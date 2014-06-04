@@ -80,20 +80,45 @@
 				'desc' => 'Runtime configuration object, can override arbitrary UiVars and plugin config.'
 			),
 			'cache_st' => array(
+				'optional'=> true,
 				'desc' => 'String to burst player cache'
 			)
 		)
 	);
 	
 	function getDocTypeStr( $param ){
+		global $objectDefinitions;
 		$typeStr = ( isset( $param['type'] ) )?  $param['type'] : 'String';
 		$optionalStr = ( isset( $param['optional'] ) )? ' <i>( Optional )</i> ': '';
+		
+		if( isset( $param['type'] ) &&  isset( $objectDefinitions[ $param['type'] ] )){
+			$typeStr = '<a href="#'. $param['type'] . '">'.$param['type'] . '</a>';
+		}
 		return  '<span class="vartype">' . $typeStr . '</span> ' . $optionalStr;
 	}
-	
-	function getDocs( $fnName){
+	function getObjectDocs( $objName ){
 		$o='';
 		// support recusive lookup for arrays: 
+		if( is_array($objName) ){
+			foreach( $objName as $name ){
+				$o.= getObjectDocs( $name );
+			}
+			return $o;
+		}
+		global $objectDefinitions;
+		$o= '<hr></hr>'.
+			'<h4 class="linkable objectdoc" id="'. $objName . '">' . $objName . '</h4>' .
+			'<div class="docblock">'.
+			'<ul>';
+		foreach( $objectDefinitions[$objName] as $attrName => $attrObj){
+			$o.='<li><b>' . $attrName .'</b> ' . getDocTypeStr( $attrObj ) . ' ' . $attrObj['desc'] . '</li>';
+		}
+		$o.='<ul>';
+		return $o;
+	}
+	function getDocs( $fnName){
+		$o='';
+		// support recursive lookup for arrays: 
 		if( is_array($fnName) ){
 			foreach( $fnName as $name ){
 				$o.= getDocs( $name );
@@ -104,22 +129,27 @@
 		$paramStr = '';
 		$paramBlock = '';
 		if( isset(  $methodDocs[$fnName]['params'] ) ){
-			$paramBlock.='<h5 id="'. $fnName .'-parameters">PARAMETERS:</h5>'.
+			$paramBlock.='<h5 class="linkable" id="'. $fnName .'-parameters">PARAMETERS:</h5>'.
 					'<ul>';
 			$coma = '';
 			foreach( $methodDocs[$fnName]['params'] as $paramName => $param ){
-				$paramStr = (isset($param['optional']) )? '[' . $paramName . ']': '';
+				if( isset( $param['optional'] ) && $param['optional'] == true ){
+					$paramStr.=$coma . ' [' . $paramName . ']';
+				} else{
+					$paramStr.=$coma. $paramName;
+				}
+				
 				$paramBlock.= '<li><b>' . $paramName . '</b> '.
 						getDocTypeStr( $param ) .
 						$param['desc'] .
 						"</li>";
-				$coma = ',';
+				$coma = ', ';
 			}
 			$paramBlock.='</ul>';
 		}
 		
 		$o= '<hr></hr>'.
-			'<h4 id="'. $fnName . '">' . $fnName . ' '. $paramStr . '</h4>' . 
+			'<h4 class="linkable" id="'. $fnName . '">' . $fnName . ' ('. $paramStr . ')</h4>' . 
 			'<span class="description">'. $methodDocs[$fnName]['desc'] . '</span>'. 
 			'<div class="docblock">';
 		// output parameters if set: 
@@ -132,7 +162,7 @@
 		}
 		// output examples if set:
 		if( isset( $methodDocs[$fnName]['examples'] ) ){
-			$o.='<h5 id="'. $fnName .'-examples">EXAMPLES:</h5>';
+			$o.='<h5 class="linkable" id="'. $fnName .'-examples">EXAMPLES:</h5>';
 			$coma = '';
 			foreach( $methodDocs[$fnName]['examples'] as $example ){
 				$link = ( isset( $example['docPath'] ) ) ? 
@@ -160,12 +190,22 @@
 	.docblock{
 		padding-left:20px;
 	}
+	.linkable{
+		cursor: pointer;
+	}
+	.objectdoc{
+		color:#777;
+	}
 </style>
 <script>
 //document ready events:
 $(function(){
 	// make code pretty
 	window.prettyPrint && prettyPrint();
+	// add linkable actions: 
+	$('.linkable').on('click', function(){
+		window.location.hash = '#' + $(this).attr('id');
+	});
 });</script>
 <div id="hps-resources"></div>
 <h2>Kaltura Player API</h2>
@@ -183,9 +223,11 @@ Once embed the following API is available:
 <div class="docblock">
 	<h3>Embedding</h3>
 	<?php echo getDocs( array( 'kWidget.embed', 'kWidget.thumbEmbed' ) ) ?>
+	<?php echo getObjectDocs( array( 'kWidget.settingsObject' ) ) ?>
 </div>
+<br><br><br>
 Notifications: Notifications are both actions and events; (e.g. play and pause). To know when a notification was dispatched add a listener to the notification name using the addJsListener (e.g. addJsListener('play');) and to make Kdp perform an action dispatch the notification using sendNotification (e.g. sendNotification('play')); For a list of notifications see the Notifications leaf in this tree
-Attributes: At run-time any public Kdp parameter or object properties in Kdp can be retrieved or changed via JavaScript; use evaluate method to get the values of various attributes or object properties and use the setKDPAttribute method to change it's value
+Attributes: At run-time any public KDP parameter or object properties in Kdp can be retrieved or changed via JavaScript; use evaluate method to get the values of various attributes or object properties and use the setKDPAttribute method to change it's value
 <h4>Legacy KDP API</h4>
  jsCallbackReady
 A JavaScript function on the hosting web page that will be called by KDP when setup of externalInterface APIs is completed. When setting sourceType=entryId, it is advised to use kdpReady instead of this event. Value should be the name of a function to be used as the handler in the hosting page
