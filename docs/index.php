@@ -24,11 +24,6 @@
 		<?php 
 	}
 	?>
-	<?php 
-		if( $wgAdditionalDocsScriptInclude ){ 
-			echo $wgAdditionalDocsScriptInclude; 
-		} 
-	?>
 	<link href="<?php echo $pathPrefix; ?>bootstrap/build/css/bootstrap.min.css" rel="stylesheet">
 	<link href="<?php echo $pathPrefix; ?>bootstrap/build/css/bootstrap-responsive.min.css" rel="stylesheet">
 
@@ -73,6 +68,11 @@
   </head>
 
   <body class="kdoc">
+	<?php 
+		if( isset( $wgAdditionalDocsScriptInclude ) ){ 
+			echo $wgAdditionalDocsScriptInclude; 
+		} 
+	?>
 	<script> 
 	// make sure the body is at least as tall as the window:
 	$('body').css('min-height', $(window).height() - parseInt( $('body').css('padding-bottom') ) + 150 );
