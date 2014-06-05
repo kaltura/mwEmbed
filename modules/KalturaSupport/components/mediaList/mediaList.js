@@ -205,9 +205,10 @@
 			addMediaItem: function(obj ,index){
 				var mediaItem;
 				var customData = obj.partnerData ? JSON.parse(obj.partnerData) :  {};
-				var title = obj.title ? obj.title : customData['title'];
-				var description = obj.description ? obj.description : customData['desc'];
-				var thumbnailUrl = /*customData['thumbUrl'] ||*/ obj.thumbnailUrl || this.getThumbUrl(obj);
+				var title = obj.title || customData.title;
+				var description = obj.description || customData.desc;
+				debugger;
+				var thumbnailUrl = obj.thumbnailUrl || customData.thumbUrl || this.getThumbUrl(obj);
 				var thumbnailRotatorUrl = this.getConfig( 'thumbnailRotator' ) ? this.getThumRotatorUrl() : '';
 
 				mediaItem = {
@@ -297,9 +298,10 @@
 				return mediaItem;
 			},
 			getThumbUrl: function(item) {
+				var time = item.thumbOffset || item.startTime;
 				var thumbUrl = kWidget.getKalturaThumbUrl(
 					$.extend( {}, this.baseThumbSettings, {
-						'vid_sec': parseInt( item.startTime / 1000 )
+						'vid_sec': parseInt( time / 1000 )
 					} )
 				);
 				return thumbUrl;
