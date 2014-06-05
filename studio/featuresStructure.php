@@ -150,6 +150,7 @@ return array(
 			"restrictUserAgent" => "",
 			"widevine" => "",
 			"sourceSelector" => "",
+			"download" => "",
 			"uiVars" => ""
 		)
 	)
