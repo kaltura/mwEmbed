@@ -207,7 +207,6 @@
 				var customData = obj.partnerData ? JSON.parse(obj.partnerData) :  {};
 				var title = obj.title || customData.title;
 				var description = obj.description || customData.desc;
-				debugger;
 				var thumbnailUrl = obj.thumbnailUrl || customData.thumbUrl || this.getThumbUrl(obj);
 				var thumbnailRotatorUrl = this.getConfig( 'thumbnailRotator' ) ? this.getThumRotatorUrl() : '';
 
