@@ -222,62 +222,55 @@ class PlaylistResult {
 		$namedMultiRequest = new KalturaNamedMultiRequest( $client );
 		// get AC filter from entry class:
 		$filter = $this->entry->getACFilter();
-		$entryPerPlaylist = array();
+		$aPerPlaylist = array();
 		$resultObject = array();
+		$acList = array();
 		foreach( $this->playlistObject as $playlistId => $playlistObject){
 			foreach( $playlistObject['items'] as $entry ){
-				if( isset( $entryPerPlaylist[ $entry->id ] ) ){
-					array_push( $entryPerPlaylist[ $entry->id ], $playlistId );
-					continue;
-				}
-				$params = array(
-					"contextDataParams" => $filter,
-					"entryId" => $entry->id
-				);
-				$namedMultiRequest->addNamedRequest($entry->id,  'baseEntry', 'getContextData', $params );
-				$entryPerPlaylist[ $entry->id ] = array( $playlistId );
-				
-				// don't run a multi-request more then 5 items: 
-				if( $namedMultiRequest->getRequestCount() >= 5 ){
-					$resultObject = array_merge( $namedMultiRequest->doQueue(), $resultObject );
-					$namedMultiRequest = new KalturaNamedMultiRequest( $client );
+				// collect ac ids
+				if( ! isset( $acList[ $entry->accessControlId ] ) ){
+					$acList[ $entry->accessControlId ] = $entry->id;
 				}
 			}
 		}
-		// run remaining items:
-		if( $namedMultiRequest->getRequestCount() > 0 ){
-			$resultObject = array_merge( $namedMultiRequest->doQueue(), $resultObject );
+		foreach( $acList as $acId => $entryId ){
+			$params = array(
+				"contextDataParams" => $filter,
+				"entryId" => $entryId
+			);
+			$namedMultiRequest->addNamedRequest($acId,  'baseEntry', 'getContextData', $params );
 		}
-		// update the response headers ( always run after cachable base playlist api request )
+		$acResultObject = $namedMultiRequest->doQueue();
+		
+		// update the response headers
 		$this->responseHeaders = $client->getResponseHeaders();
 		
-		foreach($resultObject as $entryId => $entryResult ){
-			//print_r( $entryResult );
-			$acStatus = $this->entry->isAccessControlAllowed( array( 'contextData' => $entryResult ) );
-			if( $acStatus !== true ){
-				// remove from valid playlist items
-				//print "remove: " .$entryId. "\n";
-				foreach( $entryPerPlaylist[ $entryId ] as $playlistId ){
-					// update entry list:
-					$contentEntryList = '';
-					$coma ='';
-					foreach( $this->playlistObject[ $playlistId ]['items'] as $inx => $entry ){
-						if( $entry->id == $entryId ){
-							unset( $this->playlistObject[ $playlistId ]['items'][$inx] );
-						} else{
-							$contentEntryList.= $coma . $entryId;
-							$coma =',';
-						}
-						// update content list
-						$this->playlistObject[ $playlistId ]['content'] = $contentEntryList;
-						// re-index items: 
-						$this->playlistObject[ $playlistId ]['items'] =
-							array_values( $this->playlistObject[ $playlistId ]['items'] );
+		foreach( $this->playlistObject as $playlistId => $playlistObject){
+			// update entry list:
+			$contentEntryList = '';
+			$coma ='';
+			foreach( $playlistObject['items'] as $entryInx => $entry ){
+				//echo " looking at: " . $entry->id . ' ac:' . $entry->accessControlId . " "; 
+				if( isset( $entry->accessControlId ) ){
+					$acStatus = $this->entry->isAccessControlAllowed( 
+						array( 'contextData' => $acResultObject[ $entry->accessControlId ] )
+					);
+					if( $acStatus !== true ){
+						//echo "remove: " . $entryInx . "\n";
+						// remove from playlist
+						unset( $this->playlistObject[ $playlistId ]['items'][$entryInx] );
+						continue;
 					}
 				}
-			} else {
-				//print "keep: " .$entryId . "\n";
+				//echo "keep: " . $entryInx . "\n";
+				$contentEntryList.= $coma . $entryId;
+				$coma =',';
 			}
+			// re-index items:
+			$this->playlistObject[ $playlistId ]['items'] =
+			array_values( $this->playlistObject[ $playlistId ]['items'] );
+			// update content list
+			$this->playlistObject[ $playlistId ]['content'] = $contentEntryList;
 		}
 	}
 	
