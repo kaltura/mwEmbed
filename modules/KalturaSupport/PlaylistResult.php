@@ -13,6 +13,8 @@ class PlaylistResult {
 	var $cache = null;
 	var $uiconf = null;
 	var $entry = null;
+	
+	var $responseHeaders = array();
 
 	var $playlistObject = null; // lazy init playlist Object
 
@@ -123,6 +125,7 @@ class PlaylistResult {
 			$client->addParam( $kparams, "entryIds", implode(',', $entrySet ) );
 			$client->queueServiceActionCall( "baseEntry", "getByIds", $kparams );
 			$playlistResult = $client->doQueue();
+			$this->responseHeaders = $client->getResponseHeaders();
 			$playlistSortedResult = $this->getSortedPlaylistResult($entrySet, $playlistResult);
 			$this->playlistObject = array( 
 				$mrssUrl => array(
@@ -166,7 +169,7 @@ class PlaylistResult {
 				}
 				$client->queueServiceActionCall( "playlist", "execute", array( 'id' => $firstPlaylist ) );
 				$resultObject = $client->doQueue();
-
+				$this->responseHeaders = $client->getResponseHeaders();
 				// Check if we got error
 				if(is_array($resultObject[0]) && isset($resultObject[0]['code'])){
 					throw new Exception($resultObject[0]['message']);
@@ -245,6 +248,9 @@ class PlaylistResult {
 		if( $namedMultiRequest->getRequestCount() > 0 ){
 			$resultObject = array_merge( $namedMultiRequest->doQueue(), $resultObject );
 		}
+		// update the response headers ( always run after cachable base playlist api request )
+		$this->responseHeaders = $client->getResponseHeaders();
+		
 		foreach($resultObject as $entryId => $entryResult ){
 			//print_r( $entryResult );
 			$acStatus = $this->entry->isAccessControlAllowed( array( 'contextData' => $entryResult ) );
@@ -273,6 +279,10 @@ class PlaylistResult {
 				//print "keep: " .$entryId . "\n";
 			}
 		}
+	}
+	
+	function getResponseHeaders() {
+		return $this->responseHeaders;
 	}
 	
 	/**

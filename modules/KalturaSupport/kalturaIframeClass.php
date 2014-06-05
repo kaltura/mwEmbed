@@ -360,6 +360,10 @@ class kalturaIframeClass {
 
 	public function getHeaders(){
 		$cacheHeaders = $this->utility->getCachingHeaders($this->getEntryResult()->getResponseHeaders());
+		// Merge in playlist response headers ( if requesting a playlist ) 
+		if( $this->getUiConfResult()->isPlaylist() ){
+			array_merge( $cacheHeaders, $this->getPlaylistResult()->getResponseHeaders() );
+		}
 		if( count($cacheHeaders) == 0 ) {
 			$cacheHeaders = array(
 				"Cache-Control: no-cache, must-revalidate",
