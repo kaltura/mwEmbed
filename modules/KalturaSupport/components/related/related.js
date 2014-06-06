@@ -14,7 +14,8 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 		autoContinueTime: null,
 		templatePath: 'components/related/related.tmpl.html',
 		playlistId: null,
-		formatCountdown : false
+		formatCountdown : false,
+		clickUrl : null
 	},
 	iconBtnClass: 'icon-related',
 	setup: function(){
@@ -191,6 +192,12 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 		this.stopTimer();
 		var _this = this;
 		this.getPlayer().sendNotification('relatedVideoSelect', data);
+
+		if(this.getConfig('clickUrl')){
+			window.parent.location.href = this.getConfig('clickUrl');
+			return;
+		}
+
 		this.getPlayer().sendNotification('changeMedia', data);
 		this.bind('onChangeMediaDone', function(){
 			_this.getPlayer().play();

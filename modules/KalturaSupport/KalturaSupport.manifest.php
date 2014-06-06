@@ -1218,11 +1218,18 @@ The playhead reflects segment time as if it was the natural stream length.",
 					'doc' => 'Number of seconds for auto play.',
 					'type' => 'number'
 				),
+				'clickUrl' => array(
+				'doc' => "<p style='text-align: left'>Defines the URL for a related item click</p>
+							    If this left blank the click will replace the current video with a new one.
+							    example: <b>http://my-custom-domain.com/?v={mediaProxy.entry.id}</b> as a custom
+							    URL with the entry id as postfix",
+					'type' => 'string'
+				),
 				'itemsLimit' => array(
 					'doc' => 'Maximum number of items to show on the related screen.',
 					'type' => 'number'
 				)/*,
-				// hide template path for now, no way for user to provide useful value here. 
+				// hide template path for now, no way for user to provide useful value here.
 				'templatePath' => array(
 					'doc' => 'Template path to be used by the plugin.',
 					'type' => 'string'
