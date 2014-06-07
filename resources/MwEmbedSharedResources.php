@@ -104,6 +104,9 @@ return array(
 	'jquery.naturalSize' => array(
 		'scripts' => 'resources/jquery/jquery.naturalSize.js',
 	),
+	'jquery.serialize-object' => array(
+		'scripts' => 'resources/jquery/jquery.serialize-object.js'
+	),
 
 	/* jQuery UI */
 

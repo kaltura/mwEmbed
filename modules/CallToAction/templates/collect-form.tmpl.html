@@ -1,15 +1,11 @@
 <div align="center">
 	<h3>For more information, please enter your details and we will get back to you</h3>
 	<form data-submit="processForm">
+		<% $.each(self.getConfig('fields'), function(key, field){ %>
 		<div class="cta-form-item">
-			<input type="text" required placeholder="Name" name="name" />
+			<input type="<%=field.type%>" <%=(field.required) ? 'required ' : '' %>placeholder="<%=field.placeholder%>" name="<%=field.name%>" />
 		</div>
-		<div class="cta-form-item">
-			<input type="email" required placeholder="Email" name="email" />
-		</div>
-		<div class="cta-form-item">
-			<input type="text" placeholder="Phone Number" name="phone" />
-		</div>
+		<% }); %>
 		<div class="cta-form-item">
 			<input type="submit" value="Submit" />
 		</div>

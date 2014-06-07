@@ -5,6 +5,25 @@ mw.PluginManager.add( 'actionForm', mw.KBaseScreen.extend({
 	defaultConfig: {
 		displayOn: 'start', // start, <time>, <percent>%, end
 		submitRequired: false,
+		fields: [
+			{
+				name: 'name',
+				placeholder: 'Name',
+				type: 'text',
+				required: true
+			},
+			{
+				name: 'email',
+				placeholder: 'Email',
+				type: 'email',
+				required: true
+			},
+			{
+				name: 'phone',
+				placeholder: 'Phone Number',
+				type: 'text'
+			}
+		],
 		templatePath: '../CallToAction/templates/collect-form.tmpl.html'
 	},
 
