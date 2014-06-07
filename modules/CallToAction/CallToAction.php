@@ -17,6 +17,7 @@ return array(
 		'styles' => 'resources/call-to-action.css',
 		'dependencies' => array(
 			'mw.EmbedPlayer',
+			'jquery.serialize-object',
 			'mw.KBaseScreen'
 		),
 		'templates' => '../CallToAction/templates/collect-form.tmpl.html',

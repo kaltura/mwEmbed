@@ -83,7 +83,7 @@ mw.PluginManager.add( 'actionForm', mw.KBaseScreen.extend({
 
 	processForm: function( e ) {
 		var $form = $(e.target);
-		this.getPlayer().triggerHelper('actionFormSubmitted', [$form.serializeArray()]);
+		this.getPlayer().triggerHelper('actionFormSubmitted', [$form.serializeObject()]);
 		this.hideScreen();
 	}
 }));
