@@ -82,7 +82,7 @@ mw.EmbedPlayerKplayer = {
 		}
 
 		//add OSMF HLS Plugin if the source is HLS
-		if ( this.isHlsSource( this.mediaElement.selectedSource ) ) {
+		if ( this.mediaElement.selectedSource.getMIMEType() == 'application/vnd.apple.mpegurl' ) {
 			flashvars.sourceType = 'url';
 			flashvars.ignoreStreamerTypeForSeek = true;
 			flashvars.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
@@ -129,13 +129,6 @@ mw.EmbedPlayerKplayer = {
 		});
 	},
 
-	isHlsSource: function( source ) {
-		if ( source && (source.getMIMEType() == 'application/vnd.apple.mpegurl' )) {
-			return true;
-		}
-		return false;
-	},
-
 	setCurrentTime: function( time, callback ){
 		this.flashCurrentTime = time;
         if( callback ){
@@ -167,7 +160,6 @@ mw.EmbedPlayerKplayer = {
 
 	/**
 	* Get required sources for KDP. Either by flavorTags flashvar or tagged wtih 'web'/'mbr' by default
-	 * or hls sources
 	**/
 	getSourcesForKDP: function() {
 		var _this = this;
@@ -177,7 +169,7 @@ mw.EmbedPlayerKplayer = {
 		if ( flavorTags === undefined ) {
 			var sources = _this.mediaElement.getPlayableSources();
 			$.each( sources, function( sourceIndex, source ) {
-				if ( _this.checkForTags( source.getTags(), ['web', 'mbr'] ) || ( _this.isHlsSource( source ))) {
+				if ( _this.checkForTags( source.getTags(), ['web', 'mbr'] )) {
 					sourcesByTags.push ( source );
 				}
 			});
@@ -502,7 +494,7 @@ mw.EmbedPlayerKplayer = {
 	* Get the URL to pass to KDP according to the current streamerType
 	*/
 	getEntryUrl: function() {
-		if ( this.live || this.sourcesReplaced || this.isHlsSource( this.mediaElement.selectedSource )) {
+		if ( this.live || this.sourcesReplaced ) {
 			return this.mediaElement.selectedSource.getSrc();
 		}
 		var flavorIdParam = '';
