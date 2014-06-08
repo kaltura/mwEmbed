@@ -1,7 +1,10 @@
 <?php 
 	// Some includes for output of configuration options
 	require_once( realpath( dirname( __FILE__ ) ) . '/doc-base.php' );
-	
+	require_once( realpath( dirname( __FILE__ ) ) . '/api_uivars.php' );
+	require_once( realpath( dirname( __FILE__ ) ) . '/api_methods.php' );
+	require_once( realpath( dirname( __FILE__ ) ) . '/api_listeners.php' );
+
 	/* should ideally auto generate or be in a separate file */
 	$methodDocs = array(
 		'kWidget.embed' => array(
@@ -251,71 +254,6 @@
 		$o.='</div>';
 		return $o;
 	}
-
-	$uiVars = array(
-        'kalturaLogo.visible' => array(
-            'type' => 'Boolean',
-            'desc' => 'Used to control the Kaltura player logo. Commonly used when white labeling the Kaltura player.'
-        ),
-        'kalturaLogo.kClick' => array(
-            'type' => 'String',
-            'desc' => 'JavaScript code to execute upon logo click.'
-        )
-    );
-
-	$methods = array(
-        'doPause' => array(
-            'body' => 'None',
-            'desc' => 'Command the player to pause.'
-        ),
-        'doPlay' => array(
-            'body' => 'None',
-            'desc' => 'Command the player to play.'
-        ),
-        'doStop' => array(
-            'body' => 'None',
-            'desc' => 'Do stop command to the player. Pause and move the playhead to 0.'
-        ),
-        'doSeek' => array(
-            'body' => 'Position to seek to',
-            'desc' => 'Do seek command to the player.'
-        ),
-        'doSwitch' => array(
-            'body' => 'New stream bitrate',
-            'desc' => 'Do switch command for manual switching between streams within the resource.'
-        ),
-        'cleanMedia' => array(
-            'body' => 'None',
-            'desc' => 'cleans the media from the player.'
-        )
-    );
-
-	$listeners = array(
-        'startUp' => array(
-            'body' => 'Root of the application',
-            'desc' => 'The first command that register the main proxys and main view mediator.'
-        ),
-        'initiatApp' => array(
-            'body' => 'None',
-            'desc' => 'Start the init macro commands.'
-        ),
-        'skinLoaded' => array(
-            'body' => 'None',
-            'desc' => 'Dispatched when the skin is loaded.'
-        ),
-        'skinLoadFailed' => array(
-            'body' => 'None',
-            'desc' => 'Dispatched when skin load failed.'
-        ),
-        'sourceReady' => array(
-            'body' => 'None',
-            'desc' => 'When the source is ready we can set the media element to the media player.'
-        ),
-        'kdpReady' => array(
-            'body' => 'None',
-            'desc' => 'Notify that the application is ready to be used and events can be listened to and that the loaded entry is ready to be played.'
-        )
-    );
 
     function getTableContent($headers, $param){
         $paramArrayObject = new ArrayObject($param);
