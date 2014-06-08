@@ -61,6 +61,9 @@
 				this.addBindings();
 				this.initMonitors();
 			},
+			isSafeEnviornment: function(){
+				return !mw.isIphone();
+			},
 			initConfig: function () {
 				var _this = this;
 				this.setConfig( {resizable: $.extend( {}, this.getConfig( 'resizable' ), {maxWidthPercentage: this.getConfig( 'resizable' ).maxWidth} )} );
