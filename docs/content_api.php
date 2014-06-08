@@ -24,10 +24,12 @@
 			'examples' => array(
 				array(
 					// either doc name or path can be defined ( for feature listed files vs non-feature listed )
+					'type' => 'link',
 					'name' => 'kWidget.embed',
 					'docPath' => 'kwidget'
 				),
 				array(
+				    'type' => 'link',
 					'name' => 'kWidget.embed playlist',
 					'docFullPath' => 'modules/KalturaSupport/tests/kWidget.embed.playlist.qunit.html '
 				)
@@ -49,6 +51,7 @@
 			'examples' => array(
 				array(
 					// either doc name or path can be defined ( for feature listed files vs non-feature listed )
+					'type' => 'link',
 					'name' => 'kWidget.thumbEmbed',
 					'docPath' => 'thumb'
 				)
@@ -162,17 +165,25 @@
 		}
 		// output examples if set:
 		if( isset( $methodDocs[$fnName]['examples'] ) ){
-			$o.='<h5 class="linkable" id="'. $fnName .'-examples">EXAMPLES:</h5>';
-			$coma = '';
+			$o.='<h5 class="linkable" id="'. $fnName .'-examples">EXAMPLES:</h5><ul>';
 			foreach( $methodDocs[$fnName]['examples'] as $example ){
-				$link = ( isset( $example['docPath'] ) ) ? 
-					'index.php?path=' . $example['docPath']: '';
-				if( $link == '' && isset( $example['docFullPath'] ) ){
-					$link = '../' . $example['docFullPath'];
-				}
-				$o.= $coma . '<a href="'. $link . '">' . $example['name'] . '</a>';
-				$coma = ', ';
+			    $text = '';
+			    switch ($example['type']) {
+                    case 'link':
+                        $link = ( isset( $example['docPath'] ) ) ?
+                            'index.php?path=' . $example['docPath']: '';
+                        if( $link == '' && isset( $example['docFullPath'] ) ){
+                            $link = '../' . $example['docFullPath'];
+                        }
+                        $text = '<a href="'. $link . '">' . $example['name'] . '</a>';
+                        break;
+                    case 'code':
+                        $text = $example['name'] . '<br><pre class="prettyprint linenums">'.htmlspecialchars($example['code']).'</pre>';
+                        break;
+                }
+				$o.= '<li>'. $text .'</li>';
 			}
+			$o.='</ul>';
 		}
 		// close <div class="docblock">
 		$o.='</div>';
