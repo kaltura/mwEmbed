@@ -69,7 +69,7 @@
 				'desc' => 'The player uiconf_id'
 			),
 			'entry_id' => array(
-				'desc' => 'The content entry id, can be left empty for JavaScript based entry id insert or in playlist based players.' 
+				'desc' => 'The content entry id, can be left empty for JavaScript based entry id insert or in playlist based players.'
 			),
 			'flashvars' => array(
 				'type' => 'Object',
@@ -85,7 +85,9 @@
 			)
 		)
 	);
-	
+
+
+
 	function getDocTypeStr( $param ){
 		global $objectDefinitions;
 		$typeStr = ( isset( $param['type'] ) )?  $param['type'] : 'String';
@@ -178,6 +180,42 @@
 		$o.='</div>';
 		return $o;
 	}
+
+	$uiVars = array(
+        'kalturaLogo.visible' => array(
+            'type' => 'Boolean',
+            'desc' => 'Used to control the Kaltura player logo. Commonly used when white labeling the Kaltura player.'
+        ),
+        'kalturaLogo.kClick' => array(
+            'type' => 'String',
+            'desc' => 'JavaScript code to execute upon logo click.'
+        )
+    );
+
+    function getTableContent($headers, $param){
+        $paramArrayObject = new ArrayObject($param);
+        $paramArrayObject->ksort();
+        $o = "<table>";
+        $o.= "<tr>";
+        foreach( $headers as $header ){
+            $o.= "<th>".$header."</th>";
+        }
+        $o.= "</tr>";
+        if( is_array($param) ){
+            foreach( $paramArrayObject as $key => $value ){
+                $o.= "<tr>";
+                $o.= "<td>".$key."</td>";
+                foreach( $value as $val ){
+                    $o.= "<td>".$val."</td>";
+                }
+                $o.= "</tr>";
+            }
+
+        }
+        $o.= "</table>";
+        return $o;
+    }
+
 ?>
 <style>
 	.vartype{
@@ -196,7 +234,19 @@
 	.objectdoc{
 		color:#777;
 	}
+	table,th,td{
+        border:1px solid black;
+        border-collapse:collapse;
+    }
+    th,td{
+        padding:5px;
+    }
+    th{
+        text-align:left;
+    }
 </style>
+
+
 <script>
 //document ready events:
 $(function(){
@@ -209,10 +259,15 @@ $(function(){
 });</script>
 <div id="hps-resources"></div>
 <h2>Kaltura Player API</h2>
-This documentation covers version 
-	<strong><i><?php global $wgMwEmbedVersion; echo $wgMwEmbedVersion ?></i></strong> of the html5 library.
+<p>This documentation covers version <strong><i><?php global $wgMwEmbedVersion; echo $wgMwEmbedVersion ?></i></strong> of the html5 library. </p>
+<p>
+<a href="#kWidget" class="btn btn btn-info btn-large">kWidget API &raquo;</a>
+<a href="#uiVars" class="btn btn btn-info btn-large">Using UI Vars &raquo;</a>
+<a href="#kdpAPI" class="btn btn btn-info btn-large">Player API &raquo;</a>
+</p>
 
-<h3>kWidget API</h3>
+<a name="kWidget"></a>
+<h2>kWidget API</h2>
 kWidget API is available after a Kaltura player library include. kWidget provides embedding and basic utility functions.
 Sample Kaltura player library include : 
 <pre class="prettyprint linenums">
@@ -224,8 +279,21 @@ Once embed the following API is available:
 	<h3>Embedding</h3>
 	<?php echo getDocs( array( 'kWidget.embed', 'kWidget.thumbEmbed' ) ) ?>
 	<?php echo getObjectDocs( array( 'kWidget.settingsObject' ) ) ?>
-</div>
-<br><br><br>
+</div><br><br>
+
+<a name="uiVars"></a>
+<h2>Using UI Vars</h2>
+<p>To simplify the management of many of the player features, Kaltura has implemented the “UIVars” to override and configure player features.</p>
+<p>Kaltura UIVars are an incredibly powerful feature of the Kaltura Players which allow publishers to pre-set or override the value of any FlashVar (object level parameters), show, hide and disable existing UI element, add new plugins and UI elements to an existing player, and modify attributes of all the player's elements.</p>
+<p>FlashVars are configuration variables that are set to the Kaltura Player in the HTML embed code and work for “regular” static embed, server-generated embed or JavaScript-generated embed code.  Below is a list of all the Kaltura Player FlashVars.</p>
+<div class="docblock">
+
+<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description' ), $uiVars ) ?>
+
+</div><br><br>
+
+
+<!--br><br><br>
 Notifications: Notifications are both actions and events; (e.g. play and pause). To know when a notification was dispatched add a listener to the notification name using the addJsListener (e.g. addJsListener('play');) and to make Kdp perform an action dispatch the notification using sendNotification (e.g. sendNotification('play')); For a list of notifications see the Notifications leaf in this tree
 Attributes: At run-time any public KDP parameter or object properties in Kdp can be retrieved or changed via JavaScript; use evaluate method to get the values of various attributes or object properties and use the setKDPAttribute method to change it's value
 <h4>Legacy KDP API</h4>
@@ -266,4 +334,4 @@ This API should be used when building player plugins that run inside the iframe
 <h4>Playback Actions</h4>
 <h4>Add related</h4>
 
-<h3>All plugins:</h3>
+<h3>All plugins:</h3-->
