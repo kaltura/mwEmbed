@@ -486,7 +486,7 @@ kWidget.embed({
         <p>Use the <b>sendNotification</b> method to create custom notifications that tell the player to do something, such as play, seek, or pause.</p>
         <?php echo getDocs( array( 'sendNotification' ) ) ?>
         <br><br><p>Available Notifications:</p>
-        <?php echo getTableContent( array( 'Notification', 'Body', 'Description' ), $methods ) ?>
+        <?php echo getTableContent( array( 'Notification', 'Params', 'Description' ), $methods ) ?>
         <br><br>Code sample:<br>
         <pre class="prettyprint linenums">
         //TBD
