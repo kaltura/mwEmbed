@@ -60,6 +60,47 @@
 				)
 			)
 		),
+		'kWidget.getKalturaThumbUrl' => array(
+			'desc'=>'Get video thumbnail URL.',
+			'params' => array(
+				'settings'=> array(
+					'type' => 'kWidget.settingsObject',
+					'desc' => 'Object of settings to be used in embedding.'
+				)
+			)
+		),
+        'kWidget.addReadyCallback' => array(
+            'desc'=>'Adds a ready callback to be called once the kdp or html5 player is ready.',
+            'params' => array(
+                'readyCallback' => array(
+                    'type' => 'String',
+                    'desc' => 'Function to call once a player or widget is ready on the page.',
+                )
+            ),
+            'examples' => array(
+                array(
+                    'type' => 'link',
+                    'name' => 'kWidget.addReadyCallback',
+                    'docFullPath' => 'modules/KalturaSupport/tests/ChangeMediaEntry.qunit.html '
+                )
+            )
+        ),
+         'kWidget.destroy' => array(
+             'desc'=>'Removes the player from the DOM.',
+             'params' => array(
+                 'target' => array(
+                     'type' => 'String',
+                     'desc' => 'The target element or element ID to destroy.',
+                 )
+             ),
+             'examples' => array(
+                 array(
+					'type' => 'link',
+					'name' => 'kWidget.embed',
+					'docPath' => 'kwidget'
+                 )
+             )
+         ),
 		'sendNotification' => array(
 			'desc'=>'Call a KDP notification (perform actions using this API, for example: play, pause, changeMedia, etc.)',
 			'params' => array(
@@ -340,7 +381,7 @@ Sample Kaltura player library include :
 Once embed the following API is available: 
 <div class="docblock">
 	<h3>Embedding</h3>
-	<?php echo getDocs( array( 'kWidget.embed', 'kWidget.thumbEmbed' ) ) ?>
+	<?php echo getDocs( array( 'kWidget.embed', 'kWidget.thumbEmbed', 'kWidget.getKalturaThumbUrl','kWidget.addReadyCallback','kWidget.destroy' ) ) ?>
 	<?php echo getObjectDocs( array( 'kWidget.settingsObject' ) ) ?>
 </div><br><br>
 
@@ -350,9 +391,30 @@ Once embed the following API is available:
 <p>Kaltura UIVars are an incredibly powerful feature of the Kaltura Players which allow publishers to pre-set or override the value of any FlashVar (object level parameters), show, hide and disable existing UI element, add new plugins and UI elements to an existing player, and modify attributes of all the player's elements.</p>
 <p>FlashVars are configuration variables that are set to the Kaltura Player in the HTML embed code and work for “regular” static embed, server-generated embed or JavaScript-generated embed code.  Below is a list of all the Kaltura Player FlashVars.</p>
 <br><br>
+<h5>Connecting to the Kaltura Services:</h5>
 <div class="docblock">
-	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description' ), $uiVars ) ?>
+	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default' ), $uiVars1 ) ?>
 </div><br><br>
+<h5>Kaltura MediaEntry:</h5>
+<div class="docblock">
+	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default' ), $uiVars2 ) ?>
+</div><br><br>
+<h5>Player Layout and Functionality:</h5>
+<div class="docblock">
+	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default' ), $uiVars3 ) ?>
+</div><br><br>
+<h5>Playback Control:</h5>
+<div class="docblock">
+	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default' ), $uiVars4 ) ?>
+</div><br><br>
+<h5>MediaProxy:</h5>
+<p>The MediaProxy object is responsible for referencing and loading of the current playing media.</p>
+<div class="docblock">
+	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default' ), $uiVars5 ) ?>
+</div><br><br>
+<h5>KDP Components & Plugins:</h5>
+<p>TUsing a standard OOP dot notation, every Kdp component and plugin attributes can be overrided via flashvars: objectId.parameter=value.<br>For example, to set the playlist to load automatically pass the following flashvar: playlistAPI.autoPlay=true</p><br><br>
+
 Code sample:<br>
 <pre class="prettyprint linenums">
 kWidget.embed({
@@ -364,7 +426,19 @@ kWidget.embed({
 		'autoPlay': false,
 		'adsOnReplay': true,
 		'imageDefaultDuration': 5,
-		'mediaProxy.preferedFlavorBR': 1400
+		'mediaProxy.preferedFlavorBR': 1400,
+		'closedCaptions': {
+	            'layout': 'ontop',
+	            'useCookie': true,
+	            'defaultLanguageKey': 'en',
+	            'fontsize': 12,
+	            'bg' : '0x335544',
+	            'fontFamily' : 'Arial',
+	            'fontColor' : '0xFFFFFF',
+	            'useGlow' : 'false',
+	            'glowBlur': 4,
+	            'glowColor': '0x133693'
+                }
   },
   "cache_st": 1402219661,
   "entry_id": "1_a3njcsia"
@@ -377,72 +451,132 @@ kWidget.embed({
 <h2>Player API</h2>
 <p>The JavaScript API is a two-way communication channel that lets the player tell you what it is doing and lets you tell the player to do things.
 <br>For more information: <a href="http://knowledge.kaltura.com/javascript-api-kaltura-media-players#UnderstandingtheJavaScriptAPIWorkflow" target="_blank">JavaScript API for Kaltura Media Players</a></p>
+<p>Available JavaScript API:</p>
 
-<h3>Receiving Notification that the Player API Is Ready </h3>
-<p>Before you can use the JavaScript API's base methods, the player has to reach the point in its internal loading sequence when it is ready to interact with your code. The player lets you know that it is ready by calling the <b>jsCallbackReady</b> JavaScript function on the page.</p>
-<p>jsCallbackReady is the player's first callback. The player passes jsCallbackReady an objectId parameter that represents the identifier of the player that is embedded on the page.</p>
-<?php echo getDocs( array( 'jsCallbackReady' ) ) ?>
-<br><br>Code sample:<br>
-<pre class="prettyprint linenums">
-function jsCallbackReady(objectId) {
-    window.kdp = document.getElementById(objectId);
-}
-</pre>
-<p>Kaltura recommends that you place jsCallbackReady in the global scope. This allows easily finding this critical function in the JavaScript code.</p><br><br>
+<div class="accordion" id="accordion2">
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+        Receiving Notification that the Player API Is Ready
+      </a>
+    </div>
+    <div id="collapseOne" class="accordion-body collapse">
+      <div class="accordion-inner">
+        <p>Before you can use the JavaScript API's base methods, the player has to reach the point in its internal loading sequence when it is ready to interact with your code. The player lets you know that it is ready by calling the <b>jsCallbackReady</b> JavaScript function on the page.</p>
+        <p>jsCallbackReady is the player's first callback. The player passes jsCallbackReady an objectId parameter that represents the identifier of the player that is embedded on the page.</p>
+        <?php echo getDocs( array( 'jsCallbackReady' ) ) ?>
+        <br><br>Code sample:<br>
+        <pre class="prettyprint linenums">
+        function jsCallbackReady(objectId) {
+            window.kdp = document.getElementById(objectId);
+        }
+        </pre>
+        <p>Kaltura recommends that you place jsCallbackReady in the global scope. This allows easily finding this critical function in the JavaScript code.</p><br><br>
+      </div>
+    </div>
+  </div>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+        Calling a player method from JavaScript
+      </a>
+    </div>
+    <div id="collapseTwo" class="accordion-body collapse">
+      <div class="accordion-inner">
+        <p>Use the <b>sendNotification</b> method to create custom notifications that tell the player to do something, such as play, seek, or pause.</p>
+        <?php echo getDocs( array( 'sendNotification' ) ) ?>
+        <br><br><p>Available Notifications:</p>
+        <?php echo getTableContent( array( 'Notification', 'Body', 'Description' ), $methods ) ?>
+        <br><br>Code sample:<br>
+        <pre class="prettyprint linenums">
+        //TBD
+        </pre>
+      </div>
+    </div>
+  </div>
 
-<h3>Calling a player method from JavaScript</h3>
-<p>Use the <b>sendNotification</b> method to create custom notifications that tell the player to do something, such as play, seek, or pause.</p>
-<?php echo getDocs( array( 'sendNotification' ) ) ?>
-<br><br><p>Available Notifications:</p>
-<?php echo getTableContent( array( 'Notification', 'Body', 'Description' ), $methods ) ?>
-<br><br>Code sample:<br>
-<pre class="prettyprint linenums">
-//TBD
-</pre>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">
+        Registering to a player event
+      </a>
+    </div>
+    <div id="collapseThree" class="accordion-body collapse">
+      <div class="accordion-inner">
+		<p>Use the <b>addJsListener</b> method to listen for a specific notification that something happened in the player, such as the video is playing or is paused.</p>
+		<?php echo getDocs( array( 'addJsListener' ) ) ?>
+		<br><br><p>Available Listeners:</p>
+		<?php echo getTableContent( array( 'Notification', 'Body', 'Description' ), $listeners ) ?>
+		<br><br>Code sample:<br>
+		<pre class="prettyprint linenums">
+		kdp.addJsListener(“playerUpdatePlayhead”, “playerUpdatePlayheadHandler”)
+		function playerUpdatePlayheadHandler(data, id) {
+		    // data = the player's progress time in seconds
+		    // id = the ID of the player that fired the notification
+		}
+		</pre>
+      </div>
+    </div>
+  </div>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseFour">
+		Un-registering a player event
+      </a>
+    </div>
+    <div id="collapseFour" class="accordion-body collapse">
+      <div class="accordion-inner">
+		<p>Use the <b>removeJsListener</b> method to remove a listener that is no longer needed.</p>
+		<h5>Why Remove a JsListener?</h5>
+		KDP3 accumulates JsListeners. If you add a JsListener for a notification and then add another JsListener for the same notification, the new JsListener does not override the previous one. Both JsListeners are executed in the order in which they are added. To prevent unexpected behavior in your application, Kaltura recommends that you remove unnecessary JsListeners.
+		When you remove a listener, you must specify the associated function name.
+		<br><br>Code sample:<br>
+		<pre class="prettyprint linenums">
+		removeJsListener("event", "functionName")
+		</pre>
+      </div>
+    </div>
+  </div>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseFive">
+		Retrieving a player property
+      </a>
+    </div>
+    <div id="collapseFive" class="accordion-body collapse">
+      <div class="accordion-inner">
+		<p>Use the <b>evaluate</b> method to find out something about a player by extracting data from player components.</p>
+		<?php echo getDocs( array( 'evaluate' ) ) ?>
+		<br><br><p>Available Properties:</p>
 
-<h3>Registering to a player event</h3>
-<p>Use the <b>addJsListener</b> method to listen for a specific notification that something happened in the player, such as the video is playing or is paused.</p>
-<?php echo getDocs( array( 'addJsListener' ) ) ?>
-<br><br><p>Available Listeners:</p>
-<?php echo getTableContent( array( 'Notification', 'Body', 'Description' ), $listeners ) ?>
-<br><br>Code sample:<br>
-<pre class="prettyprint linenums">
-kdp.addJsListener(“playerUpdatePlayhead”, “playerUpdatePlayheadHandler”)
-function playerUpdatePlayheadHandler(data, id) {
-    // data = the player's progress time in seconds
-    // id = the ID of the player that fired the notification
-}
-</pre>
+		<br><br>Code sample:<br>
+		<pre class="prettyprint linenums">
+		function getName() {
+		var entry_name = kdp.evaluate('{mediaProxy.entry.name}');
+		    alert('Entry name: '+entry_name);
+		}
+		</pre>
+      </div>
+    </div>
+  </div>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseSix">
+		Setting a player attribute
+      </a>
+    </div>
+    <div id="collapseSix" class="accordion-body collapse">
+      <div class="accordion-inner">
+		<p>Use the <b>setKDPAttribute</b> method to change something about a player by setting player attribute values.</p>
+		<?php echo getDocs( array( 'setKDPAttribute' ) ) ?>
+		<br><br><p>Available Attributes:</p>
 
-<h3>Un-registering a player event</h3>
-<p>Use the <b>removeJsListener</b> method to remove a listener that is no longer needed.</p>
-<h5>Why Remove a JsListener?</h5>
-KDP3 accumulates JsListeners. If you add a JsListener for a notification and then add another JsListener for the same notification, the new JsListener does not override the previous one. Both JsListeners are executed in the order in which they are added. To prevent unexpected behavior in your application, Kaltura recommends that you remove unnecessary JsListeners.
-When you remove a listener, you must specify the associated function name.
-<br><br>Code sample:<br>
-<pre class="prettyprint linenums">
-removeJsListener("event", "functionName")
-</pre>
+		<br><br>Code sample:<br>
+		<pre class="prettyprint linenums">
+		kdp.setKDPAttribute("configProxy.flashvars","autoPlay","true")
+		</pre>
+      </div>
+    </div>
+  </div>
 
-<h3>Retrieving a player property</h3>
-<p>Use the <b>evaluate</b> method to find out something about a player by extracting data from player components.</p>
-<?php echo getDocs( array( 'evaluate' ) ) ?>
-<br><br><p>Available Properties:</p>
-
-<br><br>Code sample:<br>
-<pre class="prettyprint linenums">
-function getName() {
-var entry_name = kdp.evaluate('{mediaProxy.entry.name}');
-    alert('Entry name: '+entry_name);
-}
-</pre>
-
-<h3>Setting a player attribute</h3>
-<p>Use the <b>setKDPAttribute</b> method to change something about a player by setting player attribute values.</p>
-<?php echo getDocs( array( 'setKDPAttribute' ) ) ?>
-<br><br><p>Available Attributes:</p>
-
-<br><br>Code sample:<br>
-<pre class="prettyprint linenums">
-kdp.setKDPAttribute("configProxy.flashvars","autoPlay","true")
-</pre>
+</div>
