@@ -71,9 +71,11 @@ mw.KCuePoints.prototype = {
 		// do the api request
 		this.getKalturaClient().doRequest( requestArray, function ( data ) {
 			// Validate result
-			if ( !_this.isValidResult( data ) ) {
-				return;
-			}
+			$.each(data, function(index, res) {
+				if ( !_this.isValidResult( res ) ) {
+					data[index] = null;
+				}
+			});
 			$.each(thumbCuePoint, function(index, item){
 				item.thumbnailUrl = data[index];
 			});
@@ -92,10 +94,8 @@ mw.KCuePoints.prototype = {
 			||
 			( data.code && data.message )
 			){
-			this.error = true;
 			return false;
 		}
-		this.error = false;
 		return true;
 	},
 	/**
