@@ -193,9 +193,14 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 		var _this = this;
 		this.getPlayer().sendNotification('relatedVideoSelect', data);
 
+
 		if(this.getConfig('clickUrl')){
-			window.parent.location.href = this.getConfig('clickUrl');
-			return;
+			try {
+				window.parent.location.href = this.getConfig('clickUrl');
+				return;
+			}catch(err){
+				window.open(this.getConfig('clickUrl'));
+			}
 		}
 
 		this.getPlayer().sendNotification('changeMedia', data);
