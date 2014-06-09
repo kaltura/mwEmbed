@@ -92,11 +92,15 @@ mw.PluginManager.add( 'actionForm', mw.KBaseScreen.extend({
 		}
 		this.triggered = true;
 		this.getPlayer().disablePlayControls();
+		// Disable key binding
+		 this.getPlayer().triggerHelper( 'onDisableKeyboardBinding' );
 		this._super();
 	},
 
 	hideScreen: function() {
 		this.getPlayer().enablePlayControls();
+		// restore key binding
+		 this.getPlayer().triggerHelper( 'onEnableKeyboardBinding' );
 		this._super();
 	},
 
