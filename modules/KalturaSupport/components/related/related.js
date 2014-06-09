@@ -200,6 +200,7 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 				return;
 			}catch(err){
 				window.open(this.getConfig('clickUrl'));
+				return;
 			}
 		}
 
