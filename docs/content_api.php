@@ -505,15 +505,19 @@ kWidget.embed({
       <div class="accordion-inner">
 		<p>Use the <b>addJsListener</b> method to listen for a specific notification that something happened in the player, such as the video is playing or is paused.</p>
 		<?php echo getDocs( array( 'addJsListener' ) ) ?>
-		<br><br><p>Available Listeners:</p>
-		<?php echo getTableContent( array( 'Notification', 'Body', 'Description' ), $listeners ) ?>
+		<br><h5>Player Life Cycle:</h5>
+		<?php echo getTableContent( array( 'Event', 'Parameters', 'Description' ), $listeners1 ) ?>
+		<br><br><h5>Player Information:</h5>
+		<?php echo getTableContent( array( 'Event', 'Parameters', 'Description' ), $listeners2 ) ?>
+		<br><br><h5>Player Advertisement Related Notifications:</h5>
+		<?php echo getTableContent( array( 'Event', 'Parameters', 'Description' ), $listeners3 ) ?>
 		<br><br>Code sample:<br>
 		<pre class="prettyprint linenums">
-		kdp.addJsListener(“playerUpdatePlayhead”, “playerUpdatePlayheadHandler”)
-		function playerUpdatePlayheadHandler(data, id) {
-		    // data = the player's progress time in seconds
-		    // id = the ID of the player that fired the notification
-		}
+kdp.addJsListener(“playerUpdatePlayhead”, “playerUpdatePlayheadHandler”)
+function playerUpdatePlayheadHandler(data, id) {
+    // data = the player's progress time in seconds
+    // id = the ID of the player that fired the notification
+}
 		</pre>
       </div>
     </div>
@@ -551,10 +555,10 @@ kWidget.embed({
 
 		<br><br>Code sample:<br>
 		<pre class="prettyprint linenums">
-		function getName() {
-		var entry_name = kdp.evaluate('{mediaProxy.entry.name}');
-		    alert('Entry name: '+entry_name);
-		}
+function getName() {
+var entry_name = kdp.evaluate('{mediaProxy.entry.name}');
+    alert('Entry name: '+entry_name);
+}
 		</pre>
       </div>
     </div>
@@ -573,7 +577,7 @@ kWidget.embed({
 
 		<br><br>Code sample:<br>
 		<pre class="prettyprint linenums">
-		kdp.setKDPAttribute("configProxy.flashvars","autoPlay","true")
+kdp.setKDPAttribute("configProxy.flashvars","autoPlay","true")
 		</pre>
       </div>
     </div>
