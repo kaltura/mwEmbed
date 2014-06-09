@@ -467,9 +467,9 @@ kWidget.embed({
         <?php echo getDocs( array( 'jsCallbackReady' ) ) ?>
         <br><br>Code sample:<br>
         <pre class="prettyprint linenums">
-        function jsCallbackReady(objectId) {
-            window.kdp = document.getElementById(objectId);
-        }
+function jsCallbackReady(objectId) {
+    window.kdp = document.getElementById(objectId);
+}
         </pre>
         <p>Kaltura recommends that you place jsCallbackReady in the global scope. This allows easily finding this critical function in the JavaScript code.</p><br><br>
       </div>
@@ -536,7 +536,7 @@ function playerUpdatePlayheadHandler(data, id) {
 		When you remove a listener, you must specify the associated function name.
 		<br><br>Code sample:<br>
 		<pre class="prettyprint linenums">
-		removeJsListener("event", "functionName")
+removeJsListener("event", "functionName")
 		</pre>
       </div>
     </div>
