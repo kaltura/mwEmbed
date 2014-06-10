@@ -3,7 +3,8 @@
         'httpProtocol' => array(
             'type' => 'String',
             'desc' => 'The http protocol to load the KDP application from',
-            'default' => 'Trimmed protocol of the url the KDP was loaded from'
+            'default' => 'Trimmed protocol of the url the KDP was loaded from',
+            'availability' => 'kdp'
         ),
         'host' => array(
             'type' => 'String',
@@ -23,7 +24,8 @@
         'srvUrl' => array(
             'type' => 'String',
             'desc' => 'Reserved for future use, determine the API services part of the base Kaltura API calls',
-            'default' => ''
+            'default' => '',
+            'availability' => 'kdp'
         ),
         'partnerId' => array(
             'type' => 'String',
@@ -43,7 +45,8 @@
         'disableReferrerOverride' => array(
             'type' => 'Boolean',
             'desc' => 'Flag indicating whether to take the referrer from the page (if true) or from the referrer flashvar (if false)',
-            'default' => 'false'
+            'default' => 'false',
+            'availability' => 'kdp'
         ),
         'storageId' => array(
             'type' => 'String',
@@ -53,17 +56,20 @@
         'jsTraces' => array(
             'type' => 'Boolean',
             'desc' => "Flag indicating whether to print traces to a box in the page. Usefull when there's no flash debugger version",
-            'default' => 'false'
+            'default' => 'false',
+            'availability' => 'kdp'
         ),
         'centerPreloader' => array(
             'type' => 'Boolean',
             'desc' => 'Flag indicationg whether to center the preloader swf. Should be true in case the preloader registration point is not at its center.',
-            'default' => 'false'
+            'default' => 'false',
+            'availability' => 'kdp'
         ),
         'usePreloaderBufferAnimation' => array(
             'type' => 'Boolean',
             'desc' => 'Flag indication whetehr we should use the preloader swf animation as the buffering animation. if "false": buffering animation will be taken from "kspin" class in kdp skin.',
-            'default' => 'false'
+            'default' => 'false',
+            'availability' => 'kdp'
         )
     );
 
@@ -91,22 +97,26 @@
         'streamerUrl' => array(
             'type' => 'String',
             'desc' => "A full rtmp url to the streaming application that will be used as the streaming provider, e.g. 'rtmp://rtmpakmi.kaltura.com/ondemand' (Used by the FMSURL OSMF class)",
-            'default' => ''
+            'default' => '',
+            'availability' => 'kdp'
         ),
         'streamFormat' => array(
             'type' => 'String',
             'desc' => 'Defines the video type of the rtmp stream to be played. To play mp4 streams over rtmp, pass streamFormat=mp4',
-            'default' => 'undefined'
+            'default' => 'undefined',
+            'availability' => 'kdp'
         ),
         'rtmpFlavors' => array(
             'type' => 'String',
             'desc' => 'Determine whether to use a multi-bitrate content flavors for dynamic streaming (set to 1)',
-            'default' => 'undefined'
+            'default' => 'undefined',
+            'availability' => 'kdp'
         ),
         'useRtmptFallback' => array(
             'type' => 'Boolean',
             'desc' => 'Flag indicating whether KDP should try to connect to rtmpt/rtmpte when mediaProtocol is rtmp/rtmpe.',
-            'default' => 'true'
+            'default' => 'true',
+            'availability' => 'kdp'
         ),
         'disableBitrateCookie' => array(
             'type' => 'Boolean',
@@ -141,7 +151,8 @@
         'noThumbnail' => array(
             'type' => 'Boolean',
             'desc' => 'Flag indicating whether the KDP should forgo loading the thumbnail',
-            'default' => 'false'
+            'default' => 'false',
+            'availability' => 'kdp'
         )
     );
 
@@ -159,17 +170,20 @@
         'kml' => array(
             'type' => 'String',
             'desc' => 'The source from which to load the Kdp uiConf (KML=Kaltura Meta ui Language), if undefined the kml will be loaded from the Kaltura server via uiConf.get api. Options are: local / inject',
-            'default' => 'undefined'
+            'default' => 'undefined',
+            'availability' => 'kdp'
         ),
         'kmlPath' => array(
             'type' => 'String',
             'desc' => 'An accessible path to valid kml file (use with kml=local)',
-            'default' => 'config.xml'
+            'default' => 'config.xml',
+            'availability' => 'kdp'
         ),
         'embeddedWidgetData' => array(
             'type' => 'String',
             'desc' => "Valid uiConf XML result, this is used by the 'KDP wrapper'; A flash application that wraps the KDP for caching purposes",
-            'default' => 'null'
+            'default' => 'null',
+            'availability' => 'kdp'
         ),
         'disableAlerts' => array(
             'type' => 'Boolean',
@@ -179,7 +193,8 @@
         'fileSystemMode' => array(
             'type' => 'Boolean',
             'desc' => 'Use to load the uiConf xml and skin assets from predefined path when debuggin or loading KDP from local file system',
-            'default' => 'false'
+            'default' => 'false',
+            'availability' => 'kdp'
         ),
         'debugMode' => array(
             'type' => 'Boolean',
@@ -220,7 +235,8 @@
         'mediaProxy.selectedFlavorId' => array(
             'type' => 'String',
             'desc' => 'The transcoding flavor currently playing. A valid id of a transcoding flavor associated with Kaltura entry currently being played',
-            'default' => ''
+            'default' => '',
+            'availability' => 'kdp'
         ),
         'mediaProxy.preferedFlavorBR' => array(
             'type' => 'Integer',
@@ -235,17 +251,20 @@
         'mediaProxy.supportImageDuration' => array(
             'type' => 'Boolean',
             'desc' => 'This is used to turn an image to a timed image. It is useful in case of playlist where an image should only show for a specific time before the next item will show. If the image should show without time (static), turn this to false',
-            'default' => 'true in case of playlists, false in case of single image'
+            'default' => 'true in case of playlists, false in case of single image',
+            'availability' => 'kdp'
         ),
         'mediaProxy.initialBufferTime' => array(
             'type' => 'Integer',
             'desc' => "Set the initial buffer time in dual buffering method, when a number of seconds indicated by this parameter will be buffered, the stream playback will start and the buffer size will incrase to expandedBufferTime. Any positive number representing the number of seconds the buffer should hold before playback",
-            'default' => '2'
+            'default' => '2',
+            'availability' => 'kdp'
         ),
         'mediaProxy.expandedBufferTime' => array(
             'type' => 'Integer',
             'desc' => 'Set the desired buffer time in dual buffering method, after the stream buffer has accumulated the number of seconds indicated by initialBufferTime the buffer size will incrase to the number of seconds indicated by this parameter to maximize the buffer download size during playback. Any positive number representing the desired seconds to buffer',
-            'default' => '10'
+            'default' => '10',
+            'availability' => 'kdp'
         ),
         'mediaProxy.mediaPlayFrom' => array(
             'type' => 'Integer',

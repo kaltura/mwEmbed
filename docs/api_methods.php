@@ -34,7 +34,8 @@
         ),
         'showUiElement' => array(
             'params' => 'id: ID of the element, show: true / false',
-            'desc' => 'Show/hide an element from the layout'
+            'desc' => 'Show/hide an element from the layout',
+            'availability' => 'kdp'
         ),
         'changeMedia' => array(
             'params' => 'entryId: new entry ID / referenceId: new reference ID, flavorId: new flavor ID, if exists',
@@ -46,15 +47,18 @@
         ),
         'removeAlerts' => array(
             'params' => 'None',
-            'desc' => 'Fired when all alerts popped by the player need to be removed'
+            'desc' => 'Fired when all alerts popped by the player need to be removed',
+            'availability' => 'kdp'
         ),
         'enableGui' => array(
             'params' => 'guiEnabled: true / false, enableType: full / controls',
-            'desc' => 'Enable/disable gui'
+            'desc' => 'Enable/disable gui',
+            'availability' => 'kdp'
         ),
         'cancelAlerts' => array(
             'params' => 'None',
-            'desc' => 'Hide Alerts at the Alerts Mediator'
+            'desc' => 'Hide Alerts at the Alerts Mediator',
+            'availability' => 'kdp'
         ),
         'changePreferredBitrate' => array(
             'params' => 'The new preferred bitrate',
@@ -62,7 +66,8 @@
         ),
         'liveEntry' => array(
             'params' => 'The URL resource of the played entry',
-            'desc' => 'Call the LiveStream command which tests whether the stream is currently on air'
+            'desc' => 'Call the LiveStream command which tests whether the stream is currently on air',
+            'availability' => 'kdp'
         )
     );
 ?>

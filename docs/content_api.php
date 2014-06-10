@@ -307,12 +307,28 @@
         $o.= "</tr>";
         if( is_array($param) ){
             foreach( $paramArrayObject as $key => $value ){
+				$restrictedAvailability = false;
                 $o.= "<tr>";
-                $o.= "<td>".$key."</td>";
-                foreach( $value as $val ){
-                    $o.= "<td>".$val."</td>";
+                $o.= "<td>".$key;
+                foreach( $value as $val => $value1){
+                    if ($val == 'availability' && $value1 == 'kdp'){
+                        $o.= '<br><span class="label label-warning">Legacy Only</span>';
+                        $restrictedAvailability = true;
+                    }
                 }
-                $o.= "</tr>";
+                //if (!$restrictedAvailability)
+                //    $o.= '<br><span class="label label-success">Legacy / Universal</span>';
+                $o.= "</td>";
+
+                foreach( $value as $val => $value){
+                    if ($val != 'availability')
+                        $o.= "<td>".$value."</td>";
+                }
+/*
+                foreach( $value as $val){
+                        $o.= "<td>".$val."</td>";
+                }
+                $o.= "</tr>";*/
             }
 
         }

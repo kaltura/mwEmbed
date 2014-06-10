@@ -2,23 +2,28 @@
 	$listeners1 = array(
         'startUp' => array(
             'props' => 'Root of the application',
-            'desc' => 'The first command that register the main proxys and main view mediator.'
+            'desc' => 'The first command that register the main proxys and main view mediator.',
+            'availability' => 'kdp'
         ),
         'initiatApp' => array(
             'props' => 'None',
-            'desc' => 'Start the init macro commands.'
+            'desc' => 'Start the init macro commands.',
+            'availability' => 'kdp'
         ),
         'skinLoaded' => array(
             'props' => 'None',
-            'desc' => 'Dispatched when the skin is loaded.'
+            'desc' => 'Dispatched when the skin is loaded.',
+            'availability' => 'kdp'
         ),
         'skinLoadFailed' => array(
             'props' => 'None',
-            'desc' => 'Dispatched when skin load failed.'
+            'desc' => 'Dispatched when skin load failed.',
+            'availability' => 'kdp'
         ),
         'sourceReady' => array(
             'props' => 'None',
-            'desc' => 'When the source is ready we can set the media element to the media player.'
+            'desc' => 'When the source is ready we can set the media element to the media player.',
+            'availability' => 'kdp'
         ),
         'kdpReady' => array(
             'props' => 'None',
@@ -38,19 +43,23 @@
         ),
         'pluginsLoaded' => array(
             'props' => 'Plugins map object. Every key is a plugin ID, value is the status of the plugin (see PluginStatus class)',
-            'desc' => 'Notification fired when all plugins finished the loading process.'
+            'desc' => 'Notification fired when all plugins finished the loading process.',
+            'availability' => 'kdp'
         ),
         'singlePluginLoaded' => array(
             'props' => 'The plugin ID',
-            'desc' => 'Notification fired when a single plugin is ready'
+            'desc' => 'Notification fired when a single plugin is ready',
+            'availability' => 'kdp'
         ),
         'singlePluginFailedToLoad' => array(
             'props' => 'The plugin ID',
-            'desc' => 'Notification fired when a single plugin failed to load'
+            'desc' => 'Notification fired when a single plugin failed to load',
+            'availability' => 'kdp'
         ),
         'readyToPlay' => array(
             'props' => 'None',
-            'desc' => 'Notification added with version 3.5.0, signifies that an entry / media is ready to be played in the KDP'
+            'desc' => 'Notification added with version 3.5.0, signifies that an entry / media is ready to be played in the KDP',
+            'availability' => 'kdp'
         ),
         'readyToLoad' => array(
             'props' => 'None',
@@ -66,7 +75,8 @@
         ),
         'entryNotAvailable' => array(
             'props' => 'entryId: The new entry ID',
-            'desc' => "Notification fired when the BaseEntry object has been retrieved but KDP can't play the entry. Possible reasons: status not ready / moderation status/ access control"
+            'desc' => "Notification fired when the BaseEntry object has been retrieved but KDP can't play the entry. Possible reasons: status not ready / moderation status/ access control",
+            'availability' => 'kdp'
         ),
         'mediaReady' => array(
             'props' => 'None',
@@ -89,11 +99,13 @@
         ),
         'rootResize' => array(
             'props' => 'width: new width, height: new height',
-            'desc' => 'The playe parent was resized'
+            'desc' => 'The playe parent was resized',
+            'availability' => 'kdp'
         ),
         'mediaViewableChange' => array(
             'props' => 'None',
-            'desc' => 'Used mainlly to know when OSMF Media Playe is viewable'
+            'desc' => 'Used mainlly to know when OSMF Media Playe is viewable',
+            'availability' => 'kdp'
         ),
         'playerStateChange' => array(
             'props' => 'The new state (MediaPlayerState)',
@@ -145,7 +157,8 @@
         ),
         'volumeChangedEnd' => array(
             'props' => 'New volume value',
-            'desc' => 'Notification fired when volumeChanged process ended (volume slider thumb release / volume button click). Will save value to cookie if possible'
+            'desc' => 'Notification fired when volumeChanged process ended (volume slider thumb release / volume button click). Will save value to cookie if possible',
+            'availability' => 'kdp'
         ),
         'mute' => array(
             'props' => 'None',
@@ -173,15 +186,18 @@
         ),
         'scrubberDragStart' => array(
             'props' => 'None',
-            'desc' => 'The scrubber had started being dragged'
+            'desc' => 'The scrubber had started being dragged',
+            'availability' => 'kdp'
         ),
         'scrubberDragEnd' => array(
             'props' => 'None',
-            'desc' => 'The scrubber had stopped being dragged'
+            'desc' => 'The scrubber had stopped being dragged',
+            'availability' => 'kdp'
         ),
         'intelliSeek' => array(
             'props' => 'intelliseekTo: new position to seek to',
-            'desc' => 'Notification fired when the player has started intelligent seeking'
+            'desc' => 'Notification fired when the player has started intelligent seeking',
+            'availability' => 'kdp'
         ),
         'freePreviewEnd' => array(
             'props' => 'id of the viewed entry',
@@ -189,7 +205,8 @@
         ),
         'changeMediaProcessStarted' => array(
             'props' => 'entryId: The new entry ID',
-            'desc' => 'Notification fired when the first mini-command of the ChangeMedia macro command has started'
+            'desc' => 'Notification fired when the first mini-command of the ChangeMedia macro command has started',
+            'availability' => 'kdp'
         ),
         'metadataReceived' => array(
             'props' => 'None',
@@ -220,11 +237,13 @@
         ),
         'sequenceItemPlayStart' => array(
             'props' => 'sequenceContext: pre / post / mid / main (see SequenceContextType class), currentIndex: index of current item',
-            'desc' => 'Signifies the start of an entry that is part of a sequence'
+            'desc' => 'Signifies the start of an entry that is part of a sequence',
+            'availability' => 'kdp'
         ),
         'sequenceItemPlayEnd' => array(
             'props' => 'sequenceContext: pre / post / mid / main (see SequenceContextType class), currentIndex: index of current item',
-            'desc' => 'Signifies the end of an entry that is part of a sequence as opposed to the end of a regular entry'
+            'desc' => 'Signifies the end of an entry that is part of a sequence as opposed to the end of a regular entry',
+            'availability' => 'kdp'
         ),
         'preSequenceStart' => array(
             'props' => 'None',
@@ -252,11 +271,13 @@
         ),
         'bumperStarted' => array(
             'props' => 'timeSlot: preroll / postroll',
-            'desc' => 'Defines the value of the type property of a bumper start notification'
+            'desc' => 'Defines the value of the type property of a bumper start notification',
+            'availability' => 'kdp'
         ),
         'bumperClicked' => array(
             'props' => 'None',
-            'desc' => 'Defines the value of the type property of a bumper click notification'
+            'desc' => 'Defines the value of the type property of a bumper click notification',
+            'availability' => 'kdp'
         ),
         'adStart' => array(
             'props' => 'timeSlot: pre / post / mid / main (see SequenceContextType class)',
@@ -272,15 +293,18 @@
         ),
         'firstQuartileOfAd' => array(
             'props' => 'timeSlot: pre / post / mid / main (see SequenceContextType class)',
-            'desc' => 'Defines the value of the type property of 25% of ad notification'
+            'desc' => 'Defines the value of the type property of 25% of ad notification',
+            'availability' => 'kdp'
         ),
         'midOfAd' => array(
             'props' => 'timeSlot: pre / post / mid / main (see SequenceContextType class)',
-            'desc' => 'Defines the value of the type property of 50% of ad notification'
+            'desc' => 'Defines the value of the type property of 50% of ad notification',
+            'availability' => 'kdp'
         ),
         'ThirdQuartileOfAd' => array(
             'props' => 'timeSlot: pre / post / mid / main (see SequenceContextType class)',
-            'desc' => 'Defines the value of the type property of 75% of ad notification'
+            'desc' => 'Defines the value of the type property of 75% of ad notification',
+            'availability' => 'kdp'
         )
     );
 ?>
