@@ -306,7 +306,7 @@
 							switch( objectPath[2] ){
 								case 'currentTime':
 									// check for kPreSeekTime ( kaltura seek delay update property )
-									if( embedPlayer.kPreSeekTime !== null ){
+									if( embedPlayer.seeking && embedPlayer.kPreSeekTime !== null ){
 										return embedPlayer.kPreSeekTime;
 									}
 									/*var ct = embedPlayer.currentTime - embedPlayer.startOffset;
