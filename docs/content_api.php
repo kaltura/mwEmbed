@@ -4,6 +4,7 @@
 	require_once( realpath( dirname( __FILE__ ) ) . '/api_uivars.php' );
 	require_once( realpath( dirname( __FILE__ ) ) . '/api_methods.php' );
 	require_once( realpath( dirname( __FILE__ ) ) . '/api_listeners.php' );
+	require_once( realpath( dirname( __FILE__ ) ) . '/api_evaluates.php' );
 
 	/* should ideally auto generate or be in a separate file */
 	$methodDocs = array(
@@ -568,7 +569,7 @@ removeJsListener("event", "functionName")
 		<p>Use the <b>evaluate</b> method to find out something about a player by extracting data from player components.</p>
 		<?php echo getDocs( array( 'evaluate' ) ) ?>
 		<br><br><p>Available Properties:</p>
-
+		<?php echo getTableContent( array( 'Property', 'Description' ), $evaluates ) ?>
 		<br><br>Code sample:<br>
 		<pre class="prettyprint linenums">
 function getName() {
