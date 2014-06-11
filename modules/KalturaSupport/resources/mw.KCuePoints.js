@@ -68,19 +68,23 @@ mw.KCuePoints.prototype = {
 			response[index] = { id: item.id, url: null};
 		});
 
-		// do the api request
-		this.getKalturaClient().doRequest( requestArray, function ( data ) {
-			// Validate result
-			$.each(data, function(index, res) {
-				if ( !_this.isValidResult( res ) ) {
-					data[index] = null;
-				}
-			});
-			$.each(thumbCuePoint, function(index, item){
-				item.thumbnailUrl = data[index];
-			});
+		if (requestArray.length){
+			// do the api request
+			this.getKalturaClient().doRequest( requestArray, function ( data ) {
+				// Validate result
+				$.each(data, function(index, res) {
+					if ( !_this.isValidResult( res ) ) {
+						data[index] = null;
+					}
+				});
+				$.each(thumbCuePoint, function(index, item){
+					item.thumbnailUrl = data[index];
+				});
+				_this.embedPlayer.triggerHelper( 'KalturaSupport_ThumbCuePointsReady' );
+			} );
+		} else {
 			_this.embedPlayer.triggerHelper( 'KalturaSupport_ThumbCuePointsReady' );
-		} );
+		}
 	},
 	getKalturaClient: function() {
 		if( ! this.kClient ) {
