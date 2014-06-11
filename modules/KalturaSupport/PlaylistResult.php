@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Description of KalturaPlaylistResult
  * Holds playlist request methods
@@ -12,8 +13,6 @@ class PlaylistResult {
 	var $cache = null;
 	var $uiconf = null;
 	var $entry = null;
-	
-	var $responseHeaders = array();
 
 	var $playlistObject = null; // lazy init playlist Object
 
@@ -55,7 +54,7 @@ class PlaylistResult {
 			throw new Exception("Error empty playlist");
 			return array();
 		}
-		// Build the request:
+		// Build the reqeust:
 		if( !$this->playlistObject ){
 			// Check if we are dealing with a playlist url: 
 			if( preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $firstPlaylist) != 0 ){
@@ -124,7 +123,6 @@ class PlaylistResult {
 			$client->addParam( $kparams, "entryIds", implode(',', $entrySet ) );
 			$client->queueServiceActionCall( "baseEntry", "getByIds", $kparams );
 			$playlistResult = $client->doQueue();
-			$this->responseHeaders = $client->getResponseHeaders();
 			$playlistSortedResult = $this->getSortedPlaylistResult($entrySet, $playlistResult);
 			$this->playlistObject = array( 
 				$mrssUrl => array(
@@ -166,9 +164,9 @@ class PlaylistResult {
 				foreach( $playlistIds as $playlistId ) {
 					$client->queueServiceActionCall( "playlist", "get", array( 'id' => $playlistId ) );
 				}
-				$client->queueServiceActionCall( "playlist", "execute", array( 'id' => $firstPlaylist ) );
+				$client->queueServiceActionCall( "playlist", "execute", array( 'id' => $firstPlaylist ) );			
 				$resultObject = $client->doQueue();
-				$this->responseHeaders = $client->getResponseHeaders();
+
 				// Check if we got error
 				if(is_array($resultObject[0]) && isset($resultObject[0]['code'])){
 					throw new Exception($resultObject[0]['message']);
@@ -204,77 +202,7 @@ class PlaylistResult {
 				return array();
 			}
 		}
-		// check if ac is enabled and filter playlist:
-		if( $this->uiconf->getPlayerConfig('playlistAPI', 'enableAccessControlExclusion' ) ){
-			$this->filterPlaylistEntriesAc();
-		}
-		
 		return $this->playlistObject;
-	}
-	/**
-	 * Filters the playlist object based on AC for current user request, purges cache for page. 
-	 */
-	function filterPlaylistEntriesAc(){
-		// build multi-request: 
-		$client = $this->client->getClient();
-		$client->startMultiRequest();
-		$namedMultiRequest = new KalturaNamedMultiRequest( $client );
-		// get AC filter from entry class:
-		$filter = $this->entry->getACFilter();
-		$aPerPlaylist = array();
-		$resultObject = array();
-		$acList = array();
-		foreach( $this->playlistObject as $playlistId => $playlistObject){
-			foreach( $playlistObject['items'] as $entry ){
-				// collect ac ids
-				if( ! isset( $acList[ $entry->accessControlId ] ) ){
-					$acList[ $entry->accessControlId ] = $entry->id;
-				}
-			}
-		}
-		foreach( $acList as $acId => $entryId ){
-			$params = array(
-				"contextDataParams" => $filter,
-				"entryId" => $entryId
-			);
-			$namedMultiRequest->addNamedRequest($acId,  'baseEntry', 'getContextData', $params );
-		}
-		$acResultObject = $namedMultiRequest->doQueue();
-		
-		// update the response headers
-		$this->responseHeaders = $client->getResponseHeaders();
-		
-		foreach( $this->playlistObject as $playlistId => $playlistObject){
-			// update entry list:
-			$contentEntryList = '';
-			$coma ='';
-			foreach( $playlistObject['items'] as $entryInx => $entry ){
-				//echo " looking at: " . $entry->id . ' ac:' . $entry->accessControlId . " "; 
-				if( isset( $entry->accessControlId ) ){
-					$acStatus = $this->entry->isAccessControlAllowed( 
-						array( 'contextData' => $acResultObject[ $entry->accessControlId ] )
-					);
-					if( $acStatus !== true ){
-						//echo "remove: " . $entryInx . "\n";
-						// remove from playlist
-						unset( $this->playlistObject[ $playlistId ]['items'][$entryInx] );
-						continue;
-					}
-				}
-				//echo "keep: " . $entryInx . "\n";
-				$contentEntryList.= $coma . $entryId;
-				$coma =',';
-			}
-			// re-index items:
-			$this->playlistObject[ $playlistId ]['items'] =
-			array_values( $this->playlistObject[ $playlistId ]['items'] );
-			// update content list
-			$this->playlistObject[ $playlistId ]['content'] = $contentEntryList;
-		}
-	}
-	
-	function getResponseHeaders() {
-		return $this->responseHeaders;
 	}
 	
 	/**
