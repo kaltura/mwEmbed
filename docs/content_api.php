@@ -322,8 +322,16 @@
                 $o.= "</td>";
 
                 foreach( $value as $val => $value){
-                    if ($val != 'availability')
+                    if ($val != 'availability' && $val != 'example')
                         $o.= "<td>".$value."</td>";
+                    if ($val == 'example'){
+                        if ($value != ''){
+                                $o.= '<td><a href="'.$value.'" target="_blank">Example</a></td>';
+                            }else{
+                                $o.= '<td>n/a</td>';
+                            }
+
+                        }
                 }
 /*
                 foreach( $value as $val){
@@ -410,24 +418,28 @@ Once embed the following API is available:
 <br><br>
 <h5>Connecting to the Kaltura Services:</h5>
 <div class="docblock">
-	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default' ), $uiVars1 ) ?>
+	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVars1 ) ?>
 </div><br><br>
 <h5>Kaltura MediaEntry:</h5>
 <div class="docblock">
-	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default' ), $uiVars2 ) ?>
+	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVars2 ) ?>
 </div><br><br>
 <h5>Player Layout and Functionality:</h5>
 <div class="docblock">
-	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default' ), $uiVars3 ) ?>
+	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVars3 ) ?>
 </div><br><br>
 <h5>Playback Control:</h5>
 <div class="docblock">
-	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default' ), $uiVars4 ) ?>
+	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVars4 ) ?>
+</div><br><br>
+<h5>Player Properties:</h5>
+<div class="docblock">
+	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVars5 ) ?>
 </div><br><br>
 <h5>MediaProxy:</h5>
 <p>The MediaProxy object is responsible for referencing and loading of the current playing media.</p>
 <div class="docblock">
-	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default' ), $uiVars5 ) ?>
+	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVars6 ) ?>
 </div><br><br>
 <h5>KDP Components & Plugins:</h5>
 <p>TUsing a standard OOP dot notation, every Kdp component and plugin attributes can be overrided via flashvars: objectId.parameter=value.<br>For example, to set the playlist to load automatically pass the following flashvar: playlistAPI.autoPlay=true</p><br><br>
