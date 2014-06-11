@@ -11,6 +11,9 @@ class KalturaNamedMultiRequest {
 		$this->defualt_params = $defaultParams;
 		$this->requestInx = array();
 	}
+	function getRequestCount(){
+		return count( $this->requestInx );
+	}
 	function addNamedRequest( $name, $service, $action, $params){
 		$kparams = $this->defualt_params;
 		foreach( $params as $pKey => $pVal ){

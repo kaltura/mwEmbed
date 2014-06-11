@@ -360,6 +360,10 @@ class kalturaIframeClass {
 
 	public function getHeaders(){
 		$cacheHeaders = $this->utility->getCachingHeaders($this->getEntryResult()->getResponseHeaders());
+		// Merge in playlist response headers ( if requesting a playlist ) 
+		if( $this->getUiConfResult()->isPlaylist() ){
+			array_merge( $cacheHeaders, $this->getPlaylistResult()->getResponseHeaders() );
+		}
 		if( count($cacheHeaders) == 0 ) {
 			$cacheHeaders = array(
 				"Cache-Control: no-cache, must-revalidate",
@@ -833,9 +837,13 @@ HTML;
 				} catch ( Exception $e ){
 					$payload['error'] = $e->getMessage();
 				}
+				// push up entry result errors to top level:
+				if( isset( $payload[ 'entryResult' ]  ) && isset( $payload[ 'entryResult' ]['error']) ){
+					$payload['error'] = $payload[ 'entryResult' ]['error'];
+				} 
+				// check for returned errors: 
 				echo json_encode( $payload );
 			?>;
-
 			var isIE8 = /msie 8/.test(navigator.userAgent.toLowerCase());
 		</script>
 		<script type="text/javascript">
