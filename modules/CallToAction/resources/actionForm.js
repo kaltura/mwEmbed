@@ -5,6 +5,7 @@ mw.PluginManager.add( 'actionForm', mw.KBaseScreen.extend({
 	defaultConfig: {
 		displayOn: 'start', // start, <time>, <percent>%, end
 		submitRequired: false,
+		description: 'For more information, please enter your details and we will get back to you',
 		fields: [
 			{
 				name: 'name',
