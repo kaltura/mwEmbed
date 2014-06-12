@@ -111,6 +111,7 @@ mw.KAdPlayer.prototype = {
 				adSlot.currentlyDisplayed = false;
 				// give time for the end event to clear
 				setTimeout(function(){
+					_this.embedPlayer.layoutBuilder.addPlayerTouchBindings();
 					if( !hardStop && displayDoneCallback ){
 						displayDoneCallback();
 					}
@@ -890,10 +891,32 @@ mw.KAdPlayer.prototype = {
 		});
 
 		// On done button tapped - iPhone
-		if( mw.isIphone() ) {
-			$( videoPlayer ).bind( 'webkitendfullscreen', function(){
-				$( videoPlayer ).unbind( 'webkitendfullscreen' );
-				_this.skipCurrent();
+		if( mw.isIphone() &&
+			( mw.getConfig( "EmbedPlayer.ForceNativeComponent") == null ||
+			  mw.getConfig( "EmbedPlayer.ForceNativeComponent") === "" )
+			) {
+			$( videoPlayer ).unbind( 'webkitendfullscreen' ).bind( 'webkitendfullscreen', function(){
+				//webkitendfullscreen causes similar behviour as pause so trigger the event
+				$( _this.embedPlayer ).trigger( 'onpause' );
+				//Set to true so if clickthrough is enabled let clickthrough handler take care of play
+				//If clickthrough is not set at all then let this event binding take care of the play sequence
+				_this.clickedBumper = true;
+
+				var $clickTarget = (mw.isTouchDevice()) ? $(_this.embedPlayer) : _this.embedPlayer.getVideoHolder();
+				var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'click';
+				setTimeout( function(){
+					$clickTarget.bind( clickEventName + _this.adClickPostFix, function(e) {
+						if (_this.clickedBumper) {
+							e.stopPropagation();
+							_this.getVideoElement().play();
+							$( _this.embedPlayer ).trigger( "onPlayerStateChange", ["play"] );
+							$( _this.embedPlayer ).trigger( "onResumeAdPlayback" );
+							_this.embedPlayer.restoreComponentsHover();
+							_this.embedPlayer.disablePlayControls();
+						}
+						return false;
+					});
+				}, 100);
 			});
 		}
 
