@@ -1,7 +1,7 @@
 <?php
 	$evaluates = array(
         'isHTML5' => array(
-            'desc' => 'A flag specifying if the current player is HTML5 player (Universal player)',
+            'desc' => 'A flag specifying if the current player is an HTML5 player (Universal player)',
         ),
         'sequenceProxy.timeRemaining' => array(
             'desc' => 'Time remaining until the end of the current ads sequence',

@@ -14,7 +14,7 @@
 				'targetId' => array(
 					'type' => 'String', // assumed
 					'optional' => true, 
-					'desc' => 'The DOM player target id attribute string. ( if not included, you must include targetId in "settings" object',
+					'desc' => 'The DOM player target id attribute string. ( if not included, you must include targetId in "settings" object )',
 				),
 				'settings'=> array(
 					'type' => 'kWidget.settingsObject',
@@ -71,11 +71,11 @@
 			)
 		),
         'kWidget.addReadyCallback' => array(
-            'desc'=>'Adds a ready callback to be called once the kdp or html5 player is ready.',
+            'desc'=>'Adds a ready callback to be called after the KDP or HTML5 player is ready.',
             'params' => array(
                 'readyCallback' => array(
                     'type' => 'String',
-                    'desc' => 'Function to call once a player or widget is ready on the page.',
+                    'desc' => 'Function to call after a player or widget is ready on the page.',
                 )
             ),
             'examples' => array(
@@ -107,7 +107,7 @@
 			'params' => array(
 				'notificationName' => array(
 					'type' => 'String',
-					'desc' => 'The name of notification to call',
+					'desc' => 'The name of notification to call.',
 				),
 				'notificationData'=> array(
 					'type' => 'Object',
@@ -121,20 +121,20 @@
 			'params' => array(
 				'listenerString' => array(
 					'type' => 'String',
-					'desc' => 'The name of the notification to listen to',
+					'desc' => 'The name of the notification to listen to.',
 				),
 				'jsFunctionName'=> array(
 					'type' => 'String',
-					'desc' => 'The name of the JavaScript handler function'
+					'desc' => 'The name of the JavaScript handler function.'
 				)
 			)
 		),
 		'evaluate' => array(
-			'desc'=>"Retrieve the value of a KDP model property or component's property using the standard OOP dot notation inside curly brackets",
+			'desc'=>"Retrieves the value of a KDP model property or component's property, using the standard OOP dot notation inside curly braces",
 			'params' => array(
 				'object.property.properties' => array(
 					'type' => 'String',
-					'desc' => 'the reference to the component object with data that you want to extract. Enclose the reference in curly braces within single or double quotation marks.',
+					'desc' => 'The reference to the component object with data that you want to extract. Enclose the reference in curly braces within single or double quotation marks.',
 				)
 			)
 		),
@@ -154,7 +154,7 @@
 			)
 		),
 		'jsCallbackReady' => array(
-			'desc'=>"A javascript function on the hosting web page that will be called by KDP when setup of externalInterface APIs is completed.",
+			'desc'=>"A JavaScript function on the hosting web page that is called by KDP when the setup of externalInterface APIs is completed.",
 			'params' => array(
 				'objectId' => array(
 					'type' => 'String',
@@ -166,10 +166,10 @@
 	$objectDefinitions = array(
 		'kWidget.settingsObject' => array(
 			'targetId' => array(
-				'desc' => 'The DOM player target id attribute string. If not defined as top level param.'
+				'desc' => 'The DOM player target id attribute string if not defined as top level param.'
 			),
 			'wid' => array(
-				'desc' => 'Widget id, usually the partner id prefixed by underscore'
+				'desc' => 'Widget id, usually the partner id prefixed by underscore.'
 			),
 			'uiconf_id' => array(
 				'type' => 'Number',
@@ -177,15 +177,15 @@
 				'desc' => 'The player uiconf_id'
 			),
 			'entry_id' => array(
-				'desc' => 'The content entry id, can be left empty for JavaScript based entry id insert or in playlist based players.'
+				'desc' => 'The content entry id. Can be left empty for a JavaScript based entry id.'
 			),
 			'flashvars' => array(
 				'type' => 'Object',
-				'desc' => 'Runtime configuration object, can override arbitrary UiVars and plugin config.'
+				'desc' => 'Runtime configuration object, can override arbitrary uiVars and plugin config.'
 			),
 			'params' => array(
 				'type' => 'Object',
-				'desc' => 'Runtime configuration object, can override arbitrary UiVars and plugin config.'
+				'desc' => 'Runtime configuration object, can override arbitrary uiVars and plugin config.'
 			),
 			'cache_st' => array(
 				'optional'=> true,
@@ -391,31 +391,31 @@ $(function(){
 <p>This documentation covers version <strong><i><?php global $wgMwEmbedVersion; echo $wgMwEmbedVersion ?></i></strong> of the html5 library. </p>
 <p>
 <a href="#kWidget" class="btn btn btn-info btn-large">kWidget API &raquo;</a>
-<a href="#uiVars" class="btn btn btn-info btn-large">Using UI Vars &raquo;</a>
+<a href="#uiVars" class="btn btn btn-info btn-large">Using UIVars &raquo;</a>
 <a href="#kdpAPI" class="btn btn btn-info btn-large">Player API &raquo;</a>
 </p>
 
 <a name="kWidget"></a>
 <h2>kWidget API</h2>
-kWidget API is available after a Kaltura player library include. kWidget provides embedding and basic utility functions.
-Sample Kaltura player library include : 
+The kWidget API is available after you include the Kaltura player library. kWidget provides embedding and basic utility functions.
+<br>Sample Kaltura player library include :
 <pre class="prettyprint linenums">
 &lt!-- Substitute {partner_id} for your Kaltura partner id, {uiconf_id} for uiconf player id --&gt;
 &lt;script src=&quot;http://cdnapi.kaltura.com/p/{partner_id}/sp/{partnerId}00/embedIframeJs/uiconf_id/{uiconf_id}/partner_id/{partnerId}&quot;&gt;&lt;/script&gt;
 </pre>
-Once embed the following API is available: 
+After you embed the Kaltura player library, the following kWidget API is available:
 <div class="docblock">
-	<h3>Embedding</h3>
 	<?php echo getDocs( array( 'kWidget.embed', 'kWidget.thumbEmbed', 'kWidget.getKalturaThumbUrl','kWidget.addReadyCallback','kWidget.destroy' ) ) ?>
 	<?php echo getObjectDocs( array( 'kWidget.settingsObject' ) ) ?>
 </div><br><br>
 
 <a name="uiVars"></a>
-<h2>Using UI Vars</h2>
-<p>To simplify the management of many of the player features, Kaltura has implemented the “UIVars” to override and configure player features.</p>
-<p>Kaltura UIVars are an incredibly powerful feature of the Kaltura Players which allow publishers to pre-set or override the value of any FlashVar (object level parameters), show, hide and disable existing UI element, add new plugins and UI elements to an existing player, and modify attributes of all the player's elements.</p>
-<p>FlashVars are configuration variables that are set to the Kaltura Player in the HTML embed code and work for “regular” static embed, server-generated embed or JavaScript-generated embed code.  Below is a list of all the Kaltura Player FlashVars.</p>
-<br><br>
+<h2>Using UIVars</h2>
+<p>To simplify the management of many of the player features, Kaltura has implemented “UIVars” to override and configure the player features.</p>
+<p>Kaltura UIVars are an incredibly powerful feature of the Kaltura Players that allow publishers to pre-set or override the value of any FlashVar (object level parameters), show, hide and disable existing UI elements, add new plugins and UI elements to an existing player, and modify attributes of all the player's elements.</p>
+<p>FlashVars are configuration variables that are used in the Kaltura Player in the HTML embed code and work for “regular” static embed, server-generated embed or JavaScript-generated embed code.</p>
+<p>The following table lists the Kaltura Player FlashVars:</p>
+<br>
 <h5>Connecting to the Kaltura Services:</h5>
 <div class="docblock">
 	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVars1 ) ?>
@@ -442,7 +442,7 @@ Once embed the following API is available:
 	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVars6 ) ?>
 </div><br><br>
 <h5>KDP Components & Plugins:</h5>
-<p>TUsing a standard OOP dot notation, every Kdp component and plugin attributes can be overrided via flashvars: objectId.parameter=value.<br>For example, to set the playlist to load automatically pass the following flashvar: playlistAPI.autoPlay=true</p><br><br>
+<p>Using a standard OOP dot notation, each KDP component and plugin attribute can be overridden via Flashvars: objectId.parameter=value.<br>For example, to set the playlist to load automatically, pass the following Flashvar: playlistAPI.autoPlay=true</p><br><br>
 
 Code sample:<br>
 <pre class="prettyprint linenums">
@@ -478,10 +478,10 @@ kWidget.embed({
 <a name="kdpAPI"></a>
 
  <h2>Player API</h2>
-<p>The JavaScript API is a two-way communication channel that lets the player tell you what it is doing and lets you tell the player to do things.
+<p>The JavaScript API is a two-way communication channel that lets the player communicate what it is doing and lets you instruct the player to perform operations.
 <br>For more information: <a href="http://knowledge.kaltura.com/javascript-api-kaltura-media-players#UnderstandingtheJavaScriptAPIWorkflow" target="_blank">JavaScript API for Kaltura Media Players</a></p>
 <p>Available JavaScript API:</p>
-<a href="#api1">1. Receiving Notification that the Player API Is Ready</a><br>
+<a href="#api1">1. Receiving notification that the player API is ready</a><br>
 <a href="#api2">2. Calling a player method from JavaScript</a><br>
 <a href="#api3">3. Registering to a player event</a><br>
 <a href="#api4">4. Un-registering a player event</a><br>
@@ -490,9 +490,9 @@ kWidget.embed({
 
 
 <a name="api1"></a>
-<h3>1. Receiving Notification that the Player API Is Ready</h3>
+<h3>1. Receiving notification that the player API is ready</h3>
 <p>Before you can use the JavaScript API's base methods, the player has to reach the point in its internal loading sequence when it is ready to interact with your code. The player lets you know that it is ready by calling the <b>jsCallbackReady</b> JavaScript function on the page.</p>
-<p>jsCallbackReady is the player's first callback. The player passes jsCallbackReady an objectId parameter that represents the identifier of the player that is embedded on the page.</p>
+<p>jsCallbackReady is the player's first callback. The player passes to the jsCallbackReady function an objectId parameter that represents the identifier of the player that is embedded on the page.</p>
 <?php echo getDocs( array( 'jsCallbackReady' ) ) ?>
 <br><br>Code sample:<br>
 <pre class="prettyprint linenums">
@@ -505,7 +505,7 @@ function jsCallbackReady(objectId) {
 
 <a name="api2"></a>
 <h3>2. Calling a player method from JavaScript</h3>
-<p>Use the <b>sendNotification</b> method to create custom notifications that tell the player to do something, such as play, seek, or pause.</p>
+<p>Use the <b>sendNotification</b> method to create custom notifications that instruct the player to perform an action, such as play, seek, or pause.</p>
 <?php echo getDocs( array( 'sendNotification' ) ) ?>
 <br><br><p>Available Notifications:</p>
 <?php echo getTableContent( array( 'Notification', 'Params', 'Description' ), $methods ) ?>
@@ -573,7 +573,7 @@ var entry_name = kdp.evaluate('{mediaProxy.entry.name}');
 
 <a name="api6"></a>
 <h3>6. Setting a player attribute</h3>
-<p>Use the <b>setKDPAttribute</b> method to change something about a player by setting player attribute values.</p>
+<p>Use the <b>setKDPAttribute</b> method to change a player attribute by setting its value.</p>
 <?php echo getDocs( array( 'setKDPAttribute' ) ) ?>
 <br><br>Code sample:<br>
 <pre class="prettyprint linenums">

@@ -10,19 +10,19 @@
         ),
         'doStop' => array(
             'params' => 'None',
-            'desc' => 'Do stop command to the player. Pause and move the playhead to 0.'
+            'desc' => 'Command the player to stop. Pause and move the playhead to 0.'
         ),
         'doSeek' => array(
             'params' => 'Position to seek to',
-            'desc' => 'Do seek command to the player.'
+            'desc' => 'Command the player to seek.'
         ),
         'doSwitch' => array(
             'params' => 'New stream bitrate',
-            'desc' => 'Do switch command for manual switching between streams within the resource.'
+            'desc' => 'Command the player to manually switch between streams within the resource.'
         ),
         'cleanMedia' => array(
             'params' => 'None',
-            'desc' => 'cleans the media from the player.'
+            'desc' => 'Cleans the media from the player.'
         ),
         'doReplay' => array(
             'params' => 'None',
@@ -52,7 +52,7 @@
         ),
         'enableGui' => array(
             'params' => 'guiEnabled: true / false, enableType: full / controls',
-            'desc' => 'Enable/disable gui',
+            'desc' => 'Enable/disable GUI',
             'availability' => 'kdp'
         ),
         'cancelAlerts' => array(

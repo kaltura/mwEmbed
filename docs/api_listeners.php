@@ -2,7 +2,7 @@
 	$listeners1 = array(
         'startUp' => array(
             'props' => 'Root of the application',
-            'desc' => 'The first command that register the main proxys and main view mediator.',
+            'desc' => 'The first command that registers the main proxys and main view mediator.',
             'availability' => 'kdp'
         ),
         'initiatApp' => array(
@@ -17,12 +17,12 @@
         ),
         'skinLoadFailed' => array(
             'props' => 'None',
-            'desc' => 'Dispatched when skin load failed.',
+            'desc' => 'Dispatched when the skin load failed.',
             'availability' => 'kdp'
         ),
         'sourceReady' => array(
             'props' => 'None',
-            'desc' => 'When the source is ready we can set the media element to the media player.',
+            'desc' => 'When the source is ready use to set the media element to the media player.',
             'availability' => 'kdp'
         ),
         'kdpReady' => array(
@@ -31,11 +31,11 @@
         ),
         'kdpEmpty' => array(
             'props' => 'None',
-            'desc' => 'Notify that the application is ready to be used and events can be listened to but no media was loaded'
+            'desc' => 'Notify that the application is ready to be used and events can be listened to, but no media was loaded'
         ),
         'layoutReady' => array(
             'props' => 'None',
-            'desc' => 'Dispahed when the init macro command is done and the layout is ready'
+            'desc' => 'Dispatched when the init macro command is done and the layout is ready'
         ),
         'playerReady' => array(
             'props' => 'None',
@@ -88,7 +88,7 @@
         ),
         'mediaLoaded' => array(
             'props' => 'None',
-            'desc' => 'From version 3.5.0 this notification replaces the MEDIA_READY notification as the catalyst for the MediaReadyCommand. This notification is indicative that the MediaElement constructed under the MediaProxy function prepareMediaElement is loaded into the OSMF MediaPlayer.'
+            'desc' => 'From version 3.5.0, this notification replaces the MEDIA_READY notification as the catalyst for the MediaReadyCommand. This notification is indicative that the MediaElement constructed under the MediaProxy function prepareMediaElement is loaded into the OSMF MediaPlayer.'
         )
     );
 
@@ -99,17 +99,17 @@
         ),
         'rootResize' => array(
             'props' => 'width: new width, height: new height',
-            'desc' => 'The playe parent was resized',
+            'desc' => 'The player parent was resized',
             'availability' => 'kdp'
         ),
         'mediaViewableChange' => array(
             'props' => 'None',
-            'desc' => 'Used mainlly to know when OSMF Media Playe is viewable',
+            'desc' => 'Used mainly to know when OSMF Media Player is viewable',
             'availability' => 'kdp'
         ),
         'playerStateChange' => array(
             'props' => 'The new state (MediaPlayerState)',
-            'desc' => "ispatched when media player's state has changed (OSMF MediaPlayerState: uninitialized / loading / ready / playing / paused / buffering / playbackError"
+            'desc' => "Dispatched when media player's state has changed (OSMF MediaPlayerState: uninitialized / loading / ready / playing / paused / buffering / playbackError"
         ),
         'playerPaused' => array(
             'props' => 'None',
@@ -152,12 +152,12 @@
             'desc' => 'The fullscreen was just activated'
         ),
         'volumeChanged' => array(
-            'props' => 'newVolume: New volume value',
+            'props' => 'New volume value',
             'desc' => 'Notification about a change in the player volume'
         ),
         'volumeChangedEnd' => array(
             'props' => 'New volume value',
-            'desc' => 'Notification fired when volumeChanged process ended (volume slider thumb release / volume button click). Will save value to cookie if possible',
+            'desc' => 'Notification fired when volumeChanged process ended (volume slider thumb release / volume button click). Saves value to cookie if possible',
             'availability' => 'kdp'
         ),
         'mute' => array(
@@ -182,7 +182,7 @@
         ),
         'bufferChange' => array(
             'props' => 'true / false',
-            'desc' => 'Dispatches when the player start or stop buffering'
+            'desc' => 'Dispatches when the player starts or stops buffering'
         ),
         'scrubberDragStart' => array(
             'props' => 'None',
@@ -201,7 +201,7 @@
         ),
         'freePreviewEnd' => array(
             'props' => 'id of the viewed entry',
-            'desc' => 'A notification that will be called on the hosting page with content that should be purchased after a short preview'
+            'desc' => 'A notification that is called on the hosting page with content that should be purchased after a short preview'
         ),
         'changeMediaProcessStarted' => array(
             'props' => 'entryId: The new entry ID',
@@ -232,7 +232,7 @@
 
 	$listeners3 = array(
         'adOpportunity' => array(
-            'props' => 'context: context of the ad opportunity: pre,post, mid, curPoint: the cue point object',
+            'props' => 'context: context of the ad opportunity: pre, post, mid, cuePoint: the cue point object',
             'desc' => "Notification fired when the player's time progress reaches an ad cue point"
         ),
         'sequenceItemPlayStart' => array(
