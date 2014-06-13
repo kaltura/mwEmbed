@@ -7,7 +7,7 @@
 		 * API requests interval for updating live stream status (Seconds).
 		 * Default is 30 seconds, to match server's cache expiration
 		 */
-		liveStreamStatusInterval : 30,
+		liveStreamStatusInterval : 10,
 
 		// Default DVR Window (Seconds)
 		defaultDVRWindow : 30 * 60,

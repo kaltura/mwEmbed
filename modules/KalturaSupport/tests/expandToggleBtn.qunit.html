@@ -1,0 +1,63 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Expend button </title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<script type="text/javascript">	
+function jsKalturaPlayerTest( videoId ){
+	
+	// Name this module
+	module( "Expand btn test" );
+
+	var $iframe = $('#' + videoId + '_ifp').contents();
+	var iframeContext = window.frames['kaltura_player_ifp'];
+	var kdp = $('#' + videoId )[0];
+    var $kdp = $(kdp);
+    asyncTest("Expand button click test", function(){
+            ok($iframe.find(".expandToggleBtn" ).length > 0,"the expand button is on the player");
+            $iframe.find(".expandToggleBtn" ).click();
+            setTimeout(function(){
+                ok($kdp.parent().find(".expand" ).length > 0,"after click i see the expand class name");
+                $iframe.find(".expandToggleBtn" ).click();
+                setTimeout(function(){
+                    ok($kdp.parent().find(".expand" ).length == 0,"after click i see the expand class name");
+                    start();
+
+                },50)
+            },50)
+
+    });
+
+}
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<style>
+    .player {width:300px;height:300px}
+    .expand {width: 800px;height:800px}
+</style>
+<h2> Expand toggle button </h2>
+<div id="kaltura_player" class="player"></div>
+<script>
+	kWidget.featureConfig({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id': '5677072',
+		'entry_id': '0_uka1msg4',
+		'flashvars':{
+			'expandToggleBtn': {
+				'plugin': true,
+				"kClick": "expandMe"
+			}
+		}
+	});
+    function expandMe(){
+        $("#kaltura_player" ).toggleClass("expand");
+    }
+</script>
+</body>
+</html>
