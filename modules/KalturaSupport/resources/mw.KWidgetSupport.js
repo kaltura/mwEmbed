@@ -569,6 +569,7 @@ mw.KWidgetSupport.prototype = {
 		var mediaPlayFrom = getAttr('mediaProxy.mediaPlayFrom');
 		if( mediaPlayFrom ) {
 			embedPlayer.startTime = parseFloat( mediaPlayFrom );
+			mw.setConfig( "Kaltura.UseAppleAdaptive" , true) ;
 		}
 		// Check for mediaPlayTo
 		var mediaPlayTo = getAttr('mediaProxy.mediaPlayTo');
