@@ -65,6 +65,10 @@ class PlaylistResult {
 				$this->playlistObject = $this->getPlaylistObjectFromKalturaApi();
 			}
 		}
+		// check if ac is enabled and filter playlist:
+		if( $this->uiconf->getPlayerConfig('playlistAPI', 'enableAccessControlExclusion' ) ){
+			$this->filterPlaylistEntriesAc();
+		}
 
 		// Setup result object
 		$resultObj = array( 'playlistResult' => $this->playlistObject );
@@ -204,10 +208,7 @@ class PlaylistResult {
 				return array();
 			}
 		}
-		// check if ac is enabled and filter playlist:
-		if( $this->uiconf->getPlayerConfig('playlistAPI', 'enableAccessControlExclusion' ) ){
-			$this->filterPlaylistEntriesAc();
-		}
+		
 		
 		return $this->playlistObject;
 	}
