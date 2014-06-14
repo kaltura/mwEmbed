@@ -394,16 +394,6 @@ mw.EmbedPlayerNativeComponent = {
 		return videoElementRect;
 	},
 
-	drawVideoNativeComponent: function(){
-		var videoElementPosition = this.getVideoElementPosition();
-		var x = videoElementPosition.left;
-		var y = videoElementPosition.top;
-		var w = videoElementPosition.right - videoElementPosition.left;
-		var h = videoElementPosition.bottom - videoElementPosition.top;
-
-		this.getPlayerElement().drawVideoNativeComponent( [x, y, w, h] );
-	},
-
 	showNativePlayer: function(){
 		this.getPlayerElement().showNativePlayer();
 	},
@@ -421,6 +411,27 @@ mw.EmbedPlayerNativeComponent = {
 	 */
 	toggleFullscreen: function() {
 		this.getPlayerElement().toggleFullscreen();
+	},
+
+	doneFSBtnPressed: function() {
+		this.getPlayerElement().doneFSBtnPressed();
+	},
+
+	addNativeAirPlayButton: function() {
+		this.getPlayerElement().addNativeAirPlayButton();
+	},
+
+	showNativeAirPlayButton: function( airPlayBtnPosition ) {
+		var x = airPlayBtnPosition.left;
+		var y = airPlayBtnPosition.top;
+		var w = airPlayBtnPosition.right - airPlayBtnPosition.left;
+		var h = airPlayBtnPosition.bottom - airPlayBtnPosition.top;
+
+		this.getPlayerElement().showNativeAirPlayButton( [x, y, w, h] );
+	},
+
+	hideNativeAirPlayButton: function() {
+		this.getPlayerElement().hideNativeAirPlayButton();
 	}
 };
 } )( mediaWiki, jQuery );

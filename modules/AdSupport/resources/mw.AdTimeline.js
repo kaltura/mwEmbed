@@ -118,7 +118,9 @@ mw.AdTimeline.prototype = {
 		  	nua.indexOf('AppleWebKit') > -1) &&
 		   	!(nua.indexOf('Chrome') > -1));
 
-		if(!is_native_android_browser || mw.isAndroid4andUp())
+		if( !is_native_android_browser ||
+			mw.isAndroid40() ||
+			mw.getConfig( "EmbedPlayer.ForceNativeComponent") )
 		{
 			this.embedPlayer = embedPlayer;
 			// Bind to the "play" and "end"
@@ -235,7 +237,13 @@ mw.AdTimeline.prototype = {
 		// TODO We really need a "preend" event for thing like this.
 		// So that playlist next clip or other end bindings don't get triggered.
 		embedPlayer.bindHelper( 'ended' + _this.bindPostfix, function( event ){
+
+			if (embedPlayer.replayEventCount > 0 && !embedPlayer.adsOnReplay){
+				return; // don't show postroll ads on replay if the adsOnReplay Flashvar is set to false
+			}
+
 			if( displayedPostroll ){
+				displayedPostroll = false; // reset flag to show postroll ads on replay
 				return ;
 			}
 			var playedAnAdFlag = false;

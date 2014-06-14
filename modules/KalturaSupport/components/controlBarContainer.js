@@ -48,6 +48,7 @@
 				});
 				this.bind( 'onComponentsHoverEnabled', function(){
 					_this.keepOnScreen = false;
+					_this.hide();
 				});
 			} else {
 				this.getPlayer().isControlsVisible = true;

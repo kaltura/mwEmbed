@@ -350,7 +350,7 @@ return array(
 			'simpleFormat' => array(
 				'doc' => "Use simple format to restrict to two sources only per named size, and not list content type.",
 				'type' => 'boolean',
-				'initvalue' => false,
+				'initvalue' => true,
 			),
 			array(
                 "doc" => "Preferred flavor bitrate",
@@ -361,6 +361,18 @@ return array(
             ),
 		)
 	),
+	'uiVars' => array(
+        'description' => "Allows you to add UI variables to the player configuration.",
+        'label' => "UI Variables",
+        'attributes' => array(
+            'vars' => array(
+                'doc' => 'List of UI variables',
+                'label' => 'UI variables',
+                'type' => 'uivars',
+                'model' => 'vars'
+            )
+        )
+    ),
 	'download' => array(
 		'description' => "Enables users to add a download button to the player controls.
 			The download button will enable users to download the media to a local file.",
@@ -1156,7 +1168,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			array(
 				'template' => array(
 					'doc' => 'HTML Template for the info screen.',
-					'type' => 'string',
+					'type' => 'hiddenValue',
 				),
 			)
 		)
@@ -1187,6 +1199,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'initValue' => '{mediaProxy.entry.name}',
 			),
 		)
+	),
+	'airPlay' => array(
+		'description' => 'Enables wireless streaming of audio, video, and photos, together with related metadata between devices, for iOS.',
+		'type' => 'featuremenu',
+		'label' => 'airPlay',
+		'model' => 'config.plugins.airPlay',
 	),
 	'related' => array(
 		'description' => 'Add the Related Videos screen at the end of the video to attract users to watch additional videos.',

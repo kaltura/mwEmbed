@@ -14,6 +14,6 @@
 <h2>CBS Press Express</h2>
 <p><a href="http://cbspressexpress.com/cbs-entertainment/video"><img src="images/cbs.jpg" alt="" title="CBS Press Express" width="540" height="339" class="alignnone size-large wp-image-288" /></a>
 </div>
-	<div class="clear"></div>				
+	<div class="clear"></div>
   </div> <!-- end .entry-content -->
 

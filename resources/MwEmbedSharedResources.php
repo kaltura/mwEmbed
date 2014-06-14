@@ -153,6 +153,18 @@ return array(
 			'no-theme' => 'resources/jquery.ui/themes/no-theme/jquery.ui.tooltip.css',
 		)
 	),
+	'jquery.ui.draggable' => array(
+        'scripts' => 'resources/jquery.ui/jquery.ui.draggable.js',
+        'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.mouse' )
+    ),
+    'jquery.ui.resizable' => array(
+        'scripts' => 'resources/jquery.ui/jquery.ui.resizable.js',
+        'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.mouse' ),
+        'skinStyles' => array(
+            'default' => 'resources/jquery.ui/themes/no-theme/jquery.ui.resizable.css',
+            'no-theme' => 'resources/jquery.ui/themes/no-theme/jquery.ui.resizable.css'
+        )
+    ),
 	// Widgets
 	'jquery.ui.accordion' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.accordion.js',
