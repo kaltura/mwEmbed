@@ -33,7 +33,7 @@
 					'docPath' => 'kwidget'
 				),
 				array(
-				    'type' => 'link',
+					'type' => 'link',
 					'name' => 'kWidget.embed playlist',
 					'docFullPath' => 'modules/KalturaSupport/tests/kWidget.embed.playlist.qunit.html '
 				)
@@ -70,38 +70,38 @@
 				)
 			)
 		),
-        'kWidget.addReadyCallback' => array(
-            'desc'=>'Adds a ready callback to be called after the KDP or HTML5 player is ready.',
-            'params' => array(
-                'readyCallback' => array(
-                    'type' => 'String',
-                    'desc' => 'Function to call after a player or widget is ready on the page.',
-                )
-            ),
-            'examples' => array(
-                array(
-                    'type' => 'link',
-                    'name' => 'kWidget.addReadyCallback',
-                    'docFullPath' => 'modules/KalturaSupport/tests/ChangeMediaEntry.qunit.html '
-                )
-            )
-        ),
-         'kWidget.destroy' => array(
-             'desc'=>'Removes the player from the DOM.',
-             'params' => array(
-                 'target' => array(
-                     'type' => 'String',
-                     'desc' => 'The target element or element ID to destroy.',
-                 )
-             ),
-             'examples' => array(
-                 array(
+		'kWidget.addReadyCallback' => array(
+			'desc'=>'Adds a ready callback to be called after the KDP or HTML5 player is ready.',
+			'params' => array(
+				'readyCallback' => array(
+					'type' => 'String',
+					'desc' => 'Function to call after a player or widget is ready on the page.',
+				)
+			),
+			'examples' => array(
+				array(
+					'type' => 'link',
+					'name' => 'kWidget.addReadyCallback',
+					'docFullPath' => 'modules/KalturaSupport/tests/ChangeMediaEntry.qunit.html '
+				)
+			)
+		),
+		 'kWidget.destroy' => array(
+			 'desc'=>'Removes the player from the DOM.',
+			 'params' => array(
+				 'target' => array(
+					 'type' => 'String',
+					 'desc' => 'The target element or element ID to destroy.',
+				 )
+			 ),
+			 'examples' => array(
+				 array(
 					'type' => 'link',
 					'name' => 'kWidget.embed',
 					'docPath' => 'kwidget'
-                 )
-             )
-         ),
+				 )
+			 )
+		 ),
 		'sendNotification' => array(
 			'desc'=>'Call a KDP notification (perform actions using this API, for example: play, pause, changeMedia, etc.)',
 			'params' => array(
@@ -274,20 +274,20 @@
 		if( isset( $methodDocs[$fnName]['examples'] ) ){
 			$o.='<h5 class="linkable" id="'. $fnName .'-examples">EXAMPLES:</h5><ul>';
 			foreach( $methodDocs[$fnName]['examples'] as $example ){
-			    $text = '';
-			    switch ($example['type']) {
-                    case 'link':
-                        $link = ( isset( $example['docPath'] ) ) ?
-                            'index.php?path=' . $example['docPath']: '';
-                        if( $link == '' && isset( $example['docFullPath'] ) ){
-                            $link = '../' . $example['docFullPath'];
-                        }
-                        $text = '<a href="'. $link . '">' . $example['name'] . '</a>';
-                        break;
-                    case 'code':
-                        $text = $example['name'] . '<br><pre class="prettyprint linenums">'.htmlspecialchars($example['code']).'</pre>';
-                        break;
-                }
+				$text = '';
+				switch ($example['type']) {
+					case 'link':
+						$link = ( isset( $example['docPath'] ) ) ?
+							'index.php?path=' . $example['docPath']: '';
+						if( $link == '' && isset( $example['docFullPath'] ) ){
+							$link = '../' . $example['docFullPath'];
+						}
+						$text = '<a href="'. $link . '">' . $example['name'] . '</a>';
+						break;
+					case 'code':
+						$text = $example['name'] . '<br><pre class="prettyprint linenums">'.htmlspecialchars($example['code']).'</pre>';
+						break;
+				}
 				$o.= '<li>'. $text .'</li>';
 			}
 			$o.='</ul>';
@@ -297,53 +297,53 @@
 		return $o;
 	}
 
-    function getTableContent($headers, $param){
-        $paramArrayObject = new ArrayObject($param);
-        $paramArrayObject->ksort();
-        $o = "<table>";
-        $o.= "<tr>";
-        foreach( $headers as $header ){
-            $o.= "<th>".$header."</th>";
-        }
-        $o.= "</tr>";
-        if( is_array($param) ){
-            foreach( $paramArrayObject as $key => $value ){
+	function getTableContent($headers, $param){
+		$paramArrayObject = new ArrayObject($param);
+		$paramArrayObject->ksort();
+		$o = "<table>";
+		$o.= "<tr>";
+		foreach( $headers as $header ){
+			$o.= "<th>".$header."</th>";
+		}
+		$o.= "</tr>";
+		if( is_array($param) ){
+			foreach( $paramArrayObject as $key => $value ){
 				$restrictedAvailability = false;
-                $o.= "<tr>";
-                $o.= "<td>".$key;
-                foreach( $value as $val => $value1){
-                    if ($val == 'availability' && $value1 == 'kdp'){
-                        $o.= '<br><span class="label label-warning">Legacy Only</span>';
-                        $restrictedAvailability = true;
-                    }
-                }
-                //if (!$restrictedAvailability)
-                //    $o.= '<br><span class="label label-success">Legacy / Universal</span>';
-                $o.= "</td>";
+				$o.= "<tr>";
+				$o.= "<td>".$key;
+				foreach( $value as $val => $value1){
+					if ($val == 'availability' && $value1 == 'kdp'){
+						$o.= '<br><span class="label label-warning">Legacy Only</span>';
+						$restrictedAvailability = true;
+					}
+				}
+				//if (!$restrictedAvailability)
+				//	$o.= '<br><span class="label label-success">Legacy / Universal</span>';
+				$o.= "</td>";
 
-                foreach( $value as $val => $value){
-                    if ($val != 'availability' && $val != 'example')
-                        $o.= "<td>".$value."</td>";
-                    if ($val == 'example'){
-                        if ($value != ''){
-                                $o.= '<td><a href="'.$value.'" target="_blank">Example</a></td>';
-                            }else{
-                                $o.= '<td>n/a</td>';
-                            }
+				foreach( $value as $val => $value){
+					if ($val != 'availability' && $val != 'example')
+						$o.= "<td>".$value."</td>";
+					if ($val == 'example'){
+						if ($value != ''){
+								$o.= '<td><a href="'.$value.'" target="_blank">Example</a></td>';
+							}else{
+								$o.= '<td>n/a</td>';
+							}
 
-                        }
-                }
+						}
+				}
 /*
-                foreach( $value as $val){
-                        $o.= "<td>".$val."</td>";
-                }
-                $o.= "</tr>";*/
-            }
+				foreach( $value as $val){
+						$o.= "<td>".$val."</td>";
+				}
+				$o.= "</tr>";*/
+			}
 
-        }
-        $o.= "</table>";
-        return $o;
-    }
+		}
+		$o.= "</table>";
+		return $o;
+	}
 
 ?>
 <style>
@@ -364,15 +364,15 @@
 		color:#777;
 	}
 	table,th,td{
-        border:1px solid black;
-        border-collapse:collapse;
-    }
-    th,td{
-        padding:5px;
-    }
-    th{
-        text-align:left;
-    }
+		border:1px solid black;
+		border-collapse:collapse;
+	}
+	th,td{
+		padding:5px;
+	}
+	th{
+		text-align:left;
+	}
 </style>
 
 
@@ -457,17 +457,17 @@ kWidget.embed({
 		'imageDefaultDuration': 5,
 		'mediaProxy.preferedFlavorBR': 1400,
 		'closedCaptions': {
-	            'layout': 'ontop',
-	            'useCookie': true,
-	            'defaultLanguageKey': 'en',
-	            'fontsize': 12,
-	            'bg' : '0x335544',
-	            'fontFamily' : 'Arial',
-	            'fontColor' : '0xFFFFFF',
-	            'useGlow' : 'false',
-	            'glowBlur': 4,
-	            'glowColor': '0x133693'
-                }
+				'layout': 'ontop',
+				'useCookie': true,
+				'defaultLanguageKey': 'en',
+				'fontsize': 12,
+				'bg' : '0x335544',
+				'fontFamily' : 'Arial',
+				'fontColor' : '0xFFFFFF',
+				'useGlow' : 'false',
+				'glowBlur': 4,
+				'glowColor': '0x133693'
+				}
   },
   "cache_st": 1402219661,
   "entry_id": "1_a3njcsia"
@@ -497,7 +497,7 @@ kWidget.embed({
 <br><br>Code sample:<br>
 <pre class="prettyprint linenums">
 function jsCallbackReady(objectId) {
-    window.kdp = document.getElementById(objectId);
+	window.kdp = document.getElementById(objectId);
 }
 </pre>
 <p>Kaltura recommends that you place jsCallbackReady in the global scope. This allows easily finding this critical function in the JavaScript code.</p><br><br>
@@ -512,14 +512,14 @@ function jsCallbackReady(objectId) {
 <br><br>Code sample:<br>
 <pre class="prettyprint linenums">
 &lt;script language="JavaScript"&gt;
-    var kdp;
-    function jumpToTime(timesec)
-    {
-        kdp.sendNotification("doPlay");
+	var kdp;
+	function jumpToTime(timesec)
+	{
+		kdp.sendNotification("doPlay");
 
-        // Moves to a specific point, defined in seconds from the start of the video
-        kdp.sendNotification("doSeek", timesec);
-    }
+		// Moves to a specific point, defined in seconds from the start of the video
+		kdp.sendNotification("doSeek", timesec);
+	}
 &lt;/script&gt;
 </pre>
 
@@ -538,8 +538,8 @@ function jsCallbackReady(objectId) {
 <pre class="prettyprint linenums">
 kdp.addJsListener(“playerUpdatePlayhead”, “playerUpdatePlayheadHandler”)
 function playerUpdatePlayheadHandler(data, id) {
-    // data = the player's progress time in seconds
-    // id = the ID of the player that fired the notification
+	// data = the player's progress time in seconds
+	// id = the ID of the player that fired the notification
 }
 </pre>
 
@@ -566,7 +566,7 @@ removeJsListener("event", "functionName")
 <pre class="prettyprint linenums">
 function getName() {
 var entry_name = kdp.evaluate('{mediaProxy.entry.name}');
-    alert('Entry name: '+entry_name);
+	alert('Entry name: '+entry_name);
 }
 </pre>
 
@@ -590,54 +590,54 @@ kdp.setKDPAttribute("theme", "buttonsSize", "14");
 
 <!--div class="accordion" id="accordion2">
   <div class="accordion-group">
-    <div class="accordion-heading">
-      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
-        Receiving Notification that the Player API Is Ready
-      </a>
-    </div>
-    <div id="collapseOne" class="accordion-body collapse">
-      <div class="accordion-inner">
-        <p>Before you can use the JavaScript API's base methods, the player has to reach the point in its internal loading sequence when it is ready to interact with your code. The player lets you know that it is ready by calling the <b>jsCallbackReady</b> JavaScript function on the page.</p>
-        <p>jsCallbackReady is the player's first callback. The player passes jsCallbackReady an objectId parameter that represents the identifier of the player that is embedded on the page.</p>
-        <?php echo getDocs( array( 'jsCallbackReady' ) ) ?>
-        <br><br>Code sample:<br>
-        <pre class="prettyprint linenums">
+	<div class="accordion-heading">
+	  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+		Receiving Notification that the Player API Is Ready
+	  </a>
+	</div>
+	<div id="collapseOne" class="accordion-body collapse">
+	  <div class="accordion-inner">
+		<p>Before you can use the JavaScript API's base methods, the player has to reach the point in its internal loading sequence when it is ready to interact with your code. The player lets you know that it is ready by calling the <b>jsCallbackReady</b> JavaScript function on the page.</p>
+		<p>jsCallbackReady is the player's first callback. The player passes jsCallbackReady an objectId parameter that represents the identifier of the player that is embedded on the page.</p>
+		<?php echo getDocs( array( 'jsCallbackReady' ) ) ?>
+		<br><br>Code sample:<br>
+		<pre class="prettyprint linenums">
 function jsCallbackReady(objectId) {
-    window.kdp = document.getElementById(objectId);
+	window.kdp = document.getElementById(objectId);
 }
-        </pre>
-        <p>Kaltura recommends that you place jsCallbackReady in the global scope. This allows easily finding this critical function in the JavaScript code.</p><br><br>
-      </div>
-    </div>
+		</pre>
+		<p>Kaltura recommends that you place jsCallbackReady in the global scope. This allows easily finding this critical function in the JavaScript code.</p><br><br>
+	  </div>
+	</div>
   </div>
   <div class="accordion-group">
-    <div class="accordion-heading">
-      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
-        Calling a player method from JavaScript
-      </a>
-    </div>
-    <div id="collapseTwo" class="accordion-body collapse">
-      <div class="accordion-inner">
-        <p>Use the <b>sendNotification</b> method to create custom notifications that tell the player to do something, such as play, seek, or pause.</p>
-        <?php echo getDocs( array( 'sendNotification' ) ) ?>
-        <br><br><p>Available Notifications:</p>
-        <?php echo getTableContent( array( 'Notification', 'Params', 'Description' ), $methods ) ?>
-        <br><br>Code sample:<br>
-        <pre class="prettyprint linenums">
-        //TBD
-        </pre>
-      </div>
-    </div>
+	<div class="accordion-heading">
+	  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+		Calling a player method from JavaScript
+	  </a>
+	</div>
+	<div id="collapseTwo" class="accordion-body collapse">
+	  <div class="accordion-inner">
+		<p>Use the <b>sendNotification</b> method to create custom notifications that tell the player to do something, such as play, seek, or pause.</p>
+		<?php echo getDocs( array( 'sendNotification' ) ) ?>
+		<br><br><p>Available Notifications:</p>
+		<?php echo getTableContent( array( 'Notification', 'Params', 'Description' ), $methods ) ?>
+		<br><br>Code sample:<br>
+		<pre class="prettyprint linenums">
+		//TBD
+		</pre>
+	  </div>
+	</div>
   </div>
 
   <div class="accordion-group">
-    <div class="accordion-heading">
-      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">
-        Registering to a player event
-      </a>
-    </div>
-    <div id="collapseThree" class="accordion-body collapse">
-      <div class="accordion-inner">
+	<div class="accordion-heading">
+	  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">
+		Registering to a player event
+	  </a>
+	</div>
+	<div id="collapseThree" class="accordion-body collapse">
+	  <div class="accordion-inner">
 		<p>Use the <b>addJsListener</b> method to listen for a specific notification that something happened in the player, such as the video is playing or is paused.</p>
 		<?php echo getDocs( array( 'addJsListener' ) ) ?>
 		<br><h5>Player Life Cycle:</h5>
@@ -650,21 +650,21 @@ function jsCallbackReady(objectId) {
 		<pre class="prettyprint linenums">
 kdp.addJsListener(“playerUpdatePlayhead”, “playerUpdatePlayheadHandler”)
 function playerUpdatePlayheadHandler(data, id) {
-    // data = the player's progress time in seconds
-    // id = the ID of the player that fired the notification
+	// data = the player's progress time in seconds
+	// id = the ID of the player that fired the notification
 }
 		</pre>
-      </div>
-    </div>
+	  </div>
+	</div>
   </div>
   <div class="accordion-group">
-    <div class="accordion-heading">
-      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseFour">
+	<div class="accordion-heading">
+	  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseFour">
 		Un-registering a player event
-      </a>
-    </div>
-    <div id="collapseFour" class="accordion-body collapse">
-      <div class="accordion-inner">
+	  </a>
+	</div>
+	<div id="collapseFour" class="accordion-body collapse">
+	  <div class="accordion-inner">
 		<p>Use the <b>removeJsListener</b> method to remove a listener that is no longer needed.</p>
 		<h5>Why Remove a JsListener?</h5>
 		KDP3 accumulates JsListeners. If you add a JsListener for a notification and then add another JsListener for the same notification, the new JsListener does not override the previous one. Both JsListeners are executed in the order in which they are added. To prevent unexpected behavior in your application, Kaltura recommends that you remove unnecessary JsListeners.
@@ -673,17 +673,17 @@ function playerUpdatePlayheadHandler(data, id) {
 		<pre class="prettyprint linenums">
 removeJsListener("event", "functionName")
 		</pre>
-      </div>
-    </div>
+	  </div>
+	</div>
   </div>
   <div class="accordion-group">
-    <div class="accordion-heading">
-      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseFive">
+	<div class="accordion-heading">
+	  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseFive">
 		Retrieving a player property
-      </a>
-    </div>
-    <div id="collapseFive" class="accordion-body collapse">
-      <div class="accordion-inner">
+	  </a>
+	</div>
+	<div id="collapseFive" class="accordion-body collapse">
+	  <div class="accordion-inner">
 		<p>Use the <b>evaluate</b> method to find out something about a player by extracting data from player components.</p>
 		<?php echo getDocs( array( 'evaluate' ) ) ?>
 		<br><br><p>Available Properties:</p>
@@ -692,20 +692,20 @@ removeJsListener("event", "functionName")
 		<pre class="prettyprint linenums">
 function getName() {
 var entry_name = kdp.evaluate('{mediaProxy.entry.name}');
-    alert('Entry name: '+entry_name);
+	alert('Entry name: '+entry_name);
 }
 		</pre>
-      </div>
-    </div>
+	  </div>
+	</div>
   </div>
   <div class="accordion-group">
-    <div class="accordion-heading">
-      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseSix">
+	<div class="accordion-heading">
+	  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseSix">
 		Setting a player attribute
-      </a>
-    </div>
-    <div id="collapseSix" class="accordion-body collapse">
-      <div class="accordion-inner">
+	  </a>
+	</div>
+	<div id="collapseSix" class="accordion-body collapse">
+	  <div class="accordion-inner">
 		<p>Use the <b>setKDPAttribute</b> method to change something about a player by setting player attribute values.</p>
 		<?php echo getDocs( array( 'setKDPAttribute' ) ) ?>
 		<br><br><p>Available Attributes:</p>
@@ -714,8 +714,8 @@ var entry_name = kdp.evaluate('{mediaProxy.entry.name}');
 		<pre class="prettyprint linenums">
 kdp.setKDPAttribute("configProxy.flashvars","autoPlay","true")
 		</pre>
-      </div>
-    </div>
+	  </div>
+	</div>
   </div>
 
 </div-->
