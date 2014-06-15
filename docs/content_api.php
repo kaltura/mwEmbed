@@ -102,6 +102,35 @@
 				 )
 			 )
 		 ),
+		'kWidget.api' => array(
+				'desc' => 'The kWidget API object, used to create new instances of Kaltura API request.',
+				'params' => array(
+						'apiObject'=> array(
+								'type' => 'kWidget.apiOptions',
+								'desc' => 'Object of API settings to be used in API requests.'
+						)
+				),
+				'methods'=> array(
+						'doRequest' => array(
+								'type' => 'function',
+								'desc' => "( RequestObject, callback ) Run the API request, issue callback with API response data."
+						)
+				),
+				'returns' => array(
+						'type' => 'kWidget.api',
+						'desc' => 'Returns an instance of the kWidget API object.'
+				),
+				'examples' => array(
+						array(
+								'name' => 'kWidget.api',
+								'docFullPath' => 'kWidget/tests/kWidget.api.html'
+						),
+						array(
+								'name' => 'kWidget.getSources',
+								'docFullPath' => 'modules/KalturaSupport/tests/kWidget.getSources.html'
+						)
+				)
+		),
 		'sendNotification' => array(
 			'desc'=>'Call a KDP notification (perform actions using this API, for example: play, pause, changeMedia, etc.)',
 			'params' => array(
@@ -275,6 +304,9 @@
 			$o.='<h5 class="linkable" id="'. $fnName .'-examples">EXAMPLES:</h5><ul>';
 			foreach( $methodDocs[$fnName]['examples'] as $example ){
 				$text = '';
+				if( !isset( $example['type'] ) ){
+					$example['type'] = 'link';
+				}
 				switch ($example['type']) {
 					case 'link':
 						$link = ( isset( $example['docPath'] ) ) ?
@@ -393,6 +425,7 @@ $(function(){
 <a href="#kWidget" class="btn btn btn-info btn-large">kWidget API &raquo;</a>
 <a href="#uiVars" class="btn btn btn-info btn-large">Using UIVars &raquo;</a>
 <a href="#kdpAPI" class="btn btn btn-info btn-large">Player API &raquo;</a>
+<a href="#kWidgetApi" class="btn btn btn-info btn-large">KWidget Server API &raquo;</a>
 </p>
 
 <a name="kWidget"></a>
@@ -408,6 +441,24 @@ After you embed the Kaltura player library, the following kWidget API is availab
 	<?php echo getDocs( array( 'kWidget.embed', 'kWidget.thumbEmbed', 'kWidget.getKalturaThumbUrl','kWidget.addReadyCallback','kWidget.destroy' ) ) ?>
 	<?php echo getObjectDocs( array( 'kWidget.settingsObject' ) ) ?>
 </div><br><br>
+<a name="kWidgetApi"></a>
+<h3>Server API requests ( kWidget.api )</h3>
+kWidget Server API enables direct <a href="http://www.kaltura.com/api_v3/testmeDoc/index.php">Kaltura Server API</a> calls from JavaScript. 
+This should not be confused with the <a href="http://www.kaltura.com/api_v3/testme/client-libs.php">JavaScript client library</a>, 
+which offers object mappings and works with the code generated in the 
+<a href="http://www.kaltura.com/api_v3/testme/index.php">test me console</a>. <br><br>
+Creating a kWidget API object, issue a playlist request, log the result:
+<pre class="prettyprint linenums">
+new kWidget.api( { 'wid' : '_243342', })
+	.doRequest({'service':'playlist', 'action': 'execute', 'id': '1_e387kavu'}, 
+		function( data ){
+			console.log( data );
+		}
+	);
+</pre>
+<div class="docblock">
+	<?php echo getDocs('kWidget.api' ) ?>
+</div>
 
 <a name="uiVars"></a>
 <h2>Using UIVars</h2>
