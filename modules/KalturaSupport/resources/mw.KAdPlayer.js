@@ -724,7 +724,7 @@ mw.KAdPlayer.prototype = {
 	 **/
 	setImgSrc: function (imgObj) {
 		if (imgObj.html.indexOf("src=")== -1) {
-		imgObj.html = imgObj.html.replace('<img ', '<img src="' + imgObj.resourceUri + '" ');
+			imgObj.html = imgObj.html.toLowerCase().replace('<img ', '<img src="' + imgObj.resourceUri + '" ');
 		}
 	},
 
