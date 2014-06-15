@@ -1,4 +1,3 @@
-
 <?php 
 	require_once( realpath( dirname( __FILE__ ) )  . '/doc-base.php' );
 ?>
@@ -7,7 +6,7 @@
   <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="Kaltura Player ï¿½ Fastest, Most Flexible Online Video Player Toolkit, view feature test files that highlight kaltura player toolkit features.">
+	<meta name="description" content="Kaltura Player Ð Fastest, Most Flexible Online Video Player Toolkit, view feature test files that highlight kaltura player toolkit features.">
 	<meta name="author" content="kaltura">
 
 	<?php if( $wgKalturaGoogleAnalyticsUA ){
@@ -412,3 +411,4 @@
 	</footer>
   </body>
 </html>
+
