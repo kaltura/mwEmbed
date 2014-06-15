@@ -42,7 +42,6 @@ mw.EmbedPlayerYouTube = {
 		'overlays' : true,
 		'fullscreen' : (mw.getConfig('previewMode') == null) ? true : false
 	},
-	updateTimeInterval: null,
 	init: function(){
 		var _this = this;
 	},
