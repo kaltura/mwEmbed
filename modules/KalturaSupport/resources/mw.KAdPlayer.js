@@ -1189,6 +1189,13 @@ mw.KAdPlayer.prototype = {
 				};
 				if (isJs){
 					_this.addAdBindings( environmentVars.videoSlot, adSlot, adConf );
+				}else{
+					// add support for volume control over KDP during Flash ad playback
+					$( _this.embedPlayer ).bind('volumeChanged' + _this.trackingBindPostfix, function( e, changeValue ){
+						if (typeof VPAIDObj.playerElement.sendNotification === "function"){
+							VPAIDObj.playerElement.sendNotification( 'changeVolume', changeValue );
+						}
+					});
 				}
 				_this.embedPlayer.hideSpinner();
 			},'AdImpression');
