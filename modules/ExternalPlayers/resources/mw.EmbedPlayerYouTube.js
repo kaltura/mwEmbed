@@ -21,7 +21,10 @@ mw.EmbedPlayerYouTube = {
 	playerEmbedFlag: false,
 	//Flag holdinng end state
 	hasEnded: false,
-	
+
+	// flag for is Flash player or HTML5 player
+	isFlashPlayer: false,
+
 	//the youtube entry id
 	youtubeEntryId : "",
 	
@@ -39,10 +42,10 @@ mw.EmbedPlayerYouTube = {
 		'overlays' : true,
 		'fullscreen' : (mw.getConfig('previewMode') == null) ? true : false
 	},
-	
 	init: function(){
 		var _this = this;
 	},
+
 	onPlayerStateChange : function (event){
 		//delegate to window function
 		window['onPlayerStateChange'](event);
@@ -57,18 +60,18 @@ mw.EmbedPlayerYouTube = {
 				event = event.data;
 			}
 			var stateName;
+			var embedPlayer = $('#' + window["pid"].replace( 'pid_', '' ) )[0];
 			// move to other method
 			switch( event ){
 				case -1:
 					stateName = "unstarted";
-
 				  break;
 				case 0:
-				case "0":
 					stateName = "ended";
 					this.hasEnded = true;
 				  break;
 				case 1:
+					$(embedPlayer).trigger("onPlayerStateChange",["play"]);
 					// hide the player container so that youtube click through work
 					$('.mwEmbedPlayer').hide();
 					//hide the poster
@@ -89,6 +92,7 @@ mw.EmbedPlayerYouTube = {
 				  break;
 				case 2:
 					stateName = "paused";
+					$(embedPlayer).trigger("onPlayerStateChange",["pause"]);
 					_this.parent_pause();
 				  break;
 				case 3:
@@ -101,6 +105,7 @@ mw.EmbedPlayerYouTube = {
 					stateName = "video cued";
 				  break;
 			}
+			//$( _this ).trigger( 'onPlayerStateChange', [ stateName ] );
 
 		};
 		window['hidePlayer'] = function( event ){
@@ -171,7 +176,7 @@ mw.EmbedPlayerYouTube = {
 			$('.ui-icon-image').hide();
 			$('.timed-text').hide();
 			$('.ui-icon-arrowthickstop-1-s').hide();
-			$('.ui-icon-flag').hide();			
+			$('.ui-icon-flag').hide();
 			var embedPlayer = $('#' + window["pid"].replace( 'pid_', '' ) )[0];
 			var playerVars;
 			//basic configuration
@@ -256,6 +261,7 @@ mw.EmbedPlayerYouTube = {
 		this.youtubePreFix = this.youtubeProtocol+this.youtubePreFix;
 		
 		if( this.supportsFlash() && mw.getConfig("forceIframe") != 1 ){
+			this.isFlashPlayer = true;
 			// embed chromeless flash
 			if(window['KeyValueParams']){
 				var dataUrl = this.youtubePreFix + this.youtubeEntryId +'&amp;showinfo=0&amp;version=3&ampiv_load_policy=3&amp;' +
@@ -294,11 +300,10 @@ mw.EmbedPlayerYouTube = {
 		}
 	},
 	setDuration: function(){
-		
 		//set duration only once
 		if (this.duration == 0 && this.getPlayerElement().getDuration()){
 			this.duration = this.getPlayerElement().getDuration();
-			$(this).trigger('durationchange');
+			$(this).trigger('durationChange',[this.duration]);
 		}
 	},
 	onPlayerReady : function (event){
@@ -311,6 +316,20 @@ mw.EmbedPlayerYouTube = {
 //			$('.ui-icon-image').hide();
 //			$('.ui-icon-flag').hide();
 		});
+		this.bindHelper("onEndedDone", function(){
+			if (_this.isFlashPlayer){
+				$(_this).trigger("onPlayerStateChange",["end"]);
+			}
+			setTimeout(function(){
+
+				if (!_this.isFlashPlayer){
+					_this.getPlayerElement().seekTo(0);  // fix HTML5 player bug in replay (loop)
+					_this.pause();
+					$(_this).trigger("onPlayerStateChange",["end"]);
+				}
+			},100);
+
+		})
 	},
 	supportsVolumeControl: function(){
 		// if ipad no. 
@@ -473,6 +492,7 @@ mw.EmbedPlayerYouTube = {
 	 */
 	getPlayerElementTime : function(){
 		// update currentTime
+		$( this ).trigger( 'timeupdate' );
 		return this.getPlayerElement().getCurrentTime();
 	},
 
