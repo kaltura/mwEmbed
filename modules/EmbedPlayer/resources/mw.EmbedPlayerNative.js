@@ -563,7 +563,9 @@ mw.EmbedPlayerNative = {
 			if( callbackCount == 0 && vid.paused ){
 				this.stopEventPropagation();
 				$(vid).on('play.seekPrePlay',function(){
-					_this.restoreEventPropagation();
+					if (!_this.preSequenceFlag){
+						_this.restoreEventPropagation();
+					}
 					$(vid).off('play.seekPrePlay' );
 					// NOTE: there is no need to "pause" here since parent caller will 
 					// handle if the player should continue to play at seek time or not .
