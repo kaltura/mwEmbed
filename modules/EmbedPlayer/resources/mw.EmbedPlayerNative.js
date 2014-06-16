@@ -792,12 +792,14 @@ mw.EmbedPlayerNative = {
 				// This is a workaround that reloads the player programmatically
 				// every time a new video gets selected to play
 				if ( mw.isIOS7() ){
-					vid.load();
+					vid.src = null;
+					var sourceTag = document.createElement('source');
+					sourceTag.setAttribute('src', src);
+					vid.appendChild(sourceTag);
+				} else {
+					// Do the actual source switch:
+					vid.src = src;
 				}
-
-				// Do the actual source switch:
-				vid.src = src;
-
 				// load the updated src
 				//only on desktop safari we need to load - otherwise we get the same movie play again.
 				if (mw.isDesktopSafari()){
