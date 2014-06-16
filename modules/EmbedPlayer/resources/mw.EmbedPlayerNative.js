@@ -460,7 +460,7 @@ mw.EmbedPlayerNative = {
 		if( this.startOffset ){
 			targetTime += parseFloat( this.startOffset );
 		}
-		
+
 		this.setCurrentTime( targetTime, function(){
 			// Update the current time ( so that there is not a monitor delay in reflecting "seeked time" )
 			_this.currentTime = _this.getPlayerElement().currentTime;
@@ -605,12 +605,21 @@ mw.EmbedPlayerNative = {
 				callbackHandler();
 				return ;
 			}
-
-			// Check if we got a valid seek:
-			if( vid.currentTime > 0 ){
-				callbackHandler();
+			//not replay seek
+			if( seekTime > 0.01 && _this.isFakeHlsSeek() ){
+				var playBind = 'playing.nativePlayBind';
+				$( vid ).unbind( playBind ).bind( playBind, function( event ) {
+					// Remove the listener:
+					$( vid ).unbind( playBind );
+					callbackHandler();
+				});
 			} else {
-				mw.log( "Error:: EmbedPlayerNative: seek callback without time updatet " + vid.currentTime );
+				// Check if we got a valid seek:
+				if( vid.currentTime > 0 ){
+					callbackHandler();
+				} else {
+					mw.log( "Error:: EmbedPlayerNative: seek callback without time updated " + vid.currentTime );
+				}
 			}
 		});
 		setTimeout(function(){
@@ -1188,7 +1197,7 @@ mw.EmbedPlayerNative = {
 		if( this.seeking ){
 			// HLS safari triggers onseek when its not even close to the target time,
 			// we don't want to trigger the seek event for these "fake" onseeked triggers
-			if( Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2 ){
+			if( this.isFakeHlsSeek() ){
 				mw.log( "Error:: EmbedPlayerNative:seeked triggred with time mismatch: target:" +
 						this.currentSeekTargetTime +
 						' actual:' + this.getPlayerElement().currentTime );
@@ -1396,6 +1405,15 @@ mw.EmbedPlayerNative = {
 		} else {
 			_this.parent_triggerPreSequence();
 		}
+	},
+
+	/**
+	 * HLS safari triggers onseek when its not even close to the target time
+	 * we don't want to trigger the seek event for these "fake" onseeked triggers
+	 * @returns {boolean} true if seek event is fake, false if valid
+	 */
+	isFakeHlsSeek: function() {
+		return ( Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2 );
 	}
 };
 
