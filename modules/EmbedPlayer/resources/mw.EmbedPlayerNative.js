@@ -607,10 +607,10 @@ mw.EmbedPlayerNative = {
 			}
 			//not replay seek
 			if( seekTime > 0.01 && _this.isFakeHlsSeek() ){
-				var playBind = 'playing.nativePlayBind';
-				$( vid ).unbind( playBind ).bind( playBind, function( event ) {
+				var canPlayBind = 'canplay.nativePlayBind';
+				$( vid ).unbind( canPlayBind ).bind( canPlayBind, function( event ) {
 					// Remove the listener:
-					$( vid ).unbind( playBind );
+					$( vid ).unbind( canPlayBind );
 					callbackHandler();
 				});
 			} else {
