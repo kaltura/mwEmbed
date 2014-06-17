@@ -41,6 +41,8 @@ mw.EmbedPlayerNative = {
 	// Flag for ignoring next native error we get from the player.
 	ignoreNextError:false,
 
+	keepNativeFullScreen: false,
+
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
 	nativeEvents : [
@@ -561,7 +563,9 @@ mw.EmbedPlayerNative = {
 			if( callbackCount == 0 && vid.paused ){
 				this.stopEventPropagation();
 				$(vid).on('play.seekPrePlay',function(){
-					_this.restoreEventPropagation();
+					if (!_this.preSequenceFlag){
+						_this.restoreEventPropagation();
+					}
 					$(vid).off('play.seekPrePlay' );
 					// NOTE: there is no need to "pause" here since parent caller will 
 					// handle if the player should continue to play at seek time or not .
@@ -801,12 +805,14 @@ mw.EmbedPlayerNative = {
 				// This is a workaround that reloads the player programmatically
 				// every time a new video gets selected to play
 				if ( mw.isIOS7() ){
-					vid.load();
+					vid.src = null;
+					var sourceTag = document.createElement('source');
+					sourceTag.setAttribute('src', src);
+					vid.appendChild(sourceTag);
+				} else {
+					// Do the actual source switch:
+					vid.src = src;
 				}
-
-				// Do the actual source switch:
-				vid.src = src;
-
 				// load the updated src
 				//only on desktop safari we need to load - otherwise we get the same movie play again.
 				if (mw.isDesktopSafari()){
@@ -881,7 +887,7 @@ mw.EmbedPlayerNative = {
 						return false;
 					});
 
-					// Check if ended event was fired on chrome (android devices), if not fix by time difference approximation 
+					// Check if ended event was fired on chrome (android devices), if not fix by time difference approximation
 					if( mw.isMobileChrome() ) {
 						$( vid ).bind( 'timeupdate' + switchBindPostfix, function( e ) {
 							var _this = this;
@@ -1360,26 +1366,34 @@ mw.EmbedPlayerNative = {
 	 * Local onClip done function for native player.
 	 */
 	onClipDone: function(){
+		this.parent_onClipDone();
+
+		// Don't run onclipdone if _propagateEvents is off
+		if( !this._propagateEvents ){
+			return ;
+		}
+
 		var _this = this;
 
-		if( _this.isImagePlayScreen() && !_this.isPlaylistScreen() ){
-			_this.getPlayerElement().webkitExitFullScreen();
+		if ( _this.isImagePlayScreen() && !_this.isPlaylistScreen() ) {
+			if (!this.keepNativeFullScreen) {
+				_this.getPlayerElement().webkitExitFullScreen();
+			}
 		}
 
 		// add clip done binding ( will only run on sequence complete )
-		$(this).unbind('onEndedDone.onClipDone').bind( 'onEndedDone.onClipDone', function(){
+		$( this ).unbind( 'onEndedDone.onClipDone' ).bind( 'onEndedDone.onClipDone', function () {
 			// if not a legitmate play screen don't keep the player offscreen when playback starts:
-			if( !_this.isImagePlayScreen() ){
+			if ( !_this.isImagePlayScreen() ) {
 				_this.keepPlayerOffScreenFlag = false;
-			}else{
+			} else {
 				// exit full screen mode on the iPhone
-				mw.log( 'EmbedPlayer::onClipDone: Exit full screen');
-				_this.getPlayerElement().webkitExitFullScreen();
+				mw.log( 'EmbedPlayer::onClipDone: Exit full screen' );
+				if (!_this.keepNativeFullScreen) {
+					_this.getPlayerElement().webkitExitFullScreen();
+				}
 			}
-		});
-
-
-		this.parent_onClipDone();
+		} );
 	},
 
 	enableNativeControls: function(){
