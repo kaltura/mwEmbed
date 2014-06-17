@@ -197,7 +197,7 @@ mw.KAdPlayer.prototype = {
 		// Start monitoring for display duration end ( if not supplied we depend on videoFile end )
 		if( adSlot.displayDuration  ){
 			// Monitor time for display duration display utility function
-			var startTime = _this.getOriginalPlayerElement().currentTime;
+			var startTime = _this.embedPlayer.getPlayerElementTime();
 			this.monitorForDisplayDuration( adSlot, startTime, adSlot.displayDuration );
 		}
 
@@ -234,7 +234,7 @@ mw.KAdPlayer.prototype = {
 		// Local base video monitor function:
 		var vid = _this.getOriginalPlayerElement();
 		// Stop display of overlay if video playback is no longer active
-		if( typeof vid == 'undefined' || vid.currentTime - startTime > displayDuration ){
+		if( typeof vid == 'undefined' || _this.embedPlayer.getPlayerElementTime() - startTime > displayDuration ){
 			mw.log( "KAdPlayer::display:" + adSlot.type + " Playback done because vid does not exist or > displayDuration " + displayDuration );
 			adSlot.playbackDone();
 		} else {
