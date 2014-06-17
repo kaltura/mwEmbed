@@ -13,7 +13,7 @@ mw.KBaseMediaList = mw.KBaseComponent.extend({
 		var parentConfig = this._super();
 		return $.extend({}, parentConfig, {
 			'parent': 'sideBarContainer',
-			'containerPosition': null,
+			'containerPosition': null, //'after'
 			'templatePath': 'components/mediaList/mediaList.tmpl.html',
 			'oneSecRotatorSlidesLimit': 61,
 			'twoSecRotatorSlidesLimit': 250,
@@ -24,7 +24,7 @@ mw.KBaseMediaList = mw.KBaseComponent.extend({
 			'thumbnailWidth' : 100,
 			'horizontalChapterBoxWidth': 290,
 			'overflow': false,
-			'includeThumbnail': true,
+			'includeThumbnail': false,
 			'includeChapterStartTime': true,
 			'includeChapterNumberPattern': false,
 			'includeChapterDuration': true
@@ -152,6 +152,30 @@ mw.KBaseMediaList = mw.KBaseComponent.extend({
 	},
 
 	//Media Item
+	setMediaList: function(items){
+		var _this = this;
+		this.mediaList = [];
+		$.each(items, function(i, item){
+			item.order = i;
+			_this.mediaList.push(item);
+		});
+
+		if (this.getConfig('containerPosition')){
+			this.getListContainer();
+		}
+		//Need to recalc all durations after we have all the items startTime values
+		//_this.setMediaItemTime();
+
+		_this.getComponent().append(
+			_this.getTemplateHTML( {meta: _this.getMetaData(), mediaList: _this.getTemplateData()})
+		);
+		if (_this.getConfig('containerPosition')) {
+			_this.$chaptersContainer.append(_this.getTemplateHTML( {meta: _this.getMetaData(), mediaList: _this.getTemplateData()} ));
+		}
+		_this.dataIntialized = true;
+		_this.shouldAddScroll(_this.addScroll);
+	},
+
 	addMediaItem: function(obj ,index){
 		var mediaItem;
 		var customData = obj.partnerData ? JSON.parse(obj.partnerData) :  {};
@@ -380,6 +404,7 @@ mw.KBaseMediaList = mw.KBaseComponent.extend({
 			// set container height if horizontal
 			$cc.css( 'height', dimensions.largetsBoxHeight );
 		}
+		var isVertical = ( _this.getLayout() == 'vertical' );
 
 		// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
 		$cc.find('.k-carousel').jCarouselLite({
@@ -388,7 +413,7 @@ mw.KBaseMediaList = mw.KBaseComponent.extend({
 			visible: chaptersVisible,
 			mouseWheel: true,
 			circular: false,
-			vertical: ( this.getLayout() == 'vertical' ),
+			vertical: isVertical,
 			start: 0,
 			scroll: 1
 		});
@@ -403,6 +428,7 @@ mw.KBaseMediaList = mw.KBaseComponent.extend({
 			// fit to container:
 			$cc.find('.k-carousel').css('width', $cc.width() )
 			// set width to horizontalChapterBoxWidth
+
 			$cc.find('.chapterBox').css( 'width', this.getChapterBoxWidth() );
 			//set to auto to discover height:
 			$cc.find('.chapterBox').css('height', 'auto');
@@ -424,6 +450,9 @@ mw.KBaseMediaList = mw.KBaseComponent.extend({
 			});
 			$cc.find('ul').css( 'width', totalWidth );
 		}
+	},
+	getChapterBoxWidth: function(){
+		return this.getConfig('horizontalChapterBoxWidth') || 290;
 	},
 	addScrollUiComponents: function(){
 

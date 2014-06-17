@@ -26,8 +26,6 @@
 		),
 		"mw.KBaseMediaList" => array(
 			'scripts' => "resources/mw.KBaseMediaList.js",
-		    'styles' =>  "components/mediaList/mediaList.css",
-		    'templates' => "components/mediaList/mediaList.tmpl.html",
 			'dependencies' => array( 'mw.KBaseComponent' )
 		),
 		"mw.KBaseComponent" => array(
@@ -129,7 +127,9 @@
 		),
 		"playlistAPI" => array(
             'scripts' => "components/playlistAPI.js",
-            'dependencies' => 'mw.KBaseMediaList',
+            'dependencies' => array('mw.KBaseMediaList','jCarouse'),
+            'styles' =>  "components/mediaList/mediaList.css",
+            'templates' => "components/mediaList/mediaList.tmpl.html",
             'kalturaPluginName' => 'playlistAPI',
         ),
 		"largePlayBtn" => array(

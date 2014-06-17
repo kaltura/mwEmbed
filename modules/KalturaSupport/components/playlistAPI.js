@@ -35,8 +35,7 @@
 			}
 
 			if (this.playlistSet.length > 0){
-				debugger;
-				console.log("----------- render playlist")
+				this.setMediaList(this.playlistSet[0].items);
 			};
 		}
 
