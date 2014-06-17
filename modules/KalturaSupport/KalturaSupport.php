@@ -24,6 +24,12 @@
 			'scripts' => "resources/mw.KBaseScreen.js",
 			'dependencies' => array( 'mw.KBaseComponent' )
 		),
+		"mw.KBaseMediaList" => array(
+			'scripts' => "resources/mw.KBaseMediaList.js",
+		    'styles' =>  "components/mediaList/mediaList.css",
+		    'templates' => "components/mediaList/mediaList.tmpl.html",
+			'dependencies' => array( 'mw.KBaseComponent' )
+		),
 		"mw.KBaseComponent" => array(
 			'scripts' => "resources/mw.KBaseComponent.js",
 			'dependencies' => array( 'mw.KBasePlugin', 'mediawiki.kmenu' )
@@ -123,7 +129,7 @@
 		),
 		"playlistAPI" => array(
             'scripts' => "components/playlistAPI.js",
-            'dependencies' => 'mw.KBaseComponent',
+            'dependencies' => 'mw.KBaseMediaList',
             'kalturaPluginName' => 'playlistAPI',
         ),
 		"largePlayBtn" => array(

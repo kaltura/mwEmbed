@@ -1,6 +1,6 @@
 ( function( mw, $ ) {"use strict";
 
-	mw.PluginManager.add( 'playlistAPI', mw.KBaseComponent.extend({
+	mw.PluginManager.add( 'playlistAPI', mw.KBaseMediaList.extend({
 
 		defaultConfig: {
 			'initItemEntryId': null,
@@ -35,6 +35,7 @@
 			}
 
 			if (this.playlistSet.length > 0){
+				debugger;
 				console.log("----------- render playlist")
 			};
 		}
