@@ -800,10 +800,6 @@ mw.EmbedPlayerNative = {
 				// empty out any existing sources:
 				$( vid ).empty();
 
-				// There is known limitation about using HTML5 ads with loadVideo method
-				// the player may crash Safari on iOS 7 devices
-				// This is a workaround that reloads the player programmatically
-				// every time a new video gets selected to play
 				if ( mw.isIOS7() ){
 					vid.src = null;
 					var sourceTag = document.createElement('source');
