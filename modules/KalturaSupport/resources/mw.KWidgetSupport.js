@@ -919,9 +919,11 @@ mw.KWidgetSupport.prototype = {
 				qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
 				source.src = source.src + qp +  'preferredBitrate=' + preferedBitRate;
 			}
-			// add any flashvar based playManifest params
-			qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
-			source.src = source.src +  qp + flashvarsPlayMainfestParams;
+			if ( !source['disableQueryString'] ) {
+				// add any flashvar based playManifest params
+				qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
+				source.src = source.src +  qp + flashvarsPlayMainfestParams;
+			}
 			
 			mw.log( 'KWidgetSupport:: addSource::' + embedPlayer.id + ' : ' +  source.src + ' type: ' +  source.type);
 			var sourceElm = $('<source />')
@@ -1129,6 +1131,7 @@ mw.KWidgetSupport.prototype = {
 				source['src'] = src + '/a.wvm';
 				source['data-flavorid'] = 'wvm';
 				source['type'] = 'video/wvm';
+				source['disableQueryString'] = true;
 			} 
 
 			if ( asset.tags && asset.tags == 'kontiki'){
@@ -1243,10 +1246,20 @@ mw.KWidgetSupport.prototype = {
 		var ksCheck = false;
 		this.kClient.getKS( function( ks ) {
 			ksCheck = true;
+			var referrer =   base64_encode( _this.getHostPageUrl() );
+			var clientTag = 'html5:v' + window[ 'MWEMBED_VERSION' ];
 			$.each( deviceSources, function(inx, source){
-				deviceSources[inx]['src'] = deviceSources[inx]['src'] + '?ks=' + ks + 
-					'&referrer=' + base64_encode( _this.getHostPageUrl() ) + 
-					'&clientTag=' + 'html5:v' + window[ 'MWEMBED_VERSION' ];
+				if ( deviceSources[inx]['disableQueryString'] == true ) {
+					var index = deviceSources[inx]['src'].lastIndexOf('/a.');
+					deviceSources[inx]['src'] = deviceSources[inx]['src'].substring(0, index) + '/ks/' + ks +
+						'/referrer/' + referrer +
+						'/clientTag/' + clientTag +
+						deviceSources[inx]['src'].substring(index) ;
+				} else {
+					deviceSources[inx]['src'] = deviceSources[inx]['src'] + '?ks=' + ks +
+						'&referrer=' + referrer +
+						'&clientTag=' + clientTag;
+				}
 			});
 		});
 		if( !ksCheck ){
