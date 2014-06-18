@@ -9,7 +9,9 @@
 			'kpl0Name': null,
 			'kpl0Url': null,
 			'kpl0Id': null,
-			'includeInLayout': null
+			'includeInLayout': null,
+			'parent': 'sideBarContainer',
+			'containerPosition': null //'after'
 		},
 
 		playlistSet : [],

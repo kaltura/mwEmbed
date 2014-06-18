@@ -12,8 +12,6 @@ mw.KBaseMediaList = mw.KBaseComponent.extend({
 	getBaseConfig: function(){
 		var parentConfig = this._super();
 		return $.extend({}, parentConfig, {
-			'parent': 'sideBarContainer',
-			'containerPosition': null, //'after'
 			'templatePath': 'components/mediaList/mediaList.tmpl.html',
 			'oneSecRotatorSlidesLimit': 61,
 			'twoSecRotatorSlidesLimit': 250,
@@ -27,7 +25,8 @@ mw.KBaseMediaList = mw.KBaseComponent.extend({
 			'includeThumbnail': false,
 			'includeChapterStartTime': true,
 			'includeChapterNumberPattern': false,
-			'includeChapterDuration': true
+			'includeChapterDuration': true,
+			'layout': 'vertical'
 		});
 	},
 
@@ -43,6 +42,7 @@ mw.KBaseMediaList = mw.KBaseComponent.extend({
 
 	_addBindings: function () {
 		var _this = this;
+		this._super()
 		this.bind( 'playerReady', function ( e, newState ) {
 			if (_this.dataIntialized) {
 				_this.updateActiveItem();
@@ -156,7 +156,23 @@ mw.KBaseMediaList = mw.KBaseComponent.extend({
 		var _this = this;
 		this.mediaList = [];
 		$.each(items, function(i, item){
+			var customData = item.partnerData ? JSON.parse(item.partnerData) :  {};
+			var title = item.name || customData.title;
+			var description = item.description || customData.desc;
+			var thumbnailUrl = item.thumbnailUrl || customData.thumbUrl || _this.getThumbUrl(item);
+			var thumbnailRotatorUrl = _this.getConfig( 'thumbnailRotator' ) ? _this.getThumRotatorUrl() : ''
 			item.order = i;
+			item.title = title;
+			item.description = description;
+			item.width = _this.getConfig( 'mediaItemWidth' );
+			item.durationDisplay = item.duration;
+			item.thumbnail = {
+				url: item.thumbnailUrl,
+					 thumbAssetId: item.assetId,
+					 rotatorUrl: thumbnailRotatorUrl,
+					 width: _this.getThumbWidth(),
+					 height: _this.getThumbHeight()
+			};
 			_this.mediaList.push(item);
 		});
 
@@ -169,6 +185,7 @@ mw.KBaseMediaList = mw.KBaseComponent.extend({
 		_this.getComponent().append(
 			_this.getTemplateHTML( {meta: _this.getMetaData(), mediaList: _this.getTemplateData()})
 		);
+
 		if (_this.getConfig('containerPosition')) {
 			_this.$chaptersContainer.append(_this.getTemplateHTML( {meta: _this.getMetaData(), mediaList: _this.getTemplateData()} ));
 		}
@@ -530,6 +547,7 @@ mw.KBaseMediaList = mw.KBaseComponent.extend({
 	},
 	getLargestBoxDimensions: function(){
 		var $cc = this.getComponent();
+		debugger;
 		// Get rough estimates for number of chapter visible.
 		var largestBoxWidth = 0;
 		var largestBoxHeight = 0;
