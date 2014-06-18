@@ -595,6 +595,8 @@
 					'label': gM('mwe-timedtext-no-subtitles')
 				});
 				return this.getMenu();
+			} else {
+				this.getBtn().show();
 			}
 
 			// Add Off item
