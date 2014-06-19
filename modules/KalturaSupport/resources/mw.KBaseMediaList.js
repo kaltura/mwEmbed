@@ -34,11 +34,6 @@
 		_addBindings: function () {
 			var _this = this;
 			this._super()
-			this.bind( 'playerReady', function ( e, newState ) {
-				if (_this.dataIntialized) {
-					_this.updateActiveItem();
-				}
-			});
 
 			this.bind('updateLayout', function(){
 				if (_this.dataIntialized) {
@@ -149,16 +144,9 @@
 			var _this = this;
 			this.mediaList = [];
 			$.each(items, function(i, item){
-				var customData = item.partnerData ? JSON.parse(item.partnerData) :  {};
-				var title = item.name || customData.title;
-				var description = item.description || customData.desc;
+				// set item thumbnail
 				var thumbnailUrl = item.thumbnailUrl || customData.thumbUrl || _this.getThumbUrl(item);
-				var thumbnailRotatorUrl = _this.getConfig( 'thumbnailRotator' ) ? _this.getThumRotatorUrl() : ''
-				item.order = i;
-				item.title = title;
-				item.description = description;
-				item.width = _this.getConfig( 'mediaItemWidth' );
-				item.durationDisplay = item.duration;
+				var thumbnailRotatorUrl = _this.getConfig( 'thumbnailRotator' ) ? _this.getThumRotatorUrl() : '';
 				item.thumbnail = {
 					url: item.thumbnailUrl,
 					thumbAssetId: item.assetId,
@@ -183,6 +171,7 @@
 			}
 			_this.dataIntialized = true;
 			_this.shouldAddScroll(_this.addScroll);
+			$(_this.embedPlayer).trigger("mediaListLayourReady");
 		},
 
 		getItemNumber: function(index){
@@ -259,23 +248,12 @@
 			var _this = this;
 			var hoverInterval = null;
 			var chapterBox = this.getComponent().find('.chapterBox');
-			chapterBox
-				.off('click' )
-				.on('click', function(){
-					var index = $(this).data( 'mediaItemIndex' );
-					// Check if the current media item is already active, set skipPause flag accordingly.
-					_this.skipPauseFlag = !$( this ).hasClass( 'active');
-					// start playback
-					_this.getPlayer().sendNotification( 'doPlay' );
-					// see to start time and play ( +.1 to avoid highlight of prev media item )
-					_this.getPlayer().sendNotification( 'doSeek', ( _this.mediaList[index].startTime ) + .1 );
-				});
 			if (this.getConfig('thumbnailRotator')) {
 				chapterBox
 					.off( 'mouseenter mouseleave', '.k-thumb' )
 					.on( {
 						mouseenter: function () {
-							var index = $( this ).data( 'mediaItemIndex' );
+							var index = $( this ).data( 'chapterIndex' );
 							var item = _this.mediaList[index];
 							// update base css:
 
@@ -307,7 +285,7 @@
 						mouseleave: function () {
 							clearInterval( hoverInterval );
 							// retore to orginal image:
-							var index = $( this ).data( 'mediaItemIndex' );
+							var index = $( this ).data( 'chapterIndex' );
 							var item = _this.mediaList[index];
 							$( this )
 								.css( {
@@ -519,57 +497,6 @@
 				}
 			}
 			return false;
-		},
-		updateActiveItem: function( ){
-			var _this = this;
-			// search media items for current active
-			var activeIndex = 0;
-			var time = this.getPlayer().currentTime;
-			$.each( this.mediaList, function( inx, item){
-				if( time > ( item.startTime ) ){
-					activeIndex = inx;
-				}
-			});
-			var $activeMediaItem =  this.getComponent().find( '.active' );
-			var actualActiveIndex = $activeMediaItem.data( 'mediaItemIndex' );
-			// Check if active is not already set:
-			if( actualActiveIndex == activeIndex ){
-				// update duration count down:
-				var item = this.mediaList[ activeIndex ];
-				if( item ){
-					$activeMediaItem.addClass('active');
-					item.active = true;
-					var endTime = item.endTime;
-					var countDown =  Math.abs( time - endTime );
-					$activeMediaItem.find('.k-duration span').text(
-						kWidget.seconds2npt( countDown )
-					);
-				}
-			} else {
-				var item = _this.mediaList[ actualActiveIndex ];
-				if ( item ) {
-					item.active = false;
-					var startTime = item.startTime ;
-					var endTime = item.endTime;
-					$activeMediaItem
-						.removeClass( 'active' )
-						.find( '.k-duration span' ).text(
-							kWidget.seconds2npt( endTime - startTime )
-						)
-				}
-
-				// Check if we should pause on chapter update:
-				if ( this.getConfig( 'pauseAfterChapter' ) && !this.skipPauseFlag ) {
-					this.getPlayer().sendNotification( 'doPause' );
-				}
-				// restore skip pause flag:
-				this.skipPauseFlag = false;
-
-				if ( this.mediaList[ activeIndex ] ) {
-					this.getComponent().find( "li[data-chapter-index='" + activeIndex + "']" ).addClass( 'active' );
-					this.getComponent().find( '.k-carousel' )[0].jCarouselLiteGo( activeIndex );
-				}
-			}
 		}
 
 	});
