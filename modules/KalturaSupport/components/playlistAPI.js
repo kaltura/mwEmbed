@@ -12,8 +12,8 @@
 			'includeInLayout': null,
 			'parent': 'sideBarContainer',
 			'mediaItemWidth': 290,
-			'titleLimit': 25,
-			'descriptionLimit': 70,
+			'titleLimit': 30,
+			'descriptionLimit': 60,
 			'thumbnailWidth' : 50,
 			'horizontalMediaItemWidth': 290,
 			'includeThumbnail': true,
@@ -153,8 +153,8 @@
 
 			// Restore onDoneInterfaceFlag
 			embedPlayer.onDoneInterfaceFlag = true;
-		},
-
+		}
+/*
 		addClipBindings: function( clipIndex ){
 			var _this = this;
 			mw.log( "Playlist::addClipBindings" );
@@ -323,7 +323,7 @@
 				return ;
 			}
 			mw.log("Cant prev: cur:" + clipIndex-1 );
-		}
+		}*/
 
 	})
 
