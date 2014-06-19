@@ -24,8 +24,8 @@
                     <span><%=mediaItem.startTimeDisplay%></span>
                 </span>
                 <% } %>
-                <% if( meta.includeChapterNumberPattern) { %>
-                <span class="chapterNumber"><%=mediaItem.chapterNumber%></span>
+                <% if( meta.includeitemNumberPattern) { %>
+                <span class="itemNumber"><%=mediaItem.itemNumber%></span>
                 <% } %>
                 <%
                 var chapterTitle = mediaItem.title;
@@ -35,11 +35,11 @@
                 <span class="k-title"><%=chapterTitle%></span>
             </span>
             <%
-            var chapterDesc = mediaItem.description;
+            var itemDesc = mediaItem.description;
             if( mediaItem.description && mediaItem.description.length > meta.descLimit ){
-                chapterDesc = mediaItem.description.substr(0, meta.descLimit-4 ) + ' ...';
+                itemDesc = mediaItem.description.substr(0, meta.descLimit-4 ) + ' ...';
             } %>
-            <span class="k-description" title="<%=mediaItem.description%>"><%=chapterDesc%></span>
+            <span class="k-description" title="<%=mediaItem.description%>"><%=itemDesc%></span>
             <% if( meta.includeChapterDuration) { %>
             <span class="k-duration">
                 <div class="icon-time"></div>

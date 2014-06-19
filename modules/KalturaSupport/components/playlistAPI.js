@@ -25,6 +25,12 @@
 			this.loadPlaylists();
 		},
 		addBindings: function() {
+			var _this = this;
+			this.bind( 'playerReady', function ( e, newState ) {
+				if (_this.playlistSet.length > 0){
+					_this.setMediaList(_this.playlistSet[0].items);
+				}
+			});
 			// add bindings
 		},
 		loadPlaylists: function(){
@@ -35,12 +41,7 @@
 					this.playlistSet.push( embedPlayer.kalturaPlaylistData[ playlistId ] );
 				}
 			}
-
-			if (this.playlistSet.length > 0){
-				this.setMediaList(this.playlistSet[0].items);
-			};
 		}
-
 
 	})
 
