@@ -11,6 +11,14 @@
 			'kpl0Id': null,
 			'includeInLayout': null,
 			'parent': 'sideBarContainer',
+			'mediaItemWidth': 290,
+			'titleLimit': 25,
+			'descriptionLimit': 70,
+			'thumbnailWidth' : 50,
+			'horizontalMediaItemWidth': 290,
+			'includeThumbnail': true,
+			'includeItemNumberPattern': false,
+			'includeMediaItemDuration': true,
 			'containerPosition': null //'after'
 		},
 

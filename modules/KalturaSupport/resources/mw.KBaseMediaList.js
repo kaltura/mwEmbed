@@ -16,16 +16,7 @@
 				'oneSecRotatorSlidesLimit': 61,
 				'twoSecRotatorSlidesLimit': 250,
 				'maxRotatorSlides': 125,
-				'mediaItemWidth': 290,
-				'titleLimit': 25,
-				'descriptionLimit': 70,
-				'thumbnailWidth' : 50,
-				'horizontalMediaItemWidth': 290,
 				'overflow': false,
-				'includeThumbnail': true,
-				'includeItemStartTime': true,
-				'includeItemNumberPattern': false,
-				'includeMediaItemDuration': true,
 				'layout': 'vertical'
 			});
 		},
@@ -48,19 +39,17 @@
 					_this.updateActiveItem();
 				}
 			});
+
+			this.bind('updateLayout', function(){
+				if (_this.dataIntialized) {
+					_this.getComponent().empty().append(
+						_this.getTemplateHTML( {meta: _this.getMetaData(), mediaList: _this.getTemplateData()})
+					);
+					_this.shouldAddScroll(_this.addScroll);
+				}
+			});
 		},
 
-
-
-		/*
-		 setup: function ( embedPlayer ) {
-
-		 if (this.getConfig('containerPosition')){
-		 this.getListContainer();
-		 }
-		 this.addBindings();
-		 },
-		 */
 		getComponent: function(){
 			if( ! this.$el ){
 				this.$el = $( '<div />' )
@@ -68,6 +57,7 @@
 			}
 			return this.$el;
 		},
+
 		destroy: function(){
 			this.unbind();
 			this.getComponent.empty();
@@ -77,9 +67,11 @@
 		getLayout: function(){
 			return  this.getConfig( 'layout' ) || 'horizontal';
 		},
+
 		getTemplateData: function(){
 			return this.mediaList;
 		},
+
 		getMetaData: function(){
 			return {
 				includeThumbnail: this.getConfig('includeThumbnail'),
@@ -91,6 +83,7 @@
 				layout: this.getLayout()
 			}
 		},
+
 		getListContainer: function(){
 			// remove any existing k-chapters-container for this player
 			$('.k-player-' + this.getPlayer().id + '.k-chapters-container').remove();
@@ -180,8 +173,6 @@
 			if (this.getConfig('containerPosition')){
 				this.getListContainer();
 			}
-			//Need to recalc all durations after we have all the items startTime values
-			//_this.setMediaItemTime();
 
 			_this.getComponent().append(
 				_this.getTemplateHTML( {meta: _this.getMetaData(), mediaList: _this.getTemplateData()})
@@ -194,56 +185,6 @@
 			_this.shouldAddScroll(_this.addScroll);
 		},
 
-		addMediaItem: function(obj ,index){
-			var mediaItem;
-			var customData = obj.partnerData ? JSON.parse(obj.partnerData) :  {};
-			var title = obj.title || customData.title;
-			var description = obj.description || customData.desc;
-			var thumbnailUrl = obj.thumbnailUrl || customData.thumbUrl || this.getThumbUrl(obj);
-			var thumbnailRotatorUrl = this.getConfig( 'thumbnailRotator' ) ? this.getThumRotatorUrl() : '';
-
-			mediaItem = {
-				order: index,
-				id: obj.id,
-				title: title,
-				description: description,
-				width: this.getConfig( 'mediaItemWidth' ),
-				thumbnail: {
-					url: thumbnailUrl,
-					thumbAssetId: obj.assetId,
-					rotatorUrl: thumbnailRotatorUrl,
-					width: this.getThumbWidth(),
-					height: this.getThumbHeight()
-				},
-				startTime: obj.startTime / 1000,
-				startTimeDisplay: this.formatTimeDisplayValue(kWidget.seconds2npt( obj.startTime / 1000 )),
-				endTime: null,
-				durationDisplay: null,
-				itemNumber: this.getItemNumber(index)
-
-			}
-			this.mediaList.push(mediaItem);
-		},
-		setMediaItemTime: function(){
-			var _this = this;
-			$.each(this.mediaList, function(index, item){
-				if (_this.mediaList[index + 1]){
-					item.endTime = _this.mediaList[index + 1].startTime;
-				} else {
-					item.endTime = _this.getPlayer().duration;
-				}
-
-				item.durationDisplay = kWidget.seconds2npt((item.endTime - item.startTime) );
-			});
-		},
-		formatTimeDisplayValue: function(time){
-			// Add 0 padding to start time min
-			var timeParts = time.split(':');
-			if( timeParts.length == 2 && timeParts[0].length == 1 ) {
-				time = '0' + time;
-			}
-			return time;
-		},
 		getItemNumber: function(index){
 			var itemVal = ( index + 1 ).toString();
 			if( typeof this.getConfig('includeItemNumberPattern' ) == 'string' ){
