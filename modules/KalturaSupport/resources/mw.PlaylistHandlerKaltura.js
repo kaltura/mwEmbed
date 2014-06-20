@@ -28,6 +28,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 
 	// store any playlist loading errors:
 	errorMsg: null,
+	firstChangeMedia: true,
 
 	init: function ( playlist, options ){
 		this.playlist = playlist;
@@ -228,6 +229,48 @@ mw.PlaylistHandlerKaltura.prototype = {
 	loadCurrentPlaylist: function( callback ){
 		this.loadPlaylistById( this.playlist_id, callback );
 	},
+
+
+	removeAccessControlEntries : function (callback){
+
+		mw.log("Checking access control per playlist entry");
+		var myMultiRequestArray = [];
+		//mapping the playlist entry:
+		for (var j=0;j<this.playlist.sourceHandler.clipList.length;j++){
+			myMultiRequestArray.push({
+				'ks': mw.getConfig('ks'),
+				'contextDataParams': {'flavorAssetId':null,'flavorTags':null,'streamerType':null,'mediaProtocol':null},
+				'service': 'baseEntry',
+				'action': 'getContextData',
+				'entryId': this.playlist.sourceHandler.clipList[j].id
+
+			});
+		}
+
+		//find which of them shouldnt be played
+		var _this = this ;
+		mw.kApiGetPartnerClient().doRequest(myMultiRequestArray, function( data ){
+			var entriesToRemove = [];
+			var arr = _this.playlist.sourceHandler.clipList;
+			for(var i=0;i<data.length;i++){
+				var cd = data[i];
+				if (cd.isCountryRestricted ||
+					cd.isIpAddressRestricted ||
+					cd.isSessionRestricted ||
+					cd.isSiteRestricted ||
+					cd.isUserAgentRestricted ) {
+					entriesToRemove.push(i);
+				}
+			}
+			//removing the non-playable entries from the playlist
+			for (var i = entriesToRemove.length -1; i >= 0; i--){
+				_this.playlist.sourceHandler.clipList.splice(entriesToRemove[i],1);
+			}
+			callback( data );
+		});
+	},
+
+
 	loadPlaylistById: function( playlist_id, loadedCallback ){
 		var _this = this;
 		mw.log("PlaylistHandlerKaltura::loadPlaylistById> " + playlist_id );
@@ -248,9 +291,18 @@ mw.PlaylistHandlerKaltura.prototype = {
 					embedPlayer.triggerHelper( 'playlistReady' );
 				});
 			}
-			// Issue the callback if set:
-			if( $.isFunction( loadedCallback ) ){
-				loadedCallback();
+			if( embedPlayer.getKalturaConfig('playlistAPI' , 'enableAccessControlExclution') == true ){
+				_this.removeAccessControlEntries(function(){
+					// Issue the callback if set:
+					if( $.isFunction( loadedCallback ) ){
+						loadedCallback();
+					}
+				});
+			} else {
+				// Issue the callback if set:
+				if( $.isFunction( loadedCallback ) ){
+					loadedCallback();
+				}
 			}
 		};
 
@@ -361,9 +413,13 @@ mw.PlaylistHandlerKaltura.prototype = {
 			/*embedPlayer.bindHelper( 'loadeddata', function() {
 				embedPlayer.layoutBuilder.syncPlayerSize();
 			});*/
-			// restore autoplay state: 
+			// restore autoplay state:
 			embedPlayer.autoplay = originalAutoPlayState;
-			embedPlayer.play();
+
+			if((embedPlayer.playlist.clipIndex != 0 ||  !_this.firstChangeMedia)  && !originalAutoPlayState ){
+				_this.firstChangeMedia = false;
+				embedPlayer.play();
+			}
 			if( $.isFunction( callback ) ){
 				callback();
 			}
@@ -377,9 +433,8 @@ mw.PlaylistHandlerKaltura.prototype = {
 		// Update the playlist data selectedIndex ( before issuing change media call )
 	 	_this.setClipIndex( clipIndex );
 		// Use internal changeMedia call to issue all relevant events
-	 	
-	 	// set autoplay to true to continue to playback: 
-	 	embedPlayer.autoplay = true;
+	 	// set autoplay to true to continue to playback:
+	 	embedPlayer.autoplay = false;
 		embedPlayer.sendNotification( "changeMedia", {'entryId' : this.getClip( clipIndex ).id, 'playlistCall': true} );
 	},
 	drawEmbedPlayer: function( clipIndex, callback ){
