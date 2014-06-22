@@ -20,7 +20,7 @@
 			'includeItemNumberPattern': false,
 			'includeMediaItemDuration': true,
 			'loop': false,
-			'containerPosition': null //'after'
+			'containerPosition':  null//'right'
 		},
 
 		// flag to store the current loading entry
@@ -46,21 +46,10 @@
 					_this.setMediaList(_this.playlistSet[0].items);
 				}
 			});
+		},
 
-			this.bind("mediaListLayourReady", function(){
-				// add play list event handlers
-				var chapterBox = _this.getComponent().find('.chapterBox');
-				chapterBox
-					.off('click' )
-					.on('click', function(){
-						// set active class to the current selected item
-						$(".chapterBox").removeClass( 'active');
-						$( this ).addClass( 'active');
-						// get entry ID to play
-						var index = $(this).data( 'chapterIndex' );
-						_this.playMedia( index);
-					});
-			});
+		mediaClicked: function(index){
+			this.playMedia( index);
 		},
 
 		loadPlaylists: function(){
@@ -89,6 +78,7 @@
 
 		playMedia: function(clipIndex){
 			var embedPlayer = this.embedPlayer;
+
 			var _this = this;
 			var id = _this.mediaList[clipIndex].id;
 			if( !embedPlayer ){

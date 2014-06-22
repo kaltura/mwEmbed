@@ -141,6 +141,8 @@
 
 		//Media Item
 		setMediaList: function(items){
+			if (this.dataIntialized)
+				return;
 			var _this = this;
 			this.mediaList = [];
 			$.each(items, function(i, item){
@@ -160,18 +162,16 @@
 
 			if (this.getConfig('containerPosition')){
 				this.getListContainer();
-			}
-
-			_this.getComponent().append(
-				_this.getTemplateHTML( {meta: _this.getMetaData(), mediaList: _this.getTemplateData()})
-			);
-
-			if (_this.getConfig('containerPosition')) {
 				_this.$mediaListContainer.append(_this.getTemplateHTML( {meta: _this.getMetaData(), mediaList: _this.getTemplateData()} ));
+			}else{
+				_this.getComponent().append(
+					_this.getTemplateHTML( {meta: _this.getMetaData(), mediaList: _this.getTemplateData()})
+				);
 			}
+
 			_this.dataIntialized = true;
 			_this.shouldAddScroll(_this.addScroll);
-			$(_this.embedPlayer).trigger("mediaListLayourReady");
+			$(_this.embedPlayer).trigger("mediaListLayoutReady");
 		},
 
 		getItemNumber: function(index){
@@ -247,7 +247,17 @@
 		attachMediaListHandlers: function(){
 			var _this = this;
 			var hoverInterval = null;
-			var chapterBox = this.getComponent().find('.chapterBox');
+			var chapterBox = this.getConfig('parent') ? this.getComponent().find('.chapterBox') : this.$mediaListContainer.find('.chapterBox');
+			chapterBox
+				.off('click' )
+				.on('click', function(){
+					// set active media item
+					$(".chapterBox").removeClass( 'active');
+					$( this ).addClass( 'active');
+					var index = $(this).data( 'chapterIndex' );
+					// call mediaClicked with the media index (implemented in component level)
+					_this.mediaClicked(index);
+				});
 			if (this.getConfig('thumbnailRotator')) {
 				chapterBox
 					.off( 'mouseenter mouseleave', '.k-thumb' )
@@ -301,6 +311,11 @@
 			}
 
 		},
+
+		mediaClicked: function(){
+			// should be implemented by component;
+		},
+
 		getThumbSpriteOffset: function( thumbWidth, time ){
 			var sliceIndex = this.getSliceIndexForTime( time );
 			return - ( sliceIndex * thumbWidth ) + 'px 0px';
@@ -392,7 +407,6 @@
 			return this.getConfig('horizontalMediaItemWidth') || 290;
 		},
 		addScrollUiComponents: function(){
-
 			var $cc = this.getComponent();
 			$cc.find('ul').wrap(
 				$( '<div>' ).addClass('k-carousel')
