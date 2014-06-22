@@ -82,7 +82,7 @@ mw.EmbedPlayerKplayer = {
 		}
 
 		//add OSMF HLS Plugin if the source is HLS
-		if ( this.isHlsSource( this.mediaElement.selectedSource ) ) {
+		if ( this.isHlsSource( this.mediaElement.selectedSource ) && mw.getConfig("LeadWithHLSOnFlash") ) {
 			flashvars.sourceType = 'url';
 			flashvars.ignoreStreamerTypeForSeek = true;
 			flashvars.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
