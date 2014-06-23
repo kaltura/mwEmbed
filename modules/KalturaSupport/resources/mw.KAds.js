@@ -438,6 +438,7 @@ mw.KAds.prototype = {
 			_this.adPlayer.display(
 				overlayConfig,
 				function(){
+					startOvelrayDisplayed = false;
 					mw.log("KAds::overlay done");
 				},
 				timeout
