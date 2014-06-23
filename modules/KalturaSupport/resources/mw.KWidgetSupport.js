@@ -921,8 +921,12 @@ mw.KWidgetSupport.prototype = {
 			}
 
 			if ( source['disableQueryString'] ) {
-				var index = source.src.lastIndexOf('/a.');
-				source.src = source.src.substring(0, index) + '/' + this.getPlayMainfestParams( embedPlayer, true )  + source.src.substring(index) ;
+				var mParams =  this.getPlayMainfestParams( embedPlayer, true );
+				if ( mParams != '' ) {
+					var index = source.src.lastIndexOf( '/a.' );
+					source.src = source.src.substring( 0, index ) + '/' + mParams  + source.src.substring( index ) ;
+				}
+
 			} else {
 				// add any flashvar based playManifest params
 				qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
