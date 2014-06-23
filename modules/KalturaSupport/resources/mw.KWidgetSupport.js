@@ -919,7 +919,11 @@ mw.KWidgetSupport.prototype = {
 				qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
 				source.src = source.src + qp +  'preferredBitrate=' + preferedBitRate;
 			}
-			if ( !source['disableQueryString'] ) {
+
+			if ( source['disableQueryString'] ) {
+				var index = source.src.lastIndexOf('/a.');
+				source.src = source.src.substring(0, index) + '/' + this.getPlayMainfestParams( embedPlayer, true )  + source.src.substring(index) ;
+			} else {
 				// add any flashvar based playManifest params
 				qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
 				source.src = source.src +  qp + flashvarsPlayMainfestParams;
@@ -933,14 +937,19 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.mediaElement.tryAddSource( sourceElm );
 		}
 	},
-	getPlayMainfestParams: function( embedPlayer ){
+	getPlayMainfestParams: function( embedPlayer, disableQueryString ){
 		var p = '';
 		var and = '';
+		var equalDelimiter = '=';
+		var andDelimiter = '&';
+		if ( disableQueryString ) {
+			andDelimiter = equalDelimiter = '/';
+		}
 		var urlParms = ["deliveryCode", "storageId", "maxBitrate", "playbackContext", "seekFrom", "clipTo" ];
 		$.each( urlParms, function( inx, param ){
 			if( embedPlayer.getFlashvars( param ) ){
-				 p += and + param + '=' + embedPlayer.getFlashvars( param );
-				 and = '&';
+				 p += and + param + equalDelimiter + embedPlayer.getFlashvars( param );
+				 and = andDelimiter;
 			}
 		});
 		return p;
@@ -1246,17 +1255,18 @@ mw.KWidgetSupport.prototype = {
 		var ksCheck = false;
 		this.kClient.getKS( function( ks ) {
 			ksCheck = true;
-			var referrer =   base64_encode( _this.getHostPageUrl() );
+			var manifestKs = _this.fixPlaymanifestParam( ks );
+			var referrer =   _this.fixPlaymanifestParam( base64_encode( _this.getHostPageUrl() ) );
 			var clientTag = 'html5:v' + window[ 'MWEMBED_VERSION' ];
 			$.each( deviceSources, function(inx, source){
 				if ( deviceSources[inx]['disableQueryString'] == true ) {
 					var index = deviceSources[inx]['src'].lastIndexOf('/a.');
-					deviceSources[inx]['src'] = deviceSources[inx]['src'].substring(0, index) + '/ks/' + ks +
+					deviceSources[inx]['src'] = deviceSources[inx]['src'].substring(0, index) + '/ks/' + manifestKs +
 						'/referrer/' + referrer +
 						'/clientTag/' + clientTag +
 						deviceSources[inx]['src'].substring(index) ;
 				} else {
-					deviceSources[inx]['src'] = deviceSources[inx]['src'] + '?ks=' + ks +
+					deviceSources[inx]['src'] = deviceSources[inx]['src'] + '?ks=' + manifestKs +
 						'&referrer=' + referrer +
 						'&clientTag=' + clientTag;
 				}
@@ -1267,6 +1277,14 @@ mw.KWidgetSupport.prototype = {
 		}
 		
 		return deviceSources;
+	},
+	/**
+	 *  "/" and "+" are valid base64 chars. They might break playmanifest URL so we replace them to "_" and "-" accordingly.
+	 *  There is a server side code that replaces the string back to the original value
+	 * @param value
+	 */
+	fixPlaymanifestParam: function( value ) {
+		return value.replace(/\+/g, "-").replace(/\//g, "_");
 	},
 	removeAdaptiveFlavors: function( sources ){
 		for( var i =0 ; i < sources.length; i++ ){
