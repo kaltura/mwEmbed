@@ -86,7 +86,7 @@
 				}
 			});
 
-			if( this.getConfig('layout') == 'below' ){
+			if( this.getConfig('layout') == 'below' && this.getConfig('displayCaptions') === true){
 				this.updateBelowVideoCaptionContainer();
 			}
 		},
