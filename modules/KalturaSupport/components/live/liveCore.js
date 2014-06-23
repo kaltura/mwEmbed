@@ -348,11 +348,15 @@
 			if ( embedPlayer.kalturaPlayerMetaData && embedPlayer.kalturaPlayerMetaData.type == 8 ) {
 				service = 'liveChannel';
 			}
+			var protocol = 'hls';
+			if ( embedPlayer.streamerType != 'http' ) {
+				protocol = embedPlayer.streamerType;
+			}
 			_this.getKalturaClient().doRequest( {
 				'service' : service,
 				'action' : 'islive',
 				'id' : embedPlayer.kentryid,
-				'protocol' : 'hls',
+				'protocol' : protocol,
 				'partnerId': embedPlayer.kpartnerid,
 				'timestamp' : Date.now()
 			}, function( data ) {

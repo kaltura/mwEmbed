@@ -586,7 +586,6 @@ mw.KWidgetSupport.prototype = {
 		if( getAttr( 'disablePlayerSpinner' ) ) {
 			mw.setConfig('LoadingSpinner.Disabled', true );
 		}
-
 		var streamerType = embedPlayer.getKalturaConfig( null, 'streamerType' );
 		if ( embedPlayer.kalturaContextData && streamerType == 'auto' ) {
 			embedPlayer.streamerType = embedPlayer.kalturaContextData.streamerType;
@@ -1310,6 +1309,7 @@ mw.KWidgetSupport.prototype = {
 			mimeType = 'video/multicast';
 
 		} else {
+			embedPlayer.setFlashvars( 'streamerType', 'http' );
 			extension = 'm3u8';
 			protocol = 'http';
 			mimeType = 'application/vnd.apple.mpegurl';
