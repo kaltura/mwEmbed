@@ -36,9 +36,16 @@ mw.KAdPlayer.prototype = {
 	init: function( embedPlayer ){
 		var _this = this;
 		this.embedPlayer = embedPlayer;
+
 		// bind to the doPlay event triggered by the playPauseBtn component when the user resume playback from this component after clickthrough pause
+		var eventName = "doPlay";
+
 		// bind AdSupport_StartAdPlayback event since the small play/ pause button in the control bar doesn't change the state when ad is played on mobile browser
-		$(this.embedPlayer).bind("doPlay AdSupport_StartAdPlayback", function(){
+		if( !_this.isVideoSiblingEnabled() ) {
+			eventName = eventName + " AdSupport_StartAdPlayback";
+		}
+
+		$(this.embedPlayer).bind(eventName, function(){
 			$( embedPlayer).trigger("onPlayerStateChange",["play"]); // trigger playPauseBtn UI update
 			$( embedPlayer).trigger("onResumeAdPlayback");
 			_this.clickedBumper = false;
