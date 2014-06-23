@@ -1160,6 +1160,16 @@ mw.EmbedPlayerNative = {
 	* fired when "seeking"
 	*/
 	_onseeking: function() {
+		// don't handle seek event on Android native browser
+		var nua = navigator.userAgent;
+		var is_native_android_browser = ((nua.indexOf('Mozilla/5.0') > -1 &&
+			nua.indexOf('Android ') > -1 &&
+			nua.indexOf('AppleWebKit') > -1) &&
+			!(nua.indexOf('Chrome') > -1));
+
+		if( is_native_android_browser){
+			return;
+		}
 		mw.log( "EmbedPlayerNative::onSeeking " + this.seeking + ' new time: ' + this.getPlayerElement().currentTime );
 		if( this.seeking && Math.round( this.getPlayerElement().currentTime - this.currentSeekTargetTime ) > 2 ){
 			mw.log( "Error:: EmbedPlayerNative Seek time missmatch: target:" + this.getPlayerElement().currentTime +
