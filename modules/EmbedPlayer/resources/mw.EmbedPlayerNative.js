@@ -41,6 +41,8 @@ mw.EmbedPlayerNative = {
 	// Flag for ignoring next native error we get from the player.
 	ignoreNextError:false,
 
+	keepNativeFullScreen: false,
+
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
 	nativeEvents : [
@@ -460,7 +462,7 @@ mw.EmbedPlayerNative = {
 		if( this.startOffset ){
 			targetTime += parseFloat( this.startOffset );
 		}
-		
+
 		this.setCurrentTime( targetTime, function(){
 			// Update the current time ( so that there is not a monitor delay in reflecting "seeked time" )
 			_this.currentTime = _this.getPlayerElement().currentTime;
@@ -605,12 +607,21 @@ mw.EmbedPlayerNative = {
 				callbackHandler();
 				return ;
 			}
-
-			// Check if we got a valid seek:
-			if( vid.currentTime > 0 ){
-				callbackHandler();
+			//not replay seek
+			if( seekTime > 0.01 && _this.isFakeHlsSeek() ){
+				var canPlayBind = 'canplay.nativePlayBind';
+				$( vid ).unbind( canPlayBind ).bind( canPlayBind, function( event ) {
+					// Remove the listener:
+					$( vid ).unbind( canPlayBind );
+					callbackHandler();
+				});
 			} else {
-				mw.log( "Error:: EmbedPlayerNative: seek callback without time updatet " + vid.currentTime );
+				// Check if we got a valid seek:
+				if( vid.currentTime > 0 ){
+					callbackHandler();
+				} else {
+					mw.log( "Error:: EmbedPlayerNative: seek callback without time updated " + vid.currentTime );
+				}
 			}
 		});
 		setTimeout(function(){
@@ -787,17 +798,15 @@ mw.EmbedPlayerNative = {
 				// empty out any existing sources:
 				$( vid ).empty();
 
-				// There is known limitation about using HTML5 ads with loadVideo method
-				// the player may crash Safari on iOS 7 devices
-				// This is a workaround that reloads the player programmatically
-				// every time a new video gets selected to play
 				if ( mw.isIOS7() ){
-					vid.load();
+					vid.src = null;
+					var sourceTag = document.createElement('source');
+					sourceTag.setAttribute('src', src);
+					vid.appendChild(sourceTag);
+				} else {
+					// Do the actual source switch:
+					vid.src = src;
 				}
-
-				// Do the actual source switch:
-				vid.src = src;
-
 				// load the updated src
 				//only on desktop safari we need to load - otherwise we get the same movie play again.
 				if (mw.isDesktopSafari()){
@@ -872,7 +881,7 @@ mw.EmbedPlayerNative = {
 						return false;
 					});
 
-					// Check if ended event was fired on chrome (android devices), if not fix by time difference approximation 
+					// Check if ended event was fired on chrome (android devices), if not fix by time difference approximation
 					if( mw.isMobileChrome() ) {
 						$( vid ).bind( 'timeupdate' + switchBindPostfix, function( e ) {
 							var _this = this;
@@ -1188,7 +1197,7 @@ mw.EmbedPlayerNative = {
 		if( this.seeking ){
 			// HLS safari triggers onseek when its not even close to the target time,
 			// we don't want to trigger the seek event for these "fake" onseeked triggers
-			if( Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2 ){
+			if( this.isFakeHlsSeek() ){
 				mw.log( "Error:: EmbedPlayerNative:seeked triggred with time mismatch: target:" +
 						this.currentSeekTargetTime +
 						' actual:' + this.getPlayerElement().currentTime );
@@ -1351,26 +1360,34 @@ mw.EmbedPlayerNative = {
 	 * Local onClip done function for native player.
 	 */
 	onClipDone: function(){
+		this.parent_onClipDone();
+
+		// Don't run onclipdone if _propagateEvents is off
+		if( !this._propagateEvents ){
+			return ;
+		}
+
 		var _this = this;
 
-		if( _this.isImagePlayScreen() && !_this.isPlaylistScreen() ){
-			_this.getPlayerElement().webkitExitFullScreen();
+		if ( _this.isImagePlayScreen() && !_this.isPlaylistScreen() ) {
+			if (!this.keepNativeFullScreen) {
+				_this.getPlayerElement().webkitExitFullScreen();
+			}
 		}
 
 		// add clip done binding ( will only run on sequence complete )
-		$(this).unbind('onEndedDone.onClipDone').bind( 'onEndedDone.onClipDone', function(){
+		$( this ).unbind( 'onEndedDone.onClipDone' ).bind( 'onEndedDone.onClipDone', function () {
 			// if not a legitmate play screen don't keep the player offscreen when playback starts:
-			if( !_this.isImagePlayScreen() ){
+			if ( !_this.isImagePlayScreen() ) {
 				_this.keepPlayerOffScreenFlag = false;
-			}else{
+			} else {
 				// exit full screen mode on the iPhone
-				mw.log( 'EmbedPlayer::onClipDone: Exit full screen');
-				_this.getPlayerElement().webkitExitFullScreen();
+				mw.log( 'EmbedPlayer::onClipDone: Exit full screen' );
+				if (!_this.keepNativeFullScreen) {
+					_this.getPlayerElement().webkitExitFullScreen();
+				}
 			}
-		});
-
-
-		this.parent_onClipDone();
+		} );
 	},
 
 	enableNativeControls: function(){
@@ -1396,6 +1413,15 @@ mw.EmbedPlayerNative = {
 		} else {
 			_this.parent_triggerPreSequence();
 		}
+	},
+
+	/**
+	 * HLS safari triggers onseek when its not even close to the target time
+	 * we don't want to trigger the seek event for these "fake" onseeked triggers
+	 * @returns {boolean} true if seek event is fake, false if valid
+	 */
+	isFakeHlsSeek: function() {
+		return ( Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2 );
 	}
 };
 

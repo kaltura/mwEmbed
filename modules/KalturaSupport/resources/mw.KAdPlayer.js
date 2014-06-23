@@ -111,6 +111,7 @@ mw.KAdPlayer.prototype = {
 				adSlot.currentlyDisplayed = false;
 				// give time for the end event to clear
 				setTimeout(function(){
+					_this.embedPlayer.layoutBuilder.addPlayerTouchBindings();
 					if( !hardStop && displayDoneCallback ){
 						displayDoneCallback();
 					}
@@ -197,7 +198,7 @@ mw.KAdPlayer.prototype = {
 		// Start monitoring for display duration end ( if not supplied we depend on videoFile end )
 		if( adSlot.displayDuration  ){
 			// Monitor time for display duration display utility function
-			var startTime = _this.getOriginalPlayerElement().currentTime;
+			var startTime = _this.embedPlayer.getPlayerElementTime();
 			this.monitorForDisplayDuration( adSlot, startTime, adSlot.displayDuration );
 		}
 
@@ -234,7 +235,7 @@ mw.KAdPlayer.prototype = {
 		// Local base video monitor function:
 		var vid = _this.getOriginalPlayerElement();
 		// Stop display of overlay if video playback is no longer active
-		if( typeof vid == 'undefined' || vid.currentTime - startTime > displayDuration ){
+		if( typeof vid == 'undefined' || _this.embedPlayer.getPlayerElementTime() - startTime > displayDuration ){
 			mw.log( "KAdPlayer::display:" + adSlot.type + " Playback done because vid does not exist or > displayDuration " + displayDuration );
 			adSlot.playbackDone();
 		} else {
@@ -724,7 +725,7 @@ mw.KAdPlayer.prototype = {
 	 **/
 	setImgSrc: function (imgObj) {
 		if (imgObj.html.indexOf("src=")== -1) {
-		imgObj.html = imgObj.html.replace('<img ', '<img src="' + imgObj.resourceUri + '" ');
+			imgObj.html = imgObj.html.toLowerCase().replace('<img ', '<img src="' + imgObj.resourceUri + '" ');
 		}
 	},
 
@@ -890,10 +891,32 @@ mw.KAdPlayer.prototype = {
 		});
 
 		// On done button tapped - iPhone
-		if( mw.isIphone() ) {
-			$( videoPlayer ).bind( 'webkitendfullscreen', function(){
-				$( videoPlayer ).unbind( 'webkitendfullscreen' );
-				_this.skipCurrent();
+		if( mw.isIphone() &&
+			( mw.getConfig( "EmbedPlayer.ForceNativeComponent") == null ||
+			  mw.getConfig( "EmbedPlayer.ForceNativeComponent") === "" )
+			) {
+			$( videoPlayer ).unbind( 'webkitendfullscreen' ).bind( 'webkitendfullscreen', function(){
+				//webkitendfullscreen causes similar behviour as pause so trigger the event
+				$( _this.embedPlayer ).trigger( 'onpause' );
+				//Set to true so if clickthrough is enabled let clickthrough handler take care of play
+				//If clickthrough is not set at all then let this event binding take care of the play sequence
+				_this.clickedBumper = true;
+
+				var $clickTarget = (mw.isTouchDevice()) ? $(_this.embedPlayer) : _this.embedPlayer.getVideoHolder();
+				var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'click';
+				setTimeout( function(){
+					$clickTarget.bind( clickEventName + _this.adClickPostFix, function(e) {
+						if (_this.clickedBumper) {
+							e.stopPropagation();
+							_this.getVideoElement().play();
+							$( _this.embedPlayer ).trigger( "onPlayerStateChange", ["play"] );
+							$( _this.embedPlayer ).trigger( "onResumeAdPlayback" );
+							_this.embedPlayer.restoreComponentsHover();
+							_this.embedPlayer.disablePlayControls();
+						}
+						return false;
+					});
+				}, 100);
 			});
 		}
 
@@ -1189,6 +1212,13 @@ mw.KAdPlayer.prototype = {
 				};
 				if (isJs){
 					_this.addAdBindings( environmentVars.videoSlot, adSlot, adConf );
+				}else{
+					// add support for volume control over KDP during Flash ad playback
+					$( _this.embedPlayer ).bind('volumeChanged' + _this.trackingBindPostfix, function( e, changeValue ){
+						if (typeof VPAIDObj.playerElement.sendNotification === "function"){
+							VPAIDObj.playerElement.sendNotification( 'changeVolume', changeValue );
+						}
+					});
 				}
 				_this.embedPlayer.hideSpinner();
 			},'AdImpression');
