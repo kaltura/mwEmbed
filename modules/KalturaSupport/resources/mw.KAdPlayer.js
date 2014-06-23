@@ -394,7 +394,7 @@ mw.KAdPlayer.prototype = {
 			var $clickTarget = (mw.isTouchDevice()) ? $(embedPlayer) : embedPlayer.getVideoHolder();
 			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'click';
 			setTimeout( function(){
-				$clickTarget.bind( clickEventName + _this.adClickPostFix, function(e){
+				$clickTarget.unbind(clickEventName + _this.adClickPostFix).bind( clickEventName + _this.adClickPostFix, function(e){
 					if ( adSlot.videoClickTracking && adSlot.videoClickTracking.length > 0  ) {
 						mw.log("KAdPlayer:: sendBeacon to: " + adSlot.videoClickTracking[0] );
 						for (var i=0; i < adSlot.videoClickTracking.length ; i++){
