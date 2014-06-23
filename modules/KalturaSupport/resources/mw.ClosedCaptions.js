@@ -54,10 +54,6 @@
 						_this.buildMenu();
 					});
 				});
-				this.bind( 'onChangeMedia', function(){
-					_this.setConfig('displayCaptions', false);
-					_this.getPlayer().setCookie( _this.cookieName, 'None' );
-				});
 				this.bind( 'timeupdate', function(){
 					if( _this.getConfig('displayCaptions') === true && _this.selectedSource ){
 						_this.monitor();
@@ -594,9 +590,14 @@
 				this.getMenu().addItem({
 					'label': gM('mwe-timedtext-no-subtitles')
 				});
+				// hide old timed captions text
+				this.hideCaptions();
+
 				return this.getMenu();
 			} else {
 				this.getBtn().show();
+				// show new timed captions text if exists
+				this.showCaptions();
 			}
 
 			// Add Off item
