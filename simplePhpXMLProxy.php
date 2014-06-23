@@ -177,7 +177,7 @@ $enable_native   = false;
 $valid_url_regex = '/.*/';
 
 $enable_fullHeaders = true;
-$contentType_regex = '/(text|application)\/(xml|x-srt|html|plain)/';
+$contentType_regex = '/(text|application)\/(xml|x-srt|html|plain|x-pascal)/';
 $validateXML = false;
 $encodeCDATASections = true;
 $proxyCookies = true;
