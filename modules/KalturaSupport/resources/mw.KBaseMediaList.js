@@ -78,7 +78,7 @@
 				layout: this.getLayout()
 			}
 		},
-
+/*
 		getListContainer: function(){
 			// remove any existing k-chapters-container for this player
 			$('.k-player-' + this.getPlayer().id + '.k-chapters-container').remove();
@@ -138,7 +138,7 @@
 			}
 			return $mediaListContainer;
 		},
-
+*/
 		//Media Item
 		setMediaList: function(items){
 			if (this.dataIntialized)
@@ -161,8 +161,16 @@
 			});
 
 			if (this.getConfig('containerPosition')){
-				this.getListContainer();
-				_this.$mediaListContainer.append(_this.getTemplateHTML( {meta: _this.getMetaData(), mediaList: _this.getTemplateData()} ));
+				this.getMedialistContainer();
+				//var medialistDiv = $('<div class="medialistContainer"></div>');
+				var medialistSpan = _this.getTemplateHTML( {meta: _this.getMetaData(), mediaList: _this.getTemplateData()} );
+				$(medialistSpan).addClass("medialistContainer k-chapters-container");
+				if (this.getConfig('containerPosition') == 'top'){
+					_this.$mediaListContainer.prepend(medialistSpan);
+				}else{
+					_this.$mediaListContainer.append(medialistSpan);
+				}
+				_this.setMedialistContainerSize();
 			}else{
 				_this.getComponent().append(
 					_this.getTemplateHTML( {meta: _this.getMetaData(), mediaList: _this.getTemplateData()})

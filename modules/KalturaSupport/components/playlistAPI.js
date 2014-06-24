@@ -10,8 +10,9 @@
 			'kpl0Url': null,
 			'kpl0Id': null,
 			'includeInLayout': null,
-			'parent': 'sideBarContainer',
+			'parent': null,//'sideBarContainer',
 			'mediaItemWidth': 290,
+			'defaultPlaylistHeight': 290,
 			'titleLimit': 30,
 			'descriptionLimit': 60,
 			'thumbnailWidth' : 50,
@@ -20,7 +21,7 @@
 			'includeItemNumberPattern': false,
 			'includeMediaItemDuration': true,
 			'loop': false,
-			'containerPosition':  null//'right'
+			'containerPosition':  'top'
 		},
 
 		// flag to store the current loading entry
@@ -76,6 +77,36 @@
 			}
 		},
 
+		getMedialistContainer: function(){
+			this.$mediaListContainer =  $(".playlistInterface");
+
+			// resize the video to make place for the playlist according to its position (left, top, right, bottom)
+			if (this.getConfig('containerPosition') == 'right' || this.getConfig('containerPosition') == 'left'){
+				$(".videoHolder, .mwPlayerContainer").css("width", this.$mediaListContainer.width() - this.getConfig("mediaItemWidth") +"px");
+			}
+			if (this.getConfig('containerPosition') == 'left'){
+				$(".mwPlayerContainer").css({"margin-left": this.getConfig("mediaItemWidth") +"px", "float": "right"});
+			}
+			if (this.getConfig('containerPosition') == 'top' || this.getConfig('containerPosition') == 'bottom'){
+				$(".videoHolder, .mwPlayerContainer").css("height", this.$mediaListContainer.height() - this.getConfig("defaultPlaylistHeight") +"px");
+			}
+			return this.$mediaListContainer;
+		},
+
+		setMedialistContainerSize: function(){
+			// resize the video to make place for the playlist according to its position (left, top, right, bottom)
+			if (this.getConfig('containerPosition') == 'right' || this.getConfig('containerPosition') == 'left'){
+				$(".medialistContainer").width(this.getConfig("mediaItemWidth"));
+				$(".medialistContainer").height("100%");
+				$(".medialistContainer").css("position","absolute");
+			}
+			if (this.getConfig('containerPosition') == 'right'){
+				$(".medialistContainer").css("float","right");
+				$(".mwPlayerContainer").css("float","left");
+			}
+			return this.$mediaListContainer;
+		},
+
 		playMedia: function(clipIndex){
 			var embedPlayer = this.embedPlayer;
 
@@ -106,7 +137,7 @@
 			// Check if entry id already matches ( and is loaded )
 			if( embedPlayer.kentryid == id ){
 				if( this.loadingEntry ){
-					mw.log("Error: PlaylistHandlerKaltura is loading Entry, possible double playClip request");
+					mw.log("Error: PlaylistAPI is loading Entry, possible double playClip request");
 				}else {
 					embedPlayer.play();
 				}
