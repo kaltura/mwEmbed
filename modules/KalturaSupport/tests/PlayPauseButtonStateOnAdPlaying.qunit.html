@@ -26,7 +26,7 @@
 					
 				kalturaQunitWaitForPlayer(function(){
 				// Listen for ad start
-					kdp.addJsListener( 'adStart', 'onAdStart' );
+					kdp.addJsListener('adStart', 'onAdStart');
 				});
 			});
 
@@ -36,8 +36,9 @@
 			
 				start();
 
-				kdp.addJsListener( 'adClick', 'onAdClick' );
+				kdp.addJsListener('adClick', 'onAdClick');
 				kdp.addJsListener('playerPlayed', 'onPlayerPlayed');
+				kdp.addJsListener('onEndedDone', 'onEndedDone');
 			});
 		}
 
@@ -55,7 +56,7 @@
 			
 				start();
 
-				kdp.removeJsListener( 'playerPlayed', 'onPlayerPlayed' );
+				kdp.removeJsListener('playerPlayed', 'onPlayerPlayed');
 				kdp.addJsListener('doPlay', 'onDoPlay');
 				kdp.addJsListener('doPause', 'onDoPause');
 			});
@@ -72,6 +73,17 @@
 		window[ 'onDoPause' ] = function(){
 			asyncTest( "do pause, playPause button is on play icon", function(){
 				equal("Pause clip", getPlayerBtn().title);
+			
+				start();
+			});
+		}
+
+		window[ 'onEndedDone' ] = function(){
+			kdp.removeJsListener('doPlay', 'onDoPlay');
+			kdp.removeJsListener('doPause', 'onDoPause');
+
+			asyncTest( "Validate icon changed to replay when entry ended", function(){
+				equal("Replay", getPlayerBtn().title);
 			
 				start();
 			});
