@@ -6,7 +6,7 @@
 			align: "right",
 			parent: "controlsContainer",
 			displayImportance: "low",
-			downloadName:'video',
+			downloadName:"video",
 			showTooltip: true,
 		 	order: 53
 		},
