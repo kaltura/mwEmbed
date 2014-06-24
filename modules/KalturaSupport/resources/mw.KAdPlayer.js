@@ -455,6 +455,10 @@ mw.KAdPlayer.prototype = {
 			return false;
 		}
 
+		if( mw.getConfig( "EmbedPlayer.DisableSibling") ) {
+			return false;
+		}
+
 		if( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
 			return false;
 		}
