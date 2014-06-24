@@ -45,12 +45,12 @@
 				$( playerElement ).attr( "id", 'mwe_vid' + ( index ) );
 			}
 			// apply spinner to outer container ( video does not have size while loading in firefox )
-			var $spinerTarget = $( playerElement ).parents('.mwPlayerContainer')
+			var $spinerTarget = $( playerElement ).parents('.mwPlayerContainer');
 			if( !$spinerTarget.length ){
 				$spinerTarget = $( playerElement );
 			}
 			$spinerTarget.getAbsoluteOverlaySpinner()
-			.attr('id', 'loadingSpinner_' + $( playerElement ).attr('id') )
+			.attr('id', 'loadingSpinner_' + $( playerElement ).attr('id') );
 
 			// Allow other modules update the dependencies
 			$( mw ).trigger( 'EmbedPlayerUpdateDependencies',
@@ -69,7 +69,7 @@
 		}, function( e ){
 			$( playerSelect).each( function(index, playerElement){
 				// apply spinner to outer container ( video does not have size while loading in firefox )
-				var $spinerTarget = $( playerElement ).parents('.mwPlayerContainer')
+				var $spinerTarget = $( playerElement ).parents('.mwPlayerContainer');
 				if( !$spinerTarget.length ){
 					$spinerTarget = $( playerElement );
 				}
@@ -80,11 +80,14 @@
 					.find('#loadingSpinner_' + $( playerElement ).attr('id') )
 					.remove();
 
-				//Set error message and props
-				var errorObj = {
-					title: 'Player failed',
+				//Set default error message and props
+				var defaultErrorObj = {
+					title:  'Player failed',
 					message: 'The player or one of its dependencies have failed loading',
 					buttons: null,
+					noButtons: null,
+					callbackFunction:  null,
+					isExternal: true,
 					props: {
 						textColor: null,
 						titleTextColor: null,
@@ -94,8 +97,12 @@
 					}
 				};
 
+				var loaderObj = mw.getConfig( 'EmbedPlayer.loader' );
+				var loaderErrorObj = loaderObj && loaderObj.error || {};
+				var errorObj = $.extend({}, defaultErrorObj, loaderErrorObj);
+
 				//Create the error element
-				var errorElem = errorMessage(errorObj);
+				var errorElem = createErrorMessage(errorObj);
 				//Add error dialog to screen
 				$spinerTarget
 					.parent()
@@ -118,7 +125,7 @@
 			throw new Error( 'Error loading EmbedPlayer dependency set: ' + (e && e.message)  );
 		});
 
-		function errorMessage(alertObj){
+		function createErrorMessage(alertObj) {
 			var $container = $( '<div />' ).addClass( 'alert-container' );
 			var $title = $( '<div />' ).text( alertObj.title ).addClass( 'alert-title alert-text' );
 			if ( alertObj.props && alertObj.props.titleTextColor ) {
@@ -150,11 +157,20 @@
 				$container.addClass( 'alert-container-with-buttons' );
 			}
 
-			if( typeof alertObj.callbackFunction == 'function' ) {
+			var callback = function () {};
+
+			if ( typeof alertObj.callbackFunction == 'string' ) {
+				if ( alertObj.isExternal ) {
+					try {
+						callback = window.parent[ alertObj.callbackFunction ];
+					} catch ( e ) {
+						// could not call parent method
+					}
+				} else {
+					callback = window[ alertObj.callbackFunction ];
+				}
+			} else if ( typeof alertObj.callbackFunction == 'function' ) {
 				callback = alertObj.callbackFunction;
-			} else {
-				// don't throw an error; display alert callback is optional
-				callback = function() {};
 			}
 
 			$.each( $buttonSet, function(i) {
