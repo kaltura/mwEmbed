@@ -36,8 +36,16 @@ mw.KAdPlayer.prototype = {
 	init: function( embedPlayer ){
 		var _this = this;
 		this.embedPlayer = embedPlayer;
-		// bind to the doPlay event triggered by the playPauseBtn component when the user resume playback fron this component after clickthrough pause
-		$(this.embedPlayer).bind("doPlay", function(){
+
+		// bind to the doPlay event triggered by the playPauseBtn component when the user resume playback from this component after clickthrough pause
+		var eventName = "doPlay";
+
+		// bind AdSupport_StartAdPlayback event since the small play/ pause button in the control bar doesn't change the state when ad is played on mobile browser
+		if( !_this.isVideoSiblingEnabled() ) {
+			eventName = eventName + " AdSupport_StartAdPlayback";
+		}
+
+		$(this.embedPlayer).bind(eventName, function(){
 			$( embedPlayer).trigger("onPlayerStateChange",["play"]); // trigger playPauseBtn UI update
 			$( embedPlayer).trigger("onResumeAdPlayback");
 			_this.clickedBumper = false;
@@ -444,6 +452,10 @@ mw.KAdPlayer.prototype = {
 	isVideoSiblingEnabled: function( targetSource ){
 		// if we have a target source use that to check for "image" and disable sibling video playback
 		if( targetSource && targetSource.getMIMEType().indexOf('image/') != -1 ){
+			return false;
+		}
+
+		if( mw.getConfig( "DisableVideoSibling") ) {
 			return false;
 		}
 
