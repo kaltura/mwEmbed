@@ -45,12 +45,12 @@
 				$( playerElement ).attr( "id", 'mwe_vid' + ( index ) );
 			}
 			// apply spinner to outer container ( video does not have size while loading in firefox )
-			var $spinerTarget = $( playerElement ).parents('.mwPlayerContainer') 
+			var $spinerTarget = $( playerElement ).parents('.mwPlayerContainer');
 			if( !$spinerTarget.length ){
 				$spinerTarget = $( playerElement );
 			}
 			$spinerTarget.getAbsoluteOverlaySpinner()
-			.attr('id', 'loadingSpinner_' + $( playerElement ).attr('id') )
+			.attr('id', 'loadingSpinner_' + $( playerElement ).attr('id') );
 
 			// Allow other modules update the dependencies
 			$( mw ).trigger( 'EmbedPlayerUpdateDependencies',
@@ -67,8 +67,142 @@
 			window.gM = mw.jqueryMsg.getMessageFunction( {} );
 			mw.processEmbedPlayers( playerSelect, readyCallback );
 		}, function( e ){
-			throw new Error( 'Error loading EmbedPlayer dependency set: ' + e.message  );
+			$( playerSelect).each( function(index, playerElement){
+				// apply spinner to outer container ( video does not have size while loading in firefox )
+				var $spinerTarget = $( playerElement ).parents('.mwPlayerContainer');
+				if( !$spinerTarget.length ){
+					$spinerTarget = $( playerElement );
+				}
+
+				//Remove spinner
+				$spinerTarget
+					.parent()
+					.find('#loadingSpinner_' + $( playerElement ).attr('id') )
+					.remove();
+
+				//Set default error message and props
+				var defaultErrorObj = {
+					title:  'Player failed',
+					message: 'The player or one of its dependencies have failed loading',
+					buttons: null,
+					noButtons: null,
+					callbackFunction:  null,
+					isExternal: true,
+					props: {
+						textColor: null,
+						titleTextColor: null,
+						buttonRowSpacing: null,
+						buttonHeight: null,
+						buttonSpacing: null
+					}
+				};
+
+				var loaderObj = mw.getConfig( 'EmbedPlayer.loader' );
+				var loaderErrorObj = loaderObj && loaderObj.error || {};
+				var errorObj = $.extend({}, defaultErrorObj, loaderErrorObj);
+
+				//Create the error element
+				var errorElem = createErrorMessage(errorObj);
+				//Add error dialog to screen
+				$spinerTarget
+					.parent()
+					.append($("<div />" )
+						.attr('id', 'errorMessage_' + $( playerElement ).attr('id') )
+						.css({
+							'visibility': 'visible',
+							'position': 'absolute',
+							'left': '0px',
+							'top': '0px',
+							'width': '100%',
+							'height': '100%',
+							'text-align': 'center',
+							'z-index': '1000'
+						})
+						.append(errorElem)
+				);
+
+			});
+			throw new Error( 'Error loading EmbedPlayer dependency set: ' + (e && e.message)  );
 		});
+
+		function createErrorMessage(alertObj) {
+			var $container = $( '<div />' ).addClass( 'alert-container' );
+			var $title = $( '<div />' ).text( alertObj.title ).addClass( 'alert-title alert-text' );
+			if ( alertObj.props && alertObj.props.titleTextColor ) {
+				$title.removeClass( 'alert-text' );
+				$title.css( 'color', mw.getHexColor( alertObj.props.titleTextColor ) );
+			}
+			var $message = $( '<div />' ).html( alertObj.message ).addClass( 'alert-message alert-text' );
+			if ( alertObj.isError ) {
+				$message.addClass( 'error' );
+			}
+			if ( alertObj.props && alertObj.props.textColor ) {
+				$message.removeClass( 'alert-text' );
+				$message.css( 'color', mw.getHexColor( alertObj.props.textColor ) );
+			}
+			var $buttonsContainer = $( '<div />' ).addClass( 'alert-buttons-container' );
+			if ( alertObj.props && alertObj.props.buttonRowSpacing ) {
+				$buttonsContainer.css( 'margin-top', alertObj.props.buttonRowSpacing );
+			}
+			var $buttonSet = alertObj.buttons || [];
+
+			// If no button was passed display just OK button
+			var buttonsNum = $buttonSet.length;
+			if ( buttonsNum == 0 && !alertObj.noButtons ) {
+				$buttonSet = ["OK"];
+				buttonsNum++;
+			}
+
+			if ( buttonsNum > 0 ) {
+				$container.addClass( 'alert-container-with-buttons' );
+			}
+
+			var callback = function () {};
+
+			if ( typeof alertObj.callbackFunction == 'string' ) {
+				if ( alertObj.isExternal ) {
+					try {
+						callback = window.parent[ alertObj.callbackFunction ];
+					} catch ( e ) {
+						// could not call parent method
+					}
+				} else {
+					callback = window[ alertObj.callbackFunction ];
+				}
+			} else if ( typeof alertObj.callbackFunction == 'function' ) {
+				callback = alertObj.callbackFunction;
+			}
+
+			$.each( $buttonSet, function(i) {
+				var label = this.toString();
+				var $currentButton = $( '<button />' )
+					.addClass( 'alert-button' )
+					.text( label )
+					.click( function( eventObject ) {
+						callback( eventObject );
+						closeErrorMessage( alertObj.keepOverlay );
+					} );
+				if ( alertObj.props && alertObj.props.buttonHeight ) {
+					$currentButton.css( 'height', alertObj.props.buttonHeight );
+				}
+				// Apply buttons spacing only when more than one is present
+				if (buttonsNum > 1) {
+					if (i < buttonsNum-1) {
+						if ( alertObj.props && alertObj.props.buttonSpacing ) {
+							$currentButton.css( 'margin-right', alertObj.props.buttonSpacing );
+						}
+					}
+				}
+				$buttonsContainer.append( $currentButton );
+			} );
+			return $container.append( $title, $message, $buttonsContainer );
+		}
+		function closeErrorMessage( keepOverlay ) {
+			var $alert = $(".alert-container");
+			mw.log( 'closeAlert' );
+			$alert.remove();
+			return false; // onclick action return false;
+		}
 	};
 
 
