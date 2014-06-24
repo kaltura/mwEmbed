@@ -82,7 +82,7 @@
 				}
 			});
 
-			if( this.getConfig('layout') == 'below' && this.getConfig('displayCaptions') === true){
+			if( this.getConfig('layout') == 'below'){
 				this.updateBelowVideoCaptionContainer();
 			}
 		},
@@ -484,6 +484,9 @@
 		updateBelowVideoCaptionContainer: function(){
 			var _this = this;
 			mw.log( "TimedText:: updateBelowVideoCaptionContainer" );
+			if (this.getConfig('displayCaptions') === false){
+				return;
+			}
 			// Append after video container
 			var $cc = _this.embedPlayer.getInterface().find('.captionContainer' );
 			if( !$cc.length ){
