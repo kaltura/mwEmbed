@@ -455,7 +455,7 @@ mw.KAdPlayer.prototype = {
 			return false;
 		}
 
-		if( mw.getConfig( "EmbedPlayer.DisableSibling") ) {
+		if( mw.getConfig( "DisableVideoSibling") ) {
 			return false;
 		}
 
