@@ -381,7 +381,11 @@ mw.DoubleClick.prototype = {
 			 false);
 
 		// 4. Make the request.
-		_this.adsLoader.requestAds( adsRequest );
+		try{
+			_this.adsLoader.requestAds( adsRequest );
+		}catch(e){
+			_this.onAdError( e );
+		}
 	},
 	isSiblingVideoAd: function(){
 		return ( this.getConfig('videoTagSiblingAd') && ! mw.isIOS() );
