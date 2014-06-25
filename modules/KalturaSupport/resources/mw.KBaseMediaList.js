@@ -16,7 +16,6 @@
 				'oneSecRotatorSlidesLimit': 61,
 				'twoSecRotatorSlidesLimit': 250,
 				'maxRotatorSlides': 125,
-				'overflow': false,
 				'layout': 'vertical'
 			});
 		},
@@ -322,6 +321,12 @@
 
 		mediaClicked: function(){
 			// should be implemented by component;
+		},
+
+		setSelectedMedia: function(mediaIndex){
+			var chapterBox = this.getConfig('parent') ? this.getComponent().find('.chapterBox') : this.$mediaListContainer.find('.chapterBox');
+			$(".chapterBox").removeClass( 'active');
+			$( chapterBox[mediaIndex] ).addClass( 'active');
 		},
 
 		getThumbSpriteOffset: function( thumbWidth, time ){

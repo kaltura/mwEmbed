@@ -21,14 +21,16 @@
 			'includeItemNumberPattern': false,
 			'includeMediaItemDuration': true,
 			'loop': false,
-			'containerPosition':  'top'
+			'overflow': true,
+			'selectedIndex': 0,
+			'containerPosition':  'right'
 		},
 
 		// flag to store the current loading entry
 		loadingEntry: null,
 		// Flag for disabling jumping between clips
-		enableClipSwitch: true,
-
+		//enableClipSwitch: true,
+		currentClipIndex: null,
 		playlistSet : [],
 
 		getConfig: function( key ){
@@ -75,6 +77,8 @@
 				item.width = this.getConfig( 'mediaItemWidth' );
 				item.durationDisplay = item.duration;
 			}
+			for (var j=itemsArr.length-1; j>=0; j--)
+				itemsArr.push(itemsArr[j]);
 		},
 
 		getMedialistContainer: function(){
@@ -104,10 +108,15 @@
 				$(".medialistContainer").css("float","right");
 				$(".mwPlayerContainer").css("float","left");
 			}
+			if (this.getConfig('containerPosition') == 'top' || this.getConfig('containerPosition') == 'bottom'){
+				$(".medialistContainer").height(this.getConfig("defaultPlaylistHeight"));
+				$(".medialistContainer").css("display","block");
+			}
 			return this.$mediaListContainer;
 		},
 
 		playMedia: function(clipIndex){
+			this.currentClipIndex = clipIndex; // save clip index for next / previous calls
 			var embedPlayer = this.embedPlayer;
 
 			var _this = this;
@@ -138,10 +147,10 @@
 			if( embedPlayer.kentryid == id ){
 				if( this.loadingEntry ){
 					mw.log("Error: PlaylistAPI is loading Entry, possible double playClip request");
+					return ;
 				}else {
 					embedPlayer.play();
 				}
-				return ;
 			}
 
 			// Update the loadingEntry flag:
@@ -170,110 +179,51 @@
 			embedPlayer.sendNotification( "changeMedia", {'entryId' : id, 'playlistCall': true} );
 
 			// Add playlist specific bindings:
-			//_this.addClipBindings();
+			_this.addClipBindings(clipIndex);
 
 			// Restore onDoneInterfaceFlag
 			embedPlayer.onDoneInterfaceFlag = true;
-		}
-/*
+		},
+
+		playNext: function(){
+			if (this.currentClipIndex != null && this.currentClipIndex < this.mediaList.length-1){
+				this.currentClipIndex++;
+				this.setSelectedMedia(this.currentClipIndex);
+				this.playMedia(this.currentClipIndex);
+			}
+		},
+
+		playPrevious: function(){
+			if (this.currentClipIndex != null && this.currentClipIndex > 0){
+				this.currentClipIndex--;
+				this.setSelectedMedia(this.currentClipIndex);
+				this.playMedia(this.currentClipIndex);
+			}
+		},
+
 		addClipBindings: function( clipIndex ){
 			var _this = this;
 			mw.log( "Playlist::addClipBindings" );
 
 			var embedPlayer = _this.embedPlayer;
-			// remove any old playlist bindings:
-			//$( embedPlayer ).unbind( this.bindPostfix );
-
-			// Once the player is ready add any custom bindings
-			//_this.sourceHandler.addEmbedPlayerBindings( embedPlayer );
-
-			// Add the seek forward / back buttons
-			//_this.addPlaylistSeekButtons();
-
-			// Add ad bindings
-			_this.addPlaylistAdBindings();
 
 			// Setup ondone playing binding to play next clip (if autoContinue is true )
-			if( _this.autoContinue == true ){
-				$( embedPlayer ).bind( 'postEnded' + _this.bindPostfix, function(event ){
+			if( _this.getConfig("autoContinue") == true ){
+				$( embedPlayer ).unbind( 'postEnded').bind( 'postEnded', function(event ){
 					mw.log("Playlist:: postEnded > on inx: " + clipIndex );
-					// Play next clip
-					if(  (clipIndex + 1) < _this.mediaList.length && (clipIndex + 1) <= parseInt( mw.getConfig( 'Playlist.MaxClips' ) ) ){
-						// Update the onDone action object to not run the base control done:
-						mw.log("Playlist:: postEnded > continue playlist set: onDoneInterfaceFlag false ");
-						embedPlayer.onDoneInterfaceFlag = false;
-						// update the player and play the next clip
-						_this.playMedia( clipIndex + 1, true );
-					} else {
-						mw.log("Playlist:: End of playlist, run normal end action" );
-						embedPlayer.triggerHelper( 'playlistDone' );
-						if( _this.loop ){
-							embedPlayer.onDoneInterfaceFlag = false;
-							_this.playClip(0);
-						} else {
-							// Update the onDone action object to not run the base control done:
-							embedPlayer.onDoneInterfaceFlag = true;
-						}
-					}
+					_this.playNext();
 				});
 			}
-			var uiSelector = '.playlist-set-container,.playlist-block-list,.video-list-wrapper,.playlist-scroll-buttons';
-			// fullscreen support
-			$( embedPlayer ).bind( 'onOpenFullScreen' + this.bindPostfix, function(){
-				// hide interface components ( these should really all be in their own div! )
-				$(uiSelector).hide();
-				// hide the playlist blocker:
-				_this.$target.find( '.playlist-block-list' ).hide();
-			});
-			$( embedPlayer ).bind( 'onCloseFullScreen' + this.bindPostfix, function(){
-				// restore the playlist blocker ( if present
-				_this.$target.find( '.playlist-block-list' ).show();
-
-				// only resize if the playlist has a ui:
-				if( !_this.includeInLayout ){
-					return ;
-				}
-
-				$(uiSelector).show();
-			});
-
-			// if in an iframe support update resize binding
-			$( embedPlayer ).bind( 'updateLayout' + this.bindPostfix, function(){
-				// don't do any updates if in fullscreen
-				// not displaying a player
-				// or there is no playlist ~layout~ to resize.
-				if( embedPlayer.layoutBuilder.isInFullScreen()
-					||
-					!embedPlayer.displayPlayer
-					||
-					!_this.sourceHandler.includeInLayout
-					){
-					return ;
-				}
-				// else do the update:
-				//_this.updatePlaylistLayout(); TODO: check if needed
-			});
 
 			$( embedPlayer ).bind( 'playlistPlayPrevious' + this.bindPostfix, function() {
-				_this.playPrevious(clipIndex);
+				_this.playPrevious();
 			});
 
 			$( embedPlayer ).bind( 'playlistPlayNext' + this.bindPostfix, function() {
-				_this.playNext(clipIndex);
+				_this.playNext();
 			});
-			// check for interface events and update playlist specific interface components:
-//			$( embedPlayer ).bind( 'onDisableInterfaceComponents' + this.bindPostfix, function( event, excludingComponents ){
-//				if ( !excludingComponents || ( $.inArray( 'playlistPrevNext', excludingComponents ) == -1 ) ) {
-//					_this.disablePrevNext();
-//				}
-//			});
-//			$( embedPlayer ).bind( 'onEnableInterfaceComponents' + this.bindPostfix, function(){
-//				_this.enablePrevNext();
-//			});
-			// Trigger playlistsListed when we get the data
-			$( embedPlayer ).trigger( 'playlistsListed' );
-		},
-
+		}
+/*
 		// add bindings for playlist playback ( disable playlist item selection during ad Playback )
 		addPlaylistAdBindings: function(){
 			var _this = this;
