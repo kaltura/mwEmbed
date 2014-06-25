@@ -36,8 +36,16 @@ mw.KAdPlayer.prototype = {
 	init: function( embedPlayer ){
 		var _this = this;
 		this.embedPlayer = embedPlayer;
-		// bind to the doPlay event triggered by the playPauseBtn component when the user resume playback fron this component after clickthrough pause
-		$(this.embedPlayer).bind("doPlay", function(){
+
+		// bind to the doPlay event triggered by the playPauseBtn component when the user resume playback from this component after clickthrough pause
+		var eventName = "doPlay";
+
+		// bind AdSupport_StartAdPlayback event since the small play/ pause button in the control bar doesn't change the state when ad is played on mobile browser
+		if( !_this.isVideoSiblingEnabled() ) {
+			eventName = eventName + " AdSupport_StartAdPlayback";
+		}
+
+		$(this.embedPlayer).bind(eventName, function(){
 			$( embedPlayer).trigger("onPlayerStateChange",["play"]); // trigger playPauseBtn UI update
 			$( embedPlayer).trigger("onResumeAdPlayback");
 			_this.clickedBumper = false;
@@ -111,6 +119,7 @@ mw.KAdPlayer.prototype = {
 				adSlot.currentlyDisplayed = false;
 				// give time for the end event to clear
 				setTimeout(function(){
+					_this.embedPlayer.layoutBuilder.addPlayerTouchBindings();
 					if( !hardStop && displayDoneCallback ){
 						displayDoneCallback();
 					}
@@ -197,7 +206,7 @@ mw.KAdPlayer.prototype = {
 		// Start monitoring for display duration end ( if not supplied we depend on videoFile end )
 		if( adSlot.displayDuration  ){
 			// Monitor time for display duration display utility function
-			var startTime = _this.getOriginalPlayerElement().currentTime;
+			var startTime = _this.embedPlayer.getPlayerElementTime();
 			this.monitorForDisplayDuration( adSlot, startTime, adSlot.displayDuration );
 		}
 
@@ -234,7 +243,7 @@ mw.KAdPlayer.prototype = {
 		// Local base video monitor function:
 		var vid = _this.getOriginalPlayerElement();
 		// Stop display of overlay if video playback is no longer active
-		if( typeof vid == 'undefined' || vid.currentTime - startTime > displayDuration ){
+		if( typeof vid == 'undefined' || _this.embedPlayer.getPlayerElementTime() - startTime > displayDuration ){
 			mw.log( "KAdPlayer::display:" + adSlot.type + " Playback done because vid does not exist or > displayDuration " + displayDuration );
 			adSlot.playbackDone();
 		} else {
@@ -393,7 +402,7 @@ mw.KAdPlayer.prototype = {
 			var $clickTarget = (mw.isTouchDevice()) ? $(embedPlayer) : embedPlayer.getVideoHolder();
 			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'click';
 			setTimeout( function(){
-				$clickTarget.bind( clickEventName + _this.adClickPostFix, function(e){
+				$clickTarget.unbind(clickEventName + _this.adClickPostFix).bind( clickEventName + _this.adClickPostFix, function(e){
 					if ( adSlot.videoClickTracking && adSlot.videoClickTracking.length > 0  ) {
 						mw.log("KAdPlayer:: sendBeacon to: " + adSlot.videoClickTracking[0] );
 						for (var i=0; i < adSlot.videoClickTracking.length ; i++){
@@ -443,6 +452,10 @@ mw.KAdPlayer.prototype = {
 	isVideoSiblingEnabled: function( targetSource ){
 		// if we have a target source use that to check for "image" and disable sibling video playback
 		if( targetSource && targetSource.getMIMEType().indexOf('image/') != -1 ){
+			return false;
+		}
+
+		if( mw.getConfig( "DisableVideoSibling") ) {
 			return false;
 		}
 
@@ -890,10 +903,32 @@ mw.KAdPlayer.prototype = {
 		});
 
 		// On done button tapped - iPhone
-		if( mw.isIphone() ) {
-			$( videoPlayer ).bind( 'webkitendfullscreen', function(){
-				$( videoPlayer ).unbind( 'webkitendfullscreen' );
-				_this.skipCurrent();
+		if( mw.isIphone() &&
+			( mw.getConfig( "EmbedPlayer.ForceNativeComponent") == null ||
+			  mw.getConfig( "EmbedPlayer.ForceNativeComponent") === "" )
+			) {
+			$( videoPlayer ).unbind( 'webkitendfullscreen' ).bind( 'webkitendfullscreen', function(){
+				//webkitendfullscreen causes similar behviour as pause so trigger the event
+				$( _this.embedPlayer ).trigger( 'onpause' );
+				//Set to true so if clickthrough is enabled let clickthrough handler take care of play
+				//If clickthrough is not set at all then let this event binding take care of the play sequence
+				_this.clickedBumper = true;
+
+				var $clickTarget = (mw.isTouchDevice()) ? $(_this.embedPlayer) : _this.embedPlayer.getVideoHolder();
+				var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'click';
+				setTimeout( function(){
+					$clickTarget.bind( clickEventName + _this.adClickPostFix, function(e) {
+						if (_this.clickedBumper) {
+							e.stopPropagation();
+							_this.getVideoElement().play();
+							$( _this.embedPlayer ).trigger( "onPlayerStateChange", ["play"] );
+							$( _this.embedPlayer ).trigger( "onResumeAdPlayback" );
+							_this.embedPlayer.restoreComponentsHover();
+							_this.embedPlayer.disablePlayControls();
+						}
+						return false;
+					});
+				}, 100);
 			});
 		}
 

@@ -54,10 +54,6 @@
 						_this.buildMenu();
 					});
 				});
-				this.bind( 'onChangeMedia', function(){
-					_this.setConfig('displayCaptions', false);
-					_this.getPlayer().setCookie( _this.cookieName, 'None' );
-				});
 				this.bind( 'timeupdate', function(){
 					if( _this.getConfig('displayCaptions') === true && _this.selectedSource ){
 						_this.monitor();
@@ -86,7 +82,7 @@
 				}
 			});
 
-			if( this.getConfig('layout') == 'below' ){
+			if( this.getConfig('layout') == 'below'){
 				this.updateBelowVideoCaptionContainer();
 			}
 		},
@@ -488,6 +484,9 @@
 		updateBelowVideoCaptionContainer: function(){
 			var _this = this;
 			mw.log( "TimedText:: updateBelowVideoCaptionContainer" );
+			if (this.getConfig('displayCaptions') === false){
+				return;
+			}
 			// Append after video container
 			var $cc = _this.embedPlayer.getInterface().find('.captionContainer' );
 			if( !$cc.length ){
@@ -594,7 +593,14 @@
 				this.getMenu().addItem({
 					'label': gM('mwe-timedtext-no-subtitles')
 				});
+				// hide old timed captions text
+				this.hideCaptions();
+
 				return this.getMenu();
+			} else {
+				this.getBtn().show();
+				// show new timed captions text if exists
+				this.showCaptions();
 			}
 
 			// Add Off item

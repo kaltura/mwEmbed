@@ -165,9 +165,13 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 	},
 	enableTooltip: function(){
 		if( this.getConfig('showTooltip') && this.getBtn().length ){
+			var parentContainer = this.getConfig('parent');
 			// enable tooltip for each found button
 			this.getBtn().each(function(){
 				$(this).attr('data-show-tooltip', true);
+				if (parentContainer == "topBarContainer"){
+					$(this).addClass('tooltipBelow');
+				}
 			});
 		}else{
 			this.getBtn().each(function(){
