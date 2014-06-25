@@ -28,8 +28,9 @@
 
 		// flag to store the current loading entry
 		loadingEntry: null,
-		// Flag for disabling jumping between clips
-		//enableClipSwitch: true,
+		// Flag for setting initial entry in first load
+		firstLoad: true,
+
 		currentClipIndex: null,
 		playlistSet : [],
 
@@ -47,12 +48,18 @@
 				if (_this.playlistSet.length > 0){
 					_this.prepareData(_this.playlistSet[0].items);
 					_this.setMediaList(_this.playlistSet[0].items);
+					// support initial selectedIndex
+					if (_this.firstLoad){
+						_this.setSelectedMedia(_this.getConfig('selectedIndex'));
+						_this.playMedia( _this.getConfig('selectedIndex'), false);
+						_this.firstLoad = false;
+					}
 				}
 			});
 		},
 
 		mediaClicked: function(index){
-			this.playMedia( index);
+			this.playMedia( index, true);
 		},
 
 		loadPlaylists: function(){
@@ -115,7 +122,8 @@
 			return this.$mediaListContainer;
 		},
 
-		playMedia: function(clipIndex){
+		playMedia: function(clipIndex, autoplay){
+			var autoPlay = (autoplay === true);
 			this.currentClipIndex = clipIndex; // save clip index for next / previous calls
 			var embedPlayer = this.embedPlayer;
 
@@ -149,7 +157,9 @@
 					mw.log("Error: PlaylistAPI is loading Entry, possible double playClip request");
 					return ;
 				}else {
-					embedPlayer.play();
+					if (autoPlay){
+						embedPlayer.play();
+					}
 				}
 			}
 
@@ -164,16 +174,18 @@
 				_this.loadingEntry = false;
 				// restore autoplay state:
 				embedPlayer.autoplay = originalAutoPlayState;
-				embedPlayer.play();
+				if (autoPlay){
+					embedPlayer.play();
+				}
 			});
 			mw.log("PlaylistHandlerKaltura::playClip::changeMedia entryId: " + id);
 
 			// Make sure its in a playing state when change media is called if we are autoContinuing:
-			if( this.autoContinue && !embedPlayer.firstPlay ){
+			if( this.getConfig('autoContinue') && !embedPlayer.firstPlay ){
 				embedPlayer.stopped = embedPlayer.paused = false;
 			}
 			// set autoplay to true to continue to playback:
-			embedPlayer.autoplay = true;
+			embedPlayer.autoplay = autoPlay;
 
 			// Use internal changeMedia call to issue all relevant events
 			embedPlayer.sendNotification( "changeMedia", {'entryId' : id, 'playlistCall': true} );
@@ -189,7 +201,7 @@
 			if (this.currentClipIndex != null && this.currentClipIndex < this.mediaList.length-1){
 				this.currentClipIndex++;
 				this.setSelectedMedia(this.currentClipIndex);
-				this.playMedia(this.currentClipIndex);
+				this.playMedia(this.currentClipIndex, true);
 			}
 		},
 
@@ -197,7 +209,7 @@
 			if (this.currentClipIndex != null && this.currentClipIndex > 0){
 				this.currentClipIndex--;
 				this.setSelectedMedia(this.currentClipIndex);
-				this.playMedia(this.currentClipIndex);
+				this.playMedia(this.currentClipIndex, true);
 			}
 		},
 
@@ -206,7 +218,6 @@
 			mw.log( "Playlist::addClipBindings" );
 
 			var embedPlayer = _this.embedPlayer;
-
 			// Setup ondone playing binding to play next clip (if autoContinue is true )
 			if( _this.getConfig("autoContinue") == true ){
 				$( embedPlayer ).unbind( 'postEnded').bind( 'postEnded', function(event ){
