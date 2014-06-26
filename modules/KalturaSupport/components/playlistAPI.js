@@ -50,6 +50,7 @@
 			$( this.embedPlayer ).unbind( this.bindPostFix );
 			this.bind( 'playerReady', function ( e, newState ) {
 				if (_this.playlistSet.length > 0){
+					_this.embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : _this.playlistSet[0]} ); // for backward compatibility
 					_this.prepareData(_this.playlistSet[0].items);
 					_this.setMediaList(_this.playlistSet[0].items);
 					// support initial selectedIndex
