@@ -14,7 +14,7 @@
 			'mediaItemWidth': 290,
 			'defaultPlaylistHeight': 290,
 			'titleLimit': 30,
-			'descriptionLimit': 100,
+			'descriptionLimit': 80,
 			'thumbnailWidth' : 62,
 			'horizontalMediaItemWidth': 290,
 			'includeThumbnail': true,
@@ -23,7 +23,7 @@
 			'loop': false,
 			'overflow': true,
 			'selectedIndex': 0,
-			'containerPosition':  'right'
+			'containerPosition':  'left'
 		},
 
 		// flag to store the current loading entry
@@ -33,6 +33,8 @@
 
 		currentClipIndex: null,
 		playlistSet : [],
+
+		videoWidth: null, // used to sdave the video width when exiting to full screen and returning
 
 		getConfig: function( key ){
 			return this.embedPlayer.getKalturaConfig( 'playlistAPI', key );
@@ -94,6 +96,7 @@
 			// resize the video to make place for the playlist according to its position (left, top, right, bottom)
 			if (this.getConfig('containerPosition') == 'right' || this.getConfig('containerPosition') == 'left'){
 				$(".videoHolder, .mwPlayerContainer").css("width", this.$mediaListContainer.width() - this.getConfig("mediaItemWidth") +"px");
+				this.videoWidth = (this.$mediaListContainer.width() - this.getConfig("mediaItemWidth"));
 			}
 			if (this.getConfig('containerPosition') == 'left'){
 				$(".mwPlayerContainer").css({"margin-left": this.getConfig("mediaItemWidth") +"px", "float": "right"});
@@ -225,6 +228,24 @@
 					_this.playNext();
 				});
 			}
+
+			$( this.embedPlayer ).unbind('onOpenFullScreen').bind('onOpenFullScreen', function() {
+				if (_this.getConfig('containerPosition') == 'right' || _this.getConfig('containerPosition') == 'left'){
+					if (_this.getConfig('containerPosition') == 'left'){
+						$(".mwPlayerContainer").css("margin-left",0);
+					}
+					$(".videoHolder, .mwPlayerContainer").width("100%");
+				}
+			});
+
+			$( this.embedPlayer ).unbind('onCloseFullScreen').bind('onCloseFullScreen', function() {
+				if (_this.getConfig('containerPosition') == 'right' || _this.getConfig('containerPosition') == 'left'){
+					if (_this.getConfig('containerPosition') == 'left'){
+						$(".mwPlayerContainer").css("margin-left",_this.getConfig("mediaItemWidth")+"px");
+					}
+					$(".videoHolder, .mwPlayerContainer").width(_this.videoWidth);
+				}
+			});
 
 			$( embedPlayer ).bind( 'playlistPlayPrevious' + this.bindPostfix, function() {
 				_this.playPrevious();
