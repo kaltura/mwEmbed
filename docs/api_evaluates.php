@@ -31,13 +31,13 @@
             'desc' => 'Metadata object for the current entry',
         ),
         'mediaProxy.entry' => array(
-            'desc' => 'The currently playing entry object (holds entry properties)',
+            'desc' => 'Returns all entry properties for the currently active entry.',
         ),
         'mediaProxy.isLive' => array(
-            'desc' => 'A flag specifying if the current playback is live',
+            'desc' => 'Returns true, if the the current entries live broadcast is active.',
         ),
         'mediaProxy.isOffline' => array(
-            'desc' => 'A flag specifying if the current live broadcast is offline',
+            'desc' => 'Returns true if the current entries live broadcast is offline.',
         ),
         'mediaProxy.kalturaMediaFlavorArray' => array(
             'desc' => 'An array holding all available flavours for the current media',
