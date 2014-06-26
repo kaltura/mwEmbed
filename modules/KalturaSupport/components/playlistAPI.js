@@ -12,7 +12,7 @@
 			'includeInLayout': null,
 			'parent': null,//'sideBarContainer',
 			'mediaItemWidth': 290,
-			'defaultPlaylistHeight': 290,
+			'defaultPlaylistHeight': 190,
 			'titleLimit': 30,
 			'descriptionLimit': 80,
 			'thumbnailWidth' : 62,
@@ -46,16 +46,61 @@
 		},
 		addBindings: function() {
 			var _this = this;
+
+			$( this.embedPlayer ).unbind( this.bindPostFix );
 			this.bind( 'playerReady', function ( e, newState ) {
 				if (_this.playlistSet.length > 0){
 					_this.prepareData(_this.playlistSet[0].items);
 					_this.setMediaList(_this.playlistSet[0].items);
 					// support initial selectedIndex
 					if (_this.firstLoad){
-						_this.setSelectedMedia(_this.getConfig('selectedIndex'));
 						_this.playMedia( _this.getConfig('selectedIndex'), false);
 						_this.firstLoad = false;
 					}
+				}
+			});
+
+			$( this.embedPlayer ).bind('onOpenFullScreen', function() {
+				if (_this.getConfig('containerPosition') == 'right' || _this.getConfig('containerPosition') == 'left'){
+					if (_this.getConfig('containerPosition') == 'left'){
+						$(".mwPlayerContainer").css("margin-left",0);
+					}
+					$(".videoHolder, .mwPlayerContainer").width("100%");
+				}
+			});
+
+			$( this.embedPlayer ).bind('onCloseFullScreen', function() {
+				if (_this.getConfig('containerPosition') == 'right' || _this.getConfig('containerPosition') == 'left'){
+					if (_this.getConfig('containerPosition') == 'left'){
+						$(".mwPlayerContainer").css("margin-left",_this.getConfig("mediaItemWidth")+"px");
+					}
+					$(".videoHolder, .mwPlayerContainer").width(_this.videoWidth);
+				}
+			});
+
+			$( this.embedPlayer ).bind( 'Kaltura_SetKDPAttribute' + this.bindPostFix, function( event, componentName, property, value ){
+				mw.log("PlaylistAPI::Kaltura_SetKDPAttribute:" + property + ' value:' + value);
+				switch( componentName ){
+					case "playlistAPI.dataProvider":
+					case "playlistAPI":
+						if ( property == "selectedIndex"){
+							_this.playMedia(value, true);
+						}
+						break;
+					case 'tabBar':
+						//_this.switchTab( property, value )
+						break;
+				}
+			});
+
+			$( this.embedPlayer ).bind( 'Kaltura_SendNotification'+ this.bindPostFix , function( event, notificationName, notificationData){
+				switch( notificationName ){
+					case 'playlistPlayNext':
+						_this.playNext();
+						break;
+					case 'playlistPlayPrevious':
+						_this.playPrevious();
+						break;
 				}
 			});
 		},
@@ -126,6 +171,8 @@
 		},
 
 		playMedia: function(clipIndex, autoplay){
+			this.setSelectedMedia(clipIndex);
+			this.setConfig("selectedIndex", clipIndex);
 			var autoPlay = (autoplay === true);
 			this.currentClipIndex = clipIndex; // save clip index for next / previous calls
 			var embedPlayer = this.embedPlayer;
@@ -228,33 +275,37 @@
 					_this.playNext();
 				});
 			}
-
-			$( this.embedPlayer ).unbind('onOpenFullScreen').bind('onOpenFullScreen', function() {
-				if (_this.getConfig('containerPosition') == 'right' || _this.getConfig('containerPosition') == 'left'){
-					if (_this.getConfig('containerPosition') == 'left'){
-						$(".mwPlayerContainer").css("margin-left",0);
-					}
-					$(".videoHolder, .mwPlayerContainer").width("100%");
-				}
-			});
-
-			$( this.embedPlayer ).unbind('onCloseFullScreen').bind('onCloseFullScreen', function() {
-				if (_this.getConfig('containerPosition') == 'right' || _this.getConfig('containerPosition') == 'left'){
-					if (_this.getConfig('containerPosition') == 'left'){
-						$(".mwPlayerContainer").css("margin-left",_this.getConfig("mediaItemWidth")+"px");
-					}
-					$(".videoHolder, .mwPlayerContainer").width(_this.videoWidth);
-				}
-			});
-
-			$( embedPlayer ).bind( 'playlistPlayPrevious' + this.bindPostfix, function() {
-				_this.playPrevious();
-			});
-
-			$( embedPlayer ).bind( 'playlistPlayNext' + this.bindPostfix, function() {
-				_this.playNext();
-			});
 		}
+/*
+		addEmbedPlayerBindings: function( embedPlayer ){
+			var _this = this;
+			mw.log( 'PlaylistHandlerKaltura:: addEmbedPlayerBindings');
+			// remove any old bindings;
+			$( embedPlayer ).unbind( this.bindPostFix );
+			// add the binding:
+			$( embedPlayer ).bind( 'Kaltura_SetKDPAttribute' + this.bindPostFix, function( event, componentName, property, value ){
+				mw.log("PlaylistHandlerKaltura::Kaltura_SetKDPAttribute:" + property + ' value:' + value);
+				switch( componentName ){
+					case "playlistAPI.dataProvider":
+						_this.doDataProviderAction( property, value );
+						break;
+					case 'tabBar':
+						_this.switchTab( property, value )
+						break;
+				}
+			});
+
+			$( embedPlayer ).bind( 'Kaltura_SendNotification'+ this.bindPostFix , function( event, notificationName, notificationData){
+				switch( notificationName ){
+					case 'playlistPlayNext':
+					case 'playlistPlayPrevious':
+						mw.log( "PlaylistHandlerKaltura:: trigger: " + notificationName );
+						$( embedPlayer ).trigger( notificationName );
+						break;
+				}
+			});
+		},		*/
+
 /*
 		// add bindings for playlist playback ( disable playlist item selection during ad Playback )
 		addPlaylistAdBindings: function(){
