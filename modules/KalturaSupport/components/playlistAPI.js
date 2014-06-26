@@ -30,6 +30,8 @@
 		loadingEntry: null,
 		// Flag for setting initial entry in first load
 		firstLoad: true,
+		// kClient for API calls
+		kClient: null,
 
 		currentClipIndex: null,
 		playlistSet : [],
@@ -56,10 +58,7 @@
 					}
 					_this.selectPlaylist(playlistIndex);
 				}
-				if (_this.playlistSet.length > 1){
-					_this.setMultiplePlayLists(); // support multiple play lists
-				}
-
+				_this.unbind( 'playerReady');
 			});
 
 			$( this.embedPlayer ).bind('onOpenFullScreen', function() {
@@ -175,6 +174,7 @@
 		playMedia: function(clipIndex, autoplay){
 			this.setSelectedMedia(clipIndex);
 			this.setConfig("selectedIndex", clipIndex);
+			this.embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')} ); // for backward compatibility
 			var autoPlay = (autoplay === true);
 			this.currentClipIndex = clipIndex; // save clip index for next / previous calls
 			var embedPlayer = this.embedPlayer;
@@ -287,21 +287,54 @@
 					combo.append('<option value="' + i +'">' + el.name + '</option>');
 				});
 				$(".medialistContainer").prepend(combo).prepend("<span class='playListSelector'>" + gM( 'mwe-embedplayer-select_playlist' ) + "</span>");
-				combo.on("change",function(){
+				//setTimeout(function(){$("#playlistSelect").val(1);},0);
+				combo.on("change",function(e){
 					_this.firstLoad = true;
-					_this.selectPlaylist( this.value );
+					_this.setConfig("selectedIndex", 0);
+					_this.loadPlaylistFromAPI(this.value);
+
 				});
 			}
 		},
 
+		loadPlaylistFromAPI: function(index){
+			var _this = this;
+			if (this.playlistSet[index].items.length > 0){
+				// playlist data is already in memory
+				this.selectPlaylist( index );
+			}else{
+				// load the playlist from API
+				var playlistRequest = {
+					'service' : 'playlist',
+					'action' : 'execute',
+					'id': this.playlistSet[index].id
+				};
+				this.getKClient().doRequest( playlistRequest, function( playlistDataResult ) {
+					_this.playlistSet[index].items = playlistDataResult;
+					_this.selectPlaylist( index );
+				});
+			}
+		},
+
+		getKClient: function(){
+			if( !this.kClient ){
+				this.kClient = mw.kApiGetPartnerClient( this.embedPlayer.kwidgetid );
+			}
+			return this.kClient;
+		},
+
 		selectPlaylist: function(playlistIndex){
-			this.embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : this.playlistSet} ); // for backward compatibility
+			$(".medialistContainer").empty();
+			this.embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')} ); // for backward compatibility
 			this.prepareData(this.playlistSet[playlistIndex].items);
 			this.setMediaList(this.playlistSet[playlistIndex].items);
 			// support initial selectedIndex
 			if (this.firstLoad){
 				this.playMedia( this.getConfig('selectedIndex'), false);
 				this.firstLoad = false;
+			}
+			if (this.playlistSet.length > 1){
+				this.setMultiplePlayLists(); // support multiple play lists
 			}
 		}
 

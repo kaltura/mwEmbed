@@ -140,8 +140,6 @@
 */
 		//Media Item
 		setMediaList: function(items){
-			if (this.dataIntialized)
-				return;
 			var _this = this;
 			this.mediaList = [];
 			$.each(items, function(i, item){
