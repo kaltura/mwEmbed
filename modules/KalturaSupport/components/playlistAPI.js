@@ -50,15 +50,16 @@
 			$( this.embedPlayer ).unbind( this.bindPostFix );
 			this.bind( 'playerReady', function ( e, newState ) {
 				if (_this.playlistSet.length > 0){
-					_this.embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : _this.playlistSet[0]} ); // for backward compatibility
-					_this.prepareData(_this.playlistSet[0].items);
-					_this.setMediaList(_this.playlistSet[0].items);
-					// support initial selectedIndex
-					if (_this.firstLoad){
-						_this.playMedia( _this.getConfig('selectedIndex'), false);
-						_this.firstLoad = false;
+					var playlistIndex = 0;
+					if ($("#playlistSelect").length > 0){
+						playlistIndex = $("#playlistSelect").val();
 					}
+					_this.selectPlaylist(playlistIndex);
 				}
+				if (_this.playlistSet.length > 1){
+					_this.setMultiplePlayLists(); // support multiple play lists
+				}
+
 			});
 
 			$( this.embedPlayer ).bind('onOpenFullScreen', function() {
@@ -276,36 +277,33 @@
 					_this.playNext();
 				});
 			}
-		}
-/*
-		addEmbedPlayerBindings: function( embedPlayer ){
-			var _this = this;
-			mw.log( 'PlaylistHandlerKaltura:: addEmbedPlayerBindings');
-			// remove any old bindings;
-			$( embedPlayer ).unbind( this.bindPostFix );
-			// add the binding:
-			$( embedPlayer ).bind( 'Kaltura_SetKDPAttribute' + this.bindPostFix, function( event, componentName, property, value ){
-				mw.log("PlaylistHandlerKaltura::Kaltura_SetKDPAttribute:" + property + ' value:' + value);
-				switch( componentName ){
-					case "playlistAPI.dataProvider":
-						_this.doDataProviderAction( property, value );
-						break;
-					case 'tabBar':
-						_this.switchTab( property, value )
-						break;
-				}
-			});
+		},
 
-			$( embedPlayer ).bind( 'Kaltura_SendNotification'+ this.bindPostFix , function( event, notificationName, notificationData){
-				switch( notificationName ){
-					case 'playlistPlayNext':
-					case 'playlistPlayPrevious':
-						mw.log( "PlaylistHandlerKaltura:: trigger: " + notificationName );
-						$( embedPlayer ).trigger( notificationName );
-						break;
-				}
-			});
-		},		*/
+		setMultiplePlayLists: function(){
+			var _this = this;
+			if ($(".playListSelector").length == 0){
+				var combo = $("<select id='playlistSelect' class='playListSelector'></select>");
+				$.each(this.playlistSet, function (i, el) {
+					combo.append('<option value="' + i +'">' + el.name + '</option>');
+				});
+				$(".medialistContainer").prepend(combo).prepend("<span class='playListSelector'>" + gM( 'mwe-embedplayer-select_playlist' ) + "</span>");
+				combo.on("change",function(){
+					_this.firstLoad = true;
+					_this.selectPlaylist( this.value );
+				});
+			}
+		},
+
+		selectPlaylist: function(playlistIndex){
+			this.embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : this.playlistSet} ); // for backward compatibility
+			this.prepareData(this.playlistSet[playlistIndex].items);
+			this.setMediaList(this.playlistSet[playlistIndex].items);
+			// support initial selectedIndex
+			if (this.firstLoad){
+				this.playMedia( this.getConfig('selectedIndex'), false);
+				this.firstLoad = false;
+			}
+		}
 
 /*
 		// add bindings for playlist playback ( disable playlist item selection during ad Playback )

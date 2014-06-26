@@ -202,3 +202,9 @@
 	overflow: auto;
 	background-color: #111111;
 }
+.playListSelector{
+	font-size: 11px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-left: 10px;
+}
