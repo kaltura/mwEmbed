@@ -14,8 +14,8 @@
 			'mediaItemWidth': 290,
 			'defaultPlaylistHeight': 290,
 			'titleLimit': 30,
-			'descriptionLimit': 60,
-			'thumbnailWidth' : 50,
+			'descriptionLimit': 100,
+			'thumbnailWidth' : 62,
 			'horizontalMediaItemWidth': 290,
 			'includeThumbnail': true,
 			'includeItemNumberPattern': false,
@@ -82,10 +82,10 @@
 				item.title = title;
 				item.description = description;
 				item.width = this.getConfig( 'mediaItemWidth' );
-				item.durationDisplay = item.duration;
+				item.durationDisplay = kWidget.seconds2npt(item.duration);
 			}
-			for (var j=itemsArr.length-1; j>=0; j--)
-				itemsArr.push(itemsArr[j]);
+			//for (var j=itemsArr.length-1; j>=0; j--)
+			//	itemsArr.push(itemsArr[j]);
 		},
 
 		getMedialistContainer: function(){

@@ -16,7 +16,7 @@
 }
 .k-chapters-container .k-title-container{
     font-size:11px;
-    font-weight: bold;
+    font-weight: normal;
 }
 .k-chapters-container .chapterDivider{
     width: 100%;
@@ -27,9 +27,9 @@
     left: 0px;
 }
 .k-chapters-container .chapterBox{
-    background: rgba(240,240,240,.8);
+    background: #222222;
     /* IE 7 & 8 rule */
-    background: #eee\9;
+    background: #222\9;
     cursor:pointer;
     position:relative;
     list-style-type: none;
@@ -42,30 +42,31 @@
 .k-chapters-container .chapterBox .k-thumb{
     float: left;
     margin-right:8px;
-    margin-bottom: 8px;
+    margin-top: 3px;
+	border: 1px solid black;
 }
 .k-chapters-container .chapterBoxInner{
     padding: 8px;
 }
 .k-chapters-container .chapterBox:hover{
-    background: rgba(220,220,220,.8);
+    background: #444444;
     /* IE 7 & 8 rule */
-    background: #ddd\9;
+    background: #444\9;
 }
 .k-chapters-container .chapterBox.active{
-    background: rgba(200,200,200,.8);
+    background: #444444;
     /* IE 7 & 8 rule */
-    background: #ccc\9;
+    background: #444\9;
 }
 
 .k-chapters-container .chapterNumber{
     float: left;
 }
 .k-chapters-container .k-description{
+	padding-top: 5px;
     display: block;
-    color: #333333;
-    font-size: 11px;
-    line-height: 11px;
+    color: #cacaca;
+    font-size: 10px;
 }
 .k-chapters-container .k-start-time{
 
@@ -74,7 +75,7 @@
     float:right;
     position: absolute;
     right: 8px;
-    bottom: 4px;
+    top: 4px;
 }
 
 .k-chapters-container .k-duration span{
@@ -199,4 +200,5 @@
 }
 .medialistContainer{
 	overflow: auto;
+	background-color: #111111;
 }
