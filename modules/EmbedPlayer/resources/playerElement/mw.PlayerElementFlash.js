@@ -15,6 +15,7 @@
 		//counter for listneres function names, in case we want to subscribe more than one func to the same kdp notification
 		listenerCounter: 0,
 		targetObj: null,
+
 		/**
 		 * initialize the class, creates flash embed
 		 * @param containerId container for the flash embed
