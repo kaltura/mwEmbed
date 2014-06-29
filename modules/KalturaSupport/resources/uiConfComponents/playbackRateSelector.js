@@ -23,7 +23,7 @@
 				deferred = $.Deferred();
 
 			this.bind('playerReady', function(){
-				deferred.resolve(!!_this.getPlayer().playbackRate);
+				deferred.resolve(!!_this.getPlayer().getPlayerElement().playbackRate);
 			});
 			return deferred.promise();
 		},
