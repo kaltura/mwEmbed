@@ -211,10 +211,6 @@
 				if( this.loadingEntry ){
 					mw.log("Error: PlaylistAPI is loading Entry, possible double playClip request");
 					return ;
-				}else {
-					if (autoPlay){
-						embedPlayer.play();
-					}
 				}
 			}
 
