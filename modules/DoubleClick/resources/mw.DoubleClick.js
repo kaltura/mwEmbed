@@ -40,6 +40,8 @@ mw.DoubleClick.prototype = {
 
 	allAdsCompletedFlag: null,
 
+		//Signal if error was triggered from adsLoader
+		adLoaderErrorFlag: false,
 
 	// The current ad Slot type by default "managed" i.e doubleClick manages the player sequence.
 	currentAdSlotType : null,
@@ -163,6 +165,15 @@ mw.DoubleClick.prototype = {
 
 				// trigger the double click end sequence:
 				_this.adsLoader.contentComplete();
+
+                //If adsLoader error was caught then check if restorePlayer was already called before!
+                if (_this.adLoaderErrorFlag){
+                    setTimeout(function(){
+                        if (_this.embedPlayer.sequenceProxy.isInSequence) {
+                            _this.restorePlayer(true);
+                        }
+                    }, 100);
+                }
 			};
 		});
 	},
@@ -760,6 +771,7 @@ mw.DoubleClick.prototype = {
 	onAdError: function( errorEvent ) {
 		var errorMsg = ( typeof errorEvent.getError != 'undefined' ) ? errorEvent.getError() : errorEvent;
 		mw.log('DoubleClick:: onAdError: ' + errorMsg );
+			this.adLoaderErrorFlag = true;
 		if (this.adsManager && $.isFunction( this.adsManager.unload ) ) {
 			this.adsManager.unload();
 		}
