@@ -40,6 +40,7 @@ $messages['en'] = array(
 	'mwe-embedplayer-next_clip_msg' => 'Play next clip',
 	'mwe-embedplayer-prev_clip_msg' => 'Play previous clip',
 	'mwe-embedplayer-current_clip_msg' => 'Continue playing this clip',
+	'mwe-embedplayer-select_playlist' => 'Select playlist:',
 	'mwe-embedplayer-seek_to' => 'Seek $1',
 	'mwe-embedplayer-paused' => 'paused',
 	'mwe-embedplayer-download_segment' => 'Download selection:',
