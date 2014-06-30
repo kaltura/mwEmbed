@@ -301,7 +301,32 @@ mw.KWidgetSupport.prototype = {
 			//TODO in the future we will have flavors for livestream. revise this code.
 			// Apply player Sources
 			if( playerData.contextData && playerData.contextData.flavorAssets ){
-				_this.addFlavorSources( embedPlayer, playerData );
+				if (playerData.contextData.streamerType == "hdnetwork"){
+					var flavorAssets = [];
+					$.each(playerData.contextData.flavorAssets, function(index, flavorAsset){
+						var flavorPartnerData = JSON.parse(flavorAsset.partnerData);
+						var flavorAssetss = {};
+						try {
+							flavorAsset.src = flavorPartnerData.url;
+							flavorAsset.type = "video/" + flavorPartnerData.type;
+							flavorAssetss = {
+								src: flavorPartnerData.url,
+								type: "video/" + flavorPartnerData.type,
+								width: flavorAsset.width,
+								height: flavorAsset.height,
+								bitrate: flavorAsset.bitrate,
+								frameRate: flavorAsset.frameRate
+							};
+						} catch (e){
+							debugger;
+						}
+						flavorAssets.push(flavorAssetss);
+					});
+
+					mw.setConfig('EmbedPlayer.ReplaceSources', flavorAssets);
+				} else {
+					_this.addFlavorSources( embedPlayer, playerData );
+				}
 			}
 		}
 		handlePlayerData();
@@ -932,7 +957,7 @@ mw.KWidgetSupport.prototype = {
 				qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
 				source.src = source.src +  qp + flashvarsPlayMainfestParams;
 			}
-			
+
 			mw.log( 'KWidgetSupport:: addSource::' + embedPlayer.id + ' : ' +  source.src + ' type: ' +  source.type);
 			var sourceElm = $('<source />')
 				.attr( source )
