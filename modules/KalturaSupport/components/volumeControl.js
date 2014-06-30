@@ -91,6 +91,10 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 		});
 
 		this.getSlider().slider( this.getSliderConfig() );
+		if(this.getConfig('layout') == "vertical"){
+			this.getSlider().slider({ orientation: "vertical" });
+		}
+
 		if ( this.getConfig( 'accessibilityLabels' ) ){
 			var percent = this.getPlayer().getPlayerElementVolume() * 100
 			var title = gM('mwe-embedplayer-volume-value', percent );
@@ -140,6 +144,9 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 					$btn,
 					$( '<div />' ).addClass( 'slider' )
 				);
+
+
+
 			// add accessibility controls
 			if (this.getConfig("accessibleControls")){
 				var $accessibilityIncreaseVol = $('<button/>')

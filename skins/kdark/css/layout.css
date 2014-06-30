@@ -435,6 +435,36 @@ body { letter-spacing: 0.04em; }
 	cursor: pointer;
 }
 
+/* EITAN */
+.volumeControl.open .slider.ui-slider-vertical  {
+    display: inline-block;
+    position: absolute;
+    width: 5px;
+    background: #7c7c7c;
+    height: 70px;
+    left: 61px;
+    top: -61px;
+
+    -webkit-transition: width 0.3s ease-in-out;
+    -moz-transition: width 0.3s ease-in-out;
+    -o-transition: width 0.3s ease-in-out;
+    -ms-transition: width 0.3s ease-in-out;
+    transition: width 0.3s ease-in-out;
+
+    cursor: pointer;
+}
+
+.volumeControl .slider.ui-slider-vertical  {
+    width: 5px;
+    height: 0px;
+    position: absolute;
+    left: 61px;
+    top: -61px;
+
+}
+
+/* EITAN */
+
 .volumeControl.open .slider {
 	width: 5em;
 	margin-right: 10px;
