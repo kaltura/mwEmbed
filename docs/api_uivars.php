@@ -657,13 +657,19 @@
             'default' => 'n/a',
             'example' => ''
         ),
-        /*'EmbedPlayer.ShowPosterOnStop' => array(
-            'type' => '',
-            'desc' => "",
-            'default' => '',
+       'EmbedPlayer.ShowPosterOnStop' => array(
+            'type' => 'Boolean',
+            'desc' => "When set to true, shows the movie thumbnail upon movie ends",
+            'default' => 'true',
             'example' => ''
         ),
-        'EmbedPlayer.SourceAttributes' => array(
+        'EmbedPlayer.HidePosterOnStart' => array(
+            'type' => 'Boolean',
+            'desc' => "When set to true, movie thumbnail doesn't show upon movie load (before playback starts)",
+            'default' => 'false',
+            'example' => ''
+        ),
+         /*'EmbedPlayer.SourceAttributes' => array(
             'type' => '',
             'desc' => "",
             'default' => '',
