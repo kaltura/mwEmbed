@@ -43,6 +43,7 @@
 				$( '<textarea />' )
 					.attr( 'id', 'flagComments' )
 					.css({'width': '95%', 'height': '50px', 'margin-top': '5px'}),
+				$('<div/>' ).append(
 				$('<button />')
 					.addClass( 'ui-state-default ui-corner-all copycode' )
 					.text("Cancel")
@@ -57,7 +58,7 @@
 							'flagType': $( '#flagType' ).val(),
 							'flagComments': $( '#flagComments' ).val()
 						});
-					})
+					}) )
 			);
 
 			var $moderationScreen = $( '<div />' ).append($header, $moderationMessage );
