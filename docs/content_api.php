@@ -40,7 +40,7 @@
 			)
 		),
 		'kWidget.thumbEmbed' => array(
-			'desc'=>'Used to embed a thumbnail, with kWidget.embed settings used for a player on click.',
+			'desc'=>'Used to embed a thumbnail player. When the user clicks on the thumbnail kWidget.embed will be called with the provided settings.',
 			'params' => array(
 				'targetId' => array(
 					'type' => 'String', // assumed
@@ -103,33 +103,33 @@
 			 )
 		 ),
 		'kWidget.api' => array(
-				'desc' => 'The kWidget API object, used to create new instances of Kaltura API request.',
-				'params' => array(
-						'apiObject'=> array(
-								'type' => 'kWidget.apiOptions',
-								'desc' => 'Object of API settings to be used in API requests.'
-						)
-				),
-				'methods'=> array(
-						'doRequest' => array(
-								'type' => 'function',
-								'desc' => "( RequestObject, callback ) Run the API request, issue callback with API response data."
-						)
-				),
-				'returns' => array(
-						'type' => 'kWidget.api',
-						'desc' => 'Returns an instance of the kWidget API object.'
-				),
-				'examples' => array(
-						array(
-								'name' => 'kWidget.api',
-								'docFullPath' => 'kWidget/tests/kWidget.api.html'
-						),
-						array(
-								'name' => 'kWidget.getSources',
-								'docFullPath' => 'modules/KalturaSupport/tests/kWidget.getSources.html'
-						)
+			'desc' => 'The kWidget API object, used to create new instances of Kaltura API request.',
+			'params' => array(
+				'apiObject'=> array(
+					'type' => 'kWidget.apiOptions',
+					'desc' => 'Object of API settings to be used in API requests.'
 				)
+			),
+			'methods'=> array(
+				'doRequest' => array(
+					'type' => 'function',
+					'desc' => "( RequestObject, callback ) Run the API request, issue callback with API response data."
+				)
+			),
+			'returns' => array(
+				'type' => 'kWidget.api',
+				'desc' => 'Returns an instance of the kWidget API object.'
+			),
+			'examples' => array(
+				array(
+					'name' => 'kWidget.api',
+					'docFullPath' => 'kWidget/tests/kWidget.api.html'
+				),
+				array(
+						'name' => 'kWidget.getSources',
+						'docFullPath' => 'modules/KalturaSupport/tests/kWidget.getSources.html'
+				)
+			)
 		),
 		'sendNotification' => array(
 			'desc'=>'Call a KDP notification (perform actions using this API, for example: play, pause, changeMedia, etc.)',
@@ -193,6 +193,30 @@
 		)
 	);
 	$objectDefinitions = array(
+		'kWidget.apiOptions' => array(
+			'wid'=> array(
+				'desc' => "The partner id to be used in the API request."
+			),
+			'ks' => array(
+				'desc' => "The Kaltura secret to be used in the request, if not supplied an anonymous KS will be generated and used."
+			),
+			'serviceUrl' => array(
+				'desc' => 'Can be overwritten to target a different Kaltura server.',
+				'default' => 'http://cdnapi.kaltura.com'
+			),
+			'serviceBase' => array(
+				'desc' => "Can be overwritten to alternate Kaltura service path.",
+				'default' => '/api_v3/index.php?service='
+			),
+			'statsServiceUrl' => array(
+				'desc' => "Default supplied via Kaltura library include, can be overwritten to alternate URL for core analytics events.",
+				'default' => 'http://stats.kaltura.com'
+			),
+			'disableCache' => array(
+				'desc' => "Sends no-cache param to API, for a fresh result. Can hurt performance and CDN cachability should be used sparingly.",
+				'default' => 'false'
+			)
+		),
 		'kWidget.settingsObject' => array(
 			'targetId' => array(
 				'desc' => 'The DOM player target id attribute string if not defined as top level param.'
@@ -429,7 +453,7 @@ $(function(){
 </p>
 
 <a name="kWidget"></a>
-<h2>kWidget API</h2>
+<h2>kWidget Embedding API</h2>
 The kWidget API is available after you include the Kaltura player library. kWidget provides embedding and basic utility functions.
 <br>Sample Kaltura player library include :
 <pre class="prettyprint linenums">
@@ -446,7 +470,8 @@ After you embed the Kaltura player library, the following kWidget API is availab
 kWidget Server API enables direct <a href="http://www.kaltura.com/api_v3/testmeDoc/index.php">Kaltura Server API</a> calls from JavaScript. 
 This should not be confused with the <a href="http://www.kaltura.com/api_v3/testme/client-libs.php">JavaScript client library</a>, 
 which offers object mappings and works with the code generated in the 
-<a href="http://www.kaltura.com/api_v3/testme/index.php">test me console</a>. <br><br>
+<a href="http://www.kaltura.com/api_v3/testme/index.php">test me console</a>. <br>
+The Kaltura Server API offers minimal object validation, in exchange for being much smaller.<br><br>
 Creating a kWidget API object, issue a playlist request, log the result:
 <pre class="prettyprint linenums">
 new kWidget.api( { 'wid' : '_243342', })
@@ -458,6 +483,7 @@ new kWidget.api( { 'wid' : '_243342', })
 </pre>
 <div class="docblock">
 	<?php echo getDocs('kWidget.api' ) ?>
+	<?php echo getObjectDocs( array( 'kWidget.apiOptions' ) ) ?>
 </div>
 
 <a name="uiVars"></a>
@@ -625,8 +651,7 @@ var entry_name = kdp.evaluate('{mediaProxy.entry.name}');
 <a name="api6"></a>
 <h3>6. Setting a player attribute</h3>
 <p>Use the <b>setKDPAttribute</b> method to change a player attribute by setting its value.</p>
-<?php echo getDocs( array( 'setKDPAttribute' ) ) ?>
-<br><br>Code sample:<br>
+<br>Code sample:<br>
 <pre class="prettyprint linenums">
 kdp.setKDPAttribute("configProxy.flashvars","autoPlay","true")
 </pre>
@@ -636,137 +661,4 @@ kdp.setKDPAttribute("configProxy.flashvars","autoPlay","true")
 var kdp = document.getElementById('kVideoTarget');
 kdp.setKDPAttribute("theme", "buttonsSize", "14");
 </pre>
-
-
-
-<!--div class="accordion" id="accordion2">
-  <div class="accordion-group">
-	<div class="accordion-heading">
-	  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
-		Receiving Notification that the Player API Is Ready
-	  </a>
-	</div>
-	<div id="collapseOne" class="accordion-body collapse">
-	  <div class="accordion-inner">
-		<p>Before you can use the JavaScript API's base methods, the player has to reach the point in its internal loading sequence when it is ready to interact with your code. The player lets you know that it is ready by calling the <b>jsCallbackReady</b> JavaScript function on the page.</p>
-		<p>jsCallbackReady is the player's first callback. The player passes jsCallbackReady an objectId parameter that represents the identifier of the player that is embedded on the page.</p>
-		<?php echo getDocs( array( 'jsCallbackReady' ) ) ?>
-		<br><br>Code sample:<br>
-		<pre class="prettyprint linenums">
-function jsCallbackReady(objectId) {
-	window.kdp = document.getElementById(objectId);
-}
-		</pre>
-		<p>Kaltura recommends that you place jsCallbackReady in the global scope. This allows easily finding this critical function in the JavaScript code.</p><br><br>
-	  </div>
-	</div>
-  </div>
-  <div class="accordion-group">
-	<div class="accordion-heading">
-	  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
-		Calling a player method from JavaScript
-	  </a>
-	</div>
-	<div id="collapseTwo" class="accordion-body collapse">
-	  <div class="accordion-inner">
-		<p>Use the <b>sendNotification</b> method to create custom notifications that tell the player to do something, such as play, seek, or pause.</p>
-		<?php echo getDocs( array( 'sendNotification' ) ) ?>
-		<br><br><p>Available Notifications:</p>
-		<?php echo getTableContent( array( 'Notification', 'Params', 'Description' ), $methods ) ?>
-		<br><br>Code sample:<br>
-		<pre class="prettyprint linenums">
-		//TBD
-		</pre>
-	  </div>
-	</div>
-  </div>
-
-  <div class="accordion-group">
-	<div class="accordion-heading">
-	  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">
-		Registering to a player event
-	  </a>
-	</div>
-	<div id="collapseThree" class="accordion-body collapse">
-	  <div class="accordion-inner">
-		<p>Use the <b>addJsListener</b> method to listen for a specific notification that something happened in the player, such as the video is playing or is paused.</p>
-		<?php echo getDocs( array( 'addJsListener' ) ) ?>
-		<br><h5>Player Life Cycle:</h5>
-		<?php echo getTableContent( array( 'Event', 'Parameters', 'Description' ), $listeners1 ) ?>
-		<br><br><h5>Player Information:</h5>
-		<?php echo getTableContent( array( 'Event', 'Parameters', 'Description' ), $listeners2 ) ?>
-		<br><br><h5>Player Advertisement Related Notifications:</h5>
-		<?php echo getTableContent( array( 'Event', 'Parameters', 'Description' ), $listeners3 ) ?>
-		<br><br>Code sample:<br>
-		<pre class="prettyprint linenums">
-kdp.addJsListener(“playerUpdatePlayhead”, “playerUpdatePlayheadHandler”)
-function playerUpdatePlayheadHandler(data, id) {
-	// data = the player's progress time in seconds
-	// id = the ID of the player that fired the notification
-}
-		</pre>
-	  </div>
-	</div>
-  </div>
-  <div class="accordion-group">
-	<div class="accordion-heading">
-	  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseFour">
-		Un-registering a player event
-	  </a>
-	</div>
-	<div id="collapseFour" class="accordion-body collapse">
-	  <div class="accordion-inner">
-		<p>Use the <b>removeJsListener</b> method to remove a listener that is no longer needed.</p>
-		<h5>Why Remove a JsListener?</h5>
-		KDP3 accumulates JsListeners. If you add a JsListener for a notification and then add another JsListener for the same notification, the new JsListener does not override the previous one. Both JsListeners are executed in the order in which they are added. To prevent unexpected behavior in your application, Kaltura recommends that you remove unnecessary JsListeners.
-		When you remove a listener, you must specify the associated function name.
-		<br><br>Code sample:<br>
-		<pre class="prettyprint linenums">
-removeJsListener("event", "functionName")
-		</pre>
-	  </div>
-	</div>
-  </div>
-  <div class="accordion-group">
-	<div class="accordion-heading">
-	  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseFive">
-		Retrieving a player property
-	  </a>
-	</div>
-	<div id="collapseFive" class="accordion-body collapse">
-	  <div class="accordion-inner">
-		<p>Use the <b>evaluate</b> method to find out something about a player by extracting data from player components.</p>
-		<?php echo getDocs( array( 'evaluate' ) ) ?>
-		<br><br><p>Available Properties:</p>
-		<?php echo getTableContent( array( 'Property', 'Description' ), $evaluates ) ?>
-		<br><br>Code sample:<br>
-		<pre class="prettyprint linenums">
-function getName() {
-var entry_name = kdp.evaluate('{mediaProxy.entry.name}');
-	alert('Entry name: '+entry_name);
-}
-		</pre>
-	  </div>
-	</div>
-  </div>
-  <div class="accordion-group">
-	<div class="accordion-heading">
-	  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseSix">
-		Setting a player attribute
-	  </a>
-	</div>
-	<div id="collapseSix" class="accordion-body collapse">
-	  <div class="accordion-inner">
-		<p>Use the <b>setKDPAttribute</b> method to change something about a player by setting player attribute values.</p>
-		<?php echo getDocs( array( 'setKDPAttribute' ) ) ?>
-		<br><br><p>Available Attributes:</p>
-
-		<br><br>Code sample:<br>
-		<pre class="prettyprint linenums">
-kdp.setKDPAttribute("configProxy.flashvars","autoPlay","true")
-		</pre>
-	  </div>
-	</div>
-  </div>
-
-</div-->
+<?php echo getDocs( array( 'setKDPAttribute' ) ) ?>
