@@ -442,8 +442,8 @@ body { letter-spacing: 0.04em; }
     width: 5px;
     background: #7c7c7c;
     height: 70px;
-    left: 61px;
-    top: -61px;
+    left: 10px;
+    top: 5px;
 
     -webkit-transition: width 0.3s ease-in-out;
     -moz-transition: width 0.3s ease-in-out;
@@ -458,10 +458,40 @@ body { letter-spacing: 0.04em; }
     width: 5px;
     height: 0px;
     position: absolute;
-    left: 61px;
-    top: -61px;
+    left: 10px;
+    top: 5px;
 
 }
+
+.volume-slide-wrapper{
+    bottom: 26px;
+    opacity: 0.5;
+    left: 50px;
+    width:25px ;
+    height:80px ;
+    position: absolute;
+    display: none;
+}
+.volumeControl.open .volume-slide-wrapper{
+    bottom: 26px;
+    opacity: 0.5;
+    left: 50px;
+    background-color:green ;
+    width:25px ;
+    height:80px ;
+    position: absolute;
+    display: inline-block;
+}
+
+.close .volume-slide-wrapper{
+    display: none;
+}
+
+
+
+
+
+
 
 /* EITAN */
 
