@@ -79,6 +79,7 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 		this.getScreen().fadeIn(400);
 	},
 	toggleScreen: function(){
+		if( this.isDisabled ) return ;
 		if( this.isScreenVisible() ){
 			this.hideScreen();
 		} else {
