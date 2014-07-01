@@ -705,6 +705,18 @@
             'default' => 'true',
             'example' => ''
         ),
+        'EmbedPlayer.ForceKPlayer' => array(
+            'type' => 'Boolean',
+            'desc' => "Force loading the legacy KDP Flash video player.",
+            'default' => 'false',
+            'example' => ''
+        ),
+        'EmbedPlayer.ForceSPlayer' => array(
+            'type' => 'Boolean',
+            'desc' => "Force loading the Silverlight video player.",
+            'default' => 'false',
+            'example' => ''
+        ),
         /*'EmbedPlayer.DataAttributes' => array(
             'type' => '',
             'desc' => "",
