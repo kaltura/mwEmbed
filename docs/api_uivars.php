@@ -722,6 +722,12 @@
             'desc' => "By default, an HTML play screen is displayed with image, thumb and play button. If you are not using ad plugins you may want to set this to false and display the native play button",
             'default' => 'true',
             'example' => ''
+        ),
+        'EmbedPlayer.twoPhaseManifestHlsAndroid' => array(
+			'type' => 'Boolean',
+			'desc' => "If the player should load the final location of m3u8 file and not a URL that redirects to the m3u8 file on Android set this flag to true",
+			'default' => 'false',
+			'example' => ''
         )
     );
 
