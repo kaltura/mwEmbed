@@ -447,7 +447,7 @@
 			if( !this.gg ){
 				$.getScript( this.getGgCmbUrl(), function(){
 					// Nielsen specific global param option:
-					var clientId = _this.getConfig( "clientid" );
+					var clientId = _this.getConfig( "clientId" );
 					if( ! clientId ){
 						clientId = '';
 					}
