@@ -607,7 +607,7 @@ HTML;
 				$customStyle = $customStyle . 'body {font-size: ' . $theme['buttonsSize'] . 'px}';
 			}
 			if (isset($theme['buttonsColor'])){
-				$customStyle = $customStyle . '.btn {background-color: ' . $theme['buttonsColor'] . '!important}';
+				$customStyle = $customStyle . '.btn {background-color: ' . $theme['buttonsColor'] . '}';
 			}
 			if (isset($theme['sliderColor'])){
 				$customStyle = $customStyle . '.ui-slider {background-color: ' . $theme['sliderColor'] . '!important}';
