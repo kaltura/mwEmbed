@@ -33,13 +33,13 @@ return array (
 			'useKdpMsg' => array(
 				'label' => "Use KDP message",
 				'doc' => "Overrides the message that prompts the user to use KDP.",
-				'type' => 'string',
+				'type' => 'hiddenValue',
 				'initvalue' => "This video requires Adobe Flash enabled player."
 			),
 			'useKdpTitle' => array(
 				'label' => "Use KDP title",
 				'doc' => "Overrides the title of the message that prompts the user to use KDP.",
-				'type' => 'string',
+				'type' => 'hiddenValue',
 				'initvalue' => "Notification"
 			),
 			'promptStyle' => array(
