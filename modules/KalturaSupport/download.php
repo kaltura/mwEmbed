@@ -73,7 +73,7 @@ class downloadEntry {
 
 			}
 
-			
+
 			header( "Content-Disposition: attachment; filename=$filename" );
 			readfile( $flavorUrl );
 		}
@@ -286,7 +286,7 @@ class downloadEntry {
 			return array();
 		}
 
-		//echo '<pre>'; print_r($sources); exit();
+		// echo '<pre>'; print_r($sources); exit();
 		return $this->sources;
 	}
 	private function getReferer() {
@@ -298,13 +298,19 @@ class downloadEntry {
 	}
 	public function getSourceForUserAgent(){
 
+		if($_GET['preferredBitrate'] != null){
+            $preferredBitrate	= intval($_GET['preferredBitrate']);
+        }else{
+            $preferredBitrate = -1;
+        }
+
 		// Get user agent
 		$userAgent = $this->getResultObject()->request->getUserAgent();
 
 		$flavorUrl = false;
 		
 		// First set the most compatible source ( iPhone h.264 low quality)
-		$iPhoneSrc = $this->getSourceFlavorUrl( 'iPhone' );
+		$iPhoneSrc = $this->getSourceFlavorUrl( 'iPhone' , $preferredBitrate );
 		if( $iPhoneSrc ) {
 			$flavorUrl = $iPhoneSrc;
 		}
@@ -313,18 +319,18 @@ class downloadEntry {
 			return $flavorUrl;
 		}
 		// h264 for iPad
-		$iPadSrc = $this->getSourceFlavorUrl( 'iPad' );
+		$iPadSrc = $this->getSourceFlavorUrl( 'iPad' , $preferredBitrate );
 		if( $iPadSrc ) {
 			$flavorUrl = $iPadSrc;
 		}
 		// rtsp3gp for BlackBerry
-		$rtspSrc = $this->getSourceFlavorUrl( 'rtsp3gp' );
+		$rtspSrc = $this->getSourceFlavorUrl( 'rtsp3gp' , $preferredBitrate );
 		if( strpos( $userAgent, 'BlackBerry' ) !== false && $rtspSrc){
 			return 	$rtspSrc;
 		}
 
 		// 3gp check
-		$gpSrc = $this->getSourceFlavorUrl( '3gp' );
+		$gpSrc = $this->getSourceFlavorUrl( '3gp' , $preferredBitrate);
 		if( $gpSrc ) {
 			// Blackberry ( newer blackberry's can play the iPhone src but better safe than broken )
 			if( strpos( $userAgent, 'BlackBerry' ) !== false ){
@@ -337,7 +343,7 @@ class downloadEntry {
 		}
 
 		// Firefox > 3.5 and chrome support ogg
-		$ogSrc = $this->getSourceFlavorUrl( 'ogg' );
+		$ogSrc = $this->getSourceFlavorUrl( 'ogg' , $preferredBitrate);
 		if( $ogSrc ){
 			// chrome supports ogg:
 			if( strpos( $userAgent, 'Chrome' ) !== false ){
@@ -350,7 +356,7 @@ class downloadEntry {
 		}
 
 		// Firefox > 3 and chrome support webm ( use after ogg )
-		$webmSrc = $this->getSourceFlavorUrl( 'webm' );
+		$webmSrc = $this->getSourceFlavorUrl( 'webm' , $preferredBitrate);
 		if( $webmSrc ){
 			if( strpos( $userAgent, 'Chrome' ) !== false ){
 				$flavorUrl = $webmSrc;
@@ -372,7 +378,7 @@ class downloadEntry {
 	 * @param $flavorId
 	 * 	{String} the flavor id string
 	 */
-	private function getSourceFlavorUrl( $flavorId = false){
+	private function getSourceFlavorUrl( $flavorId = false, $preferredBitrate){
 		// Get all sources ( if not provided )
 		$sources = $this->getSources();
 		$validSources = array(); 
@@ -393,8 +399,32 @@ class downloadEntry {
 			}
 			return $minSrc;
 		} else if( count( $validSources ) ) {
-			// else just return the first source we find 
-			return $validSources[0]['src'];
+			// if not preferred bitrate was specified - return the biggest source available
+			if ( $preferredBitrate == -1 ) {
+				$maxBit = 0;
+            	$maxSrc = null;
+				foreach( $validSources  as $source ){
+					if( isset($source['data-bandwidth']) && $source['data-bandwidth'] > $maxBit ){
+						$maxSrc = $source['src'];
+						$maxBit = $source['data-bandwidth'];
+					}
+				}
+				return $maxSrc;
+			}else{
+				// try to find the closest bitrate source
+				$deltaBitrate = 999999999;
+				$src = null;
+				foreach( $validSources  as $source ){
+					if( isset($source['data-bandwidth']) ){
+						$delta =  abs( $source['data-bandwidth'] - $preferredBitrate );
+						if ( $delta < $deltaBitrate) {
+							$deltaBitrate = $delta;
+							$src = $source['src'];
+						}
+					}
+				}
+				return $src;
+			}
 		}
 		return false;
 	}
