@@ -38,10 +38,14 @@ mw.PluginManager.add( 'actionForm', mw.KBaseScreen.extend({
 
 		var showScreen = $.proxy( this.showScreen, this);
 
+		if( this.getConfig('displayOn') == 0 ) {
+			this.setConfig('displayOn', 'start');
+		}
+
 		// Show screen at right time
 		switch( this.getConfig('displayOn') ) {
 			case 'start':
-				this.bind( 'playerReady', showScreen );
+				this.bind( 'playing', showScreen );
 				break;
 			case 'end':
 				this.bind( 'onEndedDone', showScreen );
