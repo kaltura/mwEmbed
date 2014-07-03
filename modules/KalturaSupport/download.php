@@ -298,19 +298,13 @@ class downloadEntry {
 	}
 	public function getSourceForUserAgent(){
 
-		if($_GET['preferredBitrate'] != null){
-            $preferredBitrate	= intval($_GET['preferredBitrate']);
-        }else{
-            $preferredBitrate = -1;
-        }
-
 		// Get user agent
 		$userAgent = $this->getResultObject()->request->getUserAgent();
 
 		$flavorUrl = false;
 		
 		// First set the most compatible source ( iPhone h.264 low quality)
-		$iPhoneSrc = $this->getSourceFlavorUrl( 'iPhone' , $preferredBitrate );
+		$iPhoneSrc = $this->getSourceFlavorUrl( 'iPhone' );
 		if( $iPhoneSrc ) {
 			$flavorUrl = $iPhoneSrc;
 		}
@@ -319,18 +313,18 @@ class downloadEntry {
 			return $flavorUrl;
 		}
 		// h264 for iPad
-		$iPadSrc = $this->getSourceFlavorUrl( 'iPad' , $preferredBitrate );
+		$iPadSrc = $this->getSourceFlavorUrl( 'iPad' );
 		if( $iPadSrc ) {
 			$flavorUrl = $iPadSrc;
 		}
 		// rtsp3gp for BlackBerry
-		$rtspSrc = $this->getSourceFlavorUrl( 'rtsp3gp' , $preferredBitrate );
+		$rtspSrc = $this->getSourceFlavorUrl( 'rtsp3gp' );
 		if( strpos( $userAgent, 'BlackBerry' ) !== false && $rtspSrc){
 			return 	$rtspSrc;
 		}
 
 		// 3gp check
-		$gpSrc = $this->getSourceFlavorUrl( '3gp' , $preferredBitrate);
+		$gpSrc = $this->getSourceFlavorUrl( '3gp' );
 		if( $gpSrc ) {
 			// Blackberry ( newer blackberry's can play the iPhone src but better safe than broken )
 			if( strpos( $userAgent, 'BlackBerry' ) !== false ){
@@ -343,7 +337,7 @@ class downloadEntry {
 		}
 
 		// Firefox > 3.5 and chrome support ogg
-		$ogSrc = $this->getSourceFlavorUrl( 'ogg' , $preferredBitrate);
+		$ogSrc = $this->getSourceFlavorUrl( 'ogg' );
 		if( $ogSrc ){
 			// chrome supports ogg:
 			if( strpos( $userAgent, 'Chrome' ) !== false ){
@@ -356,7 +350,7 @@ class downloadEntry {
 		}
 
 		// Firefox > 3 and chrome support webm ( use after ogg )
-		$webmSrc = $this->getSourceFlavorUrl( 'webm' , $preferredBitrate);
+		$webmSrc = $this->getSourceFlavorUrl( 'webm' );
 		if( $webmSrc ){
 			if( strpos( $userAgent, 'Chrome' ) !== false ){
 				$flavorUrl = $webmSrc;
@@ -379,6 +373,11 @@ class downloadEntry {
 	 * 	{String} the flavor id string
 	 */
 	private function getSourceFlavorUrl( $flavorId = false, $preferredBitrate){
+
+		if($_GET['preferredBitrate'] != null){
+            $preferredBitrate	= intval($_GET['preferredBitrate']);
+        }
+
 		// Get all sources ( if not provided )
 		$sources = $this->getSources();
 		$validSources = array(); 
@@ -400,7 +399,7 @@ class downloadEntry {
 			return $minSrc;
 		} else if( count( $validSources ) ) {
 			// if not preferred bitrate was specified - return the biggest source available
-			if ( $preferredBitrate == -1 ) {
+			if ( !isset( $preferredBitrate ) ) {
 				$maxBit = 0;
             	$maxSrc = null;
 				foreach( $validSources  as $source ){

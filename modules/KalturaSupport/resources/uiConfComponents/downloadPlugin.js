@@ -21,15 +21,13 @@
 			});
 		},
 		downloadMedia: function() {
-			var bitrate = -1;
-			if ( this.getConfig( 'preferredBitrate' ) != '' && this.getConfig( 'preferredBitrate' ) != null ){
-				bitrate = encodeURIComponent( this.getConfig( 'preferredBitrate' ));
-			}
 			var downloadUrl = mw.getMwEmbedPath() + '/modules/KalturaSupport/download.php/wid/';
 				downloadUrl += this.getPlayer().kwidgetid + '/uiconf_id/' + this.getPlayer().kuiconfid;
 				downloadUrl += '/entry_id/' + this.getPlayer().kentryid + '?forceDownload=true';
 				downloadUrl += '&downloadName=' + encodeURIComponent(this.getConfig('downloadName'));
-				downloadUrl += '&preferredBitrate=' + bitrate;
+				if ( this.getConfig( 'preferredBitrate' ) != '' && this.getConfig( 'preferredBitrate' ) != null ){
+					downloadUrl += '&preferredBitrate=' + encodeURIComponent( this.getConfig( 'preferredBitrate' ));
+				}
 				downloadUrl += '&ks=' + this.getPlayer().getFlashvars('ks');
 				
 			window.open( downloadUrl );
