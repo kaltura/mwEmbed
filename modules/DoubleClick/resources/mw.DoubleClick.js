@@ -47,6 +47,13 @@ mw.DoubleClick.prototype = {
 	currentAdSlotType : null,
 
 	init: function( embedPlayer, callback, pluginName ){
+
+		// DoubleClick is not supported on IE8 and IE9 - don't init the plugin on these browsers
+		if ( mw.isIE8() || mw.isIE9() ){
+			callback();
+			return;
+		}
+
 		var _this = this;
 
 		this.embedPlayer = embedPlayer;
@@ -180,9 +187,20 @@ mw.DoubleClick.prototype = {
 	/**
 	 * Get the content video tag
 	 */
-	getContent:function(){
-		// Set the content element to player element:
-		return this.embedPlayer.getPlayerElement();
+	getContent:function(adVideo){
+		if (this.adActive || adVideo){
+			console.log("-----> return new video object. adActive="+this.adActive+"   , adVideo="+adVideo);
+			var doubleClickAd = $('<video class="doubleClickAd persistentNativePlayer nativeEmbedPlayerPid" style="position: absolute; left: 0px; top: 0px"></video>');
+			if ($(".doubleClickAd").length === 0){
+				$(".videoHolder").append(doubleClickAd);
+				$("#videoTarget").hide();
+			}
+			return $(".doubleClickAd")[0];
+		}else{
+			console.log("-----> return player object");
+			// Set the content element to player element:
+			return this.embedPlayer.getPlayerElement();
+		}
 	},
 	addKalturaCuePointBindings: function(){
 		var _this = this;
@@ -285,7 +303,7 @@ mw.DoubleClick.prototype = {
 		if( ! this.adDisplayContainer ){
 			this.adDisplayContainer = new google.ima.AdDisplayContainer(
 				this.getAdContainer(),
-				this.getContent()
+				this.getContent(true)
 			);
 		}
 		return this.adDisplayContainer;
@@ -338,6 +356,7 @@ mw.DoubleClick.prototype = {
 	},
 	// This function requests the ads.
 	requestAds: function( adTagUrl, adType ) {
+
 		var _this = this;
 		// Add any custom params:
 		adTagUrl = _this.addCustomParams( adTagUrl );
@@ -415,7 +434,7 @@ mw.DoubleClick.prototype = {
 		// previously and the content element, so the SDK can track content
 		// and play ads automatically.
 
-		_this.adsManager = loadedEvent.getAdsManager( this.getContent()	);
+		_this.adsManager = loadedEvent.getAdsManager( this.getContent(true)	);
 
 		// add a global ad manager refrence:
 		$( _this.embedPlayer ).data( 'doubleClickAdsMangerRef', _this.adsManager );
@@ -566,6 +585,9 @@ mw.DoubleClick.prototype = {
 		adsListener( 'MIDPOINT' );
 		adsListener( 'THIRD_QUARTILE' );
 		adsListener( 'COMPLETE', function(){
+			$(".doubleClickAd").remove();
+			$("#videoTarget").show();
+
 			// make sure content is in sync with aspect size:
 			if( _this.embedPlayer.layoutBuilder ){
 				//_this.embedPlayer.layoutBuilder.syncPlayerSize();
@@ -727,6 +749,7 @@ mw.DoubleClick.prototype = {
 			this.adMonitor = 0;
 			return ;
 		}
+	/*
 		// Check if we have an ad buffer underun that double click apparently does not check for :(
 		if( _this.adPreviousTimeLeft == _this.adsManager.getRemainingTime()  ){
 			// reset the previous time check:
@@ -746,7 +769,7 @@ mw.DoubleClick.prototype = {
 				}
 				_this.activeBufferUnderunCheck = false;
 			}, 2000);
-		}
+		}*/
 		// no buffer underun make sure we are not displaying the loading spinner:
 		_this.embedPlayer.hideSpinner();
 
@@ -786,8 +809,8 @@ mw.DoubleClick.prototype = {
 		var _this = this;
 		this.adActive = false;
 		this.embedPlayer.sequenceProxy.isInSequence = false;
-
 		// Show the content:
+
 		this.showContent();
 
 		// sometimes double click has sets visibility to false ( async :( ):
