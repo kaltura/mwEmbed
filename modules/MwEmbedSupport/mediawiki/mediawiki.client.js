@@ -90,6 +90,9 @@
 	mw.isIOS5 = function(){
 		return /OS 5_/.test( userAgent ) && mw.isIOS();
 	};
+	mw.isIOS6 = function(){
+		return /OS 6_/.test( userAgent ) && mw.isIOS();
+	};
 
 	mw.isIOS7 = function(){
 		return /OS 7_/.test( userAgent ) && mw.isIOS();
