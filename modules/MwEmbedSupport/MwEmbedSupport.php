@@ -23,7 +23,7 @@ return array(
 		'scripts' => 'jquery.loadingSpinner/Spinner.js',
 	),
 	'iScroll' => array(
-		'scripts' => 'iscroll/src/iscroll.js',
+		'scripts' => 'iscroll/build/iscroll.js',
 	),
 	"jquery.loadingSpinner" => array(
 		'scripts' => 'jquery.loadingSpinner/jquery.loadingSpinner.js',
