@@ -53,7 +53,7 @@
 	};
 
 	$.button = function( options ) {
-		var options = $j.extend( {}, mw_default_button_options, options);
+		var options = $.extend( {}, mw_default_button_options, options);
 
 		// Button:
 		var $button = $('<a />')
