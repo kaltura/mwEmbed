@@ -175,7 +175,7 @@
 	 * @return {boolean} true or false if flash > 10 is supported.
 	 */
 	mw.supportsFlash = function() {
-		if( mw.getConfig('EmbedPlayer.DisableHTML5FlashFallback' ) ){
+		if( mw.config.get('EmbedPlayer.DisableHTML5FlashFallback' ) ){
 			return false;
 		}
 		
