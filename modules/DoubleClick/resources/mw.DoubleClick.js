@@ -86,7 +86,7 @@ mw.DoubleClick.prototype = {
 		// Load double click ima per doc:
 		this.loadIma( function(){
 			// Determine if we are in managed or kaltura point based mode.
-			if( _this.getConfig( "preSequence" ) && _this.getConfig( "adTagUrl" ) ){
+			if( (_this.getConfig( "preSequence" ) || _this.getConfig( "postSequence" )) && _this.getConfig( "adTagUrl" ) ){
 				// Check for adPattern
 				if( _this.getConfig( 'adPattern' ) ){
 					var adIndex = _this.getAdPatternIndex();
@@ -137,7 +137,7 @@ mw.DoubleClick.prototype = {
 	 * Load the google IMA library:
 	 */
 	loadIma:function( successCB, failureCB ){
-		$.getScript( '//s0.2mdn.net/instream/html5/ima3.js', function() {
+		$.getScript( '//s0.2mdn.net/instream/html5/ima3_debug.js', function() {
 			successCB();
 		} )
 		.fail( function( jqxhr, settings, errorCode ) {
@@ -147,57 +147,64 @@ mw.DoubleClick.prototype = {
 	addManagedBinding: function(){
 		var _this = this;
 		mw.log( "DoubleClick::addManagedBinding" );
-		_this.embedPlayer.bindHelper( 'AdSupport_preroll' + _this.bindPostfix, function( event, sequenceProxy ){
-			// Add the slot to the given sequence proxy target target
-			sequenceProxy[ _this.getSequenceIndex( 'preroll' ) ] = function( callback ){
-				// if a preroll set it as such:
-				_this.currentAdSlotType = 'preroll';
-				// Setup the restore callback
-				_this.restorePlayerCallback = callback;
-				// Request ads
-				mw.log( "DoubleClick:: addManagedBinding : requestAds:" +  _this.getConfig( 'adTagUrl' )  );
-				_this.requestAds( _this.getConfig( 'adTagUrl' ) );
-			};
-		});
-		_this.embedPlayer.bindHelper( 'AdSupport_postroll' + _this.bindPostfix, function( event, sequenceProxy ){
-			sequenceProxy[ _this.getSequenceIndex( 'postroll' ) ] = function( callback ){
-				// Setup the restore callback
-				_this.restorePlayerCallback = callback;
 
-				// set content complete flag
-				_this.contentDoneFlag = true;
+		if (_this.getConfig( "preSequence" ) ){
+			_this.embedPlayer.bindHelper( 'AdSupport_preroll' + _this.bindPostfix, function( event, sequenceProxy ){
+				// Add the slot to the given sequence proxy target target
+				sequenceProxy[ _this.getSequenceIndex( 'preroll' ) ] = function( callback ){
+					// if a preroll set it as such:
+					_this.currentAdSlotType = 'preroll';
+					// Setup the restore callback
+					_this.restorePlayerCallback = callback;
+					// Request ads
+					mw.log( "DoubleClick:: addManagedBinding : requestAds:" +  _this.getConfig( 'adTagUrl' )  );
+					_this.requestAds( _this.getConfig( 'adTagUrl' ) );
+				};
+			});
+		}
+		if (_this.getConfig( "postSequence" ) ){
+			_this.embedPlayer.bindHelper( 'AdSupport_postroll' + _this.bindPostfix, function( event, sequenceProxy ){
+				sequenceProxy[ _this.getSequenceIndex( 'postroll' ) ] = function( callback ){
 
-				// set current slot to postRoll
-				_this.currentAdSlotType = 'postroll';
+					// Setup the restore callback
+					_this.restorePlayerCallback = callback;
 
-				// trigger the double click end sequence:
-				_this.adsLoader.contentComplete();
+					// set content complete flag
+					//_this.contentDoneFlag = true;
 
-                //If adsLoader error was caught then check if restorePlayer was already called before!
-                if (_this.adLoaderErrorFlag){
-                    setTimeout(function(){
-                        if (_this.embedPlayer.sequenceProxy.isInSequence) {
-                            _this.restorePlayer(true);
-                        }
-                    }, 100);
-                }
-			};
-		});
+					// set current slot to postRoll
+					_this.currentAdSlotType = 'postroll';
+
+					// trigger the double click end sequence:
+					//_this.adsLoader.contentComplete();
+					// destroy ad manager
+					//_this.adsManager.destroy();
+
+					_this.requestAds( _this.getConfig( 'adTagUrl' ) );
+
+	                //If adsLoader error was caught then check if restorePlayer was already called before!
+	                if (_this.adLoaderErrorFlag){
+	                    setTimeout(function(){
+	                        if (_this.embedPlayer.sequenceProxy.isInSequence) {
+	                            _this.restorePlayer(true);
+	                        }
+	                    }, 100);
+	                }
+				};
+			});
+		}
 	},
 	/**
 	 * Get the content video tag
 	 */
 	getContent:function(adVideo){
-		if (this.adActive || adVideo){
-			console.log("-----> return new video object. adActive="+this.adActive+"   , adVideo="+adVideo);
-			var doubleClickAd = $('<video class="doubleClickAd persistentNativePlayer nativeEmbedPlayerPid" style="position: absolute; left: 0px; top: 0px"></video>');
+		if ( !mw.isMobileDevice() && (this.adActive || adVideo)){
+			var doubleClickAd = $('<video class="doubleClickAd persistentNativePlayer nativeEmbedPlayerPid" style="position: absolute; left: 0px; top: 0px; background-color: black"></video>');
 			if ($(".doubleClickAd").length === 0){
 				$(".videoHolder").append(doubleClickAd);
-				$("#videoTarget").hide();
 			}
 			return $(".doubleClickAd")[0];
 		}else{
-			console.log("-----> return player object");
 			// Set the content element to player element:
 			return this.embedPlayer.getPlayerElement();
 		}
@@ -356,7 +363,6 @@ mw.DoubleClick.prototype = {
 	},
 	// This function requests the ads.
 	requestAds: function( adTagUrl, adType ) {
-
 		var _this = this;
 		// Add any custom params:
 		adTagUrl = _this.addCustomParams( adTagUrl );
@@ -586,7 +592,6 @@ mw.DoubleClick.prototype = {
 		adsListener( 'THIRD_QUARTILE' );
 		adsListener( 'COMPLETE', function(){
 			$(".doubleClickAd").remove();
-			$("#videoTarget").show();
 
 			// make sure content is in sync with aspect size:
 			if( _this.embedPlayer.layoutBuilder ){
@@ -739,6 +744,7 @@ mw.DoubleClick.prototype = {
 		}
 	},
 	doMonitorAdProgress: function(){
+
 		var _this = this;
 		// check if we are still playing an ad:
 		if( !_this.adActive ){
@@ -749,7 +755,7 @@ mw.DoubleClick.prototype = {
 			this.adMonitor = 0;
 			return ;
 		}
-	/*
+/*
 		// Check if we have an ad buffer underun that double click apparently does not check for :(
 		if( _this.adPreviousTimeLeft == _this.adsManager.getRemainingTime()  ){
 			// reset the previous time check:
@@ -810,14 +816,14 @@ mw.DoubleClick.prototype = {
 		this.adActive = false;
 		this.embedPlayer.sequenceProxy.isInSequence = false;
 		// Show the content:
-
+/*
 		this.showContent();
 
 		// sometimes double click has sets visibility to false ( async :( ):
 		setTimeout(function(){
 			$( _this.getContent() ).css('visibility',  'visible');
 		}, 250);
-
+*/
 		// Check for sequence proxy style restore:
 		if( $.isFunction( this.restorePlayerCallback ) ){
 			// also do the normal restore ( will issue an async play call )
@@ -833,13 +839,13 @@ mw.DoubleClick.prototype = {
 				this.embedPlayer.play();
 			}
 		}
-
 		// Do an sync play call ( if not on postroll )
-		if( !onContentComplete ){
-			this.forceContentPlay();
-		}
+		//if( !onContentComplete ){
+		//	this.forceContentPlay();
+		//}
 
 	},
+/*
 	forceContentPlay: function(){
 		var _this = this;
 		var vid = this.getContent();
@@ -862,7 +868,7 @@ mw.DoubleClick.prototype = {
 				_this.forceContentPlay();
 			}
 		}, 4000 );
-	},
+	},*/
 	/**
 	 * TODO should be provided by the generic ad plugin class.
 	 */
