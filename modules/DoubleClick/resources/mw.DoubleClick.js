@@ -746,28 +746,7 @@ mw.DoubleClick.prototype = {
 			this.adMonitor = 0;
 			return ;
 		}
-/*
-		// Check if we have an ad buffer underun that double click apparently does not check for :(
-		if( _this.adPreviousTimeLeft == _this.adsManager.getRemainingTime()  ){
-			// reset the previous time check:
-			_this.adPreviousTimeLeft = null;
-			// if we already have an active buffer check continue:
-			if( _this.activeBufferUnderunCheck ){
-				return ;
-			}
-			_this.activeBufferUnderunCheck = true;
-			setTimeout( function(){
-				if( _this.adActive && !_this.adPaused && _this.adPreviousTimeLeft ==  _this.adsManager.getRemainingTime()  ){
-					mw.log( "DoubleClick:: buffer underun pause?  try to continue playback ");
-					// try to restart playback:
-					_this.adsManager.resume();
-					// restore the previous time check:
-					_this.adPreviousTimeLeft = _this.adsManager.getRemainingTime();
-				}
-				_this.activeBufferUnderunCheck = false;
-			}, 2000);
-		}*/
-		// no buffer underun make sure we are not displaying the loading spinner:
+		// make sure we are not displaying the loading spinner:
 		_this.embedPlayer.hideSpinner();
 
 		// update the adPreviousTimeLeft
@@ -822,36 +801,7 @@ mw.DoubleClick.prototype = {
 				this.embedPlayer.play();
 			}
 		}
-		// Do an sync play call ( if not on postroll )
-		//if( !onContentComplete ){
-		//	this.forceContentPlay();
-		//}
-
 	},
-/*
-	forceContentPlay: function(){
-		var _this = this;
-		var vid = this.getContent();
-		var isPlaying = false;
-		var playBindStr = 'playing.dcForceContentPlay';
-		$( vid ).unbind( playBindStr ).bind( playBindStr, function(){
-			isPlaying = true;
-			// make sure the content duration is accurate:
-			if( vid.duration ){
-				_this.embedPlayer.duration = vid.duration;
-			}
-			$( vid ).unbind( playBindStr );
-		});
-		vid.play();
-		setTimeout(function(){
-			var vid = _this.getContent();
-			if( ! isPlaying && ! _this.embedPlayer.paused ){
-				// Try again:
-				vid.play();
-				_this.forceContentPlay();
-			}
-		}, 4000 );
-	},*/
 	/**
 	 * TODO should be provided by the generic ad plugin class.
 	 */
