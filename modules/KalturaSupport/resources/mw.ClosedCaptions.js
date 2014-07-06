@@ -137,7 +137,7 @@
 			this._super( property, value );
 		},
 		hideCaptions: function(){
-			if( !this.getConfig('displayCaptions') ) {
+			if( !this.getConfig('displayCaptions') || this.textSources.length === 0 ) {
 				this.getCaptionsOverlay().hide();
 				var $cc = this.embedPlayer.getInterface().find('.captionContainer' );
 				$cc.remove();

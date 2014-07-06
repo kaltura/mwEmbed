@@ -1,0 +1,136 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Closed Captions</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	<script type="text/javascript">
+		function jsKalturaPlayerTest( videoId ){
+			// Name this module
+			module( "closedCaptions Sample" );
+
+			var kdp = $( '#' + videoId ).get( 0 );
+			var captionsOverlay;
+			kdp.kBind('changeMedia', 'onChangeMedia');
+
+			asyncTest( "closedCaptions plugin exists", function() {
+				kalturaQunitWaitForPlayer(function(){
+					equal( kdp.evaluate( '{closedCaptions.plugin}' ), true, "closedCaptions plugin exists");
+					kdp.sendNotification("doPlay");
+					kdp.kBind('playing', function() {
+						kdp.kUnbind('playing');
+						captionsOverlay = $('.captionsOverlay', document.getElementById("myVideoTarget_ifp").contentDocument);
+
+						if( captionsOverlay.length > 0) {
+							testDisplayCaptionsValue();
+						} else {
+							checkCaptionsExistOnMediaEntry();
+							//change to media with captions and continue
+							setTimeout(function() {
+								kdp.sendNotification("changeMedia", { entryId : "1_23pqn2nu" });
+							}, 3000);
+						}
+					});
+
+					start();
+				});
+			} );
+
+			window.checkCaptionsExistOnMediaEntry = function() {
+				asyncTest( "Validate that captions don't exist on the entry", function(){ 
+					if ( captionsOverlay.length == 0 || ( captionsOverlay[0].childNodes.length == 1 && captionsOverlay[0].style.display == "none") ) {
+						ok(true, "No captions on this entry");
+					} else {
+						ok(false, "No captions on this entry");
+					}
+
+					start();
+				});
+			}
+
+			window.onChangeMedia = function() {
+				kdp.sendNotification("doPlay");
+				kdp.kBind('playing', function() { 
+					kdp.kUnbind('playing');
+					captionsOverlay = $('.captionsOverlay', document.getElementById("myVideoTarget_ifp").contentDocument);
+					testDisplayCaptionsValue();
+				});
+			}
+
+			window.testDisplayCaptionsValue = function() { 
+				if( kdp.evaluate( '{closedCaptions.displayCaptions}' ) == false ) { 
+					asyncTest( "displayCaptions value is false", function(){
+						if( captionsOverlay.length == 0 ) {
+							ok(true, "Captions are not displayed");
+						} else {
+							ok(false, "Captions are not displayed");
+						}
+					});
+
+				} else { 
+					asyncTest( "displayCaptions value is true", function(){
+						if( captionsOverlay.length > 0 ) { 
+							ok(true, "Captions are displayed");
+						} else {
+							ok(false, "Captions are displayed");
+						}
+					});
+				}
+				
+				start();			
+			}
+
+			window.testDisplayCaptionsEnabled = function() {
+				asyncTest( "Display Captions Enabled", function(){
+					if( kdp.evaluate( '{closedCaptions.displayCaptions}' ) == true ) {
+						equal( kdp.evaluate( '{closedCaptions.displayCaptions}' ), true, "display captions is set to true" );
+						start();
+					}
+				});
+			}
+		}
+	</script>
+	<script>
+		function jsCallbackReady( videoId ){
+			if( console && console.log ){
+				console.log( 'jsCallbackReady: ' + videoId );
+			}
+		}
+	</script>
+
+	<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+	<script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+
+<h2> Closed Captions Test Page </h2>
+<div id="myVideoTarget" style="width:400px;height:330px;float:left"></div>
+<br>
+
+<script>
+	kWidget.featureConfig({
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id': '12907572',
+		'entry_id': '1_1dvx5zaw',
+		'flashvars': {
+			'disableTrackElement': true,
+			'closedCaptions': {
+				'layout': 'ontop',
+				'useCookie': true,
+				'defaultLanguageKey': 'en',
+				'fontsize': 12,
+				'bg' : '0x335544',
+				'fontFamily' : 'Arial',
+				'fontColor' : '0xFFFFFF',
+				'useGlow' : 'false',
+				'glowBlur': 4,
+				'glowColor': '0x133693',
+				"plugin":true
+			}
+		}
+	});
+</script>
+</body>
+</html>
