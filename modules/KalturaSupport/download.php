@@ -372,7 +372,7 @@ class downloadEntry {
 	 * @param $flavorId
 	 * 	{String} the flavor id string
 	 */
-	private function getSourceFlavorUrl( $flavorId = false, $preferredBitrate){
+	private function getSourceFlavorUrl( $flavorId = false ){
 
 		if($_GET['preferredBitrate'] != null){
             $preferredBitrate	= intval($_GET['preferredBitrate']);
