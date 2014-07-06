@@ -64,6 +64,7 @@
 	/**
 	* Given a timeMeasurements object return the number of seconds
 	* @param {object} timeMeasurements
+	* @return {float} seconds
 	*/
 	mw.measurements2seconds = function( timeMeasurements ){
 		var seconds = 0;
@@ -80,7 +81,7 @@
 			seconds += parseInt( timeMeasurements.seconds, 10 );
 		}
 		if( timeMeasurements.milliseconds ){
-			seconds += parseFloat(timeMeasurements.milliseconds);
+			seconds += parseFloat( timeMeasurements.milliseconds ) / 1000;
 		}
 		return seconds;
 	};
