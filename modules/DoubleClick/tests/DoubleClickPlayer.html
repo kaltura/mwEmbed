@@ -19,7 +19,7 @@
 		'entry_id' : '0_uka1msg4',
 		'flashvars': {
 			'streamerType': 'hdnetwork',
-			'doubleClick':{
+			/*'doubleClick':{
 				'plugin':true,
 				'relativeTo':'screensLayer',
 				'position':'after',
@@ -33,6 +33,23 @@
 				'includeInLayout':true,
 				'disableCompanionAds' : false,
 				'debugMode':true//				'videoTagSiblingAd': false,
+			},*/
+			'vast': {
+				'plugin' : true,
+				'numPreroll':"1",
+				//'prerollInterval':"1",
+				//'prerollStartWith':"1",
+				//'prerollUrl':"http://projects.kaltura.com/MichalR/vast3_demo.xml",
+				'overlayStartAt':"20",
+				'overlayInterval':"300",
+				'overlayUrl':"http://projects.kaltura.com/MichalR/vast_overlay.xml",
+				'numPostroll':"1",
+					'postrollInterval':"1",
+					'postrollStartWith':"1",
+					'postrollUrl':"http://projects.kaltura.com/mdale/hotelVastAd.xml",
+				'preSequence':"1",
+				'postSequence':"1",
+				'timeout':"4"
 			},
 			'debugMode':'true',
 			'adsOnReplay':true

@@ -137,7 +137,7 @@ mw.DoubleClick.prototype = {
 	 * Load the google IMA library:
 	 */
 	loadIma:function( successCB, failureCB ){
-		$.getScript( '//s0.2mdn.net/instream/html5/ima3_debug.js', function() {
+		$.getScript( '//s0.2mdn.net/instream/html5/ima3.js', function() {
 			successCB();
 		} )
 		.fail( function( jqxhr, settings, errorCode ) {
@@ -157,7 +157,7 @@ mw.DoubleClick.prototype = {
 					// Setup the restore callback
 					_this.restorePlayerCallback = callback;
 					// Request ads
-					mw.log( "DoubleClick:: addManagedBinding : requestAds:" +  _this.getConfig( 'adTagUrl' )  );
+					mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
 					_this.requestAds( _this.getConfig( 'adTagUrl' ) );
 				};
 			});
@@ -166,20 +166,12 @@ mw.DoubleClick.prototype = {
 			_this.embedPlayer.bindHelper( 'AdSupport_postroll' + _this.bindPostfix, function( event, sequenceProxy ){
 				sequenceProxy[ _this.getSequenceIndex( 'postroll' ) ] = function( callback ){
 
-					// Setup the restore callback
-					_this.restorePlayerCallback = callback;
-
-					// set content complete flag
-					//_this.contentDoneFlag = true;
-
 					// set current slot to postRoll
 					_this.currentAdSlotType = 'postroll';
-
-					// trigger the double click end sequence:
-					//_this.adsLoader.contentComplete();
-					// destroy ad manager
-					//_this.adsManager.destroy();
-
+					// Setup the restore callback
+					_this.restorePlayerCallback = callback;
+					// Request ads
+					mw.log( "DoubleClick:: addManagedBinding : requestAds for postroll:" +  _this.getConfig( 'adTagUrl' )  );
 					_this.requestAds( _this.getConfig( 'adTagUrl' ) );
 
 	                //If adsLoader error was caught then check if restorePlayer was already called before!
@@ -744,7 +736,6 @@ mw.DoubleClick.prototype = {
 		}
 	},
 	doMonitorAdProgress: function(){
-
 		var _this = this;
 		// check if we are still playing an ad:
 		if( !_this.adActive ){
@@ -815,15 +806,7 @@ mw.DoubleClick.prototype = {
 		var _this = this;
 		this.adActive = false;
 		this.embedPlayer.sequenceProxy.isInSequence = false;
-		// Show the content:
-/*
-		this.showContent();
 
-		// sometimes double click has sets visibility to false ( async :( ):
-		setTimeout(function(){
-			$( _this.getContent() ).css('visibility',  'visible');
-		}, 250);
-*/
 		// Check for sequence proxy style restore:
 		if( $.isFunction( this.restorePlayerCallback ) ){
 			// also do the normal restore ( will issue an async play call )
