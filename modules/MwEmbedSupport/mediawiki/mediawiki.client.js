@@ -46,10 +46,10 @@
 		return  /OS 3_/.test( userAgent ) && mw.isIpad();
 	};
 	mw.isAndroid44 = function(){
-		return ( userAgent.indexOf( 'Android 4.2') != -1 );
+		return ( userAgent.indexOf( 'Android 4.4') != -1 );
 	};
 	mw.isAndroid43 = function(){
-		return ( userAgent.indexOf( 'Android 4.2') != -1 );
+		return ( userAgent.indexOf( 'Android 4.3') != -1 );
 	};
 	mw.isAndroid42 = function(){
 		return ( userAgent.indexOf( 'Android 4.2') != -1 );
