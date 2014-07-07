@@ -374,7 +374,7 @@ class downloadEntry {
 	 */
 	private function getSourceFlavorUrl( $flavorId = false ){
 
-		if($_GET['preferredBitrate'] != null){
+		if( isset($_GET['preferredBitrate']) && $_GET['preferredBitrate'] != null){
             $preferredBitrate	= intval($_GET['preferredBitrate']);
         }
 
