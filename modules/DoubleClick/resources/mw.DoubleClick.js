@@ -190,7 +190,7 @@ mw.DoubleClick.prototype = {
 	 * Get the content video tag
 	 */
 	getContent:function(adVideo){
-		if ( !mw.isMobileDevice() && (this.adActive || adVideo)){
+		if ( !mw.isMobileDevice() && this.currentAdSlotType!='overlay' && this.currentAdSlotType!='midroll' && (this.adActive || adVideo)){
 			var doubleClickAd = $('<video class="doubleClickAd persistentNativePlayer nativeEmbedPlayerPid" style="position: absolute; left: 0px; top: 0px; background-color: black"></video>');
 			if ($(".doubleClickAd").length === 0){
 				$(".videoHolder").append(doubleClickAd);
@@ -230,14 +230,14 @@ mw.DoubleClick.prototype = {
 
 			// Get the ad type for each cuepoint
 			var adType = _this.embedPlayer.kCuePoints.getRawAdSlotType( cuePoint );
+			// Update the ad slot type:
+			_this.currentAdSlotType = adType;
 
 			mw.log( "DoubleClick:: AdOpportunity:: " + cuePoint.startTime + ' ad type: ' + adType );
 			if( adType == 'overlay' ){
 				_this.loadAndDisplayOverlay( cuePoint );
 				return true; // continue to next cue point
 			}
-			// Update the ad slot type:
-			_this.currentAdSlotType = adType;
 
 			if( adType == 'preroll' || adType == 'postroll' ){
 				_this.embedPlayer.bindHelper( 'AdSupport_' + adType + _this.bindPostfix, function( event, sequenceProxy ){
