@@ -58,7 +58,9 @@
 					// TODO add additional logic for "auto" where multiple bitrates 
 					// exist at the same resolution. 
 					var selectedSource = _this.embedPlayer.mediaElement.autoSelectSource();
-					_this.embedPlayer.switchSrc( selectedSource );
+					if ( selectedSource ){ // source was found
+						_this.embedPlayer.switchSrc( selectedSource );
+					}
 				});
 			}
 		},

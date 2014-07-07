@@ -919,9 +919,19 @@ mw.KWidgetSupport.prototype = {
 				qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
 				source.src = source.src + qp +  'preferredBitrate=' + preferedBitRate;
 			}
-			// add any flashvar based playManifest params
-			qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
-			source.src = source.src +  qp + flashvarsPlayMainfestParams;
+
+			if ( source['disableQueryString'] ) {
+				var mParams =  this.getPlayMainfestParams( embedPlayer, true );
+				if ( mParams != '' ) {
+					var index = source.src.lastIndexOf( '/a.' );
+					source.src = source.src.substring( 0, index ) + '/' + mParams  + source.src.substring( index ) ;
+				}
+
+			} else {
+				// add any flashvar based playManifest params
+				qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
+				source.src = source.src +  qp + flashvarsPlayMainfestParams;
+			}
 			
 			mw.log( 'KWidgetSupport:: addSource::' + embedPlayer.id + ' : ' +  source.src + ' type: ' +  source.type);
 			var sourceElm = $('<source />')
@@ -931,14 +941,19 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.mediaElement.tryAddSource( sourceElm );
 		}
 	},
-	getPlayMainfestParams: function( embedPlayer ){
+	getPlayMainfestParams: function( embedPlayer, disableQueryString ){
 		var p = '';
 		var and = '';
+		var equalDelimiter = '=';
+		var andDelimiter = '&';
+		if ( disableQueryString ) {
+			andDelimiter = equalDelimiter = '/';
+		}
 		var urlParms = ["deliveryCode", "storageId", "maxBitrate", "playbackContext", "seekFrom", "clipTo" ];
 		$.each( urlParms, function( inx, param ){
 			if( embedPlayer.getFlashvars( param ) ){
-				 p += and + param + '=' + embedPlayer.getFlashvars( param );
-				 and = '&';
+				 p += and + param + equalDelimiter + embedPlayer.getFlashvars( param );
+				 and = andDelimiter;
 			}
 		});
 		return p;
@@ -1129,6 +1144,7 @@ mw.KWidgetSupport.prototype = {
 				source['src'] = src + '/a.wvm';
 				source['data-flavorid'] = 'wvm';
 				source['type'] = 'video/wvm';
+				source['disableQueryString'] = true;
 			} 
 
 			if ( asset.tags && asset.tags == 'kontiki'){
@@ -1197,7 +1213,7 @@ mw.KWidgetSupport.prototype = {
 			var addedHlsStream = false;
 			var validClipAspect = this.getValidAspect( deviceSources );
 			// Check if mobile device media query
-			if ( mw.isDeviceLessThan480P() && iphoneAdaptiveFlavors.length ) {
+			if ( mw.isMobileDevice() && mw.isDeviceLessThan480P() && iphoneAdaptiveFlavors.length ) {
 				// Add "iPhone" HLS flavor
 				deviceSources.push({
 					'data-aspect' : validClipAspect,
@@ -1243,10 +1259,21 @@ mw.KWidgetSupport.prototype = {
 		var ksCheck = false;
 		this.kClient.getKS( function( ks ) {
 			ksCheck = true;
+			var manifestKs = _this.fixPlaymanifestParam( ks );
+			var referrer =   _this.fixPlaymanifestParam( base64_encode( _this.getHostPageUrl() ) );
+			var clientTag = 'html5:v' + window[ 'MWEMBED_VERSION' ];
 			$.each( deviceSources, function(inx, source){
-				deviceSources[inx]['src'] = deviceSources[inx]['src'] + '?ks=' + ks + 
-					'&referrer=' + base64_encode( _this.getHostPageUrl() ) + 
-					'&clientTag=' + 'html5:v' + window[ 'MWEMBED_VERSION' ];
+				if ( deviceSources[inx]['disableQueryString'] == true ) {
+					var index = deviceSources[inx]['src'].lastIndexOf('/a.');
+					deviceSources[inx]['src'] = deviceSources[inx]['src'].substring(0, index) + '/ks/' + manifestKs +
+						'/referrer/' + referrer +
+						'/clientTag/' + clientTag +
+						deviceSources[inx]['src'].substring(index) ;
+				} else {
+					deviceSources[inx]['src'] = deviceSources[inx]['src'] + '?ks=' + manifestKs +
+						'&referrer=' + referrer +
+						'&clientTag=' + clientTag;
+				}
 			});
 		});
 		if( !ksCheck ){
@@ -1254,6 +1281,14 @@ mw.KWidgetSupport.prototype = {
 		}
 		
 		return deviceSources;
+	},
+	/**
+	 *  "/" and "+" are valid base64 chars. They might break playmanifest URL so we replace them to "_" and "-" accordingly.
+	 *  There is a server side code that replaces the string back to the original value
+	 * @param value
+	 */
+	fixPlaymanifestParam: function( value ) {
+		return value.replace(/\+/g, "-").replace(/\//g, "_");
 	},
 	removeAdaptiveFlavors: function( sources ){
 		for( var i =0 ; i < sources.length; i++ ){

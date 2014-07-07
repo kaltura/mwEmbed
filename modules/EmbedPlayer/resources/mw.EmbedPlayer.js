@@ -1706,6 +1706,9 @@
 			}
 
 			$( this ).empty();
+			if (mw.getConfig( 'EmbedPlayer.HidePosterOnStart' ) === true){
+				return;
+			}
 			// for IE8 and IE7 - add specific class
 			if (mw.isIE8() || mw.isIE7()){
 				$( this ).addClass("mwEmbedPlayerTransparent");

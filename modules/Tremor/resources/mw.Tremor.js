@@ -50,7 +50,7 @@ mw.Tremor.prototype = {
 			kWidget.appendScriptUrl( _this.getAdManagerUrl(), function(){
 				_this.setupAds();
 				callback();
-			}, document );
+			}, document, callback );
 		} else{
 			_this.setupAds();
 			callback();
