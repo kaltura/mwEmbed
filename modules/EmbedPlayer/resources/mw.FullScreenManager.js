@@ -111,6 +111,7 @@ mw.FullScreenManager.prototype = {
 		}
 
 		// Check for native support for fullscreen and we are in an iframe server
+		// when "&& !mw.isMobileChrome()" removed it works
 		if( screenfull && screenfull.enabled(doc) && !mw.isMobileChrome() ) {
 			var fullscreenHeight = null;
 			var fsTarget = this.getFsTarget();
