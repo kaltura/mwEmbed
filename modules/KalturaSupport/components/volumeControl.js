@@ -45,6 +45,7 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 				_this.getComponent().addClass('open');
 			};
 			var closeSlider = function(){
+
                 if(!_this.getConfig('pinVolumeBar'))
 				    _this.getComponent().removeClass('open');
 			};
@@ -56,7 +57,9 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 			// Firefox unable to get component width correctly without timeout
 			setTimeout(function(){
 				_this.getComponent().data('width', _this.getComponent().width() );
-				closeSlider();					
+				closeSlider();
+				//$(".volume-slide-wrapper").hide();
+				$(".volume-slide-wrapper").hover(null,closeSlider);
 			}, 100);
 		});
 		// Add click bindings
@@ -84,13 +87,26 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 		}
 		this.getBtn().focusin(openSlider);
 		this.getBtn().focusout(closeSlider);
-		this.getComponent().hover(openSlider, closeSlider);
+
+
+		if(this.getConfig('layout') == "horizontal"){
+			this.getComponent().hover(openSlider, closeSlider);
+		} else {
+			// Add the hotspot to the background and not to the button
+			this.getComponent().hover(openSlider, closeSlider);
+		}
+
 
 		this.bind( 'volumeChanged', function(e, percent){
 			_this.updateVolumeUI( percent );
 		});
 
 		this.getSlider().slider( this.getSliderConfig() );
+		if(this.getConfig('layout') == "vertical"){
+			this.getSlider().slider({ orientation: "vertical" });
+			$(this.getSlider()).wrap('<div class="volume-slide-wrapper"></div>');
+		}
+
 		if ( this.getConfig( 'accessibilityLabels' ) ){
 			var percent = this.getPlayer().getPlayerElementVolume() * 100
 			var title = gM('mwe-embedplayer-volume-value', percent );
@@ -129,17 +145,34 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 	getComponent: function() {
 		if( !this.$el ) {
 			var layoutClass = ' ' + this.getConfig('layout');
-			var $btn = $( '<button />' )
-						.addClass( "btn " + this.icons['high'] )
-						.attr( {'title': gM( 'mwe-embedplayer-volume-mute' ) ,'id': 'muteBtn'});
-			this.setAccessibility($btn, gM( 'mwe-embedplayer-volume-mute' ));
-			// Add the volume control icon
-			this.$el = $('<div />')
-				.addClass( this.getCssClass() + layoutClass )
-				.append(
-					$btn,
-					$( '<div />' ).addClass( 'slider' )
-				);
+
+			if(this.getConfig('layout') == "horizontal"){
+				var $btn = $( '<button />' )
+							.addClass( "btn " + this.icons['high'] )
+							.attr( {'title': gM( 'mwe-embedplayer-volume-mute' ) ,'id': 'muteBtn'});
+				this.setAccessibility($btn, gM( 'mwe-embedplayer-volume-mute' ));
+				// Add the volume control icon
+				this.$el = $('<div />')
+					.addClass( this.getCssClass() + layoutClass )
+					.append(
+						$btn,
+						$( '<div />' ).addClass( 'slider' )
+					);
+			} else {
+				var $btn = $( '<button />' )
+					.addClass( "btn " + this.icons['high'] )
+					.attr( {'title': gM( 'mwe-embedplayer-volume-mute' ) ,'id': 'muteBtn'});
+				this.setAccessibility($btn, gM( 'mwe-embedplayer-volume-mute' ));
+				// Add the volume control icon
+				this.$el = $('<div />')
+					.addClass( this.getCssClass() + layoutClass )
+					.append(
+						$btn,
+						$( '<div />' ).addClass( 'slider' )
+					);
+			}
+
+
 			// add accessibility controls
 			if (this.getConfig("accessibleControls")){
 				var $accessibilityIncreaseVol = $('<button/>')
