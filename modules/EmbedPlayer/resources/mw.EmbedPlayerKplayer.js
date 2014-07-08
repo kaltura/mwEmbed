@@ -60,7 +60,7 @@ mw.EmbedPlayerKplayer = {
 		var flashvars = {};
 		flashvars.widgetId = "_" + this.kpartnerid;
 		flashvars.partnerId = this.kpartnerid;
-        flashvars.autoMute = this.muted;
+        flashvars.autoMute = this.muted || mw.getConfig( 'autoMute' );
 		flashvars.streamerType = this.streamerType;
 		flashvars.entryUrl = encodeURIComponent(this.getEntryUrl());
 		flashvars.ks = this.getFlashvars( 'ks' );
@@ -79,6 +79,13 @@ mw.EmbedPlayerKplayer = {
 
 		if ( this.streamerType != 'http' && this.selectedFlavorIndex != 0 ) {
 			flashvars.selectedFlavorIndex = this.selectedFlavorIndex;
+		}
+
+		//add OSMF HLS Plugin if the source is HLS
+		if ( this.isHlsSource( this.mediaElement.selectedSource ) && mw.getConfig("LeadWithHLSOnFlash") ) {
+			flashvars.sourceType = 'url';
+			flashvars.ignoreStreamerTypeForSeek = true;
+			flashvars.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
 		}
 
 		//will contain flash plugins we need to load
@@ -115,7 +122,18 @@ mw.EmbedPlayerKplayer = {
 				_this.playerObject.setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'false');
 				_this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus': false } );
 			}
+			if (mw.getConfig( 'autoMute' )){
+				_this.triggerHelper("volumeChanged",0);
+			}
+
 		});
+	},
+
+	isHlsSource: function( source ) {
+		if ( source && (source.getMIMEType() == 'application/vnd.apple.mpegurl' )) {
+			return true;
+		}
+		return false;
 	},
 
 	setCurrentTime: function( time, callback ){
@@ -149,6 +167,7 @@ mw.EmbedPlayerKplayer = {
 
 	/**
 	* Get required sources for KDP. Either by flavorTags flashvar or tagged wtih 'web'/'mbr' by default
+	 * or hls sources
 	**/
 	getSourcesForKDP: function() {
 		var _this = this;
@@ -158,7 +177,7 @@ mw.EmbedPlayerKplayer = {
 		if ( flavorTags === undefined ) {
 			var sources = _this.mediaElement.getPlayableSources();
 			$.each( sources, function( sourceIndex, source ) {
-				if ( _this.checkForTags( source.getTags(), ['web', 'mbr'] )) {
+				if ( _this.checkForTags( source.getTags(), ['web', 'mbr'] ) || ( _this.isHlsSource( source ))) {
 					sourcesByTags.push ( source );
 				}
 			});
@@ -322,7 +341,7 @@ mw.EmbedPlayerKplayer = {
 				return;
 			}
 		}
-		if ( this.playerObject.duration ) //we already loaded the movie
+		if ( !this.firstPlay ) //we already loaded the movie
 		{
 			this.seeking = true;
 			// trigger the html5 event:
@@ -483,7 +502,7 @@ mw.EmbedPlayerKplayer = {
 	* Get the URL to pass to KDP according to the current streamerType
 	*/
 	getEntryUrl: function() {
-		if ( this.live || this.sourcesReplaced ) {
+		if ( this.live || this.sourcesReplaced || this.isHlsSource( this.mediaElement.selectedSource )) {
 			return this.mediaElement.selectedSource.getSrc();
 		}
 		var flavorIdParam = '';

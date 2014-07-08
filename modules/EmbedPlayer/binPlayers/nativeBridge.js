@@ -38,7 +38,10 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 	embedPlayer: null,
 	isJsCallbackReady: false,
 	bindPostfix: ".nativeBridge",
-	playerMethods: [ 'stop', 'play', 'pause', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen', 'notifyKPlayerEvent', 'notifyKPlayerEvaluated', 'notifyJsReady' ],
+
+	playerMethods: [ 'stop', 'play', 'pause', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen', 'notifyKPlayerEvent', 'notifyKPlayerEvaluated', 'notifyJsReady',
+		'doneFSBtnPressed', 'addNativeAirPlayButton', 'showNativeAirPlayButton', 'hideNativeAirPlayButton'],
+
 	registePlayer: function (proxyElement) {
 		var _this = this;
 		this.proxyElement = proxyElement;
@@ -59,7 +62,6 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 		}
 
 		this.bindNativeEvents();
-		this.notifyJsReadyFunc();
 	},
 
 	notifyJsReadyFunc: function() {
@@ -70,6 +72,7 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 
 	registerEmbedPlayer: function( embedPlayer ) {
 		this.embedPlayer = embedPlayer;
+		this.notifyJsReadyFunc();
 	},
 	sendNotification: function( eventName, eventValue ) {
 		this.embedPlayer.sendNotification( eventName, JSON.parse( eventValue ));

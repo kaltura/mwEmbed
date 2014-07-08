@@ -49,6 +49,9 @@
 				this.iframeUrl += '#' + JSON.stringify( window.preMwEmbedConfig );
 				this.addApi( this.target );
 
+				// Setting kplayer id for jsCallbackReady
+				this.setKPlayerId( targetId );
+
 				if ( settings.playOnlyFullscreen )  {
 					kWidget.addThumbCssRules();
 					this.target.innerHTML = '' +
@@ -135,6 +138,9 @@
 				var h = videoElementRect.bottom - videoElementRect.top;
 
 				this.exec( "drawVideoNativeComponent", [ x, y, w, h, isFullscreen ], "NativeComponentPlugin" );
+			},
+			setKPlayerId: function( targetId ){
+				this.exec( "setKPlayerId", [ targetId ], "NativeComponentPlugin" );
 			}
 		};
 	}

@@ -355,7 +355,7 @@ return array(
 			'simpleFormat' => array(
 				'doc' => "Use simple format to restrict to two sources only per named size, and not list content type.",
 				'type' => 'boolean',
-				'initvalue' => false,
+				'initvalue' => true,
 			),
 			array(
                 "doc" => "Preferred flavor bitrate",
@@ -366,6 +366,18 @@ return array(
             ),
 		)
 	),
+	'uiVars' => array(
+        'description' => "Allows you to add UI variables to the player configuration.",
+        'label' => "UI Variables",
+        'attributes' => array(
+            'vars' => array(
+                'doc' => 'List of UI variables',
+                'label' => 'UI variables',
+                'type' => 'uivars',
+                'model' => 'vars'
+            )
+        )
+    ),
 	'download' => array(
 		'description' => "Enables users to add a download button to the player controls.
 			The download button will enable users to download the media to a local file.",
@@ -950,6 +962,14 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'overlayInterval' => array(
 				'doc' => "How often should the overlay be displayed.",
 				'type' => 'number',
+				'from' => 0, // *NEW*
+				'stepsize' => 1, // *NEW*
+				'to' => 500, // *NEW*
+			),
+			'overlayUrl' => array(
+				'label' => 'Overlay URL', // *NEW*
+				'doc' => "The VAST XML file that contains the overlay media and tracking info.",
+				'type' => 'url',
 				'section' => 'over',
 				'min' => 0, // *NEW*
 				'initvalue' => 0, // *NEW*
@@ -963,7 +983,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'max' => 1000, // *NEW*
 			),
 			'trackCuePoints' => array(
-				'doc' => "If entry cuepoints should be tracked for DoubleClick cue points / VAST URLs.",
+				'doc' => "If entry cuepoints should be tracked for midroll ad requests.",
 				'type' => 'boolean'
 			),
 			'storeSession' => array(
@@ -977,7 +997,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 	),
 	'keyboardShortcuts' => array(
 		'description' => 'The keyboard shortcuts plugins allows you to control the player using keyboard shortcuts. ' .
-			'More about javasciprt <a target="_new" href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent">key mappings</a>',
+			'More about javasciprt <a target="_new" href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent.keyCode#Constants_for_keyCode_value">key mappings</a>',
 		'attributes' => array(
 			'volumePercentChange' => array(
 				'doc' => 'Volume change percent, from 0 to 1.',
@@ -1126,19 +1146,23 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'string',
 			),
 			'reasonSex' => array(
-				'doc' => 'Reason Sexual Content.',
+				'label' => 'Reason: Sexual Content',
+				'doc' => 'Reason: Sexual Content.',
 				'type' => 'string',
 			),
 			'reasonViolence' => array(
-				'doc' => 'Reason Violent Content.',
+				'label' => 'Reason: Violent Content',
+				'doc' => 'Reason: Violent Content.',
 				'type' => 'string',
 			),
 			'reasonHarmful' => array(
-				'doc' => 'Reason Harmful Content.',
+				'label' => 'Reason: Harmful Content',
+				'doc' => 'Reason: Harmful Content.',
 				'type' => 'string',
 			),
 			'reasonSpam' => array(
-				'doc' => 'Reason Spam Content.',
+				'label' => 'Reason: Spam',
+				'doc' => 'Reason: Spam.',
 				'type' => 'string',
 			),
 		)
@@ -1149,7 +1173,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			array(
 				'template' => array(
 					'doc' => 'HTML Template for the info screen.',
-					'type' => 'string',
+					'type' => 'hiddenValue',
 				),
 			)
 		)
@@ -1180,6 +1204,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'initValue' => '{mediaProxy.entry.name}',
 			),
 		)
+	),
+	'airPlay' => array(
+		'description' => 'Enables wireless streaming of audio, video, and photos, together with related metadata between devices, for iOS.',
+		'type' => 'featuremenu',
+		'label' => 'airPlay',
+		'model' => 'config.plugins.airPlay',
 	),
 	'related' => array(
 		'description' => 'Add the Related Videos screen at the end of the video to attract users to watch additional videos.',

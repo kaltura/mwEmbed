@@ -112,7 +112,7 @@
 @media only screen and (max-width : 1050px) and (min-width : 651px) {
    /* Small desktop / ipad view: 3 tiles */
    .related .item {
-      width: 33.3%;
+      width: 25%;
       height: 33.3%;
    }
 	.fullscreen .related .item {
