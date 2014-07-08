@@ -681,7 +681,7 @@
 			//this.selectedPlayer =null;
 		},
 
-		getPlayerByStreamerType: function(){
+		getPlayerByStreamerType: function(source){
 			var targetPlayer;
 			//currently only kplayer can handle other streamerTypes
 			if ( !mw.getConfig( 'EmbedPlayer.IgnoreStreamerType')
@@ -707,7 +707,7 @@
 		switchPlaySource: function( source, switchCallback, doneCallback ){
 			var _this = this;
 
-			var targetPlayer = this.getPlayerByStreamerType();
+			var targetPlayer = this.getPlayerByStreamerType(source);
 			if( targetPlayer.library != this.selectedPlayer.library ){
 				this.selectPlayer ( targetPlayer );
 				this.updatePlaybackInterface( function(){
@@ -774,7 +774,7 @@
 					mw.setConfig('EmbedPlayer.ForceNativeComponent', false);
 				}
 
-				var targetPlayer = this.getPlayerByStreamerType();
+				var targetPlayer = this.getPlayerByStreamerType(this.mediaElement.selectedSource);
 				this.selectPlayer( targetPlayer );
 
 				// Check if we need to switch player rendering libraries:
