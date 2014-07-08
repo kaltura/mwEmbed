@@ -786,6 +786,12 @@ mw.DoubleClick.prototype = {
 		this.adActive = false;
 		this.embedPlayer.sequenceProxy.isInSequence = false;
 
+		// remove ad container and ad video tag
+		if( $('#' + this.getAdContainerId() ).length ){
+			$('#' + this.getAdContainerId() ).remove();
+		}
+		$(".doubleClickAd").remove();
+
 		// Check for sequence proxy style restore:
 		if( $.isFunction( this.restorePlayerCallback ) ){
 			// also do the normal restore ( will issue an async play call )
