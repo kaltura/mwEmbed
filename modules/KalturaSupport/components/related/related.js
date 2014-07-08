@@ -138,7 +138,7 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 			return this.getEntriesFromList( this.getConfig( 'entryList' ), callback );
 		}
 		// if no playlist is defined used the magic related video playlistd id: 
-		return this.getEntriesFromPlaylistId( '_KDP_CTXPL', callback);
+		return this.getEntriesFromPlaylistId( '_KDP_CTXPL', callback, true);
 	},
 	isValidResult: function( data ){
 		// Check if we got error
@@ -182,16 +182,21 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 			callback( orderedData )
 		});
 	},
-	getEntriesFromPlaylistId: function( playlistId, callback ){
+	getEntriesFromPlaylistId: function( playlistId, callback, sendContext ){
 		var _this = this;
-		this.getKalturaClient().doRequest( {
+		var requestObject = {
 			'service' : 'playlist',
 			'action' : 'execute',
 			'id' : playlistId,
 			'filter:objectType': 'KalturaMediaEntryFilterForPlaylist',
 			'filter:idNotIn': this.getPlayer().kentryid,
 			'filter:limit': this.getConfig('itemsLimit')
-		}, function( data ){
+		}
+		if ( sendContext ) {
+			requestObject['playlistContext:objectType'] = 'KalturaEntryContext';
+			requestObject['playlistContext:entryId'] = this.getPlayer().kentryid;
+		}
+		this.getKalturaClient().doRequest( requestObject, function( data ){
 			// Validate result, don't issue callback if not valid.
 			if( ! _this.isValidResult( data ) ) {
 				return ;
