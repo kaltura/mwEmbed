@@ -480,6 +480,7 @@ mw.DoubleClick.prototype = {
 		// Add ad listeners:
 		adsListener( 'CLICK', function(event){
 			if( mw.isMobileDevice() ){
+
 				var eventName = 'focus';
 
 				if( mw.isIOS() ){
@@ -490,6 +491,19 @@ mw.DoubleClick.prototype = {
 					$(window).unbind(eventName , onFocusAction);
 				}
 				$(window).bind(eventName , onFocusAction);
+
+				if( mw.isIOS6() ) {
+					var startTime = new Date().getTime();
+					var getTime = function() {
+						var currentTime = new Date().getTime();
+						if (currentTime - startTime > 500) {
+							_this.embedPlayer.getPlayerElement().play();
+						}
+						startTime = currentTime;
+						setTimeout(getTime,500);
+					};
+					getTime();
+				}
 			}
 		} );
 		adsListener( 'CONTENT_PAUSE_REQUESTED', function(event){
