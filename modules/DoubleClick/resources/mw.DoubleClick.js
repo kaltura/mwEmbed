@@ -47,11 +47,28 @@ mw.DoubleClick.prototype = {
 	currentAdSlotType : null,
 
 	init: function( embedPlayer, callback, pluginName ){
-
-		// DoubleClick is not supported on IE8 and IE9 - don't init the plugin on these browsers
-		if ( mw.isIE8() || mw.isIE9() ){
-			callback();
+		// check for vast fallback definitions
+		var isVastFallback = embedPlayer.playerConfig["plugins"] && embedPlayer.playerConfig["plugins"]["vast"];
+		// DoubleClick is not supported on IE8, IE9 and native apps - don't init the plugin on these browsers and implement VAST fallback if available
+		if ( mw.isIE8() || mw.isIE9() || mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
+			if (isVastFallback){
+				embedPlayer.setKDPAttribute( "vast", 'preSequence', '0' );  // prevent vast from displaying prerolls
+				embedPlayer.setKDPAttribute( "vast", 'postSequence', '0' ); // prevent vast from displaying postrolls
+				// set preroll fallback
+				if ( embedPlayer.getKalturaConfig( pluginName, "preSequence" ) ){
+					embedPlayer.setKDPAttribute( "vast", 'preSequence', embedPlayer.getKalturaConfig( pluginName, "preSequence" ) );   // set vast prerolls
+				}
+				// set postroll fallback
+				if ( embedPlayer.getKalturaConfig( pluginName, "postSequence" ) ){
+					embedPlayer.setKDPAttribute( "vast", 'postSequence', embedPlayer.getKalturaConfig( pluginName, "postSequence" ) ); // set vast postrolls
+				}
+			}
+			callback(); // continue player initialization process
 			return;
+		}else{ // DoubleClick is supported, prevent VAST fallback if defined
+			if (isVastFallback){
+				embedPlayer.setKDPAttribute( "vast", 'plugin', false );  // prevent vast from loading
+			}
 		}
 
 		var _this = this;
