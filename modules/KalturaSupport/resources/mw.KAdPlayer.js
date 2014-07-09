@@ -46,10 +46,28 @@ mw.KAdPlayer.prototype = {
 		}
 
 		$(this.embedPlayer).bind(eventName, function(){
-			$( embedPlayer).trigger("onPlayerStateChange",["play"]); // trigger playPauseBtn UI update
-			$( embedPlayer).trigger("onResumeAdPlayback");
-			_this.clickedBumper = false;
-			embedPlayer.disablePlayControls(); // disable player controls
+			if (mw.getConfig("enableControlsDuringAd")){
+				var adPlayer = _this.getVideoElement();
+				if ( adPlayer ) {
+					if ( adPlayer.paused ) {
+						$( embedPlayer ).trigger( "onPlayerStateChange", ["play"] ); // trigger playPauseBtn UI update
+						$( embedPlayer ).trigger( "onResumeAdPlayback" );
+						_this.clickedBumper = false;
+						_this.disablePlayControls(); // disable player controls
+						adPlayer.play();
+					} else {
+						$( embedPlayer ).trigger( "onPlayerStateChange", ["pause"] ); // trigger playPauseBtn UI update
+						setTimeout( function () {
+							adPlayer.pause();
+						}, 0 );
+					}
+				}
+			} else {
+				$( embedPlayer ).trigger( "onPlayerStateChange", ["play"] ); // trigger playPauseBtn UI update
+				$( embedPlayer ).trigger( "onResumeAdPlayback" );
+				_this.clickedBumper = false;
+				_this.disablePlayControls(); // disable player controls
+			}
 		});
 	},
 
@@ -425,7 +443,7 @@ mw.KAdPlayer.prototype = {
 							$( embedPlayer).trigger("onPlayerStateChange",["play"]);
 							$( embedPlayer).trigger("onResumeAdPlayback");
 							embedPlayer.restoreComponentsHover();
-							embedPlayer.disablePlayControls();
+							_this.disablePlayControls();
 							_this.clickedBumper = false;
 						} else {
 							_this.clickedBumper = true;
@@ -446,6 +464,14 @@ mw.KAdPlayer.prototype = {
 			}, 500 );
 		}
 	}   ,
+	disablePlayControls: function(){
+		var components = [];
+		if (mw.getConfig('enableControlsDuringAd')) {
+			components = ['playPauseBtn'];
+		}
+		this.embedPlayer.disablePlayControls(components);
+	},
+
 	/**
 	 * Check if we can use the video sibling method or if we should use the fallback source swap.
 	 */
@@ -924,7 +950,7 @@ mw.KAdPlayer.prototype = {
 							$( _this.embedPlayer ).trigger( "onPlayerStateChange", ["play"] );
 							$( _this.embedPlayer ).trigger( "onResumeAdPlayback" );
 							_this.embedPlayer.restoreComponentsHover();
-							_this.embedPlayer.disablePlayControls();
+							_this.disablePlayControls();
 						}
 						return false;
 					});

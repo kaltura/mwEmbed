@@ -121,8 +121,8 @@ mw.KCuePoints.prototype = {
 			_this.destroy();
 		});
 
-		// Bind for seeked event to update the nextCuePoint
-		$( embedPlayer ).bind( "seeked" + this.bindPostfix, function(){
+		// Bind for seeked and onplay events to update the nextCuePoint
+		$( embedPlayer ).bind( "seeked" + this.bindPostfix + " onplay" + this.bindPostfix, function(){
 			var currentTime = embedPlayer.currentTime * 1000;
 			currentCuePoint = _this.getNextCuePoint( currentTime );
 		});

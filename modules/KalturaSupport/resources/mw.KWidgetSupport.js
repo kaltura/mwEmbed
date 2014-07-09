@@ -1238,7 +1238,7 @@ mw.KWidgetSupport.prototype = {
 			var addedHlsStream = false;
 			var validClipAspect = this.getValidAspect( deviceSources );
 			// Check if mobile device media query
-			if ( mw.isDeviceLessThan480P() && iphoneAdaptiveFlavors.length ) {
+			if ( mw.isMobileDevice() && mw.isDeviceLessThan480P() && iphoneAdaptiveFlavors.length ) {
 				// Add "iPhone" HLS flavor
 				deviceSources.push({
 					'data-aspect' : validClipAspect,

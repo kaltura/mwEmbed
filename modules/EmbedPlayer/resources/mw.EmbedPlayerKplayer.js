@@ -47,6 +47,9 @@ mw.EmbedPlayerKplayer = {
 			return;
 		}
 
+		//Hide the native video tag
+		this.hideNativePoster();
+
 		// Create the container
 		this.getVideoDisplay().prepend(
 			$('<div />')
@@ -162,7 +165,29 @@ mw.EmbedPlayerKplayer = {
 	**/
 	disablePlayer: function(){
 		this.getPlayerContainer().css('visibility', 'hidden');
+		//Show the native video tag
+		this.showNativePoster();
 		this.enablePlayerObject( false );
+	},
+
+	/**
+	 * Show the native video tag
+	 */
+	showNativePoster: function(){
+		var videoTagObj = $ ( $( '#' + this.pid ).get( 0 ) );
+		if (videoTagObj){
+			videoTagObj.css('visibility', '');
+		}
+	},
+
+	/**
+	 * Hide the native video tag
+	 */
+	hideNativePoster: function(){
+		var videoTagObj = $ ( $( '#' + this.pid ).get( 0 ) );
+		if (videoTagObj){
+			videoTagObj.css('visibility', 'hidden');
+		}
 	},
 
 	/**

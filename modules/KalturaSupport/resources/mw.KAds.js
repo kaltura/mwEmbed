@@ -289,7 +289,7 @@ mw.KAds.prototype = {
 							_this.addSequenceProxyBinding( adType, adConfigSet, _this.getSequenceIndex( adType ) );
 						}
 					}
-					if( adType == 'overlay' ){
+					if( adType == 'overlay' && _this.embedPlayer.getKalturaConfig('vast', 'supportOverlays') !== false ){
 						_this.addOverlayBinding( adConfigSet[ adType ] );
 					}
 				}

@@ -147,7 +147,7 @@
 							include 'content_resources.php';
 							break;
 						case 'contact':
-							include 'contact_content.php';
+							include 'content_contact.php';
 							break;
 						case 'templates':
 							include 'content_marketing_templates.php';
