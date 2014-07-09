@@ -4,13 +4,10 @@ require_once (dirname(__FILE__)."/kaltura_client_v3/KalturaTypes.php");
 include_once (dirname(__FILE__)."/BaseObject.php");
 include_once (dirname(__FILE__)."/dataStore.php");
 include_once (dirname(__FILE__)."/request.php");
-require_once (dirname(__FILE__)."/Utils/kint/Kint.class.php");
 
 $qs       = $_SERVER['QUERY_STRING'];
 $main     = new Main();
 $response = $main->resolveRequest($qs);
-Kint::enabled(false);
-d($response);
 print_r(@serialize($response));
 
 //$console = new Logger("console");
