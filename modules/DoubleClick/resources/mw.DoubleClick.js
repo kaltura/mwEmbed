@@ -47,6 +47,8 @@ mw.DoubleClick.prototype = {
 	currentAdSlotType : null,
 	// Flag that indicates event name when ad is clicked
 	adClickEvent: null,
+	// Flag to enable/ disable timeout for iOS5/ iOS6 when ad is clicked
+	isAdClickTimeoutEnabled: false,
 
 	init: function( embedPlayer, callback, pluginName ){
 
@@ -483,6 +485,7 @@ mw.DoubleClick.prototype = {
 		adsListener( 'CLICK', function(event){
 			if( mw.isMobileDevice() ){
 				if( mw.isIOS5() || mw.isIOS6() ) {
+					_this.isAdClickTimeoutEnabled = true;
 					var startTime = new Date().getTime();
 					var getTime = function() {
 						var currentTime = new Date().getTime();
@@ -490,7 +493,9 @@ mw.DoubleClick.prototype = {
 							_this.embedPlayer.getPlayerElement().play();
 						}
 						startTime = currentTime;
-						setTimeout(getTime,500);
+						if( _this.isAdClickTimeoutEnabled ) {
+							setTimeout(getTime, 500);
+						}
 					};
 					getTime();
 				} else {
@@ -817,6 +822,8 @@ mw.DoubleClick.prototype = {
 		}
 		if( _this.adClickEvent ) {
 			$(window).unbind(_this.adClickEvent);
+		} else if( _this.isAdClickTimeoutEnabled ) {
+			_this.isAdClickTimeoutEnabled = false;
 		}
 	},
 	/**
