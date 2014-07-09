@@ -40,11 +40,13 @@ mw.DoubleClick.prototype = {
 
 	allAdsCompletedFlag: null,
 
-		//Signal if error was triggered from adsLoader
-		adLoaderErrorFlag: false,
+	//Signal if error was triggered from adsLoader
+	adLoaderErrorFlag: false,
 
 	// The current ad Slot type by default "managed" i.e doubleClick manages the player sequence.
 	currentAdSlotType : null,
+	// Flag that indicates event name when ad is clicked
+	adClickEvent: null,
 
 	init: function( embedPlayer, callback, pluginName ){
 
@@ -480,29 +482,27 @@ mw.DoubleClick.prototype = {
 		// Add ad listeners:
 		adsListener( 'CLICK', function(event){
 			if( mw.isMobileDevice() ){
-
-				var eventName = 'focus';
-
-				if( mw.isIOS() ){
-					eventName = 'pageshow';
-				}
-				var onFocusAction = function(event){
-					_this.embedPlayer.getPlayerElement().play();
-					$(window).unbind(eventName , onFocusAction);
-				}
-				$(window).bind(eventName , onFocusAction);
-
-				if( mw.isIOS6() ) {
+				if( mw.isIOS5() || mw.isIOS6() ) {
 					var startTime = new Date().getTime();
 					var getTime = function() {
 						var currentTime = new Date().getTime();
-						if (currentTime - startTime > 500) {
+						if (currentTime - startTime > 1000) {
 							_this.embedPlayer.getPlayerElement().play();
 						}
 						startTime = currentTime;
 						setTimeout(getTime,500);
 					};
 					getTime();
+				} else {
+					var eventName = 'focus.doubleClickMobileEvent';
+					if( mw.isIOS() ) {
+						eventName = 'pageshow.doubleClickMobileEvent';
+					}
+					_this.adClickEvent = eventName;
+					var onFocusAction = function(event){
+						_this.embedPlayer.getPlayerElement().play();
+					}
+					$(window).bind(eventName , onFocusAction);
 				}
 			}
 		} );
@@ -814,6 +814,9 @@ mw.DoubleClick.prototype = {
 			} else {
 				this.embedPlayer.play();
 			}
+		}
+		if( _this.adClickEvent ) {
+			$(window).unbind(_this.adClickEvent);
 		}
 	},
 	/**
