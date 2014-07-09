@@ -11,7 +11,7 @@
 		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isAndroid() || mw.config.get( "EmbedPlayer.ForceNativeComponent") )
 	};
 	mw.isIphone = function(){
-		return ( !mw.getConfig( "EmbedPlayer.ForceNativeComponent") && navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() ) || mw.isIpod();
+		return ( !mw.config.get( "EmbedPlayer.ForceNativeComponent") && navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() ) || mw.isIpod();
 	};
 	mw.isIE = function() {
 		return (/msie/.test(userAgent.toLowerCase()));
