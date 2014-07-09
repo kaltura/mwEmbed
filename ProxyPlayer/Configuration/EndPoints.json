@@ -1,0 +1,4 @@
+{
+	"soapClient" : "http://tvpapi-stg.as.tvinci.com/toggle_v2_5/ws/player/service.asmx?WSDL",
+	"soapMethod": "GetMediaInfo"
+}

@@ -1,0 +1,23 @@
+{
+    "id": "id",
+    "cuePointType": "cuePointType",
+    "status": "status",
+    "entryId": "entryId",
+    "partnerId": "partnerId",
+    "createdAt": "createdAt",
+    "updatedAt": "updatedAt",
+    "tags": "tags",
+    "startTime": "startTime",
+    "userId": "userId",
+    "partnerData": "partnerData",
+    "partnerSortValue": "partnerSortValue",
+    "forceStop": "forceStop",
+    "thumbOffset": "thumbOffset",
+    "systemName": "systemName",
+    "protocolType": "protocolType",
+    "sourceUrl": "sourceUrl",
+    "adType": "adType",
+    "title": "title",
+    "endTime": "endTime",
+    "duration": "duration"
+}

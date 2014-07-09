@@ -1,0 +1,13 @@
+{
+    "id": "id",
+    "partnerId": "partnerId",
+    "metadataProfileId": "metadataProfileId",
+    "metadataProfileVersion": "metadataProfileVersion",
+    "metadataObjectType": "metadataObjectType",
+    "objectId": "objectId",
+    "version": "version",
+    "createdAt": "createdAt",
+    "updatedAt": "updatedAt",
+    "status": "status",
+    "xml": "xml"
+}

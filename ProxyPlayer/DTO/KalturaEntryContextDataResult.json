@@ -1,0 +1,18 @@
+{
+    "isSiteRestricted": "isSiteRestricted",
+    "isCountryRestricted": "isCountryRestricted",
+    "isSessionRestricted": "isSessionRestricted",
+    "isIpAddressRestricted": "isIpAddressRestricted",
+    "isUserAgentRestricted": "isUserAgentRestricted",
+    "previewLength": "previewLength",
+    "isScheduledNow": "isScheduledNow",
+    "isAdmin": "isAdmin",
+    "streamerType": "streamerType",
+    "mediaProtocol": "mediaProtocol",
+    "storageProfilesXML": "storageProfilesXML",
+    "accessControlMessages": "accessControlMessages",
+    "accessControlActions": "accessControlActions",
+    "flavorAssets": "flavorAssets",
+    "messages": "messages",
+    "actions": "actions"
+}
