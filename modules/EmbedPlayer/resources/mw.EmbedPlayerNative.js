@@ -1431,7 +1431,7 @@ mw.EmbedPlayerNative = {
 	 * @returns {boolean} true if seek event is fake, false if valid
 	 */
 	isFakeHlsSeek: function() {
-		return ( Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2 );
+		return ( (Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2) || mw.isIpad() );
 	}
 };
 
