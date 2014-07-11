@@ -150,6 +150,10 @@ return array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.sortable.js',
 		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.mouse' ),
 	),
+	'jquery.ui.spinner' => array(
+		'scripts' => 'resources/jquery.ui/jquery.ui.spinner.js',
+		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.button.js' ),
+	),
 	'jquery.ui.tooltip' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.tooltip.js',
 		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.position' ),
