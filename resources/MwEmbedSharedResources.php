@@ -271,56 +271,56 @@ return array(
 	),
 	// Effects
 	'jquery.effects.core' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.core.js',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect.js',
 		'dependencies' => 'jquery',
 	),
 	'jquery.effects.blind' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.blind.js',
-		'dependencies' => 'jquery.effects.core',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-blind.js',
+		'dependencies' => 'jquery.ui.effect',
 	),
 	'jquery.effects.bounce' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.bounce.js',
-		'dependencies' => 'jquery.effects.core',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-bounce.js',
+		'dependencies' => 'jquery.ui.effect',
 	),
 	'jquery.effects.clip' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.clip.js',
-		'dependencies' => 'jquery.effects.core',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-clip.js',
+		'dependencies' => 'jquery.ui.effect',
 	),
 	'jquery.effects.drop' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.drop.js',
-		'dependencies' => 'jquery.effects.core',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-drop.js',
+		'dependencies' => 'jquery.ui.effect',
 	),
 	'jquery.effects.explode' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.explode.js',
-		'dependencies' => 'jquery.effects.core',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-explode.js',
+		'dependencies' => 'jquery.ui.effect',
 	),
 	'jquery.effects.fold' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.fold.js',
-		'dependencies' => 'jquery.effects.core',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-fold.js',
+		'dependencies' => 'jquery.ui.effect',
 	),
 	'jquery.effects.highlight' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.highlight.js',
-		'dependencies' => 'jquery.effects.core',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-highlight.js',
+		'dependencies' => 'jquery.ui.effect',
 	),
 	'jquery.effects.pulsate' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.pulsate.js',
-		'dependencies' => 'jquery.effects.core',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-pulsate.js',
+		'dependencies' => 'jquery.ui.effect',
 	),
 	'jquery.effects.scale' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.scale.js',
-		'dependencies' => 'jquery.effects.core',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-scale.js',
+		'dependencies' => 'jquery.ui.effect',
 	),
 	'jquery.effects.shake' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.shake.js',
-		'dependencies' => 'jquery.effects.core',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-shake.js',
+		'dependencies' => 'jquery.ui.effect',
 	),
 	'jquery.effects.slide' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.slide.js',
-		'dependencies' => 'jquery.effects.core',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-slide.js',
+		'dependencies' => 'jquery.ui.effect',
 	),
 	'jquery.effects.transfer' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.transfer.js',
-		'dependencies' => 'jquery.effects.core',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-transfer.js',
+		'dependencies' => 'jquery.ui.effect',
 	),
 
 	/* MediaWiki */
