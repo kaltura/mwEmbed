@@ -294,6 +294,10 @@ return array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.effect-explode.js',
 		'dependencies' => 'jquery.ui.effect',
 	),
+	'jquery.effects.fade' => array(
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-fade.js',
+		'dependencies' => 'jquery.ui.effect',
+	),
 	'jquery.effects.fold' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.effect-fold.js',
 		'dependencies' => 'jquery.ui.effect',
