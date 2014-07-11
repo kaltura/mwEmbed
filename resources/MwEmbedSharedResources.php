@@ -127,6 +127,10 @@ return array(
 	'jquery.ui.widget' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.widget.js',
 	),
+	'jquery.ui.menu' => array(
+		'scripts' => 'resources/jquery.ui/jquery.ui.menu.js',
+		'dependencies' => 'jquery.ui.core.js', 'jquery.ui.widget.js', 'jquery.ui.position.js',
+	),
 	'jquery.ui.mouse' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.mouse.js',
 		'dependencies' => 'jquery.ui.widget',
