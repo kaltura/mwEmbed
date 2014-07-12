@@ -24,6 +24,18 @@
  *
  */
 ( function( $ ) {
+	var eventArray = {};
+
+	$.fn.bindQueueCallback = function( eventName, callback ) {
+		var targetObject = this[0];
+
+		if ( !eventArray[ eventName ] ) {
+			eventArray[ eventName ] = [];
+		}
+
+		eventArray[ eventName ].push( { targetObject : targetObject, callback : callback } );
+	};
+	
 	$.fn.triggerQueueCallback = function( triggerName, triggerParam, callback ){
 		var targetObject = this;
 		if( !targetObject.length ){
@@ -36,11 +48,8 @@
 			triggerParam = null;
 		}
 
-		// Support namespaced event segmentation
-		var triggerBaseName = triggerName.split(".")[0];
-		var triggerNamespace = triggerName.split(".")[1];
 		// Get the callback set
-		var callbackSet = [];
+		var callbackSet = eventArray[ triggerName ];
 
 		// Since jQuery 1.9 jQuery events are on the internal jQuery object
 		if( !jQuery._data(targetObject[0], "events") ){
@@ -49,20 +58,8 @@
 			return ;
 		}
 
-		var triggerEventSet = jQuery._data(targetObject[0], "events")[ triggerBaseName ];
-		if( ! triggerNamespace ){
-			callbackSet = triggerEventSet;
-		} else{
-			$.each( triggerEventSet, function( inx, bindObject ){
-				if( bindObject.namespace ==  triggerNamespace ){
-					callbackSet.push( bindObject );
-				}
-			});
-		}
-
 		if( !callbackSet || callbackSet.length === 0 ){
-			//mw.log( '"mwEmbed::jQuery.triggerQueueCallback: No events run the callback directly: ' + triggerName );
-			// No events run the callback directly
+			// no events return callback directly
 			callback();
 			return ;
 		}
@@ -89,6 +86,11 @@
 			}
 		};
 		var triggerArgs = ( triggerParam )? [ triggerParam, doCallbackCheck ] : [ doCallbackCheck ];
+		
 		$( this ).trigger( triggerName, triggerArgs);
+
+		$.each( eventArray[ triggerName ], function ( idx, queuedCallback ) {
+			queuedCallback.callback.apply( queuedCallback.targetObject, triggerArgs );
+		} );
 	};
 } )( jQuery );
