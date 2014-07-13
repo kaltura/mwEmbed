@@ -266,13 +266,15 @@ mw.DoubleClick.prototype = {
 			if( adType == 'preroll' || adType == 'postroll' ){
 				_this.embedPlayer.bindHelper( 'AdSupport_' + adType + _this.bindPostfix, function( event, sequenceProxy ){
 					// Add the slot to the given sequence proxy target target
-					sequenceProxy[ _this.getSequenceIndex( adType ) ] = function( callback ){
-						// Setup the restore callback
-						_this.restorePlayerCallback = callback;
-						// Request ads
-						mw.log( "DoubleClick:: addManagedBinding : cuePoint:" +  adType );
-						_this.requestAds( cuePoint.sourceUrl );
-					};
+					sequenceProxy[ _this.getSequenceIndex( adType ) ] = {
+						"display" : function( callback ){
+							// Setup the restore callback
+							_this.restorePlayerCallback = callback;
+							// Request ads
+							mw.log( "DoubleClick:: addManagedBinding : cuePoint:" +  adType );
+							_this.requestAds( cuePoint.sourceUrl );
+						}
+					}
 				});
 			}
 			// If cuepoint ad type is midroll request inline:
