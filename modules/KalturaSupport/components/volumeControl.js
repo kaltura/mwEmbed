@@ -25,26 +25,31 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 		this.addBindings();
 		var _this = this;
 		this.cookieName = this.pluginName + '_volumeValue';
-
-		if( (this.getConfig( 'useCookie' ) && $.cookie( this.cookieName ) ) ) {
-			var volumeValue = parseInt( $.cookie (this.cookieName) );
-			if ( !isNaN(volumeValue) &&
-				volumeValue >=0 &&
-				volumeValue <= 100){
-					if (volumeValue == 0){
-						this.getPlayer().preMuteVolume = 1;
-						this.getPlayer().muted = true;
-						this.updateFirstMute = true;
+		this.bind( 'playerReady ' , function () {
+			if ( (_this.getConfig( 'useCookie' ) && $.cookie( _this.cookieName ) ) ) {
+				var volumeValue = parseInt( $.cookie( _this.cookieName ) );
+				if ( !isNaN( volumeValue ) &&
+					volumeValue >= 0 &&
+					volumeValue <= 100 ) {
+					if ( volumeValue === 0 ) {
+						_this.getPlayer().preMuteVolume = 1;
+						_this.getPlayer().muted = true;
+						_this.updateFirstMute = true;
 					}
-					this.getPlayer().setVolume( volumeValue / 100, true);
-
-
+					_this.firstUpdate = true;
+					_this.getPlayer().setVolume( volumeValue / 100 , true );
+				}
 			}
-		}
+		});
+
 	},
 	saveVolume: function(){
+		if (this.firstUpdate){
+			this.firstUpdate = false;
+			return;
+		}
 		if( this.getConfig( 'useCookie' ) ){
-			$.cookie( this.cookieName ,this.getPlayer().getPlayerElementVolume() * 100 );
+			this.getPlayer().setCookie( this.cookieName ,this.getPlayer().getPlayerElementVolume() * 100 );
 		}
 	},
 	isSafeEnviornment: function(){

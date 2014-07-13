@@ -73,7 +73,7 @@ class downloadEntry {
 
 			}
 
-			
+
 			header( "Content-Disposition: attachment; filename=$filename" );
 			readfile( $flavorUrl );
 		}
@@ -286,7 +286,7 @@ class downloadEntry {
 			return array();
 		}
 
-		//echo '<pre>'; print_r($sources); exit();
+		// echo '<pre>'; print_r($sources); exit();
 		return $this->sources;
 	}
 	private function getReferer() {
@@ -372,7 +372,12 @@ class downloadEntry {
 	 * @param $flavorId
 	 * 	{String} the flavor id string
 	 */
-	private function getSourceFlavorUrl( $flavorId = false){
+	private function getSourceFlavorUrl( $flavorId = false ){
+
+		if( isset($_GET['preferredBitrate']) && $_GET['preferredBitrate'] != null){
+            $preferredBitrate	= intval($_GET['preferredBitrate']);
+        }
+
 		// Get all sources ( if not provided )
 		$sources = $this->getSources();
 		$validSources = array(); 
@@ -393,8 +398,32 @@ class downloadEntry {
 			}
 			return $minSrc;
 		} else if( count( $validSources ) ) {
-			// else just return the first source we find 
-			return $validSources[0]['src'];
+			// if not preferred bitrate was specified - return the biggest source available
+			if ( !isset( $preferredBitrate ) ) {
+				$maxBit = 0;
+            	$maxSrc = null;
+				foreach( $validSources  as $source ){
+					if( isset($source['data-bandwidth']) && $source['data-bandwidth'] > $maxBit ){
+						$maxSrc = $source['src'];
+						$maxBit = $source['data-bandwidth'];
+					}
+				}
+				return $maxSrc;
+			}else{
+				// try to find the closest bitrate source
+				$deltaBitrate = 999999999;
+				$src = null;
+				foreach( $validSources  as $source ){
+					if( isset($source['data-bandwidth']) ){
+						$delta =  abs( $source['data-bandwidth'] - $preferredBitrate );
+						if ( $delta < $deltaBitrate) {
+							$deltaBitrate = $delta;
+							$src = $source['src'];
+						}
+					}
+				}
+				return $src;
+			}
 		}
 		return false;
 	}

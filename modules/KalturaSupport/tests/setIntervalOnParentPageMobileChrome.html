@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Test parent page interval on mobile chrome</title>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script>var tester = window.setInterval(function(){
+  console.log('test');
+}, 100);</script>
+</head>
+<body>
+<h2> Test parent page interval on mobile Chrome </h2>
+
+<div id="kaltura_player" style="width:400px;height:330px;">
+
+<script>
+mw.setConfig('Kaltura.LeadWithHTML5', true);
+// do the kWidget embed: 
+kWidget.embed({
+	'targetId': 'kaltura_player',
+	'wid': '_243342',
+	'uiconf_id' : '12905712',
+	'entry_id' : '0_uka1msg4'
+});
+</script>
+
+</body>
+</html>

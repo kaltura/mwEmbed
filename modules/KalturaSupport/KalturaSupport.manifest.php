@@ -381,7 +381,15 @@ return array(
 	'download' => array(
 		'description' => "Enables users to add a download button to the player controls.
 			The download button will enable users to download the media to a local file.",
-		'attributes' => $kgDefaultComponentAttr
+		'attributes' => array_merge($kgDefaultComponentAttr,
+			array(
+				'preferredBitrate' => array(
+					'doc' => "Preferred bitrate for the downloaded movie source. Keep empty for the highest bitrate",
+					'type' => 'number',
+					'initvalue' => ''
+				),
+			)
+		)
 	),
 	'docPlayToFrom' => array(
 		'description' => "The playFrom and playTo attributes enable building a preview of a segment of content.",

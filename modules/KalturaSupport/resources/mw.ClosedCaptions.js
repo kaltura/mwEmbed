@@ -137,15 +137,19 @@
 			this._super( property, value );
 		},
 		hideCaptions: function(){
-			this.getCaptionsOverlay().hide();
-			var $cc = this.embedPlayer.getInterface().find('.captionContainer' );
-			$cc.remove();
-			this.embedPlayer.doUpdateLayout();
+			if( !this.getConfig('displayCaptions') || this.textSources.length === 0 ) {
+				this.getCaptionsOverlay().hide();
+				var $cc = this.embedPlayer.getInterface().find('.captionContainer' );
+				$cc.remove();
+				this.embedPlayer.doUpdateLayout();
+			}
 		},
 		showCaptions: function(){
-			this.getCaptionsOverlay().show();
-			if( this.getConfig('layout') == 'below' ) {
-				this.updateBelowVideoCaptionContainer();
+			if( this.getConfig('displayCaptions') ) {
+				this.getCaptionsOverlay().show();
+				if( this.getConfig('layout') == 'below' ) {
+					this.updateBelowVideoCaptionContainer();
+				}
 			}
 		},
 		getCaptionURL: function( captionId ){
