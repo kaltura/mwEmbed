@@ -1,4 +1,6 @@
-/**
+( function( mw, $ ) { "use strict";
+
+	/**
 * Subply hooks into the pyMedia html5 library
 */
 mw.Subply = {
@@ -508,3 +510,4 @@ mw.Subply = {
 
 	}
 };
+} )( window.mw, window.jQuery );

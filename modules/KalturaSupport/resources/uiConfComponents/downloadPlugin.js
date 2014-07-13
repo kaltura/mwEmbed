@@ -6,8 +6,10 @@
 			align: "right",
 			parent: "controlsContainer",
 			displayImportance: "low",
+			downloadName:"video",
 			showTooltip: true,
-		 	order: 53,
+			preferredBitrate: '',
+		 	order: 53
 		},
 		isSafeEnviornment: function(){
 			return !mw.isIOS();
@@ -22,6 +24,10 @@
 			var downloadUrl = mw.getMwEmbedPath() + '/modules/KalturaSupport/download.php/wid/';
 				downloadUrl += this.getPlayer().kwidgetid + '/uiconf_id/' + this.getPlayer().kuiconfid;
 				downloadUrl += '/entry_id/' + this.getPlayer().kentryid + '?forceDownload=true';
+				downloadUrl += '&downloadName=' + encodeURIComponent(this.getConfig('downloadName'));
+				if ( this.getConfig( 'preferredBitrate' ) != '' && this.getConfig( 'preferredBitrate' ) != null ){
+					downloadUrl += '&preferredBitrate=' + encodeURIComponent( this.getConfig( 'preferredBitrate' ));
+				}
 				downloadUrl += '&ks=' + this.getPlayer().getFlashvars('ks');
 				
 			window.open( downloadUrl );

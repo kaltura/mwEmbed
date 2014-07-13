@@ -636,7 +636,11 @@
 					}
 
 					if( $.isFunction( callbackToRun ) ) {
-						callbackToRun.apply( embedPlayer, $.makeArray( arguments ) );
+						try{
+							callbackToRun.apply( embedPlayer, $.makeArray( arguments ) );
+						}catch(e){
+							mw.log("Error when trying to run callbackToRun (probably JavaScript error in callbackToRun code)")
+						};
 					} else {
 						mw.log('kdpMapping::addJsListener: callback name: ' + callbackName + ' not found');
 					}

@@ -657,13 +657,19 @@
             'default' => 'n/a',
             'example' => ''
         ),
-        /*'EmbedPlayer.ShowPosterOnStop' => array(
-            'type' => '',
-            'desc' => "",
-            'default' => '',
+       'EmbedPlayer.ShowPosterOnStop' => array(
+            'type' => 'Boolean',
+            'desc' => "When set to true, shows the movie thumbnail upon movie ends",
+            'default' => 'true',
             'example' => ''
         ),
-        'EmbedPlayer.SourceAttributes' => array(
+        'EmbedPlayer.HidePosterOnStart' => array(
+            'type' => 'Boolean',
+            'desc' => "When set to true, movie thumbnail doesn't show upon movie load (before playback starts)",
+            'default' => 'false',
+            'example' => ''
+        ),
+         /*'EmbedPlayer.SourceAttributes' => array(
             'type' => '',
             'desc' => "",
             'default' => '',
@@ -699,6 +705,18 @@
             'default' => 'true',
             'example' => ''
         ),
+        'EmbedPlayer.ForceKPlayer' => array(
+            'type' => 'Boolean',
+            'desc' => "Force loading the legacy KDP Flash video player.",
+            'default' => 'false',
+            'example' => ''
+        ),
+        'EmbedPlayer.ForceSPlayer' => array(
+            'type' => 'Boolean',
+            'desc' => "Force loading the Silverlight video player.",
+            'default' => 'false',
+            'example' => ''
+        ),
         /*'EmbedPlayer.DataAttributes' => array(
             'type' => '',
             'desc' => "",
@@ -716,6 +734,12 @@
             'desc' => "By default, an HTML play screen is displayed with image, thumb and play button. If you are not using ad plugins you may want to set this to false and display the native play button",
             'default' => 'true',
             'example' => ''
+        ),
+        'EmbedPlayer.twoPhaseManifestHlsAndroid' => array(
+			'type' => 'Boolean',
+			'desc' => "If the player should load the final location of m3u8 file and not a URL that redirects to the m3u8 file on Android set this flag to true",
+			'default' => 'false',
+			'example' => ''
         )
     );
 

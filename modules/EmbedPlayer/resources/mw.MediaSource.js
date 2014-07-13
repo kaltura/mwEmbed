@@ -489,6 +489,7 @@ mw.MediaSource.prototype = {
 			case 'anx':
 				return 'video/ogg';
 			break;
+			case 'dfxp': 
 			case 'xml':
 				return 'text/xml';
 			break;

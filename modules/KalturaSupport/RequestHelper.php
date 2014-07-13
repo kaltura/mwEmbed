@@ -178,7 +178,11 @@ class RequestHelper {
 		if( $wgKalturaForceReferer !== false ){
 			return $wgKalturaForceReferer;
 		}
-		return ( isset( $_SERVER['HTTP_REFERER'] ) ) ? $_SERVER['HTTP_REFERER'] : 'http://www.kaltura.com/';
+		if( isset( $_SERVER['HTTP_REFERER'] ) ){
+			$urlParts = parse_url( $_SERVER['HTTP_REFERER'] );
+			return $urlParts['scheme'] . "://" . $urlParts['host'] . "/";
+		}
+		return 'http://www.kaltura.com/';
 	}
 
 	// Check if private IP
