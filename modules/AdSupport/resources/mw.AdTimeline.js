@@ -358,18 +358,24 @@ mw.AdTimeline.prototype = {
 				return ;
 			}
 			// Run the sequence proxy function:
-			sequenceProxy[ key ]( function(){
-
+			var callback = function(){
+				alert("ad complete");
 				// Done with slot increment display slot count
 				_this.displayedSlotCount++;
-
 				// done with the current proxy call next
 				seqInx++;
-
 				// call sequence proxy inline for ad plugins sync when doing source switch
 				runSequeceProxyInx( seqInx );
-			});
+			}
+			// for backward compatibility, check if the sequenceproxy holds a function (legacy) or object (new ad events model)
+			if ( $.isFunction(sequenceProxy[ key ]) ){
+				sequenceProxy[ key ]( callback );
+			}else{
+				sequenceProxy[ key ]["display"]( callback );
+			}
+			alert("ad play");
 		};
+		alert("ad open");
 		runSequeceProxyInx( seqInx );
 	},
 	updateUiForAdPlayback: function( slotType ){

@@ -358,10 +358,13 @@ mw.KAds.prototype = {
 				// Disable UI while playing ad
 				_this.embedPlayer.adTimeline.updateUiForAdPlayback( adType );
 				// add to sequenceProxy:
-				sequenceProxy[ sequenceIndex ] = function( doneCallback ){
-					var adConfig = $.extend( {}, baseDisplayConf, adConfigSet[ adType ] );
-					adConfig.type = adType;
-					_this.displayAdNumAds( 0, adType, adConfig, doneCallback );
+				var adConfig = $.extend( {}, baseDisplayConf, adConfigSet[ adType ] );
+				sequenceProxy[ sequenceIndex ] = {
+					"display": 	function( doneCallback ){
+						adConfig.type = adType;
+						_this.displayAdNumAds( 0, adType, adConfig, doneCallback );
+					},
+					"config":adConfig
 				};
 			}
 		});

@@ -172,38 +172,41 @@ mw.DoubleClick.prototype = {
 		if (_this.getConfig( "preSequence" ) ){
 			_this.embedPlayer.bindHelper( 'AdSupport_preroll' + _this.bindPostfix, function( event, sequenceProxy ){
 				// Add the slot to the given sequence proxy target target
-				sequenceProxy[ _this.getSequenceIndex( 'preroll' ) ] = function( callback ){
-					// if a preroll set it as such:
-					_this.currentAdSlotType = 'preroll';
-					// Setup the restore callback
-					_this.restorePlayerCallback = callback;
-					// Request ads
-					mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
-					_this.requestAds( _this.getConfig( 'adTagUrl' ) );
-				};
+				sequenceProxy[ _this.getSequenceIndex( 'preroll' ) ] = {
+					"display" : function( callback ){
+						// if a preroll set it as such:
+						_this.currentAdSlotType = 'preroll';
+						// Setup the restore callback
+						_this.restorePlayerCallback = callback;
+						// Request ads
+						mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
+						_this.requestAds( _this.getConfig( 'adTagUrl' ) );
+					}
+				}
 			});
 		}
 		if (_this.getConfig( "postSequence" ) ){
 			_this.embedPlayer.bindHelper( 'AdSupport_postroll' + _this.bindPostfix, function( event, sequenceProxy ){
-				sequenceProxy[ _this.getSequenceIndex( 'postroll' ) ] = function( callback ){
+				sequenceProxy[ _this.getSequenceIndex( 'postroll' ) ] = {
+					"display" : function( callback ){
+						// set current slot to postRoll
+						_this.currentAdSlotType = 'postroll';
+						// Setup the restore callback
+						_this.restorePlayerCallback = callback;
+						// Request ads
+						mw.log( "DoubleClick:: addManagedBinding : requestAds for postroll:" +  _this.getConfig( 'adTagUrl' )  );
+						_this.requestAds( _this.getConfig( 'adTagUrl' ) );
 
-					// set current slot to postRoll
-					_this.currentAdSlotType = 'postroll';
-					// Setup the restore callback
-					_this.restorePlayerCallback = callback;
-					// Request ads
-					mw.log( "DoubleClick:: addManagedBinding : requestAds for postroll:" +  _this.getConfig( 'adTagUrl' )  );
-					_this.requestAds( _this.getConfig( 'adTagUrl' ) );
-
-	                //If adsLoader error was caught then check if restorePlayer was already called before!
-	                if (_this.adLoaderErrorFlag){
-	                    setTimeout(function(){
-	                        if (_this.embedPlayer.sequenceProxy.isInSequence) {
-	                            _this.restorePlayer(true);
-	                        }
-	                    }, 100);
-	                }
-				};
+		                //If adsLoader error was caught then check if restorePlayer was already called before!
+		                if (_this.adLoaderErrorFlag){
+		                    setTimeout(function(){
+		                        if (_this.embedPlayer.sequenceProxy.isInSequence) {
+		                            _this.restorePlayer(true);
+		                        }
+		                    }, 100);
+		                }
+					}
+				}
 			});
 		}
 	},
