@@ -272,13 +272,13 @@
 		},
 		onEnable: function(){
 			this.isDisabled = false;
-			this.getComponent().find('button').attr('title', this.selectSourceTitle);
+			this.updateTooltip( this.selectSourceTitle );
 			this.getComponent().find('button').removeClass( 'rotate' );
 			this.getBtn().removeClass( 'disabled' );
 		},
 		onDisable: function(){
 			this.isDisabled = true;
-			this.getComponent().find('button').attr('title', this.switchSourceTitle);
+			this.updateTooltip( this.switchSourceTitle );
 			this.getComponent().find('button').addClass( 'rotate' );
 			this.getComponent().removeClass( 'open' );
 			this.getBtn().addClass( 'disabled' );
