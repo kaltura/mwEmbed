@@ -29,6 +29,7 @@ mw.PluginManager.add( 'actionForm', mw.KBaseScreen.extend({
 	},
 
 	triggered: false,
+	duringSeek: false,
 	displayTime: false,
 	error: false,
 
@@ -54,6 +55,18 @@ mw.PluginManager.add( 'actionForm', mw.KBaseScreen.extend({
 				this.bind( 'monitorEvent', $.proxy( this.displayOnTime, this ) );
 				break;
 		}
+
+		this.bind( 'preSeek', $.proxy(function(){
+			this.duringSeek = true;
+		},this));
+		this.bind( 'seeked', $.proxy(function(){
+			this.duringSeek = false;
+			if( this.getConfig('displayOn') == 'start' ){
+				setTimeout(function() {
+					showScreen();
+				}, 0);
+			}
+		},this));
 	},
 
 	bindCleanScreen: function() {
@@ -85,21 +98,24 @@ mw.PluginManager.add( 'actionForm', mw.KBaseScreen.extend({
 	},
 
 	displayOnTime: function() {
-		if( !this.error && this.getPlayer().currentTime >= this.getDisplayTime() ) {
-			this.showScreen();
+		if( !this.duringSeek && !this.error && this.getPlayer().currentTime >= this.getDisplayTime() ) {
+			var _this = this;
+			setTimeout(function() {
+				_this.showScreen();
+			}, 0);
 		}
 	},
 
 	showScreen: function() {
 		// Show form only once
-		if( this.triggered ){
+		if( this.duringSeek || this.triggered ){
 			return ;
 		}
 		this.triggered = true;
 		this.getPlayer().disablePlayControls();
 		// Disable key binding
-		 this.getPlayer().triggerHelper( 'onDisableKeyboardBinding' );
-		this._super();
+		this.getPlayer().triggerHelper( 'onDisableKeyboardBinding' );
+		this._super();	
 	},
 
 	hideScreen: function() {
