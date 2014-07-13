@@ -40,11 +40,15 @@ mw.DoubleClick.prototype = {
 
 	allAdsCompletedFlag: null,
 
-		//Signal if error was triggered from adsLoader
-		adLoaderErrorFlag: false,
+	//Signal if error was triggered from adsLoader
+	adLoaderErrorFlag: false,
 
 	// The current ad Slot type by default "managed" i.e doubleClick manages the player sequence.
 	currentAdSlotType : null,
+	// Flag that indicates event name when ad is clicked
+	adClickEvent: null,
+	// Flag to enable/ disable timeout for iOS5/ iOS6 when ad is clicked
+	isAdClickTimeoutEnabled: false,
 
 	init: function( embedPlayer, callback, pluginName ){
 		// check for vast fallback definitions
@@ -497,16 +501,31 @@ mw.DoubleClick.prototype = {
 		// Add ad listeners:
 		adsListener( 'CLICK', function(event){
 			if( mw.isMobileDevice() ){
-				var eventName = 'focus';
-
-				if( mw.isIOS() ){
-					eventName = 'pageshow';
+				if( mw.isIOS5() || mw.isIOS6() ) {
+					_this.isAdClickTimeoutEnabled = true;
+					var startTime = new Date().getTime();
+					var getTime = function() {
+						var currentTime = new Date().getTime();
+						if (currentTime - startTime > 1000) {
+							_this.embedPlayer.getPlayerElement().play();
+						}
+						startTime = currentTime;
+						if( _this.isAdClickTimeoutEnabled ) {
+							setTimeout(getTime, 500);
+						}
+					};
+					getTime();
+				} else {
+					var eventName = 'focus.doubleClickMobileEvent';
+					if( mw.isIOS() ) {
+						eventName = 'pageshow.doubleClickMobileEvent';
+					}
+					_this.adClickEvent = eventName;
+					var onFocusAction = function(event){
+						_this.embedPlayer.getPlayerElement().play();
+					}
+					$(window).bind(eventName , onFocusAction);
 				}
-				var onFocusAction = function(event){
-					_this.embedPlayer.getPlayerElement().play();
-					$(window).unbind(eventName , onFocusAction);
-				}
-				$(window).bind(eventName , onFocusAction);
 			}
 		} );
 		adsListener( 'CONTENT_PAUSE_REQUESTED', function(event){
@@ -823,6 +842,11 @@ mw.DoubleClick.prototype = {
 			} else {
 				this.embedPlayer.play();
 			}
+		}
+		if( _this.adClickEvent ) {
+			$(window).unbind(_this.adClickEvent);
+		} else if( _this.isAdClickTimeoutEnabled ) {
+			_this.isAdClickTimeoutEnabled = false;
 		}
 	},
 	/**
