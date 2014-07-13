@@ -364,7 +364,7 @@ mw.KAds.prototype = {
 						adConfig.type = adType;
 						_this.displayAdNumAds( 0, adType, adConfig, doneCallback );
 					},
-					"config":adConfig
+					"config": [adConfig.ads[0].id, adConfig.ads[0].adSystem, adType, sequenceIndex]
 				};
 			}
 		});

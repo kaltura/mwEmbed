@@ -181,7 +181,8 @@ mw.DoubleClick.prototype = {
 						// Request ads
 						mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
 						_this.requestAds( _this.getConfig( 'adTagUrl' ) );
-					}
+					},
+					"config": ['DoubleClick', 'GDFP', 'preroll', _this.getSequenceIndex( 'preroll' )]
 				}
 			});
 		}
@@ -205,7 +206,8 @@ mw.DoubleClick.prototype = {
 		                        }
 		                    }, 100);
 		                }
-					}
+					},
+					"config": ['DoubleClick', 'GDFP', 'postroll', _this.getSequenceIndex( 'postroll' )]
 				}
 			});
 		}
@@ -273,7 +275,8 @@ mw.DoubleClick.prototype = {
 							// Request ads
 							mw.log( "DoubleClick:: addManagedBinding : cuePoint:" +  adType );
 							_this.requestAds( cuePoint.sourceUrl );
-						}
+						},
+						"config": ['DoubleClick', 'GDFP', adType, _this.getSequenceIndex( adType )]
 					}
 				});
 			}
