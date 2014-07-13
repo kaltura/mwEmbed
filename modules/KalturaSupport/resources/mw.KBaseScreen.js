@@ -100,14 +100,20 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 		return this.getConfig('usePreviewPlayer') && this.getConfig('previewPlayerEnabled');
 	},
 	pausePlayback: function(){
-		this.wasPlaying = this.getPlayer().isPlaying();
+		var player = this.getPlayer();
+		this.wasPlaying = player.isPlaying();
 		if( this.wasPlaying ){
-			this.getPlayer().pause();
+			// We use timeout to avoid race condition when we show screen on "playing" state
+			setTimeout(function(){
+				player.pause();
+			},0);
 		}
 	},
 	restorePlayback: function(){
-		if( this.wasPlaying )
+		if( this.wasPlaying ) {
+			this.wasPlaying = false;
 			this.getPlayer().play();
+		}
 	},
 	resizePlayer: function(){
 		this.getPlayer().getVideoDisplay().addClass('animateVideo');
