@@ -55,11 +55,17 @@
 			// Check for switch on resize option
 			if( this.getConfig( 'switchOnResize' ) ){
 				this.bind( 'updateLayout', function(){
-					// TODO add additional logic for "auto" where multiple bitrates 
-					// exist at the same resolution. 
-					var selectedSource = _this.embedPlayer.mediaElement.autoSelectSource();
-					if ( selectedSource ){ // source was found
-						_this.embedPlayer.switchSrc( selectedSource );
+					//if we're working with kplayer - mp4 can't be seeked - so disable this feature
+					//this only effect native for now
+					if (_this.embedPlayer.instanceOf === "Native") {
+						// TODO add additional logic for "auto" where multiple bitrates
+						// exist at the same resolution.
+						var selectedSource = _this.embedPlayer.mediaElement.autoSelectSource();
+						if ( selectedSource ) { // source was found
+							_this.embedPlayer.switchSrc( selectedSource );
+						}
+					} else {
+						mw.log( "sourceSelector - switchOnResize is ignored - Can't switch source since not using native player");
 					}
 				});
 			}
