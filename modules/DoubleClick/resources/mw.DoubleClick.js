@@ -50,6 +50,8 @@ mw.DoubleClick.prototype = {
 	// Flag to enable/ disable timeout for iOS5/ iOS6 when ad is clicked
 	isAdClickTimeoutEnabled: false,
 
+	adsManagerLoadedTimeoutId: null,
+
 	init: function( embedPlayer, callback, pluginName ){
 		// check for vast fallback definitions
 		var isVastFallback = embedPlayer.playerConfig["plugins"] && embedPlayer.playerConfig["plugins"]["vast"];
@@ -435,6 +437,14 @@ mw.DoubleClick.prototype = {
 		}catch(e){
 			_this.onAdError( e );
 		}
+		var timeoutVal = _this.getConfig("adsManagerLoadedTimeout") || 5000;
+		mw.log( "DoubleClick::requestAds: start timer for adsManager loading check: " + timeoutVal + "ms");
+		this.adsManagerLoadedTimeoutId = setTimeout(function(){
+			if (_this.adsManager == null){
+				mw.log( "DoubleClick::requestAds: adsManager failed loading after " + timeoutVal + "ms");
+				_this.onAdError("adsManager failed loading!");
+			}
+		}, timeoutVal);
 	},
 	isSiblingVideoAd: function(){
 		return ( this.getConfig('videoTagSiblingAd') && ! mw.isIOS() );
@@ -444,6 +454,10 @@ mw.DoubleClick.prototype = {
 	onAdsManagerLoaded: function( loadedEvent ) {
 		var _this = this;
 		mw.log( 'DoubleClick:: onAdsManagerLoaded' );
+
+		mw.log( "DoubleClick::requestAds: clear timer for adsManager loading check");
+		clearTimeout(this.adsManagerLoadedTimeoutId);
+		this.adsManagerLoadedTimeoutId = null;
 
 		// 1. Retrieve the ads manager. Regardless of ad type (video ad,
 		//	overlay or ad playlist controlled by ad rules), the API is the
