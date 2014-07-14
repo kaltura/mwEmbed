@@ -146,7 +146,7 @@ kWidget.addReadyCallback( function( playerId ){
 			
 			// get local ref to the sCode s var:
 			var s = window[ this.getSCodeName() ];
-			
+
 			// Check for additional eVars and eVars values
 			var additionalEvarsAndProps = this.getConfig('additionalEvarsAndProps');
 			var additionalEvarsAndPropsValues = this.getConfig('additionalEvarsAndPropsValues');
@@ -154,6 +154,7 @@ kWidget.addReadyCallback( function( playerId ){
 				extraEvars = additionalEvarsAndProps.split(",");
 			}
 			if( additionalEvarsAndPropsValues ){
+				additionalEvarsAndPropsValues = this.kdp.evaluate(additionalEvarsAndPropsValues);
 				extraEvarsValues = additionalEvarsAndPropsValues.split(",");
 			}
 			// Compare length between eVars and eVars values
