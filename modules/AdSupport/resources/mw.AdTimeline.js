@@ -358,18 +358,36 @@ mw.AdTimeline.prototype = {
 				return ;
 			}
 			// Run the sequence proxy function:
-			sequenceProxy[ key ]( function(){
-
+			var callback = function(){
+				if ( sequenceProxy[ keyList[ seqInx ] ]["config"] ){
+					// trigger ad complete event for omniture tracking. Taking current time from currentTimeLabel plugin since the embedPlayer currentTime is already 0
+					$(_this.embedPlayer).trigger('onAdComplete',[sequenceProxy[ keyList[ seqInx ] ]["config"][0], mw.npt2seconds($(".currentTimeLabel").text())]);
+				}else{
+					$(_this.embedPlayer).trigger('onAdComplete',['', mw.npt2seconds($(".currentTimeLabel").text())]);
+				}
 				// Done with slot increment display slot count
 				_this.displayedSlotCount++;
-
 				// done with the current proxy call next
 				seqInx++;
-
 				// call sequence proxy inline for ad plugins sync when doing source switch
 				runSequeceProxyInx( seqInx );
-			});
+			}
+			// for backward compatibility, check if the sequenceproxy holds a function (legacy) or object (new ad events model)
+			if ( $.isFunction(sequenceProxy[ key ]) ){
+				sequenceProxy[ key ]( callback );
+				$( _this.embedPlayer).trigger( 'onAdPlay', '' );
+			}else{
+				sequenceProxy[ key ]["display"]( callback );
+				// trigger play event for omniture analytics
+				$( _this.embedPlayer).trigger( 'onAdPlay', sequenceProxy[ keyList[ seqInx ] ]["config"][0] );
+			}
 		};
+		// dispatch adOpen event for omniture on page
+		if ( sequenceProxy[ keyList[ seqInx ] ]["config"] ){
+			$( _this.embedPlayer).trigger( 'onAdOpen',sequenceProxy[ keyList[ seqInx ] ]["config"] );
+		}else{
+			$( _this.embedPlayer).trigger( 'onAdOpen',['','','',''] );
+		}
 		runSequeceProxyInx( seqInx );
 	},
 	updateUiForAdPlayback: function( slotType ){
