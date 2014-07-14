@@ -289,7 +289,7 @@ mw.KAds.prototype = {
 							_this.addSequenceProxyBinding( adType, adConfigSet, _this.getSequenceIndex( adType ) );
 						}
 					}
-					if( adType == 'overlay' ){
+					if( adType == 'overlay' && _this.embedPlayer.getKalturaConfig('vast', 'supportOverlays') !== false ){
 						_this.addOverlayBinding( adConfigSet[ adType ] );
 					}
 				}
@@ -358,10 +358,13 @@ mw.KAds.prototype = {
 				// Disable UI while playing ad
 				_this.embedPlayer.adTimeline.updateUiForAdPlayback( adType );
 				// add to sequenceProxy:
-				sequenceProxy[ sequenceIndex ] = function( doneCallback ){
-					var adConfig = $.extend( {}, baseDisplayConf, adConfigSet[ adType ] );
-					adConfig.type = adType;
-					_this.displayAdNumAds( 0, adType, adConfig, doneCallback );
+				var adConfig = $.extend( {}, baseDisplayConf, adConfigSet[ adType ] );
+				sequenceProxy[ sequenceIndex ] = {
+					"display": 	function( doneCallback ){
+						adConfig.type = adType;
+						_this.displayAdNumAds( 0, adType, adConfig, doneCallback );
+					},
+					"config": [adConfig.ads[0].id, adConfig.ads[0].adSystem, adType, sequenceIndex]
 				};
 			}
 		});
@@ -382,8 +385,8 @@ mw.KAds.prototype = {
 				_this.embedPlayer.adTimeline.updateUiForAdPlayback( adType );
 				
 				mw.AdLoader.load( _this.getAdUrl( adType ), function( adDisplayConf ){
-					var adConfig = $.extend({}, _this.getBaseAdConf( adType ), adDisplayConf );
-					_this.adPlayer.display( adConfig, function(){
+					var adConf = $.extend(adConfig, _this.getBaseAdConf( adType ), adDisplayConf );
+					_this.adPlayer.display( adConf, function(){
 						// play next ad
 						_this.displayAdNumAds( displayCount, adType, adConfig,  callback);
 					});
@@ -438,6 +441,7 @@ mw.KAds.prototype = {
 			_this.adPlayer.display(
 				overlayConfig,
 				function(){
+					startOvelrayDisplayed = false;
 					mw.log("KAds::overlay done");
 				},
 				timeout

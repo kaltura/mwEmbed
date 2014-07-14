@@ -35,6 +35,7 @@ mw.KCuePoints.prototype = {
 	processCuePoints: function() {
 		var _this = this;
 		var cuePoints = this.getCuePoints();
+		this.requestThumbAsset();
 		// Create new array with midrolls only
 		var newCuePointsArray = [];
 		$.each( cuePoints, function( idx, cuePoint ){
@@ -47,6 +48,59 @@ mw.KCuePoints.prototype = {
 		});
 
 		this.midCuePointsArray = newCuePointsArray;
+	},
+	requestThumbAsset: function(){
+		var _this = this;
+		var requestArray = [];
+		var response = [];
+		var thumbCuePoint = $.grep(this.getCuePoints(), function(cuePoint){
+			return (cuePoint.cuePointType == 'thumbCuePoint.Thumb');
+		});
+
+		$.each(thumbCuePoint, function(index, item) {
+			requestArray.push(
+				{
+					'service': 'thumbAsset',
+					'action': 'getUrl',
+					'id': item.assetId
+				}
+			);
+			response[index] = { id: item.id, url: null};
+		});
+
+		if (requestArray.length){
+			// do the api request
+			this.getKalturaClient().doRequest( requestArray, function ( data ) {
+				// Validate result
+				$.each(data, function(index, res) {
+					if ( !_this.isValidResult( res ) ) {
+						data[index] = null;
+					}
+				});
+				$.each(thumbCuePoint, function(index, item){
+					item.thumbnailUrl = data[index];
+				});
+				_this.embedPlayer.triggerHelper( 'KalturaSupport_ThumbCuePointsReady' );
+			} );
+		} else {
+			_this.embedPlayer.triggerHelper( 'KalturaSupport_ThumbCuePointsReady' );
+		}
+	},
+	getKalturaClient: function() {
+		if( ! this.kClient ) {
+			this.kClient = mw.kApiGetPartnerClient( this.embedPlayer.kwidgetid );
+		}
+		return this.kClient;
+	},
+	isValidResult: function( data ){
+		// Check if we got error
+		if( !data
+			||
+			( data.code && data.message )
+			){
+			return false;
+		}
+		return true;
 	},
 	/**
 	 * Adds player cue point bindings
@@ -67,8 +121,8 @@ mw.KCuePoints.prototype = {
 			_this.destroy();
 		});
 
-		// Bind for seeked event to update the nextCuePoint
-		$( embedPlayer ).bind( "seeked" + this.bindPostfix, function(){
+		// Bind for seeked and onplay events to update the nextCuePoint
+		$( embedPlayer ).bind( "seeked" + this.bindPostfix + " onplay" + this.bindPostfix, function(){
 			var currentTime = embedPlayer.currentTime * 1000;
 			currentCuePoint = _this.getNextCuePoint( currentTime );
 		});
@@ -141,7 +195,7 @@ mw.KCuePoints.prototype = {
 		var cuePointWrapper = {
 			'cuePoint' : rawCuePoint
 		};
-		if( rawCuePoint.cuePointType == 'codeCuePoint.Code' ) {
+		if( rawCuePoint.cuePointType == 'codeCuePoint.Code' || rawCuePoint.cuePointType == 'thumbCuePoint.Thumb' ) {
 			// Code type cue point ( make it easier for people grepping the code base for an event )
 			eventName = 'KalturaSupport_CuePointReached';
 		} else if( rawCuePoint.cuePointType == 'adCuePoint.Ad' ) {

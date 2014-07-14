@@ -61,7 +61,13 @@ return array (
 				'doc' => "Determine the order DoubleClick should occupy among other pre sequence plugins. Set to zero to disable preroll. ( This has no effect in managed ad player.)",
 				'initvalue' => 1,
 				'type' => 'number',
-			)
+			),
+            'adsManagerLoadedTimeout'=> array(
+                'label' => 'Pre sequence index',
+                'doc' => "Timer for timed checking if adsManager was loaded(in milliseconds)",
+                'initvalue' => 5000,
+                'type' => 'number',
+            )
 		)
 	)
 );

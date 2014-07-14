@@ -48,6 +48,10 @@
 			);
 
 			this.loadMedia( readyCallback );
+
+			//hide player until we click play
+			this.getPlayerContainer().css('visibility', 'hidden');
+
 		},
 
 		loadMedia: function( readyCallback ) {
@@ -313,9 +317,6 @@
 				this.durationReceived = true;
 				if ( !this.isError ) {
 					this.callReadyFunc();
-					if ( !this.isAudioPlayer ) {
-						this.removePoster();
-					}
 					//in silverlight we have unusual situation where "Start" is sent after "playing", this workaround fixes the controls state
 					if ( this.autoplay ) {
 						$( this ).trigger( "playing" );
@@ -372,6 +373,8 @@
 			mw.log('EmbedPlayerSPlayer::play');
 			var _this = this;
 			if ( this.durationReceived && this.parent_play() ) {
+				//bring back the player
+				this.getPlayerContainer().css('visibility', 'visible');
 				if ( this.isMulticast  ) {
 					this.bindHelper( "durationChange" , function() {
 						_this.playerObject.play();

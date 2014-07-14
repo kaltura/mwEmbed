@@ -306,7 +306,7 @@
 							switch( objectPath[2] ){
 								case 'currentTime':
 									// check for kPreSeekTime ( kaltura seek delay update property )
-									if( embedPlayer.kPreSeekTime !== null ){
+									if( embedPlayer.seeking && embedPlayer.kPreSeekTime !== null ){
 										return embedPlayer.kPreSeekTime;
 									}
 									/*var ct = embedPlayer.currentTime - embedPlayer.startOffset;
@@ -479,7 +479,7 @@
 				case 'utility':
 					switch( objectPath[1] ) {
 						case 'random':
-							return Math.random();
+							return Math.floor(Math.random() * 1000000000);
 							break;
 						case 'timestamp':
 							return new Date().getTime();
@@ -636,7 +636,11 @@
 					}
 
 					if( $.isFunction( callbackToRun ) ) {
-						callbackToRun.apply( embedPlayer, $.makeArray( arguments ) );
+						try{
+							callbackToRun.apply( embedPlayer, $.makeArray( arguments ) );
+						}catch(e){
+							mw.log("Error when trying to run callbackToRun (probably JavaScript error in callbackToRun code)")
+						};
 					} else {
 						mw.log('kdpMapping::addJsListener: callback name: ' + callbackName + ' not found');
 					}

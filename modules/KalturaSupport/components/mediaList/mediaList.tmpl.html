@@ -1,0 +1,52 @@
+<ul>
+    <% for ( var i = 0; i < mediaList.length; i++ ) { %>
+    <%var mediaItem =  mediaList[i];%>
+    <li class="chapterBox" data-chapter-index="<%=i%>"
+        <% if (meta.layout == "hotizontal") { %> style="width: <%= mediaItem.width %>px " <% } %> >
+        <% if (i > 0) { %>
+        <div class="chapterDivider"
+            <% if (meta.layout == "hotizontal") { %> style="height: <%= mediaItem.thumbnail.height %>px " <% } %> >
+        </div>
+        <% } %>
+        <div class="chapterBoxInner" >
+            <% if( meta.includeThumbnail) { %>
+            <div class="k-thumb" alt="Thumbnail for <%=mediaItem.title%>" data-chapter-index="<%=i%>"
+                 style="width:<%=mediaItem.thumbnail.width%>px;
+                 height: <%=mediaItem.thumbnail.height%>px;
+                 background-repeat:no-repeat;
+                 background-position: center;
+                 background-size : auto 100%;
+                 background-image:url(<%=mediaItem.thumbnail.url%>);"></div>
+            <% } %>
+            <span class="k-title-container" title="<%=mediaItem.title%>">
+                <% if( meta.includeChapterStartTime) { %>
+                <span class="k-start-time">
+                    <span><%=mediaItem.startTimeDisplay%></span>
+                </span>
+                <% } %>
+                <% if( meta.includeChapterNumberPattern) { %>
+                <span class="chapterNumber"><%=mediaItem.chapterNumber%></span>
+                <% } %>
+                <%
+                var chapterTitle = mediaItem.title;
+                if( mediaItem.title && mediaItem.title.length > meta.titleLimit ){
+				    chapterTitle = mediaItem.title.substr(0, meta.titleLimit-4 ) + ' ...';
+                } %>
+                <span class="k-title"><%=chapterTitle%></span>
+            </span>
+            <%
+            var chapterDesc = mediaItem.description;
+            if( mediaItem.description && mediaItem.description.length > meta.descLimit ){
+                chapterDesc = mediaItem.description.substr(0, meta.descLimit-4 ) + ' ...';
+            } %>
+            <span class="k-description" title="<%=mediaItem.description%>"><%=chapterDesc%></span>
+            <% if( meta.includeChapterDuration) { %>
+            <span class="k-duration">
+                <div class="icon-time"></div>
+                <span><%=mediaItem.durationDisplay%></span>
+            </span>
+            <% } %>
+        </div>
+    </li>
+    <% } %>
+</ul>

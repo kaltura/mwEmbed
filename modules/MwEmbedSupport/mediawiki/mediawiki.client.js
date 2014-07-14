@@ -45,6 +45,12 @@
 	mw.isIpad3 = function(){
 		return  /OS 3_/.test( userAgent ) && mw.isIpad();
 	};
+	mw.isAndroid44 = function(){
+		return ( userAgent.indexOf( 'Android 4.2') != -1 );
+	};
+	mw.isAndroid43 = function(){
+		return ( userAgent.indexOf( 'Android 4.2') != -1 );
+	};
 	mw.isAndroid42 = function(){
 		return ( userAgent.indexOf( 'Android 4.2') != -1 );
 	};
@@ -91,8 +97,15 @@
 		return /OS 5_/.test( userAgent ) && mw.isIOS();
 	};
 
+	mw.isIOS6 = function(){
+		return /OS 6_/.test( userAgent ) && mw.isIOS();
+	};
+
 	mw.isIOS7 = function(){
 		return /OS 7_/.test( userAgent ) && mw.isIOS();
+	};
+	mw.isIOS8 = function(){
+		return /OS 8_/.test( userAgent ) && mw.isIOS();
 	};
 
 	// Does the client has native touch bindings?

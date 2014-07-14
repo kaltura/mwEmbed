@@ -11,7 +11,9 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 		accessibleControls: false,
 		accessibleVolumeChange: 0.1,
 		showSlider: true,
-        pinVolumeBar: false
+        pinVolumeBar: false,
+		useCookie: true
+
 	},
 	icons: {
 		'mute': 'icon-volume-mute',
@@ -21,6 +23,34 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 
 	setup: function( embedPlayer ) {
 		this.addBindings();
+		var _this = this;
+		this.cookieName = this.pluginName + '_volumeValue';
+		this.bind( 'playerReady ' , function () {
+			if ( (_this.getConfig( 'useCookie' ) && $.cookie( _this.cookieName ) ) ) {
+				var volumeValue = parseInt( $.cookie( _this.cookieName ) );
+				if ( !isNaN( volumeValue ) &&
+					volumeValue >= 0 &&
+					volumeValue <= 100 ) {
+					if ( volumeValue === 0 ) {
+						_this.getPlayer().preMuteVolume = 1;
+						_this.getPlayer().muted = true;
+						_this.updateFirstMute = true;
+					}
+					_this.firstUpdate = true;
+					_this.getPlayer().setVolume( volumeValue / 100 , true );
+				}
+			}
+		});
+
+	},
+	saveVolume: function(){
+		if (this.firstUpdate){
+			this.firstUpdate = false;
+			return;
+		}
+		if( this.getConfig( 'useCookie' ) ){
+			this.getPlayer().setCookie( this.cookieName ,this.getPlayer().getPlayerElementVolume() * 100 );
+		}
 	},
 	isSafeEnviornment: function(){
 		return !mw.isMobileDevice();
@@ -35,30 +65,31 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 			change: function( event, ui ) {
 				_this.getPlayer().setVolume( (ui.value / 100) , true );
 			}
-		}
+		};
 	},
 	addBindings: function() {
 		var _this = this;
 		// If the slider should be shown; 
-		if( this.getConfig('showSlider' ) ){
-			var openSlider = function(){
-				_this.getComponent().addClass('open');
+		if( this.getConfig('showSlider' ) ) {
+			var openSlider = function () {
+				_this.getComponent().addClass( 'open' );
 			};
-			var closeSlider = function(){
-                if(!_this.getConfig('pinVolumeBar'))
-				    _this.getComponent().removeClass('open');
+			var closeSlider = function () {
+				if ( !_this.getConfig( 'pinVolumeBar' ) ) {
+					_this.getComponent().removeClass( 'open' );
+				}
 			};
-		}
 
-		// Save component width on data attribute ( used for responsive player )
-		this.bind('layoutBuildDone', function(){
-			openSlider();
-			// Firefox unable to get component width correctly without timeout
-			setTimeout(function(){
-				_this.getComponent().data('width', _this.getComponent().width() );
-				closeSlider();					
-			}, 100);
-		});
+			// Save component width on data attribute ( used for responsive player )
+			this.bind( 'layoutBuildDone' , function () {
+				openSlider();
+				// Firefox unable to get component width correctly without timeout
+				setTimeout( function () {
+					_this.getComponent().data( 'width' , _this.getComponent().width() );
+					closeSlider();
+				} , 100 );
+			} );
+		}
 		// Add click bindings
 		this.getBtn().click( function() {
 			if( !_this.getPlayer().isMuted() ){
@@ -69,11 +100,18 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 				_this.setAccessibility(_this.getBtn(), gM( 'mwe-embedplayer-volume-mute' ));
 			}
 			_this.getPlayer().toggleMute();
+			if ( _this.updateFirstMute ){
+				_this.updateFirstMute = false;
+				_this.updateVolumeUI(1);
+			}
+			_this.saveVolume();
+
 		} );
 		if (this.getConfig("accessibleControls")){
 			this.getAccessibilityBtn('increaseVolBtn').click( function() {
 				if (_this.getPlayer().volume <= (1 - _this.getConfig("accessibleVolumeChange"))){
 					_this.getPlayer().setVolume(_this.getPlayer().volume + _this.getConfig("accessibleVolumeChange"), true);
+
 				}
 			} );
 			this.getAccessibilityBtn('decreaseVolBtn').click( function() {
@@ -88,17 +126,18 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 
 		this.bind( 'volumeChanged', function(e, percent){
 			_this.updateVolumeUI( percent );
+			_this.saveVolume();
+
 		});
 
 		this.getSlider().slider( this.getSliderConfig() );
 		if ( this.getConfig( 'accessibilityLabels' ) ){
-			var percent = this.getPlayer().getPlayerElementVolume() * 100
+			var percent = this.getPlayer().getPlayerElementVolume() * 100;
 			var title = gM('mwe-embedplayer-volume-value', percent );
 			this.getSlider().find('a').html('<span class="accessibilityLabel">'+title+'</span>');
 		}
 	},
 	updateVolumeUI: function( percent ){
-
 		var iconClasses = '',
 			newClass = '';
 

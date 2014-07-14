@@ -1,4 +1,4 @@
-<?php 
+<?php
 	require_once( realpath( dirname( __FILE__ ) )  . '/doc-base.php' );
 ?>
 <!DOCTYPE html>
@@ -6,8 +6,8 @@
   <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="">
-	<meta name="author" content="">
+	<meta name="description" content="Kaltura Player � Fastest, Most Flexible Online Video Player Toolkit, view feature test files that highlight kaltura player toolkit features.">
+	<meta name="author" content="kaltura">
 
 	<?php if( $wgKalturaGoogleAnalyticsUA ){
 		?>
@@ -15,10 +15,9 @@
 			var _gaq = _gaq || [];
 			_gaq.push(['_setAccount', '<?php echo $wgKalturaGoogleAnalyticsUA?>']);
 			_gaq.push(['_trackPageview']);
-			
 			(function() {
 				var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-				ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+				ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
 				var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 			})();
 		</script>
@@ -65,10 +64,15 @@
 	<script src="<?php echo $pathPrefix; ?>jquery/jquery.ba-hashchange.js"></script>
 	<script src="<?php echo $pathPrefix; ?>pagedown/showdown.js"></script>
 	
-	<title>Kaltura - <?php echo $kdocPageTitle; ?></title>
+	<title>Kaltura Player - Fast, Flexible, Video Player Toolkit - <?php echo $kdocPageTitle; ?></title>
   </head>
 
   <body class="kdoc">
+	<?php 
+		if( isset( $wgAdditionalDocsScriptInclude ) ){ 
+			echo $wgAdditionalDocsScriptInclude; 
+		} 
+	?>
 	<script> 
 	// make sure the body is at least as tall as the window:
 	$('body').css('min-height', $(window).height() - parseInt( $('body').css('padding-bottom') ) + 150 );
@@ -136,25 +140,28 @@
 				} else {
 					// content pages: 
 					switch( $path ){
+						case 'api':
+							include 'content_api.php';
+							break;
 						case 'resources':
-							include 'resources_content.php';
+							include 'content_resources.php';
 							break;
 						case 'contact':
-							include 'contact_content.php';
+							include 'content_contact.php';
 							break;
 						case 'templates':
-							include 'marketing_templates.php';
+							include 'content_marketing_templates.php';
 							break;
 						case 'customersamples':
-							include 'marketing_customersamples.php';
+							include 'content_marketing_customersamples.php';
 							break;
 						case 'advertising':
-							include 'marketing_customersamples.php';
+							include 'content_marketing_customersamples.php';
 							break;
 						case 'main':
 						default:
 							// insert content based on url ( same logic as JS bellow )
-							include 'main_content.php';
+							include 'content_main.php';
 							break;
 					}
 				}
@@ -250,7 +257,7 @@
 				switch( key ){
 					case 'main':
 						pageClassType = 'landing';
-						$.get( basePath + 'main_content.php', function( data ){
+						$.get( basePath + 'content_main.php', function( data ){
 							setContent( data );
 						});
 						break;
@@ -268,8 +275,14 @@
 							setContent( data );
 						});
 						break;
+					case 'api':
+						$.get( basePath + 'content_api.php', function( data ){
+							setContent( data );
+						});
+					break;
+					break;
 					case 'resources':
-						$.get( basePath + 'resources_content.php', function( data ){
+						$.get( basePath + 'content_resources.php', function( data ){
 							setContent( data );
 						});
 						break;
@@ -279,17 +292,17 @@
 						});
 						break;
 					case 'templates':
-						$.get( basePath + 'marketing_templates.php', function( data ){
+						$.get( basePath + 'content_marketing_templates.php', function( data ){
 							setContent( data );
 						});
 						break;
 					case 'customersamples':
-						$.get( basePath + 'marketing_customersamples.php', function( data ){
+						$.get( basePath + 'content_marketing_customersamples.php', function( data ){
 							setContent( data );
 						});
 						break;
 					case 'advertising':
-						$.get( basePath + 'marketing_advertising.php', function( data ){
+						$.get( basePath + 'content_marketing_advertising.php', function( data ){
 							setContent( data );
 						});
 						break;
@@ -301,7 +314,6 @@
 						});
 						break;
 				}
-				
 				$('.featurepage,.landing,.contentpage')
 					.removeClass('featurepage landing contentpage')
 					.addClass( pageClassType );

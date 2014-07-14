@@ -7,7 +7,7 @@
 		 * API requests interval for updating live stream status (Seconds).
 		 * Default is 30 seconds, to match server's cache expiration
 		 */
-		liveStreamStatusInterval : 30,
+		liveStreamStatusInterval : 10,
 
 		// Default DVR Window (Seconds)
 		defaultDVRWindow : 30 * 60,
@@ -348,11 +348,15 @@
 			if ( embedPlayer.kalturaPlayerMetaData && embedPlayer.kalturaPlayerMetaData.type == 8 ) {
 				service = 'liveChannel';
 			}
+			var protocol = 'hls';
+			if ( embedPlayer.streamerType != 'http' ) {
+				protocol = embedPlayer.streamerType;
+			}
 			_this.getKalturaClient().doRequest( {
 				'service' : service,
 				'action' : 'islive',
 				'id' : embedPlayer.kentryid,
-				'protocol' : 'hls',
+				'protocol' : protocol,
 				'partnerId': embedPlayer.kpartnerid,
 				'timestamp' : Date.now()
 			}, function( data ) {

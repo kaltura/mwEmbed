@@ -118,7 +118,9 @@ mw.AdTimeline.prototype = {
 		  	nua.indexOf('AppleWebKit') > -1) &&
 		   	!(nua.indexOf('Chrome') > -1));
 
-		if(!is_native_android_browser || mw.isAndroid40())
+		if( !is_native_android_browser ||
+			mw.isAndroid40() ||
+			mw.getConfig( "EmbedPlayer.ForceNativeComponent") )
 		{
 			this.embedPlayer = embedPlayer;
 			// Bind to the "play" and "end"
@@ -235,7 +237,13 @@ mw.AdTimeline.prototype = {
 		// TODO We really need a "preend" event for thing like this.
 		// So that playlist next clip or other end bindings don't get triggered.
 		embedPlayer.bindHelper( 'ended' + _this.bindPostfix, function( event ){
+
+			if (embedPlayer.replayEventCount > 0 && !embedPlayer.adsOnReplay){
+				return; // don't show postroll ads on replay if the adsOnReplay Flashvar is set to false
+			}
+
 			if( displayedPostroll ){
+				displayedPostroll = false; // reset flag to show postroll ads on replay
 				return ;
 			}
 			var playedAnAdFlag = false;
@@ -245,6 +253,8 @@ mw.AdTimeline.prototype = {
 			displayedPostroll = true;
 			mw.log( 'AdTimeline:: AdSupport_StartAdPlayback set onDoneInterfaceFlag = false' );
 			embedPlayer.onDoneInterfaceFlag = false;
+			//Signal player to stay at full screen for iPhone postroll
+			embedPlayer.keepNativeFullScreen = true;
 
 			// Display post roll in setTimeout ( hack to work around end sequence issues )
 			// should be refactored.
@@ -258,6 +268,16 @@ mw.AdTimeline.prototype = {
 					// Trigger the postSequenceComplete event
 					embedPlayer.triggerHelper( 'AdSupport_PostSequenceComplete' );
 					/** TODO support postroll bumper and leave behind */
+					function onPostRollDone(){
+						// Restore ondone interface:
+						embedPlayer.onDoneInterfaceFlag = true;
+						// on clip done can't be invoked with a stop state ( TOOD clean up end sequence )
+						embedPlayer.stopped = false;
+						//Signal player that it can leave full screen after iPhone postroll
+						embedPlayer.keepNativeFullScreen = false;
+						// Run the clipdone event:
+						embedPlayer.onClipDone();
+					}
 					if( playedAnAdFlag ){
 						embedPlayer.switchPlaySource( _this.originalSource, function( video ){
 							// Make sure we pause the video
@@ -269,20 +289,10 @@ mw.AdTimeline.prototype = {
 							});
 							// Restore interface
 							_this.restorePlayer( 'postroll', true );
-							// Restore ondone interface:
-							embedPlayer.onDoneInterfaceFlag = true;
-							// on clip done can't be invoked with a stop state ( TOOD clean up end sequence )
-							embedPlayer.stopped = false;
-							// Run the clipdone event:
-							embedPlayer.onClipDone();
+							onPostRollDone();
 						});
 					} else {
-						// Restore ondone interface:
-						embedPlayer.onDoneInterfaceFlag = true;
-						// on clip done can't be invoked with a stop state ( TOOD clean up end sequence )
-						embedPlayer.stopped = false;
-						// run the clipdone event:
-						embedPlayer.onClipDone();
+						onPostRollDone();
 					}
 				});
 			}, 0);
@@ -348,18 +358,36 @@ mw.AdTimeline.prototype = {
 				return ;
 			}
 			// Run the sequence proxy function:
-			sequenceProxy[ key ]( function(){
-
+			var callback = function(){
+				if ( sequenceProxy[ keyList[ seqInx ] ]["config"] ){
+					// trigger ad complete event for omniture tracking. Taking current time from currentTimeLabel plugin since the embedPlayer currentTime is already 0
+					$(_this.embedPlayer).trigger('onAdComplete',[sequenceProxy[ keyList[ seqInx ] ]["config"][0], mw.npt2seconds($(".currentTimeLabel").text())]);
+				}else{
+					$(_this.embedPlayer).trigger('onAdComplete',['', mw.npt2seconds($(".currentTimeLabel").text())]);
+				}
 				// Done with slot increment display slot count
 				_this.displayedSlotCount++;
-
 				// done with the current proxy call next
 				seqInx++;
-
 				// call sequence proxy inline for ad plugins sync when doing source switch
 				runSequeceProxyInx( seqInx );
-			});
+			}
+			// for backward compatibility, check if the sequenceproxy holds a function (legacy) or object (new ad events model)
+			if ( $.isFunction(sequenceProxy[ key ]) ){
+				sequenceProxy[ key ]( callback );
+				$( _this.embedPlayer).trigger( 'onAdPlay', '' );
+			}else{
+				sequenceProxy[ key ]["display"]( callback );
+				// trigger play event for omniture analytics
+				$( _this.embedPlayer).trigger( 'onAdPlay', sequenceProxy[ keyList[ seqInx ] ]["config"][0] );
+			}
 		};
+		// dispatch adOpen event for omniture on page
+		if ( sequenceProxy[ keyList[ seqInx ] ]["config"] ){
+			$( _this.embedPlayer).trigger( 'onAdOpen',sequenceProxy[ keyList[ seqInx ] ]["config"] );
+		}else{
+			$( _this.embedPlayer).trigger( 'onAdOpen',['','','',''] );
+		}
 		runSequeceProxyInx( seqInx );
 	},
 	updateUiForAdPlayback: function( slotType ){
@@ -375,7 +403,11 @@ mw.AdTimeline.prototype = {
 		// Stop the native embedPlayer events so we can play the preroll and bumper
 		embedPlayer.stopEventPropagation();
 		// TODO read the add disable control bar to ad config and check that here.
-		embedPlayer.disablePlayControls();
+		var components = [];
+		if (mw.getConfig('enableControlsDuringAd')) {
+			components = ['playPauseBtn'];
+		}
+		embedPlayer.disablePlayControls(components);
 		// Update the interface to play state:
 		embedPlayer.playInterfaceUpdate();
 		// make sure to hide the spinner

@@ -16,7 +16,7 @@
 		isDisabled: false,
 
 		isSafeEnviornment: function(){
-			if ( mw.isMobileDevice()){
+			if ( mw.isMobileDevice() ){
 				return false;
 			}
 			var _this = this,
@@ -29,8 +29,11 @@
 		},
 
 		setup: function(){
-			this.currentSpeed = this.getConfig('defaultSpeed') || 1;
+			this.currentSpeed = Math.abs(this.getConfig('defaultSpeed')) || 1;
 			this.speedSet = this.getConfig('speeds').split(',');
+			for (var i=0; i<this.speedSet.length; i++){
+				this.speedSet[i] = Math.abs(this.speedSet[i]);
+			}
 			this.addBindings();
 		},
 
