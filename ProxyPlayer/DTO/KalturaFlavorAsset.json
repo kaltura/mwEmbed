@@ -2,8 +2,8 @@
     "flavorParamsId": "",
     "width": "",
     "height": "",
-    "bitrate": "1000",
-    "frameRate": "1000",
+    "bitrate": "",
+    "frameRate": "",
     "isOriginal": "",
     "isWeb": "1",
     "containerFormat": "",
@@ -20,7 +20,7 @@
     "updatedAt": "",
     "deletedAt": "",
     "description": "",
-    "partnerData": "{\"url\":\"{{URL}}\", \"type\":\"{REGEX:/(?<=\\.)[^\\.]+(?=\\/Manifest$)/||{{URL}}}}\"}",
+    "partnerData": "{\"url\":\"{{URL}}\", \"type\":\"{MAP:isml=>ism,ism=>ism,m3u8=>hls,mp4=>h264,webm=>hds||{{URL}}}}\"}",
     "partnerDescription": "",
     "actualSourceAssetParamsIds": ""
 }

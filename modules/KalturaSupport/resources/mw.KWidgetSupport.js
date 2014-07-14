@@ -301,15 +301,15 @@ mw.KWidgetSupport.prototype = {
 			//TODO in the future we will have flavors for livestream. revise this code.
 			// Apply player Sources
 			if( playerData.contextData && playerData.contextData.flavorAssets ){
-				if (playerData.contextData.streamerType == "hdnetwork"){
+				if (playerData.contextData.actions &&
+					playerData.contextData.actions["proxyEnabled"] &&
+					playerData.contextData.actions["proxyEnabled"] == true){
 					var flavorAssets = [];
 					$.each(playerData.contextData.flavorAssets, function(index, flavorAsset){
-						var flavorPartnerData = JSON.parse(flavorAsset.partnerData);
-						var flavorAssetss = {};
 						try {
-							flavorAsset.src = flavorPartnerData.url;
-							flavorAsset.type = "video/" + flavorPartnerData.type;
-							flavorAssetss = {
+							var flavorPartnerData = JSON.parse( flavorAsset.partnerData );
+							var flavorAssetObj = {
+								id: flavorAsset.id,
 								src: flavorPartnerData.url,
 								type: "video/" + flavorPartnerData.type,
 								width: flavorAsset.width,
@@ -317,12 +317,11 @@ mw.KWidgetSupport.prototype = {
 								bitrate: flavorAsset.bitrate,
 								frameRate: flavorAsset.frameRate
 							};
+							flavorAssets.push(flavorAssetObj);
 						} catch (e){
-							debugger;
+							mw.log( "KwidgetSupport::Failed adding flavor asset, " + e.toString() );
 						}
-						flavorAssets.push(flavorAssetss);
 					});
-
 					mw.setConfig('EmbedPlayer.ReplaceSources', flavorAssets);
 				} else {
 					_this.addFlavorSources( embedPlayer, playerData );

@@ -16,6 +16,9 @@ class Lexer{
 	function resolve($exp, $data){
 		if ($this->isBraceExpression($exp)){
 		 	$resolved = $this->resolveBrace($exp, $data);
+			if ($this->isMapExpression($exp)){
+                $resolved = $this->resolveMap($resolved);
+            }
 			if ($this->isRegexExpression($exp)){
 				$resolved = $this->resolveRegex($resolved);
 			}
@@ -73,5 +76,32 @@ class Lexer{
 		}
 		return $exp;
 	}
+	function isMapExpression($exp){
+        preg_match_all("/\{MAP:(.*?)\}\}/", $exp, $matchedRegexExps);
+        return (count($matchedRegexExps[0]) > 0);
+    }
+    function resolveMap($exp){
+        if (preg_match_all("/\{MAP:(.*?)\}\}/", $exp, $matchedExps)){
+            foreach (array_unique($matchedExps[1]) as $key=>$matchedExp) {
+                list($mapString, $text) = explode("||", $matchedExp);
+                $mapStringArray = explode(",", $mapString);
+                $map = array();
+                foreach ($mapStringArray as $lineNum => $line)
+                {
+                    list($k, $v) = explode("=>", $line);
+                    $map[$k] = $v;
+                }
+                foreach ($map as $keyName => $valName){
+                    preg_match("/$keyName/", $text, $result);
+                    if (is_array($result) && isset($result[0])){
+                        $escapedExp = preg_quote($matchedExps[0][$key], "/");
+                        $exp = preg_replace("/".$escapedExp."/", $valName, $exp);
+                        break;
+                    }
+                }
+            }
+        }
+        return $exp;
+    }
 }
 ?>

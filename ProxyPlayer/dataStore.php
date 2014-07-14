@@ -124,7 +124,7 @@ class DataStore {
 		'accessControlActions'  => array(),
 		'flavorAssets'          => array(),
 		'messages' => array(),
-		'actions'  => array()
+		'actions'  => array('proxyEnabled'=>true)
 	);
 	private $flavorassetsData = array(
 		array(

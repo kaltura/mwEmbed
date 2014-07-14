@@ -53,7 +53,8 @@ class Main {
 					$request = new ProxyRequest();
 					$data = $request->get($partnerRequestData);	
 					DataStore::getInstance()->setData("baseentry", array($data["GetMediaInfoResult"]["Media"]));
-					//DataStore::getInstance()->setData("flavorassets", $data["GetMediaInfoResult"]["Media"]["Files"]["File"]);
+					DataStore::getInstance()->setData("flavorassets", $data["GetMediaInfoResult"]["Media"]["Files"]["File"]);
+
 				}
 			}
 			return $serviceHandler->get();
