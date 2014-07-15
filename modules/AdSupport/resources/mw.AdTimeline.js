@@ -438,6 +438,11 @@ mw.AdTimeline.prototype = {
 		}
 		mw.log( "AdTimeline:: restorePlayer " );
 		var embedPlayer = this.embedPlayer;
+
+		//if player is not binded return - nothing to restore.
+		if ( !embedPlayer ){
+			return;
+		}
 		embedPlayer.restoreEventPropagation();
 		embedPlayer.enablePlayControls();
 		embedPlayer.seeking = false;
