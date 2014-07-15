@@ -10,7 +10,7 @@
 			this.id = playerId;
 			this.targetObj = target;
 			var xapPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/silverlight-player/Player.xap';
-			//var xapPath = 'http://192.168.193.144//lightKdp/KDP3/bin-debug/Player.xap';
+			//var xapPath = 'http://localhost/lightKdp/Player.xap';
 			window["onError" + playerId]=function(sender, args){
 				var appSource = "";
 				if (sender != null && sender != 0) {
@@ -174,6 +174,9 @@
 		},
 		selectTrack: function( index ) {
 			this.playerProxy.selectTrack( index );
+		},
+		selectAudioTrack: function( index ) {
+			this.playerProxy.selectAudioTrack( index );
 		},
 		reloadMedia: function() {
 			this.playerProxy.reloadMedia();
