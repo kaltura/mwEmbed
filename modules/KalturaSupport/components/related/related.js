@@ -16,7 +16,8 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 		templatePath: 'components/related/related.tmpl.html',
 		playlistId: null,
 		formatCountdown : false,
-		clickUrl : null
+		clickUrl : null,
+		enableAccessControlExclusion:false
 	},
 	viewedEntries: [],
 	iconBtnClass: 'icon-related',
@@ -165,6 +166,7 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 			if( ! _this.isValidResult( data ) ) {
 				return ;
 			}
+
 			// restore "entryList" order
 			var orderedData = [];
 			var entrylistArry = entryList.split(',');
@@ -179,7 +181,15 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 					}
 				}
 			}
-			callback( orderedData )
+			if  (_this.getConfig("enableAccessControlExclusion") ) {
+				_this.filterAccessControl(orderedData ).then(function(acData){
+					callback(acData);
+				})
+
+			} else {
+				callback( orderedData );
+			}
+
 		});
 	},
 	getEntriesFromPlaylistId: function( playlistId, callback, sendContext ){
@@ -201,7 +211,14 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 			if( ! _this.isValidResult( data ) ) {
 				return ;
 			}
-			callback( data );
+			if  (_this.getConfig("enableAccessControlExclusion") ) {
+				_this.filterAccessControl(data ).then(function(acData){
+					callback(acData);
+				})
+
+			} else {
+				callback( data );
+			}
 
 		});
 	},
@@ -242,6 +259,63 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 				this.getScreen().find('.remaining').html(value);
 			}
 		}
+	},
+	filterAccessControl:function(data) {
+		var defer = $.Deferred();
+		var acList = {};
+		var acIndex = [];
+		for (var i in data){
+			if ( !acList[ data[i].accessControlId ] ) {
+				acList[ data[i].accessControlId ] = data[i].id;
+				acIndex[ acIndex.length ] = data[i].accessControlId;
+			}
+		}
+		var requestArray = [];
+		for(var i in acList) {
+			var requestObject = {
+				'service' : 'baseEntry',
+				'action' : 'getContextData',
+				'contextDataParams':{
+					'referrer' : window.kWidgetSupport.getHostPageUrl(),
+					'objectType' : 'KalturaEntryContextDataParams',
+					'flavorTags': "all"},
+				'streamerType': "http",
+				"entryId": acList[i]
+			};
+			requestArray.push( requestObject );
+		}
+		if ( requestArray.length ) {
+			this.getKalturaClient().doRequest( requestArray, function( EntryContextDataArray ) {
+				$.each( EntryContextDataArray , function( index , EntryContextData ) {
+					var isRestricted = false;
+					var checkFalse = ['isCountryRestricted','isIpAddressRestricted','isSessionRestricted','isSiteRestricted','isUserAgentRestricted'];
+					var checkTrue = ['isScheduledNow'];
+					$.each(checkFalse,function(index,item){
+						if ( EntryContextData[item] ){
+							isRestricted = true;
+						}
+					});
+					$.each(checkTrue,function(index,item){
+						if ( !EntryContextData[item] ){
+							isRestricted = true;
+						}
+					});
+					for (var i in acList){
+						if (acList[i] === requestArray[index].entryId){
+							acList[i] = isRestricted;
+						}
+					}
+				});
+				var verifiedEntryList = [];
+				$.each(data,function(index,entry){
+					if ( !acList[entry.accessControlId] ){
+						verifiedEntryList.push(entry);
+					}
+				});
+				defer.resolve(verifiedEntryList);
+			});
+		}
+		return defer;
 	}
 }));
 
