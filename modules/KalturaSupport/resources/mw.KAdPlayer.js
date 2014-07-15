@@ -1095,7 +1095,6 @@ mw.KAdPlayer.prototype = {
 			var vid = _this.getVideoAdSiblingElement( source );
 			//Register error state and continue with player flow in case of
 			$(vid ).bind('error.playVideoSibling', function(e){
-				debugger;
 				$( vid ).unbind( 'error.playVideoSibling' );
 				$( vid ).trigger('ended.playVideoSibling');
 			});
