@@ -502,7 +502,7 @@ mw.FullScreenManager.prototype = {
 		}
 	},
 	getDocTarget: function(){
-		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
+		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) && mw.getConfig('EmbedPlayer.IsFriendlyIframe')){
 			return window['parent'].document;
 		} else {
 			return document;

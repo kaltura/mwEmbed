@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Playlist Access Control filter</title>
+
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<body>
+<h2> Playlist access control entry removal</h2>
+<div id="kaltura_player" style="width:800px;height:300px"></div>
+<span id="kdoc-more-desc">
+	This demo filters out entries from the playlist that are not playable because of access control (client side)
+	<br>This does not apply for the first entry. The attribute name is enableAccessControlExclution in
+	playlistAPI plugin.
+	<br>This playlist has 4 entries, #2 is under country access control and #3 is under IP access
+	control
+</span>
+<script>
+
+	mw.setConfig('Kaltura.LeadWithHTML5', true);
+
+	kWidget.featureConfig({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id': '24316581',
+		'flashvars':{
+			'autoMute': true,
+			'playlistAPI':{
+				'autoInsert': true,
+				'visible': false,
+				'includeInLayout': false,
+				'kpl0Id': "1_dyuibzud",
+				"enableAccessControlExclusion" : true
+			}
+		}
+	})
+</script>
+</body>
+</html>
