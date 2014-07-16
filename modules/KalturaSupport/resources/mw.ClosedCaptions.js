@@ -250,7 +250,10 @@
 			var captionsSrc;
 			if( mw.isIphone() && !mw.getConfig('disableTrackElement') ) {
 				// getting generated vtt file from dfxp/srt
-				captionsSrc = "http://www.kaltura.com/api_v3/index.php/service/caption_captionasset/action/serveWebVTT/captionAssetId/" + dbTextSource.id + "/version/2/segmentIndex/1.vtt"
+				captionsSrc = mw.getConfig('Kaltura.CdnUrl') +
+							  "/api_v3/index.php/service/caption_captionasset/action/serveWebVTT/captionAssetId/" +
+							  dbTextSource.id +
+						      "/segmentIndex/-1/version/2/captions.vtt";
 			} else {
 				captionsSrc = this.getCaptionURL( dbTextSource.id ) + '/.' + dbTextSource.fileExt;
 			}
