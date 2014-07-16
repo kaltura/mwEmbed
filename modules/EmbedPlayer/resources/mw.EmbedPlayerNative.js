@@ -967,11 +967,6 @@ mw.EmbedPlayerNative = {
 	*/
 	play: function() {
 		var vid = this.getPlayerElement();
-		// fix for a bug on iphone native player
-		// on clip done when we try to replay an entry now it's starting from the beginning
-		if( mw.isIphone() ) {
-			vid.load();
-		}
 		// parent.$('body').append( $('<a />').attr({ 'style': 'position: absolute; top:0;left:0;', 'target': '_blank', 'href': this.getPlayerElement().src }).text('SRC') );
 		var _this = this;
 		// if starting playback from stoped state and not in an ad or otherise blocked controls state:
