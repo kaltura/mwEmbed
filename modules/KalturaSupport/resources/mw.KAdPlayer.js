@@ -88,7 +88,7 @@ mw.KAdPlayer.prototype = {
 		var _this = this;
 		mw.log("KAdPlayer::display:" + adSlot.type + ' ads:' +  adSlot.ads.length );
 
-		_this.embedPlayer.layoutBuilder.removePlayerTouchBindings();
+		_this.embedPlayer.triggerHelper("onDisableInterfaceComponents");
 		// Setup some configuration for done state:
 		adSlot.doneFunctions = [];
 		// set skip offset from config for all adds if defined 
