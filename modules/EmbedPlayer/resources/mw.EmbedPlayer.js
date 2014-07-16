@@ -2050,7 +2050,7 @@
 				if ( !_this.selectedPlayer ) {
 					_this.showPlayerError();
 					return false;
-				} else if( !mw.isIphone() ) { //if track element attached for iphone it will be
+				} else {
 					_this.embedPlayerHTML();
 				}
 			}
