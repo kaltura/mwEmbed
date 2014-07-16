@@ -161,7 +161,7 @@ mw.DoubleClick.prototype = {
 	 * Load the google IMA library:
 	 */
 	loadIma:function( successCB, failureCB ){
-		$.getScript( '//s0.2mdn.net/instream/html5/ima3.js', function() {
+		$.getScript( '//s0.2mdn.net/instream/html5/ima3_debug.js', function() {
 			successCB();
 		} )
 		.fail( function( jqxhr, settings, errorCode ) {
@@ -219,12 +219,9 @@ mw.DoubleClick.prototype = {
 	 * Get the content video tag
 	 */
 	getContent:function(adVideo){
-		if ( !mw.isMobileDevice() && this.currentAdSlotType!='overlay' && this.currentAdSlotType!='midroll' && (this.adActive || adVideo)){
-			var doubleClickAd = $('<video class="doubleClickAd persistentNativePlayer nativeEmbedPlayerPid" style="position: absolute; left: 0px; top: 0px; background-color: black"></video>');
-			if ($(".doubleClickAd").length === 0){
-				$(".videoHolder").append(doubleClickAd);
-			}
-			return $(".doubleClickAd")[0];
+		//if we're not in mobile - return null and let double click provide the sibling tag
+		if (!mw.isMobileDevice()  ){
+			return null;
 		}else{
 			// Set the content element to player element:
 			var playerElement =  this.embedPlayer.getPlayerElement();
@@ -482,7 +479,7 @@ mw.DoubleClick.prototype = {
 		// previously and the content element, so the SDK can track content
 		// and play ads automatically.
 
-		_this.adsManager = loadedEvent.getAdsManager( this.getContent(true)	);
+		_this.adsManager = loadedEvent.getAdsManager( this.embedPlayer.getPlayerElement()	);
 
 		// add a global ad manager refrence:
 		$( _this.embedPlayer ).data( 'doubleClickAdsMangerRef', _this.adsManager );
@@ -568,12 +565,12 @@ mw.DoubleClick.prototype = {
 
 			// sometimes CONTENT_PAUSE_REQUESTED is the last event we receive :(
 			// give double click 12 seconds to load the ad, else return to content playback
-			setTimeout( function(){
-				if( $.isFunction( _this.startedAdPlayback ) ){
-					// ad error will resume playback
-					_this.onAdError( " CONTENT_PAUSE_REQUESTED without no ad LOADED! ");
-				}
-			}, 12000 );
+//			setTimeout( function(){
+//				if( $.isFunction( _this.startedAdPlayback ) ){
+//					// ad error will resume playback
+//					_this.onAdError( " CONTENT_PAUSE_REQUESTED without no ad LOADED! ");
+//				}
+//			}, 12000 );
 		} );
 		adsListener( 'LOADED', function(){
 			// check for started ad playback sequence callback
@@ -629,11 +626,16 @@ mw.DoubleClick.prototype = {
 			_this.embedPlayer.sequenceProxy.isInSequence = true;
 
 			_this.adStartTime = new Date().getTime();
-
+			 debugger;
 			// Update duration
-			var $adVid = _this.getVideoElement();
-			var vid = $adVid[ $adVid.length -1 ];
-			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', vid.duration );
+			_this.duration= _this.adsManager.getRemainingTime();
+			if (_this.duration > -1) {
+				_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration' , _this.duration );
+			}
+
+//			var $adVid = _this.getVideoElement();
+//			var vid = $adVid[ $ad.length -1 ];
+//			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', vid.duration );
 
 			// Monitor ad progress
 			_this.monitorAdProgress();
@@ -820,14 +822,14 @@ mw.DoubleClick.prototype = {
 
 		// Update sequence property per active ad:
 		_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  _this.adsManager.getRemainingTime() );
-		var $adVid = _this.getVideoElement();
-		if( $adVid.length ){
-			// always use the latest video:
-			var vid = $adVid[ $adVid.length -1 ];
-			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  vid.duration );
-			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', vid.currentTime );
-			_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
-		}
+
+		     if (_this.duration == -1){
+			     _this.duration = _this.adsManager.getRemainingTime();
+		     }
+		      var currentTime = _this.duration - _this.adsManager.getRemainingTime();
+			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  _this.duration );
+			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead',  currentTime);
+			_this.embedPlayer.updatePlayHead( currentTime/ _this.duration );
 	},
 	getVideoElement: function(){
 		if( this.isSiblingVideoAd() ){
@@ -853,10 +855,10 @@ mw.DoubleClick.prototype = {
 		this.embedPlayer.sequenceProxy.isInSequence = false;
 
 		// remove ad container and ad video tag
-		if( $('#' + this.getAdContainerId() ).length ){
-			$('#' + this.getAdContainerId() ).remove();
-		}
-		$(".doubleClickAd").remove();
+//		if( $('#' + this.getAdContainerId() ).length ){
+//			$('#' + this.getAdContainerId() ).remove();
+//		}
+//		$(".doubleClickAd").remove();
 
 		// Check for sequence proxy style restore:
 		if( $.isFunction( this.restorePlayerCallback ) ){
