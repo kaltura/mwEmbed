@@ -188,7 +188,7 @@ mw.EmbedPlayerNative = {
 		this.ignoreNextNativeEvent = true;
 		
 		// empty out any existing sources:
-		if( vid ) {
+		if( vid && !mw.isIphone() ) {  //if track element attached for iphone it won't be deleted
 			$( vid ).empty();
 		}
 
