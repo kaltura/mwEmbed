@@ -42,7 +42,8 @@ mw.DoubleClick.prototype = {
 
 	//Signal if error was triggered from adsLoader
 	adLoaderErrorFlag: false,
-
+	//Flag for indicating if load has been initiated on the player element
+	playerElementLoaded: false,
 	// The current ad Slot type by default "managed" i.e doubleClick manages the player sequence.
 	currentAdSlotType : null,
 	// Flag that indicates event name when ad is clicked
@@ -226,7 +227,13 @@ mw.DoubleClick.prototype = {
 			return $(".doubleClickAd")[0];
 		}else{
 			// Set the content element to player element:
-			return this.embedPlayer.getPlayerElement();
+			var playerElement =  this.embedPlayer.getPlayerElement();
+			//Load the video tag to enable setting the source by doubleClick library
+			if (!this.playerElementLoaded) {
+				this.playerElementLoaded = true;
+				playerElement.load();
+			}
+			return playerElement;
 		}
 	},
 	addKalturaCuePointBindings: function(){
@@ -558,6 +565,7 @@ mw.DoubleClick.prototype = {
 			}
 			// loading ad:
 			_this.embedPlayer.pauseLoading();
+
 			// sometimes CONTENT_PAUSE_REQUESTED is the last event we receive :(
 			// give double click 12 seconds to load the ad, else return to content playback
 			setTimeout( function(){
