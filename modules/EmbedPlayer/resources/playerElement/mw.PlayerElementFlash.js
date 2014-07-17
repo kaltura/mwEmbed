@@ -237,6 +237,17 @@
 		onVolumeChanged: function ( data ) {
 			this.volume = data.newVolume;
 			$( this).trigger( 'volumechange' );
+		},
+		redrawObject: function ( timeout ) {
+			var _this = this;
+			//by default we will wait 250 ms
+			if ( !timeout ) {
+				timeout = 250;
+			}
+			this.playerElement.style.width = "99%";
+			setTimeout( function() {
+				_this.playerElement.style.width = "100%";
+			}, timeout );
 		}
 	});
 
