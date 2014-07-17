@@ -445,7 +445,7 @@ mw.DoubleClick.prototype = {
 			}, 12000 );
 		} );
 		adsListener( 'LOADED', function(args){
-			if (args.g && !args.g.linear) {
+			if ( args.g ) {
 				_this.isLinear = args.g.linear;
 			}
 			// check for started ad playback sequence callback
