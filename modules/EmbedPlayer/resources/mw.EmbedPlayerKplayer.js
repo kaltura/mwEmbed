@@ -616,10 +616,8 @@ mw.EmbedPlayerKplayer = {
 	},
 	toggleFullscreen: function() {
 		this.parent_toggleFullscreen();
-		//Redraw flash object, this fixes a resize issue on IE when wmode=transparent
-		if ( mw.isIE() ) {
-			this.playerObject.redrawObject();
-		}
+		//Redraw flash object, this fixes a Flash resize issue on when wmode=transparent
+		this.playerObject.redrawObject();
 	}
 };
 
