@@ -319,7 +319,7 @@ return array(
 	),
 	/* speed selector*/
 	'playbackRateSelector' => array(
-		'description' => "Enables users to select the video playback rate.",
+		'description' => "Enables users to select the video playback rate. Note http streamerType must be used to support playbackRateSelector in capable HTML5 browsers.",
 		'attributes' => array(
 			'defaultSpeed' => array(
 				'doc' => 'The default speed of the player.',
