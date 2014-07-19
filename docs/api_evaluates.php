@@ -6,6 +6,9 @@
 		'sequenceProxy.timeRemaining' => array(
 			'desc' => 'Time remaining until the end of the current ads sequence',
 		),
+		'sequenceProxy.duration' => array(
+			'desc' => 'The total duration of the current ad set.',
+		),
 		'sequenceProxy.isInSequence' => array(
 			'desc' => 'A flag specifying if the player is currently playing ads',
 		),
