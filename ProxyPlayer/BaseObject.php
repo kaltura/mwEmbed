@@ -67,7 +67,8 @@ abstract class BaseObject {
         		}
         		$resolvedItem = "";
         		foreach ($resolvers as $resolverKey => $resolverExp) {
-					if (array_key_exists($resolverKey, $classVarsObj)){		if (is_array($resolverExp)){
+					if (array_key_exists($resolverKey, $classVarsObj)){
+					if (is_array($resolverExp)){
 		            	    $resolvedItem[$resolverKey] = array();
 		            	    foreach($resolverExp as $expKey=>$expVal){
 		            	        $res = Lexer::getInstance()->resolve($expVal, $item, $data);
