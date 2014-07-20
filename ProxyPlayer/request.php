@@ -11,7 +11,11 @@
 			foreach($this->config as $config){
 				if (in_array($service, $config["services"])){
 				    if (isset($urlTokens[$config["token"]])){
-						$partnerRequestData = json_decode($urlTokens[$config["token"]]);
+				        if ($config["decodeToken"] == "true"){
+						    $partnerRequestData = json_decode($urlTokens[$config["token"]]);
+						} else {
+						    $partnerRequestData = $urlTokens[$config["token"]];
+						}
 						$this->get($config["method"], $config["redirectTo"], $partnerRequestData);
 						$this->setData($config["dataStores"]);
 					}
@@ -54,7 +58,7 @@
 			}
 		}
 
-		function getRest($method, $url, $data = false)
+		function getRest($method, $url, $data = "")
         {
             $curl = curl_init();
 
@@ -68,6 +72,13 @@
                     break;
                 case "PUT":
                     curl_setopt($curl, CURLOPT_PUT, 1);
+                    break;
+                case "local":
+                    $fileParts = pathinfo($url);
+                    $data = trim($data, '"');
+                    $file = $fileParts['dirname']."/".$fileParts['filename']."_".$data.".".$fileParts["extension"];
+                    $data = file_get_contents($file, FILE_USE_INCLUDE_PATH);
+                    return $data;
                     break;
                 default:
                     if ($data)

@@ -8,7 +8,7 @@ include_once (dirname(__FILE__)."/request.php");
 $qs       = $_SERVER['QUERY_STRING'];
 $main     = new Main();
 $response = $main->resolveRequest($qs);
-print_r(@serialize($response));
+print_r($response);
 
 //$console = new Logger("console");
 //$console->log($qs);
@@ -47,7 +47,11 @@ class Main {
 		if (!empty($service) && isset($service) && class_exists($service, false)) {
 			$serviceHandler = call_user_func(array(ucfirst($service), 'getClass'));
 			$request = new ProxyRequest($service, $tokens);			
-			return $serviceHandler->get();
+			$response = $serviceHandler->get();
+			if ($serviceHandler->requireSerialization){
+			    $response = @serialize($response);
+			}
+			return $response;
 		} else {
 			return array("message" => "service not found!");
 		}

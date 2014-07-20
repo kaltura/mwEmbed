@@ -19,6 +19,7 @@ class DataStore {
 	private $entrycontextdataData = array();
 	private $flavorassetsData = array();
 	private $cuepointsData = array();
+	private $uiconf = array();
 
 	function getData($key) {
 		
@@ -26,6 +27,9 @@ class DataStore {
 			case "baseentry":
 				$data = $this->baseentryData;
 				break;
+			case "uiconf":
+                $data = $this->uiconf;
+                break;
 			case "metadata":
 				$data = $this->metadataData;
 				break;
@@ -53,6 +57,9 @@ class DataStore {
 			case "baseentry":
 				$this->_setData($this->baseentryData, $container, $data, $merge);
 				break;
+			case "uiconf":
+                $this->_setData($this->uiconf, $container, $data, $merge);
+                break;
 			case "metadata":
 				$this->_setData($this->metadataData, $container, $data, $merge);
 				break;

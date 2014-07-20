@@ -1,6 +1,8 @@
 <?php
 class Session extends BaseObject {
 
+    public $requireSerialization = true;
+
 	function __construct() {
 	}
 

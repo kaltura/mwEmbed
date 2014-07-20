@@ -3,6 +3,7 @@
 class Cuepoints extends BaseObject {
 
 	var $data;
+	public $requireSerialization = true;
 
 	function __construct() {		
 	}

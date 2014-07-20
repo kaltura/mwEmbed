@@ -1,7 +1,18 @@
 [
 	{
+		"services": ["uiconf"],
+		"token": "id",
+		"decodeToken": false,
+		"redirectTo": "./tests/integrationTest.uiConf.json",
+		"method": "local",
+		"dataStores": {
+			"uiconf": ""
+		}
+	},
+	{
 		"services": ["multirequest"],
 		"token": "1:filter:freeText",
+		"decodeToken": true,
 		"redirectTo": "http://tvpapi-stg.as.tvinci.com/v2_6/gateways/jsonpostgw.aspx?m=GetMediaInfo",
 		"method": "POST",
 		"dataStores": {
@@ -13,6 +24,7 @@
 	{
 		"services": ["multirequest"],
 		"token": "1:filter:freeText",
+		"decodeToken": true,
 		"redirectTo": "http://tvpapi-stg.as.tvinci.com/v2_6/gateways/jsonpostgw.aspx?m=GetGroupMediaRules",
 		"method": "POST",
 		"dataStores": {
@@ -22,6 +34,7 @@
 	{
 		"services": ["multirequest"],
 		"token": "1:filter:freeText",
+		"decodeToken": true,
 		"redirectTo": "http://tvpapi-stg.as.tvinci.com/v2_6/gateways/jsonpostgw.aspx?m=GetMediaMark",
 		"method": "POST",
 		"dataStores": {

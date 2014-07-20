@@ -3,14 +3,16 @@
 class EntryContextData extends BaseObject {
 
 	var $data;
+	public $requireSerialization = true;
 
 	function __construct() {		
 	}
 
 	function get() {
 		$res = $this->resolveDtoList("KalturaEntryContextDataResult", NULL, $this->getData(), NULL, true);
-		$flavorAssets = (new FlavorAssets())->get();
-		$res->flavorAssets = $flavorAssets;
+		$flavorAssets = new FlavorAssets();
+		$result = $flavorAssets->get();
+		$res->flavorAssets = $result;
 		return $res;	
 	}
 }
