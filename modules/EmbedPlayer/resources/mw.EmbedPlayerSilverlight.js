@@ -211,7 +211,9 @@
 						'switchingChangeStarted': 'onSwitchingChangeStarted',
 						'switchingChangeComplete' : 'onSwitchingChangeComplete',
 						'flavorsListChanged' : 'onFlavorsListChanged',
-						'enableGui' : 'onEnableGui'
+						'enableGui' : 'onEnableGui',
+						'audioTracksReceived': 'onAudioTracksReceived',
+						'audioTrackSelected': 'onAudioTrackSelected'
 					};
 
 					_this.playerObject = playerElement;
@@ -548,6 +550,14 @@
 			}
 		},
 
+		onAudioTracksReceived: function ( data ) {
+			this.triggerHelper( 'audioTracksReceived', JSON.parse( data ) );
+		},
+
+		onAudioTrackSelected: function ( data ) {
+			this.triggerHelper( 'audioTrackIndexChanged', JSON.parse( data ) );
+		},
+
 		/**
 		 * Get the embed player time
 		 */
@@ -601,6 +611,12 @@
 
 		clean:function(){
 			$(this.getPlayerContainer()).remove();
+		},
+
+		switchAudioTrack: function( trackIndex ) {
+			if ( this.playerObject ) {
+				this.playerObject.selectAudioTrack( trackIndex );
+			}
 		}
 
 	}
