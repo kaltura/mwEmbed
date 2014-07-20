@@ -156,7 +156,11 @@ mw.DoubleClick.prototype = {
 	 * Load the google IMA library:
 	 */
 	loadIma:function( successCB, failureCB ){
-		$.getScript( '//s0.2mdn.net/instream/html5/ima3_debug.js', function() {
+		var imaURL =  '//s0.2mdn.net/instream/html5/ima3.js';
+		if ( this.getConfig( 'debugMode' ) === true ){
+			imaURL =  '//s0.2mdn.net/instream/html5/ima3_debug.js';
+		}
+		$.getScript( imaURL , function() {
 			successCB();
 		} )
 		.fail( function( jqxhr, settings, errorCode ) {
