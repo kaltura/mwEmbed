@@ -258,7 +258,7 @@ mw.DoubleClick.prototype = {
 		if( ! this.adDisplayContainer ){
 			this.adDisplayContainer = new google.ima.AdDisplayContainer(
 				this.getAdContainer(),
-				this.getContent(true)
+				this.getContent()
 			);
 		}
 		return this.adDisplayContainer;
