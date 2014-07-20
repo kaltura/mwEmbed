@@ -48,10 +48,6 @@
 			);
 
 			this.loadMedia( readyCallback );
-
-			//hide player until we click play
-			this.getPlayerContainer().css('visibility', 'hidden');
-
 		},
 
 		loadMedia: function( readyCallback ) {
@@ -314,6 +310,8 @@
 		onDurationChange: function( data, id ) {
 			//first durationChange indicate player is ready
 			if ( !this.durationReceived ) {
+				//hide player until we click play
+				this.getPlayerContainer().css('visibility', 'hidden');
 				this.durationReceived = true;
 				if ( !this.isError ) {
 					this.callReadyFunc();
