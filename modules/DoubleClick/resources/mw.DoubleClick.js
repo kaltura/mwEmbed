@@ -52,14 +52,20 @@ mw.DoubleClick.prototype = {
 	isAdClickTimeoutEnabled: false,
 
 	adsManagerLoadedTimeoutId: null,
+
+	//indicates we should save the time for the media switch (mobile)
 	saveTimeWhenSwitchMedia:false,
+
+	//flag for the time to return when using the same video element {mobile}
 	timeToReturn:null,
+
+	//flag that indicates we are now playing linear ad
+	playingLinearAd:false,
+
 
 	init: function( embedPlayer, callback, pluginName ){
 		var _this = this;
-
 		this.embedPlayer = embedPlayer;
-
 		// Inherit BaseAdPlugin
 		mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
 
@@ -77,8 +83,13 @@ mw.DoubleClick.prototype = {
 		var globalAdsManger = $(_this.embedPlayer).data( 'doubleClickAdsMangerRef' );
 		if( globalAdsManger ){
 			mw.log( "DoubleClick::unload old adManger" );
-			if ( $.isFunction( globalAdsManger.unload ) ) {
-				globalAdsManger.unload();
+			if ( $.isFunction( globalAdsManger.destroy ) ) {
+				var resotreFunction = $( _this.embedPlayer ).data( 'doubleClickRestore');
+				if (  $.isFunction(resotreFunction) ){
+					resotreFunction();
+				}
+				globalAdsManger.destroy();
+
 			}
 			this.removeAdContainer();
 		}
@@ -108,6 +119,11 @@ mw.DoubleClick.prototype = {
 			// Don't add any bindings directly issue callback:
 			callback();
 		});
+		var restoreOnInit = function(){
+			_this.destroy();
+		}
+		$( _this.embedPlayer ).data( 'doubleClickRestore',restoreOnInit );
+
 	},
 	removeAdContainer: function(){
 		var $containerAd = $('#' + this.getAdContainerId() );
@@ -154,6 +170,7 @@ mw.DoubleClick.prototype = {
 			// Add the slot to the given sequence proxy target target
 			sequenceProxy[ _this.getSequenceIndex( 'preroll' ) ] = {
 				"display" : function( callback ){
+					_this.sequenceProxy = sequenceProxy;
 					// if a preroll set it as such:
 					_this.currentAdSlotType = 'preroll';
 					// Setup the restore callback
@@ -163,6 +180,20 @@ mw.DoubleClick.prototype = {
 					_this.requestAds( _this.getConfig( 'adTagUrl' ) );
 				},
 				"config": ['DoubleClick', 'GDFP', 'preroll', _this.getSequenceIndex( 'preroll' )]
+			};
+		});
+
+		_this.embedPlayer.bindHelper( 'AdSupport_midroll' + _this.bindPostfix, function( event, sequenceProxy ){
+			// Add the slot to the given sequence proxy target target
+			sequenceProxy[ _this.getSequenceIndex( 'midroll' ) ] = {
+				"display" : function( callback ){
+					// if a preroll set it as such:
+					_this.currentAdSlotType = 'midroll';
+					// Setup the restore callback
+					_this.restorePlayerCallback = callback;
+
+				},
+				"config": ['DoubleClick', 'GDFP', 'midroll', _this.getSequenceIndex( 'midroll' )]
 			};
 		});
 		_this.embedPlayer.bindHelper( 'AdSupport_postroll' + _this.bindPostfix, function( event, sequenceProxy ){
@@ -178,7 +209,7 @@ mw.DoubleClick.prototype = {
 						_this.restorePlayer(true);
 					}
 				},
-				"config": ['DoubleClick', 'GDFP', 'preroll', _this.getSequenceIndex( 'preroll' )]
+				"config": ['DoubleClick', 'GDFP', 'preroll', _this.getSequenceIndex( 'postroll' )]
 			};
 		});
 	},
@@ -425,6 +456,22 @@ mw.DoubleClick.prototype = {
 			}
 		} );
 		adsListener( 'CONTENT_PAUSE_REQUESTED', function(event){
+			 if (_this.currentAdSlotType === 'midroll') {
+				 var restoreMidroll = function(){
+					 _this.embedPlayer.adTimeline.restorePlayer( 'midroll', true );
+					 _this.embedPlayer.addPlayerSpinner();
+					 if ( _this.saveTimeWhenSwitchMedia ) {
+						 _this.embedPlayer.setCurrentTime(_this.timeToReturn);
+						 _this.timeToReturn = null;
+					 }
+					// _this.embedPlayer.setCurrentTime( seekPerc * embedPlayer.getDuration(), function(){
+						 _this.embedPlayer.play();
+						 _this.embedPlayer.restorePlayerOnScreen();
+						 _this.embedPlayer.hideSpinner();
+					// } );
+				 };
+				 _this.embedPlayer.adTimeline.displaySlots( 'midroll' ,restoreMidroll);
+			 }
 			// set a local method for true ad playback start.
 			_this.startedAdPlayback = function(){
 				_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
@@ -497,6 +544,7 @@ mw.DoubleClick.prototype = {
 				_this.startedAdPlayback();
 			}
 			if (_this.isLinear) {
+				_this.playingLinearAd = true;
 				// hide spinner:
 				_this.embedPlayer.hideSpinner();
 				// make sure the player is in play state:
@@ -535,6 +583,7 @@ mw.DoubleClick.prototype = {
 		});
 		// Resume content:
 		adsListener( 'CONTENT_RESUME_REQUESTED', function(){
+			_this.playingLinearAd = false;
 			// Update slot type, if a preroll switch to midroll
 			if( _this.currentAdSlotType === 'preroll' ){
 				_this.currentAdSlotType = 'midroll';
@@ -718,8 +767,9 @@ mw.DoubleClick.prototype = {
 				if (_this.postRollCallback){
 					_this.postRollCallback();
 				}
-				this.destroy();
 				this.isdestroy = true;
+				this.destroy();
+
 			} else {
 				if ( _this.saveTimeWhenSwitchMedia ) {
 					_this.embedPlayer.setCurrentTime(_this.timeToReturn);
@@ -743,8 +793,10 @@ mw.DoubleClick.prototype = {
 		return this.embedPlayer.getKalturaConfig( this.pluginName, attrName );
 	},
 	destroy:function(){
+		if ( this.playingLinearAd ) {
+			this.restorePlayer(true);
+		}
 		this.removeAdContainer();
-		this.embedPlayer.unbindHelper(this.bindPostfix);
 		this.adsLoader.destroy();
 		this.contentDoneFlag= false;
 	}

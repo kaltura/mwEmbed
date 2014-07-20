@@ -379,7 +379,9 @@ mw.AdTimeline.prototype = {
 			}else{
 				sequenceProxy[ key ]["display"]( callback );
 				// trigger play event for omniture analytics
-				$( _this.embedPlayer).trigger( 'onAdPlay', sequenceProxy[ keyList[ seqInx ] ]["config"][0] );
+				if (sequenceProxy[ keyList[ seqInx ] ]) {
+					$( _this.embedPlayer ).trigger( 'onAdPlay' , sequenceProxy[ keyList[ seqInx ] ]["config"][0] );
+				}
 			}
 		};
 		// dispatch adOpen event for omniture on page
