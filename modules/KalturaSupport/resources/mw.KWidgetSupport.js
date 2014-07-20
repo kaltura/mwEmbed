@@ -297,38 +297,57 @@ mw.KWidgetSupport.prototype = {
 				embedPlayer.setError( embedPlayer.getKalturaMsg('LIVE-STREAM-NOT-SUPPORTED') );
 			}
 		} else {
-			embedPlayer.setLive( false );
-			//TODO in the future we will have flavors for livestream. revise this code.
-			// Apply player Sources
-			if( playerData.contextData && playerData.contextData.flavorAssets ){
-				if (playerData.contextData.actions &&
-					playerData.contextData.actions["proxyEnabled"] &&
-					playerData.contextData.actions["proxyEnabled"] == true){
-					var flavorAssets = [];
-					$.each(playerData.contextData.flavorAssets, function(index, flavorAsset){
-						try {
-							var flavorPartnerData = JSON.parse( flavorAsset.partnerData );
-							var flavorAssetObj = {
-								id: flavorAsset.id,
-								src: flavorPartnerData.url,
-								type: "video/" + flavorPartnerData.type,
-								width: flavorAsset.width,
-								height: flavorAsset.height,
-								bitrate: flavorAsset.bitrate,
-								frameRate: flavorAsset.frameRate
-							};
-							flavorAssets.push(flavorAssetObj);
-						} catch (e){
-							mw.log( "KwidgetSupport::Failed adding flavor asset, " + e.toString() );
-						}
-					});
-					mw.setConfig('EmbedPlayer.ReplaceSources', flavorAssets);
-				} else {
+			if (this.isEmbedServicesEnabled(playerData)){
+				this.setEmbedServicesData(embedPlayer, playerData);
+			} else {
+				embedPlayer.setLive( false );
+				//TODO in the future we will have flavors for livestream. revise this code.
+				// Apply player Sources
+				if ( playerData.contextData && playerData.contextData.flavorAssets ) {
 					_this.addFlavorSources( embedPlayer, playerData );
 				}
 			}
 		}
 		handlePlayerData();
+	},
+	isEmbedServicesEnabled: function(playerData){
+		if (playerData.meta.partnerData &&
+			playerData.meta.partnerData["proxyEnabled"] &&
+			playerData.meta.partnerData["proxyEnabled"] == "true") {
+			return true;
+		} else {
+			return false;
+		}
+	},
+	setEmbedServicesData: function(embedPlayer, playerData){
+		//Set flavors
+		var flavorAssets = [];
+		$.each( playerData.contextData.flavorAssets, function ( index, flavorAsset ) {
+			try {
+				var flavorPartnerData = JSON.parse( flavorAsset.partnerData );
+				var flavorAssetObj = {
+					id: flavorAsset.id,
+					src: flavorPartnerData.url,
+					type: "video/" + flavorPartnerData.type,
+					width: flavorAsset.width,
+					height: flavorAsset.height,
+					bitrate: flavorAsset.bitrate,
+					frameRate: flavorAsset.frameRate
+				};
+				flavorAssets.push( flavorAssetObj );
+			} catch ( e ) {
+				mw.log( "KwidgetSupport::Failed adding flavor asset, " + e.toString() );
+			}
+		} );
+		mw.setConfig( 'EmbedPlayer.ReplaceSources', flavorAssets );
+		//Set Live
+		if ( playerData.meta.partnerData["isLive"] &&
+			playerData.meta.partnerData["isLive"] == "true" ) {
+			embedPlayer.setLive( true );
+		}
+
+		//Set proxyData response data
+		embedPlayer.setKalturaConfig( 'proxyData', playerData.meta.partnerData);
 	},
 	addPlayerMethods: function( embedPlayer ){
 		var _this = this;

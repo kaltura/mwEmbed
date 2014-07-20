@@ -15,16 +15,5 @@ class Cuepoints extends BaseObject {
 			$this->getData(),
 			"cuePointType");	
 	}
-
-	function sort($sortIndex, $sortTypes){
-		$this->dataType = array();
-		foreach ($sortTypes as $sortType) {
-			$this->dataType[$sortType] = array();
-		}
-		
-		foreach ($this->data as $dataItem) {
-			$this->dataType[$dataItem[$sortIndex]] = $dataItem;
-		}
-	}
 }
 ?>

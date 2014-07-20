@@ -3,9 +3,20 @@
 	* 
 	*/
 	class ProxyRequest
-	{		
-		function __construct(){
-			$this->data = $this->getConfig();			
+	{
+		private $response;
+
+		function __construct($service, $urlTokens){
+			$this->config = $this->getConfig();	
+			foreach($this->config as $config){
+				if (in_array($service, $config["services"])){
+				    if (isset($urlTokens[$config["token"]])){
+						$partnerRequestData = json_decode($urlTokens[$config["token"]]);
+						$this->get($config["method"], $config["redirectTo"], $partnerRequestData);
+						$this->setData($config["dataStores"]);
+					}
+				}	
+			}
 		}
 
 		function getConfig(){
@@ -27,13 +38,51 @@
 			return json_decode($data, TRUE);
 		}
 	
-		function get($params){
-			$url = "http://tvpapi-stg.as.tvinci.com/toggle_v2_5/ws/player/service.asmx?WSDL";
-			$client = new SoapClient($url);
-			//$resolved = $this->resolveObject($objConf, json_decode(json_encode($params), true));
-			$result = $client->GetMediaInfo($params);
-			$response_arr = $this->objectToArray($result);
-			return $response_arr;
+		function get($method, $url, $params){
+            $data = json_encode($this->objectToArray($params), true);
+			$result= $this->getRest(
+			    $method,
+			    $url,
+			    $data
+			);
+            $this->response = json_decode($result, true);
+		}
+
+		function setData($dataStores){
+			foreach ($dataStores as $dataStore => $container) {
+				DataStore::getInstance()->setData($dataStore, $container, $this->response);
+			}
+		}
+
+		function getRest($method, $url, $data = false)
+        {
+            $curl = curl_init();
+
+            switch ($method)
+            {
+                case "POST":
+                    curl_setopt($curl, CURLOPT_POST, 1);
+
+                    if ($data)
+                        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+                    break;
+                case "PUT":
+                    curl_setopt($curl, CURLOPT_PUT, 1);
+                    break;
+                default:
+                    if ($data)
+                        $url = sprintf("%s?%s", $url, http_build_query($data));
+            }
+
+            // Optional Authentication:
+            //curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+            //curl_setopt($curl, CURLOPT_USERPWD, "username:password");
+
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
+            return curl_exec($curl);
+
 		}
 
 		function resolveObject($base, $extend){

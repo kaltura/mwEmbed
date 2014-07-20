@@ -1,4 +1,31 @@
-{
-	"soapClient" : "http://tvpapi-stg.as.tvinci.com/toggle_v2_5/ws/player/service.asmx?WSDL",
-	"soapMethod": "GetMediaInfo"
-}
+[
+	{
+		"services": ["multirequest"],
+		"token": "1:filter:freeText",
+		"redirectTo": "http://tvpapi-stg.as.tvinci.com/v2_6/gateways/jsonpostgw.aspx?m=GetMediaInfo",
+		"method": "POST",
+		"dataStores": {
+			"baseentry": "",
+			"entrycontextdata": "",
+			"flavorassets": ""
+		}
+	},
+	{
+		"services": ["multirequest"],
+		"token": "1:filter:freeText",
+		"redirectTo": "http://tvpapi-stg.as.tvinci.com/v2_6/gateways/jsonpostgw.aspx?m=GetGroupMediaRules",
+		"method": "POST",
+		"dataStores": {
+			"baseentry": "rules"
+		}
+	},
+	{
+		"services": ["multirequest"],
+		"token": "1:filter:freeText",
+		"redirectTo": "http://tvpapi-stg.as.tvinci.com/v2_6/gateways/jsonpostgw.aspx?m=GetMediaMark",
+		"method": "POST",
+		"dataStores": {
+			"baseentry": "mediaMark"
+		}
+	}
+]

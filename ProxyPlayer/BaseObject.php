@@ -36,7 +36,6 @@ abstract class BaseObject {
 		if (is_null($data)){
 			$data = $this->getData();
 		}
-		
 		$classVars = array();
     	$dtoConf = array();
 
@@ -49,37 +48,43 @@ abstract class BaseObject {
 	    } else {
 	    	$classVars[$implementClass] = $this->getClassVars($implementClass);
         	$dtoConf[$implementClass] = $this->getDtoConfig($implementClass);     
-	    }		   
+	    }
 
-        $resolved = array();
-		foreach ($data as $dataItem) {
-			$resolvedItem = array();
-			if (is_array($implementClass) &&
-	        	!is_null($implementClassIndex)){
-				foreach ($implementClass as $classKey=>$classVal) {
-					if ($dataItem[$implementClassIndex] == $classVal){
-						$dtoConfObj = $dtoConf[$classKey];
-						$classVarsObj = $classVars[$classKey];
-						$currClass = $classKey;
-					}
-				}	        	
-	        } else {
-	        	$dtoConfObj = $dtoConf[$implementClass];
-	        	$classVarsObj = $classVars[$implementClass];
-	        	$currClass = $implementClass;
-	        }
+	    $resolved = array();
+        foreach ($dtoConf as $classKey => $dtoConfObj) {
+        	$resolvers = $dtoConfObj["resolver"];
+        	$classVarsObj = $classVars[$classKey];
+        	$iterator = isset($dtoConfObj["pointers"]["iterator"]) &&
+        				!empty($dtoConfObj["pointers"]["iterator"]) ||
+        				is_numeric($dtoConfObj["pointers"]["iterator"]) ? $dtoConfObj["pointers"]["iterator"] : NULL;
 
-			foreach ($classVarsObj as $key => $val) {  
-				if (isset($dtoConfObj[$key])){	            	
-	            	$exp = $dtoConfObj[$key];
-	             	$item = Lexer::getInstance()->resolve($exp, $dataItem);
-	             	$resolvedItem[$key] = $item;//$dataItem[$key];		            
-		        }
-	        }	  
-			array_push($resolved, new $currClass($resolvedItem));			
-		}
-		if ($unwrap){
-			return $resolved[0];
+  			$items = (!is_null($iterator) || is_numeric($iterator)) ? $data[$iterator] : 
+  						((isset($dtoConfObj["pointers"]["wrap"]) && $dtoConfObj["pointers"]["wrap"] == "true") ? array($data) : $data);
+        	foreach ($items as $item) {
+        		if (!is_null($implementClassIndex) &&
+        			$item[$implementClassIndex] != $implementClass[$classKey]){
+        			continue;
+        		}
+        		$resolvedItem = "";
+        		foreach ($resolvers as $resolverKey => $resolverExp) {
+					if (array_key_exists($resolverKey, $classVarsObj)){		if (is_array($resolverExp)){
+		            	    $resolvedItem[$resolverKey] = array();
+		            	    foreach($resolverExp as $expKey=>$expVal){
+		            	        $res = Lexer::getInstance()->resolve($expVal, $item, $data);
+	                            $resolvedItem[$resolverKey][$expKey] = $res;
+		            	    }
+		            	} else {
+		            		$res = Lexer::getInstance()->resolve($resolverExp, $item, $data);
+		            	    $resolvedItem[$resolverKey] = $res;//$dataItem[$key];
+		                }
+        			}
+        		}
+        		array_push($resolved, new $classKey($resolvedItem));
+        	}
+        }
+		
+        if ($unwrap){
+		    return $resolved[0];
 		} elseif (is_null($responseClass)){
 			return $resolved;
 		} else {

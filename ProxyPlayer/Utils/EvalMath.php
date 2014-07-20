@@ -147,7 +147,7 @@ class EvalMath {
         } elseif (preg_match('/^\s*('.self::$namepat.')\s*\(\s*('.self::$namepat.'(?:\s*,\s*'.self::$namepat.')*)\s*\)\s*=\s*(.+)$/', $expr, $matches)) {
             $fnn = $matches[1]; // get the function name
             if (in_array($matches[1], $this->fb)) { // make sure it isn't built in
-                return $this->trigger(get_string('cannotredefinebuiltinfunction', 'mathslib', $matches[1]));
+                return $this->trigger('cannotredefinebuiltinfunction');
             }
             $args = explode(",", preg_replace("/\s+/", "", $matches[2])); // get the arguments
             if (($stack = $this->nfx($matches[3])) === false) return false; // see if it can be converted to postfix
@@ -157,7 +157,7 @@ class EvalMath {
                     if (array_key_exists($token, $this->v)) {
                         $stack[$i] = $this->v[$token];
                     } else {
-                        return $this->trigger(get_string('undefinedvariableinfunctiondefinition', 'mathslib', $token));
+                        return $this->trigger('undefinedvariableinfunctiondefinition');
                     }
                 }
             }
@@ -218,12 +218,12 @@ class EvalMath {
                 $stack->push('_'); // put a negation on the stack
                 $index++;
             } elseif ($op == '_') { // we have to explicitly deny this, because it's legal on the stack
-                return $this->trigger(get_string('illegalcharacterunderscore', 'mathslib')); // but not in the input expression
+                return $this->trigger('illegalcharacterunderscore'); // but not in the input expression
             //===============
             } elseif ((in_array($op, $ops) or $ex) and $expecting_op) { // are we putting an operator on the stack?
                 if ($ex) { // are we expecting an operator but have a number/variable/function/opening parethesis?
                     if (!$this->allowimplicitmultiplication){
-                        return $this->trigger(get_string('implicitmultiplicationnotallowed', 'mathslib'));
+                        return $this->trigger('implicitmultiplicationnotallowed');
                     } else {// it's an implicit multiplication
                         $op = '*';
                         $index--;
@@ -240,7 +240,7 @@ class EvalMath {
             //===============
             } elseif ($op == ')' and $expecting_op) { // ready to close a parenthesis?
                 while (($o2 = $stack->pop()) != '(') { // pop off the stack back to the last (
-                    if (is_null($o2)) return $this->trigger(get_string('unexpectedclosingbracket', 'mathslib'));
+                    if (is_null($o2)) return $this->trigger('unexpectedclosingbracket');
                     else $output[] = $o2;
                 }
                 if (preg_match('/^('.self::$namepat.')\($/', $stack->last(2), $matches)) { // did we just close a function?
@@ -253,7 +253,7 @@ class EvalMath {
                             $a= new stdClass();
                             $a->expected = 1;
                             $a->given = $arg_count;
-                            return $this->trigger(get_string('wrongnumberofarguments', 'mathslib', $a));
+                            return $this->trigger('wrongnumberofarguments');
                         }
                     } elseif (array_key_exists($fnn, $this->fc)) {
                         $counts = $this->fc[$fnn];
@@ -262,29 +262,29 @@ class EvalMath {
                             $a= new stdClass();
                             $a->expected = implode('/',$this->fc[$fnn]);
                             $a->given = $arg_count;
-                            return $this->trigger(get_string('wrongnumberofarguments', 'mathslib', $a));
+                            return $this->trigger('wrongnumberofarguments');
                         }
                     } elseif (array_key_exists($fnn, $this->f)) {
                         if ($arg_count != count($this->f[$fnn]['args'])) {
                             $a= new stdClass();
                             $a->expected = count($this->f[$fnn]['args']);
                             $a->given = $arg_count;
-                            return $this->trigger(get_string('wrongnumberofarguments', 'mathslib', $a));
+                            return $this->trigger('wrongnumberofarguments');
                         }
                     } else { // did we somehow push a non-function on the stack? this should never happen
-                        return $this->trigger(get_string('internalerror', 'mathslib'));
+                        return $this->trigger('internalerror');
                     }
                 }
                 $index++;
             //===============
             } elseif ($op == ',' and $expecting_op) { // did we just finish a function argument?
                 while (($o2 = $stack->pop()) != '(') {
-                    if (is_null($o2)) return $this->trigger(get_string('unexpectedcomma', 'mathslib')); // oops, never had a (
+                    if (is_null($o2)) return $this->trigger('unexpectedcomma'); // oops, never had a (
                     else $output[] = $o2; // pop the argument expression stuff and push onto the output
                 }
                 // make sure there was a function
                 if (!preg_match('/^('.self::$namepat.')\($/', $stack->last(2), $matches))
-                    return $this->trigger(get_string('unexpectedcomma', 'mathslib'));
+                    return $this->trigger('unexpectedcomma');
                 $stack->push($stack->pop()+1); // increment the argument count
                 $stack->push('('); // put the ( back on, we'll need to pop back to it again
                 $index++;
@@ -315,7 +315,7 @@ class EvalMath {
             //===============
             } elseif ($op == ')') {
                 //it could be only custom function with no params or general error
-                if ($stack->last() != '(' or $stack->last(2) != 1) return $this->trigger(get_string('unexpectedclosingbracket', 'mathslib'));
+                if ($stack->last() != '(' or $stack->last(2) != 1) return $this->trigger('unexpectedclosingbracket');
                 if (preg_match('/^('.self::$namepat.')\($/', $stack->last(3), $matches)) { // did we just close a function?
                     $stack->pop();// (
                     $stack->pop();// 1
@@ -326,23 +326,23 @@ class EvalMath {
                         $a= new stdClass();
                         $a->expected = $this->fc[$fnn];
                         $a->given = 0;
-                        return $this->trigger(get_string('wrongnumberofarguments', 'mathslib', $a));
+                        return $this->trigger('wrongnumberofarguments');
                     }
                     $output[] = array('fn'=>$fn, 'fnn'=>$fnn, 'argcount'=>0); // send function to output
                     $index++;
                     $expecting_op = true;
                 } else {
-                    return $this->trigger(get_string('unexpectedclosingbracket', 'mathslib'));
+                    return $this->trigger('unexpectedclosingbracket');
                 }
             //===============
             } elseif (in_array($op, $ops) and !$expecting_op) { // miscellaneous error checking
-                return $this->trigger(get_string('unexpectedoperator', 'mathslib', $op));
+                return $this->trigger('unexpectedoperator');
             } else { // I don't even want to know what you did to get here
-                return $this->trigger(get_string('anunexpectederroroccured', 'mathslib'));
+                return $this->trigger('anunexpectederroroccured');
             }
             if ($index == strlen($expr)) {
                 if (in_array($op, $ops)) { // did we end with an operator? bad.
-                    return $this->trigger(get_string('operatorlacksoperand', 'mathslib', $op));
+                    return $this->trigger('operatorlacksoperand');
                 } else {
                     break;
                 }
@@ -353,7 +353,7 @@ class EvalMath {
 
         }
         while (!is_null($op = $stack->pop())) { // pop everything off the stack and push onto output
-            if ($op == '(') return $this->trigger(get_string('expectingaclosingbracket', 'mathslib')); // if there are (s on the stack, ()s were unbalanced
+            if ($op == '(') return $this->trigger('expectingaclosingbracket'); // if there are (s on the stack, ()s were unbalanced
             $output[] = $op;
         }
         return $output;
@@ -373,7 +373,7 @@ class EvalMath {
                 $fnn = $token['fnn'];
                 $count = $token['argcount'];
                 if (in_array($fnn, $this->fb)) { // built-in function:
-                    if (is_null($op1 = $stack->pop())) return $this->trigger(get_string('internalerror', 'mathslib'));
+                    if (is_null($op1 = $stack->pop())) return $this->trigger('internalerror');
                     $fnn = preg_replace("/^arc/", "a", $fnn); // for the 'arc' trig synonyms
                     if ($fnn == 'ln') $fnn = 'log';
                     eval('$stack->push(' . $fnn . '($op1));'); // perfectly safe eval()
@@ -381,25 +381,25 @@ class EvalMath {
                     // get args
                     $args = array();
                     for ($i = $count-1; $i >= 0; $i--) {
-                        if (is_null($args[] = $stack->pop())) return $this->trigger(get_string('internalerror', 'mathslib'));
+                        if (is_null($args[] = $stack->pop())) return $this->trigger('internalerror');
                     }
                     $res = call_user_func_array(array('EvalMathFuncs', $fnn), array_reverse($args));
                     if ($res === FALSE) {
-                        return $this->trigger(get_string('internalerror', 'mathslib'));
+                        return $this->trigger('internalerror');
                     }
                     $stack->push($res);
                 } elseif (array_key_exists($fnn, $this->f)) { // user function
                     // get args
                     $args = array();
                     for ($i = count($this->f[$fnn]['args'])-1; $i >= 0; $i--) {
-                        if (is_null($args[$this->f[$fnn]['args'][$i]] = $stack->pop())) return $this->trigger(get_string('internalerror', 'mathslib'));
+                        if (is_null($args[$this->f[$fnn]['args'][$i]] = $stack->pop())) return $this->trigger('internalerror');
                     }
                     $stack->push($this->pfx($this->f[$fnn]['func'], $args)); // yay... recursion!!!!
                 }
             // if the token is a binary operator, pop two values off the stack, do the operation, and push the result back on
             } elseif (in_array($token, array('+', '-', '*', '/', '^'), true)) {
-                if (is_null($op2 = $stack->pop())) return $this->trigger(get_string('internalerror', 'mathslib'));
-                if (is_null($op1 = $stack->pop())) return $this->trigger(get_string('internalerror', 'mathslib'));
+                if (is_null($op2 = $stack->pop())) return $this->trigger('internalerror');
+                if (is_null($op1 = $stack->pop())) return $this->trigger('internalerror');
                 switch ($token) {
                     case '+':
                         $stack->push($op1+$op2); break;
@@ -408,7 +408,7 @@ class EvalMath {
                     case '*':
                         $stack->push($op1*$op2); break;
                     case '/':
-                        if ($op2 == 0) return $this->trigger(get_string('divisionbyzero', 'mathslib'));
+                        if ($op2 == 0) return $this->trigger('divisionbyzero');
                         $stack->push($op1/$op2); break;
                     case '^':
                         $stack->push(pow($op1, $op2)); break;
@@ -425,12 +425,12 @@ class EvalMath {
                 } elseif (array_key_exists($token, $vars)) {
                     $stack->push($vars[$token]);
                 } else {
-                    return $this->trigger(get_string('undefinedvariable', 'mathslib', $token));
+                    return $this->trigger('undefinedvariable');
                 }
             }
         }
         // when we're out of tokens, the stack should have a single element, the final result
-        if ($stack->count != 1) return $this->trigger(get_string('internalerror', 'mathslib'));
+        if ($stack->count != 1) return $this->trigger('internalerror');
         return $stack->pop();
     }
 

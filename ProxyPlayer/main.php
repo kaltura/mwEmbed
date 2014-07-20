@@ -46,17 +46,7 @@ class Main {
 		$service = isset($tokens["service"]) ? $tokens["service"] : "";
 		if (!empty($service) && isset($service) && class_exists($service, false)) {
 			$serviceHandler = call_user_func(array(ucfirst($service), 'getClass'));
-			$data = NULL;
-			if ($service == "multirequest"){
-				if (isset($tokens["1:filter:freeText"])){
-					$partnerRequestData = json_decode($tokens["1:filter:freeText"]);
-					$request = new ProxyRequest();
-					$data = $request->get($partnerRequestData);	
-					DataStore::getInstance()->setData("baseentry", array($data["GetMediaInfoResult"]["Media"]));
-					DataStore::getInstance()->setData("flavorassets", $data["GetMediaInfoResult"]["Media"]["Files"]["File"]);
-
-				}
-			}
+			$request = new ProxyRequest($service, $tokens);			
 			return $serviceHandler->get();
 		} else {
 			return array("message" => "service not found!");
@@ -64,4 +54,3 @@ class Main {
 	}
 }
 ?>
-

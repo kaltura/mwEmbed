@@ -1,5 +1,12 @@
 {
-    "partnerId": "partnerId",
-    "ks": "ks",
-    "userId": "userId"
+	"pointers":{
+		"root": "",
+		"iterator": "",
+		"wrap": "true"
+	},
+	"resolver":{
+		"partnerId": "{{partnerId}}",
+		"ks": "{{ks}}",
+		"userId": "{{userId}}"
+	}
 }

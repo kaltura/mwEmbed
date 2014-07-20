@@ -1,13 +1,19 @@
 {
-    "id": "id",
-    "partnerId": "partnerId",
-    "metadataProfileId": "metadataProfileId",
-    "metadataProfileVersion": "metadataProfileVersion",
-    "metadataObjectType": "metadataObjectType",
-    "objectId": "objectId",
-    "version": "version",
-    "createdAt": "createdAt",
-    "updatedAt": "updatedAt",
-    "status": "status",
-    "xml": "xml"
+	"pointers":{
+		"root": "",
+		"iterator": ""
+	},
+	"resolver":{
+		"id": "",
+		"partnerId": "",
+		"metadataProfileId": "",
+		"metadataProfileVersion": "",
+		"metadataObjectType": "",
+		"objectId": "",
+		"version": "",
+		"createdAt": "",
+		"updatedAt": "",
+		"status": "",
+		"xml": "{{xml}}"
+	}
 }

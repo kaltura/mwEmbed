@@ -5,7 +5,7 @@ class Session extends BaseObject {
 	}
 
 	function get() {
-		return $this->resolveDtoList("KalturaStartWidgetSessionResponse", NULL, array($this->getData()), NULL, true);
+		return $this->resolveDtoList("KalturaStartWidgetSessionResponse", NULL, $this->getData(), NULL, true);
 	}
 }
 ?>
