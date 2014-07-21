@@ -214,9 +214,6 @@
 				title+= this.getSourceSizeName( source );
 			} else if ( source.getBitrate() ) {
 					var bits = ( Math.round( source.getBitrate() / 1024 * 10 ) / 10 ) + '';
-//					if( bits[0] == '0' ){
-//						bits = bits.substring(1);
-//					}
 					title+= ' ' + bits + ' Mbs ';
 			}
 			if ( !this.getConfig( 'showBitrate' )) {
