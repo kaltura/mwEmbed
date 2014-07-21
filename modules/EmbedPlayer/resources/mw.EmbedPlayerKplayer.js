@@ -99,7 +99,7 @@ mw.EmbedPlayerKplayer = {
 				'playerPaused' : 'onPause',
 				'playerPlayed' : 'onPlay',
 				'durationChange' : 'onDurationChange',
-				'playerPlayEnd' : 'onClipDone',
+				'playbackComplete' : 'onClipDone',
 				'playerUpdatePlayhead' : 'onUpdatePlayhead',
 				'bytesTotalChange' : 'onBytesTotalChange',
 				'bytesDownloadedChange' : 'onBytesDownloadedChange',

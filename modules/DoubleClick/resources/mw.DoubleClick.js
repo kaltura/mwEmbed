@@ -32,6 +32,11 @@ mw.DoubleClick.prototype = {
 	adDuration: null,
 	demoStartTime: null,
 
+	// flag for using a chromeless player - move control to KDP DoubleClick plugin
+	isChromeless: false,
+	// for Chromeless only: save entry duration during midrolls so we can update it when midroll is finished
+	entryDuration: null,
+
 	// Flags for a fallback check for all ads completed .
 	contentDoneFlag: null,
 
@@ -65,6 +70,15 @@ mw.DoubleClick.prototype = {
 
 	init: function( embedPlayer, callback, pluginName ){
 		var _this = this;
+		// copy flashVars to KDP to support Chromeless player plugin
+		this.copyFlashvarsToKDP(embedPlayer, pluginName);
+		// check if Chromeless player is loaded and raise the isChromeless flag if so
+		embedPlayer.bindHelper( 'playerReady', function() {
+			if (embedPlayer.selectedPlayer.library === "Kplayer"){
+				_this.isChromeless = true;
+				_this.bindChromelessEvents();
+			}
+		});
 		this.embedPlayer = embedPlayer;
 		// Inherit BaseAdPlugin
 		mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
@@ -130,6 +144,16 @@ mw.DoubleClick.prototype = {
 		if( $containerAd.length ){
 			$containerAd.remove();
 		}
+	},
+	copyFlashvarsToKDP: function(embedPlayer, pluginName){
+		var flashVars = embedPlayer.getKalturaConfig(pluginName);
+		if ( flashVars['adTagUrl'] ){
+			flashVars['adTagUrl'] = escape(flashVars['adTagUrl']); // escape adTagUrl to prevent Flash string parsing error
+		}
+		if ( flashVars['path'] ){
+			delete flashVars['path']; // don't force Chromeless plugin path - it will load automatically
+		}
+		embedPlayer.setKalturaConfig('kdpVars', 'doubleClick', flashVars);
 	},
 	/**
 	 * Get the global adPattern index:
@@ -330,6 +354,19 @@ mw.DoubleClick.prototype = {
 
 		adsRequest.nonLinearAdSlotWidth = size.width;
 		adsRequest.nonLinearAdSlotHeight = size.height;
+
+		// if on chromeless - reuest ads using the KDP DoubleClick plugin instead of the JS plugin
+		if (this.isChromeless){
+			// us e a timeout to make sure allAdsCompletedFlag flag is updated
+			setTimeout(function(){
+				if (!_this.allAdsCompletedFlag){
+					adsRequest.adTagUrl = escape(adsRequest.adTagUrl);
+					_this.embedPlayer.getPlayerElement().sendNotification( 'requestAds', adsRequest );
+					mw.log( "DoubleClick::requestAds: Chromeless player request ad from KDP plugin");
+				}
+			},100)
+			return;
+		}
 
 		// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
 		this.getAdDisplayContainer();
@@ -608,6 +645,82 @@ mw.DoubleClick.prototype = {
 			}
 		});
 	},
+	bindChromelessEvents: function(){
+		var _this = this;
+		// bind to chromeless player events
+		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', adInfo.duration );
+			_this.embedPlayer.hideSpinner();
+			$(".mwEmbedPlayer").hide();
+		},'adStart');
+		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+			_this.isLinear = adInfo.isLinear;
+			if (!_this.isLinear){
+				_this.restorePlayer();
+				setTimeout(function(){
+					_this.embedPlayer.getPlayerElement().play();
+				},250);
+			}
+		},'adLoaded');
+
+		/*
+
+		this.embedPlayer.getPlayerElement().subscribe(function(){
+		},'adEnd');
+		 this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+		 },'adCompleted');
+
+		 this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+		 },'doPlay');
+
+		*/
+		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+			_this.restorePlayer(true);
+		},'allAdsCompleted');
+		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', (adInfo.duration - adInfo.remain));
+			_this.embedPlayer.updatePlayHead( adInfo.time / adInfo.duration );
+		},'adRemainingTimeChange');
+
+
+
+		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+			_this.embedPlayer.sequenceProxy.isInSequence = false;
+			if( _this.currentAdSlotType == 'preroll' ){
+				_this.currentAdSlotType = 'midroll';
+			}else{
+				if (_this.currentAdSlotType == 'midroll'){
+					setTimeout(function(){
+						_this.currentAdSlotType = 'postroll';
+						_this.embedPlayer.setDuration(_this.entryDuration);
+						_this.embedPlayer.startMonitor();
+						_this.embedPlayer.getPlayerElement().play();
+					},250);
+				}
+			}
+			if (_this.currentAdSlotType == 'postroll'){
+				//debugger;
+				_this.restorePlayer(true);
+				_this.embedPlayer.currentTime = _this.entryDuration;
+				_this.embedPlayer.sequenceProxy.isInSequence = false;
+				_this.embedPlayer.startMonitor();
+				//_this.embedPlayer.onClipDone();
+			}else{
+				setTimeout(function(){
+					_this.restorePlayer();
+					_this.embedPlayer.startMonitor();
+				},100);
+			}
+
+		},'contentResumeRequested');
+
+		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+			_this.entryDuration = _this.embedPlayer.getDuration();
+			_this.embedPlayer.sequenceProxy.isInSequence = true;
+			_this.embedPlayer.stopMonitor();
+		},'contentPauseRequested');
+
+	},
 	getPlayerSize: function(){
 		return {
 			'width': this.embedPlayer.getVideoHolder().width(),
@@ -800,8 +913,13 @@ mw.DoubleClick.prototype = {
 		if ( this.playingLinearAd ) {
 			this.restorePlayer(true);
 		}
-		this.removeAdContainer();
-		this.adsLoader.destroy();
+		if (!this.isChromeless){
+			this.removeAdContainer();
+			this.adsLoader.destroy();
+		}else{
+			this.allAdsCompletedFlag = true;
+			this.embedPlayer.getPlayerElement().sendNotification( 'destroy' );
+		}
 		this.contentDoneFlag= false;
 	}
 };
