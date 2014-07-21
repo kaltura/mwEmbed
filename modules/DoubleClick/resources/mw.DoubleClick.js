@@ -550,6 +550,7 @@ mw.DoubleClick.prototype = {
 			if( _this.startedAdPlayback ){
 				_this.startedAdPlayback();
 			}
+			_this.adActive = true;
 			if (_this.isLinear) {
 				_this.playingLinearAd = true;
 				// hide spinner:
@@ -561,7 +562,7 @@ mw.DoubleClick.prototype = {
 				_this.hideContent();
 
 				// set ad playing flag:
-				_this.adActive = true;
+
 				_this.embedPlayer.sequenceProxy.isInSequence = true;
 
 				_this.adStartTime = new Date().getTime();
