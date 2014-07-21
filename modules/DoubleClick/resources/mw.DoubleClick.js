@@ -72,13 +72,6 @@ mw.DoubleClick.prototype = {
 		var _this = this;
 		// copy flashVars to KDP to support Chromeless player plugin
 		this.copyFlashvarsToKDP(embedPlayer, pluginName);
-		// check if Chromeless player is loaded and raise the isChromeless flag if so
-		embedPlayer.bindHelper( 'playerReady', function() {
-			if (embedPlayer.selectedPlayer.library === "Kplayer"){
-				_this.isChromeless = true;
-				_this.bindChromelessEvents();
-			}
-		});
 		this.embedPlayer = embedPlayer;
 		// Inherit BaseAdPlugin
 		mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
@@ -107,7 +100,16 @@ mw.DoubleClick.prototype = {
 			}
 			this.removeAdContainer();
 		}
-
+		if (mw.isIE() || _this.getConfig('ForceFlash')){
+			mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
+			embedPlayer.bindHelper( 'playerReady', function() {
+				_this.isChromeless = true;
+				_this.bindChromelessEvents();
+			});
+			_this.addManagedBinding();
+			callback();
+			return;
+		}
 		// Load double click ima per doc:
 		this.loadIma( function(){
 			// Determine if we are in managed or kaltura point based mode.
@@ -582,6 +584,7 @@ mw.DoubleClick.prototype = {
 			if( _this.startedAdPlayback ){
 				_this.startedAdPlayback();
 			}
+			_this.adActive = true;
 			if (_this.isLinear) {
 				_this.playingLinearAd = true;
 				// hide spinner:
@@ -593,7 +596,7 @@ mw.DoubleClick.prototype = {
 				_this.hideContent();
 
 				// set ad playing flag:
-				_this.adActive = true;
+
 				_this.embedPlayer.sequenceProxy.isInSequence = true;
 
 				_this.adStartTime = new Date().getTime();
@@ -665,8 +668,10 @@ mw.DoubleClick.prototype = {
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			_this.restorePlayer(true);
-			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', _this.entryDuration );
-			_this.embedPlayer.triggerHelper( 'timeupdate', 0);
+			if (_this.currentAdSlotType == 'postroll'){
+				_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', _this.entryDuration );
+				_this.embedPlayer.triggerHelper( 'timeupdate', 0);
+			}
 		},'allAdsCompleted');
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
@@ -688,10 +693,11 @@ mw.DoubleClick.prototype = {
 					},250);
 				}
 			}
-			if (_this.currentAdSlotType !== 'postroll'){
+			if (_this.currentAdSlotType !== 'postroll' ){
+				_this.restorePlayer();
 				setTimeout(function(){
-					_this.restorePlayer();
 					_this.embedPlayer.startMonitor();
+					_this.embedPlayer.getPlayerElement().play();
 				},100);
 			}
 		},'contentResumeRequested');
@@ -851,6 +857,9 @@ mw.DoubleClick.prototype = {
 		mw.log("DoubleClick::restorePlayer: content complete:" + onContentComplete);
 		var _this = this;
 		this.adActive = false;
+		if (this.isChromeless){
+			this.embedPlayer.getPlayerElement().redrawObject(50);
+		}
 		this.embedPlayer.sequenceProxy.isInSequence = false;
 
 		// Check for sequence proxy style restore:
