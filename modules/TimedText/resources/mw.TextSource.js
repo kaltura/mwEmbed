@@ -309,8 +309,9 @@
 				'tts:fontWeight' : 'font-weight',
 				'tts:fontStyle' : 'font-style'
 			};
+			
+			var nodeString = '';
 			if( node.childNodes.length ){
-				var nodeString = '';
 				var styleVal = '';
 				for( var attr in ttsStyleMap ){
 					if( node.getAttribute( attr ) ){
@@ -322,8 +323,10 @@
 					nodeString += _this.convertTTML2HTML( childNode );
 				});
 				nodeString += '</' + node.nodeName + '>';
-				return nodeString;
+				
 			}
+			
+			return nodeString;
 		},
 		/**
 		 * srt timed text parse handle:
