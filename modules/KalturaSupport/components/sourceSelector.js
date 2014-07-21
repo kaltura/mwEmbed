@@ -214,18 +214,20 @@
 				title+= this.getSourceSizeName( source );
 			} else if ( source.getBitrate() ) {
 					var bits = ( Math.round( source.getBitrate() / 1024 * 10 ) / 10 ) + '';
-					if( bits[0] == '0' ){
-						bits = bits.substring(1);
-					}
-					title+= ' ' + bits + 'Mbs ';
+//					if( bits[0] == '0' ){
+//						bits = bits.substring(1);
+//					}
+					title+= ' ' + bits + ' Mbs ';
 			}
-			if( this.getConfig( 'simpleFormat' ) ){
-				if( source.hq ){
-					title += ' HQ';
+			if ( !this.getConfig( 'showBitrate' )) {
+				if ( this.getConfig( 'simpleFormat' ) ) {
+					if ( source.hq ) {
+						title += ' HQ';
+					}
+				} else {
+					// include type if not simple format
+					title += ' ' + source.getMIMEType().replace( 'video/' , '' );
 				}
-			} else {
-				// include type if not simple format
-				title += ' ' + source.getMIMEType().replace('video/', '');
 			}
 			return title;
 		},
