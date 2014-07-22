@@ -1,7 +1,8 @@
 {
 	"pointers":{
 		"root": "",
-		"iterator": ""
+		"iterator": "",
+		"wrap": "true"
 	},
 	"resolver":{
 		"isSiteRestricted": "false",
