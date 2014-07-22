@@ -43,6 +43,9 @@ mw.EmbedPlayerNative = {
 
 	keepNativeFullScreen: false,
 
+	// Flag for ignoring double play on iPhone
+	playing: false,
+
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
 	nativeEvents : [
@@ -536,6 +539,11 @@ mw.EmbedPlayerNative = {
 		seekTime = parseFloat( seekTime );
 		mw.log( "EmbedPlayerNative:: setCurrentTime seekTime:" + seekTime + ' count:' + callbackCount );
 		var vid = this.getPlayerElement();
+
+		if (this.currentState == "end" && mw.isIphone() ) {
+			vid.play();
+			this.playing = true;
+		}
 		
 		// some initial calls to prime the seek: 
 		if( callbackCount == 0 && vid.currentTime == 0 ){
@@ -998,7 +1006,9 @@ mw.EmbedPlayerNative = {
 					// update the preload attribute to auto
 					$( _this.getPlayerElement() ).attr('preload',"auto" );
 					// issue a play request
-					_this.getPlayerElement().play();
+					if( !_this.playing ) {
+						_this.getPlayerElement().play();
+					}
 					// re-start the monitor:
 					_this.monitor();
 				}
@@ -1232,6 +1242,7 @@ mw.EmbedPlayerNative = {
 	*/
 	_onpause: function(){
 		var _this = this;
+		this.playing = false;
 		if( this.ignoreNextNativeEvent ){
 			this.ignoreNextNativeEvent = false;
 			return ;
@@ -1373,6 +1384,10 @@ mw.EmbedPlayerNative = {
 	 */
 	onClipDone: function(){
 		this.parent_onClipDone();
+
+		if( mw.isIphone() && !this.loop ) {
+			$( this ).trigger( 'onEndedDone' );
+		}
 
 		// Don't run onclipdone if _propagateEvents is off
 		if( !this._propagateEvents ){
