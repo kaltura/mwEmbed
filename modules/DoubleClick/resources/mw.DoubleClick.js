@@ -32,6 +32,11 @@ mw.DoubleClick.prototype = {
 	adDuration: null,
 	demoStartTime: null,
 
+	// flag for using a chromeless player - move control to KDP DoubleClick plugin
+	isChromeless: false,
+	// for Chromeless only: save entry duration during midrolls so we can update it when midroll is finished
+	entryDuration: null,
+
 	// Flags for a fallback check for all ads completed .
 	contentDoneFlag: null,
 
@@ -65,6 +70,8 @@ mw.DoubleClick.prototype = {
 
 	init: function( embedPlayer, callback, pluginName ){
 		var _this = this;
+		// copy flashVars to KDP to support Chromeless player plugin
+		this.copyFlashvarsToKDP(embedPlayer, pluginName);
 		this.embedPlayer = embedPlayer;
 		// Inherit BaseAdPlugin
 		mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
@@ -93,7 +100,16 @@ mw.DoubleClick.prototype = {
 			}
 			this.removeAdContainer();
 		}
-
+		if (mw.isIE8() || mw.isIE9() || _this.getConfig('ForceFlash')){
+			mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
+			embedPlayer.bindHelper( 'playerReady', function() {
+				_this.isChromeless = true;
+				_this.bindChromelessEvents();
+			});
+			_this.addManagedBinding();
+			callback();
+			return;
+		}
 		// Load double click ima per doc:
 		this.loadIma( function(){
 			// Determine if we are in managed or kaltura point based mode.
@@ -130,6 +146,16 @@ mw.DoubleClick.prototype = {
 		if( $containerAd.length ){
 			$containerAd.remove();
 		}
+	},
+	copyFlashvarsToKDP: function(embedPlayer, pluginName){
+		var flashVars = embedPlayer.getKalturaConfig(pluginName);
+		if ( flashVars['adTagUrl'] ){
+			flashVars['adTagUrl'] = escape(flashVars['adTagUrl']); // escape adTagUrl to prevent Flash string parsing error
+		}
+		if ( flashVars['path'] ){
+			delete flashVars['path']; // don't force Chromeless plugin path - it will load automatically
+		}
+		embedPlayer.setKalturaConfig('kdpVars', 'doubleClick', flashVars);
 	},
 	/**
 	 * Get the global adPattern index:
@@ -209,7 +235,7 @@ mw.DoubleClick.prototype = {
 					// Setup the restore callback
 					_this.postRollCallback = callback;
 					//no need to request ads
-					if (!_this.isLinear){
+					if (!_this.isLinear || _this.allAdsCompletedFlag){
 						_this.restorePlayer(true);
 					}
 				},
@@ -330,6 +356,14 @@ mw.DoubleClick.prototype = {
 
 		adsRequest.nonLinearAdSlotWidth = size.width;
 		adsRequest.nonLinearAdSlotHeight = size.height;
+
+		// if on chromeless - reuest ads using the KDP DoubleClick plugin instead of the JS plugin
+		if (this.isChromeless){
+			adsRequest.adTagUrl = escape(adsRequest.adTagUrl);
+			_this.embedPlayer.getPlayerElement().sendNotification( 'requestAds', adsRequest );
+			mw.log( "DoubleClick::requestAds: Chromeless player request ad from KDP plugin");
+			return;
+		}
 
 		// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
 		this.getAdDisplayContainer();
@@ -464,7 +498,7 @@ mw.DoubleClick.prototype = {
 				 var restoreMidroll = function(){
 					 _this.embedPlayer.adTimeline.restorePlayer( 'midroll', true );
 					 _this.embedPlayer.addPlayerSpinner();
-					 if ( _this.saveTimeWhenSwitchMedia ) {
+					 if ( _this.saveTimeWhenSwitchMedia && _this.timeToReturn ) {
 						 _this.embedPlayer.setCurrentTime(_this.timeToReturn);
 						 _this.timeToReturn = null;
 					 }
@@ -483,6 +517,8 @@ mw.DoubleClick.prototype = {
 			};
 			// loading ad:
 			_this.embedPlayer.pauseLoading();
+			_this.embedPlayer.stopPlayAfterSeek = true;
+
 			if ( _this.saveTimeWhenSwitchMedia ) {
 				_this.timeToReturn = _this.embedPlayer.currentTime;
 			}
@@ -490,6 +526,7 @@ mw.DoubleClick.prototype = {
 			// give double click 12 seconds to load the ad, else return to content playback
 			setTimeout( function(){
 				if( $.isFunction( _this.startedAdPlayback ) ){
+					mw.log( " CONTENT_PAUSE_REQUESTED without no ad LOADED! ");
 					// ad error will resume playback
 					_this.onAdError( " CONTENT_PAUSE_REQUESTED without no ad LOADED! ");
 				}
@@ -547,6 +584,7 @@ mw.DoubleClick.prototype = {
 			if( _this.startedAdPlayback ){
 				_this.startedAdPlayback();
 			}
+			_this.adActive = true;
 			if (_this.isLinear) {
 				_this.playingLinearAd = true;
 				// hide spinner:
@@ -558,7 +596,7 @@ mw.DoubleClick.prototype = {
 				_this.hideContent();
 
 				// set ad playing flag:
-				_this.adActive = true;
+
 				_this.embedPlayer.sequenceProxy.isInSequence = true;
 
 				_this.adStartTime = new Date().getTime();
@@ -600,13 +638,84 @@ mw.DoubleClick.prototype = {
 		adsListener( 'ALL_ADS_COMPLETED', function(){
 			// check that content is done before we restore the player, managed players with only pre-rolls fired
 			// ALL_ADS_COMPLETED after preroll not after all ad opportunities for this content have expired.
+			// set the allAdsCompletedFlag to not call restore player twice
+			_this.allAdsCompletedFlag = true;
 			if( _this.contentDoneFlag ){
-				// set the allAdsCompletedFlag to not call restore player twice
-				_this.allAdsCompletedFlag = true;
+
 //				// restore the player but don't play content since ads are done:
 				_this.restorePlayer( true );
 			}
 		});
+	},
+	bindChromelessEvents: function(){
+		var _this = this;
+		// bind to chromeless player events
+		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', adInfo.duration );
+			_this.embedPlayer.hideSpinner();
+			$(".mwEmbedPlayer").hide();
+		},'adStart');
+
+		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+			_this.isLinear = adInfo.isLinear;
+			if (!_this.isLinear){
+				_this.restorePlayer();
+				setTimeout(function(){
+					_this.embedPlayer.getPlayerElement().play();
+				},250);
+			}
+		},'adLoaded');
+
+		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+			_this.restorePlayer(true);
+			if (_this.currentAdSlotType == 'postroll'){
+				_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', _this.entryDuration );
+				_this.embedPlayer.triggerHelper( 'timeupdate', 0);
+			}
+		},'allAdsCompleted');
+
+		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', (adInfo.duration - adInfo.remain));
+			_this.embedPlayer.updatePlayHead( adInfo.time / adInfo.duration );
+		},'adRemainingTimeChange');
+
+		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+			_this.embedPlayer.sequenceProxy.isInSequence = false;
+			if( _this.currentAdSlotType == 'preroll' ){
+				_this.currentAdSlotType = 'midroll';
+			}else{
+				if (_this.currentAdSlotType == 'midroll'){
+					setTimeout(function(){
+						_this.currentAdSlotType = 'postroll';
+						_this.embedPlayer.setDuration(_this.entryDuration);
+						_this.embedPlayer.startMonitor();
+						_this.embedPlayer.getPlayerElement().play();
+					},250);
+				}
+			}
+			if (_this.currentAdSlotType !== 'postroll' ){
+				_this.restorePlayer();
+				setTimeout(function(){
+					_this.embedPlayer.startMonitor();
+					_this.embedPlayer.getPlayerElement().play();
+				},100);
+			}
+		},'contentResumeRequested');
+
+		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+			_this.entryDuration = _this.embedPlayer.getDuration();
+			_this.embedPlayer.sequenceProxy.isInSequence = true;
+			_this.embedPlayer.stopMonitor();
+		},'contentPauseRequested');
+
+		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+			setTimeout(function(){
+				_this.embedPlayer.hideSpinner();
+				$(".mwEmbedPlayer").hide();
+				_this.restorePlayer();
+			},100);
+		},'adsLoadError');
+
 	},
 	getPlayerSize: function(){
 		return {
@@ -674,6 +783,7 @@ mw.DoubleClick.prototype = {
 		/**
 		 * Handle any send notification events:
 		 */
+
 		embedPlayer.bindHelper( 'Kaltura_SendNotification' + this.bindPostfix, function(event, notificationName, notificationData){
 			// Only take local api actions if in an Ad.
 			if( _this.adActive ){
@@ -755,6 +865,9 @@ mw.DoubleClick.prototype = {
 		mw.log("DoubleClick::restorePlayer: content complete:" + onContentComplete);
 		var _this = this;
 		this.adActive = false;
+		if (this.isChromeless){
+			this.embedPlayer.getPlayerElement().redrawObject(50);
+		}
 		this.embedPlayer.sequenceProxy.isInSequence = false;
 
 		// Check for sequence proxy style restore:
@@ -797,11 +910,19 @@ mw.DoubleClick.prototype = {
 		return this.embedPlayer.getKalturaConfig( this.pluginName, attrName );
 	},
 	destroy:function(){
-		if ( this.playingLinearAd ) {
-			this.restorePlayer(true);
+		// remove any old bindings:
+		this.embedPlayer.unbindHelper( this.bindPostfix );
+		if (!this.isChromeless){
+			if ( this.playingLinearAd ) {
+				this.restorePlayer(true);
+			}
+			this.removeAdContainer();
+			this.adsLoader.destroy();
+		}else{
+			if ( !this.isLinear ){
+				this.embedPlayer.getPlayerElement().sendNotification( 'destroy' );
+			}
 		}
-		this.removeAdContainer();
-		this.adsLoader.destroy();
 		this.contentDoneFlag= false;
 	}
 };

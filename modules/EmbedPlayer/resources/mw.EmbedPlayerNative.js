@@ -430,8 +430,12 @@ mw.EmbedPlayerNative = {
 				} else {
 					// continue to playback ( in a non-blocking call to avoid synchronous pause event ) 
 					setTimeout(function(){
-						_this.play();
-					},0)
+						if ( !_this.stopPlayAfterSeek ) {
+							mw.log( "EmbedPlayerNative::sPlay after seek" );
+							_this.play();
+							_this.stopPlayAfterSeek = false;
+						}
+					},0);
 				}
 			} );
 		}

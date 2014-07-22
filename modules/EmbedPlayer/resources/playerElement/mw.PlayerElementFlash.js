@@ -67,7 +67,7 @@
 						var bindEventMap = {
 							'playerPaused' : 'onPause',
 							'playerPlayed' : 'onPlay',
-							'durationChange' : 'onDurationChange',
+							'playbackComplete' : 'onDurationChange',
 							'playerPlayEnd' : 'onClipDone',
 							'playerUpdatePlayhead' : 'onUpdatePlayhead',
 							'playerSeekEnd': 'onPlayerSeekEnd',
