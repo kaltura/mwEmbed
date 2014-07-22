@@ -59,6 +59,9 @@
 		},
 		"getMediaLicenseLink": {
 			"plugin": true
+		},
+		"addLicenseCustomData": {
+			"plugin": true
 		}
 	},
 	"uiVars": {

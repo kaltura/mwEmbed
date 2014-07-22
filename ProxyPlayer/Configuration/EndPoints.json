@@ -40,5 +40,15 @@
 		"dataStores": {
 			"baseentry": "mediaMark"
 		}
+	},
+	{
+		"services": ["multirequest"],
+		"token": "1:filter:freeText",
+		"decodeToken": true,
+		"redirectTo": "http://tvpapi-stg.as.tvinci.com/v2_6/gateways/jsonpostgw.aspx?m=GetSecuredSiteGuid",
+		"method": "POST",
+		"dataStores": {
+			"baseentry": "ssGuid"
+		}
 	}
 ]

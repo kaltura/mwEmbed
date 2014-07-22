@@ -26,7 +26,7 @@
 		"updatedAt": "",
 		"deletedAt": "",
 		"description": "",
-		"partnerData": "{\"url\":\"{{URL}}\", \"type\":\"{MAP:isml=>ism,ism=>ism,m3u8=>hls,mp4=>h264,webm=>hds||{{URL}}}}\"}",
+		"partnerData": "{\"url\":\"{{URL}}\", \"type\":\"{MAP:isml=>playreadySmooth,ism=>playreadySmooth,m3u8=>hls,mp4=>h264,webm=>hds||{{URL}}}}\"}",
 		"partnerDescription": "",
 		"actualSourceAssetParamsIds": ""
 	}

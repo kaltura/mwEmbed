@@ -146,6 +146,9 @@
 						if ( _this.b64Referrer ) {
 							flashvars.referrer = _this.b64Referrer;
 						}
+
+						$( _this ).trigger( 'challengeCustomData', customData );
+
 						var customDataString = "";
 						for(var propt in customData){
 							customDataString += propt + "=" + customData[propt] + "&";

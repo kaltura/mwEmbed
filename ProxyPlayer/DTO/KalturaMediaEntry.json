@@ -66,7 +66,8 @@
 			"proxyEnabled": "true",
 			"isLive": "{MAP:341=>true,346=>true,__DEFAULT__=>false||{{MediaTypeID}}}}",
 			"rules": "{{rules}}",
-			"mediaMark": "{{mediaMark}}"
+			"mediaMark": "{{mediaMark}}",
+			"ssGuid": "{{ssGuid}}||147",
 		}
 	}
 }
