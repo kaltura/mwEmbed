@@ -5,12 +5,17 @@
 	class ProxyRequest
 	{
 		private $response;
+		private $logger;
 
 		function __construct($service, $urlTokens){
+		$this->logger = Logger::getLogger("main");
 			$this->config = $this->getConfig();	
 			foreach($this->config as $config){
 				if (in_array($service, $config["services"])){
+
+				    $this->logger->debug("Found request service ".$service." in config services");
 				    if (isset($urlTokens[$config["token"]])){
+				        $this->logger->debug("Found request service token ".$config["token"]." in request");
 				        if ($config["decodeToken"] == "true"){
 						    $partnerRequestData = json_decode($urlTokens[$config["token"]]);
 						} else {
@@ -43,8 +48,14 @@
 		}
 	
 		function get($type, $method, $url, $params){
+            $this->logger->info("Routing request to ".$url);
+
             $data = json_encode($this->objectToArray($params), true);
 
+            $this->logger->debug("Routing type: ".$type.", method: ".$method);
+            $this->logger->debug("Routing request with params=". $data);
+
+            $start = microtime(true);
 			switch($type){
 			    case "file":
 			        $result = $this->getFile($method, $url, $data);
@@ -54,10 +65,15 @@
                     break;
 			}
             $this->response = json_decode($result, true);
+            $this->logger->debug("Response=". $result);
+            $total = microtime(true) - $start;
+            $this->logger->info("Response time = ".$total. " seconds");
 		}
 
 		function setData($dataStores){
+		    $this->logger->info("Set data");
 			foreach ($dataStores as $dataStore => $container) {
+			    $this->logger->debug("Set ".$dataStore." data in container ". $container);
 				DataStore::getInstance()->setData($dataStore, $container, $this->response);
 			}
 		}
