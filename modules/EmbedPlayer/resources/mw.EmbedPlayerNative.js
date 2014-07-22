@@ -706,10 +706,6 @@ mw.EmbedPlayerNative = {
 			return false;
 		}
 		var ct =  this.playerElement.currentTime;
-
-		if( this.currentState == "end" ) {
-			return false;
-		}
 		// Return 0 or a positive number:
 		if( ! ct || isNaN( ct ) || ct < 0 || ! isFinite( ct ) ){
 			return 0;
