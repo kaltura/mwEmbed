@@ -100,7 +100,7 @@ mw.DoubleClick.prototype = {
 			}
 			this.removeAdContainer();
 		}
-		if (mw.isIE() || _this.getConfig('ForceFlash')){
+		if (mw.isIE8() || mw.isIE9() || _this.getConfig('ForceFlash')){
 			mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
 			embedPlayer.bindHelper( 'playerReady', function() {
 				_this.isChromeless = true;
@@ -708,6 +708,14 @@ mw.DoubleClick.prototype = {
 			_this.embedPlayer.stopMonitor();
 		},'contentPauseRequested');
 
+		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+			setTimeout(function(){
+				_this.embedPlayer.hideSpinner();
+				$(".mwEmbedPlayer").hide();
+				_this.restorePlayer();
+			},100);
+		},'adsLoadError');
+
 	},
 	getPlayerSize: function(){
 		return {
@@ -904,14 +912,16 @@ mw.DoubleClick.prototype = {
 	destroy:function(){
 		// remove any old bindings:
 		this.embedPlayer.unbindHelper( this.bindPostfix );
-		if ( this.playingLinearAd ) {
-			this.restorePlayer(true);
-		}
 		if (!this.isChromeless){
+			if ( this.playingLinearAd ) {
+				this.restorePlayer(true);
+			}
 			this.removeAdContainer();
 			this.adsLoader.destroy();
 		}else{
-			this.embedPlayer.getPlayerElement().sendNotification( 'destroy' );
+			if ( !this.isLinear ){
+				this.embedPlayer.getPlayerElement().sendNotification( 'destroy' );
+			}
 		}
 		this.contentDoneFlag= false;
 	}
