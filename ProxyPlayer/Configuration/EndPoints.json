@@ -5,6 +5,7 @@
 		"decodeToken": false,
 		"redirectTo": "./tests/integrationTest.uiConf.json",
 		"method": "local",
+		"type": "file",
 		"dataStores": {
 			"uiconf": ""
 		}
@@ -15,6 +16,7 @@
 		"decodeToken": true,
 		"redirectTo": "http://tvpapi-stg.as.tvinci.com/v2_6/gateways/jsonpostgw.aspx?m=GetMediaInfo",
 		"method": "POST",
+		"type": "rest",
 		"dataStores": {
 			"baseentry": "",
 			"entrycontextdata": "",
@@ -27,6 +29,7 @@
 		"decodeToken": true,
 		"redirectTo": "http://tvpapi-stg.as.tvinci.com/v2_6/gateways/jsonpostgw.aspx?m=GetGroupMediaRules",
 		"method": "POST",
+		"type": "rest",
 		"dataStores": {
 			"baseentry": "rules"
 		}
@@ -37,6 +40,7 @@
 		"decodeToken": true,
 		"redirectTo": "http://tvpapi-stg.as.tvinci.com/v2_6/gateways/jsonpostgw.aspx?m=GetMediaMark",
 		"method": "POST",
+		"type": "rest",
 		"dataStores": {
 			"baseentry": "mediaMark"
 		}
@@ -47,6 +51,7 @@
 		"decodeToken": true,
 		"redirectTo": "http://tvpapi-stg.as.tvinci.com/v2_6/gateways/jsonpostgw.aspx?m=GetSecuredSiteGuid",
 		"method": "POST",
+		"type": "rest",
 		"dataStores": {
 			"baseentry": "ssGuid"
 		}

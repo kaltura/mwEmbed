@@ -16,7 +16,7 @@
 						} else {
 						    $partnerRequestData = $urlTokens[$config["token"]];
 						}
-						$this->get($config["method"], $config["redirectTo"], $partnerRequestData);
+						$this->get($config["type"], $config["method"], $config["redirectTo"], $partnerRequestData);
 						$this->setData($config["dataStores"]);
 					}
 				}	
@@ -42,13 +42,17 @@
 			return json_decode($data, TRUE);
 		}
 	
-		function get($method, $url, $params){
+		function get($type, $method, $url, $params){
             $data = json_encode($this->objectToArray($params), true);
-			$result= $this->getRest(
-			    $method,
-			    $url,
-			    $data
-			);
+
+			switch($type){
+			    case "file":
+			        $result = $this->getFile($method, $url, $data);
+                    break;
+			    case "rest":
+			        $result = $this->getRest($method, $url, $data);
+                    break;
+			}
             $this->response = json_decode($result, true);
 		}
 
@@ -73,13 +77,6 @@
                 case "PUT":
                     curl_setopt($curl, CURLOPT_PUT, 1);
                     break;
-                case "local":
-                    $fileParts = pathinfo($url);
-                    $data = trim($data, '"');
-                    $file = $fileParts['dirname']."/".$fileParts['filename']."_".$data.".".$fileParts["extension"];
-                    $data = file_get_contents($file, FILE_USE_INCLUDE_PATH);
-                    return $data;
-                    break;
                 default:
                     if ($data)
                         $url = sprintf("%s?%s", $url, http_build_query($data));
@@ -94,6 +91,14 @@
 
             return curl_exec($curl);
 
+		}
+
+		function getFile($method, $url, $data = ""){
+		    $fileParts = pathinfo($url);
+            $data = trim($data, '"');
+            $file = $fileParts['dirname']."/".$fileParts['filename']."_".$data.".".$fileParts["extension"];
+            $data = file_get_contents($file, FILE_USE_INCLUDE_PATH);
+            return $data;
 		}
 
 		function resolveObject($base, $extend){
