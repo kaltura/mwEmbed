@@ -1352,7 +1352,7 @@ mw.KWidgetSupport.prototype = {
 			mimeType = 'application/vnd.apple.mpegurl';
 		}
 
-		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/' + format + '/protocol/' + protocol + '/uiConfId/' + embedPlayer.kentryid +  '/a.' + extension;
+		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/' + format + '/protocol/' + protocol + '/uiConfId/' + embedPlayer.kuiconfid +  '/a.' + extension;
 		// Append KS & Referrer
 		function getKs() {
 			var deferred = $.Deferred();
