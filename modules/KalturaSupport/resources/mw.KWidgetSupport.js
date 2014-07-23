@@ -956,6 +956,8 @@ mw.KWidgetSupport.prototype = {
 				 and = andDelimiter;
 			}
 		});
+
+		p += and + 'ui_conf' + equalDelimiter + embedPlayer.kuiconfid;
 		return p;
 	},
 	/**
