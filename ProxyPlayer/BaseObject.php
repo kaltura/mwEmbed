@@ -2,6 +2,7 @@
 abstract class BaseObject {	
 
 	private $loggers;
+	private $dtoData = NULL;
 
 	public static function getClass() {
 		 return new static;
@@ -11,17 +12,21 @@ abstract class BaseObject {
 
 	public function getDtoConfig($dtoName) {
 
-		$dataStoreName = 'DTO_'.$dtoName;//strtolower(get_class($this));
-		//if (!apc_exists($dataStoreName)) {
-			//echo "Load from file: ".$dataStoreName;
-			$data = file_get_contents('./DTO/'.$dtoName/*strtolower(get_class($this))*/.".json", FILE_USE_INCLUDE_PATH);
-		//	apc_store($dataStoreName, $data);
-		//} else {
-			//echo "Load from cache: ".$dataStoreName;
-		//	$data = apc_fetch($dataStoreName);
-		//}
+	    if (is_null($this->dtoData)){
+            $dataStoreName = 'DTO_'.$dtoName;//strtolower(get_class($this));
+            //if (!apc_exists($dataStoreName)) {
+                //echo "Load from file: ".$dataStoreName;
+                $data = file_get_contents('./DTO/'.$dtoName/*strtolower(get_class($this))*/.".json", FILE_USE_INCLUDE_PATH);
+            //	apc_store($dataStoreName, $data);
+            //} else {
+                //echo "Load from cache: ".$dataStoreName;
+            //	$data = apc_fetch($dataStoreName);
+            //}
 
-		return json_decode($data, TRUE);
+            $this->dtoData = json_decode($data, TRUE);
+		}
+
+		return $this->dtoData;
 	}
 
 	public function setData($data) {
@@ -36,27 +41,24 @@ abstract class BaseObject {
 		return $class_vars = get_class_vars($class);
 	}
 
-	function resolveDtoList($implementClass, $responseClass = NULL, $data = NULL, $implementClassIndex = NULL, $unwrap = false){
+	function resolveDtoList($implementClass, $responseClass = NULL, $unwrap = false){
 		$this->loggers = new stdClass();
         $this->loggers->main = Logger::getLogger("main");
         $this->loggers->dto = Logger::getLogger("DTO");
         $this->loggers->main->info("Resolving ".get_called_class());
         $start = microtime(true);
 
-		if (is_null($data)){
-			$data = $this->getData();
-		}
+		$data = $this->getData();
+
 		$classVars = array();
     	$dtoConf = array();
 
     	$this->loggers->dto->debug("Resolving params: implementClass=".json_encode($implementClass));
     	$this->loggers->dto->debug("Resolving params: responseClass=".$responseClass);
-    	$this->loggers->dto->debug("Resolving params: implementClassIndex=".$implementClassIndex);
     	$this->loggers->dto->debug("Resolving params: unwrap=".$unwrap);
 
-		if (is_array($implementClass) &&
-        	!is_null($implementClassIndex)){   
-        	foreach ($implementClass as $classKey=>$classVal) {
+		if (is_array($implementClass)){
+        	foreach ($implementClass as $classKey) {
     			$classVars[$classKey] = $this->getClassVars($classKey);
         		$dtoConf[$classKey] = $this->getDtoConfig($classKey);     
     		}
@@ -82,12 +84,43 @@ abstract class BaseObject {
   						((isset($dtoConfObj["pointers"]["wrap"]) && $dtoConfObj["pointers"]["wrap"] == "true") ? array($data) : $data);
 
         	$this->loggers->dto->trace("Resolve items for iteration: ".json_encode($items));
+
+        	$filters = (isset($dtoConfObj["pointers"]["filters"]) &&
+                       !empty($dtoConfObj["pointers"]["filters"])) ? $dtoConfObj["pointers"]["filters"] : NULL;
+
         	foreach ($items as $item) {
         	    $this->loggers->dto->debug("Iterate over item: ".json_encode($item));
-        	    if (!is_null($implementClassIndex) &&
-        			$item[$implementClassIndex] != $implementClass[$classKey]){
-        			$this->loggers->dto->debug("Found different implementClassIndex(".$implementClassIndex."), iterate over next item");
-        			continue;
+        	    if (isset($dtoConfObj["pointers"]["subTypeIdentifier"]) &&
+                    isset($dtoConfObj["pointers"]["include"])){
+                    if ($dtoConfObj["pointers"]["include"] == true ){
+                        foreach($dtoConfObj["pointers"]["subTypeIdentifier"] as $subTypeIdentifierKey => $subTypeIdentifierVal){
+                            if ($subTypeIdentifierVal != $item[$subTypeIdentifierKey]){
+                                $this->loggers->dto->debug("Found different subTypeIdentifierKey(".$subTypeIdentifierKey."), iterate over next item");
+                                continue;
+                            }
+                        }
+                    } else {
+                        $this->loggers->dto->debug("Do not include subtype $classKey, iterate over next item");
+                        continue;
+                    }
+        		}
+        		//Filter items
+        		if (!is_null($filters)){
+        		    if (isset($filters["exclude"])){
+        		        $skip = false;
+        		        foreach($filters["exclude"] as $filterKey => $filterVals){
+        		            if (isset($item[$filterKey])){
+                                foreach($filterVals as $filterVal){
+                                    if ($item[$filterKey] == $filterVal){
+                                        $skip = true;
+                                    }
+                                }
+        		            }
+        		        }
+        		        if ($skip){
+        		            continue;
+        		        }
+        		    }
         		}
         		$resolvedItem = "";
         		foreach ($resolvers as $resolverKey => $resolverExp) {

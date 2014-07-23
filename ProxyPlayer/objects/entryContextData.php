@@ -9,7 +9,7 @@ class EntryContextData extends BaseObject {
 	}
 
 	function get() {
-		$res = $this->resolveDtoList("KalturaEntryContextDataResult", NULL, $this->getData(), NULL, true);
+		$res = $this->resolveDtoList("KalturaEntryContextDataResult", NULL, true);
 		$flavorAssets = new FlavorAssets();
 		$result = $flavorAssets->get();
 		$res->flavorAssets = $result;

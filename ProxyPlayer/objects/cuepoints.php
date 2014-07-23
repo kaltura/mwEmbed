@@ -9,12 +9,7 @@ class Cuepoints extends BaseObject {
 	}
 
 	function get() {
-		return $this->resolveDtoList(
-			array("KalturaAnnotation" => "annotation.Annotation", 
-				"KalturaAdCuePoint" => "adCuePoint.Ad"), 
-			"KalturaMetadataListResponse",
-			$this->getData(),
-			"cuePointType");	
+		return $this->resolveDtoList(array("KalturaAnnotation", "KalturaAdCuePoint"), "KalturaMetadataListResponse");
 	}
 }
 ?>

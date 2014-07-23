@@ -20,7 +20,8 @@
 		"dataStores": {
 			"baseentry": "",
 			"entrycontextdata": "",
-			"flavorassets": ""
+			"flavorassets": "",
+			"cuepoints": ""
 		}
 	},
 	{

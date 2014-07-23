@@ -1,8 +1,12 @@
 {
 	"pointers":{
 		"root": "",
-		"iterator": "",
-		"wrap": "false"
+		"iterator": "Files",
+		"wrap": "false",
+		"subTypeIdentifier": {
+
+		},
+		"include": false
 	},
 	"resolver":{
 		"id": "{{id}}",

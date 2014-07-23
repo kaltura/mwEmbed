@@ -2,7 +2,13 @@
 	"pointers":{
 		"root": "",
 		"iterator": "Files",
-		"wrap": "false"
+		"wrap": "false",
+		"filters": {
+			"include": "",
+			"exclude": {
+				"Format": ["Trailer"]
+			}
+		}
 	},
 	"resolver":{
 		"flavorParamsId": "",
@@ -26,7 +32,7 @@
 		"updatedAt": "",
 		"deletedAt": "",
 		"description": "",
-		"partnerData": "{\"url\":\"{{URL}}\", \"type\":\"{MAP:isml=>playreadySmooth,ism=>playreadySmooth,m3u8=>hls,mp4=>h264,webm=>hds||{{URL}}}}\"}",
+		"partnerData": "{\"url\":\"{{URL}}\", \"type\":\"{MAP:isml=>playreadySmooth,ism=>playreadySmooth,m3u8=>hls,mp4=>h264,webm=>hds,MPG=>mpeg||{{URL}}}}\"}",
 		"partnerDescription": "",
 		"actualSourceAssetParamsIds": ""
 	}
