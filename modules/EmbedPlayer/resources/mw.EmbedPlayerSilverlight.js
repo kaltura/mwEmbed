@@ -26,6 +26,7 @@
 		readyCallbackFunc: undefined,
 		isMulticast: false,
 		isError: false,
+		readyFuncs: [],
 		// Create our player element
 		setup: function( readyCallback ) {
 			mw.log('EmbedPlayerSilverlight:: Setup');
@@ -333,6 +334,13 @@
 				} else if ( this.autoplay ) {
 					this.playerObject.pause();
 				}
+
+				if ( this.readyFuncs && this.readyFuncs.length > 0 ) {
+					for ( var i=0; i< this.readyFuncs.length; i++ ) {
+						this.readyFuncs[i]();
+					}
+					this.readyFuncs = [];
+				}
 			}
 
 			// Update the duration ( only if not in url time encoding mode:
@@ -369,9 +377,6 @@
 			} else {
 				this.layoutBuilder.displayAlert( errorObj );
 			}
-
-
-
 		},
 
 		/**
@@ -554,11 +559,17 @@
 		},
 
 		onAudioTracksReceived: function ( data ) {
-			this.triggerHelper( 'audioTracksReceived', JSON.parse( data ) );
+			var _this = this;
+			this.callIfReady( function() {
+				_this.triggerHelper( 'audioTracksReceived', JSON.parse( data ) );
+			});
 		},
 
 		onAudioTrackSelected: function ( data ) {
-			this.triggerHelper( 'audioTrackIndexChanged', JSON.parse( data ) );
+			var _this = this;
+			this.callIfReady( function() {
+				_this.triggerHelper( 'audioTrackIndexChanged', JSON.parse( data ) );
+			});
 		},
 
 		/**
@@ -619,6 +630,14 @@
 		switchAudioTrack: function( trackIndex ) {
 			if ( this.playerObject ) {
 				this.playerObject.selectAudioTrack( trackIndex );
+			}
+		},
+
+		callIfReady: function( callback ) {
+			if ( this.durationReceived ) {
+				callback();
+			} else {
+				this.readyFuncs.push( callback );
 			}
 		}
 
