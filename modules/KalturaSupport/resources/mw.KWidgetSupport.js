@@ -957,7 +957,7 @@ mw.KWidgetSupport.prototype = {
 			}
 		});
 
-		p += and + 'ui_conf' + equalDelimiter + embedPlayer.kuiconfid;
+		p += and + 'uiConfId' + equalDelimiter + embedPlayer.kuiconfid;
 		return p;
 	},
 	/**
@@ -1352,7 +1352,7 @@ mw.KWidgetSupport.prototype = {
 			mimeType = 'application/vnd.apple.mpegurl';
 		}
 
-		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/' + format + '/protocol/' + protocol + '/a.' + extension;
+		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/' + format + '/protocol/' + protocol + '/uiConfId/' + embedPlayer.kentryid +  '/a.' + extension;
 		// Append KS & Referrer
 		function getKs() {
 			var deferred = $.Deferred();
