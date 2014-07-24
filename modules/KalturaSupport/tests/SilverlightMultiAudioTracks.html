@@ -30,7 +30,7 @@ This example demonstrates how to listen for "audioTracksReceived" and "audioTrac
 			$.each(tracks, function(){
 				$('<option />')
 						.attr('value', this.index)
-						.html(this.name)
+						.html(this.label)
 						.appendTo('#tracksList');
 			});
 		}
@@ -47,7 +47,7 @@ This example demonstrates how to listen for "audioTracksReceived" and "audioTrac
 	}
 
 	mw.setConfig("KalturaSupport.LeadWithHTML5", true);
-	mw.setConfig("EmbedPlayer.useDirectManifestLinks", true);
+	/*mw.setConfig("EmbedPlayer.useDirectManifestLinks", true);
 
 	mw.setConfig('EmbedPlayer.ReplaceSources', [
 		{
@@ -63,6 +63,52 @@ This example demonstrates how to listen for "audioTracksReceived" and "audioTrac
 		"flashvars": {
 		},
 		"cache_st": 1401713817,
+		"readyCallback": function( playerId ){
+			kdp = $('#' + playerId)[0];
+			kdp.addJsListener( 'audioTracksReceived', 'onTracksReceived' );
+			kdp.addJsListener( 'audioTrackIndexChanged', 'onTrackSelected' );
+		}
+	}); */
+
+	kWidget.embed({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id' : '21099702',
+		'flashvars': {
+			"confFilePath": "{libPath}/modules/KalturaSupport/tests/confFiles/jsonConfig.json",
+			"related.playlistId": "1_qui13sz2",
+			"EmbedPlayer.useDirectManifestLinks": true,
+			"getMediaLicenseLink": {
+				plugin: true
+			},
+			liveCore:{
+				disableLiveCheck: true
+			},
+			"proxyData":
+			{
+				"initObj": {
+					"Locale":
+					{ "LocaleLanguage": "", "LocaleCountry": "", "LocaleDevice": "", "LocaleUserState": "Unknown" }
+					,
+					"Platform": "Web",
+					"SiteGuid": "388712",
+					"DomainID": 0,
+					"UDID": "",
+					"ApiUser": "tvpapi_147",
+					"ApiPass": "11111"
+				},
+				"MediaID": 300148,
+				"mediaType": 0,
+				"picSize": "",
+				"withDynamic": false
+			},
+			"closedCaptions": {
+				"showEmbeddedCaptions": true
+			}
+
+		},
+		//"entry_id": "1_sf5ovm7u"
+		"entry_id": "0_c0r624gh",
 		"readyCallback": function( playerId ){
 			kdp = $('#' + playerId)[0];
 			kdp.addJsListener( 'audioTracksReceived', 'onTracksReceived' );
