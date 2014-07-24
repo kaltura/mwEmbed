@@ -367,7 +367,11 @@ mw.MediaElement.prototype = {
 		$.each( playableSources, function(inx, source ){
 			var mimeType = source.mimeType;
 			var player = mw.EmbedTypes.getMediaPlayers().defaultPlayer( mimeType );
-			if ( mimeType == 'video/h264'
+			if ( (
+					mimeType == 'video/mp4'
+					||
+					mimeType == 'video/h264'
+				 )
 				&& player
 				&& (
 					player.library == 'Native'
