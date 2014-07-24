@@ -13,7 +13,7 @@
 		},
 
 		isDisabled: false,
-
+		inUpdateLayout:false,
 		selectSourceTitle: gM( 'mwe-embedplayer-select_source' ),
 		switchSourceTitle: gM( 'mwe-embedplayer-switch_source' ),
 
@@ -55,17 +55,25 @@
 			// Check for switch on resize option
 			if( this.getConfig( 'switchOnResize' ) ){
 				this.bind( 'updateLayout', function(){
-					//if we're working with kplayer - mp4 can't be seeked - so disable this feature
-					//this only effect native for now
-					if (_this.embedPlayer.instanceOf === "Native") {
-						// TODO add additional logic for "auto" where multiple bitrates
-						// exist at the same resolution.
-						var selectedSource = _this.embedPlayer.mediaElement.autoSelectSource();
-						if ( selectedSource ) { // source was found
-							_this.embedPlayer.switchSrc( selectedSource );
+					// workaround to avoid the amount of 'updateLayout' events
+					// !seeking will avoid getting current time equal to 0
+					if ( !_this.inUpdateLayout && !_this.embedPlayer.seeking ){
+						_this.inUpdateLayout = true;
+						_this.updateLayoutTimout = setTimeout(function() {
+							_this.inUpdateLayout = false;
+						},1000);
+						//if we're working with kplayer - mp4 can't be seeked - so disable this feature
+						//this only effect native for now
+						if (_this.embedPlayer.instanceOf === "Native") {
+							// TODO add additional logic for "auto" where multiple bitrates
+							// exist at the same resolution.
+							var selectedSource = _this.embedPlayer.mediaElement.autoSelectSource();
+							if ( selectedSource ) { // source was found
+								_this.embedPlayer.switchSrc( selectedSource );
+							}
+						} else {
+							mw.log( "sourceSelector - switchOnResize is ignored - Can't switch source since not using native player");
 						}
-					} else {
-						mw.log( "sourceSelector - switchOnResize is ignored - Can't switch source since not using native player");
 					}
 				});
 			}

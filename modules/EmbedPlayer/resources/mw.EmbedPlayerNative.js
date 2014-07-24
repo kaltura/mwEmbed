@@ -798,7 +798,11 @@ mw.EmbedPlayerNative = {
 				vid.removeAttribute('controls');
 
 				// dissable seeking ( if we were in a seeking state before the switch )
-				_this.seeking = false;
+				if( _this.isFlavorSwitching ) {
+					_this.seeking = true;
+				} else {
+					_this.seeking = false;
+				}
 
 				// Workaround for 'changeMedia' on Android & iOS
 				// When changing media and not playing entry before spinner is stuck on black screen
@@ -1230,6 +1234,7 @@ mw.EmbedPlayerNative = {
 				return ;
 			}
 			this.seeking = false;
+			this.isFlavorSwitching = false;
 			if( this._propagateEvents ){
 				mw.log( "EmbedPlayerNative:: trigger: seeked" );
 				this.triggerHelper( 'seeked' );
