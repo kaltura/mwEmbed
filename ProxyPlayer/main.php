@@ -5,8 +5,10 @@ include_once (dirname(__FILE__)."/BaseObject.php");
 include_once (dirname(__FILE__)."/dataStore.php");
 include_once (dirname(__FILE__)."/request.php");
 include_once (dirname(__FILE__).'/Utils/logger/Logger.php');
+include_once (dirname(__FILE__).'/configuration/loggerConfig.php');
 
-Logger::configure('./Configuration/loggerConfig.xml');
+Logger::configure($loggerConfiguration);
+
 $logger = Logger::getLogger("main");
 $logger->info("Start process");
 $logger->info("Request received: ".$_SERVER["REQUEST_URI"]);
@@ -19,8 +21,6 @@ print_r($response);
 $total = microtime(true) - $start;
 
 $logger->info("Finish process in ".$total. " seconds");
-//$console = new Logger("console");
-//$console->log($qs);
 
 class Main {
 
@@ -40,11 +40,6 @@ class Main {
 				$matches = null;
 				if (preg_match('/^([^.]+).php$/', $fileName, $matches)) {
 					require_once ("$pluginsFolder/$fileName");
-
-					$pluginClass = $matches[1];
-					if (!class_exists($pluginClass) || !in_array('IKalturaClientPlugin', class_implements($pluginClass))) {
-						continue;
-					}
 				}
 			}
 		}
@@ -64,7 +59,7 @@ class Main {
 			}
 			return $response;
 		} else {
-		    $logger->warning("Tries to request service ".$service." and service wasn't found!");
+		    $logger->warn("Tries to request service ".$service." and service wasn't found!");
 			return array("message" => "service not found!");
 		}
 	}
