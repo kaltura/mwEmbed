@@ -47,11 +47,17 @@
 						_this.addCaption( captionData.source, captionData.capId, captionData.caption );
 					}
 				});
+				this.bind( 'changedClosedCaptions', function () {
+					_this.getPlayer().triggerHelper('newClosedCaptionsData');
+					//remove old captions
+					_this.embedPlayer.getInterface().find( '.track' ).empty();
+					_this.getPlayer().triggerHelper( 'changeEmbeddedTextTrack', _this.selectedSource );
+				});
 			} else {
 				this.bind( 'playerReady', function(){
 					_this.destory();
 					_this.setupTextSources(function(){
-						_this.buildMenu();
+						_this.buildMenu( _this.textSources );
 					});
 				});
 				this.bind( 'timeupdate', function(){
@@ -60,6 +66,17 @@
 					}
 				});
 			}
+
+			this.bind( 'textTracksReceived', function( e, data ){
+				if ( data && data.languages ) {
+					_this.destory();
+					var newSources = [];
+					$.each( data.languages, function( inx, src ){
+						newSources.push( $.extend( { srclang: src.label }, src ) );
+					});
+					_this.buildMenu( newSources );
+				}
+			});
 
 			this.bind( 'onplay', function(){
 				_this.playbackStarted = true;
@@ -359,7 +376,6 @@
 					addedCaption = true;
 				}
 			});
-
 			// hide captions that are off:
 			_this.embedPlayer.getInterface().find( '.track' ).each(function( inx, caption){
 				if( !activeCaptions[ $( caption ).attr('data-capId') ] ){
@@ -583,14 +599,14 @@
 			}));
 			return baseCss;
 		},
-		buildMenu: function(){
+		buildMenu: function( sources ){
 			var _this = this;
 
 			// Destroy the old menu
 			this.getMenu().destroy();
 
 			// Check if we even have textSources
-			if( this.textSources.length == 0 ){
+			if( sources == 0 ){
 				if( this.getConfig('hideWhenEmpty') === true ) {
 					this.getBtn().hide();
 				}
@@ -619,7 +635,7 @@
 			});
 
 			// Add text sources
-			$.each(this.textSources, function( idx, source ){
+			$.each(sources, function( idx, source ){
 				_this.getMenu().addItem({
 					'label': source.label,
 					'callback': function(){
@@ -632,7 +648,7 @@
 		setTextSource: function( source, setCookie ){
 			setCookie = ( setCookie === undefined ) ? true : setCookie;
 			var _this = this;
-			if( !source.loaded ){
+			if( !source.loaded && typeof source.load === "function" ){
 				this.embedPlayer.getInterface().find('.track').text( gM('mwe-timedtext-loading-text') );
 				source.load(function(){
 					_this.getPlayer().triggerHelper('newClosedCaptionsData');
