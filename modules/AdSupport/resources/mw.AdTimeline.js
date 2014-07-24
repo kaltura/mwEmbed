@@ -422,6 +422,9 @@ mw.AdTimeline.prototype = {
 		mw.log( 'AdTimeline:: trigger: AdSupport_' + slotType + 'Started' );
 		embedPlayer.triggerHelper( 'AdSupport_' + slotType + 'Started' );
 
+		mw.log( 'AdTimeline:: trigger: AdSupport_' + slotType.replace('roll', '')  + 'SequenceStart' );
+		embedPlayer.triggerHelper( 'AdSupport_' + slotType.replace('roll', '')  + 'SequenceStart' );
+
 		// Trigger an ad start event once we enter an ad state
 		mw.log( 'AdTimeline:: trigger: AdSupport_StartAdPlayback' );
 		embedPlayer.triggerHelper( 'AdSupport_StartAdPlayback', slotType );
