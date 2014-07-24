@@ -20,7 +20,7 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 	},
 
 	_addBindings: function(){
-
+		var _this = this;
 		// Make sure we will call _addBindings on KBaseComponent
 		this._super();
 
@@ -28,10 +28,15 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 
 		this.bind('onplay', $.proxy(function(){
 			if( this.isScreenVisible() ){
+				setTimeout(function(){
+					_this.getPlayer().disableComponentsHover();
+				},50);
 				if( this.hasPreviewPlayer() ){
 					this.resizePlayer();
+
 				} else {
 					this.hideScreen();
+
 				}
 			}
 		}, this));
@@ -71,8 +76,11 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 		} else {
 			this.restorePlayback();
 		}
-		this.getPlayer().restoreComponentsHover();
+		if (this.getPlayer().isPlaying()) {
+			this.getPlayer().restoreComponentsHover();
+		}
 		this.getScreen().fadeOut(400);
+
 	},
 	showScreen: function(){
 		this._hideAllScreens(this.pluginName);
@@ -87,6 +95,7 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 		}, this));
 	},
 	toggleScreen: function(){
+		if( this.isDisabled ) return ;
 		if( this.isScreenVisible() ){
 			this.hideScreen();
 		} else {

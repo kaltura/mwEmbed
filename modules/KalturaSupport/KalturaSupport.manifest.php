@@ -324,7 +324,7 @@ return array(
 	),
 	/* speed selector*/
 	'playbackRateSelector' => array(
-		'description' => "Enables users to select the video playback rate.",
+		'description' => "Enables users to select the video playback rate. Note http streamerType must be used to support playbackRateSelector in capable HTML5 browsers.",
 		'attributes' => array(
 			'defaultSpeed' => array(
 				'doc' => 'The default speed of the player.',
@@ -381,7 +381,15 @@ return array(
 	'download' => array(
 		'description' => "Enables users to add a download button to the player controls.
 			The download button will enable users to download the media to a local file.",
-		'attributes' => $kgDefaultComponentAttr
+		'attributes' => array_merge($kgDefaultComponentAttr,
+			array(
+				'preferredBitrate' => array(
+					'doc' => "Preferred bitrate for the downloaded movie source. Keep empty for the highest bitrate",
+					'type' => 'number',
+					'initvalue' => ''
+				),
+			)
+		)
 	),
 	'docPlayToFrom' => array(
 		'description' => "The playFrom and playTo attributes enable building a preview of a segment of content.",
@@ -798,13 +806,13 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 			'preSequence' => array(
 				'doc' => "The preSequence number for sequencing the bumper before or after ads before content. Also can be set to zero and set postSequence to 1, to have the bumper play after the content",
-				'label' => 'Number of pre-sequences',
+				'label' => 'Pre-sequence index',
 				'initvalue' => 1,
 				'type' => 'number'
 			),
 			'postSequence' => array(
 				'doc' => "The postSequence number for sequencing the bumper before or after ads after content. Also can be set to zero and set preSequence to 1, to have the bumper play before the content",
-				'label' => 'Number of post-sequences',
+				'label' => 'Post-sequence index',
 				'initvalue' => 1,
 				'type' => 'number'
 			)
@@ -997,7 +1005,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 	),
 	'keyboardShortcuts' => array(
 		'description' => 'The keyboard shortcuts plugins allows you to control the player using keyboard shortcuts. ' .
-			'More about javasciprt <a target="_new" href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent.keyCode#Constants_for_keyCode_value">key mappings</a>',
+			'More about JavaScript <a target="_new" href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent.keyCode#Constants_for_keyCode_value">key mappings</a>',
 		'attributes' => array(
 			'volumePercentChange' => array(
 				'doc' => 'Volume change percent, from 0 to 1.',
@@ -1241,11 +1249,18 @@ The playhead reflects segment time as if it was the natural stream length.",
 					'doc' => 'Number of seconds for auto play.',
 					'type' => 'number'
 				),
+				'clickUrl' => array(
+				'doc' => "<p style='text-align: left'>Defines the URL for a related item click</p>
+							    If this left blank the click will replace the current video with a new one.
+							    example: <b>http://my-custom-domain.com/?v={mediaProxy.entry.id}</b> as a custom
+							    URL with the entry id as postfix",
+					'type' => 'string'
+				),
 				'itemsLimit' => array(
 					'doc' => 'Maximum number of items to show on the related screen.',
 					'type' => 'number'
 				)/*,
-				// hide template path for now, no way for user to provide useful value here. 
+				// hide template path for now, no way for user to provide useful value here.
 				'templatePath' => array(
 					'doc' => 'Template path to be used by the plugin.',
 					'type' => 'string'
