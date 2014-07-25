@@ -259,6 +259,10 @@ return array(
 				'doc' => "If the playlist should autoplay on load.",
 				'type' => 'boolean'
 			),
+			'loop' => array(
+				'doc' => "If the playlist should loop on complete.",
+				'type' => 'boolean'
+			),
 			'initItemEntryId' => array(
 				'doc' => "The entryId that should be played first."
 			),
