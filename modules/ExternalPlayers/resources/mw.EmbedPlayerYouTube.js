@@ -214,31 +214,38 @@
 		 * Write the Embed html to the target
 		 */
 		embedPlayerHTML : function(){
-			this.registerGlobalCallbacks();
-			if( this.playerEmbedFlag ){
-				return ;
-			}
-			window['mwePlayerId'] = this.id;
-			//handle fetching the youtubeId
-			var metadata = this.evaluate('{mediaProxy.entryMetadata}');
-			var entry = this.evaluate('{mediaProxy.entry}');
-			//look for referenceId and then for custom data field YoutubeId
-			if(entry.referenceId)
-				this.youtubeEntryId = entry.referenceId;
-			if(metadata.YoutubeId)
-				this.youtubeEntryId = metadata.YoutubeId;
+			try {
+				this.registerGlobalCallbacks();
+				if ( this.playerEmbedFlag ) {
+					return;
+				}
+				window['mwePlayerId'] = this.id;
+				//handle fetching the youtubeId
+				var metadata = this.evaluate( '{mediaProxy.entryMetadata}' );
+				var entry = this.evaluate( '{mediaProxy.entry}' );
+				//look for referenceId and then for custom data field YoutubeId
+				if ( entry.referenceId )
+					this.youtubeEntryId = entry.referenceId;
+				if ( metadata.YoutubeId )
+					this.youtubeEntryId = metadata.YoutubeId;
 
-			if(this.youtubeEntryId.indexOf('http') > -1 || this.youtubeEntryId.indexOf('youtube') > -1  ){
-				//found a full path - parse the entryId from it:
-				var arr = this.youtubeEntryId.split("v=");
-				var newEntryId = arr[1];
-				if (newEntryId.indexOf("#") > -1)
-					newEntryId = newEntryId.split("#")[0];
-				if (newEntryId.indexOf("&") > -1)
-					newEntryId = newEntryId.split("&")[0];
-				this.youtubeEntryId = newEntryId;
+				if ( this.youtubeEntryId.indexOf( 'http' ) > -1 || this.youtubeEntryId.indexOf( 'youtube' ) > -1 ) {
+					//found a full path - parse the entryId from it:
+					var arr = this.youtubeEntryId.split( "v=" );
+					var newEntryId = arr[1];
+					if ( newEntryId.indexOf( "#" ) > -1 )
+						newEntryId = newEntryId.split( "#" )[0];
+					if ( newEntryId.indexOf( "&" ) > -1 )
+						newEntryId = newEntryId.split( "&" )[0];
+					this.youtubeEntryId = newEntryId;
+				}
 			}
+			catch(e){
+				mw.log('Error occur while trying to extract youtube entry',e);
+				this.showWrongReferenceIdMessege();
+				return;
 
+			}
 			this.addBindings();
 
 			if(metadata.KeyValueParams){

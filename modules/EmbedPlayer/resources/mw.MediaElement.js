@@ -481,16 +481,19 @@ mw.MediaElement.prototype = {
 
 			this.sources.push( source );
 			// Add <track> element as child of <video> tag
-			if( element.nodeName && element.nodeName.toLowerCase() === 'track'){
-                // under iOS - if there are captions within the HLS stream, users should set disableTrackElement=true in the flashVars to prevent duplications
-                if (!mw.isIOS() || (mw.isIOS() && !mw.getConfig('disableTrackElement'))){
-                    if (!mw.isIE8()){
-                        var $vid = $( '#pid_' + this.parentEmbedId );
-                        if( $vid.length ){
-                            $vid.append(element);
-                        }
-                    }
-                }
+			if( element.nodeName && element.nodeName.toLowerCase() === 'track' ) {
+				// under iOS - if there are captions within the HLS stream, users should set disableTrackElement=true in the flashVars to prevent duplications
+				if ( !mw.isIOS() || ( mw.isIOS() && !mw.getConfig('disableTrackElement') ) ) {
+					if ( !mw.isIE8() ) {
+						var $vid = $( '#pid_' + this.parentEmbedId );
+						if( $vid.length ) {
+							if( mw.isIphone() ) {
+								$vid.attr('crossorigin', 'anonymous');
+							}
+							$vid.append(element);
+						}
+					}
+				}
 			}
 			//mw.log( 'tryAddSource: added source ::' + source + 'sl:' + this.sources.length );
 			return source;

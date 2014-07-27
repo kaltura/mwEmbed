@@ -88,8 +88,7 @@ mw.KAdPlayer.prototype = {
 		var _this = this;
 		mw.log("KAdPlayer::display:" + adSlot.type + ' ads:' +  adSlot.ads.length );
 
-		_this.embedPlayer.layoutBuilder.removePlayerTouchBindings();
-
+		_this.embedPlayer.triggerHelper("onDisableInterfaceComponents");
 		// Setup some configuration for done state:
 		adSlot.doneFunctions = [];
 		// set skip offset from config for all adds if defined 
@@ -102,8 +101,6 @@ mw.KAdPlayer.prototype = {
 
 		adSlot.playbackDone = function( hardStop ){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
-            // trigger ad complete event for omniture tracking. Taking current time from currentTimeLabel plugin since the embedPlayer currentTime is already 0
-            $(_this.embedPlayer).trigger('onAdComplete',[adSlot.ads[adSlot.adIndex].id, mw.npt2seconds($(".currentTimeLabel").text())]);
 			// remove click binding if present
 			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'mouseup';
 			$( _this.embedPlayer ).unbind( clickEventName + _this.adClickPostFix );
@@ -137,7 +134,7 @@ mw.KAdPlayer.prototype = {
 				adSlot.currentlyDisplayed = false;
 				// give time for the end event to clear
 				setTimeout(function(){
-					_this.embedPlayer.layoutBuilder.addPlayerTouchBindings();
+					_this.embedPlayer.triggerHelper("onEnableInterfaceComponents");
 					if( !hardStop && displayDoneCallback ){
 						displayDoneCallback();
 					}
@@ -300,8 +297,6 @@ mw.KAdPlayer.prototype = {
 				function( vid ) {
 					_this.addAdBindings( vid, adSlot, adConf );
 					$( _this.embedPlayer ).trigger( 'playing' ); // this will update the player UI to playing mode
-                    // trigger play event for omniture analytics
-                    $(_this.embedPlayer).trigger("onAdPlay",[adConf.id]);
                     if (_this.embedPlayer.muted){
                         _this.adSibling.changeVolume(0);
                     }
@@ -405,8 +400,6 @@ mw.KAdPlayer.prototype = {
 		}
 		// Fire Impression
 		this.fireImpressionBeacons( adConf );
-        // dispatch adOpen event for omniture on page
-        $( this.embedPlayer).trigger( 'onAdOpen',[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex] );
 	},
 
 	addClickthroughSupport:function( adConf, adSlot ){
@@ -1100,6 +1093,11 @@ mw.KAdPlayer.prototype = {
 
 
 			var vid = _this.getVideoAdSiblingElement( source );
+			//Register error state and continue with player flow in case of
+			$(vid ).bind('error.playVideoSibling', function(e){
+				$( vid ).unbind( 'error.playVideoSibling' );
+				$( vid ).trigger('ended.playVideoSibling');
+			});
 			vid.src = source.getSrc();
 			vid.load();
 			vid.play();
