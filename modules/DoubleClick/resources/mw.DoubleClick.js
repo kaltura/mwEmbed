@@ -663,6 +663,7 @@ mw.DoubleClick.prototype = {
 				setTimeout(function(){
 					_this.embedPlayer.getPlayerElement().play();
 				},250);
+				$('.mwEmbedPlayerTransparent' ).remove();
 			}
 		},'adLoaded');
 
