@@ -10,7 +10,7 @@
 			this.id = playerId;
 			this.targetObj = target;
 			var xapPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/silverlight-player/Player.xap';
-			//var xapPath = 'http://192.168.162.95/lightKdp/Player.xap';
+			//var xapPath = 'http://192.168.162.72/lightKdp/Player.xap';
 			window["onError" + playerId]=function(sender, args){
 				var appSource = "";
 				if (sender != null && sender != 0) {

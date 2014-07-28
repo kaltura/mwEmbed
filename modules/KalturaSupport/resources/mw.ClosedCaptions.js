@@ -14,7 +14,8 @@
 			"useCookie": true,
 			"hideWhenEmpty": false,
 			"showEmbeddedCaptions": false,
-			"hideClosedCaptions": false
+			"hideClosedCaptions": false,
+			"showEmbeddedCaptionsStyle": false
 		},
 
 		textSources: [],
@@ -35,6 +36,14 @@
 			}
 
 			if ( this.getConfig('showEmbeddedCaptions') === true ) {
+				if ( this.getConfig('showEmbeddedCaptionsStyle') === true ) {
+					this.bind( 'textTrackIndexChanged', function( e, captionData ) {
+						if ( captionData.ttml ) {
+							var xml =  $.parseXML(  decodeURIComponent( captionData.ttml ));
+							_this.selectedSource.parseStylesTTML( xml );
+						}
+					});
+				}
 				this.bind( 'onEmbeddedData', function( e, captionData ) {
 					//remove old captions
 					var $tracks = _this.embedPlayer.getInterface().find( '.track' );
@@ -44,7 +53,16 @@
 						}
 					});
 					if ( _this.getConfig( 'displayCaptions' ) === true ) {
-						_this.addCaption( captionData.source, captionData.capId, captionData.caption );
+						var caption = captionData;
+						//if we got raw ttml <p>
+						if ( captionData.ttml ) {
+							var xml =  $.parseXML(  decodeURIComponent( captionData.ttml ));
+							caption.caption = _this.selectedSource.parseCaptionObjTTML( $(xml).find( 'p' )[0] );
+						}
+						if ( !_this.selectedSource ) {
+							_this.selectedSource = caption.source;
+						}
+						_this.addCaption( _this.selectedSource, caption.capId, caption.caption );
 					}
 				});
 				this.bind( 'changedClosedCaptions', function () {
@@ -72,7 +90,10 @@
 					_this.destory();
 					var newSources = [];
 					$.each( data.languages, function( inx, src ){
-						newSources.push( $.extend( { srclang: src.label }, src ) );
+						var source =  new mw.TextSource( $.extend( { srclang: src.label }, src ) );
+						//no need to load embedded captions
+						source.loaded = true;
+						newSources.push( source );
 					});
 					_this.buildMenu( newSources );
 				}
@@ -648,7 +669,7 @@
 		setTextSource: function( source, setCookie ){
 			setCookie = ( setCookie === undefined ) ? true : setCookie;
 			var _this = this;
-			if( !source.loaded && typeof source.load === "function" ){
+			if( !source.loaded ){
 				this.embedPlayer.getInterface().find('.track').text( gM('mwe-timedtext-loading-text') );
 				source.load(function(){
 					_this.getPlayer().triggerHelper('newClosedCaptionsData');

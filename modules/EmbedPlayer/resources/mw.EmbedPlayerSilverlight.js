@@ -674,9 +674,7 @@
 					srclang: captionData.language
 				},
 				capId: captionData.language,
-				caption: {
-					content: captionData.text
-				}
+				ttml: captionData.ttml
 			};
 			this.triggerHelper( 'onEmbeddedData', caption );
 		}
