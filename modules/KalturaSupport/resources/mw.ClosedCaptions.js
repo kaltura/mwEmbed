@@ -39,7 +39,7 @@
 				if ( this.getConfig('showEmbeddedCaptionsStyle') === true ) {
 					this.bind( 'textTrackIndexChanged', function( e, captionData ) {
 						if ( captionData.ttml ) {
-							var xml =  $.parseXML(  decodeURIComponent( captionData.ttml ));
+							var xml =  $.parseXML( mw.html.unescape( decodeURIComponent( captionData.ttml ) ));
 							_this.selectedSource.parseStylesTTML( xml );
 						}
 					});
@@ -56,7 +56,7 @@
 						var caption = captionData;
 						//if we got raw ttml <p>
 						if ( captionData.ttml ) {
-							var xml =  $.parseXML(  decodeURIComponent( captionData.ttml ));
+							var xml =  $.parseXML( mw.html.unescape( decodeURIComponent( captionData.ttml ) ));
 							caption.caption = _this.selectedSource.parseCaptionObjTTML( $(xml).find( 'p' )[0] );
 						}
 						if ( !_this.selectedSource ) {
