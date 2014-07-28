@@ -9,7 +9,8 @@
 			"align": "right",
 			"showTooltip": true,
 			"switchOnResize": false,
-			"simpleFormat": true
+			"simpleFormat": true,
+			"showBitrate": false
 		},
 
 		isDisabled: false,
@@ -211,7 +212,7 @@
 				return 'Auto';
 			}
 			var title = '';			
-			if( source.getHeight() ){
+			if( source.getHeight() && !this.getConfig( 'showBitrate' ) ){
 				title+= this.getSourceSizeName( source );
 			} else if ( source.getBitrate() ) {
 					var bits = ( Math.round( source.getBitrate() / 1024 * 10 ) / 10 ) + '';
