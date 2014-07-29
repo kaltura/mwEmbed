@@ -203,12 +203,28 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 	changeMedia: function( e, data ){
 		this.stopTimer();
 		var _this = this;
+		//look for the entry in case this is a click
+		if(this.getConfig('clickUrl')){
+			if(this.templateData.nextItem.id && this.templateData.nextItem.id == data.entryId ){
+				//search in the next item
+				data = this.templateData.nextItem;
+				this.setConfig('selectedEntry',this.templateData.nextItem);
+			} else if(this.templateData.moreItems) {
+				// look for the entry in the other items
+				for (var i = 0; i < this.templateData.moreItems.length;  i++) {
+					if(data.entryId == this.templateData.moreItems[i].id ){
+						data = this.templateData.moreItems[i];
+						this.setConfig('selectedEntry',this.templateData.moreItems[i]);
+					}
+				}
+			}
+		}
+
 		this.getPlayer().sendNotification('relatedVideoSelect', data);
+
 		if(this.getConfig('clickUrl')){
 			try {
-				var urlToLoad = this.getConfig('clickUrl');
-				urlToLoad = urlToLoad.replace("[relatedId]" , data.entryId);
-				window.parent.location.href = urlToLoad;
+				window.parent.location.href = this.getConfig('clickUrl');
 				return;
 			}catch(err){
 				window.open(this.getConfig('clickUrl'));
