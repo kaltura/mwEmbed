@@ -204,11 +204,11 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 		this.stopTimer();
 		var _this = this;
 		this.getPlayer().sendNotification('relatedVideoSelect', data);
-
-
 		if(this.getConfig('clickUrl')){
 			try {
-				window.parent.location.href = this.getConfig('clickUrl');
+				var urlToLoad = this.getConfig('clickUrl');
+				urlToLoad = urlToLoad.replace("[relatedId]" , data.entryId);
+				window.parent.location.href = urlToLoad;
 				return;
 			}catch(err){
 				window.open(this.getConfig('clickUrl'));
