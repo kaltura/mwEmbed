@@ -100,15 +100,20 @@ mw.DoubleClick.prototype = {
 			}
 			this.removeAdContainer();
 		}
-		if (mw.isIE8() || mw.isIE9() || _this.getConfig('ForceFlash')){
-			mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
-			embedPlayer.bindHelper( 'playerReady', function() {
+		if ( mw.isIE8() || mw.isIE9() || _this.getConfig( 'leadWithFlash' )) {
+			if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
+				mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
 				_this.isChromeless = true;
-				_this.bindChromelessEvents();
-			});
-			_this.addManagedBinding();
-			callback();
-			return;
+				_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
+					_this.bindChromelessEvents();
+				});
+				_this.addManagedBinding();
+				callback();
+				return;
+			} else if ( mw.isIE8() || mw.isIE9() ) {   //no flash on IE8/9
+				callback();
+				return;
+			}
 		}
 		// Load double click ima per doc:
 		this.loadIma( function(){
