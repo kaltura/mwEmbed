@@ -101,7 +101,7 @@
 					}
 
 					if ( kWidget.isIOS() ) {
-						this.bind( 'timeupdate' , function() {
+						_this.bind( 'timeupdate' , function() {
 							var curTime = embedPlayer.getPlayerElementTime();
 
 							// handle timeupdate if pausedTimer was turned on
@@ -133,16 +133,16 @@
 						});
 					}
 
-					if ( this.shouldHandlePausedMonitor() ) {
+					if ( _this.shouldHandlePausedMonitor() ) {
 
-						this.bind( 'onplay', function() {
+						_this.bind( 'onplay', function() {
 							if ( _this.isDVR() && _this.switchDone ) {
 								//	_this.hideLiveStreamStatus();
 								_this.removePausedMonitor();
 							}
 						} );
 
-						this.bind( 'seeking movingBackToLive', function() {
+						_this.bind( 'seeking movingBackToLive', function() {
 							//if we are keeping track of the passed time from a previous pause - reset it
 							if ( _this.dvrTimePassed != 0 ) {
 								_this.dvrTimePassed = 0;
