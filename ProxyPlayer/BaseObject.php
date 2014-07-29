@@ -42,12 +42,14 @@ abstract class BaseObject {
 	}
 
 	function resolveDtoList($implementClass, $responseClass = NULL, $unwrap = false){
+		//Set loggers
 		$this->loggers = new stdClass();
         $this->loggers->main = Logger::getLogger("main");
         $this->loggers->dto = Logger::getLogger("DTO");
         $this->loggers->main->info("Resolving ".get_called_class());
         $start = microtime(true);
 
+		//Fetch data
 		$data = $this->getData();
 
 		$classVars = array();
@@ -57,6 +59,7 @@ abstract class BaseObject {
     	$this->loggers->dto->debug("Resolving params: responseClass=".$responseClass);
     	$this->loggers->dto->debug("Resolving params: unwrap=".$unwrap);
 
+		//Get all implemented classes vars and data transfer objects
 		if (is_array($implementClass)){
         	foreach ($implementClass as $classKey) {
     			$classVars[$classKey] = $this->getClassVars($classKey);
@@ -68,6 +71,7 @@ abstract class BaseObject {
 	    }
 
 	    $resolved = array();
+	    //Iterate over all data transfer objects
         foreach ($dtoConf as $classKey => $dtoConfObj) {
             $this->loggers->dto->info("Resolving ".$classKey);
         	$resolvers = $dtoConfObj["resolver"];
@@ -80,19 +84,24 @@ abstract class BaseObject {
 
         	$this->loggers->dto->info("Set iterator: ".$iterator);
 
-  			$items = (!is_null($iterator) || is_numeric($iterator)) ? $data[$iterator] : 
-  						((isset($dtoConfObj["pointers"]["wrap"]) && $dtoConfObj["pointers"]["wrap"] == "true") ? array($data) : $data);
+  			//Fetch items to iterate over
+  			$items = (!is_null($iterator) || is_numeric($iterator)) ? $data[$iterator] : $data;
+  			// check if needs wrapping for iterator
+  			$items = (isset($dtoConfObj["pointers"]["wrap"]) && $dtoConfObj["pointers"]["wrap"] == "true") ? array($items) : $items;
 
         	$this->loggers->dto->trace("Resolve items for iteration: ".json_encode($items));
 
         	$filters = (isset($dtoConfObj["pointers"]["filters"]) &&
                        !empty($dtoConfObj["pointers"]["filters"])) ? $dtoConfObj["pointers"]["filters"] : NULL;
 
+        	//Iterate over items and convert using the DTO
         	foreach ($items as $item) {
+        	    //Check if this is a subType and if it should be included
         	    $this->loggers->dto->debug("Iterate over item: ".json_encode($item));
         	    if (isset($dtoConfObj["pointers"]["subTypeIdentifier"]) &&
                     isset($dtoConfObj["pointers"]["include"])){
                     if ($dtoConfObj["pointers"]["include"] == true ){
+                        //Check if subType key matches current DTO
                         foreach($dtoConfObj["pointers"]["subTypeIdentifier"] as $subTypeIdentifierKey => $subTypeIdentifierVal){
                             if ($subTypeIdentifierVal != $item[$subTypeIdentifierKey]){
                                 $this->loggers->dto->debug("Found different subTypeIdentifierKey(".$subTypeIdentifierKey."), iterate over next item");
@@ -123,6 +132,7 @@ abstract class BaseObject {
         		    }
         		}
         		$resolvedItem = "";
+        		//Resolve keys using DTO mapping definitions
         		foreach ($resolvers as $resolverKey => $resolverExp) {
 					if (array_key_exists($resolverKey, $classVarsObj)){
 					    $this->loggers->dto->debug("Found key '".$resolverKey."' in resolver and in implemented class, resolving...");
