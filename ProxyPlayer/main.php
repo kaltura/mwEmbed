@@ -54,10 +54,15 @@ class Main {
 			$serviceHandler = call_user_func(array(ucfirst($service), 'getClass'));
 			$request = new ProxyRequest($service, $tokens);			
 			$response = $serviceHandler->get();
-			if ($serviceHandler->requireSerialization){
-			    $response = @serialize($response);
+
+			if (isset($tokens["callback"])){
+			    return $tokens["callback"]."(".json_encode($response, true).");";
+			} else {
+			    if ($serviceHandler->requireSerialization){
+                    $response = @serialize($response);
+                }
+			    return $response;
 			}
-			return $response;
 		} else {
 		    $logger->warn("Tries to request service ".$service." and service wasn't found!");
 			return array("message" => "service not found!");
