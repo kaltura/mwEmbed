@@ -55,6 +55,7 @@ class LoggerAutoloader {
 		'LoggerThrowableInformation' => '/LoggerThrowableInformation.php',
 		
 		// Appenders
+		'LoggerAppenderAMQP' => '/appenders/LoggerAppenderAMQP.php',
 		'LoggerAppenderConsole' => '/appenders/LoggerAppenderConsole.php',
 		'LoggerAppenderDailyFile' => '/appenders/LoggerAppenderDailyFile.php',
 		'LoggerAppenderEcho' => '/appenders/LoggerAppenderEcho.php',
