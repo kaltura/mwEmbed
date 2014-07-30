@@ -1128,6 +1128,8 @@ mw.KAdPlayer.prototype = {
 		this.adSiblingFlashPlayer = null;
 		// remove click through binding
 		this.embedPlayer.getVideoHolder().unbind( this.adClickPostFix );
+		// remove ad tracking binding
+		this.embedPlayer.unbindHelper( this.trackingBindPostfix );
 		// show the player:
 		$(this.getOriginalPlayerElement()).css('visibility', 'visible');
 	},
