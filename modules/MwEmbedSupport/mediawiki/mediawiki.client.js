@@ -108,6 +108,10 @@
 		return /OS 8_/.test( userAgent ) && mw.isIOS();
 	};
 
+	mw.isSilk = function(){
+		return /\bSilk\b/.test(userAgent);
+	};
+
 	// Does the client has native touch bindings?
 	mw.hasNativeTouchBindings = function(){
 		return (mw.isAndroid41() || mw.isAndroid42() || ( mw.isAndroid() && mw.isFirefox() ));
