@@ -83,7 +83,7 @@
 			//parse url address from playmanifest
 			var getStreamAddress = function() {
 				var deferred = $.Deferred();
-				if (mw.getConfig("EmbedPlayer.useDirectManifestLinks")) {
+				if (mw.getConfig("EmbedPlayer.UseDirectManifestLinks")) {
 					return deferred.resolve();
 				}
 				$.ajax({
