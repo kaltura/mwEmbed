@@ -330,7 +330,6 @@ mw.KAnalytics.prototype = {
 
 			_this._p100Once = true;
 			_this.sendAnalyticsEvent( 'PLAY_REACHED_100' );
-			$( embedPlayer ).trigger( "fourthQuartile" );
 		}
 	}
 };
