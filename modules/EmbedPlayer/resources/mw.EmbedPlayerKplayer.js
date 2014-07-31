@@ -99,7 +99,7 @@ mw.EmbedPlayerKplayer = {
 				'playerPaused' : 'onPause',
 				'playerPlayed' : 'onPlay',
 				'durationChange' : 'onDurationChange',
-				'playerPlayEnd' : 'onClipDone',
+				'playbackComplete' : 'onClipDone',
 				'playerUpdatePlayhead' : 'onUpdatePlayhead',
 				'bytesTotalChange' : 'onBytesTotalChange',
 				'bytesDownloadedChange' : 'onBytesDownloadedChange',
@@ -613,6 +613,11 @@ mw.EmbedPlayerKplayer = {
 		if ( this.playerObject ) {
 			this.playerObject.setKDPAttribute ( 'mediaProxy', 'entryUrl', this.getEntryUrl() );
 		}
+	},
+	toggleFullscreen: function() {
+		this.parent_toggleFullscreen();
+		//Redraw flash object, this fixes a Flash resize issue on when wmode=transparent
+		this.playerObject.redrawObject();
 	}
 };
 

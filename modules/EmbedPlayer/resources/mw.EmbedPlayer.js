@@ -87,6 +87,7 @@
 		// Mute state
 		"muted" : false,
 
+		"isFlavorSwitching" : false,
 		/**
 		 * Custom attributes for embedPlayer player: (not part of the html5
 		 * video spec)
@@ -681,6 +682,23 @@
 			//this.selectedPlayer =null;
 		},
 
+		getPlayerByStreamerType: function(source){
+			var targetPlayer;
+			//currently only kplayer can handle other streamerTypes
+			if ( !mw.getConfig( 'EmbedPlayer.IgnoreStreamerType')
+				&& !this.isImageSource()   //not an image entry
+				&& this.streamerType != 'http'
+				&& mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
+				targetPlayer =  mw.EmbedTypes.getKplayer();
+			} else {
+				targetPlayer= mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType );
+			}
+			return targetPlayer;
+		},
+
+		isImageSource: function(){
+			return ( this.mediaElement.selectedSource.getMIMEType().indexOf("image") == 0 )
+		},
 		/**
 		 * Switch and play a video source
 		 *
@@ -689,7 +707,8 @@
 		 */
 		switchPlaySource: function( source, switchCallback, doneCallback ){
 			var _this = this;
-			var targetPlayer =  mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType );
+
+			var targetPlayer = this.getPlayerByStreamerType(source);
 			if( targetPlayer.library != this.selectedPlayer.library ){
 				this.selectPlayer ( targetPlayer );
 				this.updatePlaybackInterface( function(){
@@ -753,23 +772,14 @@
 
 			// Auto select player based on default order
 			if( this.mediaElement.selectedSource ){
-				var isImageSource = function() {
-					return ( _this.mediaElement.selectedSource.getMIMEType().indexOf("image") == 0 )
-				}
+
 				// Loading kaltura native cordova component only when it's media type
-				if( isImageSource() ) {
+				if( this.isImageSource() ) {
 					mw.setConfig('EmbedPlayer.ForceNativeComponent', false);
 				}
 
-				//currently only kplayer can handle other streamerTypes
-				if ( !mw.getConfig( 'EmbedPlayer.IgnoreStreamerType')
-					&& !isImageSource()   //not an image entry
-					&& this.streamerType != 'http'
-					&& mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
-					this.selectPlayer( mw.EmbedTypes.getKplayer() );
-				} else {
-					this.selectPlayer( mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType ));
-				}
+				var targetPlayer = this.getPlayerByStreamerType(this.mediaElement.selectedSource);
+				this.selectPlayer( targetPlayer );
 
 				// Check if we need to switch player rendering libraries:
 				if ( this.selectedPlayer && ( !this.prevPlayer || this.prevPlayer.library != this.selectedPlayer.library ) ) {
@@ -2024,7 +2034,7 @@
 		inPreSequence: false,
 		replayEventCount : 0,
 		play: function() {
-			if (this.currentState == "end"){
+			if ( this.currentState == "end" && !mw.isIpad() ){
 				// prevent getting another clipdone event on replay
 				this.setCurrentTime(0.01);
 			}
@@ -2835,6 +2845,7 @@
 			var _this = this;
 			this.mediaElement.setSource( source );
 			if( ! this.isStopped() ){
+				this.isFlavorSwitching = true;
 				// Get the exact play time from the video element ( instead of parent embed Player )
 				var oldMediaTime = this.getPlayerElement().currentTime;
 				var oldPaused =  this.paused;

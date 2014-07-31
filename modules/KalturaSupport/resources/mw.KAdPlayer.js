@@ -32,6 +32,7 @@ mw.KAdPlayer.prototype = {
 	disableSibling:false,
 
 	clickedBumper: false,
+	overrideDisplayDuration:0,
 
 	init: function( embedPlayer ){
 		var _this = this;
@@ -88,8 +89,7 @@ mw.KAdPlayer.prototype = {
 		var _this = this;
 		mw.log("KAdPlayer::display:" + adSlot.type + ' ads:' +  adSlot.ads.length );
 
-		_this.embedPlayer.layoutBuilder.removePlayerTouchBindings();
-
+		_this.embedPlayer.triggerHelper("onDisableInterfaceComponents");
 		// Setup some configuration for done state:
 		adSlot.doneFunctions = [];
 		// set skip offset from config for all adds if defined 
@@ -102,7 +102,7 @@ mw.KAdPlayer.prototype = {
 
 		adSlot.playbackDone = function( hardStop ){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
-            // trigger ad complete event for omniture tracking. Taking current time from currentTimeLabel plugin since the embedPlayer currentTime is already 0
+            // trigger ad complete event for tracking. Taking current time from currentTimeLabel plugin since the embedPlayer currentTime is already 0
             $(_this.embedPlayer).trigger('onAdComplete',[adSlot.ads[adSlot.adIndex].id, mw.npt2seconds($(".currentTimeLabel").text())]);
 			// remove click binding if present
 			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'mouseup';
@@ -137,7 +137,7 @@ mw.KAdPlayer.prototype = {
 				adSlot.currentlyDisplayed = false;
 				// give time for the end event to clear
 				setTimeout(function(){
-					_this.embedPlayer.layoutBuilder.addPlayerTouchBindings();
+					_this.embedPlayer.triggerHelper("onEnableInterfaceComponents");
 					if( !hardStop && displayDoneCallback ){
 						displayDoneCallback();
 					}
@@ -188,6 +188,8 @@ mw.KAdPlayer.prototype = {
 				}
 			}
 		}
+
+
 		adSlot.displayDuration = displayDuration;
 		this.playNextAd( adSlot );
 	},
@@ -260,9 +262,13 @@ mw.KAdPlayer.prototype = {
 		var _this = this;
 		// Local base video monitor function:
 		var vid = _this.getOriginalPlayerElement();
+		if (_this.overrideDisplayDuration > 0 && _this.overrideDisplayDuration > displayDuration ){
+			displayDuration = _this.overrideDisplayDuration;
+		}
 		// Stop display of overlay if video playback is no longer active
 		if( typeof vid == 'undefined' || _this.embedPlayer.getPlayerElementTime() - startTime > displayDuration ){
 			mw.log( "KAdPlayer::display:" + adSlot.type + " Playback done because vid does not exist or > displayDuration " + displayDuration );
+			_this.overrideDisplayDuration = 0;
 			adSlot.playbackDone();
 		} else {
 			setTimeout( function(){
@@ -300,7 +306,7 @@ mw.KAdPlayer.prototype = {
 				function( vid ) {
 					_this.addAdBindings( vid, adSlot, adConf );
 					$( _this.embedPlayer ).trigger( 'playing' ); // this will update the player UI to playing mode
-                    // trigger play event for omniture analytics
+                    // trigger ad play event
                     $(_this.embedPlayer).trigger("onAdPlay",[adConf.id]);
                     if (_this.embedPlayer.muted){
                         _this.adSibling.changeVolume(0);
@@ -405,7 +411,7 @@ mw.KAdPlayer.prototype = {
 		}
 		// Fire Impression
 		this.fireImpressionBeacons( adConf );
-        // dispatch adOpen event for omniture on page
+        // dispatch adOpen event
         $( this.embedPlayer).trigger( 'onAdOpen',[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex] );
 	},
 
@@ -782,7 +788,10 @@ mw.KAdPlayer.prototype = {
 		var _this = this;
 		var overlayId = this.getOverlayId();
 		var nonLinearConf = _this.selectFromArray( adConf.nonLinear );
-
+		if (nonLinearConf.minSuggestedDuration){
+			_this.overrideDisplayDuration = kWidget.npt2seconds( nonLinearConf.minSuggestedDuration );
+			mw.log( "KAdPlayer::displayNonLinear - override duration from vast:" + _this.overrideDisplayDuration );
+		}
 		var sendBeacon = function(eventName){
 			for(var i =0;i < adConf.trackingEvents.length; i++){
 				if( eventName == adConf.trackingEvents[ i ].eventName ){
@@ -1100,6 +1109,11 @@ mw.KAdPlayer.prototype = {
 
 
 			var vid = _this.getVideoAdSiblingElement( source );
+			//Register error state and continue with player flow in case of
+			$(vid ).bind('error.playVideoSibling', function(e){
+				$( vid ).unbind( 'error.playVideoSibling' );
+				$( vid ).trigger('ended.playVideoSibling');
+			});
 			vid.src = source.getSrc();
 			vid.load();
 			vid.play();
@@ -1130,6 +1144,8 @@ mw.KAdPlayer.prototype = {
 		this.adSiblingFlashPlayer = null;
 		// remove click through binding
 		this.embedPlayer.getVideoHolder().unbind( this.adClickPostFix );
+		// remove ad tracking binding
+		this.embedPlayer.unbindHelper( this.trackingBindPostfix );
 		// show the player:
 		$(this.getOriginalPlayerElement()).css('visibility', 'visible');
 	},

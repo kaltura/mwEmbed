@@ -259,6 +259,10 @@ return array(
 				'doc' => "If the playlist should autoplay on load.",
 				'type' => 'boolean'
 			),
+			'loop' => array(
+				'doc' => "If the playlist should loop on complete.",
+				'type' => 'boolean'
+			),
 			'initItemEntryId' => array(
 				'doc' => "The entryId that should be played first."
 			),
@@ -319,7 +323,7 @@ return array(
 	),
 	/* speed selector*/
 	'playbackRateSelector' => array(
-		'description' => "Enables users to select the video playback rate.",
+		'description' => "Enables users to select the video playback rate. Note http streamerType must be used to support playbackRateSelector in capable HTML5 browsers.",
 		'attributes' => array(
 			'defaultSpeed' => array(
 				'doc' => 'The default speed of the player.',
@@ -801,13 +805,13 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 			'preSequence' => array(
 				'doc' => "The preSequence number for sequencing the bumper before or after ads before content. Also can be set to zero and set postSequence to 1, to have the bumper play after the content",
-				'label' => 'Number of pre-sequences',
+				'label' => 'Pre-sequence index',
 				'initvalue' => 1,
 				'type' => 'number'
 			),
 			'postSequence' => array(
 				'doc' => "The postSequence number for sequencing the bumper before or after ads after content. Also can be set to zero and set preSequence to 1, to have the bumper play before the content",
-				'label' => 'Number of post-sequences',
+				'label' => 'Post-sequence index',
 				'initvalue' => 1,
 				'type' => 'number'
 			)
