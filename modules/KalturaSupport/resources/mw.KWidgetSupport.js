@@ -340,7 +340,7 @@ mw.KWidgetSupport.prototype = {
 				mw.log( "KwidgetSupport::Failed adding flavor asset, " + e.toString() );
 			}
 		} );
-		mw.setConfig( 'EmbedPlayer.ReplaceSources', flavorAssets );
+		embedPlayer.replaceSources(flavorAssets);
 		//Set Live
 		if ( playerData.meta.partnerData["isLive"] &&
 			playerData.meta.partnerData["isLive"] == "true" ) {
