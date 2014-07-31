@@ -51,8 +51,8 @@
 				mwEmbedPath = window.location.protocol + mwEmbedPath.substring( mwEmbedPath.indexOf(":") + 1);
 			}
 
-			//var kdpPath = mwEmbedPath + 'modules/EmbedPlayer/binPlayers/kaltura-player/kdp3.swf';
-			 var kdpPath = "http://localhost/chromeless-kdp/KDP3/bin-debug/kdp3.swf";
+			var kdpPath = mwEmbedPath + 'modules/EmbedPlayer/binPlayers/kaltura-player/kdp3.swf';
+			// var kdpPath = "http://localhost/chromeless-kdp/KDP3/bin-debug/kdp3.swf";
 
 			window[this.jsReadyFunName] = function( playerId ){
 				// We wrap everything in setTimeout to avoid Firefox race condition with empty cache
