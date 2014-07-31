@@ -990,15 +990,15 @@ mw.EmbedPlayerNative = {
 		// parent.$('body').append( $('<a />').attr({ 'style': 'position: absolute; top:0;left:0;', 'target': '_blank', 'href': this.getPlayerElement().src }).text('SRC') );
 		var _this = this;
 
-		var nativeCalloutPlugin = { 'exist': false };
+		var nativeCalloutPlugin = {
+			'exist': false
+		};
 		if( mw.isMobileDevice() ) {
 			this.triggerHelper( 'nativeCallout',  [ nativeCalloutPlugin ] );
 		}
 
 		if( nativeCalloutPlugin.exist ) {
-			// if nativeCallout plugin exist
-			// support replacing the player "play button" with a callout to native player
-//			this.setNativeCalloutPluginFunctionality();
+			// if nativeCallout plugin exist play implementation is changed
 			return;
 		}
 
