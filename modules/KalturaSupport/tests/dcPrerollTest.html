@@ -11,6 +11,14 @@
 <br />
 <div id="kdp" style="width:600px;height:370px;float:left"></div>
 <script>
+	var kdp;
+
+	function onAdUpdatePlayhead( data ) {
+	//	$('#eventsLog').append( "\n\tAd Time: " + data );
+	}
+	function onAdsEvent( data ) {
+		$('#eventsLog').append( "\n\tAd Manager Event: " + data );
+	}
 	kWidget.featureConfig({
 		'targetId': 'kdp',
 		'wid': '_243342',
@@ -38,7 +46,18 @@
 				'debugMode': true
 			} ,
 			'titleLabel.plugin': true
+		},
+		'readyCallback': function(){
+			kdp = $('#kdp')[0];
+			kdp.addJsListener( 'AdSupport_AdUpdatePlayhead', 'onAdUpdatePlayhead' );
+			kdp.addJsListener( 'DoubleClick_AdsEvent', 'onAdsEvent' );
+			$('#kdp').css('float', 'left').after('<div id="events" style="float:left;padding-left:20px;" >'+
+					'<i>AdManager events:</i>' +
+					'<textarea id="eventsLog" style="width:300px;height:280px;" ></textarea>' +
+					'</div>'
+			)
 		}
+
 	});
 </script>
 

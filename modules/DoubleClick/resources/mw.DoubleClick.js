@@ -446,6 +446,7 @@ mw.DoubleClick.prototype = {
 				google.ima.AdEvent.Type[ eventType ],
 				function( event ){
 					mw.log( "DoubleClick::AdsEvent:" + eventType );
+					_this.embedPlayer.triggerHelper('DoubleClick_AdsEvent', eventType);
 					if( $.isFunction( callback ) ){
 						callback( event );
 					}
@@ -821,7 +822,6 @@ mw.DoubleClick.prototype = {
 	},
 	doMonitorAdProgress: function(){
 		var _this = this;
-		mw.log('DoubleClick:: ADProgress: ' );
 		// check if we are still playing an ad:
 		if( !_this.adActive ){
 			// update 'timeRemaining' and duration for no-ad )
@@ -846,7 +846,6 @@ mw.DoubleClick.prototype = {
 			 _this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead',  currentTime);
 			 _this.embedPlayer.updatePlayHead( currentTime/ _this.duration );
 		}
-		mw.log('DoubleClick:: ADProgress: ' + _this.adPreviousTimeLeft + ", duration:" + _this.duration);
 	},
 
 	// Handler for various ad errors.
