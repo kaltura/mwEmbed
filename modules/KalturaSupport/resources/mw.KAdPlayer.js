@@ -32,6 +32,7 @@ mw.KAdPlayer.prototype = {
 	disableSibling:false,
 
 	clickedBumper: false,
+	overrideDisplayDuration:0,
 
 	init: function( embedPlayer ){
 		var _this = this;
@@ -187,6 +188,8 @@ mw.KAdPlayer.prototype = {
 				}
 			}
 		}
+
+
 		adSlot.displayDuration = displayDuration;
 		this.playNextAd( adSlot );
 	},
@@ -259,9 +262,13 @@ mw.KAdPlayer.prototype = {
 		var _this = this;
 		// Local base video monitor function:
 		var vid = _this.getOriginalPlayerElement();
+		if (_this.overrideDisplayDuration > 0 && _this.overrideDisplayDuration > displayDuration ){
+			displayDuration = _this.overrideDisplayDuration;
+		}
 		// Stop display of overlay if video playback is no longer active
 		if( typeof vid == 'undefined' || _this.embedPlayer.getPlayerElementTime() - startTime > displayDuration ){
 			mw.log( "KAdPlayer::display:" + adSlot.type + " Playback done because vid does not exist or > displayDuration " + displayDuration );
+			_this.overrideDisplayDuration = 0;
 			adSlot.playbackDone();
 		} else {
 			setTimeout( function(){
@@ -781,7 +788,10 @@ mw.KAdPlayer.prototype = {
 		var _this = this;
 		var overlayId = this.getOverlayId();
 		var nonLinearConf = _this.selectFromArray( adConf.nonLinear );
-
+		if (nonLinearConf.minSuggestedDuration){
+			_this.overrideDisplayDuration = kWidget.npt2seconds( nonLinearConf.minSuggestedDuration );
+			mw.log( "KAdPlayer::displayNonLinear - override duration from vast:" + _this.overrideDisplayDuration );
+		}
 		var sendBeacon = function(eventName){
 			for(var i =0;i < adConf.trackingEvents.length; i++){
 				if( eventName == adConf.trackingEvents[ i ].eventName ){
