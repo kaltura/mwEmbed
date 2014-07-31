@@ -53,7 +53,7 @@
 			kdp.addJsListener( 'DoubleClick_AdsEvent', 'onAdsEvent' );
 			$('#kdp').css('float', 'left').after('<div id="events" style="float:left;padding-left:20px;" >'+
 					'<i>AdManager events:</i>' +
-					'<textarea id="eventsLog" style="width:300px;height:280px;" ></textarea>' +
+					'<textarea id="eventsLog" style="width:300px;height:280px;" >' + navigator.userAgent + '</textarea>' +
 					'</div>'
 			)
 		}
