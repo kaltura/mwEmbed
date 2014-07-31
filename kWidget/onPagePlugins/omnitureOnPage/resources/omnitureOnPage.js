@@ -247,7 +247,7 @@ kWidget.addReadyCallback( function( playerId ){
 			this.bind('entryReady', function() {
 				kWidget.log( 'omnitureOnPage: entryReady' );
 				_this.cacheEntryMetadata();
-			});			
+			});
 			// Run open on first play:
 			this.bind( 'playerPlayed', function(){
 				if( firstPlay ){
@@ -314,7 +314,7 @@ kWidget.addReadyCallback( function( playerId ){
 					_this.bind( eventName, function(){
 						_this.sendNotification( eventId, eventName );
 					});
-				}(customEvents[i]));
+				}($.trim(customEvents[i])));
 			}		
 		},
 
