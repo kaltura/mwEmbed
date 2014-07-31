@@ -2580,7 +2580,7 @@
 						mw.log( "EmbedPlayer::updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
 						_this.onClipDone();
 						//sometimes we don't get the "end" event from the player so we trigger clipdone
-					}/* else if ( ( ( this.currentTime - this.startOffset) / endPresentationTime ) >= .99 ){
+					} else if ( ( ( this.currentTime - this.startOffset) / endPresentationTime ) >= .99 ){
 						_this.shouldEndClip = true;
 						setTimeout( function() {
 							if ( _this.shouldEndClip ) {
@@ -2588,7 +2588,7 @@
 								_this.onClipDone();
 							}
 						}, 1000)
-					} */
+					}
 				}
 			}
 		},

@@ -821,6 +821,7 @@ mw.DoubleClick.prototype = {
 	},
 	doMonitorAdProgress: function(){
 		var _this = this;
+		mw.log('DoubleClick:: ADProgress: ' );
 		// check if we are still playing an ad:
 		if( !_this.adActive ){
 			// update 'timeRemaining' and duration for no-ad )
@@ -835,7 +836,6 @@ mw.DoubleClick.prototype = {
 
 		// update the adPreviousTimeLeft
 		_this.adPreviousTimeLeft = _this.adsManager.getRemainingTime();
-
 		// Update sequence property per active ad:
 		_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  _this.adsManager.getRemainingTime() );
 		if (_this.duration === -1){
@@ -846,6 +846,7 @@ mw.DoubleClick.prototype = {
 			 _this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead',  currentTime);
 			 _this.embedPlayer.updatePlayHead( currentTime/ _this.duration );
 		}
+		mw.log('DoubleClick:: ADProgress: ' + _this.adPreviousTimeLeft + ", duration:" + _this.duration);
 	},
 
 	// Handler for various ad errors.
