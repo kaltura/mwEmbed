@@ -28,10 +28,6 @@
 			'scripts' => "resources/mw.KBaseComponent.js",
 			'dependencies' => array( 'mw.KBasePlugin', 'mediawiki.kmenu' )
 		),
-		"mw.KBaseProxyPlugin" => array(
-            'scripts' => "resources/mw.KBaseProxyPlugin.js",
-            'dependencies' => array( 'mw.KBasePlugin' )
-        ),
 		"mw.KBaseButton" => array(
 			'scripts' => "resources/mw.KBaseButton.js",
 			'dependencies' => array( 'mw.KBaseComponent')
