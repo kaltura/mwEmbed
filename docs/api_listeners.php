@@ -93,6 +93,18 @@
     );
 
 	$listeners2 = array(
+        'firstQuartile' => array(
+            'props' => 'None',
+            'desc' => 'The player reached 25% of the entry playback'
+        ),
+        'secondQuartile' => array(
+            'props' => 'None',
+            'desc' => 'The player reached 50% of the entry playback'
+        ),
+        'thirdQuartile' => array(
+            'props' => 'None',
+            'desc' => 'The player reached 75% of the entry playback'
+        ),
         'durationChange' => array(
             'props' => 'ewValue: new duration value',
             'desc' => 'Notify a change in the playing entry duration'

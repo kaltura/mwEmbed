@@ -101,6 +101,8 @@ mw.KAdPlayer.prototype = {
 
 		adSlot.playbackDone = function( hardStop ){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
+            // trigger ad complete event for tracking. Taking current time from currentTimeLabel plugin since the embedPlayer currentTime is already 0
+            $(_this.embedPlayer).trigger('onAdComplete',[adSlot.ads[adSlot.adIndex].id, mw.npt2seconds($(".currentTimeLabel").text())]);
 			// remove click binding if present
 			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'mouseup';
 			$( _this.embedPlayer ).unbind( clickEventName + _this.adClickPostFix );
@@ -297,6 +299,8 @@ mw.KAdPlayer.prototype = {
 				function( vid ) {
 					_this.addAdBindings( vid, adSlot, adConf );
 					$( _this.embedPlayer ).trigger( 'playing' ); // this will update the player UI to playing mode
+                    // trigger ad play event
+                    $(_this.embedPlayer).trigger("onAdPlay",[adConf.id]);
                     if (_this.embedPlayer.muted){
                         _this.adSibling.changeVolume(0);
                     }
@@ -400,6 +404,8 @@ mw.KAdPlayer.prototype = {
 		}
 		// Fire Impression
 		this.fireImpressionBeacons( adConf );
+        // dispatch adOpen event
+        $( this.embedPlayer).trigger( 'onAdOpen',[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex] );
 	},
 
 	addClickthroughSupport:function( adConf, adSlot ){

@@ -203,49 +203,39 @@ mw.DoubleClick.prototype = {
 		mw.log( "DoubleClick::addManagedBinding" );
 		_this.embedPlayer.bindHelper( 'AdSupport_preroll' + _this.bindPostfix, function( event, sequenceProxy ){
 			// Add the slot to the given sequence proxy target target
-			sequenceProxy[ _this.getSequenceIndex( 'preroll' ) ] = {
-				"display" : function( callback ){
-					_this.sequenceProxy = sequenceProxy;
-					// if a preroll set it as such:
-					_this.currentAdSlotType = 'preroll';
-					// Setup the restore callback
-					_this.restorePlayerCallback = callback;
-					// Request ads
-					mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
-					_this.requestAds( _this.getConfig( 'adTagUrl' ) );
-				},
-				"config": ['DoubleClick', 'GDFP', 'preroll', _this.getSequenceIndex( 'preroll' )]
-			};
+			sequenceProxy[ _this.getSequenceIndex( 'preroll' ) ] = function(callback){
+				_this.sequenceProxy = sequenceProxy;
+				// if a preroll set it as such:
+				_this.currentAdSlotType = 'preroll';
+				// Setup the restore callback
+				_this.restorePlayerCallback = callback;
+				// Request ads
+				mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
+				_this.requestAds( _this.getConfig( 'adTagUrl' ) );
+			}
 		});
 
 		_this.embedPlayer.bindHelper( 'AdSupport_midroll' + _this.bindPostfix, function( event, sequenceProxy ){
 			// Add the slot to the given sequence proxy target target
-			sequenceProxy[ _this.getSequenceIndex( 'midroll' ) ] = {
-				"display" : function( callback ){
-					// if a preroll set it as such:
-					_this.currentAdSlotType = 'midroll';
-					// Setup the restore callback
-					_this.restorePlayerCallback = callback;
-
-				},
-				"config": ['DoubleClick', 'GDFP', 'midroll', _this.getSequenceIndex( 'midroll' )]
-			};
+			sequenceProxy[ _this.getSequenceIndex( 'midroll' ) ] = function( callback ){
+				// if a preroll set it as such:
+				_this.currentAdSlotType = 'midroll';
+				// Setup the restore callback
+				_this.restorePlayerCallback = callback;
+			}
 		});
 		_this.embedPlayer.bindHelper( 'AdSupport_postroll' + _this.bindPostfix, function( event, sequenceProxy ){
 			// Add the slot to the given sequence proxy target target
-			sequenceProxy[ _this.getSequenceIndex( 'postroll' ) ] = {
-				"display" : function( callback ){
-					// if a preroll set it as such:
-					_this.currentAdSlotType = 'postroll';
-					// Setup the restore callback
-					_this.postRollCallback = callback;
-					//no need to request ads
-					if (!_this.isLinear || _this.allAdsCompletedFlag){
-						_this.restorePlayer(true);
-					}
-				},
-				"config": ['DoubleClick', 'GDFP', 'preroll', _this.getSequenceIndex( 'postroll' )]
-			};
+			sequenceProxy[ _this.getSequenceIndex( 'postroll' ) ] = function( callback ){
+				// if a preroll set it as such:
+				_this.currentAdSlotType = 'postroll';
+				// Setup the restore callback
+				_this.postRollCallback = callback;
+				//no need to request ads
+				if (!_this.isLinear || _this.allAdsCompletedFlag){
+					_this.restorePlayer(true);
+				}
+			}
 		});
 	},
 	/**
@@ -537,10 +527,14 @@ mw.DoubleClick.prototype = {
 				}
 			}, 12000 );
 		} );
-		adsListener( 'LOADED', function(args){
-			if ( args.g ) {
-				_this.isLinear = args.g.linear;
+		adsListener( 'LOADED', function(adEvent){
+			var ad = adEvent.getAd();
+			if ( ad.a ) {
+				_this.isLinear = ad.a.linear;
 			}
+			// dispatch adOpen event
+			$( _this.embedPlayer).trigger( 'onAdOpen',[ad.a.adId, ad.a.adSystem, _this.currentAdSlotType, ad.a.adPodInfo ? ad.a.adPodInfo.adPosition : 0] );
+
 			// check for started ad playback sequence callback
 			if( _this.startedAdPlayback ){
 				_this.startedAdPlayback();
@@ -566,7 +560,10 @@ mw.DoubleClick.prototype = {
 			}
 
 		} );
-		adsListener( 'STARTED', function(){
+		adsListener( 'STARTED', function(adEvent){
+			var ad = adEvent.getAd();
+			// trigger ad play event
+			$(_this.embedPlayer).trigger("onAdPlay",[ad.a.adId]);
 			// Check for ad Stacking ( two starts in less then 250ms )
 			if( lastAdStartTime !== null &&
 				new Date().getTime() - lastAdStartTime < 250
@@ -622,8 +619,10 @@ mw.DoubleClick.prototype = {
 		});
 		adsListener( 'MIDPOINT' );
 		adsListener( 'THIRD_QUARTILE' );
-		adsListener( 'COMPLETE', function(){
+		adsListener( 'COMPLETE', function(adEvent){
+			var ad = adEvent.getAd();
 			//$(".doubleClickAd").remove();
+			$(_this.embedPlayer).trigger('onAdComplete',[ad.a.adId, mw.npt2seconds($(".currentTimeLabel").text())]);
 			_this.duration= -1;
 
 
@@ -656,6 +655,8 @@ mw.DoubleClick.prototype = {
 		var _this = this;
 		// bind to chromeless player events
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+			// trigger ad play event
+			$(_this.embedPlayer).trigger("onAdPlay",[adInfo.adID]);
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', adInfo.duration );
 			_this.embedPlayer.hideSpinner();
 			$(".mwEmbedPlayer").hide();
@@ -663,6 +664,8 @@ mw.DoubleClick.prototype = {
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			_this.isLinear = adInfo.isLinear;
+			// dispatch adOpen event
+			$( _this.embedPlayer).trigger( 'onAdOpen',[adInfo.adID, adInfo.adSystem, _this.currentAdSlotType, adInfo.adPosition] );
 			if (!_this.isLinear){
 				_this.restorePlayer();
 				setTimeout(function(){
@@ -670,6 +673,10 @@ mw.DoubleClick.prototype = {
 				},250);
 			}
 		},'adLoaded');
+
+		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+			$(_this.embedPlayer).trigger('onAdComplete',[adInfo.adID, mw.npt2seconds($(".currentTimeLabel").text())]);
+		},'adCompleted');
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			_this.restorePlayer(true);
