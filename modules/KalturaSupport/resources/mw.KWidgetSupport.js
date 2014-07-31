@@ -326,13 +326,14 @@ mw.KWidgetSupport.prototype = {
 			try {
 				var flavorPartnerData = JSON.parse( flavorAsset.partnerData );
 				var flavorAssetObj = {
-					id: flavorAsset.id,
+					"data-assetid": flavorAsset.id,
 					src: flavorPartnerData.url,
 					type: "video/" + flavorPartnerData.type,
-					width: flavorAsset.width,
-					height: flavorAsset.height,
-					bitrate: flavorAsset.bitrate,
-					frameRate: flavorAsset.frameRate
+					"data-width": flavorAsset.width,
+					"data-height": flavorAsset.height,
+					"data-bitrate": flavorAsset.bitrate,
+					"data-bandwidth" : (flavorAsset.bitrate ? (flavorAsset * 1024) : 0),
+					"data-frameRate": flavorAsset.frameRate
 				};
 				flavorAssets.push( flavorAssetObj );
 			} catch ( e ) {
