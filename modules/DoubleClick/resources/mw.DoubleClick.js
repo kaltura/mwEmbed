@@ -67,6 +67,9 @@ mw.DoubleClick.prototype = {
 	//flag that indicates we are now playing linear ad
 	playingLinearAd:false,
 
+	leadWithFlash: true,
+
+
 
 	init: function( embedPlayer, callback, pluginName ){
 		var _this = this;
@@ -100,7 +103,12 @@ mw.DoubleClick.prototype = {
 			}
 			this.removeAdContainer();
 		}
-		if ( mw.isIE8() || mw.isIE9() || _this.getConfig( 'leadWithFlash' )) {
+
+		if ( _this.getConfig( 'leadWithFlash' ) !== undefined ) {
+			_this.leadWithFlash = _this.getConfig( 'leadWithFlash' );
+		}
+
+		if ( mw.isIE8() || mw.isIE9() || _this.leadWithFlash ) {
 			if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
 				mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
 				_this.isChromeless = true;
