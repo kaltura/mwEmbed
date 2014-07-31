@@ -183,6 +183,9 @@ kWidget.addReadyCallback( function( playerId ){
 			var trackEvents = ['OPEN', 'PLAY', 'STOP', 'SECONDS', 'MILESTONE'];
 			var monitorCount = 0;
 			var trackedClose = false;
+			s.Media.autoTrack= true;
+			s.Media.trackWhilePlaying = true;
+			s.Media.trackMilestones="25,50,75";
 			s.Media.monitor = function ( s, media ) {
 				if( trackEvents.indexOf( media.event ) !== -1 ) {
 					trackMediaWithExtraEvars();
@@ -201,6 +204,9 @@ kWidget.addReadyCallback( function( playerId ){
 						_this.log( "Track MONITOR" );
 						trackMediaWithExtraEvars();
 					}
+				}
+				if (media.mediaEvent == "MILESTONE"){
+					_this.runMediaCommand( "monitor", _this.getMediaName(), media.mediaEvent);
 				}
 				if( typeof originalMediaFunc == 'function' ) {
 					originalMediaFunc( s, media );
@@ -400,6 +406,9 @@ kWidget.addReadyCallback( function( playerId ){
 		 			break;
 					case 'complete':
 						s.Media.complete(argSet[0], argSet[1]);
+						break;
+					case 'monitor':
+						s.Media.monitor(argSet[0], argSet[1]);
 						break;
 		 		}
 		 	} catch( e ) {
