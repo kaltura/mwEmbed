@@ -70,17 +70,7 @@
 		'uiconf_id' : '13920942',
 		'entry_id' : '0_uka1msg4',
 		'flashvars': {
-			'vast': {
-				'numPostroll' : 1,
-				'skipOffset': 5,
-				'storeSession': false,
-				'htmlCompanions' : "testCompanion:300:250;testLongCompanion:728:90;",
-				'postrollUrl' : 'http://projects.kaltura.com/mdale/hotelVastAd.xml?myRefurl=http%3A//myref.com/%3Ffoo%3Dbar%26cat%3Ddog',
-				'timeout' : 4,
-				'postSequence' : 1,
-				'unescapeAdUrls': false
-			},
-			'adsOnReplay':true
+			"confFilePath": "{libPath}/modules/KalturaSupport/tests/postroll.json"
 		},
 		'readyCallback': function( playerId ){
 			$p = $( '#' + playerId );
