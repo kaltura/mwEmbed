@@ -186,6 +186,11 @@
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'airPlay',
 		),
+		"nativeCallout" => array(
+			'scripts' => "components/nativeCallout.js",
+			'dependencies' => 'mw.KBasePlugin',
+			'kalturaPluginName' => 'nativeCallout',
+		),
 		"closedCaptions" => array(
 			'scripts' => "resources/mw.ClosedCaptions.js",
 			'dependencies' => array( 
