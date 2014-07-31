@@ -21,9 +21,10 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 	},
 	viewedEntries: [],
 	iconBtnClass: 'icon-related',
+
+
 	setup: function(){
 		var _this = this;
-
 		this.bind('playerReady', function(){
 			// Stop timer
 			_this.stopTimer();
@@ -49,6 +50,31 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 
 		this.bind('replayEvent', function(){
 			_this.stopTimer();
+		});
+	},
+
+	showScreen: function(){
+		this._super();
+		$('.item-inner').each(function() {
+			var cssClass = $(this).width() / $(this).height() > 1.5 ? 'wide' : 'square';
+			$(this).find("img").removeClass().addClass(cssClass);
+			var img = $(this).find("img")[0];
+			var divWidth = $(this).width();
+			var divHeight = $(this).height();
+			setTimeout(function(){
+				if (cssClass == 'wide'){
+					var heightOffset = ($(img).height()-divHeight)/2;
+					if (heightOffset > 0){
+						$(img).css("margin-top", heightOffset * (-1) + 'px');
+					}
+				}else{
+					var widthOffset = ($(img).width()-divWidth)/2;
+					if (widthOffset > 0){
+						$(img).css("margin-left", widthOffset * (-1) + 'px');
+					}
+				}
+
+			},100);
 		});
 	},
 	startTimer: function(){
@@ -222,6 +248,7 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 
 		});
 	},
+
 	changeMedia: function( e, data ){
 		this.stopTimer();
 		var _this = this;

@@ -146,6 +146,10 @@
       width: 25%;
       height: 25%;
    }
+	.related .featured {
+		width: 75%;
+		height: 74.8% !important;
+	}
 }
 
 @media only screen and (max-width: 1280px) and (-webkit-min-device-pixel-ratio: 2) {
