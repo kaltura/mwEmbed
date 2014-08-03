@@ -25,7 +25,6 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 		this._super();
 
 		this.bind('playerReady', $.proxy(function(){
-			this.templateData = null;
 			this.removeScreen();
 		}, this));
 
@@ -77,6 +76,7 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 
 	},
 	showScreen: function(){
+		debugger;
 		this._hideAllScreens(this.pluginName);
 		if( this.hasPreviewPlayer() ){
 			this.resizePlayer();
