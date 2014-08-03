@@ -105,11 +105,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 			_this.$playlistItemRenderer = $(itemRenderer );
 		}
 
-		// Force autoContoinue if there is no interface
-		if( !_this.includeInLayout ){
-			_this.autoContinue = true;
-		}
-
 		mw.log( "PlaylistHandlerKaltura:: got  " +  _this.playlistSet.length + ' playlists ' );
 		// Set the playlist to the first playlist
 		_this.setPlaylistIndex( 0 );
