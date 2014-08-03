@@ -76,7 +76,6 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 
 	},
 	showScreen: function(){
-		debugger;
 		this._hideAllScreens(this.pluginName);
 		if( this.hasPreviewPlayer() ){
 			this.resizePlayer();
