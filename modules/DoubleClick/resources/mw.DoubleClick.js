@@ -115,6 +115,10 @@ mw.DoubleClick.prototype = {
 				_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
 					_this.bindChromelessEvents();
 				});
+				_this.embedPlayer.bindHelper( 'volumeChanged' + this.bindPostfix, function(event, percent){
+					mw.log("DoubleClick::chromeless volumeChanged: " + percent );
+					_this.embedPlayer.setPlayerElementVolume( percent );
+				});
 				_this.addManagedBinding();
 				callback();
 				return;
