@@ -939,26 +939,18 @@
 				
 				$embedCode = $( '<div>' )
 				.append(
-					$('<span>').html( "For production embeds, " +
-						"its recommended you copy settings into your uiConf"
-					),
-					$('<br>'),
 					$('<span>').html( 
-						'Also production library urls should be used, more info on <a href="http://html5video.org/wiki/Kaltura_HTML5_Configuration#Controlling_the_HTML5_library_version_for_.com_uiConf_urls">' + 
-							'setting production library versions' + 
-						'</a>' ), 
+						'Please note, these settings can be edited with <a target="_new" href="http://knowledge.kaltura.com/universal-studio-information-guide">Universal Studio</a> and saved to player. ' + 
+						'<br>If testing integrations, you can invoke this plugin with current configuration at runtime ' + 
+						'by manipulating a <a href="http://knowledge.kaltura.com/embedding-kaltura-media-players-your-site">dynamic embed</a> retived from the KMC.' 
+					), 
 					$('<br>'),
-					$('<b>').text( "Testing embed: "),
-					$('<span>').text( "production embeds should use production script urls:"),
 					$('<pre>')
 					.addClass( 'prettyprint linenums' )
 					.text(
-						'<!-- Testing URL, production usage should use production urls! -->' + "\n"+
-						'<script src="' + currentUrl + '"></script>' + "\n\n" +
-						'<script>' + "\n" +
-						"// You can improve performance, by coping settings to your uiConf and removing this flag\n" +
-						"\t" + 'mw.setConfig(\'Kaltura.EnableEmbedUiConfJs\', true);' + "\n" +
-						'</script>' + "\n" +
+						'<!-- Subsitute ' + partner_id + ' with your partner id, ' + uiconf_id + ' with your uiconf_id -->' + "\n" + 
+						'<script src="//cdnapisec.kaltura.com/p/' + partner_id + '/sp/' + partner_id + '00/embedIframeJs/uiconf_id/' + uiconf_id + '/partner_id/' + partner_id +'">' +
+						"\n</script>\n"+
 						'<div id="' + playerId + '" ' + 
 							'style="width:' + $(kdp).width() + 'px;' + 
 								'height:' + $(kdp).height() + 'px;" ' +
@@ -1033,21 +1025,21 @@
 				// add uiConf vars
 				$.each( manifestData, function( pAttrName, attr ){
 					if( manifestData[ pAttrName ].attributes ){
-						uiText += '<Plugin id="' + pAttrName + '" ';
+						uiText += '"' + pAttrName + '": { ';
 						$.each( manifestData[ pAttrName ].attributes, function( attrName, attr){
 							if( attrName != 'plugin' && getAttrValue( attrName) !== null ){
-								uiText+= "\n\t" + attrName + '="' +  getAttrValue( attrName )  + '" ';
+								uiText+= "\n\t\"" + attrName + '" : "' +  getAttrValue( attrName )  + '" ';
 							}
 						});
-						uiText +="\n/>\n";
+						uiText +="\n}\n";
 						return true;
 					}
-					uiText += "\n" + '<var key="' + pAttrName + '" value="' + getAttrValue( pAttrName ) +'" />';
+					uiText += "\n" + '"uiVars": [{\n\t "key":"' + pAttrName + '",\n\t "value": "' + getAttrValue( pAttrName ) +'"\n}]';
 				});
 				
 				return $('<div />').append( 
-						$('<pre class="prettyprint linenums" />').text( uiText ),
-						$('<span>UiConf XML can be inserted via <a target="top" href="http://www.kaltura.org/modifying-kdp-editing-uiconf-xml">KMC api</a>:</span>') 
+						$('<span>Player JSON config can be edited via the <a target="top" href="http://player.kaltura.com/kWidget/tests/PlayerVersionUtility.html">player version utility</a>'),
+						$('<pre class="prettyprint linenums" />').text( uiText )
 					);
 			}
 			/**
@@ -1335,8 +1327,8 @@
 							$liEmbed,
 							// Disable flashvars ( not needed when we have 'embed' tab ) 
 							// '<li><a data-getter="getFlashvarConfigHTML" href="#tab-flashvars-' + id +'" data-toggle="tab">flashvars</a></li>' +
-							$('<li><a data-getter="getUiConfConfig" href="#tab-uiconf-' + id + '" data-toggle="tab">uiConf xml</a></li>'),
-							$('<li><a data-getter="getPlayerStudioLine" href="#tab-pstudio-'+ id +'" data-toggle="tab">Player Studio Line</a></li>')
+							$('<li><a data-getter="getUiConfConfig" href="#tab-uiconf-' + id + '" data-toggle="tab">JSON Config</a></li>')
+							//$('<li><a data-getter="getPlayerStudioLine" href="#tab-pstudio-'+ id +'" data-toggle="tab">Player Studio Line</a></li>')
 						),
 						$('<div class="tab-content" />').append(
 							$('<div class="tab-pane active" id="tab-docs-' + id + '" />'),
