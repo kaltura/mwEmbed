@@ -65,7 +65,8 @@ mw.EmbedPlayerKplayer = {
 		flashvars.partnerId = this.kpartnerid;
         flashvars.autoMute = this.muted || mw.getConfig( 'autoMute' );
 		flashvars.streamerType = this.streamerType;
-		flashvars.entryUrl = encodeURIComponent(this.getEntryUrl());
+		flashvars.entryUrl = encodeURIComponent( this.getEntryUrl() );
+		flashvars.isMp4 = this.isMp4Src();
 		flashvars.ks = this.getFlashvars( 'ks' );
 		flashvars.serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );
 		flashvars.b64Referrer = this.b64Referrer;
@@ -242,10 +243,16 @@ mw.EmbedPlayerKplayer = {
 		this.updateSources();
 		this.flashCurrentTime = 0;
 		this.playerObject.setKDPAttribute( 'mediaProxy', 'isLive', this.isLive() );
+		this.playerObject.setKDPAttribute( 'mediaProxy', 'isMp4', this.isMp4Src() );
 		this.playerObject.sendNotification( 'changeMedia', {
 			entryUrl: this.getEntryUrl()
 		});
 		callback();
+	},
+
+	isMp4Src: function() {
+		return  ( this.mediaElement.selectedSource &&
+			( this.mediaElement.selectedSource.getMIMEType() == 'video/mp4' || this.mediaElement.selectedSource.getMIMEType() == 'video/h264' ) );
 	},
 
 	/*
@@ -366,28 +373,12 @@ mw.EmbedPlayerKplayer = {
 				return;
 			}
 		}
-		if ( !this.firstPlay ) //we already loaded the movie
-		{
-			this.seeking = true;
-			// trigger the html5 event:
-			$( this ).trigger( 'seeking' );
+		this.seeking = true;
+		// trigger the html5 event:
+		$( this ).trigger( 'seeking' );
 
-			// Issue the seek to the flash player:
-			this.playerObject.seek( seekTime );
-
-			// Include a fallback seek timer: in case the kdp does not fire 'playerSeekEnd'
-//			var orgTime = this.flashCurrentTime;
-//			 this.seekInterval = setInterval( function(){ debugger;
-//				if( _this.flashCurrentTime != orgTime ){
-//					_this.seeking = false;
-//					clearInterval( _this.seekInterval );
-//					$( _this ).trigger( 'seeked' );
-//				}
-//			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
-		} else if ( percentage != 0 ) {
-			this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', seekTime);
-			this.playerObject.play();
-		}
+		// Issue the seek to the flash player:
+		this.playerObject.seek( seekTime );
 
 		// Run the onSeeking interface update
 		this.layoutBuilder.onSeek();
