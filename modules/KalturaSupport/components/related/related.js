@@ -59,7 +59,8 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 		// resize and crop from center all thumbnails
 		$('.item-inner').each(function() {
 			// set css class according to image aspect ratio
-			var cssClass = $(this).width() / $(this).height() > 1.5 ? 'wide' : 'square';
+			console.log( $(this).width() / $(this).height());
+			var cssClass = $(this).width() / $(this).height() > 1.45 ? 'wide' : 'square';
 			$(this).find("img").removeClass().addClass(cssClass);
 			var img = $(this).find("img")[0];
 
@@ -72,15 +73,25 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 					var heightOffset = ($(img).height()-divHeight)/2;
 					if (heightOffset > 0){
 						$(img).css("margin-top", heightOffset * (-1) + 'px');
+					}else{
+						$(img).width($(img).width()*divHeight/$(img).height());
+						$(img).height(divHeight);
+						var widthOffset = ($(img).width()-divWidth)/2;
+						$(img).css("margin-left", widthOffset * (-1) + 'px');
 					}
 				}else{
 					var widthOffset = ($(img).width()-divWidth)/2;
 					if (widthOffset > 0){
 						$(img).css("margin-left", widthOffset * (-1) + 'px');
+					}else{
+						$(img).height($(img).height()*divWidth/$(img).width());
+						$(img).width(divWidth);
+						var heightOffset = ($(img).height()-divHeight)/2;
+						$(img).css("margin-top", heightOffset * (-1) + 'px');
 					}
 				}
 
-			},100);
+			},200);
 		});
 	},
 	startTimer: function(){
