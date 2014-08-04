@@ -12,7 +12,8 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 		accessibleVolumeChange: 0.1,
 		showSlider: true,
         pinVolumeBar: false,
-		useCookie: true
+		useCookie: true,
+		 initialValue: 100//initialValue is between 0~100. if initialValue was set it will override the cookie
 
 	},
 	icons: {
@@ -26,6 +27,7 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 		var _this = this;
 		this.cookieName = this.pluginName + '_volumeValue';
 		this.bind( 'playerReady ' , function () {
+			 _this.getPlayer().setVolume( _this.getConfig( 'initialValue' ) / 100 , true );
 			if ( (_this.getConfig( 'useCookie' ) && $.cookie( _this.cookieName ) ) ) {
 				var volumeValue = parseInt( $.cookie( _this.cookieName ) );
 				if ( !isNaN( volumeValue ) &&
