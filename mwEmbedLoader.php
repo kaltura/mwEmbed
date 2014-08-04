@@ -395,6 +395,7 @@ class mwEmbedLoader {
 			'Kaltura.ServiceBase' => $wgKalturaServiceBase,
 			'Kaltura.CdnUrl' => $wgKalturaCDNUrl,
 			'Kaltura.StatsServiceUrl' => $wgKalturaStatsServiceUrl,
+			'Kaltura.LiveStatsServiceUrl'=>$wgKalturaLiveStatsServiceUrl,
 			'Kaltura.IframeRewrite' => $wgKalturaIframeRewrite,
 			'EmbedPlayer.EnableIpadHTMLControls' => $wgEnableIpadHTMLControls,
 			'EmbedPlayer.UseFlashOnAndroid' => true,
