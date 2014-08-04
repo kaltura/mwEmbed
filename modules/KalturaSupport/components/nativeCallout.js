@@ -24,7 +24,8 @@
 
 		// New "doPlay" implementation when nativeCallout plugin exist on mobile devices
 		calloutNativePlayer: function() {
-			var appstore = "http://itunes.apple.com/app/id";
+			var mediaSpaceAppstoreId = "698657294";
+			var appstore = "http://itunes.apple.com/app/id" + mediaSpaceAppstoreId;
 			var appurl = "kalturaPlayerToolkit://?iframeUrl="+ this.embedPlayer.getIframeSourceUrl();
 
 			var timeout;
