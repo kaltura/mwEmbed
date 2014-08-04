@@ -234,8 +234,15 @@
 								embedPlayer.hidePlayerOffScreen();
 								embedPlayer.addPlayerSpinner();
 
-								embedPlayer.setCurrentTime( seekPerc * embedPlayer.getDuration(), function(){
+								// on iOS player we can set current time only while playing
+								if( mw.isIOS() ) {
 									embedPlayer.play();
+								}
+
+								embedPlayer.setCurrentTime( seekPerc * embedPlayer.getDuration(), function(){
+									if( !mw.isIOS() ) {
+										embedPlayer.play();
+									}
 									embedPlayer.restorePlayerOnScreen();
 									embedPlayer.hideSpinner();
 								} );
