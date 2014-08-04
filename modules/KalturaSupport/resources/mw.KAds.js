@@ -236,6 +236,7 @@
 
 								// on iOS player we can set current time only while playing
 								if( mw.isIOS() ) {
+									mw.log( "KAds:: doneCallback:: if iOS first play then setCurrentTime");
 									embedPlayer.play();
 								}
 
