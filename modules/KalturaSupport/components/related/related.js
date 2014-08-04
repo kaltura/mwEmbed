@@ -54,13 +54,19 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 	},
 
 	showScreen: function(){
-		this._super();
+		this._super(); // this is an override of showScreen in mw.KBaseScreen.js - call super
+
+		// resize and crop from center all thumbnails
 		$('.item-inner').each(function() {
+			// set css class according to image aspect ratio
 			var cssClass = $(this).width() / $(this).height() > 1.5 ? 'wide' : 'square';
 			$(this).find("img").removeClass().addClass(cssClass);
 			var img = $(this).find("img")[0];
-			var divWidth = $(this).width();
-			var divHeight = $(this).height();
+
+			var divWidth = $(this).width();    // save img div container width for cropping logic
+			var divHeight = $(this).height();  // save img div container height for cropping logic
+
+			// crop image from center. use a timeout to make sure the image is already resized before changing its margins
 			setTimeout(function(){
 				if (cssClass == 'wide'){
 					var heightOffset = ($(img).height()-divHeight)/2;
