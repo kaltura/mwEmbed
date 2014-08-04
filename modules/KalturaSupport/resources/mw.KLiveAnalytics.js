@@ -5,8 +5,14 @@
 	"use strict";
 
 	mw.PluginManager.add( 'liveAnalytics' , mw.KBasePlugin.extend( {
+
+			defaultConfig: {
+				'forceLoad': false
+			},
+
 			bufferTime : 0,
 			eventIndex :1,
+			currentBitRate:-1,
 			setup: function( ) {
 			   var _this = this;
 				_this.removeBindings( );
@@ -14,6 +20,7 @@
 			   	    if ( _this.embedPlayer.isLive() || true ) {
 				        _this.eventIndex = 1;
 				        _this.bufferTime = 0;
+				        _this.currentBitRate = -1;
 						_this.addBindings();
 					}
 				} );
@@ -35,6 +42,12 @@
 					_this.calculateBuffer();
 					_this.bufferStartTime = null;
 				});
+				this.bind( 'SourceChange' ,function(){
+					if ( _this.embedPlayer.mediaElement.selectedSource ){
+						_this.currentBitRate = _this.embedPlayer.mediaElement.selectedSource.bandwidth;
+						_this.deliveryMethod =   _this.embedPlayer.mediaElement.selectedSource.
+					}
+				} );
 			},
 			calculateBuffer : function ( closeSession ){
 				var _this = this;
@@ -54,10 +67,6 @@
 			},
 			removeBindings : function (  ){
 				this.unbind( "" );
-			},
-			getCurrentBitRate : function (){
-				//TODO
-				return -1;
 			},
 			stopLiveEvents :function(){
 				var _this = this;
@@ -87,10 +96,10 @@
 					'sessionID'   : _this.embedPlayer.evaluate('{configProxy.sessionId}'),
 					'eventIndex'  : _this.eventIndex,
 					'bufferTime'  : _this.bufferTime,
-					'bitrate'     : _this.getCurrentBitRate(),
+					'bitrate'     : _this.currentBitRate,
 					'referrer'    :  encodeURIComponent( mw.getConfig('EmbedPlayer.IframeParentUrl') ),
 					'isLive'      :  1,
-					'deliveryType': _this.getCurrentDeliveryMethod
+					'deliveryType': _this.deliveryMethod
 				};
 				var eventRequest = {'service' : 'LiveStats', 'action' : 'collect'};
 				$.each(liveStatsEvent , function (index , value) {

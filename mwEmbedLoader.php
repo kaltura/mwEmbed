@@ -380,7 +380,7 @@ class mwEmbedLoader {
 	private function getExportedConfig(){
 		global $wgEnableScriptDebug, $wgResourceLoaderUrl, $wgMwEmbedVersion, $wgMwEmbedProxyUrl, $wgKalturaUseManifestUrls,
 			$wgKalturaUseManifestUrls, $wgHTTPProtocol, $wgKalturaServiceUrl, $wgKalturaServiceBase,
-			$wgKalturaCDNUrl, $wgKalturaStatsServiceUrl, $wgKalturaIframeRewrite, $wgEnableIpadHTMLControls,
+			$wgKalturaCDNUrl, $wgKalturaStatsServiceUrl,$wgKalturaLiveStatsServiceUrl, $wgKalturaIframeRewrite, $wgEnableIpadHTMLControls,
 			$wgKalturaAllowIframeRemoteService, $wgKalturaUseAppleAdaptive, $wgKalturaEnableEmbedUiConfJs,
 			$wgKalturaGoogleAnalyticsUA;
 		$exportedJS ='';
