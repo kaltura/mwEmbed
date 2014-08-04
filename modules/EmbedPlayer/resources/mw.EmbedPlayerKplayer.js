@@ -438,6 +438,9 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onSwitchingChangeComplete: function ( data, id ) {
+		if (data && data.newBitrate) {
+			this.triggerHelper( 'bitrateChange' , data.newBitrate );
+		}
 		this.mediaElement.setSourceByIndex ( data.newIndex );
 	},
 

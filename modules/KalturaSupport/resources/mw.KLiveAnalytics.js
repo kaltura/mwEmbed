@@ -17,7 +17,7 @@
 			   var _this = this;
 				_this.removeBindings( );
 				this.embedPlayer.bindHelper( 'playerReady' , function () {
-			   	    if ( _this.embedPlayer.isLive() || true ) {
+			   	    if ( _this.embedPlayer.isLive() || _this.getConfig('forceLoad') ) {
 				        _this.eventIndex = 1;
 				        _this.bufferTime = 0;
 				        _this.currentBitRate = -1;
@@ -42,11 +42,8 @@
 					_this.calculateBuffer();
 					_this.bufferStartTime = null;
 				});
-				this.bind( 'SourceChange' ,function(){
-					if ( _this.embedPlayer.mediaElement.selectedSource ){
-						_this.currentBitRate = _this.embedPlayer.mediaElement.selectedSource.bandwidth;
-						_this.deliveryMethod =   _this.embedPlayer.mediaElement.selectedSource.
-					}
+				this.bind( 'bitrateChange' ,function(event,newBitrate){
+					_this.currentBitRate = newBitrate;
 				} );
 			},
 			calculateBuffer : function ( closeSession ){
@@ -99,7 +96,7 @@
 					'bitrate'     : _this.currentBitRate,
 					'referrer'    :  encodeURIComponent( mw.getConfig('EmbedPlayer.IframeParentUrl') ),
 					'isLive'      :  1,
-					'deliveryType': _this.deliveryMethod
+					'deliveryType': _this.embedPlayer.streamerType
 				};
 				var eventRequest = {'service' : 'LiveStats', 'action' : 'collect'};
 				$.each(liveStatsEvent , function (index , value) {
