@@ -89,7 +89,7 @@
 				var liveStatsEvent = {
 					'entryID'     : _this.embedPlayer.kentryid,
 					'partnerID'   : _this.embedPlayer.kpartnerid,
-					'eventType '  :  1,
+					'eventType'  :  1,
 					'sessionID'   : _this.embedPlayer.evaluate('{configProxy.sessionId}'),
 					'eventIndex'  : _this.eventIndex,
 					'bufferTime'  : _this.bufferTime,

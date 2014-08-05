@@ -7,27 +7,43 @@
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 <script type="text/javascript">
 function jsKalturaPlayerTest( videoId ){
-	
-	// Name this module
-	module( "Use HLS Where Available" );
+    var kdp = document.getElementById( videoId );
+
+    // Name this module
+	module( "KLiveAnalytics" );
 	
 	var $iframe = $( '#' + videoId + '_ifp' ).contents();
-	
+	var index = 1;
 	asyncTest("HLS test", function(){
-		var dummyvid = document.createElement( "video" );
-		// check if the browser can even support HLS: 
-		if( mw.isIOS() || dummyvid.canPlayType('application/vnd.apple.mpegurl; codecs="avc1.42E01E"' ) ){
-			kalturaQunitWaitForPlayer(function(){
-				var player = $iframe.find('#kaltura_player')[0];
-				var selectedSource = player.mediaElement.selectedSource;
-				equal( selectedSource.mimeType, "application/vnd.apple.mpegurl", 
-						"Adaptive stream selected, content duration:" + player.getDuration() );
-				start();
-			});
-		} else {
-			ok( true, "This test only applies to HLS enabled browsers");
-			start();
-		}
+		kdp.kBind("playerReady",function(){
+            kdp.sendNotification("doPlay");
+        });
+        kdp.kBind( 'liveAnalyticsEvent' , function ( data ) {
+            var shouldBe = {bitrate: -2,
+                bufferTime: -2 ,
+                deliveryType: "hls" ,
+                entryID: "1_bhej6q2a",
+                eventIndex: index ,
+                eventType: 1 ,
+                isLive: 1   ,
+                partnerID: 243342 ,
+                referrer: -2,
+                sessionID: -2
+            };
+            $.each(shouldBe , function (index,value){
+                if ( value == -2){
+                    ok(data[index]!== null,"on index:" + index + "expected: not null"  + " but" + data[index]);
+
+                } else {
+                    ok( data[index] === shouldBe[index] , "on index:" + index + "expected:" + shouldBe[index] + " but" + data[index] );
+                }
+            });
+            index ++;
+
+        });
+        setTimeout(function(){
+            start();
+        },30000)
 	});
 }
 
@@ -42,15 +58,18 @@ function jsKalturaPlayerTest( videoId ){
 <br />
 <div id="kaltura_player" style="width:400px;height:333px;"></div>
 <script>
+    mw.setConfig("LeadWithHLSOnFlash",true);
 	kWidget.embed( {
 		'targetId' :'kaltura_player',
 		'wid': '_243342',
 		'uiconf_id' : '12905712',
-		'entry_id': '0_uka1msg4',
+		'entry_id': '1_bhej6q2a',
 		'flashvars': {
             "liveAnalytics":{
                 "plugin":true
-            }
+            },
+            "liveCore":{"plugin":true,"disableLiveCheck":true} ,
+            "liveStatus":{"plugin":false}
 
 		}
 	});

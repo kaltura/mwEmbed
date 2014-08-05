@@ -90,6 +90,7 @@ mw.EmbedPlayerKplayer = {
 			flashvars.sourceType = 'url';
 			flashvars.ignoreStreamerTypeForSeek = true;
 			flashvars.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
+			this.streamerType = "hls";
 		}
 
 		//will contain flash plugins we need to load
