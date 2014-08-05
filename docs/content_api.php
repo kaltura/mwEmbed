@@ -487,7 +487,7 @@ new kWidget.api( { 'wid' : '_243342', })
 </div>
 
 <a name="uiVars"></a>
-<h2>Using UIVars</h2>
+<h2>UIVars</h2>
 <p>To simplify the management of many of the player features, Kaltura has implemented “UIVars” to override and configure the player features.</p>
 <p>Kaltura UIVars are an incredibly powerful feature of the Kaltura Players that allow publishers to pre-set or override the value of any FlashVar (object level parameters), show, hide and disable existing UI elements, add new plugins and UI elements to an existing player, and modify attributes of all the player's elements.</p>
 <p>FlashVars are configuration variables that are used in the Kaltura Player in the HTML embed code and work for “regular” static embed, server-generated embed or JavaScript-generated embed code.</p>
@@ -495,28 +495,28 @@ new kWidget.api( { 'wid' : '_243342', })
 <br>
 <h5>Connecting to the Kaltura Services:</h5>
 <div class="docblock">
-	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVars1 ) ?>
+	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVarsServices ) ?>
 </div><br><br>
 <h5>Kaltura MediaEntry:</h5>
 <div class="docblock">
-	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVars2 ) ?>
+	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVarsMediaEntry ) ?>
 </div><br><br>
 <h5>Player Layout and Functionality:</h5>
 <div class="docblock">
-	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVars3 ) ?>
+	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVarsLayout ) ?>
 </div><br><br>
 <h5>Playback Control:</h5>
 <div class="docblock">
-	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVars4 ) ?>
+	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVarsPlayback ) ?>
 </div><br><br>
 <h5>Player Properties:</h5>
 <div class="docblock">
-	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVars5 ) ?>
+	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVarsPlayerProperties ) ?>
 </div><br><br>
 <h5>MediaProxy:</h5>
 <p>The MediaProxy object is responsible for referencing and loading of the current playing media.</p>
 <div class="docblock">
-	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVars6 ) ?>
+	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVarsMediaProxy ) ?>
 </div><br><br>
 <h5>KDP Components & Plugins:</h5>
 <p>Using a standard OOP dot notation, each KDP component and plugin attribute can be overridden via Flashvars: objectId.parameter=value.<br>For example, to set the playlist to load automatically, pass the following Flashvar: playlistAPI.autoPlay=true</p><br><br>

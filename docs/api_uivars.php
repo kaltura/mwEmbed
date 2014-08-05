@@ -1,5 +1,5 @@
 <?php
-	$uiVars1 = array(
+	$uiVarsServices = array(
         /*'Kaltura.ServiceUrl' => array(
             'type' => 'String',
             'desc' => '',
@@ -212,7 +212,7 @@
         )
     );
 
-	$uiVars2 = array(
+	$uiVarsMediaEntry = array(
         'entryId' => array(
             'type' => 'String',
             'desc' => 'Valid Kaltura media entry id or a media URL (to use URL set sourceType=URL)',
@@ -310,7 +310,7 @@
         )
     );
 
-	$uiVars3 = array(
+	$uiVarsLayout = array(
         'widgetId' => array(
             'type' => 'String',
             'desc' => 'The widget id as provided by Preview & Embed in KMC (if unsure use _partnerId e.g. _309)',
@@ -419,7 +419,7 @@
         )
     );
 
-	$uiVars4 = array(
+	$uiVarsPlayback = array(
         'autoPlay' => array(
             'type' => 'Boolean',
             'desc' => "Auto play single media (doesn't apply to playlists)",
@@ -458,7 +458,7 @@
         )
     );
 
-	$uiVars5 = array(
+	$uiVarsPlayerProperties = array(
         /*'EmbedPlayer.IsIframeServer' => array(
             'type' => '',
             'desc' => "",
@@ -743,7 +743,7 @@
         )
     );
 
-	$uiVars6 = array(
+	$uiVarsMediaProxy = array(
         'mediaProxy.selectedFlavorId' => array(
             'type' => 'String',
             'desc' => 'The transcoding flavor currently playing. A valid id of a transcoding flavor associated with Kaltura entry currently being played',
