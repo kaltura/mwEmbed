@@ -31,7 +31,8 @@
 					'minimumSequenceDuration': 2
 				},
 				'touchMenuFadeout' : 3000,
-				'cuePointType': ['thumbCuePoint.Thumb']
+				'cuePointType': ['thumbCuePoint.Thumb'],
+				'mainViewDisplay': 2 // 1 - Main stream, 2 - Presentation
 			},
 			monitor: {},
 			controlBar: {},
@@ -62,7 +63,23 @@
 				this.initMonitors();
 			},
 			isSafeEnviornment: function(){
-				return !mw.isIphone();
+				var _this = this;
+				var cuePointsExist = false;
+				if (this.getPlayer().kCuePoints){
+					var cuePoints = this.getPlayer().kCuePoints.getCuePoints();
+					var filteredCuePoints = $.grep(cuePoints, function(cuePoint){
+						var found = false;
+						$.each(_this.getConfig('cuePointType'), function(i, cuePointType){
+							if (cuePointType == cuePoint.cuePointType) {
+								found = true;
+								return false;
+							}
+						});
+						return found;
+					});
+					cuePointsExist =  (filteredCuePoints.length > 0) ? true : false;
+				}
+				return !mw.isIphone() && cuePointsExist;
 			},
 			initConfig: function () {
 				var _this = this;
@@ -252,11 +269,8 @@
 			addBindings: function () {
 				var _this = this;
 				this.bind( 'playerReady', function ( e, newState ) {
-
 					_this.originalWidth = _this.getPlayer().getPlayerWidth();
 					_this.originalHeight = _this.getPlayer().getPlayerHeight();
-
-
 
 					var primaryScreen = _this.monitor[_this.TYPE.PRIMARY].obj = _this.getPlayer().getVideoDisplay();
 					var secondaryScreen = _this.monitor[_this.TYPE.SECONDARY].obj = _this.getComponent();
@@ -287,6 +301,10 @@
 
 					_this.getSecondMonitor().prop = secondaryScreen.css(['top', 'left', 'width', 'height']);
 					_this.getSecondMonitor().obj.css(_this.getSecondMonitor().prop);
+					if (_this.getConfig("mainViewDisplay") == 2) {
+						_this.fsm.consumeEvent( "switch" );
+					}
+
 				} );
 
 				this.bind( 'onOpenFullScreen', function ( ) {
@@ -350,9 +368,8 @@
 				this.bind( 'seeked', function () {
 					//_this.cancelPrefetch();
 					var cuePoint = _this.getCurrentCuePoint();
-
 					_this.sync( cuePoint);
-				} )
+				} );
 
 				this.bind( 'KalturaSupport_ThumbCuePointsReady', function ( ) {
 					var cuePoints = _this.getPlayer().kCuePoints.getCuePoints();
