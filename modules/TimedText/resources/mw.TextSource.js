@@ -220,7 +220,6 @@
 			$( xml ).find( 'style').each( function( inx, style){
 				var styleId =  $(style).attr('id') || $(style).attr('xml:id')
 				if ( styleId ) {
-					// for(var i =0; i< style.length )
 					var cssObject = {};
 					_this.buildStyleCss( style, cssObject );
 					_this.styleCss[ styleId ] = cssObject;
