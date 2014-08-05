@@ -19,7 +19,8 @@
 					//'animate': true,
 					'maxWidth': 40,
 					'aspectRatio': true,
-					'minWidth': 100
+					'minWidth': 100,
+					'containment': 'parent'
 				},
 				'draggable': {
 					'cursor': 'move',
