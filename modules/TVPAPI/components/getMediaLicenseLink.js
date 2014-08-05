@@ -72,7 +72,7 @@
 				}
 
 				$.ajax({
-					url: "http://tvpapi.as.tvinci.com/V2_4/gateways/jsonpostgw.aspx?m=GetMediaLicenseLink",
+					url: "http://tvpapi-stg.as.tvinci.com/v2_6/gateways/jsonpostgw.aspx?m=GetMediaLicenseLink",
 					type: "POST",
 					dataType: "json",
 					contentType: "application/json",

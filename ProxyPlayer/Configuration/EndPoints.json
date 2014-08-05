@@ -14,7 +14,7 @@
 		"services": ["multirequest"],
 		"token": "1:filter:freeText",
 		"decodeToken": true,
-		"redirectTo": "http://tvpapi.as.tvinci.com/V2_4/gateways/jsonpostgw.aspx?m=GetMediaInfo",
+		"redirectTo": "http://tvpapi-stg.as.tvinci.com/v2_6/gateways/jsonpostgw.aspx?m=GetMediaInfo",
 		"method": "POST",
 		"type": "rest",
 		"dataStores": {
@@ -28,7 +28,7 @@
 		"services": ["multirequest"],
 		"token": "1:filter:freeText",
 		"decodeToken": true,
-		"redirectTo": "http://tvpapi.as.tvinci.com/V2_4/gateways/jsonpostgw.aspx?m=GetGroupMediaRules",
+		"redirectTo": "http://tvpapi-stg.as.tvinci.com/v2_6/gateways/jsonpostgw.aspx?m=GetGroupMediaRules",
 		"method": "POST",
 		"type": "rest",
 		"dataStores": {
@@ -39,7 +39,7 @@
 		"services": ["multirequest"],
 		"token": "1:filter:freeText",
 		"decodeToken": true,
-		"redirectTo": "http://tvpapi.as.tvinci.com/V2_4/gateways/jsonpostgw.aspx?m=GetMediaMark",
+		"redirectTo": "http://tvpapi-stg.as.tvinci.com/v2_6/gateways/jsonpostgw.aspx?m=GetMediaMark",
 		"method": "POST",
 		"type": "rest",
 		"dataStores": {
@@ -50,7 +50,7 @@
 		"services": ["multirequest"],
 		"token": "1:filter:freeText",
 		"decodeToken": true,
-		"redirectTo": "http://tvpapi.as.tvinci.com/V2_4/gateways/jsonpostgw.aspx?m=GetSecuredSiteGuid",
+		"redirectTo": "http://tvpapi-stg.as.tvinci.com/v2_6/gateways/jsonpostgw.aspx?m=GetSecuredSiteGuid",
 		"method": "POST",
 		"type": "rest",
 		"dataStores": {
