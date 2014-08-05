@@ -2891,7 +2891,9 @@
 				this.buffering  = true;
 				mw.log("EmbedPlayer::bufferStart");
 				$( this ).trigger( 'bufferStartEvent' );
-				this.addPlayerSpinner();
+				if ( !mw.getConfig( 'EmbedPlayer.DisableBufferingSpinner' ) ) {
+					this.addPlayerSpinner();
+				}
 			}
 
 		},
@@ -2901,7 +2903,9 @@
 				this.buffering = false;
 				mw.log("EmbedPlayer::bufferEnd");
 				$( this ).trigger( 'bufferEndEvent' );
-				this.hideSpinner();
+				if ( !mw.getConfig( 'EmbedPlayer.DisableBufferingSpinner' ) ) {
+					this.hideSpinner();
+				}
 			}
 		}
 	};
