@@ -1177,9 +1177,6 @@
 					embedPlayer.disablePlayControls();
 					}
 					break;
-				case 'switchAudioTrack':
-					embedPlayer.switchAudioTrack( notificationData.index );
-					break;
 				default: 
 					// custom notification
 					$( embedPlayer ).trigger( notificationName, [notificationData] );

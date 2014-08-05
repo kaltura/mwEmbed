@@ -14,7 +14,8 @@
 			"useCookie": true,
 			"hideWhenEmpty": false,
 			"showEmbeddedCaptions": false,
-			"hideClosedCaptions": false
+			"hideClosedCaptions": false,
+			"showEmbeddedCaptionsStyle": false
 		},
 
 		textSources: [],
@@ -35,6 +36,14 @@
 			}
 
 			if ( this.getConfig('showEmbeddedCaptions') === true ) {
+				if ( this.getConfig('showEmbeddedCaptionsStyle') === true ) {
+					this.bind( 'textTrackIndexChanged', function( e, captionData ) {
+						if ( captionData.ttml ) {
+							var xml =  $.parseXML( mw.html.unescape( decodeURIComponent( captionData.ttml ) ));
+							_this.selectedSource.parseStylesTTML( xml );
+						}
+					});
+				}
 				this.bind( 'onEmbeddedData', function( e, captionData ) {
 					//remove old captions
 					var $tracks = _this.embedPlayer.getInterface().find( '.track' );
@@ -44,14 +53,29 @@
 						}
 					});
 					if ( _this.getConfig( 'displayCaptions' ) === true ) {
-						_this.addCaption( captionData.source, captionData.capId, captionData.caption );
+						var caption = captionData;
+						//if we got raw ttml <p>
+						if ( captionData.ttml ) {
+							var xml =  $.parseXML( mw.html.unescape( decodeURIComponent( captionData.ttml ) ));
+							caption.caption = _this.selectedSource.parseCaptionObjTTML( $(xml).find( 'p' )[0] );
+						}
+						if ( !_this.selectedSource ) {
+							_this.selectedSource = caption.source;
+						}
+						_this.addCaption( _this.selectedSource, caption.capId, caption.caption );
 					}
+				});
+				this.bind( 'changedClosedCaptions', function () {
+					_this.getPlayer().triggerHelper('newClosedCaptionsData');
+					//remove old captions
+					_this.embedPlayer.getInterface().find( '.track' ).empty();
+					_this.getPlayer().triggerHelper( 'changeEmbeddedTextTrack', _this.selectedSource );
 				});
 			} else {
 				this.bind( 'playerReady', function(){
 					_this.destory();
 					_this.setupTextSources(function(){
-						_this.buildMenu();
+						_this.buildMenu( _this.textSources );
 					});
 				});
 				this.bind( 'timeupdate', function(){
@@ -60,6 +84,20 @@
 					}
 				});
 			}
+
+			this.bind( 'textTracksReceived', function( e, data ){
+				if ( data && data.languages ) {
+					_this.destory();
+					var newSources = [];
+					$.each( data.languages, function( inx, src ){
+						var source =  new mw.TextSource( $.extend( { srclang: src.label }, src ) );
+						//no need to load embedded captions
+						source.loaded = true;
+						newSources.push( source );
+					});
+					_this.buildMenu( newSources );
+				}
+			});
 
 			this.bind( 'onplay', function(){
 				_this.playbackStarted = true;
@@ -359,7 +397,6 @@
 					addedCaption = true;
 				}
 			});
-
 			// hide captions that are off:
 			_this.embedPlayer.getInterface().find( '.track' ).each(function( inx, caption){
 				if( !activeCaptions[ $( caption ).attr('data-capId') ] ){
@@ -583,14 +620,14 @@
 			}));
 			return baseCss;
 		},
-		buildMenu: function(){
+		buildMenu: function( sources ){
 			var _this = this;
 
 			// Destroy the old menu
 			this.getMenu().destroy();
 
 			// Check if we even have textSources
-			if( this.textSources.length == 0 ){
+			if( sources == 0 ){
 				if( this.getConfig('hideWhenEmpty') === true ) {
 					this.getBtn().hide();
 				}
@@ -619,7 +656,7 @@
 			});
 
 			// Add text sources
-			$.each(this.textSources, function( idx, source ){
+			$.each(sources, function( idx, source ){
 				_this.getMenu().addItem({
 					'label': source.label,
 					'callback': function(){
