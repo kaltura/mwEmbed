@@ -46,6 +46,14 @@ window['kRunFlashTests'] = false;
 if( document.URL.indexOf('runFlashQunitTests') != -1 ){
 	window['kRunFlashTests'] = true;
 }
+// check for only display player flag: 
+if( document.URL.indexOf( 'onlyDisplayPlayer') != -1  ){
+	qunitWaitForJQuery( function(){
+		jQuery( document ).ready( function(){
+			$('h1,h2,h3,h4,h5,h6,#kdoc-more-desc').hide();
+		})
+	});
+}
 
 // Check for the url for runQunitTests argument
 if( document.URL.indexOf('runQunitTests') != -1 || document.URL.indexOf('runFlashQunitTests') != -1 ){
