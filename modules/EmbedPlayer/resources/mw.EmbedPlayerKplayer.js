@@ -92,6 +92,10 @@ mw.EmbedPlayerKplayer = {
 			flashvars.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
 		}
 
+		if ( this.live && this.streamerType == 'rtmp' && !this.cancelLiveAutoPlay ) {
+			flashvars.autoPlay = true;
+		}
+
 		//will contain flash plugins we need to load
 		var kdpVars = this.getKalturaConfig( 'kdpVars', null );
 		$.extend ( flashvars, kdpVars );
@@ -112,7 +116,8 @@ mw.EmbedPlayerKplayer = {
 				'enableGui' : 'onEnableGui'  ,
 				'liveStreamOffline': 'onLiveEntryOffline',
 				'liveStreamReady': 'onLiveStreamReady',
-				'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions'
+				'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions',
+				'bufferChange': 'onBufferChange'
 			};
 			_this.playerObject = this.getElement();
 			$.each( bindEventMap, function( bindName, localMethod ) {
@@ -122,10 +127,7 @@ mw.EmbedPlayerKplayer = {
 				_this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', _this.startTime );
 			}
 			readyCallback();
-			if ( _this.live && _this.cancelLiveAutoPlay ){
-				_this.playerObject.setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'false');
-				_this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus': false } );
-			}
+
 			if (mw.getConfig( 'autoMute' )){
 				_this.triggerHelper("volumeChanged",0);
 			}
@@ -224,11 +226,12 @@ mw.EmbedPlayerKplayer = {
 		else if ( this.live && this.streamerType == 'rtmp' ){
 			var _this = this;
 
-			//in this case Flash player will determine when live is on air
-			if ( ! this.autoplay ) {
+			if ( ! this.autoplay ) { //not a real "autoPlay", just to enable live checks
 				this.autoplay = true;
 				//cancel the autoPlay once Flash starts the live checks
 				this.cancelLiveAutoPlay = true;
+			} else if ( this.playerObject ) {
+				this.playerObject.setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'true');
 			}
 			//with rtmp the first seconds look offline, delay the "offline" message
 			this.setKDPAttribute('liveCore', 'offlineAlertOffest', this.LIVE_OFFLINE_ALERT_TIMEOUT);
@@ -461,11 +464,13 @@ mw.EmbedPlayerKplayer = {
 		if ( this.streamerType == 'rtmp' ) {
 			//first time the livestream is ready
 			this.hideSpinner();
+			this.playerObject.setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'false');  //reset property for next media
 			this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : true } );
 			if ( this.cancelLiveAutoPlay ) {
 				this.cancelLiveAutoPlay = false;
+				this.autoplay = false;
 				//fix misleading player state after we cancelled autoplay
-				$( this ).trigger( "onpause" );
+				this.pause();
 			}
 		}
 	},
@@ -492,6 +497,17 @@ mw.EmbedPlayerKplayer = {
 		} else {
 			this.enablePlayControls();
 		}			
+	},
+
+	onBufferChange: function ( buffering ) {
+		//vod buffer is already being monitored by EmbedPlayer.js
+		if ( this.isLive() ) {
+			if ( buffering ) {
+				this.bufferStart();
+			} else {
+				this.bufferEnd();
+			}
+		}
 	},
 
 	/**
