@@ -15,6 +15,7 @@
 		//counter for listneres function names, in case we want to subscribe more than one func to the same kdp notification
 		listenerCounter: 0,
 		targetObj: null,
+		initialized: false,
 
 		/**
 		 * initialize the class, creates flash embed
@@ -55,43 +56,46 @@
 			// var kdpPath = "http://localhost/chromeless-kdp/KDP3/bin-debug/kdp3.swf";
 
 			window[this.jsReadyFunName] = function( playerId ){
-				// We wrap everything in setTimeout to avoid Firefox race condition with empty cache
-				setTimeout(function(){
-					_this.playerElement = $('#' + playerId )[0];
+				if (!_this.initialized) {
+					_this.initialized = true;
+					// We wrap everything in setTimeout to avoid Firefox race condition with empty cache
+					setTimeout( function () {
+						_this.playerElement = $( '#' + playerId )[0];
 
-					//if this is the target object: add event listeners
-					//if a different object is the target: it should take care of its listeners (such as embedPlayerKPlayer)
-					if ( !_this.targetObj ) {
-						_this.targetObj = _this;
+						//if this is the target object: add event listeners
+						//if a different object is the target: it should take care of its listeners (such as embedPlayerKPlayer)
+						if ( !_this.targetObj ) {
+							_this.targetObj = _this;
 
-						var bindEventMap = {
-							'playerPaused' : 'onPause',
-							'playerPlayed' : 'onPlay',
-							'durationChange' : 'onDurationChange',
-							'playerPlayEnd' : 'onClipDone',
-							'playerUpdatePlayhead' : 'onUpdatePlayhead',
-							'playerSeekEnd': 'onPlayerSeekEnd',
-							'alert': 'onAlert',
-							'mute': 'onMute',
-							'unmute': 'onUnMute',
-							'volumeChanged': 'onVolumeChanged'
-						};
+							var bindEventMap = {
+								'playerPaused': 'onPause',
+								'playerPlayed': 'onPlay',
+								'durationChange': 'onDurationChange',
+								'playbackComplete': 'onClipDone',
+								'playerUpdatePlayhead': 'onUpdatePlayhead',
+								'playerSeekEnd': 'onPlayerSeekEnd',
+								'alert': 'onAlert',
+								'mute': 'onMute',
+								'unmute': 'onUnMute',
+								'volumeChanged': 'onVolumeChanged'
+							};
 
-						$.each( bindEventMap, function( bindName, localMethod ) {
-							_this.bindPlayerFunction(bindName, localMethod);
-						});
-					}
+							$.each( bindEventMap, function ( bindName, localMethod ) {
+								_this.bindPlayerFunction( bindName, localMethod );
+							} );
+						}
 
-					//imitate html5 video readyState
-					_this.readyState = 4;
-					// Run ready callback
-					if( $.isFunction( readyCallback ) ){
-						readyCallback.apply( _this );
-					}
+						//imitate html5 video readyState
+						_this.readyState = 4;
+						// Run ready callback
+						if ( $.isFunction( readyCallback ) ) {
+							readyCallback.apply( _this );
+						}
 
-					//notify player is ready
-					$( _this ).trigger('playerJsReady');
-				},0);
+						//notify player is ready
+						$( _this ).trigger( 'playerJsReady' );
+					}, 0 );
+				}
 			};
 
 			// attributes and params:
@@ -237,6 +241,17 @@
 		onVolumeChanged: function ( data ) {
 			this.volume = data.newVolume;
 			$( this).trigger( 'volumechange' );
+		},
+		redrawObject: function ( timeout ) {
+			var _this = this;
+			//by default we will wait 250 ms
+			if ( !timeout ) {
+				timeout = 250;
+			}
+			this.playerElement.style.width = "99%";
+			setTimeout( function() {
+				_this.playerElement.style.width = "100%";
+			}, timeout );
 		}
 	});
 

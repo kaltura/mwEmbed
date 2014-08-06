@@ -43,6 +43,9 @@ mw.EmbedPlayerNative = {
 
 	keepNativeFullScreen: false,
 
+	// Flag for ignoring double play on iPhone
+	playing: false,
+
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
 	nativeEvents : [
@@ -188,7 +191,7 @@ mw.EmbedPlayerNative = {
 		this.ignoreNextNativeEvent = true;
 		
 		// empty out any existing sources:
-		if( vid ) {
+		if( vid && !mw.isIphone() ) {  //if track element attached for iphone it won't be deleted
 			$( vid ).empty();
 		}
 
@@ -320,8 +323,10 @@ mw.EmbedPlayerNative = {
 		}
 
 		// Some mobile devices ( iOS need a load call before play will work )
+		// support is only for iOS5 and upper, this fix is relevant only for iPad iOS5
 		// other mobile devices ( android 4, break if we call load at play time )
-		if ( !_this.loop && mw.isIOS() ) {
+		if ( !_this.loop &&
+			( mw.isIphone() || ( mw.isIpad() && mw.isIOS5() ) ) ) {
 			mw.log("EmbedPlayerNative::postEmbedActions: issue .load() call");
 			vid.load();
 		}
@@ -425,8 +430,12 @@ mw.EmbedPlayerNative = {
 				} else {
 					// continue to playback ( in a non-blocking call to avoid synchronous pause event ) 
 					setTimeout(function(){
-						_this.play();
-					},0)
+						if ( !_this.stopPlayAfterSeek ) {
+							mw.log( "EmbedPlayerNative::sPlay after seek" );
+							_this.play();
+							_this.stopPlayAfterSeek = false;
+						}
+					},0);
 				}
 			} );
 		}
@@ -534,6 +543,11 @@ mw.EmbedPlayerNative = {
 		seekTime = parseFloat( seekTime );
 		mw.log( "EmbedPlayerNative:: setCurrentTime seekTime:" + seekTime + ' count:' + callbackCount );
 		var vid = this.getPlayerElement();
+
+		if (this.currentState == "end" && mw.isIphone() ) {
+			vid.play();
+			this.playing = true;
+		}
 		
 		// some initial calls to prime the seek: 
 		if( callbackCount == 0 && vid.currentTime == 0 ){
@@ -784,7 +798,11 @@ mw.EmbedPlayerNative = {
 				vid.removeAttribute('controls');
 
 				// dissable seeking ( if we were in a seeking state before the switch )
-				_this.seeking = false;
+				if( _this.isFlavorSwitching ) {
+					_this.seeking = true;
+				} else {
+					_this.seeking = false;
+				}
 
 				// Workaround for 'changeMedia' on Android & iOS
 				// When changing media and not playing entry before spinner is stuck on black screen
@@ -797,6 +815,10 @@ mw.EmbedPlayerNative = {
 
 				// empty out any existing sources:
 				$( vid ).empty();
+
+				if( mw.isIpad() ) {
+					vid.load();
+				}
 
 				if ( mw.isIOS7() ){
 					vid.src = null;
@@ -996,7 +1018,9 @@ mw.EmbedPlayerNative = {
 					// update the preload attribute to auto
 					$( _this.getPlayerElement() ).attr('preload',"auto" );
 					// issue a play request
-					_this.getPlayerElement().play();
+					if( !_this.playing ) {
+						_this.getPlayerElement().play();
+					}
 					// re-start the monitor:
 					_this.monitor();
 				}
@@ -1214,6 +1238,7 @@ mw.EmbedPlayerNative = {
 				return ;
 			}
 			this.seeking = false;
+			this.isFlavorSwitching = false;
 			if( this._propagateEvents ){
 				mw.log( "EmbedPlayerNative:: trigger: seeked" );
 				this.triggerHelper( 'seeked' );
@@ -1230,6 +1255,7 @@ mw.EmbedPlayerNative = {
 	*/
 	_onpause: function(){
 		var _this = this;
+		this.playing = false;
 		if( this.ignoreNextNativeEvent ){
 			this.ignoreNextNativeEvent = false;
 			return ;
@@ -1366,11 +1392,32 @@ mw.EmbedPlayerNative = {
 			}
 		}, 3000);
 	},
+
+	/**
+	 * buffer under-run
+	 * @private
+	 */
+	_onwaiting: function () {
+		//vod buffer events are being handled by EmbedPlayer.js
+		if ( this.isLive() ) {
+			this.bufferStart();
+		}
+	},
+
+	_oncanplay: function ( event ) {
+		if ( this.isLive() && this.buffering ) {
+			this.bufferEnd();
+		}
+	},
 	/**
 	 * Local onClip done function for native player.
 	 */
 	onClipDone: function(){
 		this.parent_onClipDone();
+
+		if( mw.isIphone() && !this.loop ) {
+			$( this ).trigger( 'onEndedDone' );
+		}
 
 		// Don't run onclipdone if _propagateEvents is off
 		if( !this._propagateEvents ){
@@ -1431,7 +1478,7 @@ mw.EmbedPlayerNative = {
 	 * @returns {boolean} true if seek event is fake, false if valid
 	 */
 	isFakeHlsSeek: function() {
-		return ( Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2 );
+		return ( (Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2) || mw.isIpad() );
 	}
 };
 

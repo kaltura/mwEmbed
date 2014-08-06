@@ -78,6 +78,9 @@
 			//parse url address from playmanifest
 			var getStreamAddress = function() {
 				var deferred = $.Deferred();
+				if (mw.getConfig("EmbedPlayer.useDirectManifestLinks")) {
+					return deferred.resolve();
+				}
 				$.ajax({
 					url: _this.getSrc() + "&responseFormat=jsonp",
 					dataType: 'jsonp',
@@ -204,7 +207,9 @@
 						'switchingChangeStarted': 'onSwitchingChangeStarted',
 						'switchingChangeComplete' : 'onSwitchingChangeComplete',
 						'flavorsListChanged' : 'onFlavorsListChanged',
-						'enableGui' : 'onEnableGui'
+						'enableGui' : 'onEnableGui',
+						'audioTracksReceived': 'onAudioTracksReceived',
+						'audioTrackSelected': 'onAudioTrackSelected'
 					};
 
 					_this.playerObject = playerElement;
@@ -310,12 +315,11 @@
 		onDurationChange: function( data, id ) {
 			//first durationChange indicate player is ready
 			if ( !this.durationReceived ) {
+				//hide player until we click play
+				this.getPlayerContainer().css('visibility', 'hidden');
 				this.durationReceived = true;
 				if ( !this.isError ) {
 					this.callReadyFunc();
-					if ( !this.isAudioPlayer ) {
-						this.removePoster();
-					}
 					//in silverlight we have unusual situation where "Start" is sent after "playing", this workaround fixes the controls state
 					if ( this.autoplay ) {
 						$( this ).trigger( "playing" );
@@ -372,6 +376,8 @@
 			mw.log('EmbedPlayerSPlayer::play');
 			var _this = this;
 			if ( this.durationReceived && this.parent_play() ) {
+				//bring back the player
+				this.getPlayerContainer().css('visibility', 'visible');
 				if ( this.isMulticast  ) {
 					this.bindHelper( "durationChange" , function() {
 						_this.playerObject.play();
@@ -542,6 +548,14 @@
 			}
 		},
 
+		onAudioTracksReceived: function ( data ) {
+			this.triggerHelper( 'audioTracksReceived', JSON.parse( data ) );
+		},
+
+		onAudioTrackSelected: function ( data ) {
+			this.triggerHelper( 'audioTrackIndexChanged', JSON.parse( data ) );
+		},
+
 		/**
 		 * Get the embed player time
 		 */
@@ -595,6 +609,12 @@
 
 		clean:function(){
 			$(this.getPlayerContainer()).remove();
+		},
+
+		switchAudioTrack: function( trackIndex ) {
+			if ( this.playerObject ) {
+				this.playerObject.selectAudioTrack( trackIndex );
+			}
 		}
 
 	}

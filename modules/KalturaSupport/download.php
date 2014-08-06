@@ -286,7 +286,7 @@ class downloadEntry {
 			return array();
 		}
 
-		// echo '<pre>'; print_r($sources); exit();
+		//echo '<pre>'; print_r($this->sources); exit();
 		return $this->sources;
 	}
 	private function getReferer() {
@@ -373,20 +373,53 @@ class downloadEntry {
 	 * 	{String} the flavor id string
 	 */
 	private function getSourceFlavorUrl( $flavorId = false ){
+		global $wgHTTPProtocol;
 
+		// first check if we got preferredBitrate
 		if( isset($_GET['preferredBitrate']) && $_GET['preferredBitrate'] != null){
             $preferredBitrate	= intval($_GET['preferredBitrate']);
         }
 
-		// Get all sources ( if not provided )
-		$sources = $this->getSources();
+		// for preferredBitrate get all the sources (no filter) and look for the closest bitrate source
+		if ( isset( $preferredBitrate ) ) {
+            // try to find the closest bitrate source
+            $deltaBitrate = 999999999;
+            $src = false;
+
+            $kResultObject = $this->getResultObject();
+            $resultObject =  $kResultObject->getResult();
+
+            foreach( $resultObject['contextData']->flavorAssets as $source ){
+                if( isset($source->bitrate) ){
+                    $delta =  abs( $source->bitrate - $preferredBitrate );
+
+                    if ( $delta < $deltaBitrate) {
+                        $deltaBitrate = $delta;
+
+                        if( $kResultObject->request->getServiceConfig( 'UseManifestUrls' ) ){
+                            $flavorUrl =  $kResultObject->request->getServiceConfig( 'ServiceUrl' ) .'/p/' . $kResultObject->getPartnerId() . '/sp/' .
+                            $kResultObject->getPartnerId() . '00/playManifest/entryId/' . $kResultObject->request->getEntryId();
+                        } else {
+                            $flavorUrl = $kResultObject->request->getServiceConfig( 'CdnUrl' ) .'/p/' . $kResultObject->getPartnerId() . '/sp/' .
+                            $kResultObject->getPartnerId() . '00/flvclipper/entry_id/' . $kResultObject->request->getEntryId();
+                        }
+                        $assetUrl = $flavorUrl . '/flavorId/' . $source->id . '/format/url/protocol/' . $wgHTTPProtocol;
+                        $src =  $assetUrl .'/a.' . $source->fileExt . '?ks=' . $kResultObject->client->getKS() . '&referrer=' . $this->getReferer();
+                    }
+                }
+            }
+            return $src;
+        }
+
+        // if no preferredBitrate was specified - continue normally
+		$sources = $this->getSources(); // Get all sources ( if not provided )
 		$validSources = array(); 
 		foreach( $sources as $inx => $source ){
-			if( strtolower( $source[ 'data-flavorid' ] )  == strtolower( $flavorId ) ) {
+			if( strtolower( $source[ 'data-flavorid' ] ) == strtolower( $flavorId ) ) {
 				$validSources[] =  $source;
 			}
 		}
-		// special case the iPhone flavor as generic and we want the lowest quality ( 480 version ) 
+		// special case the iPhone flavor as generic and we want the lowest quality ( 480 version )
 		if( $flavorId == 'iPhone' ){
 			$minBit = 999999999;
 			$minSrc = null;
@@ -399,31 +432,15 @@ class downloadEntry {
 			return $minSrc;
 		} else if( count( $validSources ) ) {
 			// if not preferred bitrate was specified - return the biggest source available
-			if ( !isset( $preferredBitrate ) ) {
-				$maxBit = 0;
-            	$maxSrc = null;
-				foreach( $validSources  as $source ){
-					if( isset($source['data-bandwidth']) && $source['data-bandwidth'] > $maxBit ){
-						$maxSrc = $source['src'];
-						$maxBit = $source['data-bandwidth'];
-					}
+			$maxBit = 0;
+            $maxSrc = null;
+			foreach( $validSources  as $source ){
+				if( isset($source['data-bandwidth']) && $source['data-bandwidth'] > $maxBit ){
+					$maxSrc = $source['src'];
+					$maxBit = $source['data-bandwidth'];
 				}
-				return $maxSrc;
-			}else{
-				// try to find the closest bitrate source
-				$deltaBitrate = 999999999;
-				$src = null;
-				foreach( $validSources  as $source ){
-					if( isset($source['data-bandwidth']) ){
-						$delta =  abs( $source['data-bandwidth'] - $preferredBitrate );
-						if ( $delta < $deltaBitrate) {
-							$deltaBitrate = $delta;
-							$src = $source['src'];
-						}
-					}
-				}
-				return $src;
 			}
+			return $maxSrc;
 		}
 		return false;
 	}

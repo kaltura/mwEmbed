@@ -58,7 +58,6 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 	bindCleanScreen: function(){
 		// TODO: should bind against onChangeMedia instead, to support screens on "Start" screen.
 		this.bind('playerReady', $.proxy(function(){
-			this.templateData = null;
 			this.removeScreen();
 		}, this));
 	},
@@ -93,6 +92,7 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 		this.getScreen().fadeIn(400, $.proxy(function(){
 			this.getPlayer().triggerHelper('showScreen', [this.pluginName]);
 		}, this));
+
 	},
 	toggleScreen: function(){
 		if( this.isDisabled ) return ;

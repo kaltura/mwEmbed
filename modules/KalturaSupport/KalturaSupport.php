@@ -216,7 +216,11 @@
 			'dependencies' => array( 'mw.KBaseScreen' ),
 			'kalturaPluginName' => 'share',
 		),
-
+		"abChecker" => array(
+            'scripts' => "components/abChecker/abChecker.js",
+            'dependencies' => array( 'mw.KBasePlugin' ),
+            'kalturaPluginName' => 'abChecker',
+        ),
 		"pptWidgetPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",
 			'kalturaPluginName' => 'pptWidgetAPI'
@@ -320,6 +324,11 @@
 			'scripts' => "resources/uiConfComponents/statisticsPlugin.js",
 			'dependencies' => array( 'mw.KAnalytics' ), 
 			'kalturaPluginName' => 'statistics'
+		),
+		"liveAnalytics" => array(
+			'scripts' => "resources/mw.KLiveAnalytics.js",
+			'dependencies' => array( 'mw.KBasePlugin' ),
+			'kalturaPluginName' => 'liveAnalytics'
 		),
 		'playbackRateSelectorPlugin' => array(
 			'scripts' => "resources/uiConfComponents/playbackRateSelector.js",

@@ -105,11 +105,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 			_this.$playlistItemRenderer = $(itemRenderer );
 		}
 
-		// Force autoContoinue if there is no interface
-		if( !_this.includeInLayout ){
-			_this.autoContinue = true;
-		}
-
 		mw.log( "PlaylistHandlerKaltura:: got  " +  _this.playlistSet.length + ' playlists ' );
 		// Set the playlist to the first playlist
 		_this.setPlaylistIndex( 0 );
@@ -370,10 +365,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 		});
 		mw.log("PlaylistHandlerKaltura::playClip::changeMedia entryId: " + this.getClip( clipIndex ).id);
 
-		// Make sure its in a playing state when change media is called if we are autoContinuing:
-		if( this.autoContinue && !embedPlayer.firstPlay ){
-			embedPlayer.stopped = embedPlayer.paused = false;
-		}
 		// Update the playlist data selectedIndex ( before issuing change media call )
 	 	_this.setClipIndex( clipIndex );
 		// Use internal changeMedia call to issue all relevant events
