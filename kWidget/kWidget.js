@@ -294,14 +294,19 @@ var kWidget = {
 		// Check if we have flashvars object
 		if( ! settings.flashvars ) {
 			settings.flashvars = {};
-		}				
+		}
 
 		this.startTime[targetId] = new Date().getTime();
 		
 		// Check if we have flashvars object
 		if( ! settings.flashvars ) {
 			settings.flashvars = {};
-		}	
+		}
+
+		if( document.URL.indexOf('forceKalturaNativeComponentPlayer') !== -1 ){
+			settings.flashvars["nativeCallout"] = { plugin: true }
+		}
+
 		/**
 		 * Embed settings checks
 		 */
