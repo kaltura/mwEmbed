@@ -89,7 +89,10 @@ mw.KAdPlayer.prototype = {
 		var _this = this;
 		mw.log("KAdPlayer::display:" + adSlot.type + ' ads:' +  adSlot.ads.length );
 
-		_this.embedPlayer.triggerHelper("onDisableInterfaceComponents");
+		// if it's overlay player controls should not be disabled
+		if( adSlot.type !== 'overlay' ) {
+			_this.embedPlayer.triggerHelper("onDisableInterfaceComponents");
+		}
 		// Setup some configuration for done state:
 		adSlot.doneFunctions = [];
 		// set skip offset from config for all adds if defined 
@@ -137,7 +140,9 @@ mw.KAdPlayer.prototype = {
 				adSlot.currentlyDisplayed = false;
 				// give time for the end event to clear
 				setTimeout(function(){
-					_this.embedPlayer.triggerHelper("onEnableInterfaceComponents");
+					if( adSlot.type !== 'overlay' ) {
+						_this.embedPlayer.triggerHelper("onEnableInterfaceComponents");
+					}
 					if( !hardStop && displayDoneCallback ){
 						displayDoneCallback();
 					}
