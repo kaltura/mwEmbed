@@ -1223,6 +1223,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'label' => 'airPlay',
 		'model' => 'config.plugins.airPlay',
 	),
+	'nativeCallout' => array(
+		'description' => 'Supports replacing the player "play button" with a callout to native player, for Mobile Devices.',
+		'type' => 'featuremenu',
+		'label' => 'nativeCallout',
+		'model' => 'config.plugins.nativeCallout',
+	),
 	'related' => array(
 		'description' => 'Add the Related Videos screen at the end of the video to attract users to watch additional videos.',
 		'attributes' => array_merge($kgDefaultComponentAttr,
