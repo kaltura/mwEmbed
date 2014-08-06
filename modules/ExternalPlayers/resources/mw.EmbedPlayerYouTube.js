@@ -116,7 +116,7 @@
 
 			};
 			window['hidePlayer'] = function( event ){
-				$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
+
 			}
 			window['onError'] = function( event ){
 				mw.log("Error! YouTubePlayer" ,2);
@@ -147,8 +147,6 @@
 			};
 			//YOUTUBE IFRAME PLAYER READY (Not the Iframe - the player itself)
 			window['onIframePlayerReady'] = function( event ){
-				//autoplay
-				$('#pid_kaltura_player').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
 				window['iframePlayer'] = event.target;
 				//autoplay
 				if(mw.getConfig('autoPlay')){
@@ -169,7 +167,6 @@
 				$('.timed-text').hide();
 				$('.ui-icon-arrowthickstop-1-s').hide();
 				$('.ui-icon-flag').hide();
-				$('#pid_kaltura_player').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
 				var flashPlayer = $( '#' + playerIdStr )[0];
 				flashPlayer.addEventListener("onStateChange", "onPlayerStateChange");
 				flashPlayer.addEventListener("onError", "onError");
@@ -339,12 +336,17 @@
 			});
 
 			this.bindHelper ('playerReady' , function(){
+				$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
 				if (mw.isMobileDevice()){
 					_this.disablePlayControls();
 				}
 			});
 
 			this.bindHelper("onEndedDone", function(){
+				// restore the black cover after layout update is done (it is removed by updatePosterHTML in EmbedPlayer.js)
+				setTimeout(function(){
+					$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
+				},100);
 				if (mw.isMobileDevice() && mw.isIpad()){
 					_this.time = 0;
 				}else{
