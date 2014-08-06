@@ -279,8 +279,12 @@
 					_this.controlBar[_this.TYPE.SECONDARY].obj = _this.getControlBar( _this.TYPE.SECONDARY );
 
 					//Set rule attributes
-					primaryScreen.addClass( 'dualScreenMonitor' ).attr( 'data-monitor-rule', _this.TYPE.PRIMARY ).addClass( 'firstScreen' );
+					primaryScreen.addClass( 'dualScreenMonitor firstScreen ' + _this.pluginName ).attr( 'data-monitor-rule', _this.TYPE.PRIMARY );
 					secondaryScreen.addClass( 'dualScreenMonitor' ).attr( 'data-monitor-rule', _this.TYPE.SECONDARY );
+
+					secondaryScreen.off().on('click dblclick touchstart touchend', function(e){
+						_this.embedPlayer.triggerHelper(e);
+					});
 
 					_this.setControlBarBindings();
 
@@ -306,7 +310,18 @@
 						_this.fsm.consumeEvent( "switch" );
 					}
 
-				} );
+					//dualScreen components are set on z-index 1-3, so set all other components to zIndex 4 or above
+					$.each(_this.embedPlayer.getVideoHolder().children(), function(index, childNode){
+						if (!childNode.classList.contains("dualScreen")){
+							if ( isNaN($(childNode).css('z-index')) ){
+								$(childNode).css('z-index', 4);
+							} else {
+								var zIndex = $(childNode).css('z-index');
+								$(childNode).css('z-index', zIndex + 4);
+							}
+						}
+					});
+				});
 
 				this.bind( 'onOpenFullScreen', function ( ) {
 					_this.hideMonitor(_this.getSecondMonitor().obj);
@@ -508,7 +523,7 @@
 				var $controlBar = this.controlBar[type].obj;
 				if ( !$controlBar ) {
 					$controlBar = this.controlBar[type].obj = $( '<div />' )
-						.addClass( 'controlBar ' + this.pluginName )
+						.addClass( 'controlBar ' + this.getCssClass() )
 						.attr( {'id': type, 'data-controlBar-rule': type} )
 						.css( 'visibility', 'hidden' )
 						.append(
