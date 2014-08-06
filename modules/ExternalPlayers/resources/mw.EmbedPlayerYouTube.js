@@ -348,7 +348,9 @@
 					$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
 				},100);
 				if (mw.isMobileDevice() && mw.isIpad()){
-					_this.time = 0;
+					_this.getPlayerElement().stopVideo();
+					_this.getPlayerElement().pauseVideo();
+					_this.getPlayerElement().seekTo(0);
 				}else{
 					_this.getPlayerElement().seekTo(0);  // fix for a bug in replay (loop)
 					setTimeout(function(){
