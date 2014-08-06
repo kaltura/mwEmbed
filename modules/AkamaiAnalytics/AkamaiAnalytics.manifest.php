@@ -35,7 +35,7 @@ return array(
 				'type' => 'string'
 			),
 			'title' => array(
-				'doc' => 'Override the default value for the title field. By default it is the entry title.',
+				'doc' => 'Override the default value for the title field. By default it is the entry ID.',
 				'type' => 'string'
 			),
 			'category' => array(

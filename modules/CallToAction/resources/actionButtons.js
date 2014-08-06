@@ -25,8 +25,12 @@ mw.PluginManager.add( 'actionButtons', mw.KBaseScreen.extend({
 				break;
 			case 'related':
 				this.bind('showScreen', $.proxy(function(e, screenPluginName){
-					if( screenPluginName === 'related' ){
-						this.getPlayer().getVideoHolder().find('.related > .screen-content').find('span').after(
+					if( screenPluginName === 'related' ) {
+						var $spans = this.getPlayer().getVideoHolder().find('.related > .screen-content').find('span');
+						if( $spans.length > 1 ) {
+							$spans.eq(1).remove();
+						}
+						$spans.eq(0).after(
 							this.getTemplateHTML(this.getTemplateData())
 						);
 					}

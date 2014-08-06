@@ -527,7 +527,9 @@
 					pClass = 'fill-width';
 				}
 				$img.removeClass('fill-width fill-height').addClass(pClass);
-
+				if (this.getFlashvars("stretchVideo") === true){
+					$img.removeClass(pClass).addClass('fill-width fill-height');
+				}
 			}
 		},
 		/**
@@ -679,6 +681,23 @@
 			//this.selectedPlayer =null;
 		},
 
+		getPlayerByStreamerType: function(source){
+			var targetPlayer;
+			//currently only kplayer can handle other streamerTypes
+			if ( !mw.getConfig( 'EmbedPlayer.IgnoreStreamerType')
+				&& !this.isImageSource()   //not an image entry
+				&& this.streamerType != 'http'
+				&& mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
+				targetPlayer =  mw.EmbedTypes.getKplayer();
+			} else {
+				targetPlayer= mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType );
+			}
+			return targetPlayer;
+		},
+
+		isImageSource: function(){
+			return ( this.mediaElement.selectedSource.getMIMEType().indexOf("image") == 0 )
+		},
 		/**
 		 * Switch and play a video source
 		 *
@@ -687,7 +706,8 @@
 		 */
 		switchPlaySource: function( source, switchCallback, doneCallback ){
 			var _this = this;
-			var targetPlayer =  mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType );
+
+			var targetPlayer = this.getPlayerByStreamerType(source);
 			if( targetPlayer.library != this.selectedPlayer.library ){
 				this.selectPlayer ( targetPlayer );
 				this.updatePlaybackInterface( function(){
@@ -748,21 +768,14 @@
 
 			// Auto select player based on default order
 			if( this.mediaElement.selectedSource ){
-				var imageEntryTypeValue = 2;
+
 				// Loading kaltura native cordova component only when it's media type
-				if( this.kalturaPlayerMetaData.mediaType == imageEntryTypeValue ) {
+				if( this.isImageSource() ) {
 					mw.setConfig('EmbedPlayer.ForceNativeComponent', false);
 				}
 
-				//currently only kplayer can handle other streamerTypes
-				if ( !mw.getConfig( 'EmbedPlayer.IgnoreStreamerType')
-					&& this.kalturaPlayerMetaData.mediaType != imageEntryTypeValue    //not an image entry
-					&& this.streamerType != 'http'
-					&& mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
-					this.selectPlayer( mw.EmbedTypes.getKplayer() );
-				} else {
-					this.selectPlayer( mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType ));
-				}
+				var targetPlayer = this.getPlayerByStreamerType(this.mediaElement.selectedSource);
+				this.selectPlayer( targetPlayer );
 
 				// Check if we need to switch player rendering libraries:
 				if ( this.selectedPlayer && ( !this.prevPlayer || this.prevPlayer.library != this.selectedPlayer.library ) ) {
@@ -1116,8 +1129,8 @@
 					}
 				}
 			}
-			// display thumbnail upon movie end if showThumbnailOnEnd Flashvar is set to true
-			if (this.getFlashvars("EmbedPlayer.ShowPosterOnStop") !== false){
+			// display thumbnail upon movie end if showThumbnailOnEnd Flashvar is set to true and not looped
+			if (this.getFlashvars("EmbedPlayer.ShowPosterOnStop") !== false && !this.loop){
 				this.updatePosterHTML();
 			}
 		},
@@ -1702,6 +1715,9 @@
 			}
 
 			$( this ).empty();
+			if (mw.getConfig( 'EmbedPlayer.HidePosterOnStart' ) === true){
+				return;
+			}
 			// for IE8 and IE7 - add specific class
 			if (mw.isIE8() || mw.isIE7()){
 				$( this ).addClass("mwEmbedPlayerTransparent");

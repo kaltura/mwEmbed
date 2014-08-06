@@ -193,6 +193,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	// Our default layout container which plugins can append their components
 	layoutContainers: {
 		'topBarContainer': [],
+		'sideBarContainer': [],
 		'videoHolder': [],
 		'controlBarContainer': [],
 		'controlsContainer': []
@@ -414,16 +415,31 @@ mw.PlayerLayoutBuilder.prototype = {
 				  position: {
 					my: "center bottom-10",
 					at: "center top",
-					using: function( position, feedback ) {
-					  $( this ).css( position );
-					  $( "<div>" )
-						.addClass( "arrow" )
-						.addClass( feedback.vertical )
-						.addClass( feedback.horizontal )
-						.appendTo( this );
-					}
+					  using: function( position, feedback ) {
+						  $( this ).css( position );
+						  $( "<div>" )
+							  .addClass( "arrow" )
+							  .addClass( feedback.vertical )
+							  .addClass( feedback.horizontal )
+							  .appendTo( this );
+					  }
 				  }
 				});
+			_this.getInterface().find(".tooltipBelow").tooltip({
+				items: '[data-show-tooltip]',
+				position: {
+					my: "center bottom-10",
+					at: "center top",
+					using: function( position, feedback ) {
+						$( this ).css( position );
+						$( "<div>" )
+							.addClass( "arrowTop" )
+							.addClass( feedback.vertical )
+							.addClass( feedback.horizontal )
+							.appendTo( this );
+					}
+				}
+			});
 		});
 	},
 	/**

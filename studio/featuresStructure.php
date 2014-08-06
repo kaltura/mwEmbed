@@ -89,6 +89,13 @@ return array(
 		"type" => "menu",  
 		"model" => "lookAndFeel",
 		"children"=> array(
+			array(
+                "label" => "Show tooltips",
+                "type" => "checkbox",
+                "initvalue" => true,
+                "endline" => "false",
+                "model" => "config.uiVars.enableTooltips"
+            ),
 			"titleLabel" => "",
 			"logo" => "",
 			"loadingSpinner" => "",
@@ -149,7 +156,9 @@ return array(
 			"playbackRateSelector" => "",
 			"restrictUserAgent" => "",
 			"widevine" => "",
-			"sourceSelector" => ""
+			"sourceSelector" => "",
+			"download" => "",
+			"uiVars" => ""
 		)
 	)
 );

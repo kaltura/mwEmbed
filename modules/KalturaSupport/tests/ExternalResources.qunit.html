@@ -61,28 +61,26 @@ Please see the documentation on <a target="_new" href="http://html5video.org/wik
 <ul>
 	<li><a href="externalResources/iframeHTML5_fooBarPlugin.js">Iframe fooBarPlugin.js</a> -- shows javascript associated with a plugin line attribute ( instead of a custom var resource ) 
 	<li><a href="externalResources/IframeCustomPluginJs1.js">IframeCustomPluginJs1</a> -- shows that the resource is loaded early on and can do normal plugin "loader" bindings</li>
-    <li><a href="externalResources/IframeCustomPluginJs2.js">IframeCustomPluginJs2</a> -- just a console log showing multiple plugins </li>
-    <li><a href="externalResources/IframeCustomPluginCss1.css">IframeCustomPluginCss1</a> -- custom css file ( changes play button to a flower )</li>
+	<li><a href="externalResources/IframeCustomPluginJs2.js">IframeCustomPluginJs2</a> -- just a console log showing multiple plugins </li>
+	<li><a href="externalResources/IframeCustomPluginCss1.css">IframeCustomPluginCss1</a> -- custom css file ( changes play button to a flower )</li>
 	<li>Custom Loading Spinner - mw.setConfig('LoadingSpinner.ImageUrl', 'externalResources/loading.gif');</li>
 </ul>
 </div>
 <script>
-kWidget.featureConfig({
+kWidget.embed({
 	'targetId' : 'kaltura_player',
 	'wid' : '_243342',
 	'uiconf_id' : '5994862',
 	'entry_id' : '0_uka1msg4',
 	'flashvars': {
-		'myExternalResourcesPlugin':{
+		'myComponent':{
 			'plugin' : true,
-			'relativeTo': "video",
-			'position': "before",
-			'loadingPolicy': "onDemand",
-			'onPageCss1': "externalResources/onPageCss1_fooBarPlugin.css",
-			'iframeHTML5Css': "externalResources/iframeHTML5_fooBarPlugin.css",
-			'iframeHTML5Js' : "externalResources/iframeHTML5_fooBarPlugin.js"
+			'img':"externalResources/flower.jpg",
+			'iframeHTML5Js':'externalResources/myComponent.js',
+			'iframeHTML5Css':'externalResources/myComponent.css'
 		},
 		"IframeCustomPluginCss1" : "externalResources/IframeCustomPluginCss1.css",
+		"IframeCustomPluginJs1" : "externalResources/iframe_fooBarPlugin.js",
 		"onPageJs1" : "externalResources/onPageJs1.js",
 		"onPageCss1" :"externalResources/onPageCss1.css"
 	}
@@ -93,17 +91,17 @@ The player library supports including runtime external resources.
 These resources should be relative to the page that the player is being embed on.<br>
 When you transition to production these resources should be moved to a CDN and referenced there. 
 <pre class="prettyprint linenums">
-kWidget.ebmed({
-'targetId' : 'kaltura_player',
+kWidget.embed({
+	'targetId' : 'kaltura_player',
 	'wid' : '_243342',
 	'uiconf_id' : '5994862',
 	'entry_id' : '0_uka1msg4',
 	'flashvars': {
-		'myExternalResourcesPlugin':{
+		'myComponent':{
 			'plugin' : true,
-			'onPageCss1': "externalResources/onPageCss1_fooBarPlugin.css",
-			'iframeHTML5Css': "externalResources/iframeHTML5_fooBarPlugin.css",
-			'iframeHTML5Js' : "externalResources/iframeHTML5_fooBarPlugin.js"
+			'img':"externalResources/flower.jpg",
+			'iframeHTML5Js':'externalResources/myComponent.js',
+			'iframeHTML5Css':'externalResources/myComponent.css'
 		},
 		"IframeCustomPluginCss1" : "externalResources/IframeCustomPluginCss1.css",
 		"onPageJs1" : "externalResources/onPageJs1.js",

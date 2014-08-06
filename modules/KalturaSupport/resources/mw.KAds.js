@@ -382,8 +382,8 @@ mw.KAds.prototype = {
 				_this.embedPlayer.adTimeline.updateUiForAdPlayback( adType );
 				
 				mw.AdLoader.load( _this.getAdUrl( adType ), function( adDisplayConf ){
-					var adConfig = $.extend({}, _this.getBaseAdConf( adType ), adDisplayConf );
-					_this.adPlayer.display( adConfig, function(){
+					var adConf = $.extend(adConfig, _this.getBaseAdConf( adType ), adDisplayConf );
+					_this.adPlayer.display( adConf, function(){
 						// play next ad
 						_this.displayAdNumAds( displayCount, adType, adConfig,  callback);
 					});
@@ -438,6 +438,7 @@ mw.KAds.prototype = {
 			_this.adPlayer.display(
 				overlayConfig,
 				function(){
+					startOvelrayDisplayed = false;
 					mw.log("KAds::overlay done");
 				},
 				timeout

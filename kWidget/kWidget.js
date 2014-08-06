@@ -1703,11 +1703,13 @@ var kWidget = {
 	 flashVarsToUrl: function( flashVarsObject ){
 		 var params = '';
 		 for( var i in flashVarsObject ){
-			 var curVal = typeof flashVarsObject[i] == 'object'?
-					 JSON.stringify( flashVarsObject[i] ):
-					 flashVarsObject[i]
-			 params+= '&' + 'flashvars[' + encodeURIComponent( i ) + ']=' +
-				encodeURIComponent(  curVal );
+			 if (i !== 'jsonConfig'){
+				 var curVal = typeof flashVarsObject[i] == 'object'?
+						 JSON.stringify( flashVarsObject[i] ):
+						 flashVarsObject[i]
+				 params+= '&' + 'flashvars[' + encodeURIComponent( i ) + ']=' +
+					encodeURIComponent(  curVal );
+			 }
 		 }
 		 return params;
 	 },
@@ -1872,10 +1874,11 @@ var kWidget = {
 	/**
 	 * Append a script to the dom:
 	 * @param {string} url
-	 * @param {function} callback
+	 * @param {function} done callback
 	 * @param {object} Document to append the script on
+	 * @param {function} error callback
 	 */
-	appendScriptUrl: function( url, callback, docContext ) {
+	appendScriptUrl: function( url, callback, docContext, callbackError ) {
 		if( ! docContext ){
 			docContext = window.document;
 		}
@@ -1886,16 +1889,31 @@ var kWidget = {
 		var done = false;
 
 		// Attach handlers for all browsers
-		script.onload = script.onreadystatechange = function() {
+		script.onload = script.onerror = script.onreadystatechange = function() {
 			if ( !done && (!this.readyState ||
 					this.readyState === "loaded" || this.readyState === "complete") ) {
 				done = true;
-				if( typeof callback == 'function'){
-					callback();
+
+				if (arguments &&
+					arguments[0] &&
+					arguments[0].type){
+					if (arguments[0].type == "error"){
+						if (typeof callbackError == "function"){
+							callbackError();
+						}
+					} else {
+						if (typeof callback == "function"){
+							callback();
+						}
+					}
+				} else {
+					if (typeof callback == "function"){
+						callback();
+					}
 				}
 
 				// Handle memory leak in IE
-				script.onload = script.onreadystatechange = null;
+				script.onload = script.onerror = script.onreadystatechange = null;
 				if ( head && script.parentNode ) {
 					head.removeChild( script );
 				}

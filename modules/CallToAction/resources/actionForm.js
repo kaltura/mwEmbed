@@ -4,6 +4,7 @@ mw.PluginManager.add( 'actionForm', mw.KBaseScreen.extend({
 
 	defaultConfig: {
 		displayOn: 'start', // start, <time>, <percent>%, end
+		displayOnce: true,
 		submitRequired: false,
 		description: 'For more information, please enter your details and we will get back to you',
 		fields: [
@@ -28,7 +29,9 @@ mw.PluginManager.add( 'actionForm', mw.KBaseScreen.extend({
 		templatePath: '../CallToAction/templates/collect-form.tmpl.html'
 	},
 
-	triggered: false,
+	formDisplayed: false,
+	formSubmitted: false,
+	duringSeek: false,
 	displayTime: false,
 	error: false,
 
@@ -38,10 +41,14 @@ mw.PluginManager.add( 'actionForm', mw.KBaseScreen.extend({
 
 		var showScreen = $.proxy( this.showScreen, this);
 
+		if( this.getConfig('displayOn') == 0 ) {
+			this.setConfig('displayOn', 'start');
+		}
+
 		// Show screen at right time
 		switch( this.getConfig('displayOn') ) {
 			case 'start':
-				this.bind( 'playerReady', showScreen );
+				this.bind( 'playing', showScreen );
 				break;
 			case 'end':
 				this.bind( 'onEndedDone', showScreen );
@@ -50,6 +57,18 @@ mw.PluginManager.add( 'actionForm', mw.KBaseScreen.extend({
 				this.bind( 'monitorEvent', $.proxy( this.displayOnTime, this ) );
 				break;
 		}
+
+		this.bind( 'preSeek', $.proxy(function(){
+			this.duringSeek = true;
+		},this));
+		this.bind( 'seeked', $.proxy(function(){
+			this.duringSeek = false;
+			if( this.getConfig('displayOn') == 'start' ){
+				setTimeout(function() {
+					showScreen();
+				}, 0);
+			}
+		},this));
 	},
 
 	bindCleanScreen: function() {
@@ -81,24 +100,48 @@ mw.PluginManager.add( 'actionForm', mw.KBaseScreen.extend({
 	},
 
 	displayOnTime: function() {
-		if( !this.error && this.getPlayer().currentTime >= this.getDisplayTime() ) {
-			this.showScreen();
+		/**
+		 * Do not show form when:
+		 * 1. during seek
+		 * 2. there's an error
+		 * 3. form already submitted
+		 * 4. form should be displayed once and already been displayed
+		 */
+		if( this.getPlayer().currentTime >= this.getDisplayTime() && 
+			!this.duringSeek && !this.error && !this.formSubmitted && !(this.getConfig('displayOnce') && this.formDisplayed) ) {
+			var _this = this;
+			setTimeout(function() {
+				_this.showScreen();
+			}, 0);
 		}
 	},
 
 	showScreen: function() {
-		// Show form only once
-		if( this.triggered ){
+		this.log('showScreen');
+		// Do not show form during seek, or if already submitted
+		if( this.duringSeek || this.formSubmitted ){
+			this.log('exit due duringSeek or formSubmitted');
 			return ;
 		}
-		this.triggered = true;
+
+		// Show only once
+		if( this.getConfig('displayOnce') ) {
+			if( this.formDisplayed ) {
+				this.log('exit due formDisplayed');
+				return ;
+			}
+			this.formDisplayed = true;
+		}
+
+		this.getPlayer().ignoreNextNativeEvent = true;
 		this.getPlayer().disablePlayControls();
 		// Disable key binding
-		 this.getPlayer().triggerHelper( 'onDisableKeyboardBinding' );
-		this._super();
+		this.getPlayer().triggerHelper( 'onDisableKeyboardBinding' );
+		this._super();	
 	},
 
 	hideScreen: function() {
+		this.log('hideForm');
 		this.getPlayer().enablePlayControls();
 		// restore key binding
 		 this.getPlayer().triggerHelper( 'onEnableKeyboardBinding' );
@@ -108,6 +151,7 @@ mw.PluginManager.add( 'actionForm', mw.KBaseScreen.extend({
 	processForm: function( e ) {
 		var $form = $(e.target);
 		this.getPlayer().triggerHelper('actionFormSubmitted', [$form.serializeObject()]);
+		this.formSubmitted = true;
 		this.hideScreen();
 	}
 }));
