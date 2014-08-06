@@ -147,7 +147,9 @@
 		//indicates that the current sources list was set by "ReplaceSources" config
 		"sourcesReplaced": false,
 
-		"streamerType": 'http'
+		"streamerType": 'http',
+
+		"buffering": false
 	} );
 
 	/**
@@ -2542,6 +2544,13 @@
 					this.seek( seekPercent );
 				}
 			}
+			if ( !_this.isLive() ) {
+				if ( _this.isPlaying() && _this.currentTime == _this.getPlayerElementTime() ) {
+					_this.bufferStart();
+				} else if ( _this.buffering ) {
+					_this.bufferEnd();
+				}
+			}
 
 			// Update currentTime via embedPlayer
 			_this.currentTime = _this.getPlayerElementTime();
@@ -2605,19 +2614,6 @@
 				this.bufferedPercent = percent;
 			}
 			$( this ).trigger( 'updateBufferPercent', this.bufferedPercent );
-
-			// if we have not already run the buffer start hook
-			if( this.bufferedPercent > 0 && !this.bufferStartFlag ) {
-				this.bufferStartFlag = true;
-				mw.log("EmbedPlayer::bufferStart");
-				$( this ).trigger( 'bufferStartEvent' );
-			}
-
-			// if we have not already run the buffer end hook
-			if( this.bufferedPercent == 1 && !this.bufferEndFlag ){
-				this.bufferEndFlag = true;
-				$( this ).trigger( 'bufferEndEvent' );
-			}
 		},
 
 		/**
@@ -2888,6 +2884,29 @@
 
 		switchAudioTrack: function ( trackIndex ) {
 			mw.log('Error player does not multiple audio tracks' );
+		},
+
+		bufferStart: function() {
+			if ( !this.isInSequence() && !this.buffering ) {
+				this.buffering  = true;
+				mw.log("EmbedPlayer::bufferStart");
+				$( this ).trigger( 'bufferStartEvent' );
+				if ( !mw.getConfig( 'EmbedPlayer.DisableBufferingSpinner' ) ) {
+					this.addPlayerSpinner();
+				}
+			}
+
+		},
+
+		bufferEnd: function() {
+			if ( !this.isInSequence() && this.buffering ) {
+				this.buffering = false;
+				mw.log("EmbedPlayer::bufferEnd");
+				$( this ).trigger( 'bufferEndEvent' );
+				if ( !mw.getConfig( 'EmbedPlayer.DisableBufferingSpinner' ) ) {
+					this.hideSpinner();
+				}
+			}
 		}
 	};
 

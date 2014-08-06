@@ -112,7 +112,8 @@ mw.EmbedPlayerKplayer = {
 				'enableGui' : 'onEnableGui'  ,
 				'liveStreamOffline': 'onLiveEntryOffline',
 				'liveStreamReady': 'onLiveStreamReady',
-				'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions'
+				'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions',
+				'bufferChange': 'onBufferChange'
 			};
 			_this.playerObject = this.getElement();
 			$.each( bindEventMap, function( bindName, localMethod ) {
@@ -492,6 +493,17 @@ mw.EmbedPlayerKplayer = {
 		} else {
 			this.enablePlayControls();
 		}			
+	},
+
+	onBufferChange: function ( buffering ) {
+		//vod buffer is already being monitored by EmbedPlayer.js
+		if ( this.isLive() ) {
+			if ( buffering ) {
+				this.bufferStart();
+			} else {
+				this.bufferEnd();
+			}
+		}
 	},
 
 	/**

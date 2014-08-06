@@ -1392,6 +1392,23 @@ mw.EmbedPlayerNative = {
 			}
 		}, 3000);
 	},
+
+	/**
+	 * buffer under-run
+	 * @private
+	 */
+	_onwaiting: function () {
+		//vod buffer events are being handled by EmbedPlayer.js
+		if ( this.isLive() ) {
+			this.bufferStart();
+		}
+	},
+
+	_oncanplay: function ( event ) {
+		if ( this.isLive() && this.buffering ) {
+			this.bufferEnd();
+		}
+	},
 	/**
 	 * Local onClip done function for native player.
 	 */
