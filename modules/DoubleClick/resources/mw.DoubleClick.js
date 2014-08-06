@@ -108,6 +108,13 @@ mw.DoubleClick.prototype = {
 			_this.leadWithFlash = _this.getConfig( 'leadWithFlash' );
 		}
 
+		//native browser on Android 4.4 has "Chrome" in it, so this is the "new" way to test its user agent
+		if ( mw.isAndroid44() && navigator.userAgent.indexOf( 'Version/' ) != -1 ) {
+			mw.log("DoubleClick::user agent not supported, return" );
+			callback();
+			return;
+		}
+
 		if ( mw.isIE8() || mw.isIE9() || _this.leadWithFlash ) {
 			if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
 				mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
