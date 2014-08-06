@@ -27,7 +27,9 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 		var _this = this;
 		this.cookieName = this.pluginName + '_volumeValue';
 		this.bind( 'playerReady ' , function () {
-			 _this.getPlayer().setVolume( _this.getConfig( 'initialValue' ) / 100 , true );
+			if(_this.getConfig( 'initialValue' )>= 0 && _this.getConfig( 'initialValue' ) <= 100){
+				 _this.getPlayer().setVolume( _this.getConfig( 'initialValue' ) / 100 , true );
+			}
 			if ( (_this.getConfig( 'useCookie' ) && $.cookie( _this.cookieName ) ) ) {
 				var volumeValue = parseInt( $.cookie( _this.cookieName ) );
 				if ( !isNaN( volumeValue ) &&
