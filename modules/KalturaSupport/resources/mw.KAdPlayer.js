@@ -89,7 +89,14 @@ mw.KAdPlayer.prototype = {
 		var _this = this;
 		mw.log("KAdPlayer::display:" + adSlot.type + ' ads:' +  adSlot.ads.length );
 
-		_this.embedPlayer.triggerHelper("onDisableInterfaceComponents");
+		var excludedComponents = [];
+		// playPauseBtn won't be disabled if enableControlsDuringAd set to true
+		if ( mw.getConfig('enableControlsDuringAd') ) {
+			excludedComponents = ['playPauseBtn'];
+		}
+
+		_this.embedPlayer.triggerHelper( "onDisableInterfaceComponents", [excludedComponents] );
+
 		// Setup some configuration for done state:
 		adSlot.doneFunctions = [];
 		// set skip offset from config for all adds if defined 
