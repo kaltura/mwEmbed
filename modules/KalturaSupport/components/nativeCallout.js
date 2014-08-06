@@ -2,21 +2,13 @@
 
 	mw.PluginManager.add( 'nativeCallout', mw.KBasePlugin.extend({
 		defaultConfig: {
-			"storeUrl": null,
-			"appUrl": null,
+			"storeUrl": "http://itunes.apple.com/app/id698657294",
+			"mimeName": "kalturaPlayerToolkit://",
 			"iframeUrl": null
 		},
 		setup: function(){
 			// Bind player
 			this.addBindings();
-
-			if( !this.getConfig( "storeUrl" ) && mw.isIOS() ) {
-				this.setConfig( "storeUrl", "http://itunes.apple.com/app/id698657294" );
-			}
-
-			if( !this.getConfig( "appUrl" ) && mw.isIOS() ) {
-				this.setConfig( "appUrl", "kalturaPlayerToolkit://" );
-			}
 
 			if( !this.getConfig( "iframeUrl" ) ) {
 				this.setConfig( "iframeUrl", this.embedPlayer.getIframeSourceUrl() );
@@ -44,7 +36,7 @@
 			var timeout;
 
 			$('<iframe />')
-				.attr('src', _this.getConfig( "appUrl" ) + "?iframeUrl=" + _this.getConfig( "iframeUrl" ))
+				.attr('src', _this.getConfig( "mimeName" ) + "?iframeUrl=" + _this.getConfig( "iframeUrl" ))
 				.attr('style', 'display:none;')
 				.appendTo('body');
 
