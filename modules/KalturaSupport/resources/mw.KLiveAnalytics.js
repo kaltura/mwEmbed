@@ -9,7 +9,7 @@
 			defaultConfig: {
 				'forceLoad': false
 			},
-
+			reportingInterval : 10000,
 			bufferTime : 0,
 			eventIndex :1,
 			currentBitRate:-1,
@@ -79,7 +79,7 @@
 				this.sendLiveAnalytics();
 				_this.liveEventInterval = setInterval(function(){
 					_this.sendLiveAnalytics();
-				},10000);
+				},_this.reportingInterval);
 
 			},
 			sendLiveAnalytics : function(){
