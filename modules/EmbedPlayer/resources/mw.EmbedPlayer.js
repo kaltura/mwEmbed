@@ -2887,10 +2887,6 @@
 					}
 				});
 			}
-		},
-
-		switchAudioTrack: function ( trackIndex ) {
-			mw.log('Error player does not multiple audio tracks' );
 		}
 	};
 

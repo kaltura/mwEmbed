@@ -29,6 +29,7 @@
 		readyFuncs: [],
 		// Create our player element
 		setup: function( readyCallback ) {
+			var _this = this;
 			mw.log('EmbedPlayerSilverlight:: Setup');
 
 			// Check if we created the sPlayer container
@@ -50,6 +51,20 @@
 
 			this.slCurrentTime = 0;
 			this.loadMedia( readyCallback );
+
+			this.bindHelper( 'changeEmbeddedTextTrack', function(e, data) {
+				if ( _this.playerObject ) {
+					_this.playerObject.selectTextTrack( data.index );
+				}
+			});
+
+			this.bindHelper( 'switchAudioTrack', function(e, data) {
+				if ( _this.playerObject ) {
+					_this.playerObject.selectAudioTrack( data.index );
+				}
+			});
+
+
 
 			//hide player until we click play
 			this.getPlayerContainer().css('visibility', 'hidden');
@@ -218,7 +233,10 @@
 						'flavorsListChanged' : 'onFlavorsListChanged',
 						'enableGui' : 'onEnableGui',
 						'audioTracksReceived': 'onAudioTracksReceived',
-						'audioTrackSelected': 'onAudioTrackSelected'
+						'audioTrackSelected': 'onAudioTrackSelected',
+						'textTracksReceived': 'onTextTracksReceived',
+						'textTrackSelected': 'onTextTrackSelected',
+						'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions'
 					};
 
 					_this.playerObject = playerElement;
@@ -575,6 +593,20 @@
 			});
 		},
 
+		onTextTrackSelected: function ( data ) {
+			var _this = this;
+			this.callIfReady( function() {
+				_this.triggerHelper( 'textTrackIndexChanged', JSON.parse( data ) );
+			});
+		},
+
+		onTextTracksReceived: function ( data ) {
+			var _this = this;
+			this.callIfReady( function() {
+				_this.triggerHelper( 'textTracksReceived', JSON.parse( data ) );
+			});
+		},
+
 		/**
 		 * Get the embed player time
 		 */
@@ -630,18 +662,24 @@
 			$(this.getPlayerContainer()).remove();
 		},
 
-		switchAudioTrack: function( trackIndex ) {
-			if ( this.playerObject ) {
-				this.playerObject.selectAudioTrack( trackIndex );
-			}
-		},
-
 		callIfReady: function( callback ) {
 			if ( this.durationReceived ) {
 				callback();
 			} else {
 				this.readyFuncs.push( callback );
 			}
+		},
+
+		onLoadEmbeddedCaptions: function( data ) {
+			var captionData = JSON.parse( data );
+			var caption = {
+				source: {
+					srclang: captionData.language
+				},
+				capId: captionData.language,
+				ttml: captionData.ttml
+			};
+			this.triggerHelper( 'onEmbeddedData', caption );
 		}
 
 	}
