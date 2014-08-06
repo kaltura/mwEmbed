@@ -89,8 +89,16 @@
 		return localEmbedOptions;
 	}
 	kWidget.featureConfig = function( embedOptions ){
+		
 		var pageEmbed = $.extend( true, {}, embedOptions );
 		embedOptions = kWidget.getLocalFeatureConfig( embedOptions );
+		
+		// check for only display player flag: 
+		if( document.URL.indexOf( 'onlyDisplayPlayer') != -1 ){
+			// then just map directly to kWidget.embed:
+			kWidget.embed( embedOptions );
+			return ;
+		}
 		
 		// add targets for documentation config and player selection
 		$( '#' + embedOptions.targetId ).before(
