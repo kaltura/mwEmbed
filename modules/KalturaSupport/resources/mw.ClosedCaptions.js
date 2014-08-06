@@ -212,10 +212,10 @@
 					);
 				});
 				// Allow plugins to override text sources data
-				_this.getPlayer().triggerHelper( 'ccDataLoaded', [_this.textSource, function(textSources){
+				_this.getPlayer().triggerHelper( 'ccDataLoaded', [_this.textSources, function(textSources){
 					_this.textSources = textSources;
 				}]);
-				
+
 				if( _this.getConfig('displayCaptions') !== false ){
 					_this.autoSelectSource();
 					if( _this.selectedSource ){
@@ -228,8 +228,9 @@
 		loadCaptionsFromApi: function( callback ){
 			if(!this.getPlayer().kentryid){
 				this.log('loadCaptionsFromApi:: Entry Id not found, exit.');
-				return;
 				callback([]);
+				return;
+
 			}
 			var _this = this;
 			this.getKalturaClient().doRequest( {
@@ -240,7 +241,7 @@
 				'filter:statusEqual' : 2
 			}, function( data ) {
 				mw.log( "mw.ClosedCaptions:: loadCaptionsFromApi: " + data.totalCount, data.objects );
-				if( data.objects.length ){
+				if( data.objects && data.objects.length ){
 					_this.loadCaptionsURLsFromApi( data.objects, callback );
 				} else {
 					// No captions
