@@ -90,6 +90,7 @@ mw.EmbedPlayerKplayer = {
 			flashvars.sourceType = 'url';
 			flashvars.ignoreStreamerTypeForSeek = true;
 			flashvars.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
+			this.streamerType = "hls";
 		}
 
 		if ( this.live && this.streamerType == 'rtmp' && !this.cancelLiveAutoPlay ) {
@@ -441,6 +442,9 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onSwitchingChangeComplete: function ( data, id ) {
+		if (data && data.newBitrate) {
+			this.triggerHelper( 'bitrateChange' , data.newBitrate );
+		}
 		this.mediaElement.setSourceByIndex ( data.newIndex );
 	},
 

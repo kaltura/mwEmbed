@@ -325,6 +325,11 @@
 			'dependencies' => array( 'mw.KAnalytics' ), 
 			'kalturaPluginName' => 'statistics'
 		),
+		"liveAnalytics" => array(
+			'scripts' => "resources/mw.KLiveAnalytics.js",
+			'dependencies' => array( 'mw.KBasePlugin' ),
+			'kalturaPluginName' => 'liveAnalytics'
+		),
 		'playbackRateSelectorPlugin' => array(
 			'scripts' => "resources/uiConfComponents/playbackRateSelector.js",
 			'dependencies' => 'mw.KBaseComponent',
