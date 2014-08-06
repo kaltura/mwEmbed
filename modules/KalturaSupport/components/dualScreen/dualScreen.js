@@ -32,7 +32,8 @@
 					'minimumSequenceDuration': 2
 				},
 				'touchMenuFadeout' : 3000,
-				'cuePointType': ['thumbCuePoint.Thumb']
+				'cuePointType': ['thumbCuePoint.Thumb'],
+				'mainViewDisplay': 2 // 1 - Main stream, 2 - Presentation
 			},
 			monitor: {},
 			controlBar: {},
@@ -301,6 +302,10 @@
 
 					_this.getSecondMonitor().prop = secondaryScreen.css(['top', 'left', 'width', 'height']);
 					_this.getSecondMonitor().obj.css(_this.getSecondMonitor().prop);
+					if (_this.getConfig("mainViewDisplay") == 2) {
+						_this.fsm.consumeEvent( "switch" );
+					}
+
 				} );
 
 				this.bind( 'onOpenFullScreen', function ( ) {
