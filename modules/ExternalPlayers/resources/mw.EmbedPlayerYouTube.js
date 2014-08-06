@@ -330,13 +330,15 @@
 				if (mw.isMobileDevice()){
 					$(".largePlayBtn").css("opacity",0);
 					$(".mwEmbedPlayer").width(0);
-					_this._playContorls = false;
-					$( _this ).trigger( 'onDisableInterfaceComponents', [] );
 				}
 			});
 
 			this.bindHelper ('playerReady' , function(){
 				$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
+				if (mw.isMobileDevice()){
+					_this._playContorls = false;
+					$( _this ).trigger( 'onDisableInterfaceComponents', [] );
+				}
 			});
 
 			this.bindHelper("onEndedDone", function(){
