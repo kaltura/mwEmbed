@@ -25,7 +25,6 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 		this._super();
 
 		this.bind('playerReady', $.proxy(function(){
-			this.templateData = null;
 			this.removeScreen();
 		}, this));
 
