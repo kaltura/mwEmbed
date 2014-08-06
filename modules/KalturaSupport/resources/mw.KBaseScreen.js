@@ -84,7 +84,6 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 		}
 		this.getPlayer().disableComponentsHover();
 		this.getScreen().fadeIn(400);
-
 	},
 	toggleScreen: function(){
 		if( this.isDisabled ) return ;
