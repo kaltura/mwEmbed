@@ -48,6 +48,7 @@
 					.addClass('maximize')
 			);
 
+			this.slCurrentTime = 0;
 			this.loadMedia( readyCallback );
 
 			//hide player until we click play
