@@ -2904,11 +2904,17 @@
 
 		bufferStart: function() {
 			if ( !this.isInSequence() && !this.buffering ) {
+				var _this = this;
 				this.buffering  = true;
 				mw.log("EmbedPlayer::bufferStart");
 				$( this ).trigger( 'bufferStartEvent' );
 				if ( !mw.getConfig( 'EmbedPlayer.DisableBufferingSpinner' ) ) {
-					this.addPlayerSpinner();
+					setTimeout( function() {
+						//avoid spinner for too short buffer
+						if ( _this.buffering ) {
+							_this.addPlayerSpinner();
+						}
+					}, _this.monitorRate);
 				}
 			}
 
