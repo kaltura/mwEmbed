@@ -337,9 +337,6 @@
 
 			this.bindHelper ('playerReady' , function(){
 				$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
-				if (mw.isMobileDevice()){
-					_this.disablePlayControls();
-				}
 			});
 
 			this.bindHelper("onEndedDone", function(){
