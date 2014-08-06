@@ -10,7 +10,7 @@
 				'showTooltip': false,
 				"displayImportance": 'high',
 				'templatePath': 'components/mediaList/mediaList.tmpl.html',
-				'cuePointType': ['annotation.Annotation', 'codeCuePoint.Code', 'thumbCuePoint.Thumb'],
+				'cuePointType': ['thumbCuePoint.Thumb'],
 				'oneSecRotatorSlidesLimit': 61,
 				'twoSecRotatorSlidesLimit': 250,
 				'maxRotatorSlides': 125,
@@ -109,6 +109,25 @@
 						_this.updateActiveItem();
 					}
 				});
+			},
+			isSafeEnviornment: function(){
+				var _this = this;
+				var res = false;
+				if (this.getPlayer().kCuePoints){
+					var cuePoints = this.getPlayer().kCuePoints.getCuePoints();
+					var filteredCuePoints = $.grep(cuePoints, function(cuePoint){
+						var found = false;
+						$.each(_this.getConfig('cuePointType'), function(i, cuePointType){
+							if (cuePointType == cuePoint.cuePointType) {
+								found = true;
+								return false;
+							}
+						});
+						return found;
+					});
+					res =  (filteredCuePoints.length > 0) ? true : false;
+				}
+				return res;
 			},
 			getComponent: function(){
 				if( ! this.$el ){

@@ -111,7 +111,7 @@ mw.FullScreenManager.prototype = {
 		}
 
 		// Check for native support for fullscreen and we are in an iframe server
-		if( screenfull && screenfull.enabled(doc) && !mw.isMobileChrome() ) {
+		if( screenfull && screenfull.enabled(doc) ) {
 			var fullscreenHeight = null;
 			var fsTarget = this.getFsTarget();
 			var escapeFullscreen = function( event ) {

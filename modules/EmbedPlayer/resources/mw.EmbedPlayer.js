@@ -87,6 +87,7 @@
 		// Mute state
 		"muted" : false,
 
+		"isFlavorSwitching" : false,
 		/**
 		 * Custom attributes for embedPlayer player: (not part of the html5
 		 * video spec)
@@ -2841,6 +2842,7 @@
 			var _this = this;
 			this.mediaElement.setSource( source );
 			if( ! this.isStopped() ){
+				this.isFlavorSwitching = true;
 				// Get the exact play time from the video element ( instead of parent embed Player )
 				var oldMediaTime = this.getPlayerElement().currentTime;
 				var oldPaused =  this.paused;
@@ -2882,6 +2884,10 @@
 					}
 				});
 			}
+		},
+
+		switchAudioTrack: function ( trackIndex ) {
+			mw.log('Error player does not multiple audio tracks' );
 		}
 	};
 
