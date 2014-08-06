@@ -2,18 +2,33 @@
 
 	mw.PluginManager.add( 'nativeCallout', mw.KBasePlugin.extend({
 		defaultConfig: {
-
+			"storeUrl": null,
+			"appUrl": null,
+			"iframeUrl": null
 		},
 		setup: function(){
 			// Bind player
 			this.addBindings();
+
+			if( !this.getConfig( "storeUrl" ) && mw.isIOS() ) {
+				this.setConfig( "storeUrl", "http://itunes.apple.com/app/id698657294" );
+			}
+
+			if( !this.getConfig( "appUrl" ) && mw.isIOS() ) {
+				this.setConfig( "appUrl", "kalturaPlayerToolkit://" );
+			}
+
+			if( !this.getConfig( "iframeUrl" ) ) {
+				this.setConfig( "iframeUrl", this.embedPlayer.getIframeSourceUrl() );
+			}
 		},
 		isSafeEnviornment: function(){
-			return mw.isMobileDevice() === true;
+			return mw.isIOS() === true;
 		},
 		addBindings: function() {
 			var _this = this;
-			this.bind('nativeCallout', function(event, nativeCalloutPlugin) {
+			this.bind('nativePlayCallout', function(event, nativeCalloutPlugin) {
+
 				if( !nativeCalloutPlugin.exist ) {
 					nativeCalloutPlugin.exist = true;
 				}
@@ -24,19 +39,17 @@
 
 		// New "doPlay" implementation when nativeCallout plugin exist on mobile devices
 		calloutNativePlayer: function() {
-			var mediaSpaceAppstoreId = "698657294";
-			var appstore = "http://itunes.apple.com/app/id" + mediaSpaceAppstoreId;
-			var appurl = "kalturaPlayerToolkit://?iframeUrl="+ this.embedPlayer.getIframeSourceUrl();
 
+			var _this = this;
 			var timeout;
 
 			$('<iframe />')
-				.attr('src', appurl)
+				.attr('src', _this.getConfig( "appUrl" ) + "?iframeUrl=" + _this.getConfig( "iframeUrl" ))
 				.attr('style', 'display:none;')
 				.appendTo('body');
 
 			timeout = setTimeout(function() {
-				document.location = appstore;
+				document.location = _this.getConfig( "storeUrl" );
 			}, 500);
 			window.addEventListener( 'pagehide', preventPopup );
 

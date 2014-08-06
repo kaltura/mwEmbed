@@ -994,7 +994,7 @@ mw.EmbedPlayerNative = {
 			'exist': false
 		};
 		if( mw.isMobileDevice() ) {
-			this.triggerHelper( 'nativeCallout',  [ nativeCalloutPlugin ] );
+			this.triggerHelper( 'nativePlayCallout',  [ nativeCalloutPlugin ] );
 		}
 
 		if( nativeCalloutPlugin.exist ) {
