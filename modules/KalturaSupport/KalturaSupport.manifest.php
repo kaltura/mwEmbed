@@ -4,6 +4,11 @@
  */
 
 $kgDefaultComponentAttr = array(
+	'plugin' => array(
+		'doc' => 'Should plugin be enabled',
+		'initvalue' => true,
+		'type' => 'boolean',
+	),
 	'parent' => array(
 		'doc' => 'Parent container for component. Components include default placement, leave as null if unsure.',
 		'type' => 'enum',
@@ -1218,6 +1223,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'label' => 'airPlay',
 		'model' => 'config.plugins.airPlay',
 	),
+	'nativeCallout' => array(
+		'description' => 'Supports replacing the player "play button" with a callout to native player, for Mobile Devices.',
+		'type' => 'featuremenu',
+		'label' => 'nativeCallout',
+		'model' => 'config.plugins.nativeCallout',
+	),
 	'related' => array(
 		'description' => 'Add the Related Videos screen at the end of the video to attract users to watch additional videos.',
 		'attributes' => array_merge($kgDefaultComponentAttr,
@@ -1251,8 +1262,9 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'clickUrl' => array(
 				'doc' => "<p style='text-align: left'>Defines the URL for a related item click</p>
 							    If this left blank the click will replace the current video with a new one.
-							    example: <b>http://my-custom-domain.com/?v={mediaProxy.entry.id}</b> as a custom
-							    URL with the entry id as postfix",
+							    example: <b>http://example.com/videos/{related.selectedEntry.id}</b> as a custom
+							    URL. The string {related.selectedEntry.id} will be replaced by id of the related item
+							     that was clicked",
 					'type' => 'string'
 				),
 				'itemsLimit' => array(

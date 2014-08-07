@@ -19,6 +19,7 @@
 		},
 
 		textSources: [],
+		defaultBottom: 15,
 
 		setup: function(){
 			var _this = this;
@@ -33,6 +34,10 @@
 				( this.getConfig( 'hideClosedCaptions') === true )
 			){
 				this.setConfig('displayCaptions', false );
+			}
+
+			if( (this.embedPlayer.isOverlayControls() && !this.embedPlayer.getInterface().find( '.controlBarContainer' ).is( ':hidden' )) || this.embedPlayer.useNativePlayerControls() ){
+				this.defaultBottom += this.embedPlayer.layoutBuilder.getHeight();
 			}
 
 			if ( this.getConfig('showEmbeddedCaptions') === true ) {
@@ -124,18 +129,9 @@
 				this.updateBelowVideoCaptionContainer();
 			}
 
-			// Setup display binding
-			this.bind( 'onShowControlBar', function(event, layout ){
+			this.bind( 'onHideControlBar onShowControlBar', function(event, layout ){
 				if ( _this.getPlayer().isOverlayControls() ) {
-					// Move the text track if present
-					_this.getPlayer().getInterface().find( '.track' )
-						.stop()
-						.animate( layout, 'fast' );
-				}
-			});
-
-			this.bind( 'onHideControlBar', function(event, layout ){
-				if ( _this.getPlayer().isOverlayControls() ) {
+					_this.defaultBottom = layout.bottom;
 					// Move the text track down if present
 					_this.getPlayer().getInterface().find( '.track' )
 						.stop()
@@ -633,13 +629,9 @@
 			return style;
 		},
 		getDefaultStyle: function(){
-			var defaultBottom = 15;
-			if( (this.embedPlayer.isOverlayControls() && !this.embedPlayer.getInterface().find( '.controlBarContainer' ).is( ':hidden' )) || this.embedPlayer.useNativePlayerControls() ){
-				defaultBottom += this.embedPlayer.layoutBuilder.getHeight();
-			}
 			var baseCss =  {
 				'position':'absolute',
-				'bottom': defaultBottom,
+				'bottom': this.defaultBottom,
 				'width': '100%',
 				'display': 'block',
 				'opacity': .8,

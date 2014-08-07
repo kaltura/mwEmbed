@@ -989,6 +989,19 @@ mw.EmbedPlayerNative = {
 		var vid = this.getPlayerElement();
 		// parent.$('body').append( $('<a />').attr({ 'style': 'position: absolute; top:0;left:0;', 'target': '_blank', 'href': this.getPlayerElement().src }).text('SRC') );
 		var _this = this;
+
+		var nativeCalloutPlugin = {
+			'exist': false
+		};
+		if( mw.isMobileDevice() ) {
+			this.triggerHelper( 'nativePlayCallout',  [ nativeCalloutPlugin ] );
+		}
+
+		if( nativeCalloutPlugin.exist ) {
+			// if nativeCallout plugin exist play implementation is changed
+			return;
+		}
+
 		// if starting playback from stoped state and not in an ad or otherise blocked controls state:
 		// restore player:
 		if( this.isStopped() && this._playContorls ){
@@ -1391,6 +1404,23 @@ mw.EmbedPlayerNative = {
 				_this.triggerHelper( 'embedPlayerError' );
 			}
 		}, 3000);
+	},
+
+	/**
+	 * buffer under-run
+	 * @private
+	 */
+	_onwaiting: function () {
+		//vod buffer events are being handled by EmbedPlayer.js
+		if ( this.isLive() ) {
+			this.bufferStart();
+		}
+	},
+
+	_oncanplay: function ( event ) {
+		if ( this.isLive() && this.buffering ) {
+			this.bufferEnd();
+		}
 	},
 	/**
 	 * Local onClip done function for native player.

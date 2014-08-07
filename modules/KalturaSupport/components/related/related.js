@@ -21,9 +21,10 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 	},
 	viewedEntries: [],
 	iconBtnClass: 'icon-related',
+
+
 	setup: function(){
 		var _this = this;
-
 		this.bind('playerReady', function(){
 			// Stop timer
 			_this.stopTimer();
@@ -49,6 +50,48 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 
 		this.bind('replayEvent', function(){
 			_this.stopTimer();
+		});
+	},
+
+	showScreen: function(){
+		this._super(); // this is an override of showScreen in mw.KBaseScreen.js - call super
+
+		// resize and crop from center all thumbnails
+		$('.item-inner').each(function() {
+			// set css class according to image aspect ratio
+			console.log( $(this).width() / $(this).height());
+			var cssClass = $(this).width() / $(this).height() > 1.45 ? 'wide' : 'square';
+			$(this).find("img").removeClass().addClass(cssClass);
+			var img = $(this).find("img")[0];
+
+			var divWidth = $(this).width();    // save img div container width for cropping logic
+			var divHeight = $(this).height();  // save img div container height for cropping logic
+
+			// crop image from center. use a timeout to make sure the image is already resized before changing its margins
+			setTimeout(function(){
+				if (cssClass == 'wide'){
+					var heightOffset = ($(img).height()-divHeight)/2;
+					if (heightOffset > 0){
+						$(img).css("margin-top", heightOffset * (-1) + 'px');
+					}else{
+						$(img).width($(img).width()*divHeight/$(img).height());
+						$(img).height(divHeight);
+						var widthOffset = ($(img).width()-divWidth)/2;
+						$(img).css("margin-left", widthOffset * (-1) + 'px');
+					}
+				}else{
+					var widthOffset = ($(img).width()-divWidth)/2;
+					if (widthOffset > 0){
+						$(img).css("margin-left", widthOffset * (-1) + 'px');
+					}else{
+						$(img).height($(img).height()*divWidth/$(img).width());
+						$(img).width(divWidth);
+						var heightOffset = ($(img).height()-divHeight)/2;
+						$(img).css("margin-top", heightOffset * (-1) + 'px');
+					}
+				}
+
+			},200);
 		});
 	},
 	startTimer: function(){
@@ -222,11 +265,28 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 
 		});
 	},
+
 	changeMedia: function( e, data ){
 		this.stopTimer();
 		var _this = this;
-		this.getPlayer().sendNotification('relatedVideoSelect', data);
+		//look for the entry in case this is a click
+		if(this.getConfig('clickUrl')){
+			if(this.templateData.nextItem.id && this.templateData.nextItem.id == data.entryId ){
+				//search in the next item
+				data = this.templateData.nextItem;
+				this.setConfig('selectedEntry',this.templateData.nextItem);
+			} else if(this.templateData.moreItems) {
+				// look for the entry in the other items
+				for (var i = 0; i < this.templateData.moreItems.length;  i++) {
+					if(data.entryId == this.templateData.moreItems[i].id ){
+						data = this.templateData.moreItems[i];
+						this.setConfig('selectedEntry',this.templateData.moreItems[i]);
+					}
+				}
+			}
+		}
 
+		this.getPlayer().sendNotification('relatedVideoSelect', data);
 
 		if(this.getConfig('clickUrl')){
 			try {

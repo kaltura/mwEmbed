@@ -300,7 +300,6 @@
 		updatePlayhead: function () {
 			if ( this.seeking ) {
 				this.seeking = false;
-				this.slCurrentTime = this.playerObject.currentTime;
 			}
 		},
 

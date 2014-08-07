@@ -927,7 +927,6 @@ HTML;
 
 		// Check if file exists
 		if( !file_exists( $path ) ){
-			die('file does not exists: ' . $path);
 			return false;
 		}
 

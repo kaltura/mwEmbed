@@ -69,6 +69,8 @@ mw.DoubleClick.prototype = {
 
 	leadWithFlash: true,
 
+	adManagerLoaded: false,
+
 
 
 	init: function( embedPlayer, callback, pluginName ){
@@ -108,12 +110,23 @@ mw.DoubleClick.prototype = {
 			_this.leadWithFlash = _this.getConfig( 'leadWithFlash' );
 		}
 
+		//native browser on Android 4.4 has "Chrome" in it, so this is the "new" way to test its user agent
+		if ( mw.isAndroid44() && navigator.userAgent.indexOf( 'Version/' ) != -1 ) {
+			mw.log("DoubleClick::user agent not supported, return" );
+			callback();
+			return;
+		}
+
 		if ( mw.isIE8() || mw.isIE9() || _this.leadWithFlash ) {
 			if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
 				mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
 				_this.isChromeless = true;
 				_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
 					_this.bindChromelessEvents();
+				});
+				_this.embedPlayer.bindHelper( 'volumeChanged' + this.bindPostfix, function(event, percent){
+					mw.log("DoubleClick::chromeless volumeChanged: " + percent );
+					_this.embedPlayer.setPlayerElementVolume( percent );
 				});
 				_this.addManagedBinding();
 				callback();
@@ -123,6 +136,7 @@ mw.DoubleClick.prototype = {
 				return;
 			}
 		}
+
 		// Load double click ima per doc:
 		this.loadIma( function(){
 			// Determine if we are in managed or kaltura point based mode.
@@ -165,8 +179,10 @@ mw.DoubleClick.prototype = {
 		if ( flashVars['adTagUrl'] ){
 			flashVars['adTagUrl'] = escape(flashVars['adTagUrl']); // escape adTagUrl to prevent Flash string parsing error
 		}
-		if ( flashVars['path'] ){
-			delete flashVars['path']; // don't force Chromeless plugin path - it will load automatically
+		//we shouldn't send these params, they are unnecessary and break the flash object
+		var ignoredVars = ['path', 'customParams'];
+		for ( var i=0; i< ignoredVars.length; i++ ) {
+			delete flashVars[ignoredVars[i]];
 		}
 		embedPlayer.setKalturaConfig('kdpVars', 'doubleClick', flashVars);
 	},
@@ -195,14 +211,27 @@ mw.DoubleClick.prototype = {
 	 * Load the google IMA library:
 	 */
 	loadIma:function( successCB, failureCB ){
+		var _this = this;
+		var isLoaded = false;
+		var timeoutVal = _this.getConfig("adsManagerLoadedTimeout") || 5000;
+		mw.log( "DoubleClick::loadIma: start timer for adsManager loading check: " + timeoutVal + "ms");
+		setTimeout(function(){
+			if ( !isLoaded ){
+				mw.log( "DoubleClick::loadIma: adsManager failed loading after " + timeoutVal + "ms");
+				failureCB();
+			}
+		}, timeoutVal);
+
 		var imaURL =  '//s0.2mdn.net/instream/html5/ima3.js';
 		if ( this.getConfig( 'debugMode' ) === true ){
 			imaURL =  '//s0.2mdn.net/instream/html5/ima3_debug.js';
 		}
 		$.getScript( imaURL , function() {
+			isLoaded = true;
 			successCB();
 		} )
 		.fail( function( jqxhr, settings, errorCode ) {
+			isLoaded = true;
 			failureCB( errorCode );
 		} );
 	},
@@ -360,9 +389,18 @@ mw.DoubleClick.prototype = {
 		adsRequest.nonLinearAdSlotWidth = size.width;
 		adsRequest.nonLinearAdSlotHeight = size.height;
 
+		var timeoutVal = _this.getConfig("adsManagerLoadedTimeout") || 5000;
+		mw.log( "DoubleClick::requestAds: start timer for adsManager loading check: " + timeoutVal + "ms");
+		this.adsManagerLoadedTimeoutId = setTimeout(function(){
+			if ( !_this.adManagerLoaded ){
+				mw.log( "DoubleClick::requestAds: adsManager failed loading after " + timeoutVal + "ms");
+				_this.onAdError("adsManager failed loading!");
+			}
+		}, timeoutVal);
+
 		// if on chromeless - reuest ads using the KDP DoubleClick plugin instead of the JS plugin
 		if (this.isChromeless){
-			adsRequest.adTagUrl = escape(adsRequest.adTagUrl);
+			adsRequest.adTagUrl = encodeURIComponent(adsRequest.adTagUrl);
 			_this.embedPlayer.getPlayerElement().sendNotification( 'requestAds', adsRequest );
 			mw.log( "DoubleClick::requestAds: Chromeless player request ad from KDP plugin");
 			return;
@@ -394,14 +432,6 @@ mw.DoubleClick.prototype = {
 		}catch(e){
 			_this.onAdError( e );
 		}
-		var timeoutVal = _this.getConfig("adsManagerLoadedTimeout") || 5000;
-		mw.log( "DoubleClick::requestAds: start timer for adsManager loading check: " + timeoutVal + "ms");
-		this.adsManagerLoadedTimeoutId = setTimeout(function(){
-			if (_this.adsManager == null){
-				mw.log( "DoubleClick::requestAds: adsManager failed loading after " + timeoutVal + "ms");
-				_this.onAdError("adsManager failed loading!");
-			}
-		}, timeoutVal);
 	},
 	// Handles the ads manager loaded event. In case of no ads, the AD_ERROR
 	// event is issued and error handler is invoked.
@@ -422,6 +452,9 @@ mw.DoubleClick.prototype = {
 		// and play ads automatically.
 		//
 		_this.adsManager = loadedEvent.getAdsManager( this.embedPlayer );
+		if ( _this.adManager != null ) {
+			_this.adManagerLoaded = true;
+		}
 
 		// add a global ad manager refrence:
 		$( _this.embedPlayer ).data( 'doubleClickAdsMangerRef', _this.adsManager );
@@ -662,6 +695,10 @@ mw.DoubleClick.prototype = {
 	bindChromelessEvents: function(){
 		var _this = this;
 		// bind to chromeless player events
+		this.embedPlayer.getPlayerElement().subscribe(function(){
+			_this.adManagerLoaded = true;
+		}, 'adLoadedEvent');
+
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			// trigger ad play event
 			$(_this.embedPlayer).trigger("onAdPlay",[adInfo.adID]);

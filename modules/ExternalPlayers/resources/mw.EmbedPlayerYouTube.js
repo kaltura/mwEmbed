@@ -58,6 +58,13 @@
 				}
 				var stateName;
 				var embedPlayer = $('#' + window["pid"].replace( 'pid_', '' ) )[0];
+
+				// enable controls (if disabled on mobile devices)
+				if (mw.isMobileDevice()){
+					_this._playContorls = true;
+					$( _this ).trigger( 'onEnableInterfaceComponents', []);
+				}
+
 				// move to other method
 				switch( event ){
 					case -1:
@@ -65,18 +72,18 @@
 						break;
 					case 0:
 						stateName = "ended";
-						this.hasEnded = true;
+						_this.hasEnded = true;
 						break;
 					case 1:
 						$(embedPlayer).trigger("onPlayerStateChange",["play"]);
 						// hide the player container so that youtube click through work
+						$(".mwEmbedPlayer").width("100%");
 						$('.mwEmbedPlayer').hide();
 						//hide the poster
 						$(".playerPoster").hide();
 						$('.blackBoxHide').hide();
 						_this.play();
 						stateName = "playing";
-						//$(this).hide();
 						// update duraiton
 						_this.setDuration();
 						// trigger the seeked event only if this is seek and not in play
@@ -88,6 +95,9 @@
 						}
 						break;
 					case 2:
+						if (mw.isMobileDevice()){
+							$(".largePlayBtn").hide();
+						}
 						stateName = "paused";
 						$(embedPlayer).trigger("onPlayerStateChange",["pause"]);
 						_this.parent_pause();
@@ -106,7 +116,7 @@
 
 			};
 			window['hidePlayer'] = function( event ){
-				$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
+
 			}
 			window['onError'] = function( event ){
 				mw.log("Error! YouTubePlayer" ,2);
@@ -137,8 +147,6 @@
 			};
 			//YOUTUBE IFRAME PLAYER READY (Not the Iframe - the player itself)
 			window['onIframePlayerReady'] = function( event ){
-				//autoplay
-				$('#pid_kaltura_player').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
 				window['iframePlayer'] = event.target;
 				//autoplay
 				if(mw.getConfig('autoPlay')){
@@ -147,7 +155,10 @@
 					window['hidePlayer']();
 				}
 
-
+				if (mw.isMobileDevice()){
+					$(".largePlayBtn").hide();
+					$(".mwEmbedPlayer").hide();
+				}
 
 			};
 			// YOUTUBE FLASH PLAYER READY
@@ -156,7 +167,6 @@
 				$('.timed-text').hide();
 				$('.ui-icon-arrowthickstop-1-s').hide();
 				$('.ui-icon-flag').hide();
-				$('#pid_kaltura_player').after('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
 				var flashPlayer = $( '#' + playerIdStr )[0];
 				flashPlayer.addEventListener("onStateChange", "onPlayerStateChange");
 				flashPlayer.addEventListener("onError", "onError");
@@ -315,16 +325,38 @@
 		addBindings: function(){
 			var _this = this;
 			mw.log("addBindings" , 5);
-			this.bindHelper ('addControlBarComponent' , function(){
-//			$('.ui-icon-image').hide();
-//			$('.ui-icon-flag').hide();
+
+			this.bindHelper ('layoutBuildDone' , function(){
+				if (mw.isMobileDevice()){
+					$(".largePlayBtn").css("opacity",0);
+					$(".mwEmbedPlayer").width(0);
+				}
 			});
+
+			this.bindHelper ('playerReady' , function(){
+				$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
+				if (mw.isMobileDevice()){
+					_this._playContorls = false;
+					$( _this ).trigger( 'onDisableInterfaceComponents', [] );
+				}
+			});
+
 			this.bindHelper("onEndedDone", function(){
-				_this.getPlayerElement().seekTo(0);  // fix for a bug in replay (loop)
-				_this.pause();
+				// restore the black cover after layout update is done (it is removed by updatePosterHTML in EmbedPlayer.js)
 				setTimeout(function(){
-					$(_this).trigger("onPlayerStateChange",["end"]); // this will trigger the replay button to appear
-				},200);
+					$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
+				},100);
+				if (mw.isMobileDevice() && mw.isIpad()){
+					_this.getPlayerElement().stopVideo();
+					_this.getPlayerElement().pauseVideo();
+					_this.getPlayerElement().seekTo(0);
+				}else{
+					_this.getPlayerElement().seekTo(0);  // fix for a bug in replay (loop)
+					setTimeout(function(){
+						$(_this).trigger("onPlayerStateChange",["end"]); // this will trigger the replay button to appear
+						_this.pause();
+					},200);
+				}
 
 			})
 		},
@@ -405,9 +437,11 @@
 		 */
 		play: function(){
 			var _this = this;
-
 			if(this.hasEnded){
-				//handle replay
+				if (mw.isMobileDevice()){
+					$(".largePlayBtn").hide();
+					$(".mwEmbedPlayer").hide();
+				}
 			}
 			if( this.parent_play() ){
 				if(_this.getPlayerElement())
