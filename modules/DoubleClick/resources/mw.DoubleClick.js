@@ -114,6 +114,7 @@ mw.DoubleClick.prototype = {
 			if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
 				mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
 				_this.isChromeless = true;
+				_this.prevSlotType = 'none';
 				_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
 					_this.bindChromelessEvents();
 				});
@@ -679,8 +680,11 @@ mw.DoubleClick.prototype = {
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			// trigger ad play event
 			$(_this.embedPlayer).trigger("onAdPlay",[adInfo.adID]);
+			if ( _this.currentAdSlotType != _this.prevSlotType ) {
+				_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
+				_this.prevSlotType = _this.currentAdSlotType;
+			}
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', adInfo.duration );
-			_this.embedPlayer.hideSpinner();
 			$(".mwEmbedPlayer").hide();
 		},'adStart');
 
@@ -728,7 +732,7 @@ mw.DoubleClick.prototype = {
 				}
 			}
 			if (_this.currentAdSlotType !== 'postroll' ){
-				_this.restorePlayer();
+				_this.restorePlayer( null, true );
 				setTimeout(function(){
 					_this.embedPlayer.startMonitor();
 					_this.embedPlayer.getPlayerElement().play();
@@ -892,7 +896,7 @@ mw.DoubleClick.prototype = {
 		}
 		this.restorePlayer();
 	},
-	restorePlayer: function( onContentComplete ){
+	restorePlayer: function( onContentComplete, adPlayed ){
 		if (this.isdestroy){
 			return;
 		}
@@ -912,7 +916,7 @@ mw.DoubleClick.prototype = {
 			this.restorePlayerCallback = null;
 		} else { // do a manual restore:
 			// restore player with normal events:
-			this.embedPlayer.adTimeline.restorePlayer();
+			this.embedPlayer.adTimeline.restorePlayer( null, adPlayed);
 			// managed complete ... call clip done if content complete.
 			if( onContentComplete ){
 				if (_this.postRollCallback){
