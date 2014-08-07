@@ -26,6 +26,8 @@ mw.DoubleClick.prototype = {
 	// The monitor interval index:
 	adMonitor: null,
 
+	shouldPausePlaylist: false,
+
 	// store the ad start time
 	adPreviousTimeLeft: null,
 	contentPlaying: false,
@@ -221,12 +223,18 @@ mw.DoubleClick.prototype = {
 				_this.sequenceProxy = sequenceProxy;
 				// if a preroll set it as such:
 				_this.currentAdSlotType = 'preroll';
+				// set flag that this ad has prerolls so playlists should pause before playback
+				_this.shouldPausePlaylist = true;
 				// Setup the restore callback
 				_this.restorePlayerCallback = callback;
 				// Request ads
 				mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
 				_this.requestAds( _this.getConfig( 'adTagUrl' ) );
 			}
+		});
+
+		_this.embedPlayer.bindHelper( 'Playlist_PlayClip', function( event, clipIndex, autoContinue, playback ){
+			playback.shouldPause = _this.shouldPausePlaylist;
 		});
 
 		_this.embedPlayer.bindHelper( 'AdSupport_midroll' + _this.bindPostfix, function( event, sequenceProxy ){
