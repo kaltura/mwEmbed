@@ -313,7 +313,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	getClipList: function(){
 		return this.clipList;
 	},
-	playClip: function( embedPlayer, clipIndex, callback ){
+	playClip: function( embedPlayer, clipIndex, callback, shouldPause ){
 		var _this = this
 		if( !embedPlayer ){
 			mw.log("Error:: PlaylistHandlerKaltura:playClip > no embed player");
@@ -369,8 +369,20 @@ mw.PlaylistHandlerKaltura.prototype = {
 	 	_this.setClipIndex( clipIndex );
 		// Use internal changeMedia call to issue all relevant events
 	 	
-	 	// set autoplay to true to continue to playback: 
-	 	embedPlayer.autoplay = true;
+	 	// set autoplay to true to continue to playback:
+		embedPlayer.autoplay = true;
+		if (shouldPause && shouldPause === true){
+			mw.log("PlaylistHandlerKaltura::playClip::shouldPause = true. Will pause next clip.");
+			embedPlayer.autoplay = false;
+			// in case we don't have a preroll - autoplay
+			setTimeout(function(){
+				if (!embedPlayer.isInSequence()){
+					mw.log("PlaylistHandlerKaltura::playClip::shouldPause = true but not isInSequence - continue playback.");
+					embedPlayer.play();
+				}
+			},3000);
+		}
+
 		embedPlayer.sendNotification( "changeMedia", {'entryId' : this.getClip( clipIndex ).id, 'playlistCall': true} );
 	},
 	drawEmbedPlayer: function( clipIndex, callback ){
