@@ -2031,7 +2031,7 @@
 		inPreSequence: false,
 		replayEventCount : 0,
 		play: function() {
-			if (this.currentState == "end"){
+			if ( this.currentState == "end" && !mw.isIpad() ){
 				// prevent getting another clipdone event on replay
 				this.setCurrentTime(0.01);
 			}
