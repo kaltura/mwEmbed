@@ -196,6 +196,10 @@ mw.PluginManager.add( 'related', mw.KBaseScreen.extend({
 			if( ! _this.isValidResult( data ) ) {
 				return ;
 			}
+			// Work around for PLAT-1680 limit not being respected: 
+			if( data.length > parseInt( _this.getConfig('itemsLimit') ) ){
+				data = data.slice( 0, parseInt( _this.getConfig('itemsLimit') ) );
+			}
 			callback( data );
 
 		});
