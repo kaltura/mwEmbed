@@ -484,6 +484,41 @@ mw.DoubleClick.prototype = {
 		mw.log( "DoubleClick::adsManager.play" );
 		_this.adsManager.start();
 	},
+	displayCompanions: function(ad){
+		if ( this.getConfig( 'disableCompanionAds' )){
+			return;
+		}
+		if ( this.getConfig( 'htmlCompanions' )){
+			var companions = this.getConfig( 'htmlCompanions').split(";");
+			for (var i=0; i < companions.length; i++){
+				var companionsArr = companions[i].split(":");
+				if (companionsArr.length == 3){
+					var companionID = companionsArr[0];
+					var adSlotWidth = companionsArr[1];
+					var adSlotHeight = companionsArr[2];
+					var companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, {resourceType: google.ima.CompanionAdSelectionSettings.ResourceType.STATIC, creativeType: google.ima.CompanionAdSelectionSettings.CreativeType.IMAGE});
+					// match companions to targets
+					if (companionAds.length > 0){
+						var companionAd = companionAds[0];
+						// Get HTML content from the companion ad.
+						var content = companionAd.getContent();
+						this.showCompanion(companionID, content);
+					}
+				}
+			}
+		}
+	},
+	showCompanion: function(companionID, content){
+		// Check the iframe parent target:
+		try{
+			var targetElm = window['parent'].document.getElementById( companionID );
+			if( targetElm ){
+				targetElm.innerHTML = content;
+			}
+		} catch( e ){
+			mw.log( "Error: DoubleClick could not access parent iframe" );
+		}
+	},
 	addAdMangerListeners: function(){
 		var _this = this;
 		var adsListener = function( eventType, callback ){
@@ -491,6 +526,10 @@ mw.DoubleClick.prototype = {
 				google.ima.AdEvent.Type[ eventType ],
 				function( event ){
 					mw.log( "DoubleClick::AdsEvent:" + eventType );
+					if (event.type === google.ima.AdEvent.Type.STARTED) {
+						// Get the ad from the event and display companions.
+						_this.displayCompanions(event.getAd());
+					}
 					if( $.isFunction( callback ) ){
 						callback( event );
 					}
@@ -733,7 +772,11 @@ mw.DoubleClick.prototype = {
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			$(_this.embedPlayer).trigger('onAdComplete',[adInfo.adID, mw.npt2seconds($(".currentTimeLabel").text())]);
-		},'adCompleted');
+		},'adCompleted', true);
+
+		this.embedPlayer.getPlayerElement().subscribe(function(companionInfo){
+			_this.showCompanion(companionInfo.companionID, companionInfo.content);
+		},'displayCompanion', true);
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			_this.restorePlayer(true);
