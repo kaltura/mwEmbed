@@ -269,7 +269,7 @@ mw.EmbedPlayerKplayer = {
 	 * update the interface
 	 */
 	onPause: function() {
-		$( this ).trigger( "onpause" );
+		$( this ).trigger( "pause" );
 	},
 
 	/**
@@ -298,7 +298,6 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onClipDone: function() {
-		$( this ).trigger( "onpause" );
 		this.parent_onClipDone();
 		this.preSequenceFlag = false;
 	},
