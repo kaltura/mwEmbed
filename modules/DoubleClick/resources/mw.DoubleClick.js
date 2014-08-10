@@ -686,7 +686,7 @@ mw.DoubleClick.prototype = {
 			}
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', adInfo.duration );
 			$(".mwEmbedPlayer").hide();
-		},'adStart');
+		},'adStart', true);
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			_this.isLinear = adInfo.isLinear;
@@ -698,7 +698,7 @@ mw.DoubleClick.prototype = {
 					_this.embedPlayer.getPlayerElement().play();
 				},250);
 			}
-		},'adLoaded');
+		},'adLoaded', true);
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			$(_this.embedPlayer).trigger('onAdComplete',[adInfo.adID, mw.npt2seconds($(".currentTimeLabel").text())]);
@@ -710,12 +710,12 @@ mw.DoubleClick.prototype = {
 				_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', _this.entryDuration );
 				_this.embedPlayer.triggerHelper( 'timeupdate', 0);
 			}
-		},'allAdsCompleted');
+		},'allAdsCompleted', true);
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', (adInfo.duration - adInfo.remain));
 			_this.embedPlayer.updatePlayHead( adInfo.time / adInfo.duration );
-		},'adRemainingTimeChange');
+		},'adRemainingTimeChange', true);
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			_this.embedPlayer.sequenceProxy.isInSequence = false;
@@ -738,13 +738,13 @@ mw.DoubleClick.prototype = {
 					_this.embedPlayer.getPlayerElement().play();
 				},100);
 			}
-		},'contentResumeRequested');
+		},'contentResumeRequested', true);
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			_this.entryDuration = _this.embedPlayer.getDuration();
 			_this.embedPlayer.sequenceProxy.isInSequence = true;
 			_this.embedPlayer.stopMonitor();
-		},'contentPauseRequested');
+		},'contentPauseRequested', true);
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			setTimeout(function(){
@@ -752,7 +752,7 @@ mw.DoubleClick.prototype = {
 				$(".mwEmbedPlayer").hide();
 				_this.restorePlayer();
 			},100);
-		},'adsLoadError');
+		},'adsLoadError', true);
 
 	},
 	getPlayerSize: function(){
