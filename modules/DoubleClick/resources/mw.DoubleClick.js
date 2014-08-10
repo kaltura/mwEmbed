@@ -179,8 +179,10 @@ mw.DoubleClick.prototype = {
 		if ( flashVars['adTagUrl'] ){
 			flashVars['adTagUrl'] = escape(flashVars['adTagUrl']); // escape adTagUrl to prevent Flash string parsing error
 		}
-		if ( flashVars['path'] ){
-			delete flashVars['path']; // don't force Chromeless plugin path - it will load automatically
+		//we shouldn't send these params, they are unnecessary and break the flash object
+		var ignoredVars = ['path', 'customParams'];
+		for ( var i=0; i< ignoredVars.length; i++ ) {
+			delete flashVars[ignoredVars[i]];
 		}
 		embedPlayer.setKalturaConfig('kdpVars', 'doubleClick', flashVars);
 	},
@@ -398,7 +400,7 @@ mw.DoubleClick.prototype = {
 
 		// if on chromeless - reuest ads using the KDP DoubleClick plugin instead of the JS plugin
 		if (this.isChromeless){
-			adsRequest.adTagUrl = escape(adsRequest.adTagUrl);
+			adsRequest.adTagUrl = encodeURIComponent(adsRequest.adTagUrl);
 			_this.embedPlayer.getPlayerElement().sendNotification( 'requestAds', adsRequest );
 			mw.log( "DoubleClick::requestAds: Chromeless player request ad from KDP plugin");
 			return;

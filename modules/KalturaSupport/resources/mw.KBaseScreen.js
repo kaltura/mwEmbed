@@ -24,9 +24,7 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 		// Make sure we will call _addBindings on KBaseComponent
 		this._super();
 
-		this.bind('playerReady', $.proxy(function(){
-			this.removeScreen();
-		}, this));
+		this.bindCleanScreen();
 
 		this.bind('onplay', $.proxy(function(){
 			if( this.isScreenVisible() ){
@@ -57,8 +55,16 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 		}, this));
 	},
 
+	bindCleanScreen: function(){
+		// TODO: should bind against onChangeMedia instead, to support screens on "Start" screen.
+		this.bind('playerReady', $.proxy(function(){
+			this.removeScreen();
+		}, this));
+	},
+
 	removeScreen: function(){
 		if( this.$screen ){
+			this.log('Remove Screen');
 			this.$screen.remove();
 			this.$screen = null;
 		}
@@ -83,7 +89,10 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 			this.pausePlayback();
 		}
 		this.getPlayer().disableComponentsHover();
-		this.getScreen().fadeIn(400);
+		this.getScreen().fadeIn(400, $.proxy(function(){
+			this.getPlayer().triggerHelper('showScreen', [this.pluginName]);
+		}, this));
+
 	},
 	toggleScreen: function(){
 		if( this.isDisabled ) return ;
@@ -100,13 +109,18 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 		return this.getConfig('usePreviewPlayer') && this.getConfig('previewPlayerEnabled');
 	},
 	pausePlayback: function(){
-		this.wasPlaying = this.getPlayer().isPlaying();
+		var player = this.getPlayer();
+		this.wasPlaying = player.isPlaying();
 		if( this.wasPlaying ){
-			this.getPlayer().pause();
+			// We use timeout to avoid race condition when we show screen on "playing" state
+			setTimeout(function(){
+				player.pause();
+			},0);
 		}
 	},
 	restorePlayback: function(){
 		if( this.wasPlaying ) {
+			this.wasPlaying = false;
 			this.getPlayer().play();
 		}
 	},
