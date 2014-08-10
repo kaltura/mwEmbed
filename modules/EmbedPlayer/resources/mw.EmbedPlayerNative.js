@@ -1440,9 +1440,7 @@ mw.EmbedPlayerNative = {
 		var _this = this;
 
 		if ( _this.isImagePlayScreen() && !_this.isPlaylistScreen() ) {
-			if (!this.keepNativeFullScreen) {
-				_this.getPlayerElement().webkitExitFullScreen();
-			}
+			this.closeNativeFullScreen();
 		}
 
 		// add clip done binding ( will only run on sequence complete )
@@ -1452,14 +1450,17 @@ mw.EmbedPlayerNative = {
 				_this.keepPlayerOffScreenFlag = false;
 			} else {
 				// exit full screen mode on the iPhone
-				mw.log( 'EmbedPlayer::onClipDone: Exit full screen' );
-				if (!_this.keepNativeFullScreen) {
-					_this.getPlayerElement().webkitExitFullScreen();
-				}
+				this.closeNativeFullScreen();
 			}
 		} );
 	},
 
+	closeNativeFullScreen: function(){
+		if (!mw.getConfig("EmbedPlayer.ForceNativeFullscreenOnClipDone") && !this.keepNativeFullScreen){
+			mw.log( 'EmbedPlayer::onClipDone: Exit full screen' );
+			this.getPlayerElement().webkitExitFullScreen();
+		}
+	},
 	enableNativeControls: function(){
 		$( this.getPlayerElement() ).attr('controls', "true");
 	},
