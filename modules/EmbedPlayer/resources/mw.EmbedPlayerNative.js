@@ -1254,7 +1254,7 @@ mw.EmbedPlayerNative = {
 			this.isFlavorSwitching = false;
 			if( this._propagateEvents ){
 				mw.log( "EmbedPlayerNative:: trigger: seeked" );
-				this.triggerHelper( 'seeked' );
+				this.triggerHelper( 'seeked' ,[this.currentTime]);
 			}
 		}
 		this.hideSpinner();
