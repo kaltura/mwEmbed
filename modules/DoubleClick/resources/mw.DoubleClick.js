@@ -111,7 +111,7 @@ mw.DoubleClick.prototype = {
 		}
 
 		//native browser on Android 4.4 has "Chrome" in it, so this is the "new" way to test its user agent
-		if ( mw.isAndroid44() && navigator.userAgent.indexOf( 'Version/' ) != -1 ) {
+		if ( mw.isAndroid44() && mw.isAndroidChromeNativeBrowser() ) {
 			mw.log("DoubleClick::user agent not supported, return" );
 			callback();
 			return;
