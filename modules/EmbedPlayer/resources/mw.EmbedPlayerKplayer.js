@@ -269,7 +269,7 @@ mw.EmbedPlayerKplayer = {
 	 * update the interface
 	 */
 	onPause: function() {
-		$( this ).trigger( "onpause" );
+		$( this ).trigger( "pause" );
 	},
 
 	/**
@@ -298,7 +298,6 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onClipDone: function() {
-		$( this ).trigger( "onpause" );
 		this.parent_onClipDone();
 		this.preSequenceFlag = false;
 	},
@@ -429,7 +428,7 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onPlayerSeekEnd: function () {
-		$( this ).trigger( 'seeked' );
+		$( this ).trigger( 'seeked',[this.playerObject.getCurrentTime()]);
 		this.seeking = false;
 		this.flashCurrentTime = this.playerObject.getCurrentTime();
 		if( this.seekInterval  ) {

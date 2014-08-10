@@ -26,6 +26,8 @@ mw.DoubleClick.prototype = {
 	// The monitor interval index:
 	adMonitor: null,
 
+	shouldPausePlaylist: false,
+
 	// store the ad start time
 	adPreviousTimeLeft: null,
 	contentPlaying: false,
@@ -121,6 +123,7 @@ mw.DoubleClick.prototype = {
 			if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
 				mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
 				_this.isChromeless = true;
+				_this.prevSlotType = 'none';
 				_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
 					_this.bindChromelessEvents();
 				});
@@ -244,12 +247,18 @@ mw.DoubleClick.prototype = {
 				_this.sequenceProxy = sequenceProxy;
 				// if a preroll set it as such:
 				_this.currentAdSlotType = 'preroll';
+				// set flag that this ad has prerolls so playlists should pause before playback
+				_this.shouldPausePlaylist = true;
 				// Setup the restore callback
 				_this.restorePlayerCallback = callback;
 				// Request ads
 				mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
 				_this.requestAds( _this.getConfig( 'adTagUrl' ) );
 			}
+		});
+
+		_this.embedPlayer.bindHelper( 'Playlist_PlayClip', function( event, clipIndex, autoContinue, playback ){
+			playback.shouldPause = _this.shouldPausePlaylist;
 		});
 
 		_this.embedPlayer.bindHelper( 'AdSupport_midroll' + _this.bindPostfix, function( event, sequenceProxy ){
@@ -702,10 +711,13 @@ mw.DoubleClick.prototype = {
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			// trigger ad play event
 			$(_this.embedPlayer).trigger("onAdPlay",[adInfo.adID]);
+			if ( _this.currentAdSlotType != _this.prevSlotType ) {
+				_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
+				_this.prevSlotType = _this.currentAdSlotType;
+			}
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', adInfo.duration );
-			_this.embedPlayer.hideSpinner();
 			$(".mwEmbedPlayer").hide();
-		},'adStart');
+		},'adStart', true);
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			_this.isLinear = adInfo.isLinear;
@@ -717,7 +729,7 @@ mw.DoubleClick.prototype = {
 					_this.embedPlayer.getPlayerElement().play();
 				},250);
 			}
-		},'adLoaded');
+		},'adLoaded', true);
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			$(_this.embedPlayer).trigger('onAdComplete',[adInfo.adID, mw.npt2seconds($(".currentTimeLabel").text())]);
@@ -729,12 +741,12 @@ mw.DoubleClick.prototype = {
 				_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', _this.entryDuration );
 				_this.embedPlayer.triggerHelper( 'timeupdate', 0);
 			}
-		},'allAdsCompleted');
+		},'allAdsCompleted', true);
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', (adInfo.duration - adInfo.remain));
 			_this.embedPlayer.updatePlayHead( adInfo.time / adInfo.duration );
-		},'adRemainingTimeChange');
+		},'adRemainingTimeChange', true);
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			_this.embedPlayer.sequenceProxy.isInSequence = false;
@@ -751,19 +763,19 @@ mw.DoubleClick.prototype = {
 				}
 			}
 			if (_this.currentAdSlotType !== 'postroll' ){
-				_this.restorePlayer();
+				_this.restorePlayer( null, true );
 				setTimeout(function(){
 					_this.embedPlayer.startMonitor();
 					_this.embedPlayer.getPlayerElement().play();
 				},100);
 			}
-		},'contentResumeRequested');
+		},'contentResumeRequested', true);
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			_this.entryDuration = _this.embedPlayer.getDuration();
 			_this.embedPlayer.sequenceProxy.isInSequence = true;
 			_this.embedPlayer.stopMonitor();
-		},'contentPauseRequested');
+		},'contentPauseRequested', true);
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			setTimeout(function(){
@@ -771,7 +783,7 @@ mw.DoubleClick.prototype = {
 				$(".mwEmbedPlayer").hide();
 				_this.restorePlayer();
 			},100);
-		},'adsLoadError');
+		},'adsLoadError', true);
 
 	},
 	getPlayerSize: function(){
@@ -915,7 +927,7 @@ mw.DoubleClick.prototype = {
 		}
 		this.restorePlayer();
 	},
-	restorePlayer: function( onContentComplete ){
+	restorePlayer: function( onContentComplete, adPlayed ){
 		if (this.isdestroy){
 			return;
 		}
@@ -935,7 +947,7 @@ mw.DoubleClick.prototype = {
 			this.restorePlayerCallback = null;
 		} else { // do a manual restore:
 			// restore player with normal events:
-			this.embedPlayer.adTimeline.restorePlayer();
+			this.embedPlayer.adTimeline.restorePlayer( null, adPlayed);
 			// managed complete ... call clip done if content complete.
 			if( onContentComplete ){
 				if (_this.postRollCallback){

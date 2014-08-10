@@ -93,6 +93,14 @@ mw.KAdPlayer.prototype = {
 		if( adSlot.type !== 'overlay' ) {
 			_this.embedPlayer.triggerHelper("onDisableInterfaceComponents");
 		}
+		var excludedComponents = [];
+		// playPauseBtn won't be disabled if enableControlsDuringAd set to true
+		if ( mw.getConfig('enableControlsDuringAd') ) {
+			excludedComponents = ['playPauseBtn'];
+		}
+
+		_this.embedPlayer.triggerHelper( "onDisableInterfaceComponents", [excludedComponents] );
+
 		// Setup some configuration for done state:
 		adSlot.doneFunctions = [];
 		// set skip offset from config for all adds if defined 

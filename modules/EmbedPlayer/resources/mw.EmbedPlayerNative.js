@@ -816,10 +816,6 @@ mw.EmbedPlayerNative = {
 				// empty out any existing sources:
 				$( vid ).empty();
 
-				if( mw.isIpad() ) {
-					vid.load();
-				}
-
 				if ( mw.isIOS7() ){
 					vid.src = null;
 					var sourceTag = document.createElement('source');
@@ -1254,7 +1250,7 @@ mw.EmbedPlayerNative = {
 			this.isFlavorSwitching = false;
 			if( this._propagateEvents ){
 				mw.log( "EmbedPlayerNative:: trigger: seeked" );
-				this.triggerHelper( 'seeked' );
+				this.triggerHelper( 'seeked' ,[this.currentTime]);
 			}
 		}
 		this.hideSpinner();
