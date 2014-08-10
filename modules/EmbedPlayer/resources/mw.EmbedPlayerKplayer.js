@@ -429,7 +429,7 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onPlayerSeekEnd: function () {
-		$( this ).trigger( 'seeked' );
+		$( this ).trigger( 'seeked',[this.playerObject.getCurrentTime()]);
 		this.seeking = false;
 		this.flashCurrentTime = this.playerObject.getCurrentTime();
 		if( this.seekInterval  ) {

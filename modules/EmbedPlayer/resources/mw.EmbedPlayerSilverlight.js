@@ -499,7 +499,7 @@
 					if( _this.slCurrentTime != orgTime ){
 						_this.seeking = false;
 						clearInterval( _this.seekInterval );
-						$( _this ).trigger( 'seeked' );
+						$( _this ).trigger( 'seeked',[ _this.slCurrentTime] );
 					}
 				}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 			} else if ( percentage != 0 ) {
