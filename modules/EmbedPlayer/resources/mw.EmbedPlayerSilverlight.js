@@ -164,13 +164,18 @@
 							flashvars.referrer = _this.b64Referrer;
 						}
 
-						$( _this ).trigger( 'challengeCustomData', customData );
-
 						var customDataString = "";
 						for(var propt in customData){
 							customDataString += propt + "=" + customData[propt] + "&";
 						}
-						flashvars.challengeCustomData = customDataString;
+						var eventObj = {
+							customString : customDataString
+						}
+
+						$( _this ).trigger( 'challengeCustomData', eventObj );
+
+						flashvars.challengeCustomData = eventObj.customString;
+
 					}
 				} else if ( isMimeType( "video/multicast" ) ) {
 					_this.isMulticast = true;
