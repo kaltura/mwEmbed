@@ -458,27 +458,38 @@ mw.DoubleClick.prototype = {
 		_this.adsManager.start();
 	},
 	displayCompanions: function(ad){
-		var _this = this;
 		if ( this.getConfig( 'disableCompanionAds' )){
 			return;
 		}
 		if ( this.getConfig( 'htmlCompanions' )){
 			var companions = this.getConfig( 'htmlCompanions').split(";");
 			for (var i=0; i < companions.length; i++){
-				var adSlotWidth = companions[i].split(":")[1];
-				var adSlotHeight = companions[i].split(":")[2];
-				var companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, {resourceType: google.ima.CompanionAdSelectionSettings.ResourceType.STATIC, creativeType: google.ima.CompanionAdSelectionSettings.CreativeType.IMAGE});
-				// match companions to targets
-				if (companionAds.length > 0){
-					var companionAd = companionAds[0];
-					// Get HTML content from the companion ad.
-					var content = companionAd.getContent();
-					var targetElm = window['parent'].document.getElementById( companions[i].split(":")[0] );
-					if( targetElm ){
-						targetElm.innerHTML = content;
+				var companionsArr = companions[i].split(":");
+				if (companionsArr.length == 3){
+					var companionID = companionsArr[0];
+					var adSlotWidth = companionsArr[1];
+					var adSlotHeight = companionsArr[2];
+					var companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, {resourceType: google.ima.CompanionAdSelectionSettings.ResourceType.STATIC, creativeType: google.ima.CompanionAdSelectionSettings.CreativeType.IMAGE});
+					// match companions to targets
+					if (companionAds.length > 0){
+						var companionAd = companionAds[0];
+						// Get HTML content from the companion ad.
+						var content = companionAd.getContent();
+						this.showCompanion(companionID, content);
 					}
 				}
 			}
+		}
+	},
+	showCompanion: function(companionID, content){
+		// Check the iframe parent target:
+		try{
+			var targetElm = window['parent'].document.getElementById( companionID );
+			if( targetElm ){
+				targetElm.innerHTML = content;
+			}
+		} catch( e ){
+			mw.log( "Error: DoubleClick could not access parent iframe" );
 		}
 	},
 	addAdMangerListeners: function(){
@@ -730,7 +741,11 @@ mw.DoubleClick.prototype = {
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			$(_this.embedPlayer).trigger('onAdComplete',[adInfo.adID, mw.npt2seconds($(".currentTimeLabel").text())]);
-		},'adCompleted');
+		},'adCompleted', true);
+
+		this.embedPlayer.getPlayerElement().subscribe(function(companionInfo){
+			_this.showCompanion(companionInfo.companionID, companionInfo.content);
+		},'displayCompanion', true);
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			_this.restorePlayer(true);
