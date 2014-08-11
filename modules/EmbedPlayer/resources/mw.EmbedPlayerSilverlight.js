@@ -65,6 +65,10 @@
 			});
 
 
+
+			//hide player until we click play
+			this.getPlayerContainer().css('visibility', 'hidden');
+
 		},
 
 		loadMedia: function( readyCallback ) {
@@ -159,6 +163,7 @@
 						if ( _this.b64Referrer ) {
 							flashvars.referrer = _this.b64Referrer;
 						}
+
 						var customDataString = "";
 						for(var propt in customData){
 							customDataString += propt + "=" + customData[propt] + "&";
@@ -397,9 +402,6 @@
 			} else {
 				this.layoutBuilder.displayAlert( errorObj );
 			}
-
-
-
 		},
 
 		/**
@@ -662,6 +664,26 @@
 
 		clean:function(){
 			$(this.getPlayerContainer()).remove();
+		},
+
+		callIfReady: function( callback ) {
+			if ( this.durationReceived ) {
+				callback();
+			} else {
+				this.readyFuncs.push( callback );
+			}
+		},
+
+		onLoadEmbeddedCaptions: function( data ) {
+			var captionData = JSON.parse( data );
+			var caption = {
+				source: {
+					srclang: captionData.language
+				},
+				capId: captionData.language,
+				ttml: captionData.ttml
+			};
+			this.triggerHelper( 'onEmbeddedData', caption );
 		}
 
 	}
