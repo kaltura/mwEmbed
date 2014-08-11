@@ -65,10 +65,6 @@
 			});
 
 
-
-			//hide player until we click play
-			this.getPlayerContainer().css('visibility', 'hidden');
-
 		},
 
 		loadMedia: function( readyCallback ) {
