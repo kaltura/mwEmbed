@@ -251,8 +251,11 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	isMp4Src: function() {
-		return  ( this.mediaElement.selectedSource &&
-			( this.mediaElement.selectedSource.getMIMEType() == 'video/mp4' || this.mediaElement.selectedSource.getMIMEType() == 'video/h264' ) );
+		if ( this.mediaElement.selectedSource &&
+			( this.mediaElement.selectedSource.getMIMEType() == 'video/mp4' || this.mediaElement.selectedSource.getMIMEType() == 'video/h264' ) ) {
+			return true;
+		}
+		return false;
 	},
 
 	/*
