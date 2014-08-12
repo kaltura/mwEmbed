@@ -1,36 +1,118 @@
+
 <!DOCTYPE HTML>
 <html>
 <head>
-	<title>DoubleClick Playlist test</title>
-	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
-	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+    <title>Pause test page</title>
+    <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+    <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+    <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+    <script type="text/javascript">
+        function jsKalturaPlayerTest( videoId ){
+
+            module( "DoubleClick Player pause count" );
+
+            window["pauses"]=0;
+            window["plays"]=0;
+            window["adsStarts"]=0;
+            window["adsEnds"]=0;
+            window["playerPlayEnds"]=0;
+
+            var kdp = $('#' + videoId ).get(0);
+            asyncTest("Ad started playback", function(){
+                var _this = this;
+                window[ 'onPlay' ] = function(  ){
+                    window["plays"] ++;
+                }
+                window[ 'onPause' ] = function( slot ){
+                    window["pauses"] ++;
+                }
+                window[ 'onPlayerPlayEnd' ] = function( slot ){
+                    window["playerPlayEnds"] ++;
+                    if(window["playerPlayEnds"] == 4){
+                        setTimeout(function(){
+                            window["countAll"]();
+                        },200);
+                    }
+                }
+                window[ 'onAdSupport_StartAdPlayback' ] = function( slot ){
+                    window["adsStarts"] ++;
+                }
+                window[ 'onAdSupport_EndAdPlayback' ] = function( slot ){
+                    window["adsEnds"] ++;
+                }
+                window[ 'countAll' ] = function( slot ){
+                    //count for 4 pauses, 4 plays, 4 ad starts and ad ends, and 4 entry ended
+                    asyncTest( "Counting events", function(){
+
+                        equal( window["plays"], 4, "4 plays as expected" );
+                        equal( window["pauses"], 4, "4 pauses as expected" );
+                        equal( window["adsStarts"], 4, "4 adsStarts as expected" );
+                        equal( window["adsEnds"], 4, "4 adsEnds as expected" );
+                        equal( window["playerPlayEnds"], 4, "4 playbackCompletes as expected" );
+                        start();
+                    });
+
+                }
+
+                kalturaQunitWaitForPlayer(function(){
+                    // Listen for ad start
+                    kdp.addJsListener( 'play', 'onPlay' );
+                    kdp.addJsListener( 'pause', 'onPause' );
+                    kdp.addJsListener( 'playerPlayEnd', 'onPlayerPlayEnd' );
+                    kdp.addJsListener( 'AdSupport_StartAdPlayback', 'onAdSupport_StartAdPlayback' );
+                    kdp.addJsListener( 'AdSupport_EndAdPlayback', 'onAdSupport_EndAdPlayback' );
+                    // Send a play request:
+                    kdp.sendNotification('doPlay');
+                });
+            });
+            start();
+
+        }
+    </script>
+    <script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2>DoubleClick Playlist test</h2>
-<div id='kaltura_player' style="height:620px;width:400px"></div>
+<div id="myVideoTarget" style="width:800px;height:330px;float:left"></div>
+<div id="eventsContainer" style="position: absolute; right: 0px">
+    <h2>Events log:</h2>
+</div>
 <script>
-	kWidget.featureConfig({
-		'targetId': 'kaltura_player',
-		'wid': '_243342',
-		'uiconf_id': '5783651',
-		'flashvars': {
-			'playlistAPI':{
-				'autoContinue': true,
-				'autoPlay': false,
-				'autoInsert':true,
-				'kpl0Name': "test 4 item playlist",
-				'kpl0Id': '0_q79jh71b'
-			},
-			'doubleClick':{
-				'plugin':true,
-				'path' : 'http://cdnbakmi.kaltura.com/content/uiconf/ps/veria/kdp3.9.1/plugins/doubleclickPlugin.swf',
-				'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dlinear',
-				'disableCompanionAds' : false,
-				'debugMode':true
-			}
-		}
-	});
+    mw.setConfig("forceMobileHTML5", true);
+
+
+    kWidget.embed({
+
+        // Normal playlist (No DC plugin)
+        'cache_st': 99,
+        'targetId': 'myVideoTarget',
+        'wid': '_243342',
+        'uiconf_id' : '25550701',
+        'flashvars': {
+            "playlist": {
+                "visible": true,
+                "includeInLayout": true
+            },
+            'playlistAPI':{
+                'autoContinue': true,
+                'autoPlay': false,
+                'autoInsert':true,
+                'kpl0Name': "test 4 item playlist",
+                'kpl0Url': 'http://www.kaltura.com/index.php/partnerservices2/executeplaylist?uid=&partner_id=243342&subp_id=24334200&format=8&ks={ks}&playlist_id=0_q79jh71b'
+            }
+            ,'doubleClick': {
+                'plugin': true,
+                'path': 'http://cdnbakmi.kaltura.com/content/uiconf/ps/veria/kdp3.9.1/plugins/doubleclickPlugin.swf',
+                'adTagUrl':"http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dlinear",
+                'disableCompanionAds': false,
+                'postSequence': '0',
+                'preSequence': '1',
+                'trackCuePoints': false,
+                'debugMode': false
+            }
+        }
+    });
+
 </script>
+
 </body>
 </html>
