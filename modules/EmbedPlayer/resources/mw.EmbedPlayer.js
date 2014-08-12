@@ -2595,7 +2595,7 @@
 								mw.log( "EmbedPlayer::updatePlayheadStatus > should run clip done :: " + _this.currentTime );
 								_this.onClipDone();
 							}
-						}, endPresentationTime * 0.02 )
+						}, endPresentationTime * 0.02 * 1000 )
 					}
 				}
 			}
