@@ -36,7 +36,9 @@
 			}
 
 			if( (this.embedPlayer.isOverlayControls() && !this.embedPlayer.getInterface().find( '.controlBarContainer' ).is( ':hidden' )) || this.embedPlayer.useNativePlayerControls() ){
-				this.defaultBottom += this.embedPlayer.layoutBuilder.getHeight();
+				if( this.embedPlayer.layoutBuilder ) {
+					this.defaultBottom += this.embedPlayer.layoutBuilder.getHeight();
+				}
 			}
 
 			if ( this.getConfig('showEmbeddedCaptions') === true ) {
