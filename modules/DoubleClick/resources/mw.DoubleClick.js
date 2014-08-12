@@ -690,6 +690,9 @@ mw.DoubleClick.prototype = {
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			_this.isLinear = adInfo.isLinear;
+			if (!_this.isLinear){
+				$(".mwEmbedPlayer").hide();
+			}
 			// dispatch adOpen event
 			$( _this.embedPlayer).trigger( 'onAdOpen',[adInfo.adID, adInfo.adSystem, _this.currentAdSlotType, adInfo.adPosition] );
 			if (!_this.isLinear){
