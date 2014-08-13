@@ -2527,6 +2527,7 @@
 			// Hide the spinner once we have time update:
 			if( _this._checkHideSpinner && _this.getPlayerElementTime() && _this.currentTime != _this.getPlayerElementTime() && !_this.seeking ){
 				_this._checkHideSpinner = false;
+				_this.isPauseLoading = false;
 				_this.hideSpinner();
 			}
 
