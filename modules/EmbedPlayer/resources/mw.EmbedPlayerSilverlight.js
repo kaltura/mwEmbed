@@ -544,7 +544,8 @@
 			$( this ).trigger( 'updateBufferPercent', this.bufferedPercent );
 		},
 
-		onPlayerSeekEnd: function () {
+		onPlayerSeekEnd: function ( position ) {
+			this.slCurrentTime = position;
 			$( this ).trigger( 'seeked' );
 			this.updatePlayhead();
 			if( this.seekInterval  ) {
