@@ -1161,7 +1161,7 @@ mw.KAdPlayer.prototype = {
 
 			this.embedPlayer.getVideoHolder().append( $vidSibContainer );
 			if ( source && source.getMIMEType() ) {
-				var targetPlayer =  mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType );
+				var targetPlayer =  mw.EmbedTypes.getMediaPlayers().getDefaultPlayer( source.mimeType );
 				if ( targetPlayer.library == "Kplayer" ) {
 					this.adSibling = new mw.PlayerElementFlash( vidSibContainerId, this.getVideoAdSiblingId(), {autoPlay: true} );
 					// TODO: DELETE THIS!
@@ -1289,7 +1289,7 @@ mw.KAdPlayer.prototype = {
 					.attr('id', vpaidId )
 			);
 		}
-		if ( adConf.vpaid.flash && mw.EmbedTypes.getMediaPlayers().defaultPlayer( adConf.vpaid.flash.type ) ) { //flash vpaid
+		if ( adConf.vpaid.flash && mw.EmbedTypes.getMediaPlayers().getDefaultPlayer( adConf.vpaid.flash.type ) ) { //flash vpaid
 			var playerParams = {
 				autoPlay: true,
 				disableOnScreenClick: true,

@@ -691,7 +691,7 @@
 				&& mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
 				targetPlayer =  mw.EmbedTypes.getKplayer();
 			} else {
-				targetPlayer= mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType );
+				targetPlayer= mw.EmbedTypes.getMediaPlayers().getDefaultPlayer( source.mimeType );
 			}
 			return targetPlayer;
 		},
@@ -892,26 +892,33 @@
 			}
 
 			var runPlayerStartupMethods = function(){
-				// Update feature support
-				_this.updateFeatureSupport();
-				// Update embed sources:
-				_this.embedPlayerHTML();
-				// Update duration
-				_this.getDuration();
-				// show player inline
-				_this.showPlayer();
-				// Run the callback if provided
-				if ( $.isFunction( callback ) ){
-					callback();
-				}				
+				
 			};
 			if( _this.setup ){
-				_this.setup( runPlayerStartupMethods );
+				_this.setup( function(){
+					_this.runPlayerStartupMethods( callback ) 
+				})
 			} else {
-				runPlayerStartupMethods();
+				_this.runPlayerStartupMethods( callback );
 			}
 		},
-
+		/**
+		 * Run player startup methods: 
+		 */
+		runPlayerStartupMethods: function( callback ){
+			// Update feature support
+			this.updateFeatureSupport();
+			// Update embed sources:
+			this.embedPlayerHTML();
+			// Update duration
+			this.getDuration();
+			// show player inline
+			this.showPlayer();
+			// Run the callback if provided
+			if ( $.isFunction( callback ) ){
+				callback();
+			}
+		},
 		/**
 		 * Select a player playback system
 		 *
@@ -2838,6 +2845,10 @@
 				return sourcesByTags;
 			}
 		},
+		/**
+		 * Switches a player source 
+		 * @param {Object} source asset to switch to
+		 */
 		switchSrc: function( source ){
 			var _this = this;
 			this.mediaElement.setSource( source );
@@ -2854,6 +2865,8 @@
 						if( oldPaused ){
 							_this.pause();
 						}
+						if( callback )
+							callback()
 					} );
 				});
 			}

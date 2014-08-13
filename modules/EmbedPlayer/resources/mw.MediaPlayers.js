@@ -111,7 +111,13 @@ mw.MediaPlayers.prototype = {
 		}
 		return mimePlayers;
 	},
-
+	/**
+	 * Deprecated method call lacked get prefix for getter. 
+	 */
+	defaultPlayer: function( mimeType ){
+		mw.log( "MediaPlayer:: defaultPlayer has been deprecated, use getDefaultPlayer method instead" );
+		return getDefaultPlayer( mimeType );
+	},
 	/**
 	 * Default player for a given mime type
 	 *
@@ -119,7 +125,7 @@ mw.MediaPlayers.prototype = {
 	 *	  mimeType Mime type of the requested player
 	 * @return Player for mime type null if no player found
 	 */
-	defaultPlayer : function( mimeType ) {
+	getDefaultPlayer : function( mimeType ) {
 		// mw.log( "get defaultPlayer for " + mimeType );
 		if ( mw.getConfig( 'EmbedPlayer.ForceNativeComponent' )) {
 			return mw.EmbedTypes.getNativeComponentPlayerVideo();
@@ -134,17 +140,32 @@ mw.MediaPlayers.prototype = {
 
 		var mimePlayers = this.getMIMETypePlayers( mimeType );
 
-		if ( mimePlayers.length > 0 ){
-			// Check for prior preference for this mime type
-			for ( var i = 0; i < mimePlayers.length; i++ ) {
-				if ( mimePlayers[i].id == this.preference[mimeType] )
-					return mimePlayers[i];
+		// Check for prior preference for this mime type
+		for ( var i = 0; i < mimePlayers.length; i++ ) {
+			if ( mimePlayers[i].id == this.preference[mimeType] ){
+				return mimePlayers[i];
 			}
-			// Otherwise just return the first compatible player
-			// (it will be chosen according to the defaultPlayers list
+		}
+		// Otherwise just return the first compatible player
+		// (it will be chosen according to the defaultPlayers list
+		if( mimePlayers[0] ){
 			return mimePlayers[0];
 		}
 		// mw.log( 'No default player found for ' + mimeType );
+		return null;
+	},
+	/**
+	 * Returns only a native video tag player
+	 * @param {String}
+	 * 	mimeType for player selection criteria 
+	 */
+	getNativePlayer: function( mimeType ){
+		var mimePlayers = this.getMIMETypePlayers( mimeType );
+		for ( var i = 0; i < mimePlayers.length; i++ ) {
+			if( mimePlayers[i].library == 'Native' ){
+				return mimePlayers[i];
+			}
+		}
 		return null;
 	},
 
