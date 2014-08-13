@@ -461,6 +461,12 @@ mw.KAdPlayer.prototype = {
 						e.stopPropagation();
 						if( _this.clickedBumper ){
 							_this.getVideoElement().play();
+
+							// This changes player state to the relevant value ( play-state )
+							if( _this.isVideoSiblingEnabled() ) {
+								$( _this.embedPlayer ).trigger( 'playing' );
+							}
+
 							$( embedPlayer).trigger("onPlayerStateChange",["play"]);
 							$( embedPlayer).trigger("onResumeAdPlayback");
 							embedPlayer.restoreComponentsHover();
@@ -471,6 +477,12 @@ mw.KAdPlayer.prototype = {
 							// Pause the player
 							embedPlayer.disableComponentsHover();
 							_this.getVideoElement().pause();
+
+							// This changes player state to the relevant value ( pause-state )
+							if( _this.isVideoSiblingEnabled() ) {
+								$( _this.embedPlayer ).trigger( 'onPauseInterfaceUpdate' );
+							}
+
 							embedPlayer.enablePlayControls(["scrubber"]);
 							$( embedPlayer).trigger("onPlayerStateChange",["pause"]);
 							embedPlayer.enablePlayControls();
