@@ -63,7 +63,7 @@
 				}
 				alertConfig.buttons = [gM( 'ks-abChecker-btn-resume' )];
 			}
-
+			this.embedPlayer['data-blockPlayerDisplay']=null;
 			//Set player error to prevent playback
 			this.getPlayer().setError(alertConfig);
 			//Display the error modal
