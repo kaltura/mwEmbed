@@ -148,6 +148,7 @@
 			//YOUTUBE IFRAME PLAYER READY (Not the Iframe - the player itself)
 			window['onIframePlayerReady'] = function( event ){
 				window['iframePlayer'] = event.target;
+				_this.setDuration();
 				//autoplay
 				if(mw.getConfig('autoPlay')){
 					_this.play();
