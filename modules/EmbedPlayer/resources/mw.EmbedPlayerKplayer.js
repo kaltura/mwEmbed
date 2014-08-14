@@ -118,7 +118,9 @@ mw.EmbedPlayerKplayer = {
 				'liveStreamOffline': 'onLiveEntryOffline',
 				'liveStreamReady': 'onLiveStreamReady',
 				'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions',
-				'bufferChange': 'onBufferChange'
+				'bufferChange': 'onBufferChange',
+				'audioTracksReceived': 'onAudioTracksReceived',
+				'audioTrackSelected': 'onAudioTrackSelected'
 			};
 			_this.playerObject = this.getElement();
 			$.each( bindEventMap, function( bindName, localMethod ) {
@@ -133,6 +135,12 @@ mw.EmbedPlayerKplayer = {
 				_this.triggerHelper("volumeChanged",0);
 			}
 
+		});
+
+		this.bindHelper( 'switchAudioTrack', function(e, data) {
+			if ( _this.playerObject ) {
+				_this.playerObject.sendNotification( "doAudioSwitch",{ audioIndex: data.index  } );
+			}
 		});
 	},
 
@@ -219,7 +227,7 @@ mw.EmbedPlayerKplayer = {
 	restorePlayerOnScreen: function(){},
 
 	updateSources: function(){
-		if ( ! ( this.live || this.sourcesReplaced ) ) {
+		if ( ! ( this.live || this.sourcesReplaced || this.isHlsSource( this.mediaElement.selectedSource ) ) ) {
 			var newSources = this.getSourcesForKDP();
 			this.replaceSources( newSources );
 			this.mediaElement.autoSelectSource();
@@ -516,6 +524,14 @@ mw.EmbedPlayerKplayer = {
 		}
 	},
 
+	onAudioTracksReceived: function ( data ) {
+		this.triggerHelper( 'audioTracksReceived', data );
+	},
+
+	onAudioTrackSelected: function ( data ) {
+		this.triggerHelper( 'audioTrackIndexChanged', data  );
+	},
+
 	/**
 	 * Get the embed player time
 	 */
@@ -590,7 +606,7 @@ mw.EmbedPlayerKplayer = {
 	getSourceIndex: function( source ){
 		var sourceIndex = null;
 		$.each( this.mediaElement.getPlayableSources(), function( currentIndex, currentSource ) {
-			if( source.getSrc() == currentSource.getSrc() ){
+			if( source.getAssetId() == currentSource.getAssetId() ){
 				sourceIndex = currentIndex;
 				return false;
 			}
