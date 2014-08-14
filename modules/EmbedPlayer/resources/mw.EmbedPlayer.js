@@ -770,9 +770,6 @@
 			// Autoseletct the media source
 			this.mediaElement.autoSelectSource();
 
-			//Dispatch source
-			this.triggerHelper("sourceSelected", this.mediaElement.selectedSource);
-
 			// Auto select player based on default order
 			if( this.mediaElement.selectedSource ){
 
