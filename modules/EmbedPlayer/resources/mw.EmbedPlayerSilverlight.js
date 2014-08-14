@@ -65,10 +65,6 @@
 			});
 
 
-
-			//hide player until we click play
-			this.getPlayerContainer().css('visibility', 'hidden');
-
 		},
 
 		loadMedia: function( readyCallback ) {
@@ -548,7 +544,8 @@
 			$( this ).trigger( 'updateBufferPercent', this.bufferedPercent );
 		},
 
-		onPlayerSeekEnd: function () {
+		onPlayerSeekEnd: function ( position ) {
+			this.slCurrentTime = position;
 			$( this ).trigger( 'seeked' );
 			this.updatePlayhead();
 			if( this.seekInterval  ) {
