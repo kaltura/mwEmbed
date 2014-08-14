@@ -311,7 +311,8 @@ mw.KWidgetSupport.prototype = {
 		handlePlayerData();
 	},
 	isEmbedServicesEnabled: function(playerData){
-		if (playerData.meta.partnerData &&
+		if (playerData && playerData.meta &&
+			playerData.meta.partnerData &&
 			playerData.meta.partnerData["proxyEnabled"] &&
 			playerData.meta.partnerData["proxyEnabled"] === "true") {
 			return true;
