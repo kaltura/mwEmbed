@@ -78,6 +78,9 @@
 	mw.isAndroidNativeBrowser = function(){
 		return (mw.isAndroid() && !mw.isFirefox() && !mw.isChrome());
 	};
+	mw.isAndroidChromeNativeBrowser = function(){
+		return ( mw.isAndroid() && mw.isChrome() && userAgent.indexOf( 'Version/' ) != -1 )
+	};
 	mw.isMobileChrome = function(){
 		return ( userAgent.indexOf( 'Android 4.' ) != -1
 					&&

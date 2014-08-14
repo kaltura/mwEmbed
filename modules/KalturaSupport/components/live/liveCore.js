@@ -357,8 +357,7 @@
 				'action' : 'islive',
 				'id' : embedPlayer.kentryid,
 				'protocol' : protocol,
-				'partnerId': embedPlayer.kpartnerid,
-				'timestamp' : Date.now()
+				'partnerId': embedPlayer.kpartnerid
 			}, function( data ) {
 				var onAirStatus = false;
 				if ( data === true ) {

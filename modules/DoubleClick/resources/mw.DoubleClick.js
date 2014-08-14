@@ -26,6 +26,8 @@ mw.DoubleClick.prototype = {
 	// The monitor interval index:
 	adMonitor: null,
 
+	shouldPausePlaylist: false,
+
 	// store the ad start time
 	adPreviousTimeLeft: null,
 	contentPlaying: false,
@@ -111,7 +113,7 @@ mw.DoubleClick.prototype = {
 		}
 
 		//native browser on Android 4.4 has "Chrome" in it, so this is the "new" way to test its user agent
-		if ( mw.isAndroid44() && navigator.userAgent.indexOf( 'Version/' ) != -1 ) {
+		if ( mw.isAndroid44() && mw.isAndroidChromeNativeBrowser() ) {
 			mw.log("DoubleClick::user agent not supported, return" );
 			callback();
 			return;
@@ -121,6 +123,7 @@ mw.DoubleClick.prototype = {
 			if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
 				mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
 				_this.isChromeless = true;
+				_this.prevSlotType = 'none';
 				_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
 					_this.bindChromelessEvents();
 				});
@@ -244,12 +247,18 @@ mw.DoubleClick.prototype = {
 				_this.sequenceProxy = sequenceProxy;
 				// if a preroll set it as such:
 				_this.currentAdSlotType = 'preroll';
+				// set flag that this ad has prerolls so playlists should pause before playback
+				_this.shouldPausePlaylist = true;
 				// Setup the restore callback
 				_this.restorePlayerCallback = callback;
 				// Request ads
 				mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
 				_this.requestAds( _this.getConfig( 'adTagUrl' ) );
 			}
+		});
+
+		_this.embedPlayer.bindHelper( 'Playlist_PlayClip', function( event, clipIndex, autoContinue, playback ){
+			playback.shouldPause = _this.shouldPausePlaylist;
 		});
 
 		_this.embedPlayer.bindHelper( 'AdSupport_midroll' + _this.bindPostfix, function( event, sequenceProxy ){
@@ -475,6 +484,41 @@ mw.DoubleClick.prototype = {
 		mw.log( "DoubleClick::adsManager.play" );
 		_this.adsManager.start();
 	},
+	displayCompanions: function(ad){
+		if ( this.getConfig( 'disableCompanionAds' )){
+			return;
+		}
+		if ( this.getConfig( 'htmlCompanions' )){
+			var companions = this.getConfig( 'htmlCompanions').split(";");
+			for (var i=0; i < companions.length; i++){
+				var companionsArr = companions[i].split(":");
+				if (companionsArr.length == 3){
+					var companionID = companionsArr[0];
+					var adSlotWidth = companionsArr[1];
+					var adSlotHeight = companionsArr[2];
+					var companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, {resourceType: google.ima.CompanionAdSelectionSettings.ResourceType.STATIC, creativeType: google.ima.CompanionAdSelectionSettings.CreativeType.IMAGE});
+					// match companions to targets
+					if (companionAds.length > 0){
+						var companionAd = companionAds[0];
+						// Get HTML content from the companion ad.
+						var content = companionAd.getContent();
+						this.showCompanion(companionID, content);
+					}
+				}
+			}
+		}
+	},
+	showCompanion: function(companionID, content){
+		// Check the iframe parent target:
+		try{
+			var targetElm = window['parent'].document.getElementById( companionID );
+			if( targetElm ){
+				targetElm.innerHTML = content;
+			}
+		} catch( e ){
+			mw.log( "Error: DoubleClick could not access parent iframe" );
+		}
+	},
 	addAdMangerListeners: function(){
 		var _this = this;
 		var adsListener = function( eventType, callback ){
@@ -482,6 +526,10 @@ mw.DoubleClick.prototype = {
 				google.ima.AdEvent.Type[ eventType ],
 				function( event ){
 					mw.log( "DoubleClick::AdsEvent:" + eventType );
+					if (event.type === google.ima.AdEvent.Type.STARTED) {
+						// Get the ad from the event and display companions.
+						_this.displayCompanions(event.getAd());
+					}
 					if( $.isFunction( callback ) ){
 						callback( event );
 					}
@@ -702,13 +750,19 @@ mw.DoubleClick.prototype = {
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			// trigger ad play event
 			$(_this.embedPlayer).trigger("onAdPlay",[adInfo.adID]);
+			if ( _this.currentAdSlotType != _this.prevSlotType ) {
+				_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
+				_this.prevSlotType = _this.currentAdSlotType;
+			}
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', adInfo.duration );
-			_this.embedPlayer.hideSpinner();
 			$(".mwEmbedPlayer").hide();
-		},'adStart');
+		},'adStart', true);
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			_this.isLinear = adInfo.isLinear;
+			if (!_this.isLinear){
+				$(".mwEmbedPlayer").hide();
+			}
 			// dispatch adOpen event
 			$( _this.embedPlayer).trigger( 'onAdOpen',[adInfo.adID, adInfo.adSystem, _this.currentAdSlotType, adInfo.adPosition] );
 			if (!_this.isLinear){
@@ -717,11 +771,15 @@ mw.DoubleClick.prototype = {
 					_this.embedPlayer.getPlayerElement().play();
 				},250);
 			}
-		},'adLoaded');
+		},'adLoaded', true);
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			$(_this.embedPlayer).trigger('onAdComplete',[adInfo.adID, mw.npt2seconds($(".currentTimeLabel").text())]);
-		},'adCompleted');
+		},'adCompleted', true);
+
+		this.embedPlayer.getPlayerElement().subscribe(function(companionInfo){
+			_this.showCompanion(companionInfo.companionID, companionInfo.content);
+		},'displayCompanion', true);
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			_this.restorePlayer(true);
@@ -729,12 +787,12 @@ mw.DoubleClick.prototype = {
 				_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', _this.entryDuration );
 				_this.embedPlayer.triggerHelper( 'timeupdate', 0);
 			}
-		},'allAdsCompleted');
+		},'allAdsCompleted', true);
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', (adInfo.duration - adInfo.remain));
 			_this.embedPlayer.updatePlayHead( adInfo.time / adInfo.duration );
-		},'adRemainingTimeChange');
+		},'adRemainingTimeChange', true);
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			_this.embedPlayer.sequenceProxy.isInSequence = false;
@@ -751,19 +809,19 @@ mw.DoubleClick.prototype = {
 				}
 			}
 			if (_this.currentAdSlotType !== 'postroll' ){
-				_this.restorePlayer();
+				_this.restorePlayer( null, true );
 				setTimeout(function(){
 					_this.embedPlayer.startMonitor();
 					_this.embedPlayer.getPlayerElement().play();
 				},100);
 			}
-		},'contentResumeRequested');
+		},'contentResumeRequested', true);
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			_this.entryDuration = _this.embedPlayer.getDuration();
 			_this.embedPlayer.sequenceProxy.isInSequence = true;
 			_this.embedPlayer.stopMonitor();
-		},'contentPauseRequested');
+		},'contentPauseRequested', true);
 
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			setTimeout(function(){
@@ -771,7 +829,7 @@ mw.DoubleClick.prototype = {
 				$(".mwEmbedPlayer").hide();
 				_this.restorePlayer();
 			},100);
-		},'adsLoadError');
+		},'adsLoadError', true);
 
 	},
 	getPlayerSize: function(){
@@ -915,7 +973,7 @@ mw.DoubleClick.prototype = {
 		}
 		this.restorePlayer();
 	},
-	restorePlayer: function( onContentComplete ){
+	restorePlayer: function( onContentComplete, adPlayed ){
 		if (this.isdestroy){
 			return;
 		}
@@ -935,7 +993,7 @@ mw.DoubleClick.prototype = {
 			this.restorePlayerCallback = null;
 		} else { // do a manual restore:
 			// restore player with normal events:
-			this.embedPlayer.adTimeline.restorePlayer();
+			this.embedPlayer.adTimeline.restorePlayer( null, adPlayed);
 			// managed complete ... call clip done if content complete.
 			if( onContentComplete ){
 				if (_this.postRollCallback){
