@@ -38,10 +38,6 @@
 			var basePath = mw.getMwEmbedPath();
 			var fullScriptPath = basePath + this.getConfig("scriptPath");
 			//listen to the global Jquery ajax
-			$(document).ajaxError(function(e, xhr, settings, exception) {
-					mw.log("abChecker::Check failed - adblock detected on page");
-					_this.raiseError();
-			});
 			$.getScript( fullScriptPath )
 				.done(function( script, textStatus ) {
 					mw.log("abChecker::Check passed - no adblock detected on page");
@@ -64,7 +60,7 @@
 			if (alertConfig.enableResumePlayback){
 				alertConfig.callbackFunction = function(){
 					_this.enableContinue();
-				}
+				};
 				alertConfig.buttons = [gM( 'ks-abChecker-btn-resume' )];
 			}
 			this.embedPlayer['data-blockPlayerDisplay']=null;
