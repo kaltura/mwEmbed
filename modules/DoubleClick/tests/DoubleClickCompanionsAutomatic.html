@@ -1,0 +1,84 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+<title> DoubleClick Automatic Companions  </title>
+<script type="text/javascript" src="//s0.2mdn.net/instream/html5/gpt_proxy.js"></script>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+
+	<script type='text/javascript'>
+		var googletag = googletag || {};
+		googletag.cmd = googletag.cmd || [];
+		(function() {
+			var gads = document.createElement('script');
+			gads.async = true;
+			gads.type = 'text/javascript';
+			gads.src = '//www.googletagservices.com/tag/js/gpt.js';
+			var node = document.getElementsByTagName('script')[0];
+			node.parentNode.insertBefore(gads, node);
+		})();
+	</script>
+
+	<!-- Register your companion slots -->
+	<script type='text/javascript'>
+		googletag.cmd.push(function() {
+			// Supply YOUR_NETWORK and YOUR_UNIT_PATH.
+			googletag.defineSlot('/YOUR_NETWORK/YOUR_UNIT_PATH', [728, 90], 'testCompanionLong')
+					.addService(googletag.companionAds())
+					.addService(googletag.pubads());
+			googletag.defineSlot('/YOUR_NETWORK/YOUR_UNIT_PATH', [300, 250], 'testCompanionSquare')
+					.addService(googletag.companionAds())
+					.addService(googletag.pubads());
+			googletag.companionAds().setRefreshUnfilledSlots(true);
+			googletag.pubads().enableVideoAds();
+			googletag.enableServices();
+		});
+	</script>
+
+</head>
+<body>
+<!--script type="text/javascript" src="http://s0.2mdn.net/instream/html5/gpt_proxy.js"></script-->
+<h3>DoubleClick Automatic Companions</h3>
+<div id="videoTarget" style="width:600px;height:430px"></div>
+<script>
+	kWidget.featureConfig({
+		
+		'targetId': 'videoTarget',
+		'wid': '_243342',
+		'cache_st': 2,
+		'uiconf_id' : '13303152',
+		'entry_id' : '0_uka1msg4',
+		'flashvars': {
+			'doubleClick':{
+				'plugin':true,
+				'leadWithFlash':false,
+				//'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dlinear',
+				//'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dimageoverlay',
+				'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=%2F3510761%2FadRulesSampleTags&ciu_szs=160x600%2C300x250%2C728x90&cust_params=adrule%3Dpremidpostpodandbumpers&impl=s&gdfp_req=1&env=vp&ad_rule=1&vid=47570401&cmsid=481&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]',
+				'disableCompanionAds' : false,
+				'debugMode':false
+			},
+			//'debugMode':'true',
+			'adsOnReplay':true
+		}
+	});
+</script>
+<p><div id="testCompanionLong" style="width: 728px; height:90px">
+	<script type="text/javascript">
+		// Using the command queue to enable asynchronous loading.
+		// The unit will not actually display now - it will display when
+		// the video player is displaying the ads.
+		googletag.cmd.push(function() { googletag.display('companionDiv'); });
+	</script>
+
+</div></p>
+<div id="testCompanionSquare" style="width: 300px; height: 250px">
+	<script type="text/javascript">
+		googletag.cmd.push(function() { googletag.display('testCompanionSquare'); });
+	</script>
+</div>
+
+</body>
+</html>
