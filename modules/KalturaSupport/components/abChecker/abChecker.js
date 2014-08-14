@@ -50,7 +50,6 @@
 					_this.raiseError();
 				});
 
-			var _this = this;
 			setTimeout(function(){
 				if (!(window.adBlockCheckVariable || _this.errorRaised)){
 					_this.raiseError();
@@ -75,11 +74,14 @@
 				};
 				alertConfig.buttons = [gM( 'ks-abChecker-btn-resume' )];
 			}
+
 			this.embedPlayer['data-blockPlayerDisplay']=null;
 			//Set player error to prevent playback
 			this.getPlayer().setError(alertConfig);
 			//Display the error modal
 			this.getPlayer().showPlayerError();
+			//send notification
+			this.embedPlayer.triggerHelper("adBlockDetected");
 		},
 		enableContinue: function(){
 			//Set player error to null allow playback
