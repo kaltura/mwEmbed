@@ -19,8 +19,8 @@
 				buttonRowSpacing: null,
 				buttonHeight: null,
 				buttonSpacing: null
-			}
-
+			},
+			checkTimeout: 2000
 		},
 		setup: function(){
 			// Bind player
@@ -30,6 +30,9 @@
 			var _this = this;
 			this.bind("KalturaSupport_DoneWithUiConf", function(){
 				_this.tryAndDownload();
+			});
+			this.bind("onChangeMedia", function(){
+				_this.errorRaised = false;
 			});
 
 		},
@@ -46,9 +49,18 @@
 					mw.log("abChecker::Check failed - adblock detected on page");
 					_this.raiseError();
 				});
+
+			var _this = this;
+			setTimeout(function(){
+				if (!(window.adBlockCheckVariable || _this.errorRaised)){
+					_this.raiseError();
+				}
+			}, this.getConfig("checkTimeout"))
+
 		},
 		raiseError: function(){
 			var _this = this;
+			this.errorRaised = true;
 			var alertConfig = _this.getConfig();
 
 			//In case no buttons is set, clear the buttons array
