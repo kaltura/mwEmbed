@@ -57,7 +57,7 @@ mw.KAdPlayer.prototype = {
 						_this.disablePlayControls(); // disable player controls
 						adPlayer.play();
 					} else {
-						$( embedPlayer ).trigger( "onPlayerStateChange", ["pause"] ); // trigger playPauseBtn UI update
+						$( embedPlayer ).trigger( "onPlayerStateChange", ["pause", _this.embedPlayer.currentState] ); // trigger playPauseBtn UI update
 						setTimeout( function () {
 							adPlayer.pause();
 						}, 0 );
@@ -69,6 +69,10 @@ mw.KAdPlayer.prototype = {
 				_this.clickedBumper = false;
 				_this.disablePlayControls(); // disable player controls
 			}
+		});
+		// prevent seeking when we have ads and playback hasn't started yet
+		$(this.embedPlayer).bind('playerReady', function(){
+			_this.embedPlayer.disablePlayControls(['playPauseBtn','largePlayBtn']);
 		});
 	},
 
