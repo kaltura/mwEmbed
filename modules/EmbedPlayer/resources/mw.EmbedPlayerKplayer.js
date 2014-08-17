@@ -562,7 +562,7 @@ mw.EmbedPlayerKplayer = {
 			return this.mediaElement.selectedSource.getSrc();
 		}
 		var flavorIdParam = '';
-		var mediaProtocol = this.getKalturaConfig( null, 'mediaProtocol' ) || "http";
+		var mediaProtocol = this.getKalturaConfig( null, 'mediaProtocol' ) || mw.getConfig('Kaltura.Protocol') || "http";
 		var format;
 		var fileExt = 'f4m';
 		if ( this.streamerType === 'hdnetwork' ) {
