@@ -771,6 +771,7 @@
 				$(".mwEmbedPlayer").hide();
 			},'adStart', true);
 
+
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				_this.isLinear = adInfo.isLinear;
 				if (!_this.isLinear){
@@ -783,6 +784,9 @@
 					setTimeout(function(){
 						_this.embedPlayer.getPlayerElement().play();
 					},250);
+					if ( mw.isIE8() ) {
+						$( '.mwEmbedPlayerTransparent' ).remove();
+					}
 				}
 			},'adLoaded', true);
 
