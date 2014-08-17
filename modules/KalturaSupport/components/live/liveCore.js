@@ -91,7 +91,7 @@
 						if ( !_this.dvrWindow ) {
 							_this.dvrWindow = this.defaultDVRWindow;
 						}
-						if ( kWidget.isIOS() ) {
+						if ( _this.isNativeHLS() ) {
 							embedPlayer.setDuration( _this.dvrWindow );
 						}
 						showComponentsArr.push( 'scrubber', 'durationLabel', 'currentTimeLabel' );
@@ -100,7 +100,7 @@
 						hideComponentsArr.push( 'scrubber', 'durationLabel', 'currentTimeLabel' );
 					}
 
-					if ( kWidget.isIOS() ) {
+					if ( _this.isNativeHLS() ) {
 						_this.bind( 'timeupdate' , function() {
 							var curTime = embedPlayer.getPlayerElementTime();
 
@@ -285,7 +285,7 @@
 		 * relevant only on iOS and if updateIOSPauseTime flag is true
 		 */
 		shouldHandlePausedMonitor: function() {
-			if ( kWidget.isIOS() && this.getConfig('updateIOSPauseTime') ) {
+			if ( this.isNativeHLS() && this.getConfig('updateIOSPauseTime') ) {
 				return true;
 			}
 			return false;
@@ -379,6 +379,14 @@
 
 		log: function( msg ) {
 			mw.log( "LiveStream :: " + msg);
+		},
+
+		isNativeHLS: function() {
+			if ( mw.isIOS() || mw.isDesktopSafari() ) {
+				return true;
+			}
+
+			return false;
 		}
 
 	}));
