@@ -277,16 +277,19 @@
 				requestObject['playlistContext:objectType'] = 'KalturaEntryContext';
 				requestObject['playlistContext:entryId'] = this.getPlayer().kentryid;
 			}
-			this.getKalturaClient().doRequest( requestObject, function( data ){
+			this.getKalturaClient().doRequest( requestObject, function( data ) {
 				// Validate result, don't issue callback if not valid.
-				if( ! _this.isValidResult( data ) ) {
-					return ;
+				if ( !_this.isValidResult( data ) ) {
+					return;
 				}
-				if  (_this.getConfig("enableAccessControlExclusion") ) {
-					_this.filterAccessControl(data ).then(function(acData){
-						callback(acData);
-					})
-
+				// Work around for PLAT-1680 limit not being respected:
+				if ( data.length > parseInt( _this.getConfig( 'itemsLimit' ) ) ) {
+					data = data.slice( 0 , parseInt( _this.getConfig( 'itemsLimit' ) ) );
+				}
+				if ( _this.getConfig( "enableAccessControlExclusion" ) ) {
+					_this.filterAccessControl( data ).then( function ( acData ) {
+						callback( acData );
+					});
 				} else {
 					callback( data );
 				}
