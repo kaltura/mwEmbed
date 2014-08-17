@@ -46,10 +46,10 @@
 		return  /OS 3_/.test( userAgent ) && mw.isIpad();
 	};
 	mw.isAndroid44 = function(){
-		return ( userAgent.indexOf( 'Android 4.2') != -1 );
+		return ( userAgent.indexOf( 'Android 4.4') != -1 );
 	};
 	mw.isAndroid43 = function(){
-		return ( userAgent.indexOf( 'Android 4.2') != -1 );
+		return ( userAgent.indexOf( 'Android 4.3') != -1 );
 	};
 	mw.isAndroid42 = function(){
 		return ( userAgent.indexOf( 'Android 4.2') != -1 );
@@ -77,6 +77,9 @@
 	};
 	mw.isAndroidNativeBrowser = function(){
 		return (mw.isAndroid() && !mw.isFirefox() && !mw.isChrome());
+	};
+	mw.isAndroidChromeNativeBrowser = function(){
+		return ( mw.isAndroid() && mw.isChrome() && userAgent.indexOf( 'Version/' ) != -1 )
 	};
 	mw.isMobileChrome = function(){
 		return ( userAgent.indexOf( 'Android 4.' ) != -1
@@ -106,6 +109,10 @@
 	};
 	mw.isIOS8 = function(){
 		return /OS 8_/.test( userAgent ) && mw.isIOS();
+	};
+
+	mw.isSilk = function(){
+		return /\bSilk\b/.test(userAgent);
 	};
 
 	// Does the client has native touch bindings?

@@ -160,12 +160,18 @@ mw.MediaElement.prototype = {
 		return this.selectedSource;
 	},
 
-
+	autoSelectSource:function(){
+		if ( this.autoSelectSourceExecute() ){
+			$( '#' + this.parentEmbedId ).trigger( 'SourceSelected' , this.selectedSource );
+			return this.selectedSource;
+		}
+		return false;
+	},
 	/**
 	 * Selects the default source via cookie preference, default marked, or by
 	 * id order
 	 */
-	autoSelectSource: function() {
+	autoSelectSourceExecute: function() {
 		mw.log( 'EmbedPlayer::mediaElement::autoSelectSource' );
 		var _this = this;
 		// Select the default source
@@ -367,7 +373,11 @@ mw.MediaElement.prototype = {
 		$.each( playableSources, function(inx, source ){
 			var mimeType = source.mimeType;
 			var player = mw.EmbedTypes.getMediaPlayers().defaultPlayer( mimeType );
-			if ( mimeType == 'video/h264'
+			if ( (
+					mimeType == 'video/mp4'
+					||
+					mimeType == 'video/h264'
+				 )
 				&& player
 				&& (
 					player.library == 'Native'

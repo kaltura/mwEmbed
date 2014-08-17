@@ -27,7 +27,7 @@
 				});
 			});
 			
-			this.bind('onChangeMediaDone playerReady onpause onEndedDone', function(){
+			this.bind('onChangeMediaDone playerReady onpause onEndedDone onRemovePlayerSpinner', function(){
 				if( !_this.embedPlayer.isPlaying() ){
 					_this.show();
 				}

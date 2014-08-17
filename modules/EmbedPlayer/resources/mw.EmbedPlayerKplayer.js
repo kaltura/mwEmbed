@@ -65,7 +65,8 @@ mw.EmbedPlayerKplayer = {
 		flashvars.partnerId = this.kpartnerid;
         flashvars.autoMute = this.muted || mw.getConfig( 'autoMute' );
 		flashvars.streamerType = this.streamerType;
-		flashvars.entryUrl = encodeURIComponent(this.getEntryUrl());
+		flashvars.entryUrl = encodeURIComponent( this.getEntryUrl() );
+		flashvars.isMp4 = this.isMp4Src();
 		flashvars.ks = this.getFlashvars( 'ks' );
 		flashvars.serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );
 		flashvars.b64Referrer = this.b64Referrer;
@@ -89,6 +90,11 @@ mw.EmbedPlayerKplayer = {
 			flashvars.sourceType = 'url';
 			flashvars.ignoreStreamerTypeForSeek = true;
 			flashvars.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
+			this.streamerType = "hls";
+		}
+
+		if ( this.live && this.streamerType == 'rtmp' && !this.cancelLiveAutoPlay ) {
+			flashvars.autoPlay = true;
 		}
 
 		//will contain flash plugins we need to load
@@ -111,7 +117,10 @@ mw.EmbedPlayerKplayer = {
 				'enableGui' : 'onEnableGui'  ,
 				'liveStreamOffline': 'onLiveEntryOffline',
 				'liveStreamReady': 'onLiveStreamReady',
-				'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions'
+				'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions',
+				'bufferChange': 'onBufferChange',
+				'audioTracksReceived': 'onAudioTracksReceived',
+				'audioTrackSelected': 'onAudioTrackSelected'
 			};
 			_this.playerObject = this.getElement();
 			$.each( bindEventMap, function( bindName, localMethod ) {
@@ -121,14 +130,17 @@ mw.EmbedPlayerKplayer = {
 				_this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', _this.startTime );
 			}
 			readyCallback();
-			if ( _this.live && _this.cancelLiveAutoPlay ){
-				_this.playerObject.setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'false');
-				_this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus': false } );
-			}
+
 			if (mw.getConfig( 'autoMute' )){
 				_this.triggerHelper("volumeChanged",0);
 			}
 
+		});
+
+		this.bindHelper( 'switchAudioTrack', function(e, data) {
+			if ( _this.playerObject ) {
+				_this.playerObject.sendNotification( "doAudioSwitch",{ audioIndex: data.index  } );
+			}
 		});
 	},
 
@@ -215,7 +227,7 @@ mw.EmbedPlayerKplayer = {
 	restorePlayerOnScreen: function(){},
 
 	updateSources: function(){
-		if ( ! ( this.live || this.sourcesReplaced ) ) {
+		if ( ! ( this.live || this.sourcesReplaced || this.isHlsSource( this.mediaElement.selectedSource ) ) ) {
 			var newSources = this.getSourcesForKDP();
 			this.replaceSources( newSources );
 			this.mediaElement.autoSelectSource();
@@ -223,11 +235,12 @@ mw.EmbedPlayerKplayer = {
 		else if ( this.live && this.streamerType == 'rtmp' ){
 			var _this = this;
 
-			//in this case Flash player will determine when live is on air
-			if ( ! this.autoplay ) {
+			if ( ! this.autoplay ) { //not a real "autoPlay", just to enable live checks
 				this.autoplay = true;
 				//cancel the autoPlay once Flash starts the live checks
 				this.cancelLiveAutoPlay = true;
+			} else if ( this.playerObject ) {
+				this.playerObject.setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'true');
 			}
 			//with rtmp the first seconds look offline, delay the "offline" message
 			this.setKDPAttribute('liveCore', 'offlineAlertOffest', this.LIVE_OFFLINE_ALERT_TIMEOUT);
@@ -242,10 +255,19 @@ mw.EmbedPlayerKplayer = {
 		this.updateSources();
 		this.flashCurrentTime = 0;
 		this.playerObject.setKDPAttribute( 'mediaProxy', 'isLive', this.isLive() );
+		this.playerObject.setKDPAttribute( 'mediaProxy', 'isMp4', this.isMp4Src() );
 		this.playerObject.sendNotification( 'changeMedia', {
 			entryUrl: this.getEntryUrl()
 		});
 		callback();
+	},
+
+	isMp4Src: function() {
+		if ( this.mediaElement.selectedSource &&
+			( this.mediaElement.selectedSource.getMIMEType() == 'video/mp4' || this.mediaElement.selectedSource.getMIMEType() == 'video/h264' ) ) {
+			return true;
+		}
+		return false;
 	},
 
 	/*
@@ -258,7 +280,7 @@ mw.EmbedPlayerKplayer = {
 	 * update the interface
 	 */
 	onPause: function() {
-		$( this ).trigger( "onpause" );
+		$( this ).trigger( "pause" );
 	},
 
 	/**
@@ -287,7 +309,6 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onClipDone: function() {
-		$( this ).trigger( "onpause" );
 		this.parent_onClipDone();
 		this.preSequenceFlag = false;
 	},
@@ -366,28 +387,12 @@ mw.EmbedPlayerKplayer = {
 				return;
 			}
 		}
-		if ( !this.firstPlay ) //we already loaded the movie
-		{
-			this.seeking = true;
-			// trigger the html5 event:
-			$( this ).trigger( 'seeking' );
+		this.seeking = true;
+		// trigger the html5 event:
+		$( this ).trigger( 'seeking' );
 
-			// Issue the seek to the flash player:
-			this.playerObject.seek( seekTime );
-
-			// Include a fallback seek timer: in case the kdp does not fire 'playerSeekEnd'
-//			var orgTime = this.flashCurrentTime;
-//			 this.seekInterval = setInterval( function(){ debugger;
-//				if( _this.flashCurrentTime != orgTime ){
-//					_this.seeking = false;
-//					clearInterval( _this.seekInterval );
-//					$( _this ).trigger( 'seeked' );
-//				}
-//			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
-		} else if ( percentage != 0 ) {
-			this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', seekTime);
-			this.playerObject.play();
-		}
+		// Issue the seek to the flash player:
+		this.playerObject.seek( seekTime );
 
 		// Run the onSeeking interface update
 		this.layoutBuilder.onSeek();
@@ -400,7 +405,9 @@ mw.EmbedPlayerKplayer = {
 	 *			percentage Percentage to update volume to
 	 */
 	setPlayerElementVolume: function(percentage) {
-		    this.playerObject.sendNotification( 'changeVolume', percentage );
+			if ( this.playerObject ) {
+				this.playerObject.changeVolume( percentage );
+			}
 	},
 
 	/**
@@ -432,7 +439,7 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onPlayerSeekEnd: function () {
-		$( this ).trigger( 'seeked' );
+		$( this ).trigger( 'seeked',[this.playerObject.getCurrentTime()]);
 		this.seeking = false;
 		this.flashCurrentTime = this.playerObject.getCurrentTime();
 		if( this.seekInterval  ) {
@@ -445,6 +452,9 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onSwitchingChangeComplete: function ( data, id ) {
+		if (data && data.newBitrate) {
+			this.triggerHelper( 'bitrateChange' , data.newBitrate );
+		}
 		this.mediaElement.setSourceByIndex ( data.newIndex );
 	},
 
@@ -468,11 +478,13 @@ mw.EmbedPlayerKplayer = {
 		if ( this.streamerType == 'rtmp' ) {
 			//first time the livestream is ready
 			this.hideSpinner();
+			this.playerObject.setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'false');  //reset property for next media
 			this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : true } );
 			if ( this.cancelLiveAutoPlay ) {
 				this.cancelLiveAutoPlay = false;
+				this.autoplay = false;
 				//fix misleading player state after we cancelled autoplay
-				$( this ).trigger( "onpause" );
+				this.pause();
 			}
 		}
 	},
@@ -499,6 +511,25 @@ mw.EmbedPlayerKplayer = {
 		} else {
 			this.enablePlayControls();
 		}			
+	},
+
+	onBufferChange: function ( buffering ) {
+		//vod buffer is already being monitored by EmbedPlayer.js
+		if ( this.isLive() ) {
+			if ( buffering ) {
+				this.bufferStart();
+			} else {
+				this.bufferEnd();
+			}
+		}
+	},
+
+	onAudioTracksReceived: function ( data ) {
+		this.triggerHelper( 'audioTracksReceived', data );
+	},
+
+	onAudioTrackSelected: function ( data ) {
+		this.triggerHelper( 'audioTrackIndexChanged', data  );
 	},
 
 	/**
@@ -531,7 +562,7 @@ mw.EmbedPlayerKplayer = {
 			return this.mediaElement.selectedSource.getSrc();
 		}
 		var flavorIdParam = '';
-		var mediaProtocol = this.getKalturaConfig( null, 'mediaProtocol' ) || "http";
+		var mediaProtocol = this.getKalturaConfig( null, 'mediaProtocol' ) || mw.getConfig('Kaltura.Protocol') || "http";
 		var format;
 		var fileExt = 'f4m';
 		if ( this.streamerType === 'hdnetwork' ) {
@@ -575,7 +606,7 @@ mw.EmbedPlayerKplayer = {
 	getSourceIndex: function( source ){
 		var sourceIndex = null;
 		$.each( this.mediaElement.getPlayableSources(), function( currentIndex, currentSource ) {
-			if( source.getSrc() == currentSource.getSrc() ){
+			if( source.getAssetId() == currentSource.getAssetId() ){
 				sourceIndex = currentIndex;
 				return false;
 			}

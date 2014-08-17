@@ -111,9 +111,18 @@ if( document.URL.indexOf('runQunitTests') != -1 || document.URL.indexOf('runFlas
 			})
 		);
 	};
+	
 	// if not running unit tests provide a link:
 	qunitWaitForJQuery( function(){
-		jQuery(document).ready( window.addRunTestLink );
+		// check for only display player flag: 
+		jQuery( document ).ready( function(){
+			if( document.URL.indexOf( 'onlyDisplayPlayer') != -1  ){
+				$('h1,h2,h3,h4,h5,h6,#kdoc-more-desc').hide();
+			} else {
+				jQuery(document).ready( window.addRunTestLink );
+			}
+		})
+		
 	});
 
 }

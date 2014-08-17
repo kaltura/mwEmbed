@@ -910,32 +910,33 @@
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
+
 				case 'preSequenceComplete':
-					b('AdSupport_PreSequenceComplete', function( e, slotType ){
+					b('AdSupport_preSequenceComplete', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
 
 				// mid Sequence:
-				case 'midrollStarted':
+				case 'midSequenceStart':
 					b('AdSupport_midrollStarted', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
 				case 'midSequenceComplete':
-					b('AdSupport_MidSequenceComplete', function( e, slotType ){
+					b('AdSupport_midSequenceComplete', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
 
 				// post roll Sequence:
-				case 'postRollStarted':
+				case 'postSequenceStart':
 					b('AdSupport_postrollStarted', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
 				case 'postSequenceComplete':
-					b('AdSupport_PostSequenceComplete', function( e, slotType ){
+					b('AdSupport_postSequenceComplete', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
@@ -1176,9 +1177,6 @@
 					} else {
 					embedPlayer.disablePlayControls();
 					}
-					break;
-				case 'switchAudioTrack':
-					embedPlayer.switchAudioTrack( notificationData.index );
 					break;
 				default: 
 					// custom notification

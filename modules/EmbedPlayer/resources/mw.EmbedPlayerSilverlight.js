@@ -26,8 +26,10 @@
 		readyCallbackFunc: undefined,
 		isMulticast: false,
 		isError: false,
+		readyFuncs: [],
 		// Create our player element
 		setup: function( readyCallback ) {
+			var _this = this;
 			mw.log('EmbedPlayerSilverlight:: Setup');
 
 			// Check if we created the sPlayer container
@@ -47,7 +49,22 @@
 					.addClass('maximize')
 			);
 
+			this.slCurrentTime = 0;
 			this.loadMedia( readyCallback );
+
+			this.bindHelper( 'changeEmbeddedTextTrack', function(e, data) {
+				if ( _this.playerObject ) {
+					_this.playerObject.selectTextTrack( data.index );
+				}
+			});
+
+			this.bindHelper( 'switchAudioTrack', function(e, data) {
+				if ( _this.playerObject ) {
+					_this.playerObject.selectAudioTrack( data.index );
+				}
+			});
+
+
 		},
 
 		loadMedia: function( readyCallback ) {
@@ -78,7 +95,7 @@
 			//parse url address from playmanifest
 			var getStreamAddress = function() {
 				var deferred = $.Deferred();
-				if (mw.getConfig("EmbedPlayer.useDirectManifestLinks")) {
+				if (mw.getConfig("EmbedPlayer.UseDirectManifestLinks")) {
 					return deferred.resolve();
 				}
 				$.ajax({
@@ -142,11 +159,19 @@
 						if ( _this.b64Referrer ) {
 							flashvars.referrer = _this.b64Referrer;
 						}
+
 						var customDataString = "";
 						for(var propt in customData){
 							customDataString += propt + "=" + customData[propt] + "&";
 						}
-						flashvars.challengeCustomData = customDataString;
+						var eventObj = {
+							customString : customDataString
+						}
+
+						$( _this ).trigger( 'challengeCustomData', eventObj );
+
+						flashvars.challengeCustomData = eventObj.customString;
+
 					}
 				} else if ( isMimeType( "video/multicast" ) ) {
 					_this.isMulticast = true;
@@ -209,7 +234,10 @@
 						'flavorsListChanged' : 'onFlavorsListChanged',
 						'enableGui' : 'onEnableGui',
 						'audioTracksReceived': 'onAudioTracksReceived',
-						'audioTrackSelected': 'onAudioTrackSelected'
+						'audioTrackSelected': 'onAudioTrackSelected',
+						'textTracksReceived': 'onTextTracksReceived',
+						'textTrackSelected': 'onTextTrackSelected',
+						'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions'
 					};
 
 					_this.playerObject = playerElement;
@@ -273,7 +301,6 @@
 		updatePlayhead: function () {
 			if ( this.seeking ) {
 				this.seeking = false;
-				this.slCurrentTime = this.playerObject.currentTime;
 			}
 		},
 
@@ -328,6 +355,13 @@
 				} else if ( this.autoplay ) {
 					this.playerObject.pause();
 				}
+
+				if ( this.readyFuncs && this.readyFuncs.length > 0 ) {
+					for ( var i=0; i< this.readyFuncs.length; i++ ) {
+						this.readyFuncs[i]();
+					}
+					this.readyFuncs = [];
+				}
 			}
 
 			// Update the duration ( only if not in url time encoding mode:
@@ -364,9 +398,6 @@
 			} else {
 				this.layoutBuilder.displayAlert( errorObj );
 			}
-
-
-
 		},
 
 		/**
@@ -464,7 +495,7 @@
 					if( _this.slCurrentTime != orgTime ){
 						_this.seeking = false;
 						clearInterval( _this.seekInterval );
-						$( _this ).trigger( 'seeked' );
+						$( _this ).trigger( 'seeked',[ _this.slCurrentTime] );
 					}
 				}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 			} else if ( percentage != 0 ) {
@@ -513,7 +544,8 @@
 			$( this ).trigger( 'updateBufferPercent', this.bufferedPercent );
 		},
 
-		onPlayerSeekEnd: function () {
+		onPlayerSeekEnd: function ( position ) {
+			this.slCurrentTime = position;
 			$( this ).trigger( 'seeked' );
 			this.updatePlayhead();
 			if( this.seekInterval  ) {
@@ -549,11 +581,31 @@
 		},
 
 		onAudioTracksReceived: function ( data ) {
-			this.triggerHelper( 'audioTracksReceived', JSON.parse( data ) );
+			var _this = this;
+			this.callIfReady( function() {
+				_this.triggerHelper( 'audioTracksReceived', JSON.parse( data ) );
+			});
 		},
 
 		onAudioTrackSelected: function ( data ) {
-			this.triggerHelper( 'audioTrackIndexChanged', JSON.parse( data ) );
+			var _this = this;
+			this.callIfReady( function() {
+				_this.triggerHelper( 'audioTrackIndexChanged', JSON.parse( data ) );
+			});
+		},
+
+		onTextTrackSelected: function ( data ) {
+			var _this = this;
+			this.callIfReady( function() {
+				_this.triggerHelper( 'textTrackIndexChanged', JSON.parse( data ) );
+			});
+		},
+
+		onTextTracksReceived: function ( data ) {
+			var _this = this;
+			this.callIfReady( function() {
+				_this.triggerHelper( 'textTracksReceived', JSON.parse( data ) );
+			});
 		},
 
 		/**
@@ -611,10 +663,24 @@
 			$(this.getPlayerContainer()).remove();
 		},
 
-		switchAudioTrack: function( trackIndex ) {
-			if ( this.playerObject ) {
-				this.playerObject.selectAudioTrack( trackIndex );
+		callIfReady: function( callback ) {
+			if ( this.durationReceived ) {
+				callback();
+			} else {
+				this.readyFuncs.push( callback );
 			}
+		},
+
+		onLoadEmbeddedCaptions: function( data ) {
+			var captionData = JSON.parse( data );
+			var caption = {
+				source: {
+					srclang: captionData.language
+				},
+				capId: captionData.language,
+				ttml: captionData.ttml
+			};
+			this.triggerHelper( 'onEmbeddedData', caption );
 		}
 
 	}
