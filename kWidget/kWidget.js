@@ -45,7 +45,6 @@ var kWidget = {
 	// stored per player id
 	iframeAutoEmbedCache:{},
 
-	notSupportedRules:['BlackBerry'],
 	/**
 	 * The master kWidget setup function setups up bindings for rewrites and
 	 * proxy of jsCallbackReady
@@ -277,15 +276,11 @@ var kWidget = {
 		// empty out the ready callback queue
 		this.jsReadyCalledForIds = [];
 	},
-	isNotSupported:function(){
-		if (window.location.href.indexOf('forceNotSupported') > -1){
+	isDownloadLinkPlayer:function(){
+		if (window.location.href.indexOf('forceDownloadPlayer') > -1 || mw.getConfig("EmbedPlayer.NotPlayableDownloadLink") ) {
 			return true;
 		}
-		for (var i in this.notSupportedRules) {
-			if (navigator.userAgent.match(this.notSupportedRules[i])){
-				return true;
-			}
-		}
+
 		return false;
 	},
 	/**
@@ -294,8 +289,8 @@ var kWidget = {
 	 * @param settings {Object} Object of settings to be used in embedding.
 	 */
 	embed: function( targetId, settings ){
-		if (this.isNotSupported()){
-			return this.nonSupportEmbed(targetId,settings);
+		if ( this.isDownloadLinkPlayer() ) {
+			return this.thumbEmbed( targetId , settings , true );
 		}
 		var _this = this;
 		// Supports passing settings object as the first parameter
@@ -523,9 +518,9 @@ var kWidget = {
 	 *
 	 * All the other kWidget settings are invoked during playback.
 	 */
-	thumbEmbed: function( targetId, settings ){
-		if (this.isNotSupported()){
-			return this.nonSupportEmbed(targetId,settings);
+	thumbEmbed: function( targetId, settings ,forceDownload ){
+		if (this.isDownloadLinkPlayer()){
+			forceDownload = true;
 		}
 		var _this = this;
 		// Normalize the arguments
@@ -577,8 +572,13 @@ var kWidget = {
 			}
 			// Set a flag to capture the click event
 			settings.captureClickEventForiOS = true;
-			// update the settings object
-			kWidget.embed( settings );
+			if (forceDownload) {
+				window.open( _this.getDownloadLink( settings ) );
+			}
+			else {
+				// update the settings object
+				kWidget.embed( settings );
+			}
 		});
 		// TOOD maybe a basic basic api ( doPlay support ? )
 
@@ -1532,85 +1532,29 @@ var kWidget = {
 		// No video tag or flash, or iframe, normal "install flash" user flow )
 		return false;
 	 },
-	nonSupportEmbed: function( targetId, settings ){
+	getDownloadLink: function(  settings ) {
 		var _this = this;
-		// Normalize the arguments
-		if( typeof targetId === 'object' ) {
-			settings = targetId;
-			if( ! settings.targetId ) {
-				this.log('Error: Missing target element Id');
-			}
-			targetId = settings.targetId;
-		} else{
-			settings.targetId =targetId;
+
+		// update the settings object
+		var baseUrl = _this.getPath();
+		var downloadUrl = baseUrl + 'modules/KalturaSupport/download.php/wid/' + settings.wid;
+
+		// Also add the uiconf id to the url:
+		if ( settings.uiconf_id ) {
+			downloadUrl += '/uiconf_id/' + settings.uiconf_id;
 		}
 
-		// Check if we have flashvars object
-		if( ! settings.flashvars ) {
-			settings.flashvars = {};
+		if ( settings.entry_id ) {
+			downloadUrl += '/entry_id/' + settings.entry_id;
 		}
 
-		// inject the centered css rule ( if not already )
-		this.addThumbCssRules();
 
-		// Add the width of the target to the settings:
-		var elm = document.getElementById( targetId );
-		if( !elm ){
-			this.log( "Error could not find target id, for thumbEmbed" );
+		var ks = settings.ks || settings.flashvars && settings.flashvars.ks;
+		if ( ks ) {
+			downloadUrl += '/?ks=' + ks;
 		}
-		elm.innerHTML = '' +
-			'<div style="position: relative; width: 100%; height: 100%;">' +
-			'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl( settings ) + '" >' +
-			'<div class="kWidgetCentered kWidgetPlayBtn" ' +
-			'id="' + targetId + '_playBtn"' +
-			'></div></div>';
-		// Add a click binding to do the really embed:
-		var playBtn = document.getElementById( targetId + '_playBtn' );
-		this.addEvent(playBtn, 'click', function() {
-			// Check for the ready callback:
-			if ( settings.readyCallback ) {
-				var orgEmbedCallback = settings.readyCallback;
-			}
-			settings.readyCallback = function ( playerId ) {
-				// issue a play ( since we already clicked the play button )
-				var kdp = document.getElementById( playerId );
-				kdp.kBind( 'mediaReady' , function () {
-					kdp.sendNotification( 'doPlay' );
-				} );
-				if ( typeof orgEmbedCallback == 'function' ) {
-					orgEmbedCallback( playerId );
-				}
-			}
-			// Set a flag to capture the click event
-			settings.captureClickEventForiOS = true;
-			// update the settings object
-			var baseUrl = _this.getPath();
-			var downloadUrl = baseUrl + 'modules/KalturaSupport/download.php/wid/' + settings.wid;
 
-			// Also add the uiconf id to the url:
-			if ( settings.uiconf_id ) {
-				downloadUrl += '/uiconf_id/' + settings.uiconf_id;
-			}
-
-			if ( settings.entry_id ) {
-				downloadUrl += '/entry_id/' + settings.entry_id;
-			}
-
-
-			var ks = settings.ks || settings.flashvars && settings.flashvars.ks;
-			if (ks) {
-				downloadUrl += '/?ks=' + ks ;
-			}
-
-			window.open( downloadUrl );
-
-		});
-		// TOOD maybe a basic basic api ( doPlay support ? )
-
-		// thumb embed are ready as soon as they are embed:
-		if( settings.thumbReadyCallback ){
-			settings.thumbReadyCallback( targetId );
-		}
+		return downloadUrl;
 	},
 	 /**
 	  * Get Kaltura thumb url from entry object
