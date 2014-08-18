@@ -32,6 +32,10 @@
 				_this.duration = duration;
 			});
 
+			this.bind( 'onDisableScrubber', function(){
+				_this.onDisable();
+			});
+
 			// check if parent is controlsContainer
 			if( this.getConfig('parent') == 'controlsContainer' ){
 				// need to add
@@ -52,7 +56,6 @@
 					_this.getComponent().css('width', ( targetSize ) + 'px' );
 				});
 			}
-
 			// Update buffer bar
 			this.bind( 'updateBufferPercent', function( e, bufferedPercent ){
 				_this.updateBufferUI(bufferedPercent);

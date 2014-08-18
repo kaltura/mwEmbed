@@ -70,9 +70,11 @@ mw.KAdPlayer.prototype = {
 				_this.disablePlayControls(); // disable player controls
 			}
 		});
-		// prevent seeking when we have ads and playback hasn't started yet
+		// for mobile devices (no ad sibling): prevent seeking when we have ads and playback hasn't started yet
 		$(this.embedPlayer).bind('playerReady', function(){
-			_this.embedPlayer.disablePlayControls(['playPauseBtn','largePlayBtn']);
+			if (!_this.isVideoSiblingEnabled()){
+				$( _this.embedPlayer ).trigger( "onDisableScrubber" );
+			}
 		});
 	},
 
@@ -1053,6 +1055,10 @@ mw.KAdPlayer.prototype = {
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining',  null );
 				_this.getVPAIDDurtaion = null;
 				clearInterval( _this.adMonitorInterval );
+			}
+			if( _this.embedPlayer._checkHideSpinner && !_this.embedPlayer.seeking ){
+				_this.embedPlayer._checkHideSpinner = false;
+				_this.embedPlayer.hideSpinner();
 			}
 			var time =  videoPlayer.currentTime;
 			var dur = videoPlayer.duration;
