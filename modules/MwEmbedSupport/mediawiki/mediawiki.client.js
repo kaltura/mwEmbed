@@ -8,10 +8,10 @@
 	var userAgent = navigator.userAgent;
 
 	mw.isMobileDevice = function(){
-		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isAndroid() || mw.getConfig( "EmbedPlayer.ForceNativeComponent") )
+		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isAndroid() || mw.getConfig( "EmbedPlayer.ForceNativeComponent") == true )
 	};
 	mw.isIphone = function(){
-		return ( !mw.getConfig( "EmbedPlayer.ForceNativeComponent") && navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() ) || mw.isIpod();
+		return ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") == false && navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() ) || mw.isIpod();
 	};
 	mw.isIE = function() {
 		return (/msie/.test(userAgent.toLowerCase()));
