@@ -1077,16 +1077,6 @@
 					 return ;
 				}
 
-				// A secondary end event for playlist and clip sequence endings
-				if( this.onDoneInterfaceFlag ){
-					// We trigger two end events to match KDP and ensure playbackComplete always comes before  playerPlayEnd
-					// in content ends.
-					mw.log("EmbedPlayer:: trigger: playbackComplete");
-					$( this ).trigger( 'playbackComplete' );
-					// now trigger postEnd for( playerPlayEnd )
-					mw.log("EmbedPlayer:: trigger: postEnded");
-					$( this ).trigger( 'postEnded' );
-				}
 				// if the ended event did not trigger more timeline actions run the actual stop:
 				if( this.onDoneInterfaceFlag ){
 					mw.log("EmbedPlayer::onDoneInterfaceFlag=true do interface done");
@@ -1132,6 +1122,16 @@
 							$( _this ).trigger( 'onEndedDone' );
 						}
 					}
+				}
+				// A secondary end event for playlist and clip sequence endings
+				if( this.onDoneInterfaceFlag ){
+					// We trigger two end events to match KDP and ensure playbackComplete always comes before  playerPlayEnd
+					// in content ends.
+					mw.log("EmbedPlayer:: trigger: playbackComplete");
+					$( this ).trigger( 'playbackComplete' );
+					// now trigger postEnd for( playerPlayEnd )
+					mw.log("EmbedPlayer:: trigger: postEnded");
+					$( this ).trigger( 'postEnded' );
 				}
 			}
 			// display thumbnail upon movie end if showThumbnailOnEnd Flashvar is set to true and not looped
