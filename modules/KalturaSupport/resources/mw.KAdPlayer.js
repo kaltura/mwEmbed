@@ -89,15 +89,9 @@ mw.KAdPlayer.prototype = {
 		var _this = this;
 		mw.log("KAdPlayer::display:" + adSlot.type + ' ads:' +  adSlot.ads.length );
 
-		var excludedComponents = [];
-		// playPauseBtn won't be disabled if enableControlsDuringAd set to true
-		if ( mw.getConfig('enableControlsDuringAd') ) {
-			excludedComponents = ['playPauseBtn'];
-		}
-
 		// if it's overlay player controls should not be disabled
 		if( adSlot.type !== 'overlay' ) {
-			_this.embedPlayer.triggerHelper( "onDisableInterfaceComponents", [excludedComponents] );
+			_this.disablePlayControls();
 		}
 
 		// Setup some configuration for done state:
@@ -497,9 +491,9 @@ mw.KAdPlayer.prototype = {
 		}
 	}   ,
 	disablePlayControls: function(){
-		var components = [];
+		var components = ['fullScreenBtn','logo'];
 		if (mw.getConfig('enableControlsDuringAd')) {
-			components = ['playPauseBtn'];
+			components.push('playPauseBtn');
 		}
 		this.embedPlayer.disablePlayControls(components);
 	},
