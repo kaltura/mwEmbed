@@ -230,6 +230,11 @@
 						});
 					});
 				});
+				if (embedPlayer.seeking){ // user started seeking before playback started and we have a preroll to show
+					setTimeout(function(){
+						embedPlayer.stopEventPropagation();
+					},100);
+				}
 			});
 
 			// Bind the player "ended" event to play the postroll if present

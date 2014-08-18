@@ -57,7 +57,7 @@ mw.KAdPlayer.prototype = {
 						_this.disablePlayControls(); // disable player controls
 						adPlayer.play();
 					} else {
-						$( embedPlayer ).trigger( "onPlayerStateChange", ["pause"] ); // trigger playPauseBtn UI update
+						$( embedPlayer ).trigger( "onPlayerStateChange", ["pause", _this.embedPlayer.currentState] ); // trigger playPauseBtn UI update
 						setTimeout( function () {
 							adPlayer.pause();
 						}, 0 );
@@ -68,6 +68,12 @@ mw.KAdPlayer.prototype = {
 				$( embedPlayer ).trigger( "onResumeAdPlayback" );
 				_this.clickedBumper = false;
 				_this.disablePlayControls(); // disable player controls
+			}
+		});
+		// for mobile devices (no ad sibling): prevent seeking when we have ads and playback hasn't started yet
+		$(this.embedPlayer).bind('playerReady', function(){
+			if (!_this.isVideoSiblingEnabled()){
+				$( _this.embedPlayer ).trigger( "onDisableScrubber" );
 			}
 		});
 	},
@@ -1043,6 +1049,10 @@ mw.KAdPlayer.prototype = {
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining',  null );
 				_this.getVPAIDDurtaion = null;
 				clearInterval( _this.adMonitorInterval );
+			}
+			if( _this.embedPlayer._checkHideSpinner && !_this.embedPlayer.seeking ){
+				_this.embedPlayer._checkHideSpinner = false;
+				_this.embedPlayer.hideSpinner();
 			}
 			var time =  videoPlayer.currentTime;
 			var dur = videoPlayer.duration;
