@@ -622,7 +622,7 @@ mw.KAdPlayer.prototype = {
 				} else if ( adConf.skipoffset.indexOf("%") != -1 ) {
 					//parse percent format to seconds
 					var percent = parseInt( adConf.skipoffset.substring(0, adConf.skipoffset.indexOf("%")) ) / 100;
-					if ( isNaN( vid.duration ) ) {
+					if ( isNaN( vid.duration ) || vid.duration === 0 ) {
 						skipPercentage = percent;
 					} else {
 						skipOffsetInSecs = vid.duration * percent;
@@ -638,7 +638,7 @@ mw.KAdPlayer.prototype = {
 		adConf.skipOffset = skipOffsetInSecs;
 		mw.log("KAdPlayer:: source updated, add tracking");
 		// Always track ad progress:
-		if( vid.readyState > 0 && vid.duration ) {
+		if( vid.readyState > 0 && vid.duration && embedPlayer.selectedPlayer.library !== 'Kplayer' ) {
 			embedPlayer.triggerHelper('AdSupport_AdUpdateDuration', vid.duration); // Trigger duration event
 			_this.addAdTracking( adConf.trackingEvents, adConf  );
 		} else {
