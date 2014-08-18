@@ -82,6 +82,7 @@ mw.KBasePlugin = Class.extend({
 
 		// First get template from 'template' config
 		var rawHTML = this.getConfig( 'template', true );
+		debugger;
 		if( !rawHTML ){
 			var templatePath = this.getConfig( 'templatePath' );
 			if( !templatePath || !window.kalturaIframePackageData.templates[ templatePath ]) {

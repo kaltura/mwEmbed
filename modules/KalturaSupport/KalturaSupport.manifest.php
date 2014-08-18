@@ -46,10 +46,10 @@ $kgDefaultComponentAttr = array(
 		)
 	),
 	'order' => array(
-        'doc' => 'Draw order of the component within the container.
-            Together with alignment, determines component placement of the component. Order is set with respect to siblings on the parent container.',
-        'type' => 'number',
-    ),
+		'doc' => 'Draw order of the component within the container.
+			Together with alignment, determines component placement of the component. Order is set with respect to siblings on the parent container.',
+		'type' => 'number',
+	),
 );
 
 // list any duplicate attribute sets here:
@@ -153,10 +153,10 @@ return array(
 		'description' => 'Loading spinner options allows you to customize the look of the loading spinner.',
 		'attributes' => array(
 			'imageUrl' => array(
-                'doc' => "An image URL, to use as the loading spinner. By default it is null. If a URL is provided, it will replace the dynamic loading spinner.",
-                'type' => 'url',
-                'initvalue' => ''
-            ),
+				'doc' => "An image URL, to use as the loading spinner. By default it is null. If a URL is provided, it will replace the dynamic loading spinner.",
+				'type' => 'url',
+				'initvalue' => ''
+			),
 			'lines' => array(
 				'doc' => 'The number of lines to draw, 11 by default.',
 				'type' => 'number',
@@ -362,26 +362,26 @@ return array(
 				'initvalue' => true,
 			),
 			array(
-                "doc" => "Preferred flavor bitrate",
-                "label" => "Preferred flavor bitrate",
-                "type" => "number",
-                "initvalue" => 1600,
-                "model" => "config.uiVars.mediaProxy.preferedFlavorBR"
-            ),
+				"doc" => "Preferred flavor bitrate",
+				"label" => "Preferred flavor bitrate",
+				"type" => "number",
+				"initvalue" => 1600,
+				"model" => "config.uiVars.mediaProxy.preferedFlavorBR"
+			),
 		)
 	),
 	'uiVars' => array(
-        'description' => "Allows you to add UI variables to the player configuration.",
-        'label' => "UI Variables",
-        'attributes' => array(
-            'vars' => array(
-                'doc' => 'List of UI variables',
-                'label' => 'UI variables',
-                'type' => 'uivars',
-                'model' => 'vars'
-            )
-        )
-    ),
+		'description' => "Allows you to add UI variables to the player configuration.",
+		'label' => "UI Variables",
+		'attributes' => array(
+			'vars' => array(
+				'doc' => 'List of UI variables',
+				'label' => 'UI variables',
+				'type' => 'uivars',
+				'model' => 'vars'
+			)
+		)
+	),
 	'download' => array(
 		'description' => "Enables users to add a download button to the player controls.
 			The download button will enable users to download the media to a local file.",
@@ -582,18 +582,18 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'doc' => 'Slider buffer color',
 				'type' => 'color'
 			),
-            'buttonsIconColorDropShadow' => array(
-                'label' => 'Apply drop shadow to icons',
-                "initvalue" => true,
-                'player-refresh' => 'theme.buttonsIconColorDropShadow',
-                'doc' => 'Apply drop shadow to icons',
-                'type' => 'boolean'
-            ),
-            'dropShadowColor' => array(
-                'label' => 'Drop shadow color',
-                'doc' => 'Drop shadow color',
-                'type' => 'hiddenValue'
-            )
+			'buttonsIconColorDropShadow' => array(
+				'label' => 'Apply drop shadow to icons',
+				"initvalue" => true,
+				'player-refresh' => 'theme.buttonsIconColorDropShadow',
+				'doc' => 'Apply drop shadow to icons',
+				'type' => 'boolean'
+			),
+			'dropShadowColor' => array(
+				'label' => 'Drop shadow color',
+				'doc' => 'Drop shadow color',
+				'type' => 'hiddenValue'
+			)
 		)
 	),
 	'share' => array(
@@ -954,7 +954,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'companions',
 				'section' => 'comp',
 				'filter' => 'companions',
-                "initvalue" => "Comp_300x250:300:250;Comp_728x90:728:90;",
+				"initvalue" => "Comp_300x250:300:250;Comp_728x90:728:90;",
 			),
 			'overlayUrl' => array(
 				'label' => 'Overlay URL', // *NEW*
@@ -999,12 +999,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'boolean'
 			),
 			'storeSession' => array(
-                'doc' => 'If the frequency playback should be stored across player reloads.
-                    By default, only playlists respect frequency intervals.
-                    If set to true, the prerollInterval will be respected across player views.',
-                'type' => 'boolean',
-                'initvalue' => false,
-            )
+				'doc' => 'If the frequency playback should be stored across player reloads.
+					By default, only playlists respect frequency intervals.
+					If set to true, the prerollInterval will be respected across player views.',
+				'type' => 'boolean',
+				'initvalue' => false,
+			)
 		)
 	),
 	'keyboardShortcuts' => array(
@@ -1077,10 +1077,10 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'initvalue' => 'ctrl+39'
 			),
 			'longSeekBackKey' => array(
-                'doc' => 'Long Seek back key.',
-                'type' => 'string',
-                'initvalue' => 'ctrl+37'
-            ),
+				'doc' => 'Long Seek back key.',
+				'type' => 'string',
+				'initvalue' => 'ctrl+37'
+			),
 			'percentageSeekKeys' => array(
 				'doc' => 'Comma seperated keys for percentage seek.',
 				'type' => 'string',
@@ -1261,10 +1261,9 @@ The playhead reflects segment time as if it was the natural stream length.",
 				),
 				'clickUrl' => array(
 				'doc' => "<p style='text-align: left'>Defines the URL for a related item click</p>
-							    If this left blank the click will replace the current video with a new one.
-							    example: <b>http://example.com/videos/{related.selectedEntry.id}</b> as a custom
-							    URL. The string {related.selectedEntry.id} will be replaced by id of the related item
-							     that was clicked",
+								If this left blank the click will replace the current video with a new one.
+								example: <b>http://my-custom-domain.com/?v={mediaProxy.entry.id}</b> as a custom
+								URL with the entry id as postfix",
 					'type' => 'string'
 				),
 				'itemsLimit' => array(

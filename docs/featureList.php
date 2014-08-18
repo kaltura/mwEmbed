@@ -323,6 +323,10 @@
 							'title' => 'Thumbnail embed',
 							'path' => 'KalturaSupport/tests/ThumbnailEmbedManyPlayers.qunit.html',
 						),
+						'NativeCallout'=> array(
+							'title' => 'Native callout',
+							'path' => 'KalturaSupport/tests/NativeCalloutComingSoon.html',
+						),
 						'referenceId' => array(
 							'title' => 'Reference Id',
 							'path' => 'KalturaSupport/tests/ReferenceId.html'
