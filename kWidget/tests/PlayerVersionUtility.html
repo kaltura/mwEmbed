@@ -381,6 +381,7 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 				}),
 				$('<br>'),
 				$('<span>').text( ' Pre-releases:' ),
+				$('<span>').text( ' ( do not use pre-releases on production players ) ' ).css('color', 'red'),
 				$('<select id="prerelease">').append(
 					$('<option>').text(' ')
 				).on('change', function(){
