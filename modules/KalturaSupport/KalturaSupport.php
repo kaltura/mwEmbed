@@ -216,7 +216,11 @@
 			'dependencies' => array( 'mw.KBaseScreen' ),
 			'kalturaPluginName' => 'share',
 		),
-
+		"abChecker" => array(
+            'scripts' => "components/abChecker/abChecker.js",
+            'dependencies' => array( 'mw.KBasePlugin' ),
+            'kalturaPluginName' => 'abChecker',
+        ),
 		"pptWidgetPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",
 			'kalturaPluginName' => 'pptWidgetAPI'

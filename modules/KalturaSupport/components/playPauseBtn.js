@@ -36,11 +36,11 @@
 		},
 		addBindings: function() {
 			var _this = this;
-			this.bind('onPlayerStateChange', function(e, newState ){
-				_this.updateUI( newState );
+			this.bind('onPlayerStateChange', function(e, newState, oldState ){
+				_this.updateUI( newState, oldState );
 			});
 		},
-		updateUI: function( newState ){
+		updateUI: function( newState, oldState ){
 			var removeIconClasses = this.playIconClass + ' ' + this.pauseIconClass + ' ' + this.replayIconClass;
 			var newIconClass = null;
 			var title = null;
@@ -52,9 +52,16 @@
 					newIconClass = this.pauseIconClass;
 				    break;
 				case 'start':
-				case 'pause':
 					title = this.playTitle;
 					newIconClass = this.playIconClass;
+					break;
+				case 'pause':
+					if ( oldState && oldState!='end' ) {
+						title = this.playTitle;
+						newIconClass = this.playIconClass;
+					} else {   	//if we get 'paused' after 'end' state - leave 'replay' icon
+						ignoreChange = true;
+					}
 				    break;
 				case 'end': 
 					title = this.replayTitle;

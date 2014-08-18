@@ -175,6 +175,6 @@
 			"EmbedPlayer.DefaultImageDuration" => 2,
 
 			// Default Timeout for Player controls hover out
-			"EmbedPlayer.HoverOutTimeout" => 1000,
+			"EmbedPlayer.HoverOutTimeout" => 300,
 	);
 ?>
