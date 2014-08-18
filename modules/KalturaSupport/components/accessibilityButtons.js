@@ -90,7 +90,7 @@
 					.addClass(this.getCssClass() + layoutClass);
 
 				if (this.getConfig('positionBtn')){
-					var positionButton = $( '<button />' )
+					var positionButton = $( '<p />' )
 						.attr( 'title', 'position' )
 						.addClass( "btn positionBtn accessibilityButton");
 					this.$el.append(positionButton);
