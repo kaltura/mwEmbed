@@ -9,6 +9,7 @@
 			enabledOn : "mobile"
 		},
 		setup: function(){
+			mw.setConfig("LeadWithHLSOnFlash",true);
 			// Bind player
 			this.addBindings();
 		},
