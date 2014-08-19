@@ -480,12 +480,13 @@ mw.Playlist.prototype = {
 		}
 
 		// trigger a playlist_playClip event:
-		embedPlayer.triggerHelper( 'Playlist_PlayClip', [ clipIndex, !!autoContinue ]);
+		var playback = {'shouldPause': false};
+		embedPlayer.triggerHelper( 'Playlist_PlayClip', [ clipIndex, !!autoContinue, playback ]);
 
 		// iOS devices have a autoPlay restriction, we issue a raw play call on
 		// the video tag to "capture the user gesture" so that future
 		// javascript play calls can work
-		if( embedPlayer.getPlayerElement() && embedPlayer.getPlayerElement().load ){
+		if( embedPlayer.getPlayerElement() && embedPlayer.getPlayerElement().load && mw.isIOS() ){
 			mw.log("Playlist:: issue load call to capture click for iOS");
 			embedPlayer.getPlayerElement().load();
 		}
@@ -505,7 +506,7 @@ mw.Playlist.prototype = {
 			_this.addClipBindings();
 			// Restore onDoneInterfaceFlag
 			embedPlayer.onDoneInterfaceFlag = true;
-		} );
+		}, playback.shouldPause );
 	},
 	/**
 	* Update the player

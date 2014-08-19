@@ -37,6 +37,14 @@ events, expanding/closing full screen, replaying, and more.</p>
 <p>To start working with the plugin all you need to do is configure the relevant Omniture plugin parameters in the Kaltura
 Management Console player studio. You can either use the standard configuration or have our experts work with you
 to help realize your analytics goals.</p>
+
+<p>VAST ads are tracked as well. For each ad the following events are tracked:</p>
+	<ul>
+		<li><b>s.Media.openAd</b>: When the ad loads</li>
+		<li><b>s.Media.play</b>: When the ad starts playing</li>
+		<li><b>s.Media.complete</b>: When the ad playback is done</li>
+	</ul>
+	<p>Event parameters include additional ad information such as ad ID, ad system, sequence type (preroll, midroll, postroll) and ad index.</p>
 </div>
 
 <script>
@@ -92,9 +100,9 @@ kWidget.featureConfig({
 			'overlayInterval':"300",
 			'overlayUrl':"http://projects.kaltura.com/MichalR/vast_overlay.xml",
 			'numPostroll':"1",
-			//	'postrollInterval':"1",
-			//	'postrollStartWith':"1",
-			//	'postrollUrl':"http://projects.kaltura.com/mdale/hotelVastAd.xml",
+			'postrollInterval':"1",
+			'postrollStartWith':"1",
+			'postrollUrl':"http://projects.kaltura.com/mdale/hotelVastAd.xml",
 			'preSequence':"1",
 			'postSequence':"1",
 			'timeout':"4"

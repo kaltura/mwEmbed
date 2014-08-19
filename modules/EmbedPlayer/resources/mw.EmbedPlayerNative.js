@@ -43,6 +43,9 @@ mw.EmbedPlayerNative = {
 
 	keepNativeFullScreen: false,
 
+	// Flag for ignoring double play on iPhone
+	playing: false,
+
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
 	nativeEvents : [
@@ -188,7 +191,7 @@ mw.EmbedPlayerNative = {
 		this.ignoreNextNativeEvent = true;
 		
 		// empty out any existing sources:
-		if( vid ) {
+		if( vid && !mw.isIphone() ) {  //if track element attached for iphone it won't be deleted
 			$( vid ).empty();
 		}
 
@@ -427,8 +430,12 @@ mw.EmbedPlayerNative = {
 				} else {
 					// continue to playback ( in a non-blocking call to avoid synchronous pause event ) 
 					setTimeout(function(){
-						_this.play();
-					},0)
+						if ( !_this.stopPlayAfterSeek ) {
+							mw.log( "EmbedPlayerNative::sPlay after seek" );
+							_this.play();
+							_this.stopPlayAfterSeek = false;
+						}
+					},0);
 				}
 			} );
 		}
@@ -536,6 +543,11 @@ mw.EmbedPlayerNative = {
 		seekTime = parseFloat( seekTime );
 		mw.log( "EmbedPlayerNative:: setCurrentTime seekTime:" + seekTime + ' count:' + callbackCount );
 		var vid = this.getPlayerElement();
+
+		if (this.currentState == "end" && mw.isIphone() ) {
+			vid.play();
+			this.playing = true;
+		}
 		
 		// some initial calls to prime the seek: 
 		if( callbackCount == 0 && vid.currentTime == 0 ){
@@ -786,7 +798,11 @@ mw.EmbedPlayerNative = {
 				vid.removeAttribute('controls');
 
 				// dissable seeking ( if we were in a seeking state before the switch )
-				_this.seeking = false;
+				if( _this.isFlavorSwitching ) {
+					_this.seeking = true;
+				} else {
+					_this.seeking = false;
+				}
 
 				// Workaround for 'changeMedia' on Android & iOS
 				// When changing media and not playing entry before spinner is stuck on black screen
@@ -969,6 +985,19 @@ mw.EmbedPlayerNative = {
 		var vid = this.getPlayerElement();
 		// parent.$('body').append( $('<a />').attr({ 'style': 'position: absolute; top:0;left:0;', 'target': '_blank', 'href': this.getPlayerElement().src }).text('SRC') );
 		var _this = this;
+
+		var nativeCalloutPlugin = {
+			'exist': false
+		};
+		if( mw.isMobileDevice() ) {
+			this.triggerHelper( 'nativePlayCallout',  [ nativeCalloutPlugin ] );
+		}
+
+		if( nativeCalloutPlugin.exist ) {
+			// if nativeCallout plugin exist play implementation is changed
+			return;
+		}
+
 		// if starting playback from stoped state and not in an ad or otherise blocked controls state:
 		// restore player:
 		if( this.isStopped() && this._playContorls ){
@@ -998,7 +1027,9 @@ mw.EmbedPlayerNative = {
 					// update the preload attribute to auto
 					$( _this.getPlayerElement() ).attr('preload',"auto" );
 					// issue a play request
-					_this.getPlayerElement().play();
+					if( !_this.playing ) {
+						_this.getPlayerElement().play();
+					}
 					// re-start the monitor:
 					_this.monitor();
 				}
@@ -1216,9 +1247,10 @@ mw.EmbedPlayerNative = {
 				return ;
 			}
 			this.seeking = false;
+			this.isFlavorSwitching = false;
 			if( this._propagateEvents ){
 				mw.log( "EmbedPlayerNative:: trigger: seeked" );
-				this.triggerHelper( 'seeked' );
+				this.triggerHelper( 'seeked' ,[this.currentTime]);
 			}
 		}
 		this.hideSpinner();
@@ -1232,6 +1264,7 @@ mw.EmbedPlayerNative = {
 	*/
 	_onpause: function(){
 		var _this = this;
+		this.playing = false;
 		if( this.ignoreNextNativeEvent ){
 			this.ignoreNextNativeEvent = false;
 			return ;
@@ -1368,11 +1401,32 @@ mw.EmbedPlayerNative = {
 			}
 		}, 3000);
 	},
+
+	/**
+	 * buffer under-run
+	 * @private
+	 */
+	_onwaiting: function () {
+		//vod buffer events are being handled by EmbedPlayer.js
+		if ( this.isLive() ) {
+			this.bufferStart();
+		}
+	},
+
+	_oncanplay: function ( event ) {
+		if ( this.isLive() && this.buffering ) {
+			this.bufferEnd();
+		}
+	},
 	/**
 	 * Local onClip done function for native player.
 	 */
 	onClipDone: function(){
 		this.parent_onClipDone();
+
+		if( mw.isIphone() && !this.loop ) {
+			$( this ).trigger( 'onEndedDone' );
+		}
 
 		// Don't run onclipdone if _propagateEvents is off
 		if( !this._propagateEvents ){
@@ -1382,9 +1436,7 @@ mw.EmbedPlayerNative = {
 		var _this = this;
 
 		if ( _this.isImagePlayScreen() && !_this.isPlaylistScreen() ) {
-			if (!this.keepNativeFullScreen) {
-				_this.getPlayerElement().webkitExitFullScreen();
-			}
+			this.closeNativeFullScreen();
 		}
 
 		// add clip done binding ( will only run on sequence complete )
@@ -1394,14 +1446,17 @@ mw.EmbedPlayerNative = {
 				_this.keepPlayerOffScreenFlag = false;
 			} else {
 				// exit full screen mode on the iPhone
-				mw.log( 'EmbedPlayer::onClipDone: Exit full screen' );
-				if (!_this.keepNativeFullScreen) {
-					_this.getPlayerElement().webkitExitFullScreen();
-				}
+				this.closeNativeFullScreen();
 			}
 		} );
 	},
 
+	closeNativeFullScreen: function(){
+		if (!mw.getConfig("EmbedPlayer.ForceNativeFullscreenOnClipDone") && !this.keepNativeFullScreen){
+			mw.log( 'EmbedPlayer::onClipDone: Exit full screen' );
+			this.getPlayerElement().webkitExitFullScreen();
+		}
+	},
 	enableNativeControls: function(){
 		$( this.getPlayerElement() ).attr('controls', "true");
 	},
@@ -1433,8 +1488,8 @@ mw.EmbedPlayerNative = {
 	 * @returns {boolean} true if seek event is fake, false if valid
 	 */
 	isFakeHlsSeek: function() {
-		return ( (Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2) || mw.isIpad() );
-	}
+		return ( (Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2) || ( mw.isIpad() && this.currentSeekTargetTime > 0.01 ) );
+}
 };
 
 } )( mediaWiki, jQuery );

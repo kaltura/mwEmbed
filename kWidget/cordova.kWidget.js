@@ -47,6 +47,7 @@
 				//kWidget.getIframeRequest( targetId, settings ) - we get it encoded so we decode before encoding whole url again
 				this.iframeUrl = kWidget.getIframeUrl() + '?' + decodeURIComponent(kWidget.getIframeRequest( targetId, settings ));
 				this.iframeUrl += '#' + JSON.stringify( window.preMwEmbedConfig );
+				this.iframeUrl = this.iframeUrl.replace(/'/g,"");
 				this.addApi( this.target );
 
 				// Setting kplayer id for jsCallbackReady

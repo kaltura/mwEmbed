@@ -401,11 +401,13 @@ body { letter-spacing: 0.04em; }
 }
 
 .player-out .hover .playHead {
+	/*
 	-webkit-transform: scale(0, 0);
 	-moz-transform: scale(0, 0);
 	-o-transform: scale(0, 0);
 	-ms-transform: scale(0, 0);
-	transform: scale(0, 0);
+	transform: scale(0, 0);*/
+	display: none;
 }
 .accessibilityButtons {
 	display: inline-block;
@@ -1065,6 +1067,13 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	left: 0.3em;
 	opacity: 0.7;
 	cursor: pointer;
+	border: 1px solid grey;
+	border-radius: 25px;
+	background-color: grey;
+}
+.ie8 .expandPlayerBtn{
+	border: 0px solid grey;
+	background:url(blank.gif);
 }
 .expandPlayerBtn, .previewPlayer + .size-tiny .expandPlayerBtn {
 	display: none;

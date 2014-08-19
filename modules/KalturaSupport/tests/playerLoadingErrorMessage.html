@@ -17,46 +17,31 @@
     kWidget.featureConfig({
         "targetId": "kaltura_player",
         "wid": "_243342",
-        "uiconf_id": 5774681,
+        "uiconf_id": 21099702,
         "flashvars": {
-            "doubleClick": {
-                adSlotHeight: 330,
-                adSlotWidth: 400,
-                adType: "text_overlay",
-                channels: "",
-                container: "companion",
-                contentId: 123,
-                disableCompanionAds: false,
-                height: "100%",
-                path: "http://cdnbakmi.kaltura.com/content/uiconf/disney/kdp_3.5.19/plugins/doubleclickIma/doubleclickPlugin.swf",
-                plugin: true,
-                position: "lastChild",
-                postSequence: 1,
-                preSequence: "0",
-                provider: "doubleclick",
-                publisherId: "ca-video-googletest1",
-                relativeTo: "PlayerHolder",
-                trackCuePoints: true,
-                width: "100%"
+            'streamerType': 'hdnetwork',
+            'doubleClick':{
+                'plugin':true,
+                'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=%2F3510761%2FadRulesSampleTags&ciu_szs=160x600%2C300x250%2C728x90&cust_params=adrule%3Dpremidpostpodandbumpers&impl=s&gdfp_req=1&env=vp&ad_rule=1&vid=47570401&cmsid=481&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]',
+                'disableCompanionAds' : false,
+                'debugMode':false
             },
-            "EmbedPlayer":{
-                "loader":{
-                    "error": {
-                        "title": "Player Error",
-                        "message": "The player or one of its dependencies have failed loading",
-                        "buttons": ["ok", "cancel"],
-                        //"noButtons": true,
-                        "callbackFunction": "myCallbackFunction",
-                        "props" :{
-                            "textColor": "#FF0000",
-                            "titleTextColor":"#FF0000"
-                        }
-                    }
+            //'debugMode':'true',
+            'adsOnReplay':true,
+            "abChecker": {
+                "plugin": true,
+                "title": "Player Error",
+                "message": "The player or one of its dependencies have failed loading",
+                "noButtons": true,
+                "props" :{
+                    "textColor": "#FF0000",
+                    "titleTextColor":"#FF0000"
                 }
-            }
+
+           }
         },
         "cache_st": 1401718216,
-        "entry_id": "0_uka1msg4"
+        "entry_id": "0_c0r624gh"
     });
     function myCallbackFunction(e){
         var textBox = document.getElementById("textBox");
@@ -76,41 +61,38 @@ Please install <a href="https://adblockplus.org/en/">adblockplus</a> on your bro
 </br>
 <h3>Loader error test configuration:</h3>
 <pre style="width:800px">
-"EmbedPlayer":{
-    "loader":{
-        "error": {
-            "title": "Player Error",
-            "message": "The player or one of its dependencies have failed loading",
-            "buttons": ["ok", "cancel"],
-            "callbackFunction": "myCallbackFunction",
-            "props" :{
-                "textColor": "#FF0000",
-                "titleTextColor":"#FF0000"
-            }
+"abChecker":{
+    "alertConfig":{
+        "title": "Player Error",
+        "message": "The player or one of its dependencies have failed loading",
+        "noButtons": true,
+        "props" :{
+            "textColor": "#FF0000",
+            "titleTextColor":"#FF0000"
         }
     }
 }
     </pre>
 
-<h3>Loader error default configuration options:</h3>
+<h3>Error default configuration options:</h3>
 <pre style="width:800px">
 {
     title:  'Player failed',
     message: 'The player or one of its dependencies have failed loading',
-    buttons: null, //If empty then defaults to "ok" button(*)
-    noButtons: null, //If set to true disables button display
-    callbackFunction: null, //name of external callback function(**)
-    isExternal: true, //always set to true, as callbackFunction only takes function name
+    buttons: null, //If empty then defaults to "ok" button
+    noButtons: true, //If set to true disables button display
+    callbackFunction: null, //name of external callback function, or a function definition
+    isExternal: true, //if callback is external - e.g., on page
     props: {
         textColor: null,
         titleTextColor: null,
         buttonRowSpacing: null,
         buttonHeight: null,
         buttonSpacing: null
-    }
+    },
+    enableResumePlayback: false//Set to true to allow playback continue after error is shown(*)
 }
-//(*) - define "noButtons": true to disable buttons
-//(**) - function needs to be defined on page
+(*)This will override any callbackFunction which is defined
     </pre>
 </body>
 </html>

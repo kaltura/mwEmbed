@@ -91,13 +91,64 @@
 						if ( !_this.dvrWindow ) {
 							_this.dvrWindow = this.defaultDVRWindow;
 						}
-						if ( kWidget.isIOS() ) {
+						if ( _this.isNativeHLS() ) {
 							embedPlayer.setDuration( _this.dvrWindow );
 						}
 						showComponentsArr.push( 'scrubber', 'durationLabel', 'currentTimeLabel' );
 					} else {  //live + no DVR
 						showComponentsArr.push( 'liveStatus' );
 						hideComponentsArr.push( 'scrubber', 'durationLabel', 'currentTimeLabel' );
+					}
+
+					if ( _this.isNativeHLS() ) {
+						_this.bind( 'timeupdate' , function() {
+							var curTime = embedPlayer.getPlayerElementTime();
+
+							// handle timeupdate if pausedTimer was turned on
+							if ( _this.dvrTimePassed != 0 ) {
+								var lastShownTime = _this.lastShownTime;
+								if ( lastShownTime == 0 ) {
+									lastShownTime = curTime;
+								}
+								var accurateTime =  lastShownTime - _this.dvrTimePassed;
+								if ( accurateTime < 0 ) {
+									accurateTime = 0
+								}
+								if ( accurateTime > embedPlayer.duration ) {
+									accurateTime = embedPlayer.duration;
+								}
+								_this.updateTimeAndScrubber( accurateTime );
+
+							}
+							//handle bug in iOS: currenttime exceeds duration
+							else if ( curTime > embedPlayer.duration ) {
+								embedPlayer.triggerHelper( 'detachTimeUpdate' );
+								embedPlayer.triggerHelper( 'externalTimeUpdate', [ embedPlayer.duration ] );
+								_this.lastShownTime =  embedPlayer.duration;
+								_this.shouldReAttachTimeUpdate = true;
+							}
+							else if ( _this.dvrTimePassed == 0 && _this.shouldReAttachTimeUpdate) {
+								_this.sendReAttacheTimeUpdate();
+							}
+						});
+					}
+
+					if ( _this.shouldHandlePausedMonitor() ) {
+
+						_this.bind( 'onplay', function() {
+							if ( _this.isDVR() && _this.switchDone ) {
+								//	_this.hideLiveStreamStatus();
+								_this.removePausedMonitor();
+							}
+						} );
+
+						_this.bind( 'seeking movingBackToLive', function() {
+							//if we are keeping track of the passed time from a previous pause - reset it
+							if ( _this.dvrTimePassed != 0 ) {
+								_this.dvrTimePassed = 0;
+								_this.sendReAttacheTimeUpdate();
+							}
+						});
 					}
 				}
 				//not a live etnry: restore ui, hide live ui
@@ -181,57 +232,6 @@
 					}
 				}
 			});
-
-			if ( kWidget.isIOS() ) {
-				this.bind( 'timeupdate' , function() {
-					var curTime = embedPlayer.getPlayerElementTime();
-
-					// handle timeupdate if pausedTimer was turned on
-					if ( _this.dvrTimePassed != 0 ) {
-						var lastShownTime = _this.lastShownTime;
-						if ( lastShownTime == 0 ) {
-							lastShownTime = curTime;
-						}
-						var accurateTime =  lastShownTime - _this.dvrTimePassed;
-						if ( accurateTime < 0 ) {
-							accurateTime = 0
-						}
-						if ( accurateTime > embedPlayer.duration ) {
-							accurateTime = embedPlayer.duration;
-						}
-						_this.updateTimeAndScrubber( accurateTime );
-
-					}
-					//handle bug in iOS: currenttime exceeds duration
-					else if ( curTime > embedPlayer.duration ) {
-						embedPlayer.triggerHelper( 'detachTimeUpdate' );
-						embedPlayer.triggerHelper( 'externalTimeUpdate', [ embedPlayer.duration ] );
-						_this.lastShownTime =  embedPlayer.duration;
-						_this.shouldReAttachTimeUpdate = true;
-					}
-					else if ( _this.dvrTimePassed == 0 && _this.shouldReAttachTimeUpdate) {
-					   _this.sendReAttacheTimeUpdate();
-					}
-				});
-			}
-
-			if ( this.shouldHandlePausedMonitor() ) {
-
-				this.bind( 'onplay', function() {
-					if ( _this.isDVR() && _this.switchDone ) {
-						//	_this.hideLiveStreamStatus();
-						_this.removePausedMonitor();
-					}
-				} );
-
-				this.bind( 'seeking movingBackToLive', function() {
-					//if we are keeping track of the passed time from a previous pause - reset it
-					if ( _this.dvrTimePassed != 0 ) {
-						_this.dvrTimePassed = 0;
-						_this.sendReAttacheTimeUpdate();
-					}
-				});
-			}
 		},
 
 		sendReAttacheTimeUpdate: function() {
@@ -285,7 +285,7 @@
 		 * relevant only on iOS and if updateIOSPauseTime flag is true
 		 */
 		shouldHandlePausedMonitor: function() {
-			if ( kWidget.isIOS() && this.getConfig('updateIOSPauseTime') ) {
+			if ( this.isNativeHLS() && this.getConfig('updateIOSPauseTime') ) {
 				return true;
 			}
 			return false;
@@ -357,8 +357,7 @@
 				'action' : 'islive',
 				'id' : embedPlayer.kentryid,
 				'protocol' : protocol,
-				'partnerId': embedPlayer.kpartnerid,
-				'timestamp' : Date.now()
+				'partnerId': embedPlayer.kpartnerid
 			}, function( data ) {
 				var onAirStatus = false;
 				if ( data === true ) {
@@ -380,6 +379,14 @@
 
 		log: function( msg ) {
 			mw.log( "LiveStream :: " + msg);
+		},
+
+		isNativeHLS: function() {
+			if ( mw.isIOS() || mw.isDesktopSafari() ) {
+				return true;
+			}
+
+			return false;
 		}
 
 	}));

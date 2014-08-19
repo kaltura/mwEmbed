@@ -19,7 +19,8 @@
 					//'animate': true,
 					'maxWidth': 40,
 					'aspectRatio': true,
-					'minWidth': 100
+					'minWidth': 100,
+					'containment': 'parent'
 				},
 				'draggable': {
 					'cursor': 'move',
@@ -31,7 +32,8 @@
 					'minimumSequenceDuration': 2
 				},
 				'touchMenuFadeout' : 3000,
-				'cuePointType': ['thumbCuePoint.Thumb']
+				'cuePointType': ['thumbCuePoint.Thumb'],
+				'mainViewDisplay': 2 // 1 - Main stream, 2 - Presentation
 			},
 			monitor: {},
 			controlBar: {},
@@ -62,7 +64,23 @@
 				this.initMonitors();
 			},
 			isSafeEnviornment: function(){
-				return !mw.isIphone();
+				var _this = this;
+				var cuePointsExist = false;
+				if (this.getPlayer().kCuePoints){
+					var cuePoints = this.getPlayer().kCuePoints.getCuePoints();
+					var filteredCuePoints = $.grep(cuePoints, function(cuePoint){
+						var found = false;
+						$.each(_this.getConfig('cuePointType'), function(i, cuePointType){
+							if (cuePointType == cuePoint.cuePointType) {
+								found = true;
+								return false;
+							}
+						});
+						return found;
+					});
+					cuePointsExist =  (filteredCuePoints.length > 0) ? true : false;
+				}
+				return !mw.isIphone() && cuePointsExist;
 			},
 			initConfig: function () {
 				var _this = this;
@@ -252,11 +270,8 @@
 			addBindings: function () {
 				var _this = this;
 				this.bind( 'playerReady', function ( e, newState ) {
-
 					_this.originalWidth = _this.getPlayer().getPlayerWidth();
 					_this.originalHeight = _this.getPlayer().getPlayerHeight();
-
-
 
 					var primaryScreen = _this.monitor[_this.TYPE.PRIMARY].obj = _this.getPlayer().getVideoDisplay();
 					var secondaryScreen = _this.monitor[_this.TYPE.SECONDARY].obj = _this.getComponent();
@@ -264,8 +279,12 @@
 					_this.controlBar[_this.TYPE.SECONDARY].obj = _this.getControlBar( _this.TYPE.SECONDARY );
 
 					//Set rule attributes
-					primaryScreen.addClass( 'dualScreenMonitor' ).attr( 'data-monitor-rule', _this.TYPE.PRIMARY ).addClass( 'firstScreen' );
+					primaryScreen.addClass( 'dualScreenMonitor firstScreen ' + _this.pluginName ).attr( 'data-monitor-rule', _this.TYPE.PRIMARY );
 					secondaryScreen.addClass( 'dualScreenMonitor' ).attr( 'data-monitor-rule', _this.TYPE.SECONDARY );
+
+					secondaryScreen.off().on('click dblclick touchstart touchend', function(e){
+						_this.embedPlayer.triggerHelper(e);
+					});
 
 					_this.setControlBarBindings();
 
@@ -287,7 +306,22 @@
 
 					_this.getSecondMonitor().prop = secondaryScreen.css(['top', 'left', 'width', 'height']);
 					_this.getSecondMonitor().obj.css(_this.getSecondMonitor().prop);
-				} );
+					if (_this.getConfig("mainViewDisplay") == 2) {
+						_this.fsm.consumeEvent( "switch" );
+					}
+
+					//dualScreen components are set on z-index 1-3, so set all other components to zIndex 4 or above
+					$.each(_this.embedPlayer.getVideoHolder().children(), function(index, childNode){
+						if (!childNode.classList.contains("dualScreen")){
+							if ( isNaN($(childNode).css('z-index')) ){
+								$(childNode).css('z-index', 4);
+							} else {
+								var zIndex = $(childNode).css('z-index');
+								$(childNode).css('z-index', zIndex + 4);
+							}
+						}
+					});
+				});
 
 				this.bind( 'onOpenFullScreen', function ( ) {
 					_this.hideMonitor(_this.getSecondMonitor().obj);
@@ -350,9 +384,8 @@
 				this.bind( 'seeked', function () {
 					//_this.cancelPrefetch();
 					var cuePoint = _this.getCurrentCuePoint();
-
 					_this.sync( cuePoint);
-				} )
+				} );
 
 				this.bind( 'KalturaSupport_ThumbCuePointsReady', function ( ) {
 					var cuePoints = _this.getPlayer().kCuePoints.getCuePoints();
@@ -490,7 +523,7 @@
 				var $controlBar = this.controlBar[type].obj;
 				if ( !$controlBar ) {
 					$controlBar = this.controlBar[type].obj = $( '<div />' )
-						.addClass( 'controlBar ' + this.pluginName )
+						.addClass( 'controlBar ' + this.getCssClass() )
 						.attr( {'id': type, 'data-controlBar-rule': type} )
 						.css( 'visibility', 'hidden' )
 						.append(

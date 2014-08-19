@@ -625,8 +625,10 @@ mw.PlayerLayoutBuilder.prototype = {
 			embedPlayer.triggerHelper( 'showPlayerControls' );
 		};
 		var hidePlayerControls = function(){
-			$interface.addClass( outPlayerClass );
-			embedPlayer.triggerHelper( 'hidePlayerControls' );
+			if (!embedPlayer.paused){
+				$interface.addClass( outPlayerClass );
+				embedPlayer.triggerHelper( 'hidePlayerControls' );
+			}
 		};
 
 		// Check if we should display the interface:
@@ -702,20 +704,25 @@ mw.PlayerLayoutBuilder.prototype = {
 		});
 		// Check for click
 		$( embedPlayer ).bind( "click" + _this.bindPostfix, function() {
-            var playerStatus = embedPlayer.isPlaying();
-		    if( dblClickTimeout ) return true;
-		    dblClickTimeout = setTimeout(function(){
-		        if( didDblClick ) {
-		            didDblClick = false;
-		        } else {
-		        	mw.log('PlayerLayoutBuilder::addPlayerClickBindings:: togglePlayback from click event');
-                    if (embedPlayer.isPlaying() == playerStatus){
-		                _this.togglePlayback();
-                    }
-		        }
-		        clearTimeout( dblClickTimeout );
-		        dblClickTimeout = null;
-		    }, 300);
+			if ( mw.isMobileDevice() )  {
+				_this.togglePlayback();
+			}
+			else {
+				var playerStatus = embedPlayer.isPlaying();
+				if( dblClickTimeout ) return true;
+				dblClickTimeout = setTimeout(function(){
+					if( didDblClick ) {
+						didDblClick = false;
+					} else {
+						mw.log('PlayerLayoutBuilder::addPlayerClickBindings:: togglePlayback from click event');
+						if (embedPlayer.isPlaying() == playerStatus){
+							_this.togglePlayback();
+						}
+					}
+					clearTimeout( dblClickTimeout );
+					dblClickTimeout = null;
+				}, 300);
+			}
 
 			return true;
 		});
