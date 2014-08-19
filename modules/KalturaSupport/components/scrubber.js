@@ -139,13 +139,13 @@
 		},
 		onEnable: function() {
 			this.isDisabled = false;
-			this.getComponent().toggleClass('disabled');
+			this.getComponent().removeClass('disabled');
 			this.getComponent().slider( "option", "disabled", false );
 		},
 		onDisable: function() {
 			this.isDisabled = true;
 			this.getComponent().slider( "option", "disabled", true );
-			this.getComponent().toggleClass('disabled');
+			this.getComponent().addClass('disabled');
 		},
 		getSliceCount: function( duration ) {
 			//return kWidget.getSliceCount(this.duration);
