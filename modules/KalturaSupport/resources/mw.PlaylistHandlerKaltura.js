@@ -105,11 +105,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 			_this.$playlistItemRenderer = $(itemRenderer );
 		}
 
-		// Force autoContoinue if there is no interface
-		if( !_this.includeInLayout ){
-			_this.autoContinue = true;
-		}
-
 		mw.log( "PlaylistHandlerKaltura:: got  " +  _this.playlistSet.length + ' playlists ' );
 		// Set the playlist to the first playlist
 		_this.setPlaylistIndex( 0 );
@@ -318,7 +313,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	getClipList: function(){
 		return this.clipList;
 	},
-	playClip: function( embedPlayer, clipIndex, callback ){
+	playClip: function( embedPlayer, clipIndex, callback, shouldPause ){
 		var _this = this
 		if( !embedPlayer ){
 			mw.log("Error:: PlaylistHandlerKaltura:playClip > no embed player");
@@ -370,16 +365,24 @@ mw.PlaylistHandlerKaltura.prototype = {
 		});
 		mw.log("PlaylistHandlerKaltura::playClip::changeMedia entryId: " + this.getClip( clipIndex ).id);
 
-		// Make sure its in a playing state when change media is called if we are autoContinuing:
-		if( this.autoContinue && !embedPlayer.firstPlay ){
-			embedPlayer.stopped = embedPlayer.paused = false;
-		}
 		// Update the playlist data selectedIndex ( before issuing change media call )
 	 	_this.setClipIndex( clipIndex );
 		// Use internal changeMedia call to issue all relevant events
 	 	
-	 	// set autoplay to true to continue to playback: 
-	 	embedPlayer.autoplay = true;
+	 	// set autoplay to true to continue to playback:
+		embedPlayer.autoplay = true;
+		if (shouldPause && shouldPause === true){
+			mw.log("PlaylistHandlerKaltura::playClip::shouldPause = true. Will pause next clip.");
+			embedPlayer.autoplay = false;
+			// in case we don't have a preroll - autoplay
+			setTimeout(function(){
+				if (!embedPlayer.isInSequence()){
+					mw.log("PlaylistHandlerKaltura::playClip::shouldPause = true but not isInSequence - continue playback.");
+					embedPlayer.play();
+				}
+			},3000);
+		}
+
 		embedPlayer.sendNotification( "changeMedia", {'entryId' : this.getClip( clipIndex ).id, 'playlistCall': true} );
 	},
 	drawEmbedPlayer: function( clipIndex, callback ){

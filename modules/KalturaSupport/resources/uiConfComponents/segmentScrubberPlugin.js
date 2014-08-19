@@ -19,8 +19,8 @@
 		updateTimeOffsets: function(){
 			var player = this.getPlayer();
 			var stopEvent = 'doStop.segmentScrubber';
-			var timeIn = player.getKalturaConfig('mediaProxy', 'mediaPlayFrom' );
-			var timeOut = player.getKalturaConfig('mediaProxy', 'mediaPlayTo' );
+			var timeIn = player.startTime;
+			var timeOut = player.pauseTime;
 			player.startTime = timeIn;
 			player.startOffset = timeIn;
 			player.setDuration( timeOut - timeIn );

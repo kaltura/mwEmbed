@@ -97,11 +97,19 @@
 		return /OS 5_/.test( userAgent ) && mw.isIOS();
 	};
 
+	mw.isIOS6 = function(){
+		return /OS 6_/.test( userAgent ) && mw.isIOS();
+	};
+
 	mw.isIOS7 = function(){
 		return /OS 7_/.test( userAgent ) && mw.isIOS();
 	};
 	mw.isIOS8 = function(){
 		return /OS 8_/.test( userAgent ) && mw.isIOS();
+	};
+
+	mw.isSilk = function(){
+		return /\bSilk\b/.test(userAgent);
 	};
 
 	// Does the client has native touch bindings?

@@ -85,6 +85,25 @@
 			if( this.getConfig('layout') == 'below'){
 				this.updateBelowVideoCaptionContainer();
 			}
+
+			// Setup display binding
+			this.bind( 'onShowControlBar', function(event, layout ){
+				if ( _this.getPlayer().isOverlayControls() ) {
+					// Move the text track if present
+					_this.getPlayer().getInterface().find( '.track' )
+						.stop()
+						.animate( layout, 'fast' );
+				}
+			});
+
+			this.bind( 'onHideControlBar', function(event, layout ){
+				if ( _this.getPlayer().isOverlayControls() ) {
+					// Move the text track down if present
+					_this.getPlayer().getInterface().find( '.track' )
+						.stop()
+						.animate( layout, 'fast' );
+				}
+			});
 		},
 		updateTextSize: function(){
 			// Check if we are in fullscreen or not, if so add an additional bottom offset of
@@ -246,6 +265,18 @@
 					dbTextSource.fileExt = 'xml';
 				}
 			}
+
+			var captionsSrc;
+			if( mw.isIphone() && !mw.getConfig('disableTrackElement') ) {
+				// getting generated vtt file from dfxp/srt
+				captionsSrc = mw.getConfig('Kaltura.ServiceUrl') +
+							"/api_v3/index.php/service/caption_captionasset/action/serveWebVTT/captionAssetId/" +
+							dbTextSource.id +
+							"/segmentIndex/-1/version/2/captions.vtt";
+			} else {
+				captionsSrc = this.getCaptionURL( dbTextSource.id ) + '/.' + dbTextSource.fileExt;
+			}
+
 			// Try to insert the track source:
 			var embedSource = this.embedPlayer.mediaElement.tryAddSource(
 				$( '<track />' ).attr({
@@ -255,7 +286,7 @@
 					'label'		: dbTextSource.label || dbTextSource.language,
 					'id'		: dbTextSource.id,
 					'fileExt'	: dbTextSource.fileExt,
-					'src'		: this.getCaptionURL( dbTextSource.id ) + '/.' + dbTextSource.fileExt,
+					'src'		: captionsSrc,
 					'title'		: dbTextSource.label,
 					'default'	: dbTextSource.isDefault
 				})[0]

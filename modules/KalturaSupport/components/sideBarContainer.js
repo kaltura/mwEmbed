@@ -134,6 +134,7 @@
 		destroy: function(){
 			this._super();
 			this.getComponent().remove();
+			this.getComponentReminder().remove();
 		}
 	}));
 

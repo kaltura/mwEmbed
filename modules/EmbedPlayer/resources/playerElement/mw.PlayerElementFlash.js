@@ -68,7 +68,7 @@
 							'playerPaused' : 'onPause',
 							'playerPlayed' : 'onPlay',
 							'durationChange' : 'onDurationChange',
-							'playerPlayEnd' : 'onClipDone',
+							'playbackComplete' : 'onClipDone',
 							'playerUpdatePlayhead' : 'onUpdatePlayhead',
 							'playerSeekEnd': 'onPlayerSeekEnd',
 							'alert': 'onAlert',
@@ -159,16 +159,16 @@
 		 * add js listener for the given callback. Creates generic methodName and adds it to this playerElement
 		 * @param callback to call
 		 * @param eventName notification name to listen for
+		 * @param disregardEventCounter don't concat listenerCounter to the method name
 		 */
-		subscribe: function ( callback, eventName ) {
+		subscribe: function ( callback, eventName, disregardEventCounter ) {
 			if ( this.playerElement ) {
-				var methodName = eventName + this.listenerCounter;
+				var methodName = !!disregardEventCounter ? eventName  : eventName + this.listenerCounter;
 				this.listenerCounter++;
 				this.targetObj[methodName] = callback;
 
 				this.bindPlayerFunction( eventName, methodName );
 			}
-
 		},
 		/**
 		 * Bind a Player Function,
@@ -237,6 +237,17 @@
 		onVolumeChanged: function ( data ) {
 			this.volume = data.newVolume;
 			$( this).trigger( 'volumechange' );
+		},
+		redrawObject: function ( timeout ) {
+			var _this = this;
+			//by default we will wait 250 ms
+			if ( !timeout ) {
+				timeout = 250;
+			}
+			this.playerElement.style.width = "99%";
+			setTimeout( function() {
+				_this.playerElement.style.width = "100%";
+			}, timeout );
 		}
 	});
 

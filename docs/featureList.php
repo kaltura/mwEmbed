@@ -40,7 +40,7 @@
 						)*/
 					)
 				),
-				'Live' => array(
+				/*'Live' => array(
 					'title' => 'Live',
 					'desc' => 'The Kaltura LIVE supports sending streams to both HLS (iOS / mobile) and HDS ( flahs ).',
 					'testfiles' => array(
@@ -49,7 +49,7 @@
 							'path' => 'KalturaSupport/tests/LiveStream.html',
 						),
 					),
-				),
+				),*/
 				'Access_Control'=> array(
 					'title' => "Access Controls",
 					'desc' => 'Provides mechanism to control access to player content',
@@ -322,6 +322,10 @@
 						'thumb' => array( 
 							'title' => 'Thumbnail embed',
 							'path' => 'KalturaSupport/tests/ThumbnailEmbedManyPlayers.qunit.html',
+						),
+						'NativeCallout'=> array(
+							'title' => 'Native callout',
+							'path' => 'KalturaSupport/tests/NativeCalloutComingSoon.html',
 						),
 						'referenceId' => array(
 							'title' => 'Reference Id',

@@ -99,6 +99,57 @@
 						showComponentsArr.push( 'liveStatus' );
 						hideComponentsArr.push( 'scrubber', 'durationLabel', 'currentTimeLabel' );
 					}
+
+					if ( kWidget.isIOS() ) {
+						_this.bind( 'timeupdate' , function() {
+							var curTime = embedPlayer.getPlayerElementTime();
+
+							// handle timeupdate if pausedTimer was turned on
+							if ( _this.dvrTimePassed != 0 ) {
+								var lastShownTime = _this.lastShownTime;
+								if ( lastShownTime == 0 ) {
+									lastShownTime = curTime;
+								}
+								var accurateTime =  lastShownTime - _this.dvrTimePassed;
+								if ( accurateTime < 0 ) {
+									accurateTime = 0
+								}
+								if ( accurateTime > embedPlayer.duration ) {
+									accurateTime = embedPlayer.duration;
+								}
+								_this.updateTimeAndScrubber( accurateTime );
+
+							}
+							//handle bug in iOS: currenttime exceeds duration
+							else if ( curTime > embedPlayer.duration ) {
+								embedPlayer.triggerHelper( 'detachTimeUpdate' );
+								embedPlayer.triggerHelper( 'externalTimeUpdate', [ embedPlayer.duration ] );
+								_this.lastShownTime =  embedPlayer.duration;
+								_this.shouldReAttachTimeUpdate = true;
+							}
+							else if ( _this.dvrTimePassed == 0 && _this.shouldReAttachTimeUpdate) {
+								_this.sendReAttacheTimeUpdate();
+							}
+						});
+					}
+
+					if ( _this.shouldHandlePausedMonitor() ) {
+
+						_this.bind( 'onplay', function() {
+							if ( _this.isDVR() && _this.switchDone ) {
+								//	_this.hideLiveStreamStatus();
+								_this.removePausedMonitor();
+							}
+						} );
+
+						_this.bind( 'seeking movingBackToLive', function() {
+							//if we are keeping track of the passed time from a previous pause - reset it
+							if ( _this.dvrTimePassed != 0 ) {
+								_this.dvrTimePassed = 0;
+								_this.sendReAttacheTimeUpdate();
+							}
+						});
+					}
 				}
 				//not a live etnry: restore ui, hide live ui
 				else {
@@ -181,57 +232,6 @@
 					}
 				}
 			});
-
-			if ( kWidget.isIOS() ) {
-				this.bind( 'timeupdate' , function() {
-					var curTime = embedPlayer.getPlayerElementTime();
-
-					// handle timeupdate if pausedTimer was turned on
-					if ( _this.dvrTimePassed != 0 ) {
-						var lastShownTime = _this.lastShownTime;
-						if ( lastShownTime == 0 ) {
-							lastShownTime = curTime;
-						}
-						var accurateTime =  lastShownTime - _this.dvrTimePassed;
-						if ( accurateTime < 0 ) {
-							accurateTime = 0
-						}
-						if ( accurateTime > embedPlayer.duration ) {
-							accurateTime = embedPlayer.duration;
-						}
-						_this.updateTimeAndScrubber( accurateTime );
-
-					}
-					//handle bug in iOS: currenttime exceeds duration
-					else if ( curTime > embedPlayer.duration ) {
-						embedPlayer.triggerHelper( 'detachTimeUpdate' );
-						embedPlayer.triggerHelper( 'externalTimeUpdate', [ embedPlayer.duration ] );
-						_this.lastShownTime =  embedPlayer.duration;
-						_this.shouldReAttachTimeUpdate = true;
-					}
-					else if ( _this.dvrTimePassed == 0 && _this.shouldReAttachTimeUpdate) {
-					   _this.sendReAttacheTimeUpdate();
-					}
-				});
-			}
-
-			if ( this.shouldHandlePausedMonitor() ) {
-
-				this.bind( 'onplay', function() {
-					if ( _this.isDVR() && _this.switchDone ) {
-						//	_this.hideLiveStreamStatus();
-						_this.removePausedMonitor();
-					}
-				} );
-
-				this.bind( 'seeking movingBackToLive', function() {
-					//if we are keeping track of the passed time from a previous pause - reset it
-					if ( _this.dvrTimePassed != 0 ) {
-						_this.dvrTimePassed = 0;
-						_this.sendReAttacheTimeUpdate();
-					}
-				});
-			}
 		},
 
 		sendReAttacheTimeUpdate: function() {
