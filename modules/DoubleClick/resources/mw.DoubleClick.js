@@ -784,9 +784,6 @@
 					setTimeout(function(){
 						_this.embedPlayer.getPlayerElement().play();
 					},250);
-					if ( mw.isIE8() ) {
-						$( '.mwEmbedPlayerTransparent' ).remove();
-					}
 				}
 			},'adLoaded', true);
 
