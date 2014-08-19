@@ -1548,11 +1548,14 @@ var kWidget = {
 			downloadUrl += '/entry_id/' + settings.entry_id;
 		}
 
-
-		var ks = settings.ks || settings.flashvars && settings.flashvars.ks;
+		var flashVarsString = this.flashVarsToString(settings.flashvars);
+		var ks = settings.ks;
 		if ( ks ) {
-			downloadUrl += '/?ks=' + ks;
+			downloadUrl += '/?ks=' + ks  + flashVarsString;
+		}else{
+			downloadUrl +='/?' + flashVarsString.substr(1,flashVarsString.length);
 		}
+
 
 		return downloadUrl;
 	},
