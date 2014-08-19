@@ -329,7 +329,7 @@ mw.KWidgetSupport.prototype = {
 				var flavorAssetObj = {
 					"data-assetid": flavorAsset.id,
 					src: flavorPartnerData.url,
-					type: "video/" + flavorPartnerData.type,
+					type: flavorPartnerData.type,
 					"data-width": flavorAsset.width,
 					"data-height": flavorAsset.height,
 					"data-bitrate": flavorAsset.bitrate,
