@@ -2362,11 +2362,11 @@
 			this.setPlayerElementVolume( percent );
 			//mw.log("EmbedPlayer:: setVolume:: " + percent + ' trigger volumeChanged: ' + triggerChange );
 			if( triggerChange !== false ){
-				if (this.previousVolume === 0 && this.volume > 0){
-					$( _this ).trigger('unmute', percent );
+				if (this.previousVolume === 0 && this.volume > 0) {
+					$( _this ).trigger( 'unmute' );
 				}
-				if (this.previousVolume > 0 && this.volume === 0){
-					$( _this ).trigger('mute', percent );
+				if (this.previousVolume > 0 && this.volume === 0) {
+					$( _this ).trigger( 'mute' );
 				}
 				$( _this ).trigger('volumeChanged', percent );
 			}
