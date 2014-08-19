@@ -159,6 +159,10 @@
 				if (mw.isMobileDevice()){
 					$(".largePlayBtn").hide();
 					$(".mwEmbedPlayer").hide();
+					_this.hideSpinner();
+					setTimeout(function(){ // issue another hideSpinner call after 250 ms for slow devices (FEC-1898)
+						_this.hideSpinner();
+					},250);
 				}
 
 			};
