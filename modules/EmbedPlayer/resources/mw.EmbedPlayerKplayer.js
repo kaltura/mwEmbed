@@ -294,9 +294,6 @@ mw.EmbedPlayerKplayer = {
 			this.ignoreEnableGui = false;
 			this.enablePlayControls();
 		}
-		if ( this.seeking == true ) {
-			this.onPlayerSeekEnd();
-		}
 		this.stopped = this.paused = false;
 	},
 
@@ -373,7 +370,7 @@ mw.EmbedPlayerKplayer = {
 	 * @param {Float}
 	 *			percentage Percentage of total stream length to seek to
 	 */
-	seek: function(percentage) {
+	seek: function(percentage, stopAfterSeek) {
 		var _this = this;
 		var seekTime = percentage * this.getDuration();
 		mw.log( 'EmbedPlayerKalturaKplayer:: seek: ' + percentage + ' time:' + seekTime );
@@ -388,14 +385,39 @@ mw.EmbedPlayerKplayer = {
 			}
 		}
 		this.seeking = true;
+
+		// Save currentTime
+		this.kPreSeekTime = _this.currentTime;
+		this.currentTime = ( percentage * this.duration ).toFixed( 2 ) ;
+
 		// trigger the html5 event:
 		$( this ).trigger( 'seeking' );
 
-		// Issue the seek to the flash player:
-		this.playerObject.seek( seekTime );
-
 		// Run the onSeeking interface update
 		this.layoutBuilder.onSeek();
+
+		this.unbindHelper("seeked" + _this.bindPostfix).bindHelper("seeked" + _this.bindPostfix, function(){
+			_this.unbindHelper("seeked" + _this.bindPostfix);
+			_this.monitor();
+			if( stopAfterSeek ){
+				_this.hideSpinner();
+				_this.pause();
+				_this.updatePlayheadStatus();
+			} else {
+				// continue to playback ( in a non-blocking call to avoid synchronous pause event )
+				setTimeout(function(){
+					if ( !_this.stopPlayAfterSeek ) {
+						mw.log( "EmbedPlayerNative::sPlay after seek" );
+						_this.play();
+						_this.stopPlayAfterSeek = false;
+					}
+				},0);
+			}
+		});
+
+		// Issue the seek to the flash player:
+		this.playerObject.play();
+		this.playerObject.seek( seekTime );
 	},
 
 	/**
@@ -439,12 +461,9 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onPlayerSeekEnd: function () {
-		$( this ).trigger( 'seeked',[this.playerObject.getCurrentTime()]);
+		this.previousTime = this.currentTime = this.flashCurrentTime = this.playerObject.getCurrentTime();
 		this.seeking = false;
-		this.flashCurrentTime = this.playerObject.getCurrentTime();
-		if( this.seekInterval  ) {
-			clearInterval( this.seekInterval );
-		}
+		$( this ).trigger( 'seeked',[this.playerObject.getCurrentTime()]);
 	},
 
 	onSwitchingChangeStarted: function ( data, id ) {
