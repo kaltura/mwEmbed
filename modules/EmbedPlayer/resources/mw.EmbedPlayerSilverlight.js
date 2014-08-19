@@ -216,6 +216,8 @@
 				}
 
 				flashvars.autoplay = _this.autoplay;
+				flashvars.isLive = _this.isLive();
+				flashvars.isDVR = ( _this.isDVR() == 1 );
 				_this.durationReceived = false;
 				_this.readyCallbackFunc = readyCallback;
 				var playerElement = new mw.PlayerElementSilverlight( _this.containerId, 'splayer_' + _this.pid, flashvars, _this, function() {
