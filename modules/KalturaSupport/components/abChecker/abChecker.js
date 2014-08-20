@@ -19,8 +19,8 @@
 				buttonRowSpacing: null,
 				buttonHeight: null,
 				buttonSpacing: null
-			}
-
+			},
+			checkTimeout: 2000
 		},
 		setup: function(){
 			// Bind player
@@ -31,13 +31,16 @@
 			this.bind("KalturaSupport_DoneWithUiConf", function(){
 				_this.tryAndDownload();
 			});
+			this.bind("onChangeMedia", function(){
+				_this.errorRaised = false;
+			});
 
 		},
 		tryAndDownload: function(){
 			var _this = this;
 			var basePath = mw.getMwEmbedPath();
 			var fullScriptPath = basePath + this.getConfig("scriptPath");
-
+			//listen to the global Jquery ajax
 			$.getScript( fullScriptPath )
 				.done(function( script, textStatus ) {
 					mw.log("abChecker::Check passed - no adblock detected on page");
@@ -46,9 +49,18 @@
 					mw.log("abChecker::Check failed - adblock detected on page");
 					_this.raiseError();
 				});
+
+			var _this = this;
+			setTimeout(function(){
+				if (!(window.adBlockCheckVariable || _this.errorRaised)){
+					_this.raiseError();
+				}
+			}, this.getConfig("checkTimeout"))
+
 		},
 		raiseError: function(){
 			var _this = this;
+			this.errorRaised = true;
 			var alertConfig = _this.getConfig();
 
 			//In case no buttons is set, clear the buttons array
@@ -60,10 +72,10 @@
 			if (alertConfig.enableResumePlayback){
 				alertConfig.callbackFunction = function(){
 					_this.enableContinue();
-				}
+				};
 				alertConfig.buttons = [gM( 'ks-abChecker-btn-resume' )];
 			}
-
+			this.embedPlayer['data-blockPlayerDisplay']=null;
 			//Set player error to prevent playback
 			this.getPlayer().setError(alertConfig);
 			//Display the error modal

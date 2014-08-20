@@ -587,6 +587,8 @@ mw.DoubleClick.prototype = {
 			var ad = adEvent.getAd();
 			// trigger ad play event
 			$(_this.embedPlayer).trigger("onAdPlay",[ad.a.adId]);
+			// This changes player state to the relevant value ( play-state )
+			$(_this.embedPlayer).trigger("playing");
 			// Check for ad Stacking ( two starts in less then 250ms )
 			if( lastAdStartTime !== null &&
 				new Date().getTime() - lastAdStartTime < 250
@@ -680,6 +682,8 @@ mw.DoubleClick.prototype = {
 		this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 			// trigger ad play event
 			$(_this.embedPlayer).trigger("onAdPlay",[adInfo.adID]);
+			// This changes player state to the relevant value ( play-state )
+			$(_this.embedPlayer).trigger("playing");
 			if ( _this.currentAdSlotType != _this.prevSlotType ) {
 				_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
 				_this.prevSlotType = _this.currentAdSlotType;
