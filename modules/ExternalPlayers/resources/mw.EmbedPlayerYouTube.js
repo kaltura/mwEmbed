@@ -457,6 +457,11 @@
 			this.monitor();
 		},
 
+		monitor: function(){
+			this.parent_monitor();
+			$( this ).trigger( 'timeupdate' );
+		},
+
 		/**
 		 * pause method calls parent_pause to update the interface
 		 */
@@ -492,8 +497,6 @@
 			yt.seekTo( yt.getDuration() * percentage );
 			this.layoutBuilder.onSeek();
 			//TODO check if there is a cleaner way to get the playback
-
-
 		},
 
 		/**
@@ -527,8 +530,6 @@
 		 * Get the embed player time
 		 */
 		getPlayerElementTime : function(){
-			// update currentTime
-			$( this ).trigger( 'timeupdate' );
 			return this.getPlayerElement().getCurrentTime();
 		},
 
