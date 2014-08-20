@@ -1289,10 +1289,10 @@ mw.KAdPlayer.prototype = {
 
 			VPAIDObj.subscribe(function(obj) {
 				// handle ad linear changes
-				if (obj.AdLinear == true && !_this.embedPlayer.isPlaying()){
+				if (obj && obj.AdLinear == true && !_this.embedPlayer.isPlaying()){
 					_this.embedPlayer.play();
 				}
-				if (obj.AdLinear == false && _this.embedPlayer.isPlaying()){
+				if (obj && obj.AdLinear == false && _this.embedPlayer.isPlaying()){
 					_this.embedPlayer.pause();
 				}
 			}, 'AdLinearChange');
@@ -1371,7 +1371,9 @@ mw.KAdPlayer.prototype = {
 			if ( this.embedPlayer.selectedPlayer.library == 'Native'  ) {
 				_this.disableSibling = true;
 				//enable user clicks
-				_this.embedPlayer.getInterface().find('.mwEmbedPlayer').hide();
+				if ( !mw.isIphone() ){
+					_this.embedPlayer.getInterface().find('.mwEmbedPlayer').hide();
+				}
 				$('#' + vpaidId).css("width", 0);
 				$('#' + vpaidId).css("height", 0);
 			} else {
