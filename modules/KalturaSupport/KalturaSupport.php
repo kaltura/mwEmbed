@@ -221,6 +221,11 @@
 			'dependencies' => array( 'mw.KBaseScreen' ),
 			'kalturaPluginName' => 'share',
 		),
+		"playServerUrls" => array(
+			'scripts' => "components/playServerUrls.js",
+			'dependencies' => array( 'mw.KBasePlugin' ),
+			'kalturaPluginName' => 'playServerUrls',
+		),
 		"abChecker" => array(
             'scripts' => "components/abChecker/abChecker.js",
             'dependencies' => array( 'mw.KBasePlugin' ),
