@@ -97,7 +97,14 @@ mw.KAdPlayer.prototype = {
 
 		// if it's overlay player controls should not be disabled
 		if( adSlot.type !== 'overlay' ) {
-			_this.disablePlayControls();
+			var components = ['fullScreenBtn','logo'];
+			if (mw.getConfig('enableControlsDuringAd')) {
+				components.push('playPauseBtn');
+			}
+			if ( mw.isIphone() ){
+				components=[];
+			}
+			_this.embedPlayer.triggerHelper( "onDisableInterfaceComponents", [components] );
 		}
 
 		// Setup some configuration for done state:
