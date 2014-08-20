@@ -87,10 +87,10 @@
 				_this.calculateBuffer(true);
 				_this.kClient = mw.kApiGetPartnerClient( _this.embedPlayer.kwidgetid );
 				var liveStatsEvent = {
-					'entryID'     : _this.embedPlayer.kentryid,
-					'partnerID'   : _this.embedPlayer.kpartnerid,
+					'entryId'     : _this.embedPlayer.kentryid,
+					'partnerId'   : _this.embedPlayer.kpartnerid,
 					'eventType'  :  1,
-					'sessionID'   : _this.embedPlayer.evaluate('{configProxy.sessionId}'),
+					'sessionId'   : _this.embedPlayer.evaluate('{configProxy.sessionId}'),
 					'eventIndex'  : _this.eventIndex,
 					'bufferTime'  : _this.bufferTime,
 					'bitrate'     : _this.currentBitRate,
