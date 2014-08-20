@@ -221,10 +221,10 @@
 			'dependencies' => array( 'mw.KBaseScreen' ),
 			'kalturaPluginName' => 'share',
 		),
-		"abChecker" => array(
-            'scripts' => "components/abChecker/abChecker.js",
+		"adBlockDetector" => array(
+            'scripts' => "components/adBlockDetector/adBlockDetector.js",
             'dependencies' => array( 'mw.KBasePlugin' ),
-            'kalturaPluginName' => 'abChecker',
+            'kalturaPluginName' => 'adBlockDetector',
         ),
 		"pptWidgetPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",
