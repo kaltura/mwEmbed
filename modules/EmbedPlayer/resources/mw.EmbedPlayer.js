@@ -498,7 +498,7 @@
 		 * Disables play controls, for example when an ad is playing back
 		 */
 		disablePlayControls: function( excludedComponents ){
-			if ( ! this._playContorls) {
+			if ( ! this._playContorls || this.useNativePlayerControls() ) {
 				return;
 			}
 			mw.log("EmbedPlayer:: disablePlayControls" );
