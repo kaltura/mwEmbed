@@ -1,8 +1,8 @@
 /**
-* Native embed library:
-*
-* Enables embedPlayer support for native html5 browser playback system
-*/
+ * Native embed library:
+ *
+ * Enables embedPlayer support for native html5 browser playback system
+ */
 ( function( mw, $ ) { "use strict";
 
 mw.EmbedPlayerNative = {
@@ -1491,5 +1491,4 @@ mw.EmbedPlayerNative = {
 		return ( (Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2) || ( mw.isIpad() && this.currentSeekTargetTime > 0.01 ) );
 }
 };
-
 } )( mediaWiki, jQuery );

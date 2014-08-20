@@ -29,6 +29,7 @@ var h264NativePlayer = new mw.MediaPlayer( 'h264Native', ['video/h264', 'video/m
 var appleVdnPlayer = new mw.MediaPlayer( 'appleVdn', ['application/vnd.apple.mpegurl'], 'Native');
 var mp3NativePlayer = new mw.MediaPlayer( 'mp3Native', ['audio/mpeg', 'audio/mp3'], 'Native' );
 var webmNativePlayer = new mw.MediaPlayer( 'webmNative', ['video/webm'], 'Native' );
+var chromecastPlayer = new mw.MediaPlayer( 'chromecast', ['video/mp4'], 'Chromecast' );
 
 // Image Overlay player ( extends native )
 var imageOverlayPlayer = new mw.MediaPlayer( 'imageOverlay', ['image/jpeg', 'image/png'], 'ImageOverlay' );
@@ -97,6 +98,7 @@ mw.EmbedTypes = {
 	addSilverlightPlayer:function(){
 		this.mediaPlayers.addPlayer(splayer);
 	},
+
 	addJavaPlayer: function(){
 		if( !mw.getConfig( 'EmbedPlayer.DisableJava' ) ){
 			this.mediaPlayers.addPlayer( cortadoPlayer );
