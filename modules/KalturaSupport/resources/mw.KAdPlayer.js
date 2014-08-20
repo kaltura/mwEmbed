@@ -646,8 +646,10 @@ mw.KAdPlayer.prototype = {
 		mw.log("KAdPlayer:: source updated, add tracking");
 		// Always track ad progress:
 		if( vid.readyState > 0 && vid.duration && embedPlayer.selectedPlayer.library !== 'Kplayer' ) {
-			embedPlayer.triggerHelper('AdSupport_AdUpdateDuration', vid.duration); // Trigger duration event
-			_this.addAdTracking( adConf.trackingEvents, adConf  );
+			setTimeout(function(){
+				embedPlayer.triggerHelper('AdSupport_AdUpdateDuration', vid.duration); // Trigger duration event
+				_this.addAdTracking( adConf.trackingEvents, adConf  );
+			},0);
 		} else {
 			var loadMetadataCB = function() {
 				if ( skipPercentage ){
