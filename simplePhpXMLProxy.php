@@ -186,6 +186,8 @@ $proxySession = false;
 // ############################################################################
 
 $url = isset($_GET['url']) ? urldecode( $_GET['url'] ) : false;
+//Replace white spaces with compliant %20
+$url = str_replace(" ","%20",$url);
 $header ='';
 if ( !$url ) {
 	

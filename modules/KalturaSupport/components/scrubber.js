@@ -32,6 +32,10 @@
 				_this.duration = duration;
 			});
 
+			this.bind( 'onDisableScrubber', function(){
+				_this.onDisable();
+			});
+
 			// check if parent is controlsContainer
 			if( this.getConfig('parent') == 'controlsContainer' ){
 				// need to add
@@ -52,7 +56,6 @@
 					_this.getComponent().css('width', ( targetSize ) + 'px' );
 				});
 			}
-
 			// Update buffer bar
 			this.bind( 'updateBufferPercent', function( e, bufferedPercent ){
 				_this.updateBufferUI(bufferedPercent);
@@ -139,13 +142,13 @@
 		},
 		onEnable: function() {
 			this.isDisabled = false;
-			this.getComponent().toggleClass('disabled');
+			this.getComponent().removeClass('disabled');
 			this.getComponent().slider( "option", "disabled", false );
 		},
 		onDisable: function() {
 			this.isDisabled = true;
 			this.getComponent().slider( "option", "disabled", true );
-			this.getComponent().toggleClass('disabled');
+			this.getComponent().addClass('disabled');
 		},
 		getSliceCount: function( duration ) {
 			//return kWidget.getSliceCount(this.duration);

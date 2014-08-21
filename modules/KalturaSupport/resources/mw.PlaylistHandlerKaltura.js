@@ -441,6 +441,10 @@ mw.PlaylistHandlerKaltura.prototype = {
 					break;
 			}
 		});
+
+		if (_this.autoContinue && embedPlayer.selectedPlayer.library === 'Kplayer'){
+			mw.setConfig( 'EmbedPlayer.HidePosterOnStart' , true );
+		}
 	},
 	switchTab:function( property, value ){
 		if( property == 'selectedIndex' ){

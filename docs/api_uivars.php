@@ -740,6 +740,12 @@
 			'desc' => "If the player should load the final location of m3u8 file and not a URL that redirects to the m3u8 file on Android set this flag to true",
 			'default' => 'false',
 			'example' => ''
+        ),
+        'EmbedPlayer.DisableBufferingSpinner' => array(
+			'type' => 'Boolean',
+			'desc' => "If the player should hide the loading spinner when it is in buffering mode",
+			'default' => 'false',
+			'example' => ''
         )
     );
 

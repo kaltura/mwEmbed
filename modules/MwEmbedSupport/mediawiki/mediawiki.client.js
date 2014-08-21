@@ -8,10 +8,10 @@
 	var userAgent = navigator.userAgent;
 
 	mw.isMobileDevice = function(){
-		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isAndroid() || mw.getConfig( "EmbedPlayer.ForceNativeComponent") )
+		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isAndroid() || mw.getConfig( "EmbedPlayer.ForceNativeComponent") === true )
 	};
 	mw.isIphone = function(){
-		return ( !mw.getConfig( "EmbedPlayer.ForceNativeComponent") && navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() ) || mw.isIpod();
+		return ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") !== true && navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() ) || mw.isIpod();
 	};
 	mw.isIE = function() {
 		return (/msie/.test(userAgent.toLowerCase()));
@@ -46,10 +46,10 @@
 		return  /OS 3_/.test( userAgent ) && mw.isIpad();
 	};
 	mw.isAndroid44 = function(){
-		return ( userAgent.indexOf( 'Android 4.2') != -1 );
+		return ( userAgent.indexOf( 'Android 4.4') != -1 );
 	};
 	mw.isAndroid43 = function(){
-		return ( userAgent.indexOf( 'Android 4.2') != -1 );
+		return ( userAgent.indexOf( 'Android 4.3') != -1 );
 	};
 	mw.isAndroid42 = function(){
 		return ( userAgent.indexOf( 'Android 4.2') != -1 );
@@ -77,6 +77,9 @@
 	};
 	mw.isAndroidNativeBrowser = function(){
 		return (mw.isAndroid() && !mw.isFirefox() && !mw.isChrome());
+	};
+	mw.isAndroidChromeNativeBrowser = function(){
+		return ( mw.isAndroid() && mw.isChrome() && userAgent.indexOf( 'Version/' ) != -1 )
 	};
 	mw.isMobileChrome = function(){
 		return ( userAgent.indexOf( 'Android 4.' ) != -1
