@@ -75,6 +75,10 @@
 						_this.hasEnded = true;
 						break;
 					case 1:
+						if (_this.hasEnded){
+							_this.hasEnded = false;
+							return;
+						}
 						$(embedPlayer).trigger("onPlayerStateChange",["play"]);
 						// hide the player container so that youtube click through work
 						$(".mwEmbedPlayer").width("100%");
@@ -318,8 +322,9 @@
 			}
 		},
 		setDuration: function(){
-			//set duration only once
-			if (this.duration == 0 && this.getPlayerElement().getDuration()){
+			//set duration only if current duration is 0 or different from the video duration. on Android native browser sometimes we get duration=1 so working around that here...
+			var dur = this.getPlayerElement().getDuration();
+			if (dur && dur != 1 && (this.duration == 0 || (this.duration > 0 && this.duration != dur)) ){
 				this.duration = this.getPlayerElement().getDuration();
 				$(this).trigger('durationChange',[this.duration]);
 			}
