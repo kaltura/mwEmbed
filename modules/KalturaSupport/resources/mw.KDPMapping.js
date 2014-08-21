@@ -1162,7 +1162,7 @@
 						embedPlayer.updatePoster();
 
 						// Run the embedPlayer changeMedia function
-						embedPlayer.changeMedia();
+						embedPlayer.changeMedia(notificationData.changeMediaCallback);
 						break;
 					}
 				case 'alert':
