@@ -115,5 +115,5 @@ you can use the generic selector below, but it's slower:
     content: "\e618";
 }
 .icon-chromecast:before {
-	content: "\e618";
+	content: "\e619";
 }
