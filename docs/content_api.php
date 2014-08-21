@@ -1,10 +1,10 @@
-<?php 
-	// Some includes for output of configuration options
-	require_once( realpath( dirname( __FILE__ ) ) . '/doc-base.php' );
-	require_once( realpath( dirname( __FILE__ ) ) . '/api_uivars.php' );
-	require_once( realpath( dirname( __FILE__ ) ) . '/api_methods.php' );
-	require_once( realpath( dirname( __FILE__ ) ) . '/api_listeners.php' );
-	require_once( realpath( dirname( __FILE__ ) ) . '/api_evaluates.php' );
+<?php      // Some includes for output of configuration options
+require_once( realpath( dirname( __FILE__ ) ) . '/doc-base.php' );
+require_once( realpath( dirname( __FILE__ ) ) . '/api_uivars.php' );
+require_once( realpath( dirname( __FILE__ ) ) . '/api_methods.php' );
+require_once( realpath( dirname( __FILE__ ) ) . '/api_listeners.php'
+);     require_once( realpath( dirname( __FILE__ ) ) .
+'/api_evaluates.php' );
 
 	/* should ideally auto generate or be in a separate file */
 	$methodDocs = array(
@@ -446,10 +446,10 @@ $(function(){
 <h2>Kaltura Player API</h2>
 <p>This documentation covers version <strong><i><?php global $wgMwEmbedVersion; echo $wgMwEmbedVersion ?></i></strong> of the html5 library. </p>
 <p>
-<a href="#kWidget" class="btn btn btn-info btn-large">kWidget API &raquo;</a>
-<a href="#uiVars" class="btn btn btn-info btn-large">Using UIVars &raquo;</a>
-<a href="#kdpAPI" class="btn btn btn-info btn-large">Player API &raquo;</a>
-<a href="#kWidgetApi" class="btn btn btn-info btn-large">KWidget Server API &raquo;</a>
+<a href="#kWidget" class="btn btn btn-info">kWidget API &raquo;</a>
+<a href="#uiVars" class="btn btn btn-info">UiVars &raquo;</a>
+<a href="#kdpAPI" class="btn btn btn-info">Player API &raquo;</a>
+<a href="#kWidgetApi" class="btn btn btn-info">KWidget Server API &raquo;</a>
 </p>
 
 <a name="kWidget"></a>
@@ -460,7 +460,7 @@ The kWidget API is available after you include the Kaltura player library. kWidg
 &lt!-- Substitute {partner_id} for your Kaltura partner id, {uiconf_id} for uiconf player id --&gt;
 &lt;script src=&quot;http://cdnapi.kaltura.com/p/{partner_id}/sp/{partnerId}00/embedIframeJs/uiconf_id/{uiconf_id}/partner_id/{partnerId}&quot;&gt;&lt;/script&gt;
 </pre>
-After you embed the Kaltura player library, the following kWidget API is available:
+After you include the Kaltura player library, the following kWidget API is available:
 <div class="docblock">
 	<?php echo getDocs( array( 'kWidget.embed', 'kWidget.thumbEmbed', 'kWidget.getKalturaThumbUrl','kWidget.addReadyCallback','kWidget.destroy' ) ) ?>
 	<?php echo getObjectDocs( array( 'kWidget.settingsObject' ) ) ?>
@@ -471,7 +471,7 @@ kWidget Server API enables direct <a href="http://www.kaltura.com/api_v3/testmeD
 This should not be confused with the <a href="http://www.kaltura.com/api_v3/testme/client-libs.php">JavaScript client library</a>, 
 which offers object mappings and works with the code generated in the 
 <a href="http://www.kaltura.com/api_v3/testme/index.php">test me console</a>. <br>
-The Kaltura Server API offers minimal object validation, in exchange for being much smaller.<br><br>
+The Kaltura Server API offers minimal object validation, in exchange for being much smaller, and included with every kaltura player library include.<br><br>
 Creating a kWidget API object, issue a playlist request, log the result:
 <pre class="prettyprint linenums">
 new kWidget.api( { 'wid' : '_243342', })
@@ -487,13 +487,54 @@ new kWidget.api( { 'wid' : '_243342', })
 </div>
 
 <a name="uiVars"></a>
-<h2>UIVars</h2>
-<p>To simplify the management of many of the player features, Kaltura has implemented “UIVars” to override and configure the player features.</p>
-<p>Kaltura UIVars are an incredibly powerful feature of the Kaltura Players that allow publishers to pre-set or override the value of any FlashVar (object level parameters), show, hide and disable existing UI elements, add new plugins and UI elements to an existing player, and modify attributes of all the player's elements.</p>
-<p>FlashVars are configuration variables that are used in the Kaltura Player in the HTML embed code and work for “regular” static embed, server-generated embed or JavaScript-generated embed code.</p>
-<p>The following table lists the Kaltura Player FlashVars:</p>
+<h2>Player Configuration key value pairs ( UiVars )</h2>
+<p>
+<a href="#uiVarsServices" class="btn btn btn-info">Services &raquo;</a>
+<a href="#uiVars" class="btn btn btn-info">UiVars &raquo;</a>
+<a href="#kdpAPI" class="btn btn btn-info">Player API &raquo;</a>
+<a href="#kWidgetApi" class="btn btn btn-info">KWidget Server API &raquo;</a>
+</p>
+UiVars enable configuration of player features. There are two classes of uiVars: top level  
+is a one-to-one mapping between plugin properties, uiVars and respective flashvar overrides. 
+<p>
+Within the <a href="http://knowledge.kaltura.com/universal-studio-information-guide">player studio</a>
+UiVar configuration appears plugins -> uivars:<br>
+<img src="http://knowledge.kaltura.com/sites/default/files/styles/large/public/ui_variables_2.png">
+</p>
+<p>
+You can control the raw JSON code for UiVars by modifying the "uiVars" section of the JSON config using the <a href="http://player.kaltura.com/kWidget/tests/PlayerVersionUtility.html">player version utility</a>. 
+</p>
+<pre class="prettyprint linenums">
+{
+   "plugins":{
+	/* plugins go here */
+   },
+   "uiVars": [{
+	"key": "autoPlay",
+	"value": false,
+	"overrideFlashvar": false
+   }]
+}
+</pre>
+All player configuration properties can also be set at runtime as "flashvars": 
+<pre class="prettyprint linenums">
+kWidget.embed({
+	...
+	flashvars:{
+		"autoPlay": false
+	}
+})
+</pre>
+All player properties can also be retrieved at runtime or used in plugins macro evaluations. 
+<pre class="prettyprint linenums">
+kWidget.addReadyCallback( function(playerId){
+	document.getElementById( playerId ).evaluate("{autoPlay}");
+})
+</pre>
 <br>
-<h5>Connecting to the Kaltura Services:</h5>
+
+<a name="uiVarsServices"><h5>Kaltura / Entity Services:</h5>
+
 <div class="docblock">
 	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVarsServices ) ?>
 </div><br><br>
