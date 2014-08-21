@@ -985,6 +985,19 @@ mw.EmbedPlayerNative = {
 		var vid = this.getPlayerElement();
 		// parent.$('body').append( $('<a />').attr({ 'style': 'position: absolute; top:0;left:0;', 'target': '_blank', 'href': this.getPlayerElement().src }).text('SRC') );
 		var _this = this;
+
+		var nativeCalloutPlugin = {
+			'exist': false
+		};
+		if( mw.isMobileDevice() ) {
+			this.triggerHelper( 'nativePlayCallout',  [ nativeCalloutPlugin ] );
+		}
+
+		if( nativeCalloutPlugin.exist ) {
+			// if nativeCallout plugin exist play implementation is changed
+			return;
+		}
+
 		// if starting playback from stoped state and not in an ad or otherise blocked controls state:
 		// restore player:
 		if( this.isStopped() && this._playContorls ){
@@ -1237,7 +1250,7 @@ mw.EmbedPlayerNative = {
 			this.isFlavorSwitching = false;
 			if( this._propagateEvents ){
 				mw.log( "EmbedPlayerNative:: trigger: seeked" );
-				this.triggerHelper( 'seeked' );
+				this.triggerHelper( 'seeked' ,[this.currentTime]);
 			}
 		}
 		this.hideSpinner();
@@ -1388,6 +1401,23 @@ mw.EmbedPlayerNative = {
 			}
 		}, 3000);
 	},
+
+	/**
+	 * buffer under-run
+	 * @private
+	 */
+	_onwaiting: function () {
+		//vod buffer events are being handled by EmbedPlayer.js
+		if ( this.isLive() ) {
+			this.bufferStart();
+		}
+	},
+
+	_oncanplay: function ( event ) {
+		if ( this.isLive() && this.buffering ) {
+			this.bufferEnd();
+		}
+	},
 	/**
 	 * Local onClip done function for native player.
 	 */
@@ -1406,9 +1436,7 @@ mw.EmbedPlayerNative = {
 		var _this = this;
 
 		if ( _this.isImagePlayScreen() && !_this.isPlaylistScreen() ) {
-			if (!this.keepNativeFullScreen) {
-				_this.getPlayerElement().webkitExitFullScreen();
-			}
+			this.closeNativeFullScreen();
 		}
 
 		// add clip done binding ( will only run on sequence complete )
@@ -1418,14 +1446,17 @@ mw.EmbedPlayerNative = {
 				_this.keepPlayerOffScreenFlag = false;
 			} else {
 				// exit full screen mode on the iPhone
-				mw.log( 'EmbedPlayer::onClipDone: Exit full screen' );
-				if (!_this.keepNativeFullScreen) {
-					_this.getPlayerElement().webkitExitFullScreen();
-				}
+				this.closeNativeFullScreen();
 			}
 		} );
 	},
 
+	closeNativeFullScreen: function(){
+		if (!mw.getConfig("EmbedPlayer.ForceNativeFullscreenOnClipDone") && !this.keepNativeFullScreen){
+			mw.log( 'EmbedPlayer::onClipDone: Exit full screen' );
+			this.getPlayerElement().webkitExitFullScreen();
+		}
+	},
 	enableNativeControls: function(){
 		$( this.getPlayerElement() ).attr('controls', "true");
 	},
@@ -1457,8 +1488,8 @@ mw.EmbedPlayerNative = {
 	 * @returns {boolean} true if seek event is fake, false if valid
 	 */
 	isFakeHlsSeek: function() {
-		return ( (Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2) || mw.isIpad() );
-	}
+		return ( (Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2) || ( mw.isIpad() && this.currentSeekTargetTime > 0.01 ) );
+}
 };
 
 } )( mediaWiki, jQuery );

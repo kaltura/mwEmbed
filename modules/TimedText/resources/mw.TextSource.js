@@ -31,6 +31,8 @@
 			// The css style for captions ( some file formats specify display types )
 			this.styleCss = {};
 
+			this.bodyStyleId = '';
+
 			//	Inherits mediaSource
 			for( var i in source){
 				this[ i ] =  source[ i ];
@@ -199,95 +201,129 @@
 				return captions;
 			}
 
+			this.parseStylesTTML( xml );
+
+			$( xml ).find( 'p' ).each( function( inx, p ){
+				captions.push( _this.parseCaptionObjTTML( p ) );
+			});
+			return captions;
+		},
+		parseStylesTTML: function( xml ) {
+			var _this = this;
 			// Set the body Style
-			var bodyStyleId = $( xml ).find('body').attr('style');
+			this.bodyStyleId = $( xml ).find('body').attr('style');
+			if ( !this.bodyStyleId ) {
+				this.bodyStyleId = $( xml ).find('body').attr('region');
+			}
 
 			// Set style translate ttml to css
 			$( xml ).find( 'style').each( function( inx, style){
+				var styleId =  $(style).attr('id') || $(style).attr('xml:id')
+				if ( styleId ) {
+					var cssObject = {};
+					_this.buildStyleCss( style, cssObject );
+					_this.styleCss[ styleId ] = cssObject;
+				}
+			});
+
+			$( xml ).find( 'region' ).each( function( inx, region){
 				var cssObject = {};
-				// Map CamelCase css properties:
-				$( style.attributes ).each(function(inx, attr){
-					var attrName = attr.name;
-					if( attrName.substr(0, 4) !== 'tts:' ){
-						// skip
-						return true;
-					}
-					var cssName = '';
-					for( var c = 4; c < attrName.length; c++){
-						if( attrName[c].toLowerCase() != attrName[c] ){
-							cssName += '-' +  attrName[c].toLowerCase();
-						} else {
-							cssName+= attrName[c]
-						}
-					}
-					cssObject[ cssName ] = attr.nodeValue;
-				});
-				// for(var i =0; i< style.length )
-				_this.styleCss[ $(style).attr('id') ] = cssObject;
+				if ( $(region).attr('style') ) {
+					cssObject = _this.styleCss[ $(region).attr('style') ]
+				}  else {
+					$( region ).find( 'style' ).each( function( inx, style){
+						_this.buildStyleCss( style, cssObject );
+					});
+				}
+				var idVal =  $(region).attr('id') || $(region).attr('xml:id');
+				_this.styleCss[ idVal ] = cssObject;
 			});
-
-			$( xml ).find( 'p' ).each( function( inx, p ){
-				// Get text content by converting ttml node to html
-				var content = '';
-				$.each( p.childNodes, function(inx, node){
-					content+= _this.convertTTML2HTML( node );
-				});
-				// Get the end time:
-				var end = null;
-				if( $( p ).attr( 'end' ) ){
-					end = mw.npt2seconds( $( p ).attr( 'end' ) );
+		},
+		buildStyleCss: function( style, cssObject ) {
+			// Map CamelCase css properties:
+			$( style.attributes ).each(function(inx, attr){
+				var attrName = attr.name;
+				if( attrName.substr(0, 4) !== 'tts:' ){
+					// skip
+					return true;
 				}
-				// Look for dur
-				if( !end && $( p ).attr( 'dur' )){
-					end = mw.npt2seconds( $( p ).attr( 'begin' ) ) +
-						mw.npt2seconds( $( p ).attr( 'dur' ) );
+				var cssName = '';
+				for( var c = 4; c < attrName.length; c++){
+					if( attrName[c].toLowerCase() != attrName[c] ){
+						cssName += '-' +  attrName[c].toLowerCase();
+					} else {
+						cssName+= attrName[c]
+					}
 				}
+				cssObject[ cssName ] = attr.nodeValue;
+			});
+		},
+		parseCaptionObjTTML: function( p ) {
+			var _this = this;
+			// Get text content by converting ttml node to html
+			var content = '';
+			$.each( p.childNodes, function(inx, node){
+				content+= _this.convertTTML2HTML( node );
+			});
+			// Get the end time:
+			var end = null;
+			if( $( p ).attr( 'end' ) ){
+				end = mw.npt2seconds( $( p ).attr( 'end' ) );
+			}
+			// Look for dur
+			if( !end && $( p ).attr( 'dur' )){
+				end = mw.npt2seconds( $( p ).attr( 'begin' ) ) +
+					mw.npt2seconds( $( p ).attr( 'dur' ) );
+			}
 
-				// Create the caption object :
-				var captionObj ={
-					'start': mw.npt2seconds( $( p ).attr( 'begin' ) ),
-					'end': end,
-					'content': content
+			// Create the caption object :
+			var captionObj ={
+				'start': mw.npt2seconds( $( p ).attr( 'begin' ) ),
+				'end': end,
+				'content': content
+			};
+
+			// See if we have custom metadata for position of this caption object
+			// there are 35 columns across and 15 rows high
+			var $meta = $(p).find( 'metadata' );
+			if( $meta.length ){
+				captionObj['css'] = {
+					'position': 'absolute'
 				};
-
-				// See if we have custom metadata for position of this caption object
-				// there are 35 columns across and 15 rows high
-				var $meta = $(p).find( 'metadata' );
-				if( $meta.length ){
-					captionObj['css'] = {
-						'position': 'absolute'
-					};
-					if( $meta.attr('cccol') ){
-						captionObj['css']['left'] = ( $meta.attr('cccol') / 35 ) * 100 +'%';
-						// also means the width has to be reduced:
-						//captionObj['css']['width'] =  100 - parseInt( captionObj['css']['left'] ) + '%';
-					}
-					if( $meta.attr('ccrow') ){
-						captionObj['css']['top'] = ( $meta.attr('ccrow') / 15 ) * 100 +'%';
-					}
+				if( $meta.attr('cccol') ){
+					captionObj['css']['left'] = ( $meta.attr('cccol') / 35 ) * 100 +'%';
+					// also means the width has to be reduced:
+					//captionObj['css']['width'] =  100 - parseInt( captionObj['css']['left'] ) + '%';
 				}
-				if( $(p).attr('tts:textAlign') ){
-					if( !captionObj['css'] ){
-						captionObj['css'] = {};
-					}
-					captionObj['css']['text-align'] = $(p).attr('tts:textAlign');
-
-					// Remove text align is "right" flip the css left:
-					if( captionObj['css']['text-align'] == 'right' && captionObj['css']['left'] ){
-						//captionObj['css']['width'] = captionObj['css']['left'];
-						captionObj['css']['left'] = null;
-					}
+				if( $meta.attr('ccrow') ){
+					captionObj['css']['top'] = ( $meta.attr('ccrow') / 15 ) * 100 +'%';
 				}
+			}
+			if( $(p).attr('tts:textAlign') ){
+				if( !captionObj['css'] ){
+					captionObj['css'] = {};
+				}
+				captionObj['css']['text-align'] = $(p).attr('tts:textAlign');
 
-				// check if this p has any style else use the body parent
-				if( $(p).attr('style') ){
-					captionObj['styleId'] = $(p).attr('style') ;
+				// Remove text align is "right" flip the css left:
+				if( captionObj['css']['text-align'] == 'right' && captionObj['css']['left'] ){
+					//captionObj['css']['width'] = captionObj['css']['left'];
+					captionObj['css']['left'] = null;
+				}
+			}
+
+			// check if this p has any style else use the body parent
+			if( $(p).attr('style') ){
+				captionObj['styleId'] = $(p).attr('style') ;
+			} else {
+				if( $(p).attr('region') ){
+					captionObj['styleId'] = $(p).attr('region') ;
 				} else {
-					captionObj['styleId'] = bodyStyleId;
+					captionObj['styleId'] = _this.bodyStyleId;
 				}
-				captions.push( captionObj);
-			});
-			return captions;
+			}
+
+			return captionObj;
 		},
 		convertTTML2HTML: function( node ){
 			var _this = this;
@@ -356,7 +392,7 @@
 			for (var i = 0; i < caplist.length; i++) {
 		 		var captionText = "";
 				var caption = false;
-				captionText = caplist[i];
+				captionText = caplist[i].trim();
 				var s = captionText.split(/\n/);
 				if (s.length < 2) {
 					// file format error or comment lines
