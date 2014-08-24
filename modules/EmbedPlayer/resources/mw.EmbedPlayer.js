@@ -1627,7 +1627,9 @@
 				};
 
 				if( $.isFunction(_this.changeMediaCallback) ){
-					_this.changeMediaCallback( changeMediaDoneCallback );
+					setTimeout(function(){
+						_this.changeMediaCallback( changeMediaDoneCallback );
+					},250);
 				} else {
 					changeMediaDoneCallback();
 				}
