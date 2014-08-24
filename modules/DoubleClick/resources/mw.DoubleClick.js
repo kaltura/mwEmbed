@@ -630,6 +630,7 @@
 				if ( ad.a ) {
 					_this.isLinear = ad.a.linear;
 				}
+				$("#adContainervideoTarget").show();
 				// dispatch adOpen event
 				$( _this.embedPlayer).trigger( 'onAdOpen',[ad.a.adId, ad.a.adSystem, _this.currentAdSlotType, ad.a.adPodInfo ? ad.a.adPodInfo.adPosition : 0] );
 
@@ -784,9 +785,6 @@
 					setTimeout(function(){
 						_this.embedPlayer.getPlayerElement().play();
 					},250);
-					if ( mw.isIE8() ) {
-						$( '.mwEmbedPlayerTransparent' ).remove();
-					}
 				}
 			},'adLoaded', true);
 
@@ -998,7 +996,14 @@
 			var _this = this;
 			this.adActive = false;
 			if (this.isChromeless){
+				if (_this.isLinear){
+					$(".mwEmbedPlayer").show();
+				}
 				this.embedPlayer.getPlayerElement().redrawObject(50);
+			}else{
+				if (_this.isLinear){
+					$("#adContainervideoTarget").hide();
+				}
 			}
 			this.embedPlayer.sequenceProxy.isInSequence = false;
 

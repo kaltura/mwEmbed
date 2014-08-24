@@ -75,6 +75,10 @@
 						_this.hasEnded = true;
 						break;
 					case 1:
+						if (_this.hasEnded){
+							_this.hasEnded = false;
+							return;
+						}
 						$(embedPlayer).trigger("onPlayerStateChange",["play"]);
 						// hide the player container so that youtube click through work
 						$(".mwEmbedPlayer").width("100%");
@@ -159,6 +163,10 @@
 				if (mw.isMobileDevice()){
 					$(".largePlayBtn").hide();
 					$(".mwEmbedPlayer").hide();
+					_this.hideSpinner();
+					setTimeout(function(){ // issue another hideSpinner call after 250 ms for slow devices (FEC-1898)
+						_this.hideSpinner();
+					},250);
 				}
 
 			};
@@ -314,8 +322,9 @@
 			}
 		},
 		setDuration: function(){
-			//set duration only once
-			if (this.duration == 0 && this.getPlayerElement().getDuration()){
+			//set duration only if current duration is 0 or different from the video duration. on Android native browser sometimes we get duration=1 so working around that here...
+			var dur = this.getPlayerElement().getDuration();
+			if (dur && dur != 1 && (this.duration == 0 || (this.duration > 0 && this.duration != dur)) ){
 				this.duration = this.getPlayerElement().getDuration();
 				$(this).trigger('durationChange',[this.duration]);
 			}
@@ -453,6 +462,11 @@
 			this.monitor();
 		},
 
+		monitor: function(){
+			this.parent_monitor();
+			$( this ).trigger( 'timeupdate' );
+		},
+
 		/**
 		 * pause method calls parent_pause to update the interface
 		 */
@@ -488,8 +502,6 @@
 			yt.seekTo( yt.getDuration() * percentage );
 			this.layoutBuilder.onSeek();
 			//TODO check if there is a cleaner way to get the playback
-
-
 		},
 
 		/**
@@ -523,8 +535,6 @@
 		 * Get the embed player time
 		 */
 		getPlayerElementTime : function(){
-			// update currentTime
-			$( this ).trigger( 'timeupdate' );
 			return this.getPlayerElement().getCurrentTime();
 		},
 
