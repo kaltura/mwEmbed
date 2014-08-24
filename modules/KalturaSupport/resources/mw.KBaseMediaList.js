@@ -7,7 +7,7 @@
 	mw.KBaseMediaList = mw.KBaseComponent.extend({
 
 		mediaList: [],
-		isDisabled: true,
+		isDisabled: false,
 
 		getBaseConfig: function(){
 			var parentConfig = this._super();
@@ -255,12 +255,14 @@
 			chapterBox
 				.off('click' )
 				.on('click', function(){
-					// set active media item
-					$(".chapterBox").removeClass( 'active');
-					$( this ).addClass( 'active');
-					var index = $(this).data( 'chapterIndex' );
-					// call mediaClicked with the media index (implemented in component level)
-					_this.mediaClicked(index);
+					if ( !_this.isDisabled ){
+						// set active media item
+						$(".chapterBox").removeClass( 'active');
+						$( this ).addClass( 'active');
+						var index = $(this).data( 'chapterIndex' );
+						// call mediaClicked with the media index (implemented in component level)
+						_this.mediaClicked(index);
+					}
 				});
 			if (this.getConfig('thumbnailRotator')) {
 				chapterBox

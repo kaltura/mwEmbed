@@ -105,6 +105,15 @@
 						break;
 				}
 			});
+
+			$( this.embedPlayer ).bind('AdSupport_StartAdPlayback', function(e, adType){
+				_this.isDisabled = true;
+				$(".chapterBox, .k-duration, .medialistContainer, .chapterDivider").addClass("disabled");
+			});
+			$( this.embedPlayer ).bind('AdSupport_EndAdPlayback', function(e, adType){
+				_this.isDisabled = false;
+				$(".chapterBox, .k-duration, .medialistContainer, .chapterDivider").removeClass("disabled");
+			});
 		},
 
 		// called from KBaseMediaList when a media item is clicked - trigger clip play

@@ -38,6 +38,12 @@
     height: 70px;
     overflow: hidden;
     width: 100%;
+
+	-webkit-transition: opacity 0.3s ease-in-out;
+	-moz-transition: opacity 0.3s ease-in-out;
+	-ms-transition: opacity 0.3s ease-in-out;
+	-o-transition: opacity 0.3s ease-in-out;
+	transition: opacity 0.3s ease-in-out;
 }
 .k-chapters-container .chapterBox .k-thumb{
     float: left;
@@ -57,6 +63,28 @@
     background: #444444;
     /* IE 7 & 8 rule */
     background: #444\9;
+}
+
+/* set disabled classes */
+.k-chapters-container .chapterBox.disabled{
+	opacity: 0.2;
+	cursor: auto;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
+}
+.k-chapters-container .chapterBox.disabled:hover{
+	background: #222222;
+}
+.k-chapters-container .chapterBox.disabled.active:hover{
+	background: #444444;
+}
+.k-chapters-container .k-duration.disabled{
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)"; /* IE 8 rule only as other browsers set opacity=0.2 from parent container */
+}
+.k-chapters-container .chapterDivider.disabled{
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)"; /* IE 8 rule only as other browsers set opacity=0.2 from parent container */
+}
+.medialistContainer.disabled{
+	border-right: 1px solid #222222;
 }
 
 .k-chapters-container .chapterNumber{
@@ -201,6 +229,8 @@
 .medialistContainer{
 	overflow: auto;
 	background-color: #111111;
+	border-right: 1px solid grey;
+	z-index: 10000000;
 }
 .playListSelector{
 	font-size: 11px;
