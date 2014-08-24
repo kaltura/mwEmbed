@@ -405,28 +405,24 @@ return array(
 		'hideEdit' => true
 	),
 	'mediaProxy.mediaPlayFrom' => array(
-		'doc' => 'The start time for the video preview.',
+		'doc' => 'The start time for the video playback.',
 		'type' => 'number'
 	),
 	'mediaProxy.mediaPlayTo' => array(
-		'doc' => 'The time in seconds, for the video preview to end.',
+		'doc' => 'The time in seconds, for the video playback to end.',
 		'type' => 'number'
 	),
 	'mediaProxy.preferedFlavorBR' => array(
 		'doc' => 'The initial bitrate to be selected.',
 		'type' => 'number'
 	),
+	'segmentScrubber.plugin' => array(
+		'doc' => 'Virtaulzies the playhead to selected segment of time.',
+		'type' => 'boolean'
+	),
 	'deliveryCode' => array(
 		'doc' => 'The deliveryCode is passed along as part of a domain prefix into the stream URL. (can be used for per-embed URL billing categorization)',
 		'type' => 'string'
-	),
-	'mediaProxy.mediaPlayFrom' => array(
-		'doc' => "The media start time.",
-		'type' => 'number'
-	),
-	'mediaProxy.mediaPlayTo' => array(
-		'doc' => "The media end time.",
-		'type' => 'number'
 	),
 	/** uiConf components */
 	'controlsHolder' => array(
@@ -1302,7 +1298,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 					'type' => 'number'
 				),
 				'clickUrl' => array(
-				'doc' => "<p style='text-align: left'>Defines the URL for a related item click</p>
+					'doc' => "<p style='text-align: left'>Defines the URL for a related item click</p>
 								If this left blank the click will replace the current video with a new one.
 								example: <b>http://my-custom-domain.com/?v={mediaProxy.entry.id}</b> as a custom
 								URL with the entry id as postfix",
