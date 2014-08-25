@@ -24,6 +24,10 @@
 			'scripts' => "resources/mw.KBaseScreen.js",
 			'dependencies' => array( 'mw.KBaseComponent' )
 		),
+		"mw.KBaseMediaList" => array(
+			'scripts' => "resources/mw.KBaseMediaList.js",
+			'dependencies' => array( 'mw.KBaseComponent' )
+		),
 		"mw.KBaseComponent" => array(
 			'scripts' => "resources/mw.KBaseComponent.js",
 			'dependencies' => array( 'mw.KBasePlugin', 'mediawiki.kmenu' )
@@ -121,6 +125,13 @@
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'theme',
 		),
+		"playlistAPI" => array(
+            'scripts' => "components/playlistAPI.js",
+            'dependencies' => array('mw.KBaseMediaList','jCarouse'),
+            'styles' =>  "components/mediaList/playList.css",
+            'templates' => "components/mediaList/mediaList.tmpl.html",
+            'kalturaPluginName' => 'playlistAPI',
+        ),
 		"largePlayBtn" => array(
 			'scripts' => "components/largePlayBtn.js",
 			'dependencies' => 'mw.KBaseComponent',
@@ -230,10 +241,10 @@
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",
 			'kalturaPluginName' => 'pptWidgetAPI'
 		),
-
+/*
 		/* playlist */
-		"playlistPlugin"=> array( 
-			'scripts' => "resources/uiConfComponents/playlistPlugin.js", 
+		/*"playlistPlugin"=> array(
+			'scripts' => "resources/uiConfComponents/playlistPlugin.js",
 			'dependencies' => array(
 				// core playlist module
 				"mw.Playlist",
@@ -243,8 +254,8 @@
 				'mw.KLayout'
 			),
 			'kalturaPluginName' => 'playlistAPI'
-		),
-		
+		),*/
+
 		/* uiConf based plugins */
 		"acCheck" => array(
 			'scripts' => "resources/uiConfComponents/acCheck.js",

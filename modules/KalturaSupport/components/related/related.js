@@ -21,7 +21,7 @@
 		},
 		viewedEntries: [],
 		iconBtnClass: 'icon-related',
-
+		timerRunning:false,
 
 		setup: function(){
 			var _this = this;
@@ -123,6 +123,10 @@
 		},
 
 		startTimer: function(){
+			if (this.timerRunning){
+				return;
+			}
+			this.timerRunning = true;
 			var _this = this;
 			var updateTimeRemaining = function(){
 				var ct = _this.getConfig('timeRemaining');
@@ -161,6 +165,7 @@
 			}
 		},
 		stopTimer: function(){
+			this.timerRunning = false;
 			this.pauseTimer();
 			// Set remaining time to auto continue time
 			this.setConfig('timeRemaining', this.getConfig('autoContinueTime'));
