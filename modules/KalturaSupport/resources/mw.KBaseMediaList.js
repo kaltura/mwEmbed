@@ -162,7 +162,7 @@
 				//var medialistDiv = $('<div class="medialistContainer"></div>');
 				var medialistSpan = _this.getTemplateHTML( {meta: _this.getMetaData(), mediaList: _this.getTemplateData()} );
 				$(medialistSpan).addClass("medialistContainer k-chapters-container");
-				if (this.getConfig('containerPosition') == 'top'){
+				if (this.getConfig('containerPosition') == 'top' && !this.getConfig('onPage')){
 					_this.$mediaListContainer.prepend(medialistSpan);
 				}else{
 					_this.$mediaListContainer.append(medialistSpan);
@@ -257,7 +257,15 @@
 				.on('click', function(){
 					if ( !_this.isDisabled ){
 						// set active media item
-						$(".chapterBox").removeClass( 'active');
+
+						if (_this.getConfig('onPage')){
+							try{
+								var doc = window['parent'].document;
+								$(doc).find(".chapterBox").removeClass( 'active');
+							}catch(e){};
+						}else{
+							$(".chapterBox").removeClass( 'active');
+						}
 						$( this ).addClass( 'active');
 						var index = $(this).data( 'chapterIndex' );
 						// call mediaClicked with the media index (implemented in component level)

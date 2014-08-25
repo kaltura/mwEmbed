@@ -2,8 +2,16 @@
     height: 100%;
     width: 100%;
 }
+.onpagePlaylistInterface{
+	font: normal 13px helvetica, arial, sans-serif !important;
+	background-color: black !important;
+	color: #ffffff !important;
+	overflow: auto !important;
+	padding: 0px !important;
+}
 .k-chapters-container{
     position:relative;
+	display: block;
 }
 .k-chapters-container.horizontal {
     padding-top:5px;
