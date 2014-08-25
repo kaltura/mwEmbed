@@ -3,6 +3,7 @@
 	mw.PluginManager.add( 'playlistAPI', mw.KBaseMediaList.extend({
 
 		defaultConfig: {
+			'templatePath': 'components/mediaList/mediaList.tmpl.html',
 			'initItemEntryId': null,
 			'autoContinue': false,
 			'autoPlay': false,
@@ -10,9 +11,6 @@
 			'kpl0Url': null,
 			'kpl0Id': null,
 			'includeInLayout': null,
-			'parent': null,//'sideBarContainer',
-			'mediaItemWidth': 290,
-			'defaultPlaylistHeight': 190,
 			'titleLimit': 30,
 			'descriptionLimit': 80,
 			'thumbnailWidth' : 62,
@@ -22,10 +20,8 @@
 			'includeMediaItemDuration': true,
 			'loop': false,
 			'overflow': true,
-			'selectedIndex': 0,
-			'containerPosition':  'left',
-			'onPage': false,
-			'clipListTargetId': null
+			'cssPath': 'playList.css',
+			'selectedIndex': 0
 		},
 
 
@@ -58,26 +54,6 @@
 				_this.unbind( 'playerReady'); // we want to select the playlist only the first time the player loads
 			});
 
-			// handle fullscreen entering resize
-			$( this.embedPlayer ).bind('onOpenFullScreen', function() {
-				if (_this.getConfig('containerPosition') == 'right' || _this.getConfig('containerPosition') == 'left'){
-					if (_this.getConfig('containerPosition') == 'left'){
-						$(".mwPlayerContainer").css("margin-left",0);
-					}
-					$(".videoHolder, .mwPlayerContainer").width("100%");
-				}
-			});
-
-			// handle fullscreen exit resize
-			$( this.embedPlayer ).bind('onCloseFullScreen', function() {
-				if (_this.getConfig('containerPosition') == 'right' || _this.getConfig('containerPosition') == 'left'){
-					if (_this.getConfig('containerPosition') == 'left'){
-						$(".mwPlayerContainer").css("margin-left",_this.getConfig("mediaItemWidth")+"px");
-					}
-					$(".videoHolder, .mwPlayerContainer").width(_this.videoWidth);
-				}
-			});
-
 			// API support + backward compatibility
 			$( this.embedPlayer ).bind( 'Kaltura_SetKDPAttribute' + this.bindPostFix, function( event, componentName, property, value ){
 				mw.log("PlaylistAPI::Kaltura_SetKDPAttribute:" + property + ' value:' + value);
@@ -105,29 +81,6 @@
 					case 'playlistPlayPrevious':
 						_this.playPrevious();
 						break;
-				}
-			});
-
-			$( this.embedPlayer ).bind('AdSupport_StartAdPlayback', function(e, adType){
-				_this.isDisabled = true;
-				if (_this.getConfig('onPage')){
-					try{
-						var doc = window['parent'].document;
-						$(doc).find(".chapterBox, .k-duration, .medialistContainer, .chapterDivider").addClass("disabled");
-					}catch(e){};
-				}else{
-					$(".chapterBox, .k-duration, .medialistContainer, .chapterDivider").addClass("disabled");
-				}
-			});
-			$( this.embedPlayer ).bind('AdSupport_EndAdPlayback', function(e, adType){
-				_this.isDisabled = false;
-				if (_this.getConfig('onPage')){
-					try{
-						var doc = window['parent'].document;
-						$(doc).find(".chapterBox, .k-duration, .medialistContainer, .chapterDivider").removeClass("disabled");
-					}catch(e){};
-				}else{
-					$(".chapterBox, .k-duration, .medialistContainer, .chapterDivider").removeClass("disabled");
 				}
 			});
 		},
@@ -162,77 +115,6 @@
 			}
 		},
 
-		// set the play list container according to the selected position
-		getMedialistContainer: function(){
-			if ( this.getConfig('onPage') ){
-				var iframeID = this.embedPlayer.id + '_ifp';
-				try{
-					var iframeParent = window['parent'].document.getElementById( this.embedPlayer.id );
-					if ( this.getConfig('clipListTargetId') ){
-						$(iframeParent).parent().find("#"+this.getConfig('clipListTargetId')).append("<div class='onpagePlaylistInterface'></div>");
-						this.$mediaListContainer =  $(iframeParent).parent().find(".onpagePlaylistInterface");
-						$(this.$mediaListContainer).width("100%");
-						$(this.$mediaListContainer).height("100%");
-					}else{
-						$(iframeParent).after("<div class='onpagePlaylistInterface'></div>");
-						this.$mediaListContainer =  $(iframeParent).parent().find(".onpagePlaylistInterface");
-						$(this.$mediaListContainer).width($(iframeParent).width());
-						$(this.$mediaListContainer).height(this.getConfig("defaultPlaylistHeight"));
-					}
-					this.injectCss();
-					return this.$mediaListContainer;
-				} catch( e ){
-					mw.log( "Error: playlistAPI could not access parent iframe" );
-				}
-			}
-			this.$mediaListContainer =  $(".playlistInterface");
-			// resize the video to make place for the playlist according to its position (left, top, right, bottom)
-			if (this.getConfig('containerPosition') == 'right' || this.getConfig('containerPosition') == 'left'){
-				$(".videoHolder, .mwPlayerContainer").css("width", this.$mediaListContainer.width() - this.getConfig("mediaItemWidth") +"px");
-				this.videoWidth = (this.$mediaListContainer.width() - this.getConfig("mediaItemWidth"));
-			}
-			if (this.getConfig('containerPosition') == 'left'){
-				$(".mwPlayerContainer").css({"margin-left": this.getConfig("mediaItemWidth") +"px", "float": "right"});
-			}
-			if (this.getConfig('containerPosition') == 'top' || this.getConfig('containerPosition') == 'bottom'){
-				$(".videoHolder, .mwPlayerContainer").css("height", this.$mediaListContainer.height() - this.getConfig("defaultPlaylistHeight") +"px");
-			}
-			return this.$mediaListContainer;
-		},
-
-		// set the size of the playlist container and the video
-		setMedialistContainerSize: function(){
-			// resize the video to make place for the playlist according to its position (left, top, right, bottom)
-			if (this.getConfig('containerPosition') == 'right' || this.getConfig('containerPosition') == 'left'){
-				$(".medialistContainer").width(this.getConfig("mediaItemWidth"));
-				$(".medialistContainer").height("100%");
-				$(".medialistContainer").css("position","absolute");
-			}
-			if (this.getConfig('containerPosition') == 'right'){
-				$(".medialistContainer").css("float","right");
-				$(".mwPlayerContainer").css("float","left");
-			}
-			if (this.getConfig('containerPosition') == 'top' || this.getConfig('containerPosition') == 'bottom'){
-				$(".medialistContainer").height(this.getConfig("defaultPlaylistHeight"));
-				$(".medialistContainer").css("display","block");
-			}
-			return this.$mediaListContainer;
-		},
-
-		injectCss: function(){
-			var links = document.getElementsByTagName("link");
-			for ( var i = 0; i < links.length; i++ ) {
-				if ( links[i].getAttribute("href").indexOf('playList.css') !=-1){
-					var cssFilename = links[i].getAttribute("href");
-					var doc = window['parent'].document;
-					var fileref=doc.createElement("link");
-					fileref.setAttribute("rel", "stylesheet");
-					fileref.setAttribute("type", "text/css");
-					fileref.setAttribute("href", cssFilename);
-					doc.getElementsByTagName("head")[0].appendChild(fileref);
-				}
-			}
-		},
 		// play a clip according to the passed index. If autoPlay is set to false - the clip will be loaded but not played
 		playMedia: function(clipIndex, autoPlay){
 			this.setSelectedMedia(clipIndex);              // this will highlight the selected clip in the UI
@@ -396,82 +278,8 @@
 				this.setMultiplePlayLists(); // support multiple play lists
 			}
 		}
-
-/*
-		// add bindings for playlist playback ( disable playlist item selection during ad Playback )
-		addPlaylistAdBindings: function(){
-			var _this = this;
-			var embedPlayer = this.embedPlayer;
-			$( embedPlayer ).bind('AdSupport_StartAdPlayback' + this.bindPostfix, function(){
-				_this.blockPlaylist();
-			});
-			$( embedPlayer ).bind('AdSupport_EndAdPlayback' + this.bindPostfix, function(){
-				_this.restorePlaylist();
-			});
-		},
-		blockPlaylist: function(){
-			var _this = this;
-			var embedPlayer = this.embedPlayer;
-			// Add the Disable clip switch flag:
-			_this.enableClipSwitch = false;
-
-			// Add a gray overlay
-			var $listwrap = this.$target.find( '.video-list-wrapper' );
-			var cssPops = ['width','height', 'position', 'bottom', 'right', 'left', 'top'];
-			var cssObj = {};
-
-			// Copy in all the settings:
-			$.each( cssPops, function(inx, prop){
-				cssObj[ prop ] = $listwrap.css(prop);
-			});
-			// make sure we are not in fullscreen ( and there is nothing to cover up )
-			if( ! this.$target.find( '.playlist-block-list' ).length ){
-				$listwrap.before(
-					$('<div />').css( cssObj )
-						.addClass('playlist-block-list')
-						.css({
-							'z-index': 2,
-							'background-color' : '#FFF',
-							'opacity' : '0.7',
-							'filter' : 'alpha(opacity=70)'
-						})
-						.click(function(){
-							// don't let event propagate
-							return false;
-						})
-				);
-			}
-			// if in fullscreen hide the listwrap
-			if( embedPlayer.layoutBuilder.isInFullScreen() ){
-				_this.$target.find( '.playlist-block-list' ).hide();
-			}
-		},
-		restorePlaylist: function(){
-			// Restore clip switch:
-			this.enableClipSwitch = true;
-			this.$target.find( '.playlist-block-list' ).remove();
-		},
-
-		playNext: function(clipIndex) {
-			var _this = this;
-			if( _this.enableClipSwitch &&  (clipIndex + 1) < _this.mediaList.length && (clipIndex + 1) <= parseInt( mw.getConfig( 'Playlist.MaxClips' ) ) ){
-				_this.playClip( clipIndex+1 );
-				return ;
-			}
-			mw.log( "Error: mw.playlist can't next: current: " + _this.clipIndex );
-		},
-
-		playPrevious: function(clipIndex) {
-			var _this = this;
-			if( _this.enableClipSwitch && clipIndex - 1 >= 0 ){
-				_this.playClip( clipIndex-1 );
-				return ;
-			}
-			mw.log("Cant prev: cur:" + clipIndex-1 );
-		}*/
-
 	})
 
-	);
+);
 
 } )( window.mw, window.jQuery );

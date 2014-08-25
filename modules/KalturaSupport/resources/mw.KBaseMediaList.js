@@ -8,15 +8,21 @@
 
 		mediaList: [],
 		isDisabled: false,
+		'$mediaListContainer': null,
 
 		getBaseConfig: function(){
 			var parentConfig = this._super();
 			return $.extend({}, parentConfig, {
-				'templatePath': 'components/mediaList/mediaList.tmpl.html',
 				'oneSecRotatorSlidesLimit': 61,
 				'twoSecRotatorSlidesLimit': 250,
 				'maxRotatorSlides': 125,
-				'layout': 'vertical'
+				'layout': 'vertical',
+				'mediaItemWidth': 290,
+				'defaultMedialistHeight': 190,
+				'onPage': false,
+				'clipListTargetId': null,
+				'containerPosition':  'bottom',
+				'parent': null//'sideBarContainer',
 			});
 		},
 
@@ -42,6 +48,20 @@
 					_this.shouldAddScroll(_this.addScroll);
 				}
 			});
+			// handle fullscreen entering resize
+			$( this.embedPlayer ).bind('onOpenFullScreen', function() {
+				if ( !_this.getConfig( 'parent') ){
+					$(".medialistContainer").hide();
+				}
+			});
+
+			// handle fullscreen exit resize
+			$( this.embedPlayer ).bind('onCloseFullScreen', function() {
+				if ( !_this.getConfig( 'parent') ){
+					$(".medialistContainer").show();
+				}
+			});
+
 		},
 
 		getComponent: function(){
@@ -77,67 +97,6 @@
 				layout: this.getLayout()
 			}
 		},
-/*
-		getListContainer: function(){
-			// remove any existing k-chapters-container for this player
-			$('.k-player-' + this.getPlayer().id + '.k-chapters-container').remove();
-			// Build new media list container
-			var $mediaListContainer = this.$mediaListContainer = $('<div>').addClass( 'k-player-' + this.getPlayer().id + ' k-chapters-container');
-			// check for where it should be appended:
-			var targetRef = $('#'+this.getPlayer().id, parent.document.body );//$( this.getPlayer().getInterface() );
-			switch( this.getConfig('containerPosition') ){
-				case 'before':
-					$mediaListContainer.css('clear', 'both');
-					targetRef
-						.css( 'float', 'left')
-						.before( $mediaListContainer );
-					break;
-				case 'left':
-					$mediaListContainer.css('float', 'left').insertBefore( targetRef );
-					$( this.getPlayer() ).css('float', 'left');
-					break;
-				case 'right':
-					$mediaListContainer.css('float', 'left').insertAfter( targetRef );
-					$( targetRef ).css('float', 'left' );
-					break;
-				case 'after':
-				default:
-					targetRef
-						.css( 'float', 'none')
-						.after( $mediaListContainer );
-					break;
-			};
-			// set size based on layout
-			// set sizes:
-			if( this.getConfig('overflow') != true ){
-				$mediaListContainer.css('width', targetRef.width() )
-				if( this.getLayout() == 'vertical' ){
-					$mediaListContainer.css( 'height', targetRef.height() )
-				}
-			} else {
-				if( this.getLayout() == 'horizontal' ){
-					$mediaListContainer.css('width', '100%' );
-				} else if( this.getLayout() == 'vertical' ){
-					$mediaListContainer.css( 'width', targetRef.width() );
-				}
-			}
-			// special conditional for vertical media list width
-			if(
-				this.getLayout() == 'vertical'
-					&&
-					this.getConfig('horizontalMediaItemWidth')
-					&&
-					(
-						this.getConfig('containerPosition') == 'right'
-							||
-							this.getConfig('containerPosition') == 'left'
-						)
-				){
-				$mediaListContainer.css('width', this.getConfig('horizontalMediaItemWidth') );
-			}
-			return $mediaListContainer;
-		},
-*/
 		//Media Item
 		setMediaList: function(items){
 			var _this = this;
@@ -177,6 +136,110 @@
 			_this.dataIntialized = true;
 			_this.shouldAddScroll(_this.addScroll);
 			$(_this.embedPlayer).trigger("mediaListLayoutReady");
+		},
+
+		// set the play list container according to the selected position
+		getMedialistContainer: function(){
+			if ( this.getConfig('onPage') ){
+				var iframeID = this.embedPlayer.id + '_ifp';
+				try{
+					var iframeParent = window['parent'].document.getElementById( this.embedPlayer.id );
+					if ( this.getConfig('clipListTargetId') ){
+						$(iframeParent).parent().find("#"+this.getConfig('clipListTargetId')).append("<div class='onpagePlaylistInterface'></div>");
+						this.$mediaListContainer =  $(iframeParent).parent().find(".onpagePlaylistInterface");
+						$(this.$mediaListContainer).width("100%");
+						$(this.$mediaListContainer).height("100%");
+					}else{
+						$(iframeParent).after("<div class='onpagePlaylistInterface'></div>");
+						this.$mediaListContainer =  $(iframeParent).parent().find(".onpagePlaylistInterface");
+						$(this.$mediaListContainer).width($(iframeParent).width());
+						$(this.$mediaListContainer).height(this.getConfig("defaultMedialistHeight"));
+					}
+					this.injectCss();
+					return this.$mediaListContainer;
+				} catch( e ){
+					mw.log( "Error: playlistAPI could not access parent iframe" );
+				}
+			}
+			this.$mediaListContainer =  $(".playlistInterface");
+			// resize the video to make place for the playlist according to its position (left, top, right, bottom)
+			if (this.getConfig('containerPosition') == 'right' || this.getConfig('containerPosition') == 'left'){
+				$(".videoHolder, .mwPlayerContainer").css("width", this.$mediaListContainer.width() - this.getConfig("mediaItemWidth") +"px");
+				this.videoWidth = (this.$mediaListContainer.width() - this.getConfig("mediaItemWidth"));
+			}
+			if (this.getConfig('containerPosition') == 'left'){
+				$(".mwPlayerContainer").css({"margin-left": this.getConfig("mediaItemWidth") +"px", "float": "right"});
+			}
+
+			if (this.getConfig('containerPosition') == 'top' || this.getConfig('containerPosition') == 'bottom'){
+				$(".videoHolder, .mwPlayerContainer").css("height", this.$mediaListContainer.height() - this.getConfig("defaultMedialistHeight") +"px");
+			}
+			return this.$mediaListContainer;
+		},
+
+		// set the size of the playlist container and the video
+		setMedialistContainerSize: function(){
+			// resize the video to make place for the playlist according to its position (left, top, right, bottom)
+			if (this.getConfig('containerPosition') == 'right' || this.getConfig('containerPosition') == 'left'){
+				$(".medialistContainer").width(this.getConfig("mediaItemWidth"));
+				$(".medialistContainer").height("100%");
+				$(".medialistContainer").css("position","absolute");
+			}
+			if (this.getConfig('containerPosition') == 'right'){
+				$(".medialistContainer").css("right","0px");
+				$(".mwPlayerContainer").css("float","left");
+			}
+			if (this.getConfig('containerPosition') == 'top' || this.getConfig('containerPosition') == 'bottom'){
+				$(".medialistContainer").height(this.getConfig("defaultMedialistHeight"));
+				$(".medialistContainer").css("display","block");
+			}
+			return this.$mediaListContainer;
+		},
+
+		injectCss: function(){
+			if ( !this.getConfig("cssPath") ){
+				return;
+			}
+			var links = document.getElementsByTagName("link");
+			for ( var i = 0; i < links.length; i++ ) {
+				if ( links[i].getAttribute("href").indexOf(this.getConfig("cssPath")) !=-1){
+					var cssFilename = links[i].getAttribute("href");
+					var doc = window['parent'].document;
+					var fileref=doc.createElement("link");
+					fileref.setAttribute("rel", "stylesheet");
+					fileref.setAttribute("type", "text/css");
+					fileref.setAttribute("href", cssFilename);
+					doc.getElementsByTagName("head")[0].appendChild(fileref);
+				}
+			}
+		},
+
+		onDisable: function(){
+			this.isDisabled = true;
+			if (this.getConfig('onPage')){
+				try{
+					var doc = window['parent'].document;
+					$(doc).find(".chapterBox").addClass("disabled");
+					$(doc).find(".chapterBox").find("*").addClass("disabled");
+				}catch(e){};
+			}else{
+				$(".chapterBox").addClass("disabled");
+				$(".chapterBox").find("*").addClass("disabled");
+			}
+		},
+
+		onEnable: function(){
+			this.isDisabled = false;
+			if (this.getConfig('onPage')){
+				try{
+					var doc = window['parent'].document;
+					$(doc).find(".chapterBox").removeClass("disabled");
+					$(doc).find(".chapterBox").find("*").removeClass("disabled");
+				}catch(e){};
+			}else{
+				$(".chapterBox").removeClass("disabled");
+				$(".chapterBox").find("*").removeClass("disabled");
+			}
 		},
 
 		getItemNumber: function(index){

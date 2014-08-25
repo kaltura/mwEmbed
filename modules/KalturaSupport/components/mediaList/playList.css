@@ -93,6 +93,7 @@
 }
 .medialistContainer.disabled{
 	border-right: 1px solid #222222;
+	border-left: 1px solid #222222;
 }
 
 .k-chapters-container .chapterNumber{
@@ -238,6 +239,7 @@
 	overflow: auto;
 	background-color: #111111;
 	border-right: 1px solid grey;
+	border-left: 1px solid grey;
 	z-index: 10000000;
 }
 .playListSelector{
