@@ -11,6 +11,7 @@ mw.KCuePoints.prototype = {
 	// The bind postfix:
 	bindPostfix: '.kCuePoints',
 	midCuePointsArray: [],
+	liveCuePointsIntervalId: null,
 
 	init: function( embedPlayer ){
 		var _this = this;
@@ -24,9 +25,17 @@ mw.KCuePoints.prototype = {
 			_this.processCuePoints();
 			// Add player bindings:
 			_this.addPlayerBindings();
+			//Set live cuepoint polling
+			if (mw.getConfig("EmbedPlayer.LiveCuepoints")){
+				_this.requestLiveCuepoints();
+			}
 		});
 	},
 	destroy: function(){
+		if (this.liveCuePointsIntervalId) {
+			clearInterval( this.liveCuePointsIntervalId );
+			this.liveCuePointsIntervalId = null;
+		}
 		$( this.embedPlayer ).unbind( this.bindPostfix );
 	},
 	/*
@@ -35,7 +44,9 @@ mw.KCuePoints.prototype = {
 	processCuePoints: function() {
 		var _this = this;
 		var cuePoints = this.getCuePoints();
-		this.requestThumbAsset();
+		this.requestThumbAsset(cuePoints, function(){
+			_this.embedPlayer.triggerHelper( 'KalturaSupport_ThumbCuePointsReady' );
+		});
 		// Create new array with midrolls only
 		var newCuePointsArray = [];
 		$.each( cuePoints, function( idx, cuePoint ){
@@ -49,11 +60,12 @@ mw.KCuePoints.prototype = {
 
 		this.midCuePointsArray = newCuePointsArray;
 	},
-	requestThumbAsset: function(){
+	requestThumbAsset: function(cuePoints, callback){
 		var _this = this;
 		var requestArray = [];
 		var response = [];
-		var thumbCuePoint = $.grep(this.getCuePoints(), function(cuePoint){
+		var requestCuePoints = cuePoints || this.getCuePoints();
+		var thumbCuePoint = $.grep(requestCuePoints, function(cuePoint){
 			return (cuePoint.cuePointType == 'thumbCuePoint.Thumb');
 		});
 
@@ -80,11 +92,97 @@ mw.KCuePoints.prototype = {
 				$.each(thumbCuePoint, function(index, item){
 					item.thumbnailUrl = data[index];
 				});
-				_this.embedPlayer.triggerHelper( 'KalturaSupport_ThumbCuePointsReady' );
+				if (callback){
+					callback();
+				}
 			} );
 		} else {
-			_this.embedPlayer.triggerHelper( 'KalturaSupport_ThumbCuePointsReady' );
+			if (callback){
+				callback();
+			}
 		}
+	},
+	requestLiveCuepoints: function(){
+		var _this = this;
+
+		// Create associative cuepoint array to enable comparing new cuepoints vs existing ones
+		var cuePoints = this.getCuePoints();
+		this.associativeCuePoints = {};
+		$.each( cuePoints, function ( index, cuePoint ) {
+			_this.associativeCuePoints[cuePoint.id] = cuePoint;
+		} );
+
+		//Start live cuepoint pulling
+		this.liveCuePointsIntervalId = setInterval(function(){
+			var entryId = _this.embedPlayer.kentryid;
+			var lastUpdatedAt = _this.getLastUpdateTime() + 1;
+			_this.getKalturaClient().doRequest({
+					'service': 'cuepoint_cuepoint',
+					'action': 'list',
+					'filter:entryIdEqual': entryId,
+					'filter:objectType':'KalturaCuePointFilter',
+					'filter:cuePointTypeEqual':	'thumbCuePoint.Thumb',
+					'filter:updatedAtGreaterThanOrEqual' : lastUpdatedAt
+				},
+				function( data ){
+					// if an error pop out:
+					if( !data || data.code ){
+						// todo: add error handling
+						mw.log("Error:: KCuePoints could not retrieve live cuepoints");
+						return ;
+					}
+					_this.updateCuePoints( data.objects );
+					_this.embedPlayer.triggerHelper( 'KalturaSupport_CuePointsUpdated', [data.totalCount] );
+				}
+			);
+		}, mw.getConfig("EmbedPlayer.LiveCuepointsRequestInterval") || 10000);
+	},
+	updateCuePoints: function( rawCuePoints ){
+		if (rawCuePoints.length > 0) {
+			var _this = this;
+
+			var associativeRawCuePoints = {};
+			$.each( rawCuePoints, function ( index, cuePoint ) {
+				associativeRawCuePoints[cuePoint.id] = cuePoint;
+			} );
+
+			var updatedCuePoints = [];
+			//Only add new cuepoints or existing cuepoints which have a newer updateAt value
+			$.each( associativeRawCuePoints, function ( index, rawCuePoint ) {
+				if ( (!_this.associativeCuePoints[index]) ||
+					 ( _this.associativeCuePoints[index] &&
+					   _this.associativeCuePoints[index].updatedAt < rawCuePoint.updatedAt ) ) {
+					_this.associativeCuePoints[index] = rawCuePoint;
+					updatedCuePoints.push( rawCuePoint );
+				}
+			} );
+
+			if ( updatedCuePoints.length > 0 ) {
+				var cuePoints = this.getCuePoints();
+				//update cuepoints
+				$.merge(cuePoints, updatedCuePoints);
+				//update midpoint cuepoints
+				$.merge(this.midCuePointsArray, updatedCuePoints);
+				//Request thumb asset only for new cuepoints
+				this.requestThumbAsset(updatedCuePoints, function(){
+					_this.embedPlayer.triggerHelper( 'KalturaSupport_ThumbCuePointsUpdated' );
+				});
+				// sort the cuePoitns by startTime:
+				this.midCuePointsArray.sort( function ( a, b ) {
+					return a.startTime - b.startTime;
+				} );
+			}
+		}
+	},
+	getLastUpdateTime: function(){
+		var cuePoints = this.getCuePoints();
+		var lastUpdateTime= -1;
+		$.each(cuePoints, function(key, cuePoint){
+			if (lastUpdateTime < cuePoint.updatedAt){
+				lastUpdateTime = cuePoint.updatedAt;
+			}
+		});
+		return lastUpdateTime;
 	},
 	getKalturaClient: function() {
 		if( ! this.kClient ) {
