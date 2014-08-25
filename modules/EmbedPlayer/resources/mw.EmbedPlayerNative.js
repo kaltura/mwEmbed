@@ -922,7 +922,11 @@ mw.EmbedPlayerNative = {
 
 				// issue the play request:
 				vid.play();
-
+				if ( mw.isIphone() ){
+					setTimeout(function(){
+						handleSwitchCallback();
+					}, 100 );
+				}
 				// check if ready state is loading or doing anything ( iOS play restriction )
 				// give iOS 5 seconds to ~start~ loading media
 				setTimeout(function(){
