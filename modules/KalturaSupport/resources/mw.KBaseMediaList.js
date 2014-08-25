@@ -21,7 +21,7 @@
 				'defaultMedialistHeight': 190,
 				'onPage': false,
 				'clipListTargetId': null,
-				'containerPosition':  'bottom',
+				'containerPosition':  'left',
 				'parent': null//'sideBarContainer',
 			});
 		},
