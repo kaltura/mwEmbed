@@ -345,7 +345,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 		}
 		// Update the loadingEntry flag:
 		this.loadingEntry = this.getClip( clipIndex ).id;
-		var originalAutoPlayState = embedPlayer.autoplay;
 
 		// Listen for change media done
 		var bindName = 'onChangeMediaDone' + this.bindPostFix;
@@ -356,8 +355,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			/*embedPlayer.bindHelper( 'loadeddata', function() {
 				embedPlayer.layoutBuilder.syncPlayerSize();
 			});*/
-			// restore autoplay state: 
-			embedPlayer.autoplay = originalAutoPlayState;
+			// restore autoplay state:
 			embedPlayer.play();
 			if( $.isFunction( callback ) ){
 				callback();
@@ -370,7 +368,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 		// Use internal changeMedia call to issue all relevant events
 	 	
 	 	// set autoplay to true to continue to playback:
-		embedPlayer.autoplay = true;
 		if (shouldPause && shouldPause === true){
 			mw.log("PlaylistHandlerKaltura::playClip::shouldPause = true. Will pause next clip.");
 			embedPlayer.autoplay = false;
@@ -381,6 +378,10 @@ mw.PlaylistHandlerKaltura.prototype = {
 					embedPlayer.play();
 				}
 			},3000);
+		}
+
+		if (_this.autoContinue){ // hide poster if autoContinue
+			mw.setConfig( 'EmbedPlayer.HidePosterOnStart' , true );
 		}
 
 		embedPlayer.sendNotification( "changeMedia", {'entryId' : this.getClip( clipIndex ).id, 'playlistCall': true} );
@@ -442,9 +443,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 			}
 		});
 
-		if (_this.autoContinue && embedPlayer.selectedPlayer.library === 'Kplayer'){
-			mw.setConfig( 'EmbedPlayer.HidePosterOnStart' , true );
-		}
 	},
 	switchTab:function( property, value ){
 		if( property == 'selectedIndex' ){
