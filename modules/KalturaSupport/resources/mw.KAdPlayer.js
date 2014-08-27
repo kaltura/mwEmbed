@@ -49,7 +49,7 @@ mw.KAdPlayer.prototype = {
 			eventName = eventName + " AdSupport_StartAdPlayback";
 			// Disable seek for VAST in iPhone
 			if( !this.embedPlayer.getKalturaConfig('vast', 'allowSeekWithNativeControls') && mw.isIphone() ) {
-				this.intervalID = this.seekIntervalTrigger();
+				this.seekIntervalID = this.seekIntervalTrigger();
 			}
 		}
 
