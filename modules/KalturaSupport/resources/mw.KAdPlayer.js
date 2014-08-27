@@ -34,6 +34,9 @@ mw.KAdPlayer.prototype = {
 	clickedBumper: false,
 	overrideDisplayDuration:0,
 
+	previousTime: 0,
+	seekIntervalID: null,
+
 	init: function( embedPlayer ){
 		var _this = this;
 		this.embedPlayer = embedPlayer;
@@ -44,6 +47,10 @@ mw.KAdPlayer.prototype = {
 		// bind AdSupport_StartAdPlayback event since the small play/ pause button in the control bar doesn't change the state when ad is played on mobile browser
 		if( !_this.isVideoSiblingEnabled() ) {
 			eventName = eventName + " AdSupport_StartAdPlayback";
+			// Disable seek for VAST in iPhone
+			if( !this.embedPlayer.getKalturaConfig('vast', 'allowSeekWithNativeControls') && mw.isIphone() ) {
+				this.intervalID = this.seekIntervalTrigger();
+			}
 		}
 
 		$(this.embedPlayer).bind(eventName, function(){
@@ -76,6 +83,20 @@ mw.KAdPlayer.prototype = {
 				$( _this.embedPlayer ).trigger( "onDisableScrubber" );
 			}
 		});
+	},
+
+	seekIntervalTrigger: function() {
+		var _this = this;
+
+		return setInterval( function() {
+			if( parseInt(_this.getVideoElement().currentTime - _this.previousTime) > 1 ) {
+				_this.getVideoElement().currentTime = _this.previousTime;
+				return;
+			}
+
+			_this.previousTime = _this.getVideoElement().currentTime;
+
+		}, 1000);
 	},
 
 	/**
@@ -119,9 +140,12 @@ mw.KAdPlayer.prototype = {
 
 		adSlot.playbackDone = function( hardStop ){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
+
 			if( adSlot.ads[adSlot.adIndex] ) {
 				// trigger ad complete event for tracking. Taking current time from currentTimeLabel plugin since the embedPlayer currentTime is already 0
 				$(_this.embedPlayer).trigger('onAdComplete',[adSlot.ads[adSlot.adIndex].id, mw.npt2seconds($(".currentTimeLabel").text())]);
+			if( _this.seekIntervalID ) {
+				clearInterval(_this.seekIntervalID);
 			}
 			// remove click binding if present
 			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'mouseup';

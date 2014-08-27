@@ -1036,6 +1036,10 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'doc' => "If entry cuepoints should be tracked for midroll ad requests.",
 				'type' => 'boolean'
 			),
+			'allowSeekWithNativeControls' => array(
+				'doc' => "It allows to catch seek requests during ads and return the player to original play time..",
+				'type' => 'boolean'
+			),
 			'storeSession' => array(
 				'doc' => 'If the frequency playback should be stored across player reloads.
 					By default, only playlists respect frequency intervals.
