@@ -11,7 +11,8 @@
 			this.addBindings();
 
 			if( !this.getConfig( "iframeUrl" ) ) {
-				this.setConfig( "iframeUrl", this.embedPlayer.getIframeSourceUrl() );
+				var chromecastPluginFlashvar = "&flashvars[chromecast.plugin]=true";
+				this.setConfig( "iframeUrl", encodeURI( this.embedPlayer.getIframeSourceUrl() + chromecastPluginFlashvar ) );
 			}
 		},
 		isSafeEnviornment: function(){
@@ -34,9 +35,8 @@
 
 			var _this = this;
 			var timeout;
-
 			$('<iframe />')
-				.attr('src', _this.getConfig( "mimeName" ) + "?iframeUrl=" + _this.getConfig( "iframeUrl" ))
+				.attr('src', _this.getConfig( "mimeName" ) + "?iframeUrl:=" + _this.getConfig( "iframeUrl" ))
 				.attr('style', 'display:none;')
 				.appendTo('body');
 
