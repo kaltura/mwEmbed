@@ -1471,21 +1471,6 @@ mw.EmbedPlayerNative = {
 		vid.load();
 		vid.play();
 	},
-
-	triggerPreSequence: function() {
-		var _this = this;
-		//we must wait for playing event in android, to unlock video element
-		if ( mw.isAndroid() ) {
-			var bindPostFix = ".preSequenceCheck";
-			this.bindHelper('playing' + bindPostFix, function() {
-				_this.unbindHelper( 'playing' + bindPostFix );
-				_this.parent_triggerPreSequence();
-			});
-		} else {
-			_this.parent_triggerPreSequence();
-		}
-	},
-
 	/**
 	 * HLS safari triggers onseek when its not even close to the target time
 	 * we don't want to trigger the seek event for these "fake" onseeked triggers
