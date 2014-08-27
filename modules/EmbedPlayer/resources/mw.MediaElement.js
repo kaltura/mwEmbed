@@ -160,12 +160,18 @@ mw.MediaElement.prototype = {
 		return this.selectedSource;
 	},
 
-
+	autoSelectSource:function(){
+		if ( this.autoSelectSourceExecute() ){
+			$( '#' + this.parentEmbedId ).trigger( 'SourceSelected' , this.selectedSource );
+			return this.selectedSource;
+		}
+		return false;
+	},
 	/**
 	 * Selects the default source via cookie preference, default marked, or by
 	 * id order
 	 */
-	autoSelectSource: function() {
+	autoSelectSourceExecute: function() {
 		mw.log( 'EmbedPlayer::mediaElement::autoSelectSource' );
 		var _this = this;
 		// Select the default source

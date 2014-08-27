@@ -6,7 +6,7 @@
 <!-- <script type="text/javascript" src="../../../mwEmbedLoader.php/wid/_27017/uiconf_id/11426482/entry_id/1_5vwcdzlv"></script> -->
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
-<script type="text/javascript">	
+<script type="text/javascript">
 //mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
@@ -15,37 +15,45 @@
 <body>
 <h2>KDP YouTube Iframe wrapper</h2>
 <p>This page shows the youtube wrapper with the Iframe YouTube player behind with Kaltura UI, even if the client does have Flash player installed</p>
+<p>To create a YouTube entry:
+<ol>
+	<li>Make sure you have MediaSpace permissions to add YouTube media.</li>
+	<li>Within MediaSpace, click on "Add New" and choose "YouTube".</li>
+	<li>Insert YouTube content ID and click the "Preview" button.</li>
+	<li>Save your media as "Unlisted" or "Published".</li>
+	<li>Within MediaSpace, preview your YouTube media and click the "Share" button.</li>
+	<li>If you want to embed this entry outside of MediaSpace, use the entry ID shown at the end of the share link in your embed code.</li>
+</ol>
+</p><br>
 <div id="EmbedPlayerYouTubeSettings"></div>
 <div id="kaltura_player" style="width:700px;height:330px"></div>
 <br />
 <script>
 
-		
 		var flashvars = {
 				forceIframe: '1',
 				'autoPlay': 'false',
-				//'forceYoutubeEntry' : 'aaaaaaaaaaaaa',
+				//'forceYoutubeEntry' : '81XmhlLJhFg',
 				"previewMode" : true
 		};
-	
-// 		kWidget.featureConfig({
-			
-// 		);
-		
+
 		function doEmbedPlayer( fv ){
-			// clear the text box: 
+			// clear the text box:
 			$('#analyticsLog').empty();
 			kWidget.embed({
 				'targetId' : 'kaltura_player',
-				'wid' : '_27017',
-				'uiconf_id' : '13011592',
-				'entry_id' : '1_5vwcdzlv',
+				'wid' : '_1645161',
+				'uiconf_id' : '25505291',
+				'entry_id' : '1_j4ipv6ln',
 				'flashvars': fv
 			})
 		};
+
 		doEmbedPlayer(flashvars);
 </script>
 
 
 </body>
 </html>
+
+

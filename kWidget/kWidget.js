@@ -43,7 +43,8 @@ var kWidget = {
 	
 	// For storing iframe payloads via server side include, instead of an additional request
 	// stored per player id
-	iframeAutoEmbedCache:{}, 
+	iframeAutoEmbedCache:{},
+
 	/**
 	 * The master kWidget setup function setups up bindings for rewrites and
 	 * proxy of jsCallbackReady
@@ -275,12 +276,22 @@ var kWidget = {
 		// empty out the ready callback queue
 		this.jsReadyCalledForIds = [];
 	},
+	isDownloadLinkPlayer:function(){
+		if (window.location.href.indexOf('forceDownloadPlayer') > -1 || mw.getConfig("EmbedPlayer.NotPlayableDownloadLink") ) {
+			return true;
+		}
+
+		return false;
+	},
 	/**
 	 * The base embed method
 	 * @param targetId {String} Optional targetID string ( if not included, you must include in json)
 	 * @param settings {Object} Object of settings to be used in embedding.
 	 */
 	embed: function( targetId, settings ){
+		if ( this.isDownloadLinkPlayer() ) {
+			return this.thumbEmbed( targetId , settings , true );
+		}
 		var _this = this;
 		// Supports passing settings object as the first parameter
 		if( typeof targetId === 'object' ) {
@@ -294,14 +305,19 @@ var kWidget = {
 		// Check if we have flashvars object
 		if( ! settings.flashvars ) {
 			settings.flashvars = {};
-		}				
+		}
 
 		this.startTime[targetId] = new Date().getTime();
 		
 		// Check if we have flashvars object
 		if( ! settings.flashvars ) {
 			settings.flashvars = {};
-		}	
+		}
+
+		if( document.URL.indexOf('forceKalturaNativeComponentPlayer') !== -1 ){
+			settings.flashvars["nativeCallout"] = { plugin: true }
+		}
+
 		/**
 		 * Embed settings checks
 		 */
@@ -502,7 +518,10 @@ var kWidget = {
 	 *
 	 * All the other kWidget settings are invoked during playback.
 	 */
-	thumbEmbed: function( targetId, settings ){
+	thumbEmbed: function( targetId, settings ,forceDownload ){
+		if (this.isDownloadLinkPlayer()){
+			forceDownload = true;
+		}
 		var _this = this;
 		// Normalize the arguments
 		if( typeof targetId === 'object' ) {
@@ -553,8 +572,13 @@ var kWidget = {
 			}
 			// Set a flag to capture the click event
 			settings.captureClickEventForiOS = true;
-			// update the settings object
-			kWidget.embed( settings );
+			if (forceDownload) {
+				window.open( _this.getDownloadLink( settings ) );
+			}
+			else {
+				// update the settings object
+				kWidget.embed( settings );
+			}
 		});
 		// TOOD maybe a basic basic api ( doPlay support ? )
 
@@ -1508,7 +1532,33 @@ var kWidget = {
 		// No video tag or flash, or iframe, normal "install flash" user flow )
 		return false;
 	 },
+	getDownloadLink: function(  settings ) {
+		var _this = this;
 
+		// update the settings object
+		var baseUrl = _this.getPath();
+		var downloadUrl = baseUrl + 'modules/KalturaSupport/download.php/wid/' + settings.wid;
+
+		// Also add the uiconf id to the url:
+		if ( settings.uiconf_id ) {
+			downloadUrl += '/uiconf_id/' + settings.uiconf_id;
+		}
+
+		if ( settings.entry_id ) {
+			downloadUrl += '/entry_id/' + settings.entry_id;
+		}
+
+		var flashVarsString = this.flashVarsToString(settings.flashvars);
+		var ks = settings.ks;
+		if ( ks ) {
+			downloadUrl += '/?ks=' + ks  + flashVarsString;
+		}else{
+			downloadUrl +='/?' + flashVarsString.substr(1,flashVarsString.length);
+		}
+
+
+		return downloadUrl;
+	},
 	 /**
 	  * Get Kaltura thumb url from entry object
 	  * TODO We need to grab thumbnail path from api (baseEntry->thumbnailUrl)

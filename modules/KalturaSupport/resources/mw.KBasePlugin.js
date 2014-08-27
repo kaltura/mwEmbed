@@ -77,10 +77,11 @@ mw.KBasePlugin = Class.extend({
 		// Add out plugin instance
 		data.self = this;
 		data.player = this.embedPlayer;
+		data.entry = this.embedPlayer.kalturaPlayerMetaData;
+		data.entryMetadata = this.embedPlayer.kalturaEntryMetaData;
 
 		// First get template from 'template' config
 		var rawHTML = this.getConfig( 'template', true );
-		debugger;
 		if( !rawHTML ){
 			var templatePath = this.getConfig( 'templatePath' );
 			if( !templatePath || !window.kalturaIframePackageData.templates[ templatePath ]) {
@@ -99,6 +100,15 @@ mw.KBasePlugin = Class.extend({
 				var data = $(this).data();
 				return _this.handleClick( e, data );
 			});
+
+		// Handle form submission
+		$templateHtml.find('[data-submit]').submit(function(e){
+			var cb = $(this).data('submit');
+			if( $.isFunction( _this[cb] ) ) {
+				_this[cb](e);
+			}
+			return false;
+		});
 
 		return $templateHtml;
 	},
