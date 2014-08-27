@@ -144,8 +144,9 @@ mw.KAdPlayer.prototype = {
 			if( adSlot.ads[adSlot.adIndex] ) {
 				// trigger ad complete event for tracking. Taking current time from currentTimeLabel plugin since the embedPlayer currentTime is already 0
 				$(_this.embedPlayer).trigger('onAdComplete',[adSlot.ads[adSlot.adIndex].id, mw.npt2seconds($(".currentTimeLabel").text())]);
-			if( _this.seekIntervalID ) {
-				clearInterval(_this.seekIntervalID);
+				if( _this.seekIntervalID ) {
+					clearInterval(_this.seekIntervalID);
+				}
 			}
 			// remove click binding if present
 			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'mouseup';
@@ -238,6 +239,7 @@ mw.KAdPlayer.prototype = {
 		adSlot.displayDuration = displayDuration;
 		this.playNextAd( adSlot );
 	},
+
 	/**
 	 * Plays next ad in the adSlot, according to the adIndex position
 	 **/
