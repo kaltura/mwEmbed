@@ -123,12 +123,16 @@
 /*
 * horizontal layout styles:
 */
+.medialistContainer.k-chapters-container.k-horizontal{
+	background: #222222;
+	overflow-x: auto;
+	overflow-y: hidden;
+	white-space: nowrap;
+}
 .k-chapters-container.k-horizontal .chapterBox{
     position:relative;
+	line-height: 13px;
     display:inline;
-    float:left;
-    padding-left:4px;
-    padding-right:20px;
 }
 
 .k-chapters-container .k-carousel{
@@ -204,9 +208,17 @@
     background:#aaa;
     position:absolute;
     top:0px;
-    left:5px;
-    right:5px;
+    left:0px;
+    right:0px;
     width:auto;
+}
+.k-chapters-container.k-horizontal .chapterDivider{
+	width: 1px;
+	background:#aaa;
+	position:absolute;
+	top:0px;
+	right:0px;
+	height:100%;
 }
 .k-chapters-container.k-vertical .chapterBox{
     width:100%;

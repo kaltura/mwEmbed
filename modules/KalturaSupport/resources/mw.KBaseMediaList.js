@@ -18,7 +18,7 @@
 				'maxRotatorSlides': 125,
 				'layout': 'vertical',
 				'mediaItemWidth': 290,
-				'defaultMedialistHeight': 190,
+				'mediaItemHeight': 70,
 				'onPage': false,
 				'hidden': false,
 				'clipListTargetId': null,
@@ -121,7 +121,7 @@
 				this.getMedialistContainer();
 				//var medialistDiv = $('<div class="medialistContainer"></div>');
 				var medialistSpan = _this.getTemplateHTML( {meta: _this.getMetaData(), mediaList: _this.getTemplateData()} );
-				$(medialistSpan).addClass("medialistContainer k-chapters-container");
+				$(medialistSpan).addClass("medialistContainer k-chapters-container k-" + this.getLayout());
 				if (this.getConfig('containerPosition') == 'top' && !this.getConfig('onPage')){
 					_this.$mediaListContainer.prepend(medialistSpan);
 				}else{
@@ -137,6 +137,9 @@
 			_this.dataIntialized = true;
 			_this.shouldAddScroll(_this.addScroll);
 			$(_this.embedPlayer).trigger("mediaListLayoutReady");
+			if (_this.getLayout() === "horizontal" ){
+				_this.$mediaListContainer.find(".k-chapters-container.k-horizontal .chapterBox").width(_this.getConfig("mediaItemWidth"));
+			}
 		},
 
 		// set the play list container according to the selected position
@@ -154,13 +157,15 @@
 						$(iframeParent).after("<div class='onpagePlaylistInterface'></div>");
 						this.$mediaListContainer =  $(iframeParent).parent().find(".onpagePlaylistInterface");
 						$(this.$mediaListContainer).width($(iframeParent).width());
-						$(this.$mediaListContainer).height(this.getConfig("defaultMedialistHeight"));
+						var containerHeight = this.getLayout() === "vertical" ? this.getConfig("mediaItemHeight")*3 : this.getConfig("mediaItemHeight")+20;
+						$(this.$mediaListContainer).height(containerHeight);
 					}
 					this.injectCss();
 					// support hidden playlists
 					if ( this.getConfig( 'hidden' ) === true){
 						this.$mediaListContainer.hide();
 					}
+					this.$mediaListContainer.addClass("k-"+this.getLayout());
 					return this.$mediaListContainer;
 				} catch( e ){
 					mw.log( "Error: playlistAPI could not access parent iframe" );
@@ -177,7 +182,7 @@
 			}
 
 			if (this.getConfig('containerPosition') == 'top' || this.getConfig('containerPosition') == 'bottom'){
-				$(".videoHolder, .mwPlayerContainer").css("height", this.$mediaListContainer.height() - this.getConfig("defaultMedialistHeight") +"px");
+				$(".videoHolder, .mwPlayerContainer").css("height", this.$mediaListContainer.height() - this.getConfig("mediaItemHeight")*2 +"px");
 			}
 			return this.$mediaListContainer;
 		},
@@ -195,9 +200,14 @@
 				$(".mwPlayerContainer").css("float","left");
 			}
 			if (this.getConfig('containerPosition') == 'top' || this.getConfig('containerPosition') == 'bottom'){
-				$(".medialistContainer").height(this.getConfig("defaultMedialistHeight"));
+				$(".medialistContainer").height(this.getConfig("mediaItemHeight")*2);
 				$(".medialistContainer").css("display","block");
 			}
+			if (this.getLayout() === "horizontal" ){
+				this.$mediaListContainer.find("ul").width(this.getConfig("mediaItemWidth")*this.mediaList.length).height(this.getConfig("mediaItemHeight")+20);
+				this.$mediaListContainer.find("span").height(this.getConfig("mediaItemHeight")+20);
+			}
+
 			return this.$mediaListContainer;
 		},
 
@@ -400,7 +410,7 @@
 
 		setSelectedMedia: function(mediaIndex){
 			var chapterBox = this.getConfig('parent') ? this.getComponent().find('.chapterBox') : this.$mediaListContainer.find('.chapterBox');
-			$(".chapterBox").removeClass( 'active');
+			$(chapterBox).removeClass( 'active');
 			$( chapterBox[mediaIndex] ).addClass( 'active');
 		},
 
