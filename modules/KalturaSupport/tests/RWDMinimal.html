@@ -13,24 +13,32 @@
 	
 	<div style="width: 60%;display: inline-block;position: relative;"> 
 		<div id="dummy" style="margin-top: 56.25%;"></div> <!--   /* 16:9 aspect ratio */ -->
-		<div id="kaltura-player1" style="position:absolute;top:0;left:0;left: 0;right: 0;bottom:0;border:solid thin black;">
-				<div id="myVideoTarget" style="width:100%;height:100%"></div> 
+			<div id="kaltura-player1" style="position:absolute;top:0;left:0;left: 0;right: 0;bottom:0;border:solid thin black;">
 		</div>
-		<script>
-			kWidget.embed({
-				'targetId': 'kaltura-player1',
-				'wid': '_243342',
-				'uiconf_id' : '12868012',
-				'entry_id' : '1_sf5ovm7u'
-			});
-		</script>
 	</div>
+	<script>
+		kWidget.embed({
+			'targetId': 'kaltura-player1',
+			'wid': '_243342',
+			'uiconf_id' : '12868012',
+			'entry_id' : '1_sf5ovm7u'
+		});
+	</script>
+	<h3> Sample RWD code: </h3>
+	<pre class="prettyprint linenums">&lt;!-- Outer div defines maxium space the player can take --&gt;
+&lt;div style="width: 60%;display: inline-block;position: relative;"&gt; 
+	&lt;!--  inner pusher div defines aspect ratio: in this case 16:9 ~ 56.25% --&gt;
+	&lt;div id="dummy" style="margin-top: 56.25%;"&gt;&lt;/div&gt;
+	&lt;!--  the player embed target, set to take up available absolute space   --&gt;
+	&lt;div id="kaltura-player1" style="position:absolute;top:0;left:0;left: 0;right: 0;bottom:0;border:solid thin black;"&gt;
+	&lt;/div&gt;
+&lt;/div&gt;
+	</pre>
 	<div style="width: 60%;display: inline-block;position: relative;"> 
-		<br><br>Example of non-hover controls correction ( bottom:-36px; )<br>
+		<br><br><h3>Example of non-hover controls correction ( bottom:-36px; )</h3>
 		<div style="width: 100%;display: inline-block;position: relative;"> 
 			<div id="dummy" style="margin-top: 56.25%;"></div> <!--   /* 16:9 aspect ratio */ -->
 			<div id="kaltura-player2" style="position:absolute;top:0;left:0;left: 0;right: 0;bottom:-36px;">
-					<div id="myVideoTarget" style="width:100%;height:100%;"></div> 
 			</div>
 		</div>
 	</div>
@@ -48,5 +56,16 @@
 				}
 			});
 		</script>
+		<br><br>
+		<h3> Sample RWD code: </h3>
+	<pre class="prettyprint linenums">&lt;!-- Outer div defines maxium space the player can take --&gt;
+&lt;div style="width: 60%;display: inline-block;position: relative;"&gt; 
+	&lt;!--  inner pusher div defines aspect ratio: in this case 16:9 ~ 56.25% --&gt;
+	&lt;div id="dummy" style="margin-top: 56.25%;"&gt;&lt;/div&gt;
+	&lt;!--  the player embed target, set to take up available absolute space   --&gt;
+	&lt;div id="kaltura-player1" style="position:absolute;top:0;left:0;left: 0;right: 0;bottom:-36px;border:solid thin black;"&gt;
+	&lt;/div&gt;
+&lt;/div&gt;
+	</pre>
 </body>
 </html>
