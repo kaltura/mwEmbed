@@ -52,6 +52,9 @@
 			this.bind( 'sourceSwitchingStarted', function(){
 				_this.onDisable();
 			});
+			this.bind( 'sourceSwitchingEnd', function(){
+				_this.onEnable();
+			});
 
 			// Check for switch on resize option
 			if( this.getConfig( 'switchOnResize' ) ){

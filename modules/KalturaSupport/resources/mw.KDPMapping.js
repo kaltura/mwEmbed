@@ -1013,6 +1013,16 @@
 				case 'freePreviewEnd':
 					b('KalturaSupport_FreePreviewEnd');
 					break;
+				case 'switchingChangeStarted':
+					b( 'sourceSwitchingStarted', function( event, data ) {
+					callback( data );
+					});
+					break;
+				case 'switchingChangeComplete':
+					b( 'sourceSwitchingEnd', function( event, data ) {
+						callback( data );
+					});
+					break;
 				default:
 					// Custom listner
 					// ( called with any custom arguments that are provided in the trigger)
