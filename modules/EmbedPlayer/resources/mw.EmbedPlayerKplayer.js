@@ -467,7 +467,7 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onSwitchingChangeStarted: function ( data, id ) {
-		$( this ).trigger( 'sourceSwitchingStarted' );
+		$( this ).trigger( 'sourceSwitchingStarted', [ data ] );
 	},
 
 	onSwitchingChangeComplete: function ( data, id ) {
@@ -475,6 +475,7 @@ mw.EmbedPlayerKplayer = {
 			this.triggerHelper( 'bitrateChange' , data.newBitrate );
 		}
 		this.mediaElement.setSourceByIndex ( data.newIndex );
+		$( this ).trigger( 'sourceSwitchingEnd', [ data ]  );
 	},
 
 	onFlavorsListChanged: function ( data, id ) {

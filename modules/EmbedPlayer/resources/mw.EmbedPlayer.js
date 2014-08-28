@@ -2861,7 +2861,9 @@
 		},
 		switchSrc: function( source ){
 			var _this = this;
+			$( this ).trigger( 'sourceSwitchingStarted', [ { currentBitrate: source.getBitrate() }] );
 			this.mediaElement.setSource( source );
+			$( this ).trigger( 'sourceSwitchingEnd',  [ { newBitrate: source.getBitrate() }] );
 			if( ! this.isStopped() ){
 				this.isFlavorSwitching = true;
 				// Get the exact play time from the video element ( instead of parent embed Player )

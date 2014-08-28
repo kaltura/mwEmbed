@@ -578,7 +578,7 @@
 		},
 
 		onSwitchingChangeStarted: function ( data, id ) {
-			$( this ).trigger( 'sourceSwitchingStarted' );
+			$( this ).trigger( 'sourceSwitchingStarted', [ data ]  );
 		},
 
 		onSwitchingChangeComplete: function ( data, id ) {
@@ -589,6 +589,7 @@
 			}
 			mw.log( 'EmbedPlayerKalturaSplayer: switchingChangeComplete: new index: ' +  value.newIndex);
 			this.mediaElement.setSourceByIndex ( value.newIndex );
+			$( this ).trigger( 'sourceSwitchingEnd', [ data ]  );
 		},
 
 		onFlavorsListChanged: function ( data, id ) {
@@ -674,7 +675,7 @@
 			if ( this.playerObject && this.mediaElement.getPlayableSources().length > 1 ) {
 				var trackIndex = this.getSourceIndex( source );
 				mw.log( "EmbedPlayerSPlayer:: switch to track index: " + trackIndex);
-				$( this ).trigger( 'sourceSwitchingStarted' );
+				$( this ).trigger( 'sourceSwitchingStarted', [ { currentBitrate: source.getBitrate() } ] );
 				this.requestedSrcIndex = trackIndex;
 				this.playerObject.selectTrack( trackIndex );
 			}
