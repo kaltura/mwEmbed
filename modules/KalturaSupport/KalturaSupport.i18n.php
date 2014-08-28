@@ -59,13 +59,13 @@ $messages['en'] = array(
 	'ks-NO-DRM-LICENSE' => "We're sorry, you don’t have a valid license for this video.",
 	'ks-ERROR' => 'Error',
 	'ks-LIVE-STREAM-NOT-AVAILABLE' => "Live stream is not available",
-	'ks-abChecker-title' => 'Player failed',
-    'ks-abChecker-message' => 'The player or one of its dependencies have failed loading',
-    'ks-abChecker-btn-ok' => 'OK',
-    'ks-abChecker-btn-no' => 'NO',
-    'ks-abChecker-btn-cancel' => 'Cancel',
-    'ks-abChecker-btn-close' => 'Close',
-    'ks-abChecker-btn-resume' => 'Continue'
+	'ks-adBlockDetector-title' => 'Ad Block Detected',
+    'ks-adBlockDetector-message' => 'Ad Block Detected, Please disable ad block in order to watch content',
+    'ks-adBlockDetector-btn-ok' => 'OK',
+    'ks-adBlockDetector-btn-no' => 'NO',
+    'ks-adBlockDetector-btn-cancel' => 'Cancel',
+    'ks-adBlockDetector-btn-close' => 'Close',
+    'ks-adBlockDetector-btn-resume' => 'Continue'
 );
 
 $messages['fr'] = array(

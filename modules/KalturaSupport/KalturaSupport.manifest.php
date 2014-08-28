@@ -288,9 +288,14 @@ return array(
 			),
 			'kpl1Name' => array(
 				'doc' => "The name of the indexed playlist.",
-			)
+			),
+			'includeInLayout' => array(
+                'doc' => "If the playlist clip list should be displayed.",
+                'type' => 'boolean',
+                'initvalue' => true
+            )
 		)
-	),
+	),/*
 	'playlistHolder' => array(
 		'description' => 'Holds the playlist clip list.',
 		'attributes' => array(
@@ -299,7 +304,7 @@ return array(
 				'type' => 'boolean'
 			)
 		)
-	),
+	),*/
 
 	'localizationCode' => array(
 			'description'=> "Set the language of the Kaltura player user interface. Supports language code or <b>auto</b> to take the browser
@@ -400,28 +405,24 @@ return array(
 		'hideEdit' => true
 	),
 	'mediaProxy.mediaPlayFrom' => array(
-		'doc' => 'The start time for the video preview.',
+		'doc' => 'The start time for the video playback.',
 		'type' => 'number'
 	),
 	'mediaProxy.mediaPlayTo' => array(
-		'doc' => 'The time in seconds, for the video preview to end.',
+		'doc' => 'The time in seconds, for the video playback to end.',
 		'type' => 'number'
 	),
 	'mediaProxy.preferedFlavorBR' => array(
 		'doc' => 'The initial bitrate to be selected.',
 		'type' => 'number'
 	),
+	'segmentScrubber.plugin' => array(
+		'doc' => 'Virtaulzies the playhead to selected segment of time.',
+		'type' => 'boolean'
+	),
 	'deliveryCode' => array(
 		'doc' => 'The deliveryCode is passed along as part of a domain prefix into the stream URL. (can be used for per-embed URL billing categorization)',
 		'type' => 'string'
-	),
-	'mediaProxy.mediaPlayFrom' => array(
-		'doc' => "The media start time.",
-		'type' => 'number'
-	),
-	'mediaProxy.mediaPlayTo' => array(
-		'doc' => "The media end time.",
-		'type' => 'number'
 	),
 	/** uiConf components */
 	'controlsHolder' => array(
@@ -594,6 +595,43 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'doc' => 'Drop shadow color',
 				'type' => 'hiddenValue'
 			)
+		)
+	),
+	'playlist2' => array(
+		'description' => 'Refactored playlists plugin',
+		'label' => 'Playlist',
+		'attributes' => array(
+            'autoContinue' => array(
+                'label' => 'Auto continue',
+                "initvalue" => true,
+                'doc' => 'If the playlist should auto-continue.',
+                'type' => 'boolean'
+            ),
+            'autoPlay' => array(
+                'label' => 'Auto play',
+                "initvalue" => true,
+                'doc' => 'If the playlist should autoplay on load.',
+                'type' => 'boolean'
+            ),
+			'kpl0Name' => array(
+				'label' => 'First playlist name',
+				'doc' => 'First playlist name',
+				'type' => 'string'
+			),
+			'kpl0Url' => array(
+				'label' => 'First playlist URL',
+				'doc' => 'First playlist URL',
+				'type' => 'string'
+			),
+			'kpl0Id' => array(
+				'label' => 'First playlist ID',
+                'doc' => "The kaltura playlist Id",
+                'type' => 'string'
+            ),
+			'initItemEntryId' => array(
+				'doc' => 'The entryId that should be played first.',
+				'type' => 'string'
+			),
 		)
 	),
 	'share' => array(
@@ -1260,7 +1298,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 					'type' => 'number'
 				),
 				'clickUrl' => array(
-				'doc' => "<p style='text-align: left'>Defines the URL for a related item click</p>
+					'doc' => "<p style='text-align: left'>Defines the URL for a related item click</p>
 								If this left blank the click will replace the current video with a new one.
 								example: <b>http://my-custom-domain.com/?v={mediaProxy.entry.id}</b> as a custom
 								URL with the entry id as postfix",

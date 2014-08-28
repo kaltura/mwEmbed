@@ -97,7 +97,14 @@ mw.KAdPlayer.prototype = {
 
 		// if it's overlay player controls should not be disabled
 		if( adSlot.type !== 'overlay' ) {
-			_this.disablePlayControls();
+			var components = ['fullScreenBtn','logo'];
+			if (mw.getConfig('enableControlsDuringAd')) {
+				components.push('playPauseBtn');
+			}
+			if ( mw.isIphone() ){
+				components=[];
+			}
+			_this.embedPlayer.triggerHelper( "onDisableInterfaceComponents", [components] );
 		}
 
 		// Setup some configuration for done state:
@@ -640,8 +647,10 @@ mw.KAdPlayer.prototype = {
 		mw.log("KAdPlayer:: source updated, add tracking");
 		// Always track ad progress:
 		if( vid.readyState > 0 && vid.duration && embedPlayer.selectedPlayer.library !== 'Kplayer' ) {
-			embedPlayer.triggerHelper('AdSupport_AdUpdateDuration', vid.duration); // Trigger duration event
-			_this.addAdTracking( adConf.trackingEvents, adConf  );
+			setTimeout(function(){
+				embedPlayer.triggerHelper('AdSupport_AdUpdateDuration', vid.duration); // Trigger duration event
+				_this.addAdTracking( adConf.trackingEvents, adConf  );
+			},0);
 		} else {
 			var loadMetadataCB = function() {
 				if ( skipPercentage ){
@@ -1283,10 +1292,10 @@ mw.KAdPlayer.prototype = {
 
 			VPAIDObj.subscribe(function(obj) {
 				// handle ad linear changes
-				if (obj.AdLinear == true && !_this.embedPlayer.isPlaying()){
+				if (obj && obj.AdLinear == true && !_this.embedPlayer.isPlaying()){
 					_this.embedPlayer.play();
 				}
-				if (obj.AdLinear == false && _this.embedPlayer.isPlaying()){
+				if (obj && obj.AdLinear == false && _this.embedPlayer.isPlaying()){
 					_this.embedPlayer.pause();
 				}
 			}, 'AdLinearChange');
@@ -1365,7 +1374,9 @@ mw.KAdPlayer.prototype = {
 			if ( this.embedPlayer.selectedPlayer.library == 'Native'  ) {
 				_this.disableSibling = true;
 				//enable user clicks
-				_this.embedPlayer.getInterface().find('.mwEmbedPlayer').hide();
+				if ( !mw.isIphone() ){
+					_this.embedPlayer.getInterface().find('.mwEmbedPlayer').hide();
+				}
 				$('#' + vpaidId).css("width", 0);
 				$('#' + vpaidId).css("height", 0);
 			} else {
