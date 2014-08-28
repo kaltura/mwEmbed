@@ -66,7 +66,7 @@
 
 			// Disable seek for VAST in iPhone
 			if( !embedPlayer.getKalturaConfig('vast', 'allowSeekWithNativeControls') && mw.isIphone() ) {
-				$( embedPlayer ).bind('AdSupport_StartAdPlayback' + _this.bindPostfix, function() {
+				$( embedPlayer ).bind('onAdOpen' + _this.bindPostfix, function() {
 					_this.seekIntervalID = _this.seekIntervalTrigger();
 				});
 
