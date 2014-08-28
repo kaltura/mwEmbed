@@ -194,11 +194,16 @@
 		},
 
 		playNext: function(){
+			if( this.getConfig("loop") == true && this.currentClipIndex != null && this.currentClipIndex === this.mediaList.length - 1 ){ // support loop
+				this.currentClipIndex = -1;
+			}
 			if (this.currentClipIndex != null && this.currentClipIndex < this.mediaList.length-1){
 				this.currentClipIndex++;
 				this.setSelectedMedia(this.currentClipIndex);
 				this.playMedia(this.currentClipIndex, true);
 			}
+
+
 		},
 
 		playPrevious: function(){
