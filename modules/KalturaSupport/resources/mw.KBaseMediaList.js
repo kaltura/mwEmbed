@@ -20,6 +20,7 @@
 				'mediaItemWidth': 290,
 				'defaultMedialistHeight': 190,
 				'onPage': false,
+				'hidden': false,
 				'clipListTargetId': null,
 				'containerPosition':  'left',
 				'parent': null//'sideBarContainer',
@@ -156,6 +157,10 @@
 						$(this.$mediaListContainer).height(this.getConfig("defaultMedialistHeight"));
 					}
 					this.injectCss();
+					// support hidden playlists
+					if ( this.getConfig( 'hidden' ) === true){
+						this.$mediaListContainer.hide();
+					}
 					return this.$mediaListContainer;
 				} catch( e ){
 					mw.log( "Error: playlistAPI could not access parent iframe" );

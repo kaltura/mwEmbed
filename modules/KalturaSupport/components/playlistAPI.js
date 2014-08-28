@@ -10,7 +10,6 @@
 			'kpl0Name': null,
 			'kpl0Url': null,
 			'kpl0Id': null,
-			'includeInLayout': null,
 			'titleLimit': 30,
 			'descriptionLimit': 80,
 			'thumbnailWidth' : 62,
@@ -40,6 +39,9 @@
 		},
 
 		setup: function( embedPlayer ) {
+			if ( this.getConfig( 'hidden' ) === true){ // support hidden playlists - force onPage and hide its div.
+				this.setConfig( 'onPage', true );
+			}
 			this.addBindings();
 			this.loadPlaylists();
 		},
