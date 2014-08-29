@@ -119,13 +119,6 @@ $uiVars = array(
 					'default' => 'true',
 					'example' => '../modules/KalturaSupport/tests/UseHLS_WhereAvailable.qunit.html'
 			),
-			'httpProtocol' => array(
-					'type' => 'String',
-					'desc' => 'The HTTP protocol to load the KDP application from',
-					'default' => 'Trimmed protocol of the URL the KDP was loaded from',
-					'availability' => 'kdp',
-					'example' => ''
-			),
 			'host' => array(
 					'type' => 'String',
 					'desc' => 'The URL of the Kaltura server to work with',
@@ -202,7 +195,14 @@ $uiVars = array(
 					'default' => 'false',
 					'availability' => 'kdp',
 					'example' => ''
-			)
+			),
+			'httpProtocol' => array(
+					'type' => 'String',
+					'desc' => 'The HTTP protocol to load the KDP application from',
+					'default' => 'Trimmed protocol of the URL the KDP was loaded from',
+					'availability' => 'kdp',
+					'example' => ''
+			),
 		)
 	),
 	'mediaEntry' => array(
@@ -321,38 +321,10 @@ $uiVars = array(
 				'default' => '',
 				'example' => ''
 			),
-			'kml' => array(
-				'type' => 'String',
-				'desc' => 'The source from which to load the KDP uiConf (KML=Kaltura Meta ui Language). If undefined, the kml will be loaded from the Kaltura server via uiConf.get api. Options are: local / inject',
-				'default' => 'undefined',
-				'availability' => 'kdp',
-				'example' => ''
-			),
-			'kmlPath' => array(
-				'type' => 'String',
-				'desc' => 'An accessible path to valid kml file (use with kml=local)',
-				'default' => 'config.xml',
-				'availability' => 'kdp',
-				'example' => ''
-			),
-			'embeddedWidgetData' => array(
-				'type' => 'String',
-				'desc' => "Valid uiConf XML result, that is used by the 'KDP wrapper'; A Flash application that wraps the KDP for caching purposes",
-				'default' => 'null',
-				'availability' => 'kdp',
-				'example' => ''
-			),
 			'disableAlerts' => array(
 				'type' => 'Boolean',
 				'desc' => 'Disable the alert boxes',
 				'default' => 'false',
-				'example' => ''
-			),
-			'fileSystemMode' => array(
-				'type' => 'Boolean',
-				'desc' => 'Use to load the uiConf XML and skin assets from predefined path when debugging or loading KDP from local file system',
-				'default' => 'false',
-				'availability' => 'kdp',
 				'example' => ''
 			),
 			'debugMode' => array(
@@ -383,13 +355,41 @@ $uiVars = array(
 				'type' => 'Boolean ',
 				'desc' => 'When set to true, forces the usage of the HTML5 player',
 				'default' => '',
-				'example' => ''
+				'example' => '../modules/KalturaSupport/tests/UserAgentPlayerRules.html'
 			),
 			'alertForCookies' => array(
 				'type' => 'Boolean',
 				'desc' => 'When set to true, pops a user confirmation alert when the player needs to save a cookie in the local machine',
 				'default' => 'false',
 				'example' => '../modules/KalturaSupport/tests/AlertForCookies.qunit.html'
+			),
+			'fileSystemMode' => array(
+				'type' => 'Boolean',
+				'desc' => 'Use to load the uiConf XML and skin assets from predefined path when debugging or loading KDP from local file system',
+				'default' => 'false',
+				'availability' => 'kdp',
+				'example' => ''
+			),
+			'kml' => array(
+				'type' => 'String',
+				'desc' => 'The source from which to load the KDP uiConf (KML=Kaltura Meta ui Language). If undefined, the kml will be loaded from the Kaltura server via uiConf.get api. Options are: local / inject',
+				'default' => 'undefined',
+				'availability' => 'kdp',
+				'example' => ''
+			),
+			'kmlPath' => array(
+					'type' => 'String',
+					'desc' => 'An accessible path to valid kml file (use with kml=local)',
+					'default' => 'config.xml',
+					'availability' => 'kdp',
+					'example' => ''
+			),
+			'embeddedWidgetData' => array(
+					'type' => 'String',
+					'desc' => "Valid uiConf XML result, that is used by the 'KDP wrapper'; A Flash application that wraps the KDP for caching purposes",
+					'default' => 'null',
+					'availability' => 'kdp',
+					'example' => ''
 			),
 			'relativeCortadoAppletPath' => array(
 				'type' => 'String',
@@ -426,12 +426,6 @@ $uiVars = array(
 				'default' => 'false',
 				'example' => '../modules/KalturaSupport/tests/AutoPlay.qunit.html'
 			),
-			'autoRewind' => array(
-				'type' => 'Boolean',
-				'desc' => 'Determine whether the first or the last frame of the media will show when playback ends',
-				'default' => 'false',
-				'example' => ''
-			),
 			'autoMute' => array(
 				'type' => 'Boolean',
 				'desc' => 'Determine whether to start playback with volume muted (usually used by video ads or homepage auto play videos)',
@@ -444,18 +438,26 @@ $uiVars = array(
 				'default' => 'false',
 				'example' => '../modules/KalturaSupport/tests/Loop.qunit.html'
 			),
-			'stretchVideo' => array(
-				'type' => 'Boolean',
-				'desc' => 'When true, stretchs the video to fill its container even if video aspect ratio breaks',
-				'default' => 'false',
-				'example' => ''
-			),
 			'adsOnReplay' => array(
 				'type' => 'Boolean',
 				'desc' => 'Indicates whether to play ads after video replay',
 				'default' => 'false',
 				'example' => '../modules/DoubleClick/tests/DoubleClickManagedPlayerAdApi.qunit.html'
-			)
+			),
+			'autoRewind' => array(
+					'type' => 'Boolean',
+					'desc' => 'Determine whether the first or the last frame of the media will show when playback ends',
+					'default' => 'false',
+					'example' => '',
+					'availability' => 'kdp',
+			),
+			'stretchVideo' => array(
+					'type' => 'Boolean',
+					'desc' => 'When true, stretchs the video to fill its container even if video aspect ratio breaks',
+					'default' => 'false',
+					'example' => '',
+					'availability' => 'kdp',
+			),
 		)
 	),
 	'playerProperties' => array(
@@ -467,12 +469,6 @@ $uiVars = array(
 					'default' => '',
 					'example' => ''
 			),*/
-			'EmbedPlayer.EnableIframeApi' => array(
-					'type' => 'Boolean',
-					'desc' => "If the iFrame should send and receive JavaScript events across domains via postMessage",
-					'default' => 'true',
-					'example' => ''
-			),
 			/*'EmbedPlayer.IframeParentUrl' => array(
 			 'type' => '',
 					'desc' => "",
