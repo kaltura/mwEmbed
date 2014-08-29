@@ -2,252 +2,8 @@
 require_once( realpath( dirname( __FILE__ ) ) . '/doc-base.php' );
 require_once( realpath( dirname( __FILE__ ) ) . '/api_uivars.php' );
 require_once( realpath( dirname( __FILE__ ) ) . '/api_methods.php' );
-require_once( realpath( dirname( __FILE__ ) ) . '/api_listeners.php'
-);     require_once( realpath( dirname( __FILE__ ) ) .
-'/api_evaluates.php' );
-
-	/* should ideally auto generate or be in a separate file */
-	$methodDocs = array(
-		'kWidget.embed' => array(
-			'desc'=>'Used to embed the Kaltura player against an element target in the DOM',
-			'params' => array(
-				'targetId' => array(
-					'type' => 'String', // assumed
-					'optional' => true, 
-					'desc' => 'The DOM player target id attribute string. ( if not included, you must include targetId in "settings" object )',
-				),
-				'settings'=> array(
-					'type' => 'kWidget.settingsObject',
-					'desc' => 'Object of settings to be used in embedding.'
-				)
-			),
-			'returns' => array(
-				'type' => 'boolean|null',
-				'desc' => 'Returns boolean false if id not found'
-			),
-			'examples' => array(
-				array(
-					// either doc name or path can be defined ( for feature listed files vs non-feature listed )
-					'type' => 'link',
-					'name' => 'kWidget.embed',
-					'docPath' => 'kwidget'
-				),
-				array(
-					'type' => 'link',
-					'name' => 'kWidget.embed playlist',
-					'docFullPath' => 'modules/KalturaSupport/tests/kWidget.embed.playlist.qunit.html '
-				)
-			)
-		),
-		'kWidget.thumbEmbed' => array(
-			'desc'=>'Used to embed a thumbnail player. When the user clicks on the thumbnail kWidget.embed will be called with the provided settings.',
-			'params' => array(
-				'targetId' => array(
-					'type' => 'String', // assumed
-					'optional' => true,
-					'desc' => 'The DOM player target id attribute string. ( if not included, you must include targetId in "settings" object',
-				),
-				'settings'=> array(
-					'type' => 'kWidget.settingsObject',
-					'desc' => 'Object of settings to be used in embedding.'
-				)
-			),
-			'examples' => array(
-				array(
-					// either doc name or path can be defined ( for feature listed files vs non-feature listed )
-					'type' => 'link',
-					'name' => 'kWidget.thumbEmbed',
-					'docPath' => 'thumb'
-				)
-			)
-		),
-		'kWidget.getKalturaThumbUrl' => array(
-			'desc'=>'Get video thumbnail URL.',
-			'params' => array(
-				'settings'=> array(
-					'type' => 'kWidget.settingsObject',
-					'desc' => 'Object of settings to be used in embedding.'
-				)
-			)
-		),
-		'kWidget.addReadyCallback' => array(
-			'desc'=>'Adds a ready callback to be called after the KDP or HTML5 player is ready.',
-			'params' => array(
-				'readyCallback' => array(
-					'type' => 'String',
-					'desc' => 'Function to call after a player or widget is ready on the page.',
-				)
-			),
-			'examples' => array(
-				array(
-					'type' => 'link',
-					'name' => 'kWidget.addReadyCallback',
-					'docFullPath' => 'modules/KalturaSupport/tests/ChangeMediaEntry.qunit.html '
-				)
-			)
-		),
-		 'kWidget.destroy' => array(
-			 'desc'=>'Removes the player from the DOM.',
-			 'params' => array(
-				 'target' => array(
-					 'type' => 'String',
-					 'desc' => 'The target element or element ID to destroy.',
-				 )
-			 ),
-			 'examples' => array(
-				 array(
-					'type' => 'link',
-					'name' => 'kWidget.embed',
-					'docPath' => 'kwidget'
-				 )
-			 )
-		 ),
-		'kWidget.api' => array(
-			'desc' => 'The kWidget API object, used to create new instances of Kaltura API request.',
-			'params' => array(
-				'apiObject'=> array(
-					'type' => 'kWidget.apiOptions',
-					'desc' => 'Object of API settings to be used in API requests.'
-				)
-			),
-			'methods'=> array(
-				'doRequest' => array(
-					'type' => 'function',
-					'desc' => "( RequestObject, callback ) Run the API request, issue callback with API response data."
-				)
-			),
-			'returns' => array(
-				'type' => 'kWidget.api',
-				'desc' => 'Returns an instance of the kWidget API object.'
-			),
-			'examples' => array(
-				array(
-					'name' => 'kWidget.api',
-					'docFullPath' => 'kWidget/tests/kWidget.api.html'
-				),
-				array(
-						'name' => 'kWidget.getSources',
-						'docFullPath' => 'modules/KalturaSupport/tests/kWidget.getSources.html'
-				)
-			)
-		),
-		'sendNotification' => array(
-			'desc'=>'Call a KDP notification (perform actions using this API, for example: play, pause, changeMedia, etc.)',
-			'params' => array(
-				'notificationName' => array(
-					'type' => 'String',
-					'desc' => 'The name of notification to call.',
-				),
-				'notificationData'=> array(
-					'type' => 'Object',
-					'optional' => true,
-					'desc' => 'The custom data to pass with the notification.'
-				)
-			)
-		),
-		'addJsListener' => array(
-			'desc'=>'Register a javascript handler function for a KDP notification',
-			'params' => array(
-				'listenerString' => array(
-					'type' => 'String',
-					'desc' => 'The name of the notification to listen to.',
-				),
-				'jsFunctionName'=> array(
-					'type' => 'String',
-					'desc' => 'The name of the JavaScript handler function.'
-				)
-			)
-		),
-		'evaluate' => array(
-			'desc'=>"Retrieves the value of a KDP model property or component's property, using the standard OOP dot notation inside curly braces",
-			'params' => array(
-				'object.property.properties' => array(
-					'type' => 'String',
-					'desc' => 'The reference to the component object with data that you want to extract. Enclose the reference in curly braces within single or double quotation marks.',
-				)
-			)
-		),
-		'setKDPAttribute' => array(
-			'desc'=>"Change a value of a player configuration property or component's property using the standard OOP dot notation.",
-			'params' => array(
-				'object' => array(
-					'type' => 'String',
-					'desc' => 'A string that represents the object you want to modify. Use standard dot notation to specify sub-objects, for example, configProxy.flashvars'
-				),'property' => array(
-					'type' => 'String',
-					'desc' => 'The player property that you want to modify.'
-				),'value' => array(
-					'type' => 'String',
-					'desc' => 'The new value that you want to set for the player property.'
-				)
-			)
-		),
-		'jsCallbackReady' => array(
-			'desc'=>"A JavaScript function on the hosting web page that is called by KDP when the setup of externalInterface APIs is completed.",
-			'params' => array(
-				'objectId' => array(
-					'type' => 'String',
-					'desc' => 'Represents the identifier of the player that is embedded.'
-				)
-			)
-		)
-	);
-	$objectDefinitions = array(
-		'kWidget.apiOptions' => array(
-			'wid'=> array(
-				'desc' => "The partner id to be used in the API request."
-			),
-			'ks' => array(
-				'desc' => "The Kaltura secret to be used in the request, if not supplied an anonymous KS will be generated and used."
-			),
-			'serviceUrl' => array(
-				'desc' => 'Can be overwritten to target a different Kaltura server.',
-				'default' => 'http://cdnapi.kaltura.com'
-			),
-			'serviceBase' => array(
-				'desc' => "Can be overwritten to alternate Kaltura service path.",
-				'default' => '/api_v3/index.php?service='
-			),
-			'statsServiceUrl' => array(
-				'desc' => "Default supplied via Kaltura library include, can be overwritten to alternate URL for core analytics events.",
-				'default' => 'http://stats.kaltura.com'
-			),
-			'disableCache' => array(
-				'desc' => "Sends no-cache param to API, for a fresh result. Can hurt performance and CDN cachability should be used sparingly.",
-				'default' => 'false'
-			)
-		),
-		'kWidget.settingsObject' => array(
-			'targetId' => array(
-				'desc' => 'The DOM player target id attribute string if not defined as top level param.'
-			),
-			'wid' => array(
-				'desc' => 'Widget id, usually the partner id prefixed by underscore.'
-			),
-			'uiconf_id' => array(
-				'type' => 'Number',
-				'optional' => true,
-				'desc' => 'The player uiconf_id'
-			),
-			'entry_id' => array(
-				'desc' => 'The content entry id. Can be left empty for a JavaScript based entry id.'
-			),
-			'flashvars' => array(
-				'type' => 'Object',
-				'desc' => 'Runtime configuration object, can override arbitrary uiVars and plugin config.'
-			),
-			'params' => array(
-				'type' => 'Object',
-				'desc' => 'Runtime configuration object, can override arbitrary uiVars and plugin config.'
-			),
-			'cache_st' => array(
-				'optional'=> true,
-				'desc' => 'String to burst player cache'
-			)
-		)
-	);
-
-
+require_once( realpath( dirname( __FILE__ ) ) . '/api_listeners.php');
+require_once( realpath( dirname( __FILE__ ) ) . '/api_evaluates.php' );
 
 	function getDocTypeStr( $param ){
 		global $objectDefinitions;
@@ -352,6 +108,26 @@ require_once( realpath( dirname( __FILE__ ) ) . '/api_listeners.php'
 		$o.='</div>';
 		return $o;
 	}
+	function getOutlineContent( $objectSet ){
+		$o='<ul class="outline-vars">';
+		foreach( $objectSet as $key => $var ){
+			$o.='<li class="linkable" id="'. $key .'">';
+			$o.='<span class="key">'. $key . '</span><br>';
+			$o.= $var['desc'];
+			if( isset( $var['example'] ) && $var['example'] != '' ){
+				$o.= '<br><a href="'. $var['example'] . '" target="_blank">Live Example</a>';
+			}
+			$o.='<br><span class="type">Type</span>: <br>&nbsp;&nbsp;&nbsp;&nbsp;' .$var['type'];
+			if( isset( $var['default'] ) && $var['default'] != '' ){
+				$o.='<br><span class="default">Default</span>: <br>&nbsp;&nbsp;&nbsp;&nbsp;' .$var['default'];
+			}
+			if( isset( $var['availability'] ) && $var['availability'] == 'kdp' ){
+				$o.= '<br><span class="label label-warning">Legacy Only</span>';
+			}
+		}
+		$o.='</ul>';
+		return $o;
+	}
 
 	function getTableContent($headers, $param){
 		$paramArrayObject = new ArrayObject($param);
@@ -365,7 +141,7 @@ require_once( realpath( dirname( __FILE__ ) ) . '/api_listeners.php'
 		if( is_array($param) ){
 			foreach( $paramArrayObject as $key => $value ){
 				$restrictedAvailability = false;
-				$o.= "<tr>";
+				$o.= '<tr class="linkable" id="'. $key .'">';
 				$o.= "<td>".$key;
 				foreach( $value as $val => $value1){
 					if ($val == 'availability' && $value1 == 'kdp'){
@@ -384,7 +160,7 @@ require_once( realpath( dirname( __FILE__ ) ) . '/api_listeners.php'
 						if ($value != ''){
 								$o.= '<td><a href="'.$value.'" target="_blank">Example</a></td>';
 							}else{
-								$o.= '<td>n/a</td>';
+								$o.= '<td>-</td>';
 							}
 
 						}
@@ -403,6 +179,18 @@ require_once( realpath( dirname( __FILE__ ) ) . '/api_listeners.php'
 
 ?>
 <style>
+	ul.outline-vars li {
+		list-style-type: circle;
+		padding-top:15px;
+	}
+	ul.outline-vars .key{
+		font-weight:800;
+		font-size:110%;
+	}
+	ul.outline-vars .type, ul.outline-vars .default{
+		text-decoration: underline;
+		font-weight:800;
+	}
 	.vartype{
 		margin: 0px;
 		border: 1px solid #DDD;
@@ -489,13 +277,20 @@ new kWidget.api( { 'wid' : '_243342', })
 <a name="uiVars"></a>
 <h2>Player Configuration key value pairs ( UiVars )</h2>
 <p>
-<a href="#uiVarsServices" class="btn btn btn-info">Services &raquo;</a>
-<a href="#uiVars" class="btn btn btn-info">UiVars &raquo;</a>
-<a href="#kdpAPI" class="btn btn btn-info">Player API &raquo;</a>
-<a href="#kWidgetApi" class="btn btn btn-info">KWidget Server API &raquo;</a>
+	<?php
+		foreach( $uiVars as $key => $na){
+			echo '<a href="#uiVars' . ucfirst( $key ) . '" class="btn btn btn-info">' . 
+				ucfirst( $key ) . ' &raquo;</a>&nbsp;';
+		}
+	?>
+
 </p>
-UiVars enable configuration of player features. There are two classes of uiVars: top level  
-is a one-to-one mapping between plugin properties, uiVars and respective flashvar overrides. 
+UiVars enable configuration of all player features. There are two classes of UiVars: 
+<ul>
+	<li>top level configuration options</li>  
+	<li>plugins configuration options</li>
+</ul>
+These values can be set a few ways:<br> <br> 
 <p>
 Within the <a href="http://knowledge.kaltura.com/universal-studio-information-guide">player studio</a>
 UiVar configuration appears plugins -> uivars:<br>
@@ -516,7 +311,7 @@ You can control the raw JSON code for UiVars by modifying the "uiVars" section o
    }]
 }
 </pre>
-All player configuration properties can also be set at runtime as "flashvars": 
+Player configuration can be set at embed time as "flashvars": 
 <pre class="prettyprint linenums">
 kWidget.embed({
 	...
@@ -525,41 +320,31 @@ kWidget.embed({
 	}
 })
 </pre>
+
+</pre>
 All player properties can also be retrieved at runtime or used in plugins macro evaluations. 
 <pre class="prettyprint linenums">
 kWidget.addReadyCallback( function(playerId){
-	document.getElementById( playerId ).evaluate("{autoPlay}");
+	alert( document.getElementById( playerId ).evaluate("{autoPlay}") );
 })
 </pre>
 <br>
 
-<a name="uiVarsServices"><h5>Kaltura / Entity Services:</h5>
+<?php
+	foreach( $uiVars as $key => $uiVarSet ){
+		echo '<h2 class="linkable objectdoc" id="uiVars' . ucfirst($key) . '">' . ucfirst($key) . '</h2>';
+		if( $uiVarSet['desc'] ){
+			echo '<p>'. $uiVarSet['desc'] . '</p>';
+		}
+		// print all the vars: 
+		echo '<div class="docblock">' . 
+			getOutlineContent( $uiVarSet['vars']) . 
+			'</div><br>';
+	}
+?>
 
-<div class="docblock">
-	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVarsServices ) ?>
 </div><br><br>
-<h5>Kaltura MediaEntry:</h5>
-<div class="docblock">
-	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVarsMediaEntry ) ?>
-</div><br><br>
-<h5>Player Layout and Functionality:</h5>
-<div class="docblock">
-	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVarsLayout ) ?>
-</div><br><br>
-<h5>Playback Control:</h5>
-<div class="docblock">
-	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVarsPlayback ) ?>
-</div><br><br>
-<h5>Player Properties:</h5>
-<div class="docblock">
-	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVarsPlayerProperties ) ?>
-</div><br><br>
-<h5>MediaProxy:</h5>
-<p>The MediaProxy object is responsible for referencing and loading of the current playing media.</p>
-<div class="docblock">
-	<?php echo getTableContent( array( 'Ui Var', 'Type', 'Description', 'Default', 'Example' ), $uiVarsMediaProxy ) ?>
-</div><br><br>
-<h5>KDP Components & Plugins:</h5>
+<h3>KDP Components & Plugins:</h3>
 <p>Using a standard OOP dot notation, each KDP component and plugin attribute can be overridden via Flashvars: objectId.parameter=value.<br>For example, to set the playlist to load automatically, pass the following Flashvar: playlistAPI.autoPlay=true</p><br><br>
 
 Code sample:<br>
