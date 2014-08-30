@@ -81,7 +81,7 @@
 				delete thisSpinner;
 			}
 			if ( opts !== false ) {
-				if (opts['imageUrl'].length > 0){
+				if ( opts['imageUrl'] && opts['imageUrl'].length > 0 ){
 					var $loadingSpinner = $('<img />').attr("src", opts['imageUrl']).load(function() {
 						// Set spinner position based on image dimension
 						$( this ).css({
@@ -123,6 +123,7 @@
 			.loadingSpinner(
 				spinOps
 			)
+		
 		var pos = $( this ).position();
 		var $overlay = $("<div />")
 			.css( pos )
