@@ -49,13 +49,13 @@ $uiVars = array(
 					'type' => 'String',
 					'desc' => 'If the player should be forced to use flash on desktop.',
 					'default' => 'false',
-					'example' => ''
+					'example' => '../modules/KalturaSupport/tests/ForceFlashOnDesktop.html'
 			),
 			'Kaltura.EnableEmbedUiConfJs' => array(
 					'type' => 'String',
-					'desc' => 'If the player should request uiConf javascript prior to embed',
+					'desc' => 'If the player should request uiConf Javascript prior to embed',
 					'default' => 'false',
-					'example' => ''
+					'example' => '../modules/KalturaSupport/tests/ExternalResources.qunit.html'
 			),
 			'Kaltura.ForceFlashOnIE10' => array(
 					'type' => 'String',
@@ -212,14 +212,14 @@ $uiVars = array(
 				'type' => 'String',
 				'desc' => 'Valid Kaltura media entry id or a media URL (to use URL set sourceType=URL)',
 				'default' => '',
-				'example' => ''
+				'example' => '../modules/KalturaSupport/tests/kWidget.embed.qunit.html'
 			),
 			'referenceId' => array(
-					'type' => 'String',
-					'desc' => "Reference Id is an alternate unique identifier for media assets. Can be used instead of the entry id. 
-						The player will use the first found matching referenceId found.",
-					'default' => '',
-					'example' => '../modules/KalturaSupport/tests/ReferenceId.html'
+				'type' => 'String',
+				'desc' => "Reference Id is an alternate unique identifier for media assets. Can be used instead of the entry id. 
+					The player will use the first found matching referenceId found.",
+				'default' => '',
+				'example' => '../modules/KalturaSupport/tests/ReferenceId.html'
 			),
 			'flavorId' => array(
 				'type' => 'String',

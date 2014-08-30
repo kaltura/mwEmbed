@@ -384,29 +384,19 @@ kWidget.embed({
 <p>The JavaScript API is a two-way communication channel that lets the player communicate what it is doing and lets you instruct the player to perform operations.
 <br>For more information: <a href="http://knowledge.kaltura.com/javascript-api-kaltura-media-players#UnderstandingtheJavaScriptAPIWorkflow" target="_blank">JavaScript API for Kaltura Media Players</a></p>
 <p>Available JavaScript API:</p>
-<a href="#api1">1. Receiving notification that the player API is ready</a><br>
-<a href="#api2">2. Calling a player method from JavaScript</a><br>
-<a href="#api3">3. Registering to a player event</a><br>
+<a href="#kWidget.addReadyCallback-desc">1. Receiving notification that the player API is ready</a><br>
+<a href="#sendNotification-desc">2. Calling a player method from JavaScript</a><br>
+<a href="#addJsListener-desc">3. Registering to a player event</a><br>
 <a href="#api4">4. Un-registering a player event</a><br>
 <a href="#api5">5. Retrieving a player property</a><br>
 <a href="#api6">6. Setting a player attribute</a><br>
 
 
-<a name="api1"></a>
+<a name="kWidget.addReadyCallback-desc"></a>
 <h3>1. Receiving notification that the player API is ready</h3>
-<p>Before you can use the JavaScript API's base methods, the player has to reach the point in its internal loading sequence when it is ready to interact with your code. The player lets you know that it is ready by calling the <b>jsCallbackReady</b> JavaScript function on the page.</p>
-<p>jsCallbackReady is the player's first callback. The player passes to the jsCallbackReady function an objectId parameter that represents the identifier of the player that is embedded on the page.</p>
-<?php echo getDocs( array( 'jsCallbackReady' ) ) ?>
-<br><br>Code sample:<br>
-<pre class="prettyprint linenums">
-function jsCallbackReady(objectId) {
-	window.kdp = document.getElementById(objectId);
-}
-</pre>
-<p>Kaltura recommends that you place jsCallbackReady in the global scope. This allows easily finding this critical function in the JavaScript code.</p><br><br>
+<p>See <a href="#kWidget.addReadyCallback">kWidget.addReadyCallback</a> or the "readyCallback" method.</p>
 
-
-<a name="api2"></a>
+<a name="sendNotification-desc"></a>
 <h3>2. Calling a player method from JavaScript</h3>
 <p>Use the <b>sendNotification</b> method to create custom notifications that instruct the player to perform an action, such as play, seek, or pause.</p>
 <?php echo getDocs( array( 'sendNotification' ) ) ?>
@@ -425,9 +415,7 @@ function jsCallbackReady(objectId) {
 	}
 &lt;/script&gt;
 </pre>
-
-
-<a name="api3"></a>
+<a name="addJsListener-desc"></a>
 <h3>3. Registering to a player event</h3>
 <p>Use the <b>addJsListener</b> method to listen for a specific notification that something happened in the player, such as the video is playing or is paused.</p>
 <?php echo getDocs( array( 'addJsListener' ) ) ?>
