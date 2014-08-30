@@ -285,7 +285,11 @@
 				} else {
 					captionObj['styleId'] = bodyStyleId;
 				}
-				captions.push( captionObj);
+				
+				// FEC-320 - if captionObj.content is 'undefined', the caption has no content, so no need to add it to the captions.
+				if(captionObj.content != 'undefined') {
+					captions.push( captionObj);
+				}
 			});
 			return captions;
 		},
