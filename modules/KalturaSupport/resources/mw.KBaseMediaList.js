@@ -182,7 +182,8 @@
 			}
 
 			if (this.getConfig('containerPosition') == 'top' || this.getConfig('containerPosition') == 'bottom'){
-				$(".videoHolder, .mwPlayerContainer").css("height", this.$mediaListContainer.height() - this.getConfig("mediaItemHeight")*2 +"px");
+				var playlistHeight = this.getLayout() === "vertical" ? this.getConfig("mediaItemHeight")*2 : this.getConfig("mediaItemHeight")+20;
+				$(".videoHolder, .mwPlayerContainer").css("height", this.$mediaListContainer.height() - playlistHeight +"px");
 			}
 			return this.$mediaListContainer;
 		},

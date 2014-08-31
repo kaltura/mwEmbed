@@ -246,6 +246,9 @@ body { letter-spacing: 0.04em; }
 	border: 0;
 	font-size: 1.1em;
 }
+.btnNarrow{
+	width: 1.8em;
+}
 .btn .accessibilityLabel{
 	font-size: 0;
 	height: 1px;
@@ -416,6 +419,10 @@ body { letter-spacing: 0.04em; }
 .accessibilityButton {
 	width: 1px;
 	height: 1px;
+}
+.nextPrevBtn {
+	display: inline-block;
+	height: 100%;
 }
 .volumeControl {
 	display: inline-block;
