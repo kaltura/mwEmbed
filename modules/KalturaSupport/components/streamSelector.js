@@ -16,6 +16,7 @@
 		selectSourceTitle: gM( 'mwe-embedplayer-select_source' ),
 		switchSourceTitle: gM( 'mwe-embedplayer-switch_source' ),
 		streams: [],
+		streamsReady: false,
 
 		setup: function(){
 			this.addBindings();
@@ -33,6 +34,7 @@
 			});
 
 			this.bind( 'streamsReady', function(){
+				_this.streamsReady = true;
 				if ( ( _this.getConfig("defaultStream") < 1) || ( _this.getConfig("defaultStream") > _this.streams.length ) ){
 					mw.log("streamSelector:: Error - default stream id is out of bounds, setting to 1");
 					_this.setConfig("defaultStream", 1);
@@ -43,15 +45,17 @@
 				_this.onEnable();
 			});
 
-//			this.bind( 'SourceChange', function(){
-//				_this.onEnable();
-//			});
-//
-//			this.bind( 'sourceSwitchingStarted', function(){
-//				_this.onDisable();
-//			});
+			this.bind( 'SourceChange', function(){
+				if (_this.streamsReady){
+					_this.onEnable();
+				}
+			});
 
-			this.bind( 'streamChange', function(e, arg ){
+			this.bind( 'sourceSwitchingStarted', function(){
+				_this.onDisable();
+			});
+
+			this.bind( 'changeStream', function(e, arg ){
 				_this.setStreamFromApi( arg );
 			});
 
@@ -72,13 +76,11 @@
 				// Validate result
 				if ( _this.isValidResult( data ) ) {
 					_this.getSourcesFlavours(data);
+				} else {
+					mw.log('streamSelector::Error retrieving additional streams, disabling component');
+					_this.getBtn().hide();
 				}
 			} );
-
-			var streams = [1,2,3,4];
-
-			//TODO: add stream fetch API call
-			return streams;
 		},
 		getSourcesFlavours: function(sources){
 			var _this = this;
@@ -110,7 +112,7 @@
 				} );
 			} else {
 				mw.log('streamSelector::No streams data to request, disabling component');
-				//this.getBtn().hide();
+				this.getBtn().hide();
 			}
 		},
 		isValidResult: function( data ){
@@ -119,8 +121,7 @@
 				||
 				( data.code && data.message )
 				){
-				mw.log('streamSelector::Error getting streams data: ' + data.message);
-				//this.getBtn().hide();
+				mw.log('streamSelector::Error, invalid result: ' + data.message);
 				this.error = true;
 				return false;
 			}
@@ -142,7 +143,6 @@
 				_this.setStream( _this.getDefaultStream() );
 			});
 		},
-
 		getNextStream: function(){
 			if( this.streams[this.getCurrentStreamIndex()+1] ){
 				return this.streams[this.getCurrentStreamIndex()+1];
