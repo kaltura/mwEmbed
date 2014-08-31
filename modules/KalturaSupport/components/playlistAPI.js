@@ -34,12 +34,8 @@
 
 		videoWidth: null,        // used to save the video width when exiting to full screen and returning
 
-		getConfig: function( key ){
-			return this.embedPlayer.getKalturaConfig( 'playlistAPI', key );
-		},
-
 		setup: function( embedPlayer ) {
-			if ( this.getConfig( 'hidden' ) === true){ // support hidden playlists - force onPage and hide its div.
+			if ( this.getConfig( 'includeInLayout' ) === false){ // support hidden playlists - force onPage and hide its div.
 				this.setConfig( 'onPage', true );
 			}
 			this.addBindings();
@@ -84,6 +80,14 @@
 						_this.playPrevious();
 						break;
 				}
+			});
+
+			$( this.embedPlayer ).bind( 'playNextClip', function( event){
+				_this.playNext();
+			});
+
+			$( this.embedPlayer ).bind( 'playPreviousClip', function( event){
+				_this.playPrevious();
 			});
 		},
 

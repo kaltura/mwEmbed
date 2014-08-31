@@ -20,7 +20,7 @@
 				'mediaItemWidth': 290,
 				'mediaItemHeight': 70,
 				'onPage': false,
-				'hidden': false,
+				'includeInLayout': true,
 				'clipListTargetId': null,
 				'containerPosition':  'left',
 				'parent': null//'sideBarContainer',
@@ -162,7 +162,7 @@
 					}
 					this.injectCss();
 					// support hidden playlists
-					if ( this.getConfig( 'hidden' ) === true){
+					if ( this.getConfig( 'includeInLayout' ) === false){
 						this.$mediaListContainer.hide();
 					}
 					this.$mediaListContainer.addClass("k-"+this.getLayout());

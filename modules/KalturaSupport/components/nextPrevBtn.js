@@ -19,9 +19,6 @@
 		nextTitle: gM( 'mwe-embedplayer-next_clip' ),
 		prevTitle: gM( 'mwe-embedplayer-prev_clip' ),
 
-		setup: function( embedPlayer ) {
-
-		},
 		getComponent: function() {
 			var _this = this;
 			if( !this.$el ) {
@@ -29,13 +26,13 @@
 					.attr( 'title', this.nextTitle )
 					.addClass( "btn btnNarrow icon-next" )
 					.click( function() {
-						alert("next");
+						$( _this.embedPlayer ).trigger( 'playNextClip' );
 					});
 				var $prevBtn = $( '<button />' )
 					.attr( 'title', this.prevTitle )
 					.addClass( "btn btnNarrow icon-prev" )
 					.click( function() {
-						alert("prev");
+						$( _this.embedPlayer ).trigger( 'playPreviousClip' );
 					});
 
 				var layoutClass = ' ' + this.getConfig('layout');
