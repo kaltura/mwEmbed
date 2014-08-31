@@ -9,6 +9,9 @@
 	overflow: auto !important;
 	padding: 0px !important;
 }
+.onpagePlaylistInterface.k-vertical{
+	border: 1px solid grey;
+}
 .k-chapters-container{
     position:relative;
 	display: block;
