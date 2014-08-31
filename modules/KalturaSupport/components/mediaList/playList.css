@@ -129,7 +129,7 @@
 	background: #222222;
 	overflow-x: auto;
 	overflow-y: hidden;
-	white-space: nowrap;
+	white-space: normal;
 }
 .k-chapters-container.k-horizontal .chapterBox{
     position:relative;
