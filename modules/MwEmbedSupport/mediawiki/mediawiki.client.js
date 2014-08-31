@@ -8,10 +8,10 @@
 	var userAgent = navigator.userAgent;
 
 	mw.isMobileDevice = function(){
-		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isAndroid() || mw.getConfig( "EmbedPlayer.ForceNativeComponent") )
+		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isAndroid() || mw.config.get( "EmbedPlayer.ForceNativeComponent") )
 	};
 	mw.isIphone = function(){
-		return ( !mw.getConfig( "EmbedPlayer.ForceNativeComponent") && navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() ) || mw.isIpod();
+		return ( !mw.config.get( "EmbedPlayer.ForceNativeComponent") && navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() ) || mw.isIpod();
 	};
 	mw.isIE = function() {
 		return (/msie/.test(userAgent.toLowerCase()));
@@ -95,6 +95,9 @@
 	};
 	mw.isIOS5 = function(){
 		return /OS 5_/.test( userAgent ) && mw.isIOS();
+	};
+	mw.isIOS6 = function(){
+		return /OS 6_/.test( userAgent ) && mw.isIOS();
 	};
 
 	mw.isIOS6 = function(){
@@ -189,7 +192,7 @@
 	 * @return {boolean} true or false if flash > 10 is supported.
 	 */
 	mw.supportsFlash = function() {
-		if( mw.getConfig('EmbedPlayer.DisableHTML5FlashFallback' ) ){
+		if( mw.config.get('EmbedPlayer.DisableHTML5FlashFallback' ) ){
 			return false;
 		}
 		

@@ -10,8 +10,8 @@
 	var _oldUnique = $.unique;
 	$.unique = function(arr){
 		// Do the default behavior only if we got an array of elements
-		if (arr.length && !!arr[0].nodeType){
-			return _oldUnique.apply(this,arguments);
+		if ( arr.length == 0 || !!arr[0].nodeType ){
+			return $.unique.apply(this, arguments);
 		} else {
 			// reduce the array to contain no dupes via grep/inArray
 			return $.grep(arr,function(v,k){
@@ -53,7 +53,7 @@
 	};
 
 	$.button = function( options ) {
-		var options = $j.extend( {}, mw_default_button_options, options);
+		var options = $.extend( {}, mw_default_button_options, options);
 
 		// Button:
 		var $button = $('<a />')

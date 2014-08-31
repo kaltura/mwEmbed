@@ -23,7 +23,7 @@ return array(
 		'scripts' => 'jquery.loadingSpinner/Spinner.js',
 	),
 	'iScroll' => array(
-		'scripts' => 'iscroll/src/iscroll.js',
+		'scripts' => 'iscroll/build/iscroll.js',
 	),
 	"jquery.loadingSpinner" => array(
 		'scripts' => 'jquery.loadingSpinner/jquery.loadingSpinner.js',
@@ -34,7 +34,7 @@ return array(
 		'styles'=> array( 'skins/common/MwEmbedCommonStyle.css' ),
 		'skinStyles' => array(
 			/* shared jQuery ui skin styles */
-			'kaltura-dark' => 'skins/jquery.ui.themes/kaltura-dark/jquery-ui-1.7.2.css',
+			'kaltura-dark' => 'skins/jquery.ui.themes/kaltura-dark/jquery-ui-1.9.2.css',
 		),
 	),	
 	'mediawiki.UtilitiesTime' => array( 'scripts' => 'mediawiki/mediawiki.UtilitiesTime.js' ),

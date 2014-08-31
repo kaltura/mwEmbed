@@ -160,7 +160,7 @@ Date.now = Date.now || function(){ return +new Date; };
 				for( var i =0; i <  value.length ; i ++ ){
 					existingValue.push( value[i] );
 				}
-				mw.setConfig( name, $.unique( existingValue ) );
+				mw.setConfig( name, $.uniqueArray( existingValue ) );
 			} else {
 				mw.setConfig( name, $.extend( {}, existingValue, value) );
 			}
