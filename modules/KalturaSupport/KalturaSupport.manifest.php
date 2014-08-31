@@ -123,6 +123,11 @@ $kgDefaultCaptionAttr = array(
 	)
 );
 return array(
+	'Kaltura.UseAppleAdaptive' => array(
+		'doc' => 'If apple HLS streams should be used when available.',
+		'type' => 'boolean'
+	),
+		
 	/*Captions */
 	'closedCaptions' => array(
 		'description' => 'Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',

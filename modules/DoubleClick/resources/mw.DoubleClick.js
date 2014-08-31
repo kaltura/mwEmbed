@@ -811,19 +811,15 @@
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				_this.embedPlayer.sequenceProxy.isInSequence = false;
-				if( _this.currentAdSlotType == 'preroll' ){
-					_this.currentAdSlotType = 'midroll';
-				}else{
-					if (_this.currentAdSlotType == 'midroll'){
-						setTimeout(function(){
-							_this.currentAdSlotType = 'postroll';
-							_this.embedPlayer.setDuration(_this.entryDuration);
-							_this.embedPlayer.startMonitor();
-							_this.embedPlayer.getPlayerElement().play();
-						},250);
-					}
+				_this.currentAdSlotType = _this.embedPlayer.adTimeline.currentAdSlotType;
+				if (_this.currentAdSlotType == 'midroll'){
+					setTimeout(function(){
+						_this.embedPlayer.setDuration(_this.entryDuration);
+						_this.embedPlayer.startMonitor();
+						_this.embedPlayer.getPlayerElement().play();
+					},250);
 				}
-				if (_this.currentAdSlotType !== 'postroll' ){
+				if ( _this.currentAdSlotType !== 'postroll' ){
 					_this.restorePlayer( null, true );
 					setTimeout(function(){
 						_this.embedPlayer.startMonitor();

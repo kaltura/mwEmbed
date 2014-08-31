@@ -2190,9 +2190,13 @@
 			.attr( 'id', sId );
 		},
 		hideSpinner: function(){
-			// remove the spinner
-			$( this ).trigger( 'onRemovePlayerSpinner' );
-			$( '#loadingSpinner_' + this.id + ',.loadingSpinner' ).remove();
+			var $spinner = $( '#loadingSpinner_' + this.id + ',.loadingSpinner' );
+			if ( $spinner.length > 0 ) {
+				// remove the spinner
+				$( this ).trigger( 'onRemovePlayerSpinner' );
+				$spinner.remove();
+			}
+
 		},
 		/**
 		 * Hides the loading spinner
@@ -2920,7 +2924,7 @@
 				if ( !mw.getConfig( 'EmbedPlayer.DisableBufferingSpinner' ) ) {
 					setTimeout( function() {
 						//avoid spinner for too short buffer
-						if ( _this.buffering ) {
+						if ( !_this.isInSequence() && _this.buffering ) {
 							_this.addPlayerSpinner();
 						}
 					}, _this.monitorRate);

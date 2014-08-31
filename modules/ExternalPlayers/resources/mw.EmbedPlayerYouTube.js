@@ -501,7 +501,10 @@
 			var yt = this.getPlayerElement();
 			yt.seekTo( yt.getDuration() * percentage );
 			this.layoutBuilder.onSeek();
-			//TODO check if there is a cleaner way to get the playback
+			// Since Youtube don't have a seeked event on mobile devices, we must turn off the seeking flag on mobile devices
+			if ( mw.isMobileDevice() ){
+				this.seeking = false;
+			}
 		},
 
 		/**
