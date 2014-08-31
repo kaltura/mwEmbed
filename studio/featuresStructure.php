@@ -51,7 +51,7 @@ return array(
 				),
 				"showSearch"=> false,
 				"initvalue" => "wide",
-				"helpnote" => "Select aspect ratio",
+				"helpnote" => "Select aspect ratio for the current preview. Aspect ratio is not saved with the player settings",
 				"type" => "dropdown",
 				"label" => "Aspect Ratio",
 				"endline" => "true"
