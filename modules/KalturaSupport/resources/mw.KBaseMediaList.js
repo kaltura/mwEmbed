@@ -183,7 +183,8 @@
 
 			if (this.getConfig('containerPosition') == 'top' || this.getConfig('containerPosition') == 'bottom'){
 				var playlistHeight = this.getLayout() === "vertical" ? this.getConfig("mediaItemHeight")*2 : this.getConfig("mediaItemHeight")+20;
-				$(".videoHolder, .mwPlayerContainer").css("height", this.$mediaListContainer.height() - playlistHeight +"px");
+				$(".mwPlayerContainer").css("height", this.$mediaListContainer.height() - playlistHeight +"px");
+				$(".videoHolder").css("height", this.$mediaListContainer.height() - playlistHeight - $(".controlBarContainer").height() +"px");
 			}
 			return this.$mediaListContainer;
 		},
@@ -201,12 +202,12 @@
 				$(".mwPlayerContainer").css("float","left");
 			}
 			if (this.getConfig('containerPosition') == 'top' || this.getConfig('containerPosition') == 'bottom'){
-				$(".medialistContainer").height(this.getConfig("mediaItemHeight")*2);
+				$(".medialistContainer").height(this.getConfig("mediaItemHeight")*2-2);
 				$(".medialistContainer").css("display","block");
 			}
 			if (this.getLayout() === "horizontal" ){
-				this.$mediaListContainer.find("ul").width(this.getConfig("mediaItemWidth")*this.mediaList.length).height(this.getConfig("mediaItemHeight")+20);
-				this.$mediaListContainer.find("span").height(this.getConfig("mediaItemHeight")+20);
+				this.$mediaListContainer.find("ul").width(this.getConfig("mediaItemWidth")*this.mediaList.length).height(this.getConfig("mediaItemHeight")+18);
+				this.$mediaListContainer.find("span").height(this.getConfig("mediaItemHeight")+18);
 			}
 
 			return this.$mediaListContainer;

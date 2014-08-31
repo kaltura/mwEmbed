@@ -41,6 +41,10 @@
 					.append($prevBtn, $nextBtn);
 			}
 			return this.$el;
+		},
+
+		getBtn: function(){
+			return this.getComponent().find( '.btn' );
 		}
 	})
 	);
