@@ -156,7 +156,7 @@
 					}else{
 						$(iframeParent).after("<div class='onpagePlaylistInterface'></div>");
 						this.$mediaListContainer =  $(iframeParent).parent().find(".onpagePlaylistInterface");
-						$(this.$mediaListContainer).width($(iframeParent).width());
+						$(this.$mediaListContainer).width($(iframeParent).width()-2);
 						var containerHeight = this.getLayout() === "vertical" ? this.getConfig("mediaItemHeight")*3 : this.getConfig("mediaItemHeight")+20;
 						$(this.$mediaListContainer).height(containerHeight);
 					}
