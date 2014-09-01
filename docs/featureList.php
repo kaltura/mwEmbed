@@ -76,10 +76,6 @@
 							'title' => 'Playlist API',
 							'path' => 'KalturaSupport/tests/PlaylistKalturaApi.qunit.html'
 						),
-						'playlistOnPage' => array(
-							'title' => 'Playlist On Page',
-							'path' => '../kWidget/onPagePlugins/playlistOnPage/playlistOnPage.qunit.html'
-						),
 						'ServerSidePlaylist' => array(
 							'title' => "Server Side Playlist",
 							'path' => '../kWidget/onPagePlugins/serverSidePlaylist/ServerSidePlaylist.php'
@@ -96,10 +92,10 @@
 							'title' => "Playlist No Clip List",
 							'path' => 'KalturaSupport/tests/PlaylistNoClipList.html'
 						),
-						/*'PlaylistKalturaMRSS' => array(
+						'PlaylistKalturaMRSS' => array(
 							'title' => "Media RSS source",
 							'path' => 'KalturaSupport/tests/PlaylistKalturaMRSS.html'
-						),*/
+						),
 						'PlaylistInitItemEntryId' => array(
 							'title' => "Initial EntryId",
 							'path' => 'KalturaSupport/tests/PlaylistInitItemEntryId.html'

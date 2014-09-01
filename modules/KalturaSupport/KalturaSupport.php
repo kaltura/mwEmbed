@@ -49,12 +49,6 @@
 		"mw.KAnalytics"=> array( 
 			'scripts' => "resources/mw.KAnalytics.js"
 		),
-		"mw.PlaylistHandlerKaltura"=> array( 
-			'scripts' => "resources/mw.PlaylistHandlerKaltura.js",
-			'dependencies' => array(
-				'mw.MwEmbedSupport'
-			)
-		), 
 		"mw.KDPMapping"=> array(
 			'scripts' => "resources/mw.KDPMapping.js",
 		),
@@ -246,20 +240,6 @@
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",
 			'kalturaPluginName' => 'pptWidgetAPI'
 		),
-/*
-		/* playlist */
-		/*"playlistPlugin"=> array(
-			'scripts' => "resources/uiConfComponents/playlistPlugin.js",
-			'dependencies' => array(
-				// core playlist module
-				"mw.Playlist",
-				// kaltura specific playlist modules
-				'mw.PlaylistHandlerKaltura',
-				// support playlist layout
-				'mw.KLayout'
-			),
-			'kalturaPluginName' => 'playlistAPI'
-		),*/
 
 		/* uiConf based plugins */
 		"acCheck" => array(

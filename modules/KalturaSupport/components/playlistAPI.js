@@ -10,7 +10,7 @@
 			'kpl0Name': null,
 			'kpl0Url': null,
 			'kpl0Id': null,
-			'titleLimit': 30,
+			'titleLimit': 29,
 			'descriptionLimit': 80,
 			'thumbnailWidth' : 62,
 			'horizontalMediaItemWidth': 290,

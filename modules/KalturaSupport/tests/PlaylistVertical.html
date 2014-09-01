@@ -16,17 +16,23 @@
 			'wid': '_243342',
 			'uiconf_id': '5783651',
 			'flashvars': {
-				'sideBarContainer': {
+				/*'sideBarContainer': {
 					'plugin': true,
 					'clickToClose': true
-				},
-				'disableForceMobileHTML5': true,
+				},*/
 				'playlistAPI':{
-					'autoContinue': false,
-					'autoPlay': true,
-					'autoInsert':true,
+					'autoContinue': true,
+					'includeInLayout': true,
+					'autoPlay': false,
+					'loop': false,
+					'onPage': false,
+					'layout': 'vertical',
+					'containerPosition': 'left',
 					'kpl0Name': "test 4 item playlist",
 					'kpl0Id': '0_q79jh71b'
+				},
+				'nextPrevBtn':{
+					'plugin': true
 				}
 			}
 		});
