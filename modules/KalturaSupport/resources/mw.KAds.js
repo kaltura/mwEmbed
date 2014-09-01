@@ -73,6 +73,7 @@
 				$( embedPlayer ).bind('onAdComplete' + _this.bindPostfix, function() {
 					if( _this.seekIntervalID ) {
 						clearInterval(_this.seekIntervalID);
+						_this.seekIntervalID = null;
 					}
 				});
 			}
