@@ -27,6 +27,7 @@
 		loadingEntry: null,      // flag to store the current loading entry
 		firstLoad: true,         // Flag for setting initial entry in first load
 		kClient: null,           // kClient for API calls
+		firstPlay: true,         // firstPlay is used to check if we need to check for autoMute or keep the player volume from previous clip
 
 		currentClipIndex: null,  // currently playing clip index
 		currentPlaylistIndex: 0, // current playlist index (when we have more than 1 play lists)
@@ -165,7 +166,11 @@
 			// Listen for change media done
 			$( embedPlayer).unbind( 'onChangeMediaDone' + this.bindPostFix ).bind( 'onChangeMediaDone' + this.bindPostFix, function(){
 				mw.log( 'mw.PlaylistAPI:: onChangeMediaDone' );
-				_this.loadingEntry = false; // Update the loadingEntry flag:
+				_this.loadingEntry = false; // Update the loadingEntry flag
+				if( _this.firstPlay && embedPlayer.getKalturaConfig( '', 'autoMute' ) === null ){
+					embedPlayer.toggleMute( true );
+					_this.firstPlay = false;
+				}
 				if (autoPlay){
 					embedPlayer.play();     // auto play
 				}

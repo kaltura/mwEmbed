@@ -1107,8 +1107,8 @@ mw.EmbedPlayerNative = {
 	* Toggle the Mute
 	* calls parent_toggleMute to update the interface
 	*/
-	toggleMute: function() {
-		this.parent_toggleMute();
+	toggleMute: function(forceMute) {
+		this.parent_toggleMute(forceMute);
 		this.getPlayerElement();
 		if ( this.playerElement )
 			this.playerElement.muted = this.muted;
