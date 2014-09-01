@@ -292,6 +292,19 @@
 					}
 				}
 			});
+
+			if( mw.isIOS() ) {
+				var bindPostFix = ".doubleClickSequenceCheck";
+				_this.embedPlayer.bindHelper( 'playing' + bindPostFix, function () {
+					// Pause video element only if it's not 'overlay'
+					if( _this.isLinear === true ) {
+						_this.embedPlayer.unbindHelper( 'playing' + bindPostFix );
+						_this.embedPlayer.stopEventPropagation();
+						_this.embedPlayer.getPlayerElement().pause();
+						_this.embedPlayer.stopMonitor();
+					}
+				});
+			}
 		},
 		/**
 		 * Get the content video tag
@@ -661,6 +674,10 @@
 			} );
 			adsListener( 'STARTED', function(adEvent){
 				var ad = adEvent.getAd();
+				_this.isLinear = ad.isLinear();
+				if( mw.isIOS() && _this.embedPlayer.getPlayerElement().paused ) {
+					_this.embedPlayer.getPlayerElement().play();
+				}
 				// trigger ad play event
 				$(_this.embedPlayer).trigger("onAdPlay",[ad.a.adId]);
 				// This changes player state to the relevant value ( play-state )
