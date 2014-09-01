@@ -288,13 +288,16 @@
 				if ( this.getConfig( 'initItemEntryId' ) ){ // handle initItemEntryId
 					// find selected item index
 					var items = this.playlistSet[this.currentPlaylistIndex].items;
+					var found = false;
 					for (var i=0; i<items.length; i++){
 						if (items[i].id === this.getConfig( 'initItemEntryId' )){
 							this.playMedia(i, this.getConfig( 'autoPlay' ));
+							found = true;
 							break;
 						}
 					}
-				}else{
+				}
+				if ( (this.getConfig( 'initItemEntryId' ) && !found) || !(this.getConfig( 'initItemEntryId' )) ){
 					this.playMedia( this.getConfig('selectedIndex'), this.getConfig('autoPlay'));
 				}
 				this.firstLoad = false;

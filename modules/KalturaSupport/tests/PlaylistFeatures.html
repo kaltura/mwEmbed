@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Playlist Features</title>
+    <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+    </head>
+   <body>
+   	<h2>Playlist Features</h2>
+    <p>This player demonstrates some features available using simple playlist configuration.</p>
+    <p>Use the "Customize" tab to change the following properties in order to control the playlist layout and behaviour:</p>
+    <ul>
+	    <li><b>containerPosition</b>: Sets the playlist position to left, right, top and bottom</li>
+	    <li><b>layout</b>: Sets the playlist layout to vertical or horizontal </li>
+	    <li><b>autoPlay</b>: Start playing the first clip upon load</li>
+	    <li><b>autoContinue</b>: Continue to the next clip when the currently playing clip ends</li>
+	    <li><b>loop</b>: Loops playlist playback (jump to the first clip when the last clip ends</li>
+    </ul>
+	<div id='kaltura_player' style="height:365px;width:650px"></div>
+	<script>
+		kWidget.featureConfig({
+			'targetId': 'kaltura_player',
+			'wid': '_243342',
+			'uiconf_id': '5783651',
+			'flashvars': {
+				'playlistAPI':{
+					'autoContinue': true,
+					'includeInLayout': true,
+					'autoPlay': false,
+					'loop': false,
+					'onPage': false,
+					'layout': 'vertical',
+					'containerPosition': 'left',
+					'kpl0Name': "test 4 item playlist",
+					'kpl0Id': '0_q79jh71b'
+				},
+				'nextPrevBtn':{
+					'plugin': true
+				}
+			}
+		});
+	</script>
+  </body>
+</html>

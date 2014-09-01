@@ -80,13 +80,13 @@
 							'title' => "Server Side Playlist",
 							'path' => '../kWidget/onPagePlugins/serverSidePlaylist/ServerSidePlaylist.php'
 						),
-						'PlaylistVertical' => array(
-							'title' => "Vertical Layout",
-							'path' => 'KalturaSupport/tests/PlaylistVertical.html'
+						'PlaylistFeatures' => array(
+							'title' => "Playlist features",
+							'path' => 'KalturaSupport/tests/PlaylistFeatures.html'
 						),
-						'Carousel' => array(
-							'title' => "Carousel",
-							'path' => 'KalturaSupport/tests/Carousel.html'
+						'PlaylistOnPage' => array(
+							'title' => "Playlist on page",
+							'path' => 'KalturaSupport/tests/PlaylistOnPage.html'
 						),
 						'PlaylistNoClipList' => array(
 							'title' => "Playlist No Clip List",
@@ -99,7 +99,11 @@
 						'PlaylistInitItemEntryId' => array(
 							'title' => "Initial EntryId",
 							'path' => 'KalturaSupport/tests/PlaylistInitItemEntryId.html'
-						)
+						),
+                        'PlaylistSideBar' => array(
+                            'title' => "Playlist within side bar",
+                            'path' => 'KalturaSupport/tests/PlaylistSideBar.html'
+                        )
 					)
 				),
 			)
