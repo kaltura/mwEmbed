@@ -327,7 +327,7 @@ mw.KAnalytics.prototype = {
 			$( embedPlayer ).trigger( "thirdQuartile" );
 
 		} else if(  !_this._p100Once && percent >= .98 && seekPercent < 1) {
-
+			mw.log("KAnalytics :: reached 100 with percent: " + percent + ", seekPercent:" +  seekPercent);
 			_this._p100Once = true;
 			_this.sendAnalyticsEvent( 'PLAY_REACHED_100' );
 		}

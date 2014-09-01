@@ -147,7 +147,9 @@
 		//indicates that the current sources list was set by "ReplaceSources" config
 		"sourcesReplaced": false,
 
-		"streamerType": 'http'
+		"streamerType": 'http',
+
+		"shouldEndClip" : false
 	} );
 
 	/**
@@ -1045,6 +1047,7 @@
 		postSequenceFlag: false,
 		onClipDone: function() {
 			var _this = this;
+			this.shouldEndClip = false;
 			// Don't run onclipdone if _propagateEvents is off
 			if( !_this._propagateEvents ){
 				return ;
@@ -2572,9 +2575,20 @@
 				}
 				// Check if we are "done"
 				var endPresentationTime = this.duration;
-				if ( !this.isLive() && ( (this.currentTime - this.startOffset) >= endPresentationTime && !this.isStopped() ) ) {
-					mw.log( "EmbedPlayer::updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
-					_this.onClipDone();
+				if ( !this.isLive() ) {
+					if ( (this.currentTime - this.startOffset) >= endPresentationTime && !this.isStopped() ) {
+						mw.log( "EmbedPlayer::updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
+						_this.onClipDone();
+						//sometimes we don't get the "end" event from the player so we trigger clipdone
+					} else if ( ( ( this.currentTime - this.startOffset) / endPresentationTime ) >= .99 ){
+						_this.shouldEndClip = true;
+						setTimeout( function() {
+							if ( _this.shouldEndClip ) {
+								mw.log( "EmbedPlayer::updatePlayheadStatus > should run clip done :: " + _this.currentTime );
+								_this.onClipDone();
+							}
+						}, 1000)
+					}
 				}
 			}
 		},

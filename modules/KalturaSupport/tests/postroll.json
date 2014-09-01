@@ -1,0 +1,114 @@
+{
+	"plugins": {
+		"topBarContainer": {
+			"plugin": true
+		},
+		"controlBarContainer": {
+			"plugin": true
+		},
+		"scrubber": {
+			"plugin": true
+		},
+		"largePlayBtn": {
+			"plugin": true
+		},
+		"playHead": {
+			"plugin": true
+		},
+		"playPauseBtn": {
+			"plugin": true
+		},
+		"volumeControl": {
+			"showSlider": true,
+			"accessibleControls": false,
+			"accessibleVolumeChange": 0.1,
+			"plugin": true
+		},
+		"durationLabel": {
+			"plugin": true
+		},
+		"currentTimeLabel": {
+			"plugin": true
+		},
+		"keyboardShortcuts": {
+			"volumePercentChange": "0.1",
+			"shortSeekTime": "5",
+			"longSeekTime": "10",
+			"volumeUpKey": "38",
+			"volumeDownKey": "40",
+			"togglePlaybackKey": "32",
+			"shortSeekBackKey": "37",
+			"shortSeekForwardKey": "39",
+			"openFullscreenKey": "70",
+			"closeFullscreenkey": "27",
+			"gotoBeginingKey": "36",
+			"gotoEndKey": "35",
+			"longSeekForwardKey": "ctrl+39",
+			"longSeekBackKey": "ctrl+37",
+			"percentageSeekKeys": "49,50,51,52,53,54,55,56,57",
+			"plugin": true
+		},
+		"liveCore": {
+			"plugin": true
+		},
+		"liveStatus": {
+			"plugin": true
+		},
+		"liveBackBtn": {
+			"plugin": true
+		},
+		"fullScreenBtn": {
+			"plugin": true
+		},
+		"logo": {
+			"plugin": true
+		},
+		"skipBtn": {
+			"plugin": true,
+			"label": "Skip Ad"
+		},
+		"vast": {
+			"skipOffset": 5,
+			"timeout": 0,
+			"storeSession": false,
+			"numPreroll": 1,
+			"prerollStartWith": 0,
+			"prerollInterval": 0,
+			"preSequence": 0,
+			"overlayUrl": 0,
+			"overlayStartAt": 0,
+			"numPostroll": "2",
+			"postrollStartWith": 0,
+			"postrollInterval": "5",
+			"postSequence": 0,
+			"htmlCompanions": "",
+			"plugin": true,
+			"postrollUrl": "http://apache-testing.dev.kaltura.com/content/qa/vast_xmls/hotelVastAd.xml"
+		}
+	},
+	"uiVars": [
+		{
+			"key": "autoPlay",
+			"value": false,
+			"overrideFlashvar": false
+		},
+		{
+			"key": "autoMute",
+			"value": false,
+			"overrideFlashvar": false
+		},
+		{
+			"key": "adsOnReplay",
+			"value": true,
+			"overrideFlashvar": false
+		},
+		{
+			"key": "imageDefaultDuration",
+			"value": 2,
+			"overrideFlashvar": false
+		}
+	],
+	"layout": {
+		"skin": "kdark"
+	}
+}

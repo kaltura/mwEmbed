@@ -464,6 +464,7 @@ mw.DoubleClick.prototype = {
 				google.ima.AdEvent.Type[ eventType ],
 				function( event ){
 					mw.log( "DoubleClick::AdsEvent:" + eventType );
+					_this.embedPlayer.triggerHelper('DoubleClick_AdsEvent', eventType);
 					if( $.isFunction( callback ) ){
 						callback( event );
 					}
@@ -876,7 +877,6 @@ mw.DoubleClick.prototype = {
 
 		// update the adPreviousTimeLeft
 		_this.adPreviousTimeLeft = _this.adsManager.getRemainingTime();
-
 		// Update sequence property per active ad:
 		_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  _this.adsManager.getRemainingTime() );
 		if (_this.duration === -1){

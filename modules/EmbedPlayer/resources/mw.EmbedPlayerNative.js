@@ -1366,6 +1366,7 @@ mw.EmbedPlayerNative = {
 	* Local method for end of media event
 	*/
 	_onended: function( event ) {
+		mw.log( 'EmbedPlayer:native: onended:');
 		var _this = this;
 		if( this.getPlayerElement() ){
 			mw.log( 'EmbedPlayer:native: onended:' + this.playerElement.currentTime + ' real dur:' + this.getDuration() + ' ended ' + this._propagateEvents );
