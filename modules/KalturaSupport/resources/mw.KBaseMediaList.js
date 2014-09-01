@@ -147,12 +147,11 @@
 			if ( this.getConfig('onPage') ){
 				var iframeID = this.embedPlayer.id + '_ifp';
 				try{
+					$(window['parent'].document).find('.onpagePlaylistInterface').remove(); // remove any previously created playlists
 					var iframeParent = window['parent'].document.getElementById( this.embedPlayer.id );
-					if ( this.getConfig('clipListTargetId') ){
-						$(iframeParent).parent().find("#"+this.getConfig('clipListTargetId')).append("<div class='onpagePlaylistInterface'></div>");
+					if ( this.getConfig('clipListTargetId') && $(iframeParent).parent().find("#"+this.getConfig('clipListTargetId')).length>0){
+						$(iframeParent).parent().find("#"+this.getConfig('clipListTargetId')).html("<div class='onpagePlaylistInterface'></div>");
 						this.$mediaListContainer =  $(iframeParent).parent().find(".onpagePlaylistInterface");
-						$(this.$mediaListContainer).width("100%");
-						$(this.$mediaListContainer).height("100%");
 					}else{
 						$(iframeParent).after("<div class='onpagePlaylistInterface'></div>");
 						this.$mediaListContainer =  $(iframeParent).parent().find(".onpagePlaylistInterface");
