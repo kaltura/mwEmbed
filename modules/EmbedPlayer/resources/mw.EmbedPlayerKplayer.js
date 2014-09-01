@@ -83,8 +83,8 @@ mw.EmbedPlayerKplayer = {
 			this.setFlashvars( 'flavorId', flashvars.flavorId );
 		}
 
-		if ( this.streamerType != 'http' && this.selectedFlavorIndex != 0 ) {
-			flashvars.selectedFlavorIndex = this.selectedFlavorIndex;
+		if ( this.streamerType != 'http' && this.mediaElement.selectedSource ) {
+			flashvars.selectedFlavorIndex = this.getSourceIndex( this.mediaElement.selectedSource  );
 		}
 
 		//add OSMF HLS Plugin if the source is HLS
@@ -97,6 +97,13 @@ mw.EmbedPlayerKplayer = {
 
 		if ( this.live && this.streamerType == 'rtmp' && !this.cancelLiveAutoPlay ) {
 			flashvars.autoPlay = true;
+		}
+
+		if ( this.getFlashvars( 'maxAllowedRegularBitrate' ) ) {
+			flashvars.maxAllowedRegularBitrate =  this.getFlashvars( 'maxAllowedRegularBitrate' );
+		}
+		if ( this.getFlashvars( 'maxAllowedFSBitrate' ) ) {
+			flashvars.maxAllowedFSBitrate =  this.getFlashvars( 'maxAllowedFSBitrate' );
 		}
 
 		//will contain flash plugins we need to load
@@ -681,9 +688,16 @@ mw.EmbedPlayerKplayer = {
 		}
 	},
 	toggleFullscreen: function() {
+		var _this = this;
 		this.parent_toggleFullscreen();
 		//Redraw flash object, this fixes a Flash resize issue on when wmode=transparent
 		this.playerObject.redrawObject();
+
+		if ( _this.layoutBuilder.fullScreenManager.isInFullScreen() ) {
+			_this.playerObject.sendNotification( "hasOpenedFullScreen" );
+		} else {
+			_this.playerObject.sendNotification( "hasCloseFullScreen" );
+		}
 	}
 };
 
