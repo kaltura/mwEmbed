@@ -34,13 +34,18 @@
 			});
 
 			this.bind( 'streamsReady', function(){
+				//Indicate that the streams are ready to enable spinning animation on source switching
 				_this.streamsReady = true;
+				//Insert original entry to streams
+				this.streams.splice(0, 1 ,{ id: this.getPlayer().kentryid, data: {meta: this.getPlayer().kalturaPlayerMetaData, contextData: this.getPlayer().kalturaContextData}});
+				//Set default stream
 				if ( ( _this.getConfig("defaultStream") < 1) || ( _this.getConfig("defaultStream") > _this.streams.length ) ){
 					mw.log("streamSelector:: Error - default stream id is out of bounds, setting to 1");
 					_this.setConfig("defaultStream", 1);
 				}
 				_this.currentStream = _this.getDefaultStream();
 				//TODO: handle default stream selection???
+				_this.setStream(_this.currentStream);
 				_this.buildMenu();
 				_this.onEnable();
 			});
@@ -71,7 +76,8 @@
 			this.getKalturaClient().doRequest( {
 				'service': 'baseEntry',
 				'action': 'list',
-				'filter:parentblah': "xxxx"
+				'filter:objectType': 'KalturaBaseEntryFilter',
+				'filter:parentEntryIdEqual': this.getPlayer().kentryid
 			}, function ( data ) {
 				// Validate result
 				if ( _this.isValidResult( data ) ) {
@@ -106,7 +112,7 @@
 						}
 					});
 					$.each(_this.streams, function(index, stream){
-						stream.contextData = data[index];
+						stream.data.contextData = {flavorAssets: data[index].objects};
 					});
 					_this.embedPlayer.triggerHelper( 'streamsReady' );
 				} );
@@ -218,7 +224,7 @@
 		setStream: function(stream){
 			mw.log("streamSelector:: set stream");
 			this.currentStream = stream;
-			kWidgetSupport.addFlavorSources(this.getPlayer(), stream);
+			kWidgetSupport.addFlavorSources(this.getPlayer(), stream.data);
 			var selectedSource = this.getPlayer().mediaElement.autoSelectSource();
 			if ( selectedSource ) { // source was found
 				this.getPlayer().switchSrc( selectedSource );
