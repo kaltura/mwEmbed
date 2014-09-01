@@ -251,7 +251,7 @@ body { letter-spacing: 0.04em; }
 }
 .btn .accessibilityLabel{
 	font-size: 0;
-	height: 1px;
+	height: 1px !important;
 	overflow: hidden;
 	display: block;
 }
