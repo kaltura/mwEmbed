@@ -230,6 +230,11 @@
 						});
 					});
 				});
+				if (embedPlayer.seeking){ // user started seeking before playback started and we have a preroll to show
+					setTimeout(function(){
+						embedPlayer.stopEventPropagation();
+					},100);
+				}
 			});
 
 			// Bind the player "ended" event to play the postroll if present
@@ -385,9 +390,9 @@
 			// Stop the native embedPlayer events so we can play the preroll and bumper
 			embedPlayer.stopEventPropagation();
 			// TODO read the add disable control bar to ad config and check that here.
-			var components = [];
+			var components = ['fullScreenBtn','logo'];
 			if (mw.getConfig('enableControlsDuringAd')) {
-				components = ['playPauseBtn'];
+				components.push('playPauseBtn');
 			}
 			embedPlayer.disablePlayControls(components);
 			// Update the interface to play state:

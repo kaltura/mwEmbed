@@ -26,8 +26,10 @@
 		readyCallbackFunc: undefined,
 		isMulticast: false,
 		isError: false,
+		readyFuncs: [],
 		// Create our player element
 		setup: function( readyCallback ) {
+			var _this = this;
 			mw.log('EmbedPlayerSilverlight:: Setup');
 
 			// Check if we created the sPlayer container
@@ -47,7 +49,22 @@
 					.addClass('maximize')
 			);
 
+			this.slCurrentTime = 0;
 			this.loadMedia( readyCallback );
+
+			this.bindHelper( 'changeEmbeddedTextTrack', function(e, data) {
+				if ( _this.playerObject ) {
+					_this.playerObject.selectTextTrack( data.index );
+				}
+			});
+
+			this.bindHelper( 'switchAudioTrack', function(e, data) {
+				if ( _this.playerObject ) {
+					_this.playerObject.selectAudioTrack( data.index );
+				}
+			});
+
+
 		},
 
 		loadMedia: function( readyCallback ) {
@@ -78,7 +95,7 @@
 			//parse url address from playmanifest
 			var getStreamAddress = function() {
 				var deferred = $.Deferred();
-				if (mw.getConfig("EmbedPlayer.useDirectManifestLinks")) {
+				if (mw.getConfig("EmbedPlayer.UseDirectManifestLinks")) {
 					return deferred.resolve();
 				}
 				$.ajax({
@@ -142,11 +159,19 @@
 						if ( _this.b64Referrer ) {
 							flashvars.referrer = _this.b64Referrer;
 						}
+
 						var customDataString = "";
 						for(var propt in customData){
 							customDataString += propt + "=" + customData[propt] + "&";
 						}
-						flashvars.challengeCustomData = customDataString;
+						var eventObj = {
+							customString : customDataString
+						}
+
+						$( _this ).trigger( 'challengeCustomData', eventObj );
+
+						flashvars.challengeCustomData = eventObj.customString;
+
 					}
 				} else if ( isMimeType( "video/multicast" ) ) {
 					_this.isMulticast = true;
@@ -191,6 +216,8 @@
 				}
 
 				flashvars.autoplay = _this.autoplay;
+				flashvars.isLive = _this.isLive();
+				flashvars.isDVR = ( _this.isDVR() == 1 );
 				_this.durationReceived = false;
 				_this.readyCallbackFunc = readyCallback;
 				var playerElement = new mw.PlayerElementSilverlight( _this.containerId, 'splayer_' + _this.pid, flashvars, _this, function() {
@@ -209,7 +236,10 @@
 						'flavorsListChanged' : 'onFlavorsListChanged',
 						'enableGui' : 'onEnableGui',
 						'audioTracksReceived': 'onAudioTracksReceived',
-						'audioTrackSelected': 'onAudioTrackSelected'
+						'audioTrackSelected': 'onAudioTrackSelected',
+						'textTracksReceived': 'onTextTracksReceived',
+						'textTrackSelected': 'onTextTrackSelected',
+						'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions'
 					};
 
 					_this.playerObject = playerElement;
@@ -273,7 +303,6 @@
 		updatePlayhead: function () {
 			if ( this.seeking ) {
 				this.seeking = false;
-				this.slCurrentTime = this.playerObject.currentTime;
 			}
 		},
 
@@ -299,9 +328,6 @@
 			this.updatePlayhead();
 			$( this ).trigger( "playing" );
 			this.hideSpinner();
-			if ( this.seeking == true ) {
-				this.onPlayerSeekEnd();
-			}
 			this.stopped = this.paused = false;
 		},
 
@@ -327,6 +353,13 @@
 					}
 				} else if ( this.autoplay ) {
 					this.playerObject.pause();
+				}
+
+				if ( this.readyFuncs && this.readyFuncs.length > 0 ) {
+					for ( var i=0; i< this.readyFuncs.length; i++ ) {
+						this.readyFuncs[i]();
+					}
+					this.readyFuncs = [];
 				}
 			}
 
@@ -364,9 +397,6 @@
 			} else {
 				this.layoutBuilder.displayAlert( errorObj );
 			}
-
-
-
 		},
 
 		/**
@@ -435,7 +465,7 @@
 		 * @param {Float}
 		 *			percentage Percentage of total stream length to seek to
 		 */
-		seek: function(percentage) {
+		seek: function(percentage, stopAfterSeek) {
 			var _this = this;
 			var seekTime = percentage * this.getDuration();
 			mw.log( 'EmbedPlayerKalturaSplayer:: seek: ' + percentage + ' time:' + seekTime );
@@ -452,11 +482,35 @@
 			if ( this.playerObject.duration ) //we already loaded the movie
 			{
 				this.seeking = true;
+
+				// Save currentTime
+				this.kPreSeekTime = _this.currentTime;
+				this.currentTime = ( percentage * this.duration ).toFixed( 2 ) ;
+
 				// trigger the html5 event:
 				$( this ).trigger( 'seeking' );
 
-				// Issue the seek to the flash player:
-				this.playerObject.seek( seekTime );
+				// Run the onSeeking interface update
+				this.layoutBuilder.onSeek();
+
+				this.unbindHelper("seeked" + _this.bindPostfix).bindHelper("seeked" + _this.bindPostfix, function(){
+					_this.unbindHelper("seeked" + _this.bindPostfix);
+					_this.monitor();
+					if( stopAfterSeek ){
+						_this.hideSpinner();
+						_this.pause();
+						_this.updatePlayheadStatus();
+					} else {
+						// continue to playback ( in a non-blocking call to avoid synchronous pause event )
+						setTimeout(function(){
+							if ( !_this.stopPlayAfterSeek ) {
+								mw.log( "EmbedPlayerNative::sPlay after seek" );
+								_this.play();
+								_this.stopPlayAfterSeek = false;
+							}
+						},0);
+					}
+				});
 
 				// Include a fallback seek timer: in case the kdp does not fire 'playerSeekEnd'
 				var orgTime = this.slCurrentTime;
@@ -464,15 +518,15 @@
 					if( _this.slCurrentTime != orgTime ){
 						_this.seeking = false;
 						clearInterval( _this.seekInterval );
-						$( _this ).trigger( 'seeked' );
+						$( _this ).trigger( 'seeked',[ _this.slCurrentTime] );
 					}
 				}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
+				// Issue the seek to the flash player:
+				this.playerObject.play();
+				this.playerObject.seek( seekTime );
 			} else if ( percentage != 0 ) {
 				this.playerObject.play();
 			}
-
-			// Run the onSeeking interface update
-			this.layoutBuilder.onSeek();
 		},
 
 		/**
@@ -513,7 +567,9 @@
 			$( this ).trigger( 'updateBufferPercent', this.bufferedPercent );
 		},
 
-		onPlayerSeekEnd: function () {
+		onPlayerSeekEnd: function ( position ) {
+			this.previousTime = this.currentTime = this.slCurrentTime = position;
+			this.seeking = false;
 			$( this ).trigger( 'seeked' );
 			this.updatePlayhead();
 			if( this.seekInterval  ) {
@@ -549,11 +605,31 @@
 		},
 
 		onAudioTracksReceived: function ( data ) {
-			this.triggerHelper( 'audioTracksReceived', JSON.parse( data ) );
+			var _this = this;
+			this.callIfReady( function() {
+				_this.triggerHelper( 'audioTracksReceived', JSON.parse( data ) );
+			});
 		},
 
 		onAudioTrackSelected: function ( data ) {
-			this.triggerHelper( 'audioTrackIndexChanged', JSON.parse( data ) );
+			var _this = this;
+			this.callIfReady( function() {
+				_this.triggerHelper( 'audioTrackIndexChanged', JSON.parse( data ) );
+			});
+		},
+
+		onTextTrackSelected: function ( data ) {
+			var _this = this;
+			this.callIfReady( function() {
+				_this.triggerHelper( 'textTrackIndexChanged', JSON.parse( data ) );
+			});
+		},
+
+		onTextTracksReceived: function ( data ) {
+			var _this = this;
+			this.callIfReady( function() {
+				_this.triggerHelper( 'textTracksReceived', JSON.parse( data ) );
+			});
 		},
 
 		/**
@@ -611,10 +687,24 @@
 			$(this.getPlayerContainer()).remove();
 		},
 
-		switchAudioTrack: function( trackIndex ) {
-			if ( this.playerObject ) {
-				this.playerObject.selectAudioTrack( trackIndex );
+		callIfReady: function( callback ) {
+			if ( this.durationReceived ) {
+				callback();
+			} else {
+				this.readyFuncs.push( callback );
 			}
+		},
+
+		onLoadEmbeddedCaptions: function( data ) {
+			var captionData = JSON.parse( data );
+			var caption = {
+				source: {
+					srclang: captionData.language
+				},
+				capId: captionData.language,
+				ttml: captionData.ttml
+			};
+			this.triggerHelper( 'onEmbeddedData', caption );
 		}
 
 	}

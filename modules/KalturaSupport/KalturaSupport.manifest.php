@@ -4,6 +4,11 @@
  */
 
 $kgDefaultComponentAttr = array(
+	'plugin' => array(
+		'doc' => 'Should plugin be enabled',
+		'initvalue' => true,
+		'type' => 'boolean',
+	),
 	'parent' => array(
 		'doc' => 'Parent container for component. Components include default placement, leave as null if unsure.',
 		'type' => 'enum',
@@ -288,9 +293,14 @@ return array(
 			),
 			'kpl1Name' => array(
 				'doc' => "The name of the indexed playlist.",
-			)
+			),
+			'includeInLayout' => array(
+                'doc' => "If the playlist clip list should be displayed.",
+                'type' => 'boolean',
+                'initvalue' => true
+            )
 		)
-	),
+	),/*
 	'playlistHolder' => array(
 		'description' => 'Holds the playlist clip list.',
 		'attributes' => array(
@@ -299,7 +309,7 @@ return array(
 				'type' => 'boolean'
 			)
 		)
-	),
+	),*/
 
 	'localizationCode' => array(
 			'description'=> "Set the language of the Kaltura player user interface. Supports language code or <b>auto</b> to take the browser
@@ -590,6 +600,43 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'doc' => 'Drop shadow color',
 				'type' => 'hiddenValue'
 			)
+		)
+	),
+	'playlist2' => array(
+		'description' => 'Refactored playlists plugin',
+		'label' => 'Playlist',
+		'attributes' => array(
+            'autoContinue' => array(
+                'label' => 'Auto continue',
+                "initvalue" => true,
+                'doc' => 'If the playlist should auto-continue.',
+                'type' => 'boolean'
+            ),
+            'autoPlay' => array(
+                'label' => 'Auto play',
+                "initvalue" => true,
+                'doc' => 'If the playlist should autoplay on load.',
+                'type' => 'boolean'
+            ),
+			'kpl0Name' => array(
+				'label' => 'First playlist name',
+				'doc' => 'First playlist name',
+				'type' => 'string'
+			),
+			'kpl0Url' => array(
+				'label' => 'First playlist URL',
+				'doc' => 'First playlist URL',
+				'type' => 'string'
+			),
+			'kpl0Id' => array(
+				'label' => 'First playlist ID',
+                'doc' => "The kaltura playlist Id",
+                'type' => 'string'
+            ),
+			'initItemEntryId' => array(
+				'doc' => 'The entryId that should be played first.',
+				'type' => 'string'
+			),
 		)
 	),
 	'share' => array(
@@ -994,6 +1041,10 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'doc' => "If entry cuepoints should be tracked for midroll ad requests.",
 				'type' => 'boolean'
 			),
+			'allowSeekWithNativeControls' => array(
+				'doc' => "It allows to catch seek requests during ads and return the player to original play time..",
+				'type' => 'boolean'
+			),
 			'storeSession' => array(
 				'doc' => 'If the frequency playback should be stored across player reloads.
 					By default, only playlists respect frequency intervals.
@@ -1218,6 +1269,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'type' => 'featuremenu',
 		'label' => 'airPlay',
 		'model' => 'config.plugins.airPlay',
+	),
+	'nativeCallout' => array(
+		'description' => 'Supports replacing the player "play button" with a callout to native player, for Mobile Devices.',
+		'type' => 'featuremenu',
+		'label' => 'nativeCallout',
+		'model' => 'config.plugins.nativeCallout',
 	),
 	'related' => array(
 		'description' => 'Add the Related Videos screen at the end of the video to attract users to watch additional videos.',
