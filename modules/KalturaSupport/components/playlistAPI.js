@@ -213,8 +213,6 @@
 				this.setSelectedMedia(this.currentClipIndex);
 				this.playMedia(this.currentClipIndex, true);
 			}
-
-
 		},
 
 		playPrevious: function(){
@@ -285,9 +283,20 @@
 			this.embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')} ); // for API backward compatibility
 			this.prepareData(this.playlistSet[playlistIndex].items);   // prepare the data to be compatible with KBaseMediaList
 			this.setMediaList(this.playlistSet[playlistIndex].items);  // set the media list in KBaseMediaList
-			// support initial selectedIndex
+			// support initial selectedIndex or initItemEntryId
 			if (this.firstLoad){
-				this.playMedia( this.getConfig('selectedIndex'), this.getConfig('autoPlay'));
+				if ( this.getConfig( 'initItemEntryId' ) ){ // handle initItemEntryId
+					// find selected item index
+					var items = this.playlistSet[this.currentPlaylistIndex].items;
+					for (var i=0; i<items.length; i++){
+						if (items[i].id === this.getConfig( 'initItemEntryId' )){
+							this.playMedia(i, this.getConfig( 'autoPlay' ));
+							break;
+						}
+					}
+				}else{
+					this.playMedia( this.getConfig('selectedIndex'), this.getConfig('autoPlay'));
+				}
 				this.firstLoad = false;
 			}
 			if (this.playlistSet.length > 1){
