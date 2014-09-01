@@ -495,7 +495,7 @@
 					if( _this.slCurrentTime != orgTime ){
 						_this.seeking = false;
 						clearInterval( _this.seekInterval );
-						$( _this ).trigger( 'seeked' );
+						$( _this ).trigger( 'seeked',[ _this.slCurrentTime] );
 					}
 				}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 			} else if ( percentage != 0 ) {
@@ -544,7 +544,8 @@
 			$( this ).trigger( 'updateBufferPercent', this.bufferedPercent );
 		},
 
-		onPlayerSeekEnd: function () {
+		onPlayerSeekEnd: function ( position ) {
+			this.slCurrentTime = position;
 			$( this ).trigger( 'seeked' );
 			this.updatePlayhead();
 			if( this.seekInterval  ) {

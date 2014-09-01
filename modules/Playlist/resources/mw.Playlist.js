@@ -480,7 +480,8 @@ mw.Playlist.prototype = {
 		}
 
 		// trigger a playlist_playClip event:
-		embedPlayer.triggerHelper( 'Playlist_PlayClip', [ clipIndex, !!autoContinue ]);
+		var playback = {'shouldPause': false};
+		embedPlayer.triggerHelper( 'Playlist_PlayClip', [ clipIndex, !!autoContinue, playback ]);
 
 		// iOS devices have a autoPlay restriction, we issue a raw play call on
 		// the video tag to "capture the user gesture" so that future
@@ -505,7 +506,7 @@ mw.Playlist.prototype = {
 			_this.addClipBindings();
 			// Restore onDoneInterfaceFlag
 			embedPlayer.onDoneInterfaceFlag = true;
-		} );
+		}, playback.shouldPause );
 	},
 	/**
 	* Update the player

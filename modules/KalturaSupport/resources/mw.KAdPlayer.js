@@ -93,6 +93,14 @@ mw.KAdPlayer.prototype = {
 		if( adSlot.type !== 'overlay' ) {
 			_this.embedPlayer.triggerHelper("onDisableInterfaceComponents");
 		}
+		var excludedComponents = [];
+		// playPauseBtn won't be disabled if enableControlsDuringAd set to true
+		if ( mw.getConfig('enableControlsDuringAd') ) {
+			excludedComponents = ['playPauseBtn'];
+		}
+
+		_this.embedPlayer.triggerHelper( "onDisableInterfaceComponents", [excludedComponents] );
+
 		// Setup some configuration for done state:
 		adSlot.doneFunctions = [];
 		// set skip offset from config for all adds if defined 
@@ -105,8 +113,10 @@ mw.KAdPlayer.prototype = {
 
 		adSlot.playbackDone = function( hardStop ){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
-            // trigger ad complete event for tracking. Taking current time from currentTimeLabel plugin since the embedPlayer currentTime is already 0
-            $(_this.embedPlayer).trigger('onAdComplete',[adSlot.ads[adSlot.adIndex].id, mw.npt2seconds($(".currentTimeLabel").text())]);
+			if( adSlot.ads[adSlot.adIndex] ) {
+				// trigger ad complete event for tracking. Taking current time from currentTimeLabel plugin since the embedPlayer currentTime is already 0
+				$(_this.embedPlayer).trigger('onAdComplete',[adSlot.ads[adSlot.adIndex].id, mw.npt2seconds($(".currentTimeLabel").text())]);
+			}
 			// remove click binding if present
 			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'mouseup';
 			$( _this.embedPlayer ).unbind( clickEventName + _this.adClickPostFix );
@@ -451,6 +461,12 @@ mw.KAdPlayer.prototype = {
 						e.stopPropagation();
 						if( _this.clickedBumper ){
 							_this.getVideoElement().play();
+
+							// This changes player state to the relevant value ( play-state )
+							if( _this.isVideoSiblingEnabled() ) {
+								$( _this.embedPlayer ).trigger( 'playing' );
+							}
+
 							$( embedPlayer).trigger("onPlayerStateChange",["play"]);
 							$( embedPlayer).trigger("onResumeAdPlayback");
 							embedPlayer.restoreComponentsHover();
@@ -461,6 +477,12 @@ mw.KAdPlayer.prototype = {
 							// Pause the player
 							embedPlayer.disableComponentsHover();
 							_this.getVideoElement().pause();
+
+							// This changes player state to the relevant value ( pause-state )
+							if( _this.isVideoSiblingEnabled() ) {
+								$( _this.embedPlayer ).trigger( 'onPauseInterfaceUpdate' );
+							}
+
 							embedPlayer.enablePlayControls(["scrubber"]);
 							$( embedPlayer).trigger("onPlayerStateChange",["pause"]);
 							embedPlayer.enablePlayControls();
@@ -618,6 +640,7 @@ mw.KAdPlayer.prototype = {
 		mw.log("KAdPlayer:: source updated, add tracking");
 		// Always track ad progress:
 		if( vid.readyState > 0 && vid.duration ) {
+			embedPlayer.triggerHelper('AdSupport_AdUpdateDuration', vid.duration); // Trigger duration event
 			_this.addAdTracking( adConf.trackingEvents, adConf  );
 		} else {
 			var loadMetadataCB = function() {

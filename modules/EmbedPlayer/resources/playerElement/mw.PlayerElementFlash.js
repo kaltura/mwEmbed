@@ -163,16 +163,16 @@
 		 * add js listener for the given callback. Creates generic methodName and adds it to this playerElement
 		 * @param callback to call
 		 * @param eventName notification name to listen for
+		 * @param disregardEventCounter don't concat listenerCounter to the method name
 		 */
-		subscribe: function ( callback, eventName ) {
+		subscribe: function ( callback, eventName, disregardEventCounter ) {
 			if ( this.playerElement ) {
-				var methodName = eventName + this.listenerCounter;
+				var methodName = !!disregardEventCounter ? eventName  : eventName + this.listenerCounter;
 				this.listenerCounter++;
 				this.targetObj[methodName] = callback;
 
 				this.bindPlayerFunction( eventName, methodName );
 			}
-
 		},
 		/**
 		 * Bind a Player Function,
