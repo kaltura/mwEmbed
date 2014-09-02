@@ -100,6 +100,14 @@
 							'title' => "Initial EntryId",
 							'path' => 'KalturaSupport/tests/PlaylistInitItemEntryId.html'
 						),
+						'PlaylistVAST' => array(
+							'title' => "Playlist with VAST ads",
+							'path' => 'KalturaSupport/tests/PlaylistVAST.html'
+						),
+						'PlaylistDoubleclick' => array(
+							'title' => "Playlist with Doubleclick ads",
+							'path' => 'KalturaSupport/tests/PlaylistDoubleclick.html'
+						),
                         'PlaylistSideBar' => array(
                             'title' => "Playlist within side bar",
                             'path' => 'KalturaSupport/tests/PlaylistSideBar.html'
