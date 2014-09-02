@@ -2944,6 +2944,10 @@
 					this.hideSpinner();
 				}
 			}
+		},
+
+		getKalturaAttributeConfig: function( attr ) {
+			return this.getKalturaConfig( null , attr );
 		}
 	};
 
