@@ -495,6 +495,7 @@
 
 				this.unbindHelper("seeked" + _this.bindPostfix).bindHelper("seeked" + _this.bindPostfix, function(){
 					_this.unbindHelper("seeked" + _this.bindPostfix);
+					_this.removePoster();
 					_this.monitor();
 					if( stopAfterSeek ){
 						_this.hideSpinner();
