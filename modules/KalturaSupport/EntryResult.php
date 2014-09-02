@@ -66,6 +66,7 @@ class EntryResult {
 	
 	function getEntryResultFromApi(){
 		global $wgKalturaApiFeatures;
+		global $wgKalturaEnableProxyData;
 
 		// Check if the API supports entryRedirect feature
 		$supportsEntryRedirect = isset($wgKalturaApiFeatures['entryRedirect']) ? $wgKalturaApiFeatures['entryRedirect'] : false;
@@ -90,6 +91,11 @@ class EntryResult {
 			} else {
 				$filter->idEqual = $this->request->getEntryId();
 			}
+
+			if ($wgKalturaEnableProxyData && $this->request->getFlashVars("proxyData")){
+			    $filter->freeText = urlencode(json_encode($this->request->getFlashVars("proxyData")));
+			}
+
 			$baseEntryIdx = $namedMultiRequest->addNamedRequest( 'meta', 'baseEntry', 'list', array('filter' => $filter) );
 			// Get entryId from the baseEntry request response
 			$entryId = '{' . $baseEntryIdx . ':result:objects:0:id}';

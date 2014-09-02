@@ -90,6 +90,11 @@ mw.EmbedPlayerKplayer = {
 			flashvars.sourceType = 'url';
 			flashvars.ignoreStreamerTypeForSeek = true;
 			flashvars.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
+			this.streamerType = "hls";
+		}
+
+		if ( this.live && this.streamerType == 'rtmp' && !this.cancelLiveAutoPlay ) {
+			flashvars.autoPlay = true;
 		}
 
 		//will contain flash plugins we need to load
@@ -112,7 +117,10 @@ mw.EmbedPlayerKplayer = {
 				'enableGui' : 'onEnableGui'  ,
 				'liveStreamOffline': 'onLiveEntryOffline',
 				'liveStreamReady': 'onLiveStreamReady',
-				'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions'
+				'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions',
+				'bufferChange': 'onBufferChange',
+				'audioTracksReceived': 'onAudioTracksReceived',
+				'audioTrackSelected': 'onAudioTrackSelected'
 			};
 			_this.playerObject = this.getElement();
 			$.each( bindEventMap, function( bindName, localMethod ) {
@@ -122,14 +130,17 @@ mw.EmbedPlayerKplayer = {
 				_this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', _this.startTime );
 			}
 			readyCallback();
-			if ( _this.live && _this.cancelLiveAutoPlay ){
-				_this.playerObject.setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'false');
-				_this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus': false } );
-			}
+
 			if (mw.getConfig( 'autoMute' )){
 				_this.triggerHelper("volumeChanged",0);
 			}
 
+		});
+
+		this.bindHelper( 'switchAudioTrack', function(e, data) {
+			if ( _this.playerObject ) {
+				_this.playerObject.sendNotification( "doAudioSwitch",{ audioIndex: data.index  } );
+			}
 		});
 	},
 
@@ -216,7 +227,7 @@ mw.EmbedPlayerKplayer = {
 	restorePlayerOnScreen: function(){},
 
 	updateSources: function(){
-		if ( ! ( this.live || this.sourcesReplaced ) ) {
+		if ( ! ( this.live || this.sourcesReplaced || this.isHlsSource( this.mediaElement.selectedSource ) ) ) {
 			var newSources = this.getSourcesForKDP();
 			this.replaceSources( newSources );
 			this.mediaElement.autoSelectSource();
@@ -224,11 +235,12 @@ mw.EmbedPlayerKplayer = {
 		else if ( this.live && this.streamerType == 'rtmp' ){
 			var _this = this;
 
-			//in this case Flash player will determine when live is on air
-			if ( ! this.autoplay ) {
+			if ( ! this.autoplay ) { //not a real "autoPlay", just to enable live checks
 				this.autoplay = true;
 				//cancel the autoPlay once Flash starts the live checks
 				this.cancelLiveAutoPlay = true;
+			} else if ( this.playerObject ) {
+				this.playerObject.setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'true');
 			}
 			//with rtmp the first seconds look offline, delay the "offline" message
 			this.setKDPAttribute('liveCore', 'offlineAlertOffest', this.LIVE_OFFLINE_ALERT_TIMEOUT);
@@ -281,9 +293,6 @@ mw.EmbedPlayerKplayer = {
 		if ( this.isLive() ) {
 			this.ignoreEnableGui = false;
 			this.enablePlayControls();
-		}
-		if ( this.seeking == true ) {
-			this.onPlayerSeekEnd();
 		}
 		this.stopped = this.paused = false;
 	},
@@ -361,7 +370,7 @@ mw.EmbedPlayerKplayer = {
 	 * @param {Float}
 	 *			percentage Percentage of total stream length to seek to
 	 */
-	seek: function(percentage) {
+	seek: function(percentage, stopAfterSeek) {
 		var _this = this;
 		var seekTime = percentage * this.getDuration();
 		mw.log( 'EmbedPlayerKalturaKplayer:: seek: ' + percentage + ' time:' + seekTime );
@@ -376,14 +385,39 @@ mw.EmbedPlayerKplayer = {
 			}
 		}
 		this.seeking = true;
+
+		// Save currentTime
+		this.kPreSeekTime = _this.currentTime;
+		this.currentTime = ( percentage * this.duration ).toFixed( 2 ) ;
+
 		// trigger the html5 event:
 		$( this ).trigger( 'seeking' );
 
-		// Issue the seek to the flash player:
-		this.playerObject.seek( seekTime );
-
 		// Run the onSeeking interface update
 		this.layoutBuilder.onSeek();
+
+		this.unbindHelper("seeked" + _this.bindPostfix).bindHelper("seeked" + _this.bindPostfix, function(){
+			_this.unbindHelper("seeked" + _this.bindPostfix);
+			_this.monitor();
+			if( stopAfterSeek ){
+				_this.hideSpinner();
+				_this.pause();
+				_this.updatePlayheadStatus();
+			} else {
+				// continue to playback ( in a non-blocking call to avoid synchronous pause event )
+				setTimeout(function(){
+					if ( !_this.stopPlayAfterSeek ) {
+						mw.log( "EmbedPlayerNative::sPlay after seek" );
+						_this.play();
+						_this.stopPlayAfterSeek = false;
+					}
+				},0);
+			}
+		});
+
+		// Issue the seek to the flash player:
+		this.playerObject.play();
+		this.playerObject.seek( seekTime );
 	},
 
 	/**
@@ -427,12 +461,9 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onPlayerSeekEnd: function () {
-		$( this ).trigger( 'seeked' );
+		this.previousTime = this.currentTime = this.flashCurrentTime = this.playerObject.getCurrentTime();
 		this.seeking = false;
-		this.flashCurrentTime = this.playerObject.getCurrentTime();
-		if( this.seekInterval  ) {
-			clearInterval( this.seekInterval );
-		}
+		$( this ).trigger( 'seeked',[this.playerObject.getCurrentTime()]);
 	},
 
 	onSwitchingChangeStarted: function ( data, id ) {
@@ -440,6 +471,9 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onSwitchingChangeComplete: function ( data, id ) {
+		if (data && data.newBitrate) {
+			this.triggerHelper( 'bitrateChange' , data.newBitrate );
+		}
 		this.mediaElement.setSourceByIndex ( data.newIndex );
 	},
 
@@ -463,11 +497,13 @@ mw.EmbedPlayerKplayer = {
 		if ( this.streamerType == 'rtmp' ) {
 			//first time the livestream is ready
 			this.hideSpinner();
+			this.playerObject.setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'false');  //reset property for next media
 			this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : true } );
 			if ( this.cancelLiveAutoPlay ) {
 				this.cancelLiveAutoPlay = false;
+				this.autoplay = false;
 				//fix misleading player state after we cancelled autoplay
-				$( this ).trigger( "onpause" );
+				this.pause();
 			}
 		}
 	},
@@ -494,6 +530,25 @@ mw.EmbedPlayerKplayer = {
 		} else {
 			this.enablePlayControls();
 		}			
+	},
+
+	onBufferChange: function ( buffering ) {
+		//vod buffer is already being monitored by EmbedPlayer.js
+		if ( this.isLive() ) {
+			if ( buffering ) {
+				this.bufferStart();
+			} else {
+				this.bufferEnd();
+			}
+		}
+	},
+
+	onAudioTracksReceived: function ( data ) {
+		this.triggerHelper( 'audioTracksReceived', data );
+	},
+
+	onAudioTrackSelected: function ( data ) {
+		this.triggerHelper( 'audioTrackIndexChanged', data  );
 	},
 
 	/**
@@ -526,7 +581,7 @@ mw.EmbedPlayerKplayer = {
 			return this.mediaElement.selectedSource.getSrc();
 		}
 		var flavorIdParam = '';
-		var mediaProtocol = this.getKalturaConfig( null, 'mediaProtocol' ) || "http";
+		var mediaProtocol = this.getKalturaConfig( null, 'mediaProtocol' ) || mw.getConfig('Kaltura.Protocol') || "http";
 		var format;
 		var fileExt = 'f4m';
 		if ( this.streamerType === 'hdnetwork' ) {
@@ -570,7 +625,7 @@ mw.EmbedPlayerKplayer = {
 	getSourceIndex: function( source ){
 		var sourceIndex = null;
 		$.each( this.mediaElement.getPlayableSources(), function( currentIndex, currentSource ) {
-			if( source.getSrc() == currentSource.getSrc() ){
+			if( source.getAssetId() == currentSource.getAssetId() ){
 				sourceIndex = currentIndex;
 				return false;
 			}

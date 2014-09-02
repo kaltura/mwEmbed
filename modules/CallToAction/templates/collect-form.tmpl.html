@@ -1,0 +1,16 @@
+<div align="center">
+	<h3><%=self.getConfig('description')%></h3>
+	<form data-submit="processForm">
+		<% $.each(self.getConfig('fields'), function(key, field){ %>
+		<div class="cta-form-item">
+			<input type="<%=field.type%>" <%=(field.required) ? 'required ' : '' %>placeholder="<%=field.placeholder%>" name="<%=field.name%>" />
+		</div>
+		<% }); %>
+		<div class="cta-form-item">
+			<input type="submit" value="Submit" />
+		</div>
+	</form>
+	<% if( !self.getConfig('submitRequired') ) { %>
+	<a class="cta-skip" href="#" data-click="hideScreen">Skip</a>
+	<% } %>
+</div>

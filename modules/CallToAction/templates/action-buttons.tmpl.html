@@ -1,0 +1,5 @@
+<div>
+<% $.each(actions, function(idx, action){ %>
+	<a class="cta-button" href="<%=action.url%>" data-id="<%=action.id%>" data-click="gotoAction"><%=action.label%></a><br />
+<% }); %>
+</div>
