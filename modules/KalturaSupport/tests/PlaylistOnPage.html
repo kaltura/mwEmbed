@@ -19,7 +19,7 @@
 			  asyncTest( "Check for onPage playlist", function(){
 				  kalturaQunitWaitForPlayer(function(){
 					  // look for onPage playlist id:
-					  ok( $( '.onpagePlaylistInterface' ).length, "Found playlistOnPage div" );
+					  ok( $( '.onpagePlaylistInterface' ).length > 0, "Found playlistOnPage div" );
 					  equal ( $( '.onpagePlaylistInterface' ).find('.k-thumb').width(), kdp.evaluate('{playlistAPI.thumbnailWidth}'), "ThumbWidth is set correctly");
 					  equal( $( '.onpagePlaylistInterface' ).find('.k-description:first').html(), kdp.evaluate('{mediaProxy.entry.description}'), "description matches kdp description");
 					  start();
