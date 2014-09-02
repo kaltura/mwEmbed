@@ -131,6 +131,10 @@ return array(
 		'doc' => 'If the player should start playback once ready.',
 		'type' => 'boolean'
 	),
+	'autoMute' => array(
+		'doc' => 'If set to true, player will start with audio muted. This will be respected across entries and ads, until the user enables volume in the player. Note some VPAID ads do not support auto mute.',
+		'type' => 'boolean'
+	),
 	/*Captions */
 	'closedCaptions' => array(
 		'description' => 'Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
