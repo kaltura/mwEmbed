@@ -101,11 +101,11 @@
 							'path' => 'KalturaSupport/tests/PlaylistInitItemEntryId.html'
 						),
 						'PlaylistVAST' => array(
-							'title' => "Playlist with VAST ads",
+							'title' => "Playlist VAST ads",
 							'path' => 'KalturaSupport/tests/PlaylistVAST.html'
 						),
 						'PlaylistDoubleclick' => array(
-							'title' => "Playlist with Doubleclick ads",
+							'title' => "Playlist Doubleclick ads",
 							'path' => 'KalturaSupport/tests/PlaylistDoubleclick.html'
 						),
                         'PlaylistSideBar' => array(
