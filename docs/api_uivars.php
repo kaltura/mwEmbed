@@ -108,12 +108,6 @@
             'default' => '',
             'example' => ''
         ),
-        'Kaltura.UseAppleAdaptive' => array(
-            'type' => 'String',
-            'desc' => '',
-            'default' => '',
-            'example' => ''
-        ),
         'Kaltura.UseFlavorIdsUrls' => array(
             'type' => 'String',
             'desc' => '',
@@ -126,6 +120,12 @@
             'default' => '',
             'example' => ''
         ),*/
+		'Kaltura.UseAppleAdaptive' => array(
+				'type' => 'String',
+				'desc' => 'If apple HLS streams should be used when available',
+				'default' => 'true',
+				'example' => ''
+		),
         'httpProtocol' => array(
             'type' => 'String',
             'desc' => 'The HTTP protocol to load the KDP application from',
