@@ -90,6 +90,10 @@
 						_this.monitor();
 					}
 				});
+				this.bind( 'loadExternalClosedCaptions', function(e, textSources ){
+					_this.destory();
+					_this.buildMenu( textSources );
+				});
 			}
 
 			this.bind( 'textTracksReceived', function( e, data ){
