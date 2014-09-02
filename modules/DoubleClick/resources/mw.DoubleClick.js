@@ -762,8 +762,8 @@
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				// trigger ad play event
 				$(_this.embedPlayer).trigger("onAdPlay",[adInfo.adID]);
-			// This changes player state to the relevant value ( play-state )
-			$(_this.embedPlayer).trigger("playing");
+				// This changes player state to the relevant value ( play-state )
+				$(_this.embedPlayer).trigger("playing");
 				if ( _this.currentAdSlotType != _this.prevSlotType ) {
 					_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
 					_this.prevSlotType = _this.currentAdSlotType;
@@ -837,7 +837,7 @@
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				setTimeout(function(){
 					_this.embedPlayer.hideSpinner();
-					$(".mwEmbedPlayer").hide();
+					_this.adLoaderErrorFlag = true;
 					_this.restorePlayer();
 				},100);
 			},'adsLoadError', true);
@@ -982,7 +982,9 @@
 			if (this.adsManager && $.isFunction( this.adsManager.unload ) ) {
 				this.adsManager.unload();
 			}
-			this.restorePlayer();
+			if (this.embedPlayer.sequenceProxy.isInSequence){
+				this.restorePlayer();
+			}
 		},
 		restorePlayer: function( onContentComplete, adPlayed ){
 			if (this.isdestroy){
@@ -992,12 +994,12 @@
 			var _this = this;
 			this.adActive = false;
 			if (this.isChromeless){
-				if (_this.isLinear){
+				if (_this.isLinear || _this.adLoaderErrorFlag){
 					$(".mwEmbedPlayer").show();
 				}
 				this.embedPlayer.getPlayerElement().redrawObject(50);
 			}else{
-				if (_this.isLinear){
+				if (_this.isLinear || _this.adLoaderErrorFlag){
 					$("#adContainervideoTarget").hide();
 				}
 			}
