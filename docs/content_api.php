@@ -394,7 +394,7 @@ kWidget.embed({
 
 <a name="kWidget.addReadyCallback-desc"></a>
 <h3>1. Receiving notification that the player API is ready</h3>
-<p>See <a href="#kWidget.addReadyCallback">kWidget.addReadyCallback</a> or the "readyCallback" method.</p>
+<p>See <a href="#kWidget.addReadyCallback">kWidget.addReadyCallback</a> or the "<a href="#kWidget.settingsObject">readyCallback</a>" function within a dynamic embed.</p>
 
 <a name="sendNotification-desc"></a>
 <h3>2. Calling a player method from JavaScript</h3>
