@@ -68,6 +68,7 @@
 			}
 
 			event.preventDefault();
+			this.getPlayer().triggerHelper( 'goingtoplay' );
 			this.getPlayer().sendNotification('doPlay');
 		},
 		onEnable: function(){

@@ -630,7 +630,7 @@
 				if ( ad.a ) {
 					_this.isLinear = ad.a.linear;
 				}
-				$("#adContainervideoTarget").show();
+				$("#" + _this.getAdContainerId()).show();
 				// dispatch adOpen event
 				$( _this.embedPlayer).trigger( 'onAdOpen',[ad.a.adId, ad.a.adSystem, _this.currentAdSlotType, ad.a.adPodInfo ? ad.a.adPodInfo.adPosition : 0] );
 
@@ -1000,7 +1000,7 @@
 				this.embedPlayer.getPlayerElement().redrawObject(50);
 			}else{
 				if (_this.isLinear || _this.adLoaderErrorFlag){
-					$("#adContainervideoTarget").hide();
+					$("#" + _this.getAdContainerId()).hide();
 				}
 			}
 			this.embedPlayer.sequenceProxy.isInSequence = false;
