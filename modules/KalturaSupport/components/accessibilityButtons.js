@@ -17,7 +17,7 @@
 
 		seekForward: gM( 'mwe-embedplayer-seek_forward' ),
 		seekBackward: gM( 'mwe-embedplayer-seek_backward' ),
-		currentTime: gM( 'mwe-embedplayer-current_time' ),
+		currentTimeKey:  'mwe-embedplayer-current_time' ,
 
 		setup: function( embedPlayer ) {
 			this.addBindings();
@@ -27,10 +27,11 @@
 			if (this.getConfig('positionBtn')){
 				this.bind( 'updatePlayHeadPercent', function( e, perc ){
 					var positionButton = _this.getAccessibilityBtn('positionBtn');
-					positionButton.attr('title', 
-						gM( 'mwe-embedplayer-current_time',  mw.seconds2npt( _this.embedPlayer.currentTime ) ) 
+					var currentTimeLabel =  gM(_this.currentTimeKey,  mw.seconds2npt( _this.embedPlayer.currentTime ));
+					positionButton.attr('title',
+						currentTimeLabel
 					);
-					_this.setAccessibility(positionButton, _this.currentTime + mw.seconds2npt( perc * _this.embedPlayer.getDuration()));
+					_this.setAccessibility(positionButton,currentTimeLabel);
 				});
 			}
 			this.bind('updateBufferPercent', function(){
@@ -89,7 +90,7 @@
 					.addClass(this.getCssClass() + layoutClass);
 
 				if (this.getConfig('positionBtn')){
-					var positionButton = $( '<button />' )
+					var positionButton = $( '<p />' )
 						.attr( 'title', 'position' )
 						.addClass( "btn positionBtn accessibilityButton");
 					this.$el.append(positionButton);

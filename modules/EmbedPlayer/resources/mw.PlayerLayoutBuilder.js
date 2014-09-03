@@ -625,8 +625,10 @@ mw.PlayerLayoutBuilder.prototype = {
 			embedPlayer.triggerHelper( 'showPlayerControls' );
 		};
 		var hidePlayerControls = function(){
-			$interface.addClass( outPlayerClass );
-			embedPlayer.triggerHelper( 'hidePlayerControls' );
+			if (!embedPlayer.paused){
+				$interface.addClass( outPlayerClass );
+				embedPlayer.triggerHelper( 'hidePlayerControls' );
+			}
 		};
 
 		// Check if we should display the interface:

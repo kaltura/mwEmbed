@@ -186,6 +186,11 @@
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'airPlay',
 		),
+		"nativeCallout" => array(
+			'scripts' => "components/nativeCallout.js",
+			'dependencies' => 'mw.KBasePlugin',
+			'kalturaPluginName' => 'nativeCallout',
+		),
 		"closedCaptions" => array(
 			'scripts' => "resources/mw.ClosedCaptions.js",
 			'dependencies' => array( 
@@ -216,10 +221,10 @@
 			'dependencies' => array( 'mw.KBaseScreen' ),
 			'kalturaPluginName' => 'share',
 		),
-		"abChecker" => array(
-            'scripts' => "components/abChecker/abChecker.js",
+		"adBlockDetector" => array(
+            'scripts' => "components/adBlockDetector/adBlockDetector.js",
             'dependencies' => array( 'mw.KBasePlugin' ),
-            'kalturaPluginName' => 'abChecker',
+            'kalturaPluginName' => 'adBlockDetector',
         ),
 		"pptWidgetPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",
@@ -324,6 +329,11 @@
 			'scripts' => "resources/uiConfComponents/statisticsPlugin.js",
 			'dependencies' => array( 'mw.KAnalytics' ), 
 			'kalturaPluginName' => 'statistics'
+		),
+		"liveAnalytics" => array(
+			'scripts' => "resources/mw.KLiveAnalytics.js",
+			'dependencies' => array( 'mw.KBasePlugin' ),
+			'kalturaPluginName' => 'liveAnalytics'
 		),
 		'playbackRateSelectorPlugin' => array(
 			'scripts' => "resources/uiConfComponents/playbackRateSelector.js",

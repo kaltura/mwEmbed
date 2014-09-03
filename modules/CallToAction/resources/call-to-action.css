@@ -1,0 +1,43 @@
+.cta-button {
+	width: 150px;
+	background-color: rgb(0, 102, 255);
+	text-align: center;
+	padding: 10px;
+	border-radius: 4px;
+	margin: 10px;
+	display: inline-block;
+	color: #fff;
+	text-decoration: none;
+}
+.related .cta-50 { 
+	width: 50% !important;
+	text-align: center;
+	padding-top: 20px;
+}
+.cta-form-item {
+	margin: 10px;
+}
+.cta-form-item input {
+	padding: 5px;
+	border-radius: 4px;
+}
+.cta-skip {
+	color: #fff; 
+	text-decoration: none;
+}
+.screen + .actionButtons {
+	padding-top: 0;
+}
+.actionButtons .screen-content {
+	height: 100%;
+}
+.actionButtons .screen-content > span {
+	display: table;
+	width: 100%;
+	height: 100%;
+}
+.actionButtons .screen-content > span > div {
+	display: table-cell;
+	text-align: center;
+	vertical-align: middle;
+}

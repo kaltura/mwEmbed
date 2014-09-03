@@ -225,6 +225,38 @@ $methodDocs = array (
 						) 
 				) 
 		),
+		'kBind'=> array(
+				'desc' => 'Register a JavaScript handler function for a KDP notification',
+				'params' => array (
+						'eventName' => array (
+								'type' => 'String',
+								'desc' => 'The name of the notification to listen to. Can be namespaced for easy group event removal.'
+						),
+						'callback' => array (
+								'type' => 'String',
+								'desc' => 'A function to be called when the named event is triggered.'
+						),
+				),
+				'examples'  => array (
+							'type' => 'link',
+							'name' => 'kBind and kUBnind',
+							'docFullPath' => '../modules/KalturaSupport/tests/kBind_kUnbind.qunit.html'
+						)
+		),
+		'kUnbind' => array(
+				'desc' => 'Remove a JavaScript handler function by name or by setfor a KDP notification',
+				'params' => array (
+						'eventName' => array (
+								'type' => 'String',
+								'desc' => 'The name of the notification to remove, prefix with period for removal of a set of namespaced events.'
+						)
+				),
+				'examples' => array (
+							'type' => 'link',
+							'name' => 'kBind and kUBnind',
+							'docFullPath' => '../modules/KalturaSupport/tests/kBind_kUnbind.qunit.html'
+						)
+		),
 		'addJsListener' => array (
 				'desc' => 'Register a javascript handler function for a KDP notification',
 				'params' => array (

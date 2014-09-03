@@ -207,7 +207,7 @@ require_once( realpath( dirname( __FILE__ ) ) . '/api_evaluates.php' );
 		font-weight:800;
 	}
 	.vartype{
-		margin: 0px;
+		margin-right:5px;
 		border: 2px solid #CCC;
 		background-color: #EEE;
 		border-radius: 4px;
@@ -402,7 +402,7 @@ kWidget.embed({
 <p>Available JavaScript API:</p>
 <a href="#kWidget.addReadyCallback-desc">1. Receiving notification that the player API is ready</a><br>
 <a href="#sendNotification-desc">2. Calling a player method from JavaScript</a><br>
-<a href="#addJsListener-desc">3. Registering to a player event</a><br>
+<a href="#kBind-desc">3. Registering to a player event</a><br>
 <a href="#api4">4. Un-registering a player event</a><br>
 <a href="#api5">5. Retrieving a player property</a><br>
 <a href="#api6">6. Setting a player attribute</a><br>
@@ -432,12 +432,14 @@ echo '<div class="docblock">' .
 		getOutlineContent( $sendNotificationActions) .
 	'</div><br>';
 ?>
-<a name="addJsListener-desc"></a>
+<a name="kBind-desc"></a>
 <h3>3. Registering to a player event</h3>
-<p>Use the <b>addJsListener</b> method to listen for a specific notification that something happened in the player, such as the video is playing or is paused.</p>
-<?php echo getDocs( array( 'addJsListener' ) ) ?>
+<p>Use the <b>kBind</b> method to add listen for a specific notification that something happened in the player, such as the video is playing or is paused.</p>
+<?php echo getDocs( array( 'kBind' ) ) ?>
 <br><h5>Player Life Cycle:</h5>
+
 <?php echo getTableContent( array( 'Event', 'Parameters', 'Description' ), $listeners1 ) ?>
+
 <br><br><h5>Player Information:</h5>
 <?php echo getTableContent( array( 'Event', 'Parameters', 'Description' ), $listeners2 ) ?>
 <br><br><h5>Player Advertisement Related Notifications:</h5>

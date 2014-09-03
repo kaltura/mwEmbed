@@ -57,7 +57,7 @@ mw.KAdPlayer.prototype = {
 						_this.disablePlayControls(); // disable player controls
 						adPlayer.play();
 					} else {
-						$( embedPlayer ).trigger( "onPlayerStateChange", ["pause"] ); // trigger playPauseBtn UI update
+						$( embedPlayer ).trigger( "onPlayerStateChange", ["pause", _this.embedPlayer.currentState] ); // trigger playPauseBtn UI update
 						setTimeout( function () {
 							adPlayer.pause();
 						}, 0 );
@@ -68,6 +68,12 @@ mw.KAdPlayer.prototype = {
 				$( embedPlayer ).trigger( "onResumeAdPlayback" );
 				_this.clickedBumper = false;
 				_this.disablePlayControls(); // disable player controls
+			}
+		});
+		// for mobile devices (no ad sibling): prevent seeking when we have ads and playback hasn't started yet
+		$(this.embedPlayer).bind('playerReady', function(){
+			if (!_this.isVideoSiblingEnabled()){
+				$( _this.embedPlayer ).trigger( "onDisableScrubber" );
 			}
 		});
 	},
@@ -89,13 +95,17 @@ mw.KAdPlayer.prototype = {
 		var _this = this;
 		mw.log("KAdPlayer::display:" + adSlot.type + ' ads:' +  adSlot.ads.length );
 
-		var excludedComponents = [];
-		// playPauseBtn won't be disabled if enableControlsDuringAd set to true
-		if ( mw.getConfig('enableControlsDuringAd') ) {
-			excludedComponents = ['playPauseBtn'];
+		// if it's overlay player controls should not be disabled
+		if( adSlot.type !== 'overlay' ) {
+			var components = ['fullScreenBtn','logo'];
+			if (mw.getConfig('enableControlsDuringAd')) {
+				components.push('playPauseBtn');
+			}
+			if ( mw.isIphone() ){
+				components=[];
+			}
+			_this.embedPlayer.triggerHelper( "onDisableInterfaceComponents", [components] );
 		}
-
-		_this.embedPlayer.triggerHelper( "onDisableInterfaceComponents", [excludedComponents] );
 
 		// Setup some configuration for done state:
 		adSlot.doneFunctions = [];
@@ -109,8 +119,10 @@ mw.KAdPlayer.prototype = {
 
 		adSlot.playbackDone = function( hardStop ){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
-            // trigger ad complete event for tracking. Taking current time from currentTimeLabel plugin since the embedPlayer currentTime is already 0
-            $(_this.embedPlayer).trigger('onAdComplete',[adSlot.ads[adSlot.adIndex].id, mw.npt2seconds($(".currentTimeLabel").text())]);
+			if( adSlot.ads[adSlot.adIndex] ) {
+				// trigger ad complete event for tracking. Taking current time from currentTimeLabel plugin since the embedPlayer currentTime is already 0
+				$(_this.embedPlayer).trigger('onAdComplete',[adSlot.ads[adSlot.adIndex].id, mw.npt2seconds($(".currentTimeLabel").text())]);
+			}
 			// remove click binding if present
 			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'mouseup';
 			$( _this.embedPlayer ).unbind( clickEventName + _this.adClickPostFix );
@@ -144,7 +156,9 @@ mw.KAdPlayer.prototype = {
 				adSlot.currentlyDisplayed = false;
 				// give time for the end event to clear
 				setTimeout(function(){
-					_this.embedPlayer.triggerHelper("onEnableInterfaceComponents");
+					if( adSlot.type !== 'overlay' ) {
+						_this.embedPlayer.triggerHelper("onEnableInterfaceComponents");
+					}
 					if( !hardStop && displayDoneCallback ){
 						displayDoneCallback();
 					}
@@ -453,6 +467,12 @@ mw.KAdPlayer.prototype = {
 						e.stopPropagation();
 						if( _this.clickedBumper ){
 							_this.getVideoElement().play();
+
+							// This changes player state to the relevant value ( play-state )
+							if( _this.isVideoSiblingEnabled() ) {
+								$( _this.embedPlayer ).trigger( 'playing' );
+							}
+
 							$( embedPlayer).trigger("onPlayerStateChange",["play"]);
 							$( embedPlayer).trigger("onResumeAdPlayback");
 							embedPlayer.restoreComponentsHover();
@@ -463,6 +483,12 @@ mw.KAdPlayer.prototype = {
 							// Pause the player
 							embedPlayer.disableComponentsHover();
 							_this.getVideoElement().pause();
+
+							// This changes player state to the relevant value ( pause-state )
+							if( _this.isVideoSiblingEnabled() ) {
+								$( _this.embedPlayer ).trigger( 'onPauseInterfaceUpdate' );
+							}
+
 							embedPlayer.enablePlayControls(["scrubber"]);
 							$( embedPlayer).trigger("onPlayerStateChange",["pause"]);
 							embedPlayer.enablePlayControls();
@@ -478,9 +504,9 @@ mw.KAdPlayer.prototype = {
 		}
 	}   ,
 	disablePlayControls: function(){
-		var components = [];
+		var components = ['fullScreenBtn','logo'];
 		if (mw.getConfig('enableControlsDuringAd')) {
-			components = ['playPauseBtn'];
+			components.push('playPauseBtn');
 		}
 		this.embedPlayer.disablePlayControls(components);
 	},
@@ -603,7 +629,7 @@ mw.KAdPlayer.prototype = {
 				} else if ( adConf.skipoffset.indexOf("%") != -1 ) {
 					//parse percent format to seconds
 					var percent = parseInt( adConf.skipoffset.substring(0, adConf.skipoffset.indexOf("%")) ) / 100;
-					if ( isNaN( vid.duration ) ) {
+					if ( isNaN( vid.duration ) || vid.duration === 0 ) {
 						skipPercentage = percent;
 					} else {
 						skipOffsetInSecs = vid.duration * percent;
@@ -619,8 +645,11 @@ mw.KAdPlayer.prototype = {
 		adConf.skipOffset = skipOffsetInSecs;
 		mw.log("KAdPlayer:: source updated, add tracking");
 		// Always track ad progress:
-		if( vid.readyState > 0 && vid.duration ) {
-			_this.addAdTracking( adConf.trackingEvents, adConf  );
+		if( vid.readyState > 0 && vid.duration && embedPlayer.selectedPlayer.library !== 'Kplayer' ) {
+			setTimeout(function(){
+				embedPlayer.triggerHelper('AdSupport_AdUpdateDuration', vid.duration); // Trigger duration event
+				_this.addAdTracking( adConf.trackingEvents, adConf  );
+			},0);
 		} else {
 			var loadMetadataCB = function() {
 				if ( skipPercentage ){
@@ -1030,6 +1059,10 @@ mw.KAdPlayer.prototype = {
 				_this.getVPAIDDurtaion = null;
 				clearInterval( _this.adMonitorInterval );
 			}
+			if( _this.embedPlayer._checkHideSpinner && !_this.embedPlayer.seeking ){
+				_this.embedPlayer._checkHideSpinner = false;
+				_this.embedPlayer.hideSpinner();
+			}
 			var time =  videoPlayer.currentTime;
 			var dur = videoPlayer.duration;
 			if (_this.getVPAIDDurtaion)
@@ -1258,10 +1291,10 @@ mw.KAdPlayer.prototype = {
 
 			VPAIDObj.subscribe(function(obj) {
 				// handle ad linear changes
-				if (obj.AdLinear == true && !_this.embedPlayer.isPlaying()){
+				if (obj && obj.AdLinear == true && !_this.embedPlayer.isPlaying()){
 					_this.embedPlayer.play();
 				}
-				if (obj.AdLinear == false && _this.embedPlayer.isPlaying()){
+				if (obj && obj.AdLinear == false && _this.embedPlayer.isPlaying()){
 					_this.embedPlayer.pause();
 				}
 			}, 'AdLinearChange');
@@ -1340,7 +1373,9 @@ mw.KAdPlayer.prototype = {
 			if ( this.embedPlayer.selectedPlayer.library == 'Native'  ) {
 				_this.disableSibling = true;
 				//enable user clicks
-				_this.embedPlayer.getInterface().find('.mwEmbedPlayer').hide();
+				if ( !mw.isIphone() ){
+					_this.embedPlayer.getInterface().find('.mwEmbedPlayer').hide();
+				}
 				$('#' + vpaidId).css("width", 0);
 				$('#' + vpaidId).css("height", 0);
 			} else {

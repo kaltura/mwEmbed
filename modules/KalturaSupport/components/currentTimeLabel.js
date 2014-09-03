@@ -49,7 +49,7 @@
 			this.getComponent().text( mw.seconds2npt( time ) );
 		},
 		getCurrentTime: function(){
-			var ct = this.getPlayer().currentTime - this.getPlayer().startOffset;
+			var ct = this.getPlayer().getPlayerElementTime() - this.getPlayer().startOffset;
 			if( ct < 0 ){
 				ct = 0;
 			}

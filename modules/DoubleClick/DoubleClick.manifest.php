@@ -35,6 +35,13 @@ return array (
 				'type' => 'hiddenValue',
 				'initvalue' => false
 			),
+			'htmlCompanions' => array(
+				'label' => 'HTML Companions', // *NEW*
+				'doc' => "Companions list. For each companion please specify the ad container div id and the expected ad width and height.",
+				'type' => 'companions',
+				'filter' => 'companions',
+                "initvalue" => "Comp_300x250:300:250;Comp_728x90:728:90;"
+			),
 			'cmsId' => array(
 				'label' => 'CMS id',
                 'doc' => "The CMS id, appended to the VAST url, used by DoubleClick plugin api",

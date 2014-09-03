@@ -927,7 +927,6 @@ HTML;
 
 		// Check if file exists
 		if( !file_exists( $path ) ){
-			die('file does not exists: ' . $path);
 			return false;
 		}
 
@@ -941,6 +940,7 @@ HTML;
 
 		// Check if path is valid and exists
 		if( !$resourcePath ) {
+			$this->logger->log('Unable to find resource: ' + $resourcePath );
 			return false;
 		}
 		
