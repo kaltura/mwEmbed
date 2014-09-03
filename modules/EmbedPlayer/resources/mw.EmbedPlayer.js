@@ -2863,13 +2863,13 @@
 				return sourcesByTags;
 			}
 		},
-		switchSrc: function( source ){
+		switchSrc: function( source, overrideTime ){
 			var _this = this;
 			this.mediaElement.setSource( source );
 			if( ! this.isStopped() ){
 				this.isFlavorSwitching = true;
 				// Get the exact play time from the video element ( instead of parent embed Player )
-				var oldMediaTime = this.getPlayerElement().currentTime;
+				var oldMediaTime = overrideTime || this.getPlayerElement().currentTime;
 				var oldPaused =  this.paused;
 				// Do a live switch
 				this.playerSwitchSource( source, function( vid ){

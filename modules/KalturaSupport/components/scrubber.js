@@ -73,7 +73,7 @@
 			this.bind( 'reattachTimeUpdate', function() {
 				_this.bindUpdatePlayheadPercent();
 			});
-			this.bind( 'playerReady' ,function(event){
+			this.bind( 'playerReady updateSliderRotator' ,function(event){
 				//Load the strip only if the configuration allows preview. It gets a 404 if you do not have a local flavor
 				if(_this.getConfig("sliderPreview")){
 					_this.thumbnailsLoaded = _this.loadedThumb =  false;

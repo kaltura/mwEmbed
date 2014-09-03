@@ -1,4 +1,4 @@
-( function( mw, $ ) {"use strict";
+( function( mw, $, kWidget ) {"use strict";
 
 	mw.PluginManager.add( 'streamSelector', mw.KBaseComponent.extend({
 
@@ -37,7 +37,13 @@
 				//Indicate that the streams are ready to enable spinning animation on source switching
 				_this.streamsReady = true;
 				//Insert original entry to streams
-				this.streams.splice(0, 1 ,{ id: this.getPlayer().kentryid, data: {meta: this.getPlayer().kalturaPlayerMetaData, contextData: this.getPlayer().kalturaContextData}});
+				_this.streams.splice(0, 0 ,{
+					id: _this.getPlayer().kentryid,
+					data: {
+						meta: _this.getPlayer().kalturaPlayerMetaData,
+						contextData: _this.getPlayer().kalturaContextData
+					}
+				});
 				//Set default stream
 				if ( ( _this.getConfig("defaultStream") < 1) || ( _this.getConfig("defaultStream") > _this.streams.length ) ){
 					mw.log("streamSelector:: Error - default stream id is out of bounds, setting to 1");
@@ -45,7 +51,9 @@
 				}
 				_this.currentStream = _this.getDefaultStream();
 				//TODO: handle default stream selection???
-				_this.setStream(_this.currentStream);
+				if (_this.getPlayer().kentryid != _this.currentStream.id) {
+					_this.setStream( _this.currentStream );
+				}
 				_this.buildMenu();
 				_this.onEnable();
 			});
@@ -223,11 +231,30 @@
 		},
 		setStream: function(stream){
 			mw.log("streamSelector:: set stream");
-			this.currentStream = stream;
-			kWidgetSupport.addFlavorSources(this.getPlayer(), stream.data);
-			var selectedSource = this.getPlayer().mediaElement.autoSelectSource();
-			if ( selectedSource ) { // source was found
-				this.getPlayer().switchSrc( selectedSource );
+			if (this.currentStream != stream) {
+				//Set reference to active stream
+				this.currentStream = stream;
+				//Get reference for current time for setting timeline after source switch
+				var currentTime = this.getPlayer().getPlayerElementTime();
+				//Create source data from raw data
+				var sources = kWidgetSupport.getEntryIdSourcesFromPlayerData( this.getPlayer().kpartnerid, stream.data );
+				//handle player data mappings to embedPlayer and check for errors
+				kWidgetSupport.handlePlayerData( this.getPlayer(), stream.data );
+				//Replace sources
+				this.getPlayer().replaceSources( sources );
+
+				//Update player metadata and poster/thumbnail urls
+				this.getPlayer().kalturaPlayerMetaData = stream.data.meta;
+				this.getPlayer().triggerHelper( 'KalturaSupport_EntryDataReady', this.getPlayer().kalturaPlayerMetaData );
+				this.getPlayer().triggerHelper( 'updateSliderRotator' );
+
+				//Try to select source from new sources and switch
+				var selectedSource = this.getPlayer().mediaElement.autoSelectSource();
+				if ( selectedSource ) { // source was found
+					this.getPlayer().switchSrc( selectedSource, currentTime );
+				}
+			} else {
+				mw.log("streamSelector:: selected stream is already the active stream");
 			}
 		},
 		toggleMenu: function(){
@@ -280,4 +307,4 @@
 		}
 	}));
 
-} )( window.mw, window.jQuery );		
+} )( window.mw, window.jQuery, kWidget );
