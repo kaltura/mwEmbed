@@ -136,10 +136,10 @@
 
 			_this.dataIntialized = true;
 			_this.shouldAddScroll(_this.addScroll);
-			$(_this.embedPlayer).trigger("mediaListLayoutReady");
 			if (_this.getLayout() === "horizontal" ){
 				_this.$mediaListContainer.find(".k-chapters-container.k-horizontal .chapterBox").width(_this.getConfig("mediaItemWidth"));
 			}
+			$(_this.embedPlayer).trigger("mediaListLayoutReady");
 		},
 
 		// set the play list container according to the selected position

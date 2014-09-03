@@ -90,6 +90,10 @@
 			$( this.embedPlayer ).bind( 'playPreviousClip', function( event){
 				_this.playPrevious();
 			});
+
+			$( this.embedPlayer ).bind( 'mediaListLayoutReady', function( event){
+				_this.embedPlayer.triggerHelper( 'playlistReady' );
+			});
 		},
 
 		// called from KBaseMediaList when a media item is clicked - trigger clip play
@@ -213,6 +217,7 @@
 				this.setSelectedMedia(this.currentClipIndex);
 				this.playMedia(this.currentClipIndex, true);
 			}
+			$( this.embedPlayer ).trigger( 'playlistPlayNext');
 		},
 
 		playPrevious: function(){
@@ -221,6 +226,7 @@
 				this.setSelectedMedia(this.currentClipIndex);
 				this.playMedia(this.currentClipIndex, true);
 			}
+			$( this.embedPlayer ).trigger( 'playlistPlayPrevious' );
 		},
 
 		// when we have multiple play lists - build the UI to represent it: combobox for playlist selector
