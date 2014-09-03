@@ -1,71 +1,82 @@
 <?php
-$methods = array (
+$sendNotificationActions = array (
 		'doPause' => array (
-				'params' => 'None',
-				'desc' => 'Command the player to pause.' 
+				'desc' => 'Pauses media playback.',
+				'example' => '../modules/KalturaSupport/tests/PlayStopApi.qunit.html'
 		),
 		'doPlay' => array (
-				'params' => 'None',
-				'desc' => 'Command the player to play.' 
+				'desc' => 'Plays media. If in stopped state will initiate playback sequence.',
+				'example' => '../modules/KalturaSupport/tests/PlayStopApi.qunit.html'
 		),
 		'doStop' => array (
-				'params' => 'None',
-				'desc' => 'Command the player to stop. Pause and move the playhead to 0.' 
+				'desc' => 'Stops media playback. Will pause and move the playhead to 0.', 
+				'example' => '../modules/KalturaSupport/tests/PlayStopApi.qunit.html'
 		),
 		'doSeek' => array (
-				'params' => 'Position to seek to',
-				'desc' => 'Command the player to seek.' 
+				'notificationDataType' => 'Float',
+				'notificationData' => 'Seconds of target seek position.',
+				'notificationDataValue' => '30',
+				'desc' => 'Issues a seek.',
+				'example' => '../modules/KalturaSupport/tests/SeekApi.qunit.html'
 		),
-		'doSwitch' => array (
-				'params' => 'New stream bitrate',
-				'desc' => 'Command the player to manually switch between streams within the resource.' 
+		'changeMedia' => array (
+				'notificationDataType' => 'Object',
+				'notificationData' => 'Data object can specify an entryId or referenceId',
+				'desc' => 'Change the current media entry within the player.',
+				'notificationDataValue' => '{ "entryId" : "0_wm82kqmm" }',
+				'example' => '../modules/KalturaSupport/tests/ChangeMediaEntry.qunit.html'
+		),
+		'changeVolume' => array (
+				'notificationData' => 'Volume value from 0 to 1',
+				'notificationDataType' => 'Float',
+				'notificationDataValue' => '0.5',
+				'desc' => 'Change the audio volume',
+				'example' => '../modules/KalturaSupport/tests/SendNotificationWithAds.html'
 		),
 		'cleanMedia' => array (
-				'params' => 'None',
-				'desc' => 'Cleans the media from the player.' 
+				'desc' => 'Cleans the media from the player.'
+		),
+		'doSwitch' => array (
+				'notificationData' => 'Switch to a target flavor index',
+				'notificationDataType' => 'Object',
+				'notificationDataValue' => '{ flavorIndex: 3 }',
+				'desc' => 'Command the player to manually switch between streams within the resource.' 
+		),
+		'changePreferredBitrate' => array (
+				'notificationData' => 'The new preferred bitrate',
+				'desc' => 'Change the preferedFlavorBR on mediaProxy.vo object',
+				'availability' => 'kdp' 
 		),
 		'doReplay' => array (
-				'params' => 'None',
-				'desc' => 'Notification fired when the player started replaying the video' 
+				'desc' => 'Re-plays the video' 
 		),
 		'alert' => array (
-				'params' => 'message: alert message, title: alert title',
-				'desc' => 'Pop up an alert' 
+				'notificationData' => 'message: alert message, title: alert title',
+				'desc' => 'Pop up an alert' ,
+				'example' => '../modules/KalturaSupport/tests/showAlert.html'
 		),
 		'showUiElement' => array (
-				'params' => 'id: ID of the element, show: true / false',
+				'notificationData' => 'id: ID of the element, show: true / false',
 				'desc' => 'Show/hide an element from the layout',
 				'availability' => 'kdp' 
 		),
-		'changeMedia' => array (
-				'params' => 'entryId: new entry ID / referenceId: new reference ID, flavorId: new flavor ID, if exists',
-				'desc' => 'Start the init of change media macro commands' 
-		),
-		'changeVolume' => array (
-				'params' => 'New volume value',
-				'desc' => 'An action to change the volume' 
-		),
 		'removeAlerts' => array (
-				'params' => 'None',
+				'notificationData' => 'None',
 				'desc' => 'Fired when all alerts popped by the player need to be removed',
 				'availability' => 'kdp' 
 		),
 		'enableGui' => array (
-				'params' => 'guiEnabled: true / false, enableType: full / controls',
+				'notificationData' => 'guiEnabled: true / false, enableType: full / controls',
 				'desc' => 'Enable/disable GUI',
 				'availability' => 'kdp' 
 		),
 		'cancelAlerts' => array (
-				'params' => 'None',
+				'notificationData' => 'None',
 				'desc' => 'Hide Alerts at the Alerts Mediator',
 				'availability' => 'kdp' 
 		),
-		'changePreferredBitrate' => array (
-				'params' => 'The new preferred bitrate',
-				'desc' => 'Change the preferedFlavorBR on mediaProxy.vo object' 
-		),
 		'liveEntry' => array (
-				'params' => 'The URL resource of the played entry',
+				'notificationData' => 'The URL resource of the played entry',
 				'desc' => 'Call the LiveStream command which tests whether the stream is currently on air',
 				'availability' => 'kdp' 
 		) 

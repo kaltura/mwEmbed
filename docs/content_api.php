@@ -117,7 +117,22 @@ require_once( realpath( dirname( __FILE__ ) ) . '/api_evaluates.php' );
 			if( isset( $var['example'] ) && $var['example'] != '' ){
 				$o.= '<br><a href="'. $var['example'] . '" target="_blank">Live Example</a>';
 			}
-			$o.='<br><span class="type">Type</span>: <br>&nbsp;&nbsp;&nbsp;&nbsp;' .$var['type'];
+			if(  isset( $var['type'] ) ){
+				$o.='<br><span class="type">Type</span>: <br>&nbsp;&nbsp;&nbsp;&nbsp;' .$var['type'];
+			}
+			if(  isset( $var['params'] ) ){
+				$o.='<br><span class="type">Params</span>: <br>&nbsp;&nbsp;&nbsp;&nbsp;' .$var['params'];
+			}
+			if ( isset( $var['notificationData'] ) ){
+				$o.='<br><span class="type">Notification Data</span>: ';
+				if( isset( $var['notificationDataType'] ) ){
+					$o.='<span class="vartype">' . $var['notificationDataType'] . '</span>';
+				}
+				$o.=$var['notificationData'];
+			}
+			if( isset( $var['notificationDataValue'] ) ){
+				$o.='<br><span class="type">Sample</span>:<br><pre class="prettyprint linenums">kdp.sendNotification("'. $key . '", ' . $var['notificationDataValue'] . ');</pre>';
+			}
 			if( isset( $var['default'] ) && $var['default'] != '' ){
 				$o.='<br><span class="default">Default</span>: <br>&nbsp;&nbsp;&nbsp;&nbsp;' .$var['default'];
 			}
@@ -193,10 +208,11 @@ require_once( realpath( dirname( __FILE__ ) ) . '/api_evaluates.php' );
 	}
 	.vartype{
 		margin: 0px;
-		border: 1px solid #DDD;
-		background-color: #F8F8F8;
-		border-radius: 3px;
-		padding: 2px;
+		border: 2px solid #CCC;
+		background-color: #EEE;
+		border-radius: 4px;
+		padding-left: 3px;
+		padding-right: 3px;
 	}
 	.docblock{
 		padding-left:20px;
@@ -400,21 +416,22 @@ kWidget.embed({
 <h3>2. Calling a player method from JavaScript</h3>
 <p>Use the <b>sendNotification</b> method to create custom notifications that instruct the player to perform an action, such as play, seek, or pause.</p>
 <?php echo getDocs( array( 'sendNotification' ) ) ?>
-<br><br><p>Available Notifications:</p>
-<?php echo getTableContent( array( 'Notification', 'Params', 'Description' ), $methods ) ?>
 <br><br>Code sample:<br>
 <pre class="prettyprint linenums">
-&lt;script language="JavaScript"&gt;
-	var kdp;
-	function jumpToTime(timesec)
-	{
-		kdp.sendNotification("doPlay");
-
-		// Moves to a specific point, defined in seconds from the start of the video
-		kdp.sendNotification("doSeek", timesec);
-	}
-&lt;/script&gt;
+kWidget.addReadyCallback( function( playerId ){
+	var kdp = document.getElementById( playerId );
+	kdp.kBind( 'mediaReady', function(){
+		// Seek to 30 seconds from the start of the video
+		kdp.sendNotification("doSeek", 30);
+	})
+});
 </pre>
+<h3>Available Notifications:</h3>
+<?php
+echo '<div class="docblock">' .
+		getOutlineContent( $sendNotificationActions) .
+	'</div><br>';
+?>
 <a name="addJsListener-desc"></a>
 <h3>3. Registering to a player event</h3>
 <p>Use the <b>addJsListener</b> method to listen for a specific notification that something happened in the player, such as the video is playing or is paused.</p>
