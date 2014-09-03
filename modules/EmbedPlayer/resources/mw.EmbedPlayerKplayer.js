@@ -70,11 +70,11 @@ mw.EmbedPlayerKplayer = {
 		flashvars.ks = this.getFlashvars( 'ks' );
 		flashvars.serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );
 		flashvars.b64Referrer = this.b64Referrer;
-		flashvars.forceDynamicStream = this.getFlashvars( 'forceDynamicStream' );
+		flashvars.forceDynamicStream = this.getKalturaAttributeConfig( 'forceDynamicStream' );
 		flashvars.isLive = this.isLive();
-		flashvars.stretchVideo =  this.getFlashvars( 'stretchVideo' ) || false;
+		flashvars.stretchVideo =  this.getKalturaAttributeConfig( 'stretchVideo' ) || false;
 
-		flashvars.flavorId = this.getFlashvars( 'flavorId' );
+		flashvars.flavorId = this.getKalturaAttributeConfig( 'flavorId' );
 		if ( ! flashvars.flavorId && this.mediaElement.selectedSource ) {
 			flashvars.flavorId = this.mediaElement.selectedSource.getAssetId();
 			//this workaround saves the last real flavorId (usefull for example in widevine_mbr replay )
@@ -97,11 +97,11 @@ mw.EmbedPlayerKplayer = {
 			flashvars.autoPlay = true;
 		}
 
-		if ( this.getFlashvars( 'maxAllowedRegularBitrate' ) ) {
-			flashvars.maxAllowedRegularBitrate =  this.getFlashvars( 'maxAllowedRegularBitrate' );
+		if ( this.getKalturaAttributeConfig( 'maxAllowedRegularBitrate' ) ) {
+			flashvars.maxAllowedRegularBitrate =  this.getKalturaAttributeConfig( 'maxAllowedRegularBitrate' );
 		}
-		if ( this.getFlashvars( 'maxAllowedFSBitrate' ) ) {
-			flashvars.maxAllowedFSBitrate =  this.getFlashvars( 'maxAllowedFSBitrate' );
+		if ( this.getKalturaAttributeConfig( 'maxAllowedFSBitrate' ) ) {
+			flashvars.maxAllowedFSBitrate =  this.getKalturaAttributeConfig( 'maxAllowedFSBitrate' );
 		}
 
 		//will contain flash plugins we need to load
@@ -216,7 +216,7 @@ mw.EmbedPlayerKplayer = {
 	getSourcesForKDP: function() {
 		var _this = this;
 		var sourcesByTags = [];
-		var flavorTags = _this.getKalturaConfig( null, 'flavorTags' );
+		var flavorTags = _this.getKalturaAttributeConfig( 'flavorTags' );
 		//select default 'web' / 'mbr' flavors
 		if ( flavorTags === undefined ) {
 			var sources = _this.mediaElement.getPlayableSources();
@@ -589,7 +589,7 @@ mw.EmbedPlayerKplayer = {
 			return this.mediaElement.selectedSource.getSrc();
 		}
 		var flavorIdParam = '';
-		var mediaProtocol = this.getKalturaConfig( null, 'mediaProtocol' ) || mw.getConfig('Kaltura.Protocol') || "http";
+		var mediaProtocol = this.getKalturaAttributeConfig( 'mediaProtocol' ) || mw.getConfig('Kaltura.Protocol') || "http";
 		var format;
 		var fileExt = 'f4m';
 		if ( this.streamerType === 'hdnetwork' ) {
@@ -621,7 +621,7 @@ mw.EmbedPlayerKplayer = {
 	*/
 	getPlaymanifestArg: function ( argName, argKey ) {
 		var argString = "";
-		var argVal = this.getKalturaConfig( null, argKey );
+		var argVal = this.getKalturaAttributeConfig( argKey );
 		if ( argVal !== undefined ) {
 			argString = "/" + argName + "/" + argVal;
 		}
@@ -645,7 +645,7 @@ mw.EmbedPlayerKplayer = {
 	},
 	switchSrc: function ( source ) {
 		//http requires source switching, all other switch will be handled by OSMF in KDP
-		if ( this.streamerType == 'http' && !this.getFlashvars( 'forceDynamicStream' ) ) {
+		if ( this.streamerType == 'http' && !this.getKalturaAttributeConfig( 'forceDynamicStream' ) ) {
 			//other streamerTypes will update the source upon "switchingChangeComplete"
 			this.mediaElement.setSource ( source );
 			this.playerObject.setKDPAttribute ('mediaProxy', 'entryUrl', this.getEntryUrl());
