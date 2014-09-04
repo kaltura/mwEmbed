@@ -238,10 +238,12 @@ $methodDocs = array (
 						),
 				),
 				'examples'  => array (
+						array (
 							'type' => 'link',
 							'name' => 'kBind and kUBnind',
-							'docFullPath' => '../modules/KalturaSupport/tests/kBind_kUnbind.qunit.html'
+							'docFullPath' => 'modules/KalturaSupport/tests/kBind_kUnbind.qunit.html'
 						)
+					)
 		),
 		'kUnbind' => array(
 				'desc' => 'Remove a JavaScript handler function by name or by setfor a KDP notification',
