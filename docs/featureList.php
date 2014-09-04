@@ -84,6 +84,10 @@
 							'title' => "Playlist features",
 							'path' => 'KalturaSupport/tests/PlaylistFeatures.html'
 						),
+						'PlaylistEvents' => array(
+							'title' => "Playlist events",
+							'path' => 'KalturaSupport/tests/PlaylistEvents.html'
+						),
 						'PlaylistOnPage' => array(
 							'title' => "Playlist on page",
 							'path' => 'KalturaSupport/tests/PlaylistOnPage.html'
