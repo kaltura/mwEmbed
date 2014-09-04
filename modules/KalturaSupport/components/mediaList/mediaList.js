@@ -26,6 +26,7 @@
 				'includeChapterDuration': true
 			},
 			mediaList: [],
+			startFrom: 0,
 
 			isDisabled: true,
 
@@ -65,11 +66,13 @@
 					} );
 
 					$.each(filteredCuePoints, function(i, filteredCuePoint){
-						_this.addMediaItem(filteredCuePoint, i);
+						_this.addMediaItem(filteredCuePoint);
 					});
 
 					//Need to recalc all durations after we have all the items startTime values
 					_this.setMediaItemTime();
+
+					_this.markMediaItemsAsDisplayed(_this.mediaList);
 
 					_this.getComponent().append(
 						_this.getTemplateHTML( {meta: _this.getMetaData(), mediaList: _this.getTemplateData()})
@@ -81,6 +84,33 @@
 					_this.dataIntialized = true;
 					_this.shouldAddScroll(_this.addScroll);
 				} );
+
+				this.bind( 'KalturaSupport_ThumbCuePointsUpdated', function (e, cuepoints) {
+					cuepoints.sort( function ( a, b ) {
+						return a.startTime - b.startTime;
+					} );
+					$.each(cuepoints, function(i, cuepoint){
+						_this.addMediaItem(cuepoint);
+					});
+
+					_this.setMediaItemTime();
+				});
+
+				this.bind("monitorEvent", function(e, time){
+					var items = [];
+					$.each(_this.mediaList, function(index, item){
+						if (item.startTime <= _this.getPlayer().getPlayerElementTime() && !item.displayed){
+							item.displayed = true;
+							items.push(item);
+						}
+					});
+					if (items.length > 0) {
+						var mediaItems = _this.createMediaItems( items );
+						_this.getComponent().find( "ul" ).append( mediaItems );
+						_this.shouldAddScroll(_this.addScroll);
+						_this.updateActiveItem(true);
+					}
+				});
 
 				this.bind( 'playerReady', function ( e, newState ) {
 					if (_this.dataIntialized) {
@@ -127,7 +157,7 @@
 					});
 					res =  (filteredCuePoints.length > 0) ? true : false;
 				}
-				return res;
+				return mw.getConfig("EmbedPlayer.LiveCuepoints") || res;
 			},
 			getComponent: function(){
 				if( ! this.$el ){
@@ -149,6 +179,12 @@
 			},
 			getTemplateData: function(){
 				return this.mediaList;
+			},
+			createMediaItems: function(mediaListItems){
+				var templateData = this.getTemplateHTML( {meta: this.getMetaData(), mediaList: mediaListItems});
+				var items = $(templateData).find("li");
+
+				return items;
 			},
 			getMetaData: function(){
 				return {
@@ -221,13 +257,14 @@
 				return $chaptersContainer;
 			},
 			//Media Item
-			addMediaItem: function(obj ,index){
+			addMediaItem: function(obj){
 				var mediaItem;
 				var customData = obj.partnerData ? JSON.parse(obj.partnerData) :  {};
 				var title = obj.title || customData.title;
 				var description = obj.description || customData.desc;
 				var thumbnailUrl = obj.thumbnailUrl || customData.thumbUrl || this.getThumbUrl(obj);
 				var thumbnailRotatorUrl = this.getConfig( 'thumbnailRotator' ) ? this.getThumRotatorUrl() : '';
+				var index = this.mediaList.length;
 
 				mediaItem = {
 					order: index,
@@ -289,6 +326,11 @@
 					}
 
 					item.durationDisplay = kWidget.seconds2npt((item.endTime - item.startTime) );
+				});
+			},
+			markMediaItemsAsDisplayed: function(mediaItems){
+				$.each(mediaItems, function(index, item){
+					item.displayed = true;
 				});
 			},
 			formatTimeDisplayValue: function(time){
@@ -492,16 +534,17 @@
 				}
 
 				// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
-				$cc.find('.k-carousel').jCarouselLite({
+
+				$cc.find( '.k-carousel' ).jCarouselLite( {
 					btnNext: /*'.k-player-' + this.getPlayer().id +*/' .k-next',
 					btnPrev: /*'.k-player-' + this.getPlayer().id +*/' .k-prev',
 					visible: chaptersVisible,
 					mouseWheel: true,
 					circular: false,
 					vertical: ( this.getLayout() == 'vertical' ),
-					start: 0,
+					start: this.startFrom,
 					scroll: 1
-				});
+				} );
 
 				// make sure vertical height matches target:
 				if( this.getLayout() == 'vertical' ){
@@ -538,50 +581,52 @@
 			addScrollUiComponents: function(){
 
 				var $cc = this.getComponent();
-				$cc.find('ul').wrap(
-					$( '<div>' ).addClass('k-carousel')
-				);
-				// Add scroll buttons
-				$cc.find('.k-carousel').before(
-					$( '<a />' )
-						.addClass( "k-scroll k-prev" )
-				);
-				$cc.find('.k-carousel').after(
-					$( '<a />' )
-						.addClass( "k-scroll k-next" )
-				);
+				if ($cc.find('.k-carousel' ).length === 0) {
+					$cc.find( 'ul' ).wrap(
+						$( '<div>' ).addClass( 'k-carousel' )
+					);
+					// Add scroll buttons
+					$cc.find( '.k-carousel' ).before(
+						$( '<a />' )
+							.addClass( "k-scroll k-prev" )
+					);
+					$cc.find( '.k-carousel' ).after(
+						$( '<a />' )
+							.addClass( "k-scroll k-next" )
+					);
 
-				// Add chapter hover to hide show play buttons:
-				var inKBtn = false;
-				var inContainer = false;
-				var checkHideBtn = function(){
-					setTimeout(function(){
-						if( !inKBtn && !inContainer ){
-							$cc.find('.k-prev,.k-next').animate({'opacity':0});
-						}
-					},0)
-				}
-				var showBtn = function(){
-					$cc.find('.k-prev,.k-next').animate({'opacity':1});
-				}
-				// check for knext
-				$cc.find('.k-prev,.k-next')
-					.hover(function(){
+					// Add chapter hover to hide show play buttons:
+					var inKBtn = false;
+					var inContainer = false;
+					var checkHideBtn = function () {
+						setTimeout( function () {
+							if ( !inKBtn && !inContainer ) {
+								$cc.find( '.k-prev,.k-next' ).animate( {'opacity': 0} );
+							}
+						}, 0 )
+					}
+					var showBtn = function () {
+						$cc.find( '.k-prev,.k-next' ).animate( {'opacity': 1} );
+					}
+					// check for knext
+					$cc.find( '.k-prev,.k-next' )
+						.hover( function () {
+							showBtn();
+							inKBtn = true;
+						}, function () {
+							inKBtn = false;
+							checkHideBtn();
+						} )
+					$cc.find( '.k-carousel' ).hover( function () {
 						showBtn();
-						inKBtn = true;
-					},function(){
-						inKBtn = false;
+						inContainer = true;
+					}, function () {
+						inContainer = false;
 						checkHideBtn();
-					})
-				$cc.find('.k-carousel').hover( function(){
-					showBtn();
-					inContainer = true;
-				}, function(){
-					inContainer = false;
-					checkHideBtn();
-				})
-				// hide the arrows to start with ( with an animation so users know they are there )
-				$cc.find('.k-prev,.k-next').animate({'opacity':0});
+					} )
+					// hide the arrows to start with ( with an animation so users know they are there )
+					$cc.find( '.k-prev,.k-next' ).animate( {'opacity': 0} );
+				}
 			},
 			calculateVisibleScrollItems: function(){
 				var $cc = this.getComponent();
@@ -642,7 +687,7 @@
 				}
 				return false;
 			},
-			updateActiveItem: function( ){
+			updateActiveItem: function( force ){
 				var _this = this;
 				// search chapter for current active
 				var activeIndex = 0;
@@ -689,7 +734,11 @@
 
 					if ( this.mediaList[ activeIndex ] ) {
 						this.getComponent().find( "li[data-chapter-index='" + activeIndex + "']" ).addClass( 'active' );
-						this.getComponent().find( '.k-carousel' )[0].jCarouselLiteGo( activeIndex );
+						if (force) {
+							this.getComponent().find( '.k-carousel' )[0].jCarouselLiteForceGo( activeIndex );
+						}else {
+							this.getComponent().find( '.k-carousel' )[0].jCarouselLiteGo( activeIndex );
+						}
 					}
 				}
 			}

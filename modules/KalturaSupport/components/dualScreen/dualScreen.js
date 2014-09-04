@@ -80,7 +80,7 @@
 					});
 					cuePointsExist =  (filteredCuePoints.length > 0) ? true : false;
 				}
-				return !mw.isIphone() && cuePointsExist;
+				return (mw.getConfig("EmbedPlayer.LiveCuepoints") ||  !mw.isIphone() && cuePointsExist );
 			},
 			initConfig: function () {
 				var _this = this;
@@ -390,7 +390,7 @@
 				this.bind( 'KalturaSupport_ThumbCuePointsReady', function ( ) {
 					var cuePoints = _this.getPlayer().kCuePoints.getCuePoints();
 					$.each( cuePoints, function ( index, cuePoint ) {
-						if ( $.inArray( _this.getConfig( 'cuePointType' ), cuePoint.cuePointType ) ) {
+						if ( $.inArray( cuePoint.cuePointType, _this.getConfig( 'cuePointType' ) ) > -1 ) {
 							_this.cuePoints.push( cuePoint );
 						}
 					} );
@@ -403,6 +403,18 @@
 				this.bind( 'KalturaSupport_CuePointReached', function ( e, cuePointObj ) {
 					_this.sync( cuePointObj.cuePoint );
 				} );
+				this.bind( ' KalturaSupport_ThumbCuePointsUpdated', function (e, cuepoints ) {
+
+					$.each( cuepoints, function ( index, cuePoint ) {
+						if ( $.inArray( _this.getConfig( 'cuePointType' ), cuePoint.cuePointType ) ) {
+							_this.cuePoints.push( cuePoint );
+						}
+					} );
+
+					_this.cuePoints.sort( function ( a, b ) {
+						return a.startTime - b.startTime;
+					} );
+				});
 
 			},
 			checkAnimationSupport: function(elm){

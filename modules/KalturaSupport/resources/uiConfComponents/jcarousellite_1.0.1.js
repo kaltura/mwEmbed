@@ -324,8 +324,15 @@ $.fn.jCarouselLite = function(o) {
 						curr = to==itemLength-v+1 ? v+1 : v+o.scroll;
 					} else curr = to;
 				} else {					// If non-circular and to points to first or last, we just return.
-					if(to<0 || to>itemLength-v) return;
-					else curr = to;
+					if(!o.forceGo && (to<0 || to>itemLength-v )) {
+						return;
+					}
+					else if(o.forceGo){
+						curr = to - v + 1;
+					}
+					else {
+						curr = to;
+					}
 				}						   // If neither overrides it, the curr will still be "to" and we can proceed.
 
 				running = true;
@@ -355,6 +362,11 @@ $.fn.jCarouselLite = function(o) {
 		// expose the go method
 		this.jCarouselLiteGo = function( inx ){
 			return go( inx );
+		};
+		this.jCarouselLiteForceGo = function( inx ){
+			o.forceGo = true;
+			go( inx );
+			o.forceGo = false;
 		};
 	});
 };

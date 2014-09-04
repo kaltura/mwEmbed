@@ -54,7 +54,9 @@ mw.KCuePoints.prototype = {
 				_this.triggerCuePoint( cuePoint );
 			} else {
 				// Midroll
-				newCuePointsArray.push( cuePoint );
+				if (cuePoint.cuePointType != "eventCuePoint.Event") {
+					newCuePointsArray.push( cuePoint );
+				}
 			}
 		});
 
@@ -63,21 +65,24 @@ mw.KCuePoints.prototype = {
 	requestThumbAsset: function(cuePoints, callback){
 		var _this = this;
 		var requestArray = [];
-		var response = [];
+		var responseArray = [];
 		var requestCuePoints = cuePoints || this.getCuePoints();
 		var thumbCuePoint = $.grep(requestCuePoints, function(cuePoint){
 			return (cuePoint.cuePointType == 'thumbCuePoint.Thumb');
 		});
 
+		//Create request data only for cuepoints that have assetId
 		$.each(thumbCuePoint, function(index, item) {
-			requestArray.push(
-				{
-					'service': 'thumbAsset',
-					'action': 'getUrl',
-					'id': item.assetId
-				}
-			);
-			response[index] = { id: item.id, url: null};
+			if (item.assetId != null) {
+				requestArray.push(
+					{
+						'service': 'thumbAsset',
+						'action': 'getUrl',
+						'id': item.assetId
+					}
+				);
+				responseArray[index] = item;
+			}
 		});
 
 		if (requestArray.length){
@@ -89,7 +94,7 @@ mw.KCuePoints.prototype = {
 						data[index] = null;
 					}
 				});
-				$.each(thumbCuePoint, function(index, item){
+				$.each(responseArray, function(index, item){
 					item.thumbnailUrl = data[index];
 				});
 				if (callback){
@@ -165,7 +170,7 @@ mw.KCuePoints.prototype = {
 				$.merge(this.midCuePointsArray, updatedCuePoints);
 				//Request thumb asset only for new cuepoints
 				this.requestThumbAsset(updatedCuePoints, function(){
-					_this.embedPlayer.triggerHelper( 'KalturaSupport_ThumbCuePointsUpdated' );
+					_this.embedPlayer.triggerHelper( 'KalturaSupport_ThumbCuePointsUpdated', [updatedCuePoints] );
 				});
 				// sort the cuePoitns by startTime:
 				this.midCuePointsArray.sort( function ( a, b ) {
@@ -220,7 +225,7 @@ mw.KCuePoints.prototype = {
 		});
 
 		// Bind for seeked and onplay events to update the nextCuePoint
-		$( embedPlayer ).bind( "seeked" + this.bindPostfix + " onplay" + this.bindPostfix, function(){
+		$( embedPlayer ).bind( "seeked" + this.bindPostfix + " onplay" + this.bindPostfix  + " KalturaSupport_ThumbCuePointsUpdated" + this.bindPostfix, function(){
 			var currentTime = embedPlayer.currentTime * 1000;
 			currentCuePoint = _this.getNextCuePoint( currentTime );
 		});
