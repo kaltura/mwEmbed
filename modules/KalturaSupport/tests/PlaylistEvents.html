@@ -38,15 +38,43 @@
 			  var kdp = $('#' + videoId )[0];
 			  var $iframe = $('#' + videoId + '_ifp').contents();
 
-			  asyncTest( "Check for playlist features", function(){
+			  asyncTest( "Playlist events test #1", function(){
 				  kalturaQunitWaitForPlayer(function(){
 					  // look for the playlist:
 					  ok( $( $iframe).find( '.medialistContainer.k-vertical' ).length > 0 , "Found vertical playlist" );
-					  equal ( $( $iframe).find('.chapterBox').length, 4, "Number of clips is 4");
-					  equal ( $( $iframe ).find('.k-thumb').width(), kdp.evaluate('{playlistAPI.thumbnailWidth}'), "ThumbWidth is set correctly");
-					  equal( $( $iframe ).find('.k-description:first').html(), kdp.evaluate('{mediaProxy.entry.description}'), "description matches kdp description");
+					  ok( $("#playlistTracking").val().indexOf("playlistReady") !== -1 , "playlistReady event fired" );
 					  start();
 				  });
+			  });
+
+			  asyncTest('Playlist events test #2', function() {
+				  equal ( kdp.evaluate('{playlistAPI.dataProvider.selectedIndex}'), 0, "first clip was selected");
+				  setTimeout(function() {
+					  start();
+					  kdp.setKDPAttribute("playlistAPI.dataProvider", "selectedIndex", 3 );
+					  equal ( kdp.evaluate('{playlistAPI.dataProvider.selectedIndex}'), 3, "3rd clip was selected");
+					  kdp.sendNotification('playlistPlayPrevious');
+				  }, 3000);
+			  });
+
+
+			  setTimeout(function() {
+				  kdp.setKDPAttribute("playlistAPI.dataProvider", "selectedIndex", 2 );
+				  kdp.sendNotification('playlistPlayNext');
+			  }, 6000);
+
+			  asyncTest('Playlist events test #3', function() {
+				  setTimeout(function() {
+					  start();
+					  var events = ["playlistReady","playlistPlayNext","playlistPlayPrevious","playlistFirstEntry","playlistMiddleEntry","playlistLastEntry"];
+					  var allEventsFired = true;
+					  $.each(events, function( index, value ) {
+						  if ($("#playlistTracking").val().indexOf(value) === -1){
+							  allEventsFired = false;
+						  }
+					  });
+					  ok( allEventsFired , "All events fired" );
+				  }, 9000);
 			  });
 		  }
 
