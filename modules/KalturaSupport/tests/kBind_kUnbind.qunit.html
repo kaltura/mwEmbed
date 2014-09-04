@@ -199,7 +199,7 @@ kWidget.addReadyCallback( function( playerId ){
 	kdp.kBind( &quot;doPlay.test&quot;, function(){ //notice the .test postfix namespaces the event)
 		console.log(&quot;play &quot; + foo); // will log &quot;play bar&quot;
 		//Now we can unbind our .test postfix via kUnbind ( only will log play once )
-		kdp.kUbind('.test')
+		kdp.kUnbind('.test')
 	});
 });
 	</pre>
