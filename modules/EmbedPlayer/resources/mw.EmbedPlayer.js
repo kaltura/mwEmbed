@@ -2865,7 +2865,11 @@
 		},
 		switchSrc: function( source ){
 			var _this = this;
-			$( this ).trigger( 'sourceSwitchingStarted', [ { currentBitrate: source.getBitrate() }] );
+			var currentBR = 0;
+			if ( this.mediaElement.selectedSource ) {
+				currentBR = this.mediaElement.selectedSource.getBitrate();
+			}
+			$( this ).trigger( 'sourceSwitchingStarted', [ { currentBitrate: currentBR }] );
 			this.mediaElement.setSource( source );
 			$( this ).trigger( 'sourceSwitchingEnd',  [ { newBitrate: source.getBitrate() }] );
 			if( ! this.isStopped() ){
