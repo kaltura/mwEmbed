@@ -73,16 +73,14 @@ mw.KCuePoints.prototype = {
 
 		//Create request data only for cuepoints that have assetId
 		$.each(thumbCuePoint, function(index, item) {
-			if (item.assetId != null) {
-				requestArray.push(
-					{
-						'service': 'thumbAsset',
-						'action': 'getUrl',
-						'id': item.assetId
-					}
-				);
-				responseArray[index] = item;
-			}
+			requestArray.push(
+				{
+					'service': 'thumbAsset',
+					'action': 'getUrl',
+					'id': item.assetId
+				}
+			);
+			responseArray[index] = item;
 		});
 
 		if (requestArray.length){
@@ -94,7 +92,7 @@ mw.KCuePoints.prototype = {
 						data[index] = null;
 					}
 				});
-				$.each(responseArray, function(index, item){
+				$.each(thumbCuePoint, function(index, item){
 					item.thumbnailUrl = data[index];
 				});
 				if (callback){
