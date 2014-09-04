@@ -150,12 +150,13 @@
 			}
 
 			// Send notifications per play request
+			var eventToTrigger = "";
 			if( clipIndex == 0 ) {
-				embedPlayer.triggerHelper( 'playlistFirstEntry' );
+				eventToTrigger = 'playlistFirstEntry';
 			} else if( clipIndex == (this.mediaList.length-1) ) {
-				embedPlayer.triggerHelper( 'playlistLastEntry' );
+				eventToTrigger = 'playlistLastEntry';
 			} else {
-				embedPlayer.triggerHelper( 'playlistMiddleEntry' );
+				eventToTrigger = 'playlistMiddleEntry';
 			}
 
 			// Check if entry id already matches ( and is loaded )
@@ -170,6 +171,7 @@
 			// Listen for change media done
 			$( embedPlayer).unbind( 'onChangeMediaDone' + this.bindPostFix ).bind( 'onChangeMediaDone' + this.bindPostFix, function(){
 				mw.log( 'mw.PlaylistAPI:: onChangeMediaDone' );
+				embedPlayer.triggerHelper( eventToTrigger );
 				_this.loadingEntry = false; // Update the loadingEntry flag
 				if( _this.firstPlay && embedPlayer.getKalturaConfig( '', 'autoMute' ) === null ){
 					embedPlayer.toggleMute( true );
