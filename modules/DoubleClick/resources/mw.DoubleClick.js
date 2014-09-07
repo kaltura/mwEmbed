@@ -116,8 +116,18 @@
 			}
 
 			//native browser on Android 4.4 has "Chrome" in it, so this is the "new" way to test its user agent
-			if ( mw.isAndroid44() && mw.isAndroidChromeNativeBrowser() ) {
+			if ( mw.isAndroid44() && mw.isAndroidChromeNativeBrowser() && !mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
 				mw.log("DoubleClick::user agent not supported, return" );
+				callback();
+				return;
+			}
+			if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
+				//_this.isChromeless = true;
+				//_this.prevSlotType = 'none';
+				_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
+					_this.embedPlayer.getPlayerElement().attr( 'adTagUrl', _this.getConfig( 'adTagUrl' ));
+				});
+				//_this.addManagedBinding();
 				callback();
 				return;
 			}
