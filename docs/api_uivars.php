@@ -436,7 +436,7 @@
             'type' => 'Boolean',
             'desc' => 'Determine whether to start playback with volume muted (usually used by video ads or homepage auto play videos)',
             'default' => 'false',
-            'example' => '../modules/KalturaSupport/tests/PlaylistAutoMute.html'
+            'example' => '../modules/KalturaSupport/tests/PlaylistAutoMute.qunit.html'
         ),
         'loop' => array(
             'type' => 'Boolean',

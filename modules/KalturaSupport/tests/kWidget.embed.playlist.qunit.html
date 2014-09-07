@@ -40,7 +40,7 @@ function jsKalturaPlayerTest( videoId ){
 
 kWidget can also easily be used to embed playlists, simply pass along playlist plugin configuration as flashvars: <br>
 <pre class="prettyprint linenums">
-&lt;div id=&quot;myEmbedTarget&quot; style=&quot;width:400px;height:620px;&quot;&gt;
+&lt;div id=&quot;myEmbedTarget&quot; style=&quot;height:365px;width:650px&quot;&gt;
 &lt;!--  SEO and video metadata go here --&gt;<br/>	&lt;span property=&quot;dc:description&quot; content=&quot;test folgers coffe&quot;&gt;&lt;/span&gt;<br/>	&lt;span property=&quot;media:title&quot; content=&quot;FolgersCoffe.mpeg&quot;&gt;&lt;/span&gt;<br/>	&lt;span property=&quot;media:width&quot; content=&quot;400&quot;&gt;&lt;/span&gt;<br/>	&lt;span property=&quot;media:height&quot; content=&quot;300&quot;&gt;&lt;/span&gt;
 &lt;/div&gt;
 &lt;script src=&quot;{{HTML5LibraryURL}}&quot;&gt;&lt;/script&gt;
@@ -51,6 +51,8 @@ kWidget can also easily be used to embed playlists, simply pass along playlist p
 		'uiconf_id' : '5783651',
 		'flashvars': {
 			'playlistAPI':{
+				'plugin': true,
+				'includeInLayout': true,
 				'autoPlay': false,
 				'autoInsert':true,
 				'kpl0Name' : 'test 4 item playlist',
@@ -64,7 +66,7 @@ kWidget can also easily be used to embed playlists, simply pass along playlist p
 <span id="playbackModeSelector"></span>
 <br>
 
-<div id="myVideoTarget" style="width:400px;height:620px;">
+<div id="myVideoTarget" style="height:365px;width:650px">
 	<!--  SEO and video metadata go here -->
 	<span property="dc:description" content="test folgers coffe"></span>
 	<span property="media:title" content="FolgersCoffe.mpeg"></span>
@@ -82,6 +84,8 @@ kWidget can also easily be used to embed playlists, simply pass along playlist p
 		'uiconf_id' : '5783651',
 		'flashvars': {
 			'playlistAPI':{
+				'plugin': true,
+				'includeInLayout': true,
 				'autoPlay': false,
 				'autoInsert':true,
 				'kpl0Name' : 'test 4 item playlist',

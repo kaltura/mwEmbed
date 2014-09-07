@@ -82,39 +82,39 @@
 						),
 						'PlaylistFeatures' => array(
 							'title' => "Playlist features",
-							'path' => 'KalturaSupport/tests/PlaylistFeatures.html'
+							'path' => 'KalturaSupport/tests/PlaylistFeatures.qunit.html'
 						),
 						'PlaylistEvents' => array(
 							'title' => "Playlist events",
-							'path' => 'KalturaSupport/tests/PlaylistEvents.html'
+							'path' => 'KalturaSupport/tests/PlaylistEvents.qunit.html'
 						),
 						'PlaylistOnPage' => array(
 							'title' => "Playlist on page",
-							'path' => 'KalturaSupport/tests/PlaylistOnPage.html'
+							'path' => 'KalturaSupport/tests/PlaylistOnPage.qunit.html'
 						),
 						'PlaylistNoClipList' => array(
 							'title' => "Playlist No Clip List",
-							'path' => 'KalturaSupport/tests/PlaylistNoClipList.html'
+							'path' => 'KalturaSupport/tests/PlaylistNoClipList.qunit.html'
 						),
 						'PlaylistKalturaMRSS' => array(
 							'title' => "Media RSS source",
-							'path' => 'KalturaSupport/tests/PlaylistKalturaMRSS.html'
+							'path' => 'KalturaSupport/tests/PlaylistKalturaMRSS.qunit.html'
 						),
 						'PlaylistInitItemEntryId' => array(
 							'title' => "Initial EntryId",
-							'path' => 'KalturaSupport/tests/PlaylistInitItemEntryId.html'
+							'path' => 'KalturaSupport/tests/PlaylistInitItemEntryId.qunit.html'
 						),
 						'PlaylistVAST' => array(
 							'title' => "Playlist VAST ads",
-							'path' => 'KalturaSupport/tests/PlaylistVAST.html'
+							'path' => 'KalturaSupport/tests/PlaylistVAST.qunit.html'
 						),
 						'PlaylistDoubleclick' => array(
 							'title' => "Playlist Doubleclick ads",
-							'path' => 'KalturaSupport/tests/PlaylistDoubleclick.html'
+							'path' => 'KalturaSupport/tests/PlaylistDoubleclick.qunit.html'
 						),
                         'PlaylistSideBar' => array(
                             'title' => "Playlist within side bar",
-                            'path' => 'KalturaSupport/tests/PlaylistSideBar.html'
+                            'path' => 'KalturaSupport/tests/PlaylistSideBar.qunit.html'
                         )
 					)
 				),
