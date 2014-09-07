@@ -234,14 +234,15 @@ mw.EmbedPlayerNativeComponent = {
 
 	play: function() {
 		mw.log("EmbedPlayerNativeComponent:: play::");
-		$( this ).find( '.playerPoster' ).remove();
 
-		if ( this.getPlayerElement() ) { // update player
-			this.getPlayerElement().play();
-		}
-		$( this ).trigger( "playing" );
+//		$( this ).trigger( "playing" );
 
 		if( this.parent_play() ){
+			$( this ).find( '.playerPoster' ).remove();
+
+			if ( this.getPlayerElement() ) { // update player
+				this.getPlayerElement().play();
+			}
 			this.monitor();
 		}
 	},
