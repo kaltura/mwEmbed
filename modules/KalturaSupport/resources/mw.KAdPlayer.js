@@ -34,6 +34,9 @@ mw.KAdPlayer.prototype = {
 	clickedBumper: false,
 	overrideDisplayDuration:0,
 
+	previousTime: 0,
+	seekIntervalID: null,
+
 	init: function( embedPlayer ){
 		var _this = this;
 		this.embedPlayer = embedPlayer;
@@ -119,6 +122,7 @@ mw.KAdPlayer.prototype = {
 
 		adSlot.playbackDone = function( hardStop ){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
+
 			if( adSlot.ads[adSlot.adIndex] ) {
 				// trigger ad complete event for tracking. Taking current time from currentTimeLabel plugin since the embedPlayer currentTime is already 0
 				$(_this.embedPlayer).trigger('onAdComplete',[adSlot.ads[adSlot.adIndex].id, mw.npt2seconds($(".currentTimeLabel").text())]);
@@ -214,6 +218,7 @@ mw.KAdPlayer.prototype = {
 		adSlot.displayDuration = displayDuration;
 		this.playNextAd( adSlot );
 	},
+
 	/**
 	 * Plays next ad in the adSlot, according to the adIndex position
 	 **/
