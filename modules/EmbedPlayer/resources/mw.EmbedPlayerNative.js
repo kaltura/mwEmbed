@@ -1,7 +1,7 @@
 /**
 * Native embed library:
 *
-* Enables embedPlayer support for native html5 browser playback system
+* Enables embedPlayer support for native html5 browser playback system 
 */
 ( function( mw, $ ) { "use strict";
 
