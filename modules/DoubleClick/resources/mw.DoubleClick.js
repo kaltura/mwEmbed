@@ -505,7 +505,13 @@
 						var companionID = companionsArr[0];
 						var adSlotWidth = companionsArr[1];
 						var adSlotHeight = companionsArr[2];
-						var companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, {resourceType: google.ima.CompanionAdSelectionSettings.ResourceType.STATIC, creativeType: google.ima.CompanionAdSelectionSettings.CreativeType.IMAGE});
+						var companionAds = [];
+
+						try {
+							companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, {resourceType: google.ima.CompanionAdSelectionSettings.ResourceType.STATIC, creativeType: google.ima.CompanionAdSelectionSettings.CreativeType.IMAGE});
+						} catch(e) {
+							mw.log("Error: DoubleClick could not access getCompanionAds");
+						}
 						// match companions to targets
 						if (companionAds.length > 0){
 							var companionAd = companionAds[0];
