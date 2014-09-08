@@ -159,7 +159,6 @@
 						var containerHeight = this.getLayout() === "vertical" ? this.getConfig("mediaItemHeight")*3 : this.getConfig("mediaItemHeight")+20;
 						$(this.$mediaListContainer).height(containerHeight);
 					}
-					this.injectCss();
 					// support hidden playlists
 					if ( this.getConfig( 'includeInLayout' ) === false){
 						this.$mediaListContainer.hide();
@@ -210,24 +209,6 @@
 			}
 
 			return this.$mediaListContainer;
-		},
-
-		injectCss: function(){
-			if ( !this.getConfig("cssPath") ){
-				return;
-			}
-			var links = document.getElementsByTagName("link");
-			for ( var i = 0; i < links.length; i++ ) {
-				if ( links[i].getAttribute("href").indexOf(this.getConfig("cssPath")) !=-1){
-					var cssFilename = links[i].getAttribute("href");
-					var doc = window['parent'].document;
-					var fileref=doc.createElement("link");
-					fileref.setAttribute("rel", "stylesheet");
-					fileref.setAttribute("type", "text/css");
-					fileref.setAttribute("href", cssFilename);
-					doc.getElementsByTagName("head")[0].appendChild(fileref);
-				}
-			}
 		},
 
 		onDisable: function(){
