@@ -804,9 +804,9 @@ mw.KAdPlayer.prototype = {
 	 * Sets the image source in the html of the given object. Setting src for image immediately loads the resource, so it's better to
 	 * add the src only when displaying the object
 	 **/
-	setImgSrc: function (imgObj) {
+	setImgSrc: function (imgObj, cls) {
 		if (imgObj.html.indexOf("src=")== -1) {
-			imgObj.html = imgObj.html.toLowerCase().replace('<img ', '<img src="' + imgObj.resourceUri + '" ');
+			imgObj.html = imgObj.html.toLowerCase().replace('<img ', '<img class="'+cls+'" src="' + imgObj.resourceUri + '" ');
 		}
 	},
 
@@ -871,7 +871,8 @@ mw.KAdPlayer.prototype = {
 		if (nonLinearConf.width === undefined){
 			waitForNonLinear();
 		}
-		this.setImgSrc(nonLinearConf);
+		$( this.embedPlayer ).trigger("onAdPlay");
+		this.setImgSrc(nonLinearConf, 'overlayAd');
 		// Show the overlay update its position and content
 		$('#' +overlayId )
 		.css( layout )
@@ -894,6 +895,12 @@ mw.KAdPlayer.prototype = {
 				return true;
 			})
 		);
+
+		$(".overlayAd").error(function() {
+			$( _this.embedPlayer ).trigger("adErrorEvent");
+			$('.btn.icon-close' ).hide();
+		});
+
 		if (nonLinearConf.width !== undefined){
 			$('#' +overlayId ).fadeIn('fast');
 		}
@@ -1151,6 +1158,7 @@ mw.KAdPlayer.prototype = {
 			$(vid ).bind('error.playVideoSibling', function(e){
 				$( vid ).unbind( 'error.playVideoSibling' );
 				$( vid ).trigger('ended.playVideoSibling');
+				$( _this.embedPlayer ).trigger('adErrorEvent');
 			});
 			vid.src = source.getSrc();
 			vid.load();
