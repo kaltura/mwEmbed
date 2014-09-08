@@ -845,6 +845,9 @@
 				}
 				if ( _this.currentAdSlotType !== 'postroll' ){
 					_this.restorePlayer( null, true );
+					if ( _this.currentAdSlotType === 'preroll' ){
+						_this.currentAdSlotType = "midroll";
+					}
 					setTimeout(function(){
 						_this.embedPlayer.startMonitor();
 						_this.embedPlayer.getPlayerElement().play();
@@ -862,6 +865,7 @@
 				setTimeout(function(){
 					_this.embedPlayer.hideSpinner();
 					_this.adLoaderErrorFlag = true;
+					$( _this.embedPlayer ).trigger("adErrorEvent");
 					_this.restorePlayer();
 				},100);
 			},'adsLoadError', true);
@@ -1002,7 +1006,10 @@
 		onAdError: function( errorEvent ) {
 			var errorMsg = ( typeof errorEvent.getError != 'undefined' ) ? errorEvent.getError() : errorEvent;
 			mw.log('DoubleClick:: onAdError: ' + errorMsg );
-			this.adLoaderErrorFlag = true;
+			if (!this.adLoaderErrorFlag){
+				$( this.embedPlayer ).trigger("adErrorEvent");
+				this.adLoaderErrorFlag = true;
+			}
 			if (this.adsManager && $.isFunction( this.adsManager.unload ) ) {
 				this.adsManager.unload();
 			}
