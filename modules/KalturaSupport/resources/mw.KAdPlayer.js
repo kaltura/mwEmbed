@@ -487,10 +487,11 @@ mw.KAdPlayer.prototype = {
 							// This changes player state to the relevant value ( pause-state )
 							if( _this.isVideoSiblingEnabled() ) {
 								$( _this.embedPlayer ).trigger( 'onPauseInterfaceUpdate' );
+							}else{
+								$( embedPlayer).trigger("onPlayerStateChange",["pause"]);
 							}
 
 							embedPlayer.enablePlayControls(["scrubber"]);
-							$( embedPlayer).trigger("onPlayerStateChange",["pause"]);
 							embedPlayer.enablePlayControls();
 							//expose the URL to the
 							embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
@@ -1003,14 +1004,11 @@ mw.KAdPlayer.prototype = {
 			});
 		}
 
-		// On pause / resume:
-		$( videoPlayer ).bind( 'onpause' +  _this.trackingBindPostfix, function(){
-			sendBeacon( 'pause', true );
-		});
-
-		// On resume:
-		$( videoPlayer ).bind( 'onplay' +  _this.trackingBindPostfix, function(){
-			sendBeacon( 'resume', true );
+		// On pause:
+		$( this.embedPlayer).bind('onPlayerStateChange' +  _this.trackingBindPostfix, function(e, newState, oldState){
+			if( newState == 'pause' ){
+				sendBeacon( 'pause', true );
+			}
 		});
 
 		var time = 0;
@@ -1025,11 +1023,11 @@ mw.KAdPlayer.prototype = {
 		$( this.embedPlayer ).bind( 'onToggleMute' + _this.trackingBindPostfix, function(){
 			if (_this.embedPlayer.muted)
 			{
-				sendBeacon( 'mute' );
+				sendBeacon( 'mute', true );
 			}
 			else
 			{
-				sendBeacon( 'unmute' );
+				sendBeacon( 'unmute', true );
 			}
 		});
 
