@@ -170,6 +170,10 @@
 		loadAndDisplayAd: function( cuePointWrapper ) {
 			var _this = this;
 			var embedPlayer = this.embedPlayer;
+			//player doesn't support ads
+			if ( !embedPlayer.sequenceProxy ) {
+				return;
+			}
 			var cuePoint = cuePointWrapper.cuePoint;
 			var adType = this.embedPlayer.kCuePoints.getAdSlotType( cuePointWrapper );
 			var adDuration = Math.round( cuePoint.duration / 1000);
