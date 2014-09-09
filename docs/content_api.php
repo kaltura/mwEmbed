@@ -347,6 +347,7 @@ kWidget.addReadyCallback( function(playerId){
 	alert( document.getElementById( playerId ).evaluate("{autoPlay}") );
 })
 </pre>
+Finally many properties can be upated at runtime using <a href="#setKDPAttribute-desc">setKDPAttribute</a>.
 <br>
 
 <?php
@@ -406,9 +407,9 @@ kWidget.embed({
 <a href="#kWidget.addReadyCallback-desc">1. Receiving notification that the player API is ready</a><br>
 <a href="#sendNotification-desc">2. Calling a player method from JavaScript</a><br>
 <a href="#kBind-desc">3. Registering to a player event</a><br>
-<a href="#api4">4. Un-registering a player event</a><br>
-<a href="#api5">5. Retrieving a player property</a><br>
-<a href="#api6">6. Setting a player attribute</a><br>
+<a href="kUnbind-desc">4. Un-registering a player event</a><br>
+<a href="#evaluate-desc">5. Retrieving a player property</a><br>
+<a href="#setKDPAttribute-desc">6. Setting a player attribute</a><br>
 
 
 <a name="kWidget.addReadyCallback-desc"></a>
@@ -444,50 +445,56 @@ such as the video is playing or is paused.</p>
 <pre class="prettyprint linenums">
 kWidget.addReadyCallback(function( playerId ){
 	var kdp = document.getElementById( playerId );
-	kdp.kBind("playerUpdatePlayhead", function( data, id ){
+	// binds an event and namespces it to "myPluginName"
+	kdp.kBind("playerUpdatePlayhead.myPluginName", function( data, id ){
 		// data = the player's progress time in seconds
 		// id = the ID of the player that fired the notification
 	});
 });
 </pre>
+<a name="kUnbind-desc"></a>
+<h3>4. Un-registering a player event</h3>
+<p>Use the <b>kUnbind</b> method to remove a listener that is no longer needed.</p>
+Removing event listeners that are no longer needed can improve performance 
+<br><br>Code sample:<br>
+<pre class="prettyprint linenums">
+kWidget.addReadyCallback(function( playerId ){
+	var kdp = document.getElementById( playerId );
+	// removes all events namespaced with "myPluginName"
+	kdp.kUnbind(".myPluginName");
+	// removes events by event name: 
+	kdp.kUnbind("playerUpdatePlayhead");
+});
+</pre>
+
 <h3>Player Life Cycle:</h3>
 <?php 
 	echo getOutlineContent( $eventsPlayerLifeCycle );
 ?>
 <h3>Player State Events:</h3>
 <?php echo getOutlineContent( $eventsPlayerStates ) ?>
-<br><br><h5>Player Advertisement Related Notifications:</h5>
-<?php echo getTableContent( array( 'Event', 'Parameters', 'Description' ), $listeners3 ) ?>
+
+<h3>Player Advertisement Related Notifications:</h3>
+<?php echo getOutlineContent( $eventAds ) ?>
 
 
-<a name="api4"></a>
-<h3>4. Un-registering a player event</h3>
-<p>Use the <b>removeJsListener</b> method to remove a listener that is no longer needed.</p>
-<h5>Why Remove a JsListener?</h5>
-KDP3 accumulates JsListeners. If you add a JsListener for a notification and then add another JsListener for the same notification, the new JsListener does not override the previous one. Both JsListeners are executed in the order in which they are added. To prevent unexpected behavior in your application, Kaltura recommends that you remove unnecessary JsListeners.
-When you remove a listener, you must specify the associated function name.
-<br><br>Code sample:<br>
-<pre class="prettyprint linenums">
-removeJsListener("event", "functionName")
-</pre>
-
-
-<a name="api5"></a>
+<a name="evaluate-desc"></a>
 <h3>5. Retrieving a player property</h3>
 <p>Use the <b>evaluate</b> method to find out something about a player by extracting data from player components.</p>
 <?php echo getDocs( array( 'evaluate' ) ) ?>
-<br><br><p>Available Properties:</p>
-<?php echo getTableContent( array( 'Property', 'Description' ), $evaluates ) ?>
 <br><br>Code sample:<br>
 <pre class="prettyprint linenums">
-function getName() {
-var entry_name = kdp.evaluate('{mediaProxy.entry.name}');
-	alert('Entry name: '+entry_name);
-}
+kWidget.addReadyCallback(function( playerId ){
+	var kdp = document.getElementById( playerId );
+	// alert the entry name
+	alert('Entry name: '+ kdp.evaluate('{mediaProxy.entry.name}') );
+});
 </pre>
+<h3>Available Properties:</h3>
+<?php echo getOutlineContent( $evaluates ) ?>
 
 
-<a name="api6"></a>
+<a name="setKDPAttribute-desc"></a>
 <h3>6. Setting a player attribute</h3>
 <p>Use the <b>setKDPAttribute</b> method to change a player attribute by setting its value.</p>
 <br>Code sample:<br>

@@ -231,7 +231,7 @@
 		)
 	);
 
-	$listeners3 = array(
+	$eventAds = array(
 		'adOpportunity' => array(
 			'callbackArgs' => 'context: context of the ad opportunity: pre, post, mid, cuePoint: the cue point object',
 			'desc' => "Notification fired when the player's time progress reaches an ad cue point"
