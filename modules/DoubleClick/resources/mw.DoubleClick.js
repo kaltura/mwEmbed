@@ -519,7 +519,13 @@
 						var companionID = companionsArr[0];
 						var adSlotWidth = companionsArr[1];
 						var adSlotHeight = companionsArr[2];
-						var companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, {resourceType: google.ima.CompanionAdSelectionSettings.ResourceType.STATIC, creativeType: google.ima.CompanionAdSelectionSettings.CreativeType.IMAGE});
+						var companionAds = [];
+
+						try {
+							companionAds = ad.getCompanionAds(adSlotWidth, adSlotHeight, {resourceType: google.ima.CompanionAdSelectionSettings.ResourceType.STATIC, creativeType: google.ima.CompanionAdSelectionSettings.CreativeType.IMAGE});
+						} catch(e) {
+							mw.log("Error: DoubleClick could not access getCompanionAds");
+						}
 						// match companions to targets
 						if (companionAds.length > 0){
 							var companionAd = companionAds[0];
@@ -640,13 +646,13 @@
 				}, 12000 );
 			} );
 			adsListener( 'LOADED', function(adEvent){
-				var ad = adEvent.getAd();
-				if ( ad.a ) {
-					_this.isLinear = ad.a.linear;
+				var adData = adEvent.getAdData();
+				if ( adData) {
+					_this.isLinear = adData.linear;
 				}
 				$("#" + _this.getAdContainerId()).show();
 				// dispatch adOpen event
-				$( _this.embedPlayer).trigger( 'onAdOpen',[ad.a.adId, ad.a.adSystem, _this.currentAdSlotType, ad.a.adPodInfo ? ad.a.adPodInfo.adPosition : 0] );
+				$( _this.embedPlayer).trigger( 'onAdOpen',[adData.adId, adData.adSystem, _this.currentAdSlotType, adData.adPodInfo ? adData.adPodInfo.adPosition : 0] );
 
 				// check for started ad playback sequence callback
 				if( _this.startedAdPlayback ){
@@ -680,7 +686,7 @@
 					_this.embedPlayer.getPlayerElement().play();
 				}
 				// trigger ad play event
-				$(_this.embedPlayer).trigger("onAdPlay",[ad.a.adId]);
+				$(_this.embedPlayer).trigger("onAdPlay",[ad.getAdId()]);
 				// This changes player state to the relevant value ( play-state )
 				$(_this.embedPlayer).trigger("playing");
 				// Check for ad Stacking ( two starts in less then 250ms )
@@ -741,7 +747,7 @@
 			adsListener( 'COMPLETE', function(adEvent){
 				var ad = adEvent.getAd();
 				//$(".doubleClickAd").remove();
-				$(_this.embedPlayer).trigger('onAdComplete',[ad.a.adId, mw.npt2seconds($(".currentTimeLabel").text())]);
+				$(_this.embedPlayer).trigger('onAdComplete',[ad.getAdId(), mw.npt2seconds($(".currentTimeLabel").text())]);
 				_this.duration= -1;
 
 
