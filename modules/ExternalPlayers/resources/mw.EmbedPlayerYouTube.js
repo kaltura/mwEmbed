@@ -86,7 +86,7 @@
 						//hide the poster
 						$(".playerPoster").hide();
 						$('.blackBoxHide').hide();
-						//_this.play();
+						_this.play();
 						stateName = "playing";
 						// update duraiton
 						_this.setDuration();
