@@ -1121,6 +1121,9 @@
 							_this.ignoreNextNativeEvent = true;
 							$( _this ).trigger( 'onEndedDone' );
 						}
+						if ( _this.buffering ) {
+							_this.bufferEnd();
+						}
 					}
 				}
 				// A secondary end event for playlist and clip sequence endings
