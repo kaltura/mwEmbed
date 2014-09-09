@@ -292,7 +292,7 @@ mw.Omniture.prototype = {
  	 * Only carry 3 significant digits
  	 */
  	getCurrentTime: function(){
- 		return Math.floor( this.embedPlayer.currentTime );
+ 		return Math.floor( this.embedPlayer.getPlayerElementTime() );
  	},
  	mediaCompleteBind: function(){
  		var _this = this;
