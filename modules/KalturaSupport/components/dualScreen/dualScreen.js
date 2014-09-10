@@ -67,22 +67,22 @@
 				this.addBindings();
 				this.initMonitors();
 			},
-			isSafeEnviornment: function(){
+			isSafeEnviornment: function () {
 				var _this = this;
 				var cuePointsExist = false;
-				if (this.getPlayer().kCuePoints){
+				if ( this.getPlayer().kCuePoints ) {
 					var cuePoints = this.getPlayer().kCuePoints.getCuePoints();
-					var filteredCuePoints = $.grep(cuePoints, function(cuePoint){
+					var filteredCuePoints = $.grep( cuePoints, function ( cuePoint ) {
 						var found = false;
-						$.each(_this.getConfig('cuePointType'), function(i, cuePointType){
-							if (cuePointType == cuePoint.cuePointType) {
+						$.each( _this.getConfig( 'cuePointType' ), function ( i, cuePointType ) {
+							if ( cuePointType == cuePoint.cuePointType ) {
 								found = true;
 								return false;
 							}
-						});
+						} );
 						return found;
-					});
-					cuePointsExist =  (filteredCuePoints.length > 0) ? true : false;
+					} );
+					cuePointsExist = (filteredCuePoints.length > 0) ? true : false;
 				}
 				return !mw.isIphone() && cuePointsExist;
 			},
@@ -145,18 +145,18 @@
 					_this.enableMonitorTransition();
 
 					function transitionendHandler( e ) {
-						if (transitionHandlerSet) {
+						if ( transitionHandlerSet ) {
 							transitionHandlerSet = false;
 							_this.enableControlBar();
 							_this.disableMonitorTransition();
 						}
 					}
 
-					if (_this.getConfig('animationSupported')) {
+					if ( _this.getConfig( 'animationSupported' ) ) {
 						_this.getFirstMonitor().obj.one( 'transitionend webkitTransitionEnd', transitionendHandler );
 						_this.getSecondMonitor().obj.one( 'transitionend webkitTransitionEnd', transitionendHandler );
 					} else {
-						setTimeout(transitionendHandler, 100);
+						setTimeout( transitionendHandler, 100 );
 					}
 				};
 
@@ -320,23 +320,23 @@
 					});
 				});
 
-				this.bind( 'onOpenFullScreen', function ( ) {
-					_this.hideMonitor(_this.getSecondMonitor().obj);
+				this.bind( 'onOpenFullScreen', function () {
+					_this.hideMonitor( _this.getSecondMonitor().obj );
 					setTimeout( function () {
 						//Calculate screen properties
 						var secondScreenProps = _this.getSecondMonitor().prop;
 						var secondScreen = _this.getSecondMonitor().obj;
 						var playerWidth = _this.getPlayer().getPlayerWidth();
 						var playerHeight = _this.getPlayer().getPlayerHeight();
-						var widthRatio = _this.widthRatio = (playerWidth / _this.originalWidth).toFixed(2);
-						var heightRatio = _this.heightRatio = (playerHeight / _this.originalHeight).toFixed(2);
+						var widthRatio = _this.widthRatio = (playerWidth / _this.originalWidth).toFixed( 2 );
+						var heightRatio = _this.heightRatio = (playerHeight / _this.originalHeight).toFixed( 2 );
 						var screenProps = {
-							height: (secondScreenProps.height.replace( 'px', '' ) * heightRatio).toFixed(2) + "px",
-							width: (secondScreenProps.width.replace( 'px', '' ) * widthRatio).toFixed(2) + "px",
-							top: (secondScreenProps.top.replace( 'px', '' ) * heightRatio).toFixed(2) + "px",
-							left: (secondScreenProps.left.replace( 'px', '' ) * widthRatio).toFixed(2) + "px"
+							height: (secondScreenProps.height.replace( 'px', '' ) * heightRatio).toFixed( 2 ) + "px",
+							width: (secondScreenProps.width.replace( 'px', '' ) * widthRatio).toFixed( 2 ) + "px",
+							top: (secondScreenProps.top.replace( 'px', '' ) * heightRatio).toFixed( 2 ) + "px",
+							left: (secondScreenProps.left.replace( 'px', '' ) * widthRatio).toFixed( 2 ) + "px"
 						};
-						_this.showMonitor(_this.getSecondMonitor().obj);
+						_this.showMonitor( _this.getSecondMonitor().obj );
 						secondScreen.css( screenProps );
 
 						//Calculate screen resize max width
@@ -349,19 +349,19 @@
 
 					}, 1000 );
 				} );
-				this.bind( 'onCloseFullScreen', function ( ) {
-					_this.hideMonitor(_this.getSecondMonitor().obj);
+				this.bind( 'onCloseFullScreen', function () {
+					_this.hideMonitor( _this.getSecondMonitor().obj );
 					setTimeout( function () {
 						///Calculate screen properties
 						var secondScreenProps = _this.getSecondMonitor().prop;
 						var secondScreen = _this.getSecondMonitor().obj;
 						var screenProps = {
-							height: (secondScreenProps.height.replace( 'px', '' ) / _this.heightRatio).toFixed(2) + "px",
-							width: (secondScreenProps.width.replace( 'px', '' ) / _this.widthRatio).toFixed(2) + "px",
-							top: (secondScreenProps.top.replace( 'px', '' ) / _this.heightRatio).toFixed(2) + "px",
-							left: (secondScreenProps.left.replace( 'px', '' ) / _this.widthRatio).toFixed(2)+ "px"
+							height: (secondScreenProps.height.replace( 'px', '' ) / _this.heightRatio).toFixed( 2 ) + "px",
+							width: (secondScreenProps.width.replace( 'px', '' ) / _this.widthRatio).toFixed( 2 ) + "px",
+							top: (secondScreenProps.top.replace( 'px', '' ) / _this.heightRatio).toFixed( 2 ) + "px",
+							left: (secondScreenProps.left.replace( 'px', '' ) / _this.widthRatio).toFixed( 2 ) + "px"
 						};
-						_this.showMonitor(_this.getSecondMonitor().obj);
+						_this.showMonitor( _this.getSecondMonitor().obj );
 						secondScreen.css( screenProps );
 
 						//Calculate screen resize max width
@@ -372,7 +372,7 @@
 						_this.getFirstMonitor().prop = screenProps;
 						_this.getSecondMonitor().prop = screenProps;
 
-					}, 1000);
+					}, 1000 );
 				} );
 
 				this.bind( 'onplay', function () {
@@ -381,10 +381,10 @@
 				this.bind( 'seeked', function () {
 					//_this.cancelPrefetch();
 					var cuePoint = _this.getCurrentCuePoint();
-					_this.sync( cuePoint);
+					_this.sync( cuePoint );
 				} );
 
-				this.bind( 'KalturaSupport_ThumbCuePointsReady', function ( ) {
+				this.bind( 'KalturaSupport_ThumbCuePointsReady', function () {
 					var cuePoints = _this.getPlayer().kCuePoints.getCuePoints();
 					$.each( cuePoints, function ( index, cuePoint ) {
 						if ( $.inArray( _this.getConfig( 'cuePointType' ), cuePoint.cuePointType ) ) {
@@ -402,21 +402,21 @@
 				} );
 
 			},
-			checkAnimationSupport: function(elm){
+			checkAnimationSupport: function ( elm ) {
 				elm = elm || document.body || document.documentElement;
 				var animation = false,
 					animationstring = 'animation',
 					keyframeprefix = '',
-					domPrefixes = 'Webkit Moz O ms Khtml'.split(' '),
-					pfx  = '';
+					domPrefixes = 'Webkit Moz O ms Khtml'.split( ' ' ),
+					pfx = '';
 
-				if( elm.style.animationName !== undefined ) {
+				if ( elm.style.animationName !== undefined ) {
 					animation = true;
 				}
 
-				if( animation === false ) {
-					for( var i = 0; i < domPrefixes.length; i++ ) {
-						if( elm.style[ domPrefixes[i] + 'AnimationName' ] !== undefined ) {
+				if ( animation === false ) {
+					for ( var i = 0; i < domPrefixes.length; i++ ) {
+						if ( elm.style[ domPrefixes[i] + 'AnimationName' ] !== undefined ) {
 							pfx = domPrefixes[ i ];
 							animationstring = pfx + 'Animation';
 							keyframeprefix = '-' + pfx.toLowerCase() + '-';
@@ -426,17 +426,18 @@
 					}
 				}
 
-				this.setConfig('animationSupported', animation);
+				this.setConfig( 'animationSupported', animation );
 			},
 
 			//Monitor
 			getComponent: function () {
 				var _this = this;
 				if ( !this.$el ) {
-					var x = _this.getPlayer().getWidth() * _this.getConfig( 'secondScreen' ).size / 100;
-					var y = _this.getPlayer().getHeight() * _this.getConfig( 'secondScreen' ).size / 100;
+					this.getControlBar();
+					var x = this.getPlayer().getWidth() * this.getConfig( 'secondScreen' ).size / 100;
+					var y = this.getPlayer().getHeight() * this.getConfig( 'secondScreen' ).size / 100;
 					this.$el = $( '<div />' )
-						.css({height: y+'px', width: x+'px'})
+						.css( {height: y + 'px', width: x + 'px'} )
 						.addClass( this.getCssClass() + " secondScreen" );
 
 					this.$el.append(
