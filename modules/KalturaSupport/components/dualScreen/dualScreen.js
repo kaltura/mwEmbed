@@ -510,15 +510,14 @@
 				monitor.find(".dualScreen-transformhandle" ).remove();
 			},
 			addResizeHandlers: function (monitor, action) {
-				var _this = this;
 				var dragging = false;
-				monitor.prepend($("<span class='dualScreen-transformhandle componentAnimation cornerHandle bottomRightHandle'>" ).css({'visibility': 'hidden', 'opacity': 0}));
-				monitor.prepend($("<span class='dualScreen-transformhandle componentAnimation cornerHandle bottomLeftHandle'>").css({'visibility': 'hidden', 'opacity': 0}));
-				monitor.prepend($("<span class='dualScreen-transformhandle componentAnimation cornerHandle topRightHandle'>").css({'visibility': 'hidden', 'opacity': 0}));
-				monitor.prepend($("<span class='dualScreen-transformhandle componentAnimation cornerHandle topLeftHandle'>").css({'visibility': 'hidden', 'opacity': 0}));
+				monitor.prepend($("<span>").addClass("dualScreen-transformhandle componentAnimation cornerHandle bottomRightHandle").addClass('componentOff'));
+				monitor.prepend($("<span>").addClass("dualScreen-transformhandle componentAnimation cornerHandle bottomLeftHandle").addClass('componentOff'));
+				monitor.prepend($("<span>").addClass("dualScreen-transformhandle componentAnimation cornerHandle topRightHandle").addClass('componentOff'));
+				monitor.prepend($("<span>").addClass("dualScreen-transformhandle componentAnimation cornerHandle topLeftHandle").addClass('componentOff'));
 				monitor
-					.on( 'mousemove touchstart', function(e){if (dragging){return;}$(this ).find('.cornerHandle' ).css({'visibility': 'visible', 'opacity': 1} )})
-					.on( 'mouseleave', function(e){if (dragging){return;}$(this ).find('.cornerHandle' ).css({'visibility': 'hidden', 'opacity': 0} ) })
+					.on( 'mousemove touchstart', function(e){if (dragging){return;}$(this ).find('.cornerHandle' ).addClass('componentOn' ).removeClass('componentOff')})
+					.on( 'mouseleave', function(e){if (dragging){return;}$(this ).find('.cornerHandle' ).addClass('componentOff').removeClass('componentOn' )})
 					.on( 'mousedown', function(){dragging = true;})
 					.on( 'mouseup', function(){dragging = false;});
 
