@@ -14,7 +14,7 @@
 					'startLocation': 'right bottom'
 				},
 				'resizable': {
-					'handles': 'n, e, w, s, ne, se, sw, nw',
+					'handles': 'ne, se, sw, nw',
 					'ghost': true,
 					//'animate': true,
 					'maxWidth': 40,
@@ -282,9 +282,11 @@
 					primaryScreen.addClass( 'dualScreenMonitor firstScreen ' + _this.pluginName ).attr( 'data-monitor-rule', _this.TYPE.PRIMARY );
 					secondaryScreen.addClass( 'dualScreenMonitor' ).attr( 'data-monitor-rule', _this.TYPE.SECONDARY );
 
-					secondaryScreen.off().on('click dblclick touchstart touchend', function(e){
-						_this.embedPlayer.triggerHelper(e);
-					});
+					secondaryScreen.off().on( 'click dblclick touchstart touchend', function ( e ) {
+						_this.embedPlayer.triggerHelper( e );
+					} );
+
+					_this.addResizeHandlers(secondaryScreen);
 
 					_this.setControlBarBindings();
 
@@ -464,11 +466,30 @@
 				if ( monitor.draggable( 'option', 'disabled' ) ) {
 					monitor.css( this.getSecondMonitor().prop );
 					monitor.draggable( 'enable' ).resizable( 'enable' );
+					this.addResizeHandlers(monitor);
 				} else {
 					this.getFirstMonitor().prop = monitor.css( ['top', 'left', 'width', 'height'] );
 					this.getSecondMonitor().prop = monitor.css( ['top', 'left', 'width', 'height'] );
 					monitor.draggable( 'disable' ).resizable( 'disable' );
+					this.removeResizeHandlers(monitor);
 				}
+
+			},
+			removeResizeHandlers: function(monitor){
+				monitor.find(".dualScreen-transformhandle" ).remove();
+			},
+			addResizeHandlers: function (monitor, action) {
+				var _this = this;
+				var dragging = false;
+				monitor.prepend($("<span class='dualScreen-transformhandle componentAnimation cornerHandle bottomRightHandle'>" ).css({'visibility': 'hidden', 'opacity': 0}));
+				monitor.prepend($("<span class='dualScreen-transformhandle componentAnimation cornerHandle bottomLeftHandle'>").css({'visibility': 'hidden', 'opacity': 0}));
+				monitor.prepend($("<span class='dualScreen-transformhandle componentAnimation cornerHandle topRightHandle'>").css({'visibility': 'hidden', 'opacity': 0}));
+				monitor.prepend($("<span class='dualScreen-transformhandle componentAnimation cornerHandle topLeftHandle'>").css({'visibility': 'hidden', 'opacity': 0}));
+				monitor
+					.on( 'mousemove touchstart', function(e){if (dragging){return;}$(this ).find('.cornerHandle' ).css({'visibility': 'visible', 'opacity': 1} )})
+					.on( 'mouseleave', function(e){if (dragging){return;}$(this ).find('.cornerHandle' ).css({'visibility': 'hidden', 'opacity': 0} ) })
+					.on( 'mousedown', function(){dragging = true;})
+					.on( 'mouseup', function(){dragging = false;});
 
 			},
 			enableSideBySideView: function () {

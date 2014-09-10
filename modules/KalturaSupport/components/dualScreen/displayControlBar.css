@@ -59,6 +59,62 @@ ul.inline>li, ol.inline>li {
 .screenTransition{
     transition: 1s;
 }
+/*Override jquery UI resizable cursor handlers*/
+.dualScreen > .ui-resizable-ne{
+    cursor: nesw-resize;
+}
+.dualScreen > .ui-resizable-sw{
+    cursor: nesw-resize;
+}
+.dualScreen > .ui-resizable-nw{
+    cursor: nwse-resize;
+}
+.dualScreen > .ui-resizable-se{
+    cursor: nwse-resize;
+}
+/*Custom UI corner position handlers for second screen*/
+.cornerHandle{
+    position: absolute;
+    z-index: 2;
+    border-top: 1px solid rgb(0, 0, 0);
+    border-left: 1px solid rgb(0, 0, 0);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+}
+.topLeftHandle {
+    top: -5px;
+    left: -5px;
+}
+.topRightHandle {
+    top:-5px;
+    right:-5px;
+    -webkit-transform: rotate(-270deg);
+    -moz-transform: rotate(-270deg);
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+.bottomLeftHandle {
+    left:-5px;
+    bottom: -5px;
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+.bottomRightHandle {
+    bottom: -5px;
+    right: -5px;
+    -webkit-transform: rotate(-180deg);
+    -moz-transform: rotate(-180deg);
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+/*Animations*/
+.componentAnimation{
+    -webkit-transition: visibility 0.75s ease ,opacity 0.75s ease;
+    -moz-transition: visibility 0.75s ease ,opacity 0.75s ease;
+    -o-transition: visibility 0.75s ease ,opacity 0.75s ease;
+    transition: visibility 0.75s ease ,opacity 0.75s ease;
+}
 
 @font-face {
     font-family: 'iconmoon';
