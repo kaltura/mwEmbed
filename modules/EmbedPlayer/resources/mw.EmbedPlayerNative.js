@@ -919,8 +919,10 @@ mw.EmbedPlayerNative = {
 				if( this.useNativePlayerControls() && $( this ).find( 'video ').length == 0 ){
 					$( this ).hide();
 				}
-				// update the preload attribute to auto
-				$( this.getPlayerElement() ).attr('preload',"auto" );
+				if( !mw.isIOS8() ) {
+					// update the preload attribute to auto
+					$( this.getPlayerElement() ).attr('preload',"auto" );
+				}
 				// issue a play request
 				this.getPlayerElement().play();
 				// re-start the monitor:
