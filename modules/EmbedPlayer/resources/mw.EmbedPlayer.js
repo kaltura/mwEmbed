@@ -2055,6 +2055,15 @@
 				return false;
 			}
 
+			// Allow plugins to block playback
+			var corePlay = {allowPlayback: true};
+			//console.error('EmbedPlayer::play: trigger corePlayAction', corePlay);
+			this.triggerHelper( 'corePlayAction', [corePlay] );
+			//console.error('EmbedPlayer::play: corePlay obj after trigger', corePlay);
+			if( !corePlay.allowPlayback ){
+				return false;
+			}
+
 			// Check if thumbnail is being displayed and embed html
 			if ( _this.isStopped() && (_this.preSequenceFlag == false || (_this.sequenceProxy && _this.sequenceProxy.isInSequence == false) )) {
 				if ( !_this.selectedPlayer ) {
