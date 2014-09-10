@@ -2,8 +2,8 @@
 
 	mw.PluginManager.add( 'airPlay', mw.KBaseComponent.extend({
 		defaultConfig: {
-			"parent": "topBarContainer",
-			"order": 10,
+			"parent": "controlsContainer",
+			"order": 200,
 			"align": "right"
 		},
 		setup: function(){
@@ -11,11 +11,11 @@
 		},
 		isSafeEnviornment: function(){
 			 // If mw.getConfig( "EmbedPlayer.ForceNativeComponent") is null or empty
-			if( ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") == null || mw.getConfig( "EmbedPlayer.ForceNativeComponent") === "" ) ){
-				return false;
+			if( mw.getConfig( "EmbedPlayer.ForceNativeComponent" ) && mw.isIOS() ) {
+				return true;
 			}
 
-			return mw.getConfig( "EmbedPlayer.ForceNativeComponent");
+			return false;
 		},
 		addBindings: function() {
 			var _this = this;
@@ -26,7 +26,7 @@
 
 			this.bind('onShowControlBar', function() {
 				setTimeout(function(){
-					_this.showNativeAirPlayButton( _this.getComponent()[0].getBoundingClientRect() )
+					_this.showNativeAirPlayButton( _this.getComponent()[0].getBoundingClientRect() );
 				}, 200);
 			});
 
@@ -36,14 +36,14 @@
 
 			this.bind('enterfullscreen exitfullscreen', function() {
 				if( this.isControlsVisible ){
-					_this.showNativeAirPlayButton( _this.getComponent()[0].getBoundingClientRect() )
+					_this.showNativeAirPlayButton( _this.getComponent()[0].getBoundingClientRect() );
 				}
 			});
 		},
 		getComponent: function() {
 			if( !this.$el ) {
 				this.$el = $( '<button />' )
-					.addClass("btn").addClass( this.getCssClass() )
+					.addClass("btn").addClass( this.getCssClass() );
 			}
 
 			return this.$el;
