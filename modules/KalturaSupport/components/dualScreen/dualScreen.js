@@ -323,6 +323,7 @@
 				this.bind( 'onOpenFullScreen', function () {
 					_this.hideMonitor( _this.getSecondMonitor().obj );
 					setTimeout( function () {
+						_this.setControlBarWidth();
 						//Calculate screen properties
 						var secondScreenProps = _this.getSecondMonitor().prop;
 						var secondScreen = _this.getSecondMonitor().obj;
@@ -352,6 +353,7 @@
 				this.bind( 'onCloseFullScreen', function () {
 					_this.hideMonitor( _this.getSecondMonitor().obj );
 					setTimeout( function () {
+						_this.setControlBarWidth();
 						///Calculate screen properties
 						var secondScreenProps = _this.getSecondMonitor().prop;
 						var secondScreen = _this.getSecondMonitor().obj;
