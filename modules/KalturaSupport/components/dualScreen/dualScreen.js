@@ -301,10 +301,11 @@
 						of: $( _this.getPlayer().getVideoHolder() )
 					} );
 
-					_this.getSecondMonitor().prop = secondaryScreen.css(['top', 'left', 'width', 'height']);
-					_this.getSecondMonitor().obj.css(_this.getSecondMonitor().prop);
-					if (_this.getConfig("mainViewDisplay") == 2) {
 					secondaryScreen.getAbsoluteOverlaySpinner().attr( 'id', 'secondScreenLoadingSpinner' );
+
+					_this.getSecondMonitor().prop = secondaryScreen.css( ['top', 'left', 'width', 'height'] );
+					_this.getSecondMonitor().obj.css( _this.getSecondMonitor().prop );
+					if ( _this.getConfig( "mainViewDisplay" ) == 2 ) {
 						_this.fsm.consumeEvent( "switch" );
 					}
 
@@ -515,7 +516,20 @@
 			showMonitor: function ( monitor ) {
 				monitor.removeClass( 'hiddenScreen' );
 			},
-
+			getMonitors: function(){
+				var _this = this;
+				var monitors = [];
+				$.each( _this.TYPE, function ( i, type ) {
+					monitors.push(_this.monitor[type].obj);
+				});
+				return monitors;
+			},
+			getPrimary: function(){
+				return this.monitor[this.TYPE.PRIMARY];
+			},
+			getSecondary: function(){
+				return this.monitor[this.TYPE.SECONDARY];
+			},
 			getFirstMonitor: function () {
 				return this.monitor[this.TYPE.PRIMARY].isMain ? this.monitor[this.TYPE.PRIMARY] : this.monitor[this.TYPE.SECONDARY];
 			},
