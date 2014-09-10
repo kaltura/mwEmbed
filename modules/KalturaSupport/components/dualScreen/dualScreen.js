@@ -55,7 +55,7 @@
 					id: 'pip',
 					title: ['Picture In Picture']
 				},
-				switch: {
+				switchView: {
 					id: 'switchView',
 					title: ['Toggle Main View']
 				}
@@ -179,7 +179,7 @@
 									_this.hideMonitor( _this.getSecondMonitor().obj );
 								}
 							},
-							'switch': {
+							'switchView': {
 								name: 'PiP',
 								action: function () {
 									_this.enableMonitorFeatures( _this.getFirstMonitor().obj );
@@ -206,7 +206,7 @@
 									_this.hideMonitor( _this.getSecondMonitor().obj );
 								}
 							},
-							'switch': {
+							'switchView': {
 								name: 'SbS',
 								action: function () {
 									_this.toggleSideBySideView();
@@ -225,7 +225,7 @@
 									_this.showMonitor( _this.getSecondMonitor().obj );
 								}
 							},
-							'switch': {
+							'switchView': {
 								name: 'SV',
 								action: function () {
 									_this.showMonitor( _this.getSecondMonitor().obj );
@@ -300,7 +300,7 @@
 					_this.getSecondMonitor().prop = secondaryScreen.css( ['top', 'left', 'width', 'height'] );
 					_this.getSecondMonitor().obj.css( _this.getSecondMonitor().prop );
 					if ( _this.getConfig( "mainViewDisplay" ) == 2 ) {
-						_this.fsm.consumeEvent( "switch" );
+						_this.fsm.consumeEvent( "switchView" );
 					}
 
 					//dualScreen components are set on z-index 1-3, so set all other components to zIndex 4 or above
@@ -415,8 +415,8 @@
 						_this.fsm.consumeEvent( 'pip' );
 					}
 					if ( !_this.getPrimary().isMain ) {
-						fsmState.push('switch');
-						_this.fsm.consumeEvent( 'switch' );
+						fsmState.push('switchView');
+						_this.fsm.consumeEvent( 'switchView' );
 					}
 					cssParams = _this.getFirstMonitor().obj.css( ['top', 'left', 'width', 'height'] );
 					_this.getPrimary().obj.css({'top': '', 'left': '', 'width': '', 'height': ''} ).removeClass('firstScreen');
@@ -638,7 +638,7 @@
 									event = "SbS";
 									break;
 								case 'switchView':
-									event = "switch";
+									event = "switchView";
 									break;
 								case 'singleView':
 									event = 'hide';
