@@ -2056,9 +2056,9 @@
 			}
 
 			// Allow plugins to block playback
-			var corePlay = {allowPlayback: true};
-			this.triggerHelper( 'corePlayAction', [corePlay] );
-			if( !corePlay.allowPlayback ){
+			var prePlay = {allowPlayback: true};
+			this.triggerHelper( 'prePlayAction', [prePlay] );
+			if( !prePlay.allowPlayback ){
 				return false;
 			}
 
