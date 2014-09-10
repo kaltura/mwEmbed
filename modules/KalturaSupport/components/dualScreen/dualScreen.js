@@ -385,7 +385,7 @@
 				this.bind( 'KalturaSupport_ThumbCuePointsReady', function () {
 					var cuePoints = _this.getPlayer().kCuePoints.getCuePoints();
 					$.each( cuePoints, function ( index, cuePoint ) {
-						if ( $.inArray( _this.getConfig( 'cuePointType' ), cuePoint.cuePointType ) ) {
+						if ( $.inArray( cuePoint.cuePointType, _this.getConfig( 'cuePointType' ) ) > -1 ) {
 							_this.cuePoints.push( cuePoint );
 						}
 					} );
