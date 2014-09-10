@@ -305,12 +305,14 @@
 
 					//dualScreen components are set on z-index 1-3, so set all other components to zIndex 4 or above
 	                  $.each(_this.embedPlayer.getVideoHolder().children(), function(index, childNode){
-	                      if (!childNode.classList.contains("dualScreen")){
-	                          if ( isNaN($(childNode).css('z-index')) ){
-	                              $(childNode).css('z-index', 4);
+		                  var obj = $(childNode);
+		                  var classList = obj.attr('class')? obj.attr('class').split(/\s+/) : [];
+		                  if ( $.inArray("dualScreen", classList) == -1){
+	                          if ( isNaN(obj.css('z-index')) ){
+		                          obj.css('z-index', 4);
 	                          } else {
-	                              var zIndex = $(childNode).css('z-index');
-	                              $(childNode).css('z-index', zIndex + 4);
+	                              var zIndex = obj.css('z-index');
+		                          obj.css('z-index', zIndex + 4);
 	                          }
 	                      }
 	                  });
