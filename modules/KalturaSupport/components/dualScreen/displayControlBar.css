@@ -70,22 +70,28 @@
 .topRightHandle {
     top:-5px;
     right:-5px;
-    -webkit-transform: rotate(-270deg);
-    -moz-transform: rotate(-270deg);
-    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+    -moz-transform: rotate(-270deg);  /* Firefox */
+    -o-transform: rotate(-270deg);  /* Opera */
+    -webkit-transform: rotate(-270deg);  /* Safari y Chrome */
+    transform: rotate(-270deg);
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
 }
 .bottomLeftHandle {
     left:-5px;
     bottom: -5px;
-    -webkit-transform: rotate(-90deg);
-    -moz-transform: rotate(-90deg);
-    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+    -moz-transform: rotate(-90deg);  /* Firefox */
+    -o-transform: rotate(-90deg);  /* Opera */
+    -webkit-transform: rotate(-90deg);  /* Safari y Chrome */
+    transform: rotate(-90deg);
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
 }
 .bottomRightHandle {
     bottom: -5px;
     right: -5px;
-    -webkit-transform: rotate(-180deg);
-    -moz-transform: rotate(-180deg);
+    -moz-transform: rotate(-180deg);  /* Firefox */
+    -o-transform: rotate(-180deg);  /* Opera */
+    -webkit-transform: rotate(-180deg);  /* Safari y Chrome */
+    transform: rotate(-180deg);
     filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 }
 /*Animations*/
