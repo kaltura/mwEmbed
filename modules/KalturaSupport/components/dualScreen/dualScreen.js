@@ -582,6 +582,11 @@
 						.on( 'mouseleave', function(e){_this.hideControlBar( )} );
 				});
 
+				//add drop shadow containers for control bar
+				var shadowTargets = this.getMonitors();//.concat($(this.getPlayer()));
+				$.each(shadowTargets, function(i, obj){
+					obj.prepend($("<div class='controlBarShadow componentAnimation'></div>"));
+				});
 				//Attach control bar action handlers
 				$.each( _this.controlBarComponents, function ( name, component ) {
 					_this.getControlBar()
