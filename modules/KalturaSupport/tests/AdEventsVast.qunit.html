@@ -99,6 +99,35 @@
 	VAST 3.0 Ad Events
 	</h1>
 	<p>This test page demonstrates ad events flow. Using an ad blocker software will also trigger ad error events.</p>
+	<h4>The expected events:</h4>
+	<h5>For pre-roll ads:</h5>
+	<ul>
+		<li><b><i>AdSupport_PreSequence:</i></b> is triggered by the Kaltura player to mark the beginning of the pre-sequence event</li>
+		<li><b><i>AdSupport_StartAdPlayback:</i></b> is triggered by the Kaltura player when the first pre-sequence ad starts</li>
+		<li><b><i>onAdPlay</i></b> and  <b><i>onAdComplete</i></b> events are triggered by the VAST plugin for each ad in the sequence</li>
+		<li><b><i>AdSupport_EndAdPlayback:</i></b> is triggered by the Kaltura player when the last pre-sequence ad finish</li>
+		<li><b><i>AdSupport_PreSequenceComplete:</i></b> is triggered by the Kaltura player to mark the end of the pre-sequence event</li>
+	</ul>
+	<h5>For overlay ads:</h5>
+	<ul>
+		<li><b><i>onAdPlay</i></b> and  <b><i>onAdComplete</i></b> events are triggered by the VAST plugin for each overlay ad</li>
+	</ul>
+	<h5>For post-roll ads:</h5>
+	<ul>
+		<li><b><i>AdSupport_PostSequence:</i></b> is triggered by the Kaltura player to mark the beginning of the post-sequence event</li>
+		<li><b><i>AdSupport_StartAdPlayback:</i></b> is triggered by the Kaltura player when the first post-sequence ad starts</li>
+		<li><b><i>onAdPlay</i></b> and  <b><i>onAdComplete</i></b> events are triggered by the VAST plugin for each ad in the sequence</li>
+		<li><b><i>AdSupport_EndAdPlayback:</i></b> is triggered by the Kaltura player when the last post-sequence ad finish</li>
+		<li><b><i>AdSupport_PostSequenceComplete:</i></b> is triggered by the Kaltura player to mark the end of the post-sequence event</li>
+	</ul>
+	<h5>Ad skip event:</h5>
+	<ul>
+		<li><b><i>onAdSkip:</i></b> is triggered when the ad is skipped (when the user clicks the "Skip" button)</li>
+	</ul>
+	<h5>Ad error events:</h5>
+	<ul>
+		<li><b><i><font color="red">adErrorEvent:</font></i></b> is triggered when the ad fails to load (usually caused by ad blocker usage)</li>
+	</ul>
 	<br>
 <div id="myVideoTarget" style="width:400px;height:330px;"></div>
 
