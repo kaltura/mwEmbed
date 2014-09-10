@@ -1029,7 +1029,7 @@ mw.EmbedPlayerNative = {
 						$( _this ).hide();
 					}
 					// if it's iOS8 the native iOS player won't be shown
-					if( mw.isIphone() && mw.isIOS8() ) {
+					if( !( mw.isIphone() && mw.isIOS8() ) ) {
 						// update the preload attribute to auto
 						$( _this.getPlayerElement() ).attr('preload',"auto" );
 					}
