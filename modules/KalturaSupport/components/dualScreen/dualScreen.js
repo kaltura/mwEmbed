@@ -304,6 +304,7 @@
 					_this.getSecondMonitor().prop = secondaryScreen.css(['top', 'left', 'width', 'height']);
 					_this.getSecondMonitor().obj.css(_this.getSecondMonitor().prop);
 					if (_this.getConfig("mainViewDisplay") == 2) {
+					secondaryScreen.getAbsoluteOverlaySpinner().attr( 'id', 'secondScreenLoadingSpinner' );
 						_this.fsm.consumeEvent( "switch" );
 					}
 
@@ -397,8 +398,14 @@
 					_this.cuePoints.sort( function ( a, b ) {
 						return a.startTime - b.startTime;
 					} );
-					_this.loadNext( _this.cuePoints[0] );
-				});
+					_this.loadNext( _this.cuePoints[0], function(){
+						var $spinner = $( '#secondScreenLoadingSpinner' );
+						if ( $spinner.length > 0 ) {
+							// remove the spinner
+							$spinner.remove();
+						}
+					} );
+				} );
 				this.bind( 'KalturaSupport_CuePointReached', function ( e, cuePointObj ) {
 					_this.sync( cuePointObj.cuePoint );
 				} );
@@ -433,7 +440,6 @@
 
 			//Monitor
 			getComponent: function () {
-				var _this = this;
 				if ( !this.$el ) {
 					this.getControlBar();
 					var x = this.getPlayer().getWidth() * this.getConfig( 'secondScreen' ).size / 100;
