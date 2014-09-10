@@ -111,7 +111,7 @@
 		return /OS 7_/.test( userAgent ) && mw.isIOS();
 	};
 	mw.isIOS8 = function(){
-		return /OS 8_/.test( userAgent ) && mw.isIOS();
+		return /Version\/8.0/.test( userAgent ) && mw.isIOS();
 	};
 
 	mw.isSilk = function(){
