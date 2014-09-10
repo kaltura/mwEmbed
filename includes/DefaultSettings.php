@@ -13,7 +13,7 @@ $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
 
-$wgMwEmbedVersion = '2.18.1';
+$wgMwEmbedVersion = '2.18.5.rc1';
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
