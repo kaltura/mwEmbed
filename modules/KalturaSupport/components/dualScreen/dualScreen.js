@@ -31,7 +31,7 @@
 					'durationPercentageUntilNextSequence': 60,
 					'minimumSequenceDuration': 2
 				},
-				'touchMenuFadeout' : 3000,
+				'menuFadeout': 5000,
 				'cuePointType': ['thumbCuePoint.Thumb'],
 				'mainViewDisplay': 2 // 1 - Main stream, 2 - Presentation
 			},
@@ -45,15 +45,19 @@
 			controlBarComponents: {
 				sideBySide: {
 					id: 'sideBySide',
-					title: ['Side By Side', 'Picture In Picture']
+					title: ['Side By Side']
 				},
-				toggleEnabledView: {
-					id: 'toggleEnabledView',
-					title: ['Hide Display', 'Hide Display']
+				singleView: {
+					id: 'singleView',
+					title: ['Single View']
 				},
-				toggleMainView: {
-					id: 'toggleMainView',
-					title: ['Switch Displays']
+				pip: {
+					id: 'pip',
+					title: ['Picture In Picture']
+				},
+				switch: {
+					id: 'switchView',
+					title: ['Toggle Main View']
 				}
 			},
 
@@ -192,22 +196,16 @@
 					{
 						'name': 'SbS',
 						'events': {
-							'SbS': {
+							'PiP': {
 								name: 'PiP',
-								action: function ( source ) {
-									if ( source == _this.TYPE.SECONDARY ) {
-										_this.toggleMainMonitor();
-									}
+								action: function () {
 									_this.toggleMonitorFeatures( _this.getSecondMonitor().obj );
 									_this.disableSideBySideView();
 								}
 							},
 							'hide': {
 								name: 'SV',
-								action: function ( source ) {
-									if ( source == _this.TYPE.PRIMARY ) {
-										_this.toggleMainMonitor();
-									}
+								action: function () {
 									_this.disableSideBySideView();
 									_this.hideMonitor( _this.getSecondMonitor().obj );
 								}
@@ -224,7 +222,7 @@
 					{
 						'name': 'SV',
 						'events': {
-							'hide': {
+							'PiP': {
 								name: 'PiP',
 								action: function () {
 									_this.toggleMonitorFeatures( _this.getSecondMonitor().obj );
@@ -238,6 +236,14 @@
 									_this.hideMonitor( _this.getFirstMonitor().obj );
 
 									_this.toggleMainMonitor();
+								}
+							},
+							'SbS': {
+								name: 'SbS',
+								action: function () {
+									_this.toggleMonitorFeatures( _this.getSecondMonitor().obj );
+									_this.enableSideBySideView();
+									_this.showMonitor( _this.getSecondMonitor().obj );
 								}
 							}
 						}
@@ -256,15 +262,6 @@
 						prop: {},
 						isVisible: true
 					};
-
-					_this.controlBar[val] = {};
-					_this.controlBar[val] = {
-						rule: val,
-						obj: null,
-						prop: {},
-						isVisible: false
-					};
-
 				} );
 			},
 			addBindings: function () {
@@ -275,8 +272,6 @@
 
 					var primaryScreen = _this.monitor[_this.TYPE.PRIMARY].obj = _this.getPlayer().getVideoDisplay();
 					var secondaryScreen = _this.monitor[_this.TYPE.SECONDARY].obj = _this.getComponent();
-					_this.controlBar[_this.TYPE.PRIMARY].obj = _this.getControlBar( _this.TYPE.PRIMARY );
-					_this.controlBar[_this.TYPE.SECONDARY].obj = _this.getControlBar( _this.TYPE.SECONDARY );
 
 					//Set rule attributes
 					primaryScreen.addClass( 'dualScreenMonitor firstScreen ' + _this.pluginName ).attr( 'data-monitor-rule', _this.TYPE.PRIMARY );
@@ -540,167 +535,118 @@
 			},
 
 			//Control Bar
-			getControlBar: function ( type ) {
-				var $controlBar = this.controlBar[type].obj;
-				if ( !$controlBar ) {
-					$controlBar = this.controlBar[type].obj = $( '<div />' )
-						.addClass( 'controlBar ' + this.getCssClass() )
-						.attr( {'id': type, 'data-controlBar-rule': type} )
-						.css( 'visibility', 'hidden' )
+			getControlBar: function ( ) {
+				if ( !this.$controlBar ) {
+					this.$controlBar = $( '<div />' )
+						.addClass( 'controlBar componentAnimation ' + this.getCssClass() )
 						.append(
 						$( '<div class="controlBar-content" /> ' ).append(
-							this.getTemplateHTML( {rule: type} )
+							this.getTemplateHTML( )
 						)
 					);
-					this.getPlayer().getVideoHolder().append( $controlBar );
+					this.getPlayer().getInterface().append( this.$controlBar );
+					this.setControlBarWidth();
+					this.$controlBar.
+						css({"z-index": 3,
+							'visibility': 'hidden',
+							'opacity': 0} );
 				}
-				return $controlBar;
+				return this.$controlBar;
 			},
-
-			positionControlBar: function ( type ) {
-				this.controlBar[type].obj.position( {
-					my: 'left top',
-					at: 'left top',
-					of: $( '.dualScreenMonitor[data-monitor-rule=' + type + ']' ),
+			setControlBarWidth: function(){
+				var width = 0;
+				this.getControlBar().find("#displayControlBar").each(function() {
+					width += $(this).outerWidth( true );
+				});
+				this.getControlBar().
+					css({'width': width + 10});
+			},
+			positionControlBar: function ( ) {
+				this.getControlBar().position( {
+					my: 'right top',
+					at: 'right top',
+					of: this.getPlayer().getInterface(),
 					collision: 'none'
 				} );
 			},
 			setControlBarBindings: function () {
 				//Set control bar visiblity handlers
 				var _this = this;
-				$.each( _this.TYPE, function ( i, type ) {
-					$.each([_this.monitor[type].obj, _this.controlBar[type].obj], function(i, obj){
-						obj
-							.on( 'mouseenter', function(e){_this.showControlBar( getMonitorRule(this))} )
-							.on( 'touchstart', function(e){_this.showControlBar( getMonitorRule(this), true)} )
-							.on( 'mouseleave', function(e){_this.hideControlBar( getMonitorRule(this))} );
-					})
-				} );
-
-				function getMonitorRule(elem){
-					return $(elem).attr('data-monitor-rule') || $(elem).attr('data-controlBar-rule');
-				}
+				var components = this.getMonitors().concat(_this.getControlBar()).concat(_this.getPlayer().getVideoHolder());
+				$.each(components, function(i, obj){
+					obj
+						.on( 'mousemove touchstart', function(e){_this.showControlBar( )} )
+						.on( 'mouseleave', function(e){_this.hideControlBar( )} );
+				});
 
 				//Attach control bar action handlers
-				$.each( _this.TYPE, function ( name, type ) {
-					$.each( _this.controlBarComponents, function ( name, component ) {
-						_this.controlBar[type].obj
-							.on( 'click', 'li > span#' + component.id, function () {
-								var event = null;
-
-								switch ( component.id ) {
-									case 'sideBySide':
-										event = "SbS";
-										break;
-									case 'toggleMainView':
-										event = "switch";
-										break;
-									case 'toggleEnabledView':
-										event = 'hide';
-										break;
-								}
-								if ( event != null ) {
-									_this.fsm.consumeEvent( event, type );
-								}
-							} )
-							.find('li > span#' + component.id)
-							.attr('title', component.title[0])
-							.attr('data-show-tooltip', true);
-
-					} );
-
-					_this.controlBar[type].obj
-						.on( 'click', 'li > span#' + _this.controlBarComponents.sideBySide.id, function () {
-							if ( _this.fsm.getStatus() != "SV" ) {
-								if ($(this).data('ui-tooltip-title') == _this.controlBarComponents.sideBySide.title[0]){
-									_this.updateControlBarBtnTooltip(_this.controlBarComponents.sideBySide, 1);
-								} else {
-									_this.updateControlBarBtnTooltip(_this.controlBarComponents.sideBySide, 0);
-								}
-
-								_this.controlBar[_this.TYPE.PRIMARY].obj
-									.find( 'span#' + _this.controlBarComponents.sideBySide.id )
-									.toggleClass( 'iconmoon-arrow-down-right iconmoon-arrow-up-left' );
+				$.each( _this.controlBarComponents, function ( name, component ) {
+					_this.getControlBar()
+						.on( 'click', 'li > span#' + component.id, function () {
+							var event = null;
+							switch ( component.id ) {
+								case 'sideBySide':
+									event = "SbS";
+									break;
+								case 'switchView':
+									event = "switch";
+									break;
+								case 'singleView':
+									event = 'hide';
+									break;
+								case 'pip':
+									event = 'PiP';
+									break;
+							}
+							if ( event != null ) {
+								_this.fsm.consumeEvent( event );
 							}
 						} )
-						.on( 'click', 'li > span#' + _this.controlBarComponents.toggleEnabledView.id, function () {
-							if ($(this).data('ui-tooltip-title') == _this.controlBarComponents.toggleEnabledView.title[0]){
-								_this.updateControlBarBtnTooltip(_this.controlBarComponents.toggleEnabledView, 1);
-							} else {
-								_this.updateControlBarBtnTooltip(_this.controlBarComponents.toggleEnabledView, 0);
-							}
-							_this.controlBar[_this.TYPE.PRIMARY].obj
-								.find( 'span#' + _this.controlBarComponents.toggleEnabledView.id )
-								.toggleClass( 'iconmoon-eye-blocked iconmoon-gallery' );
-							_this.controlBar[_this.TYPE.PRIMARY].obj
-								.find( 'span#' + _this.controlBarComponents.sideBySide.id )
-								.addClass( 'iconmoon-arrow-down-right' )
-								.removeClass( 'iconmoon-arrow-up-left' )
-								.toggleClass( 'disabled' );
-						} );
+						.find('li > span#' + component.id)
+						.attr('title', component.title)
+						.attr('data-show-tooltip', false);
 				} );
 			},
-			updateControlBarBtnTooltip: function(button, titleId){
-				var _this = this;
-				$.each( _this.TYPE, function ( name, type ) {
-					_this.controlBar[type].obj.find('li > span#' + button.id )
-						.attr('title', button.title[titleId] )
-						.data('ui-tooltip-title', button.title[titleId] );
-				});
-			},
 			disableControlBar: function () {
-				this.controlBar[this.TYPE.PRIMARY].touchHandled = false;
-				this.controlBar[this.TYPE.SECONDARY].touchHandled = false;
-				clearTimeout(this.controlBar[this.TYPE.PRIMARY].handleTouchTimeoutId);
-				clearTimeout(this.controlBar[this.TYPE.SECONDARY].handleTouchTimeoutId);
-				this.hideControlBar( this.TYPE.PRIMARY );
-				this.hideControlBar( this.TYPE.SECONDARY );
+				clearTimeout(this.getControlBar().handleTouchTimeoutId);
+				this.hideControlBar( );
 				this.monitorControlBarDisabled = true;
 			},
 			enableControlBar: function () {
-				var _this = this;
 				this.monitorControlBarDisabled = false;
-
-				this.monitor[this.TYPE.PRIMARY].obj.one( 'mousemove', handleMouseMove );
-				this.monitor[this.TYPE.SECONDARY].obj.one( 'mousemove', handleMouseMove );
-
-				function handleMouseMove(e){
-					var rule = $(this).attr('data-monitor-rule') || $(elem).attr('data-controlBar-rule');
-					_this.showControlBar( rule );
-					_this.monitor[_this.TYPE.PRIMARY].obj.off( 'mousemove', handleMouseMove );
-					_this.monitor[_this.TYPE.SECONDARY].obj.off( 'mousemove', handleMouseMove );
-				}
+				this.showControlBar( );
 			},
-			hideControlBar: function ( type ) {
-				if ( this.monitorControlBarDisabled || this.controlBar[type].touchHandled) {
-					return;
-				}
-				if ( this.controlBar[ type ].isVisible ) {
-					this.controlBar[ type ].obj.css( 'visibility', 'hidden' );
-					this.controlBar[ type ].isVisible = false;
-				}
-			},
-			showControlBar: function ( type, handleTouch ) {
+			hideControlBar: function ( ) {
 				if ( this.monitorControlBarDisabled ) {
 					return;
 				}
-				if ( !this.controlBar[ type ].isVisible ) {
-					this.positionControlBar( type );
-					this.controlBar[ type ].obj.css( 'visibility', 'visible' );
-					this.controlBar[ type ].isVisible = true;
+				if ( this.getControlBar().isVisible ) {
+					this.getControlBar().css( {'visibility': 'hidden', 'opacity': 0} );
+					$(this.getFirstMonitor().obj ).find(".controlBarShadow" ).css({'visibility': 'hidden', 'opacity': 0});
+					this.getControlBar().isVisible = false;
 				}
-				if ( handleTouch ) {
-					this.controlBar[type].touchHandled = true;
-					var _this = this;
-					if (this.controlBar[type].handleTouchTimeoutId){
-						clearTimeout(this.controlBar[type].handleTouchTimeoutId);
-					}
-					this.controlBar[type].handleTouchTimeoutId = setTimeout( function () {
-						_this.controlBar[type].touchHandled = false;
-						_this.hideControlBar( type );
-						_this.controlBar[type].handleTouchTimeoutId = null;
-					}, this.getConfig('touchMenuFadeout') );
+			},
+			showControlBar: function ( ) {
+				if ( this.monitorControlBarDisabled || this.ignoreNextMouseEvent) {
+					this.ignoreNextMouseEvent = false;
+					return;
 				}
+				if ( !this.getControlBar().isVisible ) {
+					this.getControlBar().css( {'visibility': 'visible', 'opacity': 1} );
+					this.positionControlBar();
+					this.getControlBar().isVisible = true;
+					$(this.getFirstMonitor().obj ).find(".controlBarShadow" ).css({'visibility': 'visible', 'opacity': 1});
+				}
+
+				var _this = this;
+				if (this.getControlBar().handleTouchTimeoutId){
+					clearTimeout(this.getControlBar().handleTouchTimeoutId);
+				}
+				this.getControlBar().handleTouchTimeoutId = setTimeout( function () {
+					_this.ignoreNextMouseEvent = true;
+					_this.hideControlBar( );
+				}, this.getConfig('menuFadeout') );
+
 			},
 
 			//Prefetch
