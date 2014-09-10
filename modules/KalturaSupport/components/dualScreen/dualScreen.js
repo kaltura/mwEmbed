@@ -310,17 +310,17 @@
 					}
 
 					//dualScreen components are set on z-index 1-3, so set all other components to zIndex 4 or above
-					$.each(_this.embedPlayer.getVideoHolder().children(), function(index, childNode){
-						if (!childNode.classList.contains("dualScreen")){
-							if ( isNaN($(childNode).css('z-index')) ){
-								$(childNode).css('z-index', 4);
-							} else {
-								var zIndex = $(childNode).css('z-index');
-								$(childNode).css('z-index', zIndex + 4);
-							}
-						}
-					});
-				});
+	                  $.each(_this.embedPlayer.getVideoHolder().children(), function(index, childNode){
+	                      if (!childNode.classList.contains("dualScreen")){
+	                          if ( isNaN($(childNode).css('z-index')) ){
+	                              $(childNode).css('z-index', 4);
+	                          } else {
+	                              var zIndex = $(childNode).css('z-index');
+	                              $(childNode).css('z-index', zIndex + 4);
+	                          }
+	                      }
+	                  });
+				} );
 
 				this.bind( 'onOpenFullScreen', function () {
 					_this.hideMonitor( _this.getSecondMonitor().obj );
