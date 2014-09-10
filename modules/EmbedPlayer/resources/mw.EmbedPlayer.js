@@ -2057,9 +2057,7 @@
 
 			// Allow plugins to block playback
 			var corePlay = {allowPlayback: true};
-			//console.error('EmbedPlayer::play: trigger corePlayAction', corePlay);
 			this.triggerHelper( 'corePlayAction', [corePlay] );
-			//console.error('EmbedPlayer::play: corePlay obj after trigger', corePlay);
 			if( !corePlay.allowPlayback ){
 				return false;
 			}
