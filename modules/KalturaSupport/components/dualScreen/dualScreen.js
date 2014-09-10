@@ -295,8 +295,10 @@
 						of: $( _this.getPlayer().getVideoHolder() )
 					} );
 
-					secondaryScreen.getAbsoluteOverlaySpinner().attr( 'id', 'secondScreenLoadingSpinner' );
-
+					if (!_this.secondDisplayReady) {
+						var firstChild = $( secondaryScreen.children()[0] );
+						firstChild.getAbsoluteOverlaySpinner().attr( 'id', 'secondScreenLoadingSpinner' );
+					}
 					_this.getSecondMonitor().prop = secondaryScreen.css( ['top', 'left', 'width', 'height'] );
 					_this.getSecondMonitor().obj.css( _this.getSecondMonitor().prop );
 					if ( _this.getConfig( "mainViewDisplay" ) == 2 ) {
@@ -401,6 +403,7 @@
 							// remove the spinner
 							$spinner.remove();
 						}
+						_this.secondDisplayReady = true;
 					} );
 				} );
 				this.bind( 'KalturaSupport_CuePointReached', function ( e, cuePointObj ) {
