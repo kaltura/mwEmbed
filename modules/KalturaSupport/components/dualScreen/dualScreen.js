@@ -405,6 +405,34 @@
 					_this.sync( cuePointObj.cuePoint );
 				} );
 
+				var fsmState = [];
+				var screenShown = false;
+				var cssParams = {};
+				this.bind( "preShowScreen", function () {
+					screenShown = true;
+					if (_this.fsm.getStatus() != "pip"){
+						fsmState.push(_this.fsm.getStatus());
+						_this.fsm.consumeEvent( 'pip' );
+					}
+					if ( !_this.getPrimary().isMain ) {
+						fsmState.push('switch');
+						_this.fsm.consumeEvent( 'switch' );
+					}
+					cssParams = _this.getFirstMonitor().obj.css( ['top', 'left', 'width', 'height'] );
+					_this.getPrimary().obj.css({'top': '', 'left': '', 'width': '', 'height': ''} ).removeClass('firstScreen');
+					_this.fsm.consumeEvent( 'hide' );
+				} );
+				this.bind( "preHideScreen", function () {
+					if (screenShown) {
+						screenShown = false;
+						_this.getPrimary().obj.addClass( 'firstScreen' );
+						_this.getPrimary().obj.css( cssParams );
+						$.each(fsmState, function(i, state){
+							_this.fsm.consumeEvent( state );
+						});
+						fsmState = [];
+					}
+				} );
 			},
 			checkAnimationSupport: function ( elm ) {
 				elm = elm || document.body || document.documentElement;
