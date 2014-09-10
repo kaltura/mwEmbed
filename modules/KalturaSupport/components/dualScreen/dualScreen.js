@@ -121,10 +121,10 @@
 							this.currentState = this.states[i];
 						}
 					}
-					this.consumeEvent = function ( e, source ) {
+					this.consumeEvent = function ( e ) {
 						if ( this.currentState.events[e] ) {
 							fsmTransitionHandlers();
-							this.currentState.events[e].action( source );
+							this.currentState.events[e].action();
 							this.currentState = this.states[this.indexes[this.currentState.events[e].name]];
 						}
 					}
