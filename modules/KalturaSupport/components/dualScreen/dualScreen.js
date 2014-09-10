@@ -168,26 +168,22 @@
 							'SbS': {
 								name: 'SbS',
 								action: function () {
-									_this.toggleMonitorFeatures( _this.getSecondMonitor().obj );
+									_this.disableMonitorFeatures( _this.getSecondMonitor().obj );
 									_this.enableSideBySideView();
 
 								}
 							},
 							'hide': {
 								name: 'SV',
-								action: function ( source ) {
-									_this.toggleMonitorFeatures( _this.getSecondMonitor().obj );
-									if ( source == _this.TYPE.PRIMARY ) {
-										_this.toggleMainMonitor();
-									}
+								action: function (  ) {
 									_this.hideMonitor( _this.getSecondMonitor().obj );
 								}
 							},
 							'switch': {
 								name: 'PiP',
 								action: function () {
-									_this.toggleMonitorFeatures( _this.getFirstMonitor().obj );
-									_this.toggleMonitorFeatures( _this.getSecondMonitor().obj );
+									_this.enableMonitorFeatures( _this.getFirstMonitor().obj );
+									_this.disableMonitorFeatures( _this.getSecondMonitor().obj );
 									_this.toggleMainMonitor();
 								}
 							}
@@ -199,7 +195,7 @@
 							'PiP': {
 								name: 'PiP',
 								action: function () {
-									_this.toggleMonitorFeatures( _this.getSecondMonitor().obj );
+									_this.enableMonitorFeatures( _this.getSecondMonitor().obj );
 									_this.disableSideBySideView();
 								}
 							},
@@ -225,7 +221,7 @@
 							'PiP': {
 								name: 'PiP',
 								action: function () {
-									_this.toggleMonitorFeatures( _this.getSecondMonitor().obj );
+									_this.enableMonitorFeatures( _this.getSecondMonitor().obj );
 									_this.showMonitor( _this.getSecondMonitor().obj );
 								}
 							},
@@ -234,14 +230,12 @@
 								action: function () {
 									_this.showMonitor( _this.getSecondMonitor().obj );
 									_this.hideMonitor( _this.getFirstMonitor().obj );
-
 									_this.toggleMainMonitor();
 								}
 							},
 							'SbS': {
 								name: 'SbS',
 								action: function () {
-									_this.toggleMonitorFeatures( _this.getSecondMonitor().obj );
 									_this.enableSideBySideView();
 									_this.showMonitor( _this.getSecondMonitor().obj );
 								}
@@ -467,18 +461,17 @@
 					monitor.obj.toggleClass( 'firstScreen secondScreen' )
 				} );
 			},
-			toggleMonitorFeatures: function ( monitor ) {
-				if ( monitor.draggable( 'option', 'disabled' ) ) {
-					monitor.css( this.getSecondMonitor().prop );
-					monitor.draggable( 'enable' ).resizable( 'enable' );
-					this.addResizeHandlers(monitor);
-				} else {
-					this.getFirstMonitor().prop = monitor.css( ['top', 'left', 'width', 'height'] );
-					this.getSecondMonitor().prop = monitor.css( ['top', 'left', 'width', 'height'] );
-					monitor.draggable( 'disable' ).resizable( 'disable' );
-					this.removeResizeHandlers(monitor);
-				}
-
+			enableMonitorFeatures: function ( monitor ) {
+				monitor.css( this.getSecondMonitor().prop );
+				monitor.draggable( 'enable' ).resizable( 'enable' );
+				this.addResizeHandlers(monitor);
+			},
+			disableMonitorFeatures: function ( monitor ) {
+				this.getFirstMonitor().prop = monitor.css( ['top', 'left', 'width', 'height'] );
+				this.getSecondMonitor().prop = monitor.css( ['top', 'left', 'width', 'height'] );
+				monitor.draggable( 'disable' ).resizable( 'disable' );
+				//monitor.css({'top': '', 'left': '', 'width': '', 'height': ''});
+				this.removeResizeHandlers(monitor);
 			},
 			removeResizeHandlers: function(monitor){
 				monitor.find(".dualScreen-transformhandle" ).remove();
