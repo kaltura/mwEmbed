@@ -15,9 +15,9 @@
 
 			  // AdTimeline events
 
-			  kdp.addJsListener("AdSupport_PreSequence", function(){
-				  $('#adTracking').append("AdSupport_PreSequence event triggered<br>");
-				  addEvent("AdSupport_PreSequence");
+			  kdp.addJsListener("preSequenceStart", function(){
+				  $('#adTracking').append("preSequenceStart event triggered<br>");
+				  addEvent("preSequenceStart");
 			  });
 			  kdp.addJsListener("AdSupport_StartAdPlayback", function(){
 				  $('#adTracking').append("AdSupport_StartAdPlayback event triggered<br>");
@@ -27,17 +27,25 @@
 				  $('#adTracking').append("AdSupport_EndAdPlayback event triggered<br>");
 				  addEvent("AdSupport_EndAdPlayback");
 			  });
-			  kdp.addJsListener("AdSupport_PreSequenceComplete", function(){
-				  $('#adTracking').append("AdSupport_PreSequenceComplete event triggered<br>");
-				  addEvent("AdSupport_PreSequenceComplete");
+			  kdp.addJsListener("preSequenceComplete", function(){
+				  $('#adTracking').append("preSequenceComplete event triggered<br>");
+				  addEvent("preSequenceComplete");
 			  });
-			  kdp.addJsListener("AdSupport_PostSequence", function(){
-				  $('#adTracking').append("AdSupport_PostSequence event triggered<br>");
-				  addEvent("AdSupport_PostSequence");
+			  kdp.addJsListener("postSequenceStart", function(){
+				  $('#adTracking').append("postSequenceStart event triggered<br>");
+				  addEvent("postSequenceStart");
 			  });
-			  kdp.addJsListener("AdSupport_PostSequenceComplete", function(){
-				  $('#adTracking').append("AdSupport_PostSequenceComplete event triggered<br>");
-				  addEvent("AdSupport_PostSequenceComplete");
+			  kdp.addJsListener("postSequenceComplete", function(){
+				  $('#adTracking').append("postSequenceComplete event triggered<br>");
+				  addEvent("postSequenceComplete");
+			  });
+			  kdp.addJsListener("midSequenceStart", function(){
+				  $('#adTracking').append("midSequenceStart event triggered<br>");
+				  addEvent("midSequenceStart");
+			  });
+			  kdp.addJsListener("midSequenceComplete", function(){
+				  $('#adTracking').append("midSequenceComplete event triggered<br>");
+				  addEvent("midSequenceComplete");
 			  });
 
 			  // kAdPlayer events
@@ -55,6 +63,9 @@
 			  });
 			  kdp.addJsListener("onAdSkip", function(){
 				  $('#adTracking').append("onAdSkip event triggered<br>");
+			  });
+			  kdp.addJsListener("adClick", function(){
+				  $('#adTracking').append("adClick event triggered<br>");
 			  });
 			  kdp.addJsListener("adErrorEvent", function(){
 				  $('#adTracking').append("<font color='red'>adErrorEvent event triggered</font><br>");
@@ -102,11 +113,11 @@
 	<h4>The expected events:</h4>
 	<h5>For pre-roll ads:</h5>
 	<ul>
-		<li><b><i>AdSupport_PreSequence:</i></b> is triggered by the Kaltura player to mark the beginning of the pre-sequence event</li>
+		<li><b><i>preSequenceStart:</i></b> is triggered by the Kaltura player to mark the beginning of the pre-sequence event</li>
 		<li><b><i>AdSupport_StartAdPlayback:</i></b> is triggered by the Kaltura player when the first pre-sequence ad starts</li>
 		<li><b><i>onAdPlay</i></b> and  <b><i>onAdComplete</i></b> events are triggered by the VAST plugin for each ad in the sequence</li>
 		<li><b><i>AdSupport_EndAdPlayback:</i></b> is triggered by the Kaltura player when the last pre-sequence ad finish</li>
-		<li><b><i>AdSupport_PreSequenceComplete:</i></b> is triggered by the Kaltura player to mark the end of the pre-sequence event</li>
+		<li><b><i>preSequenceComplete:</i></b> is triggered by the Kaltura player to mark the end of the pre-sequence event</li>
 	</ul>
 	<h5>For mid-roll ads:</h5>
 	<ul>
@@ -122,15 +133,19 @@
 	</ul>
 	<h5>For post-roll ads:</h5>
 	<ul>
-		<li><b><i>AdSupport_PostSequence:</i></b> is triggered by the Kaltura player to mark the beginning of the post-sequence event</li>
+		<li><b><i>postSequenceStart:</i></b> is triggered by the Kaltura player to mark the beginning of the post-sequence event</li>
 		<li><b><i>AdSupport_StartAdPlayback:</i></b> is triggered by the Kaltura player when the first post-sequence ad starts</li>
 		<li><b><i>onAdPlay</i></b> and  <b><i>onAdComplete</i></b> events are triggered by the VAST plugin for each ad in the sequence</li>
 		<li><b><i>AdSupport_EndAdPlayback:</i></b> is triggered by the Kaltura player when the last post-sequence ad finish</li>
-		<li><b><i>AdSupport_PostSequenceComplete:</i></b> is triggered by the Kaltura player to mark the end of the post-sequence event</li>
+		<li><b><i>postSequenceComplete:</i></b> is triggered by the Kaltura player to mark the end of the post-sequence event</li>
 	</ul>
 	<h5>Ad skip event:</h5>
 	<ul>
 		<li><b><i>onAdSkip:</i></b> is triggered when the ad is skipped (when the user clicks the "Skip" button)</li>
+	</ul>
+	<h5>Ad click event:</h5>
+	<ul>
+		<li><b><i>adClick:</i></b> is triggered when the ad is clicked by the user</li>
 	</ul>
 	<h5>Ad error events:</h5>
 	<ul>
