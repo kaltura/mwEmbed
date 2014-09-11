@@ -98,6 +98,15 @@
 
 		// called from KBaseMediaList when a media item is clicked - trigger clip play
 		mediaClicked: function(index){
+			if (this.getConfig('onPage')){
+				try{
+					var doc = window['parent'].document;
+					$(doc).find(".chapterBox").removeClass( 'active');
+				}catch(e){};
+			}else{
+				$(".chapterBox").removeClass( 'active');
+			}
+			$(".chapterBox").find("[data-chapter-index='"+ index +"']" ).addClass( 'active');
 			this.playMedia( index, true);
 		},
 

@@ -317,16 +317,6 @@
 				.on('click', function(){
 					if ( !_this.isDisabled ){
 						// set active media item
-
-						if (_this.getConfig('onPage')){
-							try{
-								var doc = window['parent'].document;
-								$(doc).find(".chapterBox").removeClass( 'active');
-							}catch(e){};
-						}else{
-							$(".chapterBox").removeClass( 'active');
-						}
-						$( this ).addClass( 'active');
 						var index = $(this).data( 'chapterIndex' );
 						// call mediaClicked with the media index (implemented in component level)
 						_this.mediaClicked(index);
