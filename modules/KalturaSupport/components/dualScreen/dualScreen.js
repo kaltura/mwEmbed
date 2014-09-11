@@ -594,10 +594,6 @@
 					);
 					this.getPlayer().getInterface().append( this.$controlBar );
 					this.setControlBarWidth();
-					this.$controlBar.
-						css({"z-index": 3,
-							'visibility': 'hidden',
-							'opacity': 0} );
 				}
 				return this.$controlBar;
 			},
@@ -654,7 +650,7 @@
 						} )
 						.find('li > span#' + component.id)
 						.attr('title', component.title)
-						.attr('data-show-tooltip', false);
+						.attr('data-show-tooltip', true);
 				} );
 			},
 			disableControlBar: function () {
@@ -671,8 +667,8 @@
 					return;
 				}
 				if ( this.getControlBar().isVisible ) {
-					this.getControlBar().css( {'visibility': 'hidden', 'opacity': 0} );
-					$(this.getFirstMonitor().obj ).find(".controlBarShadow" ).css({'visibility': 'hidden', 'opacity': 0});
+					this.getControlBar().addClass('componentOff' ).removeClass('componentOn');
+					$(this.getPlayer().getInterface()).find(".controlBarShadow" ).addClass('componentOff' ).removeClass('componentOn');
 					this.getControlBar().isVisible = false;
 				}
 			},
@@ -682,10 +678,10 @@
 					return;
 				}
 				if ( !this.getControlBar().isVisible ) {
-					this.getControlBar().css( {'visibility': 'visible', 'opacity': 1} );
+					this.getControlBar().addClass('componentOn' ).removeClass('componentOff');
 					this.positionControlBar();
 					this.getControlBar().isVisible = true;
-					$(this.getFirstMonitor().obj ).find(".controlBarShadow" ).css({'visibility': 'visible', 'opacity': 1});
+					$(this.getPlayer().getInterface()).find(".controlBarShadow" ).addClass('componentOn' ).removeClass('componentOff');
 				}
 
 				var _this = this;

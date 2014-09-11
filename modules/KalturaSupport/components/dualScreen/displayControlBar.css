@@ -139,6 +139,7 @@ ul.inline, ol.inline {
 
 .controlBar{
     padding-top: 5px;
+    z-index: 3;
 }
 
 #displayControlBar{
