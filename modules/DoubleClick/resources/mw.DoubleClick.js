@@ -838,6 +838,7 @@
 				setTimeout(function(){
 					_this.embedPlayer.hideSpinner();
 					_this.adLoaderErrorFlag = true;
+					$( _this.embedPlayer ).trigger("adErrorEvent");
 					_this.restorePlayer();
 				},100);
 			},'adsLoadError', true);
@@ -1000,7 +1001,7 @@
 				this.embedPlayer.getPlayerElement().redrawObject(50);
 			}else{
 				if (_this.isLinear || _this.adLoaderErrorFlag){
-					$("#adContainervideoTarget").hide();
+					$("#" + _this.getAdContainerId()).hide();
 				}
 			}
 			this.embedPlayer.sequenceProxy.isInSequence = false;
