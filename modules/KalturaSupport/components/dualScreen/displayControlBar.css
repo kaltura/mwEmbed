@@ -123,10 +123,10 @@
 }
 /*Animations*/
 .componentAnimation{
-    -webkit-transition: visibility 0.75s ease ,opacity 0.75s ease;
-    -moz-transition: visibility 0.75s ease ,opacity 0.75s ease;
-    -o-transition: visibility 0.75s ease ,opacity 0.75s ease;
-    transition: visibility 0.75s ease ,opacity 0.75s ease;
+    -webkit-transition: visibility 0.75s ease-in ,opacity 0.75s ease-in;
+    -moz-transition: visibility 0.75s ease-in ,opacity 0.75s ease-in;
+    -o-transition: visibility 0.75s ease-in ,opacity 0.75s ease-in;
+    transition: visibility 0.75s ease-in ,opacity 0.75s ease-in;
 }
 /*Control bar*/
 ul.inline, ol.inline {

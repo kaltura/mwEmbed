@@ -11,7 +11,7 @@
 				'templatePath': 'components/dualScreen/displayControlBar.tmpl.html',
 				'secondScreen': {
 					'size': '30',
-					'startLocation': 'right bottom'
+					'startLocation': 'right-15 bottom'
 				},
 				'resizable': {
 					'handles': 'ne, se, sw, nw',
@@ -292,9 +292,10 @@
 						.resizable( _this.getConfig( 'resizable' ) );
 
 					secondaryScreen.position( {
-						my: _this.getConfig( 'secondScreen' ).startLocation.toLowerCase(),
-						at: _this.getConfig( 'secondScreen' ).startLocation.toLowerCase(),
-						of: $( _this.getPlayer().getVideoHolder() )
+						my: "right-15 bottom-"+(10+_this.getPlayer().layoutBuilder.getHeight()),//_this.getConfig( 'secondScreen' ).startLocation.toLowerCase() + "-15",
+						at: "right bottom+",//+(_this.getPlayer().getHeight() - _this.getPlayer().layoutBuilder.getHeight()),
+//							_this.getConfig( 'secondScreen' ).startLocation.toLowerCase() + "-" + (_this.getPlayer().layoutBuilder.getHeight()),
+						of: $( _this.getPlayer().getInterface() )
 					} );
 
 					_this.getSecondMonitor().prop = secondaryScreen.css( ['top', 'left', 'width', 'height'] );
@@ -411,7 +412,10 @@
 							$spinner.remove();
 						}
 						_this.secondDisplayReady = true;
+
+	//					_this.toggleMonitorFeatures(_this.getSecondMonitor());
 					} );
+	//				_this.toggleMonitorFeatures(_this.getSecondMonitor());
 				} );
 				this.bind( 'KalturaSupport_CuePointReached', function ( e, cuePointObj ) {
 					_this.sync( cuePointObj.cuePoint );
@@ -612,9 +616,13 @@
 				this.getControlBar().
 					css({'width': width + 10});
 			},
-			positionControlBar: function ( ) {
+			positionControlBar: function ( height ) {
+//				var x = this.getPlayer().layoutBuilder.layoutContainers.topBarContainer.length;
+//				if (x > 1){
+//
+//				}
 				this.getControlBar().position( {
-					my: 'right top',
+					my: 'right top+'+(height || 0),
 					at: 'right top',
 					of: this.getPlayer().getInterface(),
 					collision: 'none'
@@ -659,6 +667,10 @@
 						.attr('title', component.title)
 						.attr('data-show-tooltip', true);
 				} );
+
+				this.bind("onShowToplBar onHideToplBar", function(e, height){
+					_this.positionControlBar(height.top);
+				});
 			},
 			disableControlBar: function () {
 				clearTimeout(this.getControlBar().handleTouchTimeoutId);
