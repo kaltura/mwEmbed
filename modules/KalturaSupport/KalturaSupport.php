@@ -86,7 +86,7 @@
             'scripts' => "components/mediaList/mediaList.js",
             'styles' =>  "components/mediaList/mediaList.css",
             'templates' => "components/mediaList/mediaList.tmpl.html",
-            'dependencies' => array( 'mw.KBaseComponent', 'jCarouse' ),
+            'dependencies' => array( 'mw.KBaseMediaList', 'jCarouse' ),
             'kalturaPluginName' => 'mediaList'
         ),
 		/* Core plugins */
