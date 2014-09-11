@@ -322,7 +322,7 @@ mw.KAdPlayer.prototype = {
 
 		// hide any ad overlay
 		$( '#' + this.getOverlayId() ).hide();
-		
+
 		// Play the ad as sibling to the current video element.
 		if( _this.isVideoSiblingEnabled( targetSource ) ) {
 
@@ -538,8 +538,8 @@ mw.KAdPlayer.prototype = {
 			return false;
 		}
 
-		// iPhone and IOS 5 does not play multiple videos well, use source switch
-		if( mw.isIphone() || mw.isAndroid2() || mw.isAndroid40() || mw.isMobileChrome() 
+		// iPhone and IOS 5 does not play multiple videos well, use source switch. Chromecast should not use sibling as well.
+		if( mw.isIphone() || mw.isAndroid2() || mw.isAndroid40() || mw.isMobileChrome() || this.embedPlayer.instanceOf == "Chromecast"
 				|| 
 			( mw.isIpad() && ! mw.isIpad3() ) 
 		){
@@ -628,13 +628,14 @@ mw.KAdPlayer.prototype = {
 					&& 
 					!isNaN( adConf.skipoffset )
 				){
-					//parse "int" format: 
+					//parse "int" format:
 					skipOffsetInSecs = parseInt( adConf.skipoffset )
 				} else 	if ( adConf.skipoffset.indexOf(":") != -1 ) {
 					skipOffsetInSecs = this.getTimeInSeconds( adConf.skipoffset );
 				} else if ( adConf.skipoffset.indexOf("%") != -1 ) {
 					//parse percent format to seconds
 					var percent = parseInt( adConf.skipoffset.substring(0, adConf.skipoffset.indexOf("%")) ) / 100;
+
 					if ( isNaN( vid.duration ) || vid.duration === 0 ) {
 						skipPercentage = percent;
 					} else {
@@ -1090,9 +1091,9 @@ mw.KAdPlayer.prototype = {
 				var offsetRemaining = Math.max(Math.ceil(skipOffset - time), 0);
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining', offsetRemaining );
 				if (offsetRemaining <= 0) {
-				sendBeacon( 'progress' );
-				$('#' + _this.embedPlayer.id + '_ad_skipNotice' ).remove();	
-				$('#' + _this.embedPlayer.id + '_ad_skipBtn' ).show();	
+                    sendBeacon( 'progress' );
+                    $('#' + _this.embedPlayer.id + '_ad_skipNotice' ).remove();
+                    $('#' + _this.embedPlayer.id + '_ad_skipBtn' ).show();
 				}
 			}
 			if (adConf.selectedIcon) {

@@ -1,8 +1,8 @@
 /**
-* Native embed library:
-*
-* Enables embedPlayer support for native html5 browser playback system 
-*/
+ * Native embed library:
+ *
+ * Enables embedPlayer support for native html5 browser playback system
+ */
 ( function( mw, $ ) { "use strict";
 
 mw.EmbedPlayerNative = {
@@ -1110,8 +1110,8 @@ mw.EmbedPlayerNative = {
 	* Toggle the Mute
 	* calls parent_toggleMute to update the interface
 	*/
-	toggleMute: function(forceMute) {
-		this.parent_toggleMute(forceMute);
+	toggleMute: function() {
+		this.parent_toggleMute();
 		this.getPlayerElement();
 		if ( this.playerElement )
 			this.playerElement.muted = this.muted;
@@ -1483,5 +1483,4 @@ mw.EmbedPlayerNative = {
 		return ( (Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2) || ( mw.isIpad() && this.currentSeekTargetTime > 0.01 ) );
 }
 };
-
 } )( mediaWiki, jQuery );
