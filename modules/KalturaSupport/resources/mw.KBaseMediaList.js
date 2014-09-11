@@ -318,6 +318,8 @@
 					if ( !_this.isDisabled ){
 						// set active media item
 						var index = $(this).data( 'chapterIndex' );
+						// Check if the current chapter is already active, set skipPause flag accordingly.
+						_this.skipPauseFlag = !$( this ).hasClass( 'active');
 						// call mediaClicked with the media index (implemented in component level)
 						_this.mediaClicked(index);
 					}
