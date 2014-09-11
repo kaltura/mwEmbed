@@ -297,14 +297,19 @@
 						of: $( _this.getPlayer().getVideoHolder() )
 					} );
 
-					if (!_this.secondDisplayReady) {
-						var firstChild = $( secondaryScreen.children()[0] );
-						firstChild.getAbsoluteOverlaySpinner().attr( 'id', 'secondScreenLoadingSpinner' );
-					}
 					_this.getSecondMonitor().prop = secondaryScreen.css( ['top', 'left', 'width', 'height'] );
 					_this.getSecondMonitor().obj.css( _this.getSecondMonitor().prop );
+
 					if ( _this.getConfig( "mainViewDisplay" ) == 2 ) {
+						_this.bind('postDualScreenTransition', function(e, transition){
+							_this.unbind('postDualScreenTransition');
+							if (!_this.secondDisplayReady) {
+								secondaryScreen.find( '#SynchImg' ).getAbsoluteOverlaySpinner().attr( 'id', 'secondScreenLoadingSpinner' );
+							}
+						});
 						_this.fsm.consumeEvent( "switchView" );
+					} else if (!_this.secondDisplayReady) {
+						secondaryScreen.find( '#SynchImg' ).getAbsoluteOverlaySpinner().attr( 'id', 'secondScreenLoadingSpinner' );
 					}
 
 					//dualScreen components are set on z-index 1-3, so set all other components to zIndex 4 or above
