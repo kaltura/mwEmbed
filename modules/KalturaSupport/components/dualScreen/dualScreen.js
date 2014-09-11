@@ -593,7 +593,7 @@
 			getControlBar: function ( ) {
 				if ( !this.$controlBar ) {
 					this.$controlBar = $( '<div />' )
-						.addClass( 'controlBar componentAnimation ' + this.getCssClass() )
+						.addClass( 'controlBar componentAnimation componentOff' + this.getCssClass() )
 						.append(
 						$( '<div class="controlBar-content" /> ' ).append(
 							this.getTemplateHTML( )
