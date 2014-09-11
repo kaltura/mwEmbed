@@ -202,13 +202,16 @@ ul.inline, ol.inline {
     color: #fff;
 }
 .controlBarShadow{
-    background: linear-gradient(to bottom, rgba(0,0,0,0.15) 4%, rgba(0,0,0,0.1) 10%, rgba(0,0,0,0.08) 15%, rgba(0,0,0,0.05) 20%, rgba(255,255,255,0.05) 33%);
+    background: linear-gradient(to bottom, rgba(0,0,0,0.15) 4%, rgba(0,0,0,0.1) 10%, rgba(0,0,0,0.08) 15%, rgba(0,0,0,0.05) 20%, rgba(255,255,255,0.05) 33%); /* W3C */
+    background: -moz-linear-gradient(top,  rgba(0,0,0,0.15) 4%, rgba(0,0,0,0.1) 10%, rgba(0,0,0,0.08) 15%, rgba(0,0,0,0.05) 20%, rgba(255,255,255,0.05) 33%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(4%,rgba(0,0,0,0.15)), color-stop(10%,rgba(0,0,0,0.1)), color-stop(15%,rgba(0,0,0,0.08)), color-stop(20%,rgba(0,0,0,0.05)), color-stop(33%,rgba(255,255,255,0.05))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  rgba(0,0,0,0.15) 4%, rgba(0,0,0,0.1) 10%, rgba(0,0,0,0.08) 15%, rgba(0,0,0,0.05) 20%, rgba(255,255,255,0.05) 33%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  rgba(0,0,0,0.15) 4%, rgba(0,0,0,0.1) 10%, rgba(0,0,0,0.08) 15%, rgba(0,0,0,0.05) 20%, rgba(255,255,255,0.05) 33%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  rgba(0,0,0,0.15) 4%, rgba(0,0,0,0.1) 10%, rgba(0,0,0,0.08) 15%, rgba(0,0,0,0.05) 20%, rgba(255,255,255,0.05) 33%); /* IE10+ */
     position: absolute;
     content: ' ';
     width: 100%;
     height: 100%;
-    visibility: hidden;
-    opacity: 0;
 }
 /*Fonts*/
 @font-face {

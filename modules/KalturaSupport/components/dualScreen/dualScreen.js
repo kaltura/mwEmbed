@@ -628,10 +628,7 @@
 				});
 
 				//add drop shadow containers for control bar
-				var shadowTargets = this.getMonitors();//.concat($(this.getPlayer()));
-				$.each(shadowTargets, function(i, obj){
-					obj.prepend($("<div class='controlBarShadow componentAnimation'></div>"));
-				});
+				this.getPlayer().getInterface().find(".mwEmbedPlayer").prepend($("<div class='controlBarShadow componentAnimation'></div>").addClass('componentOff'));
 				//Attach control bar action handlers
 				$.each( _this.controlBarComponents, function ( name, component ) {
 					_this.getControlBar()
