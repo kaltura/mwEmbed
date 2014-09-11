@@ -507,7 +507,7 @@
 			mw.log( "DoubleClick::adsManager.play" );
 			_this.adsManager.start();
 		},
-		displayCompanions: function(ad){alert("displayCompanions");
+		displayCompanions: function(ad){
 			if ( this.getConfig( 'disableCompanionAds' )){
 				return;
 			}
