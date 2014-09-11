@@ -291,7 +291,7 @@
             'desc' => 'Defines the value of the type property of a bumper click notification',
             'availability' => 'kdp'
         ),
-        'adStart' => array(
+        'onAdPlay' => array(
             'props' => 'timeSlot: pre / post / mid / main (see SequenceContextType class)',
             'desc' => 'Defines the value of the type property of an ad start notification'
         ),
@@ -299,7 +299,11 @@
             'props' => 'timeSlot: pre / post / mid / main (see SequenceContextType class)',
             'desc' => 'Defines the value of the type property of an ad click notification'
         ),
-        'adEnd' => array(
+        'onAdSkip' => array(
+            'props' => 'timeSlot: pre / post / mid / main (see SequenceContextType class)',
+            'desc' => 'Fired when the ad is skipped (when the user clicks the "Skip" button)'
+        ),
+        'onAdComplete' => array(
             'props' => 'timeSlot: pre / post / mid / main (see SequenceContextType class)',
             'desc' => 'Defines the value of the type property of an ad end notification'
         ),

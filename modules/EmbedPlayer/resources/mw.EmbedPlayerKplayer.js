@@ -23,7 +23,9 @@ mw.EmbedPlayerKplayer = {
 		'overlays' : true,
 		'fullscreen' : true
 	},
-
+	// If the media loaded event has been fired
+	mediaLoadedFlag: false,
+	seekStarted: false,
 	// Stores the current time as set from flash player
 	flashCurrentTime : 0,
 	selectedFlavorIndex : 0,
@@ -70,19 +72,19 @@ mw.EmbedPlayerKplayer = {
 		flashvars.ks = this.getFlashvars( 'ks' );
 		flashvars.serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );
 		flashvars.b64Referrer = this.b64Referrer;
-		flashvars.forceDynamicStream = this.getFlashvars( 'forceDynamicStream' );
+		flashvars.forceDynamicStream = this.getKalturaAttributeConfig( 'forceDynamicStream' );
 		flashvars.isLive = this.isLive();
-		flashvars.stretchVideo =  this.getFlashvars( 'stretchVideo' ) || false;
+		flashvars.stretchVideo =  this.getKalturaAttributeConfig( 'stretchVideo' ) || false;
 
-		flashvars.flavorId = this.getFlashvars( 'flavorId' );
+		flashvars.flavorId = this.getKalturaAttributeConfig( 'flavorId' );
 		if ( ! flashvars.flavorId && this.mediaElement.selectedSource ) {
 			flashvars.flavorId = this.mediaElement.selectedSource.getAssetId();
 			//this workaround saves the last real flavorId (usefull for example in widevine_mbr replay )
 			this.setFlashvars( 'flavorId', flashvars.flavorId );
 		}
 
-		if ( this.streamerType != 'http' && this.selectedFlavorIndex != 0 ) {
-			flashvars.selectedFlavorIndex = this.selectedFlavorIndex;
+		if ( this.streamerType != 'http' && this.mediaElement.selectedSource ) {
+			flashvars.selectedFlavorIndex = this.getSourceIndex( this.mediaElement.selectedSource  );
 		}
 
 		//add OSMF HLS Plugin if the source is HLS
@@ -95,6 +97,13 @@ mw.EmbedPlayerKplayer = {
 
 		if ( this.live && this.streamerType == 'rtmp' && !this.cancelLiveAutoPlay ) {
 			flashvars.autoPlay = true;
+		}
+
+		if ( this.getKalturaAttributeConfig( 'maxAllowedRegularBitrate' ) ) {
+			flashvars.maxAllowedRegularBitrate =  this.getKalturaAttributeConfig( 'maxAllowedRegularBitrate' );
+		}
+		if ( this.getKalturaAttributeConfig( 'maxAllowedFSBitrate' ) ) {
+			flashvars.maxAllowedFSBitrate =  this.getKalturaAttributeConfig( 'maxAllowedFSBitrate' );
 		}
 
 		//will contain flash plugins we need to load
@@ -120,7 +129,8 @@ mw.EmbedPlayerKplayer = {
 				'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions',
 				'bufferChange': 'onBufferChange',
 				'audioTracksReceived': 'onAudioTracksReceived',
-				'audioTrackSelected': 'onAudioTrackSelected'
+				'audioTrackSelected': 'onAudioTrackSelected',
+				'videoMetadataReceived': 'onVideoMetadataReceived'
 			};
 			_this.playerObject = this.getElement();
 			$.each( bindEventMap, function( bindName, localMethod ) {
@@ -209,7 +219,7 @@ mw.EmbedPlayerKplayer = {
 	getSourcesForKDP: function() {
 		var _this = this;
 		var sourcesByTags = [];
-		var flavorTags = _this.getKalturaConfig( null, 'flavorTags' );
+		var flavorTags = _this.getKalturaAttributeConfig( 'flavorTags' );
 		//select default 'web' / 'mbr' flavors
 		if ( flavorTags === undefined ) {
 			var sources = _this.mediaElement.getPlayableSources();
@@ -253,6 +263,8 @@ mw.EmbedPlayerKplayer = {
 
 	changeMediaCallback: function( callback ){
 		this.updateSources();
+		this.seekStarted = false;
+		this.mediaLoadedFlag = false;
 		this.flashCurrentTime = 0;
 		this.playerObject.setKDPAttribute( 'mediaProxy', 'isLive', this.isLive() );
 		this.playerObject.setKDPAttribute( 'mediaProxy', 'isMp4', this.isMp4Src() );
@@ -304,7 +316,13 @@ mw.EmbedPlayerKplayer = {
 			this.playerObject.duration = data.newValue;
 		}
 	},
-
+	onVideoMetadataReceived: function(){
+		// Trigger "media loaded"
+		if( ! this.mediaLoadedFlag ){
+			$( this ).trigger( 'mediaLoaded' );
+			this.mediaLoadedFlag = true;
+		}
+	},
 	onClipDone: function() {
 		this.parent_onClipDone();
 		this.preSequenceFlag = false;
@@ -372,6 +390,7 @@ mw.EmbedPlayerKplayer = {
 	 */
 	seek: function(percentage, stopAfterSeek) {
 		var _this = this;
+		this.seekStarted = true;
 		var seekTime = percentage * this.getDuration();
 		mw.log( 'EmbedPlayerKalturaKplayer:: seek: ' + percentage + ' time:' + seekTime );
 		if (this.supportsURLTimeEncoding()) {
@@ -398,6 +417,7 @@ mw.EmbedPlayerKplayer = {
 
 		this.unbindHelper("seeked" + _this.bindPostfix).bindHelper("seeked" + _this.bindPostfix, function(){
 			_this.unbindHelper("seeked" + _this.bindPostfix);
+			_this.removePoster();
 			_this.monitor();
 			if( stopAfterSeek ){
 				_this.hideSpinner();
@@ -463,11 +483,14 @@ mw.EmbedPlayerKplayer = {
 	onPlayerSeekEnd: function () {
 		this.previousTime = this.currentTime = this.flashCurrentTime = this.playerObject.getCurrentTime();
 		this.seeking = false;
-		$( this ).trigger( 'seeked',[this.playerObject.getCurrentTime()]);
+		if (this.seekStarted){
+			this.seekStarted = false;
+			$( this ).trigger( 'seeked',[this.playerObject.getCurrentTime()]);
+		}
 	},
 
 	onSwitchingChangeStarted: function ( data, id ) {
-		$( this ).trigger( 'sourceSwitchingStarted' );
+		$( this ).trigger( 'sourceSwitchingStarted', [ data ] );
 	},
 
 	onSwitchingChangeComplete: function ( data, id ) {
@@ -475,6 +498,7 @@ mw.EmbedPlayerKplayer = {
 			this.triggerHelper( 'bitrateChange' , data.newBitrate );
 		}
 		this.mediaElement.setSourceByIndex ( data.newIndex );
+		$( this ).trigger( 'sourceSwitchingEnd', [ data ]  );
 	},
 
 	onFlavorsListChanged: function ( data, id ) {
@@ -581,7 +605,7 @@ mw.EmbedPlayerKplayer = {
 			return this.mediaElement.selectedSource.getSrc();
 		}
 		var flavorIdParam = '';
-		var mediaProtocol = this.getKalturaConfig( null, 'mediaProtocol' ) || mw.getConfig('Kaltura.Protocol') || "http";
+		var mediaProtocol = this.getKalturaAttributeConfig( 'mediaProtocol' ) || mw.getConfig('Kaltura.Protocol') || "http";
 		var format;
 		var fileExt = 'f4m';
 		if ( this.streamerType === 'hdnetwork' ) {
@@ -613,7 +637,7 @@ mw.EmbedPlayerKplayer = {
 	*/
 	getPlaymanifestArg: function ( argName, argKey ) {
 		var argString = "";
-		var argVal = this.getKalturaConfig( null, argKey );
+		var argVal = this.getKalturaAttributeConfig( argKey );
 		if ( argVal !== undefined ) {
 			argString = "/" + argName + "/" + argVal;
 		}
@@ -637,7 +661,7 @@ mw.EmbedPlayerKplayer = {
 	},
 	switchSrc: function ( source ) {
 		//http requires source switching, all other switch will be handled by OSMF in KDP
-		if ( this.streamerType == 'http' && !this.getFlashvars( 'forceDynamicStream' ) ) {
+		if ( this.streamerType == 'http' && !this.getKalturaAttributeConfig( 'forceDynamicStream' ) ) {
 			//other streamerTypes will update the source upon "switchingChangeComplete"
 			this.mediaElement.setSource ( source );
 			this.playerObject.setKDPAttribute ('mediaProxy', 'entryUrl', this.getEntryUrl());
@@ -665,9 +689,16 @@ mw.EmbedPlayerKplayer = {
 		}
 	},
 	toggleFullscreen: function() {
+		var _this = this;
 		this.parent_toggleFullscreen();
 		//Redraw flash object, this fixes a Flash resize issue on when wmode=transparent
 		this.playerObject.redrawObject();
+
+		if ( _this.layoutBuilder.fullScreenManager.isInFullScreen() ) {
+			_this.playerObject.sendNotification( "hasOpenedFullScreen" );
+		} else {
+			_this.playerObject.sendNotification( "hasCloseFullScreen" );
+		}
 	}
 };
 

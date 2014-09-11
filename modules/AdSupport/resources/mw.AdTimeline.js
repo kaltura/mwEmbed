@@ -384,6 +384,10 @@
 			}
 			mw.log( "AdTimeline:: updateUiForAdPlayback: slotType:" + slotType );
 			var embedPlayer = this.embedPlayer;
+			//player doesn't support ads
+			if ( !embedPlayer ) {
+				return;
+			}
 
 			// Set the current slot type :
 			this.currentAdSlotType = slotType;

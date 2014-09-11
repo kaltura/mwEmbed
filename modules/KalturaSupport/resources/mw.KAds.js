@@ -22,6 +22,9 @@
 		confPrefix: 'vast',
 		config:{},
 
+		previousTime: 0,
+		seekIntervalID: null,
+
 		init: function( embedPlayer, callback ){
 			var _this = this;
 			// Inherit BaseAdPlugin
@@ -61,6 +64,22 @@
 				});
 			}
 
+			// Disable seek for VAST in iPhone
+			if( !embedPlayer.getKalturaConfig('vast', 'allowSeekWithNativeControls') && mw.isIphone() ) {
+				$( embedPlayer ).bind('onAdOpen' + _this.bindPostfix, function() {
+					if( !_this.seekIntervalID ) {
+						_this.seekIntervalID = _this.seekIntervalTrigger();
+					}
+				});
+
+				$( embedPlayer ).bind('onAdComplete' + _this.bindPostfix, function() {
+					if( _this.seekIntervalID ) {
+						clearInterval(_this.seekIntervalID);
+						_this.seekIntervalID = null;
+					}
+				});
+			}
+
 			// Reset displayedCuePoints array if adsOnReplay is true
 			if( embedPlayer.getFlashvars( 'adsOnReplay' ) === true ) {
 				embedPlayer.bindHelper('ended' + _this.bindPostfix, function() {
@@ -73,6 +92,20 @@
 				mw.log( "KAds::All ads have been loaded" );
 				callback();
 			});
+		},
+
+		seekIntervalTrigger: function() {
+			var _this = this;
+
+			return setInterval( function() {
+				if( parseInt(_this.embedPlayer.getPlayerElement().currentTime - _this.previousTime) > 1 ) {
+					_this.embedPlayer.getPlayerElement().currentTime = _this.previousTime;
+					return;
+				}
+
+				_this.previousTime = _this.embedPlayer.getPlayerElement().currentTime;
+
+			}, 1000);
 		},
 
 		/**
@@ -137,6 +170,10 @@
 		loadAndDisplayAd: function( cuePointWrapper ) {
 			var _this = this;
 			var embedPlayer = this.embedPlayer;
+			//player doesn't support ads
+			if ( !embedPlayer.sequenceProxy ) {
+				return;
+			}
 			var cuePoint = cuePointWrapper.cuePoint;
 			var adType = this.embedPlayer.kCuePoints.getAdSlotType( cuePointWrapper );
 			var adDuration = Math.round( cuePoint.duration / 1000);
