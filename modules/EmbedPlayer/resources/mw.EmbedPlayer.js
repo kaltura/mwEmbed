@@ -1237,7 +1237,8 @@
 				return ;
 			}
 			// Auto play stopped ( no playerReady has already started playback ) and if not on an iPad with iOS > 3
-			if ( this.isStopped() && this.autoplay && this.canAutoPlay() ) {
+			// livestream autoPlay is handled by liveCore
+			if ( this.isStopped() && this.autoplay && this.canAutoPlay() && !this.isLive() ) {
 				mw.log( 'EmbedPlayer::showPlayer::Do autoPlay' );
 				_this.play();
 			}
