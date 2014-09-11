@@ -123,7 +123,7 @@
 					}
 					this.consumeEvent = function ( e ) {
 						if ( this.currentState.events[e] ) {
-							fsmTransitionHandlers();
+							fsmTransitionHandlers(this.currentState.name, e);
 							this.currentState.events[e].action();
 							this.currentState = this.states[this.indexes[this.currentState.events[e].name]];
 						}
@@ -138,14 +138,16 @@
 
 				var _this = this;
 
-				var fsmTransitionHandlers = function () {
+				var fsmTransitionHandlers = function (transitionFrom, transitionTo) {
 					var transitionHandlerSet = true;
+					_this.getPlayer().triggerHelper('preDualScreenTransition', [[transitionFrom, transitionTo]])
 
 					_this.disableControlBar();
 					_this.enableMonitorTransition();
 
 					function transitionendHandler( e ) {
 						if ( transitionHandlerSet ) {
+							_this.getPlayer().triggerHelper('postDualScreenTransition', [[transitionFrom, transitionTo]])
 							transitionHandlerSet = false;
 							_this.enableControlBar();
 							_this.disableMonitorTransition();
