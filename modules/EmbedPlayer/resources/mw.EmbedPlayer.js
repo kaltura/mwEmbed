@@ -2052,6 +2052,13 @@
 				return false;
 			}
 
+			// Allow plugins to block playback
+			var prePlay = {allowPlayback: true};
+			this.triggerHelper( 'prePlayAction', [prePlay] );
+			if( !prePlay.allowPlayback ){
+				return false;
+			}
+
 			// Check if thumbnail is being displayed and embed html
 			if ( _this.isStopped() && (_this.preSequenceFlag == false || (_this.sequenceProxy && _this.sequenceProxy.isInSequence == false) )) {
 				if ( !_this.selectedPlayer ) {
