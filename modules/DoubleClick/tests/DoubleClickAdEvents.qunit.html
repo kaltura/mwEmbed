@@ -47,6 +47,14 @@
 				$('#adTracking').append("postSequenceStart event triggered<br>");
 				addEvent("postSequenceStart");
 			});
+			kdp.addJsListener("AdSupport_PostSequence", function(){
+				$('#adTracking').append("AdSupport_PostSequence event triggered<br>");
+				addEvent("AdSupport_PostSequence");
+			});
+			kdp.addJsListener("AdSupport_PostSequenceComplete", function(){
+				$('#adTracking').append("AdSupport_PostSequenceComplete event triggered<br>");
+				addEvent("AdSupport_PostSequenceComplete");
+			});
 
 			// kAdPlayer events
 
