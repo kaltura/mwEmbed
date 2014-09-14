@@ -986,7 +986,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'min' => 0, // *NEW*
 				'initvalue' => 5,
 				'max' => 30, // *NEW*
-			),
+			),/*
 			'prerollStartWith' => array(
 				'label' => 'Number of prerolls to start with.', // *NEW*
 				'doc' => 'Number of prerolls to start with.',
@@ -1004,7 +1004,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'min' => 0, // *NEW*
 				'initvalue' => 0,
 				'max' => 5, // *NEW*
-			),
+			),*/
 			'preSequence' => array(
 				'label' => 'VAST pre-sequence index', // *NEW*
 				'doc' => "The VAST preSequence index. For example,1 for ads then 2 for a bumper plugin; would result in ad then bumper.",
@@ -1036,7 +1036,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'min' => 0, // *NEW*
 				'initvalue' => 1,
 				'max' => 5, // *NEW*
-			),
+			),/*
 			'postrollStartWith' => array(
 				'doc' => 'Number of postrolls to start with.',
 				'label' => 'Number of postrolls to start with',
@@ -1053,7 +1053,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'min' => 0, // *NEW*
 				'initvalue' => 0, // *NEW*
 				'max' => 5, // *NEW*
-			),
+			),*/
 			'postSequence' => array(
 				'label' => 'VAST post-sequence index',
 				'doc' => "The VAST post-Sequence index. For example, 1 for ads then 2 for a bumper plugin; would result in ad then bumper.",
