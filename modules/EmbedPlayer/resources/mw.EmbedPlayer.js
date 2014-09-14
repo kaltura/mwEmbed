@@ -2713,9 +2713,6 @@
 		getSource: function(){
 			// update the current selected source:
 			this.mediaElement.autoSelectSource();
-			if (this.mediaElement.selectedSource && this.mediaElement.selectedSource.mimeType === "application/vnd.apple.mpegurl"){
-				this.streamerType = "hls";
-			}
 			return this.mediaElement.selectedSource;
 		},
 		/**
