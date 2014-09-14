@@ -58,7 +58,7 @@
 					_this.shouldAddScroll(_this.addScroll);
 				} );
 
-				this.bind( 'playerReady', function ( e, newState ) {
+				this.bind( 'playerReady updatePlayHeadPercent', function ( e, newState ) {
 					if (_this.dataIntialized) {
 						_this.updateActiveItem();
 					}
@@ -68,12 +68,6 @@
 					_this.destroy();
 					// redraw the list
 					_this.shouldAddScroll(_this.addScroll);
-				});
-
-				this.bind('updatePlayHeadPercent', function( ct ){
-					if (_this.dataIntialized) {
-						_this.updateActiveItem();
-					}
 				});
 			},
 			isSafeEnviornment: function(){
