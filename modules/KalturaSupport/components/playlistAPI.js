@@ -121,17 +121,29 @@
 		},
 
 		// prepare the data to be compatible with KBaseMediaList
-		prepareData: function(itemsArr){
+		addMediaItems: function(itemsArr){
 			for (var i = 0; i < itemsArr.length; i++){
 				var item = itemsArr[i];
-				var customData = item.partnerData ? JSON.parse(item.partnerData) :  {};
+				var customData = (item.partnerData  && item.adminTags !== 'image') ? JSON.parse(item.partnerData) :  {};
 				var title = item.name || customData.title;
 				var description = item.description || customData.desc;
+				var thumbnailUrl = item.thumbnailUrl || customData.thumbUrl || this.getThumbUrl(item);
+				var thumbnailRotatorUrl = this.getConfig( 'thumbnailRotator' ) ? this.getThumRotatorUrl() : '';
+
 				item.order = i;
 				item.title = title;
 				item.description = description;
 				item.width = this.getConfig( 'mediaItemWidth' );
+				item.thumbnail = {
+					url: thumbnailUrl,
+					thumbAssetId: item.assetId,
+					rotatorUrl: thumbnailRotatorUrl,
+					width: this.getThumbWidth(),
+					height: this.getThumbHeight()
+				};
 				item.durationDisplay = kWidget.seconds2npt(item.duration);
+				item.chapterNumber = this.getItemNumber(i);
+				this.mediaList.push(item);
 			}
 		},
 
@@ -298,8 +310,9 @@
 		selectPlaylist: function(playlistIndex){
 			$(".medialistContainer").empty();  // empty the playlist UI container so we can build a new UI
 			this.embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')} ); // for API backward compatibility
-			this.prepareData(this.playlistSet[playlistIndex].items);   // prepare the data to be compatible with KBaseMediaList
-			this.setMediaList(this.playlistSet[playlistIndex].items);  // set the media list in KBaseMediaList
+			this.mediaList = [];
+			this.addMediaItems(this.playlistSet[playlistIndex].items);   // prepare the data to be compatible with KBaseMediaList
+			this.renderMediaList();  // set the media list in KBaseMediaList
 			// support initial selectedIndex or initItemEntryId
 			if (this.firstLoad){
 				if ( this.getConfig( 'initItemEntryId' ) ){ // handle initItemEntryId

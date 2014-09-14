@@ -40,29 +40,10 @@
 				var _this = this;
 
 				this.bind( 'KalturaSupport_ThumbCuePointsReady', function () {
-					_this.mediaList.meta = {};
-					//Init data provider
-					var cuePoints = _this.getPlayer().kCuePoints.getCuePoints();
-					//Generate data transfer object
-					var filteredCuePoints = $.grep(cuePoints, function(cuePoint){
-						var found = false;
-						$.each(_this.getConfig('cuePointType'), function(i, cuePointType){
-							if (cuePointType == cuePoint.cuePointType) {
-								found = true;
-								return false;
-							}
-						});
-						return found;
-					});
-
-					filteredCuePoints.sort( function ( a, b ) {
-						return a.startTime - b.startTime;
-					} );
-
-					$.each(filteredCuePoints, function(i, filteredCuePoint){
-						_this.addMediaItem(filteredCuePoint, i);
-					});
-
+					//Get chapters data from cuepoints
+					var chaptersRawData =_this.getChaptersData();
+					//Create media items from raw data
+					_this.addMediaItems(chaptersRawData);
 					//Need to recalc all durations after we have all the items startTime values
 					_this.setMediaItemTime();
 
@@ -174,36 +155,60 @@
 				}
 				return $chaptersContainer;
 			},
-			//Media Item
-			addMediaItem: function(obj ,index){
-				var mediaItem;
-				var customData = obj.partnerData ? JSON.parse(obj.partnerData) :  {};
-				var title = obj.title || customData.title;
-				var description = obj.description || customData.desc;
-				var thumbnailUrl = obj.thumbnailUrl || customData.thumbUrl || this.getThumbUrl(obj);
-				var thumbnailRotatorUrl = this.getConfig( 'thumbnailRotator' ) ? this.getThumRotatorUrl() : '';
 
-				mediaItem = {
-					order: index,
-					id: obj.id,
-					title: title,
-					description: description,
-					width: this.getConfig( 'mediaItemWidth' ),
-					thumbnail: {
-						url: thumbnailUrl,
-						thumbAssetId: obj.assetId,
-						rotatorUrl: thumbnailRotatorUrl,
-						width: this.getThumbWidth(),
-						height: this.getThumbHeight()
-					},
-					startTime: obj.startTime / 1000,
-					startTimeDisplay: this.formatTimeDisplayValue(kWidget.seconds2npt( obj.startTime / 1000 )),
-					endTime: null,
-					durationDisplay: null,
-					chapterNumber: this.getItemNumber(index)
+			getChaptersData: function(){
+				var _this = this;
+				//Init data provider
+				var cuePoints = this.getPlayer().kCuePoints.getCuePoints();
+				//Generate data transfer object
+				var filteredCuePoints = $.grep(cuePoints, function(cuePoint){
+					var found = false;
+					$.each(_this.getConfig('cuePointType'), function(i, cuePointType){
+						if (cuePointType == cuePoint.cuePointType) {
+							found = true;
+							return false;
+						}
+					});
+					return found;
+				});
 
-				}
-				this.mediaList.push(mediaItem);
+				filteredCuePoints.sort( function ( a, b ) {
+					return a.startTime - b.startTime;
+				} );
+				return filteredCuePoints;
+			},
+			addMediaItems: function(items ,index){
+				var _this = this;
+				$.each(items, function(i, item){
+					var mediaItem;
+					var customData = item.partnerData ? JSON.parse(item.partnerData) :  {};
+					var title = item.title || customData.title;
+					var description = item.description || customData.desc;
+					var thumbnailUrl = item.thumbnailUrl || customData.thumbUrl || _this.getThumbUrl(item);
+					var thumbnailRotatorUrl = _this.getConfig( 'thumbnailRotator' ) ? _this.getThumRotatorUrl() : '';
+
+					mediaItem = {
+						order: index,
+						id: item.id,
+						title: title,
+						description: description,
+						width: _this.getConfig( 'mediaItemWidth' ),
+						thumbnail: {
+							url: thumbnailUrl,
+							thumbAssetId: item.assetId,
+							rotatorUrl: thumbnailRotatorUrl,
+							width: _this.getThumbWidth(),
+							height: _this.getThumbHeight()
+						},
+						startTime: item.startTime / 1000,
+						startTimeDisplay: _this.formatTimeDisplayValue(kWidget.seconds2npt( item.startTime / 1000 )),
+						endTime: null,
+						durationDisplay: null,
+						chapterNumber: _this.getItemNumber(index)
+
+					};
+					_this.mediaList.push(mediaItem);
+				});
 			},
 			getMediaItemThumbs: function(callback){
 				var _this = this;

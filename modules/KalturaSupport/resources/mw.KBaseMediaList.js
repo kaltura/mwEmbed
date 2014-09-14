@@ -101,21 +101,6 @@
 		//Media Item
 		setMediaList: function(items){
 			var _this = this;
-			this.mediaList = [];
-			$.each(items, function(i, item){
-				// set item thumbnail
-				var thumbnailUrl = item.thumbnailUrl || customData.thumbUrl || _this.getThumbUrl(item);
-				var thumbnailRotatorUrl = _this.getConfig( 'thumbnailRotator' ) ? _this.getThumRotatorUrl() : '';
-				item.thumbnail = {
-					url: item.thumbnailUrl,
-					thumbAssetId: item.assetId,
-					rotatorUrl: thumbnailRotatorUrl,
-					width: _this.getThumbWidth(),
-					height: _this.getThumbHeight()
-				};
-				item.itemNumber = _this.getItemNumber(i);
-				_this.mediaList.push(item);
-			});
 
 			if (this.getConfig('containerPosition')){
 				this.getMedialistContainer();
