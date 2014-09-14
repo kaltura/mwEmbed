@@ -322,25 +322,27 @@ return array(
             ),
 			'kpl0Url' => array(
 				'doc' => 'The playlist URL. (can be a Kaltura playlist service or MRSS)',
-				'type' => 'url'
+				'type' => 'hiddenValue'
 			),
 			'kpl0Id' => array(
 				'doc' => "The kaltura playlist Id",
-				'type' => 'string'
+				'type' => 'hiddenValue'
 			),
 			'kpl0Name' => array(
 				'doc' => "The name of the playlist.",
+				'type' => 'hiddenValue'
 			),
 			'kpl1Url' => array(
 				'doc' => 'The N playlist URL.',
-				'type' => 'url'
+				'type' => 'hiddenValue'
 			),
 			'kpl1Name' => array(
 				'doc' => "The name of the indexed playlist.",
+				'type' => 'hiddenValue'
 			),
 			'includeInLayout' => array(
                 'doc' => "If the playlist clip list should be displayed.",
-                'type' => 'boolean'
+                'type' => 'hiddenValue'
             )
 		)
 	),/*
