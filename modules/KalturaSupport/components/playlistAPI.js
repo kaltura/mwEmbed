@@ -115,7 +115,7 @@
 		prepareData: function(itemsArr){
 			for (var i = 0; i < itemsArr.length; i++){
 				var item = itemsArr[i];
-				var customData = item.partnerData ? JSON.parse(item.partnerData) :  {};
+				var customData = (item.partnerData  && item.adminTags !== 'image') ? JSON.parse(item.partnerData) :  {};
 				var title = item.name || customData.title;
 				var description = item.description || customData.desc;
 				item.order = i;
