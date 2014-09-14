@@ -284,20 +284,18 @@
 						activeIndex = inx;
 					}
 				});
-				var $activeChapter =  this.getComponent().find( '.active' );
-				var actualActiveIndex = $activeChapter.data( 'chapterIndex' );
+				var $activeChapter = this.getActiveItem();
+				var actualActiveIndex = this.selectedMediaItemIndex;
 				// Check if active is not already set:
 				if( actualActiveIndex == activeIndex ){
 					// update duration count down:
 					var item = this.mediaList[ activeIndex ];
 					if( item ){
-						$activeChapter.addClass('active');
+						this.setSelectedMedia(activeIndex);
 						item.active = true;
 						var endTime = item.endTime;
 						var countDown =  Math.abs( time - endTime );
-						$activeChapter.find('.k-duration span').text(
-							kWidget.seconds2npt( countDown )
-						);
+						this.updateActiveItemDuration(countDown);
 					}
 				} else {
 					var item = _this.mediaList[ actualActiveIndex ];
@@ -305,11 +303,7 @@
 						item.active = false;
 						var startTime = item.startTime ;
 						var endTime = item.endTime;
-						$activeChapter
-							.removeClass( 'active' )
-							.find( '.k-duration span' ).text(
-							kWidget.seconds2npt( endTime - startTime )
-						)
+						this.updateActiveItemDuration( endTime - startTime );
 					}
 
 					// Check if we should pause on chapter update:
@@ -320,8 +314,7 @@
 					this.skipPauseFlag = false;
 
 					if ( this.mediaList[ activeIndex ] ) {
-						this.getComponent().find( "li[data-chapter-index='" + activeIndex + "']" ).addClass( 'active' );
-						this.getComponent().find( '.k-carousel' )[0].jCarouselLiteGo( activeIndex );
+						this.setSelectedMedia(activeIndex);
 					}
 				}
 			}

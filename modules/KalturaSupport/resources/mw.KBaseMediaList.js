@@ -370,9 +370,20 @@
 		setSelectedMedia: function(mediaIndex){
 			var chapterBox = this.getConfig('parent') ? this.getComponent().find('.chapterBox') : this.$mediaListContainer.find('.chapterBox');
 			$(chapterBox).removeClass( 'active');
-			$( chapterBox[mediaIndex] ).addClass( 'active');
+			this.selectedMediaItemIndex = mediaIndex;
+			$( chapterBox[mediaIndex] ).addClass( 'active'); //li[data-chapter-index='" + activeIndex + "']
+			if (!this.getConfig('overflow')) {
+				this.getComponent().find( '.k-carousel' )[0].jCarouselLiteGo( mediaIndex );
+			}
 		},
-
+		getActiveItem: function(){
+			return this.getComponent().find( "li[data-chapter-index='" + this.selectedMediaItemIndex + "']" );
+		},
+		updateActiveItemDuration: function(duration){
+			this.getActiveItem().find('.k-duration span').text(
+				kWidget.seconds2npt( duration )
+			);
+		},
 		getThumbSpriteOffset: function( thumbWidth, time ){
 			var sliceIndex = this.getSliceIndexForTime( time );
 			return - ( sliceIndex * thumbWidth ) + 'px 0px';
