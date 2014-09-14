@@ -261,6 +261,51 @@ return array(
 	'playlistAPI' => array(
 		'description' => 'The Kaltura playlist plugin, supports associating multiple clips in sequence.',
 		'attributes' => array(
+			'containerPosition' => array(
+                'doc' => 'Position of the playlist.',
+                'label' => "Position",
+                'type' => 'enum',
+                'initvalue' => 'left',
+                'enum' => array("left", "right", "top", "bottom"),
+                'options' => array(
+                    array(
+                        'label' => "Left of the video",
+                        'value' => "left"
+                    ),
+                    array(
+                        'label' => "Right of the video",
+                        'value' => "right"
+                    ),
+                    array(
+                        'label' => "Above the video",
+                        'value' => "top"
+                    ),
+                    array(
+                        'label' => "Below the video",
+                        'value' => "bottom"
+                    )
+                )
+            ),
+			'layout' => array(
+                'doc' => 'Playlist layout.',
+                'type' => 'enum',
+                'initvalue' => 'vertical',
+                'enum' => array("vertical", "horizontal"),
+                'options' => array(
+                    array(
+                        'label' => "Vertical playlist",
+                        'value' => "vertical"
+                    ),
+                    array(
+                        'label' => "Horizontal playlist",
+                        'value' => "horizontal"
+                    )
+                )
+            ),
+            'includeInLayout' => array(
+                'doc' => "If the playlist clip list should be displayed.",
+                'type' => 'hiddenValue'
+            ),
 			'autoContinue' => array(
 				'doc' => "If the playlist should autocontinue.",
 				'type' => 'boolean'
@@ -280,46 +325,6 @@ return array(
 			'initItemEntryId' => array(
 				'doc' => "The entryId that should be played first."
 			),
-			'containerPosition' => array(
-                'doc' => 'Position of the playlist.',
-                'type' => 'enum',
-                'initvalue' => 'left',
-                'enum' => array("left", "right", "top", "bottom"),
-                'options' => array(
-                    array(
-                        'label' => "To the left of the video.",
-                        'value' => "left"
-                    ),
-                    array(
-                        'label' => "To the right of the video.",
-                        'value' => "right"
-                    ),
-                    array(
-                        'label' => "Above the video.",
-                        'value' => "top"
-                    ),
-                    array(
-                        'label' => "Below the video.",
-                        'value' => "bottom"
-                    )
-                )
-            ),
-			'layout' => array(
-                'doc' => 'Playlist layout.',
-                'type' => 'enum',
-                'initvalue' => 'vertical',
-                'enum' => array("vertical", "horizontal"),
-                'options' => array(
-                    array(
-                        'label' => "Vertical playlist.",
-                        'value' => "vertical"
-                    ),
-                    array(
-                        'label' => "Horizontal playlist.",
-                        'value' => "horizontal"
-                    )
-                )
-            ),
 			'kpl0Url' => array(
 				'doc' => 'The playlist URL. (can be a Kaltura playlist service or MRSS)',
 				'type' => 'hiddenValue'
@@ -339,11 +344,7 @@ return array(
 			'kpl1Name' => array(
 				'doc' => "The name of the indexed playlist.",
 				'type' => 'hiddenValue'
-			),
-			'includeInLayout' => array(
-                'doc' => "If the playlist clip list should be displayed.",
-                'type' => 'hiddenValue'
-            )
+			)
 		)
 	),/*
 	'playlistHolder' => array(
