@@ -9,6 +9,7 @@
 		mediaList: [],
 		isDisabled: false,
 		'$mediaListContainer': null,
+		selectedMediaItemIndex: 0,
 
 		getBaseConfig: function(){
 			var parentConfig = this._super();
@@ -42,12 +43,7 @@
 			this._super()
 
 			this.bind('updateLayout', function(){
-				if (_this.dataIntialized) {
-					_this.getComponent().empty().append(
-						_this.getTemplateHTML( {meta: _this.getMetaData(), mediaList: _this.getTemplateData()})
-					);
-					_this.shouldAddScroll(_this.addScroll);
-				}
+				_this.renderMediaList();
 			});
 			// handle fullscreen entering resize
 			$( this.embedPlayer ).bind('onOpenFullScreen', function() {
@@ -67,10 +63,85 @@
 
 		getComponent: function(){
 			if( ! this.$el ){
-				this.$el = $( '<div />' )
-					.addClass(this.pluginName + " mediaList k-chapters-container k-" + this.getLayout() /*+ this.getCssClass()*/);
+				if (this.getConfig('containerPosition')){
+					this.$el = $( '<div />' )
+						.addClass( this.pluginName + " medialistContainer k-chapters-container k-" + this.getLayout() );
+					this.getMedialistContainer().append(this.$el);
+				} else {
+					this.$el = $( '<div />' )
+						.addClass( this.pluginName + " mediaList k-chapters-container k-" + this.getLayout() /*+ this.getCssClass()*/ );
+				}
 			}
 			return this.$el;
+		},
+
+		// set the play list container according to the selected position
+		getMedialistContainer: function(){
+			if (!this.$mediaListContainer) {
+				if ( this.getConfig( 'onPage' ) ) {
+					var iframeID = this.embedPlayer.id + '_ifp';
+					try {
+						$( window['parent'].document ).find( '.onpagePlaylistInterface' ).remove(); // remove any previously created playlists
+						var iframeParent = window['parent'].document.getElementById( this.embedPlayer.id );
+						if ( this.getConfig( 'clipListTargetId' ) && $( iframeParent ).parent().find( "#" + this.getConfig( 'clipListTargetId' ) ).length > 0 ) {
+							$( iframeParent ).parent().find( "#" + this.getConfig( 'clipListTargetId' ) ).html( "<div class='onpagePlaylistInterface'></div>" );
+							this.$mediaListContainer = $( iframeParent ).parent().find( ".onpagePlaylistInterface" );
+						} else {
+							$( iframeParent ).after( "<div class='onpagePlaylistInterface'></div>" );
+							this.$mediaListContainer = $( iframeParent ).parent().find( ".onpagePlaylistInterface" );
+							$( this.$mediaListContainer ).width( $( iframeParent ).width() - 2 );
+							var containerHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * 3 : this.getConfig( "mediaItemHeight" ) + 20;
+							$( this.$mediaListContainer ).height( containerHeight );
+						}
+						// support hidden playlists
+						if ( this.getConfig( 'includeInLayout' ) === false ) {
+							this.$mediaListContainer.hide();
+						}
+						this.$mediaListContainer.addClass( "k-" + this.getLayout() );
+					} catch ( e ) {
+						mw.log( "Error: playlistAPI could not access parent iframe" );
+					}
+				} else {
+					this.$mediaListContainer = $( ".playlistInterface" );
+					// resize the video to make place for the playlist according to its position (left, top, right, bottom)
+					if ( this.getConfig( 'containerPosition' ) == 'right' || this.getConfig( 'containerPosition' ) == 'left' ) {
+						$( ".videoHolder, .mwPlayerContainer" ).css( "width", this.$mediaListContainer.width() - this.getConfig( "mediaItemWidth" ) + "px" );
+						this.videoWidth = (this.$mediaListContainer.width() - this.getConfig( "mediaItemWidth" ));
+					}
+					if ( this.getConfig( 'containerPosition' ) == 'left' ) {
+						$( ".mwPlayerContainer" ).css( {"margin-left": this.getConfig( "mediaItemWidth" ) + "px", "float": "right"} );
+					}
+
+					if ( this.getConfig( 'containerPosition' ) == 'top' || this.getConfig( 'containerPosition' ) == 'bottom' ) {
+						var playlistHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * 2 : this.getConfig( "mediaItemHeight" ) + 20;
+						$( ".mwPlayerContainer" ).css( "height", this.$mediaListContainer.height() - playlistHeight + "px" );
+						$( ".videoHolder" ).css( "height", this.$mediaListContainer.height() - playlistHeight - $( ".controlBarContainer" ).height() + "px" );
+					}
+				}
+			}
+			return this.$mediaListContainer;
+		},
+
+		// set the size of the playlist container and the video
+		setMedialistContainerSize: function(){
+			// resize the video to make place for the playlist according to its position (left, top, right, bottom)
+			if (this.getConfig('containerPosition') == 'right' || this.getConfig('containerPosition') == 'left'){
+				this.getComponent().width(this.getConfig("mediaItemWidth"));
+				this.getComponent().height("100%");
+				this.getComponent().css("position","absolute");
+			}
+			if (this.getConfig('containerPosition') == 'right'){
+				this.getComponent().css("right","0px");
+				$(".mwPlayerContainer").css("float","left");
+			}
+			if (this.getConfig('containerPosition') == 'top' || this.getConfig('containerPosition') == 'bottom'){
+				this.getComponent().height(this.getConfig("mediaItemHeight")*2-2);
+				this.getComponent().css("display","block");
+			}
+			if (this.getLayout() === "horizontal" ){
+				this.getComponent().find("ul").width(this.getConfig("mediaItemWidth")*this.mediaList.length).height(this.getConfig("mediaItemHeight")+18);
+				this.getComponent().find("span").height(this.getConfig("mediaItemHeight")+18);
+			}
 		},
 
 		destroy: function(){
@@ -99,101 +170,25 @@
 			}
 		},
 		//Media Item
-		setMediaList: function(items){
-			var _this = this;
-
-			if (this.getConfig('containerPosition')){
-				this.getMedialistContainer();
-				//var medialistDiv = $('<div class="medialistContainer"></div>');
-				var medialistSpan = _this.getTemplateHTML( {meta: _this.getMetaData(), mediaList: _this.getTemplateData()} );
-				$(medialistSpan).addClass("medialistContainer k-chapters-container k-" + this.getLayout());
-				if (this.getConfig('containerPosition') == 'top' && !this.getConfig('onPage')){
-					_this.$mediaListContainer.prepend(medialistSpan);
-				}else{
-					_this.$mediaListContainer.append(medialistSpan);
+		renderMediaList: function(items){
+			//Generate new list template data
+			var medialist = this.getTemplateHTML( {meta: this.getMetaData(), mediaList: this.getTemplateData()});
+			//Only render if medialist item are present
+			if (this.getTemplateData().length > 0) {
+				//Clear previous list
+				this.getComponent().empty();
+				if ( this.getConfig( 'containerPosition' ) == 'top' && !this.getConfig( 'onPage' ) ) {
+					this.getComponent().prepend( medialist );
+				} else {
+					this.getComponent().append( medialist );
 				}
-				_this.setMedialistContainerSize();
-			}else{
-				_this.getComponent().append(
-					_this.getTemplateHTML( {meta: _this.getMetaData(), mediaList: _this.getTemplateData()})
-				);
-			}
 
-			_this.dataIntialized = true;
-			_this.shouldAddScroll(_this.addScroll);
-			if (_this.getLayout() === "horizontal" ){
-				_this.$mediaListContainer.find(".k-chapters-container.k-horizontal .chapterBox").width(_this.getConfig("mediaItemWidth"));
-			}
-			$(_this.embedPlayer).trigger("mediaListLayoutReady");
-		},
-
-		// set the play list container according to the selected position
-		getMedialistContainer: function(){
-			if ( this.getConfig('onPage') ){
-				var iframeID = this.embedPlayer.id + '_ifp';
-				try{
-					$(window['parent'].document).find('.onpagePlaylistInterface').remove(); // remove any previously created playlists
-					var iframeParent = window['parent'].document.getElementById( this.embedPlayer.id );
-					if ( this.getConfig('clipListTargetId') && $(iframeParent).parent().find("#"+this.getConfig('clipListTargetId')).length>0){
-						$(iframeParent).parent().find("#"+this.getConfig('clipListTargetId')).html("<div class='onpagePlaylistInterface'></div>");
-						this.$mediaListContainer =  $(iframeParent).parent().find(".onpagePlaylistInterface");
-					}else{
-						$(iframeParent).after("<div class='onpagePlaylistInterface'></div>");
-						this.$mediaListContainer =  $(iframeParent).parent().find(".onpagePlaylistInterface");
-						$(this.$mediaListContainer).width($(iframeParent).width()-2);
-						var containerHeight = this.getLayout() === "vertical" ? this.getConfig("mediaItemHeight")*3 : this.getConfig("mediaItemHeight")+20;
-						$(this.$mediaListContainer).height(containerHeight);
-					}
-					// support hidden playlists
-					if ( this.getConfig( 'includeInLayout' ) === false){
-						this.$mediaListContainer.hide();
-					}
-					this.$mediaListContainer.addClass("k-"+this.getLayout());
-					return this.$mediaListContainer;
-				} catch( e ){
-					mw.log( "Error: playlistAPI could not access parent iframe" );
+				this.shouldAddScroll( this.addScroll );
+				if ( this.getLayout() === "horizontal" ) {
+					this.getComponent().find( ".k-chapters-container.k-horizontal .chapterBox" ).width( this.getConfig( "mediaItemWidth" ) );
 				}
+				$( this.embedPlayer ).trigger( "mediaListLayoutReady" );
 			}
-			this.$mediaListContainer =  $(".playlistInterface");
-			// resize the video to make place for the playlist according to its position (left, top, right, bottom)
-			if (this.getConfig('containerPosition') == 'right' || this.getConfig('containerPosition') == 'left'){
-				$(".videoHolder, .mwPlayerContainer").css("width", this.$mediaListContainer.width() - this.getConfig("mediaItemWidth") +"px");
-				this.videoWidth = (this.$mediaListContainer.width() - this.getConfig("mediaItemWidth"));
-			}
-			if (this.getConfig('containerPosition') == 'left'){
-				$(".mwPlayerContainer").css({"margin-left": this.getConfig("mediaItemWidth") +"px", "float": "right"});
-			}
-
-			if (this.getConfig('containerPosition') == 'top' || this.getConfig('containerPosition') == 'bottom'){
-				var playlistHeight = this.getLayout() === "vertical" ? this.getConfig("mediaItemHeight")*2 : this.getConfig("mediaItemHeight")+20;
-				$(".mwPlayerContainer").css("height", this.$mediaListContainer.height() - playlistHeight +"px");
-				$(".videoHolder").css("height", this.$mediaListContainer.height() - playlistHeight - $(".controlBarContainer").height() +"px");
-			}
-			return this.$mediaListContainer;
-		},
-
-		// set the size of the playlist container and the video
-		setMedialistContainerSize: function(){
-			// resize the video to make place for the playlist according to its position (left, top, right, bottom)
-			if (this.getConfig('containerPosition') == 'right' || this.getConfig('containerPosition') == 'left'){
-				$(".medialistContainer").width(this.getConfig("mediaItemWidth"));
-				$(".medialistContainer").height("100%");
-				$(".medialistContainer").css("position","absolute");
-			}
-			if (this.getConfig('containerPosition') == 'right'){
-				$(".medialistContainer").css("right","0px");
-				$(".mwPlayerContainer").css("float","left");
-			}
-			if (this.getConfig('containerPosition') == 'top' || this.getConfig('containerPosition') == 'bottom'){
-				$(".medialistContainer").height(this.getConfig("mediaItemHeight")*2-2);
-				$(".medialistContainer").css("display","block");
-			}
-			if (this.getLayout() === "horizontal" ){
-				this.$mediaListContainer.find("ul").width(this.getConfig("mediaItemWidth")*this.mediaList.length).height(this.getConfig("mediaItemHeight")+18);
-				this.$mediaListContainer.find("span").height(this.getConfig("mediaItemHeight")+18);
-			}
-
-			return this.$mediaListContainer;
 		},
 
 		onDisable: function(){
@@ -277,6 +272,7 @@
 			if( this.checkAddScroll() ){
 				handler.apply(this);
 			} else{
+				this.setMedialistContainerSize();
 				var largestBoxHeight = 0;
 				this.getComponent().find('.chapterBox').each( function(inx, box){
 					var pad =parseInt( $(box).css('padding-top') ) + parseInt( $(box).css( 'padding-bottom') );
@@ -296,7 +292,7 @@
 		attachMediaListHandlers: function(){
 			var _this = this;
 			var hoverInterval = null;
-			var chapterBox = this.getConfig('parent') ? this.getComponent().find('.chapterBox') : this.$mediaListContainer.find('.chapterBox');
+			var chapterBox = this.getComponent().find('.chapterBox');
 			chapterBox
 				.off('click' )
 				.on('click', function(){
@@ -368,7 +364,7 @@
 		},
 
 		setSelectedMedia: function(mediaIndex){
-			var chapterBox = this.getConfig('parent') ? this.getComponent().find('.chapterBox') : this.$mediaListContainer.find('.chapterBox');
+			var chapterBox = this.getComponent().find('.chapterBox');
 			$(chapterBox).removeClass( 'active');
 			this.selectedMediaItemIndex = mediaIndex;
 			$( chapterBox[mediaIndex] ).addClass( 'active'); //li[data-chapter-index='" + activeIndex + "']

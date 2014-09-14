@@ -31,9 +31,6 @@
 			isDisabled: true,
 
 			setup: function ( embedPlayer ) {
-				if (this.getConfig('containerPosition')){
-					this.getListContainer();
-				}
 				this.addBindings();
 			},
 			addBindings: function () {
@@ -46,16 +43,10 @@
 					_this.addMediaItems(chaptersRawData);
 					//Need to recalc all durations after we have all the items startTime values
 					_this.setMediaItemTime();
-
-					_this.getComponent().append(
-						_this.getTemplateHTML( {meta: _this.getMetaData(), mediaList: _this.getTemplateData()})
-					);
-
-					if (_this.getConfig('containerPosition')) {
-						_this.$chaptersContainer.append(_this.getTemplateHTML( {meta: _this.getMetaData(), mediaList: _this.getTemplateData()} ));
-					}
+					//Set data initialized flag for handlers to start working
 					_this.dataIntialized = true;
-					_this.shouldAddScroll(_this.addScroll);
+					//Render the media list
+					_this.renderMediaList();
 				} );
 
 				this.bind( 'playerReady updatePlayHeadPercent', function ( e, newState ) {
@@ -88,66 +79,6 @@
 					res =  (filteredCuePoints.length > 0) ? true : false;
 				}
 				return res;
-			},
-			//General
-			getListContainer: function(){
-				// remove any existing k-chapters-container for this player
-				$('.k-player-' + this.getPlayer().id + '.k-chapters-container').remove();
-				// Build new chapters container
-				var $chaptersContainer = this.$chaptersContainer = $('<div>').addClass( 'k-player-' + this.getPlayer().id + ' k-chapters-container');
-				// check for where it should be appended:
-				var targetRef = $('#'+this.getPlayer().id, parent.document.body );//$( this.getPlayer().getInterface() );
-				switch( this.getConfig('containerPosition') ){
-					case 'before':
-						$chaptersContainer.css('clear', 'both');
-						targetRef
-							.css( 'float', 'left')
-							.before( $chaptersContainer );
-						break;
-					case 'left':
-						$chaptersContainer.css('float', 'left').insertBefore( targetRef );
-						$( this.getPlayer() ).css('float', 'left');
-						break;
-					case 'right':
-						$chaptersContainer.css('float', 'left').insertAfter( targetRef );
-						$( targetRef ).css('float', 'left' );
-						break;
-					case 'after':
-					default:
-						targetRef
-							.css( 'float', 'none')
-							.after( $chaptersContainer );
-						break;
-				};
-				// set size based on layout
-				// set sizes:
-				if( this.getConfig('overflow') != true ){
-					$chaptersContainer.css('width', targetRef.width() )
-					if( this.getLayout() == 'vertical' ){
-						$chaptersContainer.css( 'height', targetRef.height() )
-					}
-				} else {
-					if( this.getLayout() == 'horizontal' ){
-						$chaptersContainer.css('width', '100%' );
-					} else if( this.getLayout() == 'vertical' ){
-						$chaptersContainer.css( 'width', targetRef.width() );
-					}
-				}
-				// special conditional for vertical chapter width
-				if(
-					this.getLayout() == 'vertical'
-					&&
-					this.getConfig('horizontalChapterBoxWidth')
-					&&
-					(
-						this.getConfig('containerPosition') == 'right'
-						||
-						this.getConfig('containerPosition') == 'left'
-						)
-					){
-					$chaptersContainer.css('width', this.getConfig('horizontalChapterBoxWidth') );
-				}
-				return $chaptersContainer;
 			},
 
 			getChaptersData: function(){

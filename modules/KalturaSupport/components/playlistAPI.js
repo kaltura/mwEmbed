@@ -265,7 +265,12 @@
 						combo.append('<option value="' + i +'">' + el.name + '</option>');
 					}
 				});
-				$(".medialistContainer").prepend(combo).prepend("<span class='playListSelector'>" + gM( 'mwe-embedplayer-select_playlist' ) + "</span>");
+				this.getComponent().prepend(combo).prepend("<span class='playListSelector'>" + gM( 'mwe-embedplayer-select_playlist' ) + "</span>");
+				//Set new height of control
+				var currentHeight = parseFloat(this.getComponent().outerHeight(true));
+				var comboHeight = parseFloat(combo.outerHeight(true));
+				var combinedHeight = currentHeight + comboHeight;
+				this.getComponent().css('height', combinedHeight + "px");
 				// set the combo box change event to load the selected play list by its index
 				combo.on("change",function(e){
 					_this.switchPlaylist(this.value);
@@ -308,7 +313,6 @@
 
 		// select playlist
 		selectPlaylist: function(playlistIndex){
-			$(".medialistContainer").empty();  // empty the playlist UI container so we can build a new UI
 			this.embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')} ); // for API backward compatibility
 			this.mediaList = [];
 			this.addMediaItems(this.playlistSet[playlistIndex].items);   // prepare the data to be compatible with KBaseMediaList
