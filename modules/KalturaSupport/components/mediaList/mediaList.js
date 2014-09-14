@@ -31,12 +31,6 @@
 			isDisabled: true,
 
 			setup: function ( embedPlayer ) {
-				this.baseThumbSettings = {
-					'partner_id': this.getPlayer().kpartnerid,
-					'uiconf_id': this.getPlayer().kuiconfid,
-					'entry_id': this.getPlayer().kentryid,
-					'width': this.getConfig( "thumbWidth" )
-				};
 				if (this.getConfig('containerPosition')){
 					this.getListContainer();
 				}

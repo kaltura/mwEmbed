@@ -28,13 +28,13 @@
 		},
 
 		setDefaults: function(){
-			var baseThumbSettings = {
+			this.baseThumbSettings = {
 				'partner_id': this.getPlayer().kpartnerid,
 				'uiconf_id': this.getPlayer().kuiconfid,
 				'entry_id': this.getPlayer().kentryid,
 				'width': this.getConfig( "thumbWidth" )
 			};
-			this._super( {"baseThumbSettings": baseThumbSettings} );
+			this._super( );
 		},
 
 		_addBindings: function () {
