@@ -36,6 +36,8 @@
 
 		// flag for using a chromeless player - move control to KDP DoubleClick plugin
 		isChromeless: false,
+		 //flag for using native mobile IMA SDK
+		isNativeSDK: false,
 		// for Chromeless only: save entry duration during midrolls so we can update it when midroll is finished
 		entryDuration: null,
 
@@ -122,12 +124,8 @@
 				return;
 			}
 			if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
-				//_this.isChromeless = true;
-				//_this.prevSlotType = 'none';
-				_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
-					_this.embedPlayer.getPlayerElement().attr( 'adTagUrl', _this.getConfig( 'adTagUrl' ));
-				});
-				//_this.addManagedBinding();
+				_this.isNativeSDK = true;
+				_this.addManagedBinding();
 				callback();
 				return;
 			}
@@ -431,6 +429,13 @@
 				adsRequest.adTagUrl = encodeURIComponent(adsRequest.adTagUrl);
 				_this.embedPlayer.getPlayerElement().sendNotification( 'requestAds', adsRequest );
 				mw.log( "DoubleClick::requestAds: Chromeless player request ad from KDP plugin");
+				return;
+			}
+
+			if ( this.isNativeSDK ) {
+				_this.adManagerLoaded = true;
+				this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', this.getConfig( 'adTagUrl' ));
+				mw.log( "DoubleClick::requestAds: Native SDK player request ad ");
 				return;
 			}
 
