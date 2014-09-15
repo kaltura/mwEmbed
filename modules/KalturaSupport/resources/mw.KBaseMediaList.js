@@ -187,7 +187,7 @@
 					this.getComponent().append( medialist );
 				}
 
-				this.shouldAddScroll( this.addScroll );
+				this.shouldAddScroll( );
 				if ( this.getLayout() === "horizontal" ) {
 					this.getComponent().find( ".k-chapters-container.k-horizontal .chapterBox" ).width( this.getConfig( "mediaItemWidth" ) );
 				}
@@ -275,7 +275,7 @@
 			this.setMedialistContainerSize();
 			this.attachMediaListHandlers();
 			if( this.checkAddScroll() ){
-				handler.apply(this);
+				this.addScroll();
 			} else{
 				if (!this.getConfig('containerPosition')){
 					var largestBoxHeight = 0;

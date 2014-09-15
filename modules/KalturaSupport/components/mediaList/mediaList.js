@@ -58,7 +58,7 @@
 				this.bind( 'onChangeMedia', function(){
 					_this.destroy();
 					// redraw the list
-					_this.shouldAddScroll(_this.addScroll);
+					_this.shouldAddScroll();
 				});
 			},
 			isSafeEnviornment: function(){
