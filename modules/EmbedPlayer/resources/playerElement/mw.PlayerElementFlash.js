@@ -153,6 +153,15 @@
 				this.bindPlayerFunction( eventName, methodName );
 			}
 		},
+		removeJsListener: function( eventName, methodName ) {
+			if ( this.playerElement ) {
+				mw.log( 'PlayerElementFlash:: unbindPlayerFunction:' + eventName );
+				// The kaltura kdp can only call a global function by given name
+				var gKdpCallbackName = 'kdp_' + methodName + '_cb_' + this.id.replace(/[^a-zA-Z 0-9]+/g,'');
+				// Remove the listener ( if it exists already )
+				this.playerElement.removeJsListener( eventName, gKdpCallbackName );
+			}
+		},
 		getCurrentTime: function() {
 			if ( this.playerElement ) {
 				return this.playerElement.getCurrentTime();

@@ -148,6 +148,15 @@
 				this.bindPlayerFunction( eventName, methodName );
 			}
 		},
+		removeJsListener: function( eventName, methodName ) {
+			if ( this.playerElement ) {
+				mw.log( 'PlayerElementSilverlight:: unbindPlayerFunction:' + eventName );
+				// The kaltura kdp can only call a global function by given name
+				var gKdpCallbackName = 'silverlight_' + methodName + '_cb_' + this.id.replace(/[^a-zA-Z 0-9]+/g,'');
+				// Remove the listener ( if it exists already )
+				this.playerElement.removeJsListener( eventName, gKdpCallbackName );
+			}
+		},
 		play: function(){
 			this.playerProxy.playMedia();
 			this.isStopped = false;
