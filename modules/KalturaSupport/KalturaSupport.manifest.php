@@ -260,6 +260,7 @@ return array(
 	),
 	'playlistAPI' => array(
 		'description' => 'The Kaltura playlist plugin, supports associating multiple clips in sequence.',
+		'label' => 'Playlist Configuration',
 		'attributes' => array(
 			'containerPosition' => array(
                 'doc' => 'Position of the playlist.',
