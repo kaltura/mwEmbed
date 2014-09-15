@@ -1442,8 +1442,6 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/' + format + '/protocol/' + protocol + '/uiConfId/' + embedPlayer.kuiconfid +  '/a.' + extension;
-		var eventObj = {src:srcUrl,type:"application/vnd.apple.mpegurl"};
-		srcUrl = eventObj.src;
 		// Append KS & Referrer
 		function getKs() {
 			var deferred = $.Deferred();
