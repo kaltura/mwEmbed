@@ -103,6 +103,10 @@
 					}
 				} else {
 					this.$mediaListContainer = $( ".playlistInterface" );
+					if (this.$mediaListContainer.length == 0){
+						$(".mwPlayerContainer" ).wrap($("<div class='playlistInterface'></div>" ).css({position: "relative", width: "100%", height: "100%"}));
+						this.$mediaListContainer = $( ".playlistInterface" );
+					}
 					// resize the video to make place for the playlist according to its position (left, top, right, bottom)
 					if ( this.getConfig( 'containerPosition' ) == 'right' || this.getConfig( 'containerPosition' ) == 'left' ) {
 						$( ".videoHolder, .mwPlayerContainer" ).css( "width", this.$mediaListContainer.width() - this.getConfig( "mediaItemWidth" ) + "px" );
