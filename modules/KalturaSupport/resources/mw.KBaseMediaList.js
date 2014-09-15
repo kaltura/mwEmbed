@@ -8,7 +8,7 @@
 
 		mediaList: [],
 		isDisabled: false,
-		'$mediaListContainer': null,
+		$mediaListContainer: null,
 		selectedMediaItemIndex: 0,
 
 		getBaseConfig: function(){
@@ -40,7 +40,7 @@
 
 		_addBindings: function () {
 			var _this = this;
-			this._super()
+			this._super();
 
 			this.bind('updateLayout', function(){
 				_this.renderMediaList();
@@ -268,24 +268,26 @@
 
 		//UI Handlers
 		shouldAddScroll: function(handler){
+			this.setMedialistContainerSize();
 			this.attachMediaListHandlers();
 			if( this.checkAddScroll() ){
 				handler.apply(this);
 			} else{
-				this.setMedialistContainerSize();
-				var largestBoxHeight = 0;
-				this.getComponent().find('.chapterBox').each( function(inx, box){
-					var pad =parseInt( $(box).css('padding-top') ) + parseInt( $(box).css( 'padding-bottom') );
-					if( $(box).height() + pad > largestBoxHeight ){
-						largestBoxHeight = $(box).height() + pad;
+				if (!this.getConfig('containerPosition')){
+					var largestBoxHeight = 0;
+					this.getComponent().find( '.chapterBox' ).each( function ( inx, box ) {
+						var pad = parseInt( $( box ).css( 'padding-top' ) ) + parseInt( $( box ).css( 'padding-bottom' ) );
+						if ( $( box ).height() + pad > largestBoxHeight ) {
+							largestBoxHeight = $( box ).height() + pad;
+						}
+					} );
+					this.getComponent().find( '.chapterBox' ).css( 'height', largestBoxHeight );
+					if ( this.getLayout() == 'vertical' ) {
+						// give the box a height:
+						this.getComponent().css( 'height',
+								this.getComponent().find( '.chapterBox' ).length * largestBoxHeight
+						)
 					}
-				});
-				this.getComponent().find('.chapterBox').css( 'height', largestBoxHeight );
-				if( this.getLayout() == 'vertical' ){
-					// give the box a height:
-					this.getComponent().css('height',
-						this.getComponent().find('.chapterBox').length * largestBoxHeight
-					)
 				}
 			}
 		},

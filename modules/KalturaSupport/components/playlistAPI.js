@@ -266,11 +266,6 @@
 					}
 				});
 				this.getComponent().prepend(combo).prepend("<span class='playListSelector'>" + gM( 'mwe-embedplayer-select_playlist' ) + "</span>");
-				//Set new height of control
-				var currentHeight = parseFloat(this.getComponent().outerHeight(true));
-				var comboHeight = parseFloat(combo.outerHeight(true));
-				var combinedHeight = currentHeight + comboHeight;
-				this.getComponent().css('height', combinedHeight + "px");
 				// set the combo box change event to load the selected play list by its index
 				combo.on("change",function(e){
 					_this.switchPlaylist(this.value);
