@@ -1049,7 +1049,8 @@ mw.EmbedPlayerNative = {
 		// HLS on native android initially starts with no video, only audio. We need to pause/play after movie starts.
 		// livestream is already handled in KWidgetSupprt
 		if ( this.firstPlay && mw.isAndroid4andUp() && mw.getConfig( 'EmbedPlayer.twoPhaseManifestHlsAndroid' ) && this.mediaElement.selectedSource.getMIMEType() == 'application/vnd.apple.mpegurl' && !this.isLive()) {
-			this.getHlsUrl().then( function(){
+			this.resolveSrcURL( this.mediaElement.selectedSource.src ).then( function(resolvedSrc){
+				_this.mediaElement.selectedSource.setSrc( resolvedSrc );
 				var firstTimePostfix = ".firstTime";
 				$( vid ).bind( 'timeupdate' + firstTimePostfix, function() {
 					if ( _this.currentTime >= 1 ) {
@@ -1063,36 +1064,6 @@ mw.EmbedPlayerNative = {
 		}  else {
 			doPlay();
 		}
-	},
-
-	//android cant play HLS with redirect, so in this case source will be different
-	getHlsUrl: function() {
-		var deferred = $.Deferred();
-		var _this = this;
-		var requestUrl = this.getSrc();
-		if ( requestUrl.indexOf("?")!= -1 ) {
-			requestUrl += "&responseFormat=jsonp";
-		} else {
-			requestUrl += "?responseFormat=jsonp";
-		}
-		$.ajax({
-			url: requestUrl,
-			dataType: 'jsonp',
-			success: function( jsonpResponse ){
-				var flavors = jsonpResponse.flavors;
-				//redirect- change url to the final url to avoid redirect
-				if ( flavors.length == 1 ) {
-					_this.mediaElement.selectedSource.setSrc( flavors[0].url );
-				}
-				deferred.resolve();
-			},
-			error: function() {
-				deferred.resolve();
-			}
-		});
-
-		return deferred.promise();
-
 	},
 
 	/**

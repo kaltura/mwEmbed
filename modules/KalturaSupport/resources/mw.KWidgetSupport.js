@@ -511,6 +511,41 @@ mw.KWidgetSupport.prototype = {
 				'message': embedPlayer.getKalturaMsg( msgKey )
 			}
 		};
+
+		embedPlayer.resolveSrcURL = function( srcURL ){
+			var deferred = $.Deferred();
+			var eventObj = {"src":srcURL,
+				"promise":deferred,
+				"handled":false};
+			embedPlayer.triggerHelper( 'preResolveSrc' ,eventObj );
+			if (eventObj.handled){
+				return eventObj.promise;
+			}
+
+			if (mw.getConfig("EmbedPlayer.UseDirectManifestLinks")) {
+				return deferred.resolve( srcURL );
+			}
+			var srcToPlay = null;
+			$.ajax({
+				url: srcURL + "&responseFormat=jsonp",
+				dataType: 'jsonp',
+				success: function( playmanifest ){
+					var flavors = playmanifest.flavors;
+					if ( flavors && flavors.length > 0 ) {
+						srcToPlay = flavors[0].url;
+						deferred.resolve( srcToPlay );
+					} else {
+						deferred.reject();
+					}
+				},
+				error: function() {
+					deferred.reject();
+				}
+			});
+			return deferred.promise();
+		};
+
+
 	},
 	/**
 	 * Handle the ui conf
@@ -1407,6 +1442,8 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/' + format + '/protocol/' + protocol + '/uiConfId/' + embedPlayer.kuiconfid +  '/a.' + extension;
+		var eventObj = {src:srcUrl,type:"application/vnd.apple.mpegurl"};
+		srcUrl = eventObj.src;
 		// Append KS & Referrer
 		function getKs() {
 			var deferred = $.Deferred();
@@ -1431,31 +1468,7 @@ mw.KWidgetSupport.prototype = {
 				deferred.resolve();
 			}
 
-			//android/flash player doesn't support redirect, we will retrieve the final url and add it as the source
-			if ( mimeType == 'application/vnd.apple.mpegurl'
-				&& ( mw.isAndroid4andUp()
-					||  mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) )) {
-				$.ajax({
-					url: srcUrl + "&responseFormat=jsonp",
-					dataType: 'jsonp',
-					success: function( jsonpResponse ){
-						var flavors = jsonpResponse.flavors;
-						if ( flavors.length == 1 ) {
-							callAddSource( flavors[0].url );
-						} else {
-							callAddSource( srcUrl );
-						}
-
-						deferred.resolve();
-					},
-					error: function() {
-						callAddSource( srcUrl );
-						deferred.resolve();
-					}
-				});
-			} else {
-				callAddSource( srcUrl );
-			}
+			callAddSource( srcUrl );
 			return deferred.promise();
 		}
 		getKs().then(addSource).then(function() {

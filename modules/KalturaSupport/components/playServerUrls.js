@@ -10,6 +10,8 @@
 		},
 		setup: function(){
 			mw.setConfig("LeadWithHLSOnFlash",true);
+			mw.setConfig("LeadHLSOnAndroid",true);
+
 			// Bind player
 			this.addBindings();
 		},
@@ -23,9 +25,10 @@
 		addBindings: function(){
 			var _this = this;
 			this.bind("SourceSelected", function(event,source){
-				if ( source.type === "application/vnd.apple.mpegurl" &&  source.src.toLowerCase().indexOf("playmanifest") > -1 ) {
+				if ( source.type === "application/vnd.apple.mpegurl" &&  source.src.toLowerCase().indexOf("playmanifest") > -1 &&
+					source.src.toLowerCase().indexOf("useplayserver") === -1) {
 					source.src = _this.injectParam(source.src,"uiconf/" + _this.embedPlayer.kuiconfid);
-					source.src = _this.injectParam(source.src,"useplayserver/true");
+					source.src = _this.injectParam(source.src,"useplayserver/1");
 					source.src = _this.injectGetParam(source.src,"playerConfig=" + _this.getPlayerConfig());
 				}
 			});
