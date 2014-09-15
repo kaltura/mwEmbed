@@ -98,8 +98,6 @@ return array(
             ),
 			"titleLabel" => "",
 			"logo" => "",
-			"playlistAPI" => "",
-			"nextPrevBtn" => "",
 			"loadingSpinner" => "",
 			"volumeControl" => "",
 			"closedCaptions" => "",
@@ -107,7 +105,9 @@ return array(
 			"theme" => "",
 			"infoScreen" => "",
 			"share" => "",
-			"related" => ""
+			"related" => "",
+			"playlistAPI" => "",
+            "nextPrevBtn" => ""
 		)
 	),
 	"analytics"=> array(
