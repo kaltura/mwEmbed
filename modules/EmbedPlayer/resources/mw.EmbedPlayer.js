@@ -1121,6 +1121,9 @@
 							_this.ignoreNextNativeEvent = true;
 							$( _this ).trigger( 'onEndedDone' );
 						}
+						if ( _this.buffering ) {
+							_this.bufferEnd();
+						}
 					}
 				}
 				// A secondary end event for playlist and clip sequence endings
@@ -1234,7 +1237,8 @@
 				return ;
 			}
 			// Auto play stopped ( no playerReady has already started playback ) and if not on an iPad with iOS > 3
-			if ( this.isStopped() && this.autoplay && this.canAutoPlay() ) {
+			// livestream autoPlay is handled by liveCore
+			if ( this.isStopped() && this.autoplay && this.canAutoPlay() && !this.isLive() ) {
 				mw.log( 'EmbedPlayer::showPlayer::Do autoPlay' );
 				_this.play();
 			}
@@ -2052,6 +2056,13 @@
 				return false;
 			}
 
+			// Allow plugins to block playback
+			var prePlay = {allowPlayback: true};
+			this.triggerHelper( 'prePlayAction', [prePlay] );
+			if( !prePlay.allowPlayback ){
+				return false;
+			}
+
 			// Check if thumbnail is being displayed and embed html
 			if ( _this.isStopped() && (_this.preSequenceFlag == false || (_this.sequenceProxy && _this.sequenceProxy.isInSequence == false) )) {
 				if ( !_this.selectedPlayer ) {
@@ -2702,9 +2713,6 @@
 		getSource: function(){
 			// update the current selected source:
 			this.mediaElement.autoSelectSource();
-			if (this.mediaElement.selectedSource && this.mediaElement.selectedSource.mimeType === "application/vnd.apple.mpegurl"){
-				this.streamerType = "hls";
-			}
 			return this.mediaElement.selectedSource;
 		},
 		/**
@@ -2865,7 +2873,11 @@
 		},
 		switchSrc: function( source ){
 			var _this = this;
-			$( this ).trigger( 'sourceSwitchingStarted', [ { currentBitrate: source.getBitrate() }] );
+			var currentBR = 0;
+			if ( this.mediaElement.selectedSource ) {
+				currentBR = this.mediaElement.selectedSource.getBitrate();
+			}
+			$( this ).trigger( 'sourceSwitchingStarted', [ { currentBitrate: currentBR }] );
 			this.mediaElement.setSource( source );
 			$( this ).trigger( 'sourceSwitchingEnd',  [ { newBitrate: source.getBitrate() }] );
 			if( ! this.isStopped() ){

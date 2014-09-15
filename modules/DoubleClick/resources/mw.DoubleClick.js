@@ -300,6 +300,20 @@
 					}
 				}
 			});
+
+			if( mw.isIpad() ) {
+				var bindPostFix = ".doubleClickSequenceCheck";
+				_this.embedPlayer.bindHelper( 'playing' + bindPostFix, function () {
+					// Pause video element only if it's not 'overlay'
+					if( _this.isLinear === false ) {
+						return;
+					}
+					_this.embedPlayer.unbindHelper( 'playing' + bindPostFix );
+					_this.embedPlayer.stopEventPropagation();
+					_this.embedPlayer.getPlayerElement().pause();
+					_this.embedPlayer.stopMonitor();
+				});
+			}
 		},
 		/**
 		 * Get the content video tag
@@ -676,6 +690,10 @@
 			} );
 			adsListener( 'STARTED', function(adEvent){
 				var ad = adEvent.getAd();
+				_this.isLinear = ad.isLinear();
+				if( mw.isIpad() && _this.embedPlayer.getPlayerElement().paused ) {
+					_this.embedPlayer.getPlayerElement().play();
+				}
 				// trigger ad play event
 				$(_this.embedPlayer).trigger("onAdPlay",[ad.a.adId]);
 				// This changes player state to the relevant value ( play-state )
@@ -836,6 +854,9 @@
 				}
 				if ( _this.currentAdSlotType !== 'postroll' ){
 					_this.restorePlayer( null, true );
+					if ( _this.currentAdSlotType === 'preroll' ){
+						_this.currentAdSlotType = "midroll";
+					}
 					setTimeout(function(){
 						_this.embedPlayer.startMonitor();
 						_this.embedPlayer.getPlayerElement().play();
@@ -853,6 +874,7 @@
 				setTimeout(function(){
 					_this.embedPlayer.hideSpinner();
 					_this.adLoaderErrorFlag = true;
+					$( _this.embedPlayer ).trigger("adErrorEvent");
 					_this.restorePlayer();
 				},100);
 			},'adsLoadError', true);
@@ -993,7 +1015,10 @@
 		onAdError: function( errorEvent ) {
 			var errorMsg = ( typeof errorEvent.getError != 'undefined' ) ? errorEvent.getError() : errorEvent;
 			mw.log('DoubleClick:: onAdError: ' + errorMsg );
-			this.adLoaderErrorFlag = true;
+			if (!this.adLoaderErrorFlag){
+				$( this.embedPlayer ).trigger("adErrorEvent");
+				this.adLoaderErrorFlag = true;
+			}
 			if (this.adsManager && $.isFunction( this.adsManager.unload ) ) {
 				this.adsManager.unload();
 			}
@@ -1015,7 +1040,7 @@
 				this.embedPlayer.getPlayerElement().redrawObject(50);
 			}else{
 				if (_this.isLinear || _this.adLoaderErrorFlag){
-					$("#adContainervideoTarget").hide();
+					$("#" + _this.getAdContainerId()).hide();
 				}
 			}
 			this.embedPlayer.sequenceProxy.isInSequence = false;

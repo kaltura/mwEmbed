@@ -20,7 +20,7 @@
 				'mediaItemWidth': 290,
 				'mediaItemHeight': 70,
 				'onPage': false,
-				'hidden': false,
+				'includeInLayout': true,
 				'clipListTargetId': null,
 				'containerPosition':  'left',
 				'parent': null//'sideBarContainer',
@@ -136,10 +136,10 @@
 
 			_this.dataIntialized = true;
 			_this.shouldAddScroll(_this.addScroll);
-			$(_this.embedPlayer).trigger("mediaListLayoutReady");
 			if (_this.getLayout() === "horizontal" ){
 				_this.$mediaListContainer.find(".k-chapters-container.k-horizontal .chapterBox").width(_this.getConfig("mediaItemWidth"));
 			}
+			$(_this.embedPlayer).trigger("mediaListLayoutReady");
 		},
 
 		// set the play list container according to the selected position
@@ -147,22 +147,20 @@
 			if ( this.getConfig('onPage') ){
 				var iframeID = this.embedPlayer.id + '_ifp';
 				try{
+					$(window['parent'].document).find('.onpagePlaylistInterface').remove(); // remove any previously created playlists
 					var iframeParent = window['parent'].document.getElementById( this.embedPlayer.id );
-					if ( this.getConfig('clipListTargetId') ){
-						$(iframeParent).parent().find("#"+this.getConfig('clipListTargetId')).append("<div class='onpagePlaylistInterface'></div>");
+					if ( this.getConfig('clipListTargetId') && $(iframeParent).parent().find("#"+this.getConfig('clipListTargetId')).length>0){
+						$(iframeParent).parent().find("#"+this.getConfig('clipListTargetId')).html("<div class='onpagePlaylistInterface'></div>");
 						this.$mediaListContainer =  $(iframeParent).parent().find(".onpagePlaylistInterface");
-						$(this.$mediaListContainer).width("100%");
-						$(this.$mediaListContainer).height("100%");
 					}else{
 						$(iframeParent).after("<div class='onpagePlaylistInterface'></div>");
 						this.$mediaListContainer =  $(iframeParent).parent().find(".onpagePlaylistInterface");
-						$(this.$mediaListContainer).width($(iframeParent).width());
+						$(this.$mediaListContainer).width($(iframeParent).width()-2);
 						var containerHeight = this.getLayout() === "vertical" ? this.getConfig("mediaItemHeight")*3 : this.getConfig("mediaItemHeight")+20;
 						$(this.$mediaListContainer).height(containerHeight);
 					}
-					this.injectCss();
 					// support hidden playlists
-					if ( this.getConfig( 'hidden' ) === true){
+					if ( this.getConfig( 'includeInLayout' ) === false){
 						this.$mediaListContainer.hide();
 					}
 					this.$mediaListContainer.addClass("k-"+this.getLayout());
@@ -182,7 +180,9 @@
 			}
 
 			if (this.getConfig('containerPosition') == 'top' || this.getConfig('containerPosition') == 'bottom'){
-				$(".videoHolder, .mwPlayerContainer").css("height", this.$mediaListContainer.height() - this.getConfig("mediaItemHeight")*2 +"px");
+				var playlistHeight = this.getLayout() === "vertical" ? this.getConfig("mediaItemHeight")*2 : this.getConfig("mediaItemHeight")+20;
+				$(".mwPlayerContainer").css("height", this.$mediaListContainer.height() - playlistHeight +"px");
+				$(".videoHolder").css("height", this.$mediaListContainer.height() - playlistHeight - $(".controlBarContainer").height() +"px");
 			}
 			return this.$mediaListContainer;
 		},
@@ -200,33 +200,15 @@
 				$(".mwPlayerContainer").css("float","left");
 			}
 			if (this.getConfig('containerPosition') == 'top' || this.getConfig('containerPosition') == 'bottom'){
-				$(".medialistContainer").height(this.getConfig("mediaItemHeight")*2);
+				$(".medialistContainer").height(this.getConfig("mediaItemHeight")*2-2);
 				$(".medialistContainer").css("display","block");
 			}
 			if (this.getLayout() === "horizontal" ){
-				this.$mediaListContainer.find("ul").width(this.getConfig("mediaItemWidth")*this.mediaList.length).height(this.getConfig("mediaItemHeight")+20);
-				this.$mediaListContainer.find("span").height(this.getConfig("mediaItemHeight")+20);
+				this.$mediaListContainer.find("ul").width(this.getConfig("mediaItemWidth")*this.mediaList.length).height(this.getConfig("mediaItemHeight")+18);
+				this.$mediaListContainer.find("span").height(this.getConfig("mediaItemHeight")+18);
 			}
 
 			return this.$mediaListContainer;
-		},
-
-		injectCss: function(){
-			if ( !this.getConfig("cssPath") ){
-				return;
-			}
-			var links = document.getElementsByTagName("link");
-			for ( var i = 0; i < links.length; i++ ) {
-				if ( links[i].getAttribute("href").indexOf(this.getConfig("cssPath")) !=-1){
-					var cssFilename = links[i].getAttribute("href");
-					var doc = window['parent'].document;
-					var fileref=doc.createElement("link");
-					fileref.setAttribute("rel", "stylesheet");
-					fileref.setAttribute("type", "text/css");
-					fileref.setAttribute("href", cssFilename);
-					doc.getElementsByTagName("head")[0].appendChild(fileref);
-				}
-			}
 		},
 
 		onDisable: function(){

@@ -56,7 +56,9 @@ mw.EmbedPlayerNativeComponent = {
 		'progress',
 		'enterfullscreen',
 		'exitfullscreen',
-		'durationchange'
+		'durationchange',
+		'chromecastDeviceConnected',
+		'chromecastDeviceDisConnected'
 	],
 	// Native player supported feature set
 	supports: {
@@ -92,8 +94,18 @@ mw.EmbedPlayerNativeComponent = {
 			}
 
 			this.applyMediaElementBindings();
-			this.getPlayerElement().attr('src', this.getSrc());
 			this.playerIsLoaded = true;
+			this.getPlayerElement().attr('src', this.getSrc());
+			this.bindHelper("SourceChange", function() {
+				_this.getPlayerElement().attr('src', this.getSrc());
+			});
+			this.bindHelper("layoutBuildDone ended", function() {
+				_this.getPlayerElement().notifyLayoutReady();
+			});
+			this.bindHelper("showChromecastDeviceList", function() {
+				mw.log("EmbedPlayerNativeComponent:: showChromecastDeviceList::");
+				_this.getPlayerElement().showChromecastDeviceList();
+			});
 		}
 	},
 

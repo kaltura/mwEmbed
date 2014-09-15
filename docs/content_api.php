@@ -611,6 +611,8 @@ function jsCallbackReady(objectId) {
 <?php echo getTableContent( array( 'Event', 'Parameters', 'Description' ), $listeners2 ) ?>
 <br><br><h5>Player Advertisement Related Notifications:</h5>
 <?php echo getTableContent( array( 'Event', 'Parameters', 'Description' ), $listeners3 ) ?>
+<br><br><h5>Playlist Events:</h5>
+<?php echo getTableContent( array( 'Event', 'Parameters', 'Description' ), $listeners4 ) ?>
 <br><br>Code sample:<br>
 <pre class="prettyprint linenums">
 kdp.addJsListener(“playerUpdatePlayhead”, “playerUpdatePlayheadHandler”)

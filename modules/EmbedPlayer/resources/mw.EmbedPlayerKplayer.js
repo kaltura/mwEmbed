@@ -23,7 +23,9 @@ mw.EmbedPlayerKplayer = {
 		'overlays' : true,
 		'fullscreen' : true
 	},
-
+	// If the media loaded event has been fired
+	mediaLoadedFlag: false,
+	seekStarted: false,
 	// Stores the current time as set from flash player
 	flashCurrentTime : 0,
 	selectedFlavorIndex : 0,
@@ -127,7 +129,8 @@ mw.EmbedPlayerKplayer = {
 				'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions',
 				'bufferChange': 'onBufferChange',
 				'audioTracksReceived': 'onAudioTracksReceived',
-				'audioTrackSelected': 'onAudioTrackSelected'
+				'audioTrackSelected': 'onAudioTrackSelected',
+				'videoMetadataReceived': 'onVideoMetadataReceived'
 			};
 			_this.playerObject = this.getElement();
 			$.each( bindEventMap, function( bindName, localMethod ) {
@@ -260,6 +263,8 @@ mw.EmbedPlayerKplayer = {
 
 	changeMediaCallback: function( callback ){
 		this.updateSources();
+		this.seekStarted = false;
+		this.mediaLoadedFlag = false;
 		this.flashCurrentTime = 0;
 		this.playerObject.setKDPAttribute( 'mediaProxy', 'isLive', this.isLive() );
 		this.playerObject.setKDPAttribute( 'mediaProxy', 'isMp4', this.isMp4Src() );
@@ -311,7 +316,13 @@ mw.EmbedPlayerKplayer = {
 			this.playerObject.duration = data.newValue;
 		}
 	},
-
+	onVideoMetadataReceived: function(){
+		// Trigger "media loaded"
+		if( ! this.mediaLoadedFlag ){
+			$( this ).trigger( 'mediaLoaded' );
+			this.mediaLoadedFlag = true;
+		}
+	},
 	onClipDone: function() {
 		this.parent_onClipDone();
 		this.preSequenceFlag = false;
@@ -379,6 +390,7 @@ mw.EmbedPlayerKplayer = {
 	 */
 	seek: function(percentage, stopAfterSeek) {
 		var _this = this;
+		this.seekStarted = true;
 		var seekTime = percentage * this.getDuration();
 		mw.log( 'EmbedPlayerKalturaKplayer:: seek: ' + percentage + ' time:' + seekTime );
 		if (this.supportsURLTimeEncoding()) {
@@ -405,6 +417,7 @@ mw.EmbedPlayerKplayer = {
 
 		this.unbindHelper("seeked" + _this.bindPostfix).bindHelper("seeked" + _this.bindPostfix, function(){
 			_this.unbindHelper("seeked" + _this.bindPostfix);
+			_this.removePoster();
 			_this.monitor();
 			if( stopAfterSeek ){
 				_this.hideSpinner();
@@ -470,7 +483,10 @@ mw.EmbedPlayerKplayer = {
 	onPlayerSeekEnd: function () {
 		this.previousTime = this.currentTime = this.flashCurrentTime = this.playerObject.getCurrentTime();
 		this.seeking = false;
-		$( this ).trigger( 'seeked',[this.playerObject.getCurrentTime()]);
+		if (this.seekStarted){
+			this.seekStarted = false;
+			$( this ).trigger( 'seeked',[this.playerObject.getCurrentTime()]);
+		}
 	},
 
 	onSwitchingChangeStarted: function ( data, id ) {

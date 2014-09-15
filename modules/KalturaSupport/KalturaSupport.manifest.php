@@ -260,7 +260,53 @@ return array(
 	),
 	'playlistAPI' => array(
 		'description' => 'The Kaltura playlist plugin, supports associating multiple clips in sequence.',
+		'label' => 'Playlist Configuration',
 		'attributes' => array(
+			'containerPosition' => array(
+                'doc' => 'Position of the playlist.',
+                'label' => "Position",
+                'type' => 'enum',
+                'initvalue' => 'left',
+                'enum' => array("left", "right", "top", "bottom"),
+                'options' => array(
+                    array(
+                        'label' => "Left of the video",
+                        'value' => "left"
+                    ),
+                    array(
+                        'label' => "Right of the video",
+                        'value' => "right"
+                    ),
+                    array(
+                        'label' => "Above the video",
+                        'value' => "top"
+                    ),
+                    array(
+                        'label' => "Below the video",
+                        'value' => "bottom"
+                    )
+                )
+            ),
+			'layout' => array(
+                'doc' => 'Playlist layout.',
+                'type' => 'enum',
+                'initvalue' => 'vertical',
+                'enum' => array("vertical", "horizontal"),
+                'options' => array(
+                    array(
+                        'label' => "Vertical playlist",
+                        'value' => "vertical"
+                    ),
+                    array(
+                        'label' => "Horizontal playlist",
+                        'value' => "horizontal"
+                    )
+                )
+            ),
+            'includeInLayout' => array(
+                'doc' => "If the playlist clip list should be displayed.",
+                'type' => 'hiddenValue'
+            ),
 			'autoContinue' => array(
 				'doc' => "If the playlist should autocontinue.",
 				'type' => 'boolean'
@@ -273,32 +319,33 @@ return array(
 				'doc' => "If the playlist should loop on complete.",
 				'type' => 'boolean'
 			),
+			'onPage' => array(
+				'doc' => "If the playlist should be rendered out of the IFrame (on page).",
+				'type' => 'boolean'
+			),
 			'initItemEntryId' => array(
 				'doc' => "The entryId that should be played first."
 			),
 			'kpl0Url' => array(
 				'doc' => 'The playlist URL. (can be a Kaltura playlist service or MRSS)',
-				'type' => 'url'
+				'type' => 'hiddenValue'
 			),
 			'kpl0Id' => array(
 				'doc' => "The kaltura playlist Id",
-				'type' => 'string'
+				'type' => 'hiddenValue'
 			),
 			'kpl0Name' => array(
 				'doc' => "The name of the playlist.",
+				'type' => 'hiddenValue'
 			),
 			'kpl1Url' => array(
 				'doc' => 'The N playlist URL.',
-				'type' => 'url'
+				'type' => 'hiddenValue'
 			),
 			'kpl1Name' => array(
 				'doc' => "The name of the indexed playlist.",
-			),
-			'includeInLayout' => array(
-                'doc' => "If the playlist clip list should be displayed.",
-                'type' => 'boolean',
-                'initvalue' => true
-            )
+				'type' => 'hiddenValue'
+			)
 		)
 	),/*
 	'playlistHolder' => array(
@@ -723,6 +770,32 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 		)
 	),
+
+    'nextPrevBtn' => array(
+        'featureCheckbox' => true, // *NEW* - actually enabled even if undefined but can be disabled via this property
+        'description' => "Playlist 'Next' and 'Previous' buttons", // used for tooltip
+        'type' => 'featuremenu', // *NEW* = renders as featuremenu also if undefined, but can be turned into submenu via this
+        'label' => 'Playlist controls', // *NEW*
+        'model' => 'config.plugins.nextPrevBtn', //*NEW*
+        'attributes' => array(
+			'parent' => array(
+				'doc' => 'Parent container for component. Components include default placement, leave as null if unsure.',
+				'type' => 'enum',
+				'enum' => array("topBarContainer", "videoHolder", "controlsContainer"),
+				'options' => array(
+					array(
+						'label' => "Top bar container",
+						'value' => "topBarContainer"
+					),
+					array(
+						'label' => "Controls container",
+						'value' => "controlsContainer"
+					)
+				),
+				'initvalue' => "controlsContainer"
+			)
+        )
+    ),
 	/** statistics has global flashvar based configuration:  **/
 	'statistics' => array(
 		'description' => 'Use Kaltura statistics to

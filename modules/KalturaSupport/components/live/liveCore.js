@@ -184,6 +184,11 @@
 			} );
 
 			this.bind( 'liveStreamStatusUpdate', function( e, onAirObj ) {
+				//check for pending autoPlay
+				if ( onAirObj.onAirStatus && embedPlayer.firstPlay && embedPlayer.autoplay ) {
+					embedPlayer.play();
+				}
+
 				//if we moved from live to offline  - show message
 				if ( _this.onAirStatus && !onAirObj.onAirStatus ) {
 					//simetimes offline is only for a second and the message is not needed..

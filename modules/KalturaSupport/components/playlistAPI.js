@@ -10,7 +10,7 @@
 			'kpl0Name': null,
 			'kpl0Url': null,
 			'kpl0Id': null,
-			'titleLimit': 30,
+			'titleLimit': 29,
 			'descriptionLimit': 80,
 			'thumbnailWidth' : 62,
 			'horizontalMediaItemWidth': 290,
@@ -27,6 +27,7 @@
 		loadingEntry: null,      // flag to store the current loading entry
 		firstLoad: true,         // Flag for setting initial entry in first load
 		kClient: null,           // kClient for API calls
+		firstPlay: true,         // firstPlay is used to check if we need to check for autoMute or keep the player volume from previous clip
 
 		currentClipIndex: null,  // currently playing clip index
 		currentPlaylistIndex: 0, // current playlist index (when we have more than 1 play lists)
@@ -34,12 +35,8 @@
 
 		videoWidth: null,        // used to save the video width when exiting to full screen and returning
 
-		getConfig: function( key ){
-			return this.embedPlayer.getKalturaConfig( 'playlistAPI', key );
-		},
-
 		setup: function( embedPlayer ) {
-			if ( this.getConfig( 'hidden' ) === true){ // support hidden playlists - force onPage and hide its div.
+			if ( this.getConfig( 'includeInLayout' ) === false){ // support hidden playlists - force onPage and hide its div.
 				this.setConfig( 'onPage', true );
 			}
 			this.addBindings();
@@ -85,6 +82,18 @@
 						break;
 				}
 			});
+
+			$( this.embedPlayer ).bind( 'playNextClip', function( event){
+				_this.playNext();
+			});
+
+			$( this.embedPlayer ).bind( 'playPreviousClip', function( event){
+				_this.playPrevious();
+			});
+
+			$( this.embedPlayer ).bind( 'mediaListLayoutReady', function( event){
+				_this.embedPlayer.triggerHelper( 'playlistReady' );
+			});
 		},
 
 		// called from KBaseMediaList when a media item is clicked - trigger clip play
@@ -106,7 +115,7 @@
 		prepareData: function(itemsArr){
 			for (var i = 0; i < itemsArr.length; i++){
 				var item = itemsArr[i];
-				var customData = item.partnerData ? JSON.parse(item.partnerData) :  {};
+				var customData = (item.partnerData  && item.adminTags !== 'image') ? JSON.parse(item.partnerData) :  {};
 				var title = item.name || customData.title;
 				var description = item.description || customData.desc;
 				item.order = i;
@@ -141,12 +150,13 @@
 			}
 
 			// Send notifications per play request
+			var eventToTrigger = "";
 			if( clipIndex == 0 ) {
-				embedPlayer.triggerHelper( 'playlistFirstEntry' );
+				eventToTrigger = 'playlistFirstEntry';
 			} else if( clipIndex == (this.mediaList.length-1) ) {
-				embedPlayer.triggerHelper( 'playlistLastEntry' );
+				eventToTrigger = 'playlistLastEntry';
 			} else {
-				embedPlayer.triggerHelper( 'playlistMiddleEntry' );
+				eventToTrigger = 'playlistMiddleEntry';
 			}
 
 			// Check if entry id already matches ( and is loaded )
@@ -161,7 +171,12 @@
 			// Listen for change media done
 			$( embedPlayer).unbind( 'onChangeMediaDone' + this.bindPostFix ).bind( 'onChangeMediaDone' + this.bindPostFix, function(){
 				mw.log( 'mw.PlaylistAPI:: onChangeMediaDone' );
-				_this.loadingEntry = false; // Update the loadingEntry flag:
+				embedPlayer.triggerHelper( eventToTrigger );
+				_this.loadingEntry = false; // Update the loadingEntry flag
+				if( _this.firstPlay && embedPlayer.getKalturaConfig( '', 'autoMute' ) === null ){
+					embedPlayer.toggleMute( true );
+					_this.firstPlay = false;
+				}
 				if (autoPlay){
 					embedPlayer.play();     // auto play
 				}
@@ -204,8 +219,7 @@
 				this.setSelectedMedia(this.currentClipIndex);
 				this.playMedia(this.currentClipIndex, true);
 			}
-
-
+			$( this.embedPlayer ).trigger( 'playlistPlayNext');
 		},
 
 		playPrevious: function(){
@@ -214,6 +228,7 @@
 				this.setSelectedMedia(this.currentClipIndex);
 				this.playMedia(this.currentClipIndex, true);
 			}
+			$( this.embedPlayer ).trigger( 'playlistPlayPrevious' );
 		},
 
 		// when we have multiple play lists - build the UI to represent it: combobox for playlist selector
@@ -276,9 +291,23 @@
 			this.embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')} ); // for API backward compatibility
 			this.prepareData(this.playlistSet[playlistIndex].items);   // prepare the data to be compatible with KBaseMediaList
 			this.setMediaList(this.playlistSet[playlistIndex].items);  // set the media list in KBaseMediaList
-			// support initial selectedIndex
+			// support initial selectedIndex or initItemEntryId
 			if (this.firstLoad){
-				this.playMedia( this.getConfig('selectedIndex'), this.getConfig('autoPlay'));
+				if ( this.getConfig( 'initItemEntryId' ) ){ // handle initItemEntryId
+					// find selected item index
+					var items = this.playlistSet[this.currentPlaylistIndex].items;
+					var found = false;
+					for (var i=0; i<items.length; i++){
+						if (items[i].id === this.getConfig( 'initItemEntryId' )){
+							this.playMedia(i, this.getConfig( 'autoPlay' ));
+							found = true;
+							break;
+						}
+					}
+				}
+				if ( (this.getConfig( 'initItemEntryId' ) && !found) || !(this.getConfig( 'initItemEntryId' )) ){
+					this.playMedia( this.getConfig('selectedIndex'), this.getConfig('autoPlay'));
+				}
 				this.firstLoad = false;
 			}
 			if (this.playlistSet.length > 1){
