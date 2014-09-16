@@ -63,13 +63,10 @@
 
 		getComponent: function(){
 			if( ! this.$el ){
-				if (this.getConfig('containerPosition')){
-					this.$el = $( '<div />' )
-						.addClass( this.pluginName + " medialistContainer k-chapters-container k-" + this.getLayout() );
+				this.$el = $( '<div />' )
+					.addClass( this.pluginName + " medialistContainer k-chapters-container k-" + this.getLayout() );
+				if (!this.getConfig('parent')){
 					this.getMedialistContainer().append(this.$el);
-				} else {
-					this.$el = $( '<div />' )
-						.addClass( this.pluginName + " mediaList k-chapters-container k-" + this.getLayout() /*+ this.getCssClass()*/ );
 				}
 			}
 			return this.$el;
@@ -124,19 +121,21 @@
 
 		// set the size of the playlist container and the video
 		setMedialistContainerSize: function(){
-			// resize the video to make place for the playlist according to its position (left, top, right, bottom)
-			if (this.getConfig('containerPosition') == 'right' || this.getConfig('containerPosition') == 'left'){
-				this.getComponent().width(this.getConfig("mediaItemWidth"));
-				this.getComponent().height("100%");
-				this.getComponent().css("position","absolute");
-			}
-			if (this.getConfig('containerPosition') == 'right'){
-				this.getComponent().css("right","0px");
-				$(".mwPlayerContainer").css("float","left");
-			}
-			if (this.getConfig('containerPosition') == 'top' || this.getConfig('containerPosition') == 'bottom'){
-				this.getComponent().height(this.getConfig("mediaItemHeight")*2-2);
-				this.getComponent().css("display","block");
+			if (!this.getConfig('onPage')) {
+				// resize the video to make place for the playlist according to its position (left, top, right, bottom)
+				if ( this.getConfig( 'containerPosition' ) == 'right' || this.getConfig( 'containerPosition' ) == 'left' ) {
+					this.getComponent().width( this.getConfig( "mediaItemWidth" ) );
+					this.getComponent().height( "100%" );
+					this.getComponent().css( "position", "absolute" );
+				}
+				if ( this.getConfig( 'containerPosition' ) == 'right' ) {
+					this.getComponent().css( "right", "0px" );
+					$( ".mwPlayerContainer" ).css( "float", "left" );
+				}
+				if ( this.getConfig( 'containerPosition' ) == 'top' || this.getConfig( 'containerPosition' ) == 'bottom' ) {
+					this.getComponent().height( this.getConfig( "mediaItemHeight" ) * 2 - 2 );
+					this.getComponent().css( "display", "block" );
+				}
 			}
 			if (this.getLayout() === "horizontal" ){
 				this.getComponent().find("ul").width(this.getConfig("mediaItemWidth")*this.mediaList.length).height(this.getConfig("mediaItemHeight")+18);
