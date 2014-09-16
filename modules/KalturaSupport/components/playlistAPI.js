@@ -255,7 +255,7 @@
 		// when we have multiple play lists - build the UI to represent it: combobox for playlist selector
 		setMultiplePlayLists: function(){
 			var _this = this;
-			if ($(".playListSelector").length == 0){ // UI wasn't not created yet
+			if (this.getComponent().find(".playListSelector").length == 0){ // UI wasn't not created yet
 				var combo = $("<select class='playListSelector'></select>");
 				$.each(this.playlistSet, function (i, el) {
 					// add the selected attribute the the currently selected play list so it will be shown as the selected one in the combo box
