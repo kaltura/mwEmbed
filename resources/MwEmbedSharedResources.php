@@ -429,6 +429,10 @@ return array(
 	'jquery.mwExtension' => array(
 		'scripts' => 'resources/jquery/jquery.mwExtension.js',
 	),
+    'touchSwipe' => array(
+        'scripts' => 'resources/touchSwipe/jquery.touchSwipe.min.js',
+        'dependencies' => 'jquery'
+    ),
 	/*'mediawiki.language.parser' => new MwEmbedResourceLoaderFileModule( array(
 		'scripts' => 'resources/mediawiki.language/mediawiki.language.parser.js',
 		'dependencies' => array( 'mediawiki.language', 'mediawiki.util' ),

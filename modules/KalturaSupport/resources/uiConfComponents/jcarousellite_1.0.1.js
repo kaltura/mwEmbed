@@ -208,6 +208,7 @@ $.fn.jCarouselLite = function(o) {
 		btnNext: null,
 		btnGo: null,
 		mouseWheel: false,
+
 		auto: null,
 
 		speed: 200,
@@ -218,6 +219,8 @@ $.fn.jCarouselLite = function(o) {
 		visible: 3,
 		start: 0,
 		scroll: 1,
+		swipe: 2,
+		swipeThresholdPercentage: 0.6,
 
 		beforeStart: null,
 		afterEnd: null
@@ -297,6 +300,31 @@ $.fn.jCarouselLite = function(o) {
 				}
 				return d>0 ? go(curr-o.scroll) : go(curr+o.scroll);
 			});
+
+		if ( div.swipe){
+			var action;
+			div.swipe({
+				swipeStatus:function(event, phase, direction, distance, duration, fingers){
+					if (phase=="move") {
+						switch ( direction ) {
+							case "up":
+							case "right":
+								action = curr + o.swipe;
+								break;
+							case "down":
+							case "left":
+								action = curr - o.swipe;
+								break;
+						}
+					}
+					if (phase=="end"){
+						return go(action);
+					}
+				},
+				triggerOnTouchEnd: false,
+				threshold: liSize * o.swipeThresholdPercentage
+			});
+		}
 
 		if(o.auto)
 			setInterval(function() {
