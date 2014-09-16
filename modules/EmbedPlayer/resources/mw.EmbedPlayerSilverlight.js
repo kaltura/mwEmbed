@@ -76,13 +76,13 @@
 			var getMulticastStreamAddress = function() {
 				$( _this ).trigger( 'checkIsLive', [ function( onAirStatus ) {
 					 if ( onAirStatus ) {
-						 getStreamAddress().then( doEmbedFunc );
+						 _this.resolveSrcURL( _this.getSrc() ).then( doEmbedFunc );
 					 }  else {
 					 //stream is offline, stream address can be retrieved when online
 						 _this.bindHelper( "liveOnline" + _this.bindPostfix , function( ) {
 							 _this.unbindHelper( "liveOnline" + _this.bindPostfix );
 							 _this.addPlayerSpinner();
-							 getStreamAddress().then( doEmbedFunc );
+							 _this.resolveSrcURL( _this.getSrc() ).then( doEmbedFunc );
 							 //no need to save readyCallback since it was already called
 							 _this.readyCallbackFunc = undefined;
 
@@ -90,32 +90,8 @@
 						 readyCallback();
 					 }
 				}]);
-			}
+			};
 
-			//parse url address from playmanifest
-			var getStreamAddress = function() {
-				var deferred = $.Deferred();
-				if (mw.getConfig("EmbedPlayer.UseDirectManifestLinks")) {
-					return deferred.resolve();
-				}
-				$.ajax({
-					url: _this.getSrc() + "&responseFormat=jsonp",
-					dataType: 'jsonp',
-					success: function( playmanifest ){
-						var flavors = playmanifest.flavors;
-						if ( flavors && flavors.length > 0 ) {
-							srcToPlay = flavors[0].url;
-							deferred.resolve();
-						} else {
-							deferred.reject();
-						}
-					},
-					error: function() {
-						deferred.reject();
-					}
-				});
-				return deferred.promise();
-			}
 			//if error occured- don't try to load playmanifest, return
 			if ( !$.isEmptyObject( this.playerError )) {
 				readyCallback();
@@ -127,9 +103,9 @@
 					return true;
 				}
 				return false;
-			}
+			};
 
-			var doEmbedFunc = function() {
+			var doEmbedFunc = function( resolvedSrc) {
 				var flashvars = {
 					startvolume:	_this.volume
 				}
@@ -139,7 +115,7 @@
 
 					flashvars.smoothStreamPlayer = true;
 					flashvars.preload = "auto";
-					flashvars.entryURL = srcToPlay;
+					flashvars.entryURL = resolvedSrc;
 					//flashvars.debug = true;
 
 					if ( isMimeType( "video/playreadySmooth" ) )
@@ -257,7 +233,7 @@
 			if ( _this.isLive() ) {
 				getMulticastStreamAddress();
 			} else {
-				getStreamAddress().then( doEmbedFunc );
+				_this.resolveSrcURL(_this.getSrc()).then( doEmbedFunc );
 			}
 		},
 

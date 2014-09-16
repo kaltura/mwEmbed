@@ -2633,6 +2633,19 @@
 		},
 
 		/**
+		 *  Abstract resolveSrcURL in order to allow tokanization and pre-fetching of the src before playback.
+		 *  some platforms doesnt support redircet responses.
+		 *  can be overrider with the propare logic
+		 * @param srcURL
+		 * @returns {promise - deferred object}
+		 */
+		resolveSrcURL: function( srcURL ){
+			var deferred = $.Deferred();
+			deferred.resolve( srcURL );
+			return deferred;
+		},
+
+		/**
 		 * Abstract getPlayerElementTime function
 		 */
 		getPlayerElement: function(){

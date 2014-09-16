@@ -231,11 +231,16 @@
 			'dependencies' => array( 'mw.KBaseScreen' ),
 			'kalturaPluginName' => 'share',
 		),
+		"playServerUrls" => array(
+			'scripts' => "components/playServerUrls.js",
+			'dependencies' => array( 'mw.KBasePlugin' ),
+			'kalturaPluginName' => 'playServerUrls',
+		),
 		"adBlockDetector" => array(
-            'scripts' => "components/adBlockDetector/adBlockDetector.js",
-            'dependencies' => array( 'mw.KBasePlugin' ),
-            'kalturaPluginName' => 'adBlockDetector',
-        ),
+			'scripts' => "components/adBlockDetector/adBlockDetector.js",
+			'dependencies' => array( 'mw.KBasePlugin' ),
+			'kalturaPluginName' => 'adBlockDetector',
+		),
 		"pptWidgetPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",
 			'kalturaPluginName' => 'pptWidgetAPI'
