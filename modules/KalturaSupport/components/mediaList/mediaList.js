@@ -5,7 +5,7 @@
 
 			defaultConfig: {
 				'parent': 'sideBarContainer',
-				'containerPosition': null,//'after',
+				'containerPosition': null,
 				'order': 2,
 				'showTooltip': false,
 				"displayImportance": 'high',
@@ -218,19 +218,21 @@
 				var $activeChapter = this.getActiveItem();
 				var actualActiveIndex = this.selectedMediaItemIndex;
 				// Check if active is not already set:
-				if( actualActiveIndex == activeIndex ){
+				if( actualActiveIndex == activeIndex ) {
 					// update duration count down:
 					var item = this.mediaList[ activeIndex ];
-					if( item ){
-						this.setSelectedMedia(activeIndex);
-						item.active = true;
+					if ( item ) {
+						if (!item.active){
+							this.setSelectedMedia( activeIndex );
+							item.active = true;
+						}
 						var endTime = item.endTime;
-						var countDown =  Math.abs( time - endTime );
-						this.updateActiveItemDuration(countDown);
+						var countDown = Math.abs( time - endTime );
+						this.updateActiveItemDuration( countDown );
 					}
 				} else {
 					var item = _this.mediaList[ actualActiveIndex ];
-					if ( item ) {
+					if ( item && item.active) {
 						item.active = false;
 						var startTime = item.startTime ;
 						var endTime = item.endTime;
