@@ -70,6 +70,18 @@
 					if( !_this.seekIntervalID ) {
 						_this.seekIntervalID = _this.seekIntervalTrigger();
 					}
+
+					$( embedPlayer.getPlayerElement() ).bind('pause' + _this.bindPostfix, function() {
+						embedPlayer.skipDoneCallback = false;
+						// next button was tapped
+						if( embedPlayer.getPlayerElement().currentTime > _this.previousTime + 1
+							|| embedPlayer.getPlayerElement().currentTime == _this.previousTime ) {
+							if( embedPlayer.skipDoneCallback != null ) {
+								embedPlayer.skipDoneCallback = true;
+							}
+							embedPlayer.getPlayerElement().currentTime = _this.previousTime;
+						}
+					});
 				});
 
 				$( embedPlayer ).bind('onAdComplete' + _this.bindPostfix, function() {
@@ -623,6 +635,10 @@
 			}
 			this.embedPlayer.adTimeline && this.embedPlayer.adTimeline.restorePlayer( null, adPlaying );
 			$( this.embedPlayer ).unbind( this.bindPostfix );
+
+			if( mw.isIphone() ) {
+				$( this.embedPlayer.getPlayerElement() ).unbind( this.bindPostfix );
+			}
 		}
 	};
 
