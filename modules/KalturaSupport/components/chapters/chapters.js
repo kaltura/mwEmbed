@@ -1,7 +1,7 @@
 (function ( mw, $ ) {
 	"use strict";
 
-	mw.PluginManager.add( 'mediaList', mw.KBaseMediaList.extend( {
+	mw.PluginManager.add( 'chapters', mw.KBaseMediaList.extend( {
 
 			defaultConfig: {
 				'parent': 'sideBarContainer',
@@ -9,7 +9,7 @@
 				'order': 2,
 				'showTooltip': false,
 				"displayImportance": 'high',
-				'templatePath': 'components/mediaList/mediaList.tmpl.html',
+				'templatePath': 'components/chapters/chapters.tmpl.html',
 				'cuePointType': ['thumbCuePoint.Thumb'],
 				'oneSecRotatorSlidesLimit': 61,
 				'twoSecRotatorSlidesLimit': 250,

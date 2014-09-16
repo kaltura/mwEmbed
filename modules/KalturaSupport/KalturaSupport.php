@@ -82,12 +82,12 @@
             'dependencies' => array( 'mw.KBaseComponent' ),
             'kalturaPluginName' => 'search'
         ),
-        "mediaList" => array(
-            'scripts' => "components/mediaList/mediaList.js",
-            'styles' =>  "components/mediaList/mediaList.css",
-            'templates' => "components/mediaList/mediaList.tmpl.html",
+        "chapters" => array(
+            'scripts' => "components/chapters/chapters.js",
+            'styles' =>  "components/chapters/chapters.css",
+            'templates' => "components/chapters/chapters.tmpl.html",
             'dependencies' => array( 'mw.KBaseMediaList', 'jCarouse' ),
-            'kalturaPluginName' => 'mediaList'
+            'kalturaPluginName' => 'chapters'
         ),
 		/* Core plugins */
 		"keyboardShortcuts" => array(

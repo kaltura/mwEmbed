@@ -3,7 +3,7 @@
 	mw.PluginManager.add( 'playlistAPI', mw.KBaseMediaList.extend({
 
 		defaultConfig: {
-			'templatePath': 'components/mediaList/mediaList.tmpl.html',
+			'templatePath': 'components/chapters/chapters.tmpl.html',
 			'initItemEntryId': null,
 			'autoContinue': false,
 			'autoPlay': false,
