@@ -122,6 +122,15 @@
 
 		// called from KBaseMediaList when a media item is clicked - trigger clip play
 		mediaClicked: function(index){
+			if (this.getConfig('onPage')){
+				try{
+					var doc = window['parent'].document;
+					$(doc).find(".chapterBox").removeClass( 'active');
+				}catch(e){};
+			}else{
+				$(".chapterBox").removeClass( 'active');
+			}
+			$(".chapterBox").find("[data-chapter-index='"+ index +"']" ).addClass( 'active');
 			this.playMedia( index, true);
 		},
 
@@ -136,17 +145,29 @@
 		},
 
 		// prepare the data to be compatible with KBaseMediaList
-		prepareData: function(itemsArr){
+		addMediaItems: function(itemsArr){
 			for (var i = 0; i < itemsArr.length; i++){
 				var item = itemsArr[i];
 				var customData = (item.partnerData  && item.adminTags !== 'image') ? JSON.parse(item.partnerData) :  {};
 				var title = item.name || customData.title;
 				var description = item.description || customData.desc;
+				var thumbnailUrl = item.thumbnailUrl || customData.thumbUrl || this.getThumbUrl(item);
+				var thumbnailRotatorUrl = this.getConfig( 'thumbnailRotator' ) ? this.getThumRotatorUrl() : '';
+
 				item.order = i;
 				item.title = title;
 				item.description = description;
 				item.width = this.getConfig( 'mediaItemWidth' );
+				item.thumbnail = {
+					url: thumbnailUrl,
+					thumbAssetId: item.assetId,
+					rotatorUrl: thumbnailRotatorUrl,
+					width: this.getThumbWidth(),
+					height: this.getThumbHeight()
+				};
 				item.durationDisplay = kWidget.seconds2npt(item.duration);
+				item.chapterNumber = this.getItemNumber(i);
+				this.mediaList.push(item);
 			}
 		},
 
@@ -258,7 +279,7 @@
 		// when we have multiple play lists - build the UI to represent it: combobox for playlist selector
 		setMultiplePlayLists: function(){
 			var _this = this;
-			if ($(".playListSelector").length == 0){ // UI wasn't not created yet
+			if (this.getComponent().find(".playListSelector").length == 0){ // UI wasn't not created yet
 				var combo = $("<select class='playListSelector'></select>");
 				$.each(this.playlistSet, function (i, el) {
 					// add the selected attribute the the currently selected play list so it will be shown as the selected one in the combo box
@@ -268,7 +289,7 @@
 						combo.append('<option value="' + i +'">' + el.name + '</option>');
 					}
 				});
-				$(".medialistContainer").prepend(combo).prepend("<span class='playListSelector'>" + gM( 'mwe-embedplayer-select_playlist' ) + "</span>");
+				this.getComponent().prepend(combo).prepend("<span class='playListSelector'>" + gM( 'mwe-embedplayer-select_playlist' ) + "</span>");
 				// set the combo box change event to load the selected play list by its index
 				combo.on("change",function(e){
 					_this.switchPlaylist(this.value);
@@ -311,11 +332,10 @@
 
 		// select playlist
 		selectPlaylist: function(playlistIndex){
-			$(".medialistContainer").empty();  // empty the playlist UI container so we can build a new UI
-			// add playlist title
 			this.embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')} ); // for API backward compatibility
-			this.prepareData(this.playlistSet[playlistIndex].items);   // prepare the data to be compatible with KBaseMediaList
-			this.setMediaList(this.playlistSet[playlistIndex].items);  // set the media list in KBaseMediaList
+			this.mediaList = [];
+			this.addMediaItems(this.playlistSet[playlistIndex].items);   // prepare the data to be compatible with KBaseMediaList
+			this.renderMediaList();  // set the media list in KBaseMediaList
 			$(".playlistInterface").prepend('<span class="playlistTitle">' + this.playlistSet[0].name + '</span><span class="playlistDescription">' + this.playlistSet[0].items.length + ' videos</span><div class="blackSeparator"></div>');
 			// support initial selectedIndex or initItemEntryId
 			if (this.firstLoad){

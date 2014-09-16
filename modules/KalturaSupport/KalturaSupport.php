@@ -82,12 +82,12 @@
             'dependencies' => array( 'mw.KBaseComponent' ),
             'kalturaPluginName' => 'search'
         ),
-        "mediaList" => array(
-            'scripts' => "components/mediaList/mediaList.js",
-            'styles' =>  "components/mediaList/mediaList.css",
-            'templates' => "components/mediaList/mediaList.tmpl.html",
-            'dependencies' => array( 'mw.KBaseComponent', 'jCarouse' ),
-            'kalturaPluginName' => 'mediaList'
+        "chapters" => array(
+            'scripts' => "components/chapters/chapters.js",
+            'styles' =>  "components/chapters/chapters.css",
+            'templates' => "components/chapters/chapters.tmpl.html",
+            'dependencies' => array( 'mw.KBaseMediaList', 'jCarouse' ),
+            'kalturaPluginName' => 'chapters'
         ),
 		/* Core plugins */
 		"keyboardShortcuts" => array(
@@ -311,7 +311,8 @@
 			'kalturaPluginName' => "download"
 		),
 		"jCarouse"=> array( 
-			'scripts' => "resources/uiConfComponents/jcarousellite_1.0.1.js" 
+			'scripts' => "resources/uiConfComponents/jcarousellite_1.0.1.js",
+			 'dependencies' => 'touchSwipe'
 		),
 		"mw.KLayout"=> array( 
 			'scripts' => "resources/mw.KLayout.js" 
