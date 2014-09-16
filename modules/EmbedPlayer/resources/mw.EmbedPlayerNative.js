@@ -46,7 +46,7 @@ mw.EmbedPlayerNative = {
 	// Flag for ignoring double play on iPhone
 	playing: false,
 
-	// Flag for skipping done callback on iPhone when
+	// Flag for skipping done callback on iPhone when trying to skip vast
 	skipDoneCallback: false,
 
 	// All the native events per:
