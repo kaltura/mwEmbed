@@ -268,10 +268,7 @@
 			return parseInt( this.getConfig( 'thumbnailWidth' ) ) ;
 		},
 		getThumbHeight: function(){
-			var nativeAspect =  this.getPlayer().getHeight() / this.getPlayer().getWidth();
-			var thumbWidth = this.getThumbWidth();
-			var thumbHeight = parseInt( thumbWidth * nativeAspect );
-			return thumbWidth * 3 / 4;
+			return this.getThumbWidth() * 9 / 16;
 		},
 		getThumRotatorUrl: function(){
 			var _this = this;

@@ -3,17 +3,17 @@
 	mw.PluginManager.add( 'playlistAPI', mw.KBaseMediaList.extend({
 
 		defaultConfig: {
-			'templatePath': 'components/mediaList/mediaList.tmpl.html',
+			'templatePath': 'components/playlist/playList.tmpl.html',
 			'initItemEntryId': null,
 			'autoContinue': false,
 			'autoPlay': false,
 			'kpl0Name': null,
 			'kpl0Url': null,
 			'kpl0Id': null,
-			'titleLimit': 29,
-			'descriptionLimit': 80,
-			'thumbnailWidth' : 62,
-			'horizontalMediaItemWidth': 290,
+			'titleLimit': 36,
+			'descriptionLimit': 32,
+			'thumbnailWidth' : 86,
+			'horizontalMediaItemWidth': 320,
 			'includeThumbnail': true,
 			'includeItemNumberPattern': false,
 			'includeMediaItemDuration': true,
@@ -91,8 +91,32 @@
 				_this.playPrevious();
 			});
 
+			// set responsiveness
+			this.bind('updateLayout', function(){
+				if ($(".mwPlayerContainer").width() / 3 > _this.getConfig('mediaItemWidth')){
+					_this.setConfig('mediaItemWidth',$(".mwPlayerContainer").width()/3);
+					_this.setConfig('titleLimit', parseInt(_this.getConfig('mediaItemWidth') / 7));
+					_this.setConfig('descriptionLimit', parseInt(_this.getConfig('mediaItemWidth') / 8));
+				}
+			});
+
 			$( this.embedPlayer ).bind( 'mediaListLayoutReady', function( event){
 				_this.embedPlayer.triggerHelper( 'playlistReady' );
+				/*
+				$('.k-thumb').each(function() {
+					var img = $(this)[0];
+					img.onload = function(){
+						if (img.naturalWidth / img.naturalHeight > 16/9){
+							alert ("too wide");
+						}
+						if (img.naturalWidth / img.naturalHeight < 16/9){
+							$(this).height(48);
+							$(this).width(img.naturalHeight * 16 / 9);
+						}
+					};
+
+					console.log("---> width ="+ $(this).width() +" height = "+ $(this).height());
+				});*/
 			});
 		},
 
@@ -288,9 +312,11 @@
 		// select playlist
 		selectPlaylist: function(playlistIndex){
 			$(".medialistContainer").empty();  // empty the playlist UI container so we can build a new UI
+			// add playlist title
 			this.embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')} ); // for API backward compatibility
 			this.prepareData(this.playlistSet[playlistIndex].items);   // prepare the data to be compatible with KBaseMediaList
 			this.setMediaList(this.playlistSet[playlistIndex].items);  // set the media list in KBaseMediaList
+			$(".playlistInterface").prepend('<span class="playlistTitle">' + this.playlistSet[0].name + '</span><span class="playlistDescription">' + this.playlistSet[0].items.length + ' videos</span><div class="blackSeparator"></div>');
 			// support initial selectedIndex or initItemEntryId
 			if (this.firstLoad){
 				if ( this.getConfig( 'initItemEntryId' ) ){ // handle initItemEntryId
