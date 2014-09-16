@@ -72,12 +72,12 @@
 					}
 
 					$( embedPlayer.getPlayerElement() ).bind('pause' + _this.bindPostfix, function() {
-						embedPlayer.skipDoneCallback = false;
+						embedPlayer.disableSwitchSourceCallback = false;
 						// next button was tapped
 						if( embedPlayer.getPlayerElement().currentTime > _this.previousTime + 1
 							|| embedPlayer.getPlayerElement().currentTime == _this.previousTime ) {
-							if( embedPlayer.skipDoneCallback != null ) {
-								embedPlayer.skipDoneCallback = true;
+							if( embedPlayer.disableSwitchSourceCallback != null ) {
+								embedPlayer.disableSwitchSourceCallback = true;
 							}
 							embedPlayer.getPlayerElement().currentTime = _this.previousTime;
 						}

@@ -46,8 +46,8 @@ mw.EmbedPlayerNative = {
 	// Flag for ignoring double play on iPhone
 	playing: false,
 
-	// Flag for skipping done callback on iPhone when trying to skip vast
-	skipDoneCallback: false,
+	// Disable switch source callback
+	disableSwitchSourceCallback: false,
 
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
@@ -884,7 +884,7 @@ mw.EmbedPlayerNative = {
 				// Add the end binding if we have a post event:
 				if( $.isFunction( doneCallback ) ){
 					$( vid ).bind( 'ended' + switchBindPostfix , function( event ) {
-						if( _this.skipDoneCallback ) {
+						if( _this.disableSwitchSourceCallback ) {
 							return;
 						}
 						// Check if Timeout was activated, if true clear
