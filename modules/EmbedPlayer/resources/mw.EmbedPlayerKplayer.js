@@ -300,13 +300,15 @@ mw.EmbedPlayerKplayer = {
 	 * parent_play
 	 */
 	onPlay: function() {
-		$( this ).trigger( "playing" );
-		this.hideSpinner();
-		if ( this.isLive() ) {
-			this.ignoreEnableGui = false;
-			this.enablePlayControls();
+		if(this._propagateEvents && this.paused) {
+			$( this ).trigger( "playing" );
+			this.hideSpinner();
+			if ( this.isLive() ) {
+				this.ignoreEnableGui = false;
+				this.enablePlayControls();
+			}
+			this.stopped = this.paused = false;
 		}
-		this.stopped = this.paused = false;
 	},
 
 	onDurationChange: function( data, id ) {
@@ -418,10 +420,11 @@ mw.EmbedPlayerKplayer = {
 		this.unbindHelper("seeked" + _this.bindPostfix).bindHelper("seeked" + _this.bindPostfix, function(){
 			_this.unbindHelper("seeked" + _this.bindPostfix);
 			_this.removePoster();
-			_this.monitor();
+			_this.startMonitor();
 			if( stopAfterSeek ){
 				_this.hideSpinner();
 				_this.pause();
+//				_this.stopMonitor();
 				_this.updatePlayheadStatus();
 			} else {
 				// continue to playback ( in a non-blocking call to avoid synchronous pause event )
@@ -436,10 +439,18 @@ mw.EmbedPlayerKplayer = {
 		});
 
 		// Issue the seek to the flash player:
+		this.maskPlayerPlayed();
 		this.playerObject.play();
 		this.playerObject.seek( seekTime );
 	},
-
+	maskPlayerPlayed: function (){
+		this.stopEventPropagation();
+		this.playerObject.addJsListener('playerPlayed', "unmaskPlayerPlayed" );
+	},
+	unmaskPlayerPlayed: function (){
+		this.restoreEventPropagation();
+		this.playerObject.removeJsListener('playerPlayed', "unmaskPlayerPlayed" );
+	},
 	/**
 	 * Issues a volume update to the playerElement
 	 *

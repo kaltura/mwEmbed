@@ -324,11 +324,13 @@
 			if ( !this.durationReceived ) {
 				return;
 			}
+			if (this._propagateEvents && this.paused) {
 
-			this.updatePlayhead();
-			$( this ).trigger( "playing" );
-			this.hideSpinner();
-			this.stopped = this.paused = false;
+				this.updatePlayhead();
+				$( this ).trigger( "playing" );
+				this.hideSpinner();
+				this.stopped = this.paused = false;
+			}
 		},
 
 		callReadyFunc: function() {
@@ -523,6 +525,7 @@
 					}
 				}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 				// Issue the seek to the flash player:
+				this.maskPlayerPlayed();
 				this.playerObject.play();
 				this.playerObject.seek( seekTime );
 			} else if ( percentage != 0 ) {
@@ -530,6 +533,14 @@
 			}
 		},
 
+		maskPlayerPlayed: function (){
+			this.stopEventPropagation();
+			this.playerObject.addJsListener('playerPlayed', "unmaskPlayerPlayed" );
+		},
+		unmaskPlayerPlayed: function (){
+			this.restoreEventPropagation();
+			this.playerObject.removeJsListener('playerPlayed', "unmaskPlayerPlayed" );
+		},
 		/**
 		 * Issues a volume update to the playerElement
 		 *
