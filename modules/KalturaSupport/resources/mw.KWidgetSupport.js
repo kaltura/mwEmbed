@@ -525,15 +525,23 @@ mw.KWidgetSupport.prototype = {
 			if (mw.getConfig("EmbedPlayer.UseDirectManifestLinks")) {
 				return deferred.resolve( srcURL );
 			}
+
+			if (srcURL && srcURL.toLowerCase().indexOf("playmanifest") === -1){
+				return deferred.resolve( srcURL );
+			}
 			var srcToPlay = null;
 			$.ajax({
 				url: srcURL + "&responseFormat=jsonp",
 				dataType: 'jsonp',
 				success: function( playmanifest ){
 					var flavors = playmanifest.flavors;
-					if ( flavors && flavors.length > 0 ) {
+					if ( flavors && flavors.length === 1 ) {
 						srcToPlay = flavors[0].url;
 						deferred.resolve( srcToPlay );
+						//if we get more then 1 flavors we dont need the redirect so we'll use the same url
+						// the playmanifest service will return the manifest directly.
+					} else if (flavors && flavors.length > 1){
+						deferred.resolve( srcURL );
 					} else {
 						deferred.reject();
 					}
