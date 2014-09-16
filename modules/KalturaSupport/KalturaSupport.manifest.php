@@ -1094,15 +1094,6 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'stepsize' => 1, // *NEW*
 				'to' => 500, // *NEW*
 			),
-			'overlayUrl' => array(
-				'label' => 'Overlay URL', // *NEW*
-				'doc' => "The VAST XML file that contains the overlay media and tracking info.",
-				'type' => 'url',
-				'section' => 'over',
-				'min' => 0, // *NEW*
-				'initvalue' => 0, // *NEW*
-				'max' => 5, // *NEW*
-			),
 			'timeout' => array(
 				'doc' => "The timeout in seconds, for loading an ad from a VAST ad server.",
 				'type' => 'number',
