@@ -305,7 +305,8 @@ return array(
             ),
             'includeInLayout' => array(
                 'doc' => "If the playlist clip list should be displayed.",
-                'type' => 'hiddenValue'
+                'type' => 'boolean',
+                'initvalue' => true
             ),
 			'autoContinue' => array(
 				'doc' => "If the playlist should autocontinue.",

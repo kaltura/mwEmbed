@@ -101,21 +101,24 @@
 
 			$( this.embedPlayer ).bind( 'mediaListLayoutReady', function( event){
 				_this.embedPlayer.triggerHelper( 'playlistReady' );
-				/*
+				// keep aspect ratio of thumbnails - crop and center
 				$('.k-thumb').each(function() {
 					var img = $(this)[0];
 					img.onload = function(){
 						if (img.naturalWidth / img.naturalHeight > 16/9){
-							alert ("too wide");
-						}
-						if (img.naturalWidth / img.naturalHeight < 16/9){
 							$(this).height(48);
 							$(this).width(img.naturalHeight * 16 / 9);
+							var deltaWidth = ($(this).width()-86) / 2 * -1;
+							$(this).css("margin-left", deltaWidth)
+						}
+						if (img.naturalWidth / img.naturalHeight < 16/9){
+							$(this).width(86);
+							$(this).height(img.naturalWidth * 9 / 16);
+							var deltaHeight = ($(this).height()-48) / 2 * -1;
+							$(this).css("margin-top", deltaHeight)
 						}
 					};
-
-					console.log("---> width ="+ $(this).width() +" height = "+ $(this).height());
-				});*/
+				});
 			});
 		},
 
@@ -278,20 +281,23 @@
 		// when we have multiple play lists - build the UI to represent it: combobox for playlist selector
 		setMultiplePlayLists: function(){
 			var _this = this;
-			if (this.getComponent().find(".playListSelector").length == 0){ // UI wasn't not created yet
-				var combo = $("<select class='playListSelector'></select>");
-				$.each(this.playlistSet, function (i, el) {
-					// add the selected attribute the the currently selected play list so it will be shown as the selected one in the combo box
-					if (i == _this.currentPlaylistIndex){
-						combo.append('<option selected="selected" value="' + i +'">' + el.name + '</option>');
+			if (this.getComponent().find(".playlistSelector").length == 0){ // UI wasn't not created yet
+				$(".dropDownIcon").on("click", function(){
+					if ($(".playlistSelector").height() > 0){
+						$(".playlistSelector").height(0);
+						setTimeout(function(){$(".playlistSelector").hide();},300);
 					}else{
-						combo.append('<option value="' + i +'">' + el.name + '</option>');
+						$(".playlistSelector").show();
+						$(".playlistSelector").height(200);
+
 					}
+				}).show();
+				this.getMedialistComponent().prepend('<div class="playlistSelector"><p>More playlists:</p></div>');
+				$.each(this.playlistSet, function (i, el) {
+					$(".playlistSelector").append('<br><div class="icon-list"><span data-index="'+i+'" class="k-playlistTitle"> ' + el.name + '</span><span class=""> (' + el.content.split(",").length + ' videos)</span></div>');
 				});
-				this.getComponent().prepend(combo).prepend("<span class='playListSelector'>" + gM( 'mwe-embedplayer-select_playlist' ) + "</span>");
-				// set the combo box change event to load the selected play list by its index
-				combo.on("change",function(e){
-					_this.switchPlaylist(this.value);
+				$(".k-playlistTitle").on("click", function(){
+					_this.switchPlaylist($(this).attr('data-index'));
 				});
 			}
 		},
@@ -334,9 +340,12 @@
 			this.embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')} ); // for API backward compatibility
 			this.mediaList = [];
 			this.addMediaItems(this.playlistSet[playlistIndex].items);   // prepare the data to be compatible with KBaseMediaList
-			if (this.getLayout() === "vertical" && ( this.getConfig('containerPosition') === "left" || this.getConfig('containerPosition') === "right") ){
+			if (this.getLayout() === "vertical" && ( this.getConfig('containerPosition') === "left" || this.getConfig('containerPosition') === "right") && $(".playlistTitle").length ===0){
 				this.getMedialistHeaderComponent().prepend('<span class="playlistTitle">' + this.playlistSet[0].name + '</span><span class="playlistDescription">' + this.playlistSet[0].items.length + ' videos</span><div class="blackSeparator"></div>');
 				this.getMedialistHeaderComponent().prepend('<div class="dropDownIcon"></div>');
+			}else{
+				$(".playlistTitle").html(this.playlistSet[this.currentPlaylistIndex].name);
+				$(".playlistDescription").html(this.playlistSet[this.currentPlaylistIndex].items.length + " videos");
 			}
 			this.renderMediaList();  // set the media list in KBaseMediaList
 			// support initial selectedIndex or initItemEntryId
@@ -359,8 +368,7 @@
 				this.firstLoad = false;
 			}
 			if (this.playlistSet.length > 1){
-				$(".dropDownIcon").show();
-				//this.setMultiplePlayLists(); // support multiple play lists
+				this.setMultiplePlayLists(); // support multiple play lists
 			}
 		}
 	})

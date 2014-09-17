@@ -26,6 +26,7 @@
 }
 .k-chapters-container .k-title-container{
     font-size: 1.1em;
+	margin-left: 100px;
 	display: block;
 	padding-right: 30px;
     font-weight: normal;
@@ -106,6 +107,7 @@
 }
 .k-chapters-container .k-description{
 	padding-top: 5px;
+	margin-left: 100px;
     display: block;
     color: #888888;
     font-size: 0.9em;
@@ -262,18 +264,18 @@
 	/*border: 1px solid grey;*/
 	z-index: 10000000;
 }
-.playListSelector{
-	font-size: 11px;
-	margin-top: 10px;
-	margin-bottom: 10px;
-	margin-left: 10px;
-}
 .playlistTitle{
 	font-size: 16px;
 	display: block;
 	color: #ffffff;
 	padding-left: 8px;
 	padding-top: 8px;
+}
+.k-playlistTitle{
+	font-size: 14px;
+	font-weight: bold;
+	color: #ffffff;
+	cursor: pointer;
 }
 .playlistDescription{
 	font-size: 12px;
@@ -297,4 +299,27 @@
 	margin-right: 12px;
 	display: none;
 	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAICAYAAADJEc7MAAAAcUlEQVR42mP4////JCD+DcT/iMFAcB9I+zMACQEgZ/1/4sFKIGZkAAEgg+3v379nCemAqmFjQAZQm9/h0fQaSPEyYAPfvn2TAXkCXRNIDCTHgA8A1elhsVCHgRjw+/dvd5gOEJuBFPDnz58sIE7HJQ8A4VQINOEoAT0AAAAASUVORK5CYII=);
+	cursor: pointer;
+}
+.playlistSelector{
+	position: absolute;
+	width: 100%;
+	height: 0px;
+	z-index: 1000;
+	background-color: black;
+	overflow: hidden;
+	padding-left: 5px;
+	display: none;
+	-webkit-transition: height 0.3s ease-in;
+	-moz-transition: height 0.3s ease-in;
+	-o-transition: height 0.3s ease-in;
+	-ms-transition: height 0.3s ease-in;
+	transition: height 0.3s ease-in;
+}
+.thumbnailHolder{
+	overflow: hidden;
+	position: absolute;
+	display: block;
+	width: 86px;
+	height: 48px;
 }

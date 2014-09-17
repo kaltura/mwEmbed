@@ -10,9 +10,11 @@
         <% } %>
         <div class="chapterBoxInner" >
             <% if( meta.includeThumbnail) { %>
+	        <div class="thumbnailHolder">
             <img class="k-thumb" alt="Thumbnail for <%=mediaItem.title%>" data-chapter-index="<%=i%>" src="<%=mediaItem.thumbnail.url%>"
                  style="width:<%=mediaItem.thumbnail.width%>px;
                  height: <%=mediaItem.thumbnail.height%>px"></img>
+	        </div>
             <% } %>
             <span class="k-title-container" title="<%=mediaItem.title%>">
                 <% if( meta.includeChapterStartTime) { %>
