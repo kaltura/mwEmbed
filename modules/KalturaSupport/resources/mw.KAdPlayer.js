@@ -1272,7 +1272,7 @@ mw.KAdPlayer.prototype = {
 		var vpaidId = this.getVPAIDId();
 		var creativeData = {};
 		var environmentVars = {
-			slot: _this.embedPlayer.getVideoHolder(),
+			slot: _this.embedPlayer.getVideoHolder().get(0),
 			videoSlot:  _this.embedPlayer.getPlayerElement(),
 			videoSlotCanAutoPlay: true
 		};
@@ -1290,7 +1290,8 @@ mw.KAdPlayer.prototype = {
 					$( '#' + vpaidId ).remove();
 					_this.restoreEmbedPlayer();
 					adSlot.playbackDone();
-				}
+					$(_this.embedPlayer).trigger("playing");
+				};
 
 				VPAIDObj.subscribe( function () {
 					if ( VPAIDObj.startAd ) {
@@ -1415,7 +1416,7 @@ mw.KAdPlayer.prototype = {
 			}
 		};
 
-		if ( mw.isAndroid() ) {
+		if ( mw.isAndroid() || mw.isIpad() ) {
 			var bindPostFix = ".vpaidSequenceCheck";
 			this.embedPlayer.bindHelper( 'playing' + bindPostFix, function () {
 				_this.embedPlayer.unbindHelper( 'playing' + bindPostFix );
