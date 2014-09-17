@@ -18,7 +18,7 @@
 				'twoSecRotatorSlidesLimit': 250,
 				'maxRotatorSlides': 125,
 				'layout': 'vertical',
-				'mediaItemWidth': 290,
+				'mediaItemWidth': 320,
 				'mediaItemHeight': 70,
 				'onPage': false,
 				'includeInLayout': true,
@@ -64,12 +64,26 @@
 		getComponent: function(){
 			if( ! this.$el ){
 				this.$el = $( '<div />' )
-					.addClass( this.pluginName + " medialistContainer k-chapters-container k-" + this.getLayout() );
+					.addClass( this.pluginName + " medialistContainer k-" + this.getLayout() );
+				this.$el.append($( '<div />' ).addClass("k-medialist-header k-" + this.getLayout() ));
+				this.$el.append($( '<div />' ).addClass("k-chapters-container k-" + this.getLayout() ));
 				if (!this.getConfig('parent')){
-					this.getMedialistContainer().append(this.$el);
+					if ( this.getConfig( 'containerPosition' ) === 'top' && !this.getConfig( 'onPage' ) ) {
+						this.getMedialistContainer().prepend(this.$el);
+					} else {
+						this.getMedialistContainer().append(this.$el);
+					}
 				}
 			}
 			return this.$el;
+		},
+
+		getMedialistComponent: function(){
+			return this.getComponent().find(".k-chapters-container");
+		},
+
+		getMedialistHeaderComponent: function(){
+			return this.getComponent().find(".k-medialist-header");
 		},
 
 		// set the play list container according to the selected position
@@ -86,8 +100,8 @@
 						} else {
 							$( iframeParent ).after( "<div class='onpagePlaylistInterface'></div>" );
 							this.$mediaListContainer = $( iframeParent ).parent().find( ".onpagePlaylistInterface" );
-							$( this.$mediaListContainer ).width( $( iframeParent ).width() - 2 );
-							var containerHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * 3 : this.getConfig( "mediaItemHeight" ) + 20;
+							$( this.$mediaListContainer ).width( $( iframeParent ).width());
+							var containerHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * 3 : this.getConfig( "mediaItemHeight" );
 							$( this.$mediaListContainer ).height( containerHeight );
 						}
 						// support hidden playlists
@@ -110,7 +124,7 @@
 					}
 
 					if ( this.getConfig( 'containerPosition' ) == 'top' || this.getConfig( 'containerPosition' ) == 'bottom' ) {
-						var playlistHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * 2 : this.getConfig( "mediaItemHeight" ) + 20;
+						var playlistHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * 2 : this.getConfig( "mediaItemHeight" );
 						$( ".mwPlayerContainer" ).css( "height", this.$mediaListContainer.height() - playlistHeight + "px" );
 						$( ".videoHolder" ).css( "height", this.$mediaListContainer.height() - playlistHeight - $( ".controlBarContainer" ).height() + "px" );
 					}
@@ -138,8 +152,8 @@
 				}
 			}
 			if (this.getLayout() === "horizontal" ){
-				this.getComponent().find("ul").width(this.getConfig("mediaItemWidth")*this.mediaList.length).height(this.getConfig("mediaItemHeight")+18);
-				this.getComponent().find("span").height(this.getConfig("mediaItemHeight")+18);
+				this.getComponent().find("ul").width(this.getConfig("mediaItemWidth")*this.mediaList.length).height(this.getConfig("mediaItemHeight"));
+				this.getComponent().height(this.getConfig("mediaItemHeight"));
 			}
 		},
 
@@ -175,20 +189,26 @@
 			//Only render if medialist item are present
 			if (this.getTemplateData().length > 0) {
 				//Clear previous list
-				this.getComponent().empty();
-				if ( this.getConfig( 'containerPosition' ) == 'top' && !this.getConfig( 'onPage' ) ) {
-					this.getComponent().prepend( medialist );
-				} else {
-					this.getComponent().append( medialist );
-				}
+				this.getMedialistComponent().empty();
+				this.getMedialistComponent().append( medialist );
 
-				this.shouldAddScroll( );
 				if ( this.getLayout() === "horizontal" ) {
-					this.getComponent().find( ".k-chapters-container.k-horizontal .chapterBox" ).width( this.getConfig( "mediaItemWidth" ) );
+					this.getComponent().find( ".chapterBox" ).width( this.getConfig( "mediaItemWidth" ) );
 				}
-
+				this.shouldAddScroll();
 				$( this.embedPlayer ).trigger( "mediaListLayoutReady" );
 			}
+		},
+
+		setPlaylistHeight: function(){
+			if (this.getLayout() === "vertical"){
+				if (this.getConfig("containerPosition") === "right" || this.getConfig("containerPosition") === "left"){
+					this.getMedialistComponent().height(this.getComponent().height()-this.getMedialistHeaderComponent().height());
+				}else{
+					this.getMedialistComponent().height(this.getComponent().height());
+				}
+			}
+
 		},
 
 		onDisable: function(){
@@ -267,6 +287,7 @@
 		shouldAddScroll: function(handler){
 			this.setMedialistContainerSize();
 			this.attachMediaListHandlers();
+			this.setPlaylistHeight();
 			if( this.checkAddScroll() ){
 				this.addScroll();
 			} else{
@@ -412,12 +433,12 @@
 		},
 		initScroll: function(){
 			var _this = this;
-			var $cc = this.getComponent();
+			var $cc = this.getMedialistComponent();
 			var mediaItemVisible = this.calculateVisibleScrollItems();
 			var dimensions = this.getLargestBoxDimensions();
 			if( this.getLayout() == 'horizontal' ){
 				// set container height if horizontal
-				$cc.css( 'height', dimensions.largetsBoxHeight );
+				$cc.css( 'height', dimensions.largestBoxHeight );
 			}
 			var isVertical = ( _this.getLayout() == 'vertical' );
 
@@ -442,21 +463,21 @@
 			if( this.getLayout() == 'horizontal' ){
 				// fit to container:
 				$cc.find('.k-carousel').css('width', $cc.width() )
-				// set width to horizontalMediaItemWidth
+				// set width to mediaItemWidth
 
 				$cc.find('.chapterBox').css( 'width', this.getMediaItemBoxWidth() );
 				//set to auto to discover height:
-				$cc.find('.chapterBox').css('height', 'auto');
-				var largetsBoxHeight = 0;
+				//$cc.find('.chapterBox').css('height', 'auto');
+				var largestBoxHeight = 0;
 				$cc.find('.chapterBox').each( function(inx, box){
-					if( $(box).height() > largetsBoxHeight ){
-						largetsBoxHeight = $(box).height() + (
+					if( $(box).height() > largestBoxHeight ){
+						largestBoxHeight = $(box).height() + (
 							parseInt( $(box).css('padding-top') ) + parseInt( $(box).css( 'padding-bottom') )
 							)
 					}
 				});
-				$cc.css( 'height', largetsBoxHeight )
-					.find( '.chapterBox' ).css( 'height', largetsBoxHeight )
+				$cc.css( 'height', largestBoxHeight )
+					.find( '.chapterBox' ).css( 'height', largestBoxHeight )
 
 				var totalWidth = 0;
 				$cc.find('.chapterBox').each( function(inx, box){
@@ -467,7 +488,7 @@
 			}
 		},
 		getMediaItemBoxWidth: function(){
-			return this.getConfig('horizontalMediaItemWidth') || 290;
+			return this.getConfig('mediaItemWidth') || 320;
 		},
 		addScrollUiComponents: function(){
 			var $cc = this.getComponent();
@@ -517,7 +538,7 @@
 			$cc.find('.k-prev,.k-next').animate({'opacity':0});
 		},
 		calculateVisibleScrollItems: function(){
-			var $cc = this.getComponent();
+			var $cc = this.getMedialistComponent();
 
 			var mediaItemVisible = 3;
 
@@ -543,7 +564,7 @@
 			return mediaItemVisible;
 		},
 		getLargestBoxDimensions: function(){
-			var $cc = this.getComponent();
+			var $cc = this.getMedialistComponent();
 			// Get rough estimates for number of media items visible.
 			var largestBoxWidth = 0;
 			var largestBoxHeight = 0;
@@ -565,6 +586,7 @@
 				return true;
 			}
 			// for horizontal layouts fix to parent size fitting in area:
+			/*
 			if( this.getLayout() == 'horizontal' ){
 				var totalWidth = this.getMediaItemBoxWidth()
 					* this.mediaList.length;
@@ -572,7 +594,7 @@
 				if( this.getComponent().width() <  totalWidth ){
 					return true;
 				}
-			}
+			}*/
 			return false;
 		}
 

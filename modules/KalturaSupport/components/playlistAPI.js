@@ -13,12 +13,11 @@
 			'titleLimit': 36,
 			'descriptionLimit': 32,
 			'thumbnailWidth' : 86,
-			'horizontalMediaItemWidth': 320,
 			'includeThumbnail': true,
 			'includeItemNumberPattern': false,
 			'includeMediaItemDuration': true,
 			'loop': false,
-			'overflow': true,
+			'overflow': false,
 			'cssPath': 'playList.css',
 			'selectedIndex': 0
 		},
@@ -335,8 +334,11 @@
 			this.embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')} ); // for API backward compatibility
 			this.mediaList = [];
 			this.addMediaItems(this.playlistSet[playlistIndex].items);   // prepare the data to be compatible with KBaseMediaList
+			if (this.getLayout() === "vertical" && ( this.getConfig('containerPosition') === "left" || this.getConfig('containerPosition') === "right") ){
+				this.getMedialistHeaderComponent().prepend('<span class="playlistTitle">' + this.playlistSet[0].name + '</span><span class="playlistDescription">' + this.playlistSet[0].items.length + ' videos</span><div class="blackSeparator"></div>');
+				this.getMedialistHeaderComponent().prepend('<div class="dropDownIcon"></div>');
+			}
 			this.renderMediaList();  // set the media list in KBaseMediaList
-			$(".playlistInterface").prepend('<span class="playlistTitle">' + this.playlistSet[0].name + '</span><span class="playlistDescription">' + this.playlistSet[0].items.length + ' videos</span><div class="blackSeparator"></div>');
 			// support initial selectedIndex or initItemEntryId
 			if (this.firstLoad){
 				if ( this.getConfig( 'initItemEntryId' ) ){ // handle initItemEntryId
@@ -357,7 +359,8 @@
 				this.firstLoad = false;
 			}
 			if (this.playlistSet.length > 1){
-				this.setMultiplePlayLists(); // support multiple play lists
+				$(".dropDownIcon").show();
+				//this.setMultiplePlayLists(); // support multiple play lists
 			}
 		}
 	})

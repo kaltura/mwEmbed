@@ -1,7 +1,3 @@
-.mediaList{
-    height: 100%;
-    width: 100%;
-}
 .onpagePlaylistInterface{
 	font: normal 13px Arial !important;
 	background-color: #111111 !important;
@@ -136,7 +132,7 @@
 */
 .medialistContainer.k-chapters-container.k-horizontal{
 	background: #1C1C1C;
-	overflow-x: auto;
+	overflow-x: hidden;
 	overflow-y: hidden;
 	white-space: normal;
 }
@@ -259,7 +255,9 @@
     top:0px;
 }
 .medialistContainer{
-	overflow: auto;
+	overflow: hidden;
+	width: 100%;
+	height: 100%;
 	background-color: #111111;
 	/*border: 1px solid grey;*/
 	z-index: 10000000;
@@ -290,4 +288,13 @@
 	width: 100%;
 	height: 1px;
 	margin-top: 8px;
+}
+.dropDownIcon{
+	width: 14px;
+	height: 8px;
+	float: right;
+	margin-top: 12px;
+	margin-right: 12px;
+	display: none;
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAICAYAAADJEc7MAAAAcUlEQVR42mP4////JCD+DcT/iMFAcB9I+zMACQEgZ/1/4sFKIGZkAAEgg+3v379nCemAqmFjQAZQm9/h0fQaSPEyYAPfvn2TAXkCXRNIDCTHgA8A1elhsVCHgRjw+/dvd5gOEJuBFPDnz58sIE7HJQ8A4VQINOEoAT0AAAAASUVORK5CYII=);
 }
