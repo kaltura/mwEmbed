@@ -1416,7 +1416,7 @@ mw.KAdPlayer.prototype = {
 			}
 		};
 
-		if ( mw.isAndroid() ) {
+		if ( mw.isAndroid() || mw.isIpad() ) {
 			var bindPostFix = ".vpaidSequenceCheck";
 			this.embedPlayer.bindHelper( 'playing' + bindPostFix, function () {
 				_this.embedPlayer.unbindHelper( 'playing' + bindPostFix );
