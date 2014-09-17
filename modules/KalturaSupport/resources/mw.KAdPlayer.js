@@ -1290,7 +1290,8 @@ mw.KAdPlayer.prototype = {
 					$( '#' + vpaidId ).remove();
 					_this.restoreEmbedPlayer();
 					adSlot.playbackDone();
-				}
+					$(_this.embedPlayer).trigger("playing");
+				};
 
 				VPAIDObj.subscribe( function () {
 					if ( VPAIDObj.startAd ) {
