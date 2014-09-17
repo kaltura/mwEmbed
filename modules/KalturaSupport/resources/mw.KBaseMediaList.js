@@ -151,6 +151,10 @@
 			}
 		},
 
+		getMediaListDomElements: function(){
+			return this.getComponent().find(".chapterBox");
+		},
+
 		destroy: function(){
 			this.unbind();
 			this.getComponent.empty();
@@ -188,7 +192,7 @@
 
 				this.shouldAddScroll( );
 				if ( this.getLayout() === "horizontal" ) {
-					this.getComponent().find( ".k-chapters-container.k-horizontal .chapterBox" ).width( this.getConfig( "mediaItemWidth" ) );
+					this.getMediaListDomElements().width( this.getConfig( "mediaItemWidth" ) );
 				}
 
 				$( this.embedPlayer ).trigger( "mediaListLayoutReady" );
@@ -197,30 +201,16 @@
 
 		onDisable: function(){
 			this.isDisabled = true;
-			if (this.getConfig('onPage')){
-				try{
-					var doc = window['parent'].document;
-					$(doc).find(".chapterBox").addClass("disabled");
-					$(doc).find(".chapterBox").find("*").addClass("disabled");
-				}catch(e){};
-			}else{
-				$(".chapterBox").addClass("disabled");
-				$(".chapterBox").find("*").addClass("disabled");
-			}
+			var mediaBoxes = this.getMediaListDomElements();
+			mediaBoxes.addClass("disabled");
+			mediaBoxes.find("*").addClass("disabled");
 		},
 
 		onEnable: function(){
 			this.isDisabled = false;
-			if (this.getConfig('onPage')){
-				try{
-					var doc = window['parent'].document;
-					$(doc).find(".chapterBox").removeClass("disabled");
-					$(doc).find(".chapterBox").find("*").removeClass("disabled");
-				}catch(e){};
-			}else{
-				$(".chapterBox").removeClass("disabled");
-				$(".chapterBox").find("*").removeClass("disabled");
-			}
+			var mediaBoxes = this.getMediaListDomElements();
+			mediaBoxes.removeClass("disabled");
+			mediaBoxes.find("*").removeClass("disabled");
 		},
 
 		getItemNumber: function(index){
@@ -279,17 +269,18 @@
 			} else{
 				if (!this.getConfig('containerPosition')){
 					var largestBoxHeight = 0;
-					this.getComponent().find( '.chapterBox' ).each( function ( inx, box ) {
+					var mediaBoxes = this.getMediaListDomElements();
+					mediaBoxes.each( function ( inx, box ) {
 						var pad = parseInt( $( box ).css( 'padding-top' ) ) + parseInt( $( box ).css( 'padding-bottom' ) );
 						if ( $( box ).height() + pad > largestBoxHeight ) {
 							largestBoxHeight = $( box ).height() + pad;
 						}
 					} );
-					this.getComponent().find( '.chapterBox' ).css( 'height', largestBoxHeight );
+					mediaBoxes.css( 'height', largestBoxHeight );
 					if ( this.getLayout() == 'vertical' ) {
 						// give the box a height:
 						this.getComponent().css( 'height',
-								this.getComponent().find( '.chapterBox' ).length * largestBoxHeight
+								mediaBoxes.length * largestBoxHeight
 						)
 					}
 				}
@@ -298,8 +289,8 @@
 		attachMediaListHandlers: function(){
 			var _this = this;
 			var hoverInterval = null;
-			var chapterBox = this.getComponent().find('.chapterBox');
-			chapterBox
+			var mediaBoxes = this.getMediaListDomElements();
+			mediaBoxes
 				.off('click' )
 				.on('click', function(){
 					if ( !_this.isDisabled ){
@@ -312,7 +303,7 @@
 					}
 				});
 			if (this.getConfig('thumbnailRotator')) {
-				chapterBox
+				mediaBoxes
 					.off( 'mouseenter mouseleave', '.k-thumb' )
 					.on( {
 						mouseenter: function () {
@@ -362,7 +353,6 @@
 						}
 					}, ".k-thumb" );
 			}
-
 		},
 
 		mediaClicked: function(){
@@ -370,10 +360,10 @@
 		},
 
 		setSelectedMedia: function(mediaIndex){
-			var chapterBox = this.getComponent().find('.chapterBox');
-			$(chapterBox).removeClass( 'active');
+			var mediaBoxes = this.getMediaListDomElements();
+			mediaBoxes.removeClass( 'active');
 			this.selectedMediaItemIndex = mediaIndex;
-			$( chapterBox[mediaIndex] ).addClass( 'active'); //li[data-chapter-index='" + activeIndex + "']
+			$( mediaBoxes[mediaIndex] ).addClass( 'active'); //li[data-chapter-index='" + activeIndex + "']
 			if (!this.getConfig('overflow')) {
 				this.getComponent().find( '.k-carousel' )[0].jCarouselLiteGo( mediaIndex );
 			}
@@ -420,6 +410,7 @@
 		initScroll: function(){
 			var _this = this;
 			var $cc = this.getComponent();
+			var mediaBoxes = this.getMediaListDomElements();
 			var mediaItemVisible = this.calculateVisibleScrollItems();
 			var dimensions = this.getLargestBoxDimensions();
 			if( this.getLayout() == 'horizontal' ){
@@ -451,22 +442,22 @@
 				$cc.find('.k-carousel').css('width', $cc.width() )
 				// set width to horizontalMediaItemWidth
 
-				$cc.find('.chapterBox').css( 'width', this.getMediaItemBoxWidth() );
+				mediaBoxes.css( 'width', this.getMediaItemBoxWidth() );
 				//set to auto to discover height:
-				$cc.find('.chapterBox').css('height', 'auto');
+				mediaBoxes.css('height', 'auto');
 				var largetsBoxHeight = 0;
-				$cc.find('.chapterBox').each( function(inx, box){
+				mediaBoxes.each( function(inx, box){
 					if( $(box).height() > largetsBoxHeight ){
 						largetsBoxHeight = $(box).height() + (
 							parseInt( $(box).css('padding-top') ) + parseInt( $(box).css( 'padding-bottom') )
 							)
 					}
 				});
-				$cc.css( 'height', largetsBoxHeight )
-					.find( '.chapterBox' ).css( 'height', largetsBoxHeight )
+				$cc.css( 'height', largetsBoxHeight );
+				mediaBoxes.css( 'height', largetsBoxHeight );
 
 				var totalWidth = 0;
-				$cc.find('.chapterBox').each( function(inx, box){
+				mediaBoxes.each( function(inx, box){
 					totalWidth+= $(box).width() + parseInt( $(box).css('padding-left') ) +
 						parseInt( $(box).css('padding-right') )
 				});
@@ -550,11 +541,10 @@
 			return mediaItemVisible;
 		},
 		getLargestBoxDimensions: function(){
-			var $cc = this.getComponent();
 			// Get rough estimates for number of media items visible.
 			var largestBoxWidth = 0;
 			var largestBoxHeight = 0;
-			$cc.find('.chapterBox').each( function(inx, box){
+			this.getMediaListDomElements().each( function(inx, box){
 				if( $( box ).width() > largestBoxWidth ){
 					largestBoxWidth = $( box ).width()
 				}
