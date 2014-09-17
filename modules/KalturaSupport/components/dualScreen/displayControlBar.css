@@ -217,11 +217,11 @@ ul.inline, ol.inline {
 /*Fonts*/
 @font-face {
     font-family: 'dualScreen';
-    src:url('fonts/dualScreen.eot?vaz2em');
-    src:url('fonts/dualScreen.eot?#iefixvaz2em') format('embedded-opentype'),
-    url('fonts/dualScreen.woff?vaz2em') format('woff'),
-    url('fonts/dualScreen.ttf?vaz2em') format('truetype'),
-    url('fonts/dualScreen.svg?vaz2em#dualScreen') format('svg');
+    src:url('fonts/dualScreen.eot?edpuz4');
+    src:url('fonts/dualScreen.eot?#iefixedpuz4') format('embedded-opentype'),
+    url('fonts/dualScreen.woff?edpuz4') format('woff'),
+    url('fonts/dualScreen.ttf?edpuz4') format('truetype'),
+    url('fonts/dualScreen.svg?edpuz4#dualScreen') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -240,33 +240,21 @@ ul.inline, ol.inline {
     -moz-osx-font-smoothing: grayscale;
 }
 
-.dualScreen-chapterMenu:before {
+.dualScreen-pip:before {
     content: "\e600";
 }
-.dualScreen-clear:before {
+.dualScreen-seperator:before {
     content: "\e601";
 }
-.dualScreen-magnifyGlass:before {
+.dualScreen-switchView:before {
     content: "\e602";
 }
-.dualScreen-pip:before {
+.dualScreen-transformhandle:before {
     content: "\e603";
 }
-.dualScreen-selectStream:before {
+.dualScreen-sidebyside:before {
     content: "\e604";
-}
-.dualScreen-seperator:before {
-    content: "\e605";
 }
 .dualScreen-singleView:before {
     content: "\e606";
-}
-.dualScreen-switchView:before {
-    content: "\e607";
-}
-.dualScreen-transformhandle:before {
-    content: "\e608";
-}
-.dualScreen-sidebyside:before {
-    content: "\e609";
 }
