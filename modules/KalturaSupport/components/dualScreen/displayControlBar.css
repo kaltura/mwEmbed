@@ -140,6 +140,7 @@ ul.inline, ol.inline {
 .controlBar{
     padding-top: 5px;
     z-index: 3;
+    cursor: pointer;
 }
 
 #displayControlBar{
@@ -148,6 +149,7 @@ ul.inline, ol.inline {
     width:260px;
     height:auto;
     position: absolute;
+    cursor: pointer;
 }
 
 .controlBarBtn {
@@ -159,6 +161,7 @@ ul.inline, ol.inline {
     padding-right: 5px;
     margin-left: 10px;
     /*margin-right: 5px;*/
+    cursor: pointer;
 }
 #seperator{
     padding: 0px;
