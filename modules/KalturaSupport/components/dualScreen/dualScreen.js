@@ -617,10 +617,6 @@
 					css({'width': width + 10});
 			},
 			positionControlBar: function ( height ) {
-//				var x = this.getPlayer().layoutBuilder.layoutContainers.topBarContainer.length;
-//				if (x > 1){
-//
-//				}
 				this.getControlBar().position( {
 					my: 'right top+'+(height || 0),
 					at: 'right top',
