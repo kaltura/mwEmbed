@@ -70,6 +70,7 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 		}
 	},
 	hideScreen: function(){
+		this.getPlayer().triggerHelper('preHideScreen', [this.pluginName]);
 		if( this.hasPreviewPlayer() ){
 			this.restorePlayer();
 		} else {
@@ -83,6 +84,7 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 	},
 	showScreen: function(){
 		this._hideAllScreens(this.pluginName);
+		this.getPlayer().triggerHelper('preShowScreen', [this.pluginName]);
 		if( this.hasPreviewPlayer() ){
 			this.resizePlayer();
 		} else {
