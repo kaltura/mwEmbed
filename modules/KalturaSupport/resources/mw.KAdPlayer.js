@@ -1272,7 +1272,7 @@ mw.KAdPlayer.prototype = {
 		var vpaidId = this.getVPAIDId();
 		var creativeData = {};
 		var environmentVars = {
-			slot: _this.embedPlayer.getVideoHolder(),
+			slot: _this.embedPlayer.getVideoHolder().get(0),
 			videoSlot:  _this.embedPlayer.getPlayerElement(),
 			videoSlotCanAutoPlay: true
 		};
