@@ -24,7 +24,8 @@
 			'includeItemStartTime': true,
 			'includeItemNumberPattern': false,
 			'includeMediaItemDuration': true,
-			'onPage': false
+			'onPage': false,
+			'cssFileName': 'chapters.css'
 		},
 
 		mediaList: [],
@@ -84,13 +85,6 @@
 		getMedialistContainer: function(){
 			//Only support external onPage medialist container
 			if ( this.getConfig( 'onPage' ) ) {
-				try{
-					//Try to apply css on parent frame
-					var cssLink = $("link[href$='chapters.css']").attr("href");
-					$('head', window.parent.document ).append('<link type="text/css" rel="stylesheet" href="'+cssLink+'"/>');
-				} catch(e){
-					mw.log( "Error: chapters could not access parent iframe" );
-				}
 				return this._super();
 			}
 		},

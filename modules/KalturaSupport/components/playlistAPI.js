@@ -19,7 +19,7 @@
 			'includeMediaItemDuration': true,
 			'loop': false,
 			'overflow': true,
-			'cssPath': 'playList.css',
+			'cssFileName': 'playList.css',
 			'selectedIndex': 0
 		},
 
