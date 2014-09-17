@@ -66,7 +66,11 @@
 				this.$el = $( '<div />' )
 					.addClass( this.pluginName + " medialistContainer k-chapters-container k-" + this.getLayout() );
 				if (!this.getConfig('parent')){
-					this.getMedialistContainer().append(this.$el);
+					if ( this.getConfig( 'containerPosition' ) == 'top' && !this.getConfig( 'onPage' ) ) {
+						this.getMedialistContainer().prepend(this.$el);
+					} else {
+						this.getMedialistContainer().append(this.$el);
+					}
 				}
 			}
 			return this.$el;
@@ -173,18 +177,14 @@
 			}
 		},
 		//Media Item
-		renderMediaList: function(items){
+		renderMediaList: function(){
 			//Generate new list template data
 			var medialist = this.getTemplateHTML( {meta: this.getMetaData(), mediaList: this.getTemplateData()});
 			//Only render if medialist item are present
 			if (this.getTemplateData().length > 0) {
 				//Clear previous list
 				this.getComponent().empty();
-				if ( this.getConfig( 'containerPosition' ) == 'top' && !this.getConfig( 'onPage' ) ) {
-					this.getComponent().prepend( medialist );
-				} else {
-					this.getComponent().append( medialist );
-				}
+				this.getComponent().append( medialist );
 
 				this.shouldAddScroll( );
 				if ( this.getLayout() === "horizontal" ) {
