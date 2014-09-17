@@ -190,11 +190,13 @@
 				this.getComponent().empty();
 				this.getComponent().append( medialist );
 
-				this.shouldAddScroll( );
 				if ( this.getLayout() === "horizontal" ) {
 					this.getMediaListDomElements().width( this.getConfig( "mediaItemWidth" ) );
 				}
 
+				this.setMedialistContainerSize();
+				this.attachMediaListHandlers();
+				this.shouldAddScroll( );
 				$( this.embedPlayer ).trigger( "mediaListLayoutReady" );
 			}
 		},
@@ -262,8 +264,6 @@
 
 		//UI Handlers
 		shouldAddScroll: function(handler){
-			this.setMedialistContainerSize();
-			this.attachMediaListHandlers();
 			if( this.checkAddScroll() ){
 				this.addScroll();
 			} else{
