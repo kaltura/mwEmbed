@@ -64,7 +64,7 @@
 		getComponent: function(){
 			if( ! this.$el ){
 				this.$el = $( '<div />' )
-					.addClass( this.pluginName + " medialistContainer k-chapters-container k-" + this.getLayout() );
+					.addClass( this.pluginName + " medialistContainer unselectable k-chapters-container k-" + this.getLayout() );
 				if (!this.getConfig('parent')){
 					if ( this.getConfig( 'containerPosition' ) == 'top' && !this.getConfig( 'onPage' ) ) {
 						this.getMedialistContainer().prepend(this.$el);
