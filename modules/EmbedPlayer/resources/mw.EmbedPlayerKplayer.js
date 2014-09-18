@@ -95,7 +95,7 @@ mw.EmbedPlayerKplayer = {
 			this.streamerType = "hls";
 		}
 
-		if ( this.live && this.streamerType == 'rtmp' && !this.cancelLiveAutoPlay ) {
+		if ( this.isLive() && this.streamerType == 'rtmp' && !this.cancelLiveAutoPlay ) {
 			flashvars.autoPlay = true;
 		}
 
@@ -130,7 +130,8 @@ mw.EmbedPlayerKplayer = {
 				'bufferChange': 'onBufferChange',
 				'audioTracksReceived': 'onAudioTracksReceived',
 				'audioTrackSelected': 'onAudioTrackSelected',
-				'videoMetadataReceived': 'onVideoMetadataReceived'
+				'videoMetadataReceived': 'onVideoMetadataReceived',
+				'hlsEndList': 'onHlsEndList'
 			};
 			_this.playerObject = this.getElement();
 			$.each( bindEventMap, function( bindName, localMethod ) {
@@ -237,12 +238,12 @@ mw.EmbedPlayerKplayer = {
 	restorePlayerOnScreen: function(){},
 
 	updateSources: function(){
-		if ( ! ( this.live || this.sourcesReplaced || this.isHlsSource( this.mediaElement.selectedSource ) ) ) {
+		if ( ! ( this.isLive() || this.sourcesReplaced || this.isHlsSource( this.mediaElement.selectedSource ) ) ) {
 			var newSources = this.getSourcesForKDP();
 			this.replaceSources( newSources );
 			this.mediaElement.autoSelectSource();
 		}
-		else if ( this.live && this.streamerType == 'rtmp' ){
+		else if ( this.isLive() && this.streamerType == 'rtmp' ){
 			var _this = this;
 
 			if ( ! this.autoplay ) { //not a real "autoPlay", just to enable live checks
@@ -330,6 +331,21 @@ mw.EmbedPlayerKplayer = {
 
 	onAlert: function ( data, id ) {
 		this.layoutBuilder.displayAlert( data );
+	},
+
+	/**
+	 * m3u8 has 'EndList' tag
+	 */
+	onHlsEndList: function () {
+		var _this = this;
+		if ( this.isLive() ) {
+			this.setLive( false );
+			this.triggerHelper( 'isLiveChanged' );
+			this.setDuration(  this.playerObject.duration  );
+			this.bindHelper( 'ended', function() {
+				_this.playerObject.seek( 0 );
+			} );
+		}
 	},
 
 	/**
@@ -512,13 +528,13 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onLiveEntryOffline: function () {
-		if ( this.streamerType == 'rtmp' ) {
+		if ( this.isLive() && this.streamerType == 'rtmp' ) {
 			this.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus': false } );
 		}
 	},
 
 	onLiveStreamReady: function () {
-		if ( this.streamerType == 'rtmp' ) {
+		if ( this.isLive() && this.streamerType == 'rtmp' ) {
 			//first time the livestream is ready
 			this.hideSpinner();
 			this.playerObject.setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'false');  //reset property for next media
@@ -601,7 +617,7 @@ mw.EmbedPlayerKplayer = {
 	* Get the URL to pass to KDP according to the current streamerType
 	*/
 	getEntryUrl: function() {
-		if ( this.live || this.sourcesReplaced || this.isHlsSource( this.mediaElement.selectedSource )) {
+		if ( this.isLive() || this.sourcesReplaced || this.isHlsSource( this.mediaElement.selectedSource )) {
 			return this.mediaElement.selectedSource.getSrc();
 		}
 		var flavorIdParam = '';

@@ -60,7 +60,7 @@
 				_this.getLiveStreamStatusFromAPI( callback );
 			});
 
-			this.bind( 'playerReady', function() {
+			this.bind( 'playerReady isLiveChanged', function() {
 				//ui components to hide
 				var showComponentsArr = [];
 				//ui components to show
@@ -68,7 +68,6 @@
 				hideComponentsArr.push( 'liveBackBtn' );
 				_this.dvrTimePassed = 0;
 				_this.lastShownTime = 0;
-
 				//live entry
 				if ( embedPlayer.isLive() ) {
 					_this.addLiveStreamStatusMonitor();
@@ -89,7 +88,7 @@
 					if ( _this.isDVR() ) {
 						_this.dvrWindow = embedPlayer.evaluate( '{mediaProxy.entry.dvrWindow}' ) * 60;
 						if ( !_this.dvrWindow ) {
-							_this.dvrWindow = this.defaultDVRWindow;
+							_this.dvrWindow = _this.defaultDVRWindow;
 						}
 						if ( _this.isNativeHLS() ) {
 							embedPlayer.setDuration( _this.dvrWindow );
@@ -160,10 +159,11 @@
 
 				embedPlayer.triggerHelper('onShowInterfaceComponents', [ showComponentsArr ] );
 				embedPlayer.triggerHelper('onHideInterfaceComponents', [ hideComponentsArr ] );
+
 			} );
 
 			this.bind( 'onpause', function() {
-				if ( _this.isDVR() && _this.switchDone ) {
+				if ( embedPlayer.isLive() && _this.isDVR() && _this.switchDone ) {
 					embedPlayer.addPlayerSpinner();
 					_this.getLiveStreamStatusFromAPI( function( onAirStatus ) {
 						if ( onAirStatus ) {
@@ -184,6 +184,7 @@
 			} );
 
 			this.bind( 'liveStreamStatusUpdate', function( e, onAirObj ) {
+				if ( !embedPlayer.isLive() )
 				//check for pending autoPlay
 				if ( onAirObj.onAirStatus && embedPlayer.firstPlay && embedPlayer.autoplay ) {
 					embedPlayer.play();
@@ -244,6 +245,7 @@
 			this.lastShownTime = 0;
 			this.shouldReAttachTimeUpdate = false
 		},
+
 
 		updateTimeAndScrubber: function( val ) {
 			var embedPlayer = this.getPlayer();
