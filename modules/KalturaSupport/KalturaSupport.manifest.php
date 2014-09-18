@@ -120,6 +120,10 @@ $kgDefaultCaptionAttr = array(
 	'defaultLanguageKey' => array(
 		'doc' => "The default language key for the player.",
 		'type' => 'text'
+	),
+	'hideWhenEmpty' => array(
+		'doc' => 'If the caption button should be hidden when no captions are available for the current entry.',
+		'type' => 'boolean'
 	)
 );
 return array(
