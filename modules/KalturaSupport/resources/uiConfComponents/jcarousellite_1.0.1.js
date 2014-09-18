@@ -275,7 +275,7 @@ $.fn.jCarouselLite = function(o) {
 				if ( !(curr-o.scroll) ) {
 					$(o.btnPrev, o.refWindow).hide();
 				}
-				if ( ( curr - o.scroll ) < ( itemLength - v ) ) {
+				if ( ( curr - o.scroll ) < ( itemLength - v + 1) ) {
 					$(o.btnNext, o.refWindow).show();
 				}
 				return go(curr-o.scroll);
@@ -292,46 +292,51 @@ $.fn.jCarouselLite = function(o) {
 				if ( curr+o.scroll ) {
 					$(o.btnPrev, o.refWindow).show();
 				}
-				if ( (curr+o.scroll) == (itemLength - v) ) {
+				if ( (curr+o.scroll) > (itemLength - v + 1) ) {
 					$(o.btnNext, o.refWindow).hide();
 				}
 				return go(curr+o.scroll);
 			});
 		}
 
-		if(o.btnGo)
-			$.each(o.btnGo, function(i, val) {
-				$(val, o.refWindow).click(function() {
-					return go(o.circular ? o.visible+i : i);
-				});
-			});
+		if(o.btnGo) {
+			$.each( o.btnGo, function ( i, val ) {
+				$( val, o.refWindow ).click( function () {
+					return go( o.circular ? o.visible + i : i );
+				} );
+			} );
+		}
 
-		if(o.mouseWheel && div.mousewheel)
-			div.mousewheel(function(e, d) {
+		if(o.mouseWheel && div.mousewheel) {
+			div.mousewheel( function ( e, d ) {
 				if ( curr ) {
-					$(o.btnPrev, o.refWindow).show();
+					$( o.btnPrev, o.refWindow ).show();
 				}
-				return d>0 ? go(curr-o.scroll) : go(curr+o.scroll);
-			});
+				return d > 0 ? go( curr - o.scroll ) : go( curr + o.scroll );
+			} );
+		}
 
-			var action;
 		if(o.fingerSwipe && div.swipe){
+			var to;
 			div.swipe({
 				swipeStatus:function(event, phase, direction, distance, duration, fingers){
 					if (phase=="move") {
 						switch ( direction ) {
 							case "up":
 							case "left":
-								action = curr + o.swipe;
+								to = curr + o.swipe;
 								break;
 							case "down":
 							case "right":
-								action = curr - o.swipe;
+								to = curr - o.swipe;
 								break;
 						}
 					}
 					if (phase=="end"){
-						return go(action);
+						if (to > (itemLength-v+1)){
+							to=itemLength;
+						}
+						return go(to);
 					}
 				},
 				triggerOnTouchEnd: false,
@@ -339,10 +344,11 @@ $.fn.jCarouselLite = function(o) {
 			});
 		}
 
-		if(o.auto)
-			setInterval(function() {
-				go(curr+o.scroll);
-			}, o.auto+o.speed);
+		if(o.auto) {
+			setInterval( function () {
+				go( curr + o.scroll );
+			}, o.auto + o.speed );
+		}
 
 		function vis() {
 			return li.slice(curr).slice(0,v);
@@ -365,7 +371,7 @@ $.fn.jCarouselLite = function(o) {
 						curr = to==itemLength-v+1 ? v+1 : v+o.scroll;
 					} else curr = to;
 				} else {					// If non-circular and to points to first or last, we just return.
-					if(to<0 || to>itemLength-v) return;
+					if(to<0 || to>itemLength-v+1) return;
 					else curr = to;
 				}						   // If neither overrides it, the curr will still be "to" and we can proceed.
 
@@ -384,7 +390,7 @@ $.fn.jCarouselLite = function(o) {
 					$(o.btnPrev + "," + o.btnNext).removeClass("disabled");
 					$( (curr-o.scroll<0 && o.btnPrev)
 						||
-					   (curr+o.scroll > itemLength-v && o.btnNext)
+					   (curr+o.scroll > (itemLength-v+1) && o.btnNext)
 						||
 					   []
 					 ).addClass("disabled");
