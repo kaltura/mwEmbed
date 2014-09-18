@@ -1028,8 +1028,10 @@ mw.EmbedPlayerNative = {
 					if( _this.useNativePlayerControls() && $( _this ).find( 'video ').length == 0 ){
 						$( _this ).hide();
 					}
-					// update the preload attribute to auto
-					$( _this.getPlayerElement() ).attr('preload',"auto" );
+					if( !( mw.isIphone() && mw.isIOS80() ) ) {
+						// update the preload attribute to auto
+							$( _this.getPlayerElement() ).attr('preload',"auto" );
+					}
 					// issue a play request
 					if( !_this.playing ) {
 						_this.getPlayerElement().play();
