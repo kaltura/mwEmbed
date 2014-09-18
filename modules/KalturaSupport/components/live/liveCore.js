@@ -184,7 +184,9 @@
 			} );
 
 			this.bind( 'liveStreamStatusUpdate', function( e, onAirObj ) {
-				if ( !embedPlayer.isLive() )
+				if ( !embedPlayer.isLive() )  {
+					return;
+				}
 				//check for pending autoPlay
 				if ( onAirObj.onAirStatus && embedPlayer.firstPlay && embedPlayer.autoplay ) {
 					embedPlayer.play();
