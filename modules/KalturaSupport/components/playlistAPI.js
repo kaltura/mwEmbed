@@ -283,8 +283,8 @@
 		setMultiplePlayLists: function(){
 			var _this = this;
 			if (this.getComponent().find(".playlistSelector").length == 0){ // UI wasn't not created yet
-				$(".dropDownIcon").on("click", function(){
-					if ($(".playlistSelector").height() > 0){
+				this.getComponent().find(".dropDownIcon").on("click", function(){
+					if (_this.getComponent().find(".playlistSelector").height() > 0){
 						_this.closePlaylistDropdown();
 					}else{
 						_this.openPlaylistDropdown();
@@ -292,26 +292,28 @@
 				}).show();
 				this.getMedialistComponent().prepend('<div class="playlistSelector"><p>More playlists:</p></div>');
 				$.each(this.playlistSet, function (i, el) {
-					$(".playlistSelector").append('<br><div data-index="'+i+'" class="playlistItem"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription"> (' + el.content.split(",").length + ' videos)</span></div>');
+					_this.getComponent().find(".playlistSelector").append('<br><div data-index="'+i+'" class="playlistItem"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription"> (' + el.content.split(",").length + ' videos)</span></div>');
 				});
-				$(".playlistItem").on("click", function(){
+				this.getComponent().find(".playlistItem").on("click", function(){
 					_this.switchPlaylist($(this).attr('data-index'));
 				});
 			}
 		},
 
 		openPlaylistDropdown: function(){
+			var _this = this;
 			this.onDisable();
-			$(".playlistSelector").show();
-			$(".playlistSelector").height(200);
-			setTimeout(function(){$(".playlistSelector").css("overflow","auto");},300);
+			this.getComponent().find(".playlistSelector").show();
+			this.getComponent().find(".playlistSelector").height(200);
+			setTimeout(function(){_this.getComponent().find(".playlistSelector").css("overflow","auto");},300);
 		},
 
 		closePlaylistDropdown: function(){
+			var _this = this;
 			this.onEnable();
-			$(".playlistSelector").height(0);
-			$(".playlistSelector").css("overflow","hidden");
-			setTimeout(function(){$(".playlistSelector").hide();},300);
+			this.getComponent().find(".playlistSelector").height(0);
+			this.getComponent().find(".playlistSelector").css("overflow","hidden");
+			setTimeout(function(){_this.getComponent().find(".playlistSelector").hide();},300);
 		},
 
 		switchPlaylist: function(index){
@@ -354,15 +356,16 @@
 			this.embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')} ); // for API backward compatibility
 			this.mediaList = [];
 			this.addMediaItems(this.playlistSet[playlistIndex].items);   // prepare the data to be compatible with KBaseMediaList
-			if (this.getLayout() === "vertical" && ( this.getConfig('containerPosition') === "left" || this.getConfig('containerPosition') === "right") && $(".playlistTitle").length === 0){
-				this.getMedialistHeaderComponent().prepend('<span class="playlistTitle">' + this.playlistSet[0].name + '</span><span class="playlistDescription">' + this.playlistSet[0].items.length + ' videos</span>');
+
+			if (this.getLayout() === "vertical" && ( this.getConfig('containerPosition') === "left" || this.getConfig('containerPosition') === "right")){
+				this.getMedialistHeaderComponent().empty();
+				this.getMedialistHeaderComponent().prepend('<span class="playlistTitle">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription">' + this.playlistSet[playlistIndex].items.length + ' videos</span>');
 				this.getMedialistHeaderComponent().prepend('<div class="dropDownIcon"></div>');
 				if (this.getConfig('showControls') === true){
-					this.getMedialistHeaderComponent().prepend('<div class="playlistControls"><span class="icon-prev btn"></span><span class="icon-next btn"></span></div>');
-					$(".playlistControls .icon-next").on("click", function(){_this.playNext()});
-					$(".playlistControls .icon-prev").on("click", function(){_this.playPrevious()});
+					this.getMedialistHeaderComponent().prepend('<div class="playlistControls"><span class="icon-prev playlistBtn"></span><span class="icon-next playlistBtn"></span></div>');
+					this.getMedialistHeaderComponent().find(".playlistControls .icon-next").on("click", function(){_this.playNext()});
+					this.getMedialistHeaderComponent().find(".playlistControls .icon-prev").on("click", function(){_this.playPrevious()});
 				}
-
 			}else{
 				this.getMedialistHeaderComponent().hide();
 			}
@@ -389,7 +392,7 @@
 			if (this.playlistSet.length > 1){
 				this.setMultiplePlayLists(); // support multiple play lists
 			}else{
-				$(".playlistTitle").css("padding-left",8+"px");
+				this.getComponent().find(".playlistTitle").css("padding-left",8+"px");
 			}
 		}
 	})

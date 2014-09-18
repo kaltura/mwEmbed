@@ -332,6 +332,12 @@
 	width: 86px;
 	height: 48px;
 	margin-top: 3px;
+	border: 0px solid #2ec7e1;
+}
+.chapterBox.active .thumbnailHolder{
+	border: 2px solid #2ec7e1;
+	margin-top: 1px;
+	margin-left: -2px;
 }
 .playlistControls{
 	position: absolute;
@@ -340,5 +346,44 @@
 }
 .playlistControls span{
 	font-size: 14px;
-	margin-right: -10px;
+	margin-right: 10px;
+}
+.playlistBtn {
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+	filter: alpha(opacity=100);
+	opacity: 1;
+	background-color: transparent;
+	color: #ccc;
+	text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);
+	cursor: pointer;
+	font-size: 14px;
+}
+
+.playlistBtn:hover {
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+	filter: alpha(opacity=100);
+	opacity: 1;
+	color: #fff;
+	text-shadow: 0px 0px 10px #fff;
+}
+
+.btn1.active {
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+	filter: alpha(opacity=100);
+	opacity: 1;
+	color: #fff;
+	text-shadow: 0px 0px 10px #fff;
+}
+
+.playlistBtn.disabled,.btn.disabled:hover {
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+	filter: alpha(opacity=30);
+	opacity: 0.3;
+	cursor: default;
+	text-shadow: none;
+	color: #fff;
+}
+
+.playlistBtn:focus {
+	outline: 1px dotted #999;
 }
