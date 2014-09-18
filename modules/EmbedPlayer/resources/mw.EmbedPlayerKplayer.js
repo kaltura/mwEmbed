@@ -153,6 +153,11 @@ mw.EmbedPlayerKplayer = {
 				_this.playerObject.sendNotification( "doAudioSwitch",{ audioIndex: data.index  } );
 			}
 		});
+		this.bindHelper( 'liveEventEnded', function() {
+			if ( _this.playerObject ) {
+				_this.playerObject.sendNotification( "liveEventEnded" );
+			}
+		});
 	},
 
 	isHlsSource: function( source ) {
@@ -337,14 +342,8 @@ mw.EmbedPlayerKplayer = {
 	 * m3u8 has 'EndList' tag
 	 */
 	onHlsEndList: function () {
-		var _this = this;
 		if ( this.isLive() ) {
-			this.setLive( false );
-			this.triggerHelper( 'isLiveChanged' );
-			this.setDuration(  this.playerObject.duration  );
-			this.bindHelper( 'ended', function() {
-				_this.playerObject.seek( 0 );
-			} );
+			this.triggerHelper( 'liveEventEnded' );
 		}
 	},
 
