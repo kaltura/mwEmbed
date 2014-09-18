@@ -112,6 +112,9 @@
 	mw.isTouchDevice = function(){
 		return !!('ontouchstart' in window);
 	};
+	mw.isIOS80 = function(){
+		return /Version\/8/.test( navigator.userAgent ) && mw.isIOS();
+	};
 
 	/**
 	 * Fallforward system by default prefers flash.

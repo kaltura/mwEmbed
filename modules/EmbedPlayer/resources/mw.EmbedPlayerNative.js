@@ -984,8 +984,10 @@ mw.EmbedPlayerNative = {
 					if( _this.useNativePlayerControls() && $( _this ).find( 'video ').length == 0 ){
 						$( _this ).hide();
 					}
-					// update the preload attribute to auto
-					$( _this.getPlayerElement() ).attr('preload',"auto" );
+					if( !( mw.isIphone() && mw.isIOS80() ) ) {
+						// update the preload attribute to auto
+						$( _this.getPlayerElement() ).attr('preload',"auto" );
+					}
 					// issue a play request
 					_this.getPlayerElement().play();
 					// re-start the monitor:
@@ -993,6 +995,7 @@ mw.EmbedPlayerNative = {
 				}
 			} else {
 				mw.log( "EmbedPlayerNative:: parent play returned false, don't issue play on native element");
+
 			}
 		}
 
