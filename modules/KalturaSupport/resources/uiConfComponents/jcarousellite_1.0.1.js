@@ -208,6 +208,7 @@ $.fn.jCarouselLite = function(o) {
 		btnNext: null,
 		btnGo: null,
 		mouseWheel: false,
+		disableBodyScroll: true,
 
 		auto: null,
 
@@ -251,6 +252,17 @@ $.fn.jCarouselLite = function(o) {
 		ul.css(sizeCss, ulSize+"px").css(animCss, -(curr*liSize));
 
 		div.css(sizeCss, divSize+"px");					 // Width of the DIV. length of visible images
+
+		if ( o.disableBodyScroll ) {
+			var divHeight = div.height(),
+				divScrollHeight = div.get( 0 ).scrollHeight;
+
+			div.bind( 'mousewheel', function ( e, d ) {
+				if ( (this.scrollTop === (divScrollHeight - divHeight) && d < 0) || (this.scrollTop === 0 && d > 0) ) {
+					e.preventDefault();
+				}
+			} );
+		}
 
 		if(o.btnPrev) {
 			$(o.btnPrev, o.refWindow).show();
