@@ -221,8 +221,7 @@
 				mw.log( 'mw.PlaylistAPI:: onChangeMediaDone' );
 				embedPlayer.triggerHelper( eventToTrigger );
 				_this.loadingEntry = false; // Update the loadingEntry flag
-				if( _this.firstPlay && embedPlayer.getKalturaConfig( '', 'autoMute' ) === null ){
-					embedPlayer.toggleMute( true );
+				if( _this.firstPlay ){
 					_this.firstPlay = false;
 				}
 				if (autoPlay){
