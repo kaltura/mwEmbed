@@ -109,9 +109,9 @@
 			} );
 			return filteredCuePoints;
 		},
-		addMediaItems: function(items ,index){
+		addMediaItems: function(items){
 			var _this = this;
-			$.each(items, function(i, item){
+			$.each(items, function(index, item){
 				var mediaItem;
 				var customData = item.partnerData ? JSON.parse(item.partnerData) :  {};
 				var title = item.title || customData.title;
