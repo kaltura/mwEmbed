@@ -304,7 +304,12 @@ return array(
                 )
             ),
             'includeInLayout' => array(
-                'doc' => "If the playlist clip list should be displayed.",
+                'doc' => "If the clip list should be displayed.",
+                'type' => 'boolean',
+                'initvalue' => true
+            ),
+            'showControls' => array(
+                'doc' => "Display Next / Previous buttons.",
                 'type' => 'boolean',
                 'initvalue' => true
             ),

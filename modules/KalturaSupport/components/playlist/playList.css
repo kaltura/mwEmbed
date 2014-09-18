@@ -14,6 +14,9 @@
     position:relative;
 	display: block;
 	font-family: Arial;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	letter-spacing: 0em;
 }
 .k-chapters-container.horizontal {
     padding-top:5px;
@@ -41,9 +44,7 @@
     left: 0px;
 }
 .k-chapters-container .chapterBox{
-    background: #1C1C1C;
-    /* IE 7 & 8 rule */
-    background: #222\9;
+    background: #2d2d2d;
     cursor:pointer;
     position:relative;
     list-style-type: none;
@@ -53,11 +54,11 @@
     overflow: hidden;
     width: 100%;
 
-	-webkit-transition: opacity 0.3s ease-in-out;
-	-moz-transition: opacity 0.3s ease-in-out;
-	-ms-transition: opacity 0.3s ease-in-out;
-	-o-transition: opacity 0.3s ease-in-out;
-	transition: opacity 0.3s ease-in-out;
+	-webkit-transition: all 0.3s ease-in-out;
+	-moz-transition: all 0.3s ease-in-out;
+	-ms-transition: all 0.3s ease-in-out;
+	-o-transition: all 0.3s ease-in-out;
+	transition: all 0.3s ease-in-out;
 }
 .k-chapters-container .chapterBox .k-thumb{
     float: left;
@@ -70,14 +71,10 @@
     padding: 8px;
 }
 .k-chapters-container .chapterBox:hover{
-    background: #444444;
-    /* IE 7 & 8 rule */
-    background: #444\9;
+    background: #383838;
 }
 .k-chapters-container .chapterBox.active{
-    background: #444444;
-    /* IE 7 & 8 rule */
-    background: #444\9;
+    background: #383838;
 }
 
 /* set disabled classes */
@@ -87,7 +84,7 @@
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
 }
 .k-chapters-container .chapterBox.disabled:hover{
-	background: #1C1C1C;
+	background: #2d2d2d;
 }
 .k-chapters-container .chapterBox.disabled.active:hover{
 	background: #444444;
@@ -133,7 +130,7 @@
 * horizontal layout styles:
 */
 .medialistContainer.k-chapters-container.k-horizontal{
-	background: #1C1C1C;
+	background: #2d2d2d;
 	overflow-x: hidden;
 	overflow-y: hidden;
 	white-space: normal;
@@ -268,37 +265,45 @@
 	font-size: 16px;
 	display: block;
 	color: #ffffff;
-	padding-left: 8px;
-	padding-top: 8px;
+	padding-left: 32px;
+	padding-top: 7px;
 }
 .k-playlistTitle{
-	font-size: 14px;
+	font-size: 16px;
 	font-weight: bold;
-	color: #ffffff;
+	padding-left: 8px;
+}
+.playlistItem{
 	cursor: pointer;
+	color: #aaaaaa;
+	height: 40px;
+}
+.playlistItem:hover{
+	color: #ffffff;
+}
+.k-playlistDescription{
+	font-size: 14px;
+	padding-left: 8px;
 }
 .playlistDescription{
 	font-size: 12px;
 	display: block;
 	color: #888888;
 	padding-left: 8px;
-	padding-top: 8px;
+	padding-top: 10px;
 }
-.blackSeparator{
-	background-color: black;
-	display: block;
-	width: 100%;
-	height: 1px;
-	margin-top: 8px;
+.k-medialist-header{
+	border-bottom: 1px solid #434343;
+	height: 60px;
 }
 .dropDownIcon{
 	width: 14px;
 	height: 8px;
-	float: right;
+	float: left;
 	margin-top: 12px;
-	margin-right: 12px;
+	margin-left: 10px;
 	display: none;
-	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAICAYAAADJEc7MAAAAcUlEQVR42mP4////JCD+DcT/iMFAcB9I+zMACQEgZ/1/4sFKIGZkAAEgg+3v379nCemAqmFjQAZQm9/h0fQaSPEyYAPfvn2TAXkCXRNIDCTHgA8A1elhsVCHgRjw+/dvd5gOEJuBFPDnz58sIE7HJQ8A4VQINOEoAT0AAAAASUVORK5CYII=);
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAICAYAAADJEc7MAAAAsklEQVR42o2Qyw4BURBE+y+8woatWIsPED8gvlZiK3bCENbsZsXNfbdqeoGMRyeVvlN1ajJ3KKW0YOattbZLPwZML+dcoDMnKUEM4+Sc638qIRuAOQuL4pqMMR0YRy2X3vvheymEMEJcKnNAp30P5CCGBheA46fSBN5Vsz1W6+WtYmgggIsxTqEZHh0/Zgc1K+8hgQIyUSV3KrAaX/+cAAqyljZYdfpnBMTnrrCXUK2KuQHIz9/6b2/uIgAAAABJRU5ErkJggg==);
 	cursor: pointer;
 }
 .playlistSelector{
@@ -308,7 +313,6 @@
 	z-index: 1000;
 	background-color: black;
 	overflow: hidden;
-	padding-left: 5px;
 	display: none;
 	-webkit-transition: height 0.3s ease-in;
 	-moz-transition: height 0.3s ease-in;
@@ -316,10 +320,25 @@
 	-ms-transition: height 0.3s ease-in;
 	transition: height 0.3s ease-in;
 }
+.playlistSelector p{
+	font-size: 14px;
+	color: #888888;
+	padding-left: 8px;
+}
 .thumbnailHolder{
 	overflow: hidden;
 	position: absolute;
 	display: block;
 	width: 86px;
 	height: 48px;
+	margin-top: 3px;
+}
+.playlistControls{
+	position: absolute;
+	right: 0px;
+	top: 36px;
+}
+.playlistControls span{
+	font-size: 14px;
+	margin-right: -10px;
 }

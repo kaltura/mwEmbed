@@ -19,6 +19,7 @@
 			'loop': false,
 			'overflow': false,
 			'cssPath': 'playList.css',
+			'showControls': true,
 			'selectedIndex': 0
 		},
 
@@ -284,22 +285,33 @@
 			if (this.getComponent().find(".playlistSelector").length == 0){ // UI wasn't not created yet
 				$(".dropDownIcon").on("click", function(){
 					if ($(".playlistSelector").height() > 0){
-						$(".playlistSelector").height(0);
-						setTimeout(function(){$(".playlistSelector").hide();},300);
+						_this.closePlaylistDropdown();
 					}else{
-						$(".playlistSelector").show();
-						$(".playlistSelector").height(200);
-
+						_this.openPlaylistDropdown();
 					}
 				}).show();
 				this.getMedialistComponent().prepend('<div class="playlistSelector"><p>More playlists:</p></div>');
 				$.each(this.playlistSet, function (i, el) {
-					$(".playlistSelector").append('<br><div class="icon-list"><span data-index="'+i+'" class="k-playlistTitle"> ' + el.name + '</span><span class=""> (' + el.content.split(",").length + ' videos)</span></div>');
+					$(".playlistSelector").append('<br><div data-index="'+i+'" class="playlistItem"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription"> (' + el.content.split(",").length + ' videos)</span></div>');
 				});
-				$(".k-playlistTitle").on("click", function(){
+				$(".playlistItem").on("click", function(){
 					_this.switchPlaylist($(this).attr('data-index'));
 				});
 			}
+		},
+
+		openPlaylistDropdown: function(){
+			this.onDisable();
+			$(".playlistSelector").show();
+			$(".playlistSelector").height(200);
+			setTimeout(function(){$(".playlistSelector").css("overflow","auto");},300);
+		},
+
+		closePlaylistDropdown: function(){
+			this.onEnable();
+			$(".playlistSelector").height(0);
+			$(".playlistSelector").css("overflow","hidden");
+			setTimeout(function(){$(".playlistSelector").hide();},300);
 		},
 
 		switchPlaylist: function(index){
@@ -307,6 +319,7 @@
 			this.setConfig("selectedIndex", 0);     // set selectedIndex to 0 so we will always load the first clip in the playlist after palylist switch
 			this.currentPlaylistIndex = index;      // save the currently selected playlist index
 			this.loadPlaylistFromAPI();             // load the playlist data from the API
+			this.onEnable();
 		},
 
 		loadPlaylistFromAPI: function(){
@@ -337,15 +350,21 @@
 
 		// select playlist
 		selectPlaylist: function(playlistIndex){
+			var _this = this;
 			this.embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')} ); // for API backward compatibility
 			this.mediaList = [];
 			this.addMediaItems(this.playlistSet[playlistIndex].items);   // prepare the data to be compatible with KBaseMediaList
-			if (this.getLayout() === "vertical" && ( this.getConfig('containerPosition') === "left" || this.getConfig('containerPosition') === "right") && $(".playlistTitle").length ===0){
-				this.getMedialistHeaderComponent().prepend('<span class="playlistTitle">' + this.playlistSet[0].name + '</span><span class="playlistDescription">' + this.playlistSet[0].items.length + ' videos</span><div class="blackSeparator"></div>');
+			if (this.getLayout() === "vertical" && ( this.getConfig('containerPosition') === "left" || this.getConfig('containerPosition') === "right") && $(".playlistTitle").length === 0){
+				this.getMedialistHeaderComponent().prepend('<span class="playlistTitle">' + this.playlistSet[0].name + '</span><span class="playlistDescription">' + this.playlistSet[0].items.length + ' videos</span>');
 				this.getMedialistHeaderComponent().prepend('<div class="dropDownIcon"></div>');
+				if (this.getConfig('showControls') === true){
+					this.getMedialistHeaderComponent().prepend('<div class="playlistControls"><span class="icon-prev btn"></span><span class="icon-next btn"></span></div>');
+					$(".playlistControls .icon-next").on("click", function(){_this.playNext()});
+					$(".playlistControls .icon-prev").on("click", function(){_this.playPrevious()});
+				}
+
 			}else{
-				$(".playlistTitle").html(this.playlistSet[this.currentPlaylistIndex].name);
-				$(".playlistDescription").html(this.playlistSet[this.currentPlaylistIndex].items.length + " videos");
+				this.getMedialistHeaderComponent().hide();
 			}
 			this.renderMediaList();  // set the media list in KBaseMediaList
 			// support initial selectedIndex or initItemEntryId
@@ -369,6 +388,8 @@
 			}
 			if (this.playlistSet.length > 1){
 				this.setMultiplePlayLists(); // support multiple play lists
+			}else{
+				$(".playlistTitle").css("padding-left",8+"px");
 			}
 		}
 	})

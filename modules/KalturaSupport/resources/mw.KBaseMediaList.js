@@ -147,12 +147,11 @@
 					$( ".mwPlayerContainer" ).css( "float", "left" );
 				}
 				if ( this.getConfig( 'containerPosition' ) == 'top' || this.getConfig( 'containerPosition' ) == 'bottom' ) {
-					this.getComponent().height( this.getConfig( "mediaItemHeight" ) * 2 - 2 );
+					this.getComponent().height( this.getConfig( "mediaItemHeight" ) * 2 );
 					this.getComponent().css( "display", "block" );
 				}
 			}
 			if (this.getLayout() === "horizontal" ){
-				this.getComponent().find("ul").width(this.getConfig("mediaItemWidth")*this.mediaList.length).height(this.getConfig("mediaItemHeight"));
 				this.getComponent().height(this.getConfig("mediaItemHeight"));
 			}
 		},
@@ -422,8 +421,9 @@
 			return sliceIndex;
 		},
 		addScroll: function(){
-			this.addScrollUiComponents();
-			this.initScroll();
+			var cc = this.getMedialistComponent();
+			this.addScrollUiComponents(cc);
+			this.initScroll(cc);
 			// sort ul elements:
 			/*$cc.find('.chapterBox').map(function(a, b){
 			 return $(a).data('index') > $(b).data('index') ? 1 : -1;
@@ -431,10 +431,10 @@
 			// start at clip zero ( should be default )
 			//$cc.find('.k-carousel')[0].jCarouselLiteGo( 0 );
 		},
-		initScroll: function(){
+		initScroll: function(cc){
 			var _this = this;
-			var $cc = this.getMedialistComponent();
-			var mediaItemVisible = this.calculateVisibleScrollItems();
+			var $cc = cc;
+			var mediaItemVisible = this.calculateVisibleScrollItems(cc);
 			var dimensions = this.getLargestBoxDimensions();
 			if( this.getLayout() == 'horizontal' ){
 				// set container height if horizontal
@@ -490,8 +490,8 @@
 		getMediaItemBoxWidth: function(){
 			return this.getConfig('mediaItemWidth') || 320;
 		},
-		addScrollUiComponents: function(){
-			var $cc = this.getComponent();
+		addScrollUiComponents: function(cc){
+			var $cc = cc;
 			$cc.find('ul').wrap(
 				$( '<div>' ).addClass('k-carousel')
 			);
@@ -537,8 +537,8 @@
 			// hide the arrows to start with ( with an animation so users know they are there )
 			$cc.find('.k-prev,.k-next').animate({'opacity':0});
 		},
-		calculateVisibleScrollItems: function(){
-			var $cc = this.getMedialistComponent();
+		calculateVisibleScrollItems: function(cc){
+			var $cc = cc;
 
 			var mediaItemVisible = 3;
 
@@ -585,16 +585,6 @@
 			if( ! this.getConfig('overflow') && this.mediaList.length ){
 				return true;
 			}
-			// for horizontal layouts fix to parent size fitting in area:
-			/*
-			if( this.getLayout() == 'horizontal' ){
-				var totalWidth = this.getMediaItemBoxWidth()
-					* this.mediaList.length;
-				// Check if width is 100%, add boxes > than width
-				if( this.getComponent().width() <  totalWidth ){
-					return true;
-				}
-			}*/
 			return false;
 		}
 
