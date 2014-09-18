@@ -208,6 +208,7 @@ $.fn.jCarouselLite = function(o) {
 		btnNext: null,
 		btnGo: null,
 		mouseWheel: false,
+		fingerSwipe: true,
 		disableBodyScroll: true,
 
 		auto: null,
@@ -313,8 +314,8 @@ $.fn.jCarouselLite = function(o) {
 				return d>0 ? go(curr-o.scroll) : go(curr+o.scroll);
 			});
 
-		if ( div.swipe){
 			var action;
+		if(o.fingerSwipe && div.swipe){
 			div.swipe({
 				swipeStatus:function(event, phase, direction, distance, duration, fingers){
 					if (phase=="move") {
