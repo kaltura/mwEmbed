@@ -237,7 +237,7 @@ kWidget.addReadyCallback( function( playerId ){
 			s.Media.trackWhilePlaying = true;
 			s.Media.trackMilestones="25,50,75";
 			s.Media.monitor = function ( s, media ) {
-				if ( $.inArray( media.event, trackEvents ) !== -1 ) {
+				if( trackEvents.indexOf( media.event ) !== -1 ) {
 					trackMediaWithExtraEvars();
 				}
 				if( media.event == 'CLOSE' ){
