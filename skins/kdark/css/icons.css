@@ -118,9 +118,11 @@ you can use the generic selector below, but it's slower:
 	content: "\e619";
 }
 .icon-next:before {
+	font-size: 16px;
 	content: "\e61b";
 }
 .icon-prev:before {
+	font-size: 16px;
 	content: "\e61a";
 }
 

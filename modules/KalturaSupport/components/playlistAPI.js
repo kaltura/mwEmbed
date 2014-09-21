@@ -282,6 +282,7 @@
 		setMultiplePlayLists: function(){
 			var _this = this;
 			if (this.getComponent().find(".playlistSelector").length == 0){ // UI wasn't not created yet
+				this.getComponent().find(".playlistTitle, .playlistDescription").addClass("multiplePlaylists");
 				this.getComponent().find(".dropDownIcon").on("click", function(){
 					if (_this.getComponent().find(".playlistSelector").height() > 0){
 						_this.closePlaylistDropdown();
@@ -289,9 +290,9 @@
 						_this.openPlaylistDropdown();
 					}
 				}).show();
-				this.getMedialistComponent().prepend('<div class="playlistSelector"><p>More playlists:</p></div>');
+				this.getMedialistComponent().prepend('<div class="playlistSelector"></div>');
 				$.each(this.playlistSet, function (i, el) {
-					_this.getComponent().find(".playlistSelector").append('<br><div data-index="'+i+'" class="playlistItem"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription"> (' + el.content.split(",").length + ' videos)</span></div>');
+					_this.getComponent().find(".playlistSelector").append('<br><div data-index="'+i+'" class="playlistItem"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists"> ' + el.content.split(",").length + ' videos</span></div>');
 				});
 				this.getComponent().find(".playlistItem").on("click", function(){
 					_this.switchPlaylist($(this).attr('data-index'));
@@ -361,9 +362,9 @@
 				this.getMedialistHeaderComponent().prepend('<span class="playlistTitle">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription">' + this.playlistSet[playlistIndex].items.length + ' videos</span>');
 				this.getMedialistHeaderComponent().prepend('<div class="dropDownIcon"></div>');
 				if (this.getConfig('showControls') === true){
-					this.getMedialistHeaderComponent().prepend('<div class="playlistControls"><span class="icon-prev playlistBtn"></span><span class="icon-next playlistBtn"></span></div>');
-					this.getMedialistHeaderComponent().find(".playlistControls .icon-next").on("click", function(){_this.playNext()});
-					this.getMedialistHeaderComponent().find(".playlistControls .icon-prev").on("click", function(){_this.playPrevious()});
+					this.getMedialistHeaderComponent().prepend('<div class="playlistControls"><div class="prevBtn playlistBtn"></div><div class="nextBtn playlistBtn"></div></div>');
+					this.getMedialistHeaderComponent().find(".playlistControls .nextBtn").on("click", function(){_this.playNext()});
+					this.getMedialistHeaderComponent().find(".playlistControls .prevBtn").on("click", function(){_this.playPrevious()});
 				}
 			}else{
 				this.getMedialistHeaderComponent().hide();
@@ -390,8 +391,6 @@
 			}
 			if (this.playlistSet.length > 1){
 				this.setMultiplePlayLists(); // support multiple play lists
-			}else{
-				this.getComponent().find(".playlistTitle").css("padding-left",8+"px");
 			}
 		}
 	})
