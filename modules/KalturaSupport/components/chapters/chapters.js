@@ -14,17 +14,17 @@
 			'oneSecRotatorSlidesLimit': 61,
 			'twoSecRotatorSlidesLimit': 250,
 			'maxRotatorSlides': 125,
-			'mediaItemWidth': 290,
+			'mediaItemWidth': null,
+			'mediaItemHeight': null,
 			'titleLimit': 29,
 			'descriptionLimit': 80,
-			'thumbnailWidth' : 100,
-			'horizontalMediaItemWidth': 290,
 			'overflow': false,
 			'includeThumbnail': true,
 			'includeItemStartTime': true,
 			'includeItemNumberPattern': false,
 			'includeMediaItemDuration': true,
-			'onPage': false
+			'onPage': false,
+			'cssFileName': 'chapters.css'
 		},
 
 		mediaList: [],
@@ -47,7 +47,9 @@
 				//Set data initialized flag for handlers to start working
 				_this.dataIntialized = true;
 				//Render the media list
-				_this.renderMediaList();
+				if (_this.getPlayer().layoutBuilder.layoutReady) {
+					_this.renderMediaList();
+				}
 			} );
 
 			this.bind( 'playerReady updatePlayHeadPercent', function ( e, newState ) {
@@ -84,13 +86,6 @@
 		getMedialistContainer: function(){
 			//Only support external onPage medialist container
 			if ( this.getConfig( 'onPage' ) ) {
-				try{
-					//Try to apply css on parent frame
-					var cssLink = $("link[href$='chapters.css']").attr("href");
-					$('head', window.parent.document ).append('<link type="text/css" rel="stylesheet" href="'+cssLink+'"/>');
-				} catch(e){
-					mw.log( "Error: chapters could not access parent iframe" );
-				}
 				return this._super();
 			}
 		},
@@ -115,9 +110,9 @@
 			} );
 			return filteredCuePoints;
 		},
-		addMediaItems: function(items ,index){
+		addMediaItems: function(items){
 			var _this = this;
-			$.each(items, function(i, item){
+			$.each(items, function(index, item){
 				var mediaItem;
 				var customData = item.partnerData ? JSON.parse(item.partnerData) :  {};
 				var title = item.title || customData.title;
@@ -131,12 +126,11 @@
 					title: title,
 					description: description,
 					width: _this.getConfig( 'mediaItemWidth' ),
+					height: _this.getConfig( 'mediaItemHeight' ),
 					thumbnail: {
 						url: thumbnailUrl,
 						thumbAssetId: item.assetId,
-						rotatorUrl: thumbnailRotatorUrl,
-						width: _this.getThumbWidth(),
-						height: _this.getThumbHeight()
+						rotatorUrl: thumbnailRotatorUrl
 					},
 					startTime: item.startTime / 1000,
 					startTimeDisplay: _this.formatTimeDisplayValue(kWidget.seconds2npt( item.startTime / 1000 )),

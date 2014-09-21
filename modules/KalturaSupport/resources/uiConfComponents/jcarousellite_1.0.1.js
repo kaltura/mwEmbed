@@ -208,6 +208,8 @@ $.fn.jCarouselLite = function(o) {
 		btnNext: null,
 		btnGo: null,
 		mouseWheel: false,
+		fingerSwipe: true,
+		disableBodyScroll: true,
 
 		auto: null,
 
@@ -252,6 +254,17 @@ $.fn.jCarouselLite = function(o) {
 
 		div.css(sizeCss, divSize+"px");					 // Width of the DIV. length of visible images
 
+		if ( o.disableBodyScroll ) {
+			var divHeight = div.height(),
+				divScrollHeight = div.get( 0 ).scrollHeight;
+
+			div.bind( 'mousewheel', function ( e, d ) {
+				if ( (this.scrollTop === (divScrollHeight - divHeight) && d < 0) || (this.scrollTop === 0 && d > 0) ) {
+					e.preventDefault();
+				}
+			} );
+		}
+
 		if(o.btnPrev) {
 			$(o.btnPrev, o.refWindow).show();
 			if ( !curr ) {
@@ -262,7 +275,7 @@ $.fn.jCarouselLite = function(o) {
 				if ( !(curr-o.scroll) ) {
 					$(o.btnPrev, o.refWindow).hide();
 				}
-				if ( ( curr - o.scroll ) < ( itemLength - v ) ) {
+				if ( ( curr - o.scroll ) < ( itemLength - v) ) {
 					$(o.btnNext, o.refWindow).show();
 				}
 				return go(curr-o.scroll);
@@ -279,46 +292,54 @@ $.fn.jCarouselLite = function(o) {
 				if ( curr+o.scroll ) {
 					$(o.btnPrev, o.refWindow).show();
 				}
-				if ( (curr+o.scroll) == (itemLength - v) ) {
+				if ( (curr+o.scroll) > (itemLength - v) ) {
 					$(o.btnNext, o.refWindow).hide();
 				}
 				return go(curr+o.scroll);
 			});
 		}
 
-		if(o.btnGo)
-			$.each(o.btnGo, function(i, val) {
-				$(val, o.refWindow).click(function() {
-					return go(o.circular ? o.visible+i : i);
-				});
-			});
+		if(o.btnGo) {
+			$.each( o.btnGo, function ( i, val ) {
+				$( val, o.refWindow ).click( function () {
+					return go( o.circular ? o.visible + i : i );
+				} );
+			} );
+		}
 
-		if(o.mouseWheel && div.mousewheel)
-			div.mousewheel(function(e, d) {
+		if(o.mouseWheel && div.mousewheel) {
+			div.mousewheel( function ( e, d ) {
 				if ( curr ) {
-					$(o.btnPrev, o.refWindow).show();
+					$( o.btnPrev, o.refWindow ).show();
 				}
-				return d>0 ? go(curr-o.scroll) : go(curr+o.scroll);
-			});
+				return d > 0 ? go( curr - o.scroll ) : go( curr + o.scroll );
+			} );
+		}
 
-		if ( div.swipe){
-			var action;
+		if(o.fingerSwipe && div.swipe){
+			var to;
 			div.swipe({
 				swipeStatus:function(event, phase, direction, distance, duration, fingers){
 					if (phase=="move") {
 						switch ( direction ) {
 							case "up":
 							case "left":
-								action = curr + o.swipe;
+								to = curr + o.swipe;
 								break;
 							case "down":
 							case "right":
-								action = curr - o.swipe;
+								to = curr - o.swipe;
 								break;
 						}
 					}
 					if (phase=="end"){
-						return go(action);
+						if (to < 0){
+							to = 0;
+						}
+						if (to >= (itemLength-v)){
+							to=itemLength-v;
+						}
+						return go(to);
 					}
 				},
 				triggerOnTouchEnd: false,
@@ -326,10 +347,11 @@ $.fn.jCarouselLite = function(o) {
 			});
 		}
 
-		if(o.auto)
-			setInterval(function() {
-				go(curr+o.scroll);
-			}, o.auto+o.speed);
+		if(o.auto) {
+			setInterval( function () {
+				go( curr + o.scroll );
+			}, o.auto + o.speed );
+		}
 
 		function vis() {
 			return li.slice(curr).slice(0,v);
@@ -371,7 +393,7 @@ $.fn.jCarouselLite = function(o) {
 					$(o.btnPrev + "," + o.btnNext).removeClass("disabled");
 					$( (curr-o.scroll<0 && o.btnPrev)
 						||
-					   (curr+o.scroll > itemLength-v && o.btnNext)
+					   (curr+o.scroll > (itemLength-v) && o.btnNext)
 						||
 					   []
 					 ).addClass("disabled");

@@ -18,13 +18,14 @@
 				'twoSecRotatorSlidesLimit': 250,
 				'maxRotatorSlides': 125,
 				'layout': 'vertical',
-				'mediaItemWidth': 320,
-				'mediaItemHeight': 70,
+				'mediaItemWidth': null,
+				'mediaItemHeight': null,
+				'mediaItemRatio': (16 / 9),
 				'onPage': false,
 				'includeInLayout': true,
 				'clipListTargetId': null,
 				'containerPosition':  'left',
-				'parent': null//'sideBarContainer',
+				'parent': null
 			});
 		},
 
@@ -64,7 +65,7 @@
 		getComponent: function(){
 			if( ! this.$el ){
 				this.$el = $( '<div />' )
-					.addClass( this.pluginName + " medialistContainer k-" + this.getLayout() );
+					.addClass( this.pluginName + " medialistContainer unselectable k-" + this.getLayout() );
 				this.$el.append($( '<div />' ).addClass("k-medialist-header k-" + this.getLayout() ));
 				this.$el.append($( '<div />' ).addClass("k-chapters-container k-" + this.getLayout() ));
 				if (!this.getConfig('parent')){
@@ -77,21 +78,22 @@
 			}
 			return this.$el;
 		},
-
 		getMedialistComponent: function(){
 			return this.getComponent().find(".k-chapters-container");
 		},
-
 		getMedialistHeaderComponent: function(){
 			return this.getComponent().find(".k-medialist-header");
 		},
-
 		// set the play list container according to the selected position
 		getMedialistContainer: function(){
 			if (!this.$mediaListContainer) {
 				if ( this.getConfig( 'onPage' ) ) {
 					var iframeID = this.embedPlayer.id + '_ifp';
 					try {
+						//Try to apply css on parent frame
+						var cssLink = $("link[href$='"+this.getConfig('cssFileName')+"']").attr("href");
+						$('head', window.parent.document ).append('<link type="text/css" rel="stylesheet" href="'+cssLink+'"/>');
+
 						$( window['parent'].document ).find( '.onpagePlaylistInterface' ).remove(); // remove any previously created playlists
 						var iframeParent = window['parent'].document.getElementById( this.embedPlayer.id );
 						if ( this.getConfig( 'clipListTargetId' ) && $( iframeParent ).parent().find( "#" + this.getConfig( 'clipListTargetId' ) ).length > 0 ) {
@@ -132,10 +134,9 @@
 			}
 			return this.$mediaListContainer;
 		},
-
 		// set the size of the playlist container and the video
 		setMedialistContainerSize: function(){
-			if (!this.getConfig('onPage')) {
+			if (!this.getConfig('onPage') && this.getConfig( 'containerPosition' )) {
 				// resize the video to make place for the playlist according to its position (left, top, right, bottom)
 				if ( this.getConfig( 'containerPosition' ) == 'right' || this.getConfig( 'containerPosition' ) == 'left' ) {
 					this.getComponent().width( this.getConfig( "mediaItemWidth" ) );
@@ -156,6 +157,10 @@
 			}
 		},
 
+		getMediaListDomElements: function(){
+			return this.getMedialistComponent().find(".chapterBox");
+		},
+
 		destroy: function(){
 			this.unbind();
 			this.getComponent.empty();
@@ -165,11 +170,9 @@
 		getLayout: function(){
 			return  this.getConfig( 'layout' ) || 'horizontal';
 		},
-
 		getTemplateData: function(){
 			return this.mediaList;
 		},
-
 		getMetaData: function(){
 			return {
 				includeThumbnail: this.getConfig('includeThumbnail'),
@@ -181,25 +184,42 @@
 				layout: this.getLayout()
 			}
 		},
+		onDisable: function(){
+			this.isDisabled = true;
+			var mediaBoxes = this.getMediaListDomElements();
+			mediaBoxes.addClass("disabled");
+			mediaBoxes.find("*").addClass("disabled");
+		},
+		onEnable: function(){
+			this.isDisabled = false;
+			var mediaBoxes = this.getMediaListDomElements();
+			mediaBoxes.removeClass("disabled");
+			mediaBoxes.find("*").removeClass("disabled");
+		},
+
 		//Media Item
-		renderMediaList: function(items){
+		renderMediaList: function(){
 			//Generate new list template data
 			var medialist = this.getTemplateHTML( {meta: this.getMetaData(), mediaList: this.getTemplateData()});
 			//Only render if medialist item are present
 			if (this.getTemplateData().length > 0) {
 				//Clear previous list
 				this.getMedialistComponent().empty();
+				//Add media items to DOM
 				this.getMedialistComponent().append( medialist );
-
-				if ( this.getLayout() === "horizontal" ) {
-					this.getComponent().find( ".chapterBox" ).width( this.getConfig( "mediaItemWidth" ) );
-				}
-				this.shouldAddScroll();
+				//Adjust container size
+				this.setMedialistContainerSize();
+				this.setMedialistComponentHeight();
+				//Adjust the mediaboxes size
+				this.setMediaBoxesDimensions();
+				//Attach media items handlers
+				this.attachMediaListHandlers();
+				//Add scroll if applicable
+				this.shouldAddScroll( );
 				$( this.embedPlayer ).trigger( "mediaListLayoutReady" );
 			}
 		},
-
-		setPlaylistHeight: function(){
+		setMedialistComponentHeight: function(){
 			if (this.getLayout() === "vertical"){
 				if (this.getConfig("containerPosition") === "right" || this.getConfig("containerPosition") === "left"){
 					this.getMedialistComponent().height(this.getComponent().height()-this.getMedialistHeaderComponent().height());
@@ -209,35 +229,46 @@
 			}
 
 		},
-
-		onDisable: function(){
-			this.isDisabled = true;
-			if (this.getConfig('onPage')){
-				try{
-					var doc = window['parent'].document;
-					$(doc).find(".chapterBox").addClass("disabled");
-					$(doc).find(".chapterBox").find("*").addClass("disabled");
-				}catch(e){};
-			}else{
-				$(".chapterBox").addClass("disabled");
-				$(".chapterBox").find("*").addClass("disabled");
+		setMediaBoxesDimensions: function(){
+			var height = this.getComponent().height();
+			var width = this.getComponent().width();
+			var layout = this.getLayout();
+			var mediaBoxes = this.getMediaListDomElements();
+			if (layout == "vertical"){
+				var newHeight = this.getConfig( "mediaItemHeight" ) || width * (1 / this.getConfig("mediaItemRatio"));
+				this.setConfig("mediaItemHeight", newHeight);
+				mediaBoxes.width(width).height(newHeight);
+			} else {
+				var newWidth = this.getConfig( "mediaItemWidth" ) || height * this.getConfig("mediaItemRatio");
+				this.setConfig("mediaItemWidth", newWidth);
+				mediaBoxes.width(newWidth).height(height);
 			}
 		},
-
-		onEnable: function(){
-			this.isDisabled = false;
-			if (this.getConfig('onPage')){
-				try{
-					var doc = window['parent'].document;
-					$(doc).find(".chapterBox").removeClass("disabled");
-					$(doc).find(".chapterBox").find("*").removeClass("disabled");
-				}catch(e){};
-			}else{
-				$(".chapterBox").removeClass("disabled");
-				$(".chapterBox").find("*").removeClass("disabled");
+		getScrollbarSize: function(w) {
+			w = w || window;
+			var d = w.document, b = d.body, r = [ 0, 0 ], t;
+			if (b) {
+				t = d.createElement('div');
+				t.style.cssText = 'position:absolute;overflow:scroll;top:-100px;left:-100px;width:100px;height:100px;';
+				b.insertBefore(t, b.firstChild);
+				r = { height: t.offsetHeight - t.clientHeight, width: t.offsetWidth - t.clientWidth };
+				b.removeChild(t);
+			}
+			return r;
+		},
+		isScrollbarVisible: function(elem) {
+			if (typeof $(elem).innerWidth() == 'number') {
+				return {
+					height: $(elem).get(0) ? $(elem).get(0).scrollHeight > $(elem).innerHeight() : false,
+					width: $(elem).get(0) ? $(elem).get(0).scrollWidth > $(elem).innerWidth() : false
+				};
+			} else {
+				return {
+					width: $(elem).css('scrollWidth') > $(elem).css('clientWidth'),
+					height: $(elem).css('scrollHeight') > $(elem).css('clientHeight')
+				};
 			}
 		},
-
 		getItemNumber: function(index){
 			var itemVal = ( index + 1 ).toString();
 			if( typeof this.getConfig('includeItemNumberPattern' ) == 'string' ){
@@ -284,25 +315,38 @@
 
 		//UI Handlers
 		shouldAddScroll: function(handler){
-			this.setMedialistContainerSize();
-			this.attachMediaListHandlers();
-			this.setPlaylistHeight();
 			if( this.checkAddScroll() ){
 				this.addScroll();
 			} else{
+				var height = this.getMedialistComponent().height();
+				var width = this.getMedialistComponent().width();
+				var layout = this.getLayout();
+				var mediaBoxes = this.getMediaListDomElements();
+				if (layout == "vertical"){
+					if (this.isScrollbarVisible(this.getComponent() ).height){
+						width -= this.getScrollbarSize().width;
+					}
+					mediaBoxes.width(width);
+				} else {
+					if (this.isScrollbarVisible(this.getComponent() ).width){
+						height -= this.getScrollbarSize().height;
+					}
+					mediaBoxes.height(height);
+				}
 				if (!this.getConfig('containerPosition')){
 					var largestBoxHeight = 0;
-					this.getComponent().find( '.chapterBox' ).each( function ( inx, box ) {
+					var mediaBoxes = this.getMediaListDomElements();
+					mediaBoxes.each( function ( inx, box ) {
 						var pad = parseInt( $( box ).css( 'padding-top' ) ) + parseInt( $( box ).css( 'padding-bottom' ) );
 						if ( $( box ).height() + pad > largestBoxHeight ) {
 							largestBoxHeight = $( box ).height() + pad;
 						}
 					} );
-					this.getComponent().find( '.chapterBox' ).css( 'height', largestBoxHeight );
+					mediaBoxes.css( 'height', largestBoxHeight );
 					if ( this.getLayout() == 'vertical' ) {
 						// give the box a height:
 						this.getComponent().css( 'height',
-								this.getComponent().find( '.chapterBox' ).length * largestBoxHeight
+								mediaBoxes.length * largestBoxHeight
 						)
 					}
 				}
@@ -311,8 +355,8 @@
 		attachMediaListHandlers: function(){
 			var _this = this;
 			var hoverInterval = null;
-			var chapterBox = this.getComponent().find('.chapterBox');
-			chapterBox
+			var mediaBoxes = this.getMediaListDomElements();
+			mediaBoxes
 				.off('click' )
 				.on('click', function(){
 					if ( !_this.isDisabled ){
@@ -325,7 +369,7 @@
 					}
 				});
 			if (this.getConfig('thumbnailRotator')) {
-				chapterBox
+				mediaBoxes
 					.off( 'mouseenter mouseleave', '.k-thumb' )
 					.on( {
 						mouseenter: function () {
@@ -375,27 +419,24 @@
 						}
 					}, ".k-thumb" );
 			}
-
 		},
-
 		mediaClicked: function(){
 			// should be implemented by component;
 		},
-
 		setSelectedMedia: function(mediaIndex){
-			var chapterBox = this.getComponent().find('.chapterBox');
-			$(chapterBox).removeClass( 'active');
+			var mediaBoxes = this.getMediaListDomElements();
+			mediaBoxes.removeClass( 'active');
 			this.selectedMediaItemIndex = mediaIndex;
-			$( chapterBox[mediaIndex] ).addClass( 'active'); //li[data-chapter-index='" + activeIndex + "']
+			$( mediaBoxes[mediaIndex] ).addClass( 'active'); //li[data-chapter-index='" + activeIndex + "']
 			if (!this.getConfig('overflow')) {
-				this.getComponent().find( '.k-carousel' )[0].jCarouselLiteGo( mediaIndex );
+				this.getMedialistComponent().find( '.k-carousel' )[0].jCarouselLiteGo( mediaIndex );
 			}
 		},
 		getActiveItem: function(){
 			return this.getComponent().find( "li[data-chapter-index='" + this.selectedMediaItemIndex + "']" );
 		},
 		updateActiveItemDuration: function(duration){
-			this.getActiveItem().find('.k-duration span').text(
+			this.getActiveItem().find('.k-duration #mediaItemDuration').text(
 				kWidget.seconds2npt( duration )
 			);
 		},
@@ -421,31 +462,18 @@
 			return sliceIndex;
 		},
 		addScroll: function(){
-			var cc = this.getMedialistComponent();
-			this.addScrollUiComponents(cc);
-			this.initScroll(cc);
-			// sort ul elements:
-			/*$cc.find('.chapterBox').map(function(a, b){
-			 return $(a).data('index') > $(b).data('index') ? 1 : -1;
-			 });*/
-			// start at clip zero ( should be default )
-			//$cc.find('.k-carousel')[0].jCarouselLiteGo( 0 );
+			this.addScrollUiComponents();
+			this.initScroll();
 		},
-		initScroll: function(cc){
-			var _this = this;
-			var $cc = cc;
-			var mediaItemVisible = this.calculateVisibleScrollItems(cc);
-			var dimensions = this.getLargestBoxDimensions();
-			if( this.getLayout() == 'horizontal' ){
-				// set container height if horizontal
-				$cc.css( 'height', dimensions.largestBoxHeight );
-			}
-			var isVertical = ( _this.getLayout() == 'vertical' );
+		initScroll: function(){
+			var $cc = this.getMedialistComponent();
+			var mediaItemVisible = this.calculateVisibleScrollItems();
+			var isVertical = ( this.getLayout() == 'vertical' );
 
 			// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
 			$cc.find('.k-carousel').jCarouselLite({
-				btnNext: /*'.k-player-' + this.getPlayer().id +*/' .k-next',
-				btnPrev: /*'.k-player-' + this.getPlayer().id +*/' .k-prev',
+				btnNext: '.k-next',
+				btnPrev: '.k-prev',
 				visible: mediaItemVisible,
 				mouseWheel: true,
 				circular: false,
@@ -454,44 +482,19 @@
 				scroll: 1
 			});
 
-			// make sure vertical height matches target:
-			if( this.getLayout() == 'vertical' ){
-				$cc.find('.k-carousel').css('height', $cc.height() )
-			}
-
 			// give more height if needed
-			if( this.getLayout() == 'horizontal' ){
+			if( this.getLayout() == 'vertical' ){
+				$cc.find('.k-carousel').css('height', $cc.height() );
+			} else {
 				// fit to container:
-				$cc.find('.k-carousel').css('width', $cc.width() )
-				// set width to mediaItemWidth
-
-				$cc.find('.chapterBox').css( 'width', this.getMediaItemBoxWidth() );
-				//set to auto to discover height:
-				//$cc.find('.chapterBox').css('height', 'auto');
-				var largestBoxHeight = 0;
-				$cc.find('.chapterBox').each( function(inx, box){
-					if( $(box).height() > largestBoxHeight ){
-						largestBoxHeight = $(box).height() + (
-							parseInt( $(box).css('padding-top') ) + parseInt( $(box).css( 'padding-bottom') )
-							)
-					}
-				});
-				$cc.css( 'height', largestBoxHeight )
-					.find( '.chapterBox' ).css( 'height', largestBoxHeight )
-
-				var totalWidth = 0;
-				$cc.find('.chapterBox').each( function(inx, box){
-					totalWidth+= $(box).width() + parseInt( $(box).css('padding-left') ) +
-						parseInt( $(box).css('padding-right') )
-				});
-				$cc.find('ul').css( 'width', totalWidth );
+				$cc.find('.k-carousel').css('width', $cc.width() );
 			}
 		},
 		getMediaItemBoxWidth: function(){
 			return this.getConfig('mediaItemWidth') || 320;
 		},
-		addScrollUiComponents: function(cc){
-			var $cc = cc;
+		addScrollUiComponents: function(){
+			var $cc = this.getMedialistComponent();
 			$cc.find('ul').wrap(
 				$( '<div>' ).addClass('k-carousel')
 			);
@@ -537,24 +540,18 @@
 			// hide the arrows to start with ( with an animation so users know they are there )
 			$cc.find('.k-prev,.k-next').animate({'opacity':0});
 		},
-		calculateVisibleScrollItems: function(cc){
-			var $cc = cc;
+		calculateVisibleScrollItems: function(){
+			var $cc = this.getMedialistComponent();
 
 			var mediaItemVisible = 3;
-
-			// Get rough estimates for number of media items visible.
 			var dimensions = this.getLargestBoxDimensions();
-			var largestBoxWidth = dimensions.largestBoxWidth;
-			var largestBoxHeight = dimensions.largestBoxHeight;
-
+			// Get rough estimates for number of media items visible.
 			if( this.getLayout() == 'horizontal' ){
-				// set container height if horizontal
-				$cc.css( 'height', largestBoxHeight );
 				// calculate number of visible media items
-				mediaItemVisible = Math.floor( $cc.find( '.k-carousel' ).width() / largestBoxWidth );
+				mediaItemVisible = Math.floor( $cc.find( '.k-carousel' ).width() / dimensions.largestBoxWidth );
 			} else {
 				// calculate number of visible for vertical media items
-				mediaItemVisible = Math.floor( $cc.height() / largestBoxHeight );
+				mediaItemVisible = Math.floor( $cc.height() / dimensions.largestBoxHeight );
 			}
 			// don't show more media items then we have available:
 			if( mediaItemVisible >  this.mediaList.length ){
@@ -564,17 +561,17 @@
 			return mediaItemVisible;
 		},
 		getLargestBoxDimensions: function(){
-			var $cc = this.getMedialistComponent();
 			// Get rough estimates for number of media items visible.
 			var largestBoxWidth = 0;
 			var largestBoxHeight = 0;
-			$cc.find('.chapterBox').each( function(inx, box){
+			this.getMediaListDomElements().each( function(inx, box){
 				if( $( box ).width() > largestBoxWidth ){
 					largestBoxWidth = $( box ).width()
 				}
 				if( $(box).height() > largestBoxHeight ){
 					largestBoxHeight = $(box).height() + (
-						parseInt( $(box).css('padding-top') ) + parseInt( $(box).css( 'padding-bottom') )
+						parseInt( $(box).css('padding-top') ) + parseInt( $(box).css( 'padding-bottom') ) +
+						parseInt( $(box).css('margin-top') ) + parseInt( $(box).css( 'margin-bottom') )
 						);
 				}
 			});
@@ -585,9 +582,17 @@
 			if( ! this.getConfig('overflow') && this.mediaList.length ){
 				return true;
 			}
+			// for horizontal layouts fix to parent size fitting in area:
+			if( this.getLayout() == 'horizontal' ){
+				var totalWidth = this.getMediaItemBoxWidth()
+					* this.mediaList.length;
+				// Check if width is 100%, add boxes > than width
+				if( this.getComponent().width() <  totalWidth ){
+					return true;
+				}
+			}
 			return false;
 		}
-
 	});
 
 } )( window.mw, window.jQuery );

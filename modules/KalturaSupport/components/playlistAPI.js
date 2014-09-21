@@ -13,6 +13,8 @@
 			'titleLimit': 36,
 			'descriptionLimit': 32,
 			'thumbnailWidth' : 86,
+			'mediaItemWidth': 320,
+			'mediaItemHeight': 70,
 			'includeThumbnail': true,
 			'includeItemNumberPattern': false,
 			'includeMediaItemDuration': true,

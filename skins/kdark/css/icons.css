@@ -28,7 +28,39 @@ Instead of a list of all class selectors,
 you can use the generic selector below, but it's slower:
 [class*="icon-"] {
 */
-.icon-fullscreen-exit-alt,.icon-fullscreen-alt, .icon-contract, .icon-related, .icon-cc, .icon-cog, .icon-expand, .icon-info, .icon-volume-mute, .icon-volume-low, .icon-volume-high, .icon-share, .icon-replay, .icon-like, .icon-checkmark, .icon-unlike, .icon-play, .icon-pause, .icon-expand2, .icon-flag, .icon-camera, .icon-download, .icon-close, .icon-ad, .icon-list, .icon-chromecast, .icon-next, .icon-prev{
+.icon-fullscreen-exit-alt,
+.icon-fullscreen-alt,
+.icon-contract,
+.icon-related,
+.icon-cc,
+.icon-cog,
+.icon-expand,
+.icon-info,
+.icon-volume-mute,
+.icon-volume-low,
+.icon-volume-high,
+.icon-share,
+.icon-replay,
+.icon-like,
+.icon-checkmark,
+.icon-unlike,
+.icon-play,
+.icon-pause,
+.icon-expand2,
+.icon-flag,
+.icon-camera,
+.icon-download,
+.icon-close,
+.icon-ad,
+.icon-list,
+.icon-chromecast,
+.icon-next,
+.icon-prev,
+.icon-duration,
+.icon-start_time,
+.icon-chapterMenu,
+.icon-clear,
+.icon-magnifyGlass{
 	font-family: 'icomoon';
 	speak: none;
 	font-style: normal;
@@ -124,5 +156,20 @@ you can use the generic selector below, but it's slower:
 .icon-prev:before {
 	font-size: 16px;
 	content: "\e61a";
+}
+.icon-duration:before {
+    content: "\e61c";
+}
+.icon-start_time:before {
+    content: "\e61d";
+}
+.icon-chapterMenu:before {
+    content: "\e61e";
+}
+.icon-clear:before {
+    content: "\e61f";
+}
+.icon-magnifyGlass:before {
+    content: "\e620";
 }
 
