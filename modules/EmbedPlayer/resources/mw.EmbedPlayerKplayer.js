@@ -97,7 +97,7 @@ mw.EmbedPlayerKplayer = {
 				_this.streamerType = "hls";
 			}
 
-			if ( _this.live && _this.streamerType == 'rtmp' && !_this.cancelLiveAutoPlay ) {
+			if ( _this.isLive() && _this.streamerType == 'rtmp' && !_this.cancelLiveAutoPlay ) {
 				flashvars.autoPlay = true;
 			}
 
@@ -132,7 +132,8 @@ mw.EmbedPlayerKplayer = {
 					'bufferChange': 'onBufferChange',
 					'audioTracksReceived': 'onAudioTracksReceived',
 					'audioTrackSelected': 'onAudioTrackSelected',
-					'videoMetadataReceived': 'onVideoMetadataReceived'
+					'videoMetadataReceived': 'onVideoMetadataReceived',
+					'hlsEndList': 'onHlsEndList'
 				};
 				_this.playerObject = this.getElement();
 				$.each( bindEventMap, function( bindName, localMethod ) {
@@ -152,6 +153,12 @@ mw.EmbedPlayerKplayer = {
 			_this.bindHelper( 'switchAudioTrack', function(e, data) {
 				if ( _this.playerObject ) {
 					_this.playerObject.sendNotification( "doAudioSwitch",{ audioIndex: data.index  } );
+				}
+			});
+
+			_this.bindHelper( 'liveEventEnded', function() {
+				if ( _this.playerObject ) {
+					_this.playerObject.sendNotification( "liveEventEnded" );
 				}
 			});
 		});
@@ -241,12 +248,12 @@ mw.EmbedPlayerKplayer = {
 	restorePlayerOnScreen: function(){},
 
 	updateSources: function(){
-		if ( ! ( this.live || this.sourcesReplaced || this.isHlsSource( this.mediaElement.selectedSource ) ) ) {
+		if ( ! ( this.isLive() || this.sourcesReplaced || this.isHlsSource( this.mediaElement.selectedSource ) ) ) {
 			var newSources = this.getSourcesForKDP();
 			this.replaceSources( newSources );
 			this.mediaElement.autoSelectSource();
 		}
-		else if ( this.live && this.streamerType == 'rtmp' ){
+		else if ( this.isLive() && this.streamerType == 'rtmp' ){
 			var _this = this;
 
 			if ( ! this.autoplay ) { //not a real "autoPlay", just to enable live checks
@@ -340,6 +347,13 @@ mw.EmbedPlayerKplayer = {
 
 	onAlert: function ( data, id ) {
 		this.layoutBuilder.displayAlert( data );
+	},
+
+	/**
+	 * m3u8 has 'EndList' tag
+	 */
+	onHlsEndList: function () {
+		this.triggerHelper( 'liveEventEnded' );
 	},
 
 	/**
@@ -621,7 +635,7 @@ mw.EmbedPlayerKplayer = {
 	*/
 	getEntryUrl: function() {
 		var deferred = $.Deferred();
-		if ( this.live || this.sourcesReplaced || this.isHlsSource( this.mediaElement.selectedSource )) {
+		if ( this.isLive() || this.sourcesReplaced || this.isHlsSource( this.mediaElement.selectedSource )) {
 			this.resolveSrcURL(this.mediaElement.selectedSource.getSrc()).then(function (srcToPlay){
 				deferred.resolve(srcToPlay);
 			});
