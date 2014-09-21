@@ -165,6 +165,7 @@
     position:relative;
 	line-height: 13px;
     display:inline;
+	border-right: 1px solid #434343;
 }
 /*
 .k-chapters-container .k-carousel{
