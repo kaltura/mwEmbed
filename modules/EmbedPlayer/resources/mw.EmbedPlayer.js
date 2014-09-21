@@ -1121,6 +1121,9 @@
 							_this.ignoreNextNativeEvent = true;
 							$( _this ).trigger( 'onEndedDone' );
 						}
+						if ( _this.buffering ) {
+							_this.bufferEnd();
+						}
 					}
 				}
 				// A secondary end event for playlist and clip sequence endings
@@ -1234,7 +1237,8 @@
 				return ;
 			}
 			// Auto play stopped ( no playerReady has already started playback ) and if not on an iPad with iOS > 3
-			if ( this.isStopped() && this.autoplay && this.canAutoPlay() ) {
+			// livestream autoPlay is handled by liveCore
+			if ( this.isStopped() && this.autoplay && this.canAutoPlay() && !this.isLive() ) {
 				mw.log( 'EmbedPlayer::showPlayer::Do autoPlay' );
 				_this.play();
 			}
@@ -1627,7 +1631,9 @@
 				};
 
 				if( $.isFunction(_this.changeMediaCallback) ){
-					_this.changeMediaCallback( changeMediaDoneCallback );
+					setTimeout(function(){
+						_this.changeMediaCallback( changeMediaDoneCallback );
+					},250);
 				} else {
 					changeMediaDoneCallback();
 				}
@@ -2863,7 +2869,9 @@
 		},
 		switchSrc: function( source ){
 			var _this = this;
+			$( this ).trigger( 'sourceSwitchingStarted', [ { currentBitrate: source.getBitrate() }] );
 			this.mediaElement.setSource( source );
+			$( this ).trigger( 'sourceSwitchingEnd',  [ { newBitrate: source.getBitrate() }] );
 			if( ! this.isStopped() ){
 				this.isFlavorSwitching = true;
 				// Get the exact play time from the video element ( instead of parent embed Player )
@@ -2940,6 +2948,10 @@
 					this.hideSpinner();
 				}
 			}
+		},
+
+		getKalturaAttributeConfig: function( attr ) {
+			return this.getKalturaConfig( null , attr );
 		}
 	};
 

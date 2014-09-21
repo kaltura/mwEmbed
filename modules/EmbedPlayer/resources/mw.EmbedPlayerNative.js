@@ -922,7 +922,11 @@ mw.EmbedPlayerNative = {
 
 				// issue the play request:
 				vid.play();
-
+				if ( mw.isIphone() ){
+					setTimeout(function(){
+						handleSwitchCallback();
+					}, 100 );
+				}
 				// check if ready state is loading or doing anything ( iOS play restriction )
 				// give iOS 5 seconds to ~start~ loading media
 				setTimeout(function(){
@@ -1024,8 +1028,11 @@ mw.EmbedPlayerNative = {
 					if( _this.useNativePlayerControls() && $( _this ).find( 'video ').length == 0 ){
 						$( _this ).hide();
 					}
-					// update the preload attribute to auto
-					$( _this.getPlayerElement() ).attr('preload',"auto" );
+					// if it's iOS8 the native iOS player won't be shown
+					if( !( mw.isIphone() && mw.isIOS8() ) ) {
+						// update the preload attribute to auto
+						$( _this.getPlayerElement() ).attr('preload',"auto" );
+					}
 					// issue a play request
 					if( !_this.playing ) {
 						_this.getPlayerElement().play();
@@ -1467,21 +1474,6 @@ mw.EmbedPlayerNative = {
 		vid.load();
 		vid.play();
 	},
-
-	triggerPreSequence: function() {
-		var _this = this;
-		//we must wait for playing event in android, to unlock video element
-		if ( mw.isAndroid() ) {
-			var bindPostFix = ".preSequenceCheck";
-			this.bindHelper('playing' + bindPostFix, function() {
-				_this.unbindHelper( 'playing' + bindPostFix );
-				_this.parent_triggerPreSequence();
-			});
-		} else {
-			_this.parent_triggerPreSequence();
-		}
-	},
-
 	/**
 	 * HLS safari triggers onseek when its not even close to the target time
 	 * we don't want to trigger the seek event for these "fake" onseeked triggers
