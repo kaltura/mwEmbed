@@ -48,7 +48,9 @@
 				//Set data initialized flag for handlers to start working
 				_this.dataIntialized = true;
 				//Render the media list
-				_this.renderMediaList();
+				if (_this.getPlayer().layoutBuilder.layoutReady) {
+					_this.renderMediaList();
+				}
 			} );
 
 			this.bind( 'playerReady updatePlayHeadPercent', function ( e, newState ) {
