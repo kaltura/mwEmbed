@@ -20,7 +20,7 @@
 			kalturaQunitWaitForPlayer(function(){
 				// look for the playlist:
 				ok( $( $iframe).find( '.medialistContainer.k-vertical' ).length > 0 , "Found vertical playlist" );
-				equal ( $( $iframe).find('select')[0].selectedIndex, 0, "Current playlist index is 0");
+				equal ( $( $iframe).find('.playlistTitle').text(), "simple two clip pl", "Current playlist index is 0");
 				start();
 			});
 		});
@@ -32,7 +32,7 @@
 
 			setTimeout(function() {
 				start(); // this would tell QUnit to start the test
-				equal ( $( $iframe).find('select')[0].selectedIndex, 1, "Current playlist index changed to 1");
+				equal ( $( $iframe).find('.playlistTitle').text(), "electric sheep test", "Current playlist index changed to 1");
 				kdp.setKDPAttribute("playlistAPI.dataProvider", "selectedIndex", 1 );
 				equal ( kdp.evaluate('{playlistAPI.dataProvider.selectedIndex}'), 1, "second clip was selected");
 				ok( typeof($( kdp.evaluate('{playlistAPI.dataProvider}')) === "object") , "dataProvider object was set" );

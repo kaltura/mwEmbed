@@ -14,11 +14,10 @@
 			'oneSecRotatorSlidesLimit': 61,
 			'twoSecRotatorSlidesLimit': 250,
 			'maxRotatorSlides': 125,
-			'mediaItemWidth': 290,
+			'mediaItemWidth': null,
+			'mediaItemHeight': null,
 			'titleLimit': 29,
 			'descriptionLimit': 80,
-			'thumbnailWidth' : 100,
-			'horizontalMediaItemWidth': 290,
 			'overflow': false,
 			'includeThumbnail': true,
 			'includeItemStartTime': true,
@@ -127,12 +126,11 @@
 					title: title,
 					description: description,
 					width: _this.getConfig( 'mediaItemWidth' ),
+					height: _this.getConfig( 'mediaItemHeight' ),
 					thumbnail: {
 						url: thumbnailUrl,
 						thumbAssetId: item.assetId,
-						rotatorUrl: thumbnailRotatorUrl,
-						width: _this.getThumbWidth(),
-						height: _this.getThumbHeight()
+						rotatorUrl: thumbnailRotatorUrl
 					},
 					startTime: item.startTime / 1000,
 					startTimeDisplay: _this.formatTimeDisplayValue(kWidget.seconds2npt( item.startTime / 1000 )),

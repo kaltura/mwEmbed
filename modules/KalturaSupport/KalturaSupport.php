@@ -122,8 +122,8 @@
 		"playlistAPI" => array(
             'scripts' => "components/playlistAPI.js",
             'dependencies' => array('mw.KBaseMediaList','jCarouse'),
-            'styles' =>  "components/chapters/playList.css",
-            'templates' => "components/chapters/chapters.tmpl.html",
+            'styles' =>  "components/playlist/playList.css",
+            'templates' => "components/playlist/playList.tmpl.html",
             'kalturaPluginName' => 'playlistAPI',
         ),
 		"largePlayBtn" => array(

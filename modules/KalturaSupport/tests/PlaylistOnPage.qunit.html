@@ -21,7 +21,7 @@
 					  // look for onPage playlist id:
 					  ok( $( '.onpagePlaylistInterface' ).length > 0, "Found playlistOnPage div" );
 					  equal ( $( '.onpagePlaylistInterface' ).find('.k-thumb').width(), kdp.evaluate('{playlistAPI.thumbnailWidth}'), "ThumbWidth is set correctly");
-					  equal( $( '.onpagePlaylistInterface' ).find('.k-description:first').html(), kdp.evaluate('{mediaProxy.entry.description}'), "description matches kdp description");
+					  ok( kdp.evaluate('{mediaProxy.entry.description}' ).indexOf($( '.onpagePlaylistInterface' ).find('.k-description:first').html().substr(0,5))===0, "description matches kdp description");
 					  start();
 				  });
 			  });
@@ -44,14 +44,16 @@
 			'flashvars': {
 				'playlistAPI':{
 					'clipListTargetId': 'playListHolder',
-					'onPageCss1' : "../components/chapters/playList.css",
+					'onPageCss1' : "../components/playlist/playList.css",
 					'autoContinue': true,
 					'includeInLayout': true,
 					'autoPlay': false,
 					'loop': false,
 					'onPage': true,
-					'kpl0Name': "test 4 item playlist",
-					'kpl0Id': '0_q79jh71b'
+					'kpl0Url': "http://www.kaltura.com/index.php/partnerservices2/executeplaylist?playlist_id=1_e387kavu&partner_id=243342&subp_id=24334200&format=8&ks={ks}",
+					'kpl0Name': "simple two clip pl",
+					'kpl1Url': "http://www.kaltura.com/index.php/partnerservices2/executeplaylist?playlist_id=0_9ahdych6&partner_id=243342&subp_id=24334200&format=8&ks={ks}",
+					'kpl1Name': "electric sheep test"
 				},
 				'nextPrevBtn':{
 					'plugin': true
@@ -59,6 +61,6 @@
 			}
 		});
 	</script>
-   <div id="playListHolder" style="position: absolute; left: 420px; bottom: 40px; width: 350px; height: 300px; background-color: grey"></div>
+   <div id="playListHolder" style="position: absolute; left: 420px; bottom: 40px; width: 360px; height: 300px; background-color: grey"></div>
   </body>
 </html>

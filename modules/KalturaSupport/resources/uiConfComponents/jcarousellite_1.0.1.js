@@ -275,7 +275,7 @@ $.fn.jCarouselLite = function(o) {
 				if ( !(curr-o.scroll) ) {
 					$(o.btnPrev, o.refWindow).hide();
 				}
-				if ( ( curr - o.scroll ) < ( itemLength - v + 1) ) {
+				if ( ( curr - o.scroll ) < ( itemLength - v) ) {
 					$(o.btnNext, o.refWindow).show();
 				}
 				return go(curr-o.scroll);
@@ -292,7 +292,7 @@ $.fn.jCarouselLite = function(o) {
 				if ( curr+o.scroll ) {
 					$(o.btnPrev, o.refWindow).show();
 				}
-				if ( (curr+o.scroll) > (itemLength - v + 1) ) {
+				if ( (curr+o.scroll) > (itemLength - v) ) {
 					$(o.btnNext, o.refWindow).hide();
 				}
 				return go(curr+o.scroll);
@@ -333,8 +333,11 @@ $.fn.jCarouselLite = function(o) {
 						}
 					}
 					if (phase=="end"){
-						if (to > (itemLength-v+1)){
-							to=itemLength;
+						if (to < 0){
+							to = 0;
+						}
+						if (to >= (itemLength-v)){
+							to=itemLength-v;
 						}
 						return go(to);
 					}
@@ -371,7 +374,7 @@ $.fn.jCarouselLite = function(o) {
 						curr = to==itemLength-v+1 ? v+1 : v+o.scroll;
 					} else curr = to;
 				} else {					// If non-circular and to points to first or last, we just return.
-					if(to<0 || to>itemLength-v+1) return;
+					if(to<0 || to>itemLength-v) return;
 					else curr = to;
 				}						   // If neither overrides it, the curr will still be "to" and we can proceed.
 
@@ -390,7 +393,7 @@ $.fn.jCarouselLite = function(o) {
 					$(o.btnPrev + "," + o.btnNext).removeClass("disabled");
 					$( (curr-o.scroll<0 && o.btnPrev)
 						||
-					   (curr+o.scroll > (itemLength-v+1) && o.btnNext)
+					   (curr+o.scroll > (itemLength-v) && o.btnNext)
 						||
 					   []
 					 ).addClass("disabled");
