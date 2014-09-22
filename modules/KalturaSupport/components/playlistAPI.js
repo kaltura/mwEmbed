@@ -41,6 +41,7 @@
 			if ( this.getConfig( 'includeInLayout' ) === false){ // support hidden playlists - force onPage and hide its div.
 				this.setConfig( 'onPage', true );
 			}
+			this.setConfig( 'horizontalHeaderHeight', 43 );
 			this.addBindings();
 			this.loadPlaylists();
 		},
