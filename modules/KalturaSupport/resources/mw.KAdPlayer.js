@@ -86,7 +86,7 @@ mw.KAdPlayer.prototype = {
 			
 				// if a preroll rewind to start:
 				if( adSlot.type == 'preroll' ){
-					 _this.embedPlayer.setCurrentTime( .01);
+				//	 _this.embedPlayer.setCurrentTime( .01);
 				}
 
 				// Restore overlay if hidden:

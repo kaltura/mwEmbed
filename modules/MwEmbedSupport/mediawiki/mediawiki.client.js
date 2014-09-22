@@ -71,6 +71,10 @@
 		return /OS 5_/.test( navigator.userAgent ) && mw.isIOS();
 	};
 
+  mw.isIOS8 = function(){
+    return /Version\/8.0/.test( navigator.userAgent ) && mw.isIOS();
+  };
+
 	/**
 	 * Fallforward system by default prefers flash.
 	 *
