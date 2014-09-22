@@ -636,6 +636,7 @@
 
 				//add drop shadow containers for control bar
 				this.getPlayer().getInterface().find(".mwEmbedPlayer").prepend($("<div class='controlBarShadow componentAnimation'></div>").addClass('componentOff'));
+				this.getComponent().prepend($("<div class='controlBarShadow componentAnimation'></div>").addClass('componentOff'));
 				//Attach control bar action handlers
 				$.each( _this.controlBarComponents, function ( name, component ) {
 					_this.getControlBar()
@@ -683,7 +684,7 @@
 				}
 				if ( this.getControlBar().isVisible ) {
 					this.getControlBar().addClass('componentOff' ).removeClass('componentOn');
-					$(this.getPlayer().getInterface()).find(".controlBarShadow" ).addClass('componentOff' ).removeClass('componentOn');
+					this.getFirstMonitor().obj.find(".controlBarShadow" ).addClass('componentOff' ).removeClass('componentOn');
 					this.getControlBar().isVisible = false;
 				}
 			},
@@ -696,7 +697,7 @@
 					this.getControlBar().addClass('componentOn' ).removeClass('componentOff');
 					this.positionControlBar();
 					this.getControlBar().isVisible = true;
-					$(this.getPlayer().getInterface()).find(".controlBarShadow" ).addClass('componentOn' ).removeClass('componentOff');
+					this.getFirstMonitor().obj.find(".controlBarShadow" ).addClass('componentOn' ).removeClass('componentOff');
 				}
 
 				var _this = this;
