@@ -300,7 +300,7 @@
 			if ( !this.durationReceived ) {
 				return;
 			}
-			if (this._propagateEvents && this.paused) {
+			if ( this._propagateEvents ) {
 
 				this.updatePlayhead();
 				$( this ).trigger( "playing" );
