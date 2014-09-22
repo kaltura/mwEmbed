@@ -315,7 +315,7 @@ mw.EmbedPlayerKplayer = {
 	 * parent_play
 	 */
 	onPlay: function() {
-		if(this._propagateEvents && this.paused) {
+		if(this._propagateEvents) {
 			$( this ).trigger( "playing" );
 			this.hideSpinner();
 			if ( this.isLive() ) {
