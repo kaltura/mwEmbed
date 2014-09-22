@@ -100,7 +100,7 @@
 					setTimeout( function() {
 						if ( !_this.onAirStatus ) {
 							//if we already played once it means stream data was loaded. We can continue playing in "VOD" mode
-							if ( !_this.isNativeHLS() && !embedPlayer.firstPlay && _this.isDVR() ) {
+							if ( !embedPlayer.firstPlay && _this.isDVR() ) {
 								embedPlayer.triggerHelper( 'liveEventEnded' );
 							} else {
 								//remember last state
@@ -161,12 +161,26 @@
 							embedPlayer.setLive( true );
 						} );
 					}
-					embedPlayer.setDuration(  embedPlayer.getPlayerElement().duration  );
+					var playerDuration =  embedPlayer.getPlayerElement().duration;
+					if ( _this.isNativeHLS() ) {
+						playerDuration = embedPlayer.currentTime;
+					}
+
+					embedPlayer.setDuration( playerDuration );
 					//'ended' will be sent for js layer, update the player position for next replay
 					embedPlayer.bindHelper( 'ended', function() {
-						embedPlayer.getPlayerElement().seek( 0 );
+
+						embedPlayer.seek( 0 );
+//
+//						if ( _this.isNativeHLS() ) {
+//						   embedPlayer.getPlayerElement().currentTime = 0.01;
+//						} else {
+//							embedPlayer.getPlayerElement().seek( 0 );
+//						}
 					} );
 				}
+
+
 			});
 		},
 
