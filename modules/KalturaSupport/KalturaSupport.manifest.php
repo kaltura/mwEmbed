@@ -131,7 +131,19 @@ return array(
 		'doc' => 'If apple HLS streams should be used when available.',
 		'type' => 'boolean'
 	),
-		
+	'Kaltura.LeadHLSOnAndroid' => array(
+		'doc' => 'If Apple HLS streams should be used when available on Android devices, 
+			by default progressive streams are used on Android because of Android HLS compatibility issues.',
+		'type' => 'boolean'
+	),
+	'autoPlay' => array(
+		'doc' => 'If the player should start playback once ready.',
+		'type' => 'boolean'
+	),
+	'autoMute' => array(
+		'doc' => 'If set to true, player will start with audio muted. This will be respected across entries and ads, until the user enables volume in the player. Note some VPAID ads do not support auto mute.',
+		'type' => 'boolean'
+	),
 	/*Captions */
 	'closedCaptions' => array(
 		'description' => 'Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
