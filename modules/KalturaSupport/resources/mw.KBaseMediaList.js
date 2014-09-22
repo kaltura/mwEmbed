@@ -47,12 +47,22 @@
 				if (_this.getConfig( 'parent')){
 					_this.renderMediaList();
 					_this.setSelectedMedia(_this.selectedMediaItemIndex);
+				}else if ( _this.getLayout() === "vertical"){
+					$(".videoHolder").width("100%");
+					if (_this.getConfig("containerPosition") === "left"){
+						$(".mwPlayerContainer").css("margin-left", 0 + "px");
+					}
 				}
 			});
 			// handle fullscreen entering resize
 			$( this.embedPlayer ).bind('onOpenFullScreen', function() {
 				if ( !_this.getConfig( 'parent') ){
 					$(".medialistContainer").hide();
+				}else if ( _this.getLayout() === "vertical"){
+					$(".videoHolder").width(_this.videoWidth+"px");
+					if (_this.getConfig("containerPosition") === "left"){
+						$(".mwPlayerContainer").css("margin-left", _this.getMedialistComponent().width() + "px");
+					}
 				}
 			});
 
