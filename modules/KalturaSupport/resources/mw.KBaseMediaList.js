@@ -166,6 +166,9 @@
 				}
 			}
 			if (this.getLayout() === "horizontal" ){
+				if (this.getConfig("mediaItemHeight") === null){
+					this.setConfig("mediaItemHeight", this.getComponent().height());
+				}
 				this.getComponent().height(this.getConfig("mediaItemHeight") + this.getConfig('horizontalHeaderHeight'));
 			}
 		},
