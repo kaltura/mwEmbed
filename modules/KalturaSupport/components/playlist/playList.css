@@ -387,7 +387,16 @@
 	width: 40px;
 	float: right;
     right: 8px;
+}
+.playlistControls.k-vertical{
+    position: relative;
+	width: 40px;
+	float: right;
+    right: 8px;
     top: 36px;
+}
+.playlistControls.k-horizontal{
+    top: 2px;
 }
 .playlistBtn{
     opacity: 0.6;

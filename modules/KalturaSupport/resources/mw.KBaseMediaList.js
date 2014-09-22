@@ -21,6 +21,7 @@
 				'mediaItemWidth': null,
 				'mediaItemHeight': null,
 				'mediaItemRatio': (16 / 9),
+				'horizontalHeaderHeight': 43,
 				'onPage': false,
 				'includeInLayout': true,
 				'clipListTargetId': null,
@@ -116,7 +117,7 @@
 							$( iframeParent ).after( "<div class='onpagePlaylistInterface'></div>" );
 							this.$mediaListContainer = $( iframeParent ).parent().find( ".onpagePlaylistInterface" );
 							$( this.$mediaListContainer ).width( $( iframeParent ).width());
-							var containerHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * 3 : this.getConfig( "mediaItemHeight" ) +43;
+							var containerHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * 3 : this.getConfig( "mediaItemHeight" ) + this.getConfig('horizontalHeaderHeight');
 							$( this.$mediaListContainer ).height( containerHeight );
 						}
 						// support hidden playlists
@@ -139,7 +140,7 @@
 					}
 
 					if ( this.getConfig( 'containerPosition' ) == 'top' || this.getConfig( 'containerPosition' ) == 'bottom' ) {
-						var playlistHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * 2 : this.getConfig( "mediaItemHeight" ) + 43;
+						var playlistHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * 2 : this.getConfig( "mediaItemHeight" ) + this.getConfig('horizontalHeaderHeight');
 						$(".medialistContainer").height(playlistHeight);
 						$( ".mwPlayerContainer" ).css( "height", this.$mediaListContainer.height() - playlistHeight + "px" );
 						$( ".videoHolder" ).css( "height", this.$mediaListContainer.height() - playlistHeight - $( ".controlBarContainer" ).height() + "px" );
@@ -167,7 +168,7 @@
 				}
 			}
 			if (this.getLayout() === "horizontal" ){
-				this.getComponent().height(this.getConfig("mediaItemHeight") + 43);
+				this.getComponent().height(this.getConfig("mediaItemHeight") + this.getConfig('horizontalHeaderHeight'));
 			}
 		},
 

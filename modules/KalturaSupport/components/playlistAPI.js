@@ -363,17 +363,17 @@
 				if ( this.getConfig('containerPosition') === "left" || this.getConfig('containerPosition') === "right" || this.getConfig('onPage') === true){
 					this.getMedialistHeaderComponent().prepend('<span class="playlistTitle">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription">' + this.playlistSet[playlistIndex].items.length + ' '+gM( 'mwe-embedplayer-videos')+'</span>');
 					this.getMedialistHeaderComponent().prepend('<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist') + '"></div>');
-					if (this.getConfig('showControls') === true){
-						this.getMedialistHeaderComponent().prepend('<div class="playlistControls"><div class="prevBtn playlistBtn"></div><div class="nextBtn playlistBtn"></div></div>');
-						this.getMedialistHeaderComponent().find(".playlistControls .nextBtn").on("click", function(){_this.playNext()});
-						this.getMedialistHeaderComponent().find(".playlistControls .prevBtn").on("click", function(){_this.playPrevious()});
-					}
 				}else{
 					this.getMedialistHeaderComponent().hide();
 				}
 			}else{
 				this.getMedialistHeaderComponent().prepend('<span class="playlistTitle horizontalHeader">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription horizontalHeader">(' + this.playlistSet[playlistIndex].items.length + ' '+gM( 'mwe-embedplayer-videos')+')</span>');
 				this.getMedialistHeaderComponent().prepend('<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist') + '"></div>');
+			}
+			if (this.getConfig('showControls') === true){
+				this.getMedialistHeaderComponent().prepend('<div class="playlistControls k-'+ this.getLayout()+'"><div class="prevBtn playlistBtn"></div><div class="nextBtn playlistBtn"></div></div>');
+				this.getMedialistHeaderComponent().find(".playlistControls .nextBtn").on("click", function(){_this.playNext()});
+				this.getMedialistHeaderComponent().find(".playlistControls .prevBtn").on("click", function(){_this.playPrevious()});
 			}
 			this.renderMediaList();  // set the media list in KBaseMediaList
 			// support initial selectedIndex or initItemEntryId
