@@ -296,12 +296,16 @@
 .k-playlistTitle{
     font-size: 1.1em;
     font-weight: normal;
-    padding-left: 32px;
+    padding-left: 36px;
 }
 .playlistItem{
     cursor: pointer;
     color: #aaaaaa;
     height: 40px;
+}
+.playlistItem.k-horizontal{
+    float: left;
+	padding-top: 10px;
 }
 .playlistItem:hover{
     color: #ffffff;

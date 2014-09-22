@@ -294,7 +294,11 @@
 				}).show();
 				this.getMedialistComponent().prepend('<div class="playlistSelector"></div>');
 				$.each(this.playlistSet, function (i, el) {
-					_this.getComponent().find(".playlistSelector").append('<br><div data-index="'+i+'" class="playlistItem"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists"> ' + el.content.split(",").length + ' '+gM( 'mwe-embedplayer-videos')+'</span></div>');
+					if (_this.getLayout() === "vertical"){
+						_this.getComponent().find(".playlistSelector").append('<br><div data-index="'+i+'" class="playlistItem"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists">' + el.content.split(",").length + ' '+gM( 'mwe-embedplayer-videos')+'</span></div>');
+					}else{
+						_this.getComponent().find(".playlistSelector").append('<div data-index="'+i+'" class="playlistItem k-horizontal"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists">' + el.content.split(",").length + ' '+gM( 'mwe-embedplayer-videos')+'</span></div>');
+					}
 				});
 				this.getComponent().find(".playlistItem").on("click", function(){
 					_this.switchPlaylist($(this).attr('data-index'));
@@ -306,7 +310,8 @@
 			var _this = this;
 			this.onDisable();
 			this.getComponent().find(".playlistSelector").show();
-			this.getComponent().find(".playlistSelector").height(200);
+			var dropdownHeight = this.getLayout() === "vertical" ? 200 : this.getConfig("mediaItemHeight")-20;
+			this.getComponent().find(".playlistSelector").height(dropdownHeight);
 			setTimeout(function(){_this.getComponent().find(".playlistSelector").css("overflow","auto");},300);
 		},
 
