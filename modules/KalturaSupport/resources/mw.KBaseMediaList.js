@@ -233,9 +233,10 @@
 			}
 		},
 		setMedialistComponentHeight: function(){
-			this.getMedialistComponent().height(this.getComponent().height()-this.getMedialistHeaderComponent().height());
 			if (this.getLayout() === "vertical" && (this.getConfig("containerPosition") === "top" || this.getConfig("containerPosition") === "bottom")){
 				this.getMedialistComponent().height(this.getComponent().height());
+			}else{
+				this.getMedialistComponent().height(this.getComponent().height()-this.getMedialistHeaderComponent().height());
 			}
 
 		},
