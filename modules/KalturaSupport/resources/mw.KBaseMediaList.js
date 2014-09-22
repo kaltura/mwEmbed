@@ -116,7 +116,7 @@
 							$( iframeParent ).after( "<div class='onpagePlaylistInterface'></div>" );
 							this.$mediaListContainer = $( iframeParent ).parent().find( ".onpagePlaylistInterface" );
 							$( this.$mediaListContainer ).width( $( iframeParent ).width());
-							var containerHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * 3 : this.getConfig( "mediaItemHeight" );
+							var containerHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * 3 : this.getConfig( "mediaItemHeight" ) +43;
 							$( this.$mediaListContainer ).height( containerHeight );
 						}
 						// support hidden playlists
@@ -139,7 +139,8 @@
 					}
 
 					if ( this.getConfig( 'containerPosition' ) == 'top' || this.getConfig( 'containerPosition' ) == 'bottom' ) {
-						var playlistHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * 2 : this.getConfig( "mediaItemHeight" );
+						var playlistHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * 2 : this.getConfig( "mediaItemHeight" ) + 43;
+						$(".medialistContainer").height(playlistHeight);
 						$( ".mwPlayerContainer" ).css( "height", this.$mediaListContainer.height() - playlistHeight + "px" );
 						$( ".videoHolder" ).css( "height", this.$mediaListContainer.height() - playlistHeight - $( ".controlBarContainer" ).height() + "px" );
 					}
@@ -166,7 +167,7 @@
 				}
 			}
 			if (this.getLayout() === "horizontal" ){
-				this.getComponent().height(this.getConfig("mediaItemHeight"));
+				this.getComponent().height(this.getConfig("mediaItemHeight") + 43);
 			}
 		},
 
@@ -233,12 +234,9 @@
 			}
 		},
 		setMedialistComponentHeight: function(){
-			if (this.getLayout() === "vertical"){
-				if (this.getConfig("containerPosition") === "right" || this.getConfig("containerPosition") === "left"){
-					this.getMedialistComponent().height(this.getComponent().height()-this.getMedialistHeaderComponent().height());
-				}else{
-					this.getMedialistComponent().height(this.getComponent().height());
-				}
+			this.getMedialistComponent().height(this.getComponent().height()-this.getMedialistHeaderComponent().height());
+			if (this.getLayout() === "vertical" && (this.getConfig("containerPosition") === "top" || this.getConfig("containerPosition") === "bottom")){
+				this.getMedialistComponent().height(this.getComponent().height());
 			}
 
 		},

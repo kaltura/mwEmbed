@@ -284,7 +284,7 @@
 		setMultiplePlayLists: function(){
 			var _this = this;
 			if (this.getComponent().find(".playlistSelector").length == 0){ // UI wasn't not created yet
-				this.getComponent().find(".playlistTitle, .playlistDescription").addClass("multiplePlaylists");
+				this.getComponent().find(".k-vertical").find(".playlistTitle, .playlistDescription").addClass("multiplePlaylists");
 				this.getComponent().find(".dropDownIcon").on("click", function(){
 					if (_this.getComponent().find(".playlistSelector").height() > 0){
 						_this.closePlaylistDropdown();
@@ -294,7 +294,7 @@
 				}).show();
 				this.getMedialistComponent().prepend('<div class="playlistSelector"></div>');
 				$.each(this.playlistSet, function (i, el) {
-					_this.getComponent().find(".playlistSelector").append('<br><div data-index="'+i+'" class="playlistItem"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists"> ' + el.content.split(",").length + ' videos</span></div>');
+					_this.getComponent().find(".playlistSelector").append('<br><div data-index="'+i+'" class="playlistItem"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists"> ' + el.content.split(",").length + ' '+gM( 'mwe-embedplayer-videos')+'</span></div>');
 				});
 				this.getComponent().find(".playlistItem").on("click", function(){
 					_this.switchPlaylist($(this).attr('data-index'));
@@ -358,18 +358,22 @@
 			this.embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')} ); // for API backward compatibility
 			this.mediaList = [];
 			this.addMediaItems(this.playlistSet[playlistIndex].items);   // prepare the data to be compatible with KBaseMediaList
-
-			if (this.getLayout() === "vertical" && ( this.getConfig('containerPosition') === "left" || this.getConfig('containerPosition') === "right")){
-				this.getMedialistHeaderComponent().empty();
-				this.getMedialistHeaderComponent().prepend('<span class="playlistTitle">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription">' + this.playlistSet[playlistIndex].items.length + ' videos</span>');
-				this.getMedialistHeaderComponent().prepend('<div class="dropDownIcon"></div>');
-				if (this.getConfig('showControls') === true){
-					this.getMedialistHeaderComponent().prepend('<div class="playlistControls"><div class="prevBtn playlistBtn"></div><div class="nextBtn playlistBtn"></div></div>');
-					this.getMedialistHeaderComponent().find(".playlistControls .nextBtn").on("click", function(){_this.playNext()});
-					this.getMedialistHeaderComponent().find(".playlistControls .prevBtn").on("click", function(){_this.playPrevious()});
+			this.getMedialistHeaderComponent().empty();
+			if (this.getLayout() === "vertical"){
+				if ( this.getConfig('containerPosition') === "left" || this.getConfig('containerPosition') === "right" || this.getConfig('onPage') === true){
+					this.getMedialistHeaderComponent().prepend('<span class="playlistTitle">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription">' + this.playlistSet[playlistIndex].items.length + ' '+gM( 'mwe-embedplayer-videos')+'</span>');
+					this.getMedialistHeaderComponent().prepend('<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist') + '"></div>');
+					if (this.getConfig('showControls') === true){
+						this.getMedialistHeaderComponent().prepend('<div class="playlistControls"><div class="prevBtn playlistBtn"></div><div class="nextBtn playlistBtn"></div></div>');
+						this.getMedialistHeaderComponent().find(".playlistControls .nextBtn").on("click", function(){_this.playNext()});
+						this.getMedialistHeaderComponent().find(".playlistControls .prevBtn").on("click", function(){_this.playPrevious()});
+					}
+				}else{
+					this.getMedialistHeaderComponent().hide();
 				}
 			}else{
-				this.getMedialistHeaderComponent().hide();
+				this.getMedialistHeaderComponent().prepend('<span class="playlistTitle horizontalHeader">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription horizontalHeader">(' + this.playlistSet[playlistIndex].items.length + ' '+gM( 'mwe-embedplayer-videos')+')</span>');
+				this.getMedialistHeaderComponent().prepend('<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist') + '"></div>');
 			}
 			this.renderMediaList();  // set the media list in KBaseMediaList
 			// support initial selectedIndex or initItemEntryId
