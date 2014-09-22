@@ -46,13 +46,16 @@
 				_this.setMediaItemTime();
 				//Set data initialized flag for handlers to start working
 				_this.dataIntialized = true;
-				//Render the media list
-				if (_this.getPlayer().layoutBuilder.layoutReady) {
-					_this.renderMediaList();
-				}
 			} );
 
-			this.bind( 'playerReady updatePlayHeadPercent', function ( e, newState ) {
+			this.bind( 'playerReady', function ( e, newState ) {
+				if (_this.dataIntialized) {
+					_this.renderMediaList();
+					_this.updateActiveItem();
+				}
+			});
+
+			this.bind( 'updatePlayHeadPercent', function ( e, newState ) {
 				if (_this.dataIntialized) {
 					_this.updateActiveItem();
 				}

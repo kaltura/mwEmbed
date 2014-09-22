@@ -44,7 +44,10 @@
 			this._super();
 
 			this.bind('updateLayout', function(){
-				_this.renderMediaList();
+				if (_this.getConfig( 'parent')){
+					_this.renderMediaList();
+					_this.setSelectedMedia(_this.selectedMediaItemIndex);
+				}
 			});
 			// handle fullscreen entering resize
 			$( this.embedPlayer ).bind('onOpenFullScreen', function() {
