@@ -921,7 +921,13 @@ mw.EmbedPlayerNative = {
 				}
 				// update the preload attribute to auto
 				$( this.getPlayerElement() ).attr('preload',"auto" );
-				// issue a play request
+
+        // IOS8 HOTFIX
+        if ( mw.isIOS8() ){
+          this.getPlayerElement().load();
+        }
+
+        // issue a play request
 				this.getPlayerElement().play();
 				// re-start the monitor:
 				this.monitor();
