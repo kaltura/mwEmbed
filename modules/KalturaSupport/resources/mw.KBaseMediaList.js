@@ -233,8 +233,8 @@
 
 		},
 		setMediaBoxesDimensions: function(){
-			var height = this.getComponent().height();
-			var width = this.getComponent().width();
+			var height = this.getMedialistComponent().height();
+			var width = this.getMedialistComponent().width();
 			var layout = this.getLayout();
 			var mediaBoxes = this.getMediaListDomElements();
 			if (layout == "vertical"){
