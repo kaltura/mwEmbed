@@ -883,6 +883,7 @@ mw.EmbedPlayerNative = {
 
 				// Add the end binding if we have a post event:
 				if( $.isFunction( doneCallback ) ){
+					var sentDoneCallback = false;
 					$( vid ).bind( 'ended' + switchBindPostfix , function( event ) {
 						if( _this.disableSwitchSourceCallback ) {
 							return;
@@ -892,6 +893,7 @@ mw.EmbedPlayerNative = {
 							clearTimeout( _this.mobileChromeTimeoutID );
 							_this.mobileChromeTimeoutID = null;
 						}
+						sentDoneCallback = true;
 						// remove end binding:
 						$( vid ).unbind( switchBindPostfix );
 						// issue the doneCallback
@@ -917,8 +919,12 @@ mw.EmbedPlayerNative = {
 									// Check if timeDiff was changed in the last 2 seconds
 									if( timeDiff <= (_this.duration - _this.currentTime) ) {
 										mw.log('EmbedPlayerNative:: playerSwitchSource> error in getting ended event, issue doneCallback directly.');
-										$( vid ).unbind( switchBindPostfix );
-										doneCallback();
+										if ( ! sentDoneCallback ) {
+											$( vid ).unbind( switchBindPostfix );
+											sentDoneCallback = true;
+											doneCallback();
+										}
+
 									}
 								},2000);
 							}
