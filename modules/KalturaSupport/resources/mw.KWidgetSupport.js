@@ -24,8 +24,6 @@ mw.KWidgetSupport.prototype = {
 	isIframeApiServer: function(){
 		return ( mw.getConfig( 'EmbedPlayer.IsIframeServer' )
 					&&
-				mw.getConfig( 'EmbedPlayer.EnableIframeApi' )
-					&&
 				mw.getConfig( 'EmbedPlayer.IframeParentUrl' ) )
 	},
 	/**

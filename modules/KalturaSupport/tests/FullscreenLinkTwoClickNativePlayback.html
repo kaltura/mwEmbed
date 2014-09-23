@@ -2,10 +2,9 @@
 <html>
 <head>
 <title> Native Fullscreen Link Playback test </title>
-
-<script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
-<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
-<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 </head>
 <body>
 <h2> Native Fullscreen Link Playback test </h2>
@@ -26,7 +25,6 @@
 
 <script>
 	// just for html5: 
-	mw.setConfig( 'forceMobileHTML5', true );
 	mw.setConfig( 'EmbedPlayer.NativeControls', true);
 	
 	
@@ -46,7 +44,7 @@
 			$('#showLinks').click( function(){
 				$( this ).hide();
 				// iPad can't go into fullscreen in a syncrouns call thread of "play" 
-				if( mw.isIpad() ){
+				if( navigator.userAgent.match(/iPad/i) ){
 					$('#loading').show();
 					window['onContentStartedDownloading'] = function(){
 						kdp.removeJsListener( 'bytesTotalChange', 'onContentStartedDownloading' );
@@ -74,9 +72,9 @@
 					.click( function(){
 						var vid = $iframe.find('video').get(0);
 						// if its an ipad we can't wrap it in a try catch
-						if( mw.isIpad() ){
+						if( navigator.userAgent.match(/iPad/i) ){
 							vid.webkitEnterFullScreen();
-						} else if( !mw.isIphone() ){
+						} else if( !navigator.userAgent.match(/iPhone/i)){
 							try{
 								vid.webkitEnterFullScreen();
 							} catch( error ) {
