@@ -239,11 +239,9 @@
 			var mediaBoxes = this.getMediaListDomElements();
 			if (layout == "vertical"){
 				var newHeight = this.getConfig( "mediaItemHeight" ) || width * (1 / this.getConfig("mediaItemRatio"));
-				this.setConfig("mediaItemHeight", newHeight);
 				mediaBoxes.width(width).height(newHeight);
 			} else {
 				var newWidth = this.getConfig( "mediaItemWidth" ) || height * this.getConfig("mediaItemRatio");
-				this.setConfig("mediaItemWidth", newWidth);
 				mediaBoxes.width(newWidth).height(height);
 			}
 		},
