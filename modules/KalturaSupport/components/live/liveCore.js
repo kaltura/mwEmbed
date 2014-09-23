@@ -159,25 +159,20 @@
 						//once moving back to live, set live state again
 						embedPlayer.bindHelper( 'movingBackToLive', function() {
 							embedPlayer.setLive( true );
+							if ( _this.isNativeHLS() ) {
+								embedPlayer.setDuration( _this.dvrWindow );
+							}
 						} );
 					}
-					var playerDuration =  embedPlayer.getPlayerElement().duration;
+
 					if ( _this.isNativeHLS() ) {
-						playerDuration = embedPlayer.currentTime;
+						embedPlayer.setDuration( embedPlayer.currentTime );
+					} else {
+						embedPlayer.setDuration( embedPlayer.getPlayerElement().duration );
+						embedPlayer.bindHelper( 'ended', function() {
+							embedPlayer.getPlayerElement().seek( 0 );
+						});
 					}
-
-					embedPlayer.setDuration( playerDuration );
-					//'ended' will be sent for js layer, update the player position for next replay
-					embedPlayer.bindHelper( 'ended', function() {
-
-						embedPlayer.seek( 0 );
-//
-//						if ( _this.isNativeHLS() ) {
-//						   embedPlayer.getPlayerElement().currentTime = 0.01;
-//						} else {
-//							embedPlayer.getPlayerElement().seek( 0 );
-//						}
-					} );
 				}
 
 
