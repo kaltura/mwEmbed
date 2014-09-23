@@ -534,7 +534,7 @@
 				this.getFirstMonitor().prop = monitor.css( ['top', 'left', 'width', 'height'] );
 				this.getSecondMonitor().prop = monitor.css( ['top', 'left', 'width', 'height'] );
 				monitor.draggable( 'disable' ).resizable( 'disable' );
-				this.hideResizeHandlers(monitor);
+				this.removeResizeHandlers(monitor);
 			},
 			removeResizeHandlers: function(monitor){
 				$(monitor).find(".dualScreen-transformhandle" ).remove();
