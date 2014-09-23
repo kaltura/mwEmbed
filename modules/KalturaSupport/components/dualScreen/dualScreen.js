@@ -327,6 +327,7 @@
 					_this.hideMonitor( _this.getSecondMonitor().obj );
 					setTimeout( function () {
 						_this.setControlBarWidth();
+						_this.positionControlBar();
 						//Calculate screen properties
 						var secondScreenProps = _this.getSecondMonitor().prop;
 						var secondScreen = _this.getSecondMonitor().obj;
@@ -357,6 +358,7 @@
 					_this.hideMonitor( _this.getSecondMonitor().obj );
 					setTimeout( function () {
 						_this.setControlBarWidth();
+						_this.positionControlBar();
 						///Calculate screen properties
 						var secondScreenProps = _this.getSecondMonitor().prop;
 						var secondScreen = _this.getSecondMonitor().obj;
