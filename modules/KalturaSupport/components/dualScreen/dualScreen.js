@@ -534,23 +534,39 @@
 				this.getFirstMonitor().prop = monitor.css( ['top', 'left', 'width', 'height'] );
 				this.getSecondMonitor().prop = monitor.css( ['top', 'left', 'width', 'height'] );
 				monitor.draggable( 'disable' ).resizable( 'disable' );
-				//monitor.css({'top': '', 'left': '', 'width': '', 'height': ''});
-				this.removeResizeHandlers(monitor);
+				this.hideResizeHandlers(monitor);
 			},
 			removeResizeHandlers: function(monitor){
-				monitor.find(".dualScreen-transformhandle" ).remove();
+				$(monitor).find(".dualScreen-transformhandle" ).remove();
+			},
+			hideResizeHandlers: function(monitor){
+				$(monitor).find(".cornerHandle" ).addClass( 'componentOff componentAnimation' ).removeClass( 'componentOn' )
+			},
+			showResizeHandlers: function(monitor){
+				$(monitor).find(".cornerHandle" ).removeClass('componentAnimation' ).addClass('componentOn' ).removeClass('componentOff' );
 			},
 			addResizeHandlers: function (monitor, action) {
 				var dragging = false;
-				monitor.prepend($("<span>").addClass("dualScreen-transformhandle componentAnimation cornerHandle bottomRightHandle").addClass('componentOff'));
-				monitor.prepend($("<span>").addClass("dualScreen-transformhandle componentAnimation cornerHandle bottomLeftHandle").addClass('componentOff'));
-				monitor.prepend($("<span>").addClass("dualScreen-transformhandle componentAnimation cornerHandle topRightHandle").addClass('componentOff'));
-				monitor.prepend($("<span>").addClass("dualScreen-transformhandle componentAnimation cornerHandle topLeftHandle").addClass('componentOff'));
+				var cornerHandleVisibleTimoutId;
+				var _this = this;
+				monitor.prepend($("<span>").addClass("dualScreen-transformhandle cornerHandle componentOff bottomRightHandle"));
+				monitor.prepend($("<span>").addClass("dualScreen-transformhandle cornerHandle componentOff bottomLeftHandle"));
+				monitor.prepend($("<span>").addClass("dualScreen-transformhandle cornerHandle componentOff topRightHandle"));
+				monitor.prepend($("<span>").addClass("dualScreen-transformhandle cornerHandle componentOff topLeftHandle"));
 				monitor
-					.on( 'mousemove touchstart', function(e){if (dragging){return;}$(this ).find('.cornerHandle' ).addClass('componentOn' ).removeClass('componentOff')})
-					.on( 'mouseleave', function(e){if (dragging){return;}$(this ).find('.cornerHandle' ).addClass('componentOff').removeClass('componentOn' )})
+					.on( 'mouseup', function(){dragging = false;})
 					.on( 'mousedown', function(){dragging = true;})
-					.on( 'mouseup', function(){dragging = false;});
+					.on( 'mouseleave', function(e) { if ( !dragging ) { _this.hideResizeHandlers(this); } })
+					.on( 'mousemove touchstart', function(e){
+						if (!dragging){
+							_this.showResizeHandlers(this);
+							var monitorRef=this;
+							if(cornerHandleVisibleTimoutId){
+								clearTimeout(cornerHandleVisibleTimoutId);
+							}
+							cornerHandleVisibleTimoutId=setTimeout(function(){_this.hideResizeHandlers(monitorRef);}, _this.getConfig('menuFadeout'))
+						}
+					});
 
 			},
 			enableSideBySideView: function () {
@@ -617,7 +633,7 @@
 			getControlBar: function ( ) {
 				if ( !this.$controlBar ) {
 					this.$controlBar = $( '<div />' )
-						.addClass( 'controlBar componentAnimation componentOff' + this.getCssClass() )
+						.addClass( 'controlBar componentOff' + this.getCssClass() )
 						.append(
 						$( '<div class="controlBar-content" /> ' ).append(
 							this.getTemplateHTML( )
@@ -703,8 +719,8 @@
 					return;
 				}
 				if ( this.getControlBar().isVisible ) {
-					this.getControlBar().addClass('componentOff' ).removeClass('componentOn');
-					this.getFirstMonitor().obj.find(".controlBarShadow" ).addClass('componentOff' ).removeClass('componentOn');
+					this.getControlBar().addClass('componentOff componentAnimation' ).removeClass('componentOn');
+					this.getFirstMonitor().obj.find(".controlBarShadow" ).addClass('componentOff componentAnimation' ).removeClass('componentOn');
 					this.getControlBar().isVisible = false;
 				}
 			},
@@ -714,10 +730,10 @@
 					return;
 				}
 				if ( !this.getControlBar().isVisible ) {
-					this.getControlBar().addClass('componentOn' ).removeClass('componentOff');
+					this.getControlBar().removeClass('componentAnimation').addClass('componentOn' ).removeClass('componentOff');
 					this.positionControlBar();
 					this.getControlBar().isVisible = true;
-					this.getFirstMonitor().obj.find(".controlBarShadow" ).addClass('componentOn' ).removeClass('componentOff');
+					this.getFirstMonitor().obj.find(".controlBarShadow" ).removeClass('componentAnimation').addClass('componentOn' ).removeClass('componentOff');
 				}
 
 				var _this = this;
