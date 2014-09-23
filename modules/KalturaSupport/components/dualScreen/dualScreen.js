@@ -11,7 +11,7 @@
 				'templatePath': 'components/dualScreen/displayControlBar.tmpl.html',
 				'secondScreen': {
 					'size': '30',
-					'startLocation': 'right-15 bottom'
+					'startLocation': 'right bottom'
 				},
 				'resizable': {
 					'handles': 'ne, se, sw, nw',
@@ -291,12 +291,7 @@
 						.draggable( _this.getConfig( 'draggable' ) )
 						.resizable( _this.getConfig( 'resizable' ) );
 
-					secondaryScreen.position( {
-						my: "right-15 bottom-"+(10+_this.getPlayer().layoutBuilder.getHeight()),//_this.getConfig( 'secondScreen' ).startLocation.toLowerCase() + "-15",
-						at: "right bottom+",//+(_this.getPlayer().getHeight() - _this.getPlayer().layoutBuilder.getHeight()),
-//							_this.getConfig( 'secondScreen' ).startLocation.toLowerCase() + "-" + (_this.getPlayer().layoutBuilder.getHeight()),
-						of: $( _this.getPlayer().getInterface() )
-					} );
+					_this.positionSecondScreen();
 
 					_this.getSecondMonitor().prop = secondaryScreen.css( ['top', 'left', 'width', 'height'] );
 					_this.getSecondMonitor().obj.css( _this.getSecondMonitor().prop );
@@ -496,7 +491,30 @@
 				}
 				return this.$el;
 			},
-
+			positionSecondScreen: function(){
+				var location = this.getConfig( 'secondScreen' ).startLocation.toLowerCase().split(" ");
+				switch(location[0]){
+					case "right":
+						location[0] = location[0]+"-25 ";
+						break;
+					case "left":
+						location[0] = location[0]+"+25 ";
+						break;
+				}
+				switch(location[1]){
+					case "top":
+						location[1] = location[1]+"+"+(10+this.getPlayer().layoutBuilder.getHeight());
+						break;
+					case "bottom":
+						location[1] = location[1]+"-"+(10+this.getPlayer().layoutBuilder.getHeight());
+						break;
+				}
+				this.getSecondMonitor().obj.position( {
+					my: this.getConfig( 'secondScreen' ).startLocation.toLowerCase(),
+					at: location[0]+location[1],
+					of: $( this.getPlayer().getInterface() )
+				} );
+			},
 			toggleMainMonitor: function () {
 				var _this = this;
 				$.each( this.monitor, function ( name, monitor ) {
