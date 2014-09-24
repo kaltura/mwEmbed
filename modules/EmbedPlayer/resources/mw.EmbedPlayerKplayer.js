@@ -139,7 +139,7 @@ mw.EmbedPlayerKplayer = {
 				$.each( bindEventMap, function( bindName, localMethod ) {
 					_this.playerObject.addJsListener(  bindName, localMethod );
 				});
-				if ( _this.startTime !== undefined && __this.startTime != 0 ) {
+				if ( _this.startTime !== undefined && _this.startTime != 0 ) {
 					_this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', _this.startTime );
 				}
 				readyCallback();
