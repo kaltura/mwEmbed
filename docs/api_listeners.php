@@ -94,6 +94,10 @@
 		'thirdQuartile' => array(
 			'desc' => 'The player reached 75% of the entry playback'
 		),
+		'playerPlayEnd' => array(
+			'callbackArgs' => 'None',
+			'desc' => 'The played media has reached the end of content playback.'
+		),
 		'durationChange' => array(
 			'callbackArgs' => 'New duration value',
 			'desc' => 'Notify a change in the playing entry duration'
@@ -127,10 +131,6 @@
 		'playerSeekEnd' => array(
 			'callbackArgs' => 'None',
 			'desc' => 'Notify that the seek activity has finished'
-		),
-		'playerPlayEnd' => array(
-			'callbackArgs' => 'None',
-			'desc' => 'The played media has reached the end of playback'
 		),
 		'playerUpdatePlayhead' => array(
 			'callbackArgs' => 'Player current time',
