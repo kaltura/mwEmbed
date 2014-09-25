@@ -382,6 +382,11 @@ return array(
 				'type' => 'boolean',
 				'initvalue' => true,
 			),
+			'showBitrate' => array(
+            				'doc' => "Use show bitrate in order to show the bitrate and not the video resolution and quality",
+            				'type' => 'boolean',
+            				'initvalue' => false,
+            			),
 			array(
 				"doc" => "Preferred flavor bitrate",
 				"label" => "Preferred flavor bitrate",
