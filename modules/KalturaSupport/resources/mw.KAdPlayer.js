@@ -925,9 +925,6 @@ mw.KAdPlayer.prototype = {
 		$( _this.embedPlayer ).bind( 'onChangeMedia' + this.displayPostFix, function(){
 			adSlot.playbackDone();
 		});
-		$( _this.embedPlayer ).bind( 'ended' + this.displayPostFix, function(){
-			adSlot.playbackDone();
-		});
 
 		// Only display the the overlay for allocated time:
 		adSlot.doneFunctions.push(function(){
