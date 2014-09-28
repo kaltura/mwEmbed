@@ -165,9 +165,7 @@
 						} );
 					}
 
-					if ( _this.isNativeHLS() ) {
-						embedPlayer.setDuration( embedPlayer.currentTime );
-					} else {
+					if ( !_this.isNativeHLS() ) {
 						embedPlayer.setDuration( embedPlayer.getPlayerElement().duration );
 						embedPlayer.bindHelper( 'ended', function() {
 							embedPlayer.getPlayerElement().seek( 0 );
