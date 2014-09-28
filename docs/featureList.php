@@ -223,6 +223,24 @@
 						),
 					)
 				),
+				'CallToAction' => array(
+					'title' => 'Call To Action',
+					'desc' => 'Call to action plugins.',
+					'testfiles' => array(
+						'ActionButtons' => array(
+							'title' => 'Basic Buttons',
+							'path' => 'CallToAction/tests/ActionButtons.qunit.html'
+						),
+						'RelatedButtons' => array(
+							'title' => 'Related Buttons',
+							'path' => 'CallToAction/tests/ActionButtonsRelated.qunit.html'
+						),
+						'ActionForm' => array(
+							'title' => 'Submit Form',
+							'path' => 'CallToAction/tests/ActionForm.qunit.html'
+						),
+					)
+				),
 				'Transport' => array(
 					'title' => 'Transport',
 					'desc' => 'These plugins help optimize video delivery',
