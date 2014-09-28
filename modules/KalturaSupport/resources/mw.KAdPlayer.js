@@ -762,6 +762,14 @@ mw.KAdPlayer.prototype = {
 		}
 		// Store filledCompanion ids
 		var filledCompanions = {};
+		var sendBeacon = function(eventName, companion){
+			for(var i =0;i < companion.trackingEvents.length; i++){
+				if( eventName == companion.trackingEvents[ i ].eventName ){
+					mw.log("KAdPlayer:: sendBeacon: " + eventName + ' to: ' + companion.trackingEvents[ i ].beaconUrl );
+					mw.sendBeaconUrl( companion.trackingEvents[ i ].beaconUrl );
+				}
+			}
+		};
 		// Go though all the companions see if there are good companionTargets
 		$.each( adConf.companions, function( inx, companion ){
 			// Check for matching size:
@@ -773,6 +781,7 @@ mw.KAdPlayer.prototype = {
 				{
 					if( !filledCompanions[ companionTarget.elementid ]){
 						_this.displayCompanion( adSlot, companionTarget, companion);
+						sendBeacon("creativeView", companion);
 						filledCompanions[ companionTarget.elementid ] = true;
 					}
 				}
