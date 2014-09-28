@@ -1317,9 +1317,37 @@ mw.KAdPlayer.prototype = {
 						//TODO add this to flash vpaid
 						return VPAIDObj.getAdRemainingTime();
 					};
+
 					if ( isJs ) {
 						_this.addAdBindings( environmentVars.videoSlot, adSlot, adConf );
 					} else {
+						//TODO we should call addAdBindings here too!
+
+						// start ad tracking
+						_this.adTrackingFlag = true;
+
+						// Check runtimeHelper
+						if( adSlot.notice ){
+							var noticeId =_this.embedPlayer.id + '_ad_notice';
+							// Add the notice target:
+							_this.embedPlayer.getVideoHolder().append(
+								$('<span />')
+									.attr( 'id', noticeId )
+									.addClass( 'ad-component ad-notice-label' )
+									.css('z-index', 2001)
+							);
+							var localNoticeCB = function(){
+								if( _this.adTrackingFlag ){
+									// Evaluate notice text:
+									$('#' + noticeId).text(
+										_this.embedPlayer.evaluate( adSlot.notice.evalText )
+									);
+									setTimeout( localNoticeCB,  mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
+								}
+							};
+							localNoticeCB();
+						}
+
 						// add support for volume control over KDP during Flash ad playback
 						$( _this.embedPlayer ).bind( 'volumeChanged' + _this.trackingBindPostfix, function ( e, changeValue ) {
 							if ( typeof VPAIDObj.playerElement.sendNotification === "function" ) {
@@ -1339,6 +1367,12 @@ mw.KAdPlayer.prototype = {
 				VPAIDObj.subscribe( function ( message ) {
 					mw.log( 'VPAID :: AdLog:' + message );
 				}, 'AdLog' );
+				VPAIDObj.subscribe( function ( message ) {
+					if ( _this.embedPlayer.sequenceProxy.isInSequence ) {
+						mw.log( 'VPAID :: DurationChange:' + message.newValue );
+						_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', message.newValue );
+					}
+				}, 'durationChange' );
 
 				if ( isJs ) {  //flash vpaid will call initAd itself
 					VPAIDObj.initAd( _this.embedPlayer.getWidth(), _this.embedPlayer.getHeight(), 'normal', 512, creativeData, environmentVars );
