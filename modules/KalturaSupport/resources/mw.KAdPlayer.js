@@ -883,6 +883,11 @@ mw.KAdPlayer.prototype = {
 		$('#' +overlayId )
 		.css( layout )
 		.html( nonLinearConf.html )
+		.click(function(){
+				if (nonLinearConf.$html.attr("data-NonLinearClickTracking")){
+					mw.sendBeaconUrl( nonLinearConf.$html.attr("data-NonLinearClickTracking") );
+				}
+			})
 		.append(
 			// Add a absolute positioned close button:
 			$('<span/>')
