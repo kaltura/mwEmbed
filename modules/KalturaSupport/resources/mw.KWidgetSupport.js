@@ -253,6 +253,24 @@ mw.KWidgetSupport.prototype = {
 		var isStreamSupported = false;
 		// Check for live stream
 		if( playerData.meta && ( playerData.meta.type == 7 || playerData.meta.type == 8 )){
+			//check if entry ONLY has hls configuration:
+			var hasOnlyHLS = false;
+			var configurations = playerData.meta.liveStreamConfigurations;
+			if ( playerData.meta.hlsStreamUrl && ( !configurations || configurations.length == 0) ) {
+				hasOnlyHLS = true;
+			}  else if ( configurations ) {
+				for ( var i = 0; i < configurations.length; i++ ) {
+					if ( configurations[i].protocol != "hls" &&  configurations[i].protocol != "applehttp" ) {
+						hasOnlyHLS = false;
+						break;
+					}
+					hasOnlyHLS = true;
+				}
+			}
+			if ( hasOnlyHLS ) {
+				mw.setConfig("LeadWithHLSOnFlash", true);
+			}
+
 			if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'splayer' ) ) {
 				if ( playerData.contextData && playerData.contextData.flavorAssets ) {
 					var flavorData = playerData.contextData.flavorAssets;
