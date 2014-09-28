@@ -2826,7 +2826,12 @@
 		},
 
 		isDVR: function() {
-			return this.kalturaPlayerMetaData[ 'dvrStatus' ];
+			if ( this.kalturaPlayerMetaData && this.kalturaPlayerMetaData[ 'dvrStatus' ] )  {
+				return this.kalturaPlayerMetaData[ 'dvrStatus' ];
+			}
+
+			return false;
+
 		},
 
 		disableComponentsHover: function(){
