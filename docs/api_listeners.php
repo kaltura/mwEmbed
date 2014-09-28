@@ -306,6 +306,10 @@
 			'callbackArgs' => 'timeSlot: pre / post / mid / main (see SequenceContextType class)',
 			'desc' => 'Defines the value of the type property of 75% of ad notification',
 			'availability' => 'kdp'
+		),
+		'adErrorEvent' => array(
+			'callbackArgs' => 'None',
+			'desc' => 'Fired when an ad fails to load (applicable to all ad systems)'
 		)
 	);
 
