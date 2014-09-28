@@ -365,7 +365,7 @@
 				'cust_params=' + encodeURIComponent( this.getConfig( 'customParams' ) ) : '';
 			if( postFix ){
 				var paramSeperator = adUrl.indexOf( '?' ) === -1 ? '?' :
-					adUrl[ adUrl.length -1 ] == '&' ? '': '&';
+						adUrl[ adUrl.length -1 ] == '&' ? '': '&';
 
 				return unescape( adUrl ) + paramSeperator + postFix;
 			} else {

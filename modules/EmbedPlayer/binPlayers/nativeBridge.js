@@ -7,10 +7,12 @@ var NativeBridge = {
 	resultForCallback : function resultForCallback(callbackId, resultArray) {
 		try {
 			var callback = NativeBridge.callbacks[callbackId];
-			if (!callback) return;
+			if (!callback) {
+				return;
+			}
 
 			callback.apply(null,resultArray);
-		} catch(e) {alert(e)}
+		} catch(e) {alert(e);}
 	},
 
 	// Use this in javascript to request native objective-c code
@@ -22,8 +24,9 @@ var NativeBridge = {
 		var hasCallback = callback && typeof callback == "function";
 		var callbackId = hasCallback ? NativeBridge.callbacksCount++ : 0;
 
-		if (hasCallback)
+		if (hasCallback) {
 			NativeBridge.callbacks[callbackId] = callback;
+		}
 
 		var iframe = document.createElement("IFRAME");
 		iframe.setAttribute("src", "js-frame:" + functionName + ":" + callbackId+ ":" + encodeURIComponent(JSON.stringify(args)));
@@ -38,9 +41,8 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 	embedPlayer: null,
 	isJsCallbackReady: false,
 	bindPostfix: ".nativeBridge",
-
-	playerMethods: [ 'stop', 'play', 'pause', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen', 'notifyKPlayerEvent', 'notifyKPlayerEvaluated', 'notifyJsReady',
-		'doneFSBtnPressed', 'addNativeAirPlayButton', 'showNativeAirPlayButton', 'hideNativeAirPlayButton'],
+	playerMethods: [ 'stop', 'play', 'pause', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen', 'notifyKPlayerEvent', 'notifyKPlayerEvaluated', 'notifyJsReady', 'showChromecastDeviceList', 'notifyLayoutReady',
+		'doneFSBtnPressed', 'addNativeAirPlayButton', 'showNativeAirPlayButton', 'hideNativeAirPlayButton' ],
 
 	registePlayer: function (proxyElement) {
 		var _this = this;
@@ -174,6 +176,5 @@ if ( mw.getConfig('EmbedPlayer.ForceNativeComponent') === true ) {
 		NativeBridge.videoPlayer.notifyJsReadyFunc();
 	} );
 }
-
 
 })( window.mw, window.jQuery );

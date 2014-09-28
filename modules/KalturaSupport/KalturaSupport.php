@@ -24,6 +24,10 @@
 			'scripts' => "resources/mw.KBaseScreen.js",
 			'dependencies' => array( 'mw.KBaseComponent' )
 		),
+		"mw.KBaseMediaList" => array(
+			'scripts' => "resources/mw.KBaseMediaList.js",
+			'dependencies' => array( 'mw.KBaseComponent' )
+		),
 		"mw.KBaseComponent" => array(
 			'scripts' => "resources/mw.KBaseComponent.js",
 			'dependencies' => array( 'mw.KBasePlugin', 'mediawiki.kmenu' )
@@ -45,12 +49,6 @@
 		"mw.KAnalytics"=> array( 
 			'scripts' => "resources/mw.KAnalytics.js"
 		),
-		"mw.PlaylistHandlerKaltura"=> array( 
-			'scripts' => "resources/mw.PlaylistHandlerKaltura.js",
-			'dependencies' => array(
-				'mw.MwEmbedSupport'
-			)
-		), 
 		"mw.KDPMapping"=> array(
 			'scripts' => "resources/mw.KDPMapping.js",
 		),
@@ -84,12 +82,12 @@
             'dependencies' => array( 'mw.KBaseComponent' ),
             'kalturaPluginName' => 'search'
         ),
-        "mediaList" => array(
-            'scripts' => "components/mediaList/mediaList.js",
-            'styles' =>  "components/mediaList/mediaList.css",
-            'templates' => "components/mediaList/mediaList.tmpl.html",
-            'dependencies' => array( 'mw.KBaseComponent', 'jCarouse' ),
-            'kalturaPluginName' => 'mediaList'
+        "chapters" => array(
+            'scripts' => "components/chapters/chapters.js",
+            'styles' =>  "components/chapters/chapters.css",
+            'templates' => "components/chapters/chapters.tmpl.html",
+            'dependencies' => array( 'mw.KBaseMediaList', 'jCarouse' ),
+            'kalturaPluginName' => 'chapters'
         ),
 		/* Core plugins */
 		"keyboardShortcuts" => array(
@@ -121,6 +119,13 @@
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'theme',
 		),
+		"playlistAPI" => array(
+            'scripts' => "components/playlistAPI.js",
+            'dependencies' => array('mw.KBaseMediaList','jCarouse'),
+            'styles' =>  "components/playlist/playList.css",
+            'templates' => "components/playlist/playList.tmpl.html",
+            'kalturaPluginName' => 'playlistAPI',
+        ),
 		"largePlayBtn" => array(
 			'scripts' => "components/largePlayBtn.js",
 			'dependencies' => 'mw.KBaseComponent',
@@ -130,6 +135,11 @@
 			'scripts' => "components/playPauseBtn.js",
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'playPauseBtn',
+		),
+		"nextPrevBtn" => array(
+			'scripts' => "components/nextPrevBtn.js",
+			'dependencies' => 'mw.KBaseComponent',
+			'kalturaPluginName' => 'nextPrevBtn',
 		),
 		"fullScreenBtn" => array(
 			'scripts' => "components/fullScreenBtn.js",
@@ -221,30 +231,21 @@
 			'dependencies' => array( 'mw.KBaseScreen' ),
 			'kalturaPluginName' => 'share',
 		),
+		"playServerUrls" => array(
+			'scripts' => "components/playServerUrls.js",
+			'dependencies' => array( 'mw.KBasePlugin' ),
+			'kalturaPluginName' => 'playServerUrls',
+		),
 		"adBlockDetector" => array(
-            'scripts' => "components/adBlockDetector/adBlockDetector.js",
-            'dependencies' => array( 'mw.KBasePlugin' ),
-            'kalturaPluginName' => 'adBlockDetector',
-        ),
+			'scripts' => "components/adBlockDetector/adBlockDetector.js",
+			'dependencies' => array( 'mw.KBasePlugin' ),
+			'kalturaPluginName' => 'adBlockDetector',
+		),
 		"pptWidgetPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",
 			'kalturaPluginName' => 'pptWidgetAPI'
 		),
 
-		/* playlist */
-		"playlistPlugin"=> array( 
-			'scripts' => "resources/uiConfComponents/playlistPlugin.js", 
-			'dependencies' => array(
-				// core playlist module
-				"mw.Playlist",
-				// kaltura specific playlist modules
-				'mw.PlaylistHandlerKaltura',
-				// support playlist layout
-				'mw.KLayout'
-			),
-			'kalturaPluginName' => 'playlistAPI'
-		),
-		
 		/* uiConf based plugins */
 		"acCheck" => array(
 			'scripts' => "resources/uiConfComponents/acCheck.js",
@@ -310,7 +311,8 @@
 			'kalturaPluginName' => "download"
 		),
 		"jCarouse"=> array( 
-			'scripts' => "resources/uiConfComponents/jcarousellite_1.0.1.js" 
+			'scripts' => "resources/uiConfComponents/jcarousellite_1.0.1.js",
+			 'dependencies' => 'touchSwipe'
 		),
 		"mw.KLayout"=> array( 
 			'scripts' => "resources/mw.KLayout.js" 

@@ -2056,6 +2056,13 @@
 				return false;
 			}
 
+			// Allow plugins to block playback
+			var prePlay = {allowPlayback: true};
+			this.triggerHelper( 'prePlayAction', [prePlay] );
+			if( !prePlay.allowPlayback ){
+				return false;
+			}
+
 			// Check if thumbnail is being displayed and embed html
 			if ( _this.isStopped() && (_this.preSequenceFlag == false || (_this.sequenceProxy && _this.sequenceProxy.isInSequence == false) )) {
 				if ( !_this.selectedPlayer ) {
@@ -2626,6 +2633,19 @@
 		},
 
 		/**
+		 *  Abstract resolveSrcURL in order to allow tokanization and pre-fetching of the src before playback.
+		 *  some platforms doesnt support redircet responses.
+		 *  can be overrider with the propare logic
+		 * @param srcURL
+		 * @returns {promise - deferred object}
+		 */
+		resolveSrcURL: function( srcURL ){
+			var deferred = $.Deferred();
+			deferred.resolve( srcURL );
+			return deferred;
+		},
+
+		/**
 		 * Abstract getPlayerElementTime function
 		 */
 		getPlayerElement: function(){
@@ -2706,9 +2726,6 @@
 		getSource: function(){
 			// update the current selected source:
 			this.mediaElement.autoSelectSource();
-			if (this.mediaElement.selectedSource && this.mediaElement.selectedSource.mimeType === "application/vnd.apple.mpegurl"){
-				this.streamerType = "hls";
-			}
 			return this.mediaElement.selectedSource;
 		},
 		/**
@@ -2869,7 +2886,11 @@
 		},
 		switchSrc: function( source ){
 			var _this = this;
-			$( this ).trigger( 'sourceSwitchingStarted', [ { currentBitrate: source.getBitrate() }] );
+			var currentBR = 0;
+			if ( this.mediaElement.selectedSource ) {
+				currentBR = this.mediaElement.selectedSource.getBitrate();
+			}
+			$( this ).trigger( 'sourceSwitchingStarted', [ { currentBitrate: currentBR }] );
 			this.mediaElement.setSource( source );
 			$( this ).trigger( 'sourceSwitchingEnd',  [ { newBitrate: source.getBitrate() }] );
 			if( ! this.isStopped() ){

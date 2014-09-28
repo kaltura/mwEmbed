@@ -25,12 +25,12 @@ return array(
 //				"source" => "getTags"
 //			),
 			array(
-				"label" => "Preview entry",
+				"label" => "Preview entry / playlist",
 				"type" => "select2data",
 				"allow-custom-values" => true,
 				"source" => "listEntries",
 				"query" => "queryEntries",
-				"helpnote" => "Select entry",
+				"helpnote" => "Select entry / playlist",
 				"player-refresh"=> true,
 				"endline" => "true",
 				"width" => "100%",
@@ -105,7 +105,9 @@ return array(
 			"theme" => "",
 			"infoScreen" => "",
 			"share" => "",
-			"related" => ""
+			"related" => "",
+			"playlistAPI" => "",
+            "nextPrevBtn" => ""
 		)
 	),
 	"analytics"=> array(
