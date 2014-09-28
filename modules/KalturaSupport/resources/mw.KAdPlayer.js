@@ -597,8 +597,8 @@ mw.KAdPlayer.prototype = {
 					.addClass( 'ad-component ad-skip-btn' )
 					.bind(clickEventName, function(){
 						$( embedPlayer ).unbind( clickEventName + _this.adClickPostFix );
-						_this.skipCurrent();
 						$( embedPlayer).trigger( 'onAdSkip' );
+						_this.skipCurrent();
 						return false;
 					})
 			);
