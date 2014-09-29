@@ -318,7 +318,7 @@ mw.EmbedPlayerKplayer = {
 			this.hideSpinner();
 			if ( this.isLive() ) {
 				this.ignoreEnableGui = false;
-				this.enablePlayControls();
+				this.enablePlayControls( ['sourceSelector'] );
 			}
 			this.stopped = this.paused = false;
 		}
@@ -358,12 +358,16 @@ mw.EmbedPlayerKplayer = {
 	 * play method calls parent_play to update the interface
 	 */
 	play: function() {
-		mw.log('EmbedPlayerKplayer::play')
+		mw.log('EmbedPlayerKplayer::play');
+		var shouldDisable = false
+		if ( this.isLive() && this.paused ) {
+			shouldDisable = true;
+		}
 		if ( this.parent_play() ) {
 			//live might take a while to start, meanwhile disable gui
-			if ( this.isLive() ) {
+			if ( shouldDisable ) {
 				this.ignoreEnableGui = true;
-				this.disablePlayControls();
+				this.disablePlayControls( ['sourceSelector'] );
 			}
 			this.playerObject.play();
 			this.monitor();
