@@ -20,7 +20,7 @@
 				  kalturaQunitWaitForPlayer(function(){
 					  // look for the playlist:
 					  ok( $( $iframe).find( '.sideBarContainer' ).length > 0 , "Found side bar container" );
-					  ok( $( $iframe).find( '.sideBarContainer > .playlistAPI.mediaList' ).length > 0 , "Found playlist within side bar container" );
+					  ok( $( $iframe).find( '.sideBarContainer > .playlistAPI.medialistContainer' ).length > 0 , "Found playlist within side bar container" );
 					  equal ( $( $iframe).find('.chapterBox').length, 4, "Number of clips is 4");
 					  start();
 				  });

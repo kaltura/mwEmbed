@@ -91,13 +91,11 @@ mw.EmbedPlayerKplayer = {
 
 			//add OSMF HLS Plugin if the source is HLS
 			if ( _this.isHlsSource( _this.mediaElement.selectedSource ) && mw.getConfig("LeadWithHLSOnFlash") ) {
-				flashvars.sourceType = 'url';
-				flashvars.ignoreStreamerTypeForSeek = true;
 				flashvars.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
-				_this.streamerType = "hls";
+				flashvars.streamerType = _this.streamerType = 'hls';
 			}
 
-			if ( _this.live && _this.streamerType == 'rtmp' && !_this.cancelLiveAutoPlay ) {
+			if ( _this.isLive() && _this.streamerType == 'rtmp' && !_this.cancelLiveAutoPlay ) {
 				flashvars.autoPlay = true;
 			}
 
@@ -132,13 +130,14 @@ mw.EmbedPlayerKplayer = {
 					'bufferChange': 'onBufferChange',
 					'audioTracksReceived': 'onAudioTracksReceived',
 					'audioTrackSelected': 'onAudioTrackSelected',
-					'videoMetadataReceived': 'onVideoMetadataReceived'
+					'videoMetadataReceived': 'onVideoMetadataReceived',
+					'hlsEndList': 'onHlsEndList'
 				};
 				_this.playerObject = this.getElement();
 				$.each( bindEventMap, function( bindName, localMethod ) {
 					_this.playerObject.addJsListener(  bindName, localMethod );
 				});
-				if ( _this.startTime !== undefined && __this.startTime != 0 ) {
+				if ( _this.startTime !== undefined && _this.startTime != 0 ) {
 					_this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', _this.startTime );
 				}
 				readyCallback();
@@ -152,6 +151,12 @@ mw.EmbedPlayerKplayer = {
 			_this.bindHelper( 'switchAudioTrack', function(e, data) {
 				if ( _this.playerObject ) {
 					_this.playerObject.sendNotification( "doAudioSwitch",{ audioIndex: data.index  } );
+				}
+			});
+
+			_this.bindHelper( 'liveEventEnded', function() {
+				if ( _this.playerObject ) {
+					_this.playerObject.sendNotification( "liveEventEnded" );
 				}
 			});
 		});
@@ -241,12 +246,12 @@ mw.EmbedPlayerKplayer = {
 	restorePlayerOnScreen: function(){},
 
 	updateSources: function(){
-		if ( ! ( this.live || this.sourcesReplaced || this.isHlsSource( this.mediaElement.selectedSource ) ) ) {
+		if ( ! ( this.isLive() || this.sourcesReplaced || this.isHlsSource( this.mediaElement.selectedSource ) ) ) {
 			var newSources = this.getSourcesForKDP();
 			this.replaceSources( newSources );
 			this.mediaElement.autoSelectSource();
 		}
-		else if ( this.live && this.streamerType == 'rtmp' ){
+		else if ( this.isLive() && this.streamerType == 'rtmp' ){
 			var _this = this;
 
 			if ( ! this.autoplay ) { //not a real "autoPlay", just to enable live checks
@@ -308,12 +313,12 @@ mw.EmbedPlayerKplayer = {
 	 * parent_play
 	 */
 	onPlay: function() {
-		if(this._propagateEvents && this.paused) {
+		if(this._propagateEvents) {
 			$( this ).trigger( "playing" );
 			this.hideSpinner();
 			if ( this.isLive() ) {
 				this.ignoreEnableGui = false;
-				this.enablePlayControls();
+				this.enablePlayControls( ['sourceSelector'] );
 			}
 			this.stopped = this.paused = false;
 		}
@@ -343,15 +348,26 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	/**
+	 * m3u8 has 'EndList' tag
+	 */
+	onHlsEndList: function () {
+		this.triggerHelper( 'liveEventEnded' );
+	},
+
+	/**
 	 * play method calls parent_play to update the interface
 	 */
 	play: function() {
-		mw.log('EmbedPlayerKplayer::play')
+		mw.log('EmbedPlayerKplayer::play');
+		var shouldDisable = false
+		if ( this.isLive() && this.paused ) {
+			shouldDisable = true;
+		}
 		if ( this.parent_play() ) {
 			//live might take a while to start, meanwhile disable gui
-			if ( this.isLive() ) {
+			if ( shouldDisable ) {
 				this.ignoreEnableGui = true;
-				this.disablePlayControls();
+				this.disablePlayControls( ['sourceSelector'] );
 			}
 			this.playerObject.play();
 			this.monitor();
@@ -621,9 +637,13 @@ mw.EmbedPlayerKplayer = {
 	*/
 	getEntryUrl: function() {
 		var deferred = $.Deferred();
-		if ( this.live || this.sourcesReplaced || this.isHlsSource( this.mediaElement.selectedSource )) {
-			this.resolveSrcURL(this.mediaElement.selectedSource.getSrc()).then(function (srcToPlay){
-				deferred.resolve(srcToPlay);
+		if ( this.isLive() || this.sourcesReplaced || this.isHlsSource( this.mediaElement.selectedSource )) {
+			var originalSrc = this.mediaElement.selectedSource.getSrc();
+			this.resolveSrcURL( originalSrc )
+				.then(function ( srcToPlay ){
+				deferred.resolve( srcToPlay );
+			}, function () { //error
+				deferred.resolve( originalSrc );
 			});
 			return deferred;
 		}
