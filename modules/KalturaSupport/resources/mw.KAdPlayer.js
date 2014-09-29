@@ -1371,6 +1371,7 @@ mw.KAdPlayer.prototype = {
 				}, 'AdStopped' );
 				VPAIDObj.subscribe( function ( message ) {
 					mw.log( 'VPAID :: AdError:' + message );
+					$( _this.embedPlayer ).trigger("adErrorEvent");
 					finishPlaying();
 				}, 'AdError' );
 				VPAIDObj.subscribe( function ( message ) {
@@ -1449,6 +1450,16 @@ mw.KAdPlayer.prototype = {
 						VPAIDObj = vpaidFrame.contentWindow.getVPAIDAd();
 						VPAIDObj.handshakeVersion( '2.0' );
 						onVPAIDLoad();
+					};
+					vpaidLoader.onerror = function () {
+						if ( isJs ) {
+								_this.embedPlayer.getInterface().find( '.mwEmbedPlayer' ).show();
+							}
+						$( '#' + vpaidId ).remove();
+						$( _this.embedPlayer ).trigger("adErrorEvent");
+						_this.restoreEmbedPlayer();
+						adSlot.playbackDone();
+						$(_this.embedPlayer).trigger("playing");
 					};
 					vpaidFrame.contentWindow.document.body.appendChild( vpaidLoader );
 
