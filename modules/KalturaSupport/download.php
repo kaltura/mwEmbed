@@ -372,6 +372,21 @@ class downloadEntry {
 	 * @param $flavorId
 	 * 	{String} the flavor id string
 	 */
+	 public function getSourceUrl($kResultObject, $resultObject, $source){
+	    global $wgHTTPProtocol;
+
+        if( $kResultObject->request->getServiceConfig( 'UseManifestUrls' ) ){
+            $flavorUrl =  $kResultObject->request->getServiceConfig( 'ServiceUrl' ) .'/p/' . $kResultObject->getPartnerId() . '/sp/' .
+            $kResultObject->getPartnerId() . '00/playManifest/entryId/' . $kResultObject->request->getEntryId();
+        } else {
+            $flavorUrl = $kResultObject->request->getServiceConfig( 'CdnUrl' ) .'/p/' . $kResultObject->getPartnerId() . '/sp/' .
+            $kResultObject->getPartnerId() . '00/flvclipper/entry_id/' . $kResultObject->request->getEntryId();
+        }
+        $assetUrl = $flavorUrl . '/flavorId/' . $source->id . '/format/url/protocol/' . $wgHTTPProtocol;
+        $src =  $assetUrl .'/a.' . $source->fileExt . '?ks=' . $kResultObject->client->getKS() . '&referrer=' . $this->getReferer();
+        return $src;
+	 }
+
 	private function getSourceFlavorUrl( $flavorId = false ){
 		global $wgHTTPProtocol;
 
@@ -389,26 +404,39 @@ class downloadEntry {
             $kResultObject = $this->getResultObject();
             $resultObject =  $kResultObject->getResult();
 
-            foreach( $resultObject['contextData']->flavorAssets as $source ){
-                if( isset($source->bitrate) ){
-                    $delta =  abs( $source->bitrate - $preferredBitrate );
+			// if the user specified 0 - return the source
+			if ($_GET['preferredBitrate'] == "0"){
+				foreach( $resultObject['contextData']->flavorAssets as $source ){
+                    if (isset($source->tags) && $source->tags == "source"){
+						$src = $this->getSourceUrl($kResultObject, $resultObject, $source);
+					}
+				}
+			}else{
+				// decide if we got a bitrate or a flavour ID
+				if (strlen(strval($preferredBitrate)) == strlen($_GET['preferredBitrate'])){
+					// this is a bitrate
+		            foreach( $resultObject['contextData']->flavorAssets as $source ){
+	                    if( isset($source->bitrate) ){
+	                        $delta =  abs( $source->bitrate - $preferredBitrate );
+	                        if ( $delta < $deltaBitrate) {
+	                            $deltaBitrate = $delta;
+	                            $src = $this->getSourceUrl($kResultObject, $resultObject, $source);
+	                        }
+	                    }
+	                }
+				}else{
+					// this is a flavour ID
+		            foreach( $resultObject['contextData']->flavorAssets as $source ){
+	                    if( isset($source->id) && $source->id == $_GET['preferredBitrate']){
+	                        $src = $this->getSourceUrl($kResultObject, $resultObject, $source);
+	                    }
+	                }
+				}
+			}
 
-                    if ( $delta < $deltaBitrate) {
-                        $deltaBitrate = $delta;
-
-                        if( $kResultObject->request->getServiceConfig( 'UseManifestUrls' ) ){
-                            $flavorUrl =  $kResultObject->request->getServiceConfig( 'ServiceUrl' ) .'/p/' . $kResultObject->getPartnerId() . '/sp/' .
-                            $kResultObject->getPartnerId() . '00/playManifest/entryId/' . $kResultObject->request->getEntryId();
-                        } else {
-                            $flavorUrl = $kResultObject->request->getServiceConfig( 'CdnUrl' ) .'/p/' . $kResultObject->getPartnerId() . '/sp/' .
-                            $kResultObject->getPartnerId() . '00/flvclipper/entry_id/' . $kResultObject->request->getEntryId();
-                        }
-                        $assetUrl = $flavorUrl . '/flavorId/' . $source->id . '/format/url/protocol/' . $wgHTTPProtocol;
-                        $src =  $assetUrl .'/a.' . $source->fileExt . '?ks=' . $kResultObject->client->getKS() . '&referrer=' . $this->getReferer();
-                    }
-                }
-            }
-            return $src;
+			if ($src){
+				return $src;
+			}
         }
 
         // if no preferredBitrate was specified - continue normally

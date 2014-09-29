@@ -467,8 +467,9 @@ return array(
 		'attributes' => array_merge($kgDefaultComponentAttr,
 			array(
 				'preferredBitrate' => array(
-					'doc' => "Preferred bitrate for the downloaded movie source. Keep empty for the highest bitrate",
-					'type' => 'number',
+					'label' => 'Preferred bitrate / flavour ID',
+					'doc' => "Preferred bitrate or flavour ID for the downloaded movie source. Keep empty for the highest bitrate. Enter '0' for the original movie source file",
+					'type' => 'string',
 					'initvalue' => ''
 				),
 			)
