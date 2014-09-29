@@ -22,7 +22,6 @@ function jsKalturaPlayerTest( videoId ){
 		}
 		
 		window[ 'onPlayerSeekEnd' ] = function(){
-            debugger;
 		ok( onPlayerSeekStartTime !== null, "playerSeekStart was fired before playerSeekEnd" );
 		
 		ok( true,  'Seek end event fired ( playerSeekEnd )' );
