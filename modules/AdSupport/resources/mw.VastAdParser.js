@@ -206,11 +206,19 @@ mw.VastAdParser = {
 			$ad.find('CompanionAds Companion').each( function( na, companionNode ){
 				var staticResource = _this.getResourceObject( companionNode );
 				if( staticResource ){
+
+					staticResource.trackingEvents = [];
+					$(companionNode).find( 'trackingEvents Tracking' ).each( function( na, trackingNode ){
+						staticResource.trackingEvents.push({
+							'eventName' : $( trackingNode ).attr('event'),
+							'beaconUrl' : _this.getURLFromNode( trackingNode )
+						});
+					});
 					// Add the staticResourceto the ad config:
 					currentAd.companions.push( staticResource );
 				}
 			});
-			
+
 			// look for icons
 			currentAd.icons = [];
 			$ad.find('Icons Icon').each( function( na, icon ){
