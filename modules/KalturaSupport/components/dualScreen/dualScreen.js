@@ -192,6 +192,7 @@
 							'hide': {
 								name: 'SV',
 								action: function (  ) {
+									_this.disableMonitorFeatures( _this.getSecondMonitor().obj );
 									_this.hideMonitor( _this.getSecondMonitor().obj );
 								}
 							},
