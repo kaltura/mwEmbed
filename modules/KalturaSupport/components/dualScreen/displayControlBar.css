@@ -210,10 +210,12 @@ ul.inline, ol.inline {
     background: linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.2) 20%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.05) 80%, rgba(0,0,0,0) 100%);
     filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=10) progid:DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#000000', GradientType=0 );
     position: absolute;
-    content: ' ';
     width: 100%;
     height: 100%;
     z-index: 10;
+    overflow: hidden;
+    top: 0;
+    left: 0;
 }
 /*Fonts*/
 @font-face {

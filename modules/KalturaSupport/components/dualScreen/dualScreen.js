@@ -663,15 +663,12 @@
 			setControlBarBindings: function () {
 				//Set control bar visiblity handlers
 				var _this = this;
-				var components = this.getMonitors().concat(_this.getControlBar()).concat(_this.getPlayer().getVideoHolder());
-				$.each(components, function(i, obj){
-					obj
-						.on( 'mousemove touchstart', function(e){_this.showControlBar( )} )
-						.on( 'mouseleave', function(e){_this.hideControlBar( )} );
-				});
+				this.getPlayer().getInterface()
+					.on( 'mousemove touchstart', function(e){_this.showControlBar( )} )
+					.on( 'mouseleave', function(e){_this.hideControlBar( )} );
 
 				//add drop shadow containers for control bar
-				this.getPlayer().getInterface().find(".mwEmbedPlayer").prepend($("<div class='controlBarShadow componentAnimation'></div>").addClass('componentOff'));
+				this.getPlayer().getInterface().find(".mwEmbedPlayer").after($("<div class='controlBarShadow componentAnimation'></div>").addClass('componentOff'));
 				this.getComponent().prepend($("<div class='controlBarShadow componentAnimation'></div>").addClass('componentOff'));
 				//Attach control bar action handlers
 				$.each( _this.controlBarComponents, function ( name, component ) {
