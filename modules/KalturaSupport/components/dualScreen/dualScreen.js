@@ -10,7 +10,7 @@
 				"displayImportance": 'high',
 				'templatePath': 'components/dualScreen/displayControlBar.tmpl.html',
 				'secondScreen': {
-					'size': '30',
+					'size': '25',
 					'startLocation': 'right bottom'
 				},
 				'resizable': {

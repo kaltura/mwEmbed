@@ -177,10 +177,10 @@ ul.inline, ol.inline {
 
 @media all and  (max-width: 640px) {
     #displayControlBar{
-        width:200px;
+        width:210px;
     }
     .controlBarBtn, #seperator {
-        font-size:18px;
+        font-size:24px;
     }
 }
 

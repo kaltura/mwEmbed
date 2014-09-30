@@ -50,7 +50,12 @@ body { letter-spacing: 0.04em; }
     text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.6);
 }
 #sideBarContainerReminderContainer{
-    font-size: 24px;
+    font-size: 32px;
+}
+@media all and  (max-width: 640px) {
+    #sideBarContainerReminderContainer{
+        font-size: 24px;
+    }
 }
 .sideBarContainerReminder:hover div{
     -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
@@ -67,7 +72,7 @@ body { letter-spacing: 0.04em; }
     text-shadow: 0px 0px 10px #fff;
 }
 .sideBarContainerReminder.left{
-    left: -30%;
+    left: -25%;
     -webkit-transition: left 0.3s ease-in;
     -moz-transition: left 0.3s ease-in;
     -o-transition: left 0.3s ease-in;
@@ -78,10 +83,10 @@ body { letter-spacing: 0.04em; }
     left: 0px;
 }
 .sideBarContainerReminder.left.shifted{
-    left: 30%;
+    left: 25%;
 }
 .sideBarContainerReminder.right{
-    right: -30%;
+    right: -25%;
     -webkit-transition: right 0.3s ease-in;
     -moz-transition: right 0.3s ease-in;
     -o-transition: right 0.3s ease-in;
@@ -92,13 +97,13 @@ body { letter-spacing: 0.04em; }
     right: 0px;
 }
 .sideBarContainerReminder.right.shifted{
-    right: 30%;
+    right: 25%;
 }
 
 .sideBarContainer {
     position: absolute;
     top: 0;
-    width: 30%;
+    width: 25%;
     z-index: 100;
     box-sizing:border-box;
     height: 100%;
@@ -121,7 +126,7 @@ body { letter-spacing: 0.04em; }
 }
 
 .sideBarContainer.left{
-    left: -30%;
+    left: -25%;
 }
 .sideBarContainer.openBtn {
     z-index: 99;
@@ -130,7 +135,7 @@ body { letter-spacing: 0.04em; }
     left: 0;
 }
 .sideBarContainer.right{
-    right: -30%;
+    right: -25%;
 }
 .sideBarContainer.right.openBtn{
     right: 0;
