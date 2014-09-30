@@ -106,8 +106,8 @@
 					}
 				};
 
-				$.extend( _this.getConfig( 'draggable' ), actionsControls )
-				$.extend( _this.getConfig( 'resizable' ), actionsControls )
+				$.extend( _this.getConfig( 'draggable' ), actionsControls );
+				$.extend( _this.getConfig( 'resizable' ), actionsControls );
 			},
 			initFSM: function () {
 				function StateMachine( states ) {
@@ -138,17 +138,17 @@
 
 				var fsmTransitionHandlers = function (transitionFrom, transitionTo) {
 					var transitionHandlerSet = true;
-					_this.getPlayer().triggerHelper('preDualScreenTransition', [[transitionFrom, transitionTo]])
+					_this.getPlayer().triggerHelper('preDualScreenTransition', [[transitionFrom, transitionTo]]);
 
 					_this.disableControlBar();
 					_this.enableMonitorTransition();
 
 					function transitionendHandler( e ) {
 						if ( transitionHandlerSet ) {
-							_this.getPlayer().triggerHelper('postDualScreenTransition', [[transitionFrom, transitionTo]])
 							transitionHandlerSet = false;
 							_this.enableControlBar();
 							_this.disableMonitorTransition();
+							_this.getPlayer().triggerHelper('postDualScreenTransition', [[transitionFrom, transitionTo]]);
 						}
 					}
 
@@ -307,7 +307,8 @@
 					}
 
 					//dualScreen components are set on z-index 1-3, so set all other components to zIndex 4 or above
-	                  $.each(_this.embedPlayer.getVideoHolder().children(), function(index, childNode){
+					_this.zIndexObjs = [];
+					$.each(_this.embedPlayer.getVideoHolder().children(), function(index, childNode){
 		                  var obj = $(childNode);
 		                  var classList = obj.attr('class')? obj.attr('class').split(/\s+/) : [];
 		                  if ( $.inArray("dualScreen", classList) == -1){
@@ -317,8 +318,9 @@
 	                              var zIndex = obj.css('z-index');
 		                          obj.css('z-index', zIndex + 4);
 	                          }
+			                  _this.zIndexObjs.push(obj);
 	                      }
-	                  });
+	                });
 				} );
 
 				this.bind( 'onOpenFullScreen', function () {
@@ -432,6 +434,16 @@
 					cssParams = _this.getFirstMonitor().obj.css( ['top', 'left', 'width', 'height'] );
 					_this.getPrimary().obj.css({'top': '', 'left': '', 'width': '', 'height': ''} ).removeClass('firstScreen');
 					_this.fsm.consumeEvent( 'hide' );
+					_this.ignoreNextMouseEvent = true;
+					$.each(_this.zIndexObjs, function(i, obj){
+						var zIndex = $(obj).css('z-index');
+						$(obj ).css("z-index", zIndex - 4);
+					});
+					_this.bind("postDualScreenTransition", function(){
+							_this.getPlayer().unbindHelper("postDualScreenTransition");
+						_this.disableControlBar();
+						}
+					);
 				} );
 				this.bind( "preHideScreen", function () {
 					if (screenShown) {
@@ -442,6 +454,15 @@
 							_this.fsm.consumeEvent( state );
 						});
 						fsmState = [];
+						$.each(_this.zIndexObjs, function(i, obj){
+							var zIndex = $(obj).css('z-index');
+							$(obj ).css("z-index", zIndex + 4);
+						});
+						_this.bind("postDualScreenTransition", function(){
+							_this.getPlayer().unbindHelper("postDualScreenTransition");
+							_this.enableControlBar();
+							}
+						);
 					}
 				} );
 			},
