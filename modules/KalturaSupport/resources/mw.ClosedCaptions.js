@@ -670,6 +670,9 @@
 				// hide old timed captions text
 				this.hideCaptions();
 
+				// Allow plugins to integrate with captions menu
+				this.getPlayer().triggerHelper('captionsMenuReady');
+
 				return this.getMenu();
 			} else {
 				this.getBtn().show();
