@@ -15,8 +15,6 @@
 				},
 				'resizable': {
 					'handles': 'ne, se, sw, nw',
-					'ghost': true,
-					//'animate': true,
 					'maxWidth': 40,
 					'aspectRatio': true,
 					'minWidth': 100,
