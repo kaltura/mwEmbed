@@ -466,9 +466,17 @@ return array(
 			The download button will enable users to download the media to a local file.",
 		'attributes' => array_merge($kgDefaultComponentAttr,
 			array(
+                'flavorID' => array(
+                    'label' => 'Flavor ID',
+                    'doc' => "Flavor ID for the downloaded movie source. When specified, overrides any preferred bitrate settings",
+                    'type' => 'string',
+                    'initvalue' => ''
+                ),
+            ),
+			array(
 				'preferredBitrate' => array(
-					'label' => 'Preferred bitrate / flavour ID',
-					'doc' => "Preferred bitrate or flavour ID for the downloaded movie source. Keep empty for the highest bitrate. Enter '0' for the original movie source file",
+					'label' => 'Preferred bitrate',
+					'doc' => "Preferred bitrate for the downloaded movie source (when Flavor ID is not specified). Keep empty for the highest bitrate. Enter '0' for the original movie source file",
 					'type' => 'string',
 					'initvalue' => ''
 				),
