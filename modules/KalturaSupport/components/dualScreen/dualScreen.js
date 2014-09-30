@@ -93,10 +93,26 @@
 
 				var actionsControls = {
 					start: function ( event ) {
+						switch(event.type){
+							case "dragstart":
+								_this.dragging = true;
+								break;
+							case "resizestart":
+								_this.resizing = true;
+								break;
+						}
 						_this.disableControlBar();
 						_this.getPlayer().disablePlayControls();
 					},
 					stop: function ( event ) {
+						switch(event.type){
+							case "dragstop":
+								_this.dragging = false;
+								break;
+							case "resizestop":
+								_this.resizing = false;
+								break;
+						}
 						_this.enableControlBar();
 						$( event.toElement ).one( 'click', function ( e ) {
 							e.stopImmediatePropagation();
@@ -565,7 +581,7 @@
 				$(monitor).find(".cornerHandle" ).removeClass('componentAnimation' ).addClass('componentOn' ).removeClass('componentOff' );
 			},
 			addResizeHandlers: function (monitor, action) {
-				var dragging = false;
+				this.removeResizeHandlers(monitor);
 				var cornerHandleVisibleTimoutId;
 				var _this = this;
 				monitor.prepend($("<span>").addClass("dualScreen-transformhandle cornerHandle componentOff bottomRightHandle"));
@@ -573,11 +589,9 @@
 				monitor.prepend($("<span>").addClass("dualScreen-transformhandle cornerHandle componentOff topRightHandle"));
 				monitor.prepend($("<span>").addClass("dualScreen-transformhandle cornerHandle componentOff topLeftHandle"));
 				monitor
-					.on( 'mouseup', function(){dragging = false;})
-					.on( 'mousedown', function(){dragging = true;})
-					.on( 'mouseleave', function(e) { if ( !dragging ) { _this.hideResizeHandlers(this); } })
+					.on( 'mouseleave', function(e) { if ( !_this.dragging ) { _this.hideResizeHandlers(this); } })
 					.on( 'mousemove touchstart', function(e){
-						if (!dragging){
+						if (!this.dragging){
 							_this.showResizeHandlers(this);
 							var monitorRef=this;
 							if(cornerHandleVisibleTimoutId){
