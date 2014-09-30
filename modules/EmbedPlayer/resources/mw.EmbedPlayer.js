@@ -2938,10 +2938,6 @@
 			}
 		},
 
-		switchAudioTrack: function ( trackIndex ) {
-			mw.log('Error player does not multiple audio tracks' );
-		},
-
 		bufferStart: function() {
 			if ( !this.isInSequence() && !this.buffering ) {
 				var _this = this;
