@@ -617,22 +617,21 @@ body { letter-spacing: 0.04em; }
 }
 
 .ui-tooltip {
-	background-color: #ffffff;
+	background-color: #000000;
 	background-repeat: repeat-x;
-	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dddddd));
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#000000), to(#000000));
 
-	background: -webkit-linear-gradient(top, #ffffff, #dddddd);
-	background: -moz-linear-gradient(top, #ffffff, #dddddd);
-	background: -o-linear-gradient(top, #ffffff, #dddddd);
-	background: -ms-linear-gradient(top, #ffffff, #dddddd);
-	background: linear-gradient(top, #ffffff, #dddddd);
+	background: -webkit-linear-gradient(top, #000000, #000000);
+	background: -moz-linear-gradient(top, #000000, #000000);
+	background: -o-linear-gradient(top, #000000, #000000);
+	background: -ms-linear-gradient(top, #000000, #000000);
+	background: linear-gradient(top, #000000, #000000);
 
-	-webkit-box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.3);
-	box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.3);
 	z-index: 1000;
+    font-weight: bold;
 	font-size: 0.85em;
     letter-spacing: 0px;
-	color: #555;
+	color: #aaaaaa;
 	border-radius: 2px;
 	padding: 2px 5px;
 }
@@ -684,7 +683,7 @@ body { letter-spacing: 0.04em; }
 	-ms-transform: rotate(45deg);
 	transform: rotate(45deg);
 	tranform: rotate(45deg);
-	background-color: #ddd;
+	background-color: #000000;
 }
 
 .ui-tooltip .arrowTop:after {
@@ -705,7 +704,7 @@ body { letter-spacing: 0.04em; }
 	-ms-transform: rotate(45deg);
 	transform: rotate(45deg);
 	tranform: rotate(45deg);
-	background-color: #fafafa;
+	background-color: #000000;
 }
 
 .ui-tooltip .arrow .top:after {
