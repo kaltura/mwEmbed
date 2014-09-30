@@ -120,10 +120,10 @@
 }
 /*Animations*/
 .componentAnimation{
-    -webkit-transition: visibility 0.75s ease-out ,opacity 0.75s ease-out;
-    -moz-transition: visibility 0.75s ease-out ,opacity 0.75s ease-out;
-    -o-transition: visibility 0.75s ease-out ,opacity 0.75s ease-out;
-    transition: visibility 0.75s ease-out ,opacity 0.75s ease-out;
+    -webkit-transition: visibility 0.35s ease-out ,opacity 0.35s ease-out;
+    -moz-transition: visibility 0.35s ease-out ,opacity 0.35s ease-out;
+    -o-transition: visibility 0.35s ease-out ,opacity 0.35s ease-out;
+    transition: visibility 0.35s ease-out ,opacity 0.35s ease-out;
 }
 /*Control bar*/
 ul.inline, ol.inline {
