@@ -70,6 +70,7 @@ mw.EmbedPlayerKplayer = {
 			flashvars.streamerType = _this.streamerType;
 
 			flashvars.entryUrl = encodeURIComponent( srcToPlay );
+			flashvars.entryDuration = _this.getDuration();
 			flashvars.isMp4 = _this.isMp4Src();
 			flashvars.ks = _this.getFlashvars( 'ks' );
 			flashvars.serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );
@@ -280,6 +281,7 @@ mw.EmbedPlayerKplayer = {
 		this.flashCurrentTime = 0;
 		this.playerObject.setKDPAttribute( 'mediaProxy', 'isLive', this.isLive() );
 		this.playerObject.setKDPAttribute( 'mediaProxy', 'isMp4', this.isMp4Src() );
+		this.playerObject.setKDPAttribute( 'mediaProxy', 'entryDuration', this.getDuration() );
 		this.getEntryUrl().then(function( srcToPlay ){
 			_this.playerObject.sendNotification( 'changeMedia', {
 				entryUrl: srcToPlay
@@ -463,19 +465,19 @@ mw.EmbedPlayerKplayer = {
 			}
 		});
 
-		// Issue the seek to the flash player:
-		this.maskPlayerPlayed();
-		this.playerObject.play();
-		this.playerObject.seek( seekTime );
+		if ( this.firstPlay ) {
+			this.stopEventPropagation();
+			if ( this.streamerType == 'http' ) {
+				this.playerObject.seek( seekTime );
+			}
+			this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', seekTime );
+			this.playerObject.play();
+		} else {
+			this.playerObject.seek( seekTime );
+		}
+
 	},
-	maskPlayerPlayed: function (){
-		this.stopEventPropagation();
-		this.playerObject.addJsListener('playerPlayed', "unmaskPlayerPlayed" );
-	},
-	unmaskPlayerPlayed: function (){
-		this.restoreEventPropagation();
-		this.playerObject.removeJsListener('playerPlayed', "unmaskPlayerPlayed" );
-	},
+
 	/**
 	 * Issues a volume update to the playerElement
 	 *
@@ -517,6 +519,9 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onPlayerSeekEnd: function () {
+		if ( this.firstPlay ) {
+			this.restoreEventPropagation();
+		}
 		this.previousTime = this.currentTime = this.flashCurrentTime = this.playerObject.getCurrentTime();
 		this.seeking = false;
 		if (this.seekStarted){
