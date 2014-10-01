@@ -45,8 +45,10 @@
 
 			this.bind('updateLayout', function(){
 				if (_this.getConfig( 'parent')){
-					_this.renderMediaList();
-					_this.setSelectedMedia(_this.selectedMediaItemIndex);
+					setTimeout(function(){
+						_this.renderMediaList();
+						_this.setSelectedMedia(_this.selectedMediaItemIndex);
+					}, 0);
 				}
 			});
 			// handle fullscreen entering resize
