@@ -270,6 +270,9 @@ The kWidget API is available after you include the Kaltura player library. kWidg
 After you include the Kaltura player library, the following kWidget API is available:
 <div class="docblock">
 	<?php echo getDocs( array( 'kWidget.embed', 'kWidget.thumbEmbed', 'kWidget.getKalturaThumbUrl','kWidget.addReadyCallback','kWidget.destroy' ) ) ?>
+	<h3 class="linkable" id="kwidget-feature-and-user-agent"> User Agent and Feature Detection </h2>
+	<?php echo getDocs( array( 'kWidget.isMobileDevice', 'kWidget.supportsHTML5', 'kWidget.supportsFlash','kWidget.isIOS' ,'kWidget.isIE','kWidget.isIE8', 'kWidget.isAndroid','kWidget.isWindowsDevice') ) ?>
+	<h3 class="linkable" id="kwidget-settingsObject"> Settings Embed Object:</h2>
 	<?php echo getObjectDocs( array( 'kWidget.settingsObject' ) ) ?>
 </div><br><br>
 <a name="kWidgetApi"></a>
