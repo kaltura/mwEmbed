@@ -115,7 +115,7 @@ require_once( realpath( dirname( __FILE__ ) ) . '/api_evaluates.php' );
 			$o.='<span class="key">'. $key . '</span><br>';
 			$o.= $var['desc'];
 			if( isset( $var['example'] ) && $var['example'] != '' ){
-				$o.= '<br><a href="'. $var['example'] . '" target="_blank">Live Example</a>';
+				$o.= '<br><a href="'. $var['example'] . '" target="_blank">Usage Example</a>';
 			}
 			if(  isset( $var['type'] ) ){
 				$o.='<br><span class="type">Type</span>: <br>&nbsp;&nbsp;&nbsp;&nbsp;' .$var['type'];

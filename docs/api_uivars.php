@@ -761,7 +761,7 @@ $uiVars = array(
 					'type' => 'Integer',
 					'desc' => 'A prefered bitrate for selecting the flavor to be played. In case of an RTMP adaptive mbr, a -1 value will force an auto switching as opposed to manual one. Will be affective only if the "disableBitrateCookie=true" Flashvar is sent.',
 					'default' => '1000',
-					'example' => ''
+					'example' => '../modules/KalturaSupport/tests/FlavorSelector.preferedFlavorBR.qunit.html'
 			),
 			'mediaProxy.imageDefaultDuration' => array(
 					'type' => 'Integer',
