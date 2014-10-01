@@ -8,10 +8,9 @@
     height: 100%;
 }
 .k-chapters-container{
+	font: normal 13px "Myriad Web Pro Regular",Helvetica,Arial,sans-serif !important;
     position:relative;
     display: block;
-    font-family: Arial;
-    letter-spacing: 0em;
 }
 .k-chapters-container.horizontal {
     padding-top:5px;
