@@ -432,7 +432,10 @@
 			this.selectedMediaItemIndex = mediaIndex;
 			$( mediaBoxes[mediaIndex] ).addClass( 'active'); //li[data-chapter-index='" + activeIndex + "']
 			if (!this.getConfig('overflow')) {
-				this.getMedialistComponent().find( '.k-carousel' )[0].jCarouselLiteGo( mediaIndex );
+				var carousel = this.getMedialistComponent().find( '.k-carousel' );
+				if (carousel[0]) {
+					carousel[0].jCarouselLiteGo( mediaIndex );
+				}
 			}
 		},
 		getActiveItem: function(){
