@@ -118,6 +118,13 @@
 .bottomRightHandle .componentOff{
     filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0) progid:DXImageTransform.Microsoft.BasicImage(rotation=2)";
 }
+.ui-resizable-nw,
+.ui-resizable-sw,
+.ui-resizable-se,
+.ui-resizable-ne{
+    width: 20px;
+    height: 20px;
+}
 /*Animations*/
 .componentAnimation{
     -webkit-transition: visibility 0.35s ease-out ,opacity 0.35s ease-out;
