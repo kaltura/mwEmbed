@@ -266,10 +266,6 @@
 				}
 			});
 
-			_this.embedPlayer.bindHelper( 'Playlist_PlayClip', function( event, clipIndex, autoContinue, playback ){
-				playback.shouldPause = _this.shouldPausePlaylist;
-			});
-
 			_this.embedPlayer.bindHelper( 'AdSupport_midroll' + _this.bindPostfix, function( event, sequenceProxy ){
 				// Add the slot to the given sequence proxy target target
 				sequenceProxy[ _this.getSequenceIndex( 'midroll' ) ] = function( callback ){
