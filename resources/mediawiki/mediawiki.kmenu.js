@@ -144,7 +144,7 @@
             // Set active
             var selector = null;
             if( typeof idx == 'number' ){
-                selector = 'li:not(.' + this.options.dividerClass + ',.label):eq(' + idx + ')';
+                selector = 'li:not(.' + this.options.dividerClass + '):eq(' + idx + ')';
             } else {
                 selector = 'li[' + idx.key + '=' + idx.val + ']';
             }
