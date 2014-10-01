@@ -759,7 +759,9 @@ $uiVars = array(
 			),
 			'mediaProxy.preferedFlavorBR' => array(
 					'type' => 'Integer',
-					'desc' => 'A prefered bitrate for selecting the flavor to be played. In case of an RTMP adaptive mbr, a -1 value will force an auto switching as opposed to manual one. Will be affective only if the "disableBitrateCookie=true" Flashvar is sent.',
+					'desc' => 'A prefered bitrate for selecting the flavor to be played. '.
+						'In the case of HLS, this param is passed to the manifest chaning the flavor list with prefered bitrate flavor first. '. 
+						'In case of an RTMP adaptive mbr, a -1 value will force an auto switching as opposed to manual one. Will be affective only if the "disableBitrateCookie=true" Flashvar is sent.',
 					'default' => '1000',
 					'example' => '../modules/KalturaSupport/tests/FlavorSelector.preferedFlavorBR.qunit.html'
 			),
