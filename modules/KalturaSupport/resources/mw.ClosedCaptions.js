@@ -15,9 +15,7 @@
 			"hideWhenEmpty": false,
 			"showEmbeddedCaptions": false,
 			"hideClosedCaptions": false,
-			"showEmbeddedCaptionsStyle": false,
-			"showOffButton": true,
-			"toggleActiveCaption": false
+			"showEmbeddedCaptionsStyle": false
 		},
 
 		textSources: [],
@@ -99,7 +97,7 @@
 			}
 
 			this.bind( 'textTracksReceived', function( e, data ){
-				if ( data && $.isArray(data.languages) && data.languages.length ) {
+				if ( data && data.languages ) {
 					_this.destory();
 					var newSources = [];
 					$.each( data.languages, function( inx, src ){
@@ -199,7 +197,6 @@
 		},
 		hideCaptions: function(){
 			if( !this.getConfig('displayCaptions') || this.textSources.length === 0 ) {
-				this.getMenu().clearActive();
 				this.getCaptionsOverlay().hide();
 				var $cc = this.embedPlayer.getInterface().find('.captionContainer' );
 				$cc.remove();
@@ -647,7 +644,7 @@
 				'text-align': 'center',
 				'z-index': 2
 			};
-			baseCss = $.extend( baseCss, this.getInterfaceSizeTextCss({
+			baseCss =$.extend( baseCss, this.getInterfaceSizeTextCss({
 				'width' :  this.embedPlayer.getInterface().width(),
 				'height' : this.embedPlayer.getInterface().height()
 			}));
@@ -655,7 +652,7 @@
 		},
 		buildMenu: function( sources ){
 			var _this = this;
-			mw.log('closedCaptions::buildMenu with sources: ', sources);
+
 			// Destroy the old menu
 			this.getMenu().destroy();
 
@@ -678,37 +675,26 @@
 			}
 
 			// Add Off item
-			if( this.getConfig('showOffButton') ) {
-				this.getMenu().addItem({
-					'label': 'Off',
-					'callback': function(){
-						_this.setConfig('displayCaptions', false);
-						// also update the cookie to "None"
-						_this.getPlayer().setCookie( _this.cookieName, 'None' );
-					},
-					'active': ! _this.getConfig( "displayCaptions" ) 
-				});
-			}
+			this.getMenu().addItem({
+				'label': 'Off',
+				'callback': function(){
+					_this.setConfig('displayCaptions', false);
+					// also update the cookie to "None"
+					_this.getPlayer().setCookie( _this.cookieName, 'None' );
+				},
+				'active': ! _this.getConfig( "displayCaptions" ) 
+			});
 
 			// Add text sources
 			$.each(sources, function( idx, source ){
 				_this.getMenu().addItem({
 					'label': source.label,
 					'callback': function(){
-						// If this caption is the same as current caption, toggle off captions
-						if( _this.getConfig('toggleActiveCaption') && _this.selectedSource === source ) {
-							_this.selectedSource = null;
-							_this.setConfig('displayCaptions', false);
-						} else {
-							_this.setTextSource( source );
-						}
+						_this.setTextSource( source );
 					},
 					'active': ( _this.selectedSource === source && _this.getConfig( "displayCaptions" )  )
 				})
 			});
-
-			// Allow plugins to integrate with captions menu
-			this.getPlayer().triggerHelper('captionsMenuReady');
 		},
 		setTextSource: function( source, setCookie ){
 			setCookie = ( setCookie === undefined ) ? true : setCookie;
