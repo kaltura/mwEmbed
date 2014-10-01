@@ -142,28 +142,32 @@ ul.inline, ol.inline {
 }
 
 #displayControlBar{
-    /*top:5px; */
-    /*left:5px;*/
-    width:260px;
+    width:250px;
     height:auto;
     position: absolute;
     cursor: pointer;
 }
-
+#displayControlBar #text{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%
+}
 .controlBarBtn {
     display: inline;
     font-size:32px;
     float: left;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 20px;
     cursor: pointer;
     text-shadow: 0px 0px 1px rgba(0, 0, 0, 0.4);
 }
+.controlBarBtn.last{
+    padding-left: 0px;
+}
 #seperator {
-    padding: 0px;
-    display: inline;
-    font-size: 32px;
-    float: left;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 /*@media all and  (max-width: 640px) {*/
