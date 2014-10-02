@@ -591,7 +591,7 @@
 						getTime();
 					} else {
 						var eventName = 'focus.doubleClickMobileEvent';
-						if( mw.isIOS() ) {
+						if( _this.isPageshowEventSupported() && mw.isIOS() ) {
 							eventName = 'pageshow.doubleClickMobileEvent';
 						}
 						_this.adClickEvent = eventName;
@@ -867,6 +867,15 @@
 			},'adsLoadError', true);
 
 		},
+
+		isPageshowEventSupported: function() {
+			if( mw.isIOS8() ) {
+				return false;
+			}
+
+			return true;
+		},
+
 		getPlayerSize: function(){
 			return {
 				'width': this.embedPlayer.getVideoHolder().width(),
