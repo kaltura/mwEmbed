@@ -637,7 +637,7 @@ mw.EmbedPlayerKplayer = {
 	*/
 	getEntryUrl: function() {
 		var deferred = $.Deferred();
-		if ( this.isLive() || this.sourcesReplaced || this.isHlsSource( this.mediaElement.selectedSource )) {
+		if ( this.isHlsSource( this.mediaElement.selectedSource )) {
 			var originalSrc = this.mediaElement.selectedSource.getSrc();
 			this.resolveSrcURL( originalSrc )
 				.then(function ( srcToPlay ){
