@@ -297,9 +297,11 @@
 						return;
 					}
 					_this.embedPlayer.unbindHelper( 'playing' + bindPostFix );
-					_this.embedPlayer.stopEventPropagation();
-					_this.embedPlayer.getPlayerElement().pause();
-					_this.embedPlayer.stopMonitor();
+					if( !mw.isIOS8() ) {
+						_this.embedPlayer.stopEventPropagation();
+						_this.embedPlayer.getPlayerElement().pause();
+						_this.embedPlayer.stopMonitor();
+					}
 				});
 			}
 		},

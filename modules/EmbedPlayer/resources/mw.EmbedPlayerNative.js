@@ -1046,9 +1046,12 @@ mw.EmbedPlayerNative = {
 					// issue a play request
 					if( !_this.playing ) {
 						if( mw.isIOS8() ) {
-							vid.load();
+							setTimeout( function() {
+								vid.play();
+							}, 0);
+						} else {
+							vid.play();
 						}
-						vid.play();
 					}
 					// re-start the monitor:
 					_this.monitor();
