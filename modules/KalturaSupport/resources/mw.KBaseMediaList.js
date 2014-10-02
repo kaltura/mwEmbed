@@ -10,6 +10,7 @@
 		isDisabled: false,
 		$mediaListContainer: null,
 		selectedMediaItemIndex: 0,
+		startFrom: 0,
 
 		getBaseConfig: function(){
 			var parentConfig = this._super();
@@ -481,18 +482,18 @@
 		},
 		initScroll: function(){
 			var $cc = this.getMedialistComponent();
-			var mediaItemVisible = this.calculateVisibleScrollItems();
+			this.mediaItemVisible = this.calculateVisibleScrollItems();
 			var isVertical = ( this.getLayout() == 'vertical' );
 
 			// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
 			$cc.find('.k-carousel').jCarouselLite({
 				btnNext: '.k-next',
 				btnPrev: '.k-prev',
-				visible: mediaItemVisible,
+				visible: this.mediaItemVisible,
 				mouseWheel: true,
 				circular: false,
 				vertical: isVertical,
-				start: 0,
+				start: this.startFrom,
 				scroll: 1
 			});
 
