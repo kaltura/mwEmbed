@@ -554,7 +554,7 @@ mw.EmbedPlayerNative = {
 		
 		// some initial calls to prime the seek: 
 		if( callbackCount == 0 && vid.currentTime == 0 ){
-			// when seeking turn off preload none and issue a load call. 
+			// when seeking turn off preload none and issue a load call.
 			$( vid )
 				.attr('preload', 'auto')
 				[0].load();
@@ -674,7 +674,7 @@ mw.EmbedPlayerNative = {
 		}
 
 		// Check for seeking state ( some player iOS / iPad can only seek while playing )
-		if(! vid.seeking ){
+		if(! vid.seeking || ( mw.isIOS8() && ! vid.playing ) ){
 			mw.log( "Error:: not entering seek state, play and wait for positive time" );
 			vid.play();
 			setTimeout(function(){
@@ -1045,7 +1045,10 @@ mw.EmbedPlayerNative = {
 					}
 					// issue a play request
 					if( !_this.playing ) {
-						_this.getPlayerElement().play();
+						if( mw.isIOS8() ) {
+							vid.load();
+						}
+						vid.play();
 					}
 					// re-start the monitor:
 					_this.monitor();
