@@ -799,7 +799,8 @@ body { letter-spacing: 0.04em; }
 	text-shadow: 0px 0px 10px #fff;
 }
 
-.btn.disabled,.btn.disabled:hover {
+.btn.disabled,.btn.disabled:hover,
+.disabled .btn, .disabled .btn:hover {
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
 	filter: alpha(opacity=30);
 	opacity: 0.3;
