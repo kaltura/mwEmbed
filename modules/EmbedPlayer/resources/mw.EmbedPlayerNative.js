@@ -723,6 +723,9 @@ mw.EmbedPlayerNative = {
 
 	// Update the poster src ( updates the native object if in dom )
 	updatePoster: function( src ){
+		if (mw.getConfig( 'EmbedPlayer.HidePosterOnStart' ) === true){
+			return;
+		}
 		if( this.getPlayerElement() ){
 			$( this.getPlayerElement() ).attr('poster', src );
 		}
