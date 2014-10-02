@@ -32,7 +32,7 @@
 					}
 					return false;
 				}
-				if ( kWidget.supportsFlash() ) {   //add vars to load widevine KDP plugin
+				if ( kWidget.supportsFlash() && ! mw.isDesktopSafari() ) {   //add vars to load widevine KDP plugin
 					//either all flavors are encrypted or all are not. If the flavor is not widevine don't show wv prompt.
 					if (flavors && flavors.length) {
 						if ( isWVAsset() )  {
@@ -85,6 +85,7 @@
 					}
 				}
 				if (msg && title) {
+					_this.getPlayer().autoplay = false;
 					_this.getPlayer().layoutBuilder.displayAlert( { keepOverlay:true, message: msg, title: title, noButtons: true});
 					_this.getPlayer().disablePlayControls();
 				}
