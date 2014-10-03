@@ -887,7 +887,7 @@ mw.EmbedPlayerNative = {
 		if( this.isStopped() && this._playContorls ){
 			this.restorePlayerOnScreen();
 		}
-
+		var isfirstplay = this.firstPlay;
 		// Run parent play:
 		if( _this.parent_play() ){
 			if ( this.getPlayerElement() && this.getPlayerElement().play ) {
@@ -911,11 +911,14 @@ mw.EmbedPlayerNative = {
 					$( this ).hide();
 				}
 				// if it's iOS8 the native iOS player won't be shown
-				if( !( mw.isIphone() && mw.isIOS80() ) ) {
+				if( !(mw.isIOS80() ) ) {
 					// update the preload attribute to auto
 					$( _this.getPlayerElement() ).attr('preload',"auto" );
 				}
 				// issue a play request
+				if (mw.isIOS80() && isfirstplay) {
+					this.getPlayerElement().load();
+				}
 				this.getPlayerElement().play();
 				// re-start the monitor:
 				this.monitor();
