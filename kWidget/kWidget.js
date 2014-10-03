@@ -186,7 +186,7 @@ var kWidget = {
 			window.location.host != 'localhost'
 		){
 			if( console && console.error ){
-				console.error( "Error: Non prodcution version of kaltura player library. Please see http://knowledge.kaltura.com/production-player-urls")
+				console.error( "Error: Using non-prodcution version of kaltura player library. Please see http://knowledge.kaltura.com/production-player-urls")
 			}
 		}
 	},
