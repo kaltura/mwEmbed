@@ -428,8 +428,11 @@ mw.EmbedPlayerNative = {
 			this.doNativeSeek( percent, function(){
 				if( stopAfterSeek ){
 					_this.hideSpinner();
-					_this.pause();
-					_this.updatePlayheadStatus();
+					// pause in a non-blocking call to avoid synchronous playing event
+					setTimeout(function() {
+						_this.pause();
+						_this.updatePlayheadStatus();
+					}, 0);
 				} else {
 					// continue to playback ( in a non-blocking call to avoid synchronous pause event ) 
 					setTimeout(function(){
