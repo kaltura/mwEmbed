@@ -18,6 +18,7 @@
 			'includeThumbnail': true,
 			'includeItemNumberPattern': false,
 			'includeMediaItemDuration': true,
+			'hideClipPoster': true,
 			'loop': false,
 			'overflow': false,
 			'cssPath': 'playList.css',
@@ -246,6 +247,10 @@
 
 			// Restore onDoneInterfaceFlag
 			embedPlayer.onDoneInterfaceFlag = true;
+
+			if (!this.firstPlay && this.getConfig('hideClipPoster') === true){
+				mw.setConfig('EmbedPlayer.HidePosterOnStart', true);
+			}
 		},
 
 		addClipBindings: function( clipIndex ){
@@ -261,6 +266,9 @@
 		},
 
 		playNext: function(){
+			if (this.isDisabled){
+				return;
+			}
 			if( this.getConfig("loop") == true && this.currentClipIndex != null && this.currentClipIndex === this.mediaList.length - 1 ){ // support loop
 				this.currentClipIndex = -1;
 			}
@@ -273,6 +281,9 @@
 		},
 
 		playPrevious: function(){
+			if (this.isDisabled){
+				return;
+			}
 			if (this.currentClipIndex != null && this.currentClipIndex > 0){
 				this.currentClipIndex--;
 				this.setSelectedMedia(this.currentClipIndex);

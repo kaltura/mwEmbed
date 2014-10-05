@@ -208,6 +208,9 @@
 			mediaBoxes.find("*").addClass("disabled");
 		},
 		onEnable: function(){
+			if (this.embedPlayer.getError() !== null){
+				return;
+			}
 			this.isDisabled = false;
 			var mediaBoxes = this.getMediaListDomElements();
 			mediaBoxes.removeClass("disabled");

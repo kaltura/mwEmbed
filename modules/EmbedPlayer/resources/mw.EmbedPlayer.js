@@ -483,7 +483,7 @@
 		 * Enables the play controls ( for example when an ad is done )
 		 */
 		enablePlayControls: function( excludedComponents ){
-			if ( this._playContorls || this.useNativePlayerControls() ) {
+			if ( this._playContorls || this.useNativePlayerControls() || this.getError() !== null) {
 				return;
 			}
 
@@ -2726,6 +2726,9 @@
 		getSource: function(){
 			// update the current selected source:
 			this.mediaElement.autoSelectSource();
+			if (this.mediaElement.selectedSource && this.mediaElement.selectedSource.mimeType === "application/vnd.apple.mpegurl"){
+				this.streamerType = "hls";
+			}
 			return this.mediaElement.selectedSource;
 		},
 		/**
@@ -2826,7 +2829,12 @@
 		},
 
 		isDVR: function() {
-			return this.kalturaPlayerMetaData[ 'dvrStatus' ];
+			if ( this.kalturaPlayerMetaData && this.kalturaPlayerMetaData[ 'dvrStatus' ] )  {
+				return this.kalturaPlayerMetaData[ 'dvrStatus' ];
+			}
+
+			return false;
+
 		},
 
 		disableComponentsHover: function(){
