@@ -274,7 +274,9 @@ mw.FullScreenManager.prototype = {
 		var updateSizeByDevice = function() {
 			if ( mw.isAndroid() ) {
 				setTimeout(updateTargetSize, 10);
-			} else {
+			} else if (mw.isIOS8()){
+				setTimeout(updateTargetSize, 500);
+			} else{
 				updateTargetSize();
 			}
 		};
