@@ -68,7 +68,8 @@
 		return /OS 5_/.test( navigator.userAgent ) && mw.isIOS();
 	};
 	mw.isIOS80 = function(){
-		return /Version\/8/.test( navigator.userAgent ) && mw.isIOS();
+		// Known Limitation - It will return false for iOS8 Simulator
+		return ( /OS 8_/.test( navigator.userAgent ) || /Version\/8/.test( navigator.userAgent ) ) && mw.isIOS();
 	};
 
 	/**
