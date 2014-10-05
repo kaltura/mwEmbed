@@ -320,7 +320,7 @@ return array(
                 )
             ),
             'includeInLayout' => array(
-                'doc' => "If the clip list should be displayed.",
+                'doc' => "Include clip list in the display.",
                 'type' => 'boolean',
                 'initvalue' => true
             ),
@@ -338,7 +338,7 @@ return array(
 				'type' => 'boolean'
 			),
 			'loop' => array(
-				'doc' => "If the playlist should loop on complete.",
+				'doc' => "If the playlist should loop.",
 				'type' => 'boolean'
 			),
 			'onPage' => array(
