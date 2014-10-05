@@ -435,13 +435,19 @@ body { letter-spacing: 0.04em; }
 	background: #7c7c7c;
 	height: 0.5em;
 	top: -2px;
-
+	
 	-webkit-transition: width 0.3s ease-in-out;
 	-moz-transition: width 0.3s ease-in-out;
 	-o-transition: width 0.3s ease-in-out;
 	-ms-transition: width 0.3s ease-in-out;
 	transition: width 0.3s ease-in-out;
 	cursor: pointer;
+}
+.volumeControl.noTransition .slider{
+	-moz-transition: none ;
+	-webkit-transition: none ;
+	-o-transition: width 0 ease-in;
+	transition: none;
 }
 
 .volumeControl.open .slider {

@@ -1241,6 +1241,11 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'boolean',
 				'initvalue' => true
 			),
+			'pinVolumeBar' => array(
+				'doc' => 'If the volume slider bar should always be shown.',
+				'type' => 'boolean',
+				'initvalue' => false
+			),
 			'accessibleControls' => array(
 				'doc' => 'Accessible buttons volume change percent from 0 to 1: The amount of volume that will be added or reduced when using the accessible volume buttons.',
 				'type' => 'boolean',
