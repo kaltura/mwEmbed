@@ -16,7 +16,7 @@
 			'maxRotatorSlides': 125,
 			'mediaItemWidth': null,
 			'mediaItemHeight': null,
-			'titleLimit': 29,
+			'titleLimit': 150,
 			'descriptionLimit': 80,
 			'overflow': false,
 			'includeThumbnail': true,
@@ -28,6 +28,7 @@
 		},
 
 		mediaList: [],
+		renderOnData: false,
 
 		isDisabled: true,
 
@@ -47,6 +48,10 @@
 				_this.setMediaItemTime();
 				//Set data initialized flag for handlers to start working
 				_this.dataIntialized = true;
+				if (_this.renderOnData) {
+					_this.renderMediaList();
+					_this.updateActiveItem();
+				}
 			} );
 
 			this.bind( 'KalturaSupport_ThumbCuePointsUpdated', function (e, cuepoints) {
@@ -86,7 +91,16 @@
 				if (_this.dataIntialized) {
 					_this.renderMediaList();
 					_this.updateActiveItem();
+				} else {
+					_this.renderOnData = true;
 				}
+			});
+
+			this.bind( 'hide', function ( e, newState ) {
+				_this.getComponent().hide();
+			});
+			this.bind( 'show', function ( e, newState ) {
+				_this.getComponent().show();
 			});
 
 			this.bind( 'updatePlayHeadPercent', function ( e, newState ) {

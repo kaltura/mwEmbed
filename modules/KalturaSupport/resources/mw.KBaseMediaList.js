@@ -47,8 +47,10 @@
 
 			this.bind('updateLayout', function(){
 				if (_this.getConfig( 'parent')){
-					_this.renderMediaList();
-					_this.setSelectedMedia(_this.selectedMediaItemIndex);
+					setTimeout(function(){
+						_this.renderMediaList();
+						_this.setSelectedMedia(_this.selectedMediaItemIndex);
+					}, 0);
 				}
 			});
 			// handle fullscreen entering resize
@@ -248,17 +250,15 @@
 
 		},
 		setMediaBoxesDimensions: function(){
-			var height = this.getComponent().height();
-			var width = this.getComponent().width();
+			var height = this.getMedialistComponent().height();
+			var width = this.getMedialistComponent().width();
 			var layout = this.getLayout();
 			var mediaBoxes = this.getMediaListDomElements();
 			if (layout == "vertical"){
 				var newHeight = this.getConfig( "mediaItemHeight" ) || width * (1 / this.getConfig("mediaItemRatio"));
-				this.setConfig("mediaItemHeight", newHeight);
 				mediaBoxes.width(width).height(newHeight);
 			} else {
 				var newWidth = this.getConfig( "mediaItemWidth" ) || height * this.getConfig("mediaItemRatio");
-				this.setConfig("mediaItemWidth", newWidth);
 				mediaBoxes.width(newWidth).height(height);
 			}
 		},
@@ -447,7 +447,10 @@
 			this.selectedMediaItemIndex = mediaIndex;
 			$( mediaBoxes[mediaIndex] ).addClass( 'active'); //li[data-chapter-index='" + activeIndex + "']
 			if (!this.getConfig('overflow')) {
-				this.getMedialistComponent().find( '.k-carousel' )[0].jCarouselLiteGo( mediaIndex );
+				var carousel = this.getMedialistComponent().find( '.k-carousel' );
+				if (carousel[0]) {
+					carousel[0].jCarouselLiteGo( mediaIndex );
+				}
 			}
 		},
 		getActiveItem: function(){
