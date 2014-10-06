@@ -113,14 +113,9 @@
 
 				this.$elHelper = $('<div>' )
 					.addClass( 'sideBarContainerReminder ' + _this.getConfig('position') )
-					.append($('<div>' )
-						.addClass( 'TocBtnBorder ' + _this.getConfig('position') ))
-					.append($('<div>' )
-						.append($('<div>' )
-							.addClass( 'icon-list' ))
-						.addClass( 'icon-list-container' )
-						);
-
+					.append($('<div id="sideBarContainerReminderContainer">' )
+						.addClass( 'icon-chapterMenu' )
+					);
 
 				// Add control bar special classes
 				if( this.getConfig('hover') ) {

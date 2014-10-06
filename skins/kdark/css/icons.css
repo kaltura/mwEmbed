@@ -158,10 +158,10 @@ you can use the generic selector below, but it's slower:
 	content: "\e61a";
 }
 .icon-duration:before {
-    content: "\e61c";
+    content: "\e61d";
 }
 .icon-start_time:before {
-    content: "\e61d";
+    content: "\e61c";
 }
 .icon-chapterMenu:before {
     content: "\e61e";
