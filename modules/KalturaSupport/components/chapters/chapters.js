@@ -16,7 +16,7 @@
 			'maxRotatorSlides': 125,
 			'mediaItemWidth': null,
 			'mediaItemHeight': null,
-			'titleLimit': 40,
+			'titleLimit': 150,
 			'descriptionLimit': 80,
 			'overflow': false,
 			'includeThumbnail': true,

@@ -22,20 +22,18 @@
                         </span>
                         <% } %>
                     </div>
-                    <div>
-                        <div class="k-title-container" title="<%=mediaItem.title%>">
-                            <% if( meta.includeItemNumberPattern) { %>
-                            <span class="itemNumber"><%=mediaItem.chapterNumber%></span>
-                            <% } %>
-                            <%
-                            var chapterTitle = mediaItem.title;
-                            var tooltip = null;
-                            if( mediaItem.title && chapterTitle.length > meta.titleLimit ){
-                                tooltip =  mediaItem.title;
-                                chapterTitle = chapterTitle.substr(0, meta.titleLimit-4 ) + ' ...';
-                            } %>
-                            <span class="k-title" title="<%=tooltip%>"><%=chapterTitle%></span>
-                        </div>
+                    <div class="k-title-container" title="<%=mediaItem.title%>">
+                        <% if( meta.includeItemNumberPattern) { %>
+                        <span class="itemNumber"><%=mediaItem.chapterNumber%></span>
+                        <% } %>
+                        <%
+                        var chapterTitle = mediaItem.title;
+                        var tooltip = null;
+                        if( mediaItem.title && chapterTitle.length > meta.titleLimit ){
+                            tooltip =  mediaItem.title;
+                            chapterTitle = chapterTitle.substr(0, meta.titleLimit-4 ) + ' ...';
+                        } %>
+                        <span class="k-title" title="<%=tooltip%>"><%=chapterTitle%></span>
                     </div>
                 </div>
             </div>

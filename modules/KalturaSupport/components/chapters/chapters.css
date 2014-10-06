@@ -84,8 +84,11 @@
     bottom: 0;
     text-shadow: 0.588px 0.809px 0.99px rgba(0, 0, 0, 0.2);
     padding: 2%;
+    max-height: 33%;
+    overflow: hidden;
 }
-.k-chapters-container .chapterBoxInner > div {}
+.k-chapters-container .chapterBoxInner > div {
+}
 
 .k-chapters-container .chapterBox:hover{
     background: rgba(220,220,220,.8);
@@ -101,7 +104,6 @@
 .k-chapters-container .k-title-container{
     font-size:13px;
     font-weight: normal;
-    max-height: 20%;
 }
 .k-chapters-container .chapterNumber{
     float: left;
