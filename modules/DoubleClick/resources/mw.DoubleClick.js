@@ -342,7 +342,6 @@
 							.attr( 'id', noticeId )
 							.addClass( 'ad-component ad-notice-label' )
 							.css({"position": "fixed","margin-bottom": 36+"px"})
-							.text(this.countdownText)
 							.hide()
 					)
 				}
