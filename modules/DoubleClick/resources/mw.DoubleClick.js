@@ -341,7 +341,7 @@
 						$('<span />')
 							.attr( 'id', noticeId )
 							.addClass( 'ad-component ad-notice-label' )
-							.css({"position": "fixed","margin-bottom": 30+"px"})
+							.css({"position": "fixed","margin-bottom": 36+"px"})
 							.text(this.countdownText)
 							.hide()
 					)
@@ -804,6 +804,15 @@
 				}
 				_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', adInfo.duration );
 				$(".mwEmbedPlayer").hide();
+				if ( _this.getConfig( 'countdownText' ) && _this.embedPlayer.$interface.find(".ad-notice-label").length == 0){
+					var noticeId =_this.embedPlayer.id + '_ad_notice';
+					// Add the notice target:
+					_this.embedPlayer.getVideoHolder().append(
+						$('<span />')
+							.attr( 'id', noticeId )
+							.addClass( 'ad-component ad-notice-label' )
+					);
+				}
 			},'adStart', true);
 
 
@@ -841,6 +850,13 @@
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', (adInfo.duration - adInfo.remain));
 				_this.embedPlayer.updatePlayHead( adInfo.time / adInfo.duration );
+				// Update sequence property per active ad:
+				if (adInfo.remain > 0){
+					_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  parseInt(adInfo.remain) );
+				}
+				if (_this.getConfig('countdownText')){
+					_this.embedPlayer.$interface.find(".ad-notice-label").text(_this.getConfig('countdownText'));
+				}
 			},'adRemainingTimeChange', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
@@ -1052,6 +1068,7 @@
 				if (_this.isLinear || _this.adLoaderErrorFlag){
 					$(".mwEmbedPlayer").show();
 				}
+				this.embedPlayer.$interface.find(".ad-notice-label").remove();
 				this.embedPlayer.getPlayerElement().redrawObject(50);
 			}else{
 				if (_this.isLinear || _this.adLoaderErrorFlag){
