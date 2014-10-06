@@ -326,6 +326,7 @@
 		},
 		getAdContainer: function(){
 			if( !$('#' + this.getAdContainerId() ).length ){
+				var noticeId = this.getAdContainerId() + '_ad_notice';
 				this.embedPlayer.$interface.append(
 					$('<div />')
 						.attr( 'id',  this.getAdContainerId() )
@@ -335,6 +336,16 @@
 							'left' : '0px'
 						})
 				);
+				if ( this.getConfig( 'countdownText' )){
+					this.embedPlayer.$interface.find("#"+this.getAdContainerId()).append(
+						$('<span />')
+							.attr( 'id', noticeId )
+							.addClass( 'ad-component ad-notice-label' )
+							.css({"position": "fixed","margin-bottom": 30+"px"})
+							.text(this.countdownText)
+							.hide()
+					)
+				}
 			}
 			return $('#' + this.getAdContainerId() ).get(0);
 		},
@@ -669,7 +680,8 @@
 					_this.embedPlayer.addPlayerSpinner();
 					// if on iPad hide the quicktime logo:
 					_this.hidePlayerOffScreen( _this.getAdContainer() );
-
+					// show notice message
+					_this.embedPlayer.$interface.find(".ad-notice-label").show();
 					// Monitor ad progress
 					_this.monitorAdProgress();
 				} else{
@@ -998,7 +1010,9 @@
 			_this.adPreviousTimeLeft = _this.adsManager.getRemainingTime();
 
 			// Update sequence property per active ad:
-			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  _this.adsManager.getRemainingTime() );
+			if (_this.adsManager.getRemainingTime() > 0){
+				_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  parseInt(_this.adsManager.getRemainingTime()) );
+			}
 			if (_this.duration === -1){
 				_this.duration = _this.adsManager.getRemainingTime();
 			}  else {
@@ -1006,6 +1020,9 @@
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  _this.duration );
 				_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead',  currentTime);
 				_this.embedPlayer.updatePlayHead( currentTime/ _this.duration );
+			}
+			if (_this.getConfig('countdownText')){
+				this.embedPlayer.$interface.find(".ad-notice-label").text(_this.getConfig('countdownText'));
 			}
 		},
 
