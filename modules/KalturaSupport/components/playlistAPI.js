@@ -18,6 +18,7 @@
 			'includeThumbnail': true,
 			'includeItemNumberPattern': false,
 			'includeMediaItemDuration': true,
+			'hideClipPoster': true,
 			'loop': false,
 			'overflow': false,
 			'cssPath': 'playList.css',
@@ -41,6 +42,7 @@
 			if ( this.getConfig( 'includeInLayout' ) === false){ // support hidden playlists - force onPage and hide its div.
 				this.setConfig( 'onPage', true );
 			}
+			this.setConfig( 'horizontalHeaderHeight', 43 );
 			this.addBindings();
 			this.loadPlaylists();
 		},
@@ -105,7 +107,7 @@
 			$( this.embedPlayer ).bind( 'mediaListLayoutReady', function( event){
 				_this.embedPlayer.triggerHelper( 'playlistReady' );
 				// keep aspect ratio of thumbnails - crop and center
-				$('.k-thumb').each(function() {
+				_this.getComponent().find('.k-thumb').each(function() {
 					var img = $(this)[0];
 					img.onload = function(){
 						if (img.naturalWidth / img.naturalHeight > 16/9){
@@ -245,6 +247,10 @@
 
 			// Restore onDoneInterfaceFlag
 			embedPlayer.onDoneInterfaceFlag = true;
+
+			if (!this.firstPlay && this.getConfig('hideClipPoster') === true){
+				mw.setConfig('EmbedPlayer.HidePosterOnStart', true);
+			}
 		},
 
 		addClipBindings: function( clipIndex ){
@@ -260,6 +266,9 @@
 		},
 
 		playNext: function(){
+			if (this.isDisabled){
+				return;
+			}
 			if( this.getConfig("loop") == true && this.currentClipIndex != null && this.currentClipIndex === this.mediaList.length - 1 ){ // support loop
 				this.currentClipIndex = -1;
 			}
@@ -272,6 +281,9 @@
 		},
 
 		playPrevious: function(){
+			if (this.isDisabled){
+				return;
+			}
 			if (this.currentClipIndex != null && this.currentClipIndex > 0){
 				this.currentClipIndex--;
 				this.setSelectedMedia(this.currentClipIndex);
@@ -284,7 +296,7 @@
 		setMultiplePlayLists: function(){
 			var _this = this;
 			if (this.getComponent().find(".playlistSelector").length == 0){ // UI wasn't not created yet
-				this.getComponent().find(".playlistTitle, .playlistDescription").addClass("multiplePlaylists");
+				this.getComponent().find(".k-vertical").find(".playlistTitle, .playlistDescription").addClass("multiplePlaylists");
 				this.getComponent().find(".dropDownIcon").on("click", function(){
 					if (_this.getComponent().find(".playlistSelector").height() > 0){
 						_this.closePlaylistDropdown();
@@ -294,7 +306,11 @@
 				}).show();
 				this.getMedialistComponent().prepend('<div class="playlistSelector"></div>');
 				$.each(this.playlistSet, function (i, el) {
-					_this.getComponent().find(".playlistSelector").append('<br><div data-index="'+i+'" class="playlistItem"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists"> ' + el.content.split(",").length + ' videos</span></div>');
+					if (_this.getLayout() === "vertical"){
+						_this.getComponent().find(".playlistSelector").append('<br><div data-index="'+i+'" class="playlistItem"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists">' + el.content.split(",").length + ' '+gM( 'mwe-embedplayer-videos')+'</span></div>');
+					}else{
+						_this.getComponent().find(".playlistSelector").append('<div data-index="'+i+'" class="playlistItem k-horizontal"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists">' + el.content.split(",").length + ' '+gM( 'mwe-embedplayer-videos')+'</span></div>');
+					}
 				});
 				this.getComponent().find(".playlistItem").on("click", function(){
 					_this.switchPlaylist($(this).attr('data-index'));
@@ -306,7 +322,8 @@
 			var _this = this;
 			this.onDisable();
 			this.getComponent().find(".playlistSelector").show();
-			this.getComponent().find(".playlistSelector").height(200);
+			var dropdownHeight = this.getLayout() === "vertical" ? 200 : this.getConfig("mediaItemHeight")-20;
+			this.getComponent().find(".playlistSelector").height(dropdownHeight);
 			setTimeout(function(){_this.getComponent().find(".playlistSelector").css("overflow","auto");},300);
 		},
 
@@ -358,18 +375,22 @@
 			this.embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')} ); // for API backward compatibility
 			this.mediaList = [];
 			this.addMediaItems(this.playlistSet[playlistIndex].items);   // prepare the data to be compatible with KBaseMediaList
-
-			if (this.getLayout() === "vertical" && ( this.getConfig('containerPosition') === "left" || this.getConfig('containerPosition') === "right")){
-				this.getMedialistHeaderComponent().empty();
-				this.getMedialistHeaderComponent().prepend('<span class="playlistTitle">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription">' + this.playlistSet[playlistIndex].items.length + ' videos</span>');
-				this.getMedialistHeaderComponent().prepend('<div class="dropDownIcon"></div>');
-				if (this.getConfig('showControls') === true){
-					this.getMedialistHeaderComponent().prepend('<div class="playlistControls"><div class="prevBtn playlistBtn"></div><div class="nextBtn playlistBtn"></div></div>');
-					this.getMedialistHeaderComponent().find(".playlistControls .nextBtn").on("click", function(){_this.playNext()});
-					this.getMedialistHeaderComponent().find(".playlistControls .prevBtn").on("click", function(){_this.playPrevious()});
+			this.getMedialistHeaderComponent().empty();
+			if (this.getLayout() === "vertical"){
+				if ( this.getConfig('containerPosition') === "left" || this.getConfig('containerPosition') === "right" || this.getConfig('onPage') === true){
+					this.getMedialistHeaderComponent().prepend('<span class="playlistTitle">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription">' + this.playlistSet[playlistIndex].items.length + ' '+gM( 'mwe-embedplayer-videos')+'</span>');
+					this.getMedialistHeaderComponent().prepend('<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist') + '"></div>');
+				}else{
+					this.getMedialistHeaderComponent().hide();
 				}
 			}else{
-				this.getMedialistHeaderComponent().hide();
+				this.getMedialistHeaderComponent().prepend('<span class="playlistTitle horizontalHeader">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription horizontalHeader">(' + this.playlistSet[playlistIndex].items.length + ' '+gM( 'mwe-embedplayer-videos')+')</span>');
+				this.getMedialistHeaderComponent().prepend('<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist') + '"></div>');
+			}
+			if (this.getConfig('showControls') === true){
+				this.getMedialistHeaderComponent().prepend('<div class="playlistControls k-'+ this.getLayout()+'"><div class="prevBtn playlistBtn"></div><div class="nextBtn playlistBtn"></div></div>');
+				this.getMedialistHeaderComponent().find(".playlistControls .nextBtn").on("click", function(){_this.playNext()});
+				this.getMedialistHeaderComponent().find(".playlistControls .prevBtn").on("click", function(){_this.playPrevious()});
 			}
 			this.renderMediaList();  // set the media list in KBaseMediaList
 			// support initial selectedIndex or initItemEntryId

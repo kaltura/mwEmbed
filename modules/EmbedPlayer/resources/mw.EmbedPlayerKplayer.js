@@ -70,6 +70,7 @@ mw.EmbedPlayerKplayer = {
 			flashvars.streamerType = _this.streamerType;
 
 			flashvars.entryUrl = encodeURIComponent( srcToPlay );
+			flashvars.entryDuration = _this.getDuration();
 			flashvars.isMp4 = _this.isMp4Src();
 			flashvars.ks = _this.getFlashvars( 'ks' );
 			flashvars.serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );
@@ -91,10 +92,8 @@ mw.EmbedPlayerKplayer = {
 
 			//add OSMF HLS Plugin if the source is HLS
 			if ( _this.isHlsSource( _this.mediaElement.selectedSource ) && mw.getConfig("LeadWithHLSOnFlash") ) {
-				flashvars.sourceType = 'url';
-				flashvars.ignoreStreamerTypeForSeek = true;
 				flashvars.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
-				_this.streamerType = "hls";
+				flashvars.streamerType = _this.streamerType = 'hls';
 			}
 
 			if ( _this.isLive() && _this.streamerType == 'rtmp' && !_this.cancelLiveAutoPlay ) {
@@ -139,7 +138,7 @@ mw.EmbedPlayerKplayer = {
 				$.each( bindEventMap, function( bindName, localMethod ) {
 					_this.playerObject.addJsListener(  bindName, localMethod );
 				});
-				if ( _this.startTime !== undefined && __this.startTime != 0 ) {
+				if ( _this.startTime !== undefined && _this.startTime != 0 ) {
 					_this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', _this.startTime );
 				}
 				readyCallback();
@@ -280,6 +279,7 @@ mw.EmbedPlayerKplayer = {
 		this.flashCurrentTime = 0;
 		this.playerObject.setKDPAttribute( 'mediaProxy', 'isLive', this.isLive() );
 		this.playerObject.setKDPAttribute( 'mediaProxy', 'isMp4', this.isMp4Src() );
+		this.playerObject.setKDPAttribute( 'mediaProxy', 'entryDuration', this.getDuration() );
 		this.getEntryUrl().then(function( srcToPlay ){
 			_this.playerObject.sendNotification( 'changeMedia', {
 				entryUrl: srcToPlay
@@ -315,12 +315,12 @@ mw.EmbedPlayerKplayer = {
 	 * parent_play
 	 */
 	onPlay: function() {
-		if(this._propagateEvents && this.paused) {
+		if(this._propagateEvents) {
 			$( this ).trigger( "playing" );
 			this.hideSpinner();
 			if ( this.isLive() ) {
 				this.ignoreEnableGui = false;
-				this.enablePlayControls();
+				this.enablePlayControls( ['sourceSelector'] );
 			}
 			this.stopped = this.paused = false;
 		}
@@ -333,7 +333,10 @@ mw.EmbedPlayerKplayer = {
 			this.playerObject.duration = data.newValue;
 		}
 	},
-	onVideoMetadataReceived: function(){
+	onVideoMetadataReceived: function( data ){
+		if ( data && data.info ) {
+			$( this ).trigger( 'videoMetadataReceived',[ data.info ]);
+		}
 		// Trigger "media loaded"
 		if( ! this.mediaLoadedFlag ){
 			$( this ).trigger( 'mediaLoaded' );
@@ -360,12 +363,16 @@ mw.EmbedPlayerKplayer = {
 	 * play method calls parent_play to update the interface
 	 */
 	play: function() {
-		mw.log('EmbedPlayerKplayer::play')
+		mw.log('EmbedPlayerKplayer::play');
+		var shouldDisable = false
+		if ( this.isLive() && this.paused ) {
+			shouldDisable = true;
+		}
 		if ( this.parent_play() ) {
 			//live might take a while to start, meanwhile disable gui
-			if ( this.isLive() ) {
+			if ( shouldDisable ) {
 				this.ignoreEnableGui = true;
-				this.disablePlayControls();
+				this.disablePlayControls( ['sourceSelector'] );
 			}
 			this.playerObject.play();
 			this.monitor();
@@ -460,19 +467,19 @@ mw.EmbedPlayerKplayer = {
 			}
 		});
 
-		// Issue the seek to the flash player:
-		this.maskPlayerPlayed();
-		this.playerObject.play();
-		this.playerObject.seek( seekTime );
+		if ( this.firstPlay ) {
+			this.stopEventPropagation();
+			if ( this.streamerType == 'http' ) {
+				this.playerObject.seek( seekTime );
+			}
+			this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', seekTime );
+			this.playerObject.play();
+		} else {
+			this.playerObject.seek( seekTime );
+		}
+
 	},
-	maskPlayerPlayed: function (){
-		this.stopEventPropagation();
-		this.playerObject.addJsListener('playerPlayed', "unmaskPlayerPlayed" );
-	},
-	unmaskPlayerPlayed: function (){
-		this.restoreEventPropagation();
-		this.playerObject.removeJsListener('playerPlayed', "unmaskPlayerPlayed" );
-	},
+
 	/**
 	 * Issues a volume update to the playerElement
 	 *
@@ -514,6 +521,9 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onPlayerSeekEnd: function () {
+		if ( this.firstPlay ) {
+			this.restoreEventPropagation();
+		}
 		this.previousTime = this.currentTime = this.flashCurrentTime = this.playerObject.getCurrentTime();
 		this.seeking = false;
 		if (this.seekStarted){
@@ -635,9 +645,13 @@ mw.EmbedPlayerKplayer = {
 	*/
 	getEntryUrl: function() {
 		var deferred = $.Deferred();
-		if ( this.isLive() || this.sourcesReplaced || this.isHlsSource( this.mediaElement.selectedSource )) {
-			this.resolveSrcURL(this.mediaElement.selectedSource.getSrc()).then(function (srcToPlay){
-				deferred.resolve(srcToPlay);
+		if ( this.isHlsSource( this.mediaElement.selectedSource )) {
+			var originalSrc = this.mediaElement.selectedSource.getSrc();
+			this.resolveSrcURL( originalSrc )
+				.then(function ( srcToPlay ){
+				deferred.resolve( srcToPlay );
+			}, function () { //error
+				deferred.resolve( originalSrc );
 			});
 			return deferred;
 		}

@@ -35,14 +35,15 @@
     </head>
    <body>
    	<h2>Playlist Features</h2>
-    <p>This player demonstrates some features available using simple playlist configuration.</p>
-    <p>Use the "Customize" tab to change the following properties in order to control the playlist layout and behaviour:</p>
+    <p>This player demonstrates some features available using a simple playlist configuration.</p>
+    <p>Use the "Customize" tab to change the following properties to control the playlist layout and behavior:</p>
     <ul>
 	    <li><b>containerPosition</b>: Sets the playlist position to left, right, top and bottom</li>
 	    <li><b>layout</b>: Sets the playlist layout to vertical or horizontal </li>
 	    <li><b>autoPlay</b>: Start playing the first clip upon load</li>
 	    <li><b>autoContinue</b>: Continue to the next clip when the currently playing clip ends</li>
-	    <li><b>loop</b>: Loops playlist playback (jump to the first clip when the last clip ends</li>
+	    <li><b>loop</b>: Loops playlist playback (jump to the first clip when the last clip ends)</li>
+	    <li><b>hideClipPoster</b>: Hide clip poster when switching to another clip</li>
     </ul>
 	<div id='kaltura_player' style="height:365px;width:650px"></div>
 	<script>
@@ -59,6 +60,7 @@
 					'onPage': false,
 					'layout': 'vertical',
 					'containerPosition': 'left',
+					'hideClipPoster': true,
 					'onPageCss1' : "../components/playlist/playList.css",
 					'kpl0Name': "test 4 item playlist",
 					'kpl0Id': '0_q79jh71b'

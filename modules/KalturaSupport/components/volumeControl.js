@@ -72,6 +72,8 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 		// If the slider should be shown; 
 		if( this.getConfig('showSlider' ) ) {
 			var openSlider = function () {
+				// restore transition on hover
+				_this.getComponent().removeClass( 'noTransition' );
 				_this.getComponent().addClass( 'open' );
 			};
 			var closeSlider = function () {
@@ -82,12 +84,16 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 
 			// Save component width on data attribute ( used for responsive player )
 			this.bind( 'layoutBuildDone' , function () {
+				// open slider with noTransition: 
 				openSlider();
+				_this.getComponent().addClass( 'noTransition' );
 				// Firefox unable to get component width correctly without timeout
-				setTimeout( function () {
+				setTimeout(function(){
+					// update the slider expand space: 
 					_this.getComponent().data( 'width' , _this.getComponent().width() );
+					// close the slider ( if not pinned ) 
 					closeSlider();
-				} , 100 );
+				},100);
 			} );
 		}
 		// Add click bindings

@@ -82,7 +82,7 @@
 					} );
 					cuePointsExist = (filteredCuePoints.length > 0) ? true : false;
 				}
-				return !mw.isIphone() && cuePointsExist;
+				return (mw.getConfig("EmbedPlayer.LiveCuepoints") ||  !mw.isIphone() && cuePointsExist );
 			},
 			initConfig: function () {
 				var _this = this;
@@ -434,6 +434,18 @@
 				this.bind( 'KalturaSupport_CuePointReached', function ( e, cuePointObj ) {
 					_this.sync( cuePointObj.cuePoint );
 				} );
+				this.bind( ' KalturaSupport_ThumbCuePointsUpdated', function (e, cuepoints ) {
+
+					$.each( cuepoints, function ( index, cuePoint ) {
+						if ( $.inArray( _this.getConfig( 'cuePointType' ), cuePoint.cuePointType ) ) {
+							_this.cuePoints.push( cuePoint );
+						}
+					} );
+
+					_this.cuePoints.sort( function ( a, b ) {
+						return a.startTime - b.startTime;
+					} );
+				});
 
 				var fsmState = [];
 				var screenShown = false;
