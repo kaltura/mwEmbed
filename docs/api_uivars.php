@@ -438,6 +438,12 @@ $uiVars = array(
 				'default' => 'false',
 				'example' => '../modules/KalturaSupport/tests/Loop.qunit.html'
 			),
+			'enableControlsDuringAd' => array(
+				'type' => 'Boolean',
+				'desc' => 'If true, play pause button will be active during ad playback',
+				'default' => 'false',
+				'example' => '../modules/KalturaSupport/tests/AdEnableControls.html'
+			),
 			'adsOnReplay' => array(
 				'type' => 'Boolean',
 				'desc' => 'Indicates whether to play ads after video replay',
