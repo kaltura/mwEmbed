@@ -333,8 +333,7 @@
 		},
 		getAdContainer: function(){
 			if( !$('#' + this.getAdContainerId() ).length ){
-				var noticeId = this.getAdContainerId() + '_ad_notice';
-				this.embedPlayer.$interface.append(
+				this.embedPlayer.getInterface().append(
 					$('<div />')
 						.attr( 'id',  this.getAdContainerId() )
 						.css({
@@ -344,9 +343,8 @@
 						})
 				);
 				if ( this.getConfig( 'countdownText' )){
-					this.embedPlayer.$interface.find("#"+this.getAdContainerId()).append(
+					this.embedPlayer.getInterface().find("#"+this.getAdContainerId()).append(
 						$('<span />')
-							.attr( 'id', noticeId )
 							.addClass( 'ad-component ad-notice-label' )
 							.css({"position": "fixed","margin-bottom": 36+"px"})
 							.hide()
@@ -687,7 +685,7 @@
 					// if on iPad hide the quicktime logo:
 					_this.hidePlayerOffScreen( _this.getAdContainer() );
 					// show notice message
-					_this.embedPlayer.$interface.find(".ad-notice-label").show();
+					_this.embedPlayer.getInterface().find(".ad-notice-label").show();
 					// Monitor ad progress
 					_this.monitorAdProgress();
 				} else{
@@ -810,12 +808,10 @@
 				}
 				_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', adInfo.duration );
 				$(".mwEmbedPlayer").hide();
-				if ( _this.getConfig( 'countdownText' ) && _this.embedPlayer.$interface.find(".ad-notice-label").length == 0){
-					var noticeId =_this.embedPlayer.id + '_ad_notice';
+				if ( _this.getConfig( 'countdownText' ) && _this.embedPlayer.getInterface().find(".ad-notice-label").length == 0){
 					// Add the notice target:
 					_this.embedPlayer.getVideoHolder().append(
 						$('<span />')
-							.attr( 'id', noticeId )
 							.addClass( 'ad-component ad-notice-label' )
 					);
 				}
@@ -861,7 +857,7 @@
 					_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  parseInt(adInfo.remain) );
 				}
 				if (_this.getConfig('countdownText')){
-					_this.embedPlayer.$interface.find(".ad-notice-label").text(_this.getConfig('countdownText'));
+					_this.embedPlayer.getInterface().find(".ad-notice-label").text(_this.getConfig('countdownText'));
 				}
 			},'adRemainingTimeChange', true);
 
@@ -1044,7 +1040,7 @@
 				_this.embedPlayer.updatePlayHead( currentTime/ _this.duration );
 			}
 			if (_this.getConfig('countdownText')){
-				this.embedPlayer.$interface.find(".ad-notice-label").text(_this.getConfig('countdownText'));
+				this.embedPlayer.getInterface().find(".ad-notice-label").text(_this.getConfig('countdownText'));
 			}
 		},
 
@@ -1074,7 +1070,7 @@
 				if (_this.isLinear || _this.adLoaderErrorFlag){
 					$(".mwEmbedPlayer").show();
 				}
-				this.embedPlayer.$interface.find(".ad-notice-label").remove();
+				this.embedPlayer.getInterface().find(".ad-notice-label").remove();
 				this.embedPlayer.getPlayerElement().redrawObject(50);
 			}else{
 				if (_this.isLinear || _this.adLoaderErrorFlag){
