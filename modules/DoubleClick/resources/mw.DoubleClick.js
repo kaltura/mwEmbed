@@ -122,6 +122,13 @@
 				return;
 			}
 
+			if ( this.getConfig( 'enableCountDown' ) === true){
+				if ( !_this.getConfig( 'countdownText' ) ){
+					embedPlayer.setKalturaConfig( 'doubleClick', 'countdownText','Advertisement: Video will resume in {sequenceProxy.timeRemaining} seconds');
+				}
+			}else{
+				embedPlayer.setKalturaConfig( 'doubleClick', 'countdownText',null);
+			}
 			if ( mw.isIE8() || mw.isIE9() || _this.leadWithFlash ) {
 				if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
 					mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );

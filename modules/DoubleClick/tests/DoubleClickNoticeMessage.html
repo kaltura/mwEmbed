@@ -2,7 +2,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title> DoubleClick with a notice message  </title>
+<title> DoubleClick with a custom notice message  </title>
 
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
@@ -10,7 +10,15 @@
 </head>
 <body>
 <!--script type="text/javascript" src="http://s0.2mdn.net/instream/html5/gpt_proxy.js"></script-->
-<h3>DoubleClick with a notice message</h3>
+<h3>DoubleClick with a custom notice message</h3>
+<p>This test page demonstrates displaying a custom notice message during ad playback.<br>
+The notice message can be localized and can contain evaluated expressions using curly brackets.<br>
+The following Flashvars control the notice message:<br>
+	<ul>
+	<li><b>enableCountDown:</b> Enable / Disable the notice message. If set to true but "countdownText" is not set - a default notice message appears. </li>
+	<li><b>countdownText:</b> The message text to display. Can contain evaluated expressions. </li>
+	</ul>
+</p><br>
 <div id="videoTarget" style="width:600px;height:430px"></div>
 <script>
 	kWidget.featureConfig({
@@ -23,11 +31,11 @@
 		'flashvars': {
 			'doubleClick':{
 				'plugin':true,
-				'leadWithFlash': false,
 				'path' : 'http://cdnbakmi.kaltura.com/content/uiconf/ps/veria/kdp3.9.1/plugins/doubleclickPlugin.swf',
 				'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=%2F3510761%2FadRulesSampleTags&ciu_szs=160x600%2C300x250%2C728x90&cust_params=adrule%3Dpremidpostpodandbumpers&impl=s&gdfp_req=1&env=vp&ad_rule=1&vid=47570401&cmsid=481&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]',
 				'disableCompanionAds' : false,
 				'debugMode':false,
+				'enableCountDown': true,
 				'countdownText': "Video will start in {sequenceProxy.timeRemaining} seconds"
 			},
 			'adsOnReplay':true

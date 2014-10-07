@@ -17,6 +17,12 @@ return array (
 				'doc' => "The DoubleClick DFP VAST ad tag URL (can include multiple nested VAST URLs). ",
 				'type' => 'url'
 			),
+			'enableCountDown' => array(
+                'label' => 'Enable notice message',
+                'doc' => "When checked, a notice message displays during ad playback",
+                'initvalue' => false,
+                'type' => 'boolean',
+            ),
             'countdownText' => array(
                 'label' => 'Notice message',
                 'doc' => "Notice message to be displayed during ad playback. Can contain evaluated expressions using curly brackets",
