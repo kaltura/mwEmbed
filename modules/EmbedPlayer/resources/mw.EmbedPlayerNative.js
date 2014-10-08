@@ -1477,6 +1477,17 @@ mw.EmbedPlayerNative = {
 	 */
 	isFakeHlsSeek: function() {
 		return ( (Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2) || ( mw.isIpad() && this.currentSeekTargetTime > 0.01 ) );
-}
+	},
+
+	isVideoSiblingEnabled: function() {
+		if( mw.isIphone() || mw.isAndroid2() || mw.isAndroid40() || mw.isMobileChrome()
+			||
+			( mw.isIpad() && ! mw.isIpad3() )
+			){
+			return false;
+		} else {
+			return this.parent_isVideoSiblingEnabled();
+		}
+	}
 };
 } )( mediaWiki, jQuery );

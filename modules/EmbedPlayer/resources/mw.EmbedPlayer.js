@@ -2977,6 +2977,14 @@
 
 		getKalturaAttributeConfig: function( attr ) {
 			return this.getKalturaConfig( null , attr );
+		},
+
+		isVideoSiblingEnabled: function() {
+			if( mw.getConfig( "DisableVideoSibling") ) {
+				return false;
+			} else {
+				return true;
+			}
 		}
 	};
 
