@@ -87,104 +87,93 @@
     }();
     /** POST MESSAGE END **/
 
+
+    if(!kWidget.cielo24LoadedTranscriptions) {
+        kWidget.cielo24LoadedTranscriptions = true;
+
+        XD.receiveMessage(function(message){
+            try {
+                var messageObj = JSON.parse(message.data);
+                if(typeof(messageObj.event)!='undefined') {
+                    switch(messageObj.event) {
+                        case 'playerUpdatePlayhead':
+                            //console.log("NEWTIME: "+messageObj.time);
+                            var kdp = document.getElementById( messageObj.playerId );
+                            kdp.sendNotification('doPlay');
+                            kdp.sendNotification('doSeek', messageObj.time);
+                            break;
+                        case 'toggleVisibilityState':
+                            var kdp = document.getElementById( messageObj.playerId );
+                            kdp.toggleVisibilityState(messageObj.playerId);
+                            break;
+                        default :
+                            //console.log("Unknown event received: "+messageObj.event);
+                            break;
+                    }
+                }
+                //console.log(messageObj);
+            }catch(e) {
+                //console.log("ERROR: "+e);
+            }
+        });
+    }
+
+
 	kWidget.addReadyCallback( function( playerId ){
 
-        if(!kWidget.cielo24LoadedTranscriptions) {
-            kWidget.cielo24LoadedTranscriptions = {};
-
-            XD.receiveMessage(function(message){
-                try {
-                    var messageObj = JSON.parse(message.data);
-                    if(typeof(messageObj.event)!='undefined') {
-                        switch(messageObj.event) {
-                            case 'playerUpdatePlayhead':
-                                //console.log("NEWTIME: "+messageObj.time);
-                                var kdp = document.getElementById( messageObj.playerId );
-                                kdp.sendNotification('doPlay');
-                                kdp.sendNotification('doSeek', messageObj.time);
-                                break;
-                            case 'toggleVisibilityState':
-                                var kdp = document.getElementById( messageObj.playerId );
-                                kdp.toggleVisibilityState(messageObj.playerId);
-                                break;
-                            default :
-                                //console.log("Unknown event received: "+messageObj.event);
-                                break;
-                        }
-                    }
-                    //console.log(messageObj);
-                }catch(e) {
-                    //console.log("ERROR: "+e);
-                }
-            });
-        }
-
-
-        if(!kWidget.cielo24LoadedTranscriptions[playerId]) {
-            kWidget.cielo24LoadedTranscriptions[playerId] = true;
+        //
+        //if(!kWidget.cielo24LoadedTranscriptions[playerId]) {
+        //    kWidget.cielo24LoadedTranscriptions[playerId] = true;
 
             var playheadPositionCache = 0;
-            var widgetNormalHeight = 435;
             var widgetPage;
 
             var ifr;
             var kdp = document.getElementById( playerId );
-
-
             var ks = kdp.evaluate("{configProxy.flashvars.ks}");
-            //console.log("KS: "+ks);
-            var widgetTitle = kdp.evaluate("{DynaTransWindowTitle}");
-            var clientLogo = kdp.evaluate("{DynaTransClientLogo}");
-            var hideGear = kdp.evaluate("{DynaTransHideGear}");
-            var hideShare = kdp.evaluate("{DynaTransHideShare}");
-            var hidePrint = kdp.evaluate("{DynaTransHidePrint}");
-            var hideDownload = kdp.evaluate("{DynaTransHideDownload}");
-            var hideLeftMenu = kdp.evaluate("{DynaTransHideLeftMenu}");
-            var hideSpeakers = kdp.evaluate("{DynaTransHideSpeakers}");
-            var hideTimestamps = kdp.evaluate("{DynaTransHideTimestamps}");
-            var autoscrollOff = kdp.evaluate("{DynaTransAutoscrollOff}");
+            var widgetTitle = kdp.evaluate("{cielo24Transcriptions.DynaTransWindowTitle}");
+            var widgetNormalHeight = kdp.evaluate("{cielo24Transcriptions.DynaTransWindowSize}");
+            if(typeof(widgetNormalHeight)=='undefined') {
+                widgetNormalHeight = 435;
+            }
 
-            var onPageJs1 = kdp.evaluate("{onPageJs1}");
+            var clientLogo = kdp.evaluate("{cielo24Transcriptions.DynaTransClientLogo}");
+            var hideGear = kdp.evaluate("{cielo24Transcriptions.DynaTransHideGear}");
+            var hideShare = kdp.evaluate("{cielo24Transcriptions.DynaTransHideShare}");
+            var hidePrint = kdp.evaluate("{cielo24Transcriptions.DynaTransHidePrint}");
+            var hideDownload = kdp.evaluate("{cielo24Transcriptions.DynaTransHideDownload}");
+            var hideLeftMenu = kdp.evaluate("{cielo24Transcriptions.DynaTransHideLeftMenu}");
+            var hideSpeakers = kdp.evaluate("{cielo24Transcriptions.DynaTransHideSpeakers}");
+            var hideTimestamps = kdp.evaluate("{cielo24Transcriptions.DynaTransHideTimestamps}");
+            var autoscrollOff = kdp.evaluate("{cielo24Transcriptions.DynaTransAutoscrollOff}");
+
+            var onPageJs1 = window.location.href;
 
             var onPageJs1Link = document.createElement('a');
             onPageJs1Link.href = onPageJs1;
 
-            var projectFolderUrlPath = onPageJs1Link.pathname.substr(0, onPageJs1Link.pathname.lastIndexOf("/", onPageJs1Link.pathname.lastIndexOf("/")-1));
-            var projectFolderUrl = onPageJs1Link.protocol+"//"+onPageJs1Link.hostname+(onPageJs1Link.port!=""?":"+onPageJs1Link.port:"")+projectFolderUrlPath;
-
-            if(window.location.href.indexOf('test1')>-1) {
-                projectFolderUrl += "/test1";
-            }else if(window.location.href.indexOf('test5')>-1) {
-                projectFolderUrl += '/test5';
-            }else if(window.location.href.indexOf('test6')>-1) {
-                //projectFolderUrl += '/test6';
-            }else if(window.location.href.indexOf('demo-full')>-1) {
-                projectFolderUrl += '/demo-full';
-                hideGear = false;
-                hideShare = false;
-                hidePrint = false;
-                hideDownload = false;
-                hideLeftMenu = false;
-                hideSpeakers = false;
-                hideTimestamps = false;
-                autoscrollOff = false;
-            }else if(window.location.href.indexOf('cielo-local')>-1) {
-                //hideGear = true;
-                //hideShare = false;
-                //hidePrint = true;
-                //hideDownload = false;
-                //hideLeftMenu = true;
-                //hideSpeakers = true;
-                //hideTimestamps = true;
-                //autoscrollOff = true;
+            var projectFolderUrlPath = onPageJs1Link.pathname.substr(0, onPageJs1Link.pathname.lastIndexOf("/"));
+            if(projectFolderUrlPath.substr(0,1)!='/') {
+                projectFolderUrlPath = '/'+projectFolderUrlPath;
             }
+
+            var projectFolderUrl = onPageJs1Link.protocol+"//"+onPageJs1Link.hostname+(onPageJs1Link.port!=""?":"+onPageJs1Link.port:"")+projectFolderUrlPath;
 
             widgetPage = projectFolderUrl + '/widget.html';
 
             kdp.addJsListener("entryReady", function(entry) {
 
+                var partnerId = kdp.evaluate("{configProxy.kw.partnerId}");
+
+
+                var iframeWrapperId = 'cielo24-iframe-wrapper-'+playerId;
+                var iframeWrapper = document.getElementById(iframeWrapperId);
+                if(iframeWrapper!=null) {
+                    iframeWrapper.parentNode.removeChild(iframeWrapper);
+                }
+
                 var div = document.createElement('div');
-                div.setAttribute('id', 'cielo24-iframe-wrapper-'+playerId);
+                div.setAttribute('id', iframeWrapperId);
                 div.style.width = kdp.style.width;
                 div.style.height = widgetNormalHeight+'px';
                 div.style.marginTop = '10px';
@@ -203,6 +192,7 @@
                     ifr.setAttribute(i, ifattr[i]);
                 }
                 var ifrSrc = widgetPage+"?ks="+ks;
+                ifrSrc += "&partnerId="+encodeURIComponent(partnerId);
                 ifrSrc += "&playerId="+encodeURIComponent(playerId);
                 ifrSrc += "&widgetTitle="+encodeURIComponent(widgetTitle);
                 ifrSrc += "&vdr="+parseInt(entry.duration)*1000;
@@ -248,8 +238,10 @@
                 }
             }
 
-        }
+        //}
 
 	});
 
 })();
+
+

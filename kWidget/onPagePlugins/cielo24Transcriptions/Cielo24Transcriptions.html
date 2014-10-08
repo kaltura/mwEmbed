@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>Kaltura On-Page Chaptering Examples</title>
+    <title>Kaltura On-Page Cielo24 Transcriptions Widget</title>
     <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
     <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
     <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
@@ -12,33 +12,41 @@
 </head>
 <body>
 
-            <div id="kaltura_player_1" style="width:640px;height:360px;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject" >
-                <!-- Search engine metadata, based on schema.org/VideoObject -->
-                <span itemprop="name" content="Meet Kaltura (Company Video 2012)"></span>
-                <span itemprop="duration" content="30"></span>
-                <span itemprop="thumbnailUrl" content="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_zm1lgs13/version/100004"></span>
-                <span itemprop="width" content="640"></span>
-                <span itemprop="height" content="600"></span>
-            </div>
-            <script>
-                kWidget.embed({
-                    targetId: "kaltura_player_1",
-                    wid: "_243342",
-                    uiconf_id: "12868012",
-                    entry_id: "1_zm1lgs13",
-                    flashvars: {
-                        "chaptersView": {
-                            "plugin" : true,
 
-                            "onPageJs1" : "{onPagePluginPath}/cielo24Transcriptions/js/loader.js"
+<h1>Kaltura On-Page Cielo24 Transcriptions Widget Example</h1>
+<h2>This page provides example for how to use Kaltura's Cielo24 Transcription Widget plugin. You can view all the configuration options
+    on the <a href="Cielo24Transcriptions.qunit.html" title="chapters integration">widget integration page</a>.</h2>
 
-                        }
-                    }
-                })
-            </script>
+<div id="content">
 
+    <br/>
 
+    <div id="kaltura_player" style="width:640px;height:360px;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject" >
+        <!-- Search engine metadata, based on schema.org/VideoObject -->
+        <span itemprop="name" content="Meet Kaltura (Company Video 2012)"></span>
+        <span itemprop="duration" content="30"></span>
+        <span itemprop="thumbnailUrl" content="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_zm1lgs13/version/100004"></span>
+        <span itemprop="width" content="640"></span>
+        <span itemprop="height" content="600"></span>
+    </div>
+    <script>
+        kWidget.embed({
+            targetId: "kaltura_player",
+            wid: "_1795831",
+            uiconf_id: "25830531",
+            entry_id: "0_4wd3trg7",
+            flashvars: {
+                "cielo24Transcriptions": {
+                    'DynaTransWindowSize' : 400,
+                    'DynaTransWindowTitle' : 'Media Data Player',
+                    'DynaTransClientLogo' : "img/logo-transparent.png",
+                    "onPageJs1" : "{onPagePluginPath}/cielo24Transcriptions/js/loader.js"
+                }
+            }
+        })
+    </script>
+    <script src="http://cielo24.com/loader.js"></script>
 
-
+</div>
 </body>
 </html>

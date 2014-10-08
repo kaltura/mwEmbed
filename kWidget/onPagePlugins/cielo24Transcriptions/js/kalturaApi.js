@@ -1,4 +1,3 @@
-var partnerId = 1795831;
 var cieloTranscriptionFileTitle = "c24Trans";
 
 function corsIE8(url, done, fail) {
@@ -75,7 +74,7 @@ function loadTranscriptionFromKalturaSrt(ks, entryId) {
 
 }
 
-function loadTranscriptionFromKaltura(ks, entryId, videoDuration) {
+function loadTranscriptionFromKaltura(ks, partnerId, entryId, videoDuration) {
     var kConfig;
     var kClient;
 

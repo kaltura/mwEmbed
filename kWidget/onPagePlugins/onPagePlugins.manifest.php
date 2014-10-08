@@ -206,12 +206,12 @@ return array(
 				'type' => 'string'
 			),
 			'tags' => array(
-				'doc' => 'Default: "chaptering"â Providing a tag name will grab only annotations which have that tag. 
+				'doc' => 'Default: "chaptering"ï¿½ Providing a tag name will grab only annotations which have that tag. 
 									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters in different languages)',
 				'type' => 'string'
 			),
 			'parentName' => array(
-				'doc' => 'Default: "chaptering"â Providing a parentName will force querying only annotations whose parent fits parentName. 
+				'doc' => 'Default: "chaptering"ï¿½ Providing a parentName will force querying only annotations whose parent fits parentName. 
 									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters, references, ads).',
 				'type' => 'string'
 			),
@@ -228,7 +228,7 @@ return array(
 				'enum' => array( 'before', 'after', 'left', 'right' )
 			),
 			'overflow' => array(
-				'doc' => 'Defines what should happen in case list of chapters require more space than videos dimensions. Combined with theâ layoutâ and positionâ parameters, this parameter will cause a prev/next UI to appear if overflow is set to false.',
+				'doc' => 'Defines what should happen in case list of chapters require more space than videos dimensions. Combined with theï¿½ layoutï¿½ and positionï¿½ parameters, this parameter will cause a prev/next UI to appear if overflow is set to false.',
 				'type' => 'boolean',
 			),
 			'includeThumbnail' => array(
@@ -318,4 +318,69 @@ return array(
 			),
 		)
 	),
+    'cielo24Transcriptions' => array(
+        'description' => 'Adds a Cielo24 Transcription widget to the page.',
+        'attributes' => array(
+            'onPageJs1' => array(
+                'doc' => "",
+                'initvalue' => "{onPagePluginPath}\/cielo24Transcriptions\/js\/loader.js",
+                'type' => 'hidden'
+            ),
+            'DynaTransWindowSize' => array(
+                'initvalue' => 400,
+                'doc' => "The height of the widget.",
+                'type' => 'number',
+            ),
+            'DynaTransWindowTitle' => array(
+                'initvalue' => 'Media Data Player',
+                'doc' => "Widget title.",
+                'type' => 'string',
+            ),
+            'DynaTransClientLogo' => array(
+                'initvalue' => "{onPagePluginPath}\/cielo24Transcriptions\/img\/logo-transparent.png",
+                'doc' => "Client Logo.",
+                'type' => 'string',
+            ),
+            'DynaTransHideGear' => array(
+                'doc' => "If set to true, gear icon will be hidden.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransHideShare' => array(
+                'doc' => "If set to true, share icon will be hidden.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransHidePrint' => array(
+                'doc' => "If set to true, print icon will be hidden.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransHideDownload' => array(
+                'doc' => "If set to true, download icon will be hidden.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransHideLeftMenu' => array(
+                'doc' => "If set to true, left menu icon will be hidden.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransHideSpeakers' => array(
+                'doc' => "If set to true, speakers will be hidden.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransHideTimestamps' => array(
+                'doc' => "If set to true, timestamps will be hidden.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransAutoscrollOff' => array(
+                'doc' => "If set to true, autoscrolling feature will be switched off.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+        )
+    ),
 );

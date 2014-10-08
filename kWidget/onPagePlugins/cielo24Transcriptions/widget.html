@@ -3,26 +3,26 @@
 <head>
     <link rel="stylesheet" href="css/style.css?v=6" media="all" />
 
-    <script src="/js/underscore-min.js" ></script>
-    <script src="/js/jquery-1.11.1.min.js" ></script>
-    <script src="/js/json2.min.js"></script>
-    <script src="/js/postMessageSupport.js"></script>
+    <script src="js/underscore-min.js" ></script>
+    <script src="js/jquery-1.11.1.min.js" ></script>
+    <script src="js/json2.min.js"></script>
+    <script src="js/postMessageSupport.js"></script>
 
-    <script src="/js/kalturaClient/KalturaClientBase.js"></script>
-    <script src="/js/kalturaClient/webtoolkit.md5.js"></script>
-    <script src="/js/kalturaClient/ox.ajast.js"></script>
-    <script src="/js/kalturaClient/KalturaVO.js"></script>
-    <script src="/js/kalturaClient/KalturaTypes.js"></script>
-    <script src="/js/kalturaClient/KalturaServices.js"></script>
-    <script src="/js/kalturaClient/KalturaClient.js"></script>
+    <script src="js/kalturaClient/KalturaClientBase.js"></script>
+    <script src="js/kalturaClient/webtoolkit.md5.js"></script>
+    <script src="js/kalturaClient/ox.ajast.js"></script>
+    <script src="js/kalturaClient/KalturaVO.js"></script>
+    <script src="js/kalturaClient/KalturaTypes.js"></script>
+    <script src="js/kalturaClient/KalturaServices.js"></script>
+    <script src="js/kalturaClient/KalturaClient.js"></script>
 
-    <script src="/js/subtitles.parser.min.js"></script>
+    <script src="js/subtitles.parser.min.js"></script>
 
-    <script src="/js/binarySearch.js"></script>
-    <script src="/js/FileSaver.js"></script>
+    <script src="js/binarySearch.js"></script>
+    <script src="js/FileSaver.js"></script>
 
     <!--<script src="http://log4javascript.org/js/log4javascript.js"></script>-->
-    <script src="/js/jquery.highlight.js"></script>
+    <script src="js/jquery.highlight.js"></script>
 
     <!-- Go to www.addthis.com/dashboard to customize your tools -->
     <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-53f31ac3392bfecf" async></script>
@@ -448,7 +448,7 @@ String.prototype.toMMSS = function () {
 
         }
 
-        if($(".leftMenuTrigger").hasClass('disabled') || typeof(json.topics)=='undefined' && typeof(json.speakers)=='undefined' && typeof(json.keywords)=='undefined') {
+        if($(".leftMenuTrigger").hasClass('disabled') || (typeof(json.topics)=='undefined' && typeof(json.speakers)=='undefined' && typeof(json.keywords)=='undefined')) {
             $(".leftMenuTrigger").addClass('disabled');
         }else {
             $(".leftMenuTrigger").hover(function() {
@@ -544,6 +544,7 @@ String.prototype.toMMSS = function () {
         });
 
         var ks = getUrlParam('ks');
+        var partnerId = parseInt(getUrlParam('partnerId'));
         playerId = getUrlParam('playerId');
         var videoDuration = getUrlParam('vdr');
         var widgetTitle = getUrlParam('widgetTitle');
@@ -724,7 +725,7 @@ String.prototype.toMMSS = function () {
             XD.postMessage(jsonData, parentUrl, parent.window);
         });
 
-        loadTranscriptionFromKaltura(ks, entryId, videoDuration);
+        loadTranscriptionFromKaltura(ks, partnerId, entryId, videoDuration);
 
         $(".shareFacebook").attr('href', $(".shareFacebook").attr('href')+"&url="+parentUrl);
         $(".shareTwitter").attr('href', $(".shareTwitter").attr('href')+"&url="+parentUrl);
@@ -738,15 +739,15 @@ String.prototype.toMMSS = function () {
 
 
         // preload images
-        new Image().src = "../img/footerArrowDown.png";
-        new Image().src = "../img/rightMenuRowBg.png";
-        new Image().src = "../img/rightMenuCheckbox.png";
-        new Image().src = "../img/rightMenuCheckboxChecked.png";
-        new Image().src = "../img/menuRowBgActive.png";
+        new Image().src = "img/footerArrowDown.png";
+        new Image().src = "img/rightMenuRowBg.png";
+        new Image().src = "img/rightMenuCheckbox.png";
+        new Image().src = "img/rightMenuCheckboxChecked.png";
+        new Image().src = "img/menuRowBgActive.png";
     });
 </script>
 
-<script src="/js/kalturaApi.js"></script>
+<script src="js/kalturaApi.js"></script>
 
 </body>
 </html>
