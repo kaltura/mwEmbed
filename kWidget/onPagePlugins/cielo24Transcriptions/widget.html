@@ -134,8 +134,8 @@
                     <div class="clearfix shareDiv">
                         <div class="clearfix shareDivInner">
 
-                            <a class="shareImage shareFacebook" href="https://api.addthis.com/oexchange/0.8/forward/facebook/offer?pubid=ra-53f31ac3392bfecf&ct=1&pco=tbxnj-1.0" target="_blank" ><img style="width: 100%;" src="img/facebook.png?v=6" width="" border="0" alt="Facebook"/></a>
-                            <a class="shareImage shareTwitter" href="https://api.addthis.com/oexchange/0.8/forward/twitter/offer?pubid=ra-53f31ac3392bfecf&ct=1&pco=tbxnj-1.0" target="_blank" ><img style="width: 100%;" src="img/twitter.png?v=6" border="0" alt="Twitter"/></a>
+                            <a class="shareImage shareFacebook" href="#" target="_blank" ><img style="width: 100%;" src="img/facebook.png?v=6" width="" border="0" alt="Facebook"/></a>
+                            <a class="shareImage shareTwitter" href="#" target="_blank" ><img style="width: 100%;" src="img/twitter.png?v=6" border="0" alt="Twitter"/></a>
                             <!--<a class="shareAddthis" href="https://www.addthis.com/bookmark.php?source=tbx32nj-1.0&v=300&pubid=ra-53f31ac3392bfecf&ct=1&pco=tbxnj-1.0" target="_blank"><img src="https://cache.addthiscdn.com/icons/v2/thumbs/32x32/addthis.png" border="0" alt="Addthis"/></a>-->
 
                         </div>
@@ -180,6 +180,35 @@
 
 <script type="text/javascript">
 
+function updateQueryString(key, value, url) {
+    if (!url) url = window.location.href;
+    var re = new RegExp("([?&])" + key + "=.*?(&|#|$)(.*)", "gi");
+
+    if (re.test(url)) {
+        if (typeof value !== 'undefined' && value !== null) {
+            return url.replace(re, '$1' + key + "=" + value + '$2$3');
+        }else {
+            var hash = url.split('#');
+            url = hash[0].replace(re, '$1$3').replace(/(&|\?)$/, '');
+            if (typeof hash[1] !== 'undefined' && hash[1] !== null) {
+                url += '#' + hash[1];
+            }
+            return url;
+        }
+    }else {
+        if (typeof value !== 'undefined' && value !== null) {
+            var separator = url.indexOf('?') !== -1 ? '&' : '?',
+                    hash = url.split('#');
+            url = hash[0] + separator + key + '=' + value;
+            if (typeof hash[1] !== 'undefined' && hash[1] !== null) {
+                url += '#' + hash[1];
+            }
+            return url;
+        }else {
+            return url;
+        }
+    }
+}
 
 String.prototype.toMMSS = function () {
     var sec_num = parseInt(this, 10); // don't forget the second param
@@ -187,11 +216,9 @@ String.prototype.toMMSS = function () {
     var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
     var seconds = sec_num - (hours * 3600) - (minutes * 60);
 
-    if (hours   < 10) {hours   = "0"+hours;}
     if (minutes < 10) {minutes = "0"+minutes;}
     if (seconds < 10) {seconds = "0"+seconds;}
-    var time    = minutes+':'+seconds;
-    return time;
+    return (hours>0?hours+':':'')+minutes+':'+seconds;
 }
 
 
@@ -224,6 +251,8 @@ String.prototype.toMMSS = function () {
     var rendering = false;
 
     var parentUrl = (window.location != window.parent.location) ? document.referrer: document.location;
+
+    var playerPlayheadCurrentTime = 0;
 
     function transcription2Document(html) {
         return "<html><head><title></title></head><body>"+html+"</body></html>";
@@ -267,6 +296,9 @@ String.prototype.toMMSS = function () {
     function playerUpdatePlayhead(time) {
         var second = parseFloat(time).toFixed(2);
         var milliSecond = parseInt(second*1000);
+
+        playerPlayheadCurrentTime = milliSecond;
+
         $("#playheadTime").text(second.toMMSS());
 
         if(videoDuration>0) {
@@ -725,11 +757,23 @@ String.prototype.toMMSS = function () {
             XD.postMessage(jsonData, parentUrl, parent.window);
         });
 
-        loadTranscriptionFromKaltura(ks, partnerId, entryId, videoDuration);
+        $(".shareFacebook").click(function() {
+            var shareUrl = parentUrl;
+            if(confirm('Do you want to include current time in the share link?')) {
+                shareUrl = updateQueryString('cielo24time', playerPlayheadCurrentTime, parentUrl);
+            }
+            $(this).attr('href', 'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(shareUrl));
+        });
 
-        $(".shareFacebook").attr('href', $(".shareFacebook").attr('href')+"&url="+parentUrl);
-        $(".shareTwitter").attr('href', $(".shareTwitter").attr('href')+"&url="+parentUrl);
-        $(".shareAddthis").attr('href', $(".shareAddthis").attr('href')+"&url="+parentUrl);
+        $(".shareTwitter").click(function() {
+            var shareUrl = parentUrl;
+            if(confirm('Do you want to include current time in the share link?')) {
+                shareUrl = updateQueryString('cielo24time', playerPlayheadCurrentTime, parentUrl);
+            }
+            $(this).attr('href', 'https://twitter.com/share?url='+encodeURIComponent(shareUrl));
+        });
+
+        loadTranscriptionFromKaltura(ks, partnerId, entryId, videoDuration);
 
         $(window).resize(windowResizeCallback);
         windowResizeCallback();

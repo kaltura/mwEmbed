@@ -1,5 +1,14 @@
 (function(){
 
+    function getUrlParam(name){
+        if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
+            return decodeURIComponent(name[1]);
+    }
+
+    function isNumeric( obj ) {
+        return (obj - parseFloat( obj ) + 1) >= 0;
+    }
+
     /** JSON2 **/
         "object"!=typeof JSON&&(JSON={}),function(){"use strict"
         function f(t){return 10>t?"0"+t:t}function quote(t){return escapable.lastIndex=0,escapable.test(t)?'"'+t.replace(escapable,function(t){var e=meta[t]
@@ -125,118 +134,127 @@
         //if(!kWidget.cielo24LoadedTranscriptions[playerId]) {
         //    kWidget.cielo24LoadedTranscriptions[playerId] = true;
 
-            var playheadPositionCache = 0;
-            var widgetPage;
+        var playheadPositionCache = 0;
+        var widgetPage;
 
-            var ifr;
-            var kdp = document.getElementById( playerId );
-            var ks = kdp.evaluate("{configProxy.flashvars.ks}");
-            var widgetTitle = kdp.evaluate("{cielo24Transcriptions.DynaTransWindowTitle}");
-            var widgetNormalHeight = kdp.evaluate("{cielo24Transcriptions.DynaTransWindowSize}");
-            if(typeof(widgetNormalHeight)=='undefined') {
-                widgetNormalHeight = 435;
+        var ifr;
+        var kdp = document.getElementById( playerId );
+        top.kdp = kdp;
+        var ks = kdp.evaluate("{configProxy.flashvars.ks}");
+        var widgetTitle = kdp.evaluate("{cielo24Transcriptions.DynaTransWindowTitle}");
+        var widgetNormalHeight = kdp.evaluate("{cielo24Transcriptions.DynaTransWindowSize}");
+        if(typeof(widgetNormalHeight)=='undefined') {
+            widgetNormalHeight = 435;
+        }
+
+        var clientLogo = kdp.evaluate("{cielo24Transcriptions.DynaTransClientLogo}");
+        var hideGear = kdp.evaluate("{cielo24Transcriptions.DynaTransHideGear}");
+        var hideShare = kdp.evaluate("{cielo24Transcriptions.DynaTransHideShare}");
+        var hidePrint = kdp.evaluate("{cielo24Transcriptions.DynaTransHidePrint}");
+        var hideDownload = kdp.evaluate("{cielo24Transcriptions.DynaTransHideDownload}");
+        var hideLeftMenu = kdp.evaluate("{cielo24Transcriptions.DynaTransHideLeftMenu}");
+        var hideSpeakers = kdp.evaluate("{cielo24Transcriptions.DynaTransHideSpeakers}");
+        var hideTimestamps = kdp.evaluate("{cielo24Transcriptions.DynaTransHideTimestamps}");
+        var autoscrollOff = kdp.evaluate("{cielo24Transcriptions.DynaTransAutoscrollOff}");
+
+        var onPageJs1 = window.location.href;
+
+        var onPageJs1Link = document.createElement('a');
+        onPageJs1Link.href = onPageJs1;
+
+        var projectFolderUrlPath = onPageJs1Link.pathname.substr(0, onPageJs1Link.pathname.lastIndexOf("/"));
+        if(projectFolderUrlPath.substr(0,1)!='/') {
+            projectFolderUrlPath = '/'+projectFolderUrlPath;
+        }
+
+        var projectFolderUrl = onPageJs1Link.protocol+"//"+onPageJs1Link.hostname+(onPageJs1Link.port!=""?":"+onPageJs1Link.port:"")+projectFolderUrlPath;
+
+        widgetPage = projectFolderUrl + '/widget.html';
+
+        kdp.addJsListener("entryReady", function(entry) {
+
+            var partnerId = kdp.evaluate("{configProxy.kw.partnerId}");
+
+
+            var iframeWrapperId = 'cielo24-iframe-wrapper-'+playerId;
+            var iframeWrapper = document.getElementById(iframeWrapperId);
+            if(iframeWrapper!=null) {
+                iframeWrapper.parentNode.removeChild(iframeWrapper);
             }
 
-            var clientLogo = kdp.evaluate("{cielo24Transcriptions.DynaTransClientLogo}");
-            var hideGear = kdp.evaluate("{cielo24Transcriptions.DynaTransHideGear}");
-            var hideShare = kdp.evaluate("{cielo24Transcriptions.DynaTransHideShare}");
-            var hidePrint = kdp.evaluate("{cielo24Transcriptions.DynaTransHidePrint}");
-            var hideDownload = kdp.evaluate("{cielo24Transcriptions.DynaTransHideDownload}");
-            var hideLeftMenu = kdp.evaluate("{cielo24Transcriptions.DynaTransHideLeftMenu}");
-            var hideSpeakers = kdp.evaluate("{cielo24Transcriptions.DynaTransHideSpeakers}");
-            var hideTimestamps = kdp.evaluate("{cielo24Transcriptions.DynaTransHideTimestamps}");
-            var autoscrollOff = kdp.evaluate("{cielo24Transcriptions.DynaTransAutoscrollOff}");
+            var div = document.createElement('div');
+            div.setAttribute('id', iframeWrapperId);
+            div.style.width = kdp.style.width;
+            div.style.height = widgetNormalHeight+'px';
+            div.style.marginTop = '10px';
 
-            var onPageJs1 = window.location.href;
+            ifr = document.createElement('iframe');
 
-            var onPageJs1Link = document.createElement('a');
-            onPageJs1Link.href = onPageJs1;
-
-            var projectFolderUrlPath = onPageJs1Link.pathname.substr(0, onPageJs1Link.pathname.lastIndexOf("/"));
-            if(projectFolderUrlPath.substr(0,1)!='/') {
-                projectFolderUrlPath = '/'+projectFolderUrlPath;
-            }
-
-            var projectFolderUrl = onPageJs1Link.protocol+"//"+onPageJs1Link.hostname+(onPageJs1Link.port!=""?":"+onPageJs1Link.port:"")+projectFolderUrlPath;
-
-            widgetPage = projectFolderUrl + '/widget.html';
-
-            kdp.addJsListener("entryReady", function(entry) {
-
-                var partnerId = kdp.evaluate("{configProxy.kw.partnerId}");
-
-
-                var iframeWrapperId = 'cielo24-iframe-wrapper-'+playerId;
-                var iframeWrapper = document.getElementById(iframeWrapperId);
-                if(iframeWrapper!=null) {
-                    iframeWrapper.parentNode.removeChild(iframeWrapper);
-                }
-
-                var div = document.createElement('div');
-                div.setAttribute('id', iframeWrapperId);
-                div.style.width = kdp.style.width;
-                div.style.height = widgetNormalHeight+'px';
-                div.style.marginTop = '10px';
-
-                ifr = document.createElement('iframe');
-
-                var iframe_style = "overflow: hidden; margin: 0; padding: 0;";
-                var ifattr = {
-                    width: '100%', height: '100%', 'scrolling': 'no', 'marginWidth': 0,
-                    'marginHeight': 0, 'noResize': 0, 'border': 0, 'frameBorder': 0, 'frameSpacing': 0,
-                    'background': 'transparent', 'allowTransparency': 'allowTransparency',
-                    'style':iframe_style, clear: 'both'
-                };
-
-                for (var i in ifattr) {
-                    ifr.setAttribute(i, ifattr[i]);
-                }
-                var ifrSrc = widgetPage+"?ks="+ks;
-                ifrSrc += "&partnerId="+encodeURIComponent(partnerId);
-                ifrSrc += "&playerId="+encodeURIComponent(playerId);
-                ifrSrc += "&widgetTitle="+encodeURIComponent(widgetTitle);
-                ifrSrc += "&vdr="+parseInt(entry.duration)*1000;
-                ifrSrc += "&clientLogo="+encodeURIComponent(clientLogo);
-                ifrSrc += "&entryId="+encodeURIComponent(entry.id);
-                ifrSrc += "&hideGear="+encodeURIComponent(hideGear);
-                ifrSrc += "&hideShare="+encodeURIComponent(hideShare);
-                ifrSrc += "&hidePrint="+encodeURIComponent(hidePrint);
-                ifrSrc += "&hideDownload="+encodeURIComponent(hideDownload);
-                ifrSrc += "&hideLeftMenu="+encodeURI(hideLeftMenu);
-                ifrSrc += "&hideSpeakers="+encodeURIComponent(hideSpeakers);
-                ifrSrc += "&hideTimestamps="+encodeURIComponent(hideTimestamps);
-                ifrSrc += "&autoscrollOff="+encodeURIComponent(autoscrollOff);
-
-                ifr.src = ifrSrc;
-
-                div.appendChild(ifr);
-
-                kdp.parentNode.insertBefore(div, kdp.nextSibling);
-
-                kdp.kBind( 'playerUpdatePlayhead', onPlayerUpdatePlayhead );
-            });
-
-            kdp.addJsListener("entryFailed", function() {
-
-            });
-
-            kdp.toggleVisibilityState = function(playerId) {
-                var wrapperDiv = document.getElementById('cielo24-iframe-wrapper-'+playerId);
-                if(wrapperDiv.style.height=='45px') {
-                    wrapperDiv.style.height = widgetNormalHeight+'px';
-                }else {
-                    wrapperDiv.style.height = "45px";
-                }
+            var iframe_style = "overflow: hidden; margin: 0; padding: 0;";
+            var ifattr = {
+                width: '100%', height: '100%', 'scrolling': 'no', 'marginWidth': 0,
+                'marginHeight': 0, 'noResize': 0, 'border': 0, 'frameBorder': 0, 'frameSpacing': 0,
+                'background': 'transparent', 'allowTransparency': 'allowTransparency',
+                'style':iframe_style, clear: 'both'
             };
 
-            function onPlayerUpdatePlayhead(time){
-                var diff = Math.abs(playheadPositionCache-time);
-                if(diff>0.1) {
-                    playheadPositionCache = time;
-                    var jsonData = JSON.stringify({event: 'playerUpdatePlayhead', time: time});
-                    XD.postMessage(jsonData, widgetPage, ifr.contentWindow);
-                }
+            for (var i in ifattr) {
+                ifr.setAttribute(i, ifattr[i]);
             }
+            var ifrSrc = widgetPage+"?ks="+ks;
+            ifrSrc += "&partnerId="+encodeURIComponent(partnerId);
+            ifrSrc += "&playerId="+encodeURIComponent(playerId);
+            ifrSrc += "&widgetTitle="+encodeURIComponent(widgetTitle);
+            ifrSrc += "&vdr="+parseInt(entry.duration)*1000;
+            ifrSrc += "&clientLogo="+encodeURIComponent(clientLogo);
+            ifrSrc += "&entryId="+encodeURIComponent(entry.id);
+            ifrSrc += "&hideGear="+encodeURIComponent(hideGear);
+            ifrSrc += "&hideShare="+encodeURIComponent(hideShare);
+            ifrSrc += "&hidePrint="+encodeURIComponent(hidePrint);
+            ifrSrc += "&hideDownload="+encodeURIComponent(hideDownload);
+            ifrSrc += "&hideLeftMenu="+encodeURI(hideLeftMenu);
+            ifrSrc += "&hideSpeakers="+encodeURIComponent(hideSpeakers);
+            ifrSrc += "&hideTimestamps="+encodeURIComponent(hideTimestamps);
+            ifrSrc += "&autoscrollOff="+encodeURIComponent(autoscrollOff);
+
+            ifr.src = ifrSrc;
+
+            div.appendChild(ifr);
+
+            kdp.parentNode.insertBefore(div, kdp.nextSibling);
+
+            kdp.kBind( 'playerUpdatePlayhead', onPlayerUpdatePlayhead );
+        });
+
+        kdp.addJsListener( 'changeMedia', function() {
+            var cielo24time = getUrlParam('cielo24time');
+            if(typeof(cielo24time)!='undefined' && isNumeric(cielo24time)) {
+                kdp.sendNotification('doSeek', parseInt(cielo24time)/1000);
+                kdp.sendNotification('doPlay');
+            }
+        });
+
+        kdp.addJsListener("entryFailed", function() {
+
+        });
+
+        kdp.toggleVisibilityState = function(playerId) {
+            var wrapperDiv = document.getElementById('cielo24-iframe-wrapper-'+playerId);
+            if(wrapperDiv.style.height=='45px') {
+                wrapperDiv.style.height = widgetNormalHeight+'px';
+            }else {
+                wrapperDiv.style.height = "45px";
+            }
+        };
+
+        function onPlayerUpdatePlayhead(time){
+            var diff = Math.abs(playheadPositionCache-time);
+            if(diff>0.1) {
+                playheadPositionCache = time;
+                var jsonData = JSON.stringify({event: 'playerUpdatePlayhead', time: time});
+                XD.postMessage(jsonData, widgetPage, ifr.contentWindow);
+            }
+        }
 
         //}
 
