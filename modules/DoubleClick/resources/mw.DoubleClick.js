@@ -288,22 +288,6 @@
 					}
 				}
 			});
-
-			if( mw.isIpad() ) {
-				var bindPostFix = ".doubleClickSequenceCheck";
-				_this.embedPlayer.bindHelper( 'playing' + bindPostFix, function () {
-					// Pause video element only if it's not 'overlay'
-					if( _this.isLinear === false ) {
-						return;
-					}
-					_this.embedPlayer.unbindHelper( 'playing' + bindPostFix );
-					if( !mw.isIOS8() ) {
-						_this.embedPlayer.stopEventPropagation();
-						_this.embedPlayer.getPlayerElement().pause();
-						_this.embedPlayer.stopMonitor();
-					}
-				});
-			}
 		},
 		/**
 		 * Get the content video tag
