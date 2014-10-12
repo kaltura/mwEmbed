@@ -576,6 +576,8 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onLoadEmbeddedCaptions: function( data ) {
+		this.triggerHelper( 'onTextData', data );
+
 		var caption = {
 			source: {
 				srclang: data.language
@@ -645,8 +647,9 @@ mw.EmbedPlayerKplayer = {
 	*/
 	getEntryUrl: function() {
 		var deferred = $.Deferred();
+		var originalSrc = this.mediaElement.selectedSource.getSrc();
 		if ( this.isHlsSource( this.mediaElement.selectedSource )) {
-			var originalSrc = this.mediaElement.selectedSource.getSrc();
+
 			this.resolveSrcURL( originalSrc )
 				.then(function ( srcToPlay ){
 				deferred.resolve( srcToPlay );
@@ -654,6 +657,10 @@ mw.EmbedPlayerKplayer = {
 				deferred.resolve( originalSrc );
 			});
 			return deferred;
+		}
+
+		else if ( this.isLive() || this.sourcesReplaced ) {
+			deferred.resolve( originalSrc );
 		}
 		var flavorIdParam = '';
 		var mediaProtocol = this.getKalturaAttributeConfig( 'mediaProtocol' ) || mw.getConfig('Kaltura.Protocol') || "http";
