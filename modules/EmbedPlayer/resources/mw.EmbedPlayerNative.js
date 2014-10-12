@@ -346,6 +346,9 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		$.each( _this.nativeEvents, function( inx, eventName ){
+			if( mw.isIOS8() && mw.isIphone() && eventName === "seeking" ) {
+				return;
+			}
 			$( vid ).unbind( eventName + '.embedPlayerNative').bind( eventName + '.embedPlayerNative', function(){
 				// make sure we propagating events, and the current instance is in the correct closure.
 				if( _this._propagateEvents && _this.instanceOf == 'Native' ){
@@ -659,7 +662,7 @@ mw.EmbedPlayerNative = {
 					_this.setCurrentTime( seekTime, callback , callbackCount++ );
 				}
 			}
-		}, 5000);
+		}, ( mw.isIOS8() && mw.isIpad() ) ? 100 : 5000);
 
 		// Try to update the playerElement time:
 		try {
@@ -674,7 +677,7 @@ mw.EmbedPlayerNative = {
 		}
 
 		// Check for seeking state ( some player iOS / iPad can only seek while playing )
-		if(! vid.seeking || ( mw.isIOS8() && ! vid.playing ) ){
+		if(! vid.seeking || ( mw.isIOS8() && mw.isIphone() && ! vid.playing ) ){
 			mw.log( "Error:: not entering seek state, play and wait for positive time" );
 			vid.play();
 			setTimeout(function(){
@@ -1231,7 +1234,7 @@ mw.EmbedPlayerNative = {
 
 		// Clear the PreSeek time
 		this.kPreSeekTime = null;
-		
+
 		// Trigger the html5 action on the parent
 		if( this.seeking ){
 			// HLS safari triggers onseek when its not even close to the target time,
