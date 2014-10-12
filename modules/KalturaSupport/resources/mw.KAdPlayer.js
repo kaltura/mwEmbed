@@ -488,7 +488,7 @@ mw.KAdPlayer.prototype = {
 							if ( adSlot.videoClickTracking && adSlot.videoClickTracking.length > 0  ) {
 								mw.log("KAdPlayer:: sendBeacon to: " + adSlot.videoClickTracking[0] );
 								for (var i=0; i < adSlot.videoClickTracking.length ; i++){
-									mw.sendBeaconUrl( adSlot.videoClickTracking [i]);alert("report ct");
+									mw.sendBeaconUrl( adSlot.videoClickTracking [i]);
 								}
 								//handle wrapper clickTracking
 								if(adSlot.wrapperData ){
