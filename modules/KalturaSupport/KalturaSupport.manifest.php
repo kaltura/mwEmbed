@@ -266,7 +266,7 @@ return array(
                 'doc' => 'Position of the playlist.',
                 'label' => "Position",
                 'type' => 'enum',
-                'initvalue' => 'left',
+                'initvalue' => 'right',
                 'enum' => array("left", "right", "top", "bottom"),
                 'options' => array(
                     array(
