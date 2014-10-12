@@ -25,7 +25,7 @@
 				'onPage': false,
 				'includeInLayout': true,
 				'clipListTargetId': null,
-				'containerPosition':  'left',
+				'containerPosition':  'right',
 				'parent': null
 			});
 		},
