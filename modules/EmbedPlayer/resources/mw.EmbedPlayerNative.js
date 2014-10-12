@@ -1039,13 +1039,15 @@ mw.EmbedPlayerNative = {
 						$( _this ).hide();
 					}
 					// if it's iOS8 the player won't play
-					if( !mw.isIOS8() ) {
+					if( mw.isIOS8() && mw.isIpad()  ) {
 						// update the preload attribute to auto
+						$( _this.getPlayerElement() ).attr('preload',"metadata" );
+					} else if ( !mw.isIOS8 ){
 						$( _this.getPlayerElement() ).attr('preload',"auto" );
 					}
 					// issue a play request
 					if( !_this.playing ) {
-						if( mw.isIOS8() ) {
+						if( mw.isIOS8() && mw.isIphone() ) {
 							setTimeout( function() {
 								vid.play();
 							}, 0);
