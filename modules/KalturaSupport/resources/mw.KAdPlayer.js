@@ -453,21 +453,6 @@ mw.KAdPlayer.prototype = {
 			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'click';
 			setTimeout( function(){
 				$clickTarget.unbind(clickEventName + _this.adClickPostFix).bind( clickEventName + _this.adClickPostFix, function(e){
-					if ( adSlot.videoClickTracking && adSlot.videoClickTracking.length > 0  ) {
-						mw.log("KAdPlayer:: sendBeacon to: " + adSlot.videoClickTracking[0] );
-						for (var i=0; i < adSlot.videoClickTracking.length ; i++){
-							mw.sendBeaconUrl( adSlot.videoClickTracking [i]);
-						}
-                        //handle wrapper clickTracking
-                        if(adSlot.wrapperData ){
-
-                            adSlot.wrapperData.contents().find('ClickTracking').each(function(a,b){
-                                mw.sendBeaconUrl($(b).contents().text())
-						        mw.log("KAdPlayer:: sendBeacon to (wrapper): " + $(b).contents().text() );
-                            })
-                        }
-
-					}
 					if ( adConf.clickThrough ) {
 						e.stopPropagation();
 						if( _this.clickedBumper ){
@@ -500,6 +485,21 @@ mw.KAdPlayer.prototype = {
 							embedPlayer.enablePlayControls();
 							//expose the URL to the
 							embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
+							if ( adSlot.videoClickTracking && adSlot.videoClickTracking.length > 0  ) {
+								mw.log("KAdPlayer:: sendBeacon to: " + adSlot.videoClickTracking[0] );
+								for (var i=0; i < adSlot.videoClickTracking.length ; i++){
+									mw.sendBeaconUrl( adSlot.videoClickTracking [i]);alert("report ct");
+								}
+								//handle wrapper clickTracking
+								if(adSlot.wrapperData ){
+
+									adSlot.wrapperData.contents().find('ClickTracking').each(function(a,b){
+										mw.sendBeaconUrl($(b).contents().text())
+										mw.log("KAdPlayer:: sendBeacon to (wrapper): " + $(b).contents().text() );
+									})
+								}
+
+							}
 							window.open( adConf.clickThrough );
 						}
 					}
