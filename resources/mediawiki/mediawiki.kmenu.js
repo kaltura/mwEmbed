@@ -11,7 +11,8 @@
 				'role': 'menu',
 				'aria-labelledby': 'dLabel'
 			},
-			dividerClass: 'divider'
+			dividerClass: 'divider',
+            onSelected: null
         };
 
         this.bindPostfix = '.kMenu';
@@ -69,7 +70,11 @@
 								_this.selectedIndex = item.idx;
 								if( $.isFunction( item.callback ) ){
 									item.callback();
-								}								
+								}
+                                // Support for onSelected method
+                                if( $.isFunction(_this.options.onSelected) ) {
+                                    _this.options.onSelected(item);
+                                }						
 								_this.close();
 							})
 						);
