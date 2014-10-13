@@ -32,7 +32,7 @@
 					}
 					return false;
 				}
-				if ( kWidget.supportsFlash() ) {   //add vars to load widevine KDP plugin
+				if ( kWidget.supportsFlash() && ! mw.isDesktopSafari() ) {   //add vars to load widevine KDP plugin
 					//either all flavors are encrypted or all are not. If the flavor is not widevine don't show wv prompt.
 					if (flavors && flavors.length) {
 						if ( isWVAsset() )  {
@@ -40,6 +40,9 @@
 								_this.getPlayer().setFlashvars( 'forceDynamicStream', 'true' );
 								if ( _this.getPlayer().setKPlayerAttribute ) {
 									_this.getPlayer().setKPlayerAttribute('configProxy.flashvars', 'forceDynamicStream', 'true');
+									_this.getPlayer().setKPlayerAttribute('widevine.content', 'mediaWidth', flavors[0].width);
+									_this.getPlayer().setKPlayerAttribute('widevine.content', 'mediaHeight', flavors[0].height);
+
 								}
 								//hide the source selector until we receive the embedded flavors from the wvm package
 								_this.getPlayer().setKDPAttribute( 'sourceSelector' , 'visible', false);
@@ -82,6 +85,7 @@
 					}
 				}
 				if (msg && title) {
+					_this.getPlayer().autoplay = false;
 					_this.getPlayer().layoutBuilder.displayAlert( { keepOverlay:true, message: msg, title: title, noButtons: true});
 					_this.getPlayer().disablePlayControls();
 				}

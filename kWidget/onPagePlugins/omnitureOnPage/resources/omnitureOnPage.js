@@ -16,7 +16,9 @@ kWidget.addReadyCallback( function( playerId ){
 		
 		// track waiting for scode propagation 
 		_startWaitTime: null,
-		
+		// flasg to make sure we setup monitor only once
+		layoutReadyCalled: false,
+
 		init: function( player ){
 			var _this = this;
 			this.kdp = player;
@@ -25,18 +27,21 @@ kWidget.addReadyCallback( function( playerId ){
 			this.kdp.kUnbind( '.' + this.instanceName );
 			// We bind to event
 			_this.bindPlayer();
-			
+
 			// Check for on-page s-code that already exists
 			this.bind('layoutReady', function(){
-				_this.sCodeCheck(function(){
-					// process any queued events now that sCode is available: 
-					_this.proccessMediaQueue();
-					_this.proccessNotificationQueue();
-					// once sCode is ready setup the monitor
-					_this.setupMonitor();
-				});
-				// bind for events as soon as layout is Ready ( proxy events while player checks for sCode )
-				_this.bindCustomEvents();
+				if ( !_this.layoutReadyCalled ){
+					_this.sCodeCheck(function(){
+						// process any queued events now that sCode is available:
+						_this.proccessMediaQueue();
+						_this.proccessNotificationQueue();
+						// once sCode is ready setup the monitor
+						_this.setupMonitor();
+					});
+					// bind for events as soon as layout is Ready ( proxy events while player checks for sCode )
+					_this.bindCustomEvents();
+					_this.layoutReadyCalled = true;
+				}
 			});
 		},
 		cacheEntryMetadata: function(){
@@ -76,7 +81,8 @@ kWidget.addReadyCallback( function( playerId ){
 					callback();
 				}
 			}, function(){
-				// failed to load scode: 
+				// failed to load scode:
+				_this.kdp.sendNotification("omnitureScodeError");
 				_this.log( "Error: failed to load s-code")
 			})
 		},
@@ -179,7 +185,7 @@ kWidget.addReadyCallback( function( playerId ){
 		*/
 		setupMonitor: function() {
 			// Exit if sCode not loaded
-			if( !this.sCodeLoaded ) {
+			if( !this.sCodeLoaded) {
 				return ;
 			}
 
@@ -232,7 +238,14 @@ kWidget.addReadyCallback( function( playerId ){
 			s.Media.trackWhilePlaying = true;
 			s.Media.trackMilestones="25,50,75";
 			s.Media.monitor = function ( s, media ) {
-				if ( $.inArray( media.event, trackEvents )) {
+				var inArray = false;
+				for (var i = 0; i < trackEvents.length; i++){
+					if(media.event ===  trackEvents[i]){
+						inArray = true;
+						break;
+					}
+				}
+				if( inArray ) {
 					trackMediaWithExtraEvars();
 				}
 				if( media.event == 'CLOSE' ){

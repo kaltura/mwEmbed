@@ -22,6 +22,12 @@
 				        _this.bufferTime = 0;
 				        _this.currentBitRate = -1;
 						_this.addBindings();
+				        if (_this.embedPlayer &&
+					        _this.embedPlayer.kalturaContextData &&
+					        _this.embedPlayer.kalturaContextData.flavorAssets &&
+					        _this.embedPlayer.kalturaContextData.flavorAssets.length === 1){
+					        _this.currentBitRate = _this.embedPlayer.kalturaContextData.flavorAssets[0].bitrate;
+				        }
 					}
 				} );
 		   },

@@ -120,6 +120,10 @@ $kgDefaultCaptionAttr = array(
 	'defaultLanguageKey' => array(
 		'doc' => "The default language key for the player.",
 		'type' => 'text'
+	),
+	'hideWhenEmpty' => array(
+		'doc' => 'If the caption button should be hidden when no captions are available for the current entry.',
+		'type' => 'boolean'
 	)
 );
 return array(
@@ -127,7 +131,19 @@ return array(
 		'doc' => 'If apple HLS streams should be used when available.',
 		'type' => 'boolean'
 	),
-		
+	'Kaltura.LeadHLSOnAndroid' => array(
+		'doc' => 'If Apple HLS streams should be used when available on Android devices, 
+			by default progressive streams are used on Android because of Android HLS compatibility issues.',
+		'type' => 'boolean'
+	),
+	'autoPlay' => array(
+		'doc' => 'If the player should start playback once ready.',
+		'type' => 'boolean'
+	),
+	'autoMute' => array(
+		'doc' => 'If set to true, player will start with audio muted. This will be respected across entries and ads, until the user enables volume in the player. Note some VPAID ads do not support auto mute.',
+		'type' => 'boolean'
+	),
 	/*Captions */
 	'closedCaptions' => array(
 		'description' => 'Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
@@ -260,7 +276,59 @@ return array(
 	),
 	'playlistAPI' => array(
 		'description' => 'The Kaltura playlist plugin, supports associating multiple clips in sequence.',
+		'label' => 'Playlist Configuration',
 		'attributes' => array(
+			'containerPosition' => array(
+                'doc' => 'Position of the playlist.',
+                'label' => "Position",
+                'type' => 'enum',
+                'initvalue' => 'left',
+                'enum' => array("left", "right", "top", "bottom"),
+                'options' => array(
+                    array(
+                        'label' => "Left of the video",
+                        'value' => "left"
+                    ),
+                    array(
+                        'label' => "Right of the video",
+                        'value' => "right"
+                    ),
+                    array(
+                        'label' => "Above the video",
+                        'value' => "top"
+                    ),
+                    array(
+                        'label' => "Below the video",
+                        'value' => "bottom"
+                    )
+                )
+            ),
+			'layout' => array(
+                'doc' => 'Playlist layout.',
+                'type' => 'enum',
+                'initvalue' => 'vertical',
+                'enum' => array("vertical", "horizontal"),
+                'options' => array(
+                    array(
+                        'label' => "Vertical playlist",
+                        'value' => "vertical"
+                    ),
+                    array(
+                        'label' => "Horizontal playlist",
+                        'value' => "horizontal"
+                    )
+                )
+            ),
+            'includeInLayout' => array(
+                'doc' => "Include clip list in the display.",
+                'type' => 'boolean',
+                'initvalue' => true
+            ),
+            'showControls' => array(
+                'doc' => "Display Next / Previous buttons.",
+                'type' => 'boolean',
+                'initvalue' => true
+            ),
 			'autoContinue' => array(
 				'doc' => "If the playlist should autocontinue.",
 				'type' => 'boolean'
@@ -270,7 +338,16 @@ return array(
 				'type' => 'boolean'
 			),
 			'loop' => array(
-				'doc' => "If the playlist should loop on complete.",
+				'doc' => "If the playlist should loop.",
+				'type' => 'boolean'
+			),
+			'hideClipPoster' => array(
+				'doc' => "Hide clip poster when switching to another clip.",
+				'type' => 'boolean',
+				'initvalue' => true
+			),
+			'onPage' => array(
+				'doc' => "If the playlist should be rendered out of the IFrame (on page).",
 				'type' => 'boolean'
 			),
 			'initItemEntryId' => array(
@@ -278,27 +355,24 @@ return array(
 			),
 			'kpl0Url' => array(
 				'doc' => 'The playlist URL. (can be a Kaltura playlist service or MRSS)',
-				'type' => 'url'
+				'type' => 'hiddenValue'
 			),
 			'kpl0Id' => array(
 				'doc' => "The kaltura playlist Id",
-				'type' => 'string'
+				'type' => 'hiddenValue'
 			),
 			'kpl0Name' => array(
 				'doc' => "The name of the playlist.",
+				'type' => 'hiddenValue'
 			),
 			'kpl1Url' => array(
 				'doc' => 'The N playlist URL.',
-				'type' => 'url'
+				'type' => 'hiddenValue'
 			),
 			'kpl1Name' => array(
 				'doc' => "The name of the indexed playlist.",
-			),
-			'includeInLayout' => array(
-                'doc' => "If the playlist clip list should be displayed.",
-                'type' => 'boolean',
-                'initvalue' => true
-            )
+				'type' => 'hiddenValue'
+			)
 		)
 	),/*
 	'playlistHolder' => array(
@@ -408,9 +482,18 @@ return array(
 			The download button will enable users to download the media to a local file.",
 		'attributes' => array_merge($kgDefaultComponentAttr,
 			array(
+                'flavorID' => array(
+                    'label' => 'Flavor ID',
+                    'doc' => "Flavor ID for the downloaded movie source. When specified, overrides any preferred bitrate settings",
+                    'type' => 'string',
+                    'initvalue' => ''
+                ),
+            ),
+			array(
 				'preferredBitrate' => array(
-					'doc' => "Preferred bitrate for the downloaded movie source. Keep empty for the highest bitrate",
-					'type' => 'number',
+					'label' => 'Preferred bitrate',
+					'doc' => "Preferred bitrate for the downloaded movie source (when Flavor ID is not specified). Keep empty for the highest bitrate. Enter '0' for the original movie source file",
+					'type' => 'string',
 					'initvalue' => ''
 				),
 			)
@@ -613,43 +696,6 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 		)
 	),
-	'playlist2' => array(
-		'description' => 'Refactored playlists plugin',
-		'label' => 'Playlist',
-		'attributes' => array(
-            'autoContinue' => array(
-                'label' => 'Auto continue',
-                "initvalue" => true,
-                'doc' => 'If the playlist should auto-continue.',
-                'type' => 'boolean'
-            ),
-            'autoPlay' => array(
-                'label' => 'Auto play',
-                "initvalue" => true,
-                'doc' => 'If the playlist should autoplay on load.',
-                'type' => 'boolean'
-            ),
-			'kpl0Name' => array(
-				'label' => 'First playlist name',
-				'doc' => 'First playlist name',
-				'type' => 'string'
-			),
-			'kpl0Url' => array(
-				'label' => 'First playlist URL',
-				'doc' => 'First playlist URL',
-				'type' => 'string'
-			),
-			'kpl0Id' => array(
-				'label' => 'First playlist ID',
-                'doc' => "The kaltura playlist Id",
-                'type' => 'string'
-            ),
-			'initItemEntryId' => array(
-				'doc' => 'The entryId that should be played first.',
-				'type' => 'string'
-			),
-		)
-	),
 	'share' => array(
 		'featureCheckbox' => true,
 		'description' => 'Add the share interface to the player.',
@@ -734,6 +780,32 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 		)
 	),
+
+    'nextPrevBtn' => array(
+        'featureCheckbox' => true, // *NEW* - actually enabled even if undefined but can be disabled via this property
+        'description' => "Playlist 'Next' and 'Previous' buttons", // used for tooltip
+        'type' => 'featuremenu', // *NEW* = renders as featuremenu also if undefined, but can be turned into submenu via this
+        'label' => 'Playlist controls', // *NEW*
+        'model' => 'config.plugins.nextPrevBtn', //*NEW*
+        'attributes' => array(
+			'parent' => array(
+				'doc' => 'Parent container for component. Components include default placement, leave as null if unsure.',
+				'type' => 'enum',
+				'enum' => array("topBarContainer", "videoHolder", "controlsContainer"),
+				'options' => array(
+					array(
+						'label' => "Top bar container",
+						'value' => "topBarContainer"
+					),
+					array(
+						'label' => "Controls container",
+						'value' => "controlsContainer"
+					)
+				),
+				'initvalue' => "controlsContainer"
+			)
+        )
+    ),
 	/** statistics has global flashvar based configuration:  **/
 	'statistics' => array(
 		'description' => 'Use Kaltura statistics to
@@ -1022,34 +1094,32 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'number',
 				'section' => 'over',
 				'min' => 0, // *NEW*
-				'initvalue' => 0, // *NEW*
+				'initvalue' => 5, // *NEW*
 				'max' => 10000, // *NEW*
 			),
 			'overlayInterval' => array(
 				'doc' => "How often should the overlay be displayed.",
 				'type' => 'number',
+				'section' => 'over',
 				'from' => 0, // *NEW*
 				'stepsize' => 1, // *NEW*
 				'to' => 500, // *NEW*
-			),
-			'overlayUrl' => array(
-				'label' => 'Overlay URL', // *NEW*
-				'doc' => "The VAST XML file that contains the overlay media and tracking info.",
-				'type' => 'url',
-				'section' => 'over',
-				'min' => 0, // *NEW*
-				'initvalue' => 0, // *NEW*
-				'max' => 5, // *NEW*
+				'initvalue' => 300, // *NEW*
 			),
 			'timeout' => array(
-				'doc' => "The timeout in seconds, for loading an ad from a VAST ad server.",
+				'doc' => "The timeout in seconds, for displaying an overlay VAST ad. If the VAST XML specifies the minSuggestedDuration attribute, this property will be ignored.",
 				'type' => 'number',
+				'section' => 'over',
 				'min' => 0, // *NEW*
-				'initvalue' => 0, // *NEW*
+				'initvalue' => 5, // *NEW*
 				'max' => 1000, // *NEW*
 			),
 			'trackCuePoints' => array(
 				'doc' => "If entry cuepoints should be tracked for midroll ad requests.",
+				'type' => 'boolean'
+			),
+			'allowSeekWithNativeControls' => array(
+				'doc' => "It allows to catch seek requests during ads and return the player to original play time..",
 				'type' => 'boolean'
 			),
 			'storeSession' => array(
@@ -1149,6 +1219,11 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'doc' => 'Show the volume slider.',
 				'type' => 'boolean',
 				'initvalue' => true
+			),
+			'pinVolumeBar' => array(
+				'doc' => 'If the volume slider bar should always be shown.',
+				'type' => 'boolean',
+				'initvalue' => false
 			),
 			'accessibleControls' => array(
 				'doc' => 'Accessible buttons volume change percent from 0 to 1: The amount of volume that will be added or reduced when using the accessible volume buttons.',

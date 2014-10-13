@@ -1,0 +1,177 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>DoubleClick Ad Events</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+
+	<script type="text/javascript">
+
+		var firedEvents = [];
+
+		function onReadyCallback(playerID){
+			var kdp = $('#' + playerID )[0];
+
+			// AdTimeline events
+
+			kdp.addJsListener("AdSupport_StartAdPlayback", function(){
+				$('#adTracking').append("AdSupport_StartAdPlayback event triggered<br>");
+				addEvent("AdSupport_StartAdPlayback");
+			});
+			kdp.addJsListener("AdSupport_EndAdPlayback", function(){
+				$('#adTracking').append("AdSupport_EndAdPlayback event triggered<br>");
+				addEvent("AdSupport_EndAdPlayback");
+			});
+			kdp.addJsListener("midSequenceComplete", function(){
+				$('#adTracking').append("midSequenceComplete event triggered<br>");
+				addEvent("midSequenceComplete");
+			});
+			kdp.addJsListener("midSequenceStart", function(){
+				$('#adTracking').append("midSequenceStart event triggered<br>");
+				addEvent("midSequenceStart");
+			});
+			kdp.addJsListener("preSequenceComplete", function(){
+				$('#adTracking').append("preSequenceComplete event triggered<br>");
+				addEvent("preSequenceComplete");
+			});
+			kdp.addJsListener("preSequenceStart", function(){
+				$('#adTracking').append("preSequenceStart event triggered<br>");
+				addEvent("preSequenceStart");
+			});
+			kdp.addJsListener("postSequenceComplete", function(){
+				$('#adTracking').append("postSequenceComplete event triggered<br>");
+				addEvent("postSequenceComplete");
+			});
+			kdp.addJsListener("postSequenceStart", function(){
+				$('#adTracking').append("postSequenceStart event triggered<br>");
+				addEvent("postSequenceStart");
+			});
+			kdp.addJsListener("AdSupport_PostSequence", function(){
+				$('#adTracking').append("AdSupport_PostSequence event triggered<br>");
+				addEvent("AdSupport_PostSequence");
+			});
+			kdp.addJsListener("AdSupport_PostSequenceComplete", function(){
+				$('#adTracking').append("AdSupport_PostSequenceComplete event triggered<br>");
+				addEvent("AdSupport_PostSequenceComplete");
+			});
+
+			// kAdPlayer events
+
+			kdp.addJsListener("onResumeAdPlayback", function(){
+				$('#adTracking').append("onResumeAdPlayback event triggered<br>");
+			});
+			kdp.addJsListener("onAdComplete", function(){
+				$('#adTracking').append("onAdComplete event triggered<br>");
+				addEvent("onAdComplete");
+			});
+			kdp.addJsListener("onAdPlay", function(){
+				$('#adTracking').append("onAdPlay event triggered<br>");
+				addEvent("onAdPlay");
+			});
+			kdp.addJsListener("onAdSkip", function(){
+				$('#adTracking').append("onAdSkip event triggered<br>");
+			});
+			kdp.addJsListener("adErrorEvent", function(){
+				$('#adTracking').append("<font color='red'>adErrorEvent event triggered</font><br>");
+			});
+		}
+
+		function addEvent(eventStr){
+			if ($.inArray(eventStr, firedEvents) === -1){
+				firedEvents.push(eventStr);
+			}
+		}
+
+		function jsKalturaPlayerTest( videoId ){
+			// Name this module
+			QUnit.module( "doubleclickEvents" );
+			var kdp = $('#' + videoId )[0];
+			var $iframe = $('#' + videoId + '_ifp').contents();
+			QUnit.asyncTest( "Ad events test", function(assert) {
+				kdp.addJsListener("AdSupport_PostSequenceComplete", function(){
+					ok( firedEvents.length == 9 , "All events triggered. Fired events count = " + firedEvents.length);
+					QUnit.start();
+				});
+			});
+
+			// start playing after 1 second
+			setTimeout(function(){
+				kdp.sendNotification("doPlay");
+			},1000);
+
+		}
+
+
+	</script>
+
+
+
+	<script type="text/javascript" src="../../../modules/KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+
+</head>
+<body>
+<h1>
+	DoubleClick Ad Events
+</h1>
+<p>This test page demonstrates ad events flow. Using an ad blocker software will also trigger ad error events.</p>
+<h4>The expected events:</h4>
+<h5>For pre-roll ads:</h5>
+<ul>
+	<li><b><i>preSequenceStart:</i></b> is triggered by the Kaltura player to mark the beginning of the pre-sequence event</li>
+	<li><b><i>AdSupport_StartAdPlayback:</i></b> is triggered by the Kaltura player when the first pre-sequence ad starts</li>
+	<li><b><i>onAdPlay</i></b> and  <b><i>onAdComplete</i></b> events are triggered by the DoubleClick plugin for each ad in the sequence <b>*</b></li>
+	<li><b><i>AdSupport_EndAdPlayback:</i></b> is triggered by the Kaltura player when the last pre-sequence ad finish</li>
+	<li><b><i>preSequenceComplete:</i></b> is triggered by the Kaltura player to mark the end of the pre-sequence event</li>
+</ul>
+<h5>For mid-roll ads:</h5>
+<ul>
+	<li><b><i>midSequenceStart:</i></b> is triggered by the Kaltura player to mark the beginning of the mid-sequence event</li>
+	<li><b><i>AdSupport_StartAdPlayback:</i></b> is triggered by the Kaltura player when the first mid-sequence ad starts</li>
+	<li><b><i>onAdPlay</i></b> and  <b><i>onAdComplete</i></b> events are triggered by the DoubleClick plugin for each ad in the sequence <b>*</b></li>
+	<li><b><i>AdSupport_EndAdPlayback:</i></b> is triggered by the Kaltura player when the last mid-sequence ad finish</li>
+	<li><b><i>midSequenceComplete:</i></b> is triggered by the Kaltura player to mark the end of the mid-sequence event</li>
+</ul>
+<h5>For post-roll ads:</h5>
+<ul>
+	<li><b><i>postSequenceStart:</i></b> is triggered by the Kaltura player to mark the beginning of the post-sequence event</li>
+	<li><b><i>AdSupport_StartAdPlayback:</i></b> is triggered by the Kaltura player when the first post-sequence ad starts</li>
+	<li><b><i>onAdPlay</i></b> and  <b><i>onAdComplete</i></b> events are triggered by the DoubleClick plugin for each ad in the sequence <b>*</b></li>
+	<li><b><i>AdSupport_EndAdPlayback:</i></b> is triggered by the Kaltura player when the last post-sequence ad finish</li>
+	<li><b><i>postSequenceComplete:</i></b> is triggered by the Kaltura player to mark the end of the post-sequence event</li>
+</ul>
+<h5>Ad error events:</h5>
+<ul>
+	<li><b><i><font color="red">adErrorEvent:</font></i></b> is triggered when the ad fails to load (usually caused by ad blocker usage)</li>
+</ul>
+<br><b>* Note: <i>onAdPlay</i></b> and  <b><i>onAdComplete</i></b> events are triggered per ad and are not part of the player event flow.
+<br><br>
+<div id="myVideoTarget" style="width:400px;height:330px;"></div>
+
+<script>
+	kWidget.featureConfig({
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '13306622',
+		'entry_id' : '0_uka1msg4',
+		'readyCallback': onReadyCallback,
+		'flashvars': {
+			'doubleClick':{
+				'plugin':true,
+				//'leadWithFlash': false,
+				'path' : 'http://cdnbakmi.kaltura.com/content/uiconf/ps/veria/kdp3.9.1/plugins/doubleclickPlugin.swf',
+				//'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dlinear',
+				//'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dimageoverlay',
+				'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=%2F3510761%2FadRulesSampleTags&ciu_szs=160x600%2C300x250%2C728x90&cust_params=adrule%3Dpremidpostpodandbumpers&impl=s&gdfp_req=1&env=vp&ad_rule=1&vid=47570401&cmsid=481&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]',
+				'disableCompanionAds' : false,
+				'debugMode':false
+			},
+			'adsOnReplay':true
+		}
+	})
+</script>
+<br>
+<p>Event log for DoubleClick ads:  </p>
+<div id="adTracking" style="width:450px;height:250px;border: 1px solid black; overflow-y: auto; padding-left: 5px"></div>
+</body>
+</html>

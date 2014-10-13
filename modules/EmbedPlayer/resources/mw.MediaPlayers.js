@@ -88,7 +88,14 @@ mw.MediaPlayers.prototype = {
 		}
 		return false;
 	},
-
+	getPlayerById: function(playerId){
+		for( var i=0; i < this.players.length; i++ ){
+			if( this.players[i].id.toLowerCase() == playerId.toLowerCase() ){
+				return this.players[i];
+			}
+		}
+		return null;
+	},
 	/**
 	 * get players that support a given mimeType
 	 *

@@ -60,11 +60,12 @@ kdp.sendNotification( 'showHideClosedCaptions');
 	kWidget.featureConfig({
 		'targetId': 'myVideoTarget',
 		'wid': '_243342',
-		'uiconf_id': '12907572',
+		'uiconf_id': '20540612',
 		'entry_id': '1_23pqn2nu',
 		'flashvars': {
 			'disableTrackElement': true,
 			'closedCaptions': {
+				'hideWhenEmpty': true,
 				'layout': 'ontop',
 				'useCookie': true,
 				'defaultLanguageKey': 'en',
@@ -76,9 +77,19 @@ kdp.sendNotification( 'showHideClosedCaptions');
 				'glowBlur': 4,
 				'glowColor': '0x133693'
 			}
+		},
+		'readyCallback': function( playerId ){
+			$('.changeMeda').click(function(){
+				$('#' + playerId )[0].sendNotification('changeMedia', { 'entryId': $(this).attr('data-entryId') });
+				return false;
+			})
+			$('#changeMediaCaptions')
 		}
 	});
 </script>
+<a class="changeMeda" data-entryId="1_of7rxwqy" href="#">Change media</a> to entry without captions -- will hide button if <b>hideWhenEmpty</b> is set to true<br>
+<a class="changeMeda" data-entryId="1_23pqn2nu" href="#">Change media</a> to entry with captions -- will restore caption button if hidden.
+<br>
 <div style="clear:both"></div>
 <h3>Log caption events:</h3>
 <pre class="prettyprint linenums">

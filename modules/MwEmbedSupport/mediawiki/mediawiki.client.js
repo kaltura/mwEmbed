@@ -8,7 +8,7 @@
 	var userAgent = navigator.userAgent;
 
 	mw.isMobileDevice = function(){
-		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isAndroid() || mw.getConfig( "EmbedPlayer.ForceNativeComponent") === true )
+		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isAndroid() || mw.isWindowsPhone() || mw.getConfig( "EmbedPlayer.ForceNativeComponent") === true )
 	};
 	mw.isIphone = function(){
 		return ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") !== true && navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() ) || mw.isIpod();
@@ -87,6 +87,9 @@
 				  userAgent.indexOf( 'Chrome' ) != -1
 				)
 	};
+	mw.isWindowsPhone = function(){
+		return (  userAgent.indexOf('Windows Phone') != -1 );
+	};
 	mw.isIOS = function(){
 		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() );
 	};
@@ -108,7 +111,8 @@
 		return /OS 7_/.test( userAgent ) && mw.isIOS();
 	};
 	mw.isIOS8 = function(){
-		return /OS 8_/.test( userAgent ) && mw.isIOS();
+		// Known Limitation - It will return false for iOS8 Simulator
+		return ( /OS 8_/.test( userAgent ) || /Version\/8/.test( userAgent ) ) && mw.isIOS();
 	};
 
 	mw.isSilk = function(){

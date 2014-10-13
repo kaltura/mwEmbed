@@ -37,6 +37,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	layoutReady: false,
 
+	playingFlag: false,
 	// Display importance available values
 	importanceSet: ['low', 'medium', 'high'],
 
@@ -412,6 +413,8 @@ mw.PlayerLayoutBuilder.prototype = {
 		this.embedPlayer.bindHelper( 'layoutBuildDone', function(){
 			_this.getInterface().tooltip({
 				items: '[data-show-tooltip]',
+				"show": { "delay": 1000 },
+				"hide": { "duration": 0 },
 				  position: {
 					my: "center bottom-10",
 					at: "center top",
@@ -427,6 +430,8 @@ mw.PlayerLayoutBuilder.prototype = {
 				});
 			_this.getInterface().find(".tooltipBelow").tooltip({
 				items: '[data-show-tooltip]',
+				"show": { "delay": 1000 },
+				"hide": { "duration": 0 },
 				position: {
 					my: "center bottom-10",
 					at: "center top",
@@ -702,6 +707,14 @@ mw.PlayerLayoutBuilder.prototype = {
 		$( embedPlayer ).bind( "dblclick" + _this.bindPostfix, function() {
 			didDblClick = true;
 		});
+
+		$( embedPlayer).bind("goingtoplay" , function(){
+			_this.playingFlag = true;
+			setTimeout(function(){
+				_this.playingFlag = false;
+			},500);
+		});
+
 		// Check for click
 		$( embedPlayer ).bind( "click" + _this.bindPostfix, function() {
 			if ( mw.isMobileDevice() )  {
@@ -716,7 +729,9 @@ mw.PlayerLayoutBuilder.prototype = {
 					} else {
 						mw.log('PlayerLayoutBuilder::addPlayerClickBindings:: togglePlayback from click event');
 						if (embedPlayer.isPlaying() == playerStatus){
-							_this.togglePlayback();
+							if (!_this.playingFlag){
+								_this.togglePlayback();
+							}
 						}
 					}
 					clearTimeout( dblClickTimeout );

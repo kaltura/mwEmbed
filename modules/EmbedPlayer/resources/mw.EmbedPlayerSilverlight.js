@@ -76,13 +76,13 @@
 			var getMulticastStreamAddress = function() {
 				$( _this ).trigger( 'checkIsLive', [ function( onAirStatus ) {
 					 if ( onAirStatus ) {
-						 getStreamAddress().then( doEmbedFunc );
+						 _this.resolveSrcURL( _this.getSrc() ).then( doEmbedFunc );
 					 }  else {
 					 //stream is offline, stream address can be retrieved when online
 						 _this.bindHelper( "liveOnline" + _this.bindPostfix , function( ) {
 							 _this.unbindHelper( "liveOnline" + _this.bindPostfix );
 							 _this.addPlayerSpinner();
-							 getStreamAddress().then( doEmbedFunc );
+							 _this.resolveSrcURL( _this.getSrc() ).then( doEmbedFunc );
 							 //no need to save readyCallback since it was already called
 							 _this.readyCallbackFunc = undefined;
 
@@ -90,32 +90,8 @@
 						 readyCallback();
 					 }
 				}]);
-			}
+			};
 
-			//parse url address from playmanifest
-			var getStreamAddress = function() {
-				var deferred = $.Deferred();
-				if (mw.getConfig("EmbedPlayer.UseDirectManifestLinks")) {
-					return deferred.resolve();
-				}
-				$.ajax({
-					url: _this.getSrc() + "&responseFormat=jsonp",
-					dataType: 'jsonp',
-					success: function( playmanifest ){
-						var flavors = playmanifest.flavors;
-						if ( flavors && flavors.length > 0 ) {
-							srcToPlay = flavors[0].url;
-							deferred.resolve();
-						} else {
-							deferred.reject();
-						}
-					},
-					error: function() {
-						deferred.reject();
-					}
-				});
-				return deferred.promise();
-			}
 			//if error occured- don't try to load playmanifest, return
 			if ( !$.isEmptyObject( this.playerError )) {
 				readyCallback();
@@ -127,9 +103,9 @@
 					return true;
 				}
 				return false;
-			}
+			};
 
-			var doEmbedFunc = function() {
+			var doEmbedFunc = function( resolvedSrc) {
 				var flashvars = {
 					startvolume:	_this.volume
 				}
@@ -139,7 +115,7 @@
 
 					flashvars.smoothStreamPlayer = true;
 					flashvars.preload = "auto";
-					flashvars.entryURL = srcToPlay;
+					flashvars.entryURL = resolvedSrc;
 					//flashvars.debug = true;
 
 					if ( isMimeType( "video/playreadySmooth" ) )
@@ -257,7 +233,7 @@
 			if ( _this.isLive() ) {
 				getMulticastStreamAddress();
 			} else {
-				getStreamAddress().then( doEmbedFunc );
+				_this.resolveSrcURL(_this.getSrc()).then( doEmbedFunc );
 			}
 		},
 
@@ -324,11 +300,13 @@
 			if ( !this.durationReceived ) {
 				return;
 			}
+			if ( this._propagateEvents ) {
 
-			this.updatePlayhead();
-			$( this ).trigger( "playing" );
-			this.hideSpinner();
-			this.stopped = this.paused = false;
+				this.updatePlayhead();
+				$( this ).trigger( "playing" );
+				this.hideSpinner();
+				this.stopped = this.paused = false;
+			}
 		},
 
 		callReadyFunc: function() {
@@ -495,6 +473,7 @@
 
 				this.unbindHelper("seeked" + _this.bindPostfix).bindHelper("seeked" + _this.bindPostfix, function(){
 					_this.unbindHelper("seeked" + _this.bindPostfix);
+					_this.removePoster();
 					_this.monitor();
 					if( stopAfterSeek ){
 						_this.hideSpinner();
@@ -522,6 +501,7 @@
 					}
 				}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 				// Issue the seek to the flash player:
+				this.maskPlayerPlayed();
 				this.playerObject.play();
 				this.playerObject.seek( seekTime );
 			} else if ( percentage != 0 ) {
@@ -529,6 +509,14 @@
 			}
 		},
 
+		maskPlayerPlayed: function (){
+			this.stopEventPropagation();
+			this.playerObject.addJsListener('playerPlayed', "unmaskPlayerPlayed" );
+		},
+		unmaskPlayerPlayed: function (){
+			this.restoreEventPropagation();
+			this.playerObject.removeJsListener('playerPlayed', "unmaskPlayerPlayed" );
+		},
 		/**
 		 * Issues a volume update to the playerElement
 		 *
@@ -578,7 +566,7 @@
 		},
 
 		onSwitchingChangeStarted: function ( data, id ) {
-			$( this ).trigger( 'sourceSwitchingStarted' );
+			$( this ).trigger( 'sourceSwitchingStarted', [ data ]  );
 		},
 
 		onSwitchingChangeComplete: function ( data, id ) {
@@ -589,6 +577,7 @@
 			}
 			mw.log( 'EmbedPlayerKalturaSplayer: switchingChangeComplete: new index: ' +  value.newIndex);
 			this.mediaElement.setSourceByIndex ( value.newIndex );
+			$( this ).trigger( 'sourceSwitchingEnd', [ data ]  );
 		},
 
 		onFlavorsListChanged: function ( data, id ) {
@@ -674,7 +663,7 @@
 			if ( this.playerObject && this.mediaElement.getPlayableSources().length > 1 ) {
 				var trackIndex = this.getSourceIndex( source );
 				mw.log( "EmbedPlayerSPlayer:: switch to track index: " + trackIndex);
-				$( this ).trigger( 'sourceSwitchingStarted' );
+				$( this ).trigger( 'sourceSwitchingStarted', [ { currentBitrate: source.getBitrate() } ] );
 				this.requestedSrcIndex = trackIndex;
 				this.playerObject.selectTrack( trackIndex );
 			}
