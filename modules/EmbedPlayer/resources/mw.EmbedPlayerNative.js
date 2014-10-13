@@ -677,7 +677,7 @@ mw.EmbedPlayerNative = {
 		}
 
 		// Check for seeking state ( some player iOS / iPad can only seek while playing )
-		if(! vid.seeking || ( mw.isIOS8() && mw.isIphone() && ! vid.playing ) ){
+		if(! vid.seeking || ( mw.isIOS8() && vid.paused ) ){
 			mw.log( "Error:: not entering seek state, play and wait for positive time" );
 			vid.play();
 			setTimeout(function(){
