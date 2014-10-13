@@ -852,7 +852,7 @@ mw.EmbedPlayerNative = {
 
 					// keep going towards playback! if  switchCallback has not been called yet
 					// we need the "playing" event to trigger the switch callback
-					if ( $.isFunction( switchCallback ) ){
+					if ( !mw.isIOS71() && $.isFunction( switchCallback ) ){
 						vid.play();
 					} else {
 						_this.removeBlackScreen();
@@ -935,7 +935,7 @@ mw.EmbedPlayerNative = {
 
 				// issue the play request:
 				vid.play();
-				if ( mw.isIphone() ){
+				if ( mw.isIOS()){
 					setTimeout(function(){
 						handleSwitchCallback();
 					}, 100 );

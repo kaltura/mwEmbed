@@ -225,9 +225,6 @@
 				mw.log( 'mw.PlaylistAPI:: onChangeMediaDone' );
 				embedPlayer.triggerHelper( eventToTrigger );
 				_this.loadingEntry = false; // Update the loadingEntry flag
-				if( _this.firstPlay ){
-					_this.firstPlay = false;
-				}
 				if (autoPlay){
 					embedPlayer.play();     // auto play
 				}
@@ -240,7 +237,10 @@
 			}
 
 			// Use internal changeMedia call to issue all relevant events
-			embedPlayer.sendNotification( "changeMedia", {'entryId' : id, 'playlistCall': true} );
+			//embedPlayer.changeMediaStarted = false;
+			if (!this.firstPlay || !mw.isMobileDevice()){
+				embedPlayer.sendNotification( "changeMedia", {'entryId' : id, 'playlistCall': true} );
+			}
 
 			// Add playlist specific bindings:
 			_this.addClipBindings(clipIndex);
@@ -250,6 +250,10 @@
 
 			if (!this.firstPlay && this.getConfig('hideClipPoster') === true){
 				mw.setConfig('EmbedPlayer.HidePosterOnStart', true);
+			}
+
+			if( this.firstPlay ){
+				this.firstPlay = false;
 			}
 		},
 
