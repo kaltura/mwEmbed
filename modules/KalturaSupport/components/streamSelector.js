@@ -58,7 +58,7 @@
 				_this.onEnable();
 			});
 
-			this.bind( 'SourceChange', function(){
+			this.bind( 'sourceSwitchingEnd SourceChange', function(){
 				if (_this.streamsReady){
 					_this.onEnable();
 				}
