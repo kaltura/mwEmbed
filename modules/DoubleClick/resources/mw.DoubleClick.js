@@ -803,7 +803,9 @@
 			},'displayCompanion', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
-				_this.restorePlayer(true);
+				setTimeout(function(){
+					_this.restorePlayer(true);
+				},0);
 				if (_this.currentAdSlotType == 'postroll'){
 					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', _this.entryDuration );
 					_this.embedPlayer.triggerHelper( 'timeupdate', 0);
