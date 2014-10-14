@@ -403,7 +403,7 @@
 					_this.setPersistentConfig( 'contentIndex', 0);
 				}
 				// always increment contentIndex ( starts on 1 ):
-				_this.setPersistentConfig( 'contentIndex', _this.getPersistentConfig( 'contentIndex') + 1 );
+				_this.setPersistentConfig( 'contentIndex', parseInt(_this.getPersistentConfig( 'contentIndex')) + 1 );
 				// check if we should play an ad:
 				if( _this.getPersistentConfig( 'contentIndex') >= startWith
 					&&
