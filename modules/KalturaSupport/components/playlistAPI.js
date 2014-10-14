@@ -196,7 +196,7 @@
 			// iOS devices have a autoPlay restriction, we issue a raw play call on
 			// the video tag to "capture the user gesture" so that future
 			// javascript play calls can work
-			if( embedPlayer.getPlayerElement() && embedPlayer.getPlayerElement().load ){
+			if( embedPlayer.getPlayerElement() && embedPlayer.getPlayerElement().load && embedPlayer.firstPlay){
 				mw.log("Playlist:: issue load call to capture click for iOS");
 				embedPlayer.getPlayerElement().load();
 			}
@@ -225,9 +225,6 @@
 				mw.log( 'mw.PlaylistAPI:: onChangeMediaDone' );
 				embedPlayer.triggerHelper( eventToTrigger );
 				_this.loadingEntry = false; // Update the loadingEntry flag
-				if( _this.firstPlay ){
-					_this.firstPlay = false;
-				}
 				if (autoPlay){
 					embedPlayer.play();     // auto play
 				}
@@ -240,7 +237,16 @@
 			}
 
 			// Use internal changeMedia call to issue all relevant events
-			embedPlayer.sendNotification( "changeMedia", {'entryId' : id, 'playlistCall': true} );
+			//embedPlayer.changeMediaStarted = false;
+			if (!this.firstPlay){
+				embedPlayer.sendNotification( "changeMedia", {'entryId' : id, 'playlistCall': true} );
+			}else{
+				embedPlayer.triggerHelper( eventToTrigger );
+				embedPlayer.enablePlayControls();
+				if (autoPlay && embedPlayer.canAutoPlay()){
+					embedPlayer.play();     // auto play
+				}
+			}
 
 			// Add playlist specific bindings:
 			_this.addClipBindings(clipIndex);
@@ -250,6 +256,10 @@
 
 			if (!this.firstPlay && this.getConfig('hideClipPoster') === true){
 				mw.setConfig('EmbedPlayer.HidePosterOnStart', true);
+			}
+
+			if( this.firstPlay ){
+				this.firstPlay = false;
 			}
 		},
 

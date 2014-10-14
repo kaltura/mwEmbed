@@ -641,7 +641,7 @@
 					_this.startedAdPlayback();
 				}
 				_this.duration= _this.adsManager.getRemainingTime();
-				if (_this.duration > -1) {
+				if (_this.duration >= 0) {
 					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration' , _this.duration );
 				}
 				var size = _this.getPlayerSize();
@@ -982,14 +982,19 @@
 			_this.adPreviousTimeLeft = _this.adsManager.getRemainingTime();
 
 			// Update sequence property per active ad:
+			if (_this.adsManager.getRemainingTime()<0){
+				return;
+			}
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  _this.adsManager.getRemainingTime() );
 			if (_this.duration === -1){
 				_this.duration = _this.adsManager.getRemainingTime();
 			}  else {
 				var currentTime = _this.duration - _this.adsManager.getRemainingTime();
-				_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  _this.duration );
-				_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead',  currentTime);
-				_this.embedPlayer.updatePlayHead( currentTime/ _this.duration );
+				if (currentTime >=0){
+					_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  _this.duration );
+					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead',  currentTime);
+					_this.embedPlayer.updatePlayHead( currentTime/ _this.duration );
+				}
 			}
 		},
 
