@@ -196,7 +196,7 @@
 			// iOS devices have a autoPlay restriction, we issue a raw play call on
 			// the video tag to "capture the user gesture" so that future
 			// javascript play calls can work
-			if( embedPlayer.getPlayerElement() && embedPlayer.getPlayerElement().load ){
+			if( embedPlayer.getPlayerElement() && embedPlayer.getPlayerElement().load && embedPlayer.firstPlay){
 				mw.log("Playlist:: issue load call to capture click for iOS");
 				embedPlayer.getPlayerElement().load();
 			}
