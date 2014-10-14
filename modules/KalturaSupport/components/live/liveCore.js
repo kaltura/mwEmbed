@@ -89,7 +89,7 @@
 
 			this.bind( 'liveStreamStatusUpdate', function( e, onAirObj ) {
 				//check for pending autoPlay
-				if ( onAirObj.onAirStatus && embedPlayer.firstPlay && embedPlayer.autoplay ) {
+				if ( onAirObj.onAirStatus && embedPlayer.firstPlay && embedPlayer.autoplay && embedPlayer.canAutoPlay() ) {
 					embedPlayer.play();
 				}
 

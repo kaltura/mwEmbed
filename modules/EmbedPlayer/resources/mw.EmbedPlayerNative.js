@@ -346,6 +346,9 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		$.each( _this.nativeEvents, function( inx, eventName ){
+			if( mw.isIOS8() && mw.isIphone() && eventName === "seeking" ) {
+				return;
+			}
 			$( vid ).unbind( eventName + '.embedPlayerNative').bind( eventName + '.embedPlayerNative', function(){
 				// make sure we propagating events, and the current instance is in the correct closure.
 				if( _this._propagateEvents && _this.instanceOf == 'Native' ){
@@ -662,7 +665,7 @@ mw.EmbedPlayerNative = {
 					_this.setCurrentTime( seekTime, callback , callbackCount++ );
 				}
 			}
-		}, 5000);
+		}, ( mw.isIOS8() && mw.isIpad() ) ? 100 : 5000);
 
 		// Try to update the playerElement time:
 		try {
@@ -677,7 +680,7 @@ mw.EmbedPlayerNative = {
 		}
 
 		// Check for seeking state ( some player iOS / iPad can only seek while playing )
-		if(! vid.seeking || ( mw.isIOS8() && ! vid.playing ) ){
+		if(! vid.seeking || ( mw.isIOS8() && vid.paused ) ){
 			mw.log( "Error:: not entering seek state, play and wait for positive time" );
 			vid.play();
 			setTimeout(function(){
@@ -1048,13 +1051,15 @@ mw.EmbedPlayerNative = {
 						$( _this ).hide();
 					}
 					// if it's iOS8 the player won't play
-					if( !mw.isIOS8() ) {
+					if( mw.isIOS8() && mw.isIpad()  ) {
 						// update the preload attribute to auto
+						$( _this.getPlayerElement() ).attr('preload',"metadata" );
+					} else if ( !mw.isIOS8 ){
 						$( _this.getPlayerElement() ).attr('preload',"auto" );
 					}
 					// issue a play request
 					if( !_this.playing ) {
-						if( mw.isIOS8() ) {
+						if( mw.isIOS8() && mw.isIphone() ) {
 							setTimeout( function() {
 								vid.play();
 							}, 0);
@@ -1238,7 +1243,7 @@ mw.EmbedPlayerNative = {
 
 		// Clear the PreSeek time
 		this.kPreSeekTime = null;
-		
+
 		// Trigger the html5 action on the parent
 		if( this.seeking ){
 			// HLS safari triggers onseek when its not even close to the target time,
@@ -1476,7 +1481,7 @@ mw.EmbedPlayerNative = {
 	 * @returns {boolean} true if seek event is fake, false if valid
 	 */
 	isFakeHlsSeek: function() {
-		return ( (Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2) || ( mw.isIpad() && this.currentSeekTargetTime > 0.01 ) );
+		return ( (Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2) || ( mw.isIpad() && this.currentSeekTargetTime > 0.01 && !mw.isIOS8() ) );
 }
 };
 } )( mediaWiki, jQuery );

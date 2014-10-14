@@ -105,9 +105,7 @@ return array(
 			"theme" => "",
 			"infoScreen" => "",
 			"share" => "",
-			"related" => "",
-			"playlistAPI" => "",
-            "nextPrevBtn" => ""
+			"related" => ""
 		)
 	),
 	"analytics"=> array(
