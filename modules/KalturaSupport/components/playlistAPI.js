@@ -238,8 +238,14 @@
 
 			// Use internal changeMedia call to issue all relevant events
 			//embedPlayer.changeMediaStarted = false;
-			if (!this.firstPlay || !mw.isMobileDevice()){
+			if (!this.firstPlay){
 				embedPlayer.sendNotification( "changeMedia", {'entryId' : id, 'playlistCall': true} );
+			}else{
+				embedPlayer.triggerHelper( eventToTrigger );
+				embedPlayer.enablePlayControls();
+				if (autoPlay && embedPlayer.canAutoPlay()){
+					embedPlayer.play();     // auto play
+				}
 			}
 
 			// Add playlist specific bindings:
