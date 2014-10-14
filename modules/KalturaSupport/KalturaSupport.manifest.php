@@ -1282,7 +1282,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'clickUrl' => array(
 					'doc' => "<p style='text-align: left'>Defines the URL for a related item click</p>
 								If this left blank the click will replace the current video with a new one.
-								example: <b>http://my-custom-domain.com/?v={mediaProxy.entry.id}</b> as a custom
+								example: <b>http://my-custom-domain.com/?v={related.selectedEntry.id}</b> as a custom
 								URL with the entry id as postfix",
 					'type' => 'string'
 				),
