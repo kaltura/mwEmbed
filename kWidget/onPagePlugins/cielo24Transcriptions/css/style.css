@@ -54,6 +54,10 @@ body {
     margin-top: 90px;
 }
 
+.aquo {
+    display: none;
+}
+
 .footer {
     overflow: hidden;
     height: 45px;

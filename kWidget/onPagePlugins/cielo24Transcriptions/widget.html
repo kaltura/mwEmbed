@@ -160,11 +160,15 @@
         <div class="footerArrowUp"></div>
         <div class="language"></div>
 
-        <div class="poweredBy"></div>
+        <a href="http://svsgtranswidget.co" target="_blank">
+            <div class="poweredBy"></div>
+        </a>
         <span id="widgetTitle">Media Data Player</span>
-        <div class="clientLogoWrapper">
-            <img src="http://cielo24.com/static/cielo24/img/inside_pgs/about/cielo24_logo_small.png" style="width: 100%;" id="clientLogo" />
-        </div>
+        <a href="http://cielo24.com/" target="_blank">
+            <div class="clientLogoWrapper">
+                <img src="http://cielo24.com/static/cielo24/img/inside_pgs/about/cielo24_logo_small.png" style="width: 100%;" id="clientLogo" />
+            </div>
+        </a>
     </div>
 
 </div>
@@ -254,8 +258,30 @@ String.prototype.toMMSS = function () {
 
     var playerPlayheadCurrentTime = 0;
 
-    function transcription2Document(html) {
-        return "<html><head><title></title></head><body>"+html+"</body></html>";
+    function transcription2Document(transcriptionHtml) {
+        var html = "<html><head><title>Transcription</title>";
+        html += '<meta charset="UTF-8">';
+        html += "<style>";
+        html += '.clearfix:before, .clearfix:after { display: table; content: " "; }';
+        html += ".clearfix:after { clear: both; }";
+        html += ".transcriptionRow { margin-top: 30px; }";
+        html += ".speakerName {font-weight: bold;}";
+        html += ".speakerTime {color: #444;}";
+        html += ".aquo {display: none;}";
+
+        if(!showSpeakers) {
+            html += ".speakerName {display: none;}";
+            html += ".aquo {display: inline;}";
+        }
+
+        if(!showTimestamps) {
+            html += ".speakerTime {display: none;}";
+        }
+
+        html += "</style>";
+        html += "</head><body>"+transcriptionHtml+"</body></html>";
+//        html += "<link rel='stylesheet' href='http://"+$(location).attr('host')+window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')+1)+"css/print.css?v=6' />";
+        return html;
     }
 
     function printDocument(html) {
@@ -383,7 +409,7 @@ String.prototype.toMMSS = function () {
 
             if(segment.speaker_id!=currentSpeakerId) {
                 if(i>0) {
-                    transcriptionHtml += "</div></div><div class='transcriptionRow clearfix'>";
+                    transcriptionHtml += "<span class='aquo'>&raquo;</span></div></div><div class='transcriptionRow clearfix'>";
                 }
                 addSpeakerStripe(currentSpeakerId, segmentTimeOffset/videoDuration*100);
 
@@ -395,7 +421,7 @@ String.prototype.toMMSS = function () {
                                         +"</div><div class='speakerTime "
                                         +(showTimestamps?"":"disabled")
                                         +" '>"+(""+parseInt(segmentTimeOffset/1000)).toMMSS()
-                                        +"</div></div><div class='transcriptionColumn'>";
+                                        +"</div></div><div class='transcriptionColumn'><span class='aquo'>&laquo;</span>";
                 newLineCntr = 0;
             }
 
@@ -406,10 +432,12 @@ String.prototype.toMMSS = function () {
                     if(token.type=='word' || token.type=='punctuation') {
 
                         if(token.type=='word') {
-                            transcriptionText += (" ");
-//                            transcriptionHtml += "<span class='transcriptionLetter' data-offset='"+currentOffset+"' > </span>";
-                            transcriptionHtml += " ";
-                            currentOffset++;
+                            if(newLineCntr>0) {
+                                transcriptionText += (" ");
+                                //                            transcriptionHtml += "<span class='transcriptionLetter' data-offset='"+currentOffset+"' > </span>";
+                                transcriptionHtml += " ";
+                                currentOffset++;
+                            }
                             newLineCntr++;
                         }
 
@@ -424,7 +452,7 @@ String.prototype.toMMSS = function () {
             });
 
             transcriptionHtml += "</span>";
-            if(newLineCntr>50) {
+            if(newLineCntr>50 && i<json.segments.length-1 && json.segments[i+1].speaker_id==currentSpeakerId) {
                 transcriptionHtml += "<br /><br />";
                 newLineCntr = 0;
             }
@@ -442,7 +470,7 @@ String.prototype.toMMSS = function () {
         currentTranscriptionText = transcriptionText;
         currentTranscriptionHtml = transcriptionHtml;
 //        console.log(transcriptionText);
-        $("#transcriptionText").html(transcriptionHtml+"</div></div>");
+        $("#transcriptionText").html(transcriptionHtml+"<span class='aquo'>&raquo;</span></div></div>");
 
         $(".totalTime").text((""+(videoDuration/1000)).toMMSS());
 
