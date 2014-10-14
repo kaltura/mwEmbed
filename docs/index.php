@@ -1,5 +1,7 @@
 <?php
 	require_once( realpath( dirname( __FILE__ ) )  . '/doc-base.php' );
+	// send content as gzip:
+	ob_start('ob_gzhandler');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -411,3 +413,7 @@
 	</footer>
   </body>
 </html>
+<?php 
+header('Content-Length: ' . ob_get_length());
+ob_end_flush();
+?>
