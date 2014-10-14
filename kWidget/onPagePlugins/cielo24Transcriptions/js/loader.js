@@ -96,6 +96,16 @@
     }();
     /** POST MESSAGE END **/
 
+    function getCielo24DynaTransVar(kdp, key, defaultValue) {
+        var defaultValue = typeof(defaultValue)=='undefined'?'':defaultValue;
+        var value = kdp.evaluate("{"+key+"}");
+        value = typeof(value)=='undefined'?defaultValue:value;
+        var valueOverride = window[key];
+        return typeof(valueOverride)=='undefined'?value:valueOverride;
+    }
+
+
+
 
     if(!kWidget.cielo24LoadedTranscriptions) {
         kWidget.cielo24LoadedTranscriptions = true;
@@ -130,32 +140,24 @@
 
 	kWidget.addReadyCallback( function( playerId ){
 
-        //
-        //if(!kWidget.cielo24LoadedTranscriptions[playerId]) {
-        //    kWidget.cielo24LoadedTranscriptions[playerId] = true;
-
         var playheadPositionCache = 0;
         var widgetPage;
 
         var ifr;
         var kdp = document.getElementById( playerId );
-        top.kdp = kdp;
         var ks = kdp.evaluate("{configProxy.flashvars.ks}");
-        var widgetTitle = kdp.evaluate("{cielo24Transcriptions.DynaTransWindowTitle}");
-        var widgetNormalHeight = kdp.evaluate("{cielo24Transcriptions.DynaTransWindowSize}");
-        if(typeof(widgetNormalHeight)=='undefined') {
-            widgetNormalHeight = 435;
-        }
 
-        var clientLogo = kdp.evaluate("{cielo24Transcriptions.DynaTransClientLogo}");
-        var hideGear = kdp.evaluate("{cielo24Transcriptions.DynaTransHideGear}");
-        var hideShare = kdp.evaluate("{cielo24Transcriptions.DynaTransHideShare}");
-        var hidePrint = kdp.evaluate("{cielo24Transcriptions.DynaTransHidePrint}");
-        var hideDownload = kdp.evaluate("{cielo24Transcriptions.DynaTransHideDownload}");
-        var hideLeftMenu = kdp.evaluate("{cielo24Transcriptions.DynaTransHideLeftMenu}");
-        var hideSpeakers = kdp.evaluate("{cielo24Transcriptions.DynaTransHideSpeakers}");
-        var hideTimestamps = kdp.evaluate("{cielo24Transcriptions.DynaTransHideTimestamps}");
-        var autoscrollOff = kdp.evaluate("{cielo24Transcriptions.DynaTransAutoscrollOff}");
+        var widgetTitle = getCielo24DynaTransVar(kdp, 'cielo24Transcriptions.DynaTransWindowTitle');
+        var widgetNormalHeight = getCielo24DynaTransVar(kdp, 'cielo24Transcriptions.DynaTransWindowSize', 435);
+        var clientLogo = getCielo24DynaTransVar(kdp, "cielo24Transcriptions.DynaTransClientLogo");
+        var hideGear = getCielo24DynaTransVar(kdp, "cielo24Transcriptions.DynaTransHideGear");
+        var hideShare = getCielo24DynaTransVar(kdp, "cielo24Transcriptions.DynaTransHideShare");
+        var hidePrint = getCielo24DynaTransVar(kdp, "cielo24Transcriptions.DynaTransHidePrint");
+        var hideDownload = getCielo24DynaTransVar(kdp, "cielo24Transcriptions.DynaTransHideDownload");
+        var hideLeftMenu = getCielo24DynaTransVar(kdp, "cielo24Transcriptions.DynaTransHideLeftMenu");
+        var hideSpeakers = getCielo24DynaTransVar(kdp, "cielo24Transcriptions.DynaTransHideSpeakers");
+        var hideTimestamps = getCielo24DynaTransVar(kdp, "cielo24Transcriptions.DynaTransHideTimestamps");
+        var autoscrollOff = getCielo24DynaTransVar(kdp, "cielo24Transcriptions.DynaTransAutoscrollOff");
 
         var onPageJs1 = window.location.href;
 
@@ -255,9 +257,6 @@
                 XD.postMessage(jsonData, widgetPage, ifr.contentWindow);
             }
         }
-
-        //}
-
 	});
 
 })();
