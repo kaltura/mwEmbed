@@ -57,7 +57,7 @@
     height: 0px !important;
 }
 .screenTransition{
-    transition: 1s;
+    transition: 0.5s;
 }
 /*Override jquery UI resizable cursor handlers*/
 .dualScreen > .ui-resizable-ne{
