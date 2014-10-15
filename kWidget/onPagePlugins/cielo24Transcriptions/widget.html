@@ -214,6 +214,21 @@ function updateQueryString(key, value, url) {
     }
 }
 
+// https://gist.github.com/mseeley/1637329
+function truncateStringWordBoundary(text, length, suffix) {
+    var lastword = /\w+$/,
+            blacklist = /[\s\u0021-\u002F\u003A-\u0040\u005B-\u0060\u007B-\u007F\u00A0-\u00BF]$/,
+            hellip = '\u2026',
+            empty = '';
+
+    suffix = suffix || hellip;
+    text = text.slice(0, length - suffix.length).replace(lastword, empty);
+    while (text && blacklist.test(text)) {
+        text = text.replace(blacklist, empty);
+    }
+    return text ? text + suffix : empty;
+}
+
 String.prototype.toMMSS = function () {
     var sec_num = parseInt(this, 10); // don't forget the second param
     var hours   = Math.floor(sec_num / 3600);
@@ -787,18 +802,76 @@ String.prototype.toMMSS = function () {
 
         $(".shareFacebook").click(function() {
             var shareUrl = parentUrl;
+            var includeTimestamp = false;
             if(confirm('Do you want to include current time in the share link?')) {
+                includeTimestamp = true;
+            }
+
+            if(includeTimestamp) {
                 shareUrl = updateQueryString('cielo24time', playerPlayheadCurrentTime, parentUrl);
             }
-            $(this).attr('href', 'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(shareUrl));
+
+            var facebookUrl = 'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(shareUrl);
+
+            var width  = 575,
+                    height = 400,
+                    left   = ($(window).width()  - width)  / 2,
+                    top    = ($(window).height() - height) / 2,
+                    opts   = 'status=1' +
+                            ',width='  + width  +
+                            ',height=' + height +
+                            ',top='    + top    +
+                            ',left='   + left;
+
+            window.open(facebookUrl, 'facebook', opts);
+
+            return false;
         });
 
         $(".shareTwitter").click(function() {
+
             var shareUrl = parentUrl;
+            var includeTimestamp = false;
             if(confirm('Do you want to include current time in the share link?')) {
+                includeTimestamp = true;
+            }
+
+            if(includeTimestamp) {
                 shareUrl = updateQueryString('cielo24time', playerPlayheadCurrentTime, parentUrl);
             }
-            $(this).attr('href', 'https://twitter.com/share?url='+encodeURIComponent(shareUrl));
+
+            var twitterUrl = 'https://twitter.com/share?url='+encodeURIComponent(shareUrl);
+            var tweetText = $(location).attr('host');
+
+            if(includeTimestamp) {
+                var closest = BinarySearch.closest(segmentsTimeOffsets, playerPlayheadCurrentTime);
+                if(closest>-1) {
+                    var $closestSegment = $(".transcriptionSegment[data-time-offset='"+segmentsTimeOffsets[closest]+"']");
+                    if($closestSegment.length>0) {
+                        tweetText += " : ";
+                        var tweetMaxLength = 115;
+                        var remainingLength = tweetMaxLength - tweetText.length;
+                        remainingLength = remainingLength - 2; // for quotes
+                        tweetText += '"'+truncateStringWordBoundary($closestSegment.text(), remainingLength).trim()+'"';
+                    }
+                }
+            }
+
+            twitterUrl += "&text="+encodeURIComponent(tweetText);
+
+            var width  = 575,
+                height = 400,
+                left   = ($(window).width()  - width)  / 2,
+                top    = ($(window).height() - height) / 2,
+                opts   = 'status=1' +
+                        ',width='  + width  +
+                        ',height=' + height +
+                        ',top='    + top    +
+                        ',left='   + left;
+
+            window.open(twitterUrl, 'twitter', opts);
+
+            return false;
         });
 
         loadTranscriptionFromKaltura(ks, partnerId, entryId, videoDuration);
