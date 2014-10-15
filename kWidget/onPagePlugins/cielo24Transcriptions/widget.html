@@ -852,6 +852,7 @@ String.prototype.toMMSS = function () {
                         var tweetMaxLength = 115;
                         var remainingLength = tweetMaxLength - tweetText.length;
                         remainingLength = remainingLength - 2; // for quotes
+                        remainingLength = remainingLength - 3; // for three dots
                         tweetText += '"'+truncateStringWordBoundary($closestSegment.text(), remainingLength).trim()+'"';
                     }
                 }
