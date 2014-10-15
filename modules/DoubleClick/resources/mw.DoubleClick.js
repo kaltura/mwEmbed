@@ -333,7 +333,7 @@
 		},
 		getAdContainer: function(){
 			if( !$('#' + this.getAdContainerId() ).length ){
-				this.embedPlayer.getInterface().append(
+				this.embedPlayer.getVideoHolder().after(
 					$('<div />')
 						.attr( 'id',  this.getAdContainerId() )
 						.css({
