@@ -841,7 +841,7 @@ String.prototype.toMMSS = function () {
             }
 
             var twitterUrl = 'https://twitter.com/share?url='+encodeURIComponent(shareUrl);
-            var tweetText = $(location).attr('host');
+            var tweetText = $(location).attr('hostname');
 
             if(includeTimestamp) {
                 var closest = BinarySearch.closest(segmentsTimeOffsets, playerPlayheadCurrentTime);
@@ -849,10 +849,13 @@ String.prototype.toMMSS = function () {
                     var $closestSegment = $(".transcriptionSegment[data-time-offset='"+segmentsTimeOffsets[closest]+"']");
                     if($closestSegment.length>0) {
                         tweetText += " : ";
-                        var tweetMaxLength = 115;
-                        var remainingLength = tweetMaxLength - tweetText.length;
+                        var tweetMaxLength = 140;
+                        var remainingLength = tweetMaxLength - 24 - 3; // domain + :
+                        remainingLength = remainingLength - 24; // for the url
                         remainingLength = remainingLength - 2; // for quotes
                         remainingLength = remainingLength - 3; // for three dots
+                        console.log($closestSegment.text());
+                        console.log("REML: "+remainingLength);
                         tweetText += '"'+truncateStringWordBoundary($closestSegment.text(), remainingLength).trim()+'"';
                     }
                 }
