@@ -335,7 +335,7 @@ body {
     display: block; overflow: hidden; width: 32px; height: 32px; border-radius: 4px;
 }
 
-.shareTwitter {
+.shareTwitter, .shareLinkedin {
     margin-top: 10px;
 }
 

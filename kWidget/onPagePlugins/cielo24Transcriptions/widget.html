@@ -136,6 +136,7 @@
 
                             <a class="shareImage shareFacebook" href="#" target="_blank" ><img style="width: 100%;" src="img/facebook.png?v=6" width="" border="0" alt="Facebook"/></a>
                             <a class="shareImage shareTwitter" href="#" target="_blank" ><img style="width: 100%;" src="img/twitter.png?v=6" border="0" alt="Twitter"/></a>
+                            <a class="shareImage shareLinkedin" href="#" target="_blank" ><img style="width: 100%;" src="img/linkedin.png?v=6" border="0" alt="Linkedin"/></a>
                             <!--<a class="shareAddthis" href="https://www.addthis.com/bookmark.php?source=tbx32nj-1.0&v=300&pubid=ra-53f31ac3392bfecf&ct=1&pco=tbxnj-1.0" target="_blank"><img src="https://cache.addthiscdn.com/icons/v2/thumbs/32x32/addthis.png" border="0" alt="Addthis"/></a>-->
 
                         </div>
@@ -874,6 +875,53 @@ String.prototype.toMMSS = function () {
                         ',left='   + left;
 
             window.open(twitterUrl, 'twitter', opts);
+
+            return false;
+        });
+
+        $(".shareLinkedin").click(function() {
+
+            var shareUrl = parentUrl;
+            var includeTimestamp = false;
+            if(confirm('Do you want to include current time in the share link?')) {
+                includeTimestamp = true;
+            }
+
+            if(includeTimestamp) {
+                shareUrl = updateQueryString('cielo24time', playerPlayheadCurrentTime, parentUrl);
+            }
+
+            var linkedinUrl = 'http://www.linkedin.com/shareArticle?mini=true&url='+encodeURIComponent(shareUrl);
+            var shareText = "";
+
+            if(includeTimestamp) {
+                var closest = BinarySearch.closest(segmentsTimeOffsets, playerPlayheadCurrentTime);
+                if(closest>-1) {
+                    var $closestSegment = $(".transcriptionSegment[data-time-offset='"+segmentsTimeOffsets[closest]+"']");
+                    if($closestSegment.length>0) {
+                        var tweetMaxLength = 240;
+                        var remainingLength = tweetMaxLength; // domain + :
+                        remainingLength = remainingLength - 2; // for quotes
+                        remainingLength = remainingLength - 3; // for three dots
+                        shareText += '"'+truncateStringWordBoundary($closestSegment.text(), remainingLength).trim()+'"';
+                    }
+                }
+            }
+
+            // &title={articleTitle}&summary={articleSummary}&source={articleSource}
+            linkedinUrl += "&summary="+encodeURIComponent(shareText);
+
+            var width  = 575,
+                    height = 400,
+                    left   = ($(window).width()  - width)  / 2,
+                    top    = ($(window).height() - height) / 2,
+                    opts   = 'status=1' +
+                            ',width='  + width  +
+                            ',height=' + height +
+                            ',top='    + top    +
+                            ',left='   + left;
+
+            window.open(linkedinUrl, 'twitter', opts);
 
             return false;
         });
