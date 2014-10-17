@@ -235,8 +235,8 @@ $uiVars = array(
 			),
 			'streamerType' => array(
 				'type' => 'String',
-				'desc' => 'The media source streaming protocol to use (http / rtmp / live / hdnetwork)',
-				'default' => 'http',
+				'desc' => 'The media source streaming protocol to use (http / rtmp / live / hdnetwork / auto ). Auto will select http or adaptive based on content length and protocols available on the platform.',
+				'default' => 'auto',
 				'example' => ''
 			),
 			'streamerUrl' => array(
