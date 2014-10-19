@@ -363,7 +363,7 @@
 			// check if we are storing ads session:
 			if( this.embedPlayer.getKalturaConfig( this.confPrefix, 'storeSession' ) ){
 				// no object usage for this
-				$.cookie( this.confPrefix + '_' + key, value );
+				$.cookie( this.confPrefix + '_' + key, value, {path: '/'} );
 			}
 
 			if ( !this.embedPlayer[ this.confPrefix ] ) {
