@@ -231,11 +231,6 @@
 			});
 			mw.log("PlaylistAPI::playClip::changeMedia entryId: " + id);
 
-			// Make sure its in a playing state when change media is called if we are autoContinuing:
-			if( this.getConfig('autoContinue') && !embedPlayer.firstPlay ){
-				embedPlayer.stopped = embedPlayer.paused = false;
-			}
-
 			// Use internal changeMedia call to issue all relevant events
 			//embedPlayer.changeMediaStarted = false;
 			if (!this.firstPlay){
