@@ -349,6 +349,12 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onAlert: function ( data, id ) {
+		if ( data.messageKey ) {
+			data.message = gM ( data.messageKey );
+		}
+		if ( data.titleKey ) {
+			data.title = gM ( data.titleKey );
+		}
 		this.layoutBuilder.displayAlert( data );
 	},
 
