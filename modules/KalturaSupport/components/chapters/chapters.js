@@ -30,8 +30,6 @@
 		mediaList: [],
 		renderOnData: false,
 
-		isDisabled: true,
-
 		setup: function ( embedPlayer ) {
 			this.addBindings();
 		},
