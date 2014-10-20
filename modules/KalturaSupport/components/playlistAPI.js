@@ -198,10 +198,18 @@
 				return ;
 			}
 
-			// iOS devices have a autoPlay restriction, we issue a raw play call on
+			// Check if entry id already matches ( and is loaded )
+			if( embedPlayer.kentryid == id ){
+				if( this.loadingEntry ){
+					mw.log("Error: PlaylistAPI is loading Entry, possible double playClip request");
+					return ;
+				}
+			}
+
+			// mobile devices have a autoPlay restriction, we issue a raw play call on
 			// the video tag to "capture the user gesture" so that future
 			// javascript play calls can work
-			if( embedPlayer.getPlayerElement() && embedPlayer.getPlayerElement().load && embedPlayer.firstPlay){
+			if( mw.isMobileDevice() && embedPlayer.firstPlay){
 				mw.log("Playlist:: issue load call to capture click for iOS");
 				embedPlayer.getPlayerElement().load();
 			}
@@ -216,13 +224,6 @@
 				eventToTrigger = 'playlistMiddleEntry';
 			}
 
-			// Check if entry id already matches ( and is loaded )
-			if( embedPlayer.kentryid == id ){
-				if( this.loadingEntry ){
-					mw.log("Error: PlaylistAPI is loading Entry, possible double playClip request");
-					return ;
-				}
-			}
 
 			this.loadingEntry = id; // Update the loadingEntry flag
 			// Listen for change media done
@@ -230,6 +231,10 @@
 				mw.log( 'mw.PlaylistAPI:: onChangeMediaDone' );
 				embedPlayer.triggerHelper( eventToTrigger );
 				_this.loadingEntry = false; // Update the loadingEntry flag//
+				// play clip that was selected when autoPlay=false. if autoPlay=true, the embedPlayer will do that for us.
+				if (!_this.getConfig("autoPlay")){
+					embedPlayer.play();
+				}
 			});
 			mw.log("PlaylistAPI::playClip::changeMedia entryId: " + id);
 
