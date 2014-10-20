@@ -389,6 +389,10 @@ mw.EmbedPlayerNative = {
 	*/
 	seek: function( percent, stopAfterSeek ) {
 		var _this = this;
+		if (this.sequenceProxy && this.sequenceProxy.isInSequence){
+			mw.log( 'EmbedPlayerNative::seek : prevented seek during ad playback');
+			return;
+		}
 		// bounds check
 		if( percent < 0 ){
 			percent = 0;
