@@ -224,8 +224,6 @@
 				eventToTrigger = 'playlistMiddleEntry';
 			}
 
-
-			this.loadingEntry = id; // Update the loadingEntry flag
 			// Listen for change media done
 			$( embedPlayer).unbind( 'onChangeMediaDone' + this.bindPostFix ).bind( 'onChangeMediaDone' + this.bindPostFix, function(){
 				mw.log( 'mw.PlaylistAPI:: onChangeMediaDone' );
@@ -245,6 +243,7 @@
 			// Use internal changeMedia call to issue all relevant events
 			//embedPlayer.changeMediaStarted = false;
 			if (!this.firstPlay){
+				this.loadingEntry = id; // Update the loadingEntry flag
 				embedPlayer.sendNotification( "changeMedia", {'entryId' : id, 'playlistCall': true} );
 			}else{
 				embedPlayer.triggerHelper( eventToTrigger );
@@ -274,7 +273,7 @@
 		},
 
 		playNext: function(){
-			if (this.isDisabled){
+			if (this.isDisabled || this.loadingEntry){
 				return;
 			}
 			if( this.getConfig("loop") == true && this.currentClipIndex != null && this.currentClipIndex === this.mediaList.length - 1 ){ // support loop
@@ -289,7 +288,7 @@
 		},
 
 		playPrevious: function(){
-			if (this.isDisabled){
+			if (this.isDisabled || this.loadingEntry){
 				return;
 			}
 			if (this.currentClipIndex != null && this.currentClipIndex > 0){
