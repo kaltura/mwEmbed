@@ -760,6 +760,10 @@
 				}
 				if ( _this.currentAdSlotType != 'postroll') {
 					_this.restorePlayer();
+
+					if( mw.isIOS8() && mw.isIpad()  ) {
+						$( _this.embedPlayer.getPlayerElement() ).attr('preload',"metadata" );
+					}
 				}
 			});
 			adsListener( 'ALL_ADS_COMPLETED', function(){
@@ -769,7 +773,7 @@
 				_this.allAdsCompletedFlag = true;
 				if( _this.contentDoneFlag ){
 
-//				// restore the player but don't play content since ads are done:
+				// restore the player but don't play content since ads are done:
 					_this.restorePlayer( true );
 				}
 			});
