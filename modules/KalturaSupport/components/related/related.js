@@ -72,7 +72,7 @@
 				});
 			}
 
-			this.bind('replayEvent', function(){
+			this.bind('replayEvent preSequence', function(){
 				_this.stopTimer();
 			});
 		},
