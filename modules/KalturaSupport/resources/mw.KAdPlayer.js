@@ -47,7 +47,6 @@ mw.KAdPlayer.prototype = {
 			// bind to the doPlay event triggered by the playPauseBtn component when the user resume playback from this component after clickthrough pause
 			var eventName = "doPlay";
 			if (!_this.isVideoSiblingEnabled()){
-				$( _this.embedPlayer ).trigger( "onDisableScrubber" );
 				//first time we get the playerReady event
 				eventName = eventName + " AdSupport_StartAdPlayback";
 			}
