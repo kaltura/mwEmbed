@@ -42,6 +42,9 @@
 			if ( this.getConfig( 'includeInLayout' ) === false){ // support hidden playlists - force onPage and hide its div.
 				this.setConfig( 'onPage', true );
 			}
+			//Backward compatibility setting - set autoplay on embedPlayer instead of playlist
+			this.getPlayer().autoplay = (this.getConfig( 'autoPlay' ) == true);
+
 			this.setConfig( 'horizontalHeaderHeight', 43 );
 			this.addBindings();
 			this.loadPlaylists();
@@ -53,6 +56,8 @@
 			this.bind( 'playerReady', function ( e, newState ) {
 				if (_this.playlistSet.length > 0){
 					_this.selectPlaylist(_this.currentPlaylistIndex);
+					//Revert block player display after selecting playlist entry
+					_this.getPlayer()['data-blockPlayerDisplay'] = false;
 				}
 				_this.unbind( 'playerReady'); // we want to select the playlist only the first time the player loads
 			});
@@ -179,7 +184,7 @@
 		},
 
 		// play a clip according to the passed index. If autoPlay is set to false - the clip will be loaded but not played
-		playMedia: function(clipIndex, autoPlay){
+		playMedia: function(clipIndex){
 			this.setSelectedMedia(clipIndex);              // this will highlight the selected clip in the UI
 			this.setConfig("selectedIndex", clipIndex);    // save it to the config so it can be retrieved using the API
 			this.embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')} ); // for API backward compatibility
@@ -224,12 +229,13 @@
 			$( embedPlayer).unbind( 'onChangeMediaDone' + this.bindPostFix ).bind( 'onChangeMediaDone' + this.bindPostFix, function(){
 				mw.log( 'mw.PlaylistAPI:: onChangeMediaDone' );
 				embedPlayer.triggerHelper( eventToTrigger );
-				_this.loadingEntry = false; // Update the loadingEntry flag
-				if (autoPlay){
-					embedPlayer.play();     // auto play
-				}
+				_this.loadingEntry = false; // Update the loadingEntry flag//
 			});
 			mw.log("PlaylistAPI::playClip::changeMedia entryId: " + id);
+
+			if (!this.firstPlay && this.getConfig('hideClipPoster') === true){
+				mw.setConfig('EmbedPlayer.HidePosterOnStart', true);
+			}
 
 			// Use internal changeMedia call to issue all relevant events
 			//embedPlayer.changeMediaStarted = false;
@@ -237,10 +243,6 @@
 				embedPlayer.sendNotification( "changeMedia", {'entryId' : id, 'playlistCall': true} );
 			}else{
 				embedPlayer.triggerHelper( eventToTrigger );
-				embedPlayer.enablePlayControls();
-				if (autoPlay && embedPlayer.canAutoPlay()){
-					embedPlayer.play();     // auto play
-				}
 			}
 
 			// Add playlist specific bindings:
@@ -248,10 +250,6 @@
 
 			// Restore onDoneInterfaceFlag
 			embedPlayer.onDoneInterfaceFlag = true;
-
-			if (!this.firstPlay && this.getConfig('hideClipPoster') === true){
-				mw.setConfig('EmbedPlayer.HidePosterOnStart', true);
-			}
 
 			if( this.firstPlay ){
 				this.firstPlay = false;
@@ -406,14 +404,14 @@
 					var found = false;
 					for (var i=0; i<items.length; i++){
 						if (items[i].id === this.getConfig( 'initItemEntryId' )){
-							this.playMedia(i, this.getConfig( 'autoPlay' ));
+							this.playMedia(i);
 							found = true;
 							break;
 						}
 					}
 				}
 				if ( (this.getConfig( 'initItemEntryId' ) && !found) || !(this.getConfig( 'initItemEntryId' )) ){
-					this.playMedia( this.getConfig('selectedIndex'), this.getConfig('autoPlay'));
+					this.playMedia( this.getConfig('selectedIndex'));
 				}
 				this.firstLoad = false;
 			}
