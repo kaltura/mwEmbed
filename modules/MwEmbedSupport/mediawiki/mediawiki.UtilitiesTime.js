@@ -103,9 +103,16 @@
 		var hour = 0;
 		var min = 0;
 		var sec = 0;
+		var frames = 0;
+		var fps = 30;	// the average frames per second
 
 		times = npt_str.split( ':' );
-		if ( times.length == 3 ) {
+		if ( times.length == 4 ) {		// HH:MM:SS:FF
+			frames = times[3];
+			sec = times[2];
+			min = times[1];
+			hour = times[0];
+		} else if ( times.length == 3 ) {
 			sec = times[2];
 			min = times[1];
 			hour = times[0];
@@ -118,7 +125,7 @@
 		// Sometimes a comma is used instead of period for ms
 		sec = sec.replace( /,\s?/, '.' );
 		// Return seconds float
-		return parseInt( hour * 3600 ) + parseInt( min * 60 ) + parseFloat( sec );
+		return parseInt( hour * 3600 ) + parseInt( min * 60 ) + parseFloat( sec ) + parseFloat( frames / fps );
 	};
 
 } )( window.mediaWiki );
