@@ -231,7 +231,7 @@
 				mw.log( 'mw.PlaylistAPI:: onChangeMediaDone' );
 				embedPlayer.triggerHelper( eventToTrigger );
 				_this.loadingEntry = false; // Update the loadingEntry flag//
-				// play clip that was selected event if autoPlay=false
+				// play clip that was selected when autoPlay=false. if autoPlay=true, the embedPlayer will do that for us.
 				if (!_this.getConfig("autoPlay")){
 					embedPlayer.play();
 				}
