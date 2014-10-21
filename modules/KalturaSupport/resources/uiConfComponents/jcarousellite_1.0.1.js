@@ -208,6 +208,9 @@ $.fn.jCarouselLite = function(o) {
 		btnNext: null,
 		btnGo: null,
 		mouseWheel: false,
+		fingerSwipe: true,
+		disableBodyScroll: true,
+
 		auto: null,
 
 		speed: 200,
@@ -218,6 +221,8 @@ $.fn.jCarouselLite = function(o) {
 		visible: 3,
 		start: 0,
 		scroll: 1,
+		swipe: 2,
+		swipeThresholdPercentage: 0.6,
 
 		beforeStart: null,
 		afterEnd: null
@@ -226,7 +231,7 @@ $.fn.jCarouselLite = function(o) {
 	return this.each(function() {						   // Returns the element collection. Chainable.
 		var running = false, animCss=o.vertical?"top":"left", sizeCss=o.vertical?"height":"width";
 		var div = $(this), ul = $("ul", div), tLi = $("li", ul), tl = tLi.size(), v = o.visible;
-
+		o.refWindow = $(this).parents('body');
 		if(o.circular) {
 			ul.prepend(tLi.slice(tl-v-1+1).clone())
 			  .append(tLi.slice(0,v).clone());
@@ -249,18 +254,29 @@ $.fn.jCarouselLite = function(o) {
 
 		div.css(sizeCss, divSize+"px");					 // Width of the DIV. length of visible images
 
-		if(o.btnPrev) {
-			$(o.btnPrev).show();
-			if ( !curr ) {
-				$(o.btnPrev).hide();
-			}
-			$(o.btnPrev).unbind('click.jcarousel');
-			$(o.btnPrev).bind( 'click.jcarousel', function() {
-				if ( !(curr-o.scroll) ) {
-					$(o.btnPrev).hide();
+		if ( o.disableBodyScroll ) {
+			var divHeight = div.height(),
+				divScrollHeight = div.get( 0 ).scrollHeight;
+
+			div.bind( 'mousewheel', function ( e, d ) {
+				if ( (this.scrollTop === (divScrollHeight - divHeight) && d < 0) || (this.scrollTop === 0 && d > 0) ) {
+					e.preventDefault();
 				}
-				if ( ( curr - o.scroll ) < ( itemLength - v ) ) {
-					$(o.btnNext).show();
+			} );
+		}
+
+		if(o.btnPrev) {
+			$(o.btnPrev, o.refWindow).show();
+			if ( !curr ) {
+				$(o.btnPrev, o.refWindow).hide();
+			}
+			$(o.btnPrev, o.refWindow).unbind('click.jcarousel');
+			$(o.btnPrev, o.refWindow).bind( 'click.jcarousel', function() {
+				if ( !(curr-o.scroll) ) {
+					$(o.btnPrev, o.refWindow).hide();
+				}
+				if ( ( curr - o.scroll ) < ( itemLength - v) ) {
+					$(o.btnNext, o.refWindow).show();
 				}
 				return go(curr-o.scroll);
 			});
@@ -269,43 +285,77 @@ $.fn.jCarouselLite = function(o) {
 		if(o.btnNext) {
 			$(o.btnNext).show();
 			if ( v >= itemLength ) {
-				$( o.btnNext ).hide();
+				$( o.btnNext, o.refWindow ).hide();
 			}
-			$(o.btnNext).unbind('click.jcarousel');
-			$(o.btnNext).bind( 'click.jcarousel', function() {
+			$(o.btnNext, o.refWindow).unbind('click.jcarousel');
+			$(o.btnNext, o.refWindow).bind( 'click.jcarousel', function() {
 				if ( curr+o.scroll ) {
-					$(o.btnPrev).show();
+					$(o.btnPrev, o.refWindow).show();
 				}
-				if ( (curr+o.scroll) == (itemLength - v) ) {
-					$(o.btnNext).hide();
+				if ( (curr+o.scroll) > (itemLength - v) ) {
+					$(o.btnNext, o.refWindow).hide();
 				}
 				return go(curr+o.scroll);
 			});
 		}
 
-		if(o.btnGo)
-			$.each(o.btnGo, function(i, val) {
-				$(val).click(function() {
-					return go(o.circular ? o.visible+i : i);
-				});
-			});
+		if(o.btnGo) {
+			$.each( o.btnGo, function ( i, val ) {
+				$( val, o.refWindow ).click( function () {
+					return go( o.circular ? o.visible + i : i );
+				} );
+			} );
+		}
 
-		if(o.mouseWheel && div.mousewheel)
-			div.mousewheel(function(e, d) {
+		if(o.mouseWheel && div.mousewheel) {
+			div.mousewheel( function ( e, d ) {
 				if ( curr ) {
-					$(o.btnPrev).show();
+					$( o.btnPrev, o.refWindow ).show();
 				}
-				return d>0 ? go(curr-o.scroll) : go(curr+o.scroll);
-			});
+				return d > 0 ? go( curr - o.scroll ) : go( curr + o.scroll );
+			} );
+		}
 
-		if(o.auto)
-			setInterval(function() {
-				go(curr+o.scroll);
-			}, o.auto+o.speed);
+		if(o.fingerSwipe && div.swipe){
+			var to;
+			div.swipe({
+				swipeStatus:function(event, phase, direction, distance, duration, fingers){
+					if (phase=="move") {
+						switch ( direction ) {
+							case "up":
+							case "left":
+								to = curr + o.swipe;
+								break;
+							case "down":
+							case "right":
+								to = curr - o.swipe;
+								break;
+						}
+					}
+					if (phase=="end"){
+						if (to < 0){
+							to = 0;
+						}
+						if (to >= (itemLength-v)){
+							to=itemLength-v;
+						}
+						return go(to);
+					}
+				},
+				triggerOnTouchEnd: false,
+				threshold: liSize * o.swipeThresholdPercentage
+			});
+		}
+
+		if(o.auto) {
+			setInterval( function () {
+				go( curr + o.scroll );
+			}, o.auto + o.speed );
+		}
 
 		function vis() {
 			return li.slice(curr).slice(0,v);
-		};
+		}
 
 		function go(to) {
 			if(!running) {
@@ -343,7 +393,7 @@ $.fn.jCarouselLite = function(o) {
 					$(o.btnPrev + "," + o.btnNext).removeClass("disabled");
 					$( (curr-o.scroll<0 && o.btnPrev)
 						||
-					   (curr+o.scroll > itemLength-v && o.btnNext)
+					   (curr+o.scroll > (itemLength-v) && o.btnNext)
 						||
 					   []
 					 ).addClass("disabled");

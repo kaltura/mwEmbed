@@ -313,4 +313,5 @@
 			'availability' => 'kdp'
 		)
 	);
+
 ?>

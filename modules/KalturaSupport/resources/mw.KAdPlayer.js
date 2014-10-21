@@ -34,6 +34,9 @@ mw.KAdPlayer.prototype = {
 	clickedBumper: false,
 	overrideDisplayDuration:0,
 
+	previousTime: 0,
+	seekIntervalID: null,
+
 	init: function( embedPlayer ){
 		var _this = this;
 		this.embedPlayer = embedPlayer;
@@ -119,6 +122,7 @@ mw.KAdPlayer.prototype = {
 
 		adSlot.playbackDone = function( hardStop ){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
+
 			if( adSlot.ads[adSlot.adIndex] ) {
 				// trigger ad complete event for tracking. Taking current time from currentTimeLabel plugin since the embedPlayer currentTime is already 0
 				$(_this.embedPlayer).trigger('onAdComplete',[adSlot.ads[adSlot.adIndex].id, mw.npt2seconds($(".currentTimeLabel").text())]);
@@ -214,6 +218,7 @@ mw.KAdPlayer.prototype = {
 		adSlot.displayDuration = displayDuration;
 		this.playNextAd( adSlot );
 	},
+
 	/**
 	 * Plays next ad in the adSlot, according to the adIndex position
 	 **/
@@ -317,7 +322,7 @@ mw.KAdPlayer.prototype = {
 
 		// hide any ad overlay
 		$( '#' + this.getOverlayId() ).hide();
-		
+
 		// Play the ad as sibling to the current video element.
 		if( _this.isVideoSiblingEnabled( targetSource ) ) {
 
@@ -533,8 +538,8 @@ mw.KAdPlayer.prototype = {
 			return false;
 		}
 
-		// iPhone and IOS 5 does not play multiple videos well, use source switch
-		if( mw.isIphone() || mw.isAndroid2() || mw.isAndroid40() || mw.isMobileChrome() 
+		// iPhone and IOS 5 does not play multiple videos well, use source switch. Chromecast should not use sibling as well.
+		if( mw.isIphone() || mw.isAndroid2() || mw.isAndroid40() || mw.isMobileChrome() || this.embedPlayer.instanceOf == "Chromecast"
 				|| 
 			( mw.isIpad() && ! mw.isIpad3() ) 
 		){
@@ -623,13 +628,14 @@ mw.KAdPlayer.prototype = {
 					&& 
 					!isNaN( adConf.skipoffset )
 				){
-					//parse "int" format: 
+					//parse "int" format:
 					skipOffsetInSecs = parseInt( adConf.skipoffset )
 				} else 	if ( adConf.skipoffset.indexOf(":") != -1 ) {
 					skipOffsetInSecs = this.getTimeInSeconds( adConf.skipoffset );
 				} else if ( adConf.skipoffset.indexOf("%") != -1 ) {
 					//parse percent format to seconds
 					var percent = parseInt( adConf.skipoffset.substring(0, adConf.skipoffset.indexOf("%")) ) / 100;
+
 					if ( isNaN( vid.duration ) || vid.duration === 0 ) {
 						skipPercentage = percent;
 					} else {
@@ -1085,9 +1091,9 @@ mw.KAdPlayer.prototype = {
 				var offsetRemaining = Math.max(Math.ceil(skipOffset - time), 0);
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining', offsetRemaining );
 				if (offsetRemaining <= 0) {
-				sendBeacon( 'progress' );
-				$('#' + _this.embedPlayer.id + '_ad_skipNotice' ).remove();	
-				$('#' + _this.embedPlayer.id + '_ad_skipBtn' ).show();	
+                    sendBeacon( 'progress' );
+                    $('#' + _this.embedPlayer.id + '_ad_skipNotice' ).remove();
+                    $('#' + _this.embedPlayer.id + '_ad_skipBtn' ).show();
 				}
 			}
 			if (adConf.selectedIcon) {
@@ -1266,7 +1272,7 @@ mw.KAdPlayer.prototype = {
 		var vpaidId = this.getVPAIDId();
 		var creativeData = {};
 		var environmentVars = {
-			slot: _this.embedPlayer.getVideoHolder(),
+			slot: _this.embedPlayer.getVideoHolder().get(0),
 			videoSlot:  _this.embedPlayer.getPlayerElement(),
 			videoSlotCanAutoPlay: true
 		};
@@ -1284,7 +1290,8 @@ mw.KAdPlayer.prototype = {
 					$( '#' + vpaidId ).remove();
 					_this.restoreEmbedPlayer();
 					adSlot.playbackDone();
-				}
+					$(_this.embedPlayer).trigger("playing");
+				};
 
 				VPAIDObj.subscribe( function () {
 					if ( VPAIDObj.startAd ) {
@@ -1310,9 +1317,37 @@ mw.KAdPlayer.prototype = {
 						//TODO add this to flash vpaid
 						return VPAIDObj.getAdRemainingTime();
 					};
+
 					if ( isJs ) {
 						_this.addAdBindings( environmentVars.videoSlot, adSlot, adConf );
 					} else {
+						//TODO we should call addAdBindings here too!
+
+						// start ad tracking
+						_this.adTrackingFlag = true;
+
+						// Check runtimeHelper
+						if( adSlot.notice ){
+							var noticeId =_this.embedPlayer.id + '_ad_notice';
+							// Add the notice target:
+							_this.embedPlayer.getVideoHolder().append(
+								$('<span />')
+									.attr( 'id', noticeId )
+									.addClass( 'ad-component ad-notice-label' )
+									.css('z-index', 2001)
+							);
+							var localNoticeCB = function(){
+								if( _this.adTrackingFlag ){
+									// Evaluate notice text:
+									$('#' + noticeId).text(
+										_this.embedPlayer.evaluate( adSlot.notice.evalText )
+									);
+									setTimeout( localNoticeCB,  mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
+								}
+							};
+							localNoticeCB();
+						}
+
 						// add support for volume control over KDP during Flash ad playback
 						$( _this.embedPlayer ).bind( 'volumeChanged' + _this.trackingBindPostfix, function ( e, changeValue ) {
 							if ( typeof VPAIDObj.playerElement.sendNotification === "function" ) {
@@ -1332,6 +1367,12 @@ mw.KAdPlayer.prototype = {
 				VPAIDObj.subscribe( function ( message ) {
 					mw.log( 'VPAID :: AdLog:' + message );
 				}, 'AdLog' );
+				VPAIDObj.subscribe( function ( message ) {
+					if ( _this.embedPlayer.sequenceProxy.isInSequence ) {
+						mw.log( 'VPAID :: DurationChange:' + message.newValue );
+						_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', message.newValue );
+					}
+				}, 'durationChange' );
 
 				if ( isJs ) {  //flash vpaid will call initAd itself
 					VPAIDObj.initAd( _this.embedPlayer.getWidth(), _this.embedPlayer.getHeight(), 'normal', 512, creativeData, environmentVars );
@@ -1409,7 +1450,7 @@ mw.KAdPlayer.prototype = {
 			}
 		};
 
-		if ( mw.isAndroid() ) {
+		if ( mw.isAndroid() || mw.isIpad() ) {
 			var bindPostFix = ".vpaidSequenceCheck";
 			this.embedPlayer.bindHelper( 'playing' + bindPostFix, function () {
 				_this.embedPlayer.unbindHelper( 'playing' + bindPostFix );

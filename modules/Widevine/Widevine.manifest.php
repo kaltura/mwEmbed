@@ -7,6 +7,17 @@ return array (
 	'widevine' => array(
 	 	'description' => 'The Widevine plugin provides a DRM solution for Kaltura content. Initially, the Kaltura player checks for the Widevine browser plugin and displays a message with a download link if this plugin is missing. <a href="http://www.widevine.com/wv_drm.html" target="_blank"> More info </a>',
 		'attributes' => array(
+			'useSupportedBrowserMsg' => array(
+				'label' => "Use supported browser message",
+				'doc' => "Overrides the default message text when trying to play Widevine content in an unsupported browser (Safari).",
+				'type' => 'string',
+				'initvalue' => "This video is not supported by this browser."
+			),
+			'useSupportedBrowserTitle' => array(
+				'doc' => "Overrides the default title of the message that is displayed when trying to play Widevine content in an unsupported browser.",
+				'type' => 'string',
+				'initvalue'=> "Notification"
+			),
 			'useSupportedDeviceMsg' => array(
 				'label' => "Use supported device message",
 				'doc' => "Overrides the default message text when trying to play Widevine content in an unsupported device.",

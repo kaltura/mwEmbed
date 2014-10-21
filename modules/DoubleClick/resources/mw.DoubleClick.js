@@ -266,10 +266,6 @@
 				}
 			});
 
-			_this.embedPlayer.bindHelper( 'Playlist_PlayClip', function( event, clipIndex, autoContinue, playback ){
-				playback.shouldPause = _this.shouldPausePlaylist;
-			});
-
 			_this.embedPlayer.bindHelper( 'AdSupport_midroll' + _this.bindPostfix, function( event, sequenceProxy ){
 				// Add the slot to the given sequence proxy target target
 				sequenceProxy[ _this.getSequenceIndex( 'midroll' ) ] = function( callback ){
@@ -292,20 +288,6 @@
 					}
 				}
 			});
-
-			if( mw.isIpad() ) {
-				var bindPostFix = ".doubleClickSequenceCheck";
-				_this.embedPlayer.bindHelper( 'playing' + bindPostFix, function () {
-					// Pause video element only if it's not 'overlay'
-					if( _this.isLinear === false ) {
-						return;
-					}
-					_this.embedPlayer.unbindHelper( 'playing' + bindPostFix );
-					_this.embedPlayer.stopEventPropagation();
-					_this.embedPlayer.getPlayerElement().pause();
-					_this.embedPlayer.stopMonitor();
-				});
-			}
 		},
 		/**
 		 * Get the content video tag
@@ -365,7 +347,7 @@
 				'cust_params=' + encodeURIComponent( this.getConfig( 'customParams' ) ) : '';
 			if( postFix ){
 				var paramSeperator = adUrl.indexOf( '?' ) === -1 ? '?' :
-					adUrl[ adUrl.length -1 ] == '&' ? '': '&';
+						adUrl[ adUrl.length -1 ] == '&' ? '': '&';
 
 				return unescape( adUrl ) + paramSeperator + postFix;
 			} else {
@@ -595,7 +577,7 @@
 						getTime();
 					} else {
 						var eventName = 'focus.doubleClickMobileEvent';
-						if( mw.isIOS() ) {
+						if( _this.isPageshowEventSupported() && mw.isIOS() ) {
 							eventName = 'pageshow.doubleClickMobileEvent';
 						}
 						_this.adClickEvent = eventName;
@@ -871,6 +853,15 @@
 			},'adsLoadError', true);
 
 		},
+
+		isPageshowEventSupported: function() {
+			if( mw.isIOS8() ) {
+				return false;
+			}
+
+			return true;
+		},
+
 		getPlayerSize: function(){
 			return {
 				'width': this.embedPlayer.getVideoHolder().width(),
