@@ -901,9 +901,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'doc' => 'URL for CSS to be loaded on the embedding page.',
 		'type' => 'url'
 	),
-
+	'enableControlsDuringAd' => array(
+		'doc' => 'If true, play pause button will be active during ad playback',
+		'type' => 'boolean'
+	),
 	'adsOnReplay' => array(
-		'doc' => 'True for showing ads in replay, Fa;se to skip ads in replay.',
+		'doc' => 'true for showing ads in replay, false to skip ads in replay.',
 		'type' => 'boolean'
 	),
 	'bumper' => array(

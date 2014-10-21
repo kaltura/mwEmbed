@@ -929,7 +929,7 @@ var kWidget = {
 				settings.flashvars.jsonConfig = null;
 				$.ajax({
 					type:"POST",
-                    dataType: 'text',
+					dataType: 'text',
 					url: this.getIframeUrl() + '?' +
 						this.getIframeRequest( widgetElm, settings ),
 					data:{"jsonConfig":jsonConfig}
@@ -1313,7 +1313,7 @@ var kWidget = {
 						_this.uiConfScriptLoadList[ settings.uiconf_id ] = true;
 						// issue all uiConfScriptLoad callbacks: 
 						for( var inx in _this.uiConfScriptLoadListCallbacks[ cbName ] ){
-                            if( _this.uiConfScriptLoadListCallbacks[ cbName ].hasOwnProperty(inx) && typeof _this.uiConfScriptLoadListCallbacks[ cbName ][inx] == 'function' ){
+							if( _this.uiConfScriptLoadListCallbacks[ cbName ].hasOwnProperty(inx) && typeof _this.uiConfScriptLoadListCallbacks[ cbName ][inx] == 'function' ){
 								_this.uiConfScriptLoadListCallbacks[ cbName ][inx]();
 							}
 						};
@@ -1353,7 +1353,7 @@ var kWidget = {
 	 * @return {boolean} true or false if HTML5 video tag is supported
 	 */
 	supportsHTML5: function(){
-        if( mw.getConfig('EmbedPlayer.DisableVideoTagSupport') ){
+		if( mw.getConfig('EmbedPlayer.DisableVideoTagSupport') ){
 			return false;
 		}
 		var dummyvid = document.createElement( "video" );
@@ -1433,8 +1433,8 @@ var kWidget = {
 		return (navigator.userAgent.indexOf('Android ') != -1);
 	 },
 	 isWindowsDevice: function() {
-	   var appVer = navigator.appVersion;
-	   return  ((appVer.indexOf("Win")!=-1 && 
+		 var appVer = navigator.appVersion;
+		 return  ((appVer.indexOf("Win")!=-1 && 
 			(navigator.appVersion.indexOf("Phone")!=-1 || navigator.appVersion.indexOf("CE")!=-1))); 
 	 },
 	 /**

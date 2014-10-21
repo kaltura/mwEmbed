@@ -235,8 +235,8 @@ $uiVars = array(
 			),
 			'streamerType' => array(
 				'type' => 'String',
-				'desc' => 'The media source streaming protocol to use (http / rtmp / live / hdnetwork)',
-				'default' => 'http',
+				'desc' => 'The media source streaming protocol to use (http / rtmp / live / hdnetwork / auto ). Auto will select http or adaptive based on content length and protocols available on the platform.',
+				'default' => 'auto',
 				'example' => ''
 			),
 			'streamerUrl' => array(
@@ -437,6 +437,12 @@ $uiVars = array(
 				'desc' => 'Indicates whether the media should be played again after playback has completed',
 				'default' => 'false',
 				'example' => '../modules/KalturaSupport/tests/Loop.qunit.html'
+			),
+			'enableControlsDuringAd' => array(
+				'type' => 'Boolean',
+				'desc' => 'If true, play pause button will be active during ad playback',
+				'default' => 'false',
+				'example' => '../modules/KalturaSupport/tests/AdEnableControls.html'
 			),
 			'adsOnReplay' => array(
 				'type' => 'Boolean',
@@ -759,51 +765,50 @@ $uiVars = array(
 			),
 			'mediaProxy.preferedFlavorBR' => array(
 					'type' => 'Integer',
-					'desc' => 'A prefered bitrate for selecting the flavor to be played. In case of an RTMP adaptive mbr, a -1 value will force an auto switching as opposed to manual one. Will be affective only if the "disableBitrateCookie=true" Flashvar is sent.',
+					'desc' => 'A prefered bitrate for selecting the flavor to be played. '.
+						'In the case of HLS, this param is passed to the manifest chaning the flavor list with prefered bitrate flavor first. '. 
+						'In case of an RTMP adaptive mbr, a -1 value will force an auto switching as opposed to manual one. Will be affective only if the "disableBitrateCookie=true" Flashvar is sent.',
 					'default' => '1000',
-					'example' => ''
+					'example' => '../modules/KalturaSupport/tests/FlavorSelector.preferedFlavorBR.qunit.html'
 			),
 			'mediaProxy.imageDefaultDuration' => array(
 					'type' => 'Integer',
 					'desc' => 'In case an Image media is played in a playlist, this value sets the default time period that the image will hold until the next image is presented. Any positive number representing seconds is acceptable',
 					'default' => '3',
-					'example' => ''
 			),
 			'mediaProxy.supportImageDuration' => array(
 					'type' => 'Boolean',
 					'desc' => 'This is used to turn an image to a timed image. It is useful in case of playlist where an image should only show for a specific time before the next item will show. If the image should show without time (static), set this to false',
 					'default' => 'true in case of playlists, false in case of single image',
 					'availability' => 'kdp',
-					'example' => ''
 			),
 			'mediaProxy.initialBufferTime' => array(
 					'type' => 'Integer',
 					'desc' => "Set the initial buffer time in dual buffering method. When a number of seconds indicated by this parameter will be buffered, the stream playback will start and the buffer size will increase to expandedBufferTime. Any positive number representing the number of seconds the buffer should hold before playback",
 					'default' => '2',
 					'availability' => 'kdp',
-					'example' => ''
 			),
 			'mediaProxy.expandedBufferTime' => array(
 					'type' => 'Integer',
 					'desc' => 'Set the desired buffer time in dual buffering method. After the stream buffer has accumulated the number of seconds indicated by initialBufferTime, the buffer size increases to the number of seconds indicated by this parameter to maximize the buffer download size during playback. Any positive number representing the desired seconds to buffer',
 					'default' => '10',
 					'availability' => 'kdp',
-					'example' => ''
 			),
 			'mediaProxy.mediaPlayFrom' => array(
 					'type' => 'Integer',
-					'desc' => 'Indicates the time from which to play the media. If passed and unequal to 0, the player seeks to this time before beginning to play',
-					'default' => '-1',
-					'example' => ''
+					'desc' => 'Indicates the time from which to play the media. If passed and unequal to 0, the player seeks to this time before beginning to play content.',
+					'default' => 'null',
+					'example' => '../modules/KalturaSupport/tests/PlayFromOffsetStartTimeToEndTime.html'
 			),
 			'mediaProxy.mediaPlayTo' => array(
 					'type' => 'Integer',
 					'desc' => 'Indicates the time to which to play the media. If passed and unequal to 0, the player pauses upon arrival at this time',
-					'default' => '-1',
-					'example' => ''
+					'default' => 'null',
+					'example' => '../modules/KalturaSupport/tests/PlayFromOffsetStartTimeToEndTime.html'
 			)
 		)
 	)
 );
+
 
 

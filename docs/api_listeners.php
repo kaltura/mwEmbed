@@ -217,6 +217,11 @@
 			'callbackArgs' => 'Cue Points Map. Object mapping between start-times and arrays of the cue points found on that start-time',
 			'desc' => "Notification fired when the player has successfully loaded an entry's cue-point configuration"
 		),
+		'cuePointReached' => array(
+			'callbackArgs' => 'Current cuePoint object. Return Object with context and a cuePoint object',
+			'desc' => "Notification fired when the player reaches a cuePoint",
+			"example" => "../modules/KalturaSupport/tests/CuePointsMidrollVast.html"
+		),
 		'switchingChangeStarted' => array(
 			'callbackArgs' => 'newIndex: The index of the bitrate the player started switching to. If auto, send -1, newBitrate: The bitrate the player started switching to. If auto, send null',
 			'desc' => 'Notification dispatched when the player has started switching to a different dynamic bitrate'
@@ -312,7 +317,6 @@
 			'desc' => 'Fired when an ad fails to load (applicable to all ad systems)'
 		)
 	);
-
 	$playlists = array(
         'playlistReady' => array(
             'props' => 'None',
