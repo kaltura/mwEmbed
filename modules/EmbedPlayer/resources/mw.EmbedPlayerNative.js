@@ -179,6 +179,9 @@ mw.EmbedPlayerNative = {
 				_this.pause();
 				_this.updatePosterHTML();
 			}
+			if ( !(mw.isIOS7() && mw.isIphone())){
+				_this.changeMediaCallback = null;
+			}
 			callback();
 		});
 	},
@@ -832,7 +835,7 @@ mw.EmbedPlayerNative = {
 				// empty out any existing sources:
 				$( vid ).empty();
 
-				if ( mw.isIOS7() ){
+				if ( mw.isIOS7() && mw.isIphone()){
 					vid.src = null;
 					var sourceTag = document.createElement('source');
 					sourceTag.setAttribute('src', src);
