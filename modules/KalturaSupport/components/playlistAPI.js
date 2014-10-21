@@ -236,7 +236,7 @@
 			});
 			mw.log("PlaylistAPI::playClip::changeMedia entryId: " + id);
 
-			if (!this.firstPlay && this.getConfig('hideClipPoster') === true){
+			if (!this.firstPlay && this.getConfig('hideClipPoster') === true && !mw.isIphone()){
 				mw.setConfig('EmbedPlayer.HidePosterOnStart', true);
 			}
 
