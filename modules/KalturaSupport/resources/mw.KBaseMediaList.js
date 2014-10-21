@@ -586,13 +586,14 @@
 			var largestBoxWidth = 0;
 			var largestBoxHeight = 0;
 			this.getMediaListDomElements().each( function(inx, box){
-				if( $( box ).width() > largestBoxWidth ){
-					largestBoxWidth = $( box ).width()
+				var $box = $(box);
+				if( $box.width() > largestBoxWidth ){
+					largestBoxWidth = $box.width()
 				}
-				if( $(box).height() > largestBoxHeight ){
-					largestBoxHeight = $(box).height() + (
-						(parseInt( $(box).css('padding-top') ) || 0) + (parseInt( $(box).css( 'padding-bottom') ) || 0) +
-							(parseInt( $(box).css('margin-top') ) || 0)+ (parseInt( $(box).css( 'margin-bottom') ) || 0)
+				if( $box.height() > largestBoxHeight ){
+					largestBoxHeight = $box.height() + (
+						(parseInt( $box.css('padding-top') ) || 0) + (parseInt( $box.css( 'padding-bottom') ) || 0) +
+							(parseInt( $box.css('margin-top') ) || 0)+ (parseInt( $box.css( 'margin-bottom') ) || 0)
 						);
 				}
 			});
