@@ -591,8 +591,8 @@
 				}
 				if( $(box).height() > largestBoxHeight ){
 					largestBoxHeight = $(box).height() + (
-						parseInt( $(box).css('padding-top') ) + parseInt( $(box).css( 'padding-bottom') ) +
-						parseInt( $(box).css('margin-top') ) + parseInt( $(box).css( 'margin-bottom') )
+						(parseInt( $(box).css('padding-top') ) || 0) + (parseInt( $(box).css( 'padding-bottom') ) || 0) +
+							(parseInt( $(box).css('margin-top') ) || 0)+ (parseInt( $(box).css( 'margin-bottom') ) || 0)
 						);
 				}
 			});
