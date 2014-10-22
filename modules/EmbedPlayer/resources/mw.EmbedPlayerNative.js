@@ -392,10 +392,6 @@ mw.EmbedPlayerNative = {
 	*/
 	seek: function( percent, stopAfterSeek ) {
 		var _this = this;
-		if (this.sequenceProxy && this.sequenceProxy.isInSequence){
-			mw.log( 'EmbedPlayerNative::seek : prevented seek during ad playback');
-			return;
-		}
 		// bounds check
 		if( percent < 0 ){
 			percent = 0;
@@ -410,7 +406,11 @@ mw.EmbedPlayerNative = {
 		this.kPreSeekTime = _this.currentTime;
 
 		// Trigger preSeek event for plugins that want to store pre seek conditions.
-		this.triggerHelper( 'preSeek', percent );
+		var stopSeek = {value: false};
+		this.triggerHelper( 'preSeek', [percent, stopAfterSeek, stopSeek] );
+		if(stopSeek.value){
+			return;
+		}
 
 		this.seeking = true;
 		// Update the current time ( local property )

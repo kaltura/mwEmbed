@@ -440,6 +440,14 @@ mw.EmbedPlayerKplayer = {
 				return;
 			}
 		}
+
+		// Trigger preSeek event for plugins that want to store pre seek conditions.
+		var stopSeek = {value: false};
+		this.triggerHelper( 'preSeek', [percentage, stopAfterSeek, stopSeek] );
+		if(stopSeek.value){
+			return;
+		}
+
 		this.seeking = true;
 
 		// Save currentTime
@@ -459,7 +467,6 @@ mw.EmbedPlayerKplayer = {
 			if( stopAfterSeek ){
 				_this.hideSpinner();
 				_this.pause();
-//				_this.stopMonitor();
 				_this.updatePlayheadStatus();
 			} else {
 				// continue to playback ( in a non-blocking call to avoid synchronous pause event )

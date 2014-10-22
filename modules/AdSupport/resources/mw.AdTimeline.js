@@ -103,6 +103,7 @@
 		firstPlay: true,
 
 		bindPostfix: '.AdTimeline',
+		pendingSeek: false,
 
 		currentAdSlotType: null,
 
@@ -168,6 +169,17 @@
 
 				// Start of preSequence
 				embedPlayer.triggerHelper( 'AdSupport_PreSequence');
+
+				mw.log( 'EmbedPlayer::preSeek : prevented seek during ad playback');
+				embedPlayer.unbindHelper("preSeek" + _this.bindPostfix).bindHelper("preSeek" + _this.bindPostfix, function(e, percentage, stopAfterSeek, stopSeek) {
+					embedPlayer.unbindHelper( "preSeek" + _this.bindPostfix );
+					stopSeek.value = true;
+					_this.pendingSeek = true;
+					_this.pendingSeekData = {
+						percentage: percentage,
+						stopAfterSeek: stopAfterSeek
+					};
+				});
 
 				//Setup a playedAnAdFlag
 				var playedAnAdFlag = false;
@@ -433,6 +445,12 @@
 				return;
 			}
 			embedPlayer.restoreEventPropagation();
+
+			if (this.pendingSeek){
+				this.pendingSeek = false;
+				embedPlayer.seek(this.pendingSeekData.percentage, this.pendingSeekData.stopAfterSeek);
+			}
+
 			embedPlayer.enablePlayControls();
 			embedPlayer.seeking = false;
 			// restore in sequence property;
