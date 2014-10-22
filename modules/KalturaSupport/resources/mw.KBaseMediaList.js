@@ -58,9 +58,6 @@
 				if ( !_this.getConfig( 'parent') ){
 					$(".medialistContainer").hide();
 					$(".videoHolder").width("100%");
-					if (_this.getConfig("containerPosition") === "left"){
-						$(".mwPlayerContainer").css("margin-left", 0 + "px");
-					}
 				}
 			});
 
@@ -69,9 +66,6 @@
 				if ( !_this.getConfig( 'parent') ){
 					$(".medialistContainer").show();
 					$(".videoHolder").width(_this.videoWidth+"px");
-					if (_this.getConfig("containerPosition") === "left"){
-						$(".mwPlayerContainer").css("margin-left", _this.getMedialistComponent().width() + "px");
-					}
 				}
 			});
 
@@ -137,7 +131,7 @@
 						this.videoWidth = (this.$mediaListContainer.width() - this.getConfig( "mediaItemWidth" ));
 					}
 					if ( this.getConfig( 'containerPosition' ) == 'left' ) {
-						$( ".mwPlayerContainer" ).css( {"margin-left": this.getConfig( "mediaItemWidth" ) + "px", "float": "right"} );
+						$( ".mwPlayerContainer" ).css( "float", "right" );
 					}
 
 					if ( this.getConfig( 'containerPosition' ) == 'top' || this.getConfig( 'containerPosition' ) == 'bottom' ) {
