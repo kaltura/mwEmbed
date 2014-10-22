@@ -1630,7 +1630,7 @@
 					}
 				};
 
-				if( $.isFunction(_this.changeMediaCallback) ){
+				if( $.isFunction(_this.changeMediaCallback) && !mw.isIpad()){
 					setTimeout(function(){
 						_this.changeMediaCallback( changeMediaDoneCallback );
 					},250);
