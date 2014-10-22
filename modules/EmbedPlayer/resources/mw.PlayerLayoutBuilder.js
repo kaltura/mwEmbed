@@ -413,6 +413,8 @@ mw.PlayerLayoutBuilder.prototype = {
 		this.embedPlayer.bindHelper( 'layoutBuildDone', function(){
 			_this.getInterface().tooltip({
 				items: '[data-show-tooltip]',
+				"show": { "delay": 1000 },
+				"hide": { "duration": 0 },
 				  position: {
 					my: "center bottom-10",
 					at: "center top",
@@ -428,6 +430,8 @@ mw.PlayerLayoutBuilder.prototype = {
 				});
 			_this.getInterface().find(".tooltipBelow").tooltip({
 				items: '[data-show-tooltip]',
+				"show": { "delay": 1000 },
+				"hide": { "duration": 0 },
 				position: {
 					my: "center bottom-10",
 					at: "center top",

@@ -1,23 +1,38 @@
-.mediaList{
+/*@import url(http://fonts.googleapis.com/css?family=Open+Sans:300);*/
+.medialistContainer{
+    font-family: "Helvetica Neue", 'Open Sans', sans-serif;
     height: 100%;
     width: 100%;
 }
+.onpagePlaylistInterface{
+    width: 100%;
+    height: 100%;
+}
+.unselectable {
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+
+    /*
+      Introduced in IE 10.
+      See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+    */
+    -ms-user-select: none;
+    user-select: none;
+}
+
 .k-chapters-container{
     position:relative;
 }
 .k-chapters-container.horizontal {
     padding-top:5px;
 }
-
 .k-chapters-container ul {
     margin: 0 0 0 0;
     height: auto;
     padding: 0px;
 }
-.k-chapters-container .k-title-container{
-    font-size:14px;
-    font-weight: normal;
-}
+
 .k-chapters-container .chapterDivider{
     width: 1px;
     background: #aaa;
@@ -38,14 +53,43 @@
     overflow: hidden;
     width: auto;
 }
+
 .k-chapters-container .chapterBox .k-thumb{
     float: left;
-    margin-right:8px;
-    margin-bottom: 8px;
+    width: 100%;
+    height: 100%;
+    background-repeat:no-repeat;
+    background-position: center;
+    background-size : cover;
 }
-.k-chapters-container .chapterBoxInner{
-    padding: 8px;
+.k-chapters-container .chapterBoxShadow {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    /*background: rgba(0,0,0,0.1);*/
+    background: rgba(0,0,0,0.3);
 }
+.k-chapters-container .chapterBox:hover .chapterBoxShadow {
+
+    background: -moz-linear-gradient(top, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 100%);
+    background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(0,0,0,0.1)), color-stop(100%, rgba(0,0,0,0.2)));
+    background: -webkit-linear-gradient(top, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 100%);
+    background: -o-linear-gradient(top, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 100%);
+    background: -ms-linear-gradient(top, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 100%);
+    background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#000000', GradientType=0 );
+}
+.k-chapters-container .chapterBoxInner {
+    position: absolute;
+    bottom: 0;
+    text-shadow: 0.588px 0.809px 0.99px rgba(0, 0, 0, 0.2);
+    padding: 2%;
+    max-height: 33%;
+    overflow: hidden;
+}
+.k-chapters-container .chapterBoxInner > div {
+}
+
 .k-chapters-container .chapterBox:hover{
     background: rgba(220,220,220,.8);
     /* IE 7 & 8 rule */
@@ -57,47 +101,41 @@
     background: #ccc\9;
 }
 
+.k-chapters-container .k-title-container{
+    font-size:13px;
+    font-weight: normal;
+}
 .k-chapters-container .chapterNumber{
     float: left;
 }
-.k-chapters-container .k-description{
-    display: block;
-    color: #959595;
-    font-size: 13px;
-    line-height: 13px;
-}
-.k-chapters-container .k-start-time{
+.k-chapters-container .k-time-data{
+    font-size: 12px;
 
 }
-.k-chapters-container .k-duration{
-    float:right;
-    position: absolute;
-    right: 8px;
-    bottom: 4px;
-}
-
-.k-chapters-container .k-duration span{
-    font-size: 10px;
-    line-height: 20px;
-}
-
+.k-chapters-container .k-duration{}
+.k-chapters-container .k-duration span{}
+.k-chapters-container .k-start-time{}
+.k-chapters-container .k-start-time span{}
 /*
 * horizontal layout styles:
 */
 .k-chapters-container.k-horizontal .chapterBox{
-    position:relative;
     display:inline;
-    float:left;
-    padding-left:4px;
-    padding-right:20px;
+    height: 100%;
+}
+.k-chapters-container.k-horizontal .chapterBox:not(:last-child){
+    margin-right: 16px;
+}
+.k-chapters-container.k-horizontal .k-scroll.k-next{
+    right:0px;
+    top:0px;
+}
+.k-chapters-container.k-horizontal .k-scroll.k-right{
+    left:0px;
+    top:0px;
 }
 
-.k-chapters-container .k-carousel{
-    -moz-box-shadow: 0 0 8px rgba(0,0,0,1) inset;
-    -webkit-box-shadow: 0 0 8px rgba(0,0,0,1) inset;
-    box-shadow: 0 0 8px rgba(0,0,0,1) inset;
-}
-
+.k-chapters-container .k-carousel{}
 .k-chapters-container .k-scroll{
     display: block;
     cursor:pointer;
@@ -107,14 +145,6 @@
     text-decoration: none;
     position:absolute;
     z-index: 3;
-}
-.k-chapters-container.k-horizontal .k-scroll.k-next{
-    right:0px;
-    top:0px;
-}
-.k-chapters-container.k-horizontal .k-scroll.k-right{
-    left:0px;
-    top:0px;
 }
 .k-chapters-container .k-next{
     background: no-repeat url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAQAAAD1lzQWAAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfcCR0BGhpKxvJRAAAAhUlEQVQI12NgYJCcL3lekp8BBiTna/7X+y9zASbEpMTPxcDKIKTPfBAixHSkSmoHA4oQw38N3+3G/42hGhkhQtb7f0owMPxm+LCIiYGBgUGq/JsEAwMDg8CdpVOg9hj/N/5vd/ucw38WdC4DixL/DwYGBu47E1INjzD+gdoBk4WC/xrIXADEAzdXKDh+NAAAAABJRU5ErkJggg==);
@@ -135,13 +165,6 @@
 }
 .k-chapters-container .k-prev:hover{
     background-color: rgba(255,255,255,.5);
-}
-
-.k-chapters-container .k-start-time span{
-    color: #7198CA;
-    font-size: 13px;
-    line-height: 15px;
-    margin-right: 4px;
 }
 
 .clearfix{
@@ -172,11 +195,10 @@
 .k-chapters-container.k-vertical .chapterBox{
     width:100%;
 }
-.k-chapters-container.k-vertical .chapterBox .k-thumb {
-    margin-right:7px;
-    margin-bottom: 7px;
+.k-chapters-container.k-vertical .chapterBox .k-thumb {}
+.k-chapters-container.k-vertical .chapterBox:not(:last-child){
+    margin-bottom: 16px;
 }
-
 .k-chapters-container.k-vertical .k-scroll{
     float: none;
     width: 100%;

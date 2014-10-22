@@ -107,7 +107,7 @@ return array(
 			"share" => "",
 			"related" => "",
 			"playlistAPI" => "",
-            "nextPrevBtn" => ""
+			"nextPrevBtn" => ""
 		)
 	),
 	"analytics"=> array(

@@ -215,12 +215,7 @@
 							};
 							// Check if the src does not match original src if
 							// so switch back and restore original bindings
-							if ( embedPlayer.kAds
-								&&
-								embedPlayer.kAds.adPlayer
-								&&
-								!embedPlayer.kAds.adPlayer.isVideoSiblingEnabled()
-								){
+							if ( ! embedPlayer.isVideoSiblingEnabled() ) {
 								// restore the original source:
 								embedPlayer.switchPlaySource( _this.originalSource, completeFunc);
 							} else {

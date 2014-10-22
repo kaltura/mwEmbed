@@ -439,6 +439,10 @@ mw.EmbedPlayerNativeComponent = {
 
 	hideNativeAirPlayButton: function() {
 		this.getPlayerElement().hideNativeAirPlayButton();
+	},
+
+	isVideoSiblingEnabled: function() {
+		return false;
 	}
 };
 } )( mediaWiki, jQuery );

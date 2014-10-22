@@ -70,6 +70,18 @@
 					if( !_this.seekIntervalID ) {
 						_this.seekIntervalID = _this.seekIntervalTrigger();
 					}
+
+					$( embedPlayer.getPlayerElement() ).bind('pause' + _this.bindPostfix, function() {
+						embedPlayer.disableSwitchSourceCallback = false;
+						// next button was tapped
+						if( embedPlayer.getPlayerElement().currentTime > _this.previousTime + 1
+							|| embedPlayer.getPlayerElement().currentTime == _this.previousTime ) {
+							if( embedPlayer.disableSwitchSourceCallback != null ) {
+								embedPlayer.disableSwitchSourceCallback = true;
+							}
+							embedPlayer.getPlayerElement().currentTime = _this.previousTime;
+						}
+					});
 				});
 
 				$( embedPlayer ).bind('onAdComplete' + _this.bindPostfix, function() {
@@ -351,7 +363,7 @@
 			// check if we are storing ads session:
 			if( this.embedPlayer.getKalturaConfig( this.confPrefix, 'storeSession' ) ){
 				// no object usage for this
-				$.cookie( this.confPrefix + '_' + key, value );
+				$.cookie( this.confPrefix + '_' + key, value, {path: '/'} );
 			}
 
 			if ( !this.embedPlayer[ this.confPrefix ] ) {
@@ -391,7 +403,7 @@
 					_this.setPersistentConfig( 'contentIndex', 0);
 				}
 				// always increment contentIndex ( starts on 1 ):
-				_this.setPersistentConfig( 'contentIndex', _this.getPersistentConfig( 'contentIndex') + 1 );
+				_this.setPersistentConfig( 'contentIndex', parseInt(_this.getPersistentConfig( 'contentIndex')) + 1 );
 				// check if we should play an ad:
 				if( _this.getPersistentConfig( 'contentIndex') >= startWith
 					&&
@@ -623,6 +635,10 @@
 			}
 			this.embedPlayer.adTimeline && this.embedPlayer.adTimeline.restorePlayer( null, adPlaying );
 			$( this.embedPlayer ).unbind( this.bindPostfix );
+
+			if( mw.isIphone() ) {
+				$( this.embedPlayer.getPlayerElement() ).unbind( this.bindPostfix );
+			}
 		}
 	};
 

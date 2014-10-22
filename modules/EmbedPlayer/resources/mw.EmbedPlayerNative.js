@@ -46,6 +46,9 @@ mw.EmbedPlayerNative = {
 	// Flag for ignoring double play on iPhone
 	playing: false,
 
+	// Disable switch source callback
+	disableSwitchSourceCallback: false,
+
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
 	nativeEvents : [
@@ -168,13 +171,16 @@ mw.EmbedPlayerNative = {
 		// If switching a Persistent native player update the source:
 		// ( stop and play won't refresh the source  )
 		_this.switchPlaySource( this.getSource(), function(){
-			if( !_this.autoplay || !_this.canAutoPlay() ){
+			if( !_this.autoplay && !mw.isMobileDevice() ){
 				// pause is need to keep pause sate, while
 				// switch source calls .play() that some browsers require.
 				// to reflect source swiches.
 				_this.ignoreNextNativeEvent = true;
 				_this.pause();
 				_this.updatePosterHTML();
+			}
+			if ( !(mw.isIOS7() && mw.isIphone())){
+				_this.changeMediaCallback = null;
 			}
 			callback();
 		});
@@ -343,6 +349,9 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		$.each( _this.nativeEvents, function( inx, eventName ){
+			if( mw.isIOS8() && mw.isIphone() && eventName === "seeking" ) {
+				return;
+			}
 			$( vid ).unbind( eventName + '.embedPlayerNative').bind( eventName + '.embedPlayerNative', function(){
 				// make sure we propagating events, and the current instance is in the correct closure.
 				if( _this._propagateEvents && _this.instanceOf == 'Native' ){
@@ -383,6 +392,10 @@ mw.EmbedPlayerNative = {
 	*/
 	seek: function( percent, stopAfterSeek ) {
 		var _this = this;
+		if (this.sequenceProxy && this.sequenceProxy.isInSequence){
+			mw.log( 'EmbedPlayerNative::seek : prevented seek during ad playback');
+			return;
+		}
 		// bounds check
 		if( percent < 0 ){
 			percent = 0;
@@ -425,8 +438,11 @@ mw.EmbedPlayerNative = {
 			this.doNativeSeek( percent, function(){
 				if( stopAfterSeek ){
 					_this.hideSpinner();
-					_this.pause();
-					_this.updatePlayheadStatus();
+					// pause in a non-blocking call to avoid synchronous playing event
+					setTimeout(function() {
+						_this.pause();
+						_this.updatePlayheadStatus();
+					}, 0);
 				} else {
 					// continue to playback ( in a non-blocking call to avoid synchronous pause event ) 
 					setTimeout(function(){
@@ -551,7 +567,7 @@ mw.EmbedPlayerNative = {
 		
 		// some initial calls to prime the seek: 
 		if( callbackCount == 0 && vid.currentTime == 0 ){
-			// when seeking turn off preload none and issue a load call. 
+			// when seeking turn off preload none and issue a load call.
 			$( vid )
 				.attr('preload', 'auto')
 				[0].load();
@@ -656,7 +672,7 @@ mw.EmbedPlayerNative = {
 					_this.setCurrentTime( seekTime, callback , callbackCount++ );
 				}
 			}
-		}, 5000);
+		}, ( mw.isIOS8() && mw.isIpad() ) ? 100 : 5000);
 
 		// Try to update the playerElement time:
 		try {
@@ -671,7 +687,7 @@ mw.EmbedPlayerNative = {
 		}
 
 		// Check for seeking state ( some player iOS / iPad can only seek while playing )
-		if(! vid.seeking ){
+		if(! vid.seeking || ( mw.isIOS8() && vid.paused ) ){
 			mw.log( "Error:: not entering seek state, play and wait for positive time" );
 			vid.play();
 			setTimeout(function(){
@@ -720,6 +736,9 @@ mw.EmbedPlayerNative = {
 
 	// Update the poster src ( updates the native object if in dom )
 	updatePoster: function( src ){
+		if (mw.getConfig( 'EmbedPlayer.HidePosterOnStart' ) === true){
+			return;
+		}
 		if( this.getPlayerElement() ){
 			$( this.getPlayerElement() ).attr('poster', src );
 		}
@@ -816,7 +835,7 @@ mw.EmbedPlayerNative = {
 				// empty out any existing sources:
 				$( vid ).empty();
 
-				if ( mw.isIOS7() ){
+				if ( mw.isIOS7() && mw.isIphone()){
 					vid.src = null;
 					var sourceTag = document.createElement('source');
 					sourceTag.setAttribute('src', src);
@@ -843,7 +862,7 @@ mw.EmbedPlayerNative = {
 
 					// keep going towards playback! if  switchCallback has not been called yet
 					// we need the "playing" event to trigger the switch callback
-					if ( $.isFunction( switchCallback ) ){
+					if ( !mw.isIOS71() && $.isFunction( switchCallback ) ){
 						vid.play();
 					} else {
 						_this.removeBlackScreen();
@@ -858,6 +877,7 @@ mw.EmbedPlayerNative = {
 					// Restore
 					vid.controls = originalControlsState;
 					_this.ignoreNextError = false;
+					_this.ignoreNextNativeEvent = false;
 					// check if we have a switch callback and issue it now:
 					if ( $.isFunction( switchCallback ) ){
 						mw.log("EmbedPlayerNative:: playerSwitchSource> call switchCallback");
@@ -880,12 +900,17 @@ mw.EmbedPlayerNative = {
 
 				// Add the end binding if we have a post event:
 				if( $.isFunction( doneCallback ) ){
+					var sentDoneCallback = false;
 					$( vid ).bind( 'ended' + switchBindPostfix , function( event ) {
+						if( _this.disableSwitchSourceCallback ) {
+							return;
+						}
 						// Check if Timeout was activated, if true clear
 						if ( _this.mobileChromeTimeoutID ) {
 							clearTimeout( _this.mobileChromeTimeoutID );
 							_this.mobileChromeTimeoutID = null;
 						}
+						sentDoneCallback = true;
 						// remove end binding:
 						$( vid ).unbind( switchBindPostfix );
 						// issue the doneCallback
@@ -911,8 +936,12 @@ mw.EmbedPlayerNative = {
 									// Check if timeDiff was changed in the last 2 seconds
 									if( timeDiff <= (_this.duration - _this.currentTime) ) {
 										mw.log('EmbedPlayerNative:: playerSwitchSource> error in getting ended event, issue doneCallback directly.');
-										$( vid ).unbind( switchBindPostfix );
-										doneCallback();
+										if ( ! sentDoneCallback ) {
+											$( vid ).unbind( switchBindPostfix );
+											sentDoneCallback = true;
+											doneCallback();
+										}
+
 									}
 								},2000);
 							}
@@ -922,7 +951,7 @@ mw.EmbedPlayerNative = {
 
 				// issue the play request:
 				vid.play();
-				if ( mw.isIphone() ){
+				if ( mw.isIOS()){
 					setTimeout(function(){
 						handleSwitchCallback();
 					}, 100 );
@@ -1029,13 +1058,19 @@ mw.EmbedPlayerNative = {
 						$( _this ).hide();
 					}
 					// if it's iOS8 the player won't play
-					if( !mw.isIOS8() ) {
+					if ( !mw.isIOS8() ){
 						// update the preload attribute to auto
 						$( _this.getPlayerElement() ).attr('preload',"auto" );
 					}
 					// issue a play request
 					if( !_this.playing ) {
-						_this.getPlayerElement().play();
+						if( mw.isIOS8() && mw.isIphone() ) {
+							setTimeout( function() {
+								vid.play();
+							}, 0);
+						} else {
+							vid.play();
+						}
 					}
 					// re-start the monitor:
 					_this.monitor();
@@ -1049,7 +1084,8 @@ mw.EmbedPlayerNative = {
 		// HLS on native android initially starts with no video, only audio. We need to pause/play after movie starts.
 		// livestream is already handled in KWidgetSupprt
 		if ( this.firstPlay && mw.isAndroid4andUp() && mw.getConfig( 'EmbedPlayer.twoPhaseManifestHlsAndroid' ) && this.mediaElement.selectedSource.getMIMEType() == 'application/vnd.apple.mpegurl' && !this.isLive()) {
-			this.getHlsUrl().then( function(){
+			this.resolveSrcURL( this.mediaElement.selectedSource.src ).then( function(resolvedSrc){
+				_this.mediaElement.selectedSource.setSrc( resolvedSrc );
 				var firstTimePostfix = ".firstTime";
 				$( vid ).bind( 'timeupdate' + firstTimePostfix, function() {
 					if ( _this.currentTime >= 1 ) {
@@ -1063,36 +1099,6 @@ mw.EmbedPlayerNative = {
 		}  else {
 			doPlay();
 		}
-	},
-
-	//android cant play HLS with redirect, so in this case source will be different
-	getHlsUrl: function() {
-		var deferred = $.Deferred();
-		var _this = this;
-		var requestUrl = this.getSrc();
-		if ( requestUrl.indexOf("?")!= -1 ) {
-			requestUrl += "&responseFormat=jsonp";
-		} else {
-			requestUrl += "?responseFormat=jsonp";
-		}
-		$.ajax({
-			url: requestUrl,
-			dataType: 'jsonp',
-			success: function( jsonpResponse ){
-				var flavors = jsonpResponse.flavors;
-				//redirect- change url to the final url to avoid redirect
-				if ( flavors.length == 1 ) {
-					_this.mediaElement.selectedSource.setSrc( flavors[0].url );
-				}
-				deferred.resolve();
-			},
-			error: function() {
-				deferred.resolve();
-			}
-		});
-
-		return deferred.promise();
-
 	},
 
 	/**
@@ -1242,7 +1248,7 @@ mw.EmbedPlayerNative = {
 
 		// Clear the PreSeek time
 		this.kPreSeekTime = null;
-		
+
 		// Trigger the html5 action on the parent
 		if( this.seeking ){
 			// HLS safari triggers onseek when its not even close to the target time,
@@ -1480,7 +1486,18 @@ mw.EmbedPlayerNative = {
 	 * @returns {boolean} true if seek event is fake, false if valid
 	 */
 	isFakeHlsSeek: function() {
-		return ( (Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2) || ( mw.isIpad() && this.currentSeekTargetTime > 0.01 ) );
-}
+		return ( (Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2) || ( mw.isIpad() && this.currentSeekTargetTime > 0.01 && !mw.isIOS8() ) );
+	},
+
+	isVideoSiblingEnabled: function() {
+		if( mw.isIphone() || mw.isAndroid2() || mw.isAndroid40() || mw.isMobileChrome()
+			||
+			( mw.isIpad() && ! mw.isIpad3() )
+			){
+			return false;
+		} else {
+			return this.parent_isVideoSiblingEnabled();
+		}
+	}
 };
 } )( mediaWiki, jQuery );

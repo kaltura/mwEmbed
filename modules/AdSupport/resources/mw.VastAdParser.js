@@ -206,11 +206,19 @@ mw.VastAdParser = {
 			$ad.find('CompanionAds Companion').each( function( na, companionNode ){
 				var staticResource = _this.getResourceObject( companionNode );
 				if( staticResource ){
+
+					staticResource.trackingEvents = [];
+					$(companionNode).find( 'trackingEvents Tracking' ).each( function( na, trackingNode ){
+						staticResource.trackingEvents.push({
+							'eventName' : $( trackingNode ).attr('event'),
+							'beaconUrl' : _this.getURLFromNode( trackingNode )
+						});
+					});
 					// Add the staticResourceto the ad config:
 					currentAd.companions.push( staticResource );
 				}
 			});
-			
+
 			// look for icons
 			currentAd.icons = [];
 			$ad.find('Icons Icon').each( function( na, icon ){
@@ -361,15 +369,20 @@ mw.VastAdParser = {
 						);
 					}
 					// Add the image to the $companionHtml
-					if( $( companionNode ).find('CompanionClickThrough').text() != '' ){
+					if( $( companionNode ).find('CompanionClickThrough,NonLinearClickThrough').text() != '' ){
 						$companionHtml = $('<a />')
 							.attr({
 								'href' : _this.getURLFromNode(
 									$( companionNode ).find('CompanionClickThrough,NonLinearClickThrough')[0]
-								)
+								),
+								'target' : '_new'
 							}).append( $img );
 					} else {
 						$companionHtml = $img;
+					}
+					// support non-linear clickthrough tracking
+					if( $( companionNode ).find('NonLinearClickTracking').text() != '' ){
+						$companionHtml.attr("data-NonLinearClickTracking",$( companionNode ).find('NonLinearClickTracking')[0]);
 					}
 				break;
 				case 'application/x-shockwave-flash':

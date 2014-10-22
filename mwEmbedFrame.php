@@ -180,9 +180,6 @@ class mwEmbedFrame {
 			// We can't support full screen in object context since it requires outer page DOM control
 			mw.setConfig( 'EmbedPlayer.EnableFullscreen', false );
 
-			// Enable the iframe player server:
-			mw.setConfig( 'EmbedPlayer.EnableIframeApi', true );
-
 			mw.ready(function(){
 				// Bind window resize to reize the player: 
 				$(window).resize(function(){

@@ -1,6 +1,6 @@
 <?php
 /**
- * Widevine plugin manifest 
+ * Chromecast plugin manifest
 */
 
 return array (

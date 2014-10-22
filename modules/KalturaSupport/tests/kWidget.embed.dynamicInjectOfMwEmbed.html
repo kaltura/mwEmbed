@@ -8,7 +8,7 @@
 
 <br /><br />
 <a id="doIncludeLib" href="#">Include mwEmbed, then run kWidget.embed</a> </br>
-<div id="myVideoTarget" style="width:400px;height:330px;">
+<div id="myVideoTarget" style="width:600px;height:340px;">
 	<!--  SEO and video metadata go here -->
 	<span property="dc:description" content="test folgers coffe"></span>
 	<span property="media:title" content="FolgersCoffe.mpeg"></span>
@@ -54,12 +54,13 @@
 	doEmbedAndLink.onclick = function(){
 		// add the mwEmbed lib: 
 		appendScriptUrl('../../../mwEmbedLoader.php', function(){
+			mw.setConfig('Kaltura.LeadWithHTML5', true);
 			// do the kWidget embed: 
 			kWidget.embed({
 				'targetId': 'myVideoTarget',
 				'wid': '_243342',
-				'uiconf_id' : '12905712',
-				'entry_id' : '0_uka1msg4',
+				'uiconf_id' : '20540612',
+				'entry_id' : '1_sf5ovm7u',
 				'flashvars':{
 					'externalInterfaceDisabled' : false,
 					'autoPlay' : true,

@@ -110,8 +110,14 @@
 	mw.isIOS7 = function(){
 		return /OS 7_/.test( userAgent ) && mw.isIOS();
 	};
+
+	mw.isIOS71 = function(){
+		return /OS 7_1/.test( userAgent ) && mw.isIOS();
+	};
+
 	mw.isIOS8 = function(){
-		return /Version\/8.0/.test( userAgent ) && mw.isIOS();
+		// Known Limitation - It will return false for iOS8 Simulator
+		return ( /OS 8_/.test( userAgent ) || /Version\/8/.test( userAgent ) ) && mw.isIOS();
 	};
 
 	mw.isSilk = function(){

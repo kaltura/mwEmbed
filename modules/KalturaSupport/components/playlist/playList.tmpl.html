@@ -4,19 +4,17 @@
     <li class="chapterBox" data-chapter-index="<%=i%>"
         <% if (meta.layout == "hotizontal") { %> style="width: <%= mediaItem.width %>px " <% } %> >
         <% if (i > 0) { %>
-        <div class="chapterDivider"
+        <!--div class="chapterDivider"
             <% if (meta.layout == "hotizontal") { %> style="height: <%= mediaItem.thumbnail.height %>px " <% } %> >
-        </div>
+        </div-->
         <% } %>
         <div class="chapterBoxInner" >
             <% if( meta.includeThumbnail) { %>
-            <div class="k-thumb" alt="Thumbnail for <%=mediaItem.title%>" data-chapter-index="<%=i%>"
+	        <div class="thumbnailHolder">
+            <img class="k-thumb" alt="Thumbnail for <%=mediaItem.title%>" data-chapter-index="<%=i%>" src="<%=mediaItem.thumbnail.url%>"
                  style="width:<%=mediaItem.thumbnail.width%>px;
-                 height: <%=mediaItem.thumbnail.height%>px;
-                 background-repeat:no-repeat;
-                 background-position: center;
-                 background-size : auto 100%;
-                 background-image:url(<%=mediaItem.thumbnail.url%>);"></div>
+                 height: <%=mediaItem.thumbnail.height%>px"></img>
+	        </div>
             <% } %>
             <span class="k-title-container" title="<%=mediaItem.title%>">
                 <% if( meta.includeChapterStartTime) { %>
@@ -35,6 +33,7 @@
 				    chapterTitle = mediaItem.title.substr(0, meta.titleLimit-4 ) + ' ...';
                 } %>
                 <span class="k-title" title="<%=tooltip%>"><%=chapterTitle%></span>
+	            <!--span class="k-title" title="<%=tooltip%>"><%=chapterTitle.substr(parseInt(meta.titleLimit/2))%></span-->
             </span>
             <%
             var itemDesc = mediaItem.description;
@@ -46,7 +45,7 @@
             <span class="k-description" title="<%=tooltip%>"><%=itemDesc%></span>
             <% if( meta.includeMediaItemDuration) { %>
             <span class="k-duration">
-                <div class="icon-time"></div>
+                <!--div class="icon-time"></div-->
                 <span><%=mediaItem.durationDisplay%></span>
             </span>
             <% } %>

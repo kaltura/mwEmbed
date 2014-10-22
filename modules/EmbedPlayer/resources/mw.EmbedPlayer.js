@@ -483,7 +483,7 @@
 		 * Enables the play controls ( for example when an ad is done )
 		 */
 		enablePlayControls: function( excludedComponents ){
-			if ( this._playContorls || this.useNativePlayerControls() ) {
+			if ( this._playContorls || this.useNativePlayerControls() || this.getError() !== null) {
 				return;
 			}
 
@@ -2633,6 +2633,19 @@
 		},
 
 		/**
+		 *  Abstract resolveSrcURL in order to allow tokanization and pre-fetching of the src before playback.
+		 *  some platforms doesnt support redircet responses.
+		 *  can be overrider with the propare logic
+		 * @param srcURL
+		 * @returns {promise - deferred object}
+		 */
+		resolveSrcURL: function( srcURL ){
+			var deferred = $.Deferred();
+			deferred.resolve( srcURL );
+			return deferred;
+		},
+
+		/**
 		 * Abstract getPlayerElementTime function
 		 */
 		getPlayerElement: function(){
@@ -2713,6 +2726,9 @@
 		getSource: function(){
 			// update the current selected source:
 			this.mediaElement.autoSelectSource();
+			if (this.mediaElement.selectedSource && this.mediaElement.selectedSource.mimeType === "application/vnd.apple.mpegurl"){
+				this.streamerType = "hls";
+			}
 			return this.mediaElement.selectedSource;
 		},
 		/**
@@ -2813,7 +2829,12 @@
 		},
 
 		isDVR: function() {
-			return this.kalturaPlayerMetaData[ 'dvrStatus' ];
+			if ( this.kalturaPlayerMetaData && this.kalturaPlayerMetaData[ 'dvrStatus' ] )  {
+				return this.kalturaPlayerMetaData[ 'dvrStatus' ];
+			}
+
+			return false;
+
 		},
 
 		disableComponentsHover: function(){
@@ -2925,10 +2946,6 @@
 			}
 		},
 
-		switchAudioTrack: function ( trackIndex ) {
-			mw.log('Error player does not multiple audio tracks' );
-		},
-
 		bufferStart: function() {
 			if ( !this.isInSequence() && !this.buffering ) {
 				var _this = this;
@@ -2960,6 +2977,14 @@
 
 		getKalturaAttributeConfig: function( attr ) {
 			return this.getKalturaConfig( null , attr );
+		},
+
+		isVideoSiblingEnabled: function() {
+			if( mw.getConfig( "DisableVideoSibling") ) {
+				return false;
+			} else {
+				return true;
+			}
 		}
 	};
 
