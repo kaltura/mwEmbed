@@ -463,6 +463,13 @@
 
 				// Save currentTime
 				this.kPreSeekTime = _this.currentTime;
+				// Trigger preSeek event for plugins that want to store pre seek conditions.
+				var stopSeek = {value: false};
+				this.triggerHelper( 'preSeek', [percentage, stopAfterSeek, stopSeek] );
+				if(stopSeek.value){
+					return;
+				}
+
 				this.currentTime = ( percentage * this.duration ).toFixed( 2 ) ;
 
 				// trigger the html5 event:
