@@ -134,7 +134,9 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 		if ( this.getConfig( 'accessibilityLabels' ) ){
 			var percent = this.getPlayer().getPlayerElementVolume() * 100;
 			var title = gM('mwe-embedplayer-volume-value', percent );
-			this.getSlider().find('a').html('<span class="accessibilityLabel">'+title+'</span>');
+            var $slider = this.getSlider().find('a');
+            $slider.html('<span class="accessibilityLabel">'+title+'</span>');
+            $slider.attr("role", "paragraph");
 		}
 	},
 	updateVolumeUI: function( percent ){

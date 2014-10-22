@@ -312,22 +312,24 @@ mw.KAnalytics.prototype = {
 
 			_this._p25Once = true;
 			_this.sendAnalyticsEvent( 'PLAY_REACHED_25' );
+			$( embedPlayer ).trigger( "firstQuartile" );
 
 		} else if ( !_this._p50Once && percent >= .50 && seekPercent < .50 ) {
 
 			_this._p50Once = true;
 			_this.sendAnalyticsEvent( 'PLAY_REACHED_50' );
+			$( embedPlayer ).trigger( "secondQuartile" );
 
 		} else if( !_this._p75Once && percent >= .75 && seekPercent < .75 ) {
 
 			_this._p75Once = true;
 			_this.sendAnalyticsEvent( 'PLAY_REACHED_75' );
+			$( embedPlayer ).trigger( "thirdQuartile" );
 
 		} else if(  !_this._p100Once && percent >= .98 && seekPercent < 1) {
 
 			_this._p100Once = true;
 			_this.sendAnalyticsEvent( 'PLAY_REACHED_100' );
-
 		}
 	}
 };

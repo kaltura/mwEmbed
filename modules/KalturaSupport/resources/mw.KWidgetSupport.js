@@ -24,8 +24,6 @@ mw.KWidgetSupport.prototype = {
 	isIframeApiServer: function(){
 		return ( mw.getConfig( 'EmbedPlayer.IsIframeServer' )
 					&&
-				mw.getConfig( 'EmbedPlayer.EnableIframeApi' )
-					&&
 				mw.getConfig( 'EmbedPlayer.IframeParentUrl' ) )
 	},
 	/**
@@ -255,6 +253,24 @@ mw.KWidgetSupport.prototype = {
 		var isStreamSupported = false;
 		// Check for live stream
 		if( playerData.meta && ( playerData.meta.type == 7 || playerData.meta.type == 8 )){
+			//check if entry ONLY has hls configuration:
+			var hasOnlyHLS = false;
+			var configurations = playerData.meta.liveStreamConfigurations;
+			if ( playerData.meta.hlsStreamUrl && ( !configurations || configurations.length == 0) ) {
+				hasOnlyHLS = true;
+			}  else if ( configurations ) {
+				for ( var i = 0; i < configurations.length; i++ ) {
+					if ( configurations[i].protocol != "hls" &&  configurations[i].protocol != "applehttp" ) {
+						hasOnlyHLS = false;
+						break;
+					}
+					hasOnlyHLS = true;
+				}
+			}
+			if ( hasOnlyHLS ) {
+				mw.setConfig("LeadWithHLSOnFlash", true);
+			}
+
 			if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'splayer' ) ) {
 				if ( playerData.contextData && playerData.contextData.flavorAssets ) {
 					var flavorData = playerData.contextData.flavorAssets;
@@ -297,14 +313,59 @@ mw.KWidgetSupport.prototype = {
 				embedPlayer.setError( embedPlayer.getKalturaMsg('LIVE-STREAM-NOT-SUPPORTED') );
 			}
 		} else {
-			embedPlayer.setLive( false );
-			//TODO in the future we will have flavors for livestream. revise this code.
-			// Apply player Sources
-			if( playerData.contextData && playerData.contextData.flavorAssets ){
-				_this.addFlavorSources( embedPlayer, playerData );
+			if (this.isEmbedServicesEnabled(playerData)){
+				this.setEmbedServicesData(embedPlayer, playerData);
+			} else {
+				embedPlayer.setLive( false );
+				//TODO in the future we will have flavors for livestream. revise this code.
+				// Apply player Sources
+				if ( playerData.contextData && playerData.contextData.flavorAssets ) {
+					_this.addFlavorSources( embedPlayer, playerData );
+				}
 			}
 		}
 		handlePlayerData();
+	},
+	isEmbedServicesEnabled: function(playerData){
+		if (playerData && playerData.meta &&
+			playerData.meta.partnerData &&
+			playerData.meta.partnerData["proxyEnabled"] &&
+			playerData.meta.partnerData["proxyEnabled"] === "true") {
+			return true;
+		} else {
+			return false;
+		}
+	},
+	setEmbedServicesData: function(embedPlayer, playerData){
+		//Set flavors
+		var flavorAssets = [];
+		$.each( playerData.contextData.flavorAssets, function ( index, flavorAsset ) {
+			try {
+				var flavorPartnerData = JSON.parse( flavorAsset.partnerData );
+				var flavorAssetObj = {
+					"data-assetid": flavorAsset.id,
+					src: flavorPartnerData.url,
+					type: flavorPartnerData.type,
+					"data-width": flavorAsset.width,
+					"data-height": flavorAsset.height,
+					"data-bitrate": flavorAsset.bitrate,
+					"data-bandwidth" : (flavorAsset.bitrate ? (flavorAsset * 1024) : 0),
+					"data-frameRate": flavorAsset.frameRate
+				};
+				flavorAssets.push( flavorAssetObj );
+			} catch ( e ) {
+				mw.log( "KwidgetSupport::Failed adding flavor asset, " + e.toString() );
+			}
+		} );
+		embedPlayer.replaceSources(flavorAssets);
+		//Set Live
+		if ( playerData.meta.partnerData["isLive"] &&
+			playerData.meta.partnerData["isLive"] == "true" ) {
+			embedPlayer.setLive( true );
+		}
+
+		//Set proxyData response data
+		embedPlayer.setKalturaConfig( 'proxyData', playerData.meta.partnerData);
 	},
 	addPlayerMethods: function( embedPlayer ){
 		var _this = this;
@@ -360,6 +421,10 @@ mw.KWidgetSupport.prototype = {
 				if( typeof key === 'object' ) {
 					$.extend( embedPlayer.playerConfig[ 'plugins' ][ pluginName ], objectSet);
 					mw.log( 'merged:: ', embedPlayer.playerConfig[ 'plugins' ][ pluginName ]);
+				}
+				// If old value & new value is array, don't merge
+				else if( $.isArray(embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ]) && $.isArray(value) ) {
+					embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ] = value;
 				}
 				// If the old value is an object and the new value is an object merge them
 				else if( typeof embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ] === 'object' && typeof value === 'object' ) {
@@ -462,6 +527,49 @@ mw.KWidgetSupport.prototype = {
 				'message': embedPlayer.getKalturaMsg( msgKey )
 			}
 		};
+
+		embedPlayer.resolveSrcURL = function( srcURL ){
+			var deferred = $.Deferred();
+			var eventObj = {"src":srcURL,
+				"promise":deferred,
+				"handled":false};
+			embedPlayer.triggerHelper( 'preResolveSrc' ,eventObj );
+			if (eventObj.handled){
+				return eventObj.promise;
+			}
+
+			if (mw.getConfig("EmbedPlayer.UseDirectManifestLinks")) {
+				return deferred.resolve( srcURL );
+			}
+
+			if (srcURL && srcURL.toLowerCase().indexOf("playmanifest") === -1){
+				return deferred.resolve( srcURL );
+			}
+			var srcToPlay = null;
+			$.ajax({
+				url: srcURL + "&responseFormat=jsonp",
+				dataType: 'jsonp',
+				success: function( playmanifest ){
+					var flavors = playmanifest.flavors;
+					if ( flavors && flavors.length === 1 ) {
+						srcToPlay = flavors[0].url;
+						deferred.resolve( srcToPlay );
+						//if we get more then 1 flavors we dont need the redirect so we'll use the same url
+						// the playmanifest service will return the manifest directly.
+					} else if (flavors && flavors.length > 1){
+						deferred.resolve( srcURL );
+					} else {
+						deferred.reject();
+					}
+				},
+				error: function() {
+					deferred.reject();
+				}
+			});
+			return deferred.promise();
+		};
+
+
 	},
 	/**
 	 * Handle the ui conf
@@ -932,7 +1040,7 @@ mw.KWidgetSupport.prototype = {
 				qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
 				source.src = source.src +  qp + flashvarsPlayMainfestParams;
 			}
-			
+
 			mw.log( 'KWidgetSupport:: addSource::' + embedPlayer.id + ' : ' +  source.src + ' type: ' +  source.type);
 			var sourceElm = $('<source />')
 				.attr( source )
@@ -1092,12 +1200,17 @@ mw.KWidgetSupport.prototype = {
 			if (( $.inArray( 'mbr', tags ) != -1 || $.inArray( 'web' ,tags ) != -1 ) &&
 				$.isEmptyObject(source['src']) &&
 				!mw.isMobileDevice() &&
-				asset.fileExt &&
-				asset.fileExt.toLowerCase() == 'mp4')
+				asset.fileExt )
 			{
-				source['src'] = src + '/a.mp4';
-				source['type'] = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2';
-				hasH264Flavor = true;
+				if ( asset.fileExt.toLowerCase() == 'mp4' ) {
+					source['src'] = src + '/a.mp4';
+					source['type'] = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2';
+					hasH264Flavor = true;
+				} else if ( asset.fileExt.toLowerCase() == 'flv' ) {
+					source['src'] = src + '/a.flv';
+					source['type'] = 'video/x-flv';
+				}
+
 			}
 
 			// Check for ogg source
@@ -1377,31 +1490,7 @@ mw.KWidgetSupport.prototype = {
 				deferred.resolve();
 			}
 
-			//android/flash player doesn't support redirect, we will retrieve the final url and add it as the source
-			if ( mimeType == 'application/vnd.apple.mpegurl'
-				&& ( mw.isAndroid4andUp()
-					||  mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) )) {
-				$.ajax({
-					url: srcUrl + "&responseFormat=jsonp",
-					dataType: 'jsonp',
-					success: function( jsonpResponse ){
-						var flavors = jsonpResponse.flavors;
-						if ( flavors.length == 1 ) {
-							callAddSource( flavors[0].url );
-						} else {
-							callAddSource( srcUrl );
-						}
-
-						deferred.resolve();
-					},
-					error: function() {
-						callAddSource( srcUrl );
-						deferred.resolve();
-					}
-				});
-			} else {
-				callAddSource( srcUrl );
-			}
+			callAddSource( srcUrl );
 			return deferred.promise();
 		}
 		getKs().then(addSource).then(function() {

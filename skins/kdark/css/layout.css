@@ -246,9 +246,12 @@ body { letter-spacing: 0.04em; }
 	border: 0;
 	font-size: 1.1em;
 }
+.btnNarrow{
+	width: 1.8em;
+}
 .btn .accessibilityLabel{
 	font-size: 0;
-	height: 1px;
+	height: 1px !important;
 	overflow: hidden;
 	display: block;
 }
@@ -401,11 +404,13 @@ body { letter-spacing: 0.04em; }
 }
 
 .player-out .hover .playHead {
+	/*
 	-webkit-transform: scale(0, 0);
 	-moz-transform: scale(0, 0);
 	-o-transform: scale(0, 0);
 	-ms-transform: scale(0, 0);
-	transform: scale(0, 0);
+	transform: scale(0, 0);*/
+	display: none;
 }
 .accessibilityButtons {
 	display: inline-block;
@@ -414,6 +419,10 @@ body { letter-spacing: 0.04em; }
 .accessibilityButton {
 	width: 1px;
 	height: 1px;
+}
+.nextPrevBtn {
+	display: inline-block;
+	height: 100%;
 }
 .volumeControl {
 	display: inline-block;
@@ -947,6 +956,9 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 }
 .playPauseBtn {
 	width: 3.3em;
+}
+.chromecast {
+	font-size: 1.4em;
 }
 /*.playPauseBtn,.fullScreenBtn {
 	border-right: 1px solid rgba(0,0,0,0.7);

@@ -111,7 +111,7 @@ mw.FullScreenManager.prototype = {
 		}
 
 		// Check for native support for fullscreen and we are in an iframe server
-		if( screenfull && screenfull.enabled(doc) ) {
+		if( !this.fullScreenApiExcludes() && !mw.isAndroidChromeNativeBrowser() && screenfull && screenfull.enabled(doc) ) {
 			var fullscreenHeight = null;
 			var fsTarget = this.getFsTarget();
 			var escapeFullscreen = function( event ) {
@@ -274,7 +274,9 @@ mw.FullScreenManager.prototype = {
 		var updateSizeByDevice = function() {
 			if ( mw.isAndroid() ) {
 				setTimeout(updateTargetSize, 10);
-			} else {
+			} else if (mw.isIOS8()){
+				setTimeout(updateTargetSize, 500);
+			} else{
 				updateTargetSize();
 			}
 		};
@@ -528,7 +530,7 @@ mw.FullScreenManager.prototype = {
 
 		// Check for native support for fullscreen and support native fullscreen restore
 		var docTarget = this.getDocTarget();		
-		if ( screenfull && screenfull.enabled(docTarget) ) {
+		if ( !this.fullScreenApiExcludes() && screenfull && screenfull.enabled(docTarget) ) {
 			screenfull.exit(docTarget);
 		}
 
@@ -574,6 +576,13 @@ mw.FullScreenManager.prototype = {
 		};
 		// start monitoring for moving mouse
 		checkMovedMouse();
+	},
+
+	fullScreenApiExcludes: function(){
+		if (mw.isSilk()){
+			return true;
+		}
+		return false;
 	}
 
 };

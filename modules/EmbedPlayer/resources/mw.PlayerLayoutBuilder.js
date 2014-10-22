@@ -37,6 +37,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	layoutReady: false,
 
+	playingFlag: false,
 	// Display importance available values
 	importanceSet: ['low', 'medium', 'high'],
 
@@ -625,8 +626,10 @@ mw.PlayerLayoutBuilder.prototype = {
 			embedPlayer.triggerHelper( 'showPlayerControls' );
 		};
 		var hidePlayerControls = function(){
-			$interface.addClass( outPlayerClass );
-			embedPlayer.triggerHelper( 'hidePlayerControls' );
+			if (!embedPlayer.paused){
+				$interface.addClass( outPlayerClass );
+				embedPlayer.triggerHelper( 'hidePlayerControls' );
+			}
 		};
 
 		// Check if we should display the interface:
@@ -700,6 +703,14 @@ mw.PlayerLayoutBuilder.prototype = {
 		$( embedPlayer ).bind( "dblclick" + _this.bindPostfix, function() {
 			didDblClick = true;
 		});
+
+		$( embedPlayer).bind("goingtoplay" , function(){
+			_this.playingFlag = true;
+			setTimeout(function(){
+				_this.playingFlag = false;
+			},500);
+		});
+
 		// Check for click
 		$( embedPlayer ).bind( "click" + _this.bindPostfix, function() {
 			if ( mw.isMobileDevice() )  {
@@ -714,7 +725,9 @@ mw.PlayerLayoutBuilder.prototype = {
 					} else {
 						mw.log('PlayerLayoutBuilder::addPlayerClickBindings:: togglePlayback from click event');
 						if (embedPlayer.isPlaying() == playerStatus){
-							_this.togglePlayback();
+							if (!_this.playingFlag){
+								_this.togglePlayback();
+							}
 						}
 					}
 					clearTimeout( dblClickTimeout );

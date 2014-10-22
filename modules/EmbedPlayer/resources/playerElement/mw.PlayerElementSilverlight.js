@@ -10,7 +10,7 @@
 			this.id = playerId;
 			this.targetObj = target;
 			var xapPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/silverlight-player/Player.xap';
-			//var xapPath = 'http://localhost/lightKdp/Player.xap';
+			//var xapPath = 'http://192.168.162.72/lightKdp/Player.xap';
 			window["onError" + playerId]=function(sender, args){
 				var appSource = "";
 				if (sender != null && sender != 0) {
@@ -148,6 +148,15 @@
 				this.bindPlayerFunction( eventName, methodName );
 			}
 		},
+		removeJsListener: function( eventName, methodName ) {
+			if ( this.playerElement ) {
+				mw.log( 'PlayerElementSilverlight:: unbindPlayerFunction:' + eventName );
+				// The kaltura kdp can only call a global function by given name
+				var gKdpCallbackName = 'silverlight_' + methodName + '_cb_' + this.id.replace(/[^a-zA-Z 0-9]+/g,'');
+				// Remove the listener ( if it exists already )
+				this.playerElement.removeJsListener( eventName, gKdpCallbackName );
+			}
+		},
 		play: function(){
 			this.playerProxy.playMedia();
 			this.isStopped = false;
@@ -177,6 +186,9 @@
 		},
 		selectAudioTrack: function( index ) {
 			this.playerProxy.selectAudioTrack( index );
+		},
+		selectTextTrack: function( index ) {
+			this.playerProxy.selectTextTrack( index );
 		},
 		reloadMedia: function() {
 			this.playerProxy.reloadMedia();

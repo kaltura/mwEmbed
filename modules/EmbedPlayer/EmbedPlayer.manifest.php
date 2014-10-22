@@ -9,4 +9,12 @@ return array(
 		'doc' => "Set to false to use native device controls on iPad. By default this is true. We use HTML controls on iPad.",
 		'description'=> "The Kaltura player supports configuring native controls on iPad."
 	),
+	'EmbedPlayer.LiveCuepoints' => array(
+        'type' => 'boolean',
+        'doc' => "Enable/Disable live cuepoints feature."
+    ),
+    'EmbedPlayer.LiveCuepointsRequestInterval' => array(
+        'type' => 'number',
+        'doc' => "Live cuepoints polling interval."
+    )
 );

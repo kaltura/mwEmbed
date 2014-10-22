@@ -147,7 +147,10 @@
 		//indicates that the current sources list was set by "ReplaceSources" config
 		"sourcesReplaced": false,
 
-		"streamerType": 'http'
+		"streamerType": 'http',
+
+		"shouldEndClip" : false,
+		"buffering": false
 	} );
 
 	/**
@@ -480,7 +483,7 @@
 		 * Enables the play controls ( for example when an ad is done )
 		 */
 		enablePlayControls: function( excludedComponents ){
-			if ( this._playContorls || this.useNativePlayerControls() ) {
+			if ( this._playContorls || this.useNativePlayerControls() || this.getError() !== null) {
 				return;
 			}
 
@@ -1052,6 +1055,7 @@
 		postSequenceFlag: false,
 		onClipDone: function() {
 			var _this = this;
+			this.shouldEndClip = false;
 			// Don't run onclipdone if _propagateEvents is off
 			if( !_this._propagateEvents ){
 				return ;
@@ -1080,16 +1084,6 @@
 					 return ;
 				}
 
-				// A secondary end event for playlist and clip sequence endings
-				if( this.onDoneInterfaceFlag ){
-					// We trigger two end events to match KDP and ensure playbackComplete always comes before  playerPlayEnd
-					// in content ends.
-					mw.log("EmbedPlayer:: trigger: playbackComplete");
-					$( this ).trigger( 'playbackComplete' );
-					// now trigger postEnd for( playerPlayEnd )
-					mw.log("EmbedPlayer:: trigger: postEnded");
-					$( this ).trigger( 'postEnded' );
-				}
 				// if the ended event did not trigger more timeline actions run the actual stop:
 				if( this.onDoneInterfaceFlag ){
 					mw.log("EmbedPlayer::onDoneInterfaceFlag=true do interface done");
@@ -1134,7 +1128,20 @@
 							_this.ignoreNextNativeEvent = true;
 							$( _this ).trigger( 'onEndedDone' );
 						}
+						if ( _this.buffering ) {
+							_this.bufferEnd();
+						}
 					}
+				}
+				// A secondary end event for playlist and clip sequence endings
+				if( this.onDoneInterfaceFlag ){
+					// We trigger two end events to match KDP and ensure playbackComplete always comes before  playerPlayEnd
+					// in content ends.
+					mw.log("EmbedPlayer:: trigger: playbackComplete");
+					$( this ).trigger( 'playbackComplete' );
+					// now trigger postEnd for( playerPlayEnd )
+					mw.log("EmbedPlayer:: trigger: postEnded");
+					$( this ).trigger( 'postEnded' );
 				}
 			}
 			// display thumbnail upon movie end if showThumbnailOnEnd Flashvar is set to true and not looped
@@ -1237,7 +1244,8 @@
 				return ;
 			}
 			// Auto play stopped ( no playerReady has already started playback ) and if not on an iPad with iOS > 3
-			if ( this.isStopped() && this.autoplay && this.canAutoPlay() ) {
+			// livestream autoPlay is handled by liveCore
+			if ( this.isStopped() && this.autoplay && this.canAutoPlay() && !this.isLive() ) {
 				mw.log( 'EmbedPlayer::showPlayer::Do autoPlay' );
 				_this.play();
 			}
@@ -1630,7 +1638,9 @@
 				};
 
 				if( $.isFunction(_this.changeMediaCallback) ){
-					_this.changeMediaCallback( changeMediaDoneCallback );
+					setTimeout(function(){
+						_this.changeMediaCallback( changeMediaDoneCallback );
+					},250);
 				} else {
 					changeMediaDoneCallback();
 				}
@@ -2053,6 +2063,13 @@
 				return false;
 			}
 
+			// Allow plugins to block playback
+			var prePlay = {allowPlayback: true};
+			this.triggerHelper( 'prePlayAction', [prePlay] );
+			if( !prePlay.allowPlayback ){
+				return false;
+			}
+
 			// Check if thumbnail is being displayed and embed html
 			if ( _this.isStopped() && (_this.preSequenceFlag == false || (_this.sequenceProxy && _this.sequenceProxy.isInSequence == false) )) {
 				if ( !_this.selectedPlayer ) {
@@ -2191,9 +2208,13 @@
 			.attr( 'id', sId );
 		},
 		hideSpinner: function(){
-			// remove the spinner
-			$( this ).trigger( 'onRemovePlayerSpinner' );
-			$( '#loadingSpinner_' + this.id + ',.loadingSpinner' ).remove();
+			var $spinner = $( '#loadingSpinner_' + this.id + ',.loadingSpinner' );
+			if ( $spinner.length > 0 ) {
+				// remove the spinner
+				$( this ).trigger( 'onRemovePlayerSpinner' );
+				$spinner.remove();
+			}
+
 		},
 		/**
 		 * Hides the loading spinner
@@ -2365,6 +2386,12 @@
 			this.setPlayerElementVolume( percent );
 			//mw.log("EmbedPlayer:: setVolume:: " + percent + ' trigger volumeChanged: ' + triggerChange );
 			if( triggerChange !== false ){
+				if (this.previousVolume === 0 && this.volume > 0) {
+					$( _this ).trigger( 'unmute' );
+				}
+				if (this.previousVolume > 0 && this.volume === 0) {
+					$( _this ).trigger( 'mute' );
+				}
 				$( _this ).trigger('volumeChanged', percent );
 			}
 		},
@@ -2530,6 +2557,7 @@
 			// Hide the spinner once we have time update:
 			if( _this._checkHideSpinner && _this.getPlayerElementTime() && _this.currentTime != _this.getPlayerElementTime() && !_this.seeking ){
 				_this._checkHideSpinner = false;
+				_this.isPauseLoading = false;
 				_this.hideSpinner();
 			}
 
@@ -2547,6 +2575,13 @@
 							 seekPercent + ' == ' + _this.currentTime );
 					_this.previousTime = _this.currentTime;
 					this.seek( seekPercent );
+				}
+			}
+			if ( !_this.isLive() ) {
+				if ( _this.isPlaying() && _this.currentTime == _this.getPlayerElementTime() ) {
+					_this.bufferStart();
+				} else if ( _this.buffering ) {
+					_this.bufferEnd();
 				}
 			}
 
@@ -2579,9 +2614,20 @@
 				}
 				// Check if we are "done"
 				var endPresentationTime = this.duration;
-				if ( !this.isLive() && ( (this.currentTime - this.startOffset) >= endPresentationTime && !this.isStopped() ) ) {
-					mw.log( "EmbedPlayer::updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
-					_this.onClipDone();
+				if ( !this.isLive() ) {
+					if ( (this.currentTime - this.startOffset) >= endPresentationTime && !this.isStopped() ) {
+						mw.log( "EmbedPlayer::updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
+						_this.onClipDone();
+						//sometimes we don't get the "end" event from the player so we trigger clipdone
+					} else if ( !this.shouldEndClip && ( ( ( this.currentTime - this.startOffset) / endPresentationTime ) >= .99 ) ){
+						_this.shouldEndClip = true;
+						setTimeout( function() {
+							if ( _this.shouldEndClip ) {
+								mw.log( "EmbedPlayer::updatePlayheadStatus > should run clip done :: " + _this.currentTime );
+								_this.onClipDone();
+							}
+						}, endPresentationTime * 0.02 * 1000 )
+					}
 				}
 			}
 		},
@@ -2591,6 +2637,19 @@
 		 */
 		getPlayerElementTime: function(){
 			mw.log("Error: getPlayerElementTime should be implemented by embed library");
+		},
+
+		/**
+		 *  Abstract resolveSrcURL in order to allow tokanization and pre-fetching of the src before playback.
+		 *  some platforms doesnt support redircet responses.
+		 *  can be overrider with the propare logic
+		 * @param srcURL
+		 * @returns {promise - deferred object}
+		 */
+		resolveSrcURL: function( srcURL ){
+			var deferred = $.Deferred();
+			deferred.resolve( srcURL );
+			return deferred;
 		},
 
 		/**
@@ -2612,19 +2671,6 @@
 				this.bufferedPercent = percent;
 			}
 			$( this ).trigger( 'updateBufferPercent', this.bufferedPercent );
-
-			// if we have not already run the buffer start hook
-			if( this.bufferedPercent > 0 && !this.bufferStartFlag ) {
-				this.bufferStartFlag = true;
-				mw.log("EmbedPlayer::bufferStart");
-				$( this ).trigger( 'bufferStartEvent' );
-			}
-
-			// if we have not already run the buffer end hook
-			if( this.bufferedPercent == 1 && !this.bufferEndFlag ){
-				this.bufferEndFlag = true;
-				$( this ).trigger( 'bufferEndEvent' );
-			}
 		},
 
 		/**
@@ -2687,6 +2733,9 @@
 		getSource: function(){
 			// update the current selected source:
 			this.mediaElement.autoSelectSource();
+			if (this.mediaElement.selectedSource && this.mediaElement.selectedSource.mimeType === "application/vnd.apple.mpegurl"){
+				this.streamerType = "hls";
+			}
 			return this.mediaElement.selectedSource;
 		},
 		/**
@@ -2787,7 +2836,12 @@
 		},
 
 		isDVR: function() {
-			return this.kalturaPlayerMetaData[ 'dvrStatus' ];
+			if ( this.kalturaPlayerMetaData && this.kalturaPlayerMetaData[ 'dvrStatus' ] )  {
+				return this.kalturaPlayerMetaData[ 'dvrStatus' ];
+			}
+
+			return false;
+
 		},
 
 		disableComponentsHover: function(){
@@ -2851,7 +2905,13 @@
 		 */
 		switchSrc: function( source ){
 			var _this = this;
+			var currentBR = 0;
+			if ( this.mediaElement.selectedSource ) {
+				currentBR = this.mediaElement.selectedSource.getBitrate();
+			}
+			$( this ).trigger( 'sourceSwitchingStarted', [ { currentBitrate: currentBR }] );
 			this.mediaElement.setSource( source );
+			$( this ).trigger( 'sourceSwitchingEnd',  [ { newBitrate: source.getBitrate() }] );
 			if( ! this.isStopped() ){
 				this.isFlavorSwitching = true;
 				// Get the exact play time from the video element ( instead of parent embed Player )
@@ -2901,6 +2961,39 @@
 
 		switchAudioTrack: function ( trackIndex ) {
 			mw.log('Error player does not multiple audio tracks' );
+		},
+
+		bufferStart: function() {
+			if ( !this.isInSequence() && !this.buffering ) {
+				var _this = this;
+				this.buffering  = true;
+				mw.log("EmbedPlayer::bufferStart");
+				$( this ).trigger( 'bufferStartEvent' );
+				if ( !mw.getConfig( 'EmbedPlayer.DisableBufferingSpinner' ) ) {
+					setTimeout( function() {
+						//avoid spinner for too short buffer
+						if ( !_this.isInSequence() && _this.buffering ) {
+							_this.addPlayerSpinner();
+						}
+					}, _this.monitorRate);
+				}
+			}
+
+		},
+
+		bufferEnd: function() {
+			if ( !this.isInSequence() && this.buffering ) {
+				this.buffering = false;
+				mw.log("EmbedPlayer::bufferEnd");
+				$( this ).trigger( 'bufferEndEvent' );
+				if ( !mw.getConfig( 'EmbedPlayer.DisableBufferingSpinner' ) ) {
+					this.hideSpinner();
+				}
+			}
+		},
+
+		getKalturaAttributeConfig: function( attr ) {
+			return this.getKalturaConfig( null , attr );
 		}
 	};
 

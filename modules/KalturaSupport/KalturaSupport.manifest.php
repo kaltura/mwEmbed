@@ -4,6 +4,11 @@
  */
 
 $kgDefaultComponentAttr = array(
+	'plugin' => array(
+		'doc' => 'Should plugin be enabled',
+		'initvalue' => true,
+		'type' => 'boolean',
+	),
 	'parent' => array(
 		'doc' => 'Parent container for component. Components include default placement, leave as null if unsure.',
 		'type' => 'enum',
@@ -41,10 +46,10 @@ $kgDefaultComponentAttr = array(
 		)
 	),
 	'order' => array(
-        'doc' => 'Draw order of the component within the container.
-            Together with alignment, determines component placement of the component. Order is set with respect to siblings on the parent container.',
-        'type' => 'number',
-    ),
+		'doc' => 'Draw order of the component within the container.
+			Together with alignment, determines component placement of the component. Order is set with respect to siblings on the parent container.',
+		'type' => 'number',
+	),
 );
 
 // list any duplicate attribute sets here:
@@ -115,9 +120,30 @@ $kgDefaultCaptionAttr = array(
 	'defaultLanguageKey' => array(
 		'doc' => "The default language key for the player.",
 		'type' => 'text'
+	),
+	'hideWhenEmpty' => array(
+		'doc' => 'If the caption button should be hidden when no captions are available for the current entry.',
+		'type' => 'boolean'
 	)
 );
 return array(
+	'Kaltura.UseAppleAdaptive' => array(
+		'doc' => 'If apple HLS streams should be used when available.',
+		'type' => 'boolean'
+	),
+	'Kaltura.LeadHLSOnAndroid' => array(
+		'doc' => 'If Apple HLS streams should be used when available on Android devices, 
+			by default progressive streams are used on Android because of Android HLS compatibility issues.',
+		'type' => 'boolean'
+	),
+	'autoPlay' => array(
+		'doc' => 'If the player should start playback once ready.',
+		'type' => 'boolean'
+	),
+	'autoMute' => array(
+		'doc' => 'If set to true, player will start with audio muted. This will be respected across entries and ads, until the user enables volume in the player. Note some VPAID ads do not support auto mute.',
+		'type' => 'boolean'
+	),
 	/*Captions */
 	'closedCaptions' => array(
 		'description' => 'Reach multi-lingual audience and comply with FCC regulations with Kaltura multi-lingual closed captions support.',
@@ -148,10 +174,10 @@ return array(
 		'description' => 'Loading spinner options allows you to customize the look of the loading spinner.',
 		'attributes' => array(
 			'imageUrl' => array(
-                'doc' => "An image URL, to use as the loading spinner. By default it is null. If a URL is provided, it will replace the dynamic loading spinner.",
-                'type' => 'url',
-                'initvalue' => ''
-            ),
+				'doc' => "An image URL, to use as the loading spinner. By default it is null. If a URL is provided, it will replace the dynamic loading spinner.",
+				'type' => 'url',
+				'initvalue' => ''
+			),
 			'lines' => array(
 				'doc' => 'The number of lines to draw, 11 by default.',
 				'type' => 'number',
@@ -250,7 +276,59 @@ return array(
 	),
 	'playlistAPI' => array(
 		'description' => 'The Kaltura playlist plugin, supports associating multiple clips in sequence.',
+		'label' => 'Playlist Configuration',
 		'attributes' => array(
+			'containerPosition' => array(
+                'doc' => 'Position of the playlist.',
+                'label' => "Position",
+                'type' => 'enum',
+                'initvalue' => 'right',
+                'enum' => array("left", "right", "top", "bottom"),
+                'options' => array(
+                    array(
+                        'label' => "Left of the video",
+                        'value' => "left"
+                    ),
+                    array(
+                        'label' => "Right of the video",
+                        'value' => "right"
+                    ),
+                    array(
+                        'label' => "Above the video",
+                        'value' => "top"
+                    ),
+                    array(
+                        'label' => "Below the video",
+                        'value' => "bottom"
+                    )
+                )
+            ),
+			'layout' => array(
+                'doc' => 'Playlist layout.',
+                'type' => 'enum',
+                'initvalue' => 'vertical',
+                'enum' => array("vertical", "horizontal"),
+                'options' => array(
+                    array(
+                        'label' => "Vertical playlist",
+                        'value' => "vertical"
+                    ),
+                    array(
+                        'label' => "Horizontal playlist",
+                        'value' => "horizontal"
+                    )
+                )
+            ),
+            'includeInLayout' => array(
+                'doc' => "If the clip list should be displayed.",
+                'type' => 'boolean',
+                'initvalue' => true
+            ),
+            'showControls' => array(
+                'doc' => "Display Next / Previous buttons.",
+                'type' => 'boolean',
+                'initvalue' => true
+            ),
 			'autoContinue' => array(
 				'doc' => "If the playlist should autocontinue.",
 				'type' => 'boolean'
@@ -263,29 +341,40 @@ return array(
 				'doc' => "If the playlist should loop on complete.",
 				'type' => 'boolean'
 			),
+			'hideClipPoster' => array(
+				'doc' => "Hide clip poster when switching to another clip.",
+				'type' => 'boolean',
+				'initvalue' => true
+			),
+			'onPage' => array(
+				'doc' => "If the playlist should be rendered out of the IFrame (on page).",
+				'type' => 'boolean'
+			),
 			'initItemEntryId' => array(
 				'doc' => "The entryId that should be played first."
 			),
 			'kpl0Url' => array(
 				'doc' => 'The playlist URL. (can be a Kaltura playlist service or MRSS)',
-				'type' => 'url'
+				'type' => 'hiddenValue'
 			),
 			'kpl0Id' => array(
 				'doc' => "The kaltura playlist Id",
-				'type' => 'string'
+				'type' => 'hiddenValue'
 			),
 			'kpl0Name' => array(
 				'doc' => "The name of the playlist.",
+				'type' => 'hiddenValue'
 			),
 			'kpl1Url' => array(
 				'doc' => 'The N playlist URL.',
-				'type' => 'url'
+				'type' => 'hiddenValue'
 			),
 			'kpl1Name' => array(
 				'doc' => "The name of the indexed playlist.",
+				'type' => 'hiddenValue'
 			)
 		)
-	),
+	),/*
 	'playlistHolder' => array(
 		'description' => 'Holds the playlist clip list.',
 		'attributes' => array(
@@ -294,7 +383,7 @@ return array(
 				'type' => 'boolean'
 			)
 		)
-	),
+	),*/
 
 	'localizationCode' => array(
 			'description'=> "Set the language of the Kaltura player user interface. Supports language code or <b>auto</b> to take the browser
@@ -357,26 +446,26 @@ return array(
 				'initvalue' => true,
 			),
 			array(
-                "doc" => "Preferred flavor bitrate",
-                "label" => "Preferred flavor bitrate",
-                "type" => "number",
-                "initvalue" => 1600,
-                "model" => "config.uiVars.mediaProxy.preferedFlavorBR"
-            ),
+				"doc" => "Preferred flavor bitrate",
+				"label" => "Preferred flavor bitrate",
+				"type" => "number",
+				"initvalue" => 1600,
+				"model" => "config.uiVars.mediaProxy.preferedFlavorBR"
+			),
 		)
 	),
 	'uiVars' => array(
-        'description' => "Allows you to add UI variables to the player configuration.",
-        'label' => "UI Variables",
-        'attributes' => array(
-            'vars' => array(
-                'doc' => 'List of UI variables',
-                'label' => 'UI variables',
-                'type' => 'uivars',
-                'model' => 'vars'
-            )
-        )
-    ),
+		'description' => "Allows you to add UI variables to the player configuration.",
+		'label' => "UI Variables",
+		'attributes' => array(
+			'vars' => array(
+				'doc' => 'List of UI variables',
+				'label' => 'UI variables',
+				'type' => 'uivars',
+				'model' => 'vars'
+			)
+		)
+	),
 	'download' => array(
 		'description' => "Enables users to add a download button to the player controls.
 			The download button will enable users to download the media to a local file.",
@@ -395,28 +484,24 @@ return array(
 		'hideEdit' => true
 	),
 	'mediaProxy.mediaPlayFrom' => array(
-		'doc' => 'The start time for the video preview.',
+		'doc' => 'The start time for the video playback.',
 		'type' => 'number'
 	),
 	'mediaProxy.mediaPlayTo' => array(
-		'doc' => 'The time in seconds, for the video preview to end.',
+		'doc' => 'The time in seconds, for the video playback to end.',
 		'type' => 'number'
 	),
 	'mediaProxy.preferedFlavorBR' => array(
 		'doc' => 'The initial bitrate to be selected.',
 		'type' => 'number'
 	),
+	'segmentScrubber.plugin' => array(
+		'doc' => 'Virtaulzies the playhead to selected segment of time.',
+		'type' => 'boolean'
+	),
 	'deliveryCode' => array(
 		'doc' => 'The deliveryCode is passed along as part of a domain prefix into the stream URL. (can be used for per-embed URL billing categorization)',
 		'type' => 'string'
-	),
-	'mediaProxy.mediaPlayFrom' => array(
-		'doc' => "The media start time.",
-		'type' => 'number'
-	),
-	'mediaProxy.mediaPlayTo' => array(
-		'doc' => "The media end time.",
-		'type' => 'number'
 	),
 	/** uiConf components */
 	'controlsHolder' => array(
@@ -577,18 +662,18 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'doc' => 'Slider buffer color',
 				'type' => 'color'
 			),
-            'buttonsIconColorDropShadow' => array(
-                'label' => 'Apply drop shadow to icons',
-                "initvalue" => true,
-                'player-refresh' => 'theme.buttonsIconColorDropShadow',
-                'doc' => 'Apply drop shadow to icons',
-                'type' => 'boolean'
-            ),
-            'dropShadowColor' => array(
-                'label' => 'Drop shadow color',
-                'doc' => 'Drop shadow color',
-                'type' => 'hiddenValue'
-            )
+			'buttonsIconColorDropShadow' => array(
+				'label' => 'Apply drop shadow to icons',
+				"initvalue" => true,
+				'player-refresh' => 'theme.buttonsIconColorDropShadow',
+				'doc' => 'Apply drop shadow to icons',
+				'type' => 'boolean'
+			),
+			'dropShadowColor' => array(
+				'label' => 'Drop shadow color',
+				'doc' => 'Drop shadow color',
+				'type' => 'hiddenValue'
+			)
 		)
 	),
 	'share' => array(
@@ -675,6 +760,32 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 		)
 	),
+
+    'nextPrevBtn' => array(
+        'featureCheckbox' => true, // *NEW* - actually enabled even if undefined but can be disabled via this property
+        'description' => "Playlist 'Next' and 'Previous' buttons", // used for tooltip
+        'type' => 'featuremenu', // *NEW* = renders as featuremenu also if undefined, but can be turned into submenu via this
+        'label' => 'Playlist controls', // *NEW*
+        'model' => 'config.plugins.nextPrevBtn', //*NEW*
+        'attributes' => array(
+			'parent' => array(
+				'doc' => 'Parent container for component. Components include default placement, leave as null if unsure.',
+				'type' => 'enum',
+				'enum' => array("topBarContainer", "videoHolder", "controlsContainer"),
+				'options' => array(
+					array(
+						'label' => "Top bar container",
+						'value' => "topBarContainer"
+					),
+					array(
+						'label' => "Controls container",
+						'value' => "controlsContainer"
+					)
+				),
+				'initvalue' => "controlsContainer"
+			)
+        )
+    ),
 	/** statistics has global flashvar based configuration:  **/
 	'statistics' => array(
 		'description' => 'Use Kaltura statistics to
@@ -781,9 +892,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'doc' => 'URL for CSS to be loaded on the embedding page.',
 		'type' => 'url'
 	),
-
+	'enableControlsDuringAd' => array(
+		'doc' => 'If true, play pause button will be active during ad playback',
+		'type' => 'boolean'
+	),
 	'adsOnReplay' => array(
-		'doc' => 'True for showing ads in replay, Fa;se to skip ads in replay.',
+		'doc' => 'true for showing ads in replay, false to skip ads in replay.',
 		'type' => 'boolean'
 	),
 	'bumper' => array(
@@ -949,7 +1063,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'companions',
 				'section' => 'comp',
 				'filter' => 'companions',
-                "initvalue" => "Comp_300x250:300:250;Comp_728x90:728:90;",
+				"initvalue" => "Comp_300x250:300:250;Comp_728x90:728:90;",
 			),
 			'overlayUrl' => array(
 				'label' => 'Overlay URL', // *NEW*
@@ -973,15 +1087,6 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'stepsize' => 1, // *NEW*
 				'to' => 500, // *NEW*
 			),
-			'overlayUrl' => array(
-				'label' => 'Overlay URL', // *NEW*
-				'doc' => "The VAST XML file that contains the overlay media and tracking info.",
-				'type' => 'url',
-				'section' => 'over',
-				'min' => 0, // *NEW*
-				'initvalue' => 0, // *NEW*
-				'max' => 5, // *NEW*
-			),
 			'timeout' => array(
 				'doc' => "The timeout in seconds, for loading an ad from a VAST ad server.",
 				'type' => 'number',
@@ -993,13 +1098,17 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'doc' => "If entry cuepoints should be tracked for midroll ad requests.",
 				'type' => 'boolean'
 			),
+			'allowSeekWithNativeControls' => array(
+				'doc' => "It allows to catch seek requests during ads and return the player to original play time..",
+				'type' => 'boolean'
+			),
 			'storeSession' => array(
-                'doc' => 'If the frequency playback should be stored across player reloads.
-                    By default, only playlists respect frequency intervals.
-                    If set to true, the prerollInterval will be respected across player views.',
-                'type' => 'boolean',
-                'initvalue' => false,
-            )
+				'doc' => 'If the frequency playback should be stored across player reloads.
+					By default, only playlists respect frequency intervals.
+					If set to true, the prerollInterval will be respected across player views.',
+				'type' => 'boolean',
+				'initvalue' => false,
+			)
 		)
 	),
 	'keyboardShortcuts' => array(
@@ -1072,10 +1181,10 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'initvalue' => 'ctrl+39'
 			),
 			'longSeekBackKey' => array(
-                'doc' => 'Long Seek back key.',
-                'type' => 'string',
-                'initvalue' => 'ctrl+37'
-            ),
+				'doc' => 'Long Seek back key.',
+				'type' => 'string',
+				'initvalue' => 'ctrl+37'
+			),
 			'percentageSeekKeys' => array(
 				'doc' => 'Comma seperated keys for percentage seek.',
 				'type' => 'string',
@@ -1218,6 +1327,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'label' => 'airPlay',
 		'model' => 'config.plugins.airPlay',
 	),
+	'nativeCallout' => array(
+		'description' => 'Supports replacing the player "play button" with a callout to native player, for Mobile Devices.',
+		'type' => 'featuremenu',
+		'label' => 'nativeCallout',
+		'model' => 'config.plugins.nativeCallout',
+	),
 	'related' => array(
 		'description' => 'Add the Related Videos screen at the end of the video to attract users to watch additional videos.',
 		'attributes' => array_merge($kgDefaultComponentAttr,
@@ -1249,10 +1364,10 @@ The playhead reflects segment time as if it was the natural stream length.",
 					'type' => 'number'
 				),
 				'clickUrl' => array(
-				'doc' => "<p style='text-align: left'>Defines the URL for a related item click</p>
-							    If this left blank the click will replace the current video with a new one.
-							    example: <b>http://my-custom-domain.com/?v={mediaProxy.entry.id}</b> as a custom
-							    URL with the entry id as postfix",
+					'doc' => "<p style='text-align: left'>Defines the URL for a related item click</p>
+								If this left blank the click will replace the current video with a new one.
+								example: <b>http://mydomain.com/?videoId={related.selectedEntry.id}</b> as a custom
+								URL with the entry id as postfix",
 					'type' => 'string'
 				),
 				'itemsLimit' => array(

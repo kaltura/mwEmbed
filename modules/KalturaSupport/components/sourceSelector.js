@@ -16,6 +16,7 @@
 		inUpdateLayout:false,
 		selectSourceTitle: gM( 'mwe-embedplayer-select_source' ),
 		switchSourceTitle: gM( 'mwe-embedplayer-switch_source' ),
+		saveBackgroundColor: null, // used to save background color upon disable and rotate and return it when enabled again to prevent rotating box around the icon when custom style is applied
 
 		setup: function(){
 			var _this = this;
@@ -34,22 +35,25 @@
 					var sources = _this.getSources();
 					for ( var i = 0; i< sources.length; i++ ) {
 						//look for the closest flavor
-						 if ( selectedSrc.getSrc() == sources[i].getSrc() ) {
+						if ( selectedSrc.getSrc() == sources[i].getSrc() ) {
 							if ( i == 0 && sources.length > 1 ) {
 								selectedId = sources[i+1].getAssetId();
 							} else {
 								selectedId = sources[i-1].getAssetId();
 							}
-							 break;
-						 }
+							break;
+						}
 					}
 				}
 				_this.getMenu().setActive({'key': 'id', 'val': selectedId});
 				_this.onEnable();
-			});	
+			});
 
 			this.bind( 'sourceSwitchingStarted', function(){
 				_this.onDisable();
+			});
+			this.bind( 'sourceSwitchingEnd', function(){
+				_this.onEnable();
 			});
 
 			// Check for switch on resize option
@@ -82,19 +86,19 @@
 			return this.getPlayer().mediaElement.getPlayableSources();
 		},
 
-		buildMenu: function(){	
+		buildMenu: function(){
 			var _this = this;
 
 			// Destroy old menu
 			this.getMenu().destroy();
 
 			var sources = this.getSources();
-			
+
 			if( ! sources.length ){
 				_this.log("Error with getting sources");
 				return ;
 			}
-			
+
 			if( sources.length == 1 ){
 				// no need to do building menu logic. 
 				this.addSourceToMenu( sources[0], _this.getSourceTitle(sources[0]) );
@@ -121,9 +125,9 @@
 					if( source.getHeight() != 0
 						&&
 						( _this.getSourceSizeName( prevSource )
-							== 
-						_this.getSourceSizeName( source ) )
-					){
+							==
+							_this.getSourceSizeName( source ) )
+						){
 						//if the selected source has the same height, skip this source
 						var selectedSrc = _this.getPlayer().mediaElement.selectedSource;
 						if ( selectedSrc
@@ -134,8 +138,8 @@
 							&&
 							( _this.getSourceSizeName( source )
 								==
-							_this.getSourceSizeName( selectedSrc ) )
-						){
+								_this.getSourceSizeName( selectedSrc ) )
+							){
 							source.skip = true;
 						}
 						else if( twice ){
@@ -159,7 +163,7 @@
 					prevSource = source;
 				});
 			}
-			
+
 			var prevSource = null;
 			$.each( sources, function( sourceIndex, source ) {
 				if( source.skip ){
@@ -168,19 +172,19 @@
 				// Output the player select code:
 				var supportingPlayers = mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( source.getMIMEType() );
 				for ( var i = 0; i < supportingPlayers.length ; i++ ) {
-					if( 
+					if(
 						(
-							_this.getPlayer().selectedPlayer === undefined 
-							&& 
-							supportingPlayers[i].library == 'Native' 
-						) 
+							_this.getPlayer().selectedPlayer === undefined
+								&&
+								supportingPlayers[i].library == 'Native'
+							)
 							||
-						(
-							_this.getPlayer().selectedPlayer !== undefined
-							&& 
-							supportingPlayers[i].library == _this.getPlayer().selectedPlayer.library 
-						)
-					){
+							(
+								_this.getPlayer().selectedPlayer !== undefined
+									&&
+									supportingPlayers[i].library == _this.getPlayer().selectedPlayer.library
+								)
+						){
 						_this.addSourceToMenu( source );
 					}
 				}
@@ -188,9 +192,9 @@
 		},
 		isSourceSelected: function( source ){
 			var _this = this;
-			return ( _this.getPlayer().mediaElement.selectedSource && source.getSrc() 
-					== 
-					_this.getPlayer().mediaElement.selectedSource.getSrc() 
+			return ( _this.getPlayer().mediaElement.selectedSource && source.getSrc()
+				==
+				_this.getPlayer().mediaElement.selectedSource.getSrc()
 				);
 		},
 		addSourceToMenu: function( source ){
@@ -224,15 +228,15 @@
 			if( source.getMIMEType() == 'application/vnd.apple.mpegurl' ) {
 				return 'Auto';
 			}
-			var title = '';			
+			var title = '';
 			if( source.getHeight() ){
 				title+= this.getSourceSizeName( source );
 			} else if ( source.getBitrate() ) {
-					var bits = ( Math.round( source.getBitrate() / 1024 * 10 ) / 10 ) + '';
-					if( bits[0] == '0' ){
-						bits = bits.substring(1);
-					}
-					title+= ' ' + bits + 'Mbs ';
+				var bits = ( Math.round( source.getBitrate() / 1024 * 10 ) / 10 ) + '';
+				if( bits[0] == '0' ){
+					bits = bits.substring(1);
+				}
+				title+= ' ' + bits + 'Mbs ';
 			}
 			if( this.getConfig( 'simpleFormat' ) ){
 				if( source.hq ){
@@ -255,15 +259,15 @@
 			if( !this.$el ) {
 				var $menu = $( '<ul />' );
 				var $button = $( '<button />' )
-								.addClass( 'btn icon-cog' )
-								.attr('title', _this.selectSourceTitle)
-								.click( function(e){
-									_this.toggleMenu();
-								});
-                this.setAccessibility($button,_this.selectSourceTitle);
+					.addClass( 'btn icon-cog' )
+					.attr('title', _this.selectSourceTitle)
+					.click( function(e){
+						_this.toggleMenu();
+					});
+				this.setAccessibility($button,_this.selectSourceTitle);
 				this.$el = $( '<div />' )
-								.addClass( 'dropup' + this.getCssClass() )
-								.append( $button, $menu );
+					.addClass( 'dropup' + this.getCssClass() )
+					.append( $button, $menu );
 			}
 			return this.$el;
 		},
@@ -283,11 +287,16 @@
 			this.updateTooltip( this.selectSourceTitle );
 			this.getComponent().find('button').removeClass( 'rotate' );
 			this.getBtn().removeClass( 'disabled' );
+			if (this.saveBackgroundColor){
+				this.getComponent().find('button').attr('style', 'background-color: ' + this.saveBackgroundColor + ' !important');
+			}
 		},
 		onDisable: function(){
 			this.isDisabled = true;
 			this.updateTooltip( this.switchSourceTitle );
 			this.getComponent().find('button').addClass( 'rotate' );
+			this.saveBackgroundColor = this.getComponent().find('button').css("background-color");
+			this.getComponent().find('button').attr('style', 'background-color: null !important');
 			this.getComponent().removeClass( 'open' );
 			this.getBtn().addClass( 'disabled' );
 		}

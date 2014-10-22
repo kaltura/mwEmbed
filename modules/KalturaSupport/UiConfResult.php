@@ -91,6 +91,10 @@ class UiConfResult {
 			}
 		}
 
+		if( is_null($this->uiConfFile) || $this->uiConfFile == "null" ) {
+			throw new Exception("uiConf is empty");
+		}
+
 		if( $this->isJson() ) {
 			$this->parseJSON( $this->uiConfFile );
 		} else {
