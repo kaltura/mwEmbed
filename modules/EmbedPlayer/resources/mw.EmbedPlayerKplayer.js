@@ -691,7 +691,7 @@ mw.EmbedPlayerKplayer = {
 				 +  "/ks/" + this.getFlashvars( 'ks' ) + "/uiConfId/" + this.kuiconfid  + this.getPlaymanifestArg ( "referrerSig", "referrerSig" )  
 				 + this.getPlaymanifestArg ( "tags", "flavorTags" ) + "/a/a." + fileExt + "?referrer=" + this.b64Referrer  ;
 		var refObj = {src:srcUrl};
-		this.trigger( 'SourceSelected' , refObj );
+		this.triggerHelper( 'SourceSelected' , refObj );
 		deferred.resolve(refObj.src);
 		return deferred;
 	},
