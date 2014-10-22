@@ -69,9 +69,6 @@
 				if ( !_this.getConfig( 'parent') ){
 					$(".medialistContainer").show();
 					$(".videoHolder").width(_this.videoWidth+"px");
-					if (_this.getConfig("containerPosition") === "left"){
-						$(".mwPlayerContainer").css("margin-left", _this.getMedialistComponent().width() + "px");
-					}
 				}
 			});
 
