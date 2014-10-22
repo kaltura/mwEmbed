@@ -125,6 +125,9 @@
 			}
 			if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
 				_this.isNativeSDK = true;
+				_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
+					_this.bindChromelessEvents();
+				});
 				_this.addManagedBinding();
 				callback();
 				return;
@@ -447,7 +450,6 @@
 			}
 
 			if ( this.isNativeSDK ) {
-				_this.adManagerLoaded = true;
 				this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', this.getConfig( 'adTagUrl' ));
 				mw.log( "DoubleClick::requestAds: Native SDK player request ad ");
 				return;
@@ -808,13 +810,16 @@
 					_this.prevSlotType = _this.currentAdSlotType;
 				}
 				_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', adInfo.duration );
-				$(".mwEmbedPlayer").hide();
+				if ( _this.isChromeless ) {
+					$(".mwEmbedPlayer").hide();
+				}
+
 			},'adStart', true);
 
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				_this.isLinear = adInfo.isLinear;
-				if (!_this.isLinear){
+				if (!_this.isLinear && _this.isChromeless ){
 					$(".mwEmbedPlayer").hide();
 				}
 				// dispatch adOpen event
@@ -1098,7 +1103,10 @@
 					this.restorePlayer(true);
 				}
 				this.removeAdContainer();
-				this.adsLoader.destroy();
+				if ( this.adsLoader ) {
+					this.adsLoader.destroy();
+				}
+
 			}else{
 				if ( !this.isLinear ){
 					this.embedPlayer.getPlayerElement().sendNotification( 'destroy' );

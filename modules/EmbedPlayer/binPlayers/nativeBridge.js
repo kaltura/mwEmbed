@@ -41,6 +41,7 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 	embedPlayer: null,
 	isJsCallbackReady: false,
 	bindPostfix: ".nativeBridge",
+	subscribed: [],
 	playerMethods: [ 'stop', 'play', 'pause', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen', 'notifyKPlayerEvent', 'notifyKPlayerEvaluated', 'notifyJsReady', 'showChromecastDeviceList', 'notifyLayoutReady',
 		'doneFSBtnPressed', 'addNativeAirPlayButton', 'showNativeAirPlayButton', 'hideNativeAirPlayButton' ],
 
@@ -61,6 +62,15 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 				_this.proxyElement[attributeName] = attributeValue;
 				_this.execute('setAttribute', [ attributeName, attributeValue ]);
 			}
+		}
+
+		//TODO support more than 1 subscribe?
+		this.proxyElement.subscribe = function( callback, eventName ) {
+			_this.subscribed[eventName] = callback;
+		}
+
+		this.proxyElement.unsubscribe = function( eventName ) {
+			_this.subscribed[eventName] = undefined;
 		}
 
 		this.bindNativeEvents();
@@ -135,6 +145,10 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 			this.proxyElement['visible']  = jsEventValue;
 		} else if (eventName == 'durationchange') {
 			this.proxyElement['duration'] = jsEventValue;
+		}
+
+		if ( this.subscribed[eventName] ) {
+			this.subscribed[eventName]( jsEventValue );
 		}
 	},
 	execute: function (command, args) {
