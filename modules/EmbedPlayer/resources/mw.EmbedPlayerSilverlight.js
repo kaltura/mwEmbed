@@ -474,7 +474,7 @@
 				this.unbindHelper("seeked" + _this.bindPostfix).bindHelper("seeked" + _this.bindPostfix, function(){
 					_this.unbindHelper("seeked" + _this.bindPostfix);
 					_this.removePoster();
-					_this.monitor();
+					_this.startMonitor();
 					if( stopAfterSeek ){
 						_this.hideSpinner();
 						_this.pause();
@@ -501,21 +501,13 @@
 					}
 				}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 				// Issue the seek to the flash player:
-				this.maskPlayerPlayed();
-				this.playerObject.play();
+
+				this.stopEventPropagation();
 				this.playerObject.seek( seekTime );
+
 			} else if ( percentage != 0 ) {
 				this.playerObject.play();
 			}
-		},
-
-		maskPlayerPlayed: function (){
-			this.stopEventPropagation();
-			this.playerObject.addJsListener('playerPlayed', "unmaskPlayerPlayed" );
-		},
-		unmaskPlayerPlayed: function (){
-			this.restoreEventPropagation();
-			this.playerObject.removeJsListener('playerPlayed', "unmaskPlayerPlayed" );
 		},
 		/**
 		 * Issues a volume update to the playerElement
@@ -558,7 +550,8 @@
 		onPlayerSeekEnd: function ( position ) {
 			this.previousTime = this.currentTime = this.slCurrentTime = position;
 			this.seeking = false;
-			$( this ).trigger( 'seeked' );
+			this.restoreEventPropagation();
+			$( this ).trigger( 'seeked');
 			this.updatePlayhead();
 			if( this.seekInterval  ) {
 				clearInterval( this.seekInterval );
