@@ -562,12 +562,14 @@ mw.PlayerLayoutBuilder.prototype = {
 		});
 
 		// IE8 does not trigger click events on Flash objects
-		if( (embedPlayer.adSiblingFlashPlayer || embedPlayer.instanceOf == 'Kplayer') && 
+		if( (embedPlayer.adSiblingFlashPlayer || embedPlayer.instanceOf == 'Kplayer') &&
 			(mw.isIE8() || mw.isIE9()) ){
 			embedPlayer.getVideoHolder().bind('mouseup', function(){
-				$( embedPlayer ).trigger('click');
+				if (embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence){
+					$( embedPlayer ).trigger('click');
+				}
 			});
-		}		
+		}
 
 		// add the player click / touch bindings
 		addPlaybackBindings();
