@@ -211,7 +211,11 @@
 			// javascript play calls can work
 			if( mw.isMobileDevice() && embedPlayer.firstPlay){
 				mw.log("Playlist:: issue load call to capture click for iOS");
-				embedPlayer.getPlayerElement().load();
+				try{
+					embedPlayer.getPlayerElement().load();
+				}catch (e){
+					mw.log("Playlist:: could not load video - possibly restricted video");
+				}
 			}
 
 			// Send notifications per play request
