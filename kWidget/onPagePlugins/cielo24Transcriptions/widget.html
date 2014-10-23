@@ -620,6 +620,7 @@ String.prototype.toMMSS = function () {
         });
 
         var ks = getUrlParam('ks');
+        var kdpId = getUrlParam('kdpId');
         var partnerId = parseInt(getUrlParam('partnerId'));
         playerId = getUrlParam('playerId');
         var videoDuration = getUrlParam('vdr');
@@ -810,6 +811,7 @@ String.prototype.toMMSS = function () {
 
             if(includeTimestamp) {
                 shareUrl = updateQueryString('cielo24time', playerPlayheadCurrentTime, parentUrl);
+                shareUrl = updateQueryString('cielo24kdpId', kdpId, shareUrl);
             }
 
             var facebookUrl = 'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(shareUrl);
@@ -839,6 +841,7 @@ String.prototype.toMMSS = function () {
 
             if(includeTimestamp) {
                 shareUrl = updateQueryString('cielo24time', playerPlayheadCurrentTime, parentUrl);
+                shareUrl = updateQueryString('cielo24kdpId', kdpId, shareUrl);
             }
 
             var twitterUrl = 'https://twitter.com/share?url='+encodeURIComponent(shareUrl);
@@ -855,8 +858,6 @@ String.prototype.toMMSS = function () {
                         remainingLength = remainingLength - 24; // for the url
                         remainingLength = remainingLength - 2; // for quotes
                         remainingLength = remainingLength - 3; // for three dots
-                        console.log($closestSegment.text());
-                        console.log("REML: "+remainingLength);
                         tweetText += '"'+truncateStringWordBoundary($closestSegment.text(), remainingLength).trim()+'"';
                     }
                 }
@@ -889,6 +890,7 @@ String.prototype.toMMSS = function () {
 
             if(includeTimestamp) {
                 shareUrl = updateQueryString('cielo24time', playerPlayheadCurrentTime, parentUrl);
+                shareUrl = updateQueryString('cielo24kdpId', kdpId, shareUrl);
             }
 
             var linkedinUrl = 'http://www.linkedin.com/shareArticle?mini=true&url='+encodeURIComponent(shareUrl);

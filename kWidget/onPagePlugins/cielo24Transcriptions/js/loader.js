@@ -204,6 +204,7 @@
                 ifr.setAttribute(i, ifattr[i]);
             }
             var ifrSrc = widgetPage+"?ks="+ks;
+            ifrSrc += "&kdpId="+encodeURIComponent(kdp.id);
             ifrSrc += "&partnerId="+encodeURIComponent(partnerId);
             ifrSrc += "&playerId="+encodeURIComponent(playerId);
             ifrSrc += "&widgetTitle="+encodeURIComponent(widgetTitle);
@@ -230,7 +231,8 @@
 
         kdp.addJsListener( 'changeMedia', function() {
             var cielo24time = getUrlParam('cielo24time');
-            if(typeof(cielo24time)!='undefined' && isNumeric(cielo24time)) {
+            var kdpIdParam = getUrlParam('cielo24kdpId');
+            if(typeof(cielo24time)!='undefined' && isNumeric(cielo24time) && typeof(kdpIdParam)!='undefined' && kdp.id==kdpIdParam) {
                 kdp.sendNotification('doSeek', parseInt(cielo24time)/1000);
                 kdp.sendNotification('doPlay');
             }
