@@ -99,9 +99,13 @@
 				if ( this.getConfig( 'onPage' ) ) {
 					var iframeID = this.embedPlayer.id + '_ifp';
 					try {
-						//Try to apply css on parent frame
+						//Try to find and apply css on parent frame
 						var cssLink = $("link[href$='"+this.getConfig('cssFileName')+"']").attr("href");
-						$('head', window.parent.document ).append('<link type="text/css" rel="stylesheet" href="'+cssLink+'"/>');
+						if (cssLink) {
+							$( 'head', window.parent.document ).append( '<link type="text/css" rel="stylesheet" href="' + cssLink + '"/>' );
+						} else {
+							mw.log( "Error: "+ this.pluginName +" could not find CSS link" );
+						}
 
 						$( window['parent'].document ).find( '.onpagePlaylistInterface' ).remove(); // remove any previously created playlists
 						var iframeParent = window['parent'].document.getElementById( this.embedPlayer.id );
