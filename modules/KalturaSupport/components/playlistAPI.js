@@ -64,6 +64,7 @@
 
 			this.bind( 'mediaError', function ( e ) {
 				_this.loadingEntry = null; // reset loadingEntry if we got a media error (also media loading error will trigger this event)
+				_this.onEnable();
 			});
 
 			// API support + backward compatibility
