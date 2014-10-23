@@ -449,6 +449,9 @@
 			if (this.pendingSeek){
 				this.pendingSeek = false;
 				embedPlayer.seek(this.pendingSeekData.percentage, this.pendingSeekData.stopAfterSeek);
+			} else {
+				//If seek wasn't performed then and ad sequence is over then remove the seek handler
+				embedPlayer.unbindHelper( "preSeek" + this.bindPostfix );
 			}
 
 			embedPlayer.enablePlayControls();
