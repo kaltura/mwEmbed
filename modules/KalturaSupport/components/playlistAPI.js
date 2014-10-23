@@ -62,6 +62,11 @@
 				_this.unbind( 'playerReady'); // we want to select the playlist only the first time the player loads
 			});
 
+			this.bind( 'mediaError', function ( e ) {
+				_this.loadingEntry = null; // reset loadingEntry if we got a media error (also media loading error will trigger this event)
+				_this.onEnable();
+			});
+
 			// API support + backward compatibility
 			$( this.embedPlayer ).bind( 'Kaltura_SetKDPAttribute' + this.bindPostFix, function( event, componentName, property, value ){
 				mw.log("PlaylistAPI::Kaltura_SetKDPAttribute:" + property + ' value:' + value);

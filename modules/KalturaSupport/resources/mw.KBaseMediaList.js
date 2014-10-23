@@ -198,15 +198,15 @@
 			}
 		},
 		onDisable: function(){
+			if (this.embedPlayer.getError() !== null){
+				return;
+			}
 			this.isDisabled = true;
 			var mediaBoxes = this.getMediaListDomElements();
 			mediaBoxes.addClass("disabled");
 			mediaBoxes.find("*").addClass("disabled");
 		},
 		onEnable: function(){
-			if (this.embedPlayer.getError() !== null){
-				return;
-			}
 			this.isDisabled = false;
 			var mediaBoxes = this.getMediaListDomElements();
 			mediaBoxes.removeClass("disabled");
