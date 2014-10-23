@@ -21,7 +21,7 @@
 			'hideClipPoster': true,
 			'loop': false,
 			'overflow': false,
-			'cssPath': 'playList.css',
+			'cssFileName': 'playList.css',
 			'showControls': true,
 			'selectedIndex': 0
 		},
