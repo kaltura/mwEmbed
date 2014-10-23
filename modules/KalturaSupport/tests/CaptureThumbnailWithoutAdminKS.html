@@ -26,13 +26,14 @@
 			}
 		});
 	</script>
-	Sample embed to enable captureThumbnail:
+	Sample embed to enable captureThumbnail. Note you would want to supply a ks
 	<pre class="prettyprint linenums">kWidget.embed( {
 	'targetId': 'kaltura_player',
 	'wid': '_243342',
 	'uiconf_id' : '12905712',
 	'entry_id' : '0_uka1msg4',
 	'flashvars': {
+		'ks': /* your ks with thumbnail capture permission */
 		'captureThumbnail':{
 			'plugin': true,
 			"tooltip": "Capture Thumbnail"
