@@ -1394,11 +1394,13 @@ mw.EmbedPlayerNative = {
 			return;
 		}
 		var _this = this;
+		// this time out is to give $( window ).unload method a chance to be called before showing page unload network errors. 
+		// we want to keep this value low to avoid delay in "access control" network errors. 
 		setTimeout(function(){
 			if( _this.triggerNetworkErrorsFlag ){
 				_this.triggerHelper( 'embedPlayerError' );
 			}
-		}, 3000);
+		}, 100);
 	},
 
 	/**

@@ -90,7 +90,7 @@ mw.KWidgetSupport.prototype = {
 				downloadUrlCallback( downloadUrl );
 			});
 		});
-
+		
 		// Add hook for check player sources to use local kEntry ID source check:
 		embedPlayer.bindHelper( 'checkPlayerSourcesEvent', function( event, callback ) {
 			_this.loadAndUpdatePlayerData( embedPlayer, callback );
@@ -138,8 +138,27 @@ mw.KWidgetSupport.prototype = {
 		});
 
 		embedPlayer.bindHelper( 'embedPlayerError' , function () {
-			embedPlayer.showErrorMsg( { title: embedPlayer.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), message: embedPlayer.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) } );
+			var displayedAcError = false;
+			// check for AC error: 
+			_this.getEntryIdSourcesFromApi( embedPlayer, embedPlayer.kentryid, function( sources ){
+				// no sources, or access control error. 
+				if( ! sources || sources.message ){
+					embedPlayer.showErrorMsg( sources );
+					displayedAcError = true;
+				}
+			});
+			// give the above access control message 3 seconds to resolve; else show default network error
+			setTimeout(function(){
+				if( displayedAcError){
+					return;
+				}
+				embedPlayer.showErrorMsg( { 
+					title: embedPlayer.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), 
+					message: embedPlayer.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) 
+				});
+			}, 3000);
 		});
+		
 		// Support mediaPlayFrom, mediaPlayTo properties
 		embedPlayer.bindHelper( 'Kaltura_SetKDPAttribute', function(e, componentName, property, value){
 			switch( property ){
@@ -790,17 +809,17 @@ mw.KWidgetSupport.prototype = {
 	 * accessible via static reference mw.getEntryIdSourcesFromApi
 	 *
 	 */
-	getEntryIdSourcesFromApi:  function( widgetId, partnerId, entryId, size, callback ){
+	getEntryIdSourcesFromApi:  function( embedPlayer, entryId, callback ){
 		var _this = this;
 		var sources;
-		mw.log( "KWidgetSupport:: getEntryIdSourcesFromApi: w:" + widgetId + ' entry:' + entryId );
+		mw.log( "KWidgetSupport:: getEntryIdSourcesFromApi: w:" + embedPlayer.kwidgetid + ' entry:' + embedPlayer.kentryid );
 		this.kClient = mw.KApiPlayerLoader({
-			'widget_id' : widgetId,
-			'entry_id' : entryId
+			'widget_id': embedPlayer.kwidgetid,
+			'entry_id': entryId
 		}, function( playerData ){
 			// Check access control
 			if( playerData.contextData ){
-				var acStatus = _this.getAccessControlStatus( playerData.contextData );
+				var acStatus = _this.getAccessControlStatus( playerData.contextData, embedPlayer );
 				if( acStatus !== true ){
 					callback( acStatus );
 					return ;
@@ -811,14 +830,14 @@ mw.KWidgetSupport.prototype = {
 				sources = [{
 						'src' : _this.getKalturaThumbnailUrl({
 							url: playerData.meta.thumbnailUrl,
-							width: size.width,
-							height: size.height
+							width:  embedPlayer.getWidth(),
+							height: embedPlayer.getHeight()
 						}),
 						'type' : 'image/jpeg'
 					}];
 			} else {
 				// Get device sources
-				sources = _this.getEntryIdSourcesFromPlayerData( partnerId, playerData );
+				sources = _this.getEntryIdSourcesFromPlayerData( embedPlayer.kpartnerid, playerData );
 			}
 			// Return the valid source set
 			callback( sources );
@@ -1101,7 +1120,7 @@ mw.KWidgetSupport.prototype = {
 	 * @param {object} playerData The flavor data object
 	 */
 	getEntryIdSourcesFromPlayerData: function( partnerId, playerData ){
-	   	var _this = this;
+		var _this = this;
 
 		if( !playerData.contextData || ( playerData.contextData && !playerData.contextData.flavorAssets )){
 			mw.log("Error: KWidgetSupport: contextData.flavorAssets is not defined ");
@@ -1550,8 +1569,8 @@ if( !window.kWidgetSupport ){
 /**
  * Register a global shortcuts for the Kaltura sources query
  */
-mw.getEntryIdSourcesFromApi = function( widgetId, partnerId, entryId, size, callback ){
-	kWidgetSupport.getEntryIdSourcesFromApi( widgetId, partnerId, entryId, size, callback);
+mw.getEntryIdSourcesFromApi = function( embedPlayer, entryId, callback ){
+	kWidgetSupport.getEntryIdSourcesFromApi( embedPlayer, entryId, callback);
 };
 
 })( window.mw, jQuery );
