@@ -1,9 +1,15 @@
 ( function( mw, $ ) {"use strict";
-/**
- * Add the messages text:
- *  TODO remove once we switch to RL17
- */
 
+/* Base API helper */
+mw.KApiPartnerCache = [];
+mw.kApiGetPartnerClient = function( widgetId ){
+	if( !mw.KApiPartnerCache[ widgetId ] ){
+		mw.KApiPartnerCache[ widgetId ] = new kWidget.api( {'wid':widgetId} );
+	}
+	return mw.KApiPartnerCache[ widgetId ];
+};
+
+/* Base Widget support*/
 mw.KWidgetSupport = function( options ) {
 	// Create KWidgetSupport instance
 	return this.init( options );
@@ -84,11 +90,12 @@ mw.KWidgetSupport.prototype = {
 			// Get KS and append to download url ( should be sync call )
 			var client = mw.kApiGetPartnerClient( embedPlayer.kwidgetid );
 			// Append ks & referrer for access control
-			var referrer = base64_encode( kWidgetSupport.getHostPageUrl() );
-			client.getKS(function( ks ){
-				downloadUrl += '/?ks=' + ks + '&referrer=' + referrer;
-				downloadUrlCallback( downloadUrl );
-			});
+			downloadUrl += '/referrer/' +  base64_encode( kWidgetSupport.getHostPageUrl() );
+			var ks = client.getKs();
+			if( ks ){
+				downloadUrl += '/ks/' + ks;
+			};
+			downloadUrlCallback( downloadUrl );
 		});
 
 		// Add hook for check player sources to use local kEntry ID source check:
@@ -810,10 +817,10 @@ mw.KWidgetSupport.prototype = {
 	getEntryIdSourcesFromApi:  function( widgetId, partnerId, entryId, size, callback ){
 		var _this = this;
 		var sources;
-		mw.log( "KWidgetSupport:: getEntryIdSourcesFromApi: w:" + widgetId + ' entry:' + entryId );
-		this.kClient = mw.KApiPlayerLoader({
-			'widget_id' : widgetId,
-			'entry_id' : entryId
+		mw.log( "KWidgetSupport:: getEntryIdSourcesFromApi: w:" + embedPlayer.kwidgetid + ' entry:' + embedPlayer.kentryid );
+		this.kClient = mw.kApiEntryLoader({
+			'widget_id': embedPlayer.kwidgetid,
+			'entry_id': entryId
 		}, function( playerData ){
 			// Check access control
 			if( playerData.contextData ){
@@ -842,7 +849,7 @@ mw.KWidgetSupport.prototype = {
 		});
 	},
 	/**
-	 * Sets up variables and issues the mw.KApiPlayerLoader call
+	 * Sets up variables and issues the mw.kEntryLoader call
 	 */
 	loadPlayerData: function( embedPlayer, callback ){
 		var _this = this;
@@ -870,7 +877,7 @@ mw.KWidgetSupport.prototype = {
 
 		// Set KS from flashVar
 		this.kClient = mw.kApiGetPartnerClient( playerRequest.widget_id );
-		this.kClient.setKS( embedPlayer.getFlashvars( 'ks' ) );
+		this.kClient.setKs( embedPlayer.getFlashvars( 'ks' ) );
 
 		// Check for playlist cache based
 		if( window.kalturaIframePackageData && window.kalturaIframePackageData.playlistResult ){
@@ -896,7 +903,7 @@ mw.KWidgetSupport.prototype = {
 			delete( window.kalturaIframePackageData.entryResult );
 		} else {
 			// Run the request:
-			this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
+			this.kClient = mw.kApiEntryLoader( playerRequest, function( playerData ){
 				_this.handlePlayerData(embedPlayer, playerData );
 				callback( playerData );
 			});
@@ -1388,9 +1395,8 @@ mw.KWidgetSupport.prototype = {
 
 		// Append KS to all source if available
 		// Get KS for playManifest URL ( this should run synchronously since ks should already be available )
-		var ksCheck = false;
-		this.kClient.getKS( function( ks ) {
-			ksCheck = true;
+		var ks = this.kClient.getKs();
+		if( ks ){
 			var manifestKs = _this.fixPlaymanifestParam( ks );
 			var referrer =   _this.fixPlaymanifestParam( base64_encode( _this.getHostPageUrl() ) );
 			var clientTag = 'html5:v' + window[ 'MWEMBED_VERSION' ];
@@ -1407,9 +1413,8 @@ mw.KWidgetSupport.prototype = {
 						'&clientTag=' + clientTag;
 				}
 			});
-		});
-		if( !ksCheck ){
-			mw.log("Error:: KWidgetSupport: KS not defined in time, streams will be missing ks paramter");
+		} else {
+			mw.log("KWidgetSupport: KS not defined, streams will not include a ks paramter");
 		}
 		
 		return deviceSources;
@@ -1485,11 +1490,13 @@ mw.KWidgetSupport.prototype = {
 		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/' + format + '/protocol/' + protocol + '/uiConfId/' + embedPlayer.kuiconfid +  '/a.' + extension;
 		// Append KS & Referrer
 		function getKs() {
+			srcUrl += '?referrer=' + base64_encode( _this.getHostPageUrl() );
 			var deferred = $.Deferred();
-			_this.kClient.getKS( function( ks ) {
-				srcUrl = srcUrl + '?ks=' + ks + '&referrer=' + base64_encode( _this.getHostPageUrl() );
-				deferred.resolve();
-			});
+			var ks = _this.kClient.getKs();
+			if( ks ){
+				srcUrl += '&ks=' + ks;
+			}
+			deferred.resolve();
 			return deferred.promise();
 		}
 		//add source

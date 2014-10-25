@@ -803,9 +803,10 @@ class UiConfResult {
 		if( $this->request->getEntryId() ) {
 			$addtionalData['entryId'] = $this->request->getEntryId();
 		}
-		// Add KS to uiVars
-		$this->playerConfig['vars']['ks'] = $this->client->getKS();
-
+		// Add KS to uiVars only if part of request: 
+		if( $this->request->hasKS() ){
+			$this->playerConfig['vars']['ks'] = $this->client->getKS();
+		}
 		return array_merge($addtionalData, $this->playerConfig);
 	}
 	// Check if the requested url is a playlist
