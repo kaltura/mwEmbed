@@ -28,8 +28,10 @@
 				if ( this.getConfig( 'preferredBitrate' ) != '' && this.getConfig( 'preferredBitrate' ) != null ){
 					downloadUrl += '&preferredBitrate=' + encodeURIComponent( this.getConfig( 'preferredBitrate' ));
 				}
-				downloadUrl += '&ks=' + this.getPlayer().getFlashvars('ks');
-				
+				if( this.getKalturaClient().getKs() ){
+					downloadUrl += '&ks=' + this.getKalturaClient().getKs();
+				}
+			
 			window.open( downloadUrl );
 		},
 		getComponent: function() {

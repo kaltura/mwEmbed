@@ -286,10 +286,14 @@
 			if ( multiRequest.length ) {
 				this.getKalturaClient().doRequest( multiRequest, function( result ) {
 					var captionsURLs = {};
-					// Store captions URLs in array
-					$.each( result, function( idx, captionUrl ) {
-						captionsURLs[ captionIds[ idx ] ] = captionUrl;
-					} );
+					if( typeof result == 'string'){
+						captionsURLs[ captionIds[ 0 ] ] = result;
+					} else {
+						// Store captions URLs in array
+						$.each( result, function( idx, captionUrl ) {
+							captionsURLs[ captionIds[ idx ] ] = captionUrl;
+						} );
+					}
 					// Store caption URLs locally
 					_this.captionURLs = captionsURLs;
 					// Done adding source issue callback

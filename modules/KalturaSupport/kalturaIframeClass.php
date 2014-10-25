@@ -197,8 +197,10 @@ class kalturaIframeClass {
 			$settings['entry_id'] = $this->request->get('entry_id');
 		}
 
-		// add ks flashvar
-		$settings['flashvars']['ks'] = $this->client->getKS();
+		// Only add KS if it was part of the request, else the client should re-generate in multi-request for any subsequent request: 
+		if( $this->request->hasKS() ){
+			$settings['flashvars']['ks'] = $this->client->getKS();
+		}
 		// add referrer flashvar
 		$settings['flashvars']['referrer'] = htmlspecialchars( $this->request->getReferer() );
 
