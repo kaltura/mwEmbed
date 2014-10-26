@@ -21,7 +21,7 @@
 			'hideClipPoster': true,
 			'loop': false,
 			'overflow': false,
-			'cssFileName': 'playList.css',
+			'cssFileName': 'modules/KalturaSupport/components/playlist/playList.css',
 			'showControls': true,
 			'selectedIndex': 0
 		},
