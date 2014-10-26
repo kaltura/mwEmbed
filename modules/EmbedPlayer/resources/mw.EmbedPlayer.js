@@ -2915,12 +2915,18 @@
 				// Do a live switch
 				this.playerSwitchSource( source, function( vid ){
 					// issue a seek
-					_this.setCurrentTime( oldMediaTime, function(){
-						// reflect pause state
-						if( oldPaused ){
-							_this.pause();
-						}
-					} );
+					setTimeout(function(){
+						_this.addBlackScreen();
+						_this.hidePlayerOffScreen();
+						_this.setCurrentTime( oldMediaTime, function(){
+							_this.removeBlackScreen();
+							_this.restorePlayerOnScreen();
+							// reflect pause state
+							if( oldPaused ){
+								_this.pause();
+							}
+						} );
+					}, 100);
 				});
 			}
 		},
