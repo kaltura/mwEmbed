@@ -100,8 +100,9 @@
 					var iframeID = this.embedPlayer.id + '_ifp';
 					try {
 						//Try to find and apply css on parent frame
-						var cssLink = $("link[href$='"+this.getConfig('cssFileName')+"']").attr("href");
+						var cssLink = this.getConfig('cssFileName');
 						if (cssLink) {
+							cssLink = cssLink.toLowerCase().indexOf("http") === 0 ? cssLink : kWidget.getPath() + cssLink; // support external CSS links
 							$( 'head', window.parent.document ).append( '<link type="text/css" rel="stylesheet" href="' + cssLink + '"/>' );
 						} else {
 							mw.log( "Error: "+ this.pluginName +" could not find CSS link" );
