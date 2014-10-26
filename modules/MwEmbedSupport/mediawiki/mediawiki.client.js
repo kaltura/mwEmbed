@@ -238,7 +238,7 @@
 			var parsedJson = JSON.parse(json);
 		}catch(e){
 			mw.log("JSON parse syntax error: " + e);
-			return retValue ? retValue : {};
+			return retValue ? retValue : null;
 		}
 		return parsedJson;
 	}
