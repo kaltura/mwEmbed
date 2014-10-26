@@ -485,7 +485,7 @@ mw.KAdPlayer.prototype = {
 							if( _this.isVideoSiblingEnabled() ) {
 								$( _this.embedPlayer ).trigger( 'onPauseInterfaceUpdate' );
 							}else{
-								$( embedPlayer).trigger("onPlayerStateChange",["pause"]);
+								$( embedPlayer).trigger("onPlayerStateChange",["pause", embedPlayer.currentState]);
 							}
 
 							embedPlayer.enablePlayControls(["scrubber"]);
@@ -676,15 +676,16 @@ mw.KAdPlayer.prototype = {
         embedPlayer.bindHelper( 'doPause' + _this.trackingBindPostfix, function(){
 		    if( _this.isVideoSiblingEnabled() && _this.adSibling) {
 			    $( _this.embedPlayer ).trigger( 'onPauseInterfaceUpdate' ); // update player interface
-                vid.pause();
 		    }
+			vid.pause();
+
         });
 
         embedPlayer.bindHelper( 'doPlay' + _this.trackingBindPostfix, function(){
 		    if( _this.isVideoSiblingEnabled() && _this.adSibling) {
 			    $( _this.embedPlayer ).trigger( 'playing' ); // update player interface
-                vid.play();
 		    }
+            vid.play();
         });
 
 		if( !embedPlayer.isPersistentNativePlayer() ) {
