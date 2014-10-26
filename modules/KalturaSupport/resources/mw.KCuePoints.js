@@ -54,7 +54,9 @@ mw.KCuePoints.prototype = {
 				_this.triggerCuePoint( cuePoint );
 			} else {
 				// Midroll
-				newCuePointsArray.push( cuePoint );
+				if (cuePoint.cuePointType != "eventCuePoint.Event") {
+					newCuePointsArray.push( cuePoint );
+				}
 			}
 		});
 
@@ -63,12 +65,13 @@ mw.KCuePoints.prototype = {
 	requestThumbAsset: function(cuePoints, callback){
 		var _this = this;
 		var requestArray = [];
-		var response = [];
+		var responseArray = [];
 		var requestCuePoints = cuePoints || this.getCuePoints();
 		var thumbCuePoint = $.grep(requestCuePoints, function(cuePoint){
 			return (cuePoint.cuePointType == 'thumbCuePoint.Thumb');
 		});
 
+		//Create request data only for cuepoints that have assetId
 		$.each(thumbCuePoint, function(index, item) {
 			requestArray.push(
 				{
@@ -77,7 +80,7 @@ mw.KCuePoints.prototype = {
 					'id': item.assetId
 				}
 			);
-			response[index] = { id: item.id, url: null};
+			responseArray[index] = item;
 		});
 
 		if (requestArray.length){
@@ -165,7 +168,7 @@ mw.KCuePoints.prototype = {
 				$.merge(this.midCuePointsArray, updatedCuePoints);
 				//Request thumb asset only for new cuepoints
 				this.requestThumbAsset(updatedCuePoints, function(){
-					_this.embedPlayer.triggerHelper( 'KalturaSupport_ThumbCuePointsUpdated' );
+					_this.embedPlayer.triggerHelper( 'KalturaSupport_ThumbCuePointsUpdated', [updatedCuePoints] );
 				});
 				// sort the cuePoitns by startTime:
 				this.midCuePointsArray.sort( function ( a, b ) {
@@ -221,9 +224,10 @@ mw.KCuePoints.prototype = {
 
 		// Bind to monitorEvent to trigger the cue points events and update he nextCuePoint
 		$( embedPlayer ).bind(
-				"monitorEvent" + this.bindPostfix + " " +
-				"seeked" + this.bindPostfix + " " +
-				"onplay" + this.bindPostfix,
+				"monitorEvent" + this.bindPostfix +
+				" seeked" + this.bindPostfix +
+				" onplay" + this.bindPostfix +
+				" KalturaSupport_ThumbCuePointsUpdated" + this.bindPostfix,
 			function() {
 				var currentTime = embedPlayer.currentTime * 1000;
 				// Check if the currentCuePoint exists

@@ -179,6 +179,9 @@ mw.EmbedPlayerNative = {
 				_this.pause();
 				_this.updatePosterHTML();
 			}
+			if ( !(mw.isIOS7() && mw.isIphone())){
+				_this.changeMediaCallback = null;
+			}
 			callback();
 		});
 	},
@@ -403,7 +406,11 @@ mw.EmbedPlayerNative = {
 		this.kPreSeekTime = _this.currentTime;
 
 		// Trigger preSeek event for plugins that want to store pre seek conditions.
-		this.triggerHelper( 'preSeek', percent );
+		var stopSeek = {value: false};
+		this.triggerHelper( 'preSeek', [percent, stopAfterSeek, stopSeek] );
+		if(stopSeek.value){
+			return;
+		}
 
 		this.seeking = true;
 		// Update the current time ( local property )
@@ -431,8 +438,11 @@ mw.EmbedPlayerNative = {
 			this.doNativeSeek( percent, function(){
 				if( stopAfterSeek ){
 					_this.hideSpinner();
-					_this.pause();
-					_this.updatePlayheadStatus();
+					// pause in a non-blocking call to avoid synchronous playing event
+					setTimeout(function() {
+						_this.pause();
+						_this.updatePlayheadStatus();
+					}, 0);
 				} else {
 					// continue to playback ( in a non-blocking call to avoid synchronous pause event ) 
 					setTimeout(function(){
@@ -825,7 +835,7 @@ mw.EmbedPlayerNative = {
 				// empty out any existing sources:
 				$( vid ).empty();
 
-				if ( mw.isIOS7() ){
+				if ( mw.isIOS7() && mw.isIphone()){
 					vid.src = null;
 					var sourceTag = document.createElement('source');
 					sourceTag.setAttribute('src', src);
@@ -852,7 +862,7 @@ mw.EmbedPlayerNative = {
 
 					// keep going towards playback! if  switchCallback has not been called yet
 					// we need the "playing" event to trigger the switch callback
-					if ( $.isFunction( switchCallback ) ){
+					if ( !mw.isIOS71() && $.isFunction( switchCallback ) ){
 						vid.play();
 					} else {
 						_this.removeBlackScreen();
@@ -890,6 +900,7 @@ mw.EmbedPlayerNative = {
 
 				// Add the end binding if we have a post event:
 				if( $.isFunction( doneCallback ) ){
+					var sentDoneCallback = false;
 					$( vid ).bind( 'ended' + switchBindPostfix , function( event ) {
 						if( _this.disableSwitchSourceCallback ) {
 							return;
@@ -899,6 +910,7 @@ mw.EmbedPlayerNative = {
 							clearTimeout( _this.mobileChromeTimeoutID );
 							_this.mobileChromeTimeoutID = null;
 						}
+						sentDoneCallback = true;
 						// remove end binding:
 						$( vid ).unbind( switchBindPostfix );
 						// issue the doneCallback
@@ -924,8 +936,12 @@ mw.EmbedPlayerNative = {
 									// Check if timeDiff was changed in the last 2 seconds
 									if( timeDiff <= (_this.duration - _this.currentTime) ) {
 										mw.log('EmbedPlayerNative:: playerSwitchSource> error in getting ended event, issue doneCallback directly.');
-										$( vid ).unbind( switchBindPostfix );
-										doneCallback();
+										if ( ! sentDoneCallback ) {
+											$( vid ).unbind( switchBindPostfix );
+											sentDoneCallback = true;
+											doneCallback();
+										}
+
 									}
 								},2000);
 							}
@@ -935,7 +951,7 @@ mw.EmbedPlayerNative = {
 
 				// issue the play request:
 				vid.play();
-				if ( mw.isIphone() ){
+				if ( mw.isIOS()){
 					setTimeout(function(){
 						handleSwitchCallback();
 					}, 100 );
@@ -1042,10 +1058,8 @@ mw.EmbedPlayerNative = {
 						$( _this ).hide();
 					}
 					// if it's iOS8 the player won't play
-					if( mw.isIOS8() && mw.isIpad()  ) {
+					if ( !mw.isIOS8() ){
 						// update the preload attribute to auto
-						$( _this.getPlayerElement() ).attr('preload',"metadata" );
-					} else if ( !mw.isIOS8 ){
 						$( _this.getPlayerElement() ).attr('preload',"auto" );
 					}
 					// issue a play request
@@ -1473,6 +1487,17 @@ mw.EmbedPlayerNative = {
 	 */
 	isFakeHlsSeek: function() {
 		return ( (Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2) || ( mw.isIpad() && this.currentSeekTargetTime > 0.01 && !mw.isIOS8() ) );
-}
+	},
+
+	isVideoSiblingEnabled: function() {
+		if( mw.isIphone() || mw.isAndroid2() || mw.isAndroid40() || mw.isMobileChrome()
+			||
+			( mw.isIpad() && ! mw.isIpad3() )
+			){
+			return false;
+		} else {
+			return this.parent_isVideoSiblingEnabled();
+		}
+	}
 };
 } )( mediaWiki, jQuery );

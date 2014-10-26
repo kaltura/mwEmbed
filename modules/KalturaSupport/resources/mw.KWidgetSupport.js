@@ -297,13 +297,18 @@ mw.KWidgetSupport.prototype = {
 				return;
 			} else if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
 				var streamerType;
-				if ( hasLivestreamConfig( 'hdnetworkmanifest' )) {
+				var streamerTypeFV = embedPlayer.getKalturaConfig( null, 'streamerType' );
+				if ( streamerTypeFV && hasLivestreamConfig( streamerTypeFV ) ) {
+					streamerType = streamerTypeFV;
+				}
+				else if ( hasLivestreamConfig( 'hdnetworkmanifest' )) {
 					streamerType = 'hdnetworkmanifest';
 				} else if ( hasLivestreamConfig( 'hds' ) ){
 					streamerType = 'hds';
 				} else {
 					streamerType = 'rtmp';
 				}
+
 				// Add live stream source
 				_this.addLiveEntrySource( embedPlayer, playerData.meta, true, false, streamerType, undefined );
 				

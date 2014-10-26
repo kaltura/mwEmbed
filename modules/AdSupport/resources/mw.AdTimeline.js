@@ -103,6 +103,7 @@
 		firstPlay: true,
 
 		bindPostfix: '.AdTimeline',
+		pendingSeek: false,
 
 		currentAdSlotType: null,
 
@@ -169,6 +170,17 @@
 				// Start of preSequence
 				embedPlayer.triggerHelper( 'AdSupport_PreSequence');
 
+				mw.log( 'EmbedPlayer::preSeek : prevented seek during ad playback');
+				embedPlayer.unbindHelper("preSeek" + _this.bindPostfix).bindHelper("preSeek" + _this.bindPostfix, function(e, percentage, stopAfterSeek, stopSeek) {
+					embedPlayer.unbindHelper( "preSeek" + _this.bindPostfix );
+					stopSeek.value = true;
+					_this.pendingSeek = true;
+					_this.pendingSeekData = {
+						percentage: percentage,
+						stopAfterSeek: stopAfterSeek
+					};
+				});
+
 				//Setup a playedAnAdFlag
 				var playedAnAdFlag = false;
 				embedPlayer.bindHelper( 'AdSupport_StartAdPlayback' +  _this.bindPostfix, function(){
@@ -215,12 +227,7 @@
 							};
 							// Check if the src does not match original src if
 							// so switch back and restore original bindings
-							if ( embedPlayer.kAds
-								&&
-								embedPlayer.kAds.adPlayer
-								&&
-								!embedPlayer.kAds.adPlayer.isVideoSiblingEnabled()
-								){
+							if ( ! embedPlayer.isVideoSiblingEnabled() ) {
 								// restore the original source:
 								embedPlayer.switchPlaySource( _this.originalSource, completeFunc);
 							} else {
@@ -438,6 +445,15 @@
 				return;
 			}
 			embedPlayer.restoreEventPropagation();
+
+			if (this.pendingSeek){
+				this.pendingSeek = false;
+				embedPlayer.seek(this.pendingSeekData.percentage, this.pendingSeekData.stopAfterSeek);
+			} else {
+				//If seek wasn't performed then and ad sequence is over then remove the seek handler
+				embedPlayer.unbindHelper( "preSeek" + this.bindPostfix );
+			}
+
 			embedPlayer.enablePlayControls();
 			embedPlayer.seeking = false;
 			// restore in sequence property;

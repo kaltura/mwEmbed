@@ -481,6 +481,9 @@ kWidget.addReadyCallback(function( playerId ){
 <h3>Player Advertisement Related Notifications:</h3>
 <?php echo getOutlineContent( $eventAds ) ?>
 
+<h3>Playlist Notifications:</h3>
+<?php echo getOutlineContent( $playlists ) ?>
+
 
 <a name="evaluate-desc"></a>
 <h3>5. Retrieving a player property</h3>

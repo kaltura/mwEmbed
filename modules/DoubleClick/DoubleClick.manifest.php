@@ -17,6 +17,18 @@ return array (
 				'doc' => "The DoubleClick DFP VAST ad tag URL (can include multiple nested VAST URLs). ",
 				'type' => 'url'
 			),
+			'enableCountDown' => array(
+                'label' => 'Enable notice message',
+                'doc' => "When checked, a notice message displays during ad playback",
+                'initvalue' => false,
+                'type' => 'boolean',
+            ),
+            'countdownText' => array(
+                'label' => 'Notice message',
+                'doc' => "Notice message to be displayed during ad playback. Can contain evaluated expressions using curly brackets",
+                'initvalue' => '',
+                'type' => 'string',
+            ),
 			'contentId' => array(
 				'doc' => 'The contentId, used by DoubleClick plugin API, generally the entry ID, but can also be custom metadata mapping',
 				'type' => 'string'
@@ -30,6 +42,11 @@ return array (
 				'doc' => "Custom parameters passed to the DoubleClick adTag URL. Should be listed as URL parameterss key=value&key2=value2 pairs.",
 				'type' => 'string'
 			),
+			'cmsId' => array(
+                'label' => 'CMS id',
+                'doc' => "The CMS id, appended to the VAST url, used by DoubleClick plugin api",
+                'type' => 'number'
+            ),
 			'disableCompanionAds' => array(
 				'doc' => "determine if companion ads should be disabled.",
 				'type' => 'hiddenValue',
@@ -42,11 +59,6 @@ return array (
 				'filter' => 'companions',
                 "initvalue" => "Comp_300x250:300:250;Comp_728x90:728:90;"
 			),
-			'cmsId' => array(
-				'label' => 'CMS id',
-                'doc' => "The CMS id, appended to the VAST url, used by DoubleClick plugin api",
-                'type' => 'number'
-            ),
             'adsManagerLoadedTimeout'=> array(
                 'doc' => "Timer for timed checking if adsManager was loaded(in milliseconds)",
                 'initvalue' => 5000,

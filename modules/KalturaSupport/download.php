@@ -372,46 +372,71 @@ class downloadEntry {
 	 * @param $flavorId
 	 * 	{String} the flavor id string
 	 */
+	 public function getSourceUrl($kResultObject, $resultObject, $source){
+	    global $wgHTTPProtocol;
+
+        if( $kResultObject->request->getServiceConfig( 'UseManifestUrls' ) ){
+            $flavorUrl =  $kResultObject->request->getServiceConfig( 'ServiceUrl' ) .'/p/' . $kResultObject->getPartnerId() . '/sp/' .
+            $kResultObject->getPartnerId() . '00/playManifest/entryId/' . $kResultObject->request->getEntryId();
+        } else {
+            $flavorUrl = $kResultObject->request->getServiceConfig( 'CdnUrl' ) .'/p/' . $kResultObject->getPartnerId() . '/sp/' .
+            $kResultObject->getPartnerId() . '00/flvclipper/entry_id/' . $kResultObject->request->getEntryId();
+        }
+        $assetUrl = $flavorUrl . '/flavorId/' . $source->id . '/format/url/protocol/' . $wgHTTPProtocol;
+        $src =  $assetUrl .'/a.' . $source->fileExt . '?ks=' . $kResultObject->client->getKS() . '&referrer=' . $this->getReferer();
+        return $src;
+	 }
+
 	private function getSourceFlavorUrl( $flavorId = false ){
 		global $wgHTTPProtocol;
 
-		// first check if we got preferredBitrate
+		// first check if we got preferredBitrate or flavour ID
 		if( isset($_GET['preferredBitrate']) && $_GET['preferredBitrate'] != null){
-            $preferredBitrate	= intval($_GET['preferredBitrate']);
+            $preferredBitrate = intval($_GET['preferredBitrate']);
+        }
+        if( isset($_GET['flavorID']) && $_GET['flavorID'] != null){
+            $flavorID = $_GET['flavorID'];
         }
 
-		// for preferredBitrate get all the sources (no filter) and look for the closest bitrate source
-		if ( isset( $preferredBitrate ) ) {
-            // try to find the closest bitrate source
-            $deltaBitrate = 999999999;
-            $src = false;
+		$src = false;
+		$kResultObject = $this->getResultObject();
+        $resultObject =  $kResultObject->getResult();
 
-            $kResultObject = $this->getResultObject();
-            $resultObject =  $kResultObject->getResult();
-
+		if ( isset( $flavorID ) ) {
+			// flavor ID overrides preferred bitrate so look for it first
             foreach( $resultObject['contextData']->flavorAssets as $source ){
-                if( isset($source->bitrate) ){
-                    $delta =  abs( $source->bitrate - $preferredBitrate );
-
-                    if ( $delta < $deltaBitrate) {
-                        $deltaBitrate = $delta;
-
-                        if( $kResultObject->request->getServiceConfig( 'UseManifestUrls' ) ){
-                            $flavorUrl =  $kResultObject->request->getServiceConfig( 'ServiceUrl' ) .'/p/' . $kResultObject->getPartnerId() . '/sp/' .
-                            $kResultObject->getPartnerId() . '00/playManifest/entryId/' . $kResultObject->request->getEntryId();
-                        } else {
-                            $flavorUrl = $kResultObject->request->getServiceConfig( 'CdnUrl' ) .'/p/' . $kResultObject->getPartnerId() . '/sp/' .
-                            $kResultObject->getPartnerId() . '00/flvclipper/entry_id/' . $kResultObject->request->getEntryId();
-                        }
-                        $assetUrl = $flavorUrl . '/flavorId/' . $source->id . '/format/url/protocol/' . $wgHTTPProtocol;
-                        $src =  $assetUrl .'/a.' . $source->fileExt . '?ks=' . $kResultObject->client->getKS() . '&referrer=' . $this->getReferer();
-                    }
+                if( isset($source->id) && $source->id == $flavorID){
+                    $src = $this->getSourceUrl($kResultObject, $resultObject, $source);
                 }
             }
-            return $src;
-        }
+		}else if ( isset( $preferredBitrate ) ) {
+			// if the user specified 0 - return the source
+			if ($preferredBitrate == 0){
+				foreach( $resultObject['contextData']->flavorAssets as $source ){
+                    if (isset($source->tags) && $source->tags == "source"){
+						$src = $this->getSourceUrl($kResultObject, $resultObject, $source);
+					}
+				}
+			}else{
+	            // try to find the closest bitrate source
+                $deltaBitrate = 999999999;
+	            foreach( $resultObject['contextData']->flavorAssets as $source ){
+                    if( isset($source->bitrate) ){
+                        $delta =  abs( $source->bitrate - $preferredBitrate );
+                        if ( $delta < $deltaBitrate) {
+                            $deltaBitrate = $delta;
+                            $src = $this->getSourceUrl($kResultObject, $resultObject, $source);
+                        }
+                    }
+                }
+			}
+		}
 
-        // if no preferredBitrate was specified - continue normally
+		if ($src){
+			return $src;
+		}
+
+        // if no flavorID or preferredBitrate were specified - continue normally
 		$sources = $this->getSources(); // Get all sources ( if not provided )
 		$validSources = array(); 
 		foreach( $sources as $inx => $source ){
