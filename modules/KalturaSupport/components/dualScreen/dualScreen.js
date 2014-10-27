@@ -430,6 +430,8 @@
 				} );
 				this.bind( 'seeked', function () {
 					var cuePoint = _this.getCurrentCuePoint();
+					console.info("seeked");
+					console.info(cuePoint);
 					_this.sync( cuePoint );
 				} );
 
@@ -454,6 +456,8 @@
 					} );
 				} );
 				this.bind( 'KalturaSupport_CuePointReached', function ( e, cuePointObj ) {
+					console.info("KalturaSupport_CuePointReached");
+					console.info(cuePointObj.cuePoint);
 					_this.sync( cuePointObj.cuePoint );
 				} );
 				this.bind( 'KalturaSupport_ThumbCuePointsUpdated', function (e, cuepoints ) {
