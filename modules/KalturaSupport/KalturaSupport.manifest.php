@@ -1263,6 +1263,13 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 		)
 	),
+	'captureThumbnail' => array(
+		'description' => 'Allow your users to capture a thumbnail from the video content. A KS must be supplied to ingest the reqspective thubmnail.',
+		'plugin' => array(
+			'doc' => 'If the plugin should be activated',
+			'type' => 'string',
+		),
+	),
 	'moderation' => array(
 		'description' => 'Allow your users to flag content as inapproriate.',
 		'attributes' => array(
