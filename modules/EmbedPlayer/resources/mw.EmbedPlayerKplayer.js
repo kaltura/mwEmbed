@@ -132,7 +132,8 @@ mw.EmbedPlayerKplayer = {
 					'audioTracksReceived': 'onAudioTracksReceived',
 					'audioTrackSelected': 'onAudioTrackSelected',
 					'videoMetadataReceived': 'onVideoMetadataReceived',
-					'hlsEndList': 'onHlsEndList'
+					'hlsEndList': 'onHlsEndList',
+					'mediaError': 'onMediaError'
 				};
 				_this.playerObject = this.getElement();
 				$.each( bindEventMap, function( bindName, localMethod ) {
@@ -363,6 +364,18 @@ mw.EmbedPlayerKplayer = {
 	 */
 	onHlsEndList: function () {
 		this.triggerHelper( 'liveEventEnded' );
+	},
+	/**
+	 * Playback error
+	 * @param data: holds error which is OSMF MediaError object
+	 */
+	onMediaError: function ( data ) {
+		var error = null;
+		if ( data && data.error ) {
+			error = data.error.errorID + " detail:" + data.error.detail;
+		}
+		mw.log( "EmbedPlayerKPlayer::MediaError error code: " + error );
+		this.triggerHelper( 'embedPlayerError' );
 	},
 
 	/**
