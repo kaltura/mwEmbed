@@ -995,8 +995,8 @@
 						case 'doPlay':
 							_this.adPaused = false;
 							_this.adsManager.resume();
-							_this.monitorAdProgress();
 							$( embedPlayer ).trigger( 'onplay' );
+							_this.monitorAdProgress();
 							break;
 						case 'doStop':
 							_this.adsManager.stop();
