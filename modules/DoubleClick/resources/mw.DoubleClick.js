@@ -141,6 +141,11 @@
 						mw.log("DoubleClick::chromeless volumeChanged: " + percent );
 						_this.embedPlayer.setPlayerElementVolume( percent );
 					});
+					_this.embedPlayer.bindHelper( 'Kaltura_SendNotification' + this.bindPostfix, function(event, notificationName, notificationData){
+						if (notificationName === "doPause"){
+							_this.embedPlayer.getPlayerElement().pause();
+						}
+					});
 					_this.addManagedBinding();
 					callback();
 					return;
@@ -729,6 +734,9 @@
 
 					// Monitor ad progress
 					_this.monitorAdProgress();
+
+					// Send a notification to trigger associated events and update ui
+					_this.embedPlayer.sendNotification('doPlay');
 				}
 			} );
 			adsListener( 'PAUSED', function(){
@@ -803,6 +811,8 @@
 							.addClass( 'ad-component ad-notice-label' )
 					);
 				}
+				// Send a notification to trigger associated events and update ui
+				_this.embedPlayer.paused = false;
 			},'adStart', true);
 
 
@@ -973,12 +983,16 @@
 						case 'doPause':
 							_this.adPaused = true;
 							_this.adsManager.pause();
+							embedPlayer.paused = true;
 							$( embedPlayer ).trigger( 'onpause' );
+							$( embedPlayer ).trigger( "onPlayerStateChange", ["pause", embedPlayer.currentState] );
 							break;
 						case 'doPlay':
 							_this.adPaused = false;
 							_this.adsManager.resume();
+							embedPlayer.paused = false;
 							$( embedPlayer ).trigger( 'onplay' );
+							$( embedPlayer ).trigger( "onPlayerStateChange", ["play", embedPlayer.currentState] );
 							_this.monitorAdProgress();
 							break;
 						case 'doStop':
