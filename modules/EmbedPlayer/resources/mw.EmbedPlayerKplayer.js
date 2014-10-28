@@ -367,15 +367,15 @@ mw.EmbedPlayerKplayer = {
 	},
 	/**
 	 * Playback error
-	 * @param data: holds error which is OSMF MediaError object
+	 *
 	 */
 	onMediaError: function ( data ) {
 		var error = null;
-		if ( data && data.error ) {
-			error = data.error.errorID + " detail:" + data.error.detail;
+		if ( data  ) {
+			error = data.errorId + " detail:" + data.errorDetail;
 		}
 		mw.log( "EmbedPlayerKPlayer::MediaError error code: " + error );
-		this.triggerHelper( 'embedPlayerError' );
+		this.triggerHelper( 'embedPlayerError', [ data ] );
 	},
 
 	/**

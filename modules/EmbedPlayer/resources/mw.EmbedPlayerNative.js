@@ -1410,12 +1410,13 @@ mw.EmbedPlayerNative = {
 		var _this = this;
 		setTimeout(function(){
 			if( _this.triggerNetworkErrorsFlag ){
-				var errorCode = -1;
+				var data = [];
 				if ( event && event.currentTarget && event.currentTarget.error ) {
-					errorCode = event.currentTarget.error.code;
+					data[ 'errorCode' ] = event.currentTarget.error.code;
+					mw.log( 'EmbedPlayerNative::_onerror: MediaError code: ' + data.errorCode);
 				}
-				mw.log( 'EmbedPlayerNative::_onerror: MediaError code: ' + errorCode);
-				_this.triggerHelper( 'embedPlayerError' );
+
+				_this.triggerHelper( 'embedPlayerError', [ data ] );
 			}
 		}, 3000);
 	},
