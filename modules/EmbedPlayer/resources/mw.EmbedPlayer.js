@@ -502,7 +502,13 @@
 				return;
 			}
 			mw.log("EmbedPlayer:: disablePlayControls" );
-			excludedComponents = excludedComponents || [];
+
+			if (!excludedComponents) {
+				excludedComponents = ['fullScreenBtn', 'logo'];
+				if (mw.getConfig('enableControlsDuringAd')) {
+					excludedComponents.push('playPauseBtn');
+				}
+			}
 
 			this._playContorls = false;
 			$( this ).trigger( 'onDisableInterfaceComponents', [ excludedComponents ] );
