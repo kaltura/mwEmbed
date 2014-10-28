@@ -990,13 +990,13 @@
 						case 'doPause':
 							_this.adPaused = true;
 							_this.adsManager.pause();
-							$(embedPlayer).trigger('onpause');
+							$( embedPlayer ).trigger( 'onpause' );
 							break;
 						case 'doPlay':
 							_this.adPaused = false;
 							_this.adsManager.resume();
 							_this.monitorAdProgress();
-							$(embedPlayer).trigger('onplay');
+							$( embedPlayer ).trigger( 'onplay' );
 							break;
 						case 'doStop':
 							_this.adsManager.stop();
