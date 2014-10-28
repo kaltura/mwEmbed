@@ -21,7 +21,7 @@
 			'hideClipPoster': true,
 			'loop': false,
 			'overflow': false,
-			'cssFileName': 'playList.css',
+			'cssFileName': 'modules/KalturaSupport/components/playlist/playList.css',
 			'showControls': true,
 			'selectedIndex': 0
 		},
@@ -165,7 +165,7 @@
 		addMediaItems: function(itemsArr){
 			for (var i = 0; i < itemsArr.length; i++){
 				var item = itemsArr[i];
-				var customData = (item.partnerData  && item.adminTags !== 'image') ? JSON.parse(item.partnerData) :  {};
+				var customData = (item.partnerData  && item.adminTags !== 'image') ? mw.parseJSON(item.partnerData, {}) :  {};
 				var title = item.name || customData.title;
 				var description = item.description || customData.desc;
 				var thumbnailUrl = item.thumbnailUrl || customData.thumbUrl || this.getThumbUrl(item);

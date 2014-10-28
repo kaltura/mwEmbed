@@ -230,6 +230,20 @@
 	};
 
 	/**
+	 * parse JSON string
+	 * @return {object} parsed json object. If parsing fails (syntax error): returns retValue if specified. If no retValue was specified - returns an empty object.
+	 */
+	mw.parseJSON = function(json, retValue) {
+		try{
+			var parsedJson = JSON.parse(json);
+		}catch(e){
+			mw.log("JSON parse syntax error: " + e);
+			return retValue ? retValue : null;
+		}
+		return parsedJson;
+	}
+
+	/**
 	 * Checks for flash version
 	 * @return {string} flash version string
 	 */
