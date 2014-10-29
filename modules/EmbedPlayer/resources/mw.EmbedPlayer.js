@@ -2613,7 +2613,7 @@
 			var _this = this;
 
 			if ( this.currentTime >= 0 && this.duration ) {
-				if ( !this.userSlide && !this.seeking ) {
+				if (!this.userSlide && !this.seeking && !this.paused) {
 					var playHeadPercent = ( this.currentTime - this.startOffset ) / this.duration;
 					this.updatePlayHead( playHeadPercent );
 				}
@@ -2685,6 +2685,7 @@
 		 *	  perc Value between 0 and 1 for position of playhead
 		 */
 		updatePlayHead: function( perc ) {
+			console.log("---- updatePlayHead");
 			$( this ).trigger('updatePlayHeadPercent', perc);
 		},
 
