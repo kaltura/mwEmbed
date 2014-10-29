@@ -350,6 +350,11 @@ return array(
 				'doc' => "If the playlist should be rendered out of the IFrame (on page).",
 				'type' => 'boolean'
 			),
+			'MaxClips' => array(
+                'doc' => "Max number of clips to show in the playlist.",
+                'type' => 'number',
+                'initvalue' => 25
+            ),
 			'initItemEntryId' => array(
 				'doc' => "The entryId that should be played first."
 			),
