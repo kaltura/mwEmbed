@@ -13,13 +13,19 @@
 			mw.log( "mw.ajaxProxy :: Error: missing url to proxy." );
 		}
 
+		// Validate and set ajax options
+		if (options.ajaxOptions){
+			options.enableCors = options.ajaxOptions.enableCors || true;
+		}
+
 		// Setup default vars
 		var defaults = {
 			error: function() {},
 			proxyUrl: mw.getConfig( 'Mw.XmlProxyUrl' ),
 			proxyType: 'jsonp',
 			startWithProxy: false,
-			timeout: mw.getConfig( 'Mw.AjaxTimeout', 10000 )
+			timeout: mw.getConfig( 'Mw.AjaxTimeout', 10000 ),
+			enableCors: true
 		};
 
 		// Merge options with defaults
@@ -44,7 +50,10 @@
 				success: function( result ) {
 					_this.handleResult( result );
 				},
-				timeout: _this.options.timeout
+				timeout: _this.options.timeout,
+				xhrFields: {
+					withCredentials: _this.options.enableCors
+				}
 			};
 
 			if( useProxy ) {

@@ -33,7 +33,7 @@ mw.VastAdParser = {
 			var adUrl = $vast.find('VASTAdTagURI').text();
 			addVideoClicksIfExist();
 			mw.log('VastAdParser:: Found vast wrapper, load ad: ' + adUrl);
-			mw.AdLoader.load( adUrl, callback, true , $vast );
+			mw.AdLoader.load( adUrl, callback, true , $vast, null );
 			return ;
 		}
 

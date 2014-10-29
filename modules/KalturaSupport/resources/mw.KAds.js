@@ -173,7 +173,8 @@
 				};
 
 				_this.addSequenceProxyBinding( adType, adConfigWrapper, _this.getSequenceIndex( adType ) );
-			});
+			},
+			false, null, {enableCors: _this.getConfig("enableCors")});
 		},
 		/**
 		 * load and display an ad
@@ -322,7 +323,8 @@
 				}
 				_this.adPlayer.display( adsCuePointConf, doneCallback, adDuration );
 
-			});
+			},
+			false, null, {enableCors: _this.getConfig("enableCors")});
 		},
 
 		// Load all the ads per the $adConfig
@@ -444,7 +446,8 @@
 							// play next ad
 							_this.displayAdNumAds( displayCount, adType, adConfig,  callback);
 						});
-					});
+					},
+					false, null, {enableCors: _this.getConfig("enableCors")});
 				}else {
 					_this.adPlayer.display( adConfig, function(){
 						// play next ad ( or continue to callback )
@@ -584,8 +587,9 @@
 					mw.AdLoader.load( _this.getAdUrl( adType ) , function( adDisplayConf ){
 						mw.log("KalturaAds loaded: " + adType );
 						loadQueueCount--;
-						addAdCheckLoadDone( adType,  $.extend({}, _this.getBaseAdConf( adType ), adDisplayConf ) );
-					});
+						addAdCheckLoadDone( adType,  $.extend({}, _this.getBaseAdConf( adType ), adDisplayConf ));
+					},
+					false, null, {enableCors: _this.getConfig("enableCors")});
 				} else {
 					// No async request
 					adConfigSet[ adType ] = _this.getBaseAdConf( adType );
