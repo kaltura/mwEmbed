@@ -17,8 +17,10 @@ mw.AdLoader = {
 	 * @param {XML} wrapperData
 	 * 		(optional) in case this loader is being called from a wrapper, preserve the wrapper data and pass it to the
      * 		inner ad so it can parse and send its events
+	 * @param {object} ajaxOptions
+	 * 		(optional) additional ajax options, e.g. withCredentials
 	 */
-	load: function( adUrl, callback, wrapped , wrapperData ){
+	load: function( adUrl, callback, wrapped , wrapperData, ajaxOptions ){
 		var _this = this;
         this.wrapperData = null;
 
@@ -44,6 +46,7 @@ mw.AdLoader = {
 		// Make ajax request with fallback to proxy service
 		new mw.ajaxProxy({
 			url: adUrl,
+			ajaxOptions: ajaxOptions,
 			success: function( resultXML ) {
 				_this.handleResult( resultXML, callback );
 			},
