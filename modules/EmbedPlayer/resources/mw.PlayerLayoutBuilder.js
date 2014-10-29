@@ -1040,12 +1040,12 @@ mw.PlayerLayoutBuilder.prototype = {
 					.addClass( 'ui-icon ui-icon-closethick' )
 			);
 		}
-
+		var margin = $(".topBarContainer").length === 0 ? '0 10px 10px 0' : '22px 10px 10px 0'; // if we have a topBarContainer - push the content 22 pixels down
 		var overlayMenuCss = {
 			'height' : '100%',
 			'width' : '100%',
 			'position' : 'absolute',
-			'margin': '0 10px 10px 0',
+			'margin': margin,
 			'overflow' : 'auto',
 			'padding' : '4px',
 			'z-index' : 3
