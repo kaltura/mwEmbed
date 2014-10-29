@@ -174,7 +174,7 @@
 
 				_this.addSequenceProxyBinding( adType, adConfigWrapper, _this.getSequenceIndex( adType ) );
 			},
-			false, null, {enableCors: _this.getConfig("enableCors")});
+			false, null, {enableCORS: _this.getConfig("enableCORS")});
 		},
 		/**
 		 * load and display an ad
@@ -324,7 +324,7 @@
 				_this.adPlayer.display( adsCuePointConf, doneCallback, adDuration );
 
 			},
-			false, null, {enableCors: _this.getConfig("enableCors")});
+			false, null, {enableCORS: _this.getConfig("enableCORS")});
 		},
 
 		// Load all the ads per the $adConfig
@@ -447,7 +447,7 @@
 							_this.displayAdNumAds( displayCount, adType, adConfig,  callback);
 						});
 					},
-					false, null, {enableCors: _this.getConfig("enableCors")});
+					false, null, {enableCORS: _this.getConfig("enableCORS")});
 				}else {
 					_this.adPlayer.display( adConfig, function(){
 						// play next ad ( or continue to callback )
@@ -589,7 +589,7 @@
 						loadQueueCount--;
 						addAdCheckLoadDone( adType,  $.extend({}, _this.getBaseAdConf( adType ), adDisplayConf ));
 					},
-					false, null, {enableCors: _this.getConfig("enableCors")});
+					false, null, {enableCORS: _this.getConfig("enableCORS")});
 				} else {
 					// No async request
 					adConfigSet[ adType ] = _this.getBaseAdConf( adType );
