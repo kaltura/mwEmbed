@@ -359,4 +359,9 @@
 				'dependencies' => 'mw.KBaseComponent',
 				'kalturaPluginName' => 'audioDescription'
 		),
+		"reportError" => array(
+				'scripts' => "components/reportError.js",
+				'dependencies' => 'mw.KBaseComponent',
+				'kalturaPluginName' => 'reportError'
+		),
 	);
