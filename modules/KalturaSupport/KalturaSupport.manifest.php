@@ -1393,4 +1393,17 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 		)
 	),
+	'hammerEvents' => array(
+		'description' => 'Support Hammer.js events against the player canvas.',
+		'attributes' => array(
+			'on' => array(
+				'doc' => "The list of named hammer events to track seperated by spaces.",
+				'type' => 'string'
+			),
+			'options' => array(
+				'doc' => "JSON object of hammer initialization options",
+				'type' => 'string'
+			),
+		)
+	)
 );
