@@ -295,6 +295,18 @@
 					}
 				}
 			});
+			_this.embedPlayer.bindHelper('Kaltura_SendNotification' + this.bindPostfix, function (event, notificationName, notificationData) {
+				if (notificationName === "doPause") {
+					_this.embedPlayer.paused = true;
+					$(_this.embedPlayer).trigger("onPlayerStateChange", ["pause", _this.embedPlayer.currentState]);
+					_this.embedPlayer.getPlayerElement().sendNotification("pauseAd");
+				}
+				if (notificationName === "doPlay") {
+					_this.embedPlayer.paused = false;
+					$(_this.embedPlayer).trigger("onPlayerStateChange", ["play", _this.embedPlayer.currentState]);
+					_this.embedPlayer.getPlayerElement().sendNotification("resumeAd");
+				}
+			});
 		},
 		/**
 		 * Get the content video tag
@@ -729,6 +741,9 @@
 
 					// Monitor ad progress
 					_this.monitorAdProgress();
+
+					// Send a notification to trigger associated events and update ui
+					_this.embedPlayer.sendNotification('doPlay');
 				}
 			} );
 			adsListener( 'PAUSED', function(){
@@ -803,6 +818,8 @@
 							.addClass( 'ad-component ad-notice-label' )
 					);
 				}
+				// Send a notification to trigger associated events and update ui
+				_this.embedPlayer.paused = false;
 			},'adStart', true);
 
 
