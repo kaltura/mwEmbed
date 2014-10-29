@@ -2997,6 +2997,10 @@
 			} else {
 				return true;
 			}
+		},
+
+		handlePlayerError: function( data ) {
+			this.showErrorMsg( { title: this.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), message: this.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) } );
 		}
 	};
 
