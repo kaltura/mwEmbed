@@ -25,7 +25,10 @@ mw.AdLoader = {
         this.wrapperData = null;
 
 		adUrl = _this.replaceCacheBuster(adUrl);
-
+		
+		// trip whitespace in ad urls: 
+		adUrl = $.trim( adUrl );
+		
 		mw.log('AdLoader :: load Ad: ', adUrl);
 
 		// Increase counter if the vast is wrapped, otherwise reset
