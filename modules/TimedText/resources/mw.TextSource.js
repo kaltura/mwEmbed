@@ -360,6 +360,8 @@
 				nodeString += '</' + node.nodeName + '>';
 				return nodeString;
 			}
+			// be sure to return an empty string where node.childNodes is empty
+			return '';
 		},
 		/**
 		 * srt timed text parse handle:
