@@ -382,7 +382,7 @@ mw.VastAdParser = {
 					}
 					// support non-linear clickthrough tracking
 					if( $( companionNode ).find('NonLinearClickTracking').text() != '' ){
-						$companionHtml.attr("data-NonLinearClickTracking",$( companionNode ).find('NonLinearClickTracking')[0]);
+						$companionHtml.attr("data-NonLinearClickTracking", $(companionNode).find('NonLinearClickTracking').text());
 					}
 				break;
 				case 'application/x-shockwave-flash':
