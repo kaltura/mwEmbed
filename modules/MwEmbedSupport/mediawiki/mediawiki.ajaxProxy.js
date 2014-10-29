@@ -15,7 +15,7 @@
 
 		// Validate and set ajax options
 		if (options.ajaxOptions){
-			options.enableCors = options.ajaxOptions.enableCors || true;
+			options.enableCORS = options.ajaxOptions.enableCORS || true;
 		}
 
 		// Setup default vars
@@ -25,7 +25,7 @@
 			proxyType: 'jsonp',
 			startWithProxy: false,
 			timeout: mw.getConfig( 'Mw.AjaxTimeout', 10000 ),
-			enableCors: true
+			enableCORS: true
 		};
 
 		// Merge options with defaults
@@ -52,7 +52,7 @@
 				},
 				timeout: _this.options.timeout,
 				xhrFields: {
-					withCredentials: _this.options.enableCors
+					withCredentials: _this.options.enableCORS
 				}
 			};
 
