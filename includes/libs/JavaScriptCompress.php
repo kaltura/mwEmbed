@@ -13,7 +13,7 @@ class JavaScriptCompress{
 	 */
 	public static function minify( $s, $statementsOnOwnLine = false, $maxLineLength = 1000 ) {
 		global $wgNodeJsUglifyPath, $wgResourceLoaderMinifierStatementsOnOwnLine;
-		if( is_file( $wgNodeJsUglifyPath ) ){
+		if( is_file( $wgNodeJsUglifyPath ) || is_link( $wgNodeJsUglifyPath ) ){
 			return JavaScriptNodeUglifyJs::minify( $s );
 		} else {
 			return JavaScriptMinifier::minify($s, $wgResourceLoaderMinifierStatementsOnOwnLine, $maxLineLength );

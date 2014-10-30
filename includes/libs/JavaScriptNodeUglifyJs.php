@@ -17,9 +17,10 @@ class JavaScriptNodeUglifyJs {
 		$cmd = $wgNodeJsUglifyPath;
 		
 		$descriptorspec = array(
-				0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
-				1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
-				2 => array("file", "/tmp/error.txt", "a")
+			0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
+			1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
+			// note we should use lent etc. our compile is not without warnings
+			//2 => array("file", "/tmp/error.txt", "a") 
 		);
 		$env = array(
 			'PATH' => '/usr/local/bin' //Path to node bin dir
