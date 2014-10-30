@@ -142,6 +142,10 @@ mw.KAdPlayer.prototype = {
 			//Remove icon if present
 			$('#' + _this.embedPlayer.id + '_icon' ).remove();
 
+			//remove vpaid container for overlay ads
+			var vpaidid = _this.getVPAIDId();
+			$("#" + vpaidid ).remove();
+
 			adSlot.adIndex++;
 
 			//last ad in ad sequence
@@ -297,6 +301,7 @@ mw.KAdPlayer.prototype = {
 			mw.log( "KAdPlayer::display:" + adSlot.type + " Playback done because vid does not exist or > displayDuration " + displayDuration );
 			_this.overrideDisplayDuration = 0;
 			adSlot.playbackDone();
+
 		} else {
 			setTimeout( function(){
 				_this.monitorForDisplayDuration( adSlot, startTime, displayDuration );
