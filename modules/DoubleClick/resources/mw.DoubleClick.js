@@ -299,12 +299,16 @@
 				if (notificationName === "doPause") {
 					_this.embedPlayer.paused = true;
 					$(_this.embedPlayer).trigger("onPlayerStateChange", ["pause", _this.embedPlayer.currentState]);
-					_this.embedPlayer.getPlayerElement().sendNotification("pauseAd");
+					if (_this.isChromeless) {
+						_this.embedPlayer.getPlayerElement().sendNotification("pauseAd");
+					}
 				}
 				if (notificationName === "doPlay") {
 					_this.embedPlayer.paused = false;
 					$(_this.embedPlayer).trigger("onPlayerStateChange", ["play", _this.embedPlayer.currentState]);
-					_this.embedPlayer.getPlayerElement().sendNotification("resumeAd");
+					if (_this.isChromeless) {
+						_this.embedPlayer.getPlayerElement().sendNotification("resumeAd");
+					}
 				}
 			});
 		},
