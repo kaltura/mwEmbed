@@ -40,44 +40,45 @@ mw.KAdPlayer.prototype = {
 	init: function( embedPlayer ){
 		var _this = this;
 		this.embedPlayer = embedPlayer;
+		var receivedPlayerReady = false;
 
-		// bind to the doPlay event triggered by the playPauseBtn component when the user resume playback from this component after clickthrough pause
-		var eventName = "doPlay";
-
-		// bind AdSupport_StartAdPlayback event since the small play/ pause button in the control bar doesn't change the state when ad is played on mobile browser
-		if( !_this.isVideoSiblingEnabled() ) {
-			eventName = eventName + " AdSupport_StartAdPlayback";
-		}
-
-		$(this.embedPlayer).bind(eventName, function(){
-			if (mw.getConfig("enableControlsDuringAd")){
-				var adPlayer = _this.getVideoElement();
-				if ( adPlayer ) {
-					if ( adPlayer.paused ) {
+		// for mobile devices (no ad sibling): prevent seeking when we have ads and playback hasn't started yet
+		$(this.embedPlayer).bind('playerReady', function(){
+			// bind to the doPlay event triggered by the playPauseBtn component when the user resume playback from this component after clickthrough pause
+			var eventName = "doPlay";
+			if (!_this.isVideoSiblingEnabled()){
+				//first time we get the playerReady event
+				eventName = eventName + " AdSupport_StartAdPlayback";
+			}
+			//first playerReady
+			if ( !receivedPlayerReady ) {
+				$(_this.embedPlayer).bind(eventName, function(){
+					if (mw.getConfig("enableControlsDuringAd")){
+						var adPlayer = _this.getVideoElement();
+						if ( adPlayer ) {
+							if ( adPlayer.paused ) {
+								$( embedPlayer ).trigger( "onPlayerStateChange", ["play"] ); // trigger playPauseBtn UI update
+								$( embedPlayer ).trigger( "onResumeAdPlayback" );
+								_this.clickedBumper = false;
+								_this.disablePlayControls(); // disable player controls
+								adPlayer.play();
+							} else {
+								$( embedPlayer ).trigger( "onPlayerStateChange", ["pause", _this.embedPlayer.currentState] ); // trigger playPauseBtn UI update
+								setTimeout( function () {
+									adPlayer.pause();
+								}, 0 );
+							}
+						}
+					} else {
 						$( embedPlayer ).trigger( "onPlayerStateChange", ["play"] ); // trigger playPauseBtn UI update
 						$( embedPlayer ).trigger( "onResumeAdPlayback" );
 						_this.clickedBumper = false;
 						_this.disablePlayControls(); // disable player controls
-						adPlayer.play();
-					} else {
-						$( embedPlayer ).trigger( "onPlayerStateChange", ["pause", _this.embedPlayer.currentState] ); // trigger playPauseBtn UI update
-						setTimeout( function () {
-							adPlayer.pause();
-						}, 0 );
 					}
-				}
-			} else {
-				$( embedPlayer ).trigger( "onPlayerStateChange", ["play"] ); // trigger playPauseBtn UI update
-				$( embedPlayer ).trigger( "onResumeAdPlayback" );
-				_this.clickedBumper = false;
-				_this.disablePlayControls(); // disable player controls
+				});
 			}
-		});
-		// for mobile devices (no ad sibling): prevent seeking when we have ads and playback hasn't started yet
-		$(this.embedPlayer).bind('playerReady', function(){
-			if (!_this.isVideoSiblingEnabled()){
-				$( _this.embedPlayer ).trigger( "onDisableScrubber" );
-			}
+
+			receivedPlayerReady = true;
 		});
 	},
 
@@ -423,7 +424,13 @@ mw.KAdPlayer.prototype = {
 				$( '#' + iconId ).click(function(){
 					window.open( icon.clickthru );
 					mw.sendBeaconUrl( icon.clickTracking );
-					return true;
+					return false;
+				});
+				// prevent mouseup propegation to prevent the clickthrough url to open on IE8 / IE9 (see mw.PlayerLayoutBuilder.js, line 567)
+				$( '#' + iconId ).bind('mouseup', function(e){
+					e = e || window.event;
+					e.preventDefault();
+					e.stopPropagation();
 				});
 			}
 
@@ -453,21 +460,6 @@ mw.KAdPlayer.prototype = {
 			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'click';
 			setTimeout( function(){
 				$clickTarget.unbind(clickEventName + _this.adClickPostFix).bind( clickEventName + _this.adClickPostFix, function(e){
-					if ( adSlot.videoClickTracking && adSlot.videoClickTracking.length > 0  ) {
-						mw.log("KAdPlayer:: sendBeacon to: " + adSlot.videoClickTracking[0] );
-						for (var i=0; i < adSlot.videoClickTracking.length ; i++){
-							mw.sendBeaconUrl( adSlot.videoClickTracking [i]);
-						}
-                        //handle wrapper clickTracking
-                        if(adSlot.wrapperData ){
-
-                            adSlot.wrapperData.contents().find('ClickTracking').each(function(a,b){
-                                mw.sendBeaconUrl($(b).contents().text())
-						        mw.log("KAdPlayer:: sendBeacon to (wrapper): " + $(b).contents().text() );
-                            })
-                        }
-
-					}
 					if ( adConf.clickThrough ) {
 						e.stopPropagation();
 						if( _this.clickedBumper ){
@@ -500,6 +492,21 @@ mw.KAdPlayer.prototype = {
 							embedPlayer.enablePlayControls();
 							//expose the URL to the
 							embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
+							if ( adSlot.videoClickTracking && adSlot.videoClickTracking.length > 0  ) {
+								mw.log("KAdPlayer:: sendBeacon to: " + adSlot.videoClickTracking[0] );
+								for (var i=0; i < adSlot.videoClickTracking.length ; i++){
+									mw.sendBeaconUrl( adSlot.videoClickTracking [i]);
+								}
+								//handle wrapper clickTracking
+								if(adSlot.wrapperData ){
+
+									adSlot.wrapperData.contents().find('ClickTracking').each(function(a,b){
+										mw.sendBeaconUrl($(b).contents().text())
+										mw.log("KAdPlayer:: sendBeacon to (wrapper): " + $(b).contents().text() );
+									})
+								}
+
+							}
 							window.open( adConf.clickThrough );
 						}
 					}
@@ -525,27 +532,11 @@ mw.KAdPlayer.prototype = {
 		if( targetSource && targetSource.getMIMEType().indexOf('image/') != -1 ){
 			return false;
 		}
-
-		if( mw.getConfig( "DisableVideoSibling") ) {
+		else if ( this.disableSibling) {
 			return false;
+		} else {
+			return this.embedPlayer.isVideoSiblingEnabled();
 		}
-
-		if( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
-			return false;
-		}
-
-		if ( this.disableSibling) {
-			return false;
-		}
-
-		// iPhone and IOS 5 does not play multiple videos well, use source switch. Chromecast should not use sibling as well.
-		if( mw.isIphone() || mw.isAndroid2() || mw.isAndroid40() || mw.isMobileChrome() || this.embedPlayer.instanceOf == "Chromecast"
-				|| 
-			( mw.isIpad() && ! mw.isIpad3() ) 
-		){
-			return false;
-		}
-		return true;
 	},
 	addAdBindings: function( vid,  adSlot, adConf ){
 		var _this = this;

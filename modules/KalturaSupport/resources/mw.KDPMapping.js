@@ -861,10 +861,10 @@
 					})
 					break;
 				case 'bytesDownloadedChange':
-					// KDP sends an initial bytes loaded zeor at player ready:
+					// KDP sends an initial bytes loaded zero at player ready:
 					var prevBufferBytes = 0;
 					b( 'monitorEvent', function(){
-						if( typeof embedPlayer.bufferedPercent != 'undefined' ){
+						if( typeof embedPlayer.bufferedPercent != 'undefined' && embedPlayer.mediaElement.selectedSource ){
 							var bufferBytes = parseInt( embedPlayer.bufferedPercent *  embedPlayer.mediaElement.selectedSource.getSize() );
 							if( bufferBytes != prevBufferBytes ){
 								callback( { 'newValue': bufferBytes }, embedPlayer.id );

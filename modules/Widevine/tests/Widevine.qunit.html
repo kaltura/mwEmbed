@@ -59,19 +59,20 @@ function jsKalturaPlayerTest( videoId ){
 			'flavorTags' : 'widevine_mbr,mbr,web',
 			'widevine': {
 				'plugin' : true,
-				'useSupportedDeviceMsg': null,
-				'useSupportedDeviceTitle': null,
-				'intallFlashMsg': null,
-				'installFlashTitle' : null,
-				'useKdpMsg': null,
-				'useKdpTitle': null,
-				'promptStyle': null,
-				'promptText': null,
-				'promptLinkText' : null
+				'useSupportedBrowserMsg': 'This video is not supported by this browser.',
+				'useSupportedBrowserTitle': 'Notification',
+				'useSupportedDeviceMsg': 'This video requires Adobe Flash Player, which is not supported by your device. You can watch it on devices that support Flash.',
+				'useSupportedDeviceTitle': 'Notification',
+				'intallFlashMsg': "This video requires Adobe Flash Player, which is currently not available on your browser. Please <a href='http://www.adobe.com/support/flashplayer/downloads.html' target='_blank'> install Adobe Flash Player </a> to view this video.",
+				'installFlashTitle': 'Notification',
+				'useKdpMsg': 'This video requires Adobe Flash enabled player.',
+				'useKdpTitle': 'Notification',
+				'promptText': 'Widevine Video Optimizer plugin is needed for enabling video playback in this page. ',
+				'promptLinkText': 'Get Video Optimizer',
+				'PromptRestartChromeAfterInstall' : 'Download of the plugin installer will start immediately. Note that you must restart your Chrome browser after running the installer',
+				'promptTitle' : 'Notification'
 			} ,
-			'playbackRateSelector': {
-				'plugin': false
-			}
+			'playbackRateSelector.plugin': false
 		}
 	})
 </script>

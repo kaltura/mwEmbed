@@ -317,7 +317,6 @@
 			'desc' => 'Fired when an ad fails to load (applicable to all ad systems)'
 		)
 	);
-
 	$playlists = array(
 		'playlistReady' => array(
 			'props' => 'None',

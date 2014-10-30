@@ -320,7 +320,7 @@ return array(
                 )
             ),
             'includeInLayout' => array(
-                'doc' => "If the clip list should be displayed.",
+                'doc' => "Include clip list in the display.",
                 'type' => 'boolean',
                 'initvalue' => true
             ),
@@ -338,7 +338,7 @@ return array(
 				'type' => 'boolean'
 			),
 			'loop' => array(
-				'doc' => "If the playlist should loop on complete.",
+				'doc' => "If the playlist should loop.",
 				'type' => 'boolean'
 			),
 			'hideClipPoster' => array(
@@ -471,9 +471,17 @@ return array(
 			The download button will enable users to download the media to a local file.",
 		'attributes' => array_merge($kgDefaultComponentAttr,
 			array(
+                'flavorID' => array(
+                    'label' => 'Flavor ID',
+                    'doc' => "Flavor ID for the downloaded movie source. When specified, overrides any preferred bitrate settings",
+                    'type' => 'string',
+                    'initvalue' => ''
+                ),
+            ),
+			array(
 				'preferredBitrate' => array(
-					'label' => 'Preferred bitrate / flavour ID',
-					'doc' => "Preferred bitrate or flavour ID for the downloaded movie source. Keep empty for the highest bitrate. Enter '0' for the original movie source file",
+					'label' => 'Preferred bitrate',
+					'doc' => "Preferred bitrate for the downloaded movie source (when Flavor ID is not specified). Keep empty for the highest bitrate. Enter '0' for the original movie source file",
 					'type' => 'string',
 					'initvalue' => ''
 				),
@@ -1204,6 +1212,11 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'boolean',
 				'initvalue' => true
 			),
+			'pinVolumeBar' => array(
+				'doc' => 'If the volume slider bar should always be shown.',
+				'type' => 'boolean',
+				'initvalue' => false
+			),
 			'accessibleControls' => array(
 				'doc' => 'Accessible buttons volume change percent from 0 to 1: The amount of volume that will be added or reduced when using the accessible volume buttons.',
 				'type' => 'boolean',
@@ -1384,7 +1397,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'itemsLimit' => array(
 					'doc' => 'Maximum number of items to show on the related screen.',
 					'type' => 'number'
-				)/*,
+				),
+				'storeSession'=> array(
+					'doc' => "Store the played entries across page views in related clips display",
+					'type' => 'boolean'
+				)
+				/*
 				// hide template path for now, no way for user to provide useful value here.
 				'templatePath' => array(
 					'doc' => 'Template path to be used by the plugin.',

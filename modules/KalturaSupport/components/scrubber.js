@@ -32,10 +32,6 @@
 				_this.duration = duration;
 			});
 
-			this.bind( 'onDisableScrubber', function(){
-				_this.onDisable();
-			});
-
 			// check if parent is controlsContainer
 			if( this.getConfig('parent') == 'controlsContainer' ){
 				// need to add

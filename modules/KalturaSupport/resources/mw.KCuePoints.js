@@ -228,8 +228,12 @@ mw.KCuePoints.prototype = {
 				" seeked" + this.bindPostfix +
 				" onplay" + this.bindPostfix +
 				" KalturaSupport_ThumbCuePointsUpdated" + this.bindPostfix,
-			function() {
+			function(e) {
 				var currentTime = embedPlayer.currentTime * 1000;
+				//In case of seeked the current cuepoint needs to be updated to new seek time before
+				if ( e.type == "seeked"){
+					currentCuePoint = _this.getNextCuePoint( currentTime );
+				}
 				// Check if the currentCuePoint exists
 				if( currentCuePoint && currentTime > currentCuePoint.startTime && embedPlayer._propagateEvents ){
 					// Make a copy of the cue point to be triggered.

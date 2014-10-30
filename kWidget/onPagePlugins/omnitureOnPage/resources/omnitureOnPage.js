@@ -81,7 +81,8 @@ kWidget.addReadyCallback( function( playerId ){
 					callback();
 				}
 			}, function(){
-				// failed to load scode: 
+				// failed to load scode:
+				_this.kdp.sendNotification("omnitureScodeError");
 				_this.log( "Error: failed to load s-code")
 			})
 		},

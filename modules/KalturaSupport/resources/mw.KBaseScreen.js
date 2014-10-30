@@ -26,7 +26,7 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 
 		this.bindCleanScreen();
 
-		this.bind('onplay', $.proxy(function(){
+		this.bind('onplay preSequence', $.proxy(function(){
 			if( this.isScreenVisible() ){
 				setTimeout(function(){
 					_this.getPlayer().disableComponentsHover();

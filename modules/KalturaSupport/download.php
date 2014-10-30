@@ -390,56 +390,53 @@ class downloadEntry {
 	private function getSourceFlavorUrl( $flavorId = false ){
 		global $wgHTTPProtocol;
 
-		// first check if we got preferredBitrate
+		// first check if we got preferredBitrate or flavour ID
 		if( isset($_GET['preferredBitrate']) && $_GET['preferredBitrate'] != null){
-            $preferredBitrate	= intval($_GET['preferredBitrate']);
+            $preferredBitrate = intval($_GET['preferredBitrate']);
+        }
+        if( isset($_GET['flavorID']) && $_GET['flavorID'] != null){
+            $flavorID = $_GET['flavorID'];
         }
 
-		// for preferredBitrate get all the sources (no filter) and look for the closest bitrate source
-		if ( isset( $preferredBitrate ) ) {
-            // try to find the closest bitrate source
-            $deltaBitrate = 999999999;
-            $src = false;
+		$src = false;
+		$kResultObject = $this->getResultObject();
+        $resultObject =  $kResultObject->getResult();
 
-            $kResultObject = $this->getResultObject();
-            $resultObject =  $kResultObject->getResult();
-
+		if ( isset( $flavorID ) ) {
+			// flavor ID overrides preferred bitrate so look for it first
+            foreach( $resultObject['contextData']->flavorAssets as $source ){
+                if( isset($source->id) && $source->id == $flavorID){
+                    $src = $this->getSourceUrl($kResultObject, $resultObject, $source);
+                }
+            }
+		}else if ( isset( $preferredBitrate ) ) {
 			// if the user specified 0 - return the source
-			if ($_GET['preferredBitrate'] == "0"){
+			if ($preferredBitrate == 0){
 				foreach( $resultObject['contextData']->flavorAssets as $source ){
-                    if (isset($source->tags) && $source->tags == "source"){
+                    if (isset($source->tags) && strpos($source->tags,'source') !== false){
 						$src = $this->getSourceUrl($kResultObject, $resultObject, $source);
 					}
 				}
 			}else{
-				// decide if we got a bitrate or a flavour ID
-				if (strlen(strval($preferredBitrate)) == strlen($_GET['preferredBitrate'])){
-					// this is a bitrate
-		            foreach( $resultObject['contextData']->flavorAssets as $source ){
-	                    if( isset($source->bitrate) ){
-	                        $delta =  abs( $source->bitrate - $preferredBitrate );
-	                        if ( $delta < $deltaBitrate) {
-	                            $deltaBitrate = $delta;
-	                            $src = $this->getSourceUrl($kResultObject, $resultObject, $source);
-	                        }
-	                    }
-	                }
-				}else{
-					// this is a flavour ID
-		            foreach( $resultObject['contextData']->flavorAssets as $source ){
-	                    if( isset($source->id) && $source->id == $_GET['preferredBitrate']){
-	                        $src = $this->getSourceUrl($kResultObject, $resultObject, $source);
-	                    }
-	                }
-				}
+	            // try to find the closest bitrate source
+                $deltaBitrate = 999999999;
+	            foreach( $resultObject['contextData']->flavorAssets as $source ){
+                    if( isset($source->bitrate) ){
+                        $delta =  abs( $source->bitrate - $preferredBitrate );
+                        if ( $delta < $deltaBitrate) {
+                            $deltaBitrate = $delta;
+                            $src = $this->getSourceUrl($kResultObject, $resultObject, $source);
+                        }
+                    }
+                }
 			}
+		}
 
-			if ($src){
-				return $src;
-			}
-        }
+		if ($src){
+			return $src;
+		}
 
-        // if no preferredBitrate was specified - continue normally
+        // if no flavorID or preferredBitrate were specified - continue normally
 		$sources = $this->getSources(); // Get all sources ( if not provided )
 		$validSources = array(); 
 		foreach( $sources as $inx => $source ){

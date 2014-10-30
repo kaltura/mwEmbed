@@ -21,7 +21,7 @@
 			'hideClipPoster': true,
 			'loop': false,
 			'overflow': false,
-			'cssPath': 'playList.css',
+			'cssFileName': 'modules/KalturaSupport/components/playlist/playList.css',
 			'showControls': true,
 			'selectedIndex': 0
 		},
@@ -42,6 +42,9 @@
 			if ( this.getConfig( 'includeInLayout' ) === false){ // support hidden playlists - force onPage and hide its div.
 				this.setConfig( 'onPage', true );
 			}
+			//Backward compatibility setting - set autoplay on embedPlayer instead of playlist
+			this.getPlayer().autoplay = (this.getConfig( 'autoPlay' ) == true);
+
 			this.setConfig( 'horizontalHeaderHeight', 43 );
 			this.addBindings();
 			this.loadPlaylists();
@@ -53,8 +56,15 @@
 			this.bind( 'playerReady', function ( e, newState ) {
 				if (_this.playlistSet.length > 0){
 					_this.selectPlaylist(_this.currentPlaylistIndex);
+					//Revert block player display after selecting playlist entry
+					_this.getPlayer()['data-blockPlayerDisplay'] = false;
 				}
 				_this.unbind( 'playerReady'); // we want to select the playlist only the first time the player loads
+			});
+
+			this.bind( 'mediaError', function ( e ) {
+				_this.loadingEntry = null; // reset loadingEntry if we got a media error (also media loading error will trigger this event)
+				_this.onEnable();
 			});
 
 			// API support + backward compatibility
@@ -155,7 +165,7 @@
 		addMediaItems: function(itemsArr){
 			for (var i = 0; i < itemsArr.length; i++){
 				var item = itemsArr[i];
-				var customData = (item.partnerData  && item.adminTags !== 'image') ? JSON.parse(item.partnerData) :  {};
+				var customData = (item.partnerData  && item.adminTags !== 'image') ? mw.parseJSON(item.partnerData, {}) :  {};
 				var title = item.name || customData.title;
 				var description = item.description || customData.desc;
 				var thumbnailUrl = item.thumbnailUrl || customData.thumbUrl || this.getThumbUrl(item);
@@ -179,7 +189,7 @@
 		},
 
 		// play a clip according to the passed index. If autoPlay is set to false - the clip will be loaded but not played
-		playMedia: function(clipIndex, autoPlay){
+		playMedia: function(clipIndex){
 			this.setSelectedMedia(clipIndex);              // this will highlight the selected clip in the UI
 			this.setConfig("selectedIndex", clipIndex);    // save it to the config so it can be retrieved using the API
 			this.embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')} ); // for API backward compatibility
@@ -193,12 +203,24 @@
 				return ;
 			}
 
-			// iOS devices have a autoPlay restriction, we issue a raw play call on
+			// Check if entry id already matches ( and is loaded )
+			if( embedPlayer.kentryid == id ){
+				if( this.loadingEntry ){
+					mw.log("Error: PlaylistAPI is loading Entry, possible double playClip request");
+					return ;
+				}
+			}
+
+			// mobile devices have a autoPlay restriction, we issue a raw play call on
 			// the video tag to "capture the user gesture" so that future
 			// javascript play calls can work
-			if( embedPlayer.getPlayerElement() && embedPlayer.getPlayerElement().load ){
+			if( mw.isMobileDevice() && embedPlayer.firstPlay){
 				mw.log("Playlist:: issue load call to capture click for iOS");
-				embedPlayer.getPlayerElement().load();
+				try{
+					embedPlayer.getPlayerElement().load();
+				}catch (e){
+					mw.log("Playlist:: could not load video - possibly restricted video");
+				}
 			}
 
 			// Send notifications per play request
@@ -211,36 +233,30 @@
 				eventToTrigger = 'playlistMiddleEntry';
 			}
 
-			// Check if entry id already matches ( and is loaded )
-			if( embedPlayer.kentryid == id ){
-				if( this.loadingEntry ){
-					mw.log("Error: PlaylistAPI is loading Entry, possible double playClip request");
-					return ;
-				}
-			}
-
-			this.loadingEntry = id; // Update the loadingEntry flag
 			// Listen for change media done
 			$( embedPlayer).unbind( 'onChangeMediaDone' + this.bindPostFix ).bind( 'onChangeMediaDone' + this.bindPostFix, function(){
 				mw.log( 'mw.PlaylistAPI:: onChangeMediaDone' );
 				embedPlayer.triggerHelper( eventToTrigger );
-				_this.loadingEntry = false; // Update the loadingEntry flag
-				if( _this.firstPlay ){
-					_this.firstPlay = false;
-				}
-				if (autoPlay){
-					embedPlayer.play();     // auto play
+				_this.loadingEntry = false; // Update the loadingEntry flag//
+				// play clip that was selected when autoPlay=false. if autoPlay=true, the embedPlayer will do that for us.
+				if (!_this.getConfig("autoPlay")){
+					embedPlayer.play();
 				}
 			});
 			mw.log("PlaylistAPI::playClip::changeMedia entryId: " + id);
 
-			// Make sure its in a playing state when change media is called if we are autoContinuing:
-			if( this.getConfig('autoContinue') && !embedPlayer.firstPlay ){
-				embedPlayer.stopped = embedPlayer.paused = false;
+			if (!this.firstPlay && this.getConfig('hideClipPoster') === true && !mw.isIphone()){
+				mw.setConfig('EmbedPlayer.HidePosterOnStart', true);
 			}
 
 			// Use internal changeMedia call to issue all relevant events
-			embedPlayer.sendNotification( "changeMedia", {'entryId' : id, 'playlistCall': true} );
+			//embedPlayer.changeMediaStarted = false;
+			if (!this.firstPlay){
+				this.loadingEntry = id; // Update the loadingEntry flag
+				embedPlayer.sendNotification( "changeMedia", {'entryId' : id, 'playlistCall': true} );
+			}else{
+				embedPlayer.triggerHelper( eventToTrigger );
+			}
 
 			// Add playlist specific bindings:
 			_this.addClipBindings(clipIndex);
@@ -248,8 +264,8 @@
 			// Restore onDoneInterfaceFlag
 			embedPlayer.onDoneInterfaceFlag = true;
 
-			if (!this.firstPlay && this.getConfig('hideClipPoster') === true){
-				mw.setConfig('EmbedPlayer.HidePosterOnStart', true);
+			if( this.firstPlay ){
+				this.firstPlay = false;
 			}
 		},
 
@@ -266,7 +282,7 @@
 		},
 
 		playNext: function(){
-			if (this.isDisabled){
+			if (this.isDisabled || this.loadingEntry){
 				return;
 			}
 			if( this.getConfig("loop") == true && this.currentClipIndex != null && this.currentClipIndex === this.mediaList.length - 1 ){ // support loop
@@ -281,7 +297,7 @@
 		},
 
 		playPrevious: function(){
-			if (this.isDisabled){
+			if (this.isDisabled || this.loadingEntry){
 				return;
 			}
 			if (this.currentClipIndex != null && this.currentClipIndex > 0){
@@ -401,14 +417,14 @@
 					var found = false;
 					for (var i=0; i<items.length; i++){
 						if (items[i].id === this.getConfig( 'initItemEntryId' )){
-							this.playMedia(i, this.getConfig( 'autoPlay' ));
+							this.playMedia(i);
 							found = true;
 							break;
 						}
 					}
 				}
 				if ( (this.getConfig( 'initItemEntryId' ) && !found) || !(this.getConfig( 'initItemEntryId' )) ){
-					this.playMedia( this.getConfig('selectedIndex'), this.getConfig('autoPlay'));
+					this.playMedia( this.getConfig('selectedIndex'));
 				}
 				this.firstLoad = false;
 			}

@@ -942,7 +942,7 @@ HTML;
 
 		// Check if path is valid and exists
 		if( !$resourcePath ) {
-			$this->logger->log('Unable to find resource: ' + $resourcePath );
+			$this->logger->log('Unable to find resource: ' . $resourcePath );
 			return false;
 		}
 		
