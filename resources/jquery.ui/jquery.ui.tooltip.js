@@ -1,8 +1,8 @@
 /*!
- * jQuery UI Tooltip 1.10.3
+ * jQuery UI Tooltip 1.10.4
  * http://jqueryui.com
  *
- * Copyright 2013 jQuery Foundation and other contributors
+ * Copyright 2014 jQuery Foundation and other contributors
  * Released under the MIT license.
  * http://jquery.org/license
  *
@@ -21,8 +21,8 @@ function addDescribedBy( elem, id ) {
 	var describedby = (elem.attr( "aria-describedby" ) || "").split( /\s+/ );
 	describedby.push( id );
 	elem
-		.data( "ui-tooltip-id", id );
-		//.attr( "aria-describedby", $.trim( describedby.join( " " ) ) ); // removed due to bug causing screen readers to read button labels twice (FEC-1029)
+		.data( "ui-tooltip-id", id )
+		.attr( "aria-describedby", $.trim( describedby.join( " " ) ) );
 }
 
 function removeDescribedBy( elem ) {
@@ -43,7 +43,7 @@ function removeDescribedBy( elem ) {
 }
 
 $.widget( "ui.tooltip", {
-	version: "1.10.3",
+	version: "1.10.4",
 	options: {
 		content: function() {
 			// support: IE<9, Opera in jQuery <1.7

@@ -110,7 +110,6 @@ return array(
 
 	/* jQuery UI */
 
-	// Core
 	'jquery.ui.core' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.core.js',
 		'skinStyles' => array(
@@ -125,65 +124,45 @@ return array(
 				//'resources/jquery.ui/themes/vector/jquery.ui.theme.css',
 			),
 		),
-		'dependencies' => 'jquery',
+		'group' => 'jquery.ui',
 	),
-	'jquery.ui.widget' => array(
-		'scripts' => 'resources/jquery.ui/jquery.ui.widget.js',
-	),
-	'jquery.ui.mouse' => array(
-		'scripts' => 'resources/jquery.ui/jquery.ui.mouse.js',
-		'dependencies' => 'jquery.ui.widget',
-	),
-	'jquery.ui.position' => array(
-		'scripts' => 'resources/jquery.ui/jquery.ui.position.js',
-	),
-	'jquery.ui.selectable' => array(
-		'scripts' => 'resources/jquery.ui/jquery.ui.selectable.js',
-		'skinStyles' => array(
-			'default' => 'resources/jquery.ui/themes/default/jquery.ui.selectable.css',
-			'vector' => 'resources/jquery.ui/themes/vector/jquery.ui.selectable.css',
-		),
-		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.mouse' ),
-	),
-	'jquery.ui.sortable' => array(
-		'scripts' => 'resources/jquery.ui/jquery.ui.sortable.js',
-		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.mouse' ),
-	),
-	'jquery.ui.tooltip' => array(
-		'scripts' => 'resources/jquery.ui/jquery.ui.tooltip.js',
-		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.position' ),
-		'skinStyles' => array(
-			'no-theme' => 'resources/jquery.ui/themes/no-theme/jquery.ui.tooltip.css',
-		)
-	),
-	'jquery.ui.draggable' => array(
-        'scripts' => 'resources/jquery.ui/jquery.ui.draggable.js',
-        'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.mouse' )
-    ),
-    'jquery.ui.resizable' => array(
-        'scripts' => 'resources/jquery.ui/jquery.ui.resizable.js',
-        'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.mouse' ),
-        'skinStyles' => array(
-            'default' => 'resources/jquery.ui/themes/no-theme/jquery.ui.resizable.css',
-            'no-theme' => 'resources/jquery.ui/themes/no-theme/jquery.ui.resizable.css'
-        )
-    ),
-	// Widgets
 	'jquery.ui.accordion' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.accordion.js',
-		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget' ),
+		'dependencies' => array(
+			'jquery.ui.core',
+			'jquery.ui.widget',
+		),
 		'skinStyles' => array(
 			'default' => 'resources/jquery.ui/themes/default/jquery.ui.accordion.css',
 			'vector' => 'resources/jquery.ui/themes/vector/jquery.ui.accordion.css',
 		),
+		'group' => 'jquery.ui',
 	),
 	'jquery.ui.autocomplete' => array(
-		'scripts' => 'resources/jquery.ui/jquery.ui.autocomplete.js',
-		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.position' ),
+		'scripts' => 'resources/lib/jquery.ui/jquery.ui.autocomplete.js',
+		'dependencies' => array(
+			'jquery.ui.core',
+			'jquery.ui.widget',
+			'jquery.ui.position',
+			'jquery.ui.menu',
+		),
 		'skinStyles' => array(
 			'default' => 'resources/jquery.ui/themes/default/jquery.ui.autocomplete.css',
 			'vector' => 'resources/jquery.ui/themes/vector/jquery.ui.autocomplete.css',
 		),
+		'group' => 'jquery.ui',
+	),
+	'jquery.ui.button' => array(
+		'scripts' => 'resources/jquery.ui/jquery.ui.button.js',
+		'dependencies' => array(
+			'jquery.ui.core',
+			'jquery.ui.widget',
+		),
+		'skinStyles' => array(
+			'default' => 'resources/jquery.ui/themes/default/jquery.ui.button.css',
+			'vector' => 'resources/jquery.ui/themes/vector/jquery.ui.button.css',
+		),
+		'group' => 'jquery.ui',
 	),
 	'jquery.ui.datepicker' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.datepicker.js',
@@ -195,6 +174,7 @@ return array(
 		'languageScripts' => array(
 			'af' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-af.js',
 			'ar' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-ar.js',
+			'ar-dz' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-ar-DZ.js',
 			'az' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-az.js',
 			'bg' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-bg.js',
 			'bs' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-bs.js',
@@ -203,7 +183,9 @@ return array(
 			'da' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-da.js',
 			'de' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-de.js',
 			'el' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-el.js',
+			'en-au' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-en-AU.js',
 			'en-gb' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-en-GB.js',
+			'en-nz' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-en-NZ.js',
 			'eo' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-eo.js',
 			'es' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-es.js',
 			'et' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-et.js',
@@ -211,9 +193,11 @@ return array(
 			'fa' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-fa.js',
 			'fi' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-fi.js',
 			'fo' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-fo.js',
-			'fr-ch' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-fr-CH.js',
 			'fr' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-fr.js',
+			'fr-ch' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-fr-CH.js',
+			'gl' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-gl.js',
 			'he' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-he.js',
+			'hi' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-hi.js',
 			'hr' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-hr.js',
 			'hu' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-hu.js',
 			'hy' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-hy.js',
@@ -221,14 +205,23 @@ return array(
 			'is' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-is.js',
 			'it' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-it.js',
 			'ja' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-ja.js',
+			'ka' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-ka.js',
+			'kk' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-kk.js',
+			'km' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-km.js',
 			'ko' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-ko.js',
+			'lb' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-lb.js',
 			'lt' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-lt.js',
 			'lv' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-lv.js',
+			'mk' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-mk.js',
+			'ml' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-ml.js',
 			'ms' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-ms.js',
 			'nl' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-nl.js',
+			'nl-be' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-nl-BE.js',
 			'no' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-no.js',
 			'pl' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-pl.js',
+			'pt' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-pt.js',
 			'pt-br' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-pt-BR.js',
+			'rm' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-rm.js',
 			'ro' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-ro.js',
 			'ru' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-ru.js',
 			'sk' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-sk.js',
@@ -239,6 +232,7 @@ return array(
 			'sv' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-sv.js',
 			'ta' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-ta.js',
 			'th' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-th.js',
+			'tj' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-tj.js',
 			'tr' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-tr.js',
 			'uk' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-uk.js',
 			'vi' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-vi.js',
@@ -246,84 +240,237 @@ return array(
 			'zh-hk' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-zh-HK.js',
 			'zh-tw' => 'resources/jquery.ui/i18n/jquery.ui.datepicker-zh-TW.js',
 		),
+		'group' => 'jquery.ui',
+	),
+	'jquery.ui.dialog' => array(
+		'scripts' => 'resources/jquery.ui/jquery.ui.dialog.js',
+		'dependencies' => array(
+			'jquery.ui.core',
+			'jquery.ui.widget',
+			'jquery.ui.button',
+			'jquery.ui.draggable',
+			'jquery.ui.mouse',
+			'jquery.ui.position',
+			'jquery.ui.resizable',
+		),
+		'skinStyles' => array(
+			'default' => 'resources/jquery.ui/themes/default/jquery.ui.dialog.css',
+			'vector' => 'resources/jquery.ui/themes/vector/jquery.ui.dialog.css',
+		),
+		'group' => 'jquery.ui',
+	),
+	'jquery.ui.draggable' => array(
+		'scripts' => 'resources/jquery.ui/jquery.ui.draggable.js',
+		'dependencies' => array(
+			'jquery.ui.core',
+			'jquery.ui.mouse',
+			'jquery.ui.widget',
+		),
+		'group' => 'jquery.ui',
+	),
+	'jquery.ui.droppable' => array(
+		'scripts' => 'resources/jquery.ui/jquery.ui.droppable.js',
+		'dependencies' => array(
+			'jquery.ui.core',
+			'jquery.ui.mouse',
+			'jquery.ui.widget',
+			'jquery.ui.draggable',
+		),
+		'group' => 'jquery.ui',
+	),
+	'jquery.ui.menu' => array(
+		'scripts' => 'resources/jquery.ui/jquery.ui.menu.js',
+		'dependencies' => array(
+			'jquery.ui.core',
+			'jquery.ui.widget',
+			'jquery.ui.position',
+		),
+		'skinStyles' => array(
+			'default' => 'resources/jquery.ui/themes/default/jquery.ui.menu.css',
+		),
+		'group' => 'jquery.ui',
+	),
+	'jquery.ui.mouse' => array(
+		'scripts' => 'resources/default/jquery.ui/jquery.ui.mouse.js',
+		'dependencies' => 'jquery.ui.widget',
+		'group' => 'jquery.ui',
+	),
+	'jquery.ui.position' => array(
+		'scripts' => 'resources/jquery.ui/jquery.ui.position.js',
+		'group' => 'jquery.ui',
 	),
 	'jquery.ui.progressbar' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.progressbar.js',
-		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget' ),
+		'dependencies' => array(
+			'jquery.ui.core',
+			'jquery.ui.widget',
+		),
 		'skinStyles' => array(
 			'default' => 'resources/jquery.ui/themes/default/jquery.ui.progressbar.css',
 			'vector' => 'resources/jquery.ui/themes/vector/jquery.ui.progressbar.css',
 		),
+		'group' => 'jquery.ui',
+	),
+	'jquery.ui.resizable' => array(
+		'scripts' => 'resources/jquery.ui/jquery.ui.resizable.js',
+		'dependencies' => array(
+			'jquery.ui.core',
+			'jquery.ui.widget',
+			'jquery.ui.mouse',
+		),
+		'skinStyles' => array(
+			'no-theme' => 'resources/jquery.ui/themes/no-theme/jquery.ui.resizable.css',
+			'default' => 'resources/jquery.ui/themes/default/jquery.ui.resizable.css',
+			//'vector' => 'resources/jquery.ui/themes/vector/jquery.ui.resizable.css',
+		),
+		'group' => 'jquery.ui',
+	),
+	'jquery.ui.selectable' => array(
+		'scripts' => 'resources/jquery.ui/jquery.ui.selectable.js',
+		'dependencies' => array(
+			'jquery.ui.core',
+			'jquery.ui.widget',
+			'jquery.ui.mouse',
+		),
+		'skinStyles' => array(
+			'default' => 'resources/jquery.ui/themes/default/jquery.ui.selectable.css',
+			'vector' => 'resources/jquery.ui/themes/vector/jquery.ui.selectable.css',
+		),
+		'group' => 'jquery.ui',
 	),
 	'jquery.ui.slider' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.slider.js',
-		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.mouse' ),
+		'dependencies' => array(
+			'jquery.ui.core',
+			'jquery.ui.widget',
+			'jquery.ui.mouse',
+		),
 		'skinStyles' => array(
 			'no-theme' => 'resources/jquery.ui/themes/no-theme/jquery.ui.slider.css',
 			'default' => 'resources/jquery.ui/themes/default/jquery.ui.slider.css',
 			'vector' => 'resources/jquery.ui/themes/vector/jquery.ui.slider.css',
 		),
+		'group' => 'jquery.ui',
+	),
+	'jquery.ui.sortable' => array(
+		'scripts' => 'resources/jquery.ui/jquery.ui.sortable.js',
+		'dependencies' => array(
+			'jquery.ui.core',
+			'jquery.ui.mouse',
+			'jquery.ui.widget',
+		),
+		'group' => 'jquery.ui',
+	),
+	'jquery.ui.spinner' => array(
+		'scripts' => 'resources/jquery.ui/jquery.ui.spinner.js',
+		'dependencies' => array(
+			'jquery.ui.core',
+			'jquery.ui.widget',
+			'jquery.ui.button',
+		),
+		'skinStyles' => array(
+			'default' => 'resources/jquery.ui/themes/default/jquery.ui.spinner.css',
+		),
+		'group' => 'jquery.ui',
 	),
 	'jquery.ui.tabs' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.tabs.js',
-		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget' ),
+		'dependencies' => array(
+			'jquery.ui.core',
+			'jquery.ui.widget',
+		),
 		'skinStyles' => array(
 			'default' => 'resources/jquery.ui/themes/default/jquery.ui.tabs.css',
 			'vector' => 'resources/jquery.ui/themes/vector/jquery.ui.tabs.css',
 		),
+		'group' => 'jquery.ui',
+	),
+	'jquery.ui.tooltip' => array(
+		'scripts' => 'resources/jquery.ui/jquery.ui.tooltip.js',
+		'dependencies' => array(
+			'jquery.ui.core',
+			'jquery.ui.widget',
+			'jquery.ui.position',
+		),
+		'skinStyles' => array(
+			'no-theme' => 'resources/jquery.ui/themes/no-theme/jquery.ui.tooltip.css',
+			//'default' => 'resources/jquery.ui/themes/default/jquery.ui.tooltip.css',
+		),
+		'group' => 'jquery.ui',
+	),
+	'jquery.ui.widget' => array(
+		'scripts' => 'resources/jquery.ui/jquery.ui.widget.js',
+		'group' => 'jquery.ui',
 	),
 	// Effects
 	'jquery.effects.core' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.core.js',
-		'dependencies' => 'jquery',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect.js',
+		'group' => 'jquery.ui',
 	),
 	'jquery.effects.blind' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.blind.js',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-blind.js',
 		'dependencies' => 'jquery.effects.core',
+		'group' => 'jquery.ui',
 	),
 	'jquery.effects.bounce' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.bounce.js',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-bounce.js',
 		'dependencies' => 'jquery.effects.core',
+		'group' => 'jquery.ui',
 	),
 	'jquery.effects.clip' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.clip.js',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-clip.js',
 		'dependencies' => 'jquery.effects.core',
+		'group' => 'jquery.ui',
 	),
 	'jquery.effects.drop' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.drop.js',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-drop.js',
 		'dependencies' => 'jquery.effects.core',
+		'group' => 'jquery.ui',
 	),
 	'jquery.effects.explode' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.explode.js',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-explode.js',
 		'dependencies' => 'jquery.effects.core',
+		'group' => 'jquery.ui',
+	),
+	'jquery.effects.fade' => array(
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-fade.js',
+		'dependencies' => 'jquery.effects.core',
+		'group' => 'jquery.ui',
 	),
 	'jquery.effects.fold' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.fold.js',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-fold.js',
 		'dependencies' => 'jquery.effects.core',
+		'group' => 'jquery.ui',
 	),
 	'jquery.effects.highlight' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.highlight.js',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-highlight.js',
 		'dependencies' => 'jquery.effects.core',
+		'group' => 'jquery.ui',
 	),
 	'jquery.effects.pulsate' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.pulsate.js',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-pulsate.js',
 		'dependencies' => 'jquery.effects.core',
+		'group' => 'jquery.ui',
 	),
 	'jquery.effects.scale' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.scale.js',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-scale.js',
 		'dependencies' => 'jquery.effects.core',
+		'group' => 'jquery.ui',
 	),
 	'jquery.effects.shake' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.shake.js',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-shake.js',
 		'dependencies' => 'jquery.effects.core',
+		'group' => 'jquery.ui',
 	),
 	'jquery.effects.slide' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.slide.js',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-slide.js',
 		'dependencies' => 'jquery.effects.core',
+		'group' => 'jquery.ui',
 	),
 	'jquery.effects.transfer' => array(
-		'scripts' => 'resources/jquery.effects/jquery.effects.transfer.js',
+		'scripts' => 'resources/jquery.ui/jquery.ui.effect-transfer.js',
 		'dependencies' => 'jquery.effects.core',
+		'group' => 'jquery.ui',
 	),
 
 	/* MediaWiki */
