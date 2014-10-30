@@ -9,6 +9,36 @@
         return (obj - parseFloat( obj ) + 1) >= 0;
     }
 
+    function updateQueryString(key, value, url) {
+        if (!url) url = window.location.href;
+        var re = new RegExp("([?&])" + key + "=.*?(&|#|$)(.*)", "gi");
+
+        if (re.test(url)) {
+            if (typeof value !== 'undefined' && value !== null) {
+                return url.replace(re, '$1' + key + "=" + value + '$2$3');
+            }else {
+                var hash = url.split('#');
+                url = hash[0].replace(re, '$1$3').replace(/(&|\?)$/, '');
+                if (typeof hash[1] !== 'undefined' && hash[1] !== null) {
+                    url += '#' + hash[1];
+                }
+                return url;
+            }
+        }else {
+            if (typeof value !== 'undefined' && value !== null) {
+                var separator = url.indexOf('?') !== -1 ? '&' : '?',
+                    hash = url.split('#');
+                url = hash[0] + separator + key + '=' + value;
+                if (typeof hash[1] !== 'undefined' && hash[1] !== null) {
+                    url += '#' + hash[1];
+                }
+                return url;
+            }else {
+                return url;
+            }
+        }
+    }
+
     /** JSON2 **/
         "object"!=typeof JSON&&(JSON={}),function(){"use strict"
         function f(t){return 10>t?"0"+t:t}function quote(t){return escapable.lastIndex=0,escapable.test(t)?'"'+t.replace(escapable,function(t){var e=meta[t]
@@ -116,7 +146,6 @@
                 if(typeof(messageObj.event)!='undefined') {
                     switch(messageObj.event) {
                         case 'playerUpdatePlayhead':
-                            //console.log("NEWTIME: "+messageObj.time);
                             var kdp = document.getElementById( messageObj.playerId );
                             kdp.sendNotification('doPlay');
                             kdp.sendNotification('doSeek', messageObj.time);
@@ -124,6 +153,10 @@
                         case 'toggleVisibilityState':
                             var kdp = document.getElementById( messageObj.playerId );
                             kdp.toggleVisibilityState(messageObj.playerId);
+                            break;
+                        case 'loadLanguage':
+                            var kdp = document.getElementById( messageObj.playerId );
+                            kdp.loadLanguage(messageObj.playerId, messageObj.lang);
                             break;
                         default :
                             //console.log("Unknown event received: "+messageObj.event);
@@ -249,6 +282,14 @@
             }else {
                 wrapperDiv.style.height = "45px";
             }
+        };
+
+        kdp.loadLanguage = function(playerId, lang) {
+            var wrapperDiv = document.getElementById('cielo24-iframe-wrapper-'+playerId);
+            var iframe = wrapperDiv.firstChild;
+            var iframeSrc = iframe.src;
+            var newSrc = updateQueryString('lang', lang, iframeSrc);
+            iframe.src = newSrc;
         };
 
         function onPlayerUpdatePlayhead(time){
