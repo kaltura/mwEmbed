@@ -23,7 +23,7 @@ class JavaScriptNodeUglifyJs {
 			//2 => array("file", "/tmp/error.txt", "a") 
 		);
 		$env = array(
-			'PATH' => '/usr/local/bin' //Path to node bin dir
+			'PATH' => dirname( $wgNodeJsUglifyPath ) //Path to node bin dir
 		);
 		// https://www.npmjs.org/package/uglify-js
 		$options = ' -c --mangle';
