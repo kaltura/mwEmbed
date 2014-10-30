@@ -374,8 +374,11 @@ $.fn.jCarouselLite = function(o) {
 						curr = to==itemLength-v+1 ? v+1 : v+o.scroll;
 					} else curr = to;
 				} else {					// If non-circular and to points to first or last, we just return.
-					if(to<0 || to>itemLength-v) return;
-					else curr = to;
+					if(to<0 || to>itemLength-v) {
+						return;
+					} else {
+						curr = to;
+					}
 				}						   // If neither overrides it, the curr will still be "to" and we can proceed.
 
 				running = true;

@@ -444,7 +444,6 @@ echo '<div class="docblock">' .
 <p>Use the <b>kBind</b> method to add listen for a specific notification that something happened in the player,
 such as the video is playing or is paused.</p>
 <?php echo getDocs( array( 'kBind' ) ) ?>
-
 <br><br>Code sample:<br>
 <pre class="prettyprint linenums">
 kWidget.addReadyCallback(function( playerId ){
@@ -480,6 +479,9 @@ kWidget.addReadyCallback(function( playerId ){
 
 <h3>Player Advertisement Related Notifications:</h3>
 <?php echo getOutlineContent( $eventAds ) ?>
+
+<h3>Playlist Notifications:</h3>
+<?php echo getOutlineContent( $playlists ) ?>
 
 
 <a name="evaluate-desc"></a>

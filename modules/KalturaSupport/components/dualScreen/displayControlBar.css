@@ -8,10 +8,30 @@
 }
 .secondScreen{
     z-index: 2;
-    -webkit-box-shadow: 0px 0px 9px -1px rgba(0,0,0,0.52);
-    -moz-box-shadow: 0px 0px 9px -1px rgba(0,0,0,0.52);
-    box-shadow: 0px 0px 9px -1px rgba(0,0,0,0.52);
+    -webkit-box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.3);
+    -moz-box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.3);
+    box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.3);
     background-color: rgb(0,0,0);
+}
+.imagePlayer{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+}
+.imagePlayer.fill-width {
+    min-width: 100%;
+    height: auto;
+}
+.imagePlayer.fill-height {
+    min-height: 100%;
+    width: auto;
 }
 /*Screen states*/
 .sideBySideLeft {
@@ -37,7 +57,7 @@
     height: 0px !important;
 }
 .screenTransition{
-    transition: 1s;
+    transition: 0.5s;
 }
 /*Override jquery UI resizable cursor handlers*/
 .dualScreen > .ui-resizable-ne{
@@ -56,10 +76,7 @@
 .cornerHandle{
     position: absolute;
     z-index: 2;
-    border-top: 1px solid rgb(0, 0, 0);
-    border-left: 1px solid rgb(0, 0, 0);
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    text-shadow: 0px 0px 1px rgba(0, 0, 0, 0.4);
     -webkit-background-clip: padding-box;
     background-clip: padding-box;
 }
@@ -121,12 +138,19 @@
 .bottomRightHandle .componentOff{
     filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0) progid:DXImageTransform.Microsoft.BasicImage(rotation=2)";
 }
+.ui-resizable-nw,
+.ui-resizable-sw,
+.ui-resizable-se,
+.ui-resizable-ne{
+    width: 20px;
+    height: 20px;
+}
 /*Animations*/
 .componentAnimation{
-    -webkit-transition: visibility 0.75s ease-in ,opacity 0.75s ease-in;
-    -moz-transition: visibility 0.75s ease-in ,opacity 0.75s ease-in;
-    -o-transition: visibility 0.75s ease-in ,opacity 0.75s ease-in;
-    transition: visibility 0.75s ease-in ,opacity 0.75s ease-in;
+    -webkit-transition: visibility 0.35s ease-out ,opacity 0.35s ease-out;
+    -moz-transition: visibility 0.35s ease-out ,opacity 0.35s ease-out;
+    -o-transition: visibility 0.35s ease-out ,opacity 0.35s ease-out;
+    transition: visibility 0.35s ease-out ,opacity 0.35s ease-out;
 }
 /*Control bar*/
 ul.inline, ol.inline {
@@ -138,37 +162,39 @@ ul.inline, ol.inline {
 }
 
 .controlBar{
-    padding-top: 5px;
+    padding-top: 10px;
+    padding-right: 10px;
     z-index: 3;
     cursor: pointer;
 }
 
 #displayControlBar{
-    /*top:5px; */
-    /*left:5px;*/
-    width:260px;
+    width:250px;
     height:auto;
     position: absolute;
     cursor: pointer;
 }
-
+#displayControlBar #text{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%
+}
 .controlBarBtn {
     display: inline;
-    /*width:32px;*/
     font-size:32px;
     float: left;
-    padding-left: 5px;
-    padding-right: 5px;
-    margin-left: 10px;
-    /*margin-right: 5px;*/
+    padding-left: 20px;
     cursor: pointer;
+    text-shadow: 0px 0px 1px rgba(0, 0, 0, 0.4);
 }
-#seperator{
-    padding: 0px;
-    display: inline;
-    font-size:32px;
-    float: left;
-    margin-left: 10px;
+.controlBarBtn.last{
+    padding-left: 0px;
+}
+#seperator {
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 /*@media all and  (max-width: 640px) {*/
@@ -182,10 +208,10 @@ ul.inline, ol.inline {
 
 @media all and  (max-width: 640px) {
     #displayControlBar{
-        width:200px;
+        width:210px;
     }
     .controlBarBtn, #seperator {
-        font-size:18px;
+        font-size:24px;
     }
 }
 
@@ -206,16 +232,21 @@ ul.inline, ol.inline {
     color: #fff;
 }
 .controlBarShadow{
-    background: linear-gradient(to bottom, rgba(0,0,0,0.15) 4%, rgba(0,0,0,0.1) 10%, rgba(0,0,0,0.08) 15%, rgba(0,0,0,0.05) 20%, rgba(255,255,255,0.05) 33%); /* W3C */
-    background: -moz-linear-gradient(top,  rgba(0,0,0,0.15) 4%, rgba(0,0,0,0.1) 10%, rgba(0,0,0,0.08) 15%, rgba(0,0,0,0.05) 20%, rgba(255,255,255,0.05) 33%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(4%,rgba(0,0,0,0.15)), color-stop(10%,rgba(0,0,0,0.1)), color-stop(15%,rgba(0,0,0,0.08)), color-stop(20%,rgba(0,0,0,0.05)), color-stop(33%,rgba(255,255,255,0.05))); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top,  rgba(0,0,0,0.15) 4%, rgba(0,0,0,0.1) 10%, rgba(0,0,0,0.08) 15%, rgba(0,0,0,0.05) 20%, rgba(255,255,255,0.05) 33%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top,  rgba(0,0,0,0.15) 4%, rgba(0,0,0,0.1) 10%, rgba(0,0,0,0.08) 15%, rgba(0,0,0,0.05) 20%, rgba(255,255,255,0.05) 33%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top,  rgba(0,0,0,0.15) 4%, rgba(0,0,0,0.1) 10%, rgba(0,0,0,0.08) 15%, rgba(0,0,0,0.05) 20%, rgba(255,255,255,0.05) 33%); /* IE10+ */
+    background: rgba(0,0,0,0.25);
+    background: -moz-linear-gradient(top, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.2) 20%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.05) 80%, rgba(0,0,0,0) 100%);
+    background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(0,0,0,0.25)), color-stop(20%, rgba(0,0,0,0.2)), color-stop(40%, rgba(0,0,0,0.15)), color-stop(60%, rgba(0,0,0,0.1)), color-stop(80%, rgba(0,0,0,0.05)), color-stop(100%, rgba(0,0,0,0)));
+    background: -webkit-linear-gradient(top, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.2) 20%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.05) 80%, rgba(0,0,0,0) 100%);
+    background: -o-linear-gradient(top, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.2) 20%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.05) 80%, rgba(0,0,0,0) 100%);
+    background: -ms-linear-gradient(top, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.2) 20%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.05) 80%, rgba(0,0,0,0) 100%);
+    background: linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.2) 20%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.05) 80%, rgba(0,0,0,0) 100%);
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=10) progid:DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#000000', GradientType=0 );
     position: absolute;
-    content: ' ';
     width: 100%;
     height: 100%;
+    z-index: 10;
+    overflow: hidden;
+    top: 0;
+    left: 0;
 }
 /*Fonts*/
 @font-face {
@@ -259,5 +290,5 @@ ul.inline, ol.inline {
     content: "\e604";
 }
 .dualScreen-singleView:before {
-    content: "\e606";
+    content: "\e605";
 }

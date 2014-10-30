@@ -8,14 +8,11 @@ return array(
 	/* jQuery */
 
 	'jquery' => array(
-		'scripts' => 'resources/jquery/jquery-1.10.2.js',
+		'scripts' => 'resources/jquery/jquery.min.js',
 		'debugRaw' => false
 	),
 
 	/* cryto / encode */
-	'MD5' => array(
-		'scripts' =>	 'resources/crypto/MD5.js' 
-	),
 	'base64_encode' =>  array( 
 		'scripts' => 'resources/base64/base64_encode.js',
 		'dependencies' => 'utf8_encode'
@@ -179,12 +176,20 @@ return array(
 	),
 	'jquery.ui.autocomplete' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.autocomplete.js',
-		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.position' ),
+		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.position', 'jquery.ui.menu' ),
 		'skinStyles' => array(
 			'default' => 'resources/jquery.ui/themes/default/jquery.ui.autocomplete.css',
 			'vector' => 'resources/jquery.ui/themes/vector/jquery.ui.autocomplete.css',
 		),
 	),
+	'jquery.ui.menu' => array(
+        'scripts' => 'resources/jquery.ui/jquery.ui.menu.js',
+        'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.position' ),
+        'skinStyles' => array(
+            'default' => 'resources/jquery.ui/themes/default/jquery.ui.menu.css',
+            'vector' => 'resources/jquery.ui/themes/vector/jquery.ui.menu.css',
+        ),
+    ),
 	'jquery.ui.datepicker' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.datepicker.js',
 		'dependencies' => 'jquery.ui.core',
@@ -412,8 +417,8 @@ return array(
 		'dependencies' => array(
 			'jquery.client',
 			'jquery.cookie',
-			'jquery.messageBox',
-			'jquery.mwExtension',
+			//'jquery.messageBox',
+			//'jquery.mwExtension',
 		),
 		'messages' => array( 'showtoc', 'hidetoc' ),
 		'position' => 'top', // For $wgPreloadJavaScriptMwUtil

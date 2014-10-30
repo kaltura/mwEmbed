@@ -1,0 +1,100 @@
+.search.medialistContainer{
+    display: inline-block;
+
+    width: 100%;
+    height: auto;
+}
+.searchFormWrapper{
+    height: 28px;
+    margin-bottom: 10px;
+}
+.searchFormWrapper > form{
+    background: rgba(255, 255, 255, 0.7);
+    width: 100%;
+    display: inline-block;
+    -webkit-transition: width 0.2s;
+    -moz-transition: width 0.2s;
+    -ms-transition: width 0.2s;
+    -o-transition: width 0.2s;
+    transition: width 0.2s;
+}
+#searchBox{
+    width: 85%;
+    border: none;
+    color: #333;
+    outline: none;
+    font: 14px Helvetica, Arial, sans-serif;
+    margin: 6px 6px;
+    padding: 0;
+    background: rgba(255, 255, 255, 0);
+}
+input#searchBox:invalid {
+    box-shadow: none;
+}
+/*Fix for > IE9 x mark in textbox*/
+input#searchBox::-ms-clear {
+    width : 0;
+    height: 0;
+}
+#searchBoxIcon{
+    font-size: 16px;
+    margin: 6px 2px;
+    position: absolute;
+    color: rgba(0,0,0, 0.4);
+    cursor: pointer;
+}
+#searchBoxCancel{
+    width: 20%;
+    /*height: 100%;*/
+    float: right;
+    display: none;
+    margin-top: 6px;
+    text-align: center;
+    cursor: pointer;
+}
+/*JQuery UI customization*/
+.ui-autocomplete.ui-menu{
+    z-index: 3;
+    background-color: rgba(200, 200, 200, 0.9);
+    width: 90%;
+}
+.ui-menu-item{
+    color: #333;
+    font: 14px Helvetica, Arial, sans-serif;
+}
+.ui-menu .ui-menu-item a.ui-state-focus,
+.ui-menu .ui-menu-item a.ui-state-active {
+    margin: 0px;
+    background: rgba(230, 230, 230, 0.9);
+}
+/*Fix autocomplete UI bug causing layout to freakout and disappear*/
+.ui-helper-hidden-accessible{
+    left: -10000000px;
+}
+/*Search results*/
+.searchResultsBox{
+
+}
+.k-chapters-container .searchResultsBox {
+    background: rgba(240,240,240,.8);
+    background: #eee\9;
+    cursor: pointer;
+    position: relative;
+    list-style-type: none;
+    float: left;
+    height: auto;
+    overflow: hidden;
+    width: auto;
+}
+.k-chapters-container.k-vertical .searchResultsBox {
+    width: 100%;
+}
+.k-chapters-container.k-vertical .searchResultsBox:not(:last-child) {
+    margin-bottom: 2px;
+}
+.k-chapters-container .searchResultsInner{
+    position: absolute;
+    bottom: 0;
+    text-shadow: 0px 0px 2px rgba(0, 0, 0, 0.6);
+    padding: 10px;
+}
