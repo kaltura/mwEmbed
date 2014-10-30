@@ -750,7 +750,7 @@
 					.on( 'mouseleave', function(e){if (!mw.isMobileDevice()){_this.hideControlBar( )} } );
 
 				//add drop shadow containers for control bar
-				this.getPlayer().getInterface().find(".mwEmbedPlayer").after($("<div class='controlBarShadow componentAnimation'></div>").addClass('componentOff'));
+				this.getPlayer().getInterface().find(".mwEmbedPlayer").prepend($("<div class='controlBarShadow componentAnimation'></div>").addClass('componentOff'));
 				this.getComponent().prepend($("<div class='controlBarShadow componentAnimation'></div>").addClass('componentOff'));
 				//Attach control bar action handlers
 				$.each( _this.controlBarComponents, function ( name, component ) {
