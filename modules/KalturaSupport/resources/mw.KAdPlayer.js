@@ -597,8 +597,8 @@ mw.KAdPlayer.prototype = {
 					.addClass( 'ad-component ad-skip-btn' )
 					.bind(clickEventName, function(){
 						$( embedPlayer ).unbind( clickEventName + _this.adClickPostFix );
-						_this.skipCurrent();
 						$( embedPlayer).trigger( 'onAdSkip' );
+						_this.skipCurrent();
 						return false;
 					})
 			);
@@ -762,6 +762,14 @@ mw.KAdPlayer.prototype = {
 		}
 		// Store filledCompanion ids
 		var filledCompanions = {};
+		var sendBeacon = function(eventName, companion){
+			for(var i =0;i < companion.trackingEvents.length; i++){
+				if( eventName == companion.trackingEvents[ i ].eventName ){
+					mw.log("KAdPlayer:: sendBeacon: " + eventName + ' to: ' + companion.trackingEvents[ i ].beaconUrl );
+					mw.sendBeaconUrl( companion.trackingEvents[ i ].beaconUrl );
+				}
+			}
+		};
 		// Go though all the companions see if there are good companionTargets
 		$.each( adConf.companions, function( inx, companion ){
 			// Check for matching size:
@@ -773,6 +781,7 @@ mw.KAdPlayer.prototype = {
 				{
 					if( !filledCompanions[ companionTarget.elementid ]){
 						_this.displayCompanion( adSlot, companionTarget, companion);
+						sendBeacon("creativeView", companion);
 						filledCompanions[ companionTarget.elementid ] = true;
 					}
 				}
@@ -883,6 +892,11 @@ mw.KAdPlayer.prototype = {
 		$('#' +overlayId )
 		.css( layout )
 		.html( nonLinearConf.html )
+		.click(function(){
+				if (nonLinearConf.$html.attr("data-NonLinearClickTracking")){
+					mw.sendBeaconUrl( nonLinearConf.$html.attr("data-NonLinearClickTracking") );
+				}
+			})
 		.append(
 			// Add a absolute positioned close button:
 			$('<span/>')
@@ -922,7 +936,7 @@ mw.KAdPlayer.prototype = {
 			if( $('#' +overlayId ).length )
 				$('#' +overlayId ).animate( layout, 'fast');
 		});
-		$( _this.embedPlayer ).bind( 'onChangeMedia' + this.displayPostFix, function(){
+		$( _this.embedPlayer ).bind( 'onChangeMedia' + this.displayPostFix + ' ended' + this.displayPostFix, function(){
 			adSlot.playbackDone();
 		});
 
@@ -1362,6 +1376,7 @@ mw.KAdPlayer.prototype = {
 				}, 'AdStopped' );
 				VPAIDObj.subscribe( function ( message ) {
 					mw.log( 'VPAID :: AdError:' + message );
+					$( _this.embedPlayer ).trigger("adErrorEvent");
 					finishPlaying();
 				}, 'AdError' );
 				VPAIDObj.subscribe( function ( message ) {
@@ -1440,6 +1455,16 @@ mw.KAdPlayer.prototype = {
 						VPAIDObj = vpaidFrame.contentWindow.getVPAIDAd();
 						VPAIDObj.handshakeVersion( '2.0' );
 						onVPAIDLoad();
+					};
+					vpaidLoader.onerror = function () {
+						if ( isJs ) {
+								_this.embedPlayer.getInterface().find( '.mwEmbedPlayer' ).show();
+							}
+						$( '#' + vpaidId ).remove();
+						$( _this.embedPlayer ).trigger("adErrorEvent");
+						_this.restoreEmbedPlayer();
+						adSlot.playbackDone();
+						$(_this.embedPlayer).trigger("playing");
 					};
 					vpaidFrame.contentWindow.document.body.appendChild( vpaidLoader );
 

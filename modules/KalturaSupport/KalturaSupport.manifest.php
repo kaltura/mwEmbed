@@ -472,8 +472,9 @@ return array(
 		'attributes' => array_merge($kgDefaultComponentAttr,
 			array(
 				'preferredBitrate' => array(
-					'doc' => "Preferred bitrate for the downloaded movie source. Keep empty for the highest bitrate",
-					'type' => 'number',
+					'label' => 'Preferred bitrate / flavour ID',
+					'doc' => "Preferred bitrate or flavour ID for the downloaded movie source. Keep empty for the highest bitrate. Enter '0' for the original movie source file",
+					'type' => 'string',
 					'initvalue' => ''
 				),
 			)
@@ -1077,21 +1078,24 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'number',
 				'section' => 'over',
 				'min' => 0, // *NEW*
-				'initvalue' => 0, // *NEW*
+				'initvalue' => 5, // *NEW*
 				'max' => 10000, // *NEW*
 			),
 			'overlayInterval' => array(
 				'doc' => "How often should the overlay be displayed.",
 				'type' => 'number',
+				'section' => 'over',
 				'from' => 0, // *NEW*
 				'stepsize' => 1, // *NEW*
 				'to' => 500, // *NEW*
+				'initvalue' => 300, // *NEW*
 			),
 			'timeout' => array(
-				'doc' => "The timeout in seconds, for loading an ad from a VAST ad server.",
+				'doc' => "The timeout in seconds, for displaying an overlay VAST ad. If the VAST XML specifies the minSuggestedDuration attribute, this property will be ignored.",
 				'type' => 'number',
+				'section' => 'over',
 				'min' => 0, // *NEW*
-				'initvalue' => 0, // *NEW*
+				'initvalue' => 5, // *NEW*
 				'max' => 1000, // *NEW*
 			),
 			'trackCuePoints' => array(

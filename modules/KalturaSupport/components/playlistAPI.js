@@ -107,7 +107,7 @@
 			$( this.embedPlayer ).bind( 'mediaListLayoutReady', function( event){
 				_this.embedPlayer.triggerHelper( 'playlistReady' );
 				// keep aspect ratio of thumbnails - crop and center
-				$('.k-thumb').each(function() {
+				_this.getComponent().find('.k-thumb').each(function() {
 					var img = $(this)[0];
 					img.onload = function(){
 						if (img.naturalWidth / img.naturalHeight > 16/9){

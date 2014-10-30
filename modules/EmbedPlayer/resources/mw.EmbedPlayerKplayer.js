@@ -331,7 +331,10 @@ mw.EmbedPlayerKplayer = {
 			this.playerObject.duration = data.newValue;
 		}
 	},
-	onVideoMetadataReceived: function(){
+	onVideoMetadataReceived: function( data ){
+		if ( data && data.info ) {
+			$( this ).trigger( 'videoMetadataReceived',[ data.info ]);
+		}
 		// Trigger "media loaded"
 		if( ! this.mediaLoadedFlag ){
 			$( this ).trigger( 'mediaLoaded' );

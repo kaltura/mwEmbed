@@ -1,9 +1,9 @@
 <ul>
     <% for ( var i = 0; i < mediaList.length; i++ ) { %>
     <%var mediaItem =  mediaList[i];%>
-    <li class="chapterBox" data-chapter-index="<%=i%>">
+    <li class="chapterBox" data-chapter-index="<%=mediaItem.order%>">
             <% if( meta.includeThumbnail) { %>
-            <div class="k-thumb" alt="Thumbnail for <%=mediaItem.title%>" data-chapter-index="<%=i%>"
+            <div class="k-thumb" alt="Thumbnail for <%=mediaItem.title%>" data-chapter-index="<%=mediaItem.order%>"
                  style="background-image:url(<%=mediaItem.thumbnail.url%>);">
             <% } %>
                 <div class="chapterBoxInner" style="position: absolute;bottom: 0;width: 100%;

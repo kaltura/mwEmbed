@@ -42,11 +42,45 @@
 				var chaptersRawData =_this.getChaptersData();
 				//Create media items from raw data
 				_this.addMediaItems(chaptersRawData);
+				_this.markMediaItemsAsDisplayed(_this.mediaList);
 				//Need to recalc all durations after we have all the items startTime values
 				_this.setMediaItemTime();
 				//Set data initialized flag for handlers to start working
 				_this.dataIntialized = true;
 			} );
+
+			this.bind( 'KalturaSupport_ThumbCuePointsUpdated', function (e, cuepoints) {
+				cuepoints.sort( function ( a, b ) {
+					return a.startTime - b.startTime;
+				} );
+				_this.addMediaItems(cuepoints);
+
+				_this.setMediaItemTime();
+			});
+
+			this.bind("monitorEvent", function(e, time){
+				if (_this.dataIntialized) {
+					var items = [];
+					//Check for items that weren't displayed yet
+					$.each( _this.mediaList, function ( index, item ) {
+						if ( item.startTime <= _this.getPlayer().getPlayerElementTime() && !item.displayed ) {
+							items.push( item );
+						}
+					} );
+					if ( items.length > 0 ) {
+						//Set items as displayed
+						_this.markMediaItemsAsDisplayed( items );
+						//Create DOM markup and append to list
+						var mediaItems = _this.createMediaItems( items );
+						_this.getComponent().find( "ul" ).append( mediaItems );
+						//Mark current added items index as the index to start scroll from and re-init the scroll logic
+						_this.startFrom = _this.mediaList.length - _this.mediaItemVisible;
+						_this.shouldAddScroll();
+						_this.updateActiveItem();
+						_this.attachMediaListHandlers();
+					}
+				}
+			});
 
 			this.bind( 'playerReady', function ( e, newState ) {
 				if (_this.dataIntialized) {
@@ -84,7 +118,7 @@
 				});
 				res =  (filteredCuePoints.length > 0) ? true : false;
 			}
-			return res;
+			return mw.getConfig("EmbedPlayer.LiveCuepoints") || res;
 		},
 		getMedialistContainer: function(){
 			//Only support external onPage medialist container
@@ -113,6 +147,12 @@
 			} );
 			return filteredCuePoints;
 		},
+		createMediaItems: function(mediaListItems){
+			var templateData = this.getTemplateHTML( {meta: this.getMetaData(), mediaList: mediaListItems});
+			var items = $(templateData).find("li");
+
+			return items;
+		},
 		addMediaItems: function(items){
 			var _this = this;
 			$.each(items, function(index, item){
@@ -122,9 +162,10 @@
 				var description = item.description || customData.desc;
 				var thumbnailUrl = item.thumbnailUrl || customData.thumbUrl || _this.getThumbUrl(item);
 				var thumbnailRotatorUrl = _this.getConfig( 'thumbnailRotator' ) ? _this.getThumRotatorUrl() : '';
+				var mediaItemId = _this.mediaList.length;
 
 				mediaItem = {
-					order: index,
+					order: mediaItemId,
 					id: item.id,
 					title: title,
 					description: description,
@@ -139,10 +180,15 @@
 					startTimeDisplay: _this.formatTimeDisplayValue(kWidget.seconds2npt( item.startTime / 1000 )),
 					endTime: null,
 					durationDisplay: null,
-					chapterNumber: _this.getItemNumber(index)
+					chapterNumber: _this.getItemNumber(mediaItemId)
 
 				};
 				_this.mediaList.push(mediaItem);
+			});
+		},
+		markMediaItemsAsDisplayed: function(mediaItems){
+			$.each(mediaItems, function(index, item){
+				item.displayed = true;
 			});
 		},
 		getMediaItemThumbs: function(callback){
