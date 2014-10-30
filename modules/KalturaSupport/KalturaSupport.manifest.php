@@ -1380,7 +1380,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'itemsLimit' => array(
 					'doc' => 'Maximum number of items to show on the related screen.',
 					'type' => 'number'
-				)/*,
+				),
+				'storeSession'=> array(
+					'doc' => "Store the played entries across page views in related clips display",
+					'type' => 'boolean'
+				)
+				/*
 				// hide template path for now, no way for user to provide useful value here.
 				'templatePath' => array(
 					'doc' => 'Template path to be used by the plugin.',
