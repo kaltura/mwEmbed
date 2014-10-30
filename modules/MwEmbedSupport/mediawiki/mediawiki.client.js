@@ -214,10 +214,6 @@
 		}
 	};
 
-	mw.supportSilverlight = function(){
-		return Silverlight.isInstalled("4.0");
-	};
-
 	/**
 	 * Checks for flash version
 	 * @return {string} flash version string

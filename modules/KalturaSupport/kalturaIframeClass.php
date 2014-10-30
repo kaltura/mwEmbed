@@ -501,7 +501,7 @@ class kalturaIframeClass {
 		);
 		// check if we should minify and cache: 
 		if( !$wgEnableScriptDebug ){
-			$s = JavaScriptMinifier::minify( $s, $wgResourceLoaderMinifierStatementsOnOwnLine );
+			$s = JavaScriptCompress::minify( $s, $wgResourceLoaderMinifierStatementsOnOwnLine );
 			// try to store the cached file: 
 			@file_put_contents($cachePath, $s);
 		}
@@ -958,11 +958,9 @@ HTML;
 		if( is_file( $cachePath) ){
 			return file_get_contents( $cachePath );
 		}
-		// Get the JSmin class:
-		require_once( $wgBaseMwEmbedPath . '/includes/libs/JavaScriptMinifier.php' );
 		// get the contents inline: 
 		$jsContent = @file_get_contents( $resourcePath );
-		$jsMinContent = JavaScriptMinifier::minify( $jsContent, $wgResourceLoaderMinifierStatementsOnOwnLine );
+		$jsMinContent = JavaScriptCompress::minify( $jsContent, $wgResourceLoaderMinifierStatementsOnOwnLine );
 	
 		// try to store the cached file: 
 		@file_put_contents($cachePath, $jsMinContent);

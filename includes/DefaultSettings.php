@@ -90,7 +90,11 @@ $wgResourceLoaderDebug = false;
 
 // If the resource loader should minify vertical space
 $wgResourceLoaderMinifyJSVerticalSpace = false;
+// if js statements should retain line breaks:
+$wgResourceLoaderMinifierStatementsOnOwnLine = false;
 
+// The path to uglify js ( leave as null to use php based JavaScirptMinifier )
+$wgNodeJsUglifyPath = false;
 
 $wgMwEmbedProxyUrl =  $wgServer . $wgScriptPath . 'simplePhpXMLProxy.php';
 

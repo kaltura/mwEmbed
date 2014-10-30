@@ -409,8 +409,8 @@ return array(
 		'dependencies' => array(
 			'jquery.client',
 			'jquery.cookie',
-			'jquery.messageBox',
-			'jquery.mwExtension',
+			//'jquery.messageBox',
+			//'jquery.mwExtension',
 		),
 		'messages' => array( 'showtoc', 'hidetoc' ),
 		'position' => 'top', // For $wgPreloadJavaScriptMwUtil

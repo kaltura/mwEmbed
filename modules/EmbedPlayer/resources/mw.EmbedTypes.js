@@ -143,7 +143,7 @@ mw.EmbedTypes = {
 			this.addFlashPlayer();
 		}
 
-		if( mw.supportSilverlight() ) {
+		if( Silverlight && Silverlight.isInstalled("4.0") ) {
 			this.addSilverlightPlayer();
 		}
 

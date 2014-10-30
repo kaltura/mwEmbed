@@ -13,11 +13,18 @@
 					'dependencies' => 'mw.MwEmbedSupport'
 			),
 			"mw.EmbedTypes" => array(
-				'scripts' => 'resources/mw.EmbedTypes.js',
+				'scripts' => array(
+					'resources/mw.EmbedTypes.js',
+				),
 				'dependencies' =>  array(
 					'mw.MediaPlayers',
-					'mediawiki.Uri'
+					'mediawiki.Uri',
+					'Silverlight'
 				)
+			),
+			// sliverlight detect script: 
+			'Silverlight' => array(
+				'scripts' => 'resources/playerElement/Silverlight.js'
 			),
 			"mw.EmbedPlayer" => array(
 				'scripts' => array(
@@ -61,9 +68,10 @@
 					'jquery.ui.tooltip',
 					'jquery.naturalSize',
 
-					'mw.PlayerElementHTML',
 					'mw.PlayerElementFlash',
-					'mw.PlayerElementSilverlight',
+					// load HTML player & Silverlight on-demand ( can't load all intefaces all the time )
+					//'mw.PlayerElementSilverlight',
+					//'mw.PlayerElementHTML',
 				),
 				'styles' => "resources/EmbedPlayer.css",
 				'messageFile' => 'EmbedPlayer.i18n.php',
@@ -73,10 +81,12 @@
 				'scripts' => 'resources/mw.PluginManager.js'
 			),
 
-			"mw.EmbedPlayerSilverlight"	=> array( 'scripts'=> "resources/mw.EmbedPlayerSilverlight.js",
-			'dependencies' => array(
-				"mw.PlayerElementSilverlight"
-			) ),
+			"mw.EmbedPlayerSilverlight"	=> array( 
+				'scripts'=> "resources/mw.EmbedPlayerSilverlight.js",
+				'dependencies' => array(
+					"mw.PlayerElementSilverlight"
+				)
+			),
 			"mw.EmbedPlayerKplayer"	=> array( 'scripts'=> "resources/mw.EmbedPlayerKplayer.js" ),
 			"mw.EmbedPlayerGeneric"	=> array( 'scripts'=> "resources/mw.EmbedPlayerGeneric.js" ),
 			"mw.EmbedPlayerJava" => array( 'scripts'=> "resources/mw.EmbedPlayerJava.js"),
@@ -108,7 +118,6 @@
 			),
 			"mw.PlayerElementSilverlight" => array(
 				'scripts' => array(
-					'resources/playerElement/Silverlight.js',
 					'resources/playerElement/mw.PlayerElementSilverlight.js'
 				),
 				'dependencies' =>  array( 'mw.PlayerElement' )
