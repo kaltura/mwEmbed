@@ -22,6 +22,7 @@
 		},
 		viewedEntries: [],
 		iconBtnClass: 'icon-related',
+		confPrefix: 'related',
 		timerRunning:false,
 		
 		setup: function(){
