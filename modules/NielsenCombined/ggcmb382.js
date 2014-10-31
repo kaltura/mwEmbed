@@ -413,12 +413,16 @@ function Metrics() {
         } catch (av) {
             ao = true;
         }
-        if (ao) {
-            if (window.top.addEventListener) window.top.addEventListener('focus', aO, false);
-            else if (window.top.attachEvent) window.top.attachEvent('onfocus', aO);
-            if (window.top.addEventListener) window.top.addEventListener('blur', aG, false);
-            else if (window.top.attachEvent) window.top.attachEvent('onblur', aG);
-        }
+	    if (ao) {
+		    try{
+	            if (window.top.addEventListener) window.top.addEventListener('focus', aO, false);
+	            else if (window.top.attachEvent) window.top.attachEvent('onfocus', aO);
+	            if (window.top.addEventListener) window.top.addEventListener('blur', aG, false);
+	            else if (window.top.attachEvent) window.top.attachEvent('onblur', aG);
+		    }catch(e){
+			    console.log("NielsenCombined:: error trying to access window.top.addEventListener.");
+		    }
+	    }
         return ao;
     };
 

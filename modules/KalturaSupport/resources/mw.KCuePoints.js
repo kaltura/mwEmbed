@@ -54,7 +54,9 @@ mw.KCuePoints.prototype = {
 				_this.triggerCuePoint( cuePoint );
 			} else {
 				// Midroll
-				newCuePointsArray.push( cuePoint );
+				if (cuePoint.cuePointType != "eventCuePoint.Event") {
+					newCuePointsArray.push( cuePoint );
+				}
 			}
 		});
 
@@ -63,12 +65,13 @@ mw.KCuePoints.prototype = {
 	requestThumbAsset: function(cuePoints, callback){
 		var _this = this;
 		var requestArray = [];
-		var response = [];
+		var responseArray = [];
 		var requestCuePoints = cuePoints || this.getCuePoints();
 		var thumbCuePoint = $.grep(requestCuePoints, function(cuePoint){
 			return (cuePoint.cuePointType == 'thumbCuePoint.Thumb');
 		});
 
+		//Create request data only for cuepoints that have assetId
 		$.each(thumbCuePoint, function(index, item) {
 			requestArray.push(
 				{
@@ -77,7 +80,7 @@ mw.KCuePoints.prototype = {
 					'id': item.assetId
 				}
 			);
-			response[index] = { id: item.id, url: null};
+			responseArray[index] = item;
 		});
 
 		if (requestArray.length){
@@ -165,7 +168,7 @@ mw.KCuePoints.prototype = {
 				$.merge(this.midCuePointsArray, updatedCuePoints);
 				//Request thumb asset only for new cuepoints
 				this.requestThumbAsset(updatedCuePoints, function(){
-					_this.embedPlayer.triggerHelper( 'KalturaSupport_ThumbCuePointsUpdated' );
+					_this.embedPlayer.triggerHelper( 'KalturaSupport_ThumbCuePointsUpdated', [updatedCuePoints] );
 				});
 				// sort the cuePoitns by startTime:
 				this.midCuePointsArray.sort( function ( a, b ) {
@@ -221,11 +224,16 @@ mw.KCuePoints.prototype = {
 
 		// Bind to monitorEvent to trigger the cue points events and update he nextCuePoint
 		$( embedPlayer ).bind(
-				"monitorEvent" + this.bindPostfix + " " +
-				"seeked" + this.bindPostfix + " " +
-				"onplay" + this.bindPostfix,
-			function() {
+				"monitorEvent" + this.bindPostfix +
+				" seeked" + this.bindPostfix +
+				" onplay" + this.bindPostfix +
+				" KalturaSupport_ThumbCuePointsUpdated" + this.bindPostfix,
+			function(e) {
 				var currentTime = embedPlayer.currentTime * 1000;
+				//In case of seeked the current cuepoint needs to be updated to new seek time before
+				if ( e.type == "seeked"){
+					currentCuePoint = _this.getNextCuePoint( currentTime );
+				}
 				// Check if the currentCuePoint exists
 				if( currentCuePoint && currentTime > currentCuePoint.startTime && embedPlayer._propagateEvents ){
 					// Make a copy of the cue point to be triggered.

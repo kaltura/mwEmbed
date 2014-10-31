@@ -40,44 +40,45 @@ mw.KAdPlayer.prototype = {
 	init: function( embedPlayer ){
 		var _this = this;
 		this.embedPlayer = embedPlayer;
+		var receivedPlayerReady = false;
 
-		// bind to the doPlay event triggered by the playPauseBtn component when the user resume playback from this component after clickthrough pause
-		var eventName = "doPlay";
-
-		// bind AdSupport_StartAdPlayback event since the small play/ pause button in the control bar doesn't change the state when ad is played on mobile browser
-		if( !_this.isVideoSiblingEnabled() ) {
-			eventName = eventName + " AdSupport_StartAdPlayback";
-		}
-
-		$(this.embedPlayer).bind(eventName, function(){
-			if (mw.getConfig("enableControlsDuringAd")){
-				var adPlayer = _this.getVideoElement();
-				if ( adPlayer ) {
-					if ( adPlayer.paused ) {
+		// for mobile devices (no ad sibling): prevent seeking when we have ads and playback hasn't started yet
+		$(this.embedPlayer).bind('playerReady', function(){
+			// bind to the doPlay event triggered by the playPauseBtn component when the user resume playback from this component after clickthrough pause
+			var eventName = "doPlay";
+			if (!_this.isVideoSiblingEnabled()){
+				//first time we get the playerReady event
+				eventName = eventName + " AdSupport_StartAdPlayback";
+			}
+			//first playerReady
+			if ( !receivedPlayerReady ) {
+				$(_this.embedPlayer).bind(eventName, function(){
+					if (mw.getConfig("enableControlsDuringAd")){
+						var adPlayer = _this.getVideoElement();
+						if ( adPlayer ) {
+							if ( adPlayer.paused ) {
+								$( embedPlayer ).trigger( "onPlayerStateChange", ["play"] ); // trigger playPauseBtn UI update
+								$( embedPlayer ).trigger( "onResumeAdPlayback" );
+								_this.clickedBumper = false;
+								_this.disablePlayControls(); // disable player controls
+								adPlayer.play();
+							} else {
+								$( embedPlayer ).trigger( "onPlayerStateChange", ["pause", _this.embedPlayer.currentState] ); // trigger playPauseBtn UI update
+								setTimeout( function () {
+									adPlayer.pause();
+								}, 0 );
+							}
+						}
+					} else {
 						$( embedPlayer ).trigger( "onPlayerStateChange", ["play"] ); // trigger playPauseBtn UI update
 						$( embedPlayer ).trigger( "onResumeAdPlayback" );
 						_this.clickedBumper = false;
 						_this.disablePlayControls(); // disable player controls
-						adPlayer.play();
-					} else {
-						$( embedPlayer ).trigger( "onPlayerStateChange", ["pause", _this.embedPlayer.currentState] ); // trigger playPauseBtn UI update
-						setTimeout( function () {
-							adPlayer.pause();
-						}, 0 );
 					}
-				}
-			} else {
-				$( embedPlayer ).trigger( "onPlayerStateChange", ["play"] ); // trigger playPauseBtn UI update
-				$( embedPlayer ).trigger( "onResumeAdPlayback" );
-				_this.clickedBumper = false;
-				_this.disablePlayControls(); // disable player controls
+				});
 			}
-		});
-		// for mobile devices (no ad sibling): prevent seeking when we have ads and playback hasn't started yet
-		$(this.embedPlayer).bind('playerReady', function(){
-			if (!_this.isVideoSiblingEnabled()){
-				$( _this.embedPlayer ).trigger( "onDisableScrubber" );
-			}
+
+			receivedPlayerReady = true;
 		});
 	},
 
@@ -423,7 +424,13 @@ mw.KAdPlayer.prototype = {
 				$( '#' + iconId ).click(function(){
 					window.open( icon.clickthru );
 					mw.sendBeaconUrl( icon.clickTracking );
-					return true;
+					return false;
+				});
+				// prevent mouseup propegation to prevent the clickthrough url to open on IE8 / IE9 (see mw.PlayerLayoutBuilder.js, line 567)
+				$( '#' + iconId ).bind('mouseup', function(e){
+					e = e || window.event;
+					e.preventDefault();
+					e.stopPropagation();
 				});
 			}
 
@@ -453,21 +460,6 @@ mw.KAdPlayer.prototype = {
 			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'click';
 			setTimeout( function(){
 				$clickTarget.unbind(clickEventName + _this.adClickPostFix).bind( clickEventName + _this.adClickPostFix, function(e){
-					if ( adSlot.videoClickTracking && adSlot.videoClickTracking.length > 0  ) {
-						mw.log("KAdPlayer:: sendBeacon to: " + adSlot.videoClickTracking[0] );
-						for (var i=0; i < adSlot.videoClickTracking.length ; i++){
-							mw.sendBeaconUrl( adSlot.videoClickTracking [i]);
-						}
-                        //handle wrapper clickTracking
-                        if(adSlot.wrapperData ){
-
-                            adSlot.wrapperData.contents().find('ClickTracking').each(function(a,b){
-                                mw.sendBeaconUrl($(b).contents().text())
-						        mw.log("KAdPlayer:: sendBeacon to (wrapper): " + $(b).contents().text() );
-                            })
-                        }
-
-					}
 					if ( adConf.clickThrough ) {
 						e.stopPropagation();
 						if( _this.clickedBumper ){
@@ -500,6 +492,21 @@ mw.KAdPlayer.prototype = {
 							embedPlayer.enablePlayControls();
 							//expose the URL to the
 							embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
+							if ( adSlot.videoClickTracking && adSlot.videoClickTracking.length > 0  ) {
+								mw.log("KAdPlayer:: sendBeacon to: " + adSlot.videoClickTracking[0] );
+								for (var i=0; i < adSlot.videoClickTracking.length ; i++){
+									mw.sendBeaconUrl( adSlot.videoClickTracking [i]);
+								}
+								//handle wrapper clickTracking
+								if(adSlot.wrapperData ){
+
+									adSlot.wrapperData.contents().find('ClickTracking').each(function(a,b){
+										mw.sendBeaconUrl($(b).contents().text())
+										mw.log("KAdPlayer:: sendBeacon to (wrapper): " + $(b).contents().text() );
+									})
+								}
+
+							}
 							window.open( adConf.clickThrough );
 						}
 					}
@@ -525,27 +532,11 @@ mw.KAdPlayer.prototype = {
 		if( targetSource && targetSource.getMIMEType().indexOf('image/') != -1 ){
 			return false;
 		}
-
-		if( mw.getConfig( "DisableVideoSibling") ) {
+		else if ( this.disableSibling) {
 			return false;
+		} else {
+			return this.embedPlayer.isVideoSiblingEnabled();
 		}
-
-		if( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
-			return false;
-		}
-
-		if ( this.disableSibling) {
-			return false;
-		}
-
-		// iPhone and IOS 5 does not play multiple videos well, use source switch. Chromecast should not use sibling as well.
-		if( mw.isIphone() || mw.isAndroid2() || mw.isAndroid40() || mw.isMobileChrome() || this.embedPlayer.instanceOf == "Chromecast"
-				|| 
-			( mw.isIpad() && ! mw.isIpad3() ) 
-		){
-			return false;
-		}
-		return true;
 	},
 	addAdBindings: function( vid,  adSlot, adConf ){
 		var _this = this;
@@ -597,8 +588,8 @@ mw.KAdPlayer.prototype = {
 					.addClass( 'ad-component ad-skip-btn' )
 					.bind(clickEventName, function(){
 						$( embedPlayer ).unbind( clickEventName + _this.adClickPostFix );
-						_this.skipCurrent();
 						$( embedPlayer).trigger( 'onAdSkip' );
+						_this.skipCurrent();
 						return false;
 					})
 			);
@@ -762,6 +753,14 @@ mw.KAdPlayer.prototype = {
 		}
 		// Store filledCompanion ids
 		var filledCompanions = {};
+		var sendBeacon = function(eventName, companion){
+			for(var i =0;i < companion.trackingEvents.length; i++){
+				if( eventName == companion.trackingEvents[ i ].eventName ){
+					mw.log("KAdPlayer:: sendBeacon: " + eventName + ' to: ' + companion.trackingEvents[ i ].beaconUrl );
+					mw.sendBeaconUrl( companion.trackingEvents[ i ].beaconUrl );
+				}
+			}
+		};
 		// Go though all the companions see if there are good companionTargets
 		$.each( adConf.companions, function( inx, companion ){
 			// Check for matching size:
@@ -773,6 +772,7 @@ mw.KAdPlayer.prototype = {
 				{
 					if( !filledCompanions[ companionTarget.elementid ]){
 						_this.displayCompanion( adSlot, companionTarget, companion);
+						sendBeacon("creativeView", companion);
 						filledCompanions[ companionTarget.elementid ] = true;
 					}
 				}
@@ -883,6 +883,11 @@ mw.KAdPlayer.prototype = {
 		$('#' +overlayId )
 		.css( layout )
 		.html( nonLinearConf.html )
+		.click(function(){
+				if (nonLinearConf.$html.attr("data-NonLinearClickTracking")){
+					mw.sendBeaconUrl( nonLinearConf.$html.attr("data-NonLinearClickTracking") );
+				}
+			})
 		.append(
 			// Add a absolute positioned close button:
 			$('<span/>')
@@ -922,7 +927,7 @@ mw.KAdPlayer.prototype = {
 			if( $('#' +overlayId ).length )
 				$('#' +overlayId ).animate( layout, 'fast');
 		});
-		$( _this.embedPlayer ).bind( 'onChangeMedia' + this.displayPostFix, function(){
+		$( _this.embedPlayer ).bind( 'onChangeMedia' + this.displayPostFix + ' ended' + this.displayPostFix, function(){
 			adSlot.playbackDone();
 		});
 
@@ -1362,6 +1367,7 @@ mw.KAdPlayer.prototype = {
 				}, 'AdStopped' );
 				VPAIDObj.subscribe( function ( message ) {
 					mw.log( 'VPAID :: AdError:' + message );
+					$( _this.embedPlayer ).trigger("adErrorEvent");
 					finishPlaying();
 				}, 'AdError' );
 				VPAIDObj.subscribe( function ( message ) {
@@ -1440,6 +1446,16 @@ mw.KAdPlayer.prototype = {
 						VPAIDObj = vpaidFrame.contentWindow.getVPAIDAd();
 						VPAIDObj.handshakeVersion( '2.0' );
 						onVPAIDLoad();
+					};
+					vpaidLoader.onerror = function () {
+						if ( isJs ) {
+								_this.embedPlayer.getInterface().find( '.mwEmbedPlayer' ).show();
+							}
+						$( '#' + vpaidId ).remove();
+						$( _this.embedPlayer ).trigger("adErrorEvent");
+						_this.restoreEmbedPlayer();
+						adSlot.playbackDone();
+						$(_this.embedPlayer).trigger("playing");
 					};
 					vpaidFrame.contentWindow.document.body.appendChild( vpaidLoader );
 

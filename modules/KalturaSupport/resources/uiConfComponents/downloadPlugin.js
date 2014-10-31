@@ -9,6 +9,7 @@
 			downloadName:"video",
 			showTooltip: true,
 			preferredBitrate: '',
+			flavorID: '',
 		 	order: 53
 		},
 		isSafeEnviornment: function(){
@@ -27,6 +28,9 @@
 				downloadUrl += '&downloadName=' + encodeURIComponent(this.getConfig('downloadName'));
 				if ( this.getConfig( 'preferredBitrate' ) != '' && this.getConfig( 'preferredBitrate' ) != null ){
 					downloadUrl += '&preferredBitrate=' + encodeURIComponent( this.getConfig( 'preferredBitrate' ));
+				}
+			    if ( this.getConfig( 'flavorID' ) != '' && this.getConfig( 'flavorID' ) != null ){
+					downloadUrl += '&flavorID=' + encodeURIComponent( this.getConfig( 'flavorID' ));
 				}
 				downloadUrl += '&ks=' + this.getPlayer().getFlashvars('ks');
 				
