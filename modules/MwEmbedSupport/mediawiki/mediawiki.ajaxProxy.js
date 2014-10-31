@@ -44,7 +44,10 @@
 				success: function( result ) {
 					_this.handleResult( result );
 				},
-				timeout: _this.options.timeout
+				timeout: _this.options.timeout,
+				xhrFields: {
+					withCredentials: true
+				}
 			};
 
 			if( useProxy ) {
