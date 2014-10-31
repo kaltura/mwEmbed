@@ -42,6 +42,9 @@
 								_this.getPlayer().setFlashvars( 'forceDynamicStream', 'true' );
 								if ( _this.getPlayer().setKPlayerAttribute ) {
 									_this.getPlayer().setKPlayerAttribute('configProxy.flashvars', 'forceDynamicStream', 'true');
+									_this.getPlayer().setKPlayerAttribute('widevine.content', 'mediaWidth', flavors[0].width);
+									_this.getPlayer().setKPlayerAttribute('widevine.content', 'mediaHeight', flavors[0].height);
+
 								}
 								//hide the source selector until we receive the embedded flavors from the wvm package
 								_this.getPlayer().setKDPAttribute( 'sourceSelector' , 'visible', false);

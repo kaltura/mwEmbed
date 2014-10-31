@@ -1729,10 +1729,16 @@
 			if (mw.getConfig( 'EmbedPlayer.HidePosterOnStart' ) === true){
 				return;
 			}
-			// for IE8 and IE7 - add specific class
-			if (mw.isIE8() || mw.isIE7()){
-				$( this ).addClass("mwEmbedPlayerTransparent");
+			// support IE9 and IE10 compatibility modes
+			if (mw.isIE9Comp() || mw.isIE10Comp()){
+				$( this ).addClass("mwEmbedPlayerTransparentComp");
+			}else{
+				// for IE8 and IE7 - add specific class
+				if (mw.isIE8() || mw.isIE7()){
+					$( this ).addClass("mwEmbedPlayerTransparent");
+				}
 			}
+
 			$( this ).html(
 				$( '<img />' )
 				.css( posterCss )
@@ -2946,10 +2952,6 @@
 			}
 		},
 
-		switchAudioTrack: function ( trackIndex ) {
-			mw.log('Error player does not multiple audio tracks' );
-		},
-
 		bufferStart: function() {
 			if ( !this.isInSequence() && !this.buffering ) {
 				var _this = this;
@@ -2981,6 +2983,14 @@
 
 		getKalturaAttributeConfig: function( attr ) {
 			return this.getKalturaConfig( null , attr );
+		},
+
+		isVideoSiblingEnabled: function() {
+			if( mw.getConfig( "DisableVideoSibling") ) {
+				return false;
+			} else {
+				return true;
+			}
 		}
 	};
 

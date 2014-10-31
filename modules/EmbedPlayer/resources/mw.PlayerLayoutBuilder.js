@@ -413,6 +413,8 @@ mw.PlayerLayoutBuilder.prototype = {
 		this.embedPlayer.bindHelper( 'layoutBuildDone', function(){
 			_this.getInterface().tooltip({
 				items: '[data-show-tooltip]',
+				"show": { "delay": 1000 },
+				"hide": { "duration": 0 },
 				  position: {
 					my: "center bottom-10",
 					at: "center top",
@@ -428,6 +430,8 @@ mw.PlayerLayoutBuilder.prototype = {
 				});
 			_this.getInterface().find(".tooltipBelow").tooltip({
 				items: '[data-show-tooltip]',
+				"show": { "delay": 1000 },
+				"hide": { "duration": 0 },
 				position: {
 					my: "center bottom-10",
 					at: "center top",
@@ -558,12 +562,14 @@ mw.PlayerLayoutBuilder.prototype = {
 		});
 
 		// IE8 does not trigger click events on Flash objects
-		if( (embedPlayer.adSiblingFlashPlayer || embedPlayer.instanceOf == 'Kplayer') && 
+		if( (embedPlayer.adSiblingFlashPlayer || embedPlayer.instanceOf == 'Kplayer') &&
 			(mw.isIE8() || mw.isIE9()) ){
 			embedPlayer.getVideoHolder().bind('mouseup', function(){
-				$( embedPlayer ).trigger('click');
+				if (embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence){
+					$( embedPlayer ).trigger('click');
+				}
 			});
-		}		
+		}
 
 		// add the player click / touch bindings
 		addPlaybackBindings();
