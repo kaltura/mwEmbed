@@ -31,6 +31,12 @@
 	mw.isDesktopSafari = function(){
 	  return (/safari/).test(userAgent.toLowerCase()) && !mw.isMobileDevice() && !mw.isChrome();
 	};
+	mw.isIE9Comp = function(){
+		return (/msie 7/.test(userAgent.toLowerCase()) && /trident\/5/.test(userAgent.toLowerCase()));
+	};
+	mw.isIE10Comp = function(){
+		return (/msie 7/.test(userAgent.toLowerCase()) && /trident\/6/.test(userAgent.toLowerCase()));
+	};
 	// Uses hack described at:
 	// http://www.bdoran.co.uk/2010/07/19/detecting-the-iphone4-and-resolution-with-javascript-or-php/
 	mw.isIphone4 = function(){
@@ -222,6 +228,20 @@
 	mw.supportSilverlight = function(){
 		return Silverlight.isInstalled("4.0");
 	};
+
+	/**
+	 * parse JSON string
+	 * @return {object} parsed json object. If parsing fails (syntax error): returns retValue if specified. If no retValue was specified - returns an empty object.
+	 */
+	mw.parseJSON = function(json, retValue) {
+		try{
+			var parsedJson = JSON.parse(json);
+		}catch(e){
+			mw.log("JSON parse syntax error: " + e);
+			return retValue ? retValue : null;
+		}
+		return parsedJson;
+	}
 
 	/**
 	 * Checks for flash version

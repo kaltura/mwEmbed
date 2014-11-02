@@ -21,7 +21,7 @@
 			'hideClipPoster': true,
 			'loop': false,
 			'overflow': false,
-			'cssPath': 'playList.css',
+			'cssFileName': 'modules/KalturaSupport/components/playlist/playList.css',
 			'showControls': true,
 			'selectedIndex': 0
 		},
@@ -60,6 +60,11 @@
 					_this.getPlayer()['data-blockPlayerDisplay'] = false;
 				}
 				_this.unbind( 'playerReady'); // we want to select the playlist only the first time the player loads
+			});
+
+			this.bind( 'mediaError', function ( e ) {
+				_this.loadingEntry = null; // reset loadingEntry if we got a media error (also media loading error will trigger this event)
+				_this.onEnable();
 			});
 
 			// API support + backward compatibility
@@ -160,7 +165,7 @@
 		addMediaItems: function(itemsArr){
 			for (var i = 0; i < itemsArr.length; i++){
 				var item = itemsArr[i];
-				var customData = (item.partnerData  && item.adminTags !== 'image') ? JSON.parse(item.partnerData) :  {};
+				var customData = (item.partnerData  && item.adminTags !== 'image') ? mw.parseJSON(item.partnerData, {}) :  {};
 				var title = item.name || customData.title;
 				var description = item.description || customData.desc;
 				var thumbnailUrl = item.thumbnailUrl || customData.thumbUrl || this.getThumbUrl(item);

@@ -17,14 +17,24 @@
 			playlistId: null,
 			formatCountdown : false,
 			clickUrl : null,
-			enableAccessControlExclusion:false
+			enableAccessControlExclusion:false,
+			storeSession: false
 		},
 		viewedEntries: [],
 		iconBtnClass: 'icon-related',
+		confPrefix: 'related',
 		timerRunning:false,
-
+		
 		setup: function(){
 			var _this = this;
+			// check for storedSession of viewed entries: 
+			if( this.getConfig('storeSession') ){
+				var rawViewed = $.cookie( this.confPrefix + '_viewedEntries' );
+				if( rawViewed ){
+					this.viewedEntries = JSON.parse( rawViewed );
+				}
+			}
+			
 			this.bind('playerReady', function(){
 				// Stop timer
 				_this.stopTimer();
@@ -139,6 +149,10 @@
 					if( _this.isScreenVisible() && _this.templateData && _this.templateData.nextItem ){
 						_this.changeMedia( null, {entryId: _this.templateData.nextItem.id} );
 						_this.viewedEntries.push(_this.templateData.nextItem.id);
+						// update the session var if storing sessions: 
+						if( _this.getConfig('storeSession') ){
+							$.cookie( _this.confPrefix + '_viewedEntries', JSON.stringify( _this.viewedEntries ) );
+						}
 					}
 				}
 			};

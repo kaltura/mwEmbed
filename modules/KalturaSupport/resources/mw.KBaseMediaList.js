@@ -99,9 +99,14 @@
 				if ( this.getConfig( 'onPage' ) ) {
 					var iframeID = this.embedPlayer.id + '_ifp';
 					try {
-						//Try to apply css on parent frame
-						var cssLink = $("link[href$='"+this.getConfig('cssFileName')+"']").attr("href");
-						$('head', window.parent.document ).append('<link type="text/css" rel="stylesheet" href="'+cssLink+'"/>');
+						//Try to find and apply css on parent frame
+						var cssLink = this.getConfig('cssFileName');
+						if (cssLink) {
+							cssLink = cssLink.toLowerCase().indexOf("http") === 0 ? cssLink : kWidget.getPath() + cssLink; // support external CSS links
+							$( 'head', window.parent.document ).append( '<link type="text/css" rel="stylesheet" href="' + cssLink + '"/>' );
+						} else {
+							mw.log( "Error: "+ this.pluginName +" could not find CSS link" );
+						}
 
 						$( window['parent'].document ).find( '.onpagePlaylistInterface' ).remove(); // remove any previously created playlists
 						var iframeParent = window['parent'].document.getElementById( this.embedPlayer.id );
@@ -198,15 +203,15 @@
 			}
 		},
 		onDisable: function(){
+			if (this.embedPlayer.getError() !== null){
+				return;
+			}
 			this.isDisabled = true;
 			var mediaBoxes = this.getMediaListDomElements();
 			mediaBoxes.addClass("disabled");
 			mediaBoxes.find("*").addClass("disabled");
 		},
 		onEnable: function(){
-			if (this.embedPlayer.getError() !== null){
-				return;
-			}
 			this.isDisabled = false;
 			var mediaBoxes = this.getMediaListDomElements();
 			mediaBoxes.removeClass("disabled");
