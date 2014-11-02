@@ -414,7 +414,7 @@
 						_this.getFirstMonitor().prop = screenProps;
 						_this.getSecondMonitor().prop = screenProps;
 
-					}, 1000 );
+					}, 2000 );
 				};
 				this.bind( 'onOpenFullScreen onCloseFullScreen', resizeSecondScreen);
 				// Android fires orientationchange too soon, i.e width and height are wrong
