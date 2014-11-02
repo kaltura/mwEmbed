@@ -195,6 +195,9 @@
 			if ( flashVars['adTagUrl'] ){
 				flashVars['adTagUrl'] = escape(flashVars['adTagUrl']); // escape adTagUrl to prevent Flash string parsing error
 			}
+			if (flashVars['countdownText']) {
+				flashVars['countdownText'] = escape(flashVars['countdownText']); // escape countdownText to support & and ' characters
+			}
 			//we shouldn't send these params, they are unnecessary and break the flash object
 			var ignoredVars = ['path', 'customParams'];
 			for ( var i=0; i< ignoredVars.length; i++ ) {
