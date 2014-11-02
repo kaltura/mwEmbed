@@ -115,7 +115,7 @@
 		},
 		isSafeEnviornment: function(){
 			var _this = this;
-			var res = false;
+			var cuePointsExist = false;
 			if (this.getPlayer().kCuePoints){
 				var cuePoints = this.getPlayer().kCuePoints.getCuePoints();
 				var filteredCuePoints = $.grep(cuePoints, function(cuePoint){
@@ -128,9 +128,9 @@
 					});
 					return found;
 				});
-				res =  (filteredCuePoints.length > 0) ? true : false;
+				cuePointsExist =  (filteredCuePoints.length > 0) ? true : false;
 			}
-			return mw.getConfig("EmbedPlayer.LiveCuepoints") || res;
+			return (!this.getPlayer().useNativePlayerControls() && (mw.getConfig("EmbedPlayer.LiveCuepoints") || cuePointsExist));
 		},
 		getMedialistContainer: function(){
 			//Only support external onPage medialist container

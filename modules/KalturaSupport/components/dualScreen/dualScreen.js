@@ -83,7 +83,7 @@
 					} );
 					cuePointsExist = (filteredCuePoints.length > 0) ? true : false;
 				}
-				return (mw.getConfig("EmbedPlayer.LiveCuepoints") ||  !mw.isIphone() && cuePointsExist );
+				return (!this.getPlayer().useNativePlayerControls() && (mw.getConfig("EmbedPlayer.LiveCuepoints") || cuePointsExist ));
 			},
 			initConfig: function () {
 				var _this = this;
