@@ -359,7 +359,7 @@
 					}
 					//Hide monitor and control bar during resizing
 					_this.hideMonitor( _this.getSecondMonitor().obj );
-					_this.hideControlBar();
+					_this.disableControlBar();
 					setTimeout( function () {
 						//Resize and reposition control bar
 						_this.setControlBarWidth();
@@ -400,7 +400,7 @@
 						_this.applyIntrinsicAspect();
 						//Show monitor and control bar after resizing
 						_this.showMonitor( _this.getSecondMonitor().obj );
-						_this.showControlBar();
+						_this.enableControlBar();
 
 						//Calculate screen resize max width
 						var maxWidth = ( ( _this.getPlayer().getWidth() * _this.getConfig( 'resizable' ).maxWidthPercentage ) / 100 );
