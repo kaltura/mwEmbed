@@ -384,10 +384,7 @@
 							top: topOffset + "px",
 							left: leftOffset + "px"
 						};
-						console.info(newHeight + topOffset)
-						console.info(playerHeight)
-						console.info(newWidth + leftOffset)
-						console.info(newHeight + playerWidth)
+
 						if (newHeight + topOffset > playerHeight){
 							screenProps.top = (playerHeight - newHeight) + "px";
 						}
