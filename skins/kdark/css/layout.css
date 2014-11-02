@@ -44,7 +44,12 @@ body { letter-spacing: 0.04em; }
 }
 
 .sideBarContainerReminder{
-    padding: 10px;
+    width: 32px;
+    height: 32px;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    bottom: 0;
     position: absolute;
     cursor: pointer;
     text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.6);
@@ -55,6 +60,10 @@ body { letter-spacing: 0.04em; }
 @media all and  (max-width: 640px) {
     #sideBarContainerReminderContainer{
         font-size: 24px;
+    }
+    .sideBarContainerReminder {
+        width: 24px;
+        height: 24px;
     }
 }
 .sideBarContainerReminder:hover div{
