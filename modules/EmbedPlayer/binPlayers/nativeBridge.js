@@ -42,7 +42,7 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 	isJsCallbackReady: false,
 	bindPostfix: ".nativeBridge",
 	playerMethods: [ 'stop', 'play', 'pause', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen', 'notifyKPlayerEvent', 'notifyKPlayerEvaluated', 'notifyJsReady', 'showChromecastDeviceList', 'notifyLayoutReady',
-		'doneFSBtnPressed', 'addNativeAirPlayButton', 'showNativeAirPlayButton', 'hideNativeAirPlayButton' ],
+		'doneFSBtnPressed', 'addNativeAirPlayButton', 'showNativeAirPlayButton', 'hideNativeAirPlayButton','openShare' ],
 
 	registePlayer: function (proxyElement) {
 		var _this = this;
