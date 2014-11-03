@@ -690,7 +690,7 @@ mw.PlayerLayoutBuilder.prototype = {
 				_this.mouseMovedFlag = false;
 				_this.showPlayerControls();
 				// Once we move the mouse keep displayed for 4 seconds
-				setTimeout( checkMovedMouse, 4000 );
+				setTimeout( checkMovedMouse, mw.getConfig('EmbedPlayer.MouseMoveTimeout') );
 			} else {
 				// Check for mouse movement every 250ms
 				_this.hidePlayerControls();
