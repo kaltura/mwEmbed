@@ -1,6 +1,6 @@
 <?php
 /**
-* This file enables slow javascript response for testing blocking scripts relative to player embeds
+* This demonstrates grabbing a admin KS for a particular action ( sview ) being granted to the current user / session.
 */
 $wgMwEmbedApiServices['KSTest'] = 'mweApiKSTest';
 

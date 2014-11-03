@@ -359,6 +359,9 @@
 		getAdContainerId: function(){
 			return 'adContainer' + this.embedPlayer.id;
 		},
+		hideAdContainer: function () {
+			$("#" + this.getAdContainerId()).hide();
+		},
 		getAdDisplayContainer: function(){
 			//  Create the ad display container. Use an existing DOM element
 			//	to house the ad display container. Ideally, the element is
@@ -794,9 +797,10 @@
 				// set the allAdsCompletedFlag to not call restore player twice
 				_this.allAdsCompletedFlag = true;
 				if( _this.contentDoneFlag ){
-
-				// restore the player but don't play content since ads are done:
+					// restore the player but don't play content since ads are done:
 					_this.restorePlayer( true );
+				} else {
+					_this.hideAdContainer();
 				}
 			});
 		},
@@ -1094,7 +1098,7 @@
 				this.embedPlayer.getPlayerElement().redrawObject(50);
 			}else{
 				if (_this.isLinear || _this.adLoaderErrorFlag){
-					$("#" + _this.getAdContainerId()).hide();
+					_this.hideAdContainer();
 				}
 			}
 			this.embedPlayer.sequenceProxy.isInSequence = false;
