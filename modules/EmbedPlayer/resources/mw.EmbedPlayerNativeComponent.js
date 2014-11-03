@@ -380,8 +380,8 @@ mw.EmbedPlayerNativeComponent = {
 	/**
 	 * playback error
 	 */
-	_onerror: function ( event ) {
-		this.triggerHelper( 'embedPlayerError' );
+	_onerror: function ( event, data ) {
+		this.triggerHelper( 'embedPlayerError', [ data ] );
 	},
 
 	/**
