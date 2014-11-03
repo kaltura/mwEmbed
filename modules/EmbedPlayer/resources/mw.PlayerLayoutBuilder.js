@@ -575,6 +575,11 @@ mw.PlayerLayoutBuilder.prototype = {
 		addPlaybackBindings();
 		this.addControlsVisibilityBindings();
 
+		// if overlaying controls add hide show player binding.
+		if( embedPlayer.isOverlayControls() && mw.hasMouseEvents() ){
+			this.addMouseMoveBinding();
+		}
+
 		mw.log( 'trigger::addControlBindingsEvent' );
 		embedPlayer.triggerHelper( 'addControlBindingsEvent' );
 	},
@@ -605,10 +610,26 @@ mw.PlayerLayoutBuilder.prototype = {
 		$( this.embedPlayer ).unbind( "touchstart" + this.bindPostfix );
         $( this.embedPlayer ).unbind( "touchend" + this.bindPostfix );
 	},
+
+	// Class to add on interface when mouse is out
+	outPlayerClass: 'player-out',
+	hideControlsTimeout: null,
+	showPlayerControls: function(){
+		clearTimeout(this.hideControlsTimeout);
+		this.getInterface().removeClass( this.outPlayerClass );
+		this.embedPlayer.triggerHelper( 'showPlayerControls' );
+	},
+	hidePlayerControls: function(){
+		if (!this.embedPlayer.paused){
+			this.getInterface().addClass( this.outPlayerClass );
+			this.embedPlayer.triggerHelper( 'hidePlayerControls' );
+		}
+	},
+
 	addControlsVisibilityBindings: function(){
 		var embedPlayer = this.embedPlayer;
 		var _this = this;
-		var $interface = embedPlayer.getInterface();
+		var $interface = this.getInterface();
 
 		// Add recommend firefox if we have non-native playback:
 		if ( _this.checkNativeWarning( ) ) {
@@ -624,46 +645,62 @@ mw.PlayerLayoutBuilder.prototype = {
 			);
 		}
 
-		var outPlayerClass = 'player-out';
-
-		var showPlayerControls = function(){
-			clearTimeout(hideControlsTimeout);
-			$interface.removeClass( outPlayerClass );
-			embedPlayer.triggerHelper( 'showPlayerControls' );
-		};
-		var hidePlayerControls = function(){
-			if (!embedPlayer.paused){
-				$interface.addClass( outPlayerClass );
-				embedPlayer.triggerHelper( 'hidePlayerControls' );
-			}
-		};
-
 		// Check if we should display the interface:
 		if ( mw.hasMouseEvents() ) {
 			var hoverIntentConfig = {
 				'sensitivity': 100,
 				'timeout' : mw.getConfig('EmbedPlayer.HoverOutTimeout'),
 				'over' : function(){
-					showPlayerControls();
+					_this.showPlayerControls();
 				},
 				'out' : function(){
-					hidePlayerControls();
+					_this.hidePlayerControls();
 				}
 			};
 			$interface.hoverIntent( hoverIntentConfig );
 		}
-
-		var hideControlsTimeout = null;
 		
 		// Bind a startTouch to show controls
 		$( embedPlayer ).bind( 'touchstart', function() {
-			showPlayerControls();
-			hideControlsTimeout = setTimeout(function(){
-				hidePlayerControls();
+			_this.showPlayerControls();
+			_this.hideControlsTimeout = setTimeout(function(){
+				_this.hidePlayerControls();
 			}, 5000);
 			return true;
 		} );
 	},
+
+	addMouseMoveBinding: function(){
+		var _this = this;
+		// Bind mouse move in interface to hide control bar
+		_this.mouseMovedFlag = false;
+		var oldX =0, oldY= 0;
+		_this.getInterface().mousemove( function(event){
+			// debounce mouse movements
+			if( Math.abs( oldX - event.pageX ) > 4 ||  Math.abs( oldY - event.pageY ) > 4 ){
+				_this.mouseMovedFlag = true;
+			}
+			oldX = event.pageX;
+			oldY = event.pageY;
+		});
+
+		// Check every 2 seconds reset flag status if controls are overlay
+		var checkMovedMouse = function(){
+			if( _this.mouseMovedFlag ){
+				_this.mouseMovedFlag = false;
+				_this.showPlayerControls();
+				// Once we move the mouse keep displayed for 4 seconds
+				setTimeout( checkMovedMouse, mw.getConfig('EmbedPlayer.MouseMoveTimeout') );
+			} else {
+				// Check for mouse movement every 250ms
+				_this.hidePlayerControls();
+				setTimeout( checkMovedMouse, 250 );
+			}
+		};
+		// start monitoring for moving mouse
+		checkMovedMouse();
+	},
+
 	// Hold the current player size class
 	// The value is null so we will trigger playerSizeClassUpdate on first update
 	playerSizeClass: null,
