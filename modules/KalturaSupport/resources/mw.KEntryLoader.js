@@ -1,20 +1,5 @@
 /**
- * Simple kaltura javascript api
- *
- * uses configuration Kaltura.ServiceUrl and Kaltura.ServiceBase for api entry point
- * 
- * Should extend new kWidget.api() api.request() base
- */
-
-/**
- * kApi takes supports a few mixed argument types
- *
- * @param {String}
- *		widgetId used to establish a request key for the given session
- *		( this enables multiple sessions per widget id on a single page )
- * @param {Mixed}
- *		Array An Array of request params for multi-request
- *		Object Named request params
+ * KEntryLoader enables easy loading of entries with respective metadata. 
  */
 ( function( mw, $ ) { "use strict";
 
