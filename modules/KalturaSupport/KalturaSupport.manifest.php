@@ -377,9 +377,14 @@ return array(
 			'kpl1Name' => array(
 				'doc' => "The name of the indexed playlist.",
 				'type' => 'hiddenValue'
-			)
+			),
+			'additionalPlaylists' => array(
+                'doc' => "Additional playlists.",
+                'type' => 'additionalPlaylists'
+            )
 		)
-	),/*
+	),
+	/*
 	'playlistHolder' => array(
 		'description' => 'Holds the playlist clip list.',
 		'attributes' => array(
