@@ -301,7 +301,7 @@
 					// Setup the restore callback
 					_this.postRollCallback = callback;
 					//no need to request ads
-					if (!_this.isLinear || _this.allAdsCompletedFlag){
+					if ( !_this.isLinear || _this.allAdsCompletedFlag || _this.adLoaderErrorFlag ){
 						_this.restorePlayer(true);
 					}
 				}
