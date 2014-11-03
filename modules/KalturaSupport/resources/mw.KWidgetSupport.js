@@ -551,8 +551,10 @@ mw.KWidgetSupport.prototype = {
 				return deferred.resolve( srcURL );
 			}
 			var srcToPlay = null;
+			var qp = ( srcURL.indexOf('?') === -1) ? '?' : '&';
+
 			$.ajax({
-				url: srcURL + "&responseFormat=jsonp",
+				url: srcURL + qp + "responseFormat=jsonp",
 				dataType: 'jsonp',
 				success: function( playmanifest ){
 					var flavors = playmanifest.flavors;

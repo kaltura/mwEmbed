@@ -93,7 +93,7 @@ mw.EmbedPlayerNativeComponent = {
 		}
 
 		this.applyMediaElementBindings();
-		this.getPlayerElement().attr('src', this.getSrc());
+
 		this.bindHelper("SourceChange", function() {
 			_this.getPlayerElement().attr('src', this.getSrc());
 		});
@@ -105,7 +105,18 @@ mw.EmbedPlayerNativeComponent = {
 			_this.getPlayerElement().showChromecastDeviceList();
 		});
 
-		readyCallback();
+		this.resolveSrcURL( this.getSrc() ).then(
+			function( resolvedSrc ) {
+				mw.log("EmbedPlayerNativeComponent::resolveSrcURL get succeeded");
+				_this.getPlayerElement().attr('src', resolvedSrc);
+				readyCallback();
+			},
+			function() {
+				mw.log("EmbedPlayerNativeComponent::resolveSrcURL get failed");
+				_this.getPlayerElement().attr('src', _this.getSrc());
+				readyCallback();
+			}
+		);
 	},
 
 	embedPlayerHTML : function() {
