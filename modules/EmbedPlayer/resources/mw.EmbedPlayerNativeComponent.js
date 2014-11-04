@@ -309,11 +309,16 @@ mw.EmbedPlayerNativeComponent = {
 	 */
 	_onseeking: function() {
 		mw.log( "EmbedPlayerNative::onSeeking " );
+		if( !this.seeking ) {
+			this.seeking = true;
+			// Run the onSeeking interface update
+			this.layoutBuilder.onSeek();
 
-		// Trigger the html5 "seeking" trigger
-		mw.log("EmbedPlayerNative::seeking:trigger:: ");
-		if( this._propagateEvents ){
-			this.triggerHelper( 'seeking' );
+			if( this._propagateEvents ){
+				// Trigger the html5 "seeking" trigger
+				mw.log("EmbedPlayerNative::seeking:trigger:: ");
+				this.triggerHelper( 'seeking' );
+			}
 		}
 	},
 
@@ -322,15 +327,19 @@ mw.EmbedPlayerNativeComponent = {
 	 * fired when done seeking
 	 */
 	_onseeked: function() {
-		mw.log("EmbedPlayerNative::onSeeked " );
-		this.seeking = false;
+		mw.log("EmbedPlayerNativeComponent::onSeeked " );
+		if ( this.seeking ) {
+			this.seeking = false;
 
-		if( this._propagateEvents ){
-			mw.log( "EmbedPlayerNative:: trigger: seeked" );
-			this.triggerHelper( 'seeked' );
+			if( this._propagateEvents ){
+				mw.log( "EmbedPlayerNativeComponent:: trigger: seeked" );
+				this.triggerHelper( 'seeked' );
+			}
+
+			this.hideSpinner();
+			this.updatePlayheadStatus();
+			this.monitor();
 		}
-
-		this.monitor();
 	},
 
 	/**
