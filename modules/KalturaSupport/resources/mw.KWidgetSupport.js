@@ -347,7 +347,6 @@ mw.KWidgetSupport.prototype = {
 	setEmbedServicesData: function(embedPlayer, playerData){
 		//Set flavors
 		var flavorAssets = [];
-		var flavorSources = this.getEntryIdSourcesFromPlayerData( embedPlayer.kpartnerid, playerData );
 		$.each( playerData.contextData.flavorAssets, function ( index, flavorAsset ) {
 			try {
 				var flavorPartnerData = JSON.parse( flavorAsset.partnerData );
