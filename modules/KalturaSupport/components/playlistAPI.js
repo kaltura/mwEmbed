@@ -160,6 +160,12 @@
 					this.playlistSet.push( embedPlayer.kalturaPlaylistData[ playlistId ] );
 				}
 			}
+			// update playlist names if set in Flashvars
+			for (var i = 0; i < this.playlistSet.length; i++) {
+				if (this.getConfig('kpl' + i + 'Name')) {
+					this.playlistSet[i].name = this.getConfig('kpl' + i + 'Name');
+				}
+			}
 		},
 
 		// prepare the data to be compatible with KBaseMediaList
