@@ -214,7 +214,7 @@ mw.KCuePoints.prototype = {
 		var embedPlayer = this.embedPlayer;
 
 		// Don't add any bindings if no cuePoint exists )
-		if( !currentCuePoint ){
+		if( !(mw.getConfig("EmbedPlayer.LiveCuepoints") || currentCuePoint) ){
 			return ;
 		}
 
