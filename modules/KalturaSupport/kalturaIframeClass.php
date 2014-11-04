@@ -609,6 +609,9 @@ HTML;
 			}
 			if (isset($theme['buttonsColor'])){
 				$customStyle = $customStyle . '.btn {background-color: ' . $theme['buttonsColor'] . '}';
+				if (isset($theme['applyToLargePlayButton']) && $theme['applyToLargePlayButton'] == true){
+					$customStyle = $customStyle  . '.largePlayBtn {background-color: ' . $theme['buttonsColor'] . '!important}';
+				}
 			}
 			if (isset($theme['sliderColor'])){
 				$customStyle = $customStyle . '.ui-slider {background-color: ' . $theme['sliderColor'] . '!important}';
@@ -623,6 +626,9 @@ HTML;
 			}
 			if (isset($theme['buttonsIconColor'])){
 				$customStyle = $customStyle . '.btn {color: ' . $theme['buttonsIconColor'] . '!important}';
+				if (isset($theme['applyToLargePlayButton']) && $theme['applyToLargePlayButton'] == true){
+					$customStyle = $customStyle  . '.largePlayBtn {color: ' . $theme['buttonsIconColor'] . '!important}';
+				}
 			}
 			if (isset($theme['watchedSliderColor'])){
 				$customStyle = $customStyle . '.watched {background-color: ' . $theme['watchedSliderColor'] . '!important}';
