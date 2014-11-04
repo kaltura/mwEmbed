@@ -232,7 +232,7 @@ mw.KCuePoints.prototype = {
 				var currentTime = embedPlayer.currentTime * 1000;
 				//In case of seeked the current cuepoint needs to be updated to new seek time before
 				if ( e.type == "seeked"){
-					currentCuePoint = _this.getNextCuePoint( currentTime );
+					currentCuePoint = _this.getPreviousCuePoint( currentTime );
 				}
 				// Check if the currentCuePoint exists
 				if( currentCuePoint && currentTime > currentCuePoint.startTime && embedPlayer._propagateEvents ){
@@ -273,6 +273,24 @@ mw.KCuePoints.prototype = {
 		}
 		// No cue point found in range return false:
 		return false;
+	},
+	/**
+	 * Returns the previous cuePoint object for requested time
+	 * @param {Number} time Time in milliseconds
+	 */
+	getPreviousCuePoint: function( time ){
+		if (!isNaN(time) && time >= 0) {
+			var cuePoints = this.midCuePointsArray;
+			// Start looking for the cue point via time, return first match:
+			for ( var i = 0; i < cuePoints.length; i++ ) {
+				if ( cuePoints[i].startTime >= time ) {
+					var index = (i-1 > 0) ? (i-1) : 0;
+					return cuePoints[index];
+				}
+			}
+		}
+		// if no cuepoint found then return last one:
+		return cuePoints[cuePoints.length-1];
 	},
 	/**
 	 * Triggers the given cue point
