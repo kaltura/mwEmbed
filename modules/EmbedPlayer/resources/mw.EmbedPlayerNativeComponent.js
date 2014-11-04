@@ -71,42 +71,44 @@ mw.EmbedPlayerNativeComponent = {
 		'overlays' : true
 	},
 
-	embedPlayerHTML : function() {
+	setup: function( readyCallback ) {
 		var _this = this;
-		if ( !this.playerIsLoaded ){
-			mw.log( "NativeComponent:: embedPlayerHTML" );
-			// remove any existing pid ( if present )
-			$( '#' + this.pid ).remove();
+		mw.log( "NativeComponent:: setup" );
+		// remove any existing pid ( if present )
+		$( '#' + this.pid ).remove();
 
-			var divElement = document.createElement("div");
-			divElement.setAttribute('id', 'proxy');
-			document.body.appendChild(divElement);
+		var divElement = document.createElement("div");
+		divElement.setAttribute('id', 'proxy');
+		document.body.appendChild(divElement);
 
-			this.proxyElement = divElement;
-			try{
-				if(NativeBridge.videoPlayer){
-					NativeBridge.videoPlayer.registePlayer(this.getPlayerElement());
-					NativeBridge.videoPlayer.registerEmbedPlayer( this );
-				}
+		this.proxyElement = divElement;
+		try{
+			if(NativeBridge.videoPlayer){
+				NativeBridge.videoPlayer.registePlayer(this.getPlayerElement());
+				NativeBridge.videoPlayer.registerEmbedPlayer( this );
 			}
-			catch(e){
-				alert( e );
-			}
-
-			this.applyMediaElementBindings();
-			this.playerIsLoaded = true;
-			this.getPlayerElement().attr('src', this.getSrc());
-			this.bindHelper("SourceChange", function() {
-				_this.getPlayerElement().attr('src', this.getSrc());
-			});
-			this.bindHelper("layoutBuildDone ended", function() {
-				_this.getPlayerElement().notifyLayoutReady();
-			});
-			this.bindHelper("showChromecastDeviceList", function() {
-				mw.log("EmbedPlayerNativeComponent:: showChromecastDeviceList::");
-				_this.getPlayerElement().showChromecastDeviceList();
-			});
 		}
+		catch(e){
+			alert( e );
+		}
+
+		this.applyMediaElementBindings();
+		this.getPlayerElement().attr('src', this.getSrc());
+		this.bindHelper("SourceChange", function() {
+			_this.getPlayerElement().attr('src', this.getSrc());
+		});
+		this.bindHelper("layoutBuildDone ended", function() {
+			_this.getPlayerElement().notifyLayoutReady();
+		});
+		this.bindHelper("showChromecastDeviceList", function() {
+			mw.log("EmbedPlayerNativeComponent:: showChromecastDeviceList::");
+			_this.getPlayerElement().showChromecastDeviceList();
+		});
+
+		readyCallback();
+	},
+
+	embedPlayerHTML : function() {
 	},
 
 	playerSwitchSource: function( source, switchCallback, doneCallback ) {
