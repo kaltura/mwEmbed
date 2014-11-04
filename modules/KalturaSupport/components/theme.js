@@ -12,7 +12,8 @@
 			'watchedSliderColor':null,
 			'bufferedSliderColor':null,
 			'buttonsIconColorDropShadow': null,
-			'dropShadowColor': null
+			'dropShadowColor': null,
+			'applyToLargePlayButton': true
 		},
 
 		setup: function( embedPlayer ) {
@@ -28,14 +29,27 @@
 		onConfigChange: function( property, value ){
 			if (value != null){
 				switch( property ) {
+					case 'applyToLargePlayButton':
+						if (!this.getConfig('applyToLargePlayButton')) {
+							$(".largePlayBtn").attr("style", "background-color: #222222 !important; color: #ffffff !important");
+						} else {
+							$(".largePlayBtn").attr("style", "background-color: " + this.getConfig('buttonsColor') + " !important; color: " + this.getConfig('buttonsIconColor') + " !important");
+						}
+						break;
 					case 'buttonsSize':
 						$("body").css("font-size",value + "px");
 						break;
 					case 'buttonsColor':
 						$(".btn").not(".playHead").attr("style","background-color: " + value + " !important; color: "+ this.getConfig('buttonsIconColor') +" !important; text-shadow: "+ this.getConfig('dropShadowColor') +" !important");
+						if (this.getConfig('applyToLargePlayButton')) {
+							$(".largePlayBtn").attr("style", "background-color: " + value + " !important");
+						}
 						break;
 					case 'buttonsIconColor':
 						$(".btn").not(".playHead").attr("style","color: " + value + " !important; background-color: "+ this.getConfig('buttonsColor') +" !important; text-shadow: "+ this.getConfig('dropShadowColor') +" !important");
+						if (this.getConfig('applyToLargePlayButton')) {
+							$(".largePlayBtn ").attr("style", "color: " + value + " !important; background-color: " + this.getConfig('buttonsColor') + " !important");
+						}
 						break;
 					case 'sliderColor':
 						$(".ui-slider").attr("style","background-color: " + value + " !important");
