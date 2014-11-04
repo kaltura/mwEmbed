@@ -21,6 +21,7 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 	setup: function(){
 		this.setupPlayerURL();
 		this.addBindings();
+
 	},
 	setupPlayerURL: function(){
 		var shareURL = null;
@@ -43,6 +44,23 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 		this.bind('playerReady', function( ){
 			_this.setupPlayerURL();
 		});
+		// If in native app, call the native share
+		if(mw.getConfig( "EmbedPlayer.ForceNativeComponent")){
+			this.getComponent().unbind("click").bind("click", function(e){
+
+				// Prepare a JSON string for sending to the native app
+				var shareParams = "[";
+				var shareArray = _this.getTemplateData().networks;
+				for (var i = 0; i < shareArray.length ; i++) {
+					shareParams += JSON.stringify(shareArray[i]);
+					if (i < shareArray.length - 1) {
+						shareParams += ",";
+					}
+				}
+				shareParams += "]";
+				_this.getPlayer().share( shareParams );
+			});
+		}
 	},
 	getParentURL: function(){
 		return ( mw.getConfig( 'EmbedPlayer.IframeParentUrl') ) ?
@@ -104,6 +122,7 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 		var url = $(e.target).parents('a').attr('href');
 		// Name argument for window.open in IE8 must be from supported set: _blank for example
 		// http://msdn.microsoft.com/en-us/library/ms536651%28v=vs.85%29.aspx
+
 		window.open(
 			url + encodeURIComponent( this.getConfig('shareURL')),
 			'_blank',

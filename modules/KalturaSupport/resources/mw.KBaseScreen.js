@@ -188,6 +188,7 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 						.attr( 'title', this.getConfig('tooltip') )
 						.addClass( "btn " + this.iconBtnClass + this.getCssClass() )
 						.click( function(){
+					alert("hhh");
 							_this.toggleScreen();
 						});
             this.setAccessibility(this.$el, this.getConfig('tooltip'));
