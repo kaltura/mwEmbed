@@ -38,7 +38,7 @@ if( ! window.kWidget ){
 			} else {
 				serviceUrl = 'http://cdnbakmi.kaltura.com';
 			}
-	
+
 			var baseUrl = serviceUrl + '/p/' + settings.partnerId +
 					'/sp/' + settings.partnerId + '00/playManifest';
 			for( var i in result[1]['flavorAssets'] ){
@@ -56,6 +56,7 @@ if( ! window.kWidget ){
 	
 	
 				var src  = baseUrl + '/entryId/' + asset.entryId;
+				
 				// Check if Apple http streaming is enabled and the tags include applembr ( single stream HLS )
 				if( asset.tags.indexOf('applembr') != -1 ) {
 					src += '/format/applehttp/protocol/'+ protocol + '/a.m3u8';
@@ -70,7 +71,12 @@ if( ! window.kWidget ){
 				} else {
 					src += '/flavorId/' + asset.id + '/format/url/protocol/' + protocol;
 				}
-	
+				// add source data if a web flavor: 
+				if( asset.tags.toLowerCase().indexOf('web') != -1 ){
+					source['data-flavorid'] = asset.videoCodecId + ' ' + asset.height + 'P';
+					source['src'] = src + '/a.' + asset.fileExt;
+					source['type'] = 'video/h264';
+				}
 				// add the file extension:
 				if( asset.tags.toLowerCase().indexOf('ipad') != -1 ){
 					source['src'] = src + '/a.mp4';

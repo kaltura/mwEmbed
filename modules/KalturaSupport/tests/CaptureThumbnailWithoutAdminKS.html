@@ -10,27 +10,36 @@
 <body>
 	<h2> Capture Thumbnail </h2>
 	<br />
-
-	<object id="kaltura_player_1335864632"
-			name="kaltura_player_1335864632"
-			type="application/x-shockwave-flash"
-			allowFullScreen="true"
-			allowNetworking="all"
-			allowScriptAccess="always"
-			height="330"
-			width="400"
-			bgcolor="#000000"
-			xmlns:dc="http://purl.org/dc/terms/"
-			xmlns:media="http://search.yahoo.com/searchmonkey/media/"
-			rel="media:video"
-			resource="http://www.kaltura.com/index.php/kwidget/cache_st/1335864632/wid/_861182/uiconf_id/7967241/entry_id/1_q89nq804"
-			data="http://www.kaltura.com/index.php/kwidget/cache_st/1335864632/wid/_861182/uiconf_id/7967241/entry_id/1_q89nq804">
-		<param name="allowFullScreen" value="true" />
-		<param name="allowNetworking" value="all" />
-		<param name="allowScriptAccess" value="always" />
-		<param name="bgcolor" value="#000000" />
-		<param name="flashVars" value="&" />
-		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1335864632/wid/_861182/uiconf_id/7967241/entry_id/1_q89nq804" />
-	</object>	
+	
+	<div id="kaltura_player" style="width:400px;height:300px;"></div>
+	<script>
+		kWidget.featureConfig( {
+			'targetId': 'kaltura_player',
+			'wid': '_243342',
+			'uiconf_id' : '12905712',
+			'entry_id' : '0_uka1msg4',
+			'flashvars': {
+				'captureThumbnail':{
+					'plugin': true,
+					"tooltip": "Capture Thumbnail"
+				}
+			}
+		});
+	</script>
+	Sample embed to enable captureThumbnail. Note you would want to supply a ks
+	<pre class="prettyprint linenums">kWidget.embed( {
+	'targetId': 'kaltura_player',
+	'wid': '_243342',
+	'uiconf_id' : '12905712',
+	'entry_id' : '0_uka1msg4',
+	'flashvars': {
+		'ks': /* your ks with thumbnail capture permission */
+		'captureThumbnail':{
+			'plugin': true,
+			"tooltip": "Capture Thumbnail"
+		}
+	}
+});
+	</pre>
 </body>
 </html>

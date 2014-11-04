@@ -66,9 +66,9 @@ $sendNotificationActions = array (
 				'availability' => 'kdp' 
 		),
 		'enableGui' => array (
-				'notificationData' => 'guiEnabled: true / false, enableType: full / controls',
-				'desc' => 'Enable/disable GUI',
-				'availability' => 'kdp' 
+				'notificationData' => '{ guiEnabled: true / false, enableType: full / controls }',
+				'desc' => 'Enable or Disable GUI',
+				'example' => '../modules/KalturaSupport/tests/EnableGui.html'
 		),
 		'cancelAlerts' => array (
 				'notificationData' => 'None',
