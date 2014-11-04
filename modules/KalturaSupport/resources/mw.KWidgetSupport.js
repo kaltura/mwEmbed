@@ -140,9 +140,12 @@ mw.KWidgetSupport.prototype = {
 			callback( iframeUrl );
 		});
 
-		embedPlayer.bindHelper( 'embedPlayerError' , function ( event, data ) {
-			embedPlayer.handlePlayerError( data );
-		});
+		/*
+		embedPlayer.shouldHandlePlayerError = false
+		embedPlayer.bindHelper( 'embedPlayerError' , function ( event, data, doneCallback ) {
+			//TODO
+		});*/
+
 		// Support mediaPlayFrom, mediaPlayTo properties
 		embedPlayer.bindHelper( 'Kaltura_SetKDPAttribute', function(e, componentName, property, value){
 			switch( property ){

@@ -282,6 +282,9 @@
 		// If the player supports playbackRate ( currently available on some html5 browsers )
 		playbackRate: false,
 
+		//if the player should handle playerError events
+		shouldHandlePlayerError: true,
+
 		/**
 		 * embedPlayer
 		 *
@@ -765,6 +768,10 @@
 			mw.log("EmbedPlayer::setupSourcePlayer: " + this.id + ' sources: ' + this.mediaElement.sources.length );
 			// Setup player state manager
 			this.addPlayerStateChangeBindings();
+			this.bindHelper( 'embedPlayerError', function( e, data ) {
+				 _this.handlePlayerError( data );
+			});
+
 			// Check for source replace configuration:
 			if( mw.getConfig('EmbedPlayer.ReplaceSources' ) ){
 				this.replaceSources( mw.getConfig('EmbedPlayer.ReplaceSources' ));
@@ -3006,7 +3013,9 @@
 		},
 
 		handlePlayerError: function( data ) {
-			this.showErrorMsg( { title: this.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), message: this.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) } );
+			if ( this.shouldHandlePlayerError ) {
+				this.showErrorMsg( { title: this.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), message: this.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) } );
+			}
 		}
 	};
 
