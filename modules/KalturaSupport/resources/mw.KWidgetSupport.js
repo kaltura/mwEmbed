@@ -141,7 +141,8 @@ mw.KWidgetSupport.prototype = {
 		});
 
 		/*
-		embedPlayer.shouldHandlePlayerError = false
+		// Example how to override embedPlayerError handler
+		embedPlayer.shouldHandlePlayerError = false;
 		embedPlayer.bindHelper( 'embedPlayerError' , function ( event, data, doneCallback ) {
 			//TODO
 		});*/
