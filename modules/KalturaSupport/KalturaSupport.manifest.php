@@ -1042,7 +1042,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'postrollUrlJs' => array(
 				'doc' => "The VAST ad tag URL used where platform does not support flash.
 			If undefined all platforms will use the base postrollUrl for ad requests.",
-				'label' => 'Preroll JS URL',
+				'label' => 'Postroll JS URL',
 				'type' => 'url',
 				'section' => 'post',
 			),
