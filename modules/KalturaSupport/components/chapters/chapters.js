@@ -32,6 +32,9 @@
 
 		setup: function ( embedPlayer ) {
 			this.addBindings();
+			if (mw.getConfig("EmbedPlayer.LiveCuepoints")){
+				this.setConfig("includeMediaItemDuration", false);
+			}
 		},
 		addBindings: function () {
 			var _this = this;
@@ -47,12 +50,16 @@
 				//Set data initialized flag for handlers to start working
 				_this.dataIntialized = true;
 				if (_this.renderOnData) {
+					_this.renderOnData = false;
 					_this.renderMediaList();
 					_this.updateActiveItem();
 				}
 			} );
 
 			this.bind( 'KalturaSupport_ThumbCuePointsUpdated', function (e, cuepoints) {
+				if (!_this.dataIntialized){
+					_this.dataIntialized = true;
+				}
 				cuepoints.sort( function ( a, b ) {
 					return a.startTime - b.startTime;
 				} );
@@ -75,7 +82,12 @@
 						_this.markMediaItemsAsDisplayed( items );
 						//Create DOM markup and append to list
 						var mediaItems = _this.createMediaItems( items );
-						_this.getComponent().find( "ul" ).append( mediaItems );
+						if (_this.renderOnData){
+							_this.renderOnData = false;
+							_this.renderMediaList();
+						} else {
+							_this.getComponent().find( "ul" ).append( mediaItems );
+						}
 						//Mark current added items index as the index to start scroll from and re-init the scroll logic
 						_this.startFrom = _this.mediaList.length - _this.mediaItemVisible;
 						_this.shouldAddScroll();

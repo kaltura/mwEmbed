@@ -59,6 +59,7 @@
 					title: ['Toggle Main View']
 				}
 			},
+			currentSlide: null,
 
 			setup: function ( embedPlayer ) {
 				this.initConfig();
@@ -321,12 +322,20 @@
 						_this.bind('postDualScreenTransition', function(e, transition){
 							_this.unbind('postDualScreenTransition');
 							if (!_this.secondDisplayReady) {
-								secondaryScreen.getAbsoluteOverlaySpinner().attr( 'id', 'secondScreenLoadingSpinner' );
+								if (mw.getConfig("EmbedPlayer.LiveCuepoints")) {
+
+								} else {
+									secondaryScreen.getAbsoluteOverlaySpinner().attr( 'id', 'secondScreenLoadingSpinner' );
+								}
 							}
 						});
 						_this.fsm.consumeEvent( "switchView" );
 					} else if (!_this.secondDisplayReady) {
-						secondaryScreen.getAbsoluteOverlaySpinner().attr( 'id', 'secondScreenLoadingSpinner' );
+						if (mw.getConfig("EmbedPlayer.LiveCuepoints")) {
+
+						} else {
+							secondaryScreen.getAbsoluteOverlaySpinner().attr( 'id', 'secondScreenLoadingSpinner' );
+						}
 					}
 
 					//dualScreen components are set on z-index 1-3, so set all other components to zIndex 4 or above
@@ -425,9 +434,12 @@
 				this.bind( 'onplay', function () {
 					_this.loadAdditionalAssets();
 				} );
-				this.bind( 'seeked', function () {
+				this.bind( 'durationChange', function () {
 					var cuePoint = _this.getCurrentCuePoint();
-					_this.sync( cuePoint );
+					if (cuePoint && _this.currentSlide != cuePoint) {
+						_this.currentSlide = cuePoint;
+						_this.sync( cuePoint );
+					}
 				} );
 
 				this.bind( 'KalturaSupport_ThumbCuePointsReady', function () {
@@ -441,7 +453,8 @@
 					_this.cuePoints.sort( function ( a, b ) {
 						return a.startTime - b.startTime;
 					} );
-					_this.loadNext( _this.cuePoints[0], function(){
+					var currentCuepoint = _this.getCurrentCuePoint() || _this.cuePoints[0];
+					_this.sync(currentCuepoint , function(){
 						var $spinner = $( '#secondScreenLoadingSpinner' );
 						if ( $spinner.length > 0 ) {
 							// remove the spinner
@@ -451,7 +464,10 @@
 					} );
 				} );
 				this.bind( 'KalturaSupport_CuePointReached', function ( e, cuePointObj ) {
-					_this.sync( cuePointObj.cuePoint );
+					if (cuePointObj.cuePoint.cuePointType == "thumbCuePoint.Thumb") {
+						_this.currentSlide = cuePointObj.cuePoint;
+						_this.sync( cuePointObj.cuePoint );
+					}
 				} );
 				this.bind( 'KalturaSupport_ThumbCuePointsUpdated', function (e, cuepoints ) {
 
@@ -682,15 +698,21 @@
 				this.monitor[this.TYPE.PRIMARY].obj.removeClass( 'screenTransition' );
 				this.monitor[this.TYPE.SECONDARY].obj.removeClass( 'screenTransition' );
 			},
-			sync: function ( cuePoint ) {
+			sync: function ( cuePoint, callback ) {
 				this.loadAdditionalAssets();
 
 				var myImg = this.getComponent().find( '#SynchImg' );
 				if (cuePoint.thumbnailUrl) {
 					myImg.attr( 'src', cuePoint.thumbnailUrl);
+					if ( callback && typeof(callback) == "function" ) {
+						callback();
+					}
 				} else {
 					this.loadNext(cuePoint, function(url){
 						myImg.attr( 'src', url);
+						if ( callback && typeof(callback) == "function" ) {
+							callback();
+						}
 					});
 				}
 			},
