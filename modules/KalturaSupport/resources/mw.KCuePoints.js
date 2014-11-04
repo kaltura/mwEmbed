@@ -50,10 +50,11 @@ mw.KCuePoints.prototype = {
 		// Create new array with midrolls only
 		var newCuePointsArray = [];
 		$.each( cuePoints, function( idx, cuePoint ){
-			if( _this.getVideoAdType( cuePoint ) == 'pre' || _this.getVideoAdType( cuePoint ) == 'post' ) {
+			if( (_this.getVideoAdType( cuePoint ) == 'pre' || _this.getVideoAdType( cuePoint ) == 'post') &&
+				cuePoint.cuePointType == 'adCuePoint.Ad') {
 				_this.triggerCuePoint( cuePoint );
 			} else {
-				// Midroll
+				// Midroll or non-ad cuepoint
 				if (cuePoint.cuePointType != "eventCuePoint.Event") {
 					newCuePointsArray.push( cuePoint );
 				}
@@ -334,9 +335,9 @@ mw.KCuePoints.prototype = {
 
 	// Get Ad Type from Cue Point
 	getVideoAdType: function( rawCuePoint ) {
-		if( rawCuePoint.startTime === 0 ) {
+		if ( rawCuePoint.startTime === 0 ) {
 			return 'pre';
-		} else if( rawCuePoint.startTime == this.getEndTime() ) {
+		} else if ( rawCuePoint.startTime == this.getEndTime() ) {
 			return 'post';
 		} else {
 			return 'mid';
