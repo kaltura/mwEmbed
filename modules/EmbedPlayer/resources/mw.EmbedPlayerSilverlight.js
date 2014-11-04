@@ -159,7 +159,7 @@
 					});
 
 					flashvars.multicastPlayer = true;
-					flashvars.streamAddress = srcToPlay;
+					flashvars.streamAddress = resolvedSrc;
 					//flashvars.debug = true;
 
 					//check if multicast not available
