@@ -621,6 +621,11 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'featureCheckbox' => true,
 		'label' => 'Custom styles',
 		'attributes' => array(
+			'applyToLargePlayButton' => array(
+				'type' => 'boolean',
+				'player-refresh' => 'theme.applyToLargePlayButton',
+				"initvalue" => true
+			),
 			'buttonsSize' => array(
 				'label' => 'Button\'s size',
 				'doc' => 'Button\'s size.',
