@@ -4,6 +4,7 @@
  */
 return array(
 	'akamaiMediaAnalytics' => array(
+		'label' => 'Akamai Media Analytics',
 		'description' => "Supports sending player analytics events to Akamai.<br>",
 		'attributes'=> array(
 			'configPath' => array(
