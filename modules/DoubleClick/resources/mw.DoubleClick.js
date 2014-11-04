@@ -195,6 +195,9 @@
 			if ( flashVars['adTagUrl'] ){
 				flashVars['adTagUrl'] = escape(flashVars['adTagUrl']); // escape adTagUrl to prevent Flash string parsing error
 			}
+			if (flashVars['countdownText']) {
+				flashVars['countdownText'] = escape(flashVars['countdownText']); // escape countdownText to support & and ' characters
+			}
 			//we shouldn't send these params, they are unnecessary and break the flash object
 			var ignoredVars = ['path', 'customParams'];
 			for ( var i=0; i< ignoredVars.length; i++ ) {
@@ -292,6 +295,22 @@
 					//no need to request ads
 					if (!_this.isLinear || _this.allAdsCompletedFlag){
 						_this.restorePlayer(true);
+					}
+				}
+			});
+			_this.embedPlayer.bindHelper('Kaltura_SendNotification' + this.bindPostfix, function (event, notificationName, notificationData) {
+				if (notificationName === "doPause") {
+					_this.embedPlayer.paused = true;
+					$(_this.embedPlayer).trigger("onPlayerStateChange", ["pause", _this.embedPlayer.currentState]);
+					if (_this.isChromeless) {
+						_this.embedPlayer.getPlayerElement().sendNotification("pauseAd");
+					}
+				}
+				if (notificationName === "doPlay") {
+					_this.embedPlayer.paused = false;
+					$(_this.embedPlayer).trigger("onPlayerStateChange", ["play", _this.embedPlayer.currentState]);
+					if (_this.isChromeless) {
+						_this.embedPlayer.getPlayerElement().sendNotification("resumeAd");
 					}
 				}
 			});
@@ -732,6 +751,9 @@
 
 					// Monitor ad progress
 					_this.monitorAdProgress();
+
+					// Send a notification to trigger associated events and update ui
+					_this.embedPlayer.sendNotification('doPlay');
 				}
 			} );
 			adsListener( 'PAUSED', function(){
@@ -807,6 +829,8 @@
 							.addClass( 'ad-component ad-notice-label' )
 					);
 				}
+				// Send a notification to trigger associated events and update ui
+				_this.embedPlayer.paused = false;
 			},'adStart', true);
 
 

@@ -502,7 +502,13 @@
 				return;
 			}
 			mw.log("EmbedPlayer:: disablePlayControls" );
-			excludedComponents = excludedComponents || [];
+
+			if (!excludedComponents) {
+				excludedComponents = ['fullScreenBtn', 'logo'];
+				if (mw.getConfig('enableControlsDuringAd')) {
+					excludedComponents.push('playPauseBtn');
+				}
+			}
 
 			this._playContorls = false;
 			$( this ).trigger( 'onDisableInterfaceComponents', [ excludedComponents ] );
@@ -2607,7 +2613,7 @@
 			var _this = this;
 
 			if ( this.currentTime >= 0 && this.duration ) {
-				if ( !this.userSlide && !this.seeking ) {
+				if (!this.userSlide && !this.seeking && !this.paused) {
 					var playHeadPercent = ( this.currentTime - this.startOffset ) / this.duration;
 					this.updatePlayHead( playHeadPercent );
 				}
@@ -2915,12 +2921,18 @@
 				// Do a live switch
 				this.playerSwitchSource( source, function( vid ){
 					// issue a seek
-					_this.setCurrentTime( oldMediaTime, function(){
-						// reflect pause state
-						if( oldPaused ){
-							_this.pause();
-						}
-					} );
+					setTimeout(function(){
+						_this.addBlackScreen();
+						_this.hidePlayerOffScreen();
+						_this.setCurrentTime( oldMediaTime, function(){
+							_this.removeBlackScreen();
+							_this.restorePlayerOnScreen();
+							// reflect pause state
+							if( oldPaused ){
+								_this.pause();
+							}
+						} );
+					}, 100);
 				});
 			}
 		},
@@ -2991,6 +3003,10 @@
 			} else {
 				return true;
 			}
+		},
+
+		handlePlayerError: function( data ) {
+			this.showErrorMsg( { title: this.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), message: this.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) } );
 		}
 	};
 

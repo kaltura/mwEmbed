@@ -9,6 +9,7 @@
 			defaultConfig: {
 				'forceLoad': false
 			},
+			startTime:null,
 			reportingInterval : 10000,
 			bufferTime : 0,
 			eventIndex :1,
@@ -80,6 +81,7 @@
 			startLiveEvents :function(){
 				var _this = this;
 				_this.isLiveEventsOn = true;
+				_this.startTime = new Date().getTime();
 				_this.kClient = mw.kApiGetPartnerClient( _this.embedPlayer.kwidgetid );
 				clearInterval( _this.liveEventInterval );
 				this.sendLiveAnalytics();
@@ -102,7 +104,8 @@
 					'bitrate'     : _this.currentBitRate,
 					'referrer'    :  encodeURIComponent( mw.getConfig('EmbedPlayer.IframeParentUrl') ),
 					'isLive'      :  1,
-					'deliveryType': _this.embedPlayer.streamerType
+					'deliveryType': _this.embedPlayer.streamerType,
+					'startTime'   : _this.startTime
 				};
 				var eventRequest = {'service' : 'LiveStats', 'action' : 'collect'};
 				$.each(liveStatsEvent , function (index , value) {

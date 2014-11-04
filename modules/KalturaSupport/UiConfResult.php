@@ -211,7 +211,8 @@ class UiConfResult {
 			'keyboardShortcuts' => array(),
 			'liveCore' => array(),
 			'liveStatus' => array(),
-			'liveBackBtn' => array()
+			'liveBackBtn' => array(),
+			'reportError' => array()
 		);
 
 		$playerConfig['plugins'] = array_merge_recursive($playerConfig['plugins'], $basePlugins);
@@ -539,7 +540,8 @@ class UiConfResult {
 			"keyboardShortcuts" => array(),
 			"liveCore" => array(),
 			"liveStatus" => array(),
-			"liveBackBtn" => array()
+			"liveBackBtn" => array(),
+			"reportError" => array()
 		);
 
 		$closedCaptionPlugin = array(
