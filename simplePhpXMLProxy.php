@@ -203,7 +203,7 @@ if ( !$url ) {
 	
 } else if( !isValidHost($url) ) {
 	// URL host is not whitelisted
-	$contents = 'ERROR: invalid url host [DENIED]';
+	$contents = 'ERROR: URL not in Kaltura domain whitelist [DENIED]';
 	$status = array( 'http_code' => 'ERROR' );
 } else {
 	$ch = curl_init( $url );

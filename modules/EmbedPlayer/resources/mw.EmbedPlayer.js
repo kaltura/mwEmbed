@@ -1738,7 +1738,7 @@
 				};
 			}
 
-			$( this ).empty();
+			$( this ).find(".playerPoster").remove();
 			if (mw.getConfig( 'EmbedPlayer.HidePosterOnStart' ) === true){
 				return;
 			}

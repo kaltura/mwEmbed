@@ -246,7 +246,7 @@ mw.KWidgetSupport.prototype = {
 			// Check access controls ( must come after addPlayerMethods for custom messages )
 			// check for Cuepoint data and load cuePoints,
 			// TODO optimize cuePoints as hard or soft dependency on kWidgetSupport
-			if( playerData.entryCuePoints && playerData.entryCuePoints.length > 0 ) {
+			if( (playerData.entryCuePoints && playerData.entryCuePoints.length > 0) || mw.getConfig("EmbedPlayer.LiveCuepoints")) {
 				embedPlayer.rawCuePoints = playerData.entryCuePoints;
 				embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
 			}
@@ -595,7 +595,7 @@ mw.KWidgetSupport.prototype = {
 		// and setup their binding to KalturaSupport_CuePointsReady
 		var doneWithUiConf = function(){
 
-			if( embedPlayer.rawCuePoints ){
+			if( embedPlayer.rawCuePoints || mw.getConfig("EmbedPlayer.LiveCuepoints") ){
 				mw.log("KWidgetSupport:: trigger KalturaSupport_CuePointsReady", embedPlayer.rawCuePoints);
 				// Allow other plugins to subscribe to cuePoint ready event:
 				$( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', embedPlayer.rawCuePoints );
