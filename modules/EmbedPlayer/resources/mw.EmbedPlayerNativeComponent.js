@@ -136,21 +136,12 @@ mw.EmbedPlayerNativeComponent = {
 			switchCallback( vid );
 		}
 
-		// restore position once we have metadata
-		$( vid ).bind( 'loadedmetadata' + switchBindPostfix, function(){
-			$( vid ).unbind( 'loadedmetadata' + switchBindPostfix);
-			mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback" );
-			// ( do not update the duration )
-			// Android and iOS <5 gives bogus duration, depend on external metadata
+		if ( $.isFunction( switchCallback ) ){
+			setTimeout( function() {
+				vid.play();
+			}, 100);
+		}
 
-			// keep going towards playback! if  switchCallback has not been called yet
-			// we need the "playing" event to trigger the switch callback
-			if ( $.isFunction( switchCallback ) ){
-				setTimeout( function() {
-					vid.play();
-				}, 100);
-			}
-		});
 
 		// Add the end binding if we have a post event:
 		if( $.isFunction( doneCallback ) ){
