@@ -285,12 +285,13 @@ The Kaltura Server API offers minimal object validation, in exchange for being m
 Creating a kWidget API object, issue a playlist request, log the result:
 <pre class="prettyprint linenums">
 new kWidget.api( { 'wid' : '_243342', })
-	.doRequest({'service':'playlist', 'action': 'execute', 'id': '1_e387kavu'}, 
-		function( data ){
-			console.log( data );
-		}
-	);
-</pre>
+.doRequest({'service':'playlist', 'action': 'execute', 'id': '1_e387kavu'}, 
+	function( data ){
+		console.log( data );
+	}
+);
+</pre> 
+For more examples see the <a href="../kWidget/tests/kWidget.api.html">kWidget.api test page.</a>
 <div class="docblock">
 	<?php echo getDocs('kWidget.api' ) ?>
 	<?php echo getObjectDocs( array( 'kWidget.apiOptions' ) ) ?>
