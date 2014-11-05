@@ -59,7 +59,6 @@
 					title: ['Toggle Main View']
 				}
 			},
-			currentSlide: null,
 
 			setup: function ( embedPlayer ) {
 				this.initConfig();
@@ -434,13 +433,17 @@
 				this.bind( 'onplay', function () {
 					_this.loadAdditionalAssets();
 				} );
-				this.bind( 'durationChange', function () {
-					var cuePoint = _this.getCurrentCuePoint();
-					if (cuePoint && _this.currentSlide != cuePoint) {
-						_this.currentSlide = cuePoint;
+
+				//In live mode wait for first updatetime that is bigger then 0 for syncing initial slide
+				if (mw.getConfig("EmbedPlayer.LiveCuepoints")) {
+					this.bind( 'timeupdate', function ( ) {
+						if (_this.getPlayer().currentTime > 0) {
+							_this.unbind('timeupdate');
+						}
+						var cuePoint = _this.getCurrentCuePoint();
 						_this.sync( cuePoint );
-					}
-				} );
+					} );
+				}
 
 				this.bind( 'KalturaSupport_ThumbCuePointsReady', function () {
 					var cuePoints = _this.getPlayer().kCuePoints.getCuePoints();
@@ -464,13 +467,11 @@
 					} );
 				} );
 				this.bind( 'KalturaSupport_CuePointReached', function ( e, cuePointObj ) {
-					if (cuePointObj.cuePoint.cuePointType == "thumbCuePoint.Thumb") {
-						_this.currentSlide = cuePointObj.cuePoint;
+					if ( $.inArray( _this.getConfig( 'cuePointType' ), cuePointObj.cuePoint.cuePointType ) ) {
 						_this.sync( cuePointObj.cuePoint );
 					}
 				} );
 				this.bind( 'KalturaSupport_ThumbCuePointsUpdated', function (e, cuepoints ) {
-
 					$.each( cuepoints, function ( index, cuePoint ) {
 						if ( $.inArray( _this.getConfig( 'cuePointType' ), cuePoint.cuePointType ) ) {
 							_this.cuePoints.push( cuePoint );
@@ -700,20 +701,22 @@
 			},
 			sync: function ( cuePoint, callback ) {
 				this.loadAdditionalAssets();
-
-				var myImg = this.getComponent().find( '#SynchImg' );
-				if (cuePoint.thumbnailUrl) {
-					myImg.attr( 'src', cuePoint.thumbnailUrl);
+				var callCallback = function(){
 					if ( callback && typeof(callback) == "function" ) {
 						callback();
 					}
-				} else {
-					this.loadNext(cuePoint, function(url){
-						myImg.attr( 'src', url);
-						if ( callback && typeof(callback) == "function" ) {
-							callback();
-						}
-					});
+				};
+				if (cuePoint) {
+					var myImg = this.getComponent().find( '#SynchImg' );
+					if ( cuePoint.thumbnailUrl ) {
+						myImg.attr( 'src', cuePoint.thumbnailUrl );
+						callCallback();
+					} else {
+						this.loadNext( cuePoint, function ( url ) {
+							myImg.attr( 'src', url );
+							callCallback();
+						} );
+					}
 				}
 			},
 			applyIntrinsicAspect: function(){
