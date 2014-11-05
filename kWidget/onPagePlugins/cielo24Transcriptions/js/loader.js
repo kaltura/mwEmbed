@@ -192,12 +192,17 @@
         var hideTimestamps = getCielo24DynaTransVar(kdp, "cielo24Transcriptions.DynaTransHideTimestamps");
         var autoscrollOff = getCielo24DynaTransVar(kdp, "cielo24Transcriptions.DynaTransAutoscrollOff");
 
-        var onPageJs1 = window.location.href;
+        var widgetPageUrl = kdp.evaluate("{cielo24Transcriptions.DynaTransWidgetUrl}");
+        if(typeof(widgetPageUrl)=='undefined') {
+            widgetPageUrl = window.location.href.substr(0, window.location.href.lastIndexOf("/"))+"/widget.html";
+        }
 
         var onPageJs1Link = document.createElement('a');
-        onPageJs1Link.href = onPageJs1;
+        onPageJs1Link.href = widgetPageUrl;
 
         var projectFolderUrlPath = onPageJs1Link.pathname.substr(0, onPageJs1Link.pathname.lastIndexOf("/"));
+        //projectFolderUrlPath = projectFolderUrlPath.substr(0, projectFolderUrlPath.lastIndexOf("/"));
+
         if(projectFolderUrlPath.substr(0,1)!='/') {
             projectFolderUrlPath = '/'+projectFolderUrlPath;
         }
@@ -222,6 +227,13 @@
             div.style.width = kdp.style.width;
             div.style.height = widgetNormalHeight+'px';
             div.style.marginTop = '10px';
+            var kdpComputedStyle = window.getComputedStyle(kdp);
+            if(kdpComputedStyle.position=='absolute') {
+                div.style.position = 'absolute';
+                div.style.top = kdp.offsetHeight+"px";
+                div.style.left = 0;
+                div.style.zIndex = 99999;
+            }
 
             ifr = document.createElement('iframe');
 
@@ -300,7 +312,7 @@
                 XD.postMessage(jsonData, widgetPage, ifr.contentWindow);
             }
         }
-	});
+    });
 
 })();
 

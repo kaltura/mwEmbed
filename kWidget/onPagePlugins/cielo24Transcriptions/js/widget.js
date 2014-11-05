@@ -584,6 +584,7 @@ $(document).ready(function() {
     });
 
     $(".footerArrowUp").click(function() {
+
         $(this).toggleClass('closed');
         XD.postMessage(JSON.stringify({event: 'toggleVisibilityState', playerId: playerId}), parentUrl, parent.window);
     });
@@ -749,11 +750,14 @@ $(document).ready(function() {
     loadTranscriptionFromKaltura(ks, partnerId, lang, entryId, videoDuration, function(data) {
         var langs = data.langs;
         var loadedLang = data.loadedLang;
-        for(var i in langs) {
-            var lang = langs[i].isoCode;
-            $(".languageOption[data-lang='"+lang+"']").addClass('active');
+        if(langs.length>1) {
+            $(".language").show();
+            for(var i in langs) {
+                var lang = langs[i].isoCode;
+                $(".languageOption[data-lang='"+lang+"']").addClass('active');
+            }
+            $(".currentLanguage").text(loadedLang.name);
         }
-        $(".currentLanguage").text(loadedLang.name);
     });
 
     $(window).resize(windowResizeCallback);

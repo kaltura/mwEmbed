@@ -380,6 +380,7 @@ body {
     margin-top: 10px;
     cursor: pointer;
     position: relative;
+    display: none;
 }
 
 .currentLanguage {
