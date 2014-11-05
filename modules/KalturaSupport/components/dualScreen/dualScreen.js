@@ -318,24 +318,24 @@
 					_this.getSecondMonitor().prop = secondaryScreen.css( ['top', 'left', 'width', 'height'] );
 					_this.getSecondMonitor().obj.css( _this.getSecondMonitor().prop );
 
-					if ( _this.getConfig( "mainViewDisplay" ) == 2 ) {
-						_this.bind('postDualScreenTransition', function(e, transition){
-							_this.unbind('postDualScreenTransition');
-							if (!_this.secondDisplayReady) {
-								if (mw.getConfig("EmbedPlayer.LiveCuepoints")) {
-
-								} else {
-									secondaryScreen.getAbsoluteOverlaySpinner().attr( 'id', 'secondScreenLoadingSpinner' );
-								}
+					var addSpinner = function(){
+						if (!_this.secondDisplayReady) {
+							if (mw.getConfig("EmbedPlayer.LiveCuepoints")) {
+								//TODO: add information slide for no current slide available
+							} else {
+								secondaryScreen.getAbsoluteOverlaySpinner().attr( 'id', 'secondScreenLoadingSpinner' );
 							}
+						}
+					};
+
+					if ( _this.getConfig( "mainViewDisplay" ) == 2 ) {
+						_this.bind('postDualScreenTransition', function(){
+							_this.unbind('postDualScreenTransition');
+							addSpinner();
 						});
 						_this.fsm.consumeEvent( "switchView" );
-					} else if (!_this.secondDisplayReady) {
-						if (mw.getConfig("EmbedPlayer.LiveCuepoints")) {
-
-						} else {
-							secondaryScreen.getAbsoluteOverlaySpinner().attr( 'id', 'secondScreenLoadingSpinner' );
-						}
+					} else {
+						addSpinner();
 					}
 
 					//dualScreen components are set on z-index 1-3, so set all other components to zIndex 4 or above
