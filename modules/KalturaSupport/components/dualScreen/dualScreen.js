@@ -403,6 +403,7 @@
 							screenProps.left = (playerWidth - newWidth) + "px";
 						}
 
+						var firstScreen = _this.getFirstMonitor().obj;
 						var secondScreen = _this.getSecondMonitor().obj;
 						secondScreen.css( screenProps );
 						_this.applyIntrinsicAspect();
@@ -413,6 +414,10 @@
 						//Calculate screen resize max width
 						var maxWidth = ( ( _this.getPlayer().getWidth() * _this.getConfig( 'resizable' ).maxWidthPercentage ) / 100 );
 						var minWidth = ( ( _this.getPlayer().getWidth() * _this.getConfig( 'secondScreen' ).size ) / 100 );
+						firstScreen.resizable( {
+							maxWidth: maxWidth,
+							minWidth: minWidth
+						} );
 						secondScreen.resizable( {
 							maxWidth: maxWidth,
 							minWidth: minWidth
