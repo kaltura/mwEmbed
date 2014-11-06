@@ -39,6 +39,9 @@ mw.EmbedPlayerNativeComponent = {
 	// A local var to store the current seek target time:
 	currentSeekTargetTime: null,
 
+	// Disable switch source callback
+	disableSwitchSourceCallback: false,
+
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
 	nativeEvents : [
@@ -118,6 +121,9 @@ mw.EmbedPlayerNativeComponent = {
 		var vid = this.getPlayerElement();
 		var switchBindPostfix = '.playerSwitchSource';
 
+		// remove old binding:
+		$( vid ).unbind( switchBindPostfix );
+
 		// add a loading indicator:
 		_this.addPlayerSpinner();
 
@@ -146,8 +152,11 @@ mw.EmbedPlayerNativeComponent = {
 		// Add the end binding if we have a post event:
 		if( $.isFunction( doneCallback ) ){
 			$( vid ).bind( 'ended' + switchBindPostfix , function( event ) {
+				if( _this.disableSwitchSourceCallback ) {
+					return;
+				}
 				// remove end binding:
-				$( _this.getPlayerElement() ).unbind( switchBindPostfix );
+				$( vid ).unbind( switchBindPostfix );
 				// issue the doneCallback
 				doneCallback();
 
