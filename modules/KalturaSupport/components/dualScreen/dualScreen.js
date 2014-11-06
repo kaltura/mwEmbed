@@ -352,6 +352,9 @@
 			                  _this.zIndexObjs.push(obj);
 	                      }
 	                });
+
+					_this.showControlBar();
+					_this.monitorControlBarDisabled = true;
 				} );
 
 				var resizeSecondScreen = function (event) {
@@ -432,6 +435,13 @@
 
 				this.bind( 'onplay', function () {
 					_this.loadAdditionalAssets();
+					_this.monitorControlBarDisabled = false;
+				} );
+
+				this.bind( 'onpause ended', function () {
+					_this.ignoreNextMouseEvent = false;
+					_this.showControlBar();
+					_this.monitorControlBarDisabled = true;
 				} );
 
 				//In live mode wait for first updatetime that is bigger then 0 for syncing initial slide
@@ -804,6 +814,9 @@
 
 				this.bind("onShowToplBar onHideToplBar", function(e, height){
 					_this.positionControlBar(height.top);
+				});
+				this.bind("showPlayerControls" , function(){
+					_this.showControlBar();
 				});
 			},
 			disableControlBar: function () {
