@@ -119,6 +119,12 @@ $uiVars = array(
 					'default' => 'true',
 					'example' => '../modules/KalturaSupport/tests/UseHLS_WhereAvailable.qunit.html'
 			),
+			'LeadWithHLSOnFlash' => array(
+					'type' => 'Boolean',
+					'desc' => 'If Apple HLS streams should be on desktop browsers where Flash and an HLS stream are available',
+					'default' => 'false',
+					'example' => '../modules/KalturaSupport/tests/LeadWithHLSOnFlash.html'
+			),
 			'host' => array(
 					'type' => 'String',
 					'desc' => 'The URL of the Kaltura server to work with',

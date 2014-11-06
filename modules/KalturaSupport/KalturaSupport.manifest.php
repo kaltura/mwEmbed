@@ -136,6 +136,10 @@ return array(
 			by default progressive streams are used on Android because of Android HLS compatibility issues.',
 		'type' => 'boolean'
 	),
+	'LeadWithHLSOnFlash' => array(
+		'doc' => 'If Apple HLS streams should be used when available on Desktop browsers with Flash.',
+		'type' => 'boolean'
+	),
 	'autoPlay' => array(
 		'doc' => 'If the player should start playback once ready.',
 		'type' => 'boolean'
@@ -1262,6 +1266,13 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'string',
 			)
 		)
+	),
+	'captureThumbnail' => array(
+		'description' => 'Allow your users to capture a thumbnail from the video content. A KS must be supplied to ingest the reqspective thubmnail.',
+		'plugin' => array(
+			'doc' => 'If the plugin should be activated',
+			'type' => 'string',
+		),
 	),
 	'moderation' => array(
 		'description' => 'Allow your users to flag content as inapproriate.',

@@ -124,7 +124,7 @@ mw.KApi.prototype = {
 		// Add the Kaltura session ( if not already set )
 		var ksParam = {
 				'action' : 'startwidgetsession',
-				'widgetId': '_' + this.widget_id
+				'widgetId': this.widgetId
 		};
 		// add in the base parameters:
 		var param = $.extend( { 'service' : 'session' }, this.baseParam, ksParam );
