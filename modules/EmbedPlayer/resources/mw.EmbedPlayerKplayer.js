@@ -26,6 +26,8 @@ mw.EmbedPlayerKplayer = {
 	// If the media loaded event has been fired
 	mediaLoadedFlag: false,
 	seekStarted: false,
+	// stores the manifest derived flavor index / list:
+	manifestAdaptiveFlavors: [],
 	// Stores the current time as set from flash player
 	flashCurrentTime : 0,
 	selectedFlavorIndex : 0,
@@ -221,7 +223,16 @@ mw.EmbedPlayerKplayer = {
 			videoTagObj.css('visibility', 'hidden');
 		}
 	},
-
+	/** 
+	 * Override base flavor sources method with local set of adaptive flavor tags. 
+	 */
+	getSources: function(){
+		// check if manifest defined flavors have been defined: 
+		if( this.manifestAdaptiveFlavors.length ){
+			return this.manifestAdaptiveFlavors;
+		}
+		return this.getSourcesForKDP();
+	},
 	/**
 	* Get required sources for KDP. Either by flavorTags flashvar or tagged wtih 'web'/'mbr' by default
 	 * or hls sources
@@ -248,9 +259,7 @@ mw.EmbedPlayerKplayer = {
 
 	updateSources: function(){
 		if ( ! ( this.isLive() || this.sourcesReplaced || this.isHlsSource( this.mediaElement.selectedSource ) ) ) {
-			var newSources = this.getSourcesForKDP();
-			this.replaceSources( newSources );
-			this.mediaElement.autoSelectSource();
+			this.mediaElement.autoSelectSource( { 'sources': this.getSourcesForKDP() } );
 		}
 		else if ( this.isLive() && this.streamerType == 'rtmp' ){
 			var _this = this;
@@ -553,17 +562,24 @@ mw.EmbedPlayerKplayer = {
 		if (data && data.newBitrate) {
 			this.triggerHelper( 'bitrateChange' , data.newBitrate );
 		}
-		this.mediaElement.setSourceByIndex ( data.newIndex );
+		// TODO if we need to track source index should be top level method per each play interface having it's own adaptive logic
+		//this.mediaElement.setSourceByIndex ( data.newIndex );
 		$( this ).trigger( 'sourceSwitchingEnd', [ data ]  );
 	},
 
 	onFlavorsListChanged: function ( data, id ) {
+		var _this = this;
 		var flavors = data.flavors;
 		if ( flavors && flavors.length > 1 ) {
 			this.setKDPAttribute( 'sourceSelector' , 'visible', true);
 		}
-		this.replaceSources( flavors );
-
+		// update the manifest defined flavor set: 
+		this.manifestAdaptiveFlavors = [];
+		$.each(flavors, function(inx, flavor){
+			_this.manifestAdaptiveFlavors.push( new mw.MediaSource( flavor ) )
+		});
+		// trigger source update event for any plugins 
+		$(this).trigger( 'sourcesReplaced' );
 		//this.mediaElement.setSourceByIndex( 0 );
 	},
 
@@ -721,13 +737,13 @@ mw.EmbedPlayerKplayer = {
 	 */
 	getSourceIndex: function( source ){
 		var sourceIndex = null;
-		$.each( this.mediaElement.getPlayableSources(), function( currentIndex, currentSource ) {
+		$.each( this.getSources(), function( currentIndex, currentSource ) {
 			if( source.getAssetId() == currentSource.getAssetId() ){
 				sourceIndex = currentIndex;
 				return false;
 			}
 		});
-		if( !sourceIndex ){
+		if( sourceIndex == null ){
 			mw.log( "EmbedPlayerKplayer:: Error could not find source: " + source.getSrc() );
 		}
 		return sourceIndex;

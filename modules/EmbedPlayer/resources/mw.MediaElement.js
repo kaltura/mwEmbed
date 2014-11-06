@@ -160,8 +160,8 @@ mw.MediaElement.prototype = {
 		return this.selectedSource;
 	},
 
-	autoSelectSource:function(){
-		if ( this.autoSelectSourceExecute() ){
+	autoSelectSource:function( options ){
+		if ( this.autoSelectSourceExecute( options ) ){
 			$( '#' + this.parentEmbedId ).trigger( 'SourceSelected' , this.selectedSource );
 			return this.selectedSource;
 		}
@@ -170,12 +170,19 @@ mw.MediaElement.prototype = {
 	/**
 	 * Selects the default source via cookie preference, default marked, or by
 	 * id order
+	 * @param {Object} options
+	 * 		sources -- overrides the playable sources to be selected from
+	 * 		forceNative -- if native player sources should be forced. 
 	 */
-	autoSelectSourceExecute: function() {
+	autoSelectSourceExecute: function( options ) {
 		mw.log( 'EmbedPlayer::mediaElement::autoSelectSource' );
 		var _this = this;
-		// Select the default source
-		var playableSources = this.getPlayableSources();
+		// setup options
+		if( ! options ){
+			options = {};
+		}
+		// Populate the source set from options or from playable sources: 
+		var playableSources = options.sources || this.getPlayableSources();
 		var flash_flag = false, ogg_flag = false;
 		// null out the existing selected source to autoSelect ( in case params have changed ). 
 		this.selectedSource  = null;
@@ -397,15 +404,17 @@ mw.MediaElement.prototype = {
 		return false;
 	},
 	autoSelectNativeSource: function() {
+		mw.log( "MediaElement::autoSelectNativeSource");
 		// check if already auto selected source can just "switch" to native: 
-		this.autoSelectSource();
-		if (! this.selectedSource ) {
+		if (! this.selectedSource && ! this.autoSelectSource( { 'forceNative':true }) ) {
 			return false;
 		}
+		// attempt to select player: 
 		var player = mw.EmbedTypes.getMediaPlayers().getNativePlayer( this.selectedSource.mimeType );
 		if( player ){
 			return this.selectedSource;
 		}
+		mw.log( "MediaElement::autoSelectNativeSource: no native player found");
 		// else the selected source can't be played natively get alternate source
 		// TODO: refactor autoSelect source into methods that would be agreeable to native player prioritization. 
 		return null;

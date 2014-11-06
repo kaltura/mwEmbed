@@ -18,7 +18,6 @@
 		isSafeEnviornment: function(){
 			var _this = this,
 			deferred = $.Deferred();
-			
 			if ( mw.isMobileDevice() ){
 				return false;
 			}
@@ -135,36 +134,40 @@
 			this.currentSpeed = newSpeed;
 			// check if we need to switch interfaces: 
 			if( this.getPlayer().instanceOf != 'Native' ){
-				var currentPlayTime = this.getPlayer().currentTime;
-				var isPlaying = this.getPlayer().isPlaying();
-				var source = this.getPlayer().mediaElement.autoSelectNativeSource();
-				var player = mw.EmbedTypes.getMediaPlayers().getNativePlayer( source.mimeType );
-				this.getPlayer().selectPlayer ( player );
-				this.getPlayer().updatePlaybackInterface( function(){
-					// show loading spinner: 
-					_this.getPlayer().addPlayerSpinner();
-					// update playback rate: 
-					_this.updatePlaybackRate( newSpeed );
-					// issue a seek if given new seek time: 
-					if( currentPlayTime == 0 ){
-						return ;
-					}
-					// don't trigger events in restoring play state
-					_this.getPlayer().stopEventPropagation();
-					_this.getPlayer().setCurrentTime( currentPlayTime, function(){
-						// reflect pause state
-						if( isPlaying ){
-							_this.getPlayer().play();
-						}else {
-							_this.getPlayer().pause();
-						}
-						// restore event propagation: 
-						_this.getPlayer().restoreEventPropagation();
-					});
-				});
+				this.hanldePlayerInstanceUpdate( newSpeed );
 				return ;
 			}
 			this.updatePlaybackRate( newSpeed );
+		},
+		hanldePlayerInstanceUpdate: function( newSpeed ){
+			var _this = this;
+			var currentPlayTime = this.getPlayer().currentTime;
+			var wasPlaying = this.getPlayer().isPlaying();
+			var source = this.getPlayer().mediaElement.autoSelectNativeSource();
+			var player = mw.EmbedTypes.getMediaPlayers().getNativePlayer( source.mimeType );
+			this.getPlayer().selectPlayer ( player );
+			this.getPlayer().updatePlaybackInterface( function(){
+				// update playback rate: 
+				_this.updatePlaybackRate( newSpeed );
+				// issue a seek if given new seek time: 
+				if( currentPlayTime == 0 ){
+					return ;
+				}
+				// show loading spinner if we need to seek
+				_this.getPlayer().addPlayerSpinner();
+				// don't trigger events in restoring play state
+				_this.getPlayer().stopEventPropagation();
+				_this.getPlayer().setCurrentTime( currentPlayTime, function(){
+					// reflect pause state
+					if( wasPlaying ){
+						_this.getPlayer().play();
+					}else {
+						_this.getPlayer().pause();
+					}
+					// restore event propagation: 
+					_this.getPlayer().restoreEventPropagation();
+				});
+			});
 		},
 		/**
 		 * updatePlaybackRate issues a call to native player element to update playbackRate to target speed.

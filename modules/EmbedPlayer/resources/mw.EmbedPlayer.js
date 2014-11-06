@@ -2745,6 +2745,12 @@
 			return this.mediaElement.selectedSource;
 		},
 		/**
+		 * Retuns the set of playable sources. 
+		 */
+		getSources: function(){
+			return this.mediaElement.getPlayableSources();
+		},
+		/**
 		 * Static helper to get media sources from a set of videoFiles
 		 *
 		 * Uses mediaElement select logic to chose a
