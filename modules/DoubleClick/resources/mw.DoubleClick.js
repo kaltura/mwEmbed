@@ -199,7 +199,7 @@
 				flashVars['countdownText'] = escape(flashVars['countdownText']); // escape countdownText to support & and ' characters
 			}
 			//we shouldn't send these params, they are unnecessary and break the flash object
-			var ignoredVars = ['path', 'customParams', 'preSequence'];
+			var ignoredVars = ['path', 'customParams', 'preSequence', 'postSequence' ];
 			for ( var i=0; i< ignoredVars.length; i++ ) {
 				delete flashVars[ignoredVars[i]];
 			}
