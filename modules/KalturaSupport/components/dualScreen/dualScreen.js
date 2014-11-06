@@ -805,6 +805,9 @@
 				this.bind("onShowToplBar onHideToplBar", function(e, height){
 					_this.positionControlBar(height.top);
 				});
+				this.bind("showPlayerControls" , function(){
+					_this.showControlBar();
+				});
 			},
 			disableControlBar: function () {
 				clearTimeout(this.getControlBar().handleTouchTimeoutId);
