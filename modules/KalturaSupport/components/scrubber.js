@@ -205,10 +205,10 @@
 			if (!(data.val >=0 && this.duration >=0) ){
 				return;
 			}
-			// make sure the slider is in the dom: 
-			var $slider = $(".slider");
+			// make sure the slider is in the dom:
+			var $slider = $(".scrubber");
 			if( !$slider.length ){
-				this.log('.slider class not in DOM')
+				this.log('.scrubber class not in DOM')
 				return; 
 			}
 			//cache jqeury objects
@@ -219,7 +219,7 @@
 			var sliderLeft = 0;
 			var previewWidth = $sliderPreview.width();
 			var previewHeight = $sliderPreview.height();
-			var top = $(".slider").position().top - previewHeight - 30;
+			var top = $(".scrubber").position().top - previewHeight - 10;
 			sliderLeft = data.x - previewWidth/2;
 			if ( ( data.x + data.offset.left ) < previewWidth /2) {
 				sliderLeft =  0 ;
