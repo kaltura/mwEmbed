@@ -620,7 +620,8 @@ mw.PlayerLayoutBuilder.prototype = {
 		this.embedPlayer.triggerHelper( 'showPlayerControls' );
 	},
 	hidePlayerControls: function(){
-		if (!this.embedPlayer.paused){
+		if (!this.embedPlayer.paused ||
+			this.embedPlayer.isInSequence()){
 			this.getInterface().addClass( this.outPlayerClass );
 			this.embedPlayer.triggerHelper( 'hidePlayerControls' );
 		}
