@@ -959,6 +959,52 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 		)
 	),
+	'skipBtn' => array(
+		'label' => 'Vast skip button',
+		'description' => "Vast skip button settings",
+		"attributes" => array(
+			'skipBtn' => array(
+				'doc' => "Skip button label.",
+				'label' => 'Skip button label',
+				'initvalue' => "Skip Ad",
+				'model' => 'config.plugins.skipBtn.label',
+				'type' => 'string'
+			),
+			'skipOffset' => array(
+				'doc' => 'The time in seconds, before the skip ad link is active.',
+				'type' => 'number', // this was a string - dosen't seem logical
+				'min' => 0, // *NEW*
+				'initvalue' => 5,
+				'max' => 30, // *NEW*
+			)
+		)
+	),
+	'skipNotice' => array(
+		'label' => 'Vast skip notice',
+		'description' => "Vast skip notice",
+		"attributes" => array(
+			'text' => array(
+				'doc' => "Skip notice text (can use evaluated expressions)",
+				'label' => 'Skip notice text',
+				'initvalue' => "You can skip this ad in {sequenceProxy.skipOffsetRemaining} seconds",
+				'model' => 'config.plugins.skipNotice.text',
+				'type' => 'string'
+			)
+		)
+	),
+	'noticeMessage' => array(
+		'label' => 'Vast notice message',
+		'description' => "Vast notice message",
+		"attributes" => array(
+			'text' => array(
+				'doc' => "Notice message (can use evaluated expressions)",
+				'label' => 'Notice message',
+				'initvalue' => "Advertisement: Video will resume in {sequenceProxy.timeRemaining} seconds",
+				'model' => 'config.plugins.noticeMessage.text',
+				'type' => 'string'
+			)
+		)
+	),
 	'vast' => array(
 		'label' => 'Vast',
 		"endline" => "true", // *NEW* - demonstrates possible formatting decorator
@@ -994,20 +1040,6 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'min' => 0, // *NEW*
 				'initvalue' => 1,
 				'max' => 5, // *NEW*
-			),
-			'skipBtn' => array(
-				'doc' => "Skip button label.",
-				'label' => 'Skip button label', // *NEW* - all controls require label, if is it not there I use the control model camelCase converted to separated words with ucfirst
-				'initvalue' => "Skip Ad",
-				'model' => 'config.plugins.skipBtn.label',
-				'type' => 'string'
-			),
-			'skipOffset' => array(
-				'doc' => 'The time in seconds, before the skip ad link is active.',
-				'type' => 'number', // this was a string - dosen't seem logical
-				'min' => 0, // *NEW*
-				'initvalue' => 5,
-				'max' => 30, // *NEW*
 			),
 			'prerollStartWith' => array(
 				'label' => 'Number of prerolls to start with.', // *NEW*
