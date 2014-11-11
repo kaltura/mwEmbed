@@ -344,11 +344,6 @@ mw.EmbedPlayerKplayer = {
 			this.mediaLoadedFlag = true;
 		}
 	},
-	onClipDone: function() {
-		this.parent_onClipDone();
-		this.preSequenceFlag = false;
-	},
-
 	onAlert: function ( data, id ) {
 		if ( data.messageKey ) {
 			data.message = gM ( data.messageKey );
