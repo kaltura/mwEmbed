@@ -346,7 +346,6 @@ mw.EmbedPlayerKplayer = {
 	},
 	onClipDone: function() {
 		this.parent_onClipDone();
-		this.preSequenceFlag = false;
 	},
 
 	onAlert: function ( data, id ) {
