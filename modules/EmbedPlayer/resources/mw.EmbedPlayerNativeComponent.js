@@ -39,6 +39,9 @@ mw.EmbedPlayerNativeComponent = {
 	// A local var to store the current seek target time:
 	currentSeekTargetTime: null,
 
+	// Disable switch source callback
+	disableSwitchSourceCallback: false,
+
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
 	nativeEvents : [
@@ -71,42 +74,45 @@ mw.EmbedPlayerNativeComponent = {
 		'overlays' : true
 	},
 
-	embedPlayerHTML : function() {
+	setup: function( readyCallback ) {
 		var _this = this;
-		if ( !this.playerIsLoaded ){
-			mw.log( "NativeComponent:: embedPlayerHTML" );
-			// remove any existing pid ( if present )
-			$( '#' + this.pid ).remove();
+		mw.log( "NativeComponent:: setup" );
+		// remove any existing pid ( if present )
+		$( '#' + this.pid ).remove();
 
-			var divElement = document.createElement("div");
-			divElement.setAttribute('id', 'proxy');
-			document.body.appendChild(divElement);
+		var divElement = document.createElement("div");
+		divElement.setAttribute('id', 'proxy');
+		document.body.appendChild(divElement);
 
-			this.proxyElement = divElement;
-			try{
-				if(NativeBridge.videoPlayer){
-					NativeBridge.videoPlayer.registePlayer(this.getPlayerElement());
-					NativeBridge.videoPlayer.registerEmbedPlayer( this );
-				}
+		this.proxyElement = divElement;
+		try{
+			if(NativeBridge.videoPlayer){
+				NativeBridge.videoPlayer.registePlayer(this.getPlayerElement());
+				NativeBridge.videoPlayer.registerEmbedPlayer( this );
 			}
-			catch(e){
-				alert( e );
-			}
-
-			this.applyMediaElementBindings();
-			this.playerIsLoaded = true;
-			this.getPlayerElement().attr('src', this.getSrc());
-			this.bindHelper("SourceChange", function() {
-				_this.getPlayerElement().attr('src', this.getSrc());
-			});
-			this.bindHelper("layoutBuildDone ended", function() {
-				_this.getPlayerElement().notifyLayoutReady();
-			});
-			this.bindHelper("showChromecastDeviceList", function() {
-				mw.log("EmbedPlayerNativeComponent:: showChromecastDeviceList::");
-				_this.getPlayerElement().showChromecastDeviceList();
-			});
 		}
+		catch(e){
+			alert( e );
+		}
+
+		this.applyMediaElementBindings();
+		this.getPlayerElement().attr('src', this.getSrc());
+		this.bindHelper("SourceChange", function() {
+			_this.getPlayerElement().attr('src', this.getSrc());
+		});
+		this.bindHelper("layoutBuildDone ended", function() {
+			_this.getPlayerElement().notifyLayoutReady();
+		});
+		this.bindHelper("showChromecastDeviceList", function() {
+			mw.log("EmbedPlayerNativeComponent:: showChromecastDeviceList::");
+			_this.getPlayerElement().showChromecastDeviceList();
+		});
+
+		readyCallback();
+	},
+
+	embedPlayerHTML : function() {
+
 	},
 
 	playerSwitchSource: function( source, switchCallback, doneCallback ) {
@@ -115,17 +121,14 @@ mw.EmbedPlayerNativeComponent = {
 		var vid = this.getPlayerElement();
 		var switchBindPostfix = '.playerSwitchSource';
 
+		// remove old binding:
+		$( vid ).unbind( switchBindPostfix );
+
 		// add a loading indicator:
 		_this.addPlayerSpinner();
 
 		// empty out any existing sources:
 		$( vid ).empty();
-
-		// load the updated src
-		//only on desktop safari we need to load - otherwise we get the same movie play again.
-		if (mw.isDesktopSafari()){
-			vid.load();
-		}
 
 		if( this.getSrc() != source.getSrc() ) {
 			vid.attr( 'src', source.getSrc() );
@@ -134,33 +137,26 @@ mw.EmbedPlayerNativeComponent = {
 		}
 
 		this.isPauseLoading = false;
-
-		if( switchCallback ){
-			_this.hideSpinner();
+		_this.hideSpinner();
+		if( $.isFunction( switchCallback ) ){
 			switchCallback( vid );
 		}
 
-		// restore position once we have metadata
-		$( vid ).bind( 'loadedmetadata' + switchBindPostfix, function(){
-			$( vid ).unbind( 'loadedmetadata' + switchBindPostfix);
-			mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback" );
-			// ( do not update the duration )
-			// Android and iOS <5 gives bogus duration, depend on external metadata
+		if ( $.isFunction( switchCallback ) ){
+			setTimeout( function() {
+				vid.play();
+			}, 100);
+		}
 
-			// keep going towards playback! if  switchCallback has not been called yet
-			// we need the "playing" event to trigger the switch callback
-			if ( $.isFunction( switchCallback ) ){
-				setTimeout( function() {
-					vid.play();
-				}, 100);
-			}
-		});
 
 		// Add the end binding if we have a post event:
 		if( $.isFunction( doneCallback ) ){
 			$( vid ).bind( 'ended' + switchBindPostfix , function( event ) {
+				if( _this.disableSwitchSourceCallback ) {
+					return;
+				}
 				// remove end binding:
-				$( _this.getPlayerElement() ).unbind( switchBindPostfix );
+				$( vid ).unbind( switchBindPostfix );
 				// issue the doneCallback
 				doneCallback();
 
@@ -246,14 +242,13 @@ mw.EmbedPlayerNativeComponent = {
 
 	play: function() {
 		mw.log("EmbedPlayerNativeComponent:: play::");
-		$( this ).find( '.playerPoster' ).remove();
 
-		if ( this.getPlayerElement() ) { // update player
-			this.getPlayerElement().play();
-		}
-		$( this ).trigger( "playing" );
+		this.removePoster();
 
 		if( this.parent_play() ){
+			if ( this.getPlayerElement() ) { // update player
+				this.getPlayerElement().play();
+			}
 			this.monitor();
 		}
 	},
@@ -314,11 +309,16 @@ mw.EmbedPlayerNativeComponent = {
 	 */
 	_onseeking: function() {
 		mw.log( "EmbedPlayerNative::onSeeking " );
+		if( !this.seeking ) {
+			this.seeking = true;
+			// Run the onSeeking interface update
+			this.layoutBuilder.onSeek();
 
-		// Trigger the html5 "seeking" trigger
-		mw.log("EmbedPlayerNative::seeking:trigger:: ");
-		if( this._propagateEvents ){
-			this.triggerHelper( 'seeking' );
+			if( this._propagateEvents ){
+				// Trigger the html5 "seeking" trigger
+				mw.log("EmbedPlayerNative::seeking:trigger:: ");
+				this.triggerHelper( 'seeking' );
+			}
 		}
 	},
 
@@ -327,15 +327,19 @@ mw.EmbedPlayerNativeComponent = {
 	 * fired when done seeking
 	 */
 	_onseeked: function() {
-		mw.log("EmbedPlayerNative::onSeeked " );
-		this.seeking = false;
+		mw.log("EmbedPlayerNativeComponent::onSeeked " );
+		if ( this.seeking ) {
+			this.seeking = false;
 
-		if( this._propagateEvents ){
-			mw.log( "EmbedPlayerNative:: trigger: seeked" );
-			this.triggerHelper( 'seeked' );
+			if( this._propagateEvents ){
+				mw.log( "EmbedPlayerNativeComponent:: trigger: seeked" );
+				this.triggerHelper( 'seeked' );
+			}
+
+			this.hideSpinner();
+			this.updatePlayheadStatus();
+			this.monitor();
 		}
-
-		this.monitor();
 	},
 
 	/**
