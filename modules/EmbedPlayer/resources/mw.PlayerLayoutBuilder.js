@@ -620,7 +620,8 @@ mw.PlayerLayoutBuilder.prototype = {
 		this.embedPlayer.triggerHelper( 'showPlayerControls' );
 	},
 	hidePlayerControls: function(){
-		if (!this.embedPlayer.paused){
+		if (!this.embedPlayer.paused ||
+			this.embedPlayer.isInSequence()){
 			this.getInterface().addClass( this.outPlayerClass );
 			this.embedPlayer.triggerHelper( 'hidePlayerControls' );
 		}
@@ -682,6 +683,9 @@ mw.PlayerLayoutBuilder.prototype = {
 			}
 			oldX = event.pageX;
 			oldY = event.pageY;
+		}).mouseout( function(event){
+			//Clear mouseMoveFlag when moving mouse out of player
+			_this.mouseMovedFlag = false;
 		});
 
 		// Check every 2 seconds reset flag status if controls are overlay
