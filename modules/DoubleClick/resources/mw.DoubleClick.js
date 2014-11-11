@@ -152,6 +152,11 @@
 						mw.log("DoubleClick::chromeless volumeChanged: " + percent );
 						_this.embedPlayer.setPlayerElementVolume( percent );
 					});
+					_this.embedPlayer.bindHelper( 'Kaltura_SendNotification' + this.bindPostfix, function(event, notificationName, notificationData){
+						if (notificationName === "doPause"){
+							_this.embedPlayer.getPlayerElement().pause();
+						}
+					});
 					_this.addManagedBinding();
 					callback();
 					return;
@@ -1020,12 +1025,16 @@
 						case 'doPause':
 							_this.adPaused = true;
 							_this.adsManager.pause();
+							embedPlayer.paused = true;
 							$( embedPlayer ).trigger( 'onpause' );
+							$( embedPlayer ).trigger( "onPlayerStateChange", ["pause", embedPlayer.currentState] );
 							break;
 						case 'doPlay':
 							_this.adPaused = false;
 							_this.adsManager.resume();
+							embedPlayer.paused = false;
 							$( embedPlayer ).trigger( 'onplay' );
+							$( embedPlayer ).trigger( "onPlayerStateChange", ["play", embedPlayer.currentState] );
 							_this.monitorAdProgress();
 							break;
 						case 'doStop':
