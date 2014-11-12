@@ -342,7 +342,7 @@
 			this.getPlayer().sendNotification('relatedVideoSelect', data);
 
 			if(this.getConfig('clickUrl')){
-				this.updateViewedEntries(data.entryId);
+				this.updateViewedEntries(data.id);
 				try {
 					window.parent.location.href = this.getConfig('clickUrl');
 					return;
