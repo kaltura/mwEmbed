@@ -148,11 +148,6 @@
 					// Make sure we change media only if related is visible and we have next item
 					if( _this.isScreenVisible() && _this.templateData && _this.templateData.nextItem ){
 						_this.changeMedia( null, {entryId: _this.templateData.nextItem.id} );
-						_this.viewedEntries.push(_this.templateData.nextItem.id);
-						// update the session var if storing sessions: 
-						if( _this.getConfig('storeSession') ){
-							$.cookie( _this.confPrefix + '_viewedEntries', JSON.stringify( _this.viewedEntries ) );
-						}
 					}
 				}
 			};
@@ -316,6 +311,14 @@
 			});
 		},
 
+		updateViewedEntries: function (entryId) {
+			this.viewedEntries.push(entryId);
+			// update the session var if storing sessions:
+			if (this.getConfig('storeSession')) {
+				$.cookie(this.confPrefix + '_viewedEntries', JSON.stringify(this.viewedEntries));
+			}
+		},
+
 		changeMedia: function( e, data ){
 			this.stopTimer();
 			var _this = this;
@@ -339,6 +342,7 @@
 			this.getPlayer().sendNotification('relatedVideoSelect', data);
 
 			if(this.getConfig('clickUrl')){
+				this.updateViewedEntries(data.entryId);
 				try {
 					window.parent.location.href = this.getConfig('clickUrl');
 					return;
@@ -350,6 +354,7 @@
 
 			this.getPlayer().sendNotification('changeMedia', data);
 			this.bind('onChangeMediaDone', function(){
+				_this.updateViewedEntries(data.entryId);
 				_this.getPlayer().play();
 				_this.unbind('onChangeMediaDone');
 			});
