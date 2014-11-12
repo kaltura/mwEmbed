@@ -394,7 +394,7 @@
 			for (var i = 0; i < caplist.length; i++) {
 		 		var captionText = "";
 				var caption = false;
-				captionText = caplist[i].trim();
+				captionText = caplist[i].replace(/^\s+|\s+$/g, '');
 				var s = captionText.split(/\n/);
 				if (s.length < 2) {
 					// file format error or comment lines
