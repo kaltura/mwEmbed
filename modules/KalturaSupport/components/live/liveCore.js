@@ -415,7 +415,10 @@
 					callback( onAirStatus );
 				}
 				embedPlayer.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : onAirStatus } );
-			},mw.getConfig("SkipKSOnIsLiveRequest") );
+			},mw.getConfig("SkipKSOnIsLiveRequest"),function(){
+				mw.log("Error occur while trying to check onAir status");
+				embedPlayer.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : false } );
+			} );
 		},
 
 		getKalturaClient: function() {
