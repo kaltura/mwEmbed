@@ -571,8 +571,25 @@ mw.EmbedPlayerKplayer = {
 
 	onFlavorsListChanged: function ( data, id ) {
 		var flavors = data.flavors;
+		var currentSources = [];
+		if ( this.mediaElement ) {
+			currentSources = this.mediaElement.getPlayableSources();
+		}
 		if ( flavors && flavors.length > 1 ) {
+			//find matching pixels height because flash doesn't expose it
+			if ( currentSources.length > 0 ) {
+				$.each( flavors, function( index, flavor ) {
+					for ( var i=0; i< currentSources.length; i++ ) {
+						if ( currentSources[i].bandwidth == flavor.bandwidth ) {
+							flavor.height = currentSources[i].height;
+							break;
+						}
+					}
+				});
+			}
 			this.setKDPAttribute( 'sourceSelector' , 'visible', true);
+			//we can't use simpleFormat with flavors that came from Flash
+			this.setKDPAttribute( 'sourceSelector' , 'simpleFormat', false);
 		}
 		this.replaceSources( flavors );
 
