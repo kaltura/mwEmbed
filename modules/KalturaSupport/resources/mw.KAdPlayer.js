@@ -890,6 +890,7 @@ mw.KAdPlayer.prototype = {
 		.css( layout )
 		.html( nonLinearConf.html )
 		.click(function(){
+				_this.embedPlayer.pause(); // pause the video when the user clicks on the overlay ad
 				if (nonLinearConf.$html.attr("data-NonLinearClickTracking")){
 					mw.sendBeaconUrl( nonLinearConf.$html.attr("data-NonLinearClickTracking") );
 				}
