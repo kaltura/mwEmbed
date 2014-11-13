@@ -284,8 +284,7 @@
 				'action' : 'execute',
 				'id' : playlistId,
 				'filter:objectType': 'KalturaMediaEntryFilterForPlaylist',
-				'filter:idNotIn': this.getPlayer().kentryid,
-				'filter:limit': this.getConfig('itemsLimit')
+				'filter:idNotIn': this.getPlayer().kentryid
 			}
 			if ( sendContext ) {
 				requestObject['playlistContext:objectType'] = 'KalturaEntryContext';
