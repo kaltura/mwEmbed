@@ -1364,9 +1364,13 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'text' => array(
 				'doc' => 'The text string to be displayed for the title.',
 				'initvalue' => '{mediaProxy.entry.name}',
-				'type' => 'string',
-				'initValue' => '{mediaProxy.entry.name}',
+				'type' => 'string'
 			),
+			'truncateLongTitles' => array(
+                'doc' => 'Truncate long titles to fit in one line. Truncated titles get a tooltip and 3 dots at the end of the truncated text.',
+                'type' => 'boolean',
+                'initValue' => true,
+            )
 		)
 	),
 	'airPlay' => array(
