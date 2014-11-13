@@ -7,6 +7,16 @@
 			"displayImportance": "medium"
 		},
 
+		setup: function(){
+			var _this = this;
+			this.bind( 'seeking onpause', function() {
+				_this.getComponent().addClass( 'back-to-live-active' );
+			});
+			this.bind( 'movingBackToLive', function() {
+				_this.getComponent().removeClass( 'back-to-live-active' );
+			});
+		},
+
 		getComponent: function() {
 			var _this = this;
 			if( !this.$el ) {
