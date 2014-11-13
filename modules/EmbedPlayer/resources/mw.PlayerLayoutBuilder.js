@@ -51,7 +51,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		this.embedPlayer = embedPlayer;
 		this.fullScreenManager = new mw.FullScreenManager( embedPlayer );
 
-        $(document.body).append($('<div style="display: block" class="cssChecker"></div>'));
+		$(document.body).append($('<div style="display: block" class="cssChecker"></div>'));
 
 		// Return the layoutBuilder Object:
 		return this;
@@ -716,7 +716,9 @@ mw.PlayerLayoutBuilder.prototype = {
 				_this.playingFlag = false;
 			},500);
 		});
-
+		// check for drag: 
+		
+		
 		// Check for click
 		$( embedPlayer ).bind( "click" + _this.bindPostfix, function() {
 			if ( mw.isMobileDevice() )  {
