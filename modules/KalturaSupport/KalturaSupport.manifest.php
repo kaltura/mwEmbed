@@ -1369,7 +1369,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'truncateLongTitles' => array(
                 'doc' => 'Truncate long titles to fit in one line. Truncated titles get a tooltip and 3 dots at the end of the truncated text.',
                 'type' => 'boolean',
-                'initValue' => true,
+                'initvalue' => true,
             )
 		)
 	),
