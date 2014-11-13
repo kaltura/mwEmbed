@@ -45,6 +45,16 @@ return array(
 				Values will correspond to the evars and props comma separated map defined in additionalEvarsAndProps.",
 				'label' => 'Kaltura values',
 				'type' => 'string'
+			),
+			'autoTrack' => array(
+				'doc' => "Default true, Value passed to autoTrack Omniture media module property.",
+				'type' => 'boolean',
+				'default' => true	
+			), 
+			'trackWhilePlaying' => array(
+				'doc' => "Default true, Value passed to trackWhilePlaying Omniture media module property.",
+				'type' => 'boolean',
+				'default' => true
 			)
 		)
 	),
