@@ -206,6 +206,9 @@ Still have doubts? <a href="http://corp.kaltura.com/content/technical-support">C
 		});
 	}
 	function urlExists (url, callback){
+		// append random string to avoid CDN cache response
+		url += ( url.indexOf('?') == -1 ) ? '%3F': '%26';
+		url += Math.random();
 		$.get('../../simplePhpXMLProxy.php?url=' + url, function(data) {
 			if( data.headers && data.headers['Content-Type'] == "text/javascript" ){
 				return callback( true );

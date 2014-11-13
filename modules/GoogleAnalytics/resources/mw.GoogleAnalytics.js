@@ -1,9 +1,3 @@
-/**
-uiConf Examples:
-<Plugin id="googleAnalytics" visualDebug="false” path="googleAnalyticsPlugin.swf" width="0%" height="0%" loadingPolicy="wait" urchinCode="UA-30149691-1"/>
-<Plugin id="googleAnalytics" visualDebug="false” path="googleAnalyticsPlugin.swf" customEvent=”doPlay” width="0%" height="0%" loadingPolicy="wait" urchinCode="UA-30149691-1"/>
-<Plugin id="googleAnalytics" visualDebug="false” path="googleAnalyticsPlugin.swf" customEvent=”doPlay,playerStateChange,addThis” addThisCategory=”My AddThis Category” addThisAction=”My AddThis Action” addThisLabel=”My AddThis Label” addThisValue=”1” width="0%" height="0%" loadingPolicy="wait" urchinCode="UA-30149691-1"/>
-**/
 ( function( mw, $ ) {"use strict";
 	mw.GoogleAnalytics = function( embedPlayer, callback ) {
 		return this.init( embedPlayer, callback );
