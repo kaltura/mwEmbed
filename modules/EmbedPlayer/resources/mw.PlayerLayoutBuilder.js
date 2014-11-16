@@ -37,6 +37,8 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	layoutReady: false,
 
+	keepControlsOnScreen: false,
+
 	playingFlag: false,
 	// Display importance available values
 	importanceSet: ['low', 'medium', 'high'],
@@ -485,7 +487,6 @@ mw.PlayerLayoutBuilder.prototype = {
 			if( mw.isTouchDevice() ){
 				if( !( mw.isAndroid() && mw.isMobileChrome() ) ){
 					_this.addPlayerTouchBindings();
-					return;
 				}
 			}
 			_this.addPlayerClickBindings();
@@ -497,9 +498,8 @@ mw.PlayerLayoutBuilder.prototype = {
 			}
 			if( mw.isTouchDevice() ){
 				_this.removePlayerTouchBindings();
-			} else {
-				_this.removePlayerClickBindings();
 			}
+			_this.removePlayerClickBindings();
 		};
 
 		_this.onControlBar = false;
@@ -577,7 +577,8 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		// if overlaying controls add hide show player binding.
 		if( embedPlayer.isOverlayControls() && mw.hasMouseEvents() ){
-			this.addMouseMoveBinding();
+			this.addMouseMoveBinding(this.getInterface());
+			this.addMouseMoveHandler();
 		}
 
 		mw.log( 'trigger::addControlBindingsEvent' );
@@ -592,9 +593,13 @@ mw.PlayerLayoutBuilder.prototype = {
 		// protect against scroll intent
 		var touchStartPos, touchEndPos = null;
 		$( _this.embedPlayer ).bind( 'touchstart' + this.bindPostfix, function(e) {
+			e.preventDefault();
+			e.stopPropagation();
 			touchStartPos = e.originalEvent.touches[0].pageY; //starting point
 		})
 		.bind( 'touchend' + this.bindPostfix, function(e) {
+			e.preventDefault();
+			e.stopPropagation();
 			// remove drag binding:
 			if ( _this.embedPlayer.isControlsVisible || _this.embedPlayer.useNativePlayerControls()) {
                 touchEndPos = e.originalEvent.changedTouches[0].pageY; //ending point
@@ -617,12 +622,14 @@ mw.PlayerLayoutBuilder.prototype = {
 	showPlayerControls: function(){
 		clearTimeout(this.hideControlsTimeout);
 		this.getInterface().removeClass( this.outPlayerClass );
+		this.removeTouchOverlay();
 		this.embedPlayer.triggerHelper( 'showPlayerControls' );
 	},
 	hidePlayerControls: function(){
 		if (!this.embedPlayer.paused ||
 			this.embedPlayer.isInSequence()){
 			this.getInterface().addClass( this.outPlayerClass );
+			this.addTouchOverlay();
 			this.embedPlayer.triggerHelper( 'hidePlayerControls' );
 		}
 	},
@@ -671,38 +678,95 @@ mw.PlayerLayoutBuilder.prototype = {
 		} );
 	},
 
-	addMouseMoveBinding: function(){
-		var _this = this;
-		// Bind mouse move in interface to hide control bar
-		_this.mouseMovedFlag = false;
-		var oldX =0, oldY= 0;
-		_this.getInterface().mousemove( function(event){
-			// debounce mouse movements
-			if( Math.abs( oldX - event.pageX ) > 4 ||  Math.abs( oldY - event.pageY ) > 4 ){
-				_this.mouseMovedFlag = true;
-			}
-			oldX = event.pageX;
-			oldY = event.pageY;
-		}).mouseout( function(event){
-			//Clear mouseMoveFlag when moving mouse out of player
+	addMouseMoveBinding: function(elem){
+		if (elem) {
+			var _this = this;
+			// Bind mouse move in interface to hide control bar
 			_this.mouseMovedFlag = false;
-		});
-
+			var oldX = 0, oldY = 0;
+			$( elem ).mousemove( function ( event ) {
+				// debounce mouse movements
+				if ( Math.abs( oldX - event.pageX ) > 4 || Math.abs( oldY - event.pageY ) > 4 ) {
+					_this.mouseMovedFlag = true;
+				}
+				oldX = event.pageX;
+				oldY = event.pageY;
+			} ).mouseout( function ( event ) {
+				//Clear mouseMoveFlag when moving mouse out of player
+				_this.mouseMovedFlag = false;
+			} );
+		} else {
+			mw.log("addMouseMoveBinding: no element supplied");
+		}
+	},
+	addMouseMoveHandler: function(){
+		var _this = this;
 		// Check every 2 seconds reset flag status if controls are overlay
 		var checkMovedMouse = function(){
 			if( _this.mouseMovedFlag ){
 				_this.mouseMovedFlag = false;
 				_this.showPlayerControls();
 				// Once we move the mouse keep displayed for 4 seconds
-				setTimeout( checkMovedMouse, mw.getConfig('EmbedPlayer.MouseMoveTimeout') );
+				_this.checkMovedMouseTimeout = setTimeout( checkMovedMouse, mw.getConfig('EmbedPlayer.MouseMoveTimeout') );
 			} else {
 				// Check for mouse movement every 250ms
 				_this.hidePlayerControls();
-				setTimeout( checkMovedMouse, 250 );
+				_this.checkMovedMouseTimeout = setTimeout( checkMovedMouse, 250 );
 			}
 		};
 		// start monitoring for moving mouse
 		checkMovedMouse();
+	},
+	removeMouseMoveHandler: function(){
+		clearTimeout(this.checkMovedMouseTimeout);
+		this.checkMovedMouseTimeout = null;
+	},
+	addTouchOverlay: function(){
+		if ( mw.isTouchDevice() &&
+			!this.keepControlsOnScreen  &&
+			this.embedPlayer.getKalturaConfig( "controlBarContainer", "hover" )) {
+			var _this = this;
+			if ( this.getInterface().find( '#touchOverlay' ).length == 0 ) {
+				var touchOverlay= this.getInterface().find('.controlBarContainer').before(
+					$('<div />')
+						.css({
+							'position': 'absolute',
+							'top': 0,
+							'width': '100%',
+							'height': '100%',
+							'z-index': 1
+						})
+						.attr( 'id', "touchOverlay" )
+						.bind( 'touchstart click', function( event ) {
+							// Don't propogate the event to the document
+							if (event.stopPropagation ) {
+								event.stopPropagation();
+								if ( event.stopImmediatePropagation )  {
+									event.stopImmediatePropagation();
+								}
+							} else {
+								event.cancelBubble = true; // IE model
+							}
+							event.preventDefault();
+							_this.removeMouseMoveHandler();
+							//without setTimeout event still propagates
+							setTimeout( function() {
+								_this.mouseMovedFlag = true;
+								_this.showPlayerControls();
+								_this.addMouseMoveHandler();
+								_this.getInterface().find( '#touchOverlay' ).remove();
+							}, 500);
+
+						})
+				);
+				this.addMouseMoveBinding(touchOverlay);
+			}
+		}
+	},
+	removeTouchOverlay: function(){
+		if ( mw.isTouchDevice() && this.getInterface().find( '#touchOverlay' ).length != 0 ) {
+			this.getInterface().find( '#touchOverlay' ).remove();
+		}
 	},
 
 	// Hold the current player size class

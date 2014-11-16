@@ -65,9 +65,6 @@
 			} );
 			var $interface = this.embedPlayer.getInterface();
 			$interface.removeClass( 'player-out' );
-			if ( mw.isTouchDevice() && $interface.find( '#touchOverlay' ).length != 0 ) {
-				$interface.find( '#touchOverlay' ).remove();
-			}
 		},
 		hide: function(){
 			if( this.keepOnScreen ) return;
@@ -77,39 +74,7 @@
 			$interface.addClass( 'player-out' );
 			// Allow interface items to update:
 			this.getPlayer().triggerHelper('onHideControlBar', {'bottom' : 15} );
-			if ( mw.isTouchDevice() ) {
-				var _this = this;
-				if ( $interface.find( '#touchOverlay' ).length == 0 ) {
-					$interface.find('.controlBarContainer').before(
-						$('<div />')
-							.css({
-								'position': 'absolute',
-								'top': 0,
-								'width': '100%',
-								'height': '100%',
-								'z-index': 1
-							})
-							.attr( 'id', "touchOverlay" )
-							.bind( 'touchstart', function( event ) {
-								// Don't propogate the event to the document
-								if (event.stopPropagation ) {
-									event.stopPropagation();
-									if ( event.stopImmediatePropagation )  {
-										event.stopImmediatePropagation();
-									}
-								} else {
-									event.cancelBubble = true; // IE model
-								}
-								//without setTimeout event still propagates
-								setTimeout( function() {
-									_this.embedPlayer.triggerHelper( 'showPlayerControls' );
-									$interface.find( '#touchOverlay' ).remove();
-								}, 500);
 
-							})
-					);
-				}
-			}
 		},
 		getComponent: function(){
 			if( !this.$el ) {
