@@ -37,6 +37,8 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	layoutReady: false,
 
+	keepControlsOnScreen: false,
+
 	playingFlag: false,
 	// Display importance available values
 	importanceSet: ['low', 'medium', 'high'],
@@ -497,9 +499,8 @@ mw.PlayerLayoutBuilder.prototype = {
 			}
 			if( mw.isTouchDevice() ){
 				_this.removePlayerTouchBindings();
-			} else {
-				_this.removePlayerClickBindings();
 			}
+			_this.removePlayerClickBindings();
 		};
 
 		_this.onControlBar = false;
@@ -722,10 +723,11 @@ mw.PlayerLayoutBuilder.prototype = {
 		this.checkMovedMouseTimeout = null;
 	},
 	addTouchOverlay: function(){
-		if ( mw.isTouchDevice() ) {
+		if ( mw.isTouchDevice() &&
+			!this.keepControlsOnScreen  &&
+			this.embedPlayer.getKalturaConfig( "controlBarContainer", "hover" )) {
 			var _this = this;
 			if ( this.getInterface().find( '#touchOverlay' ).length == 0 ) {
-				console.info("addTouchOverlay");
 				var touchOverlay= this.getInterface().find('.controlBarContainer').before(
 					$('<div />')
 						.css({
@@ -764,7 +766,6 @@ mw.PlayerLayoutBuilder.prototype = {
 	},
 	removeTouchOverlay: function(){
 		if ( mw.isTouchDevice() && this.getInterface().find( '#touchOverlay' ).length != 0 ) {
-			console.info("removeTouchOverlay");
 			this.getInterface().find( '#touchOverlay' ).remove();
 		}
 	},

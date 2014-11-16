@@ -2859,16 +2859,18 @@
 		},
 
 		disableComponentsHover: function(){
-			this.triggerHelper( 'onComponentsHoverDisabled' );
 			if( this.layoutBuilder ) {
+				this.layoutBuilder.keepControlsOnScreen = true;
 				this.layoutBuilder.removeTouchOverlay();
 			}
+			this.triggerHelper( 'onComponentsHoverDisabled' );
 		},
 		restoreComponentsHover: function(){
-			this.triggerHelper( 'onComponentsHoverEnabled' );
 			if( this.layoutBuilder ) {
+				this.layoutBuilder.keepControlsOnScreen = false;
 				this.layoutBuilder.addTouchOverlay();
 			}
+			this.triggerHelper( 'onComponentsHoverEnabled' );
 		},
 		/**
 		 * @param value string containing comma seperated tags
