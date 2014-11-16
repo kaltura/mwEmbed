@@ -487,7 +487,6 @@ mw.PlayerLayoutBuilder.prototype = {
 			if( mw.isTouchDevice() ){
 				if( !( mw.isAndroid() && mw.isMobileChrome() ) ){
 					_this.addPlayerTouchBindings();
-					//return;
 				}
 			}
 			_this.addPlayerClickBindings();
