@@ -588,12 +588,8 @@ mw.EmbedPlayerKplayer = {
 				});
 			}
 			this.setKDPAttribute( 'sourceSelector' , 'visible', true);
-			//we can't use simpleFormat with flavors that came from Flash
-			this.setKDPAttribute( 'sourceSelector' , 'simpleFormat', false);
+			this.parent_onFlavorsListChanged( flavors );
 		}
-		this.replaceSources( flavors );
-
-		//this.mediaElement.setSourceByIndex( 0 );
 	},
 
 	onLiveEntryOffline: function () {
