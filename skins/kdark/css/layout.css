@@ -767,9 +767,6 @@ body { letter-spacing: 0.04em; }
 	background: rgba(0,0,0,0.7);
 	color: #efefef;
 }
-.touch .largePlayBtn {
-	pointer-events: none;
-}
 
 .largePlayBtn:hover {
 	background: rgba(0,0,0,1);

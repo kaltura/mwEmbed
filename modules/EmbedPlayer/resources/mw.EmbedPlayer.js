@@ -2194,7 +2194,7 @@
 			this.hideSpinnerOncePlaying();
 
 			// trigger on play interface updates:
-			$( this ).trigger( 'onComponentsHoverEnabled' );
+			this.restoreComponentsHover();
 			$( this ).trigger( 'onPlayInterfaceUpdate' );
 		},
 		/**
@@ -2273,7 +2273,7 @@
 			// don't display a loading spinner if paused: 
 			this.hideSpinner();
 			// trigger on pause interface updates
-			$( this ).trigger( 'onComponentsHoverDisabled' );
+			this.disableComponentsHover();
 			$( this ).trigger( 'onPauseInterfaceUpdate' );
 		},
 		/**
@@ -2860,9 +2860,15 @@
 
 		disableComponentsHover: function(){
 			this.triggerHelper( 'onComponentsHoverDisabled' );
+			if( this.layoutBuilder ) {
+				this.layoutBuilder.removeTouchOverlay();
+			}
 		},
 		restoreComponentsHover: function(){
 			this.triggerHelper( 'onComponentsHoverEnabled' );
+			if( this.layoutBuilder ) {
+				this.layoutBuilder.addTouchOverlay();
+			}
 		},
 		/**
 		 * @param value string containing comma seperated tags

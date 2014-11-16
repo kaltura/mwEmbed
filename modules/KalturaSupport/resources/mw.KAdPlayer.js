@@ -467,6 +467,7 @@ mw.KAdPlayer.prototype = {
 				$clickTarget.unbind(clickEventName + _this.adClickPostFix).bind( clickEventName + _this.adClickPostFix, function(e){
 					if ( adConf.clickThrough ) {
 						e.stopPropagation();
+						e.preventDefault();
 						if( _this.clickedBumper ){
 							_this.getVideoElement().play();
 
@@ -591,8 +592,10 @@ mw.KAdPlayer.prototype = {
 					.attr('id', skipId)
 					.text( adSlot.skipBtn.text )
 					.addClass( 'ad-component ad-skip-btn' )
-					.bind(clickEventName, function(){
+					.bind(clickEventName, function(e){
 						$( embedPlayer ).unbind( clickEventName + _this.adClickPostFix );
+						e.stopPropagation();
+						e.preventDefault();
 						$( embedPlayer).trigger( 'onAdSkip' );
 						_this.skipCurrent();
 						return false;
@@ -1017,6 +1020,7 @@ mw.KAdPlayer.prototype = {
 					$clickTarget.bind( clickEventName + _this.adClickPostFix, function(e) {
 						if (_this.clickedBumper) {
 							e.stopPropagation();
+							e.preventDefault();
 							_this.getVideoElement().play();
 							$( _this.embedPlayer ).trigger( "onPlayerStateChange", ["play"] );
 							$( _this.embedPlayer ).trigger( "onResumeAdPlayback" );

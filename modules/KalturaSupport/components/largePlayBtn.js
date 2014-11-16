@@ -68,6 +68,7 @@
 			}
 
 			event.preventDefault();
+			event.stopPropagation();
 			this.getPlayer().triggerHelper( 'goingtoplay' );
 			this.getPlayer().sendNotification('doPlay');
 		},
