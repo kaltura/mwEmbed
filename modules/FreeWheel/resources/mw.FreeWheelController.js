@@ -53,6 +53,9 @@ mw.FreeWheelController.prototype = {
 	// bindPostfix enables namespacing the plugin binding
 	bindPostfix: '.freeWheel',
 
+	//Flag for indicating if load has been initiated on the player element
+	playerElementLoaded: false,
+
 	/**
 	 * Initialize the adMannager javascript and setup adds
 	 *
@@ -121,6 +124,13 @@ mw.FreeWheelController.prototype = {
 			// set the inSequence flag while loading ads:
 			_this.embedPlayer.sequenceProxy.isInSequence = true;
 
+			if (mw.isMobileDevice()) {
+				if (!_this.playerElementLoaded) {
+					_this.playerElementLoaded = true;
+					var vid = _this.embedPlayer.getPlayerElement();
+					vid.load();
+				}
+			}
 			// Get Freewheel ads:
 			_this.getContext().submitRequest();
 			// set the callback
@@ -191,7 +201,7 @@ mw.FreeWheelController.prototype = {
 			'name': 'FreeWheel',
 			'title': asset.getName(),
 			'iabCategory': null, // not sure what's expected here.
-			'CampaignID': null, // not available via SDK API now, what exactly do you need here? 
+			'CampaignID': null // not available via SDK API now, what exactly do you need here?
 		}
 		//if( creative._parameters._fw_advertiser_name ){
 		//	metaData['advertiser'] = creative._parameters._fw_advertiser_name;
