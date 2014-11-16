@@ -129,7 +129,10 @@ mw.KAdPlayer.prototype = {
 				$(_this.embedPlayer).trigger('onAdComplete',[adSlot.ads[adSlot.adIndex].id, mw.npt2seconds($(".currentTimeLabel").text())]);
 			}
 			// remove click binding if present
-			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'mouseup';
+			var clickEventName = "mouseup" + _this.adClickPostFix;
+			if (mw.isTouchDevice()){
+				clickEventName += " touchend" + _this.adClickPostFix;;
+			}
 			$( _this.embedPlayer ).unbind( clickEventName + _this.adClickPostFix );
 			// stop any ad tracking:
 			_this.stopAdTracking();
@@ -462,9 +465,12 @@ mw.KAdPlayer.prototype = {
 			// where the click event is added to the embedPlayer stack prior to
 			// the event stack being exhausted.
 			var $clickTarget = (mw.isTouchDevice()) ? $(embedPlayer) : embedPlayer.getVideoHolder();
-			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'click';
+			var clickEventName = "click" + _this.adClickPostFix;
+			if (mw.isTouchDevice()){
+				clickEventName += " touchend" + _this.adClickPostFix;;
+			}
 			setTimeout( function(){
-				$clickTarget.unbind(clickEventName + _this.adClickPostFix).bind( clickEventName + _this.adClickPostFix, function(e){
+				$clickTarget.unbind(clickEventName).bind(clickEventName, function(e){
 					if ( adConf.clickThrough ) {
 						e.stopPropagation();
 						e.preventDefault();
@@ -582,7 +588,10 @@ mw.KAdPlayer.prototype = {
 		// holds the value of skipoffset in seconds
 		var skipOffsetInSecs = 0;
 
-		var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'mouseup';
+		var clickEventName = "mouseup" + _this.adClickPostFix;
+		if (mw.isTouchDevice()){
+			clickEventName += " touchend" + _this.adClickPostFix;;
+		}
 
 		// Check for skip add button
 		if( adSlot.skipBtn ){
@@ -593,7 +602,7 @@ mw.KAdPlayer.prototype = {
 					.text( adSlot.skipBtn.text )
 					.addClass( 'ad-component ad-skip-btn' )
 					.bind(clickEventName, function(e){
-						$( embedPlayer ).unbind( clickEventName + _this.adClickPostFix );
+						$( embedPlayer ).unbind(clickEventName);
 						e.stopPropagation();
 						e.preventDefault();
 						$( embedPlayer).trigger( 'onAdSkip' );
@@ -1015,9 +1024,12 @@ mw.KAdPlayer.prototype = {
 				_this.clickedBumper = true;
 
 				var $clickTarget = (mw.isTouchDevice()) ? $(_this.embedPlayer) : _this.embedPlayer.getVideoHolder();
-				var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'click';
+				var clickEventName = "click" + _this.adClickPostFix;
+				if (mw.isTouchDevice()){
+					clickEventName += " touchend" + _this.adClickPostFix;;
+				}
 				setTimeout( function(){
-					$clickTarget.bind( clickEventName + _this.adClickPostFix, function(e) {
+					$clickTarget.unbind(clickEventName).bind(clickEventName, function(e) {
 						if (_this.clickedBumper) {
 							e.stopPropagation();
 							e.preventDefault();
