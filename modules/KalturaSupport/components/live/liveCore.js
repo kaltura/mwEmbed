@@ -231,7 +231,7 @@
 			}
 			//not a live entry: restore ui, hide live ui
 			else {
-				hideComponentsArr.push( 'liveStatus' );
+				hideComponentsArr.push( 'liveStatus', 'liveBackBtn' );
 				showComponentsArr.push( 'sourceSelector', 'scrubber', 'durationLabel', 'currentTimeLabel' );
 				_this.removeLiveStreamStatusMonitor();
 				_this.unbind('timeupdate');
