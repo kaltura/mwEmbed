@@ -3026,6 +3026,17 @@
 			if ( this.shouldHandlePlayerError ) {
 				this.showErrorMsg( { title: this.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), message: this.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) } );
 			}
+		} ,
+
+		/**
+		 * Some players parse playmanifest and reload flavors list by calling this function
+		 * @param data
+		 */
+		onFlavorsListChanged : function ( newFlavors ) {
+			//we can't use simpleFormat with flavors that came from playmanifest otherwise sourceSelector list won't match
+			// to what is actually being played
+			this.setKDPAttribute( 'sourceSelector' , 'simpleFormat', false);
+			this.replaceSources( newFlavors );
 		}
 	};
 

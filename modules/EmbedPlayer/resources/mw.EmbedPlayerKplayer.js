@@ -571,12 +571,25 @@ mw.EmbedPlayerKplayer = {
 
 	onFlavorsListChanged: function ( data, id ) {
 		var flavors = data.flavors;
-		if ( flavors && flavors.length > 1 ) {
-			this.setKDPAttribute( 'sourceSelector' , 'visible', true);
+		var currentSources = [];
+		if ( this.mediaElement ) {
+			currentSources = this.mediaElement.getPlayableSources();
 		}
-		this.replaceSources( flavors );
-
-		//this.mediaElement.setSourceByIndex( 0 );
+		if ( flavors && flavors.length > 1 ) {
+			//find matching pixels height because flash doesn't expose it
+			if ( currentSources.length > 0 ) {
+				$.each( flavors, function( index, flavor ) {
+					for ( var i=0; i< currentSources.length; i++ ) {
+						if ( currentSources[i].bandwidth == flavor.bandwidth ) {
+							flavor.height = currentSources[i].height;
+							break;
+						}
+					}
+				});
+			}
+			this.setKDPAttribute( 'sourceSelector' , 'visible', true);
+			this.parent_onFlavorsListChanged( flavors );
+		}
 	},
 
 	onLiveEntryOffline: function () {

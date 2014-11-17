@@ -588,7 +588,8 @@
 
 		onFlavorsListChanged: function ( data, id ) {
 			var values = JSON.parse( data );
-			this.replaceSources( values.flavors );
+			this.parent_onFlavorsListChanged( values.flavors );
+
 		},
 
 		onEnableGui: function ( data, id ) {
