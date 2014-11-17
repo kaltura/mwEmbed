@@ -13,6 +13,26 @@
     box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.3);
     background-color: rgb(0,0,0);
 }
+.imagePlayer{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+}
+.imagePlayer.fill-width {
+    min-width: 100%;
+    height: auto;
+}
+.imagePlayer.fill-height {
+    min-height: 100%;
+    width: auto;
+}
 /*Screen states*/
 .sideBySideLeft {
     top: 25% !important;
@@ -37,7 +57,7 @@
     height: 0px !important;
 }
 .screenTransition{
-    transition: 1s;
+    transition: 0.5s;
 }
 /*Override jquery UI resizable cursor handlers*/
 .dualScreen > .ui-resizable-ne{

@@ -2,6 +2,8 @@
 
 	mw.PluginManager.add( 'widevine', mw.KBasePlugin.extend({
 		defaultConfig: {
+			'useSupportedBrowserMsg': 'This video is not supported by this browser.',
+			'useSupportedBrowserTitle': 'Notification',
 			'useSupportedDeviceMsg': 'This video requires Adobe Flash Player, which is not supported by your device. You can watch it on devices that support Flash.',
 			'useSupportedDeviceTitle': 'Notification',
 			'intallFlashMsg': "This video requires Adobe Flash Player, which is currently not available on your browser. Please <a href='http://www.adobe.com/support/flashplayer/downloads.html' target='_blank'> install Adobe Flash Player </a> to view this video.",
@@ -73,6 +75,9 @@
 					if ( kWidget.isMobileDevice() ) {
 						msg = _this.getConfig( 'useSupportedDeviceMsg' );
 						title = _this.getConfig( 'useSupportedDeviceTitle' );
+					} else if ( mw.isDesktopSafari() ) {
+						msg = _this.getConfig( 'useSupportedBrowserMsg' );
+						title = _this.getConfig( 'useSupportedBrowserTitle' );
 					} else {
 						//flash is not installed - prompt to install flash
 						if ( navigator.mimeTypes [ 'application/x-shockwave-flash' ] == undefined ) {

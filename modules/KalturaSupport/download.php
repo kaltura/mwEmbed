@@ -413,7 +413,7 @@ class downloadEntry {
 			// if the user specified 0 - return the source
 			if ($preferredBitrate == 0){
 				foreach( $resultObject['contextData']->flavorAssets as $source ){
-                    if (isset($source->tags) && $source->tags == "source"){
+                    if (isset($source->tags) && strpos($source->tags,'source') !== false){
 						$src = $this->getSourceUrl($kResultObject, $resultObject, $source);
 					}
 				}

@@ -26,7 +26,7 @@
 				'onPage': false,
 				'includeInLayout': true,
 				'clipListTargetId': null,
-				'containerPosition':  'left',
+				'containerPosition':  'right',
 				'parent': null
 			});
 		},
@@ -58,9 +58,6 @@
 				if ( !_this.getConfig( 'parent') ){
 					$(".medialistContainer").hide();
 					$(".videoHolder").width("100%");
-					if (_this.getConfig("containerPosition") === "left"){
-						$(".mwPlayerContainer").css("margin-left", 0 + "px");
-					}
 				}
 			});
 
@@ -69,9 +66,6 @@
 				if ( !_this.getConfig( 'parent') ){
 					$(".medialistContainer").show();
 					$(".videoHolder").width(_this.videoWidth+"px");
-					if (_this.getConfig("containerPosition") === "left"){
-						$(".mwPlayerContainer").css("margin-left", _this.getMedialistComponent().width() + "px");
-					}
 				}
 			});
 
@@ -105,9 +99,14 @@
 				if ( this.getConfig( 'onPage' ) ) {
 					var iframeID = this.embedPlayer.id + '_ifp';
 					try {
-						//Try to apply css on parent frame
-						var cssLink = $("link[href$='"+this.getConfig('cssFileName')+"']").attr("href");
-						$('head', window.parent.document ).append('<link type="text/css" rel="stylesheet" href="'+cssLink+'"/>');
+						//Try to find and apply css on parent frame
+						var cssLink = this.getConfig('cssFileName');
+						if (cssLink) {
+							cssLink = cssLink.toLowerCase().indexOf("http") === 0 ? cssLink : kWidget.getPath() + cssLink; // support external CSS links
+							$( 'head', window.parent.document ).append( '<link type="text/css" rel="stylesheet" href="' + cssLink + '"/>' );
+						} else {
+							mw.log( "Error: "+ this.pluginName +" could not find CSS link" );
+						}
 
 						$( window['parent'].document ).find( '.onpagePlaylistInterface' ).remove(); // remove any previously created playlists
 						var iframeParent = window['parent'].document.getElementById( this.embedPlayer.id );
@@ -137,7 +136,7 @@
 						this.videoWidth = (this.$mediaListContainer.width() - this.getConfig( "mediaItemWidth" ));
 					}
 					if ( this.getConfig( 'containerPosition' ) == 'left' ) {
-						$( ".mwPlayerContainer" ).css( {"margin-left": this.getConfig( "mediaItemWidth" ) + "px", "float": "right"} );
+						$( ".mwPlayerContainer" ).css( "float", "right" );
 					}
 
 					if ( this.getConfig( 'containerPosition' ) == 'top' || this.getConfig( 'containerPosition' ) == 'bottom' ) {
@@ -204,15 +203,15 @@
 			}
 		},
 		onDisable: function(){
+			if (this.embedPlayer.getError() !== null){
+				return;
+			}
 			this.isDisabled = true;
 			var mediaBoxes = this.getMediaListDomElements();
 			mediaBoxes.addClass("disabled");
 			mediaBoxes.find("*").addClass("disabled");
 		},
 		onEnable: function(){
-			if (this.embedPlayer.getError() !== null){
-				return;
-			}
 			this.isDisabled = false;
 			var mediaBoxes = this.getMediaListDomElements();
 			mediaBoxes.removeClass("disabled");
@@ -490,6 +489,7 @@
 			var $cc = this.getMedialistComponent();
 			this.mediaItemVisible = this.calculateVisibleScrollItems();
 			var isVertical = ( this.getLayout() == 'vertical' );
+			var speed = mw.isTouchDevice() ? 100: 200;
 
 			// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
 			$cc.find('.k-carousel').jCarouselLite({
@@ -500,7 +500,8 @@
 				circular: false,
 				vertical: isVertical,
 				start: this.startFrom,
-				scroll: 1
+				scroll: 1,
+				speed: speed
 			});
 
 			// give more height if needed
@@ -586,13 +587,14 @@
 			var largestBoxWidth = 0;
 			var largestBoxHeight = 0;
 			this.getMediaListDomElements().each( function(inx, box){
-				if( $( box ).width() > largestBoxWidth ){
-					largestBoxWidth = $( box ).width()
+				var $box = $(box);
+				if( $box.width() > largestBoxWidth ){
+					largestBoxWidth = $box.width()
 				}
-				if( $(box).height() > largestBoxHeight ){
-					largestBoxHeight = $(box).height() + (
-						parseInt( $(box).css('padding-top') ) + parseInt( $(box).css( 'padding-bottom') ) +
-						parseInt( $(box).css('margin-top') ) + parseInt( $(box).css( 'margin-bottom') )
+				if( $box.height() > largestBoxHeight ){
+					largestBoxHeight = $box.height() + (
+						(parseInt( $box.css('padding-top') ) || 0) + (parseInt( $box.css( 'padding-bottom') ) || 0) +
+							(parseInt( $box.css('margin-top') ) || 0)+ (parseInt( $box.css( 'margin-bottom') ) || 0)
 						);
 				}
 			});

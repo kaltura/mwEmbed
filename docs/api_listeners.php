@@ -217,6 +217,10 @@
 			'callbackArgs' => 'Cue Points Map. Object mapping between start-times and arrays of the cue points found on that start-time',
 			'desc' => "Notification fired when the player has successfully loaded an entry's cue-point configuration"
 		),
+		'cuePointReached' => array(
+			'callbackArgs' => 'Current cuePoint object. Return Object with context and a cuePoint object',
+			'desc' => "Notification fired when the player reaches a cuePoint"
+		),
 		'switchingChangeStarted' => array(
 			'callbackArgs' => 'newIndex: The index of the bitrate the player started switching to. If auto, send -1, newBitrate: The bitrate the player started switching to. If auto, send null',
 			'desc' => 'Notification dispatched when the player has started switching to a different dynamic bitrate'
@@ -234,7 +238,8 @@
 	$eventAds = array(
 		'adOpportunity' => array(
 			'callbackArgs' => 'context: context of the ad opportunity: pre, post, mid, cuePoint: the cue point object',
-			'desc' => "Notification fired when the player's time progress reaches an ad cue point"
+			'desc' => "Notification fired when the player's time progress reaches an ad cue point",
+			"example" => "../modules/KalturaSupport/tests/CuePointsMidrollVast.html"
 		),
 		'sequenceItemPlayStart' => array(
 			'callbackArgs' => 'sequenceContext: pre / post / mid / main (see SequenceContextType class), currentIndex: index of current item',
@@ -312,7 +317,6 @@
 			'desc' => 'Fired when an ad fails to load (applicable to all ad systems)'
 		)
 	);
-
 	$playlists = array(
         'playlistReady' => array(
             'props' => 'None',

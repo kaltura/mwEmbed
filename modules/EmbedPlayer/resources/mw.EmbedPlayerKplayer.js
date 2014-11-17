@@ -132,7 +132,8 @@ mw.EmbedPlayerKplayer = {
 					'audioTracksReceived': 'onAudioTracksReceived',
 					'audioTrackSelected': 'onAudioTrackSelected',
 					'videoMetadataReceived': 'onVideoMetadataReceived',
-					'hlsEndList': 'onHlsEndList'
+					'hlsEndList': 'onHlsEndList',
+					'mediaError': 'onMediaError'
 				};
 				_this.playerObject = this.getElement();
 				$.each( bindEventMap, function( bindName, localMethod ) {
@@ -345,10 +346,15 @@ mw.EmbedPlayerKplayer = {
 	},
 	onClipDone: function() {
 		this.parent_onClipDone();
-		this.preSequenceFlag = false;
 	},
 
 	onAlert: function ( data, id ) {
+		if ( data.messageKey ) {
+			data.message = gM ( data.messageKey );
+		}
+		if ( data.titleKey ) {
+			data.title = gM ( data.titleKey );
+		}
 		this.layoutBuilder.displayAlert( data );
 	},
 
@@ -357,6 +363,18 @@ mw.EmbedPlayerKplayer = {
 	 */
 	onHlsEndList: function () {
 		this.triggerHelper( 'liveEventEnded' );
+	},
+	/**
+	 * Playback error
+	 *
+	 */
+	onMediaError: function ( data ) {
+		var error = null;
+		if ( data  ) {
+			error = data.errorId + " detail:" + data.errorDetail;
+		}
+		mw.log( "EmbedPlayerKPlayer::MediaError error code: " + error );
+		this.triggerHelper( 'embedPlayerError', [ data ] );
 	},
 
 	/**
@@ -434,6 +452,14 @@ mw.EmbedPlayerKplayer = {
 				return;
 			}
 		}
+
+		// Trigger preSeek event for plugins that want to store pre seek conditions.
+		var stopSeek = {value: false};
+		this.triggerHelper( 'preSeek', [percentage, stopAfterSeek, stopSeek] );
+		if(stopSeek.value){
+			return;
+		}
+
 		this.seeking = true;
 
 		// Save currentTime
@@ -453,7 +479,6 @@ mw.EmbedPlayerKplayer = {
 			if( stopAfterSeek ){
 				_this.hideSpinner();
 				_this.pause();
-//				_this.stopMonitor();
 				_this.updatePlayheadStatus();
 			} else {
 				// continue to playback ( in a non-blocking call to avoid synchronous pause event )
@@ -546,12 +571,25 @@ mw.EmbedPlayerKplayer = {
 
 	onFlavorsListChanged: function ( data, id ) {
 		var flavors = data.flavors;
-		if ( flavors && flavors.length > 1 ) {
-			this.setKDPAttribute( 'sourceSelector' , 'visible', true);
+		var currentSources = [];
+		if ( this.mediaElement ) {
+			currentSources = this.mediaElement.getPlayableSources();
 		}
-		this.replaceSources( flavors );
-
-		//this.mediaElement.setSourceByIndex( 0 );
+		if ( flavors && flavors.length > 1 ) {
+			//find matching pixels height because flash doesn't expose it
+			if ( currentSources.length > 0 ) {
+				$.each( flavors, function( index, flavor ) {
+					for ( var i=0; i< currentSources.length; i++ ) {
+						if ( currentSources[i].bandwidth == flavor.bandwidth ) {
+							flavor.height = currentSources[i].height;
+							break;
+						}
+					}
+				});
+			}
+			this.setKDPAttribute( 'sourceSelector' , 'visible', true);
+			this.parent_onFlavorsListChanged( flavors );
+		}
 	},
 
 	onLiveEntryOffline: function () {
@@ -684,8 +722,9 @@ mw.EmbedPlayerKplayer = {
 				 + "/protocol/" + mediaProtocol + this.getPlaymanifestArg( "cdnHost", "cdnHost" ) + this.getPlaymanifestArg( "storageId", "storageId" )
 				 +  "/ks/" + this.getFlashvars( 'ks' ) + "/uiConfId/" + this.kuiconfid  + this.getPlaymanifestArg ( "referrerSig", "referrerSig" )  
 				 + this.getPlaymanifestArg ( "tags", "flavorTags" ) + "/a/a." + fileExt + "?referrer=" + this.b64Referrer  ;
-
-		deferred.resolve(srcUrl);
+		var refObj = {src:srcUrl};
+		this.triggerHelper( 'SourceSelected' , refObj );
+		deferred.resolve(refObj.src);
 		return deferred;
 	},
 

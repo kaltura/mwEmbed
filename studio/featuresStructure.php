@@ -107,7 +107,7 @@ return array(
 			"share" => "",
 			"related" => "",
 			"playlistAPI" => "",
-            "nextPrevBtn" => ""
+			"nextPrevBtn" => ""
 		)
 	),
 	"analytics"=> array(
@@ -160,6 +160,7 @@ return array(
 			"widevine" => "",
 			"sourceSelector" => "",
 			"download" => "",
+			"nativeCallout" => "",
 			"uiVars" => ""
 		)
 	)

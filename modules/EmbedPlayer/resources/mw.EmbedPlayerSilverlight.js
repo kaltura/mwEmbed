@@ -159,7 +159,7 @@
 					});
 
 					flashvars.multicastPlayer = true;
-					flashvars.streamAddress = srcToPlay;
+					flashvars.streamAddress = resolvedSrc;
 					//flashvars.debug = true;
 
 					//check if multicast not available
@@ -206,7 +206,6 @@
 						'bytesTotalChange' : 'onBytesTotalChange',
 						'bytesDownloadedChange' : 'onBytesDownloadedChange',
 						'playerSeekEnd': 'onPlayerSeekEnd',
-						'alert': 'onAlert',
 						'switchingChangeStarted': 'onSwitchingChangeStarted',
 						'switchingChangeComplete' : 'onSwitchingChangeComplete',
 						'flavorsListChanged' : 'onFlavorsListChanged',
@@ -215,7 +214,8 @@
 						'audioTrackSelected': 'onAudioTrackSelected',
 						'textTracksReceived': 'onTextTracksReceived',
 						'textTrackSelected': 'onTextTrackSelected',
-						'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions'
+						'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions',
+						'error': 'onError'
 					};
 
 					_this.playerObject = playerElement;
@@ -353,18 +353,24 @@
 			this.playerObject.pause();
 			this.parent_onClipDone();
 			this.currentTime = this.slCurrentTime = 0;
-			this.preSequenceFlag = false;
 		},
 
-		onAlert: function ( data, id ) {
-			mw.log('EmbedPlayerSPlayer::onAlert ' + data );
-			var messageText = data;
-			var dataParams = data.split(" ");
-			if ( dataParams.length ) {
-				var errorCode = dataParams[0];
-				//DRM license related error has 6XXX error code
-				if ( errorCode.length == 4 && errorCode.indexOf("6")==0 )  {
-					messageText = gM( 'ks-NO-DRM-LICENSE' );
+		onError: function ( data ) {
+			mw.log('EmbedPlayerSPlayer::onError ' );
+			this.triggerHelper( 'embedPlayerError', [ JSON.parse( data ) ] );
+		},
+
+		handlePlayerError: function( data ) {
+			var messageText = this.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) ;
+			if ( data && data.errorMessage ) {
+				messageText = data.errorMessage;
+				var dataParams = messageText.split(" ");
+				if ( dataParams.length ) {
+					var errorCode = dataParams[0];
+					//DRM license related error has 6XXX error code
+					if ( errorCode.length == 4 && errorCode.indexOf("6")==0 )  {
+						messageText = gM( 'ks-NO-DRM-LICENSE' );
+					}
 				}
 			}
 
@@ -463,6 +469,13 @@
 
 				// Save currentTime
 				this.kPreSeekTime = _this.currentTime;
+				// Trigger preSeek event for plugins that want to store pre seek conditions.
+				var stopSeek = {value: false};
+				this.triggerHelper( 'preSeek', [percentage, stopAfterSeek, stopSeek] );
+				if(stopSeek.value){
+					return;
+				}
+
 				this.currentTime = ( percentage * this.duration ).toFixed( 2 ) ;
 
 				// trigger the html5 event:
@@ -474,7 +487,7 @@
 				this.unbindHelper("seeked" + _this.bindPostfix).bindHelper("seeked" + _this.bindPostfix, function(){
 					_this.unbindHelper("seeked" + _this.bindPostfix);
 					_this.removePoster();
-					_this.monitor();
+					_this.startMonitor();
 					if( stopAfterSeek ){
 						_this.hideSpinner();
 						_this.pause();
@@ -501,21 +514,13 @@
 					}
 				}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 				// Issue the seek to the flash player:
-				this.maskPlayerPlayed();
-				this.playerObject.play();
+
+				this.stopEventPropagation();
 				this.playerObject.seek( seekTime );
+
 			} else if ( percentage != 0 ) {
 				this.playerObject.play();
 			}
-		},
-
-		maskPlayerPlayed: function (){
-			this.stopEventPropagation();
-			this.playerObject.addJsListener('playerPlayed', "unmaskPlayerPlayed" );
-		},
-		unmaskPlayerPlayed: function (){
-			this.restoreEventPropagation();
-			this.playerObject.removeJsListener('playerPlayed', "unmaskPlayerPlayed" );
 		},
 		/**
 		 * Issues a volume update to the playerElement
@@ -558,7 +563,8 @@
 		onPlayerSeekEnd: function ( position ) {
 			this.previousTime = this.currentTime = this.slCurrentTime = position;
 			this.seeking = false;
-			$( this ).trigger( 'seeked' );
+			this.restoreEventPropagation();
+			$( this ).trigger( 'seeked');
 			this.updatePlayhead();
 			if( this.seekInterval  ) {
 				clearInterval( this.seekInterval );
@@ -582,7 +588,8 @@
 
 		onFlavorsListChanged: function ( data, id ) {
 			var values = JSON.parse( data );
-			this.replaceSources( values.flavors );
+			this.parent_onFlavorsListChanged( values.flavors );
+
 		},
 
 		onEnableGui: function ( data, id ) {

@@ -40,44 +40,45 @@ mw.KAdPlayer.prototype = {
 	init: function( embedPlayer ){
 		var _this = this;
 		this.embedPlayer = embedPlayer;
+		var receivedPlayerReady = false;
 
-		// bind to the doPlay event triggered by the playPauseBtn component when the user resume playback from this component after clickthrough pause
-		var eventName = "doPlay";
-
-		// bind AdSupport_StartAdPlayback event since the small play/ pause button in the control bar doesn't change the state when ad is played on mobile browser
-		if( !_this.isVideoSiblingEnabled() ) {
-			eventName = eventName + " AdSupport_StartAdPlayback";
-		}
-
-		$(this.embedPlayer).bind(eventName, function(){
-			if (mw.getConfig("enableControlsDuringAd")){
-				var adPlayer = _this.getVideoElement();
-				if ( adPlayer ) {
-					if ( adPlayer.paused ) {
+		// for mobile devices (no ad sibling): prevent seeking when we have ads and playback hasn't started yet
+		$(this.embedPlayer).bind('playerReady', function(){
+			// bind to the doPlay event triggered by the playPauseBtn component when the user resume playback from this component after clickthrough pause
+			var eventName = "doPlay";
+			if (!_this.isVideoSiblingEnabled()){
+				//first time we get the playerReady event
+				eventName = eventName + " AdSupport_StartAdPlayback";
+			}
+			//first playerReady
+			if ( !receivedPlayerReady ) {
+				$(_this.embedPlayer).bind(eventName, function(){
+					if (mw.getConfig("enableControlsDuringAd")){
+						var adPlayer = _this.getVideoElement();
+						if ( adPlayer ) {
+							if ( adPlayer.paused ) {
+								$( embedPlayer ).trigger( "onPlayerStateChange", ["play"] ); // trigger playPauseBtn UI update
+								$( embedPlayer ).trigger( "onResumeAdPlayback" );
+								_this.clickedBumper = false;
+								_this.disablePlayControls(); // disable player controls
+								adPlayer.play();
+							} else {
+								$( embedPlayer ).trigger( "onPlayerStateChange", ["pause", _this.embedPlayer.currentState] ); // trigger playPauseBtn UI update
+								setTimeout( function () {
+									adPlayer.pause();
+								}, 0 );
+							}
+						}
+					} else {
 						$( embedPlayer ).trigger( "onPlayerStateChange", ["play"] ); // trigger playPauseBtn UI update
 						$( embedPlayer ).trigger( "onResumeAdPlayback" );
 						_this.clickedBumper = false;
 						_this.disablePlayControls(); // disable player controls
-						adPlayer.play();
-					} else {
-						$( embedPlayer ).trigger( "onPlayerStateChange", ["pause", _this.embedPlayer.currentState] ); // trigger playPauseBtn UI update
-						setTimeout( function () {
-							adPlayer.pause();
-						}, 0 );
 					}
-				}
-			} else {
-				$( embedPlayer ).trigger( "onPlayerStateChange", ["play"] ); // trigger playPauseBtn UI update
-				$( embedPlayer ).trigger( "onResumeAdPlayback" );
-				_this.clickedBumper = false;
-				_this.disablePlayControls(); // disable player controls
+				});
 			}
-		});
-		// for mobile devices (no ad sibling): prevent seeking when we have ads and playback hasn't started yet
-		$(this.embedPlayer).bind('playerReady', function(){
-			if (!_this.isVideoSiblingEnabled()){
-				$( _this.embedPlayer ).trigger( "onDisableScrubber" );
-			}
+
+			receivedPlayerReady = true;
 		});
 	},
 
@@ -128,7 +129,10 @@ mw.KAdPlayer.prototype = {
 				$(_this.embedPlayer).trigger('onAdComplete',[adSlot.ads[adSlot.adIndex].id, mw.npt2seconds($(".currentTimeLabel").text())]);
 			}
 			// remove click binding if present
-			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'mouseup';
+			var clickEventName = "mouseup" + _this.adClickPostFix;
+			if (mw.isTouchDevice()){
+				clickEventName += " touchend" + _this.adClickPostFix;;
+			}
 			$( _this.embedPlayer ).unbind( clickEventName + _this.adClickPostFix );
 			// stop any ad tracking:
 			_this.stopAdTracking();
@@ -140,6 +144,10 @@ mw.KAdPlayer.prototype = {
 			$('#' + _this.embedPlayer.id + '_ad_skipNotice' ).remove();
 			//Remove icon if present
 			$('#' + _this.embedPlayer.id + '_icon' ).remove();
+
+			//remove vpaid container for overlay ads
+			var vpaidid = _this.getVPAIDId();
+			$("#" + vpaidid ).remove();
 
 			adSlot.adIndex++;
 
@@ -296,6 +304,7 @@ mw.KAdPlayer.prototype = {
 			mw.log( "KAdPlayer::display:" + adSlot.type + " Playback done because vid does not exist or > displayDuration " + displayDuration );
 			_this.overrideDisplayDuration = 0;
 			adSlot.playbackDone();
+
 		} else {
 			setTimeout( function(){
 				_this.monitorForDisplayDuration( adSlot, startTime, displayDuration );
@@ -423,7 +432,13 @@ mw.KAdPlayer.prototype = {
 				$( '#' + iconId ).click(function(){
 					window.open( icon.clickthru );
 					mw.sendBeaconUrl( icon.clickTracking );
-					return true;
+					return false;
+				});
+				// prevent mouseup propegation to prevent the clickthrough url to open on IE8 / IE9 (see mw.PlayerLayoutBuilder.js, line 567)
+				$( '#' + iconId ).bind('mouseup', function(e){
+					e = e || window.event;
+					e.preventDefault();
+					e.stopPropagation();
 				});
 			}
 
@@ -450,11 +465,15 @@ mw.KAdPlayer.prototype = {
 			// where the click event is added to the embedPlayer stack prior to
 			// the event stack being exhausted.
 			var $clickTarget = (mw.isTouchDevice()) ? $(embedPlayer) : embedPlayer.getVideoHolder();
-			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'click';
+			var clickEventName = "click" + _this.adClickPostFix;
+			if (mw.isTouchDevice()){
+				clickEventName += " touchend" + _this.adClickPostFix;;
+			}
 			setTimeout( function(){
-				$clickTarget.unbind(clickEventName + _this.adClickPostFix).bind( clickEventName + _this.adClickPostFix, function(e){
+				$clickTarget.unbind(clickEventName).bind(clickEventName, function(e){
 					if ( adConf.clickThrough ) {
 						e.stopPropagation();
+						e.preventDefault();
 						if( _this.clickedBumper ){
 							_this.getVideoElement().play();
 
@@ -478,7 +497,7 @@ mw.KAdPlayer.prototype = {
 							if( _this.isVideoSiblingEnabled() ) {
 								$( _this.embedPlayer ).trigger( 'onPauseInterfaceUpdate' );
 							}else{
-								$( embedPlayer).trigger("onPlayerStateChange",["pause"]);
+								$( embedPlayer).trigger("onPlayerStateChange",["pause", embedPlayer.currentState]);
 							}
 
 							embedPlayer.enablePlayControls(["scrubber"]);
@@ -525,27 +544,11 @@ mw.KAdPlayer.prototype = {
 		if( targetSource && targetSource.getMIMEType().indexOf('image/') != -1 ){
 			return false;
 		}
-
-		if( mw.getConfig( "DisableVideoSibling") ) {
+		else if ( this.disableSibling) {
 			return false;
+		} else {
+			return this.embedPlayer.isVideoSiblingEnabled();
 		}
-
-		if( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
-			return false;
-		}
-
-		if ( this.disableSibling) {
-			return false;
-		}
-
-		// iPhone and IOS 5 does not play multiple videos well, use source switch. Chromecast should not use sibling as well.
-		if( mw.isIphone() || mw.isAndroid2() || mw.isAndroid40() || mw.isMobileChrome() || this.embedPlayer.instanceOf == "Chromecast"
-				|| 
-			( mw.isIpad() && ! mw.isIpad3() ) 
-		){
-			return false;
-		}
-		return true;
 	},
 	addAdBindings: function( vid,  adSlot, adConf ){
 		var _this = this;
@@ -585,7 +588,10 @@ mw.KAdPlayer.prototype = {
 		// holds the value of skipoffset in seconds
 		var skipOffsetInSecs = 0;
 
-		var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'mouseup';
+		var clickEventName = "mouseup" + _this.adClickPostFix;
+		if (mw.isTouchDevice()){
+			clickEventName += " touchend" + _this.adClickPostFix;;
+		}
 
 		// Check for skip add button
 		if( adSlot.skipBtn ){
@@ -595,8 +601,10 @@ mw.KAdPlayer.prototype = {
 					.attr('id', skipId)
 					.text( adSlot.skipBtn.text )
 					.addClass( 'ad-component ad-skip-btn' )
-					.bind(clickEventName, function(){
-						$( embedPlayer ).unbind( clickEventName + _this.adClickPostFix );
+					.bind(clickEventName, function(e){
+						$( embedPlayer ).unbind(clickEventName);
+						e.stopPropagation();
+						e.preventDefault();
 						$( embedPlayer).trigger( 'onAdSkip' );
 						_this.skipCurrent();
 						return false;
@@ -685,15 +693,16 @@ mw.KAdPlayer.prototype = {
         embedPlayer.bindHelper( 'doPause' + _this.trackingBindPostfix, function(){
 		    if( _this.isVideoSiblingEnabled() && _this.adSibling) {
 			    $( _this.embedPlayer ).trigger( 'onPauseInterfaceUpdate' ); // update player interface
-                vid.pause();
 		    }
+			vid.pause();
+
         });
 
         embedPlayer.bindHelper( 'doPlay' + _this.trackingBindPostfix, function(){
 		    if( _this.isVideoSiblingEnabled() && _this.adSibling) {
 			    $( _this.embedPlayer ).trigger( 'playing' ); // update player interface
-                vid.play();
 		    }
+            vid.play();
         });
 
 		if( !embedPlayer.isPersistentNativePlayer() ) {
@@ -893,6 +902,7 @@ mw.KAdPlayer.prototype = {
 		.css( layout )
 		.html( nonLinearConf.html )
 		.click(function(){
+				_this.embedPlayer.pause(); // pause the video when the user clicks on the overlay ad
 				if (nonLinearConf.$html.attr("data-NonLinearClickTracking")){
 					mw.sendBeaconUrl( nonLinearConf.$html.attr("data-NonLinearClickTracking") );
 				}
@@ -1014,11 +1024,15 @@ mw.KAdPlayer.prototype = {
 				_this.clickedBumper = true;
 
 				var $clickTarget = (mw.isTouchDevice()) ? $(_this.embedPlayer) : _this.embedPlayer.getVideoHolder();
-				var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'click';
+				var clickEventName = "click" + _this.adClickPostFix;
+				if (mw.isTouchDevice()){
+					clickEventName += " touchend" + _this.adClickPostFix;;
+				}
 				setTimeout( function(){
-					$clickTarget.bind( clickEventName + _this.adClickPostFix, function(e) {
+					$clickTarget.unbind(clickEventName).bind(clickEventName, function(e) {
 						if (_this.clickedBumper) {
 							e.stopPropagation();
+							e.preventDefault();
 							_this.getVideoElement().play();
 							$( _this.embedPlayer ).trigger( "onPlayerStateChange", ["play"] );
 							$( _this.embedPlayer ).trigger( "onResumeAdPlayback" );

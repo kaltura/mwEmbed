@@ -31,6 +31,7 @@
 			});
 			this.bind( 'layoutBuildDone ended', function(){
 				_this.show();
+
 			});
 
 			// Bind hover events
@@ -38,6 +39,7 @@
 				// Show / Hide controlbar on hover
 				this.bind( 'showPlayerControls', function(e, data){
 					_this.show();
+
 				});
 				this.bind( 'hidePlayerControls', function(){
 					_this.hide();
@@ -72,6 +74,7 @@
 			$interface.addClass( 'player-out' );
 			// Allow interface items to update:
 			this.getPlayer().triggerHelper('onHideControlBar', {'bottom' : 15} );
+
 		},
 		getComponent: function(){
 			if( !this.$el ) {

@@ -112,6 +112,10 @@
 		onPlayerSeekEnd: function () {
 			$( this ).trigger( 'seeked' );
 			this.seeking = false;
+		},
+
+		isVideoSiblingEnabled: function() {
+			return false;
 		}
 	};
 } )( mediaWiki, jQuery );

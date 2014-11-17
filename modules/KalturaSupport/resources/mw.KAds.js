@@ -173,7 +173,8 @@
 				};
 
 				_this.addSequenceProxyBinding( adType, adConfigWrapper, _this.getSequenceIndex( adType ) );
-			});
+			},
+			false, null, {enableCORS: _this.getConfig("enableCORS")});
 		},
 		/**
 		 * load and display an ad
@@ -322,7 +323,8 @@
 				}
 				_this.adPlayer.display( adsCuePointConf, doneCallback, adDuration );
 
-			});
+			},
+			false, null, {enableCORS: _this.getConfig("enableCORS")});
 		},
 
 		// Load all the ads per the $adConfig
@@ -363,7 +365,7 @@
 			// check if we are storing ads session:
 			if( this.embedPlayer.getKalturaConfig( this.confPrefix, 'storeSession' ) ){
 				// no object usage for this
-				$.cookie( this.confPrefix + '_' + key, value );
+				$.cookie( this.confPrefix + '_' + key, value, {path: '/'} );
 			}
 
 			if ( !this.embedPlayer[ this.confPrefix ] ) {
@@ -403,7 +405,7 @@
 					_this.setPersistentConfig( 'contentIndex', 0);
 				}
 				// always increment contentIndex ( starts on 1 ):
-				_this.setPersistentConfig( 'contentIndex', _this.getPersistentConfig( 'contentIndex') + 1 );
+				_this.setPersistentConfig( 'contentIndex', parseInt(_this.getPersistentConfig( 'contentIndex')) + 1 );
 				// check if we should play an ad:
 				if( _this.getPersistentConfig( 'contentIndex') >= startWith
 					&&
@@ -444,7 +446,8 @@
 							// play next ad
 							_this.displayAdNumAds( displayCount, adType, adConfig,  callback);
 						});
-					});
+					},
+					false, null, {enableCORS: _this.getConfig("enableCORS")});
 				}else {
 					_this.adPlayer.display( adConfig, function(){
 						// play next ad ( or continue to callback )
@@ -584,8 +587,9 @@
 					mw.AdLoader.load( _this.getAdUrl( adType ) , function( adDisplayConf ){
 						mw.log("KalturaAds loaded: " + adType );
 						loadQueueCount--;
-						addAdCheckLoadDone( adType,  $.extend({}, _this.getBaseAdConf( adType ), adDisplayConf ) );
-					});
+						addAdCheckLoadDone( adType,  $.extend({}, _this.getBaseAdConf( adType ), adDisplayConf ));
+					},
+					false, null, {enableCORS: _this.getConfig("enableCORS")});
 				} else {
 					// No async request
 					adConfigSet[ adType ] = _this.getBaseAdConf( adType );

@@ -147,12 +147,8 @@ mw.EmbedPlayerNative = {
 			$( this ).find( '.playerPoster' ).attr('src', posterSrc );
 		} else {
 			$( this ).append(
-				$('<img />').css({
-					'margin' : '0',
-					'width': '100%',
-					'height': '100%'
-				})
-				.attr( 'src', posterSrc)
+				$('<img />')
+					.attr( 'src', posterSrc)
 				.addClass('playerPoster')
 				.load(function(){
 					_this.applyIntrinsicAspect();
@@ -178,6 +174,9 @@ mw.EmbedPlayerNative = {
 				_this.ignoreNextNativeEvent = true;
 				_this.pause();
 				_this.updatePosterHTML();
+			}
+			if ( !(mw.isIOS7() && mw.isIphone())){
+				_this.changeMediaCallback = null;
 			}
 			callback();
 		});
@@ -346,6 +345,9 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		$.each( _this.nativeEvents, function( inx, eventName ){
+			if( mw.isIOS8() && mw.isIphone() && eventName === "seeking" ) {
+				return;
+			}
 			$( vid ).unbind( eventName + '.embedPlayerNative').bind( eventName + '.embedPlayerNative', function(){
 				// make sure we propagating events, and the current instance is in the correct closure.
 				if( _this._propagateEvents && _this.instanceOf == 'Native' ){
@@ -400,7 +402,11 @@ mw.EmbedPlayerNative = {
 		this.kPreSeekTime = _this.currentTime;
 
 		// Trigger preSeek event for plugins that want to store pre seek conditions.
-		this.triggerHelper( 'preSeek', percent );
+		var stopSeek = {value: false};
+		this.triggerHelper( 'preSeek', [percent, stopAfterSeek, stopSeek] );
+		if(stopSeek.value){
+			return;
+		}
 
 		this.seeking = true;
 		// Update the current time ( local property )
@@ -662,7 +668,7 @@ mw.EmbedPlayerNative = {
 					_this.setCurrentTime( seekTime, callback , callbackCount++ );
 				}
 			}
-		}, 5000);
+		}, ( mw.isIOS8() && mw.isIpad() ) ? 100 : 5000);
 
 		// Try to update the playerElement time:
 		try {
@@ -677,7 +683,7 @@ mw.EmbedPlayerNative = {
 		}
 
 		// Check for seeking state ( some player iOS / iPad can only seek while playing )
-		if(! vid.seeking || ( mw.isIOS8() && ! vid.playing ) ){
+		if(! vid.seeking || ( mw.isIOS8() && vid.paused ) ){
 			mw.log( "Error:: not entering seek state, play and wait for positive time" );
 			vid.play();
 			setTimeout(function(){
@@ -825,7 +831,7 @@ mw.EmbedPlayerNative = {
 				// empty out any existing sources:
 				$( vid ).empty();
 
-				if ( mw.isIOS7() ){
+				if ( mw.isIOS7() && mw.isIphone()){
 					vid.src = null;
 					var sourceTag = document.createElement('source');
 					sourceTag.setAttribute('src', src);
@@ -852,7 +858,7 @@ mw.EmbedPlayerNative = {
 
 					// keep going towards playback! if  switchCallback has not been called yet
 					// we need the "playing" event to trigger the switch callback
-					if ( $.isFunction( switchCallback ) ){
+					if (!mw.isIOS71() && $.isFunction(switchCallback) && !_this.isVideoSiblingEnabled()) {
 						vid.play();
 					} else {
 						_this.removeBlackScreen();
@@ -941,7 +947,7 @@ mw.EmbedPlayerNative = {
 
 				// issue the play request:
 				vid.play();
-				if ( mw.isIphone() ){
+				if ( mw.isIOS()){
 					setTimeout(function(){
 						handleSwitchCallback();
 					}, 100 );
@@ -1048,13 +1054,13 @@ mw.EmbedPlayerNative = {
 						$( _this ).hide();
 					}
 					// if it's iOS8 the player won't play
-					if( !mw.isIOS8() ) {
+					if ( !mw.isIOS8() ){
 						// update the preload attribute to auto
 						$( _this.getPlayerElement() ).attr('preload',"auto" );
 					}
 					// issue a play request
 					if( !_this.playing ) {
-						if( mw.isIOS8() ) {
+						if( mw.isIOS8() && mw.isIphone() ) {
 							setTimeout( function() {
 								vid.play();
 							}, 0);
@@ -1106,8 +1112,8 @@ mw.EmbedPlayerNative = {
 	* Toggle the Mute
 	* calls parent_toggleMute to update the interface
 	*/
-	toggleMute: function() {
-		this.parent_toggleMute();
+	toggleMute: function( forceMute ) {
+		this.parent_toggleMute( forceMute );
 		this.getPlayerElement();
 		if ( this.playerElement )
 			this.playerElement.muted = this.muted;
@@ -1238,7 +1244,7 @@ mw.EmbedPlayerNative = {
 
 		// Clear the PreSeek time
 		this.kPreSeekTime = null;
-		
+
 		// Trigger the html5 action on the parent
 		if( this.seeking ){
 			// HLS safari triggers onseek when its not even close to the target time,
@@ -1400,7 +1406,13 @@ mw.EmbedPlayerNative = {
 		var _this = this;
 		setTimeout(function(){
 			if( _this.triggerNetworkErrorsFlag ){
-				_this.triggerHelper( 'embedPlayerError' );
+				var data = [];
+				if ( event && event.currentTarget && event.currentTarget.error ) {
+					data[ 'errorCode' ] = event.currentTarget.error.code;
+					mw.log( 'EmbedPlayerNative::_onerror: MediaError code: ' + data.errorCode);
+				}
+
+				_this.triggerHelper( 'embedPlayerError', [ data ] );
 			}
 		}, 3000);
 	},
@@ -1476,7 +1488,18 @@ mw.EmbedPlayerNative = {
 	 * @returns {boolean} true if seek event is fake, false if valid
 	 */
 	isFakeHlsSeek: function() {
-		return ( (Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2) || ( mw.isIpad() && this.currentSeekTargetTime > 0.01 ) );
-}
+		return ( (Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2) || ( mw.isIpad() && this.currentSeekTargetTime > 0.01 && !mw.isIOS8() ) );
+	},
+
+	isVideoSiblingEnabled: function() {
+		if( mw.isIphone() || mw.isAndroid2() || mw.isAndroid40() || mw.isMobileChrome()
+			||
+			( mw.isIpad() && ! mw.isIpad3() )
+			){
+			return false;
+		} else {
+			return this.parent_isVideoSiblingEnabled();
+		}
+	}
 };
 } )( mediaWiki, jQuery );

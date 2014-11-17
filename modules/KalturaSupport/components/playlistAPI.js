@@ -21,8 +21,9 @@
 			'hideClipPoster': true,
 			'loop': false,
 			'overflow': false,
-			'cssPath': 'playList.css',
+			'cssFileName': 'modules/KalturaSupport/components/playlist/playList.css',
 			'showControls': true,
+			'MaxClips': 25,
 			'selectedIndex': 0
 		},
 
@@ -42,6 +43,9 @@
 			if ( this.getConfig( 'includeInLayout' ) === false){ // support hidden playlists - force onPage and hide its div.
 				this.setConfig( 'onPage', true );
 			}
+			//Backward compatibility setting - set autoplay on embedPlayer instead of playlist
+			this.getPlayer().autoplay = (this.getConfig( 'autoPlay' ) == true);
+
 			this.setConfig( 'horizontalHeaderHeight', 43 );
 			this.addBindings();
 			this.loadPlaylists();
@@ -53,8 +57,15 @@
 			this.bind( 'playerReady', function ( e, newState ) {
 				if (_this.playlistSet.length > 0){
 					_this.selectPlaylist(_this.currentPlaylistIndex);
+					//Revert block player display after selecting playlist entry
+					_this.getPlayer()['data-blockPlayerDisplay'] = false;
 				}
 				_this.unbind( 'playerReady'); // we want to select the playlist only the first time the player loads
+			});
+
+			this.bind( 'mediaError', function ( e ) {
+				_this.loadingEntry = null; // reset loadingEntry if we got a media error (also media loading error will trigger this event)
+				_this.onEnable();
 			});
 
 			// API support + backward compatibility
@@ -149,13 +160,19 @@
 					this.playlistSet.push( embedPlayer.kalturaPlaylistData[ playlistId ] );
 				}
 			}
+			// update playlist names if set in Flashvars
+			for (var i = 0; i < this.playlistSet.length; i++) {
+				if (this.getConfig('kpl' + i + 'Name')) {
+					this.playlistSet[i].name = this.getConfig('kpl' + i + 'Name');
+				}
+			}
 		},
 
 		// prepare the data to be compatible with KBaseMediaList
 		addMediaItems: function(itemsArr){
 			for (var i = 0; i < itemsArr.length; i++){
 				var item = itemsArr[i];
-				var customData = (item.partnerData  && item.adminTags !== 'image') ? JSON.parse(item.partnerData) :  {};
+				var customData = (item.partnerData  && item.adminTags !== 'image') ? mw.parseJSON(item.partnerData, {}) :  {};
 				var title = item.name || customData.title;
 				var description = item.description || customData.desc;
 				var thumbnailUrl = item.thumbnailUrl || customData.thumbUrl || this.getThumbUrl(item);
@@ -179,7 +196,7 @@
 		},
 
 		// play a clip according to the passed index. If autoPlay is set to false - the clip will be loaded but not played
-		playMedia: function(clipIndex, autoPlay){
+		playMedia: function(clipIndex){
 			this.setSelectedMedia(clipIndex);              // this will highlight the selected clip in the UI
 			this.setConfig("selectedIndex", clipIndex);    // save it to the config so it can be retrieved using the API
 			this.embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')} ); // for API backward compatibility
@@ -193,12 +210,24 @@
 				return ;
 			}
 
-			// iOS devices have a autoPlay restriction, we issue a raw play call on
+			// Check if entry id already matches ( and is loaded )
+			if( embedPlayer.kentryid == id ){
+				if( this.loadingEntry ){
+					mw.log("Error: PlaylistAPI is loading Entry, possible double playClip request");
+					return ;
+				}
+			}
+
+			// mobile devices have a autoPlay restriction, we issue a raw play call on
 			// the video tag to "capture the user gesture" so that future
 			// javascript play calls can work
-			if( embedPlayer.getPlayerElement() && embedPlayer.getPlayerElement().load ){
+			if( mw.isMobileDevice() && embedPlayer.firstPlay){
 				mw.log("Playlist:: issue load call to capture click for iOS");
-				embedPlayer.getPlayerElement().load();
+				try{
+					embedPlayer.getPlayerElement().load();
+				}catch (e){
+					mw.log("Playlist:: could not load video - possibly restricted video");
+				}
 			}
 
 			// Send notifications per play request
@@ -211,36 +240,30 @@
 				eventToTrigger = 'playlistMiddleEntry';
 			}
 
-			// Check if entry id already matches ( and is loaded )
-			if( embedPlayer.kentryid == id ){
-				if( this.loadingEntry ){
-					mw.log("Error: PlaylistAPI is loading Entry, possible double playClip request");
-					return ;
-				}
-			}
-
-			this.loadingEntry = id; // Update the loadingEntry flag
 			// Listen for change media done
 			$( embedPlayer).unbind( 'onChangeMediaDone' + this.bindPostFix ).bind( 'onChangeMediaDone' + this.bindPostFix, function(){
 				mw.log( 'mw.PlaylistAPI:: onChangeMediaDone' );
 				embedPlayer.triggerHelper( eventToTrigger );
-				_this.loadingEntry = false; // Update the loadingEntry flag
-				if( _this.firstPlay ){
-					_this.firstPlay = false;
-				}
-				if (autoPlay){
-					embedPlayer.play();     // auto play
+				_this.loadingEntry = false; // Update the loadingEntry flag//
+				// play clip that was selected when autoPlay=false. if autoPlay=true, the embedPlayer will do that for us.
+				if (!_this.getConfig("autoPlay")){
+					embedPlayer.play();
 				}
 			});
 			mw.log("PlaylistAPI::playClip::changeMedia entryId: " + id);
 
-			// Make sure its in a playing state when change media is called if we are autoContinuing:
-			if( this.getConfig('autoContinue') && !embedPlayer.firstPlay ){
-				embedPlayer.stopped = embedPlayer.paused = false;
+			if (!this.firstPlay && this.getConfig('hideClipPoster') === true && !mw.isIphone()){
+				mw.setConfig('EmbedPlayer.HidePosterOnStart', true);
 			}
 
 			// Use internal changeMedia call to issue all relevant events
-			embedPlayer.sendNotification( "changeMedia", {'entryId' : id, 'playlistCall': true} );
+			//embedPlayer.changeMediaStarted = false;
+			if (!this.firstPlay){
+				this.loadingEntry = id; // Update the loadingEntry flag
+				embedPlayer.sendNotification( "changeMedia", {'entryId' : id, 'playlistCall': true} );
+			}else{
+				embedPlayer.triggerHelper( eventToTrigger );
+			}
 
 			// Add playlist specific bindings:
 			_this.addClipBindings(clipIndex);
@@ -248,8 +271,8 @@
 			// Restore onDoneInterfaceFlag
 			embedPlayer.onDoneInterfaceFlag = true;
 
-			if (!this.firstPlay && this.getConfig('hideClipPoster') === true){
-				mw.setConfig('EmbedPlayer.HidePosterOnStart', true);
+			if( this.firstPlay ){
+				this.firstPlay = false;
 			}
 		},
 
@@ -266,7 +289,7 @@
 		},
 
 		playNext: function(){
-			if (this.isDisabled){
+			if (this.isDisabled || this.loadingEntry){
 				return;
 			}
 			if( this.getConfig("loop") == true && this.currentClipIndex != null && this.currentClipIndex === this.mediaList.length - 1 ){ // support loop
@@ -281,7 +304,7 @@
 		},
 
 		playPrevious: function(){
-			if (this.isDisabled){
+			if (this.isDisabled || this.loadingEntry){
 				return;
 			}
 			if (this.currentClipIndex != null && this.currentClipIndex > 0){
@@ -295,6 +318,7 @@
 		// when we have multiple play lists - build the UI to represent it: combobox for playlist selector
 		setMultiplePlayLists: function(){
 			var _this = this;
+			var maxClips = parseInt(this.getConfig('MaxClips'));
 			if (this.getComponent().find(".playlistSelector").length == 0){ // UI wasn't not created yet
 				this.getComponent().find(".k-vertical").find(".playlistTitle, .playlistDescription").addClass("multiplePlaylists");
 				this.getComponent().find(".dropDownIcon").on("click", function(){
@@ -306,10 +330,12 @@
 				}).show();
 				this.getMedialistComponent().prepend('<div class="playlistSelector"></div>');
 				$.each(this.playlistSet, function (i, el) {
+					var numOfClips = el.content.split(",").length;
+					numOfClips = numOfClips > maxClips ? maxClips : numOfClips; // support MaxClips Flashvar
 					if (_this.getLayout() === "vertical"){
-						_this.getComponent().find(".playlistSelector").append('<br><div data-index="'+i+'" class="playlistItem"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists">' + el.content.split(",").length + ' '+gM( 'mwe-embedplayer-videos')+'</span></div>');
+						_this.getComponent().find(".playlistSelector").append('<br><div data-index="' + i + '" class="playlistItem"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists">' + numOfClips + ' ' + gM('mwe-embedplayer-videos') + '</span></div>');
 					}else{
-						_this.getComponent().find(".playlistSelector").append('<div data-index="'+i+'" class="playlistItem k-horizontal"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists">' + el.content.split(",").length + ' '+gM( 'mwe-embedplayer-videos')+'</span></div>');
+						_this.getComponent().find(".playlistSelector").append('<div data-index="' + i + '" class="playlistItem k-horizontal"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists">' + numOfClips + ' ' + gM('mwe-embedplayer-videos') + '</span></div>');
 					}
 				});
 				this.getComponent().find(".playlistItem").on("click", function(){
@@ -374,17 +400,19 @@
 			var _this = this;
 			this.embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')} ); // for API backward compatibility
 			this.mediaList = [];
-			this.addMediaItems(this.playlistSet[playlistIndex].items);   // prepare the data to be compatible with KBaseMediaList
+			var items = this.playlistSet[playlistIndex].items;
+			items = items.length > parseInt(this.getConfig('MaxClips')) ? items.slice(0, parseInt(this.getConfig('MaxClips'))) : items; // support MaxClips Flashvar
+			this.addMediaItems(items);   // prepare the data to be compatible with KBaseMediaList
 			this.getMedialistHeaderComponent().empty();
 			if (this.getLayout() === "vertical"){
 				if ( this.getConfig('containerPosition') === "left" || this.getConfig('containerPosition') === "right" || this.getConfig('onPage') === true){
-					this.getMedialistHeaderComponent().prepend('<span class="playlistTitle">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription">' + this.playlistSet[playlistIndex].items.length + ' '+gM( 'mwe-embedplayer-videos')+'</span>');
+					this.getMedialistHeaderComponent().prepend('<span class="playlistTitle">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription">' + items.length + ' ' + gM('mwe-embedplayer-videos') + '</span>');
 					this.getMedialistHeaderComponent().prepend('<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist') + '"></div>');
 				}else{
 					this.getMedialistHeaderComponent().hide();
 				}
 			}else{
-				this.getMedialistHeaderComponent().prepend('<span class="playlistTitle horizontalHeader">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription horizontalHeader">(' + this.playlistSet[playlistIndex].items.length + ' '+gM( 'mwe-embedplayer-videos')+')</span>');
+				this.getMedialistHeaderComponent().prepend('<span class="playlistTitle horizontalHeader">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription horizontalHeader">(' + items.length + ' ' + gM('mwe-embedplayer-videos') + ')</span>');
 				this.getMedialistHeaderComponent().prepend('<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist') + '"></div>');
 			}
 			if (this.getConfig('showControls') === true){
@@ -397,18 +425,17 @@
 			if (this.firstLoad){
 				if ( this.getConfig( 'initItemEntryId' ) ){ // handle initItemEntryId
 					// find selected item index
-					var items = this.playlistSet[this.currentPlaylistIndex].items;
 					var found = false;
 					for (var i=0; i<items.length; i++){
 						if (items[i].id === this.getConfig( 'initItemEntryId' )){
-							this.playMedia(i, this.getConfig( 'autoPlay' ));
+							this.playMedia(i);
 							found = true;
 							break;
 						}
 					}
 				}
 				if ( (this.getConfig( 'initItemEntryId' ) && !found) || !(this.getConfig( 'initItemEntryId' )) ){
-					this.playMedia( this.getConfig('selectedIndex'), this.getConfig('autoPlay'));
+					this.playMedia( this.getConfig('selectedIndex'));
 				}
 				this.firstLoad = false;
 			}

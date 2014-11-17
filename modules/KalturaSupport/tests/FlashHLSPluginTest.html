@@ -29,7 +29,8 @@
 </div>
 <script>
 	mw.setConfig( 'Kaltura.LeadWithHTML5' , true );
-	mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
+	mw.setConfig('LeadWithHLSOnFlash', true);
+
 	$('#generate').click( function() {
 		mw.setConfig('EmbedPlayer.ReplaceSources', [
 			{
@@ -42,17 +43,6 @@
 			"wid": "_524241",
 			"uiconf_id": 21648442,
 			"flashvars": {
-				"kdpVars": {
-					"sourceType": "url",
-					"ignoreStreamerTypeForSeek": "true",
-					"KalturaHLS": {
-						plugin: "true",
-						//pluginURL: '../../EmbedPlayer/binPlayers/kaltura-player/plugins/KalturaHLSPlugin.swf',
-						asyncInit: "true",
-						loadingPolicy: "preInitialize",
-						//waitForSecondLoad: "false"
-					}
-				},
 				"confFilePath": "{libPath}/modules/KalturaSupport/tests/confFiles/jsonConfig.json"
 			},
 			"cache_st": 1387835968

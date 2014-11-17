@@ -49,7 +49,7 @@ mw.KApi.prototype = {
 	getWidgetId: function( ){
 		return this.widgetId;
 	},
-	doRequest : function( requestObject, callback ,skipKS ){
+	doRequest : function( requestObject, callback ,skipKS, errorCallback ){
 		var _this = this;
 		var param = {};
 		// Convert into a multi-request if no session is set ( ks will be added below )
@@ -102,12 +102,12 @@ mw.KApi.prototype = {
 		// ideally this could be part of the multi-request but could not get it to work
 		// see commented out code above.
         if (skipKS) {
-            _this.doApiRequest( param, callback);
+            _this.doApiRequest( param, callback, errorCallback);
         }else {
             this.getKS( function( ks ){
                 param['ks'] = ks;
                 // Do the getJSON jQuery call with special callback=? parameter:
-                _this.doApiRequest( param, callback);
+                _this.doApiRequest( param, callback, errorCallback);
             });
         }
 
@@ -124,7 +124,7 @@ mw.KApi.prototype = {
 		// Add the Kaltura session ( if not already set )
 		var ksParam = {
 				'action' : 'startwidgetsession',
-				'widgetId': '_' + this.widget_id
+				'widgetId': this.widgetId
 		};
 		// add in the base parameters:
 		var param = $.extend( { 'service' : 'session' }, this.baseParam, ksParam );
@@ -133,8 +133,9 @@ mw.KApi.prototype = {
 			callback( _this.ks );
 		});
 	},
-	doApiRequest: function( param, callback ){
+	doApiRequest: function( param, callback, errorCallback ){
 		var _this = this;
+
 		// Remove service tag ( hard coded into the api url )
 		var serviceType = param['service'];
 		delete param['service'];
@@ -147,6 +148,8 @@ mw.KApi.prototype = {
 		// Build the request url with sorted params:
 		var requestURL = _this.getApiUrl( serviceType ) + '&' + $.param( param );
 
+
+
 		var globalCBName = 'kapi_' + _this.getSignature( param );
 		while( window[ globalCBName ] ){
 			mw.log("Error global callback name already exists: " + globalCBName );
@@ -155,6 +158,7 @@ mw.KApi.prototype = {
 			globalCBName = globalCBName + this.callbackIndex;
 		}
 		window[ globalCBName ] = function( data ){
+			clearTimeout(timeoutError);
 			// issue the local scope callback:
 			if( callback ){
 				callback( data );
@@ -163,6 +167,13 @@ mw.KApi.prototype = {
 			// null this global function name
 			window[ globalCBName ] = null;
 		};
+		var timeoutError = setTimeout(function(){
+			window[ globalCBName ] = null;
+			if (errorCallback){
+				errorCallback();
+			}
+			mw.log("Timeout occur in doApiRequest:" + requestURL);
+		},mw.getConfig("Kaltura.APITimeout"));
 		requestURL+= '&callback=' + globalCBName;
 		mw.log("kAPI:: doApiRequest: " + requestURL);
 		$.getScript( requestURL );

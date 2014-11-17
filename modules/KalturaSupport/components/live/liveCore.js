@@ -89,7 +89,7 @@
 
 			this.bind( 'liveStreamStatusUpdate', function( e, onAirObj ) {
 				//check for pending autoPlay
-				if ( onAirObj.onAirStatus && embedPlayer.firstPlay && embedPlayer.autoplay ) {
+				if ( onAirObj.onAirStatus && embedPlayer.firstPlay && embedPlayer.autoplay && embedPlayer.canAutoPlay() ) {
 					embedPlayer.play();
 				}
 
@@ -415,7 +415,10 @@
 					callback( onAirStatus );
 				}
 				embedPlayer.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : onAirStatus } );
-			},mw.getConfig("SkipKSOnIsLiveRequest") );
+			},mw.getConfig("SkipKSOnIsLiveRequest"),function(){
+				mw.log("Error occur while trying to check onAir status");
+				embedPlayer.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : false } );
+			} );
 		},
 
 		getKalturaClient: function() {

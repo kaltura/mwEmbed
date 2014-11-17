@@ -66,9 +66,9 @@ $sendNotificationActions = array (
 				'availability' => 'kdp' 
 		),
 		'enableGui' => array (
-				'notificationData' => 'guiEnabled: true / false, enableType: full / controls',
-				'desc' => 'Enable/disable GUI',
-				'availability' => 'kdp' 
+				'notificationData' => '{ guiEnabled: true / false, enableType: full / controls }',
+				'desc' => 'Enable or Disable GUI',
+				'example' => '../modules/KalturaSupport/tests/EnableGui.html'
 		),
 		'cancelAlerts' => array (
 				'notificationData' => 'None',
@@ -142,9 +142,65 @@ $methodDocs = array (
 				'params' => array (
 						'settings' => array (
 								'type' => 'kWidget.settingsObject',
-								'desc' => 'Object of settings to be used in embedding.' 
-						) 
-				) 
+								'desc' => 'Object of settings to be used in embedding.'
+						)
+				)
+		),
+		'kWidget.isMobileDevice' => array(
+				'desc' => 'If user agent identifies as mobile device ( android, iOS or windows phone )',
+				'returns' => array (
+						'type' => 'boolean',
+						'desc' => 'true|false'
+				),
+		),
+		'kWidget.supportsHTML5' => array(
+				'desc' => 'If the device or browser supports HTML5',
+				'returns' => array (
+						'type' => 'boolean',
+						'desc' => 'true|false'
+				),
+		),
+		'kWidget.supportsFlash' => array(
+				'desc' => 'If the device or browser supports Flash ( version 10 and above )',
+				'returns' => array (
+						'type' => 'boolean',
+						'desc' => 'true|false'
+				),
+		),
+		'kWidget.isIOS' => array (
+				'desc' => 'If user agent identifies as iOS device',
+				'returns' => array (
+						'type' => 'boolean',
+						'desc' => 'true|false'
+				),
+		),
+		'kWidget.isIE' => array(
+				'desc' => "If user agent identifies as Internet Explorer browser",
+				'returns' => array (
+						'type' => 'boolean',
+						'desc' => 'true|false'
+				),
+		),
+		'kWidget.isIE8' => array(
+				'desc' => "If user agent identifies as Internet Explorer 8 browser",
+				'returns' => array (
+						'type' => 'boolean',
+						'desc' => 'true|false'
+				),
+		),
+		'kWidget.isAndroid' => array(
+				'desc' => "If user agent identifies as Android device",
+				'returns' => array (
+						'type' => 'boolean',
+						'desc' => 'true|false'
+				),
+		),
+		'kWidget.isWindowsDevice' => array(
+				'desc' => "If user agent identifies as Windows Phone device",
+				'returns' => array (
+						'type' => 'boolean',
+						'desc' => 'true|false'
+				),
 		),
 		'kWidget.addReadyCallback' => array (
 				'desc' => 'Adds a ready callback to be called after the KDP or HTML5 player is ready.',

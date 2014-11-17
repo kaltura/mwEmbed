@@ -102,6 +102,7 @@
         open: function(){
         	var _this = this;
         	this.$el.addClass('open');
+	        $(".ui-tooltip").hide();
         	// Bind to click event and close the menu
             if( this.options.closeOnFocusOut ) {
                 setTimeout(function(){

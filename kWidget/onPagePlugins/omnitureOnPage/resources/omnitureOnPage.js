@@ -234,8 +234,8 @@ kWidget.addReadyCallback( function( playerId ){
 			var trackEvents = ['OPEN', 'PLAY', 'STOP', 'SECONDS', 'MILESTONE'];
 			var monitorCount = 0;
 			var trackedClose = false;
-			s.Media.autoTrack= true;
-			s.Media.trackWhilePlaying = true;
+			s.Media.autoTrack= typeof this.getConfig('autoTrack') == 'undefined' ? true : this.getConfig('autoTrack') ;
+			s.Media.trackWhilePlaying = typeof this.getConfig('trackWhilePlaying')  == 'undefined' ? true : this.getConfig('trackWhilePlaying');
 			s.Media.trackMilestones="25,50,75";
 			s.Media.monitor = function ( s, media ) {
 				var inArray = false;

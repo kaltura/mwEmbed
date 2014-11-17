@@ -115,7 +115,7 @@ require_once( realpath( dirname( __FILE__ ) ) . '/api_evaluates.php' );
 			$o.='<span class="key">'. $key . '</span><br>';
 			$o.= $var['desc'];
 			if( isset( $var['example'] ) && $var['example'] != '' ){
-				$o.= '<br><a href="'. $var['example'] . '" target="_blank">Live Example</a>';
+				$o.= '<br><a href="'. $var['example'] . '" target="_blank">Usage Example</a>';
 			}
 			if(  isset( $var['type'] ) ){
 				$o.='<br><span class="type">Type</span>: <br>&nbsp;&nbsp;&nbsp;&nbsp;' .$var['type'];
@@ -270,6 +270,9 @@ The kWidget API is available after you include the Kaltura player library. kWidg
 After you include the Kaltura player library, the following kWidget API is available:
 <div class="docblock">
 	<?php echo getDocs( array( 'kWidget.embed', 'kWidget.thumbEmbed', 'kWidget.getKalturaThumbUrl','kWidget.addReadyCallback','kWidget.destroy' ) ) ?>
+	<h3 class="linkable" id="kwidget-feature-and-user-agent"> User Agent and Feature Detection </h2>
+	<?php echo getDocs( array( 'kWidget.isMobileDevice', 'kWidget.supportsHTML5', 'kWidget.supportsFlash','kWidget.isIOS' ,'kWidget.isIE','kWidget.isIE8', 'kWidget.isAndroid','kWidget.isWindowsDevice') ) ?>
+	<h3 class="linkable" id="kwidget-settingsObject"> Settings Embed Object:</h2>
 	<?php echo getObjectDocs( array( 'kWidget.settingsObject' ) ) ?>
 </div><br><br>
 <a name="kWidgetApi"></a>
@@ -282,12 +285,13 @@ The Kaltura Server API offers minimal object validation, in exchange for being m
 Creating a kWidget API object, issue a playlist request, log the result:
 <pre class="prettyprint linenums">
 new kWidget.api( { 'wid' : '_243342', })
-	.doRequest({'service':'playlist', 'action': 'execute', 'id': '1_e387kavu'}, 
-		function( data ){
-			console.log( data );
-		}
-	);
-</pre>
+.doRequest({'service':'playlist', 'action': 'execute', 'id': '1_e387kavu'}, 
+	function( data ){
+		console.log( data );
+	}
+);
+</pre> 
+For more examples see the <a href="../kWidget/tests/kWidget.api.html">kWidget.api test page.</a>
 <div class="docblock">
 	<?php echo getDocs('kWidget.api' ) ?>
 	<?php echo getObjectDocs( array( 'kWidget.apiOptions' ) ) ?>
@@ -438,9 +442,10 @@ echo '<div class="docblock">' .
 ?>
 <a name="kBind-desc"></a>
 <h4>3. Registering to a player event</h4>
-<p>Use the <b>kBind</b> method to add listen for a specific notification that something happened in the player, 
+<p>Use the <b>kBind</b> method to add listen for a specific notification that something happened in the player,
 such as the video is playing or is paused.</p>
 <?php echo getDocs( array( 'kBind' ) ) ?>
+
 <br><br>Code sample:<br>
 <pre class="prettyprint linenums">
 kWidget.addReadyCallback(function( playerId ){

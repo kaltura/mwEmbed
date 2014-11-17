@@ -36,6 +36,8 @@
 
 		// flag for using a chromeless player - move control to KDP DoubleClick plugin
 		isChromeless: false,
+		 //flag for using native mobile IMA SDK
+		isNativeSDK: false,
 		// for Chromeless only: save entry duration during midrolls so we can update it when midroll is finished
 		entryDuration: null,
 
@@ -116,8 +118,17 @@
 			}
 
 			//native browser on Android 4.4 has "Chrome" in it, so this is the "new" way to test its user agent
-			if ( mw.isAndroid44() && mw.isAndroidChromeNativeBrowser() ) {
+			if ( mw.isAndroid44() && mw.isAndroidChromeNativeBrowser() && !mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
 				mw.log("DoubleClick::user agent not supported, return" );
+				callback();
+				return;
+			}
+			if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
+				_this.isNativeSDK = true;
+				_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
+					_this.bindChromelessEvents();
+				});
+				_this.addManagedBinding();
 				callback();
 				return;
 			}
@@ -140,6 +151,11 @@
 					_this.embedPlayer.bindHelper( 'volumeChanged' + this.bindPostfix, function(event, percent){
 						mw.log("DoubleClick::chromeless volumeChanged: " + percent );
 						_this.embedPlayer.setPlayerElementVolume( percent );
+					});
+					_this.embedPlayer.bindHelper( 'Kaltura_SendNotification' + this.bindPostfix, function(event, notificationName, notificationData){
+						if (notificationName === "doPause"){
+							_this.embedPlayer.getPlayerElement().pause();
+						}
 					});
 					_this.addManagedBinding();
 					callback();
@@ -195,8 +211,11 @@
 			if ( flashVars['adTagUrl'] ){
 				flashVars['adTagUrl'] = escape(flashVars['adTagUrl']); // escape adTagUrl to prevent Flash string parsing error
 			}
+			if (flashVars['countdownText']) {
+				flashVars['countdownText'] = escape(flashVars['countdownText']); // escape countdownText to support & and ' characters
+			}
 			//we shouldn't send these params, they are unnecessary and break the flash object
-			var ignoredVars = ['path', 'customParams'];
+			var ignoredVars = ['path', 'customParams', 'preSequence', 'postSequence' ];
 			for ( var i=0; i< ignoredVars.length; i++ ) {
 				delete flashVars[ignoredVars[i]];
 			}
@@ -290,27 +309,27 @@
 					// Setup the restore callback
 					_this.postRollCallback = callback;
 					//no need to request ads
-					if (!_this.isLinear || _this.allAdsCompletedFlag){
+					if ( !_this.isLinear || _this.allAdsCompletedFlag || _this.adLoaderErrorFlag ){
 						_this.restorePlayer(true);
 					}
 				}
 			});
-
-			if( mw.isIpad() ) {
-				var bindPostFix = ".doubleClickSequenceCheck";
-				_this.embedPlayer.bindHelper( 'playing' + bindPostFix, function () {
-					// Pause video element only if it's not 'overlay'
-					if( _this.isLinear === false ) {
-						return;
+			_this.embedPlayer.bindHelper('Kaltura_SendNotification' + this.bindPostfix, function (event, notificationName, notificationData) {
+				if (notificationName === "doPause") {
+					_this.embedPlayer.paused = true;
+					$(_this.embedPlayer).trigger("onPlayerStateChange", ["pause", _this.embedPlayer.currentState]);
+					if (_this.isChromeless) {
+						_this.embedPlayer.getPlayerElement().sendNotification("pauseAd");
 					}
-					_this.embedPlayer.unbindHelper( 'playing' + bindPostFix );
-					if( !mw.isIOS8() ) {
-						_this.embedPlayer.stopEventPropagation();
-						_this.embedPlayer.getPlayerElement().pause();
-						_this.embedPlayer.stopMonitor();
+				}
+				if (notificationName === "doPlay") {
+					_this.embedPlayer.paused = false;
+					$(_this.embedPlayer).trigger("onPlayerStateChange", ["play", _this.embedPlayer.currentState]);
+					if (_this.isChromeless) {
+						_this.embedPlayer.getPlayerElement().sendNotification("resumeAd");
 					}
-				});
-			}
+				}
+			});
 		},
 		/**
 		 * Get the content video tag
@@ -333,7 +352,7 @@
 		},
 		getAdContainer: function(){
 			if( !$('#' + this.getAdContainerId() ).length ){
-				this.embedPlayer.getInterface().append(
+				this.embedPlayer.getVideoHolder().after(
 					$('<div />')
 						.attr( 'id',  this.getAdContainerId() )
 						.css({
@@ -355,6 +374,9 @@
 		},
 		getAdContainerId: function(){
 			return 'adContainer' + this.embedPlayer.id;
+		},
+		hideAdContainer: function () {
+			$("#" + this.getAdContainerId()).hide();
 		},
 		getAdDisplayContainer: function(){
 			//  Create the ad display container. Use an existing DOM element
@@ -448,6 +470,12 @@
 				adsRequest.adTagUrl = encodeURIComponent(adsRequest.adTagUrl);
 				_this.embedPlayer.getPlayerElement().sendNotification( 'requestAds', adsRequest );
 				mw.log( "DoubleClick::requestAds: Chromeless player request ad from KDP plugin");
+				return;
+			}
+
+			if ( this.isNativeSDK ) {
+				this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', this.getConfig( 'adTagUrl' ));
+				mw.log( "DoubleClick::requestAds: Native SDK player request ad ");
 				return;
 			}
 
@@ -672,7 +700,7 @@
 					_this.startedAdPlayback();
 				}
 				_this.duration= _this.adsManager.getRemainingTime();
-				if (_this.duration > -1) {
+				if (_this.duration >= 0) {
 					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration' , _this.duration );
 				}
 				var size = _this.getPlayerSize();
@@ -745,6 +773,9 @@
 
 					// Monitor ad progress
 					_this.monitorAdProgress();
+
+					// Send a notification to trigger associated events and update ui
+					_this.embedPlayer.sendNotification('doPlay');
 				}
 			} );
 			adsListener( 'PAUSED', function(){
@@ -776,6 +807,10 @@
 				}
 				if ( _this.currentAdSlotType != 'postroll') {
 					_this.restorePlayer();
+
+					if( mw.isIOS8() && mw.isIpad()  ) {
+						$( _this.embedPlayer.getPlayerElement() ).attr('preload',"metadata" );
+					}
 				}
 			});
 			adsListener( 'ALL_ADS_COMPLETED', function(){
@@ -784,9 +819,10 @@
 				// set the allAdsCompletedFlag to not call restore player twice
 				_this.allAdsCompletedFlag = true;
 				if( _this.contentDoneFlag ){
-
-//				// restore the player but don't play content since ads are done:
+					// restore the player but don't play content since ads are done:
 					_this.restorePlayer( true );
+				} else {
+					_this.hideAdContainer();
 				}
 			});
 		},
@@ -807,7 +843,9 @@
 					_this.prevSlotType = _this.currentAdSlotType;
 				}
 				_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', adInfo.duration );
-				$(".mwEmbedPlayer").hide();
+				if ( _this.isChromeless ) {
+					$(".mwEmbedPlayer").hide();
+				}
 				if ( _this.getConfig( 'countdownText' ) && _this.embedPlayer.getInterface().find(".ad-notice-label").length == 0){
 					// Add the notice target:
 					_this.embedPlayer.getVideoHolder().append(
@@ -815,12 +853,14 @@
 							.addClass( 'ad-component ad-notice-label' )
 					);
 				}
+				// Send a notification to trigger associated events and update ui
+				_this.embedPlayer.paused = false;
 			},'adStart', true);
 
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				_this.isLinear = adInfo.isLinear;
-				if (!_this.isLinear){
+				if (!_this.isLinear && _this.isChromeless ){
 					$(".mwEmbedPlayer").hide();
 				}
 				// dispatch adOpen event
@@ -842,7 +882,9 @@
 			},'displayCompanion', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
-				_this.restorePlayer(true);
+				setTimeout(function(){
+					_this.restorePlayer(true);
+				},0);
 				if (_this.currentAdSlotType == 'postroll'){
 					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', _this.entryDuration );
 					_this.embedPlayer.triggerHelper( 'timeupdate', 0);
@@ -983,12 +1025,16 @@
 						case 'doPause':
 							_this.adPaused = true;
 							_this.adsManager.pause();
+							embedPlayer.paused = true;
 							$( embedPlayer ).trigger( 'onpause' );
+							$( embedPlayer ).trigger( "onPlayerStateChange", ["pause", embedPlayer.currentState] );
 							break;
 						case 'doPlay':
 							_this.adPaused = false;
 							_this.adsManager.resume();
+							embedPlayer.paused = false;
 							$( embedPlayer ).trigger( 'onplay' );
+							$( embedPlayer ).trigger( "onPlayerStateChange", ["play", embedPlayer.currentState] );
 							_this.monitorAdProgress();
 							break;
 						case 'doStop':
@@ -1028,6 +1074,10 @@
 			_this.adPreviousTimeLeft = _this.adsManager.getRemainingTime();
 
 			// Update sequence property per active ad:
+			if (_this.adsManager.getRemainingTime()<0){
+				return;
+			}
+			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  _this.adsManager.getRemainingTime() );
 			if (_this.adsManager.getRemainingTime() > 0){
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  parseInt(_this.adsManager.getRemainingTime()) );
 			}
@@ -1035,9 +1085,11 @@
 				_this.duration = _this.adsManager.getRemainingTime();
 			}  else {
 				var currentTime = _this.duration - _this.adsManager.getRemainingTime();
-				_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  _this.duration );
-				_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead',  currentTime);
-				_this.embedPlayer.updatePlayHead( currentTime/ _this.duration );
+				if (currentTime >=0){
+					_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  _this.duration );
+					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead',  currentTime);
+					_this.embedPlayer.updatePlayHead( currentTime/ _this.duration );
+				}
 			}
 			if (_this.getConfig('countdownText')){
 				this.embedPlayer.getInterface().find(".ad-notice-label").text(_this.getConfig('countdownText'));
@@ -1074,7 +1126,7 @@
 				this.embedPlayer.getPlayerElement().redrawObject(50);
 			}else{
 				if (_this.isLinear || _this.adLoaderErrorFlag){
-					$("#" + _this.getAdContainerId()).hide();
+					_this.hideAdContainer();
 				}
 			}
 			this.embedPlayer.sequenceProxy.isInSequence = false;
@@ -1088,6 +1140,7 @@
 			} else { // do a manual restore:
 				// restore player with normal events:
 				this.embedPlayer.adTimeline.restorePlayer( null, adPlayed);
+				this.embedPlayer.setDuration(this.embedPlayer.duration);
 				// managed complete ... call clip done if content complete.
 				if( onContentComplete ){
 					if (_this.postRollCallback){
@@ -1101,7 +1154,7 @@
 						_this.embedPlayer.setCurrentTime(_this.timeToReturn);
 						_this.timeToReturn = null;
 					}
-					this.embedPlayer.setDuration(this.embedPlayer.duration);
+
 					this.embedPlayer.play();
 				}
 			}
@@ -1126,7 +1179,10 @@
 					this.restorePlayer(true);
 				}
 				this.removeAdContainer();
-				this.adsLoader.destroy();
+				if ( this.adsLoader ) {
+					this.adsLoader.destroy();
+				}
+
 			}else{
 				if ( !this.isLinear ){
 					this.embedPlayer.getPlayerElement().sendNotification( 'destroy' );

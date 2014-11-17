@@ -24,16 +24,17 @@
 			'includeItemNumberPattern': false,
 			'includeMediaItemDuration': true,
 			'onPage': false,
-			'cssFileName': 'chapters.css'
+			'cssFileName': 'modules/KalturaSupport/components/chapters/chapters.css'
 		},
 
 		mediaList: [],
 		renderOnData: false,
 
-		isDisabled: true,
-
 		setup: function ( embedPlayer ) {
 			this.addBindings();
+			if (mw.getConfig("EmbedPlayer.LiveCuepoints")){
+				this.setConfig("includeMediaItemDuration", false);
+			}
 		},
 		addBindings: function () {
 			var _this = this;
@@ -49,12 +50,16 @@
 				//Set data initialized flag for handlers to start working
 				_this.dataIntialized = true;
 				if (_this.renderOnData) {
+					_this.renderOnData = false;
 					_this.renderMediaList();
 					_this.updateActiveItem();
 				}
 			} );
 
 			this.bind( 'KalturaSupport_ThumbCuePointsUpdated', function (e, cuepoints) {
+				if (!_this.dataIntialized){
+					_this.dataIntialized = true;
+				}
 				cuepoints.sort( function ( a, b ) {
 					return a.startTime - b.startTime;
 				} );
@@ -77,7 +82,12 @@
 						_this.markMediaItemsAsDisplayed( items );
 						//Create DOM markup and append to list
 						var mediaItems = _this.createMediaItems( items );
-						_this.getComponent().find( "ul" ).append( mediaItems );
+						if (_this.renderOnData){
+							_this.renderOnData = false;
+							_this.renderMediaList();
+						} else {
+							_this.getComponent().find( "ul" ).append( mediaItems );
+						}
 						//Mark current added items index as the index to start scroll from and re-init the scroll logic
 						_this.startFrom = _this.mediaList.length - _this.mediaItemVisible;
 						_this.shouldAddScroll();
@@ -117,7 +127,7 @@
 		},
 		isSafeEnviornment: function(){
 			var _this = this;
-			var res = false;
+			var cuePointsExist = false;
 			if (this.getPlayer().kCuePoints){
 				var cuePoints = this.getPlayer().kCuePoints.getCuePoints();
 				var filteredCuePoints = $.grep(cuePoints, function(cuePoint){
@@ -130,9 +140,9 @@
 					});
 					return found;
 				});
-				res =  (filteredCuePoints.length > 0) ? true : false;
+				cuePointsExist =  (filteredCuePoints.length > 0) ? true : false;
 			}
-			return mw.getConfig("EmbedPlayer.LiveCuepoints") || res;
+			return (!this.getPlayer().useNativePlayerControls() && (mw.getConfig("EmbedPlayer.LiveCuepoints") || cuePointsExist));
 		},
 		getMedialistContainer: function(){
 			//Only support external onPage medialist container

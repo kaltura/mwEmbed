@@ -136,6 +136,10 @@ return array(
 			by default progressive streams are used on Android because of Android HLS compatibility issues.',
 		'type' => 'boolean'
 	),
+	'LeadWithHLSOnFlash' => array(
+		'doc' => 'If Apple HLS streams should be used when available on Desktop browsers with Flash.',
+		'type' => 'boolean'
+	),
 	'autoPlay' => array(
 		'doc' => 'If the player should start playback once ready.',
 		'type' => 'boolean'
@@ -282,7 +286,7 @@ return array(
                 'doc' => 'Position of the playlist.',
                 'label' => "Position",
                 'type' => 'enum',
-                'initvalue' => 'left',
+                'initvalue' => 'right',
                 'enum' => array("left", "right", "top", "bottom"),
                 'options' => array(
                     array(
@@ -350,6 +354,11 @@ return array(
 				'doc' => "If the playlist should be rendered out of the IFrame (on page).",
 				'type' => 'boolean'
 			),
+			'MaxClips' => array(
+                'doc' => "Max number of clips to show in the playlist.",
+                'type' => 'number',
+                'initvalue' => 25
+            ),
 			'initItemEntryId' => array(
 				'doc' => "The entryId that should be played first."
 			),
@@ -372,9 +381,14 @@ return array(
 			'kpl1Name' => array(
 				'doc' => "The name of the indexed playlist.",
 				'type' => 'hiddenValue'
-			)
+			),
+			'additionalPlaylists' => array(
+                'doc' => "Additional playlists.",
+                'type' => 'additionalPlaylists'
+            )
 		)
-	),/*
+	),
+	/*
 	'playlistHolder' => array(
 		'description' => 'Holds the playlist clip list.',
 		'attributes' => array(
@@ -622,6 +636,11 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'featureCheckbox' => true,
 		'label' => 'Custom styles',
 		'attributes' => array(
+			'applyToLargePlayButton' => array(
+				'type' => 'boolean',
+				'player-refresh' => 'theme.applyToLargePlayButton',
+				"initvalue" => true
+			),
 			'buttonsSize' => array(
 				'label' => 'Button\'s size',
 				'doc' => 'Button\'s size.',
@@ -912,9 +931,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'doc' => 'URL for CSS to be loaded on the embedding page.',
 		'type' => 'url'
 	),
-
+	'enableControlsDuringAd' => array(
+		'doc' => 'If true, play pause button will be active during ad playback',
+		'type' => 'boolean'
+	),
 	'adsOnReplay' => array(
-		'doc' => 'True for showing ads in replay, Fa;se to skip ads in replay.',
+		'doc' => 'true for showing ads in replay, false to skip ads in replay.',
 		'type' => 'boolean'
 	),
 	'bumper' => array(
@@ -1035,7 +1057,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'postrollUrlJs' => array(
 				'doc' => "The VAST ad tag URL used where platform does not support flash.
 			If undefined all platforms will use the base postrollUrl for ad requests.",
-				'label' => 'Preroll JS URL',
+				'label' => 'Postroll JS URL',
 				'type' => 'url',
 				'section' => 'post',
 			),
@@ -1128,6 +1150,11 @@ The playhead reflects segment time as if it was the natural stream length.",
 					If set to true, the prerollInterval will be respected across player views.',
 				'type' => 'boolean',
 				'initvalue' => false,
+			),
+			'enableCORS' => array(
+				'doc' => 'Enable CORS request to support request cookies to secured domains over ajax',
+				'type' => 'boolean',
+				'initvalue' => true
 			)
 		)
 	),
@@ -1271,6 +1298,13 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 		)
 	),
+	'captureThumbnail' => array(
+		'description' => 'Allow your users to capture a thumbnail from the video content. A KS must be supplied to ingest the reqspective thubmnail.',
+		'plugin' => array(
+			'doc' => 'If the plugin should be activated',
+			'type' => 'string',
+		),
+	),
 	'moderation' => array(
 		'description' => 'Allow your users to flag content as inapproriate.',
 		'attributes' => array(
@@ -1341,9 +1375,13 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'text' => array(
 				'doc' => 'The text string to be displayed for the title.',
 				'initvalue' => '{mediaProxy.entry.name}',
-				'type' => 'string',
-				'initValue' => '{mediaProxy.entry.name}',
+				'type' => 'string'
 			),
+			'truncateLongTitles' => array(
+                'doc' => 'Truncate long titles to fit in one line. Truncated titles get a tooltip and 3 dots at the end of the truncated text.',
+                'type' => 'boolean',
+                'initvalue' => true,
+            )
 		)
 	),
 	'airPlay' => array(
@@ -1355,8 +1393,24 @@ The playhead reflects segment time as if it was the natural stream length.",
 	'nativeCallout' => array(
 		'description' => 'Supports replacing the player "play button" with a callout to native player, for Mobile Devices.',
 		'type' => 'featuremenu',
-		'label' => 'nativeCallout',
 		'model' => 'config.plugins.nativeCallout',
+		'attributes' => array(
+            'storeUrl' => array(
+                'doc' => 'The URL for the app market',
+                'initvalue' => '',
+                'type' => 'string',
+            ),
+            'mimeName' => array(
+                'doc' => 'The linker for opening your native app',
+                'initvalue' => '',
+                'type' => 'string',
+            ),
+            'iframeUrl' => array(
+                'doc' => 'iFrame URL',
+                'initvalue' => '',
+                'type' => 'string',
+            ),
+        )
 	),
 	'related' => array(
 		'description' => 'Add the Related Videos screen at the end of the video to attract users to watch additional videos.',
@@ -1391,14 +1445,19 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'clickUrl' => array(
 					'doc' => "<p style='text-align: left'>Defines the URL for a related item click</p>
 								If this left blank the click will replace the current video with a new one.
-								example: <b>http://my-custom-domain.com/?v={mediaProxy.entry.id}</b> as a custom
+								example: <b>http://mydomain.com/?videoId={related.selectedEntry.id}</b> as a custom
 								URL with the entry id as postfix",
 					'type' => 'string'
 				),
 				'itemsLimit' => array(
 					'doc' => 'Maximum number of items to show on the related screen.',
 					'type' => 'number'
-				)/*,
+				),
+				'storeSession'=> array(
+					'doc' => "Store the played entries across page views in related clips display",
+					'type' => 'boolean'
+				)
+				/*
 				// hide template path for now, no way for user to provide useful value here.
 				'templatePath' => array(
 					'doc' => 'Template path to be used by the plugin.',
@@ -1411,4 +1470,17 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 		)
 	),
+	'hammerEvents' => array(
+		'description' => 'Support Hammer.js events against the player canvas.',
+		'attributes' => array(
+			'on' => array(
+				'doc' => "The list of named hammer events to track seperated by spaces.",
+				'type' => 'string'
+			),
+			'options' => array(
+				'doc' => "JSON object of hammer initialization options",
+				'type' => 'string'
+			),
+		)
+	)
 );

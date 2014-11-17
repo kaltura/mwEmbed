@@ -17,14 +17,24 @@
 			playlistId: null,
 			formatCountdown : false,
 			clickUrl : null,
-			enableAccessControlExclusion:false
+			enableAccessControlExclusion:false,
+			storeSession: false
 		},
 		viewedEntries: [],
 		iconBtnClass: 'icon-related',
+		confPrefix: 'related',
 		timerRunning:false,
-
+		
 		setup: function(){
 			var _this = this;
+			// check for storedSession of viewed entries: 
+			if( this.getConfig('storeSession') ){
+				var rawViewed = $.cookie( this.confPrefix + '_viewedEntries' );
+				if( rawViewed ){
+					this.viewedEntries = JSON.parse( rawViewed );
+				}
+			}
+			
 			this.bind('playerReady', function(){
 				// Stop timer
 				_this.stopTimer();
@@ -45,7 +55,7 @@
 						$(this).height("100%");
 					});
 					_this.resizeThumbs();
-				},200)
+				},200);
 
 			});
 			this.bind('onCloseFullScreen', function() {
@@ -57,7 +67,7 @@
 						$(this).height("100%");
 					});
 					_this.resizeThumbs();
-				},200)
+				},200);
 			});
 
 			if( this.getConfig('displayOnPlaybackDone') ){
@@ -72,7 +82,7 @@
 				});
 			}
 
-			this.bind('replayEvent', function(){
+			this.bind('replayEvent preSequence', function(){
 				_this.stopTimer();
 			});
 		},
@@ -86,7 +96,6 @@
 			// resize and crop from center all thumbnails
 			$('.item-inner').each(function() {
 				// set css class according to image aspect ratio
-				console.log( $(this).width() / $(this).height());
 				var cssClass = $(this).width() / $(this).height() > 1.45 ? 'wide' : 'square';
 				$(this).find("img").removeClass().addClass(cssClass);
 				var img = $(this).find("img")[0];
@@ -95,30 +104,31 @@
 				var divHeight = $(this).height();  // save img div container height for cropping logic
 
 				// crop image from center. use a timeout to make sure the image is already resized before changing its margins
-				setTimeout(function(){
-					if (cssClass == 'wide'){
-						var heightOffset = ($(img).height()-divHeight)/2;
-						if (heightOffset > 0){
-							$(img).css("margin-top", heightOffset * (-1) + 'px');
-						}else{
-							$(img).width($(img).width()*divHeight/$(img).height());
-							$(img).height(divHeight);
-							var widthOffset = ($(img).width()-divWidth)/2;
-							$(img).css("margin-left", widthOffset * (-1) + 'px');
+				setTimeout(function() {
+					var heightOffset, widthOffset;
+					var $img = $( img );
+					if ( cssClass === 'wide' ) {
+						heightOffset = ($img.height() - divHeight) / 2;
+						if ( heightOffset > 0 ) {
+							$img.css( "margin-top" , heightOffset * (-1) + 'px' );
+						} else {
+							$img.width( $img.width() * divHeight / $img.height() );
+							$img.height( divHeight );
+							widthOffset = ($img.width() - divWidth) / 2;
+							$img.css( "margin-left" , widthOffset * (-1) + 'px' );
 						}
-					}else{
-						var widthOffset = ($(img).width()-divWidth)/2;
-						if (widthOffset > 0){
-							$(img).css("margin-left", widthOffset * (-1) + 'px');
-						}else{
-							$(img).height($(img).height()*divWidth/$(img).width());
-							$(img).width(divWidth);
-							var heightOffset = ($(img).height()-divHeight)/2;
-							$(img).css("margin-top", heightOffset * (-1) + 'px');
+					} else {
+						widthOffset = ($img.width() - divWidth) / 2;
+						if ( widthOffset > 0 ) {
+							$img.css( "margin-left" , widthOffset * (-1) + 'px' );
+						} else {
+							$img.height( $img.height() * divWidth / $img.width() );
+							$img.width( divWidth );
+							heightOffset = ($img.height() - divHeight) / 2;
+							$img.css( "margin-top" , heightOffset * (-1) + 'px' );
 						}
 					}
-
-				},200);
+				},300);
 			});
 		},
 
@@ -138,7 +148,6 @@
 					// Make sure we change media only if related is visible and we have next item
 					if( _this.isScreenVisible() && _this.templateData && _this.templateData.nextItem ){
 						_this.changeMedia( null, {entryId: _this.templateData.nextItem.id} );
-						_this.viewedEntries.push(_this.templateData.nextItem.id);
 					}
 				}
 			};
@@ -302,6 +311,14 @@
 			});
 		},
 
+		updateViewedEntries: function (entryId) {
+			this.viewedEntries.push(entryId);
+			// update the session var if storing sessions:
+			if (this.getConfig('storeSession')) {
+				$.cookie(this.confPrefix + '_viewedEntries', JSON.stringify(this.viewedEntries));
+			}
+		},
+
 		changeMedia: function( e, data ){
 			this.stopTimer();
 			var _this = this;
@@ -325,6 +342,7 @@
 			this.getPlayer().sendNotification('relatedVideoSelect', data);
 
 			if(this.getConfig('clickUrl')){
+				this.updateViewedEntries(data.id);
 				try {
 					window.parent.location.href = this.getConfig('clickUrl');
 					return;
@@ -336,6 +354,7 @@
 
 			this.getPlayer().sendNotification('changeMedia', data);
 			this.bind('onChangeMediaDone', function(){
+				_this.updateViewedEntries(data.entryId);
 				_this.getPlayer().play();
 				_this.unbind('onChangeMediaDone');
 			});
