@@ -47,10 +47,10 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 	getParentURL: function(){
 		var res;
 		if (mw.getConfig( 'EmbedPlayer.IframeParentUrl')){
-			res = mw.getConfig( 'EmbedPlayer.IframeParentUrl')
+			res = mw.getConfig( 'EmbedPlayer.IframeParentUrl');
 		} else {
 			res = document.referrer;
-			if (res == "") {
+			if (res === "") {
 				res = document.URL;
 			}
 		}
