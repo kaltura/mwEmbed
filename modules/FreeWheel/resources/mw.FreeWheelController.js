@@ -234,7 +234,7 @@ mw.FreeWheelController.prototype = {
 					sequenceProxy[ _this.getSequenceIndex( slotType ) ] = function( callback ){
 						// Run the freewheel slot add, then run the callback once done
 						_this.displayFreeWheelSlots( slotType, 0, function(){
-							_this.restorePlayState();
+							_this.restorePlayState(slotType);
 							// Run the callback:
 							callback();
 						});
@@ -360,7 +360,7 @@ mw.FreeWheelController.prototype = {
 
 		return true;
 	},
-	restorePlayState: function(){
+	restorePlayState: function (slotType) {
 		var _this = this;
 		mw.log("FreeWheelControl::restorePlayState" );
 		this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_PLAYING );
@@ -378,6 +378,9 @@ mw.FreeWheelController.prototype = {
 		$( vid ).unbind( 'pause' + this.bindPostfix );
 		// trigger onplay now that we have restored the player:
 		setTimeout(function(){
+			if (slotType == "preroll") {
+				vid.load(); // refresh video object to cause native events to fire
+			}
 			$( _this.embedPlayer ).trigger('onplay');
 		},0);
 	},
