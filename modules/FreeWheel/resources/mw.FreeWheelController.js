@@ -73,10 +73,25 @@ mw.FreeWheelController.prototype = {
 
 		// Load the freewheel ad manager then setup the ads
 		if( !window['tv'] || !tv.freewheel ){
-			$.getScript( _this.getAdManagerUrl(), function(){
-				_this.setupAds();
-				callback();
-			});
+			var isLoaded = false;
+			var timeoutVal = _this.getConfig("adsManagerLoadedTimeout") || 5000;
+			mw.log("FreeWheelController::init: start timer for adsManager loading check: " + timeoutVal + "ms");
+			setTimeout(function () {
+				if (!isLoaded) {
+					mw.log("FreeWheelController::init: adsManager failed loading after " + timeoutVal + "ms");
+					callback();
+				}
+			}, timeoutVal);
+			$.getScript(_this.getAdManagerUrl())
+				.done(function (script, textStatus) {
+					isLoaded = true;
+					_this.setupAds();
+					callback();
+				})
+				.fail(function (jqxhr, settings, errorCode) {
+					isLoaded = true;
+					callback();
+				});
 		} else{
 			_this.setupAds();
 			callback();
