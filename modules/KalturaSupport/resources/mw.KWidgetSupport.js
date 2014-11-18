@@ -111,7 +111,7 @@ mw.KWidgetSupport.prototype = {
 				thumbUrl += '?ks=' + embedPlayer.getFlashvars('ks');
 			}
 			if (mw.getConfig('thumbnailUrl')) {
-				thumbUrl = mw.getConfig('thumbnailUrl');
+				thumbUrl = embedPlayer.evaluate(mw.getConfig('thumbnailUrl'));
 			}
 			var alt = gM('mwe-embedplayer-video-thumbnail-for', embedPlayer.evaluate('{mediaProxy.entry.name}'));
 		  	embedPlayer.updatePoster( thumbUrl, alt );
