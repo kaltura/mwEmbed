@@ -448,7 +448,12 @@ return array(
                 'doc' => 'The default stream.',
                 'initvalue' => 1,
                 'type' => 'number'
-            )
+            ),
+            'enableKeyboardShortcuts' => array(
+                'doc' => 'Enable keyboard shortcuts (Key mappings: "[" - Next, "]" - Previous, "\" - Default)',
+                'initvalue' => true,
+                'type' => 'boolean'
+            ),
         )
     ),
 	/* flavor selector */
