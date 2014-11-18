@@ -110,6 +110,9 @@ mw.KWidgetSupport.prototype = {
 			if( embedPlayer.getFlashvars( 'loadThumbnailWithKs' ) === true ) {
 				thumbUrl += '?ks=' + embedPlayer.getFlashvars('ks');
 			}
+			if (mw.getConfig('thumbnailUrl')) {
+				thumbUrl = mw.getConfig('thumbnailUrl');
+			}
 			var alt = gM('mwe-embedplayer-video-thumbnail-for', embedPlayer.evaluate('{mediaProxy.entry.name}'));
 		  	embedPlayer.updatePoster( thumbUrl, alt );
 			if( embedPlayer.kalturaPlayerMetaData.mediaType === 5 ) {
@@ -137,9 +140,13 @@ mw.KWidgetSupport.prototype = {
 			callback( iframeUrl );
 		});
 
-		embedPlayer.bindHelper( 'embedPlayerError' , function () {
-			embedPlayer.showErrorMsg( { title: embedPlayer.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), message: embedPlayer.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) } );
-		});
+		/*
+		// Example how to override embedPlayerError handler
+		embedPlayer.shouldHandlePlayerError = false;
+		embedPlayer.bindHelper( 'embedPlayerError' , function ( event, data, doneCallback ) {
+			//TODO
+		});*/
+
 		// Support mediaPlayFrom, mediaPlayTo properties
 		embedPlayer.bindHelper( 'Kaltura_SetKDPAttribute', function(e, componentName, property, value){
 			switch( property ){
@@ -239,7 +246,7 @@ mw.KWidgetSupport.prototype = {
 			// Check access controls ( must come after addPlayerMethods for custom messages )
 			// check for Cuepoint data and load cuePoints,
 			// TODO optimize cuePoints as hard or soft dependency on kWidgetSupport
-			if( playerData.entryCuePoints && playerData.entryCuePoints.length > 0 ) {
+			if( (playerData.entryCuePoints && playerData.entryCuePoints.length > 0) || mw.getConfig("EmbedPlayer.LiveCuepoints")) {
 				embedPlayer.rawCuePoints = playerData.entryCuePoints;
 				embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
 			}
@@ -347,17 +354,20 @@ mw.KWidgetSupport.prototype = {
 		$.each( playerData.contextData.flavorAssets, function ( index, flavorAsset ) {
 			try {
 				var flavorPartnerData = JSON.parse( flavorAsset.partnerData );
-				var flavorAssetObj = {
-					"data-assetid": flavorAsset.id,
-					src: flavorPartnerData.url,
-					type: flavorPartnerData.type,
-					"data-width": flavorAsset.width,
-					"data-height": flavorAsset.height,
-					"data-bitrate": flavorAsset.bitrate,
-					"data-bandwidth" : (flavorAsset.bitrate ? (flavorAsset * 1024) : 0),
-					"data-frameRate": flavorAsset.frameRate
-				};
-				flavorAssets.push( flavorAssetObj );
+				if (flavorPartnerData.url != "") {
+					var flavorAssetObj = {
+						"data-assetid": flavorAsset.id,
+						src: flavorPartnerData.url,
+						type: flavorPartnerData.type,
+						"data-width": flavorAsset.width,
+						"data-height": flavorAsset.height,
+						"data-bitrate": flavorAsset.bitrate,
+						"data-bandwidth": (flavorAsset.bitrate ? (flavorAsset * 1024) : 0),
+						"data-frameRate": flavorAsset.frameRate,
+						"data-flavorid": flavorPartnerData.flavorid
+					};
+					flavorAssets.push( flavorAssetObj );
+				}
 			} catch ( e ) {
 				mw.log( "KwidgetSupport::Failed adding flavor asset, " + e.toString() );
 			}
@@ -551,8 +561,10 @@ mw.KWidgetSupport.prototype = {
 				return deferred.resolve( srcURL );
 			}
 			var srcToPlay = null;
+			var qp = ( srcURL.indexOf('?') === -1) ? '?' : '&';
+
 			$.ajax({
-				url: srcURL + "&responseFormat=jsonp",
+				url: srcURL + qp + "responseFormat=jsonp",
 				dataType: 'jsonp',
 				success: function( playmanifest ){
 					var flavors = playmanifest.flavors;
@@ -585,7 +597,7 @@ mw.KWidgetSupport.prototype = {
 		// and setup their binding to KalturaSupport_CuePointsReady
 		var doneWithUiConf = function(){
 
-			if( embedPlayer.rawCuePoints ){
+			if( embedPlayer.rawCuePoints || mw.getConfig("EmbedPlayer.LiveCuepoints") ){
 				mw.log("KWidgetSupport:: trigger KalturaSupport_CuePointsReady", embedPlayer.rawCuePoints);
 				// Allow other plugins to subscribe to cuePoint ready event:
 				$( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', embedPlayer.rawCuePoints );

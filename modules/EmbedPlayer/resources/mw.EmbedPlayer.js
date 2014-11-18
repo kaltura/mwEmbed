@@ -282,6 +282,9 @@
 		// If the player supports playbackRate ( currently available on some html5 browsers )
 		playbackRate: false,
 
+		//if the player should handle playerError events
+		shouldHandlePlayerError: true,
+
 		/**
 		 * embedPlayer
 		 *
@@ -502,7 +505,13 @@
 				return;
 			}
 			mw.log("EmbedPlayer:: disablePlayControls" );
-			excludedComponents = excludedComponents || [];
+
+			if (!excludedComponents) {
+				excludedComponents = ['fullScreenBtn', 'logo'];
+				if (mw.getConfig('enableControlsDuringAd')) {
+					excludedComponents.push('playPauseBtn');
+				}
+			}
 
 			this._playContorls = false;
 			$( this ).trigger( 'onDisableInterfaceComponents', [ excludedComponents ] );
@@ -759,6 +768,10 @@
 			mw.log("EmbedPlayer::setupSourcePlayer: " + this.id + ' sources: ' + this.mediaElement.sources.length );
 			// Setup player state manager
 			this.addPlayerStateChangeBindings();
+			this.bindHelper( 'embedPlayerError', function( e, data ) {
+				 _this.handlePlayerError( data );
+			});
+
 			// Check for source replace configuration:
 			if( mw.getConfig('EmbedPlayer.ReplaceSources' ) ){
 				this.replaceSources( mw.getConfig('EmbedPlayer.ReplaceSources' ));
@@ -1725,7 +1738,7 @@
 				};
 			}
 
-			$( this ).empty();
+			$( this ).find(".playerPoster").remove();
 			if (mw.getConfig( 'EmbedPlayer.HidePosterOnStart' ) === true){
 				return;
 			}
@@ -2181,7 +2194,7 @@
 			this.hideSpinnerOncePlaying();
 
 			// trigger on play interface updates:
-			$( this ).trigger( 'onComponentsHoverEnabled' );
+			this.restoreComponentsHover();
 			$( this ).trigger( 'onPlayInterfaceUpdate' );
 		},
 		/**
@@ -2260,7 +2273,7 @@
 			// don't display a loading spinner if paused: 
 			this.hideSpinner();
 			// trigger on pause interface updates
-			$( this ).trigger( 'onComponentsHoverDisabled' );
+			this.disableComponentsHover();
 			$( this ).trigger( 'onPauseInterfaceUpdate' );
 		},
 		/**
@@ -2607,7 +2620,7 @@
 			var _this = this;
 
 			if ( this.currentTime >= 0 && this.duration ) {
-				if ( !this.userSlide && !this.seeking ) {
+				if (!this.userSlide && !this.seeking && !this.paused) {
 					var playHeadPercent = ( this.currentTime - this.startOffset ) / this.duration;
 					this.updatePlayHead( playHeadPercent );
 				}
@@ -2618,7 +2631,9 @@
 						mw.log( "EmbedPlayer::updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
 						_this.onClipDone();
 						//sometimes we don't get the "end" event from the player so we trigger clipdone
-					} else if ( !this.shouldEndClip && ( ( ( this.currentTime - this.startOffset) / endPresentationTime ) >= .99 ) ){
+					} else if ( !this.shouldEndClip &&
+						!this.isInSequence() &&
+						( ( ( this.currentTime - this.startOffset) / endPresentationTime ) >= .99 ) ){
 						_this.shouldEndClip = true;
 						setTimeout( function() {
 							if ( _this.shouldEndClip ) {
@@ -2844,9 +2859,17 @@
 		},
 
 		disableComponentsHover: function(){
+			if( this.layoutBuilder ) {
+				this.layoutBuilder.keepControlsOnScreen = true;
+				this.layoutBuilder.removeTouchOverlay();
+			}
 			this.triggerHelper( 'onComponentsHoverDisabled' );
 		},
 		restoreComponentsHover: function(){
+			if( this.layoutBuilder ) {
+				this.layoutBuilder.keepControlsOnScreen = false;
+				this.layoutBuilder.addTouchOverlay();
+			}
 			this.triggerHelper( 'onComponentsHoverEnabled' );
 		},
 		/**
@@ -2915,12 +2938,18 @@
 				// Do a live switch
 				this.playerSwitchSource( source, function( vid ){
 					// issue a seek
-					_this.setCurrentTime( oldMediaTime, function(){
-						// reflect pause state
-						if( oldPaused ){
-							_this.pause();
-						}
-					} );
+					setTimeout(function(){
+						_this.addBlackScreen();
+						_this.hidePlayerOffScreen();
+						_this.setCurrentTime( oldMediaTime, function(){
+							_this.removeBlackScreen();
+							_this.restorePlayerOnScreen();
+							// reflect pause state
+							if( oldPaused ){
+								_this.pause();
+							}
+						} );
+					}, 100);
 				});
 			}
 		},
@@ -2991,6 +3020,23 @@
 			} else {
 				return true;
 			}
+		},
+
+		handlePlayerError: function( data ) {
+			if ( this.shouldHandlePlayerError ) {
+				this.showErrorMsg( { title: this.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), message: this.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) } );
+			}
+		} ,
+
+		/**
+		 * Some players parse playmanifest and reload flavors list by calling this function
+		 * @param data
+		 */
+		onFlavorsListChanged : function ( newFlavors ) {
+			//we can't use simpleFormat with flavors that came from playmanifest otherwise sourceSelector list won't match
+			// to what is actually being played
+			this.setKDPAttribute( 'sourceSelector' , 'simpleFormat', false);
+			this.replaceSources( newFlavors );
 		}
 	};
 

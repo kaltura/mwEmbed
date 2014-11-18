@@ -2,7 +2,7 @@
 return array(
 	'omnitureOnPage' => array(
 		'description' => 'The Omniture s_code config version of the plugin, allows you to connect the Omniture plugin to your existing s_code.js
-			configuration for easy integration of video analytics into an Omniture site.',
+			configuration for easy integration of video analytics into an Omniture site.<br>For full implementation guide see <a target="_new" href="http://knowledge.kaltura.com/omniture-plugin-setup-and-information-guide">Omniture on page</a> in the Knowledge Center',
 		'attributes' => array(
 			's_codeUrl' => array(
 				'doc' => "The URL to the Ominture generated sCode file that must be set in the uiConf (not via flashvars). This parameter is required for the plugin to work.",
@@ -45,6 +45,16 @@ return array(
 				Values will correspond to the evars and props comma separated map defined in additionalEvarsAndProps.",
 				'label' => 'Kaltura values',
 				'type' => 'string'
+			),
+			'autoTrack' => array(
+				'doc' => "Default true, Value passed to autoTrack Omniture media module property.",
+				'type' => 'boolean',
+				'default' => true	
+			), 
+			'trackWhilePlaying' => array(
+				'doc' => "Default true, Value passed to trackWhilePlaying Omniture media module property.",
+				'type' => 'boolean',
+				'default' => true
 			)
 		)
 	),

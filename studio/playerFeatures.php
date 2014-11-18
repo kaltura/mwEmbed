@@ -223,7 +223,11 @@ Class menuMaker
             $obj->label = ucfirst($this->from_camel_case($controlModel));
         }
         $obj->model = (isset($control['model'])) ? $control['model'] : 'config.plugins.' . $pluginId . '.' . $controlModel;
-        $obj->helpnote = $control['doc'];
+        if (isset($control['doc'])) {
+            $obj->helpnote = $control['doc'];
+        }else{
+            $obj->helpnote = $obj->label;
+        }
         foreach ($control as $attr => $atrVal) {
             if (!in_array($attr, array('type', 'model', 'options', 'enum', 'label', 'doc'))) {
                 $obj->$attr = $atrVal;

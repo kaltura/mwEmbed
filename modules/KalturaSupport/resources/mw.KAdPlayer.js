@@ -129,7 +129,10 @@ mw.KAdPlayer.prototype = {
 				$(_this.embedPlayer).trigger('onAdComplete',[adSlot.ads[adSlot.adIndex].id, mw.npt2seconds($(".currentTimeLabel").text())]);
 			}
 			// remove click binding if present
-			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'mouseup';
+			var clickEventName = "mouseup" + _this.adClickPostFix;
+			if (mw.isTouchDevice()){
+				clickEventName += " touchend" + _this.adClickPostFix;;
+			}
 			$( _this.embedPlayer ).unbind( clickEventName + _this.adClickPostFix );
 			// stop any ad tracking:
 			_this.stopAdTracking();
@@ -141,6 +144,10 @@ mw.KAdPlayer.prototype = {
 			$('#' + _this.embedPlayer.id + '_ad_skipNotice' ).remove();
 			//Remove icon if present
 			$('#' + _this.embedPlayer.id + '_icon' ).remove();
+
+			//remove vpaid container for overlay ads
+			var vpaidid = _this.getVPAIDId();
+			$("#" + vpaidid ).remove();
 
 			adSlot.adIndex++;
 
@@ -297,6 +304,7 @@ mw.KAdPlayer.prototype = {
 			mw.log( "KAdPlayer::display:" + adSlot.type + " Playback done because vid does not exist or > displayDuration " + displayDuration );
 			_this.overrideDisplayDuration = 0;
 			adSlot.playbackDone();
+
 		} else {
 			setTimeout( function(){
 				_this.monitorForDisplayDuration( adSlot, startTime, displayDuration );
@@ -457,11 +465,15 @@ mw.KAdPlayer.prototype = {
 			// where the click event is added to the embedPlayer stack prior to
 			// the event stack being exhausted.
 			var $clickTarget = (mw.isTouchDevice()) ? $(embedPlayer) : embedPlayer.getVideoHolder();
-			var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'click';
+			var clickEventName = "click" + _this.adClickPostFix;
+			if (mw.isTouchDevice()){
+				clickEventName += " touchend" + _this.adClickPostFix;;
+			}
 			setTimeout( function(){
-				$clickTarget.unbind(clickEventName + _this.adClickPostFix).bind( clickEventName + _this.adClickPostFix, function(e){
+				$clickTarget.unbind(clickEventName).bind(clickEventName, function(e){
 					if ( adConf.clickThrough ) {
 						e.stopPropagation();
+						e.preventDefault();
 						if( _this.clickedBumper ){
 							_this.getVideoElement().play();
 
@@ -485,7 +497,7 @@ mw.KAdPlayer.prototype = {
 							if( _this.isVideoSiblingEnabled() ) {
 								$( _this.embedPlayer ).trigger( 'onPauseInterfaceUpdate' );
 							}else{
-								$( embedPlayer).trigger("onPlayerStateChange",["pause"]);
+								$( embedPlayer).trigger("onPlayerStateChange",["pause", embedPlayer.currentState]);
 							}
 
 							embedPlayer.enablePlayControls(["scrubber"]);
@@ -576,7 +588,10 @@ mw.KAdPlayer.prototype = {
 		// holds the value of skipoffset in seconds
 		var skipOffsetInSecs = 0;
 
-		var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'mouseup';
+		var clickEventName = "mouseup" + _this.adClickPostFix;
+		if (mw.isTouchDevice()){
+			clickEventName += " touchend" + _this.adClickPostFix;;
+		}
 
 		// Check for skip add button
 		if( adSlot.skipBtn ){
@@ -586,8 +601,10 @@ mw.KAdPlayer.prototype = {
 					.attr('id', skipId)
 					.text( adSlot.skipBtn.text )
 					.addClass( 'ad-component ad-skip-btn' )
-					.bind(clickEventName, function(){
-						$( embedPlayer ).unbind( clickEventName + _this.adClickPostFix );
+					.bind(clickEventName, function(e){
+						$( embedPlayer ).unbind(clickEventName);
+						e.stopPropagation();
+						e.preventDefault();
 						$( embedPlayer).trigger( 'onAdSkip' );
 						_this.skipCurrent();
 						return false;
@@ -676,15 +693,16 @@ mw.KAdPlayer.prototype = {
         embedPlayer.bindHelper( 'doPause' + _this.trackingBindPostfix, function(){
 		    if( _this.isVideoSiblingEnabled() && _this.adSibling) {
 			    $( _this.embedPlayer ).trigger( 'onPauseInterfaceUpdate' ); // update player interface
-                vid.pause();
 		    }
+			vid.pause();
+
         });
 
         embedPlayer.bindHelper( 'doPlay' + _this.trackingBindPostfix, function(){
 		    if( _this.isVideoSiblingEnabled() && _this.adSibling) {
 			    $( _this.embedPlayer ).trigger( 'playing' ); // update player interface
-                vid.play();
 		    }
+            vid.play();
         });
 
 		if( !embedPlayer.isPersistentNativePlayer() ) {
@@ -884,6 +902,7 @@ mw.KAdPlayer.prototype = {
 		.css( layout )
 		.html( nonLinearConf.html )
 		.click(function(){
+				_this.embedPlayer.pause(); // pause the video when the user clicks on the overlay ad
 				if (nonLinearConf.$html.attr("data-NonLinearClickTracking")){
 					mw.sendBeaconUrl( nonLinearConf.$html.attr("data-NonLinearClickTracking") );
 				}
@@ -1005,11 +1024,15 @@ mw.KAdPlayer.prototype = {
 				_this.clickedBumper = true;
 
 				var $clickTarget = (mw.isTouchDevice()) ? $(_this.embedPlayer) : _this.embedPlayer.getVideoHolder();
-				var clickEventName = (mw.isTouchDevice()) ? 'touchend' : 'click';
+				var clickEventName = "click" + _this.adClickPostFix;
+				if (mw.isTouchDevice()){
+					clickEventName += " touchend" + _this.adClickPostFix;;
+				}
 				setTimeout( function(){
-					$clickTarget.bind( clickEventName + _this.adClickPostFix, function(e) {
+					$clickTarget.unbind(clickEventName).bind(clickEventName, function(e) {
 						if (_this.clickedBumper) {
 							e.stopPropagation();
+							e.preventDefault();
 							_this.getVideoElement().play();
 							$( _this.embedPlayer ).trigger( "onPlayerStateChange", ["play"] );
 							$( _this.embedPlayer ).trigger( "onResumeAdPlayback" );

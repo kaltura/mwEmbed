@@ -104,11 +104,6 @@ mw.FullScreenManager.prototype = {
 		this.verticalScrollPosition = (doc.all ? doc.scrollTop : context.pageYOffset);
 		// Add fullscreen class to interface:
 		$interface.addClass( 'fullscreen' );
-		
-		// if overlaying controls add hide show player binding.
-		if( embedPlayer.isOverlayControls() && mw.hasMouseEvents() ){
-			_this.addMouseMoveBinding();
-		}
 
 		// Check for native support for fullscreen and we are in an iframe server
 		if( !this.fullScreenApiExcludes() && !mw.isAndroidChromeNativeBrowser() && screenfull && screenfull.enabled(doc) ) {
@@ -542,40 +537,6 @@ mw.FullScreenManager.prototype = {
 
 		// Trigger the onCloseFullscreen event:
 		$( embedPlayer ).trigger( 'onCloseFullScreen' );
-	},
-
-	addMouseMoveBinding:function(){
-		var _this = this;
-		// Bind mouse move in interface to hide control bar
-		_this.mouseMovedFlag = false;
-		var oldX =0, oldY= 0;
-		_this.embedPlayer.getInterface().mousemove( function(event){
-			// debounce mouse movements
-			if( Math.abs( oldX - event.pageX ) > 4 ||  Math.abs( oldY - event.pageY ) > 4 ){
-				_this.mouseMovedFlag = true;
-			}
-			oldX = event.pageX;
-			oldY = event.pageY;
-		});
-
-		// Check every 2 seconds reset flag status if controls are overlay
-		var checkMovedMouse = function(){
-			if( _this.isInFullScreen() ){
-				if( _this.mouseMovedFlag ){
-					_this.mouseMovedFlag = false;
-					_this.embedPlayer.triggerHelper( 'showPlayerControls' );
-					// Once we move the mouse keep displayed for 4 seconds
-					setTimeout( checkMovedMouse, 4000 );
-				} else {
-					// Check for mouse movement every 250ms
-					_this.embedPlayer.triggerHelper( 'hidePlayerControls' );
-					setTimeout( checkMovedMouse, 250 );
-				}
-				return;
-			}
-		};
-		// start monitoring for moving mouse
-		checkMovedMouse();
 	},
 
 	fullScreenApiExcludes: function(){

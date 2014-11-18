@@ -77,7 +77,8 @@
 								'alert': 'onAlert',
 								'mute': 'onMute',
 								'unmute': 'onUnMute',
-								'volumeChanged': 'onVolumeChanged'
+								'volumeChanged': 'onVolumeChanged',
+								'mediaError' : 'onMediaError'
 							};
 
 							$.each( bindEventMap, function ( bindName, localMethod ) {
@@ -250,6 +251,9 @@
 		onVolumeChanged: function ( data ) {
 			this.volume = data.newVolume;
 			$( this).trigger( 'volumechange' );
+		},
+		onMediaError: function () {
+			$( this).trigger( 'error' );
 		},
 		redrawObject: function ( timeout ) {
 			var _this = this;

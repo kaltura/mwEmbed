@@ -53,6 +53,9 @@ mw.FreeWheelController.prototype = {
 	// bindPostfix enables namespacing the plugin binding
 	bindPostfix: '.freeWheel',
 
+	//Flag for indicating if load has been initiated on the player element
+	playerElementLoaded: false,
+
 	/**
 	 * Initialize the adMannager javascript and setup adds
 	 *
@@ -70,10 +73,25 @@ mw.FreeWheelController.prototype = {
 
 		// Load the freewheel ad manager then setup the ads
 		if( !window['tv'] || !tv.freewheel ){
-			$.getScript( _this.getAdManagerUrl(), function(){
-				_this.setupAds();
-				callback();
-			});
+			var isLoaded = false;
+			var timeoutVal = _this.getConfig("adsManagerLoadedTimeout") || 5000;
+			mw.log("FreeWheelController::init: start timer for adsManager loading check: " + timeoutVal + "ms");
+			setTimeout(function () {
+				if (!isLoaded) {
+					mw.log("FreeWheelController::init: adsManager failed loading after " + timeoutVal + "ms");
+					callback();
+				}
+			}, timeoutVal);
+			$.getScript(_this.getAdManagerUrl())
+				.done(function (script, textStatus) {
+					isLoaded = true;
+					_this.setupAds();
+					callback();
+				})
+				.fail(function (jqxhr, settings, errorCode) {
+					isLoaded = true;
+					callback();
+				});
 		} else{
 			_this.setupAds();
 			callback();
@@ -121,6 +139,13 @@ mw.FreeWheelController.prototype = {
 			// set the inSequence flag while loading ads:
 			_this.embedPlayer.sequenceProxy.isInSequence = true;
 
+			if (mw.isMobileDevice()) {
+				if (!_this.playerElementLoaded) {
+					_this.playerElementLoaded = true;
+					var vid = _this.embedPlayer.getPlayerElement();
+					vid.load();
+				}
+			}
 			// Get Freewheel ads:
 			_this.getContext().submitRequest();
 			// set the callback
@@ -191,7 +216,7 @@ mw.FreeWheelController.prototype = {
 			'name': 'FreeWheel',
 			'title': asset.getName(),
 			'iabCategory': null, // not sure what's expected here.
-			'CampaignID': null, // not available via SDK API now, what exactly do you need here? 
+			'CampaignID': null // not available via SDK API now, what exactly do you need here?
 		}
 		//if( creative._parameters._fw_advertiser_name ){
 		//	metaData['advertiser'] = creative._parameters._fw_advertiser_name;
@@ -224,7 +249,7 @@ mw.FreeWheelController.prototype = {
 					sequenceProxy[ _this.getSequenceIndex( slotType ) ] = function( callback ){
 						// Run the freewheel slot add, then run the callback once done
 						_this.displayFreeWheelSlots( slotType, 0, function(){
-							_this.restorePlayState();
+							_this.restorePlayState(slotType);
 							// Run the callback:
 							callback();
 						});
@@ -350,7 +375,7 @@ mw.FreeWheelController.prototype = {
 
 		return true;
 	},
-	restorePlayState: function(){
+	restorePlayState: function (slotType) {
 		var _this = this;
 		mw.log("FreeWheelControl::restorePlayState" );
 		this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_PLAYING );
@@ -368,6 +393,9 @@ mw.FreeWheelController.prototype = {
 		$( vid ).unbind( 'pause' + this.bindPostfix );
 		// trigger onplay now that we have restored the player:
 		setTimeout(function(){
+			if (slotType == "preroll") {
+				vid.load(); // refresh video object to cause native events to fire
+			}
 			$( _this.embedPlayer ).trigger('onplay');
 		},0);
 	},
