@@ -17,6 +17,7 @@
 		switchSourceTitle: gM( 'mwe-embedplayer-switch_source' ),
 		streams: [],
 		streamsReady: false,
+		streamEnded: false,
 
 		setup: function(){
 			this.addBindings();
@@ -29,8 +30,10 @@
 			var _this = this;
 
 			this.bind( 'playerReady', function(){
-				_this.onDisable();
-				_this.getSources();
+				if (!_this.streamsReady) {
+					_this.onDisable();
+					_this.getSources();
+				}
 			});
 
 			this.bind( 'streamsReady', function(){
@@ -68,6 +71,14 @@
 				_this.onDisable();
 			});
 
+			this.bind("ended", function(){
+				_this.streamEnded = true;
+			});
+
+			this.bind("onplay", function(){
+				_this.streamEnded = false;
+			});
+
 			this.bind( 'changeStream', function(e, arg ){
 				_this.setStreamFromApi( arg );
 			});
@@ -89,7 +100,7 @@
 			}, function ( data ) {
 				// Validate result
 				if ( _this.isValidResult( data ) ) {
-					_this.getSourcesFlavours(data);
+					_this.getSourcesFlavours(data.objects);
 				} else {
 					mw.log('streamSelector::Error retrieving additional streams, disabling component');
 					_this.getBtn().hide();
@@ -99,7 +110,7 @@
 		getSourcesFlavours: function(sources){
 			var _this = this;
 			var requestArray = [];
-			$.each(sources.objects, function(index, source) {
+			$.each(sources, function(index, source) {
 				requestArray.push(
 					{
 						'service': 'flavorAsset',
@@ -232,27 +243,66 @@
 		setStream: function(stream){
 			mw.log("streamSelector:: set stream");
 			if (this.currentStream != stream) {
+				var _this = this;
+				var embedPlayer = this.getPlayer();
 				//Set reference to active stream
 				this.currentStream = stream;
 				//Get reference for current time for setting timeline after source switch
-				var currentTime = this.getPlayer().getPlayerElementTime();
-				//Create source data from raw data
-				var sources = kWidgetSupport.getEntryIdSourcesFromPlayerData( this.getPlayer().kpartnerid, stream.data );
-				//handle player data mappings to embedPlayer and check for errors
-				kWidgetSupport.handlePlayerData( this.getPlayer(), stream.data );
-				//Replace sources
-				this.getPlayer().replaceSources( sources );
-
-				//Update player metadata and poster/thumbnail urls
-				this.getPlayer().kalturaPlayerMetaData = stream.data.meta;
-				this.getPlayer().triggerHelper( 'KalturaSupport_EntryDataReady', this.getPlayer().kalturaPlayerMetaData );
-				this.getPlayer().triggerHelper( 'updateSliderRotator' );
-
-				//Try to select source from new sources and switch
-				var selectedSource = this.getPlayer().mediaElement.autoSelectSource();
-				if ( selectedSource ) { // source was found
-					this.getPlayer().switchSrc( selectedSource, currentTime );
+				var currentTime = embedPlayer.getPlayerElementTime();
+				//Check if stream ended, and ignore current time data if so
+				if (this.streamEnded){
+					currentTime = 0;
 				}
+				//Save current autoplay state to return it after switching
+				var origAutoplay = embedPlayer.autoplay;
+				//When switching stream always start playing
+				embedPlayer.autoplay = true;
+
+				//Freeze scrubber and time labels to exhibit seamless transition between streams
+				if (currentTime > 0) {
+					embedPlayer.triggerHelper( "freezeTimeIndicators", [true] );
+				}
+
+				var checkPlayerSourcesFunction = function(callback) {
+					//Create source data from raw data
+					var sources = kWidgetSupport.getEntryIdSourcesFromPlayerData( embedPlayer.kpartnerid, stream.data );
+					//handle player data mappings to embedPlayer and check for errors
+					kWidgetSupport.handlePlayerData( embedPlayer, stream.data );
+					//Replace sources
+					embedPlayer.replaceSources( sources );
+
+					//Update player metadata and poster/thumbnail urls
+					embedPlayer.kalturaPlayerMetaData = stream.data.meta;
+					//Do not show poster on switch to avoid poster flashing
+					mw.setConfig( 'EmbedPlayer.HidePosterOnStart', true );
+					embedPlayer.triggerHelper( 'KalturaSupport_EntryDataReady', embedPlayer.kalturaPlayerMetaData );
+					callback();
+				};
+
+				var changeMediaCallback = function () {
+					//Return autoplay state to original
+					embedPlayer.autoplay = origAutoplay;
+					// issue a seek
+					if (currentTime > 0) {
+						_this.bind("seeked", function(){
+							_this.unbind("seeked");
+							//Unfreeze scrubber and time labels after transition between streams
+							embedPlayer.triggerHelper("freezeTimeIndicators", [false]);
+							//emove the black screen afteer seek has ended
+							embedPlayer.removeBlackScreen();
+							//Return poster to allow display of poster on clip done
+							mw.setConfig( 'EmbedPlayer.HidePosterOnStart', false );
+						});
+						//Add black screen before seek to avoid flashing of video
+						embedPlayer.addBlackScreen();
+						embedPlayer.sendNotification( 'doSeek', currentTime );
+					} else {
+						//Return poster to allow display of poster on clip done
+						mw.setConfig( 'EmbedPlayer.HidePosterOnStart', false );
+					}
+				};
+
+				embedPlayer.changeMedia(changeMediaCallback , checkPlayerSourcesFunction, true );
 			} else {
 				mw.log("streamSelector:: selected stream is already the active stream");
 			}
