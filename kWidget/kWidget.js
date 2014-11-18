@@ -924,14 +924,19 @@ var kWidget = {
 			// get the playload from local cache
 			window[ cbName ]( this.iframeAutoEmbedCache[ targetId ]  );
 		} else {
-			if (settings.flashvars.jsonConfig){
+			// Check if we need to use post ( where flashvars excceed 2K string )
+			var iframeRequest =  this.getIframeRequest( widgetElm, settings );
+			if( iframeRequest.length > 2083 ){
+				this.log( "Warning iframe requests (" + iframeRequest.length + ") exceeds 2083 charachters, won't cache on CDN." )
+			}
+			if ( settings.flashvars.jsonConfig || iframeRequest.length > 2000 ){
 				var jsonConfig = settings.flashvars.jsonConfig;
 				settings.flashvars.jsonConfig = null;
 				$.ajax({
 					type:"POST",
 					dataType: 'text',
 					url: this.getIframeUrl() + '?' +
-						this.getIframeRequest( widgetElm, settings ),
+						iframeRequest,
 					data:{"jsonConfig":jsonConfig}
 				}).success(function(data){
 						var contentData = {content:data} ;
@@ -943,8 +948,9 @@ var kWidget = {
 			} else {
 				// do an iframe payload request:
 				_this.appendScriptUrl( this.getIframeUrl() + '?' +
-					this.getIframeRequest( widgetElm, settings ) +
-					'&callback=' + cbName );
+					iframeRequest + 
+					'&callback=' + cbName 
+				);
 			}
 		}
 	},
@@ -2048,6 +2054,10 @@ var kWidget = {
 					url += '&' + attrKey + '=' + encodeURIComponent( settings[attrKey] );
 				}
 			}
+		}
+		// add mediaProxy if set: 
+		if( settings.mediaProxy ){
+			url += '&mediaProxy=' + encodeURIComponent( JSON.stringify( settings.mediaProxy ) );
 		}
 		// Add the flashvars:
 		url += this.flashVarsToUrl( settings.flashvars );

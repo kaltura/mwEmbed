@@ -516,3 +516,31 @@ var kdp = document.getElementById('kVideoTarget');
 kdp.setKDPAttribute("theme", "buttonsSize", "14");
 </pre>
 <?php echo getDocs( array( 'setKDPAttribute' ) ) ?>
+
+<h3 id="standAlonePlayerModes" > Stand Alone Player Modes </h3>
+	Kaltura player supports several modes for associating content and configuration with the player. To 
+	evaluate of what is best for your integration requirements we strongly recommend consulting with Kaltura 
+	Solutions team.<br><br>
+	
+	<ul>
+		<li> <b>MediaProxy Override</b> -- Overrides media and player configuration at embed time.
+			<ul>
+				<li> Good for "light" integrations tests a few lines of JavaScript</li>
+				<li> Not good for portability, native apps, or player iframe services.</li>
+				<li> Not compatible with entity baased plugins or clip lists ( playlist, related videos, bumper ) </li> 
+			</ul>
+		</li>
+		<li> <b>Embed Services Lib</b> -- The "embed service" library includes tools for translating your own entitiy 
+		 and player JSON data store against Kaltura player provided identifiers.
+		 	<ul>
+				<li> Recommended approach for connecting the player to multiple entity services outside of Kaltura API</li>
+				<li> Retains portability, native apps, and player iframe services.</li>
+				<li> Compatible with entity baaed plugins or clip lists ( playlist, related videos, etc. ) </li>
+			</ul>
+		</li>
+		<li> <b> Kaltura Platform API </b> -- baseline platform data provider 
+			<ul>
+				<li> Uses Kaltura provided entries with flexible custom MetaData store, internal and external asset urls references etc.</li>
+			</ul>
+		</li>  
+	</ul> 
