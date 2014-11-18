@@ -1566,26 +1566,29 @@
 		 * Called after sources are updated, and your ready for the player to change media
 		 * @return
 		 */
-		changeMedia: function( callback ){
+		changeMedia: function( callback, checkPlayerSourcesFunction, resetPlaybackValues ){
 			var _this = this;
 			var $this = $( this );
 
 			mw.log( 'EmbedPlayer:: changeMedia ');
-			// Empty out embedPlayer object sources
-			this.emptySources();
-			// remove thumb during switch: 
+			// remove thumb during switch:
 			this.removePoster();
 
 			// onChangeMedia triggered at the start of the change media commands
 			$this.trigger( 'onChangeMedia' );
 
-			// Reset first play to true, to count that play event
-			this.firstPlay = true;
-			// reset donePlaying count on change media.
-			this.donePlayingCount = 0;
-			this.triggeredEndDone = false;
-			this.preSequenceFlag = false;
-			this.postSequenceFlag = false;
+			// Empty out embedPlayer object sources
+			this.emptySources();
+
+			if (resetPlaybackValues || resetPlaybackValues === undefined) {
+				// Reset first play to true, to count that play event
+				this.firstPlay = true;
+				// reset donePlaying count on change media.
+				this.donePlayingCount = 0;
+				this.triggeredEndDone = false;
+				this.preSequenceFlag = false;
+				this.postSequenceFlag = false;
+			}
 
 			// Add a loader to the embed player:
 			this.pauseLoading();
@@ -1652,12 +1655,20 @@
 				}
 			});
 
-			// Load new sources per the entry id via the checkPlayerSourcesEvent hook:
-			$this.triggerQueueCallback( 'checkPlayerSourcesEvent', function(){
-				mw.log( "EmbedPlayer::changeMedia:  Done with checkPlayerSourcesEvent" );
-				// Start player events leading to playerReady
-				_this.setupSourcePlayer();
-			});
+			if (checkPlayerSourcesFunction){
+				checkPlayerSourcesFunction(function () {
+					mw.log( "EmbedPlayer::changeMedia:  Done with checkPlayerSourcesFunction" );
+					// Start player events leading to playerReady
+					_this.setupSourcePlayer();
+				} );
+			} else {
+				// Load new sources per the entry id via the checkPlayerSourcesEvent hook:
+				$this.triggerQueueCallback( 'checkPlayerSourcesEvent', function () {
+					mw.log( "EmbedPlayer::changeMedia:  Done with checkPlayerSourcesEvent" );
+					// Start player events leading to playerReady
+					_this.setupSourcePlayer();
+				} );
+			}
 		},
 		/**
 		 * Checks if the current player / configuration is an image play screen:
