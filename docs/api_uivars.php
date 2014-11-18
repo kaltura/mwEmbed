@@ -378,7 +378,7 @@ $uiVars = array(
 			),
 			'thumbnailUrl' => array(
                 'type' => 'String',
-                'desc' => 'External thumbnail URL to load instead of the entry default thumbnail',
+                'desc' => 'External thumbnail URL to load instead of the entry default thumbnail. Supports evaluated expressions within curly brackets',
                 'default' => '',
                 'example' => ''
             ),
