@@ -319,7 +319,7 @@
 				var $menu = $( '<ul />' );
 				//TODO: need icon from Shlomit!
 				var $button = $( '<button />' )
-					.addClass( 'btn icon-cog' )
+					.addClass( 'btn icon-switchSource' )
 					.attr('title', _this.selectSourceTitle)
 					.click( function(e){
 						_this.toggleMenu();
