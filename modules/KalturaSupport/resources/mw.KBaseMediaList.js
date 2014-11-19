@@ -75,9 +75,7 @@
 			if( ! this.$el ){
 				this.$el = $( '<div />' )
 					.addClass( this.pluginName + " medialistContainer unselectable k-" + this.getLayout() );
-				if (this.getConfig("includeHeader")){
-					this.$el.append($( '<div />' ).addClass("k-medialist-header k-" + this.getLayout() ));
-				}
+				this.$el.append($( '<div />' ).addClass("k-medialist-header k-" + this.getLayout() ));
 				this.$el.append($( '<div />' ).addClass("k-chapters-container k-" + this.getLayout() ));
 				if (!this.getConfig('parent')){
 					if ( this.getConfig( 'containerPosition' ) === 'top' && !this.getConfig( 'onPage' ) ) {
