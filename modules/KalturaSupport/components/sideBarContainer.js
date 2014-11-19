@@ -7,7 +7,7 @@
 			'clickToClose': false,
 			'position': 'left'
 		},
-		enabled: true,
+
 		keepOnScreen: false,
 
 		setup: function(){
@@ -53,19 +53,11 @@
 
 			this.bind( 'layoutBuildDone ended', function(){
 				_this.show();
+
 			});
 
 			this.bind('updateLayout', function(){
 				_this.getComponent().css('height', _this.getPlayer().getVideoHolder().height());
-			});
-
-			this.bind("disableSideBar", function(){
-				_this.enabled = false;
-				_this.hide();
-			});
-			this.bind("enableSideBar", function(){
-				_this.enabled = true;
-				_this.show();
 			});
 
 			// Bind hover events
@@ -87,16 +79,15 @@
 			}
 		},
 		show: function(){
-			if (this.enabled) {
-				this.getComponentReminder().addClass( 'open' );
-				// Trigger the screen overlay with layout info:
-				this.getPlayer().triggerHelper( 'onShowSidelBar', {
-					'top': this.getComponentReminder().height() + 15
-				} );
-			}
+			this.getComponentReminder().addClass( 'open' );
+			// Trigger the screen overlay with layout info:
+			this.getPlayer().triggerHelper( 'onShowSidelBar', {
+				'top' : this.getComponentReminder().height() + 15
+			});
 		},
 		hide: function(){
-			if( this.enabled && (this.keepOnScreen || (this.getConfig('clickToClose') && this.getConfig( 'isSideBarOpen')))) return;
+
+			if( this.keepOnScreen || (this.getConfig('clickToClose') && this.getConfig( 'isSideBarOpen'))) return;
 			this.setConfig( 'isSideBarOpen', 'false' );
 			this.getComponentReminder().removeClass( 'open shifted' );
 			this.getComponent().removeClass( 'openBtn' );
