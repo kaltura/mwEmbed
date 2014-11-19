@@ -315,18 +315,20 @@
 				}
 			});
 			_this.embedPlayer.bindHelper('Kaltura_SendNotification' + this.bindPostfix, function (event, notificationName, notificationData) {
-				if (notificationName === "doPause") {
-					_this.embedPlayer.paused = true;
-					$(_this.embedPlayer).trigger("onPlayerStateChange", ["pause", _this.embedPlayer.currentState]);
-					if (_this.isChromeless) {
-						_this.embedPlayer.getPlayerElement().sendNotification("pauseAd");
+				if (_this.playingLinearAd) {
+					if ( notificationName === "doPause" ) {
+						_this.embedPlayer.paused = true;
+						$( _this.embedPlayer ).trigger( "onPlayerStateChange", ["pause", _this.embedPlayer.currentState] );
+						if ( _this.isChromeless ) {
+							_this.embedPlayer.getPlayerElement().sendNotification( "pauseAd" );
+						}
 					}
-				}
-				if (notificationName === "doPlay") {
-					_this.embedPlayer.paused = false;
-					$(_this.embedPlayer).trigger("onPlayerStateChange", ["play", _this.embedPlayer.currentState]);
-					if (_this.isChromeless) {
-						_this.embedPlayer.getPlayerElement().sendNotification("resumeAd");
+					if ( notificationName === "doPlay" ) {
+						_this.embedPlayer.paused = false;
+						$( _this.embedPlayer ).trigger( "onPlayerStateChange", ["play", _this.embedPlayer.currentState] );
+						if ( _this.isChromeless ) {
+							_this.embedPlayer.getPlayerElement().sendNotification( "resumeAd" );
+						}
 					}
 				}
 			});
@@ -923,12 +925,14 @@
 						_this.embedPlayer.getPlayerElement().play();
 					},100);
 				}
+				_this.playingLinearAd = false;
 			},'contentResumeRequested', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				_this.entryDuration = _this.embedPlayer.getDuration();
 				_this.embedPlayer.sequenceProxy.isInSequence = true;
 				_this.embedPlayer.stopMonitor();
+				_this.playingLinearAd = true;
 			},'contentPauseRequested', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
