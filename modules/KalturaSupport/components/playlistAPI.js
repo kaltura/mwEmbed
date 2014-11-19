@@ -24,7 +24,8 @@
 			'cssFileName': 'modules/KalturaSupport/components/playlist/playList.css',
 			'showControls': true,
 			'MaxClips': 25,
-			'selectedIndex': 0
+			'selectedIndex': 0,
+			'includeHeader': true
 		},
 
 

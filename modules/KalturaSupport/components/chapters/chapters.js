@@ -24,6 +24,7 @@
 			'includeItemNumberPattern': false,
 			'includeMediaItemDuration': true,
 			'onPage': false,
+			'includeHeader': false,
 			'cssFileName': 'modules/KalturaSupport/components/chapters/chapters.css'
 		},
 
