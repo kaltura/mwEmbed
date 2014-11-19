@@ -372,6 +372,8 @@ class kalturaIframeClass {
 				"Expires: Sat, 26 Jul 1997 05:00:00 GMT"
 			);
 		}
+		// alwayse set cross orgin headers: 
+		$cacheHeaders[] = 'Access-Control-Allow-Origin: *';
 		return $cacheHeaders;
 	}
 
@@ -388,6 +390,8 @@ class kalturaIframeClass {
 		header( "Cache-Control: public, max-age=$expireTime, max-stale=0");
 		header( "Last-Modified: " . gmdate( "D, d M Y H:i:s", $lastModified) . "GMT");
 		header( "Expires: " . gmdate( "D, d M Y H:i:s", $lastModified + $expireTime ) . " GM" );
+		// alwayse set cross orgin headers:
+		header( "Access-Control-Allow-Origin: *" );
 	}
 
 	/**
