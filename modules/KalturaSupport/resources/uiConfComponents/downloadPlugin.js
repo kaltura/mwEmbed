@@ -29,11 +29,15 @@
 				if ( this.getConfig( 'preferredBitrate' ) != '' && this.getConfig( 'preferredBitrate' ) != null ){
 					downloadUrl += '&preferredBitrate=' + encodeURIComponent( this.getConfig( 'preferredBitrate' ));
 				}
-			    if ( this.getConfig( 'flavorID' ) != '' && this.getConfig( 'flavorID' ) != null ){
+
+				if( this.getKalturaClient().getKs() ){
+					downloadUrl += '&ks=' + this.getKalturaClient().getKs();
+				}
+			
+				if ( this.getConfig( 'flavorID' ) != '' && this.getConfig( 'flavorID' ) != null ){
 					downloadUrl += '&flavorID=' + encodeURIComponent( this.getConfig( 'flavorID' ));
 				}
-				downloadUrl += '&ks=' + this.getPlayer().getFlashvars('ks');
-				
+
 			window.open( downloadUrl );
 		},
 		getComponent: function() {

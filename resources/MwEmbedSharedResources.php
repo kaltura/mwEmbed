@@ -8,14 +8,11 @@ return array(
 	/* jQuery */
 
 	'jquery' => array(
-		'scripts' => 'resources/jquery/jquery-1.10.2.js',
+		'scripts' => 'resources/jquery/jquery.min.js',
 		'debugRaw' => false
 	),
 
 	/* cryto / encode */
-	'MD5' => array(
-		'scripts' =>	 'resources/crypto/MD5.js' 
-	),
 	'base64_encode' =>  array( 
 		'scripts' => 'resources/base64/base64_encode.js',
 		'dependencies' => 'utf8_encode'
@@ -420,8 +417,8 @@ return array(
 		'dependencies' => array(
 			'jquery.client',
 			'jquery.cookie',
-			'jquery.messageBox',
-			'jquery.mwExtension',
+			//'jquery.messageBox',
+			//'jquery.mwExtension',
 		),
 		'messages' => array( 'showtoc', 'hidetoc' ),
 		'position' => 'top', // For $wgPreloadJavaScriptMwUtil

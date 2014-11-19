@@ -1,9 +1,15 @@
 ( function( mw, $ ) {"use strict";
-/**
- * Add the messages text:
- *  TODO remove once we switch to RL17
- */
 
+/* Base API helper */
+mw.KApiPartnerCache = [];
+mw.kApiGetPartnerClient = function( widgetId ){
+	if( !mw.KApiPartnerCache[ widgetId ] ){
+		mw.KApiPartnerCache[ widgetId ] = new kWidget.api( {'wid':widgetId} );
+	}
+	return mw.KApiPartnerCache[ widgetId ];
+};
+
+/* Base Widget support*/
 mw.KWidgetSupport = function( options ) {
 	// Create KWidgetSupport instance
 	return this.init( options );
@@ -84,13 +90,14 @@ mw.KWidgetSupport.prototype = {
 			// Get KS and append to download url ( should be sync call )
 			var client = mw.kApiGetPartnerClient( embedPlayer.kwidgetid );
 			// Append ks & referrer for access control
-			var referrer = base64_encode( kWidgetSupport.getHostPageUrl() );
-			client.getKS(function( ks ){
-				downloadUrl += '/?ks=' + ks + '&referrer=' + referrer;
-				downloadUrlCallback( downloadUrl );
-			});
+			downloadUrl += '/referrer/' +  base64_encode( kWidgetSupport.getHostPageUrl() );
+			var ks = client.getKs();
+			if( ks ){
+				downloadUrl += '/ks/' + ks;
+			};
+			downloadUrlCallback( downloadUrl );
 		});
-
+		
 		// Add hook for check player sources to use local kEntry ID source check:
 		embedPlayer.bindHelper( 'checkPlayerSourcesEvent', function( event, callback ) {
 			_this.loadAndUpdatePlayerData( embedPlayer, callback );
@@ -138,8 +145,27 @@ mw.KWidgetSupport.prototype = {
 		});
 
 		embedPlayer.bindHelper( 'embedPlayerError' , function () {
-			embedPlayer.showErrorMsg( { title: embedPlayer.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), message: embedPlayer.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) } );
+			var displayedAcError = false;
+			// check for AC error: 
+			_this.getEntryIdSourcesFromApi( embedPlayer, embedPlayer.kentryid, function( sources ){
+				// no sources, or access control error. 
+				if( ! sources || sources.message ){
+					embedPlayer.showErrorMsg( sources );
+					displayedAcError = true;
+				}
+			});
+			// give the above access control message 3 seconds to resolve; else show default network error
+			setTimeout(function(){
+				if( displayedAcError){
+					return;
+				}
+				embedPlayer.showErrorMsg( { 
+					title: embedPlayer.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), 
+					message: embedPlayer.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) 
+				});
+			}, 3000);
 		});
+		
 		// Support mediaPlayFrom, mediaPlayTo properties
 		embedPlayer.bindHelper( 'Kaltura_SetKDPAttribute', function(e, componentName, property, value){
 			switch( property ){
@@ -795,17 +821,17 @@ mw.KWidgetSupport.prototype = {
 	 * accessible via static reference mw.getEntryIdSourcesFromApi
 	 *
 	 */
-	getEntryIdSourcesFromApi:  function( widgetId, partnerId, entryId, size, callback ){
+	getEntryIdSourcesFromApi:  function( embedPlayer, entryId, callback ){
 		var _this = this;
 		var sources;
-		mw.log( "KWidgetSupport:: getEntryIdSourcesFromApi: w:" + widgetId + ' entry:' + entryId );
-		this.kClient = mw.KApiPlayerLoader({
-			'widget_id' : widgetId,
-			'entry_id' : entryId
+		mw.log( "KWidgetSupport:: getEntryIdSourcesFromApi: w:" + embedPlayer.kwidgetid + ' entry:' + embedPlayer.kentryid );
+		this.kClient = mw.kApiEntryLoader({
+			'widget_id': embedPlayer.kwidgetid,
+			'entry_id': entryId
 		}, function( playerData ){
 			// Check access control
 			if( playerData.contextData ){
-				var acStatus = _this.getAccessControlStatus( playerData.contextData );
+				var acStatus = _this.getAccessControlStatus( playerData.contextData, embedPlayer );
 				if( acStatus !== true ){
 					callback( acStatus );
 					return ;
@@ -816,21 +842,21 @@ mw.KWidgetSupport.prototype = {
 				sources = [{
 						'src' : _this.getKalturaThumbnailUrl({
 							url: playerData.meta.thumbnailUrl,
-							width: size.width,
-							height: size.height
+							width:  embedPlayer.getWidth(),
+							height: embedPlayer.getHeight()
 						}),
 						'type' : 'image/jpeg'
 					}];
 			} else {
 				// Get device sources
-				sources = _this.getEntryIdSourcesFromPlayerData( partnerId, playerData );
+				sources = _this.getEntryIdSourcesFromPlayerData( embedPlayer.kpartnerid, playerData );
 			}
 			// Return the valid source set
 			callback( sources );
 		});
 	},
 	/**
-	 * Sets up variables and issues the mw.KApiPlayerLoader call
+	 * Sets up variables and issues the mw.kEntryLoader call
 	 */
 	loadPlayerData: function( embedPlayer, callback ){
 		var _this = this;
@@ -858,7 +884,7 @@ mw.KWidgetSupport.prototype = {
 
 		// Set KS from flashVar
 		this.kClient = mw.kApiGetPartnerClient( playerRequest.widget_id );
-		this.kClient.setKS( embedPlayer.getFlashvars( 'ks' ) );
+		this.kClient.setKs( embedPlayer.getFlashvars( 'ks' ) );
 
 		// Check for playlist cache based
 		if( window.kalturaIframePackageData && window.kalturaIframePackageData.playlistResult ){
@@ -884,7 +910,7 @@ mw.KWidgetSupport.prototype = {
 			return ;
 		} 
 		// Run the request:
-		this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
+		this.kClient = mw.kApiEntryLoader( playerRequest, function( playerData ){
 			_this.handlePlayerData(embedPlayer, playerData );
 			callback( playerData );
 		});
@@ -1105,7 +1131,7 @@ mw.KWidgetSupport.prototype = {
 	 * @param {object} playerData The flavor data object
 	 */
 	getEntryIdSourcesFromPlayerData: function( partnerId, playerData ){
-	   	var _this = this;
+		var _this = this;
 
 		if( !playerData.contextData || ( playerData.contextData && !playerData.contextData.flavorAssets )){
 			mw.log("Error: KWidgetSupport: contextData.flavorAssets is not defined ");
@@ -1375,9 +1401,8 @@ mw.KWidgetSupport.prototype = {
 
 		// Append KS to all source if available
 		// Get KS for playManifest URL ( this should run synchronously since ks should already be available )
-		var ksCheck = false;
-		this.kClient.getKS( function( ks ) {
-			ksCheck = true;
+		var ks = this.kClient.getKs();
+		if( ks ){
 			var manifestKs = _this.fixPlaymanifestParam( ks );
 			var referrer =   _this.fixPlaymanifestParam( base64_encode( _this.getHostPageUrl() ) );
 			var clientTag = 'html5:v' + window[ 'MWEMBED_VERSION' ];
@@ -1394,9 +1419,8 @@ mw.KWidgetSupport.prototype = {
 						'&clientTag=' + clientTag;
 				}
 			});
-		});
-		if( !ksCheck ){
-			mw.log("Error:: KWidgetSupport: KS not defined in time, streams will be missing ks paramter");
+		} else {
+			mw.log("KWidgetSupport: KS not defined, streams will not include a ks paramter");
 		}
 		
 		return deviceSources;
@@ -1472,11 +1496,13 @@ mw.KWidgetSupport.prototype = {
 		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/' + format + '/protocol/' + protocol + '/uiConfId/' + embedPlayer.kuiconfid +  '/a.' + extension;
 		// Append KS & Referrer
 		function getKs() {
+			srcUrl += '?referrer=' + base64_encode( _this.getHostPageUrl() );
 			var deferred = $.Deferred();
-			_this.kClient.getKS( function( ks ) {
-				srcUrl = srcUrl + '?ks=' + ks + '&referrer=' + base64_encode( _this.getHostPageUrl() );
-				deferred.resolve();
-			});
+			var ks = _this.kClient.getKs();
+			if( ks ){
+				srcUrl += '&ks=' + ks;
+			}
+			deferred.resolve();
 			return deferred.promise();
 		}
 		//add source
@@ -1554,8 +1580,8 @@ if( !window.kWidgetSupport ){
 /**
  * Register a global shortcuts for the Kaltura sources query
  */
-mw.getEntryIdSourcesFromApi = function( widgetId, partnerId, entryId, size, callback ){
-	kWidgetSupport.getEntryIdSourcesFromApi( widgetId, partnerId, entryId, size, callback);
+mw.getEntryIdSourcesFromApi = function( embedPlayer, entryId, callback ){
+	kWidgetSupport.getEntryIdSourcesFromApi( embedPlayer, entryId, callback);
 };
 
 })( window.mw, jQuery );

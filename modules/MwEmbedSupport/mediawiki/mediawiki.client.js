@@ -225,10 +225,6 @@
 		}
 	};
 
-	mw.supportSilverlight = function(){
-		return Silverlight.isInstalled("4.0");
-	};
-
 	/**
 	 * parse JSON string
 	 * @return {object} parsed json object. If parsing fails (syntax error): returns retValue if specified. If no retValue was specified - returns an empty object.

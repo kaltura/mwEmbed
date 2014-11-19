@@ -318,29 +318,29 @@
 		)
 	);
 	$playlists = array(
-        'playlistReady' => array(
-            'props' => 'None',
-            'desc' => 'The playlist layout is ready.'
-        ),
-        'playlistPlayNext' => array(
-            'props' => 'None',
-            'desc' => 'The next clip was requested.'
-        ),
-        'playlistPlayPrevious' => array(
-            'props' => 'None',
-            'desc' => 'The previous clip was requested.'
-        ),
-        'playlistFirstEntry' => array(
-            'props' => 'None',
-            'desc' => 'The first clip in the playlist was loaded.'
-        ),
-        'playlistMiddleEntry' => array(
-            'props' => 'None',
-            'desc' => 'A clip that is not the first or the last clip in the playlist was loaded.'
-        ),
-        'playlistLastEntry' => array(
-            'props' => 'None',
-            'desc' => 'The last clip in the playlist was loaded.'
-        )
-    );
+		'playlistReady' => array(
+			'props' => 'None',
+			'desc' => 'The playlist layout is ready.'
+		),
+		'playlistPlayNext' => array(
+			'props' => 'None',
+			'desc' => 'The next clip was requested.'
+		),
+		'playlistPlayPrevious' => array(
+			'props' => 'None',
+			'desc' => 'The previous clip was requested.'
+		),
+		'playlistFirstEntry' => array(
+			'props' => 'None',
+			'desc' => 'The first clip in the playlist was loaded.'
+		),
+		'playlistMiddleEntry' => array(
+			'props' => 'None',
+			'desc' => 'A clip that is not the first or the last clip in the playlist was loaded.'
+		),
+		'playlistLastEntry' => array(
+			'props' => 'None',
+			'desc' => 'The last clip in the playlist was loaded.'
+		)
+	);
 ?>
