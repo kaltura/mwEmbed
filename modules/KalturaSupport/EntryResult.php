@@ -45,10 +45,10 @@ class EntryResult {
 	}
 	
 	function getResult(){
-		// check for user supplied mediaProxy / entryResult:
-		if( $this->request->get('mediaProxy' ) ){
-			// kind of messy decoding special chars here should request handler
-			return (array) json_decode( htmlspecialchars_decode( $this->request->get('mediaProxy') ) );
+		$mediaProxyOverride = json_decode(json_encode($this->uiconf->getPlayerConfig( false, 'mediaProxy' ) ), true);
+		// check for user supplied mediaProxy override of entryResult
+		if( $mediaProxyOverride && isset( $mediaProxyOverride['entry'] ) ){
+			return $mediaProxyOverride;
 		}
 		// Check for entry or reference Id
 		if( ! $this->request->getEntryId() && ! $this->request->getReferenceId() ) {

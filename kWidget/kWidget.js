@@ -929,15 +929,12 @@ var kWidget = {
 			if( iframeRequest.length > 2083 ){
 				this.log( "Warning iframe requests (" + iframeRequest.length + ") exceeds 2083 charachters, won't cache on CDN." )
 			}
-			if ( settings.flashvars.jsonConfig || iframeRequest.length > 2000 ){
-				var jsonConfig = settings.flashvars.jsonConfig;
-				settings.flashvars.jsonConfig = null;
+			if ( iframeRequest.length > 2000 ){
 				$.ajax({
 					type:"POST",
 					dataType: 'text',
-					url: this.getIframeUrl() + '?' +
-						iframeRequest,
-					data:{"jsonConfig":jsonConfig}
+					url: this.getIframeUrl(),
+					data: iframeRequest
 				}).success(function(data){
 						var contentData = {content:data} ;
 						window[cbName](contentData);
@@ -1759,13 +1756,11 @@ var kWidget = {
 	 flashVarsToUrl: function( flashVarsObject ){
 		 var params = '';
 		 for( var i in flashVarsObject ){
-			 if (i !== 'jsonConfig'){
-				 var curVal = typeof flashVarsObject[i] == 'object'?
-						 JSON.stringify( flashVarsObject[i] ):
-						 flashVarsObject[i]
-				 params+= '&' + 'flashvars[' + encodeURIComponent( i ) + ']=' +
-					encodeURIComponent(  curVal );
-			 }
+			 var curVal = typeof flashVarsObject[i] == 'object'?
+					 JSON.stringify( flashVarsObject[i] ):
+					 flashVarsObject[i]
+			 params+= '&' + 'flashvars[' + encodeURIComponent( i ) + ']=' +
+				encodeURIComponent(  curVal );
 		 }
 		 return params;
 	 },
@@ -2054,10 +2049,6 @@ var kWidget = {
 					url += '&' + attrKey + '=' + encodeURIComponent( settings[attrKey] );
 				}
 			}
-		}
-		// add mediaProxy if set: 
-		if( settings.mediaProxy ){
-			url += '&mediaProxy=' + encodeURIComponent( JSON.stringify( settings.mediaProxy ) );
 		}
 		// Add the flashvars:
 		url += this.flashVarsToUrl( settings.flashvars );
