@@ -72,7 +72,7 @@ mw.FreeWheelController.prototype = {
 		_this.embedPlayer.unbindHelper( _this.bindPostfix );
 
 		if (mw.isIE8()) {
-			mw.log("FreeWheelController::init: Freewheel HTML5 version is not supported in IE8. Please use KDP player.");
+			mw.log("FreeWheelController::init: Freewheel HTML5 version is not supported in IE8. Please use Flash KDP player.");
 			callback();
 			return;
 		}
