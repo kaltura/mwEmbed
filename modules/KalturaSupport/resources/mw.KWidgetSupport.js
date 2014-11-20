@@ -243,25 +243,25 @@ mw.KWidgetSupport.prototype = {
 			if( playerData.meta && playerData.meta.code == 'ENTRY_ID_NOT_FOUND' ){
 				$( embedPlayer ).trigger( 'KalturaSupport_EntryFailed' );
 			} else {
-				// Add any custom metadata:
-				if( playerData.entryMeta ){
-					embedPlayer.kalturaEntryMetaData = playerData.entryMeta;
-				}
-				// Apply player metadata
-				if( playerData.meta ) {
+				// Look for custom metadata in playerData.entryMeta and entryMetadata ( mediaProxy override name )
+				embedPlayer.kalturaEntryMetaData = ( playerData.entryMeta ) ? playerData.entryMeta : playerData.entryMetadata
+				
+				// Lock for "entry" in 'meta' and 'entry' ( mediaProxy override name )
+				var meta =  ( playerData.meta ) ? playerData.meta: playerData.entry;
+				// Apply player entry metadata
+				if( meta ) {
 					// We have to assign embedPlayer metadata as an attribute to bridge the iframe
-					embedPlayer.kalturaPlayerMetaData = playerData.meta;
+					embedPlayer.kalturaPlayerMetaData = meta;
 
-					if ( playerData.meta.moderationStatus && (!playerData.contextData || !playerData.contextData.isAdmin) ) {
-						if ( playerData.meta.moderationStatus == 1 ) {
+					if ( meta.moderationStatus && (!playerData.contextData || !playerData.contextData.isAdmin) ) {
+						if ( meta.moderationStatus == 1 ) {
 							embedPlayer.setError( embedPlayer.getKalturaMsgObject('ks-ENTRY_MODERATE') );
-						} else if ( playerData.meta.moderationStatus == 3 ) {
+						} else if ( meta.moderationStatus == 3 ) {
 							embedPlayer.setError( embedPlayer.getKalturaMsgObject('ks-ENTRY_REJECTED') );
 						}
 					}
 				}
 			}
-
 			// Check access controls ( must come after addPlayerMethods for custom messages )
 			// check for Cuepoint data and load cuePoints,
 			// TODO optimize cuePoints as hard or soft dependency on kWidgetSupport
@@ -344,7 +344,7 @@ mw.KWidgetSupport.prototype = {
 				embedPlayer.setError( embedPlayer.getKalturaMsg('LIVE-STREAM-NOT-SUPPORTED') );
 			}
 		} else {
-			if (this.isEmbedServicesEnabled(playerData)){
+			if ( this.isEmbedServicesEnabled( playerData ) ){
 				this.setEmbedServicesData(embedPlayer, playerData);
 			} else {
 				embedPlayer.setLive( false );
@@ -352,6 +352,10 @@ mw.KWidgetSupport.prototype = {
 				// Apply player Sources
 				if ( playerData.contextData && playerData.contextData.flavorAssets ) {
 					_this.addFlavorSources( embedPlayer, playerData );
+				}
+				// try with direct source override: 
+				if ( playerData.sources ) {
+					_this.addSources( embedPlayer, playerData.sources  );
 				}
 			}
 		}
@@ -881,7 +885,6 @@ mw.KWidgetSupport.prototype = {
 
 		// Add features
 		playerRequest.features = kalturaIframePackageData.apiFeatures;
-
 		// Set KS from flashVar
 		this.kClient = mw.kApiGetPartnerClient( playerRequest.widget_id );
 		this.kClient.setKs( embedPlayer.getFlashvars( 'ks' ) );
@@ -901,8 +904,9 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.kalturaPlaylistData = pl;
 			delete( window.kalturaIframePackageData.playlistResult );
 		}
-		// Check for entry cache:
+		
 		if( window.kalturaIframePackageData && window.kalturaIframePackageData.entryResult ){
+			var entryResult =  window.kalturaIframePackageData.entryResult;
 			this.handlePlayerData( embedPlayer, kalturaIframePackageData.entryResult );
 			callback( window.kalturaIframePackageData.entryResult );
 			// remove the entryResult from the payload
@@ -914,6 +918,13 @@ mw.KWidgetSupport.prototype = {
 			_this.handlePlayerData(embedPlayer, playerData );
 			callback( playerData );
 		});
+	},
+	/**
+	 * Handles direct mediaProxy mapping into the kalutra player. 
+	 */
+	handleMediaProxyOverride: function(embedPlayer, entryResult){
+		// Handle sources: 
+		
 	},
 	/**
 	 * handle player data mappings to embedPlayer
@@ -1026,7 +1037,15 @@ mw.KWidgetSupport.prototype = {
 		}
 		return false;
 	},
-
+	addSources: function( embedPlayer, sources ){
+		$.each(sources, function( inx, source){
+			var sourceElm = $('<source />')
+				.attr( source )
+				.get( 0 );
+			
+			embedPlayer.mediaElement.tryAddSource( sourceElm );
+		});
+	},
 	/**
 	* Convert flavorData to embedPlayer sources
 	*

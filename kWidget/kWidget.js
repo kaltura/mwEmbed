@@ -926,10 +926,8 @@ var kWidget = {
 		} else {
 			// Check if we need to use post ( where flashvars excceed 2K string )
 			var iframeRequest =  this.getIframeRequest( widgetElm, settings );
-			if( iframeRequest.length > 2083 ){
+			if ( iframeRequest.length > 2083 ){
 				this.log( "Warning iframe requests (" + iframeRequest.length + ") exceeds 2083 charachters, won't cache on CDN." )
-			}
-			if ( iframeRequest.length > 2000 ){
 				$.ajax({
 					type:"POST",
 					dataType: 'text',
@@ -946,7 +944,7 @@ var kWidget = {
 				// do an iframe payload request:
 				_this.appendScriptUrl( this.getIframeUrl() + '?' +
 					iframeRequest + 
-					'&callback=' + cbName 
+					'&callback=' + cbName
 				);
 			}
 		}
