@@ -326,7 +326,7 @@ var kWidget = {
 			return ;
 		}
 		var uiconf_id = settings.uiconf_id;
-		var confFile = settings.flashvars.confFilePath;
+		var confFile = settings.flashvars.confFilePath ? settings.flashvars.confFilePath : settings.flashvars.jsonConfig;
 		if( !uiconf_id && !confFile ){
 			this.log("Error: kWidget.embed missing uiconf_id or confFile");
 			return ;

@@ -186,7 +186,7 @@ mw.KWidgetSupport.prototype = {
 	loadAndUpdatePlayerData: function( embedPlayer, callback ){
 		var _this = this;
 		mw.log( "KWidgetSupport::loadAndUpdatePlayerData" );
-		// Load all the player configuration from kaltura:
+		// Load all the player configuration from Kaltura:
 		_this.loadPlayerData( embedPlayer, function( playerData ){
 			if( !playerData ){
 				mw.log("KWidgetSupport::loadAndUpdatePlayerData> error no player data!");
