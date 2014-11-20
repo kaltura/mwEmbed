@@ -1323,7 +1323,6 @@
 					'message' : errorObj
 				}
 				return ;
-
 			}
 			this.playerError = errorObj;
 		},
@@ -1631,9 +1630,7 @@
 				};
 
 				if( $.isFunction(_this.changeMediaCallback) ){
-					setTimeout(function(){
-						_this.changeMediaCallback( changeMediaDoneCallback );
-					},250);
+					_this.changeMediaCallback( changeMediaDoneCallback );
 				} else {
 					changeMediaDoneCallback();
 				}

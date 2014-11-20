@@ -913,7 +913,6 @@ mw.KWidgetSupport.prototype = {
 			delete( window.kalturaIframePackageData.entryResult );
 			return ;
 		} 
-		// Run the request:
 		this.kClient = mw.kApiEntryLoader( playerRequest, function( playerData ){
 			_this.handlePlayerData(embedPlayer, playerData );
 			callback( playerData );

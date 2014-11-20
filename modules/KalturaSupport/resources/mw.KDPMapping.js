@@ -690,7 +690,7 @@
 				case 'readyToLoad':
 					if( embedPlayer.playerReadyFlag ){
 						// player is already ready when listener is added
-						if( ! embedPlayer.kentryid ){
+						if( ! embedPlayer.kalturaPlayerMetaData ){
 							embedPlayer.kdpEmptyFlag = true;
 							callback( embedPlayer.id );
 						}
@@ -699,7 +699,7 @@
 						b( 'playerReady', function(){
 							// only trigger kdpEmpty when the player is empty
 							// TODO support 'real' player empty state, ie not via "error handler"
-							if( ! embedPlayer.kentryid ){
+							if( ! embedPlayer.kalturaPlayerMetaData ){
 								embedPlayer.kdpEmptyFlag = true;
 								// run after all other playerReady events: 
 								setTimeout(function(){
