@@ -126,9 +126,12 @@
 
 				if ( _this.isDVR() ) {
 					if ( !onAirObj.onAirStatus ) {
+						embedPlayer.triggerHelper('onHideInterfaceComponents', [['liveBackBtn']] );
 						if ( _this.shouldHandlePausedMonitor() ) {
 							_this.removePausedMonitor();
 						}
+					} else if ( _this.firstPlay ) {
+						embedPlayer.triggerHelper('onShowInterfaceComponents', [['liveBackBtn']] );
 					}
 				}
 			} );
@@ -175,8 +178,7 @@
 			//ui components to hide
 			var showComponentsArr = [];
 			//ui components to show
-			var hideComponentsArr = [];
-			hideComponentsArr.push( 'durationLabel' );
+			var hideComponentsArr = [ 'liveBackBtn' ];
 			_this.maxCurrentTime = 0;
 			//live entry
 			if ( embedPlayer.isLive() ) {
@@ -194,6 +196,7 @@
 					_this.switchDone = false;
 				}
 
+				hideComponentsArr.push( 'durationLabel' );
 				//live + DVR
 				if ( _this.isDVR() ) {
 					_this.dvrWindow = embedPlayer.evaluate( '{mediaProxy.entry.dvrWindow}' ) * 60;
@@ -231,7 +234,7 @@
 			}
 			//not a live entry: restore ui, hide live ui
 			else {
-				hideComponentsArr.push( 'liveStatus', 'liveBackBtn' );
+				hideComponentsArr.push( 'liveStatus' );
 				showComponentsArr.push( 'sourceSelector', 'scrubber', 'durationLabel', 'currentTimeLabel' );
 				_this.removeLiveStreamStatusMonitor();
 				_this.unbind('timeupdate');
