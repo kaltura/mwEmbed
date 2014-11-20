@@ -67,11 +67,13 @@
 					'jquery.ui.slider',
 					'jquery.ui.tooltip',
 					'jquery.naturalSize',
-
+					
+					'mw.PlayerElementHTML', // used in ads
+					
 					'mw.PlayerElementFlash',
 					// load HTML player & Silverlight on-demand ( can't load all intefaces all the time )
 					//'mw.PlayerElementSilverlight',
-					//'mw.PlayerElementHTML',
+					
 				),
 				'styles' => "resources/EmbedPlayer.css",
 				'messageFile' => 'EmbedPlayer.i18n.php',

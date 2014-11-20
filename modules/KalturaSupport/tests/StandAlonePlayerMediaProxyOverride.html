@@ -26,7 +26,10 @@
 				"scrubber": {
 					'thumbSlicesUrl': '{mediaProxy.entryMetadata.thumbSlicesUrl}'
 				},
-				"vast":{ "trackCuePoints":"true", "timeout": 4},
+				"vast":{ 
+					"trackCuePoints":"true",
+					"timeout": 4
+				},
 				"playPauseBtn": {},
 				"volumeControl": {},
 				"fullScreenBtn": {},
@@ -62,7 +65,8 @@
 					"thumbnailUrl": 'http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/640'
 				},
 				'entryCuePoints': [{
-					"adType": 2,
+					"protocolType": 1,
+					"adType": 1, 
 					"cuePointType": "adCuePoint.Ad",
 					"duration": 5005,
 					"startTime": 4936,
@@ -116,7 +120,9 @@
 					"thumbnailUrl": 'http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/0_c0r624gh/version/100004/width/640'
 				},
 				'entryCuePoints': [{
-					"adType": 2,
+					// see enum mappings here: 
+					"protocolType": 1,
+					"adType": 1,
 					"cuePointType": "adCuePoint.Ad",
 					"duration": 5005,
 					"startTime": 4936,
@@ -211,7 +217,7 @@ var mediaProxyEntry = {
 		"thumbnailUrl": 'http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/640'
 	},
 	'entryCuePoints': [{
-		"adType": 2,
+		"<a href="http://www.kaltura.com/api_v3/testmeDoc/index.php?object=KalturaAdType">adType</a>": 2,
 		"cuePointType": "adCuePoint.Ad",
 		"duration": 5005,
 		"startTime": 4936,
@@ -268,7 +274,7 @@ kWidget.embed('kaltura_player', {
 kdp.sendNotification('changeMedia', { 'mediaProxy': mediaProxyEntry });</pre>
 
 	<h3> Sample changeMedia on an empty player</h3>
-	<div id="kaltura_player2" style="width:600px;height:338px;"></div>
+	<div id="kaltura_player--" style="width:600px;height:338px;"></div>
 	<script>
 		kWidget.embed('kaltura_player2', {
 			'wid' : '_partnerkey',
