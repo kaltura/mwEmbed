@@ -420,37 +420,26 @@ mw.EmbedPlayerNative = {
 		this.layoutBuilder.onSeek();
 
 		// @@todo check if the clip is loaded here (if so we can do a local seek)
-		if ( this.supportsURLTimeEncoding() ) {
-			// Make sure we could not do a local seek instead:
-			if ( percent < this.bufferedPercent && this.playerElement.duration && !this.didSeekJump ) {
-				mw.log( "EmbedPlayerNative::seek local seek " + percent + ' is already buffered < ' + this.bufferedPercent );
-				this.doNativeSeek( percent );
+		// Try to do a play then seek:
+		this.doNativeSeek(percent, function () {
+			if (stopAfterSeek) {
+				_this.hideSpinner();
+				// pause in a non-blocking call to avoid synchronous playing event
+				setTimeout(function () {
+					_this.pause();
+					_this.updatePlayheadStatus();
+				}, 0);
 			} else {
-				// We support URLTimeEncoding call parent seek:
-				this.parent_seek( percent );
+				// continue to playback ( in a non-blocking call to avoid synchronous pause event )
+				setTimeout(function () {
+					if (!_this.stopPlayAfterSeek) {
+						mw.log("EmbedPlayerNative::sPlay after seek");
+						_this.play();
+						_this.stopPlayAfterSeek = false;
+					}
+				}, 0);
 			}
-		} else {
-			// Try to do a play then seek:
-			this.doNativeSeek( percent, function(){
-				if( stopAfterSeek ){
-					_this.hideSpinner();
-					// pause in a non-blocking call to avoid synchronous playing event
-					setTimeout(function() {
-						_this.pause();
-						_this.updatePlayheadStatus();
-					}, 0);
-				} else {
-					// continue to playback ( in a non-blocking call to avoid synchronous pause event ) 
-					setTimeout(function(){
-						if ( !_this.stopPlayAfterSeek ) {
-							mw.log( "EmbedPlayerNative::sPlay after seek" );
-							_this.play();
-							_this.stopPlayAfterSeek = false;
-						}
-					},0);
-				}
-			} );
-		}
+		});
 	},
 
 	/**
@@ -1233,6 +1222,9 @@ mw.EmbedPlayerNative = {
 		}
 	},
 
+	_ondurationchange: function (event, data) {
+		this.setDuration(this.getPlayerElement().duration);
+	},
 	/**
 	* Local method for seeked event
 	* fired when done seeking

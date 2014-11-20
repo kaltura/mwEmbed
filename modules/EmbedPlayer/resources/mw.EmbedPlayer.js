@@ -781,7 +781,7 @@
 				this.sourcesReplaced = false;
 			}
 			// Autoseletct the media source
-			this.mediaElement.autoSelectSource();
+			this.mediaElement.autoSelectSource(this.supportsURLTimeEncoding(), this.startTime, this.pauseTime);
 
 			// Auto select player based on default order
 			if( this.mediaElement.selectedSource ){
@@ -1019,7 +1019,8 @@
 			this.updatePlayHead( percent );
 
 			// See if we should do a server side seek ( player independent )
-			if ( this.supportsURLTimeEncoding() ) {
+			if (this.supportsURLTimeEncoding()) {
+				return;
 				mw.log( 'EmbedPlayer::seek:: updated serverSeekTime: ' + mw.seconds2npt ( this.serverSeekTime ) +
 						' currentTime: ' + _this.currentTime );
 				// make sure we need to seek:
@@ -2140,7 +2141,9 @@
 				}
 			}
 
-			this.addStartTimeCheck();
+			if (!this.supportsURLTimeEncoding()) {
+				this.addStartTimeCheck();
+			}
 
 			this.playInterfaceUpdate();
 			// If play controls are enabled continue to video content element playback:
@@ -2608,8 +2611,9 @@
 			_this.previousTime = _this.currentTime;
 
 			// Check for a pauseTime to stop playback in temporal media fragments
-			if( _this.pauseTime && _this.currentTime >  _this.pauseTime ){
+			if (_this.pauseTime && _this.currentTime > _this.pauseTime && !this.supportsURLTimeEncoding()) {
 				_this.pause();
+				alert("pause");
 				_this.pauseTime = null;
 			}
 		},
@@ -2725,7 +2729,7 @@
 
 			// If no source selected auto select the source:
 			if( !this.mediaElement.selectedSource ){
-				this.mediaElement.autoSelectSource();
+				this.mediaElement.autoSelectSource(this.supportsURLTimeEncoding(), this.startTime, this.pauseTime);
 			};
 
 			// Return selected source:
@@ -2746,7 +2750,7 @@
 		 */
 		getSource: function(){
 			// update the current selected source:
-			this.mediaElement.autoSelectSource();
+			this.mediaElement.autoSelectSource(this.supportsURLTimeEncoding(), this.startTime, this.pauseTime);
 			if (this.mediaElement.selectedSource && this.mediaElement.selectedSource.mimeType === "application/vnd.apple.mpegurl"){
 				this.streamerType = "hls";
 			}
@@ -2787,20 +2791,7 @@
 		 *		 src does not support url time requests
 		 */
 		supportsURLTimeEncoding: function() {
-			var timeUrls = mw.getConfig('EmbedPlayer.EnableURLTimeEncoding') ;
-			if( timeUrls == 'none' ){
-				return false;
-			} else if( timeUrls == 'always' ){
-				return this.mediaElement.selectedSource.URLTimeEncoding;
-			} else if( timeUrls == 'flash' ){
-				if( this.mediaElement.selectedSource && this.mediaElement.selectedSource.URLTimeEncoding){
-					// see if the current selected player is flash:
-					return ( this.instanceOf == 'Kplayer' );
-				}
-			} else {
-				mw.log("Error:: invalid config value for EmbedPlayer.EnableURLTimeEncoding:: " + mw.getConfig('EmbedPlayer.EnableURLTimeEncoding') );
-			}
-			return false;
+			return( mw.getConfig('EmbedPlayer.EnableURLTimeEncoding') );
 		},
 		/**
 		 * If alertForCookies flashvar exists:

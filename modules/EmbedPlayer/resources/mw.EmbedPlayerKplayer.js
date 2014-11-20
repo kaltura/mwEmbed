@@ -251,7 +251,7 @@ mw.EmbedPlayerKplayer = {
 		if ( ! ( this.isLive() || this.sourcesReplaced || this.isHlsSource( this.mediaElement.selectedSource ) ) ) {
 			var newSources = this.getSourcesForKDP();
 			this.replaceSources( newSources );
-			this.mediaElement.autoSelectSource();
+			this.mediaElement.autoSelectSource(this.supportsURLTimeEncoding(), this.startTime, this.pauseTime);
 		}
 		else if ( this.isLive() && this.streamerType == 'rtmp' ){
 			var _this = this;
@@ -329,10 +329,8 @@ mw.EmbedPlayerKplayer = {
 
 	onDurationChange: function( data, id ) {
 		// Update the duration ( only if not in url time encoding mode:
-		if( !this.supportsURLTimeEncoding() ){
-			this.setDuration( data.newValue );
-			this.playerObject.duration = data.newValue;
-		}
+		this.setDuration(data.newValue);
+		this.playerObject.duration = data.newValue;
 	},
 	onVideoMetadataReceived: function( data ){
 		if ( data && data.info ) {
@@ -442,16 +440,6 @@ mw.EmbedPlayerKplayer = {
 		this.seekStarted = true;
 		var seekTime = percentage * this.getDuration();
 		mw.log( 'EmbedPlayerKalturaKplayer:: seek: ' + percentage + ' time:' + seekTime );
-		if (this.supportsURLTimeEncoding()) {
-
-			// Make sure we could not do a local seek instead:
-			if (!(percentage < this.bufferedPercent
-					&& this.playerObject.duration && !this.didSeekJump)) {
-				// We support URLTimeEncoding call parent seek:
-				this.parent_seek( percentage );
-				return;
-			}
-		}
 
 		// Trigger preSeek event for plugins that want to store pre seek conditions.
 		var stopSeek = {value: false};
@@ -722,6 +710,13 @@ mw.EmbedPlayerKplayer = {
 				 + "/protocol/" + mediaProtocol + this.getPlaymanifestArg( "cdnHost", "cdnHost" ) + this.getPlaymanifestArg( "storageId", "storageId" )
 				 +  "/ks/" + this.getFlashvars( 'ks' ) + "/uiConfId/" + this.kuiconfid  + this.getPlaymanifestArg ( "referrerSig", "referrerSig" )  
 				 + this.getPlaymanifestArg ( "tags", "flavorTags" ) + "/a/a." + fileExt + "?referrer=" + this.b64Referrer  ;
+
+		if (this.supportsURLTimeEncoding() && this.pauseTime && srcUrl.indexOf("&clipTo=") === -1) {
+			srcUrl = srcUrl + "&clipTo=" + parseInt(this.pauseTime) * 1000;
+		}
+		if (this.supportsURLTimeEncoding() && this.startTime && srcUrl.indexOf("&seekFrom=") === -1) {
+			srcUrl = srcUrl + "&seekFrom=" + parseInt(this.startTime) * 1000;
+		}
 		var refObj = {src:srcUrl};
 		this.triggerHelper( 'SourceSelected' , refObj );
 		deferred.resolve(refObj.src);

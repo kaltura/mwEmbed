@@ -149,13 +149,21 @@ mw.KWidgetSupport.prototype = {
 
 		// Support mediaPlayFrom, mediaPlayTo properties
 		embedPlayer.bindHelper( 'Kaltura_SetKDPAttribute', function(e, componentName, property, value){
+			var segmentChange = false;
 			switch( property ){
 				case 'mediaPlayFrom':
 					embedPlayer.startTime = parseFloat(value);
+					segmentChange = true;
 					break;
 				case 'mediaPlayTo':
 					embedPlayer.pauseTime = parseFloat(value);
+					segmentChange = true;
 					break;
+			}
+			if (segmentChange && embedPlayer.supportsURLTimeEncoding() && embedPlayer.mediaElement) {
+				embedPlayer.pause();
+				embedPlayer.mediaElement.autoSelectSource(true, embedPlayer.startTime, embedPlayer.pauseTime);
+				embedPlayer.replay();
 			}
 		});
 	},
