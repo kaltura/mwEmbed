@@ -940,7 +940,7 @@ var kWidget = {
 						window[cbName](contentData);
 					})
 					.error(function(e){
-						alert("error occur");
+						this.log("Error in iframe request")
 					})
 			} else {
 				// do an iframe payload request:
