@@ -282,6 +282,9 @@
 		// If the player supports playbackRate ( currently available on some html5 browsers )
 		playbackRate: false,
 
+		//if the player should handle playerError events
+		shouldHandlePlayerError: true,
+
 		/**
 		 * embedPlayer
 		 *
@@ -502,7 +505,13 @@
 				return;
 			}
 			mw.log("EmbedPlayer:: disablePlayControls" );
-			excludedComponents = excludedComponents || [];
+
+			if (!excludedComponents) {
+				excludedComponents = ['fullScreenBtn', 'logo'];
+				if (mw.getConfig('enableControlsDuringAd')) {
+					excludedComponents.push('playPauseBtn');
+				}
+			}
 
 			this._playContorls = false;
 			$( this ).trigger( 'onDisableInterfaceComponents', [ excludedComponents ] );
@@ -759,6 +768,10 @@
 			mw.log("EmbedPlayer::setupSourcePlayer: " + this.id + ' sources: ' + this.mediaElement.sources.length );
 			// Setup player state manager
 			this.addPlayerStateChangeBindings();
+			this.bindHelper( 'embedPlayerError', function( e, data ) {
+				 _this.handlePlayerError( data );
+			});
+
 			// Check for source replace configuration:
 			if( mw.getConfig('EmbedPlayer.ReplaceSources' ) ){
 				this.replaceSources( mw.getConfig('EmbedPlayer.ReplaceSources' ));
@@ -1722,7 +1735,7 @@
 				};
 			}
 
-			$( this ).empty();
+			$( this ).find(".playerPoster").remove();
 			if (mw.getConfig( 'EmbedPlayer.HidePosterOnStart' ) === true){
 				return;
 			}
@@ -2604,7 +2617,7 @@
 			var _this = this;
 
 			if ( this.currentTime >= 0 && this.duration ) {
-				if ( !this.userSlide && !this.seeking ) {
+				if (!this.userSlide && !this.seeking && !this.paused) {
 					var playHeadPercent = ( this.currentTime - this.startOffset ) / this.duration;
 					this.updatePlayHead( playHeadPercent );
 				}
@@ -2912,12 +2925,18 @@
 				// Do a live switch
 				this.playerSwitchSource( source, function( vid ){
 					// issue a seek
-					_this.setCurrentTime( oldMediaTime, function(){
-						// reflect pause state
-						if( oldPaused ){
-							_this.pause();
-						}
-					} );
+					setTimeout(function(){
+						_this.addBlackScreen();
+						_this.hidePlayerOffScreen();
+						_this.setCurrentTime( oldMediaTime, function(){
+							_this.removeBlackScreen();
+							_this.restorePlayerOnScreen();
+							// reflect pause state
+							if( oldPaused ){
+								_this.pause();
+							}
+						} );
+					}, 100);
 				});
 			}
 		},
@@ -2987,6 +3006,12 @@
 				return false;
 			} else {
 				return true;
+			}
+		},
+
+		handlePlayerError: function( data ) {
+			if ( this.shouldHandlePlayerError ) {
+				this.showErrorMsg( { title: this.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), message: this.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) } );
 			}
 		}
 	};

@@ -33,7 +33,7 @@ mw.VastAdParser = {
 			var adUrl = $vast.find('VASTAdTagURI').text();
 			addVideoClicksIfExist();
 			mw.log('VastAdParser:: Found vast wrapper, load ad: ' + adUrl);
-			mw.AdLoader.load( adUrl, callback, true , $vast );
+			mw.AdLoader.load( adUrl, callback, true , $vast, null );
 			return ;
 		}
 
@@ -136,12 +136,12 @@ mw.VastAdParser = {
 
 				// Add the video source ( if an html5 compatible type )
 				var type  = $( mediaFile ).attr('type') ? $( mediaFile ).attr('type') : $( mediaFile ).attr('creativeType');
-				var delivery  = $( mediaFile ).attr('delivery');
+				//var delivery  = $( mediaFile ).attr('delivery');
 
 				//we dont support streaming method (break with rtmp
-				if ( delivery === "streaming" ){
-					type = "none";
-				}
+				//if ( delivery === "streaming" ){
+				//	type = "none";
+				//}
 				// Normalize mp4 into h264 format:
 				if( type  == 'video/x-mp4' || type == 'video/mp4' ){
 					type = 'video/h264';
@@ -382,7 +382,7 @@ mw.VastAdParser = {
 					}
 					// support non-linear clickthrough tracking
 					if( $( companionNode ).find('NonLinearClickTracking').text() != '' ){
-						$companionHtml.attr("data-NonLinearClickTracking",$( companionNode ).find('NonLinearClickTracking')[0]);
+						$companionHtml.attr("data-NonLinearClickTracking", $(companionNode).find('NonLinearClickTracking').text());
 					}
 				break;
 				case 'application/x-shockwave-flash':

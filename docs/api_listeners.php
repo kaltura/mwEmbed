@@ -219,8 +219,7 @@
 		),
 		'cuePointReached' => array(
 			'callbackArgs' => 'Current cuePoint object. Return Object with context and a cuePoint object',
-			'desc' => "Notification fired when the player reaches a cuePoint",
-			"example" => "../modules/KalturaSupport/tests/CuePointsMidrollVast.html"
+			'desc' => "Notification fired when the player reaches a cuePoint"
 		),
 		'switchingChangeStarted' => array(
 			'callbackArgs' => 'newIndex: The index of the bitrate the player started switching to. If auto, send -1, newBitrate: The bitrate the player started switching to. If auto, send null',
@@ -239,7 +238,8 @@
 	$eventAds = array(
 		'adOpportunity' => array(
 			'callbackArgs' => 'context: context of the ad opportunity: pre, post, mid, cuePoint: the cue point object',
-			'desc' => "Notification fired when the player's time progress reaches an ad cue point"
+			'desc' => "Notification fired when the player's time progress reaches an ad cue point",
+			"example" => "../modules/KalturaSupport/tests/CuePointsMidrollVast.html"
 		),
 		'sequenceItemPlayStart' => array(
 			'callbackArgs' => 'sequenceContext: pre / post / mid / main (see SequenceContextType class), currentIndex: index of current item',

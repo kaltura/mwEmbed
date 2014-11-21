@@ -10,8 +10,11 @@
 			'thumbSlices': 100,
 			'thumbWidth': 100,
 			'minWidth': 100,
-			'displayImportance': "medium"
+			'displayImportance': "medium",
+			'disableUntilFirstPlay': false
 		},
+
+		waitForFirstPlay: false,
 
 		isSliderPreviewEnabled: function(){
 			return this.getConfig("sliderPreview") && !this.isDisabled && !this.embedPlayer.isLive();
@@ -80,7 +83,21 @@
 						});
 					},1000);
 				}
+
+				if( _this.getConfig('disableUntilFirstPlay') ) {
+					_this.waitForFirstPlay = true;
+					_this.onDisable();
+				}
 			} );
+
+			// If we need to disable the plugin until first play, bind to first play
+			if( this.getConfig('disableUntilFirstPlay') ) {
+				this.waitForFirstPlay = true;
+				this.bind('firstPlay', function(){
+					_this.waitForFirstPlay = false;
+					_this.onEnable();
+				});
+			}
 		},
 		bindUpdatePlayheadPercent: function() {
 			var _this = this;
@@ -137,11 +154,13 @@
 			);
 		},
 		onEnable: function() {
+			if( this.waitForFirstPlay ) return;
 			this.isDisabled = false;
 			this.getComponent().removeClass('disabled');
 			this.getComponent().slider( "option", "disabled", false );
 		},
 		onDisable: function() {
+			if( this.isDisabled ) return; // do not disable twice
 			this.isDisabled = true;
 			this.getComponent().slider( "option", "disabled", true );
 			this.getComponent().addClass('disabled');
@@ -188,11 +207,10 @@
 			if (!(data.val >=0 && this.duration >=0) ){
 				return;
 			}
-
-			// make sure the slider is in the dom: 
-			var $slider = $(".slider");
+			// make sure the slider is in the dom:
+			var $slider = $(".scrubber");
 			if( !$slider.length ){
-				this.log('.slider class not in DOM')
+				this.log('.scrubber class not in DOM')
 				return; 
 			}
 			//cache jqeury objects
@@ -203,7 +221,7 @@
 			var sliderLeft = 0;
 			var previewWidth = $sliderPreview.width();
 			var previewHeight = $sliderPreview.height();
-			var top = $(".slider").position().top - previewHeight - 30;
+			var top = $(".scrubber").position().top - previewHeight - 10;
 			sliderLeft = data.x - previewWidth/2;
 			if ( ( data.x + data.offset.left ) < previewWidth /2) {
 				sliderLeft =  0 ;

@@ -173,5 +173,8 @@
 
 			// Default Timeout for Player controls hover out
 			"EmbedPlayer.HoverOutTimeout" => 300,
+
+			// Default Timeout for Mouse Move check
+			"EmbedPlayer.MouseMoveTimeout" => 4000,
 	);
 ?>

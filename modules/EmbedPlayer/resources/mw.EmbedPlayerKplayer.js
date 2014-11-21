@@ -132,7 +132,8 @@ mw.EmbedPlayerKplayer = {
 					'audioTracksReceived': 'onAudioTracksReceived',
 					'audioTrackSelected': 'onAudioTrackSelected',
 					'videoMetadataReceived': 'onVideoMetadataReceived',
-					'hlsEndList': 'onHlsEndList'
+					'hlsEndList': 'onHlsEndList',
+					'mediaError': 'onMediaError'
 				};
 				_this.playerObject = this.getElement();
 				$.each( bindEventMap, function( bindName, localMethod ) {
@@ -363,6 +364,18 @@ mw.EmbedPlayerKplayer = {
 	 */
 	onHlsEndList: function () {
 		this.triggerHelper( 'liveEventEnded' );
+	},
+	/**
+	 * Playback error
+	 *
+	 */
+	onMediaError: function ( data ) {
+		var error = null;
+		if ( data  ) {
+			error = data.errorId + " detail:" + data.errorDetail;
+		}
+		mw.log( "EmbedPlayerKPlayer::MediaError error code: " + error );
+		this.triggerHelper( 'embedPlayerError', [ data ] );
 	},
 
 	/**
@@ -665,7 +678,7 @@ mw.EmbedPlayerKplayer = {
 
 			this.resolveSrcURL( originalSrc )
 				.then(function ( srcToPlay ){
-				deferred.resolve( srcToPlay );
+					deferred.resolve( srcToPlay );
 			}, function () { //error
 				deferred.resolve( originalSrc );
 			});

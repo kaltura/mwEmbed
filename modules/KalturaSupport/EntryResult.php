@@ -307,7 +307,7 @@ class EntryResult {
 
 		/* IP Address Restricted */
 		if( isset( $accessControl['isIpAddressRestricted'] ) && $accessControl['isIpAddressRestricted'] ) {
-			return "Un authorized IP address\nWe're sorry, this content is only available for ceratin IP addresses.";
+			return "Un authorized IP address\nWe're sorry, this content is only available for certain IP addresses.";
 		}
 
 		/* Session Restricted */
