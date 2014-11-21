@@ -105,8 +105,7 @@
 									_this.embedPlayer.triggerHelper( 'showPlayerControls' );
 									$interface.find( '#touchOverlay' ).remove();
 								}, 500);
-
-							})
+						})
 					);
 				}
 			}

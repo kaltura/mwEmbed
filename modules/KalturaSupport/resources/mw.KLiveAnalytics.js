@@ -14,6 +14,7 @@
 			bufferTime : 0,
 			eventIndex :1,
 			currentBitRate:-1,
+			playing:false,
 			setup: function( ) {
 			   var _this = this;
 				_this.removeBindings( );
@@ -37,9 +38,11 @@
 				this.bind('onPlayerStateChange', function(e, newState, oldState) {
 					if (newState === "pause" ){
 						_this.stopLiveEvents();
+						_this.playing = false;
 					}
 					if (newState === "play"){
 						_this.startLiveEvents();
+						_this.playing = true;
 					}
 				});
 				this.bind('bufferStartEvent',function(){
@@ -49,9 +52,20 @@
 					_this.calculateBuffer();
 					_this.bufferStartTime = null;
 				});
-				this.bind( 'bitrateChange' ,function(event,newBitrate){
+				this.bind( 'bitrateChange' ,function( event,newBitrate){
 					_this.currentBitRate = newBitrate;
 				} );
+
+				this.bind( 'liveStreamStatusUpdate' ,function( event, status ){
+					if (!status){
+						//we're offline
+						_this.stopLiveEvents();
+					} else{
+						 if (_this.playing){
+							 _this.startLiveEvents();
+						 }
+					}
+				});
 			},
 			calculateBuffer : function ( closeSession ){
 				var _this = this;

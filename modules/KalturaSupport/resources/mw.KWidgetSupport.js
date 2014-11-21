@@ -120,6 +120,9 @@ mw.KWidgetSupport.prototype = {
 			if (mw.getConfig('thumbnailUrl')) {
 				thumbUrl = mw.getConfig('thumbnailUrl');
 			}
+			if (mw.getConfig('thumbnailUrl')) {
+				thumbUrl = mw.getConfig('thumbnailUrl');
+			}
 			var alt = gM('mwe-embedplayer-video-thumbnail-for', embedPlayer.evaluate('{mediaProxy.entry.name}'));
 		  	embedPlayer.updatePoster( thumbUrl, alt );
 			if( embedPlayer.kalturaPlayerMetaData.mediaType === 5 ) {
@@ -594,8 +597,10 @@ mw.KWidgetSupport.prototype = {
 				return deferred.resolve( srcURL );
 			}
 			var srcToPlay = null;
+			var qp = ( srcURL.indexOf('?') === -1) ? '?' : '&';
+
 			$.ajax({
-				url: srcURL + "&responseFormat=jsonp",
+				url: srcURL + qp + "responseFormat=jsonp",
 				dataType: 'jsonp',
 				success: function( playmanifest ){
 					var flavors = playmanifest.flavors;

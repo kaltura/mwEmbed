@@ -45,8 +45,16 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 		});
 	},
 	getParentURL: function(){
-		return ( mw.getConfig( 'EmbedPlayer.IframeParentUrl') ) ?
-				mw.getConfig( 'EmbedPlayer.IframeParentUrl') : document.URL;
+		var res;
+		if (mw.getConfig( 'EmbedPlayer.IframeParentUrl')){
+			res = mw.getConfig( 'EmbedPlayer.IframeParentUrl');
+		} else {
+			res = document.referrer;
+			if (res === "") {
+				res = document.URL;
+			}
+		}
+		return res;
 	},
 	getKalturaShareURL: function(){
 		return mw.getConfig('Kaltura.ServiceUrl') + '/index.php/extwidget/preview' +

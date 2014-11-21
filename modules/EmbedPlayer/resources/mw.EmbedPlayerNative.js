@@ -147,12 +147,8 @@ mw.EmbedPlayerNative = {
 			$( this ).find( '.playerPoster' ).attr('src', posterSrc );
 		} else {
 			$( this ).append(
-				$('<img />').css({
-					'margin' : '0',
-					'width': '100%',
-					'height': '100%'
-				})
-				.attr( 'src', posterSrc)
+				$('<img />')
+					.attr( 'src', posterSrc)
 				.addClass('playerPoster')
 				.load(function(){
 					_this.applyIntrinsicAspect();

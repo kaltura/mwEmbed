@@ -19,7 +19,8 @@
 
 		setup: function() {
 			var _this = this;
-			if ( kWidget.supportsFlash() ) {
+			// known limitation - kplayer is not supported on Safari desktop
+			if ( kWidget.supportsFlash() && !mw.isDesktopSafari() ) {
 				mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true ); //only kplayer supports audio description
 				this.getPlayer().setKalturaConfig('kdpVars', 'audioDescription',
 						{ plugin: 'true', volume: this.getConfig( 'volume' ) } );

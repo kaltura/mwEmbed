@@ -213,7 +213,8 @@ class UiConfResult {
 			'liveCore' => array(),
 			'liveStatus' => array(),
 			'liveBackBtn' => array(),
-			'reportError' => array()
+			'reportError' => array(),
+			"liveAnalytics"=>array()
 		);
 
 		$playerConfig['plugins'] = array_merge_recursive($playerConfig['plugins'], $basePlugins);

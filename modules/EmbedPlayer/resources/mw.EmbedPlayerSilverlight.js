@@ -353,7 +353,6 @@
 			this.playerObject.pause();
 			this.parent_onClipDone();
 			this.currentTime = this.slCurrentTime = 0;
-			this.preSequenceFlag = false;
 		},
 
 		onError: function ( data ) {
@@ -589,7 +588,8 @@
 
 		onFlavorsListChanged: function ( data, id ) {
 			var values = JSON.parse( data );
-			this.replaceSources( values.flavors );
+			this.parent_onFlavorsListChanged( values.flavors );
+
 		},
 
 		onEnableGui: function ( data, id ) {

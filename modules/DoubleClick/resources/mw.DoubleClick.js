@@ -36,6 +36,8 @@
 
 		// flag for using a chromeless player - move control to KDP DoubleClick plugin
 		isChromeless: false,
+		 //flag for using native mobile IMA SDK
+		isNativeSDK: false,
 		// for Chromeless only: save entry duration during midrolls so we can update it when midroll is finished
 		entryDuration: null,
 
@@ -116,8 +118,17 @@
 			}
 
 			//native browser on Android 4.4 has "Chrome" in it, so this is the "new" way to test its user agent
-			if ( mw.isAndroid44() && mw.isAndroidChromeNativeBrowser() ) {
+			if ( mw.isAndroid44() && mw.isAndroidChromeNativeBrowser() && !mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
 				mw.log("DoubleClick::user agent not supported, return" );
+				callback();
+				return;
+			}
+			if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
+				_this.isNativeSDK = true;
+				_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
+					_this.bindChromelessEvents();
+				});
+				_this.addManagedBinding();
 				callback();
 				return;
 			}
@@ -140,6 +151,11 @@
 					_this.embedPlayer.bindHelper( 'volumeChanged' + this.bindPostfix, function(event, percent){
 						mw.log("DoubleClick::chromeless volumeChanged: " + percent );
 						_this.embedPlayer.setPlayerElementVolume( percent );
+					});
+					_this.embedPlayer.bindHelper( 'Kaltura_SendNotification' + this.bindPostfix, function(event, notificationName, notificationData){
+						if (notificationName === "doPause"){
+							_this.embedPlayer.getPlayerElement().pause();
+						}
 					});
 					_this.addManagedBinding();
 					callback();
@@ -293,7 +309,7 @@
 					// Setup the restore callback
 					_this.postRollCallback = callback;
 					//no need to request ads
-					if (!_this.isLinear || _this.allAdsCompletedFlag){
+					if ( !_this.isLinear || _this.allAdsCompletedFlag || _this.adLoaderErrorFlag ){
 						_this.restorePlayer(true);
 					}
 				}
@@ -454,6 +470,12 @@
 				adsRequest.adTagUrl = encodeURIComponent(adsRequest.adTagUrl);
 				_this.embedPlayer.getPlayerElement().sendNotification( 'requestAds', adsRequest );
 				mw.log( "DoubleClick::requestAds: Chromeless player request ad from KDP plugin");
+				return;
+			}
+
+			if ( this.isNativeSDK ) {
+				this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', this.getConfig( 'adTagUrl' ));
+				mw.log( "DoubleClick::requestAds: Native SDK player request ad ");
 				return;
 			}
 
@@ -821,7 +843,9 @@
 					_this.prevSlotType = _this.currentAdSlotType;
 				}
 				_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', adInfo.duration );
-				$(".mwEmbedPlayer").hide();
+				if ( _this.isChromeless ) {
+					$(".mwEmbedPlayer").hide();
+				}
 				if ( _this.getConfig( 'countdownText' ) && _this.embedPlayer.getInterface().find(".ad-notice-label").length == 0){
 					// Add the notice target:
 					_this.embedPlayer.getVideoHolder().append(
@@ -836,7 +860,7 @@
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				_this.isLinear = adInfo.isLinear;
-				if (!_this.isLinear){
+				if (!_this.isLinear && _this.isChromeless ){
 					$(".mwEmbedPlayer").hide();
 				}
 				// dispatch adOpen event
@@ -1001,12 +1025,16 @@
 						case 'doPause':
 							_this.adPaused = true;
 							_this.adsManager.pause();
+							embedPlayer.paused = true;
 							$( embedPlayer ).trigger( 'onpause' );
+							$( embedPlayer ).trigger( "onPlayerStateChange", ["pause", embedPlayer.currentState] );
 							break;
 						case 'doPlay':
 							_this.adPaused = false;
 							_this.adsManager.resume();
+							embedPlayer.paused = false;
 							$( embedPlayer ).trigger( 'onplay' );
+							$( embedPlayer ).trigger( "onPlayerStateChange", ["play", embedPlayer.currentState] );
 							_this.monitorAdProgress();
 							break;
 						case 'doStop':
@@ -1112,6 +1140,7 @@
 			} else { // do a manual restore:
 				// restore player with normal events:
 				this.embedPlayer.adTimeline.restorePlayer( null, adPlayed);
+				this.embedPlayer.setDuration(this.embedPlayer.duration);
 				// managed complete ... call clip done if content complete.
 				if( onContentComplete ){
 					if (_this.postRollCallback){
@@ -1125,7 +1154,7 @@
 						_this.embedPlayer.setCurrentTime(_this.timeToReturn);
 						_this.timeToReturn = null;
 					}
-					this.embedPlayer.setDuration(this.embedPlayer.duration);
+
 					this.embedPlayer.play();
 				}
 			}
@@ -1150,7 +1179,10 @@
 					this.restorePlayer(true);
 				}
 				this.removeAdContainer();
-				this.adsLoader.destroy();
+				if ( this.adsLoader ) {
+					this.adsLoader.destroy();
+				}
+
 			}else{
 				if ( !this.isLinear ){
 					this.embedPlayer.getPlayerElement().sendNotification( 'destroy' );
