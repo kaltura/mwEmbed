@@ -1498,7 +1498,7 @@ mw.EmbedPlayerNative = {
 		if (this.supportsURLTimeEncoding()) {
 			var newSource = this.mediaElement.autoSelectSource(true, this.startTime, this.pauseTime);
 			if (newSource) {
-				this.switchSrc(newSource, true);
+				this.switchSrc(newSource);
 			}
 		} else {
 			this.addStartTimeCheck();

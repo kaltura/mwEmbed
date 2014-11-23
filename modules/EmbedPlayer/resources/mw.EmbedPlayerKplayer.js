@@ -763,7 +763,7 @@ mw.EmbedPlayerKplayer = {
 		}
 		return sourceIndex;
 	},
-	switchSrc: function (source, forceChangeMedia) {
+	switchSrc: function (source) {
 		var _this = this;
 		//http requires source switching, all other switch will be handled by OSMF in KDP
 		if ( this.streamerType == 'http' && !this.getKalturaAttributeConfig( 'forceDynamicStream' ) ) {
