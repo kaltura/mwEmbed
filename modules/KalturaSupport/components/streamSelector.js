@@ -264,6 +264,7 @@
 				if (currentTime > 0) {
 					embedPlayer.triggerHelper( "freezeTimeIndicators", [true] );
 				}
+				embedPlayer.stopEventPropagation();
 
 				var checkPlayerSourcesFunction = function(callback) {
 					//Create source data from raw data
@@ -294,6 +295,7 @@
 							embedPlayer.removeBlackScreen();
 							//Return poster to allow display of poster on clip done
 							mw.setConfig( 'EmbedPlayer.HidePosterOnStart', false );
+							embedPlayer.restoreEventPropagation();
 						});
 						//Add black screen before seek to avoid flashing of video
 						embedPlayer.addBlackScreen();
@@ -301,10 +303,10 @@
 					} else {
 						//Return poster to allow display of poster on clip done
 						mw.setConfig( 'EmbedPlayer.HidePosterOnStart', false );
+						embedPlayer.restoreEventPropagation();
 					}
 				};
-
-				embedPlayer.changeMedia(changeMediaCallback , checkPlayerSourcesFunction, true );
+				embedPlayer.changeMedia(changeMediaCallback , checkPlayerSourcesFunction, false );
 			} else {
 				this.log("selected stream is already the active stream");
 			}
