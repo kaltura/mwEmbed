@@ -1492,6 +1492,18 @@ mw.EmbedPlayerNative = {
 		} else {
 			return this.parent_isVideoSiblingEnabled();
 		}
+	},
+
+	playSegment: function (startTime, endTime) {
+		if (this.supportsURLTimeEncoding()) {
+			var newSource = this.mediaElement.autoSelectSource(true, this.startTime, this.pauseTime);
+			if (newSource) {
+				this.switchSrc(newSource, true);
+			}
+		} else {
+			this.addStartTimeCheck();
+			this.setCurrentTime(0);
+		}
 	}
 };
 } )( mediaWiki, jQuery );

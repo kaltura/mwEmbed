@@ -160,12 +160,8 @@ mw.KWidgetSupport.prototype = {
 					segmentChange = true;
 					break;
 			}
-			if (segmentChange && embedPlayer.supportsURLTimeEncoding() && embedPlayer.mediaElement) {
-				embedPlayer.sendNotification("changeMedia", {entryId: embedPlayer.kentryid});
-//				var newSource = embedPlayer.mediaElement.autoSelectSource(true, embedPlayer.startTime, embedPlayer.pauseTime);
-//				if (newSource){
-//					embedPlayer.switchSrc(newSource, true);
-//				}
+			if (segmentChange) {
+				embedPlayer.playSegment(embedPlayer.startTime, embedPlayer.pauseTime);
 			}
 		});
 	},

@@ -142,9 +142,6 @@ mw.EmbedPlayerKplayer = {
 				if ( _this.startTime !== undefined && _this.startTime != 0 ) {
 					_this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', _this.startTime );
 				}
-				if (_this.pauseTime !== undefined && _this.pauseTime != 0) {
-					_this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayTo', _this.pauseTime);
-				}
 				readyCallback();
 
 				if (mw.getConfig( 'autoMute' )){
@@ -283,7 +280,7 @@ mw.EmbedPlayerKplayer = {
 		this.flashCurrentTime = 0;
 		this.playerObject.setKDPAttribute( 'mediaProxy', 'isLive', this.isLive() );
 		this.playerObject.setKDPAttribute( 'mediaProxy', 'isMp4', this.isMp4Src() );
-		this.playerObject.setKDPAttribute( 'mediaProxy', 'entryDuration', this.getDuration() );
+		this.playerObject.setKDPAttribute('mediaProxy', 'entryDuration', this.getDuration()); //TODO - to support inteliseek - set the correct duration using seekFrom and clipTo
 		this.getEntryUrl().then(function( srcToPlay ){
 			_this.playerObject.sendNotification( 'changeMedia', {
 				entryUrl: srcToPlay
@@ -331,6 +328,9 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onDurationChange: function( data, id ) {
+		if (this.startTime && this.pauseTime && data.newValue > (this.pauseTime - this.startTime + 2)) {
+			return;
+		}
 		// Update the duration ( only if not in url time encoding mode:
 		this.setDuration(data.newValue);
 		this.playerObject.duration = data.newValue;
@@ -727,7 +727,7 @@ mw.EmbedPlayerKplayer = {
 		if (this.supportsURLTimeEncoding() && this.startTime) {
 			srcUrl = srcUrl + "&seekFrom=" + parseInt(this.startTime) * 1000;
 		}
-		alert(srcUrl);
+
 		var refObj = {src:srcUrl};
 		this.triggerHelper( 'SourceSelected' , refObj );
 		deferred.resolve(refObj.src);
@@ -811,6 +811,11 @@ mw.EmbedPlayerKplayer = {
 		} else {
 			_this.playerObject.sendNotification( "hasCloseFullScreen" );
 		}
+	},
+	playSegment: function (startTime, endTime) {
+		this.playerObject.sendNotification("doStop");
+		this.stop();
+		this.sendNotification("changeMedia", {entryId: this.kentryid});
 	}
 };
 
