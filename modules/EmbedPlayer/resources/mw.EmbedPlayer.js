@@ -2046,11 +2046,7 @@
 		 * @returns {boolean}
 		 */
 		isTimeUpdateSupported: function() {
-			if ( this.isLive() && mw.isAndroid() && mw.getConfig( "EmbedPlayer.ForceNativeComponent") !== true ) {
-				return false;
-			} else {
-				return true;
-			}
+			return true;
 		},
 		/**
 		 * Base Embed Controls
