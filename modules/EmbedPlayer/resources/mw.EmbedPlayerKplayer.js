@@ -142,6 +142,9 @@ mw.EmbedPlayerKplayer = {
 				if ( _this.startTime !== undefined && _this.startTime != 0 ) {
 					_this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', _this.startTime );
 				}
+				if (_this.pauseTime !== undefined && _this.pauseTime != 0) {
+					_this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayTo', _this.pauseTime);
+				}
 				readyCallback();
 
 				if (mw.getConfig( 'autoMute' )){
@@ -343,6 +346,7 @@ mw.EmbedPlayerKplayer = {
 		}
 	},
 	onClipDone: function() {
+		this.playerObject.sendNotification('doStop');
 		this.parent_onClipDone();
 	},
 
