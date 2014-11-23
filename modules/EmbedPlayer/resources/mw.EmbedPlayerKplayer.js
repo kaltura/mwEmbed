@@ -711,12 +711,19 @@ mw.EmbedPlayerKplayer = {
 				 +  "/ks/" + this.getFlashvars( 'ks' ) + "/uiConfId/" + this.kuiconfid  + this.getPlaymanifestArg ( "referrerSig", "referrerSig" )  
 				 + this.getPlaymanifestArg ( "tags", "flavorTags" ) + "/a/a." + fileExt + "?referrer=" + this.b64Referrer  ;
 
-		if (this.supportsURLTimeEncoding() && this.pauseTime && srcUrl.indexOf("&clipTo=") === -1) {
+		if (srcUrl.indexOf("&seekFrom=") !== -1) {
+			srcUrl = srcUrl.substr(0, srcUrl.indexOf("&seekFrom="));
+		}
+		if (srcUrl.indexOf("&clipTo=") !== -1) {
+			srcUrl = srcUrl.substr(0, this.selectedSource.src.indexOf("&clipTo="));
+		}
+		if (this.supportsURLTimeEncoding() && this.pauseTime) {
 			srcUrl = srcUrl + "&clipTo=" + parseInt(this.pauseTime) * 1000;
 		}
-		if (this.supportsURLTimeEncoding() && this.startTime && srcUrl.indexOf("&seekFrom=") === -1) {
+		if (this.supportsURLTimeEncoding() && this.startTime) {
 			srcUrl = srcUrl + "&seekFrom=" + parseInt(this.startTime) * 1000;
 		}
+		alert(srcUrl);
 		var refObj = {src:srcUrl};
 		this.triggerHelper( 'SourceSelected' , refObj );
 		deferred.resolve(refObj.src);
@@ -752,7 +759,7 @@ mw.EmbedPlayerKplayer = {
 		}
 		return sourceIndex;
 	},
-	switchSrc: function ( source ) {
+	switchSrc: function (source, forceChangeMedia) {
 		var _this = this;
 		//http requires source switching, all other switch will be handled by OSMF in KDP
 		if ( this.streamerType == 'http' && !this.getKalturaAttributeConfig( 'forceDynamicStream' ) ) {

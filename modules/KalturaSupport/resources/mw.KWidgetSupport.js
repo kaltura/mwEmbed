@@ -161,9 +161,11 @@ mw.KWidgetSupport.prototype = {
 					break;
 			}
 			if (segmentChange && embedPlayer.supportsURLTimeEncoding() && embedPlayer.mediaElement) {
-				embedPlayer.pause();
-				embedPlayer.mediaElement.autoSelectSource(true, embedPlayer.startTime, embedPlayer.pauseTime);
-				embedPlayer.replay();
+				embedPlayer.sendNotification("changeMedia", {entryId: embedPlayer.kentryid});
+//				var newSource = embedPlayer.mediaElement.autoSelectSource(true, embedPlayer.startTime, embedPlayer.pauseTime);
+//				if (newSource){
+//					embedPlayer.switchSrc(newSource, true);
+//				}
 			}
 		});
 	},
@@ -700,13 +702,13 @@ mw.KWidgetSupport.prototype = {
 
 		// Check for mediaPlayFrom
 		var mediaPlayFrom = getAttr('mediaProxy.mediaPlayFrom');
-		if( mediaPlayFrom ) {
+		if (mediaPlayFrom && !embedPlayer.startTime) {
 			embedPlayer.startTime = parseFloat( mediaPlayFrom );
 			mw.setConfig( "Kaltura.UseAppleAdaptive" , true) ;
 		}
 		// Check for mediaPlayTo
 		var mediaPlayTo = getAttr('mediaProxy.mediaPlayTo');
-		if( mediaPlayTo ) {
+		if (mediaPlayTo && !embedPlayer.pauseTime) {
 			embedPlayer.pauseTime = parseFloat( mediaPlayTo );
 		}
 
