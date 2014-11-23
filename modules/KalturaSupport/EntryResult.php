@@ -58,7 +58,7 @@ class EntryResult {
 	}
 	
 	function getResult(){
-		$mediaProxyOverride = json_decode(json_encode($this->uiconf->getPlayerConfig( false, 'mediaProxy' ) ), true);
+		$mediaProxyOverride = json_decode(json_encode( $this->uiconf->getPlayerConfig( 'mediaProxy' ) ), true);
 		// check for user supplied mediaProxy override of entryResult
 		if( $mediaProxyOverride && isset( $mediaProxyOverride['entry'] ) ){
 			return $mediaProxyOverride;

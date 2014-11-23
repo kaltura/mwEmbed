@@ -86,7 +86,7 @@ mw.EmbedPlayerKplayer = {
 				_this.setFlashvars( 'flavorId', flashvars.flavorId );
 			}
 
-			if ( _this.streamerType != 'http' && _this.mediaElement.selectedSource ) {
+			if ( _this.streamerType != 'http' && _this.mediaElement.selectedSource  ) {
 				flashvars.selectedFlavorIndex = _this.getSourceIndex( _this.mediaElement.selectedSource  );
 			}
 
