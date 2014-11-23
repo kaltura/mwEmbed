@@ -44,24 +44,9 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 		this.bind('playerReady', function( ){
 			_this.setupPlayerURL();
 		});
-		// If in native app, call the native share
-		if(mw.getConfig( "EmbedPlayer.ForceNativeComponent")){
-			this.getComponent().unbind("click").bind("click", function(e){
-
-				// Prepare a JSON string for sending to the native app
-				var shareParams = "[";
-				var shareArray = _this.getTemplateData().networks;
-				for (var i = 0; i < shareArray.length ; i++) {
-					shareParams += JSON.stringify(shareArray[i]);
-					if (i < shareArray.length - 1) {
-						shareParams += ",";
-					}
-				}
-				shareParams += "]";
-				_this.getPlayer().share( shareParams );
-			});
-		}
+		//
 	},
+
 	getParentURL: function(){
 		return ( mw.getConfig( 'EmbedPlayer.IframeParentUrl') ) ?
 				mw.getConfig( 'EmbedPlayer.IframeParentUrl') : document.URL;
@@ -87,30 +72,47 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 		return shareURL;
 	},
 	getTemplateData: function(){
-
 		var networks = [];
 		var socialNetworks = this.getConfig("socialNetworks");
-
 		if (socialNetworks.indexOf("facebook") != -1)
 			networks.push({
 				id: 'facebook',
 				name: 'Facebook',
 				cssClass: 'icon-facebook',
-				url: 'https://www.facebook.com/sharer/sharer.php?u='
+				url: 'https://www.facebook.com/sharer/sharer.php?u=',
+				redirectUrl: 'fb://feed/'
 			});
 		if (socialNetworks.indexOf("twitter") != -1)
 			networks.push({
 				id: 'twitter',
 				name: 'Twitter',
 				cssClass: 'icon-twitter',
-				url: 'https://twitter.com/share?url='
+				url: 'https://twitter.com/share?url=',
+				redirectUrl:'https://twitter.com/intent/tweet/complete?,https://twitter.com/intent/tweet/update'
 			});
 		if (socialNetworks.indexOf("googleplus") != -1)
 			networks.push({
 				id: 'googleplus',
-				name: 'Google+',
+				name: 'GooglePlus',
 				cssClass: 'icon-google-plus',
-				url: 'https://plus.google.com/share?url='
+				url: 'https://plus.google.com/share?url=',
+				redirectUrl: 'https://plus.google.com/app/basic/stream'
+			});
+		if (socialNetworks.indexOf("mail") != -1)
+			networks.push({
+				id: 'email',
+				name: 'Mail',
+				cssClass: 'icon-mail',
+				url: 'http://',
+				redirectUrl: ''
+			});
+		if (socialNetworks.indexOf("message") != -1)
+			networks.push({
+				id: 'message',
+				name: 'Message',
+				cssClass: 'icon-message',
+				url: 'http://',
+				redirectUrl: ''
 			});
 
 		return {
@@ -118,16 +120,38 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 			networks: networks
 		};
 	},
-	openPopup: function( e ){
-		var url = $(e.target).parents('a').attr('href');
+	openPopup: function( e ) {
+		debugger;
 		// Name argument for window.open in IE8 must be from supported set: _blank for example
-		// http://msdn.microsoft.com/en-us/library/ms536651%28v=vs.85%29.aspx
+		// http://msdn.microsoft.com/en-us/library/ms536651%28v=vs.85%29.asp
 
-		window.open(
-			url + encodeURIComponent( this.getConfig('shareURL')),
-			'_blank',
-			'width=626,height=436'
-		);
+		if(mw.getConfig( "EmbedPlayer.ForceNativeComponent" )){
+			// Prepare a JSON string for sending to the native app
+			var socialNetworks = this.getConfig("socialNetworks").split(',');
+			var networkIndex = jQuery.inArray($(e.target).attr('id'), socialNetworks);
+			var networkParams = this.getTemplateData().networks[networkIndex];
+			var shareParams = {
+				sharedLink: this.getConfig("shareURL"),
+				shareNetwork: networkParams,
+				thumbnail: this.getThumbnailURL(),
+				videoName: this.getPlayer().evaluate("{mediaProxy.entry.name}")
+			};
+			this.getPlayer().share( JSON.stringify(shareParams) );
+		} else
+			var url = $(e.target).parents('a').attr('href');{
+			window.open(
+				url + encodeURIComponent( this.getConfig('shareURL')),
+				'_blank',
+				'width=626,height=436'
+			);
+		}
+	},
+	getThumbnailURL: function(){
+		return kWidgetSupport.getKalturaThumbnailUrl({
+				url: this.getPlayer().evaluate('{mediaProxy.entry.thumbnailUrl}'),
+				width: this.getPlayer().getWidth(),
+				height: this.getPlayer().getHeight()
+		});
 	}
 }));
 

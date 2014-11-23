@@ -38,6 +38,14 @@
 	background-position: -156px -79px;
 }
 
+.icon-mail {
+	background-position: -156px -237px;
+}
+
+.icon-message {
+	background-position: -78px -80px;
+}
+
 @media all and (max-width: 340px){
 	.share input {
 		background: #B3B3B3;
@@ -64,5 +72,13 @@
 
 	.icon-google-plus {
 		background-position: -78px -40px;
+	}
+
+	.icon-mail {
+		background-position: -78px -120px;
+	}
+
+	.icon-message {
+		background-position: -78px -80px;
 	}
 }
