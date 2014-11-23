@@ -211,13 +211,6 @@
 			});
 			this.getMenu().setActive({'key': 'id', 'val': this.getCurrentStreamIndex()});
 		},
-		isStreamSelected: function( source ){
-			var _this = this;
-			return ( _this.getPlayer().mediaElement.selectedSource && source.getSrc()
-				==
-				_this.getPlayer().mediaElement.selectedSource.getSrc()
-				);
-		},
 		addStreamToMenu: function( id, stream ){
 			var _this = this;
 			var active = (this.getCurrentStreamIndex() == id);
