@@ -8,8 +8,15 @@
 			"displayImportance": 'low',
 			"align": "right",
 			"showTooltip": true,
+			"labelWidthPercentage": 33,
 			"defaultStream": 1,
-			"enableKeyboardShortcuts": true
+			"maxNumOfStream": 4,
+			"enableKeyboardShortcuts": true,
+			"keyboardShortcutsMap":{
+				"next": 221,   // Add ] Sign for next stream
+				"prev": 219,   // Add [ Sigh for previous stream
+				"default": 220 // Add \ Sigh for default stream
+			}
 		},
 
 		isDisabled: false,
@@ -30,7 +37,7 @@
 			this.bind( 'playerReady', function(){
 				if (!_this.streamsReady) {
 					_this.onDisable();
-					_this.getSources();
+					_this.getStreams();
 				}
 			});
 
@@ -47,7 +54,7 @@
 				});
 				//Set default stream
 				if ( ( _this.getConfig("defaultStream") < 1) || ( _this.getConfig("defaultStream") > _this.streams.length ) ){
-					mw.log("streamSelector:: Error - default stream id is out of bounds, setting to 1");
+					this.log("Error - default stream id is out of bounds, setting to 1");
 					_this.setConfig("defaultStream", 1);
 				}
 				_this.currentStream = _this.getDefaultStream();
@@ -59,7 +66,7 @@
 				_this.onEnable();
 			});
 
-			this.bind( 'sourceSwitchingEnd SourceChange', function(){
+			this.bind( 'sourceSwitchingEnd', function(){
 				if (_this.streamsReady){
 					_this.onEnable();
 				}
@@ -78,7 +85,7 @@
 			});
 
 			this.bind( 'changeStream', function(e, arg ){
-				_this.setStreamFromApi( arg );
+				_this.externalSetStream( arg );
 			});
 
 			if( this.getConfig('enableKeyboardShortcuts') ){
@@ -87,7 +94,7 @@
 				});
 			}
 		},
-		getSources: function(){
+		getStreams: function(){
 			var _this = this;
 			// do the api request
 			this.getKalturaClient().doRequest( {
@@ -154,15 +161,15 @@
 		addKeyboardShortcuts: function( addKeyCallback ){
 			var _this = this;
 			// Add ] Sign for next stream
-			addKeyCallback( 221, function(){
+			addKeyCallback( this.getConfig("keyboardShortcutsMap" ).next, function(){
 				_this.setStream( _this.getNextStream() );
 			});
 			// Add [ Sigh for previous stream
-			addKeyCallback( 219, function(){
+			addKeyCallback( this.getConfig("keyboardShortcutsMap" ).prev, function(){
 				_this.setStream( _this.getPrevStream() );
 			});
-			// Add \ Sigh for normal speed
-			addKeyCallback( 220, function(){
+			// Add \ Sigh for default stream
+			addKeyCallback( this.getConfig("keyboardShortcutsMap" ).default, function(){
 				_this.setStream( _this.getDefaultStream() );
 			});
 		},
@@ -199,7 +206,7 @@
 			this.getMenu().destroy();
 
 			if( ! this.streams.length ){
-				mw.log("streamSelector:: Error with getting streams");
+				this.log("Error with getting streams");
 				//this.destroy();
 				return ;
 			}
@@ -223,16 +230,16 @@
 				'active': active
 			});
 		},
-		setStreamFromApi: function(id){
+		externalSetStream: function(id){
 			var stream = this.streams[id];
 			if (stream){
 				this.setStream(stream);
 			} else {
-				mw.log("streamSelector:: Error - invalid stream id");
+				this.log("Error - invalid stream id");
 			}
 		},
 		setStream: function(stream){
-			mw.log("streamSelector:: set stream");
+			this.log("set stream");
 			if (this.currentStream != stream) {
 				var _this = this;
 				var embedPlayer = this.getPlayer();
@@ -295,7 +302,7 @@
 
 				embedPlayer.changeMedia(changeMediaCallback , checkPlayerSourcesFunction, true );
 			} else {
-				mw.log("streamSelector:: selected stream is already the active stream");
+				this.log("selected stream is already the active stream");
 			}
 		},
 		toggleMenu: function(){
