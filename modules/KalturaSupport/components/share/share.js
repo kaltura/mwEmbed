@@ -100,7 +100,7 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 			});
 		if (socialNetworks.indexOf("mail") != -1)
 			networks.push({
-				id: 'email',
+				id: 'mail',
 				name: 'Mail',
 				cssClass: 'icon-mail',
 				url: 'http://',
@@ -121,12 +121,11 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 		};
 	},
 	openPopup: function( e ) {
-		debugger;
 		// Name argument for window.open in IE8 must be from supported set: _blank for example
 		// http://msdn.microsoft.com/en-us/library/ms536651%28v=vs.85%29.asp
 
 		if(mw.getConfig( "EmbedPlayer.ForceNativeComponent" )){
-			// Prepare a JSON string for sending to the native app
+			
 			var socialNetworks = this.getConfig("socialNetworks").split(',');
 			var networkIndex = jQuery.inArray($(e.target).attr('id'), socialNetworks);
 			var networkParams = this.getTemplateData().networks[networkIndex];
@@ -137,8 +136,8 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 				videoName: this.getPlayer().evaluate("{mediaProxy.entry.name}")
 			};
 			this.getPlayer().share( JSON.stringify(shareParams) );
-		} else
-			var url = $(e.target).parents('a').attr('href');{
+		} else {
+			var url = $(e.target).parents('a').attr('href');
 			window.open(
 				url + encodeURIComponent( this.getConfig('shareURL')),
 				'_blank',
