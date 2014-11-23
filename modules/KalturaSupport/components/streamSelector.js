@@ -96,54 +96,50 @@
 		},
 		getStreams: function(){
 			var _this = this;
-			// do the api request
-			this.getKalturaClient().doRequest( {
+			var requestObject = [];
+			requestObject.push({
 				'service': 'baseEntry',
 				'action': 'list',
 				'filter:objectType': 'KalturaBaseEntryFilter',
 				'filter:parentEntryIdEqual': this.getPlayer().kentryid
-			}, function ( data ) {
+			});
+
+			var i = 0;
+			var maxNumOfStream = this.getConfig("maxNumOfStream");
+			for (i; i < maxNumOfStream; i++){
+				requestObject.push({
+					'service': 'flavorAsset',
+					'action': 'list',
+					'filter:entryIdEqual': '{1:result:objects:'+ i +':id}'
+				});
+			}
+
+			// do the api request
+			this.getKalturaClient().doRequest( requestObject, function ( data ) {
 				// Validate result
 				if ( _this.isValidResult( data ) ) {
-					_this.getSourcesFlavours(data.objects);
+					_this.createStreamList(data);
 				} else {
-					mw.log('streamSelector::Error retrieving additional streams, disabling component');
+					mw.log('streamSelector::Error retrieving streams, disabling component');
 					_this.getBtn().hide();
 				}
 			} );
 		},
-		getSourcesFlavours: function(sources){
+		createStreamList: function(data){
 			var _this = this;
-			var requestArray = [];
-			$.each(sources, function(index, source) {
-				requestArray.push(
-					{
-						'service': 'flavorAsset',
-						'action': 'list',
-						'filter:entryIdEqual': source.id
-					}
-				);
-				_this.streams.push({ id: source.id, data: {meta: source, contextData: null}});
-			});
-			// do the api request
-			if (requestArray.length){
-				// do the api request
-				this.getKalturaClient().doRequest( requestArray, function ( data ) {
-					// Validate result
-					$.each(data, function(index, res) {
-						if ( !_this.isValidResult( res ) ) {
-							data[index] = null;
+			var subStreams = data[0].objects;
+			$.each(subStreams, function(i, subStream){
+				_this.streams.push({
+					id: subStream.id,
+					data: {
+						meta: subStream,
+						contextData: {
+							flavorAssets: data[i + 1].objects
 						}
-					});
-					$.each(_this.streams, function(index, stream){
-						stream.data.contextData = {flavorAssets: data[index].objects};
-					});
-					_this.embedPlayer.triggerHelper( 'streamsReady' );
-				} );
-			} else {
-				mw.log('streamSelector::No streams data to request, disabling component');
-				this.getBtn().hide();
-			}
+					}
+				});
+			});
+			_this.embedPlayer.triggerHelper( 'streamsReady' );
 		},
 		isValidResult: function( data ){
 			// Check if we got error
