@@ -296,7 +296,7 @@
 		},
 
 		isDVR: function(){
-			return this.getPlayer().evaluate( '{mediaProxy.entry.dvrStatus}' );
+			return ( this.getPlayer().evaluate( '{mediaProxy.entry.dvrStatus}' )  && this.getPlayer().isTimeUpdateSupported() );
 		},
 
 		getCurrentTime: function() {
@@ -430,7 +430,7 @@
 		},
 
 		isNativeHLS: function() {
-			if ( mw.isIOS() || mw.isDesktopSafari() ) {
+			if ( mw.isIOS() || mw.isDesktopSafari() || mw.isAndroid() ) {
 				return true;
 			}
 
