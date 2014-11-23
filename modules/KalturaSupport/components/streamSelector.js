@@ -13,8 +13,6 @@
 		},
 
 		isDisabled: false,
-		selectSourceTitle: gM( 'mwe-embedplayer-select_source' ),
-		switchSourceTitle: gM( 'mwe-embedplayer-switch_source' ),
 		streams: [],
 		streamsReady: false,
 		streamEnded: false,
@@ -313,11 +311,11 @@
 				//TODO: need icon from Shlomit!
 				var $button = $( '<button />' )
 					.addClass( 'btn icon-switchSource' )
-					.attr('title', _this.selectSourceTitle)
+					.attr('title', gM( 'mwe-embedplayer-select_stream' ))
 					.click( function(e){
 						_this.toggleMenu();
 					});
-				this.setAccessibility($button,_this.selectSourceTitle);
+				this.setAccessibility($button, gM( 'mwe-embedplayer-select_stream' ));
 				this.$el = $( '<div />' )
 					.addClass( 'dropup' + this.getCssClass() )
 					.append( $button, $menu );
@@ -337,13 +335,13 @@
 		},
 		onEnable: function(){
 			this.isDisabled = false;
-			this.updateTooltip( this.selectSourceTitle );
+			this.updateTooltip( gM( 'mwe-embedplayer-select_stream' ) );
 			this.getComponent().find('button').removeClass( 'rotate' );
 			this.getBtn().removeClass( 'disabled' );
 		},
 		onDisable: function(){
 			this.isDisabled = true;
-			this.updateTooltip( this.switchSourceTitle );
+			this.updateTooltip( gM( 'mwe-embedplayer-switch_stream' ) );
 			this.getComponent().find('button').addClass( 'rotate' );
 			this.getComponent().removeClass( 'open' );
 			this.getBtn().addClass( 'disabled' );
