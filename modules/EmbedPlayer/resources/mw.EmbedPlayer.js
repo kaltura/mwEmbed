@@ -3024,7 +3024,7 @@
 				this.showErrorMsg( { title: this.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), message: this.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) } );
 			}
 		},
-
+		
 		/**
 		 * Some players parse playmanifest and reload flavors list by calling this function
 		 * @param data

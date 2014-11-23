@@ -149,10 +149,6 @@ mw.KAdPlayer.prototype = {
 			var vpaidid = _this.getVPAIDId();
 			$("#" + vpaidid ).remove();
 
-			//remove vpaid container for overlay ads
-			var vpaidid = _this.getVPAIDId();
-			$("#" + vpaidid ).remove();
-
 			adSlot.adIndex++;
 
 			//last ad in ad sequence

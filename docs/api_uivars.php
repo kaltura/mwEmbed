@@ -377,11 +377,11 @@ $uiVars = array(
 				'example' => ''
 			),
 			'thumbnailUrl' => array(
-                'type' => 'String',
-                'desc' => 'External thumbnail URL to load instead of the entry default thumbnail',
-                'default' => '',
-                'example' => ''
-            ),
+				'type' => 'String',
+				'desc' => 'External thumbnail URL to load instead of the entry default thumbnail. Supports evaluated expressions within curly brackets',
+				'default' => '',
+				'example' => ''
+			,
 			'kml' => array(
 				'type' => 'String',
 				'desc' => 'The source from which to load the KDP uiConf (KML=Kaltura Meta ui Language). If undefined, the kml will be loaded from the Kaltura server via uiConf.get api. Options are: local / inject',
