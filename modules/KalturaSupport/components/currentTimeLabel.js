@@ -8,7 +8,7 @@
 		 	"displayImportance": "high"
 		},
 
-		enableUpdate: true,
+		updateEnabled: true,
 
 		setup: function(){
 			var _this = this;
@@ -40,9 +40,9 @@
 			});
 			this.bind("freezeTimeIndicators", function(e, state){
 				if (state === true) {
-					_this.enableUpdate = false;
+					_this.updateEnabled = false;
 				} else {
-					_this.enableUpdate = true;
+					_this.updateEnabled = true;
 				}
 			});
 		},
@@ -55,7 +55,7 @@
 			});
 		},
 		updateUI: function( time ){
-			if (this.enableUpdate) {
+			if (this.updateEnabled) {
 				this.getComponent().text( mw.seconds2npt( time ) );
 			}
 		},
