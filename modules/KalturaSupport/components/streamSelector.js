@@ -210,21 +210,29 @@
 			$.each( this.streams, function( streamIndex, stream ) {
 				_this.addStreamToMenu( streamIndex, stream );
 			});
+			var actualWidth = this.getMenu().$el.width();
+			var labelWidthPercentage = parseInt(this.getConfig("labelWidthPercentage")) / 100;
+			var labelWidth = this.getPlayer().getWidth() * labelWidthPercentage;
+			if (actualWidth > labelWidth){
+				this.getMenu().$el.find('a' ).width(labelWidth);
+			}
 			this.getMenu().setActive({'key': 'id', 'val': this.getCurrentStreamIndex()});
 		},
 		addStreamToMenu: function( id, stream ){
 			var _this = this;
 			var active = (this.getCurrentStreamIndex() == id);
+			var streamName = stream.data.meta.name;
 			this.getMenu().addItem({
-				'label': "Cam " + (id + 1),
+				'label': streamName,
 				'attributes': {
-					'id': id//stream.getAssetId()
+					'id': id
 				},
 				'callback': function(){
 					_this.setStream( stream );
 				},
 				'active': active
 			});
+			this.getMenu().$el.find("a").addClass("truncateText");
 		},
 		externalSetStream: function(id){
 			var stream = this.streams[id];
