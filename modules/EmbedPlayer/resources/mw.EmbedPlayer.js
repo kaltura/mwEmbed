@@ -2046,11 +2046,7 @@
 		 * @returns {boolean}
 		 */
 		isTimeUpdateSupported: function() {
-			if ( this.isLive() && mw.isAndroid() ) {
-				return false;
-			} else {
-				return true;
-			}
+			return true;
 		},
 		/**
 		 * Base Embed Controls
