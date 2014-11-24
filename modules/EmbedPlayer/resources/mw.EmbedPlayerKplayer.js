@@ -813,9 +813,23 @@ mw.EmbedPlayerKplayer = {
 		}
 	},
 	playSegment: function (startTime, endTime) {
-		this.playerObject.sendNotification("doStop");
-		this.stop();
-		this.sendNotification("changeMedia", {entryId: this.kentryid});
+		var _this = this;
+		this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', this.startTime);
+
+		this.getEntryUrl().then(function (srcToPlay) {
+			var shouldSeek = !_this.paused;
+			_this.stop();
+
+			_this.playerObject.sendNotification('changeMedia', {
+				entryUrl: srcToPlay
+			});
+
+			if (shouldSeek) {
+				_this.seek(0);
+			} else {
+				_this.playerObject.sendNotification("doStop");
+			}
+		});
 	}
 };
 

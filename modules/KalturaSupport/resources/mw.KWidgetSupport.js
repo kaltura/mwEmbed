@@ -154,15 +154,22 @@ mw.KWidgetSupport.prototype = {
 				case 'mediaPlayFrom':
 					embedPlayer.startTime = parseFloat(value);
 					segmentChange = true;
+					clearTimeout(window.timeoutID);
 					break;
 				case 'mediaPlayTo':
 					embedPlayer.pauseTime = parseFloat(value);
 					segmentChange = true;
+					clearTimeout(window.timeoutID);
 					break;
 			}
+
 			if (segmentChange) {
-				embedPlayer.playSegment(embedPlayer.startTime, embedPlayer.pauseTime);
+				window.timeoutID = setTimeout(function () {
+					embedPlayer.playSegment(embedPlayer.startTime, embedPlayer.pauseTime);
+				}, 100);
 			}
+
+
 		});
 	},
 	/**

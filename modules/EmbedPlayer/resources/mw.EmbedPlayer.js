@@ -2603,10 +2603,10 @@
 
 			// Update the previousTime ( so we can know if the user-javascript changed currentTime )
 			_this.previousTime = _this.currentTime;
-
 			// Check for a pauseTime to stop playback in temporal media fragments
 			if (_this.pauseTime && _this.currentTime > _this.pauseTime && !this.supportsURLTimeEncoding()) {
 				_this.pause();
+				console.log("---- _this.pauseTime =" + _this.pauseTime + ", currenttime = " + _this.currentTime);
 				_this.pauseTime = null;
 			}
 		},
