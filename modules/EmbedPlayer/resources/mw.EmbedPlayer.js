@@ -1552,7 +1552,6 @@
 			mw.log('EmbedPlayer:: changeMedia ');
 			// remove thumb during switch:
 			this.removePoster();
-
 			// onChangeMedia triggered at the start of the change media commands
 			$this.trigger('onChangeMedia');
 
