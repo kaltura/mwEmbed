@@ -282,6 +282,12 @@ mw.EmbedPlayerNativeComponent = {
 		this.parent_seek( percentage );
 	},
 
+	share: function( shareParams ) {
+		mw.log("EmbedPlayerNativeComponent:: share::");
+		this.getPlayerElement().attr('shareParams', shareParams);
+		this.getPlayerElement().share();
+	},
+
 	/**
 	 * returns true if device can auto play
 	 */
