@@ -919,11 +919,10 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.kalturaPlaylistData = pl;
 			delete( window.kalturaIframePackageData.playlistResult );
 		}
-		
 		if( window.kalturaIframePackageData && window.kalturaIframePackageData.entryResult ){
 			var entryResult =  window.kalturaIframePackageData.entryResult;
-			this.handlePlayerData( embedPlayer, kalturaIframePackageData.entryResult );
-			callback( window.kalturaIframePackageData.entryResult );
+			this.handlePlayerData( embedPlayer, entryResult );
+			callback( entryResult );
 			// remove the entryResult from the payload
 			delete( window.kalturaIframePackageData.entryResult );
 			return ;
