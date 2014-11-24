@@ -732,14 +732,15 @@ mw.EmbedPlayerNative = {
 
 	// Update the poster src ( updates the native object if in dom )
 	updatePoster: function( src ){
+		// Also update the embedPlayer poster
+		this.parent_updatePoster( src );
+
 		if (mw.getConfig( 'EmbedPlayer.HidePosterOnStart' ) === true){
 			return;
 		}
 		if( this.getPlayerElement() ){
 			$( this.getPlayerElement() ).attr('poster', src );
 		}
-		// Also update the embedPlayer poster
-		this.parent_updatePoster( src );
 	},
 	/**
 	 * Empty player sources from the active video tag element

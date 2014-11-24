@@ -440,6 +440,22 @@ return array(
 			)
 		)
 	),
+	//Stream selector
+	'streamSelector' => array(
+        'description' => "Enables users to select the video playback stream out of a selection of streams.",
+        'attributes' => array(
+            'defaultStream' => array(
+                'doc' => 'The default stream.',
+                'initvalue' => 1,
+                'type' => 'number'
+            ),
+            'enableKeyboardShortcuts' => array(
+                'doc' => 'Enable keyboard shortcuts (Key mappings: "[" - Next, "]" - Previous, "\" - Default)',
+                'initvalue' => true,
+                'type' => 'boolean'
+            ),
+        )
+    ),
 	/* flavor selector */
 	'flavorComboControllerScreen' => array(
 		'description' => "The Kaltura flavor selector plugin.",

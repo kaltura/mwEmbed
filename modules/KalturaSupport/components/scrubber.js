@@ -15,6 +15,7 @@
 		},
 
 		waitForFirstPlay: false,
+		updateEnabled: true,
 
 		isSliderPreviewEnabled: function(){
 			return this.getConfig("sliderPreview") && !this.isDisabled && !this.embedPlayer.isLive();
@@ -98,6 +99,13 @@
 					_this.onEnable();
 				});
 			}
+			this.bind("freezeTimeIndicators", function(e, state){
+				if (state === true) {
+					_this.updateEnabled = false;
+				} else {
+					_this.updateEnabled = true;
+				}
+			});
 		},
 		bindUpdatePlayheadPercent: function() {
 			var _this = this;
@@ -106,8 +114,10 @@
 			});
 		},
 		updatePlayheadPercentUI: function( perc ) {
-			var val = parseInt( perc * 1000 );
-			this.updatePlayheadUI(val);
+			if (this.updateEnabled) {
+				var val = parseInt( perc * 1000 );
+				this.updatePlayheadUI( val );
+			}
 		},
 		updateBufferUI: function( percent ){
 			this.getComponent().find( '.buffered' ).css({
