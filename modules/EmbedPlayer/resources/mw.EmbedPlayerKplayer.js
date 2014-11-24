@@ -132,7 +132,8 @@ mw.EmbedPlayerKplayer = {
 					'audioTracksReceived': 'onAudioTracksReceived',
 					'audioTrackSelected': 'onAudioTrackSelected',
 					'videoMetadataReceived': 'onVideoMetadataReceived',
-					'hlsEndList': 'onHlsEndList'
+					'hlsEndList': 'onHlsEndList',
+					'mediaError': 'onMediaError'
 				};
 				_this.playerObject = this.getElement();
 				$.each( bindEventMap, function( bindName, localMethod ) {
@@ -345,7 +346,6 @@ mw.EmbedPlayerKplayer = {
 	},
 	onClipDone: function() {
 		this.parent_onClipDone();
-		this.preSequenceFlag = false;
 	},
 
 	onAlert: function ( data, id ) {
@@ -363,6 +363,18 @@ mw.EmbedPlayerKplayer = {
 	 */
 	onHlsEndList: function () {
 		this.triggerHelper( 'liveEventEnded' );
+	},
+	/**
+	 * Playback error
+	 *
+	 */
+	onMediaError: function ( data ) {
+		var error = null;
+		if ( data  ) {
+			error = data.errorId + " detail:" + data.errorDetail;
+		}
+		mw.log( "EmbedPlayerKPlayer::MediaError error code: " + error );
+		this.triggerHelper( 'embedPlayerError', [ data ] );
 	},
 
 	/**
@@ -559,12 +571,25 @@ mw.EmbedPlayerKplayer = {
 
 	onFlavorsListChanged: function ( data, id ) {
 		var flavors = data.flavors;
-		if ( flavors && flavors.length > 1 ) {
-			this.setKDPAttribute( 'sourceSelector' , 'visible', true);
+		var currentSources = [];
+		if ( this.mediaElement ) {
+			currentSources = this.mediaElement.getPlayableSources();
 		}
-		this.replaceSources( flavors );
-
-		//this.mediaElement.setSourceByIndex( 0 );
+		if ( flavors && flavors.length > 1 ) {
+			//find matching pixels height because flash doesn't expose it
+			if ( currentSources.length > 0 ) {
+				$.each( flavors, function( index, flavor ) {
+					for ( var i=0; i< currentSources.length; i++ ) {
+						if ( currentSources[i].bandwidth == flavor.bandwidth ) {
+							flavor.height = currentSources[i].height;
+							break;
+						}
+					}
+				});
+			}
+			this.setKDPAttribute( 'sourceSelector' , 'visible', true);
+			this.parent_onFlavorsListChanged( flavors );
+		}
 	},
 
 	onLiveEntryOffline: function () {

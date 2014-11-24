@@ -24,7 +24,9 @@
 		iconBtnClass: 'icon-related',
 		confPrefix: 'related',
 		timerRunning:false,
-		
+		loadedThumbnails: 0,
+		numOfEntries: 0,
+
 		setup: function(){
 			var _this = this;
 			// check for storedSession of viewed entries: 
@@ -88,8 +90,21 @@
 		},
 
 		showScreen: function(){
+			var _this = this;
 			this._super(); // this is an override of showScreen in mw.KBaseScreen.js - call super
-			this.resizeThumbs();
+			if (this.numOfEntries > 0 && this.loadedThumbnails < this.numOfEntries) { // related data was loaded but thumbnails were not loaded yet
+				$('.item-inner').each(function () {
+					var img = $(this).find("img")[0];
+					img.onload = function () {
+						_this.loadedThumbnails++;
+						if (_this.loadedThumbnails == _this.numOfEntries) { // check if all thumbnails were loaded
+							_this.resizeThumbs(); // resize thumbnails according to aspect ratio
+						}
+					}
+				});
+			} else { // all thumbnails were loaded - we can resize according to aspect ratio
+				this.resizeThumbs();
+			}
 		},
 
 		resizeThumbs: function(){
@@ -103,32 +118,30 @@
 				var divWidth = $(this).width();    // save img div container width for cropping logic
 				var divHeight = $(this).height();  // save img div container height for cropping logic
 
-				// crop image from center. use a timeout to make sure the image is already resized before changing its margins
-				setTimeout(function() {
-					var heightOffset, widthOffset;
-					var $img = $( img );
-					if ( cssClass === 'wide' ) {
-						heightOffset = ($img.height() - divHeight) / 2;
-						if ( heightOffset > 0 ) {
-							$img.css( "margin-top" , heightOffset * (-1) + 'px' );
-						} else {
-							$img.width( $img.width() * divHeight / $img.height() );
-							$img.height( divHeight );
-							widthOffset = ($img.width() - divWidth) / 2;
-							$img.css( "margin-left" , widthOffset * (-1) + 'px' );
-						}
+				// crop image from center
+				var heightOffset, widthOffset;
+				var $img = $(img);
+				if (cssClass === 'wide') {
+					heightOffset = ($img.height() - divHeight) / 2;
+					if (heightOffset > 0) {
+						$img.css("margin-top", heightOffset * (-1) + 'px');
 					} else {
+						$img.width($img.width() * divHeight / $img.height());
+						$img.height(divHeight);
 						widthOffset = ($img.width() - divWidth) / 2;
-						if ( widthOffset > 0 ) {
-							$img.css( "margin-left" , widthOffset * (-1) + 'px' );
-						} else {
-							$img.height( $img.height() * divWidth / $img.width() );
-							$img.width( divWidth );
-							heightOffset = ($img.height() - divHeight) / 2;
-							$img.css( "margin-top" , heightOffset * (-1) + 'px' );
-						}
+						$img.css("margin-left", widthOffset * (-1) + 'px');
 					}
-				},300);
+				} else {
+					widthOffset = ($img.width() - divWidth) / 2;
+					if (widthOffset > 0) {
+						$img.css("margin-left", widthOffset * (-1) + 'px');
+					} else {
+						$img.height($img.height() * divWidth / $img.width());
+						$img.width(divWidth);
+						heightOffset = ($img.height() - divHeight) / 2;
+						$img.css("margin-top", heightOffset * (-1) + 'px');
+					}
+				}
 			});
 		},
 
@@ -148,11 +161,6 @@
 					// Make sure we change media only if related is visible and we have next item
 					if( _this.isScreenVisible() && _this.templateData && _this.templateData.nextItem ){
 						_this.changeMedia( null, {entryId: _this.templateData.nextItem.id} );
-						_this.viewedEntries.push(_this.templateData.nextItem.id);
-						// update the session var if storing sessions: 
-						if( _this.getConfig('storeSession') ){
-							$.cookie( _this.confPrefix + '_viewedEntries', JSON.stringify( _this.viewedEntries ) );
-						}
 					}
 				}
 			};
@@ -194,10 +202,12 @@
 					// Get data from event
 					if( args ){
 						_this.templateData = args[0];
+						_this.numOfEntries = args[0].length;
 						callback();
 						return ;
 					}
 					_this.getDataFromApi( function(data){
+						_this.numOfEntries = data.length;
 						// make sure entries that were already viewed are the last in the data array
 						for (var i = 0; i < _this.viewedEntries.length; i++){
 							for (var j = 0; j < data.length; j++){
@@ -316,6 +326,16 @@
 			});
 		},
 
+		updateViewedEntries: function (entryId) {
+			if ($.inArray(entryId, this.viewedEntries) == -1) {
+				this.viewedEntries.push(entryId)
+			}
+			// update the session var if storing sessions:
+			if (this.getConfig('storeSession')) {
+				$.cookie(this.confPrefix + '_viewedEntries', JSON.stringify(this.viewedEntries));
+			}
+		},
+
 		changeMedia: function( e, data ){
 			this.stopTimer();
 			var _this = this;
@@ -339,6 +359,7 @@
 			this.getPlayer().sendNotification('relatedVideoSelect', data);
 
 			if(this.getConfig('clickUrl')){
+				this.updateViewedEntries(data.id);
 				try {
 					window.parent.location.href = this.getConfig('clickUrl');
 					return;
@@ -350,6 +371,7 @@
 
 			this.getPlayer().sendNotification('changeMedia', data);
 			this.bind('onChangeMediaDone', function(){
+				_this.updateViewedEntries(data.entryId);
 				_this.getPlayer().play();
 				_this.unbind('onChangeMediaDone');
 			});

@@ -69,26 +69,36 @@
 			'scripts' => "resources/mw.KAdPlayer.js" 
 		),
 		"dualScreen" => array(
-		    'scripts' => "components/dualScreen/dualScreen.js",
-		    'styles' =>  "components/dualScreen/displayControlBar.css",
-		    'templates' => "components/dualScreen/displayControlBar.tmpl.html",
-		    'dependencies' => array( 'mw.KBaseComponent', 'jquery.ui.draggable', 'jquery.ui.resizable' ),
-		    'kalturaPluginName' => 'dualScreen'
-        ),
-        "search" => array(
-            'scripts' => "components/search/search.js",
-            'styles' =>  "components/search/search.css",
-            'templates' => "components/search/search.tmpl.html",
-            'dependencies' => array( 'mw.KBaseComponent' ),
-            'kalturaPluginName' => 'search'
-        ),
-        "chapters" => array(
-            'scripts' => "components/chapters/chapters.js",
-            'styles' =>  "components/chapters/chapters.css",
-            'templates' => "components/chapters/chapters.tmpl.html",
-            'dependencies' => array( 'mw.KBaseMediaList', 'jCarouse' ),
-            'kalturaPluginName' => 'chapters'
-        ),
+			'scripts' => "components/dualScreen/dualScreen.js",
+			'styles' =>  "components/dualScreen/displayControlBar.css",
+			'templates' => "components/dualScreen/displayControlBar.tmpl.html",
+			'dependencies' => array( 'mw.KBaseComponent', 'jquery.ui.draggable', 'jquery.ui.resizable' ),
+			'kalturaPluginName' => 'dualScreen'
+		),
+		'hammerEvents' => array(
+			'scripts' => 'components/hammerEvents/hammerEvents.js',
+			'kalturaPluginName' => 'hammerEvents',
+			'dependencies' => array(
+				'mw.KBasePlugin', 'hammer'
+			)
+		),
+		'hammer' => array(
+			'scripts' => 'components/hammerEvents/hammer.min.js',
+		),
+		"search" => array(
+			'scripts' => "components/search/search.js",
+			'styles' =>  "components/search/search.css",
+			'templates' => "components/search/search.tmpl.html",
+			'dependencies' => array( 'mw.KBaseComponent' ),
+			'kalturaPluginName' => 'search'
+		),
+		"chapters" => array(
+			'scripts' => "components/chapters/chapters.js",
+			'styles' =>  "components/chapters/chapters.css",
+			'templates' => "components/chapters/chapters.tmpl.html",
+			'dependencies' => array( 'mw.KBaseMediaList', 'jCarouse' ),
+			'kalturaPluginName' => 'chapters'
+		),
 		/* Core plugins */
 		"keyboardShortcuts" => array(
 			'scripts' => "resources/mw.KeyboardShortcuts.js",
@@ -107,10 +117,10 @@
 			'kalturaLoad' => 'always'
 		),
 		"sideBarContainer" => array(
-            'scripts' => "components/sideBarContainer.js",
-            'dependencies' => 'mw.KBasePlugin',
-            'kalturaLoad' => 'always'
-        ),
+			'scripts' => "components/sideBarContainer.js",
+			'dependencies' => 'mw.KBasePlugin',
+			'kalturaLoad' => 'always'
+		),
 		/** 
 		 * Layout Components 
 		 **/
@@ -120,12 +130,12 @@
 			'kalturaPluginName' => 'theme',
 		),
 		"playlistAPI" => array(
-            'scripts' => "components/playlistAPI.js",
-            'dependencies' => array('mw.KBaseMediaList','jCarouse'),
-            'styles' =>  "components/playlist/playList.css",
-            'templates' => "components/playlist/playList.tmpl.html",
-            'kalturaPluginName' => 'playlistAPI',
-        ),
+			'scripts' => "components/playlistAPI.js",
+			'dependencies' => array('mw.KBaseMediaList','jCarouse'),
+			'styles' =>  "components/playlist/playList.css",
+			'templates' => "components/playlist/playList.tmpl.html",
+			'kalturaPluginName' => 'playlistAPI',
+		),
 		"largePlayBtn" => array(
 			'scripts' => "components/largePlayBtn.js",
 			'dependencies' => 'mw.KBaseComponent',
@@ -148,8 +158,8 @@
 		),
 		"expandToggleBtn" =>array(
 			'scripts' => "components/expandToggleBtn.js",
-	        'dependencies' => 'mw.KBaseButton',
-	        'kalturaPluginName' => 'expandToggleBtn',
+			'dependencies' => 'mw.KBaseButton',
+			'kalturaPluginName' => 'expandToggleBtn',
 		),
 		"scrubber" => array(
 			'scripts' => "components/scrubber.js",
@@ -358,5 +368,10 @@
 				'scripts' => "components/audioDescription.js",
 				'dependencies' => 'mw.KBaseComponent',
 				'kalturaPluginName' => 'audioDescription'
+		),
+		"reportError" => array(
+				'scripts' => "components/reportError.js",
+				'dependencies' => 'mw.KBaseComponent',
+				'kalturaPluginName' => 'reportError'
 		),
 	);

@@ -246,14 +246,6 @@ mw.MediaElement.prototype = {
 			var bandwidthTarget = $.cookie('EmbedPlayer.UserBandwidth') || this.preferedFlavorBR;
 			$.each( playableSources, function(inx, source ){
 				if( source.bandwidth ){
-					// Check if a native source ( takes president over bandwidth selection )
-					// ( we never prefer a non-native flavor ) 
-					var player = mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType );
-					if ( !player || player.library != 'Native'	) {
-						// continue
-						return true;
-					}
-
 					if( Math.abs( source.bandwidth - bandwidthTarget ) < bandwidthDelta ){
 						bandwidthDelta = Math.abs( source.bandwidth - bandwidthTarget );
 						_this.setSource( source );

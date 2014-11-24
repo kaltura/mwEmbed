@@ -25,7 +25,7 @@
 
 			if( !this.getConfig( "iframeUrl" ) ) {
 				var chromecastPluginFlashvar = "&flashvars[chromecast.plugin]=true";
-				this.setConfig( "iframeUrl", encodeURI( this.embedPlayer.getIframeSourceUrl() + chromecastPluginFlashvar ) );
+				this.setConfig( "iframeUrl", encodeURI( kWidget.iframeUrls[ this.embedPlayer.id ] + chromecastPluginFlashvar ) );
 			}
 		},
 		isSafeEnviornment: function(){

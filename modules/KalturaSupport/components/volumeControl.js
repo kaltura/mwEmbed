@@ -62,6 +62,9 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 			value: (this.getPlayer().getPlayerElementVolume() * 100),
 			min: 0,
 			max: 100,
+			slide: function( event, ui ){
+				_this.getPlayer().setVolume( (ui.value / 100) , true );
+			},
 			change: function( event, ui ) {
 				_this.getPlayer().setVolume( (ui.value / 100) , true );
 			}

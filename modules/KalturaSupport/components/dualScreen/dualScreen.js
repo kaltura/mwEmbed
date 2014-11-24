@@ -83,7 +83,7 @@
 					} );
 					cuePointsExist = (filteredCuePoints.length > 0) ? true : false;
 				}
-				return (mw.getConfig("EmbedPlayer.LiveCuepoints") ||  !mw.isIphone() && cuePointsExist );
+				return (!this.getPlayer().useNativePlayerControls() && (mw.getConfig("EmbedPlayer.LiveCuepoints") || cuePointsExist ));
 			},
 			initConfig: function () {
 				var _this = this;
@@ -317,16 +317,24 @@
 					_this.getSecondMonitor().prop = secondaryScreen.css( ['top', 'left', 'width', 'height'] );
 					_this.getSecondMonitor().obj.css( _this.getSecondMonitor().prop );
 
-					if ( _this.getConfig( "mainViewDisplay" ) == 2 ) {
-						_this.bind('postDualScreenTransition', function(e, transition){
-							_this.unbind('postDualScreenTransition');
-							if (!_this.secondDisplayReady) {
+					var addSpinner = function(){
+						if (!_this.secondDisplayReady) {
+							if (mw.getConfig("EmbedPlayer.LiveCuepoints")) {
+								//TODO: add information slide for no current slide available
+							} else {
 								secondaryScreen.getAbsoluteOverlaySpinner().attr( 'id', 'secondScreenLoadingSpinner' );
 							}
+						}
+					};
+
+					if ( _this.getConfig( "mainViewDisplay" ) == 2 ) {
+						_this.bind('postDualScreenTransition', function(){
+							_this.unbind('postDualScreenTransition');
+							addSpinner();
 						});
 						_this.fsm.consumeEvent( "switchView" );
-					} else if (!_this.secondDisplayReady) {
-						secondaryScreen.getAbsoluteOverlaySpinner().attr( 'id', 'secondScreenLoadingSpinner' );
+					} else {
+						addSpinner();
 					}
 
 					//dualScreen components are set on z-index 1-3, so set all other components to zIndex 4 or above
@@ -344,6 +352,9 @@
 			                  _this.zIndexObjs.push(obj);
 	                      }
 	                });
+
+					_this.showControlBar();
+					_this.monitorControlBarDisabled = true;
 				} );
 
 				var resizeSecondScreen = function (event) {
@@ -359,7 +370,7 @@
 					}
 					//Hide monitor and control bar during resizing
 					_this.hideMonitor( _this.getSecondMonitor().obj );
-					_this.hideControlBar();
+					_this.disableControlBar();
 					setTimeout( function () {
 						//Resize and reposition control bar
 						_this.setControlBarWidth();
@@ -384,10 +395,7 @@
 							top: topOffset + "px",
 							left: leftOffset + "px"
 						};
-						console.info(newHeight + topOffset)
-						console.info(playerHeight)
-						console.info(newWidth + leftOffset)
-						console.info(newHeight + playerWidth)
+
 						if (newHeight + topOffset > playerHeight){
 							screenProps.top = (playerHeight - newHeight) + "px";
 						}
@@ -395,16 +403,21 @@
 							screenProps.left = (playerWidth - newWidth) + "px";
 						}
 
+						var firstScreen = _this.getFirstMonitor().obj;
 						var secondScreen = _this.getSecondMonitor().obj;
 						secondScreen.css( screenProps );
 						_this.applyIntrinsicAspect();
 						//Show monitor and control bar after resizing
 						_this.showMonitor( _this.getSecondMonitor().obj );
-						_this.showControlBar();
+						_this.enableControlBar();
 
 						//Calculate screen resize max width
 						var maxWidth = ( ( _this.getPlayer().getWidth() * _this.getConfig( 'resizable' ).maxWidthPercentage ) / 100 );
 						var minWidth = ( ( _this.getPlayer().getWidth() * _this.getConfig( 'secondScreen' ).size ) / 100 );
+						firstScreen.resizable( {
+							maxWidth: maxWidth,
+							minWidth: minWidth
+						} );
 						secondScreen.resizable( {
 							maxWidth: maxWidth,
 							minWidth: minWidth
@@ -414,7 +427,7 @@
 						_this.getFirstMonitor().prop = screenProps;
 						_this.getSecondMonitor().prop = screenProps;
 
-					}, 1000 );
+					}, 2000 );
 				};
 				this.bind( 'onOpenFullScreen onCloseFullScreen', resizeSecondScreen);
 				// Android fires orientationchange too soon, i.e width and height are wrong
@@ -427,11 +440,25 @@
 
 				this.bind( 'onplay', function () {
 					_this.loadAdditionalAssets();
+					_this.monitorControlBarDisabled = false;
 				} );
-				this.bind( 'seeked', function () {
-					var cuePoint = _this.getCurrentCuePoint();
-					_this.sync( cuePoint );
+
+				this.bind( 'onpause ended', function () {
+					_this.ignoreNextMouseEvent = false;
+					_this.showControlBar();
+					_this.monitorControlBarDisabled = true;
 				} );
+
+				//In live mode wait for first updatetime that is bigger then 0 for syncing initial slide
+				if (mw.getConfig("EmbedPlayer.LiveCuepoints")) {
+					this.bind( 'timeupdate', function ( ) {
+						if (_this.getPlayer().currentTime > 0) {
+							_this.unbind('timeupdate');
+						}
+						var cuePoint = _this.getCurrentCuePoint();
+						_this.sync( cuePoint );
+					} );
+				}
 
 				this.bind( 'KalturaSupport_ThumbCuePointsReady', function () {
 					var cuePoints = _this.getPlayer().kCuePoints.getCuePoints();
@@ -444,7 +471,8 @@
 					_this.cuePoints.sort( function ( a, b ) {
 						return a.startTime - b.startTime;
 					} );
-					_this.loadNext( _this.cuePoints[0], function(){
+					var currentCuepoint = _this.getCurrentCuePoint() || _this.cuePoints[0];
+					_this.sync(currentCuepoint , function(){
 						var $spinner = $( '#secondScreenLoadingSpinner' );
 						if ( $spinner.length > 0 ) {
 							// remove the spinner
@@ -454,10 +482,11 @@
 					} );
 				} );
 				this.bind( 'KalturaSupport_CuePointReached', function ( e, cuePointObj ) {
-					_this.sync( cuePointObj.cuePoint );
+					if ( $.inArray( _this.getConfig( 'cuePointType' ), cuePointObj.cuePoint.cuePointType ) ) {
+						_this.sync( cuePointObj.cuePoint );
+					}
 				} );
 				this.bind( 'KalturaSupport_ThumbCuePointsUpdated', function (e, cuepoints ) {
-
 					$.each( cuepoints, function ( index, cuePoint ) {
 						if ( $.inArray( _this.getConfig( 'cuePointType' ), cuePoint.cuePointType ) ) {
 							_this.cuePoints.push( cuePoint );
@@ -685,16 +714,24 @@
 				this.monitor[this.TYPE.PRIMARY].obj.removeClass( 'screenTransition' );
 				this.monitor[this.TYPE.SECONDARY].obj.removeClass( 'screenTransition' );
 			},
-			sync: function ( cuePoint ) {
+			sync: function ( cuePoint, callback ) {
 				this.loadAdditionalAssets();
-
-				var myImg = this.getComponent().find( '#SynchImg' );
-				if (cuePoint.thumbnailUrl) {
-					myImg.attr( 'src', cuePoint.thumbnailUrl);
-				} else {
-					this.loadNext(cuePoint, function(url){
-						myImg.attr( 'src', url);
-					});
+				var callCallback = function(){
+					if ( callback && typeof(callback) == "function" ) {
+						callback();
+					}
+				};
+				if (cuePoint) {
+					var myImg = this.getComponent().find( '#SynchImg' );
+					if ( cuePoint.thumbnailUrl ) {
+						myImg.attr( 'src', cuePoint.thumbnailUrl );
+						callCallback();
+					} else {
+						this.loadNext( cuePoint, function ( url ) {
+							myImg.attr( 'src', url );
+							callCallback();
+						} );
+					}
 				}
 			},
 			applyIntrinsicAspect: function(){
@@ -750,7 +787,7 @@
 					.on( 'mouseleave', function(e){if (!mw.isMobileDevice()){_this.hideControlBar( )} } );
 
 				//add drop shadow containers for control bar
-				this.getPlayer().getInterface().find(".mwEmbedPlayer").after($("<div class='controlBarShadow componentAnimation'></div>").addClass('componentOff'));
+				this.getPlayer().getInterface().find(".mwEmbedPlayer").prepend($("<div class='controlBarShadow componentAnimation'></div>").addClass('componentOff'));
 				this.getComponent().prepend($("<div class='controlBarShadow componentAnimation'></div>").addClass('componentOff'));
 				//Attach control bar action handlers
 				$.each( _this.controlBarComponents, function ( name, component ) {
@@ -782,6 +819,9 @@
 
 				this.bind("onShowToplBar onHideToplBar", function(e, height){
 					_this.positionControlBar(height.top);
+				});
+				this.bind("showPlayerControls" , function(){
+					_this.showControlBar();
 				});
 			},
 			disableControlBar: function () {

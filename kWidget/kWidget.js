@@ -45,6 +45,10 @@ var kWidget = {
 	// stored per player id
 	iframeAutoEmbedCache:{},
 
+	// For storing iframe urls
+	// Stored per player id
+	iframeUrls: {},
+
 	/**
 	 * The master kWidget setup function setups up bindings for rewrites and
 	 * proxy of jsCallbackReady
@@ -880,7 +884,9 @@ var kWidget = {
 		iframe.className = 'mwEmbedKalturaIframe';
 		iframe.setAttribute('aria-labelledby', 'Player ' + targetId);
 		iframe.setAttribute('aria-describedby', 'The Kaltura Dynamic Video Player');
-
+		// IE8 requires frameborder attribute to hide frame border: 
+		iframe.setAttribute('frameborder', '0');
+		
 		// Allow Fullscreen
 		iframe.setAttribute('allowfullscreen', true);
 		iframe.setAttribute('webkitallowfullscreen', true);
@@ -941,6 +947,8 @@ var kWidget = {
 						alert("error occur");
 					})
 			} else {
+				// Store iframe urls
+				_this.iframeUrls[ targetId ] = this.getIframeUrl() + '?' + this.getIframeRequest( widgetElm, settings );
 				// do an iframe payload request:
 				_this.appendScriptUrl( this.getIframeUrl() + '?' +
 					this.getIframeRequest( widgetElm, settings ) +
