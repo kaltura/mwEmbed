@@ -759,6 +759,17 @@ mw.EmbedPlayerNative = {
 		this.parent_emptySources();
 	},
 	/**
+	 * Android Live doesn't send timeupdate events
+	 * @returns {boolean}
+	 */
+	isTimeUpdateSupported: function() {
+		if ( this.isLive() && mw.isAndroid() ) {
+			return false;
+		} else {
+			return true;
+		}
+	},
+	/**
 	 * playerSwitchSource switches the player source working around a few bugs in browsers
 	 *
 	 * @param {Object}
