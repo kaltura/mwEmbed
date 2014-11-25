@@ -181,11 +181,6 @@
 			return this.getMedialistComponent().find(".chapterBox");
 		},
 
-		destroy: function(){
-			this.unbind();
-			this.getComponent.empty();
-		},
-
 		//General
 		getLayout: function(){
 			return  this.getConfig( 'layout' ) || 'horizontal';

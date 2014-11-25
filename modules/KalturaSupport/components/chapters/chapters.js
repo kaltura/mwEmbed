@@ -121,9 +121,8 @@
 			});
 
 			this.bind( 'onChangeMedia', function(){
-				_this.destroy();
-				// redraw the list
-				_this.shouldAddScroll();
+				_this.dataIntialized = false;
+				_this.mediaList = [];
 			});
 		},
 		isSafeEnviornment: function(){
