@@ -78,7 +78,7 @@
 					_this.keepOnScreen = true;
 					_this.show();
 				});
-				this.bind( 'onComponentsHoverEnabled', function(){
+				this.bind( 'onComponentsHoverEnabled preHideScreen', function(){
 					_this.keepOnScreen = false;
 				});
 			}
