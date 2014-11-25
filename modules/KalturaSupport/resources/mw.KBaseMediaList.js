@@ -11,6 +11,7 @@
 		$mediaListContainer: null,
 		selectedMediaItemIndex: 0,
 		startFrom: 0,
+		render: true,
 
 		getBaseConfig: function(){
 			var parentConfig = this._super();
@@ -27,7 +28,11 @@
 				'includeInLayout': true,
 				'clipListTargetId': null,
 				'containerPosition':  'right',
-				'parent': null
+				'parent': null,
+				'includeHeader': false,
+				'fullScreenDisplayOnly': false,
+				'minDisplayWidth': 0,
+				'minDisplayHeight': 0
 			});
 		},
 
@@ -46,10 +51,24 @@
 			this._super();
 
 			this.bind('updateLayout', function(){
+				if (_this.getPlayer().layoutBuilder.isInFullScreen() ||
+					(!_this.getConfig("fullScreenDisplayOnly") &&
+					_this.getConfig("minDisplayWidth") <= _this.getPlayer().getWidth() &&
+					_this.getConfig("minDisplayHeight") <= _this.getPlayer().getHeight())){
+					_this.render = true;
+				} else {
+					_this.render = false;
+				}
+
 				if (_this.getConfig( 'parent')){
 					setTimeout(function(){
-						_this.renderMediaList();
-						_this.setSelectedMedia(_this.selectedMediaItemIndex);
+						if (_this.render) {
+							_this.getComponent().show();
+							_this.renderMediaList();
+							_this.setSelectedMedia( _this.selectedMediaItemIndex );
+						} else {
+							_this.getComponent().hide();
+						}
 					}, 0);
 				}
 			});
