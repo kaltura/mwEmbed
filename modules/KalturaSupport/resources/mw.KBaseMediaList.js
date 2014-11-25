@@ -75,7 +75,7 @@
 			// handle fullscreen entering resize
 			$( this.embedPlayer ).bind('onOpenFullScreen', function() {
 				if ( !_this.getConfig( 'parent') ){
-					$(".medialistContainer").hide();
+					_this.getComponent().hide();
 					$(".videoHolder").width("100%");
 				}
 			});
@@ -83,11 +83,10 @@
 			// handle fullscreen exit resize
 			$( this.embedPlayer ).bind('onCloseFullScreen', function() {
 				if ( !_this.getConfig( 'parent') ){
-					$(".medialistContainer").show();
+					_this.getComponent().show();
 					$(".videoHolder").width(_this.videoWidth+"px");
 				}
 			});
-
 		},
 
 		getComponent: function(){

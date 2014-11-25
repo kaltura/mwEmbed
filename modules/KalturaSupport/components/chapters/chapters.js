@@ -35,7 +35,7 @@
 
 		setup: function ( embedPlayer ) {
 			this.addBindings();
-			if (mw.getConfig("EmbedPlayer.LiveCuepoints")){
+			if (this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints")){
 				this.setConfig("includeMediaItemDuration", false);
 			}
 		},
@@ -144,7 +144,8 @@
 				});
 				cuePointsExist =  (filteredCuePoints.length > 0) ? true : false;
 			}
-			return (!this.getPlayer().useNativePlayerControls() && (mw.getConfig("EmbedPlayer.LiveCuepoints") || cuePointsExist));
+			return (!this.getPlayer().useNativePlayerControls() &&
+				((this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) || cuePointsExist));
 		},
 		getMedialistContainer: function(){
 			//Only support external onPage medialist container
