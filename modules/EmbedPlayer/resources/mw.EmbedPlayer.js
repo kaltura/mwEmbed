@@ -1017,22 +1017,6 @@
 			}
 			// set the playhead to the target position
 			this.updatePlayHead(percent);
-
-			// See if we should do a server side seek ( player independent )
-			if (this.supportsURLTimeEncoding()) {
-				return;
-				mw.log('EmbedPlayer::seek:: updated serverSeekTime: ' + mw.seconds2npt(this.serverSeekTime) +
-					' currentTime: ' + _this.currentTime);
-				// make sure we need to seek:
-				if (_this.currentTime == _this.serverSeekTime) {
-					return;
-				}
-
-				this.stop();
-				this.didSeekJump = true;
-				// Make sure this.serverSeekTime is up-to-date:
-				this.serverSeekTime = mw.npt2seconds(this.startNpt) + parseFloat(percent * this.getDuration());
-			}
 			// Run the onSeeking interface update
 			// NOTE layoutBuilder should really bind to html5 events rather
 			// than explicitly calling it or inheriting stuff.
@@ -2606,7 +2590,6 @@
 			// Check for a pauseTime to stop playback in temporal media fragments
 			if (_this.pauseTime && _this.currentTime > _this.pauseTime && !this.supportsURLTimeEncoding()) {
 				_this.pause();
-				console.log("---- _this.pauseTime =" + _this.pauseTime + ", currenttime = " + _this.currentTime);
 				_this.pauseTime = null;
 			}
 		},

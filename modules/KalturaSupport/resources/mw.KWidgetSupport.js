@@ -152,12 +152,14 @@ mw.KWidgetSupport.prototype = {
 			var segmentChange = false;
 			switch( property ){
 				case 'mediaPlayFrom':
-					embedPlayer.startTime = parseFloat(value);
+					if (value)
+						embedPlayer.startTime = parseFloat(value);
 					segmentChange = true;
 					clearTimeout(window.timeoutID);
 					break;
 				case 'mediaPlayTo':
-					embedPlayer.pauseTime = parseFloat(value);
+					if (value)
+						embedPlayer.pauseTime = parseFloat(value);
 					segmentChange = true;
 					clearTimeout(window.timeoutID);
 					break;
