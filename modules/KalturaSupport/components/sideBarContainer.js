@@ -6,6 +6,11 @@
 			'hover': true,
 			'clickToClose': false,
 			'position': 'left'
+			'closeTimeout': 1000,
+			'position': 'left',
+			'fullScreenDisplayOnly': false,
+			'minDisplayWidth': 0,
+			'minDisplayHeight': 0
 		},
 		enabled: true,
 		keepOnScreen: false,
@@ -23,23 +28,15 @@
 			});
 			this.bind( 'layoutBuildDone ended', function(){
 				_this.getComponentReminder().off('click').on('click', function(){
-					if (_this.getConfig('isSideBarOpen')) {
-						_this.setConfig( 'isSideBarOpen', 'false' );
-						if (_this.getConfig('clickToClose')) {
-							_this.getComponentReminder().removeClass( 'shifted' );
-							_this.getComponent().removeClass( 'openBtn' );
-						}
-					} else {
-						_this.setConfig( 'isSideBarOpen', 'true' );
-						_this.getComponentReminder().addClass( 'shifted' );
-						_this.getComponent().addClass( 'openBtn' );
-					}
+					_this.toggleSideBar();
 				});
 				if (!_this.getConfig('clickToClose')) {
 					_this.getComponent().on( 'mouseleave', function () {
-						_this.setConfig( 'isSideBarOpen', 'false' );
-						_this.getComponent().removeClass( 'openBtn' );
-						_this.getComponentReminder().removeClass( 'shifted' );
+						setTimeout(function(){
+							if (_this.getConfig('isSideBarOpen')) {
+								_this.closeSideBar();
+							}
+						}, _this.getConfig("closeTimeout"));
 					} );
 				}
 			});
@@ -102,6 +99,25 @@
 			this.getComponent().removeClass( 'openBtn' );
 			// Allow interface items to update:
 			this.getPlayer().triggerHelper('onHideSideBar', {'top' : 15} );
+		},
+		toggleSideBar: function(){
+			if (this.getConfig('isSideBarOpen')) {
+				this.closeSideBar();
+			} else {
+				this.openSideBar();
+			}
+		},
+		openSideBar: function(){
+			if (this.render) {
+				this.setConfig( 'isSideBarOpen', 'true' );
+				this.getComponentReminder().addClass( 'shifted' );
+				this.getComponent().addClass( 'openBtn' );
+			}
+		},
+		closeSideBar: function(){
+			this.setConfig( 'isSideBarOpen', 'false' );
+			this.getComponent().removeClass( 'openBtn' );
+			this.getComponentReminder().removeClass( 'shifted' );
 		},
 		getComponent: function(){
 			if( !this.$el ) {
