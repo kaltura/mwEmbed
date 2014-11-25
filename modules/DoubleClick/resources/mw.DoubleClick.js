@@ -315,18 +315,20 @@
 				}
 			});
 			_this.embedPlayer.bindHelper('Kaltura_SendNotification' + this.bindPostfix, function (event, notificationName, notificationData) {
-				if (notificationName === "doPause") {
-					_this.embedPlayer.paused = true;
-					$(_this.embedPlayer).trigger("onPlayerStateChange", ["pause", _this.embedPlayer.currentState]);
-					if (_this.isChromeless) {
-						_this.embedPlayer.getPlayerElement().sendNotification("pauseAd");
+				if (_this.playingLinearAd) {
+					if ( notificationName === "doPause" ) {
+						_this.embedPlayer.paused = true;
+						$( _this.embedPlayer ).trigger( "onPlayerStateChange", ["pause", _this.embedPlayer.currentState] );
+						if ( _this.isChromeless ) {
+							_this.embedPlayer.getPlayerElement().sendNotification( "pauseAd" );
+						}
 					}
-				}
-				if (notificationName === "doPlay") {
-					_this.embedPlayer.paused = false;
-					$(_this.embedPlayer).trigger("onPlayerStateChange", ["play", _this.embedPlayer.currentState]);
-					if (_this.isChromeless) {
-						_this.embedPlayer.getPlayerElement().sendNotification("resumeAd");
+					if ( notificationName === "doPlay" ) {
+						_this.embedPlayer.paused = false;
+						$( _this.embedPlayer ).trigger( "onPlayerStateChange", ["play", _this.embedPlayer.currentState] );
+						if ( _this.isChromeless ) {
+							_this.embedPlayer.getPlayerElement().sendNotification( "resumeAd" );
+						}
 					}
 				}
 			});
@@ -838,7 +840,7 @@
 				$(_this.embedPlayer).trigger("onAdPlay",[adInfo.adID]);
 				// This changes player state to the relevant value ( play-state )
 				$(_this.embedPlayer).trigger("playing");
-				if ( _this.currentAdSlotType != _this.prevSlotType ) {
+				if (_this.currentAdSlotType != _this.prevSlotType) {
 					_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
 					_this.prevSlotType = _this.currentAdSlotType;
 				}
@@ -905,6 +907,9 @@
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				_this.embedPlayer.sequenceProxy.isInSequence = false;
+				if (_this.prevSlotType === "midroll") {
+					_this.prevSlotType = ""; // to support multiple midrolls we must clear prevSlotType when the midroll is finished
+				}
 				_this.currentAdSlotType = _this.embedPlayer.adTimeline.currentAdSlotType;
 				if (_this.currentAdSlotType == 'midroll'){
 					setTimeout(function(){
@@ -923,12 +928,14 @@
 						_this.embedPlayer.getPlayerElement().play();
 					},100);
 				}
+				_this.playingLinearAd = false;
 			},'contentResumeRequested', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				_this.entryDuration = _this.embedPlayer.getDuration();
 				_this.embedPlayer.sequenceProxy.isInSequence = true;
 				_this.embedPlayer.stopMonitor();
+				_this.playingLinearAd = true;
 			},'contentPauseRequested', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){

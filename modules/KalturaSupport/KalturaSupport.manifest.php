@@ -632,7 +632,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 			'buttonsSize' => array(
 				'label' => 'Button\'s size',
-				'doc' => 'Button\'s size.',
+				'doc' => 'Button\'s size',
 				'type' => 'number',
 				'player-refresh' => 'theme.buttonsSize',
 				"initvalue" => 12,
@@ -645,7 +645,8 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'label' => 'Button\'s color',
 				"initvalue" => "#000000",
 				'player-refresh' => 'theme.buttonsColor',
-				'doc' => 'Button\'s color',
+				'doc' => 'Button\'s color. Note: using transparency will disable this color setting in Internet Explorer 8',
+				'alpha' => true,
 				'type' => 'color'
 			),
 			'buttonsIconColor' => array(

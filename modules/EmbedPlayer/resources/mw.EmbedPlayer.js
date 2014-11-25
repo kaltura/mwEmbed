@@ -2040,6 +2040,14 @@
 			this.triggerHelper( 'preSequence' );
 			this.playInterfaceUpdate();
 		},
+
+		/**
+		 * Android Live doesn't send timeupdate events
+		 * @returns {boolean}
+		 */
+		isTimeUpdateSupported: function() {
+			return true;
+		},
 		/**
 		 * Base Embed Controls
 		 */
@@ -2093,8 +2101,11 @@
 			}
 
 			// put a loading spiner on the player while pre-sequence or playing starts up
-			this.addPlayerSpinner();
-			this.hideSpinnerOncePlaying();
+			if ( this.isTimeUpdateSupported() ) {
+				this.addPlayerSpinner();
+				this.hideSpinnerOncePlaying();
+			}
+
 
 			// playing, exit stopped state:
 			_this.stopped = false;
