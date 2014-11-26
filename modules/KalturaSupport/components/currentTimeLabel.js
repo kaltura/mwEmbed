@@ -8,6 +8,8 @@
 		 	"displayImportance": "high"
 		},
 
+		updateEnabled: true,
+
 		setup: function(){
 			var _this = this;
 			this.bindTimeUpdate();
@@ -36,6 +38,13 @@
 			this.bind( 'seeked', function(){
 				_this.updateUI( _this.getCurrentTime() );
 			});
+			this.bind("freezeTimeIndicators", function(e, state){
+				if (state === true) {
+					_this.updateEnabled = false;
+				} else {
+					_this.updateEnabled = true;
+				}
+			});
 		},
 		bindTimeUpdate: function() {
 			var _this = this;
@@ -46,7 +55,9 @@
 			});
 		},
 		updateUI: function( time ){
-			this.getComponent().text( mw.seconds2npt( time ) );
+			if (this.updateEnabled) {
+				this.getComponent().text( mw.seconds2npt( time ) );
+			}
 		},
 		getCurrentTime: function(){
 			var ct = this.getPlayer().getPlayerElementTime() - this.getPlayer().startOffset;
