@@ -140,7 +140,7 @@
 					$.each(bindEventMap, function (bindName, localMethod) {
 						_this.playerObject.addJsListener(bindName, localMethod);
 					});
-					if (_this.startTime !== undefined && _this.startTime != 0) {
+					if (_this.startTime !== undefined && _this.startTime != 0 && !_this.supportsURLTimeEncoding()) {
 						_this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', _this.startTime);
 					}
 					readyCallback();
@@ -331,7 +331,15 @@
 		},
 
 		onDurationChange: function (data, id) {
-			if (this.startTime && this.pauseTime && data.newValue > (this.pauseTime - this.startTime + 2)) {
+			var dur = this.getDuration();
+			if (this.startTime && this.pauseTime) {
+				dur = this.pauseTime - this.startTime + 2;
+			} else {
+				if (this.startTime) {
+					dur = dur - this.startTime + 2;
+				}
+			}
+			if (data.newValue > dur) {
 				return;
 			}
 			// Update the duration ( only if not in url time encoding mode:
@@ -818,18 +826,28 @@
 		playSegment: function (startTime, endTime) {
 			var _this = this;
 			this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', this.startTime);
-			this.getEntryUrl().then(function (srcToPlay) {
-				var shouldSeek = !_this.paused;
-				_this.stop();
-				_this.playerObject.sendNotification('changeMedia', {
-					entryUrl: srcToPlay
+			if (this.supportsURLTimeEncoding()) {
+				this.getEntryUrl().then(function (srcToPlay) {
+					var shouldSeek = !_this.paused;
+					_this.stop();
+					_this.playerObject.sendNotification('changeMedia', {
+						entryUrl: srcToPlay
+					});
+					if (shouldSeek) {
+						_this.seek(0);
+					} else {
+						_this.playerObject.sendNotification("doStop");
+					}
 				});
-				if (shouldSeek) {
-					_this.seek(0);
-				} else {
-					_this.playerObject.sendNotification("doStop");
+			} else {
+				if (endTime) {
+					this.pauseTime = endTime;
 				}
-			});
+				if (startTime) {
+					this.seek(startTime / this.getDuration());
+				}
+			}
+
 		}
 	};
 

@@ -149,18 +149,20 @@ mw.KWidgetSupport.prototype = {
 
 		// Support mediaPlayFrom, mediaPlayTo properties
 		embedPlayer.bindHelper( 'Kaltura_SetKDPAttribute', function(e, componentName, property, value){
+			if (!value) {
+				return;
+			}
 			var segmentChange = false;
 			switch( property ){
 				case 'mediaPlayFrom':
-					if (value)
-						embedPlayer.startTime = parseFloat(value);
+					embedPlayer.startTime = parseFloat(value);
 					segmentChange = true;
 					clearTimeout(window.timeoutID);
 					break;
 				case 'mediaPlayTo':
-					if (value)
-						embedPlayer.pauseTime = parseFloat(value);
+					embedPlayer.pauseTime = parseFloat(value);
 					segmentChange = true;
+					embedPlayer.stopMonitor();
 					clearTimeout(window.timeoutID);
 					break;
 			}
