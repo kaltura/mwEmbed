@@ -5,10 +5,17 @@
 		defaultConfig: {
 			'hover': true,
 			'clickToClose': false,
-			'position': 'left'
+			'closeTimeout': 1000,
+			'position': 'left',
+			'fullScreenDisplayOnly': false,
+			'minDisplayWidth': 0,
+			'minDisplayHeight': 0
 		},
-
+		enabled: true,
+		render: true,
+		screenShown: false,
 		keepOnScreen: false,
+		openAfterDisable: false,
 
 		setup: function(){
 			// Bind player
@@ -23,24 +30,41 @@
 			});
 			this.bind( 'layoutBuildDone ended', function(){
 				_this.getComponentReminder().off('click').on('click', function(){
-					if (_this.getConfig('isSideBarOpen')) {
-						_this.setConfig( 'isSideBarOpen', 'false' );
-						if (_this.getConfig('clickToClose')) {
-							_this.getComponentReminder().removeClass( 'shifted' );
-							_this.getComponent().removeClass( 'openBtn' );
-						}
-					} else {
-						_this.setConfig( 'isSideBarOpen', 'true' );
-						_this.getComponentReminder().addClass( 'shifted' );
-						_this.getComponent().addClass( 'openBtn' );
-					}
+					_this.toggleSideBar();
 				});
 				if (!_this.getConfig('clickToClose')) {
 					_this.getComponent().on( 'mouseleave', function () {
-						_this.setConfig( 'isSideBarOpen', 'false' );
-						_this.getComponent().removeClass( 'openBtn' );
-						_this.getComponentReminder().removeClass( 'shifted' );
+						setTimeout(function(){
+							if (_this.getConfig('isSideBarOpen')) {
+								_this.closeSideBar();
+							}
+						}, _this.getConfig("closeTimeout"));
 					} );
+				}
+			});
+			this.bind( 'preShowScreen onDisableInterfaceComponents', function( event, excludedComponents ){
+				if( event.type == "preShowScreen" || $.inArray( _this.pluginName, excludedComponents ) == -1) {
+					_this.enabled = false;
+					_this.hide();
+				}
+			});
+			this.bind( 'preHideScreen onEnableInterfaceComponents', function( event, excludedComponents ){
+				if( event.type == "preHideScreen" || $.inArray( _this.pluginName, excludedComponents ) == -1) {
+					_this.enabled = true;
+					_this.show();
+				}
+			});
+			this.bind('updateLayout', function(){
+				if (_this.getPlayer().layoutBuilder.isInFullScreen() ||
+					(!_this.getConfig("fullScreenDisplayOnly") &&
+					_this.getConfig("minDisplayWidth") <= _this.getPlayer().getWidth() &&
+					_this.getConfig("minDisplayHeight") <= _this.getPlayer().getHeight())){
+					_this.render = true;
+					_this.getComponent().css('height', _this.getPlayer().getVideoHolder().height());
+					_this.show();
+				} else {
+					_this.render = false;
+					_this.hide();
 				}
 			});
 
@@ -50,14 +74,8 @@
 					_this.destroy();
 				}
 			});
-
 			this.bind( 'layoutBuildDone ended', function(){
 				_this.show();
-
-			});
-
-			this.bind('updateLayout', function(){
-				_this.getComponent().css('height', _this.getPlayer().getVideoHolder().height());
 			});
 
 			// Bind hover events
@@ -73,26 +91,53 @@
 					_this.keepOnScreen = true;
 					_this.show();
 				});
-				this.bind( 'onComponentsHoverEnabled', function(){
+				this.bind( 'onComponentsHoverEnabled preHideScreen', function(){
 					_this.keepOnScreen = false;
 				});
 			}
 		},
 		show: function(){
-			this.getComponentReminder().addClass( 'open' );
-			// Trigger the screen overlay with layout info:
-			this.getPlayer().triggerHelper( 'onShowSidelBar', {
-				'top' : this.getComponentReminder().height() + 15
-			});
+			if (this.enabled && this.render) {
+				this.getComponentReminder().addClass( 'open' );
+				// Trigger the screen overlay with layout info:
+				this.getPlayer().triggerHelper( 'onShowSidelBar', {
+					'top': this.getComponentReminder().height() + 15
+				} );
+				if ( this.openAfterDisable ) {
+					this.openAfterDisable = false;
+					this.getComponentReminder().trigger( "click" );
+				}
+			}
 		},
 		hide: function(){
-
-			if( this.keepOnScreen || (this.getConfig('clickToClose') && this.getConfig( 'isSideBarOpen'))) return;
+			if( this.enabled && this.render && (this.keepOnScreen || (this.getConfig('clickToClose') && this.getConfig( 'isSideBarOpen')))) return;
+			if ( this.getConfig( 'isSideBarOpen' ) ) {
+				this.openAfterDisable = true;
+			}
 			this.setConfig( 'isSideBarOpen', 'false' );
 			this.getComponentReminder().removeClass( 'open shifted' );
 			this.getComponent().removeClass( 'openBtn' );
 			// Allow interface items to update:
 			this.getPlayer().triggerHelper('onHideSideBar', {'top' : 15} );
+		},
+		toggleSideBar: function(){
+			if (this.getConfig('isSideBarOpen')) {
+				this.closeSideBar();
+			} else {
+				this.openSideBar();
+			}
+		},
+		openSideBar: function(){
+			if (this.render) {
+				this.setConfig( 'isSideBarOpen', 'true' );
+				this.getComponentReminder().addClass( 'shifted' );
+				this.getComponent().addClass( 'openBtn' );
+			}
+		},
+		closeSideBar: function(){
+			this.setConfig( 'isSideBarOpen', 'false' );
+			this.getComponent().removeClass( 'openBtn' );
+			this.getComponentReminder().removeClass( 'shifted' );
 		},
 		getComponent: function(){
 			if( !this.$el ) {

@@ -24,7 +24,10 @@
 			'includeItemNumberPattern': false,
 			'includeMediaItemDuration': true,
 			'onPage': false,
-			'cssFileName': 'modules/KalturaSupport/components/chapters/chapters.css'
+			'includeHeader': false,
+			'cssFileName': 'modules/KalturaSupport/components/chapters/chapters.css',
+			'minDisplayWidth': 0,
+			'minDisplayHeight': 0
 		},
 
 		mediaList: [],
@@ -120,9 +123,8 @@
 			});
 
 			this.bind( 'onChangeMedia', function(){
-				_this.destroy();
-				// redraw the list
-				_this.shouldAddScroll();
+				_this.dataIntialized = false;
+				_this.mediaList = [];
 			});
 		},
 		isSafeEnviornment: function(){
