@@ -97,7 +97,7 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 				url: 'https://plus.google.com/share?url=',
 				redirectUrl: 'https://plus.google.com/app/basic/stream'
 			});
-		if (socialNetworks.indexOf("mail") != -1)
+		if (mw.getConfig( "EmbedPlayer.ForceNativeComponent" ) && socialNetworks.indexOf("mail") != -1)
 			networks.push({
 				id: 'mail',
 				name: 'Mail',
@@ -105,7 +105,7 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 				url: 'http://',
 				redirectUrl: ''
 			});
-		if (socialNetworks.indexOf("message") != -1)
+		if (mw.getConfig( "EmbedPlayer.ForceNativeComponent" ) && socialNetworks.indexOf("message") != -1)
 			networks.push({
 				id: 'message',
 				name: 'Message',
