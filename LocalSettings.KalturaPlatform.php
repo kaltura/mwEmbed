@@ -28,12 +28,16 @@ $wgKalturaServiceUrl = wgGetUrl('cdn_api_host');
 $wgKalturaCDNUrl = wgGetUrl('cdn_host');
 // Default Stats URL
 $wgKalturaStatsServiceUrl = wgGetUrl('stats_host');
+// Default Live Stats URL
+$wgKalturaLiveStatsServiceUrl = wgGetUrl('live_stats_host');
 
 // SSL host names
 if( $wgHTTPProtocol == 'https' ){
 	$wgKalturaServiceUrl = wgGetUrl('cdn_api_host_https');
 	$wgKalturaCDNUrl = wgGetUrl('cdn_host_https');
 	$wgKalturaStatsServiceUrl = wgGetUrl('stats_host_https');
+	$wgKalturaLiveStatsServiceUrl = wgGetUrl('live_stats_host_https');
+
 }
 
 // Default Asset CDN Path (used in ResouceLoader.php):
@@ -55,11 +59,23 @@ if( $kConf->hasParam('use_apple_adaptive') ) {
 	$wgKalturaUseAppleAdaptive = $kConf->get('use_apple_adaptive');
 }
 
+// Get Kaltura Supported API Features
+if( $kConf->hasParam('features') ) {
+	$wgKalturaApiFeatures = $kConf->get('features');
+}
+
 // Allow Iframe to connect remote service
 $wgKalturaAllowIframeRemoteService = true;
 
 // Set debug for true (testing only)
 $wgEnableScriptDebug = false;
+
+// Get PlayReady License URL
+if( $kConf->hasMap('playReady') ) {
+	$playReadyMap = $kConf->getMap('playReady');
+	if($playReadyMap)
+		$wgKalturaLicenseServerUrl = $playReadyMap['license_server_url'];
+}
 
 // A helper function to get full URL of host
 function wgGetUrl( $hostKey = null ) {

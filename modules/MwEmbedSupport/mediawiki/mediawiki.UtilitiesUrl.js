@@ -7,10 +7,10 @@
 	 * protocol relative urls are prepended with http or https
 	 *
 	 * @param {String}
-	 *            source path or url
+	 *			source path or url
 	 * @param {String}
-	 *            contextUrl The domain / context for creating an absolute url
-	 *            from a relative path
+	 *			contextUrl The domain / context for creating an absolute url
+	 *			from a relative path
 	 * @return {=String} absolute url
 	 */
 	mw.absoluteUrl = function( source, contextUrl ) {

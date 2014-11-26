@@ -254,11 +254,11 @@ mw.FreeWheelController.prototype = {
 						// TODO handle close caption layout conflict
 						var bottom = parseInt( $('#fw_ad_container_div').css( 'bottom' ) );
 						var ctrlBarBottom  = bottom;
-						if( bottom < embedPlayer.controlBuilder.getHeight() ){
-							ctrlBarBottom = bottom + embedPlayer.controlBuilder.getHeight();
+						if( bottom < embedPlayer.layoutBuilder.getControlBarHeight() ){
+							ctrlBarBottom = bottom + embedPlayer.layoutBuilder.getControlBarHeight();
 						}
 						// Check if we are overlaying controls ( move the banner up )
-						if( embedPlayer.controlBuilder.isOverlayControls() ){
+						if( embedPlayer.isOverlayControls() ){
 							_this.embedPlayer.bindHelper( 'onShowControlBar', function(){
 								$('#fw_ad_container_div').animate({'bottom': ctrlBarBottom + 'px'}, 'fast');
 							});
@@ -303,6 +303,9 @@ mw.FreeWheelController.prototype = {
 		// Update the ad duration ( may change once the media is loaded )
 		_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration', adMetaData.duration );
 
+		// Update duration
+		_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', adMetaData.duration );
+
 		// Update the player ad playback mode:
 		_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.getSlotType( slot ) );
 		// Play the slot
@@ -311,6 +314,7 @@ mw.FreeWheelController.prototype = {
 		this.activeSlot = slot;
 		// Monitor ad progress ( for sequence proxy )
 		this.monitorAdProgress();
+
 		// Suppress freewheel controls attribute change on pause:
 		var vid = _this.embedPlayer.getPlayerElement();
 		$( vid ).bind( 'pause' + _this.bindPostfix, function(){
@@ -321,19 +325,19 @@ mw.FreeWheelController.prototype = {
 			},0);
 
 			// force display the control bar ( in case it was hiddedn )
-			_this.embedPlayer.controlBuilder.showControlBar( true );
+			_this.embedPlayer.disableComponentsHover();
 
 			// a click we want to  enable play button:
-			_this.embedPlayer._playContorls = true;
+			_this.embedPlayer.enablePlayControls();
 			// play interface update:
 			_this.embedPlayer.pauseInterfaceUpdate();
 			$( vid ).bind( 'play.fwPlayBind', function(){
 				$( vid ).unbind( 'play.fwPlayBind' );
 				// Restore hover property if set
-				_this.embedPlayer.controlBuilder.restoreControlsHover();
+				_this.embedPlayer.restoreComponentsHover();
 				// a restore _playControls restriction if in an ad )
 				if( _this.embedPlayer.sequenceProxy.isInSequence ){
-					_this.embedPlayer._playContorls = false;
+					_this.embedPlayer.disablePlayControls();
 				}
 				_this.embedPlayer.playInterfaceUpdate();
 			});
@@ -343,12 +347,6 @@ mw.FreeWheelController.prototype = {
 		if( !_this.orginalInterfaceHeight ){
 			_this.orginalInterfaceHeight = _this.embedPlayer.$interface.css( 'height' )
 		}
-		// Put the interface at the bottom of the player to allow clicks to work
-		//_this.embedPlayer.$interface.css( {
-		//	'height':  _this.embedPlayer.controlBuilder.getHeight(),
-		//	'bottom' : '0px',
-		//	'top' : _this.embedPlayer.height
-		//})
 
 		return true;
 	},
@@ -387,11 +385,7 @@ mw.FreeWheelController.prototype = {
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', parseInt( vid.duration - vid.currentTime ) );
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  vid.duration );
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', vid.currentTime );
-			
-			// TODO player interface updates should be configurable see Mantis 14076 and 14019
-			_this.embedPlayer.controlBuilder.setStatus(
-				mw.seconds2npt( vid.currentTime ) + '/' + mw.seconds2npt( vid.duration )
-			);
+
 			_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
 		}
 

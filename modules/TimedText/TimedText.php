@@ -7,7 +7,6 @@
 			'styles' => "resources/mw.style.TimedText.css",
 			'dependencies' => array(
 				'mw.EmbedPlayer',
-				'jquery.ui.dialog',
 				'mw.TextSource',
 				'mw.Language.names'
 			),

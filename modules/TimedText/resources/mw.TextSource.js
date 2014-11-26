@@ -10,27 +10,29 @@
 		return this.init( source );
 	};
 	mw.TextSource.prototype = {
-
-		//The load state:
-		loaded: false,
-
-		// Container for the captions
-		// captions include "start", "end" and "content" fields
-		captions: [],
-
-		// The css style for captions ( some file formats specify display types )
-		styleCss: {},
-
-		// The previous index of the timed text served
-		// Avoids searching the entire array on time updates.
-		prevIndex: 0,
-
 		/**
 		 * @constructor Inherits mediaSource from embedPlayer
 		 * @param {source} Base source element
 		 * @param {Object} Pointer to the textProvider
 		 */
 		init: function( source , textProvider) {
+
+			//The load state:
+			this.loaded = false;
+
+			// Container for the captions
+			// captions include "start", "end" and "content" fields
+			this.captions = [];
+
+			// The previous index of the timed text served
+			// Avoids searching the entire array on time updates.
+			this.prevIndex = 0;
+
+			// The css style for captions ( some file formats specify display types )
+			this.styleCss = {};
+
+			this.bodyStyleId = '';
+
 			//	Inherits mediaSource
 			for( var i in source){
 				this[ i ] =  source[ i ];
@@ -53,7 +55,7 @@
 		 */
 		load: function( callback ) {
 			var _this = this;
-			mw.log("TextSource:: load src:" + _this.getSrc() );
+		//	mw.log("TextSource:: load caption: " + _this.title + ", src: " + _this.getSrc() );
 
 			// Setup up a callback ( in case it was not defined )
 			if( !callback ){
@@ -66,33 +68,29 @@
 			}
 
 			// Try to load src via XHR source
-			if( !this.getSrc() ) {
+			if(!this.getSrc || !this.getSrc() ) {
 				mw.log( "Error: TextSource no source url for text track");
 				return callback();
 			}
-
+			
 			// Check type for special loaders:
 			$( mw ).triggerQueueCallback( 'TimedText_LoadTextSource', _this, function(){
-				if( _this.loaded ){
-					callback();
-				} else {
-					// if no module loaded the text source use the normal ajax proxy:
-					new mw.ajaxProxy({
-						url: _this.getSrc(),
-						success: function( resultXML ) {
-							_this.captions = _this.getCaptions( resultXML );
-							_this.loaded = true;
-							mw.log("mw.TextSource :: loaded from " +  _this.getSrc() + " Found: " + _this.captions.length + ' captions' );
-							callback();
-						},
-						error: function() {
-							mw.log("Error: TextSource Error with http response");
-							_this.loaded = true;
-							callback();
-						}
-					});
-				}
-			})
+				// if no module loaded the text source use the normal ajax proxy:
+				new mw.ajaxProxy({
+					url: _this.getSrc(),
+					success: function( resultXML ) {
+						_this.captions = _this.getCaptions( resultXML );
+						_this.loaded = true;
+						mw.log("mw.TextSource :: loaded from " +  _this.getSrc() + " Found: " + _this.captions.length + ' captions' );
+						callback();
+					},
+					error: function() {
+						mw.log("Error: TextSource Error with http response");
+						_this.loaded = true;
+						callback();
+					}
+				});
+			});
 		},
 
 		/**
@@ -161,10 +159,13 @@
 					break;
 			}
 			// check for other indicators ( where the caption is missing metadata )
-			if( this.src && this.src.substr( -4 ) == 'ttml' ){
+			if( this.src && (
+				this.src.substr(this.src.length - 4) == 'ttml' ||
+				this.src.substr(this.src.length - 2) == "tt") ||
+				this.src.substr(this.src.length - 4) == 'dfxp' ){
 				return this.getCaptionsFromTMML( data );
 			}
-			if( this.src && this.src.substr( -3 ) == 'srt' ){
+			if( this.src && this.src.substr(this.src.length - 3) == 'srt' ){
 				return this.getCaptionsFromSrt( data );
 			}
 			// caption mime not found return empty set:
@@ -189,7 +190,6 @@
 			// set up display information:
 			var captions = [];
 			var xml = ( $( data ).find("tt").length ) ? data : $.parseXML( data );
-
 			// Check for parse error:
 			try {
 				if( !xml || $( xml ).find('parsererror').length ){
@@ -201,102 +201,135 @@
 				return captions;
 			}
 
-			// Set the body Style
-			var bodyStyleId = $( xml ).find('body').attr('style');
-
-			// Set style translate ttml to css
-			$( xml ).find( 'style').each( function( inx, style){
-				var cssObject = {};
-				// Map CamelCase css properties:
-				$( style.attributes ).each(function(inx, attr){
-					var attrName = attr.name;
-					if( attrName.substr(0, 4) !== 'tts:' ){
-						// skip
-						return true;
-					}
-					var cssName = '';
-					for( var c = 4; c < attrName.length; c++){
-						if( attrName[c].toLowerCase() != attrName[c] ){
-							cssName += '-' +  attrName[c].toLowerCase();
-						} else {
-							cssName+= attrName[c]
-						}
-					}
-					cssObject[ cssName ] = attr.nodeValue;
-				});
-				// for(var i =0; i< style.length )
-				_this.styleCss[ $( style).attr('id') ] = cssObject;
-			});
+			this.parseStylesTTML( xml );
 
 			$( xml ).find( 'p' ).each( function( inx, p ){
-				// Get text content by converting ttml node to html
-				var content = '';
-				$.each( p.childNodes, function(inx, node){
-					content+= _this.convertTTML2HTML( node );
-				});
-				// Get the end time:
-				var end = null;
-				if( $( p ).attr( 'end' ) ){
-					end = mw.npt2seconds( $( p ).attr( 'end' ) );
-				}
-				// Look for dur
-				if( !end && $( p ).attr( 'dur' )){
-					end = mw.npt2seconds( $( p ).attr( 'begin' ) ) +
-						mw.npt2seconds( $( p ).attr( 'dur' ) );
-				}
-
-				// Create the caption object :
-				var captionObj ={
-					'start': mw.npt2seconds( $( p ).attr( 'begin' ) ),
-					'end': end,
-					'content': content
-				};
-
-				// See if we have custom metadata for position of this caption object
-				// there are 35 columns across and 15 rows high
-				var $meta = $(p).find( 'metadata' );
-				if( $meta.length ){
-					captionObj['css'] = {
-						'position': 'absolute'
-					};
-					if( $meta.attr('cccol') ){
-						captionObj['css']['left'] = ( $meta.attr('cccol') / 35 ) * 100 +'%';
-						// also means the width has to be reduced:
-						//captionObj['css']['width'] =  100 - parseInt( captionObj['css']['left'] ) + '%';
-					}
-					if( $meta.attr('ccrow') ){
-						captionObj['css']['top'] = ( $meta.attr('ccrow') / 15 ) * 100 +'%';
-					}
-				}
-				if( $(p).attr('tts:textAlign') ){
-					if( !captionObj['css'] ){
-						captionObj['css'] = {};
-					}
-					captionObj['css']['text-align'] = $(p).attr('tts:textAlign');
-
-					// Remove text align is "right" flip the css left:
-					if( captionObj['css']['text-align'] == 'right' && captionObj['css']['left'] ){
-						//captionObj['css']['width'] = captionObj['css']['left'];
-						captionObj['css']['left'] = null;
-					}
-				}
-
-				// check if this p has any style else use the body parent
-				if( $(p).attr('style') ){
-					captionObj['styleId'] = $(p).attr('style') ;
-				} else {
-					captionObj['styleId'] = bodyStyleId;
-				}
-				captions.push( captionObj);
+				captions.push( _this.parseCaptionObjTTML( p ) );
 			});
 			return captions;
 		},
+		parseStylesTTML: function( xml ) {
+			var _this = this;
+			// Set the body Style
+			this.bodyStyleId = $( xml ).find('body').attr('style');
+			if ( !this.bodyStyleId ) {
+				this.bodyStyleId = $( xml ).find('body').attr('region');
+			}
+
+			// Set style translate ttml to css
+			$( xml ).find( 'style').each( function( inx, style){
+				var styleId =  $(style).attr('id') || $(style).attr('xml:id')
+				if ( styleId ) {
+					var cssObject = {};
+					_this.buildStyleCss( style, cssObject );
+					_this.styleCss[ styleId ] = cssObject;
+				}
+			});
+
+			$( xml ).find( 'region' ).each( function( inx, region){
+				var cssObject = {};
+				if ( $(region).attr('style') ) {
+					cssObject = _this.styleCss[ $(region).attr('style') ]
+				}  else {
+					$( region ).find( 'style' ).each( function( inx, style){
+						_this.buildStyleCss( style, cssObject );
+					});
+				}
+				var idVal =  $(region).attr('id') || $(region).attr('xml:id');
+				_this.styleCss[ idVal ] = cssObject;
+			});
+		},
+		buildStyleCss: function( style, cssObject ) {
+			// Map CamelCase css properties:
+			$( style.attributes ).each(function(inx, attr){
+				var attrName = attr.name;
+				if( attrName.substr(0, 4) !== 'tts:' ){
+					// skip
+					return true;
+				}
+				var cssName = '';
+				for( var c = 4; c < attrName.length; c++){
+					if( attrName[c].toLowerCase() != attrName[c] ){
+						cssName += '-' +  attrName[c].toLowerCase();
+					} else {
+						cssName+= attrName[c]
+					}
+				}
+				cssObject[ cssName ] = attr.nodeValue;
+			});
+		},
+		parseCaptionObjTTML: function( p ) {
+			var _this = this;
+			// Get text content by converting ttml node to html
+			var content = '';
+			$.each( p.childNodes, function(inx, node){
+				content+= _this.convertTTML2HTML( node );
+			});
+			// Get the end time:
+			var end = null;
+			if( $( p ).attr( 'end' ) ){
+				end = mw.npt2seconds( $( p ).attr( 'end' ) );
+			}
+			// Look for dur
+			if( !end && $( p ).attr( 'dur' )){
+				end = mw.npt2seconds( $( p ).attr( 'begin' ) ) +
+					mw.npt2seconds( $( p ).attr( 'dur' ) );
+			}
+
+			// Create the caption object :
+			var captionObj ={
+				'start': mw.npt2seconds( $( p ).attr( 'begin' ) ),
+				'end': end,
+				'content': content
+			};
+
+			// See if we have custom metadata for position of this caption object
+			// there are 35 columns across and 15 rows high
+			var $meta = $(p).find( 'metadata' );
+			if( $meta.length ){
+				captionObj['css'] = {
+					'position': 'absolute'
+				};
+				if( $meta.attr('cccol') ){
+					captionObj['css']['left'] = ( $meta.attr('cccol') / 35 ) * 100 +'%';
+					// also means the width has to be reduced:
+					//captionObj['css']['width'] =  100 - parseInt( captionObj['css']['left'] ) + '%';
+				}
+				if( $meta.attr('ccrow') ){
+					captionObj['css']['top'] = ( $meta.attr('ccrow') / 15 ) * 100 +'%';
+				}
+			}
+			if( $(p).attr('tts:textAlign') ){
+				if( !captionObj['css'] ){
+					captionObj['css'] = {};
+				}
+				captionObj['css']['text-align'] = $(p).attr('tts:textAlign');
+
+				// Remove text align is "right" flip the css left:
+				if( captionObj['css']['text-align'] == 'right' && captionObj['css']['left'] ){
+					//captionObj['css']['width'] = captionObj['css']['left'];
+					captionObj['css']['left'] = null;
+				}
+			}
+
+			// check if this p has any style else use the body parent
+			if( $(p).attr('style') ){
+				captionObj['styleId'] = $(p).attr('style') ;
+			} else {
+				if( $(p).attr('region') ){
+					captionObj['styleId'] = $(p).attr('region') ;
+				} else {
+					captionObj['styleId'] = _this.bodyStyleId;
+				}
+			}
+
+			return captionObj;
+		},
 		convertTTML2HTML: function( node ){
 			var _this = this;
-
-			// look for text node:
-			if( node.nodeType == 3 ){
-				return node.textContent;
+			// look for text node (type=3) or CDATA node (type=4):
+			if( node.nodeType == 3 || node.nodeType == 4){
+				return node.nodeValue;
 			}
 			// skip metadata nodes:
 			if( node.nodeName == 'metadata' ){
@@ -359,7 +392,7 @@
 			for (var i = 0; i < caplist.length; i++) {
 		 		var captionText = "";
 				var caption = false;
-				captionText = caplist[i];
+				captionText = caplist[i].trim();
 				var s = captionText.split(/\n/);
 				if (s.length < 2) {
 					// file format error or comment lines

@@ -239,11 +239,10 @@ buildCarousel: function() {
 						height: _this.$carouselElement.find('.carouselThumbnail').height()
 					});
 					embedPlayer.doUpdateLayout();
-				}
-				else {
+				} else {
 					embedPlayer.$interface.prepend( _this.$carouselElement );
 					_this.$carouselElement.after( _this.$hoverTitle );
-					_this.$hoverTitle.css( 'bottom', ( embedPlayer.controlBuilder.getHeight() + 10 ) );
+					_this.$hoverTitle.css( 'bottom', ( embedPlayer.layoutBuilder.getHeight() + 10 ) );
 				}
 			}
 			_this.$carouselElement.find( '.carouselThumbnail' ).css( 'margin-right', _this.imgMargin );
@@ -270,7 +269,7 @@ buildCarousel: function() {
 				_this.$carouselElement.css( 'bottom', '0px' );
 			}
 			else {
-				_this.$carouselElement.css( 'bottom', embedPlayer.controlBuilder.getHeight() + 30 );
+				_this.$carouselElement.css( 'bottom', embedPlayer.layoutBuilder.getHeight() + 30 );
 			}
 			_this.addTitle();
 			_this.$carouselElement.find( '.carousel' ).css( 'left', _this.carouselLeft );

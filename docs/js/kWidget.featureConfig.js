@@ -33,7 +33,8 @@
 				}
 			})
 		}
-		function getQueryParams(qs) {
+		function getQueryParams( qs ) {
+			qs = decodeURIComponent( qs )
 			qs = qs.split("+").join(" ");
 			var params = {}, tokens,
 				re = /[?&]?([^=]+)=([^&]*)/g;
@@ -45,7 +46,7 @@
 		}
 		var params = {};
 		// check if we are in an iframe or top level page: 
-		if( self == top ){
+		if( self == top || document.URL.indexOf( 'noparent=') !== -1 ){
 			params = getQueryParams( document.location.hash.substr(1) );
 		} else {
 			params = getQueryParams( top.document.location.hash.substr(1) );
@@ -88,8 +89,16 @@
 		return localEmbedOptions;
 	}
 	kWidget.featureConfig = function( embedOptions ){
+		
 		var pageEmbed = $.extend( true, {}, embedOptions );
 		embedOptions = kWidget.getLocalFeatureConfig( embedOptions );
+		
+		// check for only display player flag: 
+		if( document.URL.indexOf( 'onlyDisplayPlayer') != -1 ){
+			// then just map directly to kWidget.embed:
+			kWidget.embed( embedOptions );
+			return ;
+		}
 		
 		// add targets for documentation config and player selection
 		$( '#' + embedOptions.targetId ).before(

@@ -44,11 +44,6 @@ on the <a href="chaptersView.qunit.html" title="chapters integration">chapters i
 					flashvars: {
 						"chaptersView": {
 							"plugin" : true,
-							"width" : "0%",
-							"height" : "0%",
-							"includeInLayout" : false,
-							"relativeTo" : "video",
-							"position" : "before",
 							"onPageJs1" : "{onPagePluginPath}/chapters/chaptersView.js",
 							"onPageJs2" : "{onPagePluginPath}/libs/jcarousellite.js",
 							"onPageJs3" : "{onPagePluginPath}/libs/jquery.sortElements.js",
@@ -110,11 +105,6 @@ on the <a href="chaptersView.qunit.html" title="chapters integration">chapters i
 					flashvars: {
 						"chaptersView": {
 							"plugin" : true,
-							"width" : "0%",
-							"height" : "0%",
-							"includeInLayout" : false,
-							"relativeTo" : "video",
-							"position" : "before",
 							"onPageJs1" : "{onPagePluginPath}/chapters/chaptersView.js",
 							"onPageJs2" : "{onPagePluginPath}/libs/jcarousellite.js",
 							"onPageJs3" : "{onPagePluginPath}/libs/jquery.sortElements.js",
@@ -177,10 +167,6 @@ on the <a href="chaptersView.qunit.html" title="chapters integration">chapters i
 					flashvars: {
 						"chaptersView": {
 							"plugin" : true,
-							"width" : "0%",
-							"height" : "0%",
-							"includeInLayout" : false,
-							"relativeTo" : "video",
 							"position" : "before",
 							"onPageJs1" : "{onPagePluginPath}/chapters/chaptersView.js",
 							"onPageJs2" : "{onPagePluginPath}/libs/jcarousellite.js",
@@ -244,10 +230,6 @@ on the <a href="chaptersView.qunit.html" title="chapters integration">chapters i
 					flashvars: {
 						"chaptersView": {
 							"plugin" : true,
-							"width" : "0%",
-							"height" : "0%",
-							"includeInLayout" : false,
-							"relativeTo" : "video",
 							"position" : "before",
 							"onPageJs1" : "{onPagePluginPath}/chapters/chaptersView.js",
 							"onPageJs2" : "{onPagePluginPath}/libs/jcarousellite.js",
@@ -309,10 +291,6 @@ on the <a href="chaptersView.qunit.html" title="chapters integration">chapters i
 					flashvars: {
 						"chaptersView": {
 							"plugin" : true,
-							"width" : "0%",
-							"height" : "0%",
-							"includeInLayout" : false,
-							"relativeTo" : "video",
 							"position" : "before",
 							"onPageJs1" : "{onPagePluginPath}/chapters/chaptersView.js",
 							"onPageJs2" : "{onPagePluginPath}/libs/jcarousellite.js",
@@ -343,10 +321,10 @@ on the <a href="chaptersView.qunit.html" title="chapters integration">chapters i
 			function onChapterRendererSample1( cuePoint, $chapterBox ){
 				
 				// For convenience, we also output to console, as an example, the fields available to custom renderers:
-				console.log('*** Rendering chapter: ***');
-				console.log('      title: '+cuePoint.text);
-				console.log('      description: '+cuePoint.customData.desc);
-				console.log('      thumbnail url: '+cuePoint.customData.thumbUrl);
+				kWidget.log('*** Rendering chapter: ***');
+				kWidget.log('      title: '+cuePoint.text);
+				kWidget.log('      description: '+cuePoint.customData.desc);
+				kWidget.log('      thumbnail url: '+cuePoint.customData.thumbUrl);
 				
 				// In this example we add a description tooltip via element attributes
 				// then we remove the description element
@@ -372,7 +350,7 @@ on the <a href="chaptersView.qunit.html" title="chapters integration">chapters i
 
 
 </div>
-<div id="playbackModeSelector"></div>
+
 
 
 </body>

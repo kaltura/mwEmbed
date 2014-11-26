@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Live Cuepoints</title>
+    <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+    <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+    <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+    <script>mw.setConfig('forceMobileHTML5', true);</script>
+</head>
+<body>
+<h1> Live cuepoints </h1>
+
+<div id="kaltura_player" style="width:640px;height:360px"></div>
+<br style="clear: both;" /><br />
+<script>
+    var options = {
+        "targetId": "kaltura_player",
+        "wid": "_1726172",
+        "uiconf_id": 25737631,
+        "flashvars": {
+            "adsOnReplay": true,
+            "EmbedPlayer.LiveCuepoints": true,
+            "EmbedPlayer.LiveCuepointsRequestInterval": 10000
+        },
+        "cache_st": 1401718216,
+        "entry_id": "0_m1fwwjtl"
+    };
+
+    kWidget.featureConfig(options);
+
+
+    function jsCallbackReady(playerId){
+        var kdp = document.getElementById(playerId);
+        kdp.kBind("KalturaSupport_ThumbCuePointsUpdated", function(){
+            $("#textBox").append($("<p>" ).html("Event KalturaSupport_ThumbCuePointsUpdated was triggered - new Thumb cuepoints retrieved from server"));
+        });
+        kdp.kBind("KalturaSupport_CuePointsUpdated", function(count){
+            if (count > 0) {
+                $( "#textBox" ).append( $( "<p>" ).html( "Event KalturaSupport_CuePointsUpdated was triggered - new Thumb cuepoints retrieved from server" ) );
+            }
+        });
+    }
+</script>
+</br>
+Live cuepoints test - input cuepoints while entry is playing and view that they are updated.
+</br>
+Default polling interval for new cuepoints is 10 seconds.
+</br>
+<form class="form-horizontal" id="cuePointsForm">
+    <div class="control-group">
+        <label class="control-label" for="inputKs">ks</label>
+        <div class="controls">
+            <input type="text" id="inputKs" placeholder="ks" required="required">
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="inputServiceUrl">Service Url</label>
+        <div class="controls">
+            <input type="url" id="inputServiceUrl" placeholder="Service Url" value="https://www.kaltura.com" required="required">
+        </div>
+    </div>
+    <div class="control-group" id="formSubmit">
+        <div class="controls">
+            <button type="submit" class="btn">Send</button>
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript">
+
+    function addFormRow(index) {
+
+        var formRowtemplate = '' +
+            '<div class="control-group cpData" id="cpRow'+index+'">' +
+            '   <label class="control-label" for="cuePointData">Cue Point</label>' +
+            '    <div class="controls form-inline">' +
+            '        <input type="text" id="inputTitle'+index+'" placeholder="Title" required="required">' +
+            '        <input type="text" id="inputDesc'+index+'" placeholder="Description" required="required">' +
+            '        <input type="number" min="0" max="100003" id="inputTime'+index+'" placeholder="Time(ms)" required="required">' +
+            '        <input type="text" id="inputAssetId'+index+'" placeholder="Asset ID">' +
+            '        <button id="cpBtn'+index+'" class="btn add-more" type="button">+</button>' +
+            '    </div>' +
+            '</div>';
+        return formRowtemplate;
+    }
+
+
+    function apiCall(params, ks, serviceUrl) {
+        serviceUrl = serviceUrl || "https://www.kaltura.com";
+        params.ks = ks;
+        params.format = 1; //return JSONP
+        var recursiveEncoded = $.param( params ); //convert params to url query
+        var url = serviceUrl + "/api_v3/index.php?"+recursiveEncoded;
+
+        var completeHandler = function(){
+            x = 0;  //horizontal coord
+            y = $("#textBox").height(); //vertical coord
+            $("#textBox").scroll(x,y);
+        }
+
+        var successHandler = function (result) {
+            if ( !result || result.code ) {
+                var error = result && result.code;
+                $("#textBox").append($("<p>" ).html("Kaltura service URL: error returned - " + error));
+                return;
+            }
+            $("#textBox").append($("<p>" ).html("Kaltura service URL: cue point "+ result.id +" created"));
+        };
+
+        var errorHandler = function (result) {
+            $("#textBox").append($("<p>" ).html("Error while calling Kaltura service URL: " + result));
+        };
+
+        $.ajax({
+            url: url,
+            type: "GET",
+            //complete: completeHandler,
+            success: successHandler,
+            error: errorHandler,
+            async: true
+        });
+
+    }
+
+    $("#cuePointsForm" ).on("submit", function(e){
+        e.preventDefault();
+        var ks = $(this ).find("#inputKs" ).val();
+        var serviceUrl = $(this ).find("#inputServiceUrl" ).val();
+        var api = new kWidget.api( { 'wid' : options.wid, 'ks' : ks } );
+        $(this ).find(".cpData" ).each(function(index, cpData){
+            var data = {};
+            $(this).find("input").each(function(index, input){
+                var field = input.id.replace(/\d+/, "");
+                data[field] = input.value;
+            });
+
+            apiCall({
+                service: "cuePoint_cuePoint",
+                action: "add",
+                "cuePoint:objectType":"KalturaThumbCuePoint",
+                "cuePoint:entryId": options["entry_id"],
+                "cuePoint:startTime": data["inputTime"],
+                "cuePoint:title": data["inputTitle"],
+                "cuePoint:description": data["inputDesc"],
+                "cuePoint:assetid": data["inputAssetId"]
+            }, ks, serviceUrl);
+        });
+    });
+    $(document).ready(function() {
+        var next = 1;
+
+        var newIn = addFormRow( 1 );
+        var newInput = $( newIn );
+        $( '#formSubmit' ).before( newInput );
+
+        $( ".add-more" ).live( 'click', function ( e ) {
+            e.preventDefault();
+            next = next + 1;
+
+            var newIn = addFormRow( next );
+            var newInput = $( newIn );
+            $( '#formSubmit' ).before( newInput );
+            $( '#cpRow' + (next - 1) ).
+                    find( "#cpBtn" + (next - 1) ).
+                    addClass( "btn-danger" ).
+                    toggleClass( "add-more remove-me" ).
+                    html( "-" ).
+                    unbind( 'click' );
+        } );
+
+        $( '.remove-me' ).live( 'click', function ( e ) {
+            e.preventDefault();
+            $( this ).parent().parent().remove();
+        } );
+    });
+
+</script>
+<h4>Callback handler text box</h4>
+<div id="textBox" style="width:640px;height:200px;overflow:auto;border:1px solid black;margin:5px 5px 5px 5px;"></div>
+
+</body>
+</html>

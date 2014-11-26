@@ -10,10 +10,12 @@ Library documentation for installation, configuration, and usage is maintained o
 
 Also you can find us on #kaltura in irc.freeNode.net
 
+Can't find what your looking for in the documentation, ran into an issue check the [Kaltura players official forums](http://forum.kaltura.org/categories/kaltura-players-and-player-plugins). 
+
 ## Quick start
 
-* Extract or git clone the mwEmebd folder to your php server. 
-* Rename LocalSettings.php.sample to LocalSettings.php
+* Extract or git clone the mwEmbed folder to your php server. 
+* Copy LocalSettings.php.sample to LocalSettings.php
 * Navigate to http://{yourServer}/path/to/mwEmbed/docs for player examples. 
 
 ## Hacking on mwEmbed
@@ -25,9 +27,25 @@ Also you can find us on #kaltura in irc.freeNode.net
 
 [Release Notes ](http://html5video.org/wiki/Kaltura_HTML5_Release_Notes) documents every release and provides production, staging and zip downloads. 
 
+## Libraries and sub-projects
+
+### Kaltura developed
+
+* [Chromless flash kdp](https://github.com/kaltura/chromeless-kdp) 
+* [Chromeless sliverlight](https://github.com/kaltura/chromeless-silverlight)
+* [OSMF HLS for flash](https://github.com/kaltura/HLS-OSMF) -- repo not yet public
+* Android HLS player -- repo not yet public
+* [Player Studio](https://github.com/kaltura/player-studio) -- visual player config JSON editor 
+
+### External libraries 
+
+* [Resource Loader](https://www.mediawiki.org/wiki/ResourceLoader)
+* [jQuery](http://jquery.com/) 
+* [bootstrap](http://getbootstrap.com/) -- for documentation pages
+
 ## Library Features
 
-The [kaltura player feature hub](http://html5video.org/kaltura-player/docs/) hosts most of the libraries features and associated test files.  
+The [kaltura player feature hub](http://player.kaltura.com/docs/) hosts most of the libraries features and associated test files.  
 
 ## Timed Media Handler
 
@@ -41,9 +59,5 @@ Copyright (C) 2007-2012 Kaltura, Wikimedia Foundation
 
 Sub modules and libraries carry specific copyright.
 
-Author Michael Dale <michael.dale@kaltura.com>, Ran Yefet <ran.yefet@kaltura.com>, Avi Vaisenberger <avi.vaisenberger@kaltura.com> and many others.
+Author Michael Dale, Ran Yefet, Avi Vaisenberger, Itay Kinnrot, Michal Radwantzor and many others.
 
-This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-[http://www.gnu.org/copyleft/gpl.html](http://www.gnu.org/copyleft/gpl.html)

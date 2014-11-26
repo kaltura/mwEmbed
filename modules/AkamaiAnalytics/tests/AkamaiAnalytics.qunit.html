@@ -15,7 +15,7 @@
 			function jsKalturaPlayerTest( videoId ) {
 				module( "Akamai Media Analytics Plugin Test" );
 				var kdp = $( '#kaltura_player' )[ 0 ];
-				
+
 				test( "Akamai Configuration Path And Cookies Are Set", function() {
 					ok( window.AKAMAI_MEDIA_ANALYTICS_CONFIG_FILE_PATH, "Configuration File Path Is Set" );
 					kdp.addJsListener( 'doPlay.playingCountTest', 'playCountCallback' );
@@ -34,10 +34,10 @@
 					} );
 				}
 			}
-			
+
 			// Support tracking analytics events:
 			window['trackAkamaiAnalyticsEvent'] = function(eventId, data){
-				// append event data. 
+				// append event data.
 				$('#analyticsLog').append( eventId + ": " +  data + "\n" );
 			}
 		</script>
@@ -48,6 +48,7 @@
 		<div id="player_container" style="float:left;" >
 		<div id="kaltura_player" style="width:400px;height:330px"></div>
 		<script>
+		//	mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
 			kWidget.featureConfig({
 				'targetId' : 'kaltura_player',
 				'wid': '_243342',
@@ -62,7 +63,7 @@
 				},
 				'readyCallback': function(){
 					$('#kaltura_player').css('float', 'left').after('<div id="analyticsContainer" style="float:left;padding-left:20px;" >'+
-						'<i>Analytics events:</i> ( only html5 )<br />' + 
+						'<i>Analytics events:</i> ( only html5 )<br />' +
 							'<textarea id="analyticsLog" style="width:300px;height:280px;" ></textarea>' +
 						'</div>'
 					)

@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Auto Embed test</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2>Auto Embed</h2>
+<b>Auto Embed</b>  best for sites where SEO is already covered by other data in the page. This concise Auto embed code is good for quickly getting a player or widget onto the page without any runtime customisations.
+<h3> A single player </h3>
+<i>Basic usage</i> of Auto Embed embed looks like this: 
+<pre class="prettyprint linenums">
+&lt;script src=&quot;http://cdnapi.kaltura.com/p/{partnerId}/sp/{partnerId}00/embedIframeJs/uiconf_id/{uiConfId}/partner_id/{partnerId}/entry_id/{entryId}/playerId/{playerId}?autoembed=true&gt;&lt;/script&gt;</pre>
+<script>
+var startTime = new Date().getTime();
+</script>
+<script src="../../../mwEmbedLoader.php/wid/_243342/uiconf_id/21099702/entry_id/0_uka1msg4/playerId/1351566600?autoembed=true"></script>
+Loader + iframe include time: <span id="incTime1" ></span><br>
+Player load time: <span id="runtime1" ></span>
+<script>
+$( '#incTime1' ).text(  new Date().getTime() - startTime );
+var startTime = new Date().getTime();
+	kWidget.addReadyCallback(function(playerId){
+		if( playerId == '1351566600' ){
+			document.getElementById( 'runtime1' ).innerHTML = new Date().getTime() - startTime;
+		}
+	});
+</script>
+<p></p>
+<h3>Auto Embed with SEO</h3>
+You can include SEO in a target div and still make use of autoEmbed directly preceding the target.
+<pre class="prettyprint linenums">
+&lt;div id=&quot;myVideoContainer&quot; itemprop=&quot;video&quot; itemscope itemtype=&quot;http://schema.org/VideoObject&quot; &gt;<br/>	&lt;div id=&quot;myVideoTarget&quot; style=&quot;width:400px;height:330px;&quot;&gt;<br/>		&lt;!--  SEO and video metadata go here --&gt;<br/>		&lt;span itemprop=&quot;description&quot; content=&quot;test folgers coffe&quot;&gt;&lt;/span&gt;<br/>		&lt;span itemprop=&quot;name&quot; content=&quot;FolgersCoffe.mpeg&quot;&gt;&lt;/span&gt;<br/>		&lt;span itemprop=&quot;width&quot; content=&quot;400&quot;&gt;&lt;/span&gt;<br/>		&lt;span itemprop=&quot;height&quot; content=&quot;300&quot;&gt;&lt;/span&gt;<br/>	&lt;/div&gt;<br/>&lt;/div&gt;
+&lt;script src=&quot;http://cdnapi.kaltura.com/p/{partnerId}/sp/{partnerId}00/embedIframeJs/uiconf_id/{uiConfId}/partner_id/{partnerId}/entry_id/{entryId}/playerId/<b>myVideoTarget</b>?autoembed=true&gt;&lt;/script&gt;
+</pre>
+<p><p>
+<h3>Auto Embed with Reference Id </h3>
+Reference Id are an alternative to entry ids, allowing custom media ids. You can auto embed with a Reference id:.
+with a per entry mapping.  
+<pre class="prettyprint linenums">
+&lt;script src=&quot;http://cdnapi.kaltura.com/p/{partnerId}/sp/{partnerId}00/embedIframeJs/uiconf_id/{uiConfId}/partner_id/{partnerId}/playerId/{playerId}?autoembed=true&amp;flashvars[referenceId]=kaltura_promo_video&quot;&gt;&lt;/script&gt;
+</pre>
+<script src="../../../mwEmbedLoader.php/wid/_243342/uiconf_id/21099702/playerId/refid_player?autoembed=true&flashvars[referenceId]=kaltura_promo_video"></script>
+
+<h3> A playlist embed with autoEmbed </h3>
+When embedding subsequent players, you can make use of &incloader=false to not duplicate the loader code. But don't worry if you do not customize the embed url, it should still work as intended. 
+<pre class="prettyprint lineums">
+&lt;script src=&quot;http://cdnapi.kaltura.com/p/{partnerId}/sp/{partnerId}00/embedIframeJs/uiconf_id/4690912/width/740/height/330/playerId/1351566638?autoembed=true&amp;incloader=false&amp;wid=_243342&amp;uiconf_id=4690912&amp;entry_id=0_uka1msg4&amp;flashvars[playlistAPI]=%7B%22kpl0Url%22%3A%22http%3A%2F%2Fwww.kaltura.com%2Findex.php%2Fpartnerservices2%2Fexecuteplaylist%3Fplaylist_id%3D1_e387kavu%26partner_id%3D243342%26subp_id%3D24334200%26format%3D8%26ks%3D%7Bks%7D%22%2C%22kpl0Name%22%3A%22simple%20two%20clip%20pl%22%2C%22kpl1Url%22%3A%22http%3A%2F%2Fwww.kaltura.com%2Findex.php%2Fpartnerservices2%2Fexecuteplaylist%3Fplaylist_id%3D0_9ahdych6%26partner_id%3D243342%26subp_id%3D24334200%26format%3D8%26ks%3D%7Bks%7D%22%2C%22kpl1Name%22%3A%22electric%20sheep%20test%22%2C%22autoContinue%22%3Atrue%2C%22autoPlay%22%3Afalse%2C%22initItemEntryId%22%3A%220_swup5zao%22%7D&amp;flashvars[imageDefaultDuration]=2&amp;playerId=myVideoTarget&amp;"&gt;&lt;/script&gt;
+</pre>
+<script>
+var plTime = new Date().getTime();
+</script>
+<script src="../../../mwEmbedLoader.php/wid/_243342/uiconf_id/4690912/width/740/height/330/playerId/1351566638?autoembed=true&incloader=false&wid=_243342&uiconf_id=4690912&entry_id=0_uka1msg4&flashvars[playlistAPI]=%7B%22kpl0Url%22%3A%22http%3A%2F%2Fwww.kaltura.com%2Findex.php%2Fpartnerservices2%2Fexecuteplaylist%3Fplaylist_id%3D1_e387kavu%26partner_id%3D243342%26subp_id%3D24334200%26format%3D8%26ks%3D%7Bks%7D%22%2C%22kpl0Name%22%3A%22simple%20two%20clip%20pl%22%2C%22kpl1Url%22%3A%22http%3A%2F%2Fwww.kaltura.com%2Findex.php%2Fpartnerservices2%2Fexecuteplaylist%3Fplaylist_id%3D0_9ahdych6%26partner_id%3D243342%26subp_id%3D24334200%26format%3D8%26ks%3D%7Bks%7D%22%2C%22kpl1Name%22%3A%22electric%20sheep%20test%22%2C%22autoContinue%22%3Atrue%2C%22autoPlay%22%3Afalse%2C%22initItemEntryId%22%3A%220_swup5zao%22%7D&flashvars[imageDefaultDuration]=2"></script>
+Loader + iframe include time <span id="incTime2" ></span><br>
+Player load time: <span id="runtime2" ></span>
+<script>
+$( '#incTime2' ).text(  new Date().getTime() - plTime );
+var plTime = new Date().getTime();
+kWidget.addReadyCallback(function(playerId){
+		if( playerId == '1351566638' ){
+			document.getElementById( 'runtime2' ).innerHTML = new Date().getTime() - plTime;
+		}
+	});
+</script>
+<p><p>
+
+</body>
+</html>

@@ -11,6 +11,7 @@ class EntryResult {
 	var $client = null;
 	var $cache = null;
 	var $logger = null;
+	var $uiconf = null;
 	var $noCache = null;
 	var $error = null;
 	var $entryResultObj = null;
@@ -18,7 +19,7 @@ class EntryResult {
 
 	var $responseHeaders = array();
 
-	function __construct( $request, $client, $cache, $logger ) {
+	function __construct( $request, $client, $cache, $logger, $uiconf ) {
 
 		if(!$request)
 			throw new Exception("Error missing request object");
@@ -28,12 +29,15 @@ class EntryResult {
 			throw new Exception("Error missing cache object");
 		if(!$logger)
 			throw new Exception("Error missing logger object");
+		if(!$uiconf)
+			throw new Exception("Error missing uiconf object");
 		
 		// Set our objects
 		$this->request = $request;
 		$this->client = $client;
 		$this->cache = $cache;
 		$this->logger = $logger;
+		$this->uiconf = $uiconf;
 	}
 
 	function getResponseHeaders() {
@@ -51,10 +55,22 @@ class EntryResult {
 		if( ! $this->entryResultObj ){
 			$this->entryResultObj = $this->getEntryResultFromApi();
 		}
+
+		//check if we have errors on the entry
+		if ($this->error) {
+			$this->entryResultObj['error'] = $this->error;
+		}
+
 		return $this->entryResultObj;
 	}
 	
 	function getEntryResultFromApi(){
+		global $wgKalturaApiFeatures;
+		global $wgKalturaEnableProxyData;
+
+		// Check if the API supports entryRedirect feature
+		$supportsEntryRedirect = isset($wgKalturaApiFeatures['entryRedirect']) ? $wgKalturaApiFeatures['entryRedirect'] : false;
+
 		$client = $this->client->getClient();
 		// define resultObject prior to try catch call
 		$resultObject = array();
@@ -66,41 +82,44 @@ class EntryResult {
 				$client->addParam( $params, "nocache",  true );
 			}
 			$namedMultiRequest = new KalturaNamedMultiRequest( $client, $params );
-			
-			// Added support for passing referenceId instead of entryId
-			$useReferenceId = false;
+
+			$filter = new KalturaBaseEntryFilter();
 			if( ! $this->request->getEntryId() && $this->request->getReferenceId() ) {
-				// Use baseEntry->listByReferenceId
-				$useReferenceId = true;
-				$refIndex = $namedMultiRequest->addNamedRequest( 'referenceResult', 'baseEntry', 'listByReferenceId', array( 'refId' => $this->request->getReferenceId() ) );
-				$entryIdParamValue = '{' . $refIndex . ':result:objects:0:id}';
+				$filter->referenceIdEqual = $this->request->getReferenceId();
+			} else if( $supportsEntryRedirect && $this->request->getFlashVars('disableEntryRedirect') !== true ){
+				$filter->redirectFromEntryId = $this->request->getEntryId();
 			} else {
-				// Use normal baseEntry->get
-				$namedMultiRequest->addNamedRequest( 'meta', 'baseEntry', 'get', array( 'entryId' => $this->request->getEntryId() ) );
-				// Set entry id param value for other requests
-				$entryIdParamValue = $this->request->getEntryId();
+				$filter->idEqual = $this->request->getEntryId();
 			}
-			
-			// Flavors - getByEntryId is deprecated - Use list instead
-			$filter = new KalturaAssetFilter();
-			$filter->entryIdEqual = $entryIdParamValue;
-			$params = array( 'filter' => $filter );			
-			$namedMultiRequest->addNamedRequest( 'flavors', 'flavorAsset', 'list', $params );
-				
+
+			if ($wgKalturaEnableProxyData && $this->request->getFlashVars("proxyData")){
+			    $filter->freeText = urlencode(json_encode($this->request->getFlashVars("proxyData")));
+			}
+
+			$baseEntryIdx = $namedMultiRequest->addNamedRequest( 'meta', 'baseEntry', 'list', array('filter' => $filter) );
+			// Get entryId from the baseEntry request response
+			$entryId = '{' . $baseEntryIdx . ':result:objects:0:id}';
+
 			// Access control NOTE: kaltura does not use http header spelling of Referer instead kaltura uses: "referrer"
+			$filter = $this->getACFilter();
 			$params = array( 
-				"contextDataParams" => array( 'referrer' =>  $this->request->getReferer() ),
-				"entryId"	=> $entryIdParamValue
+				"contextDataParams" => $filter,
+				"entryId"	=> $entryId
 			);
-			$namedMultiRequest->addNamedRequest( 'accessControl', 'baseEntry', 'getContextData', $params );
+			$namedMultiRequest->addNamedRequest( 'contextData', 'baseEntry', 'getContextData', $params );
 			
 			// Entry Custom Metadata
 			// Always get custom metadata for now 
-			//if( $this->getPlayerConfig(false, 'requiredMetadataFields') ) {
+			//if( $this->uiconf->getPlayerConfig(false, 'requiredMetadataFields') ) {
 				$filter = new KalturaMetadataFilter();
 				$filter->orderBy = KalturaMetadataOrderBy::CREATED_AT_ASC;
-				$filter->objectIdEqual = $entryIdParamValue;
+				$filter->objectIdEqual = $entryId;
 				$filter->metadataObjectTypeEqual = KalturaMetadataObjectType::ENTRY;
+				// Check if metadataProfileId is defined
+				$metadataProfileId = $this->uiconf->getPlayerConfig( false, 'metadataProfileId' );
+				if( $metadataProfileId ){
+					$filter->metadataProfileIdEqual = $metadataProfileId;
+				}
 				
 				$metadataPager =  new KalturaFilterPager();
 				$metadataPager->pageSize = 1;
@@ -109,21 +128,19 @@ class EntryResult {
 			//}
 			
 			// Entry Cue Points
-			//if( $this->getPlayerConfig(false, 'getCuePointsData') !== false ) {
+			// Always get Cue Points for now
+			//if( $this->uiconf->getPlayerConfig(false, 'getCuePointsData') !== false ) {
 				$filter = new KalturaCuePointFilter();
 				$filter->orderBy = KalturaAdCuePointOrderBy::START_TIME_ASC;
-				$filter->entryIdEqual = $entryIdParamValue;
+				$filter->entryIdEqual = $entryId;
 
 				$params = array( 'filter' => $filter );
 				$namedMultiRequest->addNamedRequest( 'entryCuePoints', "cuepoint_cuepoint", "list", $params );
 			//}
 			// Get the result object as a combination of baseResult and multiRequest
 			$resultObject = $namedMultiRequest->doQueue();
+			//print_r($resultObject);exit();
 			$this->responseHeaders = $client->getResponseHeaders();
-			// If flavors are fetched, list contains a secondary 'objects' array
-			if ( isset( $resultObject['flavors']->objects ) ) {
-				$resultObject['flavors'] = $resultObject['flavors']->objects;
-			}
 			
 		} catch( Exception $e ){
 			// Update the Exception and pass it upward
@@ -131,14 +148,15 @@ class EntryResult {
 			return array();
 		}
 
-		if( $useReferenceId ) {
-			if( $resultObject['referenceResult'] && $resultObject['referenceResult']->objects ) {
-				$this->request->set('entry_id', $resultObject['referenceResult']->objects[0]->id);
-				$resultObject['meta'] = $resultObject['referenceResult']->objects[0];
-			} else {
-				$resultObject['meta'] = array();
-			}
+		if( is_object($resultObject['meta']) 
+			&& isset($resultObject['meta']->objects) 
+			&& count($resultObject['meta']->objects) ) {
+			$this->request->set('entry_id', $resultObject['meta']->objects[0]->id);
+			$resultObject['meta'] = $resultObject['meta']->objects[0];
+		} else {
+			$resultObject['meta'] = array();
 		}
+
 		// Check that the ks was valid on the first response ( flavors ) 
 		if( is_array( $resultObject['meta'] ) && isset( $resultObject['meta']['code'] ) && $resultObject['meta']['code'] == 'INVALID_KS' ){
 			$this->error = 'Error invalid KS';
@@ -164,8 +182,8 @@ class EntryResult {
 			$resultObject[ 'entryCuePoints' ] = $resultObject['entryCuePoints']->objects;
 		}
 		
-		// Check access control and throw an exception if not allowed: 
-		if( isset( $resultObject['accessControl']) ){
+		// Check access control and flavorAssets and throw an exception if not allowed: 
+		if( isset( $resultObject['contextData']) ){
 			$acStatus = $this->isAccessControlAllowed( $resultObject );
 			if( $acStatus !== true ){
 				$this->error = $acStatus;
@@ -173,7 +191,19 @@ class EntryResult {
 		}
 		return $resultObject;
 	}
-	
+	public function getACFilter(){
+		$filter = new KalturaEntryContextDataParams();
+		$filter->referrer = $this->request->getReferer();
+		$filter->userAgent = $this->request->getUserAgent();
+		$filter->flavorTags = 'all';
+		if ( $this->uiconf->getPlayerConfig( false, 'flavorTags' ) ) {
+		    $filter->flavorTags = $this->uiconf->getPlayerConfig( false, 'flavorTags' );
+		}
+		if( $this->uiconf->getPlayerConfig( false, 'streamerType' ) ) {
+			$filter->streamerType =  $this->uiconf->getPlayerConfig( false, 'streamerType' );
+		}
+		return $filter;
+	}
 	/**
 	*  Access Control Handling
 	*/
@@ -181,9 +211,9 @@ class EntryResult {
 			
 		// Kaltura only has entry level access control not playlist level access control atm: 
 		// don't check anything without an entry_id
-		if( !$this->request->getEntryId() ){
+		/*if( !$this->request->getEntryId() ){
 			return true;
-		}
+		}*/
 
 		// If we have an error, return
 		if( $this->error ) {
@@ -194,10 +224,10 @@ class EntryResult {
 			$resultObject = $this->getResult();
 		}
 		// check for access control resultObject property:
-		if( !isset( $resultObject['accessControl']) ){
+		if( !isset( $resultObject['contextData']) ){
 			return true;
 		}
-		$accessControl = $resultObject['accessControl'];
+		$accessControl = $resultObject['contextData'];
 		
 		// Check if we had no access control due to playlist
 		if( is_array( $accessControl ) && isset( $accessControl['code'] )){
@@ -207,7 +237,7 @@ class EntryResult {
 				//$accessControl['code'] == 'INTERNAL_SERVERL_ERROR'  
 			return true;
 		}
-		
+
 		// Checks if admin
 		if( $accessControl->isAdmin ) {
 			return true;

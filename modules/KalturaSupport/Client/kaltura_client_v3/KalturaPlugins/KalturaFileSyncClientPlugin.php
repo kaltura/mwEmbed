@@ -27,24 +27,18 @@
 // @ignore
 // ===================================================================================================
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 require_once(dirname(__FILE__) . "/../KalturaClientBase.php");
 require_once(dirname(__FILE__) . "/../KalturaEnums.php");
 require_once(dirname(__FILE__) . "/../KalturaTypes.php");
 
-class KalturaFileSyncOrderBy
-{
-	const CREATED_AT_ASC = "+createdAt";
-	const CREATED_AT_DESC = "-createdAt";
-	const UPDATED_AT_ASC = "+updatedAt";
-	const UPDATED_AT_DESC = "-updatedAt";
-	const READY_AT_ASC = "+readyAt";
-	const READY_AT_DESC = "-readyAt";
-	const SYNC_TIME_ASC = "+syncTime";
-	const SYNC_TIME_DESC = "-syncTime";
-	const FILE_SIZE_ASC = "+fileSize";
-	const FILE_SIZE_DESC = "-fileSize";
-}
-
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaFileSyncStatus
 {
 	const ERROR = -1;
@@ -54,6 +48,10 @@ class KalturaFileSyncStatus
 	const PURGED = 4;
 }
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaFileSyncType
 {
 	const FILE = 1;
@@ -61,6 +59,28 @@ class KalturaFileSyncType
 	const URL = 3;
 }
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
+class KalturaFileSyncOrderBy
+{
+	const CREATED_AT_ASC = "+createdAt";
+	const FILE_SIZE_ASC = "+fileSize";
+	const READY_AT_ASC = "+readyAt";
+	const SYNC_TIME_ASC = "+syncTime";
+	const UPDATED_AT_ASC = "+updatedAt";
+	const CREATED_AT_DESC = "-createdAt";
+	const FILE_SIZE_DESC = "-fileSize";
+	const READY_AT_DESC = "-readyAt";
+	const SYNC_TIME_DESC = "-syncTime";
+	const UPDATED_AT_DESC = "-updatedAt";
+}
+
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 abstract class KalturaFileSyncBaseFilter extends KalturaFilter
 {
 	/**
@@ -255,32 +275,35 @@ abstract class KalturaFileSyncBaseFilter extends KalturaFilter
 	/**
 	 * 
 	 *
-	 * @var int
+	 * @var float
 	 */
 	public $fileSizeGreaterThanOrEqual = null;
 
 	/**
 	 * 
 	 *
-	 * @var int
+	 * @var float
 	 */
 	public $fileSizeLessThanOrEqual = null;
 
 
 }
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaFileSyncFilter extends KalturaFileSyncBaseFilter
 {
 
 }
 
+/**
+ * @package Kaltura
+ * @subpackage Client
+ */
 class KalturaFileSyncClientPlugin extends KalturaClientPlugin
 {
-	/**
-	 * @var KalturaFileSyncClientPlugin
-	 */
-	protected static $instance;
-
 	protected function __construct(KalturaClient $client)
 	{
 		parent::__construct($client);
@@ -291,9 +314,7 @@ class KalturaFileSyncClientPlugin extends KalturaClientPlugin
 	 */
 	public static function get(KalturaClient $client)
 	{
-		if(!self::$instance)
-			self::$instance = new KalturaFileSyncClientPlugin($client);
-		return self::$instance;
+		return new KalturaFileSyncClientPlugin($client);
 	}
 
 	/**

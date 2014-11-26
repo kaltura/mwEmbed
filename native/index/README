@@ -1,0 +1,3 @@
+The Kaltura native mediaSpace app checks for native/index/enabled path for opening a given url within mediaSpace. 
+
+This enables the Kaltura player to be tested in a native environment. 

@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>kWidget Dynamic Player Embed</title>
+</head>
+<body>
+<h2> kWidget Dynamic Player Embed </h2>
+
+<br /><br />
+<a id="doIncludeLib" href="#">Include mwEmbed, then run kWidget.embed</a> </br>
+<div id="myVideoTarget" style="width:600px;height:340px;">
+	<!--  SEO and video metadata go here -->
+	<span property="dc:description" content="test folgers coffe"></span>
+	<span property="media:title" content="FolgersCoffe.mpeg"></span>
+	<span property="media:width" content="400"></span>
+	<span property="media:height" content="300"></span>
+</div>
+
+<script>
+	function appendScriptUrl( url, callback ) {
+		var head = document.getElementsByTagName("head")[0] || document.documentElement;
+		var script = document.createElement("script");
+		script.src = url;
+	
+		// Handle Script loading
+		var done = false;
+	
+		// Attach handlers for all browsers
+		script.onload = script.onreadystatechange = function() {
+			if ( !done && (!this.readyState ||
+					this.readyState === "loaded" || this.readyState === "complete") ) {
+				done = true; 
+				if( typeof callback == 'function'){
+					callback();
+				}
+	
+				// Handle memory leak in IE
+				script.onload = script.onreadystatechange = null;
+				if ( head && script.parentNode ) {
+					head.removeChild( script );
+				}
+			}
+		};
+	
+		// Use insertBefore instead of appendChild  to circumvent an IE6 bug.
+		// This arises when a base node is used (#2709 and #4378).
+		head.insertBefore( script, head.firstChild );
+	};
+	window['doPlayCallback'] = function( playerId ){
+		console.log( 'kWidget doPlayCallback ' + playerId );
+		//$('body').append( '<div>started playback</div>' );
+	};
+	var doEmbedAndLink = document.getElementById('doIncludeLib');
+	doEmbedAndLink.onclick = function(){
+		// add the mwEmbed lib: 
+		appendScriptUrl('../../../mwEmbedLoader.php', function(){
+			mw.setConfig('Kaltura.LeadWithHTML5', true);
+			// do the kWidget embed: 
+			kWidget.embed({
+				'targetId': 'myVideoTarget',
+				'wid': '_243342',
+				'uiconf_id' : '20540612',
+				'entry_id' : '1_sf5ovm7u',
+				'flashvars':{
+					'externalInterfaceDisabled' : false,
+					'autoPlay' : true,
+					'fooBar': 'cats'
+				},
+				'readyCallback': function( playerId ){
+					console.log( "kWidget player ready: " + playerId );
+					var kdp = document.getElementById( playerId );
+					kdp.addJsListener( 'doPlay', 'doPlayCallback');
+				}	
+			});
+		});
+	};
+</script>
+</body>
+</html>

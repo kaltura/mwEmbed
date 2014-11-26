@@ -15,7 +15,7 @@ var acPreview = function( embedPlayer ){
 		embedPlayer.onDoneInterfaceFlag = false;
 		var closeAcMessage = function(){
 			$( embedPlayer ).unbind( '.acpreview' );
-			embedPlayer.controlBuilder.closeMenuOverlay();
+			embedPlayer.layoutBuilder.closeMenuOverlay();
 			embedPlayer.onClipDone();
 		};
 		// On change media reset acPreview binding
@@ -24,7 +24,7 @@ var acPreview = function( embedPlayer ){
 		// TODO i8ln!!
 		// TODO migrate to displayAlert call
 		if( embedPlayer.getKalturaConfig('', 'disableAlerts' ) !== true ){
-			embedPlayer.controlBuilder.displayMenuOverlay(
+			embedPlayer.layoutBuilder.displayMenuOverlay(
 				$('<div />').append(
 					$('<h3 />').append( embedPlayer.getKalturaMsg('FREE_PREVIEW_END_TITLE') ),
 					$('<span />').text( embedPlayer.getKalturaMsg('FREE_PREVIEW_END') ),
@@ -43,7 +43,7 @@ var acPreview = function( embedPlayer ){
 	// clear out any old bindings:
 	$(embedPlayer).unbind( '.acPreview' );
 
-	var ac  = embedPlayer.kalturaAccessControl;
+	var ac  = embedPlayer.kalturaContextData;
 	// Check for preview access control and add special onEnd binding:
 	if( ac.isAdmin === false && ac.isSessionRestricted === true && ac.previewLength && ac.previewLength != -1 ){
 		$( embedPlayer ).bind('postEnded.acPreview', function(){
@@ -65,7 +65,7 @@ var acPreview = function( embedPlayer ){
 
 //Check for new Embed Player events:
 mw.addKalturaConfCheck( function( embedPlayer, callback ){
-	if( embedPlayer.kalturaAccessControl ){
+	if( embedPlayer.kalturaContextData ){
 		acPreview( embedPlayer );
 	}
 	callback();

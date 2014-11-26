@@ -1,0 +1,129 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Playlist Events</title>
+    <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+
+	  <script type="text/javascript">
+		  // Enable uiconf js which includes external resources
+		  mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
+
+		  function onReadyCallback(playerID){
+			  var kdp = $('#' + playerID )[0];
+			  kdp.addJsListener("playlistReady", function(){
+				  $('#playlistTracking').append("playlistReady event triggered\r\n");
+			  });
+			  kdp.addJsListener("playlistPlayNext", function(){
+				  $('#playlistTracking').append("playlistPlayNext event triggered\r\n");
+			  });
+			  kdp.addJsListener("playlistPlayPrevious", function(){
+				  $('#playlistTracking').append("playlistPlayPrevious event triggered\r\n");
+			  });
+			  kdp.addJsListener("playlistFirstEntry", function(){
+				  $('#playlistTracking').append("playlistFirstEntry event triggered\r\n");
+			  });
+			  kdp.addJsListener("playlistMiddleEntry", function(){
+				  $('#playlistTracking').append("playlistMiddleEntry event triggered\r\n");
+			  });
+			  kdp.addJsListener("playlistLastEntry", function(){
+				  $('#playlistTracking').append("playlistLastEntry event triggered\r\n");
+			  });
+		  }
+
+		  function jsKalturaPlayerTest( videoId ){
+			  // Name this module
+			  module( "playlist" );
+			  var kdp = $('#' + videoId )[0];
+			  var $iframe = $('#' + videoId + '_ifp').contents();
+
+			  asyncTest( "Playlist events test #1", function(){
+				  kalturaQunitWaitForPlayer(function(){
+					  // look for the playlist:
+					  ok( $( $iframe).find( '.medialistContainer.k-vertical' ).length > 0 , "Found vertical playlist" );
+					  ok( $("#playlistTracking").val().indexOf("playlistReady") !== -1 , "playlistReady event fired" );
+					  start();
+				  });
+			  });
+
+			  asyncTest('Playlist events test #2', function() {
+				  equal ( kdp.evaluate('{playlistAPI.dataProvider.selectedIndex}'), 0, "first clip was selected");
+				  setTimeout(function() {
+					  start();
+					  kdp.setKDPAttribute("playlistAPI.dataProvider", "selectedIndex", 3 );
+					  equal ( kdp.evaluate('{playlistAPI.dataProvider.selectedIndex}'), 3, "3rd clip was selected");
+					  kdp.sendNotification('playlistPlayPrevious');
+				  }, 3000);
+			  });
+
+
+			  setTimeout(function() {
+				  kdp.setKDPAttribute("playlistAPI.dataProvider", "selectedIndex", 2 );
+				  kdp.sendNotification('playlistPlayNext');
+			  }, 6000);
+
+			  asyncTest('Playlist events test #3', function() {
+				  setTimeout(function() {
+					  start();
+					  var events = ["playlistReady","playlistPlayNext","playlistPlayPrevious","playlistFirstEntry","playlistMiddleEntry","playlistLastEntry"];
+					  var allEventsFired = true;
+					  $.each(events, function( index, value ) {
+						  if ($("#playlistTracking").val().indexOf(value) === -1){
+							  allEventsFired = false;
+						  }
+					  });
+					  ok( allEventsFired , "All events fired" );
+				  }, 9000);
+			  });
+		  }
+
+	  </script>
+	  <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+	  <script type="text/javascript" src="../../../modules/KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+
+    </head>
+   <body>
+   	<h2>Playlist Events</h2>
+    <p>This player demonstrates playlist events.</p>
+    <p>The following events are triggered by playlists:</p>
+    <ul>
+	    <li><b>playlistReady</b>: The playlist layout is ready.</li>
+	    <li><b>playlistPlayNext</b>: The next clip was requested.</li>
+	    <li><b>playlistPlayPrevious</b>: The previous clip was requested.</li>
+	    <li><b>playlistFirstEntry</b>: The first clip in the playlist was loaded.</li>
+	    <li><b>playlistMiddleEntry</b>: A clip that is not the first or the last clip in the playlist was loaded.</li>
+	    <li><b>playlistLastEntry</b>: The last clip in the playlist was loaded.</li>
+    </ul>
+	<div id='kaltura_player' style="height:365px;width:650px"></div>
+	<script>
+		kWidget.featureConfig({
+			'targetId': 'kaltura_player',
+			'wid': '_243342',
+			'uiconf_id': '25975211',
+			'readyCallback': onReadyCallback,
+			'flashvars': {
+				'playlistAPI':{
+					'autoContinue': true,
+					'includeInLayout': true,
+					'autoPlay': false,
+					'loop': false,
+					'onPage': false,
+					'layout': 'vertical',
+					'containerPosition': 'left',
+					'kpl0Name': "test 4 item playlist",
+					'kpl0Id': '0_q79jh71b'
+				},
+				'nextPrevBtn':{
+					'plugin': true
+				}
+			}
+		});
+	</script>
+
+    <br>
+    <p>Event log for playlist events: </p>
+    <textarea id="playlistTracking" style="width:700px;height:250px;"></textarea>
+
+  </body>
+</html>

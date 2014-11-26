@@ -11,13 +11,13 @@
  
 	widget.prototype = (function() {
 
-	    function getCommits(user, repo, branch, callback) {
-	        $.ajax({
-		        url: "https://api.github.com/repos/" + user + "/" + repo + "/commits?sha=" + branch,
-		        dataType: 'jsonp',
-		        success: callback
-	        });
-	    }
+		function getCommits(user, repo, branch, callback) {
+			$.ajax({
+				url: "https://api.github.com/repos/" + user + "/" + repo + "/commits?sha=" + branch,
+				dataType: 'jsonp',
+				success: callback
+			});
+		}
 
 		function _widgetRun(widget) {
 			if (!widget.options) {
@@ -41,11 +41,11 @@
 				element.empty();
 				var list = $('<ul>').appendTo(element);
 				for (var c = 0; c < totalCommits; c++) {
-                    var commit = commits[c];
+					var commit = commits[c];
 					list.append(
 						'<li>' +
 						' ' + ((commit.author != null) ? avatar(commit.author.gravatar_id, avatarSize) : '')+
-                        ' ' + ((commit.author != null) ? author(commit.author.login) : commit.commit.committer.name) +
+						' ' + ((commit.author != null) ? author(commit.author.login) : commit.commit.committer.name) +
 						' committed ' + message(commit.commit.message, commit.sha) +
 						' ' + when(commit.commit.committer.date) +
 						'</li>');
@@ -58,7 +58,7 @@
 				}
 
 				function author(login) {
-                    return '<a class="github-user" href="https://github.com/' + login + '">' + login + '</a>';
+					return '<a class="github-user" href="https://github.com/' + login + '">' + login + '</a>';
 				}
 
 				function message(commitMessage, sha) {
@@ -88,8 +88,8 @@
 
 						return 'about ' + differenceInHours + ' hours ago';
 					} else if (differenceInDays == 1) {
-                        return 'yesterday';
-                    }
+						return 'yesterday';
+					}
 					return differenceInDays + ' days ago';
 				}
 			});

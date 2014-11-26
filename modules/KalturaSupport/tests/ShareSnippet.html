@@ -1,10 +1,17 @@
+
 <!DOCTYPE HTML>
 <html>
 <head>
 <title>Share Snippet</title>
-
 <script type="text/javascript" src="http://cdnbakmi.kaltura.com/lib/js/swfobject_v2.2.js"></script>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script>
+	// disable source selection force flash:
+	window['disablePlaybackModeSelector'] = true;
+	mw.setConfig( 'Kaltura.ForceFlashOnDesktop', true ) ;
+</script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 
 <script type="text/javascript">
 function loaded( ){
@@ -44,23 +51,8 @@ function getUrlVars() {
 </head>
 <body onLoad="loaded()">
 <h2>Share Snippet</h2>	
+Enables you to share a portion of content by setting start and end time to be shared <strong>( flash only )</strong>
 <div id="player"></div>
-<br />
-<!-- <object id="kaltura_player_1358179348"  -->
-<!-- name="kaltura_player_1358179348"  -->
-<!-- type="application/x-shockwave-flash" -->
-<!--  allowFullScreen="true" allowNetworking="all" -->
-<!--   allowScriptAccess="always"  -->
-<!--   height="417" width="654"  -->
-<!--   bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/"
- xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
-resource="http://cdnapi.kaltura.com/index.php/kwidget/cache_st/1358179348/wid/_27017/uiconf_id/6980021/entry_id/1_qdysc0ju" 
-data="http://cdnapi.kaltura.com/index.php/kwidget/cache_st/1358179348/wid/_27017/uiconf_id/6980021/entry_id/1_qdysc0ju">
-<param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" />
-<param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" />
-<param name="flashVars" value="&streamerType=rtmp&" /><param name="movie" value="http://cdnapi.kaltura.com/index.php/kwidget/cache_st/1358179348/wid/_27017/uiconf_id/6980021/entry_id/1_qdysc0ju" /> -->
-<!--  </object> -->
-<br />
 
 </body>
 </html>

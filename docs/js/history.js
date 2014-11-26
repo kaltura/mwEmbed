@@ -12,20 +12,20 @@ var DEBUG = true;
 
 if (DEBUG) {
   if (!window.console) {
-    // Make sure we can log things during debug
-    var console = {};
+	// Make sure we can log things during debug
+	var console = {};
   }
 
   if (!console.log) {
-    console.log = function () { };
+	console.log = function () { };
   }
 
   if (!console.error) {
-    console.error = console.log;
+	console.error = console.log;
   }
 
   if (!console.info) {
-    console.info = console.log;
+	console.info = console.log;
   }
 }
 
@@ -36,62 +36,62 @@ window.history_js = window.history_js || { hashInterval: 100, delimiter: '-' };
 // support the API
 if (document.location.hash) {
   (function () {
-    // Sanitize
-    var hash = document.location.hash[0] === '#' ? document.location.hash.substr(1) : document.location.hash;
+	// Sanitize
+	var hash = document.location.hash[0] === '#' ? document.location.hash.substr(1) : document.location.hash;
 
-    // Our hashes always start with the delimiter and have at least another character there
-    if (hash[0] === window.history_js.delimiter && hash.length >= 2) {
-      // Redirect, stripping the intial delimiter
-      hash = hash.substr(1);
-      document.location = hash;
-    }
+	// Our hashes always start with the delimiter and have at least another character there
+	if (hash[0] === window.history_js.delimiter && hash.length >= 2) {
+	  // Redirect, stripping the intial delimiter
+	  hash = hash.substr(1);
+	  document.location = hash;
+	}
   }());
 }
 
 (function (history_js, window, location) {
   // Check if the browser already has a native implementation
   if ('pushState' in window.history) {
-    if (DEBUG) {
-      console.info('pushState: history.pushState already implemented, skipping');
-    }
+	if (DEBUG) {
+	  console.info('pushState: history.pushState already implemented, skipping');
+	}
 
-    // Native implementation present, we are done here
-    return;
+	// Native implementation present, we are done here
+	return;
   }
 
   var IE8inIE7 = document.documentMode && document.documentMode <= 7,
-      useLocalStorage = 'sessionStorage' in window && window.JSON && !IE8inIE7;
+	  useLocalStorage = 'sessionStorage' in window && window.JSON && !IE8inIE7;
 
   // Storage API
   if (useLocalStorage) {
-    if (DEBUG) {
-      console.info('Using persistent storage');
-      history_js.persist = true;
-    }
+	if (DEBUG) {
+	  console.info('Using persistent storage');
+	  history_js.persist = true;
+	}
 
-    history_js.setStorage = function setStorage(name, value) {
-      window.sessionStorage[name] = JSON.stringify(value);
-    };
+	history_js.setStorage = function setStorage(name, value) {
+	  window.sessionStorage[name] = JSON.stringify(value);
+	};
 
-    history_js.getStorage = function getStorage(name) {
-      return JSON.parse(window.sessionStorage[name]);
-    }
+	history_js.getStorage = function getStorage(name) {
+	  return JSON.parse(window.sessionStorage[name]);
+	}
   }
   else {
-    if (DEBUG) {
-      console.info('Using non-persistent storage');
-      history_js.persist = false;
-    }
+	if (DEBUG) {
+	  console.info('Using non-persistent storage');
+	  history_js.persist = false;
+	}
 
-    // TODO: Implement real persistence
-    history_js.fake_storage = {};
-    history_js.setStorage = function setStorage(name, value) {
-      history_js.fake_storage[name] = value;
-    };
+	// TODO: Implement real persistence
+	history_js.fake_storage = {};
+	history_js.setStorage = function setStorage(name, value) {
+	  history_js.fake_storage[name] = value;
+	};
 
-    history_js.getStorage = function getStorage(name) {
-      return history_js.fake_storage[name];
-    }
+	history_js.getStorage = function getStorage(name) {
+	  return history_js.fake_storage[name];
+	}
   }
 
   /**
@@ -102,26 +102,26 @@ if (document.location.hash) {
    * @param {boolean} replace
    */
   function changeState (data, title, url, replace) {
-    // Always add delimiter and escape hash
-    url = history_js.delimiter + escape(url);
+	// Always add delimiter and escape hash
+	url = history_js.delimiter + escape(url);
 
-    // Store data using url
-    history_js.setStorage(url, { state: data, title: title });
+	// Store data using url
+	history_js.setStorage(url, { state: data, title: title });
 
-    // HTML5 implementation only calls popstate as a result of a user action,
-    // store the hash so we don't trigger a false event
-    history_js.hash = url;
+	// HTML5 implementation only calls popstate as a result of a user action,
+	// store the hash so we don't trigger a false event
+	history_js.hash = url;
 
-    // Use the URL as a hash
-    if (replace) {
-      location.replace('#' + url);
-    }
-    else {
-      // TODO: IE 6 & 7 need to use iFrame for back button support
+	// Use the URL as a hash
+	if (replace) {
+	  location.replace('#' + url);
+	}
+	else {
+	  // TODO: IE 6 & 7 need to use iFrame for back button support
 
-      // Place the hash normally
-      location.hash = '#' + url;
-    }
+	  // Place the hash normally
+	  location.hash = '#' + url;
+	}
   }
 
   /**
@@ -130,7 +130,7 @@ if (document.location.hash) {
    * @param {!string} url
    */
   window.history.pushState = function (data, title, url) {
-    changeState(data, title, url, false);
+	changeState(data, title, url, false);
   };
 
   /**
@@ -139,7 +139,7 @@ if (document.location.hash) {
    * @param {!string} url
    */
   window.history.replaceState = function (data, title, url) {
-    changeState(data, title, url, true);
+	changeState(data, title, url, true);
   };
 
   /**
@@ -147,7 +147,7 @@ if (document.location.hash) {
    * @return {string} Hash value, minus any leading '#'
    */
   history_js.normalized_hash = function () {
-    return location.hash[0] === '#' ?  location.hash.substring(1) : location.hash;
+	return location.hash[0] === '#' ?  location.hash.substring(1) : location.hash;
   }
 
   /**
@@ -156,60 +156,60 @@ if (document.location.hash) {
    * @private
    */
   history_js.hashchange = function() {
-    var new_hash = history_js.normalized_hash(),
-        data;
+	var new_hash = history_js.normalized_hash(),
+		data;
 
-    // False alarm, ignore
-    if (new_hash === history_js.hash) {
-      return;
-    }
+	// False alarm, ignore
+	if (new_hash === history_js.hash) {
+	  return;
+	}
 
-    history_js.hash = new_hash;
-    data = history_js.hash ? history_js.getStorage(history_js.hash) : {};
+	history_js.hash = new_hash;
+	data = history_js.hash ? history_js.getStorage(history_js.hash) : {};
 
-    if (DEBUG) {
-      console.info('New hash: ', history_js.hash);
-    }
+	if (DEBUG) {
+	  console.info('New hash: ', history_js.hash);
+	}
 
-    // Now, fire onpopstate with the state object
-    if ('onpopstate' in window && typeof window.onpopstate === 'function') {
-      window.onpopstate.apply(window, [{ 'state': data ? data.state : null }]);
-    }
-    else {
-      if (DEBUG) {
-        console.info('State changed, but no handler!');
-      }
-    }
+	// Now, fire onpopstate with the state object
+	if ('onpopstate' in window && typeof window.onpopstate === 'function') {
+	  window.onpopstate.apply(window, [{ 'state': data ? data.state : null }]);
+	}
+	else {
+	  if (DEBUG) {
+		console.info('State changed, but no handler!');
+	  }
+	}
   };
 
   // IE8 in IE7 mode defines onhashchange, but never fires it
   if ('onhashchange' in window && !IE8inIE7) {
-    if (DEBUG) {
-      console.info('Browser has native onHashChange');
-    }
+	if (DEBUG) {
+	  console.info('Browser has native onHashChange');
+	}
 
-    window.onhashchange = history_js.hashchange;
+	window.onhashchange = history_js.hashchange;
   }
   else {
-    // TODO:
-    // IE6 & 7 don't create history items if the hash doesn't match an element's ID,
-    // so we need to create an iframe which we'll use 
+	// TODO:
+	// IE6 & 7 don't create history items if the hash doesn't match an element's ID,
+	// so we need to create an iframe which we'll use
 
-    if (DEBUG) {
-      console.info('Using manualy hash change detection');
-    }
+	if (DEBUG) {
+	  console.info('Using manualy hash change detection');
+	}
 
-    // Need to check hash state manually
-    history_js.hashInterval = setInterval(function () {
-      var hash = history_js.normalized_hash();
-      if (hash !== history_js.hash) {
-        history_js.hashchange();
-      }
-    }, history_js.hashInterval);
+	// Need to check hash state manually
+	history_js.hashInterval = setInterval(function () {
+	  var hash = history_js.normalized_hash();
+	  if (hash !== history_js.hash) {
+		history_js.hashchange();
+	  }
+	}, history_js.hashInterval);
   }
 
   // Fire event manually right now, if we loaded with a hash
   if (history_js.normalized_hash()) {
-    history_js.hashchange();
+	history_js.hashchange();
   }
 }(window.history_js, window, document.location));

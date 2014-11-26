@@ -1,10 +1,8 @@
 <div id="performance-main"></div>
 
-<div class="hero-unit">
-<h1>Performance Comparison </h1>
+<h3>Performance Comparison </h3>
 <p>For most accurate test disable local cache</p>
 <p><a href="#" id="gen-performance" class="btn btn btn-info btn-large">generate performance table</a></p>
-</div>
 
 <div id="performance-table">
 	<table style="width:400px;border:solid thin black;">

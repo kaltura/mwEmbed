@@ -1,9 +1,3 @@
-/**
-uiConf Examples:
-<Plugin id="googleAnalytics" visualDebug="false” path="googleAnalyticsPlugin.swf" width="0%" height="0%" loadingPolicy="wait" urchinCode="UA-30149691-1"/>
-<Plugin id="googleAnalytics" visualDebug="false” path="googleAnalyticsPlugin.swf" customEvent=”doPlay” width="0%" height="0%" loadingPolicy="wait" urchinCode="UA-30149691-1"/>
-<Plugin id="googleAnalytics" visualDebug="false” path="googleAnalyticsPlugin.swf" customEvent=”doPlay,playerStateChange,addThis” addThisCategory=”My AddThis Category” addThisAction=”My AddThis Action” addThisLabel=”My AddThis Label” addThisValue=”1” width="0%" height="0%" loadingPolicy="wait" urchinCode="UA-30149691-1"/>
-**/
 ( function( mw, $ ) {"use strict";
 	mw.GoogleAnalytics = function( embedPlayer, callback ) {
 		return this.init( embedPlayer, callback );
@@ -52,76 +46,6 @@ uiConf Examples:
 			'closeFullScreen',
 			// special case meta events:
 			'quartiles' // quartiles an event for every 1/4 the of the video played*/
-		],
-
-		// The full set of notifications for kdp3 ( validates event names )
-		validEventList : [
-			'quartiles',
-			'startUp',
-			'durationChange',
-			'initiatApp',
-			'changeMedia',
-			'cleanMedia',
-			'skinLoaded',
-			'skinLoadFailed',
-			'entryReady',
-			'entryFailed',
-			'sourceReady',
-			'loadMedia',
-			'mediaLoading',
-			'mediaReady',
-			'mediaUnloaded',
-			'mediaLoadError',
-			'mediaError',
-			'rootResize',
-			'mediaViewableChange',
-			'pre1start',
-			'post1start',
-			'doPause',
-			'doPlay',
-			'doPlayEntry',
-			'doStop',
-			'doSeek',
-			'doIntelligentSeek',
-			'doSwitch',
-			'kdpReady',
-			'kdpEmpty',
-			'layoutReady',
-			'playerStateChange',
-			'playerReady',
-			'playerContainerReady',
-			'playerPaused',
-			'playerPlayed',
-			'playerSeekStart',
-			'playerSeekEnd',
-			'playerPlayEnd',
-			'playerDimensionChange',
-			'openFullScreen',
-			'closeFullScreen',
-			'changeVolume',
-			'volumeChanged',
-			'enableGui',
-			'fastForward',
-			'stopFastForward',
-			'bytesDownloadedChange',
-			'bytesTotalChange',
-			'bufferProgress',
-			'bufferChange',
-			'playerDownloadComplete',
-			'endEntrySession',
-			'endPreSession',
-			'endPostSession',
-			'durationChange',
-			'hasCloseFullScreen',
-			'hasOpenedFullScreen',
-			'switchingChange',
-			'scrubberDragStart',
-			'scrubberDragEnd',
-			'alert',
-			'showUiElement',
-			'cancelAlerts',
-			'enableAlerts',
-			'freePreviewEnd'
 		],
 
 		defaultValueEventList : [
@@ -342,26 +266,30 @@ uiConf Examples:
 			return trackEvent;
 		},
 
-		/**
-		* Get an optional label for the methodName and data
-		*/
-		getOptionalLabel: function( methodName, data ) {
-			methodName = methodName.toString();
-			var clipTitle = ( this.embedPlayer.kalturaPlayerMetaData && this.embedPlayer.kalturaPlayerMetaData.name ) ? this.embedPlayer.kalturaPlayerMetaData.name : '';
-			var entryId = this.embedPlayer.kentryid;
-			var widgetId = this.embedPlayer.kwidgetid;
-			var customEvents = [];
-			if ( this.getConfig( 'customEvent' ) ) {
-				customEvents = this.getConfig( 'customEvent' ).split( ',' );
-				if ( $.inArray( methodName, customEvents ) != -1 ) {
-					if ( this.getConfig( methodName + "Label" ) ) {
-						return this.getConfig( methodName + "Label" );
-					}
-				}
+        /**
+         * Get an optional label for the methodName and data
+         */
+        getOptionalLabel: function( methodName, data ) {
+            methodName = methodName.toString();
+            var clipTitle = ( this.embedPlayer.kalturaPlayerMetaData && this.embedPlayer.kalturaPlayerMetaData.name ) ? this.embedPlayer.kalturaPlayerMetaData.name : '';
+            var entryId = this.embedPlayer.kentryid;
+            var widgetId = this.embedPlayer.kwidgetid;
+            var refId = this.embedPlayer.kalturaPlayerMetaData.referenceId;
+            var refString = "";
+            if(refId && this.getConfig('sendRefId') == true)
+                refString = refId + "|";
+            var customEvents = [];
+            if ( this.getConfig( 'customEvent' ) ) {
+                customEvents = this.getConfig( 'customEvent' ).split( ',' );
+                if ( $.inArray( methodName, customEvents ) != -1 ) {
+                    if ( this.getConfig( methodName + "Label" ) ) {
+                        return this.getConfig( methodName + "Label" );
+                    }
+                }
 
-			}
-			return ( clipTitle + "|" + entryId + "|" + widgetId );
-		},
+            }
+            return ( refString + clipTitle + "|" + entryId + "|" + widgetId );
+        },
 
 		/**
 		* Get an optional data value for the methodName

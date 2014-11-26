@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>jQuery noConflict test</title>
+<!--  Load an old version of jQuery -->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript">	
+// Enable uiconf js which includes external resources 
+mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
+</script>
+</head>
+<body>
+<h2> jQuery.noConflict() on page plugin support. </h2>
+<div id="kaltura_player" style="width:400px;height:330px;"></div>
+<script>
+kWidget.embed({
+	'cache_st': 23,
+	'targetId' : 'kaltura_player',
+	'wid' : '_243342',
+	'uiconf_id' : '9677891',
+	'entry_id' : '0_uka1msg4',
+	'flashvars': {
+		'descriptionBox':{
+			'plugin': true,
+			'path' : "/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf",
+			'relativeTo': 'video',
+			'position': 'before',
+			
+			'requiresJQuery' : true,
+			'onPageJs1': "{onPagePluginPath}/jQueryNoConflict/LogjQueryNoConflict.js",
+		}
+	}, 
+	readyCallback: function(){
+		$('body').append( "Client jQuery version ( player ready callback ): " +  $.fn.jquery, "<br>" );
+	}
+})
+</script>
+<script>
+(function($) {
+	$('body').append( "Client jQuery version ( inline script ): " +  $.fn.jquery, "<br>"  );
+}(jQuery));
+// also check against dom ready time
+$(document).ready(function() {
+	$('body').append( "Client jQuery version ( DOM ready ): " +  $.fn.jquery, "<br>"  );
+});
+setTimeout(function(){
+	$('body').append( "Client jQuery version ( after 4 seconds ): " +  $.fn.jquery, "<br>"  );
+}, 4000)
+</script>
+
+</body>
+</html>

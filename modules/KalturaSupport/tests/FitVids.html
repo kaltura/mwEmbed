@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Minimal Fitvid example</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<body>
+	<h2>FitVids.js example</h2>
+	<div id="playbackModeSelector" style="float:right"></div>
+	FitVid maintains player embed size aspect ratio, using JS to apply RWD padding-top technique. 
+	More about <a href="http://fitvidsjs.com/">FitVids.js</a> <br>
+	Also see kaltura's no-js <a href="RWDMinimal.html">RWD example</a> <br>
+	<br>
+	<strong>Note:</strong> 	 Changes are needed for fitVid to work against kWidget.embed
+	<a href="https://github.com/mdale/FitVids.js">fork available here</a>.
+	<br><br>
+	<strong>Sample FitVids.js with kWidget.embed Code:</strong>
+	<pre class="prettyprint linenums">&lt;script type=&quot;text/javascript&quot; src=&quot;resources/FitVids.js&quot;&gt;&lt;/script&gt;<br/>&lt;div class=&quot;contentContainer&quot; style=&quot;width:80%;height:900px;border:solid thin black&quot;&gt;<br/>	&lt;h3&gt;Page content in dynamic width content column. &lt;/h3&gt;<br/>	&lt;div class=&quot;fluid-width-video-wrapper&quot;&gt;<br/>		&lt;div id=&quot;myVideoContainer&quot; style=&quot;width:640px;height:360px&quot;&gt;<br/>			&lt;div id=&quot;kaltura_player&quot; style=&quot;width:100%;height:100%&quot;&gt;&lt;/div&gt;<br/>		&lt;/div&gt;<br/>	&lt;/div&gt;<br/>&lt;/div&gt;<br/>&lt;script&gt;<br/>	kWidget.embed({<br/>		'targetId': 'kaltura_player',<br/>		'wid': '_243342',<br/>		'uiconf_id' : '12868012',<br/>		'entry_id' : '1_sf5ovm7u'<br/>	});<br/>&lt;/script&gt;<br/>&lt;script&gt;<br/>$(&quot;.contentContainer&quot;).fitVids({ customSelector: &quot;#myVideoContainer&quot;});<br/>&lt;/script&gt;
+	</pre>
+	
+	<script type="text/javascript" src="resources/FitVids.js"></script>
+	<div class="contentContainer" style="width:80%;height:900px;border:solid thin black">
+		<h3>Dynamic width content column.</h3>
+		<div class="fluid-width-video-wrapper">
+			<div id="myVideoContainer" style="width:640px;height:360px">
+				<div id="kaltura_player" style="width:100%;height:100%"></div>
+			</div>
+		</div>
+		<br>
+		FitVids vimio video ( retains fitvid auto fitting ):
+		<br>
+		<iframe src="http://player.vimeo.com/video/28523422?title=0&amp;byline=0&amp;portrait=0&amp;color=4584be" width="800/embed/?moog_width=800" height="450" frameborder="0"></iframe>
+	</div>
+	<script>
+		kWidget.embed({
+			'targetId': 'kaltura_player',
+			'wid': '_243342',
+			'uiconf_id' : '12868012',
+			'entry_id' : '1_sf5ovm7u'
+		});
+	</script>
+	<script>
+	$(".contentContainer").fitVids({ customSelector: "#myVideoContainer"});
+	</script>
+</body>
+</html>

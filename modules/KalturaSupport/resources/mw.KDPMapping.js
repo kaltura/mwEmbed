@@ -12,6 +12,20 @@
 		return this.init( embedPlayer );
 	};
 	mw.KDPMapping.prototype = {
+
+		// ability to format expressions
+		formatFunctions: {
+			timeFormat: function( value ){
+				return mw.seconds2npt( parseFloat(value) );
+			},
+			dateFormat: function( value ){
+				var date = new Date( value * 1000 );
+				return date.toDateString();
+			},
+			numberWithCommas: function( value ){
+				return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+			}
+		},
 		// global list of kdp listening callbacks
 		listenerList: {},
 		/**
@@ -21,7 +35,7 @@
 			var _this = this;
 			// player api:
 			var kdpApiMethods = [ 'addJsListener', 'removeJsListener', 'sendNotification',
-			                      'setKDPAttribute', 'evaluate' ];
+								  'setKDPAttribute', 'evaluate' ];
 
 			var parentProxyDiv = null;
 			if(  mw.getConfig('EmbedPlayer.IsFriendlyIframe') ){
@@ -43,9 +57,20 @@
 				// Add to parentProxyDiv as well:
 				if( parentProxyDiv ){
 					parentProxyDiv[ methodName ] = function(){
-						var args = $.makeArray( arguments ) ;
-						args.splice( 0,0, embedPlayer);
-						return _this[ methodName ].apply(_this, args);
+                        var args = arguments ;
+                        // convert arguments to array
+                        var ret = [];
+                        if( args != null ){
+                            var i = args.length;
+                            // The window, strings (and functions) also have 'length'
+                            if( i == null || typeof args === "string" || jQuery.isFunction(args) || args.setInterval )
+                                ret[0] = args;
+                            else
+                                while( i )
+                                    ret[--i] = args[i];
+                        }
+                        ret.splice( 0,0, embedPlayer);
+                        return _this[ methodName ].apply(_this, ret);
 					}
 				}
 			});
@@ -75,43 +100,34 @@
 		 */
 		setKDPAttribute: function( embedPlayer, componentName, property, value ) {
 			mw.log("KDPMapping::setKDPAttribute " + componentName + " p:" + property + " v:" + value  + ' for: ' + embedPlayer.id );
+
+			var pluginNameToSet = componentName;
+			var propertyNameToSet = property;
+			var valueToSet = value;
+			
 			switch( property ) {
 				case 'autoPlay':
 					embedPlayer.autoplay = value;
 				break;
+				case 'disableAlerts':
+					mw.setConfig('EmbedPlayer.ShowPlayerAlerts', !value );
+				break;
 				default:
-					var subComponent = null;
-					var pConf = embedPlayer.playerConfig['plugins'];
-					var baseComponentName = componentName;
 					// support descendant properties
 					if( componentName.indexOf('.') != -1 ){
 						var cparts = componentName.split('.');
-						baseComponentName = cparts[0];
-						subComponent = cparts[1];
+						pluginNameToSet = cparts[0];
+						propertyNameToSet = cparts[1];
+						valueToSet = {};
+						valueToSet[ property ] = value;
 					}
-					if( !pConf[ baseComponentName ] ){
-						pConf[ baseComponentName ] = {};
-					}
-					if( subComponent ){
-						if( !pConf[ baseComponentName ][subComponent] ){
-							pConf[ baseComponentName ][ subComponent ] = {};
-						}
-						pConf[ baseComponentName ][subComponent][property] = value;
-					} else {
-						pConf[ baseComponentName ][ property ] = value;
-					}
+					// Save configuration
+					embedPlayer.setKalturaConfig( pluginNameToSet, propertyNameToSet, valueToSet );
 				break;
 			}
-			// TODO move to mediaPlayTo playFrom plugin
-			if( property == 'mediaPlayFrom' ){
-				embedPlayer.startTime = parseFloat(value);
-			}
-			if( property == 'mediaPlayTo' ){
-				embedPlayer.pauseTime = parseFloat(value);
-			}
 			// TODO move to a "ServicesProxy" plugin
-			if( baseComponentName == 'servicesProxy'
-				&& subComponent && subComponent == 'kalturaClient'
+			if( pluginNameToSet == 'servicesProxy'
+				&& propertyNameToSet && propertyNameToSet == 'kalturaClient'
 				&& property == 'ks'
 			){
 				this.updateKS( embedPlayer, value );
@@ -148,6 +164,13 @@
 			var _this = this;
 			var result;
 
+			var isCurlyBracketsExpresion = function( str ) {
+				if( typeof str == 'string' ) {
+					return ( str.charAt(0) == '{' && str.charAt( str.length -1 ) == '}' );
+				}
+				return false;
+			};
+
 			// Limit recursive calls to 5
 			limit = limit || 0;
 			if( limit > 4 ) {
@@ -159,7 +182,7 @@
 				return objectString;
 			}
 			// Check if a simple direct evaluation:
-			if( objectString[0] == '{' &&  objectString[  objectString.length -1 ] == '}' && objectString.split( '{' ).length == 2 ){
+			if( isCurlyBracketsExpresion(objectString) && objectString.split( '{' ).length == 2 ){
 				result = _this.evaluateExpression( embedPlayer, objectString.substring(1, objectString.length-1) );
 			} else if ( objectString.split( '{' ).length > 1 ){ // Check if we are doing a string based evaluate concatenation:
 				// Replace any { } calls with evaluated expression.
@@ -185,11 +208,11 @@
 				result = true;
 			}
 			/*
-			 * Support nested expressinos
+			 * Support nested expressions
 			 * Example: <Plugin id="fooPlugin" barProperty="{mediaProxy.entry.id}">
 			 * {fooPlugin.barProperty} should return entryId and not {mediaProxy.entry.id}
 			 */
-			if( typeof result === 'string' && result[0] == '{' && result[result.length-1] == '}' ) {
+			if( isCurlyBracketsExpresion(result) ) {
 				result = this.evaluate( embedPlayer, result, limit++ );
 			}
 			return result;
@@ -233,6 +256,15 @@
 
 			}
 
+			var getReffererURL = function(fv,objectPath) {
+				// Check for the fv:
+				if( fv && fv[ objectPath[2] ] ){
+					return fv[ objectPath[2] ];
+				}
+				// Else use the iframeParentUrl if set:
+				return mw.getConfig( 'EmbedPlayer.IframeParentUrl' );
+			}
+
 			switch( objectPath[0] ){
 				case 'isHTML5':
 					return true;
@@ -274,7 +306,7 @@
 							switch( objectPath[2] ){
 								case 'currentTime':
 									// check for kPreSeekTime ( kaltura seek delay update property )
-									if( embedPlayer.kPreSeekTime !== null ){
+									if( embedPlayer.seeking && embedPlayer.kPreSeekTime !== null ){
 										return embedPlayer.kPreSeekTime;
 									}
 									/*var ct = embedPlayer.currentTime - embedPlayer.startOffset;
@@ -336,6 +368,12 @@
 							}
 							return true;
 						break;	
+						case 'kalturaMediaFlavorArray':
+							if( ! embedPlayer.kalturaFlavors ){
+							return null;
+							}
+							return embedPlayer.kalturaFlavors;
+						break;
 					}
 				break;
 				// config proxy mapping
@@ -350,12 +388,8 @@
 										return embedPlayer.autoplay;
 									break;
 									case 'referer':
-										// Check for the fv:
-										if( fv && fv[ objectPath[2] ] ){
-											return fv[ objectPath[2] ];
-										}
-										// Else use the iframeParentUrl if set:
-										return mw.getConfig( 'EmbedPlayer.IframeParentUrl' );
+									case 'referrer':
+										return getReffererURL(fv,objectPath);
 										break;
 									default:
 										if( fv && fv[ objectPath[2] ] ){
@@ -442,6 +476,31 @@
 						break;
 					}
 				break;
+				case 'utility':
+					switch( objectPath[1] ) {
+						case 'random':
+							return Math.floor(Math.random() * 1000000000);
+							break;
+						case 'timestamp':
+							return new Date().getTime();
+							break;
+						case 'referrer_url':
+							var fv = embedPlayer.getFlashvars();
+							return getReffererURL(fv,objectPath);
+							break;
+						case 'referrer_host':
+							var fv = embedPlayer.getFlashvars();
+							var referrer =  getReffererURL(fv,objectPath);
+							var getLocation = function(href) {
+								var l = document.createElement("a");
+								l.href = href;
+								return l;
+							};
+							var location = getLocation(referrer);
+							return location.hostname;
+							break;
+					}
+					break;
 			}
 			// Look for a plugin based config: typeof
 			var pluginConfigValue = null;
@@ -467,9 +526,26 @@
 		 * @param {string} expression The expression to be evaluated
 		 */
 		evaluateExpression: function( embedPlayer, expression ){
+			// Search for format functions
+			var formatFunc = null;
+			if( expression.indexOf('|') !== -1 ){
+				var expArr = expression.split('|');
+				expression = expArr[0];
+				formatFunc = expArr[1];
+				if( typeof this.formatFunctions[ formatFunc ] == 'function' ){
+					formatFunc = this.formatFunctions[ formatFunc ];
+				} else {
+					formatFunc = null;
+				}
+			}
+
 			var evalVal = this.getEvaluateExpression( embedPlayer, expression );
 			if( evalVal === null || typeof evalVal == 'undefined' || evalVal === 'undefined'){
 				return '';
+			}
+			// Run by formatFunc
+			if( formatFunc ){
+				return formatFunc( evalVal );
 			}
 			return evalVal;
 		},
@@ -477,6 +553,9 @@
 			switch( functionName ){
 				case 'encodeUrl':
 					return encodeURI( value );
+					break;
+				case 'conditional': 
+					value
 					break;
 			}
 		},
@@ -557,7 +636,11 @@
 					}
 
 					if( $.isFunction( callbackToRun ) ) {
-						callbackToRun.apply( embedPlayer, $.makeArray( arguments ) );
+						try{
+							callbackToRun.apply( embedPlayer, $.makeArray( arguments ) );
+						}catch(e){
+							mw.log("Error when trying to run callbackToRun (probably JavaScript error in callbackToRun code)")
+						};
 					} else {
 						mw.log('kdpMapping::addJsListener: callback name: ' + callbackName + ' not found');
 					}
@@ -663,7 +746,7 @@
 					break;
 				case 'doStop':
 				case 'stop':
-					b( "doStop");
+					b( "doStop" );
 					break;
 				case 'playerPaused':
 				case 'pause':
@@ -780,10 +863,10 @@
 					})
 					break;
 				case 'bytesDownloadedChange':
-					// KDP sends an initial bytes loaded zeor at player ready:
+					// KDP sends an initial bytes loaded zero at player ready:
 					var prevBufferBytes = 0;
 					b( 'monitorEvent', function(){
-						if( typeof embedPlayer.bufferedPercent != 'undefined' ){
+						if( typeof embedPlayer.bufferedPercent != 'undefined' && embedPlayer.mediaElement.selectedSource ){
 							var bufferBytes = parseInt( embedPlayer.bufferedPercent *  embedPlayer.mediaElement.selectedSource.getSize() );
 							if( bufferBytes != prevBufferBytes ){
 								callback( { 'newValue': bufferBytes }, embedPlayer.id );
@@ -827,6 +910,7 @@
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
+
 				case 'preSequenceComplete':
 					b('AdSupport_preSequenceComplete', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
@@ -834,7 +918,7 @@
 					break;
 
 				// mid Sequence:
-				case 'midrollStarted':
+				case 'midSequenceStart':
 					b('AdSupport_midrollStarted', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
@@ -846,8 +930,8 @@
 					break;
 
 				// post roll Sequence:
-				case 'postRollStarted':
-					b('AdSupport_midrollStarted', function( e, slotType ){
+				case 'postSequenceStart':
+					b('AdSupport_postrollStarted', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
@@ -929,18 +1013,15 @@
 				case 'freePreviewEnd':
 					b('KalturaSupport_FreePreviewEnd');
 					break;
-				/**
-				 * For closedCaption plguin
-				 *  TODO move to mw.KTimedText.js
-				 */
-				case 'ccDataLoaded':
-					b('KalturaSupport_CCDataLoaded');
+				case 'switchingChangeStarted':
+					b( 'sourceSwitchingStarted', function( event, data ) {
+					callback( data );
+					});
 					break;
-				case 'newClosedCaptionsData':
-					b('KalturaSupport_NewClosedCaptionsData');
-					break;
-				case 'changedClosedCaptions':
-					b('TimedText_ChangeSource');
+				case 'switchingChangeComplete':
+					b( 'sourceSwitchingEnd', function( event, data ) {
+						callback( data );
+					});
 					break;
 				default:
 					// Custom listner
@@ -964,7 +1045,21 @@
 		sendNotification: function( embedPlayer, notificationName, notificationData ){
 			mw.log('KDPMapping:: sendNotification > '+ notificationName,  notificationData );
 			switch( notificationName ){
+				case 'showSpinner': 
+					embedPlayer.addPlayerSpinner();
+					break;
+				case 'hideSpinner': 
+					embedPlayer.hideSpinner();
+					break;
 				case 'doPlay':
+					// If in ad, only trigger doPlay event
+					if( embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence ) {
+						embedPlayer.triggerHelper( 'doPlay' );
+						if( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
+							embedPlayer.play();
+						}
+						break;
+					}
 					if( embedPlayer.playerReadyFlag == false ){
 						mw.log('Warning:: KDPMapping, Calling doPlay before player ready');
 						$( embedPlayer ).bind( 'playerReady.sendNotificationDoPlay', function(){
@@ -976,14 +1071,21 @@
 					embedPlayer.play();
 					break;
 				case 'doPause':
+					// If in ad, only trigger doPause event
+					if( embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence ) {
+						embedPlayer.triggerHelper( 'doPause' );
+						break;
+					}
 					embedPlayer.pause();
 					break;
 				case 'doStop':
-					embedPlayer.stop();
+					setTimeout(function() {
+						embedPlayer.ignoreNextNativeEvent = true;
+						embedPlayer.stop();
+					},10);
 					break;
 				case 'doReplay':
-					embedPlayer.stop();
-					embedPlayer.play();
+					embedPlayer.replay();
 					break;
 				case 'doSeek':
 					// Kaltura doSeek is in seconds rather than percentage:
@@ -997,15 +1099,13 @@
 					embedPlayer.seek( percent, embedPlayer.paused );
 					break;
 				case 'changeVolume':
-					embedPlayer.setVolume( parseFloat( notificationData ) );
-					// TODO the setVolume should update the interface
-					embedPlayer.setInterfaceVolume(  parseFloat( notificationData ) );
+					embedPlayer.setVolume( parseFloat( notificationData ),true );
 					break;
 				case 'openFullScreen':
-					embedPlayer.controlBuilder.doFullScreenPlayer();
+					embedPlayer.layoutBuilder.fullScreenManager.doFullScreenPlayer();
 					break;
 				case 'closeFullScreen':
-					embedPlayer.controlBuilder.restoreWindowPlayer();
+					embedPlayer.layoutBuilder.fullScreenManager.restoreWindowPlayer();
 					break;
 				case 'cleanMedia':
 					embedPlayer.emptySources();
@@ -1051,9 +1151,9 @@
 
 						// Check if we use referenceId
 						if( ! notificationData.entryId && notificationData.referenceId ) {
-							embedPlayer.kreferenceid = notificationData.referenceId;
+							embedPlayer.setFlashvars('referenceId', notificationData.referenceId);
 						} else {
-							embedPlayer.kreferenceid = null;
+							embedPlayer.setFlashvars('referenceId', null);
 						}
 						// Update the entry id
 						embedPlayer.kentryid = notificationData.entryId;
@@ -1069,17 +1169,24 @@
 						embedPlayer.kAds = null;
 
 						// Temporary update the thumbnail to black pixel. the real poster comes from entry metadata
-						embedPlayer.updatePosterSrc();
+						embedPlayer.updatePoster();
 
 						// Run the embedPlayer changeMedia function
 						embedPlayer.changeMedia();
 						break;
 					}
 				case 'alert':
-					embedPlayer.controlBuilder.displayAlert( notificationData );
+					embedPlayer.layoutBuilder.displayAlert( notificationData );
 					break;
 				case 'removealert':
-					embedPlayer.controlBuilder.closeAlert();
+					embedPlayer.layoutBuilder.closeAlert();
+					break;
+				case 'enableGui':
+					if ( notificationData.guiEnabled == true ) {
+					embedPlayer.enablePlayControls();
+					} else {
+					embedPlayer.disablePlayControls();
+					}
 					break;
 				default: 
 					// custom notification

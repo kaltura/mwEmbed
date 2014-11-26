@@ -8,12 +8,14 @@
 	 * days for now )
 	 *
 	 * @param {Float}
-	 *            sec Seconds
+	 *			sec Seconds
 	 * @param {Boolean}
-	 *            show_ms If milliseconds should be displayed.
+	 *			show_ms If milliseconds should be displayed.
+	 * @param {Boolean}
+	 *			mm_format if you want to show 2 digits for minutes
 	 * @return {Float} String npt format
 	 */
-	mw.seconds2npt = function( sec, show_ms ) {
+	mw.seconds2npt = function( sec, show_ms , mm_format ) {
 		if ( isNaN( sec ) ) {
 			mw.log("Warning: mediawiki.UtilitiesTime, trying to get npt time on NaN:" + sec);
 			return '0:00:00';
@@ -33,12 +35,15 @@
 		}
 		if( tm.hours == 0 ){
 			hoursStr = '';
+			if (mm_format && tm.minutes < 10)
+				tm.minutes = '0' + tm.minutes;
 		} else {
 			if ( tm.minutes < 10 )
 				tm.minutes = '0' + tm.minutes;
 
 			hoursStr = tm.hours + ":";
 		}
+
 		return hoursStr + tm.minutes + ":" + tm.seconds;
 	};
 
@@ -46,7 +51,7 @@
 	 * Given seconds return array with 'days', 'hours', 'min', 'seconds'
 	 *
 	 * @param {float}
-	 *            sec Seconds to be converted into time measurements
+	 *			sec Seconds to be converted into time measurements
 	 */
 	mw.seconds2Measurements = function ( sec ){
 		var tm = {};
@@ -75,7 +80,7 @@
 			seconds += parseInt( timeMeasurements.seconds, 10 );
 		}
 		if( timeMeasurements.milliseconds ){
-			seconds += parseInt( timeMeasurements.milliseconds, 10 ) / 1000;
+			seconds += parseFloat(timeMeasurements.milliseconds);
 		}
 		return seconds;
 	};
@@ -84,7 +89,7 @@
 	 * Take hh:mm:ss,ms or hh:mm:ss.ms input, return the number of seconds
 	 *
 	 * @param {String}
-	 *            npt_str NPT time string
+	 *			npt_str NPT time string
 	 * @return {Float} Number of seconds
 	 */
 	mw.npt2seconds = function ( npt_str ) {
@@ -100,7 +105,12 @@
 		var sec = 0;
 
 		times = npt_str.split( ':' );
-		if ( times.length == 3 ) {
+		if ( times.length == 4 ) {
+			sec = times[2] + '.' + times[3];
+			min = times[1];
+			hour = times[0];
+		}
+		else if ( times.length == 3 ) {
 			sec = times[2];
 			min = times[1];
 			hour = times[0];

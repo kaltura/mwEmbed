@@ -36,7 +36,7 @@ class CSSMin {
 	 * which when base64 encoded will result in a 1/3 increase in size.
 	 */
 	const EMBED_SIZE_LIMIT = 24576;
-	const URL_REGEX = 'url\(\s*[\'"]?(?P<file>[^\?\)\:\'"]*)\??[^\)\'"]*[\'"]?\s*\)';
+	const URL_REGEX = 'url\(\s*[\'"]?(?P<file>[^\?\)\:\'"]*)\??(?P<args>[^\)\'"]*)[\'"]?\s*\)';
 	
 	/* Protected Static Members */
 	
@@ -91,20 +91,26 @@ class CSSMin {
 	 */
 	public static function remap( $source, $local, $remote, $embed = true ) {
 		$pattern = '/((?P<embed>\s*\/\*\s*\@embed\s*\*\/)(?P<pre>[^\;\}]*))?' .
-			self::URL_REGEX . '(?P<post>[^;]*)[\;]?/';
+			self::URL_REGEX . '(?P<post>[^;,]*)(?P<seperator>[\;,])?/';
 		$offset = 0;
+
 		while ( preg_match( $pattern, $source, $match, PREG_OFFSET_CAPTURE, $offset ) ) {
 			// Shortcuts
 			$embed = $match['embed'][0];
 			$pre = $match['pre'][0];
 			$post = $match['post'][0];
+			$seperator = $match['seperator'][0];
 			$file = "{$local}/{$match['file'][0]}";
 			$url = "{$remote}/{$match['file'][0]}";
+			
 			// Only proceed if we can access the file
 			if ( file_exists( $file ) ) {
 				// Add version parameter as a time-stamp in ISO 8601 format,
 				// using Z for the timezone, meaning GMT
 				$url .= '?' . gmdate( 'Y-m-d\TH:i:s\Z', round( filemtime( $file ), -2 ) );
+				if( isset($match['args']) && isset($match['args'][0]) && strlen($match['args'][0]) > 0 ){
+					$url .= '&' . $match['args'][0];
+				}
 				// If we the mime-type can't be determined, no embedding will take place
 				$type = false;
 				$realpath = realpath( $file );
@@ -140,12 +146,12 @@ class CSSMin {
 					// in place of the @embed comment to try and retain line-number integrity,
 					// and the other with a remapped an versioned URL and an Internet Explorer
 					// hack making it ignored in all browsers that support data URIs
-					$replacement = "{$pre}url(data:{$type};base64,{$data}){$post};";
+					$replacement = "{$pre}url(data:{$type};base64,{$data}){$post}{$seperator}";
 					$replacement .= "{$pre}url({$url}){$post}!ie;";
 				} else {
 					// Build a CSS property with a remapped and versioned URL,
 					// preserving comment for debug mode
-					$replacement = "{$embed}{$pre}url({$url}){$post};";
+					$replacement = "{$embed}{$pre}url({$url}){$post}{$seperator}";
 				}
 
 				// Perform replacement on the source

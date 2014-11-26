@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Multiple Widget types</title>
+<script>
+window['disablePlaybackModeSelector'] = true;
+</script>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php/p/243342/uiconf_id/21099702"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Tests multiple widget embed types after including lead with HTML5 player</h2>
+<b>21099702</b> JSON config player will "lead with html5"
+<div id="kaltura_player" style="width:400px;height:300px;"></div>
+<span id="playbackModeSelector"></span>
+<script>
+	kWidget.embed({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id' : '21099702',
+		'entry_id' : '0_uka1msg4',
+	});
+</script>
+<b>12905712</b> Default white player will use flash where available. 
+<div id="kaltura_player2" style="width:400px;height:300px;"></div>
+<span id="playbackModeSelector"></span>
+<script>
+	kWidget.embed({
+		'targetId': 'kaltura_player2',
+		'wid': '_243342',
+		'uiconf_id' : '12905712',
+		'entry_id' : '0_uka1msg4',
+	});
+</script>
+
+<b>11811911</b> Presentation widget, must use flash
+<div id="kaltura_player3" style="width:400px;height:300px;"></div>
+<span id="playbackModeSelector"></span>
+<script>
+	kWidget.embed({
+		'targetId': 'kaltura_player3',
+		'wid': '_243342',
+		'uiconf_id' : '11811911',
+		'entry_id' : '0_uka1msg4',
+	});
+</script>
+<p><p>
+</body>
+</html>

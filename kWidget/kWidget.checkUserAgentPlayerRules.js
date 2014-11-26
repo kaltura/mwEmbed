@@ -8,6 +8,19 @@
 kWidget.getUserAgentPlayerRulesMsg = function( ruleSet ){
 	return kWidget.checkUserAgentPlayerRules( ruleSet, true );
 };
+kWidget.addUserAgentRule = function( uiconfId, rule, action ){
+	var ruleInx = 0;
+	// if there are existing rules, get the last rule index:
+	if( kWidget.userAgentPlayerRules[ uiconfId ] ){
+		for (ruleInx in kWidget.userAgentPlayerRules[ uiconfId ]['rules']) ;
+	} else {
+		kWidget.userAgentPlayerRules[ uiconfId ] = { 'rules':{}, 'actions': {} };
+	}
+	var ruleIndex = parseInt( ruleInx) +1;
+	// add the rule
+	kWidget.userAgentPlayerRules[ uiconfId ]['rules'][ ruleIndex ] = { 'regMatch': rule };
+	kWidget.userAgentPlayerRules[ uiconfId ]['actions'][ ruleIndex ] = {'mode': action, 'val': 1 };
+};
 kWidget.checkUserAgentPlayerRules = function( ruleSet, getMsg ){
 	var ua = ( mw.getConfig( 'KalturaSupport_ForceUserAgent' ) )?
 			mw.getConfig( 'KalturaSupport_ForceUserAgent' ) : navigator.userAgent;

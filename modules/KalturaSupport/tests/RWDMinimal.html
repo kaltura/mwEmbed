@@ -6,20 +6,66 @@
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 <body>
-	<h2>Minimal RWD self contained</h2>
-	<div style="width: 100%;display: inline-block;position: relative;"> 
-	        <div id="dummy" style="margin-top: 75%;"></div> <!--   /* 4:3 aspect ratio */ -->
-	        <div id="myVideoContainer" style="position:absolute;top:0;left:0;left: 0;right: 0;bottom:0;border:solid thin black;">
-				<div id="myVideoTarget" style="width:100%;height:100%"></div> 
-			</div>
-			<script>
-				kWidget.embed({
-					'targetId': 'myVideoTarget',
-					'wid': '_423851',
-					'uiconf_id' : '2910531',
-					'entry_id' : '0_uka1msg4'
-				});
-			</script>
+<br>
+<div id="playbackModeSelector" style="float:right"></div>
+	<h2>Minimal RWD self contained maintain 16/9 ratio</h2>
+	Resize the browser window and notice the player maintains 16/9 ratio.<br>
+	
+	<div style="width: 60%;display: inline-block;position: relative;"> 
+		<div id="dummy" style="margin-top: 56.25%;"></div> <!--   /* 16:9 aspect ratio */ -->
+			<div id="kaltura-player1" style="position:absolute;top:0;left:0;left: 0;right: 0;bottom:0;border:solid thin black;">
+		</div>
 	</div>
+	<script>
+		kWidget.embed({
+			'targetId': 'kaltura-player1',
+			'wid': '_243342',
+			'uiconf_id' : '12868012',
+			'entry_id' : '1_sf5ovm7u'
+		});
+	</script>
+	<h3> Sample RWD code: </h3>
+	<pre class="prettyprint linenums">&lt;!-- Outer div defines maximum space the player can take --&gt;
+&lt;div style="width: 60%;display: inline-block;position: relative;"&gt; 
+	&lt;!--  inner pusher div defines aspect ratio: in this case 16:9 ~ 56.25% --&gt;
+	&lt;div id="dummy" style="margin-top: 56.25%;"&gt;&lt;/div&gt;
+	&lt;!--  the player embed target, set to take up available absolute space   --&gt;
+	&lt;div id="kaltura-player1" style="position:absolute;top:0;left:0;left: 0;right: 0;bottom:0;border:solid thin black;"&gt;
+	&lt;/div&gt;
+&lt;/div&gt;
+	</pre>
+	<div style="width: 60%;display: inline-block;position: relative;"> 
+		<h3>Example of non-hover controls correction ( bottom:-36px; )</h3>
+		<div style="width: 100%;display: inline-block;position: relative;"> 
+			<div id="dummy" style="margin-top: 56.25%;"></div> <!--   /* 16:9 aspect ratio */ -->
+			<div id="kaltura-player2" style="position:absolute;top:0;left:0;left: 0;right: 0;bottom:-36px;">
+			</div>
+		</div>
+	</div>
+	<script>
+			kWidget.embed({
+				'targetId': 'kaltura-player2',
+				'wid': '_243342',
+				'uiconf_id' : '12868012',
+				'entry_id' : '1_sf5ovm7u',
+				'flashvars':{
+					'controlBarContainer': {
+						'plugin': true,
+						"hover": false
+					}
+				}
+			});
+		</script>
+		<br><br>
+		<h3> Sample RWD code: </h3>
+	<pre class="prettyprint linenums">&lt;!-- Outer div defines maximum space the player can take --&gt;
+&lt;div style="width: 60%;display: inline-block;position: relative;"&gt; 
+	&lt;!--  inner pusher div defines aspect ratio: in this case 16:9 ~ 56.25% --&gt;
+	&lt;div id="dummy" style="margin-top: 56.25%;"&gt;&lt;/div&gt;
+	&lt;!--  the player embed target, set to take up available absolute space   --&gt;
+	&lt;div id="kaltura-player1" style="position:absolute;top:0;left:0;left: 0;right: 0;bottom:-36px;border:solid thin black;"&gt;
+	&lt;/div&gt;
+&lt;/div&gt;
+	</pre>
 </body>
 </html>

@@ -13,9 +13,9 @@
 	 * be equivalent to an array.
 	 *
 	 * In other words:
-	 *    somefunction(a, b, c, d)
-         * is equivalent to
-	 *    somefunction(a, [b, c, d])
+	 *	somefunction(a, b, c, d)
+		 * is equivalent to
+	 *	somefunction(a, [b, c, d])
 	 *
 	 * @param {Integer} first offset where one finds the variadic args
 	 * @param {Array} all arguments from caller
@@ -29,8 +29,8 @@
 	 * Class method.
 	 * Returns a function suitable for use as a global, to construct strings from the message key (and optional replacements).
 	 * e.g.
-	 *       window.gM = mediaWiki.parser.getMessageFunction( options );
-	 *       $( 'p#headline' ).html( gM( 'hello-user', username ) );
+	 *	   window.gM = mediaWiki.parser.getMessageFunction( options );
+	 *	   $( 'p#headline' ).html( gM( 'hello-user', username ) );
 	 *
 	 * Like the old gM() function this returns only strings, so it destroys any bindings. If you want to preserve bindings use the
 	 * jQuery plugin version instead. This is only included for backwards compatibility with gM().
@@ -56,9 +56,9 @@
 	 * Returns a jQuery plugin which parses the message in the message key, doing replacements optionally, and appends the nodes to
 	 * the current selector. Bindings to passed-in jquery elements are preserved. Functions become click handlers for [$1 linktext] links.
 	 * e.g.
-	 *        $j.fn.msg = mediaWiki.parser.getJqueryPlugin( options );
-	 *        var userlink = $( '<a>' ).click( function() { alert( "hello!!") } );
-	 *        $( 'p#headline' ).msg( 'hello-user', userlink );
+	 *		$j.fn.msg = mediaWiki.parser.getJqueryPlugin( options );
+	 *		var userlink = $( '<a>' ).click( function() { alert( "hello!!") } );
+	 *		$( 'p#headline' ).msg( 'hello-user', userlink );
 	 *
 	 * @param {Array} parser options
 	 * @return {Function} function suitable for assigning to jQuery plugin, such as $j.fn.msg
@@ -573,7 +573,7 @@
 		/**
 		 * Transform parsed structure into external link
 		 * If the href is a jQuery object, treat it as "enclosing" the link text.
-		 *              ... function, treat it as the click handler
+		 *			  ... function, treat it as the click handler
 		 *		... string, treat it as a URI
 		 * TODO: throw an error if nodes.length > 2 ?
 		 * @param {Array} of two elements, {jQuery|Function|String} and {String}

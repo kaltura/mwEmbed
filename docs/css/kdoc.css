@@ -29,7 +29,6 @@ body.kdoc{
 	display:none;
 }
 h1, h2, h3{
-	color:#777;
 	font-family:Arial,"Tahoma","Geneva",sans-serif;
 	font-weight:400;
 	font-size:28px;
@@ -298,7 +297,7 @@ pre.prettyprint{
 	box-shadow: none;
 }
 .container-fluid{
-	width: 1020px;
+	width: 1000px;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -403,26 +402,6 @@ a:hover .kpcicon-html5, .active .kpcicon-html5{
 }
 a:hover .kpcicon-flash, .active .kpcicon-flash{
 	background-position: 0px -131px;
-}
-#playbackModeSelector{
-	clear:both;
-	width: 300px;
-	height: 40px;
-	position:relative;
-	padding:5px;
-	display: block
-}
-#playbackModeSelector button.left{
-	border-top-right-radius: 0px;
-	border-bottom-right-radius: 0px;
-}
-#playbackModeSelector button.right{
-	border-top-left-radius: 0px;
-	border-bottom-left-radius: 0px;
-}
-#playbackModeSelector span{
-	position: relative;
-	top:5px;
 }
 .feature-config{
 	padding-top: 14px;
@@ -772,7 +751,7 @@ span.blink{
 	-webkit-animation-duration: .5s; 
 }
 .tab-content {
-    overflow-y: show;
+	overflow-y: show;
 }
 .tab-content .tdValue{ 
 	max-width: 160px;
@@ -783,10 +762,10 @@ span.blink{
 }
 
 .blurb-left .blurb-txt {
-	width: 450px;
+	width: 430px;
 }
 .blurb-right .blurb-txt {
-	width: 450px;
+	width: 430px;
 	float: left;
 	margin-left: 20px;
 }

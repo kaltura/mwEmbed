@@ -8,7 +8,7 @@ kWidget.addReadyCallback( function( playerId ){
 	 */
 	var chaptersView = function(kdp, configOverride){
 		return this.init(kdp, configOverride);
-	}
+	};
 	chaptersView.prototype = {
 		// a flag to skip pausing when pauseAfterChapter is enabled
 		skipPauseFlag: false,
@@ -20,7 +20,10 @@ kWidget.addReadyCallback( function( playerId ){
 			var _this = this;
 			// setup api object
 			this.api = new kWidget.api( { 'wid' : this.getAttr( 'configProxy.kw.id' ) } );
-			
+			// Use KS from player ( in case admin ks was provided ) 
+			if(  this.getAttr('ks') ){
+				this.api.setKs( this.getAttr('ks')  )
+			}
 			// setup the app target:
 			this.$chaptersContainer = this.getConfig( 'containerId') ? 
 					$('#' + this.getConfig( 'containerId') ) : 
@@ -61,13 +64,10 @@ kWidget.addReadyCallback( function( playerId ){
 			});
 		},
 		checkMediaReady:function( callback ){
-			if( this.getAttr( 'playerStatusProxy.kdpStatus' ) == 'ready' 
-				&& 
-				this.getAttr( 'mediaProxy.entry.width' )
-			){
+			if ( this.isReady ){
 				callback();
 			} else {
-				this.kdp.kBind('mediaReady', callback );
+				this.mediaReady = callback;
 			}
 		},
 		updateActiveChapter: function( time ){
@@ -79,13 +79,13 @@ kWidget.addReadyCallback( function( playerId ){
 					activeIndex = inx;
 				}
 			});
-			var $activeChapter =  this.$chaptersContainer.find( '.active' )
+			var $activeChapter =  this.$chaptersContainer.find( '.active' );
 			// Check if active is not already set: 
 			if( $activeChapter.data('index') == activeIndex ){
 				// update duration count down:
-				var cuePoint = 	this.getCuePoints()[ activeIndex ];
+                var cuePoint = this.getCuePoints()[ activeIndex ];
 				if( this.getCuePoints()[ activeIndex ] ){
-					var endTime = _this.getChapterEndTimeByInx( activeIndex ) 
+					var endTime = _this.getChapterEndTimeByInx( activeIndex );
 					var countDown =  Math.abs( time - endTime );
 					$activeChapter.find('.k-duration span').text(
 						kWidget.seconds2npt( countDown )
@@ -751,8 +751,15 @@ kWidget.addReadyCallback( function( playerId ){
 	 * Application initialization
 	 ****************************************************************/
 	// We start build out at chaneMedia time, will clear out old chapters 
-	// in cases for playlists with entries without chapters. 
+	// in cases for playlists with entries without chapters.
+	var instance;
 	kdp.kBind( 'changeMedia', function(){
-		new chaptersView( kdp );
+		instance = new chaptersView( kdp );
+	});
+	kdp.kBind( 'mediaReady', function(){
+		if( instance.mediaReady ){
+			instance.mediaReady();
+		}
+		instance.isReady = true;
 	});
 });

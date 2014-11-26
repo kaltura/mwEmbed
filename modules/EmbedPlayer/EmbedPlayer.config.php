@@ -37,10 +37,6 @@
 			// With html controls you can't access native fullscreen
 			// With html controls you can support html themed controls, overlays, ads etc. )
 			'EmbedPlayer.EnableIpadHTMLControls' => true,
-			
-			// If the webkit-playsinline attribute should be added to the video tag. Will cause the player
-			// to play inline on iPhone
-			'EmbedPlayer.WebKitPlaysInline'=> false,
 		
 			// If we should use the native device fullscreen call,
 			// this gives you hybrid player, where controls are in HTML for in browser playback,
@@ -88,27 +84,9 @@
 				// An icon image url 16x16 image url or data url )
 				'iconurl' => false
 			),
-			
-			// If the options control bar menu item should be enabled:
-			'EmbedPlayer.EnableOptionsMenu' => false,
 	
 			// If users can right click on the player
 			'EmbedPlayer.EnableRightClick' => true,
-	
-			// Default supported menu items is merged with skin menu items
-			'EmbedPlayer.EnabledOptionsMenuItems' => array(
-				// Player Select
-				'playerSelect',
-	
-				// Download the file menu
-				'download',
-	
-				// Share the video menu
-				'share',
-	
-				// Player library link
-				'aboutPlayerLibrary'
-			),
 
 			// If the player should wait for metadata like video size and duration, before trying to draw
 			// the player interface.
@@ -164,9 +142,6 @@
 			//		Video tag embedding is much more mash-up friendly but exposes
 			//		the remote site to the mwEmbed javascript and can be a xss issue.
 			"EmbedPlayer.ShareEmbedMode" => 'iframe',
-	
-			// The skin framework list:
-			"EmbedPlayer.SkinList" => array( 'mvpcf', 'kskin' ),
 			
 			// Default player skin name
 			"EmbedPlayer.DefaultSkin" => "mvpcf",
@@ -184,9 +159,6 @@
 			// The domains which can read and send events to the video player
 			'EmbedPLayer.IFramePlayer.DomainWhiteList' => '*',
 			
-			// If the iframe should send and receive javascript events across domains via postMessage
-			'EmbedPlayer.EnableIframeApi' => true,
-			
 			// If set to true will output the iframe as inline contents on the same domain as page contents
 			'EmbedPlayer.PageDomainIframe' => true,
 	
@@ -198,5 +170,8 @@
 			
 			// Default duration for playing "images" 
 			"EmbedPlayer.DefaultImageDuration" => 2,
+
+			// Default Timeout for Player controls hover out
+			"EmbedPlayer.HoverOutTimeout" => 300,
 	);
 ?>

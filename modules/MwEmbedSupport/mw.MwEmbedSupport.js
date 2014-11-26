@@ -1,6 +1,9 @@
 // Add support for html5 / mwEmbed elements to IE
 // For discussion and comments, see: http://remysharp.com/2009/01/07/html5-enabling-script/
-'video audio source track'.replace(/\w+/g,function( n ){ document.createElement( n ) } );
+'video audio source track'.replace(/\w+/g,function( n ){ document.createElement( n ); } );
+
+// Support for Date.now for IE8
+Date.now = Date.now || function(){ return +new Date; };
 
 /**
  * MwEmbedSupport includes shared mwEmbed utilities that either
@@ -35,7 +38,7 @@
 	 * ready
 	 *
 	 * @param {Function}
-	 *            callback Function to run once DOM and jQuery are ready
+	 *			callback Function to run once DOM and jQuery are ready
 	 */
 	// mw.interfacesReadyFlag ( set to true once interfaces are ready )
 	mw.interfacesReadyFlag = false;
@@ -208,12 +211,12 @@
 	 * Note this just handles version numbers not patch letters.
 	 *
 	 * @param {String}
-	 *            minVersion Minimum version needed
+	 *			minVersion Minimum version needed
 	 * @param {String}
-	 *            clientVersion Client version to be checked
+	 *			clientVersion Client version to be checked
 	 *
 	 * @return true if the version is at least of minVersion false if the
-	 *         version is less than minVersion
+	 *		 version is less than minVersion
 	 */
 	mw.versionIsAtLeast = function( minVersion, clientVersion ) {
 		if( typeof clientVersion == 'undefined' ){
@@ -231,104 +234,6 @@
 		}
 		// Same version:
 		return true;
-	};
-
-
-	/**
-	 * addLoaderDialog small helper for displaying a loading dialog
-	 *
-	 * @param {String}
-	 *            dialogHtml text Html of the loader msg
-	 */
-	mw.addLoaderDialog = function( dialogHtml ) {
-		if( !dialogHtml ){
-			dialogHtml = gM('mwe-loading');
-		}
-		$dialog = mw.addDialog({
-			'title' : dialogHtml,
-			'content' : dialogHtml + '<br>' +
-				$('<div />')
-				.loadingSpinner()
-				.html()
-		});
-		return $dialog;
-	};
-
-
-
-	/**
-	 * Add a dialog window:
-	 *
-	 * @param {Object} with following keys:
-	 *            title: {String} Title string for the dialog
-	 *            content: {String} to be inserted in msg box
-	 *            buttons: {Object} A button object for the dialog Can be a string
-	 *            				for the close button
-	 * 			  any jquery.ui.dialog option
-	 */
-	mw.addDialog = function ( options ) {
-		// Remove any other dialog
-		$( '#mweDialog' ).remove();
-
-		if( !options){
-			options = {};
-		}
-
-		// Extend the default options with provided options
-		var options = $.extend({
-			'bgiframe': true,
-			'draggable': true,
-			'resizable': false,
-			'modal': true
-		}, options );
-
-		if( ! options.title || ! options.content ){
-			mw.log("Error: mwEmbed addDialog missing required options ( title, content ) ");
-		}
-
-		// Append the dialog div on top:
-		$( 'body' ).append(
-			$('<div />')
-			.attr( {
-				'id' : "mweDialog",
-				'title' : options.title
-			})
-			.css({
-				'display': 'none'
-			})
-			.append( options.content )
-		);
-
-		// Build the uiRequest
-		var uiRequest = [ 'jquery.ui.dialog' ];
-		if( options.draggable ){
-			uiRequest.push( 'jquery.ui.draggable' );
-		}
-		if( options.resizable ){
-			uiRequest.push( 'jquery.ui.resizable' );
-		}
-
-		// Special button string
-		if ( typeof options.buttons == 'string' ) {
-			var buttonMsg = options.buttons;
-			buttons = { };
-			options.buttons[ buttonMsg ] = function() {
-				$( this ).dialog( 'close' );
-			};
-		}
-
-		// Load the dialog resources
-		mw.load( uiRequest, function() {
-			$( '#mweDialog' ).dialog( options );
-		} );
-		return $( '#mweDialog' );
-	};
-
-	/**
-	 * Close the loader dialog created with addLoaderDialog
-	 */
-	mw.closeLoaderDialog = function() {
-		$( '#mweDialog' ).dialog( 'destroy' ).remove();
 	};
 
 	// An event once mwEmbedSupport is Ready,
@@ -351,6 +256,9 @@
 	 * @param {String} Color code in hexadecimal notation
 	 */
 	mw.getHexColor = function( color ) {
+        if( typeof color == 'string' && color.substr(0,1) == "#" ) {
+            return color;
+        }
 		if( typeof color == 'string' && color.substr(0,2) == "0x" ) {
 			return color.replace('0x', '#');
 		} else {

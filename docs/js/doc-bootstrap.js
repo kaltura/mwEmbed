@@ -1,3 +1,4 @@
+
 function getBootStrapPath(){
 	var scripts = document.getElementsByTagName('script');
 	for(var i=0; i < scripts.length ; i++ ){
@@ -64,17 +65,22 @@ if( !window.QUnit ){
 }
 window.isKalturaDocsIframe = false;
 // Detect if in an doc iframe:
-if( window.parent && window.parent['mw'] && window.parent.mw.getConfig('KalutraDocContext') ){
-	window.isKalturaDocsIframe = true;
-	// call parent loaded if set: 
-	if(  window.parent['handleLoadedIframe'] ){
-		window.parent['handleLoadedIframe']();
+try{
+	if( document.URL.indexOf( 'noparent=') === -1 &&
+		window.parent && window.parent['mw'] && window.parent.mw.getConfig('KalutraDocContext')){
+		window.isKalturaDocsIframe = true;
+		// call parent loaded if set: 
+		if(  window.parent['handleLoadedIframe'] ){
+			window.parent['handleLoadedIframe']();
+		}
+	} else {
+		// if not in an iframe add some padding
+		$('head').append(
+			$('<style>body{padding:15px}</style>')
+		);
 	}
-} else {
-	// if not in an iframe add some padding
-	$('head').append(
-		$('<style>body{padding:15px}</style>')
-	);
+}catch(e){
+	// maybe not in the right env.
 }
 // clock player render time
 var kdocPlayerStartTime = new Date().getTime();
@@ -89,7 +95,7 @@ if( typeof kWidget != 'undefined' && kWidget.addReadyCallback ){
 			// note kUnbind seems to unbind all mediaReady
 			//$( '#' + pId )[0].kUnbind(".pTimeReady");
 			$('body').append( '<div class="kdocPlayerRenderTime" style="clear:both;"><span style="font-size:11px;">player ready in:<i>' + ( new Date().getTime() - kdocPlayerStartTime )/1000 + '</i> seconds</span></div>');
-			if( parent && parent.sycnIframeContentHeight ){
+			if( document.URL.indexOf( 'noparent=') === -1 && parent && parent.sycnIframeContentHeight ){
 				parent.sycnIframeContentHeight();
 			}
 		});
@@ -105,6 +111,8 @@ $(document).on('click',  '.kdocUpdatePlayer', function(){
 if( ! localStorage.kdocEmbedPlayer ){
 	localStorage.kdocEmbedPlayer = 'html5';
 }
+// always disable playback-mode selector ( v2 ) 
+// now only pages with disablePlaybackModeSelector set LeadWithHTML5 to false, and require forceMobileHTML5
 if( !window['disablePlaybackModeSelector'] ){
 	// don't set flag if any special properties are set: 
 	if( localStorage.kdocEmbedPlayer == 'html5' && window['mw'] && 
@@ -115,62 +123,10 @@ if( !window['disablePlaybackModeSelector'] ){
 		mw.setConfig('Kaltura.LeadWithHTML5', true);
 	}
 }
-function updatePlaybackModeSelector( $target ){
-	if( window['disablePlaybackModeSelector'] ){
-		return;
-	}
-	if( ! $target ){
-		$target = $('#playbackModeSelector');
-	}
-	$target.empty().append(
-		$('<button>').attr({
-			'type': 'button',
-			'title': "Lead with the HTML5 player"
-		})
-		.addClass('btn left')
-		.append(
-			$('<i>').addClass('kpcicon-html5'),
-			$('<span>').text("HTML5 Player")
-		).click(function(){
-			if( !kWidget.supportsHTML5() ){
-				return ;
-			}
-			localStorage.kdocEmbedPlayer = 'html5';
-			location.reload();
-			return false;
-		}),
-		
-		$('<button>').attr({
-			'href': '#',
-			'title': "Lead with Flash player where available"
-		})
-		.addClass('btn right')
-		.append(
-			$('<i>').addClass('kpcicon-flash'),
-			$('<span>').text( "Flash Player")
-		).click(function(){
-			if( !kWidget.supportsFlash() ){
-				return ;
-			}
-			localStorage.kdocEmbedPlayer = 'flash';
-			location.reload()
-			return false;
-		})
-	)
-	if( !kWidget.supportsHTML5() ){
-		$target.find( '.kpcicon-html5' ).parent().addClass('disabled').attr('title',
-				"HTML5 is not supported on this browser");
-	}
-	if( !kWidget.supportsFlash() ){
-		$target.find( '.kpcicon-flash' ).parent().addClass('disabled').attr('title',
-				"Flash is not supported on this device");
-	}
-	if( localStorage.kdocEmbedPlayer == 'html5' && kWidget.supportsHTML5() ){
-		$target.find( '.kpcicon-html5' ).parent().addClass('active');
-	} else {
-		$target.find( '.kpcicon-flash' ).parent().addClass('active');
-	};
-	return $target;
+// support forceKDPFlashPlayer flag: 
+if( document.URL.indexOf('forceKDPFlashPlayer') !== -1 ){
+	mw.setConfig( 'Kaltura.LeadWithHTML5', false);
+	mw.setConfig( 'EmbedPlayer.DisableVideoTagSupport', true );
 }
 
 // document ready events:
@@ -187,9 +143,6 @@ $(function(){
 		// invoke the pref menu
 		return false;
 	})
-	
-	updatePlaybackModeSelector( $('#playbackModeSelector') );
-	
 	
 	// make code pretty
 	window.prettyPrint && prettyPrint();

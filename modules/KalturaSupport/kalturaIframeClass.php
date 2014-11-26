@@ -14,6 +14,10 @@ class kalturaIframeClass {
 	var $error = null;
 	var $playerError = false;
 	var $envConfig = null; // lazy init
+	var $iframeContent = null;
+	var $iframeOutputHash = null;
+
+	var $templates = array();
 
 	const NO_ENTRY_ID_FOUND = "No Entry ID was found";
 
@@ -129,7 +133,7 @@ class kalturaIframeClass {
 			'entry_id' => 'kentryid',
 			'uiconf_id' => 'kuiconfid',
 			'wid' => 'kwidgetid',
-			'autoplay' => 'autoplay',
+			'autoplay' => 'autoplay'
 		);
 
 		// If we have an error, show it
@@ -141,6 +145,7 @@ class kalturaIframeClass {
 		// so that overlays work on the iPad.
 		$o = "\n\n\t" .'<video class="persistentNativePlayer" ';
 		$o.= 'poster="' . htmlspecialchars( "data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%02%00%00%00%90wS%DE%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%07tIME%07%DB%0B%0A%17%041%80%9B%E7%F2%00%00%00%19tEXtComment%00Created%20with%20GIMPW%81%0E%17%00%00%00%0CIDAT%08%D7c%60%60%60%00%00%00%04%00%01'4'%0A%00%00%00%00IEND%AEB%60%82" ) . '" ';
+		//$o.= '  crossorigin="anonymous" poster="' . htmlspecialchars( "data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%02%00%00%00%90wS%DE%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%07tIME%07%DB%0B%0A%17%041%80%9B%E7%F2%00%00%00%19tEXtComment%00Created%20with%20GIMPW%81%0E%17%00%00%00%0CIDAT%08%D7c%60%60%60%00%00%00%04%00%01'4'%0A%00%00%00%00IEND%AEB%60%82" ) . '" ';
 		$o.= 'id="' . htmlspecialchars( $this->getIframeId() ) . '" ';
 
 		// Check for webkit-airplay option
@@ -177,74 +182,37 @@ class kalturaIframeClass {
 		$o.= "\n" . "</video>\n";
 
 		// Wrap in a videoContainer
-		return  '<div class="videoHolder"> ' . $o . '</div>';
+		return  '<div class="videoHolder"><div class="videoDisplay"> ' . $o . '</div></div>';
 	}
-	/**
-	 * Get Flash embed code with default flashvars:
-	 * @param childHtml Html string to set as child of object embed
-	 */
-	private function getFlashEmbedHTML( $childHTML = '', $idOverride = false ){
 
-		$playerId = ( $idOverride ) ? $idOverride :  $this->getIframeId();
+	private function getFlashObjectSettings(){
 
-		$o = '<object id="' . htmlspecialchars( $playerId ) . '" name="' . $playerId . '" ' .
-				'type="application/x-shockwave-flash" allowFullScreen="true" '.
-				'allowNetworking="all" allowScriptAccess="always" height="100%" width="100%" style="height:100%;width:100%" '.
-				'bgcolor="#000000" ' .
-				'xmlns:dc="http://purl.org/dc/terms/" '.
-				'xmlns:media="http://search.yahoo.com/searchmonkey/media/" '.
-				'rel="media:video" '.
-				'resource="' . htmlspecialchars( $this->getSwfUrl() ) . '" '.
-				'data="' . htmlspecialchars( $this->getSwfUrl() ) . '"> ';
+		$settings = array(
+			'wid' => $this->request->get('wid'),
+			'uiconf_id' => $this->request->get('uiconf_id'),
+			'flashvars' => $this->request->getFlashVars()
+		);
 
-		// check for wmod param:
+		if( $this->request->get('entry_id') ){
+			$settings['entry_id'] = $this->request->get('entry_id');
+		}
+
+		// add ks flashvar
+		$settings['flashvars']['ks'] = $this->client->getKS();
+		// add referrer flashvar
+		$settings['flashvars']['referrer'] = htmlspecialchars( $this->request->getReferer() );
+
 		if( isset( $_REQUEST['wmode'] ) && ( $_REQUEST['wmode'] == 'opaque' ||  $_REQUEST['wmode'] =='transparent' ) ){
-			$o.= '<param name="wmode" value="transparent" />';
+			$settings['params'] = array(
+				'wmode' => 'transparent'
+			);
 		} else {
-			$o.= '<param name="wmode" value="direct" />';
+			$settings['params'] = array(
+				'wmode' => 'direct'
+			);
 		}
 
-		$o.= '<param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" />' .
-			'<param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" />'.
-			'<param name="flashVars" value="';
-		$o.= $this->getFlashVarsString() ;
-		// close the object tag add the movie param and childHTML:
-		$o.='" /><param name="movie" value="' . htmlspecialchars( $this->getSwfUrl() ) . '" />'.
-		$childHTML .
-			'</object>';
-		return $o;
-	}
-	private function getFlashVarsString(){
-		// output the escaped flash vars from get arguments
-		$s = '';
-		if( isset( $_REQUEST['flashvars'] ) && is_array( $_REQUEST['flashvars'] ) ){
-			foreach( $_REQUEST['flashvars'] as $key => $val ){
-				// check for object val;
-				if( is_object( json_decode( $val ) ) ){
-					$valSet = json_decode( $val );
-					foreach( $valSet as $pkey => $pval ){
-						// convert boolean
-						if( $pval === true ){
-							$pval = 'true';
-						}
-						if( $pval === false ){
-							$pval = 'false';
-						}
-						$s.= '&' . htmlspecialchars( $key ) .
-							'.' . htmlspecialchars( $pkey ) .
-							'=' . htmlspecialchars( $pval );
-					}
-				} else {
-					$s.= '&' . htmlspecialchars( $key ) . '=' . htmlspecialchars( $val );
-				}
-			}
-		}
-		// add ks to flashvars
-		$s.= '&ks=' . $this->client->getKS();
-		// add referrer to flashvars ( will list 'http://www.kaltura.com/' if no referrer is set ) 
-		$s.= '&referrer=' . htmlspecialchars( $this->request->getReferer() );
-		
-		return $s;
+		return $settings;
 	}
 	/**
 	 * Get custom player includes for css and javascript
@@ -279,7 +247,14 @@ class kalturaIframeClass {
 		}
 		// plugins
 		$plugins = $this->getUiConfResult()->getWidgetPlugins();
+		if( !is_array($plugins) ){
+			$plugins = array();
+		}
 		foreach( $plugins as $pluginId => $plugin ){
+			// check if plugin is an array: 
+			if( ! is_array( $plugin ) ){
+				continue;
+			}
 			$loadInIframe = (isset($plugin['loadInIframe']) && $plugin['loadInIframe'] === true) ? true : false;
 			// Only load onPage plugins into iframe If we're in external iframe mode
 			$loadInIframe = ($loadInIframe && isset($_GET['iframeembed']));
@@ -308,17 +283,25 @@ class kalturaIframeClass {
 			}
 		}
 		
+		// first try .json file directly
+		$psJsonPluginPaths = dirname( $wgKalturaPSHtml5SettingsPath ) . '/../ps/pluginPathMap.json';
+		$psPluginList = array();
+		if( is_file( $psJsonPluginPaths ) ){
+			$psPluginList = json_decode( file_get_contents( $psJsonPluginPaths ), TRUE );
+		}
+		// TODO remove legacy php file support:
 		// Check for any plugins that are defined in kwidget-ps ( without server side path listing )
 		$psPluginPath =  dirname( $wgKalturaPSHtml5SettingsPath ) . '/../pluginPathMap.php';
-		if( is_file( $psPluginPath ) ){
+		if( count( $psPluginList ) == 0 && is_file( $psPluginPath ) ){
 			$psPluginList = include( $psPluginPath );
-			foreach( $psPluginList as $psPluginId => $resources ){
-				if( in_array($psPluginId, array_keys( $plugins ) ) ){
-					foreach( $resources as $resource ){
-						// preappend '{html5ps}' magic string for ps plugin handling: 
-						$resource['src'] = '{html5ps}/' . htmlspecialchars( $resource['src'] );
-						$resourceIncludes[] = $resource;
-					}
+		}
+		// add ps resources: 
+		foreach( $psPluginList as $psPluginId => $resources ){
+			if( in_array($psPluginId, array_keys( $plugins ) ) ){
+				foreach( $resources as $resource ){
+					// preappend '{html5ps}' magic string for ps plugin handling:
+					$resource['src'] = '{html5ps}/' . htmlspecialchars( $resource['src'] );
+					$resourceIncludes[] = $resource;
 				}
 			}
 		}
@@ -363,13 +346,25 @@ class kalturaIframeClass {
 	 * Function to set iframe content headers
 	 */
 	function setIFrameHeaders(){
+		$addedEtag = false;
 		foreach( $this->getHeaders() as $header ) {
+			if( strrpos($header, "Etag") !== false ){
+				$addedEtag = true;
+			}
 			header( $header );
+		}
+		// Add Etag
+		if( !$addedEtag && !$this->request->get('debug') ){
+			header("Etag: " . $this->getIframeOutputHash() );
 		}
 	}
 
 	public function getHeaders(){
 		$cacheHeaders = $this->utility->getCachingHeaders($this->getEntryResult()->getResponseHeaders());
+		// Merge in playlist response headers ( if requesting a playlist ) 
+		if( $this->getUiConfResult()->isPlaylist() ){
+			array_merge( $cacheHeaders, $this->getPlaylistResult()->getResponseHeaders() );
+		}
 		if( count($cacheHeaders) == 0 ) {
 			$cacheHeaders = array(
 				"Cache-Control: no-cache, must-revalidate",
@@ -481,9 +476,11 @@ class kalturaIframeClass {
 		if( $this->getCustomSkinUrl() ){
 			$_GET['skin'] = 'custom';
 		}
-		// include skin in cache path, as a custom param needed for startup
+		// check for language key: 
+		$_GET['lang'] = $this->getLangKey();
+		// include skin and language in cache path, as a custom param needed for startup
 		$cachePath = $wgScriptCacheDirectory . '/startup.' .
-			$wgMwEmbedVersion . $_GET['skin'] . $wgHTTPProtocol . '.min.js';
+			$wgMwEmbedVersion . $_GET['skin'] . $_GET['lang'] . $wgHTTPProtocol . '.min.js';
 			
 		// check for cached startup:
 		if( !$wgEnableScriptDebug){
@@ -507,6 +504,20 @@ class kalturaIframeClass {
 			@file_put_contents($cachePath, $s);
 		}
 		return $s;
+	}
+	private function getLangKey(){
+		global $coreLanguageNames;
+		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
+		if( isset( $playerConfig['vars']['localizationCode'] ) ){
+			// get the list of language names
+			require_once( dirname( __FILE__ ) . '/../../includes/languages/Names.php' );
+			// validate localization code.
+			if( isset( $coreLanguageNames[ $playerConfig['vars']['localizationCode']  ] ) ){
+				return $playerConfig['vars']['localizationCode'];
+			}
+		}
+		// if no language code is specified default to english: 
+		return 'en';
 	}
 	/**
 	 * Get the location of the mwEmbed library
@@ -534,7 +545,6 @@ class kalturaIframeClass {
 			padding: 0;
 			margin: 0;
 		}
-		
 		body {
 			font: normal 13px helvetica, arial, sans-serif;
 			background: #000;
@@ -546,8 +556,9 @@ class kalturaIframeClass {
 			margin: 0;
 			padding: 0;
 		}
+		.mwPlayerContainer { width: 100%; height: 100%; }
 		#error {
-			position: relative;
+			position: absolute;
 			top: 37%;
 			left: 10%;
 			margin: 0;
@@ -570,9 +581,66 @@ HTML;
 
 	}
 
+	function outputSkinCss(){
+		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
+		// provide default layout if none exisits. 
+		if( !isset( $playerConfig['layout'] ) ){
+			$playerConfig['layout'] = array(
+				"skin"=> "kdark",
+				"cssFiles" => array()
+			);
+		}
+		$layout = $playerConfig['layout'];
+		// Todo use resource loader to manage the files
+		if( isset($layout['cssFiles']) && count($layout['cssFiles']) ) {
+			foreach( $layout['cssFiles'] as $cssFile ) {
+				echo '<link rel="stylesheet" href="' .$this->resolveCustomResourceUrl($cssFile) .'" />' . "\n";
+			}
+		}
+	}
+
+	function outputCustomCss(){
+		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
+		if (isset($playerConfig['plugins']['theme'])){
+			$theme = $playerConfig['plugins']['theme'];
+			$customStyle = '<style type="text/css">';
+			if (isset($theme['buttonsSize'])){
+				$customStyle = $customStyle . 'body {font-size: ' . $theme['buttonsSize'] . 'px}';
+			}
+			if (isset($theme['buttonsColor'])){
+				$customStyle = $customStyle . '.btn {background-color: ' . $theme['buttonsColor'] . '}';
+			}
+			if (isset($theme['sliderColor'])){
+				$customStyle = $customStyle . '.ui-slider {background-color: ' . $theme['sliderColor'] . '!important}';
+			}
+			if (isset($theme['controlsBkgColor'])){
+				$customStyle = $customStyle . '.controlsContainer {background-color: ' . $theme['controlsBkgColor'] . '!important}';
+				$customStyle = $customStyle . '.controlsContainer {background: ' . $theme['controlsBkgColor'] . '!important}';
+			}
+			if (isset($theme['scrubberColor'])){
+				$customStyle = $customStyle . '.playHead {background-color: ' . $theme['scrubberColor'] . '!important}';
+				$customStyle = $customStyle . '.playHead {background: ' . $theme['scrubberColor'] . '!important}';
+			}
+			if (isset($theme['buttonsIconColor'])){
+				$customStyle = $customStyle . '.btn {color: ' . $theme['buttonsIconColor'] . '!important}';
+			}
+			if (isset($theme['watchedSliderColor'])){
+				$customStyle = $customStyle . '.watched {background-color: ' . $theme['watchedSliderColor'] . '!important}';
+			}
+			if (isset($theme['bufferedSliderColor'])){
+                $customStyle = $customStyle . '.buffered {background-color: ' . $theme['bufferedSliderColor'] . '!important}';
+            }
+            if (isset($theme['buttonsIconColorDropShadow']) && isset($theme['dropShadowColor'])){
+                $customStyle = $customStyle . '.btn {text-shadow: ' . $theme['dropShadowColor'] . '!important}';
+            }
+			$customStyle =  $customStyle . '</style>' . "\n";
+			echo $customStyle;
+		}
+	}
+
 	function getPath() {
 		global $wgResourceLoaderUrl;
-		return str_replace( 'ResourceLoader.php', '', $wgResourceLoaderUrl );
+		return str_replace( 'load.php', '', $wgResourceLoaderUrl );
 	}
 	/**
 	 * Get all the kaltura defined modules from player config
@@ -599,6 +667,7 @@ HTML;
 
 		foreach( $kalturaSupportModules as $name => $module ){
 			if( isset( $module[ 'kalturaLoad' ] ) &&  $module['kalturaLoad'] == 'always' ){
+				$this->addModuleTemplate( $module );
 				$moduleList[] = $name;
 			}
 			// Check if the module has a kalturaPluginName and load if set in playerConfig
@@ -606,35 +675,111 @@ HTML;
 				if( is_array( $module[ 'kalturaPluginName' ] ) ){
 					foreach($module[ 'kalturaPluginName' ] as $subModuleName ){
 						if( isset( $playerConfig['plugins'][ $subModuleName] )){
+							$this->addModuleTemplate( $module, $playerConfig['plugins'][ $subModuleName ] );
 							$moduleList[] = $name;
 							continue;
 						}
 					}
 				} else if( isset( $playerConfig['plugins'][ $module[ 'kalturaPluginName' ] ] ) ){
+					$this->addModuleTemplate( $module, $playerConfig['plugins'][ $module[ 'kalturaPluginName' ] ] );
 					$moduleList[] = $name;
 				}
 			}
 		}
-		
-		// Have all the kaltura related plugins listed in a configuration var for
-		// implicte dependency mapping before embedding embedPlayer
-		$o.= ResourceLoader::makeConfigSetScript( array(
-			'KalturaSupport.DepModuleList' => $moduleList
-		));
 
 		// Special cases: handle plugins that have more complex conditional load calls
 		// always include mw.EmbedPlayer
 		$moduleList[] = 'mw.EmbedPlayer';
 
-		// Load all the known required libraries:
-		$o.= ResourceLoader::makeLoaderConditionalScript(
-		Xml::encodeJsCall( 'mw.loader.load', array( $moduleList ) )
-		);
+		// Add our skin as dependency
+		$skinName = (isset( $playerConfig['layout']['skin'] ) && $playerConfig['layout']['skin'] != "") ? $playerConfig['layout']['skin'] : null;
+		if( $skinName ){
+			$moduleList[] = $skinName;
+		}		
+
+		$jsonModuleList = json_encode($moduleList);
+		$JST = $this->getTemplatesJSON();
+		// export the loading spinner config early on:
+		
+		$o.= <<<HTML
+		// Export our HTML templates
+		window.kalturaIframePackageData.templates =  {$JST};
+
+		var moduleList = {$jsonModuleList};
+		var skinName = "{$skinName}";
+		// IE8 has some issues with RL so we want to remove the skin
+		if( skinName && isIE8 ) {
+			var itemToDelete = jQuery.inArray(skinName, moduleList);
+			if( itemToDelete != -1 )
+				moduleList.splice( itemToDelete, 1);
+		}
+		mw.config.set('KalturaSupport.DepModuleList', moduleList);
+		mw.loader.load(moduleList);
+HTML;
+		// check if loadingSpinner plugin has config: 
+		if( isset( $playerConfig['plugins']['loadingSpinner'] ) ){
+			$o.='mw.config.set(\'loadingSpinner\', '. 
+				json_encode( $playerConfig['plugins']['loadingSpinner'] ) . ")\n";
+		}
+		
 		return $o;
 	}
 
+	function addModuleTemplate( $module = null, $plugin = null ){
+		if( !isset($this->templates) ){
+			$this->templates = array();
+		}
+		if( isset($plugin) && isset($plugin['templatePath']) ){
+			$templatePath = $plugin['templatePath'];
+		}
+		if( !isset($templatePath) && isset($module) && isset($module['templates']) ){
+			$templatePath = $module['templates'];
+		}
+
+		// If we got a template
+		if( isset($templatePath) ){
+			$templateKey = str_replace('{html5ps}', '', $templatePath);
+			$this->templates[ $templateKey ] = $this->loadTemplate( $templatePath );
+		}
+	}
+
+	function loadTemplate( $path = null ){
+		$path = $this->getFilePath( $path );
+
+		if( !$path ){
+			return false;
+		}
+
+		if( substr( $path, -10 ) !== '.tmpl.html' ){
+			// Error trying to load non template file
+			return false;
+		}
+
+		return file_get_contents( $path );
+	}
+
+	function getTemplatesJSON(){
+		return json_encode($this->templates, JSON_FORCE_OBJECT);
+	}
+
+	function getSkinResources(){
+		$skinsResources = include_once('skins/SkinResources.php');
+		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
+		$skinName = $playerConfig['layout']['skin'];
+		$styles = array();
+		if( isset($skinsResources[$skinName]) && isset($skinsResources[$skinName]['styles']) ){
+			foreach( $skinsResources[$skinName]['styles'] as $style ){
+				$styles[] = array(
+					'type' => 'css',
+					'src' => $this->getMwEmbedPath() . $style
+				);
+			}
+		}
+		return $styles;
+	}
+
 	function getKalturaIframeScripts(){
-		global $wgMwEmbedVersion;
+		global $wgMwEmbedVersion, $wgKalturaApiFeatures;
 		ob_start();
 		?>
 		<script type="text/javascript">
@@ -675,8 +820,10 @@ HTML;
 					'enviornmentConfig' => $this->getEnvironmentConfig(),
 					// The iframe player id
 					'playerId' => $this->getIframeId(),
-					// Flash embed HTML
-					'flashHTML' => $this->getFlashEmbedHTML(),
+					// Skin resources
+					'skinResources' => $this->getSkinResources(),
+					// Api features
+					'apiFeatures' => $wgKalturaApiFeatures,
 				);
 				try{
 					// If playlist add playlist and entry playlist entry to payload
@@ -689,10 +836,16 @@ HTML;
 						$payload[ 'entryResult' ] = $this->getEntryResult()->getResult();
 					}
 				} catch ( Exception $e ){
-					// do nothing, let the player handle it
+					$payload['error'] = $e->getMessage();
 				}
+				// push up entry result errors to top level:
+				if( isset( $payload[ 'entryResult' ]  ) && isset( $payload[ 'entryResult' ]['error']) ){
+					$payload['error'] = $payload[ 'entryResult' ]['error'];
+				} 
+				// check for returned errors: 
 				echo json_encode( $payload );
 			?>;
+			var isIE8 = /msie 8/.test(navigator.userAgent.toLowerCase());
 		</script>
 		<script type="text/javascript">
 			<!-- Include the mwEmbedStartup script inline will initialize the resource loader -->
@@ -725,6 +878,7 @@ HTML;
 			// For loading iframe side resources that need to be loaded after mw 
 			// but before player build out
 			var loadCustomResourceIncludes = function( loadSet, callback ){
+				callback = callback || function(){};
 				// if an empty set issue callback directly
 				if( loadSet.length == 0 ){
 					callback();
@@ -744,10 +898,7 @@ HTML;
 						// use appendScript for clean errors
 						kWidget.appendScriptUrl( resource.src, checkLoadDone, document );
 					} else if ( resource.type == 'css' ){
-						jQuery('head').append(
-								$('<link rel="stylesheet" type="text/css" />')
-									.attr( 'href', resource.src )
-						);
+						kWidget.appendCssUrl( resource.src, document );
 						checkLoadDone();
 					}
 				}
@@ -756,16 +907,43 @@ HTML;
 		<?php
 		return ob_get_clean();
 	}
-	function getInlinePSResource( $resourcePath ){
-		global $wgBaseMwEmbedPath, $wgKalturaPSHtml5SettingsPath, $wgScriptCacheDirectory, $wgResourceLoaderMinifierStatementsOnOwnLine;
-		// Get the real resource path:
-		$basePsPath =  realpath( dirname( $wgKalturaPSHtml5SettingsPath ) . '/../ps/' );
-		$resourcePath = realpath( str_replace('{html5ps}', $basePsPath, $resourcePath) );
-		// Don't allow directory traversing:
-		if( strpos( $resourcePath, $basePsPath) !== 0 ){
-			// Error attempted directory traversal:
-			return false;;
+
+	function getFilePath( $path = null ){
+		global $wgKalturaPSHtml5SettingsPath;
+
+
+		if( strpos( $path, '{html5ps}' ) === 0 ) {
+			$basePath = realpath( dirname( $wgKalturaPSHtml5SettingsPath ) . '/../ps/' );
+			$path = str_replace('{html5ps}', $basePath, $path) ;
+		} else {
+			$basePath = realpath( __DIR__ );
+			$path = $basePath . '/' . $path;
 		}
+
+		if( strpos( $path, $basePath ) !== 0 ){
+			// Error attempted directory traversal:
+			return false;
+		}
+
+		// Check if file exists
+		if( !file_exists( $path ) ){
+			return false;
+		}
+
+		return $path;
+	}
+
+	function getInlinePSResource( $resourcePath ){
+		global $wgBaseMwEmbedPath, $wgScriptCacheDirectory, $wgResourceLoaderMinifierStatementsOnOwnLine;
+		// Get the real resource path:
+		$resourcePath = $this->getFilePath( $resourcePath );
+
+		// Check if path is valid and exists
+		if( !$resourcePath ) {
+			$this->logger->log('Unable to find resource: ' . $resourcePath );
+			return false;
+		}
+		
 		if( substr( $resourcePath, -2 ) !== 'js' ){
 			// error attempting to load a non-js file
 			return false;
@@ -828,7 +1006,13 @@ HTML;
 		// check for inline cusom resources
 		// Load any other iframe custom resources
 		?>
-		loadCustomResourceIncludes( <?php echo json_encode( $urlResourceSet ) ?>, function(){ 
+
+		var customResources = <?php echo json_encode( $urlResourceSet ) ?>;
+		// IE8 has some issues with RL, so we load skin assets directly
+		if( isIE8 ){
+			customResources = customResources.concat( kalturaIframePackageData.skinResources );
+		}
+		loadCustomResourceIncludes( customResources, function(){ 
 			<?php echo $callbackJS ?>
 		});
 		<?php
@@ -858,6 +1042,12 @@ HTML;
 		waitForKWidget( function(){
 			if( kWidget.isUiConfIdHTML5( '<?php echo $uiConfId ?>' ) ){
 				loadMw( function(){
+					// Load skin resources after other modules loaded
+					if( isIE8 ){
+						$( mw ).bind( 'EmbedPlayerNewPlayer', function(){
+							loadCustomResourceIncludes(kalturaIframePackageData.skinResources);
+						});
+					}
 					<?php 
 						$this->loadCustomResources(
 							$this->outputKalturaModules() . 
@@ -869,7 +1059,15 @@ HTML;
 				var resourcesList = <?php echo json_encode( $this->getCustomPlayerIncludes(true) ) ?>;
 				loadCustomResourceIncludes( resourcesList, function() {
 					// replace body contents with flash object:
-					document.getElementsByTagName('body')[0].innerHTML = window.kalturaIframePackageData['flashHTML'];
+					var bodyElement = document.getElementsByTagName('body')[0];
+					bodyElement.innerHTML = '';
+					var container = document.createElement('div');
+					container.id = window.kalturaIframePackageData.playerId + '_container';
+					container.style.cssText = 'width: 100%; height: 100%;';
+					bodyElement.appendChild(container);
+					var playerId = window.kalturaIframePackageData.playerId;
+					kWidget.outputFlashObject(playerId + '_container', <?php echo json_encode($this->getFlashObjectSettings());?>, document);
+					
 				});
 			}
 		});
@@ -877,16 +1075,33 @@ HTML;
 		<?php 
 		return ob_get_clean();
 	}
+	function getIframeOutputHash(){
+		if(!$this->iframeOutputHash){
+			$this->iframeOutputHash = md5( $this->getIFramePageOutput() );
+		}
+		return $this->iframeOutputHash;
+	}
 	function getIFramePageOutput( ){
-		$uiConfId =  htmlspecialchars( $this->request->get('uiconf_id') );
-		
-		ob_start();
+		if( !$this->iframeContent ){
+			global $wgRemoteWebInspector, $wgEnableScriptDebug;
+			$uiConfId =  htmlspecialchars( $this->request->get('uiconf_id') );
+			
+			ob_start();
 		?>
 <!DOCTYPE html>
 <html>
 <head>
 	<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ </script>
+	<?php if($wgRemoteWebInspector && $wgEnableScriptDebug){
+		echo '<script src="' . $wgRemoteWebInspector . '"></script>';
+	 } ?>
 	<?php echo $this->outputIframeHeadCss(); ?>
+	<?php echo $this->outputSkinCss(); ?>
+	<?php echo $this->outputCustomCss(); ?>
+
+	<!--[if lt IE 10]>
+	<script type="text/javascript" src="<?php echo $this->getPath(); ?>resources/PIE/PIE.js"></script>
+	<![endif]-->
 </head>
 <body>
 <?php echo $this->getKalturaIframeScripts(); ?>
@@ -894,12 +1109,12 @@ HTML;
 	// wrap in a top level playlist in the iframe to avoid javascript base .wrap call that breaks video playback in iOS
 	if( $this->getUiConfResult()->isPlaylist() ){
 		?>
-		<div id="playlistInterface"
+		<div class="playlistInterface"
 			style="position: relative; width: 100%; height: 100%">
 			<?php
 	}
 	?>
-	<div class="mwPlayerContainer" style="width: 100%; height: 100%">
+	<div class="mwPlayerContainer player-out">
 		<?php echo $this->getVideoHTML(); ?>
 	</div>
 	<?php
@@ -911,7 +1126,9 @@ HTML;
 </body>
 </html>
 		<?php
-		return ob_get_clean();
+			$this->iframeContent = ob_get_clean();
+		}
+		return $this->iframeContent;
 	}
 	/**
 	 * Very simple error handling for now:

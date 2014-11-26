@@ -65,7 +65,7 @@ mw.KAnalytics.prototype = {
 	 * Constructor for kAnalytics
 	 *
 	 * @param {Object}
-	 *          embedPlayer Player to apply Kaltura analytics to.
+	 *		  embedPlayer Player to apply Kaltura analytics to.
 	 * @parma {Object}
 	 * 			kalturaClient Kaltura client object for the api session.
 	 */
@@ -98,7 +98,7 @@ mw.KAnalytics.prototype = {
 	 * Get the current report set
 	 *
 	 * @param {Number}
-	 *            KalturaStatsEventType The eventType number.
+	 *			KalturaStatsEventType The eventType number.
 	 */
 	sendAnalyticsEvent: function( KalturaStatsEventKey ){
 		var _this = this;
@@ -160,9 +160,16 @@ mw.KAnalytics.prototype = {
 				'applicationName' : 'applicationId',
 				'userId' : 'userId'
 		}
+		// support legacy ( deprecated ) top level config
 		for( var fvKey in flashVarEvents){
 			if( this.embedPlayer.getKalturaConfig( '', fvKey ) ){
-				eventSet[ flashVarEvents[ fvKey ] ] = this.embedPlayer.getKalturaConfig('', fvKey );
+				eventSet[ flashVarEvents[ fvKey ] ] = encodeURIComponent( this.embedPlayer.getKalturaConfig('', fvKey ) );
+			}
+		}
+		// check for the vars in the correct location:
+		for( var fvKey in flashVarEvents){
+			if( this.embedPlayer.getKalturaConfig( 'statistics', fvKey ) ){
+				eventSet[ flashVarEvents[ fvKey ] ] = encodeURIComponent( this.embedPlayer.getKalturaConfig('', fvKey ) );
 			}
 		}
 
@@ -224,7 +231,7 @@ mw.KAnalytics.prototype = {
 		b( 'showShareEvent', 'OPEN_VIRAL' );
 
 		// When the show download menu is displayed
-		b( 'showDownloadEvent', 'OPEN_DOWNLOAD' );
+		b( 'downloadMedia', 'OPEN_DOWNLOAD' );
 
 		// When the clip starts to buffer ( not all player types )
 		b( 'bufferStartEvent', 'BUFFER_START' );
@@ -305,22 +312,24 @@ mw.KAnalytics.prototype = {
 
 			_this._p25Once = true;
 			_this.sendAnalyticsEvent( 'PLAY_REACHED_25' );
+			$( embedPlayer ).trigger( "firstQuartile" );
 
 		} else if ( !_this._p50Once && percent >= .50 && seekPercent < .50 ) {
 
 			_this._p50Once = true;
 			_this.sendAnalyticsEvent( 'PLAY_REACHED_50' );
+			$( embedPlayer ).trigger( "secondQuartile" );
 
 		} else if( !_this._p75Once && percent >= .75 && seekPercent < .75 ) {
 
 			_this._p75Once = true;
 			_this.sendAnalyticsEvent( 'PLAY_REACHED_75' );
+			$( embedPlayer ).trigger( "thirdQuartile" );
 
 		} else if(  !_this._p100Once && percent >= .98 && seekPercent < 1) {
 
 			_this._p100Once = true;
 			_this.sendAnalyticsEvent( 'PLAY_REACHED_100' );
-
 		}
 	}
 };
