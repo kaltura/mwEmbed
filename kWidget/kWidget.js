@@ -894,12 +894,12 @@ var kWidget = {
 		// fix for iOS8 iframe overflow issue
 		var userAgent = navigator.userAgent;
 		var isIOS8 = ( /OS 8_/.test(userAgent) || /Version\/8/.test(userAgent) ) && ( userAgent.indexOf('iPad') != -1 || userAgent.indexOf('iPhone') != -1 );
-		if (isIOS8 && parseInt(widgetElm.style.height) > 0) {
-			try {
+		try {
+			if (isIOS8 && parseInt(widgetElm.style.height) > 0) {
 				iframe.style.height = widgetElm.style.height;
-			} catch (e) {
-				this.log("kWidget::error when trying to set iframe height: " + e.message);
 			}
+		} catch (e) {
+			this.log("Error when trying to set iframe height: " + e.message);
 		}
 
 		// Create the iframe proxy that wraps the actual iframe
