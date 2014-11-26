@@ -44,7 +44,6 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 		this.bind('playerReady', function( ){
 			_this.setupPlayerURL();
 		});
-		//
 	},
 
 	getParentURL: function(){
@@ -125,17 +124,17 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 		// http://msdn.microsoft.com/en-us/library/ms536651%28v=vs.85%29.asp
 
 		if(mw.getConfig( "EmbedPlayer.ForceNativeComponent" )){
-			
 			var socialNetworks = this.getConfig("socialNetworks").split(',');
 			var networkIndex = jQuery.inArray($(e.target).attr('id'), socialNetworks);
 			var networkParams = this.getTemplateData().networks[networkIndex];
 			var shareParams = {
+				actionType: this.getPlayer().nativeActionType( 'share' ),
 				sharedLink: this.getConfig("shareURL"),
 				shareNetwork: networkParams,
 				thumbnail: this.getThumbnailURL(),
 				videoName: this.getPlayer().evaluate("{mediaProxy.entry.name}")
 			};
-			this.getPlayer().share( JSON.stringify(shareParams) );
+			this.getPlayer().doNativeAction( JSON.stringify(shareParams) );
 		} else {
 			var url = $(e.target).parents('a').attr('href');
 			window.open(

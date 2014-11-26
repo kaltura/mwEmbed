@@ -42,7 +42,7 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 	isJsCallbackReady: false,
 	bindPostfix: ".nativeBridge",
 	playerMethods: [ 'stop', 'play', 'pause', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen', 'notifyKPlayerEvent', 'notifyKPlayerEvaluated', 'notifyJsReady', 'showChromecastDeviceList', 'notifyLayoutReady',
-		'doneFSBtnPressed', 'addNativeAirPlayButton', 'showNativeAirPlayButton', 'hideNativeAirPlayButton', 'share' ],
+		'doneFSBtnPressed', 'addNativeAirPlayButton', 'showNativeAirPlayButton', 'hideNativeAirPlayButton', 'doNativeAction' ],
 
 	registePlayer: function (proxyElement) {
 		var _this = this;
@@ -135,8 +135,8 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 			this.proxyElement['visible']  = jsEventValue;
 		} else if (eventName == 'durationchange') {
 			this.proxyElement['duration'] = jsEventValue;
-		} else if (eventName == 'shareParams') {
-			this.proxyElement['shareParams'] = jsEventValue;
+		} else if (eventName == 'nativeAction') {
+			this.proxyElement['nativeAction'] = jsEventValue;
 		}
 	},
 	execute: function (command, args) {

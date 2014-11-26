@@ -60,6 +60,10 @@ mw.EmbedPlayerNativeComponent = {
 		'chromecastDeviceConnected',
 		'chromecastDeviceDisConnected'
 	],
+
+	nativeActions : [
+		'share'
+	],
 	// Native player supported feature set
 	supports: {
 		'playHead' : true,
@@ -277,10 +281,14 @@ mw.EmbedPlayerNativeComponent = {
 		this.parent_seek( percentage );
 	},
 
-	share: function( shareParams ) {
-		mw.log("EmbedPlayerNativeComponent:: share::");
-		this.getPlayerElement().attr('shareParams', shareParams);
-		this.getPlayerElement().share();
+	doNativeAction: function( actionParams ) {
+		mw.log("EmbedPlayerNativeComponent:: doNativeAction::");
+		this.getPlayerElement().attr('nativeAction', actionParams);
+		this.getPlayerElement().doNativeAction();
+	},
+
+	nativeActionType: function ( actionName ) {
+		return jQuery.inArray(actionName, this.nativeActions);
 	},
 
 	/**
