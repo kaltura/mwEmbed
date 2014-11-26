@@ -1496,13 +1496,18 @@ mw.EmbedPlayerNative = {
 
 	playSegment: function (startTime, endTime) {
 		if (this.supportsURLTimeEncoding()) {
+			this.stop();
 			var newSource = this.mediaElement.autoSelectSource(true, this.startTime, this.pauseTime);
 			if (newSource) {
 				this.switchSrc(newSource);
 			}
+			this.currentTime = 0;
+			this.play();
 		} else {
+			this.pause();
+			this.currentTime = 0;
 			this.addStartTimeCheck();
-			this.setCurrentTime(0);
+			this.play();
 		}
 	}
 };
