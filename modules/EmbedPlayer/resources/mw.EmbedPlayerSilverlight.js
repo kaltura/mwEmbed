@@ -410,6 +410,9 @@
 		 * pause method calls parent_pause to update the interface
 		 */
 		pause: function() {
+			if ( !this.isPlaying() ) {
+				return;
+			}
 			try {
 				//after first play we don't want to pause in multicast, only stop
 				if ( this.isMulticast && !this.firstPlay ) {
