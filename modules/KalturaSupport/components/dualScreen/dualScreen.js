@@ -83,7 +83,8 @@
 					} );
 					cuePointsExist = (filteredCuePoints.length > 0) ? true : false;
 				}
-				return (!this.getPlayer().useNativePlayerControls() && (mw.getConfig("EmbedPlayer.LiveCuepoints") || cuePointsExist ));
+				return (!this.getPlayer().useNativePlayerControls() &&
+					( ( this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) || cuePointsExist ));
 			},
 			initConfig: function () {
 				var _this = this;
@@ -319,7 +320,7 @@
 
 					var addSpinner = function(){
 						if (!_this.secondDisplayReady) {
-							if (mw.getConfig("EmbedPlayer.LiveCuepoints")) {
+							if (_this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints")) {
 								//TODO: add information slide for no current slide available
 							} else {
 								secondaryScreen.getAbsoluteOverlaySpinner().attr( 'id', 'secondScreenLoadingSpinner' );
@@ -450,7 +451,7 @@
 				} );
 
 				//In live mode wait for first updatetime that is bigger then 0 for syncing initial slide
-				if (mw.getConfig("EmbedPlayer.LiveCuepoints")) {
+				if (this.getPlayer().isLive() &&mw.getConfig("EmbedPlayer.LiveCuepoints")) {
 					this.bind( 'timeupdate', function ( ) {
 						if (_this.getPlayer().currentTime > 0) {
 							_this.unbind('timeupdate');
