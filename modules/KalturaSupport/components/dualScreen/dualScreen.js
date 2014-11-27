@@ -296,6 +296,7 @@
 					_this.checkRenderConditions();
 					_this.initDisplay();
 					if (!_this.render) {
+						_this.getPrimary().obj.css( {'top': '', 'left': '', 'width': '', 'height': ''} ).removeClass( 'firstScreen' );
 						_this.hideDisplay();
 					}
 				} );
