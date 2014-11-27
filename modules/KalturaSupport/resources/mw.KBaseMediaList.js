@@ -460,12 +460,6 @@
 			mediaBoxes.removeClass( 'active');
 			this.selectedMediaItemIndex = mediaIndex;
 			$( mediaBoxes[mediaIndex] ).addClass( 'active'); //li[data-chapter-index='" + activeIndex + "']
-			if (!this.getConfig('overflow')) {
-				var carousel = this.getMedialistComponent().find( '.k-carousel' );
-				if (carousel[0]) {
-					carousel[0].jCarouselLiteGo( mediaIndex );
-				}
-			}
 		},
 		getActiveItem: function(){
 			return this.getComponent().find( "li[data-chapter-index='" + this.selectedMediaItemIndex + "']" );
