@@ -163,17 +163,13 @@ mw.MediaElement.prototype = {
 
 	autoSelectSource: function (supportsURLTimeEncoding, startTime, endTime) {
 		if ( this.autoSelectSourceExecute() ){
-			if (this.selectedSource.src.indexOf("&seekFrom=") !== -1) {
-				this.selectedSource.src = this.selectedSource.src.substr(0, this.selectedSource.src.indexOf("&seekFrom="));
-			}
-			if (this.selectedSource.src.indexOf("&clipTo=") !== -1) {
-				this.selectedSource.src = this.selectedSource.src.substr(0, this.selectedSource.src.indexOf("&clipTo="));
-			}
+			this.selectedSource.src = this.selectedSource.src.replace(/seekFrom\/\d+\//, '');
+			this.selectedSource.src = this.selectedSource.src.replace(/clipTo\/\d+\//, '');
 			if (supportsURLTimeEncoding && !!endTime) {
-				this.selectedSource.src = this.selectedSource.src + "&clipTo=" + parseInt(endTime) * 1000;
+				this.selectedSource.src = this.selectedSource.src.replace("playManifest/", "playManifest/clipTo/" + parseInt(endTime) * 1000 + "/");
 			}
 			if (supportsURLTimeEncoding && !!startTime) {
-				this.selectedSource.src = this.selectedSource.src + "&seekFrom=" + parseInt(startTime) * 1000;
+				this.selectedSource.src = this.selectedSource.src.replace("playManifest/", "playManifest/seekFrom/" + parseInt(startTime) * 1000 + "/");
 			}
 			$( '#' + this.parentEmbedId ).trigger( 'SourceSelected' , this.selectedSource );
 			return this.selectedSource;

@@ -2580,11 +2580,6 @@
 
 			// Update currentTime via embedPlayer
 			_this.currentTime = _this.getPlayerElementTime();
-			// Update any offsets from server seek
-			if (_this.serverSeekTime && _this.supportsURLTimeEncoding()) {
-				_this.currentTime = parseInt(_this.serverSeekTime) + parseInt(_this.getPlayerElementTime());
-			}
-
 			// Update the previousTime ( so we can know if the user-javascript changed currentTime )
 			_this.previousTime = _this.currentTime;
 			// Check for a pauseTime to stop playback in temporal media fragments
