@@ -10,6 +10,9 @@
 	mw.isMobileDevice = function(){
 		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isAndroid() || mw.isWindowsPhone() || mw.getConfig( "EmbedPlayer.ForceNativeComponent") === true )
 	};
+	mw.isNativeApp = function(){
+		return mw.getConfig( "EmbedPlayer.ForceNativeComponent");
+	};
 	mw.isIphone = function(){
 		return ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") !== true && navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() ) || mw.isIpod();
 	};
