@@ -105,7 +105,7 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 				url: 'http://',
 				redirectUrl: ''
 			});
-		if (mw.getConfig( "EmbedPlayer.ForceNativeComponent" ) && socialNetworks.indexOf("message") != -1)
+		if (mw.isNativeApp() && socialNetworks.indexOf("message") != -1)
 			networks.push({
 				id: 'message',
 				name: 'Message',
