@@ -107,6 +107,14 @@
 				_this.playPrevious();
 			});
 
+			$(this.embedPlayer).bind('onDisableInterfaceComponents', function (event) {
+				_this.getMedialistHeaderComponent().find(".playlistBtn").addClass("disabled");
+			});
+
+			$(this.embedPlayer).bind('onEnableInterfaceComponents', function (event) {
+				_this.getMedialistHeaderComponent().find(".playlistBtn").removeClass("disabled");
+			});
+
 			// set responsiveness
 			this.bind('updateLayout', function(){
 				if ($(".playlistInterface").width() / 3 > _this.getConfig('mediaItemWidth')) {
