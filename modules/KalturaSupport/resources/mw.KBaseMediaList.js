@@ -491,33 +491,32 @@
 			return sliceIndex;
 		},
 		addScroll: function(){
-			this.addScrollUiComponents();
-			this.initScroll();
-		},
-		initScroll: function(){
 			var $cc = this.getMedialistComponent();
 			this.mediaItemVisible = this.calculateVisibleScrollItems();
 			var isVertical = ( this.getLayout() == 'vertical' );
 			var speed = mw.isTouchDevice() ? 100: 200;
 
-			// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
-			$cc.find('.k-carousel').jCarouselLite({
-				btnNext: '.k-next',
-				btnPrev: '.k-prev',
-				visible: this.mediaItemVisible,
-				mouseWheel: true,
-				circular: false,
-				vertical: isVertical,
-				start: this.startFrom,
-				scroll: 1,
-				speed: speed
-			});
-
-			// give more height if needed
-			if( this.getLayout() == 'vertical' ){
-				$cc.find('.k-carousel').css('height', $cc.height() );
-			} else {
-				// fit to container:
+			if (isVertical) {
+				var list = $( this.getMedialistComponent().children()[0] );
+				var nanoWrapper = $( "<div class='nano'>" ).append( $( "<div class='nano-content'>" ) );
+				list.wrap( nanoWrapper );
+				$( ".nano").nanoScroller( {
+					flash: true
+				} );
+			}else {
+				this.addScrollUiComponents();
+				// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
+				$cc.find( '.k-carousel' ).jCarouselLite( {
+					btnNext: '.k-next',
+					btnPrev: '.k-prev',
+					visible: this.mediaItemVisible,
+					mouseWheel: true,
+					circular: false,
+					vertical: isVertical,
+					start: this.startFrom,
+					scroll: 1,
+					speed: speed
+				} );
 				$cc.find('.k-carousel').css('width', $cc.width() );
 			}
 		},
