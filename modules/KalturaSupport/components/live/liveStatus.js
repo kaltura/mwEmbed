@@ -4,7 +4,7 @@
 
 		defaultConfig: {
 			'parent': 'controlsContainer',
-			'order': 32,
+			'order': 22,
 			'displayImportance': 'high',
 			'showTooltip': true
 		},
@@ -30,7 +30,7 @@
 			var _this = this;
 			if( !this.$el ) {
 				var $btnText = $( '<div />')
-					.addClass( 'back-to-live-text ' + this.getCssClass() )
+					.addClass( 'btn back-to-live-text ' + this.getCssClass() )
 					.text( this.offlineText );
 
 				var $button  =$( '<button />' )
@@ -49,7 +49,11 @@
 		},
 
 		backToLive: function() {
-			this.getPlayer().backToLive();
+			if ( this.getPlayer().firstPlay )  {
+				this.getPlayer().play();
+			}  else {
+				this.getPlayer().backToLive();
+			}
 		},
 
 		getLiveStreamStatusText: function() {
@@ -60,14 +64,16 @@
 		},
 		setLiveStreamStatus: function( value ) {
 			var components = this.getComponent().children();
+			var $componentBtn =  $( components[0] ) ;
+			var $componentText =  $( components[1] ) ;
 			if ( this.onAirStatus ) {
-				components[0].removeClass( this.offlineIconClass ).addClass( this.onAirIconClass );
-				components[1].text( this.liveText );
+				$componentBtn.removeClass( this.offlineIconClass ).addClass( this.onAirIconClass );
+				$componentText.text( this.liveText );
 				this.updateTooltip( this.tooltip );
 			}
 			else {
-				components[0].removeClass( this.onAirIconClass ).addClass( this.offlineIconClass );
-				components[1].text( this.offlineText );
+				$componentBtn.removeClass( this.onAirIconClass ).addClass( this.offlineIconClass );
+				$componentText.text( this.offlineText );
 				this.updateTooltip( "" );
 			}
 		}

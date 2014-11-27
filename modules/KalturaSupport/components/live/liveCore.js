@@ -130,12 +130,9 @@
 
 				if ( _this.isDVR() ) {
 					if ( !onAirObj.onAirStatus ) {
-						embedPlayer.triggerHelper('onHideInterfaceComponents', [['liveBackBtn']] );
 						if ( _this.shouldHandlePausedMonitor() ) {
 							_this.removePausedMonitor();
 						}
-					} else if ( _this.firstPlay ) {
-						embedPlayer.triggerHelper('onShowInterfaceComponents', [['liveBackBtn']] );
 					}
 				}
 			} );
@@ -182,7 +179,7 @@
 			//ui components to hide
 			var showComponentsArr = [];
 			//ui components to show
-			var hideComponentsArr = [ 'liveBackBtn' ];
+			var hideComponentsArr = [];
 			_this.maxCurrentTime = 0;
 			//live entry
 			if ( embedPlayer.isLive() ) {
