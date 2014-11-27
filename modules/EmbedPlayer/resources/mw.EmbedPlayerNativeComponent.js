@@ -288,7 +288,7 @@ mw.EmbedPlayerNativeComponent = {
 	},
 
 	nativeActionType: function ( actionName ) {
-		return jQuery.inArray(actionName, this.nativeActions);
+		return $.inArray(actionName, this.nativeActions);
 	},
 
 	/**
