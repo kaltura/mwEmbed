@@ -62,7 +62,8 @@ mw.EmbedPlayerNativeComponent = {
 	],
 
 	nativeActions : [
-		'share'
+		'share',
+		'openHomePage'
 	],
 	// Native player supported feature set
 	supports: {
@@ -289,6 +290,10 @@ mw.EmbedPlayerNativeComponent = {
 
 	nativeActionType: function ( actionName ) {
 		return jQuery.inArray(actionName, this.nativeActions);
+	},
+
+	isNativeApp: function () {
+		return mw.getConfig( "EmbedPlayer.ForceNativeComponent" );
 	},
 
 	/**
