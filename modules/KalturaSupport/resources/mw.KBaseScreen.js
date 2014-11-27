@@ -131,6 +131,7 @@ mw.KBaseScreen = mw.KBaseComponent.extend({
 		this.getPlayer().getInterface().addClass('previewPlayer');
 	},
 	restorePlayer: function(){
+		this.getPlayer().getVideoDisplay().removeClass('animateVideo');
 		this.getPlayer().getInterface().removeClass('previewPlayer');
 	},
 	getTemplateData: function(){

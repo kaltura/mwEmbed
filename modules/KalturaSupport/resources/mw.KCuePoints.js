@@ -26,7 +26,7 @@ mw.KCuePoints.prototype = {
 			// Add player bindings:
 			_this.addPlayerBindings();
 			//Set live cuepoint polling
-			if (mw.getConfig("EmbedPlayer.LiveCuepoints")){
+			if (_this.embedPlayer.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints")){
 				_this.requestLiveCuepoints();
 			}
 		});
@@ -214,7 +214,7 @@ mw.KCuePoints.prototype = {
 		var embedPlayer = this.embedPlayer;
 
 		// Don't add any bindings if no cuePoint exists )
-		if( !(mw.getConfig("EmbedPlayer.LiveCuepoints") || currentCuePoint) ){
+		if( !( ( embedPlayer.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) || currentCuePoint) ){
 			return ;
 		}
 

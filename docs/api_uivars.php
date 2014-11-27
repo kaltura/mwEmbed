@@ -378,7 +378,7 @@ $uiVars = array(
 			),
 			'thumbnailUrl' => array(
                 'type' => 'String',
-                'desc' => 'External thumbnail URL to load instead of the entry default thumbnail',
+                'desc' => 'External thumbnail URL to load instead of the entry default thumbnail. Supports evaluated expressions within curly brackets',
                 'default' => '',
                 'example' => ''
             ),
@@ -725,7 +725,7 @@ $uiVars = array(
 					'type' => 'Boolean',
 					'desc' => "Force loading the legacy KDP Flash video player.",
 					'default' => 'false',
-					'example' => ''
+					'example' => '../modules/KalturaSupport/tests/ForceKPlayer.qunit.html'
 			),
 			'EmbedPlayer.ForceSPlayer' => array(
 					'type' => 'Boolean',

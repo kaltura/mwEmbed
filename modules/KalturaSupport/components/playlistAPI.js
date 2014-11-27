@@ -24,7 +24,8 @@
 			'cssFileName': 'modules/KalturaSupport/components/playlist/playList.css',
 			'showControls': true,
 			'MaxClips': 25,
-			'selectedIndex': 0
+			'selectedIndex': 0,
+			'includeHeader': true
 		},
 
 
@@ -108,11 +109,19 @@
 
 			// set responsiveness
 			this.bind('updateLayout', function(){
-				if ($(".mwPlayerContainer").width() / 3 > _this.getConfig('mediaItemWidth')){
-					_this.setConfig('mediaItemWidth',$(".mwPlayerContainer").width()/3);
-					_this.setConfig('titleLimit', parseInt(_this.getConfig('mediaItemWidth') / 7));
-					_this.setConfig('descriptionLimit', parseInt(_this.getConfig('mediaItemWidth') / 8));
+				if ($(".playlistInterface").width() / 3 > _this.getConfig('mediaItemWidth')) {
+					_this.setConfig('mediaItemWidth', $(".playlistInterface").width() / 3);
+
+				} else {
+					_this.setConfig('mediaItemWidth', '320');
 				}
+				_this.setConfig('titleLimit', parseInt(_this.getConfig('mediaItemWidth') / 7));
+				_this.setConfig('descriptionLimit', parseInt(_this.getConfig('mediaItemWidth') / 8));
+
+				// redraw player and playlist
+				_this.$mediaListContainer = null;
+				_this.getMedialistContainer();
+				_this.renderMediaList();
 			});
 
 			$( this.embedPlayer ).bind( 'mediaListLayoutReady', function( event){

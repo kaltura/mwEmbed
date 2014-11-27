@@ -45,6 +45,10 @@ var kWidget = {
 	// stored per player id
 	iframeAutoEmbedCache:{},
 
+	// For storing iframe urls
+	// Stored per player id
+	iframeUrls: {},
+
 	/**
 	 * The master kWidget setup function setups up bindings for rewrites and
 	 * proxy of jsCallbackReady
@@ -891,6 +895,17 @@ var kWidget = {
 		// copy the target element css to the iframe proxy style:
 		iframe.style.cssText = iframeCssText;
 
+		// fix for iOS8 iframe overflow issue
+		var userAgent = navigator.userAgent;
+		var isIOS8 = ( /OS 8_/.test(userAgent) || /Version\/8/.test(userAgent) ) && ( userAgent.indexOf('iPad') != -1 || userAgent.indexOf('iPhone') != -1 );
+		try {
+			if (isIOS8 && parseInt(widgetElm.style.height) > 0) {
+				iframe.style.height = widgetElm.style.height;
+			}
+		} catch (e) {
+			this.log("Error when trying to set iframe height: " + e.message);
+		}
+
 		// Create the iframe proxy that wraps the actual iframe
 		// and will be converted into an "iframe" player via jQuery.fn.iFramePlayer call
 		var iframeProxy = document.createElement("div");
@@ -943,6 +958,8 @@ var kWidget = {
 						alert("error occur");
 					})
 			} else {
+				// Store iframe urls
+				_this.iframeUrls[ targetId ] = this.getIframeUrl() + '?' + this.getIframeRequest( widgetElm, settings );
 				// do an iframe payload request:
 				_this.appendScriptUrl( this.getIframeUrl() + '?' +
 					this.getIframeRequest( widgetElm, settings ) +

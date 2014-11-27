@@ -7,6 +7,7 @@
 	display: inline;
 	border: none;
 	padding-right: 4px;
+	cursor: default;
 }
 
 .live-on-air, .live-off-air, .back-to-live {
@@ -45,8 +46,12 @@
 
 .back-to-live {
 	margin-right: 4px;
-	cursor: pointer;
 	background-color: #2FC44D;
+}
+
+.back-to-live-active {
+	opacity: 0.5;
+	cursor: pointer;
 }
 
 .back-to-live-icon {

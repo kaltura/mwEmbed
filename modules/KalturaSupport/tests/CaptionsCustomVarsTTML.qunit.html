@@ -50,7 +50,12 @@ function jsKalturaPlayerTest( videoId ){
 	<span id="kdoc-more-desc">
 	Timed Text Markup Language (TTML) allows for rich formated text in timed media
 		Read more about the <a href="http://www.w3.org/TR/ttaf1-dfxp/">TTML/DFXP standard</a>.<br><br>
-		This player has two caption files associated with it, the <a href="./resources/FishTmmlFeatureTest.en.xml" target="_blank">first file</a> demonstrates spatial alignment and default white on black text, the <a href="./resources/colors.xml" target="_blank">second file</a> titled "colors" demonstrates TTML style tags being used to give the text alternate background and text color.
+		This player has two caption files associated with it, the 
+		<a href="./resources/FishTmmlFeatureTest.en.xml" target="_blank">first file</a> 
+		demonstrates spatial alignment and default white on black text, the 
+		<a href="./resources/colors.xml" target="_blank">second file</a> titled "colors" demonstrates 
+		TTML style tags being used to give the text alternate background and text color.<br><br>
+		<b>Note: Not all closeCaption style overrides will cleanly apply to CMML that already has formatting rules defined.</b>
 	</span>
 	<script>
 	kWidget.featureConfig({
