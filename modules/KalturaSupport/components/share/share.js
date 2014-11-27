@@ -125,7 +125,7 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 
 		if(mw.isNativeApp()){
 			var socialNetworks = this.getConfig("socialNetworks").split(',');
-			var networkIndex = jQuery.inArray($(e.target).attr('id'), socialNetworks);
+			var networkIndex = $.inArray($(e.target).attr('id'), socialNetworks);
 			var networkParams = this.getTemplateData().networks[networkIndex];
 			var shareParams = {
 				actionType: this.getPlayer().nativeActionType( 'share' ),
