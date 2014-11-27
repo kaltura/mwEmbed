@@ -382,6 +382,7 @@
 			this.firstLoad = true;                  // reset firstLoad to support initial clip selectedIndex
 			this.setConfig("selectedIndex", 0);     // set selectedIndex to 0 so we will always load the first clip in the playlist after palylist switch
 			this.currentPlaylistIndex = index;      // save the currently selected playlist index
+			this.embedPlayer.pause();               // pause playback to prevent IE8 from crashing (OMG!)
 			this.loadPlaylistFromAPI();             // load the playlist data from the API
 			this.onEnable();
 		},
