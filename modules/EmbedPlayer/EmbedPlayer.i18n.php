@@ -116,6 +116,9 @@ $messages['en'] = array(
 	'mwe-embedplayer-disable-audio-description' => 'Disable audio description',
 	'mwe-embedplayer-no-audio-description' => 'No audio description available',
 	'mwe-embedplayer-install-silverlight' => 'This video requires Microsoft Silverlight, which is currently not available on your browser. Please <a href="http://www.microsoft.com/silverlight/" target="_blank"> install Microsoft Silverlight </a> to view this video.',
+	'mwe-embedplayer-player-on-air' => 'LIVE',
+	'mwe-embedplayer-player-off-air' => 'Offline',
+	'mwe-embedplayer-player-jump-to-live' => 'Jump to live',
 );
 
 /** Message documentation (Message documentation)

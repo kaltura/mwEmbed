@@ -6,21 +6,12 @@
 	float: right;
 	display: inline;
 	border: none;
-	padding-right: 4px;
 }
 
 .live-on-air, .live-off-air, .back-to-live {
 	margin-top: 6px;
 	border: 1px solid #000000;
 	padding: 2px 4px 2px 4px;
-}
-
-.live-on-air {
-	background-color: #2FC44D;
-}
-
-.live-off-air, .back-to-live {
-	background-color: #FF0000;
 }
 
 .time-disp-dvr {
@@ -46,7 +37,6 @@
 .back-to-live {
 	margin-right: 4px;
 	cursor: pointer;
-	background-color: #2FC44D;
 }
 
 .back-to-live-icon {
@@ -57,6 +47,20 @@
 	border-bottom: 4px solid transparent;   
 	border-left: 6px solid #FFFFFF;
 	display: inline-block;			
+}
+
+.offline-icon {
+	background-color: #A4A4A4;
+	opacity: 0.5;
+}
+
+.live-icon {
+	border-style: solid;
+	border-width: 8px;
+	border-color: #FF0000;
+	border-radius: 50%;
+	background-color: #FF0000;
+	opacity: 0.4
 }
 
 .back-to-live-text {
