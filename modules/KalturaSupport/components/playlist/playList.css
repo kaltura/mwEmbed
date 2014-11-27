@@ -410,6 +410,18 @@
     opacity: 1;
     -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
 }
+
+.playlistAPI .playlistBtn.disabled {
+	opacity: 0.2;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
+	cursor: auto;
+}
+
+.playlistAPI .playlistBtn.disabled:hover {
+	opacity: 0.2;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
+}
+
 .playlistAPI .prevBtn{
     width: 16px;
     height: 16px;
