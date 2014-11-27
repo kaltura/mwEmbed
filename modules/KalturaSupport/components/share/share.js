@@ -97,7 +97,7 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 				url: 'https://plus.google.com/share?url=',
 				redirectUrl: 'https://plus.google.com/app/basic/stream'
 			});
-		if (mw.getConfig( "EmbedPlayer.ForceNativeComponent" ) && socialNetworks.indexOf("mail") != -1)
+		if (mw.isNativeApp() && socialNetworks.indexOf("mail") != -1)
 			networks.push({
 				id: 'mail',
 				name: 'Mail',
@@ -123,7 +123,7 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 		// Name argument for window.open in IE8 must be from supported set: _blank for example
 		// http://msdn.microsoft.com/en-us/library/ms536651%28v=vs.85%29.asp
 
-		if(mw.getConfig( "EmbedPlayer.ForceNativeComponent" )){
+		if(mw.isNativeApp()){
 			var socialNetworks = this.getConfig("socialNetworks").split(',');
 			var networkIndex = jQuery.inArray($(e.target).attr('id'), socialNetworks);
 			var networkParams = this.getTemplateData().networks[networkIndex];
