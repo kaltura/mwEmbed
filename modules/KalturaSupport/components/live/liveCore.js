@@ -96,7 +96,7 @@
 				//if we moved from live to offline  - show message
 				if ( _this.onAirStatus && !onAirObj.onAirStatus ) {
 
-					//simetimes offline is only for a second and the message is not needed..
+					//sometimes offline is only for a second and the message is not needed..
 					setTimeout( function() {
 						if ( !_this.onAirStatus ) {
 							//if we already played once it means stream data was loaded. We can continue playing in "VOD" mode
@@ -105,7 +105,20 @@
 							} else {
 								//remember last state
 								_this.playWhenOnline = embedPlayer.isPlaying();
-								embedPlayer.layoutBuilder.displayAlert( { title: embedPlayer.getKalturaMsg( 'ks-LIVE-STREAM-OFFLINE-TITLE' ), message: embedPlayer.getKalturaMsg( 'ks-LIVE-STREAM-OFFLINE' ), keepOverlay: true } );
+
+								embedPlayer.removePoster();
+								embedPlayer.removePosterFlag = true;
+								embedPlayer.layoutBuilder.displayAlert( {
+									title: "Broadcast is not Active",
+									message: 'please check back later',
+									keepOverlay: true,
+									noButtons : true,
+									props: {
+										customAlertTitleCssClass: "liveAlertTitle",
+										customAlertMessageCssClass: "liveAlertMessage",
+										customAlertContainerCssClass: "liveAlertContainer"
+									}
+								});
 								_this.getPlayer().disablePlayControls();
 							}
 
@@ -115,6 +128,7 @@
 					embedPlayer.triggerHelper( 'liveOffline' );
 
 				}  else if ( !_this.onAirStatus && onAirObj.onAirStatus ) {
+					embedPlayer.removePosterFlag = false;
 					embedPlayer.layoutBuilder.closeAlert(); //moved from offline to online - hide the offline alert
 					if ( !_this.getPlayer().getError() ) {
 						_this.getPlayer().enablePlayControls();
@@ -238,6 +252,7 @@
 			}
 			//not a live entry: restore ui, hide live ui
 			else {
+				embedPlayer.removePosterFlag = false;
 				hideComponentsArr.push( 'liveStatus' );
 				showComponentsArr.push( 'sourceSelector', 'scrubber', 'durationLabel', 'currentTimeLabel' );
 				_this.removeLiveStreamStatusMonitor();

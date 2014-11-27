@@ -1281,7 +1281,7 @@
 				this.getVideoHolder().height( newHeight );
 			}
 			// update image layout: (Don't update poster during ad)
-			if( this.isStopped() && !( this.sequenceProxy && this.sequenceProxy.isInSequence ) ) {
+			if( this.isStopped() && !( this.sequenceProxy && this.sequenceProxy.isInSequence ) && !this.removePosterFlag) {
 				this.updatePosterHTML();
 			}
 
