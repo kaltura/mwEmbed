@@ -23,6 +23,7 @@
 			'overflow': false,
 			'cssFileName': 'modules/KalturaSupport/components/playlist/playList.css',
 			'showControls': true,
+			'MaxClips': 25,
 			'selectedIndex': 0
 		},
 
@@ -157,6 +158,12 @@
 			for (var playlistId in embedPlayer.kalturaPlaylistData ) {
 				if (embedPlayer.kalturaPlaylistData.hasOwnProperty(playlistId)) {
 					this.playlistSet.push( embedPlayer.kalturaPlaylistData[ playlistId ] );
+				}
+			}
+			// update playlist names if set in Flashvars
+			for (var i = 0; i < this.playlistSet.length; i++) {
+				if (this.getConfig('kpl' + i + 'Name')) {
+					this.playlistSet[i].name = this.getConfig('kpl' + i + 'Name');
 				}
 			}
 		},
@@ -311,6 +318,7 @@
 		// when we have multiple play lists - build the UI to represent it: combobox for playlist selector
 		setMultiplePlayLists: function(){
 			var _this = this;
+			var maxClips = parseInt(this.getConfig('MaxClips'));
 			if (this.getComponent().find(".playlistSelector").length == 0){ // UI wasn't not created yet
 				this.getComponent().find(".k-vertical").find(".playlistTitle, .playlistDescription").addClass("multiplePlaylists");
 				this.getComponent().find(".dropDownIcon").on("click", function(){
@@ -322,10 +330,12 @@
 				}).show();
 				this.getMedialistComponent().prepend('<div class="playlistSelector"></div>');
 				$.each(this.playlistSet, function (i, el) {
+					var numOfClips = el.content.split(",").length;
+					numOfClips = numOfClips > maxClips ? maxClips : numOfClips; // support MaxClips Flashvar
 					if (_this.getLayout() === "vertical"){
-						_this.getComponent().find(".playlistSelector").append('<br><div data-index="'+i+'" class="playlistItem"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists">' + el.content.split(",").length + ' '+gM( 'mwe-embedplayer-videos')+'</span></div>');
+						_this.getComponent().find(".playlistSelector").append('<br><div data-index="' + i + '" class="playlistItem"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists">' + numOfClips + ' ' + gM('mwe-embedplayer-videos') + '</span></div>');
 					}else{
-						_this.getComponent().find(".playlistSelector").append('<div data-index="'+i+'" class="playlistItem k-horizontal"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists">' + el.content.split(",").length + ' '+gM( 'mwe-embedplayer-videos')+'</span></div>');
+						_this.getComponent().find(".playlistSelector").append('<div data-index="' + i + '" class="playlistItem k-horizontal"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists">' + numOfClips + ' ' + gM('mwe-embedplayer-videos') + '</span></div>');
 					}
 				});
 				this.getComponent().find(".playlistItem").on("click", function(){
@@ -390,17 +400,19 @@
 			var _this = this;
 			this.embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')} ); // for API backward compatibility
 			this.mediaList = [];
-			this.addMediaItems(this.playlistSet[playlistIndex].items);   // prepare the data to be compatible with KBaseMediaList
+			var items = this.playlistSet[playlistIndex].items;
+			items = items.length > parseInt(this.getConfig('MaxClips')) ? items.slice(0, parseInt(this.getConfig('MaxClips'))) : items; // support MaxClips Flashvar
+			this.addMediaItems(items);   // prepare the data to be compatible with KBaseMediaList
 			this.getMedialistHeaderComponent().empty();
 			if (this.getLayout() === "vertical"){
 				if ( this.getConfig('containerPosition') === "left" || this.getConfig('containerPosition') === "right" || this.getConfig('onPage') === true){
-					this.getMedialistHeaderComponent().prepend('<span class="playlistTitle">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription">' + this.playlistSet[playlistIndex].items.length + ' '+gM( 'mwe-embedplayer-videos')+'</span>');
+					this.getMedialistHeaderComponent().prepend('<span class="playlistTitle">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription">' + items.length + ' ' + gM('mwe-embedplayer-videos') + '</span>');
 					this.getMedialistHeaderComponent().prepend('<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist') + '"></div>');
 				}else{
 					this.getMedialistHeaderComponent().hide();
 				}
 			}else{
-				this.getMedialistHeaderComponent().prepend('<span class="playlistTitle horizontalHeader">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription horizontalHeader">(' + this.playlistSet[playlistIndex].items.length + ' '+gM( 'mwe-embedplayer-videos')+')</span>');
+				this.getMedialistHeaderComponent().prepend('<span class="playlistTitle horizontalHeader">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription horizontalHeader">(' + items.length + ' ' + gM('mwe-embedplayer-videos') + ')</span>');
 				this.getMedialistHeaderComponent().prepend('<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist') + '"></div>');
 			}
 			if (this.getConfig('showControls') === true){
@@ -413,7 +425,6 @@
 			if (this.firstLoad){
 				if ( this.getConfig( 'initItemEntryId' ) ){ // handle initItemEntryId
 					// find selected item index
-					var items = this.playlistSet[this.currentPlaylistIndex].items;
 					var found = false;
 					for (var i=0; i<items.length; i++){
 						if (items[i].id === this.getConfig( 'initItemEntryId' )){

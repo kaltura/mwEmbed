@@ -51,6 +51,11 @@
 				}
 			});
 
+			this.bind( 'layoutBuildDone ended', function(){
+				_this.show();
+
+			});
+
 			this.bind('updateLayout', function(){
 				_this.getComponent().css('height', _this.getPlayer().getVideoHolder().height());
 			});

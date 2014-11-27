@@ -354,6 +354,11 @@ return array(
 				'doc' => "If the playlist should be rendered out of the IFrame (on page).",
 				'type' => 'boolean'
 			),
+			'MaxClips' => array(
+                'doc' => "Max number of clips to show in the playlist.",
+                'type' => 'number',
+                'initvalue' => 25
+            ),
 			'initItemEntryId' => array(
 				'doc' => "The entryId that should be played first."
 			),
@@ -376,9 +381,14 @@ return array(
 			'kpl1Name' => array(
 				'doc' => "The name of the indexed playlist.",
 				'type' => 'hiddenValue'
-			)
+			),
+			'additionalPlaylists' => array(
+                'doc' => "Additional playlists.",
+                'type' => 'additionalPlaylists'
+            )
 		)
-	),/*
+	),
+	/*
 	'playlistHolder' => array(
 		'description' => 'Holds the playlist clip list.',
 		'attributes' => array(
@@ -615,6 +625,11 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'featureCheckbox' => true,
 		'label' => 'Custom styles',
 		'attributes' => array(
+			'applyToLargePlayButton' => array(
+				'type' => 'boolean',
+				'player-refresh' => 'theme.applyToLargePlayButton',
+				"initvalue" => true
+			),
 			'buttonsSize' => array(
 				'label' => 'Button\'s size',
 				'doc' => 'Button\'s size.',
@@ -1031,7 +1046,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'postrollUrlJs' => array(
 				'doc' => "The VAST ad tag URL used where platform does not support flash.
 			If undefined all platforms will use the base postrollUrl for ad requests.",
-				'label' => 'Preroll JS URL',
+				'label' => 'Postroll JS URL',
 				'type' => 'url',
 				'section' => 'post',
 			),
@@ -1124,6 +1139,11 @@ The playhead reflects segment time as if it was the natural stream length.",
 					If set to true, the prerollInterval will be respected across player views.',
 				'type' => 'boolean',
 				'initvalue' => false,
+			),
+			'enableCORS' => array(
+				'doc' => 'Enable CORS request to support request cookies to secured domains over ajax',
+				'type' => 'boolean',
+				'initvalue' => true
 			)
 		)
 	),
@@ -1344,9 +1364,13 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'text' => array(
 				'doc' => 'The text string to be displayed for the title.',
 				'initvalue' => '{mediaProxy.entry.name}',
-				'type' => 'string',
-				'initValue' => '{mediaProxy.entry.name}',
+				'type' => 'string'
 			),
+			'truncateLongTitles' => array(
+                'doc' => 'Truncate long titles to fit in one line. Truncated titles get a tooltip and 3 dots at the end of the truncated text.',
+                'type' => 'boolean',
+                'initvalue' => true,
+            )
 		)
 	),
 	'airPlay' => array(
@@ -1358,8 +1382,24 @@ The playhead reflects segment time as if it was the natural stream length.",
 	'nativeCallout' => array(
 		'description' => 'Supports replacing the player "play button" with a callout to native player, for Mobile Devices.',
 		'type' => 'featuremenu',
-		'label' => 'nativeCallout',
 		'model' => 'config.plugins.nativeCallout',
+		'attributes' => array(
+            'storeUrl' => array(
+                'doc' => 'The URL for the app market',
+                'initvalue' => '',
+                'type' => 'string',
+            ),
+            'mimeName' => array(
+                'doc' => 'The linker for opening your native app',
+                'initvalue' => '',
+                'type' => 'string',
+            ),
+            'iframeUrl' => array(
+                'doc' => 'iFrame URL',
+                'initvalue' => '',
+                'type' => 'string',
+            ),
+        )
 	),
 	'related' => array(
 		'description' => 'Add the Related Videos screen at the end of the video to attract users to watch additional videos.',
@@ -1419,4 +1459,17 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 		)
 	),
+	'hammerEvents' => array(
+		'description' => 'Support Hammer.js events against the player canvas.',
+		'attributes' => array(
+			'on' => array(
+				'doc' => "The list of named hammer events to track seperated by spaces.",
+				'type' => 'string'
+			),
+			'options' => array(
+				'doc' => "JSON object of hammer initialization options",
+				'type' => 'string'
+			),
+		)
+	)
 );

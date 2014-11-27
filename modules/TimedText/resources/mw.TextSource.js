@@ -360,6 +360,8 @@
 				nodeString += '</' + node.nodeName + '>';
 				return nodeString;
 			}
+			// be sure to return an empty string where node.childNodes is empty
+			return '';
 		},
 		/**
 		 * srt timed text parse handle:
@@ -392,7 +394,7 @@
 			for (var i = 0; i < caplist.length; i++) {
 		 		var captionText = "";
 				var caption = false;
-				captionText = caplist[i].trim();
+				captionText = caplist[i].replace(/^\s+|\s+$/g, '');
 				var s = captionText.split(/\n/);
 				if (s.length < 2) {
 					// file format error or comment lines

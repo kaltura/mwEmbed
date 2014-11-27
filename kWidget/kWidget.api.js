@@ -58,7 +58,7 @@ kWidget.api.prototype = {
 	/**
 	 * Do an api request and get data in callback
 	 */
-	doRequest: function ( requestObject, callback ){
+	doRequest: function ( requestObject, callback, errorCallback ){
 		var _this = this;
 		var param = {};
 		// If we have Kaltura.NoApiCache flag, pass 'nocache' param to the client
@@ -87,8 +87,8 @@ kWidget.api.prototype = {
 
 		var handleDataResult = function( data ){
 			// check if the base param was a session ( then directly return the data object ) 
-            data = data || [];
-            if( data.length == 2 && param[ '1:service' ] == 'session' ){
+			data = data || [];
+			if( data.length == 2 && param[ '1:service' ] == 'session' ){
 				data = data[1];
 			}
 			// issue the local scope callback:
@@ -97,6 +97,24 @@ kWidget.api.prototype = {
 				callback = null;
 			}
 		}
+		// build the request URLs: 
+		var globalCBName = 'kapi_' + Math.abs( _this.hashCode( kWidget.param( param ) ) );
+		var requestURL = _this.getApiUrl( serviceType ) + '&' + kWidget.param( param );
+		var xhr = null;
+		// handle API timeout:
+		var timeoutError = setTimeout(function(){
+			// null out callback:
+			window[ globalCBName ] = null;
+			// abort XHR if active: 
+			if( xhr ){
+				xhr.abort();
+			}
+			if (errorCallback){
+				errorCallback();
+			}
+			mw.log( "Error Timeout in request:" + requestURL );
+		}, mw.getConfig("Kaltura.APITimeout") );
+		
 		// Run the request
 		// NOTE kaltura api server should return: 
 		// Access-Control-Allow-Origin:* most browsers support this. 
@@ -104,21 +122,20 @@ kWidget.api.prototype = {
 		try {
 			// set format to JSON ( Access-Control-Allow-Origin:* )
 			param['format'] = 1;
-			this.xhrRequest( _this.getApiUrl( serviceType ), param, function( data ){
+			xhr = this.xhrRequest( _this.getApiUrl( serviceType ), param, function( data ){
+				clearTimeout(timeoutError);
 				handleDataResult( data );
 			});
 		} catch(e){
 			param['format'] = 9; // jsonp
-			// build the request url: 
-			var requestURL = _this.getApiUrl( serviceType ) + '&' + kWidget.param( param );
 			// try with callback:
-			var globalCBName = 'kapi_' + Math.abs( _this.hashCode( kWidget.param( param ) ) );
 			if( window[ globalCBName ] ){
 				// Update the globalCB name inx.
 				this.callbackIndex++;
 				globalCBName = globalCBName + this.callbackIndex;
 			}
 			window[ globalCBName ] = function(data){
+				clearTimeout(timeoutError);
 				handleDataResult( data );
 				// null out the global callback for fresh loads
 				 window[globalCBName] = undefined;
@@ -136,7 +153,7 @@ kWidget.api.prototype = {
 				( ( kWidget.param( param ).length > 2000 ) ? 'xhrPost' : 'xhrGet' ) :
 				( (  this.type == "GET" )? 'xhrGet': 'xhrPost' );
 		// do the respective request
-		this[ requestMethod ](  url, param, callback );
+		return this[ requestMethod ](  url, param, callback );
 	},
 	xhrGet: function( url, param, callback ){
 		var xmlhttp = new XMLHttpRequest();
@@ -147,6 +164,7 @@ kWidget.api.prototype = {
 		}
 		xmlhttp.open("GET", url + '&' + kWidget.param( param ), true);
 		xmlhttp.send();
+		return xmlhttp;
 	},
 	/**
 	 * Do an xhr request
@@ -161,6 +179,7 @@ kWidget.api.prototype = {
 		xmlhttp.open("POST", url, true);
 		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		xmlhttp.send( kWidget.param( param ) );
+		return xmlhttp;
 	},
 	handleKsServiceRequest: function( requestObject ){
 		var param = {};

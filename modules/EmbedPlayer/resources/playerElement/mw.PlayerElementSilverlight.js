@@ -66,7 +66,8 @@
 							'alert': 'onAlert',
 							'mute': 'onMute',
 							'unmute': 'onUnMute',
-							'volumeChanged': 'onVolumeChanged'
+							'volumeChanged': 'onVolumeChanged',
+							'error': 'onError'
 						};
 
 						$.each( bindEventMap, function( bindName, localMethod ) {
@@ -138,6 +139,9 @@
 		},
 		onUnMute: function () {
 			this.muted = false;
+		},
+		onError: function () {
+			$( this ).trigger( 'error' );
 		},
 		onVolumeChanged: function ( data ) {
 			this.volume = data.newVolume;

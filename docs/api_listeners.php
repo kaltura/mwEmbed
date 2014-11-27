@@ -219,8 +219,7 @@
 		),
 		'cuePointReached' => array(
 			'callbackArgs' => 'Current cuePoint object. Return Object with context and a cuePoint object',
-			'desc' => "Notification fired when the player reaches a cuePoint",
-			"example" => "../modules/KalturaSupport/tests/CuePointsMidrollVast.html"
+			'desc' => "Notification fired when the player reaches a cuePoint"
 		),
 		'switchingChangeStarted' => array(
 			'callbackArgs' => 'newIndex: The index of the bitrate the player started switching to. If auto, send -1, newBitrate: The bitrate the player started switching to. If auto, send null',
@@ -239,7 +238,8 @@
 	$eventAds = array(
 		'adOpportunity' => array(
 			'callbackArgs' => 'context: context of the ad opportunity: pre, post, mid, cuePoint: the cue point object',
-			'desc' => "Notification fired when the player's time progress reaches an ad cue point"
+			'desc' => "Notification fired when the player's time progress reaches an ad cue point",
+			"example" => "../modules/KalturaSupport/tests/CuePointsMidrollVast.html"
 		),
 		'sequenceItemPlayStart' => array(
 			'callbackArgs' => 'sequenceContext: pre / post / mid / main (see SequenceContextType class), currentIndex: index of current item',
@@ -318,29 +318,29 @@
 		)
 	);
 	$playlists = array(
-        'playlistReady' => array(
-            'props' => 'None',
-            'desc' => 'The playlist layout is ready.'
-        ),
-        'playlistPlayNext' => array(
-            'props' => 'None',
-            'desc' => 'The next clip was requested.'
-        ),
-        'playlistPlayPrevious' => array(
-            'props' => 'None',
-            'desc' => 'The previous clip was requested.'
-        ),
-        'playlistFirstEntry' => array(
-            'props' => 'None',
-            'desc' => 'The first clip in the playlist was loaded.'
-        ),
-        'playlistMiddleEntry' => array(
-            'props' => 'None',
-            'desc' => 'A clip that is not the first or the last clip in the playlist was loaded.'
-        ),
-        'playlistLastEntry' => array(
-            'props' => 'None',
-            'desc' => 'The last clip in the playlist was loaded.'
-        )
-    );
+		'playlistReady' => array(
+			'props' => 'None',
+			'desc' => 'The playlist layout is ready.'
+		),
+		'playlistPlayNext' => array(
+			'props' => 'None',
+			'desc' => 'The next clip was requested.'
+		),
+		'playlistPlayPrevious' => array(
+			'props' => 'None',
+			'desc' => 'The previous clip was requested.'
+		),
+		'playlistFirstEntry' => array(
+			'props' => 'None',
+			'desc' => 'The first clip in the playlist was loaded.'
+		),
+		'playlistMiddleEntry' => array(
+			'props' => 'None',
+			'desc' => 'A clip that is not the first or the last clip in the playlist was loaded.'
+		),
+		'playlistLastEntry' => array(
+			'props' => 'None',
+			'desc' => 'The last clip in the playlist was loaded.'
+		)
+	);
 ?>

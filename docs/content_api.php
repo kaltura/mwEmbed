@@ -134,7 +134,13 @@ require_once( realpath( dirname( __FILE__ ) ) . '/api_evaluates.php' );
 				$o.=$var['notificationData'];
 			}
 			if( isset( $var['notificationDataValue'] ) ){
-				$o.='<br><span class="type">Sample</span>:<br><pre class="prettyprint linenums">kdp.sendNotification("'. $key . '", ' . $var['notificationDataValue'] . ');</pre>';
+				$o.='<br><span class="type">Sample</span>:<br>';
+				if( !is_array( $var['notificationDataValue'] ) ){
+					$var['notificationDataValue'] = array( $var['notificationDataValue'] );
+				}
+				foreach( $var['notificationDataValue'] as $k => $v ){
+					$o.='<pre class="prettyprint linenums">kdp.sendNotification("'. $key . '", ' .  $v . ');</pre>';
+				}
 			}
 			if( isset( $var['default'] ) && $var['default'] != '' ){
 				$o.='<br><span class="default">Default</span>: <br>&nbsp;&nbsp;&nbsp;&nbsp;' .$var['default'];
@@ -408,20 +414,20 @@ kWidget.embed({
 <p>The JavaScript API is a two-way communication channel that lets the player communicate what it is doing and lets you instruct the player to perform operations.
 <br>For more information: <a href="http://knowledge.kaltura.com/javascript-api-kaltura-media-players#UnderstandingtheJavaScriptAPIWorkflow" target="_blank">JavaScript API for Kaltura Media Players</a></p>
 <p>Available JavaScript API:</p>
-<a href="#kWidget.addReadyCallback-desc">1. Receiving notification that the player API is ready</a><br>
-<a href="#sendNotification-desc">2. Calling a player method from JavaScript</a><br>
-<a href="#kBind-desc">3. Registering to a player event</a><br>
-<a href="kUnbind-desc">4. Un-registering a player event</a><br>
-<a href="#evaluate-desc">5. Retrieving a player property</a><br>
-<a href="#setKDPAttribute-desc">6. Setting a player attribute</a><br>
+<a class="btn btn btn-info" href="#kWidget.addReadyCallback-desc">Ready Notifications</a>
+<a class="btn btn btn-info" href="#sendNotification-desc">sendNotification</a>
+<a class="btn btn btn-info" href="#kBind-desc">Bind</a>
+<a class="btn btn btn-info" href="kUnbind-desc">unBind</a>
+<a class="btn btn btn-info" href="#evaluate-desc">Evaluate</a>
+<a class="btn btn btn-info" href="#setKDPAttribute-desc">Update properties</a>
 
 
 <a name="kWidget.addReadyCallback-desc"></a>
-<h3>1. Receiving notification that the player API is ready</h3>
+<h3>Receiving notification that the player API is ready</h3>
 <p>See <a href="#kWidget.addReadyCallback">kWidget.addReadyCallback</a> or the "<a href="#kWidget.settingsObject">readyCallback</a>" function within a dynamic embed.</p>
 
 <a name="sendNotification-desc"></a>
-<h3>2. Calling a player method from JavaScript</h3>
+<h3>Calling a player method from JavaScript</h3>
 <p>Use the <b>sendNotification</b> method to create custom notifications that instruct the player to perform an action, such as play, seek, or pause.</p>
 <?php echo getDocs( array( 'sendNotification' ) ) ?>
 <br><br>Code sample:<br>
@@ -441,11 +447,10 @@ echo '<div class="docblock">' .
 	'</div><br>';
 ?>
 <a name="kBind-desc"></a>
-<h4>3. Registering to a player event</h4>
+<h4>Registering to a player event</h4>
 <p>Use the <b>kBind</b> method to add listen for a specific notification that something happened in the player,
 such as the video is playing or is paused.</p>
 <?php echo getDocs( array( 'kBind' ) ) ?>
-
 <br><br>Code sample:<br>
 <pre class="prettyprint linenums">
 kWidget.addReadyCallback(function( playerId ){
@@ -458,7 +463,7 @@ kWidget.addReadyCallback(function( playerId ){
 });
 </pre>
 <a name="kUnbind-desc"></a>
-<h3>4. Un-registering a player event</h3>
+<h3>Un-registering a player event</h3>
 <p>Use the <b>kUnbind</b> method to remove a listener that is no longer needed.</p>
 Removing event listeners that are no longer needed can improve performance 
 <br><br>Code sample:<br>
@@ -487,7 +492,7 @@ kWidget.addReadyCallback(function( playerId ){
 
 
 <a name="evaluate-desc"></a>
-<h3>5. Retrieving a player property</h3>
+<h3>Retrieving a player property</h3>
 <p>Use the <b>evaluate</b> method to find out something about a player by extracting data from player components.</p>
 <?php echo getDocs( array( 'evaluate' ) ) ?>
 <br><br>Code sample:<br>
@@ -503,7 +508,7 @@ kWidget.addReadyCallback(function( playerId ){
 
 
 <a name="setKDPAttribute-desc"></a>
-<h3>6. Setting a player attribute</h3>
+<h3>Setting a player attribute</h3>
 <p>Use the <b>setKDPAttribute</b> method to change a player attribute by setting its value.</p>
 <br>Code sample:<br>
 <pre class="prettyprint linenums">
@@ -516,3 +521,37 @@ var kdp = document.getElementById('kVideoTarget');
 kdp.setKDPAttribute("theme", "buttonsSize", "14");
 </pre>
 <?php echo getDocs( array( 'setKDPAttribute' ) ) ?>
+
+<h3 id="standAlonePlayerModes" > Stand Alone Player Modes </h3>
+	Kaltura player supports several modes for associating content and configuration with the player. To 
+	evaluate of what is best for your integration requirements we strongly recommend consulting with Kaltura 
+	Solutions team.<br><br>
+	
+	<ul>
+		<li> <b>MediaProxy Override</b> -- Overrides media and player configuration at embed time.
+			<ul>
+				<li> Good for "light" integrations tests a few lines of JavaScript</li>
+				<li> Not good for portability, native apps, or player iframe services.</li>
+				<li> Not compatible with entity baased plugins or clip lists ( playlist, related videos, bumper ) </li> 
+			</ul>
+		</li>
+		<li> <b>Embed Services Lib</b> -- The "embed service" library includes tools for translating your own entitiy 
+		 and player JSON data store against Kaltura player provided identifiers.
+		 	<ul>
+				<li> Recommended approach for connecting the player to multiple entity services outside of Kaltura API</li>
+				<li> Retains portability, native apps, and player iframe services.</li>
+				<li> Compatible with entity baaed plugins or clip lists ( playlist, related videos, etc. ) </li>
+			</ul>
+		</li>
+		<li> <b> Kaltura Platform API </b> -- baseline platform data provider 
+			<ul>
+				<li> Uses Kaltura provided entries with flexible custom MetaData store, internal and external asset urls references etc.</li>
+			</ul>
+		</li>  
+	</ul> 
+	
+<h3 id="mediaProxyObject">MediaProxy Object</h3> 
+Defines the full set of entities for mediaProxy object:
+
+
+

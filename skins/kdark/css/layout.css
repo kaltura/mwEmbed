@@ -767,9 +767,6 @@ body { letter-spacing: 0.04em; }
 	background: rgba(0,0,0,0.7);
 	color: #efefef;
 }
-.touch .largePlayBtn {
-	pointer-events: none;
-}
 
 .largePlayBtn:hover {
 	background: rgba(0,0,0,1);
@@ -1077,6 +1074,13 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
     animation:spin 3s linear infinite;
 	outline: 0 !important;
 }
+
+.truncateText {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
 .cssChecker{
 	display: none !important;
 }

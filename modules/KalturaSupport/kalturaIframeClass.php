@@ -197,8 +197,10 @@ class kalturaIframeClass {
 			$settings['entry_id'] = $this->request->get('entry_id');
 		}
 
-		// add ks flashvar
-		$settings['flashvars']['ks'] = $this->client->getKS();
+		// Only add KS if it was part of the request, else the client should re-generate in multi-request for any subsequent request: 
+		if( $this->request->hasKS() ){
+			$settings['flashvars']['ks'] = $this->client->getKS();
+		}
 		// add referrer flashvar
 		$settings['flashvars']['referrer'] = htmlspecialchars( $this->request->getReferer() );
 
@@ -499,7 +501,7 @@ class kalturaIframeClass {
 		);
 		// check if we should minify and cache: 
 		if( !$wgEnableScriptDebug ){
-			$s = JavaScriptMinifier::minify( $s, $wgResourceLoaderMinifierStatementsOnOwnLine );
+			$s = JavaScriptCompress::minify( $s, $wgResourceLoaderMinifierStatementsOnOwnLine );
 			// try to store the cached file: 
 			@file_put_contents($cachePath, $s);
 		}
@@ -609,6 +611,9 @@ HTML;
 			}
 			if (isset($theme['buttonsColor'])){
 				$customStyle = $customStyle . '.btn {background-color: ' . $theme['buttonsColor'] . '}';
+				if (isset($theme['applyToLargePlayButton']) && $theme['applyToLargePlayButton'] == true){
+					$customStyle = $customStyle  . '.largePlayBtn {background-color: ' . $theme['buttonsColor'] . '!important}';
+				}
 			}
 			if (isset($theme['sliderColor'])){
 				$customStyle = $customStyle . '.ui-slider {background-color: ' . $theme['sliderColor'] . '!important}';
@@ -623,6 +628,9 @@ HTML;
 			}
 			if (isset($theme['buttonsIconColor'])){
 				$customStyle = $customStyle . '.btn {color: ' . $theme['buttonsIconColor'] . '!important}';
+				if (isset($theme['applyToLargePlayButton']) && $theme['applyToLargePlayButton'] == true){
+					$customStyle = $customStyle  . '.largePlayBtn {color: ' . $theme['buttonsIconColor'] . '!important}';
+				}
 			}
 			if (isset($theme['watchedSliderColor'])){
 				$customStyle = $customStyle . '.watched {background-color: ' . $theme['watchedSliderColor'] . '!important}';
@@ -956,11 +964,9 @@ HTML;
 		if( is_file( $cachePath) ){
 			return file_get_contents( $cachePath );
 		}
-		// Get the JSmin class:
-		require_once( $wgBaseMwEmbedPath . '/includes/libs/JavaScriptMinifier.php' );
 		// get the contents inline: 
 		$jsContent = @file_get_contents( $resourcePath );
-		$jsMinContent = JavaScriptMinifier::minify( $jsContent, $wgResourceLoaderMinifierStatementsOnOwnLine );
+		$jsMinContent = JavaScriptCompress::minify( $jsContent, $wgResourceLoaderMinifierStatementsOnOwnLine );
 	
 		// try to store the cached file: 
 		@file_put_contents($cachePath, $jsMinContent);

@@ -147,12 +147,8 @@ mw.EmbedPlayerNative = {
 			$( this ).find( '.playerPoster' ).attr('src', posterSrc );
 		} else {
 			$( this ).append(
-				$('<img />').css({
-					'margin' : '0',
-					'width': '100%',
-					'height': '100%'
-				})
-				.attr( 'src', posterSrc)
+				$('<img />')
+					.attr( 'src', posterSrc)
 				.addClass('playerPoster')
 				.load(function(){
 					_this.applyIntrinsicAspect();
@@ -862,7 +858,7 @@ mw.EmbedPlayerNative = {
 
 					// keep going towards playback! if  switchCallback has not been called yet
 					// we need the "playing" event to trigger the switch callback
-					if ( !mw.isIOS71() && $.isFunction( switchCallback ) ){
+					if (!mw.isIOS71() && $.isFunction(switchCallback) && !_this.isVideoSiblingEnabled()) {
 						vid.play();
 					} else {
 						_this.removeBlackScreen();
@@ -1408,11 +1404,19 @@ mw.EmbedPlayerNative = {
 			return;
 		}
 		var _this = this;
+		// this time out is to give $( window ).unload method a chance to be called before showing page unload network errors. 
+		// we want to keep this value low to avoid delay in "access control" network errors. 
 		setTimeout(function(){
 			if( _this.triggerNetworkErrorsFlag ){
-				_this.triggerHelper( 'embedPlayerError' );
+				var data = [];
+				if ( event && event.currentTarget && event.currentTarget.error ) {
+					data[ 'errorCode' ] = event.currentTarget.error.code;
+					mw.log( 'EmbedPlayerNative::_onerror: MediaError code: ' + data.errorCode);
+				}
+
+				_this.triggerHelper( 'embedPlayerError', [ data ] );
 			}
-		}, 3000);
+		}, 100);
 	},
 
 	/**

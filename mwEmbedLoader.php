@@ -2,12 +2,13 @@
 // Include configuration 
 require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' );
 require_once( realpath( dirname( __FILE__ ) ) . '/modules/KalturaSupport/KalturaCommon.php' );
+// autoloader and globals
+require ( realpath( dirname( __FILE__ ) ) . '/includes/MwEmbedWebStartSetup.php' );
 
 // only include the iframe if we need to: 
 // Include MwEmbedWebStartSetup.php for all of mediawiki support
 if( isset( $_GET['autoembed'] ) ){
 	require_once( realpath( dirname( __FILE__ ) ) . '/modules/ExternalPlayers/ExternalPlayers.php' );
-	require ( dirname( __FILE__ ) . '/includes/MwEmbedWebStartSetup.php' );
 	require_once( realpath( dirname( __FILE__ ) ) . '/modules/KalturaSupport/kalturaIframeClass.php' );
 }
 
@@ -225,7 +226,6 @@ class mwEmbedLoader {
 	}
 	
 	private function getMinPerUiConfJS(){
-		global $wgResourceLoaderMinifierStatementsOnOwnLine;
 		// mwEmbedLoader based uiConf values can be hashed by the uiconf
 		$uiConfJs = $this->getPerUiConfJS();
 		if( $uiConfJs == '' ){
@@ -238,8 +238,7 @@ class mwEmbedLoader {
 			return $cacheJS;
 		}
 		//minfy js 
-		require_once( realpath( dirname( __FILE__ ) ) . '/includes/libs/JavaScriptMinifier.php' );
-		$minjs = JavaScriptMinifier::minify( $uiConfJs, $wgResourceLoaderMinifierStatementsOnOwnLine );
+		$minjs = JavaScriptCompress::minify( $uiConfJs );
 		// output minified cache: 
 		$this->outputFileCache( $key, $minjs);
 		return $minjs;
@@ -333,7 +332,7 @@ class mwEmbedLoader {
 	}
 	
 	private function getMinCombinedLoaderJs(){
-		global $wgHTTPProtocol, $wgMwEmbedVersion, $wgResourceLoaderMinifierStatementsOnOwnLine;
+		global $wgHTTPProtocol, $wgMwEmbedVersion;
 		$key = '/loader_' . $wgHTTPProtocol . '.min.' . $wgMwEmbedVersion . '.js' ;
 		$cacheJS = $this->getCacheFileContents( $key );
 		if( $cacheJS !== false ){
@@ -342,8 +341,7 @@ class mwEmbedLoader {
 		// Else get from files: 
 		$rawScript = $this->getCombinedLoaderJs();
 		// Get the JSmin class:
-		require_once( realpath( dirname( __FILE__ ) ) . '/includes/libs/JavaScriptMinifier.php' );
-		$minjs = JavaScriptMinifier::minify( $rawScript, $wgResourceLoaderMinifierStatementsOnOwnLine );
+		$minjs = JavaScriptCompress::minify( $rawScript );
 		// output the file to the cache:
 		$this->outputFileCache( $key, $minjs);
 		// return the minified js:
@@ -404,6 +402,7 @@ class mwEmbedLoader {
 			'Kaltura.UseAppleAdaptive' => $wgKalturaUseAppleAdaptive,
 			'Kaltura.EnableEmbedUiConfJs' => $wgKalturaEnableEmbedUiConfJs,
 			'Kaltura.PageGoogleAalytics' => $wgKalturaGoogleAnalyticsUA,
+			'Kaltura.APITimeout' => 10000
 		);
 		if( isset( $_GET['pskwidgetpath'] ) ){
 			$exportedJsConfig[ 'Kaltura.KWidgetPsPath' ] = htmlspecialchars( $_GET['pskwidgetpath'] );

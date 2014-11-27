@@ -45,6 +45,10 @@ var kWidget = {
 	// stored per player id
 	iframeAutoEmbedCache:{},
 
+	// For storing iframe urls
+	// Stored per player id
+	iframeUrls: {},
+
 	/**
 	 * The master kWidget setup function setups up bindings for rewrites and
 	 * proxy of jsCallbackReady
@@ -326,7 +330,7 @@ var kWidget = {
 			return ;
 		}
 		var uiconf_id = settings.uiconf_id;
-		var confFile = settings.flashvars.confFilePath;
+		var confFile = settings.flashvars.confFilePath ? settings.flashvars.confFilePath : settings.flashvars.jsonConfig;
 		if( !uiconf_id && !confFile ){
 			this.log("Error: kWidget.embed missing uiconf_id or confFile");
 			return ;
@@ -880,7 +884,9 @@ var kWidget = {
 		iframe.className = 'mwEmbedKalturaIframe';
 		iframe.setAttribute('aria-labelledby', 'Player ' + targetId);
 		iframe.setAttribute('aria-describedby', 'The Kaltura Dynamic Video Player');
-
+		// IE8 requires frameborder attribute to hide frame border: 
+		iframe.setAttribute('frameborder', '0');
+		
 		// Allow Fullscreen
 		iframe.setAttribute('allowfullscreen', true);
 		iframe.setAttribute('webkitallowfullscreen', true);
@@ -924,27 +930,30 @@ var kWidget = {
 			// get the playload from local cache
 			window[ cbName ]( this.iframeAutoEmbedCache[ targetId ]  );
 		} else {
-			if (settings.flashvars.jsonConfig){
-				var jsonConfig = settings.flashvars.jsonConfig;
-				settings.flashvars.jsonConfig = null;
+			// Check if we need to use post ( where flashvars excceed 2K string )
+			var iframeRequest =  this.getIframeRequest( widgetElm, settings );
+			if ( iframeRequest.length > 2083 ){
+				this.log( "Warning iframe requests (" + iframeRequest.length + ") exceeds 2083 charachters, won't cache on CDN." )
 				$.ajax({
 					type:"POST",
 					dataType: 'text',
-					url: this.getIframeUrl() + '?' +
-						this.getIframeRequest( widgetElm, settings ),
-					data:{"jsonConfig":jsonConfig}
+					url: this.getIframeUrl(),
+					data: iframeRequest
 				}).success(function(data){
 						var contentData = {content:data} ;
 						window[cbName](contentData);
 					})
 					.error(function(e){
-						alert("error occur");
+						this.log("Error in iframe request")
 					})
 			} else {
+				// Store iframe urls
+				_this.iframeUrls[ targetId ] = this.getIframeUrl() + '?' + this.getIframeRequest( widgetElm, settings );
 				// do an iframe payload request:
 				_this.appendScriptUrl( this.getIframeUrl() + '?' +
-					this.getIframeRequest( widgetElm, settings ) +
-					'&callback=' + cbName );
+					iframeRequest + 
+					'&callback=' + cbName
+				);
 			}
 		}
 	},
@@ -1753,13 +1762,11 @@ var kWidget = {
 	 flashVarsToUrl: function( flashVarsObject ){
 		 var params = '';
 		 for( var i in flashVarsObject ){
-			 if (i !== 'jsonConfig'){
-				 var curVal = typeof flashVarsObject[i] == 'object'?
-						 JSON.stringify( flashVarsObject[i] ):
-						 flashVarsObject[i]
-				 params+= '&' + 'flashvars[' + encodeURIComponent( i ) + ']=' +
-					encodeURIComponent(  curVal );
-			 }
+			 var curVal = typeof flashVarsObject[i] == 'object'?
+					 JSON.stringify( flashVarsObject[i] ):
+					 flashVarsObject[i]
+			 params+= '&' + 'flashvars[' + encodeURIComponent( i ) + ']=' +
+				encodeURIComponent(  curVal );
 		 }
 		 return params;
 	 },
