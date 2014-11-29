@@ -62,8 +62,7 @@
 					'jquery.naturalSize',
 
 					'mw.PlayerElementHTML',
-					'mw.PlayerElementFlash',
-					'mw.PlayerElementSilverlight',
+					'mw.PlayerElementFlash'
 				),
 				'styles' => "resources/EmbedPlayer.css",
 				'messageFile' => 'EmbedPlayer.i18n.php',
