@@ -531,6 +531,7 @@ class UiConfResult {
 		$plugins = array(
 			"topBarContainer" => array(),
 			"controlBarContainer" => array(),
+			"sideBarContainer" => array(),
 			"scrubber" => array(),
 			"largePlayBtn" => array(),
 			"playHead" => array(),
