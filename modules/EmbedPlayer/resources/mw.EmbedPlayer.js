@@ -1637,6 +1637,7 @@
 
 					// reload the player
 					if( _this.autoplay ){
+                        _this.removePoster();
 						_this.play();
 					}
 
