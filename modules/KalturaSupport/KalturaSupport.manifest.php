@@ -578,6 +578,16 @@ return array(
 			'minWidth' => array(
 				'doc' => "The minimum width of the playhead. If the min-width is reached, normal responsive display importance removal rules come into effect.",
 				'type' => 'number'
+			),
+			'sliderPreview' => array(
+				'doc' => "Show a preview thumbnail with the current time when mouse is over the scrubber",
+				'type' =>'boolean',
+				'initvalue' =>true
+			),
+			'showOnlyTime' => array(
+				'doc' => "Show only the time when mouse is over the scrubber",
+				'type' =>'boolean',
+				'initvalue' =>false
 			)
 		)
 	),
