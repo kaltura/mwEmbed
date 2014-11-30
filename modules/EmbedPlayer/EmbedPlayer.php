@@ -21,6 +21,7 @@
 			),
 			"mw.EmbedPlayer" => array(
 				'scripts' => array(
+					"resources/playerElement/Silverlight.js",
 					"resources/mw.processEmbedPlayers.js",
 					"resources/mw.EmbedPlayer.js",
 					"resources/mw.FullScreenManager.js",
