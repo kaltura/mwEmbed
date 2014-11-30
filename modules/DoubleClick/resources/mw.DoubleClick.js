@@ -333,22 +333,20 @@
 		},
 
 		pauseAd: function (isLinear) {
-			if (this.getConfig("pauseAdOnClick") !== false) {
-				var _this = this;
-				this.embedPlayer.paused = true;
-				$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
+			var _this = this;
+			this.embedPlayer.paused = true;
+			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 
-				if (isLinear) {
-					this.embedPlayer.enablePlayControls(["scrubber"]);
-				} else {
-					_this.embedPlayer.getPlayerElement().sendNotification("doPause");
-				}
+			if (isLinear) {
+				this.embedPlayer.enablePlayControls(["scrubber"]);
+			} else {
+				_this.embedPlayer.pause();
+			}
 
-				if (_this.isChromeless) {
-					_this.embedPlayer.getPlayerElement().sendNotification("pauseAd");
-				} else {
-					this.adsManager.pause();
-				}
+			if (_this.isChromeless) {
+				_this.embedPlayer.getPlayerElement().sendNotification("pauseAd");
+			} else {
+				this.adsManager.pause();
 			}
 		},
 
@@ -359,7 +357,7 @@
 			if (isLinear) {
 				this.embedPlayer.disablePlayControls();
 			} else {
-				_this.embedPlayer.getPlayerElement().sendNotification("doPlay");
+				_this.embedPlayer.play();
 			}
 
 			if (_this.isChromeless) {
@@ -368,6 +366,17 @@
 				this.adsManager.resume();
 			}
 		},
+
+		toggleAdPlayback: function (isLinear) {
+			if (this.getConfig("pauseAdOnClick") !== false) {
+				if (this.embedPlayer.paused) {
+					this.resumeAd(isLinear);
+				} else {
+					this.pauseAd(isLinear);
+				}
+			}
+		},
+
 		/**
 		 * Get the content video tag
 		 */
@@ -649,35 +658,6 @@
 			var lastAdStartTime = null;
 
 			// Add ad listeners:
-			adsListener( 'CLICK', function(event){
-				if( mw.isMobileDevice() ){
-					if( mw.isIOS5() || mw.isIOS6() ) {
-						_this.isAdClickTimeoutEnabled = true;
-						var startTime = new Date().getTime();
-						var getTime = function() {
-							var currentTime = new Date().getTime();
-							if (currentTime - startTime > 1000) {
-								_this.embedPlayer.getPlayerElement().play();
-							}
-							startTime = currentTime;
-							if( _this.isAdClickTimeoutEnabled ) {
-								setTimeout(getTime, 500);
-							}
-						};
-						getTime();
-					} else {
-						var eventName = 'focus.doubleClickMobileEvent';
-						if( _this.isPageshowEventSupported() && mw.isIOS() ) {
-							eventName = 'pageshow.doubleClickMobileEvent';
-						}
-						_this.adClickEvent = eventName;
-						var onFocusAction = function(event){
-							_this.embedPlayer.getPlayerElement().play();
-						};
-						$(window).bind(eventName , onFocusAction);
-					}
-				}
-			} );
 			adsListener( 'CONTENT_PAUSE_REQUESTED', function(event){
 				if (_this.currentAdSlotType === 'midroll') {
 					var restoreMidroll = function(){
@@ -817,11 +797,7 @@
 			adsListener('CLICK', function (adEvent) {
 				var ad = adEvent.getAd();
 				var isLinear = ad.isLinear();
-				if (_this.embedPlayer.paused) {
-					_this.resumeAd(isLinear);
-				} else {
-					_this.pauseAd(isLinear);
-				}
+				_this.toggleAdPlayback(isLinear);
 			});
 
 			adsListener( 'FIRST_QUARTILE', function(){
@@ -918,11 +894,7 @@
 			},'adCompleted', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
-				if (_this.embedPlayer.paused) {
-					_this.resumeAd(adInfo.isLinear);
-				} else {
-					_this.pauseAd(adInfo.isLinear);
-				}
+				_this.toggleAdPlayback(adInfo.isLinear);
 			}, 'adClicked', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(companionInfo){
