@@ -11,6 +11,7 @@
 
 		offlineIconClass: 'icon-off-air offline-icon',
 		onAirIconClass: 'icon-on-air live-icon',
+		unsyncIConClass: 'icon-off-air offline-icon live-off-sync-icon',
 
 		liveText: gM( 'mwe-embedplayer-player-on-air' ),
 		offlineText: gM( 'mwe-embedplayer-player-off-air' ),
@@ -22,23 +23,42 @@
 		addBindings: function() {
 			var _this = this;
 			this.bind( 'liveStreamStatusUpdate', function( e, onAirObj ) {
-				_this.onAirStatus = onAirObj.onAirStatus;
-				_this.setLiveStreamStatus( _this.getLiveStreamStatusText() );
+				if ( onAirObj.onAirStatus != _this.onAirStatus ) {
+					_this.onAirStatus = onAirObj.onAirStatus;
+					_this.setLiveStreamStatus();
+				}
 			} );
+			this.bind( 'seeking onpause', function() {
+				//live is off-synch
+				if ( _this.onAirStatus ) {
+					var components = _this.getComponent().children();
+					var $componentIcon =  $ ( $( components[0] ).children()[0] );
+					$componentIcon.removeClass( _this.onAirIconClass ).addClass( _this.unsyncIConClass );
+				}
+			});
+			this.bind( 'movingBackToLive', function() {
+				//live catched up
+				if ( _this.onAirStatus ) {
+					var components = _this.getComponent().children();
+					var $componentIcon =  $ ( $( components[0] ).children()[0] );
+					$componentIcon.removeClass( _this.unsyncIConClass ).addClass( _this.onAirIconClass );
+				}
+			});
 		},
 		getComponent: function() {
 			var _this = this;
 			if( !this.$el ) {
 				var $btnText = $( '<div />')
-					.addClass( 'btn back-to-live-text ' + this.getCssClass() )
+					.addClass( 'btn back-to-live-text timers' + this.getCssClass() )
 					.text( this.offlineText );
 
-				var $button  =$( '<button />' )
-					.addClass( "btn " + this.offlineIconClass + this.getCssClass() );
+				var $icon  =$( '<div />' )
+					.append( $( '<span />').addClass( this.offlineIconClass + this.getCssClass() ) )
+					.addClass( "btn " );
 
 				this.$el = $( '<div />')
-					.addClass( 'ui-widget back-to-live' + this.getCssClass() )
-					.append( $button, $btnText )
+					.addClass( 'back-to-live' + this.getCssClass() )
+					.append( $icon, $btnText )
 					.click( function() {
 						if ( _this.onAirStatus ) {
 							_this.backToLive();
@@ -56,23 +76,17 @@
 			}
 		},
 
-		getLiveStreamStatusText: function() {
-			if ( this.onAirStatus ) {
-				return 'On Air';
-			}
-			return 'Off Air';
-		},
-		setLiveStreamStatus: function( value ) {
+		setLiveStreamStatus: function() {
 			var components = this.getComponent().children();
-			var $componentBtn =  $( components[0] ) ;
+			var $componentIcon =  $ ( $( components[0] ).children()[0] );
 			var $componentText =  $( components[1] ) ;
 			if ( this.onAirStatus ) {
-				$componentBtn.removeClass( this.offlineIconClass ).addClass( this.onAirIconClass );
+				$componentIcon.removeClass( this.offlineIconClass ).addClass( this.onAirIconClass );
 				$componentText.text( this.liveText );
 				this.updateTooltip( this.tooltip );
 			}
 			else {
-				$componentBtn.removeClass( this.onAirIconClass ).addClass( this.offlineIconClass );
+				$componentIcon.removeClass( this.onAirIconClass ).addClass( this.offlineIconClass );
 				$componentText.text( this.offlineText );
 				this.updateTooltip( "" );
 			}

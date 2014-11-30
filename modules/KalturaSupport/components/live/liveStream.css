@@ -1,24 +1,9 @@
- .time-disp-dvr, .live-stream-status, .back-to-live {
-	margin-top: 8px;
-	height: auto;
-	overflow: hidden;
-	font-size: 10.2px;
+.back-to-live {
 	display: inline;
 	border: none;
+	margin-left: 5px;
 }
 
-.time-disp-dvr {
-	padding-right: 8px;
-}
-
-.time-disp-dvr-live {
-	text-shadow: 0 0 10px #FFFFFF;
-	font-weight: bold;
-}
-
-.play_head_dvr {
-	position: absolute;
-}
 .play_head_dvr .ui-slider-handle {
 	width:10px;
 	height:15px;
@@ -27,39 +12,32 @@
 	z-index: 2;	
 }
 
-.back-to-live {
-	margin-top: 6px;
-}
-
-.back-to-live-icon {
-	margin-right: 4px;		
-	width: 0; 
-	height: 0; 
-	border-top: 4px solid transparent;
-	border-bottom: 4px solid transparent;   
-	border-left: 6px solid #FFFFFF;
-	display: inline-block;			
-}
-
 .offline-icon {
-	background-color: #A4A4A4;
+	color: #A4A4A4 !important;
 	opacity: 0.5;
+	font-size: 1em !important;
+	margin-left: 15px !important;
+	opacity: 1;
+	background-color: transparent;
+	color: #ccc;
 }
+
+ .live-off-sync-icon {
+	 color: #FF0000 !important;
+ }
 
 .live-icon {
+	border: 4px solid rgba(255, 0, 0, .4);
 	border-radius: 50%;
-	background-color: rgba(255, 0, 0, .5) !important;
-	color: #FF0000 !important;
-	opacity: 0.4;
-	height: 15px !important;
-	width: 15px !important;
-	font-size: 8px !important;
-	text-shadow: none !important;
-	margin-left: 15px !important;
+	color: #FF0000;
+	font-size: 0.6em;
+	vertical-align : 25%;
+	text-shadow: none;
+	margin-left: 15px;
+	display: inline-block;
 }
 
 .back-to-live-text {
-	padding-left: 10px !important;
 	color: #FFFFFF !important;
 	font-family: "Arial Narrow", Arial;
 }
