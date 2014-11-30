@@ -237,9 +237,6 @@
 		// for more on CMML see: http://wiki.xiph.org/CMML
 		'cmmlData': null,
 
-		// Stores the seek time request, Updated by the seek function
-		'serverSeekTime': 0,
-
 		// If the embedPlayer is current 'seeking'
 		'seeking': false,
 
@@ -2309,7 +2306,7 @@
 
 		resetPlaybackValues: function () {
 			// Reset current time and prev time and seek offset
-			this.currentTime = this.previousTime = this.serverSeekTime = 0;
+			this.currentTime = this.previousTime = 0;
 			// reset buffer status
 			this.updateBufferStatus(0);
 			this.updatePlayHead(0);
@@ -2684,13 +2681,7 @@
 		 *            server supports supportsURLTimeEncoding
 		 * @return src url
 		 */
-		getSrc: function (serverSeekTime) {
-			if (serverSeekTime) {
-				this.serverSeekTime = serverSeekTime;
-			}
-			if (this.currentTime && !this.serverSeekTime) {
-				this.serverSeekTime = this.currentTime;
-			}
+		getSrc: function () {
 
 			// No media element we can't return src
 			if (!this.mediaElement) {
@@ -2706,12 +2697,7 @@
 			// Return selected source:
 			if (this.mediaElement.selectedSource) {
 				// See if we should pass the requested time to the source generator:
-				if (this.supportsURLTimeEncoding()) {
-					// get the first source:
-					return this.mediaElement.selectedSource.getSrc(this.serverSeekTime);
-				} else {
-					return this.mediaElement.selectedSource.getSrc();
-				}
+				return this.mediaElement.selectedSource.getSrc();
 			}
 			// No selected source return false:
 			return false;

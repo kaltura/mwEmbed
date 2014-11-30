@@ -262,23 +262,11 @@
 		 * URI function.
 		 *
 		 * @param {Number}
-		 *      serverSeekTime Int: Used to adjust the URI for url based
 		 *      seeks)
 		 * @return {String} the URI of the source.
 		 */
-		getSrc: function (serverSeekTime) {
-			if (!serverSeekTime || !this.URLTimeEncoding) {
-				return this.src;
-			}
-			var endvar = '';
-			if (this.endNpt) {
-				endvar = '/' + this.endNpt;
-			}
-			return mw.replaceUrlParams(this.src,
-				{
-					't': mw.seconds2npt(serverSeekTime) + endvar
-				}
-			);
+		getSrc: function () {
+			return this.src;
 		},
 		/**
 		 * Title accessor function.
