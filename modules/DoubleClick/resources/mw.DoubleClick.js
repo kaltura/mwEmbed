@@ -317,21 +317,50 @@
 			_this.embedPlayer.bindHelper('Kaltura_SendNotification' + this.bindPostfix, function (event, notificationName, notificationData) {
 				if (_this.playingLinearAd) {
 					if ( notificationName === "doPause" ) {
-						_this.embedPlayer.paused = true;
-						$( _this.embedPlayer ).trigger( "onPlayerStateChange", ["pause", _this.embedPlayer.currentState] );
-						if ( _this.isChromeless ) {
-							_this.embedPlayer.getPlayerElement().sendNotification( "pauseAd" );
-						}
+						_this.pauseAd(true);
 					}
 					if ( notificationName === "doPlay" ) {
-						_this.embedPlayer.paused = false;
-						$( _this.embedPlayer ).trigger( "onPlayerStateChange", ["play", _this.embedPlayer.currentState] );
-						if ( _this.isChromeless ) {
-							_this.embedPlayer.getPlayerElement().sendNotification( "resumeAd" );
-						}
+						_this.resumeAd(true);
 					}
 				}
 			});
+		},
+
+		pauseAd: function (isLinear) {
+			if (this.getConfig("pauseAdOnClick") !== false) {
+				var _this = this;
+				this.embedPlayer.paused = true;
+				$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
+
+				if (isLinear) {
+					this.embedPlayer.enablePlayControls(["scrubber"]);
+				} else {
+					_this.embedPlayer.getPlayerElement().sendNotification("doPause");
+				}
+
+				if (_this.isChromeless) {
+					_this.embedPlayer.getPlayerElement().sendNotification("pauseAd");
+				} else {
+					this.adsManager.pause();
+				}
+			}
+		},
+
+		resumeAd: function (isLinear) {
+			var _this = this;
+			this.embedPlayer.paused = false;
+			$(this.embedPlayer).trigger("onPlayerStateChange", ["play", this.embedPlayer.currentState]);
+			if (isLinear) {
+				this.embedPlayer.disablePlayControls();
+			} else {
+				_this.embedPlayer.getPlayerElement().sendNotification("doPlay");
+			}
+
+			if (_this.isChromeless) {
+				_this.embedPlayer.getPlayerElement().sendNotification("resumeAd");
+			} else {
+				this.adsManager.resume();
+			}
 		},
 		/**
 		 * Get the content video tag
@@ -785,6 +814,16 @@
 				_this.embedPlayer.sendNotification('doPause');
 			} );
 
+			adsListener('CLICK', function (adEvent) {
+				var ad = adEvent.getAd();
+				var isLinear = ad.isLinear();
+				if (_this.embedPlayer.paused) {
+					_this.resumeAd(isLinear);
+				} else {
+					_this.pauseAd(isLinear);
+				}
+			});
+
 			adsListener( 'FIRST_QUARTILE', function(){
 				// Monitor ad progress ( if for some reason we are not already monitoring )
 				_this.monitorAdProgress();
@@ -878,6 +917,14 @@
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				$(_this.embedPlayer).trigger('onAdComplete',[adInfo.adID, mw.npt2seconds($(".currentTimeLabel").text())]);
 			},'adCompleted', true);
+
+			this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
+				if (_this.embedPlayer.paused) {
+					_this.resumeAd(adInfo.isLinear);
+				} else {
+					_this.pauseAd(adInfo.isLinear);
+				}
+			}, 'adClicked', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(companionInfo){
 				_this.showCompanion(companionInfo.companionID, companionInfo.content);

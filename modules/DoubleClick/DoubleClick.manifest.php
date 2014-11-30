@@ -23,6 +23,12 @@ return array (
                 'initvalue' => false,
                 'type' => 'boolean',
             ),
+            'pauseAdOnClick' => array(
+                'label' => 'Pause ad on clicked',
+                'doc' => "When checked, the ad pauses when the user clicks on it",
+                'initvalue' => true,
+                'type' => 'boolean',
+            ),
             'countdownText' => array(
                 'label' => 'Notice message',
                 'doc' => "Notice message to be displayed during ad playback. Can contain evaluated expressions using curly brackets",
