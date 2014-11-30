@@ -725,7 +725,7 @@ $uiVars = array(
 					'type' => 'Boolean',
 					'desc' => "Force loading the legacy KDP Flash video player.",
 					'default' => 'false',
-					'example' => ''
+					'example' => '../modules/KalturaSupport/tests/ForceKPlayer.qunit.html'
 			),
 			'EmbedPlayer.ForceSPlayer' => array(
 					'type' => 'Boolean',

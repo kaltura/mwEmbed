@@ -352,6 +352,11 @@
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'playbackRateSelector'
 		),
+		'streamSelector' => array(
+            'scripts' => "components/streamSelector.js",
+            'dependencies' => 'mw.KBaseComponent',
+            'kalturaPluginName' => 'streamSelector'
+        ),
 		"watermarkPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/watermarkPlugin.js",
 			'dependencies' => 'mw.KBaseComponent',

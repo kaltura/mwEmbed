@@ -440,6 +440,22 @@ return array(
 			)
 		)
 	),
+	//Stream selector
+	'streamSelector' => array(
+        'description' => "Enables users to select the video playback stream out of a selection of streams.",
+        'attributes' => array(
+            'defaultStream' => array(
+                'doc' => 'The default stream.',
+                'initvalue' => 1,
+                'type' => 'number'
+            ),
+            'enableKeyboardShortcuts' => array(
+                'doc' => 'Enable keyboard shortcuts (Key mappings: "[" - Next, "]" - Previous, "\" - Default)',
+                'initvalue' => true,
+                'type' => 'boolean'
+            ),
+        )
+    ),
 	/* flavor selector */
 	'flavorComboControllerScreen' => array(
 		'description' => "The Kaltura flavor selector plugin.",
@@ -562,6 +578,16 @@ return array(
 			'minWidth' => array(
 				'doc' => "The minimum width of the playhead. If the min-width is reached, normal responsive display importance removal rules come into effect.",
 				'type' => 'number'
+			),
+			'sliderPreview' => array(
+				'doc' => "Show a preview thumbnail with the current time when mouse is over the scrubber",
+				'type' =>'boolean',
+				'initvalue' =>true
+			),
+			'showOnlyTime' => array(
+				'doc' => "Show only the time when mouse is over the scrubber",
+				'type' =>'boolean',
+				'initvalue' =>false
 			)
 		)
 	),

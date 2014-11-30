@@ -1546,26 +1546,29 @@
 		 * Called after sources are updated, and your ready for the player to change media
 		 * @return
 		 */
-		changeMedia: function (callback) {
+		changeMedia: function (callback, checkPlayerSourcesFunction, resetPlaybackValues) {
 			var _this = this;
 			var $this = $(this);
 
 			mw.log('EmbedPlayer:: changeMedia ');
-			// Empty out embedPlayer object sources
-			this.emptySources();
-			// remove thumb during switch: 
+			// remove thumb during switch:
 			this.removePoster();
 
 			// onChangeMedia triggered at the start of the change media commands
 			$this.trigger('onChangeMedia');
 
-			// Reset first play to true, to count that play event
-			this.firstPlay = true;
-			// reset donePlaying count on change media.
-			this.donePlayingCount = 0;
-			this.triggeredEndDone = false;
-			this.preSequenceFlag = false;
-			this.postSequenceFlag = false;
+			// Empty out embedPlayer object sources
+			this.emptySources();
+
+			if (resetPlaybackValues || resetPlaybackValues === undefined) {
+				// Reset first play to true, to count that play event
+				this.firstPlay = true;
+				// reset donePlaying count on change media.
+				this.donePlayingCount = 0;
+				this.triggeredEndDone = false;
+				this.preSequenceFlag = false;
+				this.postSequenceFlag = false;
+			}
 
 			// Add a loader to the embed player:
 			this.pauseLoading();
@@ -1614,6 +1617,7 @@
 
 					// reload the player
 					if (_this.autoplay) {
+						_this.removePoster();
 						_this.play();
 					}
 
@@ -1632,12 +1636,20 @@
 				}
 			});
 
-			// Load new sources per the entry id via the checkPlayerSourcesEvent hook:
-			$this.triggerQueueCallback('checkPlayerSourcesEvent', function () {
-				mw.log("EmbedPlayer::changeMedia:  Done with checkPlayerSourcesEvent");
-				// Start player events leading to playerReady
-				_this.setupSourcePlayer();
-			});
+			if (checkPlayerSourcesFunction) {
+				checkPlayerSourcesFunction(function () {
+					mw.log("EmbedPlayer::changeMedia:  Done with checkPlayerSourcesFunction");
+					// Start player events leading to playerReady
+					_this.setupSourcePlayer();
+				});
+			} else {
+				// Load new sources per the entry id via the checkPlayerSourcesEvent hook:
+				$this.triggerQueueCallback('checkPlayerSourcesEvent', function () {
+					mw.log("EmbedPlayer::changeMedia:  Done with checkPlayerSourcesEvent");
+					// Start player events leading to playerReady
+					_this.setupSourcePlayer();
+				});
+			}
 		},
 		/**
 		 * Checks if the current player / configuration is an image play screen:
@@ -2019,6 +2031,14 @@
 			this.triggerHelper('preSequence');
 			this.playInterfaceUpdate();
 		},
+
+		/**
+		 * Android Live doesn't send timeupdate events
+		 * @returns {boolean}
+		 */
+		isTimeUpdateSupported: function () {
+			return true;
+		},
 		/**
 		 * Base Embed Controls
 		 */
@@ -2072,8 +2092,11 @@
 			}
 
 			// put a loading spiner on the player while pre-sequence or playing starts up
-			this.addPlayerSpinner();
-			this.hideSpinnerOncePlaying();
+			if (this.isTimeUpdateSupported()) {
+				this.addPlayerSpinner();
+				this.hideSpinnerOncePlaying();
+			}
+
 
 			// playing, exit stopped state:
 			_this.stopped = false;
@@ -2110,12 +2133,12 @@
 
 			// If we previously finished playing this clip run the "replay hook"
 			if (this.donePlayingCount > 0 && !this.paused && this._propagateEvents) {
-				this.replayEventCount++;
 				// Trigger end done on replay
 				this.triggeredEndDone = false;
-				if (this.replayEventCount <= this.donePlayingCount) {
+				if (this.replayEventCount < this.donePlayingCount) {
 					mw.log("EmbedPlayer::play> trigger replayEvent");
 					this.triggerHelper('replayEvent');
+					this.replayEventCount++;
 				}
 			}
 
