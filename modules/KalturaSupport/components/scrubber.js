@@ -11,7 +11,8 @@
 			'thumbWidth': 100,
 			'minWidth': 100,
 			'displayImportance': "medium",
-			'disableUntilFirstPlay': false
+			'disableUntilFirstPlay': false,
+			'showOnlyTime':false
 		},
 
 		waitForFirstPlay: false,
@@ -42,7 +43,7 @@
 				this.bind('updateComponentsVisibilityStart', function(){
 					// take minWidth, so that normal display Importance rules work:
 					_this.getComponent().css('width', _this.getConfig('minWidth') );
-				})
+				});
 				this.bind( 'updateComponentsVisibilityDone', function(){
 					var $container = _this.getComponent().parent();
 					// get remaining space:
@@ -137,7 +138,6 @@
 						_this.hideThumbnailPreview();
 						return;
 					}
-
 					var $this = $(this);
 					var width = $this.width();
 					var offset = $this.offset();
@@ -181,6 +181,9 @@
 		},
 		loadThumbnails : function(callback) {
 			var _this = this;
+			if ( this.getConfig("showOnlyTime") ) {
+				this.loadedThumb = true;
+			}
 			if (!this.loadedThumb)  {
 				this.loadedThumb = true;
 				var baseThumbSettings = {
@@ -209,6 +212,7 @@
 		},
 
 		showThumbnailPreview: function(data) {
+			var showOnlyTime = this.getConfig("showOnlyTime");
 			if ( !this.isSliderPreviewEnabled() || !this.thumbnailsLoaded ){
 				return;
 			}
@@ -218,7 +222,7 @@
 			// make sure the slider is in the dom:
 			var $slider = $(".scrubber");
 			if( !$slider.length ){
-				this.log('.scrubber class not in DOM')
+				this.log('.scrubber class not in DOM');
 				return; 
 			}
 			//cache jqeury objects
@@ -230,25 +234,43 @@
 			var previewWidth = $sliderPreview.width();
 			var previewHeight = $sliderPreview.height();
 			var top = $(".scrubber").position().top - previewHeight - 10;
-			sliderLeft = data.x - previewWidth/2;
-			if ( ( data.x + data.offset.left ) < previewWidth /2) {
-				sliderLeft =  0 ;
-			}
-			if ( data.x >  data.offset.left + data.width - previewWidth/2) {
-				sliderLeft = data.offset.left + data.width - previewWidth ;
+
+			if (!showOnlyTime ) {
+				sliderLeft = data.x - previewWidth/2;
+				if ( ( data.x + data.offset.left ) < previewWidth / 2 ) {
+					sliderLeft = 0;
+				}
+				if ( data.x > data.offset.left + data.width - previewWidth / 2 ) {
+					sliderLeft = data.offset.left + data.width - previewWidth;
+				}
+			} else {
+				sliderLeft = data.x - $sliderPreviewTime.width()/2;
+				previewWidth = $sliderPreviewTime.width();
+				if ( ( data.x + data.offset.left ) < $sliderPreviewTime.width() / 2 ) {
+					sliderLeft = 0;
+				}
+				if ( data.x > data.offset.left + data.width -  $sliderPreviewTime.width() / 2 ) {
+					sliderLeft = data.offset.left + data.width -  $sliderPreviewTime.width() - 5;
+				}
+				$(".arrow" ).hide();
 			}
 
 			var perc = data.val / 1000;
 			var currentTime = this.duration* perc;
-			var thumbWidth =  this.getConfig("thumbWidth");
-			$sliderPreview.css({top:top,left:sliderLeft });
-			$sliderPreview.css({'background-image': 'url(\'' + this.imageSlicesUrl + '\')',
-				'background-position': kWidget.getThumbSpriteOffset( thumbWidth, currentTime  , this.duration , this.getSliceCount( this.duration ) ),
-				'background-size': ( thumbWidth * this.getSliceCount( this.duration ) ) + 'px 100%'
-			});
+			var thumbWidth =  showOnlyTime ? $sliderPreviewTime.width() : this.getConfig("thumbWidth");
+
+				$sliderPreview.css( {top: top , left: sliderLeft } );
+			if ( !showOnlyTime ) {
+				$sliderPreview.css( {'background-image': 'url(\'' + this.imageSlicesUrl + '\')' ,
+					'background-position': kWidget.getThumbSpriteOffset( thumbWidth , currentTime , this.duration , this.getSliceCount( this.duration ) ) ,
+					'background-size': ( thumbWidth * this.getSliceCount( this.duration ) ) + 'px 100%'
+				} );
+			}  else {
+				$sliderPreview.css("border","0px");
+			}
 			$(".playHead .arrow").css("left",thumbWidth / 2 -  6);
 			$sliderPreviewTime.text(kWidget.seconds2npt( currentTime ));
-			$sliderPreviewTime.css({bottom:2,left:thumbWidth/2 - $sliderPreviewTime.width()/2});
+			$sliderPreviewTime.css({bottom:2,left:thumbWidth/2 - $sliderPreviewTime.width()/2 +3});
 			$sliderPreview.css("width",thumbWidth);
 
 			if (kWidget.isIE8()) {
