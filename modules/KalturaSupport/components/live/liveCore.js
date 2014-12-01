@@ -296,7 +296,7 @@
 		},
 
 		isDVR: function(){
-			return this.getPlayer().evaluate( '{mediaProxy.entry.dvrStatus}' );
+			return ( this.getPlayer().evaluate( '{mediaProxy.entry.dvrStatus}' )  && this.getPlayer().isTimeUpdateSupported() );
 		},
 
 		getCurrentTime: function() {
@@ -415,7 +415,10 @@
 					callback( onAirStatus );
 				}
 				embedPlayer.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : onAirStatus } );
-			},mw.getConfig("SkipKSOnIsLiveRequest") );
+			},mw.getConfig("SkipKSOnIsLiveRequest"),function(){
+				mw.log("Error occur while trying to check onAir status");
+				embedPlayer.triggerHelper( 'liveStreamStatusUpdate', { 'onAirStatus' : false } );
+			} );
 		},
 
 		getKalturaClient: function() {
@@ -430,7 +433,7 @@
 		},
 
 		isNativeHLS: function() {
-			if ( mw.isIOS() || mw.isDesktopSafari() ) {
+			if ( mw.isIOS() || mw.isDesktopSafari() || mw.isAndroid() ) {
 				return true;
 			}
 

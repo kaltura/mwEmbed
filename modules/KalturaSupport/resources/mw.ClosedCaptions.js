@@ -17,7 +17,8 @@
 			"hideClosedCaptions": false,
 			"showEmbeddedCaptionsStyle": false,
 			"showOffButton": true,
-			"toggleActiveCaption": false
+			"toggleActiveCaption": false,
+			"useExternalClosedCaptions": false
 		},
 
 		textSources: [],
@@ -45,6 +46,7 @@
 			}
 
 			if ( this.getConfig('showEmbeddedCaptions') === true ) {
+
 				if ( this.getConfig('showEmbeddedCaptionsStyle') === true ) {
 					this.bind( 'textTrackIndexChanged', function( e, captionData ) {
 						if ( captionData.ttml ) {
@@ -80,37 +82,39 @@
 					_this.embedPlayer.getInterface().find( '.track' ).empty();
 					_this.getPlayer().triggerHelper( 'changeEmbeddedTextTrack', _this.selectedSource );
 				});
+				this.bind( 'textTracksReceived', function ( e, data ) {
+					if ( data && $.isArray( data.languages ) && data.languages.length ) {
+						_this.destory();
+						var newSources = [];
+						$.each( data.languages, function ( inx, src ) {
+							var source = new mw.TextSource( $.extend( { srclang: src.label }, src ) );
+							//no need to load embedded captions
+							source.loaded = true;
+							newSources.push( source );
+						} );
+						_this.buildMenu( newSources );
+					}
+				} );
 			} else {
-				this.bind( 'playerReady', function(){
-					_this.destory();
-					_this.setupTextSources(function(){
-						_this.buildMenu( _this.textSources );
-					});
-				});
+				if (this.getConfig("useExternalClosedCaptions")) {
+					this.bind( 'loadExternalClosedCaptions', function ( e, textSources ) {
+						_this.destory();
+						_this.buildMenu( textSources );
+					} );
+				} else {
+					this.bind( 'playerReady', function () {
+						_this.destory();
+						_this.setupTextSources( function () {
+							_this.buildMenu( _this.textSources );
+						} );
+					} );
+				}
 				this.bind( 'timeupdate', function(){
 					if( _this.getConfig('displayCaptions') === true && _this.selectedSource ){
 						_this.monitor();
 					}
 				});
-				this.bind( 'loadExternalClosedCaptions', function(e, textSources ){
-					_this.destory();
-					_this.buildMenu( textSources );
-				});
 			}
-
-			this.bind( 'textTracksReceived', function( e, data ){
-				if ( data && $.isArray(data.languages) && data.languages.length ) {
-					_this.destory();
-					var newSources = [];
-					$.each( data.languages, function( inx, src ){
-						var source =  new mw.TextSource( $.extend( { srclang: src.label }, src ) );
-						//no need to load embedded captions
-						source.loaded = true;
-						newSources.push( source );
-					});
-					_this.buildMenu( newSources );
-				}
-			});
 
 			this.bind( 'onplay', function(){
 				_this.playbackStarted = true;
