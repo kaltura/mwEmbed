@@ -63,11 +63,7 @@ function jsKalturaPlayerTest( videoId ){
 	// clear the companions 
 	$('#testLongCompanion').text('( long companion target )');
 	$('#testCompanion').text( '( companion target )' );
-	function jsCallbackReady( playerId ){
-		debugger;
-		var kdp = $( '#' + playerId )[0];
-		console.log( 'flashvar foo: ' + kdp.evaluate('{configProxy.flashvars.foo}' ) );
-	}
+	
 	kWidget.featureConfig({
 		'cache_st': 101,
 		'targetId': 'myVideoTarget',
