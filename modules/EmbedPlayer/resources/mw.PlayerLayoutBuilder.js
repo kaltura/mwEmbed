@@ -1213,59 +1213,58 @@ mw.PlayerLayoutBuilder.prototype = {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		var callback;
-		mw.log('PlayerLayoutBuilder::displayAlert:: ' + alertObj.title);
+		mw.log( 'PlayerLayoutBuilder::displayAlert:: ' + alertObj.title );
 		// Check if callback is external or internal (Internal by default)
 
 		// Check if overlay window is already present:
-		if (embedPlayer.getInterface().find('.overlay-win').length != 0) {
+		if ( embedPlayer.getInterface().find('.overlay-win').length != 0 ) {
 			return;
 		}
-		if (typeof alertObj.callbackFunction == 'string') {
-			if (alertObj.isExternal) {
+		if ( typeof alertObj.callbackFunction == 'string' ) {
+			if ( alertObj.isExternal ) {
 				try {
-					callback = window.parent[alertObj.callbackFunction];
-				} catch (e) {
+					callback = window.parent[ alertObj.callbackFunction ];
+				} catch ( e ) {
 					// could not call parent method
 				}
 			} else {
-				callback = window[alertObj.callbackFunction];
+				callback = window[ alertObj.callbackFunction ];
 			}
-		} else if (typeof alertObj.callbackFunction == 'function') {
+		} else if ( typeof alertObj.callbackFunction == 'function' ) {
 			// Make life easier for internal usage of the listener mapping by supporting
 			// passing a callback by function ref
 			callback = alertObj.callbackFunction;
 		} else {
 			// don't throw an error; display alert callback is optional
 			// mw.log( "PlayerLayoutBuilder :: displayAlert :: Error: bad callback type" );
-			callback = function () {
-			};
+			callback = function () {};
 		}
 
-		var $container = $('<div />').addClass('alert-container');
-		if (alertObj.props && alertObj.props.customAlertContainerCssClass) {
-			$container.removeClass('alert-container');
-			$container.addClass(alertObj.props.customAlertContainerCssClass);
+		var $container = $( '<div />' ).addClass( 'alert-container' );
+		if ( alertObj.props && alertObj.props.customAlertContainerCssClass ) {
+			$container.removeClass( 'alert-container' );
+			$container.addClass( alertObj.props.customAlertContainerCssClass );
 		}
-		var $title = $('<div />').text(alertObj.title).addClass('alert-title alert-text');
+		var $title = $( '<div />' ).text( alertObj.title ).addClass( 'alert-title alert-text' );
 
-		if (alertObj.props && alertObj.props.customAlertTitleCssClass) {
-			$title.removeClass('alert-text alert-title');
-			$title.addClass(alertObj.props.customAlertTitleCssClass);
+		if ( alertObj.props && alertObj.props.customAlertTitleCssClass ) {
+			$title.removeClass( 'alert-text alert-title' );
+			$title.addClass( alertObj.props.customAlertTitleCssClass );
 		} else {
-			if (alertObj.props && alertObj.props.titleTextColor) {
+			if ( alertObj.props && alertObj.props.titleTextColor ) {
 				$title.removeClass('alert-text');
-				$title.css('color', mw.getHexColor(alertObj.props.titleTextColor));
+				$title.css('color', mw.getHexColor( alertObj.props.titleTextColor ) );
 			}
 		}
 
 		var $message = $( '<div />' ).html( alertObj.message ).addClass( 'alert-message alert-text' );
-		if ( alertObj.props && alertObj.props.customAlertMessageCssClass){
+		if ( alertObj.props && alertObj.props.customAlertMessageCssClass ){
 			$message.removeClass( 'alert-text alert-message' );
-			$message.addClass(alertObj.props.customAlertMessageCssClass);
+			$message.addClass( alertObj.props.customAlertMessageCssClass );
 		}else {
-			if (alertObj.props && alertObj.props.textColor) {
-				$message.removeClass('alert-text');
-				$message.css('color', mw.getHexColor(alertObj.props.textColor));
+			if ( alertObj.props && alertObj.props.textColor ) {
+				$message.removeClass( 'alert-text' );
+				$message.css( 'color', mw.getHexColor(alertObj.props.textColor ) );
 			}
 		}
 
@@ -1282,7 +1281,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		// If no button was passed display just OK button
 		var buttonsNum = $buttonSet.length;
 		if ( buttonsNum == 0 && !alertObj.noButtons ) {
-			$buttonSet = ["OK"];
+			$buttonSet = [ "OK" ];
 			buttonsNum++;
 		}
 
@@ -1290,7 +1289,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			$container.addClass( 'alert-container-with-buttons' );
 		}
 
-		$.each( $buttonSet, function(i) {
+		$.each( $buttonSet, function( i ) {
 			var label = this.toString();
 			var $currentButton = $( '<button />' )
 			.addClass( 'alert-button' )
