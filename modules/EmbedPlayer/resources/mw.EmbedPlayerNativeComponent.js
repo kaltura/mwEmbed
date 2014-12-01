@@ -68,6 +68,8 @@ mw.EmbedPlayerNativeComponent = {
 		'share',
 		'openHomePage'
 	],
+
+	nativeAdId : '',
 	// Native player supported feature set
 	supports: {
 		'playHead' : true,

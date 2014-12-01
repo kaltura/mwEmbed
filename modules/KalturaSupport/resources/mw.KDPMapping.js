@@ -499,6 +499,11 @@
 							var location = getLocation(referrer);
 							return location.hostname;
 							break;
+						case 'nativeAdId':
+							if( mw.isNativeApp() ) {
+								return embedPlayer.getPlayerElement().attr( 'fetchNativeAdID' );
+							}
+							break;
 					}
 					break;
 			}

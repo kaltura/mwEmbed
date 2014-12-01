@@ -43,7 +43,7 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 	bindPostfix: ".nativeBridge",
 	subscribed: [],
 	playerMethods: [ 'stop', 'play', 'pause', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen', 'notifyKPlayerEvent', 'notifyKPlayerEvaluated', 'notifyJsReady', 'showChromecastDeviceList', 'notifyLayoutReady',
-		'doneFSBtnPressed', 'addNativeAirPlayButton', 'showNativeAirPlayButton', 'hideNativeAirPlayButton', 'doNativeAction' ],
+		'doneFSBtnPressed', 'addNativeAirPlayButton', 'showNativeAirPlayButton', 'hideNativeAirPlayButton', 'doNativeAction', 'fetchNativeAdID' ],
 
 	registePlayer: function (proxyElement) {
 		var _this = this;
@@ -147,6 +147,8 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 			this.proxyElement['duration'] = jsEventValue;
 		} else if (eventName == 'nativeAction') {
 			this.proxyElement['nativeAction'] = jsEventValue;
+		} else if (eventName == 'fetchNativeAdID') {
+			this.proxyElement['fetchNativeAdID'] = jsEventValue;
 		}
 
 		if ( this.subscribed[eventName] ) {
