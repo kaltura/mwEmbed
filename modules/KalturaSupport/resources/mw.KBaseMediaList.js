@@ -11,6 +11,7 @@
 		$mediaListContainer: null,
 		selectedMediaItemIndex: 0,
 		startFrom: 0,
+		render: true,
 
 		getBaseConfig: function(){
 			var parentConfig = this._super();
@@ -27,7 +28,11 @@
 				'includeInLayout': true,
 				'clipListTargetId': null,
 				'containerPosition':  'right',
-				'parent': null
+				'parent': null,
+				'includeHeader': false,
+				'fullScreenDisplayOnly': false,
+				'minDisplayWidth': 0,
+				'minDisplayHeight': 0
 			});
 		},
 
@@ -46,17 +51,31 @@
 			this._super();
 
 			this.bind('updateLayout', function(){
+				if (_this.getPlayer().layoutBuilder.isInFullScreen() ||
+					(!_this.getConfig("fullScreenDisplayOnly") &&
+					_this.getConfig("minDisplayWidth") <= _this.getPlayer().getWidth() &&
+					_this.getConfig("minDisplayHeight") <= _this.getPlayer().getHeight())){
+					_this.render = true;
+				} else {
+					_this.render = false;
+				}
+
 				if (_this.getConfig( 'parent')){
 					setTimeout(function(){
-						_this.renderMediaList();
-						_this.setSelectedMedia(_this.selectedMediaItemIndex);
+						if (_this.render) {
+							_this.getComponent().show();
+							_this.renderMediaList();
+							_this.setSelectedMedia( _this.selectedMediaItemIndex );
+						} else {
+							_this.getComponent().hide();
+						}
 					}, 0);
 				}
 			});
 			// handle fullscreen entering resize
 			$( this.embedPlayer ).bind('onOpenFullScreen', function() {
 				if ( !_this.getConfig( 'parent') ){
-					$(".medialistContainer").hide();
+					_this.getComponent().hide();
 					$(".videoHolder").width("100%");
 				}
 			});
@@ -64,18 +83,19 @@
 			// handle fullscreen exit resize
 			$( this.embedPlayer ).bind('onCloseFullScreen', function() {
 				if ( !_this.getConfig( 'parent') ){
-					$(".medialistContainer").show();
+					_this.getComponent().show();
 					$(".videoHolder").width(_this.videoWidth+"px");
 				}
 			});
-
 		},
 
 		getComponent: function(){
 			if( ! this.$el ){
 				this.$el = $( '<div />' )
 					.addClass( this.pluginName + " medialistContainer unselectable k-" + this.getLayout() );
-				this.$el.append($( '<div />' ).addClass("k-medialist-header k-" + this.getLayout() ));
+				if (this.getConfig("includeHeader")){
+					this.$el.append($( '<div />' ).addClass("k-medialist-header k-" + this.getLayout() ));
+				}
 				this.$el.append($( '<div />' ).addClass("k-chapters-container k-" + this.getLayout() ));
 				if (!this.getConfig('parent')){
 					if ( this.getConfig( 'containerPosition' ) === 'top' && !this.getConfig( 'onPage' ) ) {
@@ -177,11 +197,6 @@
 
 		getMediaListDomElements: function(){
 			return this.getMedialistComponent().find(".chapterBox");
-		},
-
-		destroy: function(){
-			this.unbind();
-			this.getComponent.empty();
 		},
 
 		//General

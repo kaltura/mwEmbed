@@ -21,6 +21,7 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 	setup: function(){
 		this.setupPlayerURL();
 		this.addBindings();
+
 	},
 	setupPlayerURL: function(){
 		var shareURL = null;
@@ -44,6 +45,7 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 			_this.setupPlayerURL();
 		});
 	},
+
 	getParentURL: function(){
 		var res;
 		if (mw.getConfig( 'EmbedPlayer.IframeParentUrl')){
@@ -77,30 +79,47 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 		return shareURL;
 	},
 	getTemplateData: function(){
-
 		var networks = [];
 		var socialNetworks = this.getConfig("socialNetworks");
-
 		if (socialNetworks.indexOf("facebook") != -1)
 			networks.push({
 				id: 'facebook',
 				name: 'Facebook',
 				cssClass: 'icon-facebook',
-				url: 'https://www.facebook.com/sharer/sharer.php?u='
+				url: 'https://www.facebook.com/sharer/sharer.php?u=',
+				redirectUrl: 'fb://feed/'
 			});
 		if (socialNetworks.indexOf("twitter") != -1)
 			networks.push({
 				id: 'twitter',
 				name: 'Twitter',
 				cssClass: 'icon-twitter',
-				url: 'https://twitter.com/share?url='
+				url: 'https://twitter.com/share?url=',
+				redirectUrl:'https://twitter.com/intent/tweet/complete?,https://twitter.com/intent/tweet/update'
 			});
 		if (socialNetworks.indexOf("googleplus") != -1)
 			networks.push({
 				id: 'googleplus',
-				name: 'Google+',
+				name: 'GooglePlus',
 				cssClass: 'icon-google-plus',
-				url: 'https://plus.google.com/share?url='
+				url: 'https://plus.google.com/share?url=',
+				redirectUrl: 'https://plus.google.com/app/basic/stream'
+			});
+		if (mw.isNativeApp() && socialNetworks.indexOf("mail") != -1)
+			networks.push({
+				id: 'mail',
+				name: 'Mail',
+				cssClass: 'icon-mail',
+				url: 'http://',
+				redirectUrl: ''
+			});
+		if (mw.isNativeApp() && socialNetworks.indexOf("message") != -1)
+			networks.push({
+				id: 'message',
+				name: 'Message',
+				cssClass: 'icon-message',
+				url: 'http://',
+				redirectUrl: ''
 			});
 
 		return {
@@ -108,15 +127,37 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 			networks: networks
 		};
 	},
-	openPopup: function( e ){
-		var url = $(e.target).parents('a').attr('href');
+	openPopup: function( e ) {
 		// Name argument for window.open in IE8 must be from supported set: _blank for example
-		// http://msdn.microsoft.com/en-us/library/ms536651%28v=vs.85%29.aspx
-		window.open(
-			url + encodeURIComponent( this.getConfig('shareURL')),
-			'_blank',
-			'width=626,height=436'
-		);
+		// http://msdn.microsoft.com/en-us/library/ms536651%28v=vs.85%29.asp
+
+		if(mw.isNativeApp()){
+			var socialNetworks = this.getConfig("socialNetworks").split(',');
+			var networkIndex = $.inArray($(e.target).attr('id'), socialNetworks);
+			var networkParams = this.getTemplateData().networks[networkIndex];
+			var shareParams = {
+				actionType: this.getPlayer().nativeActionType( 'share' ),
+				sharedLink: this.getConfig("shareURL"),
+				shareNetwork: networkParams,
+				thumbnail: this.getThumbnailURL(),
+				videoName: this.getPlayer().evaluate("{mediaProxy.entry.name}")
+			};
+			this.getPlayer().doNativeAction( JSON.stringify(shareParams) );
+		} else {
+			var url = $(e.target).parents('a').attr('href');
+			window.open(
+				url + encodeURIComponent( this.getConfig('shareURL')),
+				'_blank',
+				'width=626,height=436'
+			);
+		}
+	},
+	getThumbnailURL: function(){
+		return kWidgetSupport.getKalturaThumbnailUrl({
+				url: this.getPlayer().evaluate('{mediaProxy.entry.thumbnailUrl}'),
+				width: this.getPlayer().getWidth(),
+				height: this.getPlayer().getHeight()
+		});
 	}
 }));
 

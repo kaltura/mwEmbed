@@ -60,7 +60,8 @@ you can use the generic selector below, but it's slower:
 .icon-start_time,
 .icon-chapterMenu,
 .icon-clear,
-.icon-magnifyGlass{
+.icon-magnifyGlass,
+.icon-switchSource{
 	font-family: 'icomoon';
 	speak: none;
 	font-style: normal;
@@ -171,5 +172,8 @@ you can use the generic selector below, but it's slower:
 }
 .icon-magnifyGlass:before {
     content: "\e620";
+}
+.icon-switchSource:before {
+    content: "\e621";
 }
 

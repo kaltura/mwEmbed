@@ -13,6 +13,7 @@
 			img: null
 		},
 		getComponent: function() {
+			var _this = this;
 			if( !this.$el ) {
 				var $img = [];
 				if( this.getConfig('img') ){
@@ -28,10 +29,17 @@
 					.append(
 					$( '<a />' )
 						.addClass('btnFixed')
+						.click(function(){
+							if (_this.getConfig('href')) {
+								if (mw.isNativeApp()) {
+									_this.openInNativeApp();
+								}else{
+									window.open(_this.getConfig('href'), "_blank");
+								}
+							}
+						})
 						.attr({
-							'title': this.getConfig('title'),
-							'target': '_blank',
-							'href': this.getConfig('href')
+							'title': this.getConfig('title')
 						}).append( $img )
 					);
 			}
@@ -40,6 +48,13 @@
 				this.$el.removeClass('kaltura-logo');
 			}
 			return this.$el;
+		},
+		openInNativeApp: function () {
+			var  params = {
+				actionType: this.getPlayer().nativeActionType( 'openHomePage' ),
+				url: this.getConfig( 'href' )
+			}
+			this.getPlayer().doNativeAction( JSON.stringify( params ) );
 		}
 
 	}));

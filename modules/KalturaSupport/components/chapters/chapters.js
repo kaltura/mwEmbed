@@ -24,7 +24,10 @@
 			'includeItemNumberPattern': false,
 			'includeMediaItemDuration': true,
 			'onPage': false,
-			'cssFileName': 'modules/KalturaSupport/components/chapters/chapters.css'
+			'includeHeader': false,
+			'cssFileName': 'modules/KalturaSupport/components/chapters/chapters.css',
+			'minDisplayWidth': 0,
+			'minDisplayHeight': 0
 		},
 
 		mediaList: [],
@@ -32,7 +35,7 @@
 
 		setup: function ( embedPlayer ) {
 			this.addBindings();
-			if (mw.getConfig("EmbedPlayer.LiveCuepoints")){
+			if (this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints")){
 				this.setConfig("includeMediaItemDuration", false);
 			}
 		},
@@ -120,9 +123,8 @@
 			});
 
 			this.bind( 'onChangeMedia', function(){
-				_this.destroy();
-				// redraw the list
-				_this.shouldAddScroll();
+				_this.dataIntialized = false;
+				_this.mediaList = [];
 			});
 		},
 		isSafeEnviornment: function(){
@@ -142,7 +144,8 @@
 				});
 				cuePointsExist =  (filteredCuePoints.length > 0) ? true : false;
 			}
-			return (!this.getPlayer().useNativePlayerControls() && (mw.getConfig("EmbedPlayer.LiveCuepoints") || cuePointsExist));
+			return (!this.getPlayer().useNativePlayerControls() &&
+				( ( this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) || cuePointsExist));
 		},
 		getMedialistContainer: function(){
 			//Only support external onPage medialist container

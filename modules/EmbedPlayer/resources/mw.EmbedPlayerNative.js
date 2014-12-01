@@ -721,14 +721,15 @@ mw.EmbedPlayerNative = {
 
 	// Update the poster src ( updates the native object if in dom )
 	updatePoster: function( src ){
+		// Also update the embedPlayer poster
+		this.parent_updatePoster( src );
+
 		if (mw.getConfig( 'EmbedPlayer.HidePosterOnStart' ) === true){
 			return;
 		}
 		if( this.getPlayerElement() ){
 			$( this.getPlayerElement() ).attr('poster', src );
 		}
-		// Also update the embedPlayer poster
-		this.parent_updatePoster( src );
 	},
 	/**
 	 * Empty player sources from the active video tag element
@@ -746,6 +747,17 @@ mw.EmbedPlayerNative = {
 			.attr( 'poster', null);
 		// empty out generic sources:
 		this.parent_emptySources();
+	},
+	/**
+	 * Android Live doesn't send timeupdate events
+	 * @returns {boolean}
+	 */
+	isTimeUpdateSupported: function() {
+		if ( this.isLive() && mw.isAndroid() ) {
+			return false;
+		} else {
+			return true;
+		}
 	},
 	/**
 	 * playerSwitchSource switches the player source working around a few bugs in browsers
@@ -1480,7 +1492,10 @@ mw.EmbedPlayerNative = {
 	 * @returns {boolean} true if seek event is fake, false if valid
 	 */
 	isFakeHlsSeek: function() {
-		return ( (Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2) || ( mw.isIpad() && this.currentSeekTargetTime > 0.01 && !mw.isIOS8() ) );
+		return (
+		(this.mediaElement.selectedSource.getMIMEType() == 'application/vnd.apple.mpegurl')
+		&& ( (Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2) || ( mw.isIpad() && this.currentSeekTargetTime > 0.01 && !mw.isIOS8() ) )
+		);
 	},
 
 	isVideoSiblingEnabled: function() {

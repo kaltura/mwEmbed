@@ -111,15 +111,26 @@
 						'doPlayAction' : "player is playing",
 						'doPlayValue' : "1",
 						'sendRefId' : true
+					},
+					'related': {
+						plugin: true,
+						parent: "topBarContainer",
+						playlistId: '0_q79jh71b',
+						storeSession: true
 					}
 				},
-				'readyCallback':function(){
+				'readyCallback':function( playerId){
+					var kdp = document.getElementById(playerId);
 					// clear the text box: 
 					$('#gAnalyticsLog tr:not(#eventRowDesc)').remove();
+					$('.changeMedia').click(function(){
+						kdp.sendNotification('changeMedia', {'entryId' : '1_sf5ovm7u' });
+					})
 				}
 			})
 		</script>
 		<br>
+		<a class="changeMedia" href=#">Change Media</a> <br>
 		<i>Google Analytics events: ( only logs to page for html5 for now ) </i><br />
 		<table id="gAnalyticsLog" border="1" width="700">
 			<tr id="eventRowDesc">

@@ -24,7 +24,8 @@
 			'cssFileName': 'modules/KalturaSupport/components/playlist/playList.css',
 			'showControls': true,
 			'MaxClips': 25,
-			'selectedIndex': 0
+			'selectedIndex': 0,
+			'includeHeader': true
 		},
 
 
@@ -106,13 +107,29 @@
 				_this.playPrevious();
 			});
 
+			$(this.embedPlayer).bind('onDisableInterfaceComponents', function (event) {
+				_this.getMedialistHeaderComponent().find(".playlistBtn").addClass("disabled");
+			});
+
+			$(this.embedPlayer).bind('onEnableInterfaceComponents', function (event) {
+				_this.getMedialistHeaderComponent().find(".playlistBtn").removeClass("disabled");
+			});
+
 			// set responsiveness
 			this.bind('updateLayout', function(){
-				if ($(".mwPlayerContainer").width() / 3 > _this.getConfig('mediaItemWidth')){
-					_this.setConfig('mediaItemWidth',$(".mwPlayerContainer").width()/3);
-					_this.setConfig('titleLimit', parseInt(_this.getConfig('mediaItemWidth') / 7));
-					_this.setConfig('descriptionLimit', parseInt(_this.getConfig('mediaItemWidth') / 8));
+				if ($(".playlistInterface").width() / 3 > _this.getConfig('mediaItemWidth')) {
+					_this.setConfig('mediaItemWidth', $(".playlistInterface").width() / 3);
+
+				} else {
+					_this.setConfig('mediaItemWidth', '320');
 				}
+				_this.setConfig('titleLimit', parseInt(_this.getConfig('mediaItemWidth') / 7));
+				_this.setConfig('descriptionLimit', parseInt(_this.getConfig('mediaItemWidth') / 8));
+
+				// redraw player and playlist
+				_this.$mediaListContainer = null;
+				_this.getMedialistContainer();
+				_this.renderMediaList();
 			});
 
 			$( this.embedPlayer ).bind( 'mediaListLayoutReady', function( event){
@@ -365,6 +382,7 @@
 			this.firstLoad = true;                  // reset firstLoad to support initial clip selectedIndex
 			this.setConfig("selectedIndex", 0);     // set selectedIndex to 0 so we will always load the first clip in the playlist after palylist switch
 			this.currentPlaylistIndex = index;      // save the currently selected playlist index
+			this.embedPlayer.pause();               // pause playback to prevent IE8 from crashing (OMG!)
 			this.loadPlaylistFromAPI();             // load the playlist data from the API
 			this.onEnable();
 		},
