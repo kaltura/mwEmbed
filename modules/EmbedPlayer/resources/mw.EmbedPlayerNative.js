@@ -554,6 +554,11 @@ mw.EmbedPlayerNative = {
 		}
 		seekTime = parseFloat( seekTime );
 		mw.log( "EmbedPlayerNative:: setCurrentTime seekTime:" + seekTime + ' count:' + callbackCount );
+		if ( seekTime == 0 && this.isLive() && mw.isIpad() && !mw.isIOS8() ) {
+			//seek to 0 doesn't work well on live on iOS < 8
+			seekTime = 0.01;
+			mw.log( "EmbedPlayerNative:: setCurrentTime fix seekTime to 0.01" );
+		}
 		var vid = this.getPlayerElement();
 
 		if (this.currentState == "end" && mw.isIphone() ) {
