@@ -302,8 +302,16 @@
 				} );
 
 				var updateSecondScreenLayout = function (event) {
-					if (_this.displayInitialized && !( _this.dragging || _this.resizing )){
-						_this.checkRenderConditions(event.type);
+					var eventName = mw.isAndroid() ? 'resize' : 'orientationchange';
+					if (_this.displayInitialized &&
+							!(
+								_this.dragging ||
+								_this.resizing ||
+								_this.screenShown ||
+								( eventName == event.type && !_this.getPlayer().layoutBuilder.isInFullScreen() )
+							)
+						){
+						_this.checkRenderConditions();
 						//Hide monitor and control bar during resizing
 						_this.hideDisplay();
 						//Avoid debouncing of screen resize timeout handler
@@ -598,11 +606,8 @@
 				this.positionControlBar();
 				this.enableControlBar();
 			},
-			checkRenderConditions: function(currEventName){
-				var eventName = mw.isAndroid() ? 'resize' : 'orientationchange';
-				if ( this.screenShown  || eventName == currEventName && !this.getPlayer().layoutBuilder.isInFullScreen() ) {
-					this.render = false;
-				} else if ( !( this.dragging || this.resizing ) &&
+			checkRenderConditions: function(){
+				if ( !( this.dragging || this.resizing ) &&
 					(this.getPlayer().layoutBuilder.isInFullScreen() ||
 						((!this.getConfig("fullScreenDisplayOnly") &&
 							this.getConfig( "minDisplayWidth" ) <= this.getPlayer().getWidth() &&
