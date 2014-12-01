@@ -19,8 +19,21 @@ mw.KWidgetSupport.prototype = {
 		if( options ){
 			$.extend( this, options);
 		}
+		this.addStringsSupport();
 		this.addPlayerHooks();
 	},
+
+	addStringsSupport: function(){
+		window.getStringByKey = function(key){
+			var playerConfig = window.kalturaIframePackageData.playerConfig;
+			if (playerConfig && playerConfig.plugins && playerConfig.plugins.strings && playerConfig.plugins.strings[key]){
+				return playerConfig.plugins.strings[key];
+			}else{
+				return false;
+			}
+		}
+	},
+
 	isIframeApiServer: function(){
 		return ( mw.getConfig( 'EmbedPlayer.IsIframeServer' )
 					&&
