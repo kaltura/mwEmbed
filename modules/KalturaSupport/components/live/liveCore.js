@@ -94,8 +94,7 @@
 				}
 				if ( !_this.liveStreamStatusUpdate ) {
 					_this.liveStreamStatusUpdate = true;
-					debugger
-					if(onAirObj.onAirStatus){
+					if( onAirObj.onAirStatus ){
 						embedPlayer.updatePosterHTML();
 						_this.getPlayer().enablePlayControls();
 					}else{
