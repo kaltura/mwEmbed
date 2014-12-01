@@ -1242,9 +1242,12 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		var $container = $( '<div />' ).addClass( 'alert-container' );
 		var $title = $( '<div />' ).text( alertObj.title ).addClass( 'alert-title alert-text' );
-		var $message = $( '<div />' ).html( alertObj.message ).addClass( 'alert-message alert-text' );
 		var $buttonsContainer = $( '<div />' ).addClass( 'alert-buttons-container' );
-
+		var $message = $( '<div />' ).html( alertObj.message ).addClass( 'alert-message alert-text' );
+		if ( alertObj.isError ) {
+			$message.addClass( 'error' );
+		}
+		
 		if ( alertObj.props ) {
 
 			if ( alertObj.props.customAlertContainerCssClass ) {
@@ -1268,10 +1271,6 @@ mw.PlayerLayoutBuilder.prototype = {
 			if ( alertObj.props.textColor ) {
 				$message.removeClass( 'alert-text' );
 				$message.css( 'color', mw.getHexColor(alertObj.props.textColor ) );
-			}
-
-			if ( alertObj.isError ) {
-				$message.addClass( 'error' );
 			}
 
 			if ( alertObj.props.buttonRowSpacing ) {
