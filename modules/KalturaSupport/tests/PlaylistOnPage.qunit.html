@@ -35,9 +35,9 @@
    	<h2>Playlist on page</h2>
    	<p>This player demonstrates rendering the playlist out of the player IFrame, on the page.</p>
     <p>If you specify a DIV ID in the <b>clipListTargetId</b> property, the playlist will be rendered into that div. If not, the playlist is added to the page after the video player.</p>
-	<div id='kaltura_player' style="height:300px;width:400px"></div>
+	<div id='kaltura_player' style="height:300px;width:400px;float:left"></div>
 	<script>
-		kWidget.featureConfig({
+		kWidget.embed({
 			'targetId': 'kaltura_player',
 			'wid': '_243342',
 			'uiconf_id': '25975211',
@@ -61,6 +61,6 @@
 			}
 		});
 	</script>
-   <div id="playListHolder" style="position: absolute; left: 420px; bottom: 40px; width: 360px; height: 300px; background-color: grey"></div>
+   <div id="playListHolder" style="width: 400px; height: 300px; float:left; background-color: grey"></div>
   </body>
 </html>
