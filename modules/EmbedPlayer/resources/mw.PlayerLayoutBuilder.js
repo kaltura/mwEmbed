@@ -1241,40 +1241,44 @@ mw.PlayerLayoutBuilder.prototype = {
 		}
 
 		var $container = $( '<div />' ).addClass( 'alert-container' );
-		if ( alertObj.props && alertObj.props.customAlertContainerCssClass ) {
-			$container.removeClass( 'alert-container' );
-			$container.addClass( alertObj.props.customAlertContainerCssClass );
-		}
 		var $title = $( '<div />' ).text( alertObj.title ).addClass( 'alert-title alert-text' );
 
-		if ( alertObj.props && alertObj.props.customAlertTitleCssClass ) {
-			$title.removeClass( 'alert-text alert-title' );
-			$title.addClass( alertObj.props.customAlertTitleCssClass );
-		} else {
-			if ( alertObj.props && alertObj.props.titleTextColor ) {
+		if ( alertObj.props ) {
+
+			if ( alertObj.props.customAlertContainerCssClass ) {
+				$container.removeClass( 'alert-container' );
+				$container.addClass( alertObj.props.customAlertContainerCssClass );
+			}
+
+
+			if ( alertObj.props.customAlertTitleCssClass ) {
+				$title.removeClass( 'alert-text alert-title' );
+				$title.addClass( alertObj.props.customAlertTitleCssClass );
+			}
+			if ( alertObj.props.titleTextColor ) {
 				$title.removeClass('alert-text');
 				$title.css('color', mw.getHexColor( alertObj.props.titleTextColor ) );
 			}
-		}
 
-		var $message = $( '<div />' ).html( alertObj.message ).addClass( 'alert-message alert-text' );
-		if ( alertObj.props && alertObj.props.customAlertMessageCssClass ){
-			$message.removeClass( 'alert-text alert-message' );
-			$message.addClass( alertObj.props.customAlertMessageCssClass );
-		}else {
-			if ( alertObj.props && alertObj.props.textColor ) {
+
+			var $message = $( '<div />' ).html( alertObj.message ).addClass( 'alert-message alert-text' );
+			if ( alertObj.props.customAlertMessageCssClass ){
+				$message.removeClass( 'alert-text alert-message' );
+				$message.addClass( alertObj.props.customAlertMessageCssClass );
+			}
+			if ( alertObj.props.textColor ) {
 				$message.removeClass( 'alert-text' );
 				$message.css( 'color', mw.getHexColor(alertObj.props.textColor ) );
 			}
-		}
 
-		if ( alertObj.isError ) {
-			$message.addClass( 'error' );
-		}
+			if ( alertObj.isError ) {
+				$message.addClass( 'error' );
+			}
 
-		var $buttonsContainer = $( '<div />' ).addClass( 'alert-buttons-container' );
-		if ( alertObj.props && alertObj.props.buttonRowSpacing ) {
-			$buttonsContainer.css( 'margin-top', alertObj.props.buttonRowSpacing );
+			var $buttonsContainer = $( '<div />' ).addClass( 'alert-buttons-container' );
+			if ( alertObj.props.buttonRowSpacing ) {
+				$buttonsContainer.css( 'margin-top', alertObj.props.buttonRowSpacing );
+			}
 		}
 		var $buttonSet = alertObj.buttons || [];
 
@@ -1298,14 +1302,17 @@ mw.PlayerLayoutBuilder.prototype = {
 					callback( eventObject );
 					_this.closeAlert( alertObj.keepOverlay );
 				} );
-			if ( alertObj.props && alertObj.props.buttonHeight ) {
-				$currentButton.css( 'height', alertObj.props.buttonHeight );
-			}
-			// Apply buttons spacing only when more than one is present
-			if (buttonsNum > 1) {
-				if (i < buttonsNum-1) {
-					if ( alertObj.props && alertObj.props.buttonSpacing ) {
-						$currentButton.css( 'margin-right', alertObj.props.buttonSpacing );
+
+			if ( alertObj.props) {
+				if ( alertObj.props.buttonHeight ) {
+					$currentButton.css( 'height', alertObj.props.buttonHeight );
+				}
+				// Apply buttons spacing only when more than one is present
+				if (buttonsNum > 1) {
+					if (i < buttonsNum - 1) {
+						if ( alertObj.props.buttonSpacing ) {
+							$currentButton.css('margin-right', alertObj.props.buttonSpacing);
+						}
 					}
 				}
 			}
