@@ -35,6 +35,11 @@
 		 */
 		maxCurrentTime: 0,
 
+		/**
+		 * indicates that we've received the first live status update
+		 */
+		liveStreamStatusUpdate : false,
+
 		setup: function() {
 			this.addPlayerBindings();
 			this.extendApi();
@@ -48,6 +53,17 @@
 			this.getPlayer().isOffline = function() {
 				return !_this.onAirStatus;
 			}
+		},
+
+
+		addPoster: function(){
+			this.getPlayer().removePosterFlag = false;
+			this.getPlayer().updatePosterHTML();
+		},
+
+		removePoster: function(){
+			this.getPlayer().removePoster();
+			this.getPlayer().removePosterFlag = true;
 		},
 
 		addPlayerBindings: function() {
@@ -90,7 +106,16 @@
 					embedPlayer.autoplay &&
 					embedPlayer.canAutoPlay() &&
 					!embedPlayer.isPlaying() ) {
-					embedPlayer.play();
+						embedPlayer.play();
+				}
+				if ( !_this.liveStreamStatusUpdate ) {
+					_this.liveStreamStatusUpdate = true;
+					if( onAirObj.onAirStatus ){
+						_this.addPoster();
+						_this.getPlayer().enablePlayControls();
+					}else{
+						_this.getPlayer().disablePlayControls();
+					}
 				}
 
 				//if we moved from live to offline  - show message
@@ -106,8 +131,7 @@
 								//remember last state
 								_this.playWhenOnline = embedPlayer.isPlaying();
 
-								embedPlayer.removePoster();
-								embedPlayer.removePosterFlag = true;
+								_this.removePoster();
 								embedPlayer.layoutBuilder.displayAlert( {
 									title: "Broadcast is not Active",
 									message: 'please check back later',
@@ -128,8 +152,7 @@
 					embedPlayer.triggerHelper( 'liveOffline' );
 
 				}  else if ( !_this.onAirStatus && onAirObj.onAirStatus ) {
-					embedPlayer.removePosterFlag = false;
-					embedPlayer.updatePosterHTML()
+					_this.addPoster();
 					embedPlayer.layoutBuilder.closeAlert(); //moved from offline to online - hide the offline alert
 					if ( !_this.getPlayer().getError() ) {
 						_this.getPlayer().enablePlayControls();
@@ -198,6 +221,11 @@
 			_this.maxCurrentTime = 0;
 			//live entry
 			if ( embedPlayer.isLive() ) {
+				if ( !this.getConfig("disableLiveCheck")) {
+					//the controls will be enabled upon liveStatus==true notification
+					_this.removePoster();
+					embedPlayer.disablePlayControls();
+				}
 				_this.addLiveStreamStatusMonitor();
 				//hide source selector until we support live streams switching
 				hideComponentsArr.push( 'sourceSelector' );
