@@ -50,6 +50,17 @@
 			}
 		},
 
+
+		addPoster: function(){
+			this.getPlayer().removePosterFlag = false;
+			this.getPlayer().updatePosterHTML();
+		},
+
+		removePoster: function(){
+			this.getPlayer().removePoster();
+			this.getPlayer().removePosterFlag = true;
+		},
+
 		addPlayerBindings: function() {
 			var _this = this;
 			var embedPlayer = this.getPlayer();
@@ -95,7 +106,8 @@
 				if ( !_this.liveStreamStatusUpdate ) {
 					_this.liveStreamStatusUpdate = true;
 					if( onAirObj.onAirStatus ){
-						embedPlayer.updatePosterHTML();
+						debugger;
+						_this.addPoster();
 						_this.getPlayer().enablePlayControls();
 					}else{
 						_this.getPlayer().disablePlayControls();
@@ -115,8 +127,7 @@
 								//remember last state
 								_this.playWhenOnline = embedPlayer.isPlaying();
 
-								embedPlayer.removePoster();
-								embedPlayer.removePosterFlag = true;
+								_this.removePoster();
 								embedPlayer.layoutBuilder.displayAlert( {
 									title: "Broadcast is not Active",
 									message: 'please check back later',
@@ -137,8 +148,7 @@
 					embedPlayer.triggerHelper( 'liveOffline' );
 
 				}  else if ( !_this.onAirStatus && onAirObj.onAirStatus ) {
-					embedPlayer.removePosterFlag = false;
-					embedPlayer.updatePosterHTML()
+					_this.addPoster();
 					embedPlayer.layoutBuilder.closeAlert(); //moved from offline to online - hide the offline alert
 					if ( !_this.getPlayer().getError() ) {
 						_this.getPlayer().enablePlayControls();
@@ -209,7 +219,7 @@
 			if ( embedPlayer.isLive() ) {
 				if ( !this.getConfig("disableLiveCheck")) {
 					//the controls will be enabled upon liveStatus==true notification
-					embedPlayer.removePoster();
+					_this.removePoster();
 					embedPlayer.disablePlayControls();
 				}
 				_this.addLiveStreamStatusMonitor();
