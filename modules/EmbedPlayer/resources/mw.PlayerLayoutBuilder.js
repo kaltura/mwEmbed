@@ -1210,6 +1210,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	*   style CSS object
 	*/
 	displayAlert: function( alertObj ) {
+		//debugger
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		var callback;
@@ -1242,6 +1243,8 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		var $container = $( '<div />' ).addClass( 'alert-container' );
 		var $title = $( '<div />' ).text( alertObj.title ).addClass( 'alert-title alert-text' );
+		var $message = $( '<div />' ).html( alertObj.message ).addClass( 'alert-message alert-text' );
+		var $buttonsContainer = $( '<div />' ).addClass( 'alert-buttons-container' );
 
 		if ( alertObj.props ) {
 
@@ -1249,7 +1252,6 @@ mw.PlayerLayoutBuilder.prototype = {
 				$container.removeClass( 'alert-container' );
 				$container.addClass( alertObj.props.customAlertContainerCssClass );
 			}
-
 
 			if ( alertObj.props.customAlertTitleCssClass ) {
 				$title.removeClass( 'alert-text alert-title' );
@@ -1260,8 +1262,6 @@ mw.PlayerLayoutBuilder.prototype = {
 				$title.css('color', mw.getHexColor( alertObj.props.titleTextColor ) );
 			}
 
-
-			var $message = $( '<div />' ).html( alertObj.message ).addClass( 'alert-message alert-text' );
 			if ( alertObj.props.customAlertMessageCssClass ){
 				$message.removeClass( 'alert-text alert-message' );
 				$message.addClass( alertObj.props.customAlertMessageCssClass );
@@ -1275,11 +1275,11 @@ mw.PlayerLayoutBuilder.prototype = {
 				$message.addClass( 'error' );
 			}
 
-			var $buttonsContainer = $( '<div />' ).addClass( 'alert-buttons-container' );
 			if ( alertObj.props.buttonRowSpacing ) {
 				$buttonsContainer.css( 'margin-top', alertObj.props.buttonRowSpacing );
 			}
 		}
+
 		var $buttonSet = alertObj.buttons || [];
 
 		// If no button was passed display just OK button
