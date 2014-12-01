@@ -408,8 +408,8 @@
 		/**
 		 * pause method calls parent_pause to update the interface
 		 */
-		pause: function() {
-			if ( !this.isPlaying() ) {
+		pause: function () {
+			if (!this.isPlaying()) {
 				return;
 			}
 			try {

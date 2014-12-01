@@ -1546,11 +1546,11 @@
 		 * Called after sources are updated, and your ready for the player to change media
 		 * @return
 		 */
-		changeMedia: function( callback, checkPlayerSourcesFunction, resetPlaybackValues ){
+		changeMedia: function (callback, checkPlayerSourcesFunction, resetPlaybackValues) {
 			var _this = this;
 			var $this = $(this);
 
-			mw.log( 'EmbedPlayer:: changeMedia ');
+			mw.log('EmbedPlayer:: changeMedia ');
 			// remove thumb during switch:
 			this.removePoster();
 
@@ -1616,8 +1616,8 @@
 					_this.changeMediaStarted = false;
 
 					// reload the player
-					if( _this.autoplay ){
-                        _this.removePoster();
+					if (_this.autoplay) {
+						_this.removePoster();
 						_this.play();
 					}
 
@@ -1636,19 +1636,19 @@
 				}
 			});
 
-			if (checkPlayerSourcesFunction){
+			if (checkPlayerSourcesFunction) {
 				checkPlayerSourcesFunction(function () {
-					mw.log( "EmbedPlayer::changeMedia:  Done with checkPlayerSourcesFunction" );
+					mw.log("EmbedPlayer::changeMedia:  Done with checkPlayerSourcesFunction");
 					// Start player events leading to playerReady
 					_this.setupSourcePlayer();
-				} );
+				});
 			} else {
 				// Load new sources per the entry id via the checkPlayerSourcesEvent hook:
-				$this.triggerQueueCallback( 'checkPlayerSourcesEvent', function () {
-					mw.log( "EmbedPlayer::changeMedia:  Done with checkPlayerSourcesEvent" );
+				$this.triggerQueueCallback('checkPlayerSourcesEvent', function () {
+					mw.log("EmbedPlayer::changeMedia:  Done with checkPlayerSourcesEvent");
 					// Start player events leading to playerReady
 					_this.setupSourcePlayer();
-				} );
+				});
 			}
 		},
 		/**
@@ -2036,7 +2036,7 @@
 		 * Android Live doesn't send timeupdate events
 		 * @returns {boolean}
 		 */
-		isTimeUpdateSupported: function() {
+		isTimeUpdateSupported: function () {
 			return true;
 		},
 		/**
@@ -2092,7 +2092,7 @@
 			}
 
 			// put a loading spiner on the player while pre-sequence or playing starts up
-			if ( this.isTimeUpdateSupported() ) {
+			if (this.isTimeUpdateSupported()) {
 				this.addPlayerSpinner();
 				this.hideSpinnerOncePlaying();
 			}
@@ -2132,12 +2132,12 @@
 			}
 
 			// If we previously finished playing this clip run the "replay hook"
-			if( this.donePlayingCount > 0 && !this.paused && this._propagateEvents ) {
+			if (this.donePlayingCount > 0 && !this.paused && this._propagateEvents) {
 				// Trigger end done on replay
 				this.triggeredEndDone = false;
 				if (this.replayEventCount < this.donePlayingCount) {
 					mw.log("EmbedPlayer::play> trigger replayEvent");
-					this.triggerHelper( 'replayEvent' );
+					this.triggerHelper('replayEvent');
 					this.replayEventCount++;
 				}
 			}
