@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Player Skin 2.0 + JSON Config</title>
+	<title>Player strings override</title>
 	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
@@ -11,9 +11,9 @@
 <body>
 	<h1>Player strings override</h1>
 	<p>
-		In this demo, player strings are being override by Flashvars using the "strings" plugin.<br>
-		To override a string, define a new value for it's key.<br>
-		For the player below, the following keys and values are specified:<br>
+		In this demo, player strings are being overridden by Flashvars using the "strings" plugin.<br>
+		To override a string, define a new value for its key.<br>
+		For the following player, the keys and values are specified:<br>
 		<ul>
 			<li>"mwe-embedplayer-play_clip": "Click to play"</li>
 			<li>"mwe-embedplayer-pause_clip": "Click to pause"</li>
@@ -21,11 +21,12 @@
 			<li>"mwe-embedplayer-volume-mute": "Turn sound off"</li>
 			<li>"mwe-embedplayer-volume-unmute": "Turn sound on"</li>
 		</ul>
-	Roll-over the play, mute and full-screen buttons to see the new tooltip values.
+	Hover over the play, mute, and full-screen buttons to see the new tooltip values.
 	</p>
 	<div id="kaltura_player" style="width: 585px; height: 330px;float: left;"></div>
 	<br style="clear: both;" /><br />
 <script>
+
 	kWidget.featureConfig({
 		'targetId': 'kaltura_player',
 		'wid': '_243342',
@@ -44,5 +45,27 @@
 		"entry_id": "0_c0r624gh"
 	});
 </script>
+
+	<br>
+	<b>The following keys are available:</b>
+	<br><br>
+	<table id="languageList" border="1" width="100%" cellspacing="0" cellpadding="5" style="border-collapse: collapse" bordercolor="#C0C0C0">
+		<tr><td bgcolor="#CDECFE" width="350px">Key</td><td bgcolor="#CDECFE">Default Value (English)</td></tr>
+	</table>
+	<script>
+		$.getJSON('../../../services.php?service=languageKeys', function(data){
+			$.each( data, function(key, obj){
+				$('#languageList').append(
+					$('<tr>').addClass( obj.support )
+						.append(
+							$('<td>').text( key ),
+							$('<td>').text( obj )
+					)
+				)
+			});
+
+		})
+	</script>
+
 </body>
 </html>
