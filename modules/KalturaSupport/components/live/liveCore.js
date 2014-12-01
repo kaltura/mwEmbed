@@ -35,6 +35,11 @@
 		 */
 		maxCurrentTime: 0,
 
+		/**
+		 * indicates that we've received the first live status update
+		 */
+		liveStreamStatusUpdate : false,
+
 		setup: function() {
 			this.addPlayerBindings();
 			this.extendApi();
