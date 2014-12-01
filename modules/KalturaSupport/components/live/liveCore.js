@@ -129,6 +129,7 @@
 
 				}  else if ( !_this.onAirStatus && onAirObj.onAirStatus ) {
 					embedPlayer.removePosterFlag = false;
+					embedPlayer.updatePosterHTML()
 					embedPlayer.layoutBuilder.closeAlert(); //moved from offline to online - hide the offline alert
 					if ( !_this.getPlayer().getError() ) {
 						_this.getPlayer().enablePlayControls();
