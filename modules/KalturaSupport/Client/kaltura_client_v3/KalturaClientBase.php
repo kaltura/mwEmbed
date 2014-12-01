@@ -47,7 +47,7 @@ class MultiRequestSubResult implements ArrayAccess
 	{
         return new MultiRequestSubResult($this->value . ':' . $name);
 	}
-	
+
 	public function offsetExists($offset)
 	{
 		return true;
@@ -61,7 +61,7 @@ class MultiRequestSubResult implements ArrayAccess
 	public function offsetSet($offset, $value)
 	{
 	}
-	
+
 	public function offsetUnset($offset)
 	{
 	}
@@ -157,13 +157,13 @@ class KalturaClientBase
 	* @var Array of response headers
 	*/
 	private $responseHeaders = array();
-	
+
 	/**
 	 * path to save served results
 	 * @var string
 	 */
 	protected $destinationPath = null;
-	
+
 	/**
 	 * return served results without unserializing them
 	 * @var boolean
@@ -297,7 +297,7 @@ class KalturaClientBase
 			$this->resetRequest();
 			throw new KalturaClientException("Downloading files is not supported as part of multi-request.", KalturaClientException::ERROR_DOWNLOAD_IN_MULTIREQUEST);
 		}
-		
+
 		if (count($this->callsQueue) == 0)
 		{
 			$this->resetRequest();
@@ -371,7 +371,7 @@ class KalturaClientBase
 			}
 			if (!is_null($serverName) || !is_null($serverSession))
 				$this->log("server: [{$serverName}], session: [{$serverSession}]");
-			
+
 			$this->log("result (serialized): " . $postResult);
 
 			if($this->returnServedResult)
@@ -441,10 +441,10 @@ class KalturaClientBase
 	{
 		if (function_exists('curl_init'))
 			return $this->doCurl($url, $params, $files);
-			
+
 		if($this->destinationPath || $this->returnServedResult)
 			throw new KalturaClientException("Downloading files is not supported with stream context http request, please use curl.", KalturaClientException::ERROR_DOWNLOAD_NOT_SUPPORTED);
-				
+
 		return $this->doPostRequest($url, $params, $files);
 	}
 
@@ -457,107 +457,103 @@ class KalturaClientBase
 	 * @return array of result and error
 	 */
 	private function doCurl($url, $params = array(), $files = array())
-	{
-		$opt = http_build_query($params, null, "&");
-		// Force POST in case we have files
-		if(count($files) > 0) {
-			$this->config->method = self::METHOD_POST;
-		}
-		// Check for GET and append params to url
-		if( $this->config->method == self::METHOD_GET ) {
-			$url = $url . '&' . $opt;
-		}
-		$this->responseHeaders = array();
-		$cookies = array();
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $url);
-		if( $this->config->method == self::METHOD_POST ) {
-			curl_setopt($ch, CURLOPT_POST, 1);
-			if (count($files) > 0)
-			{
-				foreach($files as &$file)
-					$file = "@".$file; // let curl know its a file
-				curl_setopt($ch, CURLOPT_POSTFIELDS, array_merge($params, $files));
-			}
-			else
-			{
-				$this->log("curl: $url&$opt");
-				curl_setopt($ch, CURLOPT_POSTFIELDS, $opt);
-			}
-		}
-		curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
-		curl_setopt($ch, CURLOPT_USERAGENT, $this->config->userAgent);
-		if (count($files) > 0)
-			curl_setopt($ch, CURLOPT_TIMEOUT, 0);
-		else
-			curl_setopt($ch, CURLOPT_TIMEOUT, $this->config->curlTimeout);
+    {
+        $opt = http_build_query($params, null, "&");
+        // Force POST in case we have files
+        if (count($files) > 0) {
+            $this->config->method = self::METHOD_POST;
+        }
+        // Check for GET and append params to url
+        if ($this->config->method == self::METHOD_GET) {
+            $url = $url . '&' . $opt;
+        }
+        $this->responseHeaders = array();
+        $cookies = array();
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        if ($this->config->method == self::METHOD_POST) {
+            curl_setopt($ch, CURLOPT_POST, 1);
+            if (count($files) > 0) {
+                foreach ($files as &$file) {
+                    // The usage of the @filename API for file uploading is
+                    // deprecated from PHP 5.5. CURLFile must be used instead.
+                    if (PHP_VERSION_ID >= 50500) {
+                        $file = new \CURLFile($file);
+                    } else {
+                        $file = "@" . $file; // let curl know its a file
+                    }
+                }
+                curl_setopt($ch, CURLOPT_POSTFIELDS, array_merge($params, $files));
+            } else {
+                $this->log("curl: $url&$opt");
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $opt);
+            }
+        }
+        curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
+        curl_setopt($ch, CURLOPT_USERAGENT, $this->config->userAgent);
+        if (count($files) > 0)
+            curl_setopt($ch, CURLOPT_TIMEOUT, 0);
+        else
+            curl_setopt($ch, CURLOPT_TIMEOUT, $this->config->curlTimeout);
 
-		if ($this->config->startZendDebuggerSession === true)
-		{
-			$zendDebuggerParams = $this->getZendDebuggerParams($url);
-		 	$cookies = array_merge($cookies, $zendDebuggerParams);
-		}
+        if ($this->config->startZendDebuggerSession === true) {
+            $zendDebuggerParams = $this->getZendDebuggerParams($url);
+            $cookies = array_merge($cookies, $zendDebuggerParams);
+        }
 
-		if (count($cookies) > 0)
-		{
-			$cookiesStr = http_build_query($cookies, null, '; ');
-			curl_setopt($ch, CURLOPT_COOKIE, $cookiesStr);
-		}
+        if (count($cookies) > 0) {
+            $cookiesStr = http_build_query($cookies, null, '; ');
+            curl_setopt($ch, CURLOPT_COOKIE, $cookiesStr);
+        }
 
-		if (isset($this->config->proxyHost)) {
-			curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
-			curl_setopt($ch, CURLOPT_PROXY, $this->config->proxyHost);
-			if (isset($this->config->proxyPort)) {
-				curl_setopt($ch, CURLOPT_PROXYPORT, $this->config->proxyPort);
-			}
-			if (isset($this->config->proxyUser)) {
-				curl_setopt($ch, CURLOPT_PROXYUSERPWD, $this->config->proxyUser.':'.$this->config->proxyPassword);
-			}
-			if (isset($this->config->proxyType) && $this->config->proxyType === 'SOCKS5') {
-				curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
-			}
-		}
+        if (isset($this->config->proxyHost)) {
+            curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
+            curl_setopt($ch, CURLOPT_PROXY, $this->config->proxyHost);
+            if (isset($this->config->proxyPort)) {
+                curl_setopt($ch, CURLOPT_PROXYPORT, $this->config->proxyPort);
+            }
+            if (isset($this->config->proxyUser)) {
+                curl_setopt($ch, CURLOPT_PROXYUSERPWD, $this->config->proxyUser . ':' . $this->config->proxyPassword);
+            }
+            if (isset($this->config->proxyType) && $this->config->proxyType === 'SOCKS5') {
+                curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+            }
+        }
 
-		// Set SSL verification
-		if(!$this->getConfig()->verifySSL)
-		{
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-		}
-		elseif($this->getConfig()->sslCertificatePath)
-		{
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-			curl_setopt($ch, CURLOPT_CAINFO, $this->getConfig()->sslCertificatePath);
-		}
+        // Set SSL verification
+        if (!$this->getConfig()->verifySSL) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        } elseif ($this->getConfig()->sslCertificatePath) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+            curl_setopt($ch, CURLOPT_CAINFO, $this->getConfig()->sslCertificatePath);
+        }
 
-		// Set custom headers
-		curl_setopt($ch, CURLOPT_HTTPHEADER, $this->config->requestHeaders );
+        // Set custom headers
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $this->config->requestHeaders);
 
-		// Save response headers
-		curl_setopt($ch, CURLOPT_HEADERFUNCTION, array($this, 'readHeader') );
+        // Save response headers
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION, array($this, 'readHeader'));
 
-		$destinationResource = null;
-		if($this->destinationPath)
-		{
-			$destinationResource = fopen($this->destinationPath, "wb");
-			curl_setopt($ch, CURLOPT_FILE, $destinationResource);
-		}
-		else
-		{
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		}
-		
-		$result = curl_exec($ch);
-		
-		if($destinationResource)
-			fclose($destinationResource);
-			
-		$curlError = curl_error($ch);
-		curl_close($ch);
-		return array($result, $curlError);
-	}
+        $destinationResource = null;
+        if ($this->destinationPath) {
+            $destinationResource = fopen($this->destinationPath, "wb");
+            curl_setopt($ch, CURLOPT_FILE, $destinationResource);
+        } else {
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        }
 
-	/**
+        $result = curl_exec($ch);
+
+        if ($destinationResource)
+            fclose($destinationResource);
+
+        $curlError = curl_error($ch);
+        curl_close($ch);
+        return array($result, $curlError);
+    }
+
+       /**
 	 * HTTP stream context request
 	 *
 	 * @param string $url
