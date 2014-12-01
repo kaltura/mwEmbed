@@ -90,7 +90,17 @@
 					embedPlayer.autoplay &&
 					embedPlayer.canAutoPlay() &&
 					!embedPlayer.isPlaying() ) {
-					embedPlayer.play();
+						embedPlayer.play();
+				}
+				if ( !_this.liveStreamStatusUpdate ) {
+					_this.liveStreamStatusUpdate = true;
+					debugger
+					if(onAirObj.onAirStatus){
+						embedPlayer.updatePosterHTML();
+						_this.getPlayer().enablePlayControls();
+					}else{
+						_this.getPlayer().disablePlayControls();
+					}
 				}
 
 				//if we moved from live to offline  - show message
@@ -198,6 +208,11 @@
 			_this.maxCurrentTime = 0;
 			//live entry
 			if ( embedPlayer.isLive() ) {
+				if ( !this.getConfig("disableLiveCheck")) {
+					//the controls will be enabled upon liveStatus==true notification
+					embedPlayer.removePoster();
+					embedPlayer.disablePlayControls();
+				}
 				_this.addLiveStreamStatusMonitor();
 				//hide source selector until we support live streams switching
 				hideComponentsArr.push( 'sourceSelector' );
