@@ -132,21 +132,21 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 		// http://msdn.microsoft.com/en-us/library/ms536651%28v=vs.85%29.asp
 
 		if(mw.isNativeApp()){
-			var socialNetworks = this.getConfig("socialNetworks").split(',');
-			var networkIndex = $.inArray($(e.target).attr('id'), socialNetworks);
+			var socialNetworks = this.getConfig("socialNetworks").split( ',' );
+			var networkIndex = $.inArray( $( e.target ).attr( 'id' ), socialNetworks );
 			var networkParams = this.getTemplateData().networks[networkIndex];
 			var shareParams = {
 				actionType: this.getPlayer().nativeActionType( 'share' ),
-				sharedLink: this.getConfig("shareURL"),
+				sharedLink: this.getConfig( "shareURL" ),
 				shareNetwork: networkParams,
 				thumbnail: this.getThumbnailURL(),
 				videoName: this.getPlayer().evaluate("{mediaProxy.entry.name}")
 			};
 			this.getPlayer().doNativeAction( JSON.stringify(shareParams) );
 		} else {
-			var url = $(e.target).parents('a').attr('href');
+			var url = $( e.target ).parents( 'a' ).attr( 'href' );
 			window.open(
-				url + encodeURIComponent( this.getConfig('shareURL')),
+				url + encodeURIComponent( this.getConfig( 'shareURL' )),
 				'_blank',
 				'width=626,height=436'
 			);
@@ -154,7 +154,7 @@ mw.PluginManager.add( 'share', mw.KBaseScreen.extend({
 	},
 	getThumbnailURL: function(){
 		return kWidgetSupport.getKalturaThumbnailUrl({
-				url: this.getPlayer().evaluate('{mediaProxy.entry.thumbnailUrl}'),
+				url: this.getPlayer().evaluate( '{mediaProxy.entry.thumbnailUrl}' ),
 				width: this.getPlayer().getWidth(),
 				height: this.getPlayer().getHeight()
 		});

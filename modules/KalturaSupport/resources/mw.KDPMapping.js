@@ -500,8 +500,10 @@
 							return location.hostname;
 							break;
 						case 'nativeAdId':
-							if( mw.isNativeApp() ) {
-								return embedPlayer.getPlayerElement().attr( 'fetchNativeAdID' );
+							if( embedPlayer ) {
+								return embedPlayer.getFlashvars('nativeAdId');
+							} else {
+								return "";
 							}
 							break;
 					}
