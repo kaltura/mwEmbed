@@ -449,14 +449,14 @@ class KalturaClientBase
 	}
 
 	/**
-	 * Curl HTTP POST Request
-	 *
-	 * @param string $url
-	 * @param array $params
-	 * @param array $files
-	 * @return array of result and error
-	 */
-	private function doCurl($url, $params = array(), $files = array())
+     * Curl HTTP POST Request
+     *
+     * @param string $url
+     * @param array $params
+     * @param array $files
+     * @return array of result and error
+     */
+    private function doCurl($url, $params = array(), $files = array())
     {
         $opt = http_build_query($params, null, "&");
         // Force POST in case we have files
@@ -553,7 +553,7 @@ class KalturaClientBase
         return array($result, $curlError);
     }
 
-       /**
+    /**
 	 * HTTP stream context request
 	 *
 	 * @param string $url
