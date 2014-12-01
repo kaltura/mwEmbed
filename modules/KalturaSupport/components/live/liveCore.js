@@ -111,7 +111,6 @@
 				if ( !_this.liveStreamStatusUpdate ) {
 					_this.liveStreamStatusUpdate = true;
 					if( onAirObj.onAirStatus ){
-						debugger;
 						_this.addPoster();
 						_this.getPlayer().enablePlayControls();
 					}else{
