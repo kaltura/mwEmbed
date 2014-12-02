@@ -720,10 +720,11 @@
 			}
 
 			//build playmanifest URL
+			var ksString = this.getFlashvars('ks') ? "/ks/" + this.getFlashvars('ks') : "";
 			var srcUrl = window.kWidgetSupport.getBaseFlavorUrl(this.kpartnerid) + "/entryId/" + this.kentryid + flavorIdParam
 				+ this.getPlaymanifestArg("deliveryCode", "deliveryCode") + "/format/" + format
 				+ "/protocol/" + mediaProtocol + this.getPlaymanifestArg("cdnHost", "cdnHost") + this.getPlaymanifestArg("storageId", "storageId")
-				+ "/ks/" + this.getFlashvars('ks') + "/uiConfId/" + this.kuiconfid + this.getPlaymanifestArg("referrerSig", "referrerSig")
+				+ ksString + "/uiConfId/" + this.kuiconfid + this.getPlaymanifestArg("referrerSig", "referrerSig")
 				+ this.getPlaymanifestArg("tags", "flavorTags") + "/a/a." + fileExt + "?referrer=" + this.b64Referrer;
 
 			if (srcUrl.indexOf("&seekFrom=") !== -1) {
