@@ -1525,6 +1525,7 @@
 					this.switchSrc(newSource);
 				}
 				this.currentTime = 0;
+				this.monitor();
 				this.play();
 			} else {
 				this.pause();
