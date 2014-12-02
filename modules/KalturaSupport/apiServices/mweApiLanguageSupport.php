@@ -3,6 +3,7 @@
 * This file enables slow javascript response for testing blocking scripts relative to player embeds
 */
 $wgMwEmbedApiServices['languageSupport'] = 'mweLanguageSupport';
+$wgMwEmbedApiServices['languageKeys'] = 'mweLanguageKeys';
 
 class mweLanguageSupport {
 	function run(){
@@ -35,5 +36,17 @@ class mweLanguageSupport {
 			);
 		}
 		echo json_encode($messageSupport);
+	}
+}
+
+class mweLanguageKeys {
+	function run(){
+		// get all the message supported in embedPlayer
+		include( dirname( __FILE__ ) . '/../../EmbedPlayer/EmbedPlayer.i18n.php' );
+		$embedPlayerMessages = $messages['en'];
+		// get all the messages supported in KalturaSupport:
+        include( dirname( __FILE__ ) . '/../KalturaSupport.i18n.php' );
+        $kMessages = $messages['en'];
+        echo json_encode(array_merge($embedPlayerMessages, $kMessages));
 	}
 }

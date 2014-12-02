@@ -281,10 +281,10 @@
 							'title' => 'Chromeless No Controls',
 							'path' => 'KalturaSupport/tests/ChromelessPlayer.qunit.html'
 						),
-						/*'CustomSkin' => array(
-							'title' => 'Custom Skin',
-							'path' => 'KalturaSupport/tests/CustomSkin.html'
-						),
+						'Strings' => array(
+							'title' => 'Custom Strings',
+							'path' => 'KalturaSupport/tests/Strings.html'
+						),/*
 						'CustomSkinAudioPlayer' => array(
 							'title' => 'Custom Audio Player Skin',
 							'path' => 'KalturaSupport/tests/CustomSkinAudioPlayer.html'
