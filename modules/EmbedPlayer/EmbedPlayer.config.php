@@ -153,8 +153,7 @@
 			'EmbedPlayer.UseFlashOnAndroid' => false,
 			
 			// If embedPlayer should support server side temporal urls for seeking options are
-			// flash|always|none default is support for flash only.
-			'EmbedPlayer.EnableURLTimeEncoding' => 'flash',
+			'EmbedPlayer.EnableURLTimeEncoding' => false,
 			
 			// The domains which can read and send events to the video player
 			'EmbedPLayer.IFramePlayer.DomainWhiteList' => '*',

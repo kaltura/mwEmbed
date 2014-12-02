@@ -578,6 +578,16 @@ return array(
 			'minWidth' => array(
 				'doc' => "The minimum width of the playhead. If the min-width is reached, normal responsive display importance removal rules come into effect.",
 				'type' => 'number'
+			),
+			'sliderPreview' => array(
+				'doc' => "Show a preview thumbnail with the current time when mouse is over the scrubber",
+				'type' =>'boolean',
+				'initvalue' =>true
+			),
+			'showOnlyTime' => array(
+				'doc' => "Show only the time when mouse is over the scrubber",
+				'type' =>'boolean',
+				'initvalue' =>false
 			)
 		)
 	),
@@ -1156,6 +1166,11 @@ The playhead reflects segment time as if it was the natural stream length.",
 					If set to true, the prerollInterval will be respected across player views.',
 				'type' => 'boolean',
 				'initvalue' => false,
+			),
+			'pauseAdOnClick' => array(
+				'doc' => 'If the ad should pause when clicked.',
+				'type' => 'boolean',
+				'initvalue' => true,
 			),
 			'enableCORS' => array(
 				'doc' => 'Enable CORS request to support request cookies to secured domains over ajax',

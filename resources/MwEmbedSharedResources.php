@@ -13,9 +13,6 @@ return array(
 	),
 
 	/* cryto / encode */
-	'MD5' => array(
-		'scripts' =>	 'resources/crypto/MD5.js' 
-	),
 	'base64_encode' =>  array( 
 		'scripts' => 'resources/base64/base64_encode.js',
 		'dependencies' => 'utf8_encode'

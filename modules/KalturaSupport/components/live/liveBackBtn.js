@@ -1,5 +1,6 @@
-( function( mw, $ ) {"use strict";
-	mw.PluginManager.add( 'liveBackBtn', mw.KBaseComponent.extend({
+(function (mw, $) {
+	"use strict";
+	mw.PluginManager.add('liveBackBtn', mw.KBaseComponent.extend({
 
 		defaultConfig: {
 			'parent': 'controlsContainer',
@@ -7,30 +8,40 @@
 			"displayImportance": "medium"
 		},
 
-		getComponent: function() {
+		setup: function () {
 			var _this = this;
-			if( !this.$el ) {
-				var $backToLiveText = $( '<div />')
-					.addClass( 'back-to-live-text ' + this.getCssClass() )
-					.text( 'Live' );
+			this.bind('seeking onpause', function () {
+				_this.getComponent().addClass('back-to-live-active');
+			});
+			this.bind('movingBackToLive', function () {
+				_this.getComponent().removeClass('back-to-live-active');
+			});
+		},
+
+		getComponent: function () {
+			var _this = this;
+			if (!this.$el) {
+				var $backToLiveText = $('<div />')
+					.addClass('back-to-live-text ' + this.getCssClass())
+					.text('Live');
 
 				var $backToLiveWrapper =
-					$( '<div />' )
-						.addClass( 'back-to-live-icon ' + this.getCssClass() );
+					$('<div />')
+						.addClass('back-to-live-icon ' + this.getCssClass());
 				this.$el =
-					$( '<div />')
-						.addClass( 'ui-widget back-to-live ' + this.getCssClass() )
-						.append( $backToLiveWrapper, $backToLiveText )
-						.click( function() {
+					$('<div />')
+						.addClass('ui-widget back-to-live ' + this.getCssClass())
+						.append($backToLiveWrapper, $backToLiveText)
+						.click(function () {
 							_this.backToLive();
-						} );
+						});
 			}
 			return this.$el;
 		},
 
-		backToLive: function() {
+		backToLive: function () {
 			this.getPlayer().backToLive();
 		}
 
 	}))
-} )( window.mw, window.jQuery );
+})(window.mw, window.jQuery);

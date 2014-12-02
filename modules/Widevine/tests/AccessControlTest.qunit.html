@@ -1,40 +1,41 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Access Control Widevine ks</title>
-<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
-<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	<title>Access Control Widevine ks</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 </head>
 <body>
 <h2> Access Control Widevine ks </h2>
 
 This shows arbitrary custom access logic being applied to widevine content. <br><br>
 
-Without KS: 
-<div id="player-without-ks" style="width:400px;height:330px;"></div><br>
+Without KS:
+<div id="player-without-ks" style="width:400px;height:330px;"></div>
+<br>
 With KS:
-<div id="player-with-ks" style="width:400px;height:330px;"> loading ... </div>
+<div id="player-with-ks" style="width:400px;height:330px;"> loading ...</div>
 <script>
-	var settingsObj ={
+	var settingsObj = {
 		'wid': '_929011',
-		'uiconf_id' : '16115322',
-		'entry_id' : '1_4f9zv9fu',
-		'flashvars':{
-			'flavorTags' : 'widevine_mbr,mbr,web',
+		'uiconf_id': '16115322',
+		'entry_id': '1_4f9zv9fu',
+		'flashvars': {
+			'flavorTags': 'widevine_mbr,mbr,web',
 			'widevine': {
 				'plugin': true
 			}
 		}
 	};
-	kWidget.embed( 'player-without-ks', settingsObj);
-	$.getJSON( '../../../services.php?service=KSTest&entry_id=1_4f9zv9fu&wid=_929011', function( ksJSON ){
-		if( ! ksJSON || ! ksJSON.ks ){
-			$('#playerTarget').text( 'error getting ks');
-			return ;
+	kWidget.embed('player-without-ks', settingsObj);
+	$.getJSON('../../../services.php?service=KSTest&entry_id=1_4f9zv9fu&wid=_929011', function (ksJSON) {
+		if (!ksJSON || !ksJSON.ks) {
+			$('#playerTarget').text('error getting ks');
+			return;
 		}
 		settingsObj.flashvars.ks = ksJSON.ks;
-		kWidget.embed( 'player-with-ks', settingsObj);
+		kWidget.embed('player-with-ks', settingsObj);
 	});
 </script>
 

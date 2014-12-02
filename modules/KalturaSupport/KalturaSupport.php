@@ -13,7 +13,7 @@
 			'dependencies' => array(
 				'base64_encode',
 				'matchMedia',
-				'mw.KApi',
+				'mw.KEntryLoader',
 				'mw.KDPMapping',
 				'mw.KCuePoints'
 			),
@@ -52,11 +52,8 @@
 		"mw.KDPMapping"=> array(
 			'scripts' => "resources/mw.KDPMapping.js",
 		),
-		"mw.KApi"=> array(
-			'scripts' => "resources/mw.KApi.js", 
-			'dependencies' => array(
-				'MD5'
-			)	
+		"mw.KEntryLoader"=> array(
+			'scripts' => "resources/mw.KEntryLoader.js"
 		),
 		"mw.KAds"=> array( 
 			'scripts' => "resources/mw.KAds.js",

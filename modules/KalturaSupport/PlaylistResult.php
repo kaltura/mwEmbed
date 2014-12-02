@@ -29,7 +29,7 @@ class PlaylistResult {
 		if(!$uiconf)
 			throw new Exception("Error missing uiconf object");
 		if(!$entry)
-			throw new Exception("Error missing entry object");					
+			throw new Exception("Error missing entry object");
 		
 		// Set our objects
 		$this->request = $request;
