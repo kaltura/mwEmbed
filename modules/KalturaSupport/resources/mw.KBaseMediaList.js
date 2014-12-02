@@ -501,7 +501,9 @@
 				var nanoWrapper = $( "<div class='nano'>" ).append( $( "<div class='nano-content'>" ) );
 				list.wrap( nanoWrapper );
 				$( ".nano").nanoScroller( {
-					flash: true
+					flash: true,
+					preventPageScrolling: true,
+					iOSNativeScrolling: true
 				} );
 			}else {
 				this.addScrollUiComponents();
