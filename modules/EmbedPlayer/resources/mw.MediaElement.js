@@ -157,11 +157,20 @@ mw.MediaElement.prototype = {
 		if( !oldSrc || oldSrc.getSrc() != source.getSrc() ){
 			$( '#' + this.parentEmbedId ).trigger( 'SourceChange');
 		}
+
 		return this.selectedSource;
 	},
 
-	autoSelectSource:function(){
+	autoSelectSource: function (supportsURLTimeEncoding, startTime, endTime) {
 		if ( this.autoSelectSourceExecute() ){
+			this.selectedSource.src = this.selectedSource.src.replace(/seekFrom\/\d+\//, '');
+			this.selectedSource.src = this.selectedSource.src.replace(/clipTo\/\d+\//, '');
+			if (supportsURLTimeEncoding && !!endTime) {
+				this.selectedSource.src = this.selectedSource.src.replace("playManifest/", "playManifest/clipTo/" + parseInt(endTime) * 1000 + "/");
+			}
+			if (supportsURLTimeEncoding && !!startTime) {
+				this.selectedSource.src = this.selectedSource.src.replace("playManifest/", "playManifest/seekFrom/" + parseInt(startTime) * 1000 + "/");
+			}
 			$( '#' + this.parentEmbedId ).trigger( 'SourceSelected' , this.selectedSource );
 			return this.selectedSource;
 		}
@@ -508,8 +517,8 @@ mw.MediaElement.prototype = {
 	 *
 	 * @returns {Array} of playable media sources
 	 */
-	getPlayableSources: function( mimeFilter ) {
-		 var playableSources = [];
+	getPlayableSources: function (mimeFilter) {
+		var playableSources = [];
 		 for ( var i = 0; i < this.sources.length; i++ ) {
 			 if ( this.isPlayableType( this.sources[i].mimeType )
 					 &&
