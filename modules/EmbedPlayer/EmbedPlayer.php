@@ -21,6 +21,7 @@
 			),
 			"mw.EmbedPlayer" => array(
 				'scripts' => array(
+					"resources/playerElement/Silverlight.js",
 					"resources/mw.processEmbedPlayers.js",
 					"resources/mw.EmbedPlayer.js",
 					"resources/mw.FullScreenManager.js",
@@ -62,8 +63,7 @@
 					'jquery.naturalSize',
 
 					'mw.PlayerElementHTML',
-					'mw.PlayerElementFlash',
-					'mw.PlayerElementSilverlight',
+					'mw.PlayerElementFlash'
 				),
 				'styles' => "resources/EmbedPlayer.css",
 				'messageFile' => 'EmbedPlayer.i18n.php',

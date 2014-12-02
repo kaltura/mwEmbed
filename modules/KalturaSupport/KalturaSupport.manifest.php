@@ -1167,6 +1167,11 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'boolean',
 				'initvalue' => false,
 			),
+			'pauseAdOnClick' => array(
+				'doc' => 'If the ad should pause when clicked.',
+				'type' => 'boolean',
+				'initvalue' => true,
+			),
 			'enableCORS' => array(
 				'doc' => 'Enable CORS request to support request cookies to secured domains over ajax',
 				'type' => 'boolean',
