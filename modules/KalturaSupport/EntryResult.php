@@ -100,7 +100,7 @@ class EntryResult {
 		global $wgKalturaEnableProxyData;
 		$key = '';
 		if ($wgKalturaEnableProxyData && $this->request->getFlashVars("proxyData")){
-			$key.= md5( $this->request->getFlashVars("proxyData") );
+			$key.= md5( serialize( $this->request->getFlashVars("proxyData") ) );
 		}
 		if( $this->request->getEntryId() ){
 			$key.= $this->request->getEntryId();
