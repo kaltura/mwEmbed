@@ -87,6 +87,15 @@
 					$(".videoHolder").width(_this.videoWidth+"px");
 				}
 			});
+
+			this.bind("onShowSidelBar", function(){
+				if (_this.checkAddScroll()){
+					_this.getScrollComponent().nanoScroller( {
+						flash: true,
+						flashDelay: 2000
+					} );
+				}
+			});
 		},
 
 		getComponent: function(){
@@ -497,14 +506,7 @@
 			var speed = mw.isTouchDevice() ? 100: 200;
 
 			if (isVertical) {
-				var list = $( this.getMedialistComponent().children()[0] );
-				var nanoWrapper = $( "<div class='nano'>" ).append( $( "<div class='nano-content'>" ) );
-				list.wrap( nanoWrapper );
-				$( ".nano").nanoScroller( {
-					flash: true,
-					preventPageScrolling: true,
-					iOSNativeScrolling: true
-				} );
+				this.getScrollComponent();
 			}else {
 				this.addScrollUiComponents();
 				// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
@@ -521,6 +523,21 @@
 				} );
 				$cc.find('.k-carousel').css('width', $cc.width() );
 			}
+		},
+		getScrollComponent: function(){
+			if (!this.$scroll){
+				this.$scroll = $( "<div class='nano'>" );
+				this.$scroll.append( $( "<div class='nano-content'>" ) );
+				var list = $( this.getMedialistComponent().children()[0] );
+				list.wrap( this.$scroll );
+				this.$scroll = this.getComponent().find(".nano");
+				this.$scroll.nanoScroller( {
+					flash: true,
+					preventPageScrolling: true,
+					iOSNativeScrolling: true
+				} );
+			}
+			return this.$scroll;
 		},
 		getMediaItemBoxWidth: function(){
 			return this.getConfig('mediaItemWidth') || 320;
