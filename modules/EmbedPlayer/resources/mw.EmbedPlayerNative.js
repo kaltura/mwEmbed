@@ -486,28 +486,14 @@
 				}
 				// restore iPad video position:
 				_this.restorePlayerOnScreen();
+				_this.monitor();
+				// issue the callback:
+				if( callback ){
+					callback();
+				}
+			});
+		},
 
-	/**
-	* Set the current time with a callback
-	*
-	* @param {Float} position
-	* 		Seconds to set the time to
-	* @param {Function} callback
-	* 		Function called once time has been set.
-	*/
-	setCurrentTime: function( seekTime , callback, callbackCount ) {
-		var _this = this;
-		if( !callbackCount ){
-			callbackCount = 0;
-		}
-		seekTime = parseFloat( seekTime );
-		mw.log( "EmbedPlayerNative:: setCurrentTime seekTime:" + seekTime + ' count:' + callbackCount );
-		if ( seekTime == 0 && this.isLive() && mw.isIpad() && !mw.isIOS8() ) {
-			//seek to 0 doesn't work well on live on iOS < 8
-			seekTime = 0.01;
-			mw.log( "EmbedPlayerNative:: setCurrentTime fix seekTime to 0.01" );
-		}
-		var vid = this.getPlayerElement();
 
 		/**
 		 * Seek in a existing stream, we first play then seek to work around issues with iPad seeking.
@@ -549,17 +535,22 @@
 		 * Set the current time with a callback
 		 *
 		 * @param {Float} position
-		 *        Seconds to set the time to
+		 * 		Seconds to set the time to
 		 * @param {Function} callback
-		 *        Function called once time has been set.
+		 * 		Function called once time has been set.
 		 */
-		setCurrentTime: function (seekTime, callback, callbackCount) {
+		setCurrentTime: function( seekTime , callback, callbackCount ) {
 			var _this = this;
-			if (!callbackCount) {
+			if( !callbackCount ){
 				callbackCount = 0;
 			}
-			seekTime = parseFloat(seekTime);
-			mw.log("EmbedPlayerNative:: setCurrentTime seekTime:" + seekTime + ' count:' + callbackCount);
+			seekTime = parseFloat( seekTime );
+			mw.log( "EmbedPlayerNative:: setCurrentTime seekTime:" + seekTime + ' count:' + callbackCount );
+			if ( seekTime == 0 && this.isLive() && mw.isIpad() && !mw.isIOS8() ) {
+				//seek to 0 doesn't work well on live on iOS < 8
+				seekTime = 0.01;
+				mw.log( "EmbedPlayerNative:: setCurrentTime fix seekTime to 0.01" );
+			}
 			var vid = this.getPlayerElement();
 
 			if (this.currentState == "end" && mw.isIphone()) {
@@ -1415,7 +1406,7 @@
 					this.onClipDone();
 				}
 			}
-		}
+
 	},
 	/**
 	* playback error
@@ -1434,8 +1425,9 @@
 					data[ 'errorCode' ] = event.currentTarget.error.code;
 					mw.log( 'EmbedPlayerNative::_onerror: MediaError code: ' + data.errorCode);
 				}
-			}, 3000);
-		},
+			}
+		}, 100);
+	},
 
 		/**
 		 * buffer under-run
@@ -1446,8 +1438,7 @@
 			if (this.isLive()) {
 				this.bufferStart();
 			}
-		}, 100);
-	},
+		},
 
 		_oncanplay: function (event) {
 			if (this.isLive() && this.buffering) {
