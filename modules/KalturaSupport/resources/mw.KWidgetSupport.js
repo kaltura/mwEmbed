@@ -863,7 +863,7 @@ mw.KWidgetSupport.prototype = {
 		var _this = this;
 		var sources;
 		mw.log( "KWidgetSupport:: getEntryIdSourcesFromApi: w:" + embedPlayer.kwidgetid + ' entry:' + embedPlayer.kentryid );
-		this.kClient = mw.KApiPlayerLoader({
+		this.kClient = mw.kApiEntryLoader({
 			'widget_id': embedPlayer.kwidgetid,
 			'entry_id': entryId
 		}, function( playerData ){
