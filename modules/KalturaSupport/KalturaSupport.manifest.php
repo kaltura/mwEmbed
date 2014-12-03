@@ -1491,6 +1491,20 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 		)
 	),
+	'strings' => array(
+		'description' => 'Enables overwriting player strings. For full string keys listing, review the <a href="http://player.kaltura.com/docs/Strings" target="_blank">Strings test page</a>' ,
+		'type' => 'featuremenu',
+		'label' => 'Strings',
+		'model' => 'config.plugins.strings',
+		'attributes' => array(
+            'keyValuePairs' => array(
+                'doc' => 'Key / Value pairs of strings to overwrite',
+                'label' => 'Strings to overwrite:',
+                'initvalue' => '',
+                'type' => 'keyValuePairs',
+            )
+        )
+	),
 	'hammerEvents' => array(
 		'description' => 'Support Hammer.js events against the player canvas.',
 		'attributes' => array(
