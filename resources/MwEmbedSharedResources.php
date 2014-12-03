@@ -438,9 +438,9 @@ return array(
         'scripts' => 'resources/touchSwipe/jquery.touchSwipe.min.js',
         'dependencies' => 'jquery'
     ),
-    'nanoscroller' => array(
-        'scripts' => 'resources/nanoscroller/nanoscroller.min.js',
-        'styles' => 'resources/nanoscroller/nanoscroller.css',
+    'nanoScroller' => array(
+        'scripts' => 'resources/nanoScroller/nanoScroller.min.js',
+        'styles' => 'resources/nanoScroller/nanoScroller.css',
         'dependencies' => 'jquery'
     ),
 	/*'mediawiki.language.parser' => new MwEmbedResourceLoaderFileModule( array(

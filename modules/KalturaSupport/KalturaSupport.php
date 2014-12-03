@@ -319,7 +319,7 @@
 		),
 		"jCarouse"=> array( 
 			'scripts' => "resources/uiConfComponents/jcarousellite_1.0.1.js",
-			 'dependencies' => array('nanoscroller', 'touchSwipe')
+			 'dependencies' => array('nanoScroller', 'touchSwipe')
 		),
 		"mw.KLayout"=> array( 
 			'scripts' => "resources/mw.KLayout.js" 
