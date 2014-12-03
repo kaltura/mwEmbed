@@ -9,8 +9,8 @@
 			displayImportance: 'low',
 			align: "right",
 			cssClass: "kaltura-logo",
-			href: 'http://www.kaltura.com',
-			title: 'Kaltura',
+			href: null,
+			title: null,
 			img: null
 		},
 		getComponent: function () {
