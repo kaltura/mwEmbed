@@ -80,7 +80,15 @@ mw.FullScreenManager.prototype = {
 	*/
 	doFullScreenPlayer: function( callback ) {
 		mw.log("FullScreenManager:: doFullScreenPlayer" );
-
+		if (mw.isIOS8()){ // since we set a fixed height in IOS8 to center the loading spinner - we need to reset the iframe height to 100%
+			try{
+				if (window.parent && window.parent.$("iframe.mwEmbedKalturaIframe").height() != "100%"){
+					window.parent.$("iframe.mwEmbedKalturaIframe").height("100%");
+				}
+			}catch(e){
+				mw.log("FullScreenManager:: Error setting iframe height to 100% : " + e.message);
+			}
+		}
         if( mw.getConfig('EmbedPlayer.NewWindowFullscreen') && !screenfull &&
             !(mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen') && mw.isIpad())){
             this.openNewWindow();
