@@ -826,7 +826,6 @@
 		},
 		playSegment: function (startTime, endTime) {
 			var _this = this;
-			this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', this.startTime);
 			if (this.supportsURLTimeEncoding()) {
 				this.getEntryUrl().then(function (srcToPlay) {
 					var shouldSeek = !_this.paused;
@@ -835,12 +834,13 @@
 						entryUrl: srcToPlay
 					});
 					if (shouldSeek) {
-						_this.seek(0);
+						//_this.seek(0);
 					} else {
 						_this.playerObject.sendNotification("doStop");
 					}
 				});
 			} else {
+				this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', this.startTime);
 				if (endTime) {
 					this.pauseTime = endTime;
 				}
