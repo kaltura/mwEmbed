@@ -834,7 +834,7 @@
 						entryUrl: srcToPlay
 					});
 					if (shouldSeek) {
-						//_this.seek(0);
+						_this.seek(0);
 					} else {
 						_this.playerObject.sendNotification("doStop");
 					}
