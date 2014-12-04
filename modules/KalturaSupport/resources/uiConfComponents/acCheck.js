@@ -16,6 +16,7 @@ var acCheck = function( embedPlayer ){
 //Check for new Embed Player events:
 mw.addKalturaConfCheck( function( embedPlayer, callback ){
 	if( embedPlayer.kalturaContextData ){
+		if ( $.isEmptyObject(embedPlayer.playerError) )
 		acCheck( embedPlayer );
 	}
 	callback();
