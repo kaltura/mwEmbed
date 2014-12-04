@@ -620,11 +620,13 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'href' => array(
 					'label' => 'Logo link',
 					'doc' => "URL for the control bar logo to click through to.",
-					'type' => 'url'
+					'type' => 'url',
+                    'initvalue' => 'http://www.kaltura.com'
 			),
 			'title' => array(
 					'doc' => "Title tooltip for the logo",
-					'type' => 'string'
+					'type' => 'string',
+                    'initvalue' => 'Kaltura'
 			),
 			'cssClass' => array(
 					'doc' => "An additional class to add to the logo. Can be used for CSS based custom logo image.",
