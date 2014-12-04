@@ -1,6 +1,7 @@
-( function( mw, $ ) {"use strict";
+(function (mw, $) {
+	"use strict";
 
-	mw.PluginManager.add( 'logo', mw.KBaseComponent.extend({
+	mw.PluginManager.add('logo', mw.KBaseComponent.extend({
 
 		defaultConfig: {
 			parent: "controlsContainer",
@@ -8,55 +9,55 @@
 			displayImportance: 'low',
 			align: "right",
 			cssClass: "kaltura-logo",
-			href: 'http://www.kaltura.com',
-			title: 'Kaltura',
+			href: null,
+			title: null,
 			img: null
 		},
-		getComponent: function() {
+		getComponent: function () {
 			var _this = this;
-			if( !this.$el ) {
+			if (!this.$el) {
 				var $img = [];
-				if( this.getConfig('img') ){
-					$img = $( '<img />' )
-								.attr({
-									alt: this.getConfig('title'),
-									src: this.getConfig('img')
-								});
+				if (this.getConfig('img')) {
+					$img = $('<img />')
+						.attr({
+							alt: this.getConfig('title'),
+							src: this.getConfig('img')
+						});
 				}
 				this.$el = $('<div />')
-					.addClass ( this.getCssClass() )
+					.addClass(this.getCssClass())
 					.addClass('btn')
 					.append(
-					$( '<a />' )
-						.addClass('btnFixed')
-						.click(function(){
-							if (_this.getConfig('href')) {
-								if (mw.isNativeApp()) {
-									_this.openInNativeApp();
-								}else{
-									window.open(_this.getConfig('href'), "_blank");
+						$('<a />')
+							.addClass('btnFixed')
+							.click(function () {
+								if (_this.getConfig('href')) {
+									if (mw.isNativeApp()) {
+										_this.openInNativeApp();
+									} else {
+										window.open(_this.getConfig('href'), "_blank");
+									}
 								}
-							}
-						})
-						.attr({
-							'title': this.getConfig('title')
-						}).append( $img )
+							})
+							.attr({
+								'title': this.getConfig('title')
+							}).append($img)
 					);
 			}
 			// remove Kaltura logo image if we have a custom logo icon
-			if (this.getConfig('img') != null){
+			if (this.getConfig('img') != null) {
 				this.$el.removeClass('kaltura-logo');
 			}
 			return this.$el;
 		},
 		openInNativeApp: function () {
-			var  params = {
-				actionType: this.getPlayer().nativeActionType( 'openHomePage' ),
-				url: this.getConfig( 'href' )
+			var params = {
+				actionType: this.getPlayer().nativeActionType('openHomePage'),
+				url: this.getConfig('href')
 			}
-			this.getPlayer().doNativeAction( JSON.stringify( params ) );
+			this.getPlayer().doNativeAction(JSON.stringify(params));
 		}
 
 	}));
 
-} )( window.mw, window.jQuery );
+})(window.mw, window.jQuery);

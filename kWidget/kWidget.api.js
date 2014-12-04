@@ -86,10 +86,18 @@ kWidget.api.prototype = {
 		delete param['service'];
 
 		var handleDataResult = function( data ){
-			// check if the base param was a session ( then directly return the data object ) 
+			// check if the base param was a session
             data = data || [];
-            if( data.length == 2 && param[ '1:service' ] == 'session' ){
-				data = data[1];
+            if( data.length > 1 && param[ '1:service' ] == 'session' ){
+				//Set the returned ks
+	            _this.setKs(data[0].ks);
+	            // if original request was not a multirequest then directly return the data object
+	            // if original request was a multirequest then remove the session from the returned data objects
+	            if (data.length == 2){
+		            data = data[1];
+	            } else {
+		            data.shift();
+	            }
 			}
 			// issue the local scope callback:
 			if( callback ){
@@ -199,16 +207,30 @@ kWidget.api.prototype = {
 					if( typeof requestObject[i][paramKey] == 'object' ){
 						for( var subParamKey in requestObject[i][paramKey] ){
 							param[ requestInx + ':' + paramKey + ':' +  subParamKey ] =
-								requestObject[i][paramKey][subParamKey];
+								this.parseParam(requestObject[i][paramKey][subParamKey]);
 						}
 					} else {
-						param[ requestInx + ':' + paramKey ] = requestObject[i][paramKey];
+						param[ requestInx + ':' + paramKey ] = this.parseParam(requestObject[i][paramKey]);
 					}
 				}
 			}
 		} else {
 			param = requestObject;
 			param['ks'] = this.getKs();
+		}
+		return param;
+	},
+	parseParam: function(data){
+		var param = data;
+		//Check if we need to request session
+		if (!this.getKs()) {
+			//check if request contains dependent params and if so then update reference object num -
+			// because reference index changed due to addition of multirequest startWidgetSession service
+			var paramParts = param.toString().match( /\{(\d+)(:result:.*)\}/ );
+			if ( paramParts ) {
+				var refObj = parseInt(paramParts[1]) + 1;
+				param = "{"+ refObj + paramParts[2] + "}"
+			}
 		}
 		return param;
 	},

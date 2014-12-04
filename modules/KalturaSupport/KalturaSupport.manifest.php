@@ -620,11 +620,13 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'href' => array(
 					'label' => 'Logo link',
 					'doc' => "URL for the control bar logo to click through to.",
-					'type' => 'url'
+					'type' => 'url',
+                    'initvalue' => 'http://www.kaltura.com'
 			),
 			'title' => array(
 					'doc' => "Title tooltip for the logo",
-					'type' => 'string'
+					'type' => 'string',
+                    'initvalue' => 'Kaltura'
 			),
 			'cssClass' => array(
 					'doc' => "An additional class to add to the logo. Can be used for CSS based custom logo image.",
@@ -1167,6 +1169,11 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'boolean',
 				'initvalue' => false,
 			),
+			'pauseAdOnClick' => array(
+				'doc' => 'If the ad should pause when clicked.',
+				'type' => 'boolean',
+				'initvalue' => true,
+			),
 			'enableCORS' => array(
 				'doc' => 'Enable CORS request to support request cookies to secured domains over ajax',
 				'type' => 'boolean',
@@ -1485,6 +1492,20 @@ The playhead reflects segment time as if it was the natural stream length.",
 				),*/
 			)
 		)
+	),
+	'strings' => array(
+		'description' => 'Enables overwriting player strings. For full string keys listing, review the <a href="http://player.kaltura.com/docs/Strings" target="_blank">Strings test page</a>' ,
+		'type' => 'featuremenu',
+		'label' => 'Strings',
+		'model' => 'config.plugins.strings',
+		'attributes' => array(
+            'keyValuePairs' => array(
+                'doc' => 'Key / Value pairs of strings to overwrite',
+                'label' => 'Strings to overwrite:',
+                'initvalue' => '',
+                'type' => 'keyValuePairs',
+            )
+        )
 	),
 	'hammerEvents' => array(
 		'description' => 'Support Hammer.js events against the player canvas.',

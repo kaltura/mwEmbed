@@ -80,11 +80,22 @@
     -webkit-background-clip: padding-box;
     background-clip: padding-box;
 }
-.topLeftHandle {
+.touch .cornerHandle {
+    font-size: 24px;
+}
+.ui-resizable-handle{
+    width: 20px;
+    height: 20px;
+}
+.touch .ui-resizable-handle{
+    width: 60px;
+    height: 60px;
+}
+#topLeftHandle {
     top: -5px;
     left: -5px;
 }
-.topRightHandle {
+#topRightHandle {
     top:-5px;
     right:-5px;
     filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
@@ -93,7 +104,7 @@
     -webkit-transform: rotate(-270deg);  /* Safari and Chrome */
     transform: rotate(-270deg);
 }
-.bottomLeftHandle {
+#bottomLeftHandle {
     left:-5px;
     bottom: -5px;
     filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
@@ -102,7 +113,7 @@
     -webkit-transform: rotate(-90deg);  /* Safari and Chrome */
     transform: rotate(-90deg);
 }
-.bottomRightHandle {
+#bottomRightHandle {
     bottom: -5px;
     right: -5px;
     filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
@@ -120,31 +131,25 @@
     opacity: 0;
 }
 /*Older IE support*/
-.topRightHandle .componentOn{
+#topRightHandle .componentOn{
     filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100) progid:DXImageTransform.Microsoft.BasicImage(rotation=1)";
 }
-.topRightHandle .componentOff{
+#topRightHandle .componentOff{
     filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0) progid:DXImageTransform.Microsoft.BasicImage(rotation=1)";
 }
-.bottomLeftHandle .componentOn{
+#bottomLeftHandle .componentOn{
     filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100) progid:DXImageTransform.Microsoft.BasicImage(rotation=3)";
 }
-.bottomLeftHandle .componentOff{
+#bottomLeftHandle .componentOff{
     filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0) progid:DXImageTransform.Microsoft.BasicImage(rotation=3)";
 }
-.bottomRightHandle .componentOn{
+#bottomRightHandle .componentOn{
     filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100) progid:DXImageTransform.Microsoft.BasicImage(rotation=2)";
 }
-.bottomRightHandle .componentOff{
+#bottomRightHandle .componentOff{
     filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0) progid:DXImageTransform.Microsoft.BasicImage(rotation=2)";
 }
-.ui-resizable-nw,
-.ui-resizable-sw,
-.ui-resizable-se,
-.ui-resizable-ne{
-    width: 20px;
-    height: 20px;
-}
+
 /*Animations*/
 .componentAnimation{
     -webkit-transition: visibility 0.35s ease-out ,opacity 0.35s ease-out;

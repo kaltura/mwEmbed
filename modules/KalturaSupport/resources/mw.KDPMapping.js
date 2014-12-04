@@ -137,10 +137,8 @@
 		},
 		updateKS: function ( embedPlayer, ks){
 			var client = mw.kApiGetPartnerClient( embedPlayer.kwidgetid );
-			// clear out any old player data cache:
-			client.clearCache();
 			// update the new ks:
-			client.setKS( ks );
+			client.setKs( ks );
 			// Update KS flashvar
 			embedPlayer.setFlashvars( 'ks', ks );
 			// TODO confirm flash KDP issues a changeMedia internally for ks updates
