@@ -1390,7 +1390,9 @@ mw.KAdPlayer.prototype = {
 					_this.embedPlayer.hideSpinner();
 				}, 'AdImpression' );
 				VPAIDObj.subscribe( function ( message ) {
-					finishPlaying();
+					setTimeout(function(){
+						finishPlaying();
+					},500);
 				}, 'AdStopped' );
 				VPAIDObj.subscribe( function ( message ) {
 					mw.log( 'VPAID :: AdError:' + message );
