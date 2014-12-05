@@ -957,13 +957,6 @@ mw.KWidgetSupport.prototype = {
 		});
 	},
 	/**
-	 * Handles direct mediaProxy mapping into the kalutra player. 
-	 */
-	handleMediaProxyOverride: function(embedPlayer, entryResult){
-		// Handle sources: 
-		
-	},
-	/**
 	 * handle player data mappings to embedPlayer
 	 */
 	handlePlayerData: function(embedPlayer, entryResult ){
