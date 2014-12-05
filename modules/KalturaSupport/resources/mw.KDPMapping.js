@@ -357,6 +357,9 @@
 								return embedPlayer.kalturaPlayerMetaData;
 							}
 						break;
+						case 'sources': 
+							return embedPlayer.mediaElement.getSources();
+						break;
 						case 'isLive':
 							return embedPlayer.isLive();
 						break;

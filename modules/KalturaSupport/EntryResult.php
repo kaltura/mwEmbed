@@ -58,7 +58,11 @@ class EntryResult {
 	}
 	
 	function getResult(){
-
+		// check for user supplied mediaProxy / entryResult:
+		if( $this->request->get('mediaProxy' ) ){
+			// kind of messy decoding special chars here should request handler
+			return (array) json_decode( htmlspecialchars_decode( $this->request->get('mediaProxy') ) );
+		}
 		// Check for entry or reference Id
 		if( ! $this->request->getEntryId() && ! $this->request->getReferenceId() ) {
 			return array();

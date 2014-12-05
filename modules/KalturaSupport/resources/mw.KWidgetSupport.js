@@ -939,20 +939,19 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.kalturaPlaylistData = pl;
 			delete( window.kalturaIframePackageData.playlistResult );
 		}
-
 		// Check for entry cache:
 		if( window.kalturaIframePackageData && window.kalturaIframePackageData.entryResult ){
 			this.handlePlayerData( embedPlayer, kalturaIframePackageData.entryResult );
 			callback( window.kalturaIframePackageData.entryResult );
 			// remove the entryResult from the payload
 			delete( window.kalturaIframePackageData.entryResult );
-		} else {
-			// Run the request:
-			this.kClient = mw.kApiEntryLoader( playerRequest, function( playerData ){
-				_this.handlePlayerData(embedPlayer, playerData );
-				callback( playerData );
-			});
-		}
+			return ;
+		} 
+		// Run the request:
+		this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
+			_this.handlePlayerData(embedPlayer, playerData );
+			callback( playerData );
+		});
 	},
 	/**
 	 * handle player data mappings to embedPlayer

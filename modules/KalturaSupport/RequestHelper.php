@@ -33,7 +33,8 @@ class RequestHelper {
 		'playerId' => null,
 		'vid_sec' => null,
 		'vid_slices' => null,
-		'jsonConfig' => null
+		'jsonConfig' => null,
+		'mediaProxy' => null
 	);
 
 
