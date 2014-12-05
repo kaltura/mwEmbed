@@ -711,7 +711,7 @@
 						$('<span>').html('&nbsp;')
 					);
 				// IE < 10 half supports CROS ... but broken for cross domain POST.
-				if( $.browser.msie && $.browser.version < 10 ){
+				if (( /msie [8|9]/.test(window.navigator.userAgent.toLowerCase()))) {
 					var useCompatiblePlayer = "Please use an HTML5 compatible browser ( firefox or chrome for save configuration to player )";
 					$saveToUiConf.find('a').attr('title', useCompatiblePlayer );
 					$createPlayerBtn.find('a').attr('title', useCompatiblePlayer);
