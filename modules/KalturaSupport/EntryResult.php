@@ -279,7 +279,7 @@ class EntryResult {
 		if( !isset( $resultObject['contextData']) ){
 			return true;
 		}
-		$accessControl = $resultObject['contextData'];
+		$accessControl = (array) $resultObject['contextData'];
 		
 		// Check if we had no access control due to playlist
 		if( is_array( $accessControl ) && isset( $accessControl['code'] )){
@@ -291,33 +291,35 @@ class EntryResult {
 		}
 
 		// Checks if admin
-		if( $accessControl->isAdmin ) {
+		if( isset( $accessControl['isAdmin'] ) && $accessControl['isAdmin']) {
 			return true;
 		}
 
 		/* Domain Name Restricted */
-		if( $accessControl->isSiteRestricted ) {
+		if( isset( $accessControl['isSiteRestricted'] ) && $accessControl['isSiteRestricted'] ) {
 			return "Un authorized domain\nWe're sorry, this content is only available on certain domains.";
 		}
 
 		/* Country Restricted */
-		if( $accessControl->isCountryRestricted) {
+		if( isset( $accessControl['isCountryRestricted'] ) && $accessControl['isCountryRestricted'] ) {
 			return "Un authorized country\nWe're sorry, this content is only available in certain countries.";
 		}
 
 		/* IP Address Restricted */
-		if( $accessControl->isIpAddressRestricted) {
-			return "Un authorized IP address\nWe're sorry, this content is only available for certain IP addresses.";
+		if( isset( $accessControl['isIpAddressRestricted'] ) && $accessControl['isIpAddressRestricted'] ) {
+			return "Un authorized IP address\nWe're sorry, this content is only available for ceratin IP addresses.";
 		}
 
 		/* Session Restricted */
-		if( $accessControl->isSessionRestricted && 
+		if( isset( $accessControl['isSessionRestricted'] ) && $accessControl['isSessionRestricted'] && 
 				( $accessControl->previewLength == -1 || $accessControl->previewLength == null ) )
 		{
 			return "No KS where KS is required\nWe're sorry, access to this content is restricted.";
 		}
 
-		if( $accessControl->isScheduledNow === 0 || $accessControl->isScheduledNow === false ) {
+		if( isset( $accessControl['isScheduledNow'] ) && 
+			( $accessControl['isScheduledNow'] === 0 || $accessControl['isScheduledNow'] === false ) 
+		){
 			return "Out of scheduling\nWe're sorry, this content is currently unavailable.";
 		}
 		
@@ -326,14 +328,14 @@ class EntryResult {
 		exit();*/
 		
 		$userAgentMessage = "User Agent Restricted\nWe're sorry, this content is not available for your device.";
-		if( isset( $accessControl->isUserAgentRestricted ) && $accessControl->isUserAgentRestricted ) {
+		if( isset( $accessControl['isUserAgentRestricted'] ) && $accessControl['isUserAgentRestricted'] ) {
 			return $userAgentMessage;
 		}
 		
 		// check for generic "block" 
-		$actions = isset( $accessControl->accessControlActions ) ? 
-					$accessControl->accessControlActions:
-					isset( $accessControl->actions )? $accessControl->actions: null;
+		$actions = isset( $accessControl['accessControlActions'] ) ? 
+					$accessControl['accessControlActions'] :
+					isset( $accessControl['actions'] ) ? $accessControl['actions'] : null;
 		
 		if( $actions && count( $actions ) ) {
 			for($i=0;$i<count($actions); $i++){
