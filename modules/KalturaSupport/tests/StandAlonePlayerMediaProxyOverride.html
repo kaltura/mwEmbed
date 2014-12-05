@@ -26,6 +26,7 @@
 				"scrubber": {
 					'thumbSlicesUrl': '{mediaProxy.entryMetadata.thumbSlicesUrl}'
 				},
+				"vast":{ "trackCuePoints":"true", "timeout": 4},
 				"playPauseBtn": {},
 				"volumeControl": {},
 				"fullScreenBtn": {},
@@ -195,7 +196,7 @@
 	</div>
 	
 	<br>
-	<h3>Example of JavaScript supplied entity via of mediaProxy:</h3>
+	<h3>Entity override at embed time:</h3>
 	<pre class="prettyprint linenums" style="width:98%;max-width:98%">
 var mediaProxyEntry = {
 	'preferedFlavorBR': 1600,
@@ -262,8 +263,25 @@ kWidget.embed('kaltura_player', {
 		'mediaProxy': mediaProxyEntry
 	}
 })</pre>
-	<h3>Example of JavaScript changeMedia call ( without reloading player):</h3>
+	<h3>changeMedia call ( without reloading player):</h3>
 	<pre class="prettyprint linenums" style="width:98%;max-width:98%">
 kdp.sendNotification('changeMedia', { 'mediaProxy': mediaProxyEntry });</pre>
+
+	<h3> Sample changeMedia on an empty player</h3>
+	<div id="kaltura_player2" style="width:600px;height:338px;"></div>
+	<script>
+		kWidget.embed('kaltura_player2', {
+			'wid' : '_partnerkey',
+			'flashvars':{
+				'jsonConfig':jsonConfig,
+			},
+			'readyCallback': function( playerId ){
+				var kdp = document.getElementById( playerId );
+				kdp.kBind('readyToLoad', function(){
+					kdp.sendNotification('changeMedia', { 'mediaProxy': mediaProxyKalturaToolKitVideo });
+				});
+			}
+		});
+	</script>
 </body>
 </html>

@@ -414,12 +414,12 @@ kWidget.embed({
 <p>The JavaScript API is a two-way communication channel that lets the player communicate what it is doing and lets you instruct the player to perform operations.
 <br>For more information: <a href="http://knowledge.kaltura.com/javascript-api-kaltura-media-players#UnderstandingtheJavaScriptAPIWorkflow" target="_blank">JavaScript API for Kaltura Media Players</a></p>
 <p>Available JavaScript API:</p>
-<a href="#kWidget.addReadyCallback-desc">Receiving notification that the player API is ready</a><br>
-<a href="#sendNotification-desc">Calling a player method from JavaScript</a><br>
-<a href="#kBind-desc">Registering to a player event ( kBind )</a><br>
-<a href="kUnbind-desc">Un-registering a player event ( kUnbind ) </a><br>
-<a href="#evaluate-desc">Retrieving a player property</a><br>
-<a href="#setKDPAttribute-desc">Setting a player attribute</a><br>
+<a class="btn btn btn-info" href="#kWidget.addReadyCallback-desc">Ready Notifications</a>
+<a class="btn btn btn-info" href="#sendNotification-desc">sendNotification</a>
+<a class="btn btn btn-info" href="#kBind-desc">Bind</a>
+<a class="btn btn btn-info" href="kUnbind-desc">unBind</a>
+<a class="btn btn btn-info" href="#evaluate-desc">Evaluate</a>
+<a class="btn btn btn-info" href="#setKDPAttribute-desc">Update properties</a>
 
 
 <a name="kWidget.addReadyCallback-desc"></a>
@@ -550,3 +550,9 @@ kdp.setKDPAttribute("theme", "buttonsSize", "14");
 			</ul>
 		</li>  
 	</ul> 
+	
+<h3 id="mediaProxyObject">MediaProxy Object</h3> 
+Defines the full set of entities for mediaProxy object:
+
+
+
