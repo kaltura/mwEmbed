@@ -57,10 +57,15 @@
 		},
 
 		bindCleanScreen: function () {
+			var _this = this;
 			// TODO: should bind against onChangeMedia instead, to support screens on "Start" screen.
 			this.bind('playerReady', $.proxy(function () {
-				this.removeScreen();
+				_this.removeScreen();
 			}, this));
+			// hide screen on changeMedia event: 
+			this.bind('onChangeMedia', function(){
+				_this.hideScreen();
+			});
 		},
 
 		removeScreen: function () {
