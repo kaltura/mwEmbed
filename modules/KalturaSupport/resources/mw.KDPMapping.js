@@ -1138,8 +1138,10 @@
 
 					// Check changeMedia if we don't have entryId and referenceId and they both not -1 - Empty sources
 					if( ( ! notificationData.entryId || notificationData.entryId == "" || notificationData.entryId == -1 )
-						&& ( ! notificationData.referenceId || notificationData.referenceId == "" || notificationData.referenceId == -1 ) )
-					{
+						&& ( ! notificationData.referenceId || notificationData.referenceId == "" || notificationData.referenceId == -1 ) 
+						// check for mediaProxy based override: 
+						&& !notificationData.mediaProxy
+					){
 						mw.log( "KDPMapping:: ChangeMedia missing entryId or refrenceid, empty sources.")
 						embedPlayer.emptySources();
 						break;
@@ -1147,8 +1149,11 @@
 					// Check if we have entryId and it's not -1. than we change media
 					if( (notificationData.entryId && notificationData.entryId != -1)
 							||
-						(notificationData.referenceId && notificationData.referenceId != -1) )
-					{
+						(notificationData.referenceId && notificationData.referenceId != -1) 
+							||
+						(notificationData.mediaProxy)
+					){
+						
 						// Check if we already started change media request
 						if( embedPlayer.changeMediaStarted ) {
 							break;
@@ -1179,6 +1184,11 @@
 						// Temporary update the thumbnail to black pixel. the real poster comes from entry metadata
 						embedPlayer.updatePoster();
 
+						// if data is injected via changeMedia, re-load into iframe inject location:
+						if( notificationData.mediaProxy ){
+							window.kalturaIframePackageData.entryResult = notificationData.mediaProxy;
+						}
+						
 						// Run the embedPlayer changeMedia function
 						embedPlayer.changeMedia();
 						break;
