@@ -59,8 +59,9 @@ class UiConfResult {
 		// Get confFilePath flashvar
 		$confFilePath = $this->request->getFlashvars('confFilePath');
 
-		$jsonConfig =$this->request->get('jsonConfig');
-
+		// convert to string for now ( ugg )
+		$jsonConfig = json_encode( $this->request->getFlashvars('jsonConfig') );
+		
 		// If no uiconf_id .. throw exception
 		if( !$this->request->getUiConfId() && !$confFilePath && !$jsonConfig ) {
 			throw new Exception( "Missing uiConf ID or confFilePath" );
@@ -70,7 +71,7 @@ class UiConfResult {
 		if( $confFilePath ) {
 			$this->loadFromLocalFile( $confFilePath );
 		} else  if ($jsonConfig){
-			$this->uiConfFile = stripslashes( html_entity_decode($jsonConfig));
+			$this->uiConfFile = $jsonConfig;
 		} else {
 			// Check if we have a cached result object:
 			$cacheKey = $this->getCacheKey();
