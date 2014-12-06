@@ -80,7 +80,15 @@ mw.FullScreenManager.prototype = {
 	*/
 	doFullScreenPlayer: function( callback ) {
 		mw.log("FullScreenManager:: doFullScreenPlayer" );
-
+		if (mw.isIOS8()){ // since we set a fixed height in IOS8 to center the loading spinner - we need to reset the iframe height to 100%
+			try{
+				if (window.parent && window.parent.$("iframe.mwEmbedKalturaIframe").height() != "100%"){
+					window.parent.$("iframe.mwEmbedKalturaIframe").height("100%");
+				}
+			}catch(e){
+				mw.log("FullScreenManager:: Error setting iframe height to 100% : " + e.message);
+			}
+		}
         if( mw.getConfig('EmbedPlayer.NewWindowFullscreen') && !screenfull &&
             !(mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen') && mw.isIpad())){
             this.openNewWindow();
@@ -104,11 +112,6 @@ mw.FullScreenManager.prototype = {
 		this.verticalScrollPosition = (doc.all ? doc.scrollTop : context.pageYOffset);
 		// Add fullscreen class to interface:
 		$interface.addClass( 'fullscreen' );
-		
-		// if overlaying controls add hide show player binding.
-		if( embedPlayer.isOverlayControls() && mw.hasMouseEvents() ){
-			_this.addMouseMoveBinding();
-		}
 
 		// Check for native support for fullscreen and we are in an iframe server
 		if( !this.fullScreenApiExcludes() && !mw.isAndroidChromeNativeBrowser() && screenfull && screenfull.enabled(doc) ) {
@@ -306,12 +309,18 @@ mw.FullScreenManager.prototype = {
 	 */
 	restoreContextPlayer: function(){
 		var isIframe = mw.getConfig('EmbedPlayer.IsIframeServer' );
-		var
-		_this = this,
-		doc = isIframe ? window['parent'].document : window.document,
-		$doc = $( doc ),
-		$target = $( this.getFsTarget() ),
-		context = isIframe ? window['parent'] : window;
+		var _this = this;
+		var doc = window.document;
+		if (isIframe) {
+			try {
+				doc = window['parent'].document;
+			} catch (e) {
+				mw.log("FullScreenManager:: Security error when accessing window parent document: " + e.message);
+			}
+		}
+		var $doc = $(doc);
+		var $target = $(this.getFsTarget());
+		var context = isIframe ? window['parent'] : window;
 
 		mw.log("FullScreenManager:: restoreContextPlayer> verticalScrollPosition:" + this.verticalScrollPosition );
 
@@ -362,10 +371,14 @@ mw.FullScreenManager.prototype = {
     doNativeScroll: function(context, top, left){
         if (context) {
             $.each(['scroll', 'scrollTo'], function (i, funcName) {
-                if ($.isFunction(context[funcName])) {
-                    context[funcName](top, left);
-                    return false;
-                }
+	            try {
+		            if ($.isFunction(context[funcName])) {
+			            context[funcName](top, left);
+			            return false;
+		            }
+	            } catch (e) {
+		            mw.log("FullScreenManager:: Security error when accessing context: " + e.message);
+	            }
             });
         }
     },
@@ -542,40 +555,6 @@ mw.FullScreenManager.prototype = {
 
 		// Trigger the onCloseFullscreen event:
 		$( embedPlayer ).trigger( 'onCloseFullScreen' );
-	},
-
-	addMouseMoveBinding:function(){
-		var _this = this;
-		// Bind mouse move in interface to hide control bar
-		_this.mouseMovedFlag = false;
-		var oldX =0, oldY= 0;
-		_this.embedPlayer.getInterface().mousemove( function(event){
-			// debounce mouse movements
-			if( Math.abs( oldX - event.pageX ) > 4 ||  Math.abs( oldY - event.pageY ) > 4 ){
-				_this.mouseMovedFlag = true;
-			}
-			oldX = event.pageX;
-			oldY = event.pageY;
-		});
-
-		// Check every 2 seconds reset flag status if controls are overlay
-		var checkMovedMouse = function(){
-			if( _this.isInFullScreen() ){
-				if( _this.mouseMovedFlag ){
-					_this.mouseMovedFlag = false;
-					_this.embedPlayer.triggerHelper( 'showPlayerControls' );
-					// Once we move the mouse keep displayed for 4 seconds
-					setTimeout( checkMovedMouse, 4000 );
-				} else {
-					// Check for mouse movement every 250ms
-					_this.embedPlayer.triggerHelper( 'hidePlayerControls' );
-					setTimeout( checkMovedMouse, 250 );
-				}
-				return;
-			}
-		};
-		// start monitoring for moving mouse
-		checkMovedMouse();
 	},
 
 	fullScreenApiExcludes: function(){

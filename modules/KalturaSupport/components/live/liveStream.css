@@ -1,4 +1,4 @@
- .time-disp-dvr, .live-stream-status, .back-to-live {
+.time-disp-dvr, .live-stream-status, .back-to-live {
 	margin-top: 8px;
 	height: auto;
 	overflow: hidden;
@@ -7,6 +7,7 @@
 	display: inline;
 	border: none;
 	padding-right: 4px;
+	cursor: default;
 }
 
 .live-on-air, .live-off-air, .back-to-live {
@@ -35,28 +36,33 @@
 .play_head_dvr {
 	position: absolute;
 }
+
 .play_head_dvr .ui-slider-handle {
-	width:10px;
-	height:15px;
-	margin-left:-5px;
+	width: 10px;
+	height: 15px;
+	margin-left: -5px;
 	margin-top: -0px;
-	z-index: 2;	
+	z-index: 2;
 }
 
 .back-to-live {
 	margin-right: 4px;
-	cursor: pointer;
 	background-color: #2FC44D;
 }
 
+.back-to-live-active {
+	opacity: 0.5;
+	cursor: pointer;
+}
+
 .back-to-live-icon {
-	margin-right: 4px;		
-	width: 0; 
-	height: 0; 
+	margin-right: 4px;
+	width: 0;
+	height: 0;
 	border-top: 4px solid transparent;
-	border-bottom: 4px solid transparent;   
+	border-bottom: 4px solid transparent;
 	border-left: 6px solid #FFFFFF;
-	display: inline-block;			
+	display: inline-block;
 }
 
 .back-to-live-text {

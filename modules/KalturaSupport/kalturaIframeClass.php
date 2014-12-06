@@ -197,8 +197,10 @@ class kalturaIframeClass {
 			$settings['entry_id'] = $this->request->get('entry_id');
 		}
 
-		// add ks flashvar
-		$settings['flashvars']['ks'] = $this->client->getKS();
+		// Only add KS if it was part of the request, else the client should re-generate in multi-request for any subsequent request: 
+		if( $this->request->hasKS() ){
+			$settings['flashvars']['ks'] = $this->client->getKS();
+		}
 		// add referrer flashvar
 		$settings['flashvars']['referrer'] = htmlspecialchars( $this->request->getReferer() );
 
@@ -372,6 +374,8 @@ class kalturaIframeClass {
 				"Expires: Sat, 26 Jul 1997 05:00:00 GMT"
 			);
 		}
+		// alwayse set cross orgin headers: 
+		$cacheHeaders[] = 'Access-Control-Allow-Origin: *';
 		return $cacheHeaders;
 	}
 
@@ -388,6 +392,8 @@ class kalturaIframeClass {
 		header( "Cache-Control: public, max-age=$expireTime, max-stale=0");
 		header( "Last-Modified: " . gmdate( "D, d M Y H:i:s", $lastModified) . "GMT");
 		header( "Expires: " . gmdate( "D, d M Y H:i:s", $lastModified + $expireTime ) . " GM" );
+		// alwayse set cross orgin headers:
+		header( "Access-Control-Allow-Origin: *" );
 	}
 
 	/**
@@ -609,6 +615,9 @@ HTML;
 			}
 			if (isset($theme['buttonsColor'])){
 				$customStyle = $customStyle . '.btn {background-color: ' . $theme['buttonsColor'] . '}';
+				if (isset($theme['applyToLargePlayButton']) && $theme['applyToLargePlayButton'] == true){
+					$customStyle = $customStyle  . '.largePlayBtn {background-color: ' . $theme['buttonsColor'] . '!important}';
+				}
 			}
 			if (isset($theme['sliderColor'])){
 				$customStyle = $customStyle . '.ui-slider {background-color: ' . $theme['sliderColor'] . '!important}';
@@ -623,6 +632,9 @@ HTML;
 			}
 			if (isset($theme['buttonsIconColor'])){
 				$customStyle = $customStyle . '.btn {color: ' . $theme['buttonsIconColor'] . '!important}';
+				if (isset($theme['applyToLargePlayButton']) && $theme['applyToLargePlayButton'] == true){
+					$customStyle = $customStyle  . '.largePlayBtn {color: ' . $theme['buttonsIconColor'] . '!important}';
+				}
 			}
 			if (isset($theme['watchedSliderColor'])){
 				$customStyle = $customStyle . '.watched {background-color: ' . $theme['watchedSliderColor'] . '!important}';

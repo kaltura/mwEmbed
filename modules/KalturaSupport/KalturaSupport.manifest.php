@@ -354,6 +354,11 @@ return array(
 				'doc' => "If the playlist should be rendered out of the IFrame (on page).",
 				'type' => 'boolean'
 			),
+			'MaxClips' => array(
+                'doc' => "Max number of clips to show in the playlist.",
+                'type' => 'number',
+                'initvalue' => 25
+            ),
 			'initItemEntryId' => array(
 				'doc' => "The entryId that should be played first."
 			),
@@ -376,9 +381,14 @@ return array(
 			'kpl1Name' => array(
 				'doc' => "The name of the indexed playlist.",
 				'type' => 'hiddenValue'
-			)
+			),
+			'additionalPlaylists' => array(
+                'doc' => "Additional playlists.",
+                'type' => 'additionalPlaylists'
+            )
 		)
-	),/*
+	),
+	/*
 	'playlistHolder' => array(
 		'description' => 'Holds the playlist clip list.',
 		'attributes' => array(
@@ -430,6 +440,22 @@ return array(
 			)
 		)
 	),
+	//Stream selector
+	'streamSelector' => array(
+        'description' => "Enables users to select the video playback stream out of a selection of streams.",
+        'attributes' => array(
+            'defaultStream' => array(
+                'doc' => 'The default stream.',
+                'initvalue' => 1,
+                'type' => 'number'
+            ),
+            'enableKeyboardShortcuts' => array(
+                'doc' => 'Enable keyboard shortcuts (Key mappings: "[" - Next, "]" - Previous, "\" - Default)',
+                'initvalue' => true,
+                'type' => 'boolean'
+            ),
+        )
+    ),
 	/* flavor selector */
 	'flavorComboControllerScreen' => array(
 		'description' => "The Kaltura flavor selector plugin.",
@@ -552,6 +578,16 @@ return array(
 			'minWidth' => array(
 				'doc' => "The minimum width of the playhead. If the min-width is reached, normal responsive display importance removal rules come into effect.",
 				'type' => 'number'
+			),
+			'sliderPreview' => array(
+				'doc' => "Show a preview thumbnail with the current time when mouse is over the scrubber",
+				'type' =>'boolean',
+				'initvalue' =>true
+			),
+			'showOnlyTime' => array(
+				'doc' => "Show only the time when mouse is over the scrubber",
+				'type' =>'boolean',
+				'initvalue' =>false
 			)
 		)
 	),
@@ -584,11 +620,13 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'href' => array(
 					'label' => 'Logo link',
 					'doc' => "URL for the control bar logo to click through to.",
-					'type' => 'url'
+					'type' => 'url',
+                    'initvalue' => 'http://www.kaltura.com'
 			),
 			'title' => array(
 					'doc' => "Title tooltip for the logo",
-					'type' => 'string'
+					'type' => 'string',
+                    'initvalue' => 'Kaltura'
 			),
 			'cssClass' => array(
 					'doc' => "An additional class to add to the logo. Can be used for CSS based custom logo image.",
@@ -615,9 +653,14 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'featureCheckbox' => true,
 		'label' => 'Custom styles',
 		'attributes' => array(
+			'applyToLargePlayButton' => array(
+				'type' => 'boolean',
+				'player-refresh' => 'theme.applyToLargePlayButton',
+				"initvalue" => true
+			),
 			'buttonsSize' => array(
 				'label' => 'Button\'s size',
-				'doc' => 'Button\'s size.',
+				'doc' => 'Button\'s size',
 				'type' => 'number',
 				'player-refresh' => 'theme.buttonsSize',
 				"initvalue" => 12,
@@ -630,7 +673,8 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'label' => 'Button\'s color',
 				"initvalue" => "#000000",
 				'player-refresh' => 'theme.buttonsColor',
-				'doc' => 'Button\'s color',
+				'doc' => 'Button\'s color. Note: using transparency will disable this color setting in Internet Explorer 8',
+				'alpha' => true,
 				'type' => 'color'
 			),
 			'buttonsIconColor' => array(
@@ -1031,7 +1075,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'postrollUrlJs' => array(
 				'doc' => "The VAST ad tag URL used where platform does not support flash.
 			If undefined all platforms will use the base postrollUrl for ad requests.",
-				'label' => 'Preroll JS URL',
+				'label' => 'Postroll JS URL',
 				'type' => 'url',
 				'section' => 'post',
 			),
@@ -1124,6 +1168,16 @@ The playhead reflects segment time as if it was the natural stream length.",
 					If set to true, the prerollInterval will be respected across player views.',
 				'type' => 'boolean',
 				'initvalue' => false,
+			),
+			'pauseAdOnClick' => array(
+				'doc' => 'If the ad should pause when clicked.',
+				'type' => 'boolean',
+				'initvalue' => true,
+			),
+			'enableCORS' => array(
+				'doc' => 'Enable CORS request to support request cookies to secured domains over ajax',
+				'type' => 'boolean',
+				'initvalue' => true
 			)
 		)
 	),
@@ -1344,9 +1398,13 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'text' => array(
 				'doc' => 'The text string to be displayed for the title.',
 				'initvalue' => '{mediaProxy.entry.name}',
-				'type' => 'string',
-				'initValue' => '{mediaProxy.entry.name}',
+				'type' => 'string'
 			),
+			'truncateLongTitles' => array(
+                'doc' => 'Truncate long titles to fit in one line. Truncated titles get a tooltip and 3 dots at the end of the truncated text.',
+                'type' => 'boolean',
+                'initvalue' => true,
+            )
 		)
 	),
 	'airPlay' => array(
@@ -1358,8 +1416,24 @@ The playhead reflects segment time as if it was the natural stream length.",
 	'nativeCallout' => array(
 		'description' => 'Supports replacing the player "play button" with a callout to native player, for Mobile Devices.',
 		'type' => 'featuremenu',
-		'label' => 'nativeCallout',
 		'model' => 'config.plugins.nativeCallout',
+		'attributes' => array(
+            'storeUrl' => array(
+                'doc' => 'The URL for the app market',
+                'initvalue' => '',
+                'type' => 'string',
+            ),
+            'mimeName' => array(
+                'doc' => 'The linker for opening your native app',
+                'initvalue' => '',
+                'type' => 'string',
+            ),
+            'iframeUrl' => array(
+                'doc' => 'iFrame URL',
+                'initvalue' => '',
+                'type' => 'string',
+            ),
+        )
 	),
 	'related' => array(
 		'description' => 'Add the Related Videos screen at the end of the video to attract users to watch additional videos.',
@@ -1419,4 +1493,31 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 		)
 	),
+	'strings' => array(
+		'description' => 'Enables overwriting player strings. For full string keys listing, review the <a href="http://player.kaltura.com/docs/Strings" target="_blank">Strings test page</a>' ,
+		'type' => 'featuremenu',
+		'label' => 'Strings',
+		'model' => 'config.plugins.strings',
+		'attributes' => array(
+            'keyValuePairs' => array(
+                'doc' => 'Key / Value pairs of strings to overwrite',
+                'label' => 'Strings to overwrite:',
+                'initvalue' => '',
+                'type' => 'keyValuePairs',
+            )
+        )
+	),
+	'hammerEvents' => array(
+		'description' => 'Support Hammer.js events against the player canvas.',
+		'attributes' => array(
+			'on' => array(
+				'doc' => "The list of named hammer events to track seperated by spaces.",
+				'type' => 'string'
+			),
+			'options' => array(
+				'doc' => "JSON object of hammer initialization options",
+				'type' => 'string'
+			),
+		)
+	)
 );

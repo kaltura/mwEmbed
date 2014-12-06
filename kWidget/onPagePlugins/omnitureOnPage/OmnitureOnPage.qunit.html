@@ -37,7 +37,10 @@ events, expanding/closing full screen, replaying, and more.</p>
 <p>To start working with the plugin all you need to do is configure the relevant Omniture plugin parameters in the Kaltura
 Management Console player studio. You can either use the standard configuration or have our experts work with you
 to help realize your analytics goals.</p>
-	<p>For full plugin documentation and setup instructions <a href="https://kaltura.atlassian.net/wiki/display/FEC/Omniture+Plugin+Setup+and+specs" target="_blank">click here</a>.</p>
+
+	<p>For full plugin documentation and setup instructions <a
+			href="http://knowledge.kaltura.com/omniture-plugin-setup-and-information-guide" target="_blank">click
+		here</a>.</p>
 </div>
 
 <script>
@@ -61,10 +64,13 @@ kWidget.featureConfig({
 			's_codeUrl':  "resources/adobe_sample_s_code.js",
 			's_codeVarName': 's',
 			'trackEventMonitor': 'omnitureTrackingLog',
+			
+			'autoTrack': true, 
+			'trackWhilePlaying': true,
 
 			'monitorEventInterval': 10,
 			
-			'customEvents': "openFullScreen,closeFullScreen,firstQuartile",
+			'customEvents': "openFullScreen,closeFullScreen,firstQuartile,secondQuartile,thirdQuartile,playerPlayEnd",
 
 			'firstQuartileEvent': "event45",
 			'firstQuartileEvar1': "eVar45",

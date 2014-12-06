@@ -9,10 +9,12 @@
 			defaultConfig: {
 				'forceLoad': false
 			},
+			startTime:null,
 			reportingInterval : 10000,
 			bufferTime : 0,
 			eventIndex :1,
 			currentBitRate:-1,
+			playing:false,
 			setup: function( ) {
 			   var _this = this;
 				_this.removeBindings( );
@@ -36,9 +38,11 @@
 				this.bind('onPlayerStateChange', function(e, newState, oldState) {
 					if (newState === "pause" ){
 						_this.stopLiveEvents();
+						_this.playing = false;
 					}
 					if (newState === "play"){
 						_this.startLiveEvents();
+						_this.playing = true;
 					}
 				});
 				this.bind('bufferStartEvent',function(){
@@ -48,9 +52,20 @@
 					_this.calculateBuffer();
 					_this.bufferStartTime = null;
 				});
-				this.bind( 'bitrateChange' ,function(event,newBitrate){
+				this.bind( 'bitrateChange' ,function( event,newBitrate){
 					_this.currentBitRate = newBitrate;
 				} );
+
+				this.bind( 'liveStreamStatusUpdate' ,function( event, status ){
+					if (!status){
+						//we're offline
+						_this.stopLiveEvents();
+					} else{
+						 if (_this.playing && !_this.isLiveEventsOn){
+							 _this.startLiveEvents();
+						 }
+					}
+				});
 			},
 			calculateBuffer : function ( closeSession ){
 				var _this = this;
@@ -80,6 +95,7 @@
 			startLiveEvents :function(){
 				var _this = this;
 				_this.isLiveEventsOn = true;
+				_this.startTime = new Date().getTime();
 				_this.kClient = mw.kApiGetPartnerClient( _this.embedPlayer.kwidgetid );
 				clearInterval( _this.liveEventInterval );
 				this.sendLiveAnalytics();
@@ -102,7 +118,8 @@
 					'bitrate'     : _this.currentBitRate,
 					'referrer'    :  encodeURIComponent( mw.getConfig('EmbedPlayer.IframeParentUrl') ),
 					'isLive'      :  1,
-					'deliveryType': _this.embedPlayer.streamerType
+					'deliveryType': _this.embedPlayer.streamerType,
+					'startTime'   : _this.startTime
 				};
 				var eventRequest = {'service' : 'LiveStats', 'action' : 'collect'};
 				$.each(liveStatsEvent , function (index , value) {

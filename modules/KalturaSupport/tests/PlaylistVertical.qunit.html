@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Playlist Vertical</title>
+    <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../modules/KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+
+    </head>
+   <body>
+   	<h2> Playlist Vertical</h2>
+	<div id='kaltura_player' style="height:700px;width:400px"></div>
+	<script>
+		kWidget.embed({
+			'targetId': 'kaltura_player',
+			'wid': '_243342',
+			'uiconf_id': '25975211',
+			'flashvars': {
+				'playlistAPI':{
+					'autoContinue': true,
+					'includeInLayout': true,
+					'autoPlay': false,
+					'loop': false,
+					'onPage': false,
+					'layout': 'vertical',
+					'containerPosition': 'bottom',
+					'kpl0Name': "test 4 item playlist",
+					'kpl0Id': '0_q79jh71b'
+				},
+				'nextPrevBtn':{
+					'plugin': true
+				}
+			}
+		});
+	</script>
+  </body>
+</html>

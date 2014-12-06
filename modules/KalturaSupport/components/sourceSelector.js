@@ -71,7 +71,7 @@
 						if (_this.embedPlayer.instanceOf === "Native") {
 							// TODO add additional logic for "auto" where multiple bitrates
 							// exist at the same resolution.
-							var selectedSource = _this.embedPlayer.mediaElement.autoSelectSource();
+							var selectedSource = _this.embedPlayer.mediaElement.autoSelectSource(_this.embedPlayer.supportsURLTimeEncoding(), _this.embedPlayer.startTime, _this.embedPlayer.pauseTime);
 							if ( selectedSource ) { // source was found
 								_this.embedPlayer.switchSrc( selectedSource );
 							}

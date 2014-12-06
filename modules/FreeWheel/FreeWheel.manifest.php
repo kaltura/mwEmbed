@@ -10,7 +10,8 @@ return array (
 		'description' => 'FreeWheel gives enterprise-level media companies the infrastructure they 
 		need to create scaled, profitable content businesses in the new media landscape. 
 		Learn more about <a href="http://www.freewheel.tv/" target="_blank">FreeWheel offerings</a>. <br>
-		Kaltura supports a full featured FreeWheel ad network integration for both HTML5 and flash players.',
+		Kaltura supports a full featured FreeWheel ad network integration for both HTML5 and flash players.<br>
+		<b>Note:</b> Internet Explorer 8 supports only the Flash player integration.',
 		'attributes' => array(
 			'adManagerUrl' =>array(
 				'doc' => "The FreeWheel ad manager SWF URL.",

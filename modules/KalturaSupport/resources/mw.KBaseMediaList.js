@@ -11,6 +11,7 @@
 		$mediaListContainer: null,
 		selectedMediaItemIndex: 0,
 		startFrom: 0,
+		render: true,
 
 		getBaseConfig: function(){
 			var parentConfig = this._super();
@@ -27,7 +28,11 @@
 				'includeInLayout': true,
 				'clipListTargetId': null,
 				'containerPosition':  'right',
-				'parent': null
+				'parent': null,
+				'includeHeader': false,
+				'fullScreenDisplayOnly': false,
+				'minDisplayWidth': 0,
+				'minDisplayHeight': 0
 			});
 		},
 
@@ -46,17 +51,31 @@
 			this._super();
 
 			this.bind('updateLayout', function(){
+				if (_this.getPlayer().layoutBuilder.isInFullScreen() ||
+					(!_this.getConfig("fullScreenDisplayOnly") &&
+					_this.getConfig("minDisplayWidth") <= _this.getPlayer().getWidth() &&
+					_this.getConfig("minDisplayHeight") <= _this.getPlayer().getHeight())){
+					_this.render = true;
+				} else {
+					_this.render = false;
+				}
+
 				if (_this.getConfig( 'parent')){
 					setTimeout(function(){
-						_this.renderMediaList();
-						_this.setSelectedMedia(_this.selectedMediaItemIndex);
+						if (_this.render) {
+							_this.getComponent().show();
+							_this.renderMediaList();
+							_this.setSelectedMedia( _this.selectedMediaItemIndex );
+						} else {
+							_this.getComponent().hide();
+						}
 					}, 0);
 				}
 			});
 			// handle fullscreen entering resize
 			$( this.embedPlayer ).bind('onOpenFullScreen', function() {
 				if ( !_this.getConfig( 'parent') ){
-					$(".medialistContainer").hide();
+					_this.getComponent().hide();
 					$(".videoHolder").width("100%");
 				}
 			});
@@ -64,18 +83,28 @@
 			// handle fullscreen exit resize
 			$( this.embedPlayer ).bind('onCloseFullScreen', function() {
 				if ( !_this.getConfig( 'parent') ){
-					$(".medialistContainer").show();
+					_this.getComponent().show();
 					$(".videoHolder").width(_this.videoWidth+"px");
 				}
 			});
 
+			this.bind("onShowSidelBar", function(){
+				if (_this.checkAddScroll()){
+					_this.getScrollComponent().nanoScroller( {
+						flash: true,
+						flashDelay: 2000
+					} );
+				}
+			});
 		},
 
 		getComponent: function(){
 			if( ! this.$el ){
 				this.$el = $( '<div />' )
 					.addClass( this.pluginName + " medialistContainer unselectable k-" + this.getLayout() );
-				this.$el.append($( '<div />' ).addClass("k-medialist-header k-" + this.getLayout() ));
+				if (this.getConfig("includeHeader")){
+					this.$el.append($( '<div />' ).addClass("k-medialist-header k-" + this.getLayout() ));
+				}
 				this.$el.append($( '<div />' ).addClass("k-chapters-container k-" + this.getLayout() ));
 				if (!this.getConfig('parent')){
 					if ( this.getConfig( 'containerPosition' ) === 'top' && !this.getConfig( 'onPage' ) ) {
@@ -141,9 +170,9 @@
 
 					if ( this.getConfig( 'containerPosition' ) == 'top' || this.getConfig( 'containerPosition' ) == 'bottom' ) {
 						var playlistHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * 2 : this.getConfig( "mediaItemHeight" ) + this.getConfig('horizontalHeaderHeight');
-						$(".medialistContainer").height(playlistHeight);
+						this.getComponent().height(playlistHeight);
 						$( ".mwPlayerContainer" ).css( "height", this.$mediaListContainer.height() - playlistHeight + "px" );
-						$( ".videoHolder" ).css( "height", this.$mediaListContainer.height() - playlistHeight - $( ".controlBarContainer" ).height() + "px" );
+						this.getPlayer().getVideoHolder().css( "height", this.$mediaListContainer.height() - playlistHeight - $( ".controlBarContainer" ).height() + "px" );
 					}
 				}
 			}
@@ -177,11 +206,6 @@
 
 		getMediaListDomElements: function(){
 			return this.getMedialistComponent().find(".chapterBox");
-		},
-
-		destroy: function(){
-			this.unbind();
-			this.getComponent.empty();
 		},
 
 		//General
@@ -445,12 +469,6 @@
 			mediaBoxes.removeClass( 'active');
 			this.selectedMediaItemIndex = mediaIndex;
 			$( mediaBoxes[mediaIndex] ).addClass( 'active'); //li[data-chapter-index='" + activeIndex + "']
-			if (!this.getConfig('overflow')) {
-				var carousel = this.getMedialistComponent().find( '.k-carousel' );
-				if (carousel[0]) {
-					carousel[0].jCarouselLiteGo( mediaIndex );
-				}
-			}
 		},
 		getActiveItem: function(){
 			return this.getComponent().find( "li[data-chapter-index='" + this.selectedMediaItemIndex + "']" );
@@ -482,33 +500,44 @@
 			return sliceIndex;
 		},
 		addScroll: function(){
-			this.addScrollUiComponents();
-			this.initScroll();
-		},
-		initScroll: function(){
 			var $cc = this.getMedialistComponent();
 			this.mediaItemVisible = this.calculateVisibleScrollItems();
 			var isVertical = ( this.getLayout() == 'vertical' );
+			var speed = mw.isTouchDevice() ? 100: 200;
 
-			// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
-			$cc.find('.k-carousel').jCarouselLite({
-				btnNext: '.k-next',
-				btnPrev: '.k-prev',
-				visible: this.mediaItemVisible,
-				mouseWheel: true,
-				circular: false,
-				vertical: isVertical,
-				start: this.startFrom,
-				scroll: 1
-			});
-
-			// give more height if needed
-			if( this.getLayout() == 'vertical' ){
-				$cc.find('.k-carousel').css('height', $cc.height() );
-			} else {
-				// fit to container:
+			if (isVertical) {
+				this.getScrollComponent();
+			}else {
+				this.addScrollUiComponents();
+				// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
+				$cc.find( '.k-carousel' ).jCarouselLite( {
+					btnNext: '.k-next',
+					btnPrev: '.k-prev',
+					visible: this.mediaItemVisible,
+					mouseWheel: true,
+					circular: false,
+					vertical: isVertical,
+					start: this.startFrom,
+					scroll: 1,
+					speed: speed
+				} );
 				$cc.find('.k-carousel').css('width', $cc.width() );
 			}
+		},
+		getScrollComponent: function(){
+			if (!this.$scroll){
+				this.$scroll = $( "<div class='nano'>" );
+				this.$scroll.append( $( "<div class='nano-content'>" ) );
+				var list = $( this.getMedialistComponent().children()[0] );
+				list.wrap( this.$scroll );
+				this.$scroll = this.getComponent().find(".nano");
+				this.$scroll.nanoScroller( {
+					flash: true,
+					preventPageScrolling: true,
+					iOSNativeScrolling: true
+				} );
+			}
+			return this.$scroll;
 		},
 		getMediaItemBoxWidth: function(){
 			return this.getConfig('mediaItemWidth') || 320;

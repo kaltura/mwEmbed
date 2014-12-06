@@ -24,11 +24,17 @@
 
 		previousTime: 0,
 		seekIntervalID: null,
+        enableCORS:true,
 
 		init: function( embedPlayer, callback ){
 			var _this = this;
+
 			// Inherit BaseAdPlugin
 			mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
+
+            if( _this.getConfig('enableCORS') === false){
+                this.enableCORS = false;
+            }
 
 			_this.embedPlayer = embedPlayer;
 
@@ -173,7 +179,8 @@
 				};
 
 				_this.addSequenceProxyBinding( adType, adConfigWrapper, _this.getSequenceIndex( adType ) );
-			});
+			},
+			false, null, {enableCORS: _this.enableCORS});
 		},
 		/**
 		 * load and display an ad
@@ -322,7 +329,8 @@
 				}
 				_this.adPlayer.display( adsCuePointConf, doneCallback, adDuration );
 
-			});
+			},
+			false, null, {enableCORS: _this.enableCORS});
 		},
 
 		// Load all the ads per the $adConfig
@@ -444,7 +452,8 @@
 							// play next ad
 							_this.displayAdNumAds( displayCount, adType, adConfig,  callback);
 						});
-					});
+					},
+					false, null, {enableCORS: _this.enableCORS});
 				}else {
 					_this.adPlayer.display( adConfig, function(){
 						// play next ad ( or continue to callback )
@@ -584,8 +593,9 @@
 					mw.AdLoader.load( _this.getAdUrl( adType ) , function( adDisplayConf ){
 						mw.log("KalturaAds loaded: " + adType );
 						loadQueueCount--;
-						addAdCheckLoadDone( adType,  $.extend({}, _this.getBaseAdConf( adType ), adDisplayConf ) );
-					});
+						addAdCheckLoadDone( adType,  $.extend({}, _this.getBaseAdConf( adType ), adDisplayConf ));
+					},
+					false, null, {enableCORS: _this.enableCORS});
 				} else {
 					// No async request
 					adConfigSet[ adType ] = _this.getBaseAdConf( adType );

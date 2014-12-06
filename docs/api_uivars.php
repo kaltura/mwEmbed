@@ -376,6 +376,12 @@ $uiVars = array(
 				'availability' => 'kdp',
 				'example' => ''
 			),
+			'thumbnailUrl' => array(
+                'type' => 'String',
+                'desc' => 'External thumbnail URL to load instead of the entry default thumbnail. Supports evaluated expressions within curly brackets',
+                'default' => '',
+                'example' => ''
+            ),
 			'kml' => array(
 				'type' => 'String',
 				'desc' => 'The source from which to load the KDP uiConf (KML=Kaltura Meta ui Language). If undefined, the kml will be loaded from the Kaltura server via uiConf.get api. Options are: local / inject',
@@ -602,9 +608,9 @@ $uiVars = array(
 					'example' => ''
 			),
 			'EmbedPlayer.EnableURLTimeEncoding' => array(
-					'type' => 'String',
-					'desc' => "Determines if embedPlayer should support server side temporal URLs for seeking. Options are Flash|always|none",
-					'default' => 'flash',
+					'type' => 'Boolean',
+					'desc' => "Determines if embedPlayer should support server side temporal URLs for seeking",
+					'default' => false,
 					'example' => ''
 			),
 			'EmbedPlayer.DefaultImageDuration' => array(
@@ -719,7 +725,7 @@ $uiVars = array(
 					'type' => 'Boolean',
 					'desc' => "Force loading the legacy KDP Flash video player.",
 					'default' => 'false',
-					'example' => ''
+					'example' => '../modules/KalturaSupport/tests/ForceKPlayer.qunit.html'
 			),
 			'EmbedPlayer.ForceSPlayer' => array(
 					'type' => 'Boolean',

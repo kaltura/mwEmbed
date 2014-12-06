@@ -157,13 +157,30 @@ mw.MediaElement.prototype = {
 		if( !oldSrc || oldSrc.getSrc() != source.getSrc() ){
 			$( '#' + this.parentEmbedId ).trigger( 'SourceChange');
 		}
+
 		return this.selectedSource;
 	},
 
 	autoSelectSource:function( options ){
+		// make sure options is defined as empty object if unset:
+		if( ! options ){
+			options = {};
+		}
 		if ( this.autoSelectSourceExecute( options ) ){
-			$( '#' + this.parentEmbedId ).trigger( 'SourceSelected' , this.selectedSource );
-			return this.selectedSource;
+			this.selectedSource.src = this.selectedSource.src.replace(/seekFrom\/\d+\//, '');
+			this.selectedSource.src = this.selectedSource.src.replace(/clipTo\/\d+\//, '');
+			if (options.supportsURLTimeEncoding && !!options.endTime) {
+				this.selectedSource.src = this.selectedSource.src.replace(
+					"playManifest/", 
+					"playManifest/clipTo/" + parseInt(options.endTime) * 1000 + "/"
+				);
+			}
+			if (options.supportsURLTimeEncoding && !! options.startTime) {
+				this.selectedSource.src = this.selectedSource.src.replace(
+					"playManifest/", 
+					"playManifest/seekFrom/" + parseInt(options.startTime) * 1000 + "/"
+				);
+			}
 		}
 		return false;
 	},
@@ -253,7 +270,6 @@ mw.MediaElement.prototype = {
 			$.each( playableSources, function(inx, source ){
 				if( source.bandwidth ){
 					// Check if a native source ( takes president over bandwidth selection )
-					// ( we never prefer a non-native flavor ) 
 					var player = mw.EmbedTypes.getMediaPlayers().getDefaultPlayer( source.mimeType );
 					if ( !player || player.library != 'Native'	) {
 						// continue
@@ -542,8 +558,8 @@ mw.MediaElement.prototype = {
 	 *
 	 * @returns {Array} of playable media sources
 	 */
-	getPlayableSources: function( mimeFilter ) {
-		 var playableSources = [];
+	getPlayableSources: function (mimeFilter) {
+		var playableSources = [];
 		 for ( var i = 0; i < this.sources.length; i++ ) {
 			 if ( this.isPlayableType( this.sources[i].mimeType )
 					 &&

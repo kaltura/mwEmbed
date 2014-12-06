@@ -160,6 +160,8 @@ return array(
 			"widevine" => "",
 			"sourceSelector" => "",
 			"download" => "",
+			"nativeCallout" => "",
+			"strings" => "",
 			"uiVars" => ""
 		)
 	)

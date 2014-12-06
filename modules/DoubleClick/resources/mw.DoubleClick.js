@@ -36,6 +36,8 @@
 
 		// flag for using a chromeless player - move control to KDP DoubleClick plugin
 		isChromeless: false,
+		 //flag for using native mobile IMA SDK
+		isNativeSDK: false,
 		// for Chromeless only: save entry duration during midrolls so we can update it when midroll is finished
 		entryDuration: null,
 
@@ -116,8 +118,17 @@
 			}
 
 			//native browser on Android 4.4 has "Chrome" in it, so this is the "new" way to test its user agent
-			if ( mw.isAndroid44() && mw.isAndroidChromeNativeBrowser() ) {
+			if ( mw.isAndroid44() && mw.isAndroidChromeNativeBrowser() && !mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
 				mw.log("DoubleClick::user agent not supported, return" );
+				callback();
+				return;
+			}
+			if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
+				_this.isNativeSDK = true;
+				_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
+					_this.bindChromelessEvents();
+				});
+				_this.addManagedBinding();
 				callback();
 				return;
 			}
@@ -140,6 +151,11 @@
 					_this.embedPlayer.bindHelper( 'volumeChanged' + this.bindPostfix, function(event, percent){
 						mw.log("DoubleClick::chromeless volumeChanged: " + percent );
 						_this.embedPlayer.setPlayerElementVolume( percent );
+					});
+					_this.embedPlayer.bindHelper( 'Kaltura_SendNotification' + this.bindPostfix, function(event, notificationName, notificationData){
+						if (notificationName === "doPause"){
+							_this.embedPlayer.getPlayerElement().pause();
+						}
 					});
 					_this.addManagedBinding();
 					callback();
@@ -195,8 +211,11 @@
 			if ( flashVars['adTagUrl'] ){
 				flashVars['adTagUrl'] = escape(flashVars['adTagUrl']); // escape adTagUrl to prevent Flash string parsing error
 			}
+			if (flashVars['countdownText']) {
+				flashVars['countdownText'] = escape(flashVars['countdownText']); // escape countdownText to support & and ' characters
+			}
 			//we shouldn't send these params, they are unnecessary and break the flash object
-			var ignoredVars = ['path', 'customParams'];
+			var ignoredVars = ['path', 'customParams', 'preSequence', 'postSequence' ];
 			for ( var i=0; i< ignoredVars.length; i++ ) {
 				delete flashVars[ignoredVars[i]];
 			}
@@ -290,12 +309,68 @@
 					// Setup the restore callback
 					_this.postRollCallback = callback;
 					//no need to request ads
-					if (!_this.isLinear || _this.allAdsCompletedFlag){
+					if ( !_this.isLinear || _this.allAdsCompletedFlag || _this.adLoaderErrorFlag ){
 						_this.restorePlayer(true);
 					}
 				}
 			});
+			_this.embedPlayer.bindHelper('Kaltura_SendNotification' + this.bindPostfix, function (event, notificationName, notificationData) {
+				if (_this.playingLinearAd) {
+					if ( notificationName === "doPause" ) {
+						_this.pauseAd(true);
+					}
+					if ( notificationName === "doPlay" ) {
+						_this.resumeAd(true);
+					}
+				}
+			});
 		},
+
+		pauseAd: function (isLinear) {
+			var _this = this;
+			this.embedPlayer.paused = true;
+			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
+
+			if (isLinear) {
+				this.embedPlayer.enablePlayControls(["scrubber"]);
+			} else {
+				_this.embedPlayer.pause();
+			}
+
+			if (_this.isChromeless) {
+				_this.embedPlayer.getPlayerElement().sendNotification("pauseAd");
+			} else {
+				this.adsManager.pause();
+			}
+		},
+
+		resumeAd: function (isLinear) {
+			var _this = this;
+			this.embedPlayer.paused = false;
+			$(this.embedPlayer).trigger("onPlayerStateChange", ["play", this.embedPlayer.currentState]);
+			if (isLinear) {
+				this.embedPlayer.disablePlayControls();
+			} else {
+				_this.embedPlayer.play();
+			}
+
+			if (_this.isChromeless) {
+				_this.embedPlayer.getPlayerElement().sendNotification("resumeAd");
+			} else {
+				this.adsManager.resume();
+			}
+		},
+
+		toggleAdPlayback: function (isLinear) {
+			if (this.getConfig("pauseAdOnClick") !== false) {
+				if (this.embedPlayer.paused) {
+					this.resumeAd(isLinear);
+				} else {
+					this.pauseAd(isLinear);
+				}
+			}
+		},
+
 		/**
 		 * Get the content video tag
 		 */
@@ -438,6 +513,12 @@
 				return;
 			}
 
+			if ( this.isNativeSDK ) {
+				this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', this.getConfig( 'adTagUrl' ));
+				mw.log( "DoubleClick::requestAds: Native SDK player request ad ");
+				return;
+			}
+
 			// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
 			this.getAdDisplayContainer();
 
@@ -577,35 +658,6 @@
 			var lastAdStartTime = null;
 
 			// Add ad listeners:
-			adsListener( 'CLICK', function(event){
-				if( mw.isMobileDevice() ){
-					if( mw.isIOS5() || mw.isIOS6() ) {
-						_this.isAdClickTimeoutEnabled = true;
-						var startTime = new Date().getTime();
-						var getTime = function() {
-							var currentTime = new Date().getTime();
-							if (currentTime - startTime > 1000) {
-								_this.embedPlayer.getPlayerElement().play();
-							}
-							startTime = currentTime;
-							if( _this.isAdClickTimeoutEnabled ) {
-								setTimeout(getTime, 500);
-							}
-						};
-						getTime();
-					} else {
-						var eventName = 'focus.doubleClickMobileEvent';
-						if( _this.isPageshowEventSupported() && mw.isIOS() ) {
-							eventName = 'pageshow.doubleClickMobileEvent';
-						}
-						_this.adClickEvent = eventName;
-						var onFocusAction = function(event){
-							_this.embedPlayer.getPlayerElement().play();
-						};
-						$(window).bind(eventName , onFocusAction);
-					}
-				}
-			} );
 			adsListener( 'CONTENT_PAUSE_REQUESTED', function(event){
 				if (_this.currentAdSlotType === 'midroll') {
 					var restoreMidroll = function(){
@@ -732,12 +784,21 @@
 
 					// Monitor ad progress
 					_this.monitorAdProgress();
+
+					// Send a notification to trigger associated events and update ui
+					_this.embedPlayer.sendNotification('doPlay');
 				}
 			} );
 			adsListener( 'PAUSED', function(){
 				// Send a notification to trigger associated events and update ui
 				_this.embedPlayer.sendNotification('doPause');
 			} );
+
+			adsListener('CLICK', function (adEvent) {
+				var ad = adEvent.getAd();
+				var isLinear = ad.isLinear();
+				_this.toggleAdPlayback(isLinear);
+			});
 
 			adsListener( 'FIRST_QUARTILE', function(){
 				// Monitor ad progress ( if for some reason we are not already monitoring )
@@ -794,12 +855,14 @@
 				$(_this.embedPlayer).trigger("onAdPlay",[adInfo.adID]);
 				// This changes player state to the relevant value ( play-state )
 				$(_this.embedPlayer).trigger("playing");
-				if ( _this.currentAdSlotType != _this.prevSlotType ) {
+				if (_this.currentAdSlotType != _this.prevSlotType) {
 					_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
 					_this.prevSlotType = _this.currentAdSlotType;
 				}
 				_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', adInfo.duration );
-				$(".mwEmbedPlayer").hide();
+				if ( _this.isChromeless ) {
+					$(".mwEmbedPlayer").hide();
+				}
 				if ( _this.getConfig( 'countdownText' ) && _this.embedPlayer.getInterface().find(".ad-notice-label").length == 0){
 					// Add the notice target:
 					_this.embedPlayer.getVideoHolder().append(
@@ -807,12 +870,14 @@
 							.addClass( 'ad-component ad-notice-label' )
 					);
 				}
+				// Send a notification to trigger associated events and update ui
+				_this.embedPlayer.paused = false;
 			},'adStart', true);
 
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				_this.isLinear = adInfo.isLinear;
-				if (!_this.isLinear){
+				if (!_this.isLinear && _this.isChromeless ){
 					$(".mwEmbedPlayer").hide();
 				}
 				// dispatch adOpen event
@@ -828,6 +893,10 @@
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				$(_this.embedPlayer).trigger('onAdComplete',[adInfo.adID, mw.npt2seconds($(".currentTimeLabel").text())]);
 			},'adCompleted', true);
+
+			this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
+				_this.toggleAdPlayback(adInfo.isLinear);
+			}, 'adClicked', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(companionInfo){
 				_this.showCompanion(companionInfo.companionID, companionInfo.content);
@@ -857,6 +926,9 @@
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				_this.embedPlayer.sequenceProxy.isInSequence = false;
+				if (_this.prevSlotType === "midroll") {
+					_this.prevSlotType = ""; // to support multiple midrolls we must clear prevSlotType when the midroll is finished
+				}
 				_this.currentAdSlotType = _this.embedPlayer.adTimeline.currentAdSlotType;
 				if (_this.currentAdSlotType == 'midroll'){
 					setTimeout(function(){
@@ -875,12 +947,14 @@
 						_this.embedPlayer.getPlayerElement().play();
 					},100);
 				}
+				_this.playingLinearAd = false;
 			},'contentResumeRequested', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				_this.entryDuration = _this.embedPlayer.getDuration();
 				_this.embedPlayer.sequenceProxy.isInSequence = true;
 				_this.embedPlayer.stopMonitor();
+				_this.playingLinearAd = true;
 			},'contentPauseRequested', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
@@ -977,12 +1051,16 @@
 						case 'doPause':
 							_this.adPaused = true;
 							_this.adsManager.pause();
+							embedPlayer.paused = true;
 							$( embedPlayer ).trigger( 'onpause' );
+							$( embedPlayer ).trigger( "onPlayerStateChange", ["pause", embedPlayer.currentState] );
 							break;
 						case 'doPlay':
 							_this.adPaused = false;
 							_this.adsManager.resume();
+							embedPlayer.paused = false;
 							$( embedPlayer ).trigger( 'onplay' );
+							$( embedPlayer ).trigger( "onPlayerStateChange", ["play", embedPlayer.currentState] );
 							_this.monitorAdProgress();
 							break;
 						case 'doStop':
@@ -1088,6 +1166,7 @@
 			} else { // do a manual restore:
 				// restore player with normal events:
 				this.embedPlayer.adTimeline.restorePlayer( null, adPlayed);
+				this.embedPlayer.setDuration(this.embedPlayer.duration);
 				// managed complete ... call clip done if content complete.
 				if( onContentComplete ){
 					if (_this.postRollCallback){
@@ -1101,7 +1180,7 @@
 						_this.embedPlayer.setCurrentTime(_this.timeToReturn);
 						_this.timeToReturn = null;
 					}
-					this.embedPlayer.setDuration(this.embedPlayer.duration);
+
 					this.embedPlayer.play();
 				}
 			}
@@ -1126,7 +1205,10 @@
 					this.restorePlayer(true);
 				}
 				this.removeAdContainer();
-				this.adsLoader.destroy();
+				if ( this.adsLoader ) {
+					this.adsLoader.destroy();
+				}
+
 			}else{
 				if ( !this.isLinear ){
 					this.embedPlayer.getPlayerElement().sendNotification( 'destroy' );
