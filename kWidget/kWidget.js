@@ -2199,7 +2199,7 @@
 		}
 	};
 
-// Export to kWidget and KWidget ( official name is camel case kWidget )
+	// Export to kWidget and KWidget ( official name is camel case kWidget )
 	window.KWidget = kWidget;
 	window.kWidget = kWidget;
 

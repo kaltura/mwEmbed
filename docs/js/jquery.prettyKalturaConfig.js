@@ -714,65 +714,28 @@
 					$('<a>').attr('id', 'btn-create-player-' + id)
 						.addClass("btn disabled")
 						.text('Create new player')
-						.attr('title', 'Login to create player with these settings'),
-					$('<span>').html('&nbsp;')
-				);
-				// IE < 10 half supports CROS ... but broken for cross domain POST.
-				if (( /msie [8|9]/.test(window.navigator.userAgent.toLowerCase()))) {
-					var useCompatiblePlayer = "Please use an HTML5 compatible browser ( firefox or chrome for save configuration to player )";
-					$saveToUiConf.find('a').attr('title', useCompatiblePlayer);
-					$createPlayerBtn.find('a').attr('title', useCompatiblePlayer);
-				} else {
-					kWidget.auth.addAuthCallback(function (userObject) {
-						// we need a ks to save a new player:
-						if (!userObject.ks) {
-							return;
-						}
-						// Create new player: 
-						$createPlayerBtn.find('a')
-							.attr('title', "Create new player with these settings")
-							.removeClass("disabled")
-							.click(function () {
-								createNewPlayer($createPlayerBtn, userObject);
-							});
-					});
-
-					// Check that we can expose a save to uiConf option
-					kWidget.auth.addAuthCallback(function (userObject) {
-						var uiConfId = localStorage[ 'kdoc-embed-uiconf_id' ];
-						if (!uiConfId) {
-							$saveToUiConf.find('a').attr('title', 'No uiconf is set in seetings');
-							return;
-						}
-						// Save to player:
-						$saveToUiConf.find('a')
-							.text('Save to player: ' + uiConfId)
-							.removeClass("disabled")
-							// enable the button:
-							.click(function () {
-								saveToPlayer($saveToUiConf, userObject);
+						.attr('title', 'Login to create player with these settings'), 
+						$('<span>').html('&nbsp;')
+					);
+				return $('<div />').append( 
+							$('<div />')
+							.css({
+								'overflow-x': 'none',
+								'overflow-y':'auto', 
+								'margin-bottom':'10px',
+								'max-height': '400px'
 							})
-					})
-				}
-				return $('<div />').append(
-					$('<div />')
-						.css({
-							'overflow-x': 'none',
-							'overflow-y': 'auto',
-							'margin-bottom': '10px',
-							'max-height': '400px'
-						})
-						.append(
-							$mainPlugin,
-							$otherPlugins,
-							$fvBody
-						),
-					$updatePlayerBtn,
-					$('<span>&nbsp;</span>'),
-					$saveToUiConf,
-					$createPlayerBtn,
-					$('<p>&nbsp;</p>')
-				)
+							.append(
+								$mainPlugin,
+								$otherPlugins,
+								$fvBody
+							),
+							$updatePlayerBtn,
+							$('<span>&nbsp;</span>'),
+							$saveToUiConf,
+							$createPlayerBtn,
+							$('<p>&nbsp;</p>')
+						)
 			}
 
 			function noramlizeValue(val) {
@@ -1509,12 +1472,10 @@
 					$(_this).find('a[data-getter="getAttrEdit"]').click();
 
 				}
-
-				var settingTabHtml = ( showSettingsTab ) ?
-					'<li><a data-getter="getSettings" href="#tab-settings-' + id + '" data-toggle="tab">' +
-						'<i class="kpcicon-integrate"></i>Integrate</a></li>' :
-					'';
-				$(_this).empty().append(
+				var settingTabHtml = ( showSettingsTab ) ? 
+						'<li><a data-getter="getSettings" href="#tab-settings-' + id +'" data-toggle="tab">':
+						'';
+				$( _this ).empty().append(
 					$('<div />')
 						.css({
 							'max-width': '800px',
