@@ -166,9 +166,10 @@ class UiConfResult {
 		if( json_last_error() ) {
 			throw new Exception("Error Processing JSON: " . json_last_error() );
 		}
+		
 		// Get our flashVars
 		$vars = $this->normalizeFlashVars();
-
+		
 		// Add uiVars into vars array
 		if ( isset($playerConfig['uiVars']) ) {
 			foreach( $playerConfig['uiVars'] as $key=>$value ) {
@@ -201,6 +202,7 @@ class UiConfResult {
 
 			}
 		}
+	
 		// Add combined flashVars & uiVars into player config
 		$playerConfig['vars'] = $vars;
 		$playerConfig = $this->updatePluginsFromFlashvars( $playerConfig );
@@ -319,8 +321,7 @@ class UiConfResult {
 			// http://html5video.org/wiki/Kaltura_HTML5_Configuration
 			if( $pluginId == 'Kaltura' || 
 				$pluginId == 'EmbedPlayer' || 
-				$pluginId == 'KalturaSupport' || 
-				$pluginId == 'mediaProxy'
+				$pluginId == 'KalturaSupport'
 			){
 				continue;
 			}
@@ -357,9 +358,9 @@ class UiConfResult {
 		$flashVars = $this->request->getFlashVars();
 		if( $flashVars ) {
 			foreach( $flashVars as $fvKey => $fvValue) {
-				$fvSet = @json_decode( stripslashes( html_entity_decode( $fvValue ) ) ) ;
+				$fvSet = @json_decode( $fvValue ) ;
 				// check for json flavar and set acordingly
-				if( is_object( $fvSet ) ){
+				if( is_object( $fvSet ) || is_array( $fvSet ) ){
 					foreach( $fvSet as $subKey => $subValue ){
 						$vars[ $fvKey . '.' . $subKey ] =  $this->utility->formatString( $subValue );
 					}
@@ -385,12 +386,11 @@ class UiConfResult {
 			$pluginId = $pluginKeys[0];
 			$pluginAttribute = $pluginKeys[1];
 			 if( $pluginId == 'Kaltura' ||
-					$pluginId == 'EmbedPlayer' ||
-					$pluginId == 'KalturaSupport' ||
-					$pluginId == 'mediaProxy'
-					){
-						continue;
-					}
+				$pluginId == 'EmbedPlayer' ||
+				$pluginId == 'KalturaSupport' 
+			){
+				continue;
+			}
 			// Enforce the lower case first letter of plugin convention: 
 			$pluginId = strtolower( $pluginId[0] ) . substr($pluginId, 1 );
 			
@@ -430,7 +430,7 @@ class UiConfResult {
 			$plugins = array();
 			$vars = array();
 
-			$uiConfPluginNodes = array( 'mediaProxy', 'strings' );
+			$uiConfPluginNodes = array( 'strings' );
 
 			// Get all plugins elements
 			if( $this->uiConfFile ) {
