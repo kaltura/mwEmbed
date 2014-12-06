@@ -5,11 +5,12 @@
 	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 </head>
 <body>
-	<h3>Stand Alone Player ( MediaProxy Override )</h3>
+	<h3>Page supplied sources ( MediaProxy Override )</h3>
 	Kaltura support several stand alone player modes. Learn more about 
-	<a href="../../../docs/api#standAlonePlayerModes">stand alone player modes</a> Kaltura API documentation. 
+	<a target="_top" href="../../../docs/api#standAlonePlayerModes">stand alone player modes</a> Kaltura API documentation. 
 	<br><br>
-	This example highlights the <b>MediaProxy Override</b>, and JSON Config.
+	This example highlights the <b>MediaProxy Override</b>, and JSON Config. Since both sources an player config 
+	are supplied by the page, the player makes no the Kaltura service calls in build out. 
 	<br><br>
 
 	<div id="kaltura_player" style="width:600px;height:338px;"></div>
@@ -194,17 +195,23 @@
 		});
 	</script>
 	<br>
-	<div class="alertEval"> Alert Entry data for: 
-		<a href="#">{mediaProxy.entry}</a> | 
+	<b>MediaProxy Property alerts:</b>
+		<pre class="prettyprint linenums" style="width:98%;max-width:98%">
+alert( kdp.evaluate( '{mediaProxy.entry}' ) );</pre>
+	
+	<div class="alertEval"><a href="#">{mediaProxy.entry}</a> | 
 		<a href="#">{mediaProxy.sources}</a> |
 		<a href="#">{mediaProxy.entryCuePoints}</a> |
 		<a href="#">{mediaProxy.entryMetadata}</a>
 	</div>
-	<div class="apiCalls">API Calls:
-		<a href="#" id="changeMediaSinte">changeMedia Sintel</a>, <a href="#" id="changeToolKitVideo">changeMedia ToolKit</a>, 
-	</div>
-	
+
 	<br>
+	<b>API Calls</b>:
+	<pre class="prettyprint linenums" style="width:98%;max-width:98%">
+kdp.sendNotification('changeMedia', { 'mediaProxy': mediaProxyEntry });</pre>
+	<a href="#" id="changeMediaSinte">changeMedia Sintel</a>, <a href="#" id="changeToolKitVideo">changeMedia ToolKit</a>, 
+		
+		
 	<h3>Entity override at embed time:</h3>
 	<pre class="prettyprint linenums" style="width:98%;max-width:98%">
 var mediaProxyEntry = {
@@ -262,7 +269,7 @@ var mediaProxyEntry = {
 }
 // do the embed:
 kWidget.embed('kaltura_player', {
-	'wid' : '_partnerkey',
+	'wid' : '_custom_partner_key',
 	'flashvars':{
 		// json player config
 		'jsonConfig':jsonConfig,
@@ -272,12 +279,8 @@ kWidget.embed('kaltura_player', {
 		'mediaProxy': mediaProxyEntry
 	}
 })</pre>
-	<h3>changeMedia call ( without reloading player):</h3>
-	<pre class="prettyprint linenums" style="width:98%;max-width:98%">
-kdp.sendNotification('changeMedia', { 'mediaProxy': mediaProxyEntry });</pre>
-
-	<h3> Sample changeMedia on an empty player</h3>
-	<div id="kaltura_player2" style="width:600px;height:338px;"></div>
+	<h3>ChangeMedia call on empty player:</h3>
+	<div id="kaltura_player2" style="width:600px;height:294px;"></div>
 	<script>
 		kWidget.embed('kaltura_player2', {
 			'wid' : '_partnerkey',
@@ -287,10 +290,26 @@ kdp.sendNotification('changeMedia', { 'mediaProxy': mediaProxyEntry });</pre>
 			'readyCallback': function( playerId ){
 				var kdp = document.getElementById( playerId );
 				kdp.kBind('readyToLoad', function(){
-					kdp.sendNotification('changeMedia', { 'mediaProxy': mediaProxyKalturaToolKitVideo });
+					kdp.sendNotification('changeMedia', { 'mediaProxy': mediaProxySinte });
 				});
 			}
 		});
 	</script>
+	<h4>After embed changeMedia call example:</h4>
+	<pre class="prettyprint linenums" style="width:98%;max-width:98%">
+kWidget.embed('kaltura_player2', {
+'wid' : '_custom_partner_key',
+'flashvars':{
+	'jsonConfig':jsonConfig
+	// no entry set at startup
+},
+'readyCallback': function( playerId ){
+	var kdp = document.getElementById( playerId );
+	kdp.kBind('readyToLoad', function(){
+		kdp.sendNotification('changeMedia', { 'mediaProxy': mediaProxySinte });
+	});
+}
+});
+	</pre>
 </body>
 </html>
