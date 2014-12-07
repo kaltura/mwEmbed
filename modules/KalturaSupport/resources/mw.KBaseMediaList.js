@@ -271,10 +271,15 @@
 			}
 		},
 		setMedialistComponentHeight: function(){
+			var componentHeight = this.getComponent().height();
+			if (this.getConfig("onPage")){
+				componentHeight = this.getComponent().parent().height();
+			}
 			if (this.getLayout() === "vertical" && (this.getConfig("containerPosition") === "top" || this.getConfig("containerPosition") === "bottom")){
-				this.getMedialistComponent().height(this.getComponent().height());
+				this.getMedialistComponent().height(componentHeight);
 			}else{
-				this.getMedialistComponent().height(this.getComponent().height()-this.getMedialistHeaderComponent().height());
+
+				this.getMedialistComponent().height(componentHeight - this.getMedialistHeaderComponent().height());
 			}
 
 		},
