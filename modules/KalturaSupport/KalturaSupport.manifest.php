@@ -1494,7 +1494,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 		)
 	),
 	'strings' => array(
-		'description' => 'Enables overwriting player strings. For full string keys listing, review the <a href="http://player.kaltura.com/docs/Strings" target="_blank">Strings test page</a>' ,
+		'description' => 'Enables overwriting player strings. For full string keys listing, review the <a href="http://player.kaltura.com/docs/Strings" target="_blank">Strings documentation page</a>' ,
 		'type' => 'featuremenu',
 		'label' => 'Strings',
 		'model' => 'config.plugins.strings',
