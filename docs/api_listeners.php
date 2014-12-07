@@ -85,6 +85,9 @@
 		)
 	);
 	$eventsPlayerStates = array(
+		'firstPlay' => array(
+			'desc' => 'The first time the play event was fired'
+		),
 		'firstQuartile' => array(
 			'desc' => 'The player reached 25% of the entry playback'
 		),

@@ -165,6 +165,12 @@ kWidget.addReadyCallback( function( playerId ){
  						].join(':').replace(/\s/g, "_");
  				break;
  			}
+			// this allows to override the media name by configuration E.G. MY_PREFIX_{mediaProxy.entry.id}
+			// will output a media name with prefix.
+			if(_this.getConfig( 'mediaName' )) {
+				return _this.kdp.evaluate(_this.getConfig( 'mediaName' ));
+			}
+
 			return this.entryData.name;
 		},
 		getDuration: function(){
