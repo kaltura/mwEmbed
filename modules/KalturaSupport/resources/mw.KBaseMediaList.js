@@ -250,6 +250,8 @@
 			if (this.getTemplateData().length > 0) {
 				//Clear previous list
 				this.getMedialistComponent().empty();
+				//Clear the scroll reference
+				this.$scroll = null;
 				//Add media items to DOM
 				this.getMedialistComponent().append( medialist );
 				//Adjust container size
