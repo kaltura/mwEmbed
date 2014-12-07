@@ -808,22 +808,24 @@
 				this.monitor[this.TYPE.SECONDARY].obj.removeClass( 'screenTransition' );
 			},
 			sync: function ( cuePoint, callback ) {
-				this.loadAdditionalAssets();
-				var callCallback = function(){
-					if ( callback && typeof(callback) == "function" ) {
-						callback();
-					}
-				};
-				if (cuePoint) {
-					var myImg = this.getComponent().find( '#SynchImg' );
-					if ( cuePoint.thumbnailUrl ) {
-						myImg.attr( 'src', cuePoint.thumbnailUrl );
-						callCallback();
-					} else {
-						this.loadNext( cuePoint, function ( url ) {
-							myImg.attr( 'src', url );
+				if (this.syncEnabled) {
+					this.loadAdditionalAssets();
+					var callCallback = function () {
+						if ( callback && typeof(callback) == "function" ) {
+							callback();
+						}
+					};
+					if ( cuePoint ) {
+						var myImg = this.getComponent().find( '#SynchImg' );
+						if ( cuePoint.thumbnailUrl ) {
+							myImg.attr( 'src', cuePoint.thumbnailUrl );
 							callCallback();
-						} );
+						} else {
+							this.loadNext( cuePoint, function ( url ) {
+								myImg.attr( 'src', url );
+								callCallback();
+							} );
+						}
 					}
 				}
 			},
