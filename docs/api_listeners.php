@@ -85,6 +85,9 @@
 		)
 	);
 	$eventsPlayerStates = array(
+		'firstPlay' => array(
+			'desc' => 'Triggered once per content entry when first played.'
+		),
 		'firstQuartile' => array(
 			'desc' => 'The player reached 25% of the entry playback'
 		),
