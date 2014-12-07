@@ -357,7 +357,6 @@
 			}
 		},
 		onClipDone: function () {
-			this.playerObject.sendNotification('doStop');
 			this.parent_onClipDone();
 		},
 
