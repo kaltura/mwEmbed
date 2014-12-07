@@ -129,17 +129,22 @@
 		createStreamList: function (data) {
 			var _this = this;
 			var subStreams = data[0].objects;
-			$.each(subStreams, function (i, subStream) {
-				_this.streams.push({
-					id: subStream.id,
-					data: {
-						meta: subStream,
-						contextData: {
-							flavorAssets: data[i + 1].objects
+			if (subStreams.length > 0) {
+				$.each( subStreams, function ( i, subStream ) {
+					_this.streams.push( {
+						id: subStream.id,
+						data: {
+							meta: subStream,
+							contextData: {
+								flavorAssets: data[i + 1].objects
+							}
 						}
-					}
-				});
-			});
+					} );
+				} );
+			} else {
+				mw.log('streamSelector::No streams avaialble, disabling component');
+				_this.getBtn().hide();
+			}
 			_this.embedPlayer.triggerHelper('streamsReady');
 		},
 		isValidResult: function (data) {
