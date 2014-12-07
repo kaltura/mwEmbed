@@ -540,14 +540,20 @@
 
 				this.checkAnimationSupport();
 
-				//Set draggable and resizable configuration
-				primaryScreen
-					.draggable( this.getConfig( 'draggable' ) ).draggable( 'disable' )
-					.resizable( this.getConfig( 'resizable' ) ).resizable( 'disable' );
+					//Set draggable and resizable configuration
+					primaryScreen
+						.draggable( this.getConfig( 'draggable' ) ).draggable( 'disable' )
+						.resizable( this.getConfig( 'resizable' ) ).resizable( 'disable' )
+						.on('resize', function (e) {
+							e.stopPropagation();
+						});
 
-				secondaryScreen
-					.draggable( this.getConfig( 'draggable' ) )
-					.resizable( this.getConfig( 'resizable' ) );
+					secondaryScreen
+						.draggable( this.getConfig( 'draggable' ) )
+						.resizable( this.getConfig( 'resizable' ) )
+						.on('resize', function (e) {
+							e.stopPropagation();
+						});
 
 				this.enableMonitorFeatures();
 
