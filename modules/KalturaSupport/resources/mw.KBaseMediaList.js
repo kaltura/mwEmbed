@@ -32,7 +32,8 @@
 				'includeHeader': false,
 				'fullScreenDisplayOnly': false,
 				'minDisplayWidth': 0,
-				'minDisplayHeight': 0
+				'minDisplayHeight': 0,
+				'scrollerCssPath': "resources/nanoScroller/nanoScroller.css"
 			});
 		},
 
@@ -131,6 +132,9 @@
 						//Try to find and apply css on parent frame
 						var cssLink = this.getConfig('cssFileName');
 						if (cssLink) {
+							//Scroller CSS
+							$( 'head', window.parent.document ).append( '<link type="text/css" rel="stylesheet" href="' + kWidget.getPath() + this.getConfig("scrollerCssPath") + '"/>' );
+							//Plugin CSS
 							cssLink = cssLink.toLowerCase().indexOf("http") === 0 ? cssLink : kWidget.getPath() + cssLink; // support external CSS links
 							$( 'head', window.parent.document ).append( '<link type="text/css" rel="stylesheet" href="' + cssLink + '"/>' );
 						} else {
