@@ -129,17 +129,22 @@
 		createStreamList: function (data) {
 			var _this = this;
 			var subStreams = data[0].objects;
-			$.each(subStreams, function (i, subStream) {
-				_this.streams.push({
-					id: subStream.id,
-					data: {
-						meta: subStream,
-						contextData: {
-							flavorAssets: data[i + 1].objects
+			if (subStreams.length > 0) {
+				$.each( subStreams, function ( i, subStream ) {
+					_this.streams.push( {
+						id: subStream.id,
+						data: {
+							meta: subStream,
+							contextData: {
+								flavorAssets: data[i + 1].objects
+							}
 						}
-					}
-				});
-			});
+					} );
+				} );
+			} else {
+				mw.log('streamSelector::No streams avaialble, disabling component');
+				_this.getBtn().hide();
+			}
 			_this.embedPlayer.triggerHelper('streamsReady');
 		},
 		isValidResult: function (data) {
@@ -248,6 +253,7 @@
 			if (this.currentStream != stream) {
 				var _this = this;
 				var embedPlayer = this.getPlayer();
+				embedPlayer.triggerHelper('onChangeStream', [_this.currentStream.id]);
 				//Set reference to active stream
 				this.currentStream = stream;
 				//Get reference for current time for setting timeline after source switch
@@ -280,6 +286,11 @@
 					//Do not show poster on switch to avoid poster flashing
 					mw.setConfig('EmbedPlayer.HidePosterOnStart', true);
 					embedPlayer.triggerHelper('KalturaSupport_EntryDataReady', embedPlayer.kalturaPlayerMetaData);
+					//Reinit the kCuePoints service
+					if( (embedPlayer.rawCuePoints && embedPlayer.rawCuePoints.length > 0)) {
+						embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
+						embedPlayer.triggerHelper('KalturaSupport_CuePointsReady', embedPlayer.rawCuePoints);
+					}
 					callback();
 				};
 
@@ -297,6 +308,7 @@
 							//Return poster to allow display of poster on clip done
 							mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
 							embedPlayer.restoreEventPropagation();
+							embedPlayer.triggerHelper('onChangeStreamDone', [_this.currentStream.id]);
 						});
 						//Add black screen before seek to avoid flashing of video
 						embedPlayer.addBlackScreen();
@@ -305,6 +317,7 @@
 						//Return poster to allow display of poster on clip done
 						mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
 						embedPlayer.restoreEventPropagation();
+						embedPlayer.triggerHelper('onChangeStreamDone', [_this.currentStream.id]);
 					}
 				};
 				embedPlayer.changeMedia(changeMediaCallback, checkPlayerSourcesFunction, false);
