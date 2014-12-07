@@ -47,6 +47,7 @@
 			screenShown: false,
 			dragging: false,
 			resizing: false,
+			syncEnabled: true,
 
 			controlBarComponents: {
 				sideBySide: {
@@ -518,6 +519,18 @@
 						maximizeSecondDisplay();
 					}
 				} );
+				this.bind("onChangeMedia", function(){
+					//Clear the current slide before loading the new media
+					_this.getComponent().find( '#SynchImg' ).attr("src", "");
+				});
+				this.bind("onChangeStream", function(){
+					_this.syncEnabled = false;
+				});
+				this.bind("onChangeStreamDone", function(){
+					_this.syncEnabled = true;
+					var cuePoint = _this.getCurrentCuePoint()
+					_this.sync( cuePoint );
+				});
 			},
 			initDisplay: function(){
 				var _this = this;
