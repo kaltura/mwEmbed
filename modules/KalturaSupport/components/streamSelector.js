@@ -285,6 +285,11 @@
 					//Do not show poster on switch to avoid poster flashing
 					mw.setConfig('EmbedPlayer.HidePosterOnStart', true);
 					embedPlayer.triggerHelper('KalturaSupport_EntryDataReady', embedPlayer.kalturaPlayerMetaData);
+					//Reinit the kCuePoints service
+					if( (embedPlayer.rawCuePoints && embedPlayer.rawCuePoints.length > 0)) {
+						embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
+						embedPlayer.triggerHelper('KalturaSupport_CuePointsReady', embedPlayer.rawCuePoints);
+					}
 					callback();
 				};
 
