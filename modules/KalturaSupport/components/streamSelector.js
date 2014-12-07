@@ -253,6 +253,7 @@
 			if (this.currentStream != stream) {
 				var _this = this;
 				var embedPlayer = this.getPlayer();
+				embedPlayer.triggerHelper('onChangeStream');
 				//Set reference to active stream
 				this.currentStream = stream;
 				//Get reference for current time for setting timeline after source switch
@@ -307,6 +308,7 @@
 							//Return poster to allow display of poster on clip done
 							mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
 							embedPlayer.restoreEventPropagation();
+							embedPlayer.triggerHelper('onChangeStreamDone');
 						});
 						//Add black screen before seek to avoid flashing of video
 						embedPlayer.addBlackScreen();
@@ -315,6 +317,7 @@
 						//Return poster to allow display of poster on clip done
 						mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
 						embedPlayer.restoreEventPropagation();
+						embedPlayer.triggerHelper('onChangeStreamDone');
 					}
 				};
 				embedPlayer.changeMedia(changeMediaCallback, checkPlayerSourcesFunction, false);
