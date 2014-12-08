@@ -506,7 +506,7 @@
 			}
 			mw.log("EmbedPlayer:: disablePlayControls");
 
-			if (!excludedComponents) {
+			if ( !excludedComponents ) {
 				excludedComponents = ['fullScreenBtn', 'logo'];
 				if (mw.getConfig('enableControlsDuringAd')) {
 					excludedComponents.push('playPauseBtn');
@@ -1266,7 +1266,8 @@
 				this.getVideoHolder().height(newHeight);
 			}
 			// update image layout: (Don't update poster during ad)
-			if (this.isStopped() && !( this.sequenceProxy && this.sequenceProxy.isInSequence )) {
+			if( this.isStopped() && !( this.sequenceProxy && this.sequenceProxy.isInSequence ) && !this.removePosterFlag ) {
+
 				this.updatePosterHTML();
 			}
 
@@ -2617,7 +2618,7 @@
 		updatePlayheadStatus: function () {
 			var _this = this;
 
-			if (this.currentTime >= 0 && this.duration) {
+			if ( this.currentTime >= 0 && this.duration ) {
 				if (!this.userSlide && !this.seeking && !this.paused) {
 					var playHeadPercent = ( this.currentTime - this.startOffset ) / this.duration;
 					this.updatePlayHead(playHeadPercent);

@@ -58,7 +58,9 @@ you can use the generic selector below, but it's slower:
 .icon-chapterMenu,
 .icon-clear,
 .icon-magnifyGlass,
-.icon-switchSource {
+.icon-switchSource,
+.icon-off-air,
+.icon-on-air{
 	font-family: 'icomoon';
 	speak: none;
 	font-style: normal;
@@ -205,5 +207,12 @@ you can use the generic selector below, but it's slower:
 
 .icon-switchSource:before {
 	content: "\e621";
+}
+
+.icon-off-air:before {
+    content: "\e622";
+}
+.icon-on-air:before {
+    content: "\e623";
 }
 
