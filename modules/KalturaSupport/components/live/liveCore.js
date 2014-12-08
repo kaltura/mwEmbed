@@ -133,8 +133,8 @@
 
 								_this.removePoster();
 								embedPlayer.layoutBuilder.displayAlert( {
-									title: "Broadcast is not Active",
-									message: 'please check back later',
+									title: embedPlayer.getKalturaMsg( 'ks-LIVE-STREAM-OFFLINE-TITLE' ),
+									message: embedPlayer.getKalturaMsg( 'ks-LIVE-STREAM-OFFLINE' ),
 									keepOverlay: true,
 									noButtons : true,
 									props: {
