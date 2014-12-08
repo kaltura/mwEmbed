@@ -42,6 +42,7 @@ function buildMin( $fullPath ){
 	@mkdir( dirname( $targetPath ), 0777, true);
 	$startTime = microtime_float();
 	echo "compress -> " . $fileName . " \n";
+	echo "run: " . $cmd . "\n"; 
 	shell_exec($cmd);
 	echo "\n\t" . round( microtime_float() - $startTime, 4) . " ms \n";
 }
