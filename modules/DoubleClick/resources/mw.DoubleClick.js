@@ -316,6 +316,28 @@
 					}
 				}
 			});
+
+			_this.embedPlayer.bindHelper('AdSupport_StartAdPlayback' + this.bindPostfix, function (event) {
+				if (_this.isChromeless){
+					_this.embedPlayer.getPlayerElement().sendNotification("hideContent");
+				}else{
+					if ( _this.embedPlayer.isVideoSiblingEnabled() ) {
+						$(".mwEmbedPlayer").addClass("mwEmbedPlayerBlackBkg");
+						_this.embedPlayer.addBlackScreen();
+					}
+				}
+			});
+
+			_this.embedPlayer.bindHelper('AdSupport_EndAdPlayback' + this.bindPostfix, function (event) {
+				if (_this.isChromeless){
+					_this.embedPlayer.getPlayerElement().sendNotification("showContent");
+				}else{
+					if ( _this.embedPlayer.isVideoSiblingEnabled() ) {
+						$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
+						_this.embedPlayer.removeBlackScreen();
+					}
+				}
+			});
 		},
 		/**
 		 * Get the content video tag
