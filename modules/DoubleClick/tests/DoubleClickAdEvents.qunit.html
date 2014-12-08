@@ -72,6 +72,9 @@
 			kdp.addJsListener("onAdSkip", function(){
 				$('#adTracking').append("onAdSkip event triggered<br>");
 			});
+			kdp.addJsListener("onAllAdsCompleted", function(){
+				$('#adTracking').append("onAllAdsCompleted event triggered<br>");
+			});
 			kdp.addJsListener("adErrorEvent", function(){
 				$('#adTracking').append("<font color='red'>adErrorEvent event triggered</font><br>");
 			});
@@ -139,6 +142,10 @@
 	<li><b><i>onAdPlay</i></b> and  <b><i>onAdComplete</i></b> events are triggered by the DoubleClick plugin for each ad in the sequence <b>*</b></li>
 	<li><b><i>AdSupport_EndAdPlayback:</i></b> is triggered by the Kaltura player when the last post-sequence ad finish</li>
 	<li><b><i>postSequenceComplete:</i></b> is triggered by the Kaltura player to mark the end of the post-sequence event</li>
+</ul>
+<h5>Additional events:</h5>
+<ul>
+	<li><b><i>onAllAdsCompleted:</i></b> is triggered by the Kaltura player when all ads were shown</li>
 </ul>
 <h5>Ad error events:</h5>
 <ul>

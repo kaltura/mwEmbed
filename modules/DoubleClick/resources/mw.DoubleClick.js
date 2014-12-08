@@ -841,6 +841,7 @@
 				} else {
 					_this.hideAdContainer();
 				}
+				_this.embedPlayer.triggerHelper( 'onAllAdsCompleted' );
 			});
 		},
 		bindChromelessEvents: function(){
@@ -910,6 +911,7 @@
 					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', _this.entryDuration );
 					_this.embedPlayer.triggerHelper( 'timeupdate', 0);
 				}
+				_this.embedPlayer.triggerHelper( 'onAllAdsCompleted' );
 			},'allAdsCompleted', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
