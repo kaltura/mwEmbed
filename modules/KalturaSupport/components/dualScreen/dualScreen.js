@@ -31,8 +31,8 @@
 				},
 				'menuFadeout': 5000,
 				'cuePointType': [{
-					"main": 'thumbCuePoint.Thumb',
-					"sub": [1]
+					"main": mw.KCuePoints.TYPE.THUMB,
+					"sub": [mw.KCuePoints.THUMB_SUB_TYPE.SLIDE]
 				}],
 				'mainViewDisplay': 2, // 1 - Main stream, 2 - Presentation
 				'fullScreenDisplayOnly': false,

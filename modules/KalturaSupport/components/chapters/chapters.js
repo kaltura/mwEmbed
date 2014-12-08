@@ -11,8 +11,9 @@
 			"displayImportance": 'high',
 			'templatePath': 'components/chapters/chapters.tmpl.html',
 			'cuePointType': [{
-				"main": 'thumbCuePoint.Thumb',
-				"sub": [1, 2]
+				"main": mw.KCuePoints.TYPE.THUMB,
+				"sub": [mw.KCuePoints.THUMB_SUB_TYPE.SLIDE,
+					mw.KCuePoints.THUMB_SUB_TYPE.CHAPTER]
 			}],
 			'oneSecRotatorSlidesLimit': 61,
 			'twoSecRotatorSlidesLimit': 250,

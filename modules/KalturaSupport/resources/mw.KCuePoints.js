@@ -427,5 +427,16 @@
 			return 0;
 		}
 	};
+	mw.KCuePoints.TYPE = {
+		AD: "adCuePoint.Ad",
+		ANNOTATION: "annotation.Annotation",
+		CODE: "codeCuePoint.Code",
+		EVENT: "eventCuePoint.Event",
+		THUMB: "thumbCuePoint.Thumb"
+	};
+	mw.KCuePoints.THUMB_SUB_TYPE = {
+		SLIDE: 1,
+		CHAPTER: 2
+	};
 
 })(window.mw, window.jQuery);
