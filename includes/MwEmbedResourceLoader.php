@@ -78,6 +78,12 @@ class MwEmbedResourceLoader extends ResourceLoader {
 
 		return $this->modules[$name];
 	}
+	/**
+	 * public method to access the private full module list
+	 */
+	public function getModules(){
+		return $this->modules;
+	}
 }
 
 ?>

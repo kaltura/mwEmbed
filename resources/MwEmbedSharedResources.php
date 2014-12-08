@@ -23,6 +23,9 @@ return array(
 	'base64_decode' =>  array( 
 		'scripts' => 'resources/base64/base64_decode.js',
 	),
+	'JSON' => array(
+		'scripts' => 'resources/json/json2.js'
+	),
 
 	'class' => array(
 		'scripts' => 'resources/class/class.js',

@@ -27,6 +27,12 @@ class MwEmbedResourceLoaderFileModule extends ResourceLoaderFileModule {
 		}
 		return $this->fileDeps[$skin];
 	}
+	public function getScriptFiles( ResourceLoaderContext $context ) {
+		return parent::getScriptFiles( $context );
+	}
+	public function getLocalPath( $file ){
+		return parent::getLocalPath( $file );
+	}
 	public function getRemotePath($file){
 		global $wgServer;
 		$path = parent:: getRemotePath( $file );

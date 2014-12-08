@@ -90,6 +90,11 @@ $wgResourceLoaderDebug = false;
 // If the resource loader should minify vertical space
 $wgResourceLoaderMinifyJSVerticalSpace = false;
 
+// by default assume no static file changes:
+$wgResourceLoaderValidateStaticJS = false;
+
+// The path to uglify js ( leave as boolean false to use php based JavaScirptMinifier )
+$wgNodeJsUglifyPath = false;
 
 $wgMwEmbedProxyUrl =  $wgServer . $wgScriptPath . 'simplePhpXMLProxy.php';
 
