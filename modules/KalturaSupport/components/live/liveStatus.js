@@ -9,9 +9,9 @@
 			'showTooltip': true
 		},
 
-		offlineIconClass: 'icon-off-air offline-icon',
-		onAirIconClass: 'icon-on-air live-icon',
-		unsyncIConClass: 'icon-off-air offline-icon live-off-sync-icon',
+		offlineIconClass: 'icon-off-air live-icon offline-icon',
+		onAirIconClass: 'icon-on-air live-icon online-icon',
+		unsyncIConClass: 'icon-off-air live-icon live-off-sync-icon',
 
 		liveText: gM( 'mwe-embedplayer-player-on-air' ),
 		offlineText: gM( 'mwe-embedplayer-player-off-air' ),
@@ -32,16 +32,14 @@
 				//live is off-synch
 				if ( _this.onAirStatus ) {
 					var components = _this.getComponent().children();
-					var $componentIcon =  $ ( $( components[0] ).children()[0] );
-					$componentIcon.removeClass( _this.onAirIconClass ).addClass( _this.unsyncIConClass );
+					$( components[0] ).removeClass( _this.onAirIconClass ).addClass( _this.unsyncIConClass );
 				}
 			});
 			this.bind( 'movingBackToLive', function() {
 				//live catched up
 				if ( _this.onAirStatus ) {
 					var components = _this.getComponent().children();
-					var $componentIcon =  $ ( $( components[0] ).children()[0] );
-					$componentIcon.removeClass( _this.unsyncIConClass ).addClass( _this.onAirIconClass );
+					$( components[0] ).removeClass( _this.unsyncIConClass ).addClass( _this.onAirIconClass );
 				}
 			});
 		},
@@ -52,9 +50,7 @@
 					.addClass( 'btn back-to-live-text timers' + this.getCssClass() )
 					.text( this.offlineText );
 
-				var $icon  =$( '<div />' )
-					.append( $( '<span />').addClass( this.offlineIconClass + this.getCssClass() ) )
-					.addClass( "btn " );
+				var $icon  =$( '<div />' ).addClass( 'btn timers '+ this.offlineIconClass + this.getCssClass() );
 
 				this.$el = $( '<div />')
 					.addClass( 'back-to-live' + this.getCssClass() )
@@ -78,7 +74,7 @@
 
 		setLiveStreamStatus: function() {
 			var components = this.getComponent().children();
-			var $componentIcon =  $ ( $( components[0] ).children()[0] );
+			var $componentIcon =  $( components[0] );
 			var $componentText =  $( components[1] ) ;
 			if ( this.onAirStatus ) {
 				$componentIcon.removeClass( this.offlineIconClass ).addClass( this.onAirIconClass );
