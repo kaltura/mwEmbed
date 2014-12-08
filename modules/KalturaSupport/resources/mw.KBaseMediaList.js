@@ -32,7 +32,8 @@
 				'includeHeader': false,
 				'fullScreenDisplayOnly': false,
 				'minDisplayWidth': 0,
-				'minDisplayHeight': 0
+				'minDisplayHeight': 0,
+				'scrollerCssPath': "resources/nanoScroller/nanoScroller.css"
 			});
 		},
 
@@ -87,6 +88,15 @@
 					$(".videoHolder").width(_this.videoWidth+"px");
 				}
 			});
+
+			this.bind("onShowSidelBar", function(){
+				if (_this.checkAddScroll()){
+					_this.getScrollComponent().nanoScroller( {
+						flash: true,
+						flashDelay: 2000
+					} );
+				}
+			});
 		},
 
 		getComponent: function(){
@@ -122,6 +132,9 @@
 						//Try to find and apply css on parent frame
 						var cssLink = this.getConfig('cssFileName');
 						if (cssLink) {
+							//Scroller CSS
+							$( 'head', window.parent.document ).append( '<link type="text/css" rel="stylesheet" href="' + kWidget.getPath() + this.getConfig("scrollerCssPath") + '"/>' );
+							//Plugin CSS
 							cssLink = cssLink.toLowerCase().indexOf("http") === 0 ? cssLink : kWidget.getPath() + cssLink; // support external CSS links
 							$( 'head', window.parent.document ).append( '<link type="text/css" rel="stylesheet" href="' + cssLink + '"/>' );
 						} else {
@@ -161,9 +174,9 @@
 
 					if ( this.getConfig( 'containerPosition' ) == 'top' || this.getConfig( 'containerPosition' ) == 'bottom' ) {
 						var playlistHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * 2 : this.getConfig( "mediaItemHeight" ) + this.getConfig('horizontalHeaderHeight');
-						$(".medialistContainer").height(playlistHeight);
+						this.getComponent().height(playlistHeight);
 						$( ".mwPlayerContainer" ).css( "height", this.$mediaListContainer.height() - playlistHeight + "px" );
-						$( ".videoHolder" ).css( "height", this.$mediaListContainer.height() - playlistHeight - $( ".controlBarContainer" ).height() + "px" );
+						this.getPlayer().getVideoHolder().css( "height", this.$mediaListContainer.height() - playlistHeight - $( ".controlBarContainer" ).height() + "px" );
 					}
 				}
 			}
@@ -241,6 +254,8 @@
 			if (this.getTemplateData().length > 0) {
 				//Clear previous list
 				this.getMedialistComponent().empty();
+				//Clear the scroll reference
+				this.$scroll = null;
 				//Add media items to DOM
 				this.getMedialistComponent().append( medialist );
 				//Adjust container size
@@ -256,10 +271,15 @@
 			}
 		},
 		setMedialistComponentHeight: function(){
+			var componentHeight = this.getComponent().height();
+			if (this.getConfig("onPage")){
+				componentHeight = this.getComponent().parent().height();
+			}
 			if (this.getLayout() === "vertical" && (this.getConfig("containerPosition") === "top" || this.getConfig("containerPosition") === "bottom")){
-				this.getMedialistComponent().height(this.getComponent().height());
+				this.getMedialistComponent().height(componentHeight);
 			}else{
-				this.getMedialistComponent().height(this.getComponent().height()-this.getMedialistHeaderComponent().height());
+
+				this.getMedialistComponent().height(componentHeight - this.getMedialistHeaderComponent().height());
 			}
 
 		},
@@ -460,12 +480,6 @@
 			mediaBoxes.removeClass( 'active');
 			this.selectedMediaItemIndex = mediaIndex;
 			$( mediaBoxes[mediaIndex] ).addClass( 'active'); //li[data-chapter-index='" + activeIndex + "']
-			if (!this.getConfig('overflow')) {
-				var carousel = this.getMedialistComponent().find( '.k-carousel' );
-				if (carousel[0]) {
-					carousel[0].jCarouselLiteGo( mediaIndex );
-				}
-			}
 		},
 		getActiveItem: function(){
 			return this.getComponent().find( "li[data-chapter-index='" + this.selectedMediaItemIndex + "']" );
@@ -497,35 +511,43 @@
 			return sliceIndex;
 		},
 		addScroll: function(){
-			this.addScrollUiComponents();
-			this.initScroll();
-		},
-		initScroll: function(){
-			var $cc = this.getMedialistComponent();
-			this.mediaItemVisible = this.calculateVisibleScrollItems();
 			var isVertical = ( this.getLayout() == 'vertical' );
-			var speed = mw.isTouchDevice() ? 100: 200;
-
-			// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
-			$cc.find('.k-carousel').jCarouselLite({
-				btnNext: '.k-next',
-				btnPrev: '.k-prev',
-				visible: this.mediaItemVisible,
-				mouseWheel: true,
-				circular: false,
-				vertical: isVertical,
-				start: this.startFrom,
-				scroll: 1,
-				speed: speed
-			});
-
-			// give more height if needed
-			if( this.getLayout() == 'vertical' ){
-				$cc.find('.k-carousel').css('height', $cc.height() );
-			} else {
-				// fit to container:
+			if (isVertical) {
+				this.getScrollComponent();
+			}else {
+				this.addScrollUiComponents();
+				var $cc = this.getMedialistComponent();
+				this.mediaItemVisible = this.calculateVisibleScrollItems();
+				var speed = mw.isTouchDevice() ? 100: 200;
+				// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
+				$cc.find( '.k-carousel' ).jCarouselLite( {
+					btnNext: '.k-next',
+					btnPrev: '.k-prev',
+					visible: this.mediaItemVisible,
+					mouseWheel: true,
+					circular: false,
+					vertical: isVertical,
+					start: this.startFrom,
+					scroll: 1,
+					speed: speed
+				} );
 				$cc.find('.k-carousel').css('width', $cc.width() );
 			}
+		},
+		getScrollComponent: function(){
+			if (!this.$scroll){
+				this.$scroll = $( "<div class='nano'>" );
+				this.$scroll.append( $( "<div class='nano-content'>" ) );
+				var list = $( this.getMedialistComponent().children()[0] );
+				list.wrap( this.$scroll );
+				this.$scroll = this.getComponent().find(".nano");
+				this.$scroll.nanoScroller( {
+					flash: true,
+					preventPageScrolling: true,
+					iOSNativeScrolling: true
+				} );
+			}
+			return this.$scroll;
 		},
 		getMediaItemBoxWidth: function(){
 			return this.getConfig('mediaItemWidth') || 320;

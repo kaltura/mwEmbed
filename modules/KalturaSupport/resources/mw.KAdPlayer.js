@@ -488,20 +488,22 @@ mw.KAdPlayer.prototype = {
 							_this.disablePlayControls();
 							_this.clickedBumper = false;
 						} else {
-							_this.clickedBumper = true;
-							// Pause the player
-							embedPlayer.disableComponentsHover();
-							_this.getVideoElement().pause();
+							if (embedPlayer.evaluate("{vast.pauseAdOnClick}") !== false) {
+								_this.clickedBumper = true;
+								// Pause the player
+								embedPlayer.disableComponentsHover();
+								_this.getVideoElement().pause();
 
-							// This changes player state to the relevant value ( pause-state )
-							if( _this.isVideoSiblingEnabled() ) {
-								$( _this.embedPlayer ).trigger( 'onPauseInterfaceUpdate' );
-							}else{
-								$( embedPlayer).trigger("onPlayerStateChange",["pause", embedPlayer.currentState]);
+								// This changes player state to the relevant value ( pause-state )
+								if (_this.isVideoSiblingEnabled()) {
+									$(_this.embedPlayer).trigger('onPauseInterfaceUpdate');
+								} else {
+									$(embedPlayer).trigger("onPlayerStateChange", ["pause", embedPlayer.currentState]);
+								}
+
+								embedPlayer.enablePlayControls(["scrubber"]);
+								embedPlayer.enablePlayControls();
 							}
-
-							embedPlayer.enablePlayControls(["scrubber"]);
-							embedPlayer.enablePlayControls();
 							//expose the URL to the
 							embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
 							if ( adSlot.videoClickTracking && adSlot.videoClickTracking.length > 0  ) {
@@ -902,7 +904,9 @@ mw.KAdPlayer.prototype = {
 		.css( layout )
 		.html( nonLinearConf.html )
 		.click(function(){
-				_this.embedPlayer.pause(); // pause the video when the user clicks on the overlay ad
+				if (_this.embedPlayer.evaluate("{vast.pauseAdOnClick}") !== false) {
+					_this.embedPlayer.pause(); // pause the video when the user clicks on the overlay ad
+				}
 				if (nonLinearConf.$html.attr("data-NonLinearClickTracking")){
 					mw.sendBeaconUrl( nonLinearConf.$html.attr("data-NonLinearClickTracking") );
 				}
@@ -1386,7 +1390,9 @@ mw.KAdPlayer.prototype = {
 					_this.embedPlayer.hideSpinner();
 				}, 'AdImpression' );
 				VPAIDObj.subscribe( function ( message ) {
-					finishPlaying();
+					setTimeout(function(){
+						finishPlaying();
+					},500);
 				}, 'AdStopped' );
 				VPAIDObj.subscribe( function ( message ) {
 					mw.log( 'VPAID :: AdError:' + message );

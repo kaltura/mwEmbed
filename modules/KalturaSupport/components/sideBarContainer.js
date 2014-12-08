@@ -99,10 +99,6 @@
 		show: function(){
 			if (this.enabled && this.render) {
 				this.getComponentReminder().addClass( 'open' );
-				// Trigger the screen overlay with layout info:
-				this.getPlayer().triggerHelper( 'onShowSidelBar', {
-					'top': this.getComponentReminder().height() + 15
-				} );
 				if ( this.openAfterDisable ) {
 					this.openAfterDisable = false;
 					this.getComponentReminder().trigger( "click" );
@@ -117,8 +113,6 @@
 			this.setConfig( 'isSideBarOpen', 'false' );
 			this.getComponentReminder().removeClass( 'open shifted' );
 			this.getComponent().removeClass( 'openBtn' );
-			// Allow interface items to update:
-			this.getPlayer().triggerHelper('onHideSideBar', {'top' : 15} );
 		},
 		toggleSideBar: function(){
 			if (this.getConfig('isSideBarOpen')) {
@@ -132,12 +126,16 @@
 				this.setConfig( 'isSideBarOpen', 'true' );
 				this.getComponentReminder().addClass( 'shifted' );
 				this.getComponent().addClass( 'openBtn' );
+				// Trigger the screen overlay with layout info:
+				this.getPlayer().triggerHelper( 'onShowSidelBar');
 			}
 		},
 		closeSideBar: function(){
 			this.setConfig( 'isSideBarOpen', 'false' );
 			this.getComponent().removeClass( 'openBtn' );
 			this.getComponentReminder().removeClass( 'shifted' );
+			// Allow interface items to update:
+			this.getPlayer().triggerHelper('onHideSideBar');
 		},
 		getComponent: function(){
 			if( !this.$el ) {

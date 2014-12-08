@@ -594,7 +594,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		var touchStartPos, touchEndPos = null;
 		$( _this.embedPlayer ).bind( 'touchstart' + this.bindPostfix, function(e) {
 			e.preventDefault();
-			e.stopPropagation();
 			touchStartPos = e.originalEvent.touches[0].pageY; //starting point
 		})
 		.bind( 'touchend' + this.bindPostfix, function(e) {

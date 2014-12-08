@@ -31,8 +31,9 @@
 		setup: function(){
 			this.currentSpeed = Math.abs(this.getConfig('defaultSpeed')) || 1;
 			this.speedSet = this.getConfig('speeds').split(',');
-			for (var i=0; i<this.speedSet.length; i++){
-				this.speedSet[i] = Math.abs(this.speedSet[i]);
+			var i;
+			for ( i=0; i < this.speedSet.length; i++) {
+				this.speedSet[i] = Math.abs( this.speedSet[i] );
 			}
 			this.addBindings();
 		},
@@ -43,7 +44,9 @@
 				_this.buildMenu();
 			});
 			this.bind( 'onRemovePlayerSpinner', function(){
-				_this.getPlayer().getPlayerElement().playbackRate = _this.currentSpeed;
+				 if ( _this.getPlayer().getPlayerElement() ) {
+					 _this.getPlayer().getPlayerElement().playbackRate = _this.currentSpeed;
+				 }
 			});
 			this.bind( 'playbackRateChangeSpeed', function(e, arg ){
 				_this.setSpeedFromApi( arg );

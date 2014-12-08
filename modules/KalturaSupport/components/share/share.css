@@ -38,15 +38,25 @@
 	background-position: -156px -79px;
 }
 
-@media all and (max-width: 340px){
+.icon-mail {
+	background-position: -156px -237px;
+}
+
+.icon-message {
+	background-position: -78px -80px;
+}
+
+@media all and (max-width: 340px) {
 	.share input {
 		background: #B3B3B3;
 		font-size: 0.8em;
 		width: 80%;
 	}
-	h3{
+
+	h3 {
 		font-size: 0.9em;
 	}
+
 	.share li span {
 		width: 32px;
 		height: 32px;
@@ -64,5 +74,13 @@
 
 	.icon-google-plus {
 		background-position: -78px -40px;
+	}
+
+	.icon-mail {
+		background-position: -78px -120px;
+	}
+
+	.icon-message {
+		background-position: -78px -80px;
 	}
 }

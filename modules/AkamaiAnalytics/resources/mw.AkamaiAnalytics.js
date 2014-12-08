@@ -147,9 +147,16 @@
 		 * @param embedPlayer
 		 */
 		sendDataToKPlayer: function( embedPlayer ) {
+			var _this = this;
 			var dataObject = this.getAkamaiDataObject( embedPlayer );
+			//log events
+			$.each(dataObject, function(key, element) {
+				_this.sendEventLog( key, element );
+			});
+
 			this.doOnPlayerLoadReady( embedPlayer, function() {
 				dataObject['playerLoadtime'] = embedPlayer.evaluate( '{playerStatusProxy.loadTime}' );
+				_this.sendEventLog( 'playerLoadtime', dataObject['playerLoadtime'] );
 				embedPlayer.getPlayerElement().sendNotification( 'setMediaAnalyticsData', dataObject );
 			} );
 		},
@@ -157,15 +164,20 @@
 		sendAkamaiData: function( eventId, data ){
 			// send the data with the Akamai method: 
 			setAkamaiMediaAnalyticsData( eventId, data );
-			// log to the trackEventMonitor if not present: 
+			this.sendEventLog( eventId, data );
+
+		},
+
+		sendEventLog: function( eventId, data ) {
+			// log to the trackEventMonitor if not present:
 			if ( this.getConfig( 'trackEventMonitor' ) ) {
 				try{
 					window.parent[ this.getConfig( 'trackEventMonitor' ) ]( eventId, data );
 				} catch(e){
-					// error could not log event. 
+					// error could not log event.
 				}
 			}
-		},
+		} ,
 
 		getConfigPath: function() {
 			// Check for configuration override
