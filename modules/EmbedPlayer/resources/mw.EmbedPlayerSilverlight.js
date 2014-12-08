@@ -110,11 +110,22 @@
 				var flashvars = {
 					startvolume: _this.volume
 				}
-				if (isMimeType("video/playreadySmooth")
-					|| isMimeType("video/ism")) {
+				if ( isMimeType("video/mp4")
+					|| 
+					isMimeTYpe("video/h264")
+				){
+					_this.isMulticast = false;
+					flashvars.preload = "auto";
+					flashvars.smoothStreamPlayer = false;
+					flashvars.entryURL = resolvedSrc;
+				} else if(
+					isMimeType("video/playreadySmooth")
+						|| 
+					isMimeType("video/ism")
+				) {
 					_this.isMulticast = false;
 
-					flashvars.smoothStreamPlayer = true;
+					flashvars.smoothStreamPlayer = false;
 					flashvars.preload = "auto";
 					flashvars.entryURL = resolvedSrc;
 					//flashvars.debug = true;
