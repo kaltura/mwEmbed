@@ -1,10 +1,13 @@
 /**
 * This could be replaced with a dynamic resource loader resource
 */
+( function ( mw ) {
+	/* jscs:disable validateQuoteMarks, disallowSpaceAfterObjectKeys */
+	/* disabled validation, because this is copy pasted json output */
+	"use strict";
 
-if( !mw.Language ){
 	mw.Language = {};
-}
+
 	/**
 	 * List of all languages mediaWiki supports ( Avoid an api call to get this same info )
 	 * http://commons.wikimedia.org/w/api.php?action=query&meta=siteinfo&siprop=languages&format=jsonfm
@@ -367,3 +370,6 @@ if( !mw.Language ){
 		"zh-yue" : "\u7cb5\u8a9e",
 		"zu" : "isiZulu"
 	};
+	/* jscs:enable validateQuoteMarks, disallowSpaceAfterObjectKeys */
+
+} )( mediaWiki );
