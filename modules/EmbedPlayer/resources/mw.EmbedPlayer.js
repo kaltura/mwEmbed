@@ -282,6 +282,9 @@
 		//if the player should handle playerError events
 		shouldHandlePlayerError: true,
 
+		// save the clipDone timeout ID so we can trigger it only once per entry
+		clipDoneTimeout: null,
+
 		/**
 		 * embedPlayer
 		 *
@@ -2627,13 +2630,14 @@
 						_this.onClipDone();
 						//sometimes we don't get the "end" event from the player so we trigger clipdone
 					} else if (!this.shouldEndClip && !this.isInSequence() &&
-						( ( ( this.currentTime - this.startOffset) / endPresentationTime ) >= .99 )) {
+						( ( ( this.currentTime - this.startOffset) / endPresentationTime ) >= .99 ) && !_this.clipDoneTimeout) {
 						_this.shouldEndClip = true;
-						setTimeout(function () {
+						_this.clipDoneTimeout = setTimeout(function () {
 							if (_this.shouldEndClip) {
 								mw.log("EmbedPlayer::updatePlayheadStatus > should run clip done :: " + _this.currentTime);
 								_this.onClipDone();
 							}
+							_this.clipDoneTimeout = null;
 						}, endPresentationTime * 0.02 * 1000)
 					}
 				}
