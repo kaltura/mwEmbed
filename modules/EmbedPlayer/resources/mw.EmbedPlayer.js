@@ -2219,8 +2219,19 @@
 			$(this).trigger('onAddPlayerSpinner');
 			// remove any old spinner
 			$('#' + sId).remove();
+			var target = this;
+			switch(mw.getConfig("EmbedPlayer.SpinnerTarget")){
+				case "videoHolder":
+					target = this.getVideoHolder();
+					break;
+				case "videoDisplay":
+					target = this.getVideoDisplay();
+					break;
+				default:
+					target = this;
+			}
 			// re add an absolute positioned spinner:
-			$(this).getAbsoluteOverlaySpinner()
+			$(target).getAbsoluteOverlaySpinner()
 				.attr('id', sId);
 		},
 		hideSpinner: function () {
