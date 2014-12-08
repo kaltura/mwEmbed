@@ -1,8 +1,9 @@
-( function( $ ) {
+/*globals kalturaIframePackageData, Spinner */
+( function ( mw, $ ) {
 	/**
 	 * Set a given selector html to the loading spinner:
 	 */
-	$.fn.loadingSpinner = function( opts ) {
+	$.fn.loadingSpinner = function ( opts ) {
 		// empty the target:
 		$( this ).empty();
 		// Allow override loading spinner options
@@ -43,54 +44,53 @@
 			left: 'auto' // Left position relative to parent in px
 		};
 		// Else, use Spin.js defaults
-		if( !opts ){
+		if ( !opts ) {
 			opts = {};
 		}
 		// get any config based options:
 		var options = null;
-		if( mw.getConfig('loadingSpinner') ) {
-			options = mw.getConfig('loadingSpinner');
-		}else{
+		if ( mw.getConfig( 'loadingSpinner' ) ) {
+			options = mw.getConfig( 'loadingSpinner' );
+		} else {
 			// fix for IE where the config is not loaded yet - try to get the config from the kalturaIframePackageData
-			if (kalturaIframePackageData && kalturaIframePackageData.playerConfig && kalturaIframePackageData.playerConfig.plugins && kalturaIframePackageData.playerConfig.plugins.loadingSpinner){
+			if ( kalturaIframePackageData && kalturaIframePackageData.playerConfig && kalturaIframePackageData.playerConfig.plugins && kalturaIframePackageData.playerConfig.plugins.loadingSpinner ) {
 				options = kalturaIframePackageData.playerConfig.plugins.loadingSpinner;
 			}
 		}
-		if( options ) {
+		if ( options ) {
 			opts = $.extend(opts, options );
-			// normalize some options: 
-			if( opts['lineLength'] ){
-				opts['length'] = opts['lineLength'];
+			// normalize some options:
+			if ( opts.lineLength ) {
+				opts.length = opts.lineLength;
 			}
-			if( opts['color'] ){
-				opts['color'] =  opts['color'].split('|');
-				if( opts['color'].length == 1 ){
-					opts['color'] = opts['color'][0];
+			if ( opts.color ) {
+				opts.color =  opts.color.split( '|' );
+				if ( opts.color.length === 1 ) {
+					opts.color = opts.color[0];
 				}
 			}
 		}
 		// add color and shadow:
 		opts = $.extend({}, spinnerConfig, opts);
-		
 
-		this.each( function() {
+		this.each( function () {
 			var $this = $(this).empty();
-			var thisSpinner = $this.data('spinner');
+			var thisSpinner = $this.data( 'spinner' );
 			if (thisSpinner) {
 				thisSpinner.stop();
 				delete thisSpinner;
 			}
 			if ( opts !== false ) {
-				if ( opts['imageUrl'] && opts['imageUrl'].length > 0 ){
-					var $loadingSpinner = $('<img />').attr("src", opts['imageUrl']).load(function() {
+				if ( opts.imageUrl && opts.imageUrl.length > 0 ) {
+					var $loadingSpinner = $( '<img>' ).attr( 'src', opts.imageUrl ).load( function () {
 						// Set spinner position based on image dimension
-						$( this ).css({
-							'margin-top': '-' + (this.height/2) + 'px',
-							'margin-left': '-' + (this.width/2) + 'px'
-						});
-					});
+						$( this ).css( {
+							'margin-top': '-' + (this.height / 2) + 'px',
+							'margin-left': '-' + (this.width / 2) + 'px'
+						} );
+					} );
 					thisSpinner = $this.append( $loadingSpinner);
-				}else{
+				} else {
 					thisSpinner = new Spinner( $.extend( { color: $this.css('color') }, opts ) ).spin( this );
 				}
 			}
@@ -103,55 +103,55 @@
 	 * Add an absolute overlay spinner useful for cases where the
 	 * element does not display child elements, ( images, video )
 	 */
-	$.fn.getAbsoluteOverlaySpinner = function(){
+	$.fn.getAbsoluteOverlaySpinner = function () {
 		// Set the spin size to "small" ( length 5 ) if target height is small
- 		var spinOps = ( $( this ).height() < 36 )? { 'length' : 5, 'width' : 2, 'radius' : 4 }: {};
- 		var spinerSize = {
- 				'width' : 45,
- 				'height' : 45
- 			};
+		var spinOps = ( $( this ).height() < 36 ) ? { 'length': 5, 'width': 2, 'radius': 4 } : {};
+		var spinerSize = {
+				'width': 45,
+				'height': 45
+			};
 
-		var $spinner = $('<div />')
-			.css({
-				'width' : spinerSize.width,
-				'height' : spinerSize.height,
+		var $spinner = $( '<div>' )
+			.css( {
+				'width': spinerSize.width,
+				'height': spinerSize.height,
 				'position': 'absolute',
-				'top' : '50%',
-				'left' : '50%',
-				'z-index' : 100
-			})
+				'top': '50%',
+				'left': '50%',
+				'z-index': 100
+			} )
 			.loadingSpinner(
 				spinOps
-			)
-		
+			);
+
 		var pos = $( this ).position();
-		var $overlay = $("<div />")
+		var $overlay = $( '<div>' )
 			.css( pos )
 			.css( {
 				'position': 'absolute',
-				'width' : $(this).width(),
+				'width': $(this).width(),
 				'height': $(this).height()
-			})
+			} )
 			.append(
 				$spinner
 			);
-		// Support legacy disable spinner config option: 
-		var spinnerIsEnabled = !mw.getConfig('LoadingSpinner.Disabled');
+		// Support legacy disable spinner config option:
+		var spinnerIsEnabled = !mw.getConfig( 'LoadingSpinner.Disabled' );
 		// Support new standard config.plugin representation:
-		if( mw.getConfig('loadingSpinner') ) {
-			var config = mw.getConfig('loadingSpinner');
-			if( config && config.plugin === false ){
+		if ( mw.getConfig( 'loadingSpinner' ) ) {
+			var config = mw.getConfig( 'loadingSpinner' );
+			if ( config && config.plugin === false ) {
 				spinnerIsEnabled = false;
 			}
 		}
-		
-		if( spinnerIsEnabled ) {
+
+		if ( spinnerIsEnabled ) {
 			$( this ).after(
 				$overlay
 			);
 		}
-		
+
 		return $overlay;
 	};
 
-} )( jQuery );
+} )( mediaWiki, jQuery );

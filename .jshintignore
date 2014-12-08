@@ -30,3 +30,5 @@ modules/MwEmbedSupport/jquery/jquery.color.js
 modules/MwEmbedSupport/jquery/jquery.debouncedresize.js
 modules/MwEmbedSupport/jquery/jquery.triggerQueueCallback.js
 modules/MwEmbedSupport/jquery/jquery.ui.touchPunch.js
+modules/MwEmbedSupport/jquery.loadingSpinner/Spinner.js
+modules/MwEmbedSupport/jquery.menu
