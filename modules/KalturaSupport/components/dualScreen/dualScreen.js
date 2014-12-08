@@ -422,11 +422,6 @@
 				this.bind( 'KalturaSupport_ThumbCuePointsReady', function () {
 					var currentCuepoint = _this.getCurrentCuePoint() || _this.getCuePoints()[0];
 					_this.sync(currentCuepoint , function(){
-						var $spinner = $( '#secondScreenLoadingSpinner' );
-						if ( $spinner.length > 0 ) {
-							// remove the spinner
-							$spinner.remove();
-						}
 						_this.secondDisplayReady = true;
 					} );
 				} );
@@ -569,26 +564,22 @@
 
 					this.positionSecondScreen();
 
-					var addSpinner = function () {
-						if ( !_this.secondDisplayReady && _this.render ) {
-							if ( mw.getConfig( "EmbedPlayer.LiveCuepoints" ) ) {
-								//TODO: add information slide for no current slide available
-							} else {
-								secondaryScreen.getAbsoluteOverlaySpinner().attr( 'id', 'secondScreenLoadingSpinner' );
-							}
+					var showLoadingSlide = function () {
+						if ( !_this.secondDisplayReady && _this.render && mw.getConfig( "EmbedPlayer.LiveCuepoints" ) ) {
+							//TODO: add information slide for no current slide available
 						}
 					};
 
 					if ( this.getConfig( "mainViewDisplay" ) == 2 ) {
 						this.bind( 'postDualScreenTransition.spinnerPostFix', function () {
 							_this.unbind( 'postDualScreenTransition.spinnerPostFix' );
-							addSpinner();
+							showLoadingSlide();
 						} );
 						setTimeout( function () {
 							_this.fsm.consumeEvent( "switchView" );
 						}, 500 );
 					} else {
-						addSpinner();
+						showLoadingSlide();
 					}
 
 					//dualScreen components are set on z-index 1-3, so set all other components to zIndex 4 or above
