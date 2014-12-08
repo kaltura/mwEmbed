@@ -2618,7 +2618,7 @@
 		updatePlayheadStatus: function () {
 			var _this = this;
 
-			if (this.currentTime >= 0 ) {
+			if ( this.currentTime >= 0 && this.duration ) {
 				if (!this.userSlide && !this.seeking && !this.paused) {
 					var playHeadPercent = ( this.currentTime - this.startOffset ) / this.duration;
 					this.updatePlayHead(playHeadPercent);
