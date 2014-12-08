@@ -26,7 +26,7 @@ function corsIE8(url, done, fail) {
     }
 }
 
-function loadTranscriptionFromKaltura(ks, partnerId, langParameter, entryId, videoDuration, callback) {
+function loadTranscriptionFromKaltura(ks, partnerId, langParameter, entryId, callback) {
     var kConfig;
     var kClient;
 
@@ -69,19 +69,23 @@ function loadTranscriptionFromKaltura(ks, partnerId, langParameter, entryId, vid
                         var transcriptionId = transcription.id;
                         kClient.attachmentAsset.getUrl(function(message2, data2) {
                             if(!data2.code) {
-                                corsIE8(data2, function(jsonTranscription) {
-                                    renderTranscription(JSON.parse(jsonTranscription), videoDuration);
-                                    transcriptionLoaded = true;
-                                    var returnData = {};
-                                    returnData.langs = availableLangs;
-                                    returnData.loadedLang = foundRequestedLang;
-                                    callback(returnData);
+                                corsIE8(data2, function(transcriptionJson) {
+                                    var response = {};
+                                    response.code = 200;
+                                    response.langs = availableLangs;
+                                    response.loadedLang = foundRequestedLang;
+                                    response.transcriptionJson = JSON.parse(transcriptionJson);
+                                    callback(response);
                                 }, function(xhr, status, error) {
                                 });
                             }
                         }, transcriptionId);
                     }
                 }
+            }else {
+                var response = {};
+                response.code = 404;
+                callback(response);
             }
         }
     }, filter);

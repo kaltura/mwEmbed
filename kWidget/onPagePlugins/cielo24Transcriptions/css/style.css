@@ -218,6 +218,7 @@ body {
     background: url("../img/rightMenuRowBg.png") repeat-x scroll 0 0 transparent;
     height: 36px;
     width: 122px;
+    display: none;
 }
 
 .leftMenuPopupRow.active, .leftMenuPopupRow:hover {
@@ -734,8 +735,12 @@ body {
     cursor: pointer;
 }
 
-
-
+.noTranscriptionText {
+    margin: 40px 0 0 20px;
+    font-size: 18px;
+    text-align: center;
+    color: #999999;
+}
 
 
 

@@ -299,11 +299,17 @@ function renderTranscription(json, duration) {
 
     $(".totalTime").text((""+(videoDuration/1000)).toMMSS());
 
+    var metaHidden = true;
     for(var i in json.topics) {
         var topicStartTime = json.topics[i].time_ranges[0].start_time;
         $(".topicsWrapper").append("<span class='playheadTimeUpdateTrigger' data-time-offset='"+topicStartTime+"'>"+i+" - "+(""+(topicStartTime/1000)).toMMSS()+"</span><br />");
+        metaHidden = false;
+    }
+    if(!metaHidden) {
+        $(".leftMenuPopupRowMeta").show();
     }
 
+    var speakersHidden = true;
     for(var i in json.speakers) {
         var speakerId = json.speakers[i].id;
 
@@ -318,19 +324,27 @@ function renderTranscription(json, duration) {
         }
         if(speakerStarts.length>0) {
             $(".speakersWrapper").append("<h3>"+json.speakers[i].name+":</h3>");
+            speakersHidden = false;
         }
         for(var j in speakerStarts) {
             $(".speakersWrapper").append("<span class='playheadTimeUpdateTrigger' data-time-offset='"+speakerStarts[j]+"'>"+(""+(speakerStarts[j]/1000)).toMMSS()+"</span><br />");
         }
     }
+    if(!speakersHidden) {
+        $(".leftMenuPopupRowSpeakers").show();
+    }
 
+    var keywordsHidden = true;
     for(var keyword in json.keywords) {
         $(".keywordsWrapper").append("<h3>"+keyword+":</h3>");
         for(var j in json.keywords[keyword].time_ranges) {
             var timeRange = json.keywords[keyword].time_ranges[j];
             $(".keywordsWrapper").append("<span class='playheadTimeUpdateTrigger' data-time-offset='"+timeRange.start_time+"'>"+(""+(timeRange.start_time/1000)).toMMSS()+"</span><br />");
         }
-
+        keywordsHidden = false;
+    }
+    if(!keywordsHidden) {
+        $(".leftMenuPopupRowKeywords").show();
     }
 
     if($(".leftMenuTrigger").hasClass('disabled') || (typeof(json.topics)=='undefined' && typeof(json.speakers)=='undefined' && typeof(json.keywords)=='undefined')) {
@@ -747,17 +761,30 @@ $(document).ready(function() {
         XD.postMessage(jsonData, parentUrl, parent.window);
     });
 
-    loadTranscriptionFromKaltura(ks, partnerId, lang, entryId, videoDuration, function(data) {
-        var langs = data.langs;
-        var loadedLang = data.loadedLang;
-        if(langs.length>1) {
-            $(".language").show();
-            for(var i in langs) {
-                var lang = langs[i].isoCode;
-                $(".languageOption[data-lang='"+lang+"']").addClass('active');
+    loadTranscriptionFromKaltura(ks, partnerId, lang, entryId, function(response) {
+        var langs = response.langs;
+        var loadedLang = response.loadedLang;
+        var responseCode = response.code;
+        var transcriptionJson = response.transcriptionJson;
+
+        if(responseCode==200) {
+            if(langs.length>1) {
+                $(".language").show();
+                for(var i in langs) {
+                    var lang = langs[i].isoCode;
+                    $(".languageOption[data-lang='"+lang+"']").addClass('active');
+                }
+                $(".currentLanguage").text(loadedLang.name);
             }
-            $(".currentLanguage").text(loadedLang.name);
+            renderTranscription(transcriptionJson, videoDuration);
+        }else {
+            $("#transcriptionText").text("<div class='noTranscriptionText'>No Transcription Available</div>");
+            $(".leftMenuTrigger").addClass('disabled');
+            $(".footerArrowUp").addClass('closed');
+            XD.postMessage(JSON.stringify({event: 'toggleVisibilityState', playerId: playerId}), parentUrl, parent.window);
         }
+
+        transcriptionLoaded = true;
     });
 
     $(window).resize(windowResizeCallback);
