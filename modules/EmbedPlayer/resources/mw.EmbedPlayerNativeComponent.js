@@ -242,13 +242,12 @@
 		/**
 		 * Stop the player ( end all listeners )
 		 */
-		stop: function () {
-			mw.log("EmbedPlayerNativeComponent:: stop::");
-			this.parent_stop();
-			if (this.getPlayerElement() && this.getPlayerElement().attr('currentTime')) {
-				this.getPlayerElement().attr('currentTime', '0');
-				this.getPlayerElement().stop();
+		stop: function(){
+			var _this = this;
+			if( this.playerElement && this.playerElement.currentTime){
+				this.playerElement.pause();
 			}
+			this.parent_stop();
 		},
 
 		/**
