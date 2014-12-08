@@ -31,15 +31,13 @@
 			this.bind( 'seeking onpause', function() {
 				//live is off-synch
 				if ( _this.onAirStatus ) {
-					var components = _this.getComponent().children();
-					$( components[0] ).removeClass( _this.onAirIconClass ).addClass( _this.unsyncIConClass );
+					_this.getComponent().find('.live-icon').removeClass( _this.onAirIconClass ).addClass( _this.unsyncIConClass );
 				}
 			});
 			this.bind( 'movingBackToLive', function() {
 				//live catched up
 				if ( _this.onAirStatus ) {
-					var components = _this.getComponent().children();
-					$( components[0] ).removeClass( _this.unsyncIConClass ).addClass( _this.onAirIconClass );
+					_this.getComponent().find('.live-icon').removeClass( _this.unsyncIConClass ).addClass( _this.onAirIconClass );
 				}
 			});
 		},
@@ -73,17 +71,14 @@
 		},
 
 		setLiveStreamStatus: function() {
-			var components = this.getComponent().children();
-			var $componentIcon =  $( components[0] );
-			var $componentText =  $( components[1] ) ;
 			if ( this.onAirStatus ) {
-				$componentIcon.removeClass( this.offlineIconClass ).addClass( this.onAirIconClass );
-				$componentText.text( this.liveText );
+				this.getComponent().find('.live-icon').removeClass( this.offlineIconClass ).addClass( this.onAirIconClass );
+				this.getComponent().find('.back-to-live-text').text( this.liveText );
 				this.updateTooltip( this.tooltip );
 			}
 			else {
-				$componentIcon.removeClass( this.onAirIconClass ).addClass( this.offlineIconClass );
-				$componentText.text( this.offlineText );
+				this.getComponent().find('.live-icon').removeClass( this.onAirIconClass ).addClass( this.offlineIconClass );
+				this.getComponent().find('.back-to-live-text').text( this.offlineText );
 				this.updateTooltip( "" );
 			}
 		}
