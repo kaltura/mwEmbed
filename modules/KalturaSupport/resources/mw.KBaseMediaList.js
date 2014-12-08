@@ -32,7 +32,8 @@
 				'includeHeader': false,
 				'fullScreenDisplayOnly': false,
 				'minDisplayWidth': 0,
-				'minDisplayHeight': 0
+				'minDisplayHeight': 0,
+				'scrollerCssPath': "resources/nanoScroller/nanoScroller.css"
 			});
 		},
 
@@ -131,6 +132,9 @@
 						//Try to find and apply css on parent frame
 						var cssLink = this.getConfig('cssFileName');
 						if (cssLink) {
+							//Scroller CSS
+							$( 'head', window.parent.document ).append( '<link type="text/css" rel="stylesheet" href="' + kWidget.getPath() + this.getConfig("scrollerCssPath") + '"/>' );
+							//Plugin CSS
 							cssLink = cssLink.toLowerCase().indexOf("http") === 0 ? cssLink : kWidget.getPath() + cssLink; // support external CSS links
 							$( 'head', window.parent.document ).append( '<link type="text/css" rel="stylesheet" href="' + cssLink + '"/>' );
 						} else {
@@ -250,6 +254,8 @@
 			if (this.getTemplateData().length > 0) {
 				//Clear previous list
 				this.getMedialistComponent().empty();
+				//Clear the scroll reference
+				this.$scroll = null;
 				//Add media items to DOM
 				this.getMedialistComponent().append( medialist );
 				//Adjust container size
@@ -265,10 +271,15 @@
 			}
 		},
 		setMedialistComponentHeight: function(){
+			var componentHeight = this.getComponent().height();
+			if (this.getConfig("onPage")){
+				componentHeight = this.getComponent().parent().height();
+			}
 			if (this.getLayout() === "vertical" && (this.getConfig("containerPosition") === "top" || this.getConfig("containerPosition") === "bottom")){
-				this.getMedialistComponent().height(this.getComponent().height());
+				this.getMedialistComponent().height(componentHeight);
 			}else{
-				this.getMedialistComponent().height(this.getComponent().height()-this.getMedialistHeaderComponent().height());
+
+				this.getMedialistComponent().height(componentHeight - this.getMedialistHeaderComponent().height());
 			}
 
 		},

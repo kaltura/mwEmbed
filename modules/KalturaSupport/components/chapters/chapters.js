@@ -32,6 +32,7 @@
 
 		mediaList: [],
 		renderOnData: false,
+		freezeTimeIndicators: false,
 
 		setup: function (embedPlayer) {
 			this.addBindings();
@@ -69,6 +70,10 @@
 				_this.addMediaItems(cuepoints);
 
 				_this.setMediaItemTime();
+			});
+
+			this.bind("freezeTimeIndicators", function(e, val){
+				_this.freezeTimeIndicators = val;
 			});
 
 			this.bind("monitorEvent", function (e, time) {

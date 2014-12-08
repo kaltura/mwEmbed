@@ -47,6 +47,7 @@
 			screenShown: false,
 			dragging: false,
 			resizing: false,
+			syncEnabled: true,
 
 			controlBarComponents: {
 				sideBySide: {
@@ -518,6 +519,18 @@
 						maximizeSecondDisplay();
 					}
 				} );
+				this.bind("onChangeMedia", function(){
+					//Clear the current slide before loading the new media
+					_this.getComponent().find( '#SynchImg' ).attr("src", "");
+				});
+				this.bind("onChangeStream", function(){
+					_this.syncEnabled = false;
+				});
+				this.bind("onChangeStreamDone", function(){
+					_this.syncEnabled = true;
+					var cuePoint = _this.getCurrentCuePoint()
+					_this.sync( cuePoint );
+				});
 			},
 			initDisplay: function(){
 				var _this = this;
@@ -540,14 +553,20 @@
 
 				this.checkAnimationSupport();
 
-				//Set draggable and resizable configuration
-				primaryScreen
-					.draggable( this.getConfig( 'draggable' ) ).draggable( 'disable' )
-					.resizable( this.getConfig( 'resizable' ) ).resizable( 'disable' );
+					//Set draggable and resizable configuration
+					primaryScreen
+						.draggable( this.getConfig( 'draggable' ) ).draggable( 'disable' )
+						.resizable( this.getConfig( 'resizable' ) ).resizable( 'disable' )
+						.on('resize', function (e) {
+							e.stopPropagation();
+						});
 
-				secondaryScreen
-					.draggable( this.getConfig( 'draggable' ) )
-					.resizable( this.getConfig( 'resizable' ) );
+					secondaryScreen
+						.draggable( this.getConfig( 'draggable' ) )
+						.resizable( this.getConfig( 'resizable' ) )
+						.on('resize', function (e) {
+							e.stopPropagation();
+						});
 
 				this.enableMonitorFeatures();
 
@@ -795,22 +814,24 @@
 				this.monitor[this.TYPE.SECONDARY].obj.removeClass( 'screenTransition' );
 			},
 			sync: function ( cuePoint, callback ) {
-				this.loadAdditionalAssets();
-				var callCallback = function(){
-					if ( callback && typeof(callback) == "function" ) {
-						callback();
-					}
-				};
-				if (cuePoint) {
-					var myImg = this.getComponent().find( '#SynchImg' );
-					if ( cuePoint.thumbnailUrl ) {
-						myImg.attr( 'src', cuePoint.thumbnailUrl );
-						callCallback();
-					} else {
-						this.loadNext( cuePoint, function ( url ) {
-							myImg.attr( 'src', url );
+				if (this.syncEnabled) {
+					this.loadAdditionalAssets();
+					var callCallback = function () {
+						if ( callback && typeof(callback) == "function" ) {
+							callback();
+						}
+					};
+					if ( cuePoint ) {
+						var myImg = this.getComponent().find( '#SynchImg' );
+						if ( cuePoint.thumbnailUrl ) {
+							myImg.attr( 'src', cuePoint.thumbnailUrl );
 							callCallback();
-						} );
+						} else {
+							this.loadNext( cuePoint, function ( url ) {
+								myImg.attr( 'src', url );
+								callCallback();
+							} );
+						}
 					}
 				}
 			},
