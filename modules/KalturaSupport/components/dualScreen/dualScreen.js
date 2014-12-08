@@ -30,7 +30,10 @@
 					'minimumSequenceDuration': 2
 				},
 				'menuFadeout': 5000,
-				'cuePointType': ['thumbCuePoint.Thumb'],
+				'cuePointType': [{
+					"main": mw.KCuePoints.TYPE.THUMB,
+					"sub": [mw.KCuePoints.THUMB_SUB_TYPE.SLIDE]
+				}],
 				'mainViewDisplay': 2, // 1 - Main stream, 2 - Presentation
 				'fullScreenDisplayOnly': false,
 				'minDisplayWidth': 0,
@@ -75,23 +78,26 @@
 				this.initMonitors();
 			},
 			isSafeEnviornment: function () {
+				var cuePoints = this.getCuePoints();
+				var cuePointsExist = (cuePoints.length > 0) ? true : false;
+				return (!this.getPlayer().useNativePlayerControls() &&
+					( ( this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) || cuePointsExist));
+			},
+			getCuePoints: function(){
+				var cuePoints = [];
 				var _this = this;
-				var cuePointsExist = false;
 				if ( this.getPlayer().kCuePoints ) {
-					var cuePoints = this.getPlayer().kCuePoints.getCuePoints();
-					var filteredCuePoints = $.grep( cuePoints, function ( cuePoint ) {
-						var found = false;
-						$.each( _this.getConfig( 'cuePointType' ), function ( i, cuePointType ) {
-							if ( cuePointType == cuePoint.cuePointType ) {
-								found = true;
-								return false;
-							}
+					$.each( _this.getConfig( 'cuePointType' ), function ( i, cuePointType ) {
+						$.each( cuePointType.sub, function ( j, cuePointSubType ) {
+							var filteredCuePoints = _this.getPlayer().kCuePoints.getCuePointsByType( cuePointType.main, cuePointSubType );
+							cuePoints = cuePoints.concat( filteredCuePoints );
 						} );
-						return found;
 					} );
-					cuePointsExist = (filteredCuePoints.length > 0) ? true : false;
 				}
-				return (!this.getPlayer().useNativePlayerControls() && (mw.getConfig("EmbedPlayer.LiveCuepoints") || cuePointsExist ));
+				cuePoints.sort(function (a, b) {
+					return a.startTime - b.startTime;
+				});
+				return cuePoints;
 			},
 			initConfig: function () {
 				var _this = this;
@@ -414,17 +420,7 @@
 				}
 
 				this.bind( 'KalturaSupport_ThumbCuePointsReady', function () {
-					var cuePoints = _this.getPlayer().kCuePoints.getCuePoints();
-					$.each( cuePoints, function ( index, cuePoint ) {
-						if ( $.inArray( cuePoint.cuePointType, _this.getConfig( 'cuePointType' ) ) > -1 ) {
-							_this.cuePoints.push( cuePoint );
-						}
-					} );
-
-					_this.cuePoints.sort( function ( a, b ) {
-						return a.startTime - b.startTime;
-					} );
-					var currentCuepoint = _this.getCurrentCuePoint() || _this.cuePoints[0];
+					var currentCuepoint = _this.getCurrentCuePoint() || _this.getCuePoints()[0];
 					_this.sync(currentCuepoint , function(){
 						var $spinner = $( '#secondScreenLoadingSpinner' );
 						if ( $spinner.length > 0 ) {
@@ -435,21 +431,21 @@
 					} );
 				} );
 				this.bind( 'KalturaSupport_CuePointReached', function ( e, cuePointObj ) {
-					if ( $.inArray( _this.getConfig( 'cuePointType' ), cuePointObj.cuePoint.cuePointType ) ) {
-						_this.sync( cuePointObj.cuePoint );
-					}
-				} );
-				this.bind( 'KalturaSupport_ThumbCuePointsUpdated', function (e, cuepoints ) {
-					$.each( cuepoints, function ( index, cuePoint ) {
-						if ( $.inArray( _this.getConfig( 'cuePointType' ), cuePoint.cuePointType ) ) {
-							_this.cuePoints.push( cuePoint );
+					var cuePoint;
+					$.each(_this.getConfig( 'cuePointType' ), function(i, cuePointType){
+						var main = $.isArray(cuePointType.main) ? cuePointType.main : [cuePointType.main];
+						var sub = $.isArray(cuePointType.sub) ? cuePointType.sub : [cuePointType.sub];
+						if ( ( $.inArray( cuePointObj.cuePoint.cuePointType, main ) > -1 ) &&
+							 ( $.inArray( cuePointObj.cuePoint.subType, sub ) > -1 ) ) {
+							cuePoint = cuePointObj.cuePoint;
+							return false;
 						}
-					} );
-
-					_this.cuePoints.sort( function ( a, b ) {
-						return a.startTime - b.startTime;
-					} );
-				});
+					});
+					if (!cuePoint){
+						cuePoint = _this.getCurrentCuePoint()
+					}
+					_this.sync( cuePoint );
+				} );
 
 				var fsmState = [];
 				var secondDisplayMinimized = false;
@@ -534,24 +530,25 @@
 			},
 			initDisplay: function(){
 				var _this = this;
-				this.displayInitialized = true;
-				this.previousPlayerWidth = this.getPlayer().getWidth();
-				this.previousPlayerHeight = this.getPlayer().getHeight();
+				if (!this.displayInitialized) {
+					this.displayInitialized = true;
+					this.previousPlayerWidth = this.getPlayer().getWidth();
+					this.previousPlayerHeight = this.getPlayer().getHeight();
 
-				var primaryScreen = this.monitor[this.TYPE.PRIMARY].obj = this.getPlayer().getVideoDisplay();
-				var secondaryScreen = this.monitor[this.TYPE.SECONDARY].obj = this.getComponent();
+					var primaryScreen = this.monitor[this.TYPE.PRIMARY].obj = this.getPlayer().getVideoDisplay();
+					var secondaryScreen = this.monitor[this.TYPE.SECONDARY].obj = this.getComponent();
 
-				//Set rule attributes
-				primaryScreen.addClass( 'dualScreenMonitor firstScreen ' + this.pluginName ).attr( 'data-monitor-rule', this.TYPE.PRIMARY );
-				secondaryScreen.addClass( 'dualScreenMonitor' ).attr( 'data-monitor-rule', this.TYPE.SECONDARY );
+					//Set rule attributes
+					primaryScreen.addClass( 'dualScreenMonitor firstScreen ' + this.pluginName ).attr( 'data-monitor-rule', this.TYPE.PRIMARY );
+					secondaryScreen.addClass( 'dualScreenMonitor' ).attr( 'data-monitor-rule', this.TYPE.SECONDARY );
 
-				secondaryScreen.off().on( 'click dblclick touchstart touchend', function ( e ) {
-					_this.embedPlayer.triggerHelper( e );
-				} );
+					secondaryScreen.off().on( 'click dblclick touchstart touchend', function ( e ) {
+						_this.embedPlayer.triggerHelper( e );
+					} );
 
-				this.setControlBarBindings();
+					this.setControlBarBindings();
 
-				this.checkAnimationSupport();
+					this.checkAnimationSupport();
 
 					//Set draggable and resizable configuration
 					primaryScreen
@@ -568,50 +565,51 @@
 							e.stopPropagation();
 						});
 
-				this.enableMonitorFeatures();
+					this.enableMonitorFeatures();
 
-				this.positionSecondScreen();
+					this.positionSecondScreen();
 
-				var addSpinner = function(){
-					if (!_this.secondDisplayReady && _this.render) {
-						if (mw.getConfig("EmbedPlayer.LiveCuepoints")) {
-							//TODO: add information slide for no current slide available
-						} else {
-							secondaryScreen.getAbsoluteOverlaySpinner().attr( 'id', 'secondScreenLoadingSpinner' );
+					var addSpinner = function () {
+						if ( !_this.secondDisplayReady && _this.render ) {
+							if ( mw.getConfig( "EmbedPlayer.LiveCuepoints" ) ) {
+								//TODO: add information slide for no current slide available
+							} else {
+								secondaryScreen.getAbsoluteOverlaySpinner().attr( 'id', 'secondScreenLoadingSpinner' );
+							}
 						}
-					}
-				};
+					};
 
-				if ( this.getConfig( "mainViewDisplay" ) == 2 ) {
-					this.bind('postDualScreenTransition.spinnerPostFix', function(){
-						_this.unbind('postDualScreenTransition.spinnerPostFix');
+					if ( this.getConfig( "mainViewDisplay" ) == 2 ) {
+						this.bind( 'postDualScreenTransition.spinnerPostFix', function () {
+							_this.unbind( 'postDualScreenTransition.spinnerPostFix' );
+							addSpinner();
+						} );
+						setTimeout( function () {
+							_this.fsm.consumeEvent( "switchView" );
+						}, 500 );
+					} else {
 						addSpinner();
-					});
-					setTimeout(function(){
-						_this.fsm.consumeEvent( "switchView" );
-					}, 500);
-				} else {
-					addSpinner();
-				}
-
-				//dualScreen components are set on z-index 1-3, so set all other components to zIndex 4 or above
-				this.zIndexObjs = [];
-				$.each(this.embedPlayer.getVideoHolder().children(), function(index, childNode){
-					var obj = $(childNode);
-					var classList = obj.attr('class')? obj.attr('class').split(/\s+/) : [];
-					if ( $.inArray("dualScreen", classList) == -1){
-						if ( isNaN(obj.css('z-index')) ){
-							obj.css('z-index', 4);
-						} else {
-							var zIndex = obj.css('z-index');
-							obj.css('z-index', zIndex + 4);
-						}
-						_this.zIndexObjs.push(obj);
 					}
-				});
 
-				this.showControlBar();
-				this.monitorControlBarDisabled = true;
+					//dualScreen components are set on z-index 1-3, so set all other components to zIndex 4 or above
+					this.zIndexObjs = [];
+					$.each( this.embedPlayer.getVideoHolder().children(), function ( index, childNode ) {
+						var obj = $( childNode );
+						var classList = obj.attr( 'class' ) ? obj.attr( 'class' ).split( /\s+/ ) : [];
+						if ( $.inArray( "dualScreen", classList ) == -1 ) {
+							if ( isNaN( obj.css( 'z-index' ) ) ) {
+								obj.css( 'z-index', 4 );
+							} else {
+								var zIndex = obj.css( 'z-index' );
+								obj.css( 'z-index', zIndex + 4 );
+							}
+							_this.zIndexObjs.push( obj );
+						}
+					} );
+
+					this.showControlBar();
+					this.monitorControlBarDisabled = true;
+				}
 			},
 			hideDisplay: function(){
 				this.getSecondMonitor().obj.hide();
@@ -1073,7 +1071,7 @@
 				return true;
 			},
 			getNextCuePoint: function ( time ) {
-				var cuePoints = this.cuePoints;
+				var cuePoints = this.getCuePoints();
 				// Start looking for the cue point via time, return first match:
 				for ( var i = 0; i < cuePoints.length; i++ ) {
 					if ( cuePoints[i].startTime >= time ) {
@@ -1085,7 +1083,7 @@
 			},
 			getCurrentCuePoint: function ( ) {
 				var currentTime = this.getPlayer().currentTime *1000;
-				var cuePoints = this.cuePoints;
+				var cuePoints = this.getCuePoints();
 				var cuePoint;
 				// Start looking for the cue point via time, return first match:
 				for ( var i = 0; i < cuePoints.length; i++ ) {
