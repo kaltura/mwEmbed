@@ -74,7 +74,6 @@
 							_this.bindPlayerFunction(bindName, localMethod);
 						});
 					}
-
 					//imitate html5 video readyState
 					_this.readyState = 4;
 					// Run ready callback

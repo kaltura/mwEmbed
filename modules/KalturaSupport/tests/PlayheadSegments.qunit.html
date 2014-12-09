@@ -62,8 +62,10 @@ Switch segment to <input id="k-from" size="4" style="width:30px" value="10"> to 
                                                                                        size="4" value="30">
 <a href="#" id="switchTime">GO</a>
 <br/>
-(dynamic switching currently not supported in flash)
-
+(dynamic switching currently not supported in flash)<br><br>
+<div class="evaluate">
+Alert <a href="#">{mediaProxy.mediaPlayFrom}</a> | <a href="#">{mediaProxy.mediaPlayTo}</a>
+</div>
 <script>
 	kWidget.addReadyCallback(function (playerId) {
 		var kdp = $('#' + playerId)[0];
@@ -71,6 +73,10 @@ Switch segment to <input id="k-from" size="4" style="width:30px" value="10"> to 
 			kdp.setKDPAttribute('mediaProxy', 'mediaPlayFrom', $('#k-from').val());
 			kdp.setKDPAttribute('mediaProxy', 'mediaPlayTo', $('#k-to').val());
 			return false;
+		});
+		$('.evaluate a').click(function(){
+			alert( kdp.evaluate( $(this).text() ) ) ;
+			return false
 		});
 	});
 </script>
