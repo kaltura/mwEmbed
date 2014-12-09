@@ -100,14 +100,7 @@
 			} );
 
 			this.bind( 'liveStreamStatusUpdate', function( e, onAirObj ) {
-				//check for pending autoPlay
-				if ( onAirObj.onAirStatus &&
-					embedPlayer.firstPlay &&
-					embedPlayer.autoplay &&
-					embedPlayer.canAutoPlay() &&
-					!embedPlayer.isPlaying() ) {
-						embedPlayer.play();
-				}
+
 				if ( !_this.liveStreamStatusUpdate ) {
 					_this.liveStreamStatusUpdate = true;
 					if( onAirObj.onAirStatus ){
@@ -116,6 +109,15 @@
 					}else{
 						_this.getPlayer().disablePlayControls();
 					}
+				}
+
+				//check for pending autoPlay
+				if ( onAirObj.onAirStatus &&
+					embedPlayer.firstPlay &&
+					embedPlayer.autoplay &&
+					embedPlayer.canAutoPlay() &&
+					!embedPlayer.isPlaying() ) {
+					embedPlayer.play();
 				}
 
 				//if we moved from live to offline  - show message
