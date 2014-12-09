@@ -214,7 +214,6 @@ class UiConfResult {
 			'keyboardShortcuts' => array(),
 			'liveCore' => array(),
 			'liveStatus' => array(),
-			'liveBackBtn' => array(),
 			'reportError' => array(),
 			"sideBarContainer" => array(),
 			"liveAnalytics"=>array()
@@ -544,7 +543,6 @@ class UiConfResult {
 			"keyboardShortcuts" => array(),
 			"liveCore" => array(),
 			"liveStatus" => array(),
-			"liveBackBtn" => array(),
 			"reportError" => array()
 		);
 

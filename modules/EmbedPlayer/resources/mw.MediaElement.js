@@ -202,12 +202,19 @@ mw.MediaElement.prototype = {
 		}
 
 		// Set via marked default:
+		var hasDefaultSource = false;
 		$.each( playableSources, function( inx, source ){
 			if ( source.markedDefault ) {
 				mw.log( 'MediaElement::autoSelectSource: Set via marked default: ' + source.markedDefault );
-				return _this.setSource( source );
+				hasDefaultSource = true
+				_this.setSource( source );
+				return false;
 			}
 		});
+
+		if (hasDefaultSource){
+			return _this.selectedSource;
+		}
 
 		mw.setConfig( 'EmbedPlayer.IgnoreStreamerType', false);
 		//this array contains mimeTypes player should prefer to select, sorted by descending order

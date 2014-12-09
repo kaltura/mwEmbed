@@ -132,6 +132,7 @@
 					_this.$mediaListContainer = null;
 					_this.getMedialistContainer();
 					_this.renderMediaList();
+					_this.setMultiplePlayLists();
 				}
 			});
 

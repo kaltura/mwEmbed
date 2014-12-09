@@ -511,15 +511,14 @@
 			return sliceIndex;
 		},
 		addScroll: function(){
-			var $cc = this.getMedialistComponent();
-			this.mediaItemVisible = this.calculateVisibleScrollItems();
 			var isVertical = ( this.getLayout() == 'vertical' );
-			var speed = mw.isTouchDevice() ? 100: 200;
-
 			if (isVertical) {
 				this.getScrollComponent();
 			}else {
 				this.addScrollUiComponents();
+				var $cc = this.getMedialistComponent();
+				this.mediaItemVisible = this.calculateVisibleScrollItems();
+				var speed = mw.isTouchDevice() ? 100: 200;
 				// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
 				$cc.find( '.k-carousel' ).jCarouselLite( {
 					btnNext: '.k-next',

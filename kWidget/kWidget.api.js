@@ -58,9 +58,10 @@ kWidget.api.prototype = {
 	/**
 	 * Do an api request and get data in callback
 	 */
-	doRequest: function ( requestObject, callback ){
+	doRequest: function ( requestObject, callback,skipKS, errorCallback  ){
 		var _this = this;
 		var param = {};
+		var globalCBName = null;
 		// If we have Kaltura.NoApiCache flag, pass 'nocache' param to the client
 		if( this.disableCache === true ) {
 			param['nocache'] = 'true';
@@ -72,8 +73,9 @@ kWidget.api.prototype = {
 				param[i] = this.baseParam[i];
 			}
 		};
+
 		// Check for "user" service queries ( no ks or wid is provided  )
-		if( requestObject['service'] != 'user' ){
+		if( requestObject['service'] != 'user' && !skipKS ){
 			kWidget.extend( param, this.handleKsServiceRequest( requestObject ) );
 		} else {
 			kWidget.extend( param, requestObject );
@@ -85,7 +87,18 @@ kWidget.api.prototype = {
 		var serviceType = param['service'];
 		delete param['service'];
 
+		var timeoutError = setTimeout(function(){
+			if ( globalCBName ) {
+				window[globalCBName] = undefined;
+			}
+			if (errorCallback){
+				errorCallback();
+			}
+			//mw.log("Timeout occur in doApiRequest");
+		},mw.getConfig("Kaltura.APITimeout"));
+
 		var handleDataResult = function( data ){
+			clearTimeout(timeoutError);
 			// check if the base param was a session
             data = data || [];
             if( data.length > 1 && param[ '1:service' ] == 'session' ){
@@ -104,7 +117,8 @@ kWidget.api.prototype = {
 				callback( data );
 				callback = null;
 			}
-		}
+		};
+
 		// Run the request
 		// NOTE kaltura api server should return: 
 		// Access-Control-Allow-Origin:* most browsers support this. 
@@ -120,7 +134,7 @@ kWidget.api.prototype = {
 			// build the request url: 
 			var requestURL = _this.getApiUrl( serviceType ) + '&' + kWidget.param( param );
 			// try with callback:
-			var globalCBName = 'kapi_' + Math.abs( _this.hashCode( kWidget.param( param ) ) );
+			globalCBName = 'kapi_' + Math.abs( _this.hashCode( kWidget.param( param ) ) );
 			if( window[ globalCBName ] ){
 				// Update the globalCB name inx.
 				this.callbackIndex++;
