@@ -125,7 +125,7 @@
 				) {
 					_this.isMulticast = false;
 
-					flashvars.smoothStreamPlayer = false;
+					flashvars.smoothStreamPlayer = true;
 					flashvars.preload = "auto";
 					flashvars.entryURL = resolvedSrc;
 					//flashvars.debug = true;
