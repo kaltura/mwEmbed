@@ -339,7 +339,7 @@
 					dur = dur - this.startTime + 2;
 				}
 			}
-			if (data.newValue > dur) {
+			if ( !this.isLive() && data.newValue > dur ) {
 				return;
 			}
 			// Update the duration ( only if not in url time encoding mode:
@@ -357,7 +357,6 @@
 			}
 		},
 		onClipDone: function () {
-			this.playerObject.sendNotification('doStop');
 			this.parent_onClipDone();
 		},
 

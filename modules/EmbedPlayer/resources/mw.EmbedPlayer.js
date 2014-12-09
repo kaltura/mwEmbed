@@ -282,6 +282,9 @@
 		//if the player should handle playerError events
 		shouldHandlePlayerError: true,
 
+		// save the clipDone timeout ID so we can trigger it only once per entry
+		clipDoneTimeout: null,
+
 		/**
 		 * embedPlayer
 		 *
@@ -503,7 +506,7 @@
 			}
 			mw.log("EmbedPlayer:: disablePlayControls");
 
-			if (!excludedComponents) {
+			if ( !excludedComponents ) {
 				excludedComponents = ['fullScreenBtn', 'logo'];
 				if (mw.getConfig('enableControlsDuringAd')) {
 					excludedComponents.push('playPauseBtn');
@@ -1263,7 +1266,8 @@
 				this.getVideoHolder().height(newHeight);
 			}
 			// update image layout: (Don't update poster during ad)
-			if (this.isStopped() && !( this.sequenceProxy && this.sequenceProxy.isInSequence )) {
+			if( this.isStopped() && !( this.sequenceProxy && this.sequenceProxy.isInSequence ) && !this.removePosterFlag ) {
+
 				this.updatePosterHTML();
 			}
 
@@ -2625,7 +2629,7 @@
 		updatePlayheadStatus: function () {
 			var _this = this;
 
-			if (this.currentTime >= 0 && this.duration) {
+			if ( this.currentTime >= 0 && this.duration ) {
 				if (!this.userSlide && !this.seeking && !this.paused) {
 					var playHeadPercent = ( this.currentTime - this.startOffset ) / this.duration;
 					this.updatePlayHead(playHeadPercent);
@@ -2638,13 +2642,14 @@
 						_this.onClipDone();
 						//sometimes we don't get the "end" event from the player so we trigger clipdone
 					} else if (!this.shouldEndClip && !this.isInSequence() &&
-						( ( ( this.currentTime - this.startOffset) / endPresentationTime ) >= .99 )) {
+						( ( ( this.currentTime - this.startOffset) / endPresentationTime ) >= .99 ) && !_this.clipDoneTimeout) {
 						_this.shouldEndClip = true;
-						setTimeout(function () {
+						_this.clipDoneTimeout = setTimeout(function () {
 							if (_this.shouldEndClip) {
 								mw.log("EmbedPlayer::updatePlayheadStatus > should run clip done :: " + _this.currentTime);
 								_this.onClipDone();
 							}
+							_this.clipDoneTimeout = null;
 						}, endPresentationTime * 0.02 * 1000)
 					}
 				}

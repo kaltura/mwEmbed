@@ -324,6 +324,28 @@
 					}
 				}
 			});
+
+			_this.embedPlayer.bindHelper('AdSupport_StartAdPlayback' + this.bindPostfix, function (event) {
+				if (_this.isChromeless){
+					_this.embedPlayer.getPlayerElement().sendNotification("hideContent");
+				}else{
+					if ( _this.embedPlayer.isVideoSiblingEnabled() ) {
+						$(".mwEmbedPlayer").addClass("mwEmbedPlayerBlackBkg");
+						_this.embedPlayer.addBlackScreen();
+					}
+				}
+			});
+
+			_this.embedPlayer.bindHelper('AdSupport_EndAdPlayback' + this.bindPostfix, function (event) {
+				if (_this.isChromeless){
+					_this.embedPlayer.getPlayerElement().sendNotification("showContent");
+				}else{
+					if ( _this.embedPlayer.isVideoSiblingEnabled() ) {
+						$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
+						_this.embedPlayer.removeBlackScreen();
+					}
+				}
+			});
 		},
 
 		pauseAd: function (isLinear) {
@@ -841,6 +863,7 @@
 				} else {
 					_this.hideAdContainer();
 				}
+				_this.embedPlayer.triggerHelper( 'onAllAdsCompleted' );
 			});
 		},
 		bindChromelessEvents: function(){
@@ -910,6 +933,7 @@
 					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', _this.entryDuration );
 					_this.embedPlayer.triggerHelper( 'timeupdate', 0);
 				}
+				_this.embedPlayer.triggerHelper( 'onAllAdsCompleted' );
 			},'allAdsCompleted', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
