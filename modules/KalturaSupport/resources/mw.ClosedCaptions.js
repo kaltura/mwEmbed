@@ -18,7 +18,8 @@
 			"showEmbeddedCaptionsStyle": false,
 			"showOffButton": true,
 			"toggleActiveCaption": false,
-			"useExternalClosedCaptions": false
+			"useExternalClosedCaptions": false,
+			"offButtonPosition": "first"
 		},
 
 		textSources: [],
@@ -727,17 +728,9 @@
 				this.showCaptions();
 			}
 
-			// Add Off item
-			if( this.getConfig('showOffButton') ) {
-				this.getMenu().addItem({
-					'label': 'Off',
-					'callback': function(){
-						_this.setConfig('displayCaptions', false);
-						// also update the cookie to "None"
-						_this.getPlayer().setCookie( _this.cookieName, 'None' );
-					},
-					'active': ! _this.getConfig( "displayCaptions" ) 
-				});
+			// Add Off item as first element
+			if( this.getConfig('showOffButton') && this.getConfig('offButtonPosition') == 'first' ) {
+				this.addOffButton();
 			}
 
 			// Add text sources
@@ -757,8 +750,25 @@
 				})
 			});
 
+			// Add Off item as last element
+			if( this.getConfig('showOffButton') && this.getConfig('offButtonPosition') == 'last' ) {
+				this.addOffButton();
+			}
+
 			// Allow plugins to integrate with captions menu
 			this.getPlayer().triggerHelper('captionsMenuReady');
+		},
+		addOffButton: function() {
+			var _this = this;
+			this.getMenu().addItem({
+				'label': 'Off',
+				'callback': function(){
+					_this.setConfig('displayCaptions', false);
+					// also update the cookie to "None"
+					_this.getPlayer().setCookie( _this.cookieName, 'None' );
+				},
+				'active': ! _this.getConfig( "displayCaptions" ) 
+			});
 		},
 		setTextSource: function( source, setCookie ){
 			setCookie = ( setCookie === undefined ) ? true : setCookie;
