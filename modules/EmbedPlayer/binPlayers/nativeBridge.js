@@ -19,9 +19,9 @@ var NativeBridge = {
 	// functionName : string (I think the name is explicit :p)
 	// args : array of arguments
 	// callback : function with n-arguments that is going to be called when the native code returned
-	call : function call(functionName, args, callback) {
+	call: function call( functionName, args, callback ) {
 
-		var hasCallback = callback && typeof callback == "function";
+		var hasCallback = callback && typeof callback === "function";
 		var callbackId = hasCallback ? NativeBridge.callbacksCount++ : 0;
 
 		if (hasCallback) {
@@ -191,4 +191,4 @@ if ( mw.getConfig('EmbedPlayer.ForceNativeComponent') === true ) {
 	} );
 }
 
-})( window.mw, window.jQuery );
+})( mediaWiki, jQuery );

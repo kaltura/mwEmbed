@@ -9,15 +9,16 @@
  *	  library external script containing the plugin interface code.
  * @constructor
  */
-( function( mw, $ ) { "use strict";
+ /*globals gM*/
+( function ( mw ) {
+	'use strict';
 
-mw.MediaPlayer = function( id, supportedTypes, library )
-{
+mw.MediaPlayer = function ( id, supportedTypes, library ) {
 	this.id = id;
 	this.supportedTypes = supportedTypes;
 	this.library = library;
 	this.loaded = false;
-	this.loading_callbacks = new Array();
+	this.loading_callbacks = [];
 	return this;
 };
 mw.MediaPlayer.prototype = {
@@ -41,10 +42,11 @@ mw.MediaPlayer.prototype = {
 	 * @return {Boolean} true if mime type is supported false if mime type is
 	 *	 unsupported
 	 */
-	supportsMIMEType: function( type ) {
+	supportsMIMEType: function ( type ) {
 		for ( var i = 0; i < this.supportedTypes.length; i++ ) {
-			if ( this.supportedTypes[i] == type )
+			if ( this.supportedTypes[i] === type ) {
 				return true;
+			}
 		}
 		return false;
 	},
@@ -52,7 +54,7 @@ mw.MediaPlayer.prototype = {
 	/**
 	 * Get the "name" of the player from a predictable msg key
 	 */
-	getName: function() {
+	getName: function () {
 		return gM( 'mwe-embedplayer-ogg-player-' + this.id );
 	},
 
@@ -63,16 +65,16 @@ mw.MediaPlayer.prototype = {
 	 * @param {Function}
 	 *	  callback Function to be called once player library is loaded.
 	 */
-	load: function( callback ) {
+	load: function ( callback ) {
 		// Load player library ( upper case the first letter of the library )
 		mw.load( [
-			'mw.EmbedPlayer' + this.library.substr(0,1).toUpperCase() + this.library.substr(1)
-		], function() {
-			if( callback ){
+			'mw.EmbedPlayer' + this.library.substr( 0, 1 ).toUpperCase() + this.library.substr( 1 )
+		], function () {
+			if ( callback ) {
 				callback();
 			}
 		} );
 	}
 };
 
-} )( mediaWiki, jQuery );
+} )( mediaWiki );

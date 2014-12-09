@@ -10,8 +10,10 @@
  * The base source attribute checks also see:
  * http://dev.w3.org/html5/spec/Overview.html#the-source-element
  */
+/*globals gM*/
+( function ( mw, $ ) {
+	'use strict';
 
-( function( mw, $ ) { "use strict";
 mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
 	// source id
 	'id',
@@ -74,7 +76,7 @@ mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
 
 ] );
 
-mw.MediaSource = function( element ) {
+mw.MediaSource = function ( element ) {
 	this.init( element );
 };
 
@@ -114,9 +116,9 @@ mw.MediaSource.prototype = {
 	/**
 	 * MediaSource constructor:
 	 */
-	init : function( element ) {
+	init: function ( element ) {
 		var _this = this;
-		// mw.log('EmbedPlayer::adding mediaSource: ' + element);
+		// mw.log( 'EmbedPlayer::adding mediaSource: ' + element );
 		this.src = $( element ).attr( 'src' );
 
 		// Set default URLTimeEncoding if we have a time url:
@@ -124,36 +126,35 @@ mw.MediaSource.prototype = {
 		// should check some other way.
 		if ( this.src !== undefined ) {
 			var pUrl = new mw.Uri ( this.src );
-			if ( typeof pUrl.query[ 't' ] != 'undefined' ) {
+			if ( typeof pUrl.query.t !== 'undefined' ) {
 				this.URLTimeEncoding = true;
 			}
 		}
-	
 
 		var sourceAttr = mw.getConfig( 'EmbedPlayer.SourceAttributes' );
-		$.each( sourceAttr, function( inx, attr ){
+		$.each( sourceAttr, function ( inx, attr ) {
 			if ( $( element ).attr( attr ) !== undefined ) {
 				// strip data- from the attribute name
-				var attrName = ( attr.indexOf('data-') === 0) ? attr.substr(5) : attr
+				var attrName = ( attr.indexOf( 'data-' ) === 0 ) ? attr.substr( 5 ) : attr;
 				_this[ attrName ] = $( element ).attr( attr );
 				// Convert default field to boolean
-				if ( attrName == 'default' ) {
-					_this[ attrName ] = $( element ).attr( attr ) == "true" ? true : false;
+				if ( attrName === 'default' ) {
+					_this[ attrName ] = $( element ).attr( attr ) === 'true' ? true : false;
 				}
 			}
-		});
+		} );
 
 		// Normalize "label" to "title" ( label is the actual spec so use that over title )
-		if( this.label ){
+		if ( this.label ) {
 			this.title = this.label;
 		}
 
 		// Set the content type:
 		if ( $( element ).attr( 'type' ) ) {
 			this.mimeType = $( element ).attr( 'type' );
-		}else if ( $( element ).attr( 'content-type' ) ) {
+		} else if ( $( element ).attr( 'content-type' ) ) {
 			this.mimeType = $( element ).attr( 'content-type' );
-		}else if( $( element )[0].tagName.toLowerCase() == 'audio' ){
+		} else if ( $( element )[0].tagName.toLowerCase() === 'audio' ) {
 			// If the element is an "audio" tag set audio format
 			this.mimeType = 'audio/ogg';
 		} else {
@@ -161,26 +162,26 @@ mw.MediaSource.prototype = {
 		}
 
 		// Conform the mime type to ogg
-		if( this.mimeType == 'video/theora') {
+		if ( this.mimeType === 'video/theora' ) {
 			this.mimeType = 'video/ogg';
 		}
 
-		if( this.mimeType == 'audio/vorbis') {
+		if ( this.mimeType === 'audio/vorbis' ) {
 			this.mimeType = 'audio/ogg';
 		}
 
 		// Conform long form "video/ogg; codecs=theora" based attributes
 		// @@TODO we should support codec in the type arguments
-		if( this.mimeType ){
+		if ( this.mimeType ) {
 			this.mimeType = this.mimeType.split( ';' )[0];
 		}
 
 		// Check for parent elements ( supplies categories in "track" )
-		if( $( element ).parent().attr('category') ) {
-			this.category = $( element ).parent().attr('category');
+		if ( $( element ).parent().attr( 'category' ) ) {
+			this.category = $( element ).parent().attr( 'category' );
 		}
 
-		if( $( element ).attr( 'default' ) ){
+		if ( $( element ).attr( 'default' ) ) {
 			this.markedDefault = true;
 		}
 
@@ -194,10 +195,10 @@ mw.MediaSource.prototype = {
 	 * @param {Element}
 	 *	  element Source element to update attributes from
 	 */
-	updateSource: function( element ) {
+	updateSource: function ( element ) {
 		// for now just update the title:
-		if ( $( element ).attr( "title" ) ) {
-			this.title = $( element ).attr( "title" );
+		if ( $( element ).attr( 'title' ) ) {
+			this.title = $( element ).attr( 'title' );
 		}
 	},
 
@@ -210,12 +211,12 @@ mw.MediaSource.prototype = {
 	 *	  end_time: in NPT format
 	 */
 	updateSrcTime: function ( startNpt, endNpt ) {
-		// mw.log("f:updateSrcTime: "+ startNpt+'/'+ endNpt + ' from org: ' +
-		// this.startNpt+ '/'+this.endNpt);
-		// mw.log("pre uri:" + this.src);
+		// mw.log( "f:updateSrcTime: "+ startNpt+'/'+ endNpt + ' from org: ' +
+		// this.startNpt+ '/'+this.endNpt );
+		// mw.log( "pre uri:" + this.src );
 		// if we have time we can use:
 		if ( this.URLTimeEncoding ) {
-			// make sure its a valid start time / end time (else set default)
+			// make sure its a valid start time / end time (else set default )
 			if ( !mw.npt2seconds( startNpt ) ) {
 				startNpt = this.startNpt;
 			}
@@ -226,7 +227,7 @@ mw.MediaSource.prototype = {
 
 			this.src = mw.replaceUrlParams( this.src, {
 				't': startNpt + '/' + endNpt
-			});
+			} );
 
 			// update the duration
 			this.getURLDuration();
@@ -251,20 +252,20 @@ mw.MediaSource.prototype = {
 	 *
 	 * @return {String} the MIME type of the source.
 	 */
-	getMIMEType: function() {
-		if( this.mimeType ) {
+	getMIMEType: function () {
+		if ( this.mimeType ) {
 			return this.mimeType;
 		}
 		this.mimeType = this.detectType( this.src );
 		return this.mimeType;
 	},
-	
+
 	/**
 	 * Update the local src
 	 * @param {String}
 	 * 		src The URL to the media asset
 	 */
-	setSrc: function( src ){
+	setSrc: function ( src ) {
 		this.src = src;
 	},
 
@@ -276,7 +277,7 @@ mw.MediaSource.prototype = {
 	 *	  seeks)
 	 * @return {String} the URI of the source.
 	 */
-	getSrc: function( serverSeekTime ) {
+	getSrc: function ( serverSeekTime ) {
 		if ( !serverSeekTime || !this.URLTimeEncoding ) {
 			return this.src;
 		}
@@ -287,61 +288,53 @@ mw.MediaSource.prototype = {
 		return mw.replaceUrlParams( this.src,
 			{
 				't': mw.seconds2npt( serverSeekTime ) + endvar
-	  		}
+			}
 		);
 	},
+
 	/**
 	 * Title accessor function.
 	 *
 	 * @return {String} Title of the source.
 	 */
-	getTitle : function() {
-		if( this.title ){
+	getTitle: function () {
+		if ( this.title ) {
 			return this.title;
 		}
 		// Text tracks use "label" instead of "title"
-		if( this.label ){
+		if ( this.label ) {
 			return this.label;
 		}
 
 		// Return a Title based on mime type:
-		switch( this.getMIMEType() ) {
+		switch ( this.getMIMEType() ) {
 			case 'video/h264' :
 				return gM( 'mwe-embedplayer-video-h264' );
-			break;
 			case 'video/x-flv' :
 				return gM( 'mwe-embedplayer-video-flv' );
-			break;
 			case 'video/webm' :
-				return gM( 'mwe-embedplayer-video-webm');
-			break;
+				return gM( 'mwe-embedplayer-video-webm' );
 			case 'video/ogg' :
 				return gM( 'mwe-embedplayer-video-ogg' );
-			break;
 			case 'audio/ogg' :
 				return gM( 'mwe-embedplayer-video-audio' );
-			break;
 			case 'audio/mpeg' :
-				return gM('mwe-embedplayer-audio-mpeg');
-			break;
+				return gM( 'mwe-embedplayer-audio-mpeg' );
 			case 'video/3gp' :
-				return gM('mwe-embedplayer-video-3gp');
-			break;
+				return gM( 'mwe-embedplayer-video-3gp' );
 			case 'video/mpeg' :
-				return gM('mwe-embedplayer-video-mpeg');
-			break;
+				return gM( 'mwe-embedplayer-video-mpeg' );
 			case 'video/x-msvideo' :
-				return gM('mwe-embedplayer-video-msvideo' );
-			break;
+				return gM( 'mwe-embedplayer-video-msvideo' );
 		}
 
 		// Return title based on file name:
-		try{
-			var fileName = new mw.Uri( mw.absoluteUrl( this.getSrc() ) ).path.split('/').pop();
-			if( fileName ){
+		try {
+			var fileName = new mw.Uri( mw.absoluteUrl( this.getSrc() ) ).path.split( '/' ).pop();
+			if ( fileName ) {
 				return fileName;
 			}
-		} catch(e){}
+		} catch ( e ) {}
 
 		// Return the mime type string if not known type.
 		return this.mimeType;
@@ -349,44 +342,43 @@ mw.MediaSource.prototype = {
 	/**
 	 * Get a short title for the stream
 	 */
-	getShortTitle: function(){
-		var _this =this;
-		if( this.shorttitle ){
+	getShortTitle: function () {
+		if ( this.shorttitle ) {
 			return this.shorttitle;
 		}
 
 		var genTitle = '';
 
 		// get height
-		if( this.height ){
-			if( this.heigth < 255 ){
-				genTitle+= '240P ';
-			} else if( this.height < 370 ){
-				genTitle+= '360P ';
-			} else if( this.height < 500 ){
-				genTitle+= '480P ';
-			} else if( this.height < 800 ){
-				genTitle+= '720P ';
+		if ( this.height ) {
+			if ( this.heigth < 255 ) {
+				genTitle += '240P ';
+			} else if ( this.height < 370 ) {
+				genTitle += '360P ';
+			} else if ( this.height < 500 ) {
+				genTitle += '480P ';
+			} else if ( this.height < 800 ) {
+				genTitle += '720P ';
 			} else {
-				genTitle+= '1080P ';
+				genTitle += '1080P ';
 			}
 		}
 
 		// Just use a short "long title"
-		genTitle += this.getTitle().replace('video', '').replace('a.', '');
-		if(genTitle.length > 20) {
-			genTitle = genTitle.substring(0,17) + "...";
+		genTitle += this.getTitle().replace( 'video', '' ).replace( 'a.', '' );
+		if ( genTitle.length > 20 ) {
+			genTitle = genTitle.substring( 0, 17 ) + '...';
 		}
 
 		// add the bitrate
-		if( this.getBitrate() ){
+		if ( this.getBitrate() ) {
 			var bits = ( Math.round( this.getBitrate() / 1024 * 10 ) / 10 ) + '';
-			if( bits[0] == '0' ){
-				bits = bits.substring(1);
+			if ( bits[0] === '0' ) {
+				bits = bits.substring( 1 );
 			}
-			genTitle+= ' ' + bits + 'Mbs ';
+			genTitle += ' ' + bits + 'Mbs ';
 		}
-		return genTitle
+		return genTitle;
 	},
 	/**
 	 *
@@ -394,7 +386,7 @@ mw.MediaSource.prototype = {
 	 *
 	 * Supports media_url?t=ntp_start/ntp_end url request format
 	 */
-	getURLDuration : function() {
+	getURLDuration: function () {
 		// check if we have a URLTimeEncoding:
 		if ( this.URLTimeEncoding ) {
 			var annoURL = new mw.Uri( this.src );
@@ -410,7 +402,7 @@ mw.MediaSource.prototype = {
 					this.startNpt = mw.seconds2npt( this.startOffset );
 				}
 				if ( this.duration ) {
-					this.endNpt = mw.seconds2npt( parseInt( this.duration ) + parseInt( this.startOffset ) );
+					this.endNpt = mw.seconds2npt( parseInt( this.duration, 10 ) + parseInt( this.startOffset, 10 ) );
 				}
 			}
 		}
@@ -419,12 +411,12 @@ mw.MediaSource.prototype = {
 	* Get the extension of a url
 	* @param String uri
 	*/
-	getExt : function( uri ){
+	getExt: function ( uri ) {
 		var urlParts = new mw.Uri( uri );
 		// Get the extension from the url or from the relative name:
-		var ext = ( urlParts.file ) ?  /[^.]+$/.exec( urlParts.file )  :  /[^.]+$/.exec( uri );
+		var ext = ( urlParts.file ) ? /[^.]+$/.exec( urlParts.file ) : /[^.]+$/.exec( uri );
 		// remove the hash string if present
-		if( !ext ) {
+		if ( !ext ) {
 			return '';
 		}
 		ext = /[^#]*/g.exec( ext.toString() );
@@ -433,8 +425,8 @@ mw.MediaSource.prototype = {
 	/**
 	 * Get the flavorId if available.
 	 */
-	getFlavorId: function(){
-		if( this.flavorid ){
+	getFlavorId: function () {
+		if ( this.flavorid ) {
 			return this.flavorid;
 		}
 		return ;
@@ -447,70 +439,55 @@ mw.MediaSource.prototype = {
 	 *	  uri URI of the media file.
 	 * @return {String} The guessed MIME type of the file.
 	 */
-	detectType: function( uri ) {
+	detectType: function ( uri ) {
 		// NOTE: if media is on the same server as the javascript
 		// we can issue a HEAD request and read the mime type of the media...
 		// ( this will detect media mime type independently of the url name )
 		// http://www.jibbering.com/2002/4/httprequest.html
-		switch( this.getExt( uri ) ) {
+		switch ( this.getExt( uri ) ) {
 			case 'smil':
 			case 'sml':
 				return 'application/smil';
-			break;
 			case 'm4v':
 			case 'mp4':
 				return 'video/h264';
-			break;
 			case 'm3u8':
 				return 'application/vnd.apple.mpegurl';
-			break;
 			case 'webm':
 				return 'video/webm';
-			break;
 			case '3gp':
 				return 'video/3gp';
-			break;
 			case 'srt':
 				return 'text/x-srt';
-			break;
 			case 'flv':
 				return 'video/x-flv';
-			break;
 			case 'ogg':
 			case 'ogv':
 				return 'video/ogg';
-			break;
 			case 'oga':
 				return 'audio/ogg';
-			break;
 			case 'mp3':
 				return 'audio/mpeg';
-			break;
 			case 'anx':
 				return 'video/ogg';
-			break;
-			case 'dfxp': 
+			case 'dfxp':
 			case 'xml':
 				return 'text/xml';
-			break;
 			case 'avi':
 				return 'video/x-msvideo';
-			break;
 			case 'mpg':
 				return 'video/mpeg';
-			break;
 			case 'mpeg':
 				return 'video/mpeg';
-			break;
 		}
-		mw.log( "Error: could not detect type of media src: " + uri );
+		mw.log( 'Error: could not detect type of media src: ' + uri );
 	},
 
 	/**
 	 * Bitrate is measured in kbs rather than bandwidth bytes per second
 	 */
-	getBitrate: function() {
-		if( this.bandwidth ){
+	getBitrate: function () {
+		if ( this.bandwidth ) {
 			return this.bandwidth / 1024;
 		}
 		return 0;
@@ -519,23 +496,23 @@ mw.MediaSource.prototype = {
 	/**
 	 * Get the size of the stream in bytes
 	 */
-	getSize: function(){
-		if( this.sizebytes ){
+	getSize: function () {
+		if ( this.sizebytes ) {
 			return this.sizebytes;
 		}
 		return 0;
 	},
 
-	getTags: function() {
+	getTags: function () {
 		return this.tags;
 	},
 
-	getAssetId: function() {
+	getAssetId: function () {
 		return this.assetid;
 	},
 
-	getHeight: function(){
-		if( this.height ){
+	getHeight: function () {
+		if ( this.height ) {
 			return this.height;
 		}
 		return 0;

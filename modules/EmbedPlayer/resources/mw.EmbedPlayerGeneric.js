@@ -2,11 +2,12 @@
 * Simple embed object for unknown application/ogg plugin
 */
 
-( function( mw, $ ) { "use strict";
+( function ( mw, $ ) {
+	'use strict';
 
 mw.EmbedPlayerGeneric = {
 	// List of supported features of the generic plugin
-	 supports: {
+	supports: {
 		'playHead':false,
 		'pause':false,
 		'stop':true,
@@ -22,9 +23,9 @@ mw.EmbedPlayerGeneric = {
 	* Generic embed html
 	*
 	* @return {String}
-	* 	embed code for generic ogg plugin
+	*	embed code for generic ogg plugin
 	*/
-	embedPlayerHTML: function() {
+	embedPlayerHTML: function () {
 		$( this ).html(
 			'<object type="application/ogg" ' +
 			'width="' + this.getWidth() + '" height="' + this.getHeight() + '" ' +
@@ -33,4 +34,4 @@ mw.EmbedPlayerGeneric = {
 	}
 };
 
-} )( window.mediaWiki, window.jQuery );
+} )( mediaWiki, jQuery );
