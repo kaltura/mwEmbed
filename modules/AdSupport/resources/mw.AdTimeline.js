@@ -113,20 +113,9 @@
 		 *			embedPlayer The embedPlayer object
 		 */
 		init: function(embedPlayer) {
-			var nua = navigator.userAgent;
-			var is_native_android_browser = ((nua.indexOf('Mozilla/5.0') > -1 &&
-				nua.indexOf('Android ') > -1 &&
-				nua.indexOf('AppleWebKit') > -1) &&
-				!(nua.indexOf('Chrome') > -1));
-
-			if( !is_native_android_browser ||
-				mw.isAndroid40() ||
-				mw.getConfig( "EmbedPlayer.ForceNativeComponent") )
-			{
-				this.embedPlayer = embedPlayer;
-				// Bind to the "play" and "end"
-				this.bindPlayer();
-			}
+			this.embedPlayer = embedPlayer;
+			// Bind to the "play" and "end"
+			this.bindPlayer();
 		},
 
 		/**
