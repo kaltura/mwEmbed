@@ -12,7 +12,7 @@ mw.EmbedPlayerNative = {
 	instanceOf: 'Native',
 
 	// Flag to only load the video ( not play it )
-	onlyLoadFlag:false,
+	onlyLoadFlag: false,
 
 	//Callback fired once video is "loaded"
 	onLoadedCallback: null,
@@ -40,7 +40,7 @@ mw.EmbedPlayerNative = {
 	currentSeekTargetTime: null,
 
 	// Flag for ignoring next native error we get from the player.
-	ignoreNextError:false,
+	ignoreNextError: false,
 
 	keepNativeFullScreen: false,
 
@@ -94,13 +94,13 @@ mw.EmbedPlayerNative = {
 		readyCallback();
 
 		// disable network errors on unload:
-		$( window ).unload(function () {
+		$( window ).unload( function () {
 			_this.triggerNetworkErrorsFlag = false;
 			// remove any active error:
 			if ( _this.layoutBuilder ) {
 				_this.layoutBuilder.closeAlert();
 			}
-		});
+		} );
 	},
 	/**
 	 * Updates the supported features given the "type of player"
@@ -145,15 +145,15 @@ mw.EmbedPlayerNative = {
 			mw.getConfig( 'EmbedPlayer.BlackPixel' );
 		// Check if the poster is already present:
 		if ( $( this ).find( '.playerPoster' ).length ) {
-			$( this ).find( '.playerPoster' ).attr('src', posterSrc );
+			$( this ).find( '.playerPoster' ).attr( 'src', posterSrc );
 		} else {
 			$( this ).append(
-				$('<img />')
-					.attr( 'src', posterSrc)
-				.addClass('playerPoster')
-				.load(function () {
+				$( '<img />' )
+					.attr( 'src', posterSrc )
+				.addClass( 'playerPoster' )
+				.load( function () {
 					_this.applyIntrinsicAspect();
-				})
+				} )
 			);
 		}
 		$( this ).show();
@@ -176,11 +176,11 @@ mw.EmbedPlayerNative = {
 				_this.pause();
 				_this.updatePosterHTML();
 			}
-			if ( !(mw.isIOS7() && mw.isIphone())) {
+			if ( !( mw.isIOS7() && mw.isIphone() ) ) {
 				_this.changeMediaCallback = null;
 			}
 			callback();
-		});
+		} );
 	},
 	disablePlayer: function () {
 		$( this.getPlayerElement() ).css( 'position', 'static' );
@@ -188,21 +188,21 @@ mw.EmbedPlayerNative = {
 	/**
 	* Return the embed code
 	*/
-	embedPlayerHTML : function () {
+	embedPlayerHTML: function () {
 		var _this = this;
 		var vid = _this.getPlayerElement();
 		this.ignoreNextNativeEvent = true;
-		
+
 		// empty out any existing sources:
-		if ( vid && !mw.isIphone() ) {  //if track element attached for iphone it won't be deleted
+		if ( vid && !mw.isIphone() ) { //if track element attached for iphone it won't be deleted
 			$( vid ).empty();
 		}
 
-		if ( vid && $( vid ).attr('src') == this.getSrc( this.currentTime ) ) {
+		if ( vid && $( vid ).attr( 'src' ) === this.getSrc( this.currentTime ) ) {
 			_this.postEmbedActions();
 			return ;
 		}
-		mw.log( "EmbedPlayerNative::embedPlayerHTML > play url:" + this.getSrc( this.currentTime  ) + ' startOffset: ' + this.start_ntp + ' end: ' + this.end_ntp );
+		mw.log( 'EmbedPlayerNative::embedPlayerHTML > play url:' + this.getSrc( this.currentTime ) + ' startOffset: ' + this.start_ntp + ' end: ' + this.end_ntp );
 
 		// Check if using native controls and already the "pid" is already in the DOM
 		if ( this.isPersistentNativePlayer() && vid ) {
@@ -227,49 +227,53 @@ mw.EmbedPlayerNative = {
 	 * @param {object} playerAttribtues Attributes to be override in function call
 	 * @return {object} cssSet css to apply to the player
 	 */
-	getNativePlayerHtml: function ( playerAttribtues, cssSet ) {
-		if ( !playerAttribtues) {
-			playerAttribtues = {};
+	getNativePlayerHtml: function ( playerAttributes, cssSet ) {
+		if ( !playerAttributes ) {
+			playerAttributes = {};
 		}
 		// Update required attributes
-		if ( !playerAttribtues['id'] ) {
-			playerAttribtues['id'] = this.pid;
+		if ( !playerAttributes.id ) {
+			playerAttributes.id = this.pid;
 		}
-		if ( !playerAttribtues['src'] ) {
-			playerAttribtues['src'] = this.getSrc( this.currentTime);
+		if ( !playerAttributes.src ) {
+			playerAttributes.src = this.getSrc( this.currentTime );
 		}
 
 		// If autoplay pass along to attribute ( needed for iPad / iPod no js autoplay support
 		if ( this.autoplay ) {
-			playerAttribtues['autoplay'] = 'true';
+			playerAttributes.autoplay = 'true';
 		}
-		
+
 		if ( !cssSet ) {
 			cssSet = {};
 		}
 
 		// Set default width height to 100% of parent container
-		if ( !cssSet['width'] ) cssSet['width'] = '100%';
-		if ( !cssSet['height'] ) cssSet['height'] = '100%';
+		if ( !cssSet.width ) {
+			cssSet.width = '100%';
+		}
+		if ( !cssSet.height ) {
+			cssSet.height = '100%';
+		}
 
 		// Also need to set the loop param directly for iPad / iPod
 		if ( this.loop ) {
-			playerAttribtues['loop'] = 'true';
+			playerAttributes.loop = 'true';
 		}
 
 		var tagName = this.isAudio() ? 'audio' : 'video';
 
-		return	$( '<' + tagName + ' />' )
+		return	$( '<' + tagName + '>' )
 			// Add the special nativeEmbedPlayer to avoid any rewrites of of this video tag.
 			.addClass( 'nativeEmbedPlayerPid' )
-			.attr( playerAttribtues )
-			.css( cssSet )
+			.attr( playerAttributes )
+			.css( cssSet );
 	},
 	/**
 	 * returns true if device can auto play
 	 */
 	canAutoPlay: function () {
-		return ! mw.isAndroid() && ! mw.isMobileChrome() && ! mw.isIOS() ;
+		return !mw.isAndroid() && !mw.isMobileChrome() && !mw.isIOS() ;
 	},
 
 	/**
@@ -284,7 +288,7 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		// Update the player source ( if needed )
-		if ( $( vid).attr( 'src' ) !=  this.getSrc( this.currentTime )  ) {
+		if ( $( vid ).attr( 'src' ) !== this.getSrc( this.currentTime )  ) {
 			$( vid ).attr( 'src', this.getSrc( this.currentTime ) );
 		}
 
@@ -294,11 +298,11 @@ mw.EmbedPlayerNative = {
 
 		// Update the EmbedPlayer.WebKitAllowAirplay option:
 		if ( mw.getConfig( 'EmbedPlayer.WebKitAllowAirplay' ) ) {
-			$( vid ).attr( 'x-webkit-airplay', "allow" );
+			$( vid ).attr( 'x-webkit-airplay', 'allow' );
 		}
 		// make sure to display native controls if enabled:
 		if ( this.useNativePlayerControls() ) {
-			$( vid ).attr( 'controls', "true" );
+			$( vid ).attr( 'controls', 'true' );
 		}
 		// make sure the video is shown:
 		$( vid ).show();
@@ -307,7 +311,7 @@ mw.EmbedPlayerNative = {
 		_this.applyMediaElementBindings();
 
 		// Make sure we start playing in the correct place:
-		if ( this.currentTime != vid.currentTime ) {
+		if ( this.currentTime !== vid.currentTime ) {
 			var waitReadyStateCount = 0;
 			var checkReadyState = function () {
 				if ( vid.readyState > 0 ) {
@@ -315,7 +319,7 @@ mw.EmbedPlayerNative = {
 					return ;
 				}
 				if ( waitReadyStateCount > 1000 ) {
-					mw.log("Error: EmbedPlayerNative: could not run native seek");
+					mw.log( 'Error: EmbedPlayerNative: could not run native seek' );
 					return ;
 				}
 				waitReadyStateCount++;
@@ -330,7 +334,7 @@ mw.EmbedPlayerNative = {
 		// other mobile devices ( android 4, break if we call load at play time )
 		if ( !_this.loop &&
 			( mw.isIphone() || ( mw.isIpad() && mw.isIOS5() ) ) ) {
-			mw.log("EmbedPlayerNative::postEmbedActions: issue .load() call");
+			mw.log( 'EmbedPlayerNative::postEmbedActions: issue .load() call' );
 			vid.load();
 		}
 	},
@@ -339,30 +343,30 @@ mw.EmbedPlayerNative = {
 	 */
 	applyMediaElementBindings: function () {
 		var _this = this;
-		mw.log("EmbedPlayerNative::MediaElementBindings");
+		mw.log( 'EmbedPlayerNative::MediaElementBindings' );
 		var vid = this.getPlayerElement();
-		if ( ! vid ) {
-			mw.log( " Error: applyMediaElementBindings without player elemnet");
+		if ( !vid ) {
+			mw.log( 'Error: applyMediaElementBindings without player element' );
 			return ;
 		}
 		$.each( _this.nativeEvents, function ( inx, eventName ) {
-			if ( mw.isIOS8() && mw.isIphone() && eventName === "seeking" ) {
+			if ( mw.isIOS8() && mw.isIphone() && eventName === 'seeking' ) {
 				return;
 			}
-			$( vid ).unbind( eventName + '.embedPlayerNative').bind( eventName + '.embedPlayerNative', function () {
+			$( vid ).unbind( eventName + '.embedPlayerNative' ).bind( eventName + '.embedPlayerNative', function () {
 				// make sure we propagating events, and the current instance is in the correct closure.
-				if ( _this._propagateEvents && _this.instanceOf == 'Native' ) {
+				if ( _this._propagateEvents && _this.instanceOf === 'Native' ) {
 					var argArray = $.makeArray( arguments );
 					// Check if there is local handler:
 					if ( _this[ '_on' + eventName ] ) {
-						_this[ '_on' + eventName ].apply( _this, argArray);
+						_this[ '_on' + eventName ].apply( _this, argArray );
 					} else {
 						// No local handler directly propagate the event to the abstract object:
 						$( _this ).trigger( eventName, argArray );
 					}
 				}
-			});
-		});
+			} );
+		} );
 	},
 
 	// basic monitor function to update buffer
@@ -371,15 +375,14 @@ mw.EmbedPlayerNative = {
 		var vid = _this.getPlayerElement();
 		// Update the bufferedPercent
 		if ( vid && vid.buffered && vid.buffered.end && vid.duration ) {
-			try{
-				this.updateBufferStatus( vid.buffered.end( vid.buffered.length-1 ) / vid.duration );
+			try {
+				this.updateBufferStatus( vid.buffered.end( vid.buffered.length - 1 ) / vid.duration );
 			} catch ( e ) {
 				// opera does not have buffered.end zero index support ?
 			}
 		}
 		_this.parent_monitor();
 	},
-
 
 	/**
 	* Issue a seeking request.
@@ -399,13 +402,13 @@ mw.EmbedPlayerNative = {
 		}
 		mw.log( 'EmbedPlayerNative::seek p: ' + percent + ' : ' + this.supportsURLTimeEncoding() + ' dur: ' + this.getDuration() + ' sts:' + this.seekTimeSec );
 
-		// Save currentTime 
+		// Save currentTime
 		this.kPreSeekTime = _this.currentTime;
 
 		// Trigger preSeek event for plugins that want to store pre seek conditions.
-		var stopSeek = {value: false};
+		var stopSeek = { value: false };
 		this.triggerHelper( 'preSeek', [percent, stopAfterSeek, stopSeek] );
-		if (stopSeek.value) {
+		if ( stopSeek.value ) {
 			return;
 		}
 
@@ -420,11 +423,11 @@ mw.EmbedPlayerNative = {
 		// Run the onSeeking interface update
 		this.layoutBuilder.onSeek();
 
-		// @@todo check if the clip is loaded here (if so we can do a local seek)
+		// @@todo check if the clip is loaded here ( if so we can do a local seek )
 		if ( this.supportsURLTimeEncoding() ) {
 			// Make sure we could not do a local seek instead:
 			if ( percent < this.bufferedPercent && this.playerElement.duration && !this.didSeekJump ) {
-				mw.log( "EmbedPlayerNative::seek local seek " + percent + ' is already buffered < ' + this.bufferedPercent );
+				mw.log( 'EmbedPlayerNative::seek local seek ' + percent + ' is already buffered < ' + this.bufferedPercent );
 				this.doNativeSeek( percent );
 			} else {
 				// We support URLTimeEncoding call parent seek:
@@ -436,19 +439,19 @@ mw.EmbedPlayerNative = {
 				if ( stopAfterSeek ) {
 					_this.hideSpinner();
 					// pause in a non-blocking call to avoid synchronous playing event
-					setTimeout(function () {
+					setTimeout( function () {
 						_this.pause();
 						_this.updatePlayheadStatus();
-					}, 0);
+					}, 0 );
 				} else {
-					// continue to playback ( in a non-blocking call to avoid synchronous pause event ) 
-					setTimeout(function () {
+					// continue to playback ( in a non-blocking call to avoid synchronous pause event )
+					setTimeout( function () {
 						if ( !_this.stopPlayAfterSeek ) {
-							mw.log( "EmbedPlayerNative::sPlay after seek" );
+							mw.log( 'EmbedPlayerNative::sPlay after seek' );
 							_this.play();
 							_this.stopPlayAfterSeek = false;
 						}
-					},0);
+					}, 0 );
 				}
 			} );
 		}
@@ -457,14 +460,13 @@ mw.EmbedPlayerNative = {
 	/**
 	* Do a native seek by updating the currentTime
 	* @param {float} percent
-	* 		Percent to seek to of full time
+	*     Percent to seek to of full time
 	*/
 	doNativeSeek: function ( percent, callback ) {
-		
 		// If player already seeking, exit
 		var _this = this;
 		// chrome crashes with multiple seeks:
-		if ( (navigator.userAgent.indexOf('Chrome') === -1) && _this.playerElement.seeking ) {
+		if ( ( navigator.userAgent.indexOf( 'Chrome' ) === -1 ) && _this.playerElement.seeking ) {
 			return ;
 		}
 
@@ -479,7 +481,7 @@ mw.EmbedPlayerNative = {
 		}
 
 		var targetTime =  percent * this.getDuration();
-		
+
 		// adjust seek target per startOffset
 		if ( this.startOffset ) {
 			targetTime += parseFloat( this.startOffset );
@@ -501,17 +503,17 @@ mw.EmbedPlayerNative = {
 			if ( callback ) {
 				callback();
 			}
-		});
+		} );
 	},
 
 	/**
 	* Seek in a existing stream, we first play then seek to work around issues with iPad seeking.
 	*
 	* @param {Float} percent
-	* 		percent of the stream to seek to between 0 and 1
+	*     percent of the stream to seek to between 0 and 1
 	*/
 	doPlayThenSeek: function ( percent ) {
-		mw.log( 'EmbedPlayerNative::doPlayThenSeek::' + percent + ' isPaused ' + this.paused);
+		mw.log( 'EmbedPlayerNative::doPlayThenSeek::' + percent + ' isPaused ' + this.paused );
 		var _this = this;
 		var oldPauseState = this.paused;
 		this.play();
@@ -528,12 +530,12 @@ mw.EmbedPlayerNative = {
 				} );
 			} else {
 				// Try to get player for  30 seconds:
-				// (it would be nice if the onmetadata type callbacks where fired consistently)
+				// ( it would be nice if the onmetadata type callbacks where fired consistently )
 				if ( retryCount < 800 ) {
 					setTimeout( readyForSeek, 10 );
 					retryCount++;
 				} else {
-					mw.log( 'EmbedPlayerNative:: Error: doPlayThenSeek failed :' + _this.playerElement.duration);
+					mw.log( 'EmbedPlayerNative:: Error: doPlayThenSeek failed :' + _this.playerElement.duration );
 				}
 			}
 		};
@@ -544,34 +546,34 @@ mw.EmbedPlayerNative = {
 	* Set the current time with a callback
 	*
 	* @param {Float} position
-	* 		Seconds to set the time to
+	*     Seconds to set the time to
 	* @param {Function} callback
-	* 		Function called once time has been set.
+	*     Function called once time has been set.
 	*/
-	setCurrentTime: function ( seekTime , callback, callbackCount ) {
+	setCurrentTime: function ( seekTime, callback, callbackCount ) {
 		var _this = this;
 		if ( !callbackCount ) {
 			callbackCount = 0;
 		}
 		seekTime = parseFloat( seekTime );
-		mw.log( "EmbedPlayerNative:: setCurrentTime seekTime:" + seekTime + ' count:' + callbackCount );
+		mw.log( 'EmbedPlayerNative:: setCurrentTime seekTime:' + seekTime + ' count:' + callbackCount );
 		var vid = this.getPlayerElement();
 
-		if (this.currentState == "end" && mw.isIphone() ) {
+		if ( this.currentState === 'end' && mw.isIphone() ) {
 			vid.play();
 			this.playing = true;
 		}
-		
-		// some initial calls to prime the seek: 
-		if ( callbackCount == 0 && vid.currentTime == 0 ) {
+
+		// some initial calls to prime the seek:
+		if ( callbackCount === 0 && vid.currentTime === 0 ) {
 			// when seeking turn off preload none and issue a load call.
 			$( vid )
-				.attr('preload', 'auto')
+				.attr( 'preload', 'auto' )
 				[0].load();
 		}
-		
+
 		// Make sure all the timeouts don't seek to an expired target:
-		$( this ).data('currentSeekTarget', seekTime );
+		$( this ).data( 'currentSeekTarget', seekTime );
 
 		// add a callback handler to null out callback:
 		var callbackHandler = function () {
@@ -582,42 +584,42 @@ mw.EmbedPlayerNative = {
 				callback();
 				callback = null;
 			}
-		}
+		};
 
 		// Check if player is ready for seek:
 		if ( vid.readyState < 1 ) {
 			// if on the first call ( and video not ready issue load, play
-			if ( callbackCount == 0 && vid.paused ) {
+			if ( callbackCount === 0 && vid.paused ) {
 				this.stopEventPropagation();
-				$(vid).on('play.seekPrePlay',function () {
+				$( vid ).on( 'play.seekPrePlay', function () {
 					_this.restoreEventPropagation();
-					$(vid).off('play.seekPrePlay' );
-					// NOTE: there is no need to "pause" here since parent caller will 
+					$( vid ).off( 'play.seekPrePlay' );
+					// NOTE: there is no need to "pause" here since parent caller will
 					// handle if the player should continue to play at seek time or not .
-				});
+				} );
 				vid.load();
 				vid.play();
 			}
 			// Try to seek for 15 seconds:
 			if ( callbackCount >= 15 ) {
-				mw.log("Error:: EmbedPlayerNative: with seek request, media never in ready state");
+				mw.log( 'Error:: EmbedPlayerNative: with seek request, media never in ready state' );
 				callbackHandler();
 				return ;
 			}
 			setTimeout( function () {
 				// Check that this seek did not expire:
-				if ( $( _this ).data('currentSeekTarget') != seekTime ) {
-					mw.log("EmbedPlayerNative:: expired seek target");
+				if ( $( _this ).data( 'currentSeekTarget' ) !== seekTime ) {
+					mw.log( 'EmbedPlayerNative:: expired seek target' );
 					return ;
 				}
-				_this.setCurrentTime( seekTime, callback , callbackCount+1);
+				_this.setCurrentTime( seekTime, callback, callbackCount + 1 );
 			}, 1000 );
 			return ;
 		}
 		// Check if currentTime is already set to the seek target:
-		if ( vid.currentTime.toFixed( 2 ) == seekTime.toFixed( 2 ) ) {
-			mw.log("EmbedPlayerNative:: setCurrentTime: current time matches seek target: " +
-					vid.currentTime.toFixed(2) + ' == ' +  seekTime.toFixed(2) );
+		if ( vid.currentTime.toFixed( 2 ) === seekTime.toFixed( 2 ) ) {
+			mw.log( 'EmbedPlayerNative:: setCurrentTime: current time matches seek target: ' +
+					vid.currentTime.toFixed( 2 ) + ' == ' +  seekTime.toFixed( 2 ) );
 			callbackHandler();
 			return;
 		}
@@ -625,36 +627,36 @@ mw.EmbedPlayerNative = {
 		var seekBind = 'seeked.nativeSeekBind';
 
 		// Bind a seeked listener for the callback
-		$( vid ).unbind( seekBind ).bind( seekBind, function ( event ) {
+		$( vid ).unbind( seekBind ).bind( seekBind, function () {
 			// Remove the listener:
 			$( vid ).unbind( seekBind );
 
 			// Check if seeking to zero:
-			if ( seekTime == 0 && vid.currentTime == 0 ) {
+			if ( seekTime === 0 && vid.currentTime === 0 ) {
 				callbackHandler();
 				return ;
 			}
 			//not replay seek
 			if ( seekTime > 0.01 && _this.isFakeHlsSeek() ) {
 				var canPlayBind = 'canplay.nativePlayBind';
-				$( vid ).unbind( canPlayBind ).bind( canPlayBind, function ( event ) {
+				$( vid ).unbind( canPlayBind ).bind( canPlayBind, function () {
 					// Remove the listener:
 					$( vid ).unbind( canPlayBind );
 					callbackHandler();
-				});
+				} );
 			} else {
 				// Check if we got a valid seek:
 				if ( vid.currentTime > 0 ) {
 					callbackHandler();
 				} else {
-					mw.log( "Error:: EmbedPlayerNative: seek callback without time updated " + vid.currentTime );
+					mw.log( 'Error:: EmbedPlayerNative: seek callback without time updated ' + vid.currentTime );
 				}
 			}
-		});
-		setTimeout(function () {
+		} );
+		setTimeout( function () {
 			// Check that this seek did not expire:
-			if ( $( _this ).data('currentSeekTarget') != seekTime ) {
-				mw.log("EmbedPlayerNative:: Expired seek target");
+			if ( $( _this ).data( 'currentSeekTarget' ) !== seekTime ) {
+				mw.log( 'EmbedPlayerNative:: Expired seek target' );
 				return ;
 			}
 
@@ -662,11 +664,11 @@ mw.EmbedPlayerNative = {
 				// if seek is within 5 seconds of the target assume success. ( key frame intervals can mess with seek accuracy )
 				// this only runs where the seek callback failed ( i.e broken html5 seek ? )
 				if ( Math.abs( vid.currentTime - seekTime ) < 5 ) {
-					mw.log( "EmbedPlayerNative:: Video time: " + vid.currentTime + " is within 5 seconds of target" + seekTime + ", sucessfull seek");
+					mw.log( 'EmbedPlayerNative:: Video time: ' + vid.currentTime + ' is within 5 seconds of target ' + seekTime + ', sucessfull seek' );
 					callbackHandler();
 				} else {
 					mw.log( 'Error:: EmbedPlayerNative: Seek still has not made a callback after 5 seconds, retry' );
-					_this.setCurrentTime( seekTime, callback , callbackCount++ );
+					_this.setCurrentTime( seekTime, callback, callbackCount++ );
 				}
 			}
 		}, ( mw.isIOS8() && mw.isIpad() ) ? 100 : 5000 );
@@ -687,7 +689,7 @@ mw.EmbedPlayerNative = {
 		if ( !vid.seeking || ( mw.isIOS8() && vid.paused ) ) {
 			mw.log( 'Error:: not entering seek state, play and wait for positive time' );
 			vid.play();
-			setTimeout(function () {
+			setTimeout( function () {
 				_this.waitForPositiveCurrentTime( function () {
 					mw.log( 'EmbedPlayerNative:: Got possitive time:' + vid.currentTime.toFixed( 2 ) + ', trying to seek again' );
 					_this.setCurrentTime( seekTime, callback, callbackCount + 1 );
@@ -717,7 +719,7 @@ mw.EmbedPlayerNative = {
 		// Make sure we have .vid obj
 		this.getPlayerElement();
 		if ( !this.playerElement ) {
-			mw.log( 'EmbedPlayerNative::getPlayerElementTime: ' + this.id + ' not in dom ( stop monitor)' );
+			mw.log( 'EmbedPlayerNative::getPlayerElementTime: ' + this.id + ' not in dom ( stop monitor )' );
 			this.stop();
 			return false;
 		}
@@ -732,11 +734,11 @@ mw.EmbedPlayerNative = {
 
 	// Update the poster src ( updates the native object if in dom )
 	updatePoster: function ( src ) {
-		if (mw.getConfig( 'EmbedPlayer.HidePosterOnStart' ) === true) {
+		if ( mw.getConfig( 'EmbedPlayer.HidePosterOnStart' ) === true ) {
 			return;
 		}
 		if ( this.getPlayerElement() ) {
-			$( this.getPlayerElement() ).attr('poster', src );
+			$( this.getPlayerElement() ).attr( 'poster', src );
 		}
 		// Also update the embedPlayer poster
 		this.parent_updatePoster( src );
@@ -746,15 +748,15 @@ mw.EmbedPlayerNative = {
 	 */
 	emptySources: function () {
 		var _this = this;
-		//When empty source - we get a video error (from latest version)
+		//When empty source - we get a video error ( from latest version )
 		this.ignoreNextError = true;
-		setTimeout(function () {
+		setTimeout( function () {
 			//reset the flag
 			_this.ignoreNextError = false;
 		}, 5000 );
 		// empty player source:
 		$( this.getPlayerElement() ).attr( 'src', null )
-			.attr( 'poster', null);
+			.attr( 'poster', null );
 		// empty out generic sources:
 		this.parent_emptySources();
 	},
@@ -853,7 +855,7 @@ mw.EmbedPlayerNative = {
 				}
 				// load the updated src
 				//only on desktop safari we need to load - otherwise we get the same movie play again.
-				if (mw.isDesktopSafari()) {
+				if ( mw.isDesktopSafari() ) {
 					vid.load();
 				}
 
@@ -862,19 +864,19 @@ mw.EmbedPlayerNative = {
 
 				// restore position once we have metadata
 				$( vid ).bind( 'loadedmetadata' + switchBindPostfix, function () {
-					$( vid ).unbind( 'loadedmetadata' + switchBindPostfix);
+					$( vid ).unbind( 'loadedmetadata' + switchBindPostfix );
 					mw.log( 'EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback for:' + src );
 					// ( do not update the duration )
 					// Android and iOS <5 gives bogus duration, depend on external metadata
 
 					// keep going towards playback! if  switchCallback has not been called yet
 					// we need the "playing" event to trigger the switch callback
-					if (!mw.isIOS71() && $.isFunction(switchCallback) && !_this.isVideoSiblingEnabled()) {
+					if ( !mw.isIOS71() && $.isFunction( switchCallback ) && !_this.isVideoSiblingEnabled() ) {
 						vid.play();
 					} else {
 						_this.removeBlackScreen();
 					}
-				});
+				} );
 
 				var handleSwitchCallback = function () {
 					// restore video position ( now that we are playing with metadata size  )
@@ -928,20 +930,20 @@ mw.EmbedPlayerNative = {
 						//	vid.play();
 						//}
 						return false;
-					});
+					} );
 
-					// Check if ended event was fired on chrome (android devices), if not fix by time difference approximation
+					// Check if ended event was fired on chrome ( android devices ), if not fix by time difference approximation
 					if ( mw.isMobileChrome() ) {
 						$( vid ).bind( 'timeupdate' + switchBindPostfix, function () {
 							var _this = this;
 							var timeDiff = this.duration  - this.currentTime;
 
 							if ( timeDiff < 0.5 ) {
-								_this.mobileChromeTimeoutID = setTimeout(function () {
+								_this.mobileChromeTimeoutID = setTimeout( function () {
 									_this.mobileChromeTimeoutID = null;
 									// Check if timeDiff was changed in the last 2 seconds
-									if ( timeDiff <= (_this.duration - _this.currentTime) ) {
-										mw.log( 'EmbedPlayerNative:: playerSwitchSource> error in getting ended event, issue doneCallback directly.');
+									if ( timeDiff <= ( _this.duration - _this.currentTime ) ) {
+										mw.log( 'EmbedPlayerNative:: playerSwitchSource> error in getting ended event, issue doneCallback directly.' );
 										if ( !sentDoneCallback ) {
 											$( vid ).unbind( switchBindPostfix );
 											sentDoneCallback = true;
@@ -951,20 +953,20 @@ mw.EmbedPlayerNative = {
 									}
 								}, 2000 );
 							}
-						});
+						} );
 					}
 				}
 
 				// issue the play request:
 				vid.play();
-				if ( mw.isIOS()) {
-					setTimeout(function () {
+				if ( mw.isIOS() ) {
+					setTimeout( function () {
 						handleSwitchCallback();
 					}, 100 );
 				}
 				// check if ready state is loading or doing anything ( iOS play restriction )
 				// give iOS 5 seconds to ~start~ loading media
-				setTimeout(function () {
+				setTimeout( function () {
 					// Check that the player got out of readyState 0
 					if ( vid.readyState === 0 && $.isFunction( switchCallback ) &&  !_this.canAutoPlay() ) {
 						mw.log( 'EmbedPlayerNative:: Error: possible play without user click gesture, issue callback' );
@@ -981,16 +983,16 @@ mw.EmbedPlayerNative = {
 		}
 	},
 	hidePlayerOffScreen:function ( vid ) {
-		var vid = this.getPlayerElement();
+		vid = this.getPlayerElement();
 		// Move the video offscreen while it switches ( hides quicktime logo only applies to iPad )
 		$( vid ).css( {
 			'position': 'absolute',
 			'left': '-4048px'
-		});
+		} );
 	},
 	restorePlayerOnScreen: function ( vid ) {
-		var vid = this.getPlayerElement();
-		if ( this.keepPlayerOffScreenFlag || this.instanceOf != 'Native' ) {
+		vid = this.getPlayerElement();
+		if ( this.keepPlayerOffScreenFlag || this.instanceOf !== 'Native' ) {
 			return ;
 		}
 		// Remove any poster div ( that would overlay the player )
@@ -1022,7 +1024,7 @@ mw.EmbedPlayerNative = {
 	*/
 	play: function () {
 		var vid = this.getPlayerElement();
-		// parent.$('body').append( $('<a />').attr({ 'style': 'position: absolute; top:0;left:0;', 'target': '_blank', 'href': this.getPlayerElement().src }).text('SRC') );
+		// parent.$( 'body' ).append( $( '<a />' ).attr( { 'style': 'position: absolute; top:0;left:0;', 'target': '_blank', 'href': this.getPlayerElement().src } ).text( 'SRC' ) );
 		var _this = this;
 
 		var nativeCalloutPlugin = {
@@ -1049,7 +1051,7 @@ mw.EmbedPlayerNative = {
 				if ( _this.getPlayerElement() && _this.getPlayerElement().play ) {
 					mw.log( 'EmbedPlayerNative:: issue native play call:' );
 					// make sure the source is set:
-					if ( $( vid).attr( 'src' ) !==  _this.getSrc() ) {
+					if ( $( vid ).attr( 'src' ) !==  _this.getSrc() ) {
 						$( vid ).attr( 'src', _this.getSrc() );
 					}
 					_this.hideSpinnerOncePlaying();
@@ -1060,7 +1062,7 @@ mw.EmbedPlayerNative = {
 						$( _this ).find( '.playerPoster' ).remove();
 					}
 					// if using native controls make sure the inteface does not block the native controls interface:
-					if ( _this.useNativePlayerControls() && $( _this ).find( 'video ').length === 0 ) {
+					if ( _this.useNativePlayerControls() && $( _this ).find( 'video ' ).length === 0 ) {
 						$( _this ).hide();
 					}
 					// if it's iOS8 the player won't play
@@ -1099,9 +1101,9 @@ mw.EmbedPlayerNative = {
 						vid.pause();
 						vid.play();
 					}
-				});
+				} );
 				doPlay();
-			});
+			} );
 		}  else {
 			doPlay();
 		}
@@ -1111,7 +1113,7 @@ mw.EmbedPlayerNative = {
 	 * Stop the player ( end all listeners )
 	 */
 	stop: function () {
-		if ( this.playerElement && this.playerElement.currentTime) {
+		if ( this.playerElement && this.playerElement.currentTime ) {
 			this.playerElement.pause();
 		}
 		this.parent_stop();
@@ -1214,10 +1216,10 @@ mw.EmbedPlayerNative = {
 	_onseeking: function () {
 		// don't handle seek event on Android native browser
 		var nua = navigator.userAgent;
-		var isNativeAndroidBrowser = ((nua.indexOf('Mozilla/5.0') > -1 &&
-			nua.indexOf('Android ') > -1 &&
-			nua.indexOf('AppleWebKit') > -1) &&
-			!(nua.indexOf('Chrome') > -1));
+		var isNativeAndroidBrowser = ( ( nua.indexOf( 'Mozilla/5.0' ) > -1 &&
+			nua.indexOf( 'Android ' ) > -1 &&
+			nua.indexOf( 'AppleWebKit' ) > -1 ) &&
+			nua.indexOf( 'Chrome' ) <= -1 );
 
 		if ( isNativeAndroidBrowser ) {
 			return;
@@ -1225,7 +1227,7 @@ mw.EmbedPlayerNative = {
 		mw.log( 'EmbedPlayerNative::onSeeking ' + this.seeking + ' new time: ' + this.getPlayerElement().currentTime );
 		if ( this.seeking && Math.round( this.getPlayerElement().currentTime - this.currentSeekTargetTime ) > 2 ) {
 			mw.log( 'Error:: EmbedPlayerNative Seek time missmatch: target:' + this.getPlayerElement().currentTime +
-					' actual ' + this.currentSeekTargetTime + ', note apple HLS can only seek to 10 second targets');
+					' actual ' + this.currentSeekTargetTime + ', note apple HLS can only seek to 10 second targets' );
 		}
 		// Trigger the html5 seeking event
 		//( if not already set from interface )
@@ -1236,7 +1238,7 @@ mw.EmbedPlayerNative = {
 			this.layoutBuilder.onSeek();
 
 			// Trigger the html5 "seeking" trigger
-			mw.log( 'EmbedPlayerNative::seeking:trigger:: ' + this.seeking);
+			mw.log( 'EmbedPlayerNative::seeking:trigger:: ' + this.seeking );
 			if ( this._propagateEvents ) {
 				this.triggerHelper( 'seeking' );
 			}
@@ -1269,7 +1271,7 @@ mw.EmbedPlayerNative = {
 			this.isFlavorSwitching = false;
 			if ( this._propagateEvents ) {
 				mw.log( 'EmbedPlayerNative:: trigger: seeked' );
-				this.triggerHelper( 'seeked', [this.currentTime]);
+				this.triggerHelper( 'seeked', [this.currentTime] );
 			}
 		}
 		this.hideSpinner();
@@ -1299,7 +1301,7 @@ mw.EmbedPlayerNative = {
 		) {
 			_this.parent_pause();
 			// in iphone when we're back from the native payer we need to show the image with the play button
-			if (mw.isIphone())
+			if ( mw.isIphone() )
 			{
 				_this.updatePosterHTML();
 			}
@@ -1313,21 +1315,21 @@ mw.EmbedPlayerNative = {
 	* Handle the native play event
 	*/
 	_onplay: function () {
-		mw.log( 'EmbedPlayerNative:: OnPlay:: propogate:' +  this._propagateEvents + ' paused: ' + this.paused);
+		mw.log( 'EmbedPlayerNative:: OnPlay:: propogate:' +  this._propagateEvents + ' paused: ' + this.paused );
 		// if using native controls make sure the inteface does not block the native controls interface:
-		if ( this.useNativePlayerControls() && $( this ).find( 'video ').length === 0 ) {
+		if ( this.useNativePlayerControls() && $( this ).find( 'video ' ).length === 0 ) {
 			$( this ).hide();
 		}
 
 		// Update the interface ( if paused )
-		if ( !this.ignoreNextNativeEvent && this._propagateEvents && this.paused && ( mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') === true ) ) {
+		if ( !this.ignoreNextNativeEvent && this._propagateEvents && this.paused && ( mw.getConfig( 'EmbedPlayer.EnableIpadHTMLControls' ) === true ) ) {
 			this.parent_play();
 		} else {
 			// make sure the interface reflects the current play state if not calling parent_play()
 			this.playInterfaceUpdate();
 			this.absoluteStartPlayTime = new Date().getTime();
 			// We need first play event for analytics purpose
-			if ( this.firstPlay && this._propagateEvents) {
+			if ( this.firstPlay && this._propagateEvents ) {
 				this.firstPlay = false;
 				this.triggerHelper( 'firstPlay' );
 			}
@@ -1354,7 +1356,7 @@ mw.EmbedPlayerNative = {
 				&&
 				!isNaN( this.playerElement.duration )
 				&&
-				isFinite( this.playerElement.duration)
+				isFinite( this.playerElement.duration )
 		) {
 			mw.log( 'EmbedPlayerNative :onloadedmetadata metadata ready Update duration:' + this.playerElement.duration + ' old dur: ' + this.getDuration() );
 			this.setDuration( this.playerElement.duration );
@@ -1413,17 +1415,17 @@ mw.EmbedPlayerNative = {
 			return;
 		}
 		var _this = this;
-		setTimeout(function () {
+		setTimeout( function () {
 			if ( _this.triggerNetworkErrorsFlag ) {
 				var data = [];
 				if ( event && event.currentTarget && event.currentTarget.error ) {
 					data.errorCode = event.currentTarget.error.code;
-					mw.log( 'EmbedPlayerNative::_onerror: MediaError code: ' + data.errorCode);
+					mw.log( 'EmbedPlayerNative::_onerror: MediaError code: ' + data.errorCode );
 				}
 
 				_this.triggerHelper( 'embedPlayerError', [ data ] );
 			}
-		}, 3000);
+		}, 3000 );
 	},
 
 	/**
@@ -1476,13 +1478,13 @@ mw.EmbedPlayerNative = {
 	},
 
 	closeNativeFullScreen: function () {
-		if ( !mw.getConfig( 'EmbedPlayer.ForceNativeFullscreenOnClipDone' ) && !this.keepNativeFullScreen) {
+		if ( !mw.getConfig( 'EmbedPlayer.ForceNativeFullscreenOnClipDone' ) && !this.keepNativeFullScreen ) {
 			mw.log( 'EmbedPlayer::onClipDone: Exit full screen' );
 			this.getPlayerElement().webkitExitFullScreen();
 		}
 	},
 	enableNativeControls: function () {
-		$( this.getPlayerElement() ).attr('controls', 'true');
+		$( this.getPlayerElement() ).attr( 'controls', 'true' );
 	},
 
 	backToLive: function () {
@@ -1497,7 +1499,7 @@ mw.EmbedPlayerNative = {
 	 * @returns {boolean} true if seek event is fake, false if valid
 	 */
 	isFakeHlsSeek: function () {
-		return ( (Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2) || ( mw.isIpad() && this.currentSeekTargetTime > 0.01 && !mw.isIOS8() ) );
+		return ( ( Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2 ) || ( mw.isIpad() && this.currentSeekTargetTime > 0.01 && !mw.isIOS8() ) );
 	},
 
 	isVideoSiblingEnabled: function () {

@@ -1,18 +1,23 @@
-( function( mw, $ ) { "use strict";
+/*globals kWidget, alert, console*/
+( function ( mw, $ ) {
+	'use strict';
+
 var NativeBridge = {
-	callbacksCount : 1,
-	callbacks : {},
+	callbacksCount: 1,
+	callbacks: {},
 
 	// Automatically called by native layer when a result is available
-	resultForCallback : function resultForCallback(callbackId, resultArray) {
+	resultForCallback: function resultForCallback( callbackId, resultArray ) {
 		try {
 			var callback = NativeBridge.callbacks[callbackId];
-			if (!callback) {
+			if ( !callback ) {
 				return;
 			}
 
-			callback.apply(null,resultArray);
-		} catch(e) {alert(e);}
+			callback.apply( null, resultArray );
+		} catch ( e ) {
+			alert( e );
+		}
 	},
 
 	// Use this in javascript to request native objective-c code
@@ -21,17 +26,17 @@ var NativeBridge = {
 	// callback : function with n-arguments that is going to be called when the native code returned
 	call: function call( functionName, args, callback ) {
 
-		var hasCallback = callback && typeof callback === "function";
+		var hasCallback = callback && typeof callback === 'function';
 		var callbackId = hasCallback ? NativeBridge.callbacksCount++ : 0;
 
-		if (hasCallback) {
+		if ( hasCallback ) {
 			NativeBridge.callbacks[callbackId] = callback;
 		}
 
-		var iframe = document.createElement("IFRAME");
-		iframe.setAttribute("src", "js-frame:" + functionName + ":" + callbackId+ ":" + encodeURIComponent(JSON.stringify(args)));
-		document.documentElement.appendChild(iframe);
-		iframe.parentNode.removeChild(iframe);
+		var iframe = document.createElement( 'IFRAME' );
+		iframe.setAttribute( 'src', 'js-frame:' + functionName + ':' + callbackId + ':' + encodeURIComponent( JSON.stringify( args ) ) );
+		document.documentElement.appendChild( iframe );
+		iframe.parentNode.removeChild( iframe );
 		iframe = null;
 	}
 };
@@ -40,53 +45,53 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 	proxyElement: null,
 	embedPlayer: null,
 	isJsCallbackReady: false,
-	bindPostfix: ".nativeBridge",
+	bindPostfix: '.nativeBridge',
 	subscribed: [],
 	playerMethods: [ 'stop', 'play', 'pause', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen', 'notifyKPlayerEvent', 'notifyKPlayerEvaluated', 'notifyJsReady', 'showChromecastDeviceList', 'notifyLayoutReady',
 		'doneFSBtnPressed', 'addNativeAirPlayButton', 'showNativeAirPlayButton', 'hideNativeAirPlayButton' ],
 
-	registePlayer: function (proxyElement) {
+	registePlayer: function ( proxyElement ) {
 		var _this = this;
 		this.proxyElement = proxyElement;
 		for (var i = 0; i < this.playerMethods.length; i++) {
 			(function (method) {
 				_this.proxyElement[method] = function (arg) {
 					_this.execute(method, arg);
-				}
+				};
 			})(this.playerMethods[i]);
 		}
-		this.proxyElement.attr = function( attributeName, attributeValue ){
-			if( attributeName && attributeValue === undefined ) {
+		this.proxyElement.attr = function ( attributeName, attributeValue ) {
+			if ( attributeName && attributeValue === undefined ) {
 				return _this.proxyElement[ attributeName ];
-			} else if( attributeName && attributeValue ){
+			} else if ( attributeName && attributeValue ) {
 				_this.proxyElement[attributeName] = attributeValue;
-				_this.execute('setAttribute', [ attributeName, attributeValue ]);
+				_this.execute( 'setAttribute', [ attributeName, attributeValue ] );
 			}
-		}
+		};
 
 		//TODO support more than 1 subscribe?
-		this.proxyElement.subscribe = function( callback, eventName ) {
+		this.proxyElement.subscribe = function ( callback, eventName ) {
 			_this.subscribed[eventName] = callback;
-		}
+		};
 
-		this.proxyElement.unsubscribe = function( eventName ) {
+		this.proxyElement.unsubscribe = function ( eventName ) {
 			_this.subscribed[eventName] = undefined;
-		}
+		};
 
 		this.bindNativeEvents();
 	},
 
-	notifyJsReadyFunc: function() {
+	notifyJsReadyFunc: function () {
 		if ( this.isJsCallbackReady && this.proxyElement ) {
 			this.proxyElement.notifyJsReady( [] );
 		}
 	},
 
-	registerEmbedPlayer: function( embedPlayer ) {
+	registerEmbedPlayer: function ( embedPlayer ) {
 		this.embedPlayer = embedPlayer;
 		this.notifyJsReadyFunc();
 	},
-	sendNotification: function( eventName, eventValue ) {
+	sendNotification: function ( eventName, eventValue ) {
 		this.embedPlayer.sendNotification( eventName, JSON.parse( eventValue ));
 	},
 	/**
@@ -96,21 +101,21 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 	 */
 	getObjectString: function ( object ) {
 		var stringValue = object;
-		if ( typeof object === "object" ) {
+		if ( typeof object === 'object' ) {
 			stringValue =  JSON.stringify( object );
 		}
 		return stringValue;
 	},
-	addJsListener: function( eventName ){
+	addJsListener: function ( eventName ) {
 		var _this = this;
-		this.embedPlayer.addJsListener( eventName + this.bindPostfix, function( val ) {
+		this.embedPlayer.addJsListener( eventName + this.bindPostfix, function ( val ) {
 			_this.embedPlayer.getPlayerElement().notifyKPlayerEvent( [ eventName, _this.getObjectString( val ) ] );
-		});
+		} );
 	},
-	removeJsListener: function( eventName ) {
+	removeJsListener: function ( eventName ) {
 		this.embedPlayer.removeJsListener( eventName + this.bindPostfix );
 	},
-	setKDPAttribute: function( host, prop, value ) {
+	setKDPAttribute: function ( host, prop, value ) {
 		this.embedPlayer.setKDPAttribute( host, prop, value );
 	},
 	/**
@@ -118,33 +123,33 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 	 * @param expression
 	 * @param callbackName
 	 */
-	asyncEvaluate: function( expression, callbackName ) {
+	asyncEvaluate: function ( expression, callbackName ) {
 		var result = this.embedPlayer.evaluate( expression );
 		this.embedPlayer.getPlayerElement().notifyKPlayerEvaluated( [ callbackName, this.getObjectString( result ) ]);
 	},
 	//this function should be called from IOS/Andorid
-	trigger: function (eventName, eventValue) {
+	trigger: function ( eventName, eventValue ) {
 	//	mw.log('nativeBridge.js --> trigger:' + eventName + ' ' + eventValue);
-
-		if (eventValue === "(null)") {
+		var jsEventValue;
+		if (eventValue === '(null)' ) {
 			//set undefined
 			eventValue = void(0);
 		}
 
-		if(eventValue != undefined){
-			var jsEventValue = this.stringConvertion( eventValue );
+		if ( eventValue !== undefined) {
+			jsEventValue = this.stringConvertion( eventValue );
 		}
 
 		$( this.proxyElement).trigger( eventName, [jsEventValue] );
 
-		if (eventName == 'timeupdate'){
-			this.proxyElement['currentTime'] = jsEventValue;
-		}else if (eventName == 'progress'){
-			this.proxyElement['progress'] = jsEventValue;
-		}else if (eventName == 'visible'){
-			this.proxyElement['visible']  = jsEventValue;
-		} else if (eventName == 'durationchange') {
-			this.proxyElement['duration'] = jsEventValue;
+		if (eventName === 'timeupdate') {
+			this.proxyElement.currentTime = jsEventValue;
+		}else if (eventName === 'progress') {
+			this.proxyElement.progress = jsEventValue;
+		}else if (eventName === 'visible') {
+			this.proxyElement.visible = jsEventValue;
+		} else if (eventName === 'durationchange') {
+			this.proxyElement.duration = jsEventValue;
 		}
 
 		if ( this.subscribed[eventName] ) {
@@ -155,25 +160,25 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 		args = args || [];
 		console.log(command);
 		console.log(args);
-		NativeBridge.call(command , args);
+		NativeBridge.call(command, args);
 	},
-	bindNativeEvents: function(){
+	bindNativeEvents: function () {
 		console.log('bindNativeEvents');
 		this.proxyElement.bindPlayerEvents( [] );
 	},
-	log:function(message,arg){
-		console.log(message,arg);
+	log: function ( message, arg ) {
+		console.log( message, arg );
 	},
 
-	stringConvertion: function (str){
+	stringConvertion: function (str ) {
 		var value = parseFloat(str);
 
-		if(isNaN(value)){
-			if(value == 'true'){
+		if (isNaN( value ) ) {
+			if ( value === 'true' ) {
 				return true;
-			}else if(value == 'false'){
+			} else if ( value === 'false' ) {
 				return false;
-			}else{
+			} else {
 				return str;
 			}
 		}
@@ -182,10 +187,9 @@ NativeBridge.videoPlayer = NativeBridge.videoPlayer  || {
 	}
 };
 
-
 if ( mw.getConfig('EmbedPlayer.ForceNativeComponent') === true ) {
-	window["NativeBridge"] = NativeBridge;
-	kWidget.addReadyCallback(  function() {
+	window.NativeBridge = NativeBridge;
+	kWidget.addReadyCallback( function () {
 		NativeBridge.videoPlayer.isJsCallbackReady = true;
 		NativeBridge.videoPlayer.notifyJsReadyFunc();
 	} );

@@ -46,7 +46,7 @@ mw.EmbedPlayerKplayer = {
 		// If container exists, show the player and exit
 		if ( $container.length ) {
 			this.enablePlayerObject( true );
-			$container.css('visibility', 'visible');
+			$container.css('visibility', 'visible' );
 			readyCallback();
 			return;
 		}
@@ -84,7 +84,7 @@ mw.EmbedPlayerKplayer = {
 			flashvars.flavorId = _this.getKalturaAttributeConfig( 'flavorId' );
 			if ( !flashvars.flavorId && _this.mediaElement.selectedSource ) {
 				flashvars.flavorId = _this.mediaElement.selectedSource.getAssetId();
-				//_this workaround saves the last real flavorId (usefull for example in widevine_mbr replay )
+				//_this workaround saves the last real flavorId (usefull for example in widevine_mbr replay)
 				_this.setFlashvars( 'flavorId', flashvars.flavorId );
 			}
 
@@ -167,7 +167,7 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	isHlsSource: function ( source ) {
-		if ( source && (source.getMIMEType() === 'application/vnd.apple.mpegurl' )) {
+		if ( source && ( source.getMIMEType() === 'application/vnd.apple.mpegurl' ) ) {
 			return true;
 		}
 		return false;
@@ -236,7 +236,7 @@ mw.EmbedPlayerKplayer = {
 		if ( flavorTags === undefined ) {
 			var sources = _this.mediaElement.getPlayableSources();
 			$.each( sources, function ( sourceIndex, source ) {
-				if ( _this.checkForTags( source.getTags(), ['web', 'mbr'] ) || ( _this.isHlsSource( source ))) {
+				if ( _this.checkForTags( source.getTags(), ['web', 'mbr'] ) || ( _this.isHlsSource( source ) ) ) {
 					sourcesByTags.push ( source );
 				}
 			} );
@@ -262,10 +262,10 @@ mw.EmbedPlayerKplayer = {
 				//cancel the autoPlay once Flash starts the live checks
 				this.cancelLiveAutoPlay = true;
 			} else if ( this.playerObject ) {
-				this.playerObject.setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'true');
+				this.playerObject.setKDPAttribute( 'configProxy.flashvars', 'autoPlay', 'true' );
 			}
 			//with rtmp the first seconds look offline, delay the "offline" message
-			this.setKDPAttribute('liveCore', 'offlineAlertOffest', this.LIVE_OFFLINE_ALERT_TIMEOUT);
+			this.setKDPAttribute( 'liveCore', 'offlineAlertOffest', this.LIVE_OFFLINE_ALERT_TIMEOUT );
 			$( this ).bind( 'layoutBuildDone', function () {
 				_this.disablePlayControls();
 			} );
@@ -282,12 +282,12 @@ mw.EmbedPlayerKplayer = {
 		this.playerObject.setKDPAttribute( 'mediaProxy', 'isLive', this.isLive() );
 		this.playerObject.setKDPAttribute( 'mediaProxy', 'isMp4', this.isMp4Src() );
 		this.playerObject.setKDPAttribute( 'mediaProxy', 'entryDuration', this.getDuration() );
-		this.getEntryUrl().then(function ( srcToPlay ) {
+		this.getEntryUrl().then( function ( srcToPlay ) {
 			_this.playerObject.sendNotification( 'changeMedia', {
 				entryUrl: srcToPlay
-			});
+			} );
 			callback();
-		});
+		} );
 
 	},
 
@@ -317,7 +317,7 @@ mw.EmbedPlayerKplayer = {
 	 * parent_play
 	 */
 	onPlay: function () {
-		if (this._propagateEvents) {
+		if ( this._propagateEvents ) {
 			$( this ).trigger( 'playing' );
 			this.hideSpinner();
 			if ( this.isLive() ) {
@@ -328,7 +328,7 @@ mw.EmbedPlayerKplayer = {
 		}
 	},
 
-	onDurationChange: function ( data /*, id */) {
+	onDurationChange: function ( data /*, id */ ) {
 		// Update the duration ( only if not in url time encoding mode:
 		if ( !this.supportsURLTimeEncoding() ) {
 			this.setDuration( data.newValue );
@@ -382,7 +382,7 @@ mw.EmbedPlayerKplayer = {
 	 * play method calls parent_play to update the interface
 	 */
 	play: function () {
-		mw.log('EmbedPlayerKplayer::play');
+		mw.log( 'EmbedPlayerKplayer::play' );
 		var shouldDisable = false;
 		if ( this.isLive() && this.paused ) {
 			shouldDisable = true;
@@ -396,7 +396,7 @@ mw.EmbedPlayerKplayer = {
 			this.playerObject.play();
 			this.monitor();
 		} else {
-			mw.log( 'EmbedPlayerKPlayer:: parent play returned false, don\'t issue play on kplayer element');
+			mw.log( 'EmbedPlayerKPlayer:: parent play returned false, don\'t issue play on kplayer element' );
 		}
 	},
 
@@ -426,7 +426,7 @@ mw.EmbedPlayerKplayer = {
 		if ( switchCallback ) {
 			switchCallback( this.playerObject );
 		}
-		setTimeout(function () {
+		setTimeout( function () {
 			if ( doneCallback ) {
 				doneCallback();
 			}
@@ -444,11 +444,11 @@ mw.EmbedPlayerKplayer = {
 		this.seekStarted = true;
 		var seekTime = percentage * this.getDuration();
 		mw.log( 'EmbedPlayerKalturaKplayer:: seek: ' + percentage + ' time:' + seekTime );
-		if (this.supportsURLTimeEncoding()) {
+		if ( this.supportsURLTimeEncoding() ) {
 
 			// Make sure we could not do a local seek instead:
-			if (!(percentage < this.bufferedPercent
-					&& this.playerObject.duration && !this.didSeekJump)) {
+			if ( !( percentage < this.bufferedPercent
+					&& this.playerObject.duration && !this.didSeekJump ) ) {
 				// We support URLTimeEncoding call parent seek:
 				this.parent_seek( percentage );
 				return;
@@ -492,7 +492,7 @@ mw.EmbedPlayerKplayer = {
 					}
 				}, 0 );
 			}
-		});
+		} );
 
 		if ( this.firstPlay ) {
 			this.stopEventPropagation();
@@ -533,14 +533,14 @@ mw.EmbedPlayerKplayer = {
 	/**
 	 * function called by flash when the total media size changes
 	 */
-	onBytesTotalChange: function ( data /*, id */) {
+	onBytesTotalChange: function ( data /*, id */ ) {
 		this.bytesTotal = data.newValue;
 	},
 
 	/**
 	 * function called by flash applet when download bytes changes
 	 */
-	onBytesDownloadedChange: function ( data /*, id */) {
+	onBytesDownloadedChange: function ( data /*, id */ ) {
 		this.bytesLoaded = data.newValue;
 		this.bufferedPercent = this.bytesLoaded / this.bytesTotal;
 		// Fire the parent html5 action
@@ -553,7 +553,7 @@ mw.EmbedPlayerKplayer = {
 		}
 		this.previousTime = this.currentTime = this.flashCurrentTime = this.playerObject.getCurrentTime();
 		this.seeking = false;
-		if (this.seekStarted) {
+		if ( this.seekStarted ) {
 			this.seekStarted = false;
 			$( this ).trigger( 'seeked', [this.playerObject.getCurrentTime()] );
 		}
@@ -564,7 +564,7 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onSwitchingChangeComplete: function ( data /*, id*/ ) {
-		if (data && data.newBitrate) {
+		if ( data && data.newBitrate ) {
 			this.triggerHelper( 'bitrateChange', data.newBitrate );
 		}
 		this.mediaElement.setSourceByIndex ( data.newIndex );
@@ -587,9 +587,9 @@ mw.EmbedPlayerKplayer = {
 							break;
 						}
 					}
-				});
+				} );
 			}
-			this.setKDPAttribute( 'sourceSelector', 'visible', true);
+			this.setKDPAttribute( 'sourceSelector', 'visible', true );
 			this.parent_onFlavorsListChanged( flavors );
 		}
 	},
@@ -688,14 +688,14 @@ mw.EmbedPlayerKplayer = {
 	getEntryUrl: function () {
 		var deferred = $.Deferred();
 		var originalSrc = this.mediaElement.selectedSource.getSrc();
-		if ( this.isHlsSource( this.mediaElement.selectedSource )) {
+		if ( this.isHlsSource( this.mediaElement.selectedSource ) ) {
 
 			this.resolveSrcURL( originalSrc )
-				.then(function ( srcToPlay ) {
+				.then( function ( srcToPlay ) {
 				deferred.resolve( srcToPlay );
 			}, function () { //error
 				deferred.resolve( originalSrc );
-			});
+			} );
 			return deferred;
 		}
 
@@ -703,7 +703,7 @@ mw.EmbedPlayerKplayer = {
 			deferred.resolve( originalSrc );
 		}
 		var flavorIdParam = '';
-		var mediaProtocol = this.getKalturaAttributeConfig( 'mediaProtocol' ) || mw.getConfig('Kaltura.Protocol') || 'http';
+		var mediaProtocol = this.getKalturaAttributeConfig( 'mediaProtocol' ) || mw.getConfig( 'Kaltura.Protocol' ) || 'http';
 		var format;
 		var fileExt = 'f4m';
 		if ( this.streamerType === 'hdnetwork' ) {
@@ -726,7 +726,7 @@ mw.EmbedPlayerKplayer = {
 				+ this.getPlaymanifestArg( 'tags', 'flavorTags' ) + '/a/a.' + fileExt + '?referrer=' + this.b64Referrer;
 		var refObj = { src: srcUrl };
 		this.triggerHelper( 'SourceSelected', refObj );
-		deferred.resolve(refObj.src);
+		deferred.resolve( refObj.src );
 		return deferred;
 	},
 
@@ -766,7 +766,7 @@ mw.EmbedPlayerKplayer = {
 			//other streamerTypes will update the source upon "switchingChangeComplete"
 			this.mediaElement.setSource ( source );
 			this.getEntryUrl().then( function ( srcToPlay ) {
-				_this.playerObject.setKDPAttribute( 'mediaProxy', 'entryUrl', srcToPlay);
+				_this.playerObject.setKDPAttribute( 'mediaProxy', 'entryUrl', srcToPlay );
 				_this.playerObject.sendNotification( 'doSwitch', { flavorIndex: _this.getSourceIndex( source ) } );
 			} );
 			return;
@@ -778,10 +778,10 @@ mw.EmbedPlayerKplayer = {
 	},
 	backToLive: function () {
 		this.triggerHelper( 'movingBackToLive' );
-		this.playerObject.sendNotification('goLive');
+		this.playerObject.sendNotification( 'goLive' );
 	},
 	setKPlayerAttribute: function ( host, prop, val ) {
-		this.playerObject.setKDPAttribute(host, prop, val);
+		this.playerObject.setKDPAttribute( host, prop, val );
 	},
 	clean: function () {
 		$( this.getPlayerContainer() ).remove();

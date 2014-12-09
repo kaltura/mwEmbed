@@ -25,6 +25,7 @@ modules/Tremor
 modules/Widevine
 modules/*/tests
 modules/EmbedPlayer/binPlayers/cordova
+modules/EmbedPlayer/resources/playerElement/Silverlight.js
 modules/MwEmbedSupport/iscroll
 modules/MwEmbedSupport/jquery/jquery.color.js
 modules/MwEmbedSupport/jquery/jquery.debouncedresize.js

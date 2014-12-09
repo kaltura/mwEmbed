@@ -1,7 +1,8 @@
-( function( mw, $ ) {"use strict";
+( function ( mw, $ ) {
+	'use strict';
 
 // Class defined in resources/class/class.js
-	mw.PlayerElementFlash = mw.PlayerElement.extend({
+	mw.PlayerElementFlash = mw.PlayerElement.extend( {
 		jsReadyFunName: 'elementJsReadyFunc',
 		playerElement: null,
 		currentTime: 0,
@@ -26,19 +27,19 @@
 		 * @param readyCallback to run when player is ready
 		 * @returns {*}
 		 */
-		init: function( containerId , playerId , elementFlashvars, target, readyCallback ){
+		init: function ( containerId, playerId, elementFlashvars, target, readyCallback ) {
 			var _this = this;
-			this.element = this;			
+			this.element = this;
 			this.id = playerId;
 			this.targetObj = target;
 
 			var flashvars = {};
 			flashvars.jsCallBackReadyFunc = this.jsReadyFunName;
-			flashvars.externalInterfaceDisabled = "false";
+			flashvars.externalInterfaceDisabled = 'false';
 			flashvars.disableOnScreenClick = true;
 
 			//if debug mode
-			if( mw.getConfig( 'debug', true ) ){
+			if ( mw.getConfig( 'debug', true ) ) {
 				flashvars.debugMode = 'true';
 			}
 
@@ -49,14 +50,14 @@
 			var mwEmbedPath = mw.getMwEmbedPath();
 			//replace protocol with page protocol
 			if ( window.location.protocol ) {
-				mwEmbedPath = window.location.protocol + mwEmbedPath.substring( mwEmbedPath.indexOf(":") + 1);
+				mwEmbedPath = window.location.protocol + mwEmbedPath.substring( mwEmbedPath.indexOf( ':' ) + 1 );
 			}
 
 			var kdpPath = mwEmbedPath + 'modules/EmbedPlayer/binPlayers/kaltura-player/kdp3.swf';
 			// var kdpPath = "http://localhost/chromeless-kdp/KDP3/bin-debug/kdp3.swf";
 
-			window[this.jsReadyFunName] = function( playerId ){
-				if (!_this.initialized) {
+			window[this.jsReadyFunName] = function ( playerId ) {
+				if ( !_this.initialized ) {
 					_this.initialized = true;
 					// We wrap everything in setTimeout to avoid Firefox race condition with empty cache
 					setTimeout( function () {
@@ -78,7 +79,7 @@
 								'mute': 'onMute',
 								'unmute': 'onUnMute',
 								'volumeChanged': 'onVolumeChanged',
-								'mediaError' : 'onMediaError'
+								'mediaError': 'onMediaError'
 							};
 
 							$.each( bindEventMap, function ( bindName, localMethod ) {
@@ -102,68 +103,68 @@
 			// attributes and params:
 			flashembed( containerId,
 				{
-					id :				playerId,
-					src : 				kdpPath,
-					bgcolor :			"#000000",
-					allowNetworking : 	"all",
-					version :			[10,0],
-					wmode : 			"transparent"
+					id:					playerId,
+					src:				kdpPath,
+					bgcolor:			'#000000',
+					allowNetworking:	'all',
+					version:			[10, 0],
+					wmode:				'transparent'
 				},
 				flashvars
 			);
 
 			return this;
 		},
-		play: function(){
+		play: function () {
 			this.sendNotification( 'doPlay' );
 		},
-		pause: function(){
+		pause: function () {
 			this.sendNotification( 'doPause' );
 		},
-		seek: function( val ){
+		seek: function ( val ) {
 			this.sendNotification( 'doSeek', val );
 			$( this ).trigger( 'seeking' );
 		},
-		load: function(){
-			this.sendNotification('changeMedia', {'entryUrl': this.src}) ;
+		load: function () {
+			this.sendNotification( 'changeMedia', { 'entryUrl': this.src } ) ;
 		},
-		changeVolume: function( volume ){
+		changeVolume: function ( volume ) {
 			this.sendNotification( 'changeVolume', volume );
 		},
         sendNotification: function ( noteName, value ) {
-            if ( this.disabled ){
+            if ( this.disabled ) {
                 return false;
             }
             if ( this.playerElement ) {
                 this.playerElement.sendNotification( noteName, value ) ;
-            }else{
-                $( this ).bind('playerJsReady', function(){
-                    if ( !this.disabled ){
+            } else {
+                $( this ).bind('playerJsReady', function () {
+                    if ( !this.disabled ) {
                         this.playerElement.sendNotification( noteName, value );
                     }
-                });
+                } );
             }
         },
-		setKDPAttribute: function( obj, property, value ) {
+		setKDPAttribute: function ( obj, property, value ) {
 			if ( this.playerElement && !this.disabled ) {
 				this.playerElement.setKDPAttribute( obj, property, value );
 			}
 		},
-		addJsListener: function( eventName, methodName ) {
+		addJsListener: function ( eventName, methodName ) {
 			if ( this.playerElement ) {
 				this.bindPlayerFunction( eventName, methodName );
 			}
 		},
-		removeJsListener: function( eventName, methodName ) {
+		removeJsListener: function ( eventName, methodName ) {
 			if ( this.playerElement ) {
 				mw.log( 'PlayerElementFlash:: unbindPlayerFunction:' + eventName );
 				// The kaltura kdp can only call a global function by given name
-				var gKdpCallbackName = 'kdp_' + methodName + '_cb_' + this.id.replace(/[^a-zA-Z 0-9]+/g,'');
+				var gKdpCallbackName = 'kdp_' + methodName + '_cb_' + this.id.replace( /[^a-zA-Z 0-9]+/g, '' );
 				// Remove the listener ( if it exists already )
 				this.playerElement.removeJsListener( eventName, gKdpCallbackName );
 			}
 		},
-		getCurrentTime: function() {
+		getCurrentTime: function () {
 			if ( this.playerElement ) {
 				return this.playerElement.getCurrentTime();
 			}
@@ -197,49 +198,49 @@
 		 *@param {object}
 		 * 		target object to call the listening func from
 		 */
-		bindPlayerFunction : function(bindName, methodName, target) {
+		bindPlayerFunction: function ( bindName, methodName /*, target*/ ) {
 			var _this = this;
 			mw.log( 'PlayerElementFlash:: bindPlayerFunction:' + bindName );
 			// The kaltura kdp can only call a global function by given name
-			var gKdpCallbackName = 'kdp_' + methodName + '_cb_' + this.id.replace(/[^a-zA-Z 0-9]+/g,'');
+			var gKdpCallbackName = 'kdp_' + methodName + '_cb_' + this.id.replace(/[^a-zA-Z 0-9]+/g, '' );
 
 			// Create an anonymous function with local player scope
-			var createGlobalCB = function(cName) {
-				window[ cName ] = function(data) {
+			var createGlobalCB = function ( cName ) {
+				window[ cName ] = function ( data ) {
 					// Track all events ( except for playerUpdatePlayhead and bytesDownloadedChange )
-					if( bindName != 'playerUpdatePlayhead' && bindName != 'bytesDownloadedChange' ){
-						mw.log("PlayerElementFlash:: event: " + bindName);
+					if ( bindName !== 'playerUpdatePlayhead' && bindName !== 'bytesDownloadedChange' ) {
+						mw.log( 'PlayerElementFlash:: event: ' + bindName );
 					}
-					_this.targetObj[methodName](data);
+					_this.targetObj[methodName]( data );
 				};
-			}(gKdpCallbackName, this);
+			}( gKdpCallbackName, this );
 			// Remove the listener ( if it exists already )
 			this.playerElement.removeJsListener( bindName, gKdpCallbackName );
 			// Add the listener to the KDP flash player:
 			this.playerElement.addJsListener( bindName, gKdpCallbackName);
 		},
-		onUpdatePlayhead : function ( playheadVal ) {
+		onUpdatePlayhead: function ( playheadVal ) {
 			this.currentTime = playheadVal;
 		},
-		onPause : function() {
+		onPause: function () {
 			this.paused = true;
 			//TODO trigger event?
 		},
-		onPlay : function() {
+		onPlay: function () {
 			this.paused = false;
 			$( this ).trigger( 'playing' );
 		},
-		onDurationChange : function( data, id ) {
+		onDurationChange: function ( data /*, id*/ ) {
 			this.duration = data.newValue;
 			$( this ).trigger( 'loadedmetadata' );
 		},
-		onClipDone : function() {
+		onClipDone: function () {
 			$( this ).trigger( 'ended' );
 		},
-		onPlayerSeekEnd: function() {
+		onPlayerSeekEnd: function () {
 			$( this ).trigger( 'seeked' );
 		},
-		onAlert : function ( data, id ) {
+		onAlert: function ( /*data, id*/ ) {
 			//TODO?
 		},
 		onMute: function () {
@@ -250,10 +251,10 @@
 		},
 		onVolumeChanged: function ( data ) {
 			this.volume = data.newVolume;
-			$( this).trigger( 'volumechange' );
+			$( this ).trigger( 'volumechange' );
 		},
 		onMediaError: function () {
-			$( this).trigger( 'error' );
+			$( this ).trigger( 'error' );
 		},
 		redrawObject: function ( timeout ) {
 			var _this = this;
@@ -261,14 +262,14 @@
 			if ( !timeout ) {
 				timeout = 250;
 			}
-			this.playerElement.style.width = "99%";
-			setTimeout( function() {
-				_this.playerElement.style.width = "100%";
+			this.playerElement.style.width = '99%';
+			setTimeout( function () {
+				_this.playerElement.style.width = '100%';
 			}, timeout );
 		}
-	});
+	} );
 
-} )( window.mw, jQuery );
+} )( mediaWiki, jQuery );
 
 /*
  * jQuery Tools 1.2.5 - The missing UI library for the Web

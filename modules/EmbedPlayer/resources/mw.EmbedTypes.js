@@ -3,7 +3,9 @@
  * closely mirrors OggHandler so that its easier to share efforts in this area:
  * http://svn.wikimedia.org/viewvc/mediawiki/trunk/extensions/OggHandler/OggPlayer.js
  */
-( function( mw, $ ) { "use strict";
+ /*globals ActiveXObject*/
+( function ( mw, $ ) {
+	'use strict';
 
 /**
  * Setup local players and supported mime types In an ideal world we would query the plugin
@@ -110,6 +112,7 @@ mw.EmbedTypes = {
 	 * Detects what plug-ins the client supports
 	 */
 	detectPlayers: function () {
+		var javaEnabled;
 		mw.log( 'EmbedTypes::detectPlayers running detect' );
 
 		// All players support for playing "images"
@@ -118,7 +121,7 @@ mw.EmbedTypes = {
 		// In Mozilla, navigator.javaEnabled() only tells us about preferences, we need to
 		// search navigator.mimeTypes to see if it's installed
 		try {
-			var javaEnabled = navigator.javaEnabled();
+			javaEnabled = navigator.javaEnabled();
 		} catch ( e ) {
 
 		}
@@ -155,9 +158,9 @@ mw.EmbedTypes = {
 		if ( !mw.getConfig('EmbedPlayer.DisableVideoTagSupport' ) // to support testing limited / old browsers
 				&&
 				(
-				typeof HTMLVideoElement == 'object' // Firefox, Safari
+				typeof HTMLVideoElement === 'object' // Firefox, Safari
 					||
-				typeof HTMLVideoElement == 'function' // Opera
+				typeof HTMLVideoElement === 'function' // Opera
 				)
 		) {
 			// Test what codecs the native player supports:

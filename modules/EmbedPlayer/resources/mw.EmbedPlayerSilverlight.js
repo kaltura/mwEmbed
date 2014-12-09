@@ -32,14 +32,14 @@
 		// Create our player element
 		setup: function ( readyCallback ) {
 			var _this = this;
-			mw.log('EmbedPlayerSilverlight:: Setup');
+			mw.log( 'EmbedPlayerSilverlight:: Setup' );
 
 			// Check if we created the sPlayer container
 			var $container = this.getPlayerContainer();
 			// If container exists, show the player and exit
 			if ( $container.length ) {
 				this.enablePlayerObject( true );
-				$container.css('visibility', 'visible');
+				$container.css( 'visibility', 'visible' );
 				readyCallback();
 				return;
 			}
@@ -605,28 +605,28 @@
 			var _this = this;
 			this.callIfReady( function () {
 				_this.triggerHelper( 'audioTracksReceived', JSON.parse( data ) );
-			});
+			} );
 		},
 
 		onAudioTrackSelected: function ( data ) {
 			var _this = this;
 			this.callIfReady( function () {
 				_this.triggerHelper( 'audioTrackIndexChanged', JSON.parse( data ) );
-			});
+			} );
 		},
 
 		onTextTrackSelected: function ( data ) {
 			var _this = this;
 			this.callIfReady( function () {
 				_this.triggerHelper( 'textTrackIndexChanged', JSON.parse( data ) );
-			});
+			} );
 		},
 
 		onTextTracksReceived: function ( data ) {
 			var _this = this;
 			this.callIfReady( function () {
 				_this.triggerHelper( 'textTracksReceived', JSON.parse( data ) );
-			});
+			} );
 		},
 
 		/**
