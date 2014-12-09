@@ -77,7 +77,7 @@
 				this.updateTooltip( this.tooltip );
 			}
 			else {
-				this.getComponent().find('.live-icon').removeClass( this.onAirIconClass ).addClass( this.offlineIconClass );
+				this.getComponent().find('.live-icon').removeClass( this.onAirIconClass + " " + this.unsyncIConClass ).addClass( this.offlineIconClass );
 				this.getComponent().find('.back-to-live-text').text( this.offlineText );
 				this.updateTooltip( "" );
 			}
