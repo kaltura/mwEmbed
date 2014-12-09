@@ -404,24 +404,21 @@ mw.KWidgetSupport.prototype = {
 		//Set flavors
 		var flavorAssets = [];
 		$.each( playerData.contextData.flavorAssets, function ( index, flavorAsset ) {
-			try {
-				var flavorPartnerData = JSON.parse( flavorAsset.partnerData );
-				if (flavorPartnerData.url != "") {
-					var flavorAssetObj = {
-						"data-assetid": flavorAsset.id,
-						src: flavorPartnerData.url,
-						type: flavorPartnerData.type,
-						"data-width": flavorAsset.width,
-						"data-height": flavorAsset.height,
-						"data-bitrate": flavorAsset.bitrate,
-						"data-bandwidth": (flavorAsset.bitrate ? (flavorAsset * 1024) : 0),
-						"data-frameRate": flavorAsset.frameRate,
-						"data-flavorid": flavorPartnerData.flavorid
-					};
-					flavorAssets.push( flavorAssetObj );
-				}
-			} catch ( e ) {
-				mw.log( "KwidgetSupport::Failed adding flavor asset, " + e.toString() );
+			var flavorPartnerData = flavorAsset.partnerData;
+			if (flavorPartnerData.url != "") {
+				var flavorAssetObj = {
+					"data-assetid": flavorAsset.id,
+					src: flavorPartnerData.url,
+					type: flavorPartnerData.type,
+					"data-width": flavorAsset.width,
+					"data-height": flavorAsset.height,
+					"data-bitrate": flavorAsset.bitrate,
+					"data-bandwidth": (flavorAsset.bitrate ? (flavorAsset * 1024) : 0),
+					"data-frameRate": flavorAsset.frameRate,
+					"data-flavorid": flavorPartnerData.flavorid,
+					"default": flavorPartnerData.default
+				};
+				flavorAssets.push( flavorAssetObj );
 			}
 		} );
 		embedPlayer.replaceSources(flavorAssets);
