@@ -76,7 +76,7 @@
 		return ( userAgent.indexOf('Android') != -1 );
 	};
 	mw.isAndroid4andUp = function () {
-		return ( userAgent.indexOf('Android 4.') != -1 );
+		return ( (userAgent.indexOf('Android 4.') != -1) || (userAgent.indexOf('Android 5.') != -1) );
 	};
 	mw.isFirefox = function () {
 		return ( userAgent.indexOf('Firefox') != -1 );
@@ -91,7 +91,7 @@
 		return ( mw.isAndroid() && mw.isChrome() && userAgent.indexOf('Version/') != -1 )
 	};
 	mw.isMobileChrome = function () {
-		return ( userAgent.indexOf('Android 4.') != -1
+		return ( mw.isAndroid4andUp()
 			&&
 			userAgent.indexOf('Chrome') != -1
 			)
