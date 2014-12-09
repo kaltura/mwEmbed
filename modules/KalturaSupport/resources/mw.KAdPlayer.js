@@ -36,9 +36,14 @@ mw.KAdPlayer.prototype = {
 
 	previousTime: 0,
 	seekIntervalID: null,
+	is_native_android_browser: false,
 
 	init: function( embedPlayer ){
 		var _this = this;
+
+		var nua = navigator.userAgent;
+		this.is_native_android_browser = ((nua.indexOf('Mozilla/5.0') > -1 && nua.indexOf('Android ') > -1 && nua.indexOf('AppleWebKit') > -1) && !(nua.indexOf('Chrome') > -1));
+
 		this.embedPlayer = embedPlayer;
 		var receivedPlayerReady = false;
 
@@ -176,7 +181,13 @@ mw.KAdPlayer.prototype = {
 			   _this.playNextAd(adSlot);
 			}
 		};
-		
+
+		if (_this.is_native_android_browser){
+			adSlot.playbackDone();
+			_this.hideSpinnerOncePlaying();
+			return;
+		}
+
 		// If the current ad type is already being displayed don't do anything
 		if( adSlot.currentlyDisplayed === true ){
 			adSlot.playbackDone();
