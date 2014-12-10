@@ -192,11 +192,32 @@
 		},
 		copyFlashvarsToKDP: function(embedPlayer, pluginName){
 			var flashVars = embedPlayer.getKalturaConfig(pluginName);
-			if ( flashVars['adTagUrl'] ){
-				flashVars['adTagUrl'] = escape(flashVars['adTagUrl']); // escape adTagUrl to prevent Flash string parsing error
-			}
 			if (flashVars['countdownText']) {
 				flashVars['countdownText'] = escape(flashVars['countdownText']); // escape countdownText to support & and ' characters
+			}
+			//Handle adTagUrl separately - using postProcessConfig on the entire ad tag breaks doubleclick functionality
+			var adTagUrl = embedPlayer.getRawKalturaConfig(pluginName, "adTagUrl");
+			if ( adTagUrl ){
+				//Break url to base and query string.
+				var adTagUrlParts = adTagUrl.split('?');
+				var adTagBaseUrl = adTagUrlParts[0];
+				var queryStringParams = adTagUrlParts[1];
+				var evaluatedQueryStringParams = "";
+				if (queryStringParams) {
+					//Break query string to key-value
+					var queryStringParamsParts = adTagUrlParts[1].split( '&' );
+					for ( var i = 0; i < queryStringParamsParts.length; i++ ) {
+						//Break query string to key-value pair
+						var pair = queryStringParamsParts[i].split( '=' );
+						//Unescape and try to evaluate key and value
+						var evaluatedKey   = embedPlayer.evaluate( unescape( pair[0] ) );
+						var evaluatedValue = embedPlayer.evaluate( unescape( pair[1] ) );
+						//Escape kvp and build evaluated query string param back
+						evaluatedQueryStringParams += escape( evaluatedKey ) + "=" + encodeURIComponent( evaluatedValue ) + "&";
+					}
+					//Build entire adTagUrl back and escape all of it to prevent flash string parsing error
+					flashVars['adTagUrl'] = escape(adTagBaseUrl + "?" + evaluatedQueryStringParams);
+				}
 			}
 			//we shouldn't send these params, they are unnecessary and break the flash object
 			var ignoredVars = ['path', 'customParams', 'preSequence', 'postSequence' ];
