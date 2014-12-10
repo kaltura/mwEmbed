@@ -147,7 +147,7 @@
 
 		//indicates that the current sources list was set by "ReplaceSources" config
 		"sourcesReplaced": false,
-
+		
 		"streamerType": 'http',
 
 		"shouldEndClip": false,
@@ -281,6 +281,9 @@
 
 		//if the player should handle playerError events
 		shouldHandlePlayerError: true,
+		
+		// stores the manifest derived flavor index / list:
+		"manifestAdaptiveFlavors": [],
 
 		// save the clipDone timeout ID so we can trigger it only once per entry
 		clipDoneTimeout: null,
@@ -703,7 +706,7 @@
 				&& mw.EmbedTypes.getMediaPlayers().isSupportedPlayer('kplayer')) {
 				targetPlayer = mw.EmbedTypes.getKplayer();
 			} else {
-				targetPlayer = mw.EmbedTypes.getMediaPlayers().defaultPlayer(source.mimeType);
+				targetPlayer= mw.EmbedTypes.getMediaPlayers().getDefaultPlayer( source.mimeType );
 			}
 			return targetPlayer;
 		},
@@ -781,7 +784,7 @@
 				this.sourcesReplaced = false;
 			}
 			// Autoseletct the media source
-			this.mediaElement.autoSelectSource(this.supportsURLTimeEncoding(), this.startTime, this.pauseTime);
+			this.mediaElement.autoSelectSource();
 
 			// Auto select player based on default order
 			if (this.mediaElement.selectedSource) {
@@ -840,7 +843,18 @@
 			$(this).trigger('playerReady');
 			this.triggerWidgetLoaded();
 		},
-
+		/** 
+		 * Wraps the autoSelect source call passing in temporal url options
+		 * for use of temporal urls where supported. 
+		 */
+		autoSelectTemporalSource: function(options){
+			var baseTimeOptions =  {
+				'supportsURLTimeEncoding': this.supportsURLTimeEncoding(), 
+				'startTime' :this.startTime, 
+				'endTime': this.pauseTime
+			};
+			this.mediaElement.autoSelectSource( $.extend( {},baseTimeOptions, options ) );
+		},
 		/**
 		 * Updates the player interface
 		 *
@@ -924,10 +938,26 @@
 			if (_this.setup) {
 				_this.setup(runPlayerStartupMethods);
 			} else {
-				runPlayerStartupMethods();
+				_this.runPlayerStartupMethods( callback );
 			}
 		},
-
+		/**
+		 * Run player startup methods: 
+		 */
+		runPlayerStartupMethods: function( callback ){
+			// Update feature support
+			this.updateFeatureSupport();
+			// Update embed sources:
+			this.embedPlayerHTML();
+			// Update duration
+			this.getDuration();
+			// show player inline
+			this.showPlayer();
+			// Run the callback if provided
+			if ( $.isFunction( callback ) ){
+				callback();
+			}
+		},
 		/**
 		 * Select a player playback system
 		 *
@@ -2729,7 +2759,7 @@
 
 			// If no source selected auto select the source:
 			if (!this.mediaElement.selectedSource) {
-				this.mediaElement.autoSelectSource(this.supportsURLTimeEncoding(), this.startTime, this.pauseTime);
+				this.autoSelectTemporalSource();
 			}
 			;
 
@@ -2746,11 +2776,17 @@
 		 */
 		getSource: function () {
 			// update the current selected source:
-			this.mediaElement.autoSelectSource(this.supportsURLTimeEncoding(), this.startTime, this.pauseTime);
+			this.autoSelectTemporalSource();
 			if (this.mediaElement.selectedSource && this.mediaElement.selectedSource.mimeType === "application/vnd.apple.mpegurl") {
 				this.streamerType = "hls";
 			}
 			return this.mediaElement.selectedSource;
+		},
+		/**
+		 * Retuns the set of playable sources. 
+		 */
+		getSources: function(){
+			return this.mediaElement.getPlayableSources();
 		},
 		/**
 		 * Static helper to get media sources from a set of videoFiles
@@ -2908,7 +2944,11 @@
 				return sourcesByTags;
 			}
 		},
-		switchSrc: function (source) {
+		/**
+		 * Switches a player source 
+		 * @param {Object} source asset to switch to
+		 */
+		switchSrc: function( source ){
 			var _this = this;
 			var currentBR = 0;
 			if (this.mediaElement.selectedSource) {
@@ -3027,7 +3067,12 @@
 			//we can't use simpleFormat with flavors that came from playmanifest otherwise sourceSelector list won't match
 			// to what is actually being played
 			this.setKDPAttribute('sourceSelector', 'simpleFormat', false);
-			this.replaceSources(newFlavors);
+			// update the manifest defined flavor set: 
+			this.manifestAdaptiveFlavors = [];
+			$.each(flavors, function(inx, flavor){
+				_this.manifestAdaptiveFlavors.push( new mw.MediaSource( flavor ) )
+			});
+			$(this).trigger( 'sourcesReplaced' );;
 		}
 	};
 
