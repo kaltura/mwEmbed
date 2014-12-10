@@ -317,6 +317,7 @@
 						//Return poster to allow display of poster on clip done
 						mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
 						embedPlayer.restoreEventPropagation();
+						embedPlayer.triggerHelper( "onPlayerStateChange", ["play"] );
 						embedPlayer.triggerHelper('onChangeStreamDone', [_this.currentStream.id]);
 					}
 				};
