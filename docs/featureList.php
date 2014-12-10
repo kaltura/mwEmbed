@@ -432,9 +432,9 @@
 							'title' => 'Get Flavor Urls',
 							'path' => '../kWidget/tests/kWidget.getSources.html',
 						),
-						'selfHostedSources' => array(
-							'title' => 'Self Hosted Player Sources',
-							'path' => 'EmbedPlayer/tests/Player_Sources.html'
+						'mediaProxyOverride' => array(
+							'title' => 'Page supplied sources',
+							'path' => 'KalturaSupport/tests/StandAlonePlayerMediaProxyOverride.html',
 						),
 					)
 				),

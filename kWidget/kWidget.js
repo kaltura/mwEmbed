@@ -5,7 +5,7 @@
 // Use strict ECMAScript 5
 	"use strict";
 
-// Don't re-initialize kWidget
+	// Don't re-initialize kWidget
 	if (window.kWidget) {
 		return;
 	}
@@ -329,7 +329,7 @@
 				return;
 			}
 			var uiconf_id = settings.uiconf_id;
-			var confFile = settings.flashvars.confFilePath;
+			var confFile = settings.flashvars.confFilePath ? settings.flashvars.confFilePath : settings.flashvars.jsonConfig;
 			if (!uiconf_id && !confFile) {
 				this.log("Error: kWidget.embed missing uiconf_id or confFile");
 				return;
@@ -940,28 +940,28 @@
 				// get the playload from local cache
 				window[ cbName ](this.iframeAutoEmbedCache[ targetId ]);
 			} else {
-				if (settings.flashvars.jsonConfig) {
-					var jsonConfig = settings.flashvars.jsonConfig;
-					settings.flashvars.jsonConfig = null;
+				// Check if we need to use post ( where flashvars excceed 2K string )
+				var iframeRequest = this.getIframeRequest( widgetElm, settings );
+				if ( iframeRequest.length > 2083 ){
+					this.log( "Warning iframe requests (" + iframeRequest.length + ") exceeds 2083 charachters, won't cache on CDN." )
 					$.ajax({
-						type: "POST",
+						type:"POST",
 						dataType: 'text',
-						url: this.getIframeUrl() + '?' +
-							this.getIframeRequest(widgetElm, settings),
-						data: {"jsonConfig": jsonConfig}
-					}).success(function (data) {
-							var contentData = {content: data};
-							window[cbName](contentData);
-						})
-						.error(function (e) {
-							alert("error occur");
-						})
+						url: this.getIframeUrl(),
+						data: iframeRequest
+					}).success(function(data){
+						var contentData = {content:data} ;
+						window[cbName](contentData);
+					})
+					.error(function(e){
+						this.log("Error in iframe request")
+					})
 				} else {
 					// Store iframe urls
-					_this.iframeUrls[ targetId ] = this.getIframeUrl() + '?' + this.getIframeRequest(widgetElm, settings);
+					_this.iframeUrls[ targetId ] = this.getIframeUrl() + '?' + iframeRequest;
 					// do an iframe payload request:
 					_this.appendScriptUrl(this.getIframeUrl() + '?' +
-						this.getIframeRequest(widgetElm, settings) +
+						iframeRequest +
 						'&callback=' + cbName);
 				}
 			}
@@ -1774,13 +1774,11 @@
 		flashVarsToUrl: function (flashVarsObject) {
 			var params = '';
 			for (var i in flashVarsObject) {
-				if (i !== 'jsonConfig') {
-					var curVal = typeof flashVarsObject[i] == 'object' ?
-						JSON.stringify(flashVarsObject[i]) :
+				var curVal = typeof flashVarsObject[i] == 'object'?
+						JSON.stringify( flashVarsObject[i] ):
 						flashVarsObject[i]
-					params += '&' + 'flashvars[' + encodeURIComponent(i) + ']=' +
-						encodeURIComponent(curVal);
-				}
+						params+= '&' + 'flashvars[' + encodeURIComponent( i ) + ']=' +
+						encodeURIComponent(  curVal );
 			}
 			return params;
 		},
@@ -2161,3 +2159,4 @@
 	window.kWidget = kWidget;
 
 })();
+

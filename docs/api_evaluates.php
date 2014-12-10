@@ -27,15 +27,25 @@
 		'duration' => array(
 			'desc' => 'Current video duration in seconds',
 		),
+			
+		'mediaProxy.entry' => array(
+			'desc' => 'Returns all entry properties for the currently active entry. 
+				List of <a href="http://www.kaltura.com/api_v3/testmeDoc/index.php?object=KalturaBaseEntry">KalturaBaseEntry</a> properties',
+			'example'=> '../modules/KalturaSupport/tests/StandAlonePlayerMediaProxyOverride.html'
+		),
 		'mediaProxy.entryCuePoints' => array(
 			'desc' => 'Array of cue points if defined for the current media',
+			'example'=> '../modules/KalturaSupport/tests/StandAlonePlayerMediaProxyOverride.html'
 		),
 		'mediaProxy.entryMetadata' => array(
 			'desc' => 'Metadata object for the current entry',
+			'example'=> '../modules/KalturaSupport/tests/StandAlonePlayerMediaProxyOverride.html'
 		),
-		'mediaProxy.entry' => array(
-			'desc' => 'Returns all entry properties for the currently active entry.',
+		'mediaProxy.sources' => array(
+			'desc' => 'The current set of active sources. Sources define a "type" and source "src" attributes.',
+			'example'=> '../modules/KalturaSupport/tests/StandAlonePlayerMediaProxyOverride.html'
 		),
+			
 		'mediaProxy.isLive' => array(
 			'desc' => 'Returns true, if the the current entries live broadcast is active.',
 		),

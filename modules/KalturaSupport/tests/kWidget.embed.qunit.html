@@ -238,7 +238,7 @@ An integrated example which includes SEO and <a title="video metadata" href="htt
 </pre>
 <script>
 	window['doPlayCallback'] = function( playerId ){
-		console.log( 'kWidget doPlay callback ' + playerId );
+		kWidget.log( 'kWidget doPlay callback ' + playerId );
 	};
 	// only set autoplay if running a test:
 	var autoPlay = ( window.QUnit )? true: false;
@@ -251,7 +251,7 @@ An integrated example which includes SEO and <a title="video metadata" href="htt
 			'autoPlay': autoPlay
 		},
 		'readyCallback': function( playerId ){
-			console.log( "kWidget player ready: " + playerId );
+			kWidget.log( "kWidget player ready: " + playerId );
 			var kdp = $( '#' + playerId ).get(0);
 			kdp.addJsListener( 'doPlay', 'doPlayCallback');
 			window.inlineReadyCallbackCalled = playerId;

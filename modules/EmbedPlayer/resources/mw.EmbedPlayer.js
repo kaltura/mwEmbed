@@ -1341,7 +1341,6 @@
 					'message': errorObj
 				}
 				return;
-
 			}
 			this.playerError = errorObj;
 		},
@@ -1576,7 +1575,6 @@
 			mw.log('EmbedPlayer:: changeMedia ');
 			// remove thumb during switch:
 			this.removePoster();
-
 			// onChangeMedia triggered at the start of the change media commands
 			$this.trigger('onChangeMedia');
 
@@ -1651,9 +1649,7 @@
 				};
 
 				if ($.isFunction(_this.changeMediaCallback)) {
-					setTimeout(function () {
-						_this.changeMediaCallback(changeMediaDoneCallback);
-					}, 250);
+					_this.changeMediaCallback(changeMediaDoneCallback);
 				} else {
 					changeMediaDoneCallback();
 				}
