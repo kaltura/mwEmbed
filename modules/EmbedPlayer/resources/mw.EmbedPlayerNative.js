@@ -1332,7 +1332,7 @@ mw.EmbedPlayerNative = {
 			this.playInterfaceUpdate();
 			this.absoluteStartPlayTime = new Date().getTime();
 			// We need first play event for analytics purpose
-			if( this.firstPlay && this._propagateEvents) {
+			if( this.firstPlay && this._propagateEvents  && !this.inPreSequence()) {
 				this.firstPlay = false;
 				this.triggerHelper( 'firstPlay' );
 			}
