@@ -921,25 +921,14 @@
 				_this[ method ] = playerInterface[ method ];
 			}
 
-			var runPlayerStartupMethods = function () {
-				// Update feature support
-				_this.updateFeatureSupport();
-				// Update embed sources:
-				_this.embedPlayerHTML();
-				// Update duration
-				_this.getDuration();
-				// show player inline
-				_this.showPlayer();
-				// Run the callback if provided
-				if ($.isFunction(callback)) {
-					callback();
-				}
-			};
-			if (_this.setup) {
-				_this.setup(runPlayerStartupMethods);
-			} else {
-				_this.runPlayerStartupMethods( callback );
+			if ( $.isFunction( _this.setup) ) {
+				_this.setup(function(){
+					_this.runPlayerStartupMethods( callback );
+				});
+				return ;
 			}
+			// run player startup directly ( without setup call if not defined )
+			_this.runPlayerStartupMethods( callback );
 		},
 		/**
 		 * Run player startup methods: 
