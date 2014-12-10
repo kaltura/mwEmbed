@@ -111,15 +111,6 @@
 					}
 				}
 
-				//check for pending autoPlay
-				if ( onAirObj.onAirStatus &&
-					embedPlayer.firstPlay &&
-					embedPlayer.autoplay &&
-					embedPlayer.canAutoPlay() &&
-					!embedPlayer.isPlaying() ) {
-					embedPlayer.play();
-				}
-
 				//if we moved from live to offline  - show message
 				if ( _this.onAirStatus && !onAirObj.onAirStatus ) {
 
@@ -164,6 +155,15 @@
 						_this.playWhenOnline = false;
 					}
 					embedPlayer.triggerHelper( 'liveOnline' );
+				}
+
+				//check for pending autoPlay
+				if ( onAirObj.onAirStatus &&
+					embedPlayer.firstPlay &&
+					embedPlayer.autoplay &&
+					embedPlayer.canAutoPlay() &&
+					!embedPlayer.isPlaying() ) {
+					embedPlayer.play();
 				}
 
 				_this.onAirStatus = onAirObj.onAirStatus;
