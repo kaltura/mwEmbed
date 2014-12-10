@@ -1112,7 +1112,11 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	position: fixed;
 	top: 50%;
 	left: 50%;
-	transform: translate(-50%, -50%);
+	-webkit-transform: translate(-50%, -50%);
+	-moz-transform:    translate(-50%, -50%);
+	-ms-transform:     translate(-50%, -50%);
+	-o-transform:      translate(-50%, -50%);
+	transform:         translate(-50%, -50%);
 	color: white;
 }
 @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
