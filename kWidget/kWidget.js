@@ -897,6 +897,9 @@ var kWidget = {
 		try {
 			if (isIOS8 && parseInt(widgetElm.style.height) > 0) {
 				iframe.style.height = widgetElm.style.height;
+				setTimeout(function(){
+					iframe.style.height = "100%";
+				},3000);
 			}
 		} catch (e) {
 			this.log("Error when trying to set iframe height: " + e.message);
