@@ -1507,7 +1507,7 @@ mw.EmbedPlayerNative = {
 	},
 
 	isVideoSiblingEnabled: function() {
-		if( mw.isIphone() || mw.isAndroid2() || mw.isAndroid40() || mw.isMobileChrome()
+		if( mw.isIphone() || mw.isAndroid() || mw.isMobileChrome()
 			||
 			( mw.isIpad() && ! mw.isIpad3() )
 			){
