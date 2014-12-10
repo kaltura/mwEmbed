@@ -3069,6 +3069,7 @@
 			this.setKDPAttribute('sourceSelector', 'simpleFormat', false);
 			// update the manifest defined flavor set: 
 			this.manifestAdaptiveFlavors = [];
+			var _this = this;
 			$.each(flavors, function(inx, flavor){
 				_this.manifestAdaptiveFlavors.push( new mw.MediaSource( flavor ) )
 			});
