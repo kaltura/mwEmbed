@@ -57,6 +57,7 @@
 
 
 		addPoster: function(){
+			debugger;
 			this.getPlayer().removePosterFlag = false;
 			this.getPlayer().updatePosterHTML();
 		},
@@ -145,7 +146,7 @@
 					embedPlayer.triggerHelper( 'liveOffline' );
 
 				}  else if ( !_this.onAirStatus && onAirObj.onAirStatus ) {
-					if ( !_this.playWhenOnline ) {
+					if ( !_this.playWhenOnline && !embedPlayer.isPlaying()) {
 						_this.addPoster();
 					}
 
