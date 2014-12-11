@@ -57,7 +57,6 @@
 
 
 		addPoster: function(){
-			debugger;
 			this.getPlayer().removePosterFlag = false;
 			this.getPlayer().updatePosterHTML();
 		},
