@@ -1,9 +1,9 @@
 // Add support for html5 / mwEmbed elements to IE
 // For discussion and comments, see: http://remysharp.com/2009/01/07/html5-enabling-script/
-'video audio source track'.replace(/\w+/g,function( n ){ document.createElement( n ); } );
+'video audio source track'.replace( /\w+/g, function ( n ) { document.createElement( n ); } );
 
 // Support for Date.now for IE8
-Date.now = Date.now || function(){ return +new Date; };
+Date.now = Date.now || function () { return +new Date(); };
 
 /**
  * MwEmbedSupport includes shared mwEmbed utilities that either
@@ -23,7 +23,7 @@ Date.now = Date.now || function(){ return +new Date; };
  * @dependencies
  */
 
-( function( mw, $ ) {
+( function ( mw, $ ) {
 
 	/**
 	 * Enables javascript modules and pages to target a "interfaces ready" state.
@@ -43,8 +43,8 @@ Date.now = Date.now || function(){ return +new Date; };
 	// mw.interfacesReadyFlag ( set to true once interfaces are ready )
 	mw.interfacesReadyFlag = false;
 
-	mw.ready = function( callback ) {
-		if( mw.interfacesReadyFlag  === false ) {
+	mw.ready = function ( callback ) {
+		if ( mw.interfacesReadyFlag  === false ) {
 			// Add the callbcak to the onLoad function stack
 			$( mw ).bind( 'InterfacesReady', callback );
 		} else {
@@ -54,8 +54,8 @@ Date.now = Date.now || function(){ return +new Date; };
 	};
 
 	// Check for pre-mwEmbed ready functions
-	if( typeof window.preMwEmbedReady != 'undefined'){
-		while( window.preMwEmbedReady.length ){
+	if ( typeof window.preMwEmbedReady !== 'undefined' ) {
+		while ( window.preMwEmbedReady.length ) {
 			mw.ready( window.preMwEmbedReady.pop() );
 		}
 	}
@@ -65,30 +65,30 @@ Date.now = Date.now || function(){ return +new Date; };
 	 *
 	 * Wrap mediaWiki functionality while we port over the libraries
 	 */
-	window.gM = function(){
-		return mw.msg.apply(this, $.makeArray( arguments ) );
+	window.gM = function () {
+		return mw.msg.apply( this, $.makeArray( arguments ) );
 	};
 	/**
 	 * Aliased manual message adding
 	 */
-	mw.addMessages = function( msgOb ){
+	mw.addMessages = function ( msgOb ) {
 		mw.messages.set( msgOb );
-	}
-	mw.setConfig = function( name, value ){
+	};
+	mw.setConfig = function ( name, value ) {
 		mw.config.set( name, value );
 	};
-	mw.getConfig = function( name, value ){
+	mw.getConfig = function ( name, value ) {
 		return mw.config.get( name, value );
 	};
-	mw.setDefaultConfig = function( name, value ){
-		if( mw.config.get( name ) === null ){
+	mw.setDefaultConfig = function ( name, value ) {
+		if ( mw.config.get( name ) === null ) {
 			mw.config.set( name, value );
 		}
 	};
 	/*duplicated function
 	 * TODO: remove or test
-	mw.mergeConfig = function( name, value ){
-		if( mw.getConfig( name ) != null ){
+	mw.mergeConfig = function ( name, value ) {
+		if ( mw.getConfig( name ) != null ) {
 			var value = $.extend( {}, mw.getConfig( name ), value );
 		}
 		return mw.setConfig( name, value );
@@ -97,33 +97,32 @@ Date.now = Date.now || function(){ return +new Date; };
 	/**
 	 * Set any pre-mwEmbed embed configuration overrides
 	 */
-	if( typeof window.preMwEmbedConfig != 'undefined') {
+	if ( window.preMwEmbedConfig !== undefined ) {
 		mw.setConfig( window.preMwEmbedConfig );
 	}
-
 
 	/**
 	 * Aliased load function
 	 */
-	mw.load = function( resources, callback ){
-		mw.loader.using( resources, callback, function(){
+	mw.load = function ( resources, callback ) {
+		mw.loader.using( resources, callback, function () {
 			// failed to load
-			mw.log("Failed to load resources:"  + resources );
-		});
+			mw.log( 'Failed to load resources:'  + resources );
+		} );
 	};
 
-	mw.getEmbedPlayerPath = function(){
-		if(  mw.config.get( 'wgExtensionAssetsPath' ) ){
-			return mw.config.get( 'wgExtensionAssetsPath' ) + '/TimedMediaHandler/MwEmbedModules/EmbedPlayer'
-		} else if ( mw.config.get( 'wgLoadScript' ) ){
-			return mw.getMwEmbedPath() + 'modules/EmbedPlayer'
+	mw.getEmbedPlayerPath = function () {
+		if (  mw.config.get( 'wgExtensionAssetsPath' ) ) {
+			return mw.config.get( 'wgExtensionAssetsPath' ) + '/TimedMediaHandler/MwEmbedModules/EmbedPlayer';
+		} else if ( mw.config.get( 'wgLoadScript' ) ) {
+			return mw.getMwEmbedPath() + 'modules/EmbedPlayer';
 		}
 	};
 
 	/**
 	 * Legacy support for bind helper
 	 */
-	mw.bindHelper = function( name, callback ){
+	mw.bindHelper = function ( name, callback ) {
 		$( this ).bind( name, callback );
 		return this;
 	};
@@ -131,9 +130,9 @@ Date.now = Date.now || function(){ return +new Date; };
 	/**
 	 * legacy support to get the mwEmbed resource path:
 	 */
-	mw.getMwEmbedPath = function(){
+	mw.getMwEmbedPath = function () {
 		// check for wgExtensionAssetsPath path ( running in mw instance )
-		if ( mw.config.get( 'wgLoadScript' ) ){
+		if ( mw.config.get( 'wgLoadScript' ) ) {
 			return mw.config.get( 'wgLoadScript' ).replace('load.php', '');
 		}
 		return false;
@@ -142,22 +141,21 @@ Date.now = Date.now || function(){ return +new Date; };
 	/**
 	 * Merge in a configuration value:
 	 */
-
-	mw.mergeConfig = function( name, value ){
-		if( typeof name == 'object' ) {
-			$.each( name, function( inx, val) {
+	mw.mergeConfig = function ( name, value ) {
+		if ( typeof name === 'object' ) {
+			$.each( name, function ( inx, val) {
 				mw.mergeConfig( inx, val );
 			});
 			return ;
 		}
 		var existingValue = mw.config.get( name );
-		if( !existingValue || typeof existingValue == 'string'){
+		if ( !existingValue || typeof existingValue === 'string') {
 			mw.setConfig( name, value );
 			return ;
 		}
-		if( typeof mw.config.get( name ) == 'object' ){
-			if( $.isArray( existingValue) && $.isArray( value ) ){
-				for( var i =0; i <  value.length ; i ++ ){
+		if ( typeof mw.config.get( name ) === 'object' ) {
+			if ( $.isArray( existingValue) && $.isArray( value ) ) {
+				for ( var i = 0; i <  value.length ; i++ ) {
 					existingValue.push( value[i] );
 				}
 				mw.setConfig( name, $.unique( existingValue ) );
@@ -168,13 +166,12 @@ Date.now = Date.now || function(){ return +new Date; };
 		}
 	};
 
-
 	/**
 	 * Simple inheritance. We will move to something like
 	 * http://javascriptmvc.com/docs.html#&who=jQuery.Class
 	 * in the near future. This is just a stop gap.
 	 */
-	mw.inherit = function( _this, inhertParent ){
+	mw.inherit = function ( _this, inhertParent ) {
 		for ( var method in inhertParent ) {
 			if ( _this[ method ] ) {
 				_this['parent_' + method] = inhertParent[method];
@@ -183,7 +180,6 @@ Date.now = Date.now || function(){ return +new Date; };
 			}
 		}
 	};
-
 
 	/**
 	 * Utility Functions
@@ -194,11 +190,11 @@ Date.now = Date.now || function(){ return +new Date; };
 	 * @param {String}
 	 * 		Url url version to be checked with mw.Uri
 	 */
-	mw.isUrl = function( url ){
+	mw.isUrl = function ( url ) {
 		try {
 			new mw.Uri( url );
 			return true;
-		} catch ( e ){
+		} catch ( e ) {
 			// no error
 		}
 		return false;
@@ -218,17 +214,17 @@ Date.now = Date.now || function(){ return +new Date; };
 	 * @return true if the version is at least of minVersion false if the
 	 *		 version is less than minVersion
 	 */
-	mw.versionIsAtLeast = function( minVersion, clientVersion ) {
-		if( typeof clientVersion == 'undefined' ){
+	mw.versionIsAtLeast = function ( minVersion, clientVersion ) {
+		if ( clientVersion === undefined ) {
 			clientVersion = window.MWEMBED_VERSION;
 		}
-		var minVersionParts = minVersion.split('.');
-		var clientVersionParts = clientVersion.split('.');
-		for( var i =0; i < minVersionParts.length; i++ ) {
-			if( parseInt( clientVersionParts[i] ) > parseInt( minVersionParts[i] ) ) {
+		var minVersionParts = minVersion.split( '.' );
+		var clientVersionParts = clientVersion.split( '.' );
+		for ( var i = 0; i < minVersionParts.length; i++ ) {
+			if ( parseInt( clientVersionParts[i], 10 ) > parseInt( minVersionParts[i], 10 ) ) {
 				return true;
 			}
-			if( parseInt( clientVersionParts[i] ) < parseInt( minVersionParts[i] ) ) {
+			if ( parseInt( clientVersionParts[i], 10 ) < parseInt( minVersionParts[i], 10 ) ) {
 				return false;
 			}
 		}
@@ -240,11 +236,11 @@ Date.now = Date.now || function(){ return +new Date; };
 	$( mw ).trigger( 'MwEmbedSupportReady' );
 
 	// Once interfaces are ready update the mwReadyFlag
-	$( mw ).bind( 'InterfacesReady', function(){ mw.interfacesReadyFlag  = true; } );
+	$( mw ).bind( 'InterfacesReady', function () { mw.interfacesReadyFlag  = true; } );
 
 	// Once the DOM is ready start setting up interfaces
-	$( document ).ready( function(){
-		$( mw ).triggerQueueCallback( 'SetupInterface', function(){
+	$( document ).ready( function () {
+		$( mw ).triggerQueueCallback( 'SetupInterface', function () {
 			// All interfaces have been setup trigger InterfacesReady event
 			$( mw ).trigger( 'InterfacesReady' );
 		});
@@ -255,19 +251,19 @@ Date.now = Date.now || function(){ return +new Date; };
 	 *
 	 * @param {String} Color code in hexadecimal notation
 	 */
-	mw.getHexColor = function( color ) {
-        if( typeof color == 'string' && color.substr(0,1) == "#" ) {
+	mw.getHexColor = function ( color ) {
+        if ( typeof color === 'string' && color.substr( 0, 1 ) === '#' ) {
             return color;
         }
-		if( typeof color == 'string' && color.substr(0,2) == "0x" ) {
-			return color.replace('0x', '#');
+		if ( typeof color === 'string' && color.substr( 0, 2 ) === '0x' ) {
+			return color.replace( '0x', '#' );
 		} else {
-			color = parseInt( color );
-			color = color.toString(16);
+			color = parseInt( color, 10 );
+			color = color.toString( 16 );
 			var len = 6 - color.length;
-			if( len > 0 ) {
+			if ( len > 0 ) {
 				var pre = '';
-				for( var i=0; i<len; i++) {
+				for ( var i = 0; i < len; i++) {
 					pre += '0';
 				}
 				color = pre + color;
@@ -280,7 +276,7 @@ Date.now = Date.now || function(){ return +new Date; };
 	 * Send beacon ( used by ads and analytics plugins )
 	 * @param {String} Beacon URL to load
 	 */
-	mw.sendBeaconUrl = function( beaconUrl ){
+	mw.sendBeaconUrl = function ( beaconUrl ) {
 		var beacon = new Image();
 		beacon.src = beaconUrl;
 	};

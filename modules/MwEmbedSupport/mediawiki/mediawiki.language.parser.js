@@ -6,7 +6,7 @@
  *
  */
 
-( function( mw, $ ) {
+( function ( mw, $ ) {
 
 	/**
 	 * Helper for functions that want to accept variadic arguments after a certain argument offset, to have it
@@ -22,7 +22,7 @@
 	 * @return {Array} array of arguments desired, whether were variadic or not
 	 */
 	function getVariadicArgs( args, offset ) {
-		return $j.isArray( args[offset] ) ? args[offset] : $j.makeArray( args ).slice( offset );
+		return $.isArray( args[offset] ) ? args[offset] : $.makeArray( args ).slice( offset );
 	}
 
 	/**
@@ -38,7 +38,7 @@
 	 * @param {Array} parser options
 	 * @return {Function} function suitable for assigning to window.gM
 	 */
-	mw.language.getMessageFunction = function( options ) {
+	mw.language.getMessageFunction = function ( options ) {
 		var parser = new mw.language.parser( options );
 		/**
 		 * Note replacements are gleaned from 2nd parameter, or variadic args starting with 2nd parameter.
@@ -46,7 +46,7 @@
 		 * @param {Array} optional replacements (can also specify variadically)
 		 * @return {String} rendered HTML as string
 		 */
-		return function( key /* , replacements */ ) {
+		return function ( key /* , replacements */ ) {
 			return parser.parse( key, getVariadicArgs( arguments, 1 ) ).html();
 		};
 	};
@@ -56,14 +56,14 @@
 	 * Returns a jQuery plugin which parses the message in the message key, doing replacements optionally, and appends the nodes to
 	 * the current selector. Bindings to passed-in jquery elements are preserved. Functions become click handlers for [$1 linktext] links.
 	 * e.g.
-	 *		$j.fn.msg = mediaWiki.parser.getJqueryPlugin( options );
+	 *		$.fn.msg = mediaWiki.parser.getJqueryPlugin( options );
 	 *		var userlink = $( '<a>' ).click( function() { alert( "hello!!") } );
 	 *		$( 'p#headline' ).msg( 'hello-user', userlink );
 	 *
 	 * @param {Array} parser options
-	 * @return {Function} function suitable for assigning to jQuery plugin, such as $j.fn.msg
+	 * @return {Function} function suitable for assigning to jQuery plugin, such as $.fn.msg
 	 */
-	mw.language.getJqueryMessagePlugin = function( options ) {
+	mw.language.getJqueryMessagePlugin = function ( options ) {
 		var parser = new mw.language.parser( options );
 		/**
 		 * Note replacements are gleaned from 2nd parameter, or variadic args starting with 2nd parameter.
@@ -72,21 +72,19 @@
 		 * @param {Array} optional replacements (can also specify variadically)
 		 * @return {jQuery} this
 		 */
-		return function( key /* , replacements */ ) {
+		return function ( key /* , replacements */ ) {
 			var $target = this.empty();
-			$j.each( parser.parse( key, getVariadicArgs( arguments, 1 ) ).contents(), function( i, node ) {
+			$.each( parser.parse( key, getVariadicArgs( arguments, 1 ) ).contents(), function ( i, node ) {
 				$target.append( node );
 			} );
 			return $target;
 		};
 	};
 
-
-
 	var parserDefaults = {
-		'magic' : {},
-		'messages' : mw.messages,
-		'language' : mw.language
+		'magic': {},
+		'messages': mw.messages,
+		'language': mw.language
 	};
 
 	/**
@@ -94,8 +92,8 @@
 	 * Describes an object, whose primary duty is to .parse() message keys.
 	 * @param {Array} options
 	 */
-	mw.language.parser = function( options ) {
-		this.settings = $j.extend( {}, parserDefaults, options );
+	mw.language.parser = function ( options ) {
+		this.settings = $.extend( {}, parserDefaults, options );
 		this.emitter = new mw.language.htmlEmitter( this.settings.language, this.settings.magic );
 	};
 
@@ -112,21 +110,21 @@
 		 * @param {Array} replacements for $1, $2... $n
 		 * @return {jQuery}
 		 */
-		parse: function( key, replacements ) {
+		parse: function ( key, replacements ) {
 			return this.emitter.emit( this.getAst( key ), replacements );
 		},
 
 		/**
-	 	 * Fetch the message string associated with a key, return parsed structure. Memoized.
+		 * Fetch the message string associated with a key, return parsed structure. Memoized.
 		 * Note that we pass '[' + key + ']' back for a missing message here.
-	 	 * @param {String} key
+		 * @param {String} key
 		 * @return {String|Array} string of '[key]' if message missing, simple string if possible, array of arrays if needs parsing
 		 */
-		getAst: function( key ) {
+		getAst: function ( key ) {
 			if ( typeof this.astCache[ key ] === 'undefined' ) {
 				var wikiText = this.settings.messages.get( key );
 				if ( wikiText === null ) {
-					wikiText = "\\[" + key + "\\]";
+					wikiText = '\\[' + key + '\\]';
 				}
 				this.astCache[ key ] = this.wikiTextToAst( wikiText );
 			}
@@ -143,7 +141,7 @@
 		 * @throws Error
 		 * @return {Mixed} abstract syntax tree
 		 */
-		wikiTextToAst: function( input ) {
+		wikiTextToAst: function ( input ) {
 
 			// Indicates current position in input as we parse through it.
 			// Shared among all parsing functions below.
@@ -153,14 +151,13 @@
 			// parsing combinators - could be a library on its own
 			// =========================================================
 
-
 			// Try parsers until one works, if none work return null
 			function choice( ps ) {
-				return function() {
+				return function () {
 					for ( var i = 0; i < ps.length; i++ ) {
 						var result = ps[i]();
 						if ( result !== null ) {
-							 return result;
+							return result;
 						}
 					}
 					return null;
@@ -186,7 +183,7 @@
 			// run the same parser over and over until it fails.
 			// must succeed a minimum of n times or return null
 			function nOrMore( n, p ) {
-				return function() {
+				return function () {
 					var originalPos = pos;
 					var result = [];
 					var parsed = p();
@@ -206,7 +203,7 @@
 			// But using this as a combinator seems to cause problems when combined with nOrMore().
 			// May be some scoping issue
 			function transform( p, fn ) {
-				return function() {
+				return function () {
 					var result = p();
 					return result === null ? null : fn( result );
 				};
@@ -216,18 +213,18 @@
 
 			function makeStringParser( s ) {
 				var len = s.length;
-				return function() {
+				return function () {
 					var result = null;
 					if ( input.substr( pos, len ) === s ) {
-						 result = s;
-						 pos += len;
+						result = s;
+						pos += len;
 					}
 					return result;
 				};
 			}
 
 			function makeRegexParser( regex ) {
-				return function() {
+				return function () {
 					var matches = input.substr( pos ).match( regex );
 					if ( matches === null ) {
 						return null;
@@ -236,7 +233,6 @@
 					return matches[0];
 				};
 			}
-
 
 			/**
 			 *  ===================================================================
@@ -256,12 +252,11 @@
 			// recursive functions seem not to work in all browsers then. (Tested IE6-7, Opera, Safari, FF)
 			// This may be because, to save code, memoization was removed
 
-
 			var regularLiteral = makeRegexParser( /^[^{}[\]$\\]/ );
- 			var regularLiteralWithoutBar = makeRegexParser(/^[^{}[\]$\\|]/);
- 			var regularLiteralWithoutSpace = makeRegexParser(/^[^{}[\]$\s]/);
+			var regularLiteralWithoutBar = makeRegexParser( /^[^{}[\]$\\|]/ );
+			var regularLiteralWithoutSpace = makeRegexParser( /^[^{}[\]$\s]/ );
 
-			var backslash = makeStringParser( "\\" );
+			var backslash = makeStringParser( '\\' );
 			var anyCharacter = makeRegexParser( /^./ );
 
 			function escapedLiteral() {
@@ -289,20 +284,20 @@
 
 			// Used to define "literals" without spaces, in space-delimited situations
 			function literalWithoutSpace() {
-				 var result = nOrMore( 1, escapedOrLiteralWithoutSpace )();
-				 return result === null ? null : result.join('');
+				var result = nOrMore( 1, escapedOrLiteralWithoutSpace )();
+				return result === null ? null : result.join( '' );
 			}
 
 			// Used to define "literals" within template parameters. The pipe character is the parameter delimeter, so by default
 			// it is not a literal in the parameter
 			function literalWithoutBar() {
-				 var result = nOrMore( 1, escapedOrLiteralWithoutBar )();
-				 return result === null ? null : result.join('');
+				var result = nOrMore( 1, escapedOrLiteralWithoutBar )();
+				return result === null ? null : result.join( '' );
 			}
 
 			function literal() {
-				 var result = nOrMore( 1, escapedOrRegularLiteral )();
-				 return result === null ? null : result.join('');
+				var result = nOrMore( 1, escapedOrRegularLiteral )();
+				return result === null ? null : result.join( '' );
 			}
 
 			var whitespace = makeRegexParser( /^\s+/ );
@@ -320,7 +315,6 @@
 				return [ 'REPLACE', parseInt( result[1], 10 ) - 1 ];
 			}
 
-
 			var openExtlink = makeStringParser( '[' );
 			var closeExtlink = makeStringParser( ']' );
 
@@ -335,7 +329,7 @@
 					closeExtlink
 				] );
 				if ( parsedResult !== null ) {
-					 result = [ 'LINK', parsedResult[1], parsedResult[3] ];
+					result = [ 'LINK', parsedResult[1], parsedResult[3] ];
 				}
 				return result;
 			}
@@ -351,14 +345,14 @@
 					closeLink
 				] );
 				if ( parsedResult !== null ) {
-					 result = [ 'WLINK', parsedResult[1] ];
+					result = [ 'WLINK', parsedResult[1] ];
 				}
 				return result;
 			}
 
 			var templateName = transform(
 				makeRegexParser( /^[A-Za-z]\w+/ ),
-				function( result ) { return result.toString().toUpperCase(); }
+				function ( result ) { return result.toString().toUpperCase(); }
 			);
 
 			function templateParam() {
@@ -371,7 +365,7 @@
 				}
 				var expr = result[1];
 				// use a "CONCAT" operator if there are multiple nodes, otherwise return the first node, raw.
-				return expr.length > 1 ? [ "CONCAT" ].concat( expr ) : expr[0];
+				return expr.length > 1 ? [ 'CONCAT' ].concat( expr ) : expr[0];
 			}
 
 			var pipe = makeStringParser( '|' );
@@ -385,17 +379,17 @@
 				return result === null ? null : [ result[0], result[2] ];
 			}
 
-			var colon = makeStringParser(':');
+			var colon = makeStringParser( ':' );
 
 			var templateContents = choice( [
-				function() {
+				function () {
 					var res = sequence( [
 						templateWithReplacement,
 						nOrMore( 0, templateParam )
 					] );
 					return res === null ? null : res[0].concat( res[1] );
 				},
-				function() {
+				function () {
 					var res = sequence( [
 						templateName,
 						nOrMore( 0, templateParam )
@@ -407,8 +401,8 @@
 				}
 			] );
 
-			var openTemplate = makeStringParser('{{');
-			var closeTemplate = makeStringParser('}}');
+			var openTemplate = makeStringParser( '{{' );
+			var closeTemplate = makeStringParser( '}}' );
 
 			function template() {
 				var result = sequence( [
@@ -448,7 +442,7 @@
 				if ( result === null ) {
 					return null;
 				}
-				return [ "CONCAT" ].concat( result );
+				return [ 'CONCAT' ].concat( result );
 			}
 
 			// everything above this point is supposed to be stateless/static, but
@@ -463,8 +457,8 @@
 			 * and returned a non-null.
 			 * n.b. This is part of language infrastructure, so we do not throw an internationalizable message.
 			 */
-			if (result === null || pos !== input.length) {
-				throw new Error( "Parse error at position " + pos.toString() + " in input: " + input );
+			if ( result === null || pos !== input.length ) {
+				throw new Error( 'Parse error at position ' + pos.toString() + ' in input: ' + input );
 			}
 			return result;
 		}
@@ -474,12 +468,12 @@
 	/**
 	 * htmlEmitter - object which primarily exists to emit HTML from parser ASTs
 	 */
-	mw.language.htmlEmitter = function( language, magic ) {
+	mw.language.htmlEmitter = function ( language, magic ) {
 		this.language = language;
 		var _this = this;
 
-		$j.each( magic, function( key, val ) {
-			_this[ key.toLowerCase() ] = function() { return val; };
+		$.each( magic, function ( key, val ) {
+			_this[ key.toLowerCase() ] = function () { return val; };
 		} );
 
 		/**
@@ -489,16 +483,16 @@
 		 * @param {Array} replacements for $1, $2, ... $n
 		 * @return {Mixed} single-string node or array of nodes suitable for jQuery appending
 		 */
-		this.emit = function( node, replacements ) {
+		this.emit = function ( node, replacements ) {
 			var ret = null;
 			var _this = this;
-			switch( typeof node ) {
+			switch ( typeof node ) {
 				case 'string':
 				case 'number':
 					ret = node;
 					break;
 				case 'object': // node is an array of nodes
-					var subnodes = $j.map( node.slice( 1 ), function( n ) {
+					var subnodes = $.map( node.slice( 1 ), function ( n ) {
 						return _this.emit( n, replacements );
 					} );
 					var operation = node[0].toLowerCase();
@@ -533,11 +527,11 @@
 		 * @param {Array} nodes - mixed, some single nodes, some arrays of nodes
 		 * @return {jQuery}
 		 */
-		concat: function( nodes ) {
+		concat: function ( nodes ) {
 			var span = $( '<span>' ).addClass( 'mediaWiki_htmlEmitter' );
-			$j.each( nodes, function( i, node ) {
+			$.each( nodes, function ( i, node ) {
 				if ( node instanceof jQuery && node.hasClass( 'mediaWiki_htmlEmitter' ) ) {
-					$j.each( node.contents(), function( j, childNode ) {
+					$.each( node.contents(), function ( j, childNode ) {
 						span.append( childNode );
 					} );
 				} else {
@@ -557,7 +551,7 @@
 		 * @param {Array} of one element, integer, n >= 0
 		 * @return {String} replacement
 		 */
-		replace: function( nodes, replacements ) {
+		replace: function ( nodes, replacements ) {
 			var index = parseInt( nodes[0], 10 );
 			return index < replacements.length ? replacements[index] : '$' + ( index + 1 );
 		},
@@ -566,8 +560,8 @@
 		 * Transform wiki-link
 		 * TODO unimplemented
 		 */
-		wlink: function( nodes ) {
-			return "unimplemented";
+		wlink: function ( /*nodes*/ ) {
+			return 'unimplemented';
 		},
 
 		/**
@@ -579,7 +573,7 @@
 		 * @param {Array} of two elements, {jQuery|Function|String} and {String}
 		 * @return {jQuery}
 		 */
-		link: function( nodes ) {
+		link: function ( nodes ) {
 			var arg = nodes[0];
 			var contents = nodes[1];
 			var $el;
@@ -604,24 +598,23 @@
 		 * @param {Array} of nodes, [ {String|Number}, {String}, {String} ... ]
 		 * @return {String} selected pluralized form according to current language
 		 */
-		plural: function( nodes ) {
+		plural: function ( nodes ) {
 			var count = parseInt( this.language.convertNumber( nodes[0], true ), 10 );
-			var forms = nodes.slice(1);
+			var forms = nodes.slice( 1 );
 			return forms.length ? this.language.convertPlural( count, forms ) : '';
 		}
 
 	};
-
 
 	// Alias gM to getMessageFunction ( note in upload wizard this is done on the page but we need
 	// to have it globally available, it should not affect other messages because it acts the same
 	// as mediaWiki.message.get
 	var options = {
 		magic: {
-			'SITENAME' : mw.config.get('wgSitename')
+			'SITENAME': mw.config.get( 'wgSitename' )
 		}
 	};
 	window.gM = mediaWiki.language.getMessageFunction( options );
-	$j.fn.msg = mediaWiki.language.getJqueryMessagePlugin( options );
+	$.fn.msg = mediaWiki.language.getJqueryMessagePlugin( options );
 
 } )( mediaWiki, jQuery );

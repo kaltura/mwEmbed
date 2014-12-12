@@ -1,137 +1,139 @@
-( function( mw, $ ) {"use strict";
+/*globals Silverlight*/
+( function ( mw, $ ) {
+	'use strict';
 
 // Class defined in resources/class/class.js
-	mw.PlayerElementSilverlight = mw.PlayerElement.extend({
+	mw.PlayerElementSilverlight = mw.PlayerElement.extend( {
 
 		isStopped: false,
-		init: function(containerId , playerId , elementFlashvars, target, readyCallback ){
+		init: function ( containerId, playerId, elementFlashvars, target, readyCallback ) {
 			var _this = this;
 			this.element = this;
 			this.id = playerId;
 			this.targetObj = target;
 			var xapPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/silverlight-player/Player.xap';
 			//var xapPath = 'http://192.168.162.72/lightKdp/Player.xap';
-			window["onError" + playerId]=function(sender, args){
-				var appSource = "";
-				if (sender != null && sender != 0) {
+			window['onError' + playerId] = function ( sender, args ) {
+				var appSource = '';
+				if (sender !== null && sender !== 0 ) {
 					appSource = sender.getHost().Source;
 				}
 
 				var errorType = args.ErrorType;
 				var iErrorCode = args.ErrorCode;
 
-				if (errorType == "ImageError" || errorType == "MediaError") {
+				if ( errorType === 'ImageError' || errorType === 'MediaError' ) {
 					return;
 				}
 
-				var errMsg = "Unhandled Error in Silverlight Application " +  appSource + "\n" ;
+				var errMsg = 'Unhandled Error in Silverlight Application ' + appSource + '\n' ;
 
-				errMsg += "Code: "+ iErrorCode + "    \n";
-				errMsg += "Category: " + errorType + "       \n";
-				errMsg += "Message: " + args.ErrorMessage + "     \n";
+				errMsg += 'Code: ' + iErrorCode + '    \n';
+				errMsg += 'Category: ' + errorType + '       \n';
+				errMsg += 'Message: ' + args.ErrorMessage + '     \n';
 
-				if (errorType == "ParserError") {
-					errMsg += "File: " + args.xamlFile + "     \n";
-					errMsg += "Line: " + args.lineNumber + "     \n";
-					errMsg += "Position: " + args.charPosition + "     \n";
+				if ( errorType === 'ParserError' ) {
+					errMsg += 'File: ' + args.xamlFile + '     \n';
+					errMsg += 'Line: ' + args.lineNumber + '     \n';
+					errMsg += 'Position: ' + args.charPosition + '     \n';
 				}
-				else if (errorType == "RuntimeError") {
-					if (args.lineNumber != 0) {
-						errMsg += "Line: " + args.lineNumber + "     \n";
-						errMsg += "Position: " +  args.charPosition + "     \n";
+				else if ( errorType === 'RuntimeError' ) {
+					if ( args.lineNumber !== 0 ) {
+						errMsg += 'Line: ' + args.lineNumber + '     \n';
+						errMsg += 'Position: ' +  args.charPosition + '     \n';
 					}
-					errMsg += "MethodName: " + args.methodName + "     \n";
+					errMsg += 'MethodName: ' + args.methodName + '     \n';
 				}
-				mw.log("Error occur in silverlight player:" +errMsg);
-			}
-			window["onLoad" + playerId] = function(sender,args){
+				mw.log( 'Error occur in silverlight player: ' + errMsg );
+			};
+			window['onLoad' + playerId] = function ( /*sender, args*/ ) {
 				var slCtl = document.getElementById( playerId );
 				_this.playerProxy =  slCtl.Content.MediaElementJS;
-				//slCtl.Content.MediaElementJS.addJsListener("playerPlayed", "playing");
+				//slCtl.Content.MediaElementJS.addJsListener( 'playerPlayed', 'playing' );
 				// We wrap everything in setTimeout to avoid Firefox race condition with empty cache
-					_this.playerElement = _this.playerProxy;
+				_this.playerElement = _this.playerProxy;
 
-					//if this is the target object: add event listeners
-					//if a different object is the target: it should take care of its listeners (such as embedPlayerKPlayer)
-					if ( !_this.targetObj ) {
-						_this.targetObj = _this;
+				//if this is the target object: add event listeners
+				//if a different object is the target: it should take care of its listeners (such as embedPlayerKPlayer)
+				if ( !_this.targetObj ) {
+					_this.targetObj = _this;
 
-						var bindEventMap = {
-							'playerPaused' : 'onPause',
-							'playerPlayed' : 'onPlay',
-							'durationChange' : 'onDurationChange',
-							'playerPlayEnd' : 'onClipDone',
-							'playerUpdatePlayhead' : 'onUpdatePlayhead',
-							'playerSeekEnd': 'onPlayerSeekEnd',
-							'alert': 'onAlert',
-							'mute': 'onMute',
-							'unmute': 'onUnMute',
-							'volumeChanged': 'onVolumeChanged',
-							'error': 'onError'
-						};
+					var bindEventMap = {
+						'playerPaused': 'onPause',
+						'playerPlayed': 'onPlay',
+						'durationChange': 'onDurationChange',
+						'playerPlayEnd': 'onClipDone',
+						'playerUpdatePlayhead': 'onUpdatePlayhead',
+						'playerSeekEnd': 'onPlayerSeekEnd',
+						'alert': 'onAlert',
+						'mute': 'onMute',
+						'unmute': 'onUnMute',
+						'volumeChanged': 'onVolumeChanged',
+						'error': 'onError'
+					};
 
-						$.each( bindEventMap, function( bindName, localMethod ) {
-							_this.bindPlayerFunction(bindName, localMethod);
-						});
-					}
+					$.each( bindEventMap, function ( bindName, localMethod ) {
+						_this.bindPlayerFunction(bindName, localMethod );
+					} );
+				}
 
-					//imitate html5 video readyState
-					_this.readyState = 4;
-					// Run ready callback
-					if( $.isFunction( readyCallback ) ){
-						readyCallback.apply( _this );
-					}
+				//imitate html5 video readyState
+				_this.readyState = 4;
+				// Run ready callback
+				if ( $.isFunction( readyCallback ) ) {
+					readyCallback.apply( _this );
+				}
 
-					//notify player is ready
-					$( _this ).trigger('playerJsReady');
-			}
+				//notify player is ready
+				$( _this ).trigger( 'playerJsReady' );
+			};
 
-			elementFlashvars["onLoaded"] = "onLoad" + playerId;
-			var params = "";
-			for ( var i in elementFlashvars ){
-				params += i +"=" + elementFlashvars[i]+",";
+			elementFlashvars.onLoaded = 'onLoad' + playerId;
+			var params = '';
+			for ( var i in elementFlashvars ) {
+				params += i + '=' + elementFlashvars[i] + ',';
 			}
 
 			Silverlight.createObject(
-				 xapPath,
-				 $("#"+containerId).get(0),
-				 playerId,
-				 {
-					width:"100%",height:"100%",
-					background:"transparent",
-					windowless:"true",
-					version: "4.0.60310.0" },
+				xapPath,
+				$( '#' + containerId ).get( 0 ),
+				playerId,
 				{
-					onError: "onError" + playerId,
-					enableHtmlAccess: "true" },
+					width: '100%',
+					height: '100%',
+					background: 'transparent',
+					windowless: 'true',
+					version: '4.0.60310.0' },
+				{
+					onError: 'onError' + playerId,
+					enableHtmlAccess: 'true' },
 				params
 			//	context: "row4"
 			);
 
-
 		},
-		onUpdatePlayhead : function ( playheadVal ) {
+		onUpdatePlayhead: function ( playheadVal ) {
 			this.currentTime = playheadVal;
 		},
-		onPause : function() {
+		onPause: function () {
 			this.paused = true;
 			//TODO trigger event?
 		},
-		onPlay : function() {
+		onPlay: function () {
 			$( this ).trigger( 'playing' );
 			this.stopped = this.paused = false;
 		},
-		onDurationChange : function( data, id ) {
+		onDurationChange: function ( data /*, id*/ ) {
 			this.duration = data.newValue;
 			$( this ).trigger( 'loadedmetadata' );
 		},
-		onClipDone : function() {
+		onClipDone: function () {
 			$( this ).trigger( 'ended' );
 		},
-		onPlayerSeekEnd: function() {
+		onPlayerSeekEnd: function () {
 			$( this ).trigger( 'seeked' );
 		},
-		onAlert : function ( data, id ) {
+		onAlert: function ( /*data, id*/ ) {
 			//TODO?
 		},
 		onMute: function () {
@@ -145,60 +147,60 @@
 		},
 		onVolumeChanged: function ( data ) {
 			this.volume = data.newVolume;
-			$( this).trigger( 'volumechange' );
+			$( this ).trigger( 'volumechange' );
 		},
-		addJsListener: function( eventName, methodName ) {
+		addJsListener: function ( eventName, methodName ) {
 			if ( this.playerElement ) {
 				this.bindPlayerFunction( eventName, methodName );
 			}
 		},
-		removeJsListener: function( eventName, methodName ) {
+		removeJsListener: function ( eventName, methodName ) {
 			if ( this.playerElement ) {
 				mw.log( 'PlayerElementSilverlight:: unbindPlayerFunction:' + eventName );
 				// The kaltura kdp can only call a global function by given name
-				var gKdpCallbackName = 'silverlight_' + methodName + '_cb_' + this.id.replace(/[^a-zA-Z 0-9]+/g,'');
+				var gKdpCallbackName = 'silverlight_' + methodName + '_cb_' + this.id.replace( /[^a-zA-Z 0-9]+/g, '' );
 				// Remove the listener ( if it exists already )
 				this.playerElement.removeJsListener( eventName, gKdpCallbackName );
 			}
 		},
-		play: function(){
+		play: function () {
 			this.playerProxy.playMedia();
 			this.isStopped = false;
 		},
-		stop: function(){
+		stop: function () {
 			this.playerElement.stopMedia();
 			this.isStopped = true;
 		},
-		pause: function(){
+		pause: function () {
 			this.playerProxy.pauseMedia();
 		},
-		seek: function( val ){
-			this.playerProxy.setCurrentTime(val);
+		seek: function ( val ) {
+			this.playerProxy.setCurrentTime( val );
 			$( this ).trigger( 'seeking' );
 		},
-		load: function(){
+		load: function () {
 			if ( this.src ) {
-				this.playerProxy.setSrc(this.src);
+				this.playerProxy.setSrc( this.src );
 				this.playerProxy.loadMedia();
 			}
 		},
-		changeVolume: function( volume ){
+		changeVolume: function ( volume ) {
 			this.playerProxy.setVolume(  volume );
 		},
-		selectTrack: function( index ) {
+		selectTrack: function ( index ) {
 			this.playerProxy.selectTrack( index );
 		},
-		selectAudioTrack: function( index ) {
+		selectAudioTrack: function ( index ) {
 			this.playerProxy.selectAudioTrack( index );
 		},
-		selectTextTrack: function( index ) {
+		selectTextTrack: function ( index ) {
 			this.playerProxy.selectTextTrack( index );
 		},
-		reloadMedia: function() {
+		reloadMedia: function () {
 			this.playerProxy.reloadMedia();
 			this.isStopped = false;
 		},
-		stretchFill: function() {
+		stretchFill: function () {
 			this.playerProxy.stretchFill();
 		},
 
@@ -215,28 +217,26 @@
 		 *@param {object}
 		 * 		target object to call the listening func from
 		 */
-		bindPlayerFunction : function(bindName, methodName, target) {
+		bindPlayerFunction: function ( bindName, methodName /*, target*/ ) {
 			var _this = this;
 			mw.log( 'PlayerElementSilverlight:: bindPlayerFunction:' + bindName );
 			// The kaltura kdp can only call a global function by given name
-			var gKdpCallbackName = 'silverlight_' + methodName + '_cb_' + this.id.replace(/[^a-zA-Z 0-9]+/g,'');
+			var gKdpCallbackName = 'silverlight_' + methodName + '_cb_' + this.id.replace( /[^a-zA-Z 0-9]+/g, '' );
 
 			// Create an anonymous function with local player scope
-			var createGlobalCB = function(cName) {
-				window[ cName ] = function(data) {
+			( function createGlobalCB( cName ) {
+				window[ cName ] = function ( data ) {
 					// Track all events ( except for playerUpdatePlayhead and bytesDownloadedChange )
-					if( bindName != 'playerUpdatePlayhead' && bindName != 'bytesDownloadedChange' ){
-						mw.log("PlayerElementSilverlight:: event: " + bindName);
+					if ( bindName !== 'playerUpdatePlayhead' && bindName !== 'bytesDownloadedChange' ) {
+						mw.log( 'PlayerElementSilverlight:: event: ' + bindName ) ;
 					}
-					_this.targetObj[methodName](data);
+					_this.targetObj[methodName]( data );
 				};
-			}(gKdpCallbackName, this);
+			} )( gKdpCallbackName, this );
 			// Remove the listener ( if it exists already )
 			this.playerElement.removeJsListener( bindName, gKdpCallbackName );
 			// Add the listener to the Silvrtliht player:
-			this.playerElement.addJsListener( bindName, gKdpCallbackName);
+			this.playerElement.addJsListener( bindName, gKdpCallbackName );
 		}
-	});
-} )( window.mw, jQuery );
-
-
+	} );
+} )( mediaWiki, jQuery );

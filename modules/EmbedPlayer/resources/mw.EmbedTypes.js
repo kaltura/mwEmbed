@@ -3,7 +3,9 @@
  * closely mirrors OggHandler so that its easier to share efforts in this area:
  * http://svn.wikimedia.org/viewvc/mediawiki/trunk/extensions/OggHandler/OggPlayer.js
  */
-( function( mw, $ ) { "use strict";
+ /*globals ActiveXObject*/
+( function ( mw, $ ) {
+	'use strict';
 
 /**
  * Setup local players and supported mime types In an ideal world we would query the plugin
@@ -41,28 +43,27 @@ var imageOverlayPlayer = new mw.MediaPlayer( 'imageOverlay', ['image/jpeg', 'ima
 // Generic plugin
 //var oggPluginPlayer = new mw.MediaPlayer( 'oggPlugin', ['video/ogg', 'application/ogg'], 'Generic' );
 
-
 mw.EmbedTypes = {
 
 	// MediaPlayers object ( supports methods for quering set of browser players )
 	mediaPlayers: null,
 
-	 // Detect flag for completion
-	 detect_done:false,
+	// Detect flag for completion
+	detect_done: false,
 
 	/**
 	 * Runs the detect method and update the detect_done flag
 	 *
 	 * @constructor
 	 */
-	 init: function() {
+	init: function () {
 		// detect supported types
 		this.detect();
 		this.detect_done = true;
 	},
 
-	getMediaPlayers: function(){
-		if( this.mediaPlayers  ){
+	getMediaPlayers: function () {
+		if ( this.mediaPlayers ) {
 			return this.mediaPlayers;
 		}
 		this.mediaPlayers = new mw.MediaPlayers();
@@ -71,7 +72,7 @@ mw.EmbedTypes = {
 		return this.mediaPlayers;
 	},
 
-	getNativeComponentPlayerVideo: function(){
+	getNativeComponentPlayerVideo: function () {
 		return nativeComponentPlayerVideo;
 	},
 
@@ -81,51 +82,52 @@ mw.EmbedTypes = {
 	 * @param {String}
 	 *	  mimeType Mime type for browser plug-in check
 	 */
-	supportedMimeType: function( mimeType ) {
-		for ( var i =0; i < navigator.plugins.length; i++ ) {
+	supportedMimeType: function ( mimeType ) {
+		for ( var i = 0; i < navigator.plugins.length; i++ ) {
 			var plugin = navigator.plugins[i];
-			if ( typeof plugin[ mimeType ] != "undefined" ){
+			if ( typeof plugin[ mimeType ] !== 'undefined' ) {
 				return true;
 			}
 		}
 		return false;
 	},
-	addFlashPlayer: function(){
-		if( !mw.getConfig( 'EmbedPlayer.DisableHTML5FlashFallback' ) ){
+	addFlashPlayer: function () {
+		if ( !mw.getConfig( 'EmbedPlayer.DisableHTML5FlashFallback' ) ) {
 			this.mediaPlayers.addPlayer( kplayer );
 		}
 	},
-	addSilverlightPlayer:function(){
+	addSilverlightPlayer:function () {
 		this.mediaPlayers.addPlayer(splayer);
 	},
 
-	addJavaPlayer: function(){
-		if( !mw.getConfig( 'EmbedPlayer.DisableJava' ) ){
+	addJavaPlayer: function () {
+		if ( !mw.getConfig( 'EmbedPlayer.DisableJava' ) ) {
 			this.mediaPlayers.addPlayer( cortadoPlayer );
 		}
 	},
-	addNativeComponentPlayer: function(){
+	addNativeComponentPlayer: function () {
 		this.mediaPlayers.addPlayer( nativeComponentPlayerVideo );
 	},
 	/**
 	 * Detects what plug-ins the client supports
 	 */
-	detectPlayers: function() {
-		mw.log( "EmbedTypes::detectPlayers running detect" );
+	detectPlayers: function () {
+		var javaEnabled;
+		mw.log( 'EmbedTypes::detectPlayers running detect' );
 
 		// All players support for playing "images"
 		this.mediaPlayers.addPlayer( imageOverlayPlayer );
 
 		// In Mozilla, navigator.javaEnabled() only tells us about preferences, we need to
 		// search navigator.mimeTypes to see if it's installed
-		try{
-			var javaEnabled = navigator.javaEnabled();
-		} catch ( e ){
+		try {
+			javaEnabled = navigator.javaEnabled();
+		} catch ( e ) {
 
 		}
 
 		// flag that is uniq for mobile devices
-		if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
+		if ( mw.getConfig( 'EmbedPlayer.ForceNativeComponent' ) ) {
 			this.addNativeComponentPlayer();
 		}
 
@@ -133,68 +135,68 @@ mw.EmbedTypes = {
 		// found. And it doesn't register an application/x-java-applet mime type like
 		// Mozilla does.
 
-		if ( javaEnabled && ( navigator.appName == 'Opera' ) ) {
+		if ( javaEnabled && ( navigator.appName === 'Opera' ) ) {
 			this.addJavaPlayer();
 		}
 
 		// Use core mw.supportsFlash check:
 		// Safari has cross domain issue - Flash external interface doesn't work, so we disable kplayer
-		if( mw.supportsFlash() ){
+		if ( mw.supportsFlash() ) {
 			this.addFlashPlayer();
 		}
 
-		if( mw.supportSilverlight() ) {
+		if ( mw.supportSilverlight() ) {
 			this.addSilverlightPlayer();
 		}
 
 		// Java ActiveX
-		if( mw.isIE() && this.testActiveX( 'JavaWebStart.isInstalled' ) ) {
+		if ( mw.isIE() && this.testActiveX( 'JavaWebStart.isInstalled' ) ) {
 			this.addJavaPlayer();
 		}
 
 		// <video> element
-		if ( ! mw.getConfig('EmbedPlayer.DisableVideoTagSupport' ) // to support testing limited / old browsers
+		if ( !mw.getConfig('EmbedPlayer.DisableVideoTagSupport' ) // to support testing limited / old browsers
 				&&
 				(
-				typeof HTMLVideoElement == 'object' // Firefox, Safari
+				typeof HTMLVideoElement === 'object' // Firefox, Safari
 					||
-				typeof HTMLVideoElement == 'function' // Opera
+				typeof HTMLVideoElement === 'function' // Opera
 				)
-		){
+		) {
 			// Test what codecs the native player supports:
 			try {
-				var dummyvid = document.createElement( "video" );
-				if( dummyvid.canPlayType ) {
+				var dummyvid = document.createElement( 'video' );
+				if ( dummyvid.canPlayType ) {
 					// Add the webm player
-					if( dummyvid.canPlayType('video/webm; codecs="vp8, vorbis"')
+					if ( dummyvid.canPlayType( 'video/webm; codecs="vp8, vorbis"' )
 						//	&&
-						// ! mw.isMobileChrome() // current versions of mobile chrome should support webm
-												 // left as a comment in cases we need to re disable
+						// ! mw.isMobileChrome()// current versions of mobile chrome should support webm
+												// left as a comment in cases we need to re disable
 							&&
-						! mw.isAndroid40() // android 4 'Internet browser' lies as well.
-					){
+						!mw.isAndroid40() // android 4 'Internet browser' lies as well.
+					) {
 						this.mediaPlayers.addPlayer( webmNativePlayer );
 					}
 
 					// Test for MP3:
-					if ( this.supportedMimeType('audio/mpeg') || dummyvid.canPlayType('audio/mpeg; codecs="mp3"') ) {
+					if ( this.supportedMimeType( 'audio/mpeg' ) || dummyvid.canPlayType( 'audio/mpeg; codecs="mp3"' ) ) {
 						this.mediaPlayers.addPlayer( mp3NativePlayer );
 					}
 
 					// Test for h264:
-					if ( dummyvid.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"' ) ) {
+					if ( dummyvid.canPlayType( 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"' ) ) {
 						this.mediaPlayers.addPlayer( h264NativePlayer );
 						// Check for vdn player support ( apple adaptive ) or vdn canPlayType != '' ( ie maybe/probably )
-						if( dummyvid.canPlayType( 'application/vnd.apple.mpegurl; codecs="avc1.42E01E"' ) || mw.isAndroid4andUp() ){
+						if ( dummyvid.canPlayType( 'application/vnd.apple.mpegurl; codecs="avc1.42E01E"' ) || mw.isAndroid4andUp() ) {
 							// Android 3x lies about HLS support ( only add if not Android 3.x )
-							if( navigator.userAgent.indexOf( 'Android 3.') == -1 ){
+							if ( navigator.userAgent.indexOf( 'Android 3.') === -1 ) {
 								this.mediaPlayers.addPlayer( appleVdnPlayer );
 							}
 						}
 					}
 					// For now if Android assume we support h264Native (FIXME
 					// test on real devices )
-					if ( mw.isAndroid2() ){
+					if ( mw.isAndroid2() ) {
 						this.mediaPlayers.addPlayer( h264NativePlayer );
 					}
 
@@ -202,7 +204,7 @@ mw.EmbedTypes = {
 					if ( dummyvid.canPlayType( 'video/ogg; codecs="theora,vorbis"' ) ) {
 						this.mediaPlayers.addPlayer( oggNativePlayer );
 					// older versions of safari do not support canPlayType,
-				  	// but xiph qt registers mimetype via quicktime plugin
+					// but xiph qt registers mimetype via quicktime plugin
 					} else if ( this.supportedMimeType( 'video/ogg' ) ) {
 						this.mediaPlayers.addPlayer( oggNativePlayer );
 					}
@@ -212,7 +214,7 @@ mw.EmbedTypes = {
 			}
 		}
 
-		 // "navigator" plugins
+		// "navigator" plugins
 		if ( navigator.mimeTypes && navigator.mimeTypes.length > 0 ) {
 			for ( var i = 0; i < navigator.mimeTypes.length; i++ ) {
 				var type = navigator.mimeTypes[i].type;
@@ -231,17 +233,17 @@ mw.EmbedTypes = {
 				//	continue;
 				//}
 
-				if ( type == 'application/x-java-applet' ) {
+				if ( type === 'application/x-java-applet' ) {
 					this.addJavaPlayer();
 					continue;
 				}
 
-				if ( (type == 'video/mpeg' || type == 'video/x-msvideo') ){
+				if ( (type === 'video/mpeg' || type === 'video/x-msvideo') ) {
 					//pluginName.toLowerCase() == 'vlc multimedia plugin' ) {
 					//this.mediaPlayers.addPlayer( vlcMozillaPlayer );
 				}
 
-				if ( type == 'application/ogg' ) {
+				if ( type === 'application/ogg' ) {
 					//if ( pluginName.toLowerCase() == 'vlc multimedia plugin' ) {
 						//this.mediaPlayers.addPlayer( vlcMozillaPlayer );
 					//else if ( pluginName.indexOf( 'QuickTime' ) > -1 )
@@ -255,8 +257,8 @@ mw.EmbedTypes = {
 		}
 
 		// Allow extensions to detect and add their own "players"
-		mw.log("EmbedPlayer::trigger:EmbedPlayerUpdateMediaPlayers");
-		$( mw ).trigger( 'EmbedPlayerUpdateMediaPlayers' , this.mediaPlayers );
+		mw.log( 'EmbedPlayer::trigger:EmbedPlayerUpdateMediaPlayers' );
+		$( mw ).trigger( 'EmbedPlayerUpdateMediaPlayers', this.mediaPlayers );
 
 	},
 
@@ -266,8 +268,8 @@ mw.EmbedTypes = {
 	 * @param {String}
 	 * 		name Name of ActiveXObject to look for
 	 */
-	testActiveX : function ( name ) {
-		mw.log("EmbedPlayer::detect: test testActiveX: " + name);
+	testActiveX: function ( name ) {
+		mw.log( 'EmbedPlayer::detect: test testActiveX: ' + name);
 		var hasObj = true;
 		try {
 			// No IE, not a class called "name", it's a variable
@@ -278,10 +280,10 @@ mw.EmbedTypes = {
 		return hasObj;
 	},
 
-	getKplayer : function () {
+	getKplayer: function () {
 		return kplayer;
 	},
-	getSilverlightPlayer :function(){
+	getSilverlightPlayer: function () {
 		return splayer;
 	}
 };

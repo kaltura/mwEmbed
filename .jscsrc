@@ -1,0 +1,11 @@
+{
+	"preset": "wikimedia",
+
+	"disallowKeywordsOnNewLine": null,
+	"disallowQuotedKeysInObjects": null,
+	"requireSpacesInsideArrayBrackets": null,
+	"validateIndentation": null,
+
+	"disallowDanglingUnderscores": null,
+	"requireMultipleVarDecl": null
+}
