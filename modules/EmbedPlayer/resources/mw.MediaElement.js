@@ -181,6 +181,8 @@ mw.MediaElement.prototype = {
 					"playManifest/seekFrom/" + parseInt(options.startTime) * 1000 + "/"
 				);
 			}
+			$( '#' + this.parentEmbedId ).trigger( 'SourceSelected' , this.selectedSource );
+			return this.selectedSource;
 		}
 		return false;
 	},
