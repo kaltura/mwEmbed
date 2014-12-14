@@ -190,15 +190,11 @@
 				$containerAd.remove();
 			}
 		},
-		copyFlashvarsToKDP: function(embedPlayer, pluginName){
-			var flashVars = embedPlayer.getKalturaConfig(pluginName);
-			if (flashVars['countdownText']) {
-				flashVars['countdownText'] = escape(flashVars['countdownText']); // escape countdownText to support & and ' characters
-			}
+		parseAdTagUrlParts: function(embedPlayer, pluginName){
 			//Handle adTagUrl separately - using postProcessConfig on the entire ad tag breaks doubleclick functionality
-			try {
-				var adTagUrl = embedPlayer.getRawKalturaConfig( pluginName, "adTagUrl" );
-				if ( adTagUrl ) {
+			var adTagUrl = embedPlayer.getRawKalturaConfig( pluginName, "adTagUrl" );
+			if ( adTagUrl ) {
+				try{
 					//Break url to base and query string.
 					var adTagUrlParts = adTagUrl.split( '?' );
 					var adTagBaseUrl = adTagUrlParts[0];
@@ -217,20 +213,35 @@
 							if (evaluatedKey != 'cust_params'){
 								evaluatedQueryStringParams += escape( evaluatedKey ) + "=" + encodeURIComponent( evaluatedValue ) + "&";
 							}else{
-								flashVars['cust_params'] = encodeURIComponent( evaluatedValue );
+								this.cust_params = encodeURIComponent( evaluatedValue );
 							}
 						}
-						//Build entire adTagUrl back and escape all of it to prevent flash string parsing error
-						flashVars['adTagUrl'] = escape( adTagBaseUrl + "?" + evaluatedQueryStringParams );
+						//Build entire adTagUrl back
+						evaluatedQueryStringParams = evaluatedQueryStringParams.substring(0, evaluatedQueryStringParams.length - 1);
+						this.adTagUrl =  adTagBaseUrl + "?" + evaluatedQueryStringParams ;
+					}
+				} catch (e) {
+					// in case of error - fallback for fully escaped and evaluated adTagUrl string
+					mw.log("failed to evaluate adTagUrl parts, using fully escaped/evaluated adTagUrl");
+					var adTagUrl = embedPlayer.getKalturaConfig(pluginName);
+					if ( adTagUrl ){
+						this.adTagUrl = adTagUrl; // escape adTagUrl to prevent Flash string parsing error
+						this.cust_params = "";
 					}
 				}
-			} catch (e) {
-				// in case of error - fallback for fully escaped and evaluated adTagUrl string
-				mw.log("failed to evaluate adTagUrl parts, using fully escaped/evaluated adTagUrl");
-				if ( flashVars['adTagUrl'] ){
-					flashVars['adTagUrl'] = escape(flashVars['adTagUrl']); // escape adTagUrl to prevent Flash string parsing error
-				}
 			}
+		},
+		copyFlashvarsToKDP: function(embedPlayer, pluginName){
+			var flashVars = embedPlayer.getKalturaConfig(pluginName);
+			if (flashVars['countdownText']) {
+				flashVars['countdownText'] = escape(flashVars['countdownText']); // escape countdownText to support & and ' characters
+			}
+
+			this.parseAdTagUrlParts(embedPlayer, pluginName);
+			//Escape adTagUrl to prevent flash string parsing error
+			flashVars['adTagUrl'] = escape(this.adTagUrl);
+			flashVars['cust_params'] = this.cust_params;
+
 			//we shouldn't send these params, they are unnecessary and break the flash object
 			var ignoredVars = ['path', 'customParams', 'preSequence', 'postSequence' ];
 			for ( var i=0; i< ignoredVars.length; i++ ) {
@@ -305,7 +316,7 @@
 					_this.restorePlayerCallback = callback;
 					// Request ads
 					mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
-					_this.requestAds( _this.getConfig( 'adTagUrl' ) );
+					_this.requestAds();
 				}
 			});
 
@@ -489,9 +500,15 @@
 		/**
 		 * Adds custom params to ad url.
 		 */
-		addCustomParams: function( adUrl ){
-			var postFix = this.getConfig( 'customParams' ) ?
-				'cust_params=' + encodeURIComponent( this.getConfig( 'customParams' ) ) : '';
+		addCustomParams: function( adUrl, cust_params ){
+			var postFix = "";
+			//Use cust_params if available on double click URL, otherwise opt in to use old customParams config if available
+			if( !cust_params ) {
+				postFix = (this.getConfig( 'customParams' )) ?
+					'cust_params=' + encodeURIComponent( this.getConfig( 'customParams' ) ) : '';
+			} else {
+				postFix = 'cust_params=' + cust_params;
+			}
 			if( postFix ){
 				var paramSeperator = adUrl.indexOf( '?' ) === -1 ? '?' :
 						adUrl[ adUrl.length -1 ] == '&' ? '': '&';
@@ -522,22 +539,34 @@
 			return adTagUrl;
 		},
 		// This function requests the ads.
-		requestAds: function( adTagUrl, adType ) {
+		requestAds: function( adType ) {
 			var _this = this;
+			this.parseAdTagUrlParts(this.embedPlayer, this.pluginName);
+			var adTagUrl = this.adTagUrl;
+			var cust_params = this.cust_params;
 			// Add any custom params:
-			adTagUrl = _this.addCustomParams( adTagUrl );
+			adTagUrl = _this.addCustomParams( adTagUrl, cust_params );
 
 			// Add any adRequest mappings:
 			adTagUrl = _this.addAdRequestParams( adTagUrl );
-
-			mw.log( "DoubleClick::requestAds: url: " + adTagUrl );
 
 			// Update the local lastRequestedAdTagUrl for debug and audits
 			_this.embedPlayer.setKDPAttribute( this.pluginName, 'requestedAdTagUrl', adTagUrl );
 
 			// Create ad request object.
 			var adsRequest = {};
-			adsRequest.adTagUrl = adTagUrl;
+			if (this.isChromeless) {
+				//If chromeless then send adTagUrl escaped and cust_params separately so it will be parsed correctly
+				// on the flash plugin
+				adTagUrl = _this.addAdRequestParams( this.adTagUrl );
+				adsRequest.adTagUrl = adTagUrl;
+				adsRequest.cust_params = cust_params;
+			} else {
+				adsRequest.adTagUrl = adTagUrl;
+			}
+
+			mw.log( "DoubleClick::requestAds: url: " + adTagUrl );
+
 			if( adType ){
 				adsRequest['adType'] = adType;
 			}
