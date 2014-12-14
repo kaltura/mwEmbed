@@ -206,15 +206,19 @@
 					var evaluatedQueryStringParams = "";
 					if ( queryStringParams ) {
 						//Break query string to key-value
-						var queryStringParamsParts = adTagUrlParts[1].split( '&' );
+						var queryStringParamsParts = queryStringParams.split( '&' );
 						for ( var i = 0; i < queryStringParamsParts.length; i++ ) {
 							//Break query string to key-value pair
 							var pair = queryStringParamsParts[i].split( '=' );
 							//Unescape and try to evaluate key and value
 							var evaluatedKey = embedPlayer.evaluate( unescape( pair[0] ) );
 							var evaluatedValue = embedPlayer.evaluate( unescape( pair[1] ) );
-							//Escape kvp and build evaluated query string param back
-							evaluatedQueryStringParams += escape( evaluatedKey ) + "=" + encodeURIComponent( evaluatedValue ) + "&";
+							//Escape kvp and build evaluated query string param back. exclude cust_params.
+							if (evaluatedKey != 'cust_params'){
+								evaluatedQueryStringParams += escape( evaluatedKey ) + "=" + encodeURIComponent( evaluatedValue ) + "&";
+							}else{
+								flashVars['cust_params'] = encodeURIComponent( evaluatedValue );
+							}
 						}
 						//Build entire adTagUrl back and escape all of it to prevent flash string parsing error
 						flashVars['adTagUrl'] = escape( adTagBaseUrl + "?" + evaluatedQueryStringParams );
@@ -222,7 +226,7 @@
 				}
 			} catch (e) {
 				// in case of error - fallback for fully escaped and evaluated adTagUrl string
-				this.log("failed to evaluate adTagUrl parts, using fully escaped/evaluated adTagUrl");
+				mw.log("failed to evaluate adTagUrl parts, using fully escaped/evaluated adTagUrl");
 				if ( flashVars['adTagUrl'] ){
 					flashVars['adTagUrl'] = escape(flashVars['adTagUrl']); // escape adTagUrl to prevent Flash string parsing error
 				}
