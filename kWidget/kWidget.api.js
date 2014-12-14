@@ -249,11 +249,14 @@ kWidget.api.prototype = {
 		return param;
 	},
 	getApiUrl : function( serviceType ){
-		var serviceUrl = this.serviceUrl;
-		if( serviceType && serviceType == 'stats' && this.statsServiceUrl ) {
-			serviceUrl = this.statsServiceUrl
+		var serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );
+		if( serviceType && serviceType == 'stats' &&  mw.getConfig( 'Kaltura.StatsServiceUrl' ) ) {
+			serviceUrl = mw.getConfig( 'Kaltura.StatsServiceUrl' );
 		}
-		return serviceUrl + this.serviceBase + serviceType;
+		if( serviceType && serviceType == 'LiveStats' &&  mw.getConfig( 'Kaltura.LiveStatsServiceUrl' ) ) {
+			serviceUrl = mw.getConfig( 'Kaltura.LiveStatsServiceUrl' );
+		}
+		return serviceUrl + mw.getConfig( 'Kaltura.ServiceBase' ) + serviceType;
 	},
 	hashCode: function( str ){
 		var hash = 0;
