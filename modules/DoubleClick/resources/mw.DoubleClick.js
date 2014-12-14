@@ -364,6 +364,20 @@
 		pauseAd: function (isLinear) {
 			var _this = this;
 			this.embedPlayer.paused = true;
+			var classes = "adCover";
+			if (mw.isIE8()){
+				classes += " adCoverIE8";
+			}
+			var adCover = $('<div class="' + classes + '"></div>').on('click', function(){
+				_this.embedPlayer.hideSpinnerOncePlaying();
+				_this.resumeAd(isLinear)
+			});
+			$(".adCover").remove();
+			if (this.isChromeless){
+				$(".videoDisplay").prepend(adCover);
+			}else{
+				$(this.getAdContainer()).append(adCover);
+			}
 			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 
 			if (isLinear) {
@@ -382,6 +396,7 @@
 		resumeAd: function (isLinear) {
 			var _this = this;
 			this.embedPlayer.paused = false;
+			$(".adCover").remove();
 			$(this.embedPlayer).trigger("onPlayerStateChange", ["play", this.embedPlayer.currentState]);
 			if (isLinear) {
 				this.embedPlayer.disablePlayControls();
