@@ -3059,7 +3059,7 @@
 			// update the manifest defined flavor set: 
 			this.manifestAdaptiveFlavors = [];
 			var _this = this;
-			$.each(flavors, function(inx, flavor){
+			$.each(newFlavors, function(inx, flavor){
 				_this.manifestAdaptiveFlavors.push( new mw.MediaSource( flavor ) )
 			});
 			$(this).trigger( 'sourcesReplaced' );;
