@@ -15,16 +15,28 @@
 			'PromptRestartChromeAfterInstall' : 'Download of the plugin installer will start immediately. Note that you must restart your Chrome browser after running the installer',
 			'promptTitle' : 'Notification'
 		},
+		kClient: null,
 		setup: function(){
-			mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
 			var _this = this;
+
+			mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
+			this.kClient = mw.kApiGetPartnerClient( this.getPlayer().kwidgetid );
+			//generate KS if missing
+			if( !this.kClient.getKs() ){
+				this.kClient.doRequest( { 'service' : 'session', 'action' : 'startWidgetSession', 'widgetId': this.getPlayer().kwidgetid }, function( data ) {
+					if ( data.code ) {
+						mw.log("Widevine:: Error:: startWidgetSession failed");
+					} else if ( data.ks ) {
+						_this.kClient.setKs( data.ks );
+					}
+				}, true );
+			}
+
 			var msg;
 			var title;
 
 			this.getPlayer().setKalturaConfig('kdpVars', 'widevine',
 				{ plugin: 'true', loadingPolicy: 'preInitialize', asyncInit: 'true', isWv: true});
-
-
 
 			this.bind( 'playerReady', function() {
 				var flavors = _this.getPlayer().mediaElement.getPlayableSources();
@@ -42,6 +54,7 @@
 								_this.getPlayer().setFlashvars( 'forceDynamicStream', 'true' );
 								if ( _this.getPlayer().setKPlayerAttribute ) {
 									_this.getPlayer().setKPlayerAttribute('configProxy.flashvars', 'forceDynamicStream', 'true');
+									_this.getPlayer().setKPlayerAttribute('configProxy.flashvars', 'ks', _this.kClient.getKs());
 									_this.getPlayer().setKPlayerAttribute('widevine.content', 'mediaWidth', flavors[0].width);
 									_this.getPlayer().setKPlayerAttribute('widevine.content', 'mediaHeight', flavors[0].height);
 
@@ -61,7 +74,7 @@
 						if ( isWVAsset() ) {
 							if ( _this.getPlayer().selectedPlayer.library == "NativeComponent" ) {
 								_this.getPlayer().getPlayerElement().attr( 'wvServerKey', _this.widevineObj().getEmmUrl()
-									+ "&format=widevine&flavorAssetId=" + flavors[0].getAssetId() + "&ks=" + _this.getPlayer().getFlashvars( 'ks' ) );
+									+ "&format=widevine&flavorAssetId=" + flavors[0].getAssetId() + "&ks=" + _this.kClient.getKs() );
 							}
 						}
 						//if we received non wv flavors we can play them. continue.

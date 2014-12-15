@@ -13,7 +13,7 @@
 			'dependencies' => array(
 				'base64_encode',
 				'matchMedia',
-				'mw.KApi',
+				'mw.KEntryLoader',
 				'mw.KDPMapping',
 				'mw.KCuePoints'
 			),
@@ -52,11 +52,8 @@
 		"mw.KDPMapping"=> array(
 			'scripts' => "resources/mw.KDPMapping.js",
 		),
-		"mw.KApi"=> array(
-			'scripts' => "resources/mw.KApi.js", 
-			'dependencies' => array(
-				'MD5'
-			)	
+		"mw.KEntryLoader"=> array(
+			'scripts' => "resources/mw.KEntryLoader.js"
 		),
 		"mw.KAds"=> array( 
 			'scripts' => "resources/mw.KAds.js",
@@ -294,8 +291,7 @@
 		"liveStream" => array(
 			'scripts' => array(
 				"components/live/liveCore.js", // Will run API requests for isLive service and trigger events ( extends mw.KBasePlugin )
-				"components/live/liveStatus.js", // Live status components  ( extends mw.KBaseComponent )
-				"components/live/liveBackBtn.js" // Back to live button ( extends mw.KBaseComponent )
+				"components/live/liveStatus.js" // Live status components  ( extends mw.KBaseComponent )
 			),
 			'styles' => 'components/live/liveStream.css',
 			'dependencies' => 'mw.KBaseComponent',
@@ -322,7 +318,7 @@
 		),
 		"jCarouse"=> array( 
 			'scripts' => "resources/uiConfComponents/jcarousellite_1.0.1.js",
-			 'dependencies' => 'touchSwipe'
+			 'dependencies' => array('nanoScroller', 'touchSwipe')
 		),
 		"mw.KLayout"=> array( 
 			'scripts' => "resources/mw.KLayout.js" 
@@ -352,6 +348,11 @@
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'playbackRateSelector'
 		),
+		'streamSelector' => array(
+            'scripts' => "components/streamSelector.js",
+            'dependencies' => 'mw.KBaseComponent',
+            'kalturaPluginName' => 'streamSelector'
+        ),
 		"watermarkPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/watermarkPlugin.js",
 			'dependencies' => 'mw.KBaseComponent',

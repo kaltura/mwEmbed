@@ -1084,6 +1084,39 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 .cssChecker{
 	display: none !important;
 }
+
+.liveAlertMessage{
+	background-color : transparent;
+	padding : 5px;
+	font-weight : normal !important;
+	font-size: 1.5em;
+	color: #a4a4a4;
+	opacity: 0.5;
+	text-align: center;
+}
+
+.liveAlertTitle{
+	background-color : transparent;
+
+	font-weight : normal !important;
+	font-size: 1.8em ;
+	color: #a4a4a4;
+	opacity: 0.5;
+	text-align: center;
+}
+
+.liveAlertContainer{
+	background-color : transparent;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translate(-50%, -50%);
+	-moz-transform:    translate(-50%, -50%);
+	-ms-transform:     translate(-50%, -50%);
+	-o-transform:      translate(-50%, -50%);
+	transform:         translate(-50%, -50%);
+	color: white;
+}
 @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
 @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }

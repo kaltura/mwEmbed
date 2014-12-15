@@ -80,7 +80,6 @@ mw.FullScreenManager.prototype = {
 	*/
 	doFullScreenPlayer: function( callback ) {
 		mw.log("FullScreenManager:: doFullScreenPlayer" );
-
         if( mw.getConfig('EmbedPlayer.NewWindowFullscreen') && !screenfull &&
             !(mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen') && mw.isIpad())){
             this.openNewWindow();

@@ -161,6 +161,7 @@ return array(
 			"sourceSelector" => "",
 			"download" => "",
 			"nativeCallout" => "",
+			"strings" => "",
 			"uiVars" => ""
 		)
 	)

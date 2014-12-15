@@ -13,9 +13,6 @@ return array(
 	),
 
 	/* cryto / encode */
-	'MD5' => array(
-		'scripts' =>	 'resources/crypto/MD5.js' 
-	),
 	'base64_encode' =>  array( 
 		'scripts' => 'resources/base64/base64_encode.js',
 		'dependencies' => 'utf8_encode'
@@ -439,6 +436,11 @@ return array(
 	),
     'touchSwipe' => array(
         'scripts' => 'resources/touchSwipe/jquery.touchSwipe.min.js',
+        'dependencies' => 'jquery'
+    ),
+    'nanoScroller' => array(
+        'scripts' => 'resources/nanoScroller/nanoScroller.min.js',
+        'styles' => 'resources/nanoScroller/nanoScroller.css',
         'dependencies' => 'jquery'
     ),
 	/*'mediawiki.language.parser' => new MwEmbedResourceLoaderFileModule( array(

@@ -440,6 +440,22 @@ return array(
 			)
 		)
 	),
+	//Stream selector
+	'streamSelector' => array(
+        'description' => "Enables users to select the video playback stream out of a selection of streams.",
+        'attributes' => array(
+            'defaultStream' => array(
+                'doc' => 'The default stream.',
+                'initvalue' => 1,
+                'type' => 'number'
+            ),
+            'enableKeyboardShortcuts' => array(
+                'doc' => 'Enable keyboard shortcuts (Key mappings: "[" - Next, "]" - Previous, "\" - Default)',
+                'initvalue' => true,
+                'type' => 'boolean'
+            ),
+        )
+    ),
 	/* flavor selector */
 	'flavorComboControllerScreen' => array(
 		'description' => "The Kaltura flavor selector plugin.",
@@ -562,6 +578,16 @@ return array(
 			'minWidth' => array(
 				'doc' => "The minimum width of the playhead. If the min-width is reached, normal responsive display importance removal rules come into effect.",
 				'type' => 'number'
+			),
+			'sliderPreview' => array(
+				'doc' => "Show a preview thumbnail with the current time when mouse is over the scrubber",
+				'type' =>'boolean',
+				'initvalue' =>true
+			),
+			'showOnlyTime' => array(
+				'doc' => "Show only the time when mouse is over the scrubber",
+				'type' =>'boolean',
+				'initvalue' =>false
 			)
 		)
 	),
@@ -594,11 +620,13 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'href' => array(
 					'label' => 'Logo link',
 					'doc' => "URL for the control bar logo to click through to.",
-					'type' => 'url'
+					'type' => 'url',
+                    'initvalue' => 'http://www.kaltura.com'
 			),
 			'title' => array(
 					'doc' => "Title tooltip for the logo",
-					'type' => 'string'
+					'type' => 'string',
+                    'initvalue' => 'Kaltura'
 			),
 			'cssClass' => array(
 					'doc' => "An additional class to add to the logo. Can be used for CSS based custom logo image.",
@@ -1141,6 +1169,11 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'boolean',
 				'initvalue' => false,
 			),
+			'pauseAdOnClick' => array(
+				'doc' => 'If the ad should pause when clicked.',
+				'type' => 'boolean',
+				'initvalue' => true,
+			),
 			'enableCORS' => array(
 				'doc' => 'Enable CORS request to support request cookies to secured domains over ajax',
 				'type' => 'boolean',
@@ -1459,6 +1492,20 @@ The playhead reflects segment time as if it was the natural stream length.",
 				),*/
 			)
 		)
+	),
+	'strings' => array(
+		'description' => 'Enables overwriting player strings. For full string keys listing, review the <a href="http://player.kaltura.com/docs/Strings" target="_blank">Strings documentation page</a>' ,
+		'type' => 'featuremenu',
+		'label' => 'Strings',
+		'model' => 'config.plugins.strings',
+		'attributes' => array(
+            'keyValuePairs' => array(
+                'doc' => 'Key / Value pairs of strings to overwrite',
+                'label' => 'Strings to overwrite:',
+                'initvalue' => '',
+                'type' => 'keyValuePairs',
+            )
+        )
 	),
 	'hammerEvents' => array(
 		'description' => 'Support Hammer.js events against the player canvas.',

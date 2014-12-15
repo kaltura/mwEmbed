@@ -317,22 +317,82 @@
 			_this.embedPlayer.bindHelper('Kaltura_SendNotification' + this.bindPostfix, function (event, notificationName, notificationData) {
 				if (_this.playingLinearAd) {
 					if ( notificationName === "doPause" ) {
-						_this.embedPlayer.paused = true;
-						$( _this.embedPlayer ).trigger( "onPlayerStateChange", ["pause", _this.embedPlayer.currentState] );
-						if ( _this.isChromeless ) {
-							_this.embedPlayer.getPlayerElement().sendNotification( "pauseAd" );
-						}
+						_this.pauseAd(true);
 					}
 					if ( notificationName === "doPlay" ) {
-						_this.embedPlayer.paused = false;
-						$( _this.embedPlayer ).trigger( "onPlayerStateChange", ["play", _this.embedPlayer.currentState] );
-						if ( _this.isChromeless ) {
-							_this.embedPlayer.getPlayerElement().sendNotification( "resumeAd" );
-						}
+						_this.resumeAd(true);
+					}
+				}
+			});
+
+			_this.embedPlayer.bindHelper('AdSupport_StartAdPlayback' + this.bindPostfix, function (event) {
+				if (_this.isChromeless){
+					_this.embedPlayer.getPlayerElement().sendNotification("hideContent");
+				}else{
+					if ( _this.embedPlayer.isVideoSiblingEnabled() ) {
+						$(".mwEmbedPlayer").addClass("mwEmbedPlayerBlackBkg");
+						_this.embedPlayer.addBlackScreen();
+					}
+				}
+			});
+
+			_this.embedPlayer.bindHelper('AdSupport_EndAdPlayback' + this.bindPostfix, function (event) {
+				if (_this.isChromeless){
+					_this.embedPlayer.getPlayerElement().sendNotification("showContent");
+				}else{
+					if ( _this.embedPlayer.isVideoSiblingEnabled() ) {
+						$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
+						_this.embedPlayer.removeBlackScreen();
 					}
 				}
 			});
 		},
+
+		pauseAd: function (isLinear) {
+			var _this = this;
+			this.embedPlayer.paused = true;
+			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
+
+			if (isLinear) {
+				this.embedPlayer.enablePlayControls(["scrubber"]);
+			} else {
+				_this.embedPlayer.pause();
+			}
+
+			if (_this.isChromeless) {
+				_this.embedPlayer.getPlayerElement().sendNotification("pauseAd");
+			} else {
+				this.adsManager.pause();
+			}
+		},
+
+		resumeAd: function (isLinear) {
+			var _this = this;
+			this.embedPlayer.paused = false;
+			$(this.embedPlayer).trigger("onPlayerStateChange", ["play", this.embedPlayer.currentState]);
+			if (isLinear) {
+				this.embedPlayer.disablePlayControls();
+			} else {
+				_this.embedPlayer.play();
+			}
+
+			if (_this.isChromeless) {
+				_this.embedPlayer.getPlayerElement().sendNotification("resumeAd");
+			} else {
+				this.adsManager.resume();
+			}
+		},
+
+		toggleAdPlayback: function (isLinear) {
+			if (this.getConfig("pauseAdOnClick") !== false) {
+				if (this.embedPlayer.paused) {
+					this.resumeAd(isLinear);
+				} else {
+					this.pauseAd(isLinear);
+				}
+			}
+		},
+
 		/**
 		 * Get the content video tag
 		 */
@@ -620,35 +680,6 @@
 			var lastAdStartTime = null;
 
 			// Add ad listeners:
-			adsListener( 'CLICK', function(event){
-				if( mw.isMobileDevice() ){
-					if( mw.isIOS5() || mw.isIOS6() ) {
-						_this.isAdClickTimeoutEnabled = true;
-						var startTime = new Date().getTime();
-						var getTime = function() {
-							var currentTime = new Date().getTime();
-							if (currentTime - startTime > 1000) {
-								_this.embedPlayer.getPlayerElement().play();
-							}
-							startTime = currentTime;
-							if( _this.isAdClickTimeoutEnabled ) {
-								setTimeout(getTime, 500);
-							}
-						};
-						getTime();
-					} else {
-						var eventName = 'focus.doubleClickMobileEvent';
-						if( _this.isPageshowEventSupported() && mw.isIOS() ) {
-							eventName = 'pageshow.doubleClickMobileEvent';
-						}
-						_this.adClickEvent = eventName;
-						var onFocusAction = function(event){
-							_this.embedPlayer.getPlayerElement().play();
-						};
-						$(window).bind(eventName , onFocusAction);
-					}
-				}
-			} );
 			adsListener( 'CONTENT_PAUSE_REQUESTED', function(event){
 				if (_this.currentAdSlotType === 'midroll') {
 					var restoreMidroll = function(){
@@ -785,6 +816,12 @@
 				_this.embedPlayer.sendNotification('doPause');
 			} );
 
+			adsListener('CLICK', function (adEvent) {
+				var ad = adEvent.getAd();
+				var isLinear = ad.isLinear();
+				_this.toggleAdPlayback(isLinear);
+			});
+
 			adsListener( 'FIRST_QUARTILE', function(){
 				// Monitor ad progress ( if for some reason we are not already monitoring )
 				_this.monitorAdProgress();
@@ -826,6 +863,7 @@
 				} else {
 					_this.hideAdContainer();
 				}
+				_this.embedPlayer.triggerHelper( 'onAllAdsCompleted' );
 			});
 		},
 		bindChromelessEvents: function(){
@@ -879,6 +917,10 @@
 				$(_this.embedPlayer).trigger('onAdComplete',[adInfo.adID, mw.npt2seconds($(".currentTimeLabel").text())]);
 			},'adCompleted', true);
 
+			this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
+				_this.toggleAdPlayback(adInfo.isLinear);
+			}, 'adClicked', true);
+
 			this.embedPlayer.getPlayerElement().subscribe(function(companionInfo){
 				_this.showCompanion(companionInfo.companionID, companionInfo.content);
 			},'displayCompanion', true);
@@ -891,6 +933,7 @@
 					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', _this.entryDuration );
 					_this.embedPlayer.triggerHelper( 'timeupdate', 0);
 				}
+				_this.embedPlayer.triggerHelper( 'onAllAdsCompleted' );
 			},'allAdsCompleted', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
