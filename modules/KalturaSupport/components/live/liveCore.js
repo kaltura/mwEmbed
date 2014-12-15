@@ -111,15 +111,6 @@
 					}
 				}
 
-				//check for pending autoPlay
-				if ( onAirObj.onAirStatus &&
-					embedPlayer.firstPlay &&
-					embedPlayer.autoplay &&
-					embedPlayer.canAutoPlay() &&
-					!embedPlayer.isPlaying() ) {
-					embedPlayer.play();
-				}
-
 				//if we moved from live to offline  - show message
 				if ( _this.onAirStatus && !onAirObj.onAirStatus ) {
 
@@ -154,7 +145,10 @@
 					embedPlayer.triggerHelper( 'liveOffline' );
 
 				}  else if ( !_this.onAirStatus && onAirObj.onAirStatus ) {
-					_this.addPoster();
+					if ( !_this.playWhenOnline && !embedPlayer.isPlaying()) {
+						_this.addPoster();
+					}
+
 					embedPlayer.layoutBuilder.closeAlert(); //moved from offline to online - hide the offline alert
 					if ( !_this.getPlayer().getError() ) {
 						_this.getPlayer().enablePlayControls();
@@ -164,6 +158,15 @@
 						_this.playWhenOnline = false;
 					}
 					embedPlayer.triggerHelper( 'liveOnline' );
+				}
+
+				//check for pending autoPlay
+				if ( onAirObj.onAirStatus &&
+					embedPlayer.firstPlay &&
+					embedPlayer.autoplay &&
+					embedPlayer.canAutoPlay() &&
+					!embedPlayer.isPlaying() ) {
+					embedPlayer.play();
 				}
 
 				_this.onAirStatus = onAirObj.onAirStatus;
