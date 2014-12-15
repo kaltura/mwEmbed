@@ -541,11 +541,28 @@
 				var list = $( this.getMedialistComponent().children()[0] );
 				list.wrap( this.$scroll );
 				this.$scroll = this.getComponent().find(".nano");
-				this.$scroll.nanoScroller( {
+				var options = {
 					flash: true,
 					preventPageScrolling: true,
 					iOSNativeScrolling: true
-				} );
+				} ;
+				if (this.getConfig('onPage')){
+					try{
+						$.extend(options, {
+							documentContext: window.parent.document,
+							windowContext: window.parent.window
+						});
+						var _this = this;
+						setTimeout(function(){
+							_this.$scroll.nanoScroller( options );
+						}, 100);
+
+					} catch (e){
+						this.log("Unable to reference onPage window/document context");
+					}
+				} else {
+					this.$scroll.nanoScroller( options );
+				}
 			}
 			return this.$scroll;
 		},
