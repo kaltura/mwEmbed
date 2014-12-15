@@ -64,13 +64,12 @@ class downloadEntry {
 			header( "Content-Type: application/force-download" );
 			$extension = strrchr( substr( $flavorUrl, 0, strpos( $flavorUrl, "?ks=" ) ), '.' );
 			$flavorId = substr( strrchr( strstr( $flavorUrl, "/format/", true ), '/' ), 1 );
-
+			
 			if($_GET['downloadName'] != null){
 				$filename	= urldecode($_GET['downloadName']).$extension;
 			}else{
-
 				$filename = $flavorId . $extension;
-
+				
 			}
 
 
@@ -386,7 +385,22 @@ class downloadEntry {
 		$src =  $assetUrl .'/a.' . $source->fileExt . '?ks=' . $kResultObject->client->getKS() . '&referrer=' . $this->getReferer();
 		return $src;
 	 }
-
+	private function isSourceOnlyAsset(){
+		$kResultObject = $this->getResultObject();
+		$resultObject =  $kResultObject->getResult();
+		
+		return ( 
+				// check if flavorAssets do not exist:
+				(
+				!isset( $resultObject['contextData']->flavorAssets ) 
+				||
+				count( $resultObject['contextData']->flavorAssets ) == 0 
+				)
+			&& 
+				// check if downloadUrl is defined: 
+				isset( $resultObject['meta']->downloadUrl )
+		);
+	}
 	private function getSourceFlavorUrl( $flavorId = false ){
 		global $wgHTTPProtocol;
 
@@ -401,6 +415,14 @@ class downloadEntry {
 		$src = false;
 		$kResultObject = $this->getResultObject();
 		$resultObject =  $kResultObject->getResult();
+		
+		if( $this->isSourceOnlyAsset() ){
+			// Note we are assuming other assets have flavors, and only image gets direct mapping: 
+			// this is probably not a safe assumption, public source only assets may fall into this category 
+			// and should be supproted. 
+			// ENUM mapping here: https://www.kaltura.com/api_v3/testmeDoc/index.php?object=KalturaMediaType
+			return $resultObject['meta']->downloadUrl . '/a.jpg' . '?ks=' . $kResultObject->client->getKS() . '&referrer=' . $this->getReferer();
+		}
 
 		if ( isset( $flavorID ) ) {
 			// flavor ID overrides preferred bitrate so look for it first
@@ -409,7 +431,7 @@ class downloadEntry {
 					$src = $this->getSourceUrl($kResultObject, $resultObject, $source);
 				}
 			}
-		}else if ( isset( $preferredBitrate ) ) {
+		} else if ( isset( $preferredBitrate ) ) {
 			// if the user specified 0 - return the source
 			if ($preferredBitrate == 0){
 				foreach( $resultObject['contextData']->flavorAssets as $source ){
