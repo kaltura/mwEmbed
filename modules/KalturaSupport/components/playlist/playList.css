@@ -2,7 +2,7 @@
 	font: normal 13px "Myriad Web Pro Regular", Helvetica, Arial, sans-serif !important;
 	background-color: #2d2d2d !important;
 	color: #ffffff !important;
-	overflow: auto !important;
+	overflow: hidden !important;
 	padding: 0px !important;
 	width: 100%;
 	height: 100%;
@@ -507,3 +507,7 @@
 	display: inline;
 	paddin-top: 8px;
 }
+
+.playlistAPI .nano > .nano-pane   { background: #888; }
+.playlistAPI .nano > .nano-pane:hover {cursor: pointer;}
+.playlistAPI .nano > .nano-pane > .nano-slider { background: #111; }
