@@ -114,9 +114,6 @@
 					|| 
 					isMimeTYpe("video/h264")
 				){
-					_this.isMulticast = false;
-					flashvars.preload = "auto";
-					flashvars.smoothStreamPlayer = false;
 					flashvars.entryURL = resolvedSrc;
 				} else if(
 					isMimeType("video/playreadySmooth")
@@ -238,6 +235,14 @@
 						playerElement.stretchFill();
 					}
 					//readyCallback();
+
+					if ( isMimeType("video/mp4")
+						||
+						isMimeTYpe("video/h264")
+						){
+						_this.durationReceived = true;
+						readyCallback();
+					}
 				});
 			}
 
