@@ -9,13 +9,14 @@
 			'showTooltip': true
 		},
 
-		offlineIconClass: 'icon-off-air live-icon offline-icon',
-		onAirIconClass: 'icon-on-air live-icon online-icon',
+		offlineIconClass: 'icon-off-air live-icon offline-icon not-clickable',
+		onAirIconClass: 'icon-on-air live-icon online-icon not-clickable',
 		unsyncIConClass: 'icon-off-air live-icon live-off-sync-icon',
+		noThumbClass: 'not-clickable',
 
 		liveText: gM( 'mwe-embedplayer-player-on-air' ),
 		offlineText: gM( 'mwe-embedplayer-player-off-air' ),
-		tooltip: "",
+		tooltip: gM( 'mwe-embedplayer-player-jump-to-live' ),
 
 		prevIconClass: undefined,
 
@@ -33,12 +34,10 @@
 			} );
 			if ( this.getPlayer().isDVR() ) {
 
-				this.tooltip =  gM( 'mwe-embedplayer-player-jump-to-live' );
-
 				this.bind( 'seeked seeking onpause', function() {
 					//live is off-synch
 					if ( _this.onAirStatus ) {
-						_this.getComponent().find('.live-icon').removeClass( _this.onAirIconClass ).addClass( _this.unsyncIConClass );
+						_this.setOffSyncUI();
 					}
 					_this.prevIconClass = _this.unsyncIConClass;
 				});
@@ -48,7 +47,7 @@
 			var _this = this;
 			if( !this.$el ) {
 				var $btnText = $( '<div />')
-					.addClass( 'btn back-to-live-text timers' + this.getCssClass() )
+					.addClass( 'btn back-to-live-text timers ' + this.noThumbClass + this.getCssClass() )
 					.text( this.offlineText );
 
 				var $icon  =$( '<div />' ).addClass( 'btn timers '+ this.offlineIconClass + this.getCssClass() );
@@ -57,7 +56,7 @@
 					.addClass( 'back-to-live' + this.getCssClass() )
 					.append( $icon, $btnText )
 					.click( function() {
-						if ( _this.onAirStatus && _this.getPlayer().isDVR() ) {
+						if ( _this.onAirStatus && _this.getPlayer().isDVR() && _this.prevIconClass != _this.onAirIconClass ) {
 							_this.backToLive();
 						}
 					});
@@ -74,16 +73,30 @@
 
 			//live catched up
 			if ( this.onAirStatus ) {
-				this.getComponent().find('.live-icon').removeClass( this.unsyncIConClass ).addClass( this.onAirIconClass );
+				this.setLiveUI();
 				this.prevIconClass = this.onAirIconClass ;
 			}
 		},
 
+		setOffSyncUI: function() {
+			this.getComponent().find('.live-icon').removeClass( this.offlineIconClass + " " + this.onAirIconClass ).addClass( this.unsyncIConClass );
+			this.getComponent().find('.back-to-live-text').text( this.liveText ).removeClass( this.noThumbClass );
+			this.updateTooltip( this.tooltip );
+		},
+
+		setLiveUI: function() {
+			this.getComponent().find('.live-icon').removeClass( this.offlineIconClass + " " + this.unsyncIConClass ).addClass( this.onAirIconClass );
+			this.getComponent().find('.back-to-live-text').text( this.liveText ).addClass( this.noThumbClass );
+			this.updateTooltip( "" );
+		},
+
 		setLiveStreamStatus: function() {
 			if ( this.onAirStatus ) {
-				this.getComponent().find('.live-icon').removeClass( this.offlineIconClass ).addClass( this.prevIconClass );
-				this.getComponent().find('.back-to-live-text').text( this.liveText );
-				this.updateTooltip( this.tooltip );
+				if ( this.prevIconClass == this.unsyncIConClass ) {
+					this.setOffSyncUI();
+				} else {
+					this.setLiveUI();
+				}
 			}
 			else {
 				this.getComponent().find('.live-icon').removeClass( this.onAirIconClass + " " + this.unsyncIConClass ).addClass( this.offlineIconClass );
