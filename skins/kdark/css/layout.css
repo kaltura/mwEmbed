@@ -42,6 +42,9 @@ body { letter-spacing: 0.04em; }
 	width: 2em;
 	text-shadow: none;
 }
+.topBarContainer.block {
+	position: static;
+}
 
 .sideBarContainerReminder{
     padding: 10px;
