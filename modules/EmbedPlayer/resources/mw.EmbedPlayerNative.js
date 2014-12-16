@@ -1402,7 +1402,7 @@
 			var _this = this;
 			if (this.getPlayerElement()) {
 				mw.log('EmbedPlayer:native: onended:' + this.playerElement.currentTime + ' real dur:' + this.getDuration() + ' ended ' + this._propagateEvents);
-				if (this._propagateEvents) {
+				if (this._propagateEvents && !this.isLive()) {
 					this.onClipDone();
 				}
 			}
