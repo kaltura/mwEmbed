@@ -110,8 +110,16 @@
 				var flashvars = {
 					startvolume: _this.volume
 				}
-				if (isMimeType("video/playreadySmooth")
-					|| isMimeType("video/ism")) {
+				if ( isMimeType("video/mp4")
+					|| 
+					isMimeTYpe("video/h264")
+				){
+					flashvars.entryURL = resolvedSrc;
+				} else if(
+					isMimeType("video/playreadySmooth")
+						|| 
+					isMimeType("video/ism")
+				) {
 					_this.isMulticast = false;
 
 					flashvars.smoothStreamPlayer = true;
@@ -227,6 +235,14 @@
 						playerElement.stretchFill();
 					}
 					//readyCallback();
+
+					if ( isMimeType("video/mp4")
+						||
+						isMimeTYpe("video/h264")
+						){
+						_this.durationReceived = true;
+						readyCallback();
+					}
 				});
 			}
 
