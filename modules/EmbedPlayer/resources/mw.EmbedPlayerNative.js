@@ -302,8 +302,8 @@
 			if (this.useNativePlayerControls()) {
 				$(vid).attr('controls', "true");
 			}
-			// make sure the video is shown:
-			$(vid).show();
+			// make sure the video is show ( both display and visibility attributes )
+			$( vid ).show().css('visibility', '');
 
 			// Apply media element bindings:
 			_this.applyMediaElementBindings();
@@ -1329,7 +1329,7 @@
 				this.playInterfaceUpdate();
 				this.absoluteStartPlayTime = new Date().getTime();
 				// We need first play event for analytics purpose
-				if (this.firstPlay && this._propagateEvents) {
+				if (this.firstPlay && this._propagateEvents  && !this.inPreSequence()) {
 					this.firstPlay = false;
 					this.triggerHelper('firstPlay');
 				}

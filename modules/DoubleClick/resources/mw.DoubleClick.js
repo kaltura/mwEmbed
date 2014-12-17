@@ -1223,16 +1223,18 @@
 		},
 		destroy:function(){
 			// remove any old bindings:
+			var _this = this;
 			this.embedPlayer.unbindHelper( this.bindPostfix );
 			if (!this.isChromeless){
 				if ( this.playingLinearAd ) {
 					this.restorePlayer(true);
 				}
-				this.removeAdContainer();
-				if ( this.adsLoader ) {
-					this.adsLoader.destroy();
-				}
-
+				setTimeout(function(){
+					_this.removeAdContainer();
+					if ( _this.adsLoader ) {
+						_this.adsLoader.destroy();
+					}
+				},100);
 			}else{
 				if ( !this.isLinear ){
 					this.embedPlayer.getPlayerElement().sendNotification( 'destroy' );
