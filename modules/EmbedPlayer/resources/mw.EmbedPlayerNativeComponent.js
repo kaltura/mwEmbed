@@ -156,7 +156,8 @@
 			_this.hideSpinner();
 			if ($.isFunction(switchCallback)) {
 				switchCallback(vid);
-				if (!(!this.adsOnReplay && this.adTimeline.displayedSlotCount > 0) || this.loop ){
+				var isPlayingAdsContext = this.adsOnReplay || !(this.adTimeline.displayedSlotCount > 0);
+				if ( isPlayingAdsContext || this.loop ){
 					setTimeout(function () {
 						vid.play();
 					}, 100);
