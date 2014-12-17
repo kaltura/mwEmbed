@@ -156,12 +156,12 @@
 			_this.hideSpinner();
 			if ($.isFunction(switchCallback)) {
 				switchCallback(vid);
-			}
-
-			if ($.isFunction(switchCallback)) {
-				setTimeout(function () {
-					vid.play();
-				}, 100);
+				var isPlayingAdsContext = this.adsOnReplay || !(this.adTimeline.displayedSlotCount > 0);
+				if ( isPlayingAdsContext || this.loop ){
+					setTimeout(function () {
+						vid.play();
+					}, 100);
+				}
 			}
 
 
@@ -407,6 +407,7 @@
 		 * Local onClip done function for native player.
 		 */
 		onClipDone: function () {
+			mw.log('EmbedPlayer:native: oneClipDone:');
 			this.parent_onClipDone();
 		},
 
