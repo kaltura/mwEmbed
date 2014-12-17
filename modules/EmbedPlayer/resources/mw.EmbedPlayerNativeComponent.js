@@ -113,7 +113,6 @@
 				mw.log("EmbedPlayerNativeComponent:: showChromecastDeviceList::");
 				_this.getPlayerElement().showChromecastDeviceList();
 			});
-
 			this.resolveSrcURL(this.getSrc()).then(
 				function (resolvedSrc) {
 					mw.log("EmbedPlayerNativeComponent::resolveSrcURL get succeeded");
@@ -313,9 +312,8 @@
 		 */
 		_onplay: function () {
 			mw.log("EmbedPlayerNativeComponent:: OnPlay::");
-
 			$(this).trigger("playing");
-
+			this.removePoster();
 			if (this.paused && this.parent_play()) {
 				this.monitor();
 			}
