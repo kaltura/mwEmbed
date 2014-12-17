@@ -258,17 +258,20 @@
 				this.$scroll = null;
 				//Add media items to DOM
 				this.getMedialistComponent().append( medialist );
-				//Adjust container size
-				this.setMedialistContainerSize();
-				this.setMedialistComponentHeight();
-				//Adjust the mediaboxes size
-				this.setMediaBoxesDimensions();
-				//Attach media items handlers
-				this.attachMediaListHandlers();
-				//Add scroll if applicable
-				this.shouldAddScroll( );
+				this.configMediaListFeatures();
 				$( this.embedPlayer ).trigger( "mediaListLayoutReady" );
 			}
+		},
+		configMediaListFeatures: function(){
+			//Adjust container size
+			this.setMedialistContainerSize();
+			this.setMedialistComponentHeight();
+			//Adjust the mediaboxes size
+			this.setMediaBoxesDimensions();
+			//Attach media items handlers
+			this.attachMediaListHandlers();
+			//Add scroll if applicable
+			this.shouldAddScroll( );
 		},
 		setMedialistComponentHeight: function(){
 			var componentHeight = this.getComponent().height() - 1;

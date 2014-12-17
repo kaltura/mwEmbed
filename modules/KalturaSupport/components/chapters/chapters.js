@@ -102,9 +102,9 @@
 						}
 						//Mark current added items index as the index to start scroll from and re-init the scroll logic
 						_this.startFrom = _this.mediaList.length - _this.mediaItemVisible;
-						_this.shouldAddScroll();
+						_this.configMediaListFeatures();
 						_this.updateActiveItem();
-						_this.attachMediaListHandlers();
+						$( _this.embedPlayer ).trigger( "mediaListLayoutUpdated" );
 					}
 				}
 			});
