@@ -271,7 +271,7 @@
 			}
 		},
 		setMedialistComponentHeight: function(){
-			var componentHeight = this.getComponent().height();
+			var componentHeight = this.getComponent().height() - 1;
 			if (this.getConfig("onPage")){
 				componentHeight = this.getComponent().parent().height();
 			}
