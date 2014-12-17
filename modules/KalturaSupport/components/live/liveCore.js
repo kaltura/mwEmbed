@@ -57,6 +57,8 @@
 
 
 		addPoster: function(){
+			//sometimes thumbnail doesn't cover video, add black background
+			$(".mwEmbedPlayer").addClass("mwEmbedPlayerBlackBkg");
 			this.getPlayer().removePosterFlag = false;
 			this.getPlayer().updatePosterHTML();
 		},
@@ -90,6 +92,10 @@
 					} );
 				}
 			} );
+
+			this.bind( 'playing', function() {
+				$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
+			});
 
 			this.bind( 'firstPlay', function() {
 				_this.firstPlay = true;
