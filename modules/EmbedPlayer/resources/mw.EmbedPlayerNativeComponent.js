@@ -314,8 +314,8 @@
 			mw.log("EmbedPlayerNativeComponent:: OnPlay::");
 
 			$(this).trigger("playing");
-			
 			this.removePoster();
+			
 			if (this.paused && this.parent_play()) {
 				this.monitor();
 			}
