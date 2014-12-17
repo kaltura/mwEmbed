@@ -89,6 +89,9 @@
 				// do the api request
 				this.getKalturaClient().doRequest(requestArray, function (data) {
 					// Validate result
+					if (requestArray.length === 1){
+						data = [data];
+					}
 					$.each(data, function (index, res) {
 						if (!_this.isValidResult(res)) {
 							data[index] = null;
