@@ -41,8 +41,8 @@ if( ! window.kWidget ){
 
 			var baseUrl = serviceUrl + '/p/' + settings.partnerId +
 					'/sp/' + settings.partnerId + '00/playManifest';
-			for( var i in result[1]['flavorAssets'] ){
-				var asset = result[1]['flavorAssets'][i];
+			for( var i in result[0]['flavorAssets'] ){
+				var asset = result[0]['flavorAssets'][i];
 				// Continue if clip is not ready (2)
 				if( asset.status != 2  ) {
 					continue;
@@ -161,11 +161,11 @@ if( ! window.kWidget ){
 			// callback with device sources, poster
 			if( settings.callback ){
 				settings.callback({
-					'poster': result[2]['thumbnailUrl'],
-					'duration': result[2]['duration'],
-					'name': result[2]['name'],
-					'entryId' :  result[2]['id'],
-					'description': result[2]['description'],
+					'poster': result[1]['thumbnailUrl'],
+					'duration': result[1]['duration'],
+					'name': result[1]['name'],
+					'entryId' :  result[1]['id'],
+					'description': result[1]['description'],
 					'sources': deviceSources
 				});
 			}
