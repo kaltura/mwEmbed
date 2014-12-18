@@ -38,7 +38,7 @@
 		/**
 		 * indicates that we've received the first live status update
 		 */
-		liveStreamStatusUpdate : false,
+		liveStreamStatusUpdated : false,
 
 		setup: function() {
 			this.addPlayerBindings();
@@ -107,8 +107,8 @@
 
 			this.bind( 'liveStreamStatusUpdate', function( e, onAirObj ) {
 
-				if ( !_this.liveStreamStatusUpdate ) {
-					_this.liveStreamStatusUpdate = true;
+				if ( !_this.liveStreamStatusUpdated ) {
+					_this.liveStreamStatusUpdated = true;
 					if( onAirObj.onAirStatus ){
 						_this.addPoster();
 						_this.getPlayer().enablePlayControls();
@@ -151,7 +151,7 @@
 					embedPlayer.triggerHelper( 'liveOffline' );
 
 				}  else if ( !_this.onAirStatus && onAirObj.onAirStatus ) {
-					if ( !_this.playWhenOnline && !embedPlayer.isPlaying()) {
+					if ( _this.getPlayer().removePosterFlag && !_this.playWhenOnline && !embedPlayer.isPlaying()) {
 						_this.addPoster();
 					}
 
@@ -201,23 +201,25 @@
 					embedPlayer.setLive( false );
 					if ( _this.getConfig('hideOfflineIndicators') ) {
 						_this.isLiveChanged();
-					} else {
-						//once moving back to live, set live state again
-						embedPlayer.bindHelper( 'movingBackToLive', function() {
-							embedPlayer.setLive( true );
-							if ( _this.isNativeHLS() ) {
-								embedPlayer.setDuration( _this.dvrWindow );
-							}
-						} );
 					}
+					//once moving back to live, set live state again
+					embedPlayer.bindHelper( 'liveOnline', function() {
+						embedPlayer.setLive( true );
+					} );
 
 					if ( !_this.isNativeHLS() ) {
-						embedPlayer.setDuration( embedPlayer.getPlayerElement().duration );
 						embedPlayer.bindHelper( 'ended', function() {
 							embedPlayer.getPlayerElement().seek( 0 );
 						});
 					}
 				}
+			});
+
+			this.bind( 'movingBackToLive', function() {
+				//in case stream is shorter now (long disconnection) reset the duration
+				 if ( _this.isDVR() && _this.isNativeHLS() ) {
+					 _this.maxCurrentTime = 0;
+				 }
 			});
 		},
 
