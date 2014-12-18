@@ -183,8 +183,7 @@
 			// Populate playlist set with kalturaPlaylistData
 			for (var playlistId in embedPlayer.kalturaPlaylistData) {
 				if (embedPlayer.kalturaPlaylistData.hasOwnProperty(playlistId)) {
-					if (embedPlayer.kalturaPlaylistData[ playlistId ].items)
-					this.playlistSet.push(embedPlayer.kalturaPlaylistData[ playlistId ]);
+					this.playlistSet.push( embedPlayer.kalturaPlaylistData[ playlistId ] );
 				}
 			}
 			// update playlist names if set in Flashvars
@@ -462,12 +461,7 @@
 			if (items.length === 0){
 				//If no items then show error message
 				this.showEmptyPlaylistError();
-				if ( this.firstLoad ) {
-					this.setMultiplePlayLists(); // support multiple play lists
-					this.firstLoad = false;
-				}
 				this.configMediaListFeatures();
-
 			} else {
 				this.clearEmptyPlaylistError();
 				this.renderMediaList();  // set the media list in KBaseMediaList
@@ -488,9 +482,11 @@
 					if ( (this.getConfig( 'initItemEntryId' ) && !found) || !(this.getConfig( 'initItemEntryId' )) ) {
 						this.playMedia( this.getConfig( 'selectedIndex' ) );
 					}
-					this.setMultiplePlayLists(); // support multiple play lists
-					this.firstLoad = false;
 				}
+			}
+			if ( this.firstLoad ) {
+				this.setMultiplePlayLists(); // support multiple play lists
+				this.firstLoad = false;
 			}
 		},
 		showEmptyPlaylistError: function () {
