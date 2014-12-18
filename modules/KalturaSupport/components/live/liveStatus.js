@@ -68,6 +68,7 @@
 			if ( this.getPlayer().firstPlay )  {
 				this.getPlayer().play();
 			}  else {
+				this.getPlayer().removePoster();
 				this.getPlayer().backToLive();
 			}
 
