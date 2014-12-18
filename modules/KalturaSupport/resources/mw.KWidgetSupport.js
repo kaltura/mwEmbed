@@ -416,7 +416,7 @@ mw.KWidgetSupport.prototype = {
 					"data-bandwidth": (flavorAsset.bitrate ? (flavorAsset * 1024) : 0),
 					"data-frameRate": flavorAsset.frameRate,
 					"data-flavorid": flavorPartnerData.flavorid,
-					"default": flavorPartnerData.default
+					"default": flavorPartnerData["default"]
 				};
 				flavorAssets.push( flavorAssetObj );
 			}
