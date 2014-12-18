@@ -216,6 +216,13 @@
 			'dependencies' => array( 'mw.KBaseScreen' ),
 			'kalturaPluginName' => 'share',
 		),
+        "cornellShare" => array(
+            'scripts' => "components/cornellShare/share.js",
+            'styles' =>  "components/cornellShare/share.css",
+            'templates' => "components/cornellShare/share.tmpl.html",
+            'dependencies' => array( 'mw.KBaseScreen' ),
+            'kalturaPluginName' => 'cornellShare',
+        ),
 
 		"pptWidgetPlugin"=> array( 
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",

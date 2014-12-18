@@ -614,6 +614,43 @@ The playhead reflects segment time as if it was the natural stream length.",
 			)
 		)
 	),
+    'cornellShare' => array(
+        'featureCheckbox' => true,
+        'description' => 'Add the share interface to the player.',
+        'type' => 'featuremenu',
+        'label' => 'Share',
+        'model' => 'config.plugins.share',
+        'attributes' => array_merge($kgDefaultComponentAttr,
+            array(
+                'socialShareURL' => array(
+                    'doc' => "<p style='text-align: left'>Allows you to define the URL shared for this player:</p>
+						<ul style='text-align: left'>
+							<li><b>smart</b> will maximize inline social sharing playback, by using the
+								page URL or Kaltura URL, and depend on whether opengraph tags are present on the page</li>
+							<li><b>parent</b> will share the parent page URL.</li>
+							<li><b>http://my-custom-domain.com/?v={mediaProxy.entry.id}</b> a custom URL with magic substitution can also be used.</li>
+						</ul>",
+                    'type' => 'string',
+                    'initvalue' => 'smart'
+                ),
+                'socialNetworks' => array(
+                    'doc' => "Define included networks, separate by commas. Currently share supports facebook, twitter, googleplus.",
+                    'type' => 'string',
+                    'initvalue' => 'facebook,twitter,googleplus'
+                ),
+                'metadataProfileId' => array(
+                    'doc' => "The metadata profile id, which contains the landing page for the share URL",
+                    'type' => 'number',
+                    'initvalue' => null
+                ),
+                'metadataKey' => array(
+                    'doc' => "Metadata key name (inside the metadataProfileId) which contains the landing page for share URL",
+                    'type' => 'string',
+                    'initvalue' => 'LandingPage'
+                ),
+            )
+        )
+    ),
 	'watermark' => array(
 		'featureCheckbox' => true, // *NEW* - actually enabled even if undefined but can be disabled via this property
 		'description' => "The kaltura watermark plugin", // used for tooltip
