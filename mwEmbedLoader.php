@@ -183,6 +183,7 @@ class mwEmbedLoader {
 			
 	private function getLoaderPayload(){
 		$o = '';
+		
 		// get the main payload minfied if possible
 		if( $this->isDebugMode() ){
 			$o = $this->getCombinedLoaderJs();
@@ -367,12 +368,18 @@ class mwEmbedLoader {
 		}
 	}
 	private function getCombinedLoaderJs(){
-		global $wgResourceLoaderUrl, $wgMwEmbedVersion;
+		global $wgResourceLoaderUrl, $wgMwEmbedVersion, $IP;
 		$loaderJs = '';
 		
 		// Output all the files
 		foreach( $this->loaderFileList as $file ){
-			$loaderJs .= file_get_contents( $file );
+			// check for min version: 
+			$minFile = 'build/'. substr($file, 0, -3) . '.min.js';
+			if( is_file( $minFile ) ){
+				$loaderJs .= file_get_contents( $minFile );
+			} else {
+				$loaderJs .= file_get_contents( $file );
+			}
 		}
 		
 		return $loaderJs;

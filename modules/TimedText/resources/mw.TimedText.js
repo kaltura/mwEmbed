@@ -1120,10 +1120,9 @@
 					.css( this.getCaptionCss() )
 					.append(
 							$('<span>')
-							// Prevent background (color) overflowing TimedText
-							// http://stackoverflow.com/questions/9077887/avoid-overlapping-rows-in-inline-element-with-a-background-color-applied
 							.css( 'position', 'relative' )
-					.html( caption.content )
+							.html( caption.content )
+					)
 			);
 
 			// Add/update the lang option

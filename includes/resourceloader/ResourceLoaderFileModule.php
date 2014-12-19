@@ -507,7 +507,7 @@ class ResourceLoaderFileModule extends ResourceLoaderModule {
 	 * @return String: Concatenated and remapped JavaScript data from $scripts
 	 */
 	protected function readScriptFiles( array $scripts ) {
-		global $wgResourceLoaderValidateStaticJS;
+		global $wgResourceLoaderValidateStaticJS, $IP;
 		if ( empty( $scripts ) ) {
 			return '';
 		}
@@ -517,7 +517,14 @@ class ResourceLoaderFileModule extends ResourceLoaderModule {
 			if ( !file_exists( $localPath ) ) {
 				throw new MWException( __METHOD__.": script file not found: \"$localPath\"" );
 			}
-			$contents = file_get_contents( $localPath );
+			
+			$minLocalPath = str_replace($IP, $IP . '/build', substr($localPath, 0, -3) . '.min.js'  );
+			// try min location:
+			if( file_exists( $minLocalPath ) ){
+				$contents = file_get_contents( $minLocalPath );
+			} else {
+				$contents = file_get_contents( $localPath );
+			}
 			if ( $wgResourceLoaderValidateStaticJS ) {
 				// Static files don't really need to be checked as often; unlike
 				// on-wiki module they shouldn't change unexpectedly without
