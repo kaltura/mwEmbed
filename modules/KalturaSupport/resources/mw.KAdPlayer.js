@@ -36,9 +36,13 @@ mw.KAdPlayer.prototype = {
 
 	previousTime: 0,
 	seekIntervalID: null,
+	is_native_android_browser: false,
 
 	init: function( embedPlayer ){
 		var _this = this;
+		var nua = navigator.userAgent;
+		this.is_native_android_browser = ((nua.indexOf('Mozilla/5.0') > -1 && nua.indexOf('Android ') > -1 && nua.indexOf('AppleWebKit') > -1) && !(nua.indexOf('Chrome') > -1));
+
 		this.embedPlayer = embedPlayer;
 		var receivedPlayerReady = false;
 
@@ -179,7 +183,11 @@ mw.KAdPlayer.prototype = {
 			   _this.playNextAd(adSlot);
 			}
 		};
-		
+		if (_this.is_native_android_browser){
+			adSlot.playbackDone();
+			_this.hideSpinnerOncePlaying();
+			return;
+		}
 		// If the current ad type is already being displayed don't do anything
 		if( adSlot.currentlyDisplayed === true ){
 			adSlot.playbackDone();
@@ -1256,14 +1264,15 @@ mw.KAdPlayer.prototype = {
 					'top': 0,
 					'width': '100%',
 					'height': '100%',
-					'background': '#000'
+					'background': '#000',
+					'z-index': 100
 				})
 					.attr('id', vidSibContainerId);
 			}
 
 			this.embedPlayer.getVideoHolder().append( $vidSibContainer );
 			if ( source && source.getMIMEType() ) {
-				var targetPlayer =  mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType );
+				var targetPlayer =  mw.EmbedTypes.getMediaPlayers().getDefaultPlayer( source.mimeType );
 				if ( targetPlayer.library == "Kplayer" ) {
 					this.adSibling = new mw.PlayerElementFlash( vidSibContainerId, this.getVideoAdSiblingId(), {autoPlay: true} );
 					// TODO: DELETE THIS!
@@ -1428,7 +1437,7 @@ mw.KAdPlayer.prototype = {
 						.attr( 'id', vpaidId )
 				);
 			}
-			if ( adConf.vpaid.flash && mw.EmbedTypes.getMediaPlayers().defaultPlayer( adConf.vpaid.flash.type ) ) { //flash vpaid
+			if ( adConf.vpaid.flash && mw.EmbedTypes.getMediaPlayers().getDefaultPlayer( adConf.vpaid.flash.type ) ) { //flash vpaid
 				var playerParams = {
 					autoPlay: true,
 					disableOnScreenClick: true,
@@ -1518,4 +1527,3 @@ mw.KAdPlayer.prototype = {
 
 
 } )( window.mw, window.jQuery );
-

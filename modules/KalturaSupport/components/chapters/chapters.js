@@ -10,7 +10,11 @@
 			'showTooltip': false,
 			"displayImportance": 'high',
 			'templatePath': 'components/chapters/chapters.tmpl.html',
-			'cuePointType': ['thumbCuePoint.Thumb'],
+			'cuePointType': [{
+				"main": mw.KCuePoints.TYPE.THUMB,
+				"sub": [mw.KCuePoints.THUMB_SUB_TYPE.SLIDE,
+					mw.KCuePoints.THUMB_SUB_TYPE.CHAPTER]
+			}],
 			'oneSecRotatorSlidesLimit': 61,
 			'twoSecRotatorSlidesLimit': 250,
 			'maxRotatorSlides': 125,
@@ -45,7 +49,7 @@
 
 			this.bind('KalturaSupport_ThumbCuePointsReady', function () {
 				//Get chapters data from cuepoints
-				var chaptersRawData = _this.getChaptersData();
+				var chaptersRawData = _this.getCuePoints();
 				//Create media items from raw data
 				_this.addMediaItems(chaptersRawData);
 				_this.markMediaItemsAsDisplayed(_this.mediaList);
@@ -98,9 +102,9 @@
 						}
 						//Mark current added items index as the index to start scroll from and re-init the scroll logic
 						_this.startFrom = _this.mediaList.length - _this.mediaItemVisible;
-						_this.shouldAddScroll();
+						_this.configMediaListFeatures();
 						_this.updateActiveItem();
-						_this.attachMediaListHandlers();
+						$( _this.embedPlayer ).trigger( "mediaListLayoutUpdated" );
 					}
 				}
 			});
@@ -133,51 +137,32 @@
 			});
 		},
 		isSafeEnviornment: function () {
-			var _this = this;
-			var cuePointsExist = false;
-			if (this.getPlayer().kCuePoints) {
-				var cuePoints = this.getPlayer().kCuePoints.getCuePoints();
-				var filteredCuePoints = $.grep(cuePoints, function (cuePoint) {
-					var found = false;
-					$.each(_this.getConfig('cuePointType'), function (i, cuePointType) {
-						if (cuePointType == cuePoint.cuePointType) {
-							found = true;
-							return false;
-						}
-					});
-					return found;
-				});
-				cuePointsExist = (filteredCuePoints.length > 0) ? true : false;
-			}
+			var cuePoints = this.getCuePoints();
+			var cuePointsExist = (cuePoints.length > 0) ? true : false;
 			return (!this.getPlayer().useNativePlayerControls() &&
 				( ( this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) || cuePointsExist));
+		},
+		getCuePoints: function(){
+			var cuePoints = [];
+			var _this = this;
+			if ( this.getPlayer().kCuePoints ) {
+				$.each( _this.getConfig( 'cuePointType' ), function ( i, cuePointType ) {
+					$.each( cuePointType.sub, function ( j, cuePointSubType ) {
+						var filteredCuePoints = _this.getPlayer().kCuePoints.getCuePointsByType( cuePointType.main, cuePointSubType );
+						cuePoints = cuePoints.concat( filteredCuePoints );
+					} );
+				} );
+			}
+			cuePoints.sort(function (a, b) {
+				return a.startTime - b.startTime;
+			});
+			return cuePoints;
 		},
 		getMedialistContainer: function () {
 			//Only support external onPage medialist container
 			if (this.getConfig('onPage')) {
 				return this._super();
 			}
-		},
-		getChaptersData: function () {
-			var _this = this;
-			//Init data provider
-			var cuePoints = this.getPlayer().kCuePoints.getCuePoints();
-			//Generate data transfer object
-			var filteredCuePoints = $.grep(cuePoints, function (cuePoint) {
-				var found = false;
-				$.each(_this.getConfig('cuePointType'), function (i, cuePointType) {
-					if (cuePointType == cuePoint.cuePointType) {
-						found = true;
-						return false;
-					}
-				});
-				return found;
-			});
-
-			filteredCuePoints.sort(function (a, b) {
-				return a.startTime - b.startTime;
-			});
-			return filteredCuePoints;
 		},
 		createMediaItems: function (mediaListItems) {
 			var templateData = this.getTemplateHTML({meta: this.getMetaData(), mediaList: mediaListItems});

@@ -258,20 +258,23 @@
 				this.$scroll = null;
 				//Add media items to DOM
 				this.getMedialistComponent().append( medialist );
-				//Adjust container size
-				this.setMedialistContainerSize();
-				this.setMedialistComponentHeight();
-				//Adjust the mediaboxes size
-				this.setMediaBoxesDimensions();
-				//Attach media items handlers
-				this.attachMediaListHandlers();
-				//Add scroll if applicable
-				this.shouldAddScroll( );
+				this.configMediaListFeatures();
 				$( this.embedPlayer ).trigger( "mediaListLayoutReady" );
 			}
 		},
+		configMediaListFeatures: function(){
+			//Adjust container size
+			this.setMedialistContainerSize();
+			this.setMedialistComponentHeight();
+			//Adjust the mediaboxes size
+			this.setMediaBoxesDimensions();
+			//Attach media items handlers
+			this.attachMediaListHandlers();
+			//Add scroll if applicable
+			this.shouldAddScroll( );
+		},
 		setMedialistComponentHeight: function(){
-			var componentHeight = this.getComponent().height();
+			var componentHeight = this.getComponent().height() - 1;
 			if (this.getConfig("onPage")){
 				componentHeight = this.getComponent().parent().height();
 			}
@@ -511,15 +514,14 @@
 			return sliceIndex;
 		},
 		addScroll: function(){
-			var $cc = this.getMedialistComponent();
-			this.mediaItemVisible = this.calculateVisibleScrollItems();
 			var isVertical = ( this.getLayout() == 'vertical' );
-			var speed = mw.isTouchDevice() ? 100: 200;
-
 			if (isVertical) {
 				this.getScrollComponent();
 			}else {
 				this.addScrollUiComponents();
+				var $cc = this.getMedialistComponent();
+				this.mediaItemVisible = this.calculateVisibleScrollItems();
+				var speed = mw.isTouchDevice() ? 100: 200;
 				// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
 				$cc.find( '.k-carousel' ).jCarouselLite( {
 					btnNext: '.k-next',
@@ -542,11 +544,28 @@
 				var list = $( this.getMedialistComponent().children()[0] );
 				list.wrap( this.$scroll );
 				this.$scroll = this.getComponent().find(".nano");
-				this.$scroll.nanoScroller( {
+				var options = {
 					flash: true,
 					preventPageScrolling: true,
 					iOSNativeScrolling: true
-				} );
+				} ;
+				if (this.getConfig('onPage')){
+					try{
+						$.extend(options, {
+							documentContext: window.parent.document,
+							windowContext: window.parent.window
+						});
+						var _this = this;
+						setTimeout(function(){
+							_this.$scroll.nanoScroller( options );
+						}, 100);
+
+					} catch (e){
+						this.log("Unable to reference onPage window/document context");
+					}
+				} else {
+					this.$scroll.nanoScroller( options );
+				}
 			}
 			return this.$scroll;
 		},

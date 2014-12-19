@@ -147,7 +147,7 @@
 
 		//indicates that the current sources list was set by "ReplaceSources" config
 		"sourcesReplaced": false,
-
+		
 		"streamerType": 'http',
 
 		"shouldEndClip": false,
@@ -281,6 +281,12 @@
 
 		//if the player should handle playerError events
 		shouldHandlePlayerError: true,
+		
+		// stores the manifest derived flavor index / list:
+		"manifestAdaptiveFlavors": [],
+
+		// save the clipDone timeout ID so we can trigger it only once per entry
+		clipDoneTimeout: null,
 
 		/**
 		 * embedPlayer
@@ -503,7 +509,7 @@
 			}
 			mw.log("EmbedPlayer:: disablePlayControls");
 
-			if (!excludedComponents) {
+			if ( !excludedComponents ) {
 				excludedComponents = ['fullScreenBtn', 'logo'];
 				if (mw.getConfig('enableControlsDuringAd')) {
 					excludedComponents.push('playPauseBtn');
@@ -700,7 +706,7 @@
 				&& mw.EmbedTypes.getMediaPlayers().isSupportedPlayer('kplayer')) {
 				targetPlayer = mw.EmbedTypes.getKplayer();
 			} else {
-				targetPlayer = mw.EmbedTypes.getMediaPlayers().defaultPlayer(source.mimeType);
+				targetPlayer= mw.EmbedTypes.getMediaPlayers().getDefaultPlayer( source.mimeType );
 			}
 			return targetPlayer;
 		},
@@ -778,7 +784,7 @@
 				this.sourcesReplaced = false;
 			}
 			// Autoseletct the media source
-			this.mediaElement.autoSelectSource(this.supportsURLTimeEncoding(), this.startTime, this.pauseTime);
+			this.mediaElement.autoSelectSource();
 
 			// Auto select player based on default order
 			if (this.mediaElement.selectedSource) {
@@ -837,7 +843,18 @@
 			$(this).trigger('playerReady');
 			this.triggerWidgetLoaded();
 		},
-
+		/** 
+		 * Wraps the autoSelect source call passing in temporal url options
+		 * for use of temporal urls where supported. 
+		 */
+		autoSelectTemporalSource: function(options){
+			var baseTimeOptions =  {
+				'supportsURLTimeEncoding': this.supportsURLTimeEncoding(), 
+				'startTime' :this.startTime, 
+				'endTime': this.pauseTime
+			};
+			this.mediaElement.autoSelectSource( $.extend( {},baseTimeOptions, options ) );
+		},
 		/**
 		 * Updates the player interface
 		 *
@@ -904,27 +921,32 @@
 				_this[ method ] = playerInterface[ method ];
 			}
 
-			var runPlayerStartupMethods = function () {
-				// Update feature support
-				_this.updateFeatureSupport();
-				// Update embed sources:
-				_this.embedPlayerHTML();
-				// Update duration
-				_this.getDuration();
-				// show player inline
-				_this.showPlayer();
-				// Run the callback if provided
-				if ($.isFunction(callback)) {
-					callback();
-				}
-			};
-			if (_this.setup) {
-				_this.setup(runPlayerStartupMethods);
-			} else {
-				runPlayerStartupMethods();
+			if ( $.isFunction( _this.setup) ) {
+				_this.setup(function(){
+					_this.runPlayerStartupMethods( callback );
+				});
+				return ;
+			}
+			// run player startup directly ( without setup call if not defined )
+			_this.runPlayerStartupMethods( callback );
+		},
+		/**
+		 * Run player startup methods: 
+		 */
+		runPlayerStartupMethods: function( callback ){
+			// Update feature support
+			this.updateFeatureSupport();
+			// Update embed sources:
+			this.embedPlayerHTML();
+			// Update duration
+			this.getDuration();
+			// show player inline
+			this.showPlayer();
+			// Run the callback if provided
+			if ( $.isFunction( callback ) ){
+				callback();
 			}
 		},
-
 		/**
 		 * Select a player playback system
 		 *
@@ -1263,7 +1285,8 @@
 				this.getVideoHolder().height(newHeight);
 			}
 			// update image layout: (Don't update poster during ad)
-			if (this.isStopped() && !( this.sequenceProxy && this.sequenceProxy.isInSequence )) {
+			if( this.isStopped() && !( this.sequenceProxy && this.sequenceProxy.isInSequence ) && !this.removePosterFlag ) {
+
 				this.updatePosterHTML();
 			}
 
@@ -2219,8 +2242,19 @@
 			$(this).trigger('onAddPlayerSpinner');
 			// remove any old spinner
 			$('#' + sId).remove();
+			var target = this;
+			switch(mw.getConfig("EmbedPlayer.SpinnerTarget")){
+				case "videoHolder":
+					target = this.getVideoHolder();
+					break;
+				case "videoDisplay":
+					target = this.getVideoDisplay();
+					break;
+				default:
+					target = this;
+			}
 			// re add an absolute positioned spinner:
-			$(this).getAbsoluteOverlaySpinner()
+			$(target).getAbsoluteOverlaySpinner()
 				.attr('id', sId);
 		},
 		hideSpinner: function () {
@@ -2614,7 +2648,7 @@
 		updatePlayheadStatus: function () {
 			var _this = this;
 
-			if (this.currentTime >= 0 && this.duration) {
+			if ( this.currentTime >= 0 && this.duration ) {
 				if (!this.userSlide && !this.seeking && !this.paused) {
 					var playHeadPercent = ( this.currentTime - this.startOffset ) / this.duration;
 					this.updatePlayHead(playHeadPercent);
@@ -2627,13 +2661,14 @@
 						_this.onClipDone();
 						//sometimes we don't get the "end" event from the player so we trigger clipdone
 					} else if (!this.shouldEndClip && !this.isInSequence() &&
-						( ( ( this.currentTime - this.startOffset) / endPresentationTime ) >= .99 )) {
+						( ( ( this.currentTime - this.startOffset) / endPresentationTime ) >= .99 ) && !_this.clipDoneTimeout) {
 						_this.shouldEndClip = true;
-						setTimeout(function () {
+						_this.clipDoneTimeout = setTimeout(function () {
 							if (_this.shouldEndClip) {
 								mw.log("EmbedPlayer::updatePlayheadStatus > should run clip done :: " + _this.currentTime);
 								_this.onClipDone();
 							}
+							_this.clipDoneTimeout = null;
 						}, endPresentationTime * 0.02 * 1000)
 					}
 				}
@@ -2713,7 +2748,7 @@
 
 			// If no source selected auto select the source:
 			if (!this.mediaElement.selectedSource) {
-				this.mediaElement.autoSelectSource(this.supportsURLTimeEncoding(), this.startTime, this.pauseTime);
+				this.autoSelectTemporalSource();
 			}
 			;
 
@@ -2730,11 +2765,17 @@
 		 */
 		getSource: function () {
 			// update the current selected source:
-			this.mediaElement.autoSelectSource(this.supportsURLTimeEncoding(), this.startTime, this.pauseTime);
+			this.autoSelectTemporalSource();
 			if (this.mediaElement.selectedSource && this.mediaElement.selectedSource.mimeType === "application/vnd.apple.mpegurl") {
 				this.streamerType = "hls";
 			}
 			return this.mediaElement.selectedSource;
+		},
+		/**
+		 * Retuns the set of playable sources. 
+		 */
+		getSources: function(){
+			return this.mediaElement.getPlayableSources();
 		},
 		/**
 		 * Static helper to get media sources from a set of videoFiles
@@ -2892,7 +2933,11 @@
 				return sourcesByTags;
 			}
 		},
-		switchSrc: function (source) {
+		/**
+		 * Switches a player source 
+		 * @param {Object} source asset to switch to
+		 */
+		switchSrc: function( source ){
 			var _this = this;
 			var currentBR = 0;
 			if (this.mediaElement.selectedSource) {
@@ -3011,7 +3056,13 @@
 			//we can't use simpleFormat with flavors that came from playmanifest otherwise sourceSelector list won't match
 			// to what is actually being played
 			this.setKDPAttribute('sourceSelector', 'simpleFormat', false);
-			this.replaceSources(newFlavors);
+			// update the manifest defined flavor set: 
+			this.manifestAdaptiveFlavors = [];
+			var _this = this;
+			$.each(newFlavors, function(inx, flavor){
+				_this.manifestAdaptiveFlavors.push( new mw.MediaSource( flavor ) )
+			});
+			$(this).trigger( 'sourcesReplaced' );;
 		}
 	};
 

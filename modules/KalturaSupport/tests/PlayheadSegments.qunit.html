@@ -56,13 +56,35 @@
 <br>
 Sample code for switching segments:
 <pre class="prettyprint linenums">
-&lt;script&gt;<br/>	kWidget.addReadyCallback(function( playerId ){<br/>		var kdp = $('#' + playerId )[0];<br/>		$('#switchTime').click( function(){<br/>			kdp.setKDPAttribute('mediaProxy', 'mediaPlayFrom', $('#k-from').val() );<br/>			kdp.setKDPAttribute('mediaProxy', 'mediaPlayTo', $('#k-to').val() );<br/>			return false;<br/>		});<br/>	});<br/>&lt;/script&gt;
+kWidget.addReadyCallback(function( playerId ){
+	var kdp = $('#' + playerId)[0];
+	$('#switchTime').click(function () {
+		kdp.setKDPAttribute('mediaProxy', 'mediaPlayFrom', $('#k-from').val());
+		kdp.setKDPAttribute('mediaProxy', 'mediaPlayTo', $('#k-to').val());
+		return false;
+	});
+});
 </pre>
 Switch segment to <input id="k-from" size="4" style="width:30px" value="10"> to <input id="k-to" style="width:30px"
                                                                                        size="4" value="30">
 <a href="#" id="switchTime">GO</a>
-<br/>
-(dynamic switching currently not supported in flash)
+<br/><br/>
+This example highlights change the entry to 1_sf5ovm7u and update time 5 to 30 second, followed by a content play <br>
+<a href="#" id="changeMediaAndTime">changeMedia</a>
+<pre class="prettyprint linenums">
+kWidget.addReadyCallback(function (playerId) {
+	var kdp = $('#' + playerId)[0];
+	$('#changeMediaAndTime').click(function(){
+		kdp.kBind('playerReady', function(){
+			kdp.sendNotification('doPlay');
+		});
+		kdp.sendNotification('changeMedia', { 'entryId': '1_sf5ovm7u'} );
+		kdp.setKDPAttribute('mediaProxy', 'mediaPlayFrom', 5);
+		kdp.setKDPAttribute('mediaProxy', 'mediaPlayTo', 30);
+		return false;
+	});
+});
+</pre>
 
 <script>
 	kWidget.addReadyCallback(function (playerId) {
@@ -70,6 +92,15 @@ Switch segment to <input id="k-from" size="4" style="width:30px" value="10"> to 
 		$('#switchTime').click(function () {
 			kdp.setKDPAttribute('mediaProxy', 'mediaPlayFrom', $('#k-from').val());
 			kdp.setKDPAttribute('mediaProxy', 'mediaPlayTo', $('#k-to').val());
+			return false;
+		});
+		$('#changeMediaAndTime').click(function(){
+			kdp.kBind('playerReady', function(){
+				kdp.sendNotification('doPlay');
+			});
+			kdp.sendNotification('changeMedia', { 'entryId': '1_sf5ovm7u'} );
+			kdp.setKDPAttribute('mediaProxy', 'mediaPlayFrom', 5);
+			kdp.setKDPAttribute('mediaProxy', 'mediaPlayTo', 30);
 			return false;
 		});
 	});
