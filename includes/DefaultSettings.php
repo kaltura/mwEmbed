@@ -223,9 +223,13 @@ $wgRemoteWebInspector = false;
 // Kaltura Supported API Features
 $wgKalturaApiFeatures = array();
 
+// Check if we have an active build
+$wgScriptsArePreMinified = is_file( realpath( dirname( __FILE__ ) . '/../build/build.log' ) );
+
+
 /*********************************************************
  * Include local settings override:
-********************************************************/
+*********************************************************/
 $wgLocalSettingsFile = realpath( dirname( __FILE__ ) ) . '/../LocalSettings.php';
 
 if( is_file( $wgLocalSettingsFile ) ){

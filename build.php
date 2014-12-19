@@ -12,6 +12,11 @@ if (!isset($argc) || is_null($argc)){
 // Get mwEmbed framework:
 require_once ( dirname( __FILE__ ) . '/includes/MwEmbedWebStartSetup.php' );
 
+// benchmark build :
+$totalStartTime = microtime_float();
+$fileCount = 0;
+$filesCompressed = 0;
+
 if(	!$wgNodeJsUglifyPath  || ( ! is_file( $wgNodeJsUglifyPath ) && ! is_link( $wgNodeJsUglifyPath ) ) ){
 	echo "wgNodeJsUglifyPath: $wgNodeJsUglifyPath not valid, no build\n";
 	exit();
@@ -21,13 +26,14 @@ function microtime_float(){
 	return ((float)$usec + (float)$sec);
 }
 function buildMin( $fullPath ){
-	global $IP, $wgNodeJsUglifyPath;
+	global $IP, $wgNodeJsUglifyPath, $fileCount, $filesCompressed;
 	$fileName = str_replace( $IP, '', $fullPath );
 	// check if already min:
 	if( substr($fullPath, -7) == '.min.js'){
 		echo "skip -> " . $fileName . "\n";
 		return ;
 	}
+	$fileCount++;
 	$targetPath = substr( $fullPath,0, -3 ) . '.min.js';
 	$targetPath = str_replace( $IP, $IP . '/build', $targetPath );
 
@@ -45,6 +51,7 @@ function buildMin( $fullPath ){
 	echo "run: " . $cmd . "\n"; 
 	shell_exec($cmd);
 	echo "\n\t" . round( microtime_float() - $startTime, 4) . " ms \n";
+	$filesCompressed++;
 }
 // Respond to resource loading request
 $resourceLoader = new MwEmbedResourceLoader();
@@ -53,8 +60,7 @@ $context = new MwEmbedResourceLoaderContext( $resourceLoader, $fauxRequest );
 
 // Get full module list:
 $moduleNames = $resourceLoader->getModuleNames();
-// benchmark build time: 
-$totalStartTime = microtime_float();
+
 
 // foreach modules output .min files: 
 foreach( $moduleNames as $moduleName ){
@@ -69,6 +75,7 @@ foreach( $moduleNames as $moduleName ){
 		// ( right now we use specialized compiled jQuery, but any other asset could be pre-min )
 		$fullPath = $module->getLocalPath( $fileName );
 		buildMin( $fullPath );
+		
 	}
 }
 // also compress all the kWidget / onPage scripts:
@@ -78,5 +85,8 @@ foreach(new RecursiveIteratorIterator($it) as $file) {
 		buildMin( $file );
 	}
 };
+$buildTime =round( microtime_float() - $totalStartTime, 4);
+echo "total build in " . $buildTime  . "\n";
 
-echo "total build in " . round( microtime_float() - $totalStartTime, 4) . "\n";
+// build completed success add .builddone file to build directory to avoid minnify for module response
+file_put_contents( $IP . '/build/build.log', "build_time: {$buildTime}\nfile_count: {$fileCount}\nfiles_compressed: {$filesCompressed}\n" );
