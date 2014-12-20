@@ -74,6 +74,7 @@
 			$interface.addClass( 'player-out' );
 			// Allow interface items to update:
 			this.getPlayer().triggerHelper('onHideControlBar', {'bottom' : 15} );
+
 		},
 		getComponent: function(){
 			if( !this.$el ) {

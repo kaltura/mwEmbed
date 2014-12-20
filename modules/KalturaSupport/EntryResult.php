@@ -75,7 +75,27 @@ class EntryResult {
 
 		return $this->entryResultObj;
 	}
-	
+	function isCachable(){
+		return !$this->error
+		&&
+		$this->isAccessControlAllowed( $this->entryResultObj )
+		&&
+		!$this->request->hasKS();
+	}
+	function getCacheKey(){
+		global $wgKalturaEnableProxyData;
+		$key = '';
+		if ($wgKalturaEnableProxyData && $this->request->getFlashVars("proxyData")){
+			$key.= md5( serialize( $this->request->getFlashVars("proxyData") ) );
+		}
+		if( $this->request->getEntryId() ){
+			$key.= $this->request->getEntryId();
+		}
+		if( $this->request->getReferenceId() ){
+			$key.= $this->request->getReferenceId();
+		}
+		return $key;
+	}
 	function getEntryResultFromApi(){
 		global $wgKalturaApiFeatures;
 		global $wgKalturaEnableProxyData;

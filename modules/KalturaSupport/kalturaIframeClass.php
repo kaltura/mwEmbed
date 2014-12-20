@@ -197,10 +197,8 @@ class kalturaIframeClass {
 			$settings['entry_id'] = $this->request->get('entry_id');
 		}
 
-		// Only add KS if it was part of the request, else the client should re-generate in multi-request for any subsequent request: 
-		if( $this->request->hasKS() ){
-			$settings['flashvars']['ks'] = $this->client->getKS();
-		}
+		// add ks flashvar
+		$settings['flashvars']['ks'] = $this->client->getKS();
 		// add referrer flashvar
 		$settings['flashvars']['referrer'] = htmlspecialchars( $this->request->getReferer() );
 
@@ -374,8 +372,6 @@ class kalturaIframeClass {
 				"Expires: Sat, 26 Jul 1997 05:00:00 GMT"
 			);
 		}
-		// alwayse set cross orgin headers: 
-		$cacheHeaders[] = 'Access-Control-Allow-Origin: *';
 		return $cacheHeaders;
 	}
 
@@ -392,8 +388,6 @@ class kalturaIframeClass {
 		header( "Cache-Control: public, max-age=$expireTime, max-stale=0");
 		header( "Last-Modified: " . gmdate( "D, d M Y H:i:s", $lastModified) . "GMT");
 		header( "Expires: " . gmdate( "D, d M Y H:i:s", $lastModified + $expireTime ) . " GM" );
-		// alwayse set cross orgin headers:
-		header( "Access-Control-Allow-Origin: *" );
 	}
 
 	/**
@@ -505,7 +499,7 @@ class kalturaIframeClass {
 		);
 		// check if we should minify and cache: 
 		if( !$wgEnableScriptDebug ){
-			$s = JavaScriptCompress::minify( $s, $wgResourceLoaderMinifierStatementsOnOwnLine );
+			$s = JavaScriptMinifier::minify( $s, $wgResourceLoaderMinifierStatementsOnOwnLine );
 			// try to store the cached file: 
 			@file_put_contents($cachePath, $s);
 		}
@@ -968,9 +962,11 @@ HTML;
 		if( is_file( $cachePath) ){
 			return file_get_contents( $cachePath );
 		}
+		// Get the JSmin class:
+		require_once( $wgBaseMwEmbedPath . '/includes/libs/JavaScriptMinifier.php' );
 		// get the contents inline: 
 		$jsContent = @file_get_contents( $resourcePath );
-		$jsMinContent = JavaScriptCompress::minify( $jsContent, $wgResourceLoaderMinifierStatementsOnOwnLine );
+		$jsMinContent = JavaScriptMinifier::minify( $jsContent, $wgResourceLoaderMinifierStatementsOnOwnLine );
 	
 		// try to store the cached file: 
 		@file_put_contents($cachePath, $jsMinContent);

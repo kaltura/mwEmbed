@@ -2,13 +2,12 @@
 // Include configuration 
 require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' );
 require_once( realpath( dirname( __FILE__ ) ) . '/modules/KalturaSupport/KalturaCommon.php' );
-// autoloader and globals
-require ( realpath( dirname( __FILE__ ) ) . '/includes/MwEmbedWebStartSetup.php' );
 
 // only include the iframe if we need to: 
 // Include MwEmbedWebStartSetup.php for all of mediawiki support
 if( isset( $_GET['autoembed'] ) ){
 	require_once( realpath( dirname( __FILE__ ) ) . '/modules/ExternalPlayers/ExternalPlayers.php' );
+	require ( dirname( __FILE__ ) . '/includes/MwEmbedWebStartSetup.php' );
 	require_once( realpath( dirname( __FILE__ ) ) . '/modules/KalturaSupport/kalturaIframeClass.php' );
 }
 
@@ -226,6 +225,7 @@ class mwEmbedLoader {
 	}
 	
 	private function getMinPerUiConfJS(){
+		global $wgResourceLoaderMinifierStatementsOnOwnLine;
 		// mwEmbedLoader based uiConf values can be hashed by the uiconf
 		$uiConfJs = $this->getPerUiConfJS();
 		if( $uiConfJs == '' ){
@@ -238,7 +238,8 @@ class mwEmbedLoader {
 			return $cacheJS;
 		}
 		//minfy js 
-		$minjs = JavaScriptCompress::minify( $uiConfJs );
+		require_once( realpath( dirname( __FILE__ ) ) . '/includes/libs/JavaScriptMinifier.php' );
+		$minjs = JavaScriptMinifier::minify( $uiConfJs, $wgResourceLoaderMinifierStatementsOnOwnLine );
 		// output minified cache: 
 		$this->outputFileCache( $key, $minjs);
 		return $minjs;
@@ -332,7 +333,7 @@ class mwEmbedLoader {
 	}
 	
 	private function getMinCombinedLoaderJs(){
-		global $wgHTTPProtocol, $wgMwEmbedVersion;
+		global $wgHTTPProtocol, $wgMwEmbedVersion, $wgResourceLoaderMinifierStatementsOnOwnLine;
 		$key = '/loader_' . $wgHTTPProtocol . '.min.' . $wgMwEmbedVersion . '.js' ;
 		$cacheJS = $this->getCacheFileContents( $key );
 		if( $cacheJS !== false ){
@@ -341,7 +342,8 @@ class mwEmbedLoader {
 		// Else get from files: 
 		$rawScript = $this->getCombinedLoaderJs();
 		// Get the JSmin class:
-		$minjs = JavaScriptCompress::minify( $rawScript );
+		require_once( realpath( dirname( __FILE__ ) ) . '/includes/libs/JavaScriptMinifier.php' );
+		$minjs = JavaScriptMinifier::minify( $rawScript, $wgResourceLoaderMinifierStatementsOnOwnLine );
 		// output the file to the cache:
 		$this->outputFileCache( $key, $minjs);
 		// return the minified js:
@@ -452,7 +454,6 @@ class mwEmbedLoader {
 			header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 			header("Pragma: no-cache");
 			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
-			header("Access-Control-Allow-Origin: *"); // allow 3rd party domains to access. 
 		} else if ( isset($_GET['autoembed']) && $this->iframeHeaders ){
 			// Grab iframe headers and pass them to our loader
 			foreach( $this->iframeHeaders as $header ) {
@@ -463,7 +464,6 @@ class mwEmbedLoader {
 				}
 			}
 		} else {
-			
 			// Default expire time for the loader to 3 hours ( kaltura version always have diffrent version tags; for new versions )
 			$max_age = 60*60*3;
 			// if the loader request includes uiConf set age to 10 min ( uiConf updates should propgate in ~10 min )

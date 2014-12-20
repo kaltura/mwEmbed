@@ -12,7 +12,7 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '2.23.1';
+$wgMwEmbedVersion = '2.22.rc3';
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
@@ -89,11 +89,7 @@ $wgResourceLoaderDebug = false;
 
 // If the resource loader should minify vertical space
 $wgResourceLoaderMinifyJSVerticalSpace = false;
-// if js statements should retain line breaks:
-$wgResourceLoaderMinifierStatementsOnOwnLine = false;
 
-// The path to uglify js ( leave as null to use php based JavaScirptMinifier )
-$wgNodeJsUglifyPath = false;
 
 $wgMwEmbedProxyUrl =  $wgServer . $wgScriptPath . 'simplePhpXMLProxy.php';
 

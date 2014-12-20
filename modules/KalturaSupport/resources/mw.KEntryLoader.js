@@ -51,8 +51,10 @@ mw.KEntryLoader.prototype = {
 		if( kProperties.flashvars && kProperties.flashvars.ks ) {
 			this.clinet.setKs( kProperties.flashvars.ks );
 		}
+		this.baseDataInx = this.clinet.getKs() ? 0 : 1;
 		// Always get the entry id from the first request result
-		var entryIdValue = '{1:result:objects:0:id}';
+		var entryIdValue = '{' + ( this.baseDataInx +1 ) + ':result:objects:0:id}';
+
 		// Base entry request
 		var baseEntryRequestObj = {
 			'service' : 'baseentry',

@@ -37,8 +37,13 @@ function jsKalturaPlayerTest( videoId ){
 			setTimeout( waitForTimeUpdate, 100 );
 		});
 	});
-
 }
+kWidget.addReadyCallback( function(playerId){
+	var kdp = document.getElementById ( playerId );
+	kdp.kBind('mediaReady', function(){
+		alert('pid: ' + kdp.evaluate('{configProxy.kw.partnerId}'));
+	});
+});
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>

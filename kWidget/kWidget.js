@@ -1776,13 +1776,11 @@
 		flashVarsToUrl: function (flashVarsObject) {
 			var params = '';
 			for (var i in flashVarsObject) {
-				if (i !== 'jsonConfig') {
-					var curVal = typeof flashVarsObject[i] == 'object'?
-						JSON.stringify( flashVarsObject[i] ):
-						flashVarsObject[i];
-					params += '&' + 'flashvars[' + encodeURIComponent(i) + ']=' +
-						encodeURIComponent(curVal);
-				}
+				var curVal = typeof flashVarsObject[i] == 'object'?
+					JSON.stringify( flashVarsObject[i] ):
+					flashVarsObject[i];
+				params += '&' + 'flashvars[' + encodeURIComponent(i) + ']=' +
+					encodeURIComponent(curVal);
 			}
 			return params;
 		},

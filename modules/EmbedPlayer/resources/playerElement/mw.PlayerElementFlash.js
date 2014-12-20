@@ -28,7 +28,7 @@
 		 */
 		init: function( containerId , playerId , elementFlashvars, target, readyCallback ){
 			var _this = this;
-			this.element = this;
+			this.element = this;			
 			this.id = playerId;
 			this.targetObj = target;
 
