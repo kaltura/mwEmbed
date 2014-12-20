@@ -31,7 +31,10 @@
 				},
 				'menuFadeout': 5000,
 				'cuePointType': ['thumbCuePoint.Thumb'],
-				'mainViewDisplay': 2 // 1 - Main stream, 2 - Presentation
+				'mainViewDisplay': 2, // 1 - Main stream, 2 - Presentation
+				'fullScreenDisplayOnly': false,
+				'minDisplayWidth': 0,
+				'minDisplayHeight': 0
 			},
 			monitor: {},
 			controlBar: {},
@@ -39,7 +42,11 @@
 			TYPE: {PRIMARY: "primary", SECONDARY: "secondary"},
 
 			isDisabled: false,
-			onFullScreen: false,
+			displayInitialized: false,
+			render: true,
+			screenShown: false,
+			dragging: false,
+			resizing: false,
 
 			controlBarComponents: {
 				sideBySide: {
@@ -122,6 +129,8 @@
 						_this.enableControlBar();
 						$( event.toElement ).one( 'click', function ( e ) {
 							e.stopImmediatePropagation();
+							e.preventDefault();
+							e.stopPropagation();
 						} );
 						_this.getPlayer().enablePlayControls();
 						_this.getSecondMonitor().prop = $( this ).css( ['top', 'left', 'width', 'height'] );
@@ -190,7 +199,7 @@
 							'SbS': {
 								name: 'SbS',
 								action: function () {
-									_this.disableMonitorFeatures( _this.getSecondMonitor().obj );
+									_this.disableMonitorFeatures( );
 									_this.enableSideBySideView();
 
 								}
@@ -198,16 +207,16 @@
 							'hide': {
 								name: 'SV',
 								action: function (  ) {
-									_this.disableMonitorFeatures( _this.getSecondMonitor().obj );
+									_this.disableMonitorFeatures( );
 									_this.hideMonitor( _this.getSecondMonitor().obj );
 								}
 							},
 							'switchView': {
 								name: 'PiP',
 								action: function () {
-									_this.enableMonitorFeatures( _this.getFirstMonitor().obj );
-									_this.disableMonitorFeatures( _this.getSecondMonitor().obj );
+									_this.disableMonitorFeatures( );
 									_this.toggleMainMonitor();
+									_this.enableMonitorFeatures( );
 								}
 							}
 						}
@@ -218,7 +227,7 @@
 							'PiP': {
 								name: 'PiP',
 								action: function () {
-									_this.enableMonitorFeatures( _this.getSecondMonitor().obj );
+									_this.enableMonitorFeatures( );
 									_this.disableSideBySideView();
 								}
 							},
@@ -244,7 +253,7 @@
 							'PiP': {
 								name: 'PiP',
 								action: function () {
-									_this.enableMonitorFeatures( _this.getSecondMonitor().obj );
+									_this.enableMonitorFeatures( );
 									_this.showMonitor( _this.getSecondMonitor().obj );
 								}
 							},
@@ -284,159 +293,102 @@
 			addBindings: function () {
 				var _this = this;
 				this.bind( 'playerReady', function ( e, newState ) {
-					_this.previousPlayerWidth = _this.getPlayer().getPlayerWidth();
-					_this.previousPlayerHeight = _this.getPlayer().getPlayerHeight();
-
-					var primaryScreen = _this.monitor[_this.TYPE.PRIMARY].obj = _this.getPlayer().getVideoDisplay();
-					var secondaryScreen = _this.monitor[_this.TYPE.SECONDARY].obj = _this.getComponent();
-
-					//Set rule attributes
-					primaryScreen.addClass( 'dualScreenMonitor firstScreen ' + _this.pluginName ).attr( 'data-monitor-rule', _this.TYPE.PRIMARY );
-					secondaryScreen.addClass( 'dualScreenMonitor' ).attr( 'data-monitor-rule', _this.TYPE.SECONDARY );
-
-					secondaryScreen.off().on( 'click dblclick touchstart touchend', function ( e ) {
-						_this.embedPlayer.triggerHelper( e );
-					} );
-
-					_this.addResizeHandlers(secondaryScreen);
-
-					_this.setControlBarBindings();
-
-					_this.checkAnimationSupport();
-
-					primaryScreen
-						.draggable( _this.getConfig( 'draggable' ) ).draggable( 'disable' )
-						.resizable( _this.getConfig( 'resizable' ) ).resizable( 'disable' );
-
-					secondaryScreen
-						.draggable( _this.getConfig( 'draggable' ) )
-						.resizable( _this.getConfig( 'resizable' ) );
-
-					_this.positionSecondScreen();
-
-					_this.getSecondMonitor().prop = secondaryScreen.css( ['top', 'left', 'width', 'height'] );
-					_this.getSecondMonitor().obj.css( _this.getSecondMonitor().prop );
-
-					var addSpinner = function(){
-						if (!_this.secondDisplayReady) {
-							if (mw.getConfig("EmbedPlayer.LiveCuepoints")) {
-								//TODO: add information slide for no current slide available
-							} else {
-								secondaryScreen.getAbsoluteOverlaySpinner().attr( 'id', 'secondScreenLoadingSpinner' );
-							}
-						}
-					};
-
-					if ( _this.getConfig( "mainViewDisplay" ) == 2 ) {
-						_this.bind('postDualScreenTransition', function(){
-							_this.unbind('postDualScreenTransition');
-							addSpinner();
-						});
-						_this.fsm.consumeEvent( "switchView" );
-					} else {
-						addSpinner();
+					_this.checkRenderConditions();
+					_this.initDisplay();
+					if (!_this.render) {
+						_this.getPrimary().obj.css( {'top': '', 'left': '', 'width': '', 'height': ''} ).removeClass( 'firstScreen' );
+						_this.hideDisplay();
 					}
-
-					//dualScreen components are set on z-index 1-3, so set all other components to zIndex 4 or above
-					_this.zIndexObjs = [];
-					$.each(_this.embedPlayer.getVideoHolder().children(), function(index, childNode){
-		                  var obj = $(childNode);
-		                  var classList = obj.attr('class')? obj.attr('class').split(/\s+/) : [];
-		                  if ( $.inArray("dualScreen", classList) == -1){
-	                          if ( isNaN(obj.css('z-index')) ){
-		                          obj.css('z-index', 4);
-	                          } else {
-	                              var zIndex = obj.css('z-index');
-		                          obj.css('z-index', zIndex + 4);
-	                          }
-			                  _this.zIndexObjs.push(obj);
-	                      }
-	                });
-
-					_this.showControlBar();
-					_this.monitorControlBarDisabled = true;
 				} );
 
-				var resizeSecondScreen = function (event) {
-					if ( event.type == "onOpenFullScreen" ) {
-						_this.onFullscreen = true;
-					}
-					if ( event.type == "onCloseFullScreen" ) {
-						_this.onFullscreen = false;
-					}
+				var updateSecondScreenLayout = function (event) {
 					var eventName = mw.isAndroid() ? 'resize' : 'orientationchange';
-					if ( eventName == event.type && !_this.onFullscreen ) {
-						return false;
+					if (_this.displayInitialized &&
+							!(
+								_this.dragging ||
+								_this.resizing ||
+								_this.screenShown ||
+								( eventName == event.type && !_this.getPlayer().layoutBuilder.isInFullScreen() )
+							)
+						){
+						_this.checkRenderConditions();
+						//Hide monitor and control bar during resizing
+						_this.hideDisplay();
+						//Avoid debouncing of screen resize timeout handler
+						if ( _this.updateSecondScreenLayoutTimeout ) {
+							clearTimeout( _this.updateSecondScreenLayoutTimeout );
+							_this.updateSecondScreenLayoutTimeout = null;
+						}
+						_this.updateSecondScreenLayoutTimeout = setTimeout( function () {
+							_this.updateSecondScreenLayoutTimeout = null;
+							//Calculate new screen ratios
+							var secondScreenProps = _this.getSecondMonitor().prop;
+							var playerWidth = _this.getPlayer().getWidth();
+							var playerHeight = _this.getPlayer().getHeight();
+							var widthRatio = (playerWidth / _this.previousPlayerWidth).toFixed( 2 );
+							var heightRatio = (playerHeight / _this.previousPlayerHeight).toFixed( 2 );
+
+							//Save current dimensions for next differential calculation
+							_this.previousPlayerWidth = playerWidth;
+							_this.previousPlayerHeight = playerHeight;
+
+							//Calculate and apply new screen properties
+							var newWidth = parseInt( (secondScreenProps.width.replace( 'px', '' ) * widthRatio).toFixed( 2 ) );
+							var newHeight = parseInt( newWidth * _this.getConfig( 'secondScreen' ).widthHeightRatio );
+							var topOffset = parseInt( (secondScreenProps.top.replace( 'px', '' ) * heightRatio).toFixed( 2 ) );
+							var leftOffset = parseInt( (secondScreenProps.left.replace( 'px', '' ) * widthRatio).toFixed( 2 ) );
+							var screenProps = {
+								height: newHeight + "px",
+								width: newWidth + "px",
+								top: topOffset + "px",
+								left: leftOffset + "px"
+							};
+
+							if ( newHeight + topOffset > playerHeight ) {
+								screenProps.top = (playerHeight - newHeight) + "px";
+							}
+							if ( newWidth + leftOffset > playerWidth ) {
+								screenProps.left = (playerWidth - newWidth) + "px";
+							}
+
+							var firstScreen = _this.getFirstMonitor().obj;
+							var secondScreen = _this.getSecondMonitor().obj;
+							secondScreen.css( screenProps );
+							_this.applyIntrinsicAspect();
+							//Store props for transitions
+							_this.getSecondMonitor().prop = screenProps;
+							if ( _this.render ) {
+
+								//Show monitor and control bar after resizing
+								_this.showDisplay();
+								maximizeSecondDisplay();
+							} else {
+								_this.getPrimary().obj.show();
+								minimizeSecondDisplay();
+							}
+
+							//Calculate screen resize max width
+							var maxWidth = ( ( _this.getPlayer().getWidth() * _this.getConfig( 'resizable' ).maxWidthPercentage ) / 100 );
+							var minWidth = ( ( _this.getPlayer().getWidth() * _this.getConfig( 'secondScreen' ).size ) / 100 );
+							firstScreen.resizable( {
+								maxWidth: maxWidth,
+								minWidth: minWidth
+							} );
+							secondScreen.resizable( {
+								maxWidth: maxWidth,
+								minWidth: minWidth
+							} );
+						}, 0 );
 					}
-					//Hide monitor and control bar during resizing
-					_this.hideMonitor( _this.getSecondMonitor().obj );
-					_this.disableControlBar();
-					setTimeout( function () {
-						//Resize and reposition control bar
-						_this.setControlBarWidth();
-						_this.positionControlBar();
-						//Calculate new screen ratios
-						var secondScreenProps = _this.getSecondMonitor().prop;
-						var playerWidth = _this.getPlayer().getPlayerWidth();
-						var playerHeight = _this.getPlayer().getPlayerHeight();
-						var widthRatio = (playerWidth / _this.previousPlayerWidth).toFixed( 2 );
-						var heightRatio = (playerHeight / _this.previousPlayerHeight).toFixed( 2 );
-						//Save current dimensions for next differential calculation
-						_this.previousPlayerWidth = playerWidth;
-						_this.previousPlayerHeight = playerHeight;
-						//Calculate and apply new screen properties
-						var newWidth = parseInt((secondScreenProps.width.replace( 'px', '' ) * widthRatio).toFixed( 2 ));
-						var newHeight = parseInt(newWidth * _this.getConfig('secondScreen').widthHeightRatio);
-						var topOffset = parseInt((secondScreenProps.top.replace( 'px', '' ) * heightRatio).toFixed( 2 ));
-						var leftOffset = parseInt((secondScreenProps.left.replace( 'px', '' ) * widthRatio).toFixed( 2 ));
-						var screenProps = {
-							height: newHeight + "px",
-							width: newWidth + "px",
-							top: topOffset + "px",
-							left: leftOffset + "px"
-						};
-
-						if (newHeight + topOffset > playerHeight){
-							screenProps.top = (playerHeight - newHeight) + "px";
-						}
-						if (newWidth + leftOffset > playerWidth){
-							screenProps.left = (playerWidth - newWidth) + "px";
-						}
-
-						var firstScreen = _this.getFirstMonitor().obj;
-						var secondScreen = _this.getSecondMonitor().obj;
-						secondScreen.css( screenProps );
-						_this.applyIntrinsicAspect();
-						//Show monitor and control bar after resizing
-						_this.showMonitor( _this.getSecondMonitor().obj );
-						_this.enableControlBar();
-
-						//Calculate screen resize max width
-						var maxWidth = ( ( _this.getPlayer().getWidth() * _this.getConfig( 'resizable' ).maxWidthPercentage ) / 100 );
-						var minWidth = ( ( _this.getPlayer().getWidth() * _this.getConfig( 'secondScreen' ).size ) / 100 );
-						firstScreen.resizable( {
-							maxWidth: maxWidth,
-							minWidth: minWidth
-						} );
-						secondScreen.resizable( {
-							maxWidth: maxWidth,
-							minWidth: minWidth
-						} );
-
-						//Store props for transitions
-						_this.getFirstMonitor().prop = screenProps;
-						_this.getSecondMonitor().prop = screenProps;
-
-					}, 2000 );
 				};
-				this.bind( 'onOpenFullScreen onCloseFullScreen', resizeSecondScreen);
+				this.bind( 'updateLayout', updateSecondScreenLayout);
 				// Android fires orientationchange too soon, i.e width and height are wrong
 				var eventName = mw.isAndroid() ? 'resize' : 'orientationchange';
 				eventName += this.bindPostFix;
 				var isIframe = mw.getConfig('EmbedPlayer.IsIframeServer' );
 				var context = isIframe ? window['parent'] : window;
 				// Bind orientation change to resize player
-				$( context ).bind( eventName, resizeSecondScreen);
+				$( context ).bind( eventName, updateSecondScreenLayout);
 
 				this.bind( 'onplay', function () {
 					_this.loadAdditionalAssets();
@@ -499,37 +451,50 @@
 				});
 
 				var fsmState = [];
-				var screenShown = false;
-				var cssParams = {};
-				this.bind( "preShowScreen", function () {
-					screenShown = true;
-					if (_this.fsm.getStatus() != "pip"){
-						fsmState.push(_this.fsm.getStatus());
-						_this.fsm.consumeEvent( 'pip' );
-					}
-					if ( !_this.getPrimary().isMain ) {
-						fsmState.push('switchView');
-						_this.fsm.consumeEvent( 'switchView' );
-					}
-					cssParams = _this.getFirstMonitor().obj.css( ['top', 'left', 'width', 'height'] );
-					_this.getPrimary().obj.css({'top': '', 'left': '', 'width': '', 'height': ''} ).removeClass('firstScreen');
-					_this.fsm.consumeEvent( 'hide' );
-					_this.ignoreNextMouseEvent = true;
-					$.each(_this.zIndexObjs, function(i, obj){
-						var zIndex = $(obj).css('z-index');
-						$(obj ).css("z-index", zIndex - 4);
-					});
-					_this.bind("postDualScreenTransition", function(){
-							_this.getPlayer().unbindHelper("postDualScreenTransition");
-						_this.disableControlBar();
+				var secondDisplayMinimized = false;
+				var minimizeSecondDisplay = function(){
+					if (!secondDisplayMinimized) {
+						secondDisplayMinimized = true;
+						if (!(_this.getPrimary().isMain && _this.fsm.getStatus() == "SV")) {
+							_this.bind( "postDualScreenTransition", function ( event, transitions ) {
+									if ( transitions[1] == "hide" ) {
+										_this.getPlayer().unbindHelper( "postDualScreenTransition" );
+										_this.disableControlBar();
+									}
+								}
+							);
+							fsmState.push( _this.fsm.getStatus() );
+							if ( !_this.getPrimary().isMain ) {
+								fsmState.push( 'switchView' );
+								_this.fsm.consumeEvent( 'switchView' );
+							}
+							if ( _this.fsm.getStatus() != "PiP" ) {
+								_this.fsm.consumeEvent( 'PiP' );
+							}
+
+							_this.fsm.consumeEvent( 'hide' );
+							_this.ignoreNextMouseEvent = true;
+						} else {
+							_this.disableControlBar();
 						}
-					);
-				} );
-				this.bind( "preHideScreen", function () {
-					if (screenShown) {
-						screenShown = false;
+						_this.getPrimary().obj.css( {'top': '', 'left': '', 'width': '', 'height': ''} ).removeClass( 'firstScreen' );
+						$.each( _this.zIndexObjs, function ( i, obj ) {
+							var zIndex = $( obj ).css( 'z-index' );
+							$( obj ).css( "z-index", zIndex - 4 );
+						} );
+					}
+				};
+				var maximizeSecondDisplay = function(){
+					if (secondDisplayMinimized) {
+						secondDisplayMinimized = false;
+						_this.bind("postDualScreenTransition", function(event, transitions) {
+								if ( transitions[0] == "SV" ) {
+									_this.getPlayer().unbindHelper( "postDualScreenTransition" );
+									_this.enableControlBar();
+								}
+							}
+						);
 						_this.getPrimary().obj.addClass( 'firstScreen' );
-						_this.getPrimary().obj.css( cssParams );
 						$.each(fsmState, function(i, state){
 							_this.fsm.consumeEvent( state );
 						});
@@ -538,13 +503,120 @@
 							var zIndex = $(obj).css('z-index');
 							$(obj ).css("z-index", zIndex + 4);
 						});
-						_this.bind("postDualScreenTransition", function(){
-							_this.getPlayer().unbindHelper("postDualScreenTransition");
-							_this.enableControlBar();
-							}
-						);
+					}
+				};
+				this.bind( "preShowScreen", function () {
+					_this.screenShown = true;
+					if (_this.render) {
+						minimizeSecondDisplay();
 					}
 				} );
+				this.bind( "preHideScreen", function (e) {
+					_this.screenShown = false;
+					updateSecondScreenLayout(e)
+					if (_this.render) {
+						maximizeSecondDisplay();
+					}
+				} );
+			},
+			initDisplay: function(){
+				var _this = this;
+				this.displayInitialized = true;
+				this.previousPlayerWidth = this.getPlayer().getWidth();
+				this.previousPlayerHeight = this.getPlayer().getHeight();
+
+				var primaryScreen = this.monitor[this.TYPE.PRIMARY].obj = this.getPlayer().getVideoDisplay();
+				var secondaryScreen = this.monitor[this.TYPE.SECONDARY].obj = this.getComponent();
+
+				//Set rule attributes
+				primaryScreen.addClass( 'dualScreenMonitor firstScreen ' + this.pluginName ).attr( 'data-monitor-rule', this.TYPE.PRIMARY );
+				secondaryScreen.addClass( 'dualScreenMonitor' ).attr( 'data-monitor-rule', this.TYPE.SECONDARY );
+
+				secondaryScreen.off().on( 'click dblclick touchstart touchend', function ( e ) {
+					_this.embedPlayer.triggerHelper( e );
+				} );
+
+				this.setControlBarBindings();
+
+				this.checkAnimationSupport();
+
+				//Set draggable and resizable configuration
+				primaryScreen
+					.draggable( this.getConfig( 'draggable' ) ).draggable( 'disable' )
+					.resizable( this.getConfig( 'resizable' ) ).resizable( 'disable' );
+
+				secondaryScreen
+					.draggable( this.getConfig( 'draggable' ) )
+					.resizable( this.getConfig( 'resizable' ) );
+
+				this.enableMonitorFeatures();
+
+				this.positionSecondScreen();
+
+				var addSpinner = function(){
+					if (!_this.secondDisplayReady && _this.render) {
+						if (mw.getConfig("EmbedPlayer.LiveCuepoints")) {
+							//TODO: add information slide for no current slide available
+						} else {
+							secondaryScreen.getAbsoluteOverlaySpinner().attr( 'id', 'secondScreenLoadingSpinner' );
+						}
+					}
+				};
+
+				if ( this.getConfig( "mainViewDisplay" ) == 2 ) {
+					this.bind('postDualScreenTransition.spinnerPostFix', function(){
+						_this.unbind('postDualScreenTransition.spinnerPostFix');
+						addSpinner();
+					});
+					setTimeout(function(){
+						_this.fsm.consumeEvent( "switchView" );
+					}, 500);
+				} else {
+					addSpinner();
+				}
+
+				//dualScreen components are set on z-index 1-3, so set all other components to zIndex 4 or above
+				this.zIndexObjs = [];
+				$.each(this.embedPlayer.getVideoHolder().children(), function(index, childNode){
+					var obj = $(childNode);
+					var classList = obj.attr('class')? obj.attr('class').split(/\s+/) : [];
+					if ( $.inArray("dualScreen", classList) == -1){
+						if ( isNaN(obj.css('z-index')) ){
+							obj.css('z-index', 4);
+						} else {
+							var zIndex = obj.css('z-index');
+							obj.css('z-index', zIndex + 4);
+						}
+						_this.zIndexObjs.push(obj);
+					}
+				});
+
+				this.showControlBar();
+				this.monitorControlBarDisabled = true;
+			},
+			hideDisplay: function(){
+				this.getSecondMonitor().obj.hide();
+				this.disableControlBar();
+				this.getControlBar().hide();
+			},
+			showDisplay: function(){
+				this.getFirstMonitor().obj.show();
+				this.getSecondMonitor().obj.show();
+				this.getControlBar().show();
+				this.setControlBarWidth();
+				this.positionControlBar();
+				this.enableControlBar();
+			},
+			checkRenderConditions: function(){
+				if ( !( this.dragging || this.resizing ) &&
+					(this.getPlayer().layoutBuilder.isInFullScreen() ||
+						((!this.getConfig("fullScreenDisplayOnly") &&
+							this.getConfig( "minDisplayWidth" ) <= this.getPlayer().getWidth() &&
+							this.getConfig( "minDisplayHeight" ) <= this.getPlayer().getHeight()) ) ) ) {
+					this.render = true;
+				} else {
+					this.render = false;
+				}
 			},
 			checkAnimationSupport: function ( elm ) {
 				elm = elm || document.body || document.documentElement;
@@ -610,62 +682,70 @@
 						location[1] = location[1]+"-"+(10+this.getPlayer().layoutBuilder.getHeight());
 						break;
 				}
-				this.getSecondMonitor().obj.position( {
+				var monitor = this.getSecondMonitor();
+				monitor.obj.position( {
 					my: this.getConfig( 'secondScreen' ).startLocation.toLowerCase(),
 					at: location[0]+location[1],
 					of: $( this.getPlayer().getInterface() )
 				} );
+				monitor.prop = monitor.obj.css( ['top', 'left', 'width', 'height'] );
 			},
 			toggleMainMonitor: function () {
 				var _this = this;
+				var props = this.getSecondMonitor().prop;
 				$.each( this.monitor, function ( name, monitor ) {
 					monitor.isMain = !monitor.isMain;
+					monitor.prop = monitor.isMain ? [] : props;
 					monitor.obj.attr( 'data-monitor-rule', monitor.isMain ? _this.TYPE.PRIMARY : _this.TYPE.SECONDARY )
 					monitor.obj.toggleClass( 'firstScreen secondScreen' )
+					if (!monitor.isMain){
+						monitor.obj.css(props);
+					}
 				} );
 			},
-			enableMonitorFeatures: function ( monitor ) {
-				monitor.css( this.getSecondMonitor().prop );
+			enableMonitorFeatures: function ( ) {
+				var monitor = this.getSecondMonitor().obj;
 				monitor.draggable( 'enable' ).resizable( 'enable' );
-
-				this.addResizeHandlers(monitor);
+				this.addResizeHandlers();
 			},
-			disableMonitorFeatures: function ( monitor ) {
-				this.getFirstMonitor().prop = monitor.css( ['top', 'left', 'width', 'height'] );
-				this.getSecondMonitor().prop = monitor.css( ['top', 'left', 'width', 'height'] );
+			disableMonitorFeatures: function ( ) {
+				var monitor = this.getSecondMonitor().obj;
 				monitor.draggable( 'disable' ).resizable( 'disable' );
 				this.removeResizeHandlers(monitor);
 			},
-			removeResizeHandlers: function(monitor){
+			removeResizeHandlers: function(){
+				var monitor = this.getSecondMonitor().obj;
 				$(monitor).find(".dualScreen-transformhandle" ).remove();
 			},
-			hideResizeHandlers: function(monitor){
-				$(monitor).find(".cornerHandle" ).addClass( 'componentOff componentAnimation' ).removeClass( 'componentOn' )
-			},
-			showResizeHandlers: function(monitor){
-				$(monitor).find(".cornerHandle" ).removeClass('componentAnimation' ).addClass('componentOn' ).removeClass('componentOff' );
-			},
-			addResizeHandlers: function (monitor, action) {
-				this.removeResizeHandlers(monitor);
-				var cornerHandleVisibleTimoutId;
+			addResizeHandlers: function () {
+				this.removeResizeHandlers();
+				var cornerHandleVisibleTimeoutId;
 				var _this = this;
-				monitor.prepend($("<span>").addClass("dualScreen-transformhandle cornerHandle componentOff bottomRightHandle"));
-				monitor.prepend($("<span>").addClass("dualScreen-transformhandle cornerHandle componentOff bottomLeftHandle"));
-				monitor.prepend($("<span>").addClass("dualScreen-transformhandle cornerHandle componentOff topRightHandle"));
-				monitor.prepend($("<span>").addClass("dualScreen-transformhandle cornerHandle componentOff topLeftHandle"));
+				var monitor = this.getSecondMonitor().obj;
+				monitor.prepend($("<span>").addClass("dualScreen-transformhandle cornerHandle componentOff").attr("id", "bottomRightHandle"));   //ui-resizable-handle ui-resizable-ne
+				monitor.prepend($("<span>").addClass("dualScreen-transformhandle cornerHandle componentOff").attr("id", "bottomLeftHandle"));   //ui-resizable-handle ui-resizable-sw
+				monitor.prepend($("<span>").addClass("dualScreen-transformhandle cornerHandle componentOff").attr("id", "topRightHandle"));   //ui-resizable-handle ui-resizable-se
+				monitor.prepend($("<span>").addClass("dualScreen-transformhandle cornerHandle componentOff").attr("id", "topLeftHandle"));   //ui-resizable-handle ui-resizable-nw
 				monitor
-					.on( 'mouseleave', function(e) { if ( !( mw.isMobileDevice() || _this.dragging ) ) { _this.hideResizeHandlers(this); } })
+					.on( 'mouseleave', function(e) { if ( !( mw.isMobileDevice() || _this.dragging ) ) { _this.hideResizeHandlers(); } })
 					.on( 'mousemove touchstart', function(e){
-						if (!this.dragging){
-							_this.showResizeHandlers(this);
-							var monitorRef=this;
-							if(cornerHandleVisibleTimoutId){
-								clearTimeout(cornerHandleVisibleTimoutId);
+						if (!_this.dragging){
+							_this.showResizeHandlers();
+							if(cornerHandleVisibleTimeoutId){
+								clearTimeout(cornerHandleVisibleTimeoutId);
 							}
-							cornerHandleVisibleTimoutId=setTimeout(function(){_this.hideResizeHandlers(monitorRef);}, _this.getConfig('menuFadeout'))
+							cornerHandleVisibleTimeoutId = setTimeout(function(){_this.hideResizeHandlers();}, _this.getConfig('menuFadeout'))
 						}
 					});
 
+			},
+			hideResizeHandlers: function(){
+				var monitor = this.getSecondMonitor().obj;
+				$(monitor).find(".cornerHandle" ).addClass( 'componentOff componentAnimation' ).removeClass( 'componentOn' )
+			},
+			showResizeHandlers: function(){
+				var monitor = this.getSecondMonitor().obj;
+				$(monitor).find(".cornerHandle" ).removeClass('componentAnimation' ).addClass('componentOn' ).removeClass('componentOff' );
 			},
 			enableSideBySideView: function () {
 				this.getFirstMonitor().obj.addClass( 'sideBySideLeft' );
@@ -681,10 +761,10 @@
 
 			},
 			hideMonitor: function ( monitor ) {
-				monitor.addClass( 'hiddenScreen' );
+				monitor && monitor.addClass( 'hiddenScreen' );
 			},
 			showMonitor: function ( monitor ) {
-				monitor.removeClass( 'hiddenScreen' );
+				monitor && monitor.removeClass( 'hiddenScreen' );
 			},
 			getMonitors: function(){
 				var _this = this;
@@ -748,6 +828,7 @@
 					$img.removeClass('fill-width fill-height').addClass(pClass);
 				}
 			},
+
 			//Control Bar
 			getControlBar: function ( ) {
 				if ( !this.$controlBar ) {
@@ -826,6 +907,7 @@
 			},
 			disableControlBar: function () {
 				clearTimeout(this.getControlBar().handleTouchTimeoutId);
+				this.monitorControlBarDisabled = false;
 				this.hideControlBar( );
 				this.monitorControlBarDisabled = true;
 			},

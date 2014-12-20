@@ -80,7 +80,6 @@ mw.FullScreenManager.prototype = {
 	*/
 	doFullScreenPlayer: function( callback ) {
 		mw.log("FullScreenManager:: doFullScreenPlayer" );
-
         if( mw.getConfig('EmbedPlayer.NewWindowFullscreen') && !screenfull &&
             !(mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen') && mw.isIpad())){
             this.openNewWindow();
@@ -301,12 +300,18 @@ mw.FullScreenManager.prototype = {
 	 */
 	restoreContextPlayer: function(){
 		var isIframe = mw.getConfig('EmbedPlayer.IsIframeServer' );
-		var
-		_this = this,
-		doc = isIframe ? window['parent'].document : window.document,
-		$doc = $( doc ),
-		$target = $( this.getFsTarget() ),
-		context = isIframe ? window['parent'] : window;
+		var _this = this;
+		var doc = window.document;
+		if (isIframe) {
+			try {
+				doc = window['parent'].document;
+			} catch (e) {
+				mw.log("FullScreenManager:: Security error when accessing window parent document: " + e.message);
+			}
+		}
+		var $doc = $(doc);
+		var $target = $(this.getFsTarget());
+		var context = isIframe ? window['parent'] : window;
 
 		mw.log("FullScreenManager:: restoreContextPlayer> verticalScrollPosition:" + this.verticalScrollPosition );
 
@@ -357,10 +362,14 @@ mw.FullScreenManager.prototype = {
     doNativeScroll: function(context, top, left){
         if (context) {
             $.each(['scroll', 'scrollTo'], function (i, funcName) {
-                if ($.isFunction(context[funcName])) {
-                    context[funcName](top, left);
-                    return false;
-                }
+	            try {
+		            if ($.isFunction(context[funcName])) {
+			            context[funcName](top, left);
+			            return false;
+		            }
+	            } catch (e) {
+		            mw.log("FullScreenManager:: Security error when accessing context: " + e.message);
+	            }
             });
         }
     },

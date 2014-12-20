@@ -61,7 +61,7 @@
 						//we're offline
 						_this.stopLiveEvents();
 					} else{
-						 if (_this.playing){
+						 if (_this.playing && !_this.isLiveEventsOn){
 							 _this.startLiveEvents();
 						 }
 					}

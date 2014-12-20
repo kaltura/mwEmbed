@@ -13,21 +13,15 @@
 					'dependencies' => 'mw.MwEmbedSupport'
 			),
 			"mw.EmbedTypes" => array(
-				'scripts' => array(
-					'resources/mw.EmbedTypes.js',
-				),
+				'scripts' => 'resources/mw.EmbedTypes.js',
 				'dependencies' =>  array(
 					'mw.MediaPlayers',
-					'mediawiki.Uri',
-					'Silverlight'
+					'mediawiki.Uri'
 				)
-			),
-			// sliverlight detect script: 
-			'Silverlight' => array(
-				'scripts' => 'resources/playerElement/Silverlight.js'
 			),
 			"mw.EmbedPlayer" => array(
 				'scripts' => array(
+					"resources/playerElement/Silverlight.js",
 					"resources/mw.processEmbedPlayers.js",
 					"resources/mw.EmbedPlayer.js",
 					"resources/mw.FullScreenManager.js",
@@ -67,13 +61,9 @@
 					'jquery.ui.slider',
 					'jquery.ui.tooltip',
 					'jquery.naturalSize',
-					
-					'mw.PlayerElementFlash', // flash player
-					'mw.PlayerElementHTML', // used in ads
-				
-					// load HTML player & Silverlight on-demand ( can't load all intefaces all the time )
-					//'mw.PlayerElementSilverlight',
-					
+
+					'mw.PlayerElementHTML',
+					'mw.PlayerElementFlash'
 				),
 				'styles' => "resources/EmbedPlayer.css",
 				'messageFile' => 'EmbedPlayer.i18n.php',
@@ -83,12 +73,10 @@
 				'scripts' => 'resources/mw.PluginManager.js'
 			),
 
-			"mw.EmbedPlayerSilverlight"	=> array( 
-				'scripts'=> "resources/mw.EmbedPlayerSilverlight.js",
-				'dependencies' => array(
-					"mw.PlayerElementSilverlight"
-				)
-			),
+			"mw.EmbedPlayerSilverlight"	=> array( 'scripts'=> "resources/mw.EmbedPlayerSilverlight.js",
+			'dependencies' => array(
+				"mw.PlayerElementSilverlight"
+			) ),
 			"mw.EmbedPlayerKplayer"	=> array( 'scripts'=> "resources/mw.EmbedPlayerKplayer.js" ),
 			"mw.EmbedPlayerGeneric"	=> array( 'scripts'=> "resources/mw.EmbedPlayerGeneric.js" ),
 			"mw.EmbedPlayerJava" => array( 'scripts'=> "resources/mw.EmbedPlayerJava.js"),
@@ -120,6 +108,7 @@
 			),
 			"mw.PlayerElementSilverlight" => array(
 				'scripts' => array(
+					'resources/playerElement/Silverlight.js',
 					'resources/playerElement/mw.PlayerElementSilverlight.js'
 				),
 				'dependencies' =>  array( 'mw.PlayerElement' )

@@ -214,8 +214,8 @@ class UiConfResult {
 			'keyboardShortcuts' => array(),
 			'liveCore' => array(),
 			'liveStatus' => array(),
-			'liveBackBtn' => array(),
 			'reportError' => array(),
+			"sideBarContainer" => array(),
 			"liveAnalytics"=>array()
 		);
 
@@ -532,6 +532,7 @@ class UiConfResult {
 		$plugins = array(
 			"topBarContainer" => array(),
 			"controlBarContainer" => array(),
+			"sideBarContainer" => array(),
 			"scrubber" => array(),
 			"largePlayBtn" => array(),
 			"playHead" => array(),
@@ -542,7 +543,6 @@ class UiConfResult {
 			"keyboardShortcuts" => array(),
 			"liveCore" => array(),
 			"liveStatus" => array(),
-			"liveBackBtn" => array(),
 			"reportError" => array()
 		);
 

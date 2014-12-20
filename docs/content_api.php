@@ -447,7 +447,7 @@ echo '<div class="docblock">' .
 	'</div><br>';
 ?>
 <a name="kBind-desc"></a>
-<h4>Registering to a player event</h4>
+<h4>Registering to a player event ( kBind )</h4>
 <p>Use the <b>kBind</b> method to add listen for a specific notification that something happened in the player,
 such as the video is playing or is paused.</p>
 <?php echo getDocs( array( 'kBind' ) ) ?>
@@ -487,7 +487,7 @@ kWidget.addReadyCallback(function( playerId ){
 <h3>Player Advertisement Related Notifications:</h3>
 <?php echo getOutlineContent( $eventAds ) ?>
 
-<h3>Playlist Notifications:</h3>
+<h3>Playlist and Related Notifications:</h3>
 <?php echo getOutlineContent( $playlists ) ?>
 
 

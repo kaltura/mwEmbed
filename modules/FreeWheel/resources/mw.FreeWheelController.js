@@ -71,6 +71,12 @@ mw.FreeWheelController.prototype = {
 		// unbind any existing bindings:
 		_this.embedPlayer.unbindHelper( _this.bindPostfix );
 
+		if (mw.isIE8()) {
+			mw.log("FreeWheelController::init: Freewheel HTML5 version is not supported in IE8. Please use Flash KDP player.");
+			callback();
+			return;
+		}
+
 		// Load the freewheel ad manager then setup the ads
 		if( !window['tv'] || !tv.freewheel ){
 			var isLoaded = false;

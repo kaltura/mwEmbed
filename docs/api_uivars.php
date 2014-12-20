@@ -608,9 +608,9 @@ $uiVars = array(
 					'example' => ''
 			),
 			'EmbedPlayer.EnableURLTimeEncoding' => array(
-					'type' => 'String',
-					'desc' => "Determines if embedPlayer should support server side temporal URLs for seeking. Options are Flash|always|none",
-					'default' => 'flash',
+					'type' => 'Boolean',
+					'desc' => "Determines if embedPlayer should support server side temporal URLs for seeking",
+					'default' => false,
 					'example' => ''
 			),
 			'EmbedPlayer.DefaultImageDuration' => array(

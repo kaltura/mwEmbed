@@ -61,6 +61,9 @@
 		 * @return {String} rendered HTML as string
 		 */
 		return function( /* key, replacements */ ) {
+			if (window.getStringByKey && arguments.length > 0 && window.getStringByKey(arguments[0])){
+				return window.getStringByKey(arguments[0]);
+			}
 			return failableParserFn( arguments ).html();
 		};
 	};

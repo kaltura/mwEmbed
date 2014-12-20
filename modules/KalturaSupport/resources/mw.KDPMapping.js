@@ -500,6 +500,13 @@
 							var location = getLocation(referrer);
 							return location.hostname;
 							break;
+						case 'nativeAdId':
+							if( embedPlayer ) {
+								return embedPlayer.getFlashvars('nativeAdId');
+							} else {
+								return "";
+							}
+							break;
 					}
 					break;
 			}

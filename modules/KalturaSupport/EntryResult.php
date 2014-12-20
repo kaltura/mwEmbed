@@ -41,20 +41,7 @@ class EntryResult {
 	}
 
 	function getResponseHeaders() {
-		global $wgKalturaUiConfCacheTime;
-		// only use response headers if not cachable
-		if( !$this->isCachable( $this->entryResultObj ) ){
-			return $this->responseHeaders;
-		}
-		// else cache for cache key save time: 
-		$saveTime = $this->cache->get( $this->getCacheKey() + '_savetime' );
-		if( !$saveTime ){
-			$saveTime = time();
-		}
-		return array(
-			"Cache-Control: public, max-age=$wgKalturaUiConfCacheTime, max-stale=0",
-			"Expires: " . gmdate( "D, d M Y H:i:s", $saveTime + $wgKalturaUiConfCacheTime ) . " GM",
-		);
+		return $this->responseHeaders;
 	}
 	
 	function getResult(){
@@ -67,21 +54,15 @@ class EntryResult {
 		if( ! $this->request->getEntryId() && ! $this->request->getReferenceId() ) {
 			return array();
 		}
-		
-		// Check for entry cache: 
-		$this->entryResultObj = unserialize( $this->cache->get( $this->getCacheKey() ) );
-		if( $this->entryResultObj ){
-			return $this->entryResultObj;
-		}
-		
+
 		// Check if we have a cached result object:
 		if( ! $this->entryResultObj ){
 			$this->entryResultObj = $this->getEntryResultFromApi();
 		}
-		// if no errors, not admin and we have access, add to cache. 
-		// note playback will always go through playManifest 
-		// so we don't care if we cache where one users has permission but another does not. 
-		// we never cache admin or ks users access so would never expose info that not defined across anonymous regional access. 
+		// if no errors, not admin and we have access, add to cache.
+		// note playback will always go through playManifest
+		// so we don't care if we cache where one users has permission but another does not.
+		// we never cache admin or ks users access so would never expose info that not defined across anonymous regional access.
 		if( $this->isCachable() ){
 			$this->cache->set( $this->getCacheKey(), serialize( $this->entryResultObj ) );
 			$this->cache->set( $this->getCacheKey() + '_savetime', time() );
@@ -91,29 +72,10 @@ class EntryResult {
 		if ($this->error) {
 			$this->entryResultObj['error'] = $this->error;
 		}
+
 		return $this->entryResultObj;
 	}
-	function isCachable(){
-		return !$this->error 
-				&& 
-			$this->isAccessControlAllowed( $this->entryResultObj ) 
-				&&
-			!$this->request->hasKS();
-	}
-	function getCacheKey(){
-		global $wgKalturaEnableProxyData;
-		$key = '';
-		if ($wgKalturaEnableProxyData && $this->request->getFlashVars("proxyData")){
-			$key.= md5( $this->request->getFlashVars("proxyData") );
-		}
-		if( $this->request->getEntryId() ){
-			$key.= $this->request->getEntryId();
-		}
-		if( $this->request->getReferenceId() ){
-			$key.= $this->request->getReferenceId();
-		}
-		return $key;
-	}
+	
 	function getEntryResultFromApi(){
 		global $wgKalturaApiFeatures;
 		global $wgKalturaEnableProxyData;
@@ -143,14 +105,13 @@ class EntryResult {
 			}
 
 			if ($wgKalturaEnableProxyData && $this->request->getFlashVars("proxyData")){
-				$filter->freeText = urlencode(json_encode($this->request->getFlashVars("proxyData")));
+			    $filter->freeText = urlencode(json_encode($this->request->getFlashVars("proxyData")));
 			}
 
 			$baseEntryIdx = $namedMultiRequest->addNamedRequest( 'meta', 'baseEntry', 'list', array('filter' => $filter) );
 			// Get entryId from the baseEntry request response
 			$entryId = '{' . $baseEntryIdx . ':result:objects:0:id}';
-			
-			// ------- Disabled AC from iframe. -----
+
 			// Access control NOTE: kaltura does not use http header spelling of Referer instead kaltura uses: "referrer"
 			$filter = $this->getACFilter();
 			$params = array( 
@@ -158,7 +119,6 @@ class EntryResult {
 				"entryId"	=> $entryId
 			);
 			$namedMultiRequest->addNamedRequest( 'contextData', 'baseEntry', 'getContextData', $params );
-			
 			
 			// Entry Custom Metadata
 			// Always get custom metadata for now 
@@ -311,9 +271,14 @@ class EntryResult {
 		}
 
 		/* Session Restricted */
-		if( isset( $accessControl['isSessionRestricted'] ) && $accessControl['isSessionRestricted'] && 
-				( $accessControl->previewLength == -1 || $accessControl->previewLength == null ) )
-		{
+		if( ( isset( $accessControl['isSessionRestricted'] ) && $accessControl['isSessionRestricted'] ) 
+				&& 
+			( 
+				isset( $accessControl['previewLength'] ) 
+					&& 
+				( $accessControl['previewLength'] == -1 || $accessControl['previewLength'] == null ) 
+			)
+		){
 			return "No KS where KS is required\nWe're sorry, access to this content is restricted.";
 		}
 
@@ -332,10 +297,10 @@ class EntryResult {
 			return $userAgentMessage;
 		}
 		
-		// check for generic "block" 
-		$actions = isset( $accessControl['accessControlActions'] ) ? 
-					$accessControl['accessControlActions'] :
-					isset( $accessControl['actions'] ) ? $accessControl['actions'] : null;
+		// check for generic "block"
+		$actions = isset( $accessControl['accessControlActions'] ) ?
+		$accessControl['accessControlActions'] :
+		isset( $accessControl['actions'] ) ? $accessControl['actions'] : null;
 		
 		if( $actions && count( $actions ) ) {
 			for($i=0;$i<count($actions); $i++){

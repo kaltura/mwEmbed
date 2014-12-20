@@ -58,9 +58,10 @@ kWidget.api.prototype = {
 	/**
 	 * Do an api request and get data in callback
 	 */
-	doRequest: function ( requestObject, callback, errorCallback ){
+	doRequest: function ( requestObject, callback,skipKS, errorCallback  ){
 		var _this = this;
 		var param = {};
+		var globalCBName = null;
 		// If we have Kaltura.NoApiCache flag, pass 'nocache' param to the client
 		if( this.disableCache === true ) {
 			param['nocache'] = 'true';
@@ -72,8 +73,9 @@ kWidget.api.prototype = {
 				param[i] = this.baseParam[i];
 			}
 		};
+
 		// Check for "user" service queries ( no ks or wid is provided  )
-		if( requestObject['service'] != 'user' ){
+		if( requestObject['service'] != 'user' && !skipKS ){
 			kWidget.extend( param, this.handleKsServiceRequest( requestObject ) );
 		} else {
 			kWidget.extend( param, requestObject );
@@ -85,36 +87,38 @@ kWidget.api.prototype = {
 		var serviceType = param['service'];
 		delete param['service'];
 
+		var timeoutError = setTimeout(function(){
+			if ( globalCBName ) {
+				window[globalCBName] = undefined;
+			}
+			if (errorCallback){
+				errorCallback();
+			}
+			//mw.log("Timeout occur in doApiRequest");
+		},mw.getConfig("Kaltura.APITimeout"));
+
 		var handleDataResult = function( data ){
-			// check if the base param was a session ( then directly return the data object ) 
-			data = data || [];
-			if( data.length == 2 && param[ '1:service' ] == 'session' ){
-				data = data[1];
+			clearTimeout(timeoutError);
+			// check if the base param was a session
+            data = data || [];
+            if( data.length > 1 && param[ '1:service' ] == 'session' ){
+				//Set the returned ks
+	            _this.setKs(data[0].ks);
+	            // if original request was not a multirequest then directly return the data object
+	            // if original request was a multirequest then remove the session from the returned data objects
+	            if (data.length == 2){
+		            data = data[1];
+	            } else {
+		            data.shift();
+	            }
 			}
 			// issue the local scope callback:
 			if( callback ){
 				callback( data );
 				callback = null;
 			}
-		}
-		// build the request URLs: 
-		var globalCBName = 'kapi_' + Math.abs( _this.hashCode( kWidget.param( param ) ) );
-		var requestURL = _this.getApiUrl( serviceType ) + '&' + kWidget.param( param );
-		var xhr = null;
-		// handle API timeout:
-		var timeoutError = setTimeout(function(){
-			// null out callback:
-			window[ globalCBName ] = null;
-			// abort XHR if active: 
-			if( xhr ){
-				xhr.abort();
-			}
-			if (errorCallback){
-				errorCallback();
-			}
-			mw.log( "Error Timeout in request:" + requestURL );
-		}, mw.getConfig("Kaltura.APITimeout") );
-		
+		};
+
 		// Run the request
 		// NOTE kaltura api server should return: 
 		// Access-Control-Allow-Origin:* most browsers support this. 
@@ -122,20 +126,21 @@ kWidget.api.prototype = {
 		try {
 			// set format to JSON ( Access-Control-Allow-Origin:* )
 			param['format'] = 1;
-			xhr = this.xhrRequest( _this.getApiUrl( serviceType ), param, function( data ){
-				clearTimeout(timeoutError);
+			this.xhrRequest( _this.getApiUrl( serviceType ), param, function( data ){
 				handleDataResult( data );
 			});
 		} catch(e){
 			param['format'] = 9; // jsonp
+			// build the request url: 
+			var requestURL = _this.getApiUrl( serviceType ) + '&' + kWidget.param( param );
 			// try with callback:
+			globalCBName = 'kapi_' + Math.abs( _this.hashCode( kWidget.param( param ) ) );
 			if( window[ globalCBName ] ){
 				// Update the globalCB name inx.
 				this.callbackIndex++;
 				globalCBName = globalCBName + this.callbackIndex;
 			}
 			window[ globalCBName ] = function(data){
-				clearTimeout(timeoutError);
 				handleDataResult( data );
 				// null out the global callback for fresh loads
 				 window[globalCBName] = undefined;
@@ -153,7 +158,7 @@ kWidget.api.prototype = {
 				( ( kWidget.param( param ).length > 2000 ) ? 'xhrPost' : 'xhrGet' ) :
 				( (  this.type == "GET" )? 'xhrGet': 'xhrPost' );
 		// do the respective request
-		return this[ requestMethod ](  url, param, callback );
+		this[ requestMethod ](  url, param, callback );
 	},
 	xhrGet: function( url, param, callback ){
 		var xmlhttp = new XMLHttpRequest();
@@ -164,7 +169,6 @@ kWidget.api.prototype = {
 		}
 		xmlhttp.open("GET", url + '&' + kWidget.param( param ), true);
 		xmlhttp.send();
-		return xmlhttp;
 	},
 	/**
 	 * Do an xhr request
@@ -179,7 +183,6 @@ kWidget.api.prototype = {
 		xmlhttp.open("POST", url, true);
 		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		xmlhttp.send( kWidget.param( param ) );
-		return xmlhttp;
 	},
 	handleKsServiceRequest: function( requestObject ){
 		var param = {};
@@ -218,10 +221,10 @@ kWidget.api.prototype = {
 					if( typeof requestObject[i][paramKey] == 'object' ){
 						for( var subParamKey in requestObject[i][paramKey] ){
 							param[ requestInx + ':' + paramKey + ':' +  subParamKey ] =
-								requestObject[i][paramKey][subParamKey];
+								this.parseParam(requestObject[i][paramKey][subParamKey]);
 						}
 					} else {
-						param[ requestInx + ':' + paramKey ] = requestObject[i][paramKey];
+						param[ requestInx + ':' + paramKey ] = this.parseParam(requestObject[i][paramKey]);
 					}
 				}
 			}
@@ -231,12 +234,29 @@ kWidget.api.prototype = {
 		}
 		return param;
 	},
-	getApiUrl : function( serviceType ){
-		var serviceUrl = this.serviceUrl;
-		if( serviceType && serviceType == 'stats' && this.statsServiceUrl ) {
-			serviceUrl = this.statsServiceUrl
+	parseParam: function(data){
+		var param = data;
+		//Check if we need to request session
+		if (!this.getKs()) {
+			//check if request contains dependent params and if so then update reference object num -
+			// because reference index changed due to addition of multirequest startWidgetSession service
+			var paramParts = param.toString().match( /\{(\d+)(:result:.*)\}/ );
+			if ( paramParts ) {
+				var refObj = parseInt(paramParts[1]) + 1;
+				param = "{"+ refObj + paramParts[2] + "}"
+			}
 		}
-		return serviceUrl + this.serviceBase + serviceType;
+		return param;
+	},
+	getApiUrl : function( serviceType ){
+		var serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );
+		if( serviceType && serviceType == 'stats' &&  mw.getConfig( 'Kaltura.StatsServiceUrl' ) ) {
+			serviceUrl = mw.getConfig( 'Kaltura.StatsServiceUrl' );
+		}
+		if( serviceType && serviceType == 'LiveStats' &&  mw.getConfig( 'Kaltura.LiveStatsServiceUrl' ) ) {
+			serviceUrl = mw.getConfig( 'Kaltura.LiveStatsServiceUrl' );
+		}
+		return serviceUrl + mw.getConfig( 'Kaltura.ServiceBase' ) + serviceType;
 	},
 	hashCode: function( str ){
 		var hash = 0;

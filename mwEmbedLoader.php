@@ -452,6 +452,7 @@ class mwEmbedLoader {
 			header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 			header("Pragma: no-cache");
 			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+			header("Access-Control-Allow-Origin: *"); // allow 3rd party domains to access. 
 		} else if ( isset($_GET['autoembed']) && $this->iframeHeaders ){
 			// Grab iframe headers and pass them to our loader
 			foreach( $this->iframeHeaders as $header ) {
@@ -462,6 +463,7 @@ class mwEmbedLoader {
 				}
 			}
 		} else {
+			
 			// Default expire time for the loader to 3 hours ( kaltura version always have diffrent version tags; for new versions )
 			$max_age = 60*60*3;
 			// if the loader request includes uiConf set age to 10 min ( uiConf updates should propgate in ~10 min )
