@@ -10,7 +10,11 @@
 			'showTooltip': false,
 			"displayImportance": 'high',
 			'templatePath': 'components/search/search.tmpl.html',
-			'cuePointType': ['thumbCuePoint.Thumb'],
+			'cuePointType': [{
+				"main": mw.KCuePoints.TYPE.THUMB,
+				"sub": [mw.KCuePoints.THUMB_SUB_TYPE.SLIDE,
+					mw.KCuePoints.THUMB_SUB_TYPE.CHAPTER]
+			}],
 			'oneSecRotatorSlidesLimit': 61,
 			'twoSecRotatorSlidesLimit': 250,
 			'maxRotatorSlides': 125,
@@ -24,6 +28,7 @@
 			'includeItemNumberPattern': false,
 			'includeMediaItemDuration': false,
 			'onPage': false,
+			'includeHeader': true,
 			'cssFileName': 'search.css',
 			'animationSupported': false,
 			'searchApi': ''
@@ -31,6 +36,8 @@
 
 		mediaList: [],
 		cache: [],
+		dataSet: null,
+		searchExpression: "",
 
 		isDisabled: true,
 
@@ -53,118 +60,99 @@
 		},
 		renderSearchBar: function(){
 			var _this = this;
-			this.searchBarActive = false;
-			//Create search bar UI
-			var searchFormWrapper = $("<div/>", {"class": "searchFormWrapper"} ).appendTo(this.getMedialistHeaderComponent());
-			$("<form>" ).append(
-				$("<input id='searchBox' type='text' placeholder='Search...' required>" )
 
-			).append(
-				$("<span id='searchBoxIcon' class='icon-magnifyGlass'>")
-			).appendTo(searchFormWrapper);
-			//Attach search icon handler
-			searchFormWrapper.find("#searchBoxIcon" )
-				.on('click', function(){
-					searchFormWrapper.find("#searchBox" ).val('');
-					_this.getMedialistComponent().empty();
+			var searchFormWrapper = $("<div/>", {"class": "searchFormWrapper"} )
+				.append($("<div id='searchBoxIcon' class='searchIcon icon-magnifyGlass'>"))
+
+				.append($("<div id='searchBoxCancelIcon' class='searchIcon icon-clear'>")
+					.on("click touchend", function(){
+						$("#searchBox" ).val("" ).focus();
+						$('#searchBox').typeahead("val", "").typeahead("close");
+						$( "#searchBoxCancelIcon" ).css( "visibility", "hidden" );
+					})
+				)
+				.append($("<div id='middle'/>" )
+					.append($("<input id='searchBox' type='text' placeholder='Search' required>" )
+					.on('change keyup paste input', function(e) {
+							if (this.value.length > 0) {
+								$( "#searchBoxCancelIcon" ).css( "visibility", "visible" );
+							} else {
+								$( "#searchBoxCancelIcon" ).css( "visibility", "hidden" );
+							}
+					})
+					.on("focus", function(){
+						_this.getPlayer().triggerHelper("onDisableKeyboardBinding");
+					})
+					.on("blur", function(){
+						_this.getPlayer().triggerHelper("onEnableKeyboardBinding");
+					}))
+			);
+
+
+			this.getMedialistHeaderComponent().append(searchFormWrapper);
+
+			function findMatches(q, cb) {
+				_this.getSearchData(q, function(strs){
+						var matches, substrRegex;
+
+						// an array that will be populated with substring matches
+						matches = [];
+
+						// regex used to determine if a string contains the substring `q`
+						substrRegex = new RegExp(escape(q), 'i');
+
+						// iterate through the pool of strings and for any string that
+						// contains the substring `q`, add it to the `matches` array
+						$.each(strs, function(i, str) {
+							if (substrRegex.test(str.data)) {
+								// the typeahead jQuery plugin expects suggestions to a
+								// JavaScript object, refer to typeahead docs for more info
+								matches.push({ value: str });
+							}
+						});
+
+						cb(matches);
 				});
-			//Attach cancel handler
-			$("<span id='searchBoxCancel'>" )
-				.html("Cancel")
-				.on('click', function(e){
-					_this.searchBarActive = false;
-					$(this ).hide();
-					searchFormWrapper.find("#searchBox" ).val('');
-					searchFormWrapper
-						.find("form").css("width", "100%" )
-						.find("#searchBoxIcon").removeClass("icon-clear" ).addClass("icon-magnifyGlass");
+			};
 
-//					debugger;
-//					_this.getComponent().css("display", "inline-block");
-					_this.getComponent().css({"height": orig});
-					_this.getMedialistComponent().css({"height": "0"});
-					_this.getMedialistComponent().empty();
-					_this.getPlayer().triggerHelper('show');
-					e.preventDefault();
-				})
-				.appendTo(searchFormWrapper);
-			//Attach search form handlers
-			searchFormWrapper.find("form")
-				//Search bar animation
-				.on('click', function(){
-					if (!_this.searchBarActive) {
-						_this.searchBarActive = true;
-						var transitionendHandler = function () {
-							$( this ).off( 'transitionend webkitTransitionEnd' );
-							searchFormWrapper.find( "#searchBoxCancel" ).show();
-						};
-						if ( _this.getConfig( 'animationSupported' ) ) {
-							$( this ).one( 'transitionend webkitTransitionEnd', transitionendHandler );
-						} else {
-							setTimeout( transitionendHandler, 100 );
+			var parseData = function(obj){
+				var startOfMatch = obj.value.data.toLowerCase().indexOf(_this.searchExpression.toLowerCase());
+				if (startOfMatch > -1) {
+					var expLen = _this.searchExpression.length;
+					var dataLen = obj.value.data.length;
+					var restOfExpLen = dataLen - (startOfMatch + expLen);
+					var hintLen = Math.floor( restOfExpLen * 0.2 );
+					return obj.value.data.substr( startOfMatch, expLen + hintLen );
+				} else {
+					return obj.value.data;
+				}
+			};
+
+			var typeahead = $('#searchBox').typeahead({
+					minLength: 3,
+					highlight: true
+				},
+				{
+					name: 'label',
+					displayKey: function(obj){
+						return parseData(obj);
+					},
+					templates:{
+						suggestion: function(obj){
+							return parseData(obj) + "..."
 						}
-						$( this ).width( "80%" )
-							.find( "#searchBoxIcon" ).removeClass( "icon-magnifyGlass" ).addClass( "icon-clear" );
-					}
-				})
-				//Prevent submit on form
-				.on('submit', function(e){
-					e.preventDefault();
-					return false;
-				});
-			//Attach search bar autocomplete
-			var orig = _this.getComponent().css("height");
-			searchFormWrapper.find('#searchBox').autocomplete({
-				appendTo: ".sideBarContainer",
-				position: { my : "left top+3", at: "left bottom", of: ".searchFormWrapper" },
-				select: function( event, ui ) {
-					console.log(ui);
-//					debugger;
-					_this.getPlayer().triggerHelper('hide');
-					_this.getComponent().css({"height": "100%"});
-					_this.mediaList = [];
-					_this.addItems(ui.item.results);
+					},
+					source: findMatches
+				} ).
+				on("typeahead:selected", function(e, obj, label){
+					_this.addItems([obj.value.cuepoint]);
 					_this.renderMediaList();
-				},
-				minLength: 2,
-				source1: function( request, response ) {
-					var term = request.term;
-					if ( term in _this.cache ) {
-						response( _this.cache[ term ] );
-						return;
+				} ).
+				on("keyup", function(event){
+					if(event.keyCode == 13) {
+						typeahead.typeahead("close");
 					}
-
-					$.getJSON( _this.getConfig('searchApi'), request, function( data, status, xhr ) {
-						//TODO::Validate response
-						//TODO::parse response to autocomplete format
-						_this.cache[ term ] = data;
-						response( data );
-					});
-				},
-				source: [
-					{"label": "ActionScript", "value": "ActionScript", "results": [{id:1, title: "Title", startTime: "147"}, {id:1, title: "Title", startTime: "147"}]},
-					{"label": "AppleScript", "value": "AppleScript", "results": [{id:1, title: "Title", startTime: "147"}, {id:1, title: "Title", startTime: "147"}]},
-					{"label": "Asp", "value": "ActionScript", "results": [{id:1, title: "Title", startTime: "147"}, {id:1, title: "Title", startTime: "147"}]},
-					{"label": "BASIC", "value": "ActionScript", "results": [{id:1, title: "Title", startTime: "147"}, {id:1, title: "Title", startTime: "147"}]},
-					{"label": "C", "value": "ActionScript", "results": [{id:1, title: "Title", startTime: "147"}, {id:1, title: "Title", startTime: "147"}]},
-					{"label": "C++", "value": "ActionScript", "results": [{id:1, title: "Title", startTime: "147"}, {id:1, title: "Title", startTime: "147"}]},
-					{"label": "Clojure", "value": "ActionScript", "results": [{id:1, title: "Title", startTime: "147"}, {id:1, title: "Title", startTime: "147"}]},
-					{"label": "COBOL", "value": "ActionScript", "results": [{id:1, title: "Title", startTime: "147"}, {id:1, title: "Title", startTime: "147"}]},
-					{"label": "ColdFusion", "value": "ActionScript", "results": [{id:1, title: "Title", startTime: "147"}, {id:1, title: "Title", startTime: "147"}]},
-					{"label": "Erlang", "value": "ActionScript", "results": [{id:1, title: "Title", startTime: "147"}, {id:1, title: "Title", startTime: "147"}]},
-					{"label": "Fortran", "value": "ActionScript", "results": [{id:1, title: "Title", startTime: "147"}, {id:1, title: "Title", startTime: "147"}]},
-					{"label": "Groovy", "value": "ActionScript", "results": [{id:1, title: "Title", startTime: "147"}, {id:1, title: "Title", startTime: "147"}]},
-					{"label": "Haskell", "value": "ActionScript", "results": [{id:1, title: "Title", startTime: "147"}, {id:1, title: "Title", startTime: "147"}]},
-					{"label": "Java", "value": "ActionScript", "results": [{id:1, title: "Title", startTime: "147"}, {id:1, title: "Title", startTime: "147"}]},
-					{"label": "JavaScript", "value": "ActionScript", "results": [{id:1, title: "Title", startTime: "147"}, {id:1, title: "Title", startTime: "147"}]},
-					{"label": "Lisp", "value": "ActionScript", "results": [{id:1, title: "Title", startTime: "147"}, {id:1, title: "Title", startTime: "147"}]},
-					{"label": "Perl", "value": "ActionScript", "results": [{id:1, title: "Title", startTime: "147"}, {id:1, title: "Title", startTime: "147"}]},
-					{"label": "PHP", "value": "ActionScript", "results": [{id:1, title: "Title", startTime: "147"}, {id:1, title: "Title", startTime: "147"}]},
-					{"label": "Python", "value": "ActionScript", "results": [{id:1, title: "Title", startTime: "147"}, {id:1, title: "Title", startTime: "147"}]},
-					{"label": "Ruby", "value": "ActionScript", "results": [{id:1, title: "Title", startTime: "147"}, {id:1, title: "Title", startTime: "147"}]},
-					{"label": "Scala", "value": "ActionScript", "results": [{id:1, title: "Title", startTime: "147"}, {id:1, title: "Title", startTime: "147"}]},
-					{"label": "Scheme", "value": "ActionScript", "results": [{id:1, title: "Title", startTime: "147"}, {id:1, title: "Title", startTime: "147"}]}]
-			});
+				});
 
 		},
 		checkAnimationSupport: function ( elm ) {
@@ -193,26 +181,59 @@
 
 			this.setConfig( 'animationSupported', animation );
 		},
-		getSearchData: function(){
-			var _this = this;
-			//Init data provider
-			var cuePoints = this.getPlayer().kCuePoints.getCuePoints();
-			//Generate data transfer object
-			var filteredCuePoints = $.grep(cuePoints, function(cuePoint){
-				var found = false;
-				$.each(_this.getConfig('cuePointType'), function(i, cuePointType){
-					if (cuePointType == cuePoint.cuePointType) {
-						found = true;
-						return false;
-					}
-				});
-				return found;
-			});
 
-			filteredCuePoints.sort( function ( a, b ) {
-				return a.startTime - b.startTime;
-			} );
-			return filteredCuePoints;
+		getSearchData: function(expression, callback){
+			this.searchExpression = expression;
+			if (expression.length == 3){
+				this.dataSet = null
+			}
+			if (expression.length > 3 && this.dataSet){
+				return callback(this.dataSet);
+			}
+
+			var _this = this;
+
+			var type = this.getConfig("cuePointType" )[0].main;
+			var subType = 1;//this.getConfig("cuePointType" )[0].sub.toString();
+
+			this.getKalturaClient().doRequest({
+					'service': 'cuepoint_cuepoint',
+					'action': 'list',
+					'filter:entryIdEqual': _this.embedPlayer.kentryid,
+					'filter:objectType': 'KalturaCuePointFilter',
+//					'filter:cuePointTypeIn': type,
+//					'filter:subTypeIn': subType,
+					'filter:freeText': expression + "*"
+
+				},
+				function (data) {
+					// Validate result
+					var results = [];
+					$.each(data.objects, function (index, res) {
+						if (!_this.isValidResult(res)) {
+							data[index] = null;
+						}
+
+						results.push(
+							{
+								id: res.id,
+								data: res.title,
+								cuepoint: res
+							},{
+								id: res.id,
+								data: res.description,
+								cuepoint: res
+							}
+						);
+					});
+
+					_this.dataSet = results;
+
+					if (callback) {
+						callback(results);
+					}
+				}
+			);
 		},
 		addItems: function(items){
 			var _this = this;

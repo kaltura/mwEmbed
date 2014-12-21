@@ -63,6 +63,7 @@
 
 				if (_this.getConfig( 'parent')){
 					setTimeout(function(){
+//						_this.getComponent().height(_this.getPlayer().getVideoDisplay().height() + "px");
 						if (_this.render) {
 							_this.getComponent().show();
 							_this.renderMediaList();
@@ -296,10 +297,10 @@
 			var mediaBoxes = this.getMediaListDomElements();
 			if (layout == "vertical"){
 				var newHeight = this.getConfig( "mediaItemHeight" ) || width * (1 / this.getConfig("mediaItemRatio"));
-				mediaBoxes.width(width).height(newHeight);
+				mediaBoxes.height(newHeight);
 			} else {
 				var newWidth = this.getConfig( "mediaItemWidth" ) || height * this.getConfig("mediaItemRatio");
-				mediaBoxes.width(newWidth).height(height);
+				mediaBoxes.width(newWidth);
 			}
 		},
 		getScrollbarSize: function(w) {

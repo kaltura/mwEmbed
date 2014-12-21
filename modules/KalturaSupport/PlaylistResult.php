@@ -1,5 +1,5 @@
 <?php
-
+require_once( realpath( dirname( __FILE__ ) ) . '/../../ChromePhp.php' );
 /*
  * Description of KalturaPlaylistResult
  * Holds playlist request methods
@@ -252,17 +252,21 @@ class PlaylistResult {
 			$coma ='';
 			foreach( $playlistObject['items'] as $entryInx => $entry ){
 				//echo " looking at: " . $entry->id . ' ac:' . $entry->accessControlId . " "; 
+				ChromePhp::log("accessControlId set: ".isset( $entry->accessControlId ));
 				if( isset( $entry->accessControlId ) ){
 					$acStatus = $this->entry->isAccessControlAllowed( 
 						array( 'contextData' => $acResultObject[ $entry->accessControlId ] )
 					);
+					ChromePhp::log("acStatus=".$acStatus);
 					if( $acStatus !== true ){
+					    ChromePhp::log("remove: " . $entryInx);
 						//echo "remove: " . $entryInx . "\n";
 						// remove from playlist
 						unset( $this->playlistObject[ $playlistId ]['items'][$entryInx] );
 						continue;
 					}
 				}
+				ChromePhp::log("keep: " . $entryInx);
 				//echo "keep: " . $entryInx . "\n";
 				$contentEntryList.= $coma . $entryId;
 				$coma =',';

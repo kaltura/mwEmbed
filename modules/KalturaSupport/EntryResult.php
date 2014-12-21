@@ -1,5 +1,5 @@
 <?php
-
+require_once( realpath( dirname( __FILE__ ) ) . '/../../ChromePhp.php' );
 /**
  * Description of KalturaResultEntry
  *
@@ -325,15 +325,16 @@ class EntryResult {
 		if( isset( $accessControl->isUserAgentRestricted ) && $accessControl->isUserAgentRestricted ) {
 			return $userAgentMessage;
 		}
-		
-		// check for generic "block" 
+
+		// check for generic "block"
 		$actions = isset( $accessControl->accessControlActions ) ? 
 					$accessControl->accessControlActions:
 					isset( $accessControl->actions )? $accessControl->actions: null;
-		
+
 		if( $actions && count( $actions ) ) {
 			for($i=0;$i<count($actions); $i++){
 				$actionsObj = $actions[$i];
+
 				if( get_class( $actionsObj ) == 'KalturaAccessControlBlockAction' ){
 					return "No KS where KS is required\nWe're sorry, access to this content is restricted.";
 				}

@@ -28,7 +28,7 @@
 			'includeItemNumberPattern': false,
 			'includeMediaItemDuration': true,
 			'onPage': false,
-			'includeHeader': false,
+			'includeHeader': true,
 			'cssFileName': 'modules/KalturaSupport/components/chapters/chapters.css',
 			'minDisplayWidth': 0,
 			'minDisplayHeight': 0
@@ -116,6 +116,7 @@
 				} else {
 					_this.renderOnData = true;
 				}
+				_this.renderSearchBar();
 			});
 
 			this.bind('hide', function (e, newState) {
@@ -257,6 +258,158 @@
 			return time;
 		},
 
+		dataSet: null,
+		searchExpression: "",
+
+		renderSearchBar: function(){
+			var _this = this;
+
+			var searchFormWrapper = $("<div/>", {"class": "searchFormWrapper"} )
+				.append($("<div id='searchBoxIcon' class='searchIcon icon-magnifyGlass'>"))
+
+				.append($("<div id='searchBoxCancelIcon' class='searchIcon icon-clear'>")
+					.on("click touchend", function(){
+						$("#searchBox" ).val("" ).focus();
+						$('#searchBox').typeahead("val", "").typeahead("close");
+						$( "#searchBoxCancelIcon" ).css( "visibility", "hidden" );
+					})
+			)
+				.append($("<div id='middle'/>" )
+					.append($("<input id='searchBox' type='text' placeholder='Search' required>" )
+						.on('change keyup paste input', function(e) {
+							if (this.value.length > 0) {
+								$( "#searchBoxCancelIcon" ).css( "visibility", "visible" );
+							} else {
+								$( "#searchBoxCancelIcon" ).css( "visibility", "hidden" );
+							}
+						})
+						.on("focus", function(){
+							_this.getPlayer().triggerHelper("onDisableKeyboardBinding");
+						})
+						.on("blur", function(){
+							_this.getPlayer().triggerHelper("onEnableKeyboardBinding");
+						}))
+			);
+
+
+			this.getMedialistHeaderComponent().append(searchFormWrapper);
+
+			function findMatches(q, cb) {
+				_this.getSearchData(q, function(strs){
+					var matches, substrRegex;
+
+					// an array that will be populated with substring matches
+					matches = [];
+
+					// regex used to determine if a string contains the substring `q`
+					substrRegex = new RegExp(escape(q), 'i');
+
+					// iterate through the pool of strings and for any string that
+					// contains the substring `q`, add it to the `matches` array
+					$.each(strs, function(i, str) {
+						if (substrRegex.test(str.data)) {
+							// the typeahead jQuery plugin expects suggestions to a
+							// JavaScript object, refer to typeahead docs for more info
+							matches.push({ value: str });
+						}
+					});
+
+					cb(matches);
+				});
+			};
+
+			var parseData = function(obj){
+				var startOfMatch = obj.value.data.toLowerCase().indexOf(_this.searchExpression.toLowerCase());
+				if (startOfMatch > -1) {
+					var expLen = _this.searchExpression.length;
+					var dataLen = obj.value.data.length;
+					var restOfExpLen = dataLen - (startOfMatch + expLen);
+					var hintLen = Math.floor( restOfExpLen * 0.2 );
+					return obj.value.data.substr( startOfMatch, expLen + hintLen );
+				} else {
+					return obj.value.data;
+				}
+			};
+
+			var typeahead = $('#searchBox').typeahead({
+					minLength: 3,
+					highlight: true
+				},
+				{
+					name: 'label',
+					displayKey: function(obj){
+						return parseData(obj);
+					},
+					templates:{
+						suggestion: function(obj){
+							return parseData(obj) + "..."
+						}
+					},
+					source: findMatches
+				} ).
+				on("typeahead:selected", function(e, obj, label){
+					var mediaBoxes = _this.getMediaListDomElements();
+					mediaBoxes.css("display", "none");
+					mediaBoxes.parent().find("[data-obj-id='" + obj.value.id + "']").css("display", "");
+				} ).
+				on("keyup", function(event){
+					if(event.keyCode == 13) {
+						typeahead.typeahead("close");
+					}
+				});
+
+		},
+		getSearchData: function(expression, callback){
+			this.searchExpression = expression;
+			if (expression.length == 3){
+				this.dataSet = null
+			}
+			if (expression.length > 3 && this.dataSet){
+				return callback(this.dataSet);
+			}
+
+			var _this = this;
+
+			var type = this.getConfig("cuePointType" )[0].main;
+			var subType = 1;//this.getConfig("cuePointType" )[0].sub.toString();
+
+			this.getKalturaClient().doRequest({
+					'service': 'cuepoint_cuepoint',
+					'action': 'list',
+					'filter:entryIdEqual': _this.embedPlayer.kentryid,
+					'filter:objectType': 'KalturaCuePointFilter',
+//					'filter:cuePointTypeIn': type,
+//					'filter:subTypeIn': subType,
+					'filter:freeText': expression + "*"
+
+				},
+				function (data) {
+					// Validate result
+					var results = [];
+					$.each(data.objects, function (index, res) {
+						if (!_this.isValidResult(res)) {
+							data[index] = null;
+						}
+
+						results.push(
+							{
+								id: res.id,
+								data: res.title
+							},{
+								id: res.id,
+								data: res.description
+							}
+						);
+					});
+
+					_this.dataSet = results;
+
+					if (callback) {
+						callback(results);
+					}
+				}
+			);
+		},
 		isValidResult: function (data) {
 			// Check if we got error
 			if (!data

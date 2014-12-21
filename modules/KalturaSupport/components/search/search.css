@@ -1,35 +1,56 @@
+@import url(http://fonts.googleapis.com/css?family=Lato);
 .search.medialistContainer{
-    display: inline-block;
-
     width: 100%;
     height: auto;
 }
+.twitter-typeahead{
+    width:100%;
+}
 .searchFormWrapper{
-    height: 28px;
-    margin-bottom: 10px;
+    border-top: black 1px solid;
+    border-left: black 1px solid;
+    border-right: black 1px solid;
+    /*display:table;*/
+    border-spacing:0;
+    width:100%;
+    height: 40px;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0px 0px 16px 0px rgba(0, 0, 0, 0.2);
 }
-.searchFormWrapper > form{
-    background: rgba(255, 255, 255, 0.7);
+.searchFormWrapper > div {
+    /*display:table-cell;*/
+    /*padding: 10px 6px;*/
+}
+.searchFormWrapper > div.searchIcon {
+    font-size: 16px;
+    width: 14px;
+    margin: 12px 6px;
+    z-index: 2;
+}
+#middle{
+    /*float:left;*/
+    position: absolute;
+    top:0;
+    /*left:28px;*/
+    /*right: 28px;*/
+    padding: 0 28px;
     width: 100%;
-    display: inline-block;
-    -webkit-transition: width 0.2s;
-    -moz-transition: width 0.2s;
-    -ms-transition: width 0.2s;
-    -o-transition: width 0.2s;
-    transition: width 0.2s;
 }
-#searchBox{
-    width: 85%;
+#searchBox, .tt-hint{
+    margin: 12px 6px;
+    width: 100%;
     border: none;
-    color: #333;
+    color: rgb(0, 0, 0);
     outline: none;
-    font: 14px Helvetica, Arial, sans-serif;
-    margin: 6px 6px;
+    font-family: "Lato", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
     padding: 0;
     background: rgba(255, 255, 255, 0);
 }
-input#searchBox:invalid {
+input#searchBox:invalid::-webkit-input-placeholder {
     box-shadow: none;
+    color: black;
 }
 /*Fix for > IE9 x mark in textbox*/
 input#searchBox::-ms-clear {
@@ -37,44 +58,81 @@ input#searchBox::-ms-clear {
     height: 0;
 }
 #searchBoxIcon{
-    font-size: 16px;
-    margin: 6px 2px;
+    color: rgb(0,0,0);
+    cursor: pointer;
+    width: 16px;
+    /*float: left;*/
     position: absolute;
-    color: rgba(0,0,0, 0.4);
+}
+#searchBoxCancelIcon{
+    visibility: hidden;
     cursor: pointer;
-}
-#searchBoxCancel{
-    width: 20%;
-    /*height: 100%;*/
-    float: right;
-    display: none;
-    margin-top: 6px;
-    text-align: center;
-    cursor: pointer;
-}
-/*JQuery UI customization*/
-.ui-autocomplete.ui-menu{
-    z-index: 3;
-    background-color: rgba(200, 200, 200, 0.9);
-    width: 90%;
-}
-.ui-menu-item{
-    color: #333;
-    font: 14px Helvetica, Arial, sans-serif;
-}
-.ui-menu .ui-menu-item a.ui-state-focus,
-.ui-menu .ui-menu-item a.ui-state-active {
-    margin: 0px;
-    background: rgba(230, 230, 230, 0.9);
-}
-/*Fix autocomplete UI bug causing layout to freakout and disappear*/
-.ui-helper-hidden-accessible{
-    left: -10000000px;
+    color: rgb(136, 136, 136);
+    background-color: rgb(238, 238, 238);
+    border-radius: 11px;
+    width: 16px;
+    /*float: right;*/
+    position: absolute;
+    right: 0px;
 }
 /*Search results*/
 .searchResultsBox{
 
 }
+.twitter-typeahead{
+    width: 100%;
+}
+.tt-dropdown-menu {
+    background-color: rgb(218, 218, 218);
+    width: 100%;
+    left: -28px !important;
+    /*margin-top: 12px;*/
+    /*padding: 8px 0;*/
+    /*background-color: #fff;*/
+    /*border: 1px solid #ccc;*/
+    /*border: 1px solid rgba(0, 0, 0, 0.2);*/
+    /*-webkit-border-radius: 8px;*/
+    /*-moz-border-radius: 8px;*/
+    /*border-radius: 8px;*/
+    /*-webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);*/
+    /*-moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);*/
+    /*box-shadow: 0 5px 10px rgba(0,0,0,.2);*/
+}
+.tt-hint {
+    font-size: 14px;
+    font-family: "Lato";
+    font-weight: 300;
+    color: rgb(136, 136, 136);
+    background-color: rgb(238, 238, 238);
+}
+.tt-suggestions {
+    width: 100%;
+    background-color: rgb(218, 218, 218);
+}
+.tt-suggestion {
+    display: block;
+    padding: 3px 20px;
+    clear: both;
+    font-family: "Lato";
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 1.714em;
+    color: #333;
+    white-space: nowrap;
+    /*line-height: 24px;*/
+     color: rgb(0, 0, 0);
+}
+.tt-suggestion.tt-cursor {
+    background-color: rgb(194, 194, 194);
+}
+.tt-suggestion p {
+    margin: 0;
+    overflow: hidden;
+    white-space: nowrap !important;
+    text-overflow: ellipsis;
+    font-weight: 700;
+}
+
 .k-chapters-container .searchResultsBox {
     background: rgba(240,240,240,.8);
     background: #eee\9;
