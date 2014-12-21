@@ -21,14 +21,11 @@
 			if ( mw.isMobileDevice() ){
 				return false;
 			}
-
 			this.bind('playerReady', function(){
-				// check if we have sources that can play with Native library: 
-				deferred.resolve( 
-					_this.embedPlayer.mediaElement.getNativePlayableSources().length
-					&&
-					document.createElement( "video" ).playbackRate
-				);
+				// check if we have sources that can play with Native library:
+				if (_this.embedPlayer.mediaElement.getNativePlayableSources().length > 0){
+					deferred.resolve(document.createElement( "video" ).playbackRate);
+				}
 			});
 			return deferred.promise();
 		},
