@@ -274,7 +274,10 @@
 			this.shouldAddScroll( );
 		},
 		setMedialistComponentHeight: function(){
-			var componentHeight = this.getComponent().height() - 1;
+			var componentHeight = this.getComponent().height();
+			if (mw.isIOS() && this.embedPlayer.plugins.controlBarContainer && this.embedPlayer.plugins.controlBarContainer.getConfig()['hover']){
+				componentHeight -= 1; // fix to FEC-2500
+			}
 			if (this.getConfig("onPage")){
 				componentHeight = this.getComponent().parent().height();
 			}
