@@ -403,7 +403,7 @@ class mwEmbedLoader {
 			'Kaltura.AllowIframeRemoteService' => $wgKalturaAllowIframeRemoteService,
 			'Kaltura.UseAppleAdaptive' => $wgKalturaUseAppleAdaptive,
 			'Kaltura.EnableEmbedUiConfJs' => $wgKalturaEnableEmbedUiConfJs,
-			'Kaltura.PageGoogleAalytics' => $wgKalturaGoogleAnalyticsUA,
+			'Kaltura.PageGoogleAnalytics' => $wgKalturaGoogleAnalyticsUA,
 			'Kaltura.APITimeout' => 10000
 		);
 		if( isset( $_GET['pskwidgetpath'] ) ){
