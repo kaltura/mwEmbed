@@ -1601,7 +1601,6 @@
 
 			// reset the current time, buffering and playhead position
 			this.resetPlaybackValues();
-
 			// Clear out any player error ( both via attr and object property ):
 			this.setError(null);
 

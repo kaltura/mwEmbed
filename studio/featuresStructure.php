@@ -141,6 +141,9 @@ return array(
             ),
 			"bumper" => "",
 			"vast" => "",
+			"skipBtn" => "",
+			"skipNotice" => "",
+			"noticeMessage" => "",
 			"doubleClick" => "",
 			"freeWheel" => ""
 		)

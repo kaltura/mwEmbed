@@ -206,14 +206,58 @@
 				$containerAd.remove();
 			}
 		},
+		parseAdTagUrlParts: function(embedPlayer, pluginName){
+			//Handle adTagUrl separately - using postProcessConfig on the entire ad tag breaks doubleclick functionality
+			var adTagUrl = embedPlayer.getRawKalturaConfig( pluginName, "adTagUrl" );
+			if ( adTagUrl ) {
+				try{
+					//Break url to base and query string.
+					var adTagUrlParts = adTagUrl.split( '?' );
+					var adTagBaseUrl = adTagUrlParts[0];
+					var queryStringParams = adTagUrlParts[1];
+					var evaluatedQueryStringParams = "";
+					if ( queryStringParams ) {
+						//Break query string to key-value
+						var queryStringParamsParts = queryStringParams.split( '&' );
+						for ( var i = 0; i < queryStringParamsParts.length; i++ ) {
+							//Break query string to key-value pair
+							var pair = queryStringParamsParts[i].split( '=' );
+							//Unescape and try to evaluate key and value
+							var evaluatedKey = embedPlayer.evaluate( unescape( pair[0] ) );
+							var evaluatedValue = embedPlayer.evaluate( unescape( pair[1] ) );
+							//Escape kvp and build evaluated query string param back. exclude cust_params.
+							if (evaluatedKey != 'cust_params'){
+								evaluatedQueryStringParams += escape( evaluatedKey ) + "=" + encodeURIComponent( evaluatedValue ) + "&";
+							}else{
+								this.cust_params = encodeURIComponent( evaluatedValue );
+							}
+						}
+						//Build entire adTagUrl back
+						evaluatedQueryStringParams = evaluatedQueryStringParams.substring(0, evaluatedQueryStringParams.length - 1);
+						this.adTagUrl =  adTagBaseUrl + "?" + evaluatedQueryStringParams ;
+					}
+				} catch (e) {
+					// in case of error - fallback for fully escaped and evaluated adTagUrl string
+					mw.log("failed to evaluate adTagUrl parts, using fully escaped/evaluated adTagUrl");
+					var adTagUrl = embedPlayer.getKalturaConfig(pluginName);
+					if ( adTagUrl ){
+						this.adTagUrl = adTagUrl; // escape adTagUrl to prevent Flash string parsing error
+						this.cust_params = "";
+					}
+				}
+			}
+		},
 		copyFlashvarsToKDP: function(embedPlayer, pluginName){
 			var flashVars = embedPlayer.getKalturaConfig(pluginName);
-			if ( flashVars['adTagUrl'] ){
-				flashVars['adTagUrl'] = escape(flashVars['adTagUrl']); // escape adTagUrl to prevent Flash string parsing error
-			}
 			if (flashVars['countdownText']) {
 				flashVars['countdownText'] = escape(flashVars['countdownText']); // escape countdownText to support & and ' characters
 			}
+
+			this.parseAdTagUrlParts(embedPlayer, pluginName);
+			//Escape adTagUrl to prevent flash string parsing error
+			flashVars['adTagUrl'] = escape(this.adTagUrl);
+			flashVars['cust_params'] = this.cust_params;
+
 			//we shouldn't send these params, they are unnecessary and break the flash object
 			var ignoredVars = ['path', 'customParams', 'preSequence', 'postSequence' ];
 			for ( var i=0; i< ignoredVars.length; i++ ) {
@@ -288,7 +332,7 @@
 					_this.restorePlayerCallback = callback;
 					// Request ads
 					mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
-					_this.requestAds( _this.getConfig( 'adTagUrl' ) );
+					_this.requestAds();
 				}
 			});
 
@@ -346,6 +390,66 @@
 					}
 				}
 			});
+		},
+
+		pauseAd: function (isLinear) {
+			var _this = this;
+			this.embedPlayer.paused = true;
+			var classes = "adCover";
+			if (mw.isIE8()){
+				classes += " adCoverIE8";
+			}
+			var adCover = $('<div class="' + classes + '"></div>').on('click', function(){
+				_this.embedPlayer.hideSpinnerOncePlaying();
+				_this.resumeAd(isLinear)
+			});
+			$(".adCover").remove();
+			if (this.isChromeless){
+				$(".videoDisplay").prepend(adCover);
+			}else{
+				$(this.getAdContainer()).append(adCover);
+			}
+			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
+
+			if (isLinear) {
+				this.embedPlayer.enablePlayControls(["scrubber"]);
+			} else {
+				_this.embedPlayer.pause();
+			}
+
+			if (_this.isChromeless) {
+				_this.embedPlayer.getPlayerElement().sendNotification("pauseAd");
+			} else {
+				this.adsManager.pause();
+			}
+		},
+
+		resumeAd: function (isLinear) {
+			var _this = this;
+			this.embedPlayer.paused = false;
+			$(".adCover").remove();
+			$(this.embedPlayer).trigger("onPlayerStateChange", ["play", this.embedPlayer.currentState]);
+			if (isLinear) {
+				this.embedPlayer.disablePlayControls();
+			} else {
+				_this.embedPlayer.play();
+			}
+
+			if (_this.isChromeless) {
+				_this.embedPlayer.getPlayerElement().sendNotification("resumeAd");
+			} else {
+				this.adsManager.resume();
+			}
+		},
+
+		toggleAdPlayback: function (isLinear) {
+			if (this.getConfig("pauseAdOnClick") !== false) {
+				if (this.embedPlayer.paused) {
+					this.resumeAd(isLinear);
+				} else {
+					this.pauseAd(isLinear);
+				}
+			}
 		},
 
 		pauseAd: function (isLinear) {
@@ -457,9 +561,15 @@
 		/**
 		 * Adds custom params to ad url.
 		 */
-		addCustomParams: function( adUrl ){
-			var postFix = this.getConfig( 'customParams' ) ?
-				'cust_params=' + encodeURIComponent( this.getConfig( 'customParams' ) ) : '';
+		addCustomParams: function( adUrl, cust_params ){
+			var postFix = "";
+			//Use cust_params if available on double click URL, otherwise opt in to use old customParams config if available
+			if( !cust_params ) {
+				postFix = (this.getConfig( 'customParams' )) ?
+					'cust_params=' + encodeURIComponent( this.getConfig( 'customParams' ) ) : '';
+			} else {
+				postFix = 'cust_params=' + cust_params;
+			}
 			if( postFix ){
 				var paramSeperator = adUrl.indexOf( '?' ) === -1 ? '?' :
 						adUrl[ adUrl.length -1 ] == '&' ? '': '&';
@@ -490,22 +600,34 @@
 			return adTagUrl;
 		},
 		// This function requests the ads.
-		requestAds: function( adTagUrl, adType ) {
+		requestAds: function( adType ) {
 			var _this = this;
+			this.parseAdTagUrlParts(this.embedPlayer, this.pluginName);
+			var adTagUrl = this.adTagUrl;
+			var cust_params = this.cust_params;
 			// Add any custom params:
-			adTagUrl = _this.addCustomParams( adTagUrl );
+			adTagUrl = _this.addCustomParams( adTagUrl, cust_params );
 
 			// Add any adRequest mappings:
 			adTagUrl = _this.addAdRequestParams( adTagUrl );
-
-			mw.log( "DoubleClick::requestAds: url: " + adTagUrl );
 
 			// Update the local lastRequestedAdTagUrl for debug and audits
 			_this.embedPlayer.setKDPAttribute( this.pluginName, 'requestedAdTagUrl', adTagUrl );
 
 			// Create ad request object.
 			var adsRequest = {};
-			adsRequest.adTagUrl = adTagUrl;
+			if (this.isChromeless) {
+				//If chromeless then send adTagUrl escaped and cust_params separately so it will be parsed correctly
+				// on the flash plugin
+				adTagUrl = _this.addAdRequestParams( this.adTagUrl );
+				adsRequest.adTagUrl = adTagUrl;
+				adsRequest.cust_params = cust_params;
+			} else {
+				adsRequest.adTagUrl = adTagUrl;
+			}
+
+			mw.log( "DoubleClick::requestAds: url: " + adTagUrl );
+
 			if( adType ){
 				adsRequest['adType'] = adType;
 			}
@@ -1223,16 +1345,18 @@
 		},
 		destroy:function(){
 			// remove any old bindings:
+			var _this = this;
 			this.embedPlayer.unbindHelper( this.bindPostfix );
 			if (!this.isChromeless){
 				if ( this.playingLinearAd ) {
 					this.restorePlayer(true);
 				}
-				this.removeAdContainer();
-				if ( this.adsLoader ) {
-					this.adsLoader.destroy();
-				}
-
+				setTimeout(function(){
+					_this.removeAdContainer();
+					if ( _this.adsLoader ) {
+						_this.adsLoader.destroy();
+					}
+				},100);
 			}else{
 				if ( !this.isLinear ){
 					this.embedPlayer.getPlayerElement().sendNotification( 'destroy' );

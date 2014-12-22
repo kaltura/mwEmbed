@@ -150,6 +150,15 @@
 						.animate( layout, 'fast' );
 				}
 			});
+
+			this.bind("AdSupport_StartAdPlayback", function(){
+				_this.setConfig('displayCaptions', false);
+				_this.hideCaptions();
+			});
+			this.bind("AdSupport_EndAdPlayback", function(){
+				_this.setConfig('displayCaptions', true);
+				_this.showCaptions();
+			});
 		},
 		updateTextSize: function(){
 			// Check if we are in fullscreen or not, if so add an additional bottom offset of
@@ -293,10 +302,14 @@
 			if ( multiRequest.length ) {
 				this.getKalturaClient().doRequest( multiRequest, function( result ) {
 					var captionsURLs = {};
-					// Store captions URLs in array
-					$.each( result, function( idx, captionUrl ) {
-						captionsURLs[ captionIds[ idx ] ] = captionUrl;
-					} );
+					if( typeof result == 'string'){
+						captionsURLs[ captionIds[ 0 ] ] = result;
+					} else {
+						// Store captions URLs in array
+						$.each( result, function( idx, captionUrl ) {
+							captionsURLs[ captionIds[ idx ] ] = captionUrl;
+						} );
+					}
 					// Store caption URLs locally
 					_this.captionURLs = captionsURLs;
 					// Done adding source issue callback

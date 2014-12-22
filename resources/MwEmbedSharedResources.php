@@ -438,6 +438,11 @@ return array(
         'scripts' => 'resources/touchSwipe/jquery.touchSwipe.min.js',
         'dependencies' => 'jquery'
     ),
+    'nanoScroller' => array(
+        'scripts' => 'resources/nanoScroller/nanoScroller.min.js',
+        'styles' => 'resources/nanoScroller/nanoScroller.css',
+        'dependencies' => 'jquery'
+    ),
 	/*'mediawiki.language.parser' => new MwEmbedResourceLoaderFileModule( array(
 		'scripts' => 'resources/mediawiki.language/mediawiki.language.parser.js',
 		'dependencies' => array( 'mediawiki.language', 'mediawiki.util' ),

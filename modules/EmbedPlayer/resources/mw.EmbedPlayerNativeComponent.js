@@ -156,12 +156,12 @@
 			_this.hideSpinner();
 			if ($.isFunction(switchCallback)) {
 				switchCallback(vid);
-			}
-
-			if ($.isFunction(switchCallback)) {
-				setTimeout(function () {
-					vid.play();
-				}, 100);
+				var isPlayingAdsContext = this.adsOnReplay || !(this.adTimeline.displayedSlotCount > 0);
+				if ( isPlayingAdsContext || this.loop ){
+					setTimeout(function () {
+						vid.play();
+					}, 100);
+				}
 			}
 
 
@@ -242,13 +242,12 @@
 		/**
 		 * Stop the player ( end all listeners )
 		 */
-		stop: function () {
-			mw.log("EmbedPlayerNativeComponent:: stop::");
-			this.parent_stop();
-			if (this.getPlayerElement() && this.getPlayerElement().attr('currentTime')) {
-				this.getPlayerElement().attr('currentTime', '0');
-				this.getPlayerElement().stop();
+		stop: function(){
+			var _this = this;
+			if( this.playerElement && this.playerElement.currentTime){
+				this.playerElement.pause();
 			}
+			this.parent_stop();
 		},
 
 		/**
@@ -316,7 +315,8 @@
 			mw.log("EmbedPlayerNativeComponent:: OnPlay::");
 
 			$(this).trigger("playing");
-
+			this.removePoster();
+			
 			if (this.paused && this.parent_play()) {
 				this.monitor();
 			}
@@ -408,6 +408,7 @@
 		 * Local onClip done function for native player.
 		 */
 		onClipDone: function () {
+			mw.log('EmbedPlayer:native: oneClipDone:');
 			this.parent_onClipDone();
 		},
 

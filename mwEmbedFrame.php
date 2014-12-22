@@ -58,7 +58,7 @@ class mwEmbedFrame {
 	);
 	var $playerIframeId = 'iframeVid';
 	var $debug = false;
-				var $theme = 'kdark';
+	var $theme = 'kdark';
 				
 	
 	// When used in direct source mode the source asset.

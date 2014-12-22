@@ -594,7 +594,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		var touchStartPos, touchEndPos = null;
 		$( _this.embedPlayer ).bind( 'touchstart' + this.bindPostfix, function(e) {
 			e.preventDefault();
-			e.stopPropagation();
 			touchStartPos = e.originalEvent.touches[0].pageY; //starting point
 		})
 		.bind( 'touchend' + this.bindPostfix, function(e) {
@@ -1210,6 +1209,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	*   style CSS object
 	*/
 	displayAlert: function( alertObj ) {
+		debugger;
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		var callback;
@@ -1217,53 +1217,73 @@ mw.PlayerLayoutBuilder.prototype = {
 		// Check if callback is external or internal (Internal by default)
 
 		// Check if overlay window is already present:
-		if ( embedPlayer.getInterface().find( '.overlay-win' ).length != 0 ) {
+		if ( embedPlayer.getInterface().find('.overlay-win').length != 0 ) {
 			return;
 		}
-		if( typeof alertObj.callbackFunction == 'string' ) {
-		if ( alertObj.isExternal ) {
-			try{
-				callback = window.parent[ alertObj.callbackFunction ];
-			} catch ( e ){
-				// could not call parent method
+		if ( typeof alertObj.callbackFunction == 'string' ) {
+			if ( alertObj.isExternal ) {
+				try {
+					callback = window.parent[ alertObj.callbackFunction ];
+				} catch ( e ) {
+					// could not call parent method
 				}
 			} else {
 				callback = window[ alertObj.callbackFunction ];
 			}
-		} else if( typeof alertObj.callbackFunction == 'function' ) {
+		} else if ( typeof alertObj.callbackFunction == 'function' ) {
 			// Make life easier for internal usage of the listener mapping by supporting
 			// passing a callback by function ref
 			callback = alertObj.callbackFunction;
 		} else {
 			// don't throw an error; display alert callback is optional
 			// mw.log( "PlayerLayoutBuilder :: displayAlert :: Error: bad callback type" );
-			callback = function() {};
+			callback = function () {};
 		}
 
 		var $container = $( '<div />' ).addClass( 'alert-container' );
 		var $title = $( '<div />' ).text( alertObj.title ).addClass( 'alert-title alert-text' );
-		if ( alertObj.props && alertObj.props.titleTextColor ) {
-			$title.removeClass( 'alert-text' );
-			$title.css( 'color', mw.getHexColor( alertObj.props.titleTextColor ) );
-		}
+		var $buttonsContainer = $( '<div />' ).addClass( 'alert-buttons-container' );
 		var $message = $( '<div />' ).html( alertObj.message ).addClass( 'alert-message alert-text' );
 		if ( alertObj.isError ) {
 			$message.addClass( 'error' );
 		}
-		if ( alertObj.props && alertObj.props.textColor ) {
-			$message.removeClass( 'alert-text' );
-			$message.css( 'color', mw.getHexColor( alertObj.props.textColor ) );
+		
+		if ( alertObj.props ) {
+
+			if ( alertObj.props.customAlertContainerCssClass ) {
+				$container.removeClass( 'alert-container' );
+				$container.addClass( alertObj.props.customAlertContainerCssClass );
+			}
+
+			if ( alertObj.props.customAlertTitleCssClass ) {
+				$title.removeClass( 'alert-text alert-title' );
+				$title.addClass( alertObj.props.customAlertTitleCssClass );
+			}
+			if ( alertObj.props.titleTextColor ) {
+				$title.removeClass('alert-text');
+				$title.css('color', mw.getHexColor( alertObj.props.titleTextColor ) );
+			}
+
+			if ( alertObj.props.customAlertMessageCssClass ){
+				$message.removeClass( 'alert-text alert-message' );
+				$message.addClass( alertObj.props.customAlertMessageCssClass );
+			}
+			if ( alertObj.props.textColor ) {
+				$message.removeClass( 'alert-text' );
+				$message.css( 'color', mw.getHexColor(alertObj.props.textColor ) );
+			}
+
+			if ( alertObj.props.buttonRowSpacing ) {
+				$buttonsContainer.css( 'margin-top', alertObj.props.buttonRowSpacing );
+			}
 		}
-		var $buttonsContainer = $( '<div />' ).addClass( 'alert-buttons-container' );
-		if ( alertObj.props && alertObj.props.buttonRowSpacing ) {
-			$buttonsContainer.css( 'margin-top', alertObj.props.buttonRowSpacing );
-		}
+
 		var $buttonSet = alertObj.buttons || [];
 
 		// If no button was passed display just OK button
 		var buttonsNum = $buttonSet.length;
 		if ( buttonsNum == 0 && !alertObj.noButtons ) {
-			$buttonSet = ["OK"];
+			$buttonSet = [ "OK" ];
 			buttonsNum++;
 		}
 
@@ -1271,7 +1291,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			$container.addClass( 'alert-container-with-buttons' );
 		}
 
-		$.each( $buttonSet, function(i) {
+		$.each( $buttonSet, function( i ) {
 			var label = this.toString();
 			var $currentButton = $( '<button />' )
 			.addClass( 'alert-button' )
@@ -1280,14 +1300,17 @@ mw.PlayerLayoutBuilder.prototype = {
 					callback( eventObject );
 					_this.closeAlert( alertObj.keepOverlay );
 				} );
-			if ( alertObj.props && alertObj.props.buttonHeight ) {
-				$currentButton.css( 'height', alertObj.props.buttonHeight );
-			}
-			// Apply buttons spacing only when more than one is present
-			if (buttonsNum > 1) {
-				if (i < buttonsNum-1) {
-					if ( alertObj.props && alertObj.props.buttonSpacing ) {
-						$currentButton.css( 'margin-right', alertObj.props.buttonSpacing );
+
+			if ( alertObj.props) {
+				if ( alertObj.props.buttonHeight ) {
+					$currentButton.css( 'height', alertObj.props.buttonHeight );
+				}
+				// Apply buttons spacing only when more than one is present
+				if (buttonsNum > 1) {
+					if (i < buttonsNum - 1) {
+						if ( alertObj.props.buttonSpacing ) {
+							$currentButton.css('margin-right', alertObj.props.buttonSpacing);
+						}
 					}
 				}
 			}

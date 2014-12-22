@@ -62,9 +62,9 @@
 				this.removeScreen();
 			}, this));
 
-			this.bind('onChangeMedia', $.proxy(function () {
-				this.hideScreen();
-			}, this));
+            this.bind('onChangeMedia', $.proxy(function () {
+                this.hideScreen();
+            }, this));
 		},
 
 		removeScreen: function () {

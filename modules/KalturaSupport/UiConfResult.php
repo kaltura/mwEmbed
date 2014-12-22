@@ -59,7 +59,7 @@ class UiConfResult {
 		// Get confFilePath flashvar
 		$confFilePath = $this->request->getFlashvars('confFilePath');
 
-		$jsonConfig =$this->request->get('jsonConfig');
+		$jsonConfig =$this->request->getFlashvars('jsonConfig');
 
 		// If no uiconf_id .. throw exception
 		if( !$this->request->getUiConfId() && !$confFilePath && !$jsonConfig ) {
@@ -70,7 +70,8 @@ class UiConfResult {
 		if( $confFilePath ) {
 			$this->loadFromLocalFile( $confFilePath );
 		} else  if ($jsonConfig){
-			$this->uiConfFile = stripslashes( html_entity_decode($jsonConfig));
+			// convert to string 
+			$this->uiConfFile = json_encode( $jsonConfig );
 		} else {
 			// Check if we have a cached result object:
 			$cacheKey = $this->getCacheKey();
@@ -211,8 +212,8 @@ class UiConfResult {
 			'keyboardShortcuts' => array(),
 			'liveCore' => array(),
 			'liveStatus' => array(),
-			'liveBackBtn' => array(),
 			'reportError' => array(),
+			"sideBarContainer" => array(),
 			"liveAnalytics"=>array()
 		);
 
@@ -317,8 +318,7 @@ class UiConfResult {
 			// http://html5video.org/wiki/Kaltura_HTML5_Configuration
 			if( $pluginId == 'Kaltura' || 
 				$pluginId == 'EmbedPlayer' || 
-				$pluginId == 'KalturaSupport' || 
-				$pluginId == 'mediaProxy'
+				$pluginId == 'KalturaSupport'
 			){
 				continue;
 			}
@@ -355,9 +355,9 @@ class UiConfResult {
 		$flashVars = $this->request->getFlashVars();
 		if( $flashVars ) {
 			foreach( $flashVars as $fvKey => $fvValue) {
-				$fvSet = @json_decode( stripslashes( html_entity_decode( $fvValue ) ) ) ;
+				$fvSet = @json_decode( $fvValue ) ;
 				// check for json flavar and set acordingly
-				if( is_object( $fvSet ) ){
+				if( is_object( $fvSet ) || is_array( $fvSet ) ){
 					foreach( $fvSet as $subKey => $subValue ){
 						$vars[ $fvKey . '.' . $subKey ] =  $this->utility->formatString( $subValue );
 					}
@@ -384,8 +384,7 @@ class UiConfResult {
 			$pluginAttribute = $pluginKeys[1];
 			 if( $pluginId == 'Kaltura' ||
 					$pluginId == 'EmbedPlayer' ||
-					$pluginId == 'KalturaSupport' ||
-					$pluginId == 'mediaProxy'
+					$pluginId == 'KalturaSupport'
 					){
 						continue;
 					}
@@ -428,7 +427,7 @@ class UiConfResult {
 			$plugins = array();
 			$vars = array();
 
-			$uiConfPluginNodes = array( 'mediaProxy', 'strings' );
+			$uiConfPluginNodes = array( 'strings' );
 
 			// Get all plugins elements
 			if( $this->uiConfFile ) {
@@ -531,6 +530,7 @@ class UiConfResult {
 		$plugins = array(
 			"topBarContainer" => array(),
 			"controlBarContainer" => array(),
+			"sideBarContainer" => array(),
 			"scrubber" => array(),
 			"largePlayBtn" => array(),
 			"playHead" => array(),
@@ -541,7 +541,6 @@ class UiConfResult {
 			"keyboardShortcuts" => array(),
 			"liveCore" => array(),
 			"liveStatus" => array(),
-			"liveBackBtn" => array(),
 			"reportError" => array()
 		);
 
@@ -801,9 +800,10 @@ class UiConfResult {
 		if( $this->request->getEntryId() ) {
 			$addtionalData['entryId'] = $this->request->getEntryId();
 		}
-		// Add KS to uiVars
-		$this->playerConfig['vars']['ks'] = $this->client->getKS();
-
+		// Add KS to uiVars only if part of request: 
+		if( $this->request->hasKS() ){
+			$this->playerConfig['vars']['ks'] = $this->client->getKS();
+		}
 		return array_merge($addtionalData, $this->playerConfig);
 	}
 	// Check if the requested url is a playlist
