@@ -162,7 +162,10 @@
 						mw.log( "Error: "+ this.pluginName +" could not access parent iframe" );
 					}
 				} else {
-					this.$mediaListContainer = $( ".playlistInterface" );
+					this.$mediaListContainer = $( ".playlistInterface");
+					if (mw.isIOS()){
+						this.$mediaListContainer.height(this.embedPlayer.height);
+					}
 					// resize the video to make place for the playlist according to its position (left, top, right, bottom)
 					if ( this.getConfig( 'containerPosition' ) == 'right' || this.getConfig( 'containerPosition' ) == 'left' ) {
 						$( ".videoHolder, .mwPlayerContainer" ).css( "width", this.$mediaListContainer.width() - this.getConfig( "mediaItemWidth" ) + "px" );
@@ -176,7 +179,11 @@
 						var playlistHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * 2 : this.getConfig( "mediaItemHeight" ) + this.getConfig('horizontalHeaderHeight');
 						this.getComponent().height(playlistHeight);
 						$( ".mwPlayerContainer" ).css( "height", this.$mediaListContainer.height() - playlistHeight + "px" );
-						this.getPlayer().getVideoHolder().css( "height", this.$mediaListContainer.height() - playlistHeight - $( ".controlBarContainer" ).height() + "px" );
+						var controlBarHeight = $( ".controlBarContainer" ).height();
+						if (this.embedPlayer.plugins.controlBarContainer && this.embedPlayer.plugins.controlBarContainer.getConfig()['hover']){
+							controlBarHeight = 0;
+						}
+						this.getPlayer().getVideoHolder().css( "height", this.$mediaListContainer.height() - playlistHeight - controlBarHeight + "px" );
 					}
 				}
 			}
@@ -275,19 +282,14 @@
 		},
 		setMedialistComponentHeight: function(){
 			var componentHeight = this.getComponent().height();
-			if (mw.isIOS() && this.embedPlayer.plugins.controlBarContainer && this.embedPlayer.plugins.controlBarContainer.getConfig()['hover']){
-				componentHeight -= 1; // fix to FEC-2500
-			}
 			if (this.getConfig("onPage")){
 				componentHeight = this.getComponent().parent().height();
 			}
 			if (this.getLayout() === "vertical" && (this.getConfig("containerPosition") === "top" || this.getConfig("containerPosition") === "bottom")){
 				this.getMedialistComponent().height(componentHeight);
 			}else{
-
-				this.getMedialistComponent().height(componentHeight - this.getMedialistHeaderComponent().height());
+				this.getMedialistComponent().height(componentHeight - this.getConfig('horizontalHeaderHeight'));
 			}
-
 		},
 		setMediaBoxesDimensions: function(){
 			var height = this.getMedialistComponent().height();
