@@ -1326,6 +1326,13 @@ mw.KAdPlayer.prototype = {
 
 			//add the vpaid frindly iframe
 			var onVPAIDLoad = function () {
+				if (_this.embedPlayer.muted){
+					if ( !isJs && typeof VPAIDObj.playerElement.sendNotification === "function" ) {
+						VPAIDObj.playerElement.sendNotification( 'changeVolume', 0 ); // mute Flash ad
+					}else{
+						$( _this.embedPlayer ).trigger( 'volumeChanged',0); // mute HTML5 ad
+					}
+				}
 				var finishPlaying = function () {
 					if ( isJs ) {
 						_this.embedPlayer.getInterface().find( '.mwEmbedPlayer' ).show();
