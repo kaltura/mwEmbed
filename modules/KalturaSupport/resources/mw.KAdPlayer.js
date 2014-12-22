@@ -934,7 +934,7 @@ mw.KAdPlayer.prototype = {
 			.click(function(){
 				sendBeacon("close");
 				$( this ).parent().fadeOut('fast');
-				return true;
+				return false;
 			})
 		);
 
