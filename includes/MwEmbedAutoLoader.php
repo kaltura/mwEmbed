@@ -25,8 +25,6 @@ $wgAutoloadLocalClasses = array(
 	'CSSMin' => 'includes/libs/CSSMin.php',
 	'JavaScriptDistiller' => 'includes/libs/JavaScriptDistiller.php',
 	'JavaScriptMinifier' => 'includes/libs/JavaScriptMinifier.php',
-	'JavaScriptCompress' => 'includes/libs/JavaScriptCompress.php',
-	'JavaScriptNodeUglifyJs' => 'includes/libs/JavaScriptNodeUglifyJs.php',
 
 	# MwEmbed files ( that get autoloaded ):
 	'MwEmbedResourceLoaderContext' => 'includes/MwEmbedResourceLoaderContext.php',

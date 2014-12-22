@@ -60,7 +60,7 @@ class mweApiUiConfJs {
 		if( is_file( $loaderCacheFile ) && $this->lastFileModTime < $cacheModTime ){
 			echo file_get_contents( $loaderCacheFile );
 		} else {
-			$jsMinContent = JavaScriptCompress::minify( $jsContent, $wgResourceLoaderMinifierStatementsOnOwnLine );
+			$jsMinContent = JavaScriptMinifier::minify( $jsContent, $wgResourceLoaderMinifierStatementsOnOwnLine );
 			if( !@file_put_contents( $loaderCacheFile, $jsMinContent ) ){
 				echo "if( console ){ console.log('Error in creating loader cache: ". $wgScriptCacheDirectory . "'); }";
 			}

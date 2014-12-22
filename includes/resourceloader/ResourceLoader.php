@@ -156,7 +156,7 @@ class ResourceLoader {
 		try {
 			switch ( $filter ) {
 				case 'minify-js':
-					$result = JavaScriptCompress::minify( $data );
+					$result = JavaScriptMinifier::minify( $data );
 					$result .= "\n\n/* cache key: $key */\n";
 					break;
 				case 'minify-css':
