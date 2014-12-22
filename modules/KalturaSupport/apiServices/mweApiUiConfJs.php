@@ -43,6 +43,8 @@ class mweApiUiConfJs {
 	}
 	function outputMinfiedCached( $jsContent ){
 		global $wgScriptCacheDirectory, $wgMwEmbedVersion, $wgBaseMwEmbedPath, $wgResourceLoaderMinifierStatementsOnOwnLine;
+		// Get the JSmin class:
+		require_once( $wgBaseMwEmbedPath . '/includes/libs/JavaScriptMinifier.php' );
 		
 		// Create cache directory if not exists
 		if( ! file_exists( $wgScriptCacheDirectory ) ) {

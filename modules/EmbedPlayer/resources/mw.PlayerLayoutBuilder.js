@@ -1209,7 +1209,6 @@ mw.PlayerLayoutBuilder.prototype = {
 	*   style CSS object
 	*/
 	displayAlert: function( alertObj ) {
-		debugger;
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		var callback;

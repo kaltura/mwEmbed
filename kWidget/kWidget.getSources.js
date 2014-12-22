@@ -38,13 +38,9 @@ if( ! window.kWidget ){
 			} else {
 				serviceUrl = 'http://cdnbakmi.kaltura.com';
 			}
-			// check for alternate data mapping ( result with only two objects ) 
-			if( result.length == 2 ){
-				result.unshift([]);
-			}
 			var baseUrl = serviceUrl + '/p/' + settings.partnerId +
 					'/sp/' + settings.partnerId + '00/playManifest';
-			
+
 			for( var i in result[0]['flavorAssets'] ){
 				var asset = result[0]['flavorAssets'][i];
 				// Continue if clip is not ready (2)

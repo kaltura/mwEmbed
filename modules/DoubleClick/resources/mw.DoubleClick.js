@@ -452,51 +452,6 @@
 			}
 		},
 
-		pauseAd: function (isLinear) {
-			var _this = this;
-			this.embedPlayer.paused = true;
-			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
-
-			if (isLinear) {
-				this.embedPlayer.enablePlayControls(["scrubber"]);
-			} else {
-				_this.embedPlayer.pause();
-			}
-
-			if (_this.isChromeless) {
-				_this.embedPlayer.getPlayerElement().sendNotification("pauseAd");
-			} else {
-				this.adsManager.pause();
-			}
-		},
-
-		resumeAd: function (isLinear) {
-			var _this = this;
-			this.embedPlayer.paused = false;
-			$(this.embedPlayer).trigger("onPlayerStateChange", ["play", this.embedPlayer.currentState]);
-			if (isLinear) {
-				this.embedPlayer.disablePlayControls();
-			} else {
-				_this.embedPlayer.play();
-			}
-
-			if (_this.isChromeless) {
-				_this.embedPlayer.getPlayerElement().sendNotification("resumeAd");
-			} else {
-				this.adsManager.resume();
-			}
-		},
-
-		toggleAdPlayback: function (isLinear) {
-			if (this.getConfig("pauseAdOnClick") !== false) {
-				if (this.embedPlayer.paused) {
-					this.resumeAd(isLinear);
-				} else {
-					this.pauseAd(isLinear);
-				}
-			}
-		},
-
 		/**
 		 * Get the content video tag
 		 */
