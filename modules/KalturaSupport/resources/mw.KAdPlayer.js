@@ -108,7 +108,7 @@ mw.KAdPlayer.prototype = {
 
 		// if it's overlay player controls should not be disabled
 		if( adSlot.type !== 'overlay' ) {
-			var components = ['fullScreenBtn','logo'];
+			var components = ['fullScreenBtn','logo','volumeControl'];
 			if (mw.getConfig('enableControlsDuringAd')) {
 				components.push('playPauseBtn');
 			}
@@ -542,7 +542,7 @@ mw.KAdPlayer.prototype = {
 		}
 	}   ,
 	disablePlayControls: function(){
-		var components = ['fullScreenBtn','logo'];
+		var components = ['fullScreenBtn','logo','volumeControl'];
 		if (mw.getConfig('enableControlsDuringAd')) {
 			components.push('playPauseBtn');
 		}
