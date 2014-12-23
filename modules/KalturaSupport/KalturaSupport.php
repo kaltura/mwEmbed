@@ -82,13 +82,6 @@
 		'hammer' => array(
 			'scripts' => 'components/hammerEvents/hammer.min.js',
 		),
-		"search" => array(
-			'scripts' => "components/search/search.js",
-			'styles' =>  "components/search/search.css",
-			'templates' => "components/search/search.tmpl.html",
-			'dependencies' => array( 'mw.KBaseMediaList', 'typeahead' ),
-			'kalturaPluginName' => 'search'
-		),
 		"chapters" => array(
 			'scripts' => "components/chapters/chapters.js",
 			'styles' =>  "components/chapters/chapters.css",
