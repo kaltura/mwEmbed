@@ -35,15 +35,40 @@ mw.PluginManager.add( 'cornellShare', mw.KBaseScreen.extend({
             default:
                 shareURL = this.getConfig("socialShareURL");
         }
-        debugger;
-        if( shareURL ) {
-            //Add Cornell Logic
+
+        this.setConfig('shareURL', embedUrl);
+
+        var embedUrl = 'https://cdnapisec.kaltura.com/p/' +
+            this.getPlayer().partner_id + '/sp/' +  this.getPlayer().partner_id + '00/embedIframeJs/uiconf_id/' + this.getPlayer().uiconf_id + '/partner_id/' + this.getPlayer().partner_id + '?iframeembed=true&entry_id=' +
+            this.getPlayer().entry_id + ' width="560" height="395" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0" style="width: 560px; height: 395px;"';
+
+        //TODO: Pending server fix for widget service
+//        this.getKalturaClient().doRequest( {
+//            'service' : 'widget',
+//            'action' : 'add',
+//            'widget:sourceWidgetId' : '_' + this.getPlayer().partner_id,
+//            'widget:entryId' : this.getPlayer().kentryid,
+//            'widget:uiConfId' : this.getPlayer().uiconf_id,
+//            'widget:securityType': 1, //Set security to none
+//            'widget:addEmbedHtml5Support': 1 //Set support for html5
+//        }, function( data ) {
+//            mw.log( "mw.share plugin: get widget: " + data.totalCount, data.objects );
+//            debugger;
+//
+//            if( data.objects.length ){
+//                embedUrl = ""; //Put the new embed code as the embed URL
+////                _this.( data.objects, callback );
+//            }
+//        });
+
+        if( embedUrl ) {
+            //Add metadata Logic
             var landingPage = this.getPlayer().kalturaEntryMetaData[ this.getConfig('metadataKey') ];
             if(typeof landingPage !== 'undefined') {
-                shareURL += landingPage;
+                embedUrl += landingPage;
             }
-            this.setConfig('shareURL', shareURL);
-            this.setupPlayerEmbedCode(shareURL);
+//            this.setConfig('shareURL', embedUrl);
+            this.setupPlayerEmbedCode(embedUrl);
         }
     },
 	addBindings: function() {
@@ -130,3 +155,8 @@ mw.PluginManager.add( 'cornellShare', mw.KBaseScreen.extend({
 }));
 
 } )( window.mw, window.jQuery );
+
+
+
+http://www.cornell.edu/video/mysterious-magic-island-appears-on-saturn-moon
+<iframe src='http://www.cornell.edu/video/mysterious-magic-island-appears-on-saturn-moon/embed' width='560' height='315' frameborder='0'></iframe>
