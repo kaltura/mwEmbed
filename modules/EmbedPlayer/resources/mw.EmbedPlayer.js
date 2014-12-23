@@ -1088,7 +1088,7 @@
 				$(this).trigger('ended');
 				mw.log("EmbedPlayer::onClipDone:Trigged ended, continue? " + this.onDoneInterfaceFlag);
 
-				if (!this.onDoneInterfaceFlag) {
+				if (!this.onDoneInterfaceFlag || this.isInSequence()) {
 					// Restore events if we are not running the interface done actions
 					this.restoreEventPropagation();
 					return;
