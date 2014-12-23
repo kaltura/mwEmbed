@@ -1,5 +1,4 @@
 <?php
-require_once( realpath( dirname( __FILE__ ) ) . '/../../ChromePhp.php' );
 /**
  * Description of KalturaResultEntry
  *
