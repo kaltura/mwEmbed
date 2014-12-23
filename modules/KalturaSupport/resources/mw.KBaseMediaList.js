@@ -179,10 +179,10 @@
 						var playlistHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * 2 : this.getConfig( "mediaItemHeight" ) + this.getConfig('horizontalHeaderHeight');
 						this.getComponent().height(playlistHeight);
 						$( ".mwPlayerContainer" ).css( "height", this.$mediaListContainer.height() - playlistHeight + "px" );
-						var controlBarHeight = $( ".controlBarContainer" ).height();
-						if (this.embedPlayer.plugins.controlBarContainer && this.embedPlayer.plugins.controlBarContainer.getConfig()['hover']){
-							controlBarHeight = 0;
-						}
+						var controlBarHeight = 0;
+						$('.block').each(function() {
+							controlBarHeight += $( this ).outerHeight( true ); // add height of each components container that is not hovering
+						});
 						this.getPlayer().getVideoHolder().css( "height", this.$mediaListContainer.height() - playlistHeight - controlBarHeight + "px" );
 					}
 				}
