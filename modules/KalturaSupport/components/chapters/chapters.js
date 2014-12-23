@@ -29,13 +29,16 @@
 			'includeMediaItemDuration': true,
 			'onPage': false,
 			'includeHeader': true,
+			'enableSearch': true,
 			'cssFileName': 'modules/KalturaSupport/components/chapters/chapters.css',
 			'minDisplayWidth': 0,
 			'minDisplayHeight': 0
 		},
 
-		mediaList: [],
-		renderOnData: false,
+		mediaList: [], //Hold the medialist items
+		cache: [], //Hold the search data cache
+		dataSet: null, //Hold current dataset returnd from API
+		renderOnData: false, //Indicate if to wait for data before rendering layout
 		freezeTimeIndicators: false,
 
 		setup: function (embedPlayer) {
@@ -257,132 +260,169 @@
 			}
 			return time;
 		},
-
-		dataSet: null,
-		searchExpression: "",
-
 		renderSearchBar: function(){
-			var _this = this;
+			if (this.getConfig('enableSearch')) {
+				var _this = this;
+				// Clear search bar before adding
+				this.getMedialistHeaderComponent().empty();
+				// Build the search element
+				var searchFormWrapper = $( "<div/>", {"class": "searchFormWrapper"} )
+					//Magnifying glass icon
+					.append( $( "<div/>", {"class": "searchIcon icon-magnifyGlass", id: 'searchBoxIcon'} ) )
+					//clear icon
+					.append( $( "<div/>", {"class": "searchIcon icon-clear", id: 'searchBoxCancelIcon'} )
+						.on( "click touchend", function () {
+							$( "#searchBox" ).val( "" ).focus();
+							$( '#searchBox' ).typeahead( "val", "" ).typeahead( "close" );
+							$( "#searchBoxCancelIcon" ).css( "visibility", "hidden" );
+							$( "#searchBoxIcon" ).removeClass("active");
+							_this.resetSearchResults();
+						} )
+				)
+					//Search input box
+					.append( $( "<div/>", {"id": "searchBoxWrapper"} )
+						.append( $( "<input/>", {id: 'searchBox', type: 'text', placeholder: 'Search', required: true} )
+							.on( 'change keyup paste input', function ( e ) {
+								switch ( this.value.length ) {
+									case 0:
+										$( "#searchBoxCancelIcon" ).css( "visibility", "hidden" );
+										$( "#searchBoxIcon" ).removeClass("active");
+										_this.resetSearchResults();
+										break;
+									case 1:
+									case 2:
+										$( "#searchBoxCancelIcon" ).css( "visibility", "visible" );
+										$( "#searchBoxIcon" ).addClass("active");
+										_this.resetSearchResults();
+										break;
+									default:
+										$( "#searchBoxCancelIcon" ).css( "visibility", "visible" );
+										$( "#searchBoxIcon" ).addClass("active");
+								}
+							} )
+							.on( "focus", function () {
+								_this.getPlayer().triggerHelper( "onDisableKeyboardBinding" );
+							} )
+							.on( "blur", function () {
+								_this.getPlayer().triggerHelper( "onEnableKeyboardBinding" );
+							} )
+					)
+				);
 
-			var searchFormWrapper = $("<div/>", {"class": "searchFormWrapper"} )
-				.append($("<div id='searchBoxIcon' class='searchIcon icon-magnifyGlass'>"))
+				// Add the searchbar to the medialist header
+				this.getMedialistHeaderComponent().append( searchFormWrapper );
 
-				.append($("<div id='searchBoxCancelIcon' class='searchIcon icon-clear'>")
-					.on("click touchend", function(){
-						$("#searchBox" ).val("" ).focus();
-						$('#searchBox').typeahead("val", "").typeahead("close");
-						$( "#searchBoxCancelIcon" ).css( "visibility", "hidden" );
-					})
-			)
-				.append($("<div id='middle'/>" )
-					.append($("<input id='searchBox' type='text' placeholder='Search' required>" )
-						.on('change keyup paste input', function(e) {
-							if (this.value.length > 0) {
-								$( "#searchBoxCancelIcon" ).css( "visibility", "visible" );
-							} else {
-								$( "#searchBoxCancelIcon" ).css( "visibility", "hidden" );
+				// Helper function for autocomplete
+				var findMatches = function ( q, cb ) {
+					// Fetch results from API
+					_this.getSearchData( q, function ( strs ) {
+						var matches, substrRegex;
+						// an array that will be populated with substring matches
+						matches = [];
+						// regex used to determine if a string contains the substring `q`
+						substrRegex = new RegExp( escape( q ), 'i' );
+						// iterate through the pool of strings and for any string that
+						// contains the substring `q`, add it to the `matches` array
+						$.each( strs, function ( i, str ) {
+							if ( substrRegex.test( escape( str.data ) ) ) {
+								// the typeahead jQuery plugin expects suggestions to a
+								// JavaScript object, refer to typeahead docs for more info
+								matches.push( { value: str } );
 							}
-						})
-						.on("focus", function(){
-							_this.getPlayer().triggerHelper("onDisableKeyboardBinding");
-						})
-						.on("blur", function(){
-							_this.getPlayer().triggerHelper("onEnableKeyboardBinding");
-						}))
-			);
+						} );
+						cb( matches );
+					} );
+				};
 
-
-			this.getMedialistHeaderComponent().append(searchFormWrapper);
-
-			function findMatches(q, cb) {
-				_this.getSearchData(q, function(strs){
-					var matches, substrRegex;
-
-					// an array that will be populated with substring matches
-					matches = [];
-
-					// regex used to determine if a string contains the substring `q`
-					substrRegex = new RegExp(escape(q), 'i');
-
-					// iterate through the pool of strings and for any string that
-					// contains the substring `q`, add it to the `matches` array
-					$.each(strs, function(i, str) {
-						if (substrRegex.test(str.data)) {
-							// the typeahead jQuery plugin expects suggestions to a
-							// JavaScript object, refer to typeahead docs for more info
-							matches.push({ value: str });
+				// Helper function for parsing search result length
+				var parseData = function ( obj, searchTerm, suffix ) {
+					var startOfMatch = obj.value.data.toLowerCase().indexOf( searchTerm.toLowerCase() );
+					if ( startOfMatch > -1 ) {
+						var expLen = searchTerm.length;
+						var dataLen = obj.value.data.length;
+						var restOfExpLen = dataLen - (startOfMatch + expLen);
+						var hintLen = Math.floor( restOfExpLen * 0.2 );
+						if (hintLen == 0 || hintLen/dataLen > 0.7){
+							hintLen = restOfExpLen;
 						}
-					});
-
-					cb(matches);
-				});
-			};
-
-			var parseData = function(obj){
-				var startOfMatch = obj.value.data.toLowerCase().indexOf(_this.searchExpression.toLowerCase());
-				if (startOfMatch > -1) {
-					var expLen = _this.searchExpression.length;
-					var dataLen = obj.value.data.length;
-					var restOfExpLen = dataLen - (startOfMatch + expLen);
-					var hintLen = Math.floor( restOfExpLen * 0.2 );
-					return obj.value.data.substr( startOfMatch, expLen + hintLen );
-				} else {
-					return obj.value.data;
-				}
-			};
-
-			var typeahead = $('#searchBox').typeahead({
-					minLength: 3,
-					highlight: true
-				},
-				{
-					name: 'label',
-					displayKey: function(obj){
-						return parseData(obj);
-					},
-					templates:{
-						suggestion: function(obj){
-							return parseData(obj) + "..."
-						}
-					},
-					source: findMatches
-				} ).
-				on("typeahead:selected", function(e, obj, label){
-					var mediaBoxes = _this.getMediaListDomElements();
-					mediaBoxes.css("display", "none");
-					mediaBoxes.parent().find("[data-obj-id='" + obj.value.id + "']").css("display", "");
-				} ).
-				on("keyup", function(event){
-					if(event.keyCode == 13) {
-						typeahead.typeahead("close");
+						return obj.value.data.substr( startOfMatch, expLen + hintLen );
+					} else {
+						return obj.value.data;
 					}
-				});
+				};
 
+				var typeahead = searchFormWrapper.find( '#searchBox' )
+					.typeahead( {
+						minLength: 3,
+						highlight: true,
+						hint: false
+					},
+					{
+						name: 'label',
+						displayKey: function ( obj ) {
+							return parseData( obj, typeahead.val() );
+						},
+						templates: {
+							suggestion: function ( obj ) {
+								return parseData( obj, typeahead.val() )
+							}
+						},
+						source: findMatches
+					} ).
+					on( "typeahead:selected", function ( e, obj, label ) {
+						_this.showSearchResults( obj.value.id );
+					} ).
+					on( "keyup", function ( event ) {
+						// On enter key press:
+						// 1. If multiple suggestions and none was chosen - display results for all suggestions
+						// 2. Close dropdown menu
+						if ( event.keyCode == 13 ) {
+							var dropdown = typeahead.data( 'ttTypeahead' ).dropdown;
+							var objIds = [];
+							var suggestionsElms = dropdown._getSuggestions();
+							// Only update if there are available suggestions
+							if ( suggestionsElms.length ) {
+								suggestionsElms.each( function ( i, suggestionsElm ) {
+									var suggestionsData = dropdown.getDatumForSuggestion( $( suggestionsElm ) );
+									objIds.push( suggestionsData.raw.value.id );
+								} );
+								_this.showSearchResults( objIds );
+							}
+							typeahead.typeahead( "close" );
+						}
+					}
+				);
+			}
 		},
 		getSearchData: function(expression, callback){
-			this.searchExpression = expression;
+			var liveCheck = this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints");
+			// If results are cached then return from cache, unless in live session
+			if (!liveCheck && this.cache[expression]){
+				return callback(this.cache[expression]);
+			}
+			// If query length is 3 then clear current dataset and query against API again
 			if (expression.length == 3){
 				this.dataSet = null
 			}
+			// If query length greater then 3 chars then don't query API anymore - use initial dataset
 			if (expression.length > 3 && this.dataSet){
 				return callback(this.dataSet);
 			}
 
 			var _this = this;
+			var request = {
+				'service': 'cuepoint_cuepoint',
+				'action': 'list',
+				'filter:entryIdEqual': _this.embedPlayer.kentryid,
+				'filter:objectType': 'KalturaCuePointFilter',
+				'filter:freeText': expression + "*"
+			};
+			// If in live mode, then search only in cuepoints which are already available at current live timeline
+			if (liveCheck){
+				request['filter:updatedAtLessThanOrEqual'] = this.getPlayer().kCuePoints.getLastUpdateTime();
+			}
 
-			var type = this.getConfig("cuePointType" )[0].main;
-			var subType = 1;//this.getConfig("cuePointType" )[0].sub.toString();
-
-			this.getKalturaClient().doRequest({
-					'service': 'cuepoint_cuepoint',
-					'action': 'list',
-					'filter:entryIdEqual': _this.embedPlayer.kentryid,
-					'filter:objectType': 'KalturaCuePointFilter',
-//					'filter:cuePointTypeIn': type,
-//					'filter:subTypeIn': subType,
-					'filter:freeText': expression + "*"
-
-				},
+			this.getKalturaClient().doRequest(request,
 				function (data) {
 					// Validate result
 					var results = [];
@@ -403,12 +443,35 @@
 					});
 
 					_this.dataSet = results;
+					_this.cache[expression] = results;
 
 					if (callback) {
 						callback(results);
 					}
 				}
 			);
+		},
+		showSearchResults: function(searchResults){
+			if ( !$.isArray(searchResults)){
+				searchResults = [searchResults];
+			}
+			var mediaBoxes = this.getMediaListDomElements();
+			mediaBoxes.each(function(i, mediaBox){
+				var objId = $(mediaBox).attr("data-obj-id");
+				if ( $.inArray(objId, searchResults) > -1){
+					$(mediaBox).css("display", "");
+				} else{
+					$(mediaBox).css("display", "none");
+				}
+			});
+			//Recalac scroller height
+			this.$scroll && this.$scroll.nanoScroller();
+		},
+		resetSearchResults: function(){
+			var mediaBoxes = this.getMediaListDomElements();
+			mediaBoxes.css("display", "");
+			//Recalac scroller height
+			this.$scroll && this.$scroll.nanoScroller();
 		},
 		isValidResult: function (data) {
 			// Check if we got error

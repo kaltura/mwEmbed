@@ -1,5 +1,4 @@
-/*@import url(http://fonts.googleapis.com/css?family=Open+Sans:300);*/
-@import url(http://fonts.googleapis.com/css?family=Lato);
+@import url(http://fonts.googleapis.com/css?family=Lato:300,400,700);
 .medialistContainer{
     font-family: "Helvetica Neue", 'Open Sans', sans-serif;
     height: 100%;
@@ -219,11 +218,26 @@
     background-position:center;
     top:0px;
 }
-.nano > .nano-pane   { background: #888; width: 5px; }
-.nano > .nano-pane:hover, .nano-pane:active {cursor: pointer; width: 10px;}
-.nano > .nano-pane > .nano-slider { background: #111; }
+.nano > .nano-pane   {
+    background: none;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 2px;
+    width: 11px;
+}
+.nano > .nano-pane:hover, .nano-pane:active {
+    cursor: pointer;
+    width: 14px;
+}
 
-
+.nano > .nano-pane > .nano-slider {
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 10px;
+}
+.nano > .nano-pane > .nano-slider:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
 
 .search.medialistContainer{
     width: 100%;
@@ -236,6 +250,9 @@
     border-top: black 1px solid;
     border-left: black 1px solid;
     border-right: black 1px solid;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
     /*display:table;*/
     border-spacing:0;
     width:100%;
@@ -243,17 +260,18 @@
     background-color: rgb(255, 255, 255);
     box-shadow: 0px 0px 16px 0px rgba(0, 0, 0, 0.2);
 }
-.searchFormWrapper > div {
-    /*display:table-cell;*/
-    /*padding: 10px 6px;*/
-}
 .searchFormWrapper > div.searchIcon {
     font-size: 16px;
     width: 14px;
-    margin: 12px 6px;
+    margin: 12px 11px;
     z-index: 2;
+    color: #999999;
 }
-#middle{
+.twitter-typeahead{
+    height: 40px;
+}
+#searchBoxWrapper{
+    height: 40px;
     /*float:left;*/
     position: absolute;
     top:0;
@@ -274,9 +292,13 @@
     padding: 0;
     background: rgba(255, 255, 255, 0);
 }
+.tt-hint {
+    color: rgb(136, 136, 136);
+    background-color: rgb(238, 238, 238);
+}
 input#searchBox:invalid::-webkit-input-placeholder {
     box-shadow: none;
-    color: black;
+    color: #999999;
 }
 /*Fix for > IE9 x mark in textbox*/
 input#searchBox::-ms-clear {
@@ -284,11 +306,14 @@ input#searchBox::-ms-clear {
     height: 0;
 }
 #searchBoxIcon{
-    color: rgb(0,0,0);
+    color: #999999;
     cursor: pointer;
     width: 16px;
     /*float: left;*/
     position: absolute;
+}
+#searchBoxIcon.active {
+    color: rgb(0,0,0);
 }
 #searchBoxCancelIcon{
     visibility: hidden;
@@ -311,25 +336,7 @@ input#searchBox::-ms-clear {
 .tt-dropdown-menu {
     background-color: rgb(218, 218, 218);
     width: 100%;
-    left: -28px !important;
-    /*margin-top: 12px;*/
-    /*padding: 8px 0;*/
-    /*background-color: #fff;*/
-    /*border: 1px solid #ccc;*/
-    /*border: 1px solid rgba(0, 0, 0, 0.2);*/
-    /*-webkit-border-radius: 8px;*/
-    /*-moz-border-radius: 8px;*/
-    /*border-radius: 8px;*/
-    /*-webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);*/
-    /*-moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);*/
-    /*box-shadow: 0 5px 10px rgba(0,0,0,.2);*/
-}
-.tt-hint {
-    font-size: 14px;
-    font-family: "Lato";
-    font-weight: 300;
-    color: rgb(136, 136, 136);
-    background-color: rgb(238, 238, 238);
+    left: -30px !important;
 }
 .tt-suggestions {
     width: 100%;
@@ -340,12 +347,14 @@ input#searchBox::-ms-clear {
     padding: 3px 20px;
     clear: both;
     font-family: "Lato";
-    font-weight: 300;
+    font-weight: 700;
     font-size: 14px;
     line-height: 1.714em;
     color: #333;
     white-space: nowrap;
-    /*line-height: 24px;*/
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     color: rgb(0, 0, 0);
 }
 .tt-suggestion.tt-cursor {
@@ -356,7 +365,10 @@ input#searchBox::-ms-clear {
     overflow: hidden;
     white-space: nowrap !important;
     text-overflow: ellipsis;
-    font-weight: 700;
+}
+
+.tt-highlight {
+    font-weight: 300;
 }
 
 .k-chapters-container .searchResultsBox {
