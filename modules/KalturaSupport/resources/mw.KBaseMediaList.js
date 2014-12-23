@@ -63,7 +63,6 @@
 
 				if (_this.getConfig( 'parent')){
 					setTimeout(function(){
-//						_this.getComponent().height(_this.getPlayer().getVideoDisplay().height() + "px");
 						if (_this.render) {
 							_this.getComponent().show();
 							_this.renderMediaList();
