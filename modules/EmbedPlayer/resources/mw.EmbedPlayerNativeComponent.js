@@ -43,6 +43,8 @@
 		// Disable switch source callback
 		disableSwitchSourceCallback: false,
 
+		playbackDone: false,
+
 		// All the native events per:
 		// http://www.w3.org/TR/html5/video.html#mediaevents
 		nativeEvents: [
@@ -113,6 +115,9 @@
 				mw.log("EmbedPlayerNativeComponent:: showChromecastDeviceList::");
 				_this.getPlayerElement().showChromecastDeviceList();
 			});
+			this.bindHelper("onEndedDone", function () {
+				_this.playbackDone = true;
+			});
 			this.resolveSrcURL(this.getSrc()).then(
 				function (resolvedSrc) {
 					mw.log("EmbedPlayerNativeComponent::resolveSrcURL get succeeded");
@@ -156,7 +161,7 @@
 			if ($.isFunction(switchCallback)) {
 				switchCallback(vid);
 				var isPlayingAdsContext = this.adsOnReplay || !(this.adTimeline.displayedSlotCount > 0);
-				if ( isPlayingAdsContext || this.loop ){
+				if ( (isPlayingAdsContext || this.loop) && !_this.playbackDone) {
 					setTimeout(function () {
 						vid.play();
 					}, 100);
@@ -256,7 +261,7 @@
 
 		play: function () {
 			mw.log("EmbedPlayerNativeComponent:: play::");
-
+			this.playbackDone = false;
 			this.removePoster();
 
 			if (this.parent_play()) {
