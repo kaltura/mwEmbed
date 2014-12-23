@@ -1429,7 +1429,7 @@ mw.KAdPlayer.prototype = {
 				}, 'durationChange' );
 
 				VPAIDObj.subscribe( function ( message ) {
-					$( _this.embedPlayer ).trigger("onAdSkip");
+					_this.sendVASTBeacon( adConf.trackingEvents, 'skip' );
 				}, 'AdSkipped' );
 
 				VPAIDObj.subscribe( function ( message ) {
