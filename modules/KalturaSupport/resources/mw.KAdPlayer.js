@@ -243,9 +243,9 @@ mw.KAdPlayer.prototype = {
 		var adConf = adSlot.ads[adSlot.adIndex];
 		var _this = this;
 		var vpaidFound = false;
-		
+
 		// If player is native don't play vPaid
-		if (adConf.vpaid && mw.isNativeApp()) {
+		if ( adConf.vpaid && mw.isNativeApp() ) {
 			adSlot.playbackDone();
 			return;
 		}
