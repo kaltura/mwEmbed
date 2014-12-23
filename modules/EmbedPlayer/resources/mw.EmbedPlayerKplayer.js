@@ -709,7 +709,7 @@
 			}
 
 			else if (this.isLive() || this.sourcesReplaced) {
-				deferred.resolve(originalSrc);
+				return deferred.resolve(originalSrc);
 			}
 			var flavorIdParam = '';
 			var mediaProtocol = this.getKalturaAttributeConfig('mediaProtocol') || mw.getConfig('Kaltura.Protocol') || "http";
