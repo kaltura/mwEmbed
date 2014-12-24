@@ -38,6 +38,9 @@ mw.KAdPlayer.prototype = {
 	seekIntervalID: null,
 	is_native_android_browser: false,
 
+	vastSentEvents: {},
+	vpaidMuted: false,
+
 	init: function( embedPlayer ){
 		var _this = this;
 		var nua = navigator.userAgent;
@@ -105,7 +108,7 @@ mw.KAdPlayer.prototype = {
 
 		// if it's overlay player controls should not be disabled
 		if( adSlot.type !== 'overlay' ) {
-			var components = ['fullScreenBtn','logo'];
+			var components = ['fullScreenBtn','logo','volumeControl'];
 			if (mw.getConfig('enableControlsDuringAd')) {
 				components.push('playPauseBtn');
 			}
@@ -529,7 +532,7 @@ mw.KAdPlayer.prototype = {
 								if(adSlot.wrapperData ){
 
 									adSlot.wrapperData.contents().find('ClickTracking').each(function(a,b){
-										mw.sendBeaconUrl($(b).contents().text())
+										mw.sendBeaconUrl($(b).contents().text());
 										mw.log("KAdPlayer:: sendBeacon to (wrapper): " + $(b).contents().text() );
 									})
 								}
@@ -545,7 +548,7 @@ mw.KAdPlayer.prototype = {
 		}
 	}   ,
 	disablePlayControls: function(){
-		var components = ['fullScreenBtn','logo'];
+		var components = ['fullScreenBtn','logo','volumeControl'];
 		if (mw.getConfig('enableControlsDuringAd')) {
 			components.push('playPauseBtn');
 		}
@@ -978,6 +981,23 @@ mw.KAdPlayer.prototype = {
 		sendBeacon("creativeView");
 	},
 
+	// Function to dispatch beacons
+	sendVASTBeacon: function( trackingEvents, eventName, force ){
+		if( this.vastSentEvents[ eventName ] && !force ){
+			return ;
+		}
+		mw.log("sendBeacon:" + eventName)
+		this.vastSentEvents[ eventName ] = 1;
+		if( trackingEvents ){
+			// See if we have any beacons by that name:
+			for(var i =0;i < trackingEvents.length; i++){
+				if( eventName == trackingEvents[ i ].eventName ){
+					mw.log("KAdPlayer:: sendBeacon: " + eventName + ' to: ' + trackingEvents[ i ].beaconUrl );
+					mw.sendBeaconUrl( trackingEvents[ i ].beaconUrl );
+				}
+			}
+		}
+	},
 	/**
 	 * bindVastEvent per the VAST spec the following events are supported:
 	 *
@@ -1002,30 +1022,11 @@ mw.KAdPlayer.prototype = {
 		$( videoPlayer).unbind(  _this.trackingBindPostfix );
 
 		// Only send events once:
-		var sentEvents = {};
-
-		// Function to dispatch a beacons:
-		var sendBeacon = function( eventName, force ){
-
-			if( sentEvents[ eventName ] && !force ){
-				return ;
-			}
-			mw.log("sendBeacon:" + eventName)
-			sentEvents[ eventName ] = 1;
-			if( trackingEvents ){
-				// See if we have any beacons by that name:
-				for(var i =0;i < trackingEvents.length; i++){
-					if( eventName == trackingEvents[ i ].eventName ){
-						mw.log("KAdPlayer:: sendBeacon: " + eventName + ' to: ' + trackingEvents[ i ].beaconUrl );
-						mw.sendBeaconUrl( trackingEvents[ i ].beaconUrl );
-					}
-				}
-			}
-		};
+		this.vastSentEvents = {};
 
 		// On end stop monitor / clear interval:
 		$( videoPlayer ).bind( 'ended' +  _this.trackingBindPostfix, function(){
-			sendBeacon( 'complete' );
+			_this.sendVASTBeacon( trackingEvents, 'complete' );
 			_this.stopAdTracking();
 		});
 
@@ -1066,7 +1067,7 @@ mw.KAdPlayer.prototype = {
 		// On pause:
 		$( this.embedPlayer).bind('onPlayerStateChange' +  _this.trackingBindPostfix, function(e, newState, oldState){
 			if( newState == 'pause' ){
-				sendBeacon( 'pause', true );
+				_this.sendVASTBeacon( trackingEvents, 'pause', true );
 			}
 		});
 
@@ -1074,7 +1075,7 @@ mw.KAdPlayer.prototype = {
 		// On seek backwards
 		$( videoPlayer ).bind( 'seek' +  _this.trackingBindPostfix, function(){
 			if( videoPlayer.currentTime < time ){
-				sendBeacon( 'rewind' );
+				_this.sendVASTBeacon( trackingEvents, 'rewind' );
 			}
 		});
 
@@ -1082,27 +1083,27 @@ mw.KAdPlayer.prototype = {
 		$( this.embedPlayer ).bind( 'onToggleMute' + _this.trackingBindPostfix, function(){
 			if (_this.embedPlayer.muted)
 			{
-				sendBeacon( 'mute', true );
+				_this.sendVASTBeacon( trackingEvents, 'mute', true );
 			}
 			else
 			{
-				sendBeacon( 'unmute', true );
+				_this.sendVASTBeacon( trackingEvents, 'unmute', true );
 			}
 		});
 
 		$( this.embedPlayer).bind(  'onAdSkip' +_this.trackingBindPostfix , function(){
-		   sendBeacon( 'skip' );
+			_this.sendVASTBeacon( trackingEvents, 'skip' );
 		});
 
 		$( this.embedPlayer).bind(  'onResumeAdPlayback' +_this.trackingBindPostfix , function(){
-		   sendBeacon( 'resume' , true );
+			_this.sendVASTBeacon( trackingEvents, 'resume' , true );
 		});
 
 		$( this.embedPlayer ).bind('onOpenFullScreen' + this.trackingBindPostfix , function() {
-			sendBeacon( 'fullscreen' );
+			_this.sendVASTBeacon( trackingEvents, 'fullscreen' );
 		});
 		$( this.embedPlayer ).bind('onCloseFullScreen' + this.trackingBindPostfix, function() {
-			sendBeacon( 'exitFullscreen' );
+			_this.sendVASTBeacon( trackingEvents, 'exitFullscreen' );
 		});
 
 		// Set up a monitor for time events:
@@ -1129,7 +1130,7 @@ mw.KAdPlayer.prototype = {
 			}
 
 			// Update the timeRemaining sequence proxy
-			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', parseInt ( dur - time ) );
+			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', Math.round ( dur - time ) );
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  dur );
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', time );
 			_this.embedPlayer.updatePlayHead( time / dur );
@@ -1137,7 +1138,7 @@ mw.KAdPlayer.prototype = {
 				var offsetRemaining = Math.max(Math.ceil(skipOffset - time), 0);
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining', offsetRemaining );
 				if (offsetRemaining <= 0) {
-                    sendBeacon( 'progress' );
+					_this.sendVASTBeacon( trackingEvents, 'progress' );
                     $('#' + _this.embedPlayer.id + '_ad_skipNotice' ).remove();
                     $('#' + _this.embedPlayer.id + '_ad_skipBtn' ).show();
 				}
@@ -1157,20 +1158,20 @@ mw.KAdPlayer.prototype = {
 
 
 			if( time > 0 ){
-				sendBeacon( 'start' );
-				sendBeacon( 'creativeView' );
+				_this.sendVASTBeacon( trackingEvents, 'start' );
+				_this.sendVASTBeacon( trackingEvents, 'creativeView' );
 			}
 
 			if( time > dur / 4 ){
-				sendBeacon( 'firstQuartile' );
+				_this.sendVASTBeacon( trackingEvents, 'firstQuartile' );
 			}
 
 			if( time > dur / 2 ){
-				sendBeacon( 'midpoint' );
+				_this.sendVASTBeacon( trackingEvents, 'midpoint' );
 			}
 
 			if( time > dur / 1.5 ){
-				sendBeacon( 'thirdQuartile' );
+				_this.sendVASTBeacon( trackingEvents, 'thirdQuartile' );
 			}
 
 		}, mw.getConfig('EmbedPlayer.MonitorRate') );
@@ -1325,11 +1326,19 @@ mw.KAdPlayer.prototype = {
 		};
 
 		var runVapidFlow = function () {
+			_this.vastSentEvents = {};
 			//is js vpaid or flash vpaid
 			var isJs = false;
 
 			//add the vpaid frindly iframe
 			var onVPAIDLoad = function () {
+				if (_this.embedPlayer.muted){
+					if ( !isJs && typeof VPAIDObj.playerElement.sendNotification === "function" ) {
+						VPAIDObj.playerElement.sendNotification( 'changeVolume', 0 ); // mute Flash ad
+					}else{
+						$( _this.embedPlayer ).trigger( 'volumeChanged',0); // mute HTML5 ad
+					}
+				}
 				var finishPlaying = function () {
 					if ( isJs ) {
 						_this.embedPlayer.getInterface().find( '.mwEmbedPlayer' ).show();
@@ -1345,7 +1354,6 @@ mw.KAdPlayer.prototype = {
 						VPAIDObj.startAd();
 					}
 					_this.addClickthroughSupport( adConf, adSlot );
-					_this.fireImpressionBeacons( adConf );
 					_this.embedPlayer.playInterfaceUpdate();
 				}, 'AdLoaded' );
 
@@ -1402,6 +1410,7 @@ mw.KAdPlayer.prototype = {
 							}
 						} );
 					}
+					_this.fireImpressionBeacons( adConf );
 					_this.embedPlayer.hideSpinner();
 				}, 'AdImpression' );
 				VPAIDObj.subscribe( function ( message ) {
@@ -1412,6 +1421,7 @@ mw.KAdPlayer.prototype = {
 				VPAIDObj.subscribe( function ( message ) {
 					mw.log( 'VPAID :: AdError:' + message );
 					$( _this.embedPlayer ).trigger("adErrorEvent");
+					_this.sendVASTBeacon( adConf.trackingEvents, 'error', true );
 					finishPlaying();
 				}, 'AdError' );
 				VPAIDObj.subscribe( function ( message ) {
@@ -1423,6 +1433,66 @@ mw.KAdPlayer.prototype = {
 						_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', message.newValue );
 					}
 				}, 'durationChange' );
+
+				VPAIDObj.subscribe( function ( message ) {
+					_this.sendVASTBeacon( adConf.trackingEvents, 'skip' );
+				}, 'AdSkipped' );
+
+				VPAIDObj.subscribe( function ( message ) {
+					_this.sendVASTBeacon( adConf.trackingEvents, 'creativeView' );
+				}, 'AdStarted' );
+
+				VPAIDObj.subscribe( function ( message ) {
+					var vol = VPAIDObj.getAdVolume();
+					if ( !_this.vpaidMuted && vol === 0 ){
+						_this.vpaidMuted = true;
+						_this.sendVASTBeacon( adConf.trackingEvents, 'mute', true );
+					}
+					if ( _this.vpaidMuted && vol > 0 ){
+						_this.vpaidMuted = false;
+						_this.sendVASTBeacon( adConf.trackingEvents, 'unmute', true );
+					}
+				}, 'AdVolumeChange' );
+
+				VPAIDObj.subscribe( function ( message ) {
+					_this.sendVASTBeacon( adConf.trackingEvents, 'start' );
+				}, 'AdVideoStart' );
+
+				VPAIDObj.subscribe( function ( message ) {
+					_this.sendVASTBeacon( adConf.trackingEvents, 'firstQuartile' );
+				}, 'AdVideoFirstQuartile' );
+
+				VPAIDObj.subscribe( function ( message ) {
+					_this.sendVASTBeacon( adConf.trackingEvents, 'midpoint' );
+				}, 'AdVideoMidpoint' );
+
+				VPAIDObj.subscribe( function ( message ) {
+					_this.sendVASTBeacon( adConf.trackingEvents, 'thirdQuartile' );
+				}, 'AdVideoThirdQuartile' );
+
+				VPAIDObj.subscribe( function ( message ) {
+					_this.sendVASTBeacon( adConf.trackingEvents, 'complete' );
+				}, 'AdVideoComplete' );
+
+				VPAIDObj.subscribe( function ( message ) {
+					_this.sendVASTBeacon( adConf.trackingEvents, 'acceptInvitation' );
+				}, 'AdUserAcceptInvitation' );
+
+				VPAIDObj.subscribe( function ( message ) {
+					_this.sendVASTBeacon( adConf.trackingEvents, 'collapse' );
+				}, 'AdUserMinimize' );
+
+				VPAIDObj.subscribe( function ( message ) {
+					_this.sendVASTBeacon( adConf.trackingEvents, 'close' );
+				}, 'AdUserClose' );
+
+				VPAIDObj.subscribe( function ( message ) {
+					_this.sendVASTBeacon( adConf.trackingEvents, 'pause', true );
+				}, 'AdPaused' );
+
+				VPAIDObj.subscribe( function ( message ) {
+					_this.sendVASTBeacon( adConf.trackingEvents, 'resume', true );
+				}, 'AdPlaying' );
 
 				if ( isJs ) {  //flash vpaid will call initAd itself
 					VPAIDObj.initAd( _this.embedPlayer.getWidth(), _this.embedPlayer.getHeight(), 'normal', 512, creativeData, environmentVars );
