@@ -402,8 +402,8 @@
 		 */
 		_onended: function (event) {
 			if (this.getPlayerElement()) {
-				mw.log('EmbedPlayer:native: onended:');
-				if (this._propagateEvents) {
+				mw.log( 'EmbedPlayer:nativeComponent: onended:' );
+				if ( this._propagateEvents && !this.isLive() ) {
 					this.onClipDone();
 				}
 			}
