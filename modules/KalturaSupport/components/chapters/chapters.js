@@ -50,17 +50,19 @@
 			this.bind('KalturaSupport_ThumbCuePointsReady', function () {
 				//Get chapters data from cuepoints
 				var chaptersRawData = _this.getCuePoints();
-				//Create media items from raw data
-				_this.addMediaItems(chaptersRawData);
-				_this.markMediaItemsAsDisplayed(_this.mediaList);
-				//Need to recalc all durations after we have all the items startTime values
-				_this.setMediaItemTime();
-				//Set data initialized flag for handlers to start working
-				_this.dataIntialized = true;
-				if (_this.renderOnData) {
-					_this.renderOnData = false;
-					_this.renderMediaList();
-					_this.updateActiveItem();
+				if (chaptersRawData.length) {
+					//Create media items from raw data
+					_this.addMediaItems( chaptersRawData );
+					_this.markMediaItemsAsDisplayed( _this.mediaList );
+					//Need to recalc all durations after we have all the items startTime values
+					_this.setMediaItemTime();
+					//Set data initialized flag for handlers to start working
+					_this.dataIntialized = true;
+					if ( _this.renderOnData ) {
+						_this.renderOnData = false;
+						_this.renderMediaList();
+						_this.updateActiveItem();
+					}
 				}
 			});
 
