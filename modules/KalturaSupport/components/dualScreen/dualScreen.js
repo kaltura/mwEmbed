@@ -370,7 +370,7 @@
 								_this.showDisplay();
 								maximizeSecondDisplay();
 							} else {
-								_this.getPrimary().obj.show();
+								_this.getPrimary().obj.css("visibility", "");
 								minimizeSecondDisplay();
 							}
 
@@ -603,14 +603,14 @@
 				}
 			},
 			hideDisplay: function(){
-				this.getSecondMonitor().obj.hide();
+				this.getSecondMonitor().obj.css("visibility", "hidden");
 				this.disableControlBar();
-				this.getControlBar().hide();
+				this.getControlBar().css("visibility", "hidden");
 			},
 			showDisplay: function(){
-				this.getFirstMonitor().obj.show();
-				this.getSecondMonitor().obj.show();
-				this.getControlBar().show();
+				this.getFirstMonitor().obj.css("visibility", "");
+				this.getSecondMonitor().obj.css("visibility", "");
+				this.getControlBar().css("visibility", "");
 				this.setControlBarWidth();
 				this.positionControlBar();
 				this.enableControlBar();
