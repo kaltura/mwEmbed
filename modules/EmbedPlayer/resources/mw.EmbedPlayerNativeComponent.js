@@ -320,7 +320,8 @@
 
 			$(this).trigger("playing");
 			this.removePoster();
-			
+			this.hideSpinner();
+
 			if (this.paused && this.parent_play()) {
 				this.monitor();
 			}
