@@ -15,11 +15,12 @@
             socialShareURL: 'smart', // 'parent' / 'http://custom.url/entry/{mediaProxy.entry.id}'
             socialNetworks: 'facebook,twitter,googleplus',
             shareOffset: true,
-            templatePath: 'components/share/share.tmpl.html'
+            templatePath: 'components/share/share.tmpl.html',
+            metadataKey: "LandingPage",
+            metadataProfileId: 3152
         },
         iconBtnClass: "icon-share",
         setup: function(){
-            this.setupPlayerURL();
             this.addBindings();
         },
         setupPlayerURL: function(){
@@ -34,29 +35,80 @@
                 default:
                     shareURL = this.getConfig("socialShareURL");
             }
-            if( shareURL ) {
-                this.setConfig('shareURL', shareURL);
-            }
+
+            this.setConfig('shareURL', shareURL);
+
+
+
+            //TODO: Pending server fix for widget service
+//        this.getKalturaClient().doRequest( {
+//            'service' : 'widget',
+//            'action' : 'add',
+//            'widget:sourceWidgetId' : '_' + this.getPlayer().partner_id,
+//            'widget:entryId' : this.getPlayer().kentryid,
+//            'widget:uiConfId' : this.getPlayer().uiconf_id,
+//            'widget:securityType': 1, //Set security to none
+//            'widget:addEmbedHtml5Support': 1 //Set support for html5
+//        }, function( data ) {
+//            mw.log( "mw.share plugin: get widget: " + data.totalCount, data.objects );
+//            debugger;
+//
+//            if( data.objects.length ){
+//                embedUrl = ""; //Put the new embed code as the embed URL
+////                _this.( data.objects, callback );
+//            }
+//        });
         },
         addBindings: function() {
             var _this = this;
             this.bind('playerReady', function( ){
                 _this.setupPlayerURL();
+                var showEmbed = _this.getConfig('showEmbed');
+                if(showEmbed) {
+                    _this.setupPlayerEmbedCode();
+                }
             });
         },
+        setupPlayerEmbedCode: function() {
+            var embedCode = 'https://cdnapisec.kaltura.com/p/' +
+                this.getPlayer().kpartnerid + '/sp/' +  this.getPlayer().kpartnerid + '00/embedIframeJs/uiconf_id/' + this.getPlayer().kuiconfid + '/partner_id/' + this.getPlayer().kpartnerid + '?iframeembed=true&entry_id=' +
+                this.getPlayer().kentryid + ' width="' + this.getPlayer().width + '" height"' + this.getPlayer().height +
+                '" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0" style="width: ' + this.getPlayer().width +' height: ' + this.getPlayer().width;
+
+            this.setConfig('embedCode', embedCode);
+
+//        if( embedUrl ) {
+//            //Add metadata Logic
+////            var landingPage = this.getPlayer().kalturaEntryMetaData[ this.getConfig('metadataKey') ];
+//            if(typeof landingPage !== 'undefined') {
+//                embedUrl += landingPage;
+//            }
+////
+//        }
+        },
+
+//    setupPlayerEmbedCode: function(baseUrl) {
+//        var playerHeight = this.getPlayer().height;
+//        var playerWidth = this.getPlayer().width;
+//        baseUrl += '/embed';
+//        var embedCode = "<iframe src=" + "'" + baseUrl + "'" + ' width=' + "'" + playerWidth + "'" +  ' height=' + "'" + playerHeight + "'" + ' frameborder=' + "'0'></iframe>";
+//        this.setConfig('embedCode', embedCode);
+//    },
         getParentURL: function(){
             return ( mw.getConfig( 'EmbedPlayer.IframeParentUrl') ) ?
                 mw.getConfig( 'EmbedPlayer.IframeParentUrl') : document.URL;
         },
         getKalturaShareURL: function(){
-            return mw.getConfig('Kaltura.ServiceUrl') + '/index.php/extwidget/preview' +
+            var kalturaShareUrl =  mw.getConfig('Kaltura.ServiceUrl') + 'index.php/extwidget/preview' +
                 '/partner_id/' + this.getPlayer().kpartnerid +
                 '/uiconf_id/' + this.getPlayer().kuiconfid +
                 '/entry_id/' + this.getPlayer().kentryid + '/embed/dynamic';
+
+            return kalturaShareUrl;
         },
         getSmartURL: function(){
             var shareURL = this.getKalturaShareURL();
-            if(  mw.getConfig('EmbedPlayer.IsFriendlyIframe') ){
+            if( mw.getConfig('EmbedPlayer.IsFriendlyIframe') ){
                 try {
                     var $parentDoc = $( window['parent'].document );
                     var hasOpenGraphTags = $parentDoc.find('meta[property="og:video"]').length;
@@ -66,10 +118,10 @@
                     }
                 } catch (e) {}
             }
+
             return shareURL;
         },
         getTemplateData: function(){
-
             var networks = [];
             var socialNetworks = this.getConfig("socialNetworks");
 
