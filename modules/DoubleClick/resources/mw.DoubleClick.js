@@ -376,6 +376,8 @@
 					if ( _this.embedPlayer.isVideoSiblingEnabled() ) {
 						$(".mwEmbedPlayer").addClass("mwEmbedPlayerBlackBkg");
 						_this.embedPlayer.addBlackScreen();
+					}else{
+						$(".playerPoster").hide();
 					}
 				}
 			});
@@ -387,6 +389,8 @@
 					if ( _this.embedPlayer.isVideoSiblingEnabled() ) {
 						$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
 						_this.embedPlayer.removeBlackScreen();
+					}else{
+						$(".playerPoster").show();
 					}
 				}
 			});
