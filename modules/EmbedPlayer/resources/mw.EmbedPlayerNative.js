@@ -579,9 +579,8 @@
 					callback = null;
 				}
 			}
-
 			// Check if player is ready for seek:
-			if (vid.readyState < 1 || vid.readyState == 4) {
+			if ( vid.readyState < 1 ) {
 				// if on the first call ( and video not ready issue load, play
 				if (callbackCount == 0 && vid.paused) {
 					this.stopEventPropagation();
@@ -591,9 +590,7 @@
 						// NOTE: there is no need to "pause" here since parent caller will
 						// handle if the player should continue to play at seek time or not .
 					});
-					if (vid.readyState != 4) {
-						vid.load();
-					}
+					vid.load();
 					vid.play();
 				}
 				// Try to seek for 15 seconds:
@@ -682,7 +679,7 @@
 			}
 
 			// Check for seeking state ( some player iOS / iPad can only seek while playing )
-			if (!vid.seeking || ( mw.isIOS8() && vid.paused )) {
+			if (!vid.seeking || ( ( mw.isIOS8() || mw.isIOS7() ) && vid.paused )) {
 				mw.log("Error:: not entering seek state, play and wait for positive time");
 				vid.play();
 				setTimeout(function () {
