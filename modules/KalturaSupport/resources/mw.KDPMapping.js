@@ -360,6 +360,14 @@
 						case 'isLive':
 							return embedPlayer.isLive();
 						break;
+						case 'mediaPlayTo':
+							var mediaPlayTo = embedPlayer.getFlashvars()['mediaProxy.mediaPlayTo'];
+							return mediaPlayTo ? mediaPlayTo :null;
+							break;
+						case 'mediaPlayFrom':
+							var mediaPlayFrom = embedPlayer.getFlashvars()['mediaProxy.mediaPlayFrom'];
+							return mediaPlayFrom ? mediaPlayFrom : null;
+							break;
 						case 'isOffline':
 							if ( $.isFunction( embedPlayer.isOffline ) ) {
 								return embedPlayer.isOffline();
