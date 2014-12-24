@@ -670,9 +670,17 @@ mw.KAdPlayer.prototype = {
 		adConf.skipOffset = skipOffsetInSecs;
 		mw.log("KAdPlayer:: source updated, add tracking");
 		// Always track ad progress:
-		if( vid.readyState > 0 && vid.duration && embedPlayer.selectedPlayer.library !== 'Kplayer' ) {
+		if( vid.readyState > 0 && embedPlayer.selectedPlayer.library !== 'Kplayer' ) {
 			setTimeout(function(){
-				embedPlayer.triggerHelper('AdSupport_AdUpdateDuration', vid.duration); // Trigger duration event
+				if ( vid.duration != 0 ) {
+					embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', vid.duration ); // Trigger duration event
+				}else {
+					var durationEventString = 'durationchange.setAdDuration';
+					$(vid).bind(durationEventString, function () {
+						embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', vid.duration );
+						$(vid).unbind( durationEventString );
+					});
+				}
 				_this.addAdTracking( adConf.trackingEvents, adConf  );
 			},0);
 		} else {
