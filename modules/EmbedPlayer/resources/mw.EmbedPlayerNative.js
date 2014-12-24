@@ -936,7 +936,7 @@
 								var _this = this;
 								var timeDiff = this.duration - this.currentTime;
 
-								if (timeDiff < 0.5) {
+								if (timeDiff < 0.5 && this.duration != 0) {
 									_this.mobileChromeTimeoutID = setTimeout(function () {
 										_this.mobileChromeTimeoutID = null;
 										// Check if timeDiff was changed in the last 2 seconds
