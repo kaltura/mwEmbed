@@ -672,13 +672,13 @@ mw.KAdPlayer.prototype = {
 		// Always track ad progress:
 		if( vid.readyState > 0 && embedPlayer.selectedPlayer.library !== 'Kplayer' ) {
 			setTimeout(function(){
-				if (vid.duration != 0) {
-					embedPlayer.triggerHelper('AdSupport_AdUpdateDuration', vid.duration); // Trigger duration event
+				if ( vid.duration != 0 ) {
+					embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', vid.duration ); // Trigger duration event
 				}else {
-					var durationEventString = 'durationchange.setAdDuration'
+					var durationEventString = 'durationchange.setAdDuration';
 					$(vid).bind(durationEventString, function () {
-						embedPlayer.triggerHelper('AdSupport_AdUpdateDuration', vid.duration);
-						$(vid).unbind(durationEventString);
+						embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', vid.duration );
+						$(vid).unbind( durationEventString );
 					});
 				}
 				_this.addAdTracking( adConf.trackingEvents, adConf  );
