@@ -609,6 +609,10 @@
 					_this.setCurrentTime(seekTime, callback, callbackCount + 1);
 				}, 1000);
 				return;
+			} else if (vid.readyState == 4) {
+				setTimeout(function() {
+					vid.play();
+				}, 1000);
 			}
 			// Check if currentTime is already set to the seek target:
 			if (vid.currentTime.toFixed(2) == seekTime.toFixed(2)) {
