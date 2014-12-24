@@ -581,7 +581,7 @@
 			}
 
 			// Check if player is ready for seek:
-			if (vid.readyState < 1) {
+			if (vid.readyState < 1 || vid.readyState == 4) {
 				// if on the first call ( and video not ready issue load, play
 				if (callbackCount == 0 && vid.paused) {
 					this.stopEventPropagation();
@@ -591,7 +591,9 @@
 						// NOTE: there is no need to "pause" here since parent caller will
 						// handle if the player should continue to play at seek time or not .
 					});
-					vid.load();
+					if (vid.readyState != 4) {
+						vid.load();
+					}
 					vid.play();
 				}
 				// Try to seek for 15 seconds:
@@ -609,10 +611,6 @@
 					_this.setCurrentTime(seekTime, callback, callbackCount + 1);
 				}, 1000);
 				return;
-			} else if (vid.readyState == 4) {
-				setTimeout(function() {
-					vid.play();
-				}, 1000);
 			}
 			// Check if currentTime is already set to the seek target:
 			if (vid.currentTime.toFixed(2) == seekTime.toFixed(2)) {
