@@ -1278,7 +1278,7 @@
 			mw.log('EmbedPlayer: doUpdateLayout:: containerHeight: ' +
 				containerHeight + ', components: ' + this.layoutBuilder.getComponentsHeight() +
 				', videoHolder old height: ' + currentHeight + ', new height: ' + newHeight +
-				' hight delta: ' + deltaHeight);
+				' hight delta: ' + deltaHeight + ' width: ' + this.getWidth());
 			// Update videoHolder height if more than 1 px delta 
 			// ( somehow we are hitting the weird iOS resize bug issues again ) 
 			if (currentHeight !== newHeight && deltaHeight > 1) {
@@ -2961,6 +2961,7 @@
 					// issue a seek
 					setTimeout(function () {
 						_this.addBlackScreen();
+						console.log('hidePlayer:: EmbedPlayerNative switchSrc');
 						_this.hidePlayerOffScreen();
 						_this.setCurrentTime(oldMediaTime, function () {
 							_this.removeBlackScreen();
@@ -2973,6 +2974,12 @@
 					}, 100);
 				});
 			}
+		},
+		hidePlayerOffScreen: function (vid) {
+			console.log('hidePlayerOffScreen:: embedPlayer');
+		},
+		restorePlayerOnScreen: function (vid) {
+			console.log('restorePlayerOnScreen:: embedPlayer');
 		},
 		/**
 		 * Used for livestream: will be called when clicking on "back to live" button
