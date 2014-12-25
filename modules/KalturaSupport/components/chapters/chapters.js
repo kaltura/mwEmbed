@@ -270,7 +270,13 @@
 					//Magnifying glass icon
 					.append( $( "<div/>", {"class": "searchIcon icon-magnifyGlass", id: 'searchBoxIcon'} ) )
 					//clear icon
-					.append( $( "<div/>", {"class": "searchIcon icon-clear", id: 'searchBoxCancelIcon'} )
+					.append( $( "<div/>",
+						{
+							'class': 'searchIcon icon-clear tooltipBelow',
+							'id': 'searchBoxCancelIcon',
+							'title': gM('ks-chapters-search-clear'),
+							'data-show-tooltip': true
+						} )
 						.on( "click touchend", function () {
 							$( "#searchBox" ).val( "" ).focus();
 							$( '#searchBox' ).typeahead( "val", "" ).typeahead( "close" );
@@ -281,7 +287,7 @@
 				)
 					//Search input box
 					.append( $( "<div/>", {"id": "searchBoxWrapper"} )
-						.append( $( "<input/>", {id: 'searchBox', type: 'text', placeholder: 'Search', required: true} )
+						.append( $( "<input/>", {id: 'searchBox', type: 'text', placeholder: gM('ks-chapters-search-placeholder'), required: true} )
 							.on( 'change keyup paste input', function ( e ) {
 								switch ( this.value.length ) {
 									case 0:
@@ -308,6 +314,9 @@
 							} )
 					)
 				);
+
+				//Add tooltip
+				this.getPlayer().layoutBuilder.setupTooltip(searchFormWrapper.find("#searchBoxCancelIcon"), "arrowTop");
 
 				// Add the searchbar to the medialist header
 				this.getMedialistHeaderComponent().append( searchFormWrapper );
