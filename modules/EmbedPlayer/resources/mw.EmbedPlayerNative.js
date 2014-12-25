@@ -579,9 +579,8 @@
 					callback = null;
 				}
 			}
-
 			// Check if player is ready for seek:
-			if (vid.readyState < 1) {
+			if ( vid.readyState < 1 ) {
 				// if on the first call ( and video not ready issue load, play
 				if (callbackCount == 0 && vid.paused) {
 					this.stopEventPropagation();
@@ -680,7 +679,7 @@
 			}
 
 			// Check for seeking state ( some player iOS / iPad can only seek while playing )
-			if (!vid.seeking || ( mw.isIOS8() && vid.paused )) {
+			if (!vid.seeking || ( ( mw.isIOS8() || mw.isIOS7() ) && vid.paused )) {
 				mw.log("Error:: not entering seek state, play and wait for positive time");
 				vid.play();
 				setTimeout(function () {
@@ -937,7 +936,7 @@
 								var _this = this;
 								var timeDiff = this.duration - this.currentTime;
 
-								if (timeDiff < 0.5) {
+								if (timeDiff < 0.5 && this.duration != 0) {
 									_this.mobileChromeTimeoutID = setTimeout(function () {
 										_this.mobileChromeTimeoutID = null;
 										// Check if timeDiff was changed in the last 2 seconds

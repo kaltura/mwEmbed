@@ -65,7 +65,9 @@ $messages['en'] = array(
     'ks-adBlockDetector-btn-no' => 'NO',
     'ks-adBlockDetector-btn-cancel' => 'Cancel',
     'ks-adBlockDetector-btn-close' => 'Close',
-    'ks-adBlockDetector-btn-resume' => 'Continue'
+    'ks-adBlockDetector-btn-resume' => 'Continue',
+    'ks-chapters-search-placeholder' => 'Search',
+    'ks-chapters-search-clear' => 'Clear'
 );
 
 $messages['fr'] = array(

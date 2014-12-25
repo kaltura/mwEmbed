@@ -4,7 +4,7 @@
 
 		defaultConfig: {
 			'hover': true,
-			'clickToClose': false,
+			'clickToClose': true,
 			'closeTimeout': 1000,
 			'position': 'left',
 			'fullScreenDisplayOnly': false,
