@@ -132,6 +132,9 @@
 			},
 			startLiveEvents :function(){
 				var _this = this;
+				if ( _this.isLiveEventsOn )  {
+					return;
+				}
 				_this.isLiveEventsOn = true;
 				_this.startTime = new Date().getTime();
 				_this.kClient = mw.kApiGetPartnerClient( _this.embedPlayer.kwidgetid );
