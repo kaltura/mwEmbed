@@ -320,7 +320,8 @@
 
 			$(this).trigger("playing");
 			this.removePoster();
-			
+			this.hideSpinner();
+
 			if (this.paused && this.parent_play()) {
 				this.monitor();
 			}
@@ -401,8 +402,8 @@
 		 */
 		_onended: function (event) {
 			if (this.getPlayerElement()) {
-				mw.log('EmbedPlayer:native: onended:');
-				if (this._propagateEvents) {
+				mw.log( 'EmbedPlayer:nativeComponent: onended:' );
+				if ( this._propagateEvents && !this.isLive() ) {
 					this.onClipDone();
 				}
 			}
