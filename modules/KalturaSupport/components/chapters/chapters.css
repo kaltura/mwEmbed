@@ -66,7 +66,6 @@
     position: absolute;
     width: 100%;
     height: 100%;
-    /*background: rgba(0,0,0,0.1);*/
     background: rgba(0,0,0,0.3);
 }
 .chapters > .k-chapters-container .chapterBox:hover .chapterBoxShadow {
@@ -122,9 +121,6 @@
 .chapters > .k-chapters-container.k-horizontal .chapterBox{
     display:inline;
     height: 100%;
-}
-.chapters > .k-chapters-container.k-horizontal .chapterBox:not(:last-child){
-    /*margin-right: 16px;*/
 }
 .chapters > .k-chapters-container.k-horizontal .k-scroll.k-next{
     right:0px;
@@ -195,10 +191,6 @@
 .chapters > .k-chapters-container.k-vertical .chapterBox{
     width:100%;
 }
-.chapters > .k-chapters-container.k-vertical .chapterBox .k-thumb {}
-.chapters > .k-chapters-container.k-vertical .chapterBox:not(:last-child){
-    /*margin-bottom: 16px;*/
-}
 .chapters > .k-chapters-container.k-vertical .k-scroll{
     float: none;
     width: 100%;
@@ -253,7 +245,6 @@
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-    /*display:table;*/
     border-spacing:0;
     width:100%;
     height: 40px;
@@ -272,11 +263,8 @@
 }
 #searchBoxWrapper{
     height: 40px;
-    /*float:left;*/
     position: absolute;
     top:0;
-    /*left:28px;*/
-    /*right: 28px;*/
     padding: 0 28px;
     width: 100%;
 }
@@ -307,9 +295,7 @@ input#searchBox::-ms-clear {
 }
 #searchBoxIcon{
     color: #999999;
-    cursor: pointer;
     width: 16px;
-    /*float: left;*/
     position: absolute;
 }
 #searchBoxIcon.active {
@@ -322,13 +308,9 @@ input#searchBox::-ms-clear {
     background-color: rgb(238, 238, 238);
     border-radius: 11px;
     width: 16px;
-    /*float: right;*/
     position: absolute;
     right: 0px;
 }
-/*Search results*/
-.searchResultsBox{
-
 }
 .twitter-typeahead{
     width: 100%;
