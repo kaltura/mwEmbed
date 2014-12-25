@@ -230,6 +230,9 @@
 .nano > .nano-pane > .nano-slider:hover {
     background: rgba(255, 255, 255, 0.4);
 }
+.nano > .nano-pane > .nano-slider:active {
+    background: rgba(255, 255, 255, 0.4);
+}
 
 .search.medialistContainer{
     width: 100%;
