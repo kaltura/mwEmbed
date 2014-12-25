@@ -298,10 +298,10 @@
 			var mediaBoxes = this.getMediaListDomElements();
 			if (layout == "vertical"){
 				var newHeight = this.getConfig( "mediaItemHeight" ) || width * (1 / this.getConfig("mediaItemRatio"));
-				mediaBoxes.width(width).height(newHeight);
+				mediaBoxes.height(newHeight);
 			} else {
 				var newWidth = this.getConfig( "mediaItemWidth" ) || height * this.getConfig("mediaItemRatio");
-				mediaBoxes.width(newWidth).height(height);
+				mediaBoxes.width(newWidth);
 			}
 		},
 		getScrollbarSize: function(w) {
