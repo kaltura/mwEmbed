@@ -186,9 +186,9 @@ mw.KAdPlayer.prototype = {
 			   _this.playNextAd(adSlot);
 			}
 		};
-		if (_this.is_native_android_browser){
+		if (_this.is_native_android_browser && !mw.isNativeApp() ){
 			adSlot.playbackDone();
-			_this.hideSpinnerOncePlaying();
+			_this.embedPlayer.hideSpinnerOncePlaying();
 			return;
 		}
 		// If the current ad type is already being displayed don't do anything
