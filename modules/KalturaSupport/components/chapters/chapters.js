@@ -280,29 +280,29 @@
 						.on( "click touchend", function () {
 							$( "#searchBox" ).val( "" ).focus();
 							$( '#searchBox' ).typeahead( "val", "" ).typeahead( "close" );
-							$( "#searchBoxCancelIcon" ).css( "visibility", "hidden" );
+							$( "#searchBoxCancelIcon" ).removeClass("active");
 							$( "#searchBoxIcon" ).removeClass("active");
 							_this.resetSearchResults();
 						} )
-				)
+					)
 					//Search input box
 					.append( $( "<div/>", {"id": "searchBoxWrapper"} )
 						.append( $( "<input/>", {id: 'searchBox', type: 'text', placeholder: gM('ks-chapters-search-placeholder'), required: true} )
 							.on( 'change keyup paste input', function ( e ) {
 								switch ( this.value.length ) {
 									case 0:
-										$( "#searchBoxCancelIcon" ).css( "visibility", "hidden" );
+										$( "#searchBoxCancelIcon" ).removeClass("active");
 										$( "#searchBoxIcon" ).removeClass("active");
 										_this.resetSearchResults();
 										break;
 									case 1:
 									case 2:
-										$( "#searchBoxCancelIcon" ).css( "visibility", "visible" );
+										$( "#searchBoxCancelIcon" ).addClass("active");
 										$( "#searchBoxIcon" ).addClass("active");
 										_this.resetSearchResults();
 										break;
 									default:
-										$( "#searchBoxCancelIcon" ).css( "visibility", "visible" );
+										$( "#searchBoxCancelIcon" ).addClass("active");
 										$( "#searchBoxIcon" ).addClass("active");
 								}
 							} )
@@ -468,9 +468,9 @@
 			mediaBoxes.each(function(i, mediaBox){
 				var objId = $(mediaBox).attr("data-obj-id");
 				if ( $.inArray(objId, searchResults) > -1){
-					$(mediaBox).css("display", "");
+					$(mediaBox).removeClass("resultNoMatch");
 				} else{
-					$(mediaBox).css("display", "none");
+					$(mediaBox).addClass("resultNoMatch");
 				}
 			});
 			//Recalac scroller height
@@ -478,7 +478,7 @@
 		},
 		resetSearchResults: function(){
 			var mediaBoxes = this.getMediaListDomElements();
-			mediaBoxes.css("display", "");
+			mediaBoxes.removeClass("resultNoMatch");
 			//Recalac scroller height
 			this.$scroll && this.$scroll.nanoScroller();
 		},
