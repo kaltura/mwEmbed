@@ -173,6 +173,9 @@
 			this.setSrcAttribute( src );
 
 			this.isPauseLoading = false;
+			// Update some parent embedPlayer vars:
+			this.currentTime = 0;
+			this.previousTime = 0;
 			_this.hideSpinner();
 			if ($.isFunction(switchCallback)) {
 				switchCallback(vid);
@@ -188,6 +191,8 @@
 			// Add the end binding if we have a post event:
 			if ($.isFunction(doneCallback)) {
 				$(vid).bind('ended' + switchBindPostfix, function (event) {
+					_this.currentTime = 0;
+					_this.previousTime = 0;
 					if (_this.disableSwitchSourceCallback) {
 						return;
 					}
