@@ -92,6 +92,7 @@
 
 			var divElement = document.createElement("div");
 			divElement.setAttribute('id', 'proxy');
+			divElement['paused'] = true;
 			document.body.appendChild(divElement);
 
 			this.proxyElement = divElement;
@@ -224,7 +225,6 @@
 					if (_this._propagateEvents && _this.instanceOf == 'NativeComponent') {
 						var argArray = $.makeArray(arguments);
 						// Check if there is local handler:
-
 						if (_this[ '_on' + eventName ]) {
 							_this[ '_on' + eventName ].apply(_this, argArray);
 						} else {
@@ -338,7 +338,6 @@
 		 */
 		_onplay: function () {
 			mw.log("EmbedPlayerNativeComponent:: OnPlay::");
-
 			$(this).trigger("playing");
 			this.removePoster();
 			this.hideSpinner();
@@ -509,6 +508,13 @@
 
 		isVideoSiblingEnabled: function () {
 			return false;
+		},
+
+		isPlaying: function () {
+			if ( this.stopped || this.paused || this.getPlayerElement().paused ) {
+				return false;
+			}
+			return true;
 		}
 	};
 })(mediaWiki, jQuery);

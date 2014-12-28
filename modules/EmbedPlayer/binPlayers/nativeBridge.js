@@ -150,6 +150,10 @@
 				this.proxyElement['duration'] = jsEventValue;
 			} else if (eventName == 'nativeAction') {
 				this.proxyElement['nativeAction'] = jsEventValue;
+			} else if (eventName == 'play') {
+				this.proxyElement['paused'] = false;
+			} else if (eventName == 'pause') {
+				this.proxyElement['paused'] = true;
 			}
 
 			if (this.subscribed[eventName]) {

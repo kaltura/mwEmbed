@@ -720,7 +720,9 @@ mw.KAdPlayer.prototype = {
         embedPlayer.bindHelper( 'doPause' + _this.trackingBindPostfix, function(){
 		    if( _this.isVideoSiblingEnabled() && _this.adSibling) {
 			    $( _this.embedPlayer ).trigger( 'onPauseInterfaceUpdate' ); // update player interface
-		    }
+		    } else if ( !_this.isVideoSiblingEnabled() ) {
+				$( embedPlayer ).trigger( "onPlayerStateChange", ["pause", _this.embedPlayer.currentState] );
+			}
 			vid.pause();
 
         });
