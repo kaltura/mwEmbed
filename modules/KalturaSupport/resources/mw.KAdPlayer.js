@@ -405,7 +405,7 @@ mw.KAdPlayer.prototype = {
 					.css({
 						'position':'absolute',
 						'bottom': '10px',
-						'z-index' : 2
+						'z-index' : 102
 					})
 					.attr('id', iconId )
 				);
