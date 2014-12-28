@@ -286,13 +286,17 @@
 			this.shouldAddScroll( );
 		},
 		setMedialistComponentHeight: function(){
+			var _this = this;
 			var componentHeight = this.getComponent().height();
 			if (this.getConfig("onPage")){
 				if (this.getConfig("clipListTargetId")){
 					var iframeParent = window['parent'].document.getElementById( this.embedPlayer.id );
 					var targetHeight = $( iframeParent ).parent().find( "#" + this.getConfig( 'clipListTargetId' ) ).height();
 					$( iframeParent ).parent().find(".onpagePlaylistInterface").height(targetHeight);
-					this.getMedialistComponent().height(targetHeight - this.getMedialistHeaderComponent().height());
+					setTimeout(function(){
+						_this.getMedialistComponent().height(targetHeight - _this.getMedialistHeaderComponent().height());
+					},0);
+
 				}else{
 					if (this.getLayout() === "vertical"){
 						this.getMedialistComponent().height(this.getConfig("MinClips") * this.getConfig("mediaItemHeight"));
