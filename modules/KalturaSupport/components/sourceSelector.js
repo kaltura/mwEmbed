@@ -83,7 +83,7 @@
 			}
 		},
 		getSources: function(){
-			return this.getPlayer().mediaElement.getPlayableSources();
+			return this.getPlayer().getSources();
 		},
 
 		buildMenu: function(){

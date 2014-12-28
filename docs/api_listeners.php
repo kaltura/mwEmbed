@@ -86,7 +86,7 @@
 	);
 	$eventsPlayerStates = array(
 		'firstPlay' => array(
-			'desc' => 'The first time the play event was fired'
+			'desc' => 'Triggered once per content entry when first played.'
 		),
 		'firstQuartile' => array(
 			'desc' => 'The player reached 25% of the entry playback'
@@ -321,29 +321,41 @@
 		)
 	);
 	$playlists = array(
-        'playlistReady' => array(
-            'props' => 'None',
-            'desc' => 'The playlist layout is ready.'
-        ),
-        'playlistPlayNext' => array(
-            'props' => 'None',
-            'desc' => 'The next clip was requested.'
-        ),
-        'playlistPlayPrevious' => array(
-            'props' => 'None',
-            'desc' => 'The previous clip was requested.'
-        ),
-        'playlistFirstEntry' => array(
-            'props' => 'None',
-            'desc' => 'The first clip in the playlist was loaded.'
-        ),
-        'playlistMiddleEntry' => array(
-            'props' => 'None',
-            'desc' => 'A clip that is not the first or the last clip in the playlist was loaded.'
-        ),
-        'playlistLastEntry' => array(
-            'props' => 'None',
-            'desc' => 'The last clip in the playlist was loaded.'
-        )
-    );
+		'relatedVideoSelect' => array(
+			'callbackArgs' => 'An object with "entryId" property with the current selected entry as a value.',
+			'callbackType' => 'object',
+			'desc' => 'Called when user clicks or auto continues to a related video.',
+			'example' => '../modules/KalturaSupport/components/related/Related.html'
+		),
+		'playlistReady' => array(
+			'props' => 'None',
+			'desc' => 'The playlist layout is ready.',
+			'example' => '../modules/KalturaSupport/tests/PlaylistEvents.qunit.html'
+		),
+		'playlistPlayNext' => array(
+			'props' => 'None',
+			'desc' => 'The next clip was requested.',
+			'example' => '../modules/KalturaSupport/tests/PlaylistEvents.qunit.html'
+		),
+		'playlistPlayPrevious' => array(
+			'props' => 'None',
+			'desc' => 'The previous clip was requested.',
+			'example' => '../modules/KalturaSupport/tests/PlaylistEvents.qunit.html'
+		),
+		'playlistFirstEntry' => array(
+			'props' => 'None',
+			'desc' => 'The first clip in the playlist was loaded.',
+			'example' => '../modules/KalturaSupport/tests/PlaylistEvents.qunit.html'
+		),
+		'playlistMiddleEntry' => array(
+			'props' => 'None',
+			'desc' => 'A clip that is not the first or the last clip in the playlist was loaded.',
+			'example' => '../modules/KalturaSupport/tests/PlaylistEvents.qunit.html'
+		),
+		'playlistLastEntry' => array(
+			'props' => 'None',
+			'desc' => 'The last clip in the playlist was loaded.',
+			'example' => '../modules/KalturaSupport/tests/PlaylistEvents.qunit.html'
+		)
+	);
 ?>

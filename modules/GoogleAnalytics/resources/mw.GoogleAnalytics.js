@@ -122,7 +122,7 @@
 			$.each(_this.eventTrackList, function () {
 				var eventName = this;
 				// Disable quartiles for entries with no duration, i.e live streaming
-				if (eventName == 'quartiles' && !_this.embedPlayer.duration) {
+				if ( eventName == 'quartiles' && _this.embedPlayer.isLive() ) {
 					return;
 				}
 				var eventNameBinding = _this.getEventNameBinding(eventName);

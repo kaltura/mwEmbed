@@ -150,6 +150,15 @@
 						.animate( layout, 'fast' );
 				}
 			});
+
+			this.bind("AdSupport_StartAdPlayback", function(){
+				_this.setConfig('displayCaptions', false);
+				_this.hideCaptions();
+			});
+			this.bind("AdSupport_EndAdPlayback", function(){
+				_this.setConfig('displayCaptions', true);
+				_this.showCaptions();
+			});
 		},
 		updateTextSize: function(){
 			// Check if we are in fullscreen or not, if so add an additional bottom offset of

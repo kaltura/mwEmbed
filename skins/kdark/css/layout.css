@@ -923,6 +923,7 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 .ad-notice-label {
 	bottom: 14px;
 	left: 5px;
+	z-index: 102;
 }
 
 .ad-skip-btn {
@@ -935,6 +936,7 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	bottom: 5px;
 	padding: 10px 20px;
 	background: rgba(0,0,0,0.6);
+	z-index: 101;
 }
 
 .hover  .ad-skip-label,.ad-skip-btn {
@@ -1081,6 +1083,17 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	text-overflow: ellipsis;
 }
 
+.adCover{
+	position: fixed;
+	cursor: pointer;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0,0,0,0);
+}
+.adCoverIE8{
+	background-color: black;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+}
 .cssChecker{
 	display: none !important;
 }

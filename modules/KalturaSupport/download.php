@@ -64,13 +64,12 @@ class downloadEntry {
 			header( "Content-Type: application/force-download" );
 			$extension = strrchr( substr( $flavorUrl, 0, strpos( $flavorUrl, "?ks=" ) ), '.' );
 			$flavorId = substr( strrchr( strstr( $flavorUrl, "/format/", true ), '/' ), 1 );
-
+			
 			if($_GET['downloadName'] != null){
 				$filename	= urldecode($_GET['downloadName']).$extension;
 			}else{
-
 				$filename = $flavorId . $extension;
-
+				
 			}
 
 
@@ -373,62 +372,85 @@ class downloadEntry {
 	 * 	{String} the flavor id string
 	 */
 	 public function getSourceUrl($kResultObject, $resultObject, $source){
-	    global $wgHTTPProtocol;
+		global $wgHTTPProtocol;
 
-        if( $kResultObject->request->getServiceConfig( 'UseManifestUrls' ) ){
-            $flavorUrl =  $kResultObject->request->getServiceConfig( 'ServiceUrl' ) .'/p/' . $kResultObject->getPartnerId() . '/sp/' .
-            $kResultObject->getPartnerId() . '00/playManifest/entryId/' . $kResultObject->request->getEntryId();
-        } else {
-            $flavorUrl = $kResultObject->request->getServiceConfig( 'CdnUrl' ) .'/p/' . $kResultObject->getPartnerId() . '/sp/' .
-            $kResultObject->getPartnerId() . '00/flvclipper/entry_id/' . $kResultObject->request->getEntryId();
-        }
-        $assetUrl = $flavorUrl . '/flavorId/' . $source->id . '/format/url/protocol/' . $wgHTTPProtocol;
-        $src =  $assetUrl .'/a.' . $source->fileExt . '?ks=' . $kResultObject->client->getKS() . '&referrer=' . $this->getReferer();
-        return $src;
+		if( $kResultObject->request->getServiceConfig( 'UseManifestUrls' ) ){
+			$flavorUrl =  $kResultObject->request->getServiceConfig( 'ServiceUrl' ) .'/p/' . $kResultObject->getPartnerId() . '/sp/' .
+			$kResultObject->getPartnerId() . '00/playManifest/entryId/' . $kResultObject->request->getEntryId();
+		} else {
+			$flavorUrl = $kResultObject->request->getServiceConfig( 'CdnUrl' ) .'/p/' . $kResultObject->getPartnerId() . '/sp/' .
+			$kResultObject->getPartnerId() . '00/flvclipper/entry_id/' . $kResultObject->request->getEntryId();
+		}
+		$assetUrl = $flavorUrl . '/flavorId/' . $source->id . '/format/url/protocol/' . $wgHTTPProtocol;
+		$src =  $assetUrl .'/a.' . $source->fileExt . '?ks=' . $kResultObject->client->getKS() . '&referrer=' . $this->getReferer();
+		return $src;
 	 }
-
+	private function isSourceOnlyAsset(){
+		$kResultObject = $this->getResultObject();
+		$resultObject =  $kResultObject->getResult();
+		
+		return ( 
+				// check if flavorAssets do not exist:
+				(
+				!isset( $resultObject['contextData']->flavorAssets ) 
+				||
+				count( $resultObject['contextData']->flavorAssets ) == 0 
+				)
+			&& 
+				// check if downloadUrl is defined: 
+				isset( $resultObject['meta']->downloadUrl )
+		);
+	}
 	private function getSourceFlavorUrl( $flavorId = false ){
 		global $wgHTTPProtocol;
 
 		// first check if we got preferredBitrate or flavour ID
 		if( isset($_GET['preferredBitrate']) && $_GET['preferredBitrate'] != null){
-            $preferredBitrate = intval($_GET['preferredBitrate']);
-        }
-        if( isset($_GET['flavorID']) && $_GET['flavorID'] != null){
-            $flavorID = $_GET['flavorID'];
-        }
+			$preferredBitrate = intval($_GET['preferredBitrate']);
+		}
+		if( isset($_GET['flavorID']) && $_GET['flavorID'] != null){
+			$flavorID = $_GET['flavorID'];
+		}
 
 		$src = false;
 		$kResultObject = $this->getResultObject();
-        $resultObject =  $kResultObject->getResult();
+		$resultObject =  $kResultObject->getResult();
+		
+		if( $this->isSourceOnlyAsset() ){
+			// Note we are assuming other assets have flavors, and only image gets direct mapping: 
+			// this is probably not a safe assumption, public source only assets may fall into this category 
+			// and should be supproted. 
+			// ENUM mapping here: https://www.kaltura.com/api_v3/testmeDoc/index.php?object=KalturaMediaType
+			return $resultObject['meta']->downloadUrl . '/a.jpg' . '?ks=' . $kResultObject->client->getKS() . '&referrer=' . $this->getReferer();
+		}
 
 		if ( isset( $flavorID ) ) {
 			// flavor ID overrides preferred bitrate so look for it first
-            foreach( $resultObject['contextData']->flavorAssets as $source ){
-                if( isset($source->id) && $source->id == $flavorID){
-                    $src = $this->getSourceUrl($kResultObject, $resultObject, $source);
-                }
-            }
-		}else if ( isset( $preferredBitrate ) ) {
+			foreach( $resultObject['contextData']->flavorAssets as $source ){
+				if( isset($source->id) && $source->id == $flavorID){
+					$src = $this->getSourceUrl($kResultObject, $resultObject, $source);
+				}
+			}
+		} else if ( isset( $preferredBitrate ) ) {
 			// if the user specified 0 - return the source
 			if ($preferredBitrate == 0){
 				foreach( $resultObject['contextData']->flavorAssets as $source ){
-                    if (isset($source->tags) && strpos($source->tags,'source') !== false){
+					if (isset($source->tags) && strpos($source->tags,'source') !== false){
 						$src = $this->getSourceUrl($kResultObject, $resultObject, $source);
 					}
 				}
 			}else{
-	            // try to find the closest bitrate source
-                $deltaBitrate = 999999999;
-	            foreach( $resultObject['contextData']->flavorAssets as $source ){
-                    if( isset($source->bitrate) ){
-                        $delta =  abs( $source->bitrate - $preferredBitrate );
-                        if ( $delta < $deltaBitrate) {
-                            $deltaBitrate = $delta;
-                            $src = $this->getSourceUrl($kResultObject, $resultObject, $source);
-                        }
-                    }
-                }
+				// try to find the closest bitrate source
+				$deltaBitrate = 999999999;
+				foreach( $resultObject['contextData']->flavorAssets as $source ){
+					if( isset($source->bitrate) ){
+						$delta =  abs( $source->bitrate - $preferredBitrate );
+						if ( $delta < $deltaBitrate) {
+							$deltaBitrate = $delta;
+							$src = $this->getSourceUrl($kResultObject, $resultObject, $source);
+						}
+					}
+				}
 			}
 		}
 
@@ -436,7 +458,7 @@ class downloadEntry {
 			return $src;
 		}
 
-        // if no flavorID or preferredBitrate were specified - continue normally
+		// if no flavorID or preferredBitrate were specified - continue normally
 		$sources = $this->getSources(); // Get all sources ( if not provided )
 		$validSources = array(); 
 		foreach( $sources as $inx => $source ){
@@ -458,7 +480,7 @@ class downloadEntry {
 		} else if( count( $validSources ) ) {
 			// if not preferred bitrate was specified - return the biggest source available
 			$maxBit = 0;
-            $maxSrc = null;
+			$maxSrc = null;
 			foreach( $validSources  as $source ){
 				if( isset($source['data-bandwidth']) && $source['data-bandwidth'] > $maxBit ){
 					$maxSrc = $source['src'];
