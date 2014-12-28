@@ -618,7 +618,7 @@
 				$.each(manifestData, function (otherPluginId, pluginObject) {
 					if (pluginObject.attributes && pluginName != otherPluginId) {
 						$otherPlugins.append(
-							$('<b />').text(pluginObject.description)
+							$('<b />').html(pluginObject.description)
 						);
 						var $otherPluginTB = $('<tbody />');
 						$.each(pluginObject.attributes, function (attrName, attr) {

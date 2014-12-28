@@ -45,6 +45,7 @@ $messages['en'] = array(
 	//'mwe-embedplayer-prev_clip_msg' => 'Play previous clip',
 	//'mwe-embedplayer-current_clip_msg' => 'Continue playing this clip',
 	'mwe-embedplayer-select_playlist' => 'Select playlist',
+	'mwe-embedplayer-empty_playlist' => 'No source video was found in the selected playlist',
 	'mwe-embedplayer-videos' => 'videos',
 	/*'mwe-embedplayer-seek_to' => 'Seek $1',
 	'mwe-embedplayer-paused' => 'paused',

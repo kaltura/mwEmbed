@@ -218,6 +218,6 @@
     background-position:center;
     top:0px;
 }
-.nano > .nano-pane   { background: #888; }
-.nano > .nano-pane:hover {cursor: pointer;}
+.nano > .nano-pane   { background: #888; width: 5px; }
+.nano > .nano-pane:hover, .nano-pane:active {cursor: pointer; width: 10px;}
 .nano > .nano-pane > .nano-slider { background: #111; }

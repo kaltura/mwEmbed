@@ -36,3 +36,12 @@
 	color: #FFFFFF !important;
 	font-family: "Arial Narrow", Arial;
 }
+
+.not-clickable {
+	cursor: default !important;
+}
+
+.not-clickable:hover {
+	cursor: default !important;
+	text-shadow: none !important;
+}

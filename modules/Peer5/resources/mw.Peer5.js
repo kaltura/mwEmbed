@@ -37,7 +37,7 @@
 					$.each(playableSources, function (inx, source) {
 						if (source.bandwidth) {
 							// We only look at sources that can be played with "native" player
-							var player = mw.EmbedTypes.getMediaPlayers().defaultPlayer(source.mimeType);
+							var player = mw.EmbedTypes.getMediaPlayers().getDefaultPlayer(source.mimeType);
 							if (!player || player.library != 'Native') {
 								// continue
 								return true;

@@ -89,6 +89,9 @@
 				// do the api request
 				this.getKalturaClient().doRequest(requestArray, function (data) {
 					// Validate result
+					if (requestArray.length === 1){
+						data = [data];
+					}
 					$.each(data, function (index, res) {
 						if (!_this.isValidResult(res)) {
 							data[index] = null;
@@ -259,6 +262,35 @@
 			}
 			return this.embedPlayer.rawCuePoints;
 		},
+		getCuePointsByType: function (type, subType) {
+			var filteredCuePoints = this.getCuePoints();
+			if (filteredCuePoints && ( type || subType )) {
+				var _this = this;
+				filteredCuePoints = $.grep( filteredCuePoints, function ( cuePoint ) {
+					var foundCuePointType = _this.validateCuePointAttribute(cuePoint, "cuePointType", type);
+					var foundCuePointSubType = _this.validateCuePointAttribute(cuePoint, "subType", subType);
+					return foundCuePointType && foundCuePointSubType;
+				} );
+			}
+			return filteredCuePoints;
+		},
+		validateCuePointAttribute: function(cuePoint, attrName, attrValues){
+			var foundAttr = false;
+			if (attrName && attrValues) {
+				if (!$.isArray(attrValues)){
+					attrValues = [attrValues];
+				}
+				$.each( attrValues, function ( i, attrValue ) {
+					if ( attrValue == cuePoint[attrName] ) {
+						foundAttr = true;
+						return false;
+					}
+				} );
+			} else {
+				foundAttr = true;
+			}
+			return foundAttr;
+		},
 		/**
 		 * Returns the next cuePoint object for requested time
 		 * @param {Number} time Time in milliseconds
@@ -397,6 +429,17 @@
 			// anything else, return zero
 			return 0;
 		}
+	};
+	mw.KCuePoints.TYPE = {
+		AD: "adCuePoint.Ad",
+		ANNOTATION: "annotation.Annotation",
+		CODE: "codeCuePoint.Code",
+		EVENT: "eventCuePoint.Event",
+		THUMB: "thumbCuePoint.Thumb"
+	};
+	mw.KCuePoints.THUMB_SUB_TYPE = {
+		SLIDE: 1,
+		CHAPTER: 2
 	};
 
 })(window.mw, window.jQuery);

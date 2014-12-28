@@ -223,7 +223,17 @@
 				videoTagObj.css('visibility', 'hidden');
 			}
 		},
-
+		/** 
+		* Override base flavor sources method with local set of adaptive flavor tags. 
+		*/
+		getSources: function(){
+			// check if manifest defined flavors have been defined: 
+			if( this.manifestAdaptiveFlavors.length ){
+				return this.manifestAdaptiveFlavors;
+			}
+			return this.getSourcesForKDP();
+		},
+		
 		/**
 		 * Get required sources for KDP. Either by flavorTags flashvar or tagged wtih 'web'/'mbr' by default
 		 * or hls sources
@@ -251,9 +261,7 @@
 
 		updateSources: function () {
 			if (!( this.isLive() || this.sourcesReplaced || this.isHlsSource(this.mediaElement.selectedSource) )) {
-				var newSources = this.getSourcesForKDP();
-				this.replaceSources(newSources);
-				this.mediaElement.autoSelectSource(this.supportsURLTimeEncoding(), this.startTime, this.pauseTime);
+				this.autoSelectTemporalSource( { 'sources': this.getSourcesForKDP() } );
 			}
 			else if (this.isLive() && this.streamerType == 'rtmp') {
 				var _this = this;
@@ -567,7 +575,8 @@
 			if (data && data.newBitrate) {
 				this.triggerHelper('bitrateChange', data.newBitrate);
 			}
-			this.mediaElement.setSourceByIndex(data.newIndex);
+			// TODO if we need to track source index should be top level method per each play interface having it's own adaptive logic
+			//this.mediaElement.setSourceByIndex(data.newIndex);
 			$(this).trigger('sourceSwitchingEnd', [ data ]);
 		},
 
@@ -700,7 +709,7 @@
 			}
 
 			else if (this.isLive() || this.sourcesReplaced) {
-				deferred.resolve(originalSrc);
+				return deferred.resolve(originalSrc);
 			}
 			var flavorIdParam = '';
 			var mediaProtocol = this.getKalturaAttributeConfig('mediaProtocol') || mw.getConfig('Kaltura.Protocol') || "http";
@@ -763,13 +772,14 @@
 		 */
 		getSourceIndex: function (source) {
 			var sourceIndex = null;
-			$.each(this.mediaElement.getPlayableSources(), function (currentIndex, currentSource) {
+			$.each( this.getSources(), function( currentIndex, currentSource ) {
 				if (source.getAssetId() == currentSource.getAssetId()) {
 					sourceIndex = currentIndex;
 					return false;
 				}
 			});
-			if (!sourceIndex) {
+			// check for null, a zero index would evaluate false
+			if( sourceIndex == null ){
 				mw.log("EmbedPlayerKplayer:: Error could not find source: " + source.getSrc());
 			}
 			return sourceIndex;
