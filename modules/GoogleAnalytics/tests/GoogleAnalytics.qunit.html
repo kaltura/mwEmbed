@@ -93,7 +93,11 @@
 <br/>
 
 <div id="kaltura_player" style="width:400px;height:330px"></div>
+<div id="kdoc-more-desc"><br>This google analytics example highlights custom tracking events. Notice the 
+"related" event within the GA log when selecting a related video.</div>
 <script>
+	// Use the configured analtyics ua or hard code the player.kaltura.com acocunt:
+	var googleAnalyticsAccountId = mw.getConfig( 'Kaltura.PageGoogleAnalytics' ) ? mw.getConfig( 'Kaltura.PageGoogleAnalytics' ): "UA-2078931-34";
 	kWidget.featureConfig({
 		'targetId': 'kaltura_player',
 		'wid': '_243342',
@@ -106,11 +110,17 @@
 				'position': 'before',
 
 				'trackEventMonitor': 'trackFunc',
-				'urchinCode': "UA-39915151-1",
-				'customEvent': 'doPlay',
-				'doPlayCategory': "My Custom event",
-				'doPlayAction': "player is playing",
+				'urchinCode': googleAnalyticsAccountId,
+				'customEvent': 'doPlay,relatedVideoSelect',
+				'doPlayCategory': "Custom Events",
+				
+				'doPlayAction': "playing",
 				'doPlayValue': "1",
+				
+				// Enables us to track what entries are being clicked on from related videos
+				'relatedVideoSelectCategory': 'Related Fulfillment',
+				'relatedVideoSelectAction': "{related.selectedEntryId}",
+				
 				'sendRefId': true
 			},
 			'related': {
@@ -132,7 +142,7 @@
 </script>
 <br>
 <a class="changeMedia" href=#">Change Media</a> <br>
-<i>Google Analytics events: ( only logs to page for html5 for now ) </i><br/>
+<i>Google Analytics events: </i><br/>
 <table id="gAnalyticsLog" border="1" width="700">
 	<tr id="eventRowDesc">
 		<td>Category</td>
