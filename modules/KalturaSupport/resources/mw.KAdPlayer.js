@@ -892,12 +892,53 @@ mw.KAdPlayer.prototype = {
 				.attr('id', overlayId )
 			);
 		}
+
+		var screenSize = {
+			'width' : 0,
+			'height' : 0
+		};
+		var imgRatio = nonLinearConf.width / nonLinearConf.height;
+
+		var videoSize = {
+			'width' : _this.embedPlayer.getVideoHolder().width() * 0.9,
+			'height' : _this.embedPlayer.getVideoHolder().height() * 0.9
+		};
+
+		var diffs = {
+			'width' : videoSize.width - nonLinearConf.width,
+			'height' : videoSize.height - nonLinearConf.height
+		};
+
+		// Image size smaller then then the videoHolder size
+		if (diffs.width > 0 && diffs.height > 0) {
+			screenSize.width = nonLinearConf.width;
+			screenSize.height = nonLinearConf.height;
+		// Image height bigger or equals to video holder height and image width is smaller
+		} else if (diffs.width > 0 && diffs.height <= 0) {
+			screenSize.height = videoSize.height;
+			screenSize.width = screenSize.height * imgRatio;
+		// Image width bigger or equals to video holder width and image height is smaller
+		} else if (diffs.width <= 0 && diffs.height > 0) {
+			screenSize.width = videoSize.width;
+			screenSize.height = screenSize.width / imgRatio;
+		// Image size bigger then video holder size
+		} else if (diffs.width <= 0 && diffs.height <=0) {
+			// Check which value is bigger to use the biggest ratio
+			if (diffs.width <= diffs.height) {
+				screenSize.width = videoSize.width;
+				screenSize.height = screenSize.width / imgRatio;
+			} else {
+				screenSize.height = videoSize.height;
+				screenSize.width = screenSize.height * imgRatio;
+			}
+		}
+
 		var layout = {
-			'width' : nonLinearConf.width + 'px',
-			'height' : nonLinearConf.height + 'px',
+			'width' : screenSize.width + 'px',
+			'height' : screenSize.height + 'px',
 			'left' : '50%',
 			'display': 'none',
-			'margin-left': -(nonLinearConf.width /2 )+ 'px'
+			'margin-left': -(screenSize.width /2 )+ 'px'
 		};
 
 		// if we didn't recieve the dimensions - wait till the ad loads and use the DIV's dimensions
@@ -916,6 +957,11 @@ mw.KAdPlayer.prototype = {
 		}
 		$( this.embedPlayer ).trigger("onAdPlay");
 		this.setImgSrc(nonLinearConf, 'overlayAd');
+
+		if ( $(nonLinearConf.html).find('img').length ) {
+			nonLinearConf.html = $(nonLinearConf.html).find('img').width('100%').height('100%');
+		}
+
 		// Show the overlay update its position and content
 		$('#' +overlayId )
 		.css( layout )
