@@ -320,7 +320,7 @@
 		},
 		getTextSourceFromDB: function( dbTextSource ) {
 			var _this = this;
-			if( dbTextSource.fileExt == null || dbTextSource.fileExt == ""){
+			if( !dbTextSource.fileExt ){
 				// TODO other format mappings?
 				switch( dbTextSource.format ){
 					case '1':
