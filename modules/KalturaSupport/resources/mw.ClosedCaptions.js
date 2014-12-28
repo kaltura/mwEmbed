@@ -320,16 +320,16 @@
 		},
 		getTextSourceFromDB: function( dbTextSource ) {
 			var _this = this;
-            if( dbTextSource.fileExt == null ){
+			if( dbTextSource.fileExt == null ){
 				// TODO other format mappings?
-                switch( dbTextSource.format ){
-                    case '1':
-                        dbTextSource.fileExt = 'srt';
-                        break;
-                    case '2':
-                        dbTextSource.fileExt = 'xml';
-                        break;
-                }
+				switch( dbTextSource.format ){
+					case '1':
+						dbTextSource.fileExt = 'srt';
+						break;
+					case '2':
+						dbTextSource.fileExt = 'xml';
+						break;
+				}
 			}
 
 			var captionsSrc;
