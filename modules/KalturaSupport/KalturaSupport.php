@@ -216,6 +216,7 @@
 			'dependencies' => array( 'mw.KBaseScreen' ),
 			'kalturaPluginName' => 'share',
 		),
+
 		"pptWidgetPlugin"=> array(
 			'scripts' => "resources/uiConfComponents/pptWidgetPlugin.js",
 			'kalturaPluginName' => 'pptWidgetAPI'
