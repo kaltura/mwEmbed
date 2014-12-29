@@ -26,7 +26,7 @@
 		),
 		"mw.KBaseMediaList" => array(
 			'scripts' => "resources/mw.KBaseMediaList.js",
-			'dependencies' => array( 'mw.KBaseComponent' )
+			'dependencies' => array( 'mw.KBaseComponent','jCarouse', 'nanoScroller' )
 		),
 		"mw.KBaseComponent" => array(
 			'scripts' => "resources/mw.KBaseComponent.js",
@@ -82,18 +82,11 @@
 		'hammer' => array(
 			'scripts' => 'components/hammerEvents/hammer.min.js',
 		),
-		"search" => array(
-			'scripts' => "components/search/search.js",
-			'styles' =>  "components/search/search.css",
-			'templates' => "components/search/search.tmpl.html",
-			'dependencies' => array( 'mw.KBaseComponent' ),
-			'kalturaPluginName' => 'search'
-		),
 		"chapters" => array(
 			'scripts' => "components/chapters/chapters.js",
 			'styles' =>  "components/chapters/chapters.css",
 			'templates' => "components/chapters/chapters.tmpl.html",
-			'dependencies' => array( 'mw.KBaseMediaList', 'jCarouse' ),
+			'dependencies' => array( 'mw.KBaseMediaList', 'typeahead' ),
 			'kalturaPluginName' => 'chapters'
 		),
 		/* Core plugins */
@@ -128,7 +121,7 @@
 		),
 		"playlistAPI" => array(
 			'scripts' => "components/playlistAPI.js",
-			'dependencies' => array('mw.KBaseMediaList','jCarouse'),
+			'dependencies' => array('mw.KBaseMediaList'),
 			'styles' =>  "components/playlist/playList.css",
 			'templates' => "components/playlist/playList.tmpl.html",
 			'kalturaPluginName' => 'playlistAPI',
@@ -291,8 +284,7 @@
 		"liveStream" => array(
 			'scripts' => array(
 				"components/live/liveCore.js", // Will run API requests for isLive service and trigger events ( extends mw.KBasePlugin )
-				"components/live/liveStatus.js", // Live status components  ( extends mw.KBaseComponent )
-				"components/live/liveBackBtn.js" // Back to live button ( extends mw.KBaseComponent )
+				"components/live/liveStatus.js" // Live status components  ( extends mw.KBaseComponent )
 			),
 			'styles' => 'components/live/liveStream.css',
 			'dependencies' => 'mw.KBaseComponent',
@@ -319,7 +311,7 @@
 		),
 		"jCarouse"=> array( 
 			'scripts' => "resources/uiConfComponents/jcarousellite_1.0.1.js",
-			 'dependencies' => array('nanoScroller', 'touchSwipe')
+			 'dependencies' => array('touchSwipe')
 		),
 		"mw.KLayout"=> array( 
 			'scripts' => "resources/mw.KLayout.js" 

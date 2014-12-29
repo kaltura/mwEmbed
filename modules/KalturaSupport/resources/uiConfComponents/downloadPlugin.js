@@ -22,6 +22,7 @@
 			});
 		},
 		downloadMedia: function() {
+			var ks =  this.getKalturaClient().getKs();
 			var downloadUrl = mw.getMwEmbedPath() + '/modules/KalturaSupport/download.php/wid/';
 				downloadUrl += this.getPlayer().kwidgetid + '/uiconf_id/' + this.getPlayer().kuiconfid;
 				downloadUrl += '/entry_id/' + this.getPlayer().kentryid + '?forceDownload=true';
@@ -33,8 +34,8 @@
 					downloadUrl += '&flavorID=' + encodeURIComponent( this.getConfig( 'flavorID' ));
 				}
 
-				if( this.getKalturaClient().getKs() ){
-					downloadUrl += '&ks=' + this.getKalturaClient().getKs();
+				if( ks ){
+					downloadUrl += '&ks=' + ks;
 				}
 			
 			window.open( downloadUrl );

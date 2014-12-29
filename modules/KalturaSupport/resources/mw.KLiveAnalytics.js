@@ -15,6 +15,42 @@
 			eventIndex :1,
 			currentBitRate:-1,
 			playing:false,
+			monitorIntervalObj:{},
+			smartSetInterval:function(callback,time,monitorObj) {
+				//create the timer speed, a counter and a starting timestamp
+				var speed = time,
+					counter = 1,
+					start = new Date().getTime();
+
+				//timer instance function
+				var instance = function ()
+				{
+					if (monitorObj.cancel ){
+						return;
+					}
+					callback();
+					//work out the real and ideal elapsed time
+					var real = (counter * speed),
+						ideal = (new Date().getTime() - start);
+
+					//increment the counter
+					counter++;
+
+					//calculate and display the difference
+					var diff = (ideal - real);
+					monitorObj.counter = counter;
+					monitorObj.diff = diff;
+
+					var nextSpeed = speed - diff;
+					if (Math.abs(nextSpeed) > speed){
+						nextSpeed = speed;
+					}
+					window.setTimeout(function() { instance(); }, nextSpeed);
+				};
+
+				//now kick everything off with the first timer instance
+				window.setTimeout(function() { instance(); }, speed);
+			},
 			setup: function( ) {
 			   var _this = this;
 				_this.removeBindings( );
@@ -60,6 +96,8 @@
 					if (!status){
 						//we're offline
 						_this.stopLiveEvents();
+						_this.bufferTime = 0;
+						_this.bufferStartTime = null;
 					} else{
 						 if (_this.playing && !_this.isLiveEventsOn){
 							 _this.startLiveEvents();
@@ -89,19 +127,22 @@
 			stopLiveEvents :function(){
 				var _this = this;
 				_this.isLiveEventsOn = false;
-				clearInterval( _this.liveEventInterval );
+				_this.monitorIntervalObj.cancel = true;
 				_this.liveEventInterval = null;
 			},
 			startLiveEvents :function(){
 				var _this = this;
+				if ( _this.isLiveEventsOn )  {
+					return;
+				}
 				_this.isLiveEventsOn = true;
 				_this.startTime = new Date().getTime();
 				_this.kClient = mw.kApiGetPartnerClient( _this.embedPlayer.kwidgetid );
-				clearInterval( _this.liveEventInterval );
+				_this.monitorIntervalObj.cancel = false;
 				this.sendLiveAnalytics();
-				_this.liveEventInterval = setInterval(function(){
+				_this.smartSetInterval(function(){
 					_this.sendLiveAnalytics();
-				},_this.reportingInterval);
+				},_this.reportingInterval,_this.monitorIntervalObj);
 
 			},
 			sendLiveAnalytics : function(){

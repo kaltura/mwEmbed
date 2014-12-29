@@ -113,20 +113,9 @@
 		 *			embedPlayer The embedPlayer object
 		 */
 		init: function(embedPlayer) {
-			var nua = navigator.userAgent;
-			var is_native_android_browser = ((nua.indexOf('Mozilla/5.0') > -1 &&
-				nua.indexOf('Android ') > -1 &&
-				nua.indexOf('AppleWebKit') > -1) &&
-				!(nua.indexOf('Chrome') > -1));
-
-			if( !is_native_android_browser ||
-				mw.isAndroid40() ||
-				mw.getConfig( "EmbedPlayer.ForceNativeComponent") )
-			{
-				this.embedPlayer = embedPlayer;
-				// Bind to the "play" and "end"
-				this.bindPlayer();
-			}
+			this.embedPlayer = embedPlayer;
+			// Bind to the "play" and "end"
+			this.bindPlayer();
 		},
 
 		/**
@@ -249,8 +238,9 @@
 			// TODO We really need a "preend" event for thing like this.
 			// So that playlist next clip or other end bindings don't get triggered.
 			embedPlayer.bindHelper( 'ended' + _this.bindPostfix, function( event ){
+				embedPlayer.unbindHelper('ended' + _this.bindPostfix )
 
-				if (embedPlayer.replayEventCount > 0 && !embedPlayer.adsOnReplay){
+				if ( embedPlayer.replayEventCount > 0 && !embedPlayer.adsOnReplay){
 					return; // don't show postroll ads on replay if the adsOnReplay Flashvar is set to false
 				}
 
@@ -401,7 +391,7 @@
 			// Stop the native embedPlayer events so we can play the preroll and bumper
 			embedPlayer.stopEventPropagation();
 			// TODO read the add disable control bar to ad config and check that here.
-			var components = ['fullScreenBtn','logo'];
+			var components = ['fullScreenBtn','logo','volumeControl'];
 			if (mw.getConfig('enableControlsDuringAd')) {
 				components.push('playPauseBtn');
 			}

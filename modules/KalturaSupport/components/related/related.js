@@ -26,10 +26,11 @@
 		timerRunning:false,
 		loadedThumbnails: 0,
 		numOfEntries: 0,
+		updateStoredSession: true,
 
 		setup: function(){
 			var _this = this;
-			// check for storedSession of viewed entries: 
+			// check for storedSession of viewed entries:
 			if( this.getConfig('storeSession') ){
 				var rawViewed = $.cookie( this.confPrefix + '_viewedEntries' );
 				if( rawViewed ){
@@ -215,13 +216,18 @@
 		updateTemplateData: function( data ){
 			this.numOfEntries = data.length;
 			// make sure entries that were already viewed are the last in the data array
-			for (var i = 0; i < this.viewedEntries.length; i++){
-				for (var j = 0; j < data.length; j++){
-					if (data[j].id === this.viewedEntries[i]){ // entry was already viewed - move it to the last place in the data array
-						var entry = data.splice(j,1)[0];
-						data.push(entry);
+			if ( this.viewedEntries.length <= data.length ){
+				for (var i = 0; i < this.viewedEntries.length; i++){
+					for (var j = 0; j < data.length; j++){
+						if (data[j].id === this.viewedEntries[i]){ // entry was already viewed - move it to the last place in the data array
+							var entry = data.splice(j,1)[0];
+							data.push(entry);
+						}
 					}
 				}
+			}else{
+				this.viewedEntries = [];
+				this.updateStoredSession = false;
 			}
 			this.templateData = {
 				nextItem: data.splice(0,1)[0],
@@ -331,7 +337,7 @@
 				this.viewedEntries.push(entryId)
 			}
 			// update the session var if storing sessions:
-			if (this.getConfig('storeSession')) {
+			if ( this.updateStoredSession && this.getConfig('storeSession') ) {
 				$.cookie(this.confPrefix + '_viewedEntries', JSON.stringify(this.viewedEntries));
 			}
 		},

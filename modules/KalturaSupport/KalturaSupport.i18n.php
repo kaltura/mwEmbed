@@ -53,8 +53,8 @@ $messages['en'] = array(
 	'ks-UNKNOWN_STATUS_TITLE' => "Unknown status",
 	'ks-USER_AGENT_RESTRICTED' => "User Agent Restricted\nWe're sorry, this content is not available for your device.",
 	'ks-LIVE-STREAM-NOT-SUPPORTED' => "Your browser does not support Live stream playback.",
-	'ks-LIVE-STREAM-OFFLINE-TITLE' => "Live stream not active",
-	'ks-LIVE-STREAM-OFFLINE' => "This Live stream is not active, Please check back later.",
+	'ks-LIVE-STREAM-OFFLINE-TITLE' => "Broadcast is not Active",
+	'ks-LIVE-STREAM-OFFLINE' => "please check back later",
 	'ks-FLASH-REQUIRED' => "This video requires Adobe Flash Player, which is currently not available on your browser. Please <a href='http://www.adobe.com/support/flashplayer/downloads.html' target='_blank'> install Adobe Flash Player </a> to view this video.",
 	'ks-NO-DRM-LICENSE' => "We're sorry, you don’t have a valid license for this video.",
 	'ks-ERROR' => 'Error',
@@ -65,7 +65,9 @@ $messages['en'] = array(
     'ks-adBlockDetector-btn-no' => 'NO',
     'ks-adBlockDetector-btn-cancel' => 'Cancel',
     'ks-adBlockDetector-btn-close' => 'Close',
-    'ks-adBlockDetector-btn-resume' => 'Continue'
+    'ks-adBlockDetector-btn-resume' => 'Continue',
+    'ks-chapters-search-placeholder' => 'Search',
+    'ks-chapters-search-clear' => 'Clear'
 );
 
 $messages['fr'] = array(

@@ -45,6 +45,7 @@ $messages['en'] = array(
 	//'mwe-embedplayer-prev_clip_msg' => 'Play previous clip',
 	//'mwe-embedplayer-current_clip_msg' => 'Continue playing this clip',
 	'mwe-embedplayer-select_playlist' => 'Select playlist',
+	'mwe-embedplayer-empty_playlist' => 'No source video was found in the selected playlist',
 	'mwe-embedplayer-videos' => 'videos',
 	/*'mwe-embedplayer-seek_to' => 'Seek $1',
 	'mwe-embedplayer-paused' => 'paused',
@@ -116,6 +117,9 @@ $messages['en'] = array(
 	'mwe-embedplayer-disable-audio-description' => 'Disable audio description',
 	'mwe-embedplayer-no-audio-description' => 'No audio description available',
 	'mwe-embedplayer-install-silverlight' => 'This video requires Microsoft Silverlight, which is currently not available on your browser. Please <a href="http://www.microsoft.com/silverlight/" target="_blank"> install Microsoft Silverlight </a> to view this video.',
+	'mwe-embedplayer-player-on-air' => 'LIVE',
+	'mwe-embedplayer-player-off-air' => 'Off Air',
+	'mwe-embedplayer-player-jump-to-live' => 'Jump to live',
 );
 
 /** Message documentation (Message documentation)

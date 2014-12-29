@@ -1,5 +1,4 @@
 <?php
-
 /*
  * Description of KalturaPlaylistResult
  * Holds playlist request methods
@@ -257,7 +256,7 @@ class PlaylistResult {
 						array( 'contextData' => $acResultObject[ $entry->accessControlId ] )
 					);
 					if( $acStatus !== true ){
-						//echo "remove: " . $entryInx . "\n";
+					    //echo "remove: " . $entryInx . "\n";
 						// remove from playlist
 						unset( $this->playlistObject[ $playlistId ]['items'][$entryInx] );
 						continue;

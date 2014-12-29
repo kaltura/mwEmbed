@@ -22,8 +22,10 @@
 				'layout': 'vertical',
 				'mediaItemWidth': null,
 				'mediaItemHeight': null,
+				'MinClips': 2,
 				'mediaItemRatio': (16 / 9),
 				'horizontalHeaderHeight': 0,
+				'verticalHeaderHeight': 0,
 				'onPage': false,
 				'includeInLayout': true,
 				'clipListTargetId': null,
@@ -32,7 +34,8 @@
 				'includeHeader': false,
 				'fullScreenDisplayOnly': false,
 				'minDisplayWidth': 0,
-				'minDisplayHeight': 0
+				'minDisplayHeight': 0,
+				'scrollerCssPath': "resources/nanoScroller/nanoScroller.css"
 			});
 		},
 
@@ -100,8 +103,9 @@
 
 		getComponent: function(){
 			if( ! this.$el ){
+				var cssClass = (this.getConfig('cssClass') ? ' ' + this.getConfig('cssClass') : '');
 				this.$el = $( '<div />' )
-					.addClass( this.pluginName + " medialistContainer unselectable k-" + this.getLayout() );
+					.addClass( this.pluginName + cssClass + " medialistContainer unselectable k-" + this.getLayout() );
 				if (this.getConfig("includeHeader")){
 					this.$el.append($( '<div />' ).addClass("k-medialist-header k-" + this.getLayout() ));
 				}
@@ -131,6 +135,9 @@
 						//Try to find and apply css on parent frame
 						var cssLink = this.getConfig('cssFileName');
 						if (cssLink) {
+							//Scroller CSS
+							$( 'head', window.parent.document ).append( '<link type="text/css" rel="stylesheet" href="' + kWidget.getPath() + this.getConfig("scrollerCssPath") + '"/>' );
+							//Plugin CSS
 							cssLink = cssLink.toLowerCase().indexOf("http") === 0 ? cssLink : kWidget.getPath() + cssLink; // support external CSS links
 							$( 'head', window.parent.document ).append( '<link type="text/css" rel="stylesheet" href="' + cssLink + '"/>' );
 						} else {
@@ -146,7 +153,7 @@
 							$( iframeParent ).after( "<div class='onpagePlaylistInterface'></div>" );
 							this.$mediaListContainer = $( iframeParent ).parent().find( ".onpagePlaylistInterface" );
 							$( this.$mediaListContainer ).width( $( iframeParent ).width());
-							var containerHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * 3 : this.getConfig( "mediaItemHeight" ) + this.getConfig('horizontalHeaderHeight');
+							var containerHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * this.getConfig( 'MinClips' ) + this.getConfig('verticalHeaderHeight') : this.getConfig( "mediaItemHeight" ) + this.getConfig('horizontalHeaderHeight');
 							$( this.$mediaListContainer ).height( containerHeight );
 						}
 						// support hidden playlists
@@ -158,7 +165,10 @@
 						mw.log( "Error: "+ this.pluginName +" could not access parent iframe" );
 					}
 				} else {
-					this.$mediaListContainer = $( ".playlistInterface" );
+					this.$mediaListContainer = $( ".playlistInterface");
+					if (mw.isIOS()){
+						this.$mediaListContainer.height(this.embedPlayer.height);
+					}
 					// resize the video to make place for the playlist according to its position (left, top, right, bottom)
 					if ( this.getConfig( 'containerPosition' ) == 'right' || this.getConfig( 'containerPosition' ) == 'left' ) {
 						$( ".videoHolder, .mwPlayerContainer" ).css( "width", this.$mediaListContainer.width() - this.getConfig( "mediaItemWidth" ) + "px" );
@@ -169,10 +179,14 @@
 					}
 
 					if ( this.getConfig( 'containerPosition' ) == 'top' || this.getConfig( 'containerPosition' ) == 'bottom' ) {
-						var playlistHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * 2 : this.getConfig( "mediaItemHeight" ) + this.getConfig('horizontalHeaderHeight');
+						var playlistHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * this.getConfig( "MinClips" ) + this.getMedialistHeaderComponent().height() : this.getConfig( "mediaItemHeight" ) + this.getConfig('horizontalHeaderHeight');
 						this.getComponent().height(playlistHeight);
 						$( ".mwPlayerContainer" ).css( "height", this.$mediaListContainer.height() - playlistHeight + "px" );
-						this.getPlayer().getVideoHolder().css( "height", this.$mediaListContainer.height() - playlistHeight - $( ".controlBarContainer" ).height() + "px" );
+						var controlBarHeight = 0;
+						$('.block').each(function() {
+							controlBarHeight += $( this ).outerHeight( true ); // add height of each components container that is not hovering
+						});
+						this.getPlayer().getVideoHolder().css( "height", this.$mediaListContainer.height() - playlistHeight - controlBarHeight + "px" );
 					}
 				}
 			}
@@ -192,7 +206,7 @@
 					$( ".mwPlayerContainer" ).css( "float", "left" );
 				}
 				if ( this.getConfig( 'containerPosition' ) == 'top' || this.getConfig( 'containerPosition' ) == 'bottom' ) {
-					this.getComponent().height( this.getConfig( "mediaItemHeight" ) * 2 );
+					this.getComponent().height( this.getConfig( "mediaItemHeight" ) * this.getConfig( "MinClips" ) + this.getMedialistHeaderComponent().height() );
 					this.getComponent().css( "display", "block" );
 				}
 			}
@@ -201,6 +215,10 @@
 					this.setConfig("mediaItemHeight", this.getComponent().height());
 				}
 				this.getComponent().height(this.getConfig("mediaItemHeight") + this.getConfig('horizontalHeaderHeight'));
+			}
+			if (this.getConfig('onPage') && this.getLayout() === "vertical" ){
+				var iframeParent = window['parent'].document.getElementById( this.embedPlayer.id );
+				$( this.$mediaListContainer ).height(this.getConfig("MinClips") * this.getConfig( "mediaItemHeight" ) + this.getConfig('verticalHeaderHeight'));
 			}
 		},
 
@@ -250,27 +268,45 @@
 			if (this.getTemplateData().length > 0) {
 				//Clear previous list
 				this.getMedialistComponent().empty();
+				//Clear the scroll reference
+				this.$scroll = null;
 				//Add media items to DOM
 				this.getMedialistComponent().append( medialist );
-				//Adjust container size
-				this.setMedialistContainerSize();
-				this.setMedialistComponentHeight();
-				//Adjust the mediaboxes size
-				this.setMediaBoxesDimensions();
-				//Attach media items handlers
-				this.attachMediaListHandlers();
-				//Add scroll if applicable
-				this.shouldAddScroll( );
+				this.configMediaListFeatures();
 				$( this.embedPlayer ).trigger( "mediaListLayoutReady" );
 			}
 		},
+		configMediaListFeatures: function(){
+			//Adjust container size
+			this.setMedialistContainerSize();
+			this.setMedialistComponentHeight();
+			//Adjust the mediaboxes size
+			this.setMediaBoxesDimensions();
+			//Attach media items handlers
+			this.attachMediaListHandlers();
+			//Add scroll if applicable
+			this.shouldAddScroll( );
+		},
 		setMedialistComponentHeight: function(){
-			if (this.getLayout() === "vertical" && (this.getConfig("containerPosition") === "top" || this.getConfig("containerPosition") === "bottom")){
-				this.getMedialistComponent().height(this.getComponent().height());
+			var _this = this;
+			var componentHeight = this.getComponent().height();
+			if (this.getConfig("onPage")){
+				if (this.getConfig("clipListTargetId")){
+					_this.getMedialistComponent().height(_this.$mediaListContainer.height() - _this.getMedialistHeaderComponent().height());
+				}else{
+					if (this.getLayout() === "vertical"){
+						this.getMedialistComponent().height(this.getConfig("MinClips") * this.getConfig("mediaItemHeight"));
+					}else{
+						this.getMedialistComponent().height(this.getConfig("mediaItemHeight"));
+					}
+				}
 			}else{
-				this.getMedialistComponent().height(this.getComponent().height()-this.getMedialistHeaderComponent().height());
+				if (this.getLayout() === "vertical"){
+					this.getMedialistComponent().height(componentHeight - this.getMedialistHeaderComponent().height());
+				}else{
+					this.getMedialistComponent().height(this.getConfig("mediaItemHeight"));
+				}
 			}
-
 		},
 		setMediaBoxesDimensions: function(){
 			var height = this.getMedialistComponent().height();
@@ -279,10 +315,10 @@
 			var mediaBoxes = this.getMediaListDomElements();
 			if (layout == "vertical"){
 				var newHeight = this.getConfig( "mediaItemHeight" ) || width * (1 / this.getConfig("mediaItemRatio"));
-				mediaBoxes.width(width).height(newHeight);
+				mediaBoxes.height(newHeight);
 			} else {
 				var newWidth = this.getConfig( "mediaItemWidth" ) || height * this.getConfig("mediaItemRatio");
-				mediaBoxes.width(newWidth).height(height);
+				mediaBoxes.width(newWidth);
 			}
 		},
 		getScrollbarSize: function(w) {
@@ -500,15 +536,14 @@
 			return sliceIndex;
 		},
 		addScroll: function(){
-			var $cc = this.getMedialistComponent();
-			this.mediaItemVisible = this.calculateVisibleScrollItems();
 			var isVertical = ( this.getLayout() == 'vertical' );
-			var speed = mw.isTouchDevice() ? 100: 200;
-
 			if (isVertical) {
 				this.getScrollComponent();
 			}else {
 				this.addScrollUiComponents();
+				var $cc = this.getMedialistComponent();
+				this.mediaItemVisible = this.calculateVisibleScrollItems();
+				var speed = mw.isTouchDevice() ? 100: 200;
 				// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
 				$cc.find( '.k-carousel' ).jCarouselLite( {
 					btnNext: '.k-next',
@@ -521,6 +556,7 @@
 					scroll: 1,
 					speed: speed
 				} );
+				$cc.find('ul').width((this.getMediaItemBoxWidth()+1)*this.mediaList.length);
 				$cc.find('.k-carousel').css('width', $cc.width() );
 			}
 		},
@@ -531,11 +567,28 @@
 				var list = $( this.getMedialistComponent().children()[0] );
 				list.wrap( this.$scroll );
 				this.$scroll = this.getComponent().find(".nano");
-				this.$scroll.nanoScroller( {
+				var options = {
 					flash: true,
 					preventPageScrolling: true,
 					iOSNativeScrolling: true
-				} );
+				} ;
+				if (this.getConfig('onPage')){
+					try{
+						$.extend(options, {
+							documentContext: window.parent.document,
+							windowContext: window.parent.window
+						});
+						var _this = this;
+						setTimeout(function(){
+							_this.$scroll.nanoScroller( options );
+						}, 100);
+
+					} catch (e){
+						this.log("Unable to reference onPage window/document context");
+					}
+				} else {
+					this.$scroll.nanoScroller( options );
+				}
 			}
 			return this.$scroll;
 		},

@@ -43,6 +43,10 @@
 		// Disable switch source callback
 		disableSwitchSourceCallback: false,
 
+		playbackDone: false,
+
+		playingSource: undefined,
+
 		// All the native events per:
 		// http://www.w3.org/TR/html5/video.html#mediaevents
 		nativeEvents: [
@@ -88,6 +92,7 @@
 
 			var divElement = document.createElement("div");
 			divElement.setAttribute('id', 'proxy');
+			divElement['paused'] = true;
 			document.body.appendChild(divElement);
 
 			this.proxyElement = divElement;
@@ -104,7 +109,7 @@
 			this.applyMediaElementBindings();
 
 			this.bindHelper("SourceChange", function () {
-				_this.getPlayerElement().attr('src', this.getSrc());
+				_this.setSrcAttribute( _this.getSrc() );
 			});
 			this.bindHelper("layoutBuildDone ended", function () {
 				_this.getPlayerElement().notifyLayoutReady();
@@ -113,16 +118,18 @@
 				mw.log("EmbedPlayerNativeComponent:: showChromecastDeviceList::");
 				_this.getPlayerElement().showChromecastDeviceList();
 			});
-
+			this.bindHelper("onEndedDone", function () {
+				_this.playbackDone = true;
+			});
 			this.resolveSrcURL(this.getSrc()).then(
 				function (resolvedSrc) {
 					mw.log("EmbedPlayerNativeComponent::resolveSrcURL get succeeded");
-					_this.getPlayerElement().attr('src', resolvedSrc);
+					_this.setSrcAttribute( resolvedSrc );
 					readyCallback();
 				},
 				function () {
 					mw.log("EmbedPlayerNativeComponent::resolveSrcURL get failed");
-					_this.getPlayerElement().attr('src', _this.getSrc());
+					_this.setSrcAttribute( _this.getSrc() );
 					readyCallback();
 				}
 			);
@@ -131,11 +138,30 @@
 		embedPlayerHTML: function () {
 		},
 
+		setSrcAttribute: function( source ) {
+			this.getPlayerElement().attr('src', source);
+			this.playingSource =  source;
+		},
+
 		playerSwitchSource: function (source, switchCallback, doneCallback) {
 			mw.log("NativeComponent:: playerSwitchSource");
 			var _this = this;
 			var vid = this.getPlayerElement();
+			var src = source.getSrc();
 			var switchBindPostfix = '.playerSwitchSource';
+
+			// Make sure the switch source is different:
+			if ( !src || src == this.playingSource ) {
+				if ($.isFunction(switchCallback)) {
+					switchCallback(vid);
+				}
+				// Delay done callback to allow any non-blocking switch callback code to fully execute
+				if ($.isFunction(doneCallback)) {
+					doneCallback();
+				}
+				return;
+			}
+
 
 			// remove old binding:
 			$(vid).unbind(switchBindPostfix);
@@ -145,29 +171,29 @@
 
 			// empty out any existing sources:
 			$(vid).empty();
-
-			if (this.getSrc() != source.getSrc()) {
-				vid.attr('src', source.getSrc());
-			} else {
-				vid.attr('src', this.getSrc());
-			}
+			this.setSrcAttribute( src );
 
 			this.isPauseLoading = false;
+			// Update some parent embedPlayer vars:
+			this.currentTime = 0;
+			this.previousTime = 0;
 			_this.hideSpinner();
 			if ($.isFunction(switchCallback)) {
 				switchCallback(vid);
-			}
-
-			if ($.isFunction(switchCallback)) {
-				setTimeout(function () {
-					vid.play();
-				}, 100);
+				var isPlayingAdsContext = this.adsOnReplay || !(this.adTimeline.displayedSlotCount > 0);
+				if ( (isPlayingAdsContext || this.loop) && !_this.playbackDone) {
+					setTimeout(function () {
+						vid.play();
+					}, 100);
+				}
 			}
 
 
 			// Add the end binding if we have a post event:
 			if ($.isFunction(doneCallback)) {
 				$(vid).bind('ended' + switchBindPostfix, function (event) {
+					_this.currentTime = 0;
+					_this.previousTime = 0;
 					if (_this.disableSwitchSourceCallback) {
 						return;
 					}
@@ -199,7 +225,6 @@
 					if (_this._propagateEvents && _this.instanceOf == 'NativeComponent') {
 						var argArray = $.makeArray(arguments);
 						// Check if there is local handler:
-
 						if (_this[ '_on' + eventName ]) {
 							_this[ '_on' + eventName ].apply(_this, argArray);
 						} else {
@@ -242,13 +267,12 @@
 		/**
 		 * Stop the player ( end all listeners )
 		 */
-		stop: function () {
-			mw.log("EmbedPlayerNativeComponent:: stop::");
-			this.parent_stop();
-			if (this.getPlayerElement() && this.getPlayerElement().attr('currentTime')) {
-				this.getPlayerElement().attr('currentTime', '0');
-				this.getPlayerElement().stop();
+		stop: function(){
+			var _this = this;
+			if( this.playerElement && this.playerElement.currentTime){
+				this.playerElement.pause();
 			}
+			this.parent_stop();
 		},
 
 		/**
@@ -258,7 +282,7 @@
 
 		play: function () {
 			mw.log("EmbedPlayerNativeComponent:: play::");
-
+			this.playbackDone = false;
 			this.removePoster();
 
 			if (this.parent_play()) {
@@ -314,8 +338,9 @@
 		 */
 		_onplay: function () {
 			mw.log("EmbedPlayerNativeComponent:: OnPlay::");
-
 			$(this).trigger("playing");
+			this.removePoster();
+			this.hideSpinner();
 
 			if (this.paused && this.parent_play()) {
 				this.monitor();
@@ -397,8 +422,8 @@
 		 */
 		_onended: function (event) {
 			if (this.getPlayerElement()) {
-				mw.log('EmbedPlayer:native: onended:');
-				if (this._propagateEvents) {
+				mw.log( 'EmbedPlayer:nativeComponent: onended:' );
+				if ( this._propagateEvents && !this.isLive() ) {
 					this.onClipDone();
 				}
 			}
@@ -408,6 +433,7 @@
 		 * Local onClip done function for native player.
 		 */
 		onClipDone: function () {
+			mw.log('EmbedPlayer:native: oneClipDone:');
 			this.parent_onClipDone();
 		},
 
@@ -482,6 +508,13 @@
 
 		isVideoSiblingEnabled: function () {
 			return false;
+		},
+
+		isPlaying: function () {
+			if ( this.stopped || this.paused || this.getPlayerElement().paused ) {
+				return false;
+			}
+			return true;
 		}
 	};
 })(mediaWiki, jQuery);

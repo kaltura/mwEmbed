@@ -24,6 +24,7 @@
 			'overflow': false,
 			'cssFileName': 'modules/KalturaSupport/components/playlist/playList.css',
 			'showControls': true,
+			'MinClips': 2,
 			'MaxClips': 25,
 			'selectedIndex': 0,
 			'includeHeader': true
@@ -40,15 +41,22 @@
 		playlistSet: [],        // array holding all the play lists returned from the server
 
 		videoWidth: null,        // used to save the video width when exiting to full screen and returning
+		minClips: null,          // saves the MinClips Flashvar when we switch playlists
+		multiplePlayListsReady: false, //Indicate if multiplaylist selector is ready
+		playerIsReady: false,
 
 		setup: function (embedPlayer) {
 			if (this.getConfig('includeInLayout') === false) { // support hidden playlists - force onPage and hide its div.
 				this.setConfig('onPage', true);
 			}
+			this.minClips = parseInt(this.getConfig('MinClips'));
 			//Backward compatibility setting - set autoplay on embedPlayer instead of playlist
 			this.getPlayer().autoplay = (this.getConfig('autoPlay') == true);
 
-			this.setConfig('horizontalHeaderHeight', 43);
+			if (this.getConfig("includeHeader")){
+				this.setConfig('horizontalHeaderHeight', 43);
+				this.setConfig('verticalHeaderHeight', 65);
+			}
 			this.addBindings();
 			this.loadPlaylists();
 		},
@@ -57,6 +65,7 @@
 
 			$(this.embedPlayer).unbind(this.bindPostFix);
 			this.bind('playerReady', function (e, newState) {
+				_this.playerIsReady = true;
 				if (_this.playlistSet.length > 0) {
 					_this.selectPlaylist(_this.currentPlaylistIndex);
 					//Revert block player display after selecting playlist entry
@@ -132,6 +141,7 @@
 					_this.$mediaListContainer = null;
 					_this.getMedialistContainer();
 					_this.renderMediaList();
+					_this.setMultiplePlayLists();
 				}
 			});
 
@@ -339,30 +349,35 @@
 
 		// when we have multiple play lists - build the UI to represent it: combobox for playlist selector
 		setMultiplePlayLists: function () {
-			var _this = this;
-			var maxClips = parseInt(this.getConfig('MaxClips'));
-			if (this.getComponent().find(".playlistSelector").length == 0) { // UI wasn't not created yet
-				this.getComponent().find(".k-vertical").find(".playlistTitle, .playlistDescription").addClass("multiplePlaylists");
-				this.getComponent().find(".dropDownIcon").on("click",function () {
-					if (_this.getComponent().find(".playlistSelector").height() > 0) {
-						_this.closePlaylistDropdown();
-					} else {
-						_this.openPlaylistDropdown();
-					}
-				}).show();
-				this.getMedialistComponent().prepend('<div class="playlistSelector"></div>');
-				$.each(this.playlistSet, function (i, el) {
-					var numOfClips = el.content.split(",").length;
-					numOfClips = numOfClips > maxClips ? maxClips : numOfClips; // support MaxClips Flashvar
-					if (_this.getLayout() === "vertical") {
-						_this.getComponent().find(".playlistSelector").append('<br><div data-index="' + i + '" class="playlistItem"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists">' + numOfClips + ' ' + gM('mwe-embedplayer-videos') + '</span></div>');
-					} else {
-						_this.getComponent().find(".playlistSelector").append('<div data-index="' + i + '" class="playlistItem k-horizontal"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists">' + numOfClips + ' ' + gM('mwe-embedplayer-videos') + '</span></div>');
-					}
-				});
-				this.getComponent().find(".playlistItem").on("click", function () {
-					_this.switchPlaylist($(this).attr('data-index'));
-				});
+			if ( this.playerIsReady && this.playlistSet.length > 1 ) {
+				var _this = this;
+				var maxClips = parseInt( this.getConfig( 'MaxClips' ) );
+				if ( this.getComponent().find( ".playlistSelector" ).length == 0 ) { // UI wasn't not created yet
+					this.getComponent().find( ".k-vertical" ).find( ".playlistTitle, .playlistDescription" ).addClass( "multiplePlaylists" );
+					this.getComponent().find( ".dropDownIcon" ).on( "click", function () {
+						if ( _this.getComponent().find( ".playlistSelector" ).height() > 0 ) {
+							_this.closePlaylistDropdown();
+						} else {
+							_this.openPlaylistDropdown();
+						}
+					} );
+					this.getMedialistComponent().prepend( '<div class="playlistSelector"></div>' );
+					$.each( this.playlistSet, function ( i, el ) {
+						var numOfClips = el.content.split( "," ).length;
+						numOfClips = numOfClips > maxClips ? maxClips : numOfClips; // support MaxClips Flashvar
+						if ( _this.getLayout() === "vertical" ) {
+							_this.getComponent().find( ".playlistSelector" ).append( '<br><div data-index="' + i + '" class="playlistItem"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists">' + numOfClips + ' ' + gM( 'mwe-embedplayer-videos' ) + '</span></div>' );
+						} else {
+							_this.getComponent().find( ".playlistSelector" ).append( '<div data-index="' + i + '" class="playlistItem k-horizontal"><span class="k-playlistTitle"> ' + el.name + '</span><br><span class="k-playlistDescription multiplePlaylists">' + numOfClips + ' ' + gM( 'mwe-embedplayer-videos' ) + '</span></div>' );
+						}
+					} );
+					this.getComponent().find( ".playlistItem" ).on( "click", function () {
+						_this.switchPlaylist( $( this ).attr( 'data-index' ) );
+					} );
+					setTimeout(function(){
+						_this.getComponent().find(".dropDownIcon").show();
+					},100);
+				}
 			}
 		},
 
@@ -428,50 +443,92 @@
 			this.embedPlayer.setKalturaConfig('playlistAPI', 'dataProvider', {'content': this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')}); // for API backward compatibility
 			this.mediaList = [];
 			var items = this.playlistSet[playlistIndex].items;
-			items = items.length > parseInt(this.getConfig('MaxClips')) ? items.slice(0, parseInt(this.getConfig('MaxClips'))) : items; // support MaxClips Flashvar
-			this.addMediaItems(items);   // prepare the data to be compatible with KBaseMediaList
-			this.getMedialistHeaderComponent().empty();
-			if (this.getLayout() === "vertical") {
-				if (this.getConfig('containerPosition') === "left" || this.getConfig('containerPosition') === "right" || this.getConfig('onPage') === true) {
-					this.getMedialistHeaderComponent().prepend('<span class="playlistTitle">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription">' + items.length + ' ' + gM('mwe-embedplayer-videos') + '</span>');
-					this.getMedialistHeaderComponent().prepend('<div class="dropDownIcon" title="' + gM('mwe-embedplayer-select_playlist') + '"></div>');
-				} else {
-					this.getMedialistHeaderComponent().hide();
+			items = items.length > parseInt( this.getConfig( 'MaxClips' ) ) ? items.slice( 0, parseInt( this.getConfig( 'MaxClips' ) ) ) : items; // support MaxClips Flashvar
+			this.setConfig('MinClips', this.minClips);
+			if (items.length < this.minClips){              // support the MinClips Flashvar
+				this.setConfig('MinClips', items.length);	// set MinClips Flashvar to the number of items in the playlist
 				}
-			} else {
-				this.getMedialistHeaderComponent().prepend('<span class="playlistTitle horizontalHeader">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription horizontalHeader">(' + items.length + ' ' + gM('mwe-embedplayer-videos') + ')</span>');
-				this.getMedialistHeaderComponent().prepend('<div class="dropDownIcon" title="' + gM('mwe-embedplayer-select_playlist') + '"></div>');
+			if (!this.getConfig( 'onPage' )){
+				// make sure we leave enough space for the video
+				while (this.$mediaListContainer.height() - parseInt(this.getConfig('MinClips')) * this.getConfig("mediaItemHeight") < 200){
+					this.setConfig('MinClips',parseInt(this.getConfig('MinClips'))-1);
+				}
+				this.$mediaListContainer = null;            // remove currently rendered media items so it will re re-calculated on the renderMediaList() call
+				this.getMedialistContainer();
 			}
-			if (this.getConfig('showControls') === true) {
-				this.getMedialistHeaderComponent().prepend('<div class="playlistControls k-' + this.getLayout() + '"><div class="prevBtn playlistBtn"></div><div class="nextBtn playlistBtn"></div></div>');
-				this.getMedialistHeaderComponent().find(".playlistControls .nextBtn").on("click", function () {
+			this.addMediaItems( items );   // prepare the data to be compatible with KBaseMediaList
+			this.getMedialistHeaderComponent().empty();
+			if ( this.getLayout() === "vertical" ) {
+					this.getMedialistHeaderComponent().prepend( '<span class="playlistTitle">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription">' + items.length + ' ' + gM( 'mwe-embedplayer-videos' ) + '</span>' );
+					this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '"></div>' );
+				} else {
+					this.getMedialistHeaderComponent().prepend( '<span class="playlistTitle horizontalHeader">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription horizontalHeader">(' + items.length + ' ' + gM( 'mwe-embedplayer-videos' ) + ')</span>' );
+					this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '"></div>' );
+			}
+			if ( this.getConfig( 'showControls' ) === true ) {
+				this.getMedialistHeaderComponent().prepend( '<div class="playlistControls k-' + this.getLayout() + '"><div class="prevBtn playlistBtn"></div><div class="nextBtn playlistBtn"></div></div>' );
+				this.getMedialistHeaderComponent().find( ".playlistControls .nextBtn" ).on( "click", function () {
 					_this.playNext()
-				});
-				this.getMedialistHeaderComponent().find(".playlistControls .prevBtn").on("click", function () {
+				} );
+				this.getMedialistHeaderComponent().find( ".playlistControls .prevBtn" ).on( "click", function () {
 					_this.playPrevious()
-				});
+				} );
 			}
-			this.renderMediaList();  // set the media list in KBaseMediaList
-			// support initial selectedIndex or initItemEntryId
-			if (this.firstLoad) {
-				if (this.getConfig('initItemEntryId')) { // handle initItemEntryId
-					// find selected item index
-					var found = false;
-					for (var i = 0; i < items.length; i++) {
-						if (items[i].id === this.getConfig('initItemEntryId')) {
-							this.playMedia(i);
-							found = true;
-							break;
+
+			if (items.length === 0){
+				//If no items then show error message
+				this.showEmptyPlaylistError();
+				this.configMediaListFeatures();
+			} else {
+				this.clearEmptyPlaylistError();
+				this.renderMediaList();  // set the media list in KBaseMediaList
+
+				// support initial selectedIndex or initItemEntryId
+				if ( this.firstLoad ) {
+					if ( this.getConfig( 'initItemEntryId' ) ) { // handle initItemEntryId
+						// find selected item index
+						var found = false;
+						for ( var i = 0; i < items.length; i++ ) {
+							if ( items[i].id === this.getConfig( 'initItemEntryId' ) ) {
+								this.playMedia( i );
+								found = true;
+								break;
+							}
 						}
 					}
+					if ( (this.getConfig( 'initItemEntryId' ) && !found) || !(this.getConfig( 'initItemEntryId' )) ) {
+						this.playMedia( this.getConfig( 'selectedIndex' ) );
+					}
 				}
-				if ((this.getConfig('initItemEntryId') && !found) || !(this.getConfig('initItemEntryId'))) {
-					this.playMedia(this.getConfig('selectedIndex'));
-				}
+			}
+			if ( this.firstLoad ) {
+				this.setMultiplePlayLists(); // support multiple play lists
 				this.firstLoad = false;
 			}
-			if (this.playlistSet.length > 1) {
-				this.setMultiplePlayLists(); // support multiple play lists
+		},
+		showEmptyPlaylistError: function () {
+			var $this = $(this);
+			var errorObj = this.embedPlayer.getKalturaMsgObject('mwe-embedplayer-empty_playlist');
+			this.emptyPlaylistSelected = true;
+			this.getPlayer()['data-blockPlayerDisplay'] = false;
+			// Support no sources custom error msg:
+			$this.trigger('EmptyPlaylistCustomError', function (customErrorMsg) {
+				if (customErrorMsg) {
+					errorObj.message = customErrorMsg;
+				}
+			});
+			// set the error object:
+			this.embedPlayer.setError(errorObj);
+			// Add the no sources error:
+			this.embedPlayer.showErrorMsg(errorObj);
+		},
+		clearEmptyPlaylistError : function(){
+			if (this.emptyPlaylistSelected){
+				this.emptyPlaylistSelected = false;
+				this.embedPlayer.getInterface().find('.error').remove();
+				this.embedPlayer.setError(null);
+				this.embedPlayer.layoutBuilder.closeAlert();
+				this.embedPlayer.layoutBuilder.closeMenuOverlay();
 			}
 		}
 	})

@@ -23,7 +23,10 @@ $sendNotificationActions = array (
 				'notificationDataType' => 'Object',
 				'notificationData' => 'Data object can specify an entryId or referenceId',
 				'desc' => 'Change the current media entry within the player.',
-				'notificationDataValue' => '{ "entryId" : "0_wm82kqmm" }',
+				'notificationDataValue' => array(
+						'{ "entryId" : "0_wm82kqmm" }',
+						'{ "mediaProxy" : mediaProxyObject }'
+				),
 				'example' => '../modules/KalturaSupport/tests/ChangeMediaEntry.qunit.html'
 		),
 		'changeVolume' => array (

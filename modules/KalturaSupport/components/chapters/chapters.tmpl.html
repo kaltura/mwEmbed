@@ -1,7 +1,7 @@
 <ul>
     <% for ( var i = 0; i < mediaList.length; i++ ) { %>
     <%var mediaItem =  mediaList[i];%>
-    <li class="chapterBox" data-chapter-index="<%=mediaItem.order%>">
+    <li class="chapterBox" data-chapter-index="<%=mediaItem.order%>" data-obj-id="<%=mediaItem.id%>">
             <% if( meta.includeThumbnail) { %>
             <div class="k-thumb" alt="Thumbnail for <%=mediaItem.title%>" data-chapter-index="<%=mediaItem.order%>"
                  style="background-image:url(<%=mediaItem.thumbnail.url%>);">

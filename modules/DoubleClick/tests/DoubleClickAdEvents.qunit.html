@@ -72,6 +72,9 @@
 			kdp.addJsListener("onAdSkip", function(){
 				$('#adTracking').append("onAdSkip event triggered<br>");
 			});
+			kdp.addJsListener("onAllAdsCompleted", function(){
+				$('#adTracking').append("onAllAdsCompleted event triggered<br>");
+			});
 			kdp.addJsListener("adErrorEvent", function(){
 				$('#adTracking').append("<font color='red'>adErrorEvent event triggered</font><br>");
 			});
@@ -140,6 +143,10 @@
 	<li><b><i>AdSupport_EndAdPlayback:</i></b> is triggered by the Kaltura player when the last post-sequence ad finish</li>
 	<li><b><i>postSequenceComplete:</i></b> is triggered by the Kaltura player to mark the end of the post-sequence event</li>
 </ul>
+<h5>Additional events:</h5>
+<ul>
+	<li><b><i>onAllAdsCompleted:</i></b> is triggered by the Kaltura player when all ads were shown</li>
+</ul>
 <h5>Ad error events:</h5>
 <ul>
 	<li><b><i><font color="red">adErrorEvent:</font></i></b> is triggered when the ad fails to load (usually caused by ad blocker usage)</li>
@@ -158,7 +165,7 @@
 		'flashvars': {
 			'doubleClick':{
 				'plugin':true,
-				//'leadWithFlash': false,
+				'leadWithFlash': false,
 				'path' : 'http://cdnbakmi.kaltura.com/content/uiconf/ps/veria/kdp3.9.1/plugins/doubleclickPlugin.swf',
 				//'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dlinear',
 				//'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dimageoverlay',
