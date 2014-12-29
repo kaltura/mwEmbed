@@ -153,14 +153,10 @@
 			'EmbedPlayer.UseFlashOnAndroid' => false,
 			
 			// If embedPlayer should support server side temporal urls for seeking options are
-			// flash|always|none default is support for flash only.
-			'EmbedPlayer.EnableURLTimeEncoding' => 'flash',
+			'EmbedPlayer.EnableURLTimeEncoding' => false,
 			
 			// The domains which can read and send events to the video player
 			'EmbedPLayer.IFramePlayer.DomainWhiteList' => '*',
-			
-			// If the iframe should send and receive javascript events across domains via postMessage
-			'EmbedPlayer.EnableIframeApi' => true,
 			
 			// If set to true will output the iframe as inline contents on the same domain as page contents
 			'EmbedPlayer.PageDomainIframe' => true,
@@ -175,6 +171,9 @@
 			"EmbedPlayer.DefaultImageDuration" => 2,
 
 			// Default Timeout for Player controls hover out
-			"EmbedPlayer.HoverOutTimeout" => 1000,
+			"EmbedPlayer.HoverOutTimeout" => 300,
+
+			// Default Timeout for Mouse Move check
+			"EmbedPlayer.MouseMoveTimeout" => 4000,
 	);
 ?>

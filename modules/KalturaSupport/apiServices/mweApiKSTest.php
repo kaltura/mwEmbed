@@ -1,6 +1,6 @@
 <?php
 /**
-* This file enables slow javascript response for testing blocking scripts relative to player embeds
+* This demonstrates grabbing a admin KS for a particular action ( sview ) being granted to the current user / session.
 */
 $wgMwEmbedApiServices['KSTest'] = 'mweApiKSTest';
 
@@ -11,14 +11,14 @@ class mweApiKSTest {
 	function run(){
 		global $wgKalturaAdminSecret;
 		// validate params ( hard coded to test a particular test file / account )
-		if( !isset( $_REQUEST['wid'] ) ||  $_REQUEST['wid'] != '_243342' ){
+		if( !isset( $_REQUEST['wid'] ) ||  $_REQUEST['wid'] != '_929011' ){
 			$this->outputError( 'bad widget param');
 		}
-		$this->partnerId = '243342';
-		if( !isset( $_REQUEST['entry_id'] ) || $_REQUEST['entry_id'] != '1_20x0ca3l' ){
+		$this->partnerId = '929011';
+		if( !isset( $_REQUEST['entry_id'] ) || $_REQUEST['entry_id'] != '1_4f9zv9fu' ){
 			$this->outputError( 'bad entry_id param');
 		}
-		$this->entryId = '1_20x0ca3l';
+		$this->entryId = '1_4f9zv9fu';
 		
 		// load library and get ks for given entry:
 		if( !isset( $wgKalturaAdminSecret ) || ( $wgKalturaAdminSecret == null ) ) {
@@ -30,8 +30,8 @@ class mweApiKSTest {
 				$_SERVER['REMOTE_ADDR'], 
 				KalturaSessionType::ADMIN, 
 				$this->partnerId, 
-				null, 
-				"sview:{$this->entryId}"
+				3600, // expire in one hour
+				"sview:{$this->entryId}" // give permision to "view" the entry
 			);
 		header( 'Content-type: text/javascript');
 		echo json_encode(array('ks' => $ks ) );

@@ -1,32 +1,8 @@
 <?php 
 return array(
-	'playlistOnPage' => array( 
-		'description' => 'Adds a playlist to the page, per player defined playlist id. This enables custom on-page css to theme the playlist to the host page.',
-		'attributes' => array(
-			'plugin' => array(
-				'hideEdit' => true,
-			),
-			'path' => array(
-				'hideEdit' => true
-			),
-			'clipListTargetId' => array(
-				'doc' => 'Target div for ul list of clips, appended after player if null',
-				'type' => 'string'
-			),
-			'layoutMode' => array(
-				'doc' => "Layout mode of playlist ( vertical or horizontal ) ",
-				'type' => 'enum',
-				'enum' => array( 'vertical', 'horizontal' )
-			),
-			'thumbWidth' => array(
-				'doc' => "The width of the clip thumbnails in pixels ( default 110 )",
-				'type' => 'number',
-			)
-		)
-	),
 	'omnitureOnPage' => array(
 		'description' => 'The Omniture s_code config version of the plugin, allows you to connect the Omniture plugin to your existing s_code.js
-			configuration for easy integration of video analytics into an Omniture site.',
+			configuration for easy integration of video analytics into an Omniture site.<br>For full implementation guide see <a target="_new" href="http://knowledge.kaltura.com/omniture-plugin-setup-and-information-guide">Omniture on page</a> in the Knowledge Center',
 		'attributes' => array(
 			's_codeUrl' => array(
 				'doc' => "The URL to the Ominture generated sCode file that must be set in the uiConf (not via flashvars). This parameter is required for the plugin to work.",
@@ -69,6 +45,16 @@ return array(
 				Values will correspond to the evars and props comma separated map defined in additionalEvarsAndProps.",
 				'label' => 'Kaltura values',
 				'type' => 'string'
+			),
+			'autoTrack' => array(
+				'doc' => "Default true, Value passed to autoTrack Omniture media module property.",
+				'type' => 'boolean',
+				'default' => true	
+			), 
+			'trackWhilePlaying' => array(
+				'doc' => "Default true, Value passed to trackWhilePlaying Omniture media module property.",
+				'type' => 'boolean',
+				'default' => true
 			)
 		)
 	),
@@ -206,12 +192,12 @@ return array(
 				'type' => 'string'
 			),
 			'tags' => array(
-				'doc' => 'Default: "chaptering"â Providing a tag name will grab only annotations which have that tag. 
+				'doc' => 'Default: "chaptering"ï¿½ Providing a tag name will grab only annotations which have that tag. 
 									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters in different languages)',
 				'type' => 'string'
 			),
 			'parentName' => array(
-				'doc' => 'Default: "chaptering"â Providing a parentName will force querying only annotations whose parent fits parentName. 
+				'doc' => 'Default: "chaptering"ï¿½ Providing a parentName will force querying only annotations whose parent fits parentName. 
 									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters, references, ads).',
 				'type' => 'string'
 			),
@@ -228,7 +214,7 @@ return array(
 				'enum' => array( 'before', 'after', 'left', 'right' )
 			),
 			'overflow' => array(
-				'doc' => 'Defines what should happen in case list of chapters require more space than videos dimensions. Combined with theâ layoutâ and positionâ parameters, this parameter will cause a prev/next UI to appear if overflow is set to false.',
+				'doc' => 'Defines what should happen in case list of chapters require more space than videos dimensions. Combined with theï¿½ layoutï¿½ and positionï¿½ parameters, this parameter will cause a prev/next UI to appear if overflow is set to false.',
 				'type' => 'boolean',
 			),
 			'includeThumbnail' => array(

@@ -26,7 +26,7 @@
 			// Unbind any existing bindings
 			this.embedPlayer.unbindHelper( _this.bindPostFix );
 			this.embedPlayer.bindHelper( 'PlayerLoaded' + _this.bindPostFix, function() {
-				//kplayer will use flash akamaiMediaAnalyticsPlugin
+				// kplayer will use flash akamaiMediaAnalyticsPlugin
 				if ( embedPlayer.selectedPlayer.library == 'Kplayer' ) {
 					_this.sendDataToKPlayer( embedPlayer );
 				} else {
@@ -113,7 +113,7 @@
 		 */
 		setData: function( embedPlayer ) {
 			var _this = this;
-		  	var dataObject = this.getAkamaiDataObject( embedPlayer );
+			var dataObject = this.getAkamaiDataObject( embedPlayer );
 			$.each(dataObject, function(key, element) {
 				_this.sendAkamaiData( key, element );
 			});
@@ -134,7 +134,8 @@
 			}
 			//else wait for widget load event
 			else {
-				embedPlayer.bindHelper( 'playerReady',function(){
+				// TODO inherit the base plugin and use normal this.bind method
+				embedPlayer.bindHelper( 'playerReady.AkamaiMediaAnalytics',function(){
 					// add a timeout to give the parent frame a chance to update the total load time
 					setTimeout(function(){
 						callback();
@@ -147,25 +148,41 @@
 		 * @param embedPlayer
 		 */
 		sendDataToKPlayer: function( embedPlayer ) {
+			var _this = this;
 			var dataObject = this.getAkamaiDataObject( embedPlayer );
+			//log events
+			$.each(dataObject, function(key, element) {
+				_this.sendEventLog( key, element );
+			});
+
 			this.doOnPlayerLoadReady( embedPlayer, function() {
+				// confirm we are still a KDP instance: 
+				if( embedPlayer.selectedPlayer.library != 'Kplayer' ){
+					return ;
+				}
 				dataObject['playerLoadtime'] = embedPlayer.evaluate( '{playerStatusProxy.loadTime}' );
+				_this.sendEventLog( 'playerLoadtime', dataObject['playerLoadtime'] );
 				embedPlayer.getPlayerElement().sendNotification( 'setMediaAnalyticsData', dataObject );
-			} );
+			});
 		},
 
 		sendAkamaiData: function( eventId, data ){
 			// send the data with the Akamai method: 
 			setAkamaiMediaAnalyticsData( eventId, data );
-			// log to the trackEventMonitor if not present: 
+			this.sendEventLog( eventId, data );
+
+		},
+
+		sendEventLog: function( eventId, data ) {
+			// log to the trackEventMonitor if not present:
 			if ( this.getConfig( 'trackEventMonitor' ) ) {
 				try{
 					window.parent[ this.getConfig( 'trackEventMonitor' ) ]( eventId, data );
 				} catch(e){
-					// error could not log event. 
+					// error could not log event.
 				}
 			}
-		},
+		} ,
 
 		getConfigPath: function() {
 			// Check for configuration override

@@ -137,10 +137,8 @@
 		},
 		updateKS: function ( embedPlayer, ks){
 			var client = mw.kApiGetPartnerClient( embedPlayer.kwidgetid );
-			// clear out any old player data cache:
-			client.clearCache();
 			// update the new ks:
-			client.setKS( ks );
+			client.setKs( ks );
 			// Update KS flashvar
 			embedPlayer.setFlashvars( 'ks', ks );
 			// TODO confirm flash KDP issues a changeMedia internally for ks updates
@@ -362,6 +360,14 @@
 						case 'isLive':
 							return embedPlayer.isLive();
 						break;
+						case 'mediaPlayTo':
+							var mediaPlayTo = embedPlayer.getFlashvars('mediaProxy.mediaPlayTo');
+							return mediaPlayTo ? mediaPlayTo :null;
+							break;
+						case 'mediaPlayFrom':
+							var mediaPlayFrom = embedPlayer.getFlashvars('mediaProxy.mediaPlayFrom');
+							return mediaPlayFrom ? mediaPlayFrom : null;
+							break;
 						case 'isOffline':
 							if ( $.isFunction( embedPlayer.isOffline ) ) {
 								return embedPlayer.isOffline();
@@ -498,6 +504,13 @@
 							};
 							var location = getLocation(referrer);
 							return location.hostname;
+							break;
+						case 'nativeAdId':
+							if( embedPlayer ) {
+								return embedPlayer.getFlashvars('nativeAdId');
+							} else {
+								return "";
+							}
 							break;
 					}
 					break;
@@ -863,10 +876,10 @@
 					})
 					break;
 				case 'bytesDownloadedChange':
-					// KDP sends an initial bytes loaded zeor at player ready:
+					// KDP sends an initial bytes loaded zero at player ready:
 					var prevBufferBytes = 0;
 					b( 'monitorEvent', function(){
-						if( typeof embedPlayer.bufferedPercent != 'undefined' ){
+						if( typeof embedPlayer.bufferedPercent != 'undefined' && embedPlayer.mediaElement.selectedSource ){
 							var bufferBytes = parseInt( embedPlayer.bufferedPercent *  embedPlayer.mediaElement.selectedSource.getSize() );
 							if( bufferBytes != prevBufferBytes ){
 								callback( { 'newValue': bufferBytes }, embedPlayer.id );
@@ -910,32 +923,33 @@
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
+
 				case 'preSequenceComplete':
-					b('AdSupport_PreSequenceComplete', function( e, slotType ){
+					b('AdSupport_preSequenceComplete', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
 
 				// mid Sequence:
-				case 'midrollStarted':
+				case 'midSequenceStart':
 					b('AdSupport_midrollStarted', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
 				case 'midSequenceComplete':
-					b('AdSupport_MidSequenceComplete', function( e, slotType ){
+					b('AdSupport_midSequenceComplete', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
 
 				// post roll Sequence:
-				case 'postRollStarted':
+				case 'postSequenceStart':
 					b('AdSupport_postrollStarted', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
 				case 'postSequenceComplete':
-					b('AdSupport_PostSequenceComplete', function( e, slotType ){
+					b('AdSupport_postSequenceComplete', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
@@ -1011,6 +1025,16 @@
 
 				case 'freePreviewEnd':
 					b('KalturaSupport_FreePreviewEnd');
+					break;
+				case 'switchingChangeStarted':
+					b( 'sourceSwitchingStarted', function( event, data ) {
+					callback( data );
+					});
+					break;
+				case 'switchingChangeComplete':
+					b( 'sourceSwitchingEnd', function( event, data ) {
+						callback( data );
+					});
 					break;
 				default:
 					// Custom listner

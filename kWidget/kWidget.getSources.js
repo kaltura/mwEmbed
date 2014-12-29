@@ -38,11 +38,17 @@ if( ! window.kWidget ){
 			} else {
 				serviceUrl = 'http://cdnbakmi.kaltura.com';
 			}
-	
+			// check for alternate data mapping ( result with only two objects ) 
+			if( result.length == 2 ){
+				result.unshift([]);
+			}
 			var baseUrl = serviceUrl + '/p/' + settings.partnerId +
 					'/sp/' + settings.partnerId + '00/playManifest';
+			// look for flavor asset:
+			
 			for( var i in result[1]['flavorAssets'] ){
 				var asset = result[1]['flavorAssets'][i];
+
 				// Continue if clip is not ready (2)
 				if( asset.status != 2  ) {
 					continue;
@@ -56,6 +62,7 @@ if( ! window.kWidget ){
 	
 	
 				var src  = baseUrl + '/entryId/' + asset.entryId;
+				
 				// Check if Apple http streaming is enabled and the tags include applembr ( single stream HLS )
 				if( asset.tags.indexOf('applembr') != -1 ) {
 					src += '/format/applehttp/protocol/'+ protocol + '/a.m3u8';
@@ -70,7 +77,12 @@ if( ! window.kWidget ){
 				} else {
 					src += '/flavorId/' + asset.id + '/format/url/protocol/' + protocol;
 				}
-	
+				// add source data if a web flavor: 
+				if( asset.tags.toLowerCase().indexOf('web') != -1 ){
+					source['data-flavorid'] = asset.videoCodecId + ' ' + asset.height + 'P';
+					source['src'] = src + '/a.' + asset.fileExt;
+					source['type'] = 'video/h264';
+				}
 				// add the file extension:
 				if( asset.tags.toLowerCase().indexOf('ipad') != -1 ){
 					source['src'] = src + '/a.mp4';
@@ -155,11 +167,11 @@ if( ! window.kWidget ){
 			// callback with device sources, poster
 			if( settings.callback ){
 				settings.callback({
-					'poster': result[2]['thumbnailUrl'],
-					'duration': result[2]['duration'],
-					'name': result[2]['name'],
-					'entryId' :  result[2]['id'],
-					'description': result[2]['description'],
+					'poster': result[1]['thumbnailUrl'],
+					'duration': result[1]['duration'],
+					'name': result[1]['name'],
+					'entryId' :  result[1]['id'],
+					'description': result[1]['description'],
 					'sources': deviceSources
 				});
 			}

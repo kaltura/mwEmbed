@@ -9,6 +9,7 @@
 			downloadName:"video",
 			showTooltip: true,
 			preferredBitrate: '',
+			flavorID: '',
 		 	order: 53
 		},
 		isSafeEnviornment: function(){
@@ -28,8 +29,14 @@
 				if ( this.getConfig( 'preferredBitrate' ) != '' && this.getConfig( 'preferredBitrate' ) != null ){
 					downloadUrl += '&preferredBitrate=' + encodeURIComponent( this.getConfig( 'preferredBitrate' ));
 				}
-				downloadUrl += '&ks=' + this.getPlayer().getFlashvars('ks');
-				
+			    if ( this.getConfig( 'flavorID' ) != '' && this.getConfig( 'flavorID' ) != null ){
+					downloadUrl += '&flavorID=' + encodeURIComponent( this.getConfig( 'flavorID' ));
+				}
+
+				if( this.getKalturaClient().getKs() ){
+					downloadUrl += '&ks=' + this.getKalturaClient().getKs();
+				}
+			
 			window.open( downloadUrl );
 		},
 		getComponent: function() {

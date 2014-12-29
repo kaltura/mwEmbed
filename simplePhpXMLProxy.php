@@ -186,6 +186,8 @@ $proxySession = false;
 // ############################################################################
 
 $url = isset($_GET['url']) ? urldecode( $_GET['url'] ) : false;
+//Replace white spaces with compliant %20
+$url = str_replace(" ","%20",$url);
 $header ='';
 if ( !$url ) {
 	
@@ -201,7 +203,7 @@ if ( !$url ) {
 	
 } else if( !isValidHost($url) ) {
 	// URL host is not whitelisted
-	$contents = 'ERROR: invalid url host [DENIED]';
+	$contents = 'ERROR: URL not in Kaltura domain whitelist [DENIED]';
 	$status = array( 'http_code' => 'ERROR' );
 } else {
 	$ch = curl_init( $url );

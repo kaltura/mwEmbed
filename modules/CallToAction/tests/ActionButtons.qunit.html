@@ -1,0 +1,80 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Call to Action - Buttons</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<script type="text/javascript">	
+function jsKalturaPlayerTest( videoId ){
+	
+	// Name this module
+	module( "Action button player" );
+
+	var $iframe = $('#' + videoId + '_ifp').contents();
+	var iframeContext = window.frames[ videoId + '_ifp'];
+	var kdp = $('#' + videoId )[0];
+	
+	asyncTest( "Iframe in DOM", function() {
+		ok( $('#' + videoId + '_ifp').length , 'iframe found' );
+		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
+		start();
+	});
+	
+	asyncTest("Buttons in Layout", function(){
+		kalturaQunitWaitForPlayer(function(){
+			
+			window[ 'kTestEndScreen' ] = function() {
+				setTimeout(function(){
+				var $btn = $iframe.find('a[data-id=product]');
+				ok( $btn.length, "Button Id 'product' found" );
+				equal( $btn.text(), "Buy this Product", "Button text match" );
+				start();
+				}, 100);
+			};
+
+			kdp.addJsListener( "playerPlayEnd", "kTestEndScreen" );
+			// Start playback
+			kdp.sendNotification('doPlay');
+			var seekTo = kdp.evaluate('{duration}') - 2;
+			// Seek to seconds before end
+			kdp.sendNotification('doSeek', seekTo);			
+		});
+	});
+
+}
+</script>
+</head>
+<body>
+<h2>Call to Action - Buttons</h2>
+<br />
+<div id="kdp" style="width:600px;height:370px;float:left"></div>
+<script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+<script>
+	kWidget.featureConfig({
+		'targetId': 'kdp',
+		'wid': '_811441',
+		'uiconf_id' : '11824841',
+		'entry_id' : '1_3fxkoyn2',
+		'flashvars': {
+			'actionButtons': {
+				plugin: true,
+				displayOn: 'end',
+				customDataKey: 'ActionButtons',
+				actions: [
+					{"id": "product", "label": "Buy this Product", "url": "http://www.myproduct.com"},
+					{"id": "product2", "label": "Read more about this Product", "url": "http://www.myproduct.com"}
+				],
+				templatePath: '../CallToAction/templates/action-buttons.tmpl.html'		
+			},
+			'related': {
+				plugin: false,
+				itemsLimit: 5
+			},
+			'metadataProfileId': 3416131
+		}
+	});
+</script>
+
+</body>
+</html>

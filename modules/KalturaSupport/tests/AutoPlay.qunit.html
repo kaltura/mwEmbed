@@ -47,11 +47,6 @@ function jsKalturaPlayerTest( videoId ){
 <h2> AutoPlay Test </h2>
 AutoPlay config var, detects devices that can't autoplay without a user gesture, 
 and just displays the play button.
-<pre class="prettyprint linenums">
-kWidget.embed({<br/>	'targetId': 'kaltura_player',<br/>	'wid': '_243342',<br/>	'uiconf_id' : '12905712',<br/>	'entry_id' : '0_uka1msg4',<br/>	'flashvars': {<br/>		'autoPlay': true<br/>	}<br/>});
-</pre>
-<br />
-
 <div id="kaltura_player" style="width:400px;height:330px;"></div>
 <script>
 kWidget.featureConfig({
@@ -64,5 +59,10 @@ kWidget.featureConfig({
 	}
 });
 </script>
+<br>
+Sample embed code:
+<pre class="prettyprint linenums">
+kWidget.embed({<br/>	'targetId': 'kaltura_player',<br/>	'wid': '_243342',<br/>	'uiconf_id' : '12905712',<br/>	'entry_id' : '0_uka1msg4',<br/>	'flashvars': {<br/>		'autoPlay': true<br/>	}<br/>});
+</pre>
 </body>
 </html>

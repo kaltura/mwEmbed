@@ -180,7 +180,9 @@ class RequestHelper {
 		}
 		if( isset( $_SERVER['HTTP_REFERER'] ) ){
 			$urlParts = parse_url( $_SERVER['HTTP_REFERER'] );
-			return $urlParts['scheme'] . "://" . $urlParts['host'] . "/";
+			if (isset( $urlParts['scheme'] ) &&  isset( $urlParts['host']) ) {
+				return $urlParts['scheme'] . "://" . $urlParts['host'] . "/";
+			}
 		}
 		return 'http://www.kaltura.com/';
 	}

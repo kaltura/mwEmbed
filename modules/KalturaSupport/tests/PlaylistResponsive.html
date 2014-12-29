@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Responsive Playlist</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<body>
+<br>
+<div id="playbackModeSelector" style="float:right"></div>
+	<h2>Responsive Playlist</h2>
+	Resize the browser window and notice the video and playlist resize accordingly.<br>
+	
+	<div style="width: 60%;display: inline-block;position: relative;"> 
+		<div id="dummy" style="margin-top: 26.25%;"></div> <!--   /* 16:9 aspect ratio */ -->
+			<div id="kaltura_player" style="position:absolute;top:0;left:0;left: 0;right: 0;bottom:0;border:solid thin black;">
+		</div>
+	</div>
+	<script>
+		kWidget.featureConfig({
+			'targetId': 'kaltura_player',
+			'wid': '_243342',
+			'uiconf_id': '25975211',
+			'flashvars': {
+				'playlistAPI':{
+					'autoContinue': true,
+					'includeInLayout': true,
+					'autoPlay': false,
+					'loop': false,
+					'onPage': false,
+					'layout': 'vertical',
+					'containerPosition': 'right',
+					'hideClipPoster': true,
+					'onPageCss1' : "../components/playlist/playList.css",
+					'kpl0Name': "test 4 item playlist",
+					'kpl0Id': '0_q79jh71b'
+				},
+				'nextPrevBtn':{
+					'plugin': true
+				}
+			}
+		});
+	</script>
+
+</body>
+</html>

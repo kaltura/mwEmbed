@@ -49,7 +49,7 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 			return;
 		}
 		if( this.getConfig( 'useCookie' ) ){
-			this.getPlayer().setCookie( this.cookieName ,this.getPlayer().getPlayerElementVolume() * 100 );
+			this.getPlayer().setCookie( this.cookieName ,this.getPlayer().getPlayerElementVolume() * 100 , {path: '/'});
 		}
 	},
 	isSafeEnviornment: function(){
@@ -62,6 +62,9 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 			value: (this.getPlayer().getPlayerElementVolume() * 100),
 			min: 0,
 			max: 100,
+			slide: function( event, ui ){
+				_this.getPlayer().setVolume( (ui.value / 100) , true );
+			},
 			change: function( event, ui ) {
 				_this.getPlayer().setVolume( (ui.value / 100) , true );
 			}
@@ -72,6 +75,8 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 		// If the slider should be shown; 
 		if( this.getConfig('showSlider' ) ) {
 			var openSlider = function () {
+				// restore transition on hover
+				_this.getComponent().removeClass( 'noTransition' );
 				_this.getComponent().addClass( 'open' );
 			};
 			var closeSlider = function () {
@@ -82,12 +87,16 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 
 			// Save component width on data attribute ( used for responsive player )
 			this.bind( 'layoutBuildDone' , function () {
+				// open slider with noTransition: 
 				openSlider();
+				_this.getComponent().addClass( 'noTransition' );
 				// Firefox unable to get component width correctly without timeout
-				setTimeout( function () {
+				setTimeout(function(){
+					// update the slider expand space: 
 					_this.getComponent().data( 'width' , _this.getComponent().width() );
+					// close the slider ( if not pinned ) 
 					closeSlider();
-				} , 100 );
+				},100);
 			} );
 		}
 		// Add click bindings
@@ -134,7 +143,9 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 		if ( this.getConfig( 'accessibilityLabels' ) ){
 			var percent = this.getPlayer().getPlayerElementVolume() * 100;
 			var title = gM('mwe-embedplayer-volume-value', percent );
-			this.getSlider().find('a').html('<span class="accessibilityLabel">'+title+'</span>');
+            var $slider = this.getSlider().find('a');
+            $slider.html('<span class="accessibilityLabel">'+title+'</span>');
+            $slider.attr("role", "paragraph");
 		}
 	},
 	updateVolumeUI: function( percent ){
