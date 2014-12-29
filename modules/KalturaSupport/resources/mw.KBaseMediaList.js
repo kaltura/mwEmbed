@@ -25,6 +25,7 @@
 				'MinClips': 2,
 				'mediaItemRatio': (16 / 9),
 				'horizontalHeaderHeight': 0,
+				'verticalHeaderHeight': 0,
 				'onPage': false,
 				'includeInLayout': true,
 				'clipListTargetId': null,
@@ -151,7 +152,7 @@
 							$( iframeParent ).after( "<div class='onpagePlaylistInterface'></div>" );
 							this.$mediaListContainer = $( iframeParent ).parent().find( ".onpagePlaylistInterface" );
 							$( this.$mediaListContainer ).width( $( iframeParent ).width());
-							var containerHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * this.getConfig( 'MinClips' ) + 65 : this.getConfig( "mediaItemHeight" ) + this.getConfig('horizontalHeaderHeight');
+							var containerHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * this.getConfig( 'MinClips' ) + this.getConfig('verticalHeaderHeight') : this.getConfig( "mediaItemHeight" ) + this.getConfig('horizontalHeaderHeight');
 							$( this.$mediaListContainer ).height( containerHeight );
 						}
 						// support hidden playlists
@@ -216,7 +217,7 @@
 			}
 			if (this.getConfig('onPage') && this.getLayout() === "vertical" ){
 				var iframeParent = window['parent'].document.getElementById( this.embedPlayer.id );
-				$( this.$mediaListContainer ).height(this.getConfig("MinClips") * this.getConfig( "mediaItemHeight" ) + 65);
+				$( this.$mediaListContainer ).height(this.getConfig("MinClips") * this.getConfig( "mediaItemHeight" ) + this.getConfig('verticalHeaderHeight'));
 			}
 		},
 
@@ -290,13 +291,7 @@
 			var componentHeight = this.getComponent().height();
 			if (this.getConfig("onPage")){
 				if (this.getConfig("clipListTargetId")){
-					var iframeParent = window['parent'].document.getElementById( this.embedPlayer.id );
-					var targetHeight = $( iframeParent ).parent().find( "#" + this.getConfig( 'clipListTargetId' ) ).height();
-					$( iframeParent ).parent().find(".onpagePlaylistInterface").height(targetHeight);
-					setTimeout(function(){
-						_this.getMedialistComponent().height(targetHeight - _this.getMedialistHeaderComponent().height());
-					},0);
-
+					_this.getMedialistComponent().height(_this.$mediaListContainer.height() - _this.getMedialistHeaderComponent().height());
 				}else{
 					if (this.getLayout() === "vertical"){
 						this.getMedialistComponent().height(this.getConfig("MinClips") * this.getConfig("mediaItemHeight"));

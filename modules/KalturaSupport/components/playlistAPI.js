@@ -55,6 +55,7 @@
 
 			if (this.getConfig("includeHeader")){
 				this.setConfig('horizontalHeaderHeight', 43);
+				this.setConfig('verticalHeaderHeight', 65);
 			}
 			this.addBindings();
 			this.loadPlaylists();
