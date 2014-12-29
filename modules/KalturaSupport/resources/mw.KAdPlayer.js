@@ -186,9 +186,9 @@ mw.KAdPlayer.prototype = {
 			   _this.playNextAd(adSlot);
 			}
 		};
-		if (_this.is_native_android_browser){
+		if (_this.is_native_android_browser && !mw.isNativeApp() ){
 			adSlot.playbackDone();
-			_this.hideSpinnerOncePlaying();
+			_this.embedPlayer.hideSpinnerOncePlaying();
 			return;
 		}
 		// If the current ad type is already being displayed don't do anything
@@ -405,7 +405,7 @@ mw.KAdPlayer.prototype = {
 					.css({
 						'position':'absolute',
 						'bottom': '10px',
-						'z-index' : 2
+						'z-index' : 102
 					})
 					.attr('id', iconId )
 				);
@@ -449,6 +449,7 @@ mw.KAdPlayer.prototype = {
 				$( '#' + iconId ).click(function(){
 					window.open( icon.clickthru );
 					mw.sendBeaconUrl( icon.clickTracking );
+					_this.pauseAd();
 					return false;
 				});
 				// prevent mouseup propegation to prevent the clickthrough url to open on IE8 / IE9 (see mw.PlayerLayoutBuilder.js, line 567)
@@ -472,7 +473,34 @@ mw.KAdPlayer.prototype = {
         // dispatch adOpen event
         $( this.embedPlayer).trigger( 'onAdOpen',[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex] );
 	},
-
+	pauseAd: function(){
+		if (this.embedPlayer.evaluate("{vast.pauseAdOnClick}") !== false) {
+			this.clickedBumper = true;
+			// Pause the player
+			this.embedPlayer.disableComponentsHover();
+			this.getVideoElement().pause();
+			// This changes player state to the relevant value ( pause-state )
+			if (this.isVideoSiblingEnabled()) {
+				$(this.embedPlayer).trigger('onPauseInterfaceUpdate');
+			} else {
+				$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
+			}
+			this.embedPlayer.enablePlayControls(["scrubber"]);
+			this.embedPlayer.enablePlayControls();
+		}
+	},
+	resumeAd: function(){
+		this.getVideoElement().play();
+		// This changes player state to the relevant value ( play-state )
+		if( this.isVideoSiblingEnabled() ) {
+			$( this.embedPlayer ).trigger( 'playing' );
+		}
+		$( this.embedPlayer).trigger("onPlayerStateChange",["play"]);
+		$( this.embedPlayer).trigger("onResumeAdPlayback");
+		this.embedPlayer.restoreComponentsHover();
+		this.disablePlayControls();
+		this.clickedBumper = false;
+	},
 	addClickthroughSupport:function( adConf, adSlot ){
 		var _this = this;
 		var embedPlayer = _this.embedPlayer;
@@ -492,35 +520,9 @@ mw.KAdPlayer.prototype = {
 						e.stopPropagation();
 						e.preventDefault();
 						if( _this.clickedBumper ){
-							_this.getVideoElement().play();
-
-							// This changes player state to the relevant value ( play-state )
-							if( _this.isVideoSiblingEnabled() ) {
-								$( _this.embedPlayer ).trigger( 'playing' );
-							}
-
-							$( embedPlayer).trigger("onPlayerStateChange",["play"]);
-							$( embedPlayer).trigger("onResumeAdPlayback");
-							embedPlayer.restoreComponentsHover();
-							_this.disablePlayControls();
-							_this.clickedBumper = false;
+							_this.resumeAd();
 						} else {
-							if (embedPlayer.evaluate("{vast.pauseAdOnClick}") !== false) {
-								_this.clickedBumper = true;
-								// Pause the player
-								embedPlayer.disableComponentsHover();
-								_this.getVideoElement().pause();
-
-								// This changes player state to the relevant value ( pause-state )
-								if (_this.isVideoSiblingEnabled()) {
-									$(_this.embedPlayer).trigger('onPauseInterfaceUpdate');
-								} else {
-									$(embedPlayer).trigger("onPlayerStateChange", ["pause", embedPlayer.currentState]);
-								}
-
-								embedPlayer.enablePlayControls(["scrubber"]);
-								embedPlayer.enablePlayControls();
-							}
+							_this.pauseAd();
 							//expose the URL to the
 							embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
 							if ( adSlot.videoClickTracking && adSlot.videoClickTracking.length > 0  ) {
@@ -720,7 +722,9 @@ mw.KAdPlayer.prototype = {
         embedPlayer.bindHelper( 'doPause' + _this.trackingBindPostfix, function(){
 		    if( _this.isVideoSiblingEnabled() && _this.adSibling) {
 			    $( _this.embedPlayer ).trigger( 'onPauseInterfaceUpdate' ); // update player interface
-		    }
+		    } else if ( !_this.isVideoSiblingEnabled() ) {
+				$( embedPlayer ).trigger( "onPlayerStateChange", ["pause", _this.embedPlayer.currentState] );
+			}
 			vid.pause();
 
         });

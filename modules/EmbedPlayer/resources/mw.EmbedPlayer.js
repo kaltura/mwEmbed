@@ -1767,6 +1767,9 @@
 				}
 			}
 
+			//sometimes thumbnail doesn't cover video, add black background
+			$(".mwEmbedPlayer").addClass("mwEmbedPlayerBlackBkg");
+
 			$(this).html(
 				$('<img />')
 					.css(posterCss)
@@ -1784,6 +1787,7 @@
 		 * Remove the poster
 		 */
 		removePoster: function () {
+			$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
 			$(this).find('.playerPoster').remove();
 		},
 		/**

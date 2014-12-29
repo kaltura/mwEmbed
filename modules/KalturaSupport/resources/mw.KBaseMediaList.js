@@ -103,8 +103,9 @@
 
 		getComponent: function(){
 			if( ! this.$el ){
+				var cssClass = (this.getConfig('cssClass') ? ' ' + this.getConfig('cssClass') : '');
 				this.$el = $( '<div />' )
-					.addClass( this.pluginName + " medialistContainer unselectable k-" + this.getLayout() );
+					.addClass( this.pluginName + cssClass + " medialistContainer unselectable k-" + this.getLayout() );
 				if (this.getConfig("includeHeader")){
 					this.$el.append($( '<div />' ).addClass("k-medialist-header k-" + this.getLayout() ));
 				}

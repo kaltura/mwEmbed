@@ -1094,6 +1094,7 @@
 				case 'doStop':
 					setTimeout(function() {
 						embedPlayer.ignoreNextNativeEvent = true;
+                			        embedPlayer.seek(0, true);
 						embedPlayer.stop();
 					},10);
 					break;

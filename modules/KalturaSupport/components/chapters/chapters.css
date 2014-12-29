@@ -337,7 +337,6 @@ input#searchBox::-ms-clear {
     display: block;
     padding: 3px 20px;
     clear: both;
-    font-family: "Lato";
     font-weight: 700;
     font-size: 14px;
     line-height: 1.714em;
