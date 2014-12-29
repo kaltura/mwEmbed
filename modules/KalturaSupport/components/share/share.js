@@ -17,10 +17,12 @@
             shareOffset: true,
             templatePath: 'components/share/share.tmpl.html',
             metadataKey: "LandingPage",
-            metadataProfileId: 3152
+            metadataProfileId: 3152,
+            showEmbed: false
         },
         iconBtnClass: "icon-share",
         setup: function(){
+            this.setupPlayerURL();
             this.addBindings();
         },
         setupPlayerURL: function(){
@@ -37,8 +39,6 @@
             }
 
             this.setConfig('shareURL', shareURL);
-
-
 
             //TODO: Pending server fix for widget service
 //        this.getKalturaClient().doRequest( {
@@ -76,24 +76,8 @@
                 '" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0" style="width: ' + this.getPlayer().width +' height: ' + this.getPlayer().width;
 
             this.setConfig('embedCode', embedCode);
-
-//        if( embedUrl ) {
-//            //Add metadata Logic
-////            var landingPage = this.getPlayer().kalturaEntryMetaData[ this.getConfig('metadataKey') ];
-//            if(typeof landingPage !== 'undefined') {
-//                embedUrl += landingPage;
-//            }
-////
-//        }
         },
 
-//    setupPlayerEmbedCode: function(baseUrl) {
-//        var playerHeight = this.getPlayer().height;
-//        var playerWidth = this.getPlayer().width;
-//        baseUrl += '/embed';
-//        var embedCode = "<iframe src=" + "'" + baseUrl + "'" + ' width=' + "'" + playerWidth + "'" +  ' height=' + "'" + playerHeight + "'" + ' frameborder=' + "'0'></iframe>";
-//        this.setConfig('embedCode', embedCode);
-//    },
         getParentURL: function(){
             return ( mw.getConfig( 'EmbedPlayer.IframeParentUrl') ) ?
                 mw.getConfig( 'EmbedPlayer.IframeParentUrl') : document.URL;
