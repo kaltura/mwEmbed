@@ -329,7 +329,7 @@
 				return;
 			}
 			var uiconf_id = settings.uiconf_id;
-			var confFile = settings.flashvars.confFilePath;
+			var confFile = settings.flashvars.confFilePath ? settings.flashvars.confFilePath : settings.flashvars.jsonConfig;
 			if (!uiconf_id && !confFile) {
 				this.log("Error: kWidget.embed missing uiconf_id or confFile");
 				return;
@@ -939,35 +939,36 @@
 				// Clear out this global function
 				window[ cbName ] = null;
 			};
+			
+			// Try and  get playload from local cache ( autoEmbed )
 			if (this.iframeAutoEmbedCache[ targetId ]) {
-				// get the playload from local cache
 				window[ cbName ](this.iframeAutoEmbedCache[ targetId ]);
-			} else {
-				if (settings.flashvars.jsonConfig) {
-					var jsonConfig = settings.flashvars.jsonConfig;
-					settings.flashvars.jsonConfig = null;
-					$.ajax({
-						type: "POST",
-						dataType: 'text',
-						url: this.getIframeUrl() + '?' +
-							this.getIframeRequest(widgetElm, settings),
-						data: {"jsonConfig": jsonConfig}
-					}).success(function (data) {
-							var contentData = {content: data};
-							window[cbName](contentData);
-						})
-						.error(function (e) {
-							alert("error occur");
-						})
-				} else {
-					// Store iframe urls
-					_this.iframeUrls[ targetId ] = this.getIframeUrl() + '?' + this.getIframeRequest(widgetElm, settings);
-					// do an iframe payload request:
-					_this.appendScriptUrl(this.getIframeUrl() + '?' +
-						this.getIframeRequest(widgetElm, settings) +
-						'&callback=' + cbName);
-				}
+				return ;
 			}
+			
+			// Check if we need to use post ( where flashvars excceed 2K string )
+			var iframeRequest = this.getIframeRequest( widgetElm, settings );
+			if ( iframeRequest.length > 2083 ){
+				this.log( "Warning iframe requests (" + iframeRequest.length + ") exceeds 2083 charachters, won't cache on CDN." )
+				$.ajax({
+					type: "POST",
+					dataType: 'text',
+					url: this.getIframeUrl(),
+					data: iframeRequest
+				}).success(function (data) {
+						var contentData = {content: data};
+						window[cbName](contentData);
+					})
+					.error(function (e) {
+						_this.log("Error in player iframe request")
+					})
+				return ;
+			}
+			var iframeUrl = this.getIframeUrl() + '?' + iframeRequest;
+			// Store iframe urls
+			_this.iframeUrls[ targetId ] = iframeUrl;
+			// do an iframe payload request:
+			_this.appendScriptUrl( iframeUrl +'&callback=' + cbName );
 		},
 		getIframeCbName: function (iframeId) {
 			var _this = this;
@@ -1777,13 +1778,11 @@
 		flashVarsToUrl: function (flashVarsObject) {
 			var params = '';
 			for (var i in flashVarsObject) {
-				if (i !== 'jsonConfig') {
-					var curVal = typeof flashVarsObject[i] == 'object' ?
-						JSON.stringify(flashVarsObject[i]) :
-						flashVarsObject[i]
-					params += '&' + 'flashvars[' + encodeURIComponent(i) + ']=' +
-						encodeURIComponent(curVal);
-				}
+				var curVal = typeof flashVarsObject[i] == 'object'?
+					JSON.stringify( flashVarsObject[i] ):
+					flashVarsObject[i];
+				params += '&' + 'flashvars[' + encodeURIComponent(i) + ']=' +
+					encodeURIComponent(curVal);
 			}
 			return params;
 		},

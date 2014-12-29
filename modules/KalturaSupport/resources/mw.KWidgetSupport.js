@@ -276,19 +276,20 @@ mw.KWidgetSupport.prototype = {
 			if( playerData.meta && playerData.meta.code == 'ENTRY_ID_NOT_FOUND' ){
 				$( embedPlayer ).trigger( 'KalturaSupport_EntryFailed' );
 			} else {
-				// Add any custom metadata:
-				if( playerData.entryMeta ){
-					embedPlayer.kalturaEntryMetaData = playerData.entryMeta;
-				}
-				// Apply player metadata
-				if( playerData.meta ) {
+				// Look for custom metadata in playerData.entryMeta and entryMetadata ( mediaProxy override name )
+				embedPlayer.kalturaEntryMetaData = ( playerData.entryMeta ) ? playerData.entryMeta : playerData.entryMetadata
+				
+				// Lock for "entry" in 'meta' and 'entry' ( mediaProxy override name )
+				var meta =  ( playerData.meta ) ? playerData.meta: playerData.entry;
+				// Apply player entry metadata
+				if( meta ) {
 					// We have to assign embedPlayer metadata as an attribute to bridge the iframe
-					embedPlayer.kalturaPlayerMetaData = playerData.meta;
+					embedPlayer.kalturaPlayerMetaData = meta;
 
-					if ( playerData.meta.moderationStatus && (!playerData.contextData || !playerData.contextData.isAdmin) ) {
-						if ( playerData.meta.moderationStatus == 1 ) {
+					if ( meta.moderationStatus && (!playerData.contextData || !playerData.contextData.isAdmin) ) {
+						if ( meta.moderationStatus == 1 ) {
 							embedPlayer.setError( embedPlayer.getKalturaMsgObject('ks-ENTRY_MODERATE') );
-						} else if ( playerData.meta.moderationStatus == 3 ) {
+						} else if ( meta.moderationStatus == 3 ) {
 							embedPlayer.setError( embedPlayer.getKalturaMsgObject('ks-ENTRY_REJECTED') );
 						}
 					}
@@ -385,6 +386,10 @@ mw.KWidgetSupport.prototype = {
 				// Apply player Sources
 				if ( playerData.contextData && playerData.contextData.flavorAssets ) {
 					_this.addFlavorSources( embedPlayer, playerData );
+				}
+				// try with direct source override: 
+				if ( playerData.sources ) {
+					_this.addSources( embedPlayer, playerData.sources  );
 				}
 			}
 		}
@@ -939,17 +944,18 @@ mw.KWidgetSupport.prototype = {
 
 		// Check for entry cache:
 		if( window.kalturaIframePackageData && window.kalturaIframePackageData.entryResult ){
-			this.handlePlayerData( embedPlayer, kalturaIframePackageData.entryResult );
-			callback( window.kalturaIframePackageData.entryResult );
+			var entryResult =  window.kalturaIframePackageData.entryResult
+			this.handlePlayerData( embedPlayer, entryResult );
+			callback( entryResult );
 			// remove the entryResult from the payload
 			delete( window.kalturaIframePackageData.entryResult );
-		} else {
-			// Run the request:
-			this.kClient = mw.kApiEntryLoader( playerRequest, function( playerData ){
-				_this.handlePlayerData(embedPlayer, playerData );
-				callback( playerData );
-			});
+			return ;
 		}
+		// Run the request:
+		this.kClient = mw.kApiEntryLoader( playerRequest, function( playerData ){
+			_this.handlePlayerData(embedPlayer, playerData );
+			callback( playerData );
+		});
 	},
 	/**
 	 * handle player data mappings to embedPlayer
@@ -1062,7 +1068,15 @@ mw.KWidgetSupport.prototype = {
 		}
 		return false;
 	},
-
+	addSources: function( embedPlayer, sources ){
+		$.each(sources, function( inx, source){
+			embedPlayer.mediaElement.tryAddSource( 
+				$('<source />')
+				.attr( source )
+				.get( 0 )
+			);
+		});
+	},
 	/**
 	* Convert flavorData to embedPlayer sources
 	*

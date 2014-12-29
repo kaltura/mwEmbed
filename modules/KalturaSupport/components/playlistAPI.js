@@ -189,7 +189,7 @@
 			// Populate playlist set with kalturaPlaylistData
 			for (var playlistId in embedPlayer.kalturaPlaylistData) {
 				if (embedPlayer.kalturaPlaylistData.hasOwnProperty(playlistId)) {
-					this.playlistSet.push( embedPlayer.kalturaPlaylistData[ playlistId ] );
+					this.playlistSet.push(embedPlayer.kalturaPlaylistData[ playlistId ]);
 				}
 			}
 			// update playlist names if set in Flashvars
