@@ -44,9 +44,20 @@
 			var _this = this;
 			this.bind('playerReady', function () {
 				_this.setupPlayerURL();
+                var showEmbed = _this.getConfig('showEmbed');
+                if(showEmbed) {
+                    _this.setupPlayerEmbedCode();
+                }
 			});
 		},
+        setupPlayerEmbedCode: function() {
+            var embedCode = 'https://cdnapisec.kaltura.com/p/' +
+                this.getPlayer().kpartnerid + '/sp/' +  this.getPlayer().kpartnerid + '00/embedIframeJs/uiconf_id/' + this.getPlayer().kuiconfid + '/partner_id/' + this.getPlayer().kpartnerid + '?iframeembed=true&entry_id=' +
+                this.getPlayer().kentryid + ' width="' + this.getPlayer().width + '" height"' + this.getPlayer().height +
+                '" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0" style="width: ' + this.getPlayer().width +' height: ' + this.getPlayer().width;
 
+            this.setConfig('embedCode', embedCode);
+        },
 		getParentURL: function () {
 			var res;
 			if (mw.getConfig('EmbedPlayer.IframeParentUrl')) {
