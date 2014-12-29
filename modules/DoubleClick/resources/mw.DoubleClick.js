@@ -377,7 +377,7 @@
 						$(".mwEmbedPlayer").addClass("mwEmbedPlayerBlackBkg");
 						_this.embedPlayer.addBlackScreen();
 					}else{
-						$(".playerPoster").hide();
+						_this.embedPlayer.removePoster();
 					}
 				}
 			});
@@ -390,7 +390,7 @@
 						$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
 						_this.embedPlayer.removeBlackScreen();
 					}else{
-						$(".playerPoster").show();
+						_this.embedPlayer.updatePosterHTML();
 					}
 				}
 			});
