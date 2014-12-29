@@ -226,6 +226,7 @@
 			//ui components to show
 			var hideComponentsArr = [];
 			_this.maxCurrentTime = 0;
+			_this.liveStreamStatusUpdated = false;
 			//live entry
 			if ( embedPlayer.isLive() ) {
 				if ( !this.getConfig("disableLiveCheck")) {
