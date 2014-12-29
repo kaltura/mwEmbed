@@ -6,6 +6,14 @@
 	"use strict";
 
 	var cache = {};
+	var helpers = {};
+	mw.util.registerTemplateHelper = function( name, callback ){
+		helpers[ name ] = callback;
+	};
+
+	mw.util.getTemplateHelpers = function(){
+		return helpers;
+	};
 	
 	mw.util.tmpl = function(str, data){
 		// Figure out if we're getting a template, or if we need to

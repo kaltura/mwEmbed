@@ -79,6 +79,7 @@ mw.KBasePlugin = Class.extend({
 		data.player = this.embedPlayer;
 		data.entry = this.embedPlayer.kalturaPlayerMetaData;
 		data.entryMetadata = this.embedPlayer.kalturaEntryMetaData;
+		data.helpers = mw.util.getTemplateHelpers();
 
 		// First get template from 'template' config
 		var rawHTML = this.getConfig( 'template', true );
