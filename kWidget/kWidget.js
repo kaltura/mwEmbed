@@ -982,7 +982,6 @@
 			return cbName;
 		},
 		resizeOvelayByHolderSize: function (overlaySize, parentSize, ratio) {
-			debugger;
 			var overlayRatio = overlaySize.width / overlaySize.height;
 
 			var centeredParent = {

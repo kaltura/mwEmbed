@@ -1081,7 +1081,6 @@
 				// TOOD we should improve the end event flow
 				// First end event for ads or current clip ended bindings
 				if (!this.onDoneInterfaceFlag) {
-					alert('onClipDone');
 					this.stopEventPropagation();
 				}
 
@@ -1103,7 +1102,6 @@
 					_this.donePlayingCount++;
 					if (_this.loop) {
 						// Prevent the native "onPlay" event from propagating that happens when we rewind:
-						alert('onClipDone - loop');
 						this.stopEventPropagation();
 						// Rewind the player to the start:
 						// NOTE: Setting to 0 causes lags on iPad when replaying, thus setting to 0.01
@@ -1170,7 +1168,6 @@
 				if (_this.startOffset) {
 					startTime = _this.startOffset;
 				}
-				alert('onClipDone - replay');
 				_this.stopEventPropagation();
 				_this.setCurrentTime(startTime, function () {
 					// Restore events after we rewind the player
