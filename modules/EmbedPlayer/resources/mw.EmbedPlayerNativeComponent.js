@@ -60,11 +60,11 @@
 			'error',
 			'stalled',
 			'loadedmetadata',
+			'durationchange',
 			'timeupdate',
 			'progress',
 			'enterfullscreen',
 			'exitfullscreen',
-			'durationchange',
 			'chromecastDeviceConnected',
 			'chromecastDeviceDisConnected'
 		],
@@ -178,16 +178,20 @@
 			this.currentTime = 0;
 			this.previousTime = 0;
 			_this.hideSpinner();
+
 			if ($.isFunction(switchCallback)) {
-				switchCallback(vid);
-				var isPlayingAdsContext = this.adsOnReplay || !(this.adTimeline.displayedSlotCount > 0);
-				if ( (isPlayingAdsContext || this.loop) && !_this.playbackDone) {
-					setTimeout(function () {
-						vid.play();
-					}, 100);
-				}
+				$(vid).bind('durationchange' + switchBindPostfix, function () {
+					$( vid ).unbind( 'durationchange' + switchBindPostfix );
+					switchCallback( vid );
+				} );
 			}
 
+			var isPlayingAdsContext = _this.adsOnReplay || !(_this.adTimeline.displayedSlotCount > 0);
+			if ( (isPlayingAdsContext || _this.loop) && !_this.playbackDone) {
+				setTimeout(function () {
+					vid.play();
+				}, 100);
+			}
 
 			// Add the end binding if we have a post event:
 			if ($.isFunction(doneCallback)) {
@@ -218,11 +222,12 @@
 		applyMediaElementBindings: function () {
 			var _this = this;
 			mw.log("EmbedPlayerNative::MediaElementBindings");
+			var bindPostfix = '.embedPlayerNativeComponent';
 
 			$.each(_this.nativeEvents, function (inx, eventName) {
-				$(_this.getPlayerElement()).unbind(eventName).bind(eventName, function () {
+				$( _this.getPlayerElement() ).unbind( eventName + bindPostfix ).bind( eventName + bindPostfix, function () {
 					// make sure we propagating events, and the current instance is in the correct closure.
-					if (_this._propagateEvents && _this.instanceOf == 'NativeComponent') {
+					if ( _this._propagateEvents && _this.instanceOf == 'NativeComponent' ) {
 						var argArray = $.makeArray(arguments);
 						// Check if there is local handler:
 						if (_this[ '_on' + eventName ]) {
@@ -232,8 +237,13 @@
 							$(_this).trigger(eventName, argArray);
 						}
 					}
+
 				});
 			});
+		},
+
+		_ondurationchange: function () {
+			this.setDuration( this.getPlayerElement().duration );
 		},
 
 		/**
