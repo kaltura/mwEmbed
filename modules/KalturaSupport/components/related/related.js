@@ -345,6 +345,10 @@
 		changeMedia: function( e, data ){
 			this.stopTimer();
 			var _this = this;
+			// update the selected entry:
+			if( data && data.entryId ){
+				this.setConfig('selectedEntryId', data.entryId );
+			}
 			//look for the entry in case this is a click
 			if(this.getConfig('clickUrl')){
 				if(this.templateData.nextItem.id && this.templateData.nextItem.id == data.entryId ){
