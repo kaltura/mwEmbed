@@ -321,6 +321,7 @@
 
 				this.updatePlayhead();
 				$(this).trigger("playing");
+				this.getPlayerContainer().css('visibility', 'visible');
 				this.hideSpinner();
 				this.stopped = this.paused = false;
 			}
