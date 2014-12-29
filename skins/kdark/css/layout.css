@@ -42,6 +42,9 @@ body { letter-spacing: 0.04em; }
 	width: 2em;
 	text-shadow: none;
 }
+.topBarContainer.block {
+	position: static;
+}
 
 .sideBarContainerReminder{
     padding: 10px;
@@ -72,7 +75,7 @@ body { letter-spacing: 0.04em; }
     text-shadow: 0px 0px 10px #fff;
 }
 .sideBarContainerReminder.left{
-    left: -25%;
+    left: -30%;
     -webkit-transition: left 0.3s ease-in;
     -moz-transition: left 0.3s ease-in;
     -o-transition: left 0.3s ease-in;
@@ -83,10 +86,10 @@ body { letter-spacing: 0.04em; }
     left: 0px;
 }
 .sideBarContainerReminder.left.shifted{
-    left: 25%;
+    left: 30%;
 }
 .sideBarContainerReminder.right{
-    right: -25%;
+    right: -30%;
     -webkit-transition: right 0.3s ease-in;
     -moz-transition: right 0.3s ease-in;
     -o-transition: right 0.3s ease-in;
@@ -97,17 +100,17 @@ body { letter-spacing: 0.04em; }
     right: 0px;
 }
 .sideBarContainerReminder.right.shifted{
-    right: 25%;
+    right: 30%;
 }
 
 .sideBarContainer {
     position: absolute;
     top: 0;
-    width: 25%;
+    width: 30%;
     z-index: 100;
     box-sizing:border-box;
     height: 100%;
-    padding: 1%;
+    /*padding: 1%;*/
 
     -webkit-transition: left 0.3s ease-in, right 0.3s ease-in;
     -moz-transition: left 0.3s ease-in, right 0.3s ease-in;
@@ -126,7 +129,7 @@ body { letter-spacing: 0.04em; }
 }
 
 .sideBarContainer.left{
-    left: -25%;
+    left: -30%;
 }
 .sideBarContainer.openBtn {
     z-index: 99;
@@ -135,7 +138,7 @@ body { letter-spacing: 0.04em; }
     left: 0;
 }
 .sideBarContainer.right{
-    right: -25%;
+    right: -30%;
 }
 .sideBarContainer.right.openBtn{
     right: 0;

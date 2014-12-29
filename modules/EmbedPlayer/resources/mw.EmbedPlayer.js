@@ -150,7 +150,7 @@
 		
 		"streamerType": 'http',
 
-		"shouldEndClip": false,
+		"shouldEndClip": true,
 		"buffering": false
 	});
 
@@ -1088,7 +1088,7 @@
 				$(this).trigger('ended');
 				mw.log("EmbedPlayer::onClipDone:Trigged ended, continue? " + this.onDoneInterfaceFlag);
 
-				if (!this.onDoneInterfaceFlag) {
+				if (!this.onDoneInterfaceFlag || this.isInSequence()) {
 					// Restore events if we are not running the interface done actions
 					this.restoreEventPropagation();
 					return;
@@ -1591,6 +1591,7 @@
 				this.triggeredEndDone = false;
 				this.preSequenceFlag = false;
 				this.postSequenceFlag = false;
+				this.shouldEndClip = true;
 			}
 
 			// Add a loader to the embed player:
@@ -1766,6 +1767,9 @@
 				}
 			}
 
+			//sometimes thumbnail doesn't cover video, add black background
+			$(".mwEmbedPlayer").addClass("mwEmbedPlayerBlackBkg");
+
 			$(this).html(
 				$('<img />')
 					.css(posterCss)
@@ -1783,6 +1787,7 @@
 		 * Remove the poster
 		 */
 		removePoster: function () {
+			$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
 			$(this).find('.playerPoster').remove();
 		},
 		/**
@@ -2158,6 +2163,7 @@
 			if (this.donePlayingCount > 0 && !this.paused && this._propagateEvents) {
 				// Trigger end done on replay
 				this.triggeredEndDone = false;
+				this.shouldEndClip = true;
 				if (this.replayEventCount < this.donePlayingCount) {
 					mw.log("EmbedPlayer::play> trigger replayEvent");
 					this.triggerHelper('replayEvent');
@@ -2656,13 +2662,12 @@
 				// Check if we are "done"
 				var endPresentationTime = this.duration;
 				if (!this.isLive()) {
+					var endTime =  ( this.currentTime - this.startOffset ) / endPresentationTime  ;
 					if ((this.currentTime - this.startOffset) >= endPresentationTime && !this.isStopped()) {
 						mw.log("EmbedPlayer::updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime);
 						_this.onClipDone();
 						//sometimes we don't get the "end" event from the player so we trigger clipdone
-					} else if (!this.shouldEndClip && !this.isInSequence() &&
-						( ( ( this.currentTime - this.startOffset) / endPresentationTime ) >= .99 ) && !_this.clipDoneTimeout) {
-						_this.shouldEndClip = true;
+					} else if ( endTime >= .99 && !this.isInSequence() && !_this.clipDoneTimeout && this.shouldEndClip) {
 						_this.clipDoneTimeout = setTimeout(function () {
 							if (_this.shouldEndClip) {
 								mw.log("EmbedPlayer::updatePlayheadStatus > should run clip done :: " + _this.currentTime);

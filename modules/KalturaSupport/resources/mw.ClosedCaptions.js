@@ -320,10 +320,15 @@
 		},
 		getTextSourceFromDB: function( dbTextSource ) {
 			var _this = this;
-			if( dbTextSource.fileExt == '' ){
+			if( !dbTextSource.fileExt ){
 				// TODO other format mappings?
-				if( dbTextSource.format == '2' ){
-					dbTextSource.fileExt = 'xml';
+				switch( dbTextSource.format ){
+					case '1':
+						dbTextSource.fileExt = 'srt';
+						break;
+					case '2':
+						dbTextSource.fileExt = 'xml';
+						break;
 				}
 			}
 
@@ -386,6 +391,14 @@
 					return ;
 				}				
 			}
+            // Get source by "default" property
+            if ( !this.selectedSource ) {
+                source = this.selectDefaultSource();
+                if( source ){
+                    this.log('autoSelectSource: select by default caption');
+                    this.selectedSource = source;
+                }
+            }
 			// Get from $_SERVER['HTTP_ACCEPT_LANGUAGE']
 			if( !this.selectedSource && mw.getConfig('Kaltura.UserLanguage') ){
 				$.each(mw.getConfig('Kaltura.UserLanguage'), function(lang, priority){
@@ -396,14 +409,6 @@
 						return true;
 					}
 				});
-			}
-			// Get source by "default" property
-			if ( !this.selectedSource ) {
-				source = this.selectDefaultSource();
-				if( source ){
-					this.log('autoSelectSource: select by default caption');
-					this.selectedSource = source;
-				}
 			}
 			// Else, get the first caption
 			if( !this.selectedSource ){

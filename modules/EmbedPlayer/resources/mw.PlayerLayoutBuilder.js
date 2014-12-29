@@ -407,46 +407,36 @@ mw.PlayerLayoutBuilder.prototype = {
 	},
 
 	initToolTips: function(){
+		var _this = this;
+		this.embedPlayer.bindHelper( 'layoutBuildDone', function(){
+			_this.setupTooltip()
+			_this.setupTooltip(_this.getInterface().find(".tooltipBelow"), "arrowTop")
+		});
+	},
+	setupTooltip: function(elm, arrowDirection){
 		// exit if not enabled
 		if( !this.embedPlayer.enableTooltips || kWidget.isIE8() ) {
 			return;
 		}
-		var _this = this;
-		this.embedPlayer.bindHelper( 'layoutBuildDone', function(){
-			_this.getInterface().tooltip({
-				items: '[data-show-tooltip]',
-				"show": { "delay": 1000 },
-				"hide": { "duration": 0 },
-				  position: {
-					my: "center bottom-10",
-					at: "center top",
-					  using: function( position, feedback ) {
-						  $( this ).css( position );
-						  $( "<div>" )
-							  .addClass( "arrow" )
-							  .addClass( feedback.vertical )
-							  .addClass( feedback.horizontal )
-							  .appendTo( this );
-					  }
-				  }
-				});
-			_this.getInterface().find(".tooltipBelow").tooltip({
-				items: '[data-show-tooltip]',
-				"show": { "delay": 1000 },
-				"hide": { "duration": 0 },
-				position: {
-					my: "center bottom-10",
-					at: "center top",
-					using: function( position, feedback ) {
-						$( this ).css( position );
-						$( "<div>" )
-							.addClass( "arrowTop" )
-							.addClass( feedback.vertical )
-							.addClass( feedback.horizontal )
-							.appendTo( this );
-					}
+		var	tooltips = elm ? elm : this.getInterface();
+		var arrowType = arrowDirection ? arrowDirection : "arrow";
+
+		tooltips.tooltip({
+			items: '[data-show-tooltip]',
+			"show": { "delay": 1000 },
+			"hide": { "duration": 0 },
+			position: {
+				my: "center bottom-10",
+				at: "center top",
+				using: function( position, feedback ) {
+					$( this ).css( position );
+					$( "<div>" )
+						.addClass( arrowType )
+						.addClass( feedback.vertical )
+						.addClass( feedback.horizontal )
+						.appendTo( this );
 				}
-			});
+			}
 		});
 	},
 	/**

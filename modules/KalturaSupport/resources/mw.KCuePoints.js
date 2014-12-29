@@ -123,15 +123,19 @@
 			//Start live cuepoint pulling
 			this.liveCuePointsIntervalId = setInterval(function () {
 				var entryId = _this.embedPlayer.kentryid;
+				var request = {
+					'service': 'cuepoint_cuepoint',
+					'action': 'list',
+					'filter:entryIdEqual': entryId,
+					'filter:objectType': 'KalturaCuePointFilter',
+					'filter:cuePointTypeEqual': 'thumbCuePoint.Thumb'
+				};
 				var lastUpdatedAt = _this.getLastUpdateTime() + 1;
-				_this.getKalturaClient().doRequest({
-						'service': 'cuepoint_cuepoint',
-						'action': 'list',
-						'filter:entryIdEqual': entryId,
-						'filter:objectType': 'KalturaCuePointFilter',
-						'filter:cuePointTypeEqual': 'thumbCuePoint.Thumb',
-						'filter:updatedAtGreaterThanOrEqual': lastUpdatedAt
-					},
+				// Only add lastUpdatedAt filter if any cue points already received
+				if (lastUpdatedAt > 0) {
+					request['filter:updatedAtGreaterThanOrEqual'] = lastUpdatedAt;
+				}
+				_this.getKalturaClient().doRequest( request,
 					function (data) {
 						// if an error pop out:
 						if (!data || data.code) {
