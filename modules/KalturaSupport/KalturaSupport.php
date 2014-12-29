@@ -8,7 +8,7 @@
 			),
 			'kalturaLoad' => 'always'
 		),
-		"mw.KWidgetSupport" => array( 
+		"mw.KWidgetSupport" => array(
 			'scripts' => "resources/mw.KWidgetSupport.js",
 			'dependencies' => array(
 				'base64_encode',
