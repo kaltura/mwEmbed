@@ -16,7 +16,8 @@
 			socialNetworks: 'facebook,twitter,googleplus',
 			shareOffset: true,
 			templatePath: 'components/share/share.tmpl.html',
-            showEmbed: false
+            showEmbed: false,
+            customEmbedUrl: null
 		},
 		iconBtnClass: "icon-share",
 		setup: function () {
@@ -60,9 +61,16 @@
             var partnerId = this.getPlayer().kpartnerid;
             var entryId = this.getPlayer().kentryid;
             var uiconfId = this.getPlayer().kuiconfid;
+            var customEmbedUrl = this.getConfig('customEmbedUrl');
 
-            var embedCode = '<iframe src="' + serviceUrl + '/p/' + partnerId + '/sp/' +  partnerId + '00/embedIframeJs/uiconf_id/' + uiconfId + '/partner_id/' + partnerId + '?iframeembed=true&entry_id=' +
-                entryId + '" width="' + width + '" height="' + height +
+            var embedCodeSrc = serviceUrl + '/p/' + partnerId + '/sp/' +  partnerId + '00/embedIframeJs/uiconf_id/' + uiconfId + '/partner_id/' + partnerId + '?iframeembed=true&entry_id=' +
+                entryId;
+
+            if(customEmbedUrl) {
+                embedCodeSrc = customEmbedUrl;
+            }
+
+            var embedCode = '<iframe src="' + embedCodeSrc + '" width="' + width + '" height="' + height +
                 '" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0" style="width: ' + width + '; height: ' + height + '"/>';
 
             var embedCodeEntities = this.htmlEntities(embedCode);
