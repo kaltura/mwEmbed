@@ -2981,6 +2981,12 @@
 		backToLive: function () {
 			mw.log('Error player does not support back to live');
 		},
+		hidePlayerOffScreen: function() {
+			mw.log('EmbedPlayer:: hidePlayerOffScreen: Notice player does not support hide player off screen');
+		},
+		restorePlayerOnScreen: function() {
+			mw.log('EmbedPlayer:: restorePlayerOnScreen: Notice player does not support restore player on screen');
+		},
 
 		/**
 		 * add storageId parameter to all "playmanifest" sources
