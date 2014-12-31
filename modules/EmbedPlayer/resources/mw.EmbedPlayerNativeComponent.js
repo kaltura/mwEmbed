@@ -149,7 +149,7 @@
 
 			// empty out any existing sources:
 			$(vid).empty();
-
+			var time = this.getPlayerElement().currentTime;
 			if (this.getSrc() != source.getSrc()) {
 				vid.attr('src', source.getSrc());
 			} else {
@@ -162,8 +162,16 @@
 				switchCallback(vid);
 				var isPlayingAdsContext = this.adsOnReplay || !(this.adTimeline.displayedSlotCount > 0);
 				if ( (isPlayingAdsContext || this.loop) && !_this.playbackDone) {
+					vid.attr('currentTime', time);
 					setTimeout(function () {
+						$(vid).bind('loadedmetadata.me', function () {
+							$(vid).unbind('loadedmetadata.me');
+							vid.attr('currentTime', time);
+						});
 						vid.play();
+
+						//
+						//});
 					}, 100);
 				}
 			}
