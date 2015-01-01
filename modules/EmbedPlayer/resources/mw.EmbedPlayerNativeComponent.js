@@ -164,8 +164,8 @@
 				if ( (isPlayingAdsContext || this.loop) && !_this.playbackDone) {
 					vid.attr('currentTime', time);
 					setTimeout(function () {
-						$(vid).bind('loadedmetadata.me', function () {
-							$(vid).unbind('loadedmetadata.me');
+						$(vid).bind('loadedmetadata.switchSourceSeek', function () {
+							$(vid).unbind('loadedmetadata.switchSourceSeek');
 							vid.attr('currentTime', time);
 						});
 						vid.play();
