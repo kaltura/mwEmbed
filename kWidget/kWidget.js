@@ -898,8 +898,9 @@
 			var userAgent = navigator.userAgent;
 			var isIOS8 = ( /OS 8_/.test(userAgent) || /Version\/8/.test(userAgent) ) && ( userAgent.indexOf('iPad') != -1 || userAgent.indexOf('iPhone') != -1 );
 			try {
-				if (isIOS8 && parseInt(widgetElm.style.height) > 0) {
-					iframe.style.height = widgetElm.style.height;
+				var iframeHeight = widgetElm.style.height ? widgetElm.style.height : widgetElm.offsetHeight;
+				if (isIOS8 && parseInt(iframeHeight) > 0) {
+					iframe.style.height = iframeHeight;
 					setTimeout(function(){
 						iframe.style.height = "100%";
 					},3000);
