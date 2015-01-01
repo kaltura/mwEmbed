@@ -904,12 +904,19 @@ mw.KAdPlayer.prototype = {
 				.attr('id', overlayId )
 			);
 		}
+
+
+		var videoSize = {
+			'width' : _this.embedPlayer.getVideoHolder().width(),
+			'height' : _this.embedPlayer.getVideoHolder().height()
+		};
+		var screenSize = kWidget.resizeOvelayByHolderSize(nonLinearConf, videoSize, 0.9);
 		var layout = {
-			'width' : nonLinearConf.width + 'px',
-			'height' : nonLinearConf.height + 'px',
+			'width' : screenSize.width + 'px',
+			'height' : screenSize.height + 'px',
 			'left' : '50%',
 			'display': 'none',
-			'margin-left': -(nonLinearConf.width /2 )+ 'px'
+			'margin-left': -(screenSize.width /2 )+ 'px'
 		};
 
 		// if we didn't recieve the dimensions - wait till the ad loads and use the DIV's dimensions
@@ -928,6 +935,12 @@ mw.KAdPlayer.prototype = {
 		}
 		$( this.embedPlayer ).trigger("onAdPlay");
 		this.setImgSrc(nonLinearConf, 'overlayAd');
+
+		if ( $(nonLinearConf.html).find('img').length ) {
+			debugger;
+			nonLinearConf.html = $(nonLinearConf.html).find('img').addClass("ad-image-overlay");
+		}
+
 		// Show the overlay update its position and content
 		$('#' +overlayId )
 		.css( layout )

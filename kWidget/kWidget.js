@@ -983,6 +983,49 @@
 			}
 			return cbName;
 		},
+		resizeOvelayByHolderSize: function (overlaySize, parentSize, ratio) {
+			var overlayRatio = overlaySize.width / overlaySize.height;
+
+			var centeredParent = {
+				'width' : parentSize.width * ratio,
+				'height' : parentSize.height * ratio
+			};
+
+			var diffs = {
+				'width' : parentSize.width - overlaySize.width,
+				'height' : parentSize.height - overlaySize.height
+			};
+
+			var screenSize = {
+				'width' : 0,
+				'height' : 0
+			};
+
+			// Image size smaller then then the videoHolder size
+			if (diffs.width > 0 && diffs.height > 0) {
+				screenSize.width = overlaySize.width;
+				screenSize.height = overlaySize.height;
+				// Image height bigger or equals to video holder height and image width is smaller
+			} else if (diffs.width > 0 && diffs.height <= 0) {
+				screenSize.height = centeredParent.height;
+				screenSize.width = screenSize.height * overlayRatio;
+				// Image width bigger or equals to video holder width and image height is smaller
+			} else if (diffs.width <= 0 && diffs.height > 0) {
+				screenSize.width = centeredParent.width;
+				screenSize.height = screenSize.width / overlayRatio;
+				// Image size bigger then video holder size
+			} else if (diffs.width <= 0 && diffs.height <=0) {
+				// Check which value is bigger to use the biggest ratio
+				if (diffs.width <= diffs.height) {
+					screenSize.width = centeredParent.width;
+					screenSize.height = screenSize.width / overlayRatio;
+				} else {
+					screenSize.height = centeredParent.height;
+					screenSize.width = screenSize.height * overlayRatio;
+				}
+			}
+			return screenSize;
+		},
 		/**
 		 * Supports the iOS captured clicks iframe update,
 		 *
