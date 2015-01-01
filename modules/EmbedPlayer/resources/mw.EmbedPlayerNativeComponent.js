@@ -108,9 +108,6 @@
 
 			this.applyMediaElementBindings();
 
-			this.bindHelper("SourceChange", function () {
-				_this.setSrcAttribute( _this.getSrc() );
-			});
 			this.bindHelper("layoutBuildDone ended", function () {
 				_this.getPlayerElement().notifyLayoutReady();
 			});
