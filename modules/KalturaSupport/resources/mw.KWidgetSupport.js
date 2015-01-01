@@ -745,13 +745,19 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		// Check for mediaPlayFrom
-		var mediaPlayFrom = getAttr('mediaProxy.mediaPlayFrom');
+		var mediaPlayFrom = null;
+		if ( embedPlayer.getKalturaConfig('mediaProxy') ) {
+			mediaPlayFrom = embedPlayer.getKalturaConfig('mediaProxy').mediaPlayFrom;
+		}
 		if (mediaPlayFrom && !embedPlayer.startTime) {
 			embedPlayer.startTime = parseFloat( mediaPlayFrom );
 			mw.setConfig( "Kaltura.UseAppleAdaptive" , true) ;
 		}
 		// Check for mediaPlayTo
-		var mediaPlayTo = getAttr('mediaProxy.mediaPlayTo');
+		var mediaPlayTo = null;
+		if ( embedPlayer.getKalturaConfig('mediaProxy') ) {
+			mediaPlayTo = embedPlayer.getKalturaConfig('mediaProxy').mediaPlayTo;
+		}
 		if (mediaPlayTo && !embedPlayer.pauseTime) {
 			embedPlayer.pauseTime = parseFloat( mediaPlayTo );
 		}
