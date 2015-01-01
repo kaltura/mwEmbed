@@ -131,6 +131,18 @@
 				}
 			});
 
+			this.bind( 'showClosedCaptions', function(){
+				if( _this.getConfig('displayCaptions') === false ){
+					_this.setConfig('displayCaptions', true);
+				}
+			});
+
+			this.bind( 'hideClosedCaptions', function(){
+				if( _this.getConfig('displayCaptions') === true ){
+					_this.setConfig('displayCaptions', false);
+				}
+			});
+
 			this.bind( 'onCloseFullScreen onOpenFullScreen', function(){
 				if (_this.getConfig("displayCaptions") == true){
 					_this.updateTextSize();
@@ -217,11 +229,13 @@
 				var $cc = this.embedPlayer.getInterface().find('.captionContainer' );
 				$cc.remove();
 				this.embedPlayer.doUpdateLayout();
+				this.getPlayer().triggerHelper('closedCaptionsHidden');
 			}
 		},
 		showCaptions: function(){
 			if( this.getConfig('displayCaptions') ) {
 				this.getCaptionsOverlay().show();
+				this.getPlayer().triggerHelper('closedCaptionsDisplayed', {language: this.selectedSource.label});
 				if( this.getConfig('layout') == 'below' ) {
 					this.updateBelowVideoCaptionContainer();
 				}
@@ -757,7 +771,7 @@
 				this.getPlayer().setCookie( this.cookieName, source.srclang.toLowerCase() );
 			}
 
-			this.getPlayer().triggerHelper('changedClosedCaptions');
+			this.getPlayer().triggerHelper('changedClosedCaptions', {language: this.selectedSource.label});
 		},
 		getComponent: function(){
 			var _this = this;
