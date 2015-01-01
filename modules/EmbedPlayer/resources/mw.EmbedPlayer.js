@@ -1780,8 +1780,9 @@
 					.addClass('playerPoster')
 					.load(function () {
 						_this.applyIntrinsicAspect();
+						$(_this).show();
 					})
-			).show();
+			).hide();
 		},
 		/**
 		 * Remove the poster
