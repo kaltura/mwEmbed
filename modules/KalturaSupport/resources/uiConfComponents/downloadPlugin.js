@@ -6,7 +6,7 @@
 			align: "right",
 			parent: "controlsContainer",
 			displayImportance: "low",
-			downloadName:"video",
+			downloadName: '{mediaProxy.entry.name}',
 			showTooltip: true,
 			preferredBitrate: '',
 			flavorID: '',
