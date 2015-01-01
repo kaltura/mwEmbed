@@ -242,10 +242,6 @@
 			});
 		},
 
-		_ondurationchange: function () {
-			this.setDuration( this.getPlayerElement().duration );
-		},
-
 		/**
 		 * Get the embed player time
 		 */
@@ -322,6 +318,23 @@
 			this.parent_seek(percentage);
 		},
 
+		/**
+		 * Set the current time with a callback
+		 *
+		 * @param {Float} position
+		 * 		Seconds to set the time to
+		 * @param {Function} callback
+		 * 		Function called once time has been set.
+		 */
+		setCurrentTime: function( seekTime , callback ) {
+			seekTime = parseFloat( seekTime );
+			mw.log( "EmbedPlayerNativeComponent:: setCurrentTime to " + seekTime );
+			this.getPlayerElement().attr('currentTime', seekTime);
+			if ($.isFunction(callback)) {
+				callback();
+			}
+		},
+
 		doNativeAction: function (actionParams) {
 			mw.log("EmbedPlayerNativeComponent:: doNativeAction::");
 			this.getPlayerElement().attr('nativeAction', actionParams);
@@ -343,18 +356,28 @@
 			return true;
 		},
 
+		_ondurationchange: function () {
+			mw.log( "EmbedPlayerNativeComponent:: onDurationChange::" + this.getPlayerElement().duration );
+			this.setDuration( this.getPlayerElement().duration );
+		},
+
 		/**
 		 * Handle the native play event
 		 */
 		_onplay: function () {
 			mw.log("EmbedPlayerNativeComponent:: OnPlay::");
-			$(this).trigger("playing");
+
 			this.removePoster();
 			this.hideSpinner();
+			$( this ).trigger("playing");
 
-			if (this.paused && this.parent_play()) {
+			if ( this.paused && this.parent_play() ) {
 				this.monitor();
+			} else {
+				this.playInterfaceUpdate();
 			}
+
+
 		},
 
 		/**
