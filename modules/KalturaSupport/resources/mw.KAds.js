@@ -104,14 +104,39 @@
 					_this.displayedCuePoints = [];
 				});
 			}
-
-			// Load the Ads from uiConf
+			
+			// Check if we should only load ads when played: 
+			if( _this.getConfig('loadAdsOnPlay') == true ){
+				_this.handleAdsOnPlay( embedPlayer );
+				callback();
+				return ;
+			}
+			// load the Ads from uiConf
 			_this.loadAds( function(){
 				mw.log( "KAds::All ads have been loaded" );
 				callback();
 			});
 		},
-
+		handleAdsOnPlay: function( embedPlayer ){
+			var _this = this;
+			var loadedAds = null;
+			embedPlayer.bindHelper('prePlayAction' + _this.bindPostfix, function( e, prePlay ){
+				if( loadedAds === null ){
+					embedPlayer.addPlayerSpinner();
+					_this.loadAds( function(){
+						loadedAds = true;
+						embedPlayer.unbindHelper('prePlayAction' + _this.bindPostfix);
+						embedPlayer.play();
+					});
+				}
+				// block playback while ads are loaded.
+				if( loadedAds !== true ){
+					prePlay.allowPlayback = false;
+				}
+				// set loadingAds to false to only load ads once. 
+				loadedAds = false;
+			});
+		},
 		seekIntervalTrigger: function() {
 			var _this = this;
 
