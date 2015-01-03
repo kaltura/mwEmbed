@@ -24,7 +24,7 @@
 
 		previousTime: 0,
 		seekIntervalID: null,
-        enableCORS:true,
+		enableCORS:true,
 
 		init: function( embedPlayer, callback ){
 			var _this = this;
@@ -32,9 +32,9 @@
 			// Inherit BaseAdPlugin
 			mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
 
-            if( _this.getConfig('enableCORS') === false){
-                this.enableCORS = false;
-            }
+			if( _this.getConfig('enableCORS') === false){
+				this.enableCORS = false;
+			}
 
 			_this.embedPlayer = embedPlayer;
 

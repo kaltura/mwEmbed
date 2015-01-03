@@ -35,6 +35,7 @@
 			// Get the bumper entryid
 			mw.log( "BumperPlugin::checkUiConf: get sources for " + bumperConfig.bumperEntryID);
 			mw.getEntryIdSourcesFromApi( embedPlayer, bumperConfig.bumperEntryID, function( sources ){
+				debugger;
 				if( ! sources || sources.message ){
 					// no sources, or access control error. 
 					mw.log("Error: bumperPlugin: No sources for: " + embedPlayer.kwidgetid + ' entry: ' +  bumperConfig.bumperEntryID );
