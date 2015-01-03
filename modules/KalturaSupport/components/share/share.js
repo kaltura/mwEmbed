@@ -1,5 +1,4 @@
-(function (mw, $) {
-	"use strict";
+( function( mw, $ ) {"use strict";
 
 	mw.PluginManager.add('share', mw.KBaseScreen.extend({
 
@@ -16,7 +15,9 @@
 			socialShareURL: 'smart', // 'parent' / 'http://custom.url/entry/{mediaProxy.entry.id}'
 			socialNetworks: 'facebook,twitter,googleplus',
 			shareOffset: true,
-			templatePath: 'components/share/share.tmpl.html'
+			templatePath: 'components/share/share.tmpl.html',
+            showEmbed: false,
+            customEmbedUrl: null
 		},
 		iconBtnClass: "icon-share",
 		setup: function () {
@@ -44,9 +45,37 @@
 			var _this = this;
 			this.bind('playerReady', function () {
 				_this.setupPlayerURL();
+                var showEmbed = _this.getConfig('showEmbed');
+                if(showEmbed) {
+                    _this.setupPlayerEmbedCode();
+                }
 			});
 		},
+        htmlEntities: function(str) {
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        },
+        setupPlayerEmbedCode: function() {
+            var serviceUrl = mw.getConfig('Kaltura.ServiceUrl');
+            var height = this.getPlayer().height;
+            var width = this.getPlayer().width;
+            var partnerId = this.getPlayer().kpartnerid;
+            var entryId = this.getPlayer().kentryid;
+            var uiconfId = this.getPlayer().kuiconfid;
+            var customEmbedUrl = this.getConfig('customEmbedUrl');
 
+            var embedCodeSrc = serviceUrl + '/p/' + partnerId + '/sp/' +  partnerId + '00/embedIframeJs/uiconf_id/' + uiconfId + '/partner_id/' + partnerId + '?iframeembed=true&entry_id=' +
+                entryId;
+
+            if(customEmbedUrl) {
+                embedCodeSrc = customEmbedUrl;
+            }
+
+            var embedCode = '<iframe src="' + embedCodeSrc + '" width="' + width + '" height="' + height +
+                '" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0" style="width: ' + width + '; height: ' + height + '"/>';
+
+            var embedCodeEntities = this.htmlEntities(embedCode);
+            this.setConfig('embedCode', embedCodeEntities);
+        },
 		getParentURL: function () {
 			var res;
 			if (mw.getConfig('EmbedPlayer.IframeParentUrl')) {
