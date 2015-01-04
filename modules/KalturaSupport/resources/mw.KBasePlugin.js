@@ -90,8 +90,8 @@ mw.KBasePlugin = Class.extend({
 			}
 			rawHTML = window.kalturaIframePackageData.templates[ templatePath ];
 		}
-		var transformedHTML = mw.util.tmpl( rawHTML, data );
-		transformedHTML = transformedHTML();
+		var transformedHTML = mw.util.tmpl( rawHTML );
+		transformedHTML = transformedHTML(data);
 		var evaluatedHTML = $.trim( this.embedPlayer.evaluate( transformedHTML ) );
 		var $templateHtml = $( '<span>' + evaluatedHTML + '</span>' );
 
