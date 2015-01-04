@@ -136,7 +136,7 @@ mw.KAdPlayer.prototype = {
 				$(_this.embedPlayer).trigger('onAdComplete',[adSlot.ads[adSlot.adIndex].id, mw.npt2seconds($(".currentTimeLabel").text())]);
 			}
 			// remove click binding if present
-			var clickEventName = "mouseup" + _this.adClickPostFix;
+			var clickEventName = "click" + _this.adClickPostFix;
 			if (mw.isTouchDevice()){
 				clickEventName += " touchend" + _this.adClickPostFix;;
 			}
@@ -609,7 +609,7 @@ mw.KAdPlayer.prototype = {
 		// holds the value of skipoffset in seconds
 		var skipOffsetInSecs = 0;
 
-		var clickEventName = "mouseup" + _this.adClickPostFix;
+		var clickEventName = "click" + _this.adClickPostFix;
 		if (mw.isTouchDevice()){
 			clickEventName += " touchend" + _this.adClickPostFix;;
 		}
