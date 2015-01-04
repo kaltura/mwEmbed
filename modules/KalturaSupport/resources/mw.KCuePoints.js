@@ -204,10 +204,11 @@
 		},
 		isValidResult: function (data) {
 			// Check if we got error
-			if (!data
-				||
-				( data.code && data.message )
-				) {
+			if (!data){
+				mw.log("mw.KCuePoints :: error retrieving data");
+				return false;
+			} else if ( data.code && data.message ) {
+				mw.log("mw.KCuePoints :: error code: " + data.code + ", error message: " + data.message);
 				return false;
 			}
 			return true;
