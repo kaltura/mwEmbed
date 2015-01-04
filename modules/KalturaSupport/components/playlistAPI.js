@@ -176,7 +176,7 @@
 			} else {
 				$(".chapterBox").removeClass('active');
 			}
-			$(".chapterBox").find("[data-chapter-index='" + index + "']").addClass('active');
+			$(".chapterBox").find("[data-mediaBox-index='" + index + "']").addClass('active');
 			this.playMedia(index, true);
 		},
 

@@ -216,7 +216,7 @@
 		},
 
 		getMediaListDomElements: function(){
-			return this.getMedialistComponent().find(".chapterBox");
+			return this.getMedialistComponent().find(".mediaBox");
 		},
 
 		//General
@@ -235,7 +235,7 @@
 				titleLimit: this.getConfig('titleLimit'),
 				descLimit: this.getConfig('descriptionLimit'),
 				layout: this.getLayout()
-			}
+			};
 		},
 		onDisable: function(){
 			if (this.embedPlayer.getError() !== null){
@@ -255,10 +255,10 @@
 
 		//Media Item
 		renderMediaList: function(){
-			//Generate new list template data
-			var medialist = this.getTemplateHTML( {meta: this.getMetaData(), mediaList: this.getTemplateData()});
 			//Only render if medialist item are present
 			if (this.getTemplateData().length > 0) {
+				//Generate new list template data
+				var medialist = this.getTemplateHTML( {meta: this.getMetaData(), mediaList: this.getTemplateData()});
 				//Clear previous list
 				this.getMedialistComponent().empty();
 				//Clear the scroll reference
@@ -288,21 +288,34 @@
 			if (this.getLayout() === "vertical" && (this.getConfig("containerPosition") === "top" || this.getConfig("containerPosition") === "bottom")){
 				this.getMedialistComponent().height(componentHeight);
 			}else{
-				this.getMedialistComponent().height(componentHeight - this.getConfig('horizontalHeaderHeight'));
+				if (this.getLayout() === "vertical"){
+					this.getMedialistComponent().height(componentHeight - this.getMedialistHeaderComponent().height());
+				} else {
+					this.getMedialistComponent().height( componentHeight - this.getConfig( 'horizontalHeaderHeight' ) );
+				}
 			}
 		},
 		setMediaBoxesDimensions: function(){
-			var height = this.getMedialistComponent().height();
-			var width = this.getMedialistComponent().width();
+			var _this = this;
 			var layout = this.getLayout();
 			var mediaBoxes = this.getMediaListDomElements();
-			if (layout == "vertical"){
-				var newHeight = this.getConfig( "mediaItemHeight" ) || width * (1 / this.getConfig("mediaItemRatio"));
-				mediaBoxes.height(newHeight);
-			} else {
-				var newWidth = this.getConfig( "mediaItemWidth" ) || height * this.getConfig("mediaItemRatio");
-				mediaBoxes.width(newWidth);
-			}
+			mediaBoxes.each(function(index, mediaBox){
+				if (layout === "vertical"){
+					var newHeight = _this.getMediaBoxHeight(_this.mediaList[index]);
+					$(mediaBox).height(newHeight);
+				} else {
+					var newWidth = _this.getMediaBoxWidth(_this.mediaList[index]);
+					$(mediaBox).width(newWidth);
+				}
+			});
+		},
+		getMediaBoxHeight: function(mediaItem){
+			var width = this.getMedialistComponent().width();
+			return this.getConfig("mediaItemHeight") || width * (1 / this.getConfig("mediaItemRatio"));
+		},
+		getMediaBoxWidth: function(mediaItem){
+			var height = this.getMedialistComponent().height();
+			return this.getConfig("mediaItemWidth") || height * this.getConfig("mediaItemRatio");
 		},
 		getScrollbarSize: function(w) {
 			w = w || window;
@@ -374,7 +387,7 @@
 		},
 
 		//UI Handlers
-		shouldAddScroll: function(handler){
+		shouldAddScroll: function(){
 			if( this.checkAddScroll() ){
 				this.addScroll();
 			} else{
@@ -382,7 +395,7 @@
 				var width = this.getMedialistComponent().width();
 				var layout = this.getLayout();
 				var mediaBoxes = this.getMediaListDomElements();
-				if (layout == "vertical"){
+				if (layout === "vertical"){
 					if (this.isScrollbarVisible(this.getComponent() ).height){
 						width -= this.getScrollbarSize().width;
 					}
@@ -403,11 +416,11 @@
 						}
 					} );
 					mediaBoxes.css( 'height', largestBoxHeight );
-					if ( this.getLayout() == 'vertical' ) {
+					if ( this.getLayout() === 'vertical' ) {
 						// give the box a height:
 						this.getComponent().css( 'height',
 								mediaBoxes.length * largestBoxHeight
-						)
+						);
 					}
 				}
 			}
@@ -421,7 +434,7 @@
 				.on('click', function(){
 					if ( !_this.isDisabled ){
 						// set active media item
-						var index = $(this).data( 'chapterIndex' );
+						var index = $(this).attr( 'data-mediaBox-index' );
 						// Check if the current chapter is already active, set skipPause flag accordingly.
 						_this.skipPauseFlag = !$( this ).hasClass( 'active');
 						// call mediaClicked with the media index (implemented in component level)
@@ -433,7 +446,7 @@
 					.off( 'mouseenter mouseleave', '.k-thumb' )
 					.on( {
 						mouseenter: function () {
-							var index = $( this ).data( 'chapterIndex' );
+							var index = $(this).attr( 'data-mediaBox-index' );
 							var item = _this.mediaList[index];
 							// update base css:
 
@@ -465,7 +478,7 @@
 						mouseleave: function () {
 							clearInterval( hoverInterval );
 							// retore to orginal image:
-							var index = $( this ).data( 'chapterIndex' );
+							var index = $(this).attr( 'data-mediaBox-index' );
 							var item = _this.mediaList[index];
 							$( this )
 								.css( {
@@ -490,7 +503,7 @@
 			$( mediaBoxes[mediaIndex] ).addClass( 'active'); //li[data-chapter-index='" + activeIndex + "']
 		},
 		getActiveItem: function(){
-			return this.getComponent().find( "li[data-chapter-index='" + this.selectedMediaItemIndex + "']" );
+			return this.getComponent().find( "li[data-mediaBox-index='" + this.selectedMediaItemIndex + "']" );
 		},
 		updateActiveItemDuration: function(duration){
 			this.getActiveItem().find('.k-duration #mediaItemDuration').text(
@@ -549,18 +562,23 @@
 				var list = $( this.getMedialistComponent().children()[0] );
 				list.wrap( this.$scroll );
 				this.$scroll = this.getComponent().find(".nano");
+
+				var width = this.getMedialistComponent().width();
+				var scrollHeight = this.getConfig( "mediaItemHeight" ) || width * (1 / this.getConfig("mediaItemRatio"));
+
 				var options = {
 					flash: true,
 					preventPageScrolling: true,
-					iOSNativeScrolling: true
+					iOSNativeScrolling: true,
+					sliderMaxHeight: scrollHeight
 				} ;
+				var _this = this;
 				if (this.getConfig('onPage')){
 					try{
 						$.extend(options, {
 							documentContext: window.parent.document,
 							windowContext: window.parent.window
 						});
-						var _this = this;
 						setTimeout(function(){
 							_this.$scroll.nanoScroller( options );
 						}, 100);
@@ -571,8 +589,14 @@
 				} else {
 					this.$scroll.nanoScroller( options );
 				}
+				this.$scroll.on('update', function(e, data){
+					_this.doOnScrollerUpdate(data);
+				});
 			}
 			return this.$scroll;
+		},
+		doOnScrollerUpdate: function(data){
+			// should be implemented by component;
 		},
 		getMediaItemBoxWidth: function(){
 			return this.getConfig('mediaItemWidth') || 320;

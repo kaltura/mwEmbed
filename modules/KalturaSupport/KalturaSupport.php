@@ -85,8 +85,12 @@
 		"chapters" => array(
 			'scripts' => "components/chapters/chapters.js",
 			'styles' =>  "components/chapters/chapters.css",
-			'templates' => "components/chapters/chapters.tmpl.html",
-			'dependencies' => array( 'mw.KBaseMediaList', 'typeahead' ),
+			'templates' => array(
+			    "list" => "components/chapters/list.tmpl.html",
+			    "chapters" => "components/chapters/chapters.tmpl.html",
+			    "slides" => "components/chapters/slides.tmpl.html"
+			),
+			'dependencies' => array( 'mw.KBaseMediaList', 'typeahead', 'dotdotdot' ),
 			'kalturaPluginName' => 'chapters'
 		),
 		/* Core plugins */
