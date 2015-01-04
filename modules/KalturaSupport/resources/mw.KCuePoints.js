@@ -160,11 +160,11 @@
 
 				var updatedCuePoints = [];
 				//Only add new cuepoints or existing cuepoints which have a newer updateAt value
-				$.each(associativeRawCuePoints, function (index, rawCuePoint) {
-					if ((!_this.associativeCuePoints[index]) ||
-						( _this.associativeCuePoints[index] &&
-							_this.associativeCuePoints[index].updatedAt < rawCuePoint.updatedAt )) {
-						_this.associativeCuePoints[index] = rawCuePoint;
+				$.each(associativeRawCuePoints, function (id, rawCuePoint) {
+					if ((!_this.associativeCuePoints[id]) ||
+						( _this.associativeCuePoints[id] &&
+							_this.associativeCuePoints[id].updatedAt < rawCuePoint.updatedAt )) {
+						_this.associativeCuePoints[id] = rawCuePoint;
 						updatedCuePoints.push(rawCuePoint);
 					}
 				});
