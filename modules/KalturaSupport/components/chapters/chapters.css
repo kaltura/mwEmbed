@@ -1,4 +1,4 @@
-@import url(http://fonts.googleapis.com/css?family=Lato:300,400,700);
+@import url(http://fonts.googleapis.com/css?family=Lato:300,400,700,900);
 .medialistContainer{
     font-family: "Helvetica Neue", 'Open Sans', sans-serif;
     height: 100%;
@@ -23,6 +23,7 @@
 
 .chapters > .k-chapters-container{
     position:relative;
+    font-family:'Lato';
 }
 .chapters > .k-chapters-container.horizontal {
     padding-top:5px;
@@ -33,6 +34,12 @@
     padding: 0px;
 }
 
+.chapters > .k-chapters-container .k-medialist-header{
+    height: 40px;
+}
+.touch  .chapters > .k-chapters-container .k-medialist-header{
+    height: 48px;
+}
 .chapters > .k-chapters-container .chapterDivider{
     width: 1px;
     background: #aaa;
@@ -40,85 +47,198 @@
     top: 8px;
     left: 0px;
 }
-.chapters > .k-chapters-container .chapterBox{
-    background: rgba(240,240,240,.8);
-    /* IE 7 & 8 rule */
-    background: #eee\9;
+.chapters > .k-chapters-container .mediaBox{
     cursor:pointer;
     position:relative;
     list-style-type: none;
-
     float: left;
     height: auto;
     overflow: hidden;
     width: auto;
+    background-color: rgb(50, 50, 50);
 }
-
-.chapters > .k-chapters-container .chapterBox .k-thumb{
+.chapters > .k-chapters-container .boxImg{
     float: left;
-    width: 100%;
+    height: 100%;
+}
+.chapters > .k-chapters-container .boxImg img {
     height: 100%;
     background-repeat: no-repeat;
     background-position: left top;
     background-size : cover;
 }
-.chapters > .k-chapters-container .chapterBoxShadow {
+.chapters > .k-chapters-container .boxShadow {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.3);
+    opacity: 0.55;
+    top: 0;
+    left: 0;
 }
-.chapters > .k-chapters-container .chapterBox:hover .chapterBoxShadow {
-
-    background: -moz-linear-gradient(top, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 100%);
-    background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(0,0,0,0.1)), color-stop(100%, rgba(0,0,0,0.2)));
-    background: -webkit-linear-gradient(top, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 100%);
-    background: -o-linear-gradient(top, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 100%);
-    background: -ms-linear-gradient(top, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 100%);
-    background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#000000', GradientType=0 );
+.chapters > .k-chapters-container .mediaBox:hover .boxShadow {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.85) 100%);
 }
-.chapters > .k-chapters-container .chapterBoxInner {
-    position: absolute;
-    bottom: 0;
-    text-shadow: 0.588px 0.809px 0.99px rgba(0, 0, 0, 0.2);
-    padding: 2%;
-    max-height: 33%;
-    overflow: hidden;
+.chapters > .k-chapters-container .mediaBoxText{
+    position: relative;
+    z-index: 2;
+    opacity: 0.68;
+    text-transform: capitalize;
 }
-.chapters > .k-chapters-container .chapterBoxInner > div {
-}
-
-.chapters > .k-chapters-container .chapterBox:hover{
-    background: rgba(220,220,220,.8);
-    /* IE 7 & 8 rule */
-    background: #ddd\9;
-}
-.chapters > .k-chapters-container .chapterBox.active{
-    background: rgba(200,200,200,.8);
-    /* IE 7 & 8 rule */
-    background: #ccc\9;
-}
-
 .chapters > .k-chapters-container .k-title-container{
-    font-size:13px;
-    font-weight: normal;
+    opacity: 1;
+}
+
+.chapters > .k-chapters-container .chapterBox > .boxImg{
+    width: 100%;
+}
+
+.chapters > .k-chapters-container .chapterBox .boxInfo{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.chapters > .k-chapters-container .chapterBox .boxShadow {
+    background-image: -moz-linear-gradient(rgb(34, 34, 34) 0%, rgba(0, 0, 0, 0.71) 50%,
+    rgba(0, 0, 0, 0.65) 60%, rgba(0, 0, 0, 0.30196) 100%);
+    background-image: -webkit-linear-gradient(rgb(34, 34, 34) 0%, rgba(0, 0, 0, 0.71) 50%,
+    rgba(0, 0, 0, 0.65) 60%, rgba(0, 0, 0, 0.30196) 100%);
+    background-image: -ms-linear-gradient(rgb(34, 34, 34) 0%, rgba(0, 0, 0, 0.71) 50%,
+    rgba(0, 0, 0, 0.65) 60%, rgba(0, 0, 0, 0.30196) 100%);
+}
+
+.chapters > .k-chapters-container .chapterRibbon{
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 37px 50px 0 0;
+    border-color: #c2c2c2 transparent transparent transparent;
+}
+.chapters > .k-chapters-container .chapterNumberWrapper{
+    z-index: 2;
+    position: relative;
 }
 .chapters > .k-chapters-container .chapterNumber{
-    float: left;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    font-size: 11px;
+    font-weight: 900;
+    text-align: center;
+    color: rgb(0, 0, 0);
 }
-.chapters > .k-chapters-container .k-time-data{
+.chapters > .k-chapters-container .chapterBox .mediaBoxText {
+    margin: 0 10px 5px 10px;
+}
+.chapters > .k-chapters-container .chapterBox .k-title-container{
+    max-height: 20%;
+}
+.chapters > .k-chapters-container .k-chapter-title{
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+.chapters > .k-chapters-container .k-description-container{
+    max-height: 30%;
+    font-size:13px;
+    font-weight: 300;
+    line-height: 1.357;
+}
+.chapters > .k-chapters-container .k-chapter-time {
+    font-weight: 300;
+    color: rgb(255, 255, 255);
+    line-height: 1.2;
     font-size: 12px;
+}
+.chapters > .k-chapters-container .k-duration{
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 12px 20px 0px 0px !important;
+}
+
+.chapterBox.collapsed .slideBoxToggle{
+    border-color: #c2c2c2 transparent transparent transparent;
+}
+.chapterBox .slideBoxToggle{
+    border-style: solid;
+    border-width: 40px 40px 0 0;
+    border-color: transparent #c2c2c2 transparent transparent;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.chapterBox.disableChapterToggle .slideBoxToggle{
+    display: none;
+}
+
+.slideBox{
+    -webkit-transition-property: all .5s cubic-bezier(0, 1, 0.5, 1);
+    -moz-transition-property: all .5s cubic-bezier(0, 1, 0.5, 1);
+    -ms-transition-property: all .5s cubic-bezier(0, 1, 0.5, 1);
+    transition: all .5s cubic-bezier(0, 1, 0.5, 1);
+}
+.slideBox.collapsed{
+    -webkit-transform: translateX(-100%);
+    -moz-transform: translateX(-100%);
+    -ms-transform: translateX(-100%);
+    transform: translateX(-100%);
+    height: 0 !important;
+}
+.slideBox > .boxImg{
+    width: 66%;
+    right: 0;
+    position: absolute;
+}
+.slideBox > .boxShadow {
+    background-image: -moz-linear-gradient(-45deg, rgb(34, 34, 34) 0%, rgba(0, 0, 0, 0.71) 50%,
+    rgba(0, 0, 0, 0.65) 60%, rgba(0, 0, 0, 0.30196) 100%);
+    background-image: -webkit-linear-gradient(-45deg, rgb(34, 34, 34) 0%, rgba(0, 0, 0, 0.71) 50%,
+    rgba(0, 0, 0, 0.65) 60%, rgba(0, 0, 0, 0.30196) 100%);
+    background-image: -ms-linear-gradient(-45deg, rgb(34, 34, 34) 0%, rgba(0, 0, 0, 0.71) 50%,
+    rgba(0, 0, 0, 0.65) 60%, rgba(0, 0, 0, 0.30196) 100%);
+}
+.slideBox .slideGutter{
+    position: absolute;
+    width: 35px;
+    height: 60%;
+    top: 1%;
+    font-size: 12px;
+    font-weight: 300;
+    text-align: right;
+    left: 0px;
+    z-index: 2;
+    color: rgb(187,187,187);
+}
+.chapters > .k-chapters-container .slideBox .boxInfo{
+    padding: 0px 40px;
+    height: 60%;
+    top: 20%;
+    position: absolute;
+    width: 100%;
+    box-sizing: border-box;
+    color: rgb(255, 255, 255);
+}
+.chapters > .k-chapters-container .k-slide-text{
+    position: relative;
+    z-index: 2;
+    vertical-align: middle;
+    opacity: 0.68;
+}
+.chapters > .k-chapters-container .slideBox .k-title-container{
+
+
 
 }
-.chapters > .k-chapters-container .k-duration{}
-.chapters > .k-chapters-container .k-duration span{}
-.chapters > .k-chapters-container .k-start-time{}
-.chapters > .k-chapters-container .k-start-time span{}
+.chapters > .k-chapters-container .slideBox .mediaBoxText {
+    max-height: 80%;
+    min-height: 18px;
+    vertical-align: middle;
+}
 /*
 * horizontal layout styles:
 */
-.chapters > .k-chapters-container.k-horizontal .chapterBox{
+.chapters > .k-chapters-container.k-horizontal .mediaBox{
     display:inline;
     height: 100%;
 }
@@ -188,7 +308,7 @@
     right:5px;
     width:auto;
 }
-.chapters > .k-chapters-container.k-vertical .chapterBox{
+.chapters > .k-chapters-container.k-vertical .mediaBox{
     width:100%;
 }
 .chapters > .k-chapters-container.k-vertical .k-scroll{
@@ -228,6 +348,8 @@
 .nano > .nano-pane > .nano-slider {
     background: rgba(255, 255, 255, 0.6);
     border-radius: 10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
 }
 .nano > .nano-pane > .nano-slider:hover {
     background: rgba(255, 255, 255, 0.4);
@@ -244,47 +366,75 @@
 .twitter-typeahead{
     width:100%;
 }
+.touch .searchFormWrapper{
+    /*height: 48px;*/
+}
 .searchFormWrapper{
-    border-top: black 1px solid;
-    border-left: black 1px solid;
-    border-right: black 1px solid;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
+    display: table;
     border-spacing:0;
     width:100%;
-    height: 40px;
-    background-color: rgb(255, 255, 255);
+    /*height: 40px;*/
+    background-color: rgb(245, 245, 245);
     box-shadow: 0px 0px 16px 0px rgba(0, 0, 0, 0.2);
+}
+.searchFormWrapper > div {
+    display: table-cell;
+    height: 40px;
+    -webkit-transition-property: height;
+    -webkit-transition-duration: 1s;
+    -webkit-transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+    -moz-transition-property: height;
+    -moz-transition-duration: 1s;
+    -moz-transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+    -ms-transition-property: height;
+    -ms-transition-duration: 1s;
+    -ms-transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+    transition-property: height;
+    transition-duration: 1s;
+    transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+}
+.touch .searchFormWrapper > div {
+    height: 48px;
+}
+.searchFormWrapper.minimized > div {
+    height: 20px;
+}
+.touch .searchFormWrapper > div.searchIcon {
+    margin: 16px 11px;
 }
 .searchFormWrapper > div.searchIcon {
     font-size: 16px;
-    width: 14px;
-    margin: 12px 11px;
-    z-index: 2;
-    color: #999999;
+    width: 26px;
+    vertical-align: middle;
+}
+.touch .twitter-typeahead{
+    height: 48px;
 }
 .twitter-typeahead{
     height: 40px;
 }
-#searchBoxWrapper{
-    height: 40px;
-    position: absolute;
-    top:0;
-    padding: 0 28px;
-    width: 100%;
+.minimized > * > .twitter-typeahead{
+    height: 20px;
+}
+.touch #searchBox, .touch.tt-hint {
+    margin: 16px 6px;
 }
 #searchBox, .tt-hint{
-    margin: 12px 6px;
+    margin: 12px 2px;
     width: 100%;
     border: none;
     color: rgb(0, 0, 0);
     outline: none;
+    box-shadow:none;
     font-family: "Lato", Helvetica, Arial, sans-serif;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 400;
     padding: 0;
     background: rgba(255, 255, 255, 0);
+}
+.minimized > * > * > #searchBox {
+    margin: 1px 2px;
+    font-size: 13px;
 }
 .tt-hint {
     color: rgb(136, 136, 136);
@@ -298,11 +448,11 @@ input#searchBox:invalid::-webkit-input-placeholder {
 input#searchBox::-ms-clear {
     width : 0;
     height: 0;
+    display: none;
 }
 #searchBoxIcon{
     color: #999999;
-    width: 16px;
-    position: absolute;
+    text-align: right;
 }
 #searchBoxIcon.active {
     color: rgb(0,0,0);
@@ -311,11 +461,7 @@ input#searchBox::-ms-clear {
     visibility: hidden;
     cursor: pointer;
     color: rgb(136, 136, 136);
-    background-color: rgb(238, 238, 238);
-    border-radius: 11px;
-    width: 16px;
-    position: absolute;
-    right: 0px;
+    text-align: center;
 }
 #searchBoxCancelIcon.active{
     visibility: visible;
@@ -327,19 +473,27 @@ input#searchBox::-ms-clear {
 .tt-dropdown-menu {
     background-color: rgb(218, 218, 218);
     width: 100%;
-    left: -30px !important;
+    left: -26px !important;
+    max-height: 200px;
+    overflow-y: auto;
+}
+.touch .tt-dropdown-menu {
+    max-height: 240px;
 }
 .tt-suggestions {
     width: 100%;
     background-color: rgb(218, 218, 218);
+}
+.touch .tt-suggestion {
+    height: 44px;
 }
 .tt-suggestion {
     display: block;
     padding: 3px 20px;
     clear: both;
     font-weight: 700;
-    font-size: 14px;
-    line-height: 1.714em;
+    font-size: 15px;
+    line-height: 2em;
     color: #333;
     white-space: nowrap;
     overflow: hidden;
@@ -358,7 +512,7 @@ input#searchBox::-ms-clear {
 }
 
 .tt-highlight {
-    font-weight: 300;
+    font-weight: 400;
 }
 
 .k-chapters-container .searchResultsBox {
@@ -385,6 +539,6 @@ input#searchBox::-ms-clear {
     padding: 10px;
 }
 
-.chapters > .k-chapters-container .chapterBox.resultNoMatch{
+.chapters > .k-chapters-container .mediaBox.resultNoMatch{
     display: none;
 }

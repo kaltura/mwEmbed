@@ -14,9 +14,9 @@
 			"maxNumOfStream": 4,
 			"enableKeyboardShortcuts": true,
 			"keyboardShortcutsMap": {
-				"next": 221,   // Add ] Sign for next stream
-				"prev": 219,   // Add [ Sigh for previous stream
-				"default": 220 // Add \ Sigh for default stream
+				"nextStream": 221,   // Add ] Sign for next stream
+				"prevStream": 219,   // Add [ Sigh for previous stream
+				"defaultStream": 220 // Add \ Sigh for default stream
 			}
 		},
 
@@ -163,15 +163,15 @@
 		addKeyboardShortcuts: function (addKeyCallback) {
 			var _this = this;
 			// Add ] Sign for next stream
-			addKeyCallback(this.getConfig("keyboardShortcutsMap").next, function () {
+			addKeyCallback(this.getConfig("keyboardShortcutsMap").nextStream, function () {
 				_this.setStream(_this.getNextStream());
 			});
 			// Add [ Sigh for previous stream
-			addKeyCallback(this.getConfig("keyboardShortcutsMap").prev, function () {
+			addKeyCallback(this.getConfig("keyboardShortcutsMap").prevStream, function () {
 				_this.setStream(_this.getPrevStream());
 			});
 			// Add \ Sigh for default stream
-			addKeyCallback(this.getConfig("keyboardShortcutsMap").default, function () {
+			addKeyCallback(this.getConfig("keyboardShortcutsMap" ).defaultStream, function () {
 				_this.setStream(_this.getDefaultStream());
 			});
 		},

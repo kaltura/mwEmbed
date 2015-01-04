@@ -1,43 +1,41 @@
-<ul>
-    <% for ( var i = 0; i < mediaList.length; i++ ) { %>
-    <%var mediaItem =  mediaList[i];%>
-    <li class="chapterBox" data-chapter-index="<%=mediaItem.order%>" data-obj-id="<%=mediaItem.id%>">
-            <% if( meta.includeThumbnail) { %>
-            <div class="k-thumb" alt="Thumbnail for <%=mediaItem.title%>" data-chapter-index="<%=mediaItem.order%>"
-                 style="background-image:url(<%=mediaItem.thumbnail.url%>);">
-            <% } %>
-                <div class="chapterBoxShadow"></div>
-                <div class="chapterBoxInner">
-                    <div class="k-time-data">
-                        <% if( meta.includeItemStartTime) { %>
-                        <span class="k-start-time">
-                            <span class="icon-start_time"></span>
-                            <span><%=mediaItem.startTimeDisplay%></span>
-                        </span>
-                        <% } %>
-                        <% if( meta.includeMediaItemDuration) { %>
-                        <span class="k-duration">
-                            <span class="icon-duration"></span>
-                            <span id="mediaItemDuration"><%=mediaItem.durationDisplay%></span>
-                        </span>
-                        <% } %>
-                    </div>
-                    <div class="k-title-container" title="<%=mediaItem.title%>">
-                        <% if( meta.includeItemNumberPattern) { %>
-                        <span class="itemNumber"><%=mediaItem.chapterNumber%></span>
-                        <% } %>
-                        <%
-                        var chapterTitle = mediaItem.title;
-                        var tooltip = null;
-                        if( mediaItem.title && chapterTitle.length > meta.titleLimit ){
-                            tooltip =  mediaItem.title;
-                            chapterTitle = chapterTitle.substr(0, meta.titleLimit-4 ) + ' ...';
-                        } %>
-                        <span class="k-title" title="<%=tooltip%>"><%=chapterTitle%></span>
-                    </div>
-                </div>
-            </div>
+<li class="mediaBox chapterBox collapsed"
+    data-chapter-index="<%=mediaItem.chapterNumber%>"
+    data-obj-id="<%=mediaItem.id%>"
+    data-box-type="<%=mediaItem.type%>"
+    data-mediaBox-index="<%=mediaItem.order%>"
+    data-chapter-collapsed="true">
 
-    </li>
-    <% } %>
-</ul>
+    <div class="boxImg" alt="Thumbnail for <%=mediaItem.title%>">
+        <img src="<%=mediaItem.thumbnail.url%>"/>
+    </div>
+    <div class="boxInfo">
+        <div class="chapterNumberWrapper">
+            <div class="chapterRibbon" title="Chapter number"></div>
+            <%
+                var ribbonChapterNumber = mediaItem.chapterNumber;
+                if (mediaItem.chapterNumber.toString().length === 1){
+                    ribbonChapterNumber = "0" + (mediaItem.chapterNumber + 1);
+                }
+            %>
+            <span class="chapterNumber"><%=ribbonChapterNumber%></span>
+        </div>
+        <div class="k-title-container mediaBoxText">
+            <span class="k-chapter-title" title="<%=mediaItem.title%>"><%=mediaItem.title%></span>
+        </div>
+        <div class="k-description-container mediaBoxText">
+            <span class="k-description" title="<%=mediaItem.description%>"><%=mediaItem.description%></span>
+        </div>
+        <span class="mediaBoxText k-chapter-time" title="Chapter start time">
+            <span class="icon-start_time"></span>
+            <span><%=mediaItem.startTimeDisplay%></span>
+        </span>
+        <span class="k-duration mediaBoxText k-chapter-time" title="Chapter duration">
+            <span class="icon-duration"></span>
+            <span id="mediaItemDuration"><%=mediaItem.durationDisplay%></span>
+        </span>
+    </div>
+    <div class="boxShadow"></div>
+    <% if (mediaItem.hasChildren){%>
+    <div class="slideBoxToggle" title="Toggle slides menu"></div>
+    <%}%>
+</li>

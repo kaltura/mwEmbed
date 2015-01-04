@@ -160,11 +160,11 @@
 
 				var updatedCuePoints = [];
 				//Only add new cuepoints or existing cuepoints which have a newer updateAt value
-				$.each(associativeRawCuePoints, function (index, rawCuePoint) {
-					if ((!_this.associativeCuePoints[index]) ||
-						( _this.associativeCuePoints[index] &&
-							_this.associativeCuePoints[index].updatedAt < rawCuePoint.updatedAt )) {
-						_this.associativeCuePoints[index] = rawCuePoint;
+				$.each(associativeRawCuePoints, function (id, rawCuePoint) {
+					if ((!_this.associativeCuePoints[id]) ||
+						( _this.associativeCuePoints[id] &&
+							_this.associativeCuePoints[id].updatedAt < rawCuePoint.updatedAt )) {
+						_this.associativeCuePoints[id] = rawCuePoint;
 						updatedCuePoints.push(rawCuePoint);
 					}
 				});
@@ -204,10 +204,11 @@
 		},
 		isValidResult: function (data) {
 			// Check if we got error
-			if (!data
-				||
-				( data.code && data.message )
-				) {
+			if (!data){
+				mw.log("mw.KCuePoints :: error retrieving data");
+				return false;
+			} else if ( data.code && data.message ) {
+				mw.log("mw.KCuePoints :: error code: " + data.code + ", error message: " + data.message);
 				return false;
 			}
 			return true;
