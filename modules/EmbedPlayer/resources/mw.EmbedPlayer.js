@@ -1774,15 +1774,14 @@
 				$('<img />')
 					.css(posterCss)
 					.attr({
-						'alt': this.posterAlt,
 						'src': this.poster
 					})
 					.addClass('playerPoster')
 					.load(function () {
 						_this.applyIntrinsicAspect();
-						$(_this).show();
+						$('.playerPoster').attr('alt', _this.posterAlt);
 					})
-			).hide();
+			).show();
 		},
 		/**
 		 * Remove the poster
