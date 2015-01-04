@@ -200,39 +200,39 @@
 
 				// Allow other plugins to inject data
 				this.getPlayer().triggerQueueCallback( 'relatedData', function( args ){
-					// Get data from event
-					if( args ){
-						_this.templateData = args[0];
-						_this.numOfEntries = args[0].length;
+					// See if the data from event will work:
+					if( args && args[0] && args[0].length ){
+						_this.updateTemplateData( args[0] );
 						callback();
 						return ;
 					}
 					_this.getDataFromApi( function(data){
-						_this.numOfEntries = data.length;
-						// make sure entries that were already viewed are the last in the data array
-						if ( _this.viewedEntries.length <= data.length ){
-							for (var i = 0; i < _this.viewedEntries.length; i++){
-								for (var j = 0; j < data.length; j++){
-									if (data[j].id === _this.viewedEntries[i]){ // entry was already viewed - move it to the last place in the data array
-										var entry = data.splice(j,1)[0];
-										data.push(entry);
-									}
-								}
-							}
-						}else{
-							_this.viewedEntries = [];
-							_this.updateStoredSession = false;
-						}
-						_this.templateData = {
-							nextItem: data.splice(0,1)[0],
-							moreItems: data
-						};
+						_this.updateTemplateData( data );
+						callback();
 					});
 				});
-				return;
 			}
-			callback();
-			return;
+		},
+		updateTemplateData: function( data ){
+			this.numOfEntries = data.length;
+			// make sure entries that were already viewed are the last in the data array
+			if ( this.viewedEntries.length <= data.length ){
+				for (var i = 0; i < this.viewedEntries.length; i++){
+					for (var j = 0; j < data.length; j++){
+						if (data[j].id === this.viewedEntries[i]){ // entry was already viewed - move it to the last place in the data array
+							var entry = data.splice(j,1)[0];
+							data.push(entry);
+						}
+					}
+				}
+			}else{
+				this.viewedEntries = [];
+				this.updateStoredSession = false;
+			}
+			this.templateData = {
+				nextItem: data.splice(0,1)[0],
+				moreItems: data
+			};
 		},
 		getDataFromApi: function( callback ){
 			var _this = this;
@@ -345,6 +345,10 @@
 		changeMedia: function( e, data ){
 			this.stopTimer();
 			var _this = this;
+			// update the selected entry:
+			if( data && data.entryId ){
+				this.setConfig('selectedEntryId', data.entryId );
+			}
 			//look for the entry in case this is a click
 			if(this.getConfig('clickUrl')){
 				if(this.templateData.nextItem.id && this.templateData.nextItem.id == data.entryId ){

@@ -23,7 +23,10 @@ $sendNotificationActions = array (
 				'notificationDataType' => 'Object',
 				'notificationData' => 'Data object can specify an entryId or referenceId',
 				'desc' => 'Change the current media entry within the player.',
-				'notificationDataValue' => '{ "entryId" : "0_wm82kqmm" }',
+				'notificationDataValue' => array(
+						'{ "entryId" : "0_wm82kqmm" }',
+						'{ "mediaProxy" : mediaProxyObject }'
+				),
 				'example' => '../modules/KalturaSupport/tests/ChangeMediaEntry.qunit.html'
 		),
 		'changeVolume' => array (
@@ -78,8 +81,18 @@ $sendNotificationActions = array (
 		'liveEntry' => array (
 				'notificationData' => 'The URL resource of the played entry',
 				'desc' => 'Call the LiveStream command which tests whether the stream is currently on air',
-				'availability' => 'kdp' 
-		) 
+				'availability' => 'kdp'
+		),
+		'showClosedCaptions' => array (
+				'notificationData' => 'None',
+				'desc' => 'Display closed captions',
+				'example' => '../modules/KalturaSupport/tests/ClosedCaptions.html'
+		),
+		'hideClosedCaptions' => array (
+				'notificationData' => 'None',
+				'desc' => 'Hide closed captions',
+				'example' => '../modules/KalturaSupport/tests/ClosedCaptions.html'
+		)
 );
 
 /* should ideally auto generate or be in a separate file */

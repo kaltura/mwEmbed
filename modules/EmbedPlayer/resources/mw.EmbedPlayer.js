@@ -1767,16 +1767,19 @@
 				}
 			}
 
+			//sometimes thumbnail doesn't cover video, add black background
+			$(".mwEmbedPlayer").addClass("mwEmbedPlayerBlackBkg");
+
 			$(this).html(
 				$('<img />')
 					.css(posterCss)
 					.attr({
-						'alt': this.posterAlt,
 						'src': this.poster
 					})
 					.addClass('playerPoster')
 					.load(function () {
 						_this.applyIntrinsicAspect();
+						$('.playerPoster').attr('alt', _this.posterAlt);
 					})
 			).show();
 		},
@@ -1784,6 +1787,7 @@
 		 * Remove the poster
 		 */
 		removePoster: function () {
+			$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
 			$(this).find('.playerPoster').remove();
 		},
 		/**
@@ -2665,7 +2669,7 @@
 						//sometimes we don't get the "end" event from the player so we trigger clipdone
 					} else if ( endTime >= .99 && !this.isInSequence() && !_this.clipDoneTimeout && this.shouldEndClip) {
 						_this.clipDoneTimeout = setTimeout(function () {
-							if (_this.shouldEndClip) {
+							if ( _this.shouldEndClip && !_this.isLive() ) {
 								mw.log("EmbedPlayer::updatePlayheadStatus > should run clip done :: " + _this.currentTime);
 								_this.onClipDone();
 							}
@@ -2981,7 +2985,12 @@
 		backToLive: function () {
 			mw.log('Error player does not support back to live');
 		},
-
+		hidePlayerOffScreen: function() {
+			mw.log('EmbedPlayer:: hidePlayerOffScreen: Notice player does not support hide player off screen');
+		},
+		restorePlayerOnScreen: function() {
+			mw.log('EmbedPlayer:: restorePlayerOnScreen: Notice player does not support restore player on screen');
+		},
 		/**
 		 * add storageId parameter to all "playmanifest" sources
 		 * @param storageId

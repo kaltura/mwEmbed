@@ -38,9 +38,9 @@ if( ! window.kWidget ){
 			} else {
 				serviceUrl = 'http://cdnbakmi.kaltura.com';
 			}
-
 			var baseUrl = serviceUrl + '/p/' + settings.partnerId +
 					'/sp/' + settings.partnerId + '00/playManifest';
+
 			for( var i in result[0]['flavorAssets'] ){
 				var asset = result[0]['flavorAssets'][i];
 				// Continue if clip is not ready (2)

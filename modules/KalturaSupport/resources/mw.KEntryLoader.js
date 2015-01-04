@@ -54,6 +54,7 @@ mw.KEntryLoader.prototype = {
 
 		// Always get the entry id from the first request result
 		var entryIdValue = '{1:result:objects:0:id}';
+
 		// Base entry request
 		var baseEntryRequestObj = {
 			'service' : 'baseentry',

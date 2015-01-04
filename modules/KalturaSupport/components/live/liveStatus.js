@@ -32,6 +32,12 @@
 					_this.setLiveStreamStatus();
 				}
 			} );
+			this.bind( 'movingBackToLive', function() {
+				if ( _this.onAirStatus ) {
+					_this.setLiveUI();
+					_this.prevIconClass = _this.onAirIconClass ;
+				}
+			} );
 			if ( this.getPlayer().isDVR() ) {
 
 				this.bind( 'seeked seeking onpause', function() {
@@ -70,12 +76,6 @@
 			}  else {
 				this.getPlayer().removePoster();
 				this.getPlayer().backToLive();
-			}
-
-			//live catched up
-			if ( this.onAirStatus ) {
-				this.setLiveUI();
-				this.prevIconClass = this.onAirIconClass ;
 			}
 		},
 
