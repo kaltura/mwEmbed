@@ -121,10 +121,10 @@ mw.KAdPlayer.prototype = {
 		// Setup some configuration for done state:
 		adSlot.doneFunctions = [];
 		// set skip offset from config for all adds if defined 
-		if( _this.embedPlayer.getKalturaConfig( 'vast', 'skipOffset' ) ){
+		if( _this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' ) ){
 			var i = 0;
 			for( i = 0; i < adSlot.ads.length; i++ ){
-				adSlot.ads[i].skipoffset =  _this.embedPlayer.getKalturaConfig( 'vast', 'skipOffset' );
+				adSlot.ads[i].skipoffset =  _this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' );
 			}
 		}
 
@@ -615,7 +615,7 @@ mw.KAdPlayer.prototype = {
 		}
 
 		// Check for skip add button
-		if( adSlot.skipBtn ){
+		if( adSlot.skipBtn && adConf.skipoffset ){
 			var skipId = embedPlayer.id + '_ad_skipBtn';
 			embedPlayer.getVideoHolder().append(
 				$('<span />')
