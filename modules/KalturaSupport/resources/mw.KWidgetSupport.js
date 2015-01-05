@@ -1438,26 +1438,30 @@ mw.KWidgetSupport.prototype = {
 		// Append KS to all source if available
 		// Get KS for playManifest URL ( this should run synchronously since ks should already be available )
 		var ks = this.kClient.getKs();
-		if( ks ){
+		var ksStr = '';
+		var ksQueryString = '';
+
+		if (ks){
 			var manifestKs = _this.fixPlaymanifestParam( ks );
-			var referrer =   _this.fixPlaymanifestParam( base64_encode( _this.getHostPageUrl() ) );
-			var clientTag = 'html5:v' + window[ 'MWEMBED_VERSION' ];
-			$.each( deviceSources, function(inx, source){
-				if ( deviceSources[inx]['disableQueryString'] == true ) {
-					var index = deviceSources[inx]['src'].lastIndexOf('/a.');
-					deviceSources[inx]['src'] = deviceSources[inx]['src'].substring(0, index) + '/ks/' + manifestKs +
-						'/referrer/' + referrer +
-						'/clientTag/' + clientTag +
-						deviceSources[inx]['src'].substring(index) ;
-				} else {
-					deviceSources[inx]['src'] = deviceSources[inx]['src'] + '?ks=' + manifestKs +
-						'&referrer=' + referrer +
-						'&clientTag=' + clientTag;
-				}
-			});
-		} else {
-			mw.log("KWidgetSupport: KS not defined, streams will not include a ks paramter");
+			ksStr = '/ks/' + manifestKs;
+			ksQueryString = '&ks=' + manifestKs;
 		}
+
+		var referrer =   _this.fixPlaymanifestParam( base64_encode( _this.getHostPageUrl() ) );
+		var clientTag = 'html5:v' + window[ 'MWEMBED_VERSION' ];
+		$.each( deviceSources, function(inx, source){
+			if ( deviceSources[inx]['disableQueryString'] == true ) {
+				var index = deviceSources[inx]['src'].lastIndexOf('/a.');
+				deviceSources[inx]['src'] = deviceSources[inx]['src'].substring(0, index) + ksStr +
+					'/referrer/' + referrer +
+					'/clientTag/' + clientTag +
+					deviceSources[inx]['src'].substring(index) ;
+			} else {
+				deviceSources[inx]['src'] = deviceSources[inx]['src'] +
+					'?referrer=' + referrer + ksQueryString +
+					'&clientTag=' + clientTag;
+			}
+		});
 		
 		return deviceSources;
 	},
