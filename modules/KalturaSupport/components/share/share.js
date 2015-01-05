@@ -17,13 +17,12 @@
 			shareOffset: true,
 			templatePath: 'components/share/share.tmpl.html',
             showEmbed: false,
-            customEmbedUrl: null
+            customEmbedCode: null
 		},
 		iconBtnClass: "icon-share",
 		setup: function () {
 			this.setupPlayerURL();
 			this.addBindings();
-
 		},
 		setupPlayerURL: function () {
 			var shareURL = null;
@@ -61,17 +60,18 @@
             var partnerId = this.getPlayer().kpartnerid;
             var entryId = this.getPlayer().kentryid;
             var uiconfId = this.getPlayer().kuiconfid;
-            var customEmbedUrl = this.getConfig('customEmbedUrl');
 
             var embedCodeSrc = serviceUrl + '/p/' + partnerId + '/sp/' +  partnerId + '00/embedIframeJs/uiconf_id/' + uiconfId + '/partner_id/' + partnerId + '?iframeembed=true&entry_id=' +
                 entryId;
 
-            if(customEmbedUrl) {
-                embedCodeSrc = customEmbedUrl;
-            }
-
             var embedCode = '<iframe src="' + embedCodeSrc + '" width="' + width + '" height="' + height +
                 '" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0" style="width: ' + width + '; height: ' + height + '"/>';
+
+            var customEmbedCode =  decodeURIComponent(this.getConfig('customEmbedCode'));
+
+            if(customEmbedCode) {
+                embedCode = customEmbedCode;
+            }
 
             var embedCodeEntities = this.htmlEntities(embedCode);
             this.setConfig('embedCode', embedCodeEntities);
