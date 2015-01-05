@@ -73,7 +73,14 @@
 					_this.getConfig("minDisplayWidth") <= _this.getPlayer().getWidth() &&
 					_this.getConfig("minDisplayHeight") <= _this.getPlayer().getHeight())){
 					_this.render = true;
-					_this.getComponent().css('height', _this.getPlayer().getVideoHolder().height());
+					//Sidebar height is player height without the top and bottom bars
+					var height = _this.getPlayer().getHeight() -
+						_this.getPlayer().getControlBarContainer().height() -
+						_this.getPlayer().getTopBarContainer().height();
+					_this.getComponent().css('height', height);
+					//If topbar exist then add top value
+					_this.getComponent().css('top', _this.getPlayer().getTopBarContainer().height());
+					_this.getComponentReminder().css('top', _this.getPlayer().getTopBarContainer().height());
 					_this.show();
 				} else {
 					_this.render = false;
@@ -141,6 +148,7 @@
 				this.getComponent().addClass( 'openBtn' );
 				// Trigger the screen overlay with layout info:
 				this.getPlayer().triggerHelper( 'onShowSidelBar');
+				this.getPlayer().triggerHelper( 'onComponentsHoverDisabled');
 			}
 		},
 		closeSideBar: function(){
@@ -149,6 +157,7 @@
 			this.getComponentReminder().removeClass( 'shifted' );
 			// Allow interface items to update:
 			this.getPlayer().triggerHelper('onHideSideBar');
+			this.getPlayer().triggerHelper( 'onComponentsHoverEnabled');
 		},
 		getComponent: function(){
 			if( !this.$el ) {
