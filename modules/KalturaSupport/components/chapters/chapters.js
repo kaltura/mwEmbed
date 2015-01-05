@@ -548,8 +548,9 @@
 		getSearchData: function(expression, callback){
 			var liveCheck = this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints");
 			// If results are cached then return from cache, unless in live session
-			if (!liveCheck && this.cache[expression]){
-				return callback(this.cache[expression]);
+			var cacheExp = expression.substr(0,3);
+			if (!liveCheck && this.cache[cacheExp]){
+				return callback(this.cache[cacheExp]);
 			}
 			// If query length is 3 then clear current dataset and query against API again
 			if (expression.length === 3){
