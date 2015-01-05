@@ -722,7 +722,7 @@
 						this.updateActiveItemDuration( countDown );
 					}
 				} else {
-					item = _this.mediaList[ actualActiveIndex ];
+					item = this.mediaList[ actualActiveIndex ];
 					if ( item && item.active ) {
 						item.active = false;
 						var startTime = item.startTime;
