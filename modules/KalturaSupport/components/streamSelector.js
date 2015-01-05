@@ -129,17 +129,20 @@
 		createStreamList: function (data) {
 			var _this = this;
 			var subStreams = data[0].objects;
+			var subStreamsData = data.slice(1);
 			if (subStreams.length > 0) {
 				$.each( subStreams, function ( i, subStream ) {
-					_this.streams.push( {
-						id: subStream.id,
-						data: {
-							meta: subStream,
-							contextData: {
-								flavorAssets: data[i + 1].objects
+					if (subStreamsData[i]) {
+						_this.streams.push( {
+							id: subStream.id,
+							data: {
+								meta: subStream,
+								contextData: {
+									flavorAssets: subStreamsData[i].objects
+								}
 							}
-						}
-					} );
+						} );
+					}
 				} );
 			} else {
 				mw.log('streamSelector::No streams avaialble, disabling component');
