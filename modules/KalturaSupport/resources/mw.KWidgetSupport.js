@@ -1461,13 +1461,11 @@ mw.KWidgetSupport.prototype = {
 
 		var ksStr = '';
 		var ksQueryString = '';
-		var referrerQueryString = '?referrer=';
 
 		if (ks){
 			var manifestKs = _this.fixPlaymanifestParam( ks );
 			ksStr = '/ks/' + manifestKs;
-			ksQueryString = '?ks=' + manifestKs;
-			referrerQueryString = '&referrer=';
+			ksQueryString = '&ks=' + manifestKs;
 		}
 
 		var referrer =   _this.fixPlaymanifestParam( base64_encode( _this.getHostPageUrl() ) );
@@ -1480,8 +1478,8 @@ mw.KWidgetSupport.prototype = {
 					'/clientTag/' + clientTag +
 					deviceSources[inx]['src'].substring(index) ;
 			} else {
-				deviceSources[inx]['src'] = deviceSources[inx]['src'] + ksQueryString +
-					referrerQueryString + referrer +
+				deviceSources[inx]['src'] = deviceSources[inx]['src'] +
+					'?referrer=' + referrer + ksQueryString +
 					'&clientTag=' + clientTag;
 			}
 		});
