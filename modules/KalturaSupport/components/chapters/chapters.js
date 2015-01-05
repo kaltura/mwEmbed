@@ -630,7 +630,7 @@
 				this.enableChapterToggle();
 				var mediaBoxes = this.getMediaListDomElements();
 				mediaBoxes.removeClass( "resultNoMatch" );
-				mediaBoxes.addClass( "collapsed" );
+				mediaBoxes.filter("[data-chapter-index!=-1]").addClass( "collapsed" );
 				//Recalac scroller height
 				this.renderScroller();
 			}
