@@ -297,6 +297,7 @@
 				var changeMediaCallback = function () {
 					//Return autoplay state to original
 					embedPlayer.autoplay = origAutoplay;
+					embedPlayer.restoreEventPropagation();
 					// issue a seek
 					if (currentTime > 0) {
 						_this.bind("seeked", function () {
@@ -307,7 +308,6 @@
 							embedPlayer.removeBlackScreen();
 							//Return poster to allow display of poster on clip done
 							mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
-							embedPlayer.restoreEventPropagation();
 							embedPlayer.triggerHelper('onChangeStreamDone', [_this.currentStream.id]);
 						});
 						//Add black screen before seek to avoid flashing of video
@@ -316,7 +316,6 @@
 					} else {
 						//Return poster to allow display of poster on clip done
 						mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
-						embedPlayer.restoreEventPropagation();
 						embedPlayer.triggerHelper( "onPlayerStateChange", ["play"] );
 						embedPlayer.triggerHelper('onChangeStreamDone', [_this.currentStream.id]);
 					}
