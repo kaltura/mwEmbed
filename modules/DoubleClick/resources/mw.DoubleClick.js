@@ -424,7 +424,11 @@
 			if (_this.isChromeless) {
 				_this.embedPlayer.getPlayerElement().sendNotification("pauseAd");
 			} else {
-				this.adsManager.pause();
+				if(this.adsManager) {
+					this.adsManager.pause();
+				}else{
+					_this.embedPlayer.getPlayerElement().pause();
+				}
 			}
 		},
 
@@ -442,7 +446,11 @@
 			if (_this.isChromeless) {
 				_this.embedPlayer.getPlayerElement().sendNotification("resumeAd");
 			} else {
-				this.adsManager.resume();
+				if (this.adsManager) {
+					this.adsManager.resume();
+				}else{
+					_this.embedPlayer.getPlayerElement().resume();
+				}
 			}
 		},
 
