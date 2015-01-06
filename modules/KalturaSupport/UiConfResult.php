@@ -19,7 +19,10 @@ class UiConfResult {
 	var $noCache = null;
 	var $isPlaylist = null;
 	var $isJsonConfig = null;	
-	
+
+	// These properties are handled differently, we don't want to resolve them automatically
+    var $propsToIgnoreWhenResolvingResource = array('templatePath');
+
 	function __construct( $request, $client, $cache, $logger, $utility ) {
 
 		if(!$request)
@@ -240,6 +243,7 @@ class UiConfResult {
 				$this->walkThroughPluginAttributes( $attrValue , $refrencePathInObject[$attrKey] );
 			}
 			else {
+				if( in_array($attrKey, $this->propsToIgnoreWhenResolvingResource) ) continue;
 			    $refrencePathInObject[$attrKey] = $this->resolveCustomResourceUrl( $attrValue );
 			}
 		}
