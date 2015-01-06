@@ -1890,6 +1890,12 @@
 		getVideoDisplay: function () {
 			return this.getInterface().find('.videoDisplay');
 		},
+		getControlBarContainer: function () {
+			return this.getInterface().find('.controlBarContainer');
+		},
+		getTopBarContainer: function () {
+			return this.getInterface().find('.topBarContainer');
+		},
 
 		/**
 		 * Abstract method,
