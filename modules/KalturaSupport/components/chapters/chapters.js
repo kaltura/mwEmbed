@@ -464,7 +464,7 @@
 						// an array that will be populated with substring matches
 						matches = [];
 						// regex used to determine if a string contains the substring `q`
-						var regexExp = q.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+						var regexExp = q.replace(/^\s+/, '').replace(/\s+$/, '').replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 						substrRegex = new RegExp( regexExp, 'i' );
 						// iterate through the pool of strings and for any string that
 						// contains the substring `q`, add it to the `matches` array
@@ -548,6 +548,7 @@
 		getSearchData: function(expression, callback){
 			var liveCheck = this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints");
 			// If results are cached then return from cache, unless in live session
+			expression = expression.replace(/^\s+/, '').replace(/\s+$/, '');
 			var cacheExp = expression.substr(0,3);
 			if (!liveCheck && this.cache[cacheExp]){
 				return callback(this.cache[cacheExp]);
