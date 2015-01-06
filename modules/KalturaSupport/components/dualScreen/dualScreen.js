@@ -511,8 +511,10 @@
 					}
 				} );
 				this.bind("onChangeMedia", function(){
-					//Clear the current slide before loading the new media
-					_this.getComponent().find( '#SynchImg' ).attr("src", "");
+					if (_this.syncEnabled) {
+						//Clear the current slide before loading the new media
+						_this.getComponent().find( '#SynchImg' ).hide();
+					}
 				});
 				this.bind("onChangeStream", function(){
 					_this.syncEnabled = false;
