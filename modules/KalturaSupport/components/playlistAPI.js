@@ -44,6 +44,7 @@
 		minClips: null,          // saves the MinClips Flashvar when we switch playlists
 		multiplePlayListsReady: false, //Indicate if multiplaylist selector is ready
 		playerIsReady: false,
+		redrawOnResize: true,
 
 		setup: function (embedPlayer) {
 			if (this.getConfig('includeInLayout') === false) { // support hidden playlists - force onPage and hide its div.
@@ -71,6 +72,12 @@
 					//Revert block player display after selecting playlist entry
 					_this.getPlayer()['data-blockPlayerDisplay'] = false;
 				}
+
+				// prevent iframe resize layout refresh  on iOS8
+				if ( mw.isIOS8() ){
+					_this.redrawOnResize = false;
+				}
+
 				_this.unbind('playerReady'); // we want to select the playlist only the first time the player loads
 			});
 
@@ -127,7 +134,7 @@
 
 			// set responsiveness
 			this.bind('updateLayout', function(){
-				if (!_this.getPlayer().layoutBuilder.isInFullScreen()) {
+				if (!_this.getPlayer().layoutBuilder.isInFullScreen() && _this.redrawOnResize) {
 					if ( $( ".playlistInterface" ).width() / 3 > _this.getConfig( 'mediaItemWidth' ) ) {
 						_this.setConfig( 'mediaItemWidth', $( ".playlistInterface" ).width() / 3 );
 
