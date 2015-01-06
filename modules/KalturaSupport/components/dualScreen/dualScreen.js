@@ -511,10 +511,8 @@
 					}
 				} );
 				this.bind("onChangeMedia", function(){
-					if (_this.syncEnabled) {
-						//Clear the current slide before loading the new media
-						_this.getComponent().find( '#SynchImg' ).hide();
-					}
+					//Clear the current slide before loading the new media
+					_this.getComponent().find( '#SynchImg' ).attr("src", "");
 				});
 				this.bind("onChangeStream", function(){
 					_this.syncEnabled = false;

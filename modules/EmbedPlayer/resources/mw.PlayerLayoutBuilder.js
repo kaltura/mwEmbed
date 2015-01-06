@@ -413,10 +413,6 @@ mw.PlayerLayoutBuilder.prototype = {
 			_this.setupTooltip()
 			_this.setupTooltip(_this.getInterface().find(".tooltipBelow"), "arrowTop")
 		});
-		this.embedPlayer.bindHelper('hidePlayerControls', function(){
-			debugger;
-			$(document.body ).find(".ui-tooltip" ).remove();
-		});
 	},
 	setupTooltip: function(elm, arrowDirection){
 		// exit if not enabled
