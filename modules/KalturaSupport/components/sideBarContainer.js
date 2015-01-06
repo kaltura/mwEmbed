@@ -74,13 +74,14 @@
 					_this.getConfig("minDisplayHeight") <= _this.getPlayer().getHeight())){
 					_this.render = true;
 					//Sidebar height is player height without the top and bottom bars
-					var height = _this.getPlayer().getHeight() -
-						_this.getPlayer().getControlBarContainer().height() -
-						_this.getPlayer().getTopBarContainer().height();
+					var height = _this.getPlayer().getHeight() - _this.getPlayer().getControlBarContainer().height();
+					if (_this.getPlayer().getTopBarContainer().length){
+						height -= _this.getPlayer().getTopBarContainer().height();
+						//If topbar exist then add top value
+						_this.getComponent().css('top', _this.getPlayer().getTopBarContainer().height());
+						_this.getComponentReminder().css('top', _this.getPlayer().getTopBarContainer().height());
+					}
 					_this.getComponent().css('height', height);
-					//If topbar exist then add top value
-					_this.getComponent().css('top', _this.getPlayer().getTopBarContainer().height());
-					_this.getComponentReminder().css('top', _this.getPlayer().getTopBarContainer().height());
 					_this.show();
 				} else {
 					_this.render = false;
