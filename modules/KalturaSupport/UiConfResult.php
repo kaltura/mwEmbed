@@ -21,7 +21,7 @@ class UiConfResult {
 	var $isJsonConfig = null;	
 
 	// These properties are handled differently, we don't want to resolve them automatically
-    var $propsToIgnoreWhenResolvingResource = array('templatePath');
+	var $propsToIgnoreWhenResolvingResource = array('templatePath');
 
 	function __construct( $request, $client, $cache, $logger, $utility ) {
 
@@ -244,7 +244,7 @@ class UiConfResult {
 				$this->walkThroughPluginAttributes( $attrValue , $refrencePathInObject[$attrKey] );
 			}
 			else {
-				if( in_array($attrKey, $this->propsToIgnoreWhenResolvingResource) ) continue;
+			    if( in_array($attrKey, $this->propsToIgnoreWhenResolvingResource) ) continue;
 			    $refrencePathInObject[$attrKey] = $this->resolveCustomResourceUrl( $attrValue );
 			}
 		}
