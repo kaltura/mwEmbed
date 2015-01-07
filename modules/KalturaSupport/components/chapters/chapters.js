@@ -138,6 +138,7 @@
 						_this.renderOnData = true;
 					}
 					_this.renderSearchBar();
+					_this.renderBottomBar();
 				}
 			});
 
@@ -564,9 +565,11 @@
 		},
 		minimizeSearchBar: function(){
 			this.$searchFormWrapper.addClass("minimized");
+			this.getMedialistFooterComponent().addClass("minimized");
 		},
 		maximizeSearchBar: function(){
 			this.$searchFormWrapper.removeClass("minimized");
+			this.getMedialistFooterComponent().removeClass("minimized");
 		},
 		getSearchData: function(expression, callback){
 			var liveCheck = this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints");
@@ -672,6 +675,20 @@
 				}
 				this.$scroll.find(".nano-content" ).css("z-index", "");
 			}
+		},
+		getMedialistFooterComponent: function(){
+			if (!this.$bottomBar){
+				this.$bottomBar = $("<div/>", {"class": "footer"});
+				this.getComponent().append(this.$bottomBar);
+			}
+			return this.$bottomBar;
+		},
+		renderBottomBar: function(){
+			this.getMedialistFooterComponent().empty();
+			var bottomBar = $("<div/>", {"class": "footerWrapper"} )
+				.append($("<span/>", {"class": "slideLocator icon-locator", "title": gM("ks-chapters-locate-active-media")}))
+				.append($("<span/>", {"class": "toggleAll icon-toggleAll", "title": gM("ks-chapters-toggle-all-chapter")}));
+			this.getMedialistFooterComponent().append(bottomBar);
 		},
 		isValidResult: function (data) {
 			// Check if we got error

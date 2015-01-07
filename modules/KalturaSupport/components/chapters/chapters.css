@@ -40,6 +40,43 @@
 .touch  .chapters > .k-chapters-container .k-medialist-header{
     height: 48px;
 }
+.chapters > .footer{
+    height: 40px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    display: table;
+    z-index: 10;
+    transition: transform 0.5s ease-out;
+}
+.chapters > .footer.minimized{
+    transform: scale(0);
+}
+.touch  .chapters > .footer{
+    height: 48px;
+}
+.chapters > .footer > .footerWrapper{
+    height: 100%;
+    width: 100%;
+    background-color: rgb(245, 245, 245);
+    overflow: hidden;
+    text-align: center;
+    vertical-align: middle;
+    display: table-cell;
+}
+.chapters > .footer span{
+    width: 24px;
+    display: inline-block;
+    color: rgb(0,0,0);
+    font-size: 24px;
+    margin: 0px 5px;
+    cursor: pointer;
+}
+.chapters > .footer span.toggleAll {
+    position: absolute;
+    right: 0;
+}
+
 .chapters > .k-chapters-container .chapterDivider{
     width: 1px;
     background: #aaa;
