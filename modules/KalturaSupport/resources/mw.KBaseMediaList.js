@@ -579,6 +579,7 @@
 
 				var width = this.getMedialistComponent().width();
 				var scrollHeight = this.getConfig( "mediaItemHeight" ) || width * (1 / this.getConfig("mediaItemRatio"));
+				scrollHeight *= 1/2;
 
 				var options = {
 					flash: true,
