@@ -860,7 +860,7 @@ mw.KAdPlayer.prototype = {
 	 * add the src only when displaying the object
 	 **/
 	setImgSrc: function (imgObj, cls) {
-		if (imgObj.html.indexOf("src=")== -1) {
+		if (imgObj.html && (typeof imgObj.html == 'string' || imgObj.html instanceof String) && imgObj.html.indexOf("src=")== -1) {
 			imgObj.html = imgObj.html.replace(/<img\s/ig, '<img class="'+cls+'" src="' + imgObj.resourceUri + '" ');
 		}
 	},
