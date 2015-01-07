@@ -494,7 +494,7 @@ input#searchBox::-ms-clear {
 .touch .tt-suggestion {
     height: 44px;
 }
-.tt-suggestion {
+.tt-suggestion, .empty-message {
     display: block;
     padding: 3px 20px;
     clear: both;

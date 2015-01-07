@@ -528,6 +528,12 @@
 							suggestion: function ( obj ) {
 								return parseData( obj, typeahead.val() );
 							}
+							},
+							empty: [
+								'<div class="empty-message">',
+								gM("ks-chapters-search-empty-result"),
+								'</div>'
+							].join('\n')
 						},
 						source: findMatches
 					} ).
