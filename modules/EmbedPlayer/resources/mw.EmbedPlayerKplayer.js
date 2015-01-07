@@ -701,8 +701,11 @@
 		 */
 		getEntryUrl: function () {
 			var deferred = $.Deferred();
+			if( ! this.mediaElement.selectedSource ){
+				this.mediaElement.autoSelectSource();
+			}
 			var originalSrc = this.mediaElement.selectedSource.getSrc();
-			if (this.isHlsSource(this.mediaElement.selectedSource)) {
+			if ( this.isHlsSource(this.mediaElement.selectedSource ) ) {
 
 				this.resolveSrcURL(originalSrc)
 					.then(function (srcToPlay) {
@@ -712,8 +715,12 @@
 					});
 				return deferred;
 			}
+			// check if the source has no assetID ( wont' work with Kaltura manifest url logic )
+			if( this.mediaElement.selectedSource && !this.mediaElement.selectedSource.getAssetId() ){
+				return deferred.resolve(originalSrc);
+			}
 
-			else if (this.isLive() || this.sourcesReplaced) {
+			if ( this.isLive() || this.sourcesReplaced ) {
 				return deferred.resolve(originalSrc);
 			}
 			var flavorIdParam = '';
