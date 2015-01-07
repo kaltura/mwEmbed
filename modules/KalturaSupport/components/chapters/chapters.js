@@ -36,6 +36,7 @@
 		renderOnData: false, //Indicate if to wait for data before rendering layout
 		freezeTimeIndicators: false,
 		chaptersMap: [],
+		barsMinimized: false,
 
 		setup: function () {
 			this.addBindings();
@@ -713,23 +714,46 @@
 		},
 		doOnScrollerUpdate: function(data){
 			//If maximum scroll has changed then reset last position
-			if (this.maximumScroll !== data.maximum){
-				this.lastPosition = data.position;
+			if (this.maximumScroll !== data.maximum ||
+				this.previousDirection !== data.direction){
+				this.lastScrollPosition = data.position;
 			}
+			//Save data for comparison on next iteration
 			this.maximumScroll = data.maximum;
-			if (data.direction === "up"){
-				//On up maximize searchbar
-				this.maximizeSearchBar();
-				//Reset last location of scroll bar
-				this.lastPosition = -1;
-			} else {
-				//On scroll down minimize searchbar after 10% scroll from max scroll height
-				if (this.lastPosition === -1){
-					//Set initial location of scroll bar
-					this.lastPosition = data.position;
+			this.previousDirection = data.direction;
+			//Set anchor position after maximize/minimize was performed
+			if (this.lastScrollPosition === -1){
+				//Set initial location of scroll bar
+				this.lastScrollPosition = data.position;
+			}
+			if ((data.direction === "up") || (data.position === 0)){
+				//On scroll up maximize searchbar after 10% scroll from max scroll height
+				//or when scroll to top
+				if (this.barsMinimized && ((this.lastScrollPosition - data.position) / this.maximumScroll) > 0.1){
+					this.barsMinimized = false;
+					this.maximizeSearchBar();
+					this.setMedialistComponentHeight();
+					this.lastScrollPosition = -1;
 				}
-				if (((data.position - this.lastPosition) / this.maximumScroll) > 0.1){
+			} else {
+				//On scroll down minimize searchbar after 20% scroll from max scroll height
+				//or when scroll to bottom
+				if ((!this.barsMinimized &&
+					((data.position - this.lastScrollPosition) / this.maximumScroll) > 0.2) ||
+					(data.position === data.maximum)){
+					this.barsMinimized = true;
 					this.minimizeSearchBar();
+					this.lastScrollPosition = -1;
+
+					if (this.scrollUpdateTimeout){
+						clearTimeout(this.scrollUpdateTimeout);
+						this.scrollUpdateTimeout = null;
+					}
+					var _this = this;
+					this.scrollUpdateTimeout = setTimeout(function(){
+						_this.scrollUpdateTimeout = null;
+						_this.setMedialistComponentHeight();
+					}, 100);
 				}
 			}
 			//Remove focus from searchbox to enable maximize on focus
