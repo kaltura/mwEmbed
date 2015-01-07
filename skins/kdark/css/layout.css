@@ -942,7 +942,7 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	z-index: 101;
 }
 
-.ad-image-overlay {
+.overlayAd {
 	width: 100% !important;
 	height: 100% !important;
 }

@@ -936,10 +936,6 @@ mw.KAdPlayer.prototype = {
 		$( this.embedPlayer ).trigger("onAdPlay");
 		this.setImgSrc(nonLinearConf, 'overlayAd');
 
-		if ( $(nonLinearConf.html).find('img').length ) {
-			nonLinearConf.html = $(nonLinearConf.html).find('img').addClass("ad-image-overlay");
-		}
-
 		// Show the overlay update its position and content
 		$('#' +overlayId )
 		.css( layout )
