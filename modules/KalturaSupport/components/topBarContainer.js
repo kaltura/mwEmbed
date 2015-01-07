@@ -46,6 +46,12 @@
 					_this.keepOnScreen = false;
 					_this.hide();
 				});
+				this.bind( 'onHideSideBar', function(){
+					_this.forceOnScreen = false;
+				});
+				this.bind( 'onShowSideBar', function(){
+					_this.forceOnScreen = true;
+				});
 			}
 		},
 		show: function(){
@@ -56,7 +62,7 @@
 			});
 		},
 		hide: function(){
-			if( this.keepOnScreen ) return;
+			if( this.keepOnScreen || this.forceOnScreen) return;
 			this.getComponent().removeClass( 'open' );
 			// Allow interface items to update:
 			this.getPlayer().triggerHelper('onHideTopBar', {'top' : 15} );
