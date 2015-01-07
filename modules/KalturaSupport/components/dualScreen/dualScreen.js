@@ -190,7 +190,7 @@
 						}
 					}
 
-					if ( _this.getConfig( 'animationSupported' ) ) {
+					if ( mw.getConfig( 'EmbedPlayer.AnimationSupported') ) {
 						_this.getFirstMonitor().obj.one( 'transitionend webkitTransitionEnd', transitionendHandler );
 						_this.getSecondMonitor().obj.one( 'transitionend webkitTransitionEnd', transitionendHandler );
 					} else {
@@ -370,7 +370,7 @@
 								_this.showDisplay();
 								maximizeSecondDisplay();
 							} else {
-								_this.getPrimary().obj.show();
+								_this.getPrimary().obj.css("visibility", "");
 								minimizeSecondDisplay();
 							}
 
@@ -543,8 +543,6 @@
 
 					this.setControlBarBindings();
 
-					this.checkAnimationSupport();
-
 					//Set draggable and resizable configuration
 					primaryScreen
 						.draggable( this.getConfig( 'draggable' ) ).draggable( 'disable' )
@@ -603,14 +601,14 @@
 				}
 			},
 			hideDisplay: function(){
-				this.getSecondMonitor().obj.hide();
+				this.getSecondMonitor().obj.css("visibility", "hidden");
 				this.disableControlBar();
-				this.getControlBar().hide();
+				this.getControlBar().css("visibility", "hidden");
 			},
 			showDisplay: function(){
-				this.getFirstMonitor().obj.show();
-				this.getSecondMonitor().obj.show();
-				this.getControlBar().show();
+				this.getFirstMonitor().obj.css("visibility", "");
+				this.getSecondMonitor().obj.css("visibility", "");
+				this.getControlBar().css("visibility", "");
 				this.setControlBarWidth();
 				this.positionControlBar();
 				this.enableControlBar();
@@ -625,32 +623,6 @@
 				} else {
 					this.render = false;
 				}
-			},
-			checkAnimationSupport: function ( elm ) {
-				elm = elm || document.body || document.documentElement;
-				var animation = false,
-					animationstring = 'animation',
-					keyframeprefix = '',
-					domPrefixes = 'Webkit Moz O ms Khtml'.split( ' ' ),
-					pfx = '';
-
-				if ( elm.style.animationName !== undefined ) {
-					animation = true;
-				}
-
-				if ( animation === false ) {
-					for ( var i = 0; i < domPrefixes.length; i++ ) {
-						if ( elm.style[ domPrefixes[i] + 'AnimationName' ] !== undefined ) {
-							pfx = domPrefixes[ i ];
-							animationstring = pfx + 'Animation';
-							keyframeprefix = '-' + pfx.toLowerCase() + '-';
-							animation = true;
-							break;
-						}
-					}
-				}
-
-				this.setConfig( 'animationSupported', animation );
 			},
 
 			//Monitor

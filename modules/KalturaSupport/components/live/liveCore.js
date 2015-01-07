@@ -57,8 +57,6 @@
 
 
 		addPoster: function(){
-			//sometimes thumbnail doesn't cover video, add black background
-			$(".mwEmbedPlayer").addClass("mwEmbedPlayerBlackBkg");
 			this.getPlayer().removePosterFlag = false;
 			this.getPlayer().updatePosterHTML();
 		},
@@ -92,10 +90,6 @@
 					} );
 				}
 			} );
-
-			this.bind( 'playing', function() {
-				$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
-			});
 
 			this.bind( 'firstPlay', function() {
 				_this.firstPlay = true;
@@ -151,7 +145,7 @@
 					embedPlayer.triggerHelper( 'liveOffline' );
 
 				}  else if ( !_this.onAirStatus && onAirObj.onAirStatus ) {
-					if ( _this.getPlayer().removePosterFlag && !_this.playWhenOnline && !embedPlayer.isPlaying()) {
+					if ( _this.getPlayer().removePosterFlag && !_this.playWhenOnline && !embedPlayer.isPlaying() ) {
 						_this.addPoster();
 					}
 
@@ -164,6 +158,31 @@
 						_this.playWhenOnline = false;
 					}
 					embedPlayer.triggerHelper( 'liveOnline' );
+
+					//reload livestream
+					if ( !embedPlayer.firstPlay && _this.isDVR() ) {
+						embedPlayer.disablePlayControls();
+						var shouldPause = !embedPlayer.isPlaying();
+						var playingEvtName = "playing.backToLive";
+						embedPlayer.bindHelper( playingEvtName , function() {
+							embedPlayer.unbindHelper( playingEvtName );
+							setTimeout( function() {
+								embedPlayer.enablePlayControls();
+								if ( shouldPause ) {
+									embedPlayer.pause();
+								}
+							}, 1);
+
+						});
+
+						setTimeout( function() {
+							_this.maxCurrentTime = 0;
+							//in case player was in 'ended' state change to 'paused' state
+							embedPlayer.pauseInterfaceUpdate();
+							embedPlayer.backToLive();
+						}, 1000 );
+
+					}
 				}
 
 				//check for pending autoPlay
@@ -232,6 +251,7 @@
 			//ui components to show
 			var hideComponentsArr = [];
 			_this.maxCurrentTime = 0;
+			_this.liveStreamStatusUpdated = false;
 			//live entry
 			if ( embedPlayer.isLive() ) {
 				if ( !this.getConfig("disableLiveCheck")) {

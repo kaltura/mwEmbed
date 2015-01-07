@@ -112,7 +112,7 @@
 				}
 				if ( isMimeType("video/mp4")
 					|| 
-					isMimeTYpe("video/h264")
+					isMimeType("video/h264")
 				){
 					flashvars.entryURL = resolvedSrc;
 				} else if(
@@ -238,7 +238,7 @@
 
 					if ( isMimeType("video/mp4")
 						||
-						isMimeTYpe("video/h264")
+						isMimeType("video/h264")
 						){
 						_this.durationReceived = true;
 						readyCallback();
@@ -321,6 +321,7 @@
 
 				this.updatePlayhead();
 				$(this).trigger("playing");
+				this.getPlayerContainer().css('visibility', 'visible');
 				this.hideSpinner();
 				this.stopped = this.paused = false;
 			}

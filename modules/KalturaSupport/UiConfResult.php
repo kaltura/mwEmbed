@@ -59,7 +59,7 @@ class UiConfResult {
 		// Get confFilePath flashvar
 		$confFilePath = $this->request->getFlashvars('confFilePath');
 
-		$jsonConfig = $this->request->get('jsonConfig');
+		$jsonConfig =$this->request->getFlashvars('jsonConfig');
 
 		// If no uiconf_id .. throw exception
 		if( !$this->request->getUiConfId() && !$confFilePath && !$jsonConfig ) {
@@ -69,7 +69,8 @@ class UiConfResult {
 		// Try to load confFile from local path
 		if( $confFilePath ) {
 			$this->loadFromLocalFile( $confFilePath );
-		} else if ($jsonConfig){
+		} else  if ($jsonConfig){
+			// convert to string 
 			$this->uiConfFile = json_encode( $jsonConfig );
 		} else {
 			// Check if we have a cached result object:
@@ -328,8 +329,7 @@ class UiConfResult {
 			// http://html5video.org/wiki/Kaltura_HTML5_Configuration
 			if( $pluginId == 'Kaltura' || 
 				$pluginId == 'EmbedPlayer' || 
-				$pluginId == 'KalturaSupport' || 
-				$pluginId == 'mediaProxy'
+				$pluginId == 'KalturaSupport'
 			){
 				continue;
 			}
@@ -366,9 +366,9 @@ class UiConfResult {
 		$flashVars = $this->request->getFlashVars();
 		if( $flashVars ) {
 			foreach( $flashVars as $fvKey => $fvValue) {
-				$fvSet = @json_decode( stripslashes( html_entity_decode( $fvValue ) ) ) ;
+				$fvSet = @json_decode( $fvValue ) ;
 				// check for json flavar and set acordingly
-				if( is_object( $fvSet ) ){
+				if( is_object( $fvSet ) || is_array( $fvSet ) ){
 					foreach( $fvSet as $subKey => $subValue ){
 						$vars[ $fvKey . '.' . $subKey ] =  $this->utility->formatString( $subValue );
 					}
@@ -395,8 +395,7 @@ class UiConfResult {
 			$pluginAttribute = $pluginKeys[1];
 			 if( $pluginId == 'Kaltura' ||
 					$pluginId == 'EmbedPlayer' ||
-					$pluginId == 'KalturaSupport' ||
-					$pluginId == 'mediaProxy'
+					$pluginId == 'KalturaSupport'
 					){
 						continue;
 					}
@@ -439,7 +438,7 @@ class UiConfResult {
 			$plugins = array();
 			$vars = array();
 
-			$uiConfPluginNodes = array( 'mediaProxy', 'strings' );
+			$uiConfPluginNodes = array( 'strings' );
 
 			// Get all plugins elements
 			if( $this->uiConfFile ) {

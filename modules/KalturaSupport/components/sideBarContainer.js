@@ -5,7 +5,7 @@
 		defaultConfig: {
 			'hover': true,
 			'clickToClose': false,
-			'closeTimeout': 1000,
+			'closeTimeout': 2000,
 			'position': 'left',
 			'fullScreenDisplayOnly': false,
 			'minDisplayWidth': 0,
@@ -29,17 +29,30 @@
 				_this.getComponent().after(_this.$elHelper);
 			});
 			this.bind( 'layoutBuildDone ended', function(){
+				var disableClosingTimeout = function(){
+					if (_this.closeBarTimeout){
+						clearTimeout(_this.closeBarTimeout);
+						_this.closeBarTimeout = null;
+					}
+				};
 				_this.getComponentReminder().off('click').on('click', function(){
+					disableClosingTimeout();
 					_this.toggleSideBar();
 				});
 				if (!_this.getConfig('clickToClose')) {
-					_this.getComponent().on( 'mouseleave', function () {
-						setTimeout(function(){
-							if (_this.getConfig('isSideBarOpen')) {
-								_this.closeSideBar();
-							}
-						}, _this.getConfig("closeTimeout"));
-					} );
+					_this.getComponent()
+						.on( 'mouseleave', function () {
+							disableClosingTimeout();
+							_this.closeBarTimeout = setTimeout(function(){
+								_this.closeBarTimeout = null;
+								if (_this.getConfig('isSideBarOpen')) {
+									_this.closeSideBar();
+								}
+							}, _this.getConfig("closeTimeout"));
+						} )
+						.on('mouseenter', function () {
+							disableClosingTimeout();
+						});
 				}
 			});
 			this.bind( 'preShowScreen onDisableInterfaceComponents', function( event, excludedComponents ){
