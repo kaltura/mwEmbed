@@ -148,7 +148,7 @@
 				this.getComponentReminder().addClass( 'shifted' );
 				this.getComponent().addClass( 'openBtn' );
 				// Trigger the screen overlay with layout info:
-				this.getPlayer().triggerHelper( 'onShowSidelBar');
+				this.getPlayer().triggerHelper( 'onShowSideBar');
 				this.getPlayer().triggerHelper( 'onComponentsHoverDisabled');
 			}
 		},

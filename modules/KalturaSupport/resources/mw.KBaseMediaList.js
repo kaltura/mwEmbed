@@ -91,7 +91,7 @@
 				}
 			});
 
-			this.bind("onShowSidelBar", function(){
+			this.bind("onShowSideBar", function(){
 				if (_this.checkAddScroll()){
 					_this.getScrollComponent().nanoScroller( {
 						flash: true,
