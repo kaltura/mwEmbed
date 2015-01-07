@@ -59,7 +59,7 @@ class UiConfResult {
 		// Get confFilePath flashvar
 		$confFilePath = $this->request->getFlashvars('confFilePath');
 
-		$jsonConfig =$this->request->get('jsonConfig');
+		$jsonConfig = $this->request->get('jsonConfig');
 
 		// If no uiconf_id .. throw exception
 		if( !$this->request->getUiConfId() && !$confFilePath && !$jsonConfig ) {
@@ -69,8 +69,8 @@ class UiConfResult {
 		// Try to load confFile from local path
 		if( $confFilePath ) {
 			$this->loadFromLocalFile( $confFilePath );
-		} else  if ($jsonConfig){
-			$this->uiConfFile = stripslashes( html_entity_decode($jsonConfig));
+		} else if ($jsonConfig){
+			$this->uiConfFile = json_encode( $jsonConfig );
 		} else {
 			// Check if we have a cached result object:
 			$cacheKey = $this->getCacheKey();
@@ -161,7 +161,6 @@ class UiConfResult {
 	public function parseJSON( $uiConf ) {
 
 		$playerConfig = json_decode( $uiConf, true );
-
 		if( json_last_error() ) {
 			throw new Exception("Error Processing JSON: " . json_last_error() );
 		}
@@ -213,7 +212,19 @@ class UiConfResult {
 			'liveStatus' => array(),
 			'reportError' => array(),
 			"sideBarContainer" => array(),
-			"liveAnalytics"=>array()
+			"liveAnalytics"=>array(),
+				
+			// default plugins for JSON config: 
+			"topBarContainer" => array(),
+			"sideBarContainer" => array(),
+			"scrubber" => array(),
+			"largePlayBtn" => array(),
+			"playHead" => array(),
+			"playPauseBtn" => array(),
+			"volumeControl" => array(),
+			"durationLabel" => array(),
+			"currentTimeLabel" => array(),
+			"keyboardShortcuts" => array()
 		);
 
 		$playerConfig['plugins'] = array_merge_recursive($playerConfig['plugins'], $basePlugins);
@@ -496,7 +507,7 @@ class UiConfResult {
 			$playerConfig = $this->updatePluginsFromVars( $plugins, $vars, $uiConfPluginNodes );
 
 			// Save to cache
-			$this->cache->set( $cacheKey, serialize($playerConfig) );	
+			$this->cache->set( $cacheKey, serialize($playerConfig) );
 		}
 		// Flashvars
 		$uiVars = $playerConfig['vars'];
@@ -526,7 +537,6 @@ class UiConfResult {
 		$ignorePlugins = array(
 			'kalturaMix', 'captionsOverFader', 'gigya'
 		);
-
 		// Default set of plugins, always enabled
 		$plugins = array(
 			"topBarContainer" => array(),
