@@ -583,7 +583,6 @@
 				var options = {
 					flash: true,
 					preventPageScrolling: true,
-					iOSNativeScrolling: true,
 					sliderMaxHeight: scrollHeight
 				} ;
 				var _this = this;
