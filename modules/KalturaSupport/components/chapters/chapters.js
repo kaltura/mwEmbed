@@ -487,11 +487,11 @@
 						substrRegex = new RegExp( regexExp, 'i' );
 						// iterate through the pool of strings and for any string that
 						// contains the substring `q`, add it to the `matches` array
-						$.each( strs, function ( i, str ) {
-							if ( substrRegex.test( str.data ) ) {
+						$.each( strs, function ( key, ids ) {
+							if ( substrRegex.test( key ) ) {
 								// the typeahead jQuery plugin expects suggestions to a
 								// JavaScript object, refer to typeahead docs for more info
-								matches.push( { value: str } );
+								matches.push( { value: {data: key, ids: ids} } );
 							}
 						} );
 						cb( matches );
@@ -499,19 +499,19 @@
 				};
 
 				// Helper function for parsing search result length
-				var parseData = function ( obj, searchTerm ) {
-					var startOfMatch = obj.value.data.toLowerCase().indexOf( searchTerm.toLowerCase() );
+				var parseData = function ( data, searchTerm ) {
+					var startOfMatch = data.toLowerCase().indexOf( searchTerm.toLowerCase() );
 					if ( startOfMatch > -1 ) {
 						var expLen = searchTerm.length;
-						var dataLen = obj.value.data.length;
+						var dataLen = data.length;
 						var restOfExpLen = dataLen - (startOfMatch + expLen);
 						var hintLen = Math.floor( restOfExpLen * 0.2 );
 						if (hintLen === 0 || hintLen/dataLen > 0.7 || hintLen < 40){
 							hintLen = restOfExpLen;
 						}
-						return obj.value.data.substr( startOfMatch, expLen + hintLen );
+						return data.substr( startOfMatch, expLen + hintLen );
 					} else {
-						return obj.value.data;
+						return data;
 					}
 				};
 
@@ -524,12 +524,11 @@
 					{
 						name: 'label',
 						displayKey: function ( obj ) {
-							return parseData( obj, typeahead.val() );
+							return parseData( obj.value.data, typeahead.val() );
 						},
 						templates: {
 							suggestion: function ( obj ) {
-								return parseData( obj, typeahead.val() );
-							}
+								return parseData( obj.value.data, typeahead.val() );
 							},
 							empty: [
 								'<div class="empty-message">',
@@ -540,7 +539,7 @@
 						source: findMatches
 					} ).
 					on( "typeahead:selected", function ( e, obj ) {
-						_this.showSearchResults( obj.value.id );
+						_this.showSearchResults( obj.value.ids );
 					} ).
 					on( "keyup", function ( event ) {
 						// On enter key press:
@@ -554,7 +553,7 @@
 							if ( suggestionsElms.length ) {
 								suggestionsElms.each( function ( i, suggestionsElm ) {
 									var suggestionsData = dropdown.getDatumForSuggestion( $( suggestionsElm ) );
-									objIds.push( suggestionsData.raw.value.id );
+									objIds = objIds.concat( suggestionsData.raw.value.ids );
 								} );
 								_this.showSearchResults( objIds );
 							}
@@ -608,21 +607,20 @@
 						return;
 					}
 					// Validate result
-					var results = [];
+					var results = {};
 					$.each(data.objects, function (index, res) {
 						if (!_this.isValidResult(res)) {
 							data[index] = null;
 						}
 
-						results.push(
-							{
-								id: res.id,
-								data: res.title
-							},{
-								id: res.id,
-								data: res.description
+						var searchData = [res.title, res.description];
+						$.each(searchData, function(index, data){
+							if (results[data]) {
+								results[data].push(res.id);
+							} else {
+								results[data] = [res.id];
 							}
-						);
+						});
 					});
 
 					_this.dataSet = results;
