@@ -17,59 +17,27 @@
 	<span itemprop="height" content="333"></span>
 </div>
 
-<div>
-	<Label> Change Audio Track: </Label>
-	<select id="tracksList" onchange="switchTrack()"/>
-</div>
+
 
 <script>
 	var kdp;
-	function onTracksReceived( data ) {
-		if ( data.languages && data.languages.length > 0 ) {
-			var tracks = data.languages;
-			$.each(tracks, function(){
-				$('<option />')
-						.attr('value', this.index)
-						.html(this.label)
-						.appendTo('#tracksList');
-			});
-		}
-	}
 
-	function onTrackSelected( data ) {
-		if ( data.index < $('#tracksList option').size() && data.index != $('#tracksList').val() ) {
-			$('#tracksList').val(data.index);
-		}
-	}
-
-	function switchTrack() {
-		kdp.sendNotification('switchAudioTrack', {index: $('#tracksList').val() });
-	}
 
 	mw.setConfig("KalturaSupport.LeadWithHTML5", true);
 	mw.setConfig("LeadWithHLSOnFlash", true);
 
-	mw.setConfig('EmbedPlayer.ReplaceSources', [
-		{
-			'type' : 'application/vnd.apple.mpegurl',
-			'src' : 'http://pa-www.kaltura.com/content/shared/erank/multi_audio.m3u8'
-		}
-	]);
+
 
 	kWidget.embed({
-		"targetId": "kaltura_player_1404120708",
-		"wid": "_524241",
-		"uiconf_id": 24670302,
-		"flashvars": {
-			"streamerType": "auto",
-		},
-		"cache_st": 1404120708,
-		"entry_id": "0_r1ss0uv1",
-		"readyCallback": function( playerId ){
-			kdp = $('#' + playerId)[0];
-			kdp.addJsListener( 'audioTracksReceived', 'onTracksReceived' );
-			kdp.addJsListener( 'audioTrackIndexChanged', 'onTrackSelected' );
-		}
+        "targetId": "kaltura_player_1404120708",
+        "wid": "_1281471",
+        "uiconf_id": 24670302,
+        "flashvars": {
+            "streamerType": "auto" ,
+            "audioSelector": {plugin: true}
+        },
+        "cache_st": 1404120708,
+        "entry_id": "0_pb1l3rfa"
 	});
 </script>
 </body>

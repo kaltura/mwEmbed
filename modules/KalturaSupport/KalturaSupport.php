@@ -185,6 +185,12 @@
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'sourceSelector',
 		),
+
+        		"audioSelector" => array(
+        			'scripts' => "components/audioSelector.js",
+        			'dependencies' => 'mw.KBaseComponent',
+        			'kalturaPluginName' => 'audioSelector',
+        		),
 		"logo" => array(
 			'scripts' => "components/logo.js",
 			'dependencies' => 'mw.KBaseComponent',

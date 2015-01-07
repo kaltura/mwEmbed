@@ -33,6 +33,7 @@ $messages['en'] = array(
 	'mwe-embedplayer-select_source' => 'Quality Settings',
 	'mwe-embedplayer-switch_source' => 'switch in progress',
 	'mwe-embedplayer-select_stream' => 'Select stream',
+	'mwe-embedplayer-select_audio' => 'Select audio',
     'mwe-embedplayer-switch_stream' => 'switch in progress',
 	//'mwe-embedplayer-player_options' => 'Player options',
 	'mwe-embedplayer-timed_text' => 'Closed Captions',
