@@ -232,7 +232,7 @@
 			//Get current item number
 			var orderId = this.mediaList.length;
 			//Map items to mediaList items
-			this.mediaList = $.map(items, function (item) {
+			var mediaList = $.map(items, function (item) {
 				var mediaItem;
 				var customData = item.partnerData ? JSON.parse(item.partnerData) : {};
 				var title = item.title || customData.title;
@@ -281,6 +281,9 @@
 				}
 				return mediaItem;
 			});
+			//Add media items to mediaList cache - need to concat here new to existing list in
+			//order to support live cuepoints which adds up as stream progress
+			this.mediaList = this.mediaList.concat(mediaList);
 		},
 		getMediaBoxHeight: function(mediaItem){
 			//Get media box height by mediaItemRatio and by media item type (Chapter/Slide)
