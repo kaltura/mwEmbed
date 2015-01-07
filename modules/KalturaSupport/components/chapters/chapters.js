@@ -36,6 +36,8 @@
 		renderOnData: false, //Indicate if to wait for data before rendering layout
 		freezeTimeIndicators: false,
 		chaptersMap: [],
+		activeItem: 0,
+		inSlideAnimation: false,
 		barsMinimized: false,
 
 		setup: function () {
@@ -320,7 +322,7 @@
 			return newWidth;
 		},
 		disableChapterToggle: function(){
-			this.getMediaListDomElements().filter(".chapterBox").addClass("disableChapterToggle").attr("data-chapter-collapsed", true);
+			this.getMediaListDomElements().filter(".chapterBox").addClass("disableChapterToggle");
 		},
 		enableChapterToggle: function(){
 			this.getMediaListDomElements().filter(".chapterBox").removeClass("disableChapterToggle");
@@ -637,33 +639,50 @@
 			);
 		},
 		showSearchResults: function(searchResults){
-			this.searchResultShown = true;
-			if ( !$.isArray(searchResults)){
-				searchResults = [searchResults];
-			}
-			this.disableChapterToggle();
-			var mediaBoxes = this.getMediaListDomElements();
-			mediaBoxes.each(function(i, mediaBox){
-				var objId = $(mediaBox).attr("data-obj-id");
-				if ( $.inArray(objId, searchResults) > -1){
-					var mediaBoxObj = $(mediaBox);
-					mediaBoxObj.removeClass("resultNoMatch collapsed");
-				} else{
-					$(mediaBox).addClass("resultNoMatch");
+
+			var chapters = this.getMediaListDomElements().filter(".chapterBox");
+			var expandedChapters = chapters.filter("[data-chapter-collapsed=false]");
+			this.toggleChapter(expandedChapters);
+
+			this.doOnSlideAnimationEnded(function(){
+				this.searchResultShown = true;
+				if ( !$.isArray(searchResults)){
+					searchResults = [searchResults];
 				}
+				this.disableChapterToggle();
+				var mediaBoxes = this.getMediaListDomElements();
+				mediaBoxes.each(function(i, mediaBox){
+					var objId = $(mediaBox).attr("data-obj-id");
+					if ( $.inArray(objId, searchResults) > -1){
+						var mediaBoxObj = $(mediaBox);
+						mediaBoxObj.removeClass("resultNoMatch");
+					} else{
+						$(mediaBox).addClass("resultNoMatch");
+					}
+				});
+				//Remove search results slide collapsed state
+				var slidesSearchResults = mediaBoxes.filter(":not(.resultNoMatch).slideBox");
+				this.inSlideAnimation = slidesSearchResults.length ? true : false;
+				this.transitionsToBeFired += slidesSearchResults.length;
+				this.initSlideAnimation(slidesSearchResults);
+				slidesSearchResults.removeClass("collapsed");
 			});
-			//Recalac scroller height
-			this.renderScroller();
 		},
 		resetSearchResults: function(){
 			if (this.searchResultShown) {
 				this.searchResultShown = false;
 				this.enableChapterToggle();
 				var mediaBoxes = this.getMediaListDomElements();
+				//Remove search results slide collapsed state
+				var slidesSearchResults = mediaBoxes.filter(":not(.resultNoMatch).slideBox");
+				this.inSlideAnimation = slidesSearchResults.length ? true : false;
+				this.transitionsToBeFired += slidesSearchResults.length;
+				slidesSearchResults.addClass("collapsed");
+
 				mediaBoxes.removeClass( "resultNoMatch" );
-				mediaBoxes.filter("[data-chapter-index!=-1]").addClass( "collapsed" );
-				//Recalac scroller height
-				this.renderScroller();
+				var chapters = this.getMediaListDomElements().filter(".chapterBox");
+				var expandedChapters = chapters.filter("[data-chapter-collapsed=false]");
+				this.toggleChapter(expandedChapters);
 			}
 
 		},
@@ -765,11 +784,13 @@
 		updateActiveItem: function () {
 			if (!this.freezeTimeIndicators) {
 				// search chapter for current active
-				var activeIndex = 0;
+				var _this = this;
+				var activeChapterIndex = 0;
 				var time = this.getPlayer().currentTime;
-				$.each( this.chaptersMap, function ( inx, item ) {
-					if ( time > ( item.data.startTime ) ) {
-						activeIndex = item.data.order;
+				$.each( this.mediaList, function ( inx, item ) {
+					if ( time > ( item.startTime ) ) {
+						activeChapterIndex = _this.chaptersMap[item.chapterNumber].data.order;
+						_this.activeItem = item.order;
 					}
 				} );
 
@@ -777,12 +798,12 @@
 				// Check if active is not already set:
 				var item;
 				var endTime;
-				if ( actualActiveIndex === activeIndex ) {
+				if ( actualActiveIndex === activeChapterIndex ) {
 					// update duration count down:
-					item = this.mediaList[ activeIndex ];
+					item = this.mediaList[ activeChapterIndex ];
 					if ( item ) {
 						if ( !item.active ) {
-							this.setSelectedMedia( activeIndex );
+							this.setSelectedMedia( activeChapterIndex );
 							item.active = true;
 						}
 						endTime = item.endTime;
@@ -805,8 +826,8 @@
 					// restore skip pause flag:
 					this.skipPauseFlag = false;
 
-					if ( this.mediaList[ activeIndex ] ) {
-						this.setSelectedMedia( activeIndex );
+					if ( this.mediaList[ activeChapterIndex ] ) {
+						this.setSelectedMedia( activeChapterIndex );
 					}
 				}
 			}
@@ -815,17 +836,19 @@
 			var _this = this;
 			this._super();
 			var delay = 0.1;
-			var transitionsToBeFired = 0;
-			var animationSupported = mw.getConfig( 'EmbedPlayer.AnimationSupported');
+			this.transitionsToBeFired = 0;
 			var slideBoxes = this.getComponent().find(".slideBox" );
 			slideBoxes.on('transitionend webkitTransitionEnd', function(e){
 				var $target = $( e.target ); // target letter transitionend fired on
 				if ( /transform/i.test( e.originalEvent.propertyName ) ) { // check event fired on "transform" prop
-					transitionsToBeFired -= 1;
+					_this.transitionsToBeFired -= 1;
+					_this.transitionsToBeFired = _this.transitionsToBeFired < 0 ? 0 : _this.transitionsToBeFired;
 					$target.css( {transitionDelay: '0ms'} ); // set transition delay to 0 so when 'dropped' class is removed, letter appears instantly
-					if ( !transitionsToBeFired ) { // all transitions on characters have completed?
+					if ( _this.transitionsToBeFired === 0 ) { // all transitions on characters have completed?
 						delay = 0.1;
 						_this.renderScroller({stop: false});
+						_this.inSlideAnimation = false;
+						_this.getPlayer().triggerHelper("slideAnimationEnded");
 					}
 				}
 			});
@@ -833,30 +856,101 @@
 			this.getComponent().find(".slideBoxToggle")
 				.on("click", function(e){
 					e.stopPropagation();
-					var toggleChapter = $( this ).parent();
-					toggleChapter.toggleClass( "collapsed" );
-					var chapterToggleId = parseInt( toggleChapter.attr( "data-chapter-index" ), 10 );
-					var targets = _this.getComponent().find( ".slideBox[data-chapter-index=" + chapterToggleId + "]" );
-					transitionsToBeFired = targets.length;
-					_this.renderScroller({stop: true});
-					if (toggleChapter.attr("data-chapter-collapsed") === "true") {
-						toggleChapter.attr("data-chapter-collapsed", false);
-						delay = 0.1;
-						if (animationSupported) {
-							targets.each( function () {
-								$( this ).css( {transitionDelay: delay + 's'} ); // apply sequential trans delay to each character
-								delay += 0.1;
-							} );
-						} else {
-							setTimeout(function(){
-								_this.renderScroller({stop: false});
-							}, 500);
-						}
-					} else {
-						toggleChapter.attr("data-chapter-collapsed", true);
-					}
-					targets.toggleClass( "collapsed" );
+					var chapter = $( this ).parent();
+					_this.toggleChapter(chapter);
 				});
+
+			this.getMedialistFooterComponent()
+				.find(".toggleAll" )
+				.off("click").on("click", function(){
+					var chapters = _this.getMediaListDomElements().filter(".chapterBox");
+					var collapsedChapters = chapters.filter("[data-chapter-collapsed=true]");
+					var expandedChapters = chapters.filter("[data-chapter-collapsed=false]");
+					if (chapters.length === collapsedChapters.length || chapters.length === expandedChapters.length){
+						_this.toggleChapter(chapters);
+					} else if (collapsedChapters.length >= expandedChapters.length){
+						_this.toggleChapter(expandedChapters);
+					} else {
+						_this.toggleChapter(collapsedChapters);
+					}
+				});
+
+			this.getMedialistFooterComponent()
+				.find(".slideLocator" )
+				.off("click").on("click", function(){
+					_this.scrollToCurrent(_this.activeItem);
+				});
+		},
+		toggleChapter: function(chapters){
+			var _this = this;
+			$.each(chapters, function(index, chapter){
+				chapter = $(chapter);
+				chapter.toggleClass( "collapsed" );
+				var chapterToggleId = parseInt( chapter.attr( "data-chapter-index" ), 10 );
+				var targets = _this.getComponent().find( ".slideBox[data-chapter-index=" + chapterToggleId + "]" );
+				_this.renderScroller({stop: true});
+				_this.inSlideAnimation = true;
+				_this.transitionsToBeFired += targets.length;
+				if (chapter.attr("data-chapter-collapsed") === "true") {
+					chapter.attr("data-chapter-collapsed", false);
+					_this.initSlideAnimation(targets);
+					targets.removeClass( "collapsed" );
+				} else {
+					chapter.attr("data-chapter-collapsed", true);
+					targets.addClass( "collapsed" );
+				}
+			});
+		},
+		initSlideAnimation: function(slides){
+			var _this = this;
+			var delay = 0.1;
+			if (mw.getConfig( 'EmbedPlayer.AnimationSupported')) {
+				slides.each( function () {
+					$( this ).css( {transitionDelay: delay + 's'} ); // apply sequential trans delay to each character
+					delay += 0.1;
+				} );
+			} else {
+				setTimeout(function(){
+					_this.inSlideAnimation = false;
+					_this.renderScroller({stop: false});
+					_this.getPlayer().triggerHelper("slideAnimationEnded");
+				}, 500);
+			}
+		},
+		scrollToCurrent: function(index){
+			var item = this.mediaList[index];
+			var _this = this;
+			if (item) {
+				this.resetSearchResults();
+				this.doOnSlideAnimationEnded(function(){
+					var mediaBox = _this.getMediaListDomElements()
+						.filter( ".mediaBox[data-mediaBox-index=" + item.order + "]" );
+					if ( item.type === mw.KCuePoints.THUMB_SUB_TYPE.SLIDE ) {
+						if ( item.hasParent ) {
+							if ( mediaBox.hasClass( "collapsed" ) ) {
+								var chapter = _this.getMediaListDomElements()
+									.filter( ".chapterBox[data-chapter-index=" + item.chapterNumber + "]" );
+								_this.toggleChapter( chapter );
+							}
+						}
+					}
+					_this.doOnSlideAnimationEnded(function(){
+						_this.lastScrollPosition = -1;
+						_this.$scroll.nanoScroller( { scrollTo: mediaBox, flash: true } );
+					});
+				});
+			}
+		},
+		doOnSlideAnimationEnded: function(fn){
+			if (this.inSlideAnimation){
+				var _this = this;
+				this.bind("slideAnimationEnded", function(){
+					_this.unbind("slideAnimationEnded");
+					fn.apply(_this);
+				})
+			} else {
+				fn.apply(this);
+			}
 		}
 	}));
 })(window.mw, window.jQuery);
