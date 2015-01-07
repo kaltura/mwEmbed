@@ -186,7 +186,13 @@ mw.MediaElement.prototype = {
 			}
 			$( '#' + this.parentEmbedId ).trigger( 'SourceSelected' , this.selectedSource );
 			if ( updatedDuration > 0 ){
-				$( '#' + this.parentEmbedId ).trigger( 'durationChange' , updatedDuration );
+				try{
+					// try accessing the embedPlayer setDuration method to make sure embedPlayer.duration is updated as well
+					$( '#' + this.parentEmbedId )[0].setDuration(updatedDuration);
+				}catch(e){
+					// if we can't access the embedPlayer directly, trigger the durationChange event. embedPlayer.duration will not be updated
+					$( '#' + this.parentEmbedId ).trigger( 'durationChange' , updatedDuration );
+				}
 			}
 			return this.selectedSource;
 		}
