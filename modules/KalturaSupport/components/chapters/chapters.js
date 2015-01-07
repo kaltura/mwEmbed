@@ -614,6 +614,10 @@
 						}
 
 						var searchData = [res.title, res.description];
+						var tags = res.tags.split(",");
+						tags = $.grep(tags,function(n){ return(n) });
+
+						searchData = searchData.concat(tags);
 						$.each(searchData, function(index, data){
 							if (results[data]) {
 								results[data].push(res.id);
