@@ -8,7 +8,7 @@
         <img src="<%=mediaItem.thumbnail.url%>"/>
     </div>
     <div class="boxInfo">
-        <div class="slideGutter" title="Slide number">
+        <div class="slideGutter" title="<%=meta.titles.slideNumber%>">
             <% if (mediaItem.hasParent){ %>
                 <%=(mediaItem.chapterNumber + 1)%>.<%=(mediaItem.slideNumber + 1)%>
             <%}%>
@@ -16,7 +16,7 @@
         <div class="k-title-container mediaBoxText" title="<%=mediaItem.title%>">
             <span class="k-title" title="<%=mediaItem.title%>"><%=mediaItem.title%></span>
         </div>
-        <span class="mediaBoxText k-chapter-time" title="Slide start time">
+        <span class="mediaBoxText k-chapter-time" title="<%=meta.titles.slideStartTime%>">
             <span class="icon-start_time"></span>
             <span><%=mediaItem.startTimeDisplay%></span>
         </span>

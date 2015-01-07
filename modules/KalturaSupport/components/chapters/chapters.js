@@ -226,6 +226,20 @@
 				mediaList: data.mediaList
 			});
 		},
+		getMetaData: function(){
+			var metaData = this._super();
+			metaData.titles = {
+				chapterNumber: gM("ks-chapters-chapterNumber"),
+				chapterStartTime: gM("ks-chapters-chapter-start-time"),
+				chapterDuration: gM("ks-chapters-chapter-duration"),
+				chapterToggle: gM("ks-chapters-toggle-chapter"),
+				slideNumber: gM("ks-chapters-slideNumber"),
+				slideStartTime: gM("ks-chapters-slide-start-time"),
+				slideDuration: gM("ks-chapters-slide-duration"),
+
+			};
+			return metaData;
+		},
 		addMediaItems: function (items) {
 			var _this = this;
 

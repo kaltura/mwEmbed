@@ -67,7 +67,17 @@ $messages['en'] = array(
     'ks-adBlockDetector-btn-close' => 'Close',
     'ks-adBlockDetector-btn-resume' => 'Continue',
     'ks-chapters-search-placeholder' => 'Search',
-    'ks-chapters-search-clear' => 'Clear'
+    'ks-chapters-search-clear' => 'Clear',
+    'ks-chapters-search-empty-result' => "Sorry, no results we're found",
+    'ks-chapters-locate-active-media' => "Locate current chapter/slide",
+    'ks-chapters-toggle-chapter' => "Expand/collapse chapter",
+    'ks-chapters-toggle-all-chapter' => "Expand/collapse all chapters",
+    'ks-chapters-chapterNumber' => "Chapter number",
+    'ks-chapters-chapter-start-time' => "Chapter start time",
+    'ks-chapters-chapter-duration' => "Chapter duration",
+    'ks-chapters-slideNumber' => "Slide number",
+    'ks-chapters-slide-start-time' => "Slide start time",
+    'ks-chapters-slide-duration' => "Slide duration"
 );
 
 $messages['fr'] = array(
