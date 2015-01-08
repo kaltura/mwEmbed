@@ -1066,6 +1066,10 @@
 		onClipDone: function () {
 			var _this = this;
 			this.shouldEndClip = false;
+			if ( _this.clipDoneTimeout ){
+				clearTimeout(_this.clipDoneTimeout);
+				_this.clipDoneTimeout = null;
+			}
 			// Don't run onclipdone if _propagateEvents is off
 			if (!_this._propagateEvents) {
 				return;
