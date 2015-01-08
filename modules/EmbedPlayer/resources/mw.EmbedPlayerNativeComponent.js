@@ -213,9 +213,18 @@
 			}
 		},
 
-		/**
-		 * Apply media element bindings
-		 */
+		changeMediaCallback: function (callback) {
+			// Check if we have source
+			if (!this.getSource()) {
+				callback();
+				return;
+			}
+
+			this.switchPlaySource(this.getSource(), function () {
+				callback();
+			});
+		},
+
 		applyMediaElementBindings: function () {
 			var _this = this;
 			mw.log("EmbedPlayerNative::MediaElementBindings");
