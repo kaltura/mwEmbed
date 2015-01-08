@@ -184,7 +184,7 @@
 			}
 
 			var isPlayingAdsContext = _this.adsOnReplay || !(_this.adTimeline.displayedSlotCount > 0);
-			if ( (isPlayingAdsContext || _this.loop) && !_this.playbackDone) {
+			if ( isPlayingAdsContext || _this.loop || _this.getConfig('playlistAPI.kpl0Id') ) {
 				setTimeout(function () {
 					vid.play();
 				}, 100);
@@ -213,9 +213,18 @@
 			}
 		},
 
-		/**
-		 * Apply media element bindings
-		 */
+		changeMediaCallback: function (callback) {
+			// Check if we have source
+			if (!this.getSource()) {
+				callback();
+				return;
+			}
+
+			this.switchPlaySource(this.getSource(), function () {
+				callback();
+			});
+		},
+
 		applyMediaElementBindings: function () {
 			var _this = this;
 			mw.log("EmbedPlayerNative::MediaElementBindings");
