@@ -184,7 +184,7 @@
 			}
 
 			var isPlayingAdsContext = _this.adsOnReplay || !(_this.adTimeline.displayedSlotCount > 0);
-			if ( isPlayingAdsContext || _this.loop || _this.getConfig('playlistAPI.kpl0Id') ) {
+			if ( (isPlayingAdsContext || _this.loop) && !_this.playbackDone) {
 				setTimeout(function () {
 					vid.play();
 				}, 100);
