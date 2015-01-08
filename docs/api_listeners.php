@@ -235,6 +235,18 @@
 		'playbackComplete' => array(
 			'callbackArgs' => 'None',
 			'desc' => 'Signifies the end of a media in the player (can be either ad or content)'
+		),
+		'closedCaptionsHidden' => array(
+			'callbackArgs' => 'None',
+			'desc' => 'Notification dispatched when captions are hidden'
+		),
+		'closedCaptionsDisplayed' => array(
+			'callbackArgs' => 'language: the selected language',
+			'desc' => 'Notification dispatched when captions are displayed'
+		),
+		'changedClosedCaptions' => array(
+			'callbackArgs' => 'language: the new selected language',
+			'desc' => 'Notification dispatched when captions language is changed'
 		)
 	);
 

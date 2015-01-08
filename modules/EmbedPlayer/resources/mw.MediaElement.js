@@ -169,19 +169,31 @@ mw.MediaElement.prototype = {
 		if ( this.autoSelectSourceExecute( options ) ){
 			this.selectedSource.src = this.selectedSource.src.replace(/seekFrom\/\d+\//, '');
 			this.selectedSource.src = this.selectedSource.src.replace(/clipTo\/\d+\//, '');
+			var updatedDuration = 0;
 			if (options.supportsURLTimeEncoding && !!options.endTime) {
+				updatedDuration = options.endTime;
 				this.selectedSource.src = this.selectedSource.src.replace(
 					"playManifest/", 
 					"playManifest/clipTo/" + parseInt(options.endTime) * 1000 + "/"
 				);
 			}
 			if (options.supportsURLTimeEncoding && !! options.startTime) {
+				updatedDuration -= options.startTime;
 				this.selectedSource.src = this.selectedSource.src.replace(
 					"playManifest/", 
 					"playManifest/seekFrom/" + parseInt(options.startTime) * 1000 + "/"
 				);
 			}
 			$( '#' + this.parentEmbedId ).trigger( 'SourceSelected' , this.selectedSource );
+			if ( updatedDuration > 0 ){
+				try{
+					// try accessing the embedPlayer setDuration method to make sure embedPlayer.duration is updated as well
+					$( '#' + this.parentEmbedId )[0].setDuration(updatedDuration);
+				}catch(e){
+					// if we can't access the embedPlayer directly, trigger the durationChange event. embedPlayer.duration will not be updated
+					$( '#' + this.parentEmbedId ).trigger( 'durationChange' , updatedDuration );
+				}
+			}
 			return this.selectedSource;
 		}
 		return false;

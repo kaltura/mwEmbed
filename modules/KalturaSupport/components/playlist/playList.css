@@ -5,7 +5,7 @@
 	overflow: hidden !important;
 	padding: 0px !important;
 	width: 100%;
-	height: 100%;
+	height: 100% !important;
 }
 
 .playlistAPI .k-chapters-container {
@@ -331,8 +331,11 @@
 	font-size: 1.1em;
 	display: block;
 	color: #ffffff;
-	padding-left: 12px;
+	padding-left: 12px !important;
 	padding-top: 12px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
 .playlistAPI .k-playlistTitle {
@@ -345,6 +348,9 @@
 	cursor: pointer;
 	color: #aaaaaa;
 	height: 40px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
 .playlistAPI .playlistItem.k-horizontal {

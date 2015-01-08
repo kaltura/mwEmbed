@@ -134,7 +134,8 @@
 						'audioTrackSelected': 'onAudioTrackSelected',
 						'videoMetadataReceived': 'onVideoMetadataReceived',
 						'hlsEndList': 'onHlsEndList',
-						'mediaError': 'onMediaError'
+						'mediaError': 'onMediaError',
+						'bitrateChange': 'onBitrateChange'
 					};
 					_this.playerObject = this.getElement();
 					$.each(bindEventMap, function (bindName, localMethod) {
@@ -572,12 +573,16 @@
 		},
 
 		onSwitchingChangeComplete: function (data, id) {
-			if (data && data.newBitrate) {
-				this.triggerHelper('bitrateChange', data.newBitrate);
-			}
+			this.onBitrateChange( data );
 			// TODO if we need to track source index should be top level method per each play interface having it's own adaptive logic
 			//this.mediaElement.setSourceByIndex(data.newIndex);
 			$(this).trigger('sourceSwitchingEnd', [ data ]);
+		},
+
+		onBitrateChange: function ( data ) {
+			if ( data && data.newBitrate ) {
+				this.triggerHelper('bitrateChange', data.newBitrate);
+			}
 		},
 
 		onFlavorsListChanged: function (data, id) {

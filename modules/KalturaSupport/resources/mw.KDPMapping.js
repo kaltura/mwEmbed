@@ -357,6 +357,9 @@
 								return embedPlayer.kalturaPlayerMetaData;
 							}
 						break;
+						case 'sources': 
+							return embedPlayer.mediaElement.getSources();
+						break;
 						case 'isLive':
 							return embedPlayer.isLive();
 						break;
@@ -702,7 +705,7 @@
 				case 'readyToLoad':
 					if( embedPlayer.playerReadyFlag ){
 						// player is already ready when listener is added
-						if( ! embedPlayer.kentryid ){
+						if( ! embedPlayer.kalturaPlayerMetaData ){
 							embedPlayer.kdpEmptyFlag = true;
 							callback( embedPlayer.id );
 						}
@@ -711,7 +714,7 @@
 						b( 'playerReady', function(){
 							// only trigger kdpEmpty when the player is empty
 							// TODO support 'real' player empty state, ie not via "error handler"
-							if( ! embedPlayer.kentryid ){
+							if( ! embedPlayer.kalturaPlayerMetaData ){
 								embedPlayer.kdpEmptyFlag = true;
 								// run after all other playerReady events: 
 								setTimeout(function(){
@@ -1094,6 +1097,7 @@
 				case 'doStop':
 					setTimeout(function() {
 						embedPlayer.ignoreNextNativeEvent = true;
+                			        embedPlayer.seek(0, true);
 						embedPlayer.stop();
 					},10);
 					break;
@@ -1143,8 +1147,10 @@
 
 					// Check changeMedia if we don't have entryId and referenceId and they both not -1 - Empty sources
 					if( ( ! notificationData.entryId || notificationData.entryId == "" || notificationData.entryId == -1 )
-						&& ( ! notificationData.referenceId || notificationData.referenceId == "" || notificationData.referenceId == -1 ) )
-					{
+						&& ( ! notificationData.referenceId || notificationData.referenceId == "" || notificationData.referenceId == -1 ) 
+						// check for mediaProxy based override: 
+						&& !notificationData.mediaProxy
+					){
 						mw.log( "KDPMapping:: ChangeMedia missing entryId or refrenceid, empty sources.")
 						embedPlayer.emptySources();
 						break;
@@ -1152,8 +1158,11 @@
 					// Check if we have entryId and it's not -1. than we change media
 					if( (notificationData.entryId && notificationData.entryId != -1)
 							||
-						(notificationData.referenceId && notificationData.referenceId != -1) )
-					{
+						(notificationData.referenceId && notificationData.referenceId != -1) 
+							||
+						(notificationData.mediaProxy)
+					){
+						
 						// Check if we already started change media request
 						if( embedPlayer.changeMediaStarted ) {
 							break;
@@ -1184,6 +1193,13 @@
 						// Temporary update the thumbnail to black pixel. the real poster comes from entry metadata
 						embedPlayer.updatePoster();
 
+						// if data is injected via changeMedia, re-load into iframe inject location:
+						if( notificationData.mediaProxy ){
+							window.kalturaIframePackageData.entryResult = notificationData.mediaProxy;
+							// update plugin possition. Future refactor should treat mediaProxy as plugin  
+							embedPlayer.playerConfig.plugins['mediaProxy'] = notificationData.mediaProxy;
+						}
+						
 						// Run the embedPlayer changeMedia function
 						embedPlayer.changeMedia();
 						break;

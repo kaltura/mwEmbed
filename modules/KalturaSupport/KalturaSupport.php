@@ -26,7 +26,7 @@
 		),
 		"mw.KBaseMediaList" => array(
 			'scripts' => "resources/mw.KBaseMediaList.js",
-			'dependencies' => array( 'mw.KBaseComponent' )
+			'dependencies' => array( 'mw.KBaseComponent','jCarouse', 'nanoScroller' )
 		),
 		"mw.KBaseComponent" => array(
 			'scripts' => "resources/mw.KBaseComponent.js",
@@ -82,18 +82,15 @@
 		'hammer' => array(
 			'scripts' => 'components/hammerEvents/hammer.min.js',
 		),
-		"search" => array(
-			'scripts' => "components/search/search.js",
-			'styles' =>  "components/search/search.css",
-			'templates' => "components/search/search.tmpl.html",
-			'dependencies' => array( 'mw.KBaseComponent' ),
-			'kalturaPluginName' => 'search'
-		),
 		"chapters" => array(
 			'scripts' => "components/chapters/chapters.js",
 			'styles' =>  "components/chapters/chapters.css",
-			'templates' => "components/chapters/chapters.tmpl.html",
-			'dependencies' => array( 'mw.KBaseMediaList', 'jCarouse' ),
+			'templates' => array(
+			    "list" => "components/chapters/list.tmpl.html",
+			    "chapters" => "components/chapters/chapters.tmpl.html",
+			    "slides" => "components/chapters/slides.tmpl.html"
+			),
+			'dependencies' => array( 'mw.KBaseMediaList', 'typeahead', 'dotdotdot' ),
 			'kalturaPluginName' => 'chapters'
 		),
 		/* Core plugins */
@@ -128,7 +125,7 @@
 		),
 		"playlistAPI" => array(
 			'scripts' => "components/playlistAPI.js",
-			'dependencies' => array('mw.KBaseMediaList','jCarouse'),
+			'dependencies' => array('mw.KBaseMediaList'),
 			'styles' =>  "components/playlist/playList.css",
 			'templates' => "components/playlist/playList.tmpl.html",
 			'kalturaPluginName' => 'playlistAPI',
@@ -318,7 +315,7 @@
 		),
 		"jCarouse"=> array( 
 			'scripts' => "resources/uiConfComponents/jcarousellite_1.0.1.js",
-			 'dependencies' => array('nanoScroller', 'touchSwipe')
+			 'dependencies' => array('touchSwipe')
 		),
 		"mw.KLayout"=> array( 
 			'scripts' => "resources/mw.KLayout.js" 

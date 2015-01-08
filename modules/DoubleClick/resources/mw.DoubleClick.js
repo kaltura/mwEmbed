@@ -373,9 +373,11 @@
 				if (_this.isChromeless){
 					_this.embedPlayer.getPlayerElement().sendNotification("hideContent");
 				}else{
-					if ( _this.embedPlayer.isVideoSiblingEnabled() ) {
+					if ( _this.embedPlayer.isVideoSiblingEnabled() && !mw.isAndroidNativeBrowser() ) {
 						$(".mwEmbedPlayer").addClass("mwEmbedPlayerBlackBkg");
 						_this.embedPlayer.addBlackScreen();
+					}else{
+						_this.embedPlayer.removePoster();
 					}
 				}
 			});
@@ -384,9 +386,11 @@
 				if (_this.isChromeless){
 					_this.embedPlayer.getPlayerElement().sendNotification("showContent");
 				}else{
-					if ( _this.embedPlayer.isVideoSiblingEnabled() ) {
+					if ( _this.embedPlayer.isVideoSiblingEnabled() && !mw.isAndroidNativeBrowser() ) {
 						$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
 						_this.embedPlayer.removeBlackScreen();
+					}else{
+						_this.embedPlayer.updatePosterHTML();
 					}
 				}
 			});
@@ -420,7 +424,11 @@
 			if (_this.isChromeless) {
 				_this.embedPlayer.getPlayerElement().sendNotification("pauseAd");
 			} else {
-				this.adsManager.pause();
+				if(this.adsManager) {
+					this.adsManager.pause();
+				}else{
+					_this.embedPlayer.getPlayerElement().pause();
+				}
 			}
 		},
 
@@ -438,7 +446,11 @@
 			if (_this.isChromeless) {
 				_this.embedPlayer.getPlayerElement().sendNotification("resumeAd");
 			} else {
-				this.adsManager.resume();
+				if (this.adsManager) {
+					this.adsManager.resume();
+				}else{
+					_this.embedPlayer.getPlayerElement().resume();
+				}
 			}
 		},
 

@@ -123,15 +123,20 @@
 			//Start live cuepoint pulling
 			this.liveCuePointsIntervalId = setInterval(function () {
 				var entryId = _this.embedPlayer.kentryid;
+				var request = {
+					'service': 'cuepoint_cuepoint',
+					'action': 'list',
+					'filter:entryIdEqual': entryId,
+					'filter:objectType': 'KalturaCuePointFilter',
+					'filter:statusIn': '1,3',
+					'filter:cuePointTypeEqual': 'thumbCuePoint.Thumb'
+				};
 				var lastUpdatedAt = _this.getLastUpdateTime() + 1;
-				_this.getKalturaClient().doRequest({
-						'service': 'cuepoint_cuepoint',
-						'action': 'list',
-						'filter:entryIdEqual': entryId,
-						'filter:objectType': 'KalturaCuePointFilter',
-						'filter:cuePointTypeEqual': 'thumbCuePoint.Thumb',
-						'filter:updatedAtGreaterThanOrEqual': lastUpdatedAt
-					},
+				// Only add lastUpdatedAt filter if any cue points already received
+				if (lastUpdatedAt > 0) {
+					request['filter:updatedAtGreaterThanOrEqual'] = lastUpdatedAt;
+				}
+				_this.getKalturaClient().doRequest( request,
 					function (data) {
 						// if an error pop out:
 						if (!data || data.code) {
@@ -156,11 +161,11 @@
 
 				var updatedCuePoints = [];
 				//Only add new cuepoints or existing cuepoints which have a newer updateAt value
-				$.each(associativeRawCuePoints, function (index, rawCuePoint) {
-					if ((!_this.associativeCuePoints[index]) ||
-						( _this.associativeCuePoints[index] &&
-							_this.associativeCuePoints[index].updatedAt < rawCuePoint.updatedAt )) {
-						_this.associativeCuePoints[index] = rawCuePoint;
+				$.each(associativeRawCuePoints, function (id, rawCuePoint) {
+					if ((!_this.associativeCuePoints[id]) ||
+						( _this.associativeCuePoints[id] &&
+							_this.associativeCuePoints[id].updatedAt < rawCuePoint.updatedAt )) {
+						_this.associativeCuePoints[id] = rawCuePoint;
 						updatedCuePoints.push(rawCuePoint);
 					}
 				});
@@ -200,10 +205,11 @@
 		},
 		isValidResult: function (data) {
 			// Check if we got error
-			if (!data
-				||
-				( data.code && data.message )
-				) {
+			if (!data){
+				mw.log("mw.KCuePoints :: error retrieving data");
+				return false;
+			} else if ( data.code && data.message ) {
+				mw.log("mw.KCuePoints :: error code: " + data.code + ", error message: " + data.message);
 				return false;
 			}
 			return true;
