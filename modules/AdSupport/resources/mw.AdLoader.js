@@ -29,12 +29,6 @@ mw.AdLoader = {
 		// trip whitespace in ad urls: 
 		adUrl = $.trim( adUrl );
 
-		try{
-			adUrl = encodeURIComponent(adUrl);
-		}catch(e){
-			mw.log('AdLoader :: Error when trying to apply encodeURIComponent to adUrl: '+ e.message);
-		}
-
 		mw.log('AdLoader :: load Ad: ', adUrl);
 
 		// Increase counter if the vast is wrapped, otherwise reset
