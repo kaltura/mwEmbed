@@ -238,9 +238,8 @@
 			// TODO We really need a "preend" event for thing like this.
 			// So that playlist next clip or other end bindings don't get triggered.
 			embedPlayer.bindHelper( 'ended' + _this.bindPostfix, function( event ){
-				embedPlayer.unbindHelper('ended' + _this.bindPostfix )
 
-				if ( embedPlayer.replayEventCount > 0 && !embedPlayer.adsOnReplay){
+				if ( embedPlayer.isInSequence() || ( embedPlayer.replayEventCount > 0 && !embedPlayer.adsOnReplay) ){
 					return; // don't show postroll ads on replay if the adsOnReplay Flashvar is set to false
 				}
 
@@ -400,6 +399,10 @@
 			embedPlayer.playInterfaceUpdate();
 			// make sure to hide the spinner
 			embedPlayer.hideSpinner();
+			// hide poster when not using ad sibling
+			if ( !embedPlayer.isVideoSiblingEnabled() ){
+				embedPlayer.removePoster();
+			}
 			// Set inSequence property to "true"
 			embedPlayer.sequenceProxy.isInSequence = true;
 			// Trigger preroll started ( Note: updateUiForAdPlayback is our only
@@ -448,6 +451,11 @@
 			embedPlayer.seeking = false;
 			// restore in sequence property;
 			embedPlayer.sequenceProxy.isInSequence = false;
+
+			// restore poster when not using ad sibling
+			if ( !embedPlayer.isVideoSiblingEnabled() ){
+				embedPlayer.updatePosterHTML();
+			}
 
 			// issue the ad triggers if an ad was played.
 			if( playedAd ){

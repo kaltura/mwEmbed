@@ -4,8 +4,8 @@
 
 		defaultConfig: {
 			'hover': true,
-			'clickToClose': true,
-			'closeTimeout': 1000,
+			'clickToClose': false,
+			'closeTimeout': 2000,
 			'position': 'left',
 			'fullScreenDisplayOnly': false,
 			'minDisplayWidth': 0,
@@ -29,17 +29,30 @@
 				_this.getComponent().after(_this.$elHelper);
 			});
 			this.bind( 'layoutBuildDone ended', function(){
+				var disableClosingTimeout = function(){
+					if (_this.closeBarTimeout){
+						clearTimeout(_this.closeBarTimeout);
+						_this.closeBarTimeout = null;
+					}
+				};
 				_this.getComponentReminder().off('click').on('click', function(){
+					disableClosingTimeout();
 					_this.toggleSideBar();
 				});
 				if (!_this.getConfig('clickToClose')) {
-					_this.getComponent().on( 'mouseleave', function () {
-						setTimeout(function(){
-							if (_this.getConfig('isSideBarOpen')) {
-								_this.closeSideBar();
-							}
-						}, _this.getConfig("closeTimeout"));
-					} );
+					_this.getComponent()
+						.on( 'mouseleave', function () {
+							disableClosingTimeout();
+							_this.closeBarTimeout = setTimeout(function(){
+								_this.closeBarTimeout = null;
+								if (_this.getConfig('isSideBarOpen')) {
+									_this.closeSideBar();
+								}
+							}, _this.getConfig("closeTimeout"));
+						} )
+						.on('mouseenter', function () {
+							disableClosingTimeout();
+						});
 				}
 			});
 			this.bind( 'preShowScreen onDisableInterfaceComponents', function( event, excludedComponents ){
@@ -60,7 +73,15 @@
 					_this.getConfig("minDisplayWidth") <= _this.getPlayer().getWidth() &&
 					_this.getConfig("minDisplayHeight") <= _this.getPlayer().getHeight())){
 					_this.render = true;
-					_this.getComponent().css('height', _this.getPlayer().getVideoHolder().height());
+					//Sidebar height is player height without the top and bottom bars
+					var height = _this.getPlayer().getHeight() - _this.getPlayer().getControlBarContainer().height();
+					if (_this.getPlayer().getTopBarContainer().length){
+						height -= _this.getPlayer().getTopBarContainer().height();
+						//If topbar exist then add top value
+						_this.getComponent().css('top', _this.getPlayer().getTopBarContainer().height());
+						_this.getComponentReminder().css('top', _this.getPlayer().getTopBarContainer().height());
+					}
+					_this.getComponent().css('height', height);
 					_this.show();
 				} else {
 					_this.render = false;
@@ -128,6 +149,7 @@
 				this.getComponent().addClass( 'openBtn' );
 				// Trigger the screen overlay with layout info:
 				this.getPlayer().triggerHelper( 'onShowSidelBar');
+				this.getPlayer().triggerHelper( 'onComponentsHoverDisabled');
 			}
 		},
 		closeSideBar: function(){
@@ -136,6 +158,7 @@
 			this.getComponentReminder().removeClass( 'shifted' );
 			// Allow interface items to update:
 			this.getPlayer().triggerHelper('onHideSideBar');
+			this.getPlayer().triggerHelper( 'onComponentsHoverEnabled');
 		},
 		getComponent: function(){
 			if( !this.$el ) {

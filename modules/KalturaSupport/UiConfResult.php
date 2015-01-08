@@ -62,7 +62,7 @@ class UiConfResult {
 		// Get confFilePath flashvar
 		$confFilePath = $this->request->getFlashvars('confFilePath');
 
-		$jsonConfig =$this->request->get('jsonConfig');
+		$jsonConfig =$this->request->getFlashvars('jsonConfig');
 
 		// If no uiconf_id .. throw exception
 		if( !$this->request->getUiConfId() && !$confFilePath && !$jsonConfig ) {
@@ -73,7 +73,8 @@ class UiConfResult {
 		if( $confFilePath ) {
 			$this->loadFromLocalFile( $confFilePath );
 		} else  if ($jsonConfig){
-			$this->uiConfFile = stripslashes( html_entity_decode($jsonConfig));
+			// convert to string 
+			$this->uiConfFile = json_encode( $jsonConfig );
 		} else {
 			// Check if we have a cached result object:
 			$cacheKey = $this->getCacheKey();
@@ -181,7 +182,7 @@ class UiConfResult {
 				$override = false;
 
 				//if the value is array - we got an object with the key and value =>translate it
-				if ( is_array( $value ) && isset( $value["key"] ) && isset( $value["overrideFlashvar"] ) ) {
+				if ( is_array( $value ) && !empty( $value["key"] ) && isset($value["value"]) && isset( $value["overrideFlashvar"] ) ) {
 					$key = $value["key"];
 					if ( $value["overrideFlashvar"] ) {
 						$override = true;
@@ -321,8 +322,7 @@ class UiConfResult {
 			// http://html5video.org/wiki/Kaltura_HTML5_Configuration
 			if( $pluginId == 'Kaltura' || 
 				$pluginId == 'EmbedPlayer' || 
-				$pluginId == 'KalturaSupport' || 
-				$pluginId == 'mediaProxy'
+				$pluginId == 'KalturaSupport'
 			){
 				continue;
 			}
@@ -359,9 +359,9 @@ class UiConfResult {
 		$flashVars = $this->request->getFlashVars();
 		if( $flashVars ) {
 			foreach( $flashVars as $fvKey => $fvValue) {
-				$fvSet = @json_decode( stripslashes( html_entity_decode( $fvValue ) ) ) ;
+				$fvSet = @json_decode( $fvValue ) ;
 				// check for json flavar and set acordingly
-				if( is_object( $fvSet ) ){
+				if( is_object( $fvSet ) || is_array( $fvSet ) ){
 					foreach( $fvSet as $subKey => $subValue ){
 						$vars[ $fvKey . '.' . $subKey ] =  $this->utility->formatString( $subValue );
 					}
@@ -388,8 +388,7 @@ class UiConfResult {
 			$pluginAttribute = $pluginKeys[1];
 			 if( $pluginId == 'Kaltura' ||
 					$pluginId == 'EmbedPlayer' ||
-					$pluginId == 'KalturaSupport' ||
-					$pluginId == 'mediaProxy'
+					$pluginId == 'KalturaSupport'
 					){
 						continue;
 					}
@@ -432,7 +431,7 @@ class UiConfResult {
 			$plugins = array();
 			$vars = array();
 
-			$uiConfPluginNodes = array( 'mediaProxy', 'strings' );
+			$uiConfPluginNodes = array( 'strings' );
 
 			// Get all plugins elements
 			if( $this->uiConfFile ) {

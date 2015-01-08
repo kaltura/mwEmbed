@@ -121,10 +121,10 @@ mw.KAdPlayer.prototype = {
 		// Setup some configuration for done state:
 		adSlot.doneFunctions = [];
 		// set skip offset from config for all adds if defined 
-		if( _this.embedPlayer.getKalturaConfig( 'vast', 'skipOffset' ) ){
+		if( _this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' ) ){
 			var i = 0;
 			for( i = 0; i < adSlot.ads.length; i++ ){
-				adSlot.ads[i].skipoffset =  _this.embedPlayer.getKalturaConfig( 'vast', 'skipOffset' );
+				adSlot.ads[i].skipoffset =  _this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' );
 			}
 		}
 
@@ -136,7 +136,7 @@ mw.KAdPlayer.prototype = {
 				$(_this.embedPlayer).trigger('onAdComplete',[adSlot.ads[adSlot.adIndex].id, mw.npt2seconds($(".currentTimeLabel").text())]);
 			}
 			// remove click binding if present
-			var clickEventName = "mouseup" + _this.adClickPostFix;
+			var clickEventName = "click" + _this.adClickPostFix;
 			if (mw.isTouchDevice()){
 				clickEventName += " touchend" + _this.adClickPostFix;;
 			}
@@ -609,13 +609,13 @@ mw.KAdPlayer.prototype = {
 		// holds the value of skipoffset in seconds
 		var skipOffsetInSecs = 0;
 
-		var clickEventName = "mouseup" + _this.adClickPostFix;
+		var clickEventName = "click" + _this.adClickPostFix;
 		if (mw.isTouchDevice()){
 			clickEventName += " touchend" + _this.adClickPostFix;;
 		}
 
 		// Check for skip add button
-		if( adSlot.skipBtn ){
+		if( adSlot.skipBtn && adConf.skipoffset ){
 			var skipId = embedPlayer.id + '_ad_skipBtn';
 			embedPlayer.getVideoHolder().append(
 				$('<span />')
@@ -860,7 +860,7 @@ mw.KAdPlayer.prototype = {
 	 * add the src only when displaying the object
 	 **/
 	setImgSrc: function (imgObj, cls) {
-		if (imgObj.html.indexOf("src=")== -1) {
+		if (imgObj.html && (typeof imgObj.html == 'string' || imgObj.html instanceof String) && imgObj.html.indexOf("src=")== -1) {
 			imgObj.html = imgObj.html.replace(/<img\s/ig, '<img class="'+cls+'" src="' + imgObj.resourceUri + '" ');
 		}
 	},
@@ -904,12 +904,19 @@ mw.KAdPlayer.prototype = {
 				.attr('id', overlayId )
 			);
 		}
+
+
+		var videoSize = {
+			'width' : _this.embedPlayer.getVideoHolder().width(),
+			'height' : _this.embedPlayer.getVideoHolder().height()
+		};
+		var screenSize = kWidget.resizeOvelayByHolderSize(nonLinearConf, videoSize, 0.9);
 		var layout = {
-			'width' : nonLinearConf.width + 'px',
-			'height' : nonLinearConf.height + 'px',
+			'width' : screenSize.width + 'px',
+			'height' : screenSize.height + 'px',
 			'left' : '50%',
 			'display': 'none',
-			'margin-left': -(nonLinearConf.width /2 )+ 'px'
+			'margin-left': -(screenSize.width /2 )+ 'px'
 		};
 
 		// if we didn't recieve the dimensions - wait till the ad loads and use the DIV's dimensions
@@ -928,6 +935,7 @@ mw.KAdPlayer.prototype = {
 		}
 		$( this.embedPlayer ).trigger("onAdPlay");
 		this.setImgSrc(nonLinearConf, 'overlayAd');
+
 		// Show the overlay update its position and content
 		$('#' +overlayId )
 		.css( layout )

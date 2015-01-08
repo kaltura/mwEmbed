@@ -377,7 +377,7 @@
 						$(".mwEmbedPlayer").addClass("mwEmbedPlayerBlackBkg");
 						_this.embedPlayer.addBlackScreen();
 					}else{
-						$(".playerPoster").hide();
+						_this.embedPlayer.removePoster();
 					}
 				}
 			});
@@ -390,7 +390,7 @@
 						$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
 						_this.embedPlayer.removeBlackScreen();
 					}else{
-						$(".playerPoster").show();
+						_this.embedPlayer.updatePosterHTML();
 					}
 				}
 			});
@@ -424,7 +424,11 @@
 			if (_this.isChromeless) {
 				_this.embedPlayer.getPlayerElement().sendNotification("pauseAd");
 			} else {
-				this.adsManager.pause();
+				if(this.adsManager) {
+					this.adsManager.pause();
+				}else{
+					_this.embedPlayer.getPlayerElement().pause();
+				}
 			}
 		},
 
@@ -442,7 +446,11 @@
 			if (_this.isChromeless) {
 				_this.embedPlayer.getPlayerElement().sendNotification("resumeAd");
 			} else {
-				this.adsManager.resume();
+				if (this.adsManager) {
+					this.adsManager.resume();
+				}else{
+					_this.embedPlayer.getPlayerElement().resume();
+				}
 			}
 		},
 

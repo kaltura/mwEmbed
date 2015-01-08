@@ -138,8 +138,6 @@
 				var jsEventValue = this.stringConvertion(eventValue);
 			}
 
-			$(this.proxyElement).trigger(eventName, [jsEventValue]);
-
 			if (eventName == 'timeupdate') {
 				this.proxyElement['currentTime'] = jsEventValue;
 			} else if (eventName == 'progress') {
@@ -155,6 +153,8 @@
 			} else if (eventName == 'pause') {
 				this.proxyElement['paused'] = true;
 			}
+
+			$(this.proxyElement).trigger(eventName, [jsEventValue]);
 
 			if (this.subscribed[eventName]) {
 				this.subscribed[eventName](jsEventValue);

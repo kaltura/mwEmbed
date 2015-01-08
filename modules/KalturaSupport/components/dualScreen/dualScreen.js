@@ -190,7 +190,7 @@
 						}
 					}
 
-					if ( _this.getConfig( 'animationSupported' ) ) {
+					if ( mw.getConfig( 'EmbedPlayer.AnimationSupported') ) {
 						_this.getFirstMonitor().obj.one( 'transitionend webkitTransitionEnd', transitionendHandler );
 						_this.getSecondMonitor().obj.one( 'transitionend webkitTransitionEnd', transitionendHandler );
 					} else {
@@ -411,7 +411,7 @@
 				//In live mode wait for first updatetime that is bigger then 0 for syncing initial slide
 				if (mw.getConfig("EmbedPlayer.LiveCuepoints")) {
 					this.bind( 'timeupdate', function ( ) {
-						if (_this.getPlayer().currentTime > 0) {
+						if (!_this.getPlayer().isDVR() && _this.getPlayer().currentTime > 0) {
 							_this.unbind('timeupdate');
 						}
 						var cuePoint = _this.getCurrentCuePoint();
@@ -543,8 +543,6 @@
 
 					this.setControlBarBindings();
 
-					this.checkAnimationSupport();
-
 					//Set draggable and resizable configuration
 					primaryScreen
 						.draggable( this.getConfig( 'draggable' ) ).draggable( 'disable' )
@@ -625,32 +623,6 @@
 				} else {
 					this.render = false;
 				}
-			},
-			checkAnimationSupport: function ( elm ) {
-				elm = elm || document.body || document.documentElement;
-				var animation = false,
-					animationstring = 'animation',
-					keyframeprefix = '',
-					domPrefixes = 'Webkit Moz O ms Khtml'.split( ' ' ),
-					pfx = '';
-
-				if ( elm.style.animationName !== undefined ) {
-					animation = true;
-				}
-
-				if ( animation === false ) {
-					for ( var i = 0; i < domPrefixes.length; i++ ) {
-						if ( elm.style[ domPrefixes[i] + 'AnimationName' ] !== undefined ) {
-							pfx = domPrefixes[ i ];
-							animationstring = pfx + 'Animation';
-							keyframeprefix = '-' + pfx.toLowerCase() + '-';
-							animation = true;
-							break;
-						}
-					}
-				}
-
-				this.setConfig( 'animationSupported', animation );
 			},
 
 			//Monitor
