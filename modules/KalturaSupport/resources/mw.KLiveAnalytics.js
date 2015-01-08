@@ -96,7 +96,7 @@
 				} );
 
 				this.bind( 'liveStreamStatusUpdate' ,function( event, status ){
-					if (!status){
+					if ( !status.onAirStatus ){
 						//we're offline
 						_this.stopLiveEvents();
 						_this.bufferTime = 0;
