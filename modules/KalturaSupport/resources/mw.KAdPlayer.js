@@ -1143,11 +1143,6 @@ mw.KAdPlayer.prototype = {
 			}
 			var time =  videoPlayer.currentTime;
 			var dur = videoPlayer.duration;
-			if (_this.getVPAIDDurtaion)
-			{
-				//we need to add time since we get the duration that left.
-				dur = _this.getVPAIDDurtaion() + time;
-			}
 
 			// Update the timeRemaining sequence proxy
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', Math.round ( dur - time ) );
