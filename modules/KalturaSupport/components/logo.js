@@ -52,7 +52,7 @@
 		},
 		openInNativeApp: function () {
 			var params = {
-				actionType: this.getPlayer().nativeActionType('openHomePage'),
+				actionType: 'openURL',
 				url: this.getConfig('href')
 			}
 			this.getPlayer().doNativeAction(JSON.stringify(params));
