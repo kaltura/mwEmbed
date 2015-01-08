@@ -133,6 +133,7 @@
 						'audioTracksReceived': 'onAudioTracksReceived',
 						'audioTrackSelected': 'onAudioTrackSelected',
 						'videoMetadataReceived': 'onVideoMetadataReceived',
+						'mediaLoaded': 'onMediaLoaded',
 						'hlsEndList': 'onHlsEndList',
 						'mediaError': 'onMediaError'
 					};
@@ -358,6 +359,13 @@
 			if (data && data.info) {
 				$(this).trigger('videoMetadataReceived', [ data.info ]);
 			}
+			// Trigger "media loaded"
+			if (!this.mediaLoadedFlag) {
+				$(this).trigger('mediaLoaded');
+				this.mediaLoadedFlag = true;
+			}
+		},
+		onMediaLoaded: function () {
 			// Trigger "media loaded"
 			if (!this.mediaLoadedFlag) {
 				$(this).trigger('mediaLoaded');
