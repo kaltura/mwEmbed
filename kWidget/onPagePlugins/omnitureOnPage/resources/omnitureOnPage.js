@@ -30,6 +30,11 @@ kWidget.addReadyCallback( function( playerId ){
 
 			// Check for on-page s-code that already exists
 			this.bind('layoutReady', function(){
+
+				if( _this.getConfig('plugin') == false ){
+					return ;
+				}
+
 				if ( !_this.layoutReadyCalled ){
 					_this.sCodeCheck(function(){
 						// process any queued events now that sCode is available:
