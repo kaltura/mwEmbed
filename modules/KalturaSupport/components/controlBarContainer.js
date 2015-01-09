@@ -31,6 +31,7 @@
 			});
 			this.bind( 'layoutBuildDone ended', function(){
 				_this.show();
+
 			});
 
 			// Bind hover events
@@ -38,6 +39,7 @@
 				// Show / Hide controlbar on hover
 				this.bind( 'showPlayerControls', function(e, data){
 					_this.show();
+
 				});
 				this.bind( 'hidePlayerControls', function(){
 					_this.hide();
@@ -48,6 +50,7 @@
 				});
 				this.bind( 'onComponentsHoverEnabled', function(){
 					_this.keepOnScreen = false;
+					_this.hide();
 				});
 			} else {
 				this.getPlayer().isControlsVisible = true;
@@ -60,13 +63,18 @@
 			this.getPlayer().triggerHelper( 'onShowControlBar', {
 				'bottom' : this.getComponent().height() + 15
 			} );
+			var $interface = this.embedPlayer.getInterface();
+			$interface.removeClass( 'player-out' );
 		},
 		hide: function(){
 			if( this.keepOnScreen ) return;
 			this.getPlayer().isControlsVisible = false;
 			this.getComponent().removeClass( 'open' );
+			var $interface = this.embedPlayer.getInterface();
+			$interface.addClass( 'player-out' );
 			// Allow interface items to update:
 			this.getPlayer().triggerHelper('onHideControlBar', {'bottom' : 15} );
+
 		},
 		getComponent: function(){
 			if( !this.$el ) {

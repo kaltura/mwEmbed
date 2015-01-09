@@ -1,35 +1,11 @@
 <?php 
 return array(
-	'playlistOnPage' => array( 
-		'description' => 'Adds a playlist to the page, per player defined playlist id. This enables custom on-page css to theme the playlist to the host page.',
-		'attributes' => array(
-			'plugin' => array(
-				'hideEdit' => true,
-			),
-			'path' => array(
-				'hideEdit' => true
-			),
-			'clipListTargetId' => array(
-				'doc' => 'Target div for ul list of clips, appended after player if null',
-				'type' => 'string'
-			),
-			'layoutMode' => array(
-				'doc' => "Layout mode of playlist ( vertical or horizontal ) ",
-				'type' => 'enum',
-				'enum' => array( 'vertical', 'horizontal' )
-			),
-			'thumbWidth' => array(
-				'doc' => "The width of the clip thumbnails in pixels ( default 110 )",
-				'type' => 'number',
-			)
-		)
-	),
 	'omnitureOnPage' => array(
 		'description' => 'The Omniture s_code config version of the plugin, allows you to connect the Omniture plugin to your existing s_code.js
-			configuration for easy integration of video analytics into an Omniture site.',
+			configuration for easy integration of video analytics into an Omniture site.<br>For full implementation guide see <a target="_new" href="http://knowledge.kaltura.com/omniture-plugin-setup-and-information-guide">Omniture on page</a> in the Knowledge Center',
 		'attributes' => array(
 			's_codeUrl' => array(
-				'doc' => "The URL to the Ominture gennerated sCode file that must be set in the uiConf (not via flashvars). This parameter is required for the plugin to work.",
+				'doc' => "The URL to the Ominture generated sCode file that must be set in the uiConf (not via flashvars). This parameter is required for the plugin to work.",
 				'type' => 'url'
 			),
 			's_codeVarName' => array(
@@ -50,12 +26,12 @@ return array(
 				'type' => 'string'
 			),
 			'concatMediaName' => array(
-				'doc' => "A per partner key for special media name concatenation rules. By default this paramater should be left null.",
+				'doc' => "A per partner key for special media name concatenation rules. By default this parameter should be left null.",
 				'label' => 'Media name concatenation rules',
 				'type'=> 'string'
 			),
 			'customEvents' => array(
-				'doc' => "A comma seperated list of Kaltura player events you want to track.",
+				'doc' => "A comma separated list of Kaltura player events you want to track.",
 				'label' => 'Kaltura player events',
 				'type'=> 'string'
 			),
@@ -65,10 +41,20 @@ return array(
 				'type' => 'string'
 			),
 			'additionalEvarsAndPropsValues' => array(
-				'doc' => "A comma seperated list of Kaltura values, you want to pass along with every media event.
-				Values will correspond to the evars and props comma seperated map defined in additionalEvarsAndProps.",
+				'doc' => "A comma separated list of Kaltura values, you want to pass along with every media event.
+				Values will correspond to the evars and props comma separated map defined in additionalEvarsAndProps.",
 				'label' => 'Kaltura values',
 				'type' => 'string'
+			),
+			'autoTrack' => array(
+				'doc' => "Default true, Value passed to autoTrack Omniture media module property.",
+				'type' => 'boolean',
+				'default' => true	
+			), 
+			'trackWhilePlaying' => array(
+				'doc' => "Default true, Value passed to trackWhilePlaying Omniture media module property.",
+				'type' => 'boolean',
+				'default' => true
 			)
 		)
 	),
@@ -83,7 +69,7 @@ return array(
 				'hideEdit' => true
 			),
 			'showTransition' => array(
-				'doc' => 'Whether to show the details block with a transition. If null, block will apear without transition',
+				'doc' => 'Whether to show the details block with a transition. If null, block will appear without transition',
 				'type' => 'boolean'
 			),
 			'showTransitionDuration' => array(
@@ -101,7 +87,7 @@ return array(
 				'enum' => array( 'after', 'before', 'left', 'right' )
 			),
 			'customTitle' => array(
-				'doc' => 'Overrides the entry name with a custom title for the blocl. If null, will load the currently playing entry name',
+				'doc' => 'Overrides the entry name with a custom title for the block. If null, will load the currently playing entry name',
 				'type' => 'string'
 			),
 		)
@@ -161,7 +147,7 @@ return array(
 	
 	'chaptersEdit' => array(
 		'description' => 'Provides a simple interface for editing chapter annotation data. You 
-		must provide your credentails on the "integrate" tab and select an entry from your 
+		must provide your credentials on the "integrate" tab and select an entry from your 
 		account to edits it\'s chapter cuePoints.',
 		'attributes' => array(
 			'ks' => array(
@@ -178,12 +164,12 @@ return array(
 				'type' => 'list',
 				'list' => array(
 					'desc'=> 'Chapter Description',
-					'thumbUrl'=> 'Thumbnail url override'
+					'thumbUrl'=> 'Thumbnail URL override'
 				),
 			),
 			'tags' => array(
-				'doc' => 'Default: "chaptering" – Providing a tag name will grab only annotations which have that tag. 
-									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters in diffrent languages)',
+				'doc' => 'Default: "chaptering", Providing a tag name will grab only annotations which have that tag. 
+									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters in different languages)',
 				'type' => 'string'
 			),
 			'editPropId' => array(
@@ -206,29 +192,29 @@ return array(
 				'type' => 'string'
 			),
 			'tags' => array(
-				'doc' => 'Default: "chaptering" – Providing a tag name will grab only annotations which have that tag. 
-									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters in diffrent languages)',
+				'doc' => 'Default: "chaptering"� Providing a tag name will grab only annotations which have that tag. 
+									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters in different languages)',
 				'type' => 'string'
 			),
 			'parentName' => array(
-				'doc' => 'Default: "chaptering" – Providing a parentName will force querying only annotations whose parent fits parentName. 
+				'doc' => 'Default: "chaptering"� Providing a parentName will force querying only annotations whose parent fits parentName. 
 									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters, references, ads).',
 				'type' => 'string'
 			),
 			'layout' => array(
-				'doc' => 'Will affect the layout of the chapters. This will only add css classes, the actual visual layout is performed via CSS',
+				'doc' => 'Will affect the layout of the chapters. This will only add CSS classes, the actual visual layout is performed via CSS',
 				'type'=> 'enum',
 				'initvalue' => 'horizontal',
 				'enum' => array( 'vertical', 'horizontal' )
 			),
 			'containerPosition' => array(
-				'doc' =>  'Will affect the position of the chaptering UI in relation to the video. This will only affect the structure of UI HTML elements, and will leave actual layouting to be performed via CSS)',
+				'doc' =>  'Will affect the position of the chaptering UI in relation to the video. This will only affect the structure of UI HTML elements, and will leave actual layout to be performed via CSS)',
 				'type' => 'enum',
 				'initvalue' => 'after',
 				'enum' => array( 'before', 'after', 'left', 'right' )
 			),
 			'overflow' => array(
-				'doc' => 'Defines what should happen in case list of chapters require more space than videos dimensions. Combined with the “layout” and “position” parameters, this parameter will cause a prev/next UI to appear if overflow is set to false.',
+				'doc' => 'Defines what should happen in case list of chapters require more space than videos dimensions. Combined with the� layout� and position� parameters, this parameter will cause a prev/next UI to appear if overflow is set to false.',
 				'type' => 'boolean',
 			),
 			'includeThumbnail' => array(

@@ -208,6 +208,9 @@ $.fn.jCarouselLite = function(o) {
 		btnNext: null,
 		btnGo: null,
 		mouseWheel: false,
+		fingerSwipe: true,
+		disableBodyScroll: true,
+
 		auto: null,
 
 		speed: 200,
@@ -218,6 +221,8 @@ $.fn.jCarouselLite = function(o) {
 		visible: 3,
 		start: 0,
 		scroll: 1,
+		swipe: 2,
+		swipeThresholdPercentage: 0.6,
 
 		beforeStart: null,
 		afterEnd: null
@@ -226,7 +231,7 @@ $.fn.jCarouselLite = function(o) {
 	return this.each(function() {						   // Returns the element collection. Chainable.
 		var running = false, animCss=o.vertical?"top":"left", sizeCss=o.vertical?"height":"width";
 		var div = $(this), ul = $("ul", div), tLi = $("li", ul), tl = tLi.size(), v = o.visible;
-
+		o.refWindow = $(this).parents('body');
 		if(o.circular) {
 			ul.prepend(tLi.slice(tl-v-1+1).clone())
 			  .append(tLi.slice(0,v).clone());
@@ -249,18 +254,29 @@ $.fn.jCarouselLite = function(o) {
 
 		div.css(sizeCss, divSize+"px");					 // Width of the DIV. length of visible images
 
-		if(o.btnPrev) {
-			$(o.btnPrev).show();
-			if ( !curr ) {
-				$(o.btnPrev).hide();
-			}
-			$(o.btnPrev).unbind('click.jcarousel');
-			$(o.btnPrev).bind( 'click.jcarousel', function() {
-				if ( !(curr-o.scroll) ) {
-					$(o.btnPrev).hide();
+		if ( o.disableBodyScroll ) {
+			var divHeight = div.height(),
+				divScrollHeight = div.get( 0 ).scrollHeight;
+
+			div.bind( 'mousewheel', function ( e, d ) {
+				if ( (this.scrollTop === (divScrollHeight - divHeight) && d < 0) || (this.scrollTop === 0 && d > 0) ) {
+					e.preventDefault();
 				}
-				if ( ( curr - o.scroll ) < ( itemLength - v ) ) {
-					$(o.btnNext).show();
+			} );
+		}
+
+		if(o.btnPrev) {
+			$(o.btnPrev, o.refWindow).show();
+			if ( !curr ) {
+				$(o.btnPrev, o.refWindow).hide();
+			}
+			$(o.btnPrev, o.refWindow).unbind('click.jcarousel');
+			$(o.btnPrev, o.refWindow).bind( 'click.jcarousel', function() {
+				if ( !(curr-o.scroll) ) {
+					$(o.btnPrev, o.refWindow).hide();
+				}
+				if ( ( curr - o.scroll ) < ( itemLength - v) ) {
+					$(o.btnNext, o.refWindow).show();
 				}
 				return go(curr-o.scroll);
 			});
@@ -269,40 +285,77 @@ $.fn.jCarouselLite = function(o) {
 		if(o.btnNext) {
 			$(o.btnNext).show();
 			if ( v >= itemLength ) {
-				$( o.btnNext ).hide();
+				$( o.btnNext, o.refWindow ).hide();
 			}
-			$(o.btnNext).unbind('click.jcarousel');
-			$(o.btnNext).bind( 'click.jcarousel', function() {
+			$(o.btnNext, o.refWindow).unbind('click.jcarousel');
+			$(o.btnNext, o.refWindow).bind( 'click.jcarousel', function() {
 				if ( curr+o.scroll ) {
-					$(o.btnPrev).show();
+					$(o.btnPrev, o.refWindow).show();
 				}
-				if ( (curr+o.scroll) == (itemLength - v) ) {
-					$(o.btnNext).hide();
+				if ( (curr+o.scroll) > (itemLength - v) ) {
+					$(o.btnNext, o.refWindow).hide();
 				}
 				return go(curr+o.scroll);
 			});
 		}
 
-		if(o.btnGo)
-			$.each(o.btnGo, function(i, val) {
-				$(val).click(function() {
-					return go(o.circular ? o.visible+i : i);
-				});
-			});
+		if(o.btnGo) {
+			$.each( o.btnGo, function ( i, val ) {
+				$( val, o.refWindow ).click( function () {
+					return go( o.circular ? o.visible + i : i );
+				} );
+			} );
+		}
 
-		if(o.mouseWheel && div.mousewheel)
-			div.mousewheel(function(e, d) {
-				return d>0 ? go(curr-o.scroll) : go(curr+o.scroll);
-			});
+		if(o.mouseWheel && div.mousewheel) {
+			div.mousewheel( function ( e, d ) {
+				if ( curr ) {
+					$( o.btnPrev, o.refWindow ).show();
+				}
+				return d > 0 ? go( curr - o.scroll ) : go( curr + o.scroll );
+			} );
+		}
 
-		if(o.auto)
-			setInterval(function() {
-				go(curr+o.scroll);
-			}, o.auto+o.speed);
+		if(o.fingerSwipe && div.swipe){
+			var to;
+			div.swipe({
+				swipeStatus:function(event, phase, direction, distance, duration, fingers){
+					if (phase=="move") {
+						switch ( direction ) {
+							case "up":
+							case "left":
+								to = curr + o.swipe;
+								break;
+							case "down":
+							case "right":
+								to = curr - o.swipe;
+								break;
+						}
+					}
+					if (phase=="end"){
+						if (to < 0){
+							to = 0;
+						}
+						if (to >= (itemLength-v)){
+							to=itemLength-v;
+						}
+						return go(to);
+					}
+				},
+				triggerOnTouchEnd: false,
+				threshold: liSize * o.swipeThresholdPercentage
+			});
+		}
+
+		if(o.auto) {
+			setInterval( function () {
+				go( curr + o.scroll );
+			}, o.auto + o.speed );
+		}
 
 		function vis() {
 			return li.slice(curr).slice(0,v);
-		};
+		}
 
 		function go(to) {
 			if(!running) {
@@ -321,8 +374,11 @@ $.fn.jCarouselLite = function(o) {
 						curr = to==itemLength-v+1 ? v+1 : v+o.scroll;
 					} else curr = to;
 				} else {					// If non-circular and to points to first or last, we just return.
-					if(to<0 || to>itemLength-v) return;
-					else curr = to;
+					if(to<0 || to>itemLength-v) {
+						return;
+					} else {
+						curr = to;
+					}
 				}						   // If neither overrides it, the curr will still be "to" and we can proceed.
 
 				running = true;
@@ -340,7 +396,7 @@ $.fn.jCarouselLite = function(o) {
 					$(o.btnPrev + "," + o.btnNext).removeClass("disabled");
 					$( (curr-o.scroll<0 && o.btnPrev)
 						||
-					   (curr+o.scroll > itemLength-v && o.btnNext)
+					   (curr+o.scroll > (itemLength-v) && o.btnNext)
 						||
 					   []
 					 ).addClass("disabled");
@@ -348,6 +404,10 @@ $.fn.jCarouselLite = function(o) {
 
 			}
 			return false;
+		};
+		// expose the go method
+		this.jCarouselLiteGo = function( inx ){
+			return go( inx );
 		};
 	});
 };
@@ -361,5 +421,90 @@ function width(el) {
 function height(el) {
 	return el[0].offsetHeight + css(el, 'marginTop') + css(el, 'marginBottom');
 };
+
+})(jQuery);
+
+/*! Copyright (c) 2011 Brandon Aaron (http://brandonaaron.net)
+ * Licensed under the MIT License (LICENSE.txt).
+ *
+ * Thanks to: http://adomas.org/javascript-mouse-wheel/ for some pointers.
+ * Thanks to: Mathias Bank(http://www.mathias-bank.de) for a scope bug fix.
+ * Thanks to: Seamus Leahy for adding deltaX and deltaY
+ *
+ * Version: 3.0.6
+ *
+ * Requires: 1.2.2+
+ */
+
+(function($) {
+
+	var types = ['DOMMouseScroll', 'mousewheel'];
+
+	if ($.event.fixHooks) {
+		for ( var i=types.length; i; ) {
+			$.event.fixHooks[ types[--i] ] = $.event.mouseHooks;
+		}
+	}
+
+	$.event.special.mousewheel = {
+		setup: function() {
+			if ( this.addEventListener ) {
+				for ( var i=types.length; i; ) {
+					this.addEventListener( types[--i], handler, false );
+				}
+			} else {
+				this.onmousewheel = handler;
+			}
+		},
+
+		teardown: function() {
+			if ( this.removeEventListener ) {
+				for ( var i=types.length; i; ) {
+					this.removeEventListener( types[--i], handler, false );
+				}
+			} else {
+				this.onmousewheel = null;
+			}
+		}
+	};
+
+	$.fn.extend({
+		mousewheel: function(fn) {
+			return fn ? this.bind("mousewheel", fn) : this.trigger("mousewheel");
+		},
+
+		unmousewheel: function(fn) {
+			return this.unbind("mousewheel", fn);
+		}
+	});
+
+
+	function handler(event) {
+		var orgEvent = event || window.event, args = [].slice.call( arguments, 1 ), delta = 0, returnValue = true, deltaX = 0, deltaY = 0;
+		event = $.event.fix(orgEvent);
+		event.type = "mousewheel";
+
+		// Old school scrollwheel delta
+		if ( orgEvent.wheelDelta ) { delta = orgEvent.wheelDelta/120; }
+		if ( orgEvent.detail     ) { delta = -orgEvent.detail/3; }
+
+		// New school multidimensional scroll (touchpads) deltas
+		deltaY = delta;
+
+		// Gecko
+		if ( orgEvent.axis !== undefined && orgEvent.axis === orgEvent.HORIZONTAL_AXIS ) {
+			deltaY = 0;
+			deltaX = -1*delta;
+		}
+
+		// Webkit
+		if ( orgEvent.wheelDeltaY !== undefined ) { deltaY = orgEvent.wheelDeltaY/120; }
+		if ( orgEvent.wheelDeltaX !== undefined ) { deltaX = -1*orgEvent.wheelDeltaX/120; }
+
+		// Add event and delta to the front of the arguments
+		args.unshift(event, delta, deltaX, deltaY);
+
+		return ($.event.dispatch || $.event.handle).apply(this, args);
+	}
 
 })(jQuery);

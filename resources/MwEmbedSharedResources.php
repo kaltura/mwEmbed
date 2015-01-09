@@ -8,14 +8,11 @@ return array(
 	/* jQuery */
 
 	'jquery' => array(
-		'scripts' => 'resources/jquery/jquery-1.10.2.js',
+		'scripts' => 'resources/jquery/jquery.min.js',
 		'debugRaw' => false
 	),
 
 	/* cryto / encode */
-	'MD5' => array(
-		'scripts' =>	 'resources/crypto/MD5.js' 
-	),
 	'base64_encode' =>  array( 
 		'scripts' => 'resources/base64/base64_encode.js',
 		'dependencies' => 'utf8_encode'
@@ -104,6 +101,9 @@ return array(
 	'jquery.naturalSize' => array(
 		'scripts' => 'resources/jquery/jquery.naturalSize.js',
 	),
+	'jquery.serialize-object' => array(
+		'scripts' => 'resources/jquery/jquery.serialize-object.js'
+	),
 
 	/* jQuery UI */
 
@@ -153,6 +153,18 @@ return array(
 			'no-theme' => 'resources/jquery.ui/themes/no-theme/jquery.ui.tooltip.css',
 		)
 	),
+	'jquery.ui.draggable' => array(
+        'scripts' => 'resources/jquery.ui/jquery.ui.draggable.js',
+        'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.mouse' )
+    ),
+    'jquery.ui.resizable' => array(
+        'scripts' => 'resources/jquery.ui/jquery.ui.resizable.js',
+        'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.mouse' ),
+        'skinStyles' => array(
+            'default' => 'resources/jquery.ui/themes/no-theme/jquery.ui.resizable.css',
+            'no-theme' => 'resources/jquery.ui/themes/no-theme/jquery.ui.resizable.css'
+        )
+    ),
 	// Widgets
 	'jquery.ui.accordion' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.accordion.js',
@@ -164,12 +176,20 @@ return array(
 	),
 	'jquery.ui.autocomplete' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.autocomplete.js',
-		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.position' ),
+		'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.position', 'jquery.ui.menu' ),
 		'skinStyles' => array(
 			'default' => 'resources/jquery.ui/themes/default/jquery.ui.autocomplete.css',
 			'vector' => 'resources/jquery.ui/themes/vector/jquery.ui.autocomplete.css',
 		),
 	),
+	'jquery.ui.menu' => array(
+        'scripts' => 'resources/jquery.ui/jquery.ui.menu.js',
+        'dependencies' => array( 'jquery.ui.core', 'jquery.ui.widget', 'jquery.ui.position' ),
+        'skinStyles' => array(
+            'default' => 'resources/jquery.ui/themes/default/jquery.ui.menu.css',
+            'vector' => 'resources/jquery.ui/themes/vector/jquery.ui.menu.css',
+        ),
+    ),
 	'jquery.ui.datepicker' => array(
 		'scripts' => 'resources/jquery.ui/jquery.ui.datepicker.js',
 		'dependencies' => 'jquery.ui.core',
@@ -414,6 +434,23 @@ return array(
 	'jquery.mwExtension' => array(
 		'scripts' => 'resources/jquery/jquery.mwExtension.js',
 	),
+    'touchSwipe' => array(
+        'scripts' => 'resources/touchSwipe/jquery.touchSwipe.min.js',
+        'dependencies' => 'jquery'
+    ),
+    'nanoScroller' => array(
+        'scripts' => 'resources/nanoScroller/nanoScroller.min.js',
+        'styles' => 'resources/nanoScroller/nanoScroller.css',
+        'dependencies' => 'jquery'
+    ),
+    'typeahead' => array(
+        'scripts' => 'resources/typeahead/typeahead.jquery.min.js',
+        'dependencies' => 'jquery'
+    ),
+    'dotdotdot' => array(
+        'scripts' => 'resources/jquery.dotdotdot/jquery.dotdotdot.min.js',
+        'dependencies' => 'jquery'
+    )
 	/*'mediawiki.language.parser' => new MwEmbedResourceLoaderFileModule( array(
 		'scripts' => 'resources/mediawiki.language/mediawiki.language.parser.js',
 		'dependencies' => array( 'mediawiki.language', 'mediawiki.util' ),

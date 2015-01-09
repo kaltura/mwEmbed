@@ -1,3 +1,4 @@
+
 function getBootStrapPath(){
 	var scripts = document.getElementsByTagName('script');
 	for(var i=0; i < scripts.length ; i++ ){
@@ -38,9 +39,9 @@ if( !window.QUnit ){
 	);
 	// check if we should enable google analytics: 
 	// TODO remove dependency on mw
-	if( typeof mw != 'undefined' && mw.getConfig( 'Kaltura.PageGoogleAalytics' ) ) {
+	if( typeof mw != 'undefined' && mw.getConfig( 'Kaltura.PageGoogleAnalytics' ) ) {
 		var _gaq = _gaq || [];
-		_gaq.push(['_setAccount', mw.getConfig( 'Kaltura.PageGoogleAalytics' ) ]);
+		_gaq.push(['_setAccount', mw.getConfig( 'Kaltura.PageGoogleAnalytics' ) ]);
 		_gaq.push(['_trackPageview']);
 		(function() {
 			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
@@ -84,16 +85,17 @@ try{
 // clock player render time
 var kdocPlayerStartTime = new Date().getTime();
 if( typeof kWidget != 'undefined' && kWidget.addReadyCallback ){
-	var alreadyRun = false;
+	var kdocTimePerPlayer = {};
 	kWidget.addReadyCallback( function( pId ){
-		$( '#' + pId )[0].kBind("mediaReady.pTimeReady", function(){
-			if( alreadyRun ){
+		$( '#' + pId )[0].kBind("playerReady.pTimeReady", function(){
+			if( kdocTimePerPlayer[ pId] ){
 				return ;
 			}
-			alreadyRun = true;
+			kdocTimePerPlayer[ pId ] = ( new Date().getTime() - kdocPlayerStartTime )/1000;
 			// note kUnbind seems to unbind all mediaReady
-			//$( '#' + pId )[0].kUnbind(".pTimeReady");
-			$('body').append( '<div class="kdocPlayerRenderTime" style="clear:both;"><span style="font-size:11px;">player ready in:<i>' + ( new Date().getTime() - kdocPlayerStartTime )/1000 + '</i> seconds</span></div>');
+			$( '#' + pId )[0].kUnbind(".pTimeReady");
+			$('body').append( '<div class="kdocPlayerRenderTime" style="clear:both;"><span style="font-size:11px;">' + pId + ' ready in: <i>' + 
+					kdocTimePerPlayer[ pId ] + '</i> seconds</span></div>');
 			if( document.URL.indexOf( 'noparent=') === -1 && parent && parent.sycnIframeContentHeight ){
 				parent.sycnIframeContentHeight();
 			}
@@ -121,6 +123,11 @@ if( !window['disablePlaybackModeSelector'] ){
 	){
 		mw.setConfig('Kaltura.LeadWithHTML5', true);
 	}
+}
+// support forceKDPFlashPlayer flag: 
+if( document.URL.indexOf('forceKDPFlashPlayer') !== -1 ){
+	mw.setConfig( 'Kaltura.LeadWithHTML5', false);
+	mw.setConfig( 'EmbedPlayer.DisableVideoTagSupport', true );
 }
 
 // document ready events:

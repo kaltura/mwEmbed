@@ -6,8 +6,11 @@
 			align: "right",
 			parent: "controlsContainer",
 			displayImportance: "low",
+			downloadName: '{mediaProxy.entry.name}',
 			showTooltip: true,
-		 	order: 53,
+			preferredBitrate: '',
+			flavorID: '',
+		 	order: 53
 		},
 		isSafeEnviornment: function(){
 			return !mw.isIOS();
@@ -19,11 +22,22 @@
 			});
 		},
 		downloadMedia: function() {
+			var ks =  this.getKalturaClient().getKs();
 			var downloadUrl = mw.getMwEmbedPath() + '/modules/KalturaSupport/download.php/wid/';
 				downloadUrl += this.getPlayer().kwidgetid + '/uiconf_id/' + this.getPlayer().kuiconfid;
 				downloadUrl += '/entry_id/' + this.getPlayer().kentryid + '?forceDownload=true';
-				downloadUrl += '&ks=' + this.getPlayer().getFlashvars('ks');
-				
+				downloadUrl += '&downloadName=' + encodeURIComponent(this.getConfig('downloadName'));
+				if ( this.getConfig( 'preferredBitrate' ) != '' && this.getConfig( 'preferredBitrate' ) != null ){
+					downloadUrl += '&preferredBitrate=' + encodeURIComponent( this.getConfig( 'preferredBitrate' ));
+				}
+			    if ( this.getConfig( 'flavorID' ) != '' && this.getConfig( 'flavorID' ) != null ){
+					downloadUrl += '&flavorID=' + encodeURIComponent( this.getConfig( 'flavorID' ));
+				}
+
+				if( ks ){
+					downloadUrl += '&ks=' + ks;
+				}
+			
 			window.open( downloadUrl );
 		},
 		getComponent: function() {

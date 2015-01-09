@@ -76,34 +76,46 @@
 							'title' => 'Playlist API',
 							'path' => 'KalturaSupport/tests/PlaylistKalturaApi.qunit.html'
 						),
-						'playlistOnPage' => array(
-							'title' => 'Playlist On Page',
-							'path' => '../kWidget/onPagePlugins/playlistOnPage/playlistOnPage.qunit.html'
-						),
 						'ServerSidePlaylist' => array(
 							'title' => "Server Side Playlist",
 							'path' => '../kWidget/onPagePlugins/serverSidePlaylist/ServerSidePlaylist.php'
 						),
-						'PlaylistVertical' => array(
-							'title' => "Vertical Layout",
-							'path' => 'KalturaSupport/tests/PlaylistVertical.html'
+						'PlaylistFeatures' => array(
+							'title' => "Playlist features",
+							'path' => 'KalturaSupport/tests/PlaylistFeatures.qunit.html'
 						),
-						'Carousel' => array(
-							'title' => "Carousel",
-							'path' => 'KalturaSupport/tests/Carousel.html'
+						'PlaylistEvents' => array(
+							'title' => "Playlist events",
+							'path' => 'KalturaSupport/tests/PlaylistEvents.qunit.html'
+						),
+						'PlaylistOnPage' => array(
+							'title' => "Playlist on page",
+							'path' => 'KalturaSupport/tests/PlaylistOnPage.qunit.html'
 						),
 						'PlaylistNoClipList' => array(
 							'title' => "Playlist No Clip List",
-							'path' => 'KalturaSupport/tests/PlaylistNoClipList.html'
+							'path' => 'KalturaSupport/tests/PlaylistNoClipList.qunit.html'
 						),
-						/*'PlaylistKalturaMRSS' => array(
+						'PlaylistKalturaMRSS' => array(
 							'title' => "Media RSS source",
-							'path' => 'KalturaSupport/tests/PlaylistKalturaMRSS.html'
-						),*/
+							'path' => 'KalturaSupport/tests/PlaylistKalturaMRSS.qunit.html'
+						),
 						'PlaylistInitItemEntryId' => array(
 							'title' => "Initial EntryId",
-							'path' => 'KalturaSupport/tests/PlaylistInitItemEntryId.html'
-						)
+							'path' => 'KalturaSupport/tests/PlaylistInitItemEntryId.qunit.html'
+						),
+						'PlaylistVAST' => array(
+							'title' => "Playlist VAST ads",
+							'path' => 'KalturaSupport/tests/PlaylistVAST.qunit.html'
+						),
+						'PlaylistDoubleclick' => array(
+							'title' => "Playlist Doubleclick ads",
+							'path' => 'KalturaSupport/tests/PlaylistDoubleclick.qunit.html'
+						),
+                        'PlaylistSideBar' => array(
+                            'title' => "Playlist within side bar",
+                            'path' => 'KalturaSupport/tests/PlaylistSideBar.qunit.html'
+                        )
 					)
 				),
 			)
@@ -209,10 +221,10 @@
 							'title' => 'Chapters Editor',
 							'path' => '../kWidget/onPagePlugins/chapters/chaptersEdit.qunit.html'
 						),
-						'AttracTV' => array(
+						/*'AttracTV' => array(
 							'title' => 'AttracTV',
 							'path' => 'AttracTV/tests/AttracTV.qunit.html'
-						),
+						),*/
 						'LimeSurvey' => array(
 							'title' => 'LimeSurvey On Video',
 							'path' => '../kWidget/onPagePlugins/limeSurveyCuePointForms/limeSurveyCuePointForms.qunit.html'
@@ -220,6 +232,24 @@
 						'videoDetailsBlock' => array(
 							'title' => 'Video Details Block',
 							'path' => '../kWidget/onPagePlugins/videoDetailsBlock/videoDetailsBlock.qunit.html'
+						),
+					)
+				),
+				'CallToAction' => array(
+					'title' => 'Call To Action',
+					'desc' => 'Call to action plugins.',
+					'testfiles' => array(
+						'ActionButtons' => array(
+							'title' => 'Basic Buttons',
+							'path' => 'CallToAction/tests/ActionButtons.qunit.html'
+						),
+						'RelatedButtons' => array(
+							'title' => 'Related Buttons',
+							'path' => 'CallToAction/tests/ActionButtonsRelated.qunit.html'
+						),
+						'ActionForm' => array(
+							'title' => 'Submit Form',
+							'path' => 'CallToAction/tests/ActionForm.qunit.html'
 						),
 					)
 				),
@@ -251,10 +281,10 @@
 							'title' => 'Chromeless No Controls',
 							'path' => 'KalturaSupport/tests/ChromelessPlayer.qunit.html'
 						),
-						/*'CustomSkin' => array(
-							'title' => 'Custom Skin',
-							'path' => 'KalturaSupport/tests/CustomSkin.html'
-						),
+						'Strings' => array(
+							'title' => 'Custom Strings',
+							'path' => 'KalturaSupport/tests/Strings.html'
+						),/*
 						'CustomSkinAudioPlayer' => array(
 							'title' => 'Custom Audio Player Skin',
 							'path' => 'KalturaSupport/tests/CustomSkinAudioPlayer.html'
@@ -308,7 +338,7 @@
 			'featureSets' => array(
 		
 				'Embedding'  => array(
-					'title' => 'Embedding the kaltura player',
+					'title' => 'Embedding the Kaltura player',
 					'desc' => 'These files cover basic embedding from <a href="#rewrite">legacy</a> object embed, to the dynamic <a href="#kwidget">kWidget</a> embed method', 
 					'testfiles' =>array(
 						'kwidget' => array(
@@ -322,6 +352,10 @@
 						'thumb' => array( 
 							'title' => 'Thumbnail embed',
 							'path' => 'KalturaSupport/tests/ThumbnailEmbedManyPlayers.qunit.html',
+						),
+						'NativeCallout'=> array(
+							'title' => 'Native callout',
+							'path' => 'KalturaSupport/tests/NativeCalloutComingSoon.html',
 						),
 						'referenceId' => array(
 							'title' => 'Reference Id',

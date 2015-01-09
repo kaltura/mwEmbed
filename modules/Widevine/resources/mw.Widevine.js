@@ -2,6 +2,8 @@
 
 	mw.PluginManager.add( 'widevine', mw.KBasePlugin.extend({
 		defaultConfig: {
+			'useSupportedBrowserMsg': 'This video is not supported by this browser.',
+			'useSupportedBrowserTitle': 'Notification',
 			'useSupportedDeviceMsg': 'This video requires Adobe Flash Player, which is not supported by your device. You can watch it on devices that support Flash.',
 			'useSupportedDeviceTitle': 'Notification',
 			'intallFlashMsg': "This video requires Adobe Flash Player, which is currently not available on your browser. Please <a href='http://www.adobe.com/support/flashplayer/downloads.html' target='_blank'> install Adobe Flash Player </a> to view this video.",
@@ -13,16 +15,28 @@
 			'PromptRestartChromeAfterInstall' : 'Download of the plugin installer will start immediately. Note that you must restart your Chrome browser after running the installer',
 			'promptTitle' : 'Notification'
 		},
+		kClient: null,
 		setup: function(){
-			mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
 			var _this = this;
+
+			mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
+			this.kClient = mw.kApiGetPartnerClient( this.getPlayer().kwidgetid );
+			//generate KS if missing
+			if( !this.kClient.getKs() ){
+				this.kClient.doRequest( { 'service' : 'session', 'action' : 'startWidgetSession', 'widgetId': this.getPlayer().kwidgetid }, function( data ) {
+					if ( data.code ) {
+						mw.log("Widevine:: Error:: startWidgetSession failed");
+					} else if ( data.ks ) {
+						_this.kClient.setKs( data.ks );
+					}
+				}, true );
+			}
+
 			var msg;
 			var title;
 
 			this.getPlayer().setKalturaConfig('kdpVars', 'widevine',
 				{ plugin: 'true', loadingPolicy: 'preInitialize', asyncInit: 'true', isWv: true});
-
-
 
 			this.bind( 'playerReady', function() {
 				var flavors = _this.getPlayer().mediaElement.getPlayableSources();
@@ -32,7 +46,7 @@
 					}
 					return false;
 				}
-				if ( kWidget.supportsFlash() ) {   //add vars to load widevine KDP plugin
+				if ( kWidget.supportsFlash() && ! mw.isDesktopSafari() ) {   //add vars to load widevine KDP plugin
 					//either all flavors are encrypted or all are not. If the flavor is not widevine don't show wv prompt.
 					if (flavors && flavors.length) {
 						if ( isWVAsset() )  {
@@ -40,6 +54,10 @@
 								_this.getPlayer().setFlashvars( 'forceDynamicStream', 'true' );
 								if ( _this.getPlayer().setKPlayerAttribute ) {
 									_this.getPlayer().setKPlayerAttribute('configProxy.flashvars', 'forceDynamicStream', 'true');
+									_this.getPlayer().setKPlayerAttribute('configProxy.flashvars', 'ks', _this.kClient.getKs());
+									_this.getPlayer().setKPlayerAttribute('widevine.content', 'mediaWidth', flavors[0].width);
+									_this.getPlayer().setKPlayerAttribute('widevine.content', 'mediaHeight', flavors[0].height);
+
 								}
 								//hide the source selector until we receive the embedded flavors from the wvm package
 								_this.getPlayer().setKDPAttribute( 'sourceSelector' , 'visible', false);
@@ -56,7 +74,7 @@
 						if ( isWVAsset() ) {
 							if ( _this.getPlayer().selectedPlayer.library == "NativeComponent" ) {
 								_this.getPlayer().getPlayerElement().attr( 'wvServerKey', _this.widevineObj().getEmmUrl()
-									+ "&format=widevine&flavorAssetId=" + flavors[0].getAssetId() + "&ks=" + _this.getPlayer().getFlashvars( 'ks' ) );
+									+ "&format=widevine&flavorAssetId=" + flavors[0].getAssetId() + "&ks=" + _this.kClient.getKs() );
 							}
 						}
 						//if we received non wv flavors we can play them. continue.
@@ -70,6 +88,9 @@
 					if ( kWidget.isMobileDevice() ) {
 						msg = _this.getConfig( 'useSupportedDeviceMsg' );
 						title = _this.getConfig( 'useSupportedDeviceTitle' );
+					} else if ( mw.isDesktopSafari() ) {
+						msg = _this.getConfig( 'useSupportedBrowserMsg' );
+						title = _this.getConfig( 'useSupportedBrowserTitle' );
 					} else {
 						//flash is not installed - prompt to install flash
 						if ( navigator.mimeTypes [ 'application/x-shockwave-flash' ] == undefined ) {
@@ -82,6 +103,7 @@
 					}
 				}
 				if (msg && title) {
+					_this.getPlayer().autoplay = false;
 					_this.getPlayer().layoutBuilder.displayAlert( { keepOverlay:true, message: msg, title: title, noButtons: true});
 					_this.getPlayer().disablePlayControls();
 				}

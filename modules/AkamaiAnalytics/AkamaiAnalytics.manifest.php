@@ -4,6 +4,7 @@
  */
 return array(
 	'akamaiMediaAnalytics' => array(
+		'label' => 'Akamai Media Analytics',
 		'description' => "Supports sending player analytics events to Akamai.<br>",
 		'attributes'=> array(
 			'configPath' => array(
@@ -35,7 +36,7 @@ return array(
 				'type' => 'string'
 			),
 			'title' => array(
-				'doc' => 'Override the default value for the title field. By default it is the entry title.',
+				'doc' => 'Override the default value for the title field. By default it is the entry ID.',
 				'type' => 'string'
 			),
 			'category' => array(

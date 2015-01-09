@@ -16,7 +16,7 @@ if( window.QUnit ){
 		setTimeout( function(){
 			ok( false, "Player timed out" );
 			start();
-		}, 90000 );
+		}, 180000 );
 		window['kalturaPlayerLoadedCallbackCalled'] = function( playerId ){
 			ok( true, "Player loaded: " + playerId );
 			if( typeof jsKalturaPlayerTest == 'function' ){

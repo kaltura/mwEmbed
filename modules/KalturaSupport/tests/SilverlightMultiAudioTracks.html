@@ -1,0 +1,121 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>ISM Source with Multiple Audio Tracks</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+
+</head>
+<body>
+<h2> Media with Multiple Audio Tracks </h2>
+This example demonstrates how to listen for "audioTracksReceived" and "audioTrackIndexChanged" notifications <br /> and how to change current audio track.
+<br />
+<br />
+
+<div id="kaltura_player" style="width: 400px; height: 333px"></div>
+<br />
+
+
+<div>
+	<Label> Change Audio Track: </Label>
+	<select id="tracksList" onchange="switchTrack()"/>
+</div>
+
+<script type="text/javascript">
+	var kdp;
+	function onTracksReceived( data ) {
+		if ( data.languages && data.languages.length > 0 ) {
+			var tracks = data.languages;
+			$.each(tracks, function(){
+				$('<option />')
+						.attr('value', this.index)
+						.html(this.label)
+						.appendTo('#tracksList');
+			});
+		}
+	}
+
+	function onTrackSelected( data ) {
+		if ( data.index < $('#tracksList option').size() && data.index != $('#tracksList').val() ) {
+			$('#tracksList').val(data.index);
+		}
+	}
+
+	function switchTrack() {
+		kdp.sendNotification('switchAudioTrack', {index: $('#tracksList').val() });
+	}
+
+	mw.setConfig("KalturaSupport.LeadWithHTML5", true);
+	/*mw.setConfig("EmbedPlayer.useDirectManifestLinks", true);
+
+	 mw.setConfig('EmbedPlayer.ReplaceSources', [
+	 {
+	 'type' : 'video/ism',
+	 'src' : 'http://streams.smooth.vertigo.com/elephantsdream/Elephants_Dream_1024-h264-st-aac.ism/manifest'
+	 }
+	 ]);
+
+	 kWidget.embed({
+	 "targetId": "kaltura_player",
+	 "wid": "_524241",
+	 "uiconf_id": 24521441,
+	 "flashvars": {
+	 },
+	 "cache_st": 1401713817,
+	 "readyCallback": function( playerId ){
+	 kdp = $('#' + playerId)[0];
+	 kdp.addJsListener( 'audioTracksReceived', 'onTracksReceived' );
+	 kdp.addJsListener( 'audioTrackIndexChanged', 'onTrackSelected' );
+	 }
+	 }); */
+
+	kWidget.embed({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id' : '21099702',
+		'flashvars': {
+			"confFilePath": "{libPath}/modules/KalturaSupport/tests/confFiles/jsonConfig.json",
+			"related.playlistId": "1_qui13sz2",
+			"EmbedPlayer.useDirectManifestLinks": true,
+			"getMediaLicenseLink": {
+				plugin: true
+			},
+			liveCore:{
+				disableLiveCheck: true
+			},
+			"proxyData":
+			{
+				"initObj": {
+					"Locale":
+					{ "LocaleLanguage": "", "LocaleCountry": "", "LocaleDevice": "", "LocaleUserState": "Unknown" }
+					,
+					"Platform": "Web",
+					"SiteGuid": "388712",
+					"DomainID": 0,
+					"UDID": "",
+					"ApiUser": "tvpapi_147",
+					"ApiPass": "11111"
+				},
+				"MediaID": 300148,
+				"mediaType": 0,
+				"picSize": "",
+				"withDynamic": false
+			},
+			"closedCaptions": {
+				"showEmbeddedCaptions": true
+			}
+
+		},
+		//"entry_id": "1_sf5ovm7u"
+		"entry_id": "0_c0r624gh",
+		"readyCallback": function( playerId ){
+			kdp = $('#' + playerId)[0];
+			kdp.addJsListener( 'audioTracksReceived', 'onTracksReceived' );
+			kdp.addJsListener( 'audioTrackIndexChanged', 'onTrackSelected' );
+		}
+	});
+</script>
+
+</body>
+</html>

@@ -137,10 +137,8 @@
 		},
 		updateKS: function ( embedPlayer, ks){
 			var client = mw.kApiGetPartnerClient( embedPlayer.kwidgetid );
-			// clear out any old player data cache:
-			client.clearCache();
 			// update the new ks:
-			client.setKS( ks );
+			client.setKs( ks );
 			// Update KS flashvar
 			embedPlayer.setFlashvars( 'ks', ks );
 			// TODO confirm flash KDP issues a changeMedia internally for ks updates
@@ -306,7 +304,7 @@
 							switch( objectPath[2] ){
 								case 'currentTime':
 									// check for kPreSeekTime ( kaltura seek delay update property )
-									if( embedPlayer.kPreSeekTime !== null ){
+									if( embedPlayer.seeking && embedPlayer.kPreSeekTime !== null ){
 										return embedPlayer.kPreSeekTime;
 									}
 									/*var ct = embedPlayer.currentTime - embedPlayer.startOffset;
@@ -359,9 +357,20 @@
 								return embedPlayer.kalturaPlayerMetaData;
 							}
 						break;
+						case 'sources': 
+							return embedPlayer.mediaElement.getSources();
+						break;
 						case 'isLive':
 							return embedPlayer.isLive();
 						break;
+						case 'mediaPlayTo':
+							var mediaPlayTo = embedPlayer.getFlashvars('mediaProxy.mediaPlayTo');
+							return mediaPlayTo ? mediaPlayTo :null;
+							break;
+						case 'mediaPlayFrom':
+							var mediaPlayFrom = embedPlayer.getFlashvars('mediaProxy.mediaPlayFrom');
+							return mediaPlayFrom ? mediaPlayFrom : null;
+							break;
 						case 'isOffline':
 							if ( $.isFunction( embedPlayer.isOffline ) ) {
 								return embedPlayer.isOffline();
@@ -479,7 +488,7 @@
 				case 'utility':
 					switch( objectPath[1] ) {
 						case 'random':
-							return Math.random();
+							return Math.floor(Math.random() * 1000000000);
 							break;
 						case 'timestamp':
 							return new Date().getTime();
@@ -498,6 +507,13 @@
 							};
 							var location = getLocation(referrer);
 							return location.hostname;
+							break;
+						case 'nativeAdId':
+							if( embedPlayer ) {
+								return embedPlayer.getFlashvars('nativeAdId');
+							} else {
+								return "";
+							}
 							break;
 					}
 					break;
@@ -636,7 +652,11 @@
 					}
 
 					if( $.isFunction( callbackToRun ) ) {
-						callbackToRun.apply( embedPlayer, $.makeArray( arguments ) );
+						try{
+							callbackToRun.apply( embedPlayer, $.makeArray( arguments ) );
+						}catch(e){
+							mw.log("Error when trying to run callbackToRun (probably JavaScript error in callbackToRun code)")
+						};
 					} else {
 						mw.log('kdpMapping::addJsListener: callback name: ' + callbackName + ' not found');
 					}
@@ -685,7 +705,7 @@
 				case 'readyToLoad':
 					if( embedPlayer.playerReadyFlag ){
 						// player is already ready when listener is added
-						if( ! embedPlayer.kentryid ){
+						if( ! embedPlayer.kalturaPlayerMetaData ){
 							embedPlayer.kdpEmptyFlag = true;
 							callback( embedPlayer.id );
 						}
@@ -694,7 +714,7 @@
 						b( 'playerReady', function(){
 							// only trigger kdpEmpty when the player is empty
 							// TODO support 'real' player empty state, ie not via "error handler"
-							if( ! embedPlayer.kentryid ){
+							if( ! embedPlayer.kalturaPlayerMetaData ){
 								embedPlayer.kdpEmptyFlag = true;
 								// run after all other playerReady events: 
 								setTimeout(function(){
@@ -859,10 +879,10 @@
 					})
 					break;
 				case 'bytesDownloadedChange':
-					// KDP sends an initial bytes loaded zeor at player ready:
+					// KDP sends an initial bytes loaded zero at player ready:
 					var prevBufferBytes = 0;
 					b( 'monitorEvent', function(){
-						if( typeof embedPlayer.bufferedPercent != 'undefined' ){
+						if( typeof embedPlayer.bufferedPercent != 'undefined' && embedPlayer.mediaElement.selectedSource ){
 							var bufferBytes = parseInt( embedPlayer.bufferedPercent *  embedPlayer.mediaElement.selectedSource.getSize() );
 							if( bufferBytes != prevBufferBytes ){
 								callback( { 'newValue': bufferBytes }, embedPlayer.id );
@@ -906,32 +926,33 @@
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
+
 				case 'preSequenceComplete':
-					b('AdSupport_PreSequenceComplete', function( e, slotType ){
+					b('AdSupport_preSequenceComplete', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
 
 				// mid Sequence:
-				case 'midrollStarted':
+				case 'midSequenceStart':
 					b('AdSupport_midrollStarted', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
 				case 'midSequenceComplete':
-					b('AdSupport_MidSequenceComplete', function( e, slotType ){
+					b('AdSupport_midSequenceComplete', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
 
 				// post roll Sequence:
-				case 'postRollStarted':
+				case 'postSequenceStart':
 					b('AdSupport_postrollStarted', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
 				case 'postSequenceComplete':
-					b('AdSupport_PostSequenceComplete', function( e, slotType ){
+					b('AdSupport_postSequenceComplete', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});
 					break;
@@ -1008,6 +1029,16 @@
 				case 'freePreviewEnd':
 					b('KalturaSupport_FreePreviewEnd');
 					break;
+				case 'switchingChangeStarted':
+					b( 'sourceSwitchingStarted', function( event, data ) {
+					callback( data );
+					});
+					break;
+				case 'switchingChangeComplete':
+					b( 'sourceSwitchingEnd', function( event, data ) {
+						callback( data );
+					});
+					break;
 				default:
 					// Custom listner
 					// ( called with any custom arguments that are provided in the trigger)
@@ -1066,6 +1097,7 @@
 				case 'doStop':
 					setTimeout(function() {
 						embedPlayer.ignoreNextNativeEvent = true;
+                			        embedPlayer.seek(0, true);
 						embedPlayer.stop();
 					},10);
 					break;
@@ -1115,8 +1147,10 @@
 
 					// Check changeMedia if we don't have entryId and referenceId and they both not -1 - Empty sources
 					if( ( ! notificationData.entryId || notificationData.entryId == "" || notificationData.entryId == -1 )
-						&& ( ! notificationData.referenceId || notificationData.referenceId == "" || notificationData.referenceId == -1 ) )
-					{
+						&& ( ! notificationData.referenceId || notificationData.referenceId == "" || notificationData.referenceId == -1 ) 
+						// check for mediaProxy based override: 
+						&& !notificationData.mediaProxy
+					){
 						mw.log( "KDPMapping:: ChangeMedia missing entryId or refrenceid, empty sources.")
 						embedPlayer.emptySources();
 						break;
@@ -1124,8 +1158,11 @@
 					// Check if we have entryId and it's not -1. than we change media
 					if( (notificationData.entryId && notificationData.entryId != -1)
 							||
-						(notificationData.referenceId && notificationData.referenceId != -1) )
-					{
+						(notificationData.referenceId && notificationData.referenceId != -1) 
+							||
+						(notificationData.mediaProxy)
+					){
+						
 						// Check if we already started change media request
 						if( embedPlayer.changeMediaStarted ) {
 							break;
@@ -1156,6 +1193,13 @@
 						// Temporary update the thumbnail to black pixel. the real poster comes from entry metadata
 						embedPlayer.updatePoster();
 
+						// if data is injected via changeMedia, re-load into iframe inject location:
+						if( notificationData.mediaProxy ){
+							window.kalturaIframePackageData.entryResult = notificationData.mediaProxy;
+							// update plugin possition. Future refactor should treat mediaProxy as plugin  
+							embedPlayer.playerConfig.plugins['mediaProxy'] = notificationData.mediaProxy;
+						}
+						
 						// Run the embedPlayer changeMedia function
 						embedPlayer.changeMedia();
 						break;

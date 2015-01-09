@@ -22,15 +22,15 @@ function outputConfig(){
 			'path' => array(
 				'hideEdit' => true
 			),
-			'width' => array(
+			'loadInIframe' => array(
+					'doc' => "If the on-page-plugin should be loaded inside the iframe,
+				for share and embeds that don't include on-page JavaScript",
+					'type' => 'boolean',
+					'hideEdit' => true,
+			),
+			/*'width' => array(
 				'doc' => "The width of the plugin",
 				'value' => '0%',
-				'hideEdit' => true,
-			),
-			'loadInIframe' => array(
-				'doc' => "If the on-page-plugin should be loaded inside the iframe, 
-					for share and embeds that don't include on-page JavaScript",
-				'type' => 'boolean',
 				'hideEdit' => true,
 			),
 			'height' => array(
@@ -45,7 +45,7 @@ function outputConfig(){
 			),
 			'relativeTo' => array(
 				'hideEdit' => true
-			),
+			),*/
 			'position' => array(
 				'hideEdit' => true
 			),

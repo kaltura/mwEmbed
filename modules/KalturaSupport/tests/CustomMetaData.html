@@ -47,7 +47,8 @@ Pay attention to the metadataProfile id, set to 3282 per player.kaltura.com acco
 <script type="text/javascript">
 	$('#switchSource').click(function(){
 		$('#customData tr').not('.head').remove();
-		$('#kaltura_player')[0].sendNotification("changeMedia",{ entryId:"0_swup5zao" });	
+		$('#kaltura_player')[0].sendNotification("changeMedia",{ entryId:"0_swup5zao" });
+		return false;
 	});
 </script>
 <i>Custom Data for this player: </i><br />

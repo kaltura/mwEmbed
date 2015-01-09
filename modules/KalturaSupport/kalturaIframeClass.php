@@ -133,7 +133,7 @@ class kalturaIframeClass {
 			'entry_id' => 'kentryid',
 			'uiconf_id' => 'kuiconfid',
 			'wid' => 'kwidgetid',
-			'autoplay' => 'autoplay',
+			'autoplay' => 'autoplay'
 		);
 
 		// If we have an error, show it
@@ -145,6 +145,7 @@ class kalturaIframeClass {
 		// so that overlays work on the iPad.
 		$o = "\n\n\t" .'<video class="persistentNativePlayer" ';
 		$o.= 'poster="' . htmlspecialchars( "data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%02%00%00%00%90wS%DE%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%07tIME%07%DB%0B%0A%17%041%80%9B%E7%F2%00%00%00%19tEXtComment%00Created%20with%20GIMPW%81%0E%17%00%00%00%0CIDAT%08%D7c%60%60%60%00%00%00%04%00%01'4'%0A%00%00%00%00IEND%AEB%60%82" ) . '" ';
+		//$o.= '  crossorigin="anonymous" poster="' . htmlspecialchars( "data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%02%00%00%00%90wS%DE%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%07tIME%07%DB%0B%0A%17%041%80%9B%E7%F2%00%00%00%19tEXtComment%00Created%20with%20GIMPW%81%0E%17%00%00%00%0CIDAT%08%D7c%60%60%60%00%00%00%04%00%01'4'%0A%00%00%00%00IEND%AEB%60%82" ) . '" ';
 		$o.= 'id="' . htmlspecialchars( $this->getIframeId() ) . '" ';
 
 		// Check for webkit-airplay option
@@ -196,8 +197,10 @@ class kalturaIframeClass {
 			$settings['entry_id'] = $this->request->get('entry_id');
 		}
 
-		// add ks flashvar
-		$settings['flashvars']['ks'] = $this->client->getKS();
+		// Only add KS if it was part of the request, else the client should re-generate in multi-request for any subsequent request: 
+		if( $this->request->hasKS() ){
+			$settings['flashvars']['ks'] = $this->client->getKS();
+		}
 		// add referrer flashvar
 		$settings['flashvars']['referrer'] = htmlspecialchars( $this->request->getReferer() );
 
@@ -360,6 +363,10 @@ class kalturaIframeClass {
 
 	public function getHeaders(){
 		$cacheHeaders = $this->utility->getCachingHeaders($this->getEntryResult()->getResponseHeaders());
+		// Merge in playlist response headers ( if requesting a playlist ) 
+		if( $this->getUiConfResult()->isPlaylist() ){
+			array_merge( $cacheHeaders, $this->getPlaylistResult()->getResponseHeaders() );
+		}
 		if( count($cacheHeaders) == 0 ) {
 			$cacheHeaders = array(
 				"Cache-Control: no-cache, must-revalidate",
@@ -367,6 +374,8 @@ class kalturaIframeClass {
 				"Expires: Sat, 26 Jul 1997 05:00:00 GMT"
 			);
 		}
+		// alwayse set cross orgin headers: 
+		$cacheHeaders[] = 'Access-Control-Allow-Origin: *';
 		return $cacheHeaders;
 	}
 
@@ -383,6 +392,8 @@ class kalturaIframeClass {
 		header( "Cache-Control: public, max-age=$expireTime, max-stale=0");
 		header( "Last-Modified: " . gmdate( "D, d M Y H:i:s", $lastModified) . "GMT");
 		header( "Expires: " . gmdate( "D, d M Y H:i:s", $lastModified + $expireTime ) . " GM" );
+		// alwayse set cross orgin headers:
+		header( "Access-Control-Allow-Origin: *" );
 	}
 
 	/**
@@ -603,7 +614,10 @@ HTML;
 				$customStyle = $customStyle . 'body {font-size: ' . $theme['buttonsSize'] . 'px}';
 			}
 			if (isset($theme['buttonsColor'])){
-				$customStyle = $customStyle . '.btn {background-color: ' . $theme['buttonsColor'] . '!important}';
+				$customStyle = $customStyle . '.btn {background-color: ' . $theme['buttonsColor'] . '}';
+				if (isset($theme['applyToLargePlayButton']) && $theme['applyToLargePlayButton'] == true){
+					$customStyle = $customStyle  . '.largePlayBtn {background-color: ' . $theme['buttonsColor'] . '!important}';
+				}
 			}
 			if (isset($theme['sliderColor'])){
 				$customStyle = $customStyle . '.ui-slider {background-color: ' . $theme['sliderColor'] . '!important}';
@@ -618,6 +632,9 @@ HTML;
 			}
 			if (isset($theme['buttonsIconColor'])){
 				$customStyle = $customStyle . '.btn {color: ' . $theme['buttonsIconColor'] . '!important}';
+				if (isset($theme['applyToLargePlayButton']) && $theme['applyToLargePlayButton'] == true){
+					$customStyle = $customStyle  . '.largePlayBtn {color: ' . $theme['buttonsIconColor'] . '!important}';
+				}
 			}
 			if (isset($theme['watchedSliderColor'])){
 				$customStyle = $customStyle . '.watched {background-color: ' . $theme['watchedSliderColor'] . '!important}';
@@ -733,8 +750,16 @@ HTML;
 
 		// If we got a template
 		if( isset($templatePath) ){
-			$templateKey = str_replace('{html5ps}', '', $templatePath);
-			$this->templates[ $templateKey ] = $this->loadTemplate( $templatePath );
+		    if (is_array($templatePath)){
+		        foreach ($templatePath as $templateFileName => $templateFilePath){
+                    $templateKey = str_replace('{html5ps}', '', $templateFilePath);
+                    $templateKey = is_numeric($templateFileName) ? $templateKey : $templateFileName;
+                    $this->templates[ $templateKey ] = $this->loadTemplate( $templateFilePath );
+		        }
+		    } else {
+			    $templateKey = str_replace('{html5ps}', '', $templatePath);
+			    $this->templates[ $templateKey ] = $this->loadTemplate( $templatePath );
+			}
 		}
 	}
 
@@ -833,9 +858,13 @@ HTML;
 				} catch ( Exception $e ){
 					$payload['error'] = $e->getMessage();
 				}
+				// push up entry result errors to top level:
+				if( isset( $payload[ 'entryResult' ]  ) && isset( $payload[ 'entryResult' ]['error']) ){
+					$payload['error'] = $payload[ 'entryResult' ]['error'];
+				} 
+				// check for returned errors: 
 				echo json_encode( $payload );
 			?>;
-
 			var isIE8 = /msie 8/.test(navigator.userAgent.toLowerCase());
 		</script>
 		<script type="text/javascript">
@@ -918,7 +947,6 @@ HTML;
 
 		// Check if file exists
 		if( !file_exists( $path ) ){
-			die('file does not exists: ' . $path);
 			return false;
 		}
 
@@ -932,6 +960,7 @@ HTML;
 
 		// Check if path is valid and exists
 		if( !$resourcePath ) {
+			$this->logger->log('Unable to find resource: ' . $resourcePath );
 			return false;
 		}
 		
