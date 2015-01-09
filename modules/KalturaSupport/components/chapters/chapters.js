@@ -568,10 +568,21 @@
 		minimizeSearchBar: function(){
 			this.$searchFormWrapper.addClass("minimized");
 			this.getMedialistFooterComponent().addClass("minimized");
+			if (this.scrollUpdateTimeout){
+				clearTimeout(this.scrollUpdateTimeout);
+				this.scrollUpdateTimeout = null;
+			}
+			var _this = this;
+			this.scrollUpdateTimeout = setTimeout(function(){
+				_this.scrollUpdateTimeout = null;
+				_this.setMedialistComponentHeight();
+			}, 100);
+
 		},
 		maximizeSearchBar: function(){
 			this.$searchFormWrapper.removeClass("minimized");
 			this.getMedialistFooterComponent().removeClass("minimized");
+			this.setMedialistComponentHeight();
 		},
 		getSearchData: function(expression, callback){
 			var liveCheck = this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints");
@@ -752,7 +763,6 @@
 				if (this.barsMinimized && ((this.lastScrollPosition - data.position) / this.maximumScroll) > 0.1){
 					this.barsMinimized = false;
 					this.maximizeSearchBar();
-					this.setMedialistComponentHeight();
 					this.lastScrollPosition = -1;
 				}
 			} else {
@@ -764,16 +774,6 @@
 					this.barsMinimized = true;
 					this.minimizeSearchBar();
 					this.lastScrollPosition = -1;
-
-					if (this.scrollUpdateTimeout){
-						clearTimeout(this.scrollUpdateTimeout);
-						this.scrollUpdateTimeout = null;
-					}
-					var _this = this;
-					this.scrollUpdateTimeout = setTimeout(function(){
-						_this.scrollUpdateTimeout = null;
-						_this.setMedialistComponentHeight();
-					}, 100);
 				}
 			}
 			//Remove focus from searchbox to enable maximize on focus
