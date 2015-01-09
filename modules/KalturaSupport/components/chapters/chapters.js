@@ -31,7 +31,7 @@
 		},
 
 		mediaList: [], //Hold the medialist items
-		cache: [], //Hold the search data cache
+		cache: {}, //Hold the search data cache
 		dataSet: null, //Hold current dataset returnd from API
 		renderOnData: false, //Indicate if to wait for data before rendering layout
 		freezeTimeIndicators: false,
@@ -489,11 +489,11 @@
 						substrRegex = new RegExp( regexExp, 'i' );
 						// iterate through the pool of strings and for any string that
 						// contains the substring `q`, add it to the `matches` array
-						$.each( strs, function ( key, ids ) {
-							if ( substrRegex.test( key ) ) {
+						$.each( strs, function ( index, str ) {
+							if ( substrRegex.test( str ) ) {
 								// the typeahead jQuery plugin expects suggestions to a
 								// JavaScript object, refer to typeahead docs for more info
-								matches.push( { value: {data: key, ids: ids} } );
+								matches.push( { value: str } );
 							}
 						} );
 						cb( matches );
@@ -526,11 +526,11 @@
 					{
 						name: 'label',
 						displayKey: function ( obj ) {
-							return parseData( obj.value.data, typeahead.val() );
+							return parseData( obj.value, typeahead.val() );
 						},
 						templates: {
 							suggestion: function ( obj ) {
-								return parseData( obj.value.data, typeahead.val() );
+								return parseData( obj.value, typeahead.val() );
 							},
 							empty: [
 								'<div class="empty-message">',
@@ -541,7 +541,7 @@
 						source: findMatches
 					} ).
 					on( "typeahead:selected", function ( e, obj ) {
-						_this.showSearchResults( obj.value.ids );
+						_this.showSearchResults( _this.dataSet[obj.value] );
 					} ).
 					on( "keyup", function ( event ) {
 						// On enter key press:
@@ -555,7 +555,7 @@
 							if ( suggestionsElms.length ) {
 								suggestionsElms.each( function ( i, suggestionsElm ) {
 									var suggestionsData = dropdown.getDatumForSuggestion( $( suggestionsElm ) );
-									objIds = objIds.concat( suggestionsData.raw.value.ids );
+									objIds = objIds.concat( _this.dataSet[suggestionsData.raw.value] );
 								} );
 								_this.showSearchResults( objIds );
 							}
@@ -576,18 +576,11 @@
 		getSearchData: function(expression, callback){
 			var liveCheck = this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints");
 			// If results are cached then return from cache, unless in live session
-			expression = expression.replace(/^\s+/, '').replace(/\s+$/, '');
+			expression = expression.replace(/^\s+/, '').replace(/\s+$/, '' ).toLowerCase();
 			var cacheExp = expression.substr(0,3);
 			if (!liveCheck && this.cache[cacheExp]){
-				return callback(this.cache[cacheExp]);
-			}
-			// If query length is 3 then clear current dataset and query against API again
-			if (expression.length === 3){
-				this.dataSet = null;
-			}
-			// If query length greater then 3 chars then don't query API anymore - use initial dataset
-			if (expression.length > 3 && this.dataSet){
-				return callback(this.dataSet);
+				this.dataSet = this.cache[cacheExp].hash;
+				return callback(this.cache[cacheExp].sortedKeys);
 			}
 
 			var _this = this;
@@ -609,7 +602,11 @@
 						return;
 					}
 					// Validate result
-					var results = {};
+					var results = {
+						hash: {},
+						sortedKeys: []
+					};
+
 					$.each(data.objects, function (index, res) {
 						if (!_this.isValidResult(res)) {
 							data[index] = null;
@@ -617,23 +614,25 @@
 
 						var searchData = [res.title, res.description];
 						var tags = res.tags.split(",");
-						tags = $.grep(tags,function(n){ return(n) });
+						tags = $.grep(tags,function(n){ return(n); });
 
 						searchData = searchData.concat(tags);
 						$.each(searchData, function(index, data){
-							if (results[data]) {
-								results[data].push(res.id);
+							if (results.hash[data]) {
+								results.hash[data].push(res.id);
 							} else {
-								results[data] = [res.id];
+								results.hash[data] = [res.id];
+								results.sortedKeys.push(data);
 							}
 						});
 					});
+					results.sortedKeys.sort();
 
-					_this.dataSet = results;
+					_this.dataSet = results.hash;
 					_this.cache[expression] = results;
 
 					if (callback) {
-						callback(results);
+						callback(results.sortedKeys);
 					}
 				}
 			);
