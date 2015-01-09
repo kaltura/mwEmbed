@@ -27,7 +27,8 @@
 			'MinClips': 2,
 			'MaxClips': 25,
 			'selectedIndex': 0,
-			'includeHeader': true
+			'includeHeader': true,
+			'itemsToShow': 3
 		},
 
 
@@ -135,8 +136,8 @@
 			// set responsiveness
 			this.bind('updateLayout', function(){
 				if (!_this.getPlayer().layoutBuilder.isInFullScreen() && _this.redrawOnResize) {
-					if ( $( ".playlistInterface" ).width() / 3 > _this.getConfig( 'mediaItemWidth' ) ) {
-						_this.setConfig( 'mediaItemWidth', $( ".playlistInterface" ).width() / 3 );
+					if ( $( ".playlistInterface" ).width() / _this.getConfig( 'itemsToShow' ) > _this.getConfig( 'mediaItemWidth' ) ) {
+						_this.setConfig( 'mediaItemWidth', $( ".playlistInterface" ).width() / _this.getConfig( 'itemsToShow' ) );
 
 					} else {
 						_this.setConfig( 'mediaItemWidth', '320' );
