@@ -39,6 +39,7 @@
 		activeItem: 0,
 		inSlideAnimation: false,
 		barsMinimized: false,
+		searchResultShown: false,
 
 		setup: function () {
 			this.addBindings();
@@ -649,34 +650,32 @@
 			);
 		},
 		showSearchResults: function(searchResults){
+			this.searchResultShown = true;
+			if ( !$.isArray(searchResults)){
+				searchResults = [searchResults];
+			}
+			this.disableChapterToggle();
+			var mediaBoxes = this.getMediaListDomElements();
 
-			var chapters = this.getMediaListDomElements().filter(".chapterBox");
-			var expandedChapters = chapters.filter("[data-chapter-collapsed=false]");
-			this.toggleChapter(expandedChapters);
-
-			this.doOnSlideAnimationEnded(function(){
-				this.searchResultShown = true;
-				if ( !$.isArray(searchResults)){
-					searchResults = [searchResults];
+			mediaBoxes.each(function(i, mediaBox){
+				var mediaBoxObj = $(mediaBox);
+				var objId = mediaBoxObj.attr("data-obj-id");
+				if ( $.inArray(objId, searchResults) > -1){
+					mediaBoxObj.removeClass("resultNoMatch");
+				} else{
+					mediaBoxObj.addClass("resultNoMatch collapsed");
 				}
-				this.disableChapterToggle();
-				var mediaBoxes = this.getMediaListDomElements();
-				mediaBoxes.each(function(i, mediaBox){
-					var objId = $(mediaBox).attr("data-obj-id");
-					if ( $.inArray(objId, searchResults) > -1){
-						var mediaBoxObj = $(mediaBox);
-						mediaBoxObj.removeClass("resultNoMatch");
-					} else{
-						$(mediaBox).addClass("resultNoMatch");
-					}
-				});
-				//Remove search results slide collapsed state
-				var slidesSearchResults = mediaBoxes.filter(":not(.resultNoMatch).slideBox");
-				this.inSlideAnimation = slidesSearchResults.length ? true : false;
-				this.transitionsToBeFired += slidesSearchResults.length;
-				this.initSlideAnimation(slidesSearchResults);
-				slidesSearchResults.removeClass("collapsed");
 			});
+			var _this = this;
+
+			//Remove search results slide collapsed state
+			var slidesSearchResults = mediaBoxes.filter(":not(.resultNoMatch).slideBox.collapsed");
+			_this.inSlideAnimation = slidesSearchResults.length ? true : false;
+			if (_this.inSlideAnimation) {
+				_this.transitionsToBeFired = slidesSearchResults.length;
+				_this.initSlideAnimation( slidesSearchResults );
+				slidesSearchResults.removeClass("collapsed");
+			}
 		},
 		resetSearchResults: function(){
 			if (this.searchResultShown) {
@@ -684,17 +683,18 @@
 				this.enableChapterToggle();
 				var mediaBoxes = this.getMediaListDomElements();
 				//Remove search results slide collapsed state
-				var slidesSearchResults = mediaBoxes.filter(":not(.resultNoMatch).slideBox");
+				var slidesSearchResults = mediaBoxes.filter(":not(.resultNoMatch.collapsed).slideBox");
 				this.inSlideAnimation = slidesSearchResults.length ? true : false;
-				this.transitionsToBeFired += slidesSearchResults.length;
+				this.transitionsToBeFired = slidesSearchResults.length;
 				slidesSearchResults.addClass("collapsed");
-
-				mediaBoxes.removeClass( "resultNoMatch" );
-				var chapters = this.getMediaListDomElements().filter(".chapterBox");
-				var expandedChapters = chapters.filter("[data-chapter-collapsed=false]");
-				this.toggleChapter(expandedChapters);
+				mediaBoxes.filter(".chapterBox" ).addClass( "resultNoMatch" );
+				this.doOnSlideAnimationEnded(function() {
+					mediaBoxes.removeClass( "resultNoMatch" );
+					var chapters = this.getMediaListDomElements().filter( ".chapterBox" );
+					var expandedChapters = chapters.filter( "[data-chapter-collapsed=false]" );
+					this.toggleChapter( expandedChapters );
+				});
 			}
-
 		},
 		renderScroller: function(options){
 			if (this.$scroll){
@@ -889,7 +889,7 @@
 				var targets = _this.getComponent().find( ".slideBox[data-chapter-index=" + chapterToggleId + "]" );
 				_this.renderScroller({stop: true});
 				_this.inSlideAnimation = true;
-				_this.transitionsToBeFired += targets.length;
+				_this.transitionsToBeFired = targets.length;
 				if (chapter.attr("data-chapter-collapsed") === "true") {
 					chapter.attr("data-chapter-collapsed", false);
 					_this.initSlideAnimation(targets);
@@ -940,13 +940,13 @@
 				});
 			}
 		},
-		doOnSlideAnimationEnded: function(fn){
+		doOnSlideAnimationEnded: function(fn, prefix){
 			if (this.inSlideAnimation){
 				var _this = this;
 				this.bind("slideAnimationEnded", function(){
 					_this.unbind("slideAnimationEnded");
 					fn.apply(_this);
-				})
+				});
 			} else {
 				fn.apply(this);
 			}

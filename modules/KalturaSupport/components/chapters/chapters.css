@@ -217,10 +217,10 @@
 }
 
 .slideBox{
-    -webkit-transition-property: all .5s cubic-bezier(0, 1, 0.5, 1);
-    -moz-transition-property: all .5s cubic-bezier(0, 1, 0.5, 1);
-    -ms-transition-property: all .5s cubic-bezier(0, 1, 0.5, 1);
-    transition: all .5s cubic-bezier(0, 1, 0.5, 1);
+    -webkit-transition: -webkit-transform .5s cubic-bezier(0, 1, 0.5, 1);
+    -moz-transition: -moz-transform .5s cubic-bezier(0, 1, 0.5, 1);
+    -ms-transition: -ms-transform .5s cubic-bezier(0, 1, 0.5, 1);
+    transition: transform .5s cubic-bezier(0, 1, 0.5, 1);
 }
 .slideBox.collapsed{
     -webkit-transform: translateX(-100%);
