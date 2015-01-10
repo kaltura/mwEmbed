@@ -47,9 +47,16 @@
     width: 100%;
     display: table;
     z-index: 10;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0, M12=0, M21=0, M22=0, SizingMethod='auto expand')";
+    -webkit-transition: -webkit-transform 0.5s ease-out;
+    -moz-transition: -moz-transform 0.5s ease-out;
+    -ms-transition: -ms-transform 0.5s ease-out;
     transition: transform 0.5s ease-out;
 }
 .chapters > .footer.minimized{
+    -webkit-transform: scale(0);
+    -moz-transform: scale(0);
+    -ms-transform: scale(0);
     transform: scale(0);
 }
 .touch  .chapters > .footer{
@@ -195,10 +202,10 @@
 
 .chapterBox.collapsed .slideBoxToggle{
     filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
-    transform: rotate(-90deg);
     -webkit-transform: rotate(-90deg);
     -moz-transform: rotate(-90deg);
     -ms-transform: rotate(-90deg);
+    transform: rotate(-90deg);
 }
 .chapterBox .slideBoxToggle{
     position: absolute;
@@ -206,10 +213,10 @@
     right: 0;
     margin: 0 20px 12px 0;
     font-size: 30px;
-    transition: transform 0.5s;
-    -webkit-transition: transform 0.5s;
-    -moz-transition: transform 0.5s;
-    -ms-transition: transform 0.5s;
+    -webkit-transition: -webkit-transform 0.5s ease-out;
+    -moz-transition: -moz-transform 0.5s ease-out;
+    -ms-transition: -ms-transform 0.5s ease-out;
+    transition: transform 0.5s ease-out;
 }
 
 .chapterBox.disableChapterToggle .slideBoxToggle{
