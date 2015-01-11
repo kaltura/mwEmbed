@@ -7,7 +7,8 @@
 			"cssClass": "bottomLeft",
 			"img": null,
 			"href": null,
-			"padding": null
+			"padding": null,
+			"watermarkTimeout": 0
 		},
 		isSafeEnviornment: function(){
 			return !!this.getConfig('img');
@@ -24,6 +25,9 @@
 			this.bind('AdSupport_EndAdPlayback', function(){
 				_this.getComponent().show();
 			});
+			if( this.getConfig('watermarkTimeout') != 0 ){
+				_this.timeoutWatermark();
+			};
 		},
 		getComponent: function(){
 			var _this = this;
@@ -50,6 +54,14 @@
 				}
 			}
 			return this.$el;
+		},
+		timeoutWatermark: function(){
+			var _this = this;
+			setTimeout(function(){
+				_this.$el.fadeOut( "slow", function(){
+					_this.$el.remove();
+				});
+			}, this.getConfig('watermarkTimeout') * 1000 )
 		}
 	}));
 
