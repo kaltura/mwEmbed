@@ -542,13 +542,18 @@
 						source: findMatches
 					} ).
 					on( "typeahead:selected", function ( e, obj ) {
+						e.preventDefault();
+						e.stopPropagation();
 						_this.showSearchResults( _this.dataSet[obj.value] );
+						return false;
 					} ).
-					on( "keyup", function ( event ) {
+					on( "keyup", function ( e ) {
+						e.preventDefault();
+						e.stopPropagation();
 						// On enter key press:
 						// 1. If multiple suggestions and none was chosen - display results for all suggestions
 						// 2. Close dropdown menu
-						if ( event.keyCode === 13 ) {
+						if ( e.keyCode === 13 ) {
 							var dropdown = typeahead.data( 'ttTypeahead' ).dropdown;
 							var objIds = [];
 							var suggestionsElms = dropdown._getSuggestions();
@@ -562,6 +567,8 @@
 							}
 							typeahead.typeahead( "close" );
 						}
+
+						return false;
 					}
 				);
 			}
