@@ -77,6 +77,9 @@
 			$( this.embedPlayer ).bind('onOpenFullScreen', function() {
 				if ( !_this.getConfig( 'parent') ){
 					_this.getComponent().hide();
+					if (mw.isIOS()){
+						_this.$mediaListContainer.height("100%");
+					}
 					$(".videoHolder").width("100%");
 				}
 			});
