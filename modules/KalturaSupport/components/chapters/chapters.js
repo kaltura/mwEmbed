@@ -860,7 +860,7 @@
 			});
 
 			this.getComponent().find(".slideBoxToggle")
-				.on("click", function(e){
+				.off("click").on("click", function(e){
 					e.stopPropagation();
 					var chapter = $( this ).parent();
 					_this.toggleChapter(chapter);
