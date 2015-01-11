@@ -795,7 +795,7 @@
 				var time = this.getPlayer().currentTime;
 				$.each( this.mediaList, function ( inx, item ) {
 					if ( time > ( item.startTime ) ) {
-						activeChapterIndex = _this.chaptersMap[item.chapterNumber].data.order;
+						activeChapterIndex = (item.chapterNumber !== -1) ? _this.chaptersMap[item.chapterNumber].data.order : -1;
 						_this.activeItem = item.order;
 					}
 				} );
