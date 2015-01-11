@@ -77,7 +77,8 @@ $messages['en'] = array(
     'ks-chapters-chapter-duration' => "Chapter duration",
     'ks-chapters-slideNumber' => "Slide number",
     'ks-chapters-slide-start-time' => "Slide start time",
-    'ks-chapters-slide-duration' => "Slide duration"
+    'ks-chapters-slide-duration' => "Slide duration",
+    'ks-sidebar-toggleBtn' => "Menu"
 );
 
 $messages['fr'] = array(

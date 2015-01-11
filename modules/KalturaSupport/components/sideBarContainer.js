@@ -188,6 +188,8 @@
 
 				this.$elHelper = $('<div>' )
 					.addClass( 'sideBarContainerReminder ' + _this.getConfig('position') )
+					.prop("title", gM("ks-sidebar-toggleBtn"))
+					.attr("data-show-tooltip", true)
 					.append($('<div id="sideBarContainerReminderContainer">' )
 						.addClass( 'icon-chapterMenu' )
 					);
