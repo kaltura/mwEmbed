@@ -503,9 +503,8 @@
 						minimizeSecondDisplay();
 					}
 				} );
-				this.bind( "preHideScreen", function (e) {
+				this.bind( "preHideScreen", function () {
 					_this.screenShown = false;
-					updateSecondScreenLayout(e)
 					if (_this.render) {
 						maximizeSecondDisplay();
 					}
