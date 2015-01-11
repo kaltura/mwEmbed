@@ -132,6 +132,14 @@
 				_this.getMedialistHeaderComponent().find(".playlistBtn").removeClass("disabled");
 			});
 
+			$( this.embedPlayer ).bind('onOpenFullScreen', function() {
+				_this.redrawOnResize = false;
+			});
+
+			$( this.embedPlayer ).bind('onCloseFullScreen', function() {
+				setTimeout(function(){_this.redrawOnResize = true;},2000);
+			});
+
 			// set responsiveness
 			this.bind('updateLayout', function(){
 				if (!_this.getPlayer().layoutBuilder.isInFullScreen() && _this.redrawOnResize) {
