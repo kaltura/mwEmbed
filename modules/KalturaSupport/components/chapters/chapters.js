@@ -323,10 +323,15 @@
 			return newWidth;
 		},
 		disableChapterToggle: function(){
-			this.getMediaListDomElements().filter(".chapterBox").addClass("disableChapterToggle");
+			this.getMediaListDomElements()
+				.filter(".chapterBox")
+				.addClass("disableChapterToggle" )
+				.attr("data-chapter-collapsed", true);
 		},
 		enableChapterToggle: function(){
-			this.getMediaListDomElements().filter(".chapterBox").removeClass("disableChapterToggle");
+			this.getMediaListDomElements()
+				.filter(".chapterBox")
+				.removeClass("disableChapterToggle");
 		},
 		markMediaItemsAsDisplayed: function (mediaItems) {
 			$.each(mediaItems, function (index, item) {
