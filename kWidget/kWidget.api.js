@@ -160,11 +160,19 @@ kWidget.api.prototype = {
 		// do the respective request
 		this[ requestMethod ](  url, param, callback );
 	},
+	parseResponse: function (data ){
+		var response = data;
+		try {
+			response = JSON.parse( data );
+		}catch(e){}
+		return response;
+	},
 	xhrGet: function( url, param, callback ){
+		var _this = this;
 		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.onreadystatechange = function(){
 			if ( xmlhttp.readyState==4 && xmlhttp.status==200 ){
-				callback( JSON.parse( xmlhttp.responseText) );
+				callback( _this.parseResponse( xmlhttp.responseText ) );
 			}
 		}
 		xmlhttp.open("GET", url + '&' + kWidget.param( param ), true);
@@ -174,10 +182,11 @@ kWidget.api.prototype = {
 	 * Do an xhr request
 	 */
 	xhrPost: function( url, param, callback ){
+		var _this = this;
 		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.onreadystatechange = function(){
 			if ( xmlhttp.readyState==4 && xmlhttp.status==200 ){
-				callback( JSON.parse( xmlhttp.responseText) );
+				callback( _this.parseResponse( xmlhttp.responseText ) );
 			}
 		}
 		xmlhttp.open("POST", url, true);
