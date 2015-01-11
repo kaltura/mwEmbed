@@ -25,8 +25,14 @@
 			this.bind('AdSupport_EndAdPlayback', function(){
 				_this.getComponent().show();
 			});
+
 			if( this.getConfig('watermarkTimeout') != 0 ){
-				_this.timeoutWatermark();
+
+				this.bind('onChangeMediaDone playerReady', function(){
+					_this.getComponent().show();
+						_this.timeoutWatermark();
+				});
+
 			};
 		},
 		getComponent: function(){
@@ -57,11 +63,12 @@
 		},
 		timeoutWatermark: function(){
 			var _this = this;
-			setTimeout(function(){
-				_this.$el.fadeOut( "slow", function(){
-					_this.$el.remove();
-				});
-			}, this.getConfig('watermarkTimeout') * 1000 )
+			this.bind('firstPlay', function() {
+				debugger;
+				setTimeout(function () {
+					_this.$el.fadeOut("slow");
+				}, _this.getConfig('watermarkTimeout') * 1000)
+			});
 		}
 	}));
 
