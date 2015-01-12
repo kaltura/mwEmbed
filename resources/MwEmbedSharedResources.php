@@ -443,6 +443,14 @@ return array(
         'styles' => 'resources/nanoScroller/nanoScroller.css',
         'dependencies' => 'jquery'
     ),
+    'typeahead' => array(
+        'scripts' => 'resources/typeahead/typeahead.jquery.min.js',
+        'dependencies' => 'jquery'
+    ),
+    'dotdotdot' => array(
+        'scripts' => 'resources/jquery.dotdotdot/jquery.dotdotdot.min.js',
+        'dependencies' => 'jquery'
+    )
 	/*'mediawiki.language.parser' => new MwEmbedResourceLoaderFileModule( array(
 		'scripts' => 'resources/mediawiki.language/mediawiki.language.parser.js',
 		'dependencies' => array( 'mediawiki.language', 'mediawiki.util' ),

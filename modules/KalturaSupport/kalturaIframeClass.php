@@ -750,8 +750,16 @@ HTML;
 
 		// If we got a template
 		if( isset($templatePath) ){
-			$templateKey = str_replace('{html5ps}', '', $templatePath);
-			$this->templates[ $templateKey ] = $this->loadTemplate( $templatePath );
+		    if (is_array($templatePath)){
+		        foreach ($templatePath as $templateFileName => $templateFilePath){
+                    $templateKey = str_replace('{html5ps}', '', $templateFilePath);
+                    $templateKey = is_numeric($templateFileName) ? $templateKey : $templateFileName;
+                    $this->templates[ $templateKey ] = $this->loadTemplate( $templateFilePath );
+		        }
+		    } else {
+			    $templateKey = str_replace('{html5ps}', '', $templatePath);
+			    $this->templates[ $templateKey ] = $this->loadTemplate( $templatePath );
+			}
 		}
 	}
 

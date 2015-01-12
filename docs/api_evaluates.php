@@ -27,14 +27,14 @@
 		'duration' => array(
 			'desc' => 'Current video duration in seconds',
 		),
+		'mediaProxy.entry' => array(
+			'desc' => 'Returns all entry properties for the currently active entry.',
+		),
 		'mediaProxy.entryCuePoints' => array(
 			'desc' => 'Array of cue points if defined for the current media',
 		),
 		'mediaProxy.entryMetadata' => array(
 			'desc' => 'Metadata object for the current entry',
-		),
-		'mediaProxy.entry' => array(
-			'desc' => 'Returns all entry properties for the currently active entry.',
 		),
 		'mediaProxy.isLive' => array(
 			'desc' => 'Returns true, if the the current entries live broadcast is active.',

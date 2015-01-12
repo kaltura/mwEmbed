@@ -43,6 +43,10 @@
 		// Disable switch source callback
 		disableSwitchSourceCallback: false,
 
+		playbackDone: false,
+
+		playingSource: undefined,
+
 		// All the native events per:
 		// http://www.w3.org/TR/html5/video.html#mediaevents
 		nativeEvents: [
@@ -56,11 +60,11 @@
 			'error',
 			'stalled',
 			'loadedmetadata',
+			'durationchange',
 			'timeupdate',
 			'progress',
 			'enterfullscreen',
 			'exitfullscreen',
-			'durationchange',
 			'chromecastDeviceConnected',
 			'chromecastDeviceDisConnected'
 		],
@@ -88,6 +92,7 @@
 
 			var divElement = document.createElement("div");
 			divElement.setAttribute('id', 'proxy');
+			divElement['paused'] = true;
 			document.body.appendChild(divElement);
 
 			this.proxyElement = divElement;
@@ -103,9 +108,6 @@
 
 			this.applyMediaElementBindings();
 
-			this.bindHelper("SourceChange", function () {
-				_this.getPlayerElement().attr('src', this.getSrc());
-			});
 			this.bindHelper("layoutBuildDone ended", function () {
 				_this.getPlayerElement().notifyLayoutReady();
 			});
@@ -113,15 +115,18 @@
 				mw.log("EmbedPlayerNativeComponent:: showChromecastDeviceList::");
 				_this.getPlayerElement().showChromecastDeviceList();
 			});
+			this.bindHelper("onEndedDone", function () {
+				_this.playbackDone = true;
+			});
 			this.resolveSrcURL(this.getSrc()).then(
 				function (resolvedSrc) {
 					mw.log("EmbedPlayerNativeComponent::resolveSrcURL get succeeded");
-					_this.getPlayerElement().attr('src', resolvedSrc);
+					_this.setSrcAttribute( resolvedSrc );
 					readyCallback();
 				},
 				function () {
 					mw.log("EmbedPlayerNativeComponent::resolveSrcURL get failed");
-					_this.getPlayerElement().attr('src', _this.getSrc());
+					_this.setSrcAttribute( _this.getSrc() );
 					readyCallback();
 				}
 			);
@@ -130,11 +135,30 @@
 		embedPlayerHTML: function () {
 		},
 
+		setSrcAttribute: function( source ) {
+			this.getPlayerElement().attr('src', source);
+			this.playingSource =  source;
+		},
+
 		playerSwitchSource: function (source, switchCallback, doneCallback) {
 			mw.log("NativeComponent:: playerSwitchSource");
 			var _this = this;
 			var vid = this.getPlayerElement();
+			var src = source.getSrc();
 			var switchBindPostfix = '.playerSwitchSource';
+
+			// Make sure the switch source is different:
+			if ( !src || src == this.playingSource ) {
+				if ($.isFunction(switchCallback)) {
+					switchCallback(vid);
+				}
+				// Delay done callback to allow any non-blocking switch callback code to fully execute
+				if ($.isFunction(doneCallback)) {
+					doneCallback();
+				}
+				return;
+			}
+
 
 			// remove old binding:
 			$(vid).unbind(switchBindPostfix);
@@ -144,29 +168,33 @@
 
 			// empty out any existing sources:
 			$(vid).empty();
-
-			if (this.getSrc() != source.getSrc()) {
-				vid.attr('src', source.getSrc());
-			} else {
-				vid.attr('src', this.getSrc());
-			}
+			this.setSrcAttribute( src );
 
 			this.isPauseLoading = false;
+			// Update some parent embedPlayer vars:
+			this.currentTime = 0;
+			this.previousTime = 0;
 			_this.hideSpinner();
+
 			if ($.isFunction(switchCallback)) {
-				switchCallback(vid);
-				var isPlayingAdsContext = this.adsOnReplay || !(this.adTimeline.displayedSlotCount > 0);
-				if ( isPlayingAdsContext || this.loop ){
-					setTimeout(function () {
-						vid.play();
-					}, 100);
-				}
+				$(vid).bind('durationchange' + switchBindPostfix, function () {
+					$( vid ).unbind( 'durationchange' + switchBindPostfix );
+					switchCallback( vid );
+				} );
 			}
 
+			var isPlayingAdsContext = _this.adsOnReplay || !(_this.adTimeline.displayedSlotCount > 0);
+			if ( (isPlayingAdsContext || _this.loop) && !_this.playbackDone) {
+				setTimeout(function () {
+					vid.play();
+				}, 100);
+			}
 
 			// Add the end binding if we have a post event:
 			if ($.isFunction(doneCallback)) {
 				$(vid).bind('ended' + switchBindPostfix, function (event) {
+					_this.currentTime = 0;
+					_this.previousTime = 0;
 					if (_this.disableSwitchSourceCallback) {
 						return;
 					}
@@ -191,14 +219,14 @@
 		applyMediaElementBindings: function () {
 			var _this = this;
 			mw.log("EmbedPlayerNative::MediaElementBindings");
+			var bindPostfix = '.embedPlayerNativeComponent';
 
 			$.each(_this.nativeEvents, function (inx, eventName) {
-				$(_this.getPlayerElement()).unbind(eventName).bind(eventName, function () {
+				$( _this.getPlayerElement() ).unbind( eventName + bindPostfix ).bind( eventName + bindPostfix, function () {
 					// make sure we propagating events, and the current instance is in the correct closure.
-					if (_this._propagateEvents && _this.instanceOf == 'NativeComponent') {
+					if ( _this._propagateEvents && _this.instanceOf == 'NativeComponent' ) {
 						var argArray = $.makeArray(arguments);
 						// Check if there is local handler:
-
 						if (_this[ '_on' + eventName ]) {
 							_this[ '_on' + eventName ].apply(_this, argArray);
 						} else {
@@ -206,6 +234,7 @@
 							$(_this).trigger(eventName, argArray);
 						}
 					}
+
 				});
 			});
 		},
@@ -256,7 +285,7 @@
 
 		play: function () {
 			mw.log("EmbedPlayerNativeComponent:: play::");
-
+			this.playbackDone = false;
 			this.removePoster();
 
 			if (this.parent_play()) {
@@ -286,6 +315,23 @@
 			this.parent_seek(percentage);
 		},
 
+		/**
+		 * Set the current time with a callback
+		 *
+		 * @param {Float} position
+		 * 		Seconds to set the time to
+		 * @param {Function} callback
+		 * 		Function called once time has been set.
+		 */
+		setCurrentTime: function( seekTime , callback ) {
+			seekTime = parseFloat( seekTime );
+			mw.log( "EmbedPlayerNativeComponent:: setCurrentTime to " + seekTime );
+			this.getPlayerElement().attr('currentTime', seekTime);
+			if ($.isFunction(callback)) {
+				callback();
+			}
+		},
+
 		doNativeAction: function (actionParams) {
 			mw.log("EmbedPlayerNativeComponent:: doNativeAction::");
 			this.getPlayerElement().attr('nativeAction', actionParams);
@@ -307,18 +353,28 @@
 			return true;
 		},
 
+		_ondurationchange: function () {
+			mw.log( "EmbedPlayerNativeComponent:: onDurationChange::" + this.getPlayerElement().duration );
+			this.setDuration( this.getPlayerElement().duration );
+		},
+
 		/**
 		 * Handle the native play event
 		 */
 		_onplay: function () {
 			mw.log("EmbedPlayerNativeComponent:: OnPlay::");
 
-			$(this).trigger("playing");
 			this.removePoster();
-			
-			if (this.paused && this.parent_play()) {
+			this.hideSpinner();
+			$( this ).trigger("playing");
+
+			if ( this.paused && this.parent_play() ) {
 				this.monitor();
+			} else {
+				this.playInterfaceUpdate();
 			}
+
+
 		},
 
 		/**
@@ -396,8 +452,8 @@
 		 */
 		_onended: function (event) {
 			if (this.getPlayerElement()) {
-				mw.log('EmbedPlayer:native: onended:');
-				if (this._propagateEvents) {
+				mw.log( 'EmbedPlayer:nativeComponent: onended:' );
+				if ( this._propagateEvents && !this.isLive() ) {
 					this.onClipDone();
 				}
 			}
@@ -482,6 +538,13 @@
 
 		isVideoSiblingEnabled: function () {
 			return false;
+		},
+
+		isPlaying: function () {
+			if ( this.stopped || this.paused || this.getPlayerElement().paused ) {
+				return false;
+			}
+			return true;
 		}
 	};
 })(mediaWiki, jQuery);

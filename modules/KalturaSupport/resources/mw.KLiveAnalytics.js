@@ -15,8 +15,11 @@
 			eventIndex :1,
 			currentBitRate:-1,
 			playing:false,
+			firstPlay: true,
+			liveEventInterval: null,
 			monitorIntervalObj:{},
 			smartSetInterval:function(callback,time,monitorObj) {
+				var _this = this;
 				//create the timer speed, a counter and a starting timestamp
 				var speed = time,
 					counter = 1,
@@ -45,11 +48,11 @@
 					if (Math.abs(nextSpeed) > speed){
 						nextSpeed = speed;
 					}
-					window.setTimeout(function() { instance(); }, nextSpeed);
+					_this.liveEventInterval = window.setTimeout(function() { instance(); }, nextSpeed);
 				};
 
 				//now kick everything off with the first timer instance
-				window.setTimeout(function() { instance(); }, speed);
+				_this.liveEventInterval = window.setTimeout(function() { instance(); }, speed);
 			},
 			setup: function( ) {
 			   var _this = this;
@@ -114,7 +117,9 @@
 
 				//calc the buffer time
 				this.bufferTime += (new Date() - _this.bufferStartTime) / 1000;
-
+				if (this.bufferTime > 10){
+					this.bufferTime = 10;
+				}
 				//set the buffer start time to now - in order to continue and counting the current buffer session
 				if ( closeSession ){
 					_this.bufferStartTime = new Date();
@@ -128,15 +133,22 @@
 				var _this = this;
 				_this.isLiveEventsOn = false;
 				_this.monitorIntervalObj.cancel = true;
+				clearTimeout( _this.liveEventInterval );
 				_this.liveEventInterval = null;
 			},
 			startLiveEvents :function(){
 				var _this = this;
+				if ( _this.isLiveEventsOn )  {
+					return;
+				}
 				_this.isLiveEventsOn = true;
 				_this.startTime = new Date().getTime();
 				_this.kClient = mw.kApiGetPartnerClient( _this.embedPlayer.kwidgetid );
 				_this.monitorIntervalObj.cancel = false;
-				this.sendLiveAnalytics();
+				if ( _this.firstPlay ){
+					_this.sendLiveAnalytics();
+					_this.firstPlay = false;
+				}
 				_this.smartSetInterval(function(){
 					_this.sendLiveAnalytics();
 				},_this.reportingInterval,_this.monitorIntervalObj);

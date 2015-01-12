@@ -138,8 +138,6 @@
 				var jsEventValue = this.stringConvertion(eventValue);
 			}
 
-			$(this.proxyElement).trigger(eventName, [jsEventValue]);
-
 			if (eventName == 'timeupdate') {
 				this.proxyElement['currentTime'] = jsEventValue;
 			} else if (eventName == 'progress') {
@@ -150,7 +148,13 @@
 				this.proxyElement['duration'] = jsEventValue;
 			} else if (eventName == 'nativeAction') {
 				this.proxyElement['nativeAction'] = jsEventValue;
+			} else if (eventName == 'play') {
+				this.proxyElement['paused'] = false;
+			} else if (eventName == 'pause') {
+				this.proxyElement['paused'] = true;
 			}
+
+			$(this.proxyElement).trigger(eventName, [jsEventValue]);
 
 			if (this.subscribed[eventName]) {
 				this.subscribed[eventName](jsEventValue);

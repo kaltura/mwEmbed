@@ -90,7 +90,8 @@ mw.KBasePlugin = Class.extend({
 			}
 			rawHTML = window.kalturaIframePackageData.templates[ templatePath ];
 		}
-		var transformedHTML = mw.util.tmpl( rawHTML, data );
+		var transformedHTML = mw.util.tmpl( rawHTML );
+		transformedHTML = transformedHTML(data);
 		var evaluatedHTML = $.trim( this.embedPlayer.evaluate( transformedHTML ) );
 		var $templateHtml = $( '<span>' + evaluatedHTML + '</span>' );
 
@@ -111,6 +112,20 @@ mw.KBasePlugin = Class.extend({
 		});
 
 		return $templateHtml;
+	},
+	getTemplatePartialHTML: function( partialName, settings ){
+		// First get template from 'template' config
+		var rawHTML = this.getConfig( 'template', true );
+		if( !rawHTML ){
+			if( !partialName || !window.kalturaIframePackageData.templates[ partialName ]) {
+				this.log('getTemplateHTML:: Template not found');
+				return '';
+			}
+			rawHTML = window.kalturaIframePackageData.templates[ partialName ];
+		}
+		var transformedHTML = mw.util.tmpl( rawHTML, settings );
+
+		return transformedHTML;
 	},
 	handleClick: function( e, data ){
 
