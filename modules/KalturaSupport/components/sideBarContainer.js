@@ -161,6 +161,9 @@
 				//If topbar exist then add top value
 				this.getComponent().css('top', this.getPlayer().getTopBarContainer().height());
 				this.getComponentReminder().css('top', this.getPlayer().getTopBarContainer().height());
+			} else {
+				this.getComponent().css('top', 0);
+				this.getComponentReminder().css('top', 0);
 			}
 			this.getComponent().css('height', height);
 		},
