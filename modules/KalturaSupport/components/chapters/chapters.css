@@ -84,6 +84,11 @@
     right: 0;
 }
 
+.chapters > .footer span.toggleAll.disabled {
+    color: rgba(0,0,0,0.35);
+    cursor: default;
+}
+
 .chapters > .k-chapters-container .chapterDivider{
     width: 1px;
     background: #aaa;

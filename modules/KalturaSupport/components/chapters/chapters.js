@@ -40,6 +40,7 @@
 		inSlideAnimation: false,
 		barsMinimized: false,
 		searchResultShown: false,
+		chapterToggleEnabled: true,
 
 		setup: function () {
 			this.addBindings();
@@ -323,15 +324,19 @@
 			return newWidth;
 		},
 		disableChapterToggle: function(){
+			this.chapterToggleEnabled = false;
 			this.getMediaListDomElements()
 				.filter(".chapterBox")
 				.addClass("disableChapterToggle" )
 				.attr("data-chapter-collapsed", true);
+			this.getMedialistFooterComponent().find(".toggleAll").addClass("disabled");
 		},
 		enableChapterToggle: function(){
+			this.chapterToggleEnabled = true;
 			this.getMediaListDomElements()
 				.filter(".chapterBox")
 				.removeClass("disableChapterToggle");
+			this.getMedialistFooterComponent().find(".toggleAll").removeClass("disabled");
 		},
 		markMediaItemsAsDisplayed: function (mediaItems) {
 			$.each(mediaItems, function (index, item) {
@@ -874,15 +879,17 @@
 			this.getMedialistFooterComponent()
 				.find(".toggleAll" )
 				.off("click").on("click", function(){
-					var chapters = _this.getMediaListDomElements().filter(".chapterBox");
-					var collapsedChapters = chapters.filter("[data-chapter-collapsed=true]");
-					var expandedChapters = chapters.filter("[data-chapter-collapsed=false]");
-					if (chapters.length === collapsedChapters.length || chapters.length === expandedChapters.length){
-						_this.toggleChapter(chapters);
-					} else if (collapsedChapters.length >= expandedChapters.length){
-						_this.toggleChapter(expandedChapters);
-					} else {
-						_this.toggleChapter(collapsedChapters);
+					if (_this.chapterToggleEnabled) {
+						var chapters = _this.getMediaListDomElements().filter( ".chapterBox" );
+						var collapsedChapters = chapters.filter( "[data-chapter-collapsed=true]" );
+						var expandedChapters = chapters.filter( "[data-chapter-collapsed=false]" );
+						if ( chapters.length === collapsedChapters.length || chapters.length === expandedChapters.length ) {
+							_this.toggleChapter( chapters );
+						} else if ( collapsedChapters.length >= expandedChapters.length ) {
+							_this.toggleChapter( expandedChapters );
+						} else {
+							_this.toggleChapter( collapsedChapters );
+						}
 					}
 				});
 
