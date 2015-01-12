@@ -1583,9 +1583,10 @@
 			// Empty out embedPlayer object sources
 			this.emptySources();
 
+			// Reset first play to true, to count that play event
+			this.firstPlay = true;
+
 			if (resetPlaybackValues || resetPlaybackValues === undefined) {
-				// Reset first play to true, to count that play event
-				this.firstPlay = true;
 				// reset donePlaying count on change media.
 				this.donePlayingCount = 0;
 				this.triggeredEndDone = false;
