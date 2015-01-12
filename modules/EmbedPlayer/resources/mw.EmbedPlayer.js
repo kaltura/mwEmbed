@@ -3058,9 +3058,10 @@
 			}
 		},
 
-		handlePlayerError: function (data) {
-			if (this.shouldHandlePlayerError) {
-				this.showErrorMsg({ title: this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'), message: this.getKalturaMsg('ks-CLIP_NOT_FOUND') });
+		handlePlayerError: function (data, shouldHandlePlayerError) {
+			if (this.shouldHandlePlayerError || shouldHandlePlayerError) {
+				var message = data ? data : this.getKalturaMsg('ks-CLIP_NOT_FOUND');
+				this.showErrorMsg({ title: this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'), message: message });
 			}
 		},
 
