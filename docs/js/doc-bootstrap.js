@@ -107,7 +107,11 @@ if( typeof kWidget != 'undefined' && kWidget.addReadyCallback ){
 					( new Date().getTime() - kdocPlayerStartTime )/1000 + 
 					'</i> seconds</span></div>'
 			);
-
+			kdocTimePerPlayer[ pId ] = ( new Date().getTime() - kdocPlayerStartTime )/1000;
+			// note kUnbind seems to unbind all mediaReady
+			$( '#' + pId )[0].kUnbind(".pTimeReady");
+			$('body').append( '<div class="kdocPlayerRenderTime" style="clear:both;"><span style="font-size:11px;">' + pId + ' ready in: <i>' + 
+					kdocTimePerPlayer[ pId ] + '</i> seconds</span></div>');
 			if( document.URL.indexOf( 'noparent=') === -1 && parent && parent.sycnIframeContentHeight ){
 				parent.sycnIframeContentHeight();
 			}
