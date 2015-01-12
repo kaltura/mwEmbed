@@ -784,7 +784,12 @@
 				this.sourcesReplaced = false;
 			}
 			// Autoseletct the media source
-			this.mediaElement.autoSelectSource();
+			var baseTimeOptions =  {
+				'supportsURLTimeEncoding': this.supportsURLTimeEncoding(),
+				'startTime' :this.startTime,
+				'endTime': this.pauseTime
+			};
+			this.mediaElement.autoSelectSource(baseTimeOptions);
 
 			// Auto select player based on default order
 			if (this.mediaElement.selectedSource) {
@@ -2808,7 +2813,12 @@
 				mw.log("EmbedPlayer::getCompatibleSource: add " + source.src + ' of type:' + source.type);
 			});
 			var myMediaElement = new mw.MediaElement($media[0]);
-			var source = myMediaElement.autoSelectSource();
+			var baseTimeOptions =  {
+				'supportsURLTimeEncoding': this.supportsURLTimeEncoding(),
+				'startTime' :this.startTime,
+				'endTime': this.pauseTime
+			};
+			var source = myMediaElement.autoSelectSource(baseTimeOptions);
 			if (source) {
 				mw.log("EmbedPlayer::getCompatibleSource: " + source.getSrc());
 				return source;
