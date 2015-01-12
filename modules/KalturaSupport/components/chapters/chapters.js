@@ -75,6 +75,10 @@
 						//Create media items from raw data
 						_this.addMediaItems( chaptersRawData );
 						_this.markMediaItemsAsDisplayed( _this.mediaList );
+						//If no chapters then disable chapter toggling
+						if (_this.chaptersMap.length === 0){
+							_this.disableChapterToggle();
+						}
 						//Need to recalc all durations after we have all the items startTime values
 						_this.setMediaItemTime();
 						//Set data initialized flag for handlers to start working
