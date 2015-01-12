@@ -67,7 +67,11 @@
 					setTimeout(function(){
 						if (_this.render) {
 							_this.getComponent().show();
-							_this.configMediaListFeatures();
+							if (_this.getTemplateData().length) {
+								_this.configMediaListFeatures();
+							} else {
+								_this.renderMediaList();
+							}
 							_this.setSelectedMedia( _this.selectedMediaItemIndex );
 						} else {
 							_this.getComponent().hide();
