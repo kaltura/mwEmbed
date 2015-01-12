@@ -69,10 +69,6 @@
 			'chromecastDeviceDisConnected'
 		],
 
-		nativeActions: [
-			'share',
-			'openHomePage'
-		],
 		// Native player supported feature set
 		supports: {
 			'playHead': true,
@@ -347,9 +343,6 @@
 			this.getPlayerElement().doNativeAction();
 		},
 
-		nativeActionType: function (actionName) {
-			return $.inArray(actionName, this.nativeActions);
-		},
 
 		isNativeApp: function () {
 			return mw.getConfig("EmbedPlayer.ForceNativeComponent");
