@@ -143,6 +143,7 @@
 				this.getComponent().addClass( 'openBtn' );
 				// Trigger the screen overlay with layout info:
 				this.getPlayer().triggerHelper( 'onShowSideBar');
+				this.getPlayer().triggerHelper('clearTooltip');
 				this.getPlayer().triggerHelper( 'onComponentsHoverDisabled');
 			}
 		},
@@ -152,6 +153,7 @@
 			this.getComponentReminder().removeClass( 'shifted' );
 			// Allow interface items to update:
 			this.getPlayer().triggerHelper('onHideSideBar');
+			this.getPlayer().triggerHelper('clearTooltip');
 			this.getPlayer().triggerHelper( 'onComponentsHoverEnabled');
 		},
 		setHeight: function(){
@@ -190,7 +192,7 @@
 				// Add control bar
 
 				this.$elHelper = $('<div>' )
-					.addClass( 'sideBarContainerReminder ' + _this.getConfig('position') )
+					.addClass( 'sideBarContainerReminder tooltipBelow ' + _this.getConfig('position') )
 					.prop("title", gM("ks-sidebar-toggleBtn"))
 					.attr("data-show-tooltip", true)
 					.append($('<div id="sideBarContainerReminderContainer">' )
