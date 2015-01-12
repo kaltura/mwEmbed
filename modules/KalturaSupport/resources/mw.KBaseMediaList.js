@@ -67,7 +67,11 @@
 					setTimeout(function(){
 						if (_this.render) {
 							_this.getComponent().show();
-							_this.renderMediaList();
+							if (_this.getTemplateData().length) {
+								_this.configMediaListFeatures();
+							} else {
+								_this.renderMediaList();
+							}
 							_this.setSelectedMedia( _this.selectedMediaItemIndex );
 						} else {
 							_this.getComponent().hide();
@@ -94,7 +98,7 @@
 				}
 			});
 
-			this.bind("onShowSidelBar", function(){
+			this.bind("onShowSideBar", function(){
 				if (_this.checkAddScroll()){
 					_this.getScrollComponent().nanoScroller( {
 						flash: true,
@@ -582,11 +586,11 @@
 
 				var width = this.getMedialistComponent().width();
 				var scrollHeight = this.getConfig( "mediaItemHeight" ) || width * (1 / this.getConfig("mediaItemRatio"));
+				scrollHeight *= 1/2;
 
 				var options = {
 					flash: true,
 					preventPageScrolling: true,
-					iOSNativeScrolling: true,
 					sliderMaxHeight: scrollHeight
 				} ;
 				var _this = this;

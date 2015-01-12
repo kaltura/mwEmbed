@@ -411,7 +411,11 @@ mw.PlayerLayoutBuilder.prototype = {
 		var _this = this;
 		this.embedPlayer.bindHelper( 'layoutBuildDone', function(){
 			_this.setupTooltip()
-			_this.setupTooltip(_this.getInterface().find(".tooltipBelow"), "arrowTop")
+			_this.setupTooltip(_this.getInterface().find(".tooltipBelow"), "arrowTop");
+		});
+		//Remove tooltip on UI state changes
+		this.embedPlayer.bindHelper( 'hidePlayerControls clearTooltip', function(){
+			_this.getInterface().siblings(".ui-tooltip").remove();
 		});
 	},
 	setupTooltip: function(elm, arrowDirection){

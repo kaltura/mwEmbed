@@ -40,6 +40,55 @@
 .touch  .chapters > .k-chapters-container .k-medialist-header{
     height: 48px;
 }
+.chapters > .footer{
+    height: 40px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    display: table;
+    z-index: 10;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0, M12=0, M21=0, M22=0, SizingMethod='auto expand')";
+    -webkit-transition: -webkit-transform 0.25s ease-out;
+    -moz-transition: -moz-transform 0.25s ease-out;
+    -ms-transition: -ms-transform 0.25s ease-out;
+    transition: transform 0.25s ease-out;
+}
+.chapters > .footer.minimized{
+    -webkit-transform: scale(0);
+    -moz-transform: scale(0);
+    -ms-transform: scale(0);
+    transform: scale(0);
+}
+.touch  .chapters > .footer{
+    height: 48px;
+}
+.chapters > .footer > .footerWrapper{
+    height: 100%;
+    width: 100%;
+    background-color: rgb(245, 245, 245);
+    overflow: hidden;
+    text-align: center;
+    vertical-align: middle;
+    display: table-cell;
+}
+.chapters > .footer span{
+    width: 24px;
+    display: inline-block;
+    color: rgb(0,0,0);
+    font-size: 24px;
+    margin: 0px 5px;
+    cursor: pointer;
+}
+.chapters > .footer span.toggleAll {
+    position: absolute;
+    right: 0;
+}
+
+.chapters > .footer span.toggleAll.disabled {
+    color: rgba(0,0,0,0.35);
+    cursor: default;
+}
+
 .chapters > .k-chapters-container .chapterDivider{
     width: 1px;
     background: #aaa;
@@ -157,15 +206,22 @@
 }
 
 .chapterBox.collapsed .slideBoxToggle{
-    border-color: #c2c2c2 transparent transparent transparent;
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    transform: rotate(-90deg);
 }
 .chapterBox .slideBoxToggle{
-    border-style: solid;
-    border-width: 40px 40px 0 0;
-    border-color: transparent #c2c2c2 transparent transparent;
     position: absolute;
     bottom: 0;
     right: 0;
+    margin: 0 20px 12px 0;
+    font-size: 30px;
+    -webkit-transition: -webkit-transform 0.5s ease-out;
+    -moz-transition: -moz-transform 0.5s ease-out;
+    -ms-transition: -ms-transform 0.5s ease-out;
+    transition: transform 0.5s ease-out;
 }
 
 .chapterBox.disableChapterToggle .slideBoxToggle{
@@ -173,10 +229,10 @@
 }
 
 .slideBox{
-    -webkit-transition-property: all .5s cubic-bezier(0, 1, 0.5, 1);
-    -moz-transition-property: all .5s cubic-bezier(0, 1, 0.5, 1);
-    -ms-transition-property: all .5s cubic-bezier(0, 1, 0.5, 1);
-    transition: all .5s cubic-bezier(0, 1, 0.5, 1);
+    -webkit-transition: -webkit-transform .5s cubic-bezier(0, 1, 0.5, 1);
+    -moz-transition: -moz-transform .5s cubic-bezier(0, 1, 0.5, 1);
+    -ms-transition: -ms-transform .5s cubic-bezier(0, 1, 0.5, 1);
+    transition: transform .5s cubic-bezier(0, 1, 0.5, 1);
 }
 .slideBox.collapsed{
     -webkit-transform: translateX(-100%);
@@ -340,6 +396,9 @@
     padding: 2px;
     width: 11px;
 }
+.touch .nano-pane   {
+    display: none !important;
+}
 .nano > .nano-pane:hover, .nano-pane:active {
     cursor: pointer;
     width: 14px;
@@ -487,7 +546,7 @@ input#searchBox::-ms-clear {
 .touch .tt-suggestion {
     height: 44px;
 }
-.tt-suggestion {
+.tt-suggestion, .empty-message {
     display: block;
     padding: 3px 20px;
     clear: both;

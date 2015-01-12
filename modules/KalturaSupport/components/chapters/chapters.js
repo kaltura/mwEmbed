@@ -31,11 +31,16 @@
 		},
 
 		mediaList: [], //Hold the medialist items
-		cache: [], //Hold the search data cache
+		cache: {}, //Hold the search data cache
 		dataSet: null, //Hold current dataset returnd from API
 		renderOnData: false, //Indicate if to wait for data before rendering layout
 		freezeTimeIndicators: false,
 		chaptersMap: [],
+		activeItem: 0,
+		inSlideAnimation: false,
+		barsMinimized: false,
+		searchResultShown: false,
+		chapterToggleEnabled: true,
 
 		setup: function () {
 			this.addBindings();
@@ -70,6 +75,10 @@
 						//Create media items from raw data
 						_this.addMediaItems( chaptersRawData );
 						_this.markMediaItemsAsDisplayed( _this.mediaList );
+						//If no chapters then disable chapter toggling
+						if (_this.chaptersMap.length === 0){
+							_this.disableChapterToggle();
+						}
 						//Need to recalc all durations after we have all the items startTime values
 						_this.setMediaItemTime();
 						//Set data initialized flag for handlers to start working
@@ -138,6 +147,7 @@
 						_this.renderOnData = true;
 					}
 					_this.renderSearchBar();
+					_this.renderBottomBar();
 				}
 			});
 
@@ -226,6 +236,20 @@
 				mediaList: data.mediaList
 			});
 		},
+		getMetaData: function(){
+			var metaData = this._super();
+			metaData.titles = {
+				chapterNumber: gM("ks-chapters-chapterNumber"),
+				chapterStartTime: gM("ks-chapters-chapter-start-time"),
+				chapterDuration: gM("ks-chapters-chapter-duration"),
+				chapterToggle: gM("ks-chapters-toggle-chapter"),
+				slideNumber: gM("ks-chapters-slideNumber"),
+				slideStartTime: gM("ks-chapters-slide-start-time"),
+				slideDuration: gM("ks-chapters-slide-duration"),
+
+			};
+			return metaData;
+		},
 		addMediaItems: function (items) {
 			var _this = this;
 
@@ -304,10 +328,19 @@
 			return newWidth;
 		},
 		disableChapterToggle: function(){
-			this.getMediaListDomElements().filter(".chapterBox").addClass("disableChapterToggle").attr("data-chapter-collapsed", true);
+			this.chapterToggleEnabled = false;
+			this.getMediaListDomElements()
+				.filter(".chapterBox")
+				.addClass("disableChapterToggle" )
+				.attr("data-chapter-collapsed", true);
+			this.getMedialistFooterComponent().find(".toggleAll").addClass("disabled");
 		},
 		enableChapterToggle: function(){
-			this.getMediaListDomElements().filter(".chapterBox").removeClass("disableChapterToggle");
+			this.chapterToggleEnabled = true;
+			this.getMediaListDomElements()
+				.filter(".chapterBox")
+				.removeClass("disableChapterToggle");
+			this.getMedialistFooterComponent().find(".toggleAll").removeClass("disabled");
 		},
 		markMediaItemsAsDisplayed: function (mediaItems) {
 			$.each(mediaItems, function (index, item) {
@@ -445,8 +478,7 @@
 							'data-show-tooltip': true
 						} )
 						.on( "click touchend", function () {
-							$( "#searchBox" ).val( "" ).focus();
-							$( '#searchBox' ).typeahead( "val", "" ).typeahead( "close" );
+							$( '#searchBox' ).typeahead( "val", "" ).typeahead( "close" ).focus();
 							$( "#searchBoxCancelIcon" ).removeClass("active");
 							$( "#searchBoxIcon" ).removeClass("active");
 							_this.resetSearchResults();
@@ -471,8 +503,8 @@
 						substrRegex = new RegExp( regexExp, 'i' );
 						// iterate through the pool of strings and for any string that
 						// contains the substring `q`, add it to the `matches` array
-						$.each( strs, function ( i, str ) {
-							if ( substrRegex.test( str.data ) ) {
+						$.each( strs, function ( index, str ) {
+							if ( substrRegex.test( str ) ) {
 								// the typeahead jQuery plugin expects suggestions to a
 								// JavaScript object, refer to typeahead docs for more info
 								matches.push( { value: str } );
@@ -483,19 +515,19 @@
 				};
 
 				// Helper function for parsing search result length
-				var parseData = function ( obj, searchTerm ) {
-					var startOfMatch = obj.value.data.toLowerCase().indexOf( searchTerm.toLowerCase() );
+				var parseData = function ( data, searchTerm ) {
+					var startOfMatch = data.toLowerCase().indexOf( searchTerm.toLowerCase() );
 					if ( startOfMatch > -1 ) {
 						var expLen = searchTerm.length;
-						var dataLen = obj.value.data.length;
+						var dataLen = data.length;
 						var restOfExpLen = dataLen - (startOfMatch + expLen);
 						var hintLen = Math.floor( restOfExpLen * 0.2 );
 						if (hintLen === 0 || hintLen/dataLen > 0.7 || hintLen < 40){
 							hintLen = restOfExpLen;
 						}
-						return obj.value.data.substr( startOfMatch, expLen + hintLen );
+						return data.substr( startOfMatch, expLen + hintLen );
 					} else {
-						return obj.value.data;
+						return data;
 					}
 				};
 
@@ -508,23 +540,33 @@
 					{
 						name: 'label',
 						displayKey: function ( obj ) {
-							return parseData( obj, typeahead.val() );
+							return parseData( obj.value, typeahead.val() );
 						},
 						templates: {
 							suggestion: function ( obj ) {
-								return parseData( obj, typeahead.val() );
-							}
+								return parseData( obj.value, typeahead.val() );
+							},
+							empty: [
+								'<div class="empty-message">',
+								gM("ks-chapters-search-empty-result"),
+								'</div>'
+							].join('\n')
 						},
 						source: findMatches
-					} ).
-					on( "typeahead:selected", function ( e, obj ) {
-						_this.showSearchResults( obj.value.id );
-					} ).
-					on( "keyup", function ( event ) {
+					} )
+					.on( "typeahead:selected", function ( e, obj ) {
+						e.preventDefault();
+						e.stopPropagation();
+						_this.showSearchResults( _this.dataSet[obj.value] );
+						return false;
+					} )
+					.on( "keyup", function ( e ) {
+						e.preventDefault();
+						e.stopPropagation();
 						// On enter key press:
 						// 1. If multiple suggestions and none was chosen - display results for all suggestions
 						// 2. Close dropdown menu
-						if ( event.keyCode === 13 ) {
+						if ( e.keyCode === 13 ) {
 							var dropdown = typeahead.data( 'ttTypeahead' ).dropdown;
 							var objIds = [];
 							var suggestionsElms = dropdown._getSuggestions();
@@ -532,37 +574,45 @@
 							if ( suggestionsElms.length ) {
 								suggestionsElms.each( function ( i, suggestionsElm ) {
 									var suggestionsData = dropdown.getDatumForSuggestion( $( suggestionsElm ) );
-									objIds.push( suggestionsData.raw.value.id );
+									objIds = objIds.concat( _this.dataSet[suggestionsData.raw.value] );
 								} );
 								_this.showSearchResults( objIds );
 							}
 							typeahead.typeahead( "close" );
 						}
+
+						return false;
 					}
 				);
 			}
 		},
 		minimizeSearchBar: function(){
 			this.$searchFormWrapper.addClass("minimized");
+			this.getMedialistFooterComponent().addClass("minimized");
+			if (this.scrollUpdateTimeout){
+				clearTimeout(this.scrollUpdateTimeout);
+				this.scrollUpdateTimeout = null;
+			}
+			var _this = this;
+			this.scrollUpdateTimeout = setTimeout(function(){
+				_this.scrollUpdateTimeout = null;
+				_this.setMedialistComponentHeight();
+			}, 100);
+
 		},
 		maximizeSearchBar: function(){
 			this.$searchFormWrapper.removeClass("minimized");
+			this.getMedialistFooterComponent().removeClass("minimized");
+			this.setMedialistComponentHeight();
 		},
 		getSearchData: function(expression, callback){
 			var liveCheck = this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints");
 			// If results are cached then return from cache, unless in live session
-			expression = expression.replace(/^\s+/, '').replace(/\s+$/, '');
+			expression = expression.replace(/^\s+/, '').replace(/\s+$/, '' ).toLowerCase();
 			var cacheExp = expression.substr(0,3);
 			if (!liveCheck && this.cache[cacheExp]){
-				return callback(this.cache[cacheExp]);
-			}
-			// If query length is 3 then clear current dataset and query against API again
-			if (expression.length === 3){
-				this.dataSet = null;
-			}
-			// If query length greater then 3 chars then don't query API anymore - use initial dataset
-			if (expression.length > 3 && this.dataSet){
-				return callback(this.dataSet);
+				this.dataSet = this.cache[cacheExp].hash;
+				return callback(this.cache[cacheExp].sortedKeys);
 			}
 
 			var _this = this;
@@ -584,28 +634,37 @@
 						return;
 					}
 					// Validate result
-					var results = [];
+					var results = {
+						hash: {},
+						sortedKeys: []
+					};
+
 					$.each(data.objects, function (index, res) {
 						if (!_this.isValidResult(res)) {
 							data[index] = null;
 						}
 
-						results.push(
-							{
-								id: res.id,
-								data: res.title
-							},{
-								id: res.id,
-								data: res.description
-							}
-						);
-					});
+						var searchData = [res.title, res.description];
+						var tags = res.tags.split(",");
+						tags = $.grep(tags,function(n){ return(n); });
 
-					_this.dataSet = results;
+						searchData = searchData.concat(tags);
+						$.each(searchData, function(index, data){
+							if (results.hash[data]) {
+								results.hash[data].push(res.id);
+							} else {
+								results.hash[data] = [res.id];
+								results.sortedKeys.push(data);
+							}
+						});
+					});
+					results.sortedKeys.sort();
+
+					_this.dataSet = results.hash;
 					_this.cache[expression] = results;
 
 					if (callback) {
-						callback(results);
+						callback(results.sortedKeys);
 					}
 				}
 			);
@@ -617,29 +676,45 @@
 			}
 			this.disableChapterToggle();
 			var mediaBoxes = this.getMediaListDomElements();
+
 			mediaBoxes.each(function(i, mediaBox){
-				var objId = $(mediaBox).attr("data-obj-id");
+				var mediaBoxObj = $(mediaBox);
+				var objId = mediaBoxObj.attr("data-obj-id");
 				if ( $.inArray(objId, searchResults) > -1){
-					var mediaBoxObj = $(mediaBox);
-					mediaBoxObj.removeClass("resultNoMatch collapsed");
+					mediaBoxObj.removeClass("resultNoMatch");
 				} else{
-					$(mediaBox).addClass("resultNoMatch");
+					mediaBoxObj.addClass("resultNoMatch collapsed");
 				}
 			});
-			//Recalac scroller height
-			this.renderScroller();
+			var _this = this;
+
+			//Remove search results slide collapsed state
+			var slidesSearchResults = mediaBoxes.filter(":not(.resultNoMatch).slideBox.collapsed");
+			_this.inSlideAnimation = slidesSearchResults.length ? true : false;
+			if (_this.inSlideAnimation) {
+				_this.transitionsToBeFired = slidesSearchResults.length;
+				_this.initSlideAnimation( slidesSearchResults );
+				slidesSearchResults.removeClass("collapsed");
+			}
 		},
 		resetSearchResults: function(){
 			if (this.searchResultShown) {
 				this.searchResultShown = false;
 				this.enableChapterToggle();
 				var mediaBoxes = this.getMediaListDomElements();
-				mediaBoxes.removeClass( "resultNoMatch" );
-				mediaBoxes.filter("[data-chapter-index!=-1]").addClass( "collapsed" );
-				//Recalac scroller height
-				this.renderScroller();
+				//Remove search results slide collapsed state
+				var slidesSearchResults = mediaBoxes.filter(":not(.resultNoMatch.collapsed).slideBox");
+				this.inSlideAnimation = slidesSearchResults.length ? true : false;
+				this.transitionsToBeFired = slidesSearchResults.length;
+				slidesSearchResults.addClass("collapsed");
+				mediaBoxes.filter(".chapterBox" ).addClass( "resultNoMatch" );
+				this.doOnSlideAnimationEnded(function() {
+					mediaBoxes.removeClass( "resultNoMatch" );
+					var chapters = this.getMediaListDomElements().filter( ".chapterBox" );
+					var expandedChapters = chapters.filter( "[data-chapter-collapsed=false]" );
+					this.toggleChapter( expandedChapters );
+				});
 			}
-
 		},
 		renderScroller: function(options){
 			if (this.$scroll){
@@ -652,6 +727,20 @@
 				}
 				this.$scroll.find(".nano-content" ).css("z-index", "");
 			}
+		},
+		getMedialistFooterComponent: function(){
+			if (!this.$bottomBar){
+				this.$bottomBar = $("<div/>", {"class": "footer"});
+				this.getComponent().append(this.$bottomBar);
+			}
+			return this.$bottomBar;
+		},
+		renderBottomBar: function(){
+			this.getMedialistFooterComponent().empty();
+			var bottomBar = $("<div/>", {"class": "footerWrapper"} )
+				.append($("<span/>", {"class": "slideLocator icon-locator", "title": gM("ks-chapters-locate-active-media")}))
+				.append($("<span/>", {"class": "toggleAll icon-toggleAll", "title": gM("ks-chapters-toggle-all-chapter")}));
+			this.getMedialistFooterComponent().append(bottomBar);
 		},
 		isValidResult: function (data) {
 			// Check if we got error
@@ -676,23 +765,35 @@
 		},
 		doOnScrollerUpdate: function(data){
 			//If maximum scroll has changed then reset last position
-			if (this.maximumScroll !== data.maximum){
-				this.lastPosition = data.position;
+			if (this.maximumScroll !== data.maximum ||
+				this.previousDirection !== data.direction){
+				this.lastScrollPosition = data.position;
 			}
+			//Save data for comparison on next iteration
 			this.maximumScroll = data.maximum;
-			if (data.direction === "up"){
-				//On up maximize searchbar
-				this.maximizeSearchBar();
-				//Reset last location of scroll bar
-				this.lastPosition = -1;
-			} else {
-				//On scroll down minimize searchbar after 10% scroll from max scroll height
-				if (this.lastPosition === -1){
-					//Set initial location of scroll bar
-					this.lastPosition = data.position;
+			this.previousDirection = data.direction;
+			//Set anchor position after maximize/minimize was performed
+			if (this.lastScrollPosition === -1){
+				//Set initial location of scroll bar
+				this.lastScrollPosition = data.position;
+			}
+			if ((data.direction === "up") || (data.position === 0)){
+				//On scroll up maximize searchbar after 10% scroll from max scroll height
+				//or when scroll to top
+				if (this.barsMinimized && ((this.lastScrollPosition - data.position) / this.maximumScroll) > 0.1){
+					this.barsMinimized = false;
+					this.maximizeSearchBar();
+					this.lastScrollPosition = -1;
 				}
-				if (((data.position - this.lastPosition) / this.maximumScroll) > 0.1){
+			} else {
+				//On scroll down minimize searchbar after 20% scroll from max scroll height
+				//or when scroll to bottom
+				if ((!this.barsMinimized &&
+					((data.position - this.lastScrollPosition) / this.maximumScroll) > 0.2) ||
+					(data.position === data.maximum)){
+					this.barsMinimized = true;
 					this.minimizeSearchBar();
+					this.lastScrollPosition = -1;
 				}
 			}
 			//Remove focus from searchbox to enable maximize on focus
@@ -702,11 +803,13 @@
 		updateActiveItem: function () {
 			if (!this.freezeTimeIndicators) {
 				// search chapter for current active
-				var activeIndex = 0;
+				var _this = this;
+				var activeChapterIndex = 0;
 				var time = this.getPlayer().currentTime;
-				$.each( this.chaptersMap, function ( inx, item ) {
-					if ( time > ( item.data.startTime ) ) {
-						activeIndex = item.data.order;
+				$.each( this.mediaList, function ( inx, item ) {
+					if ( time > ( item.startTime ) ) {
+						activeChapterIndex = (item.chapterNumber !== -1) ? _this.chaptersMap[item.chapterNumber].data.order : -1;
+						_this.activeItem = item.order;
 					}
 				} );
 
@@ -714,12 +817,12 @@
 				// Check if active is not already set:
 				var item;
 				var endTime;
-				if ( actualActiveIndex === activeIndex ) {
+				if ( actualActiveIndex === activeChapterIndex ) {
 					// update duration count down:
-					item = this.mediaList[ activeIndex ];
+					item = this.mediaList[ activeChapterIndex ];
 					if ( item ) {
 						if ( !item.active ) {
-							this.setSelectedMedia( activeIndex );
+							this.setSelectedMedia( activeChapterIndex );
 							item.active = true;
 						}
 						endTime = item.endTime;
@@ -742,8 +845,8 @@
 					// restore skip pause flag:
 					this.skipPauseFlag = false;
 
-					if ( this.mediaList[ activeIndex ] ) {
-						this.setSelectedMedia( activeIndex );
+					if ( this.mediaList[ activeChapterIndex ] ) {
+						this.setSelectedMedia( activeChapterIndex );
 					}
 				}
 			}
@@ -752,48 +855,123 @@
 			var _this = this;
 			this._super();
 			var delay = 0.1;
-			var transitionsToBeFired = 0;
-			var animationSupported = mw.getConfig( 'EmbedPlayer.AnimationSupported');
+			this.transitionsToBeFired = 0;
 			var slideBoxes = this.getComponent().find(".slideBox" );
 			slideBoxes.on('transitionend webkitTransitionEnd', function(e){
 				var $target = $( e.target ); // target letter transitionend fired on
 				if ( /transform/i.test( e.originalEvent.propertyName ) ) { // check event fired on "transform" prop
-					transitionsToBeFired -= 1;
+					_this.transitionsToBeFired -= 1;
+					_this.transitionsToBeFired = _this.transitionsToBeFired < 0 ? 0 : _this.transitionsToBeFired;
 					$target.css( {transitionDelay: '0ms'} ); // set transition delay to 0 so when 'dropped' class is removed, letter appears instantly
-					if ( !transitionsToBeFired ) { // all transitions on characters have completed?
+					if ( _this.transitionsToBeFired === 0 ) { // all transitions on characters have completed?
 						delay = 0.1;
 						_this.renderScroller({stop: false});
+						_this.inSlideAnimation = false;
+						_this.getPlayer().triggerHelper("slideAnimationEnded");
 					}
 				}
 			});
 
 			this.getComponent().find(".slideBoxToggle")
-				.on("click", function(e){
+				.off("click").on("click", function(e){
 					e.stopPropagation();
-					var toggleChapter = $( this ).parent();
-					toggleChapter.toggleClass( "collapsed" );
-					var chapterToggleId = parseInt( toggleChapter.attr( "data-chapter-index" ), 10 );
-					var targets = _this.getComponent().find( ".slideBox[data-chapter-index=" + chapterToggleId + "]" );
-					transitionsToBeFired = targets.length;
-					_this.renderScroller({stop: true});
-					if (toggleChapter.attr("data-chapter-collapsed") === "true") {
-						toggleChapter.attr("data-chapter-collapsed", false);
-						delay = 0.1;
-						if (animationSupported) {
-							targets.each( function () {
-								$( this ).css( {transitionDelay: delay + 's'} ); // apply sequential trans delay to each character
-								delay += 0.1;
-							} );
-						} else {
-							setTimeout(function(){
-								_this.renderScroller({stop: false});
-							}, 500);
-						}
-					} else {
-						toggleChapter.attr("data-chapter-collapsed", true);
-					}
-					targets.toggleClass( "collapsed" );
+					var chapter = $( this ).parent();
+					_this.toggleChapter(chapter);
 				});
+
+			this.getMedialistFooterComponent()
+				.find(".toggleAll" )
+				.off("click").on("click", function(){
+					if (_this.chapterToggleEnabled) {
+						var chapters = _this.getMediaListDomElements().filter( ".chapterBox" );
+						var collapsedChapters = chapters.filter( "[data-chapter-collapsed=true]" );
+						var expandedChapters = chapters.filter( "[data-chapter-collapsed=false]" );
+						if ( chapters.length === collapsedChapters.length || chapters.length === expandedChapters.length ) {
+							_this.toggleChapter( chapters );
+						} else if ( collapsedChapters.length >= expandedChapters.length ) {
+							_this.toggleChapter( expandedChapters );
+						} else {
+							_this.toggleChapter( collapsedChapters );
+						}
+					}
+				});
+
+			this.getMedialistFooterComponent()
+				.find(".slideLocator" )
+				.off("click").on("click", function(){
+					_this.scrollToCurrent(_this.activeItem);
+				});
+		},
+		toggleChapter: function(chapters){
+			var _this = this;
+			$.each(chapters, function(index, chapter){
+				chapter = $(chapter);
+				chapter.toggleClass( "collapsed" );
+				var chapterToggleId = parseInt( chapter.attr( "data-chapter-index" ), 10 );
+				var targets = _this.getComponent().find( ".slideBox[data-chapter-index=" + chapterToggleId + "]" );
+				_this.renderScroller({stop: true});
+				_this.inSlideAnimation = true;
+				_this.transitionsToBeFired = targets.length;
+				if (chapter.attr("data-chapter-collapsed") === "true") {
+					chapter.attr("data-chapter-collapsed", false);
+					_this.initSlideAnimation(targets);
+					targets.removeClass( "collapsed" );
+				} else {
+					chapter.attr("data-chapter-collapsed", true);
+					targets.addClass( "collapsed" );
+				}
+			});
+		},
+		initSlideAnimation: function(slides){
+			var _this = this;
+			var delay = 0.1;
+			if (mw.getConfig( 'EmbedPlayer.AnimationSupported')) {
+				slides.each( function () {
+					$( this ).css( {transitionDelay: delay + 's'} ); // apply sequential trans delay to each character
+					delay += 0.1;
+				} );
+			} else {
+				setTimeout(function(){
+					_this.inSlideAnimation = false;
+					_this.renderScroller({stop: false});
+					_this.getPlayer().triggerHelper("slideAnimationEnded");
+				}, 500);
+			}
+		},
+		scrollToCurrent: function(index){
+			var item = this.mediaList[index];
+			var _this = this;
+			if (item) {
+				this.resetSearchResults();
+				this.doOnSlideAnimationEnded(function(){
+					var mediaBox = _this.getMediaListDomElements()
+						.filter( ".mediaBox[data-mediaBox-index=" + item.order + "]" );
+					if ( item.type === mw.KCuePoints.THUMB_SUB_TYPE.SLIDE ) {
+						if ( item.hasParent ) {
+							if ( mediaBox.hasClass( "collapsed" ) ) {
+								var chapter = _this.getMediaListDomElements()
+									.filter( ".chapterBox[data-chapter-index=" + item.chapterNumber + "]" );
+								_this.toggleChapter( chapter );
+							}
+						}
+					}
+					_this.doOnSlideAnimationEnded(function(){
+						_this.lastScrollPosition = -1;
+						_this.$scroll.nanoScroller( { scrollTo: mediaBox, flash: true } );
+					});
+				});
+			}
+		},
+		doOnSlideAnimationEnded: function(fn, prefix){
+			if (this.inSlideAnimation){
+				var _this = this;
+				this.bind("slideAnimationEnded", function(){
+					_this.unbind("slideAnimationEnded");
+					fn.apply(_this);
+				});
+			} else {
+				fn.apply(this);
+			}
 		}
 	}));
 })(window.mw, window.jQuery);

@@ -74,14 +74,7 @@
 					_this.getConfig("minDisplayHeight") <= _this.getPlayer().getHeight())){
 					_this.render = true;
 					//Sidebar height is player height without the top and bottom bars
-					var height = _this.getPlayer().getHeight() - _this.getPlayer().getControlBarContainer().height();
-					if (_this.getPlayer().getTopBarContainer().length){
-						height -= _this.getPlayer().getTopBarContainer().height();
-						//If topbar exist then add top value
-						_this.getComponent().css('top', _this.getPlayer().getTopBarContainer().height());
-						_this.getComponentReminder().css('top', _this.getPlayer().getTopBarContainer().height());
-					}
-					_this.getComponent().css('height', height);
+					_this.setHeight();
 					_this.show();
 				} else {
 					_this.render = false;
@@ -96,6 +89,7 @@
 				}
 			});
 			this.bind( 'layoutBuildDone ended', function(){
+				_this.setHeight();
 				_this.show();
 			});
 
@@ -148,7 +142,8 @@
 				this.getComponentReminder().addClass( 'shifted' );
 				this.getComponent().addClass( 'openBtn' );
 				// Trigger the screen overlay with layout info:
-				this.getPlayer().triggerHelper( 'onShowSidelBar');
+				this.getPlayer().triggerHelper( 'onShowSideBar');
+				this.getPlayer().triggerHelper('clearTooltip');
 				this.getPlayer().triggerHelper( 'onComponentsHoverDisabled');
 			}
 		},
@@ -158,7 +153,21 @@
 			this.getComponentReminder().removeClass( 'shifted' );
 			// Allow interface items to update:
 			this.getPlayer().triggerHelper('onHideSideBar');
+			this.getPlayer().triggerHelper('clearTooltip');
 			this.getPlayer().triggerHelper( 'onComponentsHoverEnabled');
+		},
+		setHeight: function(){
+			var height = this.getPlayer().getHeight() - this.getPlayer().getControlBarContainer().height();
+			if (this.getPlayer().getTopBarContainer().length){
+				height -= this.getPlayer().getTopBarContainer().height();
+				//If topbar exist then add top value
+				this.getComponent().css('top', this.getPlayer().getTopBarContainer().height());
+				this.getComponentReminder().css('top', this.getPlayer().getTopBarContainer().height());
+			} else {
+				this.getComponent().css('top', 0);
+				this.getComponentReminder().css('top', 0);
+			}
+			this.getComponent().css('height', height);
 		},
 		getComponent: function(){
 			if( !this.$el ) {
@@ -183,7 +192,9 @@
 				// Add control bar
 
 				this.$elHelper = $('<div>' )
-					.addClass( 'sideBarContainerReminder ' + _this.getConfig('position') )
+					.addClass( 'sideBarContainerReminder tooltipBelow ' + _this.getConfig('position') )
+					.prop("title", gM("ks-sidebar-toggleBtn"))
+					.attr("data-show-tooltip", true)
 					.append($('<div id="sideBarContainerReminderContainer">' )
 						.addClass( 'icon-chapterMenu' )
 					);
