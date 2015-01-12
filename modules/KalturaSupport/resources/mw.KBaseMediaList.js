@@ -568,7 +568,7 @@
 					scroll: 1,
 					speed: speed
 				} );
-				$cc.find('ul').width((this.getMediaItemBoxWidth()+1)*this.mediaList.length);
+				$cc.find('ul').width($cc.find('li').first().outerWidth(true)*this.mediaList.length);
 				$cc.find('.k-carousel').css('width', $cc.width() );
 			}
 		},
