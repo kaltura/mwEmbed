@@ -238,9 +238,8 @@
 			// TODO We really need a "preend" event for thing like this.
 			// So that playlist next clip or other end bindings don't get triggered.
 			embedPlayer.bindHelper( 'ended' + _this.bindPostfix, function( event ){
-				embedPlayer.unbindHelper('ended' + _this.bindPostfix )
 
-				if ( embedPlayer.replayEventCount > 0 && !embedPlayer.adsOnReplay){
+				if ( embedPlayer.isInSequence() || ( embedPlayer.replayEventCount > 0 && !embedPlayer.adsOnReplay) ){
 					return; // don't show postroll ads on replay if the adsOnReplay Flashvar is set to false
 				}
 

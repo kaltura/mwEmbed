@@ -510,7 +510,7 @@
 			mw.log("EmbedPlayer:: disablePlayControls");
 
 			if ( !excludedComponents ) {
-				excludedComponents = ['fullScreenBtn', 'logo'];
+				excludedComponents = ['fullScreenBtn', 'logo', 'volumeControl'];
 				if (mw.getConfig('enableControlsDuringAd')) {
 					excludedComponents.push('playPauseBtn');
 				}
