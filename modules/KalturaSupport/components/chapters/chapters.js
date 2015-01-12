@@ -478,8 +478,7 @@
 							'data-show-tooltip': true
 						} )
 						.on( "click touchend", function () {
-							$( "#searchBox" ).val( "" ).focus();
-							$( '#searchBox' ).typeahead( "val", "" ).typeahead( "close" );
+							$( '#searchBox' ).typeahead( "val", "" ).typeahead( "close" ).focus();
 							$( "#searchBoxCancelIcon" ).removeClass("active");
 							$( "#searchBoxIcon" ).removeClass("active");
 							_this.resetSearchResults();
@@ -554,14 +553,14 @@
 							].join('\n')
 						},
 						source: findMatches
-					} ).
-					on( "typeahead:selected", function ( e, obj ) {
+					} )
+					.on( "typeahead:selected", function ( e, obj ) {
 						e.preventDefault();
 						e.stopPropagation();
 						_this.showSearchResults( _this.dataSet[obj.value] );
 						return false;
-					} ).
-					on( "keyup", function ( e ) {
+					} )
+					.on( "keyup", function ( e ) {
 						e.preventDefault();
 						e.stopPropagation();
 						// On enter key press:
