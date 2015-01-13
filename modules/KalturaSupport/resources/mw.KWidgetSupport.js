@@ -178,10 +178,7 @@ mw.KWidgetSupport.prototype = {
 				if( displayedAcError){
 					return;
 				}
-				embedPlayer.showErrorMsg( { 
-					title: embedPlayer.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), 
-					message: embedPlayer.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) 
-				});
+				embedPlayer.handlePlayerError(data, true);
 			}, 3000);
 		});
 		
