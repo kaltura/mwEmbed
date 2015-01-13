@@ -1215,6 +1215,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'doc' => 'Enable CORS request to support request cookies to secured domains over ajax',
 				'type' => 'boolean',
 				'initvalue' => true
+			),
+			'loadAdsOnPlay' => array(
+				'doc' => 'By default ads are loaded at player startup time. 
+					Setting loadAdsOnPlay to true will load ads only once the user presses play.',
+				'type' => 'boolean',
+				'initvalue' => false
 			)
 		)
 	),
