@@ -291,7 +291,11 @@
 			if (this.getLayout() === "vertical" && (this.getConfig("containerPosition") === "top" || this.getConfig("containerPosition") === "bottom")){
 				this.getMedialistComponent().height(componentHeight);
 			}else{
-				this.getMedialistComponent().height(componentHeight - this.getConfig('horizontalHeaderHeight'));
+				if (this.getLayout() === "vertical"){
+					this.getMedialistComponent().height(componentHeight - this.getMedialistHeaderComponent().height());
+				}else{
+					this.getMedialistComponent().height(this.getConfig("mediaItemHeight"));
+				}
 			}
 		},
 		setMediaBoxesDimensions: function(){
