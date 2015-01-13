@@ -189,7 +189,8 @@
 			if( $('.btn').is(":focus") ){
 				return false;
 			}
-			this.getPlayer().togglePlayback();
+			var notificationName = ( this.getPlayer().isPlaying() ) ? 'doPause' : 'doPlay';
+			this.getPlayer().sendNotification( notificationName );
 			return false;
 		},
 		seek: function( seekType, direction ){
