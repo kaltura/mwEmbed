@@ -17,7 +17,7 @@
 			var _this = this;
 			this.embedPlayer = embedPlayer;
 			
-			// We load dashjs module and its dependencies‎ 
+			// We load dashjs on demand to avoid increasing payload for players that can't play dash. 
 			$.getScript( mw.getMwEmbedPath() + 'modules/EmbedPlayerDash/dash.js/dash.min.js', function(){
 				// setup player bindings
 				_this.bindPlayer()
@@ -27,7 +27,19 @@
 		},
 		isEnvironmentSuported: function(){
 			var ua = navigator.userAgent;
-			// TODO convert to mediaSource api tests ( not user agent based ) 
+			var _this = this;
+			deferred = $.Deferred();
+			if( !this.isUaSupported() ){
+				return false;
+			}
+			this.bind('playerReady', function(){
+				// check if we have sources that can play with dash library:
+				deferred.resolve( _this.getDashUrl() );
+			});
+			mw.log( "Dash:: MediaSource API not present and required for MPEG-Dash playback" )
+			return ;
+		},
+		isEnvironmentSupported: function(){
 			if( /chrome/i.test(ua)) {
 				var uaArray = ua.split(' ');
 				// check chrome browser version >= 26 ( supports mediaSource api )
@@ -35,8 +47,11 @@
 					return true;
 				}
 			}
-			mw.log( "Dash:: MediaSource API not present and required for MPEG-Dash playback" )
-			return ;
+			// Detect IE11:
+			if( !!navigator.userAgent.match(/Trident\/7.0/) && navigator.userAgent.indexOf("rv:11.0") != -1 ){
+				return true;
+			}
+			return false;
 		},
 		getDashJsPath: function(){
 			return mw.getEmbedPlayerPath() + 'modules/Dash/dash.js/dash.min.js';
@@ -54,6 +69,11 @@
 			});
 			// TODO check sources for dash type
 			return ;
+		},
+		getDashUrl: function(){
+			// check for dash content type in media inject override: 
+			
+			// else check if we can build a dash url:
 		},
 		initDashPlayer: function(){
 			var dashUrl = null;
