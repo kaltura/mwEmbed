@@ -1514,13 +1514,18 @@
 		playSegment: function (startTime, endTime) {
 			if (this.supportsURLTimeEncoding()) {
 				this.stop();
-				var newSource = this.mediaElement.autoSelectSource(true, this.startTime, this.pauseTime);
+				var baseTimeOptions =  {
+					'supportsURLTimeEncoding': true,
+					'startTime' :this.startTime,
+					'endTime': this.pauseTime
+				};
+				var newSource = this.mediaElement.autoSelectSource(baseTimeOptions);
 				if (newSource) {
 					this.switchSrc(newSource);
 				}
-				this.currentTime = 0;
-				this.monitor();
-				this.play();
+				if (mw.isIOS8()){
+					this.play();
+				}
 			} else {
 				this.pause();
 				this.currentTime = 0;
