@@ -84,7 +84,7 @@
 }
 
 .chapters > .footer span.toggleAll.disabled {
-    color: rgba(0,0,0,0.35);
+    display: none;
     cursor: default;
 }
 
