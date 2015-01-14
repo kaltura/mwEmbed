@@ -173,7 +173,7 @@
 					}
 				} else {
 					this.$mediaListContainer = $( ".playlistInterface");
-					if (mw.isIOS()){
+					if (mw.isIOS() && (this.getConfig( 'containerPosition' ) == 'top' || this.getConfig( 'containerPosition' ) == 'bottom')){
 						this.$mediaListContainer.height(this.embedPlayer.height);
 					}
 					// resize the video to make place for the playlist according to its position (left, top, right, bottom)
