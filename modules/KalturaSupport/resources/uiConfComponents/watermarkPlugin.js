@@ -8,7 +8,7 @@
 			"img": null,
 			"href": null,
 			"padding": null,
-			"watermarkTimeout": 0
+			"hideTimeout": 0
 		},
 		isSafeEnviornment: function(){
 			return !!this.getConfig('img');
@@ -26,7 +26,7 @@
 				_this.getComponent().show();
 			});
 
-			if( this.getConfig('watermarkTimeout') != 0 ){
+			if( this.getConfig('hideTimeout') != 0 ){
 
 				this.bind('onChangeMediaDone playerReady', function(){
 					_this.getComponent().show();
@@ -64,10 +64,9 @@
 		timeoutWatermark: function(){
 			var _this = this;
 			this.bind('firstPlay', function() {
-				debugger;
 				setTimeout(function () {
 					_this.$el.fadeOut("slow");
-				}, _this.getConfig('watermarkTimeout') * 1000)
+				}, _this.getConfig('hideTimeout') * 1000)
 			});
 		}
 	}));

@@ -810,7 +810,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'initvalue' => 'http://www.kaltura.com/',
 				'type' => 'url'
 			),
-			'watermarkTimeout' => array(
+			'hideTimeout' => array(
 				'label' => 'Watermark display duration',
 				'doc' => "Number of seconds to display the watermark, 0 show always.",
 				'min' => 0, //
