@@ -2,7 +2,7 @@
     <% for ( var i = 0; i < mediaList.length; i++ ) { %>
     <%var mediaItem =  mediaList[i];%>
     <li class="chapterBox mediaBox" data-mediaBox-index="<%=i%>">
-        <% if (meta.layout == "hotizontal") { %> style="width: <%= mediaItem.width %>px " <% } %> >
+        <% if (meta.layout == "hotizontal") { %> style="width: <%= mediaItem.width %>px " <% } %>
         <% if (i > 0) { %>
         <!--div class="chapterDivider"
             <% if (meta.layout == "hotizontal") { %> style="height: <%= mediaItem.thumbnail.height %>px " <% } %> >
