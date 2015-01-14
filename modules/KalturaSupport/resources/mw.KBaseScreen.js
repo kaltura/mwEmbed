@@ -10,6 +10,7 @@
 		$screen: null,
 		templateData: null,
 		iconBtnClass: '',
+		error: false,
 
 		// Returns KBaseComponent config with screen config
 		getBaseConfig: function () {
@@ -40,6 +41,10 @@
 
 					}
 				}
+			}, this));
+
+			this.bind('playerReady', $.proxy(function (e, size) {
+				this.error = false;
 			}, this));
 
 			this.bind('playerSizeClassUpdate', $.proxy(function (e, size) {
@@ -75,31 +80,33 @@
 			}
 		},
 		hideScreen: function () {
-			this.getPlayer().triggerHelper('preHideScreen', [this.pluginName]);
-			if (this.hasPreviewPlayer()) {
-				this.restorePlayer();
-			} else {
-				this.restorePlayback();
+			if (!this.error) {
+				this.getPlayer().triggerHelper( 'preHideScreen', [this.pluginName] );
+				if ( this.hasPreviewPlayer() ) {
+					this.restorePlayer();
+				} else {
+					this.restorePlayback();
+				}
+				if ( this.getPlayer().isPlaying() ) {
+					this.getPlayer().restoreComponentsHover();
+				}
+				this.getScreen().fadeOut( 400 );
 			}
-			if (this.getPlayer().isPlaying()) {
-				this.getPlayer().restoreComponentsHover();
-			}
-			this.getScreen().fadeOut(400);
-
 		},
 		showScreen: function () {
-			this._hideAllScreens(this.pluginName);
-			this.getPlayer().triggerHelper('preShowScreen', [this.pluginName]);
-			if (this.hasPreviewPlayer()) {
-				this.resizePlayer();
-			} else {
-				this.pausePlayback();
+			if (!this.error) {
+				this._hideAllScreens( this.pluginName );
+				this.getPlayer().triggerHelper( 'preShowScreen', [this.pluginName] );
+				if ( this.hasPreviewPlayer() ) {
+					this.resizePlayer();
+				} else {
+					this.pausePlayback();
+				}
+				this.getPlayer().disableComponentsHover();
+				this.getScreen().fadeIn( 400, $.proxy( function () {
+					this.getPlayer().triggerHelper( 'showScreen', [this.pluginName] );
+				}, this ) );
 			}
-			this.getPlayer().disableComponentsHover();
-			this.getScreen().fadeIn(400, $.proxy(function () {
-				this.getPlayer().triggerHelper('showScreen', [this.pluginName]);
-			}, this));
-
 		},
 		toggleScreen: function () {
 			if (this.isDisabled) return;
