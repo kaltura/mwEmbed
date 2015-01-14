@@ -311,6 +311,7 @@
 }
 
 .playlistAPI .medialistContainer {
+	text-align: left;
 	overflow: hidden;
 	width: 100%;
 	height: 100%;
