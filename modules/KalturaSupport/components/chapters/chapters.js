@@ -179,8 +179,10 @@
 				}
 			});
 
-			this.bind('mediaListLayoutReady', function () {
-				_this.getComponent().find(".mediaBoxText").dotdotdot();
+			this.bind('mediaListLayoutReady updateLayout', function () {
+				setTimeout(function(){
+					_this.getComponent().find(".mediaBoxText").dotdotdot();
+				}, 100);
 			});
 		},
 		isSafeEnviornment: function () {
