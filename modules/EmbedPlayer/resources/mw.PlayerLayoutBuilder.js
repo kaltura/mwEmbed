@@ -1080,7 +1080,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		this.displayOptionsMenuFlag = true;
 
 		if ( !this.supportedComponents[ 'overlays' ] ) {
-			embedPlayer.stop();
+			embedPlayer.pause();
 		}
 
 		// Check if overlay window is already present:
