@@ -247,7 +247,7 @@
 				chapterToggle: gM("ks-chapters-toggle-chapter"),
 				slideNumber: gM("ks-chapters-slideNumber"),
 				slideStartTime: gM("ks-chapters-slide-start-time"),
-				slideDuration: gM("ks-chapters-slide-duration"),
+				slideDuration: gM("ks-chapters-slide-duration")
 
 			};
 			return metaData;
@@ -320,7 +320,7 @@
 				(newHeight * this.getConfig('chapterSlideBoxRatio'));
 			return newHeight;
 		},
-		getMediaBoxWidth: function(){
+		getMediaBoxWidth: function(mediaItem){
 			//Get media box width by mediaItemRatio and by media item type (Chapter/Slide)
 			var	height = this.getMedialistComponent().height();
 			var	newWidth = height * (1 / this.getConfig("mediaItemRatio"));
@@ -419,73 +419,42 @@
 		renderSearchBar: function(){
 			if (this.getConfig('enableSearch')) {
 				var _this = this;
+
 				// Clear search bar before adding
 				this.getMedialistHeaderComponent().empty();
+
 				// Build the search element
+				var magnifyGlassContainer = $( "<div/>", {"class": "searchIcon icon-magnifyGlass", id: 'searchBoxIcon'} );
+				var searchBox = $( "<input/>", {
+					id: 'searchBox',
+					type: 'text',
+					placeholder: gM('ks-chapters-search-placeholder'),
+					autocapitalize: "off",
+					autocorrect :"off",
+					autocomplete: "off"} );
+				var searchBoxWrapper = $( "<div/>", {"id": "searchBoxWrapper"} )
+					.append( searchBox );
+				var clearSearchBoxContainer = $( "<div/>", {
+						'class': 'searchIcon icon-clear tooltipBelow',
+						'id': 'searchBoxCancelIcon',
+						'title': gM('ks-chapters-search-clear'),
+						'data-show-tooltip': true
+					} )
+					.on( "click touchend", function (e) {
+						e.preventDefault();
+						e.stopPropagation();
+						document.activeElement.blur();
+						updateSearchUI("");
+						typeahead.typeahead( "val", "" ).focus();
+						return false;
+					} );
 				var searchFormWrapper = this.$searchFormWrapper = $( "<div/>", {"class": "searchFormWrapper"} )
 					//Magnifying glass icon
-					.append( $( "<div/>", {"class": "searchIcon icon-magnifyGlass", id: 'searchBoxIcon'} ) )
+					.append( magnifyGlassContainer )
 					//Search input box
-					.append( $( "<div/>", {"id": "searchBoxWrapper"} )
-						.append( $( "<input/>", {id: 'searchBox', type: 'text', placeholder: gM('ks-chapters-search-placeholder'), required: true} )
-							.on( 'change keyup paste input', function ( ) {
-								var searchBoxCancelIcon = $( "#searchBoxCancelIcon" );
-								var searchBoxIcon = $( "#searchBoxIcon" );
-								switch ( this.value.length ) {
-									case 0:
-										searchBoxCancelIcon.removeClass("active");
-										searchBoxIcon.removeClass("active");
-										_this.resetSearchResults();
-										break;
-									case 1:
-									case 2:
-										searchBoxCancelIcon.addClass("active");
-										searchBoxIcon.addClass("active");
-										_this.resetSearchResults();
-										break;
-									default:
-										searchBoxCancelIcon.addClass("active");
-										searchBoxIcon.addClass("active");
-								}
-							} )
-							.keydown(function(e) {
-								var nodeName = e.target.nodeName.toLowerCase();
-
-								if (e.which === 8) {
-									if ((nodeName === 'input' && e.target.type === 'text') ||
-										nodeName === 'textarea') {
-										// do nothing
-									} else {
-										e.preventDefault();
-									}
-								}
-							})
-							.on( "focus", function () {
-								_this.getPlayer().triggerHelper( "onDisableKeyboardBinding" );
-								//On each focus render width of dropdown menu
-								searchFormWrapper.find(".tt-dropdown-menu" ).width(searchFormWrapper.width());
-								_this.maximizeSearchBar();
-							} )
-							.on( "blur", function () {
-								_this.getPlayer().triggerHelper( "onEnableKeyboardBinding" );
-							} )
-						)
-					)
+					.append( searchBoxWrapper )
 					//clear icon
-					.append( $( "<div/>",
-						{
-							'class': 'searchIcon icon-clear tooltipBelow',
-							'id': 'searchBoxCancelIcon',
-							'title': gM('ks-chapters-search-clear'),
-							'data-show-tooltip': true
-						} )
-						.on( "click touchend", function () {
-							$( '#searchBox' ).typeahead( "val", "" ).typeahead( "close" ).focus();
-							$( "#searchBoxCancelIcon" ).removeClass("active");
-							$( "#searchBoxIcon" ).removeClass("active");
-							_this.resetSearchResults();
-						} )
-					);
+					.append( clearSearchBoxContainer );
 
 				//Add tooltip
 				this.getPlayer().layoutBuilder.setupTooltip(searchFormWrapper.find("#searchBoxCancelIcon"), "arrowTop");
@@ -533,8 +502,45 @@
 					}
 				};
 
-				var typeahead = searchFormWrapper.find( '#searchBox' )
-					.typeahead( {
+				//Update icon state and dropdown menu state
+				var updateSearchUI = function(expression){
+					switch ( expression.length ) {
+						case 0:
+							clearSearchBoxContainer.removeClass("active");
+							magnifyGlassContainer.removeClass("active");
+							_this.resetSearchResults();
+							break;
+						case 1:
+						case 2:
+							clearSearchBoxContainer.addClass("active");
+							magnifyGlassContainer.addClass("active");
+							_this.resetSearchResults();
+							break;
+						default:
+							clearSearchBoxContainer.addClass("active");
+							magnifyGlassContainer.addClass("active");
+					}
+				};
+
+				//Get all search results for current search term
+				var getDropdownResults = function(){
+					//Untill typeahead expose event or API to query this data we need to use this HACK to access inner
+					//objects and data inside the lib
+					var dropdown = typeahead.data( 'ttTypeahead' ).dropdown;
+					var objIds = [];
+					var suggestionsElms = dropdown._getSuggestions();
+					// Only update if there are available suggestions
+					if ( suggestionsElms.length ) {
+						suggestionsElms.each( function ( i, suggestionsElm ) {
+							var suggestionsData = dropdown.getDatumForSuggestion( $( suggestionsElm ) );
+							objIds = objIds.concat( _this.dataSet[suggestionsData.raw.value] );
+						} );
+					}
+					return objIds;
+				};
+
+				//Init typeahead lib
+				var typeahead = searchBox.typeahead( {
 						minLength: 3,
 						highlight: true,
 						hint: false
@@ -562,30 +568,29 @@
 						_this.showSearchResults( _this.dataSet[obj.value] );
 						return false;
 					} )
-					.on( "keyup", function ( e ) {
+					.on( 'change keyup paste input', function (e) {
+						updateSearchUI(this.value);
 						e.preventDefault();
 						e.stopPropagation();
-						// On enter key press:
+						// On "enter" key press:
 						// 1. If multiple suggestions and none was chosen - display results for all suggestions
 						// 2. Close dropdown menu
-						if ( e.keyCode === 13 ) {
-							var dropdown = typeahead.data( 'ttTypeahead' ).dropdown;
-							var objIds = [];
-							var suggestionsElms = dropdown._getSuggestions();
-							// Only update if there are available suggestions
-							if ( suggestionsElms.length ) {
-								suggestionsElms.each( function ( i, suggestionsElm ) {
-									var suggestionsData = dropdown.getDatumForSuggestion( $( suggestionsElm ) );
-									objIds = objIds.concat( _this.dataSet[suggestionsData.raw.value] );
-								} );
-								_this.showSearchResults( objIds );
-							}
+						if ( e.type === "keyup" && e.keyCode === 13 ) {
+							var results = getDropdownResults();
+							_this.showSearchResults( results );
 							typeahead.typeahead( "close" );
 						}
-
 						return false;
-					}
-				);
+					} )
+					.on( "focus", function () {
+						_this.getPlayer().triggerHelper( "onDisableKeyboardBinding" );
+						//On each focus render width of dropdown menu
+						searchBoxWrapper.find(".tt-dropdown-menu" ).width(searchFormWrapper.width());
+						_this.maximizeSearchBar();
+					} )
+					.on( "blur", function () {
+						_this.getPlayer().triggerHelper( "onEnableKeyboardBinding" );
+					} );
 			}
 		},
 		minimizeSearchBar: function(){
@@ -673,30 +678,32 @@
 		},
 		showSearchResults: function(searchResults){
 			this.searchResultShown = true;
-			if ( !$.isArray(searchResults)){
+			if ( !$.isArray( searchResults ) ) {
 				searchResults = [searchResults];
 			}
-			this.disableChapterToggle();
-			var mediaBoxes = this.getMediaListDomElements();
+			if (searchResults.length > 0) {
+				this.disableChapterToggle();
+				var mediaBoxes = this.getMediaListDomElements();
 
-			mediaBoxes.each(function(i, mediaBox){
-				var mediaBoxObj = $(mediaBox);
-				var objId = mediaBoxObj.attr("data-obj-id");
-				if ( $.inArray(objId, searchResults) > -1){
-					mediaBoxObj.removeClass("resultNoMatch");
-				} else{
-					mediaBoxObj.addClass("resultNoMatch collapsed");
+				mediaBoxes.each( function ( i, mediaBox ) {
+					var mediaBoxObj = $( mediaBox );
+					var objId = mediaBoxObj.attr( "data-obj-id" );
+					if ( $.inArray( objId, searchResults ) > -1 ) {
+						mediaBoxObj.removeClass( "resultNoMatch" );
+					} else {
+						mediaBoxObj.addClass( "resultNoMatch collapsed" );
+					}
+				} );
+				var _this = this;
+
+				//Remove search results slide collapsed state
+				var slidesSearchResults = mediaBoxes.filter( ":not(.resultNoMatch).slideBox.collapsed" );
+				_this.inSlideAnimation = slidesSearchResults.length ? true : false;
+				if ( _this.inSlideAnimation ) {
+					_this.transitionsToBeFired = slidesSearchResults.length;
+					_this.initSlideAnimation( slidesSearchResults );
+					slidesSearchResults.removeClass( "collapsed" );
 				}
-			});
-			var _this = this;
-
-			//Remove search results slide collapsed state
-			var slidesSearchResults = mediaBoxes.filter(":not(.resultNoMatch).slideBox.collapsed");
-			_this.inSlideAnimation = slidesSearchResults.length ? true : false;
-			if (_this.inSlideAnimation) {
-				_this.transitionsToBeFired = slidesSearchResults.length;
-				_this.initSlideAnimation( slidesSearchResults );
-				slidesSearchResults.removeClass("collapsed");
 			}
 		},
 		resetSearchResults: function(){
@@ -964,7 +971,7 @@
 				});
 			}
 		},
-		doOnSlideAnimationEnded: function(fn, prefix){
+		doOnSlideAnimationEnded: function(fn){
 			if (this.inSlideAnimation){
 				var _this = this;
 				this.bind("slideAnimationEnded", function(){

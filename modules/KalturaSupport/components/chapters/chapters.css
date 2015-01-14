@@ -1,6 +1,6 @@
 @import url(http://fonts.googleapis.com/css?family=Lato:300,400,700,900);
 .medialistContainer{
-    font-family: "Helvetica Neue", 'Open Sans', sans-serif;
+    font-family: "Lato", 'Open Sans', sans-serif;
     height: 100%;
     width: 100%;
 }
@@ -23,7 +23,6 @@
 
 .chapters > .k-chapters-container{
     position:relative;
-    font-family:'Lato';
 }
 .chapters > .k-chapters-container.horizontal {
     padding-top:5px;
@@ -188,10 +187,12 @@
 }
 .chapters > .k-chapters-container .k-description-container{
     max-height: 30%;
+    height: 100%;
     font-size:13px;
     font-weight: 300;
     line-height: 1.357;
 }
+
 .chapters > .k-chapters-container .k-chapter-time {
     font-weight: 300;
     color: rgb(255, 255, 255);
@@ -476,20 +477,21 @@
     height: 20px;
 }
 .touch #searchBox, .touch.tt-hint {
-    margin: 16px 6px;
+    margin: 16px 0px;
 }
 #searchBox, .tt-hint{
-    margin: 12px 2px;
+    margin: 12px 0px;
+    height: 16px;
     width: 100%;
     border: none;
     color: rgb(0, 0, 0);
     outline: none;
     box-shadow:none;
-    font-family: "Lato", Helvetica, Arial, sans-serif;
     font-size: 15px;
     font-weight: 400;
     padding: 0;
     background: rgba(255, 255, 255, 0);
+    z-index: 2;
 }
 .minimized > * > * > #searchBox {
     margin: 1px 2px;
