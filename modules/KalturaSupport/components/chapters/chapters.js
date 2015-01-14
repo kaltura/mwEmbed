@@ -179,7 +179,7 @@
 				}
 			});
 
-			this.bind('mediaListLayoutReady updateLayout', function () {
+			this.bind('mediaListLayoutReady slideAnimationEnded updateLayout', function () {
 				setTimeout(function(){
 					_this.getComponent().find(".mediaBoxText").dotdotdot();
 				}, 100);
