@@ -323,7 +323,7 @@
 		},
 
 		isDVR: function(){
-			return ( this.getPlayer().evaluate( '{mediaProxy.entry.dvrStatus}' )  && this.getPlayer().isTimeUpdateSupported() );
+			return ( this.getPlayer().isDVR()  && this.getPlayer().isTimeUpdateSupported() );
 		},
 
 		getCurrentTime: function() {
