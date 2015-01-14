@@ -837,9 +837,13 @@
 				this.getControlBar().
 					css({'width': width + 10});
 			},
-			positionControlBar: function ( height ) {
+			positionControlBar: function (  ) {
+				var height = 0;
+				if (this.getPlayer().getTopBarContainer().length) {
+					height = this.getPlayer().getTopBarContainer().height();
+				}
 				this.getControlBar().position( {
-					my: 'right top+'+(height || 0),
+					my: 'right top+'+height,
 					at: 'right top',
 					of: this.getPlayer().getInterface(),
 					collision: 'none'
@@ -883,9 +887,6 @@
 						.attr('data-show-tooltip', true);
 				} );
 
-				this.bind("onShowToplBar onHideToplBar", function(e, height){
-					_this.positionControlBar(height.top);
-				});
 				this.bind("showPlayerControls" , function(){
 					_this.showControlBar();
 				});
