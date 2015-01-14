@@ -48,6 +48,7 @@
 			displayInitialized: false,
 			render: true,
 			screenShown: false,
+			currentScreenNameShown: "",
 			dragging: false,
 			resizing: false,
 			syncEnabled: true,
@@ -497,15 +498,18 @@
 						});
 					}
 				};
-				this.bind( "preShowScreen", function () {
+				this.bind( "preShowScreen", function (e, screenName) {
 					_this.screenShown = true;
 					if (_this.render) {
+						_this.currentScreenNameShown = screenName;
+						_this.hideControlBar();
 						minimizeSecondDisplay();
 					}
 				} );
-				this.bind( "preHideScreen", function () {
+				this.bind( "preHideScreen", function (e, screenName) {
 					_this.screenShown = false;
-					if (_this.render) {
+					if (_this.render && _this.currentScreenNameShown === screenName) {
+						_this.currentScreenNameShown = "";
 						maximizeSecondDisplay();
 					}
 				} );

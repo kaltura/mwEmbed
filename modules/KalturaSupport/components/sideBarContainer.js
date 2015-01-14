@@ -13,7 +13,7 @@
 		},
 		enabled: true,
 		render: true,
-		screenShown: false,
+		currentScreenNameShown: "",
 		keepOnScreen: false,
 		openAfterDisable: false,
 
@@ -55,14 +55,26 @@
 						});
 				}
 			});
-			this.bind( 'preShowScreen onDisableInterfaceComponents', function( event, excludedComponents ){
-				if( event.type == "preShowScreen" || $.inArray( _this.pluginName, excludedComponents ) == -1) {
+			this.bind( 'onDisableInterfaceComponents', function( event, excludedComponents ){
+				if( $.inArray( _this.pluginName, excludedComponents ) == -1) {
 					_this.enabled = false;
 					_this.hide();
 				}
 			});
-			this.bind( 'preHideScreen onEnableInterfaceComponents', function( event, excludedComponents ){
-				if( event.type == "preHideScreen" || $.inArray( _this.pluginName, excludedComponents ) == -1) {
+			this.bind( 'onEnableInterfaceComponents', function( event, excludedComponents ){
+				if( $.inArray( _this.pluginName, excludedComponents ) == -1) {
+					_this.enabled = true;
+					_this.show();
+				}
+			});
+			this.bind( 'preShowScreen', function( event, screenName ){
+				_this.currentScreenNameShown = screenName;
+				_this.enabled = false;
+				_this.hide();
+			});
+			this.bind( 'preHideScreen', function( event, screenName ){
+				if (_this.currentScreenNameShown === screenName) {
+					_this.currentScreenNameShown = "";
 					_this.enabled = true;
 					_this.show();
 				}

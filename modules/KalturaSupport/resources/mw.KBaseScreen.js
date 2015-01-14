@@ -95,8 +95,8 @@
 		},
 		showScreen: function () {
 			if (!this.error) {
-				this._hideAllScreens( this.pluginName );
 				this.getPlayer().triggerHelper( 'preShowScreen', [this.pluginName] );
+				this._hideAllScreens( this.pluginName );
 				if ( this.hasPreviewPlayer() ) {
 					this.resizePlayer();
 				} else {
