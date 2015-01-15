@@ -1057,7 +1057,7 @@
 						$(_this.getPlayerElement()).show();
 						// Remove any poster div ( that would overlay the player )
 						if (!_this.isAudio()) {
-							$(_this).find('.playerPoster').remove();
+							_this.removePoster();
 						}
 						// if using native controls make sure the inteface does not block the native controls interface:
 						if (_this.useNativePlayerControls() && $(_this).find('video ').length == 0) {
