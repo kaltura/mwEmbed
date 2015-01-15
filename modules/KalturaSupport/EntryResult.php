@@ -64,11 +64,13 @@ class EntryResult {
 			return array();
 		}
 		
-		// Check for entry cache: 
-		$this->entryResultObj = unserialize( $this->cache->get( $this->getCacheKey() ) );
-		if( $this->entryResultObj ){
-			return $this->entryResultObj;
-		}
+		// Check for entry cache:
+		if ( !$this->request->hasKS() ){
+            $this->entryResultObj = unserialize( $this->cache->get( $this->getCacheKey() ) );
+            if( $this->entryResultObj ){
+                return $this->entryResultObj;
+            }
+        }
 		
 		// Check if we have a cached result object:
 		if( ! $this->entryResultObj ){
