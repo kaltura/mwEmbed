@@ -291,7 +291,7 @@
 		play: function () {
 			mw.log("EmbedPlayerNativeComponent:: play::");
 			this.playbackDone = false;
-			this.removePoster();
+
 
 			if (this.parent_play()) {
 				if (this.getPlayerElement()) { // update player
@@ -299,6 +299,7 @@
 				}
 				this.monitor();
 			}
+			this.removePoster();
 		},
 
 		/**

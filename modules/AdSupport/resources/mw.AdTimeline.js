@@ -453,7 +453,7 @@
 			embedPlayer.sequenceProxy.isInSequence = false;
 
 			// restore poster when not using ad sibling
-			if ( !embedPlayer.isVideoSiblingEnabled() && embedPlayer.selectedPlayer.library != "NativeComponent" ){
+			if ( !embedPlayer.isVideoSiblingEnabled()  ){
 				embedPlayer.updatePosterHTML();
 			}
 
