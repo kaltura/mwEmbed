@@ -38,16 +38,17 @@
 					_this.prevIconClass = _this.onAirIconClass ;
 				}
 			} );
-			if ( this.getPlayer().isDVR() ) {
 
-				this.bind( 'seeked seeking onpause', function() {
+			this.bind( 'seeked seeking onpause', function() {
+				if ( _this.getPlayer().isDVR() ) {
 					//live is off-synch
 					if ( _this.onAirStatus ) {
 						_this.setOffSyncUI();
 					}
 					_this.prevIconClass = _this.unsyncIConClass;
-				});
-			}
+				}
+			});
+
 		},
 		getComponent: function() {
 			var _this = this;

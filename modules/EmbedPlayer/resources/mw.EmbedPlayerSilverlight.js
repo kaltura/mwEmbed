@@ -253,6 +253,13 @@
 			}
 		},
 
+		isDVR: function () {
+			if ( this.isMulticast ) {
+				return false;
+			}
+			return this.parent_isDVR();
+		},
+
 		setCurrentTime: function (time) {
 			this.slCurrentTime = time;
 		},
