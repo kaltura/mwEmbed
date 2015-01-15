@@ -162,7 +162,6 @@ class UiConfResult {
 	public function parseJSON( $uiConf ) {
 
 		$playerConfig = json_decode( $uiConf, true );
-
 		if( json_last_error() ) {
 			throw new Exception("Error Processing JSON: " . json_last_error() );
 		}
@@ -214,7 +213,19 @@ class UiConfResult {
 			'liveStatus' => array(),
 			'reportError' => array(),
 			"sideBarContainer" => array(),
-			"liveAnalytics"=>array()
+			"liveAnalytics"=>array(),
+				
+			// default plugins for JSON config: 
+			"topBarContainer" => array(),
+			"sideBarContainer" => array(),
+			"scrubber" => array(),
+			"largePlayBtn" => array(),
+			"playHead" => array(),
+			"playPauseBtn" => array(),
+			"volumeControl" => array(),
+			"durationLabel" => array(),
+			"currentTimeLabel" => array(),
+			"keyboardShortcuts" => array()
 		);
 
 		$playerConfig['plugins'] = array_merge_recursive($playerConfig['plugins'], $basePlugins);
@@ -495,7 +506,7 @@ class UiConfResult {
 			$playerConfig = $this->updatePluginsFromVars( $plugins, $vars, $uiConfPluginNodes );
 
 			// Save to cache
-			$this->cache->set( $cacheKey, serialize($playerConfig) );	
+			$this->cache->set( $cacheKey, serialize($playerConfig) );
 		}
 		// Flashvars
 		$uiVars = $playerConfig['vars'];
@@ -525,7 +536,6 @@ class UiConfResult {
 		$ignorePlugins = array(
 			'kalturaMix', 'captionsOverFader', 'gigya'
 		);
-
 		// Default set of plugins, always enabled
 		$plugins = array(
 			"topBarContainer" => array(),
