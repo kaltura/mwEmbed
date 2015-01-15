@@ -129,17 +129,20 @@
 		createStreamList: function (data) {
 			var _this = this;
 			var subStreams = data[0].objects;
+			var subStreamsData = data.slice(1);
 			if (subStreams.length > 0) {
 				$.each( subStreams, function ( i, subStream ) {
-					_this.streams.push( {
-						id: subStream.id,
-						data: {
-							meta: subStream,
-							contextData: {
-								flavorAssets: data[i + 1].objects
+					if (subStreamsData[i]) {
+						_this.streams.push( {
+							id: subStream.id,
+							data: {
+								meta: subStream,
+								contextData: {
+									flavorAssets: subStreamsData[i].objects
+								}
 							}
-						}
-					} );
+						} );
+					}
 				} );
 			} else {
 				mw.log('streamSelector::No streams avaialble, disabling component');
@@ -297,6 +300,7 @@
 				var changeMediaCallback = function () {
 					//Return autoplay state to original
 					embedPlayer.autoplay = origAutoplay;
+					embedPlayer.restoreEventPropagation();
 					// issue a seek
 					if (currentTime > 0) {
 						_this.bind("seeked", function () {
@@ -307,7 +311,6 @@
 							embedPlayer.removeBlackScreen();
 							//Return poster to allow display of poster on clip done
 							mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
-							embedPlayer.restoreEventPropagation();
 							embedPlayer.triggerHelper('onChangeStreamDone', [_this.currentStream.id]);
 						});
 						//Add black screen before seek to avoid flashing of video
@@ -316,7 +319,6 @@
 					} else {
 						//Return poster to allow display of poster on clip done
 						mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
-						embedPlayer.restoreEventPropagation();
 						embedPlayer.triggerHelper( "onPlayerStateChange", ["play"] );
 						embedPlayer.triggerHelper('onChangeStreamDone', [_this.currentStream.id]);
 					}

@@ -117,7 +117,9 @@
 
 				//calc the buffer time
 				this.bufferTime += (new Date() - _this.bufferStartTime) / 1000;
-
+				if (this.bufferTime > 10){
+					this.bufferTime = 10;
+				}
 				//set the buffer start time to now - in order to continue and counting the current buffer session
 				if ( closeSession ){
 					_this.bufferStartTime = new Date();

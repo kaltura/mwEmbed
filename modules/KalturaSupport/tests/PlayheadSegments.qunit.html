@@ -75,7 +75,7 @@ This example highlights change the entry to 1_sf5ovm7u and update time 5 to 30 s
 kWidget.addReadyCallback(function (playerId) {
 	var kdp = $('#' + playerId)[0];
 	$('#changeMediaAndTime').click(function(){
-		kdp.kBind('playerReady', function(){
+		kdp.kBind('onChangeMediaDone', function(){
 			kdp.sendNotification('doPlay');
 		});
 		kdp.sendNotification('changeMedia', { 'entryId': '1_sf5ovm7u'} );
@@ -95,7 +95,7 @@ kWidget.addReadyCallback(function (playerId) {
 			return false;
 		});
 		$('#changeMediaAndTime').click(function(){
-			kdp.kBind('playerReady', function(){
+			kdp.kBind('onChangeMediaDone', function(){
 				kdp.sendNotification('doPlay');
 			});
 			kdp.sendNotification('changeMedia', { 'entryId': '1_sf5ovm7u'} );

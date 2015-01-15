@@ -128,6 +128,7 @@
 					'action': 'list',
 					'filter:entryIdEqual': entryId,
 					'filter:objectType': 'KalturaCuePointFilter',
+					'filter:statusIn': '1,3',
 					'filter:cuePointTypeEqual': 'thumbCuePoint.Thumb'
 				};
 				var lastUpdatedAt = _this.getLastUpdateTime() + 1;

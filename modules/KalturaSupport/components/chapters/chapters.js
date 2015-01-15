@@ -232,7 +232,7 @@
 			//Get current item number
 			var orderId = this.mediaList.length;
 			//Map items to mediaList items
-			this.mediaList = $.map(items, function (item) {
+			var mediaList = $.map(items, function (item) {
 				var mediaItem;
 				var customData = item.partnerData ? JSON.parse(item.partnerData) : {};
 				var title = item.title || customData.title;
@@ -281,6 +281,9 @@
 				}
 				return mediaItem;
 			});
+			//Add media items to mediaList cache - need to concat here new to existing list in
+			//order to support live cuepoints which adds up as stream progress
+			this.mediaList = this.mediaList.concat(mediaList);
 		},
 		getMediaBoxHeight: function(mediaItem){
 			//Get media box height by mediaItemRatio and by media item type (Chapter/Slide)
@@ -464,7 +467,7 @@
 						// an array that will be populated with substring matches
 						matches = [];
 						// regex used to determine if a string contains the substring `q`
-						var regexExp = q.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+						var regexExp = q.replace(/^\s+/, '').replace(/\s+$/, '').replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 						substrRegex = new RegExp( regexExp, 'i' );
 						// iterate through the pool of strings and for any string that
 						// contains the substring `q`, add it to the `matches` array
@@ -548,8 +551,10 @@
 		getSearchData: function(expression, callback){
 			var liveCheck = this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints");
 			// If results are cached then return from cache, unless in live session
-			if (!liveCheck && this.cache[expression]){
-				return callback(this.cache[expression]);
+			expression = expression.replace(/^\s+/, '').replace(/\s+$/, '');
+			var cacheExp = expression.substr(0,3);
+			if (!liveCheck && this.cache[cacheExp]){
+				return callback(this.cache[cacheExp]);
 			}
 			// If query length is 3 then clear current dataset and query against API again
 			if (expression.length === 3){

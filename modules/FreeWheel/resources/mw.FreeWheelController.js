@@ -321,6 +321,10 @@ mw.FreeWheelController.prototype = {
 		if( slot.getAdCount() == 0 ){
 			return false;
 		}
+
+		// remove poster to prevent black screen covering the ad
+		_this.embedPlayer.removePoster();
+
 		var vid = _this.embedPlayer.getPlayerElement();
 		// make sure we remove preload attr
 		$( vid ).removeAttr( 'preload' );

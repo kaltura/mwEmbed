@@ -41,8 +41,9 @@ if( !window.QUnit ){
 	// TODO remove dependency on mw
 	if( typeof mw != 'undefined' && mw.getConfig( 'Kaltura.PageGoogleAnalytics' ) ) {
 		var _gaq = _gaq || [];
-		_gaq.push(['_setAccount', mw.getConfig( 'Kaltura.PageGoogleAnalytics' ) ]);
+		_gaq.push(['_setAccount', mw.getConfig( 'Kaltura.PageGoogleAnalytics' )]);
 		_gaq.push(['_trackPageview']);
+
 		(function() {
 			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
 			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
@@ -91,6 +92,16 @@ if( typeof kWidget != 'undefined' && kWidget.addReadyCallback ){
 			if( kdocTimePerPlayer[ pId] ){
 				return ;
 			}
+			alreadyRun = true;
+			var readyTime = ( new Date().getTime() - kdocPlayerStartTime )/1000;
+			var fileName = location.pathname.split('/').pop();
+			// trigger the google track event if set:: 
+			if( window['_gaq'] ){
+				// send feature page load time event:
+				_gaq.push(['_trackEvent', 'FeaturePage', 'PlayerLoadTimeMs', fileName, readyTime*1000]);
+			}
+			// note kUnbind seems to unbind all mediaReady
+			//$( '#' + pId )[0].kUnbind(".pTimeReady");
 			kdocTimePerPlayer[ pId ] = ( new Date().getTime() - kdocPlayerStartTime )/1000;
 			// note kUnbind seems to unbind all mediaReady
 			$( '#' + pId )[0].kUnbind(".pTimeReady");

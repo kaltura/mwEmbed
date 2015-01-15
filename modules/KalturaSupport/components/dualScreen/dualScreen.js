@@ -411,7 +411,7 @@
 				//In live mode wait for first updatetime that is bigger then 0 for syncing initial slide
 				if (mw.getConfig("EmbedPlayer.LiveCuepoints")) {
 					this.bind( 'timeupdate', function ( ) {
-						if (_this.getPlayer().currentTime > 0) {
+						if (!_this.getPlayer().isDVR() && _this.getPlayer().currentTime > 0) {
 							_this.unbind('timeupdate');
 						}
 						var cuePoint = _this.getCurrentCuePoint();
