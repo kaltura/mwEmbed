@@ -578,7 +578,7 @@
 						} );
 						setTimeout( function () {
 							_this.fsm.consumeEvent( "switchView" );
-						}, 500 );
+						}, 1000 );
 					} else {
 						showLoadingSlide();
 					}

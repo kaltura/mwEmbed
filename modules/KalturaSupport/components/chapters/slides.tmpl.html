@@ -4,22 +4,22 @@
     data-box-type="<%=mediaItem.type%>"
     data-obj-id="<%=mediaItem.id%>"
     data-mediaBox-index="<%=mediaItem.order%>">
-    <div class="boxImg">
+    <div class="boxImg" title="<%=mediaItem.title%>" data-show-tooltip="true">
         <img src="<%=mediaItem.thumbnail.url%>" alt="Thumbnail for <%=mediaItem.title%>"/>
     </div>
     <div class="boxInfo">
-        <div class="slideGutter" title="<%=meta.titles.slideNumber%>">
+        <div class="slideGutter">
             <% if (mediaItem.hasParent){ %>
-                <%=(mediaItem.chapterNumber + 1)%>.<%=(mediaItem.slideNumber + 1)%>
+                <div class="slideNumber" title="<%=meta.titles.slideNumber%>" data-show-tooltip="true">
+                    <%=(mediaItem.chapterNumber + 1)%>.<%=(mediaItem.slideNumber + 1)%>
+                </div>
             <%}%>
-        </div>
-        <div class="k-title-container mediaBoxText" title="<%=mediaItem.title%>">
-            <span class="k-title" title="<%=mediaItem.title%>"><%=mediaItem.title%></span>
-        </div>
-        <span class="mediaBoxText k-chapter-time" title="<%=meta.titles.slideStartTime%>">
-            <span class="icon-start_time"></span>
+            <span class="mediaBoxText k-chapter-time" title="<%=meta.titles.slideStartTime%>" data-show-tooltip="true">
+                <span class="icon-start_time"></span>
             <span><%=mediaItem.startTimeDisplay%></span>
         </span>
+        </div>
     </div>
-    <div class="boxShadow"></div>
+    <div class="slideOverlay"></div>
+    <div class="separator"></div>
 </li>
