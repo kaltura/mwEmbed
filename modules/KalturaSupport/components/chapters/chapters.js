@@ -572,8 +572,6 @@
 					} )
 					.on( 'change keyup paste input', function (e) {
 						updateSearchUI(this.value);
-						e.preventDefault();
-						e.stopPropagation();
 						// On "enter" key press:
 						// 1. If multiple suggestions and none was chosen - display results for all suggestions
 						// 2. Close dropdown menu
@@ -582,7 +580,6 @@
 							_this.showSearchResults( results );
 							typeahead.typeahead( "close" );
 						}
-						return false;
 					} )
 					.on( "focus", function () {
 						_this.getPlayer().triggerHelper( "onDisableKeyboardBinding" );
