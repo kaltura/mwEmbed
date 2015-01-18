@@ -789,7 +789,7 @@
 			if ((data.direction === "up") || (data.position === 0)){
 				//On scroll up maximize searchbar after 10% scroll from max scroll height
 				//or when scroll to top
-				if (this.barsMinimized && ((this.lastScrollPosition - data.position) / this.maximumScroll) > 0.1){
+				if (this.barsMinimized && ((this.lastScrollPosition - data.position) / this.maximumScroll) > 0.05){
 					this.barsMinimized = false;
 					this.maximizeSearchBar();
 					this.lastScrollPosition = -1;
@@ -798,7 +798,7 @@
 				//On scroll down minimize searchbar after 20% scroll from max scroll height
 				//or when scroll to bottom
 				if ((!this.barsMinimized &&
-					((data.position - this.lastScrollPosition) / this.maximumScroll) > 0.2) ||
+					((data.position - this.lastScrollPosition) / this.maximumScroll) > 0.1) ||
 					(data.position === data.maximum)){
 					this.barsMinimized = true;
 					this.minimizeSearchBar();
