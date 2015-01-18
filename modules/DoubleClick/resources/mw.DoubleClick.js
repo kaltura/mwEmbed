@@ -955,6 +955,7 @@
 				$(_this.embedPlayer).trigger("onAdPlay",[adInfo.adID]);
 				// This changes player state to the relevant value ( play-state )
 				$(_this.embedPlayer).trigger("playing");
+				$(_this.embedPlayer).trigger("onplay");
 				if (_this.currentAdSlotType != _this.prevSlotType) {
 					_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
 					_this.prevSlotType = _this.currentAdSlotType;

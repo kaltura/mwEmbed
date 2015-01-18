@@ -78,6 +78,10 @@
 			kdp.addJsListener("adErrorEvent", function(){
 				$('#adTracking').append("<font color='red'>adErrorEvent event triggered</font><br>");
 			});
+			// check for playerPlayed and firstPlay events as well:
+			kdp.addJsListener("playerPlayed", function(){
+				$('#adTracking').append("<font color='green'>playerPlayed event triggered</font><br>");
+			});
 		}
 
 		function addEvent(eventStr){
@@ -147,6 +151,12 @@
 <ul>
 	<li><b><i>onAllAdsCompleted:</i></b> is triggered by the Kaltura player when all ads were shown</li>
 </ul>
+<h5>Global player events:</h5>
+<ul>
+	<li><b><i><font color="green">playerPlayed:</font></i></b> is triggered by the Kaltura player when the player enters the playing status.<br>
+		Note that due to different DoubleClick SDKs usage, this event will be triggered after the "onAdPlay" when using<br>
+		the Flash SDK (most desktop browsers) and after the "onResumeAdPlayback" when using the JavaScript SDK (mobile devices). </li>
+</ul>
 <h5>Ad error events:</h5>
 <ul>
 	<li><b><i><font color="red">adErrorEvent:</font></i></b> is triggered when the ad fails to load (usually caused by ad blocker usage)</li>
@@ -165,7 +175,7 @@
 		'flashvars': {
 			'doubleClick':{
 				'plugin':true,
-				'leadWithFlash': false,
+				//'leadWithFlash': false,
 				'path' : 'http://cdnbakmi.kaltura.com/content/uiconf/ps/veria/kdp3.9.1/plugins/doubleclickPlugin.swf',
 				//'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dlinear',
 				//'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dimageoverlay',
