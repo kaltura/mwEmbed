@@ -182,7 +182,8 @@
 
 			this.bind('mediaListLayoutReady slideAnimationEnded updateLayout', function () {
 				setTimeout(function(){
-					_this.getComponent().find(".mediaBoxText").dotdotdot();
+					_this.getComponent()
+						.find(".k-title-container.mediaBoxText, .k-description-container.mediaBoxText").dotdotdot();
 				}, 100);
 			});
 		},
