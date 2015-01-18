@@ -859,29 +859,31 @@
 			}
 		},
 		updateActiveChapter: function(){
-			var activeChapterIndex = 0;
-			var time = this.getPlayer().currentTime;
-			$.each( this.chaptersMap, function ( inx, item ) {
-				if ( time > item.data.startTime) {
-					activeChapterIndex = item.data.chapterNumber;
-				}
-			} );
+			if (this.chaptersMap.length > 0) {
+				var activeChapterIndex = 0;
+				var time = this.getPlayer().currentTime;
+				$.each( this.chaptersMap, function ( inx, item ) {
+					if ( time > item.data.startTime ) {
+						activeChapterIndex = item.data.chapterNumber;
+					}
+				} );
 
-			var actualActiveIndex = this.selectedChapterIndex;
-			var chapterObj = this.chaptersMap[actualActiveIndex].data;
+				var actualActiveIndex = this.selectedChapterIndex;
+				var chapterObj = this.chaptersMap[actualActiveIndex].data;
 
-			var endTime;
-			if ( actualActiveIndex === activeChapterIndex ) {
-				this.selectedChapterIndex = activeChapterIndex;
-				endTime = chapterObj.endTime;
-				var countDown = Math.abs( time - endTime );
-				this.updateActiveChapterDuration(chapterObj.order, countDown);
-			} else {
-				var startTime = chapterObj.startTime;
-				endTime = chapterObj.endTime;
-				this.updateActiveChapterDuration(chapterObj.order, endTime - startTime);
-				if ( this.chaptersMap[ activeChapterIndex ] ) {
+				var endTime;
+				if ( actualActiveIndex === activeChapterIndex ) {
 					this.selectedChapterIndex = activeChapterIndex;
+					endTime = chapterObj.endTime;
+					var countDown = Math.abs( time - endTime );
+					this.updateActiveChapterDuration( chapterObj.order, countDown );
+				} else {
+					var startTime = chapterObj.startTime;
+					endTime = chapterObj.endTime;
+					this.updateActiveChapterDuration( chapterObj.order, endTime - startTime );
+					if ( this.chaptersMap[ activeChapterIndex ] ) {
+						this.selectedChapterIndex = activeChapterIndex;
+					}
 				}
 			}
 		},
