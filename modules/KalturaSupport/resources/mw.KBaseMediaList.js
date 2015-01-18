@@ -460,6 +460,21 @@
 						// call mediaClicked with the media index (implemented in component level)
 						_this.mediaClicked(index);
 					}
+				} )
+				.on("touchmove", function(){
+					_this.isDisabled = true;
+				})
+				.on("touchend", function() {
+					if (_this.isDisabled){
+						if (_this.dragHandlerTimeout){
+							clearTimeout(_this.dragHandlerTimeout);
+							_this.dragHandlerTimeout = null;
+						}
+						_this.dragHandlerTimeout = setTimeout(function(){
+							_this.dragHandlerTimeout = null;
+							_this.isDisabled = false;
+						}, 300);
+					}
 				});
 			if (this.getConfig('thumbnailRotator')) {
 				mediaBoxes
