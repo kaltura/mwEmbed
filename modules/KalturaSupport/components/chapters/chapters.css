@@ -259,6 +259,10 @@
     vertical-align: middle;
     color: rgb(187,187,187);
 }
+.slideBox .slideNumber{
+    position: relative;
+    z-index: 2;
+}
 .slideBox .slideOverlay{
     opacity: 0.5;
     position: absolute;
