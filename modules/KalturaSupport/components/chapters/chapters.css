@@ -111,9 +111,11 @@
 }
 .chapters > .k-chapters-container .boxImg img {
     height: 100%;
+    width: 100%;
     background-repeat: no-repeat;
     background-position: left top;
-    background-size : cover;
+    background-size: cover;
+    box-sizing: border-box;
 }
 .chapters > .k-chapters-container .boxShadow {
     position: absolute;
@@ -245,36 +247,38 @@
 .slideBox > .boxImg{
     width: 66%;
     right: 0;
+    box-sizing: border-box;
+    padding: 4px 6px;
     position: absolute;
-}
-.slideBox > .boxShadow {
-    background-image: -moz-linear-gradient(-45deg, rgb(34, 34, 34) 0%, rgba(0, 0, 0, 0.71) 50%,
-    rgba(0, 0, 0, 0.65) 60%, rgba(0, 0, 0, 0.30196) 100%);
-    background-image: -webkit-linear-gradient(-45deg, rgb(34, 34, 34) 0%, rgba(0, 0, 0, 0.71) 50%,
-    rgba(0, 0, 0, 0.65) 60%, rgba(0, 0, 0, 0.30196) 100%);
-    background-image: -ms-linear-gradient(-45deg, rgb(34, 34, 34) 0%, rgba(0, 0, 0, 0.71) 50%,
-    rgba(0, 0, 0, 0.65) 60%, rgba(0, 0, 0, 0.30196) 100%);
 }
 .slideBox .slideGutter{
-    position: absolute;
-    width: 35px;
-    height: 60%;
-    top: 1%;
+    display: table-cell;
     font-size: 12px;
     font-weight: 300;
-    text-align: right;
-    left: 0px;
-    z-index: 2;
+    text-align: center;
+    vertical-align: middle;
     color: rgb(187,187,187);
 }
-.chapters > .k-chapters-container .slideBox .boxInfo{
-    padding: 0px 40px;
-    height: 60%;
-    top: 20%;
+.slideBox .slideOverlay{
+    opacity: 0.5;
     position: absolute;
     width: 100%;
-    box-sizing: border-box;
+    height: 100%;
+}
+.chapters > .k-chapters-container .slideBox .boxInfo{
+    display: table;
+    position: absolute;
+    width: 34%;
+    height: 100%;
     color: rgb(255, 255, 255);
+}
+.slideBox .separator{
+    position: absolute;
+    bottom: 0;
+    border-bottom: 1px solid rgb(80,80,80);
+    height: 1px;
+    width: 100%;
+
 }
 .chapters > .k-chapters-container .k-slide-text{
     position: relative;

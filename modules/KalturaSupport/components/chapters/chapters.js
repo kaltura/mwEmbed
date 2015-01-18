@@ -37,6 +37,7 @@
 		freezeTimeIndicators: false,
 		chaptersMap: [],
 		activeItem: 0,
+		selectedChapterIndex: 0,
 		inSlideAnimation: false,
 		barsMinimized: false,
 		searchResultShown: false,
@@ -811,41 +812,37 @@
 		},
 		updateActiveItem: function () {
 			if (!this.freezeTimeIndicators) {
+				this.updateActiveChapter();
 				// search chapter for current active
-				var _this = this;
-				var activeChapterIndex = 0;
+
+				var activeItemIndex = 0;
 				var time = this.getPlayer().currentTime;
 				$.each( this.mediaList, function ( inx, item ) {
-					if ( time > ( item.startTime ) ) {
-						activeChapterIndex = (item.chapterNumber !== -1) ? _this.chaptersMap[item.chapterNumber].data.order : -1;
-						_this.activeItem = item.order;
+					if ( item.type === mw.KCuePoints.THUMB_SUB_TYPE.SLIDE && (time > item.startTime ) ) {
+						activeItemIndex = item.order;
 					}
 				} );
 
 				var actualActiveIndex = this.selectedMediaItemIndex;
+				var activeDomObj = this.getActiveItem();
+
 				// Check if active is not already set:
-				var item;
-				var endTime;
-				if ( actualActiveIndex === activeChapterIndex ) {
+				var item = this.mediaList[ activeItemIndex ];
+				if ( actualActiveIndex === activeItemIndex ) {
 					// update duration count down:
-					item = this.mediaList[ activeChapterIndex ];
 					if ( item ) {
 						if ( !item.active ) {
-							this.setSelectedMedia( activeChapterIndex );
+							this.setSelectedMedia( activeItemIndex );
 							item.active = true;
+							activeDomObj.find(".slideOverlay").addClass("watched");
 						}
-						endTime = item.endTime;
-						var countDown = Math.abs( time - endTime );
-						this.updateActiveItemDuration( countDown );
 					}
 				} else {
-					item = this.mediaList[ actualActiveIndex ];
 					if ( item && item.active ) {
 						item.active = false;
-						var startTime = item.startTime;
-						endTime = item.endTime;
-						this.updateActiveItemDuration( endTime - startTime );
 					}
+
+					activeDomObj.find(".slideOverlay").removeClass("watched");
 
 					// Check if we should pause on chapter update:
 					if ( this.getConfig( 'pauseAfterChapter' ) && !this.skipPauseFlag ) {
@@ -854,11 +851,44 @@
 					// restore skip pause flag:
 					this.skipPauseFlag = false;
 
-					if ( this.mediaList[ activeChapterIndex ] ) {
-						this.setSelectedMedia( activeChapterIndex );
+					if ( this.mediaList[ activeItemIndex ] ) {
+						this.setSelectedMedia( activeItemIndex );
 					}
 				}
 			}
+		},
+		updateActiveChapter: function(){
+			var activeChapterIndex = 0;
+			var time = this.getPlayer().currentTime;
+			$.each( this.chaptersMap, function ( inx, item ) {
+				if ( time > item.data.startTime) {
+					activeChapterIndex = item.data.chapterNumber;
+				}
+			} );
+
+			var actualActiveIndex = this.selectedChapterIndex;
+			var chapterObj = this.chaptersMap[actualActiveIndex].data;
+
+			var endTime;
+			if ( actualActiveIndex === activeChapterIndex ) {
+				this.selectedChapterIndex = activeChapterIndex;
+				endTime = chapterObj.endTime;
+				var countDown = Math.abs( time - endTime );
+				this.updateActiveChapterDuration(chapterObj.order, countDown);
+			} else {
+				var startTime = chapterObj.startTime;
+				endTime = chapterObj.endTime;
+				this.updateActiveChapterDuration(chapterObj.order, endTime - startTime);
+				if ( this.chaptersMap[ activeChapterIndex ] ) {
+					this.selectedChapterIndex = activeChapterIndex;
+				}
+			}
+		},
+		updateActiveChapterDuration: function(chapterNumber, remainingDuration){
+			var actualMediaBoxIndex = this.selectedMediaItemIndex;
+			this.setSelectedMedia( chapterNumber );
+			this.updateActiveItemDuration( remainingDuration );
+			this.setSelectedMedia( actualMediaBoxIndex );
 		},
 		attachMediaListHandlers: function(){
 			var _this = this;
@@ -908,7 +938,7 @@
 			this.getMedialistFooterComponent()
 				.find(".slideLocator" )
 				.off("click").on("click", function(){
-					_this.scrollToCurrent(_this.activeItem);
+					_this.scrollToCurrent(_this.selectedMediaItemIndex);
 				});
 		},
 		toggleChapter: function(chapters){
