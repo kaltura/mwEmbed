@@ -286,7 +286,7 @@
 			} else {
 				eventToTrigger = 'playlistMiddleEntry';
 			}
-
+			this.redrawOnResize = false;
 			// Listen for change media done
 			$(embedPlayer).unbind('onChangeMediaDone' + this.bindPostFix).bind('onChangeMediaDone' + this.bindPostFix, function () {
 				mw.log('mw.PlaylistAPI:: onChangeMediaDone');
@@ -296,6 +296,7 @@
 				if (!_this.getConfig("autoPlay")) {
 					embedPlayer.play();
 				}
+				_this.redrawOnResize = true;
 			});
 			mw.log("PlaylistAPI::playClip::changeMedia entryId: " + id);
 
