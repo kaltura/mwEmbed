@@ -1,4 +1,5 @@
 <?php
+require_once( dirname( __FILE__ ) . '/../../../ChromePhp.php' );
 /**
 * This file injects all on Page uiConf based javascript and configuration and loader. 
 *
@@ -15,6 +16,7 @@ class mweApiUiConfJs {
 	var $preLoaderMode = false;
 	var $jsConfigCheckDone = false;
 	var $lastFileModTime = 0;
+	var $shouldIgnoreOnPageCaching = false;
 
 	function __construct() {
 		global $container;
@@ -31,12 +33,14 @@ class mweApiUiConfJs {
 		// add any on-page javascript
 		$this->sendHeaders();
 		// check if we should minify:
-		if( !$wgEnableScriptDebug ){
+		if( !($wgEnableScriptDebug || $this->shouldIgnoreOnPageCaching)){
+		ChromePhp::log("Minify and cache");
 			// ob_gzhandler automatically checks for browser gzip support and gzips
 			if(!ob_start("ob_gzhandler")) ob_start();
 			// output the cached min version:
 			$this->outputMinfiedCached( $o );
 		} else {
+		ChromePhp::log("Just output");
 			echo $o;
 		}
 	}
@@ -97,7 +101,7 @@ class mweApiUiConfJs {
 		global $wgEnableScriptDebug, $wgBaseMwEmbedPath;
 		// flag for requires jQuery
 		$requiresJQuery = false;
-		// inti script output 
+		// inti script output
 		$o = '';
 		// Get all the "plugins" 
 		$scriptSet = array();
@@ -134,7 +138,9 @@ class mweApiUiConfJs {
 		foreach( $cssSet as $cssFile ){
 			$o.='kWidget.appendCssUrl(\'' . $this->utility->getExternalResourceUrl( $cssFile ) . "');\n";
 		}
-		
+
+		//Flag indication if file was loaded from local
+		$fileLoadedFromLocal = false;
 		// Always Output the mwEmbedLoader javascript inline ( if possible ) to be minified and gziped above )
 		foreach( $scriptSet as $inx => $filePath ){
 			$fullPath = $this->resolvePath( $filePath );
@@ -160,8 +166,13 @@ class mweApiUiConfJs {
 					$this->lastFileModTime = filemtime( $fullPath );
 				}
 				unset( $scriptSet[ $inx] );
+				$fileLoadedFromLocal = true;
 			}
 		}
+
+		//If no file loaded from local then set flag to indicate no minification is needed!
+		$this->shouldIgnoreOnPageCaching = !$fileLoadedFromLocal;
+
 		// output the remaining assets via appendScriptUrls
 		$o.= "\n" . 'kWidget.appendScriptUrls( [';
 		$coma = '';
