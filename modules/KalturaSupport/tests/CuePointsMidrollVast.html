@@ -97,5 +97,22 @@ Read more about <a href="http://knowledge.kaltura.com/faq/how-configure-mid-roll
 	</tr>
 	</table>
 </div>
+<div style="clear:both"></div>
+<h3>Listening to a cuePoint event in JavasScirpt</h3>
+<pre class="prettyprint linenums" syle="width:100%">
+kWidget.addReadyCallback(function(playerId){
+	var kdp = $('#' + playerId)[0]; 
+	kdp.kBind('cuePointReached', function( qPoint ){
+		var type = (qPoint.context) ? 'Ad' : 'Code';
+		$('#eventRowDesc').after(
+		$('<tr />' ).append(
+			$('<td />').text( (qPoint.cuePoint.title) ? qPoint.cuePoint.title : qPoint.cuePoint.description ),
+			$('<td />').text( type ),
+			$('<td />').text( qPoint.cuePoint.startTime )
+		)
+		);
+	})
+})
+</pre>
 </body>
 </html>
