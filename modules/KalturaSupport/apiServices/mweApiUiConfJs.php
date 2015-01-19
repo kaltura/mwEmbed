@@ -1,5 +1,4 @@
 <?php
-require_once( dirname( __FILE__ ) . '/../../../ChromePhp.php' );
 /**
 * This file injects all on Page uiConf based javascript and configuration and loader. 
 *
@@ -34,13 +33,11 @@ class mweApiUiConfJs {
 		$this->sendHeaders();
 		// check if we should minify:
 		if( !($wgEnableScriptDebug || $this->shouldIgnoreOnPageCaching)){
-		ChromePhp::log("Minify and cache");
 			// ob_gzhandler automatically checks for browser gzip support and gzips
 			if(!ob_start("ob_gzhandler")) ob_start();
 			// output the cached min version:
 			$this->outputMinfiedCached( $o );
 		} else {
-		ChromePhp::log("Just output");
 			echo $o;
 		}
 	}
