@@ -192,7 +192,7 @@ mw.KAnalytics.prototype = {
 		}
 
 		// Do the api request:
-		this.kClient.doRequest( eventRequest );
+		this.kClient.doRequest( eventRequest, null, true );
 	},
 
 	/**
