@@ -178,7 +178,7 @@
 				_this.bufferTime = 0;
 				_this.eventIndex +=1;
 				_this.embedPlayer.triggerHelper( 'liveAnalyticsEvent' , liveStatsEvent);
-				_this.kClient.doRequest( eventRequest );
+				_this.kClient.doRequest( eventRequest, null, true );
 
 			}
 		})
