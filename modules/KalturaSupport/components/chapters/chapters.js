@@ -691,7 +691,10 @@
 					if ( $.inArray( objId, searchResults ) > -1 ) {
 						mediaBoxObj.removeClass( "resultNoMatch" );
 					} else {
-						mediaBoxObj.addClass( "resultNoMatch collapsed" );
+						mediaBoxObj
+							.addClass( "resultNoMatch" )
+							.filter("[data-chapter-index!=-1]" ) //Only collapse slides under chapters
+							.addClass("collapsed");
 					}
 				} );
 				var _this = this;
@@ -711,8 +714,8 @@
 				this.searchResultShown = false;
 				this.enableChapterToggle();
 				var mediaBoxes = this.getMediaListDomElements();
-				//Remove search results slide collapsed state
-				var slidesSearchResults = mediaBoxes.filter(":not(.resultNoMatch.collapsed).slideBox");
+				//Remove search results slide collapsed state (only to slides under chapters)
+				var slidesSearchResults = mediaBoxes.filter(":not(.resultNoMatch.collapsed).slideBox[data-chapter-index!=-1]");
 				this.inSlideAnimation = slidesSearchResults.length ? true : false;
 				this.transitionsToBeFired = slidesSearchResults.length;
 				slidesSearchResults.addClass("collapsed");
