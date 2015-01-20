@@ -393,7 +393,7 @@
 				// Android fires orientationchange too soon, i.e width and height are wrong
 				var eventName = mw.isAndroid() ? 'resize' : 'orientationchange';
 				eventName += this.bindPostFix;
-				var isIframe = mw.getConfig('EmbedPlayer.IsIframeServer' );
+				var isIframe = (mw.getConfig('EmbedPlayer.IsIframeServer' ) && mw.getConfig('EmbedPlayer.IsFriendlyIframe'));
 				var context = isIframe ? window['parent'] : window;
 				// Bind orientation change to resize player
 				$( context ).bind( eventName, updateSecondScreenLayout);
