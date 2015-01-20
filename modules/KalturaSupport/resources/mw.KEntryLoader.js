@@ -178,7 +178,8 @@ mw.KEntryLoader.prototype = {
 					// add in the flashvars that can vary the api response
 					if( typeof kProperties.flashvars == 'object'){
 						rKey += kProperties.flashvars.getCuePointsData;
-						rKey += kProperties.flashvars.ks
+						rKey += kProperties.flashvars.ks;
+						rKey += kProperties.flashvars.referenceId;
 					}
 				} else {
 					rKey+=inx + '_' + value;
