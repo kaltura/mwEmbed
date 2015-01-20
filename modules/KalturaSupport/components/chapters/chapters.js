@@ -89,6 +89,10 @@
 							_this.renderMediaList();
 							_this.updateActiveItem();
 						}
+					} else {
+						//If no cuepoints on start then player is in live mode
+						//and there are no chapters in live mode, so disable toggling
+						_this.disableChapterToggle();
 					}
 				}
 			});
