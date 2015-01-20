@@ -1,5 +1,4 @@
 <?php
-global $wgMwEmbedVersion;
 return array(
 	'omnitureOnPage' => array(
 		'description' => 'The Omniture s_code config version of the plugin, allows you to connect the Omniture plugin to your existing s_code.js
