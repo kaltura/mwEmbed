@@ -959,10 +959,12 @@
 			var _this = this;
 			// bind to chromeless player events
 			this.embedPlayer.getPlayerElement().subscribe(function(){
+				mw.log("DoubleClick:: adLoadedEvent");
 				_this.adManagerLoaded = true;
 			}, 'adLoadedEvent');
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+				mw.log("DoubleClick:: adStart");
 				// trigger ad play event
 				$(_this.embedPlayer).trigger("onAdPlay",[adInfo.adID]);
 				// This changes player state to the relevant value ( play-state )
@@ -988,6 +990,7 @@
 
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+				mw.log("DoubleClick:: adLoaded");
 				_this.isLinear = adInfo.isLinear;
 				if (!_this.isLinear && _this.isChromeless ){
 					$(".mwEmbedPlayer").hide();
@@ -1003,18 +1006,22 @@
 			},'adLoaded', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+				mw.log("DoubleClick:: adCompleted");
 				$(_this.embedPlayer).trigger('onAdComplete',[adInfo.adID, mw.npt2seconds($(".currentTimeLabel").text())]);
 			},'adCompleted', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
+				mw.log("DoubleClick:: adClicked");
 				_this.toggleAdPlayback(adInfo.isLinear);
 			}, 'adClicked', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(companionInfo){
+				mw.log("DoubleClick:: displayCompanion");
 				_this.showCompanion(companionInfo.companionID, companionInfo.content);
 			},'displayCompanion', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+				mw.log("DoubleClick:: allAdsCompleted");
 				setTimeout(function(){
 					_this.restorePlayer(true);
 				},0);
@@ -1026,6 +1033,7 @@
 			},'allAdsCompleted', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+				mw.log("DoubleClick:: adRemainingTimeChange");
 				_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', (adInfo.duration - adInfo.remain));
 				_this.embedPlayer.updatePlayHead( adInfo.time / adInfo.duration );
 				// Update sequence property per active ad:
@@ -1038,6 +1046,7 @@
 			},'adRemainingTimeChange', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+				mw.log("DoubleClick:: contentResumeRequested");
 				_this.embedPlayer.sequenceProxy.isInSequence = false;
 				if (_this.prevSlotType === "midroll") {
 					_this.prevSlotType = ""; // to support multiple midrolls we must clear prevSlotType when the midroll is finished
@@ -1051,19 +1060,22 @@
 					},250);
 				}
 				if ( _this.currentAdSlotType !== 'postroll' ){
-					_this.restorePlayer( null, true );
+					_this.restorePlayer(null, true);
 					if ( _this.currentAdSlotType === 'preroll' ){
 						_this.currentAdSlotType = "midroll";
 					}
-					setTimeout(function(){
-						_this.embedPlayer.startMonitor();
-						_this.embedPlayer.getPlayerElement().play();
-					},100);
+					if ( !_this.isNativeSDK ) {
+						setTimeout(function () {
+							_this.embedPlayer.startMonitor();
+							_this.embedPlayer.getPlayerElement().play();
+						}, 100);
+					}
 				}
 				_this.playingLinearAd = false;
 			},'contentResumeRequested', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+				mw.log("DoubleClick:: contentPauseRequested");
 				_this.entryDuration = _this.embedPlayer.getDuration();
 				_this.embedPlayer.sequenceProxy.isInSequence = true;
 				_this.embedPlayer.stopMonitor();
@@ -1071,6 +1083,7 @@
 			},'contentPauseRequested', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
+				mw.log("DoubleClick:: adsLoadError");
 				setTimeout(function(){
 					_this.embedPlayer.hideSpinner();
 					_this.adLoaderErrorFlag = true;

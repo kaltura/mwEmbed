@@ -61,12 +61,14 @@ kWidget.addReadyCallback(function( playerId ){
 	$('#switchTime').click(function () {
 		kdp.setKDPAttribute('mediaProxy', 'mediaPlayFrom', $('#k-from').val());
 		kdp.setKDPAttribute('mediaProxy', 'mediaPlayTo', $('#k-to').val());
+		setTimeout(function(){
+			kdp.sendNotification('doPlay');
+		},500);
 		return false;
 	});
 });
 </pre>
-Switch segment to <input id="k-from" size="4" style="width:30px" value="10"> to <input id="k-to" style="width:30px"
-                                                                                       size="4" value="30">
+Switch segment to <input id="k-from" size="4" style="width:30px" value="30"> to <input id="k-to" style="width:30px" size="4" value="50">
 <a href="#" id="switchTime">GO</a>
 <br/><br/>
 This example highlights change the entry to 1_sf5ovm7u and update time 5 to 30 second, followed by a content play <br>
@@ -92,6 +94,9 @@ kWidget.addReadyCallback(function (playerId) {
 		$('#switchTime').click(function () {
 			kdp.setKDPAttribute('mediaProxy', 'mediaPlayFrom', $('#k-from').val());
 			kdp.setKDPAttribute('mediaProxy', 'mediaPlayTo', $('#k-to').val());
+			setTimeout(function(){
+				kdp.sendNotification('doPlay');
+			},500);
 			return false;
 		});
 		$('#changeMediaAndTime').click(function(){

@@ -510,7 +510,7 @@
 			mw.log("EmbedPlayer:: disablePlayControls");
 
 			if ( !excludedComponents ) {
-				excludedComponents = ['fullScreenBtn', 'logo'];
+				excludedComponents = ['fullScreenBtn', 'logo', 'volumeControl'];
 				if (mw.getConfig('enableControlsDuringAd')) {
 					excludedComponents.push('playPauseBtn');
 				}
@@ -784,7 +784,12 @@
 				this.sourcesReplaced = false;
 			}
 			// Autoseletct the media source
-			this.mediaElement.autoSelectSource();
+			var baseTimeOptions =  {
+				'supportsURLTimeEncoding': this.supportsURLTimeEncoding(),
+				'startTime' :this.startTime,
+				'endTime': this.pauseTime
+			};
+			this.mediaElement.autoSelectSource(baseTimeOptions);
 
 			// Auto select player based on default order
 			if (this.mediaElement.selectedSource) {
@@ -1066,6 +1071,10 @@
 		onClipDone: function () {
 			var _this = this;
 			this.shouldEndClip = false;
+			if ( _this.clipDoneTimeout ){
+				clearTimeout(_this.clipDoneTimeout);
+				_this.clipDoneTimeout = null;
+			}
 			// Don't run onclipdone if _propagateEvents is off
 			if (!_this._propagateEvents) {
 				return;
@@ -1117,14 +1126,10 @@
 							mw.log("EmbedPlayer::onClipDone:Restore events after we rewind the player");
 							_this.restoreEventPropagation();
 
-							// fix for streaming
-							if (_this.streamerType == 'hdnetwork') {
-								setTimeout(function () {
-									_this.play();
-								}, 100);
-							} else {
+							// synchronize playing with events listeners
+							setTimeout(function () {
 								_this.play();
-							}
+							}, 100);
 
 							return;
 						});
@@ -1583,9 +1588,10 @@
 			// Empty out embedPlayer object sources
 			this.emptySources();
 
+			// Reset first play to true, to count that play event
+			this.firstPlay = true;
+
 			if (resetPlaybackValues || resetPlaybackValues === undefined) {
-				// Reset first play to true, to count that play event
-				this.firstPlay = true;
 				// reset donePlaying count on change media.
 				this.donePlayingCount = 0;
 				this.triggeredEndDone = false;
@@ -2808,7 +2814,12 @@
 				mw.log("EmbedPlayer::getCompatibleSource: add " + source.src + ' of type:' + source.type);
 			});
 			var myMediaElement = new mw.MediaElement($media[0]);
-			var source = myMediaElement.autoSelectSource();
+			var baseTimeOptions =  {
+				'supportsURLTimeEncoding': this.supportsURLTimeEncoding(),
+				'startTime' :this.startTime,
+				'endTime': this.pauseTime
+			};
+			var source = myMediaElement.autoSelectSource(baseTimeOptions);
 			if (source) {
 				mw.log("EmbedPlayer::getCompatibleSource: " + source.getSrc());
 				return source;
@@ -3058,9 +3069,10 @@
 			}
 		},
 
-		handlePlayerError: function (data) {
-			if (this.shouldHandlePlayerError) {
-				this.showErrorMsg({ title: this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'), message: this.getKalturaMsg('ks-CLIP_NOT_FOUND') });
+		handlePlayerError: function (data, shouldHandlePlayerError) {
+			if (this.shouldHandlePlayerError || shouldHandlePlayerError) {
+				var message = data ? data : this.getKalturaMsg('ks-CLIP_NOT_FOUND');
+				this.showErrorMsg({ title: this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'), message: message });
 			}
 		},
 

@@ -69,10 +69,6 @@
 			'chromecastDeviceDisConnected'
 		],
 
-		nativeActions: [
-			'share',
-			'openHomePage'
-		],
 		// Native player supported feature set
 		supports: {
 			'playHead': true,
@@ -213,9 +209,18 @@
 			}
 		},
 
-		/**
-		 * Apply media element bindings
-		 */
+		changeMediaCallback: function (callback) {
+			// Check if we have source
+			if (!this.getSource()) {
+				callback();
+				return;
+			}
+
+			this.switchPlaySource(this.getSource(), function () {
+				callback();
+			});
+		},
+
 		applyMediaElementBindings: function () {
 			var _this = this;
 			mw.log("EmbedPlayerNative::MediaElementBindings");
@@ -286,7 +291,7 @@
 		play: function () {
 			mw.log("EmbedPlayerNativeComponent:: play::");
 			this.playbackDone = false;
-			this.removePoster();
+
 
 			if (this.parent_play()) {
 				if (this.getPlayerElement()) { // update player
@@ -294,6 +299,7 @@
 				}
 				this.monitor();
 			}
+			this.removePoster();
 		},
 
 		/**
@@ -338,9 +344,6 @@
 			this.getPlayerElement().doNativeAction();
 		},
 
-		nativeActionType: function (actionName) {
-			return $.inArray(actionName, this.nativeActions);
-		},
 
 		isNativeApp: function () {
 			return mw.getConfig("EmbedPlayer.ForceNativeComponent");

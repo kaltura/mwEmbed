@@ -1,6 +1,6 @@
 @import url(http://fonts.googleapis.com/css?family=Lato:300,400,700,900);
 .medialistContainer{
-    font-family: "Helvetica Neue", 'Open Sans', sans-serif;
+    font-family: "Lato", 'Open Sans', sans-serif;
     height: 100%;
     width: 100%;
 }
@@ -23,7 +23,6 @@
 
 .chapters > .k-chapters-container{
     position:relative;
-    font-family:'Lato';
 }
 .chapters > .k-chapters-container.horizontal {
     padding-top:5px;
@@ -40,6 +39,55 @@
 .touch  .chapters > .k-chapters-container .k-medialist-header{
     height: 48px;
 }
+.chapters > .footer{
+    height: 40px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    display: table;
+    z-index: 10;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0, M12=0, M21=0, M22=0, SizingMethod='auto expand')";
+    -webkit-transition: -webkit-transform 0.25s ease-out;
+    -moz-transition: -moz-transform 0.25s ease-out;
+    -ms-transition: -ms-transform 0.25s ease-out;
+    transition: transform 0.25s ease-out;
+}
+.chapters > .footer.minimized{
+    -webkit-transform: scale(0);
+    -moz-transform: scale(0);
+    -ms-transform: scale(0);
+    transform: scale(0);
+}
+.touch  .chapters > .footer{
+    height: 48px;
+}
+.chapters > .footer > .footerWrapper{
+    height: 100%;
+    width: 100%;
+    background-color: rgb(245, 245, 245);
+    overflow: hidden;
+    text-align: center;
+    vertical-align: middle;
+    display: table-cell;
+}
+.chapters > .footer span{
+    width: 24px;
+    display: inline-block;
+    color: rgb(0,0,0);
+    font-size: 24px;
+    margin: 0px 5px;
+    cursor: pointer;
+}
+.chapters > .footer span.toggleAll {
+    position: absolute;
+    right: 0;
+}
+
+.chapters > .footer span.toggleAll.disabled {
+    display: none;
+    cursor: default;
+}
+
 .chapters > .k-chapters-container .chapterDivider{
     width: 1px;
     background: #aaa;
@@ -63,9 +111,11 @@
 }
 .chapters > .k-chapters-container .boxImg img {
     height: 100%;
+    width: 100%;
     background-repeat: no-repeat;
     background-position: left top;
-    background-size : cover;
+    background-size: cover;
+    box-sizing: border-box;
 }
 .chapters > .k-chapters-container .boxShadow {
     position: absolute;
@@ -139,10 +189,12 @@
 }
 .chapters > .k-chapters-container .k-description-container{
     max-height: 30%;
+    height: 100%;
     font-size:13px;
     font-weight: 300;
     line-height: 1.357;
 }
+
 .chapters > .k-chapters-container .k-chapter-time {
     font-weight: 300;
     color: rgb(255, 255, 255);
@@ -157,15 +209,23 @@
 }
 
 .chapterBox.collapsed .slideBoxToggle{
-    border-color: #c2c2c2 transparent transparent transparent;
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    transform: rotate(-90deg);
 }
 .chapterBox .slideBoxToggle{
-    border-style: solid;
-    border-width: 40px 40px 0 0;
-    border-color: transparent #c2c2c2 transparent transparent;
     position: absolute;
     bottom: 0;
     right: 0;
+    z-index: 2;
+    margin: 0 20px 12px 0;
+    font-size: 30px;
+    -webkit-transition: -webkit-transform 0.5s ease-out;
+    -moz-transition: -moz-transform 0.5s ease-out;
+    -ms-transition: -ms-transform 0.5s ease-out;
+    transition: transform 0.5s ease-out;
 }
 
 .chapterBox.disableChapterToggle .slideBoxToggle{
@@ -173,10 +233,10 @@
 }
 
 .slideBox{
-    -webkit-transition-property: all .5s cubic-bezier(0, 1, 0.5, 1);
-    -moz-transition-property: all .5s cubic-bezier(0, 1, 0.5, 1);
-    -ms-transition-property: all .5s cubic-bezier(0, 1, 0.5, 1);
-    transition: all .5s cubic-bezier(0, 1, 0.5, 1);
+    -webkit-transition: -webkit-transform .5s cubic-bezier(0, 1, 0.5, 1);
+    -moz-transition: -moz-transform .5s cubic-bezier(0, 1, 0.5, 1);
+    -ms-transition: -ms-transform .5s cubic-bezier(0, 1, 0.5, 1);
+    transition: transform .5s cubic-bezier(0, 1, 0.5, 1);
 }
 .slideBox.collapsed{
     -webkit-transform: translateX(-100%);
@@ -188,36 +248,42 @@
 .slideBox > .boxImg{
     width: 66%;
     right: 0;
+    box-sizing: border-box;
+    padding: 4px 6px;
     position: absolute;
-}
-.slideBox > .boxShadow {
-    background-image: -moz-linear-gradient(-45deg, rgb(34, 34, 34) 0%, rgba(0, 0, 0, 0.71) 50%,
-    rgba(0, 0, 0, 0.65) 60%, rgba(0, 0, 0, 0.30196) 100%);
-    background-image: -webkit-linear-gradient(-45deg, rgb(34, 34, 34) 0%, rgba(0, 0, 0, 0.71) 50%,
-    rgba(0, 0, 0, 0.65) 60%, rgba(0, 0, 0, 0.30196) 100%);
-    background-image: -ms-linear-gradient(-45deg, rgb(34, 34, 34) 0%, rgba(0, 0, 0, 0.71) 50%,
-    rgba(0, 0, 0, 0.65) 60%, rgba(0, 0, 0, 0.30196) 100%);
 }
 .slideBox .slideGutter{
-    position: absolute;
-    width: 35px;
-    height: 60%;
-    top: 1%;
+    display: table-cell;
     font-size: 12px;
     font-weight: 300;
-    text-align: right;
-    left: 0px;
-    z-index: 2;
+    text-align: center;
+    vertical-align: middle;
     color: rgb(187,187,187);
 }
-.chapters > .k-chapters-container .slideBox .boxInfo{
-    padding: 0px 40px;
-    height: 60%;
-    top: 20%;
+.slideBox .slideNumber{
+    position: relative;
+    z-index: 2;
+}
+.slideBox .slideOverlay{
+    opacity: 0.5;
     position: absolute;
     width: 100%;
-    box-sizing: border-box;
+    height: 100%;
+}
+.chapters > .k-chapters-container .slideBox .boxInfo{
+    display: table;
+    position: absolute;
+    width: 34%;
+    height: 100%;
     color: rgb(255, 255, 255);
+}
+.slideBox .separator{
+    position: absolute;
+    bottom: 0;
+    border-bottom: 1px solid rgb(80,80,80);
+    height: 1px;
+    width: 100%;
+
 }
 .chapters > .k-chapters-container .k-slide-text{
     position: relative;
@@ -340,6 +406,9 @@
     padding: 2px;
     width: 11px;
 }
+.touch .nano-pane   {
+    display: none !important;
+}
 .nano > .nano-pane:hover, .nano-pane:active {
     cursor: pointer;
     width: 14px;
@@ -417,20 +486,21 @@
     height: 20px;
 }
 .touch #searchBox, .touch.tt-hint {
-    margin: 16px 6px;
+    margin: 16px 0px;
 }
 #searchBox, .tt-hint{
-    margin: 12px 2px;
+    margin: 12px 0px;
+    height: 16px;
     width: 100%;
     border: none;
     color: rgb(0, 0, 0);
     outline: none;
     box-shadow:none;
-    font-family: "Lato", Helvetica, Arial, sans-serif;
     font-size: 15px;
     font-weight: 400;
     padding: 0;
     background: rgba(255, 255, 255, 0);
+    z-index: 2;
 }
 .minimized > * > * > #searchBox {
     margin: 1px 2px;
@@ -487,7 +557,7 @@ input#searchBox::-ms-clear {
 .touch .tt-suggestion {
     height: 44px;
 }
-.tt-suggestion {
+.tt-suggestion, .empty-message {
     display: block;
     padding: 3px 20px;
     clear: both;
