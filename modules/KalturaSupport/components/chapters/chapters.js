@@ -216,11 +216,12 @@
 			}
 		},
 		createMediaItems: function (mediaListItems) {
+			var _this = this;
 			//Fetch slides template
 			var slideTemplate = this.getTemplatePartialHTML("slides");
 			//Generate slide from each new medialist item
 			var mediaList = $.map(mediaListItems, function(mediaListItem){
-				return slideTemplate({mediaItem: mediaListItem});
+				return slideTemplate({mediaItem: mediaListItem, meta: _this.getMetaData()});
 			});
 			//Concat the template strings array to a full string
 			var mediaListString = mediaList.join("");
