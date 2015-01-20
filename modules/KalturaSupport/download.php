@@ -67,6 +67,7 @@ class downloadEntry {
 			
 			if($_GET['downloadName'] != null){
 				$filename	= urldecode($_GET['downloadName']).$extension;
+				$filename = $this->sanitizeFilenameForHeader($filename);
 			}else{
 				$filename = $flavorId . $extension;
 				
@@ -401,6 +402,21 @@ class downloadEntry {
 				isset( $resultObject['meta']->downloadUrl )
 		);
 	}
+
+	private function sanitizeFilenameForHeader($filename) {
+		strip_tags($filename);
+
+		function match_replace(){
+			return '';
+		};
+
+		$filename = preg_replace_callback(array('/[^(\x20-\x7F)]*/', '/[^\w\-\.\s]+/'),
+			"match_replace",
+			$filename
+		);
+		return $filename;
+	}
+
 	private function getSourceFlavorUrl( $flavorId = false ){
 		global $wgHTTPProtocol;
 
