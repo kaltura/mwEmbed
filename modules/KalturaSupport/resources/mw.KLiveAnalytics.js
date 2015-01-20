@@ -171,7 +171,7 @@
 					'deliveryType': _this.embedPlayer.streamerType,
 					'startTime'   : _this.startTime
 				};
-				var eventRequest = {'service' : 'LiveStats', 'action' : 'collect'};
+				var eventRequest = {'service' : 'liveStats', 'action' : 'collect'};
 				$.each(liveStatsEvent , function (index , value) {
 					eventRequest[ 'event:' + index] = value;
 				});
