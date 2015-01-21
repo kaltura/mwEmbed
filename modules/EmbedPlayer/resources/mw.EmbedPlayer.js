@@ -2163,12 +2163,12 @@
 
 			if (this.paused === true) {
 				this.paused = false;
-				// Check if we should Trigger the play event
-				mw.log("EmbedPlayer:: trigger play event::" + !this.paused + ' events:' + this._propagateEvents);
-				// trigger the actual play event:
-				if (this._propagateEvents) {
-					this.triggerHelper('onplay');
-				}
+			}
+			// Check if we should Trigger the play event
+			mw.log("EmbedPlayer:: trigger play event::" + !this.paused + ' events:' + this._propagateEvents);
+			// trigger the actual play event:
+			if (this._propagateEvents) {
+				this.triggerHelper('onplay');
 			}
 
 			// If we previously finished playing this clip run the "replay hook"
