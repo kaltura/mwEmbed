@@ -13,6 +13,7 @@
 		ANDROID_MIME_NAME: "http://kalturaplayertoolkit.com",
 
 		setup: function(){
+			mw.EmbedTypes.getMediaPlayers().defaultPlayers[ 'video/wvm' ].push( 'Native' );
 			// Bind player
 			this.addBindings();
 			if( !this.getConfig( "storeUrl" ) ) {
