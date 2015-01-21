@@ -294,7 +294,9 @@
 				_this.loadingEntry = false; // Update the loadingEntry flag//
 				// play clip that was selected when autoPlay=false. if autoPlay=true, the embedPlayer will do that for us.
 				if (!_this.getConfig("autoPlay")) {
-					embedPlayer.play();
+					setTimeout(function(){
+						embedPlayer.play();
+					},100); // timeout is required when loading live entries
 				}
 				_this.redrawOnResize = true;
 			});
