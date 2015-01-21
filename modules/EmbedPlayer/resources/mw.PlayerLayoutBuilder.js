@@ -588,7 +588,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		// protect against scroll intent
 		var touchStartPos, touchEndPos = null;
 		$( _this.embedPlayer ).bind( 'touchstart' + this.bindPostfix, function(e) {
-			e.preventDefault();
 			touchStartPos = e.originalEvent.touches[0].pageY; //starting point
 		})
 		.bind( 'touchend' + this.bindPostfix, function(e) {
