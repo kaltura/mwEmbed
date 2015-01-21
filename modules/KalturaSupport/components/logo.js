@@ -30,14 +30,17 @@
 					.append(
 						$('<a />')
 							.addClass('btnFixed')
-							.click(function () {
-								if (_this.getConfig('href')) {
+							.click(function (e) {
+								if (_this.getConfig('href') || this.href) {
 									if (mw.isNativeApp()) {
 										_this.openInNativeApp();
-									} else {
-										window.open(_this.getConfig('href'), "_blank");
+									}
+									else{
+										window.open(_this.getConfig("href") ? _this.getConfig("href") : this.href, "_blank")
 									}
 								}
+								e.preventDefault
+								return false;
 							})
 							.attr({
 								'title': this.getConfig('title')
