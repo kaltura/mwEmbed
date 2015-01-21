@@ -4,11 +4,6 @@
  */
 
 $kgDefaultComponentAttr = array(
-	'plugin' => array(
-		'doc' => 'Should plugin be enabled',
-		'initvalue' => true,
-		'type' => 'boolean',
-	),
 	'parent' => array(
 		'doc' => 'Parent container for component. Components include default placement, leave as null if unsure.',
 		'type' => 'enum',
