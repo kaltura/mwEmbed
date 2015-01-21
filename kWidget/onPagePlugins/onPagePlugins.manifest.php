@@ -1,4 +1,4 @@
-<?php 
+<?php
 return array(
 	'omnitureOnPage' => array(
 		'description' => 'The Omniture s_code config version of the plugin, allows you to connect the Omniture plugin to your existing s_code.js
@@ -12,6 +12,12 @@ return array(
 				'doc' => "The name of s_code entry point in the global window scope. ( \"s\" by default ).",
 				'label' => 'Entry code name',
 				'initvalue' => 's',
+				'type' => 'string'
+			),
+			'onPageJs1' => array(
+				'doc' => "The link to the omnitureOnPage plugin script.",
+				'label' => 'Plugin script URL',
+				'initvalue' => '{onPagePluginPath}/omnitureOnPage/resources/omnitureOnPage.js',
 				'type' => 'string'
 			),
 			'monitorEventInterval' => array(
