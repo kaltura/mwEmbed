@@ -78,14 +78,16 @@
 					}
 
 					$( embedPlayer.getPlayerElement() ).bind('pause' + _this.bindPostfix, function() {
-						embedPlayer.disableSwitchSourceCallback = false;
-						// next button was tapped
-						if( embedPlayer.getPlayerElement().currentTime > _this.previousTime + 1
-							|| embedPlayer.getPlayerElement().currentTime == _this.previousTime ) {
-							if( embedPlayer.disableSwitchSourceCallback != null ) {
-								embedPlayer.disableSwitchSourceCallback = true;
+						if(_this.seekIntervalID) {
+							embedPlayer.disableSwitchSourceCallback = false;
+							// next button was tapped
+							if (embedPlayer.getPlayerElement().currentTime > _this.previousTime + 1
+								|| embedPlayer.getPlayerElement().currentTime == _this.previousTime) {
+								if (embedPlayer.disableSwitchSourceCallback != null) {
+									embedPlayer.disableSwitchSourceCallback = true;
+								}
+								embedPlayer.getPlayerElement().currentTime = _this.previousTime;
 							}
-							embedPlayer.getPlayerElement().currentTime = _this.previousTime;
 						}
 					});
 				});
