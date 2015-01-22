@@ -67,7 +67,11 @@
 					setTimeout(function(){
 						if (_this.render) {
 							_this.getComponent().show();
-							_this.renderMediaList();
+							if (_this.getTemplateData().length) {
+								_this.configMediaListFeatures();
+							} else {
+								_this.renderMediaList();
+							}
 							_this.setSelectedMedia( _this.selectedMediaItemIndex );
 						} else {
 							_this.getComponent().hide();
@@ -94,7 +98,7 @@
 				}
 			});
 
-			this.bind("onShowSidelBar", function(){
+			this.bind("onShowSideBar", function(){
 				if (_this.checkAddScroll()){
 					_this.getScrollComponent().nanoScroller( {
 						flash: true,
@@ -169,7 +173,7 @@
 					}
 				} else {
 					this.$mediaListContainer = $( ".playlistInterface");
-					if (mw.isIOS()){
+					if (mw.isIOS() && (this.getConfig( 'containerPosition' ) == 'top' || this.getConfig( 'containerPosition' ) == 'bottom')){
 						this.$mediaListContainer.height(this.embedPlayer.height);
 					}
 					// resize the video to make place for the playlist according to its position (left, top, right, bottom)
@@ -456,6 +460,21 @@
 						// call mediaClicked with the media index (implemented in component level)
 						_this.mediaClicked(index);
 					}
+				} )
+				.on("touchmove", function(){
+					_this.isDisabled = true;
+				})
+				.on("touchend", function() {
+					if (_this.isDisabled){
+						if (_this.dragHandlerTimeout){
+							clearTimeout(_this.dragHandlerTimeout);
+							_this.dragHandlerTimeout = null;
+						}
+						_this.dragHandlerTimeout = setTimeout(function(){
+							_this.dragHandlerTimeout = null;
+							_this.isDisabled = false;
+						}, 300);
+					}
 				});
 			if (this.getConfig('thumbnailRotator')) {
 				mediaBoxes
@@ -582,11 +601,11 @@
 
 				var width = this.getMedialistComponent().width();
 				var scrollHeight = this.getConfig( "mediaItemHeight" ) || width * (1 / this.getConfig("mediaItemRatio"));
+				scrollHeight *= 1/2;
 
 				var options = {
 					flash: true,
 					preventPageScrolling: true,
-					iOSNativeScrolling: true,
 					sliderMaxHeight: scrollHeight
 				} ;
 				var _this = this;

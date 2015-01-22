@@ -1057,7 +1057,7 @@
 						$(_this.getPlayerElement()).show();
 						// Remove any poster div ( that would overlay the player )
 						if (!_this.isAudio()) {
-							$(_this).find('.playerPoster').remove();
+							_this.removePoster();
 						}
 						// if using native controls make sure the inteface does not block the native controls interface:
 						if (_this.useNativePlayerControls() && $(_this).find('video ').length == 0) {
@@ -1514,13 +1514,18 @@
 		playSegment: function (startTime, endTime) {
 			if (this.supportsURLTimeEncoding()) {
 				this.stop();
-				var newSource = this.mediaElement.autoSelectSource(true, this.startTime, this.pauseTime);
+				var baseTimeOptions =  {
+					'supportsURLTimeEncoding': true,
+					'startTime' :this.startTime,
+					'endTime': this.pauseTime
+				};
+				var newSource = this.mediaElement.autoSelectSource(baseTimeOptions);
 				if (newSource) {
 					this.switchSrc(newSource);
 				}
-				this.currentTime = 0;
-				this.monitor();
-				this.play();
+				if (mw.isIOS8()){
+					this.play();
+				}
 			} else {
 				this.pause();
 				this.currentTime = 0;

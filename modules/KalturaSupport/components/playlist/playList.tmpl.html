@@ -1,8 +1,8 @@
 <ul>
     <% for ( var i = 0; i < mediaList.length; i++ ) { %>
     <%var mediaItem =  mediaList[i];%>
-    <li class="chapterBox mediaBox" data-mediabox-index="<%=i%>"
-        <% if (meta.layout == "hotizontal") { %> style="width: <%= mediaItem.width %>px " <% } %> >
+    <li class="chapterBox mediaBox" data-mediaBox-index="<%=i%>">
+        <% if (meta.layout == "hotizontal") { %> style="width: <%= mediaItem.width %>px " <% } %>
         <% if (i > 0) { %>
         <!--div class="chapterDivider"
             <% if (meta.layout == "hotizontal") { %> style="height: <%= mediaItem.thumbnail.height %>px " <% } %> >
@@ -13,7 +13,7 @@
 	        <div class="thumbnailHolder">
             <img class="k-thumb" alt="Thumbnail for <%=mediaItem.title%>" data-mediaBox-index="<%=i%>" src="<%=mediaItem.thumbnail.url%>"
                  style="width:<%=mediaItem.thumbnail.width%>px;
-                 height: <%=mediaItem.thumbnail.height%>px"></img>
+                 height: <%=mediaItem.thumbnail.height%>px"/>
 	        </div>
             <% } %>
             <span class="k-title-container" title="<%=mediaItem.title%>">

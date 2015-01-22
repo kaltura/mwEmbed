@@ -235,7 +235,9 @@
 		showCaptions: function(){
 			if( this.getConfig('displayCaptions') ) {
 				this.getCaptionsOverlay().show();
-				this.getPlayer().triggerHelper('closedCaptionsDisplayed', {language: this.selectedSource.label});
+				if( this.selectedSource != null ) {
+					this.getPlayer().triggerHelper('closedCaptionsDisplayed', {language: this.selectedSource.label});
+				}
 				if( this.getConfig('layout') == 'below' ) {
 					this.updateBelowVideoCaptionContainer();
 				}
@@ -771,7 +773,7 @@
 				this.getPlayer().setCookie( this.cookieName, source.srclang.toLowerCase() );
 			}
 
-			this.getPlayer().triggerHelper('changedClosedCaptions', {language: this.selectedSource.label});
+			this.getPlayer().triggerHelper('changedClosedCaptions', {language: this.selectedSource.label ? this.selectedSource.label : ""});
 		},
 		getComponent: function(){
 			var _this = this;

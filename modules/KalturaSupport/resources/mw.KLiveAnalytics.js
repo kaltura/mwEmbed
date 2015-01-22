@@ -138,11 +138,11 @@
 			},
 			startLiveEvents :function(){
 				var _this = this;
+				_this.startTime = null;
 				if ( _this.isLiveEventsOn )  {
 					return;
 				}
 				_this.isLiveEventsOn = true;
-				_this.startTime = new Date().getTime();
 				_this.kClient = mw.kApiGetPartnerClient( _this.embedPlayer.kwidgetid );
 				_this.monitorIntervalObj.cancel = false;
 				if ( _this.firstPlay ){
@@ -171,14 +171,22 @@
 					'deliveryType': _this.embedPlayer.streamerType,
 					'startTime'   : _this.startTime
 				};
-				var eventRequest = {'service' : 'LiveStats', 'action' : 'collect'};
+				var eventRequest = {'service' : 'liveStats', 'action' : 'collect'};
 				$.each(liveStatsEvent , function (index , value) {
 					eventRequest[ 'event:' + index] = value;
 				});
 				_this.bufferTime = 0;
 				_this.eventIndex +=1;
 				_this.embedPlayer.triggerHelper( 'liveAnalyticsEvent' , liveStatsEvent);
-				_this.kClient.doRequest( eventRequest, null, true );
+				_this.kClient.doRequest( eventRequest, function(data){
+					try {
+						if (!_this.startTime ) {
+							_this.startTime = data;
+						}
+					}catch(e){
+						mw.log("Failed sync time from server");
+					}
+				}, true );
 
 			}
 		})
