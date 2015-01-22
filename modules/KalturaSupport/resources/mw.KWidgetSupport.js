@@ -114,7 +114,7 @@ mw.KWidgetSupport.prototype = {
 		
 		// Add hook for check player sources to use local kEntry ID source check:
 		embedPlayer.bindHelper( 'checkPlayerSourcesEvent', function( event, callback ) {
-			_this.originalStreamerType = embedPlayer.getKalturaConfig( null, 'streamerType' ) ? embedPlayer.getKalturaConfig( null, 'streamerType' ) : 'auto';
+			_this.originalStreamerType = embedPlayer.getKalturaConfig( null, 'streamerType' ) ? embedPlayer.getKalturaConfig( null, 'streamerType' ) : 'http';
 			_this.loadAndUpdatePlayerData( embedPlayer, callback );
 		});
 
