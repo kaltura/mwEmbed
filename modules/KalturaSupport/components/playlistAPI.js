@@ -147,16 +147,25 @@
 						_this.setConfig( 'mediaItemWidth', $( ".playlistInterface" ).width() / 3 );
 
 					} else {
-						_this.setConfig( 'mediaItemWidth', '320' );
+						if (_this.getLayout() === "vertical"){
+							_this.setConfig( 'mediaItemWidth', '320' );
+						}else{
+							// support MinClips property in horizontal playlists
+							var requiredMediaItemWidth = $( ".playlistInterface" ).width() / _this.getConfig("MinClips");
+							if (  requiredMediaItemWidth < _this.getConfig( 'mediaItemWidth' ) ) {
+								_this.setConfig( 'mediaItemWidth', Math.floor(requiredMediaItemWidth) );
+							}
+						}
 					}
-					_this.setConfig( 'titleLimit', parseInt( _this.getConfig( 'mediaItemWidth' ) / 7 ) );
-					_this.setConfig( 'descriptionLimit', parseInt( _this.getConfig( 'mediaItemWidth' ) / 8 ) );
-
 					// redraw player and playlist
 					_this.$mediaListContainer = null;
 					_this.getMedialistContainer();
 					_this.renderMediaList();
 					_this.setMultiplePlayLists();
+					setTimeout(function(){
+						_this.getComponent().find(".k-description-container").dotdotdot();
+					},100);
+
 				}
 			});
 
