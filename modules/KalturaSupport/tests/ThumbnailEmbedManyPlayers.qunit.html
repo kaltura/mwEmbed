@@ -99,7 +99,7 @@ if( window.QUnit ){
 	// Only run default demo if not a qunit test: 
 	if( !window.QUnit ){
 		/* configuration */
-		var numOfPlayer = 12;
+		var numOfPlayer = 6;
 		var useThumbEmbed = true;
 		if( document.URL.indexOf( 'forceNoThumbFlash') != -1){
 			useThumbEmbed = false;
@@ -167,6 +167,106 @@ if( window.QUnit ){
 			})(i);
 		}
 	}
+</script>
+<br><br>
+<div style="clear:both">
+<h3>Custom Thumbnail embed</h3>
+<div id="player-target" style="width:400px;height:300px"></div>
+<br>
+<b>Load the entry data from the api, then embed with captureClickEventForiOS flag</b>
+<pre class="prettyprint linenums">
+var entryId =  '0_uka1msg4';
+new kWidget.api( {
+	'wid' : '_243342',
+}).doRequest({
+	'service' : 'baseentry',
+	'action' : 'list',
+	'filter:objectType' : 'KalturaBaseEntryFilter',
+	'filter:idEqual' : entryId
+}, function(data){
+	if( !data.objects || !data.objects[0] ){
+		kWidget.log('Error getting entry')
+		return ;	
+	}
+	var entry = data.objects[0];
+	var settings = {
+		'targetId': 'player-target',
+		'wid' : '_243342',
+		'entry_id': entryId,
+		'uiconf_id': '20540612',
+		// since we already have the click gesture run kWiget embed with special capture click flag:
+		'captureClickEventForiOS' : true
+	}
+	// set callbakck to play on media ready ( works in iOS since we captured user gesture above) 
+	settings.readyCallback = function (playerId) {
+		// issue a play ( since we already clicked the play button )
+		var kdp = document.getElementById(playerId);
+		kdp.kBind('mediaReady', function () {
+			kdp.sendNotification('doPlay');
+		});
+	}
+	$('#player-target')
+	.append(
+		'&lt;div style="position: relative; width: 100%; height: 100%;"&gt;' + 
+			'&lt;img class="kWidgetCentered" src="' + kWidget.getKalturaThumbUrl(settings)  + '""&gt;' + 
+			'&lt;div class="kWidgetCentered kWidgetPlayBtn"&gt;&lt;/div&gt;' + 
+			'&lt;div style="position:absolute;top:10px;left:10px;width:300px;background-color:black;color:white"&gt;' +
+				entry.name + ' ' + entry.duration + ' seconds ' +
+			'&lt;/div&gt;' +
+		'&lt;/div&gt;'
+	)
+	.click(function(){
+		kWidget.embed(settings);
+	})
+	
+})
+</pre>
+<script>
+var entryId =  '0_uka1msg4';
+new kWidget.api( {
+	'wid' : '_243342',
+}).doRequest({
+	'service' : 'baseentry',
+	'action' : 'list',
+	'filter:objectType' : 'KalturaBaseEntryFilter',
+	'filter:idEqual' : entryId
+}, function(data){
+	if( !data.objects || !data.objects[0] ){
+		kWidget.log('Error getting entry')
+		return ;	
+	}
+	var entry = data.objects[0];
+	var settings = {
+		'targetId': 'player-target',
+		'wid' : '_243342',
+		'entry_id': entryId,
+		'uiconf_id': '20540612',
+		// since we already have the click gesture run kWiget embed with special capture click flag:
+		'captureClickEventForiOS' : true
+	}
+	// set callback to play on media ready ( works in iOS since we captured user gesture above) 
+	settings.readyCallback = function (playerId) {
+		// issue a play ( since we already clicked the play button )
+		var kdp = document.getElementById(playerId);
+		kdp.kBind('mediaReady', function () {
+			kdp.sendNotification('doPlay');
+		});
+	}
+	$('#player-target')
+	.append(
+		'<div style="position: relative; width: 100%; height: 100%;">' + 
+			'<img class="kWidgetCentered" src="' + kWidget.getKalturaThumbUrl(settings)  + '"">' + 
+			'<div class="kWidgetCentered kWidgetPlayBtn"></div>' + 
+			'<div style="position:absolute;top:10px;left:10px;width:300px;background-color:black;color:white">' +
+				entry.name + ' ' + entry.duration + ' seconds ' +
+			'</div>' +
+		'</div>'
+	)
+	.click(function(){
+		kWidget.embed(settings);
+	})
+	
+})
 </script>
  
 </body>
