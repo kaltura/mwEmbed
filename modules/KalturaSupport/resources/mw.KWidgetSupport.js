@@ -19,6 +19,7 @@ mw.KWidgetSupport.prototype = {
 	// The Kaltura client local reference
 	kClient : null,
 	kSessionId: null, // Used for Analytics events
+	originalStreamerType: null,
 
 	// Constructor check settings etc
 	init: function( options ){
@@ -113,6 +114,7 @@ mw.KWidgetSupport.prototype = {
 		
 		// Add hook for check player sources to use local kEntry ID source check:
 		embedPlayer.bindHelper( 'checkPlayerSourcesEvent', function( event, callback ) {
+			_this.originalStreamerType = embedPlayer.getKalturaConfig( null, 'streamerType' ) ? embedPlayer.getKalturaConfig( null, 'streamerType' ) : 'http';
 			_this.loadAndUpdatePlayerData( embedPlayer, callback );
 		});
 
@@ -774,6 +776,8 @@ mw.KWidgetSupport.prototype = {
 		} else if ( streamerType ) {
 			embedPlayer.streamerType = streamerType;
 		}
+		// restore the original streamerType Flashvar for future use if the user change media (for example - playlist)
+		embedPlayer.setFlashvars( 'streamerType', _this.originalStreamerType);
 	},
 	/**
 	 * Check for xml config, let flashvars override
