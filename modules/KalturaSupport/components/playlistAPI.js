@@ -300,7 +300,11 @@
 			} else {
 				eventToTrigger = 'playlistMiddleEntry';
 			}
-			this.redrawOnResize = false;
+
+			if ( !(mw.isAndroid() && mw.isNativeApp()) ) {
+				this.redrawOnResize = false;
+			}
+
 			// Listen for change media done
 			$(embedPlayer).unbind('onChangeMediaDone' + this.bindPostFix).bind('onChangeMediaDone' + this.bindPostFix, function () {
 				mw.log('mw.PlaylistAPI:: onChangeMediaDone');
