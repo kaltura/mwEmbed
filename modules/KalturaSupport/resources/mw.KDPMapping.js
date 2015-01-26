@@ -811,7 +811,10 @@
 					});
 					break;
 				case 'durationChange':
-					b( "durationchange durationChange", function(){
+					b( "durationchange", function(){
+						callback( {'newValue' : embedPlayer.duration}, embedPlayer.id );
+					});
+					b( "durationChange", function(){
 						callback( {'newValue' : embedPlayer.duration}, embedPlayer.id );
 					});
 				break;
