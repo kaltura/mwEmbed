@@ -473,8 +473,9 @@
 		/**
 		 * playback error
 		 */
-		_onerror: function (event, data) {
-			this.triggerHelper('embedPlayerError', [ data ]);
+		_onerror: function (event, dataStr) {
+			var data = JSON.parse(dataStr);
+			this.triggerHelper('embedPlayerError', data);
 		},
 
 		/**

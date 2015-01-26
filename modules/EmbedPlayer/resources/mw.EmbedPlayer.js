@@ -3072,6 +3072,8 @@
 		handlePlayerError: function (data, shouldHandlePlayerError) {
 			if (this.shouldHandlePlayerError || shouldHandlePlayerError) {
 				var message = data ? data : this.getKalturaMsg('ks-CLIP_NOT_FOUND');
+				/* there are two formats used to represent error messages*/
+				message = message.errorMessage ? message.errorMessage : message;
 				this.showErrorMsg({ title: this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'), message: message });
 			}
 		},
