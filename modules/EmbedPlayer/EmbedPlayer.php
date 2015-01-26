@@ -25,6 +25,7 @@
 					"resources/mw.processEmbedPlayers.js",
 					"resources/mw.EmbedPlayer.js",
 					"resources/mw.FullScreenManager.js",
+					"resources/mw.VisibilityManager.js",
 					"resources/mw.PlayerLayoutBuilder.js",
 				),
 				'dependencies' => array(

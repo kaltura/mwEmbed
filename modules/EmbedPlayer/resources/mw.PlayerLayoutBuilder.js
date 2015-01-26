@@ -52,6 +52,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		var _this = this;
 		this.embedPlayer = embedPlayer;
 		this.fullScreenManager = new mw.FullScreenManager( embedPlayer );
+		this.visibilityManager = new mw.VisibilityManager( embedPlayer );
 		var animationSupported = this.checkAnimationSupport();
 		mw.setConfig( 'EmbedPlayer.AnimationSupported', animationSupported );
 		$(document.body).append($('<div style="display: block" class="cssChecker"></div>'));
