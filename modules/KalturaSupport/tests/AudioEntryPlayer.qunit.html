@@ -36,7 +36,7 @@
 	Highlights an audio only player, disables large play button. 
 	
 	<br />
-	<div id="kaltura_player" style="width:400px;height:55px;"></div>
+	<div id="kaltura_player" style="width:400px;height:30px;"></div>
 	<script>
 		kWidget.embed({
 			'targetId' : 'kaltura_player',
@@ -46,6 +46,14 @@
 			'flashvars':{
 				'largePlayBtn':{
 					'plugin': false
+				},
+				'scrubber': {
+					'parent': 'controlsContainer',
+					'minWidth': 100,
+					'sliderPreview': false
+				},
+				'volumeControl':{
+					'pinVolumeBar': true
 				}
 			}
 		})
