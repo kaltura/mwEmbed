@@ -811,7 +811,7 @@
 					});
 					break;
 				case 'durationChange':
-					b( "durationchange durationChange", function(){debugger;
+					b( "durationchange durationChange", function(){
 						callback( {'newValue' : embedPlayer.duration}, embedPlayer.id );
 					});
 				break;
