@@ -143,8 +143,10 @@
 			// set responsiveness
 			this.bind('updateLayout', function(){
 				if (!_this.getPlayer().layoutBuilder.isInFullScreen() && _this.redrawOnResize) {
-					if ( $( ".playlistInterface" ).width() / 3 > _this.getConfig( 'mediaItemWidth' ) ) {
-						_this.setConfig( 'mediaItemWidth', $( ".playlistInterface" ).width() / 3 );
+					// decide the width of the items. For vertical layout: 3rd of the container. For horizontal: according to MinClips value
+					var divider = _this.getLayout() == "vertical" ? 3 : _this.getConfig("MinClips");
+					if ( $( ".playlistInterface" ).width() / divider > _this.getConfig( 'mediaItemWidth' ) ) {
+						_this.setConfig( 'mediaItemWidth', $( ".playlistInterface" ).width() / divider );
 
 					} else {
 						if (_this.getLayout() === "vertical"){
