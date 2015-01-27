@@ -278,9 +278,7 @@
 				if (mw.isIOS8() && mw.isIphone() && eventName === "seeking") {
 					return;
 				}
-				console.info("Add "+eventName);
-				vid.on(eventName, function () {
-					console.info(eventName);
+				vid.off(eventName).on(eventName, function () {
 					// make sure we propagating events, and the current instance is in the correct closure.
 					if (_this._propagateEvents && _this.instanceOf === _this.instanceOf) {
 						var argArray = $.makeArray(arguments);
@@ -295,6 +293,113 @@
 					}
 				});
 			});
+		},
+		/**
+		 * play method calls parent_play to update the interface
+		 */
+		play: function () {
+			if (this.parent_play()) {
+
+				this.playerObject.play();
+				this.monitor();
+			} else {
+				mw.log("EmbedPlayerMultiDRM:: parent play returned false, don't issue play on kplayer element");
+			}
+		},
+
+		/**
+		 * pause method calls parent_pause to update the interface
+		 */
+		pause: function () {
+			try {
+				this.playerObject.pause();
+			} catch (e) {
+				mw.log("EmbedPlayerMultiDRM:: doPause failed");
+			}
+			this.parent_pause();
+		},
+		/**
+		 * on Pause callback from the kaltura flash player calls parent_pause to
+		 * update the interface
+		 */
+		onPause: function () {
+			$(this).trigger("pause");
+		},
+
+		/**
+		 * onPlay function callback from the kaltura flash player directly call the
+		 * parent_play
+		 */
+		onPlay: function () {
+			if (this._propagateEvents) {
+				$(this).trigger("playing");
+				this.hideSpinner();
+				if (this.isLive()) {
+					this.ignoreEnableGui = false;
+					this.enablePlayControls(['sourceSelector']);
+				}
+				this.stopped = this.paused = false;
+			}
+		},
+		_ondurationchange: function (event, data) {
+			this.setDuration(this.getPlayerElement().duration());
+		},
+		/**
+		 * Local method for metadata ready
+		 * fired when metadata becomes available
+		 *
+		 * Used to update the media duration to
+		 * accurately reflect the src duration
+		 */
+		_onloadedmetadata: function () {
+			this.getPlayerElement();
+
+			// only update duration if we don't have one: ( some browsers give bad duration )
+			// like Android 4 default browser
+			if (!this.duration
+				&&
+				this.playerElement
+				&& !isNaN(this.playerElement.duration)
+				&&
+				isFinite(this.playerElement.duration)
+				) {
+				mw.log('EmbedPlayerNative :onloadedmetadata metadata ready Update duration:' + this.playerElement.duration + ' old dur: ' + this.getDuration());
+				this.setDuration(this.playerElement.duration);
+			}
+
+			// Check if in "playing" state and we are _propagateEvents events and continue to playback:
+			if (!this.paused && this._propagateEvents) {
+				this.getPlayerElement().play();
+			}
+
+			//Fire "onLoaded" flags if set
+			if (typeof this.onLoadedCallback == 'function') {
+				this.onLoadedCallback();
+			}
+
+			// Trigger "media loaded"
+			if (!this.mediaLoadedFlag) {
+				$(this).trigger('mediaLoaded');
+				this.mediaLoadedFlag = true;
+			}
+		},
+
+		/**
+		 * Local method for progress event
+		 * fired as the video is downloaded / buffered
+		 *
+		 * Used to update the bufferedPercent
+		 *
+		 * Note: this way of updating buffer was only supported in Firefox 3.x and
+		 * not supported in Firefox 4.x
+		 */
+		_onprogress: function (event) {
+			var e = event.originalEvent;
+			if (e && e.loaded && e.total) {
+				this.updateBufferStatus(e.loaded / e.total);
+				this.progressEventData = e.loaded;
+			}
 		}
+
 	};
 })(mediaWiki, jQuery);
