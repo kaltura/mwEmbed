@@ -4,7 +4,7 @@
 ( function( mw, $ ) {
 	"use strict";
 
-	// Add chromecast player:
+	// Add multidrm player:
 	$( mw ).bind( 'EmbedPlayerUpdateMediaPlayers' , function ( event , mediaPlayers ) {
 		var multiDRMProtocols = ['video/mp4'];
 		var multiDRMPlayer = new mw.MediaPlayer( 'multidrm' , multiDRMProtocols , 'MultiDRM' );
