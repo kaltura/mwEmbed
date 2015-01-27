@@ -36,10 +36,10 @@
 				"authenticationToken": null ,
 				"widevineLicenseServerURL": "https://lic.staging.drmtoday.com/license-proxy-widevine/cenc/" ,
 				"accessLicenseServerURL": "https://lic.staging.drmtoday.com/flashaccess/LicenseTrigger/v1" ,
-				"autoplay": true ,
-				"flashFile": 'http://localhost/dashas/dashas.swf' ,
-				"width": "640px" ,
-				"height": "320px" ,
+				"autoplay": false ,
+				"widht":"100%",
+				"height":"100%",
+				"flashFile": 'http://localhost/dashas/dashas.swf',
 				"controls": false ,
 				"techs": ["dashjs", "dashas"] ,
 				"debug": false
@@ -48,6 +48,9 @@
 		setup: function( embedPlayer ) {
 			var _this = this;
 			_this.addBindings();
+			//this.setConfig("castlabConfig.width",this.embedPlayer.width);
+			//this.setConfig("castlabConfig.height",this.embedPlayer.height);
+
 			this.embedPlayer.config = this.getConfig("castlabConfig");
 			$.getScript('http://localhost/video.js' ).then(
 				function(){

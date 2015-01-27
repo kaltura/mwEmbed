@@ -399,7 +399,33 @@
 				this.updateBufferStatus(e.loaded / e.total);
 				this.progressEventData = e.loaded;
 			}
-		}
+		},
+		/**
+		 * Update Volume
+		 *
+		 * @param {Float} percent Value between 0 and 1 to set audio volume
+		 */
+		setPlayerElementVolume: function (percent) {
+			if (this.getPlayerElement()) {
+				// Disable mute if positive volume
+				if (percent != 0 ) {
+					this.getPlayerElement().muted(false);
+				}
+				this.getPlayerElement().volume(percent);
+			}
+		},
+
+		/**
+		 * get Volume
+		 *
+		 * @return {Float}
+		 *    Audio volume between 0 and 1.
+		 */
+		getPlayerElementVolume: function () {
+			if (this.getPlayerElement()) {
+				return this.getPlayerElement().volume();
+			}
+		},
 
 	};
 })(mediaWiki, jQuery);
