@@ -6,7 +6,7 @@
 
 	// Add multidrm player:
 	$( mw ).bind( 'EmbedPlayerUpdateMediaPlayers' , function ( event , mediaPlayers ) {
-		var multiDRMProtocols = ['video/mp4'];
+		var multiDRMProtocols = ['video/dash'];
 		var multiDRMPlayer = new mw.MediaPlayer( 'multidrm' , multiDRMProtocols , 'MultiDRM' );
 		mediaPlayers.addPlayer( multiDRMPlayer );
 		// add
@@ -19,5 +19,53 @@
 		} );
 	} );
 
+	mw.PluginManager.add( 'multidrm', mw.KBasePlugin.extend({
 
+		defaultConfig: {
+			asyncInit:true,
+			'visible': false,
+			'align': "right",
+			castlabConfig: {
+				"customData": {
+					"userId": "purchase" ,
+					"sessionId": "p0" ,
+					"merchant": "six"
+				} ,
+				"assetId": "chromecast_debug" ,
+				"variantId": null ,
+				"authenticationToken": null ,
+				"widevineLicenseServerURL": "https://lic.staging.drmtoday.com/license-proxy-widevine/cenc/" ,
+				"accessLicenseServerURL": "https://lic.staging.drmtoday.com/flashaccess/LicenseTrigger/v1" ,
+				"autoplay": true ,
+				"flashFile": 'http://localhost/dashas/dashas.swf' ,
+				"width": "640px" ,
+				"height": "320px" ,
+				"controls": false ,
+				"techs": ["dashjs", "dashas"] ,
+				"debug": false
+			}
+		},
+		setup: function( embedPlayer ) {
+			var _this = this;
+			_this.addBindings();
+			this.embedPlayer.config = this.getConfig("castlabConfig");
+			$.getScript('http://localhost/video.js' ).then(
+				function(){
+					$.getScript('http://localhost/cldasheverywhere.min.js')
+				} ).then(function(){
+					_this.initCompleteCallback();
+				});
+
+
+
+		},
+		addBindings: function(){
+			var _this = this;
+			this.bind ('playerReady' , function() {
+			 	if (_this.embedPlayer.instanceOf === "MultiDRM"){
+				    _this.embedPlayer.config = _this.getConfig("castlabConfig");
+			    }
+			});
+		}
+	}));
 } )( window.mw, window.jQuery );

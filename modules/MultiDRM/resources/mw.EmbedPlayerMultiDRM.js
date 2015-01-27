@@ -51,7 +51,7 @@
 		setup: function (readyCallback){
 			this._propagateEvents = true;
 			mw.log('EmbedPlayerKplayer:: Setup');
-debugger;
+
 			// Check if we created the kPlayer container
 			var $container = this.getPlayerContainer();
 
@@ -75,7 +75,7 @@ debugger;
 			);
 
 			var _this = this;
-			var config = {};
+			var config = this.config;;
 			this.getEntryUrl().then(function (srcToPlay) {
 				//update config if needed
 
@@ -113,9 +113,10 @@ debugger;
 			};
 
 				_this.dashPlayer = new castLabs.DashEverywhere(config);
-				_this.playerObject = _this.dashPlayer.getPlayer().contentEl();
-				_this.applyMediaElementBindings();
+
 				_this.dashPlayer.loadVideo(srcToPlay);
+				_this.playerObject = _this.dashPlayer.getPlayer();
+				_this.applyMediaElementBindings();
 			});
 		},
 		/**
@@ -145,6 +146,13 @@ debugger;
 		},
 		supportsVolumeControl: function () {
 			return  !( mw.isIpad() || mw.isAndroid() || mw.isMobileChrome() || this.useNativePlayerControls() )
+		},
+		/**
+		 * Get the embed player time
+		 */
+		getPlayerElementTime: function () {
+			// update currentTime
+			return this.getPlayerElement().currentTime();
 		},
 		/**
 		 * Get the embed flash object player Element
@@ -269,10 +277,13 @@ debugger;
 				if (mw.isIOS8() && mw.isIphone() && eventName === "seeking") {
 					return;
 				}
-				$(vid).unbind(eventName + _this.bindPostfix).bind(eventName + _this.bindPostfix, function () {
+				console.info("Add "+eventName);
+				vid.on(eventName, function () {
+					console.info(eventName);
 					// make sure we propagating events, and the current instance is in the correct closure.
 					if (_this._propagateEvents && _this.instanceOf === _this.instanceOf) {
 						var argArray = $.makeArray(arguments);
+						console.info(eventName);
 						// Check if there is local handler:
 						if (_this[ '_on' + eventName ]) {
 							_this[ '_on' + eventName ].apply(_this, argArray);
