@@ -75,7 +75,7 @@
 			);
 
 			var _this = this;
-			var config = this.config;;
+			var config = this.config;
 			this.getEntryUrl().then(function (srcToPlay) {
 				//update config if needed
 
@@ -117,6 +117,7 @@
 				_this.dashPlayer.loadVideo(srcToPlay);
 				_this.playerObject = _this.dashPlayer.getPlayer();
 				_this.applyMediaElementBindings();
+				readyCallback();
 			});
 		},
 		/**
