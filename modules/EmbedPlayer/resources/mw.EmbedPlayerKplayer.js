@@ -64,7 +64,7 @@
 			this.updateSources();
 
 			var flashvars = {};
-			this.getEntryUrl().then(function (srcToPlay) {
+		this.getEntryUrl().then(function (srcToPlay) {
 				flashvars.widgetId = "_" + _this.kpartnerid;
 				flashvars.partnerId = _this.kpartnerid;
 				flashvars.autoMute = _this.muted || mw.getConfig('autoMute');
@@ -138,7 +138,7 @@
 						'mediaError': 'onMediaError',
 						'bitrateChange': 'onBitrateChange'
 					};
-					_this.playerObject = this.getElement();
+				_this.playerObject = this.getElement();
 					$.each(bindEventMap, function (bindName, localMethod) {
 						_this.playerObject.addJsListener(bindName, localMethod);
 					});
