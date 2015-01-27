@@ -22,6 +22,7 @@
 	mw.PluginManager.add( 'multidrm', mw.KBasePlugin.extend({
 
 		defaultConfig: {
+			asyncInit:true,
 			'visible': false,
 			'align': "right",
 			castlabConfig: {
@@ -46,7 +47,15 @@
 		},
 		setup: function( embedPlayer ) {
 			var _this = this;
-			this.addBindings();
+			_this.addBindings();
+			$.getScript('http://localhost/video.js' ).then(
+				function(){
+					$.getScript('http://localhost/cldasheverywhere.min.js')
+				} ).then(function(){
+					_this.initCompleteCallback();
+				});
+
+
 
 		},
 		addBindings: function(){
