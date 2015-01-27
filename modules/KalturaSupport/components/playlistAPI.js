@@ -143,19 +143,15 @@
 			// set responsiveness
 			this.bind('updateLayout', function(){
 				if (!_this.getPlayer().layoutBuilder.isInFullScreen() && _this.redrawOnResize) {
-					if ( $( ".playlistInterface" ).width() / 3 > _this.getConfig( 'mediaItemWidth' ) ) {
-						_this.setConfig( 'mediaItemWidth', $( ".playlistInterface" ).width() / 3 );
-
-					} else {
-						if (_this.getLayout() === "vertical"){
-							_this.setConfig( 'mediaItemWidth', '320' );
-						}else{
-							// support MinClips property in horizontal playlists
-							var requiredMediaItemWidth = $( ".playlistInterface" ).width() / _this.getConfig("MinClips");
-							if (  requiredMediaItemWidth < _this.getConfig( 'mediaItemWidth' ) ) {
-								_this.setConfig( 'mediaItemWidth', Math.floor(requiredMediaItemWidth) );
-							}
+					// decide the width of the items. For vertical layout: 3rd of the container. For horizontal: according to MinClips value
+					if ( _this.getLayout() === "vertical" ){
+						if ( $( ".playlistInterface" ).width() / 3 > _this.getConfig( 'mediaItemWidth' ) ) {
+							_this.setConfig( 'mediaItemWidth', $( ".playlistInterface" ).width() / 3 );
+						} else {
+							_this.setConfig( 'mediaItemWidth', '320' ); // set min width to 320
 						}
+					}else{
+						_this.setConfig( 'mediaItemWidth', Math.floor($( ".playlistInterface" ).width() / _this.getConfig("MinClips")) );
 					}
 					// redraw player and playlist
 					_this.$mediaListContainer = null;
