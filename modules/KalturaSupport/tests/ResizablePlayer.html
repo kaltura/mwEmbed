@@ -46,13 +46,14 @@ Also moves the control bar to take up available space till min size.
 			'captureThumbnail':{'plugin': true},
 			'playbackRateSelector':{'plugin': true},
 		}
+		var fv = Object.create( addedComponets );
+		// add iframe to flashvars: 
+		fv["IframeCustomPluginCss1"] = "resources/displaySizesColors.css";
 		kWidget.embed( 'playerTarget', {
 			'wid': '_243342',
 			'uiconf_id' : '21099702',
 			'entry_id' : '0_uka1msg4',
-			'flashvars': $.merge( addedComponets, {
-				"IframeCustomPluginCss1" : "resources/displaySizesColors.css"
-			}),
+			'flashvars': fv,
 			'readyCallback': function( playerId ){
 				kdp = $('#' + playerId )[0];
 				
@@ -99,7 +100,7 @@ Also moves the control bar to take up available space till min size.
 	});
 	</script>
 <br />
-<h3>Hide show components API:</h3>
+<h3>Hide show components via manual API calls:</h3>
 <pre class="prettyprint linenums">
 kdp.setKDPAttribute('pluginName', 'visible', false);
 </pre>
