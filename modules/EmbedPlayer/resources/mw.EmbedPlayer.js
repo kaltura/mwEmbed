@@ -3074,6 +3074,9 @@
 				var message = data ? data : this.getKalturaMsg('ks-CLIP_NOT_FOUND');
 				/* there are two formats used to represent error messages*/
 				message = message.errorMessage ? message.errorMessage : message;
+				if (!message || message == undefined){
+					message = this.getKalturaMsg('ks-CLIP_NOT_FOUND');
+				}
 				this.showErrorMsg({ title: this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'), message: message });
 			}
 		},
