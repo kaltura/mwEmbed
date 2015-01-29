@@ -656,10 +656,16 @@
 						}
 
 						var searchData = [res.title, res.description];
-						var tags = res.tags.split(",");
-						tags = $.grep(tags,function(n){ return(n); });
+						//Check if res tags is not empty before adding data
+						if (res.tags) {
+							var tags = res.tags.split( "," );
+							tags = $.grep( tags, function ( n ) {
+								return(n);
+							} );
 
-						searchData = searchData.concat(tags);
+							searchData = searchData.concat( tags );
+						}
+
 						$.each(searchData, function(index, data){
 							if (results.hash[data]) {
 								results.hash[data].push(res.id);
