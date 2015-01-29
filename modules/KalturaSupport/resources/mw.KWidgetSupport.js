@@ -723,13 +723,18 @@ mw.KWidgetSupport.prototype = {
 			mw.setConfig('EmbedPlayer.ShowPlayerAlerts', false );
 		}
 
-		// Check for dissable bit rate cookie and overide default bandwidth
-		if( getAttr( 'disableBitrateCookie' ) && getAttr( 'mediaProxy.preferedFlavorBR') ){
-			embedPlayer.setCookie( 'EmbedPlayer.UserBandwidth', getAttr( 'mediaProxy.preferedFlavorBR' ) * 1000 );
+		// check for preferedFlavorBR
+		var preferedFlavorBR = null;
+		if ( embedPlayer.getKalturaConfig('mediaProxy') ) {
+			preferedFlavorBR = embedPlayer.getKalturaConfig('mediaProxy').preferedFlavorBR;
 		}
-		// always set perfered bitrate if defined: 
-		if( getAttr( 'mediaProxy.preferedFlavorBR' ) && embedPlayer.mediaElement ){
-			embedPlayer.mediaElement.preferedFlavorBR = getAttr( 'mediaProxy.preferedFlavorBR' ) * 1000;
+		// Check for dissable bit rate cookie and overide default bandwidth
+		if( getAttr( 'disableBitrateCookie' ) && preferedFlavorBR ){
+			embedPlayer.setCookie( 'EmbedPlayer.UserBandwidth', preferedFlavorBR * 1000 );
+		}
+		// always set perfered bitrate if defined:
+		if( preferedFlavorBR && embedPlayer.mediaElement ){
+			embedPlayer.mediaElement.preferedFlavorBR = preferedFlavorBR * 1000;
 		}
 
 		// Enable tooltips
@@ -786,7 +791,7 @@ mw.KWidgetSupport.prototype = {
 	 * @param attr {Optional: Array|String} A list of attributes you want to get for the confPrefix
 	 * 				if null, we retrive all settings with the provided confPrefix
 	 */
-	getPluginConfig: function( embedPlayer, confPrefix, attr ){
+	 getPluginConfig: function( embedPlayer, confPrefix, attr ){
 		var singleAttrName = false;
 		if( typeof attr == 'string' ){
 			singleAttrName = attr;
