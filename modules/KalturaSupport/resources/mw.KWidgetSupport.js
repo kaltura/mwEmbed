@@ -723,13 +723,31 @@ mw.KWidgetSupport.prototype = {
 			mw.setConfig('EmbedPlayer.ShowPlayerAlerts', false );
 		}
 
-		// Check for dissable bit rate cookie and overide default bandwidth
-		if( getAttr( 'disableBitrateCookie' ) && getAttr( 'mediaProxy.preferedFlavorBR') ){
-			embedPlayer.setCookie( 'EmbedPlayer.UserBandwidth', getAttr( 'mediaProxy.preferedFlavorBR' ) * 1000 );
-		}
-		// always set perfered bitrate if defined: 
-		if( getAttr( 'mediaProxy.preferedFlavorBR' ) && embedPlayer.mediaElement ){
-			embedPlayer.mediaElement.preferedFlavorBR = getAttr( 'mediaProxy.preferedFlavorBR' ) * 1000;
+		var mediaProxy = embedPlayer.getKalturaConfig('mediaProxy');
+		// handle mediaProxy properties
+		if ( mediaProxy ){
+			// check for preferedFlavorBR
+			var preferedFlavorBR = mediaProxy.preferedFlavorBR;
+			// Check for dissable bit rate cookie and overide default bandwidth
+			if( getAttr( 'disableBitrateCookie' ) && preferedFlavorBR ){
+				embedPlayer.setCookie( 'EmbedPlayer.UserBandwidth', preferedFlavorBR * 1000 );
+			}
+			// always set perfered bitrate if defined:
+			if( preferedFlavorBR && embedPlayer.mediaElement ){
+				embedPlayer.mediaElement.preferedFlavorBR = preferedFlavorBR * 1000;
+			}
+
+			// Check for mediaPlayFrom
+			var mediaPlayFrom = mediaProxy.mediaPlayFrom;
+			if (mediaPlayFrom && !embedPlayer.startTime) {
+				embedPlayer.startTime = parseFloat( mediaPlayFrom );
+				mw.setConfig( "Kaltura.UseAppleAdaptive" , true) ;
+			}
+			// Check for mediaPlayTo
+			var mediaPlayTo = mediaProxy.mediaPlayTo;
+			if (mediaPlayTo && !embedPlayer.pauseTime) {
+				embedPlayer.pauseTime = parseFloat( mediaPlayTo );
+			}
 		}
 
 		// Enable tooltips
@@ -743,23 +761,7 @@ mw.KWidgetSupport.prototype = {
 			$( embedPlayer ).data('imageDuration', imageDuration);
 		}
 
-		// Check for mediaPlayFrom
-		var mediaPlayFrom = null;
-		if ( embedPlayer.getKalturaConfig('mediaProxy') ) {
-			mediaPlayFrom = embedPlayer.getKalturaConfig('mediaProxy').mediaPlayFrom;
-		}
-		if (mediaPlayFrom && !embedPlayer.startTime) {
-			embedPlayer.startTime = parseFloat( mediaPlayFrom );
-			mw.setConfig( "Kaltura.UseAppleAdaptive" , true) ;
-		}
-		// Check for mediaPlayTo
-		var mediaPlayTo = null;
-		if ( embedPlayer.getKalturaConfig('mediaProxy') ) {
-			mediaPlayTo = embedPlayer.getKalturaConfig('mediaProxy').mediaPlayTo;
-		}
-		if (mediaPlayTo && !embedPlayer.pauseTime) {
-			embedPlayer.pauseTime = parseFloat( mediaPlayTo );
-		}
+
 
 		// Should we show ads on replay?
 		if( getAttr( 'adsOnReplay' ) ) {
@@ -786,7 +788,7 @@ mw.KWidgetSupport.prototype = {
 	 * @param attr {Optional: Array|String} A list of attributes you want to get for the confPrefix
 	 * 				if null, we retrive all settings with the provided confPrefix
 	 */
-	getPluginConfig: function( embedPlayer, confPrefix, attr ){
+	 getPluginConfig: function( embedPlayer, confPrefix, attr ){
 		var singleAttrName = false;
 		if( typeof attr == 'string' ){
 			singleAttrName = attr;
