@@ -581,7 +581,7 @@ $uiVars = array(
 					'type' => 'Boolean',
 					'desc' => "Determines if mwEmbed should use the Native player controls. This will prevent video tag rewriting and skinning. Useful for devices such as iPad / iPod that don't fully support DOM overlays or don't expose full-screen functionality to JavaScript",
 					'default' => 'false',
-					'example' => ''
+					'example' => '../modules/KalturaSupport/tests/iPadNativeControls.html'
 			),
 			'EmbedPlayer.EnableIpadHTMLControls' => array(
 					'type' => 'Boolean',
