@@ -55,12 +55,12 @@ return array(
 			'autoTrack' => array(
 				'doc' => "Default true, Value passed to autoTrack Omniture media module property.",
 				'type' => 'boolean',
-				'default' => true	
+				'initvalue' => true
 			), 
 			'trackWhilePlaying' => array(
 				'doc' => "Default true, Value passed to trackWhilePlaying Omniture media module property.",
 				'type' => 'boolean',
-				'default' => true
+				'initvalue' => true
 			)
 		)
 	),
