@@ -291,7 +291,8 @@
 				'action' : 'list',
 				'filter:objectType' : 'KalturaAssetFilter',
 				'filter:entryIdEqual' : this.getPlayer().kentryid,
-				'filter:statusEqual' : 2
+				'filter:statusEqual' : 2,
+				'pager:pageSize': 100
 			}, function( data ) {
 				mw.log( "mw.ClosedCaptions:: loadCaptionsFromApi: " + data.totalCount, data.objects );
 				if( data.objects && data.objects.length ){
