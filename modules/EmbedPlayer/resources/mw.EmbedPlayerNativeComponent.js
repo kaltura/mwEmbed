@@ -474,7 +474,7 @@
 		 * playback error
 		 */
 		_onerror: function (event, data) {
-			this.triggerHelper('embedPlayerError', [ data ]);
+			this.triggerHelper('embedPlayerError', data);
 		},
 
 		/**

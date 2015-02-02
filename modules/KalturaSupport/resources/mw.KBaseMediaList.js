@@ -223,7 +223,7 @@
 				}
 				this.getComponent().height(this.getConfig("mediaItemHeight") + this.getConfig('horizontalHeaderHeight'));
 			}
-			if (this.getConfig('onPage') && this.getLayout() === "vertical" ){
+			if (this.getConfig('onPage') && this.getLayout() === "vertical" && !this.getConfig("clipListTargetId")){
 				var iframeParent = window['parent'].document.getElementById( this.embedPlayer.id );
 				$( this.$mediaListContainer ).height(this.getConfig("MinClips") * this.getConfig( "mediaItemHeight" ) + this.getConfig('verticalHeaderHeight'));
 			}
@@ -299,7 +299,9 @@
 			var componentHeight = this.getComponent().height();
 			if (this.getConfig("onPage")){
 				if (this.getConfig("clipListTargetId")){
-					_this.getMedialistComponent().height(_this.$mediaListContainer.height() - _this.getMedialistHeaderComponent().height());
+					setTimeout(function(){
+						_this.getMedialistComponent().height(_this.$mediaListContainer.height() - _this.getMedialistHeaderComponent().height());
+					},0);
 				}else{
 					if (this.getLayout() === "vertical"){
 						this.getMedialistComponent().height(this.getConfig("MinClips") * this.getConfig("mediaItemHeight"));

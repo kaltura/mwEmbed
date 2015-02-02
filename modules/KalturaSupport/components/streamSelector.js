@@ -303,8 +303,10 @@
 					embedPlayer.restoreEventPropagation();
 					// issue a seek
 					if (currentTime > 0) {
-						_this.bind("seeked", function () {
-							_this.unbind("seeked");
+						//Add black screen before seek to avoid flashing of video
+						embedPlayer.addBlackScreen();
+						//Jump to last time stamp in the new stream
+						embedPlayer.setCurrentTime(currentTime, function(){
 							//Unfreeze scrubber and time labels after transition between streams
 							embedPlayer.triggerHelper("freezeTimeIndicators", [false]);
 							//emove the black screen afteer seek has ended
@@ -313,9 +315,6 @@
 							mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
 							embedPlayer.triggerHelper('onChangeStreamDone', [_this.currentStream.id]);
 						});
-						//Add black screen before seek to avoid flashing of video
-						embedPlayer.addBlackScreen();
-						embedPlayer.sendNotification('doSeek', currentTime);
 					} else {
 						//Return poster to allow display of poster on clip done
 						mw.setConfig('EmbedPlayer.HidePosterOnStart', false);

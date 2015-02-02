@@ -459,8 +459,11 @@
 				if (this.embedPlayer.paused) {
 					this.resumeAd(isLinear);
 				} else {
+					$(this.embedPlayer).trigger('adClick');
 					this.pauseAd(isLinear);
 				}
+			}else{
+				$(this.embedPlayer).trigger('adClick');
 			}
 		},
 
