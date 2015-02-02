@@ -412,7 +412,9 @@
 				//In live mode wait for first updatetime that is bigger then 0 for syncing initial slide
 				if (mw.getConfig("EmbedPlayer.LiveCuepoints")) {
 					this.bind( 'timeupdate', function ( ) {
-						if (!_this.getPlayer().isDVR() && _this.getPlayer().currentTime > 0) {
+						if (!_this.getPlayer().isMulticast &&
+							!_this.getPlayer().isDVR() &&
+							_this.getPlayer().currentTime > 0) {
 							_this.unbind('timeupdate');
 						}
 						var cuePoint = _this.getCurrentCuePoint();
@@ -1055,7 +1057,12 @@
 				// Start looking for the cue point via time, return first match:
 				for ( var i = 0; i < cuePoints.length; i++ ) {
 					var startTime = cuePoints[i].startTime;
-					var endTime = cuePoints[i + 1] ? cuePoints[i + 1].startTime : (this.getPlayer().getDuration() * 1000);
+					//Retrieve end time from cuePoint metadata, unless it's less one and then use clip duration.
+					//If clip duration doesn't exist or it's 0 then use current time(in multicast live duration is
+					//always 0)
+					var endTime = cuePoints[i + 1] ? cuePoints[i + 1].startTime :
+						(this.getPlayer().getDuration() * 1000) ?
+							(this.getPlayer().getDuration() * 1000) : (currentTime + 1);
 					if ( startTime <= currentTime && currentTime < endTime ) {
 						cuePoint = cuePoints[i];
 						break;
