@@ -10,8 +10,8 @@
 			tooltip: 'Share',
 			showTooltip: true,
 			displayImportance: 'medium',
-			usePreviewPlayer: true,
-			previewPlayerEnabled: true,
+			usePreviewPlayer: false,
+			previewPlayerEnabled: false,
 			socialShareEnabled: true,
 			socialShareURL: 'smart', // 'parent' / 'http://custom.url/entry/{mediaProxy.entry.id}'
 			socialNetworks: 'facebook,twitter,googleplus',
@@ -44,6 +44,11 @@
 			var _this = this;
 			this.bind('playerReady', function () {
 				_this.setupPlayerURL();
+			});
+			this.bind('preShowScreen', function () {
+				_this.getScreen().addClass('semiTransparentBkg');
+				$("#"+_this.getPlayer().getPlayerElement().id).addClass("blur");
+				$(".playerPoster").addClass("blur");
 			});
 		},
 

@@ -90,6 +90,9 @@
 				if ( this.getPlayer().isPlaying() ) {
 					this.getPlayer().restoreComponentsHover();
 				}
+
+				$("#"+this.getPlayer().getPlayerElement().id).removeClass("blur");
+				$(".playerPoster").removeClass("blur");
 				this.getScreen().fadeOut( 400 );
 			}
 		},
@@ -103,6 +106,7 @@
 					this.pausePlayback();
 				}
 				this.getPlayer().disableComponentsHover();
+				$(".largePlayBtn").hide();
 				this.getScreen().fadeIn( 400, $.proxy( function () {
 					this.getPlayer().triggerHelper( 'showScreen', [this.pluginName] );
 				}, this ) );
@@ -127,15 +131,17 @@
 			this.wasPlaying = player.isPlaying();
 			if (this.wasPlaying) {
 				// We use timeout to avoid race condition when we show screen on "playing" state
-				setTimeout(function () {
+				//setTimeout(function () {
 					player.pause();
-				}, 0);
+				//}, 0);
 			}
 		},
 		restorePlayback: function () {
 			if (this.wasPlaying) {
 				this.wasPlaying = false;
 				this.getPlayer().play();
+			}else{
+				$(".largePlayBtn").show();
 			}
 		},
 		resizePlayer: function () {
