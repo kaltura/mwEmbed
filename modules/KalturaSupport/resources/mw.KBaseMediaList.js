@@ -8,6 +8,7 @@
 
 		mediaList: [],
 		isDisabled: false,
+		isTouchDisabled: false,
 		$mediaListContainer: null,
 		selectedMediaItemIndex: 0,
 		startFrom: 0,
@@ -454,7 +455,7 @@
 			mediaBoxes
 				.off('click' )
 				.on('click', function(){
-					if ( !_this.isDisabled ){
+					if ( !_this.isDisabled && !_this.isTouchDisabled){
 						// set active media item
 						var index = $(this).attr( 'data-mediaBox-index' );
 						// Check if the current chapter is already active, set skipPause flag accordingly.
@@ -464,17 +465,17 @@
 					}
 				} )
 				.on("touchmove", function(){
-					_this.isDisabled = true;
+					_this.isTouchDisabled = true;
 				})
 				.on("touchend", function() {
-					if (_this.isDisabled){
+					if (_this.isTouchDisabled){
 						if (_this.dragHandlerTimeout){
 							clearTimeout(_this.dragHandlerTimeout);
 							_this.dragHandlerTimeout = null;
 						}
 						_this.dragHandlerTimeout = setTimeout(function(){
 							_this.dragHandlerTimeout = null;
-							_this.isDisabled = false;
+							_this.isTouchDisabled = false;
 						}, 300);
 					}
 				});
