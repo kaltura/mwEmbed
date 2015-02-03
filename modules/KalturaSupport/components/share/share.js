@@ -138,7 +138,7 @@
 				var networkIndex = $.inArray($(e.target).attr('id'), socialNetworks);
 				var networkParams = this.getTemplateData().networks[networkIndex];
 				var shareParams = {
-					actionType: this.getPlayer().nativeActionType('share'),
+					actionType: 'share',
 					sharedLink: this.getConfig("shareURL"),
 					shareNetwork: networkParams,
 					thumbnail: this.getThumbnailURL(),

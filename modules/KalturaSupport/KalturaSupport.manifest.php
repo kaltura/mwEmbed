@@ -4,11 +4,6 @@
  */
 
 $kgDefaultComponentAttr = array(
-	'plugin' => array(
-		'doc' => 'Should plugin be enabled',
-		'initvalue' => true,
-		'type' => 'boolean',
-	),
 	'parent' => array(
 		'doc' => 'Parent container for component. Components include default placement, leave as null if unsure.',
 		'type' => 'enum',
@@ -45,6 +40,10 @@ $kgDefaultComponentAttr = array(
 			)
 		)
 	),
+//	'visible' => array(
+//		'doc' => "If the control holder should be visible.",
+//		'type' => 'boolean'
+//	),
 	'order' => array(
 		'doc' => 'Draw order of the component within the container.
 			Together with alignment, determines component placement of the component. Order is set with respect to siblings on the parent container.',
@@ -351,7 +350,8 @@ return array(
 				'initvalue' => true
 			),
 			'onPage' => array(
-				'doc' => "If the playlist should be rendered out of the IFrame (on page).",
+				'label' => "Render on publisher's page",
+				'doc' => "When unchecked, the playlist will be rendered inside the player's iframe (recommended).",
 				'type' => 'boolean'
 			),
 			'MinClips' => array(
@@ -809,6 +809,14 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'doc' => "The URL for the watermark click.",
 				'initvalue' => 'http://www.kaltura.com/',
 				'type' => 'url'
+			),
+			'hideTimeout' => array(
+				'label' => 'Watermark display duration',
+				'doc' => "Number of seconds to display the watermark, 0 show always.",
+				'min' => 0, //
+				'initvalue' => 0, // 0 show always
+				'type' => 'number',
+				'max' => 1000
 			),
 			'padding' => array(
 				'label' => 'Padding CSS', // *NEW*

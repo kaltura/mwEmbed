@@ -171,6 +171,9 @@
 				_this.setConfig('displayCaptions', true);
 				_this.showCaptions();
 			});
+			this.bind("playSegmentEvent", function(){
+				_this.updateTimeOffset();
+			});
 		},
 		updateTextSize: function(){
 			// Check if we are in fullscreen or not, if so add an additional bottom offset of
@@ -235,7 +238,9 @@
 		showCaptions: function(){
 			if( this.getConfig('displayCaptions') ) {
 				this.getCaptionsOverlay().show();
-				this.getPlayer().triggerHelper('closedCaptionsDisplayed', {language: this.selectedSource.label});
+				if( this.selectedSource != null ) {
+					this.getPlayer().triggerHelper('closedCaptionsDisplayed', {language: this.selectedSource.label});
+				}
 				if( this.getConfig('layout') == 'below' ) {
 					this.updateBelowVideoCaptionContainer();
 				}
@@ -247,9 +252,15 @@
 			} 
 			return null;
 		},
+		updateTimeOffset: function(){
+			// support server side clipping
+			if ( this.embedPlayer.supportsURLTimeEncoding() && this.embedPlayer.startTime ){
+				this.timeOffset = this.embedPlayer.startTime;
+			}
+		},
 		setupTextSources: function( callback ){
 			var _this = this;
-
+			this.updateTimeOffset();
 			// Get from <track> elements
 			$.each( this.getPlayer().getTextTracks(), function( inx, textSource ){
 				_this.textSources.push( new mw.TextSource( textSource ) );
@@ -771,7 +782,7 @@
 				this.getPlayer().setCookie( this.cookieName, source.srclang.toLowerCase() );
 			}
 
-			this.getPlayer().triggerHelper('changedClosedCaptions', {language: this.selectedSource.label});
+			this.getPlayer().triggerHelper('changedClosedCaptions', {language: this.selectedSource.label ? this.selectedSource.label : ""});
 		},
 		getComponent: function(){
 			var _this = this;

@@ -11,19 +11,19 @@
 	<meta name="description" content="Kaltura Player � Fastest, Most Flexible Online Video Player Toolkit, view feature test files that highlight kaltura player toolkit features.">
 	<meta name="author" content="kaltura">
 
-	<?php if( $wgKalturaGoogleAnalyticsUA ){
-		?>
+	<?php if( $wgKalturaGoogleAnalyticsUA ){ ?>
 		<script type="text/javascript">
-			var _gaq = _gaq || [];
-			_gaq.push(['_setAccount', '<?php echo $wgKalturaGoogleAnalyticsUA?>']);
-			_gaq.push(['_trackPageview']);
-			(function() {
-				var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-				ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
-				var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-			})();
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', '<?php echo $wgKalturaGoogleAnalyticsUA?>']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
 		</script>
-		<?php 
+	<?php
 	}
 	?>
 	<link href="<?php echo $pathPrefix; ?>bootstrap/build/css/bootstrap.min.css" rel="stylesheet">

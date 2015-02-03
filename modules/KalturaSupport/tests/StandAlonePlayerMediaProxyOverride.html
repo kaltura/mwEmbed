@@ -9,7 +9,8 @@
 	Kaltura support several stand alone player modes. Learn more about 
 	<a href="../../../docs/api#standAlonePlayerModes">stand alone player modes</a> Kaltura API documentation. 
 	<br><br>
-	This example highlights the <b>MediaProxy Override</b>, and JSON Config.
+	This example highlights the <b>MediaProxy Override</b>, and JSON Config. It includes a midroll at 5 seconds,
+	 and sample entry metadata mapping for thumbnail preview slices.. 
 	<br><br>
 
 	<div id="kaltura_player" style="width:600px;height:338px;"></div>
@@ -73,9 +74,7 @@
 					"protocolType": 1,
 					"adType": 1, 
 					"cuePointType": "adCuePoint.Ad",
-					"duration": 5005,
 					"startTime": 4936,
-					"endTime": 9941,
 					"sourceUrl": "http://projects.kaltura.com/mdale/hotelVastAd.xml"
 				}],
 				"contextData":{
@@ -220,11 +219,10 @@ var mediaProxyEntry = {
 		"thumbnailUrl": 'http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/640'
 	},
 	'entryCuePoints': [{
-		"<a href="http://www.kaltura.com/api_v3/testmeDoc/index.php?object=KalturaAdType">adType</a>": 2,
+		"protocolType": 1,
+		"adType": 1, 
 		"cuePointType": "adCuePoint.Ad",
-		"duration": 5005,
 		"startTime": 4936,
-		"endTime": 9941,
 		"sourceUrl": "http://projects.kaltura.com/mdale/hotelVastAd.xml"
 	}],
 	"contextData":{

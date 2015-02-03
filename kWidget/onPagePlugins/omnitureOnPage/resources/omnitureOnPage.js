@@ -286,7 +286,6 @@ kWidget.addReadyCallback( function( playerId ){
 			var _this = this;
 			var firstPlay = true;
 			var ignoreFirstChangeMedia = true;
-
 			// setup shortcuts:
 			var stop = function(){
 				_this.runMediaCommand( "stop", _this.getMediaName(), _this.getCurrentTime() );
@@ -317,7 +316,7 @@ kWidget.addReadyCallback( function( playerId ){
 				_this.cacheEntryMetadata();
 			});
 			// Run open on first play:
-			this.bind( 'playerPlayed', function(){
+			this.bind( 'firstPlay', function(){
 				if( firstPlay ){
 					_this.runMediaCommand( "open", 
 						_this.getMediaName(), 
@@ -466,8 +465,8 @@ kWidget.addReadyCallback( function( playerId ){
 	 			// not working :(
 	 			//s.Media[cmd].apply( this, args );
 
-				if(this.getConfig("s.Media.playerName")){
-					s.Media.playerName = this.getConfig("s.Media.playerName")
+				if(this.getConfig("overridePlayerName") != undefined ){
+					s.Media.playerName = String(this.getConfig("overridePlayerName"));
 				}
 
 		 		switch( cmd ) {

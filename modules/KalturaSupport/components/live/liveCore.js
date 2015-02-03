@@ -20,7 +20,9 @@
 			//disable the islive check (force live to true)
 			disableLiveCheck: false,
 			//hide live indicators when playing offline from DVR
-			hideOfflineIndicators: false
+			hideOfflineIndicators: false,
+			//hide currentTimeLabel when livestream is not DVR
+			hideCurrentTimeLabel: true
 		},
 
 		/**
@@ -283,7 +285,11 @@
 					showComponentsArr.push( 'scrubber', 'currentTimeLabel' );
 				} else {  //live + no DVR
 					showComponentsArr.push( 'liveStatus' );
-					hideComponentsArr.push( 'scrubber', 'currentTimeLabel' );
+					if ( _this.getConfig('hideCurrentTimeLabel') ){
+						hideComponentsArr.push( 'scrubber', 'currentTimeLabel' );
+					} else {
+						showComponentsArr.push( 'scrubber', 'currentTimeLabel' );
+					}
 				}
 
 				if ( _this.isNativeHLS() ) {
@@ -323,7 +329,7 @@
 		},
 
 		isDVR: function(){
-			return ( this.getPlayer().evaluate( '{mediaProxy.entry.dvrStatus}' )  && this.getPlayer().isTimeUpdateSupported() );
+			return ( this.getPlayer().isDVR()  && this.getPlayer().isTimeUpdateSupported() );
 		},
 
 		getCurrentTime: function() {

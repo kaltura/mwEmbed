@@ -18,7 +18,15 @@ mw.PluginManager = {
 		}
 
 		this.registerdPlugins[ pluginName ] = pluginClass;
-		this.totalPlugins++;
+		//Only add total count for plugins which are not explicitly set to false
+		var playerConfig = mw.getConfig("KalturaSupport.PlayerConfig");
+		if (playerConfig.plugins &&
+			playerConfig.plugins[ pluginName ] &&
+			playerConfig.plugins[ pluginName ].plugin === false){
+			mw.log('PluginManager::register: Plugin "' + pluginName + '" is disabled, omitted from total plugin count.');
+		} else {
+			this.totalPlugins++;
+		}
 	},
 	getClass: function( pluginName ) {
 		if( !this.registerdPlugins[ pluginName ] ) {

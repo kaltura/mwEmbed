@@ -60,7 +60,10 @@ you can use the generic selector below, but it's slower:
 .icon-magnifyGlass,
 .icon-switchSource,
 .icon-off-air,
-.icon-on-air{
+.icon-on-air,
+.icon-toggle,
+.icon-locator,
+.icon-toggleAll{
 	font-family: 'icomoon';
 	speak: none;
 	font-style: normal;
@@ -214,5 +217,14 @@ you can use the generic selector below, but it's slower:
 }
 .icon-on-air:before {
     content: "\e623";
+}
+.icon-toggle:before {
+    content: "\e624";
+}
+.icon-locator:before {
+    content: "\e625";
+}
+.icon-toggleAll:before {
+    content: "\e626";
 }
 

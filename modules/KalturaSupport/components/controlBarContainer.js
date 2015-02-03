@@ -52,6 +52,12 @@
 					_this.keepOnScreen = false;
 					_this.hide();
 				});
+				this.bind( 'onHideSideBar', function(){
+					_this.forceOnScreen = false;
+				});
+				this.bind( 'onShowSideBar', function(){
+					_this.forceOnScreen = true;
+				});
 			} else {
 				this.getPlayer().isControlsVisible = true;
 			}
@@ -67,7 +73,7 @@
 			$interface.removeClass( 'player-out' );
 		},
 		hide: function(){
-			if( this.keepOnScreen ) return;
+			if( this.keepOnScreen || this.forceOnScreen) return;
 			this.getPlayer().isControlsVisible = false;
 			this.getComponent().removeClass( 'open' );
 			var $interface = this.embedPlayer.getInterface();
