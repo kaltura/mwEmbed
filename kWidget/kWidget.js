@@ -896,14 +896,20 @@
 
 			// fix for iOS8 iframe overflow issue
 			var userAgent = navigator.userAgent;
-			var isIOS8 = ( /OS 8_/.test(userAgent) || /Version\/8/.test(userAgent) ) && ( userAgent.indexOf('iPad') != -1 || userAgent.indexOf('iPhone') != -1 );
+			var isIOS = ( userAgent.indexOf('iPad') != -1 || userAgent.indexOf('iPhone') != -1 );
 			try {
 				var iframeHeight = widgetElm.style.height ? widgetElm.style.height : widgetElm.offsetHeight;
-				if (isIOS8 && parseInt(iframeHeight) > 0) {
+				if (isIOS && parseInt(iframeHeight) > 0) {
 					iframe.style.height = iframeHeight;
-					setTimeout(function(){
+					var updateIframeID = setTimeout(function(){
 						iframe.style.height = "100%";
 					},6000);
+					window.addEventListener("message", function(event){
+						if ( event.data === 'layoutBuildDone' ){
+							iframe.style.height = "100%";
+							clearTimeout(updateIframeID);
+						}
+					}, false);
 				}
 			} catch (e) {
 				this.log("Error when trying to set iframe height: " + e.message);

@@ -263,6 +263,9 @@ mw.PlayerLayoutBuilder.prototype = {
 		// Trigger layoutBuildDone ( old event: controlBarBuildDone )
 		this.layoutReady = true;
 		this.embedPlayer.triggerHelper( 'layoutBuildDone' );
+		try{
+			window.parent.postMessage('layoutBuildDone','*');
+		}catch(e){}
 	},
 
 	drawComponents: function( $parent, components ) {
