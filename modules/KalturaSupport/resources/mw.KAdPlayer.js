@@ -140,7 +140,7 @@ mw.KAdPlayer.prototype = {
 			if (mw.isTouchDevice()){
 				clickEventName += " touchend" + _this.adClickPostFix;;
 			}
-			$( _this.embedPlayer ).unbind( clickEventName + _this.adClickPostFix );
+			$( _this.embedPlayer ).unbind( clickEventName );
 			// stop any ad tracking:
 			_this.stopAdTracking();
 			// Remove notice if present:
@@ -1143,11 +1143,6 @@ mw.KAdPlayer.prototype = {
 			}
 			var time =  videoPlayer.currentTime;
 			var dur = videoPlayer.duration;
-			if (_this.getVPAIDDurtaion)
-			{
-				//we need to add time since we get the duration that left.
-				dur = _this.getVPAIDDurtaion() + time;
-			}
 
 			// Update the timeRemaining sequence proxy
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', Math.round ( dur - time ) );

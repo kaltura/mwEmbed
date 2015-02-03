@@ -13,7 +13,7 @@
 		},
 		enabled: true,
 		render: true,
-		screenShown: false,
+		currentScreenNameShown: "",
 		keepOnScreen: false,
 		openAfterDisable: false,
 
@@ -55,14 +55,26 @@
 						});
 				}
 			});
-			this.bind( 'preShowScreen onDisableInterfaceComponents', function( event, excludedComponents ){
-				if( event.type == "preShowScreen" || $.inArray( _this.pluginName, excludedComponents ) == -1) {
+			this.bind( 'onDisableInterfaceComponents', function( event, excludedComponents ){
+				if( $.inArray( _this.pluginName, excludedComponents ) == -1) {
 					_this.enabled = false;
 					_this.hide();
 				}
 			});
-			this.bind( 'preHideScreen onEnableInterfaceComponents', function( event, excludedComponents ){
-				if( event.type == "preHideScreen" || $.inArray( _this.pluginName, excludedComponents ) == -1) {
+			this.bind( 'onEnableInterfaceComponents', function( event, excludedComponents ){
+				if( $.inArray( _this.pluginName, excludedComponents ) == -1) {
+					_this.enabled = true;
+					_this.show();
+				}
+			});
+			this.bind( 'preShowScreen', function( event, screenName ){
+				_this.currentScreenNameShown = screenName;
+				_this.enabled = false;
+				_this.hide();
+			});
+			this.bind( 'preHideScreen', function( event, screenName ){
+				if (_this.currentScreenNameShown === screenName) {
+					_this.currentScreenNameShown = "";
 					_this.enabled = true;
 					_this.show();
 				}
@@ -74,14 +86,7 @@
 					_this.getConfig("minDisplayHeight") <= _this.getPlayer().getHeight())){
 					_this.render = true;
 					//Sidebar height is player height without the top and bottom bars
-					var height = _this.getPlayer().getHeight() - _this.getPlayer().getControlBarContainer().height();
-					if (_this.getPlayer().getTopBarContainer().length){
-						height -= _this.getPlayer().getTopBarContainer().height();
-						//If topbar exist then add top value
-						_this.getComponent().css('top', _this.getPlayer().getTopBarContainer().height());
-						_this.getComponentReminder().css('top', _this.getPlayer().getTopBarContainer().height());
-					}
-					_this.getComponent().css('height', height);
+					_this.setHeight();
 					_this.show();
 				} else {
 					_this.render = false;
@@ -96,6 +101,7 @@
 				}
 			});
 			this.bind( 'layoutBuildDone ended', function(){
+				_this.setHeight();
 				_this.show();
 			});
 
@@ -148,7 +154,8 @@
 				this.getComponentReminder().addClass( 'shifted' );
 				this.getComponent().addClass( 'openBtn' );
 				// Trigger the screen overlay with layout info:
-				this.getPlayer().triggerHelper( 'onShowSidelBar');
+				this.getPlayer().triggerHelper( 'onShowSideBar');
+				this.getPlayer().triggerHelper('clearTooltip');
 				this.getPlayer().triggerHelper( 'onComponentsHoverDisabled');
 			}
 		},
@@ -158,7 +165,21 @@
 			this.getComponentReminder().removeClass( 'shifted' );
 			// Allow interface items to update:
 			this.getPlayer().triggerHelper('onHideSideBar');
+			this.getPlayer().triggerHelper('clearTooltip');
 			this.getPlayer().triggerHelper( 'onComponentsHoverEnabled');
+		},
+		setHeight: function(){
+			var height = this.getPlayer().getHeight() - this.getPlayer().getControlBarContainer().height();
+			if (this.getPlayer().getTopBarContainer().length){
+				height -= this.getPlayer().getTopBarContainer().height();
+				//If topbar exist then add top value
+				this.getComponent().css('top', this.getPlayer().getTopBarContainer().height());
+				this.getComponentReminder().css('top', this.getPlayer().getTopBarContainer().height());
+			} else {
+				this.getComponent().css('top', 0);
+				this.getComponentReminder().css('top', 0);
+			}
+			this.getComponent().css('height', height);
 		},
 		getComponent: function(){
 			if( !this.$el ) {
@@ -183,7 +204,9 @@
 				// Add control bar
 
 				this.$elHelper = $('<div>' )
-					.addClass( 'sideBarContainerReminder ' + _this.getConfig('position') )
+					.addClass( 'sideBarContainerReminder tooltipBelow ' + _this.getConfig('position') )
+					.prop("title", gM("ks-sidebar-toggleBtn"))
+					.attr("data-show-tooltip", true)
 					.append($('<div id="sideBarContainerReminderContainer">' )
 						.addClass( 'icon-chapterMenu' )
 					);

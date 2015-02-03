@@ -8,6 +8,7 @@
 
 		mediaList: [],
 		isDisabled: false,
+		isTouchDisabled: false,
 		$mediaListContainer: null,
 		selectedMediaItemIndex: 0,
 		startFrom: 0,
@@ -67,7 +68,11 @@
 					setTimeout(function(){
 						if (_this.render) {
 							_this.getComponent().show();
-							_this.renderMediaList();
+							if (_this.getTemplateData().length) {
+								_this.configMediaListFeatures();
+							} else {
+								_this.renderMediaList();
+							}
 							_this.setSelectedMedia( _this.selectedMediaItemIndex );
 						} else {
 							_this.getComponent().hide();
@@ -94,7 +99,7 @@
 				}
 			});
 
-			this.bind("onShowSidelBar", function(){
+			this.bind("onShowSideBar", function(){
 				if (_this.checkAddScroll()){
 					_this.getScrollComponent().nanoScroller( {
 						flash: true,
@@ -169,7 +174,7 @@
 					}
 				} else {
 					this.$mediaListContainer = $( ".playlistInterface");
-					if (mw.isIOS()){
+					if (mw.isIOS() && (this.getConfig( 'containerPosition' ) == 'top' || this.getConfig( 'containerPosition' ) == 'bottom')){
 						this.$mediaListContainer.height(this.embedPlayer.height);
 					}
 					// resize the video to make place for the playlist according to its position (left, top, right, bottom)
@@ -219,7 +224,7 @@
 				}
 				this.getComponent().height(this.getConfig("mediaItemHeight") + this.getConfig('horizontalHeaderHeight'));
 			}
-			if (this.getConfig('onPage') && this.getLayout() === "vertical" ){
+			if (this.getConfig('onPage') && this.getLayout() === "vertical" && !this.getConfig("clipListTargetId")){
 				var iframeParent = window['parent'].document.getElementById( this.embedPlayer.id );
 				$( this.$mediaListContainer ).height(this.getConfig("MinClips") * this.getConfig( "mediaItemHeight" ) + this.getConfig('verticalHeaderHeight'));
 			}
@@ -295,7 +300,9 @@
 			var componentHeight = this.getComponent().height();
 			if (this.getConfig("onPage")){
 				if (this.getConfig("clipListTargetId")){
-					_this.getMedialistComponent().height(_this.$mediaListContainer.height() - _this.getMedialistHeaderComponent().height());
+					setTimeout(function(){
+						_this.getMedialistComponent().height(_this.$mediaListContainer.height() - _this.getMedialistHeaderComponent().height());
+					},0);
 				}else{
 					if (this.getLayout() === "vertical"){
 						this.getMedialistComponent().height(this.getConfig("MinClips") * this.getConfig("mediaItemHeight"));
@@ -448,13 +455,28 @@
 			mediaBoxes
 				.off('click' )
 				.on('click', function(){
-					if ( !_this.isDisabled ){
+					if ( !_this.isDisabled && !_this.isTouchDisabled){
 						// set active media item
 						var index = $(this).attr( 'data-mediaBox-index' );
 						// Check if the current chapter is already active, set skipPause flag accordingly.
 						_this.skipPauseFlag = !$( this ).hasClass( 'active');
 						// call mediaClicked with the media index (implemented in component level)
 						_this.mediaClicked(index);
+					}
+				} )
+				.on("touchmove", function(){
+					_this.isTouchDisabled = true;
+				})
+				.on("touchend", function() {
+					if (_this.isTouchDisabled){
+						if (_this.dragHandlerTimeout){
+							clearTimeout(_this.dragHandlerTimeout);
+							_this.dragHandlerTimeout = null;
+						}
+						_this.dragHandlerTimeout = setTimeout(function(){
+							_this.dragHandlerTimeout = null;
+							_this.isTouchDisabled = false;
+						}, 300);
 					}
 				});
 			if (this.getConfig('thumbnailRotator')) {
@@ -582,11 +604,11 @@
 
 				var width = this.getMedialistComponent().width();
 				var scrollHeight = this.getConfig( "mediaItemHeight" ) || width * (1 / this.getConfig("mediaItemRatio"));
+				scrollHeight *= 1/2;
 
 				var options = {
 					flash: true,
 					preventPageScrolling: true,
-					iOSNativeScrolling: true,
 					sliderMaxHeight: scrollHeight
 				} ;
 				var _this = this;

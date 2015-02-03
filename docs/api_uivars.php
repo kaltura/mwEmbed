@@ -819,5 +819,4 @@ $uiVars = array(
 					'example' => '../modules/KalturaSupport/tests/PlayFromOffsetStartTimeToEndTime.html'
 			)
 		)
-	)
-);
+	)));

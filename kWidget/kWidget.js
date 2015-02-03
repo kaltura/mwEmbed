@@ -903,7 +903,7 @@
 					iframe.style.height = iframeHeight;
 					setTimeout(function(){
 						iframe.style.height = "100%";
-					},3000);
+					},6000);
 				}
 			} catch (e) {
 				this.log("Error when trying to set iframe height: " + e.message);

@@ -13,13 +13,15 @@
 			'minWidth': 100,
 			'displayImportance': "medium",
 			'disableUntilFirstPlay': false,
-			'showOnlyTime': false
+			'showOnlyTime': false,
+			'thumbSlicesUrl': null
 		},
 
 		waitForFirstPlay: false,
 		updateEnabled: true,
 
 		isSliderPreviewEnabled: function () {
+			
 			return this.getConfig("sliderPreview") && !this.isDisabled && !this.embedPlayer.isLive();
 		},
 		setup: function (embedPlayer) {
@@ -187,31 +189,35 @@
 			}
 			if (!this.loadedThumb) {
 				this.loadedThumb = true;
-				var baseThumbSettings = {
-					'partner_id': this.embedPlayer.kpartnerid,
-					'uiconf_id': this.embedPlayer.kuiconfid,
-					'entry_id': this.embedPlayer.kentryid,
-					'width': this.getConfig("thumbWidth")
-				};
-
-				this.imageSlicesUrl = kWidget.getKalturaThumbUrl(
-					$.extend({}, baseThumbSettings, {
-						'vid_slices': this.getSliceCount(this.duration)
-					})
-				);
-
+				
+				
 				// preload the image slices:
 				var img = new Image();
 				img.onload = function () {
 					callback();
 				};
-				img.src = _this.imageSlicesUrl;
+				img.src = this.getThumbSlicesUrl();
 			} else {
 				callback();
 			}
 
 		},
-
+		getThumbSlicesUrl: function(){
+			// check for config override: 
+			if( this.getConfig('thumbSlicesUrl')  ){
+				return this.getConfig('thumbSlicesUrl');
+			}
+			// else get thumb slices from helper:
+			return kWidget.getKalturaThumbUrl(
+					{
+						'partner_id': this.embedPlayer.kpartnerid,
+						'uiconf_id': this.embedPlayer.kuiconfid,
+						'entry_id': this.embedPlayer.kentryid,
+						'width': this.getConfig("thumbWidth"),
+						'vid_slices': this.getSliceCount(this.duration)
+					}
+				);
+		},
 		showThumbnailPreview: function (data) {
 			var showOnlyTime = this.getConfig("showOnlyTime");
 			if (!this.isSliderPreviewEnabled() || !this.thumbnailsLoaded) {
@@ -262,7 +268,7 @@
 
 			$sliderPreview.css({top: top, left: sliderLeft });
 			if (!showOnlyTime) {
-				$sliderPreview.css({'background-image': 'url(\'' + this.imageSlicesUrl + '\')',
+				$sliderPreview.css({'background-image': 'url(\'' + this.getThumbSlicesUrl() + '\')',
 					'background-position': kWidget.getThumbSpriteOffset(thumbWidth, currentTime, this.duration, this.getSliceCount(this.duration)),
 					'background-size': ( thumbWidth * this.getSliceCount(this.duration) ) + 'px 100%'
 				});

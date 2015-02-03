@@ -48,6 +48,7 @@
 			displayInitialized: false,
 			render: true,
 			screenShown: false,
+			currentScreenNameShown: "",
 			dragging: false,
 			resizing: false,
 			syncEnabled: true,
@@ -392,7 +393,7 @@
 				// Android fires orientationchange too soon, i.e width and height are wrong
 				var eventName = mw.isAndroid() ? 'resize' : 'orientationchange';
 				eventName += this.bindPostFix;
-				var isIframe = mw.getConfig('EmbedPlayer.IsIframeServer' );
+				var isIframe = (mw.getConfig('EmbedPlayer.IsIframeServer' ) && mw.getConfig('EmbedPlayer.IsFriendlyIframe'));
 				var context = isIframe ? window['parent'] : window;
 				// Bind orientation change to resize player
 				$( context ).bind( eventName, updateSecondScreenLayout);
@@ -497,16 +498,18 @@
 						});
 					}
 				};
-				this.bind( "preShowScreen", function () {
+				this.bind( "preShowScreen", function (e, screenName) {
 					_this.screenShown = true;
 					if (_this.render) {
+						_this.currentScreenNameShown = screenName;
+						_this.hideControlBar();
 						minimizeSecondDisplay();
 					}
 				} );
-				this.bind( "preHideScreen", function (e) {
+				this.bind( "preHideScreen", function (e, screenName) {
 					_this.screenShown = false;
-					updateSecondScreenLayout(e)
-					if (_this.render) {
+					if (_this.render && _this.currentScreenNameShown === screenName) {
+						_this.currentScreenNameShown = "";
 						maximizeSecondDisplay();
 					}
 				} );
@@ -575,7 +578,7 @@
 						} );
 						setTimeout( function () {
 							_this.fsm.consumeEvent( "switchView" );
-						}, 500 );
+						}, 1000 );
 					} else {
 						showLoadingSlide();
 					}
@@ -834,9 +837,13 @@
 				this.getControlBar().
 					css({'width': width + 10});
 			},
-			positionControlBar: function ( height ) {
+			positionControlBar: function (  ) {
+				var height = 0;
+				if (this.getPlayer().getTopBarContainer().length) {
+					height = this.getPlayer().getTopBarContainer().height();
+				}
 				this.getControlBar().position( {
-					my: 'right top+'+(height || 0),
+					my: 'right top+'+height,
 					at: 'right top',
 					of: this.getPlayer().getInterface(),
 					collision: 'none'
@@ -880,9 +887,6 @@
 						.attr('data-show-tooltip', true);
 				} );
 
-				this.bind("onShowToplBar onHideToplBar", function(e, height){
-					_this.positionControlBar(height.top);
-				});
 				this.bind("showPlayerControls" , function(){
 					_this.showControlBar();
 				});

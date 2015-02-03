@@ -143,20 +143,25 @@
 			// set responsiveness
 			this.bind('updateLayout', function(){
 				if (!_this.getPlayer().layoutBuilder.isInFullScreen() && _this.redrawOnResize) {
-					if ( $( ".playlistInterface" ).width() / 3 > _this.getConfig( 'mediaItemWidth' ) ) {
-						_this.setConfig( 'mediaItemWidth', $( ".playlistInterface" ).width() / 3 );
-
-					} else {
-						_this.setConfig( 'mediaItemWidth', '320' );
+					// decide the width of the items. For vertical layout: 3rd of the container. For horizontal: according to MinClips value
+					if ( _this.getLayout() === "vertical" ){
+						if ( $( ".playlistInterface" ).width() / 3 > _this.getConfig( 'mediaItemWidth' ) ) {
+							_this.setConfig( 'mediaItemWidth', $( ".playlistInterface" ).width() / 3 );
+						} else {
+							_this.setConfig( 'mediaItemWidth', '320' ); // set min width to 320
+						}
+					}else{
+						_this.setConfig( 'mediaItemWidth', Math.floor($( ".playlistInterface" ).width() / _this.getConfig("MinClips")) );
 					}
-					_this.setConfig( 'titleLimit', parseInt( _this.getConfig( 'mediaItemWidth' ) / 7 ) );
-					_this.setConfig( 'descriptionLimit', parseInt( _this.getConfig( 'mediaItemWidth' ) / 8 ) );
-
 					// redraw player and playlist
 					_this.$mediaListContainer = null;
 					_this.getMedialistContainer();
 					_this.renderMediaList();
 					_this.setMultiplePlayLists();
+					setTimeout(function(){
+						_this.getComponent().find(".k-description-container").dotdotdot();
+					},100);
+
 				}
 			});
 
@@ -222,6 +227,11 @@
 				var customData = (item.partnerData && item.adminTags !== 'image') ? mw.parseJSON(item.partnerData, {}) : {};
 				var title = item.name || customData.title;
 				var description = item.description || customData.desc;
+
+				// sanitize
+				title = kWidget.sanitize( title );
+				description = kWidget.sanitize( description );
+
 				var thumbnailUrl = item.thumbnailUrl || customData.thumbUrl || this.getThumbUrl(item);
 				var thumbnailRotatorUrl = this.getConfig('thumbnailRotator') ? this.getThumRotatorUrl() : '';
 
@@ -287,6 +297,10 @@
 				eventToTrigger = 'playlistMiddleEntry';
 			}
 
+			if ( !(mw.isAndroid() && mw.isNativeApp()) ) {
+				this.redrawOnResize = false;
+			}
+
 			// Listen for change media done
 			$(embedPlayer).unbind('onChangeMediaDone' + this.bindPostFix).bind('onChangeMediaDone' + this.bindPostFix, function () {
 				mw.log('mw.PlaylistAPI:: onChangeMediaDone');
@@ -294,8 +308,11 @@
 				_this.loadingEntry = false; // Update the loadingEntry flag//
 				// play clip that was selected when autoPlay=false. if autoPlay=true, the embedPlayer will do that for us.
 				if (!_this.getConfig("autoPlay")) {
-					embedPlayer.play();
+					setTimeout(function(){
+						embedPlayer.play();
+					},100); // timeout is required when loading live entries
 				}
+				_this.redrawOnResize = true;
 			});
 			mw.log("PlaylistAPI::playClip::changeMedia entryId: " + id);
 

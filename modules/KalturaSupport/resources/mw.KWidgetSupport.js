@@ -19,6 +19,7 @@ mw.KWidgetSupport.prototype = {
 	// The Kaltura client local reference
 	kClient : null,
 	kSessionId: null, // Used for Analytics events
+	originalStreamerType: null,
 
 	// Constructor check settings etc
 	init: function( options ){
@@ -113,6 +114,7 @@ mw.KWidgetSupport.prototype = {
 		
 		// Add hook for check player sources to use local kEntry ID source check:
 		embedPlayer.bindHelper( 'checkPlayerSourcesEvent', function( event, callback ) {
+			_this.originalStreamerType = embedPlayer.getKalturaConfig( null, 'streamerType' ) ? embedPlayer.getKalturaConfig( null, 'streamerType' ) : 'http';
 			_this.loadAndUpdatePlayerData( embedPlayer, callback );
 		});
 
@@ -178,10 +180,7 @@ mw.KWidgetSupport.prototype = {
 				if( displayedAcError){
 					return;
 				}
-				embedPlayer.showErrorMsg( { 
-					title: embedPlayer.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), 
-					message: embedPlayer.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) 
-				});
+				embedPlayer.handlePlayerError(data, true);
 			}, 3000);
 		});
 		
@@ -206,6 +205,7 @@ mw.KWidgetSupport.prototype = {
 			}
 			if (segmentChange) {
 				window.timeoutID = setTimeout(function () {
+					$(embedPlayer).trigger("playSegmentEvent", [embedPlayer.startTime, embedPlayer.pauseTime]);
 					embedPlayer.playSegment(embedPlayer.startTime, embedPlayer.pauseTime);
 				}, 100);
 			}
@@ -724,13 +724,31 @@ mw.KWidgetSupport.prototype = {
 			mw.setConfig('EmbedPlayer.ShowPlayerAlerts', false );
 		}
 
-		// Check for dissable bit rate cookie and overide default bandwidth
-		if( getAttr( 'disableBitrateCookie' ) && getAttr( 'mediaProxy.preferedFlavorBR') ){
-			embedPlayer.setCookie( 'EmbedPlayer.UserBandwidth', getAttr( 'mediaProxy.preferedFlavorBR' ) * 1000 );
-		}
-		// always set perfered bitrate if defined: 
-		if( getAttr( 'mediaProxy.preferedFlavorBR' ) && embedPlayer.mediaElement ){
-			embedPlayer.mediaElement.preferedFlavorBR = getAttr( 'mediaProxy.preferedFlavorBR' ) * 1000;
+		var mediaProxy = embedPlayer.getKalturaConfig('mediaProxy');
+		// handle mediaProxy properties
+		if ( mediaProxy ){
+			// check for preferedFlavorBR
+			var preferedFlavorBR = mediaProxy.preferedFlavorBR;
+			// Check for dissable bit rate cookie and overide default bandwidth
+			if( getAttr( 'disableBitrateCookie' ) && preferedFlavorBR ){
+				embedPlayer.setCookie( 'EmbedPlayer.UserBandwidth', preferedFlavorBR * 1000 );
+			}
+			// always set perfered bitrate if defined:
+			if( preferedFlavorBR && embedPlayer.mediaElement ){
+				embedPlayer.mediaElement.preferedFlavorBR = preferedFlavorBR * 1000;
+			}
+
+			// Check for mediaPlayFrom
+			var mediaPlayFrom = mediaProxy.mediaPlayFrom;
+			if (mediaPlayFrom && !embedPlayer.startTime) {
+				embedPlayer.startTime = parseFloat( mediaPlayFrom );
+				mw.setConfig( "Kaltura.UseAppleAdaptive" , true) ;
+			}
+			// Check for mediaPlayTo
+			var mediaPlayTo = mediaProxy.mediaPlayTo;
+			if (mediaPlayTo && !embedPlayer.pauseTime) {
+				embedPlayer.pauseTime = parseFloat( mediaPlayTo );
+			}
 		}
 
 		// Enable tooltips
@@ -744,23 +762,7 @@ mw.KWidgetSupport.prototype = {
 			$( embedPlayer ).data('imageDuration', imageDuration);
 		}
 
-		// Check for mediaPlayFrom
-		var mediaPlayFrom = null;
-		if ( embedPlayer.getKalturaConfig('mediaProxy') ) {
-			mediaPlayFrom = embedPlayer.getKalturaConfig('mediaProxy').mediaPlayFrom;
-		}
-		if (mediaPlayFrom && !embedPlayer.startTime) {
-			embedPlayer.startTime = parseFloat( mediaPlayFrom );
-			mw.setConfig( "Kaltura.UseAppleAdaptive" , true) ;
-		}
-		// Check for mediaPlayTo
-		var mediaPlayTo = null;
-		if ( embedPlayer.getKalturaConfig('mediaProxy') ) {
-			mediaPlayTo = embedPlayer.getKalturaConfig('mediaProxy').mediaPlayTo;
-		}
-		if (mediaPlayTo && !embedPlayer.pauseTime) {
-			embedPlayer.pauseTime = parseFloat( mediaPlayTo );
-		}
+
 
 		// Should we show ads on replay?
 		if( getAttr( 'adsOnReplay' ) ) {
@@ -777,6 +779,8 @@ mw.KWidgetSupport.prototype = {
 		} else if ( streamerType ) {
 			embedPlayer.streamerType = streamerType;
 		}
+		// restore the original streamerType Flashvar for future use if the user change media (for example - playlist)
+		embedPlayer.setFlashvars( 'streamerType', _this.originalStreamerType);
 	},
 	/**
 	 * Check for xml config, let flashvars override
@@ -785,7 +789,7 @@ mw.KWidgetSupport.prototype = {
 	 * @param attr {Optional: Array|String} A list of attributes you want to get for the confPrefix
 	 * 				if null, we retrive all settings with the provided confPrefix
 	 */
-	getPluginConfig: function( embedPlayer, confPrefix, attr ){
+	 getPluginConfig: function( embedPlayer, confPrefix, attr ){
 		var singleAttrName = false;
 		if( typeof attr == 'string' ){
 			singleAttrName = attr;

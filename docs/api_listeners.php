@@ -222,7 +222,8 @@
 		),
 		'cuePointReached' => array(
 			'callbackArgs' => 'Current cuePoint object. Return Object with context and a cuePoint object',
-			'desc' => "Notification fired when the player reaches a cuePoint"
+			'desc' => "Notification fired when the player reaches a cuePoint",
+			'example' => '../modules/KalturaSupport/components/related/CuePointsMidrollVast.html'
 		),
 		'switchingChangeStarted' => array(
 			'callbackArgs' => 'newIndex: The index of the bitrate the player started switching to. If auto, send -1, newBitrate: The bitrate the player started switching to. If auto, send null',
