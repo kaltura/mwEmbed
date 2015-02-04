@@ -896,14 +896,20 @@
 
 			// fix for iOS8 iframe overflow issue
 			var userAgent = navigator.userAgent;
-			var isIOS8 = ( /OS 8_/.test(userAgent) || /Version\/8/.test(userAgent) ) && ( userAgent.indexOf('iPad') != -1 || userAgent.indexOf('iPhone') != -1 );
+			var isIOS = ( userAgent.indexOf('iPad') != -1 || userAgent.indexOf('iPhone') != -1 );
 			try {
 				var iframeHeight = widgetElm.style.height ? widgetElm.style.height : widgetElm.offsetHeight;
-				if (isIOS8 && parseInt(iframeHeight) > 0) {
+				if (isIOS && parseInt(iframeHeight) > 0) {
 					iframe.style.height = iframeHeight;
-					setTimeout(function(){
+					var updateIframeID = setTimeout(function(){
 						iframe.style.height = "100%";
 					},6000);
+					window.addEventListener("message", function(event){
+						if ( event.data === 'layoutBuildDone' ){
+							iframe.style.height = "100%";
+							clearTimeout(updateIframeID);
+						}
+					}, false);
 				}
 			} catch (e) {
 				this.log("Error when trying to set iframe height: " + e.message);
@@ -946,24 +952,50 @@
 				window[ cbName ](this.iframeAutoEmbedCache[ targetId ]);
 				return ;
 			}
-			
+
 			// Check if we need to use post ( where flashvars excceed 2K string )
 			var iframeRequest = this.getIframeRequest( widgetElm, settings );
-			if ( iframeRequest.length > 2083 ){
-				this.log( "Warning iframe requests (" + iframeRequest.length + ") exceeds 2083 charachters, won't cache on CDN." )
-				$.ajax({
-					type: "POST",
-					dataType: 'text',
-					url: this.getIframeUrl(),
-					data: iframeRequest
-				}).success(function (data) {
-						var contentData = {content: data};
-						window[cbName](contentData);
-					})
-					.error(function (e) {
-						_this.log("Error in player iframe request")
-					})
-				return ;
+
+			// -----> IE8 and IE9 hack to solve Studio issues. SUP-3795. Should be handled from PHP side and removed <----
+			var isLowIE = /msie 8/.test(navigator.userAgent.toLowerCase()) || /msie 9/.test(navigator.userAgent.toLowerCase());
+			if ( isLowIE && settings.flashvars.jsonConfig ){
+				jsonConfig = settings.flashvars.jsonConfig;
+				delete settings.flashvars.jsonConfig;
+				if ( iframeRequest.length > 2083 ){
+					this.log( "Warning iframe requests (" + iframeRequest.length + ") exceeds 2083 charachters, won't cache on CDN." )
+					$.ajax({
+						type: "POST",
+						dataType: 'text',
+						url: this.getIframeUrl() + '?' +	this.getIframeRequest(widgetElm, settings),
+						data: {"jsonConfig": jsonConfig}
+					}).success(function (data) {
+							var contentData = {content: data};
+							window[cbName](contentData);
+						})
+						.error(function (e) {
+							_this.log("Error in player iframe request")
+						})
+					return ;
+				}
+			}else{
+				// -----> End of IE8 and IE9 hack <----
+
+				if ( iframeRequest.length > 2083 ){
+					this.log( "Warning iframe requests (" + iframeRequest.length + ") exceeds 2083 charachters, won't cache on CDN." )
+					$.ajax({
+						type: "POST",
+						dataType: 'text',
+						url: this.getIframeUrl(),
+						data: iframeRequest
+					}).success(function (data) {
+							var contentData = {content: data};
+							window[cbName](contentData);
+						})
+						.error(function (e) {
+							_this.log("Error in player iframe request")
+						})
+					return ;
+				}
 			}
 			var iframeUrl = this.getIframeUrl() + '?' + iframeRequest;
 			// Store iframe urls

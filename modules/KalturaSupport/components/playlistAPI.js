@@ -134,10 +134,11 @@
 
 			$( this.embedPlayer ).bind('onOpenFullScreen', function() {
 				_this.redrawOnResize = false;
+				clearTimeout(window.redrawTimeOutID);
 			});
 
 			$( this.embedPlayer ).bind('onCloseFullScreen', function() {
-				setTimeout(function(){_this.redrawOnResize = true;},2000);
+				window.redrawTimeOutID = setTimeout(function(){_this.redrawOnResize = true;},2000);
 			});
 
 			// set responsiveness
