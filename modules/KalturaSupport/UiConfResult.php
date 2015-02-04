@@ -1,6 +1,5 @@
 <?php
 
-include "ChromePhp.php";
 /**
  * Description of KalturaUiConfResult
  *
