@@ -349,7 +349,7 @@
 					dur = dur - this.startTime + 2;
 				}
 			}
-			if ( !this.isLive() && data.newValue > dur ) {
+			if ( !this.isLive() && data.newValue > dur && mw.getConfig("EmbedPlayer.EnableURLTimeEncoding")===true ) {
 				return;
 			}
 			// Update the duration ( only if not in url time encoding mode:
