@@ -50,6 +50,8 @@ mw.FreeWheelController.prototype = {
 	// Local storage of ad freewheel ad metadata indexed by ad Id
 	fwAdParams: {},
 
+	playerElementLoaded:false,
+
 	// bindPostfix enables namespacing the plugin binding
 	bindPostfix: '.freeWheel',
 
@@ -115,7 +117,13 @@ mw.FreeWheelController.prototype = {
 
 			// XXX FreeWheel sets SVLads003 as the response?
 			window[ 'SVLads003' ] = true;
-
+			if (mw.isMobileDevice()) {
+				if (!_this.playerElementLoaded) {
+					_this.playerElementLoaded = true;
+					var vid = _this.embedPlayer.getPlayerElement();
+					vid.load();
+				}
+			}
 			// Load add data ( will call onRequestComplete once ready )
 			mw.log( "FreeWheelController::submitRequest>" );
 			// set the inSequence flag while loading ads:
