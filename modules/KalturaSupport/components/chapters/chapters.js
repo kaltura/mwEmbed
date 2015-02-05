@@ -871,7 +871,7 @@
 		},
 		updateActiveChapter: function(){
 			if (this.chaptersMap.length > 0) {
-				var activeChapterIndex = 0;
+				var activeChapterIndex = -1;
 				var time = this.getPlayer().currentTime;
 				$.each( this.chaptersMap, function ( inx, item ) {
 					if ( time > item.data.startTime ) {
