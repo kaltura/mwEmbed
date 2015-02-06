@@ -700,14 +700,14 @@
 		getPlayerByStreamerType: function (source) {
 			var targetPlayer;
 			//currently only kplayer can handle other streamerTypes
-			if (!mw.getConfig('EmbedPlayer.IgnoreStreamerType')
-				&& !this.isImageSource()   //not an image entry
-				&& this.streamerType != 'http'
-				&& mw.EmbedTypes.getMediaPlayers().isSupportedPlayer('kplayer')) {
-				targetPlayer = mw.EmbedTypes.getKplayer();
-			} else {
+//			if (!mw.getConfig('EmbedPlayer.IgnoreStreamerType')
+//				&& !this.isImageSource()   //not an image entry
+//				&& this.streamerType != 'http'
+//				&& mw.EmbedTypes.getMediaPlayers().isSupportedPlayer('kplayer')) {
+//				targetPlayer = mw.EmbedTypes.getKplayer();
+//			} else {
 				targetPlayer= mw.EmbedTypes.getMediaPlayers().getDefaultPlayer( source.mimeType );
-			}
+			//}
 			return targetPlayer;
 		},
 
