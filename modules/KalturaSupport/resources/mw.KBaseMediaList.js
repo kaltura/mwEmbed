@@ -171,9 +171,6 @@
 					}
 				} else {
 					this.$mediaListContainer = $( ".playlistInterface");
-					if (mw.isIOS() && (this.getConfig( 'containerPosition' ) == 'top' || this.getConfig( 'containerPosition' ) == 'bottom')){
-						this.$mediaListContainer.height(this.embedPlayer.height);
-					}
 					// resize the video to make place for the playlist according to its position (left, top, right, bottom)
 					if ( this.getConfig( 'containerPosition' ) == 'right' || this.getConfig( 'containerPosition' ) == 'left' ) {
 						$( ".videoHolder, .mwPlayerContainer" ).css( "width", this.$mediaListContainer.width() - this.getConfig( "mediaItemWidth" ) + "px" );
