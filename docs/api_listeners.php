@@ -81,7 +81,8 @@
 		),
 		'mediaLoaded' => array(
 			'callbackArgs' => 'None',
-			'desc' => 'From version 3.5.0, this notification replaces the MEDIA_READY notification as the catalyst for the MediaReadyCommand. This notification is indicative that the MediaElement constructed under the MediaProxy function prepareMediaElement is loaded into the OSMF MediaPlayer.'
+			'desc' => 'MediaLoaded is triggered between each content load. i.e once between every item in a playlist. 
+				It indicates the mediaProxy is populated with entry metadata and the metadata from the content media asset or manifest has been loaded'
 		)
 	);
 	$eventsPlayerStates = array(
@@ -125,7 +126,8 @@
 		),
 		'playerPlayed' => array(
 			'callbackArgs' => 'None',
-			'desc' => 'The player is now in play state'
+			'desc' => 'Triggered when the player enters a play state. This event be triggered multiple times during a single playback session.
+				For example, playerPlayed will be triggered between ads and when the user plays content after pausing it.'
 		),
 		'playerSeekStart' => array(
 			'callbackArgs' => 'None',
