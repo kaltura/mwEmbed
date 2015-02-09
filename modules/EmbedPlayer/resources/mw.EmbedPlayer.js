@@ -3078,6 +3078,7 @@
 					message = this.getKalturaMsg('ks-CLIP_NOT_FOUND');
 				}
 				this.showErrorMsg({ title: this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'), message: message });
+
 			}
 		},
 
