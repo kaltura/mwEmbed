@@ -24,6 +24,16 @@
 			this.addBindings();
 
 		},
+		addScreenBindings: function(){
+			if( mw.isIE8() ){
+				$('.share .PIE').each(function(){
+					PIE.attach(this);
+				});
+			}
+		},
+		closeShare: function(e){
+			this.hideScreen();
+		},
 		setupPlayerURL: function () {
 			var shareURL = null;
 			switch (this.getConfig('socialShareURL')) {
@@ -49,6 +59,10 @@
 				_this.getScreen().addClass('semiTransparentBkg');
 				$("#"+_this.getPlayer().getPlayerElement().id).addClass("blur");
 				$(".playerPoster").addClass("blur");
+				_this.getPlayer().triggerHelper( 'onDisableKeyboardBinding' );
+			});
+			this.bind('preHideScreen', function () {
+				_this.getPlayer().triggerHelper( 'onEnableKeyboardBinding' );
 			});
 		},
 
@@ -92,7 +106,7 @@
 				networks.push({
 					id: 'facebook',
 					name: 'Facebook',
-					cssClass: 'icon-facebook',
+					cssClass: 'icon-share-facebook',
 					url: 'https://www.facebook.com/sharer/sharer.php?u=',
 					redirectUrl: 'fb://feed/'
 				});
@@ -100,7 +114,7 @@
 				networks.push({
 					id: 'twitter',
 					name: 'Twitter',
-					cssClass: 'icon-twitter',
+					cssClass: 'icon-share-twitter',
 					url: 'https://twitter.com/share?url=',
 					redirectUrl: 'https://twitter.com/intent/tweet/complete?,https://twitter.com/intent/tweet/update'
 				});
@@ -108,7 +122,7 @@
 				networks.push({
 					id: 'googleplus',
 					name: 'GooglePlus',
-					cssClass: 'icon-google-plus',
+					cssClass: 'icon-share-google',
 					url: 'https://plus.google.com/share?url=',
 					redirectUrl: 'https://plus.google.com/app/basic/stream'
 				});
@@ -116,7 +130,7 @@
 				networks.push({
 					id: 'mail',
 					name: 'Mail',
-					cssClass: 'icon-mail',
+					cssClass: 'icon-share-mail',
 					url: 'http://',
 					redirectUrl: ''
 				});
@@ -124,7 +138,7 @@
 				networks.push({
 					id: 'message',
 					name: 'Message',
-					cssClass: 'icon-message',
+					cssClass: 'icon-share-sms',
 					url: 'http://',
 					redirectUrl: ''
 				});
