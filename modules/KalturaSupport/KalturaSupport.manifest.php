@@ -4,11 +4,6 @@
  */
 
 $kgDefaultComponentAttr = array(
-	'plugin' => array(
-		'doc' => 'Should plugin be enabled',
-		'initvalue' => true,
-		'type' => 'boolean',
-	),
 	'parent' => array(
 		'doc' => 'Parent container for component. Components include default placement, leave as null if unsure.',
 		'type' => 'enum',
@@ -45,10 +40,10 @@ $kgDefaultComponentAttr = array(
 			)
 		)
 	),
-	'visible' => array(
-		'doc' => "If the control holder should be visible.",
-		'type' => 'boolean'
-	),
+//	'visible' => array(
+//		'doc' => "If the control holder should be visible.",
+//		'type' => 'boolean'
+//	),
 	'order' => array(
 		'doc' => 'Draw order of the component within the container.
 			Together with alignment, determines component placement of the component. Order is set with respect to siblings on the parent container.',

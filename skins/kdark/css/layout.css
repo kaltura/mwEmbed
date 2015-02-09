@@ -298,7 +298,7 @@ body { letter-spacing: 0.04em; }
 	height: 1.1em;
 	border-radius: 50%;
 	outline: 0;
-	margin-left: -0.5em !important;
+	margin-left: -0.38em;
 	/*border: 8px solid #dadada;*/
 	cursor: pointer;
 

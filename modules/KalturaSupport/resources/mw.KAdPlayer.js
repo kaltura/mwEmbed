@@ -140,7 +140,7 @@ mw.KAdPlayer.prototype = {
 			if (mw.isTouchDevice()){
 				clickEventName += " touchend" + _this.adClickPostFix;;
 			}
-			$( _this.embedPlayer ).unbind( clickEventName + _this.adClickPostFix );
+			$( _this.embedPlayer ).unbind( clickEventName );
 			// stop any ad tracking:
 			_this.stopAdTracking();
 			// Remove notice if present:

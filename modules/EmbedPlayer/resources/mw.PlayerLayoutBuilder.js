@@ -263,6 +263,9 @@ mw.PlayerLayoutBuilder.prototype = {
 		// Trigger layoutBuildDone ( old event: controlBarBuildDone )
 		this.layoutReady = true;
 		this.embedPlayer.triggerHelper( 'layoutBuildDone' );
+		try{
+			window.parent.postMessage('layoutBuildDone','*');
+		}catch(e){}
 	},
 
 	drawComponents: function( $parent, components ) {
@@ -588,7 +591,6 @@ mw.PlayerLayoutBuilder.prototype = {
 		// protect against scroll intent
 		var touchStartPos, touchEndPos = null;
 		$( _this.embedPlayer ).bind( 'touchstart' + this.bindPostfix, function(e) {
-			e.preventDefault();
 			touchStartPos = e.originalEvent.touches[0].pageY; //starting point
 		})
 		.bind( 'touchend' + this.bindPostfix, function(e) {

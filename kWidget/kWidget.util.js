@@ -120,6 +120,12 @@
         var sliceIndex = Math.ceil( sliceCount * perc );
         return sliceIndex;
     };
+	kWidget.sanitize = function( str ){
+		if (str){
+			str = str.replace(/<(?:.|\n)*?>/gm, '');
+		}
+		return str;
+	};
 
 	
 })(window.kWidget);

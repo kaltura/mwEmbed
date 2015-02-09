@@ -281,7 +281,7 @@
 						break;
 					}
 					var entryId = entrylistArry[i];
-					for(var j in data){
+					for(var j = 0; j < data.length; j++){
 						if( data[j]['id'] == entryId){
 							orderedData.push( data.splice( j, 1)[0] );
 						}

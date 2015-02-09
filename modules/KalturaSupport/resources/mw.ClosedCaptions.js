@@ -171,6 +171,9 @@
 				_this.setConfig('displayCaptions', true);
 				_this.showCaptions();
 			});
+			this.bind("playSegmentEvent", function(){
+				_this.updateTimeOffset();
+			});
 		},
 		updateTextSize: function(){
 			// Check if we are in fullscreen or not, if so add an additional bottom offset of
@@ -249,9 +252,15 @@
 			} 
 			return null;
 		},
+		updateTimeOffset: function(){
+			// support server side clipping
+			if ( this.embedPlayer.supportsURLTimeEncoding() && this.embedPlayer.startTime ){
+				this.timeOffset = this.embedPlayer.startTime;
+			}
+		},
 		setupTextSources: function( callback ){
 			var _this = this;
-
+			this.updateTimeOffset();
 			// Get from <track> elements
 			$.each( this.getPlayer().getTextTracks(), function( inx, textSource ){
 				_this.textSources.push( new mw.TextSource( textSource ) );
