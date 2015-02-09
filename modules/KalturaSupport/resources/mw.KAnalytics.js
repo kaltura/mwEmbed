@@ -190,6 +190,9 @@ mw.KAnalytics.prototype = {
 				// error in calling parent page event
 			}
 		}
+		if (this.embedPlayer.getFlashvars('ks')){
+			eventRequest['ks'] = this.embedPlayer.getFlashvars('ks');
+		}
 
 		// Do the api request:
 		this.kClient.doRequest( eventRequest, null, true );

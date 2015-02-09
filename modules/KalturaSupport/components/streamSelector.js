@@ -28,6 +28,9 @@
 		setup: function () {
 			this.addBindings();
 		},
+		isSafeEnviornment: function(){
+			return !mw.isIOS();
+		},
 		destroy: function () {
 			this._super();
 			this.getComponent().remove();

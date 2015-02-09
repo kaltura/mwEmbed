@@ -33,6 +33,10 @@
 		*/
 		init: function( embedPlayer ){
 			var _this = this;
+			
+			// Expose formatFunctions as mw.formaters
+			mw.formaters = this.formatFunctions;
+
 			// player api:
 			var kdpApiMethods = [ 'addJsListener', 'removeJsListener', 'sendNotification',
 								  'setKDPAttribute', 'evaluate' ];
@@ -812,6 +816,9 @@
 					break;
 				case 'durationChange':
 					b( "durationchange", function(){
+						callback( {'newValue' : embedPlayer.duration}, embedPlayer.id );
+					});
+					b( "durationChange", function(){
 						callback( {'newValue' : embedPlayer.duration}, embedPlayer.id );
 					});
 				break;
