@@ -181,7 +181,9 @@
         var ks = kdp.evaluate("{configProxy.flashvars.ks}");
 
         var widgetTitle = getCielo24DynaTransVar(kdp, 'cielo24Transcriptions.DynaTransWindowTitle');
-        var widgetNormalHeight = getCielo24DynaTransVar(kdp, 'cielo24Transcriptions.DynaTransWindowSize', 435);
+        var widgetNormalHeight = getCielo24DynaTransVar(kdp, 'cielo24Transcriptions.DynaTransWindowHeight', 435);
+        var widgetWidth = getCielo24DynaTransVar(kdp, 'cielo24Transcriptions.DynaTransWindowWidth', kdp.style.width);
+        widgetWidth = (widgetWidth+'').indexOf("px")>-1?widgetWidth:widgetWidth+'px';
         var clientLogo = getCielo24DynaTransVar(kdp, "cielo24Transcriptions.DynaTransClientLogo");
         var hideGear = getCielo24DynaTransVar(kdp, "cielo24Transcriptions.DynaTransHideGear");
         var hideShare = getCielo24DynaTransVar(kdp, "cielo24Transcriptions.DynaTransHideShare");
@@ -224,7 +226,7 @@
 
             var div = document.createElement('div');
             div.setAttribute('id', iframeWrapperId);
-            div.style.width = kdp.style.width;
+            div.style.width = widgetWidth;
             div.style.height = widgetNormalHeight+'px';
             div.style.marginTop = '10px';
             var kdpComputedStyle = window.getComputedStyle(kdp);
