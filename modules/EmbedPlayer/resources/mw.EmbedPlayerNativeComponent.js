@@ -66,7 +66,8 @@
 			'enterfullscreen',
 			'exitfullscreen',
 			'chromecastDeviceConnected',
-			'chromecastDeviceDisConnected'
+			'chromecastDeviceDisConnected',
+			'textTracksReceived'
 		],
 
 		// Native player supported feature set
@@ -489,6 +490,14 @@
 			}
 		},
 
+		_ontextTracksReceived: function (event, data) {
+			this.unbindHelper('changedClosedCaptions').bindHelper('changedClosedCaptions',function(event, selection){
+				alert("selected");
+				debugger;
+				this.getPlayerElement().attr('textTrackSelected', selection);
+			});
+			this.triggerHelper('textTracksReceived', data);
+		},
 		/*
 		 * Write the Embed html to the target
 		 */
