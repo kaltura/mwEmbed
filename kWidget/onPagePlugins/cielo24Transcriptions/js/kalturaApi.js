@@ -5,7 +5,17 @@ var supportedLangs = [
     {name:'Russian',isoCode:'ru'},
     {name:'German', isoCode:'de'},
     {name:'Italian',isoCode:'it'},
-    {name:'Spanish',isoCode:'es'}
+    {name:'Spanish',isoCode:'es'},
+    {name:'Arabic', isoCode:'ar'},
+    {name:'French', isoCode:'fr'},
+    {name:'Hebrew', isoCode:'he'},
+    {name:'Hindi',  isoCode:'hi'},
+    {name:'Japanese', isoCode:'jp'},
+    {name:'Korean', isoCode:'ko'},
+    {name:'Mandarin Chinese', isoCode:'cmn'},
+    {name:'Portuguese', isoCode:'pt'},
+    {name:'Traditional Chinese', isoCode:'zh'},
+    {name:'Turkish', isoCode:'tr'}
 ];
 
 function corsIE8(url, done, fail) {
