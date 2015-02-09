@@ -7,7 +7,7 @@
 		asyncInit: true,
 
 		defaultConfig: {
-			'clientTimeout': 2000
+			'clientTimeout': 4000
 		},
 
 		setup: function() {
