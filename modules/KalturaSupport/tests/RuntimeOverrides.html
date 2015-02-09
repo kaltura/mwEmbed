@@ -1,0 +1,371 @@
+<html>
+<head>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	
+	<script type="text/javascript" src="../../../kWidget/tests/resources/ace/ace.js" charset="utf-8"></script>
+	<script type="text/javascript" src="../../../kWidget/tests/resources/ace/theme-twilight.js" charset="utf-8"></script>
+	<script type="text/javascript" src="../../../kWidget/tests/resources/ace/mode-html.js" charset="utf-8"></script>
+</head>
+<body>
+	<h3>Stand alone player runtime overrides</h3>
+	This page demonstrates some of the dynamic overrides of the kaltura player.
+	<br><br>
+
+	<div id="kaltura_player" style="width:600px;height:338px;"></div>
+	
+	<script>
+	
+		var customRelatedEntries =[{  
+				"id":"1_18leun9q",
+				"name":"World Office Sports - Swivel Chair Sprint (Source)",
+				"thumbnailUrl":"http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_18leun9q/version/100002",
+			 },
+			 {  
+				"id":"1_vez3hrud",
+				"name":"Cube Fabulous (Zen Cube) (Source)",
+				"thumbnailUrl":"http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_vez3hrud/version/100002",
+			 }
+		];
+	
+		var jsonConfig	= {
+			"plugins":{
+				"topBarContainer": {},
+				"titleLabel": {}, 
+				"controlBarContainer": {
+					"hover": true
+				},
+				"largePlayBtn": {},
+				"scrubber": {
+					'thumbSlicesUrl': '{mediaProxy.entryMetadata.thumbSlicesUrl}'
+				},
+				"vast":{ 
+					"trackCuePoints":"true",
+					"timeout": 4
+				},
+				'skipBtn': {
+					'label': 'Skip Ad'
+				},
+				'noticeMessage': {
+					'text': 'Advertisment {sequenceProxy.timeRemaining|timeFormat}'
+				},
+				"related":{},
+				"playPauseBtn": {},
+				"volumeControl": {},
+				"fullScreenBtn": {},
+				"durationLabel": {},
+				"currentTimeLabel": {},
+				"sourceSelector": {},
+				"logo": { "visible": false},
+				"infoScreen": {},
+				"share": {},
+				'statistics': {'plugin': false},
+			},
+			"uiVars":[{
+				"key":"autoPlay",
+				"value":false,
+				"overrideFlashvar":false
+			}],
+			"layout":{
+				"skin": "kdark",
+				"cssFiles":[]
+			}
+		};
+		// per entry settings
+		var mediaProxy = {
+				'entry':{
+					'id': "my_entry_key",
+					'name': "My ToolKit Video",
+					"description": "Kaltura Player toolkit Description.",
+					"plays":1234,
+					"views":47332,
+					"duration":114,
+					"createdAt":1379965720,
+					"thumbnailUrl": 'http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/640'
+				},
+				'entryCuePoints': [{
+					"protocolType": 1,
+					"adType": 1, 
+					"cuePointType": "adCuePoint.Ad",
+					"startTime": 4936,
+					"sourceUrl": "http://projects.kaltura.com/mdale/hotelVastAd.xml"
+				}],
+				"contextData":{
+					'isCountryRestricted': false
+				},
+				'entryMetadata': {
+					'thumbSlicesUrl': 'http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/100/vid_slices/100',
+					'AgeGroup': "16"
+				},
+				'sources':[
+					{
+						"src":"http://cdnbakmi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_sf5ovm7u/flavorId/1_4j0omqcl/format/url/protocol/http/a.webm",
+						"width":"624",
+						"height":"352",
+						"bandwidth":"740352",
+						"type":"video/webm; codecs=\"vp8, vorbis",
+					 },{
+						"src":"http://cdnbakmi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_sf5ovm7u/flavorId/1_d2uwy7vv/format/url/protocol/http/a.mp4",
+						"width":"640",
+						"height":"360",
+						"bandwidth":"1101824",
+						"type":"video/mp4; codecs=\"avc1.42E01E, mp4a.40.2",
+					 },{
+						"src":"http://cdnbakmi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_sf5ovm7u/flavorId/1_jl7y56al/format/url/protocol/http/a.mp4",
+						"width":"1280",
+						"height":"720",
+						"bandwidth":"24117248",
+						"type":"video/mp4; codecs=\"avc1.42E01E, mp4a.40.2",
+					 },
+					 {
+						"src":"http://cdnbakmi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_sf5ovm7u/flavorIds/1_jl7y56al/format/applehttp/protocol/http/a.m3u8",
+						"type":"application/vnd.apple.mpegurl",
+					 }
+				]
+			}
+		
+		var infoTemplate = "<div class='panel-right'>\n" +
+			"\t<div class='created'>Uploaded on {mediaProxy.entry.createdAt|dateFormat}</div>\n" +
+			"\t<div class='description'>{mediaProxy.entry.description}</div>\n" +
+		"</div>\n" +
+		"<div class='panel-left'>\n" +
+			"\t<div class='views'>{mediaProxy.entry.views|numberWithCommas} Views</div>\n" +
+		"</div>";
+		
+		var relatedTemplate = "<h3>Custom Related Template</h3>\n<div class=\"item featured\" data-entry-id=\"<%=nextItem.id%>\" data-click=\"changeMedia\">\n" + 
+		"	<div class=\"item-inner\">\n" + 
+		"		<div class=\"title\">\n" + 
+		"			<% if( self.getConfig('autoContinueTime') ) { %>\n" + 
+		"			Next <span class=\"time\">in: \n" + 
+		"					<span class=\"remaining\">{related.timeRemaining|timeFormat}</span>\n" + 
+		"				</span><br />\n" + 
+		"			<% } %>\n" + 
+		"			<%=nextItem.name%>\n" + 
+		"		</div>\n" + 
+		"		<img class=\"<%= ( nextItem.width / nextItem.height  > 1.34 ) ? 'wide':'square' %>\"\n" + 
+		"			alt=\"<%=nextItem.name%>\" src=\"<%=nextItem.thumbnailUrl%>/width/450\" />\n" + 
+		"	</div>\n" + 
+		"</div>\n" + 
+		"<% $.each(moreItems, function(idx, item) { %>\n" + 
+		"<div class=\"item small\" data-entry-id=\"<%=item.id%>\" data-click=\"changeMedia\">\n" + 
+		"	<div class=\"item-inner\"> \\n" + 
+		"		<div class=\"title\"><%=item.name%></div>\n" + 
+		"		<img class=\"<%= ( item.width / item.height  > 1.34 ) ? 'wide':'square' %>\"\n" + 
+		"			alt=\"<%=item.name%>\" src=\"<%=item.thumbnailUrl%>/width/350\" />\n" + 
+		"	</div>\n" + 
+		"</div>\n" + 
+		"<% }); %>";
+		
+		var shareTemplate = "<div class='panel-right'>\n" + 
+		"\t<h3>Custom Share:</h3>\n" +
+		"\t<img src=\"rblogo.png\">\n" +
+		"\t<input value=\"<%= share.getConfig('shareURL') %>\" />\n" +
+		"\t<div class=\"divider\"></div>" +
+		"\t<ul>\n" +
+		"\t\t<% $.each(networks, function(idx, network){ %>\n" +
+			"\t\t\t<li><a href=\"<%=network.url%>\" data-click=\"openPopup\">\n\t\t\t\t<span class=\"<%=network.cssClass%>\" title=\"<%=network.name%>\"></span>\n\t\t\t\t</a>\n\t\t\t</li>\n" +
+		"\t\t<% }); %>\n" +
+		"\t</ul>\n" + 
+		"</div>";
+		
+		function doPlayerEmbed(){
+			jsonConfig.plugins.infoScreen.template = infoTemplate;
+			jsonConfig.plugins.related.template = relatedTemplate;
+			
+			kWidget.embed('kaltura_player', {
+				'wid': '_243342',
+				'flashvars':{
+					'jsonConfig': jsonConfig,
+					'mediaProxy': mediaProxy
+				},
+				// ready bindings:
+				'readyCallback': function( playerId ){
+					var kdp = document.getElementById( playerId );
+					
+					// bind custom related data
+					kdp.kBind( 'relatedData', function( callback){
+						callback( customRelatedEntries );
+					});
+				}
+			});
+		}
+		doPlayerEmbed();
+	</script>
+	<br>
+	
+	<div role="tabpanel">
+		<!-- Nav tabs -->
+		<ul class="nav nav-tabs" role="tablist" id="configTabs">
+			<li role="presentation" class="active"><a href="#json" aria-controls="json" role="tab" data-toggle="tab">JSON config</a></li>
+			<li role="presentation"><a href="#media" aria-controls="media" role="tab" data-toggle="tab">Media</a></li>
+			<li role="presentation"><a href="#info" aria-controls="info" role="tab" data-toggle="tab">Info template</a></li>
+			<li role="presentation"><a href="#related" aria-controls="related" role="tab" data-toggle="tab">Related data</a></li>
+			<li role="presentation"><a href="#related_template" aria-controls="related_template" role="tab" data-toggle="tab">Related template </a></li>
+			<li role="presentation"><a href="#share_template" aria-controls="share_template" role="tab" data-toggle="tab">Share template </a></li>
+		</ul>
+	
+		<!-- Tab panes -->
+		<div class="tab-content">
+			<div role="tabpanel" class="tab-pane active" id="json"> 
+			
+			<div id="json-editor" style="width:100%;height:400px;"></div><br>
+			<a href="#" id="update-json" class="btn btn btn-info"> Update player json</a>
+			<script>
+				jsonEditor = ace.edit("json-editor");
+				// editor.setTheme("ace/theme/twilight");
+				jsonEditor.getSession().setMode("ace/mode/json");
+				jsonEditor.setShowPrintMargin(false);
+				// update ace editor data: 
+				jsonEditor.setValue( JSON.stringify( jsonConfig, null, "\t" ), -1 );
+				$('#update-json').click(function(){
+					// update template:
+					try{
+						jsonConfig = JSON.parse( jsonEditor.getValue() );
+					} catch ( e ){
+						alert( "Could not parse custom related videos JSON");
+						return ;
+					}
+					// re-render player: 
+					doPlayerEmbed();
+				});
+			</script>
+		</div>
+		<div role="tabpanel" class="tab-pane" id="media"> 
+
+			<div id="media-editor" style="width:100%;height:400px;"></div><br>
+			<a href="#" id="update-media" class="btn btn btn-info"> Update media </a>
+			<script>
+				mediaEditor = ace.edit("media-editor");
+				// editor.setTheme("ace/theme/twilight");
+				mediaEditor.getSession().setMode("ace/mode/json");
+				mediaEditor.setShowPrintMargin(false);
+				// update ace editor data: 
+				mediaEditor.setValue( JSON.stringify( mediaProxy, null, "\t" ), -1 );
+				$('#update-media').click(function(){
+					// update template:
+					try{
+						mediaProxy = JSON.parse( mediaEditor.getValue() );
+					} catch ( e ){
+						alert( "Could not parse custom related videos JSON");
+						return ;
+					}
+					// re-render player: 
+					doPlayerEmbed();
+				});
+			</script>
+
+		</div>
+		<div role="tabpanel" class="tab-pane" id="info"> 
+		
+		
+			<div id="info-editor" style="width:100%;height:400px;"></div><br>
+			<a href="#" id="update-info" class="btn btn btn-info"> Update media info template </a>
+			<script>
+				infoEditor = ace.edit("info-editor");
+				// editor.setTheme("ace/theme/twilight");
+				infoEditor.getSession().setMode("ace/mode/html");
+				infoEditor.setShowPrintMargin(false);
+				// update ace editor data: 
+				infoEditor.setValue( infoTemplate, -1 );
+				$('#update-info').click(function(){
+					// update template:
+					infoTemplate = infoEditor.getValue();
+					// re-render player: 
+					doPlayerEmbed();
+				});
+			</script>
+		
+		
+		</div>
+		<div role="tabpanel" class="tab-pane" id="related"> 
+
+
+	<div id="related-editor" style="width:100%;height:400px;"></div><br>
+	<a href="#" id="update-related" class="btn btn btn-info"> Update custom related data</a>
+	<script>
+		var customRelatedEntries =[{  
+				"id":"1_18leun9q",
+				"name":"World Office Sports - Swivel Chair Sprint (Source)",
+				"thumbnailUrl":"http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_18leun9q/version/100002",
+			 },
+			 {  
+				"id":"1_vez3hrud",
+				"name":"Cube Fabulous (Zen Cube) (Source)",
+				"thumbnailUrl":"http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_vez3hrud/version/100002",
+			 }
+		];
+		relatedEditor = ace.edit("related-editor");
+		// editor.setTheme("ace/theme/twilight");
+		relatedEditor.getSession().setMode("ace/mode/json");
+		relatedEditor.setShowPrintMargin(false);
+		// update ace editor data: 
+		relatedEditor.setValue( JSON.stringify( customRelatedEntries, null, "\t" ), -1 );
+		$('#update-related').click(function(){
+			// update template:
+			try{
+				customRelatedEntries = JSON.parse( relatedEditor.getValue(), -1 );
+			} catch ( e ){
+				alert( "Could not parse custom related videos JSON");
+				return ;
+			}
+			// re-render player: 
+			doPlayerEmbed();
+		});
+	</script>
+	
+
+			 </div>
+			<div role="tabpanel" class="tab-pane" id="related_template"> 
+			
+				<div id="relatedtemplate-editor" style="width:100%;height:400px;"></div><br>
+				<a href="#" id="update-relatedTemplate" class="btn btn btn-info"> Update related template </a>
+				<script>
+					relatedTemplateEditor = ace.edit("relatedtemplate-editor");
+					// editor.setTheme("ace/theme/twilight");
+					relatedTemplateEditor.getSession().setMode("ace/mode/html");
+					relatedTemplateEditor.setShowPrintMargin(false);
+					// update ace editor data: 
+					relatedTemplateEditor.setValue( relatedTemplate, -1 );
+					relatedTemplateEditor.getSession().setUseWorker(false);
+					$('#update-relatedTemplate').click(function(){
+						// update template:
+						relatedTemplate = relatedTemplateEditor.getValue();
+						// re-render player: 
+						doPlayerEmbed();
+					});
+				</script>
+			
+			
+			 </div>
+		
+			<div role="tabpanel" class="tab-pane" id="share_template"> 
+			
+				<div id="sharetemplate-editor" style="width:100%;height:400px;"></div><br>
+				<a href="#" id="update-share" class="btn btn btn-info"> Update share template </a>
+				<script>
+					shareTemplateEditor = ace.edit("sharetemplate-editor");
+					// editor.setTheme("ace/theme/twilight");
+					shareTemplateEditor.getSession().setMode("ace/mode/html");
+					shareTemplateEditor.setShowPrintMargin(false);
+					// update ace editor data: 
+					shareTemplateEditor.setValue( shareTemplate, -1 );
+					shareTemplateEditor.getSession().setUseWorker(false);
+					$('#update-share').click(function(){
+						// update template:
+						shareTemplate = shareTemplateEditor.getValue();
+						// re-render player: 
+						doPlayerEmbed();
+					});
+				</script>
+			
+			
+			 </div>
+		</div>
+
+	</div>
+	<script> 
+		
+	</script>
+</body>
+</html>

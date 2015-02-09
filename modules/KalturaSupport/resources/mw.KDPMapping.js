@@ -33,6 +33,10 @@
 		*/
 		init: function( embedPlayer ){
 			var _this = this;
+			
+			// Expose formatFunctions as mw.formaters
+			mw.formaters = this.formatFunctions;
+
 			// player api:
 			var kdpApiMethods = [ 'addJsListener', 'removeJsListener', 'sendNotification',
 								  'setKDPAttribute', 'evaluate' ];
@@ -517,6 +521,12 @@
 							break;
 					}
 					break;
+				case 'embedServices':
+					var proxyData = embedPlayer.getKalturaConfig( 'proxyData' );
+					var filedName = expression.replace('embedServices.', '');
+					return this.getProperty(filedName, proxyData);
+					break;
+
 			}
 			// Look for a plugin based config: typeof
 			var pluginConfigValue = null;
@@ -575,7 +585,19 @@
 					break;
 			}
 		},
+		getProperty: function( propertyName, object ) {
+			var parts = propertyName.split( "." ),
+				length = parts.length,
+				i,
+				property = object || this;
 
+			for ( i = 0; i < length; i++ ) {
+				if (property === undefined) break;
+				property = property[parts[i]];
+			}
+
+			return property;
+		},
 		/**
 		 * Emulates Kaltura removeJsListener function
 		 */

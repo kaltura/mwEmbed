@@ -28,13 +28,25 @@
 			'desc' => 'Current video duration in seconds',
 		),
 		'mediaProxy.entry' => array(
-			'desc' => 'Returns all entry properties for the currently active entry.',
+			'desc' => "Return or set all entry properties. Entry properties include: 
+					'id','name','description','plays','views','duration','createdAt', 'thumbnailUrl' and others. 
+				See Kaltura <a target=\"_new\" href=\"http://www.kaltura.com/api_v3/testmeDoc/?object=KalturaBaseEntry\">base entry object</a>,
+				in Kaltura API definition for full set of properties.",
+			'example' => '../modules/KalturaSupport/tests/StandAlonePlayerMediaProxyOverride.html'
 		),
 		'mediaProxy.entryCuePoints' => array(
-			'desc' => 'Array of cue points if defined for the current media',
+			'desc' => 'Return or set cue points for the current media entry.
+				See Kaltura <a target=\"_new\" href=\"http://www.kaltura.com/api_v3/testmeDoc/?object=KalturaCuePoint\">cuePoint object</a>,
+				in Kaltura API definition for full set of properties.',
+			'example' => '../modules/KalturaSupport/tests/StandAlonePlayerMediaProxyOverride.html'
 		),
 		'mediaProxy.entryMetadata' => array(
-			'desc' => 'Metadata object for the current entry',
+			'desc' => 'Metadata object for the current entry. Enables reading custom metadata key value pairs.',
+			'example' => '../modules/KalturaSupport/tests/CustomMetaData.html'
+		),
+		'mediaProxy.sources' => array(
+			'desc' => 'An array of HTML5 sources with src attribute for fully resolved URL and Type attribute which should match HTML5 source type value.',
+			'example' => '../modules/KalturaSupport/tests/StandAlonePlayerMediaProxyOverride.html'
 		),
 		'mediaProxy.isLive' => array(
 			'desc' => 'Returns true, if the the current entries live broadcast is active.',
