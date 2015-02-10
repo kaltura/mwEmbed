@@ -1,6 +1,7 @@
 <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
 <span class="share-close icon-share-close"  data-click="closeShare"></span>
 <div class='panel-center'>
+	<span class="share-alert">Error message</span>
 	<div class="share-icons-scroller">
 		<div class="icon-play back-btn"></div>
 		<div class="icon-play next-btn"></div>
@@ -9,27 +10,26 @@
 				<div class="icon-border PIE">
 					<a href="<%=network.url%>" data-click="openPopup"><span class="<%=network.cssClass%> share-network" title="<%=network.name%>" id="<%=network.id%>"></span></a>
 				</div>
-
 			<% }); %>
 		</div>
 	</div>
 	<div class="share-input-container share-container">
-		<input class="share-input" value="<%= share.getConfig('shareURL') %>"/>
+		<input class="shareembed-input share-input" value="<%= share.getConfig('shareURL') %>"/>
 		<div class="share-copy-btn">Copy</div>
 		<div class="icon-share-Yes share-v-icon"></div>
 	</div>
 	<div class="share-input-container share-offset-container">
 		<span class="share-label">Start video at</span>
-		<input value="00:00:00" class="share-offset"/>
+		<input value="00:00:00" class="shareembed-input share-offset"/>
 	</div>
 	<div class="share-input-container embed-container">
-		<input class="embed-input" value="<%= share.getConfig('shareURL') %>"/>
+		<input class="shareembed-input embed-input" value="<%= share.getConfig('shareURL') %>"/>
 		<div class="share-copy-btn">Copy</div>
 		<div class="icon-share-Yes share-v-icon"></div>
 	</div>
 	<div class="share-input-container embed-offset-container">
 		<span class="share-label">Start video at</span>
-		<input value="00:00:00" class="share-offset"/>
+		<input value="00:00:00" class="shareembed-input share-offset"/>
 		<label style="float: left; margin-top: 12px"><input class="share-secured" type="checkbox" name="securedCB" value="secured">Secured embed</label>
 	</div>
 </div>
