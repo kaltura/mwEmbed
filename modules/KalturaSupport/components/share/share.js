@@ -28,37 +28,43 @@
 					"name": "Facebook",
 					"icon": "",
 					"cssClass": "icon-share-facebook",
-					"template": "https://www.facebook.com/sharer/sharer.php?u={shareUrl}"
+					"template": "https://www.facebook.com/sharer/sharer.php?u={shareUrl}",
+					"redirectUrl": 'fb://feed/'
 				},
 				"twitter": {
 					"name": "Twitter",
 					"icon": "",
 					"cssClass": "icon-share-twitter",
-					"template": "https://twitter.com/share?url={shareUrl}"
+					"template": "https://twitter.com/share?url={shareUrl}",
+					"redirectUrl": 'https://twitter.com/intent/tweet/complete?,https://twitter.com/intent/tweet/update'
 				},
 				"googleplus": {
 					"name": "Google+",
 					"icon": "",
 					"cssClass": "icon-share-google",
-					"template": "https://plus.google.com/share?url={shareUrl}"
+					"template": "https://plus.google.com/share?url={shareUrl}",
+					"redirectUrl": 'https://plus.google.com/app/basic/stream'
 				},
 				"email": {
 					"name": "Email",
 					"icon": "",
 					"cssClass": "icon-share-email",
-					"template": "mailto:email@address.com?subject=Check out {mediaProxy.entry.name}&body=Check out {mediaProxy.entry.name}: {shareUrl}"
+					"template": "mailto:email@address.com?subject=Check out {mediaProxy.entry.name}&body=Check out {mediaProxy.entry.name}: {shareUrl}",
+					"redirectUrl": ''
 				},
 				"linkedin": {
 					"name": "LinkedIn",
 					"icon": "",
 					"cssClass": "icon-share-linkedin",
-					"template": "http://www.linkedin.com/shareArticle?mini=true&url={shareUrl}"
+					"template": "http://www.linkedin.com/shareArticle?mini=true&url={shareUrl}",
+					"redirectUrl": ''
 				},
 				"sms": {
 					"name": "SMS",
 					"icon": "",
 					"cssClass": "icon-share-sms",
-					"template": "Check out {mediaProxy.entry.name}: {shareUrl}"
+					"template": "Check out {mediaProxy.entry.name}: {shareUrl}",
+					"redirectUrl": ''
 				}
 			},
 			embedCodeTemplate: '<iframe src="{cdn}/p/{partnerId}/sp/{partnerId}00/embedIframeJs/uiconf_id/{uiconfId}/partner_id/{partnerId}?iframeembed=true&playerId={kaltura_player_id}&entry_id={entryId}&flashvars[streamerType]=auto" width="560" height="395" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0"></iframe>',
@@ -91,15 +97,22 @@
 
 				// prevent keyboard key actions to allow typing in share screen fields
 				_this.getPlayer().triggerHelper( 'onDisableKeyboardBinding' );
+
+				// disable all player controls except play button, scrubber and volume control
+				_this.getPlayer().disablePlayControls(["volumeControl","scrubber","playPauseBtn"]);
 			});
 			this.bind('preHideScreen', function () {
 				// restore keyboard actions
 				_this.getPlayer().triggerHelper( 'onEnableKeyboardBinding' );
+
+				// re-enable player controls
+				_this.getPlayer().enablePlayControls();
 			});
 		},
 
 		getTemplateData: function () {
 			var networks = this.getConfig('shareOptions');
+
 			// in order to support the legacy socialNetworks Flashvar, we will go through it and remove networks that are not specified in socialNetworks
 			var socialNetworks = this.getConfig("socialNetworks").split(",");
 			$.each(networks, function(idx, network){
@@ -107,6 +120,14 @@
 					delete networks[idx];
 				}
 			});
+
+			// remove sms option if we are not inside a native app
+			if ( !mw.isNativeApp() ) {
+				delete networks["sms"];
+			}
+
+			// save networks to config
+			this.setConfig( 'shareOptions' , networks );
 
 			return {
 				'share': this,
@@ -125,19 +146,26 @@
 			url = this.getPlayer().evaluate(url); // replace all other tokens
 
 			if (mw.isNativeApp()) {
-				var socialNetworks = this.getConfig("socialNetworks").split(',');
-				var networkIndex = $.inArray($(e.target).attr('id'), socialNetworks);
-				var networkParams = this.getTemplateData().networks[networkIndex];
+				var networks = this.getConfig('shareOptions');
+				var id = $(e.target).attr('id');
 				var shareParams = {
 					actionType: 'share',
+					id: id,
 					sharedLink: this.getConfig("shareURL"),
-					shareNetwork: networkParams,
+					shareNetwork: networks[id],
 					thumbnail: this.getThumbnailURL(),
 					videoName: this.getPlayer().evaluate("{mediaProxy.entry.name}")
 				};
 				this.getPlayer().doNativeAction(JSON.stringify(shareParams));
 			} else {
-				window.open(url,'_blank','width=626,height=436');
+				var opener = window.open(url,'_blank','width=626,height=436');
+				// close the window if this is an email
+				if (url.indexOf("mailto") === 0){
+					setTimeout(function(){
+						opener.close();
+					},2000);
+
+				}
 			}
 		},
 		getThumbnailURL: function () {
