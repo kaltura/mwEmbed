@@ -32,10 +32,7 @@
 			}
 		},
 		closeShare: function(e){
-			//this.hideScreen();
-			$(".share-offset-container").show();
-			$(".embed-offset-container").show();
-			$(".share-copy-btn").show();
+			this.hideScreen();
 		},
 		setupPlayerURL: function () {
 			var shareURL = null;

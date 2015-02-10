@@ -57,7 +57,7 @@
 	color: rgba(255, 255, 255, 0.502);
 }
 .share .share-offset-container{
-	margin: 0;
+	margin: 0 auto;
 	display: none;
 	margin-bottom: 19px;
 }
@@ -67,7 +67,7 @@
 	padding-left: 10px;
 	padding-right: 10px;
 	text-align: center;
-	float: none;
+	float: left;
 	margin-bottom: 0px;
 	margin-left: 6px;
 }
@@ -76,18 +76,21 @@
 }
 .share .embed-offset-container{
 	display: none;
-	margin: 0;
+	margin: 0 auto;
 }
 /* checkbox */
 .share .share-secured{
 	margin-left: 12px;
 }
 /* labels and alerts */
-.share .embed-offset-container .share-label{
+.share .share-label{
 	float: left;
 	margin-left: 60px;
 	margin-top: 14px;
 	margin-right: 6px;
+}
+.share .embed-offset-container .share-label{
+	margin-left: 0px;
 }
 .share-alert{
 	font-size: 11pt;
@@ -120,13 +123,7 @@
 	height: 36px;
 	display: none;
 }
-/* icon placeholder */
-.share .share-icons-scroller{
-	width: 400px;
-	height: 58px;
-	margin: 0 auto;
-	margin-bottom: 12px;
-}
+/* next and back buttons */
 .share .back-btn{
 	-moz-transform: scaleX(-1);
 	-o-transform: scaleX(-1);
@@ -138,6 +135,7 @@
 	position: absolute;
 	margin-top: 22px;
 	cursor: pointer;
+	display: none;
 }
 .share .back-btn:hover{
 	text-shadow: 0px 0px 10px #fff;
@@ -148,9 +146,17 @@
 	margin-top: 22px;
 	cursor: pointer;
 	margin-left: 370px;
+	display: none;
 }
 .share .next-btn:hover{
 	text-shadow: 0px 0px 10px #fff;
+}
+/* icon placeholder */
+.share .share-icons-scroller{
+	width: 400px;
+	height: 58px;
+	margin: 0 auto;
+	margin-bottom: 12px;
 }
 .share .share-icons-container{
 	width: 340px;
