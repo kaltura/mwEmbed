@@ -81,6 +81,10 @@
 			this.setupPlayerURL();
 			this.addBindings();
 
+			// disable embed option on mobile and native
+			if ( mw.isMobileDevice() || mw.isNativeApp() ){
+				this.setConfig( 'embedEnabled' , false );
+			}
 		},
 
 		addBindings: function () {
