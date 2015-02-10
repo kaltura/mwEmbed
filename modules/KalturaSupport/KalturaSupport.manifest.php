@@ -760,7 +760,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'socialNetworks' => array(
 					'doc' => "Define included networks, separate by commas. Currently share supports facebook, twitter, googleplus.",
 					'type' => 'string',
-					'initvalue' => 'facebook,twitter,googleplus'
+					'initvalue' => 'facebook,twitter,googleplus,email,linkedin,sms'
 				),
 			)
 		)
