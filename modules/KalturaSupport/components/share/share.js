@@ -168,6 +168,7 @@
 						$(".share-offset-container").fadeIn(300);
 					});
 				}
+				$(this).select();
 			});
 
 			$(".embed-input").on("click", function(){
@@ -179,6 +180,7 @@
 						$(".embed-offset-container").fadeIn(300);
 					});
 				}
+				$(this).select();
 			});
 			this.restrictNPTFields();
 			// handle time offset for share link
