@@ -79,7 +79,6 @@
 		iconBtnClass: "icon-share",
 		setup: function () {
 			this.setupPlayerURL();
-			this.setupEmbedCode();
 			this.addBindings();
 
 			// disable embed option on mobile and native
@@ -105,6 +104,11 @@
 
 				// disable all player controls except play button, scrubber and volume control
 				_this.getPlayer().disablePlayControls(["volumeControl","scrubber","playPauseBtn"]);
+
+				// setup embed code when the screen opens
+				_this.setupEmbedCode();
+				// set embed code in the UI as the template doesn't load it correctly when using data binding because of the double quotes inside the text
+				$(".embed-input").val(_this.getConfig('embedCode'));
 			});
 			this.bind('preHideScreen', function () {
 				// restore keyboard actions
@@ -192,9 +196,6 @@
 				}
 			});
 
-			// set embed code in the UI as the template doesn't load it correctly when using data binding because of the double quotes inside the text
-			$(".embed-input").val(this.getConfig('embedCode'));
-
 			// handle time offset for embed code
 			$(".embed-offset-container>.share-offset").on("propertychange change keyup input paste", function(event){
 				_this.setEmbedTimeOffset($(this).val());
@@ -273,6 +274,7 @@
 			$(".share-container>.share-copy-btn").hide();
 			$(".share-offset").val("00:00");
 			$(".share-alert").hide();
+			$('.share-secured').attr('checked', false);
 			this.hideScreen();
 		},
 
