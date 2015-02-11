@@ -69,6 +69,18 @@ return array (
 				'doc' => "Timer for timed checking if adsManager was loaded(in milliseconds)",
 				'initvalue' => 5000,
 				'type' => 'hiddenValue',
+			),
+			'leadWithFlash' => array(
+				'label' => 'Lead with flash',
+				'doc' => "If the flash based DFP runtime should be used where flash is available.",
+				'type' => 'boolean',
+				'initvalue'=> false
+			),
+			'debugMode' => array(
+				'label' => 'Debug mode',
+				'doc' => "If the DFP IMA3 SDK debug mode should be used.",
+				'type' => 'boolean',
+				'initvalue'=> false
 			)
 		)
 	)
