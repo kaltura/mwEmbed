@@ -68,7 +68,7 @@
 				}
 			},
 			embedCodeTemplate: '<iframe src="{cdn}/p/{partnerId}/sp/{partnerId}00/embedIframeJs/uiconf_id/{uiconfId}/partner_id/{partnerId}?iframeembed=true&playerId={kaltura_player_id}&entry_id={entryId}&flashvars[streamerType]=auto" width="560" height="395" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0"></iframe>',
-			embedCodeOptions: {
+			embedOptions: {
 				"streamerType": "auto",
 				"width": 560,
 				"height": 395,
@@ -79,6 +79,7 @@
 		iconBtnClass: "icon-share",
 		setup: function () {
 			this.setupPlayerURL();
+			this.setupEmbedCode();
 			this.addBindings();
 
 			// disable embed option on mobile and native
@@ -146,7 +147,7 @@
 
 		// overwrite addScreenBindings function of mw.KBaseScreen
 		addScreenBindings: function(){
-
+			var _this = this;
 			//add IE8 support for rounded corners using the PIE library
 			if( mw.isIE8() ){
 				$('.share .PIE').each(function(){
@@ -155,29 +156,123 @@
 			}
 			// add bindings
 			$(".share-input").on("click", function(){
-				$(".embed-offset-container").hide();
-				$(".embed-container>.share-copy-btn").hide();
-				$(".share-offset-container").height(0).show().animate({ height: "43px" }, 300 ,function(){
-					$(".share-container>.share-copy-btn").fadeIn(300);
-					$(".share-offset-container").fadeIn(300);
-				});
+				if ( $(".share-offset-container").css("display") === "none" ){
+					$(".embed-offset-container").hide();
+					$(".embed-container>.share-copy-btn").hide();
+					$(".share-offset-container").height(0).show().animate({ height: "43px" }, 300 ,function(){
+						$(".share-container>.share-copy-btn").fadeIn(300);
+						$(".share-offset-container").fadeIn(300);
+					});
+				}
 			});
 
 			$(".embed-input").on("click", function(){
-				$(".share-offset-container").hide();
-				$(".share-container>.share-copy-btn").hide();
-				$(".embed-offset-container").height(0).show().animate({ height: "43px" }, 300 ,function(){
-					$(".embed-container>.share-copy-btn").fadeIn(300);
-					$(".embed-offset-container").fadeIn(300);
-				});
+				if ( $(".embed-offset-container").css("display") === "none" ){
+					$(".share-offset-container").hide();
+					$(".share-container>.share-copy-btn").hide();
+					$(".embed-offset-container").height(0).show().animate({ height: "43px" }, 300 ,function(){
+						$(".embed-container>.share-copy-btn").fadeIn(300);
+						$(".embed-offset-container").fadeIn(300);
+					});
+				}
+			});
+			this.restrictNPTFields();
+			// handle time offset for share link
+			$(".share-offset-container>.share-offset").on("propertychange change keyup input paste", function(event){
+				_this.setShareTimeOffset($(this).val());
+			});
+
+			// handle copy button for share link
+			$(".share-container>.share-copy-btn").on("click", function(){
+				// $(".share-input").select();
+				if ( window.clipboardData ){ // copy in IE
+					window.clipboardData.setData("Text",$(".share-input").val());
+				}else{
+					window.prompt("Copy to clipboard: Ctrl+C, Enter", $(".share-input").val());
+				}
+			});
+
+			// set embed code in the UI as the template doesn't load it correctly when using data binding because of the double quotes inside the text
+			$(".embed-input").val(this.getConfig('embedCode'));
+
+			// handle time offset for embed code
+			$(".embed-offset-container>.share-offset").on("propertychange change keyup input paste", function(event){
+				_this.setEmbedTimeOffset($(this).val());
+			});
+
+			// handle secured embed
+			$(".share-secured").on("click", function(){
+				var embedCode = $(".embed-input").val();
+				if ($(this).is(':checked')){
+					embedCode = embedCode.split("http:").join("https:");
+					embedCode = embedCode.split("cdnapi.kaltura.com").join("cdnapisec.kaltura.com");
+				}else{
+					embedCode = embedCode.split("https:").join("http:");
+					embedCode = embedCode.split("cdnapisec.kaltura.com").join("cdnapi.kaltura.com");
+				}
+				$(".embed-input").val(embedCode);
 			});
 		},
 
+		restrictNPTFields: function(){
+			$(".share-offset").keydown(function (e) {
+				// Allow: backspace, delete, tab, escape, enter and :
+				if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 186]) !== -1 ||
+					// Allow: Ctrl+A
+					(e.keyCode == 65 && e.ctrlKey === true) ||
+					// Allow: home, end, left, right
+					(e.keyCode >= 35 && e.keyCode <= 39)) {
+					// let it happen, don't do anything
+					return;
+				}
+				// Ensure that it is a number and stop the keypress
+				if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+					e.preventDefault();
+				}
+			});
+		},
+
+		setShareTimeOffset: function(offset){
+			var shareLink = $(".share-input").val();
+			shareLink = shareLink.split("?")[0];
+			if ( this.validateTimeOffset(offset) ){
+				shareLink = shareLink + "?startTime=" + offset;
+			}
+			$(".share-input").val(shareLink);
+			this.setConfig("shareURL", shareLink);
+		},
+
+		setEmbedTimeOffset: function(offset){
+			var embedCode = $(".embed-input").val();
+			// remove any existing mediaProxy.mediaPlayFrom flashvars previously defined
+			if ( embedCode.indexOf("mediaProxy.mediaPlayFrom") !== -1 ){
+				embedCode = embedCode.replace( /flashvars\[mediaProxy.mediaPlayFrom\]=(.*?)&/ ,"");
+			}
+			if ( this.validateTimeOffset(offset) ){
+				embedCode = embedCode.split("?").join("?flashvars[mediaProxy.mediaPlayFrom]=" + mw.npt2seconds(offset) + "&");
+			}
+			console.log(embedCode);
+			$(".embed-input").val(embedCode);
+		},
+
+		validateTimeOffset: function(offset){
+			$(".share-alert").text("").hide();
+			if ( mw.npt2seconds(offset) > this.getPlayer().duration ){
+				$(".share-alert").text("Time offset cannot be longer than movie duration.").show();
+				return false;
+			}
+			if ( mw.npt2seconds(offset) === 0 ){
+				return false;
+			}
+			return true;
+		},
 		closeScreen: function(){
 			$(".embed-offset-container").hide();
 			$(".embed-container>.share-copy-btn").hide();
 			$(".share-offset-container").hide();
 			$(".share-container>.share-copy-btn").hide();
+			$(".share-offset").val("00:00");
+			$(".share-alert").hide();
 			this.hideScreen();
 		},
 
@@ -217,7 +312,29 @@
 				height: this.getPlayer().getHeight()
 			});
 		},
+		// setup embed code
+		setupEmbedCode: function(){
+			var embedCode = this.getConfig("embedCodeTemplate",true);
+			var embedConfig = this.getConfig("embedOptions");
+			var embedPlayer = this.getPlayer();
+			var cdn = window.kWidgetSupport.getBaseFlavorUrl(embedPlayer.kpartnerid).split("/p/")[0];
 
+			// replace tokens in template
+			embedCode = embedCode.split("{cdn}").join(cdn);
+			embedCode = embedCode.split("{partnerId}").join(embedPlayer.kpartnerid);
+			embedCode = embedCode.split("{uiconfId}").join(embedPlayer.kuiconfid);
+			embedCode = embedCode.split("{kaltura_player_id}").join(embedPlayer.id);
+			embedCode = embedCode.split("{entryId}").join(embedPlayer.kentryid);
+
+			// replace properties that come from configuration
+			embedCode = embedCode.replace( /streamerType\]=(.*?)"/ ,'streamerType]=' + embedConfig["streamerType"] + '"');
+			embedCode = embedCode.replace( /width="(.*?)"/ ,'width="' + embedConfig["width"] + '"');
+			embedCode = embedCode.replace( /height="(.*?)"/ ,'height="' + embedConfig["height"] + '"');
+			embedCode = embedCode.replace( /frameborder="(.*?)"/ ,'frameborder="' + embedConfig["frameBorderWidth"] + '"');
+
+			// save embed code to Flashvar to be used later
+			this.setConfig('embedCode', embedCode);
+		},
 		// -------------- start setup player url according to the socialShareURL flashvar ------- //
 		setupPlayerURL: function () {
 			var shareURL = null;

@@ -1,7 +1,7 @@
 <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
 <span class="share-close icon-share-close"  data-click="closeScreen"></span>
 <div class='panel-center'>
-	<span class="share-alert">Error message</span>
+	<span class="share-alert"></span>
 	<div class="share-icons-scroller">
 		<div class="icon-play back-btn"></div>
 		<div class="icon-play next-btn"></div>
@@ -22,25 +22,25 @@
 		</div>
 		<% if( allowTimeOffset) { %>
 			<div class="share-input-container share-offset-container">
-				<span class="share-label">Start video at</span>
-				<input value="00:00:00" class="shareembed-input share-offset"/>
+				<span class="share-label noselection">Start video at</span>
+				<input value="00:00" class="shareembed-input share-offset"/>
 			</div>
 		<% } %>
 	<% } %>
 
 	<% if( embedEnabled) { %>
 		<div class="share-input-container embed-container">
-			<input class="shareembed-input embed-input" value="<%= share.getConfig('shareURL') %>"/>
+			<input class="shareembed-input embed-input"/>
 			<div class="share-copy-btn">Copy</div>
 			<div class="icon-share-Yes share-v-icon"></div>
 		</div>
 		<div class="share-input-container embed-offset-container">
 			<% if( allowTimeOffset) { %>
-				<span class="share-label">Start video at</span>
-				<input value="00:00:00" class="shareembed-input share-offset"/>
+				<span class="share-label noselection">Start video at</span>
+				<input value="00:00" class="shareembed-input share-offset"/>
 			<% } %>
 			<% if( allowSecuredEmbed) { %>
-				<label style="float: left; margin-top: 12px"><input class="share-secured" type="checkbox" name="securedCB" value="secured">Secured embed</label>
+				<label class="noselection" style="float: left; margin-top: 12px"><input class="share-secured" type="checkbox" name="securedCB" value="secured">Secured embed</label>
 			<% } %>
 		</div>
 	<% } %>

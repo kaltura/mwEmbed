@@ -95,9 +95,18 @@
 .share-alert{
 	font-size: 11pt;
 	font-family: 'Lato', Helvetica, Arial;
+	text-shadow: 1px 1px #000000;
 	color: red;
 	line-height: 28pt;
 	display: none;
+}
+.noselection{
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 /* copy button classes */
 .share .share-copy-btn{
