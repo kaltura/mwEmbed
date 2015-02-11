@@ -12,7 +12,10 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 		previewPlayerEnabled: true,			
 		templatePath: 'components/info/info.tmpl.html'
 	},
-	iconBtnClass: "icon-info"
+	iconBtnClass: "icon-info",
+	isSafeEnviornment: function(){
+		return !mw.isIpad() || ( mw.isIpad() && mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') !== false );
+	}
 }));
 
 } )( window.mw, window.jQuery );

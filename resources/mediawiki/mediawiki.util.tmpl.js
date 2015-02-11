@@ -5,7 +5,13 @@
 ( function ( $, mw ) {
 	"use strict";
 
-	var cache = {};
+	mw.util.registerTemplateHelper = function( name, callback ){
+		if( $.isFunction(mw.formaters[ name ]) ) {
+			mw.log('mw.util.registerTemplateHelper: callback: "' + name + '" already exists.');
+			return;
+		}
+		mw.formaters[ name ] = callback;
+	};
 
 	// Is a given variable an object?
 	var isObject = function(obj) {

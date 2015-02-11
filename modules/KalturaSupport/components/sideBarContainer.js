@@ -9,7 +9,8 @@
 			'position': 'left',
 			'fullScreenDisplayOnly': false,
 			'minDisplayWidth': 0,
-			'minDisplayHeight': 0
+			'minDisplayHeight': 0,
+			'toggleBtnLabel': null
 		},
 		enabled: true,
 		render: true,
@@ -203,9 +204,11 @@
 				var _this = this;
 				// Add control bar
 
+				var title = this.getConfig("toggleBtnLabel") || gM("ks-sidebar-toggleBtn");
+
 				this.$elHelper = $('<div>' )
 					.addClass( 'sideBarContainerReminder tooltipBelow ' + _this.getConfig('position') )
-					.prop("title", gM("ks-sidebar-toggleBtn"))
+					.prop("title", title)
 					.attr("data-show-tooltip", true)
 					.append($('<div id="sideBarContainerReminderContainer">' )
 						.addClass( 'icon-chapterMenu' )

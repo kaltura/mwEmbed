@@ -374,20 +374,17 @@ $uiVars = array(
 				'desc' => 'Use to load the uiConf XML and skin assets from predefined path when debugging or loading KDP from local file system',
 				'default' => 'false',
 				'availability' => 'kdp',
-				'example' => ''
 			),
 			'thumbnailUrl' => array(
 				'type' => 'String',
 				'desc' => 'External thumbnail URL to load instead of the entry default thumbnail. Supports evaluated expressions within curly brackets',
 				'default' => '',
-				'example' => ''
-			,
+			),
 			'kml' => array(
 				'type' => 'String',
 				'desc' => 'The source from which to load the KDP uiConf (KML=Kaltura Meta ui Language). If undefined, the kml will be loaded from the Kaltura server via uiConf.get api. Options are: local / inject',
 				'default' => 'undefined',
 				'availability' => 'kdp',
-				'example' => ''
 			),
 			'kmlPath' => array(
 					'type' => 'String',
@@ -401,13 +398,11 @@ $uiVars = array(
 					'desc' => "Valid uiConf XML result, that is used by the 'KDP wrapper'; A Flash application that wraps the KDP for caching purposes",
 					'default' => 'null',
 					'availability' => 'kdp',
-					'example' => ''
 			),
 			'relativeCortadoAppletPath' => array(
 				'type' => 'String',
 				'desc' => 'The default location for Java Cortado Applet',
 				'default' => '',
-				'example' => ''
 			),
 			'disableTrackElement' => array(
 				'type' => 'Boolean',
@@ -419,7 +414,6 @@ $uiVars = array(
 				'type' => 'Boolean',
 				'desc' => 'When set to true, first tries to load the HTML5 player and if loading fails, loads the Flash player',
 				'default' => 'false',
-				'example' => ''
 			),
 			'KalturaSupport.PlayerConfig' => array(
 				'type' => 'Object',
@@ -587,7 +581,7 @@ $uiVars = array(
 					'type' => 'Boolean',
 					'desc' => "Determines if mwEmbed should use the Native player controls. This will prevent video tag rewriting and skinning. Useful for devices such as iPad / iPod that don't fully support DOM overlays or don't expose full-screen functionality to JavaScript",
 					'default' => 'false',
-					'example' => ''
+					'example' => '../modules/KalturaSupport/tests/iPadNativeControls.html'
 			),
 			'EmbedPlayer.EnableIpadHTMLControls' => array(
 					'type' => 'Boolean',
@@ -819,4 +813,5 @@ $uiVars = array(
 					'example' => '../modules/KalturaSupport/tests/PlayFromOffsetStartTimeToEndTime.html'
 			)
 		)
-	)));
+	)
+);

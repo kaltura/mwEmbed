@@ -40,10 +40,10 @@ $kgDefaultComponentAttr = array(
 			)
 		)
 	),
-	'visible' => array(
-		'doc' => "If the control holder should be visible.",
-		'type' => 'boolean'
-	),
+//	'visible' => array(
+//		'doc' => "If the control holder should be visible.",
+//		'type' => 'boolean'
+//	),
 	'order' => array(
 		'doc' => 'Draw order of the component within the container.
 			Together with alignment, determines component placement of the component. Order is set with respect to siblings on the parent container.',
@@ -1223,6 +1223,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'doc' => 'Enable CORS request to support request cookies to secured domains over ajax',
 				'type' => 'boolean',
 				'initvalue' => true
+			),
+			'loadAdsOnPlay' => array(
+				'doc' => 'By default ads are loaded at player startup time. 
+					Setting loadAdsOnPlay to true will load ads only once the user presses play.',
+				'type' => 'boolean',
+				'initvalue' => false
 			)
 		)
 	),

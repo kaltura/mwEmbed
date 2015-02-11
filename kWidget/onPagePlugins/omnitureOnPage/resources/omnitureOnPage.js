@@ -465,8 +465,8 @@ kWidget.addReadyCallback( function( playerId ){
 	 			// not working :(
 	 			//s.Media[cmd].apply( this, args );
 
-				if(this.getConfig("s.Media.playerName")){
-					s.Media.playerName = this.getConfig("s.Media.playerName")
+				if(this.getConfig("overridePlayerName") != undefined ){
+					s.Media.playerName = String(this.getConfig("overridePlayerName"));
 				}
 
 		 		switch( cmd ) {
