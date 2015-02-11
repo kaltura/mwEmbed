@@ -109,6 +109,8 @@
 				_this.setupEmbedCode();
 				// set embed code in the UI as the template doesn't load it correctly when using data binding because of the double quotes inside the text
 				$(".embed-input").val(_this.getConfig('embedCode'));
+
+				_this.enablePlayDuringScreen = true; // enable playback when the share screen is opened
 			});
 			this.bind('preHideScreen', function () {
 				// restore keyboard actions
@@ -277,6 +279,7 @@
 			$(".share-offset").val("00:00");
 			$(".share-alert").hide();
 			$('.share-secured').attr('checked', false);
+			this.enablePlayDuringScreen = false;
 			this.hideScreen();
 		},
 

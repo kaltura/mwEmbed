@@ -11,6 +11,7 @@
 		templateData: null,
 		iconBtnClass: '',
 		error: false,
+		enablePlayDuringScreen: false,
 
 		// Returns KBaseComponent config with screen config
 		getBaseConfig: function () {
@@ -93,7 +94,9 @@
 
 				$("#"+this.getPlayer().getPlayerElement().id).removeClass("blur");
 				$(".playerPoster").removeClass("blur");
-				this.getScreen().fadeOut( 400 );
+				if ( !this.enablePlayDuringScreen ){
+					this.getScreen().fadeOut( 400 );
+				}
 			}
 		},
 		showScreen: function () {
