@@ -18,23 +18,23 @@ return array (
 				'type' => 'url'
 			),
 			'enableCountDown' => array(
-                'label' => 'Enable notice message',
-                'doc' => "When checked, a notice message displays during ad playback",
-                'initvalue' => false,
-                'type' => 'boolean',
-            ),
-            'pauseAdOnClick' => array(
-                'label' => 'Pause ad on clicked',
-                'doc' => "When checked, the ad pauses when the user clicks on it",
-                'initvalue' => true,
-                'type' => 'boolean',
-            ),
-            'countdownText' => array(
-                'label' => 'Notice message',
-                'doc' => "Notice message to be displayed during ad playback. Can contain evaluated expressions using curly brackets",
-                'initvalue' => '',
-                'type' => 'string',
-            ),
+				'label' => 'Enable notice message',
+				'doc' => "When checked, a notice message displays during ad playback",
+				'initvalue' => false,
+				'type' => 'boolean',
+			),
+			'pauseAdOnClick' => array(
+				'label' => 'Pause ad on clicked',
+				'doc' => "When checked, the ad pauses when the user clicks on it",
+				'initvalue' => true,
+				'type' => 'boolean',
+			),
+			'countdownText' => array(
+				'label' => 'Notice message',
+				'doc' => "Notice message to be displayed during ad playback. Can contain evaluated expressions using curly brackets",
+				'initvalue' => '',
+				'type' => 'string',
+			),
 			'contentId' => array(
 				'doc' => 'The contentId, used by DoubleClick plugin API, generally the entry ID, but can also be custom metadata mapping',
 				'type' => 'string'
@@ -49,10 +49,10 @@ return array (
 				'type' => 'string'
 			),
 			'cmsId' => array(
-                'label' => 'CMS id',
-                'doc' => "The CMS id, appended to the VAST url, used by DoubleClick plugin api",
-                'type' => 'number'
-            ),
+				'label' => 'CMS id',
+				'doc' => "The CMS id, appended to the VAST url, used by DoubleClick plugin api",
+				'type' => 'number'
+			),
 			'disableCompanionAds' => array(
 				'doc' => "determine if companion ads should be disabled.",
 				'type' => 'hiddenValue',
@@ -63,13 +63,13 @@ return array (
 				'doc' => "Companions list. For each companion please specify the ad container div id and the expected ad width and height.",
 				'type' => 'companions',
 				'filter' => 'companions',
-                "initvalue" => "Comp_300x250:300:250;Comp_728x90:728:90;"
+				"initvalue" => "Comp_300x250:300:250;Comp_728x90:728:90;"
 			),
-            'adsManagerLoadedTimeout'=> array(
-                'doc' => "Timer for timed checking if adsManager was loaded(in milliseconds)",
-                'initvalue' => 5000,
-                'type' => 'hiddenValue',
-            )
+			'adsManagerLoadedTimeout'=> array(
+				'doc' => "Timer for timed checking if adsManager was loaded(in milliseconds)",
+				'initvalue' => 5000,
+				'type' => 'hiddenValue',
+			)
 		)
 	)
 );
