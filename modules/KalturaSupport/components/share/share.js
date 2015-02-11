@@ -23,7 +23,7 @@
 
 			socialShareURL: 'smart', // 'parent' or 'http://custom.url/entry/{mediaProxy.entry.id}'
 			socialNetworks: 'facebook,twitter,googleplus,email,linkedin,sms',
-			shareOptions: {
+			shareConfig: {
 				"facebook": {
 					"name": "Facebook",
 					"icon": "",
@@ -115,7 +115,7 @@
 		},
 
 		getTemplateData: function () {
-			var networks = this.getConfig('shareOptions');
+			var networks = this.getConfig('shareConfig');
 
 			// in order to support the legacy socialNetworks Flashvar, we will go through it and remove networks that are not specified in socialNetworks
 			var socialNetworks = this.getConfig("socialNetworks").split(",");
@@ -131,7 +131,7 @@
 			}
 
 			// save networks to config
-			this.setConfig( 'shareOptions' , networks );
+			this.setConfig( 'shareConfig' , networks );
 
 			return {
 				'share': this,
@@ -143,6 +143,44 @@
 				'networks': networks
 			};
 		},
+
+		// overwrite addScreenBindings function of mw.KBaseScreen
+		addScreenBindings: function(){
+
+			//add IE8 support for rounded corners using the PIE library
+			if( mw.isIE8() ){
+				$('.share .PIE').each(function(){
+					PIE.attach(this);
+				});
+			}
+			// add bindings
+			$(".share-input").on("click", function(){
+				$(".embed-offset-container").hide();
+				$(".embed-container>.share-copy-btn").hide();
+				$(".share-offset-container").height(0).show().animate({ height: "43px" }, 300 ,function(){
+					$(".share-container>.share-copy-btn").fadeIn(300);
+					$(".share-offset-container").fadeIn(300);
+				});
+			});
+
+			$(".embed-input").on("click", function(){
+				$(".share-offset-container").hide();
+				$(".share-container>.share-copy-btn").hide();
+				$(".embed-offset-container").height(0).show().animate({ height: "43px" }, 300 ,function(){
+					$(".embed-container>.share-copy-btn").fadeIn(300);
+					$(".embed-offset-container").fadeIn(300);
+				});
+			});
+		},
+
+		closeScreen: function(){
+			$(".embed-offset-container").hide();
+			$(".embed-container>.share-copy-btn").hide();
+			$(".share-offset-container").hide();
+			$(".share-container>.share-copy-btn").hide();
+			this.hideScreen();
+		},
+
 		openPopup: function (e) {
 			var url = $(e.target).parents('a').attr('href');
 			url = decodeURIComponent(url); // url was encoded to keep curly brackets for template tokens
@@ -150,7 +188,7 @@
 			url = this.getPlayer().evaluate(url); // replace all other tokens
 
 			if (mw.isNativeApp()) {
-				var networks = this.getConfig('shareOptions');
+				var networks = this.getConfig('shareConfig');
 				var id = $(e.target).attr('id');
 				var shareParams = {
 					actionType: 'share',
@@ -229,17 +267,9 @@
 				}
 			}
 			return res;
-		},
+		}
 		// -------------- finish setup player url according to the socialShareURL flashvar ------- //
 
-		// overwrite addScreenBindings function of mw.KBaseScreen to add IE8 support for rounded corners using the PIE library
-		addScreenBindings: function(){
-			if( mw.isIE8() ){
-				$('.share .PIE').each(function(){
-					PIE.attach(this);
-				});
-			}
-		}
 	}));
 
 })(window.mw, window.jQuery);
