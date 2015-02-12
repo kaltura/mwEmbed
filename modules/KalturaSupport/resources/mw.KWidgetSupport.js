@@ -739,7 +739,12 @@ mw.KWidgetSupport.prototype = {
 			}
 
 			// Check for mediaPlayFrom
-			var mediaPlayFrom = mediaProxy.mediaPlayFrom;
+			// first check in hash
+			var mediaPlayFrom = kWidget.getHashParam("t");
+			// now cheeck in Flashvars - will override hash params
+			if (mediaProxy.mediaPlayFrom){
+				mediaPlayFrom = mediaProxy.mediaPlayFrom;
+			}
 			if (mediaPlayFrom && !embedPlayer.startTime) {
 				embedPlayer.startTime = parseFloat( mediaPlayFrom );
 				mw.setConfig( "Kaltura.UseAppleAdaptive" , true) ;
