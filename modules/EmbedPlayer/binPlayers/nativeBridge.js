@@ -173,6 +173,9 @@
 		log: function (message, arg) {
 			console.log(message, arg);
 		},
+		getVideoHolderHeight: function () {
+			return this.embedPlayer.getVideoHolder().height();
+		},
 
 		stringConvertion: function (str) {
 			var value = parseFloat(str);
