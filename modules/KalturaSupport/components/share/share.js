@@ -89,6 +89,7 @@
 
 		addBindings: function () {
 			var _this = this;
+			var embedPlayer = this.getPlayer();
 			this.bind('playerReady', function () {
 				_this.setupPlayerURL();
 			});
@@ -96,14 +97,14 @@
 				_this.getScreen().addClass('semiTransparentBkg'); // add semi-transparent background for share plugin screen only. Won't affect other screen based plugins
 
 				// add blur effect to video and poster
-				$("#"+_this.getPlayer().getPlayerElement().id).addClass("blur");
+				$("#"+embedPlayer.getPlayerElement().id).addClass("blur");
 				$(".playerPoster").addClass("blur");
 
 				// prevent keyboard key actions to allow typing in share screen fields
-				_this.getPlayer().triggerHelper( 'onDisableKeyboardBinding' );
+				embedPlayer.triggerHelper( 'onDisableKeyboardBinding' );
 
 				// disable all player controls except play button, scrubber and volume control
-				_this.getPlayer().disablePlayControls(["volumeControl","scrubber","playPauseBtn"]);
+				embedPlayer.disablePlayControls(["volumeControl","scrubber","playPauseBtn"]);
 
 				// setup embed code when the screen opens
 				_this.setupEmbedCode();
@@ -114,10 +115,19 @@
 			});
 			this.bind('preHideScreen', function () {
 				// restore keyboard actions
-				_this.getPlayer().triggerHelper( 'onEnableKeyboardBinding' );
+				embedPlayer.triggerHelper( 'onEnableKeyboardBinding' );
 
 				// re-enable player controls
-				_this.getPlayer().enablePlayControls();
+				embedPlayer.enablePlayControls();
+			});
+
+			// add API support: register to the "doShare" notification and dispatch the "shareEvent" event with the share link data
+			$(embedPlayer).bind( 'doShare', function(event, data){
+				var shareUrl = _this.getConfig('shareURL');
+				if ( data && data.timeOffset ){
+					shareUrl += "#t="+data.timeOffset;
+				}
+				embedPlayer.triggerHelper( 'shareEvent', { "shareLink" : shareUrl } );
 			});
 		},
 
