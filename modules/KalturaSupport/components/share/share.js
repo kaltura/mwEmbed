@@ -28,46 +28,46 @@
 					"name": "Facebook",
 					"icon": "",
 					"cssClass": "icon-share-facebook",
-					"template": "https://www.facebook.com/sharer/sharer.php?u={shareUrl}",
+					"template": "https://www.facebook.com/sharer/sharer.php?u={share.shareURL}",
 					"redirectUrl": 'fb://feed/'
 				},
 				"twitter": {
 					"name": "Twitter",
 					"icon": "",
 					"cssClass": "icon-share-twitter",
-					"template": "https://twitter.com/share?url={shareUrl}",
+					"template": "https://twitter.com/share?url={share.shareURL}",
 					"redirectUrl": 'https://twitter.com/intent/tweet/complete?,https://twitter.com/intent/tweet/update'
 				},
 				"googleplus": {
 					"name": "Google+",
 					"icon": "",
 					"cssClass": "icon-share-google",
-					"template": "https://plus.google.com/share?url={shareUrl}",
+					"template": "https://plus.google.com/share?url={share.shareURL}",
 					"redirectUrl": 'https://plus.google.com/app/basic/stream'
 				},
 				"email": {
 					"name": "Email",
 					"icon": "",
 					"cssClass": "icon-share-email",
-					"template": "mailto:email@address.com?subject=Check out {mediaProxy.entry.name}&body=Check out {mediaProxy.entry.name}: {shareUrl}",
+					"template": "mailto:email@address.com?subject=Check out {mediaProxy.entry.name}&body=Check out {mediaProxy.entry.name}: {share.shareURL}",
 					"redirectUrl": ''
 				},
 				"linkedin": {
 					"name": "LinkedIn",
 					"icon": "",
 					"cssClass": "icon-share-linkedin",
-					"template": "http://www.linkedin.com/shareArticle?mini=true&url={shareUrl}",
+					"template": "http://www.linkedin.com/shareArticle?mini=true&url={share.shareURL}",
 					"redirectUrl": ''
 				},
 				"sms": {
 					"name": "SMS",
 					"icon": "",
 					"cssClass": "icon-share-sms",
-					"template": "Check out {mediaProxy.entry.name}: {shareUrl}",
+					"template": "Check out {mediaProxy.entry.name}: {share.shareURL}",
 					"redirectUrl": ''
 				}
 			},
-			embedCodeTemplate: '<iframe src="{cdn}/p/{partnerId}/sp/{partnerId}00/embedIframeJs/uiconf_id/{uiconfId}/partner_id/{partnerId}?iframeembed=true&playerId={kaltura_player_id}&entry_id={entryId}&flashvars[streamerType]=auto" width="560" height="395" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0"></iframe>',
+			embedCodeTemplate: '<iframe src="//cdnapi.kaltura.com/p/{mediaProxy.entry.partnerId}/sp/{mediaProxy.entry.partnerId}00/embedIframeJs/uiconf_id/{configProxy.kw.uiConfId}/partner_id/{mediaProxy.entry.partnerId}?iframeembed=true&playerId={configProxy.targetId}&entry_id={mediaProxy.entry.id}&flashvars[streamerType]=auto" width="560" height="395" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0"></iframe>',
 			embedOptions: {
 				"streamerType": "auto",
 				"width": 560,
@@ -191,13 +191,9 @@
 			});
 
 			// handle copy button for share link
-			$(".share-container>.share-copy-btn").on("click", function(){
-				// $(".share-input").select();
-				if ( window.clipboardData ){ // copy in IE
-					window.clipboardData.setData("Text",$(".share-input").val());
-				}else{
-					window.prompt("Copy to clipboard: Ctrl+C, Enter", $(".share-input").val());
-				}
+			$(".share-copy-btn").on("click", function(){
+				var selector = $(this).data("target");
+				window.prompt("Copy to clipboard: Ctrl+C, Enter", $(selector).val());
 			});
 
 			// handle time offset for embed code
@@ -209,10 +205,8 @@
 			$(".share-secured").on("click", function(){
 				var embedCode = $(".embed-input").val();
 				if ($(this).is(':checked')){
-					embedCode = embedCode.split("http:").join("https:");
 					embedCode = embedCode.split("cdnapi.kaltura.com").join("cdnapisec.kaltura.com");
 				}else{
-					embedCode = embedCode.split("https:").join("http:");
 					embedCode = embedCode.split("cdnapisec.kaltura.com").join("cdnapi.kaltura.com");
 				}
 				$(".embed-input").val(embedCode);
@@ -239,9 +233,9 @@
 
 		setShareTimeOffset: function(offset){
 			var shareLink = $(".share-input").val();
-			shareLink = shareLink.split("?")[0];
+			shareLink = shareLink.split("#")[0];
 			if ( this.validateTimeOffset(offset) ){
-				shareLink = shareLink + "?startTime=" + offset;
+				shareLink = shareLink + "#t=" + offset;
 			}
 			$(".share-input").val(shareLink);
 			this.setConfig("shareURL", shareLink);
@@ -285,9 +279,8 @@
 
 		openPopup: function (e) {
 			var url = $(e.target).parents('a').attr('href');
-			url = decodeURIComponent(url); // url was encoded to keep curly brackets for template tokens
-			url = url.split("{shareUrl}").join(encodeURIComponent(this.getConfig('shareURL'))); // replace {shareUrl} token with the share URL
-			url = this.getPlayer().evaluate(url); // replace all other tokens
+			url = decodeURIComponent(url);        // url was encoded to keep curly brackets for template tokens
+			url = this.getPlayer().evaluate(url); // replace tokens
 
 			if (mw.isNativeApp()) {
 				var networks = this.getConfig('shareConfig');
@@ -324,14 +317,9 @@
 			var embedCode = this.getConfig("embedCodeTemplate",true);
 			var embedConfig = this.getConfig("embedOptions");
 			var embedPlayer = this.getPlayer();
-			var cdn = window.kWidgetSupport.getBaseFlavorUrl(embedPlayer.kpartnerid).split("/p/")[0];
 
 			// replace tokens in template
-			embedCode = embedCode.split("{cdn}").join(cdn);
-			embedCode = embedCode.split("{partnerId}").join(embedPlayer.kpartnerid);
-			embedCode = embedCode.split("{uiconfId}").join(embedPlayer.kuiconfid);
-			embedCode = embedCode.split("{kaltura_player_id}").join(embedPlayer.id);
-			embedCode = embedCode.split("{entryId}").join(embedPlayer.kentryid);
+			embedCode = embedPlayer.evaluate(embedCode);
 
 			// replace properties that come from configuration
 			embedCode = embedCode.replace( /streamerType\]=(.*?)"/ ,'streamerType]=' + embedConfig["streamerType"] + '"');

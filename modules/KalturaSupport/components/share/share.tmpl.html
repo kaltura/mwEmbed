@@ -17,7 +17,7 @@
 	<% if( socialShareEnabled) { %>
 		<div class="share-input-container share-container">
 			<input class="shareembed-input share-input" value="<%= share.getConfig('shareURL') %>"/>
-			<div class="share-copy-btn">Copy</div>
+			<div class="share-copy-btn" data-target=".share-input">Copy</div>
 			<div class="icon-share-Yes share-v-icon"></div>
 		</div>
 		<% if( allowTimeOffset) { %>
@@ -31,7 +31,7 @@
 	<% if( embedEnabled) { %>
 		<div class="share-input-container embed-container">
 			<input class="shareembed-input embed-input"/>
-			<div class="share-copy-btn">Copy</div>
+			<div class="share-copy-btn" data-target=".embed-input">Copy</div>
 			<div class="icon-share-Yes share-v-icon"></div>
 		</div>
 		<div class="share-input-container embed-offset-container">

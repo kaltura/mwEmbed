@@ -432,6 +432,9 @@
 							}
 							return kw;
 						break;
+						case 'targetId':
+							return embedPlayer.id;
+						break;
 						case 'sessionId':
 							return window.kWidgetSupport.getGUID();
 						break;
