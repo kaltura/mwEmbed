@@ -7,7 +7,7 @@
 			parent: "topBarContainer",
 			order: 5,
 			align: "right",
-			tooltip: 'Share',
+			tooltip:  gM( 'mwe-embedplayer-share' ),
 			showTooltip: true,
 			displayImportance: 'medium',
 			templatePath: 'components/share/share.tmpl.html',
@@ -77,6 +77,13 @@
 		},
 
 		iconBtnClass: "icon-share",
+		locale:{
+			startTimeLbl: gM( 'mwe-share-startTimeLbl' ),
+			secureEmbedLbl: gM( 'mwe-share-secureEmbedLbl' ),
+			copyLbl: gM( 'mwe-share-copyLbl' ),
+			errDuration: gM( 'mwe-share-errDuration' ),
+			errFormat: gM( 'mwe-share-errFormat' )
+		},
 		setup: function () {
 			this.setupPlayerURL();
 			this.addBindings();
@@ -262,18 +269,17 @@
 			if ( this.validateTimeOffset(offset) ){
 				embedCode = embedCode.split("?").join("?flashvars[mediaProxy.mediaPlayFrom]=" + mw.npt2seconds(offset) + "&");
 			}
-			console.log(embedCode);
 			$(".embed-input").val(embedCode);
 		},
 
 		validateTimeOffset: function(offset){
 			$(".share-alert").text("").hide();
 			if ( mw.npt2seconds(offset) > this.getPlayer().duration ){
-				$(".share-alert").text("Time offset cannot be longer than movie duration.").show();
+				$(".share-alert").text(this.locale.errDuration).show();
 				return false;
 			}
 			if ( parseInt(offset) > 59 && offset.indexOf(":") === -1 ){
-				$(".share-alert").text("Please use the hh:mm:ss format.").show();
+				$(".share-alert").text(this.locale.errFormat).show();
 				return false;
 			}
 			if ( mw.npt2seconds(offset) === 0 ){
