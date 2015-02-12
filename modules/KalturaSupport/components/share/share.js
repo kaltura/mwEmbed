@@ -260,6 +260,10 @@
 				$(".share-alert").text("Time offset cannot be longer than movie duration.").show();
 				return false;
 			}
+			if ( parseInt(offset) > 59 && offset.indexOf(":") === -1 ){
+				$(".share-alert").text("Please use the hh:mm:ss format.").show();
+				return false;
+			}
 			if ( mw.npt2seconds(offset) === 0 ){
 				return false;
 			}
