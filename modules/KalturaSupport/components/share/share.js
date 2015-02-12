@@ -23,6 +23,7 @@
 
 			socialShareURL: 'smart', // 'parent' or 'http://custom.url/entry/{mediaProxy.entry.id}'
 			socialNetworks: 'facebook,twitter,googleplus,email,linkedin,sms',
+			shareUiconfID: null,
 			shareConfig: {
 				"facebook": {
 					"name": "Facebook",
@@ -70,6 +71,7 @@
 			embedCodeTemplate: '<iframe src="//cdnapi.kaltura.com/p/{mediaProxy.entry.partnerId}/sp/{mediaProxy.entry.partnerId}00/embedIframeJs/uiconf_id/{configProxy.kw.uiConfId}/partner_id/{mediaProxy.entry.partnerId}?iframeembed=true&playerId={configProxy.targetId}&entry_id={mediaProxy.entry.id}&flashvars[streamerType]=auto" width="560" height="395" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0"></iframe>',
 			embedOptions: {
 				"streamerType": "auto",
+				"uiconfID": null,
 				"width": 560,
 				"height": 395,
 				"frameBorderWidth": 0
@@ -230,6 +232,37 @@
 				}
 				$(".embed-input").val(embedCode);
 			});
+
+			// handle scroll buttons
+			var deltaScroll = $(".share-icons-container .icon-border").width() + parseInt($(".share-icons-container .icon-border").css("margin-right"))*2;
+			$(".share-icons-scroller .next-btn").on("click", function(){
+				$(".share-icons-scroller .back-btn").show();
+				$('.share-icons-container').animate({scrollLeft: '+='+deltaScroll }, 300, function(){
+					if ($('.share-icons-container').scrollLeft()/deltaScroll === ($(".icon-border").length - 5) ){
+						$(".share-icons-scroller .next-btn").hide();
+					}
+				});
+			});
+
+			$(".share-icons-scroller .back-btn").on("click", function(){
+				$(".share-icons-scroller .next-btn").show();
+				$('.share-icons-container').animate({scrollLeft: '-='+deltaScroll }, 300, function(){
+					if ($('.share-icons-container').scrollLeft() === 0){
+						$(".share-icons-scroller .back-btn").hide();
+					}
+				});
+			});
+			setTimeout(function(){
+				_this.addScroll(); // add scroll for social network icons if needed
+			},0)
+
+		},
+
+		addScroll: function(){
+			if ( $(".icon-border").length > 5 ){
+				$(".share-icons-container").scrollLeft(0);
+				$(".share-icons-scroller .next-btn").show();
+			}
 		},
 
 		restrictNPTFields: function(){
@@ -343,15 +376,24 @@
 			var embedConfig = this.getConfig("embedOptions");
 			var embedPlayer = this.getPlayer();
 
+			// replace properties that come from configuration
+			if (embedConfig["uiconfID"]){
+				embedCode = embedCode.split("{configProxy.kw.uiConfId}").join(embedConfig["uiconfID"]);
+			}
+			if ( embedConfig["streamerType"] ){
+				embedCode = embedCode.replace( /streamerType\]=(.*?)"/ ,'streamerType]=' + embedConfig["streamerType"] + '"');
+			}
+			if ( embedConfig["width"] ){
+				embedCode = embedCode.replace( /width="(.*?)"/ ,'width="' + embedConfig["width"] + '"');
+			}
+			if ( embedConfig["height"] ){
+				embedCode = embedCode.replace( /height="(.*?)"/ ,'height="' + embedConfig["height"] + '"');
+			}
+			if ( embedConfig["frameBorderWidth"] ){
+				embedCode = embedCode.replace( /frameborder="(.*?)"/ ,'frameborder="' + embedConfig["frameBorderWidth"] + '"');
+			}
 			// replace tokens in template
 			embedCode = embedPlayer.evaluate(embedCode);
-
-			// replace properties that come from configuration
-			embedCode = embedCode.replace( /streamerType\]=(.*?)"/ ,'streamerType]=' + embedConfig["streamerType"] + '"');
-			embedCode = embedCode.replace( /width="(.*?)"/ ,'width="' + embedConfig["width"] + '"');
-			embedCode = embedCode.replace( /height="(.*?)"/ ,'height="' + embedConfig["height"] + '"');
-			embedCode = embedCode.replace( /frameborder="(.*?)"/ ,'frameborder="' + embedConfig["frameBorderWidth"] + '"');
-
 			// save embed code to Flashvar to be used later
 			this.setConfig('embedCode', embedCode);
 		},
@@ -388,9 +430,10 @@
 			return shareURL;
 		},
 		getKalturaShareURL: function () {
+			var uiConfId = this.getConfig("shareUiconfID") ? this.getConfig("shareUiconfID") : this.getPlayer().kuiconfid;
 			return mw.getConfig('Kaltura.ServiceUrl') + '/index.php/extwidget/preview' +
 				'/partner_id/' + this.getPlayer().kpartnerid +
-				'/uiconf_id/' + this.getPlayer().kuiconfid +
+				'/uiconf_id/' + uiConfId +
 				'/entry_id/' + this.getPlayer().kentryid + '/embed/dynamic';
 		},
 		getParentURL: function () {
