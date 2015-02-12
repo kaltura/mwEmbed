@@ -110,6 +110,8 @@
 				_this.setupEmbedCode();
 				// set embed code in the UI as the template doesn't load it correctly when using data binding because of the double quotes inside the text
 				$(".embed-input").val(_this.getConfig('embedCode'));
+				// send event for analytics
+				$(embedPlayer).trigger("showShareEvent");
 
 				_this.enablePlayDuringScreen = true; // enable playback when the share screen is opened
 			});
@@ -292,6 +294,7 @@
 		},
 
 		openPopup: function (e) {
+			var embedPlayer = this.getPlayer();
 			var url = $(e.target).parents('a').attr('href');
 			url = decodeURIComponent(url);        // url was encoded to keep curly brackets for template tokens
 			url = this.getPlayer().evaluate(url); // replace tokens
@@ -307,7 +310,7 @@
 					thumbnail: this.getThumbnailURL(),
 					videoName: this.getPlayer().evaluate("{mediaProxy.entry.name}")
 				};
-				this.getPlayer().doNativeAction(JSON.stringify(shareParams));
+				embedPlayer.doNativeAction(JSON.stringify(shareParams));
 			} else {
 				var opener = window.open(url,'_blank','width=626,height=436');
 				// close the window if this is an email
@@ -318,6 +321,8 @@
 
 				}
 			}
+			// send event for analytics
+			$( embedPlayer ).trigger( "socialShareEvent" );
 		},
 		getThumbnailURL: function () {
 			return kWidgetSupport.getKalturaThumbnailUrl({
