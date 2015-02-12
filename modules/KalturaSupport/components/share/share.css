@@ -49,10 +49,9 @@
 	height: 100%;
 }
 .share .share-input-container{
-	width: 400px;
+	width: 340px;
 	height: 42px;
 	margin: 0 auto;
-	padding-left: 60px;
 	color: white; /* IE8 support */
 	color: rgba(255, 255, 255, 0.502);
 }
@@ -81,6 +80,10 @@
 /* checkbox */
 .share .share-secured{
 	margin-left: 12px;
+}
+.share-secure-lbl{
+	float: left;
+	margin-top: 12px;
 }
 /* labels and alerts */
 .share .share-label{
@@ -154,7 +157,7 @@
 	position: absolute;
 	margin-top: 22px;
 	cursor: pointer;
-	margin-left: 370px;
+	margin-left: 375px;
 	display: none;
 }
 .share .next-btn:hover{
@@ -227,42 +230,71 @@
 }
 
 /* media queries */
-@media all and (max-width: 340px) {
-	.share input {
-		background: #B3B3B3;
-		font-size: 0.8em;
-		width: 80%;
+@media all and (max-width: 399px) {
+	.share .share-input-container{
+		width: 220px;
+		height: 24px;
 	}
-
-	h3 {
-		font-size: 0.9em;
+	.share .shareembed-input {
+		width: 176px;
+		padding-right: 0px;
+		height: 16px;
+		font-size: 8pt;
 	}
-
-	.share li span {
-		width: 32px;
+	.share .icon-border{
+		width: 34px;
 		height: 32px;
-		display: inline-block;
-		background-image: url(icons_small.png);
 	}
-
-	.icon-twitter {
-		background-position: 0 0;
+	.share .share-icons-scroller{
+		width: 260px;
+		height: 32px;
 	}
-
-	.icon-facebook {
-		background-position: -37px 0;
+	.share .share-icons-container{
+		width: 222px;
 	}
-
-	.icon-google-plus {
-		background-position: -78px -40px;
+	.share .share-network{
+		font-size: 0.7em;
+		margin-top: 7px;
+		margin-left: 9px;
 	}
-
-	.icon-mail {
-		background-position: -78px -120px;
+	.share .share-offset{
+		width: 40px;
+		padding-left: 4px;
+		padding-right: 4px;
 	}
-
-	.icon-message {
-		background-position: -78px -80px;
+	.share .share-label{
+		float: left;
+		margin-left: 45px;
+		margin-top: 6px;
+		margin-right: 0px;
+		font-size: 8pt;
+	}
+	.share-secure-lbl{
+		font-size: 8pt;
+	}
+    .share .embed-offset-container .share-offset{
+	    width: 30px;
+	    margin-right: 4px;
+    }
+	.share .share-secured{
+		margin-left: 2px;
+	}
+	.share-secure-lbl{
+		margin-top: 0px;
+	}
+	.share .share-close{
+		margin-left: 4px;
+		margin-top: 4px;
+		font-size: 10px;
+	}
+	.share .next-btn{
+		margin-top: 12px;
+		margin-left: 246px;
+		font-size: 10px;
+	}
+	.share .back-btn{
+		margin-top: 12px;
+		font-size: 10px;
 	}
 }
 

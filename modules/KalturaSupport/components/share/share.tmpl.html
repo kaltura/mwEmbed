@@ -17,8 +17,8 @@
 	<% if( socialShareEnabled) { %>
 		<div class="share-input-container share-container">
 			<input class="shareembed-input share-input" value="<%= share.getConfig('shareURL') %>"/>
-			<div class="share-copy-btn" data-target=".share-input"><%=share.locale.copyLbl%></div>
-			<div class="icon-share-Yes share-v-icon"></div>
+			<!--div class="share-copy-btn" data-target=".share-input"><%=share.locale.copyLbl%></div>
+			<div class="icon-share-Yes share-v-icon"></div-->
 		</div>
 		<% if( allowTimeOffset) { %>
 			<div class="share-input-container share-offset-container">
@@ -31,8 +31,8 @@
 	<% if( embedEnabled) { %>
 		<div class="share-input-container embed-container">
 			<input class="shareembed-input embed-input"/>
-			<div class="share-copy-btn" data-target=".embed-input"><%=share.locale.copyLbl%></div>
-			<div class="icon-share-Yes share-v-icon"></div>
+			<!--div class="share-copy-btn" data-target=".embed-input"><%=share.locale.copyLbl%></div>
+			<div class="icon-share-Yes share-v-icon"></div-->
 		</div>
 		<div class="share-input-container embed-offset-container">
 			<% if( allowTimeOffset) { %>
@@ -40,7 +40,7 @@
 				<input value="00:00" class="shareembed-input share-offset"/>
 			<% } %>
 			<% if( allowSecuredEmbed) { %>
-				<label class="noselection" style="float: left; margin-top: 12px"><input class="share-secured" type="checkbox" name="securedCB" value="secured"><%=share.locale.secureEmbedLbl%></label>
+				<label class="share-secure-lbl noselection"><input class="share-secured" type="checkbox" name="securedCB" value="secured"><%=share.locale.secureEmbedLbl%></label>
 			<% } %>
 		</div>
 	<% } %>

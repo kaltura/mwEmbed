@@ -182,11 +182,12 @@
 				});
 			}
 			// add bindings
+			var offsetContainerHeight = this.getPlayer().width < 400 ? "18px" : "43px";
 			$(".share-input").on("click", function(){
 				if ( $(".share-offset-container").css("display") === "none" ){
 					$(".embed-offset-container").hide();
 					$(".embed-container>.share-copy-btn").hide();
-					$(".share-offset-container").height(0).show().animate({ height: "43px" }, 300 ,function(){
+					$(".share-offset-container").height(0).show().animate({ height: offsetContainerHeight }, 300 ,function(){
 						$(".share-container>.share-copy-btn").fadeIn(300);
 						$(".share-offset-container").fadeIn(300);
 					});
@@ -198,7 +199,7 @@
 				if ( $(".embed-offset-container").css("display") === "none" ){
 					$(".share-offset-container").hide();
 					$(".share-container>.share-copy-btn").hide();
-					$(".embed-offset-container").height(0).show().animate({ height: "43px" }, 300 ,function(){
+					$(".embed-offset-container").height(0).show().animate({ height: offsetContainerHeight }, 300 ,function(){
 						$(".embed-container>.share-copy-btn").fadeIn(300);
 						$(".embed-offset-container").fadeIn(300);
 					});
