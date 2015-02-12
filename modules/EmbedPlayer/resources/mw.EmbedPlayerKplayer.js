@@ -136,7 +136,8 @@
 						'mediaLoaded': 'onMediaLoaded',
 						'hlsEndList': 'onHlsEndList',
 						'mediaError': 'onMediaError',
-						'bitrateChange': 'onBitrateChange'
+						'bitrateChange': 'onBitrateChange',
+                        'textTracksReceived': 'onTextTracksReceived'
 					};
 					_this.playerObject = this.getElement();
 					$.each(bindEventMap, function (bindName, localMethod) {
@@ -164,6 +165,12 @@
 						_this.playerObject.sendNotification("liveEventEnded");
 					}
 				});
+
+                _this.bindHelper('changeEmbeddedTextTrack', function (e, data) {
+                    if (_this.playerObject) {
+                        _this.playerObject.sendNotification("doTextTrackSwitch", { textIndex :data.index});
+                    }
+                });
 			});
 
 		},
@@ -225,6 +232,14 @@
 				videoTagObj.css('visibility', 'hidden');
 			}
 		},
+
+        /**
+         * receive languages list from hls player plugin
+         */
+        onTextTracksReceived: function (data) {
+            this.triggerHelper('textTracksReceived', data);
+        },
+
 		/** 
 		* Override base flavor sources method with local set of adaptive flavor tags. 
 		*/
