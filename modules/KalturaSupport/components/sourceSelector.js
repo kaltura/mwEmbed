@@ -92,7 +92,7 @@
 			// Destroy old menu
 			this.getMenu().destroy();
 
-			var sources = this.getSources();
+			var sources = this.getSources().slice(0);
 
 			if( ! sources.length ){
 				_this.log("Error with getting sources");

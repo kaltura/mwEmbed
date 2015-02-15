@@ -74,7 +74,7 @@ class downloadEntry {
 			}
 
 
-			header( "Content-Disposition: attachment; filename=$filename" );
+			header( 'Content-Disposition: attachment; filename="'.$filename.'"' );
 			readfile( $flavorUrl );
 		}
 		else {
