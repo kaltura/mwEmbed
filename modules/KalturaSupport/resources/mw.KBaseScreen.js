@@ -144,8 +144,6 @@
 			if (this.wasPlaying) {
 				this.wasPlaying = false;
 				this.getPlayer().play();
-			}else{
-				$(".largePlayBtn").show();
 			}
 		},
 		resizePlayer: function () {
