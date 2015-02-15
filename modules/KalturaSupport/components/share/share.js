@@ -74,7 +74,7 @@
 				"uiconfID": null,
 				"width": 560,
 				"height": 395,
-				"frameBorderWidth": 0
+				"borderWidth": 0
 			}
 		},
 
@@ -179,6 +179,11 @@
 			// remove sms option if we are not inside a native app
 			if ( !mw.isNativeApp() ) {
 				delete networks["sms"];
+			}
+
+			// remove email option if emailEnabled = false
+			if ( this.getConfig("emailEnabled") === false ) {
+				delete networks["email"];
 			}
 
 			// save networks to config
@@ -413,8 +418,8 @@
 			if ( embedConfig["height"] ){
 				embedCode = embedCode.replace( /height="(.*?)"/ ,'height="' + embedConfig["height"] + '"');
 			}
-			if ( embedConfig["frameBorderWidth"] ){
-				embedCode = embedCode.replace( /frameborder="(.*?)"/ ,'frameborder="' + embedConfig["frameBorderWidth"] + '"');
+			if ( embedConfig["borderWidth"] ){
+				embedCode = embedCode.replace( /frameborder="(.*?)"/ ,'frameborder="' + embedConfig["borderWidth"] + '"');
 			}
 			// replace tokens in template
 			embedCode = embedPlayer.evaluate(embedCode);
