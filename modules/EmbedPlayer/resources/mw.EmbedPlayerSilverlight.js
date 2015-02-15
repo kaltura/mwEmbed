@@ -719,6 +719,9 @@
 				ttml: captionData.ttml
 			};
 			this.triggerHelper('onEmbeddedData', caption);
+		},
+		getMulticastBitrate:function(){
+			this.playerObject.getMulticastBitrate();
 		}
 
 	}
