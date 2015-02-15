@@ -69,6 +69,7 @@
 			}, this));
 
             this.bind('onChangeMedia', $.proxy(function () {
+	            this.enablePlayDuringScreen = false;
                 this.hideScreen();
             }, this));
 		},

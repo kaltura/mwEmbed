@@ -86,6 +86,8 @@
 			errDuration: gM( 'mwe-share-errDuration' ),
 			errFormat: gM( 'mwe-share-errFormat' )
 		},
+		shareScreenOpened: false,
+
 		setup: function () {
 			this.setupPlayerURL();
 			this.addBindings();
@@ -104,7 +106,7 @@
 			});
 			this.bind('preShowScreen', function () {
 				_this.getScreen().addClass('semiTransparentBkg'); // add semi-transparent background for share plugin screen only. Won't affect other screen based plugins
-
+				_this.shareScreenOpened = true;
 				// add blur effect to video and poster
 				$("#"+embedPlayer.getPlayerElement().id).addClass("blur");
 				$(".playerPoster").addClass("blur");
@@ -125,9 +127,11 @@
 				_this.enablePlayDuringScreen = true; // enable playback when the share screen is opened
 			});
 			this.bind('preHideScreen', function () {
+				if ( !_this.enablePlayDuringScreen ){
+					_this.shareScreenOpened = false;
+				}
 				// restore keyboard actions
 				embedPlayer.triggerHelper( 'onEnableKeyboardBinding' );
-
 				// re-enable player controls
 				embedPlayer.enablePlayControls();
 			});
@@ -139,6 +143,13 @@
 					shareUrl += "#t="+data.timeOffset;
 				}
 				embedPlayer.triggerHelper( 'shareEvent', { "shareLink" : shareUrl } );
+			});
+
+			$(embedPlayer).bind( 'onpause', function(event, data){
+				if ( _this.shareScreenOpened ){
+					$("#"+embedPlayer.getPlayerElement().id).addClass("blur");
+					$(".playerPoster").addClass("blur");
+				}
 			});
 		},
 
