@@ -1131,14 +1131,14 @@
 					break;
 				case 'doSeek':
 					// Kaltura doSeek is in seconds rather than percentage:
-					var percent = ( parseFloat( notificationData ) - embedPlayer.startOffset )/ embedPlayer.getDuration();
+					var seekTime = ( parseFloat( notificationData ) - embedPlayer.startOffset );
 					// Update local kPreSeekTime
 					embedPlayer.kPreSeekTime =  embedPlayer.currentTime;
 					// Once the seek is complete null kPreSeekTime
 					embedPlayer.bindHelper( 'seeked.kdpMapOnce', function(){
 						embedPlayer.kPreSeekTime = null;
 					});
-					embedPlayer.seek( percent, embedPlayer.paused );
+					embedPlayer.seek( seekTime );
 					break;
 				case 'changeVolume':
 					embedPlayer.setVolume( parseFloat( notificationData ),true );
