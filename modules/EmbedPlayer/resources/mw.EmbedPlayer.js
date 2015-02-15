@@ -1263,7 +1263,7 @@
 					startTime = _this.startOffset;
 				}
 				_this.stopEventPropagation();
-				_this.unbindHelper("seek.replay").bindOnceHelper("seek.replay", function () {
+				_this.unbindHelper("seeked.replay").bindOnceHelper("seeked.replay", function () {
 					// Restore events after we rewind the player
 					mw.log("EmbedPlayer::onClipDone:Restore events after we rewind the player");
 					_this.restoreEventPropagation();
