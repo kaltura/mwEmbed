@@ -104,36 +104,40 @@
 			this.bind('playerReady', function () {
 				_this.setupPlayerURL();
 			});
-			this.bind('preShowScreen', function () {
-				_this.getScreen().addClass('semiTransparentBkg'); // add semi-transparent background for share plugin screen only. Won't affect other screen based plugins
-				_this.shareScreenOpened = true;
-				// add blur effect to video and poster
-				$("#"+embedPlayer.getPlayerElement().id).addClass("blur");
-				$(".playerPoster").addClass("blur");
+			this.bind('preShowScreen', function (event, screenName) {
+				if ( screenName === "share" ){
+					_this.getScreen().addClass('semiTransparentBkg'); // add semi-transparent background for share plugin screen only. Won't affect other screen based plugins
+					_this.shareScreenOpened = true;
+					// add blur effect to video and poster
+					$("#"+embedPlayer.getPlayerElement().id).addClass("blur");
+					$(".playerPoster").addClass("blur");
 
-				// prevent keyboard key actions to allow typing in share screen fields
-				embedPlayer.triggerHelper( 'onDisableKeyboardBinding' );
+					// prevent keyboard key actions to allow typing in share screen fields
+					embedPlayer.triggerHelper( 'onDisableKeyboardBinding' );
 
-				// disable all player controls except play button, scrubber and volume control
-				embedPlayer.disablePlayControls(["volumeControl","scrubber","playPauseBtn"]);
+					// disable all player controls except play button, scrubber and volume control
+					embedPlayer.disablePlayControls(["volumeControl","scrubber","playPauseBtn"]);
 
-				// setup embed code when the screen opens
-				_this.setupEmbedCode();
-				// set embed code in the UI as the template doesn't load it correctly when using data binding because of the double quotes inside the text
-				$(".embed-input").val(_this.getConfig('embedCode'));
-				// send event for analytics
-				$(embedPlayer).trigger("showShareEvent");
+					// setup embed code when the screen opens
+					_this.setupEmbedCode();
+					// set embed code in the UI as the template doesn't load it correctly when using data binding because of the double quotes inside the text
+					$(".embed-input").val(_this.getConfig('embedCode'));
+					// send event for analytics
+					$(embedPlayer).trigger("showShareEvent");
 
-				_this.enablePlayDuringScreen = true; // enable playback when the share screen is opened
-			});
-			this.bind('preHideScreen', function () {
-				if ( !_this.enablePlayDuringScreen ){
-					_this.shareScreenOpened = false;
+					_this.enablePlayDuringScreen = true; // enable playback when the share screen is opened
 				}
-				// restore keyboard actions
-				embedPlayer.triggerHelper( 'onEnableKeyboardBinding' );
-				// re-enable player controls
-				embedPlayer.enablePlayControls();
+			});
+			this.bind('preHideScreen', function (event, screenName) {
+				if ( screenName === "share" ){
+					if ( !_this.enablePlayDuringScreen ){
+						_this.shareScreenOpened = false;
+					}
+					// restore keyboard actions
+					embedPlayer.triggerHelper( 'onEnableKeyboardBinding' );
+					// re-enable player controls
+					embedPlayer.enablePlayControls();
+				}
 			});
 
 			// add API support: register to the "doShare" notification and dispatch the "shareEvent" event with the share link data
@@ -143,6 +147,14 @@
 					shareUrl += "#t="+data.timeOffset;
 				}
 				embedPlayer.triggerHelper( 'shareEvent', { "shareLink" : shareUrl } );
+			});
+
+			$(embedPlayer).bind( 'onplay', function(event, data){
+				if ( _this.shareScreenOpened ){
+					setTimeout(function(){
+						embedPlayer.disablePlayControls(["volumeControl","scrubber","playPauseBtn"]);
+					},0);
+				}
 			});
 
 			$(embedPlayer).bind( 'onpause', function(event, data){
