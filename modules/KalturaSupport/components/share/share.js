@@ -50,7 +50,7 @@
 					"name": "Email",
 					"icon": "",
 					"cssClass": "icon-share-email",
-					"template": "mailto:email@address.com?subject=Check out {mediaProxy.entry.name}&body=Check out {mediaProxy.entry.name}: {share.shareURL}",
+					"template": "mailto:?subject=Check out {mediaProxy.entry.name}&body=Check out {mediaProxy.entry.name}: {share.shareURL}",
 					"redirectUrl": ''
 				},
 				"linkedin": {
