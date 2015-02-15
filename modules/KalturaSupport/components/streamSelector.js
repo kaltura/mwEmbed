@@ -28,9 +28,6 @@
 		setup: function () {
 			this.addBindings();
 		},
-		isSafeEnviornment: function(){
-			return !mw.isIOS();
-		},
 		destroy: function () {
 			this._super();
 			this.getComponent().remove();
@@ -318,7 +315,7 @@
 						});
 						//Add black screen before seek to avoid flashing of video
 						embedPlayer.addBlackScreen();
-						embedPlayer.sendNotification('doSeek', currentTime);
+						embedPlayer.seek(currentTime, false);
 					} else {
 						//Return poster to allow display of poster on clip done
 						mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
