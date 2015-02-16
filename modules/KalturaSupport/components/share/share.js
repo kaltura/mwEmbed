@@ -110,7 +110,7 @@
 					_this.shareScreenOpened = true;
 					// add blur effect to video and poster
 					$("#"+embedPlayer.getPlayerElement().id).addClass("blur");
-					$(".playerPoster").addClass("blur");
+					embedPlayer.getPlayerPoster().addClass("blur");
 					// prevent keyboard key actions to allow typing in share screen fields
 					embedPlayer.triggerHelper( 'onDisableKeyboardBinding' );
 					// disable all player controls except play button, scrubber and volume control
@@ -124,7 +124,7 @@
 					// enable playback when the share screen is opened
 					_this.enablePlayDuringScreen = true;
 					// set responsive size
-					if ($(".videoHolder").width() < 400){
+					if (embedPlayer.getVideoHolder().width() < 400){
 						$(".share").addClass("small");
 					}
 				}
@@ -142,7 +142,7 @@
 			});
 
 			// add API support: register to the "doShare" notification and dispatch the "shareEvent" event with the share link data
-			$(embedPlayer).bind( 'doShare', function(event, data){
+			this.bind( 'doShare', function(event, data){
 				var shareUrl = _this.getConfig('shareURL');
 				if ( data && data.timeOffset ){
 					shareUrl += "#t="+data.timeOffset;
@@ -150,7 +150,7 @@
 				embedPlayer.triggerHelper( 'shareEvent', { "shareLink" : shareUrl } );
 			});
 
-			$(embedPlayer).bind( 'onplay', function(event, data){
+			this.bind( 'onplay', function(event, data){
 				if ( _this.shareScreenOpened ){
 					setTimeout(function(){
 						embedPlayer.disablePlayControls(["volumeControl","scrubber","playPauseBtn"]);
@@ -158,16 +158,16 @@
 				}
 			});
 
-			$(embedPlayer).bind( 'onpause', function(event, data){
+			this.bind( 'onpause', function(event, data){
 				if ( _this.shareScreenOpened ){
 					$("#"+embedPlayer.getPlayerElement().id).addClass("blur");
-					$(".playerPoster").addClass("blur");
+					embedPlayer.getPlayerPoster().addClass("blur");
 				}
 			});
 
-			$(embedPlayer).bind( 'updateLayout', function(event, data){
+			this.bind( 'updateLayout', function(event, data){
 				if ( _this.shareScreenOpened ){
-					if ($(".videoHolder").width() < 400){
+					if (embedPlayer.getVideoHolder().width() < 400){
 						$(".share").addClass("small");
 					}else{
 						$(".share").removeClass("small");
@@ -176,6 +176,11 @@
 			});
 		},
 
+		hideScreen: function(){
+			this._super();
+			$("#"+this.getPlayer().getPlayerElement().id).removeClass("blur");
+			this.getPlayer().getPlayerPoster().removeClass("blur");
+		},
 		getTemplateData: function () {
 			var networks = this.getConfig('shareConfig');
 
@@ -222,7 +227,7 @@
 				});
 			}
 			// add bindings
-			var offsetContainerHeight = $(".videoHolder").width() < 400 ? "18px" : "43px";
+			var offsetContainerHeight = this.getPlayer().getVideoHolder().width() < 400 ? "18px" : "43px";
 			$(".share-input").on("click", function(){
 				if ( $(".share-offset-container").css("display") === "none" ){
 					$(".embed-offset-container").hide();
@@ -255,10 +260,10 @@
 			});
 
 			// handle copy button for share link
-			$(".share-copy-btn").on("click", function(){
-				var selector = $(this).data("target");
-				window.prompt("Copy to clipboard: Ctrl+C, Enter", $(selector).val());
-			});
+//			$(".share-copy-btn").on("click", function(){
+//				var selector = $(this).data("target");
+//				window.prompt("Copy to clipboard: Ctrl+C, Enter", $(selector).val());
+//			});
 
 			// handle time offset for embed code
 			$(".embed-offset-container>.share-offset").on("propertychange change keyup input paste", function(event){

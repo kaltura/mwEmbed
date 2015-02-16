@@ -1992,6 +1992,9 @@
 		getTopBarContainer: function () {
 			return this.getInterface().find('.topBarContainer');
 		},
+		getPlayerPoster: function () {
+			return this.getInterface().find('.playerPoster');
+		},
 
 		/**
 		 * Abstract method,
