@@ -129,8 +129,8 @@
 			.css( pos )
 			.css( {
 				'position': 'absolute',
-				'width' : $(this).width(),
-				'height': $(this).height()
+				'width' : '100%',
+				'height': '100%'
 			})
 			.append(
 				$spinner
