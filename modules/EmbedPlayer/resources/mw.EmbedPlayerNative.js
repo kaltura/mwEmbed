@@ -439,7 +439,7 @@
 				if (callbackCount == 0 && vid.paused) {
 					this.stopEventPropagation();
 					var vidObj = $(vid);
-					var eventName = mw.isIOS() ? "canplaythrough.seekPrePlay" : "play.seekPrePlay";
+					var eventName = mw.isIOS() ? "canplaythrough.seekPrePlay" : "canplay.seekPrePlay";
 					vidObj.off(eventName).one(eventName, function () {
 						_this.restoreEventPropagation();
 						clearTimeout(_this.canSeekTimeout);
