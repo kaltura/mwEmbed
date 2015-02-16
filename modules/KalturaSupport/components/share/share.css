@@ -179,6 +179,7 @@
 	text-align: left;
 }
 .share .icon-border{
+	position: relative;
 	border-radius: 28px 28px 28px 28px;
 	-moz-border-radius: 28px 28px 28px 28px;
 	-webkit-border-radius: 28px 28px 28px 28px;
@@ -229,75 +230,129 @@
 	text-shadow: 0px 0px 10px #fff;
 }
 
-/* media queries */
-@media all and (max-width: 399px) {
-	.share .share-input-container{
-		width: 220px;
-		height: 24px;
-	}
-	.share .shareembed-input {
-		width: 176px;
-		padding-right: 0px;
-		height: 16px;
-		font-size: 8pt;
-	}
-	.share .icon-border{
-		width: 34px;
-		height: 32px;
-	}
-	.share .share-icons-scroller{
-		width: 260px;
-		height: 32px;
-	}
-	.share .share-icons-container{
-		width: 222px;
-	}
-	.share .share-network{
-		font-size: 0.7em;
-		margin-top: 7px;
-		margin-left: 9px;
-	}
-	.share .share-offset{
-		width: 40px;
-		padding-left: 4px;
-		padding-right: 4px;
-	}
-	.share .share-label{
-		float: left;
-		margin-left: 45px;
-		margin-top: 6px;
-		margin-right: 0px;
-		font-size: 8pt;
-	}
-	.share-secure-lbl{
-		font-size: 8pt;
-	}
-    .share .embed-offset-container .share-offset{
-	    width: 30px;
-	    margin-right: 4px;
-    }
-	.share .share-secured{
-		margin-left: 2px;
-	}
-	.share-secure-lbl{
-		margin-top: 0px;
-	}
-	.share .share-close{
-		margin-left: 4px;
-		margin-top: 4px;
-		font-size: 10px;
-	}
-	.share .next-btn{
-		margin-top: 12px;
-		margin-left: 246px;
-		font-size: 10px;
-	}
-	.share .back-btn{
-		margin-top: 12px;
-		font-size: 10px;
-	}
+/* small size */
+
+.small.share .share-input-container{
+	width: 220px;
+	height: 24px;
+}
+.small.share .shareembed-input {
+	width: 176px;
+	padding-right: 0px;
+	height: 16px;
+	font-size: 8pt;
+}
+.small.share .icon-border{
+	width: 34px;
+	height: 32px;
+}
+.small.share .share-icons-scroller{
+	width: 260px;
+	height: 32px;
+}
+.small.share .share-icons-container{
+	width: 222px;
+}
+.small.share .share-network{
+	font-size: 0.7em;
+	margin-top: 7px;
+	margin-left: 9px;
+}
+.small.share .share-offset{
+	width: 40px;
+	padding-left: 4px;
+	padding-right: 4px;
+}
+.small.share .share-label{
+	float: left;
+	margin-left: 45px;
+	margin-top: 6px;
+	margin-right: 0px;
+	font-size: 8pt;
+}
+.small.share .embed-offset-container .share-label{
+	margin-left: 0px;
+}
+.small.share .share-secure-lbl{
+	font-size: 8pt;
+}
+.small.share .embed-offset-container .share-offset{
+    width: 30px;
+    margin-right: 4px;
+}
+.small.share .share-secured{
+	margin-left: 2px;
+}
+.small.share .share-secure-lbl{
+	margin-top: 0px;
+}
+.small.share .share-close{
+	margin-left: 4px;
+	margin-top: 4px;
+	font-size: 10px;
+}
+.small.share .next-btn{
+	margin-top: 12px;
+	margin-left: 246px;
+	font-size: 10px;
+}
+.small.share .back-btn{
+	margin-top: 12px;
+	font-size: 10px;
 }
 
+/* IE8 support */
+.share.ie8 .shareembed-input {
+	font-family: Arial;
+	height:24px;
+	border: 1px solid white;
+	padding-right: 4px;
+	padding-left: 4px;
+}
+.share-alert.ie8{
+	font-family: Arial;
+}
+.share.ie8 .share-input{
+	background: url("");
+	width: 326px;
+}
+.share.ie8 .embed-input{
+	background: url("");
+	width: 326px;
+}
+.share.ie8 .share-label{
+	font-size: 11pt;
+	margin-top: 5px;
+}
+.share.ie8 .share-secure-lbl{
+	font-size: 11pt;
+	margin-top: 5px;
+}
+.share.ie8 .share-offset{
+	background-color: transparent !important;;
+}
+.small.share.ie8 .share-input{
+	width: 210px;
+	height: 16px;
+}
+.small.share.ie8 .embed-input{
+	width: 210px;
+	height: 16px;
+}
+.small.share.ie8 .share-label{
+	font-size: 8pt;
+	margin-top: 3px;
+}
+.small.share.ie8 .share-secure-lbl{
+	font-size: 8pt;
+}
+.small.share.ie8 .share-offset{
+	font-size: 9pt;
+	height: 16px;
+}
+.small.share.ie8 .share-secure-lbl{
+	margin-top: 0px;
+}
 /* font icons */
 @font-face {
 	font-family: 'share';

@@ -111,21 +111,22 @@
 					// add blur effect to video and poster
 					$("#"+embedPlayer.getPlayerElement().id).addClass("blur");
 					$(".playerPoster").addClass("blur");
-
 					// prevent keyboard key actions to allow typing in share screen fields
 					embedPlayer.triggerHelper( 'onDisableKeyboardBinding' );
-
 					// disable all player controls except play button, scrubber and volume control
 					embedPlayer.disablePlayControls(["volumeControl","scrubber","playPauseBtn"]);
-
 					// setup embed code when the screen opens
 					_this.setupEmbedCode();
 					// set embed code in the UI as the template doesn't load it correctly when using data binding because of the double quotes inside the text
 					$(".embed-input").val(_this.getConfig('embedCode'));
 					// send event for analytics
 					$(embedPlayer).trigger("showShareEvent");
-
-					_this.enablePlayDuringScreen = true; // enable playback when the share screen is opened
+					// enable playback when the share screen is opened
+					_this.enablePlayDuringScreen = true;
+					// set responsive size
+					if ($(".videoHolder").width() < 400){
+						$(".share").addClass("small");
+					}
 				}
 			});
 			this.bind('preHideScreen', function (event, screenName) {
@@ -161,6 +162,16 @@
 				if ( _this.shareScreenOpened ){
 					$("#"+embedPlayer.getPlayerElement().id).addClass("blur");
 					$(".playerPoster").addClass("blur");
+				}
+			});
+
+			$(embedPlayer).bind( 'updateLayout', function(event, data){
+				if ( _this.shareScreenOpened ){
+					if ($(".videoHolder").width() < 400){
+						$(".share").addClass("small");
+					}else{
+						$(".share").removeClass("small");
+					}
 				}
 			});
 		},
@@ -205,12 +216,13 @@
 			var _this = this;
 			//add IE8 support for rounded corners using the PIE library
 			if( mw.isIE8() ){
+				$(".share").addClass("ie8");
 				$('.share .PIE').each(function(){
 					PIE.attach(this);
 				});
 			}
 			// add bindings
-			var offsetContainerHeight = this.getPlayer().width < 400 ? "18px" : "43px";
+			var offsetContainerHeight = $(".videoHolder").width() < 400 ? "18px" : "43px";
 			$(".share-input").on("click", function(){
 				if ( $(".share-offset-container").css("display") === "none" ){
 					$(".embed-offset-container").hide();
@@ -218,6 +230,7 @@
 					$(".share-offset-container").height(0).show().animate({ height: offsetContainerHeight }, 300 ,function(){
 						$(".share-container>.share-copy-btn").fadeIn(300);
 						$(".share-offset-container").fadeIn(300);
+						$(".share-icons-container").hide().show(); // force refresh for IE8 :(
 					});
 				}
 				$(this).select();
@@ -230,6 +243,7 @@
 					$(".embed-offset-container").height(0).show().animate({ height: offsetContainerHeight }, 300 ,function(){
 						$(".embed-container>.share-copy-btn").fadeIn(300);
 						$(".embed-offset-container").fadeIn(300);
+						$(".share-icons-container").hide().show(); // force refresh for IE8 :(
 					});
 				}
 				$(this).select();
