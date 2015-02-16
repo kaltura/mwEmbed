@@ -31,6 +31,7 @@
 						$('<a />')
 							.addClass('btnFixed')
 							.click(function () {
+								if( _this.isDisabled ) return ;
 								if (_this.getConfig('href')) {
 									if (mw.isNativeApp()) {
 										_this.openInNativeApp();

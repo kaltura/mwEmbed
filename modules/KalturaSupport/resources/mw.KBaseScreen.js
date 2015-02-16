@@ -11,6 +11,7 @@
 		templateData: null,
 		iconBtnClass: '',
 		error: false,
+		enablePlayDuringScreen: false,
 
 		// Returns KBaseComponent config with screen config
 		getBaseConfig: function () {
@@ -68,6 +69,7 @@
 			}, this));
 
             this.bind('onChangeMedia', $.proxy(function () {
+	            this.enablePlayDuringScreen = false;
                 this.hideScreen();
             }, this));
 		},
@@ -90,7 +92,10 @@
 				if ( this.getPlayer().isPlaying() ) {
 					this.getPlayer().restoreComponentsHover();
 				}
-				this.getScreen().fadeOut( 400 );
+
+				if ( !this.enablePlayDuringScreen ){
+					this.getScreen().fadeOut( 400 );
+				}
 			}
 		},
 		showScreen: function () {
@@ -127,9 +132,7 @@
 			this.wasPlaying = player.isPlaying();
 			if (this.wasPlaying) {
 				// We use timeout to avoid race condition when we show screen on "playing" state
-				setTimeout(function () {
-					player.pause();
-				}, 0);
+				player.pause();
 			}
 		},
 		restorePlayback: function () {
