@@ -51,6 +51,11 @@
 </script>
 <div style="clear:both"></div>
 <h3> Share plugin API </h3>
+<p>
+The Share plugin provides JavaScript API for triggering the shared link generation and retrieving it:<br><br>
+<b>"doShare" Notification: </b>is used to trigger the shared link generation. You can specify the required time offset by sending a configuration object, for example: { "timeOffset" : "30" }<br>
+<b>"shareEvent" Event: </b>is triggered by the plugin once the shared link is generated. It provides access to the 	generated shared link by accessing the event's "sharedLink" property.
+</p>
 <br>
 Sample code for Share API:
 <pre class="prettyprint linenums">
