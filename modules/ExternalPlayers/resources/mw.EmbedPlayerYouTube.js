@@ -13,6 +13,9 @@
 		instanceOf : 'youtube',
 
 		bindPostfix: '.YouTube',
+
+		playerPrefix: 'EmbedPlayerYouTube',
+
 		//current playhead time
 		time : 0,
 		//current entry duration

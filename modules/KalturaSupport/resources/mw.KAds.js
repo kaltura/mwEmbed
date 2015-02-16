@@ -278,9 +278,8 @@
 				$.extend( adsCuePointConf, baseDisplayConf );
 
 				var originalSource = embedPlayer.getSource();
-				var seekPerc = ( parseFloat( cuePoint.startTime / 1000 ) / parseFloat( embedPlayer.duration ) );
+				var seekTime = parseFloat( cuePoint.startTime / 1000 );
 				var oldDuration = embedPlayer.duration;
-				var vidDuration = embedPlayer.getPlayerElement().duration;
 
 				// Set switch back function
 				var doneCallback = function() {
@@ -323,13 +322,15 @@
 									embedPlayer.play();
 								}
 
-								embedPlayer.setCurrentTime( seekPerc * embedPlayer.getDuration(), function(){
+								embedPlayer.unbindHelper("seeked.midroll").bindOnceHelper("seeked.midroll", function () {
 									if( !mw.isIOS() ) {
 										embedPlayer.play();
 									}
 									embedPlayer.restorePlayerOnScreen();
 									embedPlayer.hideSpinner();
-								} );
+								});
+
+								embedPlayer.seek(seekTime, false);
 							}
 						});
 					} else {

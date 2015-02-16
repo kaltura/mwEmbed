@@ -152,6 +152,7 @@
 				this.bindPlayerFunction( eventName, methodName );
 			}
 		},
+
 		removeJsListener: function( eventName, methodName ) {
 			if ( this.playerElement ) {
 				mw.log( 'PlayerElementSilverlight:: unbindPlayerFunction:' + eventName );

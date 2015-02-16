@@ -10,6 +10,8 @@
 
 		bindPostfix: '.kPlayer',
 
+		playerPrefix: 'EmbedPlayerKplayer',
+
 		//Flag indicating we should cancel autoPlay on live entry
 		// (we set it to true as a workaround to make the Flash start the live checks call)
 		cancelLiveAutoPlay: false,
@@ -481,62 +483,19 @@
 		 * @param {Float}
 		 *            percentage Percentage of total stream length to seek to
 		 */
-		seek: function (percentage, stopAfterSeek) {
-			var _this = this;
+		doSeek: function (seekTime) {
 			this.seekStarted = true;
-			var seekTime = percentage * this.getDuration();
-			mw.log('EmbedPlayerKalturaKplayer:: seek: ' + percentage + ' time:' + seekTime);
-
-			// Trigger preSeek event for plugins that want to store pre seek conditions.
-			var stopSeek = {value: false};
-			this.triggerHelper('preSeek', [percentage, stopAfterSeek, stopSeek]);
-			if (stopSeek.value) {
-				return;
-			}
-
-			this.seeking = true;
-
-			// Save currentTime
-			this.kPreSeekTime = _this.currentTime;
-			this.currentTime = ( percentage * this.duration ).toFixed(2);
-
-			// trigger the html5 event:
-			$(this).trigger('seeking');
-
-			// Run the onSeeking interface update
-			this.layoutBuilder.onSeek();
-
-			this.unbindHelper("seeked" + _this.bindPostfix).bindHelper("seeked" + _this.bindPostfix, function () {
-				_this.unbindHelper("seeked" + _this.bindPostfix);
-				_this.removePoster();
-				_this.startMonitor();
-				if (stopAfterSeek) {
-					_this.hideSpinner();
-					_this.pause();
-					_this.updatePlayheadStatus();
-				} else {
-					// continue to playback ( in a non-blocking call to avoid synchronous pause event )
-					setTimeout(function () {
-						if (!_this.stopPlayAfterSeek) {
-							mw.log("EmbedPlayerNative::sPlay after seek");
-							_this.play();
-							_this.stopPlayAfterSeek = false;
-						}
-					}, 0);
-				}
-			});
-
 			if (this.firstPlay) {
 				this.stopEventPropagation();
 				if (this.streamerType == 'http') {
 					this.playerObject.seek(seekTime);
+				} else {
+					this.playerObject.setKDPAttribute( 'mediaProxy', 'mediaPlayFrom', seekTime );
+					this.playerObject.play();
 				}
-				this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', seekTime);
-				this.playerObject.play();
 			} else {
 				this.playerObject.seek(seekTime);
 			}
-
 		},
 
 		/**
@@ -583,11 +542,9 @@
 			if (this.firstPlay) {
 				this.restoreEventPropagation();
 			}
-			this.previousTime = this.currentTime = this.flashCurrentTime = this.playerObject.getCurrentTime();
-			this.seeking = false;
 			if (this.seekStarted) {
 				this.seekStarted = false;
-				$(this).trigger('seeked', [this.playerObject.getCurrentTime()]);
+				this.triggerHelper('seeked', [this.playerObject.getCurrentTime()]);
 			}
 		},
 
@@ -882,7 +839,7 @@
 					this.pauseTime = endTime;
 				}
 				if (startTime) {
-					this.seek(startTime / this.getDuration());
+					this.seek(startTime);
 				}
 			}
 
