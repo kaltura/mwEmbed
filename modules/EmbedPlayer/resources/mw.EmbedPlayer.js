@@ -2194,7 +2194,7 @@
 		play: function () {
 			if (this.currentState == "end") {
 				// prevent getting another clipdone event on replay
-				this.seek(0.01);
+				this.seek(0.01, false);
 			}
 			var _this = this;
 			var $this = $(this);
