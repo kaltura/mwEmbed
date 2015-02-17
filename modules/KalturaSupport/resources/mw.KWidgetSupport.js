@@ -741,6 +741,9 @@ mw.KWidgetSupport.prototype = {
 			// Check for mediaPlayFrom
 			// first check in hash
 			var mediaPlayFrom = kWidget.getHashParam("t");
+			if ( mediaPlayFrom ){
+				mediaPlayFrom = kWidget.npt2seconds(mediaPlayFrom);
+			}
 			// now cheeck in Flashvars - will override hash params
 			if (mediaProxy.mediaPlayFrom){
 				mediaPlayFrom = mediaProxy.mediaPlayFrom;
