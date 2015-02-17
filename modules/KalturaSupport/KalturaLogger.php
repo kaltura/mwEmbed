@@ -1,5 +1,7 @@
 <?php
 
+// Include the kaltura client ( provides IKalturaLogger which is not presently integrated into autoLoader )
+
 class KalturaLogger implements IKalturaLogger {
 
 	var $logDir = null;

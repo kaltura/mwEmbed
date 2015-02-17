@@ -171,7 +171,6 @@ class UiConfResult {
 		}
 		// Get our flashVars
 		$vars = $this->normalizeFlashVars();
-
 		// Add uiVars into vars array
 		if ( isset($playerConfig['uiVars']) ) {
 			foreach( $playerConfig['uiVars'] as $key=>$value ) {
@@ -513,9 +512,9 @@ class UiConfResult {
 		// Add default layout
 		$playerConfig['layout'] = array(
 			'skin' => 'kdark'
-		);
+		);	
 
-		$this->playerConfig = $playerConfig;
+		$this->playerConfig = $playerConfig;		
 
 		//echo '<pre>';
 		//echo json_encode( $this->playerConfig );

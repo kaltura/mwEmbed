@@ -25,6 +25,8 @@
  * @author Michael Dale
  *
  */
+# Load default settings
+require_once( dirname( __FILE__ ) . "/includes/DefaultSettings.php" );
 
 require_once ( dirname( __FILE__ ) . '/includes/MwEmbedWebStartSetup.php' );
 

@@ -1,0 +1,124 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Ad Delivery Comparison </title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Demo -- Delivering Ads Using Kaltura HTML5 Player Client side</h2>
+This player is configured to play a mid-roll after 10 seconds. 
+The native device player calls the ad based on a cue point set by the publisher.
+ This technology is widely supported by PC, iOS mobile web and native apps and in new Android mobile web and native players.
+<br>
+The ad is skippable and the user engagement can be easily tracked. 
+<div id="kaltura-player" style="width:640px;height:360px;"></div>
+
+<h2>Demo - Delivering Ads Using Kaltura Server Side Video Stitching</h2>
+This stream is configured to play a mid-roll after 10 seconds. The server serves the ad, without any active request from the player. 
+<br>
+Server side ad stitching is used eliminate the need for client libraries or SDKs and is compatible with devices such as Androids,
+ ​Apple TV, Roku, Chromecast, xbox and connected TVs.
+<br>
+Since the ad is stitched to the video stream, it will play one any device regardless of any ad blocker, and can easily 
+be integrated into any application. Note the embed code is simply a video tag ( no client library )
+<div style="background-color:#000;width:640px;height:360px;" >
+<video id="syndication"
+ poster="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/0_a6lewqcs/version/100022/acv/252/width/640/height/360" 
+ controls style="width:100%;height:100%;"></div>
+ </div>
+
+<script>
+	mw.setConfig('EmbedPlayer.EnableIpadHTMLControls', false);
+	
+	kWidget.embed({
+		'targetId': 'kaltura-player',
+		'wid': '_243342',
+		'uiconf_id' : '21099702',
+		'entry_id' : '0_a6lewqcs',
+		'flashvars': {
+			'vast': {
+				'plugin': true,
+				'trackCuePoints': true,
+				'skipOffset': 5,
+				'timeout' : 4
+			},
+			'skipBtn': {
+				'plugin': true,
+				'label': 'Skip ad'
+			},
+			'skipNotice':{
+				'plugin': true,
+				'label': "Can skip in {sequenceProxy.skipOffsetRemaining}"
+			},
+			'adsOnReplay':true
+		}
+	});
+	
+	
+	function s4() {
+		return Math.floor((1 + Math.random()) * 0x10000)
+			.toString(16)
+			.substring(1);
+	};
+	function guid() {
+		return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+			s4() + '-' + s4() + s4() + s4();
+	}
+	var instaceGuid = guid();
+	var src = "../../../services.php?service=mediaSession&wid=_243342&uiconf_id=6470132&entry_id=0_a6lewqcs"
+		+ '&guid=' + instaceGuid;
+	if( $('#syndication' ).attr('src') != src ){
+		$('#syndication' ).attr('src', src );
+		$('#link').show().attr('href', src);
+	}
+	
+</script>
+
+<script> 
+	function logMessage(msg){
+		$( '#medialog' ).prepend( msg + "\n" );
+	}
+	function initiateSocketLog( instaceGuid ){
+		// register the guid on the page: 
+		logMessage( 'Open Connection: ' + instaceGuid );
+		// MediaState relay ( not needed for syndication mode)
+		var host = window.location.hostname;
+		var conn = new WebSocket('ws://' + host + ':8080' + '/mwEmbedSocket');
+		
+		conn.onopen = function(e) {
+			logMessage("Connection established!");
+			// send the guid:
+			try{
+				conn.send(
+					JSON.stringify({
+						'action': 'subscribe',
+						'guid': instaceGuid
+					})
+				);
+			} catch(exception){  
+				logMessage('Error:' + exception);
+			} 
+		};
+		conn.onerror = function(e){
+			logMessage("Connection failed!");
+		}
+		conn.onclose = function(e){
+			logMessage("Connection closed!");
+		}
+		conn.onmessage = function(e) {
+			var msgData = JSON.parse( e.data );
+			// this socket only handles messages ( future socket could handle realtime ads.  )
+			if( msgData.action == 'message' ){
+				logMessage( msgData.data );
+			}
+		};
+	}
+</script>
+
+</body>
+</html>

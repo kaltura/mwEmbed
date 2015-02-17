@@ -6,11 +6,9 @@
 */
 require_once( dirname( __FILE__ ) . '/../KalturaCommon.php' );
 
-$wgMwEmbedApiServices['uiconfJs'] = 'mweApiUiConfJs';
-
-// should extend a base mwApiService class
 // TODO split into two services "pageResources" and "userAgentPlayerRules"
-class mweApiUiConfJs {
+
+class ServiceUiConfJs {
 	var $resultObject = null;
 	var $preLoaderMode = false;
 	var $jsConfigCheckDone = false;

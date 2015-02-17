@@ -2,9 +2,7 @@
 /**
 * This file enables slow javascript response for testing blocking scripts relative to player embeds
 */
-$wgMwEmbedApiServices['sleepTest'] = 'mweApiSleepTest';
-
-class mweApiSleepTest {
+class ServiceSleepTest {
 	function run(){
 		$waitTime = intval( $_REQUEST['waitTime'] );
 		if( $waitTime > 30 || $waitTime < 0 ) {

@@ -123,7 +123,7 @@ mw.MediaPlayers.prototype = {
 	 */
 	defaultPlayer: function( mimeType ){
 		mw.log( "MediaPlayer:: defaultPlayer has been deprecated, use getDefaultPlayer method instead" );
-		return getDefaultPlayer( mimeType );
+		return this.getDefaultPlayer( mimeType );
 	},
 	/**
 	 * Default player for a given mime type

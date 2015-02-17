@@ -32,7 +32,14 @@ class RequestHelper {
 		'height'=> null,
 		'playerId' => null,
 		'vid_sec' => null,
-		'vid_slices' => null
+		'vid_slices' => null,
+		// for m3u8 service: 
+		'streamUrl' => null,
+		'flavorProps' => null,
+		'guid' => null,
+		// for player studio: 
+		'jsonConfig' => null,
+		'service' => null
 	);
 
 
@@ -137,6 +144,12 @@ class RequestHelper {
 		return false;
 	}
 
+	function remove( $key ){
+		if( isset( $this->urlParameters[ $key ] ) ){
+			unset( $this->urlParameters[ $key ] );
+		}
+	}
+	
 	function getServiceConfig( $name ){
 		global $wgKalturaAllowIframeRemoteService;
 		

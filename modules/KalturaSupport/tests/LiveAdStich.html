@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Live Stream Example</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script>
+	mw.setConfig('Kaltura.ForceFlashOnDesktop', true );
+</script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<script type="text/javascript">	
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Kaltura Live Ad Stiching </h2>
+This demonstrates a live stream with the kaltura player. Live stream courtesy of NASA tv<br><br>
+<div id="kaltura_player" style="width:400px;height:330px"></div>
+<script>
+kWidget.embed({
+	'wid': '_7463',
+	'targetId': 'kaltura_player',
+	'uiconf_id': '11958342',
+	'entry_id' : '1_c91a5joq',
+	"flashVars":{
+		"streamerType":"auto",
+		"mediaProxy.expandedLiveBufferTime" : .75,
+		"mediaProxy.initialLiveBufferTime": .75
+	}
+});
+</script>
+<h3>Controlling Live Buffering ( flash player, flashvars )</h3>
+<b>mediaProxy.expandedLiveBufferTime</b> = default is 0.75
+              sets the maximum buffer time to be set for a live entry - once the video has started playing and we want to minimize further buffering events.
+<br>
+<b>mediaProxy.initialLiveBufferTime</b> = default 0.75
+              sets the initial buffer time for a live entry
+</body>
+</html>

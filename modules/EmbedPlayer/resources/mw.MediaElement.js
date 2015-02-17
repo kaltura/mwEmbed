@@ -224,7 +224,6 @@ mw.MediaElement.prototype = {
 
 		// Set via module driven preference:
 		$( this ).trigger( 'onSelectSource', playableSources );
-
 		if( _this.selectedSource ){
 			mw.log('MediaElement::autoSelectSource: Set via trigger::' + _this.selectedSource.getTitle() );
 			return _this.selectedSource;

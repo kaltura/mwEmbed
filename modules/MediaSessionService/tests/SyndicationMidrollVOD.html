@@ -1,0 +1,89 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Syndication VOD Entry Midroll </title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<script>
+	// http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
+	function s4() {
+		return Math.floor((1 + Math.random()) * 0x10000)
+			.toString(16)
+			.substring(1);
+	};
+	function guid() {
+		return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+			s4() + '-' + s4() + s4() + s4();
+	}
+</script>
+</head>
+<body>
+<div style="float:left">
+<h3> Syndication VOD Entry Midroll </h3>
+Midroll starts at 10 seconds 
+<a id="link" target="_new" href="#" style="display:none">Link to stand alone m3u8</a><br>
+<video id="vid" style="width:600px;height:342px" controls autoplay></video>
+</div>
+<script>
+	var instaceGuid = guid();
+	function updateVideoSource(){
+		var src = "../../../services.php/service/mediaSession/wid/_243342/uiconf_id/6470132/entry_id/1_w4fqa380"
+			+ '/guid/' + instaceGuid;
+		if( $('#vid' ).attr('src') != src ){
+			$('#vid' ).attr('src', src );
+			$('#link').show().attr('href', src);
+		}
+	}
+</script>
+
+<div style="overflow:hidden;padding-left:10px;"> 
+<h3> Media State Events</h3>
+<textarea id="medialog" style="width:96%;height:342px;"></textarea>
+</div>
+
+
+<script> 
+	function logMessage(msg){
+		$( '#medialog' ).prepend( msg + "\n" );
+	}
+	// register the guid on the page: 
+	logMessage( 'Open Connection: ' + instaceGuid );
+	// MediaState relay ( not needed for syndication mode)
+	var host = window.location.hostname;
+	var conn = new WebSocket('ws://' + host + ':8080' + '/mwEmbedSocket');
+	
+	conn.onopen = function(e) {
+		logMessage("Connection established!");
+		// send the guid:
+		try{
+			conn.send(
+				JSON.stringify({
+					'action': 'subscribe',
+					'guid': instaceGuid
+				})
+			);
+		} catch(exception){  
+			logMessage('Error:' + exception);
+		} 
+		// update the video source once connection has been established ( avoid race condition with webSocket handshake. )
+		updateVideoSource();
+	};
+	conn.onerror = function(e){
+		logMessage("Connection failed!");
+	}
+	conn.onclose = function(e){
+		logMessage("Connection closed!");
+		// still update the source if connection is closed:
+		updateVideoSource();
+	}
+	conn.onmessage = function(e) {
+		var msgData = JSON.parse( e.data );
+		// this socket only handles messages ( future socket could handle realtime ads.  )
+		if( msgData.action == 'message' ){
+			logMessage( msgData.data );
+		}
+	};
+</script>
+</body>
+</html>
