@@ -15,6 +15,8 @@
 		//Instance Name
 		instanceOf: 'NativeComponent',
 
+		bindPostfix: '.EmbedPlayerNativeComponent',
+		
 		// Flag to only load the video ( not play it )
 		onlyLoadFlag: false,
 
@@ -314,11 +316,9 @@
 			}
 		},
 
-		seek: function (percentage) {
+		doSeek: function (seekTime) {
 			mw.log("EmbedPlayerNativeComponent:: seek::");
-			var seekTime = percentage * this.getDuration();
-			this.getPlayerElement().attr('currentTime', seekTime);
-			this.parent_seek(percentage);
+			this.getPlayerElement().attr('currentTime', seekTime*1000);
 		},
 
 		/**
@@ -336,6 +336,11 @@
 			if ($.isFunction(callback)) {
 				callback();
 			}
+		},
+
+		backToLive: function () {
+			this.triggerHelper('movingBackToLive');
+			this.seek(this.getDuration());
 		},
 
 		doNativeAction: function (actionParams) {
@@ -358,7 +363,7 @@
 
 		_ondurationchange: function () {
 			mw.log( "EmbedPlayerNativeComponent:: onDurationChange::" + this.getPlayerElement().duration );
-			this.setDuration( this.getPlayerElement().duration );
+			this.setDuration( this.getPlayerElement().attr('currentTime') );//itay
 		},
 
 		/**
@@ -415,18 +420,11 @@
 		 * fired when done seeking
 		 */
 		_onseeked: function () {
-			mw.log("EmbedPlayerNativeComponent::onSeeked ");
 			if (this.seeking) {
-				this.seeking = false;
-
 				if (this._propagateEvents) {
 					mw.log("EmbedPlayerNativeComponent:: trigger: seeked");
 					this.triggerHelper('seeked');
 				}
-
-				this.hideSpinner();
-				this.updatePlayheadStatus();
-				this.monitor();
 			}
 		},
 
