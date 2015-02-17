@@ -381,7 +381,6 @@
 
 		_ondurationchange: function () {
 			mw.log( "EmbedPlayerNativeComponent:: onDurationChange::" + this.getPlayerElement().duration );
-			this.setDuration( this.getPlayerElement().attr('currentTime') );//itay
 		},
 
 		/**
