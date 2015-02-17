@@ -317,11 +317,6 @@
 				settings.flashvars = {};
 			}
 
-			// check for forceJSONP
-			if ( settings.flashvars["Kaltura.ForceJSONP"] === true ){
-				mw.setConfig( "Kaltura.ForceJSONP", true );
-			}
-
 			if (document.URL.indexOf('forceKalturaNativeComponentPlayer') !== -1) {
 				settings.flashvars["nativeCallout"] = { plugin: true }
 			}
@@ -545,11 +540,6 @@
 			// Check if we have flashvars object
 			if (!settings.flashvars) {
 				settings.flashvars = {};
-			}
-
-			// check for forceJSONP
-			if ( settings.flashvars["Kaltura.ForceJSONP"] === true ){
-				mw.setConfig( "Kaltura.ForceJSONP", true );
 			}
 
 			// inject the centered css rule ( if not already )
@@ -792,12 +782,6 @@
 			if (!settings.flashvars) {
 				settings.flashvars = {};
 			}
-
-			// check for forceJSONP
-			if ( settings.flashvars["Kaltura.ForceJSONP"] === true ){
-				mw.setConfig( "Kaltura.ForceJSONP", true );
-			}
-
 			// Set our special callback flashvar:
 			if (settings.flashvars['jsCallbackReadyFunc']) {
 				kWidget.log("Error: Setting jsCallbackReadyFunc is not compatible with kWidget embed");
@@ -2172,7 +2156,9 @@
 
 			return url;
 		},
-
+		forceJSONP: function(){
+			mw.setConfig( "Kaltura.ForceJSONP", true );
+		},
 		/**
 		 * Overrides flash embed methods, as to optionally support HTML5 injection
 		 */

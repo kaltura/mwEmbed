@@ -697,7 +697,9 @@ mw.KWidgetSupport.prototype = {
 		var getAttr = function( attrName ){
 			return _this.getPluginConfig( embedPlayer, '', attrName );
 		}
-		
+		if ( getAttr( "Kaltura.ForceJSONP" ) === true ){
+			kWidget.forceJSONP();
+		}
 		// Check for autoplay:
 		var autoPlay = getAttr( 'autoPlay' );
 		if( autoPlay ){
