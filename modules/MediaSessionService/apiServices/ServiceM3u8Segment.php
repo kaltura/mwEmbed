@@ -21,6 +21,11 @@ class ServiceM3u8Segment extends BaseStreamService {
 		$targetEntry = new ServiceMediaSessionTargetEntry();
 		$targetEntryId = $this->cache->get( $targetEntry->getTargetKey()  );
 		
+		// in all cases don't cache segments: 
+		header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+		header("Cache-Control: post-check=0, pre-check=0", false);
+		header("Pragma: no-cache");
+		
 		// check entry matches current stream: 
 		if( $this->request->get("entry_id") == $targetEntryId ){
 			// redirect to content url:
