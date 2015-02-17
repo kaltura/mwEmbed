@@ -14,7 +14,7 @@
 			'titleLimit': 36,
 			'descriptionLimit': 32,
 			'thumbnailWidth': 86,
-			'mediaItemWidth': 320,
+			'mediaItemWidth': null,
 			'mediaItemHeight': 70,
 			'includeThumbnail': true,
 			'includeItemNumberPattern': false,
@@ -45,6 +45,7 @@
 		multiplePlayListsReady: false, //Indicate if multiplaylist selector is ready
 		playerIsReady: false,
 		redrawOnResize: true,
+		widthSetByUser: true,    // assuming the user specified the required playlist width. Will be changed if needed in the setup function
 
 		setup: function (embedPlayer) {
 			if (this.getConfig('includeInLayout') === false) { // support hidden playlists - force onPage and hide its div.
@@ -53,6 +54,11 @@
 			this.minClips = parseInt(this.getConfig('MinClips'));
 			//Backward compatibility setting - set autoplay on embedPlayer instead of playlist
 			this.getPlayer().autoplay = (this.getConfig('autoPlay') == true);
+
+			if ( !this.getConfig( 'mediaItemWidth') ){
+				this.widthSetByUser = false;           // user did not specify a required width. We will set to 320 and apply responsive logic on updateLayout event
+				this.setConfig( 'mediaItemWidth',320); // set default width to 320 if not defined by user
+			}
 
 			if (this.getConfig("includeHeader")){
 				this.setConfig('horizontalHeaderHeight', 43);
@@ -146,10 +152,8 @@
 				if (!_this.getPlayer().layoutBuilder.isInFullScreen() && _this.redrawOnResize) {
 					// decide the width of the items. For vertical layout: 3rd of the container. For horizontal: according to MinClips value
 					if ( _this.getLayout() === "vertical" ){
-						if ( $( ".playlistInterface" ).width() / 3 > _this.getConfig( 'mediaItemWidth' ) ) {
+						if ( !_this.widthSetByUser && $( ".playlistInterface" ).width() / 3 > _this.getConfig( 'mediaItemWidth' ) ) {
 							_this.setConfig( 'mediaItemWidth', $( ".playlistInterface" ).width() / 3 );
-						} else {
-							_this.setConfig( 'mediaItemWidth', '320' ); // set min width to 320
 						}
 					}else{
 						_this.setConfig( 'mediaItemWidth', Math.floor($( ".playlistInterface" ).width() / _this.getConfig("MinClips")) );
