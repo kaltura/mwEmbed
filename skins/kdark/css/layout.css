@@ -593,6 +593,7 @@ body { letter-spacing: 0.04em; }
 
 .closedCaptions > .dropdown-menu {
 	overflow-y:auto;
+	overflow-x:hidden;
 	max-height:200px;
 	width:auto;
 	max-width:140px;
