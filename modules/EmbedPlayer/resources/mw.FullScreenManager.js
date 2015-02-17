@@ -59,9 +59,11 @@ mw.FullScreenManager.prototype = {
         );
         embedPlayer.pause();
         // try and do a browser popup:
+        // Name argument for window.open in IE8 must be from supported set: _blank for example
+		// http://msdn.microsoft.com/en-us/library/ms536651%28v=vs.85%29.aspx
         var newwin = window.open(
             url,
-            embedPlayer.id,
+            '_blank',
             // Fullscreen window params:
             'width=' + screen.width +
                 ', height=' + ( screen.height - 90 ) +
@@ -78,7 +80,6 @@ mw.FullScreenManager.prototype = {
 	*/
 	doFullScreenPlayer: function( callback ) {
 		mw.log("FullScreenManager:: doFullScreenPlayer" );
-
         if( mw.getConfig('EmbedPlayer.NewWindowFullscreen') && !screenfull &&
             !(mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen') && mw.isIpad())){
             this.openNewWindow();
@@ -102,14 +103,9 @@ mw.FullScreenManager.prototype = {
 		this.verticalScrollPosition = (doc.all ? doc.scrollTop : context.pageYOffset);
 		// Add fullscreen class to interface:
 		$interface.addClass( 'fullscreen' );
-		
-		// if overlaying controls add hide show player binding.
-		if( embedPlayer.isOverlayControls() && mw.hasMouseEvents() ){
-			_this.addMouseMoveBinding();
-		}
 
 		// Check for native support for fullscreen and we are in an iframe server
-		if( screenfull && screenfull.enabled(doc) && !mw.isMobileChrome() ) {
+		if( !this.fullScreenApiExcludes() && !mw.isAndroidChromeNativeBrowser() && screenfull && screenfull.enabled(doc) ) {
 			var fullscreenHeight = null;
 			var fsTarget = this.getFsTarget();
 			var escapeFullscreen = function( event ) {
@@ -179,13 +175,19 @@ mw.FullScreenManager.prototype = {
 
 		// Set the original parent page scale if possible:
 		this.orginalParnetViewPortContent = $doc.find( 'meta[name="viewport"]' ).attr( 'content' );
+
+		if( !this.orginalParnetViewPortContent ) {
+			this.orginalParnetViewPortContent = $doc.find('meta[name="viewport"]').attr('content', 'width=device-width, user-scalable=yes');
+		}
+
 		this.orginalTargetElementLayout = {
 			'style' : $target[0].style.cssText,
 			'width' : $target.width(),
 			'height' : $target.height()
 		};
 		mw.log("PlayerControls:: doParentIframeFullscreen> verticalScrollPosition:" + this.verticalScrollPosition);
-		context.scroll(0, 0);
+
+        this.doNativeScroll(context, 0, 0);
 
 		// Make sure the parent page page has a zoom of 1:
 		if( ! $doc.find('meta[name="viewport"]').length ){
@@ -234,7 +236,7 @@ mw.FullScreenManager.prototype = {
 		);
 
 		var updateTargetSize = function() {
-			context.scroll(0, 0);
+            _this.doNativeScroll(context, 0, 0);
 			var innerWidth = context.innerWidth || context.document.documentElement.clientWidth || context.document.body.clientWidth;
 			var innerHeight = context.innerHeight || context.document.documentElement.clientHeight || context.document.body.clientHeight;
 			// mobile android chrome has an off by one bug for inner window size: 
@@ -266,7 +268,9 @@ mw.FullScreenManager.prototype = {
 		var updateSizeByDevice = function() {
 			if ( mw.isAndroid() ) {
 				setTimeout(updateTargetSize, 10);
-			} else {
+			} else if (mw.isIOS8()){
+				setTimeout(updateTargetSize, 500);
+			} else{
 				updateTargetSize();
 			}
 		};
@@ -296,12 +300,18 @@ mw.FullScreenManager.prototype = {
 	 */
 	restoreContextPlayer: function(){
 		var isIframe = mw.getConfig('EmbedPlayer.IsIframeServer' );
-		var
-		_this = this,
-		doc = isIframe ? window['parent'].document : window.document,
-		$doc = $( doc ),
-		$target = $( this.getFsTarget() ),
-		context = isIframe ? window['parent'] : window;
+		var _this = this;
+		var doc = window.document;
+		if (isIframe) {
+			try {
+				doc = window['parent'].document;
+			} catch (e) {
+				mw.log("FullScreenManager:: Security error when accessing window parent document: " + e.message);
+			}
+		}
+		var $doc = $(doc);
+		var $target = $(this.getFsTarget());
+		var context = isIframe ? window['parent'] : window;
 
 		mw.log("FullScreenManager:: restoreContextPlayer> verticalScrollPosition:" + this.verticalScrollPosition );
 
@@ -342,9 +352,27 @@ mw.FullScreenManager.prototype = {
 		} );
 		// Scroll back to the previews position ( in a timeout to allow dom to update )
 		setTimeout( function(){
-			context.scroll( 0, _this.verticalScrollPosition );
+            _this.doNativeScroll( context, 0, _this.verticalScrollPosition );
 		},100)
 	},
+
+    /**
+     * Use correct native browser scroll method in case native method is overriden
+     */
+    doNativeScroll: function(context, top, left){
+        if (context) {
+            $.each(['scroll', 'scrollTo'], function (i, funcName) {
+	            try {
+		            if ($.isFunction(context[funcName])) {
+			            context[funcName](top, left);
+			            return false;
+		            }
+	            } catch (e) {
+		            mw.log("FullScreenManager:: Security error when accessing context: " + e.message);
+	            }
+            });
+        }
+    },
 
 	/**
 	 * Supports hybrid native fullscreen, player html controls, and fullscreen is native
@@ -480,7 +508,7 @@ mw.FullScreenManager.prototype = {
 		}
 	},
 	getDocTarget: function(){
-		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
+		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) && mw.getConfig('EmbedPlayer.IsFriendlyIframe')){
 			return window['parent'].document;
 		} else {
 			return document;
@@ -506,7 +534,7 @@ mw.FullScreenManager.prototype = {
 
 		// Check for native support for fullscreen and support native fullscreen restore
 		var docTarget = this.getDocTarget();		
-		if ( screenfull && screenfull.enabled(docTarget) ) {
+		if ( !this.fullScreenApiExcludes() && screenfull && screenfull.enabled(docTarget) ) {
 			screenfull.exit(docTarget);
 		}
 
@@ -520,38 +548,11 @@ mw.FullScreenManager.prototype = {
 		$( embedPlayer ).trigger( 'onCloseFullScreen' );
 	},
 
-	addMouseMoveBinding:function(){
-		var _this = this;
-		// Bind mouse move in interface to hide control bar
-		_this.mouseMovedFlag = false;
-		var oldX =0, oldY= 0;
-		_this.embedPlayer.getInterface().mousemove( function(event){
-			// debounce mouse movements
-			if( Math.abs( oldX - event.pageX ) > 4 ||  Math.abs( oldY - event.pageY ) > 4 ){
-				_this.mouseMovedFlag = true;
-			}
-			oldX = event.pageX;
-			oldY = event.pageY;
-		});
-
-		// Check every 2 seconds reset flag status if controls are overlay
-		var checkMovedMouse = function(){
-			if( _this.isInFullScreen() ){
-				if( _this.mouseMovedFlag ){
-					_this.mouseMovedFlag = false;
-					_this.embedPlayer.triggerHelper( 'showPlayerControls' );
-					// Once we move the mouse keep displayed for 4 seconds
-					setTimeout( checkMovedMouse, 4000 );
-				} else {
-					// Check for mouse movement every 250ms
-					_this.embedPlayer.triggerHelper( 'hidePlayerControls' );
-					setTimeout( checkMovedMouse, 250 );
-				}
-				return;
-			}
-		};
-		// start monitoring for moving mouse
-		checkMovedMouse();
+	fullScreenApiExcludes: function(){
+		if (mw.isSilk()){
+			return true;
+		}
+		return false;
 	}
 
 };

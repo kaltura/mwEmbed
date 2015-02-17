@@ -43,6 +43,13 @@
 				$( '<textarea />' )
 					.attr( 'id', 'flagComments' )
 					.css({'width': '95%', 'height': '50px', 'margin-top': '5px'}),
+				$('<div/>' ).append(
+				$('<button />')
+					.addClass( 'ui-state-default ui-corner-all copycode' )
+					.text("Cancel")
+					.click(function(){
+						_this.closeModal();
+					}),
 				$( '<button />' )
 					.addClass( 'ui-state-default ui-corner-all copycode' )
 					.text( 'Submit' )
@@ -51,7 +58,7 @@
 							'flagType': $( '#flagType' ).val(),
 							'flagComments': $( '#flagComments' ).val()
 						});
-					})
+					}) )
 			);
 
 			var $moderationScreen = $( '<div />' ).append($header, $moderationMessage );
@@ -64,7 +71,15 @@
 				}
 			};
 
-			this.getPlayer().layoutBuilder.displayMenuOverlay( $moderationScreen, closeCallback );
+			this.showModal($moderationScreen, closeCallback);
+		},
+		showModal: function(screen, closeCallback){
+			this.getPlayer().disablePlayControls();
+			this.getPlayer().layoutBuilder.displayMenuOverlay( screen, closeCallback );
+		},
+		closeModal: function(){
+			this.getPlayer().enablePlayControls();
+			this.getPlayer().layoutBuilder.closeMenuOverlay();
 		},
 		submitFlag: function(flagObj) {
 			var _this = this;
@@ -90,7 +105,7 @@
 								.text( 'Done' )
 								.click(function() {
 									_this.getPlayer().triggerHelper( 'onEnableKeyboardBinding' );
-									_this.getPlayer().layoutBuilder.closeMenuOverlay();
+									_this.closeModal();
 								})
 						)
 					);

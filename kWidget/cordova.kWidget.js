@@ -9,7 +9,7 @@
 /**
  * Cordova kWidget lib
  */
-(function(kWidget){ "use strict"
+(function(kWidget){ "use strict";
 	if( !kWidget ){
 		return ;
 	}
@@ -17,10 +17,11 @@
 
 		if ( kWidget.isAndroid() ){
 			var executeCordova;
+
 			cordova.define("cordova/plugin/NativeComponentPlugin",
 				function(require, exports, module) {
 					executeCordova = require("cordova/exec");
-					//executeCordova( null, null, "cordovaInitialized", [], "NativeComponentPlugin" );
+					executeCordova( null, null, "NativeComponentPlugin", "cordovaInitialized", [] );
 				});
 			//This is mandatory for supporting cordova plugins
 			if (!window.plugins) {
@@ -43,17 +44,23 @@
 					kWidget.log( "Error could not find target id, for cordova embed" );
 				}
 
-				this.target.style.backgroundColor = "transparent";
+				this.target.style.backgroundColor += "transparent";
+
 				//kWidget.getIframeRequest( targetId, settings ) - we get it encoded so we decode before encoding whole url again
 				this.iframeUrl = kWidget.getIframeUrl() + '?' + decodeURIComponent(kWidget.getIframeRequest( targetId, settings ));
 				this.iframeUrl += '#' + JSON.stringify( window.preMwEmbedConfig );
+				this.iframeUrl = this.iframeUrl.replace(/'/g,"");
 				this.addApi( this.target );
+
+				// Setting kplayer id for jsCallbackReady
+				this.setKPlayerId( targetId );
 
 				if ( settings.playOnlyFullscreen )  {
 					kWidget.addThumbCssRules();
+					var thumbUrl = mw.getConfig('EmbedPlayer.BlackPixel') || kWidget.getKalturaThumbUrl( settings );
 					this.target.innerHTML = '' +
 						'<div style="position: relative; width: 100%; height: 100%;">' +
-						'<img class="kWidgetCentered" src="' + kWidget.getKalturaThumbUrl( settings ) + '" >' +
+						'<img src="' + thumbUrl  + '" >' +
 						'<div class="kWidgetCentered kWidgetPlayBtn" ' +
 						'id="' + targetId + '_playBtn"' +
 						'></div></div>';
@@ -110,19 +117,20 @@
 				this.exec( "sendNotification", [ notificationName, JSON.stringify( notificationData ) ], "NativeComponentPlugin" );
 			},
 			addJsListener: function( notificationName, callbackName ){
-				this.exec( "addJsListener", [ notificationName, callbackName ] );
+				this.exec( "addJsListener", [ notificationName, callbackName ], "NativeComponentPlugin" );
 			},
 			removeJsListener: function( notificationName, callbackName ){
-				this.exec( "removeJsListener", [ notificationName, callbackName ] );
+				this.exec( "removeJsListener", [ notificationName, callbackName ], "NativeComponentPlugin" );
 			},
 			asyncEvaluate: function( expression, callbackName ) {
-				this.exec( "asyncEvaluate", [ expression, callbackName ] );
+				this.exec( "asyncEvaluate", [ expression, callbackName ], "NativeComponentPlugin" );
 			},
 			setKDPAttribute: function( host, prop, value ) {
-				this.exec( "setKDPAttribute", [ host, prop, value ] );
+				this.exec( "setKDPAttribute", [ host, prop, value ], "NativeComponentPlugin" );
 			},
 			drawPlayer: function( target , openInFullscreen ){
 				var isFullscreen = 0;
+
 				if ( openInFullscreen ) {
 					isFullscreen = 1;
 				}
@@ -132,7 +140,11 @@
 				var y = videoElementRect.top + document.body.scrollTop;
 				var w = videoElementRect.right - videoElementRect.left;
 				var h = videoElementRect.bottom - videoElementRect.top;
+
 				this.exec( "drawVideoNativeComponent", [ x, y, w, h, isFullscreen ], "NativeComponentPlugin" );
+			},
+			setKPlayerId: function( targetId ){
+				this.exec( "setKPlayerId", [ targetId ], "NativeComponentPlugin" );
 			}
 		};
 	}

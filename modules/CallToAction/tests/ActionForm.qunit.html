@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Call to Action - Form</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<script type="text/javascript">	
+function jsKalturaPlayerTest( videoId ){
+	
+	// Name this module
+	module( "Action form player" );
+
+	var $iframe = $('#' + videoId + '_ifp').contents();
+	var iframeContext = window.frames[ videoId + '_ifp'];
+	var kdp = $('#' + videoId )[0];
+	
+	asyncTest( "Iframe in DOM", function() {
+		ok( $('#' + videoId + '_ifp').length , 'iframe found' );
+		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
+		start();
+	});
+	
+	var mockData = {
+		"name": "John",
+		"email": "john@company.com",
+		"phone": "00099910"
+	};
+
+	function fillInFields( $form ) {
+		$.each(mockData, function(key, value){
+			$form.find('input[name="' + key + '"]').val( value );
+		});
+		$form.find('input[type=submit]').click();
+	}
+
+	asyncTest("Submit Form", function(){
+		kalturaQunitWaitForPlayer(function(){
+			
+			window[ 'kTestFormSubmission' ] = function(formData) {
+				ok( formData.length, "Recived 'actionFormSubmitted' event " );
+				equal( formData[0].value, "John", "Form data name is 'John'" );
+				equal( formData[1].value, "john@company.com", "Form data email is 'john@company.com'" );
+				start();
+			};
+
+			kdp.addJsListener( "actionFormSubmitted", "kTestFormSubmission" );
+			var $form = $iframe.find('.actionForm').find('form');
+			
+			fillInFields($form);
+		});
+	});
+}
+</script>
+</head>
+<body>
+<h2>Call to Action - Collect Form</h2>
+<br />
+<div id="kdp" style="width:600px;height:370px;float:left"></div>
+<script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+<script>
+	kWidget.featureConfig({
+		'targetId': 'kdp',
+		'wid': '_811441',
+		'uiconf_id' : '11824841',
+		'entry_id' : '1_3fxkoyn2',
+		'flashvars': {
+			'actionForm': {
+				plugin: true,
+				displayOn: 'start',
+				description: 'For more information, please enter your details and we will get back to you'
+			}
+		}
+	});
+</script>
+
+</body>
+</html>

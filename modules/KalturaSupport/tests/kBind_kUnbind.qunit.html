@@ -199,13 +199,13 @@ kWidget.addReadyCallback( function( playerId ){
 	kdp.kBind( &quot;doPlay.test&quot;, function(){ //notice the .test postfix namespaces the event)
 		console.log(&quot;play &quot; + foo); // will log &quot;play bar&quot;
 		//Now we can unbind our .test postfix via kUnbind ( only will log play once )
-		kdp.kUbnind('.test')
+		kdp.kUnbind('.test')
 	});
 });
 	</pre>
 	
 	<br />
-	<div id="playbackModeSelector"></div>
+	
 	<div id="myVideoTarget" style="width: 400px; height: 330px"></div>
 	<script>
 		kWidget.embed({

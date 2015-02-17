@@ -28,10 +28,6 @@
 					'flashvars': {
 						'bumper':{
 							'plugin': true,
-							'relativeTo':'video', //this is for flash support
-							'position': 'before', //this is for flash support
-				 			'includeInLayout': false, //this is for flash support
-				 			
 							'bumperEntryID':"0_5diu7kzg",
 							'clickurl': "http://www.kaltura.com",
 							'lockUI': "true",
@@ -42,6 +38,21 @@
 				}
 			);
 		</script>
+		<script>
+			// add some event listerners and log to console:
+			kWidget.addReadyCallback(function( playerId ){
+				var kdp = $('#'+playerId )[0];
+				var $log = $('#eventlog');
+				var events = ['adStart', 'prerollStarted', 'preSequenceStart', 'preSequenceComplete'];
+				$.each( events, function(na, eventName){
+					kdp.kBind(eventName, function(){
+						$log.append( eventName + "\n");
+					});
+				});
+			});
+		</script>
+		<h3> Events:</h3>
+		<textarea id="eventlog" style="width:600px;height:200px;"></textarea>
 	</body>
 </html>
 

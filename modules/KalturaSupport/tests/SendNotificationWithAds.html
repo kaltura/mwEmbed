@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+	<title>Send Notifications with VAST 3.0 Ad Pods</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+  </head>
+  <body>
+	<h1>
+	VAST 3.0 Ad Pods
+	</h1>
+	<br>
+<div id="myVideoTarget" style="width:400px;height:330px;"></div>
+<h3>Ad Pods:</h3>
+This demonstrates the VAST 3.0 support for sequential ads as defined in the VAST 3 spec as <b>ad pods</b>. This demo features two prerolls from vast3 adPods schema. It also includes an Overlay ad.<br>The 3 buttons below demonstrates controlling the player during ad playback using the sendNotification API.
+<br>
+<img src="resources/adpods_iba-net.png" style="max-width:400px">
+<br>
+See the <a href="http://www.iab.net/media/file/VASTv3.0.pdf">Vast 3.0 spec</a> for more details.
+<script>
+	kWidget.featureConfig({
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '13306622',
+		'entry_id' : '0_uka1msg4',
+		'flashvars': {
+			'vast': {
+				//'plugin' : true,
+				'numPreroll':"1", 
+				'prerollInterval':"1",
+				'prerollStartWith':"1",
+				'prerollUrl':"http://projects.kaltura.com/MichalR/vast3_demo.xml", 
+				'overlayStartAt':"20",
+				'overlayInterval':"300",
+				'overlayUrl':"http://projects.kaltura.com/MichalR/vast_overlay.xml",
+				'numPostroll':"1",
+			//	'postrollInterval':"1",
+			//	'postrollStartWith':"1",
+			//	'postrollUrl':"http://projects.kaltura.com/mdale/hotelVastAd.xml",
+				'preSequence':"1",
+				'postSequence':"1",
+				'timeout':"4"
+			},
+			'adsOnReplay':true
+		}
+	})
+
+	var kdp = document.getElementById("myVideoTarget");
+
+	function pause(){
+		kdp.sendNotification( 'doPause' ) // pause the ad
+	}
+
+	function play(){
+		kdp.sendNotification( 'doPlay' ) // resume playback
+	}
+
+	function volume(){
+		kdp.sendNotification( 'changeVolume',0.5 ) // set volume to 50%
+	}
+
+</script>
+    <br>
+	<button onclick="play()">Play</button>
+	<button onclick="pause()">Pause</button>
+	<button onclick="volume()">Set Volume</button>
+  </body>
+</html>

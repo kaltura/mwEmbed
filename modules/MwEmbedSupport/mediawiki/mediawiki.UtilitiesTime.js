@@ -80,7 +80,7 @@
 			seconds += parseInt( timeMeasurements.seconds, 10 );
 		}
 		if( timeMeasurements.milliseconds ){
-			seconds += parseInt( timeMeasurements.milliseconds, 10 ) / 1000;
+			seconds += parseFloat(timeMeasurements.milliseconds);
 		}
 		return seconds;
 	};
@@ -105,7 +105,12 @@
 		var sec = 0;
 
 		times = npt_str.split( ':' );
-		if ( times.length == 3 ) {
+		if ( times.length == 4 ) {
+			sec = times[2] + '.' + times[3];
+			min = times[1];
+			hour = times[0];
+		}
+		else if ( times.length == 3 ) {
 			sec = times[2];
 			min = times[1];
 			hour = times[0];

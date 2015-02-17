@@ -27,8 +27,10 @@
 				});
 			});
 			
-			this.bind('onChangeMediaDone playerReady onpause onEndedDone', function(){
-				_this.show();
+			this.bind('onChangeMediaDone playerReady onpause onEndedDone onRemovePlayerSpinner', function(){
+				if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
+					_this.show();
+				}
 			});
 			this.bind('playing AdSupport_StartAdPlayback onAddPlayerSpinner', function(){
 				_this.hide();
@@ -66,6 +68,8 @@
 			}
 
 			event.preventDefault();
+			event.stopPropagation();
+			this.getPlayer().triggerHelper( 'goingtoplay' );
 			this.getPlayer().sendNotification('doPlay');
 		},
 		onEnable: function(){

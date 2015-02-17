@@ -27,6 +27,22 @@ Can't find what your looking for in the documentation, ran into an issue check t
 
 [Release Notes ](http://html5video.org/wiki/Kaltura_HTML5_Release_Notes) documents every release and provides production, staging and zip downloads. 
 
+## Libraries and sub-projects
+
+### Kaltura developed
+
+* [Chromless flash kdp](https://github.com/kaltura/chromeless-kdp) 
+* [Chromeless sliverlight](https://github.com/kaltura/chromeless-silverlight)
+* [OSMF HLS for flash](https://github.com/kaltura/HLS-OSMF) -- repo not yet public
+* Android HLS player -- repo not yet public
+* [Player Studio](https://github.com/kaltura/player-studio) -- visual player config JSON editor 
+
+### External libraries 
+
+* [Resource Loader](https://www.mediawiki.org/wiki/ResourceLoader)
+* [jQuery](http://jquery.com/) 
+* [bootstrap](http://getbootstrap.com/) -- for documentation pages
+
 ## Library Features
 
 The [kaltura player feature hub](http://player.kaltura.com/docs/) hosts most of the libraries features and associated test files.  

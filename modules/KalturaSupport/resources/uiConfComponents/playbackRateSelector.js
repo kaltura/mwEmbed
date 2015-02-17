@@ -17,17 +17,26 @@
 
 		isSafeEnviornment: function(){
 			var _this = this,
-				deferred = $.Deferred();
-
+			deferred = $.Deferred();
+			if ( mw.isMobileDevice() ){
+				return false;
+			}
 			this.bind('playerReady', function(){
-				deferred.resolve(!!_this.getPlayer().playbackRate);
+				// check if we have sources that can play with Native library:
+				if (_this.embedPlayer.mediaElement.getNativePlayableSources().length > 0){
+					deferred.resolve(document.createElement( "video" ).playbackRate);
+				}
 			});
 			return deferred.promise();
 		},
 
 		setup: function(){
-			this.currentSpeed = this.getConfig('defaultSpeed') || 1;
+			this.currentSpeed = Math.abs(this.getConfig('defaultSpeed')) || 1;
 			this.speedSet = this.getConfig('speeds').split(',');
+			var i;
+			for ( i=0; i < this.speedSet.length; i++) {
+				this.speedSet[i] = Math.abs( this.speedSet[i] );
+			}
 			this.addBindings();
 		},
 
@@ -35,6 +44,11 @@
 			var _this = this;
 			this.bind( 'playerReady', function(){
 				_this.buildMenu();
+			});
+			this.bind( 'onRemovePlayerSpinner', function(){
+				 if ( _this.getPlayer().getPlayerElement() ) {
+					 _this.getPlayer().getPlayerElement().playbackRate = _this.currentSpeed;
+				 }
 			});
 			this.bind( 'playbackRateChangeSpeed', function(e, arg ){
 				_this.setSpeedFromApi( arg );
@@ -115,9 +129,55 @@
 			});
 		},
 		setSpeed: function( newSpeed ){
+			var _this = this;
 			this.log('Set Speed to: ' + newSpeed);
 			this.currentSpeed = newSpeed;
-			this.getPlayer().getPlayerElement().playbackRate = newSpeed;
+			// check if we need to switch interfaces: 
+			if( this.getPlayer().instanceOf != 'Native' ){
+				this.hanldePlayerInstanceUpdate( newSpeed );
+				return ;
+			}
+			this.updatePlaybackRate( newSpeed );
+		},
+		hanldePlayerInstanceUpdate: function( newSpeed ){
+			var _this = this;
+			var currentPlayTime = this.getPlayer().currentTime;
+			var wasPlaying = this.getPlayer().isPlaying();
+			var source = this.getPlayer().mediaElement.autoSelectNativeSource();
+			var player = mw.EmbedTypes.getMediaPlayers().getNativePlayer( source.mimeType );
+			this.getPlayer().selectPlayer ( player );
+			this.getPlayer().updatePlaybackInterface( function(){
+				// update playback rate: 
+				_this.updatePlaybackRate( newSpeed );
+				// issue a seek if given new seek time: 
+				if( currentPlayTime == 0 ){
+					return ;
+				}
+				// show loading spinner if we need to seek
+				_this.getPlayer().addPlayerSpinner();
+				// don't trigger events in restoring play state
+				_this.getPlayer().stopEventPropagation();
+				_this.getPlayer().setCurrentTime( currentPlayTime, function(){
+					// reflect pause state
+					if( wasPlaying ){
+						_this.getPlayer().play();
+					}else {
+						_this.getPlayer().pause();
+					}
+					// restore event propagation: 
+					_this.getPlayer().restoreEventPropagation();
+				});
+			});
+		},
+		/**
+		 * updatePlaybackRate issues a call to native player element to update playbackRate to target speed.
+		 * @param {float} newSpeed target playback rate in float 1.0 = normal playback rate. 
+		 */
+		updatePlaybackRate: function( newSpeed ){
+			// workaround for Firefox and IE - changing playbackRate before media loads causes player to stuck
+			if (this.getPlayer().mediaLoadedFlag){
+				this.getPlayer().getPlayerElement().playbackRate = newSpeed;
+			}
 			this.getBtn().text( newSpeed + 'x' );
 			this.getPlayer().triggerHelper( 'updatedPlaybackRate', newSpeed);
 		},

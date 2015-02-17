@@ -19,7 +19,10 @@ class UiConfResult {
 	var $noCache = null;
 	var $isPlaylist = null;
 	var $isJsonConfig = null;	
-	
+
+	// These properties are handled differently, we don't want to resolve them automatically
+	var $propsToIgnoreWhenResolvingResource = array('templatePath');
+
 	function __construct( $request, $client, $cache, $logger, $utility ) {
 
 		if(!$request)
@@ -59,7 +62,7 @@ class UiConfResult {
 		// Get confFilePath flashvar
 		$confFilePath = $this->request->getFlashvars('confFilePath');
 
-		$jsonConfig =$this->request->get('jsonConfig');
+		$jsonConfig =$this->request->getFlashvars('jsonConfig');
 
 		// If no uiconf_id .. throw exception
 		if( !$this->request->getUiConfId() && !$confFilePath && !$jsonConfig ) {
@@ -70,7 +73,8 @@ class UiConfResult {
 		if( $confFilePath ) {
 			$this->loadFromLocalFile( $confFilePath );
 		} else  if ($jsonConfig){
-			$this->uiConfFile = stripslashes( html_entity_decode($jsonConfig));
+			// convert to string 
+			$this->uiConfFile = json_encode( $jsonConfig );
 		} else {
 			// Check if we have a cached result object:
 			$cacheKey = $this->getCacheKey();
@@ -83,8 +87,16 @@ class UiConfResult {
 				$this->logger->log('KalturaUiConfResult::loadUiConf: [' . $this->request->getUiConfId() . '] Cache uiConf xml to: ' . $cacheKey);
 				$this->cache->set( $cacheKey, $this->uiConfFile );
 			} else {
-				throw new Exception( $this->error );
+				if (isset($this->error)){
+					throw new Exception( $this->error );
+				}else{
+					throw new Exception("An error occurred when trying to retrieve uiConfFile");
+				}
 			}
+		}
+
+		if( is_null($this->uiConfFile) || $this->uiConfFile == "null" ) {
+			throw new Exception("uiConf is empty");
 		}
 
 		if( $this->isJson() ) {
@@ -169,7 +181,7 @@ class UiConfResult {
 				$override = false;
 
 				//if the value is array - we got an object with the key and value =>translate it
-				if ( is_array( $value ) && isset( $value["key"] ) && isset( $value["overrideFlashvar"] ) ) {
+				if ( is_array( $value ) && !empty( $value["key"] ) && isset($value["value"]) && isset( $value["overrideFlashvar"] ) ) {
 					$key = $value["key"];
 					if ( $value["overrideFlashvar"] ) {
 						$override = true;
@@ -202,10 +214,19 @@ class UiConfResult {
 			'keyboardShortcuts' => array(),
 			'liveCore' => array(),
 			'liveStatus' => array(),
-			'liveBackBtn' => array()
+			'reportError' => array(),
+			"sideBarContainer" => array(),
+			"liveAnalytics"=>array()
 		);
 
 		$playerConfig['plugins'] = array_merge_recursive($playerConfig['plugins'], $basePlugins);
+
+		//scan the plugins attributes and replace tokens
+		foreach ($playerConfig['plugins']  as $key=>$value){
+			if ( is_array($value)) {
+				$this->walkThroughPluginAttributes($value, $playerConfig['plugins'][$key]);
+			}
+		}
 		$this->playerConfig = $playerConfig;
 		
 		/*
@@ -214,6 +235,28 @@ class UiConfResult {
 		exit();
 		*/
 		
+	}
+
+	private function walkThroughPluginAttributes( $attrArray ,&$refrencePathInObject ){
+		foreach ($attrArray as $attrKey=>$attrValue) {
+			if ( is_array( $attrValue ) ) {
+				$this->walkThroughPluginAttributes( $attrValue , $refrencePathInObject[$attrKey] );
+			}
+			else {
+			    if( in_array($attrKey, $this->propsToIgnoreWhenResolvingResource) ) continue;
+			    $refrencePathInObject[$attrKey] = $this->resolveCustomResourceUrl( $attrValue );
+			}
+		}
+	}
+
+	private function resolveCustomResourceUrl( $url ){
+		global $wgHTML5PsWebPath;
+		if ( isset($url) &&  is_string($url) ){
+			if( strpos( $url, '{html5ps}' ) === 0  ){
+				$url = str_replace('{html5ps}', $wgHTML5PsWebPath, $url);
+			}
+		}
+		return $url;
 	}
 	
 	/* 
@@ -278,8 +321,7 @@ class UiConfResult {
 			// http://html5video.org/wiki/Kaltura_HTML5_Configuration
 			if( $pluginId == 'Kaltura' || 
 				$pluginId == 'EmbedPlayer' || 
-				$pluginId == 'KalturaSupport' || 
-				$pluginId == 'mediaProxy'
+				$pluginId == 'KalturaSupport'
 			){
 				continue;
 			}
@@ -316,9 +358,9 @@ class UiConfResult {
 		$flashVars = $this->request->getFlashVars();
 		if( $flashVars ) {
 			foreach( $flashVars as $fvKey => $fvValue) {
-				$fvSet = @json_decode( stripslashes( html_entity_decode( $fvValue ) ) ) ;
+				$fvSet = @json_decode( $fvValue ) ;
 				// check for json flavar and set acordingly
-				if( is_object( $fvSet ) ){
+				if( is_object( $fvSet ) || is_array( $fvSet ) ){
 					foreach( $fvSet as $subKey => $subValue ){
 						$vars[ $fvKey . '.' . $subKey ] =  $this->utility->formatString( $subValue );
 					}
@@ -345,8 +387,7 @@ class UiConfResult {
 			$pluginAttribute = $pluginKeys[1];
 			 if( $pluginId == 'Kaltura' ||
 					$pluginId == 'EmbedPlayer' ||
-					$pluginId == 'KalturaSupport' ||
-					$pluginId == 'mediaProxy'
+					$pluginId == 'KalturaSupport'
 					){
 						continue;
 					}
@@ -389,7 +430,7 @@ class UiConfResult {
 			$plugins = array();
 			$vars = array();
 
-			$uiConfPluginNodes = array( 'mediaProxy', 'strings' );
+			$uiConfPluginNodes = array( 'strings' );
 
 			// Get all plugins elements
 			if( $this->uiConfFile ) {
@@ -492,6 +533,7 @@ class UiConfResult {
 		$plugins = array(
 			"topBarContainer" => array(),
 			"controlBarContainer" => array(),
+			"sideBarContainer" => array(),
 			"scrubber" => array(),
 			"largePlayBtn" => array(),
 			"playHead" => array(),
@@ -502,7 +544,7 @@ class UiConfResult {
 			"keyboardShortcuts" => array(),
 			"liveCore" => array(),
 			"liveStatus" => array(),
-			"liveBackBtn" => array()
+			"reportError" => array()
 		);
 
 		$closedCaptionPlugin = array(
@@ -761,9 +803,10 @@ class UiConfResult {
 		if( $this->request->getEntryId() ) {
 			$addtionalData['entryId'] = $this->request->getEntryId();
 		}
-		// Add KS to uiVars
-		$this->playerConfig['vars']['ks'] = $this->client->getKS();
-
+		// Add KS to uiVars only if part of request: 
+		if( $this->request->hasKS() ){
+			$this->playerConfig['vars']['ks'] = $this->client->getKS();
+		}
 		return array_merge($addtionalData, $this->playerConfig);
 	}
 	// Check if the requested url is a playlist

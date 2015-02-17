@@ -1,0 +1,107 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Omniture on page SiteCatalyst 15 + DoubleClick Ads</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	<script type="text/javascript">	
+	//Enable uiconf js which includes external resources ( not needed if resources are defined in uiConf )
+	mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
+	
+	function jsKalturaPlayerTest( videoId ){
+		// Name this module
+		module( "Omniture page test" );
+	}
+	</script>
+	<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+	<script type="text/javascript" src="../../../modules/KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Omniture sCode Config, SiteCatalyst 15 + DoubleClick Ads</h2>
+<div id="kaltura_player" style="width:500px;height:310px;"></div>
+<div id="kdoc-more-desc">
+<p>This test page highlights DoubleClick ad tracking as well. For each ad the following events are tracked:</p>
+<ul>
+	<li><b>s.Media.openAd</b>: When the ad loads</li>
+	<li><b>s.Media.play</b>: When the ad starts playing</li>
+	<li><b>s.Media.complete</b>: When the ad playback is done</li>
+</ul>
+<p>Event parameters include additional ad information such as ad ID, ad system, sequence type (preroll, midroll, postroll) and ad index.</p>
+</div>
+
+
+<script>
+kWidget.featureConfig({
+	'targetId' : 'kaltura_player',
+	'wid': '_243342',
+	'uiconf_id' : '13306622',
+	'entry_id' : '0_uka1msg4',
+	'flashvars': {
+		'streamerType': 'hdnetwork',
+		'omnitureOnPage' :{
+			'plugin': true,
+			'path' : "/content/uiconf/ps/kaltura/kdp/v3.6.9/plugins/facadePlugin.swf",
+			'relativeTo': 'video',
+			'position': 'before',
+			'includeInLayout':false,
+
+			'loadInIframe':true,
+			
+			'onPageJs1': "{onPagePluginPath}/omnitureOnPage/resources/omnitureOnPage.js",
+			
+			's_codeUrl':  "resources/adobe_sample_s_code.js",
+			's_codeVarName': 's',
+			'trackEventMonitor': 'omnitureTrackingLog',
+
+			'monitorEventInterval': 10,
+			
+			'customEvents': "openFullScreen,closeFullScreen",
+			'openFullScreenEvent': "event50",
+			'openFullScreenEvar1': "eVar50",
+			'openFullScreenEvar1Value': "{mediaProxy.entry.id}",
+			'openFullScreenEvar2': "eVar51",
+			'openFullScreenEvar2Value': "{mediaProxy.entry.name}",
+			'openFullScreenProp1': "prop50",
+			'openFullScreenProp1Value': "{configProxy.flashvars.referer}",
+			'closeFullScreenEvent': "event40",
+			'closeFullScreenEvar1': "eVar40",
+			'closeFullScreenEvar1Value': "{mediaProxy.entry.id}",
+			'closeFullScreenEvar2': "eVar41",
+			'closeFullScreenEvar2Value': "{mediaProxy.entry.name}",
+			'closeFullScreenProp1': "prop40",
+			'closeFullScreenProp1Value': "{configProxy.flashvars.referer}",
+
+			'additionalEvarsAndProps': "eVar51,prop44",
+			'additionalEvarsAndPropsValues': "{mediaProxy.entry.creatorId},{mediaProxy.entry.createdAt}"
+		},
+		'doubleClick':{
+		 'plugin':true,
+		 //'ForceFlash': true,
+		 'path' : 'http://cdnbakmi.kaltura.com/content/uiconf/ps/veria/kdp3.9.1/plugins/doubleclickPlugin.swf',
+		 //'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dlinear',
+		 'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=%2F3510761%2FadRulesSampleTags&ciu_szs=160x600%2C300x250%2C728x90&cust_params=adrule%3Dpremidpostpodandbumpers&impl=s&gdfp_req=1&env=vp&ad_rule=1&vid=47570401&cmsid=481&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]',
+		 'trackCuePoints': false,
+		 'disableCompanionAds' : false,
+		 'debugMode':true
+		 }
+	}
+});
+</script>
+
+
+<br>
+<p>Event log for Omniture dispatch events. You can also monitor your network console.  </p>
+<textarea id="omnitureTracking" style="width:700px;height:250px;"></textarea>
+<script>
+window['omnitureTrackingLog'] = function( eventStr, eventPayload ){
+	$t = $('#omnitureTracking');
+	$t.append( eventStr );
+	if( eventPayload ){
+		$t.append( ": " + JSON.stringify( eventPayload ) );
+	}
+	$t.append( "\n" );
+}
+</script>
+</body>
+</html>

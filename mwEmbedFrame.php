@@ -58,7 +58,7 @@ class mwEmbedFrame {
 	);
 	var $playerIframeId = 'iframeVid';
 	var $debug = false;
-				var $theme = 'kdark';
+	var $theme = 'kdark';
 				
 	
 	// When used in direct source mode the source asset.
@@ -179,9 +179,6 @@ class mwEmbedFrame {
 			//Set some iframe embed config:
 			// We can't support full screen in object context since it requires outer page DOM control
 			mw.setConfig( 'EmbedPlayer.EnableFullscreen', false );
-
-			// Enable the iframe player server:
-			mw.setConfig( 'EmbedPlayer.EnableIframeApi', true );
 
 			mw.ready(function(){
 				// Bind window resize to reize the player: 

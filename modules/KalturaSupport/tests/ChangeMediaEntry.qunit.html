@@ -52,12 +52,12 @@ kWidget.addReadyCallback(function(videoId){
 	// change media run at the start of the changeMedia sequence
 	kdp.kBind('changeMedia', function(data){
 		if( data.entryId ){
-			$("#changeLog").append( "EntryId: " + data.entryId );
+			$("#changeLog").append( "\nEntryId: " + data.entryId + "\n\n");
 		}
 	})
 	// entry ready is run once the entry data has been loaded
 	kdp.kBind('entryReady', function(){
-		$("#changeLog").append( " Name: " + kdp.evaluate('{mediaProxy.entry.name}') + "\n" );
+		$("#changeLog").append( "Name: " + kdp.evaluate('{mediaProxy.entry.name}') );
 	})
 });
 </script>
@@ -89,16 +89,22 @@ Change Media Log: <pre style="max-width:800px" id="changeLog"></pre>
 <input class="changeMedia" type="button" data-entryId="404" value="Missing Entry" />
 <input class="changeMedia" type="button" data-entryId="0_swup5zao" value="Entry 1 fish" />
 <input class="changeMedia" type="button" data-entryId="0_wm82kqmm" value="Entry 2 electric sheep" />
-<input class="changeMedia" type="button" data-entryId="0_59x7sgqo" value="Entry 3 Kaltura logo" />
+<!--  <input class="changeMedia" type="button" data-entryId="0_59x7sgqo" value="Entry 3 Kaltura logo" />  -->
 <br><br>
-<div id="playbackModeSelector"></div>
-<div id="kaltura_player" style="height:333px;width:400px"></div>
 
+<div id="kaltura_player" style="height:333px;width:400px"></div>
 <script>
-	kWidget.embed( 'kaltura_player', {
-		'wid' : '_243342',
-		'uiconf_id': '12905712'
-	});
+	function doEmbedPlayer( autoPlay ){
+		kWidget.embed( 'kaltura_player', {
+			'wid' : '_243342',
+			'uiconf_id': '12905712',
+			'entry_id': '0_swup5zao',
+			'flashvars': {
+				'autoPlay': !! autoPlay
+			}
+		});
+	}
+	doEmbedPlayer();
 </script>
 
 </body>

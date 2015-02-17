@@ -1,3 +1,4 @@
+
 function getBootStrapPath(){
 	var scripts = document.getElementsByTagName('script');
 	for(var i=0; i < scripts.length ; i++ ){
@@ -38,10 +39,11 @@ if( !window.QUnit ){
 	);
 	// check if we should enable google analytics: 
 	// TODO remove dependency on mw
-	if( typeof mw != 'undefined' && mw.getConfig( 'Kaltura.PageGoogleAalytics' ) ) {
+	if( typeof mw != 'undefined' && mw.getConfig( 'Kaltura.PageGoogleAnalytics' ) ) {
 		var _gaq = _gaq || [];
-		_gaq.push(['_setAccount', mw.getConfig( 'Kaltura.PageGoogleAalytics' ) ]);
+		_gaq.push(['_setAccount', mw.getConfig( 'Kaltura.PageGoogleAnalytics' )]);
 		_gaq.push(['_trackPageview']);
+
 		(function() {
 			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
 			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
@@ -84,16 +86,27 @@ try{
 // clock player render time
 var kdocPlayerStartTime = new Date().getTime();
 if( typeof kWidget != 'undefined' && kWidget.addReadyCallback ){
-	var alreadyRun = false;
+	var kdocTimePerPlayer = {};
 	kWidget.addReadyCallback( function( pId ){
-		$( '#' + pId )[0].kBind("mediaReady.pTimeReady", function(){
-			if( alreadyRun ){
+		$( '#' + pId )[0].kBind("playerReady.pTimeReady", function(){
+			if( kdocTimePerPlayer[ pId] ){
 				return ;
 			}
 			alreadyRun = true;
+			var readyTime = ( new Date().getTime() - kdocPlayerStartTime )/1000;
+			var fileName = location.pathname.split('/').pop();
+			// trigger the google track event if set:: 
+			if( window['_gaq'] ){
+				// send feature page load time event:
+				_gaq.push(['_trackEvent', 'FeaturePage', 'PlayerLoadTimeMs', fileName, readyTime*1000]);
+			}
 			// note kUnbind seems to unbind all mediaReady
 			//$( '#' + pId )[0].kUnbind(".pTimeReady");
-			$('body').append( '<div class="kdocPlayerRenderTime" style="clear:both;"><span style="font-size:11px;">player ready in:<i>' + ( new Date().getTime() - kdocPlayerStartTime )/1000 + '</i> seconds</span></div>');
+			kdocTimePerPlayer[ pId ] = ( new Date().getTime() - kdocPlayerStartTime )/1000;
+			// note kUnbind seems to unbind all mediaReady
+			$( '#' + pId )[0].kUnbind(".pTimeReady");
+			$('body').append( '<div class="kdocPlayerRenderTime" style="clear:both;"><span style="font-size:11px;">' + pId + ' ready in: <i>' + 
+					kdocTimePerPlayer[ pId ] + '</i> seconds</span></div>');
 			if( document.URL.indexOf( 'noparent=') === -1 && parent && parent.sycnIframeContentHeight ){
 				parent.sycnIframeContentHeight();
 			}
@@ -110,6 +123,8 @@ $(document).on('click',  '.kdocUpdatePlayer', function(){
 if( ! localStorage.kdocEmbedPlayer ){
 	localStorage.kdocEmbedPlayer = 'html5';
 }
+// always disable playback-mode selector ( v2 ) 
+// now only pages with disablePlaybackModeSelector set LeadWithHTML5 to false, and require forceMobileHTML5
 if( !window['disablePlaybackModeSelector'] ){
 	// don't set flag if any special properties are set: 
 	if( localStorage.kdocEmbedPlayer == 'html5' && window['mw'] && 
@@ -120,62 +135,10 @@ if( !window['disablePlaybackModeSelector'] ){
 		mw.setConfig('Kaltura.LeadWithHTML5', true);
 	}
 }
-function updatePlaybackModeSelector( $target ){
-	if( window['disablePlaybackModeSelector'] ){
-		return;
-	}
-	if( ! $target ){
-		$target = $('#playbackModeSelector');
-	}
-	$target.empty().append(
-		$('<button>').attr({
-			'type': 'button',
-			'title': "Lead with the HTML5 player"
-		})
-		.addClass('btn left')
-		.append(
-			$('<i>').addClass('kpcicon-html5'),
-			$('<span>').text("HTML5 Player")
-		).click(function(){
-			if( !kWidget.supportsHTML5() ){
-				return ;
-			}
-			localStorage.kdocEmbedPlayer = 'html5';
-			location.reload();
-			return false;
-		}),
-		
-		$('<button>').attr({
-			'href': '#',
-			'title': "Lead with Flash player where available"
-		})
-		.addClass('btn right')
-		.append(
-			$('<i>').addClass('kpcicon-flash'),
-			$('<span>').text( "Flash Player")
-		).click(function(){
-			if( !kWidget.supportsFlash() ){
-				return ;
-			}
-			localStorage.kdocEmbedPlayer = 'flash';
-			location.reload()
-			return false;
-		})
-	)
-	if( !kWidget.supportsHTML5() ){
-		$target.find( '.kpcicon-html5' ).parent().addClass('disabled').attr('title',
-				"HTML5 is not supported on this browser");
-	}
-	if( !kWidget.supportsFlash() ){
-		$target.find( '.kpcicon-flash' ).parent().addClass('disabled').attr('title',
-				"Flash is not supported on this device");
-	}
-	if( localStorage.kdocEmbedPlayer == 'html5' && kWidget.supportsHTML5() ){
-		$target.find( '.kpcicon-html5' ).parent().addClass('active');
-	} else {
-		$target.find( '.kpcicon-flash' ).parent().addClass('active');
-	};
-	return $target;
+// support forceKDPFlashPlayer flag: 
+if( document.URL.indexOf('forceKDPFlashPlayer') !== -1 ){
+	mw.setConfig( 'Kaltura.LeadWithHTML5', false);
+	mw.setConfig( 'EmbedPlayer.DisableVideoTagSupport', true );
 }
 
 // document ready events:
@@ -192,9 +155,6 @@ $(function(){
 		// invoke the pref menu
 		return false;
 	})
-	
-	updatePlaybackModeSelector( $('#playbackModeSelector') );
-	
 	
 	// make code pretty
 	window.prettyPrint && prettyPrint();

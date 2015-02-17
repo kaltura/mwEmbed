@@ -3,27 +3,29 @@
 <html>
 <head>
 	<title> HLSDynamicPlugin Test</title>
-	<script src="../../../resources/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 	<style>
 		#url { width: 400px; height:20px; vertical-align: middle;}
 	</style>
 </head>
 
 <body>
-<h2> HLSDynamicPlugin Test </h2>
+<h2> Flash HLS URL Tester </h2>
 <div class="item">
 	<label>HLS url:</label>
-	<input type="text" id="url" value="http://public.infozen.cshls.lldns.net/infozen/public/public.m3u8"></input>
+	<input type="text" id="url" value="http://cdnapi.kaltura.com/p/524241/sp/52424100/playManifest/entryId/0_8zzalxul/flavorIds/0_3ob6cr7c,0_tpmcai9x,0_kde7mda7/format/applehttp/protocol/http/a.m3u8"></input>
 </div>
 
-<div><input type="button" id="generate" value="Generate" /></div>
+<div><input type="button" id="generate" value="Create Player" /></div>
 
-<div id="kaltura_player_1387835968" style="width: 400px; height: 333px;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject">
+<div id="kaltura_player_1387835968" style="width: 720px; height: 384px;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject">
 </div>
 <script>
 	mw.setConfig( 'Kaltura.LeadWithHTML5' , true );
-	mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
+	mw.setConfig('LeadWithHLSOnFlash', true);
+
 	$('#generate').click( function() {
 		mw.setConfig('EmbedPlayer.ReplaceSources', [
 			{
@@ -36,17 +38,6 @@
 			"wid": "_524241",
 			"uiconf_id": 21648442,
 			"flashvars": {
-				"kdpVars": {
-					"sourceType": "url",
-					"ignoreStreamerTypeForSeek": "true",
-					"KalturaHLS": {
-						plugin: "true",
-						//pluginURL: '../../EmbedPlayer/binPlayers/kaltura-player/plugins/KalturaHLSPlugin.swf',
-						asyncInit: "true",
-						loadingPolicy: "preInitialize",
-						//waitForSecondLoad: "false"
-					}
-				},
 				"confFilePath": "{libPath}/modules/KalturaSupport/tests/confFiles/jsonConfig.json"
 			},
 			"cache_st": 1387835968

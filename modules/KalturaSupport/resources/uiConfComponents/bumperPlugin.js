@@ -34,13 +34,9 @@
 
 			// Get the bumper entryid
 			mw.log( "BumperPlugin::checkUiConf: get sources for " + bumperConfig.bumperEntryID);
-			var size = {
-				'width': embedPlayer.getWidth(),
-				'height': embedPlayer.getHeight()
-			}
-			mw.getEntryIdSourcesFromApi( embedPlayer.kwidgetid, embedPlayer.kpartnerid, bumperConfig.bumperEntryID, size, function( sources ){
-				if( ! sources ){
-					// no sources error:
+			mw.getEntryIdSourcesFromApi( embedPlayer, bumperConfig.bumperEntryID, function( sources ){
+				if( ! sources || sources.message ){
+					// no sources, or access control error. 
 					mw.log("Error: bumperPlugin: No sources for: " + embedPlayer.kwidgetid + ' entry: ' +  bumperConfig.bumperEntryID );
 					callback();
 					return ;

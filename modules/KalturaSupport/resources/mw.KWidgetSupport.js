@@ -1,9 +1,15 @@
 ( function( mw, $ ) {"use strict";
-/**
- * Add the messages text:
- *  TODO remove once we switch to RL17
- */
 
+/* Base API helper */
+mw.KApiPartnerCache = [];
+mw.kApiGetPartnerClient = function( widgetId ){
+	if( !mw.KApiPartnerCache[ widgetId ] ){
+		mw.KApiPartnerCache[ widgetId ] = new kWidget.api( {'wid':widgetId} );
+	}
+	return mw.KApiPartnerCache[ widgetId ];
+};
+
+/* Base Widget support*/
 mw.KWidgetSupport = function( options ) {
 	// Create KWidgetSupport instance
 	return this.init( options );
@@ -13,18 +19,30 @@ mw.KWidgetSupport.prototype = {
 	// The Kaltura client local reference
 	kClient : null,
 	kSessionId: null, // Used for Analytics events
+	originalStreamerType: null,
 
 	// Constructor check settings etc
 	init: function( options ){
 		if( options ){
 			$.extend( this, options);
 		}
+		this.addStringsSupport();
 		this.addPlayerHooks();
 	},
+
+	addStringsSupport: function(){
+		window.getStringByKey = function(key){
+			var playerConfig = window.kalturaIframePackageData.playerConfig;
+			if (playerConfig && playerConfig.plugins && playerConfig.plugins.strings && playerConfig.plugins.strings[key]){
+				return playerConfig.plugins.strings[key];
+			}else{
+				return false;
+			}
+		}
+	},
+
 	isIframeApiServer: function(){
 		return ( mw.getConfig( 'EmbedPlayer.IsIframeServer' )
-					&&
-				mw.getConfig( 'EmbedPlayer.EnableIframeApi' )
 					&&
 				mw.getConfig( 'EmbedPlayer.IframeParentUrl' ) )
 	},
@@ -86,15 +104,17 @@ mw.KWidgetSupport.prototype = {
 			// Get KS and append to download url ( should be sync call )
 			var client = mw.kApiGetPartnerClient( embedPlayer.kwidgetid );
 			// Append ks & referrer for access control
-			var referrer = base64_encode( kWidgetSupport.getHostPageUrl() );
-			client.getKS(function( ks ){
-				downloadUrl += '/?ks=' + ks + '&referrer=' + referrer;
-				downloadUrlCallback( downloadUrl );
-			});
+			downloadUrl += '/referrer/' +  base64_encode( kWidgetSupport.getHostPageUrl() );
+			var ks = client.getKs();
+			if( ks ){
+				downloadUrl += '/ks/' + ks;
+			};
+			downloadUrlCallback( downloadUrl );
 		});
-
+		
 		// Add hook for check player sources to use local kEntry ID source check:
 		embedPlayer.bindHelper( 'checkPlayerSourcesEvent', function( event, callback ) {
+			_this.originalStreamerType = embedPlayer.getKalturaConfig( null, 'streamerType' ) ? embedPlayer.getKalturaConfig( null, 'streamerType' ) : 'http';
 			_this.loadAndUpdatePlayerData( embedPlayer, callback );
 		});
 
@@ -111,6 +131,9 @@ mw.KWidgetSupport.prototype = {
 			});
 			if( embedPlayer.getFlashvars( 'loadThumbnailWithKs' ) === true ) {
 				thumbUrl += '?ks=' + embedPlayer.getFlashvars('ks');
+			}
+			if (mw.getConfig('thumbnailUrl')) {
+				thumbUrl = embedPlayer.evaluate(mw.getConfig('thumbnailUrl'));
 			}
 			var alt = gM('mwe-embedplayer-video-thumbnail-for', embedPlayer.evaluate('{mediaProxy.entry.name}'));
 		  	embedPlayer.updatePoster( thumbUrl, alt );
@@ -139,18 +162,52 @@ mw.KWidgetSupport.prototype = {
 			callback( iframeUrl );
 		});
 
-		embedPlayer.bindHelper( 'embedPlayerError' , function () {
-			embedPlayer.showErrorMsg( { title: embedPlayer.getKalturaMsg( 'ks-GENERIC_ERROR_TITLE' ), message: embedPlayer.getKalturaMsg( 'ks-CLIP_NOT_FOUND' ) } );
+		// Example how to override embedPlayerError handler
+		embedPlayer.shouldHandlePlayerError = false;
+		embedPlayer.bindHelper( 'embedPlayerError' , function ( event, data, doneCallback )  {
+			var displayedAcError = false;
+			// check for AC error: 
+			_this.getEntryIdSourcesFromApi( embedPlayer, embedPlayer.kentryid, function( sources ){
+				// no sources, or access control error. 
+				if( ! sources || sources.message ){
+					embedPlayer.showErrorMsg( sources );
+					displayedAcError = true;
+					doneCallback();
+				}
+			});
+			// give the above access control message 3 seconds to resolve; else show default network error
+			setTimeout(function(){
+				if( displayedAcError){
+					return;
+				}
+				embedPlayer.handlePlayerError(data, true);
+			}, 3000);
 		});
+		
 		// Support mediaPlayFrom, mediaPlayTo properties
 		embedPlayer.bindHelper( 'Kaltura_SetKDPAttribute', function(e, componentName, property, value){
+			if (!value) {
+				return;
+			}
+			var segmentChange = false;
 			switch( property ){
 				case 'mediaPlayFrom':
 					embedPlayer.startTime = parseFloat(value);
+					segmentChange = true;
+					clearTimeout(window.timeoutID);
 					break;
 				case 'mediaPlayTo':
 					embedPlayer.pauseTime = parseFloat(value);
+					segmentChange = true;
+					embedPlayer.stopMonitor();
+					clearTimeout(window.timeoutID);
 					break;
+			}
+			if (segmentChange) {
+				window.timeoutID = setTimeout(function () {
+					$(embedPlayer).trigger("playSegmentEvent", [embedPlayer.startTime, embedPlayer.pauseTime]);
+					embedPlayer.playSegment(embedPlayer.startTime, embedPlayer.pauseTime);
+				}, 100);
 			}
 		});
 	},
@@ -219,19 +276,20 @@ mw.KWidgetSupport.prototype = {
 			if( playerData.meta && playerData.meta.code == 'ENTRY_ID_NOT_FOUND' ){
 				$( embedPlayer ).trigger( 'KalturaSupport_EntryFailed' );
 			} else {
-				// Add any custom metadata:
-				if( playerData.entryMeta ){
-					embedPlayer.kalturaEntryMetaData = playerData.entryMeta;
-				}
-				// Apply player metadata
-				if( playerData.meta ) {
+				// Look for custom metadata in playerData.entryMeta and entryMetadata ( mediaProxy override name )
+				embedPlayer.kalturaEntryMetaData = ( playerData.entryMeta ) ? playerData.entryMeta : playerData.entryMetadata
+				
+				// Lock for "entry" in 'meta' and 'entry' ( mediaProxy override name )
+				var meta =  ( playerData.meta ) ? playerData.meta: playerData.entry;
+				// Apply player entry metadata
+				if( meta ) {
 					// We have to assign embedPlayer metadata as an attribute to bridge the iframe
-					embedPlayer.kalturaPlayerMetaData = playerData.meta;
+					embedPlayer.kalturaPlayerMetaData = meta;
 
-					if ( playerData.meta.moderationStatus && (!playerData.contextData || !playerData.contextData.isAdmin) ) {
-						if ( playerData.meta.moderationStatus == 1 ) {
+					if ( meta.moderationStatus && (!playerData.contextData || !playerData.contextData.isAdmin) ) {
+						if ( meta.moderationStatus == 1 ) {
 							embedPlayer.setError( embedPlayer.getKalturaMsgObject('ks-ENTRY_MODERATE') );
-						} else if ( playerData.meta.moderationStatus == 3 ) {
+						} else if ( meta.moderationStatus == 3 ) {
 							embedPlayer.setError( embedPlayer.getKalturaMsgObject('ks-ENTRY_REJECTED') );
 						}
 					}
@@ -241,7 +299,7 @@ mw.KWidgetSupport.prototype = {
 			// Check access controls ( must come after addPlayerMethods for custom messages )
 			// check for Cuepoint data and load cuePoints,
 			// TODO optimize cuePoints as hard or soft dependency on kWidgetSupport
-			if( playerData.entryCuePoints && playerData.entryCuePoints.length > 0 ) {
+			if( (playerData.entryCuePoints && playerData.entryCuePoints.length > 0) || ( embedPlayer.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) ) {
 				embedPlayer.rawCuePoints = playerData.entryCuePoints;
 				embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
 			}
@@ -252,10 +310,40 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.kalturaContextData = playerData.contextData;
 		}
 
+		var isStreamSupported = false;
 		// Check for live stream
 		if( playerData.meta && ( playerData.meta.type == 7 || playerData.meta.type == 8 )){
-			if ( hasLivestreamConfig( 'multicast_silverlight' ) &&  mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'splayer' ) ) {
-				_this.addLiveEntrySource( embedPlayer, playerData.meta, false, true, 'multicast_silverlight', undefined);
+			//check if entry ONLY has hls configuration:
+			var hasOnlyHLS = false;
+			var configurations = playerData.meta.liveStreamConfigurations;
+			if ( playerData.meta.hlsStreamUrl && ( !configurations || configurations.length == 0) ) {
+				hasOnlyHLS = true;
+			}  else if ( configurations ) {
+				for ( var i = 0; i < configurations.length; i++ ) {
+					if ( configurations[i].protocol != "hls" &&  configurations[i].protocol != "applehttp" ) {
+						hasOnlyHLS = false;
+						break;
+					}
+					hasOnlyHLS = true;
+				}
+			}
+			if ( hasOnlyHLS ) {
+				mw.setConfig("LeadWithHLSOnFlash", true);
+			}
+
+			if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'splayer' ) ) {
+				if ( playerData.contextData && playerData.contextData.flavorAssets ) {
+					var flavorData = playerData.contextData.flavorAssets;
+					for( var i = 0 ; i < flavorData.length; i ++ ) {
+						var tags = flavorData[i].tags.toLowerCase().split(',');
+						if ( $.inArray( 'multicast_silverlight', tags ) != -1 ) {
+							_this.addLiveEntrySource( embedPlayer, playerData.meta, false, true, 'multicast_silverlight', undefined);
+							isStreamSupported = true;
+							embedPlayer.setLive( true );
+							break;
+						}
+					}
+				}
 			}
 			if(  (playerData.meta.hlsStreamUrl || hasLivestreamConfig( 'hls' ) || hasLivestreamConfig( 'applehttp' ))
 				&&
@@ -269,30 +357,84 @@ mw.KWidgetSupport.prototype = {
 				return;
 			} else if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
 				var streamerType;
-				if ( hasLivestreamConfig( 'hdnetworkmanifest' )) {
+				var streamerTypeFV = embedPlayer.getKalturaConfig( null, 'streamerType' );
+				if ( streamerTypeFV && hasLivestreamConfig( streamerTypeFV ) ) {
+					streamerType = streamerTypeFV;
+				}
+				else if ( hasLivestreamConfig( 'hdnetworkmanifest' )) {
 					streamerType = 'hdnetworkmanifest';
 				} else if ( hasLivestreamConfig( 'hds' ) ){
 					streamerType = 'hds';
 				} else {
 					streamerType = 'rtmp';
 				}
+
 				// Add live stream source
 				_this.addLiveEntrySource( embedPlayer, playerData.meta, true, false, streamerType, undefined );
 				
 				// Set live property to true
 				embedPlayer.setLive( true );
-			} else {
+			} else if ( !isStreamSupported ) {
 				embedPlayer.setError( embedPlayer.getKalturaMsg('LIVE-STREAM-NOT-SUPPORTED') );
 			}
 		} else {
-			embedPlayer.setLive( false );
-			//TODO in the future we will have flavors for livestream. revise this code.
-			// Apply player Sources
-			if( playerData.contextData && playerData.contextData.flavorAssets ){
-				_this.addFlavorSources( embedPlayer, playerData );
+			if (this.isEmbedServicesEnabled(playerData)){
+				this.setEmbedServicesData(embedPlayer, playerData);
+			} else {
+				embedPlayer.setLive( false );
+				//TODO in the future we will have flavors for livestream. revise this code.
+				// Apply player Sources
+				if ( playerData.contextData && playerData.contextData.flavorAssets ) {
+					_this.addFlavorSources( embedPlayer, playerData );
+				}
+				// try with direct source override: 
+				if ( playerData.sources ) {
+					_this.addSources( embedPlayer, playerData.sources  );
+				}
 			}
 		}
 		handlePlayerData();
+	},
+	isEmbedServicesEnabled: function(playerData){
+		if (playerData && playerData.meta &&
+			playerData.meta.partnerData &&
+			playerData.meta.partnerData["proxyEnabled"] &&
+			playerData.meta.partnerData["proxyEnabled"] === "true") {
+			return true;
+		} else {
+			return false;
+		}
+	},
+	setEmbedServicesData: function(embedPlayer, playerData){
+		//Set flavors
+		var flavorAssets = [];
+		$.each( playerData.contextData.flavorAssets, function ( index, flavorAsset ) {
+			var flavorPartnerData = flavorAsset.partnerData;
+			if (flavorPartnerData.url != "") {
+				var flavorAssetObj = {
+					"data-assetid": flavorAsset.id,
+					src: flavorPartnerData.url,
+					type: flavorPartnerData.type,
+					"data-width": flavorAsset.width,
+					"data-height": flavorAsset.height,
+					"data-bitrate": flavorAsset.bitrate,
+					"data-bandwidth": (flavorAsset.bitrate ? (flavorAsset * 1024) : 0),
+					"data-frameRate": flavorAsset.frameRate,
+					"data-flavorid": flavorPartnerData.flavorid,
+					"default": flavorPartnerData["default"]
+				};
+				flavorAssets.push( flavorAssetObj );
+			}
+		} );
+		embedPlayer.replaceSources(flavorAssets);
+		//Set Live
+		if ( playerData.meta.partnerData["isLive"] &&
+			playerData.meta.partnerData["isLive"] == "true" ) {
+			embedPlayer.setLive( true );
+		}
+
+		//Set proxyData response data
+		embedPlayer.setKalturaConfig( 'proxyData', playerData.meta.partnerData);
 	},
 	addPlayerMethods: function( embedPlayer ){
 		var _this = this;
@@ -312,8 +454,9 @@ mw.KWidgetSupport.prototype = {
 
 		// Extend plugin configuration
 		embedPlayer.setKalturaConfig = function( pluginName, key, value, quiet ) {
-			// no plugin/key - exit
-			if ( ! pluginName || ! key ) {
+
+			// no key - exit
+			if ( ! key ) {
 				return ;
 			}
 
@@ -334,14 +477,23 @@ mw.KWidgetSupport.prototype = {
 					'vars' : {}
 				};
 			}
-			// Plugin doesn't exists -> create it
-			if( ! embedPlayer.playerConfig[ 'plugins' ][ pluginName ] ){
+			// check for var update ( no top level plugin ) 
+			if( ! pluginName ){
+				embedPlayer.playerConfig['vars'][key] = value;
+			} else if( 
+				! embedPlayer.playerConfig[ 'plugins' ][ pluginName ] 
+			){
+				// Plugin doesn't exists -> create it
 				embedPlayer.playerConfig[ 'plugins' ][ pluginName ] = objectSet;
 			} else {
 				// If our key is an object, and the plugin already exists, merge the two objects together
 				if( typeof key === 'object' ) {
 					$.extend( embedPlayer.playerConfig[ 'plugins' ][ pluginName ], objectSet);
 					mw.log( 'merged:: ', embedPlayer.playerConfig[ 'plugins' ][ pluginName ]);
+				}
+				// If old value & new value is array, don't merge
+				else if( $.isArray(embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ]) && $.isArray(value) ) {
+					embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ] = value;
 				}
 				// If the old value is an object and the new value is an object merge them
 				else if( typeof embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ] === 'object' && typeof value === 'object' ) {
@@ -444,6 +596,51 @@ mw.KWidgetSupport.prototype = {
 				'message': embedPlayer.getKalturaMsg( msgKey )
 			}
 		};
+
+		embedPlayer.resolveSrcURL = function( srcURL ){
+			var deferred = $.Deferred();
+			var eventObj = {"src":srcURL,
+				"promise":deferred,
+				"handled":false};
+			embedPlayer.triggerHelper( 'preResolveSrc' ,eventObj );
+			if (eventObj.handled){
+				return eventObj.promise;
+			}
+
+			if (mw.getConfig("EmbedPlayer.UseDirectManifestLinks")) {
+				return deferred.resolve( srcURL );
+			}
+
+			if (srcURL && srcURL.toLowerCase().indexOf("playmanifest") === -1){
+				return deferred.resolve( srcURL );
+			}
+			var srcToPlay = null;
+			var qp = ( srcURL.indexOf('?') === -1) ? '?' : '&';
+
+			$.ajax({
+				url: srcURL + qp + "responseFormat=jsonp",
+				dataType: 'jsonp',
+				success: function( playmanifest ){
+					var flavors = playmanifest.flavors;
+					if ( flavors && flavors.length === 1 ) {
+						srcToPlay = flavors[0].url;
+						deferred.resolve( srcToPlay );
+						//if we get more then 1 flavors we dont need the redirect so we'll use the same url
+						// the playmanifest service will return the manifest directly.
+					} else if (flavors && flavors.length > 1){
+						deferred.resolve( srcURL );
+					} else {
+						deferred.reject();
+					}
+				},
+				error: function() {
+					deferred.reject();
+				}
+			});
+			return deferred.promise();
+		};
+
+
 	},
 	/**
 	 * Handle the ui conf
@@ -454,7 +651,7 @@ mw.KWidgetSupport.prototype = {
 		// and setup their binding to KalturaSupport_CuePointsReady
 		var doneWithUiConf = function(){
 
-			if( embedPlayer.rawCuePoints ){
+			if( embedPlayer.rawCuePoints || ( embedPlayer.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) ){
 				mw.log("KWidgetSupport:: trigger KalturaSupport_CuePointsReady", embedPlayer.rawCuePoints);
 				// Allow other plugins to subscribe to cuePoint ready event:
 				$( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', embedPlayer.rawCuePoints );
@@ -500,19 +697,22 @@ mw.KWidgetSupport.prototype = {
 		var getAttr = function( attrName ){
 			return _this.getPluginConfig( embedPlayer, '', attrName );
 		}
+		
 		// Check for autoplay:
 		var autoPlay = getAttr( 'autoPlay' );
 		if( autoPlay ){
 			embedPlayer.autoplay = true;
 		}
-        // Check for autoMute:
-        var autoMute = getAttr( 'autoMute' );
-        if( autoMute ){
-            setTimeout(function(){
-                embedPlayer.toggleMute();
-            },300);
-
-        }
+		
+		// Check for autoMute:
+		var autoMute = getAttr( 'autoMute' );
+		if( autoMute ){
+			setTimeout(function(){
+				embedPlayer.toggleMute( true );
+			},300);
+			// autoMute should only happen once per session:
+			embedPlayer.setKalturaConfig( '', 'autoMute', null );
+		}
 		// Check for loop:
 		var loop = getAttr( 'loop' );
 		if( loop ){
@@ -524,13 +724,31 @@ mw.KWidgetSupport.prototype = {
 			mw.setConfig('EmbedPlayer.ShowPlayerAlerts', false );
 		}
 
-		// Check for dissable bit rate cookie and overide default bandwidth
-		if( getAttr( 'disableBitrateCookie' ) && getAttr( 'mediaProxy.preferedFlavorBR') ){
-			embedPlayer.setCookie( 'EmbedPlayer.UserBandwidth', getAttr( 'mediaProxy.preferedFlavorBR' ) * 1000 );
-		}
-		// always set perfered bitrate if defined: 
-		if( getAttr( 'mediaProxy.preferedFlavorBR' ) && embedPlayer.mediaElement ){
-			embedPlayer.mediaElement.preferedFlavorBR = getAttr( 'mediaProxy.preferedFlavorBR' ) * 1000;
+		var mediaProxy = embedPlayer.getKalturaConfig('mediaProxy');
+		// handle mediaProxy properties
+		if ( mediaProxy ){
+			// check for preferedFlavorBR
+			var preferedFlavorBR = mediaProxy.preferedFlavorBR;
+			// Check for dissable bit rate cookie and overide default bandwidth
+			if( getAttr( 'disableBitrateCookie' ) && preferedFlavorBR ){
+				embedPlayer.setCookie( 'EmbedPlayer.UserBandwidth', preferedFlavorBR * 1000 );
+			}
+			// always set perfered bitrate if defined:
+			if( preferedFlavorBR && embedPlayer.mediaElement ){
+				embedPlayer.mediaElement.preferedFlavorBR = preferedFlavorBR * 1000;
+			}
+
+			// Check for mediaPlayFrom
+			var mediaPlayFrom = mediaProxy.mediaPlayFrom;
+			if (mediaPlayFrom && !embedPlayer.startTime) {
+				embedPlayer.startTime = parseFloat( mediaPlayFrom );
+				mw.setConfig( "Kaltura.UseAppleAdaptive" , true) ;
+			}
+			// Check for mediaPlayTo
+			var mediaPlayTo = mediaProxy.mediaPlayTo;
+			if (mediaPlayTo && !embedPlayer.pauseTime) {
+				embedPlayer.pauseTime = parseFloat( mediaPlayTo );
+			}
 		}
 
 		// Enable tooltips
@@ -544,16 +762,7 @@ mw.KWidgetSupport.prototype = {
 			$( embedPlayer ).data('imageDuration', imageDuration);
 		}
 
-		// Check for mediaPlayFrom
-		var mediaPlayFrom = getAttr('mediaProxy.mediaPlayFrom');
-		if( mediaPlayFrom ) {
-			embedPlayer.startTime = parseFloat( mediaPlayFrom );
-		}
-		// Check for mediaPlayTo
-		var mediaPlayTo = getAttr('mediaProxy.mediaPlayTo');
-		if( mediaPlayTo ) {
-			embedPlayer.pauseTime = parseFloat( mediaPlayTo );
-		}
+
 
 		// Should we show ads on replay?
 		if( getAttr( 'adsOnReplay' ) ) {
@@ -564,13 +773,14 @@ mw.KWidgetSupport.prototype = {
 		if( getAttr( 'disablePlayerSpinner' ) ) {
 			mw.setConfig('LoadingSpinner.Disabled', true );
 		}
-
 		var streamerType = embedPlayer.getKalturaConfig( null, 'streamerType' );
 		if ( embedPlayer.kalturaContextData && streamerType == 'auto' ) {
 			embedPlayer.streamerType = embedPlayer.kalturaContextData.streamerType;
 		} else if ( streamerType ) {
 			embedPlayer.streamerType = streamerType;
 		}
+		// restore the original streamerType Flashvar for future use if the user change media (for example - playlist)
+		embedPlayer.setFlashvars( 'streamerType', _this.originalStreamerType);
 	},
 	/**
 	 * Check for xml config, let flashvars override
@@ -579,7 +789,7 @@ mw.KWidgetSupport.prototype = {
 	 * @param attr {Optional: Array|String} A list of attributes you want to get for the confPrefix
 	 * 				if null, we retrive all settings with the provided confPrefix
 	 */
-	getPluginConfig: function( embedPlayer, confPrefix, attr ){
+	 getPluginConfig: function( embedPlayer, confPrefix, attr ){
 		var singleAttrName = false;
 		if( typeof attr == 'string' ){
 			singleAttrName = attr;
@@ -640,6 +850,7 @@ mw.KWidgetSupport.prototype = {
 	postProcessConfig: function( embedPlayer, config ){
 		var _this = this;
 		var returnSet = $.extend( {}, config );
+		
 		$.each( returnSet, function( attrName, value ) {
 			// Unescape values that would come in from flashvars
 			if( value && ( typeof value === 'string' ) ){
@@ -660,17 +871,17 @@ mw.KWidgetSupport.prototype = {
 	 * accessible via static reference mw.getEntryIdSourcesFromApi
 	 *
 	 */
-	getEntryIdSourcesFromApi:  function( widgetId, partnerId, entryId, size, callback ){
+	getEntryIdSourcesFromApi:  function( embedPlayer, entryId, callback ){
 		var _this = this;
 		var sources;
-		mw.log( "KWidgetSupport:: getEntryIdSourcesFromApi: w:" + widgetId + ' entry:' + entryId );
-		this.kClient = mw.KApiPlayerLoader({
-			'widget_id' : widgetId,
-			'entry_id' : entryId
+		mw.log( "KWidgetSupport:: getEntryIdSourcesFromApi: w:" + embedPlayer.kwidgetid + ' entry:' + embedPlayer.kentryid );
+		this.kClient = mw.kApiEntryLoader({
+			'widget_id': embedPlayer.kwidgetid,
+			'entry_id': entryId
 		}, function( playerData ){
 			// Check access control
 			if( playerData.contextData ){
-				var acStatus = _this.getAccessControlStatus( playerData.contextData );
+				var acStatus = _this.getAccessControlStatus( playerData.contextData, embedPlayer );
 				if( acStatus !== true ){
 					callback( acStatus );
 					return ;
@@ -681,21 +892,21 @@ mw.KWidgetSupport.prototype = {
 				sources = [{
 						'src' : _this.getKalturaThumbnailUrl({
 							url: playerData.meta.thumbnailUrl,
-							width: size.width,
-							height: size.height
+							width:  embedPlayer.getWidth(),
+							height: embedPlayer.getHeight()
 						}),
 						'type' : 'image/jpeg'
 					}];
 			} else {
 				// Get device sources
-				sources = _this.getEntryIdSourcesFromPlayerData( partnerId, playerData );
+				sources = _this.getEntryIdSourcesFromPlayerData( embedPlayer.kpartnerid, playerData );
 			}
 			// Return the valid source set
 			callback( sources );
 		});
 	},
 	/**
-	 * Sets up variables and issues the mw.KApiPlayerLoader call
+	 * Sets up variables and issues the mw.kEntryLoader call
 	 */
 	loadPlayerData: function( embedPlayer, callback ){
 		var _this = this;
@@ -723,7 +934,7 @@ mw.KWidgetSupport.prototype = {
 
 		// Set KS from flashVar
 		this.kClient = mw.kApiGetPartnerClient( playerRequest.widget_id );
-		this.kClient.setKS( embedPlayer.getFlashvars( 'ks' ) );
+		this.kClient.setKs( embedPlayer.getFlashvars( 'ks' ) );
 
 		// Check for playlist cache based
 		if( window.kalturaIframePackageData && window.kalturaIframePackageData.playlistResult ){
@@ -743,17 +954,18 @@ mw.KWidgetSupport.prototype = {
 
 		// Check for entry cache:
 		if( window.kalturaIframePackageData && window.kalturaIframePackageData.entryResult ){
-			this.handlePlayerData( embedPlayer, kalturaIframePackageData.entryResult );
-			callback( window.kalturaIframePackageData.entryResult );
+			var entryResult =  window.kalturaIframePackageData.entryResult
+			this.handlePlayerData( embedPlayer, entryResult );
+			callback( entryResult );
 			// remove the entryResult from the payload
 			delete( window.kalturaIframePackageData.entryResult );
-		} else {
-			// Run the request:
-			this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
-				_this.handlePlayerData(embedPlayer, playerData );
-				callback( playerData );
-			});
+			return ;
 		}
+		// Run the request:
+		this.kClient = mw.kApiEntryLoader( playerRequest, function( playerData ){
+			_this.handlePlayerData(embedPlayer, playerData );
+			callback( playerData );
+		});
 	},
 	/**
 	 * handle player data mappings to embedPlayer
@@ -866,7 +1078,15 @@ mw.KWidgetSupport.prototype = {
 		}
 		return false;
 	},
-
+	addSources: function( embedPlayer, sources ){
+		$.each(sources, function( inx, source){
+			embedPlayer.mediaElement.tryAddSource( 
+				$('<source />')
+				.attr( source )
+				.get( 0 )
+			);
+		});
+	},
 	/**
 	* Convert flavorData to embedPlayer sources
 	*
@@ -897,10 +1117,20 @@ mw.KWidgetSupport.prototype = {
 				qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
 				source.src = source.src + qp +  'preferredBitrate=' + preferedBitRate;
 			}
-			// add any flashvar based playManifest params
-			qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
-			source.src = source.src +  qp + flashvarsPlayMainfestParams;
-			
+
+			if ( source['disableQueryString'] ) {
+				var mParams =  this.getPlayMainfestParams( embedPlayer, true );
+				if ( mParams != '' ) {
+					var index = source.src.lastIndexOf( '/a.' );
+					source.src = source.src.substring( 0, index ) + '/' + mParams  + source.src.substring( index ) ;
+				}
+
+			} else {
+				// add any flashvar based playManifest params
+				qp = ( source.src.indexOf('?') === -1) ? '?' : '&';
+				source.src = source.src +  qp + flashvarsPlayMainfestParams;
+			}
+
 			mw.log( 'KWidgetSupport:: addSource::' + embedPlayer.id + ' : ' +  source.src + ' type: ' +  source.type);
 			var sourceElm = $('<source />')
 				.attr( source )
@@ -909,16 +1139,23 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.mediaElement.tryAddSource( sourceElm );
 		}
 	},
-	getPlayMainfestParams: function( embedPlayer ){
+	getPlayMainfestParams: function( embedPlayer, disableQueryString ){
 		var p = '';
 		var and = '';
+		var equalDelimiter = '=';
+		var andDelimiter = '&';
+		if ( disableQueryString ) {
+			andDelimiter = equalDelimiter = '/';
+		}
 		var urlParms = ["deliveryCode", "storageId", "maxBitrate", "playbackContext", "seekFrom", "clipTo" ];
 		$.each( urlParms, function( inx, param ){
 			if( embedPlayer.getFlashvars( param ) ){
-				 p += and + param + '=' + embedPlayer.getFlashvars( param );
-				 and = '&';
+				 p += and + param + equalDelimiter + embedPlayer.getFlashvars( param );
+				 and = andDelimiter;
 			}
 		});
+
+		p += and + 'uiConfId' + equalDelimiter + embedPlayer.kuiconfid;
 		return p;
 	},
 	/**
@@ -954,7 +1191,7 @@ mw.KWidgetSupport.prototype = {
 	 * @param {object} playerData The flavor data object
 	 */
 	getEntryIdSourcesFromPlayerData: function( partnerId, playerData ){
-	   	var _this = this;
+		var _this = this;
 
 		if( !playerData.contextData || ( playerData.contextData && !playerData.contextData.flavorAssets )){
 			mw.log("Error: KWidgetSupport: contextData.flavorAssets is not defined ");
@@ -1053,12 +1290,17 @@ mw.KWidgetSupport.prototype = {
 			if (( $.inArray( 'mbr', tags ) != -1 || $.inArray( 'web' ,tags ) != -1 ) &&
 				$.isEmptyObject(source['src']) &&
 				!mw.isMobileDevice() &&
-				asset.fileExt &&
-				asset.fileExt.toLowerCase() == 'mp4')
+				asset.fileExt )
 			{
-				source['src'] = src + '/a.mp4';
-				source['type'] = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2';
-				hasH264Flavor = true;
+				if ( asset.fileExt.toLowerCase() == 'mp4' ) {
+					source['src'] = src + '/a.mp4';
+					source['type'] = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2';
+					hasH264Flavor = true;
+				} else if ( asset.fileExt.toLowerCase() == 'flv' ) {
+					source['src'] = src + '/a.flv';
+					source['type'] = 'video/x-flv';
+				}
+
 			}
 
 			// Check for ogg source
@@ -1107,6 +1349,7 @@ mw.KWidgetSupport.prototype = {
 				source['src'] = src + '/a.wvm';
 				source['data-flavorid'] = 'wvm';
 				source['type'] = 'video/wvm';
+				source['disableQueryString'] = true;
 			} 
 
 			if ( asset.tags && asset.tags == 'kontiki'){
@@ -1175,7 +1418,7 @@ mw.KWidgetSupport.prototype = {
 			var addedHlsStream = false;
 			var validClipAspect = this.getValidAspect( deviceSources );
 			// Check if mobile device media query
-			if ( mw.isDeviceLessThan480P() && iphoneAdaptiveFlavors.length ) {
+			if ( mw.isMobileDevice() && mw.isDeviceLessThan480P() && iphoneAdaptiveFlavors.length ) {
 				// Add "iPhone" HLS flavor
 				deviceSources.push({
 					'data-aspect' : validClipAspect,
@@ -1218,20 +1461,42 @@ mw.KWidgetSupport.prototype = {
 
 		// Append KS to all source if available
 		// Get KS for playManifest URL ( this should run synchronously since ks should already be available )
-		var ksCheck = false;
-		this.kClient.getKS( function( ks ) {
-			ksCheck = true;
-			$.each( deviceSources, function(inx, source){
-				deviceSources[inx]['src'] = deviceSources[inx]['src'] + '?ks=' + ks + 
-					'&referrer=' + base64_encode( _this.getHostPageUrl() ) + 
-					'&clientTag=' + 'html5:v' + window[ 'MWEMBED_VERSION' ];
-			});
-		});
-		if( !ksCheck ){
-			mw.log("Error:: KWidgetSupport: KS not defined in time, streams will be missing ks paramter");
+		var ks = this.kClient.getKs();
+
+		var ksStr = '';
+		var ksQueryString = '';
+
+		if (ks){
+			var manifestKs = _this.fixPlaymanifestParam( ks );
+			ksStr = '/ks/' + manifestKs;
+			ksQueryString = '&ks=' + manifestKs;
 		}
+
+		var referrer =   _this.fixPlaymanifestParam( base64_encode( _this.getHostPageUrl() ) );
+		var clientTag = 'html5:v' + window[ 'MWEMBED_VERSION' ];
+		$.each( deviceSources, function(inx, source){
+			if ( deviceSources[inx]['disableQueryString'] == true ) {
+				var index = deviceSources[inx]['src'].lastIndexOf('/a.');
+				deviceSources[inx]['src'] = deviceSources[inx]['src'].substring(0, index) + ksStr +
+					'/referrer/' + referrer +
+					'/clientTag/' + clientTag +
+					deviceSources[inx]['src'].substring(index) ;
+			} else {
+				deviceSources[inx]['src'] = deviceSources[inx]['src'] +
+					'?referrer=' + referrer + ksQueryString +
+					'&clientTag=' + clientTag;
+			}
+		});
 		
 		return deviceSources;
+	},
+	/**
+	 *  "/" and "+" are valid base64 chars. They might break playmanifest URL so we replace them to "_" and "-" accordingly.
+	 *  There is a server side code that replaces the string back to the original value
+	 * @param value
+	 */
+	fixPlaymanifestParam: function( value ) {
+		return value.replace(/\+/g, "-").replace(/\//g, "_");
 	},
 	removeAdaptiveFlavors: function( sources ){
 		for( var i =0 ; i < sources.length; i++ ){
@@ -1287,19 +1552,22 @@ mw.KWidgetSupport.prototype = {
 			mimeType = 'video/multicast';
 
 		} else {
+			embedPlayer.setFlashvars( 'streamerType', 'http' );
 			extension = 'm3u8';
 			protocol = 'http';
 			mimeType = 'application/vnd.apple.mpegurl';
 		}
 
-		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/' + format + '/protocol/' + protocol + '/a.' + extension;
+		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/' + format + '/protocol/' + protocol + '/uiConfId/' + embedPlayer.kuiconfid +  '/a.' + extension;
 		// Append KS & Referrer
 		function getKs() {
+			srcUrl += '?referrer=' + base64_encode( _this.getHostPageUrl() );
 			var deferred = $.Deferred();
-			_this.kClient.getKS( function( ks ) {
-				srcUrl = srcUrl + '?ks=' + ks + '&referrer=' + base64_encode( _this.getHostPageUrl() );
-				deferred.resolve();
-			});
+			var ks = _this.kClient.getKs();
+			if( ks ){
+				srcUrl += '&ks=' + ks;
+			}
+			deferred.resolve();
 			return deferred.promise();
 		}
 		//add source
@@ -1317,28 +1585,7 @@ mw.KWidgetSupport.prototype = {
 				deferred.resolve();
 			}
 
-			//android player doesn't support redirect, we will retrieve the final url and add it as the source
-			if ( mw.isAndroid4andUp() ) {
-				$.ajax({
-					url: srcUrl + "&responseFormat=jsonp",
-					dataType: 'jsonp',
-					success: function( jsonpResponse ){
-						var flavors = jsonpResponse.flavors;
-						for (var i=0; i<flavors.length; i++) {
-							if ( flavors[i].ext == "m3u8" ) {
-								callAddSource( flavors[i].url );
-								return;
-							}
-						}
-						deferred.reject();
-					},
-					error: function() {
-						deferred.reject();
-					}
-				});
-			} else {
-				callAddSource( srcUrl );
-			}
+			callAddSource( srcUrl );
 			return deferred.promise();
 		}
 		getKs().then(addSource).then(function() {
@@ -1398,8 +1645,8 @@ if( !window.kWidgetSupport ){
 /**
  * Register a global shortcuts for the Kaltura sources query
  */
-mw.getEntryIdSourcesFromApi = function( widgetId, partnerId, entryId, size, callback ){
-	kWidgetSupport.getEntryIdSourcesFromApi( widgetId, partnerId, entryId, size, callback);
+mw.getEntryIdSourcesFromApi = function( embedPlayer, entryId, callback ){
+	kWidgetSupport.getEntryIdSourcesFromApi( embedPlayer, entryId, callback);
 };
 
 })( window.mw, jQuery );

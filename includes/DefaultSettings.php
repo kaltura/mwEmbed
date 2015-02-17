@@ -12,7 +12,7 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '2.6.rc3';
+$wgMwEmbedVersion = '2.27.1';
 
 
 # Full path to working directory.
@@ -228,6 +228,9 @@ $wgKalturaAuthDomains = array( 'www.kaltura.com', 'kmc.kaltura.com' );
 // If google anlytics should be enabled, set to the ua string
 $wgKalturaGoogleAnalyticsUA = false;
 
+// for additional script includes. 
+$wgAdditionalDocsScriptInclude = false;
+
 //Remote web inspector URL such as: weinre, fireBug
 $wgRemoteWebInspector = false;
 
@@ -244,6 +247,7 @@ if( is_file( $wgLocalSettingsFile ) ){
 }
 // Include autoloader 
 include_once( realpath( dirname( __FILE__ ) ) .'/../AutoLoader.php' );
+
 
 /**
  * Extensions should register foreign module sources here. 'local' is a

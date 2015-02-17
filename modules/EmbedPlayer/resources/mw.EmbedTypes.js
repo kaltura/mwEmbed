@@ -13,14 +13,10 @@
  * loaded post player detection
  */
 //Native Mobile player
-var nativeComponentPlayerVideo = new mw.MediaPlayer( 'nativeComponentPlayer', ['video/h264', 'video/mp4', 'application/vnd.apple.mpegurl'], 'NativeComponent' );
+var nativeComponentPlayerVideo = new mw.MediaPlayer( 'nativeComponentPlayer', ['video/h264', 'video/mp4', 'application/vnd.apple.mpegurl', 'video/wvm'], 'NativeComponent' );
 
 // Flash based players:
-var kplayer = new mw.MediaPlayer('kplayer', ['video/live', 'video/kontiki', 'video/wvm', 'video/x-flv', 
-											'application/vnd.apple.mpegurl', 'video/h264', 'video/mp4', 
-											'audio/mpeg', 'application/x-shockwave-flash'], 
-								'Kplayer' );
-
+var kplayer = new mw.MediaPlayer('kplayer', ['video/live', 'video/kontiki', 'video/wvm', 'video/x-flv', 'video/h264', 'video/mp4', 'audio/mpeg', 'application/x-shockwave-flash', 'application/vnd.apple.mpegurl'], 'Kplayer');
 // Silverlight
 var splayer = new mw.MediaPlayer('splayer', ['video/playreadySmooth', 'video/ism', 'video/multicast', 'video/h264', 'video/mp4'], 'Silverlight');
 
@@ -31,8 +27,10 @@ var cortadoPlayer = new mw.MediaPlayer( 'cortado', ['video/ogg', 'audio/ogg', 'a
 var oggNativePlayer = new mw.MediaPlayer( 'oggNative', ['video/ogg', 'audio/ogg', 'application/ogg' ], 'Native' );
 var h264NativePlayer = new mw.MediaPlayer( 'h264Native', ['video/h264', 'video/mp4'], 'Native' );
 var appleVdnPlayer = new mw.MediaPlayer( 'appleVdn', ['application/vnd.apple.mpegurl'], 'Native');
+var wvmPlayer = new mw.MediaPlayer( 'wvmNative', ['video/wvm'], 'Native');
 var mp3NativePlayer = new mw.MediaPlayer( 'mp3Native', ['audio/mpeg', 'audio/mp3'], 'Native' );
 var webmNativePlayer = new mw.MediaPlayer( 'webmNative', ['video/webm'], 'Native' );
+var chromecastPlayer = new mw.MediaPlayer( 'chromecast', ['video/mp4'], 'Chromecast' );
 
 // Image Overlay player ( extends native )
 var imageOverlayPlayer = new mw.MediaPlayer( 'imageOverlay', ['image/jpeg', 'image/png'], 'ImageOverlay' );
@@ -101,6 +99,7 @@ mw.EmbedTypes = {
 	addSilverlightPlayer:function(){
 		this.mediaPlayers.addPlayer(splayer);
 	},
+
 	addJavaPlayer: function(){
 		if( !mw.getConfig( 'EmbedPlayer.DisableJava' ) ){
 			this.mediaPlayers.addPlayer( cortadoPlayer );
@@ -140,8 +139,8 @@ mw.EmbedTypes = {
 		}
 
 		// Use core mw.supportsFlash check:
-		// Safari has cross domain issue - Flash external interface doesn't work, so we disable kplayer									 '
-		if( mw.supportsFlash() && !mw.isDesktopSafari() ){
+		// Safari has cross domain issue - Flash external interface doesn't work, so we disable kplayer
+		if( mw.supportsFlash() ){
 			this.addFlashPlayer();
 		}
 
@@ -207,6 +206,10 @@ mw.EmbedTypes = {
 				  	// but xiph qt registers mimetype via quicktime plugin
 					} else if ( this.supportedMimeType( 'video/ogg' ) ) {
 						this.mediaPlayers.addPlayer( oggNativePlayer );
+					}
+
+					if ( mw.isIOS() || mw.isAndroid4andUp() ) {
+						this.mediaPlayers.addPlayer( wvmPlayer );
 					}
 				}
 			} catch ( e ) {

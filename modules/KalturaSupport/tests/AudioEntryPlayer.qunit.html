@@ -33,15 +33,32 @@
 </head>
 <body>
 	<h2> Audio Player MP3 Flavor Test </h2>
-	<div id="playbackModeSelector"></div>
+	Highlights an audio only player, disables large play button. 
+	
 	<br />
-	<div id="kaltura_player" style="width:400px;height:55px;"></div>
+	<div id="kaltura_player" style="width:400px;height:30px;"></div>
 	<script>
 		kWidget.embed({
 			'targetId' : 'kaltura_player',
 			'wid' : '_243342',
 			'uiconf_id' :'12905712',
-			'entry_id': '1_wup745o9'
+			'entry_id': '1_wup745o9',
+			'flashvars':{
+				'largePlayBtn':{
+					'plugin': false
+				},
+				'scrubber': {
+					'parent': 'controlsContainer',
+					'minWidth': 100,
+					'sliderPreview': false
+				},
+				'volumeControl':{
+					'pinVolumeBar': true
+				},
+				'fullScreenBtn':{
+					'plugin': false
+				}
+			}
 		})
 	</script>
 </body>

@@ -52,6 +52,7 @@
 		},
 		updateContentSource:function(){
 			var _this = this;
+			
 			// change source to HLS
 			$(this.embedPlayer.mediaElement).bind('onSelectSource', function () {
 				// set this UGULY hack to have flash player deal with URL: 
@@ -64,7 +65,7 @@
 					})
 				);
 				// select our m3u8 source: 
-				_this.embedPlayer.selectedSource = kAdsSource;
+				_this.embedPlayer.mediaElement.selectedSource = kAdsSource;
 			});
 		},
 		getGuid: function(){

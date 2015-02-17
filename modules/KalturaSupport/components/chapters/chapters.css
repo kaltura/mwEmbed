@@ -1,0 +1,614 @@
+@import url(http://fonts.googleapis.com/css?family=Lato:300,400,700,900);
+.medialistContainer{
+    font-family: "Lato", 'Open Sans', sans-serif;
+    height: 100%;
+    width: 100%;
+}
+.onpagePlaylistInterface{
+    width: 100%;
+    height: 100%;
+}
+.chapters .unselectable {
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+
+    /*
+      Introduced in IE 10.
+      See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+    */
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.chapters > .k-chapters-container{
+    position:relative;
+}
+.chapters > .k-chapters-container.horizontal {
+    padding-top:5px;
+}
+.chapters > .k-chapters-container ul {
+    margin: 0 0 0 0;
+    height: auto;
+    padding: 0px;
+}
+
+.chapters > .k-chapters-container .k-medialist-header{
+    height: 40px;
+}
+.touch  .chapters > .k-chapters-container .k-medialist-header{
+    height: 48px;
+}
+.chapters > .footer{
+    height: 40px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    display: table;
+    z-index: 10;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0, M12=0, M21=0, M22=0, SizingMethod='auto expand')";
+    -webkit-transition: -webkit-transform 0.25s ease-out;
+    -moz-transition: -moz-transform 0.25s ease-out;
+    -ms-transition: -ms-transform 0.25s ease-out;
+    transition: transform 0.25s ease-out;
+}
+.chapters > .footer.minimized{
+    -webkit-transform: scale(0);
+    -moz-transform: scale(0);
+    -ms-transform: scale(0);
+    transform: scale(0);
+}
+.touch  .chapters > .footer{
+    height: 48px;
+}
+.chapters > .footer > .footerWrapper{
+    height: 100%;
+    width: 100%;
+    background-color: rgb(245, 245, 245);
+    overflow: hidden;
+    text-align: center;
+    vertical-align: middle;
+    display: table-cell;
+}
+.chapters > .footer span{
+    width: 24px;
+    display: inline-block;
+    color: rgb(0,0,0);
+    font-size: 24px;
+    margin: 0px 5px;
+    cursor: pointer;
+}
+.chapters > .footer span.toggleAll {
+    position: absolute;
+    right: 0;
+}
+
+.chapters > .footer span.toggleAll.disabled {
+    display: none;
+    cursor: default;
+}
+
+.chapters > .k-chapters-container .chapterDivider{
+    width: 1px;
+    background: #aaa;
+    position:absolute;
+    top: 8px;
+    left: 0px;
+}
+.chapters > .k-chapters-container .mediaBox{
+    cursor:pointer;
+    position:relative;
+    list-style-type: none;
+    float: left;
+    height: auto;
+    overflow: hidden;
+    width: auto;
+    background-color: rgb(50, 50, 50);
+}
+.chapters > .k-chapters-container .boxImg{
+    float: left;
+    height: 100%;
+}
+.chapters > .k-chapters-container .boxImg img {
+    height: 100%;
+    width: 100%;
+    background-repeat: no-repeat;
+    background-position: left top;
+    background-size: cover;
+    box-sizing: border-box;
+}
+.chapters > .k-chapters-container .boxShadow {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0.55;
+    top: 0;
+    left: 0;
+}
+.chapters > .k-chapters-container .mediaBox:hover .boxShadow {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.85) 100%);
+}
+.chapters > .k-chapters-container .mediaBoxText{
+    position: relative;
+    z-index: 2;
+    opacity: 0.68;
+    text-transform: capitalize;
+}
+.chapters > .k-chapters-container .k-title-container{
+    opacity: 1;
+}
+
+.chapters > .k-chapters-container .chapterBox > .boxImg{
+    width: 100%;
+}
+
+.chapters > .k-chapters-container .chapterBox .boxInfo{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.chapters > .k-chapters-container .chapterBox .boxShadow {
+    background-image: -moz-linear-gradient(rgb(34, 34, 34) 0%, rgba(0, 0, 0, 0.71) 50%,
+    rgba(0, 0, 0, 0.65) 60%, rgba(0, 0, 0, 0.30196) 100%);
+    background-image: -webkit-linear-gradient(rgb(34, 34, 34) 0%, rgba(0, 0, 0, 0.71) 50%,
+    rgba(0, 0, 0, 0.65) 60%, rgba(0, 0, 0, 0.30196) 100%);
+    background-image: -ms-linear-gradient(rgb(34, 34, 34) 0%, rgba(0, 0, 0, 0.71) 50%,
+    rgba(0, 0, 0, 0.65) 60%, rgba(0, 0, 0, 0.30196) 100%);
+}
+
+.chapters > .k-chapters-container .chapterRibbon{
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 37px 50px 0 0;
+    border-color: #c2c2c2 transparent transparent transparent;
+}
+.chapters > .k-chapters-container .chapterNumberWrapper{
+    z-index: 2;
+    position: relative;
+}
+.chapters > .k-chapters-container .chapterNumber{
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    font-size: 11px;
+    font-weight: 900;
+    text-align: center;
+    color: rgb(0, 0, 0);
+}
+.chapters > .k-chapters-container .chapterBox .mediaBoxText {
+    margin: 0 10px 5px 10px;
+}
+.chapters > .k-chapters-container .chapterBox .k-title-container{
+    max-height: 20%;
+}
+.chapters > .k-chapters-container .k-chapter-title{
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+.chapters > .k-chapters-container .k-description-container{
+    max-height: 30%;
+    height: 100%;
+    font-size:13px;
+    font-weight: 300;
+    line-height: 1.357;
+}
+
+.chapters > .k-chapters-container .k-chapter-time {
+    font-weight: 300;
+    color: rgb(255, 255, 255);
+    line-height: 1.2;
+    font-size: 12px;
+}
+.chapters > .k-chapters-container .k-duration{
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 12px 20px 0px 0px !important;
+}
+
+.chapterBox.collapsed .slideBoxToggle{
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+}
+.chapterBox .slideBoxToggle{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: 2;
+    margin: 0 20px 12px 0;
+    font-size: 30px;
+    -webkit-transition: -webkit-transform 0.5s ease-out;
+    -moz-transition: -moz-transform 0.5s ease-out;
+    -ms-transition: -ms-transform 0.5s ease-out;
+    transition: transform 0.5s ease-out;
+}
+
+.chapterBox.disableChapterToggle .slideBoxToggle{
+    display: none;
+}
+
+.slideBox{
+    -webkit-transition: -webkit-transform .5s cubic-bezier(0, 1, 0.5, 1);
+    -moz-transition: -moz-transform .5s cubic-bezier(0, 1, 0.5, 1);
+    -ms-transition: -ms-transform .5s cubic-bezier(0, 1, 0.5, 1);
+    transition: transform .5s cubic-bezier(0, 1, 0.5, 1);
+}
+.slideBox.collapsed{
+    -webkit-transform: translateX(-100%);
+    -moz-transform: translateX(-100%);
+    -ms-transform: translateX(-100%);
+    transform: translateX(-100%);
+    height: 0 !important;
+}
+.slideBox > .boxImg{
+    width: 66%;
+    right: 0;
+    box-sizing: border-box;
+    padding: 4px 6px;
+    position: absolute;
+}
+.slideBox .slideGutter{
+    display: table-cell;
+    font-size: 12px;
+    font-weight: 300;
+    text-align: center;
+    vertical-align: middle;
+    color: rgb(187,187,187);
+}
+.slideBox .slideNumber{
+    position: relative;
+    z-index: 2;
+}
+.slideBox .slideOverlay{
+    opacity: 0.5;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.chapters > .k-chapters-container .slideBox .boxInfo{
+    display: table;
+    position: absolute;
+    width: 34%;
+    height: 100%;
+    color: rgb(255, 255, 255);
+}
+.slideBox .separator{
+    position: absolute;
+    bottom: 0;
+    border-bottom: 1px solid rgb(80,80,80);
+    height: 1px;
+    width: 100%;
+
+}
+.chapters > .k-chapters-container .k-slide-text{
+    position: relative;
+    z-index: 2;
+    vertical-align: middle;
+    opacity: 0.68;
+}
+.chapters > .k-chapters-container .slideBox .k-title-container{
+
+
+
+}
+.chapters > .k-chapters-container .slideBox .mediaBoxText {
+    max-height: 80%;
+    min-height: 18px;
+    vertical-align: middle;
+}
+/*
+* horizontal layout styles:
+*/
+.chapters > .k-chapters-container.k-horizontal .mediaBox{
+    display:inline;
+    height: 100%;
+}
+.chapters > .k-chapters-container.k-horizontal .k-scroll.k-next{
+    right:0px;
+    top:0px;
+}
+.chapters > .k-chapters-container.k-horizontal .k-scroll.k-right{
+    left:0px;
+    top:0px;
+}
+
+.chapters > .k-chapters-container .k-carousel{}
+.chapters > .k-chapters-container .k-scroll{
+    display: block;
+    cursor:pointer;
+    width: 20px;
+    height:100%;
+    opacity:.7;
+    text-decoration: none;
+    position:absolute;
+    z-index: 3;
+}
+.chapters > .k-chapters-container .k-next{
+    background: no-repeat url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAQAAAD1lzQWAAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfcCR0BGhpKxvJRAAAAhUlEQVQI12NgYJCcL3lekp8BBiTna/7X+y9zASbEpMTPxcDKIKTPfBAixHSkSmoHA4oQw38N3+3G/42hGhkhQtb7f0owMPxm+LCIiYGBgUGq/JsEAwMDg8CdpVOg9hj/N/5vd/ucw38WdC4DixL/DwYGBu47E1INjzD+gdoBk4WC/xrIXADEAzdXKDh+NAAAAABJRU5ErkJggg==);
+    background-position:center;
+}
+.chapters > .k-chapters-container .k-next.disabled{
+    visibility:hidden;
+}
+.chapters > .k-chapters-container .k-next:hover{
+    background-color: rgba(255,255,255,.5);
+}
+.chapters > .k-chapters-container .k-prev{
+    background: no-repeat url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAQAAAD1lzQWAAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfcCR0BFDQIk9IQAAAAj0lEQVQI12NggAJJfsnzkvMZGFhgXOaDQvq/DaACEC4rAyuDED8TgsvAILXjSBWDJL/MBb3/xv+N//tu/6/BwMAgtxDCtXr+X4OBgYGBaekUgTsMDAwM3ySkyhkYGBgY/rOcc7C7bfzf+L/mf8n5WISYGBgY/xgemZDKfYeBgYtBiR/qTogqqD0Iof8aDAwAfkM1Z1BrKhkAAAAASUVORK5CYII=);
+    background-position:center;
+}
+.chapters > .k-chapters-container .k-prev.disabled{
+    visibility:hidden;
+}
+.chapters > .k-chapters-container .k-prev:hover{
+    background-color: rgba(255,255,255,.5);
+}
+
+.chapters > .clearfix{
+    clear: both;
+}
+.chapters > .icon-time {
+    margin: 3px 3px;
+    width: 14px;
+    height: 14px;
+    float: left;
+    background-position: 0px 0px;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAQAAAC1QeVaAAAAAXNSR0IArs4c6QAAAAJiS0dEAP+Hj8y/AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AwLFgwK7xJlJAAAAQxJREFUGNONkD1Lw3AYxH//UAotQR37QKkIDiLmRQudSqhkcRe6dugn8IMUh+79BqKbYzLoJk3EMYKTdiy1sVDQPg6NxU1vvDvuuIP/QHoSyYtMJZLeD2cAZJu46lcp54alvWCR0pnMCkc9dTVMRn1ta3vUDxNX6+km0NUwUV9tUVBb/TBxtQg/vG/qoAvQ1LV90G3q0S0A3ntrrvZvUe3W/PgVLKh8rDB5UaGiYPIV1haUoPy2PBFv8ggPp+sB4n3Z2wlYsHdjURkCmNjEJobK0GL3et1QCzJHJRIPQDyJHA0yrRVjxp0gc7ShMpVpQx0NsnFn85CW8C/On85m+6V85/ng7vKK1Hz+8fc32cti8IOB/GwAAAAASUVORK5CYII=);
+}
+
+
+/******************************************************************
+* Vertical overrides
+******************************************************************/
+.chapters > .k-chapters-container.k-vertical .chapterDivider{
+    height: 1px;
+    background:#aaa;
+    position:absolute;
+    top:0px;
+    left:5px;
+    right:5px;
+    width:auto;
+}
+.chapters > .k-chapters-container.k-vertical .mediaBox{
+    width:100%;
+}
+.chapters > .k-chapters-container.k-vertical .k-scroll{
+    float: none;
+    width: 100%;
+    height: 20px;
+    position: absolute;
+}
+.chapters > .k-chapters-container.k-vertical .k-carousel{
+    float: none;
+}
+.chapters > .k-chapters-container.k-vertical .k-next{
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAICAQAAABn7dZ6AAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfcCR0FEyvN0+H+AAAAhklEQVQI12NgYPivYb1Ocj4DFMB4LP81/Pp/eAgwMDA8T2RgQPBYzkt8VGFg4GJgSGBgeNbp1//Mg4GBlYHBgPE/y3mbgtlfVRgY/jJwvfgpwcDwm+Hdxb/2jAwMCCkGBpjw848QC1nOOdjdNv5v/F/vv8wFSX4GBIBIYQhDpA6byi1ECAMAoP045A/DsTkAAAAASUVORK5CYII=');
+    background-position:center;
+    bottom:0px;
+}
+.chapters > .k-chapters-container.k-vertical .k-prev{
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAICAQAAABn7dZ6AAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfcCR0FEzqnY8EMAAAAkUlEQVQI12NggAJJfrmFh03/szCgAkl+mQt6/+1un3NAkYIIG/83RpJiZGCQ5Gc+KKTPClXEfWdCquERxj9MCGH2F38ZGBi+qhTMPm/zn4WZ94SIASsDA4PUjj2RTTzMBqwMv4X22RhcZGK48JuBgUFqx6ZCxhvPEz8s+MbAwMB/x/AFAwOD5Hzrdf814A6B8gCavDND8yApewAAAABJRU5ErkJggg==');
+    background-position:center;
+    top:0px;
+}
+
+/*Slider*/
+.nano > .nano-pane   {
+    background: none;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 2px;
+    width: 11px;
+}
+.touch .nano-pane   {
+    display: none !important;
+}
+.nano > .nano-pane:hover, .nano-pane:active {
+    cursor: pointer;
+    width: 14px;
+}
+
+.nano > .nano-pane > .nano-slider {
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+.nano > .nano-pane > .nano-slider:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+.nano > .nano-pane > .nano-slider:active {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+/*Search*/
+.search.medialistContainer{
+    width: 100%;
+    height: auto;
+}
+.twitter-typeahead{
+    width:100%;
+}
+.touch .searchFormWrapper{
+    /*height: 48px;*/
+}
+.searchFormWrapper{
+    display: table;
+    border-spacing:0;
+    width:100%;
+    /*height: 40px;*/
+    background-color: rgb(245, 245, 245);
+    box-shadow: 0px 0px 16px 0px rgba(0, 0, 0, 0.2);
+}
+.searchFormWrapper > div {
+    display: table-cell;
+    height: 40px;
+    -webkit-transition-property: height;
+    -webkit-transition-duration: 1s;
+    -webkit-transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+    -moz-transition-property: height;
+    -moz-transition-duration: 1s;
+    -moz-transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+    -ms-transition-property: height;
+    -ms-transition-duration: 1s;
+    -ms-transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+    transition-property: height;
+    transition-duration: 1s;
+    transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+}
+.touch .searchFormWrapper > div {
+    height: 48px;
+}
+.searchFormWrapper.minimized > div {
+    height: 20px;
+}
+.touch .searchFormWrapper > div.searchIcon {
+    margin: 16px 11px;
+}
+.searchFormWrapper > div.searchIcon {
+    font-size: 16px;
+    width: 26px;
+    vertical-align: middle;
+}
+.touch .twitter-typeahead{
+    height: 48px;
+}
+.twitter-typeahead{
+    height: 40px;
+}
+.minimized > * > .twitter-typeahead{
+    height: 20px;
+}
+.touch #searchBox, .touch.tt-hint {
+    margin: 16px 0px;
+}
+#searchBox, .tt-hint{
+    margin: 12px 0px;
+    height: 16px;
+    width: 100%;
+    border: none;
+    color: rgb(0, 0, 0);
+    outline: none;
+    box-shadow:none;
+    font-size: 15px;
+    font-weight: 400;
+    padding: 0;
+    background: rgba(255, 255, 255, 0);
+    z-index: 2;
+}
+.minimized > * > * > #searchBox {
+    margin: 1px 2px;
+    font-size: 13px;
+}
+.tt-hint {
+    color: rgb(136, 136, 136);
+    background-color: rgb(238, 238, 238);
+}
+input#searchBox:invalid::-webkit-input-placeholder {
+    box-shadow: none;
+    color: #999999;
+}
+/*Fix for > IE9 x mark in textbox*/
+input#searchBox::-ms-clear {
+    width : 0;
+    height: 0;
+    display: none;
+}
+#searchBoxIcon{
+    color: #999999;
+    text-align: right;
+}
+#searchBoxIcon.active {
+    color: rgb(0,0,0);
+}
+#searchBoxCancelIcon{
+    visibility: hidden;
+    cursor: pointer;
+    color: rgb(136, 136, 136);
+    text-align: center;
+}
+#searchBoxCancelIcon.active{
+    visibility: visible;
+}
+/*Search results*/
+.twitter-typeahead{
+    width: 100%;
+}
+.tt-dropdown-menu {
+    background-color: rgb(218, 218, 218);
+    width: 100%;
+    left: -26px !important;
+    max-height: 200px;
+    overflow-y: auto;
+}
+.touch .tt-dropdown-menu {
+    max-height: 240px;
+}
+.tt-suggestions {
+    width: 100%;
+    background-color: rgb(218, 218, 218);
+}
+.touch .tt-suggestion {
+    height: 44px;
+}
+.tt-suggestion, .empty-message {
+    display: block;
+    padding: 3px 20px;
+    clear: both;
+    font-weight: 700;
+    font-size: 15px;
+    line-height: 2em;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: rgb(0, 0, 0);
+}
+.tt-suggestion.tt-cursor {
+    background-color: rgb(194, 194, 194);
+}
+.tt-suggestion p {
+    margin: 0;
+    overflow: hidden;
+    white-space: nowrap !important;
+    text-overflow: ellipsis;
+}
+
+.tt-highlight {
+    font-weight: 400;
+}
+
+.k-chapters-container .searchResultsBox {
+    background: rgba(240,240,240,.8);
+    background: #eee\9;
+    cursor: pointer;
+    position: relative;
+    list-style-type: none;
+    float: left;
+    height: auto;
+    overflow: hidden;
+    width: auto;
+}
+.k-chapters-container.k-vertical .searchResultsBox {
+    width: 100%;
+}
+.k-chapters-container.k-vertical .searchResultsBox:not(:last-child) {
+    margin-bottom: 2px;
+}
+.k-chapters-container .searchResultsInner{
+    position: absolute;
+    bottom: 0;
+    text-shadow: 0px 0px 2px rgba(0, 0, 0, 0.6);
+    padding: 10px;
+}
+
+.chapters > .k-chapters-container .mediaBox.resultNoMatch{
+    display: none;
+}

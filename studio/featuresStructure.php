@@ -25,16 +25,16 @@ return array(
 //				"source" => "getTags"
 //			),
 			array(
-				"label" => "Preview entry",
+				"label" => "Preview entry / playlist",
 				"type" => "select2data",
 				"allow-custom-values" => true,
 				"source" => "listEntries",
 				"query" => "queryEntries",
-				"helpnote" => "Select entry",
+				"helpnote" => "Select entry / playlist",
 				"player-refresh"=> true,
 				"endline" => "true",
 				"width" => "100%",
-				"model" => "~settings.previewEntry",
+				"model" => "~selectedEntry",
 				"data-placeholder" => "Pick an entry"
 			),
 			array(
@@ -51,11 +51,10 @@ return array(
 				),
 				"showSearch"=> false,
 				"initvalue" => "wide",
-				"helpnote" => "Select aspect ratio",
+				"helpnote" => "Select aspect ratio for the current preview. Aspect ratio is not saved with the player settings",
 				"type" => "dropdown",
 				"label" => "Aspect Ratio",
-				"endline" => "true",
-				"model" => "basicDisplay.aspectRatio"
+				"endline" => "true"
 			),
 			array(
 				"label" => "Automatically play video on page load",
@@ -69,6 +68,12 @@ return array(
 				"endline" => "true",
 				"model" => "config.uiVars.autoMute"
 			),
+			array(
+                "label" => "Hovering controls",
+                "type" => "checkbox",
+                "endline" => "true",
+                "model" => "config.plugins.controlBarContainer.hover"
+            ),
 			array(
 				"label" => "Last Update",
 				"type" => "readonly",
@@ -84,16 +89,25 @@ return array(
 		"type" => "menu",  
 		"model" => "lookAndFeel",
 		"children"=> array(
+			array(
+                "label" => "Show tooltips",
+                "type" => "checkbox",
+                "initvalue" => true,
+                "endline" => "false",
+                "model" => "config.uiVars.enableTooltips"
+            ),
 			"titleLabel" => "",
 			"logo" => "",
 			"loadingSpinner" => "",
 			"volumeControl" => "",
 			"closedCaptions" => "",
 			"watermark" => "",
+			"theme" => "",
 			"infoScreen" => "",
 			"share" => "",
 			"related" => "",
-			"theme" => ""
+			"playlistAPI" => "",
+			"nextPrevBtn" => ""
 		)
 	),
 	"analytics"=> array(
@@ -118,11 +132,20 @@ return array(
 		"type" => "menu",
 		"model" => "monitization",
 		"children"=> array(
+			array(
+                "label" => "Display ads on replay",
+                "type" => "checkbox",
+                "initvalue" => true,
+                "endline" => "false",
+                "model" => "config.uiVars.adsOnReplay"
+            ),
 			"bumper" => "",
 			"vast" => "",
+			"skipBtn" => "",
+			"skipNotice" => "",
+			"noticeMessage" => "",
 			"doubleClick" => "",
-			"freeWheel" => "",
-			"tremor" => ""
+			"freeWheel" => ""
 		)
 	),
 	"plugins"=> array(
@@ -137,7 +160,12 @@ return array(
 			"moderation" => "",
 			"playbackRateSelector" => "",
 			"restrictUserAgent" => "",
-			"widevine" => ""
+			"widevine" => "",
+			"sourceSelector" => "",
+			"download" => "",
+			"nativeCallout" => "",
+			"strings" => "",
+			"uiVars" => ""
 		)
 	)
 );

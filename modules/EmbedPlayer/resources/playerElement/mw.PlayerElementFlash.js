@@ -15,6 +15,8 @@
 		//counter for listneres function names, in case we want to subscribe more than one func to the same kdp notification
 		listenerCounter: 0,
 		targetObj: null,
+		initialized: false,
+
 		/**
 		 * initialize the class, creates flash embed
 		 * @param containerId container for the flash embed
@@ -44,47 +46,57 @@
 				$.extend ( flashvars, elementFlashvars );
 			}
 
-			var kdpPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player/kdp3.swf';
-			// var kdpPath = "http://localhost/lightKdp/KDP3/bin-debug/kdp3.swf";
+			var mwEmbedPath = mw.getMwEmbedPath();
+			//replace protocol with page protocol
+			if ( window.location.protocol ) {
+				mwEmbedPath = window.location.protocol + mwEmbedPath.substring( mwEmbedPath.indexOf(":") + 1);
+			}
+
+			var kdpPath = mwEmbedPath + 'modules/EmbedPlayer/binPlayers/kaltura-player/kdp3.swf';
+			// var kdpPath = "http://localhost/chromeless-kdp/KDP3/bin-debug/kdp3.swf";
 
 			window[this.jsReadyFunName] = function( playerId ){
-				// We wrap everything in setTimeout to avoid Firefox race condition with empty cache
-				setTimeout(function(){
-					_this.playerElement = $('#' + playerId )[0];
+				if (!_this.initialized) {
+					_this.initialized = true;
+					// We wrap everything in setTimeout to avoid Firefox race condition with empty cache
+					setTimeout( function () {
+						_this.playerElement = $( '#' + playerId )[0];
 
-					//if this is the target object: add event listeners
-					//if a different object is the target: it should take care of its listeners (such as embedPlayerKPlayer)
-					if ( !_this.targetObj ) {
-						_this.targetObj = _this;
+						//if this is the target object: add event listeners
+						//if a different object is the target: it should take care of its listeners (such as embedPlayerKPlayer)
+						if ( !_this.targetObj ) {
+							_this.targetObj = _this;
 
-						var bindEventMap = {
-							'playerPaused' : 'onPause',
-							'playerPlayed' : 'onPlay',
-							'durationChange' : 'onDurationChange',
-							'playerPlayEnd' : 'onClipDone',
-							'playerUpdatePlayhead' : 'onUpdatePlayhead',
-							'playerSeekEnd': 'onPlayerSeekEnd',
-							'alert': 'onAlert',
-							'mute': 'onMute',
-							'unmute': 'onUnMute',
-							'volumeChanged': 'onVolumeChanged'
-						};
+							var bindEventMap = {
+								'playerPaused': 'onPause',
+								'playerPlayed': 'onPlay',
+								'durationChange': 'onDurationChange',
+								'playbackComplete': 'onClipDone',
+								'playerUpdatePlayhead': 'onUpdatePlayhead',
+								'playerSeekEnd': 'onPlayerSeekEnd',
+								'alert': 'onAlert',
+								'mute': 'onMute',
+								'unmute': 'onUnMute',
+								'volumeChanged': 'onVolumeChanged',
+								'mediaError' : 'onMediaError'
+							};
 
-						$.each( bindEventMap, function( bindName, localMethod ) {
-							_this.bindPlayerFunction(bindName, localMethod);
-						});
-					}
+							$.each( bindEventMap, function ( bindName, localMethod ) {
+								_this.bindPlayerFunction( bindName, localMethod );
+							} );
+						}
 
-					//imitate html5 video readyState
-					_this.readyState = 4;
-					// Run ready callback
-					if( $.isFunction( readyCallback ) ){
-						readyCallback.apply( _this );
-					}
+						//imitate html5 video readyState
+						_this.readyState = 4;
+						// Run ready callback
+						if ( $.isFunction( readyCallback ) ) {
+							readyCallback.apply( _this );
+						}
 
-					//notify player is ready
-					$( _this ).trigger('playerJsReady');
-				},0);
+						//notify player is ready
+						$( _this ).trigger( 'playerJsReady' );
+					}, 0 );
+				}
 			};
 
 			// attributes and params:
@@ -142,6 +154,15 @@
 				this.bindPlayerFunction( eventName, methodName );
 			}
 		},
+		removeJsListener: function( eventName, methodName ) {
+			if ( this.playerElement ) {
+				mw.log( 'PlayerElementFlash:: unbindPlayerFunction:' + eventName );
+				// The kaltura kdp can only call a global function by given name
+				var gKdpCallbackName = 'kdp_' + methodName + '_cb_' + this.id.replace(/[^a-zA-Z 0-9]+/g,'');
+				// Remove the listener ( if it exists already )
+				this.playerElement.removeJsListener( eventName, gKdpCallbackName );
+			}
+		},
 		getCurrentTime: function() {
 			if ( this.playerElement ) {
 				return this.playerElement.getCurrentTime();
@@ -152,16 +173,16 @@
 		 * add js listener for the given callback. Creates generic methodName and adds it to this playerElement
 		 * @param callback to call
 		 * @param eventName notification name to listen for
+		 * @param disregardEventCounter don't concat listenerCounter to the method name
 		 */
-		subscribe: function ( callback, eventName ) {
+		subscribe: function ( callback, eventName, disregardEventCounter ) {
 			if ( this.playerElement ) {
-				var methodName = eventName + this.listenerCounter;
+				var methodName = !!disregardEventCounter ? eventName  : eventName + this.listenerCounter;
 				this.listenerCounter++;
 				this.targetObj[methodName] = callback;
 
 				this.bindPlayerFunction( eventName, methodName );
 			}
-
 		},
 		/**
 		 * Bind a Player Function,
@@ -230,6 +251,20 @@
 		onVolumeChanged: function ( data ) {
 			this.volume = data.newVolume;
 			$( this).trigger( 'volumechange' );
+		},
+		onMediaError: function () {
+			$( this).trigger( 'error' );
+		},
+		redrawObject: function ( timeout ) {
+			var _this = this;
+			//by default we will wait 250 ms
+			if ( !timeout ) {
+				timeout = 250;
+			}
+			this.playerElement.style.width = "99%";
+			setTimeout( function() {
+				_this.playerElement.style.width = "100%";
+			}, timeout );
 		}
 	});
 

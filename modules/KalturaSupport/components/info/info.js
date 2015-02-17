@@ -7,11 +7,15 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 		order: 3,
 		align: "right",
 		tooltip: 'Info',
+		showTooltip: true,
 		usePreviewPlayer: true,
 		previewPlayerEnabled: true,			
 		templatePath: 'components/info/info.tmpl.html'
 	},
-	iconBtnClass: "icon-info"
+	iconBtnClass: "icon-info",
+	isSafeEnviornment: function(){
+		return !mw.isIpad() || ( mw.isIpad() && mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') !== false );
+	}
 }));
 
 } )( window.mw, window.jQuery );

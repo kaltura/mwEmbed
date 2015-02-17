@@ -1,6 +1,7 @@
-( function( mw, $ ) {"use strict";
+(function (mw, $) {
+	"use strict";
 
-	mw.PluginManager.add( 'logo', mw.KBaseComponent.extend({
+	mw.PluginManager.add('logo', mw.KBaseComponent.extend({
 
 		defaultConfig: {
 			parent: "controlsContainer",
@@ -8,36 +9,55 @@
 			displayImportance: 'low',
 			align: "right",
 			cssClass: "kaltura-logo",
-			href: 'http://www.kaltura.com',
-			title: 'Kaltura',
+			href: null,
+			title: null,
 			img: null
 		},
-		getComponent: function() {
-			if( !this.$el ) {
+		getComponent: function () {
+			var _this = this;
+			if (!this.$el) {
 				var $img = [];
-				if( this.getConfig('img') ){
-					$img = $( '<img />' )
-								.attr({
-									alt: this.getConfig('title'),
-									src: this.getConfig('img')
-								});
+				if (this.getConfig('img')) {
+					$img = $('<img />')
+						.attr({
+							alt: this.getConfig('title'),
+							src: this.getConfig('img')
+						});
 				}
 				this.$el = $('<div />')
-					.addClass ( this.getCssClass() )
+					.addClass(this.getCssClass())
 					.addClass('btn')
 					.append(
-					$( '<a />' )
-						.addClass('btnFixed')
-						.attr({
-							'title': this.getConfig('title'),
-							'target': '_blank',
-							'href': this.getConfig('href')
-						}).append( $img )
+						$('<a />')
+							.addClass('btnFixed')
+							.click(function () {
+								if (_this.getConfig('href')) {
+									if (mw.isNativeApp()) {
+										_this.openInNativeApp();
+									} else {
+										window.open(_this.getConfig('href'), "_blank");
+									}
+								}
+							})
+							.attr({
+								'title': this.getConfig('title')
+							}).append($img)
 					);
 			}
+			// remove Kaltura logo image if we have a custom logo icon
+			if (this.getConfig('img') != null) {
+				this.$el.removeClass('kaltura-logo');
+			}
 			return this.$el;
+		},
+		openInNativeApp: function () {
+			var params = {
+				actionType: 'openURL',
+				url: this.getConfig('href')
+			}
+			this.getPlayer().doNativeAction(JSON.stringify(params));
 		}
 
 	}));
 
-} )( window.mw, window.jQuery );
+})(window.mw, window.jQuery);

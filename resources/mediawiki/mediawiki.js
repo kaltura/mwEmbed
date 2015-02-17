@@ -615,6 +615,15 @@ var mw = ( function ( $, undefined ) {
 							}
 							jobs.splice( j, 1 );
 							j -= 1;
+						} else if ( compare(
+							filter( ['ready', 'error'], jobs[j].dependencies ).sort(),
+							jobs[j].dependencies.sort() ) )
+						{
+							if ( $.isFunction( jobs[j].error ) ) {
+								jobs[j].error();
+							}
+							jobs.splice( j, 1 );
+							j -= 1;
 						}
 					}
 					// Execute modules whose dependencies have just been met
@@ -663,7 +672,7 @@ var mw = ( function ( $, undefined ) {
 					script.setAttribute( 'type', 'text/javascript' );
 					if ( callback && $.isFunction( callback ) ) {
 						// Attach handlers for all browsers (based on jQuery.ajax)
-						script.onload = script.onreadystatechange = function() {
+						script.onload = script.onerror = script.onreadystatechange = function() {
 
 							if (
 								!done
@@ -675,7 +684,19 @@ var mw = ( function ( $, undefined ) {
 
 								done = true;
 
-								callback();
+								var eventType;
+								var errorSignal = false;
+
+								if (arguments &&
+									arguments[0] &&
+									arguments[0].type){
+									eventType = arguments[0].type;
+									if (eventType == "error"){
+										errorSignal = true;
+									}
+								}
+
+								callback(errorSignal);
 
 								// Handle memory leak in IE. This seems to fail in
 								// IE7 sometimes (Permission Denied error when
@@ -762,8 +783,8 @@ var mw = ( function ( $, undefined ) {
 				// Execute script
 				//try {
 					script = registry[module].script;
-					markModuleReady = function() {
-						registry[module].state = 'ready';
+					markModuleReady = function(state) {
+						registry[module].state = state || 'ready';
 						handlePending( module );
 						if ( callback && $.isFunction( callback ) ) {
 							callback();
@@ -782,8 +803,13 @@ var mw = ( function ( $, undefined ) {
 							return ;
 						}
 
-						addScript( arr[i], function() {
-							nestedAddScript( arr, callback, async, i + 1 );	
+						addScript( arr[i], function(error) {
+							if (error){
+								callback('error');
+							} else {
+								nestedAddScript( arr, callback, async, i + 1 );
+							}
+
 						}, async );
 					};
 
@@ -1382,6 +1408,13 @@ var mw = ( function ( $, undefined ) {
 				 */
 				escape: function ( s ) {
 					return s.replace( /['"<>&]/g, escapeCallback );
+				},
+
+				unescape: function ( s ) {
+					return s.replace(/&#([0-9]{1,3});/gi, function (match, numStr) {
+						var num = parseInt(numStr, 10); // read num as normal number
+						return String.fromCharCode(num);
+					});
 				},
 
 				/**

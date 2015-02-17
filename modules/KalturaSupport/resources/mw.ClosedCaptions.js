@@ -14,10 +14,15 @@
 			"useCookie": true,
 			"hideWhenEmpty": false,
 			"showEmbeddedCaptions": false,
-			"hideClosedCaptions": false
+			"hideClosedCaptions": false,
+			"showEmbeddedCaptionsStyle": false,
+			"showOffButton": true,
+			"toggleActiveCaption": false,
+			"useExternalClosedCaptions": false
 		},
 
 		textSources: [],
+		defaultBottom: 15,
 
 		setup: function(){
 			var _this = this;
@@ -34,7 +39,22 @@
 				this.setConfig('displayCaptions', false );
 			}
 
+			if( (this.embedPlayer.isOverlayControls() && !this.embedPlayer.getInterface().find( '.controlBarContainer' ).is( ':hidden' )) || this.embedPlayer.useNativePlayerControls() ){
+				if( this.embedPlayer.layoutBuilder ) {
+					this.defaultBottom += this.embedPlayer.layoutBuilder.getHeight();
+				}
+			}
+
 			if ( this.getConfig('showEmbeddedCaptions') === true ) {
+
+				if ( this.getConfig('showEmbeddedCaptionsStyle') === true ) {
+					this.bind( 'textTrackIndexChanged', function( e, captionData ) {
+						if ( captionData.ttml ) {
+							var xml =  $.parseXML( mw.html.unescape( decodeURIComponent( captionData.ttml ) ));
+							_this.selectedSource.parseStylesTTML( xml );
+						}
+					});
+				}
 				this.bind( 'onEmbeddedData', function( e, captionData ) {
 					//remove old captions
 					var $tracks = _this.embedPlayer.getInterface().find( '.track' );
@@ -44,16 +64,51 @@
 						}
 					});
 					if ( _this.getConfig( 'displayCaptions' ) === true ) {
-						_this.addCaption( captionData.source, captionData.capId, captionData.caption );
+						var caption = captionData;
+						//if we got raw ttml <p>
+						if ( captionData.ttml ) {
+							var xml =  $.parseXML( mw.html.unescape( decodeURIComponent( captionData.ttml ) ));
+							caption.caption = _this.selectedSource.parseCaptionObjTTML( $(xml).find( 'p' )[0] );
+						}
+						if ( !_this.selectedSource ) {
+							_this.selectedSource = caption.source;
+						}
+						_this.addCaption( _this.selectedSource, caption.capId, caption.caption );
 					}
 				});
-			} else {
-				this.bind( 'playerReady', function(){
-					_this.destory();
-					_this.setupTextSources(function(){
-						_this.buildMenu();
-					});
+				this.bind( 'changedClosedCaptions', function () {
+					_this.getPlayer().triggerHelper('newClosedCaptionsData');
+					//remove old captions
+					_this.embedPlayer.getInterface().find( '.track' ).empty();
+					_this.getPlayer().triggerHelper( 'changeEmbeddedTextTrack', _this.selectedSource );
 				});
+				this.bind( 'textTracksReceived', function ( e, data ) {
+					if ( data && $.isArray( data.languages ) && data.languages.length ) {
+						_this.destory();
+						var newSources = [];
+						$.each( data.languages, function ( inx, src ) {
+							var source = new mw.TextSource( $.extend( { srclang: src.label }, src ) );
+							//no need to load embedded captions
+							source.loaded = true;
+							newSources.push( source );
+						} );
+						_this.buildMenu( newSources );
+					}
+				} );
+			} else {
+				if (this.getConfig("useExternalClosedCaptions")) {
+					this.bind( 'loadExternalClosedCaptions', function ( e, textSources ) {
+						_this.destory();
+						_this.buildMenu( textSources );
+					} );
+				} else {
+					this.bind( 'playerReady', function () {
+						_this.destory();
+						_this.setupTextSources( function () {
+							_this.buildMenu( _this.textSources );
+						} );
+					} );
+				}
 				this.bind( 'timeupdate', function(){
 					if( _this.getConfig('displayCaptions') === true && _this.selectedSource ){
 						_this.monitor();
@@ -76,15 +131,49 @@
 				}
 			});
 
+			this.bind( 'showClosedCaptions', function(){
+				if( _this.getConfig('displayCaptions') === false ){
+					_this.setConfig('displayCaptions', true);
+				}
+			});
+
+			this.bind( 'hideClosedCaptions', function(){
+				if( _this.getConfig('displayCaptions') === true ){
+					_this.setConfig('displayCaptions', false);
+				}
+			});
+
 			this.bind( 'onCloseFullScreen onOpenFullScreen', function(){
 				if (_this.getConfig("displayCaptions") == true){
 					_this.updateTextSize();
 				}
 			});
 
-			if( this.getConfig('layout') == 'below' ){
+			if( this.getConfig('layout') == 'below'){
 				this.updateBelowVideoCaptionContainer();
 			}
+
+			this.bind( 'onHideControlBar onShowControlBar', function(event, layout ){
+				if ( _this.getPlayer().isOverlayControls() ) {
+					_this.defaultBottom = layout.bottom;
+					// Move the text track down if present
+					_this.getPlayer().getInterface().find( '.track' )
+						.stop()
+						.animate( layout, 'fast' );
+				}
+			});
+
+			this.bind("AdSupport_StartAdPlayback", function(){
+				_this.setConfig('displayCaptions', false);
+				_this.hideCaptions();
+			});
+			this.bind("AdSupport_EndAdPlayback", function(){
+				_this.setConfig('displayCaptions', true);
+				_this.showCaptions();
+			});
+			this.bind("playSegmentEvent", function(){
+				_this.updateTimeOffset();
+			});
 		},
 		updateTextSize: function(){
 			// Check if we are in fullscreen or not, if so add an additional bottom offset of
@@ -137,15 +226,24 @@
 			this._super( property, value );
 		},
 		hideCaptions: function(){
-			this.getCaptionsOverlay().hide();
-			var $cc = this.embedPlayer.getInterface().find('.captionContainer' );
-			$cc.remove();
-			this.embedPlayer.doUpdateLayout();
+			if( !this.getConfig('displayCaptions') || this.textSources.length === 0 ) {
+				this.getMenu().clearActive();
+				this.getCaptionsOverlay().hide();
+				var $cc = this.embedPlayer.getInterface().find('.captionContainer' );
+				$cc.remove();
+				this.embedPlayer.doUpdateLayout();
+				this.getPlayer().triggerHelper('closedCaptionsHidden');
+			}
 		},
 		showCaptions: function(){
-			this.getCaptionsOverlay().show();
-			if( this.getConfig('layout') == 'below' ) {
-				this.updateBelowVideoCaptionContainer();
+			if( this.getConfig('displayCaptions') ) {
+				this.getCaptionsOverlay().show();
+				if( this.selectedSource != null ) {
+					this.getPlayer().triggerHelper('closedCaptionsDisplayed', {language: this.selectedSource.label});
+				}
+				if( this.getConfig('layout') == 'below' ) {
+					this.updateBelowVideoCaptionContainer();
+				}
 			}
 		},
 		getCaptionURL: function( captionId ){
@@ -154,9 +252,15 @@
 			} 
 			return null;
 		},
+		updateTimeOffset: function(){
+			// support server side clipping
+			if ( this.embedPlayer.supportsURLTimeEncoding() && this.embedPlayer.startTime ){
+				this.timeOffset = this.embedPlayer.startTime;
+			}
+		},
 		setupTextSources: function( callback ){
 			var _this = this;
-
+			this.updateTimeOffset();
 			// Get from <track> elements
 			$.each( this.getPlayer().getTextTracks(), function( inx, textSource ){
 				_this.textSources.push( new mw.TextSource( textSource ) );
@@ -170,10 +274,10 @@
 					);
 				});
 				// Allow plugins to override text sources data
-				_this.getPlayer().triggerHelper( 'ccDataLoaded', [_this.textSource, function(textSources){
+				_this.getPlayer().triggerHelper( 'ccDataLoaded', [_this.textSources, function(textSources){
 					_this.textSources = textSources;
 				}]);
-				
+
 				if( _this.getConfig('displayCaptions') !== false ){
 					_this.autoSelectSource();
 					if( _this.selectedSource ){
@@ -186,8 +290,9 @@
 		loadCaptionsFromApi: function( callback ){
 			if(!this.getPlayer().kentryid){
 				this.log('loadCaptionsFromApi:: Entry Id not found, exit.');
-				return;
 				callback([]);
+				return;
+
 			}
 			var _this = this;
 			this.getKalturaClient().doRequest( {
@@ -198,7 +303,7 @@
 				'filter:statusEqual' : 2
 			}, function( data ) {
 				mw.log( "mw.ClosedCaptions:: loadCaptionsFromApi: " + data.totalCount, data.objects );
-				if( data.objects.length ){
+				if( data.objects && data.objects.length ){
 					_this.loadCaptionsURLsFromApi( data.objects, callback );
 				} else {
 					// No captions
@@ -222,10 +327,14 @@
 			if ( multiRequest.length ) {
 				this.getKalturaClient().doRequest( multiRequest, function( result ) {
 					var captionsURLs = {};
-					// Store captions URLs in array
-					$.each( result, function( idx, captionUrl ) {
-						captionsURLs[ captionIds[ idx ] ] = captionUrl;
-					} );
+					if( typeof result == 'string'){
+						captionsURLs[ captionIds[ 0 ] ] = result;
+					} else {
+						// Store captions URLs in array
+						$.each( result, function( idx, captionUrl ) {
+							captionsURLs[ captionIds[ idx ] ] = captionUrl;
+						} );
+					}
 					// Store caption URLs locally
 					_this.captionURLs = captionsURLs;
 					// Done adding source issue callback
@@ -236,12 +345,29 @@
 		},
 		getTextSourceFromDB: function( dbTextSource ) {
 			var _this = this;
-			if( dbTextSource.fileExt == '' ){
+			if( !dbTextSource.fileExt ){
 				// TODO other format mappings?
-				if( dbTextSource.format == '2' ){
-					dbTextSource.fileExt = 'xml';
+				switch( dbTextSource.format ){
+					case '1':
+						dbTextSource.fileExt = 'srt';
+						break;
+					case '2':
+						dbTextSource.fileExt = 'xml';
+						break;
 				}
 			}
+
+			var captionsSrc;
+			if( mw.isIphone() && !mw.getConfig('disableTrackElement') ) {
+				// getting generated vtt file from dfxp/srt
+				captionsSrc = mw.getConfig('Kaltura.ServiceUrl') +
+							"/api_v3/index.php/service/caption_captionasset/action/serveWebVTT/captionAssetId/" +
+							dbTextSource.id +
+							"/segmentIndex/-1/version/2/captions.vtt";
+			} else {
+				captionsSrc = this.getCaptionURL( dbTextSource.id ) + '/.' + dbTextSource.fileExt;
+			}
+
 			// Try to insert the track source:
 			var embedSource = this.embedPlayer.mediaElement.tryAddSource(
 				$( '<track />' ).attr({
@@ -251,7 +377,7 @@
 					'label'		: dbTextSource.label || dbTextSource.language,
 					'id'		: dbTextSource.id,
 					'fileExt'	: dbTextSource.fileExt,
-					'src'		: this.getCaptionURL( dbTextSource.id ) + '/.' + dbTextSource.fileExt,
+					'src'		: captionsSrc,
 					'title'		: dbTextSource.label,
 					'default'	: dbTextSource.isDefault
 				})[0]
@@ -290,6 +416,14 @@
 					return ;
 				}				
 			}
+            // Get source by "default" property
+            if ( !this.selectedSource ) {
+                source = this.selectDefaultSource();
+                if( source ){
+                    this.log('autoSelectSource: select by default caption');
+                    this.selectedSource = source;
+                }
+            }
 			// Get from $_SERVER['HTTP_ACCEPT_LANGUAGE']
 			if( !this.selectedSource && mw.getConfig('Kaltura.UserLanguage') ){
 				$.each(mw.getConfig('Kaltura.UserLanguage'), function(lang, priority){
@@ -300,14 +434,6 @@
 						return true;
 					}
 				});
-			}
-			// Get source by "default" property
-			if ( !this.selectedSource ) {
-				source = this.selectDefaultSource();
-				if( source ){
-					this.log('autoSelectSource: select by default caption');
-					this.selectedSource = source;
-				}
 			}
 			// Else, get the first caption
 			if( !this.selectedSource ){
@@ -355,7 +481,6 @@
 					addedCaption = true;
 				}
 			});
-
 			// hide captions that are off:
 			_this.embedPlayer.getInterface().find( '.track' ).each(function( inx, caption){
 				if( !activeCaptions[ $( caption ).attr('data-capId') ] ){
@@ -484,6 +609,9 @@
 		updateBelowVideoCaptionContainer: function(){
 			var _this = this;
 			mw.log( "TimedText:: updateBelowVideoCaptionContainer" );
+			if (this.getConfig('displayCaptions') === false){
+				return;
+			}
 			// Append after video container
 			var $cc = _this.embedPlayer.getInterface().find('.captionContainer' );
 			if( !$cc.length ){
@@ -557,63 +685,80 @@
 			return style;
 		},
 		getDefaultStyle: function(){
-			var defaultBottom = 15;
-			if( (this.embedPlayer.isOverlayControls() && !this.embedPlayer.getInterface().find( '.controlBarContainer' ).is( ':hidden' )) || this.embedPlayer.useNativePlayerControls() ){
-				defaultBottom += this.embedPlayer.layoutBuilder.getHeight();
-			}
 			var baseCss =  {
 				'position':'absolute',
-				'bottom': defaultBottom,
+				'bottom': this.defaultBottom,
 				'width': '100%',
 				'display': 'block',
 				'opacity': .8,
 				'text-align': 'center',
 				'z-index': 2
 			};
-			baseCss =$.extend( baseCss, this.getInterfaceSizeTextCss({
+			baseCss = $.extend( baseCss, this.getInterfaceSizeTextCss({
 				'width' :  this.embedPlayer.getInterface().width(),
 				'height' : this.embedPlayer.getInterface().height()
 			}));
 			return baseCss;
 		},
-		buildMenu: function(){
+		buildMenu: function( sources ){
 			var _this = this;
-
+			mw.log('closedCaptions::buildMenu with sources: ', sources);
 			// Destroy the old menu
 			this.getMenu().destroy();
 
 			// Check if we even have textSources
-			if( this.textSources.length == 0 ){
+			if( sources == 0 ){
 				if( this.getConfig('hideWhenEmpty') === true ) {
 					this.getBtn().hide();
 				}
 				this.getMenu().addItem({
-					'label': gM('mwe-timedtext-no-subtitles'),
+					'label': gM('mwe-timedtext-no-subtitles')
 				});
+				// hide old timed captions text
+				this.hideCaptions();
+
+				// Allow plugins to integrate with captions menu
+				this.getPlayer().triggerHelper('captionsMenuReady');
+
 				return this.getMenu();
+			} else {
+				this.getBtn().show();
+				// show new timed captions text if exists
+				this.showCaptions();
 			}
 
 			// Add Off item
-			this.getMenu().addItem({
-				'label': 'Off',
-				'callback': function(){
-					_this.setConfig('displayCaptions', false);
-					// also update the cookie to "None" 
-					_this.getPlayer().setCookie( _this.cookieName, 'None' );
-				},
-				'active': ! _this.getConfig( "displayCaptions" ) 
-			});
+			if( this.getConfig('showOffButton') ) {
+				this.getMenu().addItem({
+					'label': 'Off',
+					'callback': function(){
+						_this.setConfig('displayCaptions', false);
+						// also update the cookie to "None"
+						_this.getPlayer().setCookie( _this.cookieName, 'None' );
+					},
+					'active': ! _this.getConfig( "displayCaptions" ) 
+				});
+			}
 
 			// Add text sources
-			$.each(this.textSources, function( idx, source ){
+			$.each(sources, function( idx, source ){
 				_this.getMenu().addItem({
 					'label': source.label,
 					'callback': function(){
-						_this.setTextSource( source );
+						// If this caption is the same as current caption, toggle off captions
+						if( _this.getConfig('toggleActiveCaption') && _this.selectedSource === source ) {
+							_this.selectedSource = null;
+							_this.setConfig('displayCaptions', false);
+						} else {
+							_this.setTextSource( source );
+						}
 					},
 					'active': ( _this.selectedSource === source && _this.getConfig( "displayCaptions" )  )
 				})
 			});
+
+			// Allow plugins to integrate with captions menu
+			this.getPlayer().triggerHelper('captionsMenuReady');
 		},
 		setTextSource: function( source, setCookie ){
 			setCookie = ( setCookie === undefined ) ? true : setCookie;
@@ -637,7 +782,7 @@
 				this.getPlayer().setCookie( this.cookieName, source.srclang.toLowerCase() );
 			}
 
-			this.getPlayer().triggerHelper('changedClosedCaptions');
+			this.getPlayer().triggerHelper('changedClosedCaptions', {language: this.selectedSource.label ? this.selectedSource.label : ""});
 		},
 		getComponent: function(){
 			var _this = this;

@@ -56,45 +56,32 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> Play Stop </h2>
-Once the player is ready it will start to play for 3 sec and then stop, the test will verify that the right events are triggered <br>
-Mobile devices that require click gestures for playback won't seek without first playing.
+Demonstrates basic usage of the play, stop & pause API.
 <br>
 <pre class="prettyprint linenums">
-kWidget.addReadyCallback( function( playerId ){<br/>
-	var kdp = document.getElementById( playerId );<br/>
-	// Add a binding for when seek is completed: <br/>	kdp.kBind('playerSeekEnd', function(){<br/>		if( console ) <br/>		console.log( 'playerSeekEnd, playhead should be at 30 seconds');<br/>		<br/>		// Pause player after 2 second <br/>		setTimeout(function(){<br/>			kdp.sendNotification('doPause' );<br/>		},2000)<br/>	});<br/>	// Once playing issue seek<br/>	var seekDone = false;<br/>	kdp.kBind('playerUpdatePlayhead', function(){<br/>		if( ! seekDone ){<br/>		kdp.sendNotification('doSeek', 30 );<br/>		}<br/>		seekDone = true;<br/>	});<br/>	// Wait for &quot;media ready&quot; before starting playback: <br/>	kdp.kBind('mediaReady', function(){<br/>		kdp.sendNotification('doPlay');<br/>	})<br/>});
-</pre>
-<br />
-<script>
-if( !window.QUnit ){
-	kWidget.addReadyCallback( function( playerId ){
-		var kdp = document.getElementById( playerId );
-		// Add a binding for when seek is completed: 
-		kdp.kBind('playerSeekEnd', function(){
-			if( console ){ 
-				console.log( 'playerSeekEnd, playhead should be at 30 seconds');
-			}
-			// Pause player after 2 second 
-			setTimeout(function(){
-			kdp.sendNotification('doPause' );
-			},2000)
-		});
-		// Once playing issue seek
-		var seekDone = false;
-		kdp.kBind('playerUpdatePlayhead', function(){
-			if( ! seekDone ){
-			kdp.sendNotification('doSeek', 30 );
-			}
-			seekDone = true;
-		});
-		// Wait for "media ready" before starting playback: 
-		kdp.kBind('mediaReady', function(){
-			kdp.sendNotification('doPlay');
-		})
+kWidget.addReadyCallback( function( playerId ){
+	var kdp = document.getElementById( playerId );
+	$('#sampleActions .btn').click(function(){
+		kdp.sendNotfication( $(this).text() );
 	});
-}
+});
+</pre>
+<h3> Sample actions: </h3>
+<div id="sampleActions">
+	<a class="btn">doPlay</a> 
+	<a class="btn">doPause</a>
+	<a class="btn">doStop</a> 
+</div>
+<br>
+<script>
+kWidget.addReadyCallback( function( playerId ){
+	var kdp = document.getElementById( playerId );
+	$('#sampleActions .btn').click(function(){
+		kdp.sendNotification( $(this).text() );
+	});
+});
 </script>
-<div id="playbackModeSelector"></div>
+
 <div id="kaltura_player_1360356455" style="width: 400px; height: 333px"></div>
 <script type="text/javascript">
 kWidget.embed({

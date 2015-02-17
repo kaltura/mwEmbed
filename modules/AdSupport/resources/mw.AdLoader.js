@@ -14,14 +14,26 @@ mw.AdLoader = {
 	 * 		Function called with ad payload once ad content is loaded.
 	 * @param {boolean} wrapped
 	 * 		(optional) used to increase the internal counter
+	 * @param {XML} wrapperData
+	 * 		(optional) in case this loader is being called from a wrapper, preserve the wrapper data and pass it to the
+     * 		inner ad so it can parse and send its events
+	 * @param {object} ajaxOptions
+	 * 		(optional) additional ajax options, e.g. withCredentials
 	 */
-	load: function( adUrl, callback, wrapped ){
+	load: function( adUrl, callback, wrapped , wrapperData, ajaxOptions ){
 		var _this = this;
+        this.wrapperData = null;
+
 		adUrl = _this.replaceCacheBuster(adUrl);
+		
+		// trip whitespace in ad urls: 
+		adUrl = $.trim( adUrl );
+
 		mw.log('AdLoader :: load Ad: ', adUrl);
 
 		// Increase counter if the vast is wrapped, otherwise reset
 		if( wrapped ) {
+            this.wrapperData = wrapperData ;
 			this.currentCounter++;
 		} else {
 			this.currentCounter = 0;
@@ -37,6 +49,7 @@ mw.AdLoader = {
 		// Make ajax request with fallback to proxy service
 		new mw.ajaxProxy({
 			url: adUrl,
+			ajaxOptions: ajaxOptions,
 			success: function( resultXML ) {
 				_this.handleResult( resultXML, callback );
 			},
@@ -67,7 +80,7 @@ mw.AdLoader = {
 				// If we have lots of ad formats we could conditionally load them here:
 				// 'mw.VastAdParser' is a dependency of adLoader
 				mw.load( 'mw.VastAdParser', function(){
-					mw.VastAdParser.parse( data, callback );
+					mw.VastAdParser.parse( data, callback , _this.wrapperData);
 				});
 				return ;
 			break;
