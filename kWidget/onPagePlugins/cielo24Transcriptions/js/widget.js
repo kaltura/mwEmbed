@@ -301,9 +301,11 @@ function renderTranscription(json, duration) {
 
     var metaHidden = true;
     for(var i in json.topics) {
-        var topicStartTime = json.topics[i].time_ranges[0].start_time;
-        $(".topicsWrapper").append("<span class='playheadTimeUpdateTrigger' data-time-offset='"+topicStartTime+"'>"+i+" - "+(""+(topicStartTime/1000)).toMMSS()+"</span><br />");
-        metaHidden = false;
+        if(json.topics[i].time_ranges.length>0) {
+            var topicStartTime = json.topics[i].time_ranges[0].start_time;
+            $(".topicsWrapper").append("<span class='playheadTimeUpdateTrigger' data-time-offset='"+topicStartTime+"'>"+i+" - "+(""+(topicStartTime/1000)).toMMSS()+"</span><br />");
+            metaHidden = false;
+        }
     }
     if(!metaHidden) {
         $(".leftMenuPopupRowMeta").show();
