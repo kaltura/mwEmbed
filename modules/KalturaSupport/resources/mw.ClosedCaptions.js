@@ -31,9 +31,9 @@
 
 			if( (this.getConfig( 'useCookie' ) && $.cookie( this.cookieName )
 				&&
-				$.cookie( this.cookieName ) == 'None'
-				&&
-				this.getConfig('displayCaptions') === null)
+				$.cookie( this.cookieName ) == 'None')
+				||
+				this.getConfig('displayCaptions') === null
 				||
 				( this.getConfig( 'hideClosedCaptions') === true )
 			){
@@ -279,7 +279,7 @@
 					_this.textSources = textSources;
 				}]);
 
-				if( _this.getConfig('displayCaptions') !== false ){
+				if( _this.getConfig('displayCaptions') !== false || ($.cookie( _this.cookieName ) !== 'None' && $.cookie( _this.cookieName )) ){
 					_this.autoSelectSource();
 					if( _this.selectedSource ){
 						_this.setTextSource(_this.selectedSource, false);
