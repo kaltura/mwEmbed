@@ -591,6 +591,14 @@ body { letter-spacing: 0.04em; }
 	bottom: 102%;
 }
 
+.closedCaptions > .dropdown-menu {
+	overflow-y:auto;
+	overflow-x:hidden;
+	max-height:200px;
+	width:auto;
+	max-width:140px;
+}
+
 .dropup .dropdown-submenu > .dropdown-menu {
 	top: auto;
 	bottom: 0;
