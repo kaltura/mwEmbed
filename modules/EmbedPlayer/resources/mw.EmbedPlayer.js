@@ -1736,7 +1736,7 @@
 					_this.changeMediaStarted = false;
 
 					// reload the player
-					if (_this.autoplay) {
+					if (_this.autoplay && _this.canAutoPlay() ) {
 						_this.removePoster();
 						_this.play();
 					}
