@@ -234,9 +234,7 @@ kWidget.addReadyCallback( function( playerId ){
 					})(extraEvars[i], extraEvarsValues[i]);
 				}
 				// Call s.track method
-				if ( _this.getConfig("monitorTracking") !== false ){
-					s.Media.track( _this.getMediaName() );
-				}
+				s.Media.track( _this.getMediaName() );
 			};
 
 			// Check if we have monitor function
@@ -320,6 +318,7 @@ kWidget.addReadyCallback( function( playerId ){
 			// Run open on first play:
 			this.bind( 'firstPlay', function(){
 				if( firstPlay ){
+					play();
 					_this.runMediaCommand( "open", 
 						_this.getMediaName(), 
 						_this.getDuration(), 
@@ -327,7 +326,6 @@ kWidget.addReadyCallback( function( playerId ){
 					)
 				}
 				firstPlay = false;
-				play();
 			});
 			this.bind( 'playerSeekStart', function() {
 				// Ignore HTML5 seek to 0 on PlayerPlayEnd
