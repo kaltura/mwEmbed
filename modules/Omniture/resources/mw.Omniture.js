@@ -48,12 +48,18 @@ mw.Omniture.prototype = {
  		return this.embedPlayer.getKalturaConfig( this.pluginName, key );
  	},
  	loadSCode: function( callback ){
+	    var _this = this;
  		var sCodePath = this.getConfig ( 'sCodePath' ) || mw.getConfig('Omniture.ScodePath');
 	    var ajaxCallback = function(){
 		    if( !s.Media ){
 			    // issue warning and load from local resource
 			    mw.log( "Error: s.Media is not defined in scode ( loading local media module" );
-			    $.getScript( mw.getConfig('Omniture.ScodeMediaPath'), callback );
+			    $.ajax( {
+				    url: mw.getConfig('Omniture.ScodeMediaPath'),
+				    cache: _this.getConfig('cache_s_code') || mw.getConfig('Omniture.cache_s_code'),
+				    dataType: "script",
+				    success: callback
+			    });
 			    return ;
 		    }
 		    callback();
