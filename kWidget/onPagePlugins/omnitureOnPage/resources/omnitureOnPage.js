@@ -234,7 +234,9 @@ kWidget.addReadyCallback( function( playerId ){
 					})(extraEvars[i], extraEvarsValues[i]);
 				}
 				// Call s.track method
-				s.Media.track( _this.getMediaName() );
+				if ( _this.getConfig("monitorTracking") !== false ){
+					s.Media.track( _this.getMediaName() );
+				}
 			};
 
 			// Check if we have monitor function
