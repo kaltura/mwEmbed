@@ -433,7 +433,16 @@ mw.MediaElement.prototype = {
 			return this.selectedSource;
 		}
 
-		// Else just select the first playable source
+		// Look for the first mbr source
+		if ( !this.selectedSource ){
+			for (var i = 0; i < playableSources.length; i++ ){
+				if ( playableSources[i].tags && playableSources[i].tags.indexOf("mbr") !== -1 ){
+					return _this.setSource( playableSources[i] );
+				}
+			}
+		}
+
+		// Else just select the first playable source.
 		if ( !this.selectedSource && playableSources[0] ) {
 			mw.log( 'MediaElement::autoSelectSource: Set via first source: ' + playableSources[0].getTitle() + ' mime: ' + playableSources[0].getMIMEType() );
 			return _this.setSource( playableSources[0] );
