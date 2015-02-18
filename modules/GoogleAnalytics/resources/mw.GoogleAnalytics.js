@@ -85,6 +85,7 @@
 			});
 
 			this.eventTrackList = $.merge(_this.eventTrackList, customEvents);
+			this.eventTrackList = $.unique(this.eventTrackList);
 
 			// Setup the initial state of some flags
 			this._p25Once = false;
