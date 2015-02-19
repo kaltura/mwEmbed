@@ -61,7 +61,7 @@
 					"redirectUrl": ''
 				},
 				"sms": {
-					"name": "SMS",
+					"name": "Message",
 					"icon": "",
 					"cssClass": "icon-share-sms",
 					"template": "Check out {mediaProxy.entry.name}: {share.shareURL}",
