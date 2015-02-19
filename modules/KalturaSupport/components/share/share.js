@@ -47,7 +47,7 @@
 					"redirectUrl": 'https://plus.google.com/app/basic/stream'
 				},
 				"email": {
-					"name": "Email",
+					"name": "Mail",
 					"icon": "",
 					"cssClass": "icon-share-email",
 					"template": "mailto:?subject=Check out {mediaProxy.entry.name}&body=Check out {mediaProxy.entry.name}: {share.shareURL}",
