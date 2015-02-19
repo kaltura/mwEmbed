@@ -165,7 +165,11 @@ mw.KApi.prototype = {
 		};
 		requestURL+= '&callback=' + globalCBName;
 		mw.log("kAPI:: doApiRequest: " + requestURL);
-		$.getScript( requestURL );
+		$.ajax({
+			url: requestURL,
+			dataType: "script",
+			cache: (mw.getConfig('Kaltura.cacheAjaxCalls') || true)
+		});
 	},
 	getApiUrl : function( serviceType ){
 		var serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );

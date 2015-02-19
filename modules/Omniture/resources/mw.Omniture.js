@@ -7,7 +7,8 @@
 // set default Omniture sCode path:
 mw.setDefaultConfig({
 	'Omniture.ScodePath': mw.getMwEmbedPath() + '/modules/Omniture/s_code.js',
-	'Omniture.ScodeMediaPath': mw.getMwEmbedPath() + '/modules/Omniture/s_codeMedia.js'
+	'Omniture.ScodeMediaPath': mw.getMwEmbedPath() + '/modules/Omniture/s_codeMedia.js',
+	'Omniture.cache_s_code': true
 })
 
 mw.Omniture = function( embedPlayer, pluginName,  callback ){
@@ -48,15 +49,26 @@ mw.Omniture.prototype = {
  	},
  	loadSCode: function( callback ){
  		var sCodePath = this.getConfig ( 'sCodePath' ) || mw.getConfig('Omniture.ScodePath');
- 		$.getScript(sCodePath, function(){
- 			if( !s.Media ){
- 				// issue warning and load from local resource
- 				mw.log( "Error: s.Media is not defined in scode ( loading local media module" );
- 				$.getScript( mw.getConfig('Omniture.ScodeMediaPath'), callback );
- 				return ;
- 			}
- 			callback();
- 		});
+	    var ajaxCallback = function(){
+			if( !s.Media ){
+				// issue warning and load from local resource
+				mw.log( "Error: s.Media is not defined in scode ( loading local media module" );
+				$.ajax({
+					url: mw.getConfig('Omniture.ScodeMediaPath'),
+					success: callback,
+					dataType: "script",
+					cache: this.getConfig('cache_s_code') || mw.getConfig('Omniture.cache_s_code')
+				});
+				return ;
+			}
+		 	callback();
+		};
+	    $.ajax({
+		   url: sCodePath,
+		   success: ajaxCallback,
+		   dataType: "script",
+		   cache: this.getConfig('cache_s_code') || mw.getConfig('Omniture.cache_s_code')
+		});
  	},
  	/**
  	 * Adds the omniture "page code"
