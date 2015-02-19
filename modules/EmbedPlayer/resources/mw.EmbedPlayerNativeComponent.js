@@ -340,7 +340,7 @@
 
 		backToLive: function () {
 			this.triggerHelper('movingBackToLive');
-			this.seek(this.getDuration());
+			this.getPlayerElement().attr('goLive', 'true');
 		},
 
 		doNativeAction: function (actionParams) {
@@ -483,6 +483,15 @@
 		_onprogress: function (event, progress) {
 			if (typeof progress !== 'undefined') {
 				this.updateBufferStatus(progress);
+				if(progress < 0.9){
+					if(!this.showProgressSpinner) {
+						this.addPlayerSpinner();
+						this.showProgressSpinner = true;
+					}
+				}else{
+					this.showProgressSpinner = false;
+					this.hideSpinner();
+				}
 			}
 		},
 
