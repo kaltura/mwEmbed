@@ -87,7 +87,7 @@
 	);
 	$eventsPlayerStates = array(
 		'firstPlay' => array(
-			'desc' => 'Triggered once per content entry when first played.'
+			'desc' => 'Triggered once per content entry when first played. If user initiates a replay this is a new content playback sequence and will triger firstPlay again.'
 		),
 		'firstQuartile' => array(
 			'desc' => 'The player reached 25% of the entry playback'
