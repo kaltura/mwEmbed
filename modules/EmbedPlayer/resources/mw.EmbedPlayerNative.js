@@ -1065,27 +1065,30 @@
 
 				var canPlayBind = 'canplaythrough.nativePlayBind';
 				$(vid).unbind(canPlayBind).one(canPlayBind, function () {
-
-					var timeupdateCallback = function(callbackCount){
-						if ((Math.abs(_this.currentSeekTargetTime - _this.getPlayerElement().currentTime) > 2) &&
-							callbackCount <= 15){
-							setTimeout(function(){
-								timeupdateCallback(callbackCount++);
-							}, 100);
-						} else {
-							if (callbackCount > 15){
-								_this.log( "Error: seek target failed" );
+					if (vid.paused){
+						return waitForSeekTargetDeferred.resolve();
+					} else {
+						var timeupdateCallback = function ( callbackCount ) {
+							if ( (Math.abs( _this.currentSeekTargetTime - _this.getPlayerElement().currentTime ) > 2) &&
+								callbackCount <= 15 ) {
+								setTimeout( function () {
+									timeupdateCallback( callbackCount++ );
+								}, 100 );
 							} else {
-								_this.log( "seek target verified" );
+								if ( callbackCount > 15 ) {
+									_this.log( "Error: seek target failed" );
+								} else {
+									_this.log( "seek target verified" );
+								}
+								return waitForSeekTargetDeferred.resolve();
 							}
-							return waitForSeekTargetDeferred.resolve();
-						}
-					};
+						};
 
-					var timeupdateBind = 'timeupdate.nativePlayBind';
-					$(vid).unbind(timeupdateBind).one(timeupdateBind, function () {
-						timeupdateCallback(0);
-					});
+						var timeupdateBind = 'timeupdate.nativePlayBind';
+						$( vid ).unbind( timeupdateBind ).one( timeupdateBind, function () {
+							timeupdateCallback( 0 );
+						} );
+					}
 				});
 				return waitForSeekTargetDeferred;
 			} else {
