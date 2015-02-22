@@ -1067,6 +1067,7 @@
 				var canPlayBind = 'canplaythrough.nativePlayBind';
 				$(vid).unbind(canPlayBind).one(canPlayBind, function () {
 					if (vid.paused){
+						_this.log( "seek target verified" );
 						return waitForSeekTargetDeferred.resolve();
 					} else {
 						var timeupdateCallback = function ( callbackCount ) {
