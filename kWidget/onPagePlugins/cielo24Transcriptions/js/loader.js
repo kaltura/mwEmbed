@@ -211,7 +211,11 @@
 
         var projectFolderUrl = onPageJs1Link.protocol+"//"+onPageJs1Link.hostname+(onPageJs1Link.port!=""?":"+onPageJs1Link.port:"")+projectFolderUrlPath;
 
-        widgetPage = projectFolderUrl + '/widget.html';
+        widgetPage = projectFolderUrl;
+        if(widgetPage.substr(-1)!='/') {
+            widgetPage += '/';
+        }
+        widgetPage += 'widget.html';
 
         kdp.addJsListener("entryReady", function(entry) {
 

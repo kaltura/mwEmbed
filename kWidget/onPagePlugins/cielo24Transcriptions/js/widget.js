@@ -301,11 +301,21 @@ function renderTranscription(json, duration) {
 
     var metaHidden = true;
     for(var i in json.topics) {
-        if(json.topics[i].time_ranges.length>0) {
-            var topicStartTime = json.topics[i].time_ranges[0].start_time;
-            $(".topicsWrapper").append("<span class='playheadTimeUpdateTrigger' data-time-offset='"+topicStartTime+"'>"+i+" - "+(""+(topicStartTime/1000)).toMMSS()+"</span><br />");
-            metaHidden = false;
+        metaHidden = false;
+
+        var topicStartTime = 0;
+        var hasTimeRange = json.topics[i].time_ranges.length>0;
+        if(hasTimeRange) {
+            topicStartTime = json.topics[i].time_ranges[0].start_time;
         }
+
+        var topicHtml = "<span class='"+(hasTimeRange?"playheadTimeUpdateTrigger":"")+"' data-time-offset='"+topicStartTime+"'>" + i;
+        if(hasTimeRange) {
+            topicHtml += (" - "+(""+(topicStartTime/1000)).toMMSS());
+        }
+        topicHtml += +"</span><br />";
+
+        $(".topicsWrapper").append(topicHtml);
     }
     if(!metaHidden) {
         $(".leftMenuPopupRowMeta").show();
