@@ -300,6 +300,10 @@
 				var changeMediaCallback = function () {
 					//Return autoplay state to original
 					embedPlayer.autoplay = origAutoplay;
+					//If player is still not playing then start playback
+					if (!embedPlayer.isPlaying()){
+						embedPlayer.play();
+					}
 					embedPlayer.restoreEventPropagation();
 					// issue a seek
 					if (currentTime > 0) {
