@@ -227,7 +227,11 @@
 							var evaluatedValue = embedPlayer.evaluate( unescape( pair[1] ) );
 							//Escape kvp and build evaluated query string param back. exclude cust_params.
 							if (evaluatedKey != 'cust_params'){
-								evaluatedQueryStringParams += escape( evaluatedKey ) + "=" + encodeURIComponent( evaluatedValue ) + "&";
+								evaluatedQueryStringParams += escape( evaluatedKey );
+								if (evaluatedValue) {
+									evaluatedQueryStringParams += "=" + encodeURIComponent( evaluatedValue );
+								}
+								evaluatedQueryStringParams += "&";
 							}else{
 								this.cust_params = encodeURIComponent( evaluatedValue );
 							}
