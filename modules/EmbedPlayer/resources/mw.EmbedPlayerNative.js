@@ -426,7 +426,7 @@
 			}
 
 			// some initial calls to prime the seek:
-			if (vid.currentTime === 0) {
+			if (vid.currentTime === 0 && callbackCount === 0) {
 				// when seeking turn off preload none and issue a load call.
 				$(vid)
 					.attr('preload', 'auto')
@@ -434,7 +434,6 @@
 			}
 
 			if ( vid.readyState < 1 ) {
-				this.log("player can't seek - try to init video element ready state");
 				// if on the first call ( and video not ready issue load, play
 				if (callbackCount == 0 && vid.paused) {
 					this.stopEventPropagation();
@@ -448,6 +447,7 @@
 							return checkVideoStateDeferred.resolve();
 						}, 10);
 					});
+					this.log("player can't seek - try to init video element ready state");
 					vid.load();
 					vid.play();
 				}
@@ -456,6 +456,7 @@
 					this.log("Error:: with seek request, media never in ready state");
 					return checkVideoStateDeferred.resolve();
 				}
+				this.log("player can't seek - wait video element ready state");
 				this.canSeekTimeout = setTimeout(function () {
 					this.canSeekTimeout = null;
 					_this.canSeek(checkVideoStateDeferred, callbackCount + 1);
