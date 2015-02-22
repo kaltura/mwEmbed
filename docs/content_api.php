@@ -531,6 +531,7 @@ kdp.setKDPAttribute("theme", "buttonsSize", "14");
 		<li> <b>MediaProxy Override</b> -- Overrides media and player configuration at embed time.
 			<ul>
 				<li> Good for "light" integrations tests a few lines of JavaScript</li>
+				<li> Can be used with changeMedia, to retain CDN cache for player & config</li>
 				<li> Not good for portability, native apps, or player iframe services.</li>
 				<li> Not compatible with entity baased plugins or clip lists ( playlist, related videos, bumper ) </li> 
 			</ul>
