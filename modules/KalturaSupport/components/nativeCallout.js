@@ -44,7 +44,6 @@
 			});
 		},
 
-		// New "doPlay" implementation when nativeCallout plugin exist on mobile devices
 		calloutNativePlayer: function() {
 			var _this = this;
 			var timeout;
@@ -57,7 +56,14 @@
 
 			var url =  _this.getConfig( "mimeName" ) + "?iframeUrl:=" + _this.getConfig( "iframeUrl" );
 			if ( mw.isAndroid() ) {
-				window.open( url, "_system" );
+				var popup = [];
+				setTimeout(function(){
+					popup.close();
+					//show the open play store splash screen
+				},1000);
+
+				popup = window.open(url);
+
 			} else {
 				$('<iframe />')
 					.attr('src', url)
