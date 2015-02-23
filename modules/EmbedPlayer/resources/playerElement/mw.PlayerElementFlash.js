@@ -16,7 +16,9 @@
 		listenerCounter: 0,
 		targetObj: null,
 		initialized: false,
-
+        detectFlash: null,
+        detectTests: 5,
+        flashDetected: false,
 		/**
 		 * initialize the class, creates flash embed
 		 * @param containerId container for the flash embed
@@ -27,93 +29,122 @@
 		 * @returns {*}
 		 */
 		init: function( containerId , playerId , elementFlashvars, target, readyCallback ){
-			var _this = this;
-			this.element = this;			
-			this.id = playerId;
-			this.targetObj = target;
+            var _this = this;
+            this.element = this;
+            this.id = playerId;
+            this.targetObj = target;
 
-			var flashvars = {};
-			flashvars.jsCallBackReadyFunc = this.jsReadyFunName;
-			flashvars.externalInterfaceDisabled = "false";
-			flashvars.disableOnScreenClick = true;
+            var flashvars = {};
+            flashvars.jsCallBackReadyFunc = this.jsReadyFunName;
+            flashvars.externalInterfaceDisabled = "false";
+            flashvars.disableOnScreenClick = true;
 
-			//if debug mode
-			if( mw.getConfig( 'debug', true ) ){
-				flashvars.debugMode = 'true';
-			}
+            //if debug mode
+            if( mw.getConfig( 'debug', true ) ){
+                flashvars.debugMode = 'true';
+            }
 
-			if ( elementFlashvars ) {
-				$.extend ( flashvars, elementFlashvars );
-			}
+            if ( elementFlashvars ) {
+                $.extend ( flashvars, elementFlashvars );
+            }
 
-			var mwEmbedPath = mw.getMwEmbedPath();
-			//replace protocol with page protocol
-			if ( window.location.protocol ) {
-				mwEmbedPath = window.location.protocol + mwEmbedPath.substring( mwEmbedPath.indexOf(":") + 1);
-			}
+            var mwEmbedPath = mw.getMwEmbedPath();
+            //replace protocol with page protocol
+            if ( window.location.protocol ) {
+                mwEmbedPath = window.location.protocol + mwEmbedPath.substring( mwEmbedPath.indexOf(":") + 1);
+            }
 
-			var kdpPath = mwEmbedPath + 'modules/EmbedPlayer/binPlayers/kaltura-player/kdp3.swf';
-			// var kdpPath = "http://localhost/chromeless-kdp/KDP3/bin-debug/kdp3.swf";
+            var kdpPath = mwEmbedPath + 'modules/EmbedPlayer/binPlayers/kaltura-player/kdp3.swf';
+            // var kdpPath = "http://localhost/chromeless-kdp/KDP3/bin-debug/kdp3.swf";
 
-			window[this.jsReadyFunName] = function( playerId ){
-				if (!_this.initialized) {
-					_this.initialized = true;
-					// We wrap everything in setTimeout to avoid Firefox race condition with empty cache
-					setTimeout( function () {
-						_this.playerElement = $( '#' + playerId )[0];
+            _this.detectFlash = setInterval(function(){ _this.waitForFlash(); }, 500);
 
-						//if this is the target object: add event listeners
-						//if a different object is the target: it should take care of its listeners (such as embedPlayerKPlayer)
-						if ( !_this.targetObj ) {
-							_this.targetObj = _this;
+            window[this.jsReadyFunName] = function( playerId ){
+                if (!_this.initialized) {
+                    _this.initialized = true;
+                    _this.flashDetected = true;
+                    // We wrap everything in setTimeout to avoid Firefox race condition with empty cache
+                    setTimeout( function () {
+                        _this.playerElement = $( '#' + playerId )[0];
 
-							var bindEventMap = {
-								'playerPaused': 'onPause',
-								'playerPlayed': 'onPlay',
-								'durationChange': 'onDurationChange',
-								'playbackComplete': 'onClipDone',
-								'playerUpdatePlayhead': 'onUpdatePlayhead',
-								'playerSeekEnd': 'onPlayerSeekEnd',
-								'alert': 'onAlert',
-								'mute': 'onMute',
-								'unmute': 'onUnMute',
-								'volumeChanged': 'onVolumeChanged',
-								'mediaError' : 'onMediaError'
-							};
+                        //if this is the target object: add event listeners
+                        //if a different object is the target: it should take care of its listeners (such as embedPlayerKPlayer)
+                        if ( !_this.targetObj ) {
+                            _this.targetObj = _this;
 
-							$.each( bindEventMap, function ( bindName, localMethod ) {
-								_this.bindPlayerFunction( bindName, localMethod );
-							} );
-						}
+                            var bindEventMap = {
+                                'playerPaused': 'onPause',
+                                'playerPlayed': 'onPlay',
+                                'durationChange': 'onDurationChange',
+                                'playbackComplete': 'onClipDone',
+                                'playerUpdatePlayhead': 'onUpdatePlayhead',
+                                'playerSeekEnd': 'onPlayerSeekEnd',
+                                'alert': 'onAlert',
+                                'mute': 'onMute',
+                                'unmute': 'onUnMute',
+                                'volumeChanged': 'onVolumeChanged',
+                                'mediaError' : 'onMediaError'
+                            };
 
-						//imitate html5 video readyState
-						_this.readyState = 4;
-						// Run ready callback
-						if ( $.isFunction( readyCallback ) ) {
-							readyCallback.apply( _this );
-						}
+                            $.each( bindEventMap, function ( bindName, localMethod ) {
+                                _this.bindPlayerFunction( bindName, localMethod );
+                            } );
+                        }
 
-						//notify player is ready
-						$( _this ).trigger( 'playerJsReady' );
-					}, 0 );
-				}
-			};
+                        //imitate html5 video readyState
+                        _this.readyState = 4;
+                        // Run ready callback
+                        if ( $.isFunction( readyCallback ) ) {
+                            readyCallback.apply( _this );
+                        }
 
-			// attributes and params:
-			flashembed( containerId,
-				{
-					id :				playerId,
-					src : 				kdpPath,
-					bgcolor :			"#000000",
-					allowNetworking : 	"all",
-					version :			[10,0],
-					wmode : 			"transparent"
-				},
-				flashvars
-			);
+                        //notify player is ready
+                        $( _this ).trigger( 'playerJsReady' );
+                    }, 0 );
+                }
+            };
 
-			return this;
-		},
+            // attributes and params:
+            flashembed( containerId,
+                {
+                    id :				playerId,
+                    src : 				kdpPath,
+                    bgcolor :			"#000000",
+                    allowNetworking : 	"all",
+                    version :			[10,0],
+                    wmode : 			"transparent",
+                    onFail:             function() {
+                        alert("Flash blocked");
+                    }
+                },
+                flashvars
+            );
+
+            return this;
+
+        },
+        waitForFlash: function(){
+            var data = {
+                'title': 'Detecting Flash Player',
+                'message': "Please wait.. " + this.detectTests
+            };
+            mw.log("PlayerElementFlash::waitForFlash::Alert: " + data.message);
+            //$( this ).trigger( 'alert', [ data ] );
+
+            if (this.flashDetected) {
+                clearInterval(this.detectFlash);
+            }
+            if(this.detectTests==0 && !this.flashDetected){
+                clearInterval(this.detectFlash);
+                data = {
+                    'title': 'Failed to detecting Flash Player',
+                    'message': "Flash blocked"
+                };
+                mw.log("PlayerElementFlash::waitForFlash::Error: " + data.message);
+                //$( this ).trigger( 'error', [ data ] );
+            }
+            this.detectTests--;
+        },
 		play: function(){
 			this.sendNotification( 'doPlay' );
 		},
@@ -240,7 +271,7 @@
 			$( this ).trigger( 'seeked' );
 		},
 		onAlert : function ( data, id ) {
-			//TODO?
+			//TDDO?
 		},
 		onMute: function () {
 			this.muted = true;
