@@ -2193,6 +2193,11 @@
 		inPreSequence: false,
 		replayEventCount: 0,
 		play: function () {
+			if (this.seeking){
+				this.log("Play while seeking, will play after seek!");
+				this.stopAfterSeek = false;
+				return false;
+			}
 			if (this.currentState == "end") {
 				// prevent getting another clipdone event on replay
 				this.seek(0.01, false);
