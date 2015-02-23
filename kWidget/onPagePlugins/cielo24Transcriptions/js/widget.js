@@ -323,6 +323,7 @@ function renderTranscription(json, duration) {
 
     var speakersHidden = true;
     for(var i in json.speakers) {
+        speakersHidden = false;
         var speakerId = json.speakers[i].id;
 
         var speakerStarts = [];
@@ -336,7 +337,6 @@ function renderTranscription(json, duration) {
         }
         if(speakerStarts.length>0) {
             $(".speakersWrapper").append("<h3>"+json.speakers[i].name+":</h3>");
-            speakersHidden = false;
         }
         for(var j in speakerStarts) {
             $(".speakersWrapper").append("<span class='playheadTimeUpdateTrigger' data-time-offset='"+speakerStarts[j]+"'>"+(""+(speakerStarts[j]/1000)).toMMSS()+"</span><br />");
