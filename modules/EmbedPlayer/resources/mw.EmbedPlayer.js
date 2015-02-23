@@ -1041,7 +1041,8 @@
 				seekTime = 0;
 			}
 
-			if (seekTime > this.getDuration()) {
+			//Only validate seek if duration already updated from player element
+			if (this.getDuration() > 0 && seekTime > this.getDuration()) {
 				seekTime = this.getDuration();
 			}
 

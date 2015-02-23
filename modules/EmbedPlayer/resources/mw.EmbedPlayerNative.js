@@ -433,7 +433,7 @@
 					[0].load();
 			}
 
-			if ( vid.readyState < 1 ) {
+			if ( (vid.readyState < 1) || (this.getDuration() === 0)) {
 				// if on the first call ( and video not ready issue load, play
 				if (callbackCount == 0 && vid.paused) {
 					this.stopEventPropagation();
@@ -441,11 +441,16 @@
 					var eventName = mw.isIOS() ? "canplaythrough.seekPrePlay" : "canplay.seekPrePlay";
 					vidObj.off(eventName).one(eventName, function () {
 						_this.restoreEventPropagation();
-						clearTimeout(_this.canSeekTimeout);
-						this.canSeekTimeout = null;
-						setTimeout(function(){
-							return checkVideoStateDeferred.resolve();
-						}, 10);
+						if (vid.duration > 0) {
+							_this.log("player can seek");
+							clearTimeout( _this.canSeekTimeout );
+							this.canSeekTimeout = null;
+							setTimeout( function () {
+								return checkVideoStateDeferred.resolve();
+							}, 10 );
+						} else {
+							_this.log("player can't seek - video duration not available, wait for video duration update");
+						}
 					});
 					this.log("player can't seek - try to init video element ready state");
 					vid.load();
