@@ -16,8 +16,8 @@
 		listenerCounter: 0,
 		targetObj: null,
 		initialized: false,
-        detectFlash: null,
-        detectTests: 5,
+        detectFlashInterval: null,
+        detectFlashIntervalLoops: 3,
         flashDetected: false,
 		/**
 		 * initialize the class, creates flash embed
@@ -28,7 +28,7 @@
 		 * @param readyCallback to run when player is ready
 		 * @returns {*}
 		 */
-		init: function( containerId , playerId , elementFlashvars, target, readyCallback ){
+		init: function( containerId , playerId , elementFlashvars, target, readyCallback, failCallback ){
             var _this = this;
             this.element = this;
             this.id = playerId;
@@ -57,12 +57,18 @@
             var kdpPath = mwEmbedPath + 'modules/EmbedPlayer/binPlayers/kaltura-player/kdp3.swf';
             // var kdpPath = "http://localhost/chromeless-kdp/KDP3/bin-debug/kdp3.swf";
 
-            _this.detectFlash = setInterval(function(){ _this.waitForFlash(); }, 500);
+            // set interval in order to try to detect flash player (run 3 times)
+            _this.detectFlashInterval = setInterval(function(){
+                _this.detectFlash(failCallback);
+            }, 500);
 
             window[this.jsReadyFunName] = function( playerId ){
                 if (!_this.initialized) {
                     _this.initialized = true;
-                    _this.flashDetected = true;
+
+                    _this.flashDetected = true; // used in order to clear detectFlash interval
+                    clearInterval(_this.detectFlashInterval); // stop trying to detect flash
+
                     // We wrap everything in setTimeout to avoid Firefox race condition with empty cache
                     setTimeout( function () {
                         _this.playerElement = $( '#' + playerId )[0];
@@ -112,10 +118,7 @@
                     bgcolor :			"#000000",
                     allowNetworking : 	"all",
                     version :			[10,0],
-                    wmode : 			"transparent",
-                    onFail:             function() {
-                        alert("Flash blocked");
-                    }
+                    wmode : 			"transparent"
                 },
                 flashvars
             );
@@ -123,27 +126,15 @@
             return this;
 
         },
-        waitForFlash: function(){
-            var data = {
-                'title': 'Detecting Flash Player',
-                'message': "Please wait.. " + this.detectTests
-            };
-            mw.log("PlayerElementFlash::waitForFlash::Alert: " + data.message);
-            //$( this ).trigger( 'alert', [ data ] );
+        detectFlash: function(failCallback){
+            mw.log("PlayerElementFlash::detectFlash::detect loop " + this.detectFlashIntervalLoops);
 
-            if (this.flashDetected) {
-                clearInterval(this.detectFlash);
+            if(!this.flashDetected && this.detectFlashIntervalLoops==0 ){
+                mw.log("PlayerElementFlash::detectFlash::failed to detecting Flash Player");
+                clearInterval(this.detectFlashInterval); // stop trying to detect flash
+                failCallback(); //trigger fail callback -> goes to the EmbeadPlayerKplayer in order to displayAlert with ks-FLASH-BLOCKED message
             }
-            if(this.detectTests==0 && !this.flashDetected){
-                clearInterval(this.detectFlash);
-                data = {
-                    'title': 'Failed to detecting Flash Player',
-                    'message': "Flash blocked"
-                };
-                mw.log("PlayerElementFlash::waitForFlash::Error: " + data.message);
-                //$( this ).trigger( 'error', [ data ] );
-            }
-            this.detectTests--;
+            this.detectFlashIntervalLoops--;
         },
 		play: function(){
 			this.sendNotification( 'doPlay' );

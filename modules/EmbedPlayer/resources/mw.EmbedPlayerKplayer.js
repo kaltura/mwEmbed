@@ -154,7 +154,21 @@
 						_this.triggerHelper("volumeChanged", 0);
 					}
 
-				});
+				},
+                function(){
+                    _this.removePoster();
+                    _this.layoutBuilder.displayAlert( {
+                        title: _this.getKalturaMsg( 'ks-FLASH-BLOCKED-TITLE' ),
+                        message: _this.getKalturaMsg( 'ks-FLASH-BLOCKED' ),
+                        keepOverlay: true,
+                        noButtons : true,
+                        props: {
+                            customAlertTitleCssClass: "liveAlertTitle",
+                            customAlertMessageCssClass: "liveAlertMessage",
+                            customAlertContainerCssClass: "flashBlockAlertContainer"
+                        }
+                    });
+                });
 
 				_this.bindHelper('switchAudioTrack', function (e, data) {
 					if (_this.playerObject) {
