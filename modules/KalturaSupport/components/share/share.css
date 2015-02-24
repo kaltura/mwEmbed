@@ -99,7 +99,7 @@
 .share-alert{
 	font-size: 11pt;
 	font-family: 'Lato', Helvetica, Arial;
-	text-shadow: 1px 1px #000000;
+	/*text-shadow: 1px 1px #000000;*/
 	color: red;
 	line-height: 28pt;
 	display: none;
@@ -184,7 +184,8 @@
 	border-radius: 28px 28px 28px 28px;
 	-moz-border-radius: 28px 28px 28px 28px;
 	-webkit-border-radius: 28px 28px 28px 28px;
-	border: 1px solid #ffffff;
+	border: 1px solid white;
+	border: 1px solid rgba(255,255,255,0.5);
 	width: 56px;
 	height: 56px;
 	font-size: 2em;
