@@ -1199,30 +1199,13 @@
 					// Update the clip done playing count ( for keeping track of replays )
 					_this.donePlayingCount++;
 					if (_this.loop) {
-						// Prevent the native "onPlay" event from propagating that happens when we rewind:
-						this.stopEventPropagation();
 						// Rewind the player to the start:
 						// NOTE: Setting to 0 causes lags on iPad when replaying, thus setting to 0.01
 						var startTime = 0.01;
 						if (this.startOffset) {
 							startTime = this.startOffset;
 						}
-						_this.unbindHelper("seeked.loop").bindOnceHelper("seeked.loop", function () {
-							// Set to stopped state:
-							_this.stop();
-
-							// Restore events after we rewind the player
-							mw.log("EmbedPlayer::onClipDone:Restore events after we rewind the player");
-							_this.restoreEventPropagation();
-
-							// synchronize playing with events listeners
-							setTimeout(function () {
-								_this.play();
-							}, 100);
-
-							return;
-						});
-						this.seek(startTime);
+						this.seek(startTime, false);
 					} else {
 						// make sure we are in a paused state.
 						_this.stop();
