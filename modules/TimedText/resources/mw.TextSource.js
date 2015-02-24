@@ -188,8 +188,14 @@
 			var _this = this;
 			mw.log("TextSource::getCaptionsFromTMML", data);
 			// set up display information:
+
 			var captions = [];
-			var xml = ( $( data ).find("tt").length ) ? data : $.parseXML( data );
+			var parsedData = data;
+			//check if TTML contains &
+			if( typeof(data) == "string" ) {
+				parsedData = data.replace(/&amp;/g, '&').replace(/&/g, '&amp;');
+			}
+			var xml = ( $( parsedData ).find("tt").length ) ? parsedData : $.parseXML( parsedData );
 			// Check for parse error:
 			try {
 				if( !xml || $( xml ).find('parsererror').length ){

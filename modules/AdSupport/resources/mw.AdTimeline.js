@@ -160,12 +160,12 @@
 				embedPlayer.triggerHelper( 'AdSupport_PreSequence');
 
 				mw.log( 'EmbedPlayer::preSeek : prevented seek during ad playback');
-				embedPlayer.unbindHelper("preSeek" + _this.bindPostfix).bindHelper("preSeek" + _this.bindPostfix, function(e, percentage, stopAfterSeek, stopSeek) {
+				embedPlayer.unbindHelper("preSeek" + _this.bindPostfix).bindHelper("preSeek" + _this.bindPostfix, function(e, seekTime, stopAfterSeek, stopSeek) {
 					embedPlayer.unbindHelper( "preSeek" + _this.bindPostfix );
 					stopSeek.value = true;
 					_this.pendingSeek = true;
 					_this.pendingSeekData = {
-						percentage: percentage,
+						seekTime: seekTime,
 						stopAfterSeek: stopAfterSeek
 					};
 				});
@@ -441,7 +441,7 @@
 
 			if (this.pendingSeek){
 				this.pendingSeek = false;
-				embedPlayer.seek(this.pendingSeekData.percentage, this.pendingSeekData.stopAfterSeek);
+				embedPlayer.seek(this.pendingSeekData.seekTime, this.pendingSeekData.stopAfterSeek);
 			} else {
 				//If seek wasn't performed then and ad sequence is over then remove the seek handler
 				embedPlayer.unbindHelper( "preSeek" + this.bindPostfix );

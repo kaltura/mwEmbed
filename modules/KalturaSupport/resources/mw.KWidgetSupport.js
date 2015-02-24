@@ -697,7 +697,9 @@ mw.KWidgetSupport.prototype = {
 		var getAttr = function( attrName ){
 			return _this.getPluginConfig( embedPlayer, '', attrName );
 		}
-		
+		if ( getAttr( "Kaltura.ForceJSONP" ) === true ){
+			kWidget.forceJSONP();
+		}
 		// Check for autoplay:
 		var autoPlay = getAttr( 'autoPlay' );
 		if( autoPlay ){
@@ -739,7 +741,15 @@ mw.KWidgetSupport.prototype = {
 			}
 
 			// Check for mediaPlayFrom
-			var mediaPlayFrom = mediaProxy.mediaPlayFrom;
+			// first check in hash
+			var mediaPlayFrom = kWidget.getHashParam("t");
+			if ( mediaPlayFrom ){
+				mediaPlayFrom = kWidget.npt2seconds(mediaPlayFrom);
+			}
+			// now cheeck in Flashvars - will override hash params
+			if (mediaProxy.mediaPlayFrom){
+				mediaPlayFrom = mediaProxy.mediaPlayFrom;
+			}
 			if (mediaPlayFrom && !embedPlayer.startTime) {
 				embedPlayer.startTime = parseFloat( mediaPlayFrom );
 				mw.setConfig( "Kaltura.UseAppleAdaptive" , true) ;

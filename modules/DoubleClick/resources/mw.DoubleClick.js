@@ -227,7 +227,11 @@
 							var evaluatedValue = embedPlayer.evaluate( unescape( pair[1] ) );
 							//Escape kvp and build evaluated query string param back. exclude cust_params.
 							if (evaluatedKey != 'cust_params'){
-								evaluatedQueryStringParams += escape( evaluatedKey ) + "=" + encodeURIComponent( evaluatedValue ) + "&";
+								evaluatedQueryStringParams += escape( evaluatedKey );
+								if (evaluatedValue) {
+									evaluatedQueryStringParams += "=" + encodeURIComponent( evaluatedValue );
+								}
+								evaluatedQueryStringParams += "&";
 							}else{
 								this.cust_params = encodeURIComponent( evaluatedValue );
 							}
@@ -778,7 +782,7 @@
 						_this.embedPlayer.adTimeline.restorePlayer( 'midroll', true );
 						_this.embedPlayer.addPlayerSpinner();
 						if ( _this.saveTimeWhenSwitchMedia && _this.timeToReturn ) {
-							_this.embedPlayer.setCurrentTime(_this.timeToReturn);
+							_this.embedPlayer.seek(_this.timeToReturn);
 							_this.timeToReturn = null;
 						}
 						// _this.embedPlayer.setCurrentTime( seekPerc * embedPlayer.getDuration(), function(){
@@ -1307,7 +1311,7 @@
 
 				} else {
 					if ( _this.saveTimeWhenSwitchMedia ) {
-						_this.embedPlayer.setCurrentTime(_this.timeToReturn);
+						_this.embedPlayer.seek(_this.timeToReturn);
 						_this.timeToReturn = null;
 					}
 

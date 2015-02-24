@@ -432,6 +432,9 @@
 							}
 							return kw;
 						break;
+						case 'targetId':
+							return embedPlayer.id;
+						break;
 						case 'sessionId':
 							return window.kWidgetSupport.getGUID();
 						break;
@@ -521,6 +524,12 @@
 							break;
 					}
 					break;
+				case 'embedServices':
+					var proxyData = embedPlayer.getKalturaConfig( 'proxyData' );
+					var filedName = expression.replace('embedServices.', '');
+					return this.getProperty(filedName, proxyData);
+					break;
+
 			}
 			// Look for a plugin based config: typeof
 			var pluginConfigValue = null;
@@ -579,7 +588,19 @@
 					break;
 			}
 		},
+		getProperty: function( propertyName, object ) {
+			var parts = propertyName.split( "." ),
+				length = parts.length,
+				i,
+				property = object || this;
 
+			for ( i = 0; i < length; i++ ) {
+				if (property === undefined) break;
+				property = property[parts[i]];
+			}
+
+			return property;
+		},
 		/**
 		 * Emulates Kaltura removeJsListener function
 		 */
@@ -1113,14 +1134,14 @@
 					break;
 				case 'doSeek':
 					// Kaltura doSeek is in seconds rather than percentage:
-					var percent = ( parseFloat( notificationData ) - embedPlayer.startOffset )/ embedPlayer.getDuration();
+					var seekTime = ( parseFloat( notificationData ) - embedPlayer.startOffset );
 					// Update local kPreSeekTime
 					embedPlayer.kPreSeekTime =  embedPlayer.currentTime;
 					// Once the seek is complete null kPreSeekTime
 					embedPlayer.bindHelper( 'seeked.kdpMapOnce', function(){
 						embedPlayer.kPreSeekTime = null;
 					});
-					embedPlayer.seek( percent, embedPlayer.paused );
+					embedPlayer.seek( seekTime );
 					break;
 				case 'changeVolume':
 					embedPlayer.setVolume( parseFloat( notificationData ),true );

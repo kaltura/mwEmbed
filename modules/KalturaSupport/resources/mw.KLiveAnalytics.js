@@ -14,6 +14,7 @@
 			bufferTime : 0,
 			eventIndex :1,
 			currentBitRate:-1,
+			eventType:1,
 			playing:false,
 			firstPlay: true,
 			liveEventInterval: null,
@@ -107,6 +108,17 @@
 						 }
 					}
 				});
+
+				this.bind( 'movingBackToLive', function() {
+					_this.eventType = 1;
+				} );
+
+				this.bind( 'seeked seeking onpause', function() {
+					if ( _this.getPlayer().isDVR() ) {
+						_this.eventType = 2;
+					}
+				});
+
 			},
 			calculateBuffer : function ( closeSession ){
 				var _this = this;
@@ -161,7 +173,7 @@
 				var liveStatsEvent = {
 					'entryId'     : _this.embedPlayer.kentryid,
 					'partnerId'   : _this.embedPlayer.kpartnerid,
-					'eventType'  :  1,
+					'eventType'  :  _this.eventType,
 					'sessionId'   : _this.embedPlayer.evaluate('{configProxy.sessionId}'),
 					'eventIndex'  : _this.eventIndex,
 					'bufferTime'  : _this.bufferTime,
