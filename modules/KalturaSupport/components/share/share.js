@@ -227,7 +227,7 @@
 				});
 			}
 			// add bindings
-			var offsetContainerHeight = this.getPlayer().getVideoHolder().width() < 400 ? "18px" : "43px";
+			var offsetContainerHeight = this.getPlayer().getVideoHolder().width() < 400 ? "24px" : "32px";
 			$(".share-input").on("click", function(){
 				if ( $(".share-offset-container").css("display") === "none" ){
 					$(".embed-offset-container").hide();
