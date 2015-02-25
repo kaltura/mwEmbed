@@ -136,10 +136,8 @@ mw.KWidgetSupport.prototype = {
 				thumbUrl = embedPlayer.evaluate(mw.getConfig('thumbnailUrl'));
 			}
 			var alt = gM('mwe-embedplayer-video-thumbnail-for', embedPlayer.evaluate('{mediaProxy.entry.name}'));
-		  	embedPlayer.updatePoster( thumbUrl, alt );
-			if( embedPlayer.kalturaPlayerMetaData.mediaType === 5 ) {
-		  		embedPlayer.isAudioPlayer = true;
-		  	}		  	
+			embedPlayer.updatePoster( thumbUrl, alt );
+			embedPlayer.isAudioPlayer = ( embedPlayer.kalturaPlayerMetaData.mediaType === 5 );
 		});
 
 		// Add black sources:
