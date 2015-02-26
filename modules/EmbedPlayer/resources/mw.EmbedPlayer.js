@@ -1388,6 +1388,7 @@
 				if (mw.getConfig('EmbedPlayer.IsIframeServer')) {
 					$(window).off("debouncedresize").on("debouncedresize", function () {
 						mw.log('debouncedresize:: call doUpdateLayout');
+						_this.triggerHelper('resizeEvent');
 						_this.doUpdateLayout();
 					});
 				}
