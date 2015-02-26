@@ -258,12 +258,11 @@ function renderTranscription(json, duration) {
 
         $(segment.sequences).each(function(j, sequence) {
             $(sequence.tokens).each(function(k, token) {
-                if(token.type=='word' || token.type=='punctuation') {
+                if(token.type=='word' || token.type=='punctuation' || token.type=='sound') {
 
-                    if(token.type=='word') {
+                    if(token.type=='word' || token.type=='sound') {
                         if(newLineCntr>0) {
                             transcriptionText += (" ");
-                            //                            transcriptionHtml += "<span class='transcriptionLetter' data-offset='"+currentOffset+"' > </span>";
                             transcriptionHtml += " ";
                             currentOffset++;
                         }
@@ -294,16 +293,27 @@ function renderTranscription(json, duration) {
 
     currentTranscriptionText = transcriptionText;
     currentTranscriptionHtml = transcriptionHtml;
-//        console.log(transcriptionText);
     $("#transcriptionText").html(transcriptionHtml+"<span class='aquo'>&raquo;</span></div></div>");
 
     $(".totalTime").text((""+(videoDuration/1000)).toMMSS());
 
     var metaHidden = true;
     for(var i in json.topics) {
-        var topicStartTime = json.topics[i].time_ranges[0].start_time;
-        $(".topicsWrapper").append("<span class='playheadTimeUpdateTrigger' data-time-offset='"+topicStartTime+"'>"+i+" - "+(""+(topicStartTime/1000)).toMMSS()+"</span><br />");
         metaHidden = false;
+
+        var topicStartTime = 0;
+        var hasTimeRange = json.topics[i].time_ranges.length>0;
+        if(hasTimeRange) {
+            topicStartTime = json.topics[i].time_ranges[0].start_time;
+        }
+
+        var topicHtml = "<span class='"+(hasTimeRange?"playheadTimeUpdateTrigger":"")+"' data-time-offset='"+topicStartTime+"'>" + i;
+        if(hasTimeRange) {
+            topicHtml += (" - "+(""+(topicStartTime/1000)).toMMSS());
+        }
+        topicHtml += "</span><br />";
+
+        $(".topicsWrapper").append(topicHtml);
     }
     if(!metaHidden) {
         $(".leftMenuPopupRowMeta").show();
@@ -311,6 +321,7 @@ function renderTranscription(json, duration) {
 
     var speakersHidden = true;
     for(var i in json.speakers) {
+        speakersHidden = false;
         var speakerId = json.speakers[i].id;
 
         var speakerStarts = [];
@@ -324,7 +335,6 @@ function renderTranscription(json, duration) {
         }
         if(speakerStarts.length>0) {
             $(".speakersWrapper").append("<h3>"+json.speakers[i].name+":</h3>");
-            speakersHidden = false;
         }
         for(var j in speakerStarts) {
             $(".speakersWrapper").append("<span class='playheadTimeUpdateTrigger' data-time-offset='"+speakerStarts[j]+"'>"+(""+(speakerStarts[j]/1000)).toMMSS()+"</span><br />");
@@ -598,7 +608,6 @@ $(document).ready(function() {
     });
 
     $(".footerArrowUp").click(function() {
-
         $(this).toggleClass('closed');
         XD.postMessage(JSON.stringify({event: 'toggleVisibilityState', playerId: playerId}), parentUrl, parent.window);
     });
@@ -761,30 +770,14 @@ $(document).ready(function() {
         XD.postMessage(jsonData, parentUrl, parent.window);
     });
 
-    loadTranscriptionFromKaltura(ks, partnerId, lang, entryId, function(response) {
-        var langs = response.langs;
-        var loadedLang = response.loadedLang;
-        var responseCode = response.code;
-        var transcriptionJson = response.transcriptionJson;
-
-        if(responseCode==200) {
-            if(langs.length>1) {
-                $(".language").show();
-                for(var i in langs) {
-                    var lang = langs[i].isoCode;
-                    $(".languageOption[data-lang='"+lang+"']").addClass('active');
-                }
-                $(".currentLanguage").text(loadedLang.name);
-            }
-            renderTranscription(transcriptionJson, videoDuration);
-        }else {
-            $("#transcriptionText").text("<div class='noTranscriptionText'>No Transcription Available</div>");
-            $(".leftMenuTrigger").addClass('disabled');
-            $(".footerArrowUp").addClass('closed');
-            XD.postMessage(JSON.stringify({event: 'toggleVisibilityState', playerId: playerId}), parentUrl, parent.window);
+    loadTranscriptionFromKaltura(ks, partnerId, lang, entryId, videoDuration, function(data) {
+        var langs = data.langs;
+        var loadedLang = data.loadedLang;
+        for(var i in langs) {
+            var lang = langs[i].isoCode;
+            $(".languageOption[data-lang='"+lang+"']").addClass('active');
         }
-
-        transcriptionLoaded = true;
+        $(".currentLanguage").text(loadedLang.name);
     });
 
     $(window).resize(windowResizeCallback);
