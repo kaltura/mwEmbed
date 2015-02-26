@@ -199,8 +199,8 @@
 	height: 100%;
 }
 .share .custom-share-network{
-	margin-top: 0px;
-	margin-left: 0px;
+	margin-top: 0px !important;
+	margin-left: 0px !important;
 }
 /* a href link styles */
 .share a:link {
