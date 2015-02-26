@@ -2177,10 +2177,6 @@
 		inPreSequence: false,
 		replayEventCount: 0,
 		play: function () {
-			if (this.currentState == "end") {
-				// prevent getting another clipdone event on replay
-				this.seek(0.01, false);
-			}
 			var _this = this;
 			var $this = $(this);
 			// Store the absolute play time ( to track native events that should not invoke interface updates )
@@ -2226,6 +2222,11 @@
 					mw.log("EmbedPlayer:: isInSequence, do NOT play content");
 					return false;
 				}
+			}
+
+			if (this.currentState == "end") {
+				// prevent getting another clipdone event on replay
+				this.seek(0.01, false);
 			}
 
 			// Remove any poster div ( that would overlay the player )

@@ -664,7 +664,15 @@
 						}
 					});
 
+					$(vid).bind('pause' + switchBindPostfix, function () {
+						_this.log("playerSwitchSource> received pause during switching, issue play to continue source switching!")
+						$(vid).unbind('pause' + switchBindPostfix);
+						vid.play();
+					});
+
 					var handleSwitchCallback = function () {
+						//Clear pause binding on switch exit in case it wasn't triggered.
+						$(vid).unbind('pause' + switchBindPostfix);
 						// restore video position ( now that we are playing with metadata size  )
 						_this.restorePlayerOnScreen();
 						// play hide loading spinner:
