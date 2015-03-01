@@ -54,6 +54,8 @@
 		// Disable switch source callback
 		disableSwitchSourceCallback: false,
 
+		// Flag specifying if a mobile device already played. If true - mobile device can autoPlay
+		mobilePlayed: false,
 		// All the native events per:
 		// http://www.w3.org/TR/html5/video.html#mediaevents
 		nativeEvents: [
@@ -275,7 +277,7 @@
 		 * returns true if device can auto play
 		 */
 		canAutoPlay: function () {
-			return !mw.isAndroid() && !mw.isMobileChrome() && !mw.isIOS();
+			return (!mw.isAndroid() && !mw.isMobileChrome() && !mw.isIOS()) || this.mobilePlayed;
 		},
 
 		/**
@@ -662,7 +664,15 @@
 						}
 					});
 
+					$(vid).bind('pause' + switchBindPostfix, function () {
+						_this.log("playerSwitchSource> received pause during switching, issue play to continue source switching!")
+						$(vid).unbind('pause' + switchBindPostfix);
+						vid.play();
+					});
+
 					var handleSwitchCallback = function () {
+						//Clear pause binding on switch exit in case it wasn't triggered.
+						$(vid).unbind('pause' + switchBindPostfix);
 						// restore video position ( now that we are playing with metadata size  )
 						_this.restorePlayerOnScreen();
 						// play hide loading spinner:
@@ -865,6 +875,7 @@
 								vid.play();
 							}
 						}
+						_this.mobilePlayed = true;
 						// re-start the monitor:
 						_this.monitor();
 					}
