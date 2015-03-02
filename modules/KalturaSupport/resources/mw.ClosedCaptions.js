@@ -18,7 +18,8 @@
 			"showEmbeddedCaptionsStyle": false,
 			"showOffButton": true,
 			"toggleActiveCaption": false,
-			"useExternalClosedCaptions": false
+			"useExternalClosedCaptions": false,
+			"offButtonPosition": "first"
 		},
 
 		textSources: [],
@@ -30,9 +31,9 @@
 
 			if( (this.getConfig( 'useCookie' ) && $.cookie( this.cookieName )
 				&&
-				$.cookie( this.cookieName ) == 'None'
-				&&
-				this.getConfig('displayCaptions') === null)
+				$.cookie( this.cookieName ) == 'None')
+				||
+				this.getConfig('displayCaptions') === null
 				||
 				( this.getConfig( 'hideClosedCaptions') === true )
 			){
@@ -171,6 +172,9 @@
 				_this.setConfig('displayCaptions', true);
 				_this.showCaptions();
 			});
+			this.bind("playSegmentEvent", function(){
+				_this.updateTimeOffset();
+			});
 		},
 		updateTextSize: function(){
 			// Check if we are in fullscreen or not, if so add an additional bottom offset of
@@ -249,9 +253,15 @@
 			} 
 			return null;
 		},
+		updateTimeOffset: function(){
+			// support server side clipping
+			if ( this.embedPlayer.supportsURLTimeEncoding() && this.embedPlayer.startTime ){
+				this.timeOffset = this.embedPlayer.startTime;
+			}
+		},
 		setupTextSources: function( callback ){
 			var _this = this;
-
+			this.updateTimeOffset();
 			// Get from <track> elements
 			$.each( this.getPlayer().getTextTracks(), function( inx, textSource ){
 				_this.textSources.push( new mw.TextSource( textSource ) );
@@ -269,7 +279,7 @@
 					_this.textSources = textSources;
 				}]);
 
-				if( _this.getConfig('displayCaptions') !== false ){
+				if( _this.getConfig('displayCaptions') !== false || ($.cookie( _this.cookieName ) !== 'None' && $.cookie( _this.cookieName )) ){
 					_this.autoSelectSource();
 					if( _this.selectedSource ){
 						_this.setTextSource(_this.selectedSource, false);
@@ -291,7 +301,8 @@
 				'action' : 'list',
 				'filter:objectType' : 'KalturaAssetFilter',
 				'filter:entryIdEqual' : this.getPlayer().kentryid,
-				'filter:statusEqual' : 2
+				'filter:statusEqual' : 2,
+				'pager:pageSize': 50
 			}, function( data ) {
 				mw.log( "mw.ClosedCaptions:: loadCaptionsFromApi: " + data.totalCount, data.objects );
 				if( data.objects && data.objects.length ){
@@ -718,17 +729,9 @@
 				this.showCaptions();
 			}
 
-			// Add Off item
-			if( this.getConfig('showOffButton') ) {
-				this.getMenu().addItem({
-					'label': 'Off',
-					'callback': function(){
-						_this.setConfig('displayCaptions', false);
-						// also update the cookie to "None"
-						_this.getPlayer().setCookie( _this.cookieName, 'None' );
-					},
-					'active': ! _this.getConfig( "displayCaptions" ) 
-				});
+			// Add Off item as first element
+			if( this.getConfig('showOffButton') && this.getConfig('offButtonPosition') == 'first' ) {
+				this.addOffButton();
 			}
 
 			// Add text sources
@@ -748,8 +751,25 @@
 				})
 			});
 
+			// Add Off item as last element
+			if( this.getConfig('showOffButton') && this.getConfig('offButtonPosition') == 'last' ) {
+				this.addOffButton();
+			}
+
 			// Allow plugins to integrate with captions menu
 			this.getPlayer().triggerHelper('captionsMenuReady');
+		},
+		addOffButton: function() {
+			var _this = this;
+			this.getMenu().addItem({
+				'label': 'Off',
+				'callback': function(){
+					_this.setConfig('displayCaptions', false);
+					// also update the cookie to "None"
+					_this.getPlayer().setCookie( _this.cookieName, 'None' );
+				},
+				'active': ! _this.getConfig( "displayCaptions" ) 
+			});
 		},
 		setTextSource: function( source, setCookie ){
 			setCookie = ( setCookie === undefined ) ? true : setCookie;

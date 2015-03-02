@@ -79,6 +79,7 @@ mw.KBasePlugin = Class.extend({
 		data.player = this.embedPlayer;
 		data.entry = this.embedPlayer.kalturaPlayerMetaData;
 		data.entryMetadata = this.embedPlayer.kalturaEntryMetaData;
+		data.formaters = mw.formaters;
 
 		// First get template from 'template' config
 		var rawHTML = this.getConfig( 'template', true );
@@ -93,7 +94,7 @@ mw.KBasePlugin = Class.extend({
 		var transformedHTML = mw.util.tmpl( rawHTML );
 		transformedHTML = transformedHTML(data);
 		var evaluatedHTML = $.trim( this.embedPlayer.evaluate( transformedHTML ) );
-		var $templateHtml = $( '<span>' + evaluatedHTML + '</span>' );
+		var $templateHtml = $( '<span class="tmpl">' + evaluatedHTML + '</span>' );
 
 		$templateHtml
 			.find('[data-click],[data-notification]')

@@ -68,7 +68,7 @@ $messages['en'] = array(
     'ks-adBlockDetector-btn-resume' => 'Continue',
     'ks-chapters-search-placeholder' => 'Search',
     'ks-chapters-search-clear' => 'Clear',
-    'ks-chapters-search-empty-result' => "Sorry, no results we're found",
+    'ks-chapters-search-empty-result' => "Sorry, no results were found",
     'ks-chapters-locate-active-media' => "Locate current chapter/slide",
     'ks-chapters-toggle-chapter' => "Expand/collapse chapter",
     'ks-chapters-toggle-all-chapter' => "Expand/collapse all chapters",
@@ -78,7 +78,7 @@ $messages['en'] = array(
     'ks-chapters-slideNumber' => "Slide number",
     'ks-chapters-slide-start-time' => "Slide start time",
     'ks-chapters-slide-duration' => "Slide duration",
-    'ks-sidebar-toggleBtn' => "Menu"
+    'ks-sidebar-toggleBtn' => "Navigation"
 );
 
 $messages['fr'] = array(

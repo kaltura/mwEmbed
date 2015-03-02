@@ -8,6 +8,7 @@
 		// Instance name:
 		instanceOf: 'Silverlight',
 		bindPostfix: '.sPlayer',
+		playerPrefix: 'EmbedPlayerSilverlight',
 		//default playback start time to wait before falling back to unicast in millisecods
 		defaultMulticastStartTimeout: 10000,
 		containerId: null,
@@ -475,67 +476,46 @@
 		 * @param {Float}
 		 *            percentage Percentage of total stream length to seek to
 		 */
-		seek: function (percentage, stopAfterSeek) {
+		doSeek: function (seekTime) {
 			var _this = this;
-			var seekTime = percentage * this.getDuration();
-			mw.log('EmbedPlayerKalturaSplayer:: seek: ' + percentage + ' time:' + seekTime);
-			if (this.playerObject.duration) //we already loaded the movie
-			{
-				this.seeking = true;
-
-				// Save currentTime
-				this.kPreSeekTime = _this.currentTime;
-				// Trigger preSeek event for plugins that want to store pre seek conditions.
-				var stopSeek = {value: false};
-				this.triggerHelper('preSeek', [percentage, stopAfterSeek, stopSeek]);
-				if (stopSeek.value) {
-					return;
+			// Include a fallback seek timer: in case the kdp does not fire 'playerSeekEnd'
+			var orgTime = this.slCurrentTime;
+			this.seekInterval = setInterval(function () {
+				if ((_this.slCurrentTime != orgTime) && _this.seeking) {//TODO - check seeking also
+					_this.seeking = false;
+					clearInterval(_this.seekInterval);
+					_this.triggerHelper('seeked', [ _this.slCurrentTime]);
 				}
-
-				this.currentTime = ( percentage * this.duration ).toFixed(2);
-
-				// trigger the html5 event:
-				$(this).trigger('seeking');
-
-				// Run the onSeeking interface update
-				this.layoutBuilder.onSeek();
-
-				this.unbindHelper("seeked" + _this.bindPostfix).bindHelper("seeked" + _this.bindPostfix, function () {
-					_this.unbindHelper("seeked" + _this.bindPostfix);
-					_this.removePoster();
-					_this.startMonitor();
-					if (stopAfterSeek) {
-						_this.hideSpinner();
-						_this.pause();
-						_this.updatePlayheadStatus();
-					} else {
-						// continue to playback ( in a non-blocking call to avoid synchronous pause event )
-						setTimeout(function () {
-							if (!_this.stopPlayAfterSeek) {
-								mw.log("EmbedPlayerNative::sPlay after seek");
-								_this.play();
-								_this.stopPlayAfterSeek = false;
-							}
-						}, 0);
-					}
-				});
-
-				// Include a fallback seek timer: in case the kdp does not fire 'playerSeekEnd'
-				var orgTime = this.slCurrentTime;
-				this.seekInterval = setInterval(function () {
-					if (_this.slCurrentTime != orgTime) {
-						_this.seeking = false;
-						clearInterval(_this.seekInterval);
-						$(_this).trigger('seeked', [ _this.slCurrentTime]);
-					}
-				}, mw.getConfig('EmbedPlayer.MonitorRate'));
-				// Issue the seek to the flash player:
-
+			}, mw.getConfig('EmbedPlayer.MonitorRate'));
+			this.stopEventPropagation();
+			// Issue the seek to the flash player:
+			this.playerObject.seek(seekTime);
+		},
+		canSeek: function(){
+			var _this = this;
+			var deferred = $.Deferred();
+			if (this.playerObject.duration) { //we already loaded the movie
+				this.log("player can seek");
+				return deferred.resolve();
+			} else {
+				this.log("player can't seek - try to init video element ready state");
+				this.canSeekPlayedHandler = function(){
+					_this.restoreEventPropagation();
+					//Issue a pause on the player element
+					_this.playerObject.pause();
+					//Remove the temprary event listener
+					_this.playerObject.removeJsListener("playerPlayed", "canSeekPlayedHandler");
+					_this.log("player can seek");
+					deferred.resolve();
+				};
+				//Register temporary event handler for playerPlayed event
+				this.playerObject.removeJsListener("playerPlayed", "canSeekPlayedHandler");
+				this.playerObject.addJsListener("playerPlayed", "canSeekPlayedHandler");
+				//Stop event propagation so play would not be caught by analytics
 				this.stopEventPropagation();
-				this.playerObject.seek(seekTime);
-
-			} else if (percentage != 0) {
+				//Issue a play on the player element
 				this.playerObject.play();
+				return deferred;
 			}
 		},
 		/**
@@ -576,12 +556,9 @@
 			$(this).trigger('updateBufferPercent', this.bufferedPercent);
 		},
 
-		onPlayerSeekEnd: function (position) {
-			this.previousTime = this.currentTime = this.slCurrentTime = position;
-			this.seeking = false;
+		onPlayerSeekEnd: function () {
 			this.restoreEventPropagation();
-			$(this).trigger('seeked');
-			this.updatePlayhead();
+			this.triggerHelper('seeked');
 			if (this.seekInterval) {
 				clearInterval(this.seekInterval);
 			}

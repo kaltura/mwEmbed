@@ -27,22 +27,15 @@
                 <% } %>
                 <%
                 var chapterTitle = mediaItem.title;
-	            var tooltip = null;
-                if( mediaItem.title && mediaItem.title.length > meta.titleLimit ){
-	                tooltip =  mediaItem.title;
-				    chapterTitle = mediaItem.title.substr(0, meta.titleLimit-4 ) + ' ...';
-                } %>
-                <span class="k-title" title="<%=tooltip%>"><%=chapterTitle%></span>
-	            <!--span class="k-title" title="<%=tooltip%>"><%=chapterTitle.substr(parseInt(meta.titleLimit/2))%></span-->
+	            %>
+                <span class="k-title" title="<%=chapterTitle%>"><%=chapterTitle%></span>
             </span>
             <%
             var itemDesc = mediaItem.description;
-	        var tooltip = null;
-            if( mediaItem.description && mediaItem.description.length > meta.descLimit ){
-	            tooltip =  mediaItem.description;
-                itemDesc = mediaItem.description.substr(0, meta.descLimit-4 ) + ' ...';
-            } %>
-            <span class="k-description" title="<%=tooltip%>"><%=itemDesc%></span>
+            %>
+	        <div class="k-description-container">
+                <span class="k-description" title="<%=itemDesc%>"><%=itemDesc%></span>
+	        </div>
             <% if( meta.includeMediaItemDuration) { %>
             <span class="k-duration">
                 <!--div class="icon-time"></div-->
