@@ -44,7 +44,6 @@
 			});
 		},
 
-		// New "doPlay" implementation when nativeCallout plugin exist on mobile devices
 		calloutNativePlayer: function() {
 			var _this = this;
 			var timeout;
@@ -55,9 +54,44 @@
 				window.removeEventListener( 'pagehide', preventPopup );
 			}
 
+			function isHidden() {
+				if (typeof document.hidden !== 'undefined') {
+					return document.hidden;
+				} else if (typeof document.mozHidden !== 'undefined') {
+					return document.mozHidden;
+				} else if (typeof document.msHidden !== 'undefined') {
+					return document.msHidden;
+				} else if (typeof document.webkitHidden !== 'undefined') {
+					return document.webkitHidden;
+				}
+
+				return false;
+			}
+
 			var url =  _this.getConfig( "mimeName" ) + "?iframeUrl:=" + _this.getConfig( "iframeUrl" );
 			if ( mw.isAndroid() ) {
-				window.open( url, "_system" );
+				var popup = [];
+				setTimeout(function(){
+					popup.close();
+					//show the open play store splash screen
+					setTimeout(function(){
+						if (isHidden()){
+							//app is loaded
+						}else{
+							_this.getPlayer().layoutBuilder.displayAlert({
+								message:'Please download <a href="https://play.google.com/store/apps/details?id=com.kaltura.kms\" target="_blank">KalturaPlay</a> from Google Playstore',
+								title:'yo',
+								'keepOverlay': false,
+								'noButtons': false,
+								'isModal': true,
+								'isError': true
+							});
+						}
+					},1000);
+				},100);
+
+				popup = window.open(url);
+
 			} else {
 				$('<iframe />')
 					.attr('src', url)
