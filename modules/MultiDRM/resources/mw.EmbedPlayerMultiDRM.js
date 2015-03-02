@@ -329,7 +329,7 @@
 					// make sure we propagating events, and the current instance is in the correct closure.
 					if (_this._propagateEvents && _this.instanceOf === _this.instanceOf) {
 						var argArray = $.makeArray(arguments);
-						console.info(eventName);
+						if (eventName!=="timeupdate" && eventName!=="progress")console.info(eventName);
 						// Check if there is local handler:
 						if (_this[ '_on' + eventName ]) {
 							_this[ '_on' + eventName ].apply(_this, argArray);
@@ -361,108 +361,87 @@
 		 * @param {Float} percent
 		 * @param {bollean} stopAfterSeek if the player should stop after the seek
 		 */
-		seek: function (percent, stopAfterSeek) {
+		doSeek: function (seekTime) {
 			var _this = this;
-			// bounds check
-			if (percent < 0) {
-				percent = 0;
-			}
 
-			if (percent > 1) {
-				percent = 1;
-			}
-			mw.log('EmbedPlayerNative::seek p: ' + percent + ' : ' + this.supportsURLTimeEncoding() + ' dur: ' + this.getDuration() + ' sts:' + this.seekTimeSec);
-
-			// Save currentTime
-			this.kPreSeekTime = _this.currentTime;
-
-			// Trigger preSeek event for plugins that want to store pre seek conditions.
-			var stopSeek = {value: false};
-			this.triggerHelper('preSeek', [percent, stopAfterSeek, stopSeek]);
-			if (stopSeek.value) {
-				return;
-			}
-
-			this.seeking = true;
-			// Update the current time ( local property )
-			this.currentTime = ( percent * this.duration ).toFixed(2);
-
-			// trigger the seeking event:
-			mw.log('EmbedPlayerNative::seek:trigger');
-			this.triggerHelper('seeking');
-
-			// Run the onSeeking interface update
-			this.layoutBuilder.onSeek();
-
-			// @@todo check if the clip is loaded here (if so we can do a local seek)
-			// Try to do a play then seek:
-			this.doNativeSeek(percent, function () {
-				if (stopAfterSeek) {
-					_this.hideSpinner();
-					// pause in a non-blocking call to avoid synchronous playing event
-					setTimeout(function () {
-						_this.pause();
-						_this.updatePlayheadStatus();
-					}, 0);
-				} else {
-					// continue to playback ( in a non-blocking call to avoid synchronous pause event )
-					setTimeout(function () {
-						if (!_this.stopPlayAfterSeek) {
-							mw.log("EmbedPlayerNative::sPlay after seek");
-							_this.play();
-							_this.stopPlayAfterSeek = false;
-						}
-					}, 0);
-				}
-			});
-		},
-		/**
-		 * Do a native seek by updating the currentTime
-		 * @param {float} percent
-		 *        Percent to seek to of full time
-		 */
-		doNativeSeek: function (percent, callback) {
-
-			// If player already seeking, exit
-			var _this = this;
-			// chrome crashes with multiple seeks:
-			if ((navigator.userAgent.indexOf('Chrome') === -1) && _this.playerElement.seeking) {
-				return;
-			}
-
-			mw.log('EmbedPlayerNative::doNativeSeek::' + percent);
-			this.seeking = true;
-
-			this.seekTimeSec = 0;
-
-			// Hide iPad video off screen ( iOS shows quicktime logo during seek )
 			if (mw.isIOS()) {
 				this.hidePlayerOffScreen();
 			}
 
-			var targetTime = percent * this.getDuration();
-
-			// adjust seek target per startOffset
-			if (this.startOffset) {
-				targetTime += parseFloat(this.startOffset);
+			if ( seekTime === 0 && this.isLive() && mw.isIpad() && !mw.isIOS8() ) {
+				//seek to 0 doesn't work well on live on iOS < 8
+				seekTime = 0.01;
+				this.log( "doSeek: fix seekTime to 0.01" );
 			}
 
-			this.setCurrentTime(targetTime, function () {
-				// Update the current time ( so that there is not a monitor delay in reflecting "seeked time" )
-				_this.currentTime = _this.getPlayerElement().currentTime;
-				// Done seeking ( should be a fallback trigger event ) :
-				if (_this.seeking) {
-					_this.seeking = false;
-					$(_this).trigger('seeked');
-				}
+			this.unbindHelper("seeked.doSeek").bindOnceHelper("seeked.doSeek", function(){
 				// restore iPad video position:
 				_this.restorePlayerOnScreen();
-				_this.monitor();
-				// issue the callback:
-				if( callback ){
-					callback();
-				}
 			});
+			this.setCurrentTime(seekTime);
+		},
+		canSeek: function(deferred, callbackCount){
+			var vid = this.getPlayerElement();
+			var checkVideoStateDeferred = deferred || $.Deferred();
+			var _this = this;
+			if( !callbackCount ){
+				callbackCount = 0;
+			}
+
+			if (this.currentState === "end" && mw.isIphone()) {
+				vid.play();
+				this.playing = true;
+			}
+
+			// some initial calls to prime the seek:
+			if (vid.currentTime() === 0 && callbackCount === 0) {
+				// when seeking turn off preload none and issue a load call.
+				vid.preload('auto');
+//				vid.load();
+			}
+
+			var vidObj = $(vid.contentEl() ).find("video")[0];
+
+			if ( (vidObj && vidObj.readyState < 1) || (this.getDuration() === 0)) {
+				// if on the first call ( and video not ready issue load, play
+				if (callbackCount == 0 && vid.paused()) {
+					this.stopEventPropagation();
+
+					var eventName = mw.isIOS() ? "canplaythrough.seekPrePlay" : "canplay.seekPrePlay";
+					vid.off(eventName).one(eventName, function () {
+						_this.restoreEventPropagation();
+						if (vid.duration() > 0) {
+							_this.log("player can seek");
+							clearTimeout( _this.canSeekTimeout );
+							this.canSeekTimeout = null;
+							setTimeout( function () {
+								return checkVideoStateDeferred.resolve();
+							}, 10 );
+						} else {
+							_this.log("player can't seek - video duration not available, wait for video duration update");
+						}
+					});
+					this.log("player can't seek - try to init video element ready state");
+//					vid.load();
+					vid.play();
+				}
+				// Try to seek for 15 seconds:
+				if (callbackCount >= 15) {
+					this.log("Error:: with seek request, media never in ready state");
+					return checkVideoStateDeferred.resolve();
+				}
+				this.log("player can't seek - wait video element ready state");
+				this.canSeekTimeout = setTimeout(function () {
+					this.canSeekTimeout = null;
+					_this.canSeek(checkVideoStateDeferred, callbackCount + 1);
+				}, 1000);
+			} else {
+				setTimeout(function(){
+					_this.log("player can seek");
+					return checkVideoStateDeferred.resolve();
+				}, 10);
+			}
+			return checkVideoStateDeferred;
 		},
 		/**
 		 * Set the current time with a callback
@@ -472,171 +451,15 @@
 		 * @param {Function} callback
 		 * 		Function called once time has been set.
 		 */
-		setCurrentTime: function( seekTime , callback, callbackCount ) {
-			var _this = this;
-			if( !callbackCount ){
-				callbackCount = 0;
-			}
-			seekTime = parseFloat( seekTime );
-			mw.log( "EmbedPlayerNative:: setCurrentTime seekTime:" + seekTime + ' count:' + callbackCount );
-			if ( seekTime == 0 && this.isLive() && mw.isIpad() && !mw.isIOS8() ) {
-				//seek to 0 doesn't work well on live on iOS < 8
-				seekTime = 0.01;
-				mw.log( "EmbedPlayerNative:: setCurrentTime fix seekTime to 0.01" );
-			}
-			var vid = this.getPlayerElement();
-
-			if (this.currentState == "end" && mw.isIphone()) {
-				vid.play();
-				this.playing = true;
-			}
-
-			// some initial calls to prime the seek:
-			if (callbackCount == 0 && vid.currentTime() == 0) {
-				// when seeking turn off preload none and issue a load call.
-				$(vid.contentEl())
-					.attr('preload', 'auto')
-					[0].load();
-			}
-
-			// Make sure all the timeouts don't seek to an expired target:
-			$(this).data('currentSeekTarget', seekTime);
-
-			// add a callback handler to null out callback:
-			var callbackHandler = function () {
-				// reset the seeking flag:
-				_this.seeking = false;
-				//null the seek target:
-				if ($.isFunction(callback)) {
-					callback();
-					callback = null;
-				}
-			};
-			// Check if player is ready for seek:
-			if ( $(vid.contentEl()).readyState < 1 ) {
-				// if on the first call ( and video not ready issue load, play
-				if (callbackCount == 0 && vid.paused) {
-					this.stopEventPropagation();
-					vid.on('play.seekPrePlay', function () {
-						_this.restoreEventPropagation();
-						vid.off('play.seekPrePlay');
-						// NOTE: there is no need to "pause" here since parent caller will
-						// handle if the player should continue to play at seek time or not .
-					});
-					vid.load();
-					vid.play();
-				}
-				// Try to seek for 15 seconds:
-				if (callbackCount >= 15) {
-					mw.log("Error:: EmbedPlayerNative: with seek request, media never in ready state");
-					callbackHandler();
-					return;
-				}
-				setTimeout(function () {
-					// Check that this seek did not expire:
-					if ($(_this).data('currentSeekTarget') != seekTime) {
-						mw.log("EmbedPlayerNative:: expired seek target");
-						return;
-					}
-					_this.setCurrentTime(seekTime, callback, callbackCount + 1);
-				}, 1000);
-				return;
-			}
-			// Check if currentTime is already set to the seek target:
-			if (vid.currentTime().toFixed(2) == seekTime.toFixed(2)) {
-				mw.log("EmbedPlayerNative:: setCurrentTime: current time matches seek target: " +
-					vid.currentTime().toFixed(2) + ' == ' + seekTime.toFixed(2));
-				callbackHandler();
-				return;
-			}
-			// setup a namespaced seek bind:
-			var seekBind = 'seeked.nativeSeekBind';
-
-			// Bind a seeked listener for the callback
-			vid.off(seekBind).one(seekBind, function (event) {
-
-
-				// Check if seeking to zero:
-				if (seekTime == 0 && vid.currentTime == 0) {
-					callbackHandler();
-					return;
-				}
-				//not replay seek
-				if (seekTime > 0.01 && _this.isFakeHlsSeek()) {
-					var canPlayBind = 'canplay.nativePlayBind';
-					vid.one(canPlayBind, function (event) {
-
-						callbackHandler();
-					});
-				} else {
-					// Check if we got a valid seek:
-					if (vid.currentTime() > 0) {
-						callbackHandler();
-					} else {
-						mw.log("Error:: EmbedPlayerNative: seek callback without time updated " + vid.currentTime);
-					}
-				}
-			});
-			setTimeout(function () {
-				// Check that this seek did not expire:
-				if ($(_this).data('currentSeekTarget') != seekTime) {
-					mw.log("EmbedPlayerNative:: Expired seek target");
-					return;
-				}
-
-				if ($.isFunction(callback)) {
-					// if seek is within 5 seconds of the target assume success. ( key frame intervals can mess with seek accuracy )
-					// this only runs where the seek callback failed ( i.e broken html5 seek ? )
-					if (Math.abs(vid.currentTime - seekTime) < 5) {
-						mw.log("EmbedPlayerNative:: Video time: " + vid.currentTime + " is within 5 seconds of target" + seekTime + ", sucessfull seek");
-						callbackHandler();
-					} else {
-						mw.log("Error:: EmbedPlayerNative: Seek still has not made a callback after 5 seconds, retry");
-						_this.setCurrentTime(seekTime, callback, callbackCount++);
-					}
-				}
-			}, ( mw.isIOS8() && mw.isIpad() ) ? 100 : 5000);
-
+		setCurrentTime: function( seekTime ) {
+			this.log("setCurrentTime seekTime:" + seekTime );
 			// Try to update the playerElement time:
 			try {
-				_this.seeking = true;
-				_this.currentSeekTargetTime = seekTime.toFixed(2);
-				// use toFixed ( iOS issue with float seek times )
-				vid.currentTime(_this.currentSeekTargetTime);
+				var vid = this.getPlayerElement();
+				vid.currentTime(this.currentSeekTargetTime);
 			} catch (e) {
-				mw.log("Error:: EmbedPlayerNative: Could not set video tag seekTime");
-				callbackHandler();
-				return;
-			}
-
-			// Check for seeking state ( some player iOS / iPad can only seek while playing )
-			if (!vid.seeking() || ( ( mw.isIOS8() || mw.isIOS7() ) && vid.paused )) {
-				mw.log("Error:: not entering seek state, play and wait for positive time");
-				vid.play();
-				setTimeout(function () {
-					_this.waitForPositiveCurrentTime(function () {
-						mw.log("EmbedPlayerNative:: Got possitive time:" + vid.currentTime().toFixed(2) + ", trying to seek again");
-						_this.setCurrentTime(seekTime, callback, callbackCount + 1);
-					});
-				}, mw.getConfig('EmbedPlayer.MonitorRate'));
-			}
-		},
-		waitForPositiveCurrentTime: function (callback) {
-			var _this = this;
-			var vid = this.getPlayerElement();
-			this.waitForPositiveCurrentTimeCount++;
-			// Wait for playback for 10 seconds
-			if (vid.currentTime() > 0) {
-				mw.log('EmbedPlayerNative:: waitForPositiveCurrentTime success');
-				this.waitForPositiveCurrentTimeCount = 0;
-				callback();
-			} else if (this.waitForPositiveCurrentTimeCount > 200) {
-				mw.log("Error:: waitForPositiveCurrentTime failed to reach possitve time");
-				callback();
-			} else {
-				setTimeout(function () {
-					_this.waitForPositiveCurrentTime(callback);
-				}, 50);
+				this.log("Error: Could not set video tag seekTime");
+				this.triggerHelper("seeked");
 			}
 		},
 		/**
