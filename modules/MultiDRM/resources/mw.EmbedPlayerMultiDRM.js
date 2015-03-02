@@ -52,34 +52,9 @@
 		},
 		setup: function (readyCallback){
 			this._propagateEvents = true;
-			mw.log('EmbedPlayerKplayer:: Setup');
+			mw.log('EmbedPlayerMultiDRM:: Setup');
 
-			// Check if we created the kPlayer container
-			var $container = this.getPlayerContainer();
 
-			// If container exists, show the player and exit
-			if ($container.length) {
-				$container.css('visibility', 'visible');
-				readyCallback();
-				return;
-			}
-
-			//Hide the native video tag
-			this.hideNativePoster();
-
-			// Create the container
-			this.getVideoDisplay().prepend(
-				$('<div />')
-					.attr('id', this.playerContainerId)
-					.addClass('maximize')
-					.append($('<div />')
-						.attr('id', "dasheverywhere"))
-			);
-
-			var _this = this;
-			var config = this.config;
-			this.getEntryUrl().then(function (srcToPlay) {
-				//update config if needed
 
 			var defaultConfig = {
 				"drm": "auto",
@@ -113,14 +88,7 @@
 				"techs" : ["dashas","dashjs","silverlight"],
 				"enableSmoothStreamingCompatibility" : true
 			};
-
-				_this.dashPlayer = new castLabs.DashEverywhere(config);
-
-				_this.dashPlayer.loadVideo(srcToPlay);
-				_this.playerObject = _this.dashPlayer.getPlayer();
-				_this.applyMediaElementBindings();
-				readyCallback();
-			});
+			readyCallback();
 		},
 		/**
 		 * Updates the supported features given the "type of player"
@@ -142,7 +110,7 @@
 			// Check if we already have a video element an apply bindings ( for native interfaces )
 			if (this.getPlayerElement()) {
 				this.applyMediaElementBindings();
-				this.playbackRate = this.getPlayerElement().playbackRate;
+				this.playbackRate = this.getPlayerElement().playbackRate();
 			}
 
 			this.parent_updateFeatureSupport();
@@ -150,12 +118,105 @@
 		supportsVolumeControl: function () {
 			return  !( mw.isIpad() || mw.isAndroid() || mw.isMobileChrome() || this.useNativePlayerControls() )
 		},
+		disablePlayer: function () {
+			$(this.getPlayerElement()).css('position', 'static');
+		},
 		/**
-		 * Get the embed player time
+		 * Return the embed code
 		 */
-		getPlayerElementTime: function () {
-			// update currentTime
-			return this.getPlayerElement().currentTime();
+		embedPlayerHTML: function () {
+			var _this = this;
+			var vid = _this.getPlayerElement();
+			this.ignoreNextNativeEvent = true;
+
+			// empty out any existing sources:
+			if (vid && !mw.isIphone()) {  //if track element attached for iphone it won't be deleted
+				$(vid).empty();
+			}
+
+			// Check if we created the Player container
+			var $container = this.getPlayerContainer();
+
+			// If container exists, show the player and exit
+			if ($container.length) {
+				$container.css('visibility', 'visible');
+				_this.postEmbedActions();
+				return;
+			}
+
+			if (vid && $(vid).attr('src') == this.getSrc(this.currentTime)) {
+				_this.postEmbedActions();
+				return;
+			}
+
+			//Hide the native video tag
+			this.hideNativePoster();
+
+			mw.log("EmbedPlayerNative::embedPlayerHTML > play url:" + this.getSrc(this.currentTime) + ' startOffset: ' + this.start_ntp + ' end: ' + this.end_ntp);
+
+			// Check if using native controls and already the "pid" is already in the DOM
+			if (this.isPersistentNativePlayer() && vid) {
+				_this.postEmbedActions();
+				return;
+			}
+			// Reset some play state flags:
+			_this.bufferStartFlag = false;
+			_this.bufferEndFlag = false;
+
+			this.setPlayerHtml();
+			this.dashPlayer = new castLabs.DashEverywhere(this.config);
+
+			this.dashPlayer.loadVideo(this.getSrc(this.currentTime));
+			this.playerObject = _this.dashPlayer.getPlayer();
+
+			// Directly run postEmbedActions ( if playerElement is not available it will retry )
+			_this.postEmbedActions();
+		},
+
+		/**
+		 * Get the native player embed code.
+		 *
+		 * @param {object} playerAttribtues Attributes to be override in function call
+		 * @return {object} cssSet css to apply to the player
+		 */
+		setPlayerHtml: function (playerAttribtues, cssSet) {
+			if (!playerAttribtues) {
+				playerAttribtues = {};
+			}
+			// Update required attributes
+			if (!playerAttribtues['id']) {
+				playerAttribtues['id'] = this.playerContainerId;
+			}
+			if (!playerAttribtues['src']) {
+				playerAttribtues['src'] = this.getSrc(this.currentTime);
+			}
+
+			// If autoplay pass along to attribute ( needed for iPad / iPod no js autoplay support
+			if (this.autoplay) {
+				playerAttribtues['autoplay'] = 'true';
+			}
+
+			if (!cssSet) {
+				cssSet = {};
+			}
+
+			// Set default width height to 100% of parent container
+			if (!cssSet['width']) cssSet['width'] = '100%';
+			if (!cssSet['height']) cssSet['height'] = '100%';
+
+			// Also need to set the loop param directly for iPad / iPod
+			if (this.loop) {
+				playerAttribtues['loop'] = 'true';
+			}
+
+			this.getVideoDisplay().prepend(
+				$('<div />')
+					.attr(playerAttribtues)
+					.css(cssSet)
+					.addClass('maximize')
+					.append($('<div />')
+						.attr('id', "dasheverywhere"))
+			);
 		},
 		/**
 		 * Get the embed flash object player Element
@@ -171,17 +232,6 @@
 			return $('#' + this.playerContainerId);
 		},
 		/**
-		 * Get the URL to pass to KDP according to the current streamerType
-		 */
-		getEntryUrl: function () {
-			var deferred = $.Deferred();
-			var originalSrc = this.mediaElement.selectedSource.getSrc();
-			var refObj = {src: originalSrc};
-			this.triggerHelper('SourceSelected', refObj);
-			deferred.resolve(refObj.src);
-			return deferred;
-		},
-		/**
 		 * Hide the native video tag
 		 */
 		hideNativePoster: function () {
@@ -190,12 +240,7 @@
 				videoTagObj.css('visibility', 'hidden');
 			}
 		},
-		/**
-		 * Return the embed code
-		 */
-		embedPlayerHTML: function () {
 
-		},
 		/**
 		 * returns true if device can auto play
 		 */
@@ -214,35 +259,35 @@
 			if (!vid) {
 				return;
 			}
-			// Update the player source ( if needed )
-			if ($(vid).attr('src') != this.getSrc(this.currentTime)) {
-				$(vid).attr('src', this.getSrc(this.currentTime));
-			}
+//			// Update the player source ( if needed )
+//			if (vid.currentSrc() != this.getSrc(this.currentTime)) {
+//				vid.src(this.getSrc(this.currentTime));
+//			}
 
 			if (this.muted) {
-				vid.muted = true;
+				vid.muted(true);
 			}
 
 			// Update the EmbedPlayer.WebKitAllowAirplay option:
-			if (mw.getConfig('EmbedPlayer.WebKitAllowAirplay')) {
-				$(vid).attr('x-webkit-airplay', "allow");
-			}
+//			if (mw.getConfig('EmbedPlayer.WebKitAllowAirplay')) {
+//				$(vid).attr('x-webkit-airplay', "allow");
+//			}
 			// make sure to display native controls if enabled:
 			if (this.useNativePlayerControls()) {
-				$(vid).attr('controls', "true");
+				vid.controls(true);
 			}
 			// make sure the video is show ( both display and visibility attributes )
-			$( vid ).show().css('visibility', '');
+			$( vid.contentEl() ).show().css('visibility', '');
 
 			// Apply media element bindings:
 			_this.applyMediaElementBindings();
 
 			// Make sure we start playing in the correct place:
-			if (this.currentTime != vid.currentTime) {
+			if (this.currentTime != vid.currentTime()) {
 				var waitReadyStateCount = 0;
 				var checkReadyState = function () {
 					if (vid.readyState > 0) {
-						vid.currentTime = this.currentTime;
+						vid.currentTime(this.currentTime);
 						return;
 					}
 					if (waitReadyStateCount > 1000) {
@@ -296,31 +341,20 @@
 				});
 			});
 		},
-		/**
-		 * play method calls parent_play to update the interface
-		 */
-		play: function () {
-			if (this.parent_play()) {
-
-				this.playerObject.play();
-				this.monitor();
-			} else {
-				mw.log("EmbedPlayerMultiDRM:: parent play returned false, don't issue play on kplayer element");
+		// basic monitor function to update buffer
+		monitor: function () {
+			var _this = this;
+			var vid = _this.getPlayerElement();
+			// Update the bufferedPercent
+			if (vid && vid.buffered() && vid.duration()) {
+				try {
+					this.updateBufferStatus(vid.bufferedPercent());
+				} catch (e) {
+					// opera does not have buffered.end zero index support ?
+				}
 			}
+			_this.parent_monitor();
 		},
-
-		/**
-		 * pause method calls parent_pause to update the interface
-		 */
-		pause: function () {
-			try {
-				this.playerObject.pause();
-			} catch (e) {
-				mw.log("EmbedPlayerMultiDRM:: doPause failed");
-			}
-			this.parent_pause();
-		},
-
 		/**
 		 * Issue a seeking request.
 		 *
@@ -606,6 +640,39 @@
 			}
 		},
 		/**
+		 * Get the embed player time
+		 */
+		getPlayerElementTime: function () {
+			// update currentTime
+			return this.getPlayerElement().currentTime();
+		},
+		/**
+		 * play method calls parent_play to update the interface
+		 */
+		play: function () {
+			if (this.parent_play()) {
+
+				this.playerObject.play();
+				this.monitor();
+			} else {
+				mw.log("EmbedPlayerMultiDRM:: parent play returned false, don't issue play on kplayer element");
+			}
+		},
+
+		/**
+		 * pause method calls parent_pause to update the interface
+		 */
+		pause: function () {
+			try {
+				this.playerObject.pause();
+			} catch (e) {
+				mw.log("EmbedPlayerMultiDRM:: doPause failed");
+			}
+			this.parent_pause();
+		},
+
+
+		/**
 		 * on Pause callback from the kaltura flash player calls parent_pause to
 		 * update the interface
 		 */
@@ -712,7 +779,7 @@
 			if (this.getPlayerElement()) {
 				return this.getPlayerElement().volume();
 			}
-		},
+		}
 
 	};
 })(mediaWiki, jQuery);

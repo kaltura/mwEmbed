@@ -30,7 +30,7 @@
 					"userId": "purchase" ,
 					"sessionId": "p0" ,
 					"merchant": "six"
-				} ,
+				},
 				"assetId": "chromecast_debug" ,
 				"variantId": null ,
 				"authenticationToken": null ,
