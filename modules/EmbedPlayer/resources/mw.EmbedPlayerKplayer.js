@@ -113,6 +113,22 @@
 				//will contain flash plugins we need to load
 				var kdpVars = _this.getKalturaConfig('kdpVars', null);
 				$.extend(flashvars, kdpVars);
+
+				var flashFailCallback = function(){
+					_this.removePoster();
+					_this.layoutBuilder.displayAlert( {
+						title: _this.getKalturaMsg( 'ks-FLASH-BLOCKED-TITLE' ),
+						message: _this.getKalturaMsg( 'ks-FLASH-BLOCKED' ),
+						keepOverlay: true,
+						noButtons : true,
+						props: {
+							customAlertTitleCssClass: "AlertTitleTransparent",
+							customAlertMessageCssClass: "AlertMessageTransparent",
+							customAlertContainerCssClass: "AlertContainerTransparent flashBlockAlertContainer"
+						}
+					});
+				};
+
 				var playerElementFlash = new mw.PlayerElementFlash(_this.kPlayerContainerId, 'kplayer_' + _this.pid, flashvars, _this, function () {
 					var bindEventMap = {
 						'playerPaused': 'onPause',
@@ -154,21 +170,7 @@
 						_this.triggerHelper("volumeChanged", 0);
 					}
 
-				},
-                function(){
-                    _this.removePoster();
-                    _this.layoutBuilder.displayAlert( {
-                        title: _this.getKalturaMsg( 'ks-FLASH-BLOCKED-TITLE' ),
-                        message: _this.getKalturaMsg( 'ks-FLASH-BLOCKED' ),
-                        keepOverlay: true,
-                        noButtons : true,
-                        props: {
-                            customAlertTitleCssClass: "liveAlertTitle",
-                            customAlertMessageCssClass: "liveAlertMessage",
-                            customAlertContainerCssClass: "flashBlockAlertContainer"
-                        }
-                    });
-                });
+				},flashFailCallback);
 
 				_this.bindHelper('switchAudioTrack', function (e, data) {
 					if (_this.playerObject) {

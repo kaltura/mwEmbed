@@ -79,7 +79,7 @@ $messages['en'] = array(
     'ks-chapters-slide-start-time' => "Slide start time",
     'ks-chapters-slide-duration' => "Slide duration",
     'ks-sidebar-toggleBtn' => "Navigation",
-    'ks-FLASH-BLOCKED-TITLE' => "Flash is not Active",
+    'ks-FLASH-BLOCKED-TITLE' => "Flash is not active",
     'ks-FLASH-BLOCKED' => "Flash does not appear to be installed or active.<br>Please <a href='http://get.adobe.com/flashplayer/' target='_blank'> install </a> or activate flash"
 );
 

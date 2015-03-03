@@ -1106,38 +1106,39 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	display: none !important;
 }
 
-.liveAlertMessage{
-	background-color : transparent;
-	padding : 5px;
-	font-weight : normal !important;
-	font-size: 1.5em;
-	color: #a4a4a4;
-	opacity: 0.5;
-	text-align: center;
+.AlertMessageTransparent{
+    background-color : transparent;
+    padding : 5px;
+    font-weight : normal !important;
+    font-size: 1.5em;
+    color: #a4a4a4;
+    opacity: 0.5;
+    text-align: center;
 }
 
-.liveAlertTitle{
-	background-color : transparent;
+.AlertTitleTransparent{
+    background-color : transparent;
 
-	font-weight : normal !important;
-	font-size: 1.8em ;
-	color: #a4a4a4;
-	opacity: 0.5;
-	text-align: center;
+    font-weight : normal !important;
+    font-size: 1.8em ;
+    color: #a4a4a4;
+    opacity: 0.5;
+    text-align: center;
 }
 
-.liveAlertContainer{
-	background-color : transparent;
-	position: fixed;
-	top: 50%;
-	left: 50%;
-	-webkit-transform: translate(-50%, -50%);
-	-moz-transform:    translate(-50%, -50%);
-	-ms-transform:     translate(-50%, -50%);
-	-o-transform:      translate(-50%, -50%);
-	transform:         translate(-50%, -50%);
-	color: white;
+.AlertContainerTransparent{
+    background-color : transparent;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform:    translate(-50%, -50%);
+    -ms-transform:     translate(-50%, -50%);
+    -o-transform:      translate(-50%, -50%);
+    transform:         translate(-50%, -50%);
+    color: white;
 }
+
 
 .flashBlockAlertContainer{
     background-color : transparent;
