@@ -1540,6 +1540,10 @@ mw.KAdPlayer.prototype = {
 				if ( adConf.adParameters ) {
 					playerParams.vpaidAdParameters = encodeURIComponent( adConf.adParameters );
 				}
+				if ( adConf.vpaid.flash.width) {
+					playerParams.vpaidAdWidth = adConf.vpaid.flash.width;
+					playerParams.vpaidAdHeight = adConf.vpaid.flash.height;
+				}
 				//flashvars to load vpaidPlugin.swf and to disable on screen clicks since vpaid swf will handle the clicks
 				var adSibling = new mw.PlayerElementFlash( vpaidId, vpaidId + "_obj", playerParams, null, function () {
 					VPAIDObj = this.getElement();

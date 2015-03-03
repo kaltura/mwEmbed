@@ -56,7 +56,7 @@
 			this.getPlayer().autoplay = (this.getConfig('autoPlay') == true);
 
 			if ( !this.getConfig( 'mediaItemWidth') ){
-				this.widthSetByUser = false;           // user did not specify a required width. We will set to 320 and apply responsive logic on updateLayout event
+				this.widthSetByUser = false;           // user did not specify a required width. We will set to 320 and apply responsive logic on resizeEvent event
 				this.setConfig( 'mediaItemWidth',320); // set default width to 320 if not defined by user
 			}
 
@@ -90,6 +90,12 @@
 			this.bind('mediaError', function (e) {
 				_this.loadingEntry = null; // reset loadingEntry if we got a media error (also media loading error will trigger this event)
 				_this.onEnable();
+			});
+
+			this.bind('updateLayout', function () {
+				if (_this.firstLoad){
+					_this.redrawPlaylist();
+				}
 			});
 
 			// API support + backward compatibility
@@ -148,26 +154,8 @@
 			});
 
 			// set responsiveness
-			this.bind('updateLayout', function(){
-				if (!_this.getPlayer().layoutBuilder.isInFullScreen() && _this.redrawOnResize) {
-					// decide the width of the items. For vertical layout: 3rd of the container. For horizontal: according to MinClips value
-					if ( _this.getLayout() === "vertical" ){
-						if ( !_this.widthSetByUser && $( ".playlistInterface" ).width() / 3 > _this.getConfig( 'mediaItemWidth' ) ) {
-							_this.setConfig( 'mediaItemWidth', $( ".playlistInterface" ).width() / 3 );
-						}
-					}else{
-						_this.setConfig( 'mediaItemWidth', Math.floor($( ".playlistInterface" ).width() / _this.getConfig("MinClips")) );
-					}
-					// redraw player and playlist
-					_this.$mediaListContainer = null;
-					_this.getMedialistContainer();
-					_this.renderMediaList();
-					_this.setMultiplePlayLists();
-					setTimeout(function(){
-						_this.getComponent().find(".k-description-container").dotdotdot();
-					},100);
-
-				}
+			this.bind('resizeEvent', function(){
+				_this.redrawPlaylist();
 			});
 
 			$(this.embedPlayer).bind('mediaListLayoutReady', function (event) {
@@ -192,7 +180,30 @@
 				});
 			});
 		},
-
+		redrawPlaylist: function(){
+			var _this = this;
+			if (!this.getPlayer().layoutBuilder.isInFullScreen() && this.redrawOnResize) {
+				// decide the width of the items. For vertical layout: 3rd of the container. For horizontal: according to MinClips value
+				if ( this.getLayout() === "vertical" ){
+					if ( !this.widthSetByUser ){
+						if ( $( ".playlistInterface" ).width() / 3 > this.getConfig( 'mediaItemWidth' ) ) {
+							this.setConfig( 'mediaItemWidth', $( ".playlistInterface" ).width() / 3 );
+						}else{
+							this.setConfig( 'mediaItemWidth',320);
+						}
+					}
+				}else{
+					this.setConfig( 'mediaItemWidth', Math.floor($( ".playlistInterface" ).width() / this.getConfig("MinClips")) );
+				}
+				this.$mediaListContainer = null;
+				this.getMedialistContainer();
+				this.renderMediaList();
+				this.setMultiplePlayLists();
+				setTimeout(function(){
+					_this.getComponent().find(".k-description-container").dotdotdot();
+				},100);
+			}
+		},
 		// called from KBaseMediaList when a media item is clicked - trigger clip play
 		mediaClicked: function (index) {
 			if (this.getConfig('onPage')) {
@@ -302,10 +313,6 @@
 				eventToTrigger = 'playlistMiddleEntry';
 			}
 
-			if ( !(mw.isAndroid() && mw.isNativeApp()) ) {
-				this.redrawOnResize = false;
-			}
-
 			// Listen for change media done
 			$(embedPlayer).unbind('onChangeMediaDone' + this.bindPostFix).bind('onChangeMediaDone' + this.bindPostFix, function () {
 				mw.log('mw.PlaylistAPI:: onChangeMediaDone');
@@ -317,7 +324,6 @@
 						embedPlayer.play();
 					},100); // timeout is required when loading live entries
 				}
-				_this.redrawOnResize = true;
 			});
 			mw.log("PlaylistAPI::playClip::changeMedia entryId: " + id);
 
@@ -484,8 +490,8 @@
 			this.setConfig('MinClips', this.minClips);
 			if (items.length < this.minClips){              // support the MinClips Flashvar
 				this.setConfig('MinClips', items.length);	// set MinClips Flashvar to the number of items in the playlist
-				}
-			if (!this.getConfig( 'onPage' )){
+			}
+			if (!this.getConfig( 'onPage' ) && this.getLayout() === 'vertical' && (this.getConfig( 'containerPosition' ) == 'top' || this.getConfig( 'containerPosition' ) == 'bottom')){
 				// make sure we leave enough space for the video
 				while (this.$mediaListContainer.height() - parseInt(this.getConfig('MinClips')) * this.getConfig("mediaItemHeight") < 200){
 					this.setConfig('MinClips',parseInt(this.getConfig('MinClips'))-1);
