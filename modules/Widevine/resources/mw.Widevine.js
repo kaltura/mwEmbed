@@ -158,7 +158,7 @@
 							if (c_start!=-1)
 								{
 									c_start=c_start + c_name.length+1;
-									c_end=document.cookie.indexOf(";",c_start);
+									var c_end=document.cookie.indexOf(";",c_start);
 									if (c_end==-1) c_end=document.cookie.length;
 									return unescape(document.cookie.substring(c_start,c_end))
 								}
@@ -191,7 +191,7 @@
 			
 			function writeDebugMimeArray( values ){
 				var result = "";
-				for ( value in values ) {
+				for (var value in values ) {
 					if ( values[value] ) {
 						result += "<td><table><tr><td>" + values[value].description + "</td></tr><tr><td>"+values[value].type+"</td></tr><tr><td>"+values[value].enabledPlugin+"</td></tr></table></td>";
 					}

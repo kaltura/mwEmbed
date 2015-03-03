@@ -1,0 +1,171 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Share Plugin Configuration - Adding a social network</title>
+	<script type="text/javascript" src="../../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<body>
+<h2>Share Plugin Configuration - Adding a social network</h2>
+<br />
+<div id="kdp" style="width:600px;height:370px;float:left"></div>
+<script type="text/javascript" src="../../tests/resources/qunit-kaltura-bootstrap.js"></script>
+<script>
+	function onReadyCallback(playerID){
+		window.kdp = document.getElementById( playerID );
+		kdp.kBind( 'shareEvent', function(event){
+			// retrieve the share link
+			var shareLink = event.shareLink;
+			$("#shareLink").text(shareLink);
+			$("#shareLink").show();
+		});
+
+		$('#triggerShare').click(function () {
+			window.kdp.sendNotification('doShare');
+		});
+
+		$('#triggerShareOffset').click(function () {
+			window.kdp.sendNotification('doShare',{"timeOffset":"30"});
+		});
+	}
+
+
+	kWidget.featureConfig({
+		'targetId': 'kdp',
+		'wid': '_243342',
+		'uiconf_id' : '21099702',
+		'entry_id' : '1_sf5ovm7u',
+		'readyCallback': onReadyCallback,
+		'flashvars': {
+			'share': {
+				'plugin': true,
+				'parent': "topBarContainer",
+				'order': 3,
+				'socialShareURL': 'smart',
+				'socialNetworks': 'facebook,pinterest,twitter,googleplus,email,linkedin',
+				shareConfig: {
+					"facebook": {
+						"name": "Facebook",
+						"icon": "",
+						"cssClass": "icon-share-facebook",
+						"template": "https://www.facebook.com/sharer/sharer.php?u={share.shareURL}",
+						"redirectUrl": 'fb://feed/'
+					},
+					"pinterest": {
+						"name": "Pinterest",
+						"icon": "http://projects.kaltura.com/amir/pinterest_blue36x36.png",
+						"cssClass": "",
+						"template": "http://pinterest.com/pin/create/button/?url={share.shareURL}&media={mediaProxy.entry.thumbnailUrl}/width/400&description={mediaProxy.entry.description}",
+						"redirectUrl": ''
+					},
+					"twitter": {
+						"name": "Twitter",
+						"icon": "",
+						"cssClass": "icon-share-twitter",
+						"template": "https://twitter.com/share?url={share.shareURL}",
+						"redirectUrl": 'https://twitter.com/intent/tweet/complete?,https://twitter.com/intent/tweet/update'
+					},
+					"googleplus": {
+						"name": "Google+",
+						"icon": "",
+						"cssClass": "icon-share-google",
+						"template": "https://plus.google.com/share?url={share.shareURL}",
+						"redirectUrl": 'https://plus.google.com/app/basic/stream'
+					},
+					"email": {
+						"name": "Mail",
+						"icon": "",
+						"cssClass": "icon-share-email",
+						"template": "mailto:?subject=Check out {mediaProxy.entry.name}&body=Check out {mediaProxy.entry.name}: {share.shareURL}",
+						"redirectUrl": ''
+					},
+					"linkedin": {
+						"name": "LinkedIn",
+						"icon": "",
+						"cssClass": "icon-share-linkedin",
+						"template": "http://www.linkedin.com/shareArticle?mini=true&url={share.shareURL}",
+						"redirectUrl": ''
+					}
+				}
+			},
+			'topBarContainer.plugin': true
+		}
+	});
+
+
+</script>
+<div style="clear:both"></div>
+<h3> Adding a social network </h3>
+<p>
+You can add social networks to the Share plugin by adding it to the "config" Flashvar object and listing it in the "socialNetworks" Flashvar:<br>
+In the example below, the Pinterest social network was added to the Share plugin:
+</p>
+<br>
+Sample code for Share configuration:
+<pre class="prettyprint linenums">
+kWidget.featureConfig({
+		'targetId': 'kdp',
+		'wid': '_243342',
+		'uiconf_id' : '21099702',
+		'entry_id' : '1_sf5ovm7u',
+		'readyCallback': onReadyCallback,
+		'flashvars': {
+			'share': {
+				'plugin': true,
+				'parent': "topBarContainer",
+				'order': 3,
+				'socialShareURL': 'smart',
+				'socialNetworks': 'facebook,pinterest,twitter,googleplus,linkedin',
+				shareConfig: {
+					"facebook": {
+						"name": "Facebook",
+						"icon": "",
+						"cssClass": "icon-share-facebook",
+						"template": "https://www.facebook.com/sharer/sharer.php?u={share.shareURL}",
+						"redirectUrl": 'fb://feed/'
+					},
+					"pinterest": {
+						"name": "Pinterest",
+						"icon": "http://projects.kaltura.com/amir/pinterest_blue36x36.png",
+						"cssClass": "",
+						"template": "http://pinterest.com/pin/create/button/?url={share.shareURL}&media={mediaProxy.entry.thumbnailUrl}/width/400&description={mediaProxy.entry.description}",
+						"redirectUrl": ''
+					},
+					"twitter": {
+						"name": "Twitter",
+						"icon": "",
+						"cssClass": "icon-share-twitter",
+						"template": "https://twitter.com/share?url={share.shareURL}",
+						"redirectUrl": 'https://twitter.com/intent/tweet/complete?,https://twitter.com/intent/tweet/update'
+					},
+					"googleplus": {
+						"name": "Google+",
+						"icon": "",
+						"cssClass": "icon-share-google",
+						"template": "https://plus.google.com/share?url={share.shareURL}",
+						"redirectUrl": 'https://plus.google.com/app/basic/stream'
+					},
+					"email": {
+						"name": "Mail",
+						"icon": "",
+						"cssClass": "icon-share-email",
+						"template": "mailto:?subject=Check out {mediaProxy.entry.name}&body=Check out {mediaProxy.entry.name}: {share.shareURL}",
+						"redirectUrl": ''
+					},
+					"linkedin": {
+						"name": "LinkedIn",
+						"icon": "",
+						"cssClass": "icon-share-linkedin",
+						"template": "http://www.linkedin.com/shareArticle?mini=true&url={share.shareURL}",
+						"redirectUrl": ''
+					}
+				}
+			},
+			'topBarContainer.plugin': true
+		}
+	});
+	</script>
+});
+</body>
+</html>

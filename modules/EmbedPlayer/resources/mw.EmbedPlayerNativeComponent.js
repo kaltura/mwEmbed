@@ -15,6 +15,8 @@
 		//Instance Name
 		instanceOf: 'NativeComponent',
 
+		bindPostfix: '.EmbedPlayerNativeComponent',
+		
 		// Flag to only load the video ( not play it )
 		onlyLoadFlag: false,
 
@@ -63,6 +65,7 @@
 			'durationchange',
 			'timeupdate',
 			'progress',
+			'bufferchange',
 			'enterfullscreen',
 			'exitfullscreen',
 			'chromecastDeviceConnected',
@@ -316,11 +319,9 @@
 			}
 		},
 
-		seek: function (percentage) {
+		doSeek: function (seekTime) {
 			mw.log("EmbedPlayerNativeComponent:: seek::");
-			var seekTime = percentage * this.getDuration();
-			this.getPlayerElement().attr('currentTime', seekTime);
-			this.parent_seek(percentage);
+			this.getPlayerElement().attr('currentTime', seekTime*1000);
 		},
 
 		/**
@@ -338,6 +339,11 @@
 			if ($.isFunction(callback)) {
 				callback();
 			}
+		},
+
+		backToLive: function () {
+			this.triggerHelper('movingBackToLive');
+			this.getPlayerElement().attr('goLive', 'true');
 		},
 
 		doNativeAction: function (actionParams) {
@@ -376,7 +382,6 @@
 
 		_ondurationchange: function () {
 			mw.log( "EmbedPlayerNativeComponent:: onDurationChange::" + this.getPlayerElement().duration );
-			this.setDuration( this.getPlayerElement().duration );
 		},
 
 		/**
@@ -433,18 +438,11 @@
 		 * fired when done seeking
 		 */
 		_onseeked: function () {
-			mw.log("EmbedPlayerNativeComponent::onSeeked ");
 			if (this.seeking) {
-				this.seeking = false;
-
 				if (this._propagateEvents) {
 					mw.log("EmbedPlayerNativeComponent:: trigger: seeked");
 					this.triggerHelper('seeked');
 				}
-
-				this.hideSpinner();
-				this.updatePlayheadStatus();
-				this.monitor();
 			}
 		},
 
@@ -502,8 +500,15 @@
 		 * @private
 		 */
 		_onprogress: function (event, progress) {
-			if (typeof progress !== 'undefined') {
-				this.updateBufferStatus(progress);
+			this.updateBufferStatus(progress);
+		},
+
+		_onbufferchange: function(event, bufferReady){
+			_this.buffering = bufferReady;
+			if(bufferReady){
+				_this.bufferStart();
+			}else{
+				_this.bufferEnd();
 			}
 		},
 

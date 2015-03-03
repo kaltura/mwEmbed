@@ -522,6 +522,12 @@
 								return "";
 							}
 							break;
+						case 'nativeVersion':
+							if ( embedPlayer ) {
+								return embedPlayer.getFlashvars( 'nativeVersion' );
+							} else {
+								return "";
+							}
 					}
 					break;
 				case 'embedServices':

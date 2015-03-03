@@ -85,7 +85,7 @@ mw.KWidgetSupport.prototype = {
 			mw.log('Error: KWidgetSupport::bindPlayer error playerConfig not found');
 			return ;
 		}
-
+		mw.setConfig("nativeVersion", embedPlayer.getFlashvars("nativeVersion"));
 		// Overrides the direct download link to kaltura specific download.php tool for
 		// selecting a download / playback flavor based on user agent.
 		embedPlayer.bindHelper( 'directDownloadLink', function( event, downloadUrlCallback ) {
@@ -1483,7 +1483,9 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		var referrer =   _this.fixPlaymanifestParam( base64_encode( _this.getHostPageUrl() ) );
-		var clientTag = 'html5:v' + window[ 'MWEMBED_VERSION' ];
+		var nativeVersion = mw.getConfig("nativeVersion");
+		nativeVersion = (nativeVersion != null && nativeVersion.length > 0) ? '_' + nativeVersion : '';
+		var clientTag = 'html5:v' + window[ 'MWEMBED_VERSION' ] + nativeVersion;
 		$.each( deviceSources, function(inx, source){
 			if ( deviceSources[inx]['disableQueryString'] == true ) {
 				var index = deviceSources[inx]['src'].lastIndexOf('/a.');

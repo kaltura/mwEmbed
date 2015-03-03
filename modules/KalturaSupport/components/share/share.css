@@ -198,7 +198,10 @@
 	width: 100%;
 	height: 100%;
 }
-
+.share .custom-share-network{
+	margin-top: 0px !important;
+	margin-left: 0px !important;
+}
 /* a href link styles */
 .share a:link {
 	color: #ffffff;
