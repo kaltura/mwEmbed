@@ -104,6 +104,9 @@ mw.FullScreenManager.prototype = {
 		// Add fullscreen class to interface:
 		$interface.addClass( 'fullscreen' );
 		var callFullScreenAPI = function() {
+			if( !(screenfull && screenfull.enabled(doc)) ){
+				return;
+			};
 			var fsTarget = _this.getFsTarget();
 			var escapeFullscreen = function( event ) {
 				// grab the correct document target to check for fullscreen
@@ -125,7 +128,7 @@ mw.FullScreenManager.prototype = {
 		if( !this.fullScreenApiExcludes() && !mw.isAndroidChromeNativeBrowser() && screenfull && screenfull.enabled(doc) ) {
 			callFullScreenAPI();
 		} else {
-			if(!this.fullScreenApiExcludes()){
+			if(!this.fullScreenApiExcludes() && mw.isAndroidChromeNativeBrowser()){
 				callFullScreenAPI();
 			}
 			// Check for hybrid html controls / native fullscreen support:
