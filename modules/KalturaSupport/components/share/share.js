@@ -30,42 +30,48 @@
 					"icon": "",
 					"cssClass": "icon-share-facebook",
 					"template": "https://www.facebook.com/sharer/sharer.php?u={share.shareURL}",
-					"redirectUrl": 'fb://feed/'
+					"redirectUrl": 'fb://feed/',
+					"barColor": '#394F8F'
 				},
 				"twitter": {
 					"name": "Twitter",
 					"icon": "",
 					"cssClass": "icon-share-twitter",
 					"template": "https://twitter.com/share?url={share.shareURL}",
-					"redirectUrl": 'https://twitter.com/intent/tweet/complete?,https://twitter.com/intent/tweet/update'
+					"redirectUrl": 'https://twitter.com/intent/tweet/complete?,https://twitter.com/intent/tweet/update',
+					"barColor": '#39BAB6'
 				},
 				"googleplus": {
 					"name": "Google+",
 					"icon": "",
 					"cssClass": "icon-share-google",
 					"template": "https://plus.google.com/share?url={share.shareURL}",
-					"redirectUrl": 'https://plus.google.com/app/basic/stream'
+					"redirectUrl": 'https://plus.google.com/app/basic/stream',
+					"barColor": '#CB2726'
 				},
 				"email": {
 					"name": "Mail",
 					"icon": "",
 					"cssClass": "icon-share-email",
 					"template": "mailto:?subject=Check out {mediaProxy.entry.name}&body=Check out {mediaProxy.entry.name}: {share.shareURL}",
-					"redirectUrl": ''
+					"redirectUrl": '',
+					"barColor": '#394F8F'
 				},
 				"linkedin": {
 					"name": "LinkedIn",
 					"icon": "",
 					"cssClass": "icon-share-linkedin",
 					"template": "http://www.linkedin.com/shareArticle?mini=true&url={share.shareURL}",
-					"redirectUrl": ''
+					"redirectUrl": '',
+					"barColor": '#222222'
 				},
 				"sms": {
 					"name": "Message",
 					"icon": "",
 					"cssClass": "icon-share-sms",
 					"template": "Check out {mediaProxy.entry.name}: {share.shareURL}",
-					"redirectUrl": ''
+					"redirectUrl": '',
+					"barColor": '#394F8F'
 				}
 			},
 			embedCodeTemplate: '<iframe src="//cdnapi.kaltura.com/p/{mediaProxy.entry.partnerId}/sp/{mediaProxy.entry.partnerId}00/embedIframeJs/uiconf_id/{configProxy.kw.uiConfId}/partner_id/{mediaProxy.entry.partnerId}?iframeembed=true&playerId={configProxy.targetId}&entry_id={mediaProxy.entry.id}&flashvars[streamerType]=auto" width="560" height="395" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0"></iframe>',
