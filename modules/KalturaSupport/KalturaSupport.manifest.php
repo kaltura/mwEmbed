@@ -742,7 +742,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'featureCheckbox' => true,
 		'description' => 'Add the share interface to the player.',
 		'type' => 'featuremenu',
-		'label' => 'Share',
+		'label' => 'Share and Embed',
 		'model' => 'config.plugins.share',
 		'attributes' => array_merge($kgDefaultComponentAttr,
 			array(
@@ -760,8 +760,97 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'socialNetworks' => array(
 					'doc' => "Define included networks, separate by commas. Currently share supports facebook, twitter, googleplus.",
 					'type' => 'string',
-					'initvalue' => 'facebook,twitter,googleplus'
+					'initvalue' => 'facebook,twitter,googleplus,email,linkedin,sms'
 				),
+				'socialShareEnabled' => array(
+                    'doc' => 'Display Share link.',
+                    'initvalue' => true,
+                    'type' => 'boolean'
+                ),
+				'embedEnabled' => array(
+                    'doc' => 'Display Embed code.',
+                    'initvalue' => true,
+                    'type' => 'boolean'
+                ),
+				'allowTimeOffset' => array(
+                    'doc' => 'Allow setting a time offset for the entry.',
+                    'initvalue' => true,
+                    'type' => 'boolean'
+                ),
+				'allowSecuredEmbed' => array(
+                    'doc' => 'Display secured embed option.',
+                    'initvalue' => true,
+                    'type' => 'boolean'
+                ),
+				'emailEnabled' => array(
+                    'doc' => 'Display Email in the share options.',
+                    'initvalue' => true,
+                    'type' => 'boolean'
+                ),
+				'shareUiconfID' => array(
+                    'doc' => 'Specify a UIConf ID for the shared link. Leave empty to use the current UIConf.',
+                    'initvalue' => "",
+                    'type' => 'string'
+                ),
+                'shareConfig' => array(
+                    'doc' => 'Configuration options for all share networks.',
+                    'initvalue' =>  array(
+                                        "facebook" =>  array(
+                                            "name" => "Facebook",
+                                            "icon" => "",
+                                            "cssClass" => "icon-share-facebook",
+                                            "template" => "https://www.facebook.com/sharer/sharer.php?u={share.shareURL}",
+                                            "redirectUrl" => "fb://feed/"
+                                        ),
+                                        "twitter" =>  array(
+                                            "name" => "Twitter",
+                                            "icon" => "",
+                                            "cssClass" => "icon-share-twitter",
+                                            "template" => "https://twitter.com/share?url={share.shareURL}",
+                                            "redirectUrl" => "https://twitter.com/intent/tweet/complete?,https://twitter.com/intent/tweet/update"
+                                        ),
+                                        "googleplus" =>  array(
+                                            "name" => "Google+",
+                                            "icon" => "",
+                                            "cssClass" => "icon-share-google",
+                                            "template" => "https://plus.google.com/share?url={share.shareURL}",
+                                            "redirectUrl" => "https://plus.google.com/app/basic/stream"
+                                        ),
+                                        "email" =>  array(
+                                            "name" => "Email",
+                                            "icon" => "",
+                                            "cssClass" => "icon-share-email",
+                                            "template" => "mailto:?subject=Check out {mediaProxy.entry.name}&body=Check out {mediaProxy.entry.name}: {share.shareURL}",
+                                            "redirectUrl" => ""
+                                        ),
+                                        "linkedin" =>  array(
+                                            "name" => "LinkedIn",
+                                            "icon" => "",
+                                            "cssClass" => "icon-share-linkedin",
+                                            "template" => "http://www.linkedin.com/shareArticle?mini=true&url={share.shareURL}",
+                                            "redirectUrl" => ""
+                                        ),
+                                        "sms" =>  array(
+                                            "name" =>  "SMS",
+                                            "icon" => "",
+                                            "cssClass" => "icon-share-sms",
+                                            "template" => "Check out {mediaProxy.entry.name}: {share.shareURL}",
+                                            "redirectUrl" => ""
+                                        )
+                                    ),
+                    'type' => 'json'
+                ),
+                'embedOptions' => array(
+                                    'doc' => 'Embed code configuration options.',
+                                    'initvalue' =>  array(
+                                                        "streamerType" => "auto",
+                                                        "uiconfID" => "",
+                                                        "width" => 560,
+                                                        "height" => 395,
+                                                        "borderWidth" => 0
+                                                    ),
+                                    'type' => 'json'
+                                ),
 			)
 		)
 	),

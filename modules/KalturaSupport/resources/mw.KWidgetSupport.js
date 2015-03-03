@@ -85,7 +85,7 @@ mw.KWidgetSupport.prototype = {
 			mw.log('Error: KWidgetSupport::bindPlayer error playerConfig not found');
 			return ;
 		}
-
+		mw.setConfig("nativeVersion", embedPlayer.getFlashvars("nativeVersion"));
 		// Overrides the direct download link to kaltura specific download.php tool for
 		// selecting a download / playback flavor based on user agent.
 		embedPlayer.bindHelper( 'directDownloadLink', function( event, downloadUrlCallback ) {
@@ -697,7 +697,9 @@ mw.KWidgetSupport.prototype = {
 		var getAttr = function( attrName ){
 			return _this.getPluginConfig( embedPlayer, '', attrName );
 		}
-		
+		if ( getAttr( "Kaltura.ForceJSONP" ) === true ){
+			kWidget.forceJSONP();
+		}
 		// Check for autoplay:
 		var autoPlay = getAttr( 'autoPlay' );
 		if( autoPlay ){
@@ -739,7 +741,15 @@ mw.KWidgetSupport.prototype = {
 			}
 
 			// Check for mediaPlayFrom
-			var mediaPlayFrom = mediaProxy.mediaPlayFrom;
+			// first check in hash
+			var mediaPlayFrom = kWidget.getHashParam("t");
+			if ( mediaPlayFrom ){
+				mediaPlayFrom = kWidget.npt2seconds(mediaPlayFrom);
+			}
+			// now cheeck in Flashvars - will override hash params
+			if (mediaProxy.mediaPlayFrom){
+				mediaPlayFrom = mediaProxy.mediaPlayFrom;
+			}
 			if (mediaPlayFrom && !embedPlayer.startTime) {
 				embedPlayer.startTime = parseFloat( mediaPlayFrom );
 				mw.setConfig( "Kaltura.UseAppleAdaptive" , true) ;
@@ -1473,7 +1483,9 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		var referrer =   _this.fixPlaymanifestParam( base64_encode( _this.getHostPageUrl() ) );
-		var clientTag = 'html5:v' + window[ 'MWEMBED_VERSION' ];
+		var nativeVersion = mw.getConfig("nativeVersion");
+		nativeVersion = (nativeVersion != null && nativeVersion.length > 0) ? '_' + nativeVersion : '';
+		var clientTag = 'html5:v' + window[ 'MWEMBED_VERSION' ] + nativeVersion;
 		$.each( deviceSources, function(inx, source){
 			if ( deviceSources[inx]['disableQueryString'] == true ) {
 				var index = deviceSources[inx]['src'].lastIndexOf('/a.');

@@ -1,13 +1,53 @@
-<div class='panel-right'>
-	<input value="<%= share.getConfig('shareURL') %>"/>
+<span class="share-close icon-share-close"  data-click="closeScreen"></span>
+<div class='panel-center'>
+	<span class="share-alert"></span>
+	<div class="share-icons-scroller">
+		<div class="icon-play back-btn noselection"></div>
+		<div class="icon-play next-btn noselection"></div>
+		<div class="share-icons-container">
+			<% $.each(networks, function(idx, network){ %>
+				<div class="icon-border PIE">
+					<a href="<%=encodeURIComponent(network.template)%>" data-click="openPopup">
+						<% if( network.icon != "" ) { %>
+							<img class="share-network custom-share-network" title="<%=network.name%>" src="<%=network.icon%>">
+						<% }else{ %>
+							<span class="<%=network.cssClass%> share-network" title="<%=network.name%>" id="<%=idx%>"></span>
+						<% } %>
+					</a>
+				</div>
+			<% }); %>
+		</div>
+	</div>
 
-	<div class="divider"></div>
-	<h3>Social Share</h3>
-	<ul>
-		<% $.each(networks, function(idx, network){ %>
-		<li><a href="<%=network.url%>" data-click="openPopup"><span class="<%=network.cssClass%>"
-		                                                            title="<%=network.name%>"
-		                                                            id="<%=network.id%>"></span></a></li>
-		<% }); %>
-	</ul>
+	<% if( socialShareEnabled) { %>
+		<div class="share-input-container share-container">
+			<input class="shareembed-input share-input" value="<%= share.getConfig('shareURL') %>"/>
+			<!--div class="share-copy-btn" data-target=".share-input"><%=share.locale.copyLbl%></div>
+			<div class="icon-share-Yes share-v-icon"></div-->
+		</div>
+		<% if( allowTimeOffset) { %>
+			<div class="share-input-container share-offset-container">
+				<span class="share-label noselection"><%=share.locale.startTimeLbl%></span>
+				<input value="00:00" class="shareembed-input share-offset"/>
+			</div>
+		<% } %>
+	<% } %>
+
+	<% if( embedEnabled) { %>
+		<div class="share-input-container embed-container">
+			<input class="shareembed-input embed-input"/>
+			<!--div class="share-copy-btn" data-target=".embed-input"><%=share.locale.copyLbl%></div>
+			<div class="icon-share-Yes share-v-icon"></div-->
+		</div>
+		<div class="share-input-container embed-offset-container">
+			<% if( allowTimeOffset) { %>
+				<span class="share-label noselection"><%=share.locale.startTimeLbl%></span>
+				<input value="00:00" class="shareembed-input share-offset"/>
+			<% } %>
+			<% if( allowSecuredEmbed) { %>
+				<label class="share-secure-lbl noselection"><input class="share-secured" type="checkbox" name="securedCB" value="secured"><%=share.locale.secureEmbedLbl%></label>
+			<% } %>
+		</div>
+	<% } %>
+
 </div>

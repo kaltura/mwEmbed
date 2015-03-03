@@ -498,11 +498,11 @@
 		 * @param {Float}
 		 *			percentage Percentage of total stream length to seek to
 		 */
-		seek : function( percentage ){
+		seek : function( seekTime ){
 			this.seeking = true;
 			$( this ).trigger( 'seeking' );
 			var yt = this.getPlayerElement();
-			yt.seekTo( yt.getDuration() * percentage );
+			yt.seekTo( seekTime );
 			this.layoutBuilder.onSeek();
 			// Since Youtube don't have a seeked event on mobile devices, we must turn off the seeking flag on mobile devices
 			if ( mw.isMobileDevice() ){

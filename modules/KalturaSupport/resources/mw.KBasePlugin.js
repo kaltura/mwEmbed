@@ -94,7 +94,7 @@ mw.KBasePlugin = Class.extend({
 		var transformedHTML = mw.util.tmpl( rawHTML );
 		transformedHTML = transformedHTML(data);
 		var evaluatedHTML = $.trim( this.embedPlayer.evaluate( transformedHTML ) );
-		var $templateHtml = $( '<span>' + evaluatedHTML + '</span>' );
+		var $templateHtml = $( '<span class="tmpl">' + evaluatedHTML + '</span>' );
 
 		$templateHtml
 			.find('[data-click],[data-notification]')
