@@ -779,6 +779,7 @@ $(document).ready(function() {
         }
         $(".currentLanguage").text(loadedLang.name);
         renderTranscription(data.transcriptionJson, videoDuration);
+        transcriptionLoaded = true;
     });
 
     $(window).resize(windowResizeCallback);
