@@ -770,7 +770,7 @@ $(document).ready(function() {
         XD.postMessage(jsonData, parentUrl, parent.window);
     });
 
-    loadTranscriptionFromKaltura(ks, partnerId, lang, entryId, videoDuration, function(data) {
+    loadTranscriptionFromKaltura(ks, partnerId, lang, entryId, function(data) {
         var langs = data.langs;
         var loadedLang = data.loadedLang;
         for(var i in langs) {
