@@ -216,7 +216,7 @@
 
 		// Desktop safari flash has "power saving bug" as well as cross domain request issues
 		// by default we disable flash on desktop safari.
-		if (mw.isDesktopSafari() && !mw.getConfig('Kaltura.ForceFlashOnDesktop') ) {
+		if (mw.isDesktopSafari() && !mw.getConfig('ForceFlashOnDesktopSafari') ) {
 			return false;
 		}
 		var majorVersion = this.getFlashVersion().split(',').shift();
