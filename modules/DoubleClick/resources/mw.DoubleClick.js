@@ -777,19 +777,28 @@
 
 			// Add ad listeners:
 			adsListener( 'CONTENT_PAUSE_REQUESTED', function(event){
+				//Save video content duration for restoring after ad playback
+				var previousDuration = _this.embedPlayer.duration;
 				if (_this.currentAdSlotType === 'midroll') {
 					var restoreMidroll = function(){
 						_this.embedPlayer.adTimeline.restorePlayer( 'midroll', true );
+						//Restore video content duration after ad playback
+						_this.embedPlayer.setDuration(previousDuration);
 						_this.embedPlayer.addPlayerSpinner();
 						if ( _this.saveTimeWhenSwitchMedia && _this.timeToReturn ) {
-							_this.embedPlayer.seek(_this.timeToReturn);
-							_this.timeToReturn = null;
+							//Save original onLoadedCallback
+							var orgOnLoadedCallback = _this.embedPlayer.onLoadedCallback;
+							//Wait for video loadedmetadata before issuing seek
+							_this.embedPlayer.onLoadedCallback = function() {
+								//Restore original onLoadedCallback
+								_this.embedPlayer.onLoadedCallback = orgOnLoadedCallback;
+								_this.embedPlayer.seek( _this.timeToReturn );
+								_this.timeToReturn = null;
+							};
 						}
-						// _this.embedPlayer.setCurrentTime( seekPerc * embedPlayer.getDuration(), function(){
 						_this.embedPlayer.play();
 						_this.embedPlayer.restorePlayerOnScreen();
 						_this.embedPlayer.hideSpinner();
-						// } );
 					};
 					_this.embedPlayer.adTimeline.displaySlots( 'midroll' ,restoreMidroll);
 				}
