@@ -450,19 +450,20 @@
 		 */
 		play: function(){
 			var _this = this;
-			if(this.hasEnded){
-				if (mw.isMobileDevice()){
-					$(".largePlayBtn").hide();
-					$(".mwEmbedPlayer").hide();
+			if(this.duration != 0) {
+				if (this.hasEnded) {
+					if (mw.isMobileDevice()) {
+						$(".largePlayBtn").hide();
+						$(".mwEmbedPlayer").hide();
+					}
 				}
-			}
-			if( this.parent_play() ){
-				if(_this.getPlayerElement())
-				{
-					_this.getPlayerElement().playVideo();
+				if (this.parent_play()) {
+					if (_this.getPlayerElement()) {
+						_this.getPlayerElement().playVideo();
+					}
 				}
+				this.monitor();
 			}
-			this.monitor();
 		},
 
 		monitor: function(){
@@ -521,7 +522,9 @@
 //			this.playerElement.sendNotification('changeVolume', percentage);
 //		}
 			var yt = this.getPlayerElement();
-			yt.setVolume(percentage*100);
+			if(yt.setVolume) {
+				yt.setVolume(percentage * 100);
+			}
 		},
 
 		/**
