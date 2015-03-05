@@ -944,6 +944,7 @@ mw.KAdPlayer.prototype = {
 				if (_this.embedPlayer.evaluate("{vast.pauseAdOnClick}") !== false) {
 					_this.embedPlayer.pause(); // pause the video when the user clicks on the overlay ad
 				}
+				_this.embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
 				if (nonLinearConf.$html.attr("data-NonLinearClickTracking")){
 					mw.sendBeaconUrl( nonLinearConf.$html.attr("data-NonLinearClickTracking") );
 				}
