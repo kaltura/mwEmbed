@@ -4,7 +4,8 @@
 		defaultConfig: {
 			"storeUrl": null,
 			"mimeName": null,
-			"iframeUrl": null
+			"iframeUrl": null,
+			'templatePath': 'components/nativeCallout/nativeCallout.tmpl.html',
 		},
 
 		IOS_STORE_URL: "http://itunes.apple.com/app/id698657294",
@@ -44,6 +45,16 @@
 			});
 		},
 
+		getComponent: function(){
+			if( ! this.$el ){
+				var cssClass = (this.getConfig('cssClass') ? ' ' + this.getConfig('cssClass') : '');
+				this.$el = $( '<div />' )
+					.addClass( this.pluginName + cssClass );
+				this.getPlayer().getVideoHolder().append(this.$el);
+			}
+			return this.$el;
+		},
+
 		calloutNativePlayer: function() {
 			var _this = this;
 			var timeout;
@@ -68,6 +79,8 @@
 				return false;
 			}
 
+
+
 			var url =  _this.getConfig( "mimeName" ) + "?iframeUrl:=" + _this.getConfig( "iframeUrl" );
 			if ( mw.isAndroid() ) {
 				var popup = [];
@@ -78,14 +91,9 @@
 						if (isHidden()){
 							//app is loaded
 						}else{
-							_this.getPlayer().layoutBuilder.displayAlert({
-								message:'Please download <a href="https://play.google.com/store/apps/details?id=com.kaltura.kms\" target="_blank">KalturaPlay</a> from Google Playstore',
-								title:'yo',
-								'keepOverlay': false,
-								'noButtons': false,
-								'isModal': true,
-								'isError': true
-							});
+							var htmlMarkup = _this.getTemplateHTML();// {meta: this.getMetaData(), mediaList: this.getTemplateData()}
+							var $el = _this.getComponent();
+							$el.append(htmlMarkup);
 						}
 					},1000);
 				},100);
