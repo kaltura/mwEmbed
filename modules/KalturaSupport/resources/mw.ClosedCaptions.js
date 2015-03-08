@@ -415,6 +415,7 @@
 				if( source ){
 					this.log('autoSelectSource: select by defaultLanguageKey: ' + defaultLangKey);
 					this.selectedSource = source;
+					this.embedPlayer.getInterface().find( '[srclang='+ defaultLangKey +']').attr("default", "true");
 					return ;
 				}				
 			}
