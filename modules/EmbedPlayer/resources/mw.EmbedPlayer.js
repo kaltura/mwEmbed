@@ -2177,6 +2177,11 @@
 		inPreSequence: false,
 		replayEventCount: 0,
 		play: function () {
+			if (this.seeking){
+				this.log("Play while seeking, will play after seek!");
+				this.stopAfterSeek = false;
+				return false;
+			}
 			var _this = this;
 			var $this = $(this);
 			// Store the absolute play time ( to track native events that should not invoke interface updates )
@@ -2974,14 +2979,14 @@
 				this.layoutBuilder.keepControlsOnScreen = true;
 				this.layoutBuilder.removeTouchOverlay();
 			}
-			this.triggerHelper('onComponentsHoverDisabled');
+			$(this).trigger('onComponentsHoverDisabled');
 		},
 		restoreComponentsHover: function () {
 			if (this.layoutBuilder) {
 				this.layoutBuilder.keepControlsOnScreen = false;
 				this.layoutBuilder.addTouchOverlay();
 			}
-			this.triggerHelper('onComponentsHoverEnabled');
+			$(this).trigger('onComponentsHoverEnabled');
 		},
 		/**
 		 * @param value string containing comma seperated tags

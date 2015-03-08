@@ -65,6 +65,7 @@
 			'durationchange',
 			'timeupdate',
 			'progress',
+			'bufferchange',
 			'enterfullscreen',
 			'exitfullscreen',
 			'chromecastDeviceConnected',
@@ -499,17 +500,15 @@
 		 * @private
 		 */
 		_onprogress: function (event, progress) {
-			if (typeof progress !== 'undefined') {
-				this.updateBufferStatus(progress);
-				if(progress < 0.9){
-					if(!this.showProgressSpinner) {
-						this.addPlayerSpinner();
-						this.showProgressSpinner = true;
-					}
-				}else{
-					this.showProgressSpinner = false;
-					this.hideSpinner();
-				}
+			this.updateBufferStatus(progress);
+		},
+
+		_onbufferchange: function(event, bufferReady){
+			_this.buffering = bufferReady;
+			if(bufferReady){
+				_this.bufferStart();
+			}else{
+				_this.bufferEnd();
 			}
 		},
 

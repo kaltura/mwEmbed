@@ -154,9 +154,11 @@
 			});
 
 			// set responsiveness
-			this.bind('resizeEvent', function(){
-				_this.redrawPlaylist();
-			});
+			if ( !mw.isIOS7()) {
+				this.bind( 'resizeEvent' , function () {
+					_this.redrawPlaylist();
+				} );
+			}
 
 			$(this.embedPlayer).bind('mediaListLayoutReady', function (event) {
 				_this.embedPlayer.triggerHelper('playlistReady');
