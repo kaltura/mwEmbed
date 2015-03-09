@@ -397,7 +397,7 @@
 				var id = $(e.target).attr('id');
 				var shareParams = {
 					actionType: 'share',
-					id: id,
+					id: id[0].toUpperCase() + id.substr(1),
 					sharedLink: this.getConfig("shareURL"),
 					shareNetwork: networks[id],
 					thumbnail: this.getThumbnailURL(),
