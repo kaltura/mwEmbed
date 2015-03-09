@@ -100,6 +100,10 @@
 							//app is loaded
 						}else{
 							var htmlMarkup = _this.getTemplateHTML();// {meta: this.getMetaData(), mediaList: this.getTemplateData()}
+							var storeImage =$("<div/>",{"class":"store-nativecallout"});
+							var storeElement = htmlMarkup.find("#store");
+							storeElement.attr('href', "https://play.google.com/store/apps/details?id=com.kaltura.kms");
+							storeElement.append(storeImage);
 							var $el = _this.getComponent();
 							$el.append(htmlMarkup);
 							_this.embedPlayer.getPlayerPoster().addClass("blur");
