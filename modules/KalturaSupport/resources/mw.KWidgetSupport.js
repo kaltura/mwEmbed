@@ -1626,8 +1626,12 @@ mw.KWidgetSupport.prototype = {
 		var thumbUrl = thumb.url;
 		// Only append width/height params if thumbnail from kaltura service ( could be external thumbnail )
 		if( thumbUrl.indexOf( "thumbnail/entry_id" ) != -1 ){
-			thumbUrl += '/width/' + thumb.width;
-			thumbUrl += '/height/' + thumb.height;
+
+			if( mw.getConfig('EmbedPlayer.ShowOriginalPoster') ){
+				thumbUrl += '/width/0/height/0';
+			} else {
+				thumbUrl += '/width/' + thumb.width + '/height/' + thumb.height;
+			}
 		}
 		return thumbUrl;
 	},
