@@ -1722,7 +1722,9 @@
 
 					// reload the player
 					if (_this.autoplay && _this.canAutoPlay() ) {
-						_this.removePoster();
+						if (!_this.isAudioPlayer) {
+							_this.removePoster();
+						}
 						_this.play();
 					}
 
