@@ -1600,7 +1600,7 @@ mw.KAdPlayer.prototype = {
 			}
 		};
 
-		if ( mw.isAndroid() || mw.isIpad() ) {
+		if ( (mw.isAndroid() || mw.isIpad()) && adSlot.type !== "overlay" ) {
 			var bindPostFix = ".vpaidSequenceCheck";
 			this.embedPlayer.bindHelper( 'playing' + bindPostFix, function () {
 				_this.embedPlayer.unbindHelper( 'playing' + bindPostFix );
