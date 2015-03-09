@@ -94,7 +94,7 @@
 				}
 
 				//add OSMF HLS Plugin if the source is HLS
-				if (_this.isHlsSource(_this.mediaElement.selectedSource) && mw.getConfig("LeadWithHLSOnFlash")) {
+				if (_this.isHlsSource(_this.mediaElement.selectedSource)) {
 					flashvars.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
 					flashvars.streamerType = _this.streamerType = 'hls';
 				}
