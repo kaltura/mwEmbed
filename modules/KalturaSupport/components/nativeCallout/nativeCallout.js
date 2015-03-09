@@ -55,6 +55,14 @@
 			return this.$el;
 		},
 
+		closeScreen: function(){
+			this.embedPlayer.getPlayerPoster().removeClass("blur");
+			this.embedPlayer.getVideoHolder().find(".largePlayBtn").show();
+			this.$el.remove();
+			this.$el = undefined;
+			this.embedPlayer.enablePlayControls();
+		},
+
 		calloutNativePlayer: function() {
 			var _this = this;
 			var timeout;
@@ -94,9 +102,14 @@
 							var htmlMarkup = _this.getTemplateHTML();// {meta: this.getMetaData(), mediaList: this.getTemplateData()}
 							var $el = _this.getComponent();
 							$el.append(htmlMarkup);
+							_this.embedPlayer.getPlayerPoster().addClass("blur");
+							_this.embedPlayer.getVideoHolder().find(".largePlayBtn").hide();
+							_this.embedPlayer.disablePlayControls();
+							var components = ['fullScreenBtn','logo'];
+							_this.embedPlayer.triggerHelper( "onDisableInterfaceComponents", components );
 						}
 					},1000);
-				},100);
+				},1000);
 
 				popup = window.open(url);
 
