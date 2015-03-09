@@ -1539,7 +1539,7 @@ mw.KAdPlayer.prototype = {
 					}
 				};
 				if ( adConf.adParameters ) {
-					playerParams.vpaidAdParameters = encodeURIComponent( adConf.adParameters );
+					playerParams.vpaidAdParameters = escape( adConf.adParameters );
 				}
 				if ( adConf.vpaid.flash.width) {
 					playerParams.vpaidAdWidth = adConf.vpaid.flash.width;
