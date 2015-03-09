@@ -11,6 +11,7 @@
 			"layout": "ontop", // "below"
 			"displayCaptions": null, // null will use user preference
 			"defaultLanguageKey": null,
+			"whiteListLanguagesCodes": null, //white list the languages by languages codes (e.g. 'en,fr' will remove all items but English and French if they exist)
 			"useCookie": true,
 			"hideWhenEmpty": false,
 			"showEmbeddedCaptions": false,
@@ -312,7 +313,26 @@
 			}, function( data ) {
 				mw.log( "mw.ClosedCaptions:: loadCaptionsFromApi: " + data.totalCount, data.objects );
 				if( data.objects && data.objects.length ){
+					// white list languages by their label
+					if( _this.getConfig("whiteListLanguagesCodes") != null){
+						mw.log( "mw.ClosedCaptions:: whitelist : " + _this.getConfig("whiteListLanguagesCodes") );
+						var whiteListedLaguages = new Array();
+						var whiteListArr = _this.getConfig("whiteListLanguagesCodes").split(",");
+						for(var j=0 ; j<whiteListArr.length ; j++){
+							for(var i=data.objects.length-1 ; i > -1 ; i--){
+								if( data.objects[i].languageCode == whiteListArr[j]){
+									whiteListedLaguages.push(data.objects[i]);
+								}
+							}
+						}
+						data.objects = whiteListedLaguages;
+						if(!data.objects.length && _this.getConfig("hideWhenEmpty") == true){
+							_this.getBtn().hide();
+						}
+
+					}
 					_this.loadCaptionsURLsFromApi( data.objects, callback );
+
 				} else {
 					// No captions
 					callback([]);
