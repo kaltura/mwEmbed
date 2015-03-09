@@ -22,6 +22,9 @@
 				return false;
 			}
 			this.bind('playerReady', function(){
+				if ( _this.embedPlayer.isLive() ){
+					deferred.resolve(false);
+				}
 				// check if we have sources that can play with Native library:
 				if (_this.embedPlayer.mediaElement.getNativePlayableSources().length > 0){
 					deferred.resolve(document.createElement( "video" ).playbackRate);
