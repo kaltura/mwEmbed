@@ -54,6 +54,7 @@
 			});
 		},
 		toggleFullscreen: function() {
+			if( this.isDisabled ) return ;
 			this.getPlayer().toggleFullscreen();
 		}
 	}));

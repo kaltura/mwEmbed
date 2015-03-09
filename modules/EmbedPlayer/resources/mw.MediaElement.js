@@ -214,6 +214,7 @@ mw.MediaElement.prototype = {
 		}
 		// Populate the source set from options or from playable sources: 
 		var playableSources = options.sources || this.getPlayableSources();
+		this.removeSourceFlavor(playableSources);
 		var flash_flag = false, ogg_flag = false;
 		// null out the existing selected source to autoSelect ( in case params have changed ). 
 		this.selectedSource  = null;
@@ -259,6 +260,7 @@ mw.MediaElement.prototype = {
 
 		// Set apple adaptive ( if available )
 		var vndSources = this.getPlayableSources('application/vnd.apple.mpegurl');
+		this.removeSourceFlavor(vndSources);
 		if( vndSources.length && mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'application/vnd.apple.mpegurl' ).length ){
 			// Check for device flags:
 			var desktopVdn, mobileVdn;
@@ -315,7 +317,7 @@ mw.MediaElement.prototype = {
 		// If we have at least one native source, throw out non-native sources
 		// for size based source selection:
 		var nativePlayableSources = this.getNativePlayableSources();
-		
+		this.removeSourceFlavor(nativePlayableSources);
 		// Prefer native playback ( and prefer WebM over ogg and h.264 )
 		var namedSourceSet = {};
 		$.each( nativePlayableSources, function(inx, source ){
@@ -431,7 +433,16 @@ mw.MediaElement.prototype = {
 			return this.selectedSource;
 		}
 
-		// Else just select the first playable source
+		// Look for the first mbr source
+		if ( !this.selectedSource ){
+			for (var i = 0; i < playableSources.length; i++ ){
+				if ( playableSources[i].tags && playableSources[i].tags.indexOf("mbr") !== -1 ){
+					return _this.setSource( playableSources[i] );
+				}
+			}
+		}
+
+		// Else just select the first playable source.
 		if ( !this.selectedSource && playableSources[0] ) {
 			mw.log( 'MediaElement::autoSelectSource: Set via first source: ' + playableSources[0].getTitle() + ' mime: ' + playableSources[0].getMIMEType() );
 			return _this.setSource( playableSources[0] );
@@ -593,6 +604,22 @@ mw.MediaElement.prototype = {
 				 playableSources.length + ' sources playable out of ' +  this.sources.length );
 
 		 return playableSources;
+	},
+
+	/**
+	 * removeSourceFlavor: remove the original source from playableSources unless its the only playable source
+	 *
+	 * @pram sources {=array} the sources array from which to removed the source flavor. Send by ref and manipulated by this function.
+	 *
+	 */
+	removeSourceFlavor: function( sources ){
+		if ( sources.length > 1 ){
+			for (var i = sources.length-1; i >= 0; i--){
+				if ( sources[i].tags && sources[i].tags.indexOf("source") !== -1 ){
+					sources.splice( i, 1 );
+				}
+			}
+		}
 	}
 };
 

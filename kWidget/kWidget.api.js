@@ -124,6 +124,9 @@ kWidget.api.prototype = {
 		// Access-Control-Allow-Origin:* most browsers support this. 
 		// ( old browsers with large api payloads are not supported )
 		try {
+			if ( mw.getConfig( 'Kaltura.ForceJSONP' ) ){
+				throw "forceJSONP";
+			}
 			// set format to JSON ( Access-Control-Allow-Origin:* )
 			param['format'] = 1;
 			this.xhrRequest( _this.getApiUrl( serviceType ), param, function( data ){

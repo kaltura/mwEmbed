@@ -311,7 +311,7 @@
 				},
 				change: function (event, ui) {
 					alreadyChanged = true;
-					var perc = ui.value / 1000;
+					var seekTime = (ui.value / 1000) * embedPlayer.getDuration();
 					// always update the title
 					_this.updateAttr(ui);
 					// Only run the onChange event if done by a user slide
@@ -319,11 +319,7 @@
 					if (embedPlayer.userSlide) {
 						embedPlayer.userSlide = false;
 						embedPlayer.seeking = true;
-
-						if (embedPlayer.isStopped()) {
-							embedPlayer.play();
-						}
-						embedPlayer.seek(perc);
+						embedPlayer.seek(seekTime);
 					}
 				}
 			};
