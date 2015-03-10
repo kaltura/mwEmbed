@@ -8,7 +8,7 @@
 			'templatePath': 'components/nativeCallout/nativeCallout.tmpl.html',
 		},
 
-		IOS_STORE_URL: "http://itunes.apple.com/app/id698657294",
+		IOS_STORE_URL: "http://itunes.apple.com/app/id919225951",
 		ANDROID_STORE_URL: "https://play.google.com/store/apps/details?id=com.kaltura.kalturaplayertoolkit",
 		IOS_MIME_NAME: "kalturaPlayerToolkit://",
 		ANDROID_MIME_NAME: "http://kalturaplayertoolkit.com",
