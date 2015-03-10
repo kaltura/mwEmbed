@@ -13,12 +13,19 @@
 		IOS_MIME_NAME: "kalturaPlayerToolkit://",
 		ANDROID_MIME_NAME: "http://kalturaplayertoolkit.com",
 
+		ANDROID_STORE_IMAGE: "store-android-nativecallout",
+		IOS_STORE_IMAGE: "store-ios-nativecallout",
+
 		setup: function(){
 			mw.EmbedTypes.getMediaPlayers().defaultPlayers[ 'video/wvm' ].push( 'Native' );
 			// Bind player
 			this.addBindings();
 			if( !this.getConfig( "storeUrl" ) ) {
 				this.setConfig( "storeUrl", mw.isAndroid() ? this.ANDROID_STORE_URL : this.IOS_STORE_URL );
+			}
+
+			if( !this.getConfig( "storeImage" ) ) {
+				this.setConfig( "storeImage", mw.isAndroid() ? this.ANDROID_STORE_IMAGE : this.IOS_STORE_IMAGE );
 			}
 
 			if( !this.getConfig( "mimeName" ) ) {
@@ -71,7 +78,6 @@
 				clearTimeout(timeout);
 				timeout = null;
 				window.removeEventListener( 'pagehide', preventPopup );
-				showNativeCallout();
 			}
 
 			function isHidden() {
@@ -90,7 +96,7 @@
 
 			function showNativeCallout() {
 				var htmlMarkup = _this.getTemplateHTML();// {meta: this.getMetaData(), mediaList: this.getTemplateData()}
-				var storeImage =$("<div/>",{"class":"store-nativecallout"});
+				var storeImage =$("<div/>",{"class": _this.getConfig("storeImage")});
 				var storeElement = htmlMarkup.find("#store");
 				storeElement.attr('href', _this.getConfig( "storeUrl" ));//"https://play.google.com/store/apps/details?id=com.kaltura.kms"
 				storeElement.append(storeImage);
@@ -127,8 +133,12 @@
 					.appendTo('body');
 
 				timeout = setTimeout(function() {
-					document.location = _this.getConfig( "storeUrl" );
-				}, 500);
+					if (isHidden()){
+						//app is loaded
+					}else{
+						showNativeCallout();
+					}
+				}, 1000);
 				window.addEventListener( 'pagehide', preventPopup );
 			}
 		}
