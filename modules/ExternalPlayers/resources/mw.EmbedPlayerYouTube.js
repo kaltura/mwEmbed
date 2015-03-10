@@ -44,6 +44,7 @@
 		},
 		init: function(){
 			var _this = this;
+			_this._playContorls = false;
 		},
 
 		onPlayerStateChange : function (event){
@@ -156,6 +157,7 @@
 			window['onIframePlayerReady'] = function( event ){
 				window['iframePlayer'] = event.target;
 				_this.setDuration();
+				_this._playContorls = true;
 				//autoplay
 				if(mw.getConfig('autoPlay')){
 					_this.play();
@@ -182,6 +184,7 @@
 				var flashPlayer = $( '#' + playerIdStr )[0];
 				flashPlayer.addEventListener("onStateChange", "onPlayerStateChange");
 				flashPlayer.addEventListener("onError", "onError");
+				_this._playContorls = true;
 				//autoplay
 				if(mw.getConfig('autoPlay')){
 					_this.play();
@@ -450,7 +453,7 @@
 		 */
 		play: function(){
 			var _this = this;
-			if(this.duration != 0) {
+			if(this._playContorls) {
 				if (this.hasEnded) {
 					if (mw.isMobileDevice()) {
 						$(".largePlayBtn").hide();
