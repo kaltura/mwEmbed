@@ -94,7 +94,7 @@
 				}
 
 				//add OSMF HLS Plugin if the source is HLS
-				if (_this.isHlsSource(_this.mediaElement.selectedSource) && mw.getConfig("LeadWithHLSOnFlash")) {
+				if (_this.isHlsSource(_this.mediaElement.selectedSource)) {
 					flashvars.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
 					flashvars.streamerType = _this.streamerType = 'hls';
 				}
@@ -113,6 +113,22 @@
 				//will contain flash plugins we need to load
 				var kdpVars = _this.getKalturaConfig('kdpVars', null);
 				$.extend(flashvars, kdpVars);
+
+				var flashFailCallback = function(){
+					_this.removePoster();
+					_this.layoutBuilder.displayAlert( {
+						title: _this.getKalturaMsg( 'ks-FLASH-BLOCKED-TITLE' ),
+						message: _this.getKalturaMsg( 'ks-FLASH-BLOCKED' ),
+						keepOverlay: true,
+						noButtons : true,
+						props: {
+							customAlertTitleCssClass: "AlertTitleTransparent",
+							customAlertMessageCssClass: "AlertMessageTransparent",
+							customAlertContainerCssClass: "AlertContainerTransparent flashBlockAlertContainer"
+						}
+					});
+				};
+
 				var playerElementFlash = new mw.PlayerElementFlash(_this.kPlayerContainerId, 'kplayer_' + _this.pid, flashvars, _this, function () {
 					var bindEventMap = {
 						'playerPaused': 'onPause',
@@ -154,7 +170,7 @@
 						_this.triggerHelper("volumeChanged", 0);
 					}
 
-				});
+				},flashFailCallback);
 
 				_this.bindHelper('switchAudioTrack', function (e, data) {
 					if (_this.playerObject) {
