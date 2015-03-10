@@ -9,7 +9,7 @@
 		},
 
 		IOS_STORE_URL: "http://itunes.apple.com/app/id698657294",
-		ANDROID_STORE_URL: "market://details?=com.kaltura.kalturaplayertoolkit",
+		ANDROID_STORE_URL: "https://play.google.com/store/apps/details?id=com.kaltura.kalturaplayertoolkit",
 		IOS_MIME_NAME: "kalturaPlayerToolkit://",
 		ANDROID_MIME_NAME: "http://kalturaplayertoolkit.com",
 
@@ -71,6 +71,7 @@
 				clearTimeout(timeout);
 				timeout = null;
 				window.removeEventListener( 'pagehide', preventPopup );
+				showNativeCallout();
 			}
 
 			function isHidden() {
@@ -87,7 +88,20 @@
 				return false;
 			}
 
-
+			function showNativeCallout() {
+				var htmlMarkup = _this.getTemplateHTML();// {meta: this.getMetaData(), mediaList: this.getTemplateData()}
+				var storeImage =$("<div/>",{"class":"store-nativecallout"});
+				var storeElement = htmlMarkup.find("#store");
+				storeElement.attr('href', _this.getConfig( "storeUrl" ));//"https://play.google.com/store/apps/details?id=com.kaltura.kms"
+				storeElement.append(storeImage);
+				var $el = _this.getComponent();
+				$el.append(htmlMarkup);
+				_this.embedPlayer.getPlayerPoster().addClass("blur");
+				_this.embedPlayer.getVideoHolder().find(".largePlayBtn").hide();
+				_this.embedPlayer.disablePlayControls();
+				var components = ['fullScreenBtn','logo'];
+				_this.embedPlayer.triggerHelper( "onDisableInterfaceComponents", components );
+			}
 
 			var url =  _this.getConfig( "mimeName" ) + "?iframeUrl:=" + _this.getConfig( "iframeUrl" );
 			if ( mw.isAndroid() ) {
@@ -99,18 +113,7 @@
 						if (isHidden()){
 							//app is loaded
 						}else{
-							var htmlMarkup = _this.getTemplateHTML();// {meta: this.getMetaData(), mediaList: this.getTemplateData()}
-							var storeImage =$("<div/>",{"class":"store-nativecallout"});
-							var storeElement = htmlMarkup.find("#store");
-							storeElement.attr('href', "https://play.google.com/store/apps/details?id=com.kaltura.kms");
-							storeElement.append(storeImage);
-							var $el = _this.getComponent();
-							$el.append(htmlMarkup);
-							_this.embedPlayer.getPlayerPoster().addClass("blur");
-							_this.embedPlayer.getVideoHolder().find(".largePlayBtn").hide();
-							_this.embedPlayer.disablePlayControls();
-							var components = ['fullScreenBtn','logo'];
-							_this.embedPlayer.triggerHelper( "onDisableInterfaceComponents", components );
+							showNativeCallout();
 						}
 					},1000);
 				},1000);
