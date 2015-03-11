@@ -5,26 +5,33 @@
 	<script type="text/javascript" src="../../../../tests/qunit/qunit-bootstrap.js"></script>
 	<script type="text/javascript" src="../../../../mwEmbedLoader.php"></script>
 	<script type="text/javascript" src="../../../../docs/js/doc-bootstrap.js"></script>
-	<!-- Facebook Open Graph tags -->
-	<meta property="og:url" content="http://cdnapi.kaltura.com/index.php/extwidget/preview/partner_id/243342/uiconf_id/12905712/entry_id/1_sf5ovm7u/embed/dynamic" />
-	<meta property="og:title" content="Kaltura Player: Share Plugin example" />
-	<meta property="og:description" content="Kaltura Player: Share plugin demonstrates the ease of which social share can be configured with the kaltura player toolkit." />
-	<meta property="og:type" content="video.other" />
-	<meta property="og:image" content="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/400" />
-	<meta property="og:image:seucre_url" content="https://cdnsecakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/400" />
-	<meta property="og:video" content="https://cdnapisec.kaltura.com/index.php/kwidget/cache_st/1383581207/wid/_243342/uiconf_id/12905712/entry_id/1_sf5ovm7u" />
-	<meta property="og:video:width" content="600" />
-	<meta property="og:video:height" content="370" />	
-	<meta property="og:video:type" content="application/x-shockwave-flash" />
-	<meta property="og:video" content="https://cdnapisec.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_sf5ovm7u/flavorId/1_d2uwy7vv/format/url/protocol/http/a.mp4" />
-	<meta property="og:video:type" content="video/mp4" />	
-	<meta property="og:site_name" content="Kaltura" />
 	
-	<!-- Facebook iframe embed  -->
-	<meta property="og:video:secure_url" content="https://cdnapisec.kaltura.com/p/243342/sp/24334200/embedIframeJs/uiconf_id/12905712/partner_id/243342?iframeembed=true&playerId=kaltura_player&entry_id=1_sf5ovm7u" />
-	<meta property="og:video:type" content="text/html"> 
-	<meta property="og:video:width" content="600" />
-	<meta property="og:video:height" content="370" />	
+<!-- Facebook Open Graph tags -->
+<meta property="og:title" content="Kaltura Player: Share Plugin example" />
+<meta property="og:url" content="http://player.kaltura.com/modules/KalturaSupport/components/share/Share.html">
+<meta property="og:description" content="Kaltura Player: Share plugin demonstrates the ease of which social share can be configured with the kaltura player toolkit." />
+<meta property="og:type" content="video" />
+<meta property="og:image" content="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/400" />
+<meta property="og:image:seucre_url" content="https://cdnsecakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/400" />
+
+<!-- direct asset ref: -->
+<meta property="og:video" content="https://cdnapisec.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_sf5ovm7u/flavorId/1_d2uwy7vv/format/url/protocol/http/a.mp4" />
+<meta property="og:video:type" content="video/mp4" />	
+<meta property="og:site_name" content="Kaltura" />
+
+<!-- Facebook iframe embed  -->
+<meta property="og:video:url" content="https://cdnapisec.kaltura.com/html5/html5lib/v2.26/mwEmbedFrame.php/p/811441/uiconf_id/27153841/entry_id/1_ynoekb50?wid=_811441&iframeembed=true&playerId=kaltura_player_1423083561&entry_id=1_ynoekb50">
+<meta property="og:video:secure_url" content="https://cdnapisec.kaltura.com/html5/html5lib/v2.26/mwEmbedFrame.php/p/811441/uiconf_id/27153841/entry_id/1_ynoekb50?wid=_811441&iframeembed=true&playerId=kaltura_player_1423083561&entry_id=1_ynoekb50">
+<meta property="og:video:type" content="text/html">
+<meta property="og:video:width" content="560">
+<meta property="og:video:height" content="395">
+
+<!--  legacy swf embed:  -->
+<meta property="og:video:url" content="https://cdnapisec.kaltura.com/index.php/kwidget/cache_st/1423160141/wid/_243342/uiconf_id/12905712/entry_id/1_sf5ovm7u" />
+<meta property="og:video:secure_url" content="https://cdnapisec.kaltura.com/index.php/kwidget/cache_st/1423160141/wid/_243342/uiconf_id/12905712/entry_id/1_sf5ovm7u" />
+<meta property="og:video:type" content="application/x-shockwave-flash"> 
+<meta property="og:video:width" content="600" />
+<meta property="og:video:height" content="370" />	
 	
 	<!-- Twitter Cards tags -->
 	<meta name="twitter:card" content="player">
@@ -83,19 +90,32 @@ Facebook support player embed via <a href="https://developers.facebook.com/docs/
 For your player to inline playback on facebook, you should associate a flash UiConf XML with your html5 JSON player.
 <br><br>
 <b>Sample Kaltura player Facebook Open Graph markup:</b>
-<pre class="prettyprint linenums">&lt;meta property=&quot;og:url&quot; content=&quot;http://cdnapi.kaltura.com/index.php/extwidget/preview/partner_id/243342/uiconf_id/12905712/entry_id/1_sf5ovm7u/embed/dynamic&quot; /&gt;
+<pre class="prettyprint linenums">&lt;!-- Facebook Open Graph tags --&gt;
 &lt;meta property=&quot;og:title&quot; content=&quot;Kaltura Player: Share Plugin example&quot; /&gt;
+&lt;meta property=&quot;og:url&quot; content=&quot;http://player.kaltura.com/modules/KalturaSupport/components/share/Share.html&quot;&gt;
 &lt;meta property=&quot;og:description&quot; content=&quot;Kaltura Player: Share plugin demonstrates the ease of which social share can be configured with the kaltura player toolkit.&quot; /&gt;
-&lt;meta property=&quot;og:type&quot; content=&quot;video.other&quot; /&gt;
+&lt;meta property=&quot;og:type&quot; content=&quot;video&quot; /&gt;
 &lt;meta property=&quot;og:image&quot; content=&quot;http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/400&quot; /&gt;
 &lt;meta property=&quot;og:image:seucre_url&quot; content=&quot;https://cdnsecakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/400&quot; /&gt;
-&lt;meta property=&quot;og:video&quot; content=&quot;https://cdnapisec.kaltura.com/index.php/kwidget/cache_st/1383581207/wid/_243342/uiconf_id/12905712/entry_id/1_sf5ovm7u&quot; /&gt;
-&lt;meta property=&quot;og:video:width&quot; content=&quot;600&quot; /&gt;
-&lt;meta property=&quot;og:video:height&quot; content=&quot;370&quot; /&gt;	
-&lt;meta property=&quot;og:video:type&quot; content=&quot;application/x-shockwave-flash&quot; /&gt;
+
+&lt;!-- direct asset ref: --&gt;
 &lt;meta property=&quot;og:video&quot; content=&quot;https://cdnapisec.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_sf5ovm7u/flavorId/1_d2uwy7vv/format/url/protocol/http/a.mp4&quot; /&gt;
 &lt;meta property=&quot;og:video:type&quot; content=&quot;video/mp4&quot; /&gt;	
 &lt;meta property=&quot;og:site_name&quot; content=&quot;Kaltura&quot; /&gt;
+
+&lt;!-- Facebook iframe embed  --&gt;
+&lt;meta property=&quot;og:video:url&quot; content=&quot;https://cdnapisec.kaltura.com/html5/html5lib/v2.26/mwEmbedFrame.php/p/811441/uiconf_id/27153841/entry_id/1_ynoekb50?wid=_811441&amp;iframeembed=true&amp;playerId=kaltura_player_1423083561&amp;entry_id=1_ynoekb50&quot;&gt;
+&lt;meta property=&quot;og:video:secure_url&quot; content=&quot;https://cdnapisec.kaltura.com/html5/html5lib/v2.26/mwEmbedFrame.php/p/811441/uiconf_id/27153841/entry_id/1_ynoekb50?wid=_811441&amp;iframeembed=true&amp;playerId=kaltura_player_1423083561&amp;entry_id=1_ynoekb50&quot;&gt;
+&lt;meta property=&quot;og:video:type&quot; content=&quot;text/html&quot;&gt;
+&lt;meta property=&quot;og:video:width&quot; content=&quot;560&quot;&gt;
+&lt;meta property=&quot;og:video:height&quot; content=&quot;395&quot;&gt;
+
+&lt;!--  legacy swf embed:  --&gt;
+&lt;meta property=&quot;og:video:url&quot; content=&quot;https://cdnapisec.kaltura.com/index.php/kwidget/cache_st/1423160141/wid/_243342/uiconf_id/12905712/entry_id/1_sf5ovm7u&quot; /&gt;
+&lt;meta property=&quot;og:video:secure_url&quot; content=&quot;https://cdnapisec.kaltura.com/index.php/kwidget/cache_st/1423160141/wid/_243342/uiconf_id/12905712/entry_id/1_sf5ovm7u&quot; /&gt;
+&lt;meta property=&quot;og:video:type&quot; content=&quot;application/x-shockwave-flash&quot;&gt; 
+&lt;meta property=&quot;og:video:width&quot; content=&quot;600&quot; /&gt;
+&lt;meta property=&quot;og:video:height&quot; content=&quot;370&quot; /&gt;	
 </pre>
 </body>
 </html>
