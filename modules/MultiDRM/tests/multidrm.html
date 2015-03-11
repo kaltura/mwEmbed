@@ -59,7 +59,7 @@
     // per entry settings
     var mediaProxyKalturaToolKitVideo = {
         'entry':{
-            'id': "key_1",
+            'id': "chromecast_debug",
             'name': "My ToolKit Video",
             "description": "Kaltura Player toolkit Description.",
             "plays":1234,
@@ -151,7 +151,26 @@
 
     kWidget.embed('videoTarget', {
         'wid' : '_partnerkey',
+        'entry_id': 'chromecast_debug',
         'flashvars':{
+            "EmbedPlayer": {
+                DrmConfig: {
+                    "drm": "auto",
+                    "customData":{
+                        "userId": "purchase",
+                        "sessionId": "p0",
+                        "merchant": "six"
+                    },
+                    "sendCustomData": true,
+                    "widevineHeader": {
+                        "provider": "castlabs",
+                        "contentId": "fkj3ljaSdfalkr3j",
+                        "trackType": "",
+                        "policy": ""
+                    },
+                    "autoplay": false
+                }
+            },
             'jsonConfig':jsonConfig,
             // per entity settings:
             'mediaProxy': mediaProxyKalturaToolKitVideo
