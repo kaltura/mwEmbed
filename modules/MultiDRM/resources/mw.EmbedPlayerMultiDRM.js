@@ -171,7 +171,35 @@
 			_this.bufferEndFlag = false;
 
 			this.setPlayerHtml();
-			this.dashPlayer = new castLabs.DashEverywhere(this.config);
+			var drmConfig = mw.getConfig("EmbedPlayer.DrmConfig");
+			if (drmConfig.autoplay){
+				drmConfig.autoplay = false;
+				this.autoplay = true;
+			}
+
+			var licenseBaseUrl = mw.getConfig('Kaltura.UdrmServerURL');
+			if (!licenseBaseUrl) {
+				this.log('Error:: failed to retrieve UDRM license URL ');
+			}
+
+			//TODO: error handling in case of error
+
+			var assetId = this.mediaElement.selectedSource.getAssetId();
+			var licenseData = this.getLicenseData(assetId);
+
+			drmConfig.widevineLicenseServerURL = licenseBaseUrl + licenseData;
+			drmConfig.assetId = this.kentryid;
+			drmConfig.variantId = assetId;
+
+			var eventObj = {
+				customString: drmConfig
+			};
+
+			this.triggerHelper('challengeCustomData', eventObj);
+
+			drmConfig = eventObj.customString;
+
+			this.dashPlayer = new castLabs.DashEverywhere(drmConfig);
 
 			this.dashPlayer.loadVideo(this.getSrc(this.currentTime));
 			this.playerObject = _this.dashPlayer.getPlayer();
@@ -179,7 +207,9 @@
 			// Directly run postEmbedActions ( if playerElement is not available it will retry )
 			_this.postEmbedActions();
 		},
-
+		getLicenseData: function(assetId){
+			return "";
+		},
 		/**
 		 * Get the native player embed code.
 		 *
