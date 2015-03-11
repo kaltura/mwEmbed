@@ -236,7 +236,7 @@ mw.MediaElement.prototype = {
 		$.each( playableSources, function( inx, source ){
 			if ( source.markedDefault ) {
 				mw.log( 'MediaElement::autoSelectSource: Set via marked default: ' + source.markedDefault );
-				hasDefaultSource = true
+				hasDefaultSource = true;
 				_this.setSource( source );
 				return false;
 			}
@@ -248,7 +248,7 @@ mw.MediaElement.prototype = {
 
 		mw.setConfig( 'EmbedPlayer.IgnoreStreamerType', false);
 		//this array contains mimeTypes player should prefer to select, sorted by descending order
-		var typesToCheck = ['video/playreadySmooth', 'video/ism', 'video/multicast'];
+		var typesToCheck = ['video/dash', 'video/playreadySmooth', 'video/ism', 'video/multicast'];
 		for ( var i = 0; i < typesToCheck.length; i++ ) {
 			var matchingSources = this.getPlayableSources( typesToCheck[i] );
 			if ( matchingSources.length ) {
