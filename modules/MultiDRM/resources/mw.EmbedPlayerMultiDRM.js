@@ -11,8 +11,49 @@
 
 		bindPostfix: '.multiDRM',
 
-		waitForPositiveCurrentTimeCount: 0,
+		playerPrefix: 'EmbedPlayerMultiDRM',
 
+		// Flag to only load the video ( not play it )
+		onlyLoadFlag: false,
+
+		//Callback fired once video is "loaded"
+		onLoadedCallback: null,
+
+		// The previous "currentTime" to sniff seek actions
+		// NOTE the bug where onSeeked does not seem fire consistently may no longer be applicable
+		prevCurrentTime: -1,
+
+		// Store the progress event ( updated during monitor )
+		progressEventData: null,
+
+		// If the media loaded event has been fired
+		mediaLoadedFlag: null,
+
+		// If network errors should triggered.
+		triggerNetworkErrorsFlag: true,
+
+		// A flag to keep the video tag offscreen.
+		keepPlayerOffScreenFlag: null,
+
+		// A flag to designate the first play event, as to not propagate the native event in this case
+		ignoreNextNativeEvent: null,
+
+		// A local var to store the current seek target time:
+		currentSeekTargetTime: null,
+
+		// Flag for ignoring next native error we get from the player.
+		ignoreNextError: false,
+
+		keepNativeFullScreen: false,
+
+		// Flag for ignoring double play on iPhone
+		playing: false,
+
+		// Disable switch source callback
+		disableSwitchSourceCallback: false,
+
+		// Flag specifying if a mobile device already played. If true - mobile device can autoPlay
+		mobilePlayed: false,
 		// All the native events per:
 		// http://www.w3.org/TR/html5/video.html#mediaevents
 		nativeEvents: [
@@ -54,40 +95,6 @@
 			this._propagateEvents = true;
 			mw.log('EmbedPlayerMultiDRM:: Setup');
 
-
-
-			var defaultConfig = {
-				"drm": "auto",
-				"keyId": "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE ",
-				"customData":{
-					"userId": "user1", "sessionId": "123", "merchant": "merchantid"
-				},
-				"assetId": "asset_001",
-				"variantId": "",
-				"authenticationToken": "xxx",
-				"sendCustomData": true,
-				"playReadyLicenseServerURL": "https://lic.staging.drmtoday.com/license-proxy- headerauth/drmtoday/RightsManager.asmx",
-				"widevineLicenseServerURL": "https://lic.staging.drmtoday.com/license-proxy-widevine/cenc/",
-				"accessLicenseServerURL": "https://lic. staging.drmtoday.com/flashaccess/LicenseTrigger/v1",
-				"generatePSSH": true,
-				"widevineHeader": {
-					"provider": "test_provider",
-					"contentId": "123",
-					"trackType": "",
-					"policy": ""
-				},
-				"playreadyHeader": {
-					"laUrl": "http://lic.staging.drmtoday.com/license-proxy- headerauth/drmtoday/RightsManager.asmx",
-					"luiUrl": "https://example.com"
-				},
-				"autoplay": true,
-				"debug": true,
-				"flashFile": 'dashas/dashas.swf',
-				"width" : "640px",
-				"height" : "320px",
-				"techs" : ["dashas","dashjs","silverlight"],
-				"enableSmoothStreamingCompatibility" : true
-			};
 			readyCallback();
 		},
 		/**
@@ -496,11 +503,33 @@
 
 
 		/**
-		 * on Pause callback from the kaltura flash player calls parent_pause to
-		 * update the interface
+		 * Handle the native paused event
 		 */
 		onPause: function () {
-			$(this).trigger("pause");
+			var _this = this;
+			this.playing = false;
+			if (this.ignoreNextNativeEvent) {
+				this.ignoreNextNativeEvent = false;
+				return;
+			}
+			var timeSincePlay = Math.abs(this.absoluteStartPlayTime - new Date().getTime());
+			this.log(" OnPaused:: propagate:" + this._propagateEvents +
+			' time since play: ' + timeSincePlay + ' duringSeek:' + this.seeking);
+			// Only trigger parent pause if more than MonitorRate time has gone by.
+			// Some browsers trigger native pause events when they "play" or after a src switch
+			if (!this.seeking && !this.userSlide
+				&&
+				timeSincePlay > mw.getConfig('EmbedPlayer.MonitorRate')
+			) {
+				_this.parent_pause();
+				// in iphone when we're back from the native payer we need to show the image with the play button
+				if (mw.isIphone()) {
+					_this.updatePosterHTML();
+				}
+			} else {
+				// try to continue playback:
+				this.getPlayerElement().play();
+			}
 		},
 
 		/**
@@ -508,15 +537,22 @@
 		 * parent_play
 		 */
 		onPlay: function () {
-			if (this._propagateEvents) {
-				$(this).trigger("playing");
-				this.hideSpinner();
-				if (this.isLive()) {
-					this.ignoreEnableGui = false;
-					this.enablePlayControls(['sourceSelector']);
-				}
-				this.stopped = this.paused = false;
+			this.log(" OnPlay:: propogate:" + this._propagateEvents + ' paused: ' + this.paused);
+			// if using native controls make sure the inteface does not block the native controls interface:
+			if (this.useNativePlayerControls() && $(this).find('video ').length == 0) {
+				$(this).hide();
 			}
+
+			// Update the interface ( if paused )
+			if (!this.ignoreNextNativeEvent && this._propagateEvents && this.paused && ( mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') === true )) {
+				this.parent_play();
+			} else {
+				// make sure the interface reflects the current play state if not calling parent_play()
+				this.playInterfaceUpdate();
+				this.absoluteStartPlayTime = new Date().getTime();
+			}
+			// Set firstEmbedPlay state to false to avoid initial play invocation :
+			this.ignoreNextNativeEvent = false;
 		},
 		_ondurationchange: function (event, data) {
 			this.setDuration(this.getPlayerElement().duration());
