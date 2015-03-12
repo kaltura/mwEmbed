@@ -7,6 +7,12 @@ return array(
 		"model" => "basicDisplay",
 		"icon" => "TabBasicSettings",
 		"children"=> array(
+		array(
+                "label" => "Player's ID:",
+                "type" => "readonly",
+                "player-refresh"=> false,
+                "model" => "id"
+            ),
 			array(
 				"label" => "Player's Name",
 				"type" => "text",
@@ -76,7 +82,7 @@ return array(
             ),
 			array(
 				"label" => "Last Update",
-				"type" => "readonly",
+				"type" => "timeago",
 				"filter" => "timeago",
 				"model" => "updatedAt"
 			)
