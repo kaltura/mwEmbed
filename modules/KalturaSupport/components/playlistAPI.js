@@ -219,6 +219,9 @@
 				$(".chapterBox").removeClass('active');
 			}
 			$(".chapterBox").find("[data-mediaBox-index='" + index + "']").addClass('active');
+			if ( mw.isMobileDevice() ){
+				this.embedPlayer.mobilePlayed = true; // since the user clicked the screen, we can set mobilePlayed to true to enable canAutoPlay
+			}
 			this.playMedia(index, true);
 		},
 
