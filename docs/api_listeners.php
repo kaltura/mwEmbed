@@ -31,6 +31,9 @@
 		'layoutReady' => array(
 			'desc' => 'Dispatched when the init macro command is done and the layout is ready'
 		),
+		'layoutBuildDone' => array(
+			'desc' => 'Dispatched when the player layout is ready and rendered on the screen'
+		),
 		'playerReady' => array(
 			'desc' => 'Dispatches when the player is ready to play the media'
 		),
