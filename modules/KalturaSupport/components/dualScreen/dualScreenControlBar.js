@@ -93,6 +93,8 @@
 			//Attach control bar action handlers
 			_this.getComponent()
 				.on( 'click touchstart', 'li > span', function (e) {
+					e.stopPropagation();
+					e.preventDefault();
 					var btn = _this.controlBarComponents[this.id];
 					var obj = $(this);
 					//Change state button disabled state
@@ -103,6 +105,7 @@
 					if (btn && btn.event){
 						_this.embedPlayer.triggerHelper("dualScreenStateChange", btn.event);
 					}
+					return false;
 				} );
 
 			//Set tooltips
