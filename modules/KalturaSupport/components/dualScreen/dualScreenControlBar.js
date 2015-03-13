@@ -46,41 +46,27 @@
 					.addClass( 'controlBar componentOff' + this.cssClass )
 					.append(transformedHTML);
 				this.embedPlayer.getInterface().append( this.$controlBar );
-				this.setControlBarWidth();
+				//If top bar exist then position controlBar under it
+				if (this.embedPlayer.getTopBarContainer().length) {
+					var height = this.embedPlayer.getTopBarContainer().height();
+					this.$controlBar.css("top", height + "px");
+				}
+				if (mw.isNativeApp()){
+					this.$controlBar.find("#" + this.controlBarComponents.sideBySide.id ).remove();
+				}
 			}
 			return this.$controlBar;
 		},
-		setControlBarWidth: function(){
-			var width = 0;
-			this.getComponent().find("#displayControlBar").each(function() {
-				width += $(this).outerWidth( true );
-			});
-			this.getComponent().
-				css({'width': width + 10});
-		},
-		positionControlBar: function (  ) {
-			var height = 0;
-			if (this.embedPlayer.getTopBarContainer().length) {
-				height = this.embedPlayer.getTopBarContainer().height();
-			}
-			this.getComponent().position( {
-				my: 'right top+'+height,
-				at: 'right top',
-				of: this.embedPlayer.getInterface(),
-				collision: 'none'
-			} );
-		},
+
 		addBindings: function () {
 			//Set control bar visiblity handlers
 			var _this = this;
 			this.embedPlayer.getInterface()
 				.on( 'mousemove touchstart', function(){
-					if (!_this.disabled){
-						_this.show();
-					}
+					_this.show();
 				})
 				.on( 'mouseleave', function(){
-					if (!mw.isMobileDevice() && !_this.disabled){
+					if (!mw.isMobileDevice()){
 						_this.hide();
 					}
 				});
@@ -114,47 +100,38 @@
 			this.embedPlayer.layoutBuilder.setupTooltip(buttons, "arrowTop");
 		},
 		disable: function () {
-			console.warn("disable");
 			clearTimeout(this.getComponent().handleTouchTimeoutId);
 			this.disabled = true;
 		},
 		enable: function () {
-			console.warn("enable");
 			this.disabled = false;
 		},
 		hide: function ( ) {
-			if ( this.disabled ) {
-				return;
-			}
-			console.warn("hide");
-			if ( this.getComponent().isVisible ) {
-				this.getComponent().addClass('componentOff componentAnimation' ).removeClass('componentOn');
-				this.embedPlayer.getVideoHolder().find(".controlBarShadow" ).addClass('componentOff componentAnimation' ).removeClass('componentOn');
-				this.getComponent().isVisible = false;
+			if ( !this.disabled ) {
+				this.embedPlayer.triggerHelper( 'clearTooltip' );
+				if ( this.isVisible ) {
+					this.getComponent().addClass( 'componentOff componentAnimation' ).removeClass( 'componentOn' );
+					this.embedPlayer.getVideoHolder().find( ".controlBarShadow" ).addClass( 'componentOff componentAnimation' ).removeClass( 'componentOn' );
+					this.isVisible = false;
+				}
 			}
 		},
 		show: function ( ) {
-			if ( this.disabled || this.ignoreNextMouseEvent) {
-				this.ignoreNextMouseEvent = false;
-				return;
-			}
-			console.warn("show");
-			if ( !this.getComponent().isVisible ) {
-				this.getComponent().removeClass('componentAnimation').addClass('componentOn' ).removeClass('componentOff');
-				this.positionControlBar();
-				this.getComponent().isVisible = true;
-				this.embedPlayer.getVideoHolder().find(".controlBarShadow" ).removeClass('componentAnimation').addClass('componentOn' ).removeClass('componentOff');
-			}
+			if ( !this.disabled) {
+				if ( !this.isVisible ) {
+					this.getComponent().removeClass( 'componentAnimation' ).addClass( 'componentOn' ).removeClass( 'componentOff' );
+					this.isVisible = true;
+					this.embedPlayer.getVideoHolder().find( ".controlBarShadow" ).removeClass( 'componentAnimation' ).addClass( 'componentOn' ).removeClass( 'componentOff' );
+				}
 
-			var _this = this;
-			if (this.getComponent().handleTouchTimeoutId){
-				clearTimeout(this.getComponent().handleTouchTimeoutId);
+				var _this = this;
+				if ( this.getComponent().handleTouchTimeoutId ) {
+					clearTimeout( this.getComponent().handleTouchTimeoutId );
+				}
+				this.getComponent().handleTouchTimeoutId = setTimeout( function () {
+					_this.hide();
+				}, this.menuFadeout );
 			}
-			this.getComponent().handleTouchTimeoutId = setTimeout( function () {
-				_this.ignoreNextMouseEvent = true;
-				_this.hide( );
-			}, this.menuFadeout );
-
 		}
 	};
 })( window.mw, window.jQuery );
