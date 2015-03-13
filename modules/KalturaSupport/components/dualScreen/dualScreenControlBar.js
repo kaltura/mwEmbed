@@ -88,13 +88,20 @@
 			//add drop shadow containers for control bar
 			this.embedPlayer.getVideoHolder().prepend($("<div class='dualScreen controlBarShadow componentAnimation'></div>").addClass('componentOff'));
 
+			//Cache buttons
+			var buttons = _this.getComponent().find( "span" );
 			//Attach control bar action handlers
 			_this.getComponent()
-				.on( 'click', 'li > span', function () {
+				.on( 'click touchstart', 'li > span', function (e) {
 					var btn = _this.controlBarComponents[this.id];
+					var obj = $(this);
+					//Change state button disabled state
+					if (obj.data("type") === "state") {
+						buttons.removeClass( "disabled" );
+						obj.addClass( "disabled" );
+					}
 					if (btn && btn.event){
 						_this.embedPlayer.triggerHelper("dualScreenStateChange", btn.event);
-						//_this.fsm.consumeEvent( event );
 					}
 				} );
 
