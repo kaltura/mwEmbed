@@ -71,6 +71,19 @@
 					}
 				});
 
+			this.bind("dualScreenControlsHide", function(){
+				_this.hide();
+			});
+			this.bind("dualScreenControlsShow", function(){
+				_this.show();
+			});
+			this.bind("dualScreenControlsDisable", function(){
+				_this.disable();
+			});
+			this.bind("dualScreenControlsEnable", function(){
+				_this.enable();
+			});
+
 			//add drop shadow containers for control bar
 			this.embedPlayer.getVideoHolder().prepend($("<div class='dualScreen controlBarShadow componentAnimation'></div>").addClass('componentOff'));
 
