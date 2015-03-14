@@ -85,7 +85,13 @@
 			});
 
 			//add drop shadow containers for control bar
-			this.embedPlayer.getVideoHolder().prepend($("<div class='dualScreen controlBarShadow componentAnimation'></div>").addClass('componentOff'));
+			this.embedPlayer.getVideoHolder()
+				.prepend($("<div class='dualScreen controlBarShadow componentAnimation'></div>")
+					.addClass('componentOff')
+					.on("click mouseover mousemove mouseout touchstart touchend", function(e){
+						_this.embedPlayer.triggerHelper(e);
+					})
+			);
 
 			//Cache buttons
 			var buttons = _this.getComponent().find( "span" );
