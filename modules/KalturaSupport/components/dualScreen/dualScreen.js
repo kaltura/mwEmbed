@@ -561,6 +561,9 @@
 				this.bind("showPlayerControls" , function(){
 					_this.getPlayer().triggerHelper("dualScreenControlsShow");
 				});
+				this.bind("postDualScreenTransition", function () {
+					_this.applyIntrinsicAspect();
+				});
 			},
 			initDisplay: function(){
 				var _this = this;
@@ -682,7 +685,6 @@
 							.attr( 'id', 'SynchImg' )
 							.addClass("imagePlayer")
 					);
-					this.applyIntrinsicAspect();
 				}
 				return this.$el;
 			},
@@ -823,7 +825,9 @@
 			sync: function ( cuePoint, callback ) {
 				if (this.syncEnabled) {
 					this.loadAdditionalAssets();
+					var _this = this;
 					var callCallback = function () {
+						_this.applyIntrinsicAspect();
 						if ( callback && typeof(callback) === "function" ) {
 							callback();
 						}
@@ -846,11 +850,11 @@
 				// Check if a image thumbnail is present:
 				var $img = this.getComponent().find( '.imagePlayer' );
 				if( $img.length ){
-					var pHeight = this.getPlayer().getVideoDisplay().height();
+					var pHeight = this.getSecondary().obj.height();
 					// Check for intrinsic width and maintain aspect ratio
 					var pWidth = parseInt( $img.naturalWidth() / $img.naturalHeight() * pHeight, 10);
 					var pClass = 'fill-height';
-					if( pWidth > this.getPlayer().getVideoDisplay().width() ){
+					if( pWidth > this.getSecondary().obj.width() ){
 						pClass = 'fill-width';
 					}
 					$img.removeClass('fill-width fill-height').addClass(pClass);
