@@ -276,7 +276,50 @@
 					}
 				];
 
-				this.fsm = new StateMachine( states );
+				var nativeAppStates = [
+					{
+						'name': 'PiP',
+						'initial': true,
+						'events': {
+							'hide': {
+								name: 'SV',
+								action: function (  ) {
+									_this.disableMonitorFeatures();
+									_this.hideMonitor( _this.getSecondMonitor().obj );
+								}
+							}
+						}
+					},
+					{
+						'name': 'SV',
+						'events': {
+							'PiP': {
+								name: 'PiP',
+								action: function () {
+									if (_this.getPrimary() === _this.getSecondMonitor()) {
+
+										_this.toggleMainMonitor();
+										_this.showMonitor( _this.getFirstMonitor().obj );
+									}
+									_this.enableMonitorFeatures();
+									_this.showMonitor( _this.getSecondMonitor().obj );
+								}
+							},
+							'switchView': {
+								name: 'SV',
+								action: function () {
+									_this.showMonitor( _this.getSecondMonitor().obj );
+									_this.hideMonitor( _this.getFirstMonitor().obj );
+									_this.toggleMainMonitor();
+								}
+							}
+						}
+					}
+				];
+
+				var selectedStatesMap = mw.isNativeApp() ? nativeAppStates : states;
+
+				this.fsm = new StateMachine( selectedStatesMap );
 			},
 			initMonitors: function () {
 				var _this = this;
