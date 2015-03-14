@@ -24,7 +24,7 @@
 			},
 			switchView: {
 				id: 'switchView',
-				title: 'Toggle Main View',
+				title: 'Toggle View',
 				event: "switchView"
 			}
 		};
@@ -95,6 +95,7 @@
 
 			//Cache buttons
 			var buttons = _this.getComponent().find( "span" );
+			var switchBtn = buttons.filter('[data-type="switch"]');
 			//Attach control bar action handlers
 			_this.getComponent()
 				.on( 'click touchstart', 'li > span', function (e) {
@@ -107,14 +108,28 @@
 						buttons.removeClass( "disabled" );
 						obj.addClass( "disabled" );
 					}
+					if (mw.isNativeApp()){
+						if (this.id === _this.controlBarComponents.pip.id){
+							switchBtn
+								.addClass("disabled")
+								.tooltip( "option", "content", nativeAppTooltip);
+						} else if(this.id === _this.controlBarComponents.singleView.id){
+							switchBtn.tooltip( "option", "content", _this.controlBarComponents.switchView.title);
+						}
+					}
 					if (btn && btn.event){
 						_this.embedPlayer.triggerHelper("dualScreenStateChange", btn.event);
 					}
 					return false;
 				} );
 
+			if (mw.isNativeApp()){
+				var nativeAppTooltip = "Switching content<br/>on current view<br/>is not yet<br/>supported.<br/><br/>Try single view";
+				switchBtn.addClass("disabled" )
+					.attr("title", nativeAppTooltip );
+			}
+
 			//Set tooltips
-			var buttons = this.getComponent().find('li > span' );
 			buttons.attr('data-show-tooltip', true);
 			this.embedPlayer.layoutBuilder.setupTooltip(buttons, "arrowTop");
 		},
