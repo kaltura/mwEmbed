@@ -608,13 +608,17 @@
 						}
 					};
 
-					if ( this.getConfig( "mainViewDisplay" ) === 2 ) {
+					if ( this.getConfig( "mainViewDisplay" ) === 2 && !mw.isNativeApp() ||
+					     this.getPlayer().isAudio()) {
 						this.bind( 'postDualScreenTransition.spinnerPostFix', function () {
 							_this.unbind( 'postDualScreenTransition.spinnerPostFix' );
 							showLoadingSlide();
 						} );
 						setTimeout( function () {
 							_this.fsm.consumeEvent( "switchView" );
+							if (_this.getPlayer().isAudio()){
+								_this.fsm.consumeEvent( "hide" );
+							}
 						}, 1000 );
 					} else {
 						showLoadingSlide();
