@@ -103,9 +103,12 @@
 								_this.resizing = true;
 								break;
 						}
-						_this.controlBar.hide();
-						wasDisabled = _this.controlBar.disabled;
-						_this.controlBar.disable();
+
+						_this.getPlayer().triggerHelper("dualScreenControlsHide");
+						if (_this.controlBar){
+							wasDisabled = _this.controlBar.disabled;
+						}
+						_this.getPlayer().triggerHelper("dualScreenControlsDisable");
 						_this.getPlayer().disablePlayControls();
 					},
 					stop: function ( event ) {
@@ -120,8 +123,8 @@
 
 						//Only enable and show if controlBar was enabled before transition
 						if (!wasDisabled) {
-							_this.controlBar.enable();
-							_this.controlBar.show();
+							_this.getPlayer().triggerHelper("dualScreenControlsEnable");
+							_this.getPlayer().triggerHelper("dualScreenControlsShow");
 						}
 						$( event.toElement ).one( 'click', function ( e ) {
 							e.stopImmediatePropagation();
@@ -167,14 +170,14 @@
 					var transitionHandlerSet = true;
 					_this.getPlayer().triggerHelper('preDualScreenTransition', [[transitionFrom, transitionTo]]);
 
-					_this.controlBar.hide();
+					_this.getPlayer().triggerHelper("dualScreenControlsHide");
 
 					_this.enableMonitorTransition();
 
 					function transitionendHandler( ) {
 						if ( transitionHandlerSet ) {
 							transitionHandlerSet = false;
-							_this.controlBar.show();
+							_this.getPlayer().triggerHelper("dualScreenControlsShow");
 							_this.disableMonitorTransition();
 							_this.getPlayer().triggerHelper('postDualScreenTransition', [[transitionFrom, transitionTo]]);
 						}
@@ -389,13 +392,12 @@
 
 				this.bind( 'onplay', function () {
 					_this.loadAdditionalAssets();
-					_this.controlBar.enable();
+					_this.getPlayer().triggerHelper("dualScreenControlsEnable");
 				} );
 
 				this.bind( 'onpause ended playerReady', function () {
-					_this.controlBar.ignoreNextMouseEvent = false;
-					_this.controlBar.show();
-					_this.controlBar.disable();
+					_this.getPlayer().triggerHelper("dualScreenControlsShow");
+					_this.getPlayer().triggerHelper("dualScreenControlsDisable");
 				} );
 
 				//In live mode wait for first updatetime that is bigger then 0 for syncing initial slide
@@ -450,7 +452,6 @@
 							}
 
 							_this.fsm.consumeEvent( 'hide' );
-							_this.ignoreNextMouseEvent = true;
 						}
 						_this.getPrimary().obj.css( {'top': '', 'left': '', 'width': '', 'height': ''} ).removeClass( 'firstScreen' );
 						$.each( _this.zIndexObjs, function ( i, obj ) {
@@ -477,9 +478,9 @@
 					_this.screenShown = true;
 					if (_this.render) {
 						_this.currentScreenNameShown = screenName;
-						_this.controlBar.enable();
-						_this.controlBar.hide();
-						_this.controlBar.disable();
+						_this.getPlayer().triggerHelper("dualScreenControlsEnable");
+						_this.getPlayer().triggerHelper("dualScreenControlsHide");
+						_this.getPlayer().triggerHelper("dualScreenControlsDisable");
 						minimizeSecondDisplay();
 					}
 				} );
@@ -493,8 +494,8 @@
 						//only then preShowScreen
 						setTimeout(function(){
 							if (!_this.screenShown) {
-								_this.controlBar.enable();
-								_this.controlBar.show();
+								_this.getPlayer().triggerHelper("dualScreenControlsEnable");
+								_this.getPlayer().triggerHelper("dualScreenControlsShow");
 							}
 						}, 100);
 					}
@@ -515,7 +516,7 @@
 					_this.fsm.consumeEvent( state );
 				});
 				this.bind("showPlayerControls" , function(){
-					_this.controlBar.show();
+					_this.getPlayer().triggerHelper("dualScreenControlsShow");
 				});
 			},
 			initDisplay: function(){
@@ -603,16 +604,14 @@
 			},
 			hideDisplay: function(){
 				this.getSecondMonitor().obj.css("visibility", "hidden");
-				this.controlBar.hide();
-				this.controlBar.disable();
+				this.getPlayer().triggerHelper("dualScreenControlsHide");
+				this.getPlayer().triggerHelper("dualScreenControlsDisable");
 			},
 			showDisplay: function(){
 				this.getFirstMonitor().obj.css("visibility", "");
 				this.getSecondMonitor().obj.css("visibility", "");
-				this.controlBar.setControlBarWidth();
-				this.controlBar.positionControlBar();
-				this.controlBar.enable();
-				this.controlBar.show();
+				this.getPlayer().triggerHelper("dualScreenControlsEnable");
+				this.getPlayer().triggerHelper("dualScreenControlsShow");
 			},
 			checkRenderConditions: function(){
 				if ( !( this.dragging || this.resizing ) &&
