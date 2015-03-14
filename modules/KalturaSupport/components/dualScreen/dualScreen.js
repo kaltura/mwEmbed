@@ -681,7 +681,7 @@
 					var width = this.getPlayer().getWidth() * this.getConfig( 'secondScreen' ).size / 100;
 					var height = width * this.getConfig('secondScreen').widthHeightRatio;
 					this.$el = $( '<div />' )
-						.css( {height: height + 'px', width: width + 'px'} )
+						.css( {height: height + 'px', width: width + 'px', "background": "black"} )
 						.addClass( this.getCssClass() + " secondScreen" );
 
 					this.$el.append(
