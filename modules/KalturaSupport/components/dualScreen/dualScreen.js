@@ -57,15 +57,6 @@
 				this.initFSM();
 				this.addBindings();
 				this.initMonitors();
-
-				//Init control bar
-				this.controlBar = new mw.dualScreenControlBar({
-					embedPlayer: this.getPlayer(),
-					templatePath: this.getConfig("templatePath"),
-					menuFadeout: this.getConfig("menuFadeout"),
-					cssClass: this.getCssClass(),
-					controlBarComponents: this.controlBarComponents
-				});
 			},
 			isSafeEnviornment: function () {
 				var cuePoints = this.getCuePoints();
@@ -301,6 +292,7 @@
 				this.bind( 'playerReady', function (  ) {
 					_this.checkRenderConditions();
 					_this.initDisplay();
+					_this.initControlBar();
 					if (!_this.render) {
 						_this.getPrimary().obj.css( {'top': '', 'left': '', 'width': '', 'height': ''} ).removeClass( 'firstScreen' );
 						_this.hideDisplay();
@@ -595,6 +587,17 @@
 							}
 							_this.zIndexObjs.push( obj );
 						}
+					} );
+				}
+			},
+			initControlBar: function(){
+				if ( !this.getPlayer().isAudio()) {
+					this.controlBar = new mw.dualScreenControlBar( {
+						embedPlayer: this.getPlayer(),
+						templatePath: this.getConfig( "templatePath" ),
+						menuFadeout: this.getConfig( "menuFadeout" ),
+						cssClass: this.getCssClass(),
+						displayMode: this.displayMode
 					} );
 				}
 			},
