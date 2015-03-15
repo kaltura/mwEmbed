@@ -396,6 +396,10 @@
 				captionsSrc = this.getCaptionURL( dbTextSource.id ) + '/.' + dbTextSource.fileExt;
 			}
 
+			this.bind( 'onChangeMediaDone', function () {
+				_this.embedPlayer.getInterface().find( 'track').remove();
+			});
+
 			// Try to insert the track source:
 			var embedSource = this.embedPlayer.mediaElement.tryAddSource(
 				$( '<track />' ).attr({
