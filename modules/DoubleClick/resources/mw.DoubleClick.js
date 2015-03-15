@@ -68,6 +68,8 @@
 		//flag for the time to return when using the same video element {mobile}
 		timeToReturn:null,
 
+		cust_params: null,
+
 		//flag that indicates we are now playing linear ad
 		playingLinearAd:false,
 
