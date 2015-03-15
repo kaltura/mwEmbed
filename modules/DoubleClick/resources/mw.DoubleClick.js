@@ -239,6 +239,8 @@
 						//Build entire adTagUrl back
 						evaluatedQueryStringParams = evaluatedQueryStringParams.substring(0, evaluatedQueryStringParams.length - 1);
 						this.adTagUrl =  adTagBaseUrl + "?" + evaluatedQueryStringParams ;
+					}else{
+						this.adTagUrl = adTagUrl;
 					}
 				} catch (e) {
 					// in case of error - fallback for fully escaped and evaluated adTagUrl string
@@ -990,7 +992,9 @@
 					_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
 					_this.prevSlotType = _this.currentAdSlotType;
 				}
-				_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', adInfo.duration );
+				if (adInfo.duration > 0){
+					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', adInfo.duration );
+				}
 				if ( _this.isChromeless ) {
 					$(".mwEmbedPlayer").hide();
 				}
@@ -1051,8 +1055,10 @@
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				mw.log("DoubleClick:: adRemainingTimeChange");
-				_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', (adInfo.duration - adInfo.remain));
-				_this.embedPlayer.updatePlayHead( adInfo.time / adInfo.duration );
+				if (adInfo.duration > 0){
+					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', (adInfo.duration - adInfo.remain));
+					_this.embedPlayer.updatePlayHead( adInfo.time / adInfo.duration );
+				}
 				// Update sequence property per active ad:
 				if (adInfo.remain > 0){
 					_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  parseInt(adInfo.remain) );
