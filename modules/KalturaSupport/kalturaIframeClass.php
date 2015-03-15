@@ -887,7 +887,7 @@ HTML;
 							waitforMw( callback );
 						} else {
 							if( console ){
-								console.log("Error in loading mwEmbedLodaer");
+								console.log("Error in loading mwEmbedLoader");
 							}
 						}
 					}, 5 );

@@ -422,6 +422,7 @@
 			if (data) {
 				error = data.errorId + " detail:" + data.errorDetail;
 			}
+			data.errorMessage = this.getKalturaMsg('ks-CLIP_NOT_FOUND');
 			mw.log("EmbedPlayerKPlayer::MediaError error code: " + error);
 			this.triggerHelper('embedPlayerError', [ data ]);
 		},

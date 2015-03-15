@@ -282,56 +282,56 @@ return array(
 		'label' => 'Playlist Configuration',
 		'attributes' => array(
 			'containerPosition' => array(
-                'doc' => 'Position of the playlist.',
-                'label' => "Position",
-                'type' => 'enum',
-                'initvalue' => 'right',
-                'enum' => array("left", "right", "top", "bottom"),
-                'options' => array(
-                    array(
-                        'label' => "Left of the video",
-                        'value' => "left"
-                    ),
-                    array(
-                        'label' => "Right of the video",
-                        'value' => "right"
-                    ),
-                    array(
-                        'label' => "Above the video",
-                        'value' => "top"
-                    ),
-                    array(
-                        'label' => "Below the video",
-                        'value' => "bottom"
-                    )
-                )
-            ),
+				'doc' => 'Position of the playlist.',
+				'label' => "Position",
+				'type' => 'enum',
+				'initvalue' => 'right',
+				'enum' => array("left", "right", "top", "bottom"),
+				'options' => array(
+					array(
+						'label' => "Left of the video",
+						'value' => "left"
+					),
+					array(
+						'label' => "Right of the video",
+						'value' => "right"
+					),
+					array(
+						'label' => "Above the video",
+						'value' => "top"
+					),
+					array(
+						'label' => "Below the video",
+						'value' => "bottom"
+					)
+				)
+			),
 			'layout' => array(
-                'doc' => 'Playlist layout.',
-                'type' => 'enum',
-                'initvalue' => 'vertical',
-                'enum' => array("vertical", "horizontal"),
-                'options' => array(
-                    array(
-                        'label' => "Vertical playlist",
-                        'value' => "vertical"
-                    ),
-                    array(
-                        'label' => "Horizontal playlist",
-                        'value' => "horizontal"
-                    )
-                )
-            ),
-            'includeInLayout' => array(
-                'doc' => "Include clip list in the display.",
-                'type' => 'boolean',
-                'initvalue' => true
-            ),
-            'showControls' => array(
-                'doc' => "Display Next / Previous buttons.",
-                'type' => 'boolean',
-                'initvalue' => true
-            ),
+				'doc' => 'Playlist layout.',
+				'type' => 'enum',
+				'initvalue' => 'vertical',
+				'enum' => array("vertical", "horizontal"),
+				'options' => array(
+					array(
+						'label' => "Vertical playlist",
+						'value' => "vertical"
+					),
+					array(
+						'label' => "Horizontal playlist",
+						'value' => "horizontal"
+					)
+				)
+			),
+			'includeInLayout' => array(
+				'doc' => "Include clip list in the display.",
+				'type' => 'boolean',
+				'initvalue' => true
+			),
+			'showControls' => array(
+				'doc' => "Display Next / Previous buttons.",
+				'type' => 'boolean',
+				'initvalue' => true
+			),
 			'autoContinue' => array(
 				'doc' => "If the playlist should autocontinue.",
 				'type' => 'boolean'
@@ -355,15 +355,15 @@ return array(
 				'type' => 'boolean'
 			),
 			'MinClips' => array(
-                'doc' => "Minimum number of clips to show in the playlist without scrolling.",
-                'type' => 'number',
-                'initvalue' => 2
-            ),
+				'doc' => "Minimum number of clips to show in the playlist without scrolling.",
+				'type' => 'number',
+				'initvalue' => 2
+			),
 			'MaxClips' => array(
-                'doc' => "Max number of clips to show in the playlist.",
-                'type' => 'number',
-                'initvalue' => 25
-            ),
+				'doc' => "Max number of clips to show in the playlist.",
+				'type' => 'number',
+				'initvalue' => 25
+			),
 			'initItemEntryId' => array(
 				'doc' => "The entryId that should be played first."
 			),
@@ -388,9 +388,9 @@ return array(
 				'type' => 'hiddenValue'
 			),
 			'additionalPlaylists' => array(
-                'doc' => "Additional playlists.",
-                'type' => 'additionalPlaylists'
-            )
+				'doc' => "Additional playlists.",
+				'type' => 'additionalPlaylists'
+			)
 		)
 	),
 	/*
@@ -447,20 +447,20 @@ return array(
 	),
 	//Stream selector
 	'streamSelector' => array(
-        'description' => "Enables users to select the video playback stream out of a selection of streams.",
-        'attributes' => array(
-            'defaultStream' => array(
-                'doc' => 'The default stream.',
-                'initvalue' => 1,
-                'type' => 'number'
-            ),
-            'enableKeyboardShortcuts' => array(
-                'doc' => 'Enable keyboard shortcuts (Key mappings: "[" - Next, "]" - Previous, "\" - Default)',
-                'initvalue' => true,
-                'type' => 'boolean'
-            ),
-        )
-    ),
+		'description' => "Enables users to select the video playback stream out of a selection of streams.",
+		'attributes' => array(
+			'defaultStream' => array(
+				'doc' => 'The default stream.',
+				'initvalue' => 1,
+				'type' => 'number'
+			),
+			'enableKeyboardShortcuts' => array(
+				'doc' => 'Enable keyboard shortcuts (Key mappings: "[" - Next, "]" - Previous, "\" - Default)',
+				'initvalue' => true,
+				'type' => 'boolean'
+			),
+		)
+	),
 	/* flavor selector */
 	'flavorComboControllerScreen' => array(
 		'description' => "The Kaltura flavor selector plugin.",
@@ -506,13 +506,13 @@ return array(
 			The download button will enable users to download the media to a local file.",
 		'attributes' => array_merge($kgDefaultComponentAttr,
 			array(
-                'flavorID' => array(
-                    'label' => 'Flavor ID',
-                    'doc' => "Flavor ID for the downloaded movie source. When specified, overrides any preferred bitrate settings",
-                    'type' => 'string',
-                    'initvalue' => ''
-                ),
-            ),
+				'flavorID' => array(
+					'label' => 'Flavor ID',
+					'doc' => "Flavor ID for the downloaded movie source. When specified, overrides any preferred bitrate settings",
+					'type' => 'string',
+					'initvalue' => ''
+				),
+			),
 			array(
 				'preferredBitrate' => array(
 					'label' => 'Preferred bitrate',
@@ -626,12 +626,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 					'label' => 'Logo link',
 					'doc' => "URL for the control bar logo to click through to.",
 					'type' => 'url',
-                    'initvalue' => 'http://www.kaltura.com'
+					'initvalue' => 'http://www.kaltura.com'
 			),
 			'title' => array(
 					'doc' => "Title tooltip for the logo",
 					'type' => 'string',
-                    'initvalue' => 'Kaltura'
+					'initvalue' => 'Kaltura'
 			),
 			'cssClass' => array(
 					'doc' => "An additional class to add to the logo. Can be used for CSS based custom logo image.",
@@ -920,13 +920,13 @@ The playhead reflects segment time as if it was the natural stream length.",
 		)
 	),
 
-    'nextPrevBtn' => array(
-        'featureCheckbox' => true, // *NEW* - actually enabled even if undefined but can be disabled via this property
-        'description' => "Playlist 'Next' and 'Previous' buttons", // used for tooltip
-        'type' => 'featuremenu', // *NEW* = renders as featuremenu also if undefined, but can be turned into submenu via this
-        'label' => 'Playlist controls', // *NEW*
-        'model' => 'config.plugins.nextPrevBtn', //*NEW*
-        'attributes' => array(
+	'nextPrevBtn' => array(
+		'featureCheckbox' => true, // *NEW* - actually enabled even if undefined but can be disabled via this property
+		'description' => "Playlist 'Next' and 'Previous' buttons", // used for tooltip
+		'type' => 'featuremenu', // *NEW* = renders as featuremenu also if undefined, but can be turned into submenu via this
+		'label' => 'Playlist controls', // *NEW*
+		'model' => 'config.plugins.nextPrevBtn', //*NEW*
+		'attributes' => array(
 			'parent' => array(
 				'doc' => 'Parent container for component. Components include default placement, leave as null if unsure.',
 				'type' => 'enum',
@@ -943,8 +943,8 @@ The playhead reflects segment time as if it was the natural stream length.",
 				),
 				'initvalue' => "controlsContainer"
 			)
-        )
-    ),
+		)
+	),
 	/** statistics has global flashvar based configuration:  **/
 	'statistics' => array(
 		'description' => 'Use Kaltura statistics to
@@ -1541,10 +1541,10 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'string'
 			),
 			'truncateLongTitles' => array(
-                'doc' => 'Truncate long titles to fit in one line. Truncated titles get a tooltip and 3 dots at the end of the truncated text.',
-                'type' => 'boolean',
-                'initvalue' => true,
-            )
+				'doc' => 'Truncate long titles to fit in one line. Truncated titles get a tooltip and 3 dots at the end of the truncated text.',
+				'type' => 'boolean',
+				'initvalue' => true,
+			)
 		)
 	),
 	'airPlay' => array(
@@ -1558,22 +1558,22 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'type' => 'featuremenu',
 		'model' => 'config.plugins.nativeCallout',
 		'attributes' => array(
-            'storeUrl' => array(
-                'doc' => 'The URL for the app market',
-                'initvalue' => '',
-                'type' => 'string',
-            ),
-            'mimeName' => array(
-                'doc' => 'The linker for opening your native app',
-                'initvalue' => '',
-                'type' => 'string',
-            ),
-            'iframeUrl' => array(
-                'doc' => 'iFrame URL',
-                'initvalue' => '',
-                'type' => 'string',
-            ),
-        )
+			'storeUrl' => array(
+				'doc' => 'The URL for the app market',
+				'initvalue' => '',
+				'type' => 'string',
+			),
+			'mimeName' => array(
+				'doc' => 'The linker for opening your native app',
+				'initvalue' => '',
+				'type' => 'string',
+			),
+			'iframeUrl' => array(
+				'doc' => 'iFrame URL',
+				'initvalue' => '',
+				'type' => 'string',
+			),
+		)
 	),
 	'related' => array(
 		'description' => 'Add the Related Videos screen at the end of the video to attract users to watch additional videos.',
@@ -1639,13 +1639,13 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'label' => 'Strings',
 		'model' => 'config.plugins.strings',
 		'attributes' => array(
-            'keyValuePairs' => array(
-                'doc' => 'Key / Value pairs of strings to overwrite',
-                'label' => 'Strings to overwrite:',
-                'initvalue' => '',
-                'type' => 'keyValuePairs',
-            )
-        )
+			'keyValuePairs' => array(
+				'doc' => 'Key / Value pairs of strings to overwrite',
+				'label' => 'Strings to overwrite:',
+				'initvalue' => '',
+				'type' => 'keyValuePairs',
+			)
+		)
 	),
 	'hammerEvents' => array(
 		'description' => 'Support Hammer.js events against the player canvas.',

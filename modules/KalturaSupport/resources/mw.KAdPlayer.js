@@ -944,6 +944,7 @@ mw.KAdPlayer.prototype = {
 				if (_this.embedPlayer.evaluate("{vast.pauseAdOnClick}") !== false) {
 					_this.embedPlayer.pause(); // pause the video when the user clicks on the overlay ad
 				}
+				_this.embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
 				if (nonLinearConf.$html.attr("data-NonLinearClickTracking")){
 					mw.sendBeaconUrl( nonLinearConf.$html.attr("data-NonLinearClickTracking") );
 				}
@@ -1509,8 +1510,31 @@ mw.KAdPlayer.prototype = {
 					_this.sendVASTBeacon( adConf.trackingEvents, 'resume', true );
 				}, 'AdPlaying' );
 
-				if ( isJs ) {  //flash vpaid will call initAd itself
+				if ( isJs ) {
+					//flash vpaid will call initAd itself
 					VPAIDObj.initAd( _this.embedPlayer.getWidth(), _this.embedPlayer.getHeight(), 'normal', 512, creativeData, environmentVars );
+					if ( adSlot.type == "overlay" ){
+						// add play / pause binding to trigger VPAID pauseAd and resumeAd
+						var bindPostFix = ".jsvpaid";
+						_this.embedPlayer.unbindHelper('onPlayerStateChange' + bindPostFix).bindHelper('onPlayerStateChange' + bindPostFix, function(e, newState, oldState){
+							if( newState == 'pause' && VPAIDObj.pauseAd && typeof VPAIDObj.pauseAd == "function" ){
+								VPAIDObj.pauseAd();
+							}
+							if( newState == 'play' && VPAIDObj.resumeAd && typeof VPAIDObj.resumeAd == "function" ){
+								VPAIDObj.resumeAd();
+							}
+						});
+						_this.embedPlayer.unbindHelper('onOpenFullScreen' + bindPostFix).bindHelper('onOpenFullScreen' + bindPostFix, function(){
+							if( VPAIDObj.resizeAd && typeof VPAIDObj.resizeAd == "function" ){
+								setTimeout(function(){VPAIDObj.resizeAd($(window).width(),$(window).height(),"fullscreen")},1000);
+							}
+						});
+						_this.embedPlayer.unbindHelper('onCloseFullScreen' + bindPostFix).bindHelper('onCloseFullScreen' + bindPostFix, function(){
+							if( VPAIDObj.resizeAd && typeof VPAIDObj.resizeAd == "function" ){
+								setTimeout(function(){VPAIDObj.resizeAd(_this.embedPlayer.width,_this.embedPlayer.height,"normal")},1000);
+							}
+						});
+					}
 				}
 			}
 			//add the vpaid container
@@ -1538,7 +1562,11 @@ mw.KAdPlayer.prototype = {
 					}
 				};
 				if ( adConf.adParameters ) {
-					playerParams.vpaidAdParameters = encodeURIComponent( adConf.adParameters );
+					playerParams.vpaidAdParameters = escape( adConf.adParameters );
+				}
+				if ( adConf.vpaid.flash.width) {
+					playerParams.vpaidAdWidth = adConf.vpaid.flash.width;
+					playerParams.vpaidAdHeight = adConf.vpaid.flash.height;
 				}
 				//flashvars to load vpaidPlugin.swf and to disable on screen clicks since vpaid swf will handle the clicks
 				var adSibling = new mw.PlayerElementFlash( vpaidId, vpaidId + "_obj", playerParams, null, function () {
@@ -1595,7 +1623,7 @@ mw.KAdPlayer.prototype = {
 			}
 		};
 
-		if ( mw.isAndroid() || mw.isIpad() ) {
+		if ( (mw.isAndroid() || mw.isIpad()) && adSlot.type !== "overlay" ) {
 			var bindPostFix = ".vpaidSequenceCheck";
 			this.embedPlayer.bindHelper( 'playing' + bindPostFix, function () {
 				_this.embedPlayer.unbindHelper( 'playing' + bindPostFix );

@@ -24,6 +24,7 @@
 
 		textSources: [],
 		defaultBottom: 15,
+		lastActiveCaption: null,
 
 		setup: function(){
 			var _this = this;
@@ -229,6 +230,9 @@
 		hideCaptions: function(){
 			if( !this.getConfig('displayCaptions') || this.textSources.length === 0 ) {
 				this.getMenu().clearActive();
+				if (this.getConfig('showOffButton')){
+						this.getMenu().$el.find('.offBtn').addClass('active');
+				}
 				this.getCaptionsOverlay().hide();
 				var $cc = this.embedPlayer.getInterface().find('.captionContainer' );
 				$cc.remove();
@@ -238,9 +242,11 @@
 		},
 		showCaptions: function(){
 			if( this.getConfig('displayCaptions') ) {
+				this.getMenu().clearActive();
 				this.getCaptionsOverlay().show();
 				if( this.selectedSource != null ) {
 					this.getPlayer().triggerHelper('closedCaptionsDisplayed', {language: this.selectedSource.label});
+					this.getMenu().$el.find("li").eq(this.lastActiveCaption).addClass('active');
 				}
 				if( this.getConfig('layout') == 'below' ) {
 					this.updateBelowVideoCaptionContainer();
@@ -415,6 +421,7 @@
 				if( source ){
 					this.log('autoSelectSource: select by defaultLanguageKey: ' + defaultLangKey);
 					this.selectedSource = source;
+					this.embedPlayer.getInterface().find( '[srclang='+ defaultLangKey +']').attr("default", "true");
 					return ;
 				}				
 			}
@@ -745,12 +752,14 @@
 							_this.setConfig('displayCaptions', false);
 						} else {
 							_this.setTextSource( source );
+							_this.getActiveCaption();
 						}
 					},
 					'active': ( _this.selectedSource === source && _this.getConfig( "displayCaptions" )  )
 				})
 			});
 
+			this.getActiveCaption();
 			// Add Off item as last element
 			if( this.getConfig('showOffButton') && this.getConfig('offButtonPosition') == 'last' ) {
 				this.addOffButton();
@@ -763,6 +772,9 @@
 			var _this = this;
 			this.getMenu().addItem({
 				'label': 'Off',
+				'attributes': {
+					'class': "offBtn"
+				},
 				'callback': function(){
 					_this.setConfig('displayCaptions', false);
 					// also update the cookie to "None"
@@ -786,6 +798,7 @@
 			this.selectedSource = source;
 
 			if( !this.getConfig('displayCaptions') ){
+				_this.getActiveCaption();
 				this.setConfig('displayCaptions', true );
 			}
 			// Save to cookie
@@ -794,6 +807,18 @@
 			}
 
 			this.getPlayer().triggerHelper('changedClosedCaptions', {language: this.selectedSource.label ? this.selectedSource.label : ""});
+		},
+		getActiveCaption: function(){
+			var _this = this;
+			var currentActiveCaption = this.getMenu().$el.find('.active').index();
+			if( this.lastActiveCaption === null ) {
+				_this.lastActiveCaption = currentActiveCaption;
+				return _this.lastActiveCaption;
+			}
+			if( this.lastActiveCaption != currentActiveCaption ) {
+				_this.lastActiveCaption = currentActiveCaption;
+				return _this.lastActiveCaption;
+			}
 		},
 		getComponent: function(){
 			var _this = this;

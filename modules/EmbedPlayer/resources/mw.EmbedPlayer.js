@@ -1722,7 +1722,9 @@
 
 					// reload the player
 					if (_this.autoplay && _this.canAutoPlay() ) {
-						_this.removePoster();
+						if (!_this.isAudioPlayer) {
+							_this.removePoster();
+						}
 						_this.play();
 					}
 
@@ -2979,14 +2981,14 @@
 				this.layoutBuilder.keepControlsOnScreen = true;
 				this.layoutBuilder.removeTouchOverlay();
 			}
-			this.triggerHelper('onComponentsHoverDisabled');
+			$(this).trigger('onComponentsHoverDisabled');
 		},
 		restoreComponentsHover: function () {
 			if (this.layoutBuilder) {
 				this.layoutBuilder.keepControlsOnScreen = false;
 				this.layoutBuilder.addTouchOverlay();
 			}
-			this.triggerHelper('onComponentsHoverEnabled');
+			$(this).trigger('onComponentsHoverEnabled');
 		},
 		/**
 		 * @param value string containing comma seperated tags
