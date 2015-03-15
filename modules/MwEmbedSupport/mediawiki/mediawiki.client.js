@@ -17,7 +17,7 @@
 		return ( mw.getConfig("EmbedPlayer.ForceNativeComponent") !== true && navigator.userAgent.indexOf('iPhone') != -1 && !mw.isIpad() ) || mw.isIpod();
 	};
 	mw.isIE = function () {
-		return (/msie/.test(userAgent.toLowerCase()));
+		return (/msie/.test(userAgent.toLowerCase()) || /trident/.test(navigator.userAgent.toLowerCase()));
 	};
 	mw.isIE7 = function () {
 		return (/msie 7/.test(userAgent.toLowerCase()));
@@ -28,9 +28,9 @@
 	mw.isIE9 = function () {
 		return (/msie 9/.test(userAgent.toLowerCase()));
 	};
-	mw.isIE = function () {
-		return (/msie/).test(userAgent.toLowerCase());
-	};
+    mw.isIE11 = function () {
+        return (/trident\/7.0/.test(navigator.userAgent.toLowerCase()));
+    };
 	mw.isDesktopSafari = function () {
 		return (/safari/).test(userAgent.toLowerCase()) && !mw.isMobileDevice() && !mw.isChrome();
 	};

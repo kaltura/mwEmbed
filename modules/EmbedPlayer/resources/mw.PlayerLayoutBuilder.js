@@ -410,6 +410,16 @@ mw.PlayerLayoutBuilder.prototype = {
 		return height;
 	},
 
+    getContainerHeight: function() {
+        var height = 0;
+        if(mw.isIE()){
+            height = this.getInterface()[0].clientHeight;
+        }else{
+            height = this.getInterface().height();
+        }
+        return height;
+    },
+
 	initToolTips: function(){
 		var _this = this;
 		this.embedPlayer.bindHelper( 'layoutBuildDone', function(){
