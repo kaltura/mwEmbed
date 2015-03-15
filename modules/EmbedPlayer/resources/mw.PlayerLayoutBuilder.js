@@ -433,6 +433,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			items: '[data-show-tooltip]',
 			"show": { "delay": 1000 },
 			"hide": { "duration": 0 },
+			"content": function(){return $(this).attr('title');},
 			position: {
 				my: "center bottom-10",
 				at: "center top",
