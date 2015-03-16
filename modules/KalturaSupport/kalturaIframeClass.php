@@ -541,8 +541,16 @@ class kalturaIframeClass {
 	 */
 	private function getEntryTitle()
 	{
+		try{
 		$baseEntry = $this->getEntryResult()->getResult();
-		return $baseEntry['meta']->name;
+			if($baseEntry['meta']->name){
+			return $baseEntry['meta']->name;
+			} else {
+			return "Kaltura Embed Player iFrame";
+			}
+		} catch (Exception $e){
+		return "Kaltura Embed Player iFrame";
+		}
 	}
 
 	/**
