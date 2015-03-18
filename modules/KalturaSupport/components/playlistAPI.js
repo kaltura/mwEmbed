@@ -361,7 +361,7 @@
 			mw.log("PlaylistAPI::addClipBindings");
 			// Setup postEnded event binding to play next clip (if autoContinue is true )
 			if (this.getConfig("autoContinue") == true) {
-				$(this.embedPlayer).unbind('postEnded').bind('postEnded', function () {
+				$(this.embedPlayer).unbind('postEnded' + this.bindPostFix).bind('postEnded' + this.bindPostFix, function () {
 					mw.log("PlaylistAPI:: postEnded > on inx: " + clipIndex);
 					_this.playNext();
 				});
