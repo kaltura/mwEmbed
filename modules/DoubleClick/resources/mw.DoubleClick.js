@@ -833,9 +833,10 @@
 				if ( adData) {
 					_this.isLinear = adData.linear;
 				}
+				var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
 				$("#" + _this.getAdContainerId()).show();
 				// dispatch adOpen event
-				$( _this.embedPlayer).trigger( 'onAdOpen',[adData.adId, adData.adSystem, _this.currentAdSlotType, adData.adPodInfo ? adData.adPodInfo.adPosition : 0] );
+				$( _this.embedPlayer).trigger( 'onAdOpen',[adData.adId, adData.adSystem, currentAdSlotType, adData.adPodInfo ? adData.adPodInfo.adPosition : 0] );
 
 				// check for started ad playback sequence callback
 				if( _this.startedAdPlayback ){
@@ -866,11 +867,12 @@
 			adsListener( 'STARTED', function(adEvent){
 				var ad = adEvent.getAd();
 				_this.isLinear = ad.isLinear();
+				var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
 				if( mw.isIpad() && _this.embedPlayer.getPlayerElement().paused ) {
 					_this.embedPlayer.getPlayerElement().play();
 				}
 				// trigger ad play event
-				$(_this.embedPlayer).trigger("onAdPlay",[ad.getAdId()]);
+				$(_this.embedPlayer).trigger("onAdPlay",[ad.getAdId(),ad.getAdSystem(),currentAdSlotType]);
 				// This changes player state to the relevant value ( play-state )
 				$(_this.embedPlayer).trigger("playing");
 				// Check for ad Stacking ( two starts in less then 250ms )
@@ -1018,15 +1020,14 @@
 				if (!_this.isLinear && _this.isChromeless ){
 					$(".mwEmbedPlayer").hide();
 				}
-
+				var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
+				// dispatch adOpen event
+				$( _this.embedPlayer).trigger( 'onAdOpen',[adInfo.adID, adInfo.adSystem, currentAdSlotType, adInfo.adPosition] );
 				if (!_this.isLinear){
 					_this.restorePlayer();
 					setTimeout(function(){
 						_this.embedPlayer.getPlayerElement().play();
 					},250);
-				}else{
-					// dispatch adOpen event for linear ads
-					$( _this.embedPlayer).trigger( 'onAdOpen',[adInfo.adID, adInfo.adSystem, _this.currentAdSlotType, adInfo.adPosition] );
 				}
 			},'adLoaded', true);
 

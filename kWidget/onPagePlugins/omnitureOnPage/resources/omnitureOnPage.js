@@ -302,7 +302,9 @@ kWidget.addReadyCallback( function( playerId ){
 				firstPlay = true;
 			};
 			var adOpen = function(adID, adSystem, type, adIndex){
-				_this.runMediaCommand( "openAd",adID, -1, adSystem, _this.getMediaName(), type, adIndex);
+				if ( type !== "overlay" ){
+					_this.runMediaCommand( "openAd",adID, -1, adSystem, _this.getMediaName(), type, adIndex);
+				}
 			};
 			var complete = function(adID, position, type){
 				if ( type !== "overlay" ){
