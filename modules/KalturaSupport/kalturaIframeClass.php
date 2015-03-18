@@ -536,22 +536,6 @@ class kalturaIframeClass {
 			'&iframeServer=true'; 
 	}
 
-	/**
-	 * Get entry name for iFrame title
-	 */
-	private function getEntryTitle()
-	{
-		try{
-		$baseEntry = $this->getEntryResult()->getResult();
-			if($baseEntry['meta']->name){
-			return $baseEntry['meta']->name;
-			} else {
-			return "Kaltura Embed Player iFrame";
-			}
-		} catch (Exception $e){
-		return "Kaltura Embed Player iFrame";
-		}
-	}
 
 	/**
 	 * Get the iframe css
@@ -559,7 +543,7 @@ class kalturaIframeClass {
 	function outputIframeHeadCss(){
 		return <<<HTML
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>{$this->getEntryTitle()}</title>
+	<title>Kaltura Embed Player iFrame</title>
 	<style type="text/css">
 		html,body,video {
 			width: 100%;
