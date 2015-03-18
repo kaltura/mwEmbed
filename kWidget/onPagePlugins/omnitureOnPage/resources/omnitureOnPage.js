@@ -297,7 +297,6 @@ kWidget.addReadyCallback( function( playerId ){
 				if( firstPlay ){
 					return;
 				}
-				stop();
 				_this.runMediaCommand( "close", _this.getMediaName() );
 				firstPlay = true;
 			};
