@@ -1018,13 +1018,15 @@
 				if (!_this.isLinear && _this.isChromeless ){
 					$(".mwEmbedPlayer").hide();
 				}
-				// dispatch adOpen event
-				$( _this.embedPlayer).trigger( 'onAdOpen',[adInfo.adID, adInfo.adSystem, _this.currentAdSlotType, adInfo.adPosition] );
+
 				if (!_this.isLinear){
 					_this.restorePlayer();
 					setTimeout(function(){
 						_this.embedPlayer.getPlayerElement().play();
 					},250);
+				}else{
+					// dispatch adOpen event for linear ads
+					$( _this.embedPlayer).trigger( 'onAdOpen',[adInfo.adID, adInfo.adSystem, _this.currentAdSlotType, adInfo.adPosition] );
 				}
 			},'adLoaded', true);
 
