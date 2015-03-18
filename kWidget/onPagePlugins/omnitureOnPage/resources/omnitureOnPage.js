@@ -301,12 +301,16 @@ kWidget.addReadyCallback( function( playerId ){
 				firstPlay = true;
 			};
 			var adOpen = function(adID, adSystem, type, adIndex){
-				_this.runMediaCommand( "openAd",adID, -1, adSystem, _this.getMediaName(), type, adIndex);
+				if ( type !== "overlay" ){
+					_this.runMediaCommand( "openAd",adID, -1, adSystem, _this.getMediaName(), type, adIndex);
+				}
 			};
-			var complete = function(adID, position){
-				_this.runMediaCommand( "complete",adID, position);
-				_this.runMediaCommand( "stop",adID, position);
-				_this.runMediaCommand( "close",adID);
+			var complete = function(adID, position, type){
+				if ( type !== "overlay" ){
+					_this.runMediaCommand( "complete",adID, position);
+					_this.runMediaCommand( "stop",adID, position);
+					_this.runMediaCommand( "close",adID);
+				}
 			};
 
 			this.bind('entryReady', function() {
@@ -356,8 +360,10 @@ kWidget.addReadyCallback( function( playerId ){
 			});
 			this.bind('onAdOpen', adOpen);
 			this.bind('onAdComplete', complete);
-			this.bind('onAdPlay', function(adName){
-				_this.runMediaCommand( "play",adName, 0);
+			this.bind('onAdPlay', function(adName, adSystem, type, adIndex){
+				if ( type !== "overlay" ){
+					_this.runMediaCommand( "play",adName, 0);
+				}
 			});
 		},
 
