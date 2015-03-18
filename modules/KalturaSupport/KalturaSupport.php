@@ -205,9 +205,11 @@
 			'kalturaPluginName' => 'airPlay',
 		),
 		"nativeCallout" => array(
-			'scripts' => "components/nativeCallout.js",
+			'scripts' => "components/nativeCallout/nativeCallout.js",
 			'dependencies' => 'mw.KBasePlugin',
 			'kalturaPluginName' => 'nativeCallout',
+			'styles' => "components/nativeCallout/PlayStore.css",
+            'templates' => "components/nativeCallout/nativeCallout.tmpl.html",
 		),
 		"closedCaptions" => array(
 			'scripts' => "resources/mw.ClosedCaptions.js",
