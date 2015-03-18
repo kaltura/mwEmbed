@@ -354,7 +354,7 @@ mw.KWidgetSupport.prototype = {
 				mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'application/vnd.apple.mpegurl' ).length ) {
 				// Add live stream source
 				//if we're gettting the source from manual provider(mediaProxy) - add them directly
-				if (playerData.entry.manualProvider){
+				if (playerData.entry && playerData.entry.manualProvider){
 					if (playerData.meta.hdsStreamUrl){
 						embedPlayer.mediaElement.tryAddSource($('<source />')
 							.attr({
