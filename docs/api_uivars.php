@@ -47,10 +47,16 @@ $uiVars = array(
 			),
 			'Kaltura.ForceFlashOnDesktop' => array(
 					'type' => 'String',
-					'desc' => 'If the player should be forced to use flash on desktop.',
+					'desc' => 'If the player should be forced to use flash on desktop (kdp only).',
 					'default' => 'false',
 					'example' => '../modules/KalturaSupport/tests/ForceFlashOnDesktop.html'
 			),
+			'Kaltura.ForceFlashOnDesktopSafari' => array(
+            					'type' => 'String',
+            					'desc' => 'If the player should be forced to use flash on desktop Safari.',
+            					'default' => 'false',
+            					'example' => '../modules/KalturaSupport/tests/ForceFlashOnDesktopSafari.html'
+            			),
 			'Kaltura.EnableEmbedUiConfJs' => array(
 					'type' => 'String',
 					'desc' => 'If the player should request uiConf Javascript prior to embed',
@@ -682,6 +688,12 @@ $uiVars = array(
 			'EmbedPlayer.HidePosterOnStart' => array(
 					'type' => 'Boolean',
 					'desc' => "When set to true, movie thumbnail doesn't show upon movie load (before playback starts)",
+					'default' => 'false',
+					'example' => ''
+			),
+			'EmbedPlayer.ShowOriginalPoster' => array(
+					'type' => 'Boolean',
+					'desc' => "When set to true, the thumbnail is loaded with its original size",
 					'default' => 'false',
 					'example' => ''
 			),

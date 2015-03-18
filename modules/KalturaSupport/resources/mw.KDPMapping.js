@@ -1232,6 +1232,7 @@
 							window.kalturaIframePackageData.entryResult = notificationData.mediaProxy;
 							// update plugin possition. Future refactor should treat mediaProxy as plugin  
 							embedPlayer.playerConfig.plugins['mediaProxy'] = notificationData.mediaProxy;
+							embedPlayer.playerConfig.plugins['mediaProxy'].manualProvider = true;
 						}
 						
 						// Run the embedPlayer changeMedia function
