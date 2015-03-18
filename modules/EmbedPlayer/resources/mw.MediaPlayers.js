@@ -137,8 +137,8 @@ mw.MediaPlayers.prototype = {
 		if ( mw.getConfig( 'EmbedPlayer.ForceNativeComponent' )) {
 			return mw.EmbedTypes.getNativeComponentPlayerVideo();
 		}
-
-		if ( mw.getConfig( 'EmbedPlayer.ForceKPlayer' ) && this.isSupportedPlayer( 'kplayer' ) ) {
+		if ( (mw.getConfig( 'EmbedPlayer.ForceKPlayer' ) || ( mw.getConfig( 'ForceFlashOnDesktopSafari') && mw.isDesktopSafari() ) )
+			&& this.isSupportedPlayer( 'kplayer' ) ) {
 			return mw.EmbedTypes.getKplayer();
 		}
 		if (mw.getConfig( 'EmbedPlayer.ForceSPlayer') && this.isSupportedPlayer('splayer')) {

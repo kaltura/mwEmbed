@@ -133,9 +133,9 @@
 									keepOverlay: true,
 									noButtons : true,
 									props: {
-										customAlertTitleCssClass: "liveAlertTitle",
-										customAlertMessageCssClass: "liveAlertMessage",
-										customAlertContainerCssClass: "liveAlertContainer"
+										customAlertTitleCssClass: "AlertTitleTransparent",
+										customAlertMessageCssClass: "AlertMessageTransparent",
+										customAlertContainerCssClass: "AlertContainerTransparent"
 									}
 								});
 								_this.getPlayer().disablePlayControls();
