@@ -102,7 +102,7 @@ if( ! isset( $featureList[ $featureCategoryKey ] )
 }
 // Output the title: 
 ?>
-<span id="hps-<?php echo $fullFeaturePath; ?>"></span>
+<span id="hps-<?php if( isset( $fullFeaturePath ) ){ echo $fullFeaturePath; }?>"></span>
 <script>
 	var iframeLoadCount =0; 
 	window['handleLoadedIframe'] = function( id ){

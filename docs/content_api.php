@@ -267,6 +267,9 @@ $(function(){
 
 <a name="kWidget"></a>
 <h2>kWidget Embedding API</h2>
+Embeding into <a href="http://knowledge.kaltura.com/kaltura-player-sdk-ios">Native iOS</a> 
+<br> Embeding into <a href="http://knowledge.kaltura.com/kaltura-player-sdk-android">Native Android</a>
+<br><br>
 The kWidget API is available after you include the Kaltura player library. kWidget provides embedding and basic utility functions.
 <br>Sample Kaltura player library include :
 <pre class="prettyprint linenums">

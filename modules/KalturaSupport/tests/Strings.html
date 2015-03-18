@@ -58,7 +58,7 @@
 				$('#languageList').append(
 					$('<tr>').addClass( obj.support )
 						.append(
-							$('<td>').text( key ),
+							$('<td>').append( '<a href="#' + key + '" name="' + key + '">' + key +'</a>' ),
 							$('<td>').text( obj )
 					)
 				)
