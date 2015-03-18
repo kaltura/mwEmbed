@@ -96,6 +96,9 @@
 				//add OSMF HLS Plugin if the source is HLS
 				if (_this.isHlsSource(_this.mediaElement.selectedSource) && mw.getConfig("LeadWithHLSOnFlash")) {
 					flashvars.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
+                    if(mw.getConfig("hlsSegmentBuffer")) {
+                        flashvars.KalturaHLS["segmentBuffer"] = mw.getConfig("hlsSegmentBuffer");
+                    }
 					flashvars.streamerType = _this.streamerType = 'hls';
 				}
 
@@ -419,6 +422,7 @@
 			if (data) {
 				error = data.errorId + " detail:" + data.errorDetail;
 			}
+			data.errorMessage = this.getKalturaMsg('ks-CLIP_NOT_FOUND');
 			mw.log("EmbedPlayerKPlayer::MediaError error code: " + error);
 			this.triggerHelper('embedPlayerError', [ data ]);
 		},

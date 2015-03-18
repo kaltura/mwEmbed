@@ -60,6 +60,7 @@ class EntryResult {
 		$mediaProxyOverride = json_decode(json_encode( $this->uiconf->getPlayerConfig( 'mediaProxy' ) ), true);
 		// check for user supplied mediaProxy override of entryResult
 		if( $mediaProxyOverride && isset( $mediaProxyOverride['entry'] ) ){
+			$mediaProxyOverride['entry']['manualProvider'] = 'true';
 			return $mediaProxyOverride;
 		}
 		// Check for entry or reference Id

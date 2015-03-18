@@ -214,6 +214,7 @@ mw.MediaElement.prototype = {
 		}
 		// Populate the source set from options or from playable sources: 
 		var playableSources = options.sources || this.getPlayableSources();
+		this.removeSourceFlavor(playableSources);
 		var flash_flag = false, ogg_flag = false;
 		// null out the existing selected source to autoSelect ( in case params have changed ). 
 		this.selectedSource  = null;
@@ -235,7 +236,7 @@ mw.MediaElement.prototype = {
 		$.each( playableSources, function( inx, source ){
 			if ( source.markedDefault ) {
 				mw.log( 'MediaElement::autoSelectSource: Set via marked default: ' + source.markedDefault );
-				hasDefaultSource = true
+				hasDefaultSource = true;
 				_this.setSource( source );
 				return false;
 			}
@@ -249,7 +250,7 @@ mw.MediaElement.prototype = {
 		//this array contains mimeTypes player should prefer to select, sorted by descending order
 		var typesToCheck = ['video/playreadySmooth', 'video/ism', 'video/multicast'];
 		for ( var i = 0; i < typesToCheck.length; i++ ) {
-			var matchingSources = this.getPlayableSources( typesToCheck[i] );
+			var matchingSources = this.getPlayableSources( typesToCheck[i], playableSources );
 			if ( matchingSources.length ) {
 				mw.log( 'MediaElement::autoSelectSource: Set prefered mimeType flavor ' + typesToCheck[i] );
 				mw.setConfig( 'EmbedPlayer.IgnoreStreamerType', true);
@@ -258,7 +259,8 @@ mw.MediaElement.prototype = {
 		}
 
 		// Set apple adaptive ( if available )
-		var vndSources = this.getPlayableSources('application/vnd.apple.mpegurl');
+		var vndSources = this.getPlayableSources('application/vnd.apple.mpegurl', playableSources);
+		this.removeSourceFlavor(vndSources);
 		if( vndSources.length && mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'application/vnd.apple.mpegurl' ).length ){
 			// Check for device flags:
 			var desktopVdn, mobileVdn;
@@ -314,8 +316,8 @@ mw.MediaElement.prototype = {
 
 		// If we have at least one native source, throw out non-native sources
 		// for size based source selection:
-		var nativePlayableSources = this.getNativePlayableSources();
-		
+		var nativePlayableSources = this.getNativePlayableSources(playableSources);
+		this.removeSourceFlavor(nativePlayableSources);
 		// Prefer native playback ( and prefer WebM over ogg and h.264 )
 		var namedSourceSet = {};
 		$.each( nativePlayableSources, function(inx, source ){
@@ -400,7 +402,7 @@ mw.MediaElement.prototype = {
 						return _this.setSource( namedSourceSet[ codec ][0] );
 					}
 				}
-			};
+			}
 		}
 
 		// Set h264 via native or flash fallback
@@ -431,7 +433,16 @@ mw.MediaElement.prototype = {
 			return this.selectedSource;
 		}
 
-		// Else just select the first playable source
+		// Look for the first mbr source
+		if ( !this.selectedSource ){
+			for (var i = 0; i < playableSources.length; i++ ){
+				if ( playableSources[i].tags && playableSources[i].tags.indexOf("mbr") !== -1 ){
+					return _this.setSource( playableSources[i] );
+				}
+			}
+		}
+
+		// Else just select the first playable source.
 		if ( !this.selectedSource && playableSources[0] ) {
 			mw.log( 'MediaElement::autoSelectSource: Set via first source: ' + playableSources[0].getTitle() + ' mime: ' + playableSources[0].getMIMEType() );
 			return _this.setSource( playableSources[0] );
@@ -499,8 +510,8 @@ mw.MediaElement.prototype = {
 	 * Checks if the avaliable sources include native playback
 	 * @return {Array} set of native playable sources
 	 */
-	getNativePlayableSources: function(){
-		var playableSources = this.getPlayableSources();
+	getNativePlayableSources: function(sources){
+		var playableSources = sources || this.getPlayableSources();
 		var nativePlayableSources = [];
 		$.each( playableSources, function(inx, source ){
 			var mimeType = source.mimeType;
@@ -579,20 +590,37 @@ mw.MediaElement.prototype = {
 	 *
 	 * @returns {Array} of playable media sources
 	 */
-	getPlayableSources: function (mimeFilter) {
+	getPlayableSources: function (mimeFilter, sources) {
 		var playableSources = [];
-		 for ( var i = 0; i < this.sources.length; i++ ) {
-			 if ( this.isPlayableType( this.sources[i].mimeType )
+		var sourcesList = sources || this.sources;
+		 for ( var i = 0; i < sourcesList.length; i++ ) {
+			 if ( this.isPlayableType( sourcesList[i].mimeType )
 					 &&
-				( !mimeFilter || this.sources[i].mimeType.indexOf( mimeFilter) != -1  )
+				( !mimeFilter || sourcesList[i].mimeType.indexOf( mimeFilter) != -1  )
 			){
-				 playableSources.push( this.sources[i] );
+				 playableSources.push( sourcesList[i] );
 			}
 		 };
 		 mw.log( "MediaElement::GetPlayableSources mimeFilter:" + mimeFilter + " " +
-				 playableSources.length + ' sources playable out of ' +  this.sources.length );
+				 playableSources.length + ' sources playable out of ' +  sourcesList.length );
 
 		 return playableSources;
+	},
+
+	/**
+	 * removeSourceFlavor: remove the original source from playableSources unless its the only playable source
+	 *
+	 * @pram sources {=array} the sources array from which to removed the source flavor. Send by ref and manipulated by this function.
+	 *
+	 */
+	removeSourceFlavor: function( sources ){
+		if ( sources.length > 1 ){
+			for (var i = sources.length-1; i >= 0; i--){
+				if ( sources[i].tags && sources[i].tags.indexOf("source") !== -1 ){
+					sources.splice( i, 1 );
+				}
+			}
+		}
 	}
 };
 

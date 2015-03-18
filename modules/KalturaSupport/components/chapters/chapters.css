@@ -254,6 +254,7 @@
     box-sizing: border-box;
     padding: 4px 6px;
     position: absolute;
+    filter: alpha(opacity=100);
 }
 .slideBox .slideGutter{
     display: table-cell;
@@ -497,8 +498,8 @@
     margin: 16px 0px;
 }
 #searchBox, .tt-hint{
-    margin: 12px 0px;
-    height: 16px;
+    margin: 10px 0px;
+    height: 20px;
     width: 100%;
     border: none;
     color: rgb(0, 0, 0);
@@ -507,9 +508,8 @@
     font-size: 15px;
     font-weight: 400;
     padding: 0;
-    background: rgba(255, 255, 255, 0);
     background: rgb(255, 255, 255);
-    /*filter: alpha(opacity=0);*/
+    background: rgba(255, 255, 255, 0);
     z-index: 2;
 }
 .minimized > * > * > #searchBox {

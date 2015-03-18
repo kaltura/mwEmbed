@@ -67,11 +67,15 @@
 		),
 		"dualScreen" => array(
 			'scripts' => "components/dualScreen/dualScreen.js",
-			'styles' =>  "components/dualScreen/displayControlBar.css",
-			'templates' => "components/dualScreen/displayControlBar.tmpl.html",
-			'dependencies' => array( 'mw.KBaseComponent', 'jquery.ui.draggable', 'jquery.ui.resizable' ),
+			'styles' =>  "components/dualScreen/dualScreen.css",
+			'templates' => "components/dualScreen/dualScreenControlBar.tmpl.html",
+			'dependencies' => array( 'mw.KBaseComponent', 'jquery.ui.draggable', 'jquery.ui.resizable', 'dualScreenControlBar' ),
 			'kalturaPluginName' => 'dualScreen'
 		),
+		"dualScreenControlBar" => array(
+            'scripts' => "components/dualScreen/dualScreenControlBar.js",
+            'styles' =>  "components/dualScreen/dualScreenControlBar.css"
+        ),
 		'hammerEvents' => array(
 			'scripts' => 'components/hammerEvents/hammerEvents.js',
 			'kalturaPluginName' => 'hammerEvents',

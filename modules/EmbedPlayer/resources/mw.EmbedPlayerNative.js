@@ -54,6 +54,8 @@
 		// Disable switch source callback
 		disableSwitchSourceCallback: false,
 
+		// Flag specifying if a mobile device already played. If true - mobile device can autoPlay
+		mobilePlayed: false,
 		// All the native events per:
 		// http://www.w3.org/TR/html5/video.html#mediaevents
 		nativeEvents: [
@@ -275,7 +277,7 @@
 		 * returns true if device can auto play
 		 */
 		canAutoPlay: function () {
-			return !mw.isAndroid() && !mw.isMobileChrome() && !mw.isIOS();
+			return (!mw.isAndroid() && !mw.isMobileChrome() && !mw.isIOS()) || this.mobilePlayed;
 		},
 
 		/**
@@ -426,15 +428,14 @@
 			}
 
 			// some initial calls to prime the seek:
-			if (vid.currentTime === 0) {
+			if (vid.currentTime === 0 && callbackCount === 0) {
 				// when seeking turn off preload none and issue a load call.
 				$(vid)
 					.attr('preload', 'auto')
 					[0].load();
 			}
 
-			if ( vid.readyState < 1 ) {
-				this.log("player can't seek - try to init video element ready state");
+			if ( (vid.readyState < 1) || (this.getDuration() === 0)) {
 				// if on the first call ( and video not ready issue load, play
 				if (callbackCount == 0 && vid.paused) {
 					this.stopEventPropagation();
@@ -442,12 +443,18 @@
 					var eventName = mw.isIOS() ? "canplaythrough.seekPrePlay" : "canplay.seekPrePlay";
 					vidObj.off(eventName).one(eventName, function () {
 						_this.restoreEventPropagation();
-						clearTimeout(_this.canSeekTimeout);
-						this.canSeekTimeout = null;
-						setTimeout(function(){
-							return checkVideoStateDeferred.resolve();
-						}, 10);
+						if (vid.duration > 0) {
+							_this.log("player can seek");
+							clearTimeout( _this.canSeekTimeout );
+							this.canSeekTimeout = null;
+							setTimeout( function () {
+								return checkVideoStateDeferred.resolve();
+							}, 10 );
+						} else {
+							_this.log("player can't seek - video duration not available, wait for video duration update");
+						}
 					});
+					this.log("player can't seek - try to init video element ready state");
 					vid.load();
 					vid.play();
 				}
@@ -456,6 +463,7 @@
 					this.log("Error:: with seek request, media never in ready state");
 					return checkVideoStateDeferred.resolve();
 				}
+				this.log("player can't seek - wait video element ready state");
 				this.canSeekTimeout = setTimeout(function () {
 					this.canSeekTimeout = null;
 					_this.canSeek(checkVideoStateDeferred, callbackCount + 1);
@@ -656,7 +664,15 @@
 						}
 					});
 
+					$(vid).bind('pause' + switchBindPostfix, function () {
+						_this.log("playerSwitchSource> received pause during switching, issue play to continue source switching!")
+						$(vid).unbind('pause' + switchBindPostfix);
+						vid.play();
+					});
+
 					var handleSwitchCallback = function () {
+						//Clear pause binding on switch exit in case it wasn't triggered.
+						$(vid).unbind('pause' + switchBindPostfix);
 						// restore video position ( now that we are playing with metadata size  )
 						_this.restorePlayerOnScreen();
 						// play hide loading spinner:
@@ -859,6 +875,7 @@
 								vid.play();
 							}
 						}
+						_this.mobilePlayed = true;
 						// re-start the monitor:
 						_this.monitor();
 					}
@@ -1065,27 +1082,31 @@
 
 				var canPlayBind = 'canplaythrough.nativePlayBind';
 				$(vid).unbind(canPlayBind).one(canPlayBind, function () {
-
-					var timeupdateCallback = function(callbackCount){
-						if ((Math.abs(_this.currentSeekTargetTime - _this.getPlayerElement().currentTime) > 2) &&
-							callbackCount <= 15){
-							setTimeout(function(){
-								timeupdateCallback(callbackCount++);
-							}, 100);
-						} else {
-							if (callbackCount > 15){
-								_this.log( "Error: seek target failed" );
+					if (vid.paused){
+						_this.log( "seek target verified" );
+						return waitForSeekTargetDeferred.resolve();
+					} else {
+						var timeupdateCallback = function ( callbackCount ) {
+							if ( (Math.abs( _this.currentSeekTargetTime - _this.getPlayerElement().currentTime ) > 2) &&
+								callbackCount <= 15 ) {
+								setTimeout( function () {
+									timeupdateCallback( callbackCount++ );
+								}, 100 );
 							} else {
-								_this.log( "seek target verified" );
+								if ( callbackCount > 15 ) {
+									_this.log( "Error: seek target failed" );
+								} else {
+									_this.log( "seek target verified" );
+								}
+								return waitForSeekTargetDeferred.resolve();
 							}
-							return waitForSeekTargetDeferred.resolve();
-						}
-					};
+						};
 
-					var timeupdateBind = 'timeupdate.nativePlayBind';
-					$(vid).unbind(timeupdateBind).one(timeupdateBind, function () {
-						timeupdateCallback(0);
-					});
+						var timeupdateBind = 'timeupdate.nativePlayBind';
+						$( vid ).unbind( timeupdateBind ).one( timeupdateBind, function () {
+							timeupdateCallback( 0 );
+						} );
+					}
 				});
 				return waitForSeekTargetDeferred;
 			} else {
@@ -1104,7 +1125,9 @@
 		 * Handle the native durationchange event
 		 */
 		_ondurationchange: function (event, data) {
-			this.setDuration(this.getPlayerElement().duration);
+			if (this.playerElement && !isNaN(this.playerElement.duration) && isFinite(this.playerElement.duration)) {
+				this.setDuration(this.getPlayerElement().duration);
+			}
 		},
 		/**
 		 * Handle the native paused event

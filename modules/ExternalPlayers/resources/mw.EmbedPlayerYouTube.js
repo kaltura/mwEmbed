@@ -44,6 +44,7 @@
 		},
 		init: function(){
 			var _this = this;
+			_this._playContorls = false;
 		},
 
 		onPlayerStateChange : function (event){
@@ -156,6 +157,7 @@
 			window['onIframePlayerReady'] = function( event ){
 				window['iframePlayer'] = event.target;
 				_this.setDuration();
+				_this._playContorls = true;
 				//autoplay
 				if(mw.getConfig('autoPlay')){
 					_this.play();
@@ -182,6 +184,7 @@
 				var flashPlayer = $( '#' + playerIdStr )[0];
 				flashPlayer.addEventListener("onStateChange", "onPlayerStateChange");
 				flashPlayer.addEventListener("onError", "onError");
+				_this._playContorls = true;
 				//autoplay
 				if(mw.getConfig('autoPlay')){
 					_this.play();
@@ -450,19 +453,20 @@
 		 */
 		play: function(){
 			var _this = this;
-			if(this.hasEnded){
-				if (mw.isMobileDevice()){
-					$(".largePlayBtn").hide();
-					$(".mwEmbedPlayer").hide();
+			if(this._playContorls) {
+				if (this.hasEnded) {
+					if (mw.isMobileDevice()) {
+						$(".largePlayBtn").hide();
+						$(".mwEmbedPlayer").hide();
+					}
 				}
-			}
-			if( this.parent_play() ){
-				if(_this.getPlayerElement())
-				{
-					_this.getPlayerElement().playVideo();
+				if (this.parent_play()) {
+					if (_this.getPlayerElement()) {
+						_this.getPlayerElement().playVideo();
+					}
 				}
+				this.monitor();
 			}
-			this.monitor();
 		},
 
 		monitor: function(){
@@ -498,11 +502,11 @@
 		 * @param {Float}
 		 *			percentage Percentage of total stream length to seek to
 		 */
-		seek : function( percentage ){
+		seek : function( seekTime ){
 			this.seeking = true;
 			$( this ).trigger( 'seeking' );
 			var yt = this.getPlayerElement();
-			yt.seekTo( yt.getDuration() * percentage );
+			yt.seekTo( seekTime );
 			this.layoutBuilder.onSeek();
 			// Since Youtube don't have a seeked event on mobile devices, we must turn off the seeking flag on mobile devices
 			if ( mw.isMobileDevice() ){
@@ -521,7 +525,9 @@
 //			this.playerElement.sendNotification('changeVolume', percentage);
 //		}
 			var yt = this.getPlayerElement();
-			yt.setVolume(percentage*100);
+			if(yt.setVolume) {
+				yt.setVolume(percentage * 100);
+			}
 		},
 
 		/**

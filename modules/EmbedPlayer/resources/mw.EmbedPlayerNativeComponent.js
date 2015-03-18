@@ -65,10 +65,13 @@
 			'durationchange',
 			'timeupdate',
 			'progress',
+			'bufferchange',
 			'enterfullscreen',
 			'exitfullscreen',
 			'chromecastDeviceConnected',
-			'chromecastDeviceDisConnected'
+			'chromecastDeviceDisConnected',
+			'textTracksReceived',
+			'loadEmbeddedCaptions'
 		],
 
 		// Native player supported feature set
@@ -361,6 +364,22 @@
 			return true;
 		},
 
+		_onloadEmbeddedCaptions: function (event, data) {
+
+			this.triggerHelper('onTextData', data);
+
+			var caption = {
+				source: {
+					srclang: data.language
+				},
+				capId: data.trackid,
+				caption: {
+					content: data.text
+				}
+			};
+			this.triggerHelper('onEmbeddedData', caption);
+		},
+
 		_ondurationchange: function () {
 			mw.log( "EmbedPlayerNativeComponent:: onDurationChange::" + this.getPlayerElement().duration );
 		},
@@ -492,9 +511,16 @@
 					this.showProgressSpinner = false;
 					this.hideSpinner();
 				}
+
 			}
 		},
 
+		_ontextTracksReceived: function (event, data) {
+			this.unbindHelper('changedClosedCaptions').bindHelper('changedClosedCaptions',function(event, selection){
+				this.getPlayerElement().attr('textTrackSelected', selection);
+			});
+			this.triggerHelper('textTracksReceived', data);
+		},
 		/*
 		 * Write the Embed html to the target
 		 */

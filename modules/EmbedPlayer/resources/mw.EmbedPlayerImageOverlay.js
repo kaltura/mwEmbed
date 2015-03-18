@@ -167,8 +167,8 @@
 		*
 		* @param {Float} seekPercent Percentage to seek into the virtual player
 		*/
-		seek: function( seekPercent ) {
-			this.lastPauseTime = seekPercent * this.getDuration();
+		seek: function( seekTime ) {
+			this.lastPauseTime = seekTime;
 			this.seeking = false;
 			// start seeking:
 			$( this ).trigger( 'seeking' );

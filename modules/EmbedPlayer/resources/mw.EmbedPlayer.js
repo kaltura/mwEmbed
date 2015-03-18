@@ -1041,7 +1041,8 @@
 				seekTime = 0;
 			}
 
-			if (seekTime > this.getDuration()) {
+			//Only validate seek if duration already updated from player element
+			if (this.getDuration() > 0 && seekTime > this.getDuration()) {
 				seekTime = this.getDuration();
 			}
 
@@ -1198,30 +1199,13 @@
 					// Update the clip done playing count ( for keeping track of replays )
 					_this.donePlayingCount++;
 					if (_this.loop) {
-						// Prevent the native "onPlay" event from propagating that happens when we rewind:
-						this.stopEventPropagation();
 						// Rewind the player to the start:
 						// NOTE: Setting to 0 causes lags on iPad when replaying, thus setting to 0.01
 						var startTime = 0.01;
 						if (this.startOffset) {
 							startTime = this.startOffset;
 						}
-						_this.unbindHelper("seeked.loop").bindOnceHelper("seeked.loop", function () {
-							// Set to stopped state:
-							_this.stop();
-
-							// Restore events after we rewind the player
-							mw.log("EmbedPlayer::onClipDone:Restore events after we rewind the player");
-							_this.restoreEventPropagation();
-
-							// synchronize playing with events listeners
-							setTimeout(function () {
-								_this.play();
-							}, 100);
-
-							return;
-						});
-						this.seek(startTime);
+						this.seek(startTime, false);
 					} else {
 						// make sure we are in a paused state.
 						_this.stop();
@@ -1404,6 +1388,7 @@
 				if (mw.getConfig('EmbedPlayer.IsIframeServer')) {
 					$(window).off("debouncedresize").on("debouncedresize", function () {
 						mw.log('debouncedresize:: call doUpdateLayout');
+						_this.triggerHelper('resizeEvent');
 						_this.doUpdateLayout();
 					});
 				}
@@ -1736,8 +1721,10 @@
 					_this.changeMediaStarted = false;
 
 					// reload the player
-					if (_this.autoplay) {
-						_this.removePoster();
+					if (_this.autoplay && _this.canAutoPlay() ) {
+						if (!_this.isAudioPlayer) {
+							_this.removePoster();
+						}
 						_this.play();
 					}
 
@@ -2192,9 +2179,10 @@
 		inPreSequence: false,
 		replayEventCount: 0,
 		play: function () {
-			if (this.currentState == "end") {
-				// prevent getting another clipdone event on replay
-				this.seek(0.01, false);
+			if (this.seeking){
+				this.log("Play while seeking, will play after seek!");
+				this.stopAfterSeek = false;
+				return false;
 			}
 			var _this = this;
 			var $this = $(this);
@@ -2241,6 +2229,11 @@
 					mw.log("EmbedPlayer:: isInSequence, do NOT play content");
 					return false;
 				}
+			}
+
+			if (this.currentState == "end") {
+				// prevent getting another clipdone event on replay
+				this.seek(0.01, false);
 			}
 
 			// Remove any poster div ( that would overlay the player )
@@ -2988,14 +2981,14 @@
 				this.layoutBuilder.keepControlsOnScreen = true;
 				this.layoutBuilder.removeTouchOverlay();
 			}
-			this.triggerHelper('onComponentsHoverDisabled');
+			$(this).trigger('onComponentsHoverDisabled');
 		},
 		restoreComponentsHover: function () {
 			if (this.layoutBuilder) {
 				this.layoutBuilder.keepControlsOnScreen = false;
 				this.layoutBuilder.addTouchOverlay();
 			}
-			this.triggerHelper('onComponentsHoverEnabled');
+			$(this).trigger('onComponentsHoverEnabled');
 		},
 		/**
 		 * @param value string containing comma seperated tags

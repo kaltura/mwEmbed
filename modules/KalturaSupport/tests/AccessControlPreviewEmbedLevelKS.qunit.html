@@ -79,5 +79,24 @@ function jsKalturaPlayerTest( videoId ){
 		});
 	});
 </script>
+<h3>Example getting KS via service and used in embed code:</h3>
+<pre class="prettyprint linenums">
+// for example ks service API call see: 
+// https://github.com/kaltura/mwEmbed/blob/master/modules/KalturaSupport/apiServices/mweApiKSTest.php
+$.getJSON( 'YOUR_ENTITLEMENT_CHECK_SERVICE__&entry_id=1_20x0ca3l&wid=_243342', function( ksJSON ){
+	if( ! ksJSON || ! ksJSON.ks ){
+		$('#playerTarget').text( 'You may not have permission to view this content');
+		return ;
+	}
+	kWidget.embed( 'playerTarget', {
+		'wid' : '_243342',
+		'uiconf_id' : '8145862',
+		'entry_id' : '1_20x0ca3l',
+		'flashvars':{
+			'ks' : ksJSON.ks
+		}
+	});
+});
+</pre>
 </body>
 </html>
