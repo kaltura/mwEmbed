@@ -84,6 +84,10 @@
 		},
 		getComponent: function() {
 			var _this = this;
+			var eventName = 'click';
+			if (mw.isTouchDevice()){
+				eventName = 'touchstart';
+			}
 			if( !this.$el ) {
 				this.$el = $( '<a />' )
 							.attr( {
@@ -94,9 +98,9 @@
 							} )
 							.hide()
 							// Add play hook:
-							.click( function(e) {
+							.on(eventName, function(e) {
 								_this.clickButton(e);
-							} );		
+							} );
 			}
 			return this.$el;
 		}

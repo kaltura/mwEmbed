@@ -259,7 +259,7 @@
 			if( !this.canSeek ) {
 				return false;
 			}
-			this.getPlayer().seek(1);
+			this.getPlayer().seek(this.getPlayer().getDuration());
 		},
 		getOpenedMenu: function(){
 			var openedMenu = null;

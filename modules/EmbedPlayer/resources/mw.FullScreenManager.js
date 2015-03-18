@@ -103,16 +103,16 @@ mw.FullScreenManager.prototype = {
 		this.verticalScrollPosition = (doc.all ? doc.scrollTop : context.pageYOffset);
 		// Add fullscreen class to interface:
 		$interface.addClass( 'fullscreen' );
-
-		// Check for native support for fullscreen and we are in an iframe server
-		if( !this.fullScreenApiExcludes() && !mw.isAndroidChromeNativeBrowser() && screenfull && screenfull.enabled(doc) ) {
-			var fullscreenHeight = null;
-			var fsTarget = this.getFsTarget();
+		var callFullScreenAPI = function() {
+			if( !(screenfull && screenfull.enabled(doc)) ){
+				return;
+			};
+			var fsTarget = _this.getFsTarget();
 			var escapeFullscreen = function( event ) {
 				// grab the correct document target to check for fullscreen
 				var doc = ( mw.getConfig('EmbedPlayer.IsIframeServer' ) && mw.getConfig('EmbedPlayer.IsFriendlyIframe'))?
-						window['parent'].document:
-						window.document;
+					window['parent'].document:
+					window.document;
 				if ( ! screenfull.isFullscreen(doc) ) {
 					_this.restoreWindowPlayer();
 				}
@@ -123,7 +123,14 @@ mw.FullScreenManager.prototype = {
 			doc.addEventListener(screenfull.raw.fullscreenchange, escapeFullscreen );
 			// Make the iframe fullscreen:
 			screenfull.request(fsTarget, doc);
+		};
+		// Check for native support for fullscreen and we are in an iframe server
+		if( !this.fullScreenApiExcludes() && !mw.isAndroidChromeNativeBrowser() && screenfull && screenfull.enabled(doc) ) {
+			callFullScreenAPI();
 		} else {
+			if(!this.fullScreenApiExcludes() && mw.isAndroidChromeNativeBrowser()){
+				callFullScreenAPI();
+			}
 			// Check for hybrid html controls / native fullscreen support:
 			var vid = this.embedPlayer.getPlayerElement();
 			if( mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen')

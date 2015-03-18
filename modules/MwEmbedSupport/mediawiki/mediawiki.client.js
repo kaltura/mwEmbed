@@ -88,7 +88,7 @@
 		return (mw.isAndroid() && !mw.isFirefox() && !mw.isChrome());
 	};
 	mw.isAndroidChromeNativeBrowser = function () {
-		return ( mw.isAndroid() && mw.isChrome() && userAgent.indexOf('Version/') != -1 )
+		return ( mw.isAndroid() && mw.isChrome() );
 	};
 	mw.isMobileChrome = function () {
 		return ( mw.isAndroid4andUp()

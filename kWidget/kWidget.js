@@ -245,7 +245,10 @@
 			// Support closing menu inside the player
 			if (!mw.getConfig('EmbedPlayer.IsIframeServer')) {
 				document.onclick = function () {
-					player.sendNotification('onFocusOutOfIframe');
+					//If player is destroyed don't send notification
+					if (!_this.destroyedWidgets[ player.id ]) {
+						player.sendNotification( 'onFocusOutOfIframe' );
+					}
 				};
 			}
 			// Check for proxied jsReadyCallback:

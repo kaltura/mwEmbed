@@ -11,14 +11,14 @@ class mweApiKSTest {
 	function run(){
 		global $wgKalturaAdminSecret;
 		// validate params ( hard coded to test a particular test file / account )
-		if( !isset( $_REQUEST['wid'] ) ||  $_REQUEST['wid'] != '_929011' ){
+		if( !isset( $_REQUEST['wid'] ) ||  $_REQUEST['wid'] != '_243342' ){
 			$this->outputError( 'bad widget param');
 		}
-		$this->partnerId = '929011';
-		if( !isset( $_REQUEST['entry_id'] ) || $_REQUEST['entry_id'] != '1_4f9zv9fu' ){
+		$this->partnerId = '243342';
+		if( !isset( $_REQUEST['entry_id'] ) || $_REQUEST['entry_id'] != '1_20x0ca3l' ){
 			$this->outputError( 'bad entry_id param');
 		}
-		$this->entryId = '1_4f9zv9fu';
+		$this->entryId = '1_20x0ca3l';
 		
 		// load library and get ks for given entry:
 		if( !isset( $wgKalturaAdminSecret ) || ( $wgKalturaAdminSecret == null ) ) {

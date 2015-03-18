@@ -1125,7 +1125,9 @@
 		 * Handle the native durationchange event
 		 */
 		_ondurationchange: function (event, data) {
-			this.setDuration(this.getPlayerElement().duration);
+			if (this.playerElement && !isNaN(this.playerElement.duration) && isFinite(this.playerElement.duration)) {
+				this.setDuration(this.getPlayerElement().duration);
+			}
 		},
 		/**
 		 * Handle the native paused event

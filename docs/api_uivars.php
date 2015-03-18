@@ -691,6 +691,12 @@ $uiVars = array(
 					'default' => 'false',
 					'example' => ''
 			),
+			'EmbedPlayer.ShowOriginalPoster' => array(
+					'type' => 'Boolean',
+					'desc' => "When set to true, the thumbnail is loaded with its original size",
+					'default' => 'false',
+					'example' => ''
+			),
 			/*'EmbedPlayer.SourceAttributes' => array(
 			 'type' => '',
 					'desc' => "",

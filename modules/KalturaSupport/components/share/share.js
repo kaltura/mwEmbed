@@ -30,42 +30,48 @@
 					"icon": "",
 					"cssClass": "icon-share-facebook",
 					"template": "https://www.facebook.com/sharer/sharer.php?u={share.shareURL}",
-					"redirectUrl": 'fb://feed/'
+					"redirectUrl": 'fb://feed/',
+					"barColor": '#394F8F'
 				},
 				"twitter": {
 					"name": "Twitter",
 					"icon": "",
 					"cssClass": "icon-share-twitter",
 					"template": "https://twitter.com/share?url={share.shareURL}",
-					"redirectUrl": 'https://twitter.com/intent/tweet/complete?,https://twitter.com/intent/tweet/update'
+					"redirectUrl": 'https://twitter.com/intent/tweet/complete?,https://twitter.com/intent/tweet/update',
+					"barColor": '#39BAB6'
 				},
 				"googleplus": {
 					"name": "Google+",
 					"icon": "",
 					"cssClass": "icon-share-google",
 					"template": "https://plus.google.com/share?url={share.shareURL}",
-					"redirectUrl": 'https://plus.google.com/app/basic/stream'
+					"redirectUrl": 'https://plus.google.com/app/basic/stream',
+					"barColor": '#CB2726'
 				},
 				"email": {
 					"name": "Mail",
 					"icon": "",
 					"cssClass": "icon-share-email",
 					"template": "mailto:?subject=Check out {mediaProxy.entry.name}&body=Check out {mediaProxy.entry.name}: {share.shareURL}",
-					"redirectUrl": ''
+					"redirectUrl": '',
+					"barColor": '#394F8F'
 				},
 				"linkedin": {
 					"name": "LinkedIn",
 					"icon": "",
 					"cssClass": "icon-share-linkedin",
 					"template": "http://www.linkedin.com/shareArticle?mini=true&url={share.shareURL}",
-					"redirectUrl": ''
+					"redirectUrl": '',
+					"barColor": '#222222'
 				},
 				"sms": {
 					"name": "Message",
 					"icon": "",
 					"cssClass": "icon-share-sms",
 					"template": "Check out {mediaProxy.entry.name}: {share.shareURL}",
-					"redirectUrl": ''
+					"redirectUrl": '',
+					"barColor": '#394F8F'
 				}
 			},
 			embedCodeTemplate: '<iframe src="//cdnapi.kaltura.com/p/{mediaProxy.entry.partnerId}/sp/{mediaProxy.entry.partnerId}00/embedIframeJs/uiconf_id/{configProxy.kw.uiConfId}/partner_id/{mediaProxy.entry.partnerId}?iframeembed=true&playerId={configProxy.targetId}&entry_id={mediaProxy.entry.id}&flashvars[streamerType]=auto" width="560" height="395" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0"></iframe>',
@@ -227,14 +233,14 @@
 				});
 			}
 			// add bindings
-			var offsetContainerHeight = this.getPlayer().getVideoHolder().width() < 400 ? "18px" : "43px";
+			var offsetContainerHeight = this.getPlayer().getVideoHolder().width() < 400 ? "24px" : "32px";
 			$(".share-input").on("click", function(){
 				if ( $(".share-offset-container").css("display") === "none" ){
 					$(".embed-offset-container").hide();
 					$(".embed-container>.share-copy-btn").hide();
-					$(".share-offset-container").height(0).show().animate({ height: offsetContainerHeight }, 300 ,function(){
-						$(".share-container>.share-copy-btn").fadeIn(300);
-						$(".share-offset-container").fadeIn(300);
+					$(".share-offset-container").height(0).show().animate({ height: offsetContainerHeight }, 150 ,function(){
+						//$(".share-container>.share-copy-btn").fadeIn(300);
+						$(".share-offset-container").fadeIn(150);
 						$(".share-icons-container").hide().show(); // force refresh for IE8 :(
 					});
 				}
@@ -245,9 +251,9 @@
 				if ( $(".embed-offset-container").css("display") === "none" ){
 					$(".share-offset-container").hide();
 					$(".share-container>.share-copy-btn").hide();
-					$(".embed-offset-container").height(0).show().animate({ height: offsetContainerHeight }, 300 ,function(){
-						$(".embed-container>.share-copy-btn").fadeIn(300);
-						$(".embed-offset-container").fadeIn(300);
+					$(".embed-offset-container").height(0).show().animate({ height: offsetContainerHeight }, 150 ,function(){
+						//$(".embed-container>.share-copy-btn").fadeIn(300);
+						$(".embed-offset-container").fadeIn(150);
 						$(".share-icons-container").hide().show(); // force refresh for IE8 :(
 					});
 				}
@@ -316,7 +322,7 @@
 		restrictNPTFields: function(){
 			$(".share-offset").keydown(function (e) {
 				// Allow: backspace, delete, tab, escape, enter and :
-				if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 186]) !== -1 ||
+				if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 186, 59]) !== -1 ||
 					// Allow: Ctrl+A
 					(e.keyCode == 65 && e.ctrlKey === true) ||
 					// Allow: home, end, left, right
@@ -391,7 +397,7 @@
 				var id = $(e.target).attr('id');
 				var shareParams = {
 					actionType: 'share',
-					id: id,
+					id: id[0].toUpperCase() + id.substr(1),
 					sharedLink: this.getConfig("shareURL"),
 					shareNetwork: networks[id],
 					thumbnail: this.getThumbnailURL(),
