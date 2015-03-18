@@ -407,6 +407,7 @@
 		pauseAd: function (isLinear) {
 			var _this = this;
 			this.embedPlayer.paused = true;
+			$(this.embedPlayer).trigger('onpause');
 			var classes = "adCover";
 			if (mw.isIE8()){
 				classes += " adCoverIE8";
