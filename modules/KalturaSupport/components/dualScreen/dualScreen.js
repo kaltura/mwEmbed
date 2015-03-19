@@ -205,7 +205,7 @@
 								}
 							},
 							'hide': {
-								name: 'SV',
+								name: 'hide',
 								action: function (  ) {
 									_this.disableMonitorFeatures( );
 									_this.hideMonitor( _this.getSecondMonitor().obj );
@@ -232,7 +232,7 @@
 								}
 							},
 							'hide': {
-								name: 'SV',
+								name: 'hide',
 								action: function () {
 									_this.disableSideBySideView();
 									_this.hideMonitor( _this.getSecondMonitor().obj );
@@ -248,7 +248,7 @@
 						}
 					},
 					{
-						'name': 'SV',
+						'name': 'hide',
 						'events': {
 							'PiP': {
 								name: 'PiP',
@@ -258,7 +258,7 @@
 								}
 							},
 							'switchView': {
-								name: 'SV',
+								name: 'hide',
 								action: function () {
 									_this.showMonitor( _this.getSecondMonitor().obj );
 									_this.hideMonitor( _this.getFirstMonitor().obj );
@@ -282,7 +282,7 @@
 						'initial': true,
 						'events': {
 							'hide': {
-								name: 'SV',
+								name: 'hide',
 								action: function (  ) {
 									_this.disableMonitorFeatures();
 									_this.hideMonitor( _this.getSecondMonitor().obj );
@@ -291,7 +291,7 @@
 						}
 					},
 					{
-						'name': 'SV',
+						'name': 'hide',
 						'events': {
 							'PiP': {
 								name: 'PiP',
@@ -306,7 +306,7 @@
 								}
 							},
 							'switchView': {
-								name: 'SV',
+								name: 'hide',
 								action: function () {
 									_this.showMonitor( _this.getSecondMonitor().obj );
 									_this.hideMonitor( _this.getFirstMonitor().obj );
@@ -484,7 +484,7 @@
 				var minimizeSecondDisplay = function(){
 					if (!secondDisplayMinimized) {
 						secondDisplayMinimized = true;
-						if (!(_this.getPrimary().isMain && _this.fsm.getStatus() === "SV")) {
+						if (!(_this.getPrimary().isMain && _this.fsm.getStatus() === "hide")) {
 							fsmState.push( _this.fsm.getStatus() );
 							if ( !_this.getPrimary().isMain ) {
 								fsmState.push( 'switchView' );
