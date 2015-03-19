@@ -37,7 +37,12 @@
 				'mainViewDisplay': 2, // 1 - Main stream, 2 - Presentation
 				'fullScreenDisplayOnly': false,
 				'minDisplayWidth': 0,
-				'minDisplayHeight': 0
+				'minDisplayHeight': 0,
+				"enableKeyboardShortcuts": true,
+				"keyboardShortcutsMap": {
+					"nextState": 81,   // Add q Sign for next state
+					"switchView": 87   // Add w Sigh for switch views
+				}
 			},
 			monitor: {},
 			cuePoints: [],
@@ -563,6 +568,35 @@
 				});
 				this.bind("postDualScreenTransition", function () {
 					_this.applyIntrinsicAspect();
+				});
+				if (this.getConfig('enableKeyboardShortcuts')) {
+					this.bind('addKeyBindCallback', function (e, addKeyCallback) {
+						_this.addKeyboardShortcuts(addKeyCallback);
+					});
+				}
+			},
+			addKeyboardShortcuts: function (addKeyCallback) {
+				var _this = this;
+				// Add q Sign for next state
+				addKeyCallback(this.getConfig("keyboardShortcutsMap").nextState, function () {
+					var action;
+					switch(_this.fsm.getStatus())
+					{
+						case "PiP":
+							action = "hide";
+							break;
+						case "hide":
+							action = "SbS";
+							break;
+						case "SbS":
+							action = "PiP";
+							break;
+					}
+					_this.getPlayer().triggerHelper('dualScreenStateChange', action);
+				});
+				// Add w Sigh for switch view
+				addKeyCallback(this.getConfig("keyboardShortcutsMap").switchView, function () {
+					_this.getPlayer().triggerHelper('dualScreenStateChange', "switchView");
 				});
 			},
 			initDisplay: function(){
