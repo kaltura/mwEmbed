@@ -10,7 +10,12 @@
 			'fullScreenDisplayOnly': false,
 			'minDisplayWidth': 0,
 			'minDisplayHeight': 0,
-			'toggleBtnLabel': null
+			'toggleBtnLabel': null,
+			enableKeyboardShortcuts: true,
+			"keyboardShortcutsMap": {
+				"open": "ctrl+79",   // Add ctrl+o Sign for next stream
+				"close": "ctrl+alt+79"   // Add ctrl+alt+o Sigh for previous stream
+			}
 		},
 		enabled: true,
 		render: true,
@@ -126,6 +131,25 @@
 					_this.keepOnScreen = false;
 				});
 			}
+
+			//key bindings
+			//shift+o (open) shift+cmd+o (to close)
+			if (this.getConfig('enableKeyboardShortcuts')) {
+				this.bind('addKeyBindCallback', function (e, addKeyCallback) {
+					_this.addKeyboardShortcuts(addKeyCallback);
+				});
+			}
+		},
+		addKeyboardShortcuts: function (addKeyCallback) {
+			var _this = this;
+			// Add ctrl+O for open side bar
+			addKeyCallback(this.getConfig("keyboardShortcutsMap").open, function () {
+				_this.openSideBar();
+			});
+			// Add ctrl+Alt+O for close side bar
+			addKeyCallback(this.getConfig("keyboardShortcutsMap").close, function () {
+				_this.closeSideBar();
+			});
 		},
 		show: function(){
 			if (this.enabled && this.render) {
