@@ -853,7 +853,8 @@
 			applyIntrinsicAspect: function(){
 				// Check if a image thumbnail is present:
 				var $img = this.getComponent().find( '.imagePlayer' );
-				if( $img.length ){
+				//Make sure both image player and display are initialized
+				if( $img.length && this.displayInitialized){
 					var pHeight = this.getSecondary().obj.height();
 					// Check for intrinsic width and maintain aspect ratio
 					var pWidth = parseInt( $img.naturalWidth() / $img.naturalHeight() * pHeight, 10);
