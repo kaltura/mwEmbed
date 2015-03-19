@@ -441,7 +441,9 @@ mw.VastAdParser = {
 		// check for empty impression, return empty text instead of trying to decode
 		var urlText = $.trim( $( node ).text() );
 		try {
-			urlText = decodeURIComponent( urlText )
+			if( $(node)[0].nodeName != "ClickThrough" ){
+				urlText = decodeURIComponent(urlText)
+			}
 		} catch( e ){
 			mw.log("BastError url includes non-utf chars? ")
 		}
