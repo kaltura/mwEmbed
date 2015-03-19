@@ -327,15 +327,6 @@ mw.EmbedPlayerNative = {
 				}, 10 );
 			};
 		}
-
-		// Some mobile devices ( iOS need a load call before play will work )
-		// support is only for iOS5 and upper, this fix is relevant only for iPad iOS5
-		// other mobile devices ( android 4, break if we call load at play time )
-		if ( !_this.loop &&
-			( mw.isIphone() || ( mw.isIpad() && mw.isIOS5() ) ) ) {
-			mw.log("EmbedPlayerNative::postEmbedActions: issue .load() call");
-			vid.load();
-		}
 	},
 	/**
 	 * Apply media element bindings
@@ -1075,13 +1066,7 @@ mw.EmbedPlayerNative = {
 					}
 					// issue a play request
 					if( !_this.playing ) {
-						if( mw.isIOS8() && mw.isIphone() ) {
-							setTimeout( function() {
-								vid.play();
-							}, 0);
-						} else {
-							vid.play();
-						}
+						vid.play();
 					}
 					// re-start the monitor:
 					_this.monitor();
@@ -1332,7 +1317,7 @@ mw.EmbedPlayerNative = {
 			this.playInterfaceUpdate();
 			this.absoluteStartPlayTime = new Date().getTime();
 			// We need first play event for analytics purpose
-			if( this.firstPlay && this._propagateEvents  && !this.inPreSequence()) {
+			if( this.firstPlay && this._propagateEvents  && !this.inPreSequence) {
 				this.firstPlay = false;
 				this.triggerHelper( 'firstPlay' );
 			}
