@@ -332,15 +332,6 @@
 					}, 10);
 				};
 			}
-
-			// Some mobile devices ( iOS need a load call before play will work )
-			// support is only for iOS5 and upper, this fix is relevant only for iPad iOS5
-			// other mobile devices ( android 4, break if we call load at play time )
-			if (!_this.loop &&
-				( mw.isIphone() || ( mw.isIpad() && mw.isIOS5() ) )) {
-				this.log("postEmbedActions: issue .load() call");
-				vid.load();
-			}
 		},
 		/**
 		 * Apply media element bindings
@@ -866,14 +857,8 @@
 							$(_this.getPlayerElement()).attr('preload', "auto");
 						}
 						// issue a play request
-						if (!_this.playing) {
-							if (mw.isIOS8() && mw.isIphone()) {
-								setTimeout(function () {
-									vid.play();
-								}, 0);
-							} else {
-								vid.play();
-							}
+						if ( !_this.playing ) {
+							vid.play();
 						}
 						_this.mobilePlayed = true;
 						// re-start the monitor:
