@@ -176,7 +176,9 @@
 		getVideoHolderHeight: function () {
 			return this.embedPlayer.getVideoHolder().height();
 		},
-
+		getControlBarHeight: function () {
+			return this.embedPlayer.getControlBarContainer().height();
+		},
 		stringConvertion: function (str) {
 			var value = parseFloat(str);
 
