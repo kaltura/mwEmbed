@@ -57,10 +57,12 @@
             var kdpPath = mwEmbedPath + 'modules/EmbedPlayer/binPlayers/kaltura-player/kdp3.swf';
             // var kdpPath = "http://localhost/chromeless-kdp/KDP3/bin-debug/kdp3.swf";
 
-            // set interval in order to try to detect flash player (run 3 times)
-            _this.detectFlashInterval = setInterval(function(){
-                _this.detectFlash(failCallback);
-            }, 500);
+            // check for ForceFlashOnDesktopSafari and if so set interval in order to try to detect flash player (run 3 times)
+            if(mw.getConfig("ForceFlashOnDesktopSafari")) {
+                _this.detectFlashInterval = setInterval(function () {
+                    _this.detectFlash(failCallback);
+                }, 500);
+            }
 
             window[this.jsReadyFunName] = function( playerId ){
                 if (!_this.initialized) {
