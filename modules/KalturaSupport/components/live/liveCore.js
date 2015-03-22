@@ -23,7 +23,7 @@
 			hideOfflineIndicators: false,
 			//hide currentTimeLabel when livestream is not DVR
 			hideCurrentTimeLabel: true,
-            //show thumbnail at the end of a livestream
+            //show thumbnail if livestream becomes offline
             showThumbnailWhenOffline : false
 		},
 
