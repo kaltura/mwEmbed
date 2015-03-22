@@ -120,7 +120,7 @@
 					//sometimes offline is only for a second and the message is not needed..
 					setTimeout( function() {
 						if ( !_this.onAirStatus ) {
-                            if( _this.getConfig('showThumbnailWhenOffline' )){
+                            if( _this.getConfig('showThumbnailWhenOffline') ){
                                 _this.addPoster();
                             }
 							//if we already played once it means stream data was loaded. We can continue playing in "VOD" mode
