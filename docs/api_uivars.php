@@ -321,7 +321,13 @@ $uiVars = array(
 				'default' => 'false',
 				'availability' => 'kdp',
 				'example' => ''
-			)
+			),
+			'liveCore.showThumbnailWhenOffline' => array(
+            				'type' => 'Boolean',
+            				'desc' => 'Flag indicating whether the the default thumbnail should be shown if live stream becomes offline',
+            				'default' => 'false',
+            				'example' => ''
+            )
 		)
 	),
 	'layout' => array(
