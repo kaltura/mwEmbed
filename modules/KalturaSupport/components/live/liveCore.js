@@ -22,7 +22,9 @@
 			//hide live indicators when playing offline from DVR
 			hideOfflineIndicators: false,
 			//hide currentTimeLabel when livestream is not DVR
-			hideCurrentTimeLabel: true
+			hideCurrentTimeLabel: true,
+            //show thumbnail at the end of a livestream
+            showThumbnailWhenOffline : false
 		},
 
 		/**
@@ -42,6 +44,8 @@
 		 */
 		liveStreamStatusUpdated : false,
 
+        thumbUrl: null,
+
 		setup: function() {
 			this.addPlayerBindings();
 			this.extendApi();
@@ -57,8 +61,37 @@
 			}
 		},
 
+        getThumbSlicesUrl: function(){
+            // check for config override:
+            if (mw.getConfig('thumbnailUrl')) {
+                return embedPlayer.evaluate(mw.getConfig('thumbnailUrl'));
+            }
+            // else get thumb slices from helper:
+            return kWidget.getKalturaThumbUrl(
+                {
+                    url: this.getPlayer().evaluate('{mediaProxy.entry.thumbnailUrl}'),
+                    width: this.getPlayer().getWidth(),
+                    height: this.getPlayer().getHeight(),
+                    partner_id: this.getPlayer().kpartnerid,
+                    uiconf_id: this.getPlayer().kuiconfid,
+                    entry_id: this.getPlayer().kentryid,
+                }
+            );
+        },
 
-		addPoster: function(){
+		addPoster: function(thumbnail){
+            if(thumbnail){
+                // Update thumbnail
+                //if(!this.thumbUrl)
+                this.thumbUrl = this.getThumbSlicesUrl();
+                console.log("3! ------------------------------------------------------------------> thumbUrl = "+ thumbUrl);
+                if( this.getPlayer().getFlashvars( 'loadThumbnailWithKs' ) === true ) {
+                    this.thumbUrl += '?ks=' + this.getPlayer().getFlashvars('ks');
+                }
+
+                var alt = gM('mwe-embedplayer-video-thumbnail-for', embedPlayer.evaluate('{mediaProxy.entry.name}'));
+                this.getPlayer().updatePoster( this.thumbUrl, alt );
+            }
 			this.getPlayer().removePosterFlag = false;
 			this.getPlayer().updatePosterHTML();
 		},
@@ -116,6 +149,10 @@
 				//if we moved from live to offline  - show message
 				if ( _this.onAirStatus && !onAirObj.onAirStatus ) {
 
+                    console.log("1! ------------------------------------------------------------------> "+ _this.getConfig('showThumbnailWhenOffline'));
+                    if(_this.getConfig('showThumbnailWhenOffline')){
+                        _this.addPoster(true);
+                    }
 					//sometimes offline is only for a second and the message is not needed..
 					setTimeout( function() {
 						if ( !_this.onAirStatus ) {
@@ -126,22 +163,23 @@
 								//remember last state
 								_this.playWhenOnline = embedPlayer.isPlaying();
 
-								_this.removePoster();
-								embedPlayer.layoutBuilder.displayAlert( {
-									title: embedPlayer.getKalturaMsg( 'ks-LIVE-STREAM-OFFLINE-TITLE' ),
-									message: embedPlayer.getKalturaMsg( 'ks-LIVE-STREAM-OFFLINE' ),
-									keepOverlay: true,
-									noButtons : true,
-									props: {
-										customAlertTitleCssClass: "AlertTitleTransparent",
-										customAlertMessageCssClass: "AlertMessageTransparent",
-										customAlertContainerCssClass: "AlertContainerTransparent"
-									}
-								});
+                                console.log("2! ------------------------------------------------------------------> layoutBuilder.displayAlert -> ks-LIVE-STREAM-OFFLINE");
+                                    _this.removePoster();
+                                    embedPlayer.layoutBuilder.displayAlert({
+                                        title: embedPlayer.getKalturaMsg('ks-LIVE-STREAM-OFFLINE-TITLE'),
+                                        message: embedPlayer.getKalturaMsg('ks-LIVE-STREAM-OFFLINE'),
+                                        keepOverlay: true,
+                                        noButtons: true,
+                                        props: {
+                                            customAlertTitleCssClass: "AlertTitleTransparent",
+                                            customAlertMessageCssClass: "AlertMessageTransparent",
+                                            customAlertContainerCssClass: "AlertContainerTransparent"
+                                        }
+                                    });
+                                }
 								_this.getPlayer().disablePlayControls();
 							}
 
-						}
 					}, _this.getConfig( 'offlineAlertOffest' ) );
 
 					embedPlayer.triggerHelper( 'liveOffline' );
@@ -150,8 +188,7 @@
 					if ( _this.getPlayer().removePosterFlag && !_this.playWhenOnline && !embedPlayer.isPlaying() ) {
 						_this.addPoster();
 					}
-
-					embedPlayer.layoutBuilder.closeAlert(); //moved from offline to online - hide the offline alert
+                    embedPlayer.layoutBuilder.closeAlert(); //moved from offline to online - hide the offline alert
 					if ( !_this.getPlayer().getError() ) {
 						_this.getPlayer().enablePlayControls();
 					}
