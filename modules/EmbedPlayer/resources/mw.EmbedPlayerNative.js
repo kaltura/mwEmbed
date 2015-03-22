@@ -283,13 +283,6 @@ mw.EmbedPlayerNative = {
 				}, 10 );
 			};
 		}
-
-		// Some mobile devices ( iOS need a load call before play will work )
-		// other mobile devices ( android 4, break if we call load at play time )
-		if ( !_this.loop && mw.isIOS() ) {
-			mw.log("EmbedPlayerNative::postEmbedActions: issue .load() call");
-			vid.load();
-		}
 	},
 	/**
 	 * Apply media element bindings
@@ -896,7 +889,9 @@ mw.EmbedPlayerNative = {
 		if( this.isStopped() && this._playContorls ){
 			this.restorePlayerOnScreen();
 		}
-
+		if (this.firstPlay && !this.loop && mw.isIOS()){
+			vid.load();
+		}
 		// Run parent play:
 		if( _this.parent_play() ){
 			if ( this.getPlayerElement() && this.getPlayerElement().play ) {
