@@ -1,9 +1,4 @@
-body {
-	letter-spacing: 0.04em;
-	/*Disable the default behavior of an Anchor in jQuery Mobile (iOS)*/
-	-webkit-touch-callout: none ; /* disable the iOS popup when long-press on a link */
-	-webkit-user-select: none ; /* disable selection/copy of UIWebView */
-}
+body { letter-spacing: 0.04em; }
 .topBarContainer {
 	position: absolute;
 	top: 0;
