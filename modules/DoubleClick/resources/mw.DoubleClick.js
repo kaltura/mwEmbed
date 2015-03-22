@@ -119,12 +119,6 @@
 				_this.leadWithFlash = _this.getConfig( 'leadWithFlash' );
 			}
 
-			//native browser on Android 4.4 has "Chrome" in it, so this is the "new" way to test its user agent
-			if ( mw.isAndroid44() && mw.isAndroidChromeNativeBrowser() && !mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
-				mw.log("DoubleClick::user agent not supported, return" );
-				callback();
-				return;
-			}
 			if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
 				_this.isNativeSDK = true;
 				_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
@@ -480,11 +474,6 @@
 		 * Get the content video tag
 		 */
 		getContent:function(){
-			//if we're not in mobile - return null and let double click provide the sibling tag
-			if (!mw.isMobileDevice() ){
-				this.saveTimeWhenSwitchMedia = false;
-				return null;
-			}
 			// Set the content element to player element:
 			var playerElement =  this.embedPlayer.getPlayerElement();
 			//Load the video tag to enable setting the source by doubleClick library
@@ -643,7 +632,7 @@
 			}
 
 			// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
-			this.getAdDisplayContainer();
+			this.getAdDisplayContainer().initialize();
 
 			// Create ads loader.
 			_this.adsLoader = new google.ima.AdsLoader( _this.adDisplayContainer );
