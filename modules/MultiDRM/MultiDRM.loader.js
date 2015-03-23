@@ -7,6 +7,11 @@
 	// Add multidrm player:
 	$( mw ).bind( 'EmbedPlayerUpdateMediaPlayers' , function ( event , mediaPlayers ) {
 		var multiDRMProtocols = ['video/dash'];
+		//On chrome add smooth stream mimetype support
+		if (mw.isChrome()){
+			multiDRMProtocols.push("video/ism");
+			multiDRMProtocols.push("video/playreadySmooth");
+		}
 		var multiDRMPlayer = new mw.MediaPlayer( 'multidrm' , multiDRMProtocols , 'MultiDRM' );
 		mediaPlayers.addPlayer( multiDRMPlayer );
 		// add
@@ -80,7 +85,8 @@
 	mw.addKalturaConfCheck( function( embedPlayer, callback ){
 		var sources = embedPlayer.getSources();
 		var drmSources = sources.filter(function(source){
-			return source.mimeType === "video/dash";
+			return ( ( source.mimeType === "video/dash" ) ||
+					( source.mimeType === "video/ism" || source.mimeType === "video/playreadySmooth" && mw.isChrome() ) );
 		});
 		var isDrmSourceAvailable = drmSources.length > 0;
 		if (isDrmSourceAvailable){
