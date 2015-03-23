@@ -15,11 +15,12 @@ class mweApiKSTest {
 			$this->outputError( 'bad widget param');
 		}
 		$this->partnerId = '243342';
-		if( !isset( $_REQUEST['entry_id'] ) || $_REQUEST['entry_id'] != '1_20x0ca3l' ){
+
+		if( !isset( $_REQUEST['entry_id'] ) || $_REQUEST['entry_id'] != '1_9ln5whcm' ){
 			$this->outputError( 'bad entry_id param');
 		}
-		$this->entryId = '1_20x0ca3l';
-		
+		$this->entryId = '1_9ln5whcm';
+
 		// load library and get ks for given entry:
 		if( !isset( $wgKalturaAdminSecret ) || ( $wgKalturaAdminSecret == null ) ) {
 			$this->outputError( 'no admin ks configured');

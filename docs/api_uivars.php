@@ -47,10 +47,16 @@ $uiVars = array(
 			),
 			'Kaltura.ForceFlashOnDesktop' => array(
 					'type' => 'String',
-					'desc' => 'If the player should be forced to use flash on desktop.',
+					'desc' => 'If the player should be forced to use flash on desktop (kdp only).',
 					'default' => 'false',
 					'example' => '../modules/KalturaSupport/tests/ForceFlashOnDesktop.html'
 			),
+			'Kaltura.ForceFlashOnDesktopSafari' => array(
+            					'type' => 'String',
+            					'desc' => 'If the player should be forced to use flash on desktop Safari.',
+            					'default' => 'false',
+            					'example' => '../modules/KalturaSupport/tests/ForceFlashOnDesktopSafari.html'
+            			),
 			'Kaltura.EnableEmbedUiConfJs' => array(
 					'type' => 'String',
 					'desc' => 'If the player should request uiConf Javascript prior to embed',
@@ -315,7 +321,13 @@ $uiVars = array(
 				'default' => 'false',
 				'availability' => 'kdp',
 				'example' => ''
-			)
+			),
+			'liveCore.showThumbnailWhenOffline' => array(
+            				'type' => 'Boolean',
+            				'desc' => 'Flag indicating whether the the default thumbnail should be shown if live stream becomes offline',
+            				'default' => 'false',
+            				'example' => ''
+            )
 		)
 	),
 	'layout' => array(

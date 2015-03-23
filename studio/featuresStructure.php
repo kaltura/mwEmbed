@@ -82,7 +82,7 @@ return array(
             ),
 			array(
 				"label" => "Last Update",
-				"type" => "timeago",
+				"type" => "readonly",
 				"filter" => "timeago",
 				"model" => "updatedAt"
 			)

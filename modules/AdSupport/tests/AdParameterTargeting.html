@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+	<title>Paramaterized Ad Targeting</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+  </head>
+  <body>
+	<h1>
+	Paramaterized Ad Targeting 
+	</h1>
+	<br>
+<div id="myVideoTarget" style="width:400px;height:330px;"></div>
+
+<script>
+	var localPath = document.location.href;
+	localPath = localPath.split('AdParameterTargeting.html')[0];
+	kWidget.featureConfig({
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '13306622',
+		'entry_id' : '0_uka1msg4',
+		'flashvars': {
+			'vast': {
+				'numPreroll':"1", 
+				'prerollUrl': localPath + 'targetAds.php?target={myAdTarget.target}' , 
+				//'prerollUrl': localPath + 'liverail.xml',
+				'preSequence':"1",
+				'loadAdsOnPlay': true
+			},
+			// by default target the hotel add:
+			'myAdTarget': {'target': 'hotel'},
+			'adsOnReplay':true
+		},
+		'readyCallback': function( playerId ){
+			var kdp = $('#' + playerId )[0];
+			
+			$('#targetHotel').click(function(){
+				kdp.setKDPAttribute('myAdTarget', 'target', 'hotel');
+			});
+			$('#targetHooro').click(function(){
+				kdp.setKDPAttribute('myAdTarget', 'target', 'hooroo');
+			})
+		}
+	})
+</script>
+	<h3> Runtime Ad Tag URL targeting </h3>
+	Set user data against player: 
+	<a href="#" class="btn" id="targetHotel">Target Hotel Ad</a>  <a href="#" class="btn" id="targetHooro"> Target Hooroo</a>
+	<pre class="prettyprint linenums">
+// Within VAST config we pass the custom macro: 
+'vast': {
+	'numPreroll':"1", 
+	'prerollUrl': localPath + 'targetAds.php?target={myAdTarget.target}' , 
+	'loadAdsOnPlay': true
+	...
+}
+
+// Within the button click handler we set the custom property)
+'readyCallback': function( playerId ){
+	var kdp = $('#' + playerId )[0];
+	
+	$('#targetHotel').click(function(){
+		kdp.setKDPAttribute('myAdTarget', 'target', 'hotel');
+	});
+	$('#targetHooro').click(function(){
+		kdp.setKDPAttribute('myAdTarget', 'target', 'hooroo');
+	})
+}
+	</pre>
+  </body>
+</html>
