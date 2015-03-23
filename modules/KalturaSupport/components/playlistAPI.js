@@ -64,6 +64,7 @@
 				this.setConfig('horizontalHeaderHeight', 43);
 				this.setConfig('verticalHeaderHeight', 65);
 			}
+			this.embedPlayer.playlist = true;
 			this.addBindings();
 			this.loadPlaylists();
 		},

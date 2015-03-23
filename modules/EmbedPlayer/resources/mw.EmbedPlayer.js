@@ -1706,12 +1706,6 @@
 				if (_this.getError()) {
 					// Reset changeMediaStarted flag
 					_this.changeMediaStarted = false;
-					if (_this.playlist) {
-						// Allow user to move to next/previous entries
-						_this.playlist.enablePrevNext();
-						_this.playlist.addClipBindings();
-						_this.layoutBuilder.closeAlert();
-					}
 					_this.showErrorMsg(_this.getError());
 					return;
 				}
