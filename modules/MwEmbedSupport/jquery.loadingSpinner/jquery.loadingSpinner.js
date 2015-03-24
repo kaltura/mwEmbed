@@ -82,7 +82,7 @@
 			}
 			if ( opts !== false ) {
 				if ( opts['imageUrl'] && opts['imageUrl'].length > 0 ){
-					var $loadingSpinner = $('<img />').attr("src", opts['imageUrl']).load(function() {
+					var $loadingSpinner = $('<img />').addClass(opts['className']).attr("src", opts['imageUrl']).load(function() {
 						// Set spinner position based on image dimension
 						$( this ).css({
 							'margin-top': '-' + (this.height/2) + 'px',
@@ -129,8 +129,8 @@
 			.css( pos )
 			.css( {
 				'position': 'absolute',
-				'width' : $(this).width(),
-				'height': $(this).height()
+				'width' : '100%',
+				'height': '100%'
 			})
 			.append(
 				$spinner

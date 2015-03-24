@@ -139,24 +139,23 @@ kWidget.addReadyCallback( function( playerId ){
 		getMediaPlayerName: function(){
 			return 'Kaltura Omniture OnPage v' + mw.getConfig('version'); 
 		},
+
+		trimSpaces: function(str) {
+			// shortcut to custom data with trimming spaces if exists
+			str = str.replace(/^\s+/, '');
+			for (var i = str.length - 1; i >= 0; i--) {
+				if (/\S/.test(str.charAt(i))) {
+					str = str.substring(0, i + 1);
+					break;
+				}
+			}
+			return str;
+		},
+
 		getMediaName: function(){
 	 		var _this = this;
-	 		// shortcut to custom data with trimming spaces if exists
-
-			var trimSpaces = function(str) {
-				str = str.replace(/^\s+/, '');
-				for (var i = str.length - 1; i >= 0; i--) {
-					if (/\S/.test(str.charAt(i))) {
-						str = str.substring(0, i + 1);
-						break;
-					}
-				}
-				return str;
-			}
-
-
 	 		var g = function( key ){
-	 			return trimSpaces(_this.getAttr( 'mediaProxy.entryMetadata.' + key ) || '_');
+	 			return _this.trimSpaces(_this.getAttr( 'mediaProxy.entryMetadata.' + key ) || '_');
 	 		}
  			switch( _this.getConfig( 'concatMediaName' ) ){
  				case 'doluk':
@@ -298,17 +297,20 @@ kWidget.addReadyCallback( function( playerId ){
 				if( firstPlay ){
 					return;
 				}
-				stop();
 				_this.runMediaCommand( "close", _this.getMediaName() );
 				firstPlay = true;
 			};
 			var adOpen = function(adID, adSystem, type, adIndex){
-				_this.runMediaCommand( "openAd",adID, -1, adSystem, _this.getMediaName(), type, adIndex);
+				if ( type !== "overlay" ){
+					_this.runMediaCommand( "openAd",adID, -1, adSystem, _this.getMediaName(), type, adIndex);
+				}
 			};
-			var complete = function(adID, position){
-				_this.runMediaCommand( "complete",adID, position);
-				_this.runMediaCommand( "stop",adID, position);
-				_this.runMediaCommand( "close",adID);
+			var complete = function(adID, position, type){
+				if ( type !== "overlay" ){
+					_this.runMediaCommand( "complete",adID, position);
+					_this.runMediaCommand( "stop",adID, position);
+					_this.runMediaCommand( "close",adID);
+				}
 			};
 
 			this.bind('entryReady', function() {
@@ -318,14 +320,15 @@ kWidget.addReadyCallback( function( playerId ){
 			// Run open on first play:
 			this.bind( 'firstPlay', function(){
 				if( firstPlay ){
-					_this.runMediaCommand( "open", 
-						_this.getMediaName(), 
-						_this.getDuration(), 
-						_this.getMediaPlayerName() 
-					)
+					if ( _this.getConfig( 'triggerPlayFirst' ) === true ){
+						play();
+						_this.runMediaCommand( "open", _this.getMediaName(), _this.getDuration(), _this.getMediaPlayerName() );
+					}else{
+						_this.runMediaCommand( "open", _this.getMediaName(), _this.getDuration(), _this.getMediaPlayerName() );
+						play();
+					}
 				}
 				firstPlay = false;
-				play();
 			});
 			this.bind( 'playerSeekStart', function() {
 				// Ignore HTML5 seek to 0 on PlayerPlayEnd
@@ -338,6 +341,7 @@ kWidget.addReadyCallback( function( playerId ){
 				play();
 			});
 			this.bind( 'doPause', stop );
+			this.bind( 'AdSupport_midSequenceComplete', play );
 			this.bind( 'playerPlayEnd', function(){
 				close();
 			});
@@ -357,8 +361,10 @@ kWidget.addReadyCallback( function( playerId ){
 			});
 			this.bind('onAdOpen', adOpen);
 			this.bind('onAdComplete', complete);
-			this.bind('onAdPlay', function(adName){
-				_this.runMediaCommand( "play",adName, 0);
+			this.bind('onAdPlay', function(adName, adSystem, type, adIndex){
+				if ( type !== "overlay" ){
+					_this.runMediaCommand( "play",adName, 0);
+				}
 			});
 		},
 
@@ -381,7 +387,7 @@ kWidget.addReadyCallback( function( playerId ){
 					_this.bind( eventName, function(){
 						_this.sendNotification( eventId, eventName );
 					});
-				}($.trim(customEvents[i])));
+				}(_this.trimSpaces(customEvents[i])));
 			}		
 		},
 

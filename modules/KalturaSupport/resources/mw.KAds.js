@@ -24,7 +24,7 @@
 
 		previousTime: 0,
 		seekIntervalID: null,
-        enableCORS:true,
+		enableCORS:true,
 
 		init: function( embedPlayer, callback ){
 			var _this = this;
@@ -32,9 +32,9 @@
 			// Inherit BaseAdPlugin
 			mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
 
-            if( _this.getConfig('enableCORS') === false){
-                this.enableCORS = false;
-            }
+			if( _this.getConfig('enableCORS') === false){
+				this.enableCORS = false;
+			}
 
 			_this.embedPlayer = embedPlayer;
 
@@ -106,14 +106,39 @@
 					_this.displayedCuePoints = [];
 				});
 			}
-
-			// Load the Ads from uiConf
+			
+			// Check if we should only load ads when played: 
+			if( _this.getConfig('loadAdsOnPlay') == true ){
+				_this.handleAdsOnPlay( embedPlayer );
+				callback();
+				return ;
+			}
+			// load the Ads from uiConf
 			_this.loadAds( function(){
 				mw.log( "KAds::All ads have been loaded" );
 				callback();
 			});
 		},
-
+		handleAdsOnPlay: function( embedPlayer ){
+			var _this = this;
+			var loadedAds = null;
+			embedPlayer.bindHelper('prePlayAction' + _this.bindPostfix, function( e, prePlay ){
+				if( loadedAds === null ){
+					embedPlayer.addPlayerSpinner();
+					_this.loadAds( function(){
+						loadedAds = true;
+						embedPlayer.unbindHelper('prePlayAction' + _this.bindPostfix);
+						embedPlayer.play();
+					});
+				}
+				// block playback while ads are loaded.
+				if( loadedAds !== true ){
+					prePlay.allowPlayback = false;
+				}
+				// set loadingAds to false to only load ads once. 
+				loadedAds = false;
+			});
+		},
 		seekIntervalTrigger: function() {
 			var _this = this;
 
@@ -253,9 +278,8 @@
 				$.extend( adsCuePointConf, baseDisplayConf );
 
 				var originalSource = embedPlayer.getSource();
-				var seekPerc = ( parseFloat( cuePoint.startTime / 1000 ) / parseFloat( embedPlayer.duration ) );
+				var seekTime = parseFloat( cuePoint.startTime / 1000 );
 				var oldDuration = embedPlayer.duration;
-				var vidDuration = embedPlayer.getPlayerElement().duration;
 
 				// Set switch back function
 				var doneCallback = function() {
@@ -298,13 +322,15 @@
 									embedPlayer.play();
 								}
 
-								embedPlayer.setCurrentTime( seekPerc * embedPlayer.getDuration(), function(){
+								embedPlayer.unbindHelper("seeked.midroll").bindOnceHelper("seeked.midroll", function () {
 									if( !mw.isIOS() ) {
 										embedPlayer.play();
 									}
 									embedPlayer.restorePlayerOnScreen();
 									embedPlayer.hideSpinner();
-								} );
+								});
+
+								embedPlayer.seek(seekTime, false);
 							}
 						});
 					} else {

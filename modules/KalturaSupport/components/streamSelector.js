@@ -28,9 +28,6 @@
 		setup: function () {
 			this.addBindings();
 		},
-		isSafeEnviornment: function(){
-			return !mw.isIOS();
-		},
 		destroy: function () {
 			this._super();
 			this.getComponent().remove();
@@ -84,7 +81,7 @@
 				_this.streamEnded = true;
 			});
 
-			this.bind("onplay", function () {
+			this.bind("onplay onChangeStreamDone", function () {
 				_this.streamEnded = false;
 			});
 
@@ -121,7 +118,7 @@
 			// do the api request
 			this.getKalturaClient().doRequest(requestObject, function (data) {
 				// Validate result
-				if (_this.isValidResult(data)) {
+				if (data && _this.isValidResult(data[0])) {
 					_this.createStreamList(data);
 				} else {
 					mw.log('streamSelector::Error retrieving streams, disabling component');
@@ -133,7 +130,7 @@
 			var _this = this;
 			var subStreams = data[0].objects;
 			var subStreamsData = data.slice(1);
-			if (subStreams.length > 0) {
+			if (subStreams && subStreams.length > 0) {
 				$.each( subStreams, function ( i, subStream ) {
 					if (subStreamsData[i]) {
 						_this.streams.push( {
@@ -303,6 +300,10 @@
 				var changeMediaCallback = function () {
 					//Return autoplay state to original
 					embedPlayer.autoplay = origAutoplay;
+					//If player is still not playing then start playback
+					if (!embedPlayer.isPlaying()){
+						embedPlayer.play();
+					}
 					embedPlayer.restoreEventPropagation();
 					// issue a seek
 					if (currentTime > 0) {
@@ -318,7 +319,7 @@
 						});
 						//Add black screen before seek to avoid flashing of video
 						embedPlayer.addBlackScreen();
-						embedPlayer.sendNotification('doSeek', currentTime);
+						embedPlayer.seek(currentTime, false);
 					} else {
 						//Return poster to allow display of poster on clip done
 						mw.setConfig('EmbedPlayer.HidePosterOnStart', false);

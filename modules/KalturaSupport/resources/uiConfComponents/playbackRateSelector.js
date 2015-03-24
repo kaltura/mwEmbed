@@ -22,6 +22,9 @@
 				return false;
 			}
 			this.bind('playerReady', function(){
+				if ( _this.embedPlayer.isLive() ){
+					deferred.resolve(false);
+				}
 				// check if we have sources that can play with Native library:
 				if (_this.embedPlayer.mediaElement.getNativePlayableSources().length > 0){
 					deferred.resolve(document.createElement( "video" ).playbackRate);
@@ -134,15 +137,14 @@
 			this.currentSpeed = newSpeed;
 			// check if we need to switch interfaces: 
 			if( this.getPlayer().instanceOf != 'Native' ){
-				this.hanldePlayerInstanceUpdate( newSpeed );
+				this.handlePlayerInstanceUpdate( newSpeed );
 				return ;
 			}
 			this.updatePlaybackRate( newSpeed );
 		},
-		hanldePlayerInstanceUpdate: function( newSpeed ){
+		handlePlayerInstanceUpdate: function( newSpeed ){
 			var _this = this;
 			var currentPlayTime = this.getPlayer().currentTime;
-			var wasPlaying = this.getPlayer().isPlaying();
 			var source = this.getPlayer().mediaElement.autoSelectNativeSource();
 			var player = mw.EmbedTypes.getMediaPlayers().getNativePlayer( source.mimeType );
 			this.getPlayer().selectPlayer ( player );
@@ -153,20 +155,9 @@
 				if( currentPlayTime == 0 ){
 					return ;
 				}
-				// show loading spinner if we need to seek
-				_this.getPlayer().addPlayerSpinner();
-				// don't trigger events in restoring play state
-				_this.getPlayer().stopEventPropagation();
-				_this.getPlayer().setCurrentTime( currentPlayTime, function(){
-					// reflect pause state
-					if( wasPlaying ){
-						_this.getPlayer().play();
-					}else {
-						_this.getPlayer().pause();
-					}
-					// restore event propagation: 
-					_this.getPlayer().restoreEventPropagation();
-				});
+				setTimeout(function(){
+					_this.getPlayer().seek( currentPlayTime );
+				}, 0);
 			});
 		},
 		/**

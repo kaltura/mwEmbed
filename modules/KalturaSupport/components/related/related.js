@@ -382,7 +382,9 @@
 			this.getPlayer().sendNotification('changeMedia', data);
 			this.bind('onChangeMediaDone', function(){
 				_this.updateViewedEntries(data.entryId);
-				_this.getPlayer().play();
+				if (_this.getPlayer().canAutoPlay()) {
+					_this.getPlayer().play();
+				}
 				_this.unbind('onChangeMediaDone');
 			});
 			this.hideScreen();

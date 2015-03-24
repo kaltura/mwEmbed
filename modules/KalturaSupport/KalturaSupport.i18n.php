@@ -68,7 +68,7 @@ $messages['en'] = array(
     'ks-adBlockDetector-btn-resume' => 'Continue',
     'ks-chapters-search-placeholder' => 'Search',
     'ks-chapters-search-clear' => 'Clear',
-    'ks-chapters-search-empty-result' => "Sorry, no results we're found",
+    'ks-chapters-search-empty-result' => "Sorry, no results were found",
     'ks-chapters-locate-active-media' => "Locate current chapter/slide",
     'ks-chapters-toggle-chapter' => "Expand/collapse chapter",
     'ks-chapters-toggle-all-chapter' => "Expand/collapse all chapters",
@@ -78,7 +78,9 @@ $messages['en'] = array(
     'ks-chapters-slideNumber' => "Slide number",
     'ks-chapters-slide-start-time' => "Slide start time",
     'ks-chapters-slide-duration' => "Slide duration",
-    'ks-sidebar-toggleBtn' => "Navigation"
+    'ks-sidebar-toggleBtn' => "Navigation",
+    'ks-FLASH-BLOCKED-TITLE' => "Flash is not active",
+    'ks-FLASH-BLOCKED' => "Flash does not appear to be installed or active.<br>Please <a href='http://get.adobe.com/flashplayer/' target='_blank'>install</a> or <a href='http://knowledge.kaltura.com/faq/how-activate-flash-safari-desktop' target='_blank'>activate</a> flash"
 );
 
 $messages['fr'] = array(

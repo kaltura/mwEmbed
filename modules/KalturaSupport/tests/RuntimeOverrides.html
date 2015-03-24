@@ -159,7 +159,6 @@
 		
 		var shareTemplate = "<div class='panel-right'>\n" + 
 		"\t<h3>Custom Share:</h3>\n" +
-		"\t<img src=\"rblogo.png\">\n" +
 		"\t<input value=\"<%= share.getConfig('shareURL') %>\" />\n" +
 		"\t<div class=\"divider\"></div>" +
 		"\t<ul>\n" +
@@ -172,6 +171,7 @@
 		function doPlayerEmbed(){
 			jsonConfig.plugins.infoScreen.template = infoTemplate;
 			jsonConfig.plugins.related.template = relatedTemplate;
+			jsonConfig.plugins.share.template = shareTemplate;
 			
 			kWidget.embed('kaltura_player', {
 				'wid': '_243342',
@@ -354,6 +354,30 @@
 					$('#update-share').click(function(){
 						// update template:
 						shareTemplate = shareTemplateEditor.getValue();
+						// re-render player: 
+						doPlayerEmbed();
+					});
+				</script>
+			
+			
+			 </div>
+			 
+			 
+			 <div role="tabpanel" class="tab-pane" id="css_overrides"> 
+			
+				<div id="css-editor" style="width:100%;height:400px;"></div><br>
+				<a href="#" id="update-css" class="btn btn btn-info"> Update CSS </a>
+				<script>
+					cssEditor = ace.edit("sharetemplate-editor");
+					// editor.setTheme("ace/theme/twilight");
+					cssEditor.getSession().setMode("ace/mode/css");
+					cssEditor.setShowPrintMargin(false);
+					// update ace editor data: 
+					cssEditor.setValue( cssOverrides, -1 );
+					cssEditor.getSession().setUseWorker(false);
+					$('#update-share').click(function(){
+						// update template:
+						cssOverrides = cssEditor.getValue();
 						// re-render player: 
 						doPlayerEmbed();
 					});

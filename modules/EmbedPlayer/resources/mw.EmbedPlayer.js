@@ -288,6 +288,8 @@
 		// save the clipDone timeout ID so we can trigger it only once per entry
 		clipDoneTimeout: null,
 
+		playerPrefix: 'BasePlayer',
+
 		/**
 		 * embedPlayer
 		 *
@@ -386,6 +388,10 @@
 			}
 			return this;
 		},
+		bindOnceHelper: function (name, callback) {
+			$(this).one(name, callback);
+			return this;
+		},
 		triggerQueueCallback: function (name, callback) {
 			$(this).triggerQueueCallback(name, callback);
 		},
@@ -396,6 +402,10 @@
 				// ignore try catch calls
 				mw.log("EmbedPlayer:: possible error in trigger: " + name + " " + e.toString());
 			}
+		},
+
+		log: function(message){
+			mw.log(this.playerPrefix + "::" + message);
 		},
 
 		addPlayerStateChangeBindings: function () {
@@ -1025,26 +1035,105 @@
 		 * @param {bollean}
 		 *            stopAfterSeek if the player should stop after the seek
 		 */
-		seek: function (percent, stopAfterSeek) {
-			var _this = this;
-			this.seeking = true;
+		seek: function (seekTime, stopAfterSeek) {
+			// bounds check
+			if (seekTime < 0) {
+				seekTime = 0;
+			}
+
+			//Only validate seek if duration already updated from player element
+			if (this.getDuration() > 0 && seekTime > this.getDuration()) {
+				seekTime = this.getDuration();
+			}
+
+			seekTime = parseFloat(parseFloat(seekTime).toFixed(2));
+			this.stopAfterSeek = (stopAfterSeek !== undefined) ? stopAfterSeek : !this.isPlaying();
+			mw.log('EmbedPlayer:: seek: to:' + seekTime + " sec, stopAfterSeek=" + this.stopAfterSeek);
+
+			// Save currentTime
+			this.kPreSeekTime = this.currentTime;
+
 			// Trigger preSeek event for plugins that want to store pre seek conditions.
-			$(this).trigger('preSeek', percent);
-
-			// Do argument checking:
-			if (percent < 0) {
-				percent = 0;
+			var stopSeek = {value: false};
+			this.triggerHelper('preSeek', [seekTime, stopAfterSeek, stopSeek]);
+			if (stopSeek.value) {
+				return false;
 			}
 
-			if (percent > 1) {
-				percent = 1;
-			}
-			// set the playhead to the target position
-			this.updatePlayHead(percent);
+			this.seeking = true;
+			// Update the current time ( local property )
+			this.currentTime = seekTime;
+
+			// trigger the seeking event:
+			mw.log('EmbedPlayer::seek:trigger');
+			this.triggerHelper('seeking');
+
 			// Run the onSeeking interface update
-			// NOTE layoutBuilder should really bind to html5 events rather
-			// than explicitly calling it or inheriting stuff.
 			this.layoutBuilder.onSeek();
+
+			this.unbindHelper("seeked" + this.bindPostfix).bindOnceHelper("seeked" + this.bindPostfix, this.seekedHandler);
+
+			// Make sure all the timeouts don't seek to an expired target:
+			$(this).data('currentSeekTarget', seekTime);
+			this.currentSeekTargetTime = seekTime;
+
+			// Check if currentTime is already set to the seek target:
+			var playerElementTime = parseFloat(this.getPlayerElementTime()).toFixed(2);
+			if (playerElementTime === seekTime) {
+				mw.log("EmbedPlayer:: seek: current time matches seek target: " +
+					playerElementTime + ' == ' + seekTime);
+				if (this.seeking) {
+					this.seeking = false;
+					$(this).trigger('seeked');
+				}
+				this.seekedHandler();
+				return;
+			}
+
+			var _this = this;
+			this.canSeek().then(function(){
+				_this.doSeek(seekTime, stopAfterSeek);
+			});
+		},
+		/**
+		 * seekedHandler function handles all players seeked teardown operations
+		 */
+		seekedHandler: function () {
+			var _this = this;
+			this.seeking = false;
+
+			// sync the seek checks so that we don't re-issue the seek request
+			this.previousTime = this.currentTime = this.getPlayerElementTime();
+
+			// Clear the PreSeek time
+			this.kPreSeekTime = null;
+
+			this.removePoster();
+			this.startMonitor();
+			if (this.stopAfterSeek) {
+				this.hideSpinner();
+				// pause in a non-blocking call to avoid synchronous playing event
+				setTimeout(function () {
+					_this.updatePlayheadStatus();
+					_this.pause();
+				}, 0);
+			} else {
+				// continue to playback ( in a non-blocking call to avoid synchronous pause event )
+				setTimeout(function () {
+					if (!_this.stopPlayAfterSeek) {
+						mw.log("EmbedPlayer::Play after seek");
+						_this.play();
+						_this.stopPlayAfterSeek = false;
+					}
+				}, 0);
+			}
+		},
+		/**
+		 * canSeek function ( should be implemented by embedPlayer interface
+		 * playerNative, playerKplayer etc. )
+		 */
+		canSeek: function(){
+			return $.Deferred().resolve();
 		},
 
 		/**
@@ -1110,29 +1199,13 @@
 					// Update the clip done playing count ( for keeping track of replays )
 					_this.donePlayingCount++;
 					if (_this.loop) {
-						// Prevent the native "onPlay" event from propagating that happens when we rewind:
-						this.stopEventPropagation();
 						// Rewind the player to the start:
 						// NOTE: Setting to 0 causes lags on iPad when replaying, thus setting to 0.01
 						var startTime = 0.01;
 						if (this.startOffset) {
 							startTime = this.startOffset;
 						}
-						this.setCurrentTime(startTime, function () {
-							// Set to stopped state:
-							_this.stop();
-
-							// Restore events after we rewind the player
-							mw.log("EmbedPlayer::onClipDone:Restore events after we rewind the player");
-							_this.restoreEventPropagation();
-
-							// synchronize playing with events listeners
-							setTimeout(function () {
-								_this.play();
-							}, 100);
-
-							return;
-						});
+						this.seek(startTime, false);
 					} else {
 						// make sure we are in a paused state.
 						_this.stop();
@@ -1174,7 +1247,7 @@
 					startTime = _this.startOffset;
 				}
 				_this.stopEventPropagation();
-				_this.setCurrentTime(startTime, function () {
+				_this.unbindHelper("seeked.replay").bindOnceHelper("seeked.replay", function () {
 					// Restore events after we rewind the player
 					mw.log("EmbedPlayer::onClipDone:Restore events after we rewind the player");
 					_this.restoreEventPropagation();
@@ -1182,6 +1255,7 @@
 					_this.play();
 					return;
 				});
+				_this.seek(startTime);
 			}, 10);
 		},
 
@@ -1314,6 +1388,7 @@
 				if (mw.getConfig('EmbedPlayer.IsIframeServer')) {
 					$(window).off("debouncedresize").on("debouncedresize", function () {
 						mw.log('debouncedresize:: call doUpdateLayout');
+						_this.triggerHelper('resizeEvent');
 						_this.doUpdateLayout();
 					});
 				}
@@ -1646,8 +1721,10 @@
 					_this.changeMediaStarted = false;
 
 					// reload the player
-					if (_this.autoplay) {
-						_this.removePoster();
+					if (_this.autoplay && _this.canAutoPlay() ) {
+						if (!_this.isAudioPlayer) {
+							_this.removePoster();
+						}
 						_this.play();
 					}
 
@@ -1739,6 +1816,7 @@
 		 * Updates the poster HTML
 		 */
 		updatePosterHTML: function () {
+            mw.log('!!EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
 			mw.log('EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
 			var _this = this;
 
@@ -1901,6 +1979,9 @@
 		},
 		getTopBarContainer: function () {
 			return this.getInterface().find('.topBarContainer');
+		},
+		getPlayerPoster: function () {
+			return this.getInterface().find('.playerPoster');
 		},
 
 		/**
@@ -2099,9 +2180,10 @@
 		inPreSequence: false,
 		replayEventCount: 0,
 		play: function () {
-			if (this.currentState == "end") {
-				// prevent getting another clipdone event on replay
-				this.setCurrentTime(0.01);
+			if (this.seeking){
+				this.log("Play while seeking, will play after seek!");
+				this.stopAfterSeek = false;
+				return false;
 			}
 			var _this = this;
 			var $this = $(this);
@@ -2148,6 +2230,11 @@
 					mw.log("EmbedPlayer:: isInSequence, do NOT play content");
 					return false;
 				}
+			}
+
+			if (this.currentState == "end") {
+				// prevent getting another clipdone event on replay
+				this.seek(0.01, false);
 			}
 
 			// Remove any poster div ( that would overlay the player )
@@ -2206,14 +2293,12 @@
 					// If we have start time defined, start playing from that point
 					if (_this.currentTime < _this.startTime) {
 						if (!mw.isIOS()) {
-							_this.setCurrentTime(_this.startTime);
+							_this.seek(_this.startTime);
 							_this.startTime = 0;
 						} else {
 							// iPad seeking on syncronus play event sucks
 							setTimeout(function () {
-								_this.setCurrentTime(_this.startTime, function () {
-									_this.play();
-								});
+								_this.seek(_this.startTime, false);
 								_this.startTime = 0;
 							}, 500)
 						}
@@ -2310,6 +2395,7 @@
 			var _this = this;
 			// Trigger the pause event if not already paused and using native controls:
 			if (this.paused === false) {
+				this.stopMonitor();
 				this.paused = true;
 				if (this._propagateEvents) {
 					mw.log('EmbedPlayer:trigger pause:' + this.paused);
@@ -2636,10 +2722,9 @@
 				if (_this.getDuration() && _this.currentTime <= _this.getDuration()) {
 					var seekPercent = _this.currentTime / _this.getDuration();
 					mw.log("EmbedPlayer::syncCurrentTime::" + _this.previousTime + ' != ' +
-						_this.currentTime + " javascript based currentTime update to " +
-						seekPercent + ' == ' + _this.currentTime);
+						_this.currentTime + " javascript based currentTime update to " + _this.currentTime);
 					_this.previousTime = _this.currentTime;
-					this.seek(seekPercent);
+					this.seek(_this.currentTime);
 				}
 			}
 			if (!_this.isLive()) {
@@ -2667,7 +2752,7 @@
 			var _this = this;
 
 			if ( this.currentTime >= 0 && this.duration ) {
-				if (!this.userSlide && !this.seeking && !this.paused) {
+				if (!this.userSlide && !this.seeking ) {
 					var playHeadPercent = ( this.currentTime - this.startOffset ) / this.duration;
 					this.updatePlayHead(playHeadPercent);
 				}
@@ -2897,14 +2982,14 @@
 				this.layoutBuilder.keepControlsOnScreen = true;
 				this.layoutBuilder.removeTouchOverlay();
 			}
-			this.triggerHelper('onComponentsHoverDisabled');
+			$(this).trigger('onComponentsHoverDisabled');
 		},
 		restoreComponentsHover: function () {
 			if (this.layoutBuilder) {
 				this.layoutBuilder.keepControlsOnScreen = false;
 				this.layoutBuilder.addTouchOverlay();
 			}
-			this.triggerHelper('onComponentsHoverEnabled');
+			$(this).trigger('onComponentsHoverEnabled');
 		},
 		/**
 		 * @param value string containing comma seperated tags
@@ -2983,14 +3068,11 @@
 					setTimeout(function () {
 						_this.addBlackScreen();
 						_this.hidePlayerOffScreen();
-						_this.setCurrentTime(oldMediaTime, function () {
+						_this.unbindHelper("seeked.switchSrc" ).bindOnceHelper("seeked.switchSrc", function () {
 							_this.removeBlackScreen();
 							_this.restorePlayerOnScreen();
-							// reflect pause state
-							if (oldPaused) {
-								_this.pause();
-							}
 						});
+						_this.seek(oldMediaTime, oldPaused);
 					}, 100);
 				});
 			}
@@ -3077,13 +3159,15 @@
 				if (!message || message == undefined){
 					message = this.getKalturaMsg('ks-CLIP_NOT_FOUND');
 				}
-				this.showErrorMsg({ title: this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'), message: message });
+                this.showErrorMsg({ title: this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'), message: message });
+
 			}
 		},
 
 		/**
 		 * Some players parse playmanifest and reload flavors list by calling this function
 		 * @param data
+		 * Exmaple:[{"bandwidth":517120,"type":"video/mp4","assetid":0,"height":0},{"bandwidth":727040,"type":"video/mp4","assetid":1,"height":0},{"bandwidth":1041408,"type":"video/mp4","assetid":2,"height":0}
 		 */
 		onFlavorsListChanged: function (newFlavors) {
 			//we can't use simpleFormat with flavors that came from playmanifest otherwise sourceSelector list won't match

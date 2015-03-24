@@ -212,7 +212,7 @@
 					newCurrentTime = parseFloat(this.getPlayer().getDuration());
 				}
 			}
-			this.getPlayer().seek( newCurrentTime / this.getPlayer().getDuration() );
+			this.getPlayer().seek( newCurrentTime );
 		},	
 		shortSeekBackKeyCallback: function(){
 			this.seek( 'short', 'back' );
@@ -236,7 +236,8 @@
 				var idx = $.inArray(keyCode.toString(), percentArr);
 				return ((idx + 1) * 0.1 ).toFixed(2);
 			};
-			this.getPlayer().seek( getPercentage() );
+			var seekTime = getPercentage() * this.getPlayer().getDuration();
+			this.getPlayer().seek( seekTime );
 		},
 		openFullscreenKeyCallback: function(){
 			if( !this.getPlayer().getInterface().hasClass('fullscreen') ){
@@ -258,7 +259,7 @@
 			if( !this.canSeek ) {
 				return false;
 			}
-			this.getPlayer().seek(1);
+			this.getPlayer().seek(this.getPlayer().getDuration());
 		},
 		getOpenedMenu: function(){
 			var openedMenu = null;

@@ -85,6 +85,7 @@
 			});
 
 			this.eventTrackList = $.merge(_this.eventTrackList, customEvents);
+			this.eventTrackList = $.unique(this.eventTrackList);
 
 			// Setup the initial state of some flags
 			this._p25Once = false;
@@ -274,6 +275,7 @@
 			methodName = methodName.toString();
 			var clipTitle = ( this.embedPlayer.kalturaPlayerMetaData && this.embedPlayer.kalturaPlayerMetaData.name ) ? this.embedPlayer.kalturaPlayerMetaData.name : '';
 			var entryId = this.embedPlayer.kentryid;
+			var uiconfId = this.embedPlayer.kuiconfid;
 			var widgetId = this.embedPlayer.kwidgetid;
 			var refId = this.embedPlayer.kalturaPlayerMetaData.referenceId;
 			var refString = "";
@@ -289,7 +291,7 @@
 				}
 
 			}
-			return ( refString + clipTitle + "|" + entryId + "|" + widgetId );
+			return ( refString + clipTitle + "|" + entryId + "|" + widgetId + "|" +uiconfId  );
 		},
 
 		/**

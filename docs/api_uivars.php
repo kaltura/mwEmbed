@@ -47,10 +47,16 @@ $uiVars = array(
 			),
 			'Kaltura.ForceFlashOnDesktop' => array(
 					'type' => 'String',
-					'desc' => 'If the player should be forced to use flash on desktop.',
+					'desc' => 'If the player should be forced to use flash on desktop (kdp only).',
 					'default' => 'false',
 					'example' => '../modules/KalturaSupport/tests/ForceFlashOnDesktop.html'
 			),
+			'Kaltura.ForceFlashOnDesktopSafari' => array(
+            					'type' => 'String',
+            					'desc' => 'If the player should be forced to use flash on desktop Safari.',
+            					'default' => 'false',
+            					'example' => '../modules/KalturaSupport/tests/ForceFlashOnDesktopSafari.html'
+            			),
 			'Kaltura.EnableEmbedUiConfJs' => array(
 					'type' => 'String',
 					'desc' => 'If the player should request uiConf Javascript prior to embed',
@@ -118,6 +124,12 @@ $uiVars = array(
 					'desc' => 'If apple HLS streams should be used when available',
 					'default' => 'true',
 					'example' => '../modules/KalturaSupport/tests/UseHLS_WhereAvailable.qunit.html'
+			),
+			'Kaltura.ForceJSONP' => array(
+					'type' => 'Boolean',
+					'desc' => 'If API calls should use the JSONP protocol',
+					'default' => 'false',
+					'example' => ''
 			),
 			'LeadWithHLSOnFlash' => array(
 					'type' => 'Boolean',
@@ -309,7 +321,13 @@ $uiVars = array(
 				'default' => 'false',
 				'availability' => 'kdp',
 				'example' => ''
-			)
+			),
+			'liveCore.showThumbnailWhenOffline' => array(
+            				'type' => 'Boolean',
+            				'desc' => 'Flag indicating whether the the default thumbnail should be shown if live stream becomes offline',
+            				'default' => 'false',
+            				'example' => ''
+            )
 		)
 	),
 	'layout' => array(
@@ -676,6 +694,12 @@ $uiVars = array(
 			'EmbedPlayer.HidePosterOnStart' => array(
 					'type' => 'Boolean',
 					'desc' => "When set to true, movie thumbnail doesn't show upon movie load (before playback starts)",
+					'default' => 'false',
+					'example' => ''
+			),
+			'EmbedPlayer.ShowOriginalPoster' => array(
+					'type' => 'Boolean',
+					'desc' => "When set to true, the thumbnail is loaded with its original size",
 					'default' => 'false',
 					'example' => ''
 			),

@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Iframe hidden div</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<body>
+<h2>Load player in hidden Iframe div</h2>
+<a id="showframe" href="#">Show iframe player</a>
+<div id="hiddenFrame" style="display:none;" >
+	<iframe src="../../../mwEmbedFrame.php/p/243342/uiconf_id/26426791/entry_id/0_wtcufrh9?wid=_243342&iframeembed=true&playerId=kaltura_player_1423233833&entry_id=0_wtcufrh9&flashvars[streamerType]=auto&flashvars[EmbedPlayer.ShowOriginalPoster]=true" width="560" height="395" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0" style="width: 560px; height: 395px;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject">
+	</iframe>
+</div>
+<script>
+	$('#showframe').click(function(){
+		$('#hiddenFrame').show();
+	})
+</script>
+</body>
+</html>
+

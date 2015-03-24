@@ -432,6 +432,9 @@
 							}
 							return kw;
 						break;
+						case 'targetId':
+							return embedPlayer.id;
+						break;
 						case 'sessionId':
 							return window.kWidgetSupport.getGUID();
 						break;
@@ -518,6 +521,19 @@
 							} else {
 								return "";
 							}
+							break;
+						case 'nativeVersion':
+							if ( embedPlayer ) {
+								return embedPlayer.getFlashvars( 'nativeVersion' );
+							} else {
+								return "";
+							}
+							break;
+						case 'streamerType':
+							if (embedPlayer){
+								return embedPlayer.streamerType;
+							}
+							return "";
 							break;
 					}
 					break;
@@ -1131,14 +1147,14 @@
 					break;
 				case 'doSeek':
 					// Kaltura doSeek is in seconds rather than percentage:
-					var percent = ( parseFloat( notificationData ) - embedPlayer.startOffset )/ embedPlayer.getDuration();
+					var seekTime = ( parseFloat( notificationData ) - embedPlayer.startOffset );
 					// Update local kPreSeekTime
 					embedPlayer.kPreSeekTime =  embedPlayer.currentTime;
 					// Once the seek is complete null kPreSeekTime
 					embedPlayer.bindHelper( 'seeked.kdpMapOnce', function(){
 						embedPlayer.kPreSeekTime = null;
 					});
-					embedPlayer.seek( percent, embedPlayer.paused );
+					embedPlayer.seek( seekTime );
 					break;
 				case 'changeVolume':
 					embedPlayer.setVolume( parseFloat( notificationData ),true );
@@ -1223,6 +1239,7 @@
 							window.kalturaIframePackageData.entryResult = notificationData.mediaProxy;
 							// update plugin possition. Future refactor should treat mediaProxy as plugin  
 							embedPlayer.playerConfig.plugins['mediaProxy'] = notificationData.mediaProxy;
+							embedPlayer.playerConfig.plugins['mediaProxy'].manualProvider = true;
 						}
 						
 						// Run the embedPlayer changeMedia function
