@@ -27,6 +27,7 @@
 		volume: 1,
 		vid: {'readyState': 1},
 		receiverName: '',
+		playerPlayed:false,
 
 		setup: function( readyCallback ) {
 			mw.log('EmbedPlayerFlashHLS:: Setup');
@@ -52,10 +53,34 @@
 			window.onHLSReady = function(playerId){
 				_this.playerObject = $("#" + playerId ).get(0);
 				//_this.getEntryUrl().then(function (srcToPlay) {
-					_this.playerObject.playerLoad(_this.mediaElement.selectedSource.src);
+				_this.playerObject.playerLoad(_this.mediaElement.selectedSource.src);
 				readyCallback();
 			//	} );
 			};
+			window.onState = function(newState){
+				switch(newState) {
+					case 'PLAYING_BUFFERING':
+						_this.bufferStart();
+						break;
+					case 'PLAYING':
+						_this.bufferEnd();
+						_this.onPlay();
+						break;
+					case 'PAUSED':
+						_this.onPause();
+						break;
+				}
+			};
+			window.onPosition = function(timeMetric){
+				_this.onUpdatePlayhead(timeMetric.position );
+				var duration = _this.getDuration();
+				if (duration != timeMetric.duration){
+					_this.onDurationChange(timeMetric.duration);
+				}
+			};
+
+
+
 
 		//	this.getEntryUrl().then(function (srcToPlay) {
 				// attributes and params:
@@ -93,17 +118,17 @@
 		 */
 		play: function () {
 			mw.log('EmbedPlayerKplayer::play');
-			var shouldDisable = false
-			if (this.isLive() && this.paused) {
-				shouldDisable = true;
-			}
+
 			if (this.parent_play()) {
 				//live might take a while to start, meanwhile disable gui
-				if (shouldDisable) {
-					this.ignoreEnableGui = true;
-					this.disablePlayControls(['sourceSelector']);
+
+				if (!this.playerPlayed) {
+					this.playerObject.playerPlay();
+					this.playerPlayed = true;
+				} else {
+					this.playerObject.playerResume();
 				}
-				this.playerObject.playerPlay();
+
 				this.monitor();
 			} else {
 				mw.log("EmbedPlayerKPlayer:: parent play returned false, don't issue play on kplayer element");
@@ -119,6 +144,88 @@
 				mw.log("EmbedPlayerKplayer:: doPause failed");
 			}
 			this.parent_pause();
+		},
+		/**
+		 * on Pause callback from the kaltura flash player calls parent_pause to
+		 * update the interface
+		 */
+		onPause: function () {
+			this.updatePlayhead();
+			$(this).trigger("onpause");
+		},
+
+		/**
+		 * onPlay function callback from the kaltura flash player directly call the
+		 * parent_play
+		 */
+		onPlay: function () {
+			if (this._propagateEvents) {
+
+				this.updatePlayhead();
+				$(this).trigger("playing");
+				this.getPlayerContainer().css('visibility', 'visible');
+				this.hideSpinner();
+				this.stopped = this.paused = false;
+			}
+		},
+		/**
+		 * function called by flash at set interval to update the playhead.
+		 */
+		onUpdatePlayhead: function (playheadValue) {
+			if (this.seeking) {
+				this.seeking = false;
+			}
+			this.flcurrentTime = playheadValue;
+			$(this).trigger('timeupdate');
+		},
+		updatePlayhead: function () {
+			if (this.seeking) {
+				this.seeking = false;
+			}
+		} ,
+		/**
+		 * Get the embed player time
+		 */
+		getPlayerElementTime: function () {
+			// update currentTime
+			return this.flcurrentTime;
+		},
+		onDurationChange: function (data) {
+			var dur = this.getDuration();
+
+			if ( !this.isLive() && data > dur && mw.getConfig("EmbedPlayer.EnableURLTimeEncoding")===true ) {
+				return;
+			}
+			// Update the duration ( only if not in url time encoding mode:
+			this.setDuration(data);
+			this.playerObject.duration = data.newValue;
+		},
+		/**
+		 * Issues a seek to the playerElement
+		 *
+		 * @param {Float}
+		 *            percentage Percentage of total stream length to seek to
+		 */
+		doSeek: function (seekTime) {
+			this.seekStarted = true;
+
+				this.playerObject.playerSeek(seekTime);
+
+		},
+		/**
+		 * Issues a volume update to the playerElement
+		 *
+		 * @param {Float}
+		 *            percentage Percentage to update volume to
+		 */
+		setPlayerElementVolume: function (percentage) {
+			if (this.playerObject) {
+				this.playerObject.playerVolume(percentage*100);
+			}
+		},
+		backToLive: function () {
+			this.triggerHelper('movingBackToLive');
+			this.playerObject.playerSeek(this.duration);
 		}
 
 	};
