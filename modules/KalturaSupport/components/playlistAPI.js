@@ -77,7 +77,7 @@
 					case "playlistAPI.dataProvider":
 					case "playlistAPI":
 						if (property == "selectedIndex") {
-							_this.playMedia(value, true);
+_this.playMedia(value);
 						}
 						break;
 					case 'tabBar':
@@ -219,7 +219,7 @@
 		},
 
 		// play a clip according to the passed index. If autoPlay is set to false - the clip will be loaded but not played
-		playMedia: function (clipIndex) {
+playMedia: function (clipIndex, load) {
 			this.setSelectedMedia(clipIndex);              // this will highlight the selected clip in the UI
 			this.setConfig("selectedIndex", clipIndex);    // save it to the config so it can be retrieved using the API
 			this.embedPlayer.setKalturaConfig('playlistAPI', 'dataProvider', {'content': this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')}); // for API backward compatibility
@@ -244,7 +244,7 @@
 			// mobile devices have a autoPlay restriction, we issue a raw play call on
 			// the video tag to "capture the user gesture" so that future
 			// javascript play calls can work
-			if (mw.isMobileDevice() && embedPlayer.firstPlay) {
+if (mw.isMobileDevice() && embedPlayer.firstPlay && load) {
 				mw.log("Playlist:: issue load call to capture click for iOS");
 				try {
 					embedPlayer.getPlayerElement().load();
