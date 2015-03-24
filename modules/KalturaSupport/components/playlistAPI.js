@@ -64,7 +64,7 @@
 					case "playlistAPI.dataProvider":
 					case "playlistAPI":
 						if ( property == "selectedIndex"){
-							_this.playMedia(value, true);
+_this.playMedia(value);
 						}
 						break;
 					case 'tabBar':
