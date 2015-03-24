@@ -60,12 +60,12 @@
     var mediaProxyKalturaToolKitVideo = {
         'entry':{
             'id': "chromecast_debug",
-            'name': "My ToolKit Video",
-            "description": "Kaltura Player toolkit Description.",
-            "plays":1234,
-            "views":47332,
-            "duration":114,
-            "createdAt":1379965720,
+            'name': "DRM Test",
+            "description": "Kaltura Player DRM test entry",
+            "plays": 1234,
+            "views": 47332,
+            "duration": 114,
+            "createdAt": 1379965720,
             "thumbnailUrl": 'http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/640'
         },
 //        'entryCuePoints': [{
@@ -75,79 +75,40 @@
 //            "startTime": 4936,
 //            "sourceUrl": "http://projects.kaltura.com/mdale/hotelVastAd.xml"
 //        }],
-        "contextData":{
-            'isCountryRestricted': false
+        "contextData": {
+            'isCountryRestricted': false,
+            'flavorCustomData': {
+                a1: {},
+                a2: {
+                    "license":{
+                        "custom_data": "eyJjYV9zeXN0ZW0iOiJPVFQiLCJ1c2VyX3Rva2VuIjoiMTIzNDU2IiwiYWNjb3VudF9pZCI6IjE0NyIsImNvbnRlbnRfaWQiOiJhbWlzaGFpX3Rlc3QiLCJmaWxlX2lkcyI6W10sInBsYXRmb3JtIjoiV2ViIn0=",
+                        "signature": "WpnlZ7QC364kYR4z8QsUrEwqVd4%3D"
+                    },
+                    "contentId": "Fu9sZgv2Sni4Bl64NBNR/A=="
+                }
+            }
         },
         'entryMetadata': {
             'thumbSlicesUrl': 'http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/100/vid_slices/100',
             'AgeGroup': "16"
         },
-        'sources':[
+        'sources': [
+            //{
+                //"src": "http://demo.castlabs.com/media/rio_enc/Manifest.mpd",
+                //"width": "624",
+                //"height": "352",
+                //"bandwidth": "740352",
+                //"type": "video/dash",
+                //"assetid": "a1"
+            //},
             {
-                "src":"http://demo.castlabs.com/media/rio_enc/Manifest.mpd",
-                "width":"624",
-                "height":"352",
-                "bandwidth":"740352",
-                "type":"video/dash;"
+                "src": "http://192.168.162.193/player/test/amishai_test.ism/manifest",
+                "type": "video/playreadySmooth",
+                "assetid": "a2"
             }
         ]
-    }
 
-    var mediaProxySinte = {
-        'entry':{
-            'id': "key_2",
-            'name': "Sintel Title",
-            "description": "Sintel Description here",
-            "plays":1234,
-            "views":47332,
-            "duration":114,
-            "createdAt":1379965720,
-            "updatedAt":1384465538,
-            "thumbnailUrl": 'http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/0_c0r624gh/version/100004/width/640'
-        },
-        'entryCuePoints': [{
-            // see enum mappings here:
-            "protocolType": 1,
-            "adType": 1,
-            "cuePointType": "adCuePoint.Ad",
-            "duration": 5005,
-            "startTime": 4936,
-            "endTime": 9941,
-            "sourceUrl": "http://projects.kaltura.com/mdale/hotelVastAd.xml"
-        }],
-        "contextData":{
-            'isCountryRestricted': false
-        },
-        'entryMetadata': {
-            'thumbSlicesUrl': 'http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/0_c0r624gh/version/100004/width/100/vid_slices/100',
-            'AgeGroup': "16"
-        },
-        'sources':[
-            {
-                "src":"http://cdnbakmi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_c0r624gh/flavorId/0_1c89hhxb/format/url/protocol/http/a.webm",
-                "width":"816",
-                "height":"352",
-                "bandwidth":"637652",
-                "type":"video/webm; codecs=\"vp8, vorbis",
-            },{
-                "src":"http://cdnbakmi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_c0r624gh/flavorId/0_w3aolq8p/format/url/protocol/http/a.mp4",
-                "width":"640",
-                "height":"272",
-                "bandwidth":"9688824",
-                "type":"video/mp4; codecs=\"avc1.42E01E, mp4a.40.2",
-            },{
-                "src":"http://cdnbakmi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_c0r624gh/flavorId/0_w48dtkyq/format/url/protocol/http/a.mp4",
-                "width":"1280",
-                "height":"544",
-                "bandwidth":"15352248",
-                "type":"video/mp4; codecs=\"avc1.42E01E, mp4a.40.2",
-            },
-            {
-                "src":"http://cdnbakmi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_c0r624gh/flavorIds/1_tj3uq03m,0_w48dtkyq/format/applehttp/protocol/http/a.m3u8",
-                "type":"application/vnd.apple.mpegurl",
-            }
-        ]
-    }
+    };
 
     kWidget.embed('videoTarget', {
         'wid' : '_partnerkey',
@@ -155,27 +116,16 @@
         'flashvars':{
             "EmbedPlayer": {
                 DrmConfig: {
-                    "drm": "auto",
                     "customData":{
-                        "userId": "purchase",
-                        "sessionId": "p0",
-                        "merchant": "six"
+                        "userId": "123456"
                     },
-                    "sendCustomData": true,
-                    "widevineHeader": {
-                        "provider": "castlabs",
-                        "contentId": "fkj3ljaSdfalkr3j",
-                        "trackType": "",
-                        "policy": ""
-                    },
-                    "autoplay": false
+                    debug: true
                 }
             },
             'jsonConfig':jsonConfig,
             // per entity settings:
             'mediaProxy': mediaProxyKalturaToolKitVideo
         }
-
     });
 </script>
 
