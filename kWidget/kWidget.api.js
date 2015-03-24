@@ -124,7 +124,7 @@ kWidget.api.prototype = {
 		// Access-Control-Allow-Origin:* most browsers support this. 
 		// ( old browsers with large api payloads are not supported )
 		var userAgent = navigator.userAgent.toLowerCase();
-		var forceJSONP = ( userAgent.indexOf('msie 8') !== -1 || userAgent.indexOf('msie 9') !== -1 );
+		var forceJSONP = ( userAgent.indexOf('msie 8') !== -1 || userAgent.indexOf('msie 9') !== -1 || userAgent.indexOf('msie 10') !== -1 );
 		try {
 			if ( forceJSONP ){
 				throw "forceJSONP";
