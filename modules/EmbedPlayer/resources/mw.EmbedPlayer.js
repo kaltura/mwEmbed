@@ -1810,6 +1810,7 @@
 		 * Updates the poster HTML
 		 */
 		updatePosterHTML: function () {
+            mw.log('!!EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
 			mw.log('EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
 			var _this = this;
 
@@ -3152,7 +3153,7 @@
 				if (!message || message == undefined){
 					message = this.getKalturaMsg('ks-CLIP_NOT_FOUND');
 				}
-				this.showErrorMsg({ title: this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'), message: message });
+                this.showErrorMsg({ title: this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'), message: message });
 
 			}
 		},

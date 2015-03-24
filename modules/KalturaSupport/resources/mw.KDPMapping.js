@@ -528,6 +528,13 @@
 							} else {
 								return "";
 							}
+							break;
+						case 'streamerType':
+							if (embedPlayer){
+								return embedPlayer.streamerType;
+							}
+							return "";
+							break;
 					}
 					break;
 				case 'embedServices':

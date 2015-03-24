@@ -22,7 +22,9 @@
 			//hide live indicators when playing offline from DVR
 			hideOfflineIndicators: false,
 			//hide currentTimeLabel when livestream is not DVR
-			hideCurrentTimeLabel: true
+			hideCurrentTimeLabel: true,
+            //show thumbnail if livestream becomes offline
+            showThumbnailWhenOffline : false
 		},
 
 		/**
@@ -42,6 +44,7 @@
 		 */
 		liveStreamStatusUpdated : false,
 
+
 		setup: function() {
 			this.addPlayerBindings();
 			this.extendApi();
@@ -57,9 +60,8 @@
 			}
 		},
 
-
 		addPoster: function(){
-			this.getPlayer().removePosterFlag = false;
+            this.getPlayer().removePosterFlag = false;
 			this.getPlayer().updatePosterHTML();
 		},
 
@@ -115,33 +117,34 @@
 
 				//if we moved from live to offline  - show message
 				if ( _this.onAirStatus && !onAirObj.onAirStatus ) {
-
 					//sometimes offline is only for a second and the message is not needed..
 					setTimeout( function() {
 						if ( !_this.onAirStatus ) {
+                            if( _this.getConfig('showThumbnailWhenOffline') ){
+                                _this.addPoster();
+                            }
 							//if we already played once it means stream data was loaded. We can continue playing in "VOD" mode
 							if ( !embedPlayer.firstPlay && _this.isDVR() ) {
-								embedPlayer.triggerHelper( 'liveEventEnded' );
+                                embedPlayer.triggerHelper( 'liveEventEnded' );
 							} else {
 								//remember last state
 								_this.playWhenOnline = embedPlayer.isPlaying();
 
-								_this.removePoster();
-								embedPlayer.layoutBuilder.displayAlert( {
-									title: embedPlayer.getKalturaMsg( 'ks-LIVE-STREAM-OFFLINE-TITLE' ),
-									message: embedPlayer.getKalturaMsg( 'ks-LIVE-STREAM-OFFLINE' ),
-									keepOverlay: true,
-									noButtons : true,
-									props: {
-										customAlertTitleCssClass: "AlertTitleTransparent",
-										customAlertMessageCssClass: "AlertMessageTransparent",
-										customAlertContainerCssClass: "AlertContainerTransparent"
-									}
-								});
-								_this.getPlayer().disablePlayControls();
-							}
-
+                                embedPlayer.layoutBuilder.displayAlert({
+                                title: embedPlayer.getKalturaMsg('ks-LIVE-STREAM-OFFLINE-TITLE'),
+                                message: embedPlayer.getKalturaMsg('ks-LIVE-STREAM-OFFLINE'),
+                                keepOverlay: true,
+                                noButtons: true,
+                                props: {
+                                    customAlertTitleCssClass: "AlertTitleTransparent",
+                                    customAlertMessageCssClass: "AlertMessageTransparent",
+                                    customAlertContainerCssClass: "AlertContainerTransparent"
+                                    }
+                                });
+                            }
+							_this.getPlayer().disablePlayControls();
 						}
+
 					}, _this.getConfig( 'offlineAlertOffest' ) );
 
 					embedPlayer.triggerHelper( 'liveOffline' );
@@ -150,8 +153,7 @@
 					if ( _this.getPlayer().removePosterFlag && !_this.playWhenOnline && !embedPlayer.isPlaying() ) {
 						_this.addPoster();
 					}
-
-					embedPlayer.layoutBuilder.closeAlert(); //moved from offline to online - hide the offline alert
+                    embedPlayer.layoutBuilder.closeAlert(); //moved from offline to online - hide the offline alert
 					if ( !_this.getPlayer().getError() ) {
 						_this.getPlayer().enablePlayControls();
 					}
