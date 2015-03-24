@@ -321,7 +321,7 @@ mw.EmbedPlayerNative = {
 		// other mobile devices ( android 4, break if we call load at play time )
 		if ( !_this.loop && mw.isIOS() ) {
 			mw.log("EmbedPlayerNative::postEmbedActions: issue .load() call");
-			vid.load();
+//			vid.load();
 		}
 	},
 	/**
@@ -984,10 +984,13 @@ mw.EmbedPlayerNative = {
 					if( _this.useNativePlayerControls() && $( _this ).find( 'video ').length == 0 ){
 						$( _this ).hide();
 					}
-					if( !( mw.isIphone() && mw.isIOS80() ) ) {
-						// update the preload attribute to auto
-						$( _this.getPlayerElement() ).attr('preload',"auto" );
-					}
+					// update the preload attribute to auto
+// if it's iOS8 the native iOS player won't be shown
+if( !( mw.isIphone() && mw.isIOS80() ) ) {
+
+					$( _this.getPlayerElement() ).attr('preload',"auto" );
+}
+
 					// issue a play request
 					_this.getPlayerElement().play();
 					// re-start the monitor:
@@ -995,7 +998,6 @@ mw.EmbedPlayerNative = {
 				}
 			} else {
 				mw.log( "EmbedPlayerNative:: parent play returned false, don't issue play on native element");
-
 			}
 		}
 
