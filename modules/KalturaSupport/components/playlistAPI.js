@@ -42,6 +42,7 @@
 		videoWidth: null,        // used to save the video width when exiting to full screen and returning
 		multiplePlayListsReady: false, //Indicate if multiplaylist selector is ready
 		playerIsReady: false,
+		redrawOnResize: true,
 
 		setup: function (embedPlayer) {
 			if (this.getConfig('includeInLayout') === false) { // support hidden playlists - force onPage and hide its div.
@@ -67,6 +68,12 @@
 					//Revert block player display after selecting playlist entry
 					_this.getPlayer()['data-blockPlayerDisplay'] = false;
 				}
+
+				// prevent iframe resize layout refresh  on iOS8
+				if ( mw.isIOS8() ){
+					_this.redrawOnResize = false;
+				}
+
 				_this.unbind('playerReady'); // we want to select the playlist only the first time the player loads
 			});
 
@@ -82,7 +89,7 @@
 					case "playlistAPI.dataProvider":
 					case "playlistAPI":
 						if (property == "selectedIndex") {
-							_this.playMedia(value, true);
+_this.playMedia(value);
 						}
 						break;
 					case 'tabBar':
@@ -121,9 +128,17 @@
 				_this.getMedialistHeaderComponent().find(".playlistBtn").removeClass("disabled");
 			});
 
+			$( this.embedPlayer ).bind('onOpenFullScreen', function() {
+				_this.redrawOnResize = false;
+			});
+
+			$( this.embedPlayer ).bind('onCloseFullScreen', function() {
+				setTimeout(function(){_this.redrawOnResize = true;},2000);
+			});
+
 			// set responsiveness
 			this.bind('updateLayout', function(){
-				if (!_this.getPlayer().layoutBuilder.isInFullScreen()) {
+				if (!_this.getPlayer().layoutBuilder.isInFullScreen() && _this.redrawOnResize) {
 					if ( $( ".playlistInterface" ).width() / 3 > _this.getConfig( 'mediaItemWidth' ) ) {
 						_this.setConfig( 'mediaItemWidth', $( ".playlistInterface" ).width() / 3 );
 
@@ -224,7 +239,7 @@
 		},
 
 		// play a clip according to the passed index. If autoPlay is set to false - the clip will be loaded but not played
-		playMedia: function (clipIndex) {
+playMedia: function (clipIndex, load) {
 			this.setSelectedMedia(clipIndex);              // this will highlight the selected clip in the UI
 			this.setConfig("selectedIndex", clipIndex);    // save it to the config so it can be retrieved using the API
 			this.embedPlayer.setKalturaConfig('playlistAPI', 'dataProvider', {'content': this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')}); // for API backward compatibility
@@ -249,7 +264,7 @@
 			// mobile devices have a autoPlay restriction, we issue a raw play call on
 			// the video tag to "capture the user gesture" so that future
 			// javascript play calls can work
-			if (mw.isMobileDevice() && embedPlayer.firstPlay) {
+if (mw.isMobileDevice() && embedPlayer.firstPlay && load) {
 				mw.log("Playlist:: issue load call to capture click for iOS");
 				try {
 					embedPlayer.getPlayerElement().load();
