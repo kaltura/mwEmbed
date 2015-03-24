@@ -323,7 +323,7 @@ mw.EmbedPlayerNative = {
 		// other mobile devices ( android 4, break if we call load at play time )
 		if ( !_this.loop && mw.isIOS() ) {
 			mw.log("EmbedPlayerNative::postEmbedActions: issue .load() call");
-			vid.load();
+//			vid.load();
 		}
 	},
 	/**
