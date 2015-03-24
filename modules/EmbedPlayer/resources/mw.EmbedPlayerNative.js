@@ -328,7 +328,7 @@ mw.EmbedPlayerNative = {
 		if ( !_this.loop &&
 			( mw.isIphone() || ( mw.isIpad() && mw.isIOS5() ) ) ) {
 			mw.log("EmbedPlayerNative::postEmbedActions: issue .load() call");
-			vid.load();
+//			vid.load();
 		}
 	},
 	/**
