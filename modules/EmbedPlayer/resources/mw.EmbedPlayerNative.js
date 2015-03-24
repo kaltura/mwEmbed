@@ -331,7 +331,7 @@ mw.EmbedPlayerNative = {
 		if ( !_this.loop &&
 			( mw.isIphone() || ( mw.isIpad() && mw.isIOS5() ) ) ) {
 			mw.log("EmbedPlayerNative::postEmbedActions: issue .load() call");
-			vid.load();
+//			vid.load();
 		}
 	},
 	/**
@@ -1059,7 +1059,7 @@ mw.EmbedPlayerNative = {
 					}
 					// issue a play request
 					if( !_this.playing ) {
-						if( mw.isIOS8() && mw.isIphone() ) {
+						if( 0 && mw.isIOS8() && mw.isIphone() ) {
 							setTimeout( function() {
 								vid.play();
 							}, 0);
