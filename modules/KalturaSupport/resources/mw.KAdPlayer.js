@@ -1584,6 +1584,8 @@ mw.KAdPlayer.prototype = {
 					//enable user clicks
 					if ( !mw.isIphone() ) {
 						_this.embedPlayer.getInterface().find( '.mwEmbedPlayer' ).hide();
+					}else{
+						_this.embedPlayer.getPlayerElement().load();
 					}
 					$( '#' + vpaidId ).css( "width", 0 );
 					$( '#' + vpaidId ).css( "height", 0 );
