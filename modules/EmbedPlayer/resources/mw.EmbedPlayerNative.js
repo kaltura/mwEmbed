@@ -288,7 +288,7 @@ mw.EmbedPlayerNative = {
 		// other mobile devices ( android 4, break if we call load at play time )
 		if ( !_this.loop && mw.isIOS() ) {
 			mw.log("EmbedPlayerNative::postEmbedActions: issue .load() call");
-			vid.load();
+//			vid.load();
 		}
 	},
 	/**
@@ -888,6 +888,7 @@ mw.EmbedPlayerNative = {
 			this.restorePlayerOnScreen();
 		}
 
+if (this.firstPlay && !this.loop && mw.isIOS()){vid.load();}
 		// Run parent play:
 		if( _this.parent_play() ){
 			if ( this.getPlayerElement() && this.getPlayerElement().play ) {
