@@ -26,17 +26,19 @@
 
 	function getDrmConfig(config){
 		var defaultConfig = {
+			"drm": "auto",
 			"customData": {
-				"userId": "purchase" ,
-				"sessionId": "p0" ,
-				"merchant": "six"
+				"userId": null ,
+				"sessionId": "castlab-session" ,
+				"merchant": "kaltura"
 			},
+			"sendCustomData": true,
 			"assetId": null , //coguid //entryid
 			"variantId": null , //flavorid
 			"authenticationToken": null ,
-			"widevineLicenseServerURL": null, //"https://lic.staging.drmtoday.com/license-proxy-widevine/cenc/" ,
-			"accessLicenseServerURL": null, //"https://lic.staging.drmtoday.com/flashaccess/LicenseTrigger/v1" ,
-			"autoplay": false ,
+			"widevineLicenseServerURL": null,
+			"accessLicenseServerURL": null,
+			"autoplay": false,
 			"widht":"100%",
 			"height":"100%",
 			"flashFile": 'http://localhost/dashas/dashas.swf',
@@ -44,41 +46,7 @@
 			"techs": ["dashjs", "dashas"] ,
 			"debug": false
 		};
-		return $.extend(defaultConfig, config);
-
-
-		//var defaultConfig = {
-		//	"drm": "auto",
-		//	"keyId": "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE ",
-		//	"customData":{
-		//		"userId": "user1", "sessionId": "123", "merchant": "merchantid"
-		//	},
-		//	"assetId": "asset_001",
-		//	"variantId": "",
-		//	"authenticationToken": "xxx",
-		//	"sendCustomData": true,
-		//	"playReadyLicenseServerURL": "https://lic.staging.drmtoday.com/license-proxy- headerauth/drmtoday/RightsManager.asmx",
-		//	"widevineLicenseServerURL": "https://lic.staging.drmtoday.com/license-proxy-widevine/cenc/",
-		//	"accessLicenseServerURL": "https://lic. staging.drmtoday.com/flashaccess/LicenseTrigger/v1",
-		//	"generatePSSH": true,
-		//	"widevineHeader": {
-		//		"provider": "test_provider",
-		//		"contentId": "123",
-		//		"trackType": "",
-		//		"policy": ""
-		//	},
-		//	"playreadyHeader": {
-		//		"laUrl": "http://lic.staging.drmtoday.com/license-proxy- headerauth/drmtoday/RightsManager.asmx",
-		//		"luiUrl": "https://example.com"
-		//	},
-		//	"autoplay": true,
-		//	"debug": true,
-		//	"flashFile": 'dashas/dashas.swf',
-		//	"width" : "640px",
-		//	"height" : "320px",
-		//	"techs" : ["dashas","dashjs","silverlight"],
-		//	"enableSmoothStreamingCompatibility" : true
-		//};
+		return $.extend(true, defaultConfig, config);
 	}
 
 	//Load 3rd party plugins if DRM sources are available

@@ -220,19 +220,39 @@
 			drmConfig.assetId = this.kentryid;
 			drmConfig.variantId = assetId;
 
+			if (this.shouldGeneratePssh()) {
+				drmConfig.generatePSSH = true;
+				drmConfig.isSmoothStreaming = true;
+				drmConfig.enableSmoothStreamingCompatibility = true;
+				drmConfig.widevineHeader = {
+					"provider": "castlabs",
+					"contentId": this.getAuthenticationToken( assetId ),
+					"trackType": "HD",
+					"policy": ""
+				};
+			}
+
 			var eventObj = {
 				customString: drmConfig
 			};
-
 			this.triggerHelper('challengeCustomData', eventObj);
 			drmConfig = eventObj.customString;
 
-			drmConfig.widevineHeader.contentId = this.getAuthenticationToken(assetId);
 			this.dashPlayer = new castLabs.DashEverywhere(drmConfig);
 
 			var videoSource = this.getSrc(this.currentTime);
 			this.dashPlayer.loadVideo(videoSource);
 			this.playerObject = this.dashPlayer.getPlayer();
+		},
+		shouldGeneratePssh: function(){
+			var source = this.getSource();
+			var res;
+			if (source){
+				res = ( source.mimeType === "video/ism" || source.mimeType === "video/playreadySmooth" );
+			} else {
+				res = false;
+			}
+			return res;
 		},
 		getLicenseData: function(assetId){
 			var flavorCustomData = this.kalturaContextData.flavorCustomData[assetId];
