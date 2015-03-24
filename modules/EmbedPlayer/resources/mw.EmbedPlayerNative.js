@@ -321,7 +321,7 @@ mw.EmbedPlayerNative = {
 		// other mobile devices ( android 4, break if we call load at play time )
 		if ( !_this.loop && mw.isIOS() ) {
 			mw.log("EmbedPlayerNative::postEmbedActions: issue .load() call");
-			vid.load();
+//			vid.load();
 		}
 	},
 	/**
@@ -981,7 +981,12 @@ mw.EmbedPlayerNative = {
 						$( _this ).hide();
 					}
 					// update the preload attribute to auto
+// if it's iOS8 the native iOS player won't be shown
+if( !( mw.isIphone() && mw.isIOS80() ) ) {
+
 					$( _this.getPlayerElement() ).attr('preload',"auto" );
+}
+
 					// issue a play request
 					_this.getPlayerElement().play();
 					// re-start the monitor:
