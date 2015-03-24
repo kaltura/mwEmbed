@@ -333,7 +333,7 @@
 			if (!_this.loop &&
 				( mw.isIphone() || ( mw.isIpad() && mw.isIOS5() ) )) {
 				mw.log("EmbedPlayerNative::postEmbedActions: issue .load() call");
-				vid.load();
+//				vid.load();
 			}
 		},
 		/**
@@ -1071,7 +1071,7 @@
 						}
 						// issue a play request
 						if (!_this.playing) {
-							if (mw.isIOS8() && mw.isIphone()) {
+							if (0 && mw.isIOS8() && mw.isIphone()) {
 								setTimeout(function () {
 									vid.play();
 								}, 0);
@@ -1402,7 +1402,7 @@
 			var _this = this;
 			if (this.getPlayerElement()) {
 				mw.log('EmbedPlayer:native: onended:' + this.playerElement.currentTime + ' real dur:' + this.getDuration() + ' ended ' + this._propagateEvents);
-				if (this._propagateEvents) {
+				if (this._propagateEvents && !this.isLive()) {
 					this.onClipDone();
 				}
 			}
