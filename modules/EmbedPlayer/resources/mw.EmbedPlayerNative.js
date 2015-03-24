@@ -328,7 +328,7 @@ mw.EmbedPlayerNative = {
 		if ( !_this.loop &&
 			( mw.isIphone() || ( mw.isIpad() && mw.isIOS5() ) ) ) {
 			mw.log("EmbedPlayerNative::postEmbedActions: issue .load() call");
-			vid.load();
+//			vid.load();
 		}
 	},
 	/**
@@ -1012,7 +1012,12 @@ mw.EmbedPlayerNative = {
 						$( _this ).hide();
 					}
 					// update the preload attribute to auto
+// if it's iOS8 the native iOS player won't be shown
+if( !( mw.isIphone() && mw.isIOS80() ) ) {
+
 					$( _this.getPlayerElement() ).attr('preload',"auto" );
+}
+
 					// issue a play request
 					if( !_this.playing ) {
 						_this.getPlayerElement().play();
