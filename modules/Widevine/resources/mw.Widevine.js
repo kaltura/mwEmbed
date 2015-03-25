@@ -75,6 +75,12 @@
 							if ( _this.getPlayer().selectedPlayer.library == "NativeComponent" ) {
 								_this.getPlayer().getPlayerElement().attr( 'wvServerKey', _this.widevineObj().getEmmUrl()
 									+ "&format=widevine&flavorAssetId=" + flavors[0].getAssetId() + "&ks=" + _this.kClient.getKs() );
+								if(_this.getPlayer().autoplay && kWidget.isMobileDevice()){
+									setTimeout(function(){
+										_this.getPlayer().play();
+									},0);
+
+								}
 							}
 						}
 						//if we received non wv flavors we can play them. continue.
