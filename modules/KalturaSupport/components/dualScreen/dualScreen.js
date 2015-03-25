@@ -64,6 +64,24 @@
 				return (!this.getPlayer().useNativePlayerControls() &&
 					( ( this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) || cuePointsExist));
 			},
+			roundPercisionFloat: function(value, exp){
+				// If the exp is undefined or zero...
+				if (typeof exp === 'undefined' || +exp === 0) {
+					return Math.round(value);
+				}
+				value = +value;
+				exp = +exp;
+				// If the value is not a number or the exp is not an integer...
+				if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0)) {
+					return NaN;
+				}
+				// Shift
+				value = value.toString().split('e');
+				value = Math.round(+(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp)));
+				// Shift back
+				value = value.toString().split('e');
+				return +(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp));
+			},
 			getCuePoints: function(){
 				var cuePoints = [];
 				var _this = this;
@@ -369,25 +387,27 @@
 							var secondScreenProps = _this.getSecondMonitor().prop;
 							var playerWidth = _this.getPlayer().getWidth();
 							var playerHeight = _this.getPlayer().getHeight();
-							var widthRatio = (playerWidth / _this.previousPlayerWidth).toFixed( 2 );
-							var heightRatio = (playerHeight / _this.previousPlayerHeight).toFixed( 2 );
-
+							var widthRatio = (playerWidth / _this.previousPlayerWidth);
+							var heightRatio = (playerHeight / _this.previousPlayerHeight);
 							//Save current dimensions for next differential calculation
 							_this.previousPlayerWidth = playerWidth;
 							_this.previousPlayerHeight = playerHeight;
 
 							//Calculate and apply new screen properties
-							var newWidth = parseInt( (secondScreenProps.width.replace( 'px', '' ) * widthRatio).toFixed( 2 ), 10 );
-							var newHeight = parseInt( newWidth * _this.getConfig( 'secondScreen' ).widthHeightRatio, 10 );
-							var topOffset = parseInt( (secondScreenProps.top.replace( 'px', '' ) * heightRatio).toFixed( 2 ), 10 );
-							var leftOffset = parseInt( (secondScreenProps.left.replace( 'px', '' ) * widthRatio).toFixed( 2 ), 10 );
+							var screenWidth = secondScreenProps.width.replace( 'px', '' );
+							var screenWidthHeightRatio = _this.getConfig( 'secondScreen' ).widthHeightRatio;
+							var screenTop = secondScreenProps.top.replace( 'px', '' );
+							var screenLeft = secondScreenProps.left.replace( 'px', '' );
+							var newWidth = _this.roundPercisionFloat((screenWidth * widthRatio), -2);
+							var newHeight = _this.roundPercisionFloat(screenWidthHeightRatio * newWidth, -2);
+							var topOffset = _this.roundPercisionFloat((screenTop * heightRatio), -2);
+							var leftOffset = _this.roundPercisionFloat((screenLeft * widthRatio), -2);
 							var screenProps = {
 								height: newHeight + "px",
 								width: newWidth + "px",
 								top: topOffset + "px",
 								left: leftOffset + "px"
 							};
-
 							if ( newHeight + topOffset > playerHeight ) {
 								screenProps.top = (playerHeight - newHeight) + "px";
 							}
