@@ -372,7 +372,7 @@
 			if (this.isDisabled || this.loadingEntry) {
 				return;
 			}
-			if (this.getConfig("loop") == true && this.currentClipIndex != null && this.currentClipIndex == this.mediaList.length - 1) { // support loop
+			if (this.getConfig("loop") == true && this.currentClipIndex != null && parseInt(this.currentClipIndex) == this.mediaList.length - 1) { // support loop
 				this.currentClipIndex = -1;
 			}
 			if (this.currentClipIndex != null && this.currentClipIndex < this.mediaList.length - 1) {
