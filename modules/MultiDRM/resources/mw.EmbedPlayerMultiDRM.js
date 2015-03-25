@@ -227,7 +227,7 @@
 				drmConfig.widevineHeader = {
 					"provider": "castlabs",
 					"contentId": this.getAuthenticationToken( assetId ),
-					"trackType": "HD",
+					"trackType": "SD_HD",
 					"policy": ""
 				};
 			}

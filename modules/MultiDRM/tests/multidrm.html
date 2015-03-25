@@ -57,7 +57,7 @@
         }
     };
     // per entry settings
-    var mediaProxyKalturaToolKitVideo = {
+    var mediaProxyKalturaEntryData = {
         'entry':{
             'id': "chromecast_debug",
             'name': "DRM Test",
@@ -85,6 +85,13 @@
                         "signature": "WpnlZ7QC364kYR4z8QsUrEwqVd4%3D"
                     },
                     "contentId": "Fu9sZgv2Sni4Bl64NBNR/A=="
+                },
+                a3: {
+                    "license":{
+                        "custom_data": "eyJjYV9zeXN0ZW0iOiJPVFQiLCJ1c2VyX3Rva2VuIjoiMTIzNDU2IiwiYWNjb3VudF9pZCI6IjE0NyIsImNvbnRlbnRfaWQiOiJCaWdCdWNrQnVubnkiLCJmaWxlX2lkcyI6IiJ9",
+                        "signature": "w0rD23ozL4u7Og/t2mXUaJvfjN0%3D"
+                    },
+                    "contentId": "TycikTMV90+oqZBlPwKFsg=="
                 }
             }
         },
@@ -101,10 +108,15 @@
                 //"type": "video/dash",
                 //"assetid": "a1"
             //},
+//            {
+//                "src": "http://192.168.162.193/player/test/amishai_test.ism/manifest",
+//                "type": "video/playreadySmooth",
+//                "assetid": "a2"
+//            },
             {
-                "src": "http://192.168.162.193/player/test/amishai_test.ism/manifest",
+                "src": "http://52.17.80.196/dest/BigBuckBunny.ism/manifest", //http://192.168.162.193/player/bigbuckbunny/bigbuckbunny.ism/manifest"
                 "type": "video/playreadySmooth",
-                "assetid": "a2"
+                "assetid": "a3"
             }
         ]
 
@@ -119,12 +131,13 @@
                     "customData":{
                         "userId": "123456"
                     },
+                    "ignoreManifestBufferSettings": true,
                     debug: true
                 }
             },
             'jsonConfig':jsonConfig,
             // per entity settings:
-            'mediaProxy': mediaProxyKalturaToolKitVideo
+            'mediaProxy': mediaProxyKalturaEntryData
         }
     });
 </script>
