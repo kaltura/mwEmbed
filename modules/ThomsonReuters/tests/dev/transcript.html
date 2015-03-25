@@ -1,0 +1,56 @@
+<!-- will be rendered dynamically with JavaScript -->
+<div class="inner-right-container">
+	<div class="tabs">
+		<div class="btn transcript active" data-tab="transcript">Transcript</div>
+		<div class="btn info">More Info</div>
+	</div>
+	<div class="tabs-content">
+		<div id="transcript-tab" class="tab-content">
+			<div class="search-box">
+				<form>
+					<div class="input-wrapper">
+						<span class="input-placeholder">Enter Search Term</span>
+						<input type="text" value="">
+						<a class="search-btn"></a>
+					</div>
+				</form>
+			</div>
+			<div class="transcript-wrapper webkit-scrollbar">
+				<div class="ri-transcript-type ri-transcript-type--automatic">- Automatically Generated -</div>
+				<div class="ri-transcript-type ri-transcript-type--verified">- Reviewed for Accuracy -</div>
+				<div class="transcript-body"></div>
+			</div>
+			<div class="mentioned-terms-wrapper">
+				<div>
+					<div class="mentioned-terms-switch">
+						<span class="mentioned-terms-switch-btn">
+							<span class="mentioned-terms-switch-btn-icon"></span>
+						</span>
+						<span class="mentioned-terms-switch-caption">Mentioned Terms:</span>
+					</div>
+					<div class="mentioned-terms-categories">
+						<div class="mentioned-terms-category">
+							<span class="mentioned-terms-category-caption">companies:</span>
+							<span id="companiesTerms" class="mentioned-terms-category-entries"></span>
+						</div>
+						<div class="mentioned-terms-category">
+							<span class="mentioned-terms-category-caption">geography:</span>
+							<span id="locationsTerms" class="mentioned-terms-category-entries"></span>
+						</div>
+						<div class="mentioned-terms-category">
+							<span class="mentioned-terms-category-caption">keywords:</span>
+							<span id="keywordsTerms" class="mentioned-terms-category-entries"></span>
+						</div>
+						<div class="mentioned-terms-category">
+							<span class="mentioned-terms-category-caption">people:</span>
+							<span id="peopleTerms" class="mentioned-terms-category-entries"></span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="info-tab" class="tab-content hide">
+
+		</div>
+	</div>
+</div>

@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+	<title>Kaltura Player</title>
+	<script type="text/javascript" src="../../../../mwEmbedLoader.php"></script>
+</head>
+<body>
+	<div class="tr-top-bar">
+		<div class="tr-top-logo">REUTERS&nbsp;<span class="tr-logo-sub">INSIDER</span></div>
+	</div>
+	<div class="right-container"><!-- render transcript plugin to this div --></div>	
+	<div class="left-container">
+		<div class="player-buttons">
+			<!-- render player-actions plugin to this div -->
+		</div>
+		<div id="kPlayer" style="height: 410px;"></div>
+	</div>
+<script>
+// Force HTML5 player
+mw.setConfig('forceMobileHTML5', true);
+
+// get embed config from location.hash
+function getConfigFromLocationHash() {
+	try {
+		return JSON.parse(location.hash.substring(1));
+	} catch(e) {
+		kWidget.log('TR: Unable to parse JSON from location.hash');
+		return {};
+	}
+}
+
+// Merge config from location.hash & Embed the player
+kWidget.embed(kWidget.extend({
+	targetId: 'kPlayer',
+	flashvars: {
+		'topBarContainer.hover': true,
+		'autoPlay': true,
+		'trTitle.createTopBar': false,
+		'trTranscript.plugin': true,
+		'playlistAPI':{
+			'mediaItemWidth': 110, // 443 (player width) / 4 items is 110 per item
+			'itemsToShow': 4,				
+			'autoPlay': true,
+			'autoContinue': true
+		}
+	}
+}, getConfigFromLocationHash()));
+</script>
+</body>
+</html>
