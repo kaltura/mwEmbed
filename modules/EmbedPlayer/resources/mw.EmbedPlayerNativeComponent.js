@@ -361,6 +361,10 @@
 		 * returns true if device can auto play
 		 */
 		canAutoPlay: function () {
+			var flavors = _this.getPlayer().mediaElement.getPlayableSources();
+			if ( flavors && flavors.length && ( flavors[0].objectType == "KalturaWidevineFlavorAsset" || flavors[0].getFlavorId() == "wvm" ) ) {
+				return false;
+			}
 			return true;
 		},
 
