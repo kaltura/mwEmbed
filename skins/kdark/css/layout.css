@@ -54,6 +54,7 @@ body { letter-spacing: 0.04em; }
 }
 #sideBarContainerReminderContainer{
     font-size: 32px;
+    color: rgb(255, 255, 255);
 }
 @media all and  (max-width: 640px) {
     #sideBarContainerReminderContainer{
