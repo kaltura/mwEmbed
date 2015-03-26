@@ -52,8 +52,8 @@
 			this.bind( 'sourceSwitchingStarted', function(){
 				_this.onDisable();
 			});
-			this.bind( 'sourceSwitchingEnd', function(){
-				_this.onEnable();
+			this.bind( 'sourceSwitchingEnd', function(newIndex){
+                _this.onEnable();
 			});
 
 			// Check for switch on resize option
@@ -98,6 +98,14 @@
 				_this.log("Error with getting sources");
 				return ;
 			}
+
+            if(_this.getPlayer().streamerType != "http" && !_this.getPlayer().isPlaying()){ //consider firstPlay -> check with autoplay
+                this.getMenu().addItem({
+                    'label': 'Auto',
+                    'active': true
+                });
+                return;
+            }
 
 			if( sources.length == 1 ){
 				// no need to do building menu logic. 

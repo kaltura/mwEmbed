@@ -576,7 +576,8 @@
 			this.onBitrateChange( data );
 			// TODO if we need to track source index should be top level method per each play interface having it's own adaptive logic
 			//this.mediaElement.setSourceByIndex(data.newIndex);
-			$(this).trigger('sourceSwitchingEnd', [ data ]);
+            mw.log("-------------EmbeadPlayerKPlayer::onSwitchingChangeComplete::data.newIndex " + data.newIndex);
+            $(this).trigger('sourceSwitchingEnd', [ data.newIndex ]);
 		},
 
 		onBitrateChange: function ( data ) {
