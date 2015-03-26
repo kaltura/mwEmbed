@@ -85,7 +85,7 @@
 		getComponent: function() {
 			var _this = this;
 			var eventName = 'click';
-			if (mw.isTouchDevice()){
+			if (mw.isMobileDevice()){
 				eventName = 'touchstart';
 			}
 			if( !this.$el ) {
