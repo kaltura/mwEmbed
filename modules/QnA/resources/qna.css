@@ -1,3 +1,6 @@
-.qna{
-	background-color: yellow;
+.qna .qna-label{
+	color: yellow;
+}
+.qna .question-input{
+	width: 50%;
 }

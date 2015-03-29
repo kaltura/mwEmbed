@@ -20,28 +20,42 @@
 
 		iconBtnClass: "icon-flag",
 
-		entryData: null,
-
 		setup: function () {
 			this.addBindings();
 		},
 
 		addBindings: function () {
-//			var _this = this;
-//			var embedPlayer = this.getPlayer();
-//			this.bind('layoutBuildDone', function () {
-//
-//				var entryRequest = {
-//					'service': 'baseEntry',
-//					'action': 'get',
-//					'entryId': embedPlayer.kentryid
-//				};
-//				_this.getKClient().doRequest(entryRequest, function (entryDataResult) {
-//					_this.entryData = entryDataResult;
-//					_this.showScreen();
-//				});
-//
-//			});
+			var _this = this;
+			var embedPlayer = this.getPlayer();
+
+			this.bind('preShowScreen', function (event, screenName) {
+				if ( screenName === "qna" ){
+					// prevent keyboard key actions to allow typing in share screen fields
+					embedPlayer.triggerHelper( 'onDisableKeyboardBinding' );
+				}
+			});
+			this.bind('preHideScreen', function (event, screenName) {
+				if ( screenName === "qna" ){
+					// restore keyboard actions
+					embedPlayer.triggerHelper( 'onEnableKeyboardBinding' );
+				}
+			});
+
+		},
+
+		submitQuestion: function(){
+			var embedPlayer = this.getPlayer();
+			var _this = this;
+			alert("submit: "+$(".qna .question-input").val());
+			var entryRequest = {
+				'service': 'baseEntry',
+				'action': 'get',
+				'entryId': embedPlayer.kentryid
+			};
+			_this.getKClient().doRequest(entryRequest, function (entryDataResult) {
+				alert("Got entry: "+entryDataResult.name);
+				_this.hideScreen();
+			});
 		},
 
 		getKClient: function () {
