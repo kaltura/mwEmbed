@@ -94,8 +94,7 @@
 		setup: function (readyCallback){
 			this._propagateEvents = true;
 			mw.log('EmbedPlayerMultiDRM:: Setup');
-
-			readyCallback();
+			this.initDashPlayer(readyCallback);
 		},
 		/**
 		 * Updates the supported features given the "type of player"
@@ -112,14 +111,14 @@
 			}
 			// Check if we already have a selected source and a player in the page,
 			if (this.getPlayerElement() && this.getSrc()) {
-				$(this.getPlayerElement()).attr('src', this.getSrc());
+				this.getPlayerElement().src(this.getSrc());
+				this.updateDashContext();
 			}
 			// Check if we already have a video element an apply bindings ( for native interfaces )
 			if (this.getPlayerElement()) {
 				this.applyMediaElementBindings();
 				this.playbackRate = this.getPlayerElement().playbackRate();
 			}
-
 			this.parent_updateFeatureSupport();
 		},
 		supportsVolumeControl: function () {
@@ -160,48 +159,64 @@
 			var vid = _this.getPlayerElement();
 			this.ignoreNextNativeEvent = true;
 
-			// empty out any existing sources:
-			if (vid && !mw.isIphone()) {  //if track element attached for iphone it won't be deleted
-				$(vid).empty();
+			if (vid || $('#' + this.pid).get(0)) {
+				if ( vid.src() === this.getSrc( this.currentTime ) ) {
+					_this.postEmbedActions();
+					return;
+				}
+
+				//Hide the native video tag
+				//this.hideNativePoster();
+
+				mw.log( "EmbedPlayerNative::embedPlayerHTML > play url:" + this.getSrc( this.currentTime ) + ' startOffset: ' + this.start_ntp + ' end: ' + this.end_ntp );
+
+				// Check if using native controls and already the "pid" is already in the DOM
+				if ( this.isPersistentNativePlayer() ) {
+					_this.postEmbedActions();
+					return;
+				}
+			} else {
+				// Reset some play state flags:
+				_this.bufferStartFlag = false;
+				_this.bufferEndFlag = false;
+
+				$( this ).html(
+					_this.getNativePlayerHtml()
+				);
+
+				this.initDashPlayer();
+				this.updateDashContext();
+				// Directly run postEmbedActions ( if playerElement is not available it will retry )
+				this.postEmbedActions();
 			}
-
-			// Check if we created the Player container
-			var $container = this.getPlayerContainer();
-
-			// If container exists, show the player and exit
-			if ($container.length) {
-				$container.css('visibility', 'visible');
-				_this.postEmbedActions();
-				return;
-			}
-
-			if (vid && vid(src) === this.getSrc(this.currentTime)) {
-				_this.postEmbedActions();
-				return;
-			}
-
-			//Hide the native video tag
-			this.hideNativePoster();
-
-			mw.log("EmbedPlayerNative::embedPlayerHTML > play url:" + this.getSrc(this.currentTime) + ' startOffset: ' + this.start_ntp + ' end: ' + this.end_ntp);
-
-			// Check if using native controls and already the "pid" is already in the DOM
-			if (this.isPersistentNativePlayer() && vid) {
-				_this.postEmbedActions();
-				return;
-			}
-			// Reset some play state flags:
-			_this.bufferStartFlag = false;
-			_this.bufferEndFlag = false;
-
-			this.setPlayerHtml();
-			this.initDashPlayer();
-
-			// Directly run postEmbedActions ( if playerElement is not available it will retry )
-			this.postEmbedActions();
 
 		},
-		initDashPlayer: function(){
+		initDashPlayer: function(callback){
+			if (!this.dashPlayerInitialized) {
+				var _this = this;
+				this.dashPlayerInitialized = true;
+				this.playerElement = videojs( this.pid, {
+					autoplay: false,
+					controls: false,
+					height: "100%",
+					width: "100%",
+					plugins: {
+						audiotracks: {},
+						texttracks: {}
+					},
+					techOrder: ['dasheverywhere']
+				}, function(){
+					_this.playerElement = this;
+					callback();
+				} );
+			}
+		},
+		updateDashContext: function(){
+			if (this.getPlayerElement() && this.getSrc()) {
+				this.playerElement.loadVideo( this.getSrc(), this.getDrmConfig() );
+			}
+		},
+		getDrmConfig: function(){
 			var drmConfig = mw.getConfig("EmbedPlayer.DrmConfig");
 			if (drmConfig.autoplay){
 				drmConfig.autoplay = false;
@@ -227,22 +242,13 @@
 				drmConfig.widevineHeader = {
 					"provider": "castlabs",
 					"contentId": this.getAuthenticationToken( assetId ),
-					"trackType": "SD_HD",
 					"policy": ""
 				};
 			}
 
-			var eventObj = {
-				customString: drmConfig
-			};
-			this.triggerHelper('challengeCustomData', eventObj);
-			drmConfig = eventObj.customString;
+			this.triggerHelper('updateDashContextData', {contextData: drmConfig});
 
-			this.dashPlayer = new castLabs.DashEverywhere(drmConfig);
-
-			var videoSource = this.getSrc(this.currentTime);
-			this.dashPlayer.loadVideo(videoSource);
-			this.playerObject = this.dashPlayer.getPlayer();
+			return drmConfig;
 		},
 		shouldGeneratePssh: function(){
 			var source = this.getSource();
@@ -275,13 +281,13 @@
 		 * @param {object} playerAttribtues Attributes to be override in function call
 		 * @return {object} cssSet css to apply to the player
 		 */
-		setPlayerHtml: function (playerAttribtues, cssSet) {
+		getNativePlayerHtml: function (playerAttribtues, cssSet) {
 			if (!playerAttribtues) {
 				playerAttribtues = {};
 			}
 			// Update required attributes
 			if (!playerAttribtues['id']) {
-				playerAttribtues['id'] = this.playerContainerId;
+				playerAttribtues['id'] = this.pid;
 			}
 			if (!playerAttribtues['src']) {
 				playerAttribtues['src'] = this.getSrc(this.currentTime);
@@ -305,28 +311,23 @@
 				playerAttribtues['loop'] = 'true';
 			}
 
-			this.getVideoDisplay().prepend(
-				$('<div />')
-					.attr(playerAttribtues)
-					.css(cssSet)
-					.addClass('maximize')
-					.append($('<div />')
-						.attr('id', "dasheverywhere"))
-			);
-		},
-		/**
-		 * Get the embed flash object player Element
-		 */
-		getPlayerElement: function () {
-			return this.playerObject;
+			var tagName = this.isAudio() ? 'audio' : 'video';
+
+			return    $('<' + tagName + ' />')
+				// Add the special nativeEmbedPlayer to avoid any rewrites of of this video tag.
+				.addClass('nativeEmbedPlayerPid')
+				.attr(playerAttribtues)
+				.css(cssSet);
 		},
 
-		getPlayerContainer: function () {
-			if (!this.playerContainerId) {
-				this.playerContainerId = 'multiDRM_' + this.id;
-			}
-			return $('#' + this.playerContainerId);
+
+		/**
+		 * Get /update the playerElement value
+		 */
+		getPlayerElement: function () {
+			return this.playerElement;
 		},
+
 		/**
 		 * Hide the native video tag
 		 */
@@ -356,7 +357,7 @@
 				return;
 			}
 //			// Update the player source ( if needed )
-//			if (vid.currentSrc() != this.getSrc(this.currentTime)) {
+//			if (vid.src() != this.getSrc(this.currentTime)) {
 //				vid.src(this.getSrc(this.currentTime));
 //			}
 
@@ -373,7 +374,7 @@
 				vid.controls(true);
 			}
 			// make sure the video is show ( both display and visibility attributes )
-			$( vid.contentEl() ).show().css('visibility', '');
+			//$( vid ).show().css('visibility', '');
 
 			// Apply media element bindings:
 			_this.applyMediaElementBindings();
@@ -730,8 +731,8 @@
 						}
 					}
 
-					//Re init the dash player context
-					this.initDashPlayer();
+					//Update dash player context
+					this.updateDashContext();
 					// issue the play request:
 					vid.play();
 					if (mw.isIOS()) {
@@ -764,7 +765,7 @@
 		play: function () {
 			if (this.parent_play()) {
 
-				this.playerObject.play();
+				this.getPlayerElement().play();
 				this.monitor();
 			} else {
 				mw.log("EmbedPlayerMultiDRM:: parent play returned false, don't issue play on kplayer element");
@@ -776,7 +777,7 @@
 		 */
 		pause: function () {
 			try {
-				this.playerObject.pause();
+				this.getPlayerElement().pause();
 			} catch (e) {
 				mw.log("EmbedPlayerMultiDRM:: doPause failed");
 			}
