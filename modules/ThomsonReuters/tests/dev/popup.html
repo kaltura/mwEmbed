@@ -19,6 +19,41 @@
 // Force HTML5 player
 mw.setConfig('forceMobileHTML5', true);
 
+
+//parse query string to an object
+var QueryString = function () {
+    var query_string = {};
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i=0;i<vars.length;i++) {
+        var pair = vars[i].split("=");
+        // If first entry with this name
+        if (typeof query_string[pair[0]] === "undefined") {
+            query_string[pair[0]] = pair[1];
+            // If second entry with this name
+        } else if (typeof query_string[pair[0]] === "string") {
+            var arr = [ query_string[pair[0]], pair[1] ];
+            query_string[pair[0]] = arr;
+            // If third or later entry with this name
+        } else {
+            query_string[pair[0]].push(pair[1]);
+        }
+    }
+    return query_string;
+} ();
+
+//defaults
+var entryId = "";
+var partnerId = "";
+var playlistId = "";
+var widgetType = ""; //entry or playlist. in case of entry - the playlist will be related
+var uiconfId = 1 ; //this will come from KMS
+var clipsToShow = 3; //amount of videos to show in playlist
+
+
+
+
+
 // get embed config from location.hash
 function getConfigFromLocationHash() {
 	try {
@@ -39,12 +74,15 @@ kWidget.embed(kWidget.extend({
 		'trTranscript.plugin': true,
 		'playlistAPI':{
 			'mediaItemWidth': 110, // 443 (player width) / 4 items is 110 per item
-			'itemsToShow': 4,				
+			'MinClips': 3,
 			'autoPlay': true,
 			'autoContinue': true
 		}
 	}
-}, getConfigFromLocationHash()));
+},
+
+        getConfigFromLocationHash()));
+
 </script>
 </body>
 </html>
