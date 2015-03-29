@@ -522,6 +522,19 @@
 								return "";
 							}
 							break;
+						case 'nativeVersion':
+							if ( embedPlayer ) {
+								return embedPlayer.getFlashvars( 'nativeVersion' );
+							} else {
+								return "";
+							}
+							break;
+						case 'streamerType':
+							if (embedPlayer){
+								return embedPlayer.streamerType;
+							}
+							return "";
+							break;
 					}
 					break;
 				case 'embedServices':
@@ -1226,6 +1239,7 @@
 							window.kalturaIframePackageData.entryResult = notificationData.mediaProxy;
 							// update plugin possition. Future refactor should treat mediaProxy as plugin  
 							embedPlayer.playerConfig.plugins['mediaProxy'] = notificationData.mediaProxy;
+							embedPlayer.playerConfig.plugins['mediaProxy'].manualProvider = true;
 						}
 						
 						// Run the embedPlayer changeMedia function

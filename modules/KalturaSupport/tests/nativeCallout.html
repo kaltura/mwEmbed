@@ -2,33 +2,59 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Player Skin 2.0 + JSON Config</title>
+	<title>Native Callout</title>
 	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
-	<script>mw.setConfig('forceMobileHTML5', true);</script>
 	<!--<meta name="apple-itunes-app" content="app-id=304878510">-->
 </head>
 <body>
-	<h1>Player Skin 2.0 + JSON Config</h1>
+	<h1>Native Callout</h1>
+	
 	<br />
 	<div id="kaltura_player" style="width: 585px; height: 330px;float: left;"></div>
+	<div id="kdoc-more-desc">
+	<br>The native callout plugin enables robust web to native bridge for delivery seamless native featue functionality
+	from the context of we webview player embed. By default it calls out to the "kaltura play" native application but
+	can be configured to work with other native applications. This helps bridge your web visitors into native application context. 
+You can lean more about features of native embeds on the <a href="http://knowledge.kaltura.com/kaltura-player-v2-toolkit-theme-skin-guide">player toolkit knowledge center article</a>
+</div>
+	
 	<br style="clear: both;" /><br />
 <script>
 	kWidget.featureConfig({
-		'targetId': 'kaltura_player',
-		'wid': '_243342',
-		'uiconf_id' : '21099702',
+		'targetId' : 'kaltura_player',
+		'wid' : '_243342',
+		'uiconf_id' : '20540612',
+		'entry_id' : '1_sf5ovm7u',
 		'flashvars': {
-			"confFilePath": "{libPath}/modules/KalturaSupport/tests/confFiles/jsonConfig.json",
-			"related.playlistId": "1_qui13sz2",
 			"nativeCallout": {
 				"plugin":true
 			}
-		},
-		//"entry_id": "1_sf5ovm7u"
-		"entry_id": "0_c0r624gh" // Entry with captions
+		}
 	});
 </script>
+<h3> Test your Kaltura player with Kaltura Play native app:</h3>
+To test a Kaltura web player with Kaltura play:
+<br>1. Install the Kaltura Play APP. ( <a href="https://itunes.apple.com/us/app/kaltura-play/id919225951?mt=8">iOS</a> )
+<br>2. Visit the site with your mobile device with Chrome browser on Android or Safari browser on iOS.
+<br>3. Manipulate the page URL to append the following string: <b>#forceKalturaNativeComponentPlayer</b> 
+<br>4. Refresh the page and click "play" it should launch Katlura play with the current player within the play application. 
+
+<h3> Install the Kaltura Play App:</h3>
+<a href="https://itunes.apple.com/us/app/kaltura-play/id919225951?mt=8"><img style="width:200px;"src="resources/ios-appstore-sm.png"></a>
+<a href="https://play.google.com/store/apps/details?id=com.kaltura.kalturaplayertoolkit&hl=en"><img style="width:200px;"src="resources/google-play-sm.png"></a>
+
+
+<h3> Why native ?  </h3>
+An overview of features gained with native player ( instead of web view ) is outlined in the 
+<a href="http://knowledge.kaltura.com/kaltura-player-v2-toolkit-theme-skin-guide#Why Native?">why native</a> 
+section of the getting started with Kaltura player article. <BR>
+Additional properties are available in the native App for ad tag URL evaluations, such as {utility.nativeAdId}
+
+<h3> This is great ! Can I use this player in my own app ? </h3>
+Yes. See the kaltura native sdk integration guides for <a href="http://knowledge.kaltura.com/kaltura-player-sdk-ios">iOS</a> 
+and <a href="http://knowledge.kaltura.com/kaltura-player-sdk-android">Android</a>. 
+<BR><BR>
 </body>
 </html>

@@ -11,6 +11,7 @@
 			"layout": "ontop", // "below"
 			"displayCaptions": null, // null will use user preference
 			"defaultLanguageKey": null,
+			"whiteListLanguagesCodes": null, //white list the languages by languages codes (e.g. 'en,fr' will remove all items but English and French if they exist)
 			"useCookie": true,
 			"hideWhenEmpty": false,
 			"showEmbeddedCaptions": false,
@@ -24,6 +25,7 @@
 
 		textSources: [],
 		defaultBottom: 15,
+		lastActiveCaption: null,
 
 		setup: function(){
 			var _this = this;
@@ -229,6 +231,9 @@
 		hideCaptions: function(){
 			if( !this.getConfig('displayCaptions') || this.textSources.length === 0 ) {
 				this.getMenu().clearActive();
+				if (this.getConfig('showOffButton')){
+						this.getMenu().$el.find('.offBtn').addClass('active');
+				}
 				this.getCaptionsOverlay().hide();
 				var $cc = this.embedPlayer.getInterface().find('.captionContainer' );
 				$cc.remove();
@@ -238,9 +243,11 @@
 		},
 		showCaptions: function(){
 			if( this.getConfig('displayCaptions') ) {
+				this.getMenu().clearActive();
 				this.getCaptionsOverlay().show();
 				if( this.selectedSource != null ) {
 					this.getPlayer().triggerHelper('closedCaptionsDisplayed', {language: this.selectedSource.label});
+					this.getMenu().$el.find("li").eq(this.lastActiveCaption).addClass('active');
 				}
 				if( this.getConfig('layout') == 'below' ) {
 					this.updateBelowVideoCaptionContainer();
@@ -306,7 +313,26 @@
 			}, function( data ) {
 				mw.log( "mw.ClosedCaptions:: loadCaptionsFromApi: " + data.totalCount, data.objects );
 				if( data.objects && data.objects.length ){
+					// white list languages by their label
+					if( _this.getConfig("whiteListLanguagesCodes") != null){
+						mw.log( "mw.ClosedCaptions:: whitelist : " + _this.getConfig("whiteListLanguagesCodes") );
+						var whiteListedLaguages = new Array();
+						var whiteListArr = _this.getConfig("whiteListLanguagesCodes").split(",");
+						for(var j=0 ; j<whiteListArr.length ; j++){
+							for(var i=data.objects.length-1 ; i > -1 ; i--){
+								if( data.objects[i].languageCode == whiteListArr[j]){
+									whiteListedLaguages.push(data.objects[i]);
+								}
+							}
+						}
+						data.objects = whiteListedLaguages;
+						if(!data.objects.length && _this.getConfig("hideWhenEmpty") == true){
+							_this.getBtn().hide();
+						}
+
+					}
 					_this.loadCaptionsURLsFromApi( data.objects, callback );
+
 				} else {
 					// No captions
 					callback([]);
@@ -370,6 +396,10 @@
 				captionsSrc = this.getCaptionURL( dbTextSource.id ) + '/.' + dbTextSource.fileExt;
 			}
 
+			this.bind( 'onChangeMediaDone', function () {
+				_this.embedPlayer.getInterface().find( 'track').remove();
+			});
+
 			// Try to insert the track source:
 			var embedSource = this.embedPlayer.mediaElement.tryAddSource(
 				$( '<track />' ).attr({
@@ -415,6 +445,7 @@
 				if( source ){
 					this.log('autoSelectSource: select by defaultLanguageKey: ' + defaultLangKey);
 					this.selectedSource = source;
+					this.embedPlayer.getInterface().find( '[srclang='+ defaultLangKey +']').attr("default", "true");
 					return ;
 				}				
 			}
@@ -745,12 +776,14 @@
 							_this.setConfig('displayCaptions', false);
 						} else {
 							_this.setTextSource( source );
+							_this.getActiveCaption();
 						}
 					},
 					'active': ( _this.selectedSource === source && _this.getConfig( "displayCaptions" )  )
 				})
 			});
 
+			this.getActiveCaption();
 			// Add Off item as last element
 			if( this.getConfig('showOffButton') && this.getConfig('offButtonPosition') == 'last' ) {
 				this.addOffButton();
@@ -763,6 +796,9 @@
 			var _this = this;
 			this.getMenu().addItem({
 				'label': 'Off',
+				'attributes': {
+					'class': "offBtn"
+				},
 				'callback': function(){
 					_this.setConfig('displayCaptions', false);
 					// also update the cookie to "None"
@@ -777,7 +813,7 @@
 			if( !source.loaded ){
 				this.embedPlayer.getInterface().find('.track').text( gM('mwe-timedtext-loading-text') );
 				source.load(function(){
-					_this.getPlayer().triggerHelper('newClosedCaptionsData');
+					_this.getPlayer().triggerHelper('newClosedCaptionsData' , _this.selectedSource);
 					if( _this.playbackStarted ){
 						_this.monitor();
 					}
@@ -786,6 +822,7 @@
 			this.selectedSource = source;
 
 			if( !this.getConfig('displayCaptions') ){
+				_this.getActiveCaption();
 				this.setConfig('displayCaptions', true );
 			}
 			// Save to cookie
@@ -794,6 +831,18 @@
 			}
 
 			this.getPlayer().triggerHelper('changedClosedCaptions', {language: this.selectedSource.label ? this.selectedSource.label : ""});
+		},
+		getActiveCaption: function(){
+			var _this = this;
+			var currentActiveCaption = this.getMenu().$el.find('.active').index();
+			if( this.lastActiveCaption === null ) {
+				_this.lastActiveCaption = currentActiveCaption;
+				return _this.lastActiveCaption;
+			}
+			if( this.lastActiveCaption != currentActiveCaption ) {
+				_this.lastActiveCaption = currentActiveCaption;
+				return _this.lastActiveCaption;
+			}
 		},
 		getComponent: function(){
 			var _this = this;

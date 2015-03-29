@@ -136,10 +136,8 @@ mw.KWidgetSupport.prototype = {
 				thumbUrl = embedPlayer.evaluate(mw.getConfig('thumbnailUrl'));
 			}
 			var alt = gM('mwe-embedplayer-video-thumbnail-for', embedPlayer.evaluate('{mediaProxy.entry.name}'));
-		  	embedPlayer.updatePoster( thumbUrl, alt );
-			if( embedPlayer.kalturaPlayerMetaData.mediaType === 5 ) {
-		  		embedPlayer.isAudioPlayer = true;
-		  	}		  	
+			embedPlayer.updatePoster( thumbUrl, alt );
+			embedPlayer.isAudioPlayer = ( embedPlayer.kalturaPlayerMetaData.mediaType === 5 );
 		});
 
 		// Add black sources:
@@ -163,27 +161,33 @@ mw.KWidgetSupport.prototype = {
 		});
 
 		// Example how to override embedPlayerError handler
+
 		embedPlayer.shouldHandlePlayerError = false;
-		embedPlayer.bindHelper( 'embedPlayerError' , function ( event, data, doneCallback )  {
+		embedPlayer.bindHelper( 'embedPlayerError' , function ( event , data , doneCallback ) {
 			var displayedAcError = false;
-			// check for AC error: 
-			_this.getEntryIdSourcesFromApi( embedPlayer, embedPlayer.kentryid, function( sources ){
-				// no sources, or access control error. 
-				if( ! sources || sources.message ){
+			// check for AC error:
+			if ( mw.getConfig("manualProvider") ) {
+				embedPlayer.shouldHandlePlayerError = true;
+				embedPlayer.handlePlayerError(data);
+				return;
+			}
+			_this.getEntryIdSourcesFromApi( embedPlayer , embedPlayer.kentryid , function ( sources ) {
+				// no sources, or access control error.
+				if ( !sources || sources.message ) {
 					embedPlayer.showErrorMsg( sources );
 					displayedAcError = true;
 					doneCallback();
 				}
-			});
+			} );
 			// give the above access control message 3 seconds to resolve; else show default network error
-			setTimeout(function(){
-				if( displayedAcError){
+			setTimeout( function () {
+				if ( displayedAcError ) {
 					return;
 				}
-				embedPlayer.handlePlayerError(data, true);
-			}, 3000);
-		});
-		
+				embedPlayer.handlePlayerError( data , true );
+			} , 3000 );
+		} );
+
 		// Support mediaPlayFrom, mediaPlayTo properties
 		embedPlayer.bindHelper( 'Kaltura_SetKDPAttribute', function(e, componentName, property, value){
 			if (!value) {
@@ -349,6 +353,26 @@ mw.KWidgetSupport.prototype = {
 				&&
 				mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'application/vnd.apple.mpegurl' ).length ) {
 				// Add live stream source
+				//if we're gettting the source from manual provider(mediaProxy) - add them directly
+				if (playerData.entry && playerData.entry.manualProvider){
+					if (playerData.meta.hdsStreamUrl){
+						embedPlayer.mediaElement.tryAddSource($('<source />')
+							.attr({
+								'src' : playerData.meta.hdsStreamUrl,
+								'type' : 'application/vnd.apple.mpegurl'
+							})[0] );
+					}
+					embedPlayer.mediaElement.tryAddSource(
+						$('<source />')
+							.attr({
+								'src' : playerData.meta.hlsStreamUrl,
+								'type' : 'application/vnd.apple.mpegurl'
+							})[0] );
+
+					embedPlayer.setLive( true );
+					handlePlayerData();
+					return;
+				}
 				_this.addLiveEntrySource( embedPlayer, playerData.meta, false, false, 'applehttp', function() {
 					// Set live property to true
 					embedPlayer.setLive( true );
@@ -965,6 +989,7 @@ mw.KWidgetSupport.prototype = {
 		// Check for entry cache:
 		if( window.kalturaIframePackageData && window.kalturaIframePackageData.entryResult ){
 			var entryResult =  window.kalturaIframePackageData.entryResult
+
 			this.handlePlayerData( embedPlayer, entryResult );
 			callback( entryResult );
 			// remove the entryResult from the payload
@@ -999,6 +1024,9 @@ mw.KWidgetSupport.prototype = {
 		if( errObj ) {
 			embedPlayer.hideSpinner();
 			embedPlayer.setError( errObj );
+		}
+		if (entryResult.entry && entryResult.entry.manualProvider){
+			mw.setConfig("manualProvider",true);
 		}
 	},
 
@@ -1628,8 +1656,12 @@ mw.KWidgetSupport.prototype = {
 		var thumbUrl = thumb.url;
 		// Only append width/height params if thumbnail from kaltura service ( could be external thumbnail )
 		if( thumbUrl.indexOf( "thumbnail/entry_id" ) != -1 ){
-			thumbUrl += '/width/' + thumb.width;
-			thumbUrl += '/height/' + thumb.height;
+
+			if( mw.getConfig('EmbedPlayer.ShowOriginalPoster') ){
+				thumbUrl += '/width/0/height/0';
+			} else {
+				thumbUrl += '/width/' + thumb.width + '/height/' + thumb.height;
+			}
 		}
 		return thumbUrl;
 	},

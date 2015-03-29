@@ -267,6 +267,9 @@ $(function(){
 
 <a name="kWidget"></a>
 <h2>kWidget Embedding API</h2>
+Embeding into <a href="http://knowledge.kaltura.com/kaltura-player-sdk-ios">Native iOS</a> 
+<br> Embeding into <a href="http://knowledge.kaltura.com/kaltura-player-sdk-android">Native Android</a>
+<br><br>
 The kWidget API is available after you include the Kaltura player library. kWidget provides embedding and basic utility functions.
 <br>Sample Kaltura player library include :
 <pre class="prettyprint linenums">
@@ -531,6 +534,7 @@ kdp.setKDPAttribute("theme", "buttonsSize", "14");
 		<li> <b>MediaProxy Override</b> -- Overrides media and player configuration at embed time.
 			<ul>
 				<li> Good for "light" integrations tests a few lines of JavaScript</li>
+				<li> Can be used with changeMedia, to retain CDN cache for player & config</li>
 				<li> Not good for portability, native apps, or player iframe services.</li>
 				<li> Not compatible with entity baased plugins or clip lists ( playlist, related videos, bumper ) </li> 
 			</ul>

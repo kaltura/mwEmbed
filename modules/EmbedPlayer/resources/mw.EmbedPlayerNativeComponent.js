@@ -65,6 +65,7 @@
 			'durationchange',
 			'timeupdate',
 			'progress',
+			'bufferchange',
 			'enterfullscreen',
 			'exitfullscreen',
 			'chromecastDeviceConnected',
@@ -320,7 +321,7 @@
 
 		doSeek: function (seekTime) {
 			mw.log("EmbedPlayerNativeComponent:: seek::");
-			this.getPlayerElement().attr('currentTime', seekTime*1000);
+			this.getPlayerElement().attr('currentTime', seekTime);
 		},
 
 		/**
@@ -510,6 +511,7 @@
 					this.showProgressSpinner = false;
 					this.hideSpinner();
 				}
+
 			}
 		},
 
