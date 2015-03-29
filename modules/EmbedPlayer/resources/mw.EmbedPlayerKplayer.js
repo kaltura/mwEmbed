@@ -684,7 +684,11 @@ mw.EmbedPlayerKplayer = {
 			fileExt = 'smil';
 		} else if ( this.streamerType === 'live' ) {
 			format = 'rtmp';
-		} else {
+		} else if (this.streamerType === 'hdnetworkmanifest') {
+				mediaProtocol = 'http';
+				format = this.streamerType;
+		}
+		else {
 			format = this.streamerType;
 			if ( format == 'http' ) {
 				flavorIdParam = this.mediaElement.selectedSource ? "/flavorId/" + this.mediaElement.selectedSource.getAssetId() : "";
