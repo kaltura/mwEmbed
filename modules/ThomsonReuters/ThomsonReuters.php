@@ -11,12 +11,18 @@ return array(
 	),
 	"trTranscript" =>  array(
 		'scripts' => "resources/trTranscript.js",
-		'styles'  => "resources/style.css",
 		'dependencies' => array(
 			'mw.KBasePlugin'
 		),
 		'kalturaPluginName' => 'trTranscript',
-		'messageFile'	=> 'ThomsonReuters.i18n.php',
+	),
+	"trControls" =>  array(
+		'scripts' => "resources/trControls.js",
+		'templates' => "templates/player-controls.tmpl.html",
+		'dependencies' => array(
+			'mw.KBasePlugin'
+		),
+		'kalturaPluginName' => 'trControls',
 	),
 
 );

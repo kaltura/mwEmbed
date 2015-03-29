@@ -8,10 +8,10 @@
 	<div class="tr-top-bar">
 		<div class="tr-top-logo">REUTERS&nbsp;<span class="tr-logo-sub">INSIDER</span></div>
 	</div>
-	<div class="right-container"><!-- render transcript plugin to this div --></div>	
+	<div class="right-container" id="transcriptContainer"><!-- render transcript plugin to this div --></div>	
 	<div class="left-container">
-		<div class="player-buttons">
-			<!-- render player-actions plugin to this div -->
+		<div class="player-buttons" id="playerControlsContainer">
+			<!-- render player-controls plugin to this div -->
 		</div>
 		<div id="kPlayer" style="height: 410px;"></div>
 	</div>
@@ -71,7 +71,9 @@ kWidget.embed(kWidget.extend({
 		'topBarContainer.hover': true,
 		'autoPlay': true,
 		'trTitle.createTopBar': false,
+		'trTitle.injectCssToParent': true,
 		'trTranscript.plugin': true,
+		'trControls.plugin': true,
 		'playlistAPI':{
 			'mediaItemWidth': 110, // 443 (player width) / 4 items is 110 per item
 			'MinClips': 3,
