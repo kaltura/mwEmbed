@@ -7,16 +7,15 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 	// another plugin will do that
 
 	defaultConfig: {
-		'transcriptDivId': 'captionsContainer'
+		'targetId': 'transcriptContainer'
 	},
+
 	setup: function() {
-		this.setBindeings();
-	},
-	setBindeings: function() {
 		this.bind('newClosedCaptionsData', $.proxy(function(event,source){
 			this.setTranscript(source.captions)
 		},this));
-	} ,
+	},
+
 	setTranscript : function (captions){
 		// copy the transcript data to an object, parse and manipulate it and then inject it
 		// to the dedicated div
@@ -35,7 +34,6 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 
 		$(doc).find("#"+this.getConfig('transcriptDivId')).text("");
 		$(doc).find("#"+this.getConfig('transcriptDivId')).append(htmlString);
-
 
 	}
 

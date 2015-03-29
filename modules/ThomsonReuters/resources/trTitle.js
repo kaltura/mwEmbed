@@ -6,7 +6,8 @@ mw.PluginManager.add( 'trTitle', mw.KBaseComponent.extend({
 		'order': 1,
 		'createTopBar': true,
 		'popupSize': '900x500',
-		'popupPage': 'popup.html'
+		'popupPage': 'popup.html',
+		'injectCssToParent': false
 	},
 
 	setup: function() {
@@ -15,6 +16,7 @@ mw.PluginManager.add( 'trTitle', mw.KBaseComponent.extend({
 		this.setPopupSize();
 		this.registerTemplateHelper();
 		this.bindChangeMedia();
+		this.injectCssToParent();
 	},
 
 	// Set popup object
@@ -73,6 +75,13 @@ mw.PluginManager.add( 'trTitle', mw.KBaseComponent.extend({
 		};
 		var jsonConfig = JSON.stringify(config);
 		window.open( this.getConfig('popupPage')+'#' + jsonConfig, 'trPopup', "width=" + this.popup.width + ",height=" + this.popup.height + ",top=" + top + ",left=" + left );
+	},
+
+	injectCssToParent: function() {
+		if( this.getConfig('injectCssToParent') ) {
+			var cssFilePath = kWidget.getPath() + '/modules/ThomsonReuters/resources/popup.css';
+			kWidget.appendCssUrl(cssFilePath, window['parent'].document);
+		}
 	},
 
 	getComponent: function() {
