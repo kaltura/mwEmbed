@@ -41,7 +41,7 @@
 			"autoplay": false,
 			"widht":"100%",
 			"height":"100%",
-			"flashFile": 'http://projects.kaltura.com/OrenM/dashas/dashas.swf',
+			"flashFile": mw.getConfig("EmbedPlayer.dashAsUrl"),
 			"controls": false ,
 			"techs": ["dashjs", "dashas"] ,
 			"debug": false
@@ -58,14 +58,17 @@
 		});
 		var isDrmSourceAvailable = drmSources.length > 0;
 		if (isDrmSourceAvailable){
-			$.getScript('http://projects.kaltura.com/OrenM/video.js' ).then(
-				function(){
-					$.getScript('http://projects.kaltura.com/OrenM/cldasheverywhere.min.js').then(function(){
-						var drmConfig = getDrmConfig(mw.getConfig("EmbedPlayer.DrmConfig"));
-						mw.setConfig("EmbedPlayer.DrmConfig", drmConfig);
-						callback();
-					});
-				} );
+			$.when(
+				$.getScript( mw.getConfig("EmbedPlayer.clDashPlayerUrl") ),
+				$.getScript( mw.getConfig("EmbedPlayer.dashJsUrl") ),
+				$.Deferred(function( deferred ){
+					$( deferred.resolve );
+				})
+			).done(function(){
+					var drmConfig = getDrmConfig();
+					mw.setConfig("EmbedPlayer.DrmConfig", drmConfig);
+					callback();
+				});
 		} else {
 			callback();
 		}
