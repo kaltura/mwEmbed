@@ -64,6 +64,8 @@
 				} else if (attributeName && attributeValue) {
 					_this.proxyElement[attributeName] = attributeValue;
 					_this.execute('setAttribute', [ attributeName, attributeValue ]);
+					_this.proxyElement['language'] = mw.getConfig('localizationCode');
+					_this.execute('setAttribute', [ 'language', mw.getConfig('localizationCode') ]);
 				}
 			}
 
