@@ -753,6 +753,13 @@
 				srcUrl = srcUrl + "&seekFrom=" + parseInt(this.startTime) * 1000;
 			}
 
+            //copy clientTag from original playManifest
+            if (originalSrc.indexOf("&clientTag=") !== -1) {
+                var clientTag = originalSrc.slice(originalSrc.indexOf("clientTag"));
+                clientTag = clientTag.slice(0, clientTag.indexOf("&"))
+                srcUrl = srcUrl + "&" + clientTag;
+            }
+
 			var refObj = {src: srcUrl};
 			this.triggerHelper('SourceSelected', refObj);
 			deferred.resolve(refObj.src);
