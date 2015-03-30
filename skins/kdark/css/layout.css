@@ -145,7 +145,10 @@ body { letter-spacing: 0.04em; }
     right: 0;
 }
 
-.titleLabel { padding: 8px 0 0 10px; }
+.titleLabel {
+	padding: 8px 0 0 10px;
+	color: white;
+}
 
 .controlBarContainer {
 	position: absolute;
