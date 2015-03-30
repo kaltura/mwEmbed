@@ -28,6 +28,10 @@
 			var _this = this;
 			var embedPlayer = this.getPlayer();
 
+			this.bind('layoutBuildDone', function (event, screenName) {
+				embedPlayer.getVideoHolder().append('<div style="bottom: 50px; margin: 0 auto; left: 50%; background-color: red; position: absolute">hello</div>');
+			});
+
 			this.bind('preShowScreen', function (event, screenName) {
 				if ( screenName === "qna" ){
 					// prevent keyboard key actions to allow typing in share screen fields
