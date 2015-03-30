@@ -12,10 +12,19 @@
 	<div id="kaltura_player" style="width: 585px; height: 330px;float: left;"></div>
 	<br style="clear: both;" /><br />
 <script>
+
+	function onReadyCallback(playerID){
+		window.kdp = document.getElementById( playerID );
+		kdp.kBind( 'showQuestion', function(event){
+			alert("show question ui");
+		});
+	}
+
 	kWidget.featureConfig({
 		'targetId': 'kaltura_player',
 		'wid': '_243342',
 		'uiconf_id' : '21099702',
+		'readyCallback': onReadyCallback,
 		'flashvars': {
 			'qna': {
 				'plugin': true
@@ -23,6 +32,11 @@
 		},
 		"entry_id": "0_l1v5vzh3" 
 	});
+
+	function sendQuestion(){
+		window.kdp.sendNotification("sendQuestion",{"question":$('.question').val()});
+	}
 </script>
+<input type="text" class="question" style="width: 200px"></input><button onclick="sendQuestion()">submit</button>
 </body>
 </html>

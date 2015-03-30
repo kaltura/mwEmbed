@@ -1,21 +1,10 @@
 (function (mw, $) {
 	"use strict";
 
-	mw.PluginManager.add('qna', mw.KBaseScreen.extend({
+	mw.PluginManager.add('qna', mw.KBasePlugin.extend({
 
 		defaultConfig: {
-			parent: "controlsContainer",
-			order: 5,
-			align: "right",
-			tooltip:  gM( 'qna-tooltip' ),
-			visible: true,
-			showTooltip: true,
-			displayImportance: 'medium',
 			templatePath: '../QnA/resources/qna.tmpl.html',
-
-			usePreviewPlayer: false,
-			previewPlayerEnabled: false
-
 		},
 
 		iconBtnClass: "icon-flag",
@@ -29,28 +18,20 @@
 			var embedPlayer = this.getPlayer();
 
 			this.bind('layoutBuildDone', function (event, screenName) {
-				embedPlayer.getVideoHolder().append('<div style="bottom: 50px; margin: 0 auto; left: 50%; background-color: red; position: absolute">hello</div>');
+				embedPlayer.getVideoHolder().append('<div class="qna-btn">hello</div>');
+				$(".qna-btn").on("click", function(){
+					embedPlayer.triggerHelper( 'showQuestion');
+				})
 			});
 
-			this.bind('preShowScreen', function (event, screenName) {
-				if ( screenName === "qna" ){
-					// prevent keyboard key actions to allow typing in share screen fields
-					embedPlayer.triggerHelper( 'onDisableKeyboardBinding' );
-				}
+			this.bind( 'sendQuestion', function(event, data){
+				_this.submitQuestion(data.question);
 			});
-			this.bind('preHideScreen', function (event, screenName) {
-				if ( screenName === "qna" ){
-					// restore keyboard actions
-					embedPlayer.triggerHelper( 'onEnableKeyboardBinding' );
-				}
-			});
-
 		},
 
-		submitQuestion: function(){
+		submitQuestion: function(question){
 			var embedPlayer = this.getPlayer();
 			var _this = this;
-			alert("submit: "+$(".qna .question-input").val());
 			var entryRequest = {
 				'service': 'baseEntry',
 				'action': 'get',
@@ -58,7 +39,6 @@
 			};
 			_this.getKClient().doRequest(entryRequest, function (entryDataResult) {
 				alert("Got entry: "+entryDataResult.name);
-				_this.hideScreen();
 			});
 		},
 

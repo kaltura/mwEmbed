@@ -1,6 +1,7 @@
-.qna .qna-label{
-	color: yellow;
-}
-.qna .question-input{
-	width: 50%;
+.qna-btn{
+	bottom: 50px;
+	margin: 0 auto;
+	left: 50%;
+	background-color: red;
+	position: absolute
 }
