@@ -1714,11 +1714,12 @@
 					// Reset changeMediaStarted flag
 					_this.changeMediaStarted = false;
 
+					if (!_this.isAudioPlayer) {
+						_this.removePoster();
+					}
+
 					// reload the player
 					if (_this.autoplay && _this.canAutoPlay() ) {
-						if (!_this.isAudioPlayer) {
-							_this.removePoster();
-						}
 						_this.play();
 					}
 
