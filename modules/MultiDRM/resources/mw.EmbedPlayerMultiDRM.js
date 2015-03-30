@@ -159,7 +159,7 @@
 			var vid = _this.getPlayerElement();
 			this.ignoreNextNativeEvent = true;
 
-			if (vid || $('#' + this.pid).get(0)) {
+			if (vid) {
 				if ( vid.src() === this.getSrc( this.currentTime ) ) {
 					_this.postEmbedActions();
 					return;
@@ -195,7 +195,7 @@
 			if (!this.dashPlayerInitialized) {
 				var _this = this;
 				this.dashPlayerInitialized = true;
-				this.playerElement = videojs( this.pid, {
+				this.playerElement = mw.dash.player( this.pid, {
 					autoplay: false,
 					controls: false,
 					height: "100%",
@@ -217,7 +217,7 @@
 			}
 		},
 		getDrmConfig: function(){
-			var drmConfig = mw.getConfig("EmbedPlayer.DrmConfig");
+			var drmConfig = this.getKalturaConfig('multiDrm');
 			if (drmConfig.autoplay){
 				drmConfig.autoplay = false;
 				this.autoplay = true;
@@ -236,14 +236,16 @@
 			drmConfig.variantId = assetId;
 
 			if (this.shouldGeneratePssh()) {
-				drmConfig.generatePSSH = true;
-				drmConfig.isSmoothStreaming = true;
-				drmConfig.enableSmoothStreamingCompatibility = true;
-				drmConfig.widevineHeader = {
+				var config = {};
+				config.generatePSSH = true;
+				config.isSmoothStreaming = true;
+				config.enableSmoothStreamingCompatibility = true;
+				config.widevineHeader = {
 					"provider": "castlabs",
 					"contentId": this.getAuthenticationToken( assetId ),
 					"policy": ""
 				};
+				$.extend(true, drmConfig, config);
 			}
 
 			this.triggerHelper('updateDashContextData', {contextData: drmConfig});

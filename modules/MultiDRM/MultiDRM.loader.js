@@ -3,77 +3,66 @@
  */
 ( function( mw, $ ) {
 	"use strict";
-
-	// Add multidrm player:
-	$( mw ).bind( 'EmbedPlayerUpdateMediaPlayers' , function ( event , mediaPlayers ) {
-		var multiDRMProtocols = ['video/dash'];
-		//On chrome add smooth stream mimetype support
-		if (mw.isChrome()){
-			multiDRMProtocols.push("video/ism");
-			multiDRMProtocols.push("video/playreadySmooth");
-		}
-		var multiDRMPlayer = new mw.MediaPlayer( 'multidrm' , multiDRMProtocols , 'MultiDRM' );
-		mediaPlayers.addPlayer( multiDRMPlayer );
-		// add
-		$.each( multiDRMProtocols , function ( inx , mimeType ) {
-			if ( mediaPlayers.defaultPlayers[ mimeType ] ) {
-				mediaPlayers.defaultPlayers[ mimeType ].push( 'MultiDRM' );
-				return true;
-			}
-			mediaPlayers.defaultPlayers[ mimeType ] = ['MultiDRM'];
-		} );
-	} );
-
-	function getDrmConfig(config){
-		var defaultConfig = {
-			"drm": "auto",
-			"customData": {
-				"userId": null ,
-				"sessionId": "castlab-session" ,
-				"merchant": "kaltura"
-			},
-			"sendCustomData": true,
-			"assetId": null , //coguid //entryid
-			"variantId": null , //flavorid
-			"authenticationToken": null ,
-			"widevineLicenseServerURL": null,
-			"accessLicenseServerURL": null,
-			"autoplay": false,
-			"widht":"100%",
-			"height":"100%",
-			"flashFile": mw.getConfig("EmbedPlayer.dashAsUrl"),
-			"controls": false ,
-			"techs": ["dashjs", "dashas"] ,
-			"debug": false
-		};
-		return $.extend(true, defaultConfig, config);
-	}
-
 	//Load 3rd party plugins if DRM sources are available
 	mw.addKalturaConfCheck( function( embedPlayer, callback ){
-		var sources = embedPlayer.getSources();
-		var drmSources = sources.filter(function(source){
-			return ( ( source.mimeType === "video/dash" ) ||
-					( source.mimeType === "video/ism" || source.mimeType === "video/playreadySmooth" && mw.isChrome() ) );
-		});
-		var isDrmSourceAvailable = drmSources.length > 0;
-		if (isDrmSourceAvailable){
-			$.when(
-				$.getScript( mw.getConfig("EmbedPlayer.clDashPlayerUrl") ),
-				$.getScript( mw.getConfig("EmbedPlayer.dashJsUrl") ),
-				$.Deferred(function( deferred ){
-					$( deferred.resolve );
-				})
-			).done(function(){
-					var drmConfig = getDrmConfig();
-					mw.setConfig("EmbedPlayer.DrmConfig", drmConfig);
-					callback();
-				});
+		if( embedPlayer.isPluginEnabled( 'multiDrm' ) ) {
+			registerDashPlayer();
+			var sources = embedPlayer.getSources();
+			var drmSources = sources.filter( function ( source ) {
+				return ( ( source.mimeType === "video/dash" ) ||
+				( source.mimeType === "video/ism" || source.mimeType === "video/playreadySmooth" && mw.isChrome() ) );
+			} );
+			var isDrmSourceAvailable = drmSources.length > 0;
+			if ( isDrmSourceAvailable ) {
+				$.when(
+					$.getScript( mw.getConfig( "EmbedPlayer.clDashPlayerUrl" ) ),
+					$.getScript( mw.getConfig( "EmbedPlayer.dashJsUrl" ) ),
+					$.Deferred( function ( deferred ) {
+						$( deferred.resolve );
+					} )
+				).done( function () {
+						//Get user configuration
+						var drmUserConfig = embedPlayer.getKalturaConfig("multiDrm");
+						//Get default config
+						var drmConfig = getDefaultDrmConfig();
+						//Deep extend custom config
+						$.extend(true, drmConfig, drmUserConfig);
+						embedPlayer.setKalturaConfig("multiDrm", drmConfig);
+						//Set reference for DASH playback engine
+						mw.dash = {
+							player: videojs
+						};
+						callback();
+					} );
+			} else {
+				callback();
+			}
 		} else {
 			callback();
 		}
-		return;
 	});
+
+	function registerDashPlayer(){
+		// Add multidrm player:
+		$( mw ).bind( 'EmbedPlayerUpdateMediaPlayers' , function ( event , mediaPlayers ) {
+			var multiDRMProtocols = ['video/dash'];
+			//On chrome add smooth stream mimetype support
+			if ( mw.isChrome() ) {
+				multiDRMProtocols.push( "video/ism" );
+				multiDRMProtocols.push( "video/playreadySmooth" );
+			}
+			var multiDRMPlayer = new mw.MediaPlayer( 'multidrm', multiDRMProtocols, 'MultiDRM' );
+			mediaPlayers.addPlayer( multiDRMPlayer );
+			// add
+			$.each( multiDRMProtocols, function ( inx, mimeType ) {
+				if ( mediaPlayers.defaultPlayers[mimeType] ) {
+					mediaPlayers.defaultPlayers[mimeType].unshift( 'MultiDRM' );
+					return true;
+				}
+				mediaPlayers.defaultPlayers[mimeType] = ['MultiDRM'];
+			} );
+		} );
+	}
 
 	if (!Array.prototype.filter) {
 		Array.prototype.filter = function(fun/*, thisArg*/) {
@@ -108,5 +97,30 @@
 
 			return res;
 		};
+	}
+
+	function getDefaultDrmConfig(){
+		var defaultConfig = {
+			"drm": "auto",
+			"customData": {
+				"userId": null ,
+				"sessionId": "castlab-session" ,
+				"merchant": "kaltura"
+			},
+			"sendCustomData": true,
+			"assetId": null , //coguid //entryid
+			"variantId": null , //flavorid
+			"authenticationToken": null ,
+			"widevineLicenseServerURL": null,
+			"accessLicenseServerURL": null,
+			"autoplay": false,
+			"widht":"100%",
+			"height":"100%",
+			"flashFile": mw.getConfig("EmbedPlayer.dashAsUrl"),
+			"controls": false ,
+			"techs": ["dashjs", "dashas"] ,
+			"debug": false
+		};
+		return defaultConfig;
 	}
 } )( window.mediaWiki, window.jQuery );
