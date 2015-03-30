@@ -59,6 +59,7 @@ body {
 }
 #sideBarContainerReminderContainer{
     font-size: 32px;
+    color: rgb(255, 255, 255);
 }
 @media all and  (max-width: 640px) {
     #sideBarContainerReminderContainer{
@@ -149,7 +150,10 @@ body {
     right: 0;
 }
 
-.titleLabel { padding: 8px 0 0 10px; }
+.titleLabel {
+	padding: 8px 0 0 10px;
+	color: white;
+}
 
 .controlBarContainer {
 	position: absolute;

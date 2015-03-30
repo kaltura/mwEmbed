@@ -7,6 +7,7 @@
 	*/
 	global $wgKalturaUseManifestUrls;
 	global $wgKalturaLicenseServerUrl;
+	global $wgKalturaUdrmLicenseServerUrl;
 	
 	return array (
 		'Kaltura.ServiceUrl' => 'http://www.kaltura.com',
@@ -59,5 +60,8 @@
 		// Do not send KS for isLive requests
 		'SkipKSOnIsLiveRequest' => true,
 
-		'Kaltura.LicenseServerURL' => $wgKalturaLicenseServerUrl
+		'Kaltura.LicenseServerURL' => $wgKalturaLicenseServerUrl,
+
+
+		'Kaltura.UdrmServerURL' => $wgKalturaUdrmLicenseServerUrl
 	);
