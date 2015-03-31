@@ -247,6 +247,7 @@
 
 					}
 					readyCallback();
+					_this.readyCallbackFunc = null;
 				});
 			}
 
