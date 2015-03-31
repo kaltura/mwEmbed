@@ -76,7 +76,7 @@
 						if ( !_this.selectedSource ) {
 							_this.selectedSource = caption.source;
 						}
-                        var captionContent = _this.removeTimestamp(caption.caption);
+                        var captionContent = _this.parseCaption(caption.caption);
 						_this.addCaption( _this.selectedSource, caption.capId, captionContent );
 					}
 				});
@@ -884,20 +884,20 @@
 			this.textSources = [];
 			this.selectedSource = null;
 		},
-        removeTimestamp: function(caption){
-            var finalCaption = caption.content;
+        parseCaption: function(caption){
+            var parsedCaption = caption.content;
 
             //find timeStamp in caption string (for example: 00:00:01.000 --> 00:00:01.200) and cut it if exists
             var regExp = /^\d{2}:\d{2}:\d{2}\.\d{3}\s-->\s\d{2}:\d{2}:\d{2}\.\d{3}\s/;
-            if( regExp.test(finalCaption ))
-                finalCaption=finalCaption.replace(regExp,"");
+            if( regExp.test(parsedCaption ))
+                parsedCaption=parsedCaption.replace(regExp,"");
 
             //find align expression in caption string (for example: align:middle) and cut it if exists
             regExp = /align:(left|middle|right)/;
-            if( regExp.test(finalCaption ))
-                finalCaption=finalCaption.replace(regExp,"");
+            if( regExp.test(parsedCaption ))
+                parsedCaption=parsedCaption.replace(regExp,"");
 
-            return { "content" : finalCaption };
+            return { "content" : parsedCaption };
         }
 	}));
 
