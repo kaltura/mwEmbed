@@ -411,7 +411,6 @@
 		},
 		onClipDone: function () {
 			this.parent_onClipDone();
-			var _this = this;
 			this.flashCurrentTime = 0;
 		},
 
