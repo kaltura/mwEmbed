@@ -86,10 +86,14 @@ $container['client_helper'] = $container->share(function ($c) {
 	$request = $c['request_helper'];
 	$logger = $c['logger'];
 
+	$getServiceUrl = function() use ($request) {
+	    return $request->getServiceConfig('ServiceUrl');
+	};
+
 	// Setup client config
 	$config = array(
 		'ClientTag'			=>	'html5iframe:' . $c['mwembed_version'] . ',cache_st: ' . $request->getCacheSt(),
-		'ServiceUrl'		=>	$request->getServiceConfig('ServiceUrl'),
+		'ServiceUrl'		=>	$getServiceUrl,
 		'ServiceBase'		=>	$request->getServiceConfig('ServiceBase'),
 		'ServiceTimeout'	=>	$c['service_timeout'],
 		'UserAgent'			=>	$request->getUserAgent(),
