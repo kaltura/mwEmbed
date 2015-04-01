@@ -899,6 +899,115 @@
 			}
 		},
 		/**
+		 * Local method for seeking event
+		 * fired when "seeking"
+		 */
+		_onseeking: function () {
+			// don't handle seek event on Android native browser
+			var nua = navigator.userAgent;
+			var is_native_android_browser = ((nua.indexOf('Mozilla/5.0') > -1 &&
+			nua.indexOf('Android ') > -1 &&
+			nua.indexOf('AppleWebKit') > -1) && !(nua.indexOf('Chrome') > -1));
+
+			if (is_native_android_browser) {
+				return;
+			}
+			this.log("onSeeking " + this.seeking + ' new time: ' + this.getPlayerElement().currentTime());
+			if (this.seeking && Math.round(this.getPlayerElement().currentTime - this.currentSeekTargetTime) > 2) {
+				this.log("Error: Seek time mismatch: target:" + this.getPlayerElement().currentTime +
+				' actual ' + this.currentSeekTargetTime + ', note apple HLS can only seek to 10 second targets');
+			}
+			// Trigger the html5 seeking event
+			//( if not already set from interface )
+			if (!this.seeking) {
+				this.currentSeekTargetTime = this.getPlayerElement().currentTime;
+				this.seeking = true;
+				// Run the onSeeking interface update
+				this.layoutBuilder.onSeek();
+
+				// Trigger the html5 "seeking" trigger
+				this.log("seeking:trigger:: " + this.seeking);
+				if (this._propagateEvents) {
+					this.triggerHelper('seeking');
+				}
+			}
+		},
+		/**
+		 * Local method for seeked event
+		 * fired when done seeking
+		 */
+		_onseeked: function () {
+			this.log("onSeeked " + this.seeking + ' ct:' + this.playerElement.currentTime());
+
+			// Trigger the html5 action on the parent
+			if (this.seeking) {
+				var _this = this;
+				this.waitForSeekTarget().then(function(){
+					_this.seeking = false;
+					_this.isFlavorSwitching = false;
+					if (_this._propagateEvents) {
+						_this.log(" trigger: seeked");
+						_this.triggerHelper('seeked', [_this.currentTime]);
+					}
+					_this.hideSpinner();
+				});
+			}
+		},
+
+		waitForSeekTarget: function(deferred, callbackCount){
+			this.log("wait for seek target verification");
+			var _this = this;
+			var vid = this.getPlayerElement();
+			var waitForSeekTargetDeferred = deferred || $.Deferred();
+
+			// HLS safari triggers onseek when its not even close to the target time,
+			// we don't want to trigger the seek event for these "fake" onseeked triggers
+			if ((this.mediaElement.selectedSource.getMIMEType() === 'application/vnd.apple.mpegurl') &&
+				( ( Math.abs(this.currentSeekTargetTime - this.getPlayerElement().currentTime) > 2) ||
+				( this.currentSeekTargetTime > 0.01 && ( mw.isIpad() && !mw.isIOS8() ) ) ) ) {
+
+				this.log( "Error: seeked triggred with time mismatch: target:" +
+				this.currentSeekTargetTime + ' actual:' + this.getPlayerElement().currentTime );
+
+				if( !callbackCount ){
+					callbackCount = 0;
+				}
+
+				var canPlayBind = 'canplaythrough.nativePlayBind';
+				$(vid).unbind(canPlayBind).one(canPlayBind, function () {
+					if (vid.paused){
+						_this.log( "seek target verified" );
+						return waitForSeekTargetDeferred.resolve();
+					} else {
+						var timeupdateCallback = function ( callbackCount ) {
+							if ( (Math.abs( _this.currentSeekTargetTime - _this.getPlayerElement().currentTime ) > 2) &&
+								callbackCount <= 15 ) {
+								setTimeout( function () {
+									timeupdateCallback( callbackCount++ );
+								}, 100 );
+							} else {
+								if ( callbackCount > 15 ) {
+									_this.log( "Error: seek target failed" );
+								} else {
+									_this.log( "seek target verified" );
+								}
+								return waitForSeekTargetDeferred.resolve();
+							}
+						};
+
+						var timeupdateBind = 'timeupdate.nativePlayBind';
+						$( vid ).unbind( timeupdateBind ).one( timeupdateBind, function () {
+							timeupdateCallback( 0 );
+						} );
+					}
+				});
+				return waitForSeekTargetDeferred;
+			} else {
+				this.log("seek target verified");
+				return waitForSeekTargetDeferred.resolve();
+			}
+		},
+		/**
 		 * Update Volume
 		 *
 		 * @param {Float} percent Value between 0 and 1 to set audio volume
