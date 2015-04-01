@@ -169,6 +169,24 @@ class RequestHelper {
 		}
 	}
 
+	function isEmbedServices(){
+	    global $wgKalturaAuthEmbedServicesDomains;
+	    if (in_array($_SERVER['HTTP_HOST'], $wgKalturaAuthEmbedServicesDomains )){
+	        return true;
+	    } else {
+	        return false;
+        }
+	}
+
+	function isEmbedServicesRequest(){
+	    $proxyData = $this->getFlashVars("proxyData");
+        return (isset($proxyData) && !empty($proxyData));
+    }
+
+	function getEmbedServicesRequest(){
+	    return $this->getFlashVars("proxyData");
+	}
+
 	public function getUserAgent() {
 		return isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
 	}
