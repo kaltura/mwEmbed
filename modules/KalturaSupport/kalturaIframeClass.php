@@ -22,7 +22,7 @@ class kalturaIframeClass {
 	const NO_ENTRY_ID_FOUND = "No Entry ID was found";
 
 	function __construct() {
-		global $container;
+	    global $container;
 		$this->request = $container['request_helper'];
 		$this->client = $container['client_helper'];
 		$this->utility = $container['utility_helper'];
@@ -113,6 +113,26 @@ class kalturaIframeClass {
 		}
 		return $this->entryResult;
 	}
+	function getEntryResultData(){
+	    global $wgKalturaServiceUrl;
+        //Store original service url
+        $orgServiceUrl = $wgKalturaServiceUrl;
+	    //Updaste the service URL if available
+	    $this->updateServiceUrl();
+	    //Fetch entry results
+	    $entryResult = $this->getEntryResult()->getResult();
+	    //Restore original service url
+	    $wgKalturaServiceUrl = $orgServiceUrl;
+	    return $entryResult;
+	}
+	function updateServiceUrl(){
+        if( $this->request->isEmbedServices() &&
+            ( $this->getUiConfResult()->getPlayerConfig( null, 'Kaltura.AllowIframeRemoteService' ) === true ) &&
+            ( !empty( $this->getUiConfResult()->getPlayerConfig( null, 'Kaltura.ServiceUrl' ) ) ) ){
+            global $wgKalturaServiceUrl;
+            $wgKalturaServiceUrl = $this->getUiConfResult()->getPlayerConfig( null, 'Kaltura.ServiceUrl' );
+        }
+    }
 	/**
 	 * Grabs a playlist result object:
 	 */
@@ -799,7 +819,7 @@ HTML;
 	}
 
 	function getKalturaIframeScripts(){
-		global $wgMwEmbedVersion, $wgKalturaApiFeatures;
+	    global $wgMwEmbedVersion, $wgKalturaApiFeatures;
 		ob_start();
 		?>
 		<script type="text/javascript">
@@ -853,7 +873,7 @@ HTML;
 										$this->getPlaylistResult()->getResult()
 									);
 					} else {
-						$payload[ 'entryResult' ] = $this->getEntryResult()->getResult();
+					    $payload[ 'entryResult' ] = $this->getEntryResultData();
 					}
 				} catch ( Exception $e ){
 					$payload['error'] = $e->getMessage();
@@ -1102,7 +1122,7 @@ HTML;
 		return $this->iframeOutputHash;
 	}
 	function getIFramePageOutput( ){
-		if( !$this->iframeContent ){
+        if( !$this->iframeContent ){
 			global $wgRemoteWebInspector, $wgEnableScriptDebug;
 			$uiConfId =  htmlspecialchars( $this->request->get('uiconf_id') );
 			
