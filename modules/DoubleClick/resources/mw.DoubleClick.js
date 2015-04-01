@@ -977,6 +977,8 @@
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				mw.log("DoubleClick:: adStart");
+				// set volume when ad starts to enable autoMute. TODO: remove next line once DoubleClick fix their bug when setting adsManager.volume before ad starts
+				_this.embedPlayer.setPlayerElementVolume(_this.embedPlayer.volume);
 				// trigger ad play event
 				$(_this.embedPlayer).trigger("onAdPlay",[adInfo.adID]);
 				// This changes player state to the relevant value ( play-state )
