@@ -141,7 +141,7 @@ class RequestHelper {
 		global $wgKalturaAllowIframeRemoteService;
 		
 		// Check if we allow URL override: 
-		if( $wgKalturaAllowIframeRemoteService == true ){
+		if(( $wgKalturaAllowIframeRemoteService == true ) || $this->isEmbedServices()){
 			// Check for urlParameters
 			if( $this->get( $name ) ){
 				return $this->get( $name );
