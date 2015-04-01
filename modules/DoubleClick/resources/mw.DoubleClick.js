@@ -481,7 +481,7 @@
 				this.playerElementLoaded = true;
 				playerElement.load();
 			}
-			this.saveTimeWhenSwitchMedia = true;
+			this.saveTimeWhenSwitchMedia = mw.isMobileDevice();
 			return playerElement;
 		},
 		getAdContainer: function(){
