@@ -931,6 +931,9 @@
 					this.triggerHelper('seeking');
 				}
 			}
+			if (this.paused && this.seeking){
+				this._onseeked();
+			}
 		},
 		/**
 		 * Local method for seeked event
