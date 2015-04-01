@@ -2469,10 +2469,19 @@
 
 
 		togglePlayback: function () {
-			if (this.paused) {
-				this.play();
-			} else {
-				this.pause();
+			var togglePlyabackExecuter = function() {
+				if (this.paused) {
+					this.play();
+				} else {
+					this.pause();
+				}
+			};
+			if(mw.isAndroid()) {
+				setTimeout(function () {
+					togglePlyabackExecuter();
+				}, 100);
+			}else{
+				togglePlyabackExecuter();
 			}
 		},
 		isMuted: function () {
