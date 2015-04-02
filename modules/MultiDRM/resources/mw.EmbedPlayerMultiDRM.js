@@ -324,7 +324,6 @@
 				.css(cssSet);
 		},
 
-
 		/**
 		 * Get /update the playerElement value
 		 */
@@ -430,7 +429,7 @@
 					// make sure we propagating events, and the current instance is in the correct closure.
 					if (_this._propagateEvents && _this.instanceOf === _this.instanceOf) {
 						var argArray = $.makeArray(arguments);
-						if (eventName!=="timeupdate" && eventName!=="progress")console.info(eventName);
+						//if (eventName!=="timeupdate" && eventName!=="progress") console.info(eventName);
 						// Check if there is local handler:
 						if (_this[ '_on' + eventName ]) {
 							_this[ '_on' + eventName ].apply(_this, argArray);
@@ -503,13 +502,14 @@
 
 			var vidObj = $(vid.contentEl() ).find("video")[0];
 
-			if ( (vidObj && vidObj.readyState < 1) || (this.getDuration() === 0)) {
+			if ( (vidObj && vidObj.readyState < 3) || (this.getDuration() === 0)) {
 				// if on the first call ( and video not ready issue load, play
 				if (callbackCount == 0 && vid.paused()) {
 					this.stopEventPropagation();
 
 					var eventName = mw.isIOS() ? "canplaythrough.seekPrePlay" : "canplay.seekPrePlay";
-					vid.off(eventName).one(eventName, function () {
+					$(vidObj).off(eventName).one(eventName, function () {
+						console.info("passed");
 						_this.restoreEventPropagation();
 						if (vid.duration() > 0) {
 							_this.log("player can seek");
@@ -523,7 +523,6 @@
 						}
 					});
 					this.log("player can't seek - try to init video element ready state");
-//					vid.load();
 					vid.play();
 				}
 				// Try to seek for 15 seconds:
