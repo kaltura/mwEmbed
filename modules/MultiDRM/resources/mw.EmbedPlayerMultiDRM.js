@@ -207,6 +207,8 @@
 					techOrder: ['dasheverywhere']
 				}, function(){
 					_this.playerElement = this;
+					//Set schedule while paused to true to allow buffering when in paused state
+					_this.playerElement.mediaPlayer.setScheduleWhilePaused(true);
 					callback();
 				} );
 			}
@@ -930,9 +932,6 @@
 				if (this._propagateEvents) {
 					this.triggerHelper('seeking');
 				}
-			}
-			if (this.paused && this.seeking){
-				this._onseeked();
 			}
 		},
 		/**
