@@ -777,7 +777,7 @@
 			if( !source.loaded ){
 				this.embedPlayer.getInterface().find('.track').text( gM('mwe-timedtext-loading-text') );
 				source.load(function(){
-					_this.getPlayer().triggerHelper('newClosedCaptionsData');
+					_this.getPlayer().triggerHelper('newClosedCaptionsData', _this.selectedSource);
 					if( _this.playbackStarted ){
 						_this.monitor();
 					}
