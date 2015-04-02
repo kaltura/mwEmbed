@@ -922,7 +922,7 @@
 			// Trigger the html5 seeking event
 			//( if not already set from interface )
 			if (!this.seeking) {
-				this.currentSeekTargetTime = this.getPlayerElement().currentTime;
+				this.currentSeekTargetTime = this.getPlayerElement().currentTime();
 				this.seeking = true;
 				// Run the onSeeking interface update
 				this.layoutBuilder.onSeek();
@@ -976,13 +976,13 @@
 				}
 
 				var canPlayBind = 'canplaythrough.nativePlayBind';
-				$(vid).unbind(canPlayBind).one(canPlayBind, function () {
-					if (vid.paused){
+				vid.off(canPlayBind).one(canPlayBind, function () {
+					if (vid.paused()){
 						_this.log( "seek target verified" );
 						return waitForSeekTargetDeferred.resolve();
 					} else {
 						var timeupdateCallback = function ( callbackCount ) {
-							if ( (Math.abs( _this.currentSeekTargetTime - _this.getPlayerElement().currentTime ) > 2) &&
+							if ( (Math.abs( _this.currentSeekTargetTime - _this.getPlayerElement().currentTime() ) > 2) &&
 								callbackCount <= 15 ) {
 								setTimeout( function () {
 									timeupdateCallback( callbackCount++ );
@@ -998,7 +998,7 @@
 						};
 
 						var timeupdateBind = 'timeupdate.nativePlayBind';
-						$( vid ).unbind( timeupdateBind ).one( timeupdateBind, function () {
+						vid.off( timeupdateBind ).one( timeupdateBind, function () {
 							timeupdateCallback( 0 );
 						} );
 					}
