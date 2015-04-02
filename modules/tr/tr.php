@@ -7,7 +7,7 @@ return array(
 			'mw.KBasePlugin'
 		),
 		'kalturaPluginName' => 'trTitle',
-		'messageFile'	=> 'ThomsonReuters.i18n.php',
+		'messageFile'	=> 'tr.i18n.php',
 	),
 	"trTranscript" =>  array(
 		'scripts' => "resources/trTranscript.js",

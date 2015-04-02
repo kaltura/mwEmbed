@@ -61,25 +61,42 @@ mw.PluginManager.add( 'trTitle', mw.KBaseComponent.extend({
 		var left = (screen.width/2)-(this.popup.width/2);
 		var top = (screen.height/2)-(this.popup.height/2);
 		// player config
+
+//		var config = {
+//			pid: this.getPlayer().kpartnerid,
+//			flashvars: {
+//				"mediaProxy.mediaPlayFrom": this.getPlayer().currentTime,
+//				"playlistAPI": {
+//					"initItemEntryId": this.getPlayer().kentryid,
+//					"kpl0Id": this.getPlayer().getKalturaConfig('playlistAPI', 'kpl0Id')
+//				}
+//			}
+//		};
+
+		//this is simulating JUST entryId pop-up. the play
 		var config = {
-			wid: '_' + this.getPlayer().kpartnerid,
 			pid: this.getPlayer().kpartnerid,
-			uiconf_id: this.getPlayer().kuiconfid,
-			flashvars: {
-				"mediaProxy.mediaPlayFrom": this.getPlayer().currentTime,
-				"playlistAPI": {
-					"initItemEntryId": this.getPlayer().kentryid,
-					"kpl0Id": this.getPlayer().getKalturaConfig('playlistAPI', 'kpl0Id')
-				}
-			}
+			mid: this.getPlayer().kentryid,
+			startFrom:this.getPlayer().currentTime,
+			uuid: "omnitureUser",
+			pn: "pmniturePn",
+			pn: "pmniturePn",
+			bitrate: 400,
+			eud : "omnitureEud",
+			wtype : "omnitureWtype"
 		};
+
+
+
+
+
 		var jsonConfig = JSON.stringify(config);
 		window.open( this.getConfig('popupPage')+'#' + jsonConfig, 'trPopup', "width=" + this.popup.width + ",height=" + this.popup.height + ",top=" + top + ",left=" + left );
 	},
 
 	injectCssToParent: function() {
 		if( this.getConfig('injectCssToParent') ) {
-			var cssFilePath = kWidget.getPath() + '/modules/ThomsonReuters/resources/popup.css';
+			var cssFilePath = kWidget.getPath() + '/modules/tr/resources/popup.css';
 			kWidget.appendCssUrl(cssFilePath, window['parent'].document);
 		}
 	},

@@ -7,8 +7,6 @@
 <body>
 <div class="container" style="width: 100%;">
     <div id="kPlayer" style="width: 290px; height: 440px; float: left"></div>
-    <div id="captionsContainer" style="width: auto;height:440px;position: inherit;
-    ;background-color: #DDDDDD;">1234</div>
 </div>
 <script>
 
@@ -59,7 +57,7 @@
     mapFromTo('uiconfId','uiconfId');
     mapFromTo('clipsToShow','clipsToShow');
 //      example of override
-//      http://localhost/html5.kaltura/mwEmbed/modules/ThomsonReuters/tests/dev/?partnerId=27017&playlistId=1_y3554xhv&entryId=1_cvsg4ghm&uiconfId=27493391&clipsToShow=3
+//      http://localhost/html5.kaltura/mwEmbed/modules/tr/tests/dev/?partnerId=27017&playlistId=1_y3554xhv&entryId=1_cvsg4ghm&uiconfId=29008071&clipsToShow=3
 
     mw.setConfig('forceMobileHTML5', true);
 
@@ -68,8 +66,7 @@
         'wid': '_'+partnerId,
         'uiconf_id' : uiconfId,
         'flashvars': {
-            'confFilePath': '{libPath}/modules/ThomsonReuters/resources/trjson.json',
-            'trTopBar.plugin': false,
+            'confFilePath': '{libPath}/modules/tr/resources/trjson.json',
             'trTitle.plugin': true,
             'playlistAPI': {
                 'kpl0Id': playlistId,

@@ -32,8 +32,10 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 			}
 		}
 
-		$(doc).find("#"+this.getConfig('transcriptDivId')).text("");
-		$(doc).find("#"+this.getConfig('transcriptDivId')).append(htmlString);
+
+
+		$(doc).find("#"+this.getConfig('targetId')).text("");
+		$(doc).find("#"+this.getConfig('targetId')).append(htmlString);
 
 	}
 
