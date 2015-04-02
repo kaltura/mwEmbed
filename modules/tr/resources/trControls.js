@@ -2,7 +2,7 @@ mw.PluginManager.add( 'trControls', mw.KBasePlugin.extend({
 
 	defaultConfig: {
 		targetId: 'playerControlsContainer',
-		templatePath: 'templates/player-controls.tmpl.html'
+		templatePath: '../tr/templates/player-controls.tmpl.html'
 	},
 
 	setup: function() {
@@ -13,7 +13,6 @@ mw.PluginManager.add( 'trControls', mw.KBasePlugin.extend({
 		if( !mw.getConfig('EmbedPlayer.IsFriendlyIframe') ){
 			return false;
 		}
-
 		var parentTarget = null;
 		try {
 			parentTarget = window['parent'].document.getElementById( this.getConfig('targetId') );
@@ -33,8 +32,8 @@ mw.PluginManager.add( 'trControls', mw.KBasePlugin.extend({
 
 	updateTargetWithTemplate: function() {
 		if( this.hasValidTargetElement() ) {
-			var target = this.getTargetElement();debugger;
-			target.innerHTML = this.getTemplateHTML();
+			var target = this.getTargetElement();
+			target.innerHTML = this.getTemplateHTML().html();
 		}
 	}
 

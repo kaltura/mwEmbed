@@ -11,6 +11,7 @@ return array(
 	),
 	"trTranscript" =>  array(
 		'scripts' => "resources/trTranscript.js",
+		'templates' => "../tr/templates/transcript.tmpl.html",
 		'dependencies' => array(
 			'mw.KBasePlugin'
 		),
@@ -18,7 +19,7 @@ return array(
 	),
 	"trControls" =>  array(
 		'scripts' => "resources/trControls.js",
-		'templates' => "templates/player-controls.tmpl.html",
+		'templates' => "../tr/templates/player-controls.tmpl.html",
 		'dependencies' => array(
 			'mw.KBasePlugin'
 		),
