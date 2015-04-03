@@ -7,7 +7,7 @@ return array(
 			'mw.KBasePlugin'
 		),
 		'kalturaPluginName' => 'trTitle',
-		'messageFile'	=> 'tr.i18n.php',
+		'messageFile'	=> 'tr.i18n.php'
 	),
 	"trTranscript" =>  array(
 		'scripts' => "resources/trTranscript.js",
@@ -15,15 +15,17 @@ return array(
 		'dependencies' => array(
 			'mw.KBasePlugin'
 		),
-		'kalturaPluginName' => 'trTranscript',
+		'kalturaPluginName' => 'trTranscript'
 	),
 	"trControls" =>  array(
 		'scripts' => "resources/trControls.js",
+		'styles'  => "resources/style.css",
 		'templates' => "../tr/templates/player-controls.tmpl.html",
 		'dependencies' => array(
 			'mw.KBasePlugin'
 		),
 		'kalturaPluginName' => 'trControls',
+		'messageFile'	=> 'tr.i18n.php'
 	),
 
 );

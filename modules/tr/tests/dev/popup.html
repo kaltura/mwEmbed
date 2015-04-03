@@ -52,14 +52,13 @@
 
     var entryId = "";
     var partnerId = 27017;
-    var playlistId = "";
-    var uiconfId = 28529602 ; //this will come from KMS
+    var uiconfId = 29034491 ; //this will come from KMS 27493391 28529602 29008071
     var clipsToShow = 3; //amount of videos to show in playlist
     var omniturePn = "";
     var omnitureEud = "";
     var omnitureUuid = "";
     var widgetType = "";
-    var playlistId = "1_smuhcro8";
+    var playlistId = "1_y3554xhv";
     var startFrom = 0;
 
 
@@ -72,7 +71,7 @@
     }
 
     partnerId = jsonConfig.pid;
-    playlistId = jsonConfig.cid;
+    //playlistId = jsonConfig.cid;
     entryId = jsonConfig.mid;
     widgetType = jsonConfig.wtype;
     if(jsonConfig.startFrom){
@@ -94,10 +93,11 @@
         'targetId': 'kPlayer',
         'wid': '_'+partnerId,
         'uiconf_id' : uiconfId,
-        'entry_id' : entryId,
+        //'entry_id' : entryId,
         'flashvars': {
+            'confFilePath': '{libPath}/modules/tr/resources/trjson.json',
             'trTitle' : {
-                "plugin" : false
+                "plugin" : true //TODO check why is it that if I set this to false the layout breaks
             },
             "trTranscript": {
                 "plugin": true,
@@ -105,17 +105,22 @@
             },
             "mediaProxy.mediaPlayFrom" : startFrom,
 
-            'playlistAPI': {
-//                'kpl0Id': playlistId,
-                'MinClips': 3
-
-            },
             "closedCaptions": {
                 "plugin": true
             },
             "trControls" : {
                 "plugin" : true,
                 "targetId" : "topFunctions"
+            },
+            'playlistAPI': {
+                'kpl0Id': playlistId,
+                'cssClass': 'trTopBar',
+                'showControls': false,
+                'includeHeader': false,
+                'mediaItemHeight': 160,
+                'templatePath': '../tr/templates/playlist.tmpl.html',
+                'MinClips': 3
+
             }
 
 

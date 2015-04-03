@@ -54,7 +54,7 @@
     mapFromTo('playlistId','playlistId');
     mapFromTo('entryId','entryId');
     mapFromTo('widgetType','widgetType');
-    mapFromTo('uiconfId','uiconfId');
+   // mapFromTo('uiconfId','uiconfId');
     mapFromTo('clipsToShow','clipsToShow');
 //      example of override
 //      http://localhost/html5.kaltura/mwEmbed/modules/tr/tests/dev/?partnerId=27017&playlistId=1_y3554xhv&entryId=1_cvsg4ghm&uiconfId=29008071&clipsToShow=3
@@ -70,8 +70,8 @@
             'trTitle.plugin': true,
             'playlistAPI': {
                 'kpl0Id': playlistId,
+                'templatePath': '../tr/templates/playlist.tmpl.html',
                 'MinClips': 3
-
             },
             'trTopBar.popupPage' : 'popup_local.html'
         }
