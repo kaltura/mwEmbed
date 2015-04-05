@@ -10,6 +10,7 @@
 <body>
 	<h1>Q and A Demo</h1>
 	<div id="kaltura_player" style="width: 585px; height: 330px;float: left;"></div>
+	<div id="qnaListHolder" style="width: 300px; height: 330px; float:left; background-color: grey; float: left"></div>
 	<br style="clear: both;" /><br />
 <script>
 
@@ -20,23 +21,23 @@
 		});
 	}
 
+
 	kWidget.featureConfig({
 		'targetId': 'kaltura_player',
 		'wid': '_243342',
 		'uiconf_id' : '21099702',
 		'readyCallback': onReadyCallback,
 		'flashvars': {
+			'ks': 'djJ8MTgwMjM4MXwxfknMDoBOX3JqXL9_6TMYwyovO5C-EGuUEBwQSPtsMH4yY6rXQGyHRtfpx0HAkBAhSrLpj_Qwo-tKC9f9mDLWG3NnrcoGu0qPWlC8W-l6ExSWzJ3s_10DSki2y66qKvdSfWumjK4XeciSPxAPeKaPYY3Mq2wxxE07KUwO_Ocmew==',
 			'qna': {
-				'plugin': true
+				'plugin': true,
+				'qnaTargetId': 'qnaListHolder'
 			}
 		},
-		"entry_id": "0_l1v5vzh3" 
+		'entry_id': "1_qujsngha"
+
 	});
 
-	function sendQuestion(){
-		window.kdp.sendNotification("sendQuestion",{"question":$('.question').val()});
-	}
 </script>
-<input type="text" class="question" style="width: 200px"></input><button onclick="sendQuestion()">submit</button>
 </body>
 </html>
