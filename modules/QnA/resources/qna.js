@@ -44,7 +44,6 @@
 			});
 
 			this.bind( 'sendQuestion', function(event, data){
-				alert(data);
 				_this.submitQuestion(data.question);
 			});
 		},
@@ -118,6 +117,13 @@
 				.on('click', function(){
 					var question = parentWindowDocument.find('.qnaQuestionTextArea').val();
 					_this.submitQuestion(question);
+					textArea.val(_this.getConfig('defaultTextAreaValue'));
+				});
+			var cancelButton = parentWindowDocument.find('.qnaCancelButton');
+			cancelButton
+				.off('click')
+				.on('click', function(){
+					textArea.val(_this.getConfig('defaultTextAreaValue'));
 				});
 
 			var textArea = parentWindowDocument.find('.qnaQuestionTextArea');
