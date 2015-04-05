@@ -2823,10 +2823,11 @@ class KalturaFlavorAssetService extends KalturaServiceBase
 	 * @param bool $forceProxy 
 	 * @return string
 	 */
-	function getUrl($id, $storageId = null, $forceProxy = false)
+	function getUrl($id, $storageId = null, $forceProxy = false, $fileName = null)
 	{
 		$kparams = array();
 		$this->client->addParam($kparams, "id", $id);
+		$this->client->addParam($kparams, "fileName", $fileName);
 		$this->client->addParam($kparams, "storageId", $storageId);
 		$this->client->addParam($kparams, "forceProxy", $forceProxy);
 		$this->client->queueServiceActionCall("flavorasset", "getUrl", $kparams);

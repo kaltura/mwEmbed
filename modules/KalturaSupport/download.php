@@ -55,6 +55,7 @@ class downloadEntry {
 	
 	function redirectDownload() {
 		$flavorUrl = $this->getSourceForUserAgent();
+		$client = $this->getResultObject()->client->getClient();
 		// Redirect to flavor
 		header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 		header("Pragma: no-cache");
@@ -70,12 +71,9 @@ class downloadEntry {
 				$filename = $this->sanitizeFilenameForHeader($filename);
 			}else{
 				$filename = $flavorId . $extension;
-				
 			}
-
-
-			header( 'Content-Disposition: attachment; filename="'.$filename.'"' );
-			readfile( $flavorUrl );
+			$flavorUrl = $client->flavorAsset->getUrl($flavorId,null,false,$filename);
+			header("Location: " . $flavorUrl );
 		}
 		else {
 			header("Location: " . $flavorUrl );
