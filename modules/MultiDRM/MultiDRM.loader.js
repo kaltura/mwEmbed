@@ -14,13 +14,9 @@
 			} );
 			var isDrmSourceAvailable = drmSources.length > 0;
 			if ( isDrmSourceAvailable ) {
-				$.when(
-					$.getScript( mw.getConfig( "EmbedPlayer.clDashPlayerUrl" ) ),
-					$.getScript( mw.getConfig( "EmbedPlayer.dashJsUrl" ) ),
-					$.Deferred( function ( deferred ) {
-						$( deferred.resolve );
-					} )
-				).done( function () {
+
+				$.getScript(mw.getConfig( "EmbedPlayer.clDashPlayerUrl" ), function(){
+					$.getScript(mw.getConfig( "EmbedPlayer.dashJsUrl" ), function(){
 						//Get user configuration
 						var drmUserConfig = embedPlayer.getKalturaConfig("multiDrm");
 						//Get default config
@@ -33,7 +29,8 @@
 							player: videojs
 						};
 						callback();
-					} );
+					});
+				});
 			} else {
 				callback();
 			}
