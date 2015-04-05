@@ -127,7 +127,7 @@ $kgDefaultCaptionAttr = array(
 	'showEmbeddedCaptions' => array(
 		'doc' => 'Show captions embedded in the video file.',
 		'type' => 'boolean',
-		'initvalue' => false,
+		'initvalue' => true,
 	)
 );
 return array(

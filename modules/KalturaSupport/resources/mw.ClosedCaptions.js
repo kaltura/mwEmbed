@@ -14,7 +14,7 @@
 			"whiteListLanguagesCodes": null, //white list the languages by languages codes (e.g. 'en,fr' will remove all items but English and French if they exist)
 			"useCookie": true,
 			"hideWhenEmpty": false,
-			"showEmbeddedCaptions": false,
+			"showEmbeddedCaptions": true,
 			"hideClosedCaptions": false,
 			"showEmbeddedCaptionsStyle": false,
 			"showOffButton": true,
