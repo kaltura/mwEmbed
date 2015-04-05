@@ -29,9 +29,17 @@
 			var embedPlayer = this.getPlayer();
 
 			this.bind('layoutBuildDone', function (event, screenName) {
-				embedPlayer.getVideoHolder().append('<div class="qna-btn">hello</div>');
-				$(".qna-btn").on("click", function(){
-					embedPlayer.triggerHelper( 'showQuestion');
+				embedPlayer.getVideoHolder().append('<div class="qna-on-video-btn">hello</div>');
+				var _this = this;
+				var qnaObject =  $(window['parent'].document.getElementById(embedPlayer.id )).parent().find( ".qnaInterface" );
+				$(".qna-on-video-btn").on("click", function(){
+					if (qnaObject.is(":visible")){
+						qnaObject.hide();
+					} else {
+						qnaObject.show();
+					}
+
+					//debugger;
 				})
 			});
 
@@ -50,10 +58,11 @@
 				"service": "cuePoint_cuePoint",
 				"action": "add",
 				"ks": embedPlayer.getFlashvars("ks"),
-				"cuePoint:objectType": "KalturaThumbCuePoint",
+				"cuePoint:objectType": "KalturaAnnotation",
 				"cuePoint:entryId": embedPlayer.kentryid,
 				"cuePoint:startTime": embedPlayer.currentTime,
-				"cuePoint:subType" : 1   //slide and not chapter
+				"tags": "qna",
+				"text": question
 			};
 
 			_this.getKClient().doRequest(entryRequest, function (result) {
@@ -107,7 +116,7 @@
 			sendButton
 				.off('click')
 				.on('click', function(){
-					var question = parentWindowDocument.find('.qnaQuestionInput').val();
+					var question = parentWindowDocument.find('.qnaQuestionTextArea').val();
 					_this.submitQuestion(question);
 				});
 
