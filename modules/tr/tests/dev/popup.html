@@ -97,7 +97,7 @@
         'flashvars': {
             'confFilePath': '{libPath}/modules/tr/resources/trjson.json',
             'trTitle' : {
-                "plugin" : true //TODO check why is it that if I set this to false the layout breaks
+                "createTopBar" : false 
             },
             "trTranscript": {
                 "plugin": true,
@@ -114,7 +114,6 @@
             },
             'playlistAPI': {
                 'kpl0Id': playlistId,
-                'cssClass': 'trTopBar',
                 'showControls': false,
                 'includeHeader': false,
                 'mediaItemHeight': 160,

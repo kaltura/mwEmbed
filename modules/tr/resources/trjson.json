@@ -76,14 +76,14 @@
 			"showControls": true,
 			"hideClipPoster": true,
 			"MaxClips": 25,
-			"cssClass": "trTopBar",
+			"cssClass": "trTitle",
 			"includeHeader": false,
 			"templatePath": "{html5ps}/thomson-reuters/playlist.tmpl.html",
 			"mediaItemHeight": 157,
 			"mediaItemWidth": 124,
 			"plugin": true
 		},
-		"trTopBar": {
+		"trTitle": {
 			"plugin": true
 		},
 		"trTranscript": {
