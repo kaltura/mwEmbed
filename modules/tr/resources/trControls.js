@@ -14,6 +14,7 @@ mw.PluginManager.add( 'trControls', mw.KBasePlugin.extend({
 		var doc = window['parent'].document;
 		var $parentContainer = $(doc.getElementById('topContainer'));
 		var $playerInterface = this.getPlayer().getInterface();
+		var player = this.getPlayer();
 
 		// Do fullscreen
 		$(doc).find(".player-mode").click(function(){
@@ -28,11 +29,17 @@ mw.PluginManager.add( 'trControls', mw.KBasePlugin.extend({
 		});
 
 		$(doc).find(".share-copy").click(function(){
-			alert(".share-copy");
+			player.sendNotification('toggleScreen', 'share');
 		});
 
 		$(doc).find(".share-email").click(function(){
-			alert(".share-email");
+			player.sendNotification('doShare');
+		});
+
+		this.bind('shareEvent', function(e, shareData){
+			var entryName = player.evaluate('{mediaProxy.entry.name}');
+			var mailToUrl = 'mailto:?subject=Check out ' + entryName + '&body=Check out ' + entryName + ': ' + shareData.shareLink;
+			window.open(mailToUrl);
 		});
 
 
