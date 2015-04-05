@@ -12,12 +12,19 @@ mw.PluginManager.add( 'trControls', mw.KBasePlugin.extend({
 
 	applyBehavior: function() {
 		var doc = window['parent'].document;
-		$(doc).find(".enhanced-mode").click(function(){
-			$(this).parent().parent().removeClass("enhanced");
+		var $parentContainer = $(doc.getElementById('topContainer'));
+		var $playerInterface = this.getPlayer().getInterface();
+
+		// Do fullscreen
+		$(doc).find(".player-mode").click(function(){
+			$parentContainer.addClass("enhanced");
+			$playerInterface.addClass('fullscreen');
 		});
 
-		$(doc).find(".player-mode").click(function(){
-			$(this).parent().parent().addClass("enhanced");
+		// Restore to normal mode
+		$(doc).find(".enhanced-mode").click(function(){
+			$parentContainer.removeClass("enhanced");
+			$playerInterface.removeClass('fullscreen');
 		});
 
 		$(doc).find(".share-copy").click(function(){
