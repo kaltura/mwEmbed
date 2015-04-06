@@ -163,6 +163,8 @@
 
 			$(this.embedPlayer).bind('mediaListLayoutReady', function (event) {
 				_this.embedPlayer.triggerHelper('playlistReady');
+				_this.setMultiplePlayLists();
+				_this.getComponent().find(".k-description-container").dotdotdot();
 				// keep aspect ratio of thumbnails - crop and center
 				_this.getComponent().find('.k-thumb').each(function () {
 					var img = $(this)[0];
@@ -201,10 +203,6 @@
 				this.$mediaListContainer = null;
 				this.getMedialistContainer();
 				this.renderMediaList();
-				this.setMultiplePlayLists();
-				setTimeout(function(){
-					_this.getComponent().find(".k-description-container").dotdotdot();
-				},100);
 			}
 		},
 		// called from KBaseMediaList when a media item is clicked - trigger clip play
