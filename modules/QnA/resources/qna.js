@@ -21,7 +21,6 @@
 
 		setup: function () {
 			this.addBindings();
-			this.getQnAContainer();
 		},
 
 		addBindings: function () {
@@ -29,8 +28,8 @@
 			var embedPlayer = this.getPlayer();
 
 			this.bind('layoutBuildDone', function (event, screenName) {
-				embedPlayer.getVideoHolder().append('<div class="qna-on-video-btn">hello</div>');
-				var _this = this;
+				embedPlayer.getVideoHolder().append('<div class="qna-on-video-btn"></div>');
+				_this.getQnaContainer();
 				var qnaObject =  $(window['parent'].document.getElementById(embedPlayer.id )).parent().find( ".qnaInterface" );
 				$(".qna-on-video-btn").on("click", function(){
 					if (qnaObject.is(":visible")){
@@ -38,8 +37,6 @@
 					} else {
 						qnaObject.show();
 					}
-
-					//debugger;
 				})
 			});
 
@@ -87,7 +84,7 @@
 		},
 
 		// load the Q&A template to the div with qnaTargetId
-		getQnAContainer: function(){
+		getQnaContainer: function(){
 			if (!this.$qnaListContainer) {
 				// Inject external CSS file
 				var cssLink = this.getConfig('cssFileName');
@@ -104,8 +101,15 @@
 				this.$qnaListContainer.append(this.getHTML());
 
 				this.bindButtons();
+				this.positionOnVideoButton();
 			}
 			return this.$qnaListContainer;
+		},
+
+		positionOnVideoButton : function(){
+			var onVideoTogglePluginButton = $('.qna-on-video-btn');
+			var topOffset = (this.getPlayer().getVideoHolder().height()-onVideoTogglePluginButton.height())/2 + "px";
+			onVideoTogglePluginButton.css({top: topOffset});
 		},
 
 		bindButtons : function(){
