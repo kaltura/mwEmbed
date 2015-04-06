@@ -8,5 +8,7 @@
 
 $messages = array();
 $messages['en'] = array(
-	'qna-tooltip' => 'Questions and Answers',
+	'qna-default-question-box-text' => 'Type new question here',
+	'qna-cancel-button-text' => 'Cancel',
+	'qna-send-button-text' => 'Send',
 );

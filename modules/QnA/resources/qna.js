@@ -5,8 +5,7 @@
 
 		defaultConfig: {
 			templatePath: '../QnA/resources/qna.tmpl.html',
-			cssFileName: 'modules/QnA/resources/qna.css',
-			defaultTextAreaValue: 'Type new question here'
+			cssFileName: 'modules/QnA/resources/qna.css'
 		},
 
 		getBaseConfig: function() {
@@ -116,27 +115,29 @@
 			var _this = this;
 			var parentWindowDocument = $( window['parent'].document );
 			var sendButton = parentWindowDocument.find('.qnaSendButton');
+			sendButton.text(gM('qna-send-button-text'));
 			sendButton
 				.off('click')
 				.on('click', function(){
 					var question = parentWindowDocument.find('.qnaQuestionTextArea').val();
 					_this.submitQuestion(question);
-					textArea.val(_this.getConfig('defaultTextAreaValue'));
+					textArea.val(gM('qna-default-question-box-text'));
 				});
 			var cancelButton = parentWindowDocument.find('.qnaCancelButton');
+			cancelButton.text(gM('qna-cancel-button-text'));
 			cancelButton
 				.off('click')
 				.on('click', function(){
-					textArea.val(_this.getConfig('defaultTextAreaValue'));
+					textArea.val(gM('qna-default-question-box-text'));
 				});
 
 			var textArea = parentWindowDocument.find('.qnaQuestionTextArea');
-			textArea.val(_this.getConfig('defaultTextAreaValue'));
+			textArea.val(gM('qna-default-question-box-text'));
 
 			textArea
 				.off('focus')
 				.on('focus', function(){
-					if (textArea.val() === _this.getConfig('defaultTextAreaValue')) {
+					if (textArea.val() === gM('qna-default-question-box-text')) {
 						textArea.val('');
 					}
 				});
@@ -145,7 +146,7 @@
 				.off('blur')
 				.on('blur', function(){
 					if (textArea.val() === '') {
-						textArea.val(_this.getConfig('defaultTextAreaValue'));
+						textArea.val(gM('qna-default-question-box-text'));
 					}
 				});
 		},
