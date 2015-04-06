@@ -72,7 +72,9 @@ class downloadEntry {
 			}else{
 				$filename = $flavorId . $extension;
 			}
-			$flavorUrl = $client->flavorAsset->getUrl($flavorId,null,false,$filename);
+			$options = new KalturaFlavorAssetUrlOptions();
+			$options->fileName = $filename;
+			$flavorUrl = $client->flavorAsset->getUrl($flavorId,null,false,$options);
 			header("Location: " . $flavorUrl );
 		}
 		else {
