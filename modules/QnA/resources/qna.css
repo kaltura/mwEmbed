@@ -1,3 +1,4 @@
+@import url(http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900);
 .qnaInterface{
 }
 
@@ -19,9 +20,9 @@
 
 .qnaInterface .qnaQuestionTextArea{
 	background-color: transparent;
-	font-family: 'Lato', sans-serif;
+	font-family: 'Lato', Helvetica, Arial;
 	font-size: 13px;
-	font-weight: 200;
+	font-weight: 300;
 	line-height: 16px;
 	text-align: left;
 	color: #ffffff;
@@ -49,11 +50,19 @@
 	margin-top: 10px;
 }
 
+.qnaInterface .qnaButtonsContainer{
+	position: relative;
+	width: 130px;
+	margin-left: 160px;
+	padding-top: 5px;
+	display:inline-block
+}
+
 .qnaInterface .qnaPipeLable{
 	background-color: transparent;
-	font-family: 'Lato', sans-serif;
+	font-family: 'Lato', Helvetica, Arial;
 	font-size: 13px;
-	font-weight: 200;
+	font-weight: 100;
 	line-height: 16px;
 	text-align: left;
 	color: #ffffff;
@@ -68,6 +77,43 @@
 	position: fixed;
 }
 
+.qnaInterface .qnaButtonsPipeLable{
+	background-color: transparent;
+	font-family: 'Lato', Helvetica, Arial;
+	font-size: 13px;
+	font-weight: 300;
+	line-height: 12px;
+	text-align: left;
+	color: #ffffff;
+	border: transparent;
+	border: none;
+	margin-top: 13px;
+	-webkit-box-shadow:	none;
+	-moz-box-shadow:	none;
+	box-shadow:			none;
+	margin-left: 5px;
+	margin-right: 5px;
+	float: right;
+}
+
+.qnaInterface .controlBarBtn{
+	background-color: transparent;
+	border: none;
+	line-height: 12px;
+	text-align: left;
+	font-family: 'Lato', Helvetica, Arial;
+	font-size: 13px;
+	color: #ffffff;
+	float: right;
+}
+
+.qnaInterface .qnaCancelButton{
+	font-weight: 100;
+}
+.qnaInterface .qnaSendButton{
+	font-weight: 300;
+}
+
 .qna-on-video-btn {
 	background-color : #f0f0f0;
 	position: absolute;
@@ -80,3 +126,5 @@
 	-moz-border-radius: 76px 0 0 76px;
 	-webkit-border-radius: 76px 0 0 76px;
 }
+
+
