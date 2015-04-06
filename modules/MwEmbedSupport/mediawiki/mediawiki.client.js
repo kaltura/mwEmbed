@@ -88,7 +88,7 @@
 		return (mw.isAndroid() && !mw.isFirefox() && !mw.isChrome());
 	};
 	mw.isAndroidChromeNativeBrowser = function () {
-		return ( mw.isAndroid() && mw.isChrome() && userAgent.indexOf('Version/') != -1 )
+		return ( mw.isAndroid() && mw.isChrome() );
 	};
 	mw.isMobileChrome = function () {
 		return ( mw.isAndroid4andUp()
@@ -215,11 +215,10 @@
 		}
 
 		// Desktop safari flash has "power saving bug" as well as cross domain request issues
-		// by default we disable flash on desktop safari. 
-		if (mw.isDesktopSafari()) {
+		// by default we disable flash on desktop safari.
+		if (mw.isDesktopSafari() && !mw.getConfig('ForceFlashOnDesktopSafari') ) {
 			return false;
 		}
-
 		var majorVersion = this.getFlashVersion().split(',').shift();
 		if (majorVersion < 10) {
 			return false;

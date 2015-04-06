@@ -66,7 +66,7 @@
 			this.updateSources();
 
 			var flashvars = {};
-			this.getEntryUrl().then(function (srcToPlay) {
+		this.getEntryUrl().then(function (srcToPlay) {
 				flashvars.widgetId = "_" + _this.kpartnerid;
 				flashvars.partnerId = _this.kpartnerid;
 				flashvars.autoMute = _this.muted || mw.getConfig('autoMute');
@@ -94,8 +94,11 @@
 				}
 
 				//add OSMF HLS Plugin if the source is HLS
-				if (_this.isHlsSource(_this.mediaElement.selectedSource) && mw.getConfig("LeadWithHLSOnFlash")) {
+				if (_this.isHlsSource(_this.mediaElement.selectedSource)) {
 					flashvars.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
+                    if(mw.getConfig("hlsSegmentBuffer")) {
+                        flashvars.KalturaHLS["segmentBuffer"] = mw.getConfig("hlsSegmentBuffer");
+                    }
 					flashvars.streamerType = _this.streamerType = 'hls';
 				}
 
@@ -113,6 +116,22 @@
 				//will contain flash plugins we need to load
 				var kdpVars = _this.getKalturaConfig('kdpVars', null);
 				$.extend(flashvars, kdpVars);
+
+				var flashFailCallback = function(){
+					_this.removePoster();
+					_this.layoutBuilder.displayAlert( {
+						title: _this.getKalturaMsg( 'ks-FLASH-BLOCKED-TITLE' ),
+						message: _this.getKalturaMsg( 'ks-FLASH-BLOCKED' ),
+						keepOverlay: true,
+						noButtons : true,
+						props: {
+							customAlertTitleCssClass: "AlertTitleTransparent",
+							customAlertMessageCssClass: "AlertMessageTransparent",
+							customAlertContainerCssClass: "AlertContainerTransparent flashBlockAlertContainer"
+						}
+					});
+				};
+
 				var playerElementFlash = new mw.PlayerElementFlash(_this.kPlayerContainerId, 'kplayer_' + _this.pid, flashvars, _this, function () {
 					var bindEventMap = {
 						'playerPaused': 'onPause',
@@ -141,7 +160,7 @@
 						'bitrateChange': 'onBitrateChange',
                         'textTracksReceived': 'onTextTracksReceived'
 					};
-					_this.playerObject = this.getElement();
+				_this.playerObject = this.getElement();
 					$.each(bindEventMap, function (bindName, localMethod) {
 						_this.playerObject.addJsListener(bindName, localMethod);
 					});
@@ -154,7 +173,7 @@
 						_this.triggerHelper("volumeChanged", 0);
 					}
 
-				});
+				},flashFailCallback);
 
 				_this.bindHelper('switchAudioTrack', function (e, data) {
 					if (_this.playerObject) {
@@ -392,6 +411,7 @@
 		},
 		onClipDone: function () {
 			this.parent_onClipDone();
+			this.flashCurrentTime = 0;
 		},
 
 		onAlert: function (data, id) {
@@ -419,6 +439,7 @@
 			if (data) {
 				error = data.errorId + " detail:" + data.errorDetail;
 			}
+			data.errorMessage = this.getKalturaMsg('ks-CLIP_NOT_FOUND');
 			mw.log("EmbedPlayerKPlayer::MediaError error code: " + error);
 			this.triggerHelper('embedPlayerError', [ data ]);
 		},
@@ -732,6 +753,13 @@
 			if (this.supportsURLTimeEncoding() && this.startTime) {
 				srcUrl = srcUrl + "&seekFrom=" + parseInt(this.startTime) * 1000;
 			}
+
+            //copy clientTag from original playManifest
+            if (originalSrc.indexOf("&clientTag=") !== -1) {
+                var clientTag = originalSrc.slice(originalSrc.indexOf("clientTag"));
+                clientTag = clientTag.slice(0, clientTag.indexOf("&"))
+                srcUrl = srcUrl + "&" + clientTag;
+            }
 
 			var refObj = {src: srcUrl};
 			this.triggerHelper('SourceSelected', refObj);

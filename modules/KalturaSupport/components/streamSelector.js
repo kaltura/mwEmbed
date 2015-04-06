@@ -81,7 +81,7 @@
 				_this.streamEnded = true;
 			});
 
-			this.bind("onplay", function () {
+			this.bind("onplay onChangeStreamDone", function () {
 				_this.streamEnded = false;
 			});
 

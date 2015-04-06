@@ -105,7 +105,7 @@
 					case "playlistAPI.dataProvider":
 					case "playlistAPI":
 						if (property == "selectedIndex") {
-							_this.playMedia(value, true);
+							_this.playMedia(value);
 						}
 						break;
 					case 'tabBar':
@@ -219,6 +219,9 @@
 				$(".chapterBox").removeClass('active');
 			}
 			$(".chapterBox").find("[data-mediaBox-index='" + index + "']").addClass('active');
+			if ( mw.isMobileDevice() ){
+				this.embedPlayer.mobilePlayed = true; // since the user clicked the screen, we can set mobilePlayed to true to enable canAutoPlay
+			}
 			this.playMedia(index, true);
 		},
 
@@ -271,7 +274,7 @@
 		},
 
 		// play a clip according to the passed index. If autoPlay is set to false - the clip will be loaded but not played
-		playMedia: function (clipIndex) {
+		playMedia: function (clipIndex, load) {
 			this.setSelectedMedia(clipIndex);              // this will highlight the selected clip in the UI
 			this.setConfig("selectedIndex", clipIndex);    // save it to the config so it can be retrieved using the API
 			this.embedPlayer.setKalturaConfig('playlistAPI', 'dataProvider', {'content': this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')}); // for API backward compatibility
@@ -296,7 +299,7 @@
 			// mobile devices have a autoPlay restriction, we issue a raw play call on
 			// the video tag to "capture the user gesture" so that future
 			// javascript play calls can work
-			if (mw.isMobileDevice() && embedPlayer.firstPlay) {
+			if (mw.isMobileDevice() && embedPlayer.firstPlay && load) {
 				mw.log("Playlist:: issue load call to capture click for iOS");
 				try {
 					embedPlayer.getPlayerElement().load();
@@ -358,7 +361,7 @@
 			mw.log("PlaylistAPI::addClipBindings");
 			// Setup postEnded event binding to play next clip (if autoContinue is true )
 			if (this.getConfig("autoContinue") == true) {
-				$(this.embedPlayer).unbind('postEnded').bind('postEnded', function () {
+				$(this.embedPlayer).unbind('postEnded' + this.bindPostFix).bind('postEnded' + this.bindPostFix, function () {
 					mw.log("PlaylistAPI:: postEnded > on inx: " + clipIndex);
 					_this.playNext();
 				});

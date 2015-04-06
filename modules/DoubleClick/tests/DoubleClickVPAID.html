@@ -1,0 +1,37 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+<title> DoubleClick VPAID  </title>
+
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<body>
+
+<h3>DoubleClick VPAID</h3>
+<div id="videoTarget" style="width:600px;height:430px"></div>
+<script>
+    var localPath = document.location.href;
+    localPath = localPath.split('DoubleClickVPAID.html')[0];
+    kWidget.featureConfig({
+		'targetId': 'videoTarget',
+		'wid': '_243342',
+		'cache_st': 2,
+		'uiconf_id' : '13303152',
+		'entry_id' : '0_uka1msg4',
+		'flashvars': {
+            'ForceFlashOnDesktopSafari' : true,
+			'doubleClick':{
+				'plugin':true,
+				'path' : 'http://cdnbakmi.kaltura.com/content/uiconf/ps/veria/kdp3.9.1/plugins/doubleclickPlugin.swf',
+				'adTagUrl': localPath+'liverailOnlyFlash.xml?random={utility.random}&timestamp={utility.timestamp}&referrer_url={utility.referrer_url}&referrer_host={utility.referrer_host}',
+				'disableCompanionAds' : false,
+				'debugMode':false
+			}
+		}
+	});
+</script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Live HLS - Kaltura testing - live</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<body>
+<h2>Live HLS - Kaltura testing - live </h2>
+
+<br />
+<div id="kaltura_player" style="width:400px;height:333px;"></div>
+<script>
+    mw.setConfig("LeadWithHLSOnFlash",true);
+	kWidget.embed( {
+		'targetId' :'kaltura_player',
+		'wid': '_1878761',
+		'uiconf_id' : '12905712',
+		'entry_id': '1_9u6tpaco',
+		'flashvars': {
+            "liveCore":{"plugin":true,"disableLiveCheck":true} ,
+            "liveStatus":{"plugin":true},
+            //"hlsSegmentBuffer" : "3",
+            "sourceSelector.plugin" : true
+		}
+	});
+</script>
+</body>
+</html>

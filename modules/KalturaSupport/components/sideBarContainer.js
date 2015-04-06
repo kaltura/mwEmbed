@@ -36,9 +36,12 @@
 						_this.closeBarTimeout = null;
 					}
 				};
-				_this.getComponentReminder().off('click').on('click', function(){
+				_this.getComponentReminder().off('click touchstart').on('click touchstart', function(e){
+					e.stopPropagation();
+					e.preventDefault();
 					disableClosingTimeout();
 					_this.toggleSideBar();
+					return false;
 				});
 				if (!_this.getConfig('clickToClose')) {
 					_this.getComponent()

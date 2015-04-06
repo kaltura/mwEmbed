@@ -68,6 +68,8 @@
 		//flag for the time to return when using the same video element {mobile}
 		timeToReturn:null,
 
+		cust_params: null,
+
 		//flag that indicates we are now playing linear ad
 		playingLinearAd:false,
 
@@ -117,12 +119,6 @@
 				_this.leadWithFlash = _this.getConfig( 'leadWithFlash' );
 			}
 
-			//native browser on Android 4.4 has "Chrome" in it, so this is the "new" way to test its user agent
-			if ( mw.isAndroid44() && mw.isAndroidChromeNativeBrowser() && !mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
-				mw.log("DoubleClick::user agent not supported, return" );
-				callback();
-				return;
-			}
 			if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
 				_this.isNativeSDK = true;
 				_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
@@ -233,12 +229,14 @@
 								}
 								evaluatedQueryStringParams += "&";
 							}else{
-								this.cust_params = encodeURIComponent( evaluatedValue );
+								this.cust_params = escape( evaluatedValue );
 							}
 						}
 						//Build entire adTagUrl back
 						evaluatedQueryStringParams = evaluatedQueryStringParams.substring(0, evaluatedQueryStringParams.length - 1);
 						this.adTagUrl =  adTagBaseUrl + "?" + evaluatedQueryStringParams ;
+					}else{
+						this.adTagUrl = adTagUrl;
 					}
 				} catch (e) {
 					// in case of error - fallback for fully escaped and evaluated adTagUrl string
@@ -403,6 +401,7 @@
 		pauseAd: function (isLinear) {
 			var _this = this;
 			this.embedPlayer.paused = true;
+			$(this.embedPlayer).trigger('onpause');
 			var classes = "adCover";
 			if (mw.isIE8()){
 				classes += " adCoverIE8";
@@ -829,9 +828,10 @@
 				if ( adData) {
 					_this.isLinear = adData.linear;
 				}
+				var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
 				$("#" + _this.getAdContainerId()).show();
 				// dispatch adOpen event
-				$( _this.embedPlayer).trigger( 'onAdOpen',[adData.adId, adData.adSystem, _this.currentAdSlotType, adData.adPodInfo ? adData.adPodInfo.adPosition : 0] );
+				$( _this.embedPlayer).trigger( 'onAdOpen',[adData.adId, adData.adSystem, currentAdSlotType, adData.adPodInfo ? adData.adPodInfo.adPosition : 0] );
 
 				// check for started ad playback sequence callback
 				if( _this.startedAdPlayback ){
@@ -862,11 +862,12 @@
 			adsListener( 'STARTED', function(adEvent){
 				var ad = adEvent.getAd();
 				_this.isLinear = ad.isLinear();
+				var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
 				if( mw.isIpad() && _this.embedPlayer.getPlayerElement().paused ) {
 					_this.embedPlayer.getPlayerElement().play();
 				}
 				// trigger ad play event
-				$(_this.embedPlayer).trigger("onAdPlay",[ad.getAdId()]);
+				$(_this.embedPlayer).trigger("onAdPlay",[ad.getAdId(),ad.getAdSystem(),currentAdSlotType]);
 				// This changes player state to the relevant value ( play-state )
 				$(_this.embedPlayer).trigger("playing");
 				// Check for ad Stacking ( two starts in less then 250ms )
@@ -981,6 +982,8 @@
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				mw.log("DoubleClick:: adStart");
+				// set volume when ad starts to enable autoMute. TODO: remove next line once DoubleClick fix their bug when setting adsManager.volume before ad starts
+				_this.embedPlayer.setPlayerElementVolume(_this.embedPlayer.volume);
 				// trigger ad play event
 				$(_this.embedPlayer).trigger("onAdPlay",[adInfo.adID]);
 				// This changes player state to the relevant value ( play-state )
@@ -990,7 +993,9 @@
 					_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
 					_this.prevSlotType = _this.currentAdSlotType;
 				}
-				_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', adInfo.duration );
+				if (adInfo.duration > 0){
+					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', adInfo.duration );
+				}
 				if ( _this.isChromeless ) {
 					$(".mwEmbedPlayer").hide();
 				}
@@ -1012,8 +1017,9 @@
 				if (!_this.isLinear && _this.isChromeless ){
 					$(".mwEmbedPlayer").hide();
 				}
+				var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
 				// dispatch adOpen event
-				$( _this.embedPlayer).trigger( 'onAdOpen',[adInfo.adID, adInfo.adSystem, _this.currentAdSlotType, adInfo.adPosition] );
+				$( _this.embedPlayer).trigger( 'onAdOpen',[adInfo.adID, adInfo.adSystem, currentAdSlotType, adInfo.adPosition] );
 				if (!_this.isLinear){
 					_this.restorePlayer();
 					setTimeout(function(){
@@ -1051,8 +1057,10 @@
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				mw.log("DoubleClick:: adRemainingTimeChange");
-				_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', (adInfo.duration - adInfo.remain));
-				_this.embedPlayer.updatePlayHead( adInfo.time / adInfo.duration );
+				if (adInfo.duration > 0){
+					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', (adInfo.duration - adInfo.remain));
+					_this.embedPlayer.updatePlayHead( adInfo.time / adInfo.duration );
+				}
 				// Update sequence property per active ad:
 				if (adInfo.remain > 0){
 					_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  parseInt(adInfo.remain) );

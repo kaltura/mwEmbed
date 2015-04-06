@@ -1722,7 +1722,9 @@
 
 					// reload the player
 					if (_this.autoplay && _this.canAutoPlay() ) {
-						_this.removePoster();
+						if (!_this.isAudioPlayer) {
+							_this.removePoster();
+						}
 						_this.play();
 					}
 
@@ -1814,6 +1816,7 @@
 		 * Updates the poster HTML
 		 */
 		updatePosterHTML: function () {
+            mw.log('!!EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
 			mw.log('EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
 			var _this = this;
 
@@ -2184,6 +2187,10 @@
 			}
 			var _this = this;
 			var $this = $(this);
+			if (this.currentState == "end") {
+				// prevent getting another clipdone event on replay
+				this.seek(0.01, false);
+			}
 			// Store the absolute play time ( to track native events that should not invoke interface updates )
 			mw.log("EmbedPlayer:: play: " + this._propagateEvents + ' isStopped: ' + _this.isStopped());
 			this.absoluteStartPlayTime = new Date().getTime();
@@ -2227,11 +2234,6 @@
 					mw.log("EmbedPlayer:: isInSequence, do NOT play content");
 					return false;
 				}
-			}
-
-			if (this.currentState == "end") {
-				// prevent getting another clipdone event on replay
-				this.seek(0.01, false);
 			}
 
 			// Remove any poster div ( that would overlay the player )
@@ -3156,7 +3158,7 @@
 				if (!message || message == undefined){
 					message = this.getKalturaMsg('ks-CLIP_NOT_FOUND');
 				}
-				this.showErrorMsg({ title: this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'), message: message });
+                this.showErrorMsg({ title: this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'), message: message });
 
 			}
 		},
@@ -3164,6 +3166,7 @@
 		/**
 		 * Some players parse playmanifest and reload flavors list by calling this function
 		 * @param data
+		 * Exmaple:[{"bandwidth":517120,"type":"video/mp4","assetid":0,"height":0},{"bandwidth":727040,"type":"video/mp4","assetid":1,"height":0},{"bandwidth":1041408,"type":"video/mp4","assetid":2,"height":0}
 		 */
 		onFlavorsListChanged: function (newFlavors) {
 			//we can't use simpleFormat with flavors that came from playmanifest otherwise sourceSelector list won't match
