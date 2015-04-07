@@ -208,10 +208,19 @@
 			}
 
 			this.parseStylesTTML( xml );
-
+			var captionLineToRemove = [];
 			$( xml ).find( 'p' ).each( function( inx, p ){
 				captions.push( _this.parseCaptionObjTTML( p ) );
+				if (captions.length>1){
+					if (captions[inx-1].start == captions[inx].start) {
+						captions[inx-1].content = (captions[inx-1].content).concat(captions[inx].content);
+						captionLineToRemove.push(inx);
+					}
+				}
 			});
+			for (var inx = captionLineToRemove.length-1; inx >= 0; inx--){
+				captions.splice(captionLineToRemove[inx],1)
+			}
 			return captions;
 		},
 		parseStylesTTML: function( xml ) {
