@@ -19,7 +19,7 @@
 	background-color: transparent;
 	font-family: 'Lato', Helvetica, Arial;
 	font-size: 13px;
-	font-weight: 100;
+	/*font-weight: 100;*/
 	line-height: 16px;
 	text-align: left;
 	color: #ffffff;
@@ -31,7 +31,7 @@
 	box-shadow:			none;
 	resize: none;
 	overflow: hidden;
-	opacity: 0.8;
+	/*opacity: 0.8;*/
 }
 
 .qnaInterface .qnaQuestionButtonsArea{

@@ -140,15 +140,21 @@
 				.off('click')
 				.on('click', function(){
 					textArea.val(gM('qna-default-question-box-text'));
+					textArea.css({opacity: 0.8});
+					textArea.css({'font-weight': 100});
 				});
 
 			var textArea = parentWindowDocument.find('.qnaQuestionTextArea');
 			textArea.val(gM('qna-default-question-box-text'));
 
+			textArea.css({'opacity': 0.8});
+			textArea.css({'font-weight': 100});
 			textArea
 				.off('focus')
 				.on('focus', function(){
 					if (textArea.val() === gM('qna-default-question-box-text')) {
+						textArea.css({opacity: 1});
+						textArea.css({'font-weight': 300});
 						textArea.val('');
 					}
 				});
@@ -158,6 +164,8 @@
 				.on('blur', function(){
 					if (textArea.val() === '') {
 						textArea.val(gM('qna-default-question-box-text'));
+						textArea.css({opacity: 0.8});
+						textArea.css({'font-weight': 100});
 					}
 				});
 
