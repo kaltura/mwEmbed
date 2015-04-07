@@ -10,23 +10,88 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 		'targetId': 'transcriptContainer',
 		'templatePath': '../tr/templates/transcript.tmpl.html',
 		'transcriptTargetId': 'transcript-body'
-
 	},
 
 	setup: function() {
-
+		this.mainDoc = $(window['parent'].document);
 		this.updateTargetWithTemplate();
+		this.setBindings();
+		this.applyFilterBehavior();
+	},
+
+	applyFilterBehavior : function (){
+		var _this = this;
+		//hook enter key
+		this.mainDoc.find(".search-input").keyup(function(e){
+			if (e.keyCode === 13) {
+				_this.getPlayer().sendNotification('trLocalSearch', _this.mainDoc.find(".search-input").val());
+			}
+		});
+		//hook search icon
+		this.mainDoc.find(".search-btn").click(function(e){
+			_this.getPlayer().sendNotification('trLocalSearch', _this.mainDoc.find(".search-input").val());
+		})
+		//hook clear button
+		this.mainDoc.find(".btn-filter").click(function(e){
+			_this.mainDoc.find(".transcript-filter").removeClass("active");
+			this.mainDoc.find(".ri-transcript-filter-txt").removeClass("active");
+			_this.mainDoc.find(".search-input").val("");
+		})
+
+	},
+	setBindings : function (){
 		this.bind('newClosedCaptionsData', $.proxy(function(event,source){
+			this.clearData();
 			this.setTranscript(source.captions);
 			this.setMentionedTerms();
 			//Experimental :) // render the mentioned terms to the transcript
 			try{
 				this.renderHighlightedWords();
+				this.applyBehavior();
 			}catch(e){
 				mw.log("Error applying highlighted words " + e)
 			}
 		},this));
+		this.bind('playerReady', $.proxy(function(){
+			this.clearData();
+		},this));
+		this.bind('trLocalSearch', $.proxy(function(e,searchString){
+			//show filter box
+			this.localSearch(searchString)
+		},this));
+	},
 
+
+	localSearch : function(searchString){
+		this.mainDoc.find(".transcript-filter").addClass("active");
+	},
+
+
+	clearData : function () {
+		//clear UI on transcript and mentioned terms
+		var doc = window['parent'].document;
+		$(doc).find("#"+this.getConfig('transcriptTargetId')).text("");
+
+		$(doc).find("#peopleTerms").text("");
+		$(doc).find("#companiesTerms").text("");
+		$(doc).find("#locationsTerms").text("");
+		$(doc).find("#keywordsTerms").text("");
+
+	},
+	applyBehavior : function (){
+		//apply to transcript
+
+		this.mainDoc.find("#"+this.getConfig('transcriptTargetId')).find("[trdata]").click(function(e){
+
+		});
+
+		//apply behavior to the mentioned terms
+		this.mainDoc.find(".mentioned-terms-categories").find("[trdata]").click($.proxy(function(event,source){
+			this.mainDoc.find(".search-input").val($(this).attr("trdata"));
+			this.mainDoc.find(".ri-transcript-filter-term").text($(event.target).attr("trdata"));
+			this.mainDoc.find(".ri-transcript-filter-txt").addClass("active");
+			this.getPlayer().sendNotification('trLocalSearch',$(event.target).attr("trdata"));
+		},this));
 	},
 	renderHighlightedWords : function (){
 
@@ -35,11 +100,12 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 		newOutput = $(doc).find("#"+this.getConfig('transcriptTargetId')).text();
 
 		for (var i=0;i<markMyWords.length;i++){
-			var reg = new RegExp (markMyWords[i] , "g")
-			newOutput = newOutput.replace(reg,'<span class="highlight">'+markMyWords[i]+'</span>');
+			var reg = new RegExp (markMyWords[i] , "g");
+			newOutput = newOutput.replace(reg,'<span class="highlight" trdata="markMyWords[i]">'+markMyWords[i]+'</span>');
 		}
 		$(doc).find("#"+this.getConfig('transcriptTargetId')).text("");
 		$(doc).find("#"+this.getConfig('transcriptTargetId')).append(newOutput);
+
 	},
 	setMentionedTerms : function (){
 		//TODO replace this with real data once I get it
@@ -111,7 +177,7 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 		var htmlString = "";
 		for (var i=0;i<dataArr.length;i++){
 			// need to add the click mechanism later
-			htmlString+="<a> "+ dataArr[i].key +"</a>,";
+			htmlString+="<span trdata="+dataArr[i].string+"> "+ dataArr[i].key +"</span>,";
 		};
 		// remove last string
 		$(doc).find("#"+targetClass).append(htmlString.slice(0,htmlString.length-1));

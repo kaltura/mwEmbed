@@ -1,13 +1,18 @@
 mw.PluginManager.add( 'trControls', mw.KBasePlugin.extend({
 
 	defaultConfig: {
+		maxResults: 2,
 		targetId: 'playerControlsContainer',
 		templatePath: '../tr/templates/player-controls.tmpl.html'
 	},
 
 	setup: function() {
 		this.updateTargetWithTemplate();
-		this.applyBehavior();
+		var _this = this;
+		setTimeout(function(){
+				_this.applyBehavior();
+			}
+		,100)
 	},
 
 	applyBehavior: function() {
@@ -16,6 +21,7 @@ mw.PluginManager.add( 'trControls', mw.KBasePlugin.extend({
 		var $playerInterface = this.getPlayer().getInterface();
 		var player = this.getPlayer();
 
+		var _this = this;
 		// Do fullscreen
 		$(doc).find(".player-mode").click(function(){
 			$parentContainer.addClass("enhanced");
@@ -28,6 +34,17 @@ mw.PluginManager.add( 'trControls', mw.KBasePlugin.extend({
 			$playerInterface.removeClass('fullscreen');
 		});
 
+		$(doc).find(".playlist-test").click(function(){
+			var params = {
+				"service":"playlist" ,
+				"action":"executefromfilters" ,
+				"ks":"Y2U4NWM1NWU5MThjMzVlY2RiNDFjZmQyNzJmY2ViYWY5MDhhYThlN3wyNzAxNzsyNzAxNzsxNDI4NTE0NTc2OzI7MTQyODQyODE3Ni41OTQ2O19fQURNSU5fXzI2Njg3Ozs7" ,
+				'filters:item0:tagsMultiLikeOr' : "noa" , 	// search term here
+				'filters:item0:idNotIn' : "0_0g8l44yy" , 	// dont fetch current entry
+				"totalResults" : _this.getConfig("maxResults")
+			}
+			player.sendNotification('loadExternalPlaylist', params);
+		});
 		$(doc).find(".share-copy").click(function(){
 			player.sendNotification('toggleScreen', 'share');
 		});
@@ -41,8 +58,6 @@ mw.PluginManager.add( 'trControls', mw.KBasePlugin.extend({
 			var mailToUrl = 'mailto:?subject=Check out ' + entryName + '&body=Check out ' + entryName + ': ' + shareData.shareLink;
 			window.open(mailToUrl);
 		});
-
-
 	},
 	hasValidTargetElement: function() {
 		if( !mw.getConfig('EmbedPlayer.IsFriendlyIframe') ){
@@ -55,7 +70,6 @@ mw.PluginManager.add( 'trControls', mw.KBasePlugin.extend({
 			this.log('Unable to find element with id of: ' + this.getConfig('targetId') + ' on the parent document');
 			return false;
 		}
-
 		if( parentTarget ) {
 			return true;
 		}
@@ -71,5 +85,8 @@ mw.PluginManager.add( 'trControls', mw.KBasePlugin.extend({
 			target.innerHTML = this.getTemplateHTML().html();
 		}
 	}
+
+	//			this.bind('loadExternalPlaylist', function (e,params) {
+
 
 }));

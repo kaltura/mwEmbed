@@ -27,5 +27,13 @@ return array(
 		'kalturaPluginName' => 'trControls',
 		'messageFile'	=> 'tr.i18n.php'
 	),
+	"trLocale" =>  array(
+		'scripts' => "resources/trLocale.js",
+		'dependencies' => array(
+			'mw.KBasePlugin'
+		),
+		'kalturaPluginName' => 'trLocale',
+		'messageFile'	=> 'tr.i18n.php'
+	)
 
 );
