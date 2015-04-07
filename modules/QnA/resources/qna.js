@@ -149,6 +149,12 @@
 						textArea.val(gM('qna-default-question-box-text'));
 					}
 				});
+
+			textArea.bind("mousewheel",function(ev) {
+				ev.preventDefault();
+				var scrollTop = $(this).scrollTop();
+				$(this).scrollTop(scrollTop-Math.round(ev.originalEvent.deltaY));
+			});
 		},
 
 		getHTML : function(data){
