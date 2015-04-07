@@ -32,6 +32,14 @@
 	resize: none;
 	overflow: hidden;
 	/*opacity: 0.8;*/
+	/* Firefox */
+	width: -moz-calc(100% - 50px);
+	/* WebKit */
+	width: -webkit-calc(100% - 50px);
+	/* Opera */
+	width: -o-calc(100% - 50px);
+	/* Standard */
+	width: calc(100% - 50px);
 }
 
 .qnaInterface .qnaQuestionButtonsArea{
@@ -46,7 +54,8 @@
 .qnaInterface .qnaButtonsContainer{
 	position: relative;
 	width: 130px;
-	margin-left: 160px;
+	float: right;
+	margin-right: 10px;
 	padding-top: 5px;
 	display:inline-block
 }

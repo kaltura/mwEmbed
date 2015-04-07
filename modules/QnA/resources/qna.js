@@ -54,7 +54,7 @@
 				"ks": embedPlayer.getFlashvars("ks"),
 				"cuePoint:objectType": "KalturaAnnotation",
 				"cuePoint:entryId": embedPlayer.kentryid,
-				"cuePoint:startTime": new Date().getTime() / 1000,
+				"cuePoint:startTime": embedPlayer.currentTime,
 				"cuePoint:text": question,
 				"cuePoint:tags": "qna"
 			};
