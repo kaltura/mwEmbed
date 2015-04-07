@@ -28,6 +28,21 @@
 // ===================================================================================================
 
 /**
+* @package Kaltura
+* @subpackage Client
+*/
+class KalturaFlavorAssetUrlOptions extends KalturaObjectBase
+{
+		/**
+ 		* The name of the downloaded file
+		*
+		*
+		* @var string
+		*/
+		public $fileName = null;
+}
+
+/**
  * @package Kaltura
  * @subpackage Client
  */
