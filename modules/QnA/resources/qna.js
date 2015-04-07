@@ -106,7 +106,13 @@
 
 		positionOnVideoButton : function(){
 			var onVideoTogglePluginButton = $('.qna-on-video-btn');
-			var topOffset = (this.getPlayer().getVideoHolder().height()-onVideoTogglePluginButton.height())/2 + "px";
+			var videoHeight = this.getPlayer().getVideoHolder().height();
+			var buttonHeight = Math.round(videoHeight / 5) + "px";
+			var buttonWidth = Math.round(videoHeight / 10) + "px";
+			onVideoTogglePluginButton.css({height: buttonHeight});
+			onVideoTogglePluginButton.css({width: buttonWidth});
+
+			var topOffset = (videoHeight-onVideoTogglePluginButton.height())/2 + "px";
 			onVideoTogglePluginButton.css({top: topOffset});
 		},
 
@@ -122,8 +128,10 @@
 					if (_this.getPlayer().isOffline()){
 						alert(gM('qna-cant-ask-while-not-live'));
 					} else {
-						_this.submitQuestion(question);
-						textArea.val(gM('qna-default-question-box-text'));
+						if (question !== gM('qna-default-question-box-text')) {
+							_this.submitQuestion(question);
+							textArea.val(gM('qna-default-question-box-text'));
+						}
 					}
 				});
 			var cancelButton = parentWindowDocument.find('.qnaCancelButton');
