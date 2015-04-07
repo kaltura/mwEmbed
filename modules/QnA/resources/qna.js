@@ -11,7 +11,6 @@
 		getBaseConfig: function() {
 			var parentConfig = this._super();
 			return $.extend({}, parentConfig, {
-				//templatePath: '../QnA/resources/qna.tmpl.html',
 				qnaTargetId: null
 			});
 		},
@@ -55,9 +54,9 @@
 				"ks": embedPlayer.getFlashvars("ks"),
 				"cuePoint:objectType": "KalturaAnnotation",
 				"cuePoint:entryId": embedPlayer.kentryid,
-				"cuePoint:startTime": embedPlayer.currentTime,
-				"tags": "qna",
-				"text": question
+				"cuePoint:startTime": new Date().getTime() / 1000,
+				"cuePoint:text": question,
+				"cuePoint:tags": "qna"
 			};
 
 			_this.getKClient().doRequest(entryRequest, function (result) {
@@ -120,8 +119,12 @@
 				.off('click')
 				.on('click', function(){
 					var question = parentWindowDocument.find('.qnaQuestionTextArea').val();
-					_this.submitQuestion(question);
-					textArea.val(gM('qna-default-question-box-text'));
+					if (_this.getPlayer().isOffline()){
+						alert(gM('qna-cant-ask-while-not-live'));
+					} else {
+						_this.submitQuestion(question);
+						textArea.val(gM('qna-default-question-box-text'));
+					}
 				});
 			var cancelButton = parentWindowDocument.find('.qnaCancelButton');
 			cancelButton.text(gM('qna-cancel-button-text'));
