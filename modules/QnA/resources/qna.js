@@ -60,7 +60,8 @@
 			};
 
 			_this.getKClient().doRequest(entryRequest, function (result) {
-				debugger;
+				mw.log("added Annotation cue point with id: " + result.id);
+				//debugger;
 			},
 			false,
 			function(err){
