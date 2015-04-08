@@ -31,15 +31,16 @@
 	box-shadow:			none;
 	resize: none;
 	overflow: hidden;
+	height: 40px;
 	/*opacity: 0.8;*/
 	/* Firefox */
-	width: -moz-calc(100% - 50px);
+	width: -moz-calc(100% - 45px);
 	/* WebKit */
-	width: -webkit-calc(100% - 50px);
+	width: -webkit-calc(100% - 45px);
 	/* Opera */
-	width: -o-calc(100% - 50px);
+	width: -o-calc(100% - 45px);
 	/* Standard */
-	width: calc(100% - 50px);
+	width: calc(100% - 45px);
 }
 
 .qnaInterface .qnaQuestionButtonsArea{
@@ -74,7 +75,7 @@
 	-webkit-box-shadow:	none;
 	-moz-box-shadow:	none;
 	box-shadow:			none;
-	width: 15px;
+	width: 10px;
 	margin-left: 15px;
 	float: left;
 }
