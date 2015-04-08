@@ -1419,7 +1419,24 @@
 							;
 						};
 						// add the services.php includes:
-						_this.appendScriptUrl(baseUiConfJsUrl + _this.embedSettingsToUrl(settings) + '&callback=' + cbName);
+						var scriptUrl = baseUiConfJsUrl + _this.embedSettingsToUrl(settings) + '&callback=' + cbName;
+						if (scriptUrl.length > 4096){
+							_this.log( "Warning iframe requests (" + scriptUrl.length + ") exceeds 4096 characters, won't cache on CDN." )
+							$.ajax({
+								type: "POST",
+								dataType: 'text',
+								url: _this.getIframeUrl(),
+								data: _this.embedSettingsToUrl(settings)
+							}).success(function (data) {
+									var contentData = {content: data};
+									window[cbName](contentData);
+								})
+								.error(function (e) {
+									_this.log("Error in player iframe request");
+							});
+						}else{
+							_this.appendScriptUrl(scriptUrl);
+						}
 					} else {
 						// add the callback
 						_this.uiConfScriptLoadListCallbacks[ cbName ].push(callback);
