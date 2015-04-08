@@ -119,6 +119,7 @@
 }
 
 .qna-on-video-btn {
+	z-index: 99999;
 	background-color : #f0f0f0;
 	position: absolute;
 	right: 0;
