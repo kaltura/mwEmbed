@@ -127,6 +127,9 @@
 					_this.loadAds( function(){
 						loadedAds = true;
 						embedPlayer.unbindHelper('prePlayAction' + _this.bindPostfix);
+						if ( mw.isMobileDevice() ){
+							embedPlayer.getPlayerElement().load();
+						}
 						embedPlayer.play();
 					});
 				}
