@@ -323,7 +323,7 @@ return array(
         'attributes' => array(
             'onPageJs1' => array(
                 'doc' => "",
-                'initvalue' => "{onPagePluginPath}\/cielo24Transcriptions\/js\/loader.js",
+                'initvalue' => "https:\/\/s3-us-west-2.amazonaws.com\/svsg-kaltura-trans-widget\/js\/loader.js",
                 'type' => 'hidden'
             ),
             'DynaTransWindowSize' => array(
@@ -337,7 +337,7 @@ return array(
                 'type' => 'string',
             ),
             'DynaTransClientLogo' => array(
-                'initvalue' => "{onPagePluginPath}\/cielo24Transcriptions\/img\/logo-transparent.png",
+                'initvalue' => "https:\/\/s3-us-west-2.amazonaws.com\/svsg-kaltura-trans-widget\/img\/logo-transparent.png",
                 'doc' => "Client Logo.",
                 'type' => 'string',
             ),
