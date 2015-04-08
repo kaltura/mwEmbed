@@ -1706,12 +1706,6 @@
 				if (_this.getError()) {
 					// Reset changeMediaStarted flag
 					_this.changeMediaStarted = false;
-					if (_this.playlist) {
-						// Allow user to move to next/previous entries
-						_this.playlist.enablePrevNext();
-						_this.playlist.addClipBindings();
-						_this.layoutBuilder.closeAlert();
-					}
 					_this.showErrorMsg(_this.getError());
 					return;
 				}
@@ -1719,7 +1713,8 @@
 				var changeMediaDoneCallback = function () {
 					// Reset changeMediaStarted flag
 					_this.changeMediaStarted = false;
-
+					//remove black bg when showing poster after change media
+					$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
 					// reload the player
 					if (_this.autoplay && _this.canAutoPlay() ) {
 						if (!_this.isAudioPlayer) {

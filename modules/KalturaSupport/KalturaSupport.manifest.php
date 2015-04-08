@@ -123,6 +123,11 @@ $kgDefaultCaptionAttr = array(
 	'hideWhenEmpty' => array(
 		'doc' => 'If the caption button should be hidden when no captions are available for the current entry.',
 		'type' => 'boolean'
+	),
+	'showEmbeddedCaptions' => array(
+		'doc' => 'Show captions embedded in the video file.',
+		'type' => 'boolean',
+		'initvalue' => false,
 	)
 );
 return array(

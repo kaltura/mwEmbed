@@ -474,11 +474,6 @@
 		 * Get the content video tag
 		 */
 		getContent:function(){
-			//if we're not in mobile - return null and let double click provide the sibling tag
-			if (!mw.isMobileDevice() ){
-				this.saveTimeWhenSwitchMedia = false;
-				return null;
-			}
 			// Set the content element to player element:
 			var playerElement =  this.embedPlayer.getPlayerElement();
 			//Load the video tag to enable setting the source by doubleClick library
@@ -486,7 +481,7 @@
 				this.playerElementLoaded = true;
 				playerElement.load();
 			}
-			this.saveTimeWhenSwitchMedia = true;
+			this.saveTimeWhenSwitchMedia = mw.isMobileDevice();
 			return playerElement;
 		},
 		getAdContainer: function(){
@@ -637,7 +632,7 @@
 			}
 
 			// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
-			this.getAdDisplayContainer();
+			this.getAdDisplayContainer().initialize();
 
 			// Create ads loader.
 			_this.adsLoader = new google.ima.AdsLoader( _this.adDisplayContainer );
