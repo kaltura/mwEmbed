@@ -168,6 +168,10 @@
 				if ( _this.localizationCode ){
 					google.ima.settings.setLocale(_this.localizationCode);
 				}
+				// set player type and version
+				google.ima.settings.setPlayerType("kaltura/mwEmbed");
+				google.ima.settings.setPlayerVersion(mw.getConfig("version"));
+
 				if( _this.getConfig( "adTagUrl" ) ) {
 					// Check for adPattern
 					if ( _this.getConfig( 'adPattern' ) ) {
@@ -265,6 +269,8 @@
 			for ( var i=0; i< ignoredVars.length; i++ ) {
 				delete flashVars[ignoredVars[i]];
 			}
+			// add player version as a Flashvar to be used in playerVersion property of ImaSdkSettings
+			flashVars['playerVersion'] = mw.getConfig("version");
 			embedPlayer.setKalturaConfig('kdpVars', 'doubleClick', flashVars);
 			if ( this.localizationCode ){
 				embedPlayer.setKalturaConfig('kdpVars', 'localizationCode', this.localizationCode);
