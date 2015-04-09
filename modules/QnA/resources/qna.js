@@ -26,20 +26,33 @@
 			var embedPlayer = this.getPlayer();
 
 			this.bind('layoutBuildDone', function (event, screenName) {
-				embedPlayer.getVideoHolder().append('<div class="qna-on-video-btn"></div>');
+				embedPlayer.getVideoHolder().append('<div class="qna-on-video-btn icon-qna-close"></div>');
 				_this.getQnaContainer();
 				var qnaObject =  $(window['parent'].document.getElementById(embedPlayer.id )).parent().find( ".qnaInterface" );
+				var onVideoTogglePluginButton = $('.qna-on-video-btn');
 				$(".qna-on-video-btn").on("click", function(){
 					if (qnaObject.is(":visible")){
 						qnaObject.hide();
+						onVideoTogglePluginButton.removeClass('icon-qna-close');
+						onVideoTogglePluginButton.addClass('icon-qna-Ask');
 					} else {
 						qnaObject.show();
+						onVideoTogglePluginButton.removeClass('icon-qna-Ask');
+						onVideoTogglePluginButton.addClass('icon-qna-close');
 					}
 				})
 			});
 
 			this.bind( 'sendQuestion', function(event, data){
 				_this.submitQuestion(data.question);
+			});
+
+			this.bind('onOpenFullScreen', function() {
+				$(".qna-on-video-btn").hide();
+			});
+
+			this.bind('onCloseFullScreen', function() {
+				$(".qna-on-video-btn").show();
 			});
 		},
 
@@ -61,7 +74,6 @@
 
 			_this.getKClient().doRequest(entryRequest, function (result) {
 				mw.log("added Annotation cue point with id: " + result.id);
-				//debugger;
 			},
 			false,
 			function(err){
@@ -108,13 +120,19 @@
 		positionOnVideoButton : function(){
 			var onVideoTogglePluginButton = $('.qna-on-video-btn');
 			var videoHeight = this.getPlayer().getVideoHolder().height();
-			var buttonHeight = Math.round(videoHeight / 5) + "px";
-			var buttonWidth = Math.round(videoHeight / 10) + "px";
-			onVideoTogglePluginButton.css({height: buttonHeight});
-			onVideoTogglePluginButton.css({width: buttonWidth});
+			var buttonHeight = Math.round(videoHeight / 5);
+			var buttonWidth = Math.round(videoHeight / 10);
+			onVideoTogglePluginButton.css({height: buttonHeight + "px"});
+			onVideoTogglePluginButton.css({width: buttonWidth + "px"});
 
 			var topOffset = (videoHeight-onVideoTogglePluginButton.height())/2 + "px";
 			onVideoTogglePluginButton.css({top: topOffset});
+
+			onVideoTogglePluginButton.css({'line-height': buttonHeight + "px"});
+
+			var textIndent = (buttonWidth - parseInt(onVideoTogglePluginButton.css('font-size'))) / 2;
+			onVideoTogglePluginButton.css({'text-indent': textIndent + "px"});
+
 		},
 
 		bindButtons : function(){
