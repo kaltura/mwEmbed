@@ -64,6 +64,7 @@
 				this.setConfig('horizontalHeaderHeight', 43);
 				this.setConfig('verticalHeaderHeight', 65);
 			}
+			this.embedPlayer.playlist = true;
 			this.addBindings();
 			this.loadPlaylists();
 		},
@@ -162,6 +163,8 @@
 
 			$(this.embedPlayer).bind('mediaListLayoutReady', function (event) {
 				_this.embedPlayer.triggerHelper('playlistReady');
+				_this.setMultiplePlayLists();
+				_this.getComponent().find(".k-description-container").dotdotdot();
 				// keep aspect ratio of thumbnails - crop and center
 				_this.getComponent().find('.k-thumb').each(function () {
 					var img = $(this)[0];
@@ -181,6 +184,31 @@
 					};
 				});
 			});
+
+
+			// This API is to allow external plugin to replace the current playlist content.
+			// Previous content is not saved. player will switch to new playlist when autoInsert is set to true
+			// params will have inner objects for playlistParams, autoInsert, playerName and initItemEntryId
+			this.bind('loadExternalPlaylist', function (e,params) {
+				if(params.initItemEntryId){
+					_this.firstLoad = true;
+					_this.setConfig("initItemEntryId" ,params.initItemEntryId )
+				}
+				_this.getKClient().doRequest(params.playlistParams, function (playlistDataResult) {
+					_this.playlistSet[_this.currentPlaylistIndex].items = playlistDataResult; //apply data to the correct playlist in the playlistSet
+					if(params.playlistName){
+						_this.playlistSet[_this.currentPlaylistIndex].name = params.playlistName; //apply data to the correct playlist in the playlistSet
+					}
+					_this.selectPlaylist(_this.currentPlaylistIndex);
+					_this.currentClipIndex = -1; //reset index of current clip so "next" will play the first item of the new loaded playlist
+					if(params.autoInsert){
+						_this.playNext();
+					}
+				})
+			});
+
+
+
 		},
 		redrawPlaylist: function(){
 			var _this = this;
@@ -200,10 +228,6 @@
 				this.$mediaListContainer = null;
 				this.getMedialistContainer();
 				this.renderMediaList();
-				this.setMultiplePlayLists();
-				setTimeout(function(){
-					_this.getComponent().find(".k-description-container").dotdotdot();
-				},100);
 			}
 		},
 		// called from KBaseMediaList when a media item is clicked - trigger clip play

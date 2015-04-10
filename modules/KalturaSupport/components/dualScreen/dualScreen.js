@@ -37,7 +37,12 @@
 				'mainViewDisplay': 2, // 1 - Main stream, 2 - Presentation
 				'fullScreenDisplayOnly': false,
 				'minDisplayWidth': 0,
-				'minDisplayHeight': 0
+				'minDisplayHeight': 0,
+				"enableKeyboardShortcuts": true,
+				"keyboardShortcutsMap": {
+					"nextState": 81,   // Add q Sign for next state
+					"switchView": 87   // Add w Sigh for switch views
+				}
 			},
 			monitor: {},
 			cuePoints: [],
@@ -63,6 +68,24 @@
 				var cuePointsExist = (cuePoints.length > 0) ? true : false;
 				return (!this.getPlayer().useNativePlayerControls() &&
 					( ( this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) || cuePointsExist));
+			},
+			roundPercisionFloat: function(value, exp){
+				// If the exp is undefined or zero...
+				if (typeof exp === 'undefined' || +exp === 0) {
+					return Math.round(value);
+				}
+				value = +value;
+				exp = +exp;
+				// If the value is not a number or the exp is not an integer...
+				if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0)) {
+					return NaN;
+				}
+				// Shift
+				value = value.toString().split('e');
+				value = Math.round(+(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp)));
+				// Shift back
+				value = value.toString().split('e');
+				return +(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp));
 			},
 			getCuePoints: function(){
 				var cuePoints = [];
@@ -205,7 +228,7 @@
 								}
 							},
 							'hide': {
-								name: 'SV',
+								name: 'hide',
 								action: function (  ) {
 									_this.disableMonitorFeatures( );
 									_this.hideMonitor( _this.getSecondMonitor().obj );
@@ -232,7 +255,7 @@
 								}
 							},
 							'hide': {
-								name: 'SV',
+								name: 'hide',
 								action: function () {
 									_this.disableSideBySideView();
 									_this.hideMonitor( _this.getSecondMonitor().obj );
@@ -248,7 +271,7 @@
 						}
 					},
 					{
-						'name': 'SV',
+						'name': 'hide',
 						'events': {
 							'PiP': {
 								name: 'PiP',
@@ -258,7 +281,7 @@
 								}
 							},
 							'switchView': {
-								name: 'SV',
+								name: 'hide',
 								action: function () {
 									_this.showMonitor( _this.getSecondMonitor().obj );
 									_this.hideMonitor( _this.getFirstMonitor().obj );
@@ -282,7 +305,7 @@
 						'initial': true,
 						'events': {
 							'hide': {
-								name: 'SV',
+								name: 'hide',
 								action: function (  ) {
 									_this.disableMonitorFeatures();
 									_this.hideMonitor( _this.getSecondMonitor().obj );
@@ -291,7 +314,7 @@
 						}
 					},
 					{
-						'name': 'SV',
+						'name': 'hide',
 						'events': {
 							'PiP': {
 								name: 'PiP',
@@ -306,7 +329,7 @@
 								}
 							},
 							'switchView': {
-								name: 'SV',
+								name: 'hide',
 								action: function () {
 									_this.showMonitor( _this.getSecondMonitor().obj );
 									_this.hideMonitor( _this.getFirstMonitor().obj );
@@ -369,25 +392,27 @@
 							var secondScreenProps = _this.getSecondMonitor().prop;
 							var playerWidth = _this.getPlayer().getWidth();
 							var playerHeight = _this.getPlayer().getHeight();
-							var widthRatio = (playerWidth / _this.previousPlayerWidth).toFixed( 2 );
-							var heightRatio = (playerHeight / _this.previousPlayerHeight).toFixed( 2 );
-
+							var widthRatio = (playerWidth / _this.previousPlayerWidth);
+							var heightRatio = (playerHeight / _this.previousPlayerHeight);
 							//Save current dimensions for next differential calculation
 							_this.previousPlayerWidth = playerWidth;
 							_this.previousPlayerHeight = playerHeight;
 
 							//Calculate and apply new screen properties
-							var newWidth = parseInt( (secondScreenProps.width.replace( 'px', '' ) * widthRatio).toFixed( 2 ), 10 );
-							var newHeight = parseInt( newWidth * _this.getConfig( 'secondScreen' ).widthHeightRatio, 10 );
-							var topOffset = parseInt( (secondScreenProps.top.replace( 'px', '' ) * heightRatio).toFixed( 2 ), 10 );
-							var leftOffset = parseInt( (secondScreenProps.left.replace( 'px', '' ) * widthRatio).toFixed( 2 ), 10 );
+							var screenWidth = secondScreenProps.width.replace( 'px', '' );
+							var screenWidthHeightRatio = _this.getConfig( 'secondScreen' ).widthHeightRatio;
+							var screenTop = secondScreenProps.top.replace( 'px', '' );
+							var screenLeft = secondScreenProps.left.replace( 'px', '' );
+							var newWidth = _this.roundPercisionFloat((screenWidth * widthRatio), -2);
+							var newHeight = _this.roundPercisionFloat(screenWidthHeightRatio * newWidth, -2);
+							var topOffset = _this.roundPercisionFloat((screenTop * heightRatio), -2);
+							var leftOffset = _this.roundPercisionFloat((screenLeft * widthRatio), -2);
 							var screenProps = {
 								height: newHeight + "px",
 								width: newWidth + "px",
 								top: topOffset + "px",
 								left: leftOffset + "px"
 							};
-
 							if ( newHeight + topOffset > playerHeight ) {
 								screenProps.top = (playerHeight - newHeight) + "px";
 							}
@@ -484,7 +509,7 @@
 				var minimizeSecondDisplay = function(){
 					if (!secondDisplayMinimized) {
 						secondDisplayMinimized = true;
-						if (!(_this.getPrimary().isMain && _this.fsm.getStatus() === "SV")) {
+						if (!(_this.getPrimary().isMain && _this.fsm.getStatus() === "hide")) {
 							fsmState.push( _this.fsm.getStatus() );
 							if ( !_this.getPrimary().isMain ) {
 								fsmState.push( 'switchView' );
@@ -563,6 +588,35 @@
 				});
 				this.bind("postDualScreenTransition", function () {
 					_this.applyIntrinsicAspect();
+				});
+				if (this.getConfig('enableKeyboardShortcuts')) {
+					this.bind('addKeyBindCallback', function (e, addKeyCallback) {
+						_this.addKeyboardShortcuts(addKeyCallback);
+					});
+				}
+			},
+			addKeyboardShortcuts: function (addKeyCallback) {
+				var _this = this;
+				// Add q Sign for next state
+				addKeyCallback(this.getConfig("keyboardShortcutsMap").nextState, function () {
+					var action;
+					switch(_this.fsm.getStatus())
+					{
+						case "PiP":
+							action = "hide";
+							break;
+						case "hide":
+							action = "SbS";
+							break;
+						case "SbS":
+							action = "PiP";
+							break;
+					}
+					_this.getPlayer().triggerHelper('dualScreenStateChange', action);
+				});
+				// Add w Sigh for switch view
+				addKeyCallback(this.getConfig("keyboardShortcutsMap").switchView, function () {
+					_this.getPlayer().triggerHelper('dualScreenStateChange', "switchView");
 				});
 			},
 			initDisplay: function(){
@@ -853,7 +907,8 @@
 			applyIntrinsicAspect: function(){
 				// Check if a image thumbnail is present:
 				var $img = this.getComponent().find( '.imagePlayer' );
-				if( $img.length ){
+				//Make sure both image player and display are initialized
+				if( $img.length && this.displayInitialized){
 					var pHeight = this.getSecondary().obj.height();
 					// Check for intrinsic width and maintain aspect ratio
 					var pWidth = parseInt( $img.naturalWidth() / $img.naturalHeight() * pHeight, 10);
