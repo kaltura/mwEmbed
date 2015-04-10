@@ -113,14 +113,15 @@ body {
 }
 .enhanced .share-container{
     float: right;
-    margin-right: 120px;
+    left: 0 !important;
+    margin-right: -13px;
 }
 .enhanced .k-horizontal{
     display: none;
 }
 .share-container{
     float: left;
-    left: 130px;
+    left: 283px;
     position: relative;
 }
 
@@ -563,17 +564,20 @@ body {
     color: #ddd;
 }
 .tabs .btn {
-    color: #bfbfbf;
-    background-image: -webkit-linear-gradient(top, #2a2a2a, #030303);
-    background-image: linear-gradient(to bottom, #2a2a2a, #030303);
+    color: #c2c2c2;
     border: 1px solid #000;
-    box-shadow: inset 0 1px rgba(255,255,255,0.15), inset 0 0 0 1px rgba(255,255,255,0.05);
+    background-color: #3c3c42;
 }
 .tabs .btn.active {
-    color: #d76d01;
-    background-color: #3b2501;
-    background-image: -webkit-linear-gradient(top, #332000, #422902);
-    background-image: linear-gradient(to bottom, #332000, #422902);
+    color: #ff9933 !important;
+    background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+    background-image: -moz-linear-gradient(top, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+    background-image: -ms-linear-gradient(top, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+    background-image: -o-linear-gradient(top, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+    -webkit-box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+    -moz-box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+    background-color: #3c3c42 !important;
 }
 .tabs-content {
     border: 1px solid #1f1f1f;
@@ -609,7 +613,7 @@ body {
     color: #fff;
 }
 .input-wrapper , .search-form{
-    height: 27px !important;
+    height: 20px !important;
 }
 
 /*  ALL COLLORS DEFINITIONS MUST BE WITH A TOP-LEVEL THEME CLASS NVS */

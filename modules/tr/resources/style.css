@@ -70,6 +70,10 @@
     margin-left: 5px;
 }
 
+.icon-share:before {
+    content: "" !important;
+}
+
 .tr-logo-sub {
     color: #ff8000;
 }

@@ -85,7 +85,7 @@
         clipsToShow = jsonConfig.clipsToShow;
     }
     //      example of overrideß
-    //      http://localhost/html5.kaltura/mwEmbed/modules/tr/tests/dev/popup.html#{"pid":27017,"mid":"1_1611vudr","startFrom":0,"uuid":"omnitureUser","pn":"pmniturePn","bitrate":400,"eud":"omnitureEud","wtype":"omnitureWtype"}
+    //      http://localhost/html5.kaltura/mwEmbed/modules/tr/tests/dev/popup.html?#{"pid":27017,"mid":"1_1611vudr","startFrom":0,"uuid":"omnitureUser","pn":"pmniturePn","bitrate":400,"eud":"omnitureEud","wtype":"omnitureWtype"}
     mw.setConfig('forceMobileHTML5', true);
 
 
@@ -120,8 +120,8 @@
             },
             'playlistAPI': {
                 'kpl0Id': playlistId,
-                'showControls': true,
-                'includeHeader': true,
+                'showControls': false,
+                'includeHeader': false,
                 'mediaItemHeight': 160,
                 'templatePath': '../tr/templates/playlist.tmpl.html',
                 'MinClips': 4

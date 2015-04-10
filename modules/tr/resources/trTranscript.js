@@ -43,6 +43,8 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 		this.mainDoc.find(".btn.info").click(function(e){
 			_this.mainDoc.find("#transcript-tab").addClass("hide");
 			_this.mainDoc.find("#info-tab").removeClass("hide");
+			_this.mainDoc.find(".btn.transcript").removeClass("active");
+			_this.mainDoc.find(".btn.info").addClass("active");
 		})
 
 
@@ -108,11 +110,14 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 	},
 	applyBehavior : function (){
 		//apply to transcript
-
-		this.mainDoc.find("#"+this.getConfig('transcriptTargetId')).find("[trdata]").click(function(e){
-
+		var _this = this;
+		this.mainDoc.find("#"+this.getConfig('transcriptTargetId')).find("[trtime]").click(function(e){
+			var seekTime = $(this).attr("trtime");
+			_this.getPlayer().sendNotification("doSeek" , seekTime);
 		});
-
+		//this.mainDoc.find("#"+this.getConfig('transcriptTargetId')).find("[trdata]").click(function(e){
+		//
+		//});
 		//apply behavior to the mentioned terms
 		this.mainDoc.find(".mentioned-terms-categories").find("[trdata]").click($.proxy(function(event,source){
 			this.mainDoc.find(".search-input").val($(this).attr("trdata"));
@@ -122,17 +127,51 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 		},this));
 	},
 	renderHighlightedWords : function (){
-
+		var _this = this;
 		var doc = window['parent'].document;
 		var markMyWords = this.markMyWords;
-		newOutput = $(doc).find("#"+this.getConfig('transcriptTargetId')).text();
+
+		//TODO replace with regexp later
+		var currentText = $(doc).find("#"+this.getConfig('transcriptTargetId')).html();
+
+		function replaceAllTemp(str,find, replace) {
+			var ignoreCase=true;
+			var _token;
+			var token=find;
+			var newToken=replace;
+			var i = -1;
+
+			if ( typeof token === "string" ) {
+
+				if ( ignoreCase ) {
+
+					_token = token.toLowerCase();
+
+					while( (
+						i = str.toLowerCase().indexOf(
+							token, i >= 0 ? i + newToken.length : 0
+						) ) !== -1
+						) {
+						str = str.substring( 0, i ) +
+						newToken +
+						str.substring( i + token.length );
+					}
+
+				} else {
+					return this.split( token ).join( newToken );
+				}
+
+			}
+			return str;
+		};
 
 		for (var i=0;i<markMyWords.length;i++){
-			var reg = new RegExp (markMyWords[i] , "g");
-			newOutput = newOutput.replace(reg,'<span class="highlight" trdata="markMyWords[i]">'+markMyWords[i]+'</span>');
+			mw.log(" processiong ::: " + markMyWords[i])
+			currentText = replaceAllTemp(currentText ,markMyWords[i], '<span class="highlight">' +markMyWords[i]+'</span>')
 		}
-		$(doc).find("#"+this.getConfig('transcriptTargetId')).text("");
-		$(doc).find("#"+this.getConfig('transcriptTargetId')).append(newOutput);
+
+		$(doc).find("#"+this.getConfig('transcriptTargetId')).html(currentText);
+		//$(doc).find("#"+this.getConfig('transcriptTargetId')).append(newOutput);
 
 	},
 	setMentionedTerms : function (){
@@ -223,8 +262,9 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 
 		for (var property in captions) {
 			if (captions.hasOwnProperty(property)) {
-				string += captions[property]["content"]+" ";
-				htmlString+='<span index="'+property+'">'+captions[property]["content"]+' </span>';
+				//debugger;
+				var timeStamp = captions[property].start
+				htmlString+='<span index="'+property+'" trtime="'+timeStamp+'">'+captions[property]["content"]+' </span>';
 			}
 		}
 		$(doc).find("#"+this.getConfig('transcriptTargetId')).text("");
