@@ -1,7 +1,7 @@
 mw.PluginManager.add( 'trControls', mw.KBasePlugin.extend({
 
 	defaultConfig: {
-		maxResults: 2,
+		maxResults: 50,
 		targetId: 'playerControlsContainer',
 		templatePath: '../tr/templates/player-controls.tmpl.html'
 	},
@@ -34,14 +34,57 @@ mw.PluginManager.add( 'trControls', mw.KBasePlugin.extend({
 			$playerInterface.removeClass('fullscreen');
 		});
 
-		$(doc).find(".playlist-test").click(function(){
+		var ks= _this.getKalturaClient().ks;
+
+		$(doc).find(".playlist-test1").click(function(){
+
+
 			var params = {
+				"playlistParams" : {
 				"service":"playlist" ,
 				"action":"executefromfilters" ,
-				"ks":"Y2U4NWM1NWU5MThjMzVlY2RiNDFjZmQyNzJmY2ViYWY5MDhhYThlN3wyNzAxNzsyNzAxNzsxNDI4NTE0NTc2OzI7MTQyODQyODE3Ni41OTQ2O19fQURNSU5fXzI2Njg3Ozs7" ,
-				'filters:item0:tagsMultiLikeOr' : "noa" , 	// search term here
-				'filters:item0:idNotIn' : "0_0g8l44yy" , 	// dont fetch current entry
+				//'ks' : ks,
+				'filters:item0:tagsMultiLikeAnd' : "noa" , 	// search term here
+				'filters:item0:idNotIn' : "0_0g8l44yy" , 	// don't fetch current entry
 				"totalResults" : _this.getConfig("maxResults")
+				},
+				'autoInsert' : true,
+				'playlistName' : "new name"
+			}
+
+			player.sendNotification('loadExternalPlaylist', params );
+		});
+		$(doc).find(".playlist-test2").click(function(){
+			var params = {
+				'playlistParams' : {
+					'service':'playlist' ,
+					'action':'execute' ,
+					'ks' : _this.getKalturaClient().ks,
+					'id' : '_KDP_CTXPL' ,
+					'filter:objectType' : 'KalturaMediaEntryFilterForPlaylist' ,
+					'filter:idNotIn' : _this.embedPlayer.evaluate('{mediaProxy.entry.id}') , 	// dont fetch current entry
+					'playlistContext:objectType':'KalturaEntryContext',
+					'playlistContext:entryId': _this.embedPlayer.evaluate('{mediaProxy.entry.id}'),
+					'totalResults' : 50
+				},
+				'autoInsert' : true, //if this is set to true the player will load and switch the current video to the new playlist
+				//'initItemEntryId' : '1_cvsg4ghm', // player start playing a specific entry if exist
+				'playlistName' : 'new playlist' // override the displayed playlist name
+			}
+
+			player.sendNotification('loadExternalPlaylist', params );
+		});
+		$(doc).find(".playlist-test3").click(function(){
+			//implement search here
+			var params = {
+				"playlistParams" : {
+					"service": "playlist",
+					"action": "executefromfilters",
+					'ks': ks,
+					'filters:item0:tagsMultiLikeAnd': "timers", 	// search term here
+					'filters:item0:idNotIn': "0_0g8l44yy", 	// dont fetch current entry
+					"totalResults": _this.getConfig("maxResults")
+				}
 			}
 			player.sendNotification('loadExternalPlaylist', params);
 		});

@@ -17,8 +17,37 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 		this.updateTargetWithTemplate();
 		this.setBindings();
 		this.applyFilterBehavior();
+		this.applyTabsBehavior();
+		this.applyMetionedTermsBehavior();
 	},
 
+	applyMetionedTermsBehavior : function (){
+		var _this = this;
+		this.mainDoc.find(".mentioned-terms-switch-btn").click(function(e){
+			if($(this).parent().parent().hasClass("collapsed")){
+				$(this).parent().parent().removeClass("collapsed");
+			} else {
+				$(this).parent().parent().addClass("collapsed");
+			}
+		})
+	},
+	applyTabsBehavior : function (){
+
+		var _this = this;
+		this.mainDoc.find(".btn.transcript").click(function(e){
+			_this.mainDoc.find("#transcript-tab").removeClass("hide");
+			_this.mainDoc.find("#info-tab").addClass("hide");
+			_this.mainDoc.find(".btn.transcript").addClass("active");
+			_this.mainDoc.find(".btn.info").removeClass("active");
+		})
+		this.mainDoc.find(".btn.info").click(function(e){
+			_this.mainDoc.find("#transcript-tab").addClass("hide");
+			_this.mainDoc.find("#info-tab").removeClass("hide");
+		})
+
+
+		this.mainDoc.find(".transcript-tab")
+	},
 	applyFilterBehavior : function (){
 		var _this = this;
 		//hook enter key
@@ -71,7 +100,6 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 		//clear UI on transcript and mentioned terms
 		var doc = window['parent'].document;
 		$(doc).find("#"+this.getConfig('transcriptTargetId')).text("");
-
 		$(doc).find("#peopleTerms").text("");
 		$(doc).find("#companiesTerms").text("");
 		$(doc).find("#locationsTerms").text("");
