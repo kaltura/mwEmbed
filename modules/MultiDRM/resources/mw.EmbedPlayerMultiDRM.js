@@ -119,6 +119,7 @@
 				this.applyMediaElementBindings();
 				this.playbackRate = this.getPlayerElement().playbackRate();
 			}
+			var _this = this;
 			this.parent_updateFeatureSupport();
 		},
 		supportsVolumeControl: function () {
@@ -211,6 +212,11 @@
 					_this.playerElement.mediaPlayer.setScheduleWhilePaused(true);
 					callback();
 				} );
+				this.bindHelper('switchAudioTrack', function (e, data) {
+					if (_this.getPlayerElement()) {
+						_this.getPlayerElement().setActiveTrack("audio", data.index);
+					}
+				});
 			}
 		},
 		updateDashContext: function(){
@@ -851,7 +857,7 @@
 		 * accurately reflect the src duration
 		 */
 		_onloadedmetadata: function () {
-			this.getPlayerElement();
+			var player = this.getPlayerElement();
 
 			// only update duration if we don't have one: ( some browsers give bad duration )
 			// like Android 4 default browser
@@ -865,6 +871,41 @@
 				mw.log('EmbedPlayerNative :onloadedmetadata metadata ready Update duration:' + this.playerElement.duration + ' old dur: ' + this.getDuration());
 				this.setDuration(this.playerElement.duration);
 			}
+
+			var audioTracks = player.audioTracks();
+			if (audioTracks){
+				var data = {languages: []};
+				 $.each(audioTracks, function(index, audioTrack){
+					 data.languages.push({
+						'kind'		: 'audioTrack',
+						'language'	: audioTrack,
+						'srclang' 	: audioTrack,
+						'label'		: audioTrack,
+						'id'		: audioTrack,
+						'index'		: data.languages.length,
+						'title'		: audioTrack
+					 });
+				});
+				this.onAudioTracksReceived(data);
+			}
+			var subtitleTracks = player.subtitleTracks();
+			if (subtitleTracks){
+			}
+
+			var _this = this;
+			var update = function(){
+				//Get Playback statistics
+				var stats = player.getPlaybackStatistics();
+
+				if (stats.audio.activeTrack){
+					_this.onAudioTrackSelected({index: stats.audio.activeTrack.id});
+				}
+				if (stats.text.activeTrack){
+				}
+			};
+			update();
+
+			setInterval(function(){update();}, 5000);
 
 			// Check if in "playing" state and we are _propagateEvents events and continue to playback:
 			if (!this.paused && this._propagateEvents) {
@@ -882,6 +923,15 @@
 				this.mediaLoadedFlag = true;
 			}
 		},
+
+		onAudioTracksReceived: function (data) {
+			this.triggerHelper('audioTracksReceived', data);
+		},
+
+		onAudioTrackSelected: function (data) {
+			this.triggerHelper('audioTrackIndexChanged', data);
+		},
+
 
 		/**
 		 * Local method for progress event
@@ -1034,6 +1084,5 @@
 				return this.getPlayerElement().volume();
 			}
 		}
-
 	};
 })(mediaWiki, jQuery);
