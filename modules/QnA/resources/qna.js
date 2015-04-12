@@ -42,7 +42,7 @@
 					}
 				})
 			});
-			
+
 			this.bind('onOpenFullScreen', function() {
 				$(".qna-on-video-btn").hide();
 			});
@@ -59,7 +59,6 @@
 			var entryRequest = {
 				"service": "cuePoint_cuePoint",
 				"action": "add",
-				"ks": embedPlayer.getFlashvars("ks"), //@todo - check if removing this line breaks anything...
 				"cuePoint:objectType": "KalturaAnnotation",
 				"cuePoint:entryId": embedPlayer.kentryid,
 				"cuePoint:startTime": embedPlayer.currentTime,
