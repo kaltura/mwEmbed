@@ -1,4 +1,4 @@
-@import url(http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900);
+@import url(http://fonts.googleapis.com/css?family=Lato:100,200,300,400,500,600,700,800,900);
 .qnaInterface{
 }
 
@@ -32,7 +32,6 @@
 	resize: none;
 	overflow: hidden;
 	height: 40px;
-	/*opacity: 0.8;*/
 	/* Firefox */
 	width: -moz-calc(100% - 45px);
 	/* WebKit */
@@ -65,7 +64,7 @@
 	background-color: transparent;
 	font-family: 'Lato', Helvetica, Arial;
 	font-size: 13px;
-	font-weight: 100;
+	font-weight: 300;
 	line-height: 16px;
 	text-align: left;
 	color: #ffffff;
@@ -112,10 +111,10 @@
 }
 
 .qnaInterface .qnaCancelButton{
-	font-weight: 100;
+	font-weight: 300;
 }
 .qnaInterface .qnaSendButton{
-	font-weight: 300;
+	font-weight: 500;
 }
 
 .qna-on-video-btn {

@@ -159,22 +159,22 @@
 				.off('click')
 				.on('click', function(){
 					textArea.val(gM('qna-default-question-box-text'));
-					textArea.css({opacity: 0.8});
-					textArea.css({'font-weight': 100});
+					textArea.css({'font-weight': 200});
+					textArea.css({'color': 'rgba(255, 240, 240, 0.61)'});
 				});
 
 			var textArea = parentWindowDocument.find('.qnaQuestionTextArea');
 			textArea.val(gM('qna-default-question-box-text'));
 
-			textArea.css({'opacity': 0.8});
-			textArea.css({'font-weight': 100});
+			textArea.css({'font-weight': 200});
+			textArea.css({'color': 'rgba(255, 240, 240, 0.61)'});
 			textArea
 				.off('focus')
 				.on('focus', function(){
 					if (textArea.val() === gM('qna-default-question-box-text')) {
-						textArea.css({opacity: 1});
 						textArea.css({'font-weight': 300});
 						textArea.val('');
+						textArea.css({'color': '#ffffff'});
 					}
 				});
 
@@ -183,8 +183,8 @@
 				.on('blur', function(){
 					if (textArea.val() === '') {
 						textArea.val(gM('qna-default-question-box-text'));
-						textArea.css({opacity: 0.8});
-						textArea.css({'font-weight': 100});
+						textArea.css({'font-weight': 200});
+						textArea.css({'color': 'rgba(255, 240, 240, 0.61)'});
 					}
 				});
 
