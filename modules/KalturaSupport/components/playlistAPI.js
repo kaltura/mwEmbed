@@ -184,6 +184,31 @@
 					};
 				});
 			});
+
+
+			// This API is to allow external plugin to replace the current playlist content.
+			// Previous content is not saved. player will switch to new playlist when autoInsert is set to true
+			// params will have inner objects for playlistParams, autoInsert, playerName and initItemEntryId
+			this.bind('loadExternalPlaylist', function (e,params) {
+				if(params.initItemEntryId){
+					_this.firstLoad = true;
+					_this.setConfig("initItemEntryId" ,params.initItemEntryId )
+				}
+				_this.getKClient().doRequest(params.playlistParams, function (playlistDataResult) {
+					_this.playlistSet[_this.currentPlaylistIndex].items = playlistDataResult; //apply data to the correct playlist in the playlistSet
+					if(params.playlistName){
+						_this.playlistSet[_this.currentPlaylistIndex].name = params.playlistName; //apply data to the correct playlist in the playlistSet
+					}
+					_this.selectPlaylist(_this.currentPlaylistIndex);
+					_this.currentClipIndex = -1; //reset index of current clip so "next" will play the first item of the new loaded playlist
+					if(params.autoInsert){
+						_this.playNext();
+					}
+				})
+			});
+
+
+
 		},
 		redrawPlaylist: function(){
 			var _this = this;
