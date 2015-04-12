@@ -78,7 +78,7 @@
 			"MaxClips": 25,
 			"cssClass": "trTitle",
 			"includeHeader": false,
-			"templatePath": "{html5ps}/thomson-reuters/playlist.tmpl.html",
+			"templatePath": "../tr/templates/playlist.tmpl.html",
 			"mediaItemHeight": 157,
 			"mediaItemWidth": 124,
 			"plugin": true

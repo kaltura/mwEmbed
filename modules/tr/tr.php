@@ -3,6 +3,7 @@ return array(
 	"trTitle" =>  array( 
 		'scripts' => "resources/trTitle.js", 
 		'styles'  => "resources/style.css",
+		'templates' => "../tr/templates/playlist.tmpl.html",
 		'dependencies' => array(
 			'mw.KBasePlugin'
 		),
