@@ -126,12 +126,17 @@
 	width: 38px;
 	height: 76px;
 	text-align: center;
-	border-radius: 76px 0 0 76px;
-	-moz-border-radius: 76px 0 0 76px;
-	-webkit-border-radius: 76px 0 0 76px;
+	-moz-border-radius: 38px 0 0 38px;
+	-webkit-border-radius: 38px 0 0 38px;
+	border-radius: 38px 0 0 38px;
 	text-align: center;
 	vertical-align: middle;
 	line-height: 76px;
+
+	box-shadow: 0px 3px 50px 0px rgba(29, 222, 196, 0.35);
+	-moz-box-shadow: 0px 3px 50px 0px rgba(29, 222, 196, 0.35);
+	-webkit-box-shadow: 0px 3px 50px 0px rgba(29, 222, 196, 0.35);
+	-o-box-shadow: 0px 3px 50px 0px rgba(29, 222, 196, 0.35);
 }
 
 .qna-on-video-btn:before {

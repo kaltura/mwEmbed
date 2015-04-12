@@ -125,6 +125,10 @@
 			onVideoTogglePluginButton.css({height: buttonHeight + "px"});
 			onVideoTogglePluginButton.css({width: buttonWidth + "px"});
 
+			onVideoTogglePluginButton.css({'-moz-border-radius': buttonWidth + "px 0 0 " + buttonWidth + "px"});
+			onVideoTogglePluginButton.css({'-webkit-border-radius': buttonWidth + "px 0 0 " + buttonWidth + "px"});
+			onVideoTogglePluginButton.css({'border-radius': buttonWidth + "px 0 0 " + buttonWidth + "px"});
+
 			var topOffset = (videoHeight-onVideoTogglePluginButton.height())/2 + "px";
 			onVideoTogglePluginButton.css({top: topOffset});
 
