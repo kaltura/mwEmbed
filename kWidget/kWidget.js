@@ -2176,9 +2176,6 @@
 
 			return url;
 		},
-		forceJSONP: function(){
-			mw.setConfig( "Kaltura.ForceJSONP", true );
-		},
 		/**
 		 * Overrides flash embed methods, as to optionally support HTML5 injection
 		 */
