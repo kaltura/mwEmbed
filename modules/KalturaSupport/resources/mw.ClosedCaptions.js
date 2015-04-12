@@ -19,7 +19,9 @@
 			"showOffButton": true,
 			"toggleActiveCaption": false,
 			"useExternalClosedCaptions": false,
-			"offButtonPosition": "first"
+			"offButtonPosition": "first",
+			// Can be used to force loading specific language and expose to other plugins
+			"forceLoadLanguage": false
 		},
 
 		textSources: [],
@@ -279,6 +281,11 @@
 					_this.textSources = textSources;
 				}]);
 
+				// Handle Force loading of captions
+				if( _this.getConfig('forceLoadLanguage') ) {
+					_this.forceLoadLanguage();
+				}
+
 				if( _this.getConfig('displayCaptions') !== false || ($.cookie( _this.cookieName ) !== 'None' && $.cookie( _this.cookieName )) ){
 					_this.autoSelectSource();
 					if( _this.selectedSource ){
@@ -386,6 +393,16 @@
 			);
 			// Return a "textSource" object:
 			return new mw.TextSource( embedSource );
+		},
+		forceLoadLanguage: function(){
+			var lang = this.getConfig('forceLoadLanguage');
+			var source = this.selectSourceByLangKey( lang );
+			// Found caption
+			if( source && !source.loaded ) {
+				source.load($.proxy(function(){
+					this.getPlayer().triggerHelper('newClosedCaptionsData', source);
+				},this));
+			}
 		},
 		autoSelectSource: function(){
 			var _this = this;
