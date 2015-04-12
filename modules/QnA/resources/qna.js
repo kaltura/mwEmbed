@@ -15,8 +15,6 @@
 			});
 		},
 
-		iconBtnClass: "icon-flag",
-
 		setup: function () {
 			this.addBindings();
 		},
@@ -26,10 +24,12 @@
 			var embedPlayer = this.getPlayer();
 
 			this.bind('layoutBuildDone', function (event, screenName) {
+				// add the Q&A toggle button to be on the video
 				embedPlayer.getVideoHolder().append('<div class="qna-on-video-btn icon-qna-close"></div>');
 				_this.getQnaContainer();
 				var qnaObject =  $(window['parent'].document.getElementById(embedPlayer.id )).parent().find( ".qnaInterface" );
 				var onVideoTogglePluginButton = $('.qna-on-video-btn');
+				// register to on click to change the icon of the toggle button
 				$(".qna-on-video-btn").on("click", function(){
 					if (qnaObject.is(":visible")){
 						qnaObject.hide();
@@ -42,15 +42,10 @@
 					}
 				})
 			});
-
-			this.bind( 'sendQuestion', function(event, data){
-				_this.submitQuestion(data.question);
-			});
-
+			
 			this.bind('onOpenFullScreen', function() {
 				$(".qna-on-video-btn").hide();
 			});
-
 			this.bind('onCloseFullScreen', function() {
 				$(".qna-on-video-btn").show();
 			});
@@ -64,7 +59,7 @@
 			var entryRequest = {
 				"service": "cuePoint_cuePoint",
 				"action": "add",
-				"ks": embedPlayer.getFlashvars("ks"),
+				"ks": embedPlayer.getFlashvars("ks"), //@todo - check if removing this line breaks anything...
 				"cuePoint:objectType": "KalturaAnnotation",
 				"cuePoint:entryId": embedPlayer.kentryid,
 				"cuePoint:startTime": embedPlayer.currentTime,
@@ -86,12 +81,6 @@
 				this.kClient = mw.kApiGetPartnerClient(this.embedPlayer.kwidgetid);
 			}
 			return this.kClient;
-		},
-
-		getTemplateData: function () {
-			return {
-				'qna': this
-			};
 		},
 
 		// load the Q&A template to the div with qnaTargetId
@@ -125,9 +114,10 @@
 			onVideoTogglePluginButton.css({height: buttonHeight + "px"});
 			onVideoTogglePluginButton.css({width: buttonWidth + "px"});
 
-			onVideoTogglePluginButton.css({'-moz-border-radius': buttonWidth + "px 0 0 " + buttonWidth + "px"});
-			onVideoTogglePluginButton.css({'-webkit-border-radius': buttonWidth + "px 0 0 " + buttonWidth + "px"});
-			onVideoTogglePluginButton.css({'border-radius': buttonWidth + "px 0 0 " + buttonWidth + "px"});
+			var borderRadius = buttonWidth + "px 0 0 " + buttonWidth + "px";
+			onVideoTogglePluginButton.css({'-moz-border-radius': borderRadius});
+			onVideoTogglePluginButton.css({'-webkit-border-radius': borderRadius});
+			onVideoTogglePluginButton.css({'border-radius': borderRadius});
 
 			var topOffset = (videoHeight-onVideoTogglePluginButton.height())/2 + "px";
 			onVideoTogglePluginButton.css({top: topOffset});
@@ -153,7 +143,7 @@
 					} else {
 						if (question !== gM('qna-default-question-box-text')) {
 							_this.submitQuestion(question);
-							textArea.val(gM('qna-default-question-box-text'));
+							_this.resetTextArea(textArea);
 						}
 					}
 				});
@@ -162,16 +152,11 @@
 			cancelButton
 				.off('click')
 				.on('click', function(){
-					textArea.val(gM('qna-default-question-box-text'));
-					textArea.css({'font-weight': 300});
-					textArea.css({'color': 'rgba(255, 240, 240, 0.61)'});
+					_this.resetTextArea(textArea);
 				});
 
 			var textArea = parentWindowDocument.find('.qnaQuestionTextArea');
-			textArea.val(gM('qna-default-question-box-text'));
-
-			textArea.css({'font-weight': 300});
-			textArea.css({'color': 'rgba(255, 240, 240, 0.61)'});
+			_this.resetTextArea(textArea);
 			textArea
 				.off('focus')
 				.on('focus', function(){
@@ -186,9 +171,7 @@
 				.off('blur')
 				.on('blur', function(){
 					if (textArea.val() === '') {
-						textArea.val(gM('qna-default-question-box-text'));
-						textArea.css({'font-weight': 300});
-						textArea.css({'color': 'rgba(255, 240, 240, 0.61)'});
+						_this.resetTextArea(textArea);
 					}
 				});
 
@@ -197,6 +180,12 @@
 				var scrollTop = $(this).scrollTop();
 				$(this).scrollTop(scrollTop-Math.round(ev.originalEvent.deltaY));
 			});
+		},
+
+		resetTextArea : function(textArea){
+			textArea.val(gM('qna-default-question-box-text'));
+			textArea.css({'font-weight': 300});
+			textArea.css({'color': 'rgba(255, 240, 240, 0.61)'});
 		},
 
 		getHTML : function(data){
