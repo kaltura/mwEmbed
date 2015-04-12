@@ -967,6 +967,29 @@
 				}
 			}
 		},
+		/**
+		 * playback error
+		 */
+		_onerror: function ( event ) {
+			if( this.ignoreNextError ) {
+				return;
+			}
+			var _this = this;
+			// this time out is to give $( window ).unload method a chance to be called before showing page unload network errors.
+			// we want to keep this value low to avoid delay in "access control" network errors.
+			setTimeout(function(){
+				if( _this.triggerNetworkErrorsFlag ){
+					var error = {};
+					var player = _this.getPlayerElement();
+					if ( event && player && player.error ) {
+						error.code = player.error().code;
+						error.subtype = player.error().subtype;
+						_this.log( '_onerror: MediaError code: ' + error.code + ', MediaError message: ' + error.subtype);
+					}
+				}
+			}, 100);
+		},
+		/**
 		 * Local method for seeking event
 		 * fired when "seeking"
 		 */
