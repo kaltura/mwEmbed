@@ -772,12 +772,19 @@
 		 * play method calls parent_play to update the interface
 		 */
 		play: function () {
-			if (this.parent_play()) {
-
-				this.getPlayerElement().play();
-				this.monitor();
+			var duration = parseInt(this.duration, 10).toFixed(2);
+			var curTime = parseInt(this.getPlayerElementTime(), 10).toFixed(2);
+			if (( this.currentState === "end" ) ||
+				( this.currentState === "pause" && duration === curTime )) {
+				this.seek(0.01, false);
 			} else {
-				mw.log("EmbedPlayerMultiDRM:: parent play returned false, don't issue play on kplayer element");
+				if ( this.parent_play() ) {
+
+					this.getPlayerElement().play();
+					this.monitor();
+				} else {
+					mw.log( "EmbedPlayerMultiDRM:: parent play returned false, don't issue play on player element" );
+				}
 			}
 		},
 
@@ -950,6 +957,16 @@
 			}
 		},
 		/**
+		 * Local method for end of media event
+		 */
+		_onended: function () {
+			if (this.getPlayerElement()) {
+				this.log('onended:' + this.playerElement.currentTime() + ' real dur:' + this.getDuration() + ' ended ' + this._propagateEvents);
+				if (this._propagateEvents && !this.isLive()) {
+					this.onClipDone();
+				}
+			}
+		},
 		 * Local method for seeking event
 		 * fired when "seeking"
 		 */
