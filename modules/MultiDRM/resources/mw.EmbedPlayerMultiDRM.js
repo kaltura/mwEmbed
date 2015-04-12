@@ -427,11 +427,12 @@
 				mw.log(" Error: applyMediaElementBindings without player elemnet");
 				return;
 			}
+
 			$.each(_this.nativeEvents, function (inx, eventName) {
 				if (mw.isIOS8() && mw.isIphone() && eventName === "seeking") {
 					return;
 				}
-				vid.off(eventName).on(eventName, function () {
+				var eventHandler = function () {
 					// make sure we propagating events, and the current instance is in the correct closure.
 					if (_this._propagateEvents && _this.instanceOf === _this.instanceOf) {
 						var argArray = $.makeArray(arguments);
@@ -444,7 +445,8 @@
 							$(_this).trigger(eventName, argArray);
 						}
 					}
-				});
+				};
+				vid.off(eventName, eventHandler).on(eventName, eventHandler);
 			});
 		},
 		// basic monitor function to update buffer
@@ -874,7 +876,7 @@
 				&& !isNaN(this.playerElement.duration)
 				&&
 				isFinite(this.playerElement.duration)
-				) {
+			) {
 				mw.log('EmbedPlayerNative :onloadedmetadata metadata ready Update duration:' + this.playerElement.duration + ' old dur: ' + this.getDuration());
 				this.setDuration(this.playerElement.duration);
 			}
