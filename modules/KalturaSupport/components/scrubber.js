@@ -77,6 +77,16 @@
 			this.bind('reattachTimeUpdate', function () {
 				_this.bindUpdatePlayheadPercent();
 			});
+
+			this.bind('onOpenFullScreen', function () {
+				// check if IE11 and iframe
+				window["resizeScrubber"] = true;
+			});
+			this.bind('onCloseFullScreen', function () {
+				// check if IE11 and iframe
+				window["resizeScrubber"] = null;
+			});
+
 			this.bind('playerReady', function (event) {
 				//Load the strip only if the configuration allows preview. It gets a 404 if you do not have a local flavor
 				if (_this.getConfig("sliderPreview")) {
@@ -129,7 +139,7 @@
 			});
 		},
 		updatePlayheadUI: function (val) {
-			this.getComponent().slider('option', 'value', val);
+			this.getComponent().slider({value: val});
 		},
 		setupThumbPreview: function () {
 			var _this = this;
