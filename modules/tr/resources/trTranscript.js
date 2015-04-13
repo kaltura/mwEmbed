@@ -71,7 +71,7 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 
 	},
 	setBindings : function (){
-		this.bind('newClosedCaptionsData', $.proxy(function(event,source){
+		this.bind('forcedCaptionLoaded', $.proxy(function(event,source){
 			this.clearData();
 			this.setTranscript(source.captions);
 			this.setMentionedTerms();
