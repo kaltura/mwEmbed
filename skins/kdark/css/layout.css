@@ -1,4 +1,9 @@
-body { letter-spacing: 0.04em; }
+body {
+	letter-spacing: 0.04em;
+	/*Disable the default behavior of an Anchor in jQuery Mobile (iOS)*/
+	-webkit-touch-callout: none ; /* disable the iOS popup when long-press on a link */
+	-webkit-user-select: none ; /* disable selection/copy of UIWebView */
+}
 .topBarContainer {
 	position: absolute;
 	top: 0;
@@ -54,6 +59,7 @@ body { letter-spacing: 0.04em; }
 }
 #sideBarContainerReminderContainer{
     font-size: 32px;
+    color: rgb(255, 255, 255);
 }
 @media all and  (max-width: 640px) {
     #sideBarContainerReminderContainer{
@@ -144,7 +150,10 @@ body { letter-spacing: 0.04em; }
     right: 0;
 }
 
-.titleLabel { padding: 8px 0 0 10px; }
+.titleLabel {
+	padding: 8px 0 0 10px;
+	color: white;
+}
 
 .controlBarContainer {
 	position: absolute;

@@ -141,10 +141,10 @@
                                     customAlertContainerCssClass: "AlertContainerTransparent"
                                     }
                                 });
-                            }
-							_this.getPlayer().disablePlayControls();
-						}
 
+							    _this.getPlayer().disablePlayControls();
+                            }
+                        }
 					}, _this.getConfig( 'offlineAlertOffest' ) );
 
 					embedPlayer.triggerHelper( 'liveOffline' );

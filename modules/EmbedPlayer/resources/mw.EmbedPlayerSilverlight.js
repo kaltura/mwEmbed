@@ -129,6 +129,7 @@
 					//flashvars.debug = true;
 
 					if (isMimeType("video/playreadySmooth")) {
+						flashvars.preload = "none";
 						var licenseUrl = _this.getKalturaConfig(null, 'playreadyLicenseUrl') || mw.getConfig('Kaltura.LicenseServerURL');
 						if (!licenseUrl) {
 							mw.log('EmbedPlayerSPlayer::Error:: failed to retrieve playready license URL ');
@@ -224,7 +225,8 @@
 						'textTracksReceived': 'onTextTracksReceived',
 						'textTrackSelected': 'onTextTrackSelected',
 						'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions',
-						'error': 'onError'
+						'error': 'onError',
+						'alert': 'onError'
 					};
 
 					_this.playerObject = playerElement;
@@ -235,15 +237,16 @@
 					if (_this.getFlashvars('stretchVideo')) {
 						playerElement.stretchFill();
 					}
-					//readyCallback();
+
 
 					if ( isMimeType("video/mp4")
 						||
 						isMimeType("video/h264")
 						){
 						_this.durationReceived = true;
-						readyCallback();
+
 					}
+					readyCallback();
 				});
 			}
 
@@ -379,9 +382,10 @@
 			this.currentTime = this.slCurrentTime = 0;
 		},
 
-		onError: function (data) {
-			mw.log('EmbedPlayerSPlayer::onError ');
-			this.triggerHelper('embedPlayerError', [ JSON.parse(data) ]);
+		onError: function (message) {
+			var data = {errorMessage: message};
+			mw.log('EmbedPlayerSPlayer::onError: ' + message);
+			this.triggerHelper('embedPlayerError', [ data ]);
 		},
 
 		handlePlayerError: function (data) {
@@ -413,7 +417,7 @@
 		play: function () {
 			mw.log('EmbedPlayerSPlayer::play');
 			var _this = this;
-			if (this.durationReceived && this.parent_play()) {
+			if ( this.parent_play() ) {
 				//bring back the player
 				this.getPlayerContainer().css('visibility', 'visible');
 				if (this.isMulticast) {

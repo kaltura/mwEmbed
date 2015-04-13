@@ -53,13 +53,18 @@ return array(
 					array(
 						"label" => "16/9",
 						"value" => "wide"
-					)
+					),
+                    array(
+                        "label" => "Custom",
+                        "value" => "custom"
+                    )
 				),
 				"showSearch"=> false,
-				"initvalue" => "wide",
-				"helpnote" => "Select aspect ratio for the current preview. Aspect ratio is not saved with the player settings",
-				"type" => "dropdown",
-				"label" => "Aspect Ratio",
+				"allowNegative"=> false,
+				"helpnote" => "Set Player Dimensions",
+				"helpnote2" => "Height will be automatically calculated according to the selected aspect ratio",
+				"type" => "dimensions",
+				"label" => "Player Dimensions",
 				"endline" => "true"
 			),
 			array(
