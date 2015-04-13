@@ -2469,11 +2469,11 @@
 
 
 		togglePlayback: function () {
-			if (this.paused) {
-				this.play();
-			} else {
-				this.pause();
-			}
+				if (this.paused) {
+					this.play();
+				} else {
+					this.pause();
+				}
 		},
 		isMuted: function () {
 			return this.muted;
