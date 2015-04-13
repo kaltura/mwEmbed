@@ -877,20 +877,19 @@
 		 */
 		_onloadedmetadata: function () {
 			var player = this.getPlayerElement();
+			var duration = player.duration();
 
-			// only update duration if we don't have one: ( some browsers give bad duration )
-			// like Android 4 default browser
-			if (!this.duration
+			// Update if there's no duration or actual media duration is not the same as the metadata duration
+			if ((!this.duration || (this.duration !== duration))
 				&&
-				this.playerElement
-				&& !isNaN(this.playerElement.duration)
+				player
+				&& !isNaN(duration)
 				&&
-				isFinite(this.playerElement.duration)
+				isFinite(duration)
 			) {
-				mw.log('EmbedPlayerNative :onloadedmetadata metadata ready Update duration:' + this.playerElement.duration + ' old dur: ' + this.getDuration());
-				this.setDuration(this.playerElement.duration);
+				this.log('onloadedmetadata metadata ready Update duration:' + duration + ' old dur: ' + this.getDuration());
+				this.setDuration(this.playerElement.duration());
 			}
-
 			var audioTracks = player.audioTracks();
 			if (audioTracks){
 				var data = {languages: []};
