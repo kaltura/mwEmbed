@@ -242,6 +242,7 @@
 					if ( isMimeType("video/mp4")
 						||
 						isMimeType("video/h264")
+					|| _this.isLive()
 						){
 						_this.durationReceived = true;
 
@@ -324,8 +325,8 @@
 		 * parent_play
 		 */
 		onPlay: function () {
-			//workaround to avoid two playing events with autoPlay.
-			if (!this.durationReceived) {
+			////workaround to avoid two playing events with autoPlay.
+			if (!this.durationReceived ) {
 				return;
 			}
 			if (this._propagateEvents) {
