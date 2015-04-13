@@ -107,7 +107,7 @@
 			}
 			
 			// Check if we should only load ads when played: 
-			if( _this.getConfig('loadAdsOnPlay') == true ){
+			if( _this.getConfig('loadAdsOnPlay') == true && !mw.isMobileDevice() ){
 				_this.handleAdsOnPlay( embedPlayer );
 				callback();
 				return ;
@@ -127,9 +127,6 @@
 					_this.loadAds( function(){
 						loadedAds = true;
 						embedPlayer.unbindHelper('prePlayAction' + _this.bindPostfix);
-						if ( mw.isMobileDevice() ){
-							embedPlayer.getPlayerElement().load();
-						}
 						embedPlayer.play();
 					});
 				}

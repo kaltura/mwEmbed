@@ -1320,7 +1320,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 			'loadAdsOnPlay' => array(
 				'doc' => 'By default ads are loaded at player startup time. 
-					Setting loadAdsOnPlay to true will load ads only once the user presses play.',
+					Setting loadAdsOnPlay to true will load ads only once the user presses play. Note that this option is not available on mobile devices.',
 				'type' => 'boolean',
 				'initvalue' => false
 			)
