@@ -941,22 +941,6 @@
 				$(this).trigger('mediaLoaded');
 				this.mediaLoadedFlag = true;
 			}
-			setTimeout(_this.getAvailableBitRates.bind(this), 2000);
-		},
-
-		getAvailableBitRates: function(){
-			debugger;
-			var player = this.getPlayerElement();
-			var mp = player.mediaPlayer;
-			var metrics = mp.getMetricsFor('video');
-			var metricsExtensions = mp.getMetricsExt();
-			var maxBitrateIndex = metricsExtensions.getMaxIndexForBufferType('video', 0);  //or 'audio'
-
-			//Which returns the maximum index of all representations (lowest bitrate has index 0, highest this return value).
-
-			//To get the bitrate of the current active representation, you can use this code:
-			var repSwitch = metricsExtensions.getCurrentRepresentationSwitch(metrics);
-			var bandWidthForIndex = metricsExtensions.getBandwidthForRepresentation(repSwitch.to);
 		},
 
 		onAudioTracksReceived: function (data) {
