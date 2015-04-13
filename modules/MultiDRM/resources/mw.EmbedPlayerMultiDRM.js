@@ -243,28 +243,37 @@
 			drmConfig.widevineLicenseServerURL = licenseBaseUrl + "?" + licenseData;
 			drmConfig.assetId = this.kentryid;
 			drmConfig.variantId = assetId;
+			var config = {};
 
-			if (this.shouldGeneratePssh()) {
-				var config = {};
+			if (this.shouldGeneratePssh(drmConfig)) {
 				config.generatePSSH = true;
-				config.isSmoothStreaming = true;
-				config.enableSmoothStreamingCompatibility = true;
 				config.widevineHeader = {
 					"provider": "castlabs",
 					"contentId": this.getAuthenticationToken( assetId ),
 					"policy": ""
 				};
-				$.extend(true, drmConfig, config);
 			}
 
+			var sourceMimeType = this.mediaElement.selectedSource && this.mediaElement.selectedSource.mimeType;
+			if (sourceMimeType === "video/ism" || sourceMimeType === "video/playreadySmooth"){
+				config.isSmoothStreaming = true;
+				config.enableSmoothStreamingCompatibility = true;
+			}
+
+			//Extend the drmConfig with new configuration
+			$.extend(true, drmConfig, config);
+
+			//Give chance to other plugins to review DRM config
 			this.triggerHelper('updateDashContextData', {contextData: drmConfig});
 
 			return drmConfig;
 		},
-		shouldGeneratePssh: function(){
+		shouldGeneratePssh: function(drmConfig){
 			var source = this.getSource();
 			var res;
-			if (source){
+			if (!(drmConfig.isClear === undefined || drmConfig.isClear === null)){
+				res = !!drmConfig.isClear;
+			} else if (source){
 				res = ( source.mimeType === "video/ism" || source.mimeType === "video/playreadySmooth" );
 			} else {
 				res = false;
@@ -932,6 +941,22 @@
 				$(this).trigger('mediaLoaded');
 				this.mediaLoadedFlag = true;
 			}
+			setTimeout(_this.getAvailableBitRates.bind(this), 2000);
+		},
+
+		getAvailableBitRates: function(){
+			debugger;
+			var player = this.getPlayerElement();
+			var mp = player.mediaPlayer;
+			var metrics = mp.getMetricsFor('video');
+			var metricsExtensions = mp.getMetricsExt();
+			var maxBitrateIndex = metricsExtensions.getMaxIndexForBufferType('video', 0);  //or 'audio'
+
+			//Which returns the maximum index of all representations (lowest bitrate has index 0, highest this return value).
+
+			//To get the bitrate of the current active representation, you can use this code:
+			var repSwitch = metricsExtensions.getCurrentRepresentationSwitch(metrics);
+			var bandWidthForIndex = metricsExtensions.getBandwidthForRepresentation(repSwitch.to);
 		},
 
 		onAudioTracksReceived: function (data) {

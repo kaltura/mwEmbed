@@ -36,7 +36,7 @@
 						} );
 					} );
 				} else {
-					mw.log("Media sources not found");
+					mw.log("No media sources found, not loading DASH player");
 					callback();
 				}
 			} else {
