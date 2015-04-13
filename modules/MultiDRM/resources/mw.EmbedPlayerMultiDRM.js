@@ -208,6 +208,7 @@
 					techOrder: ['dasheverywhere']
 				}, function(){
 					_this.playerElement = this;
+					$(_this.playerElement.el() ).attr('data-src', _this.getSrc());
 					//Set schedule while paused to true to allow buffering when in paused state
 					_this.playerElement.mediaPlayer.setScheduleWhilePaused(true);
 					callback();
@@ -585,7 +586,7 @@
 			this.isPauseLoading = false;
 
 			// Make sure the switch source is different:
-			if (!src || src == vid.src()) {
+			if (!src || src == vid.src() || $(vid.el() ).attr('data-src') === src) {
 				if ($.isFunction(switchCallback)) {
 					switchCallback(vid);
 				}
