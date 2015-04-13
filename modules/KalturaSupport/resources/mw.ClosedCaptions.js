@@ -400,7 +400,7 @@
 			// Found caption
 			if( source && !source.loaded ) {
 				source.load($.proxy(function(){
-					this.getPlayer().triggerHelper('newClosedCaptionsData', source);
+					this.getPlayer().triggerHelper('forcedCaptionLoaded', source);
 				},this));
 			}
 		},
