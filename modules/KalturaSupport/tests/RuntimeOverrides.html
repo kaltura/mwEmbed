@@ -169,9 +169,15 @@
 		"</div>";
 		
 		function doPlayerEmbed(){
-			jsonConfig.plugins.infoScreen.template = infoTemplate;
-			jsonConfig.plugins.related.template = relatedTemplate;
-			jsonConfig.plugins.share.template = shareTemplate;
+			if( jsonConfig.plugins.infoScreen ){
+				jsonConfig.plugins.infoScreen.template = infoTemplate;
+			}
+			if( jsonConfig.plugins.related ){
+				jsonConfig.plugins.related.template = relatedTemplate;
+			}
+			if( jsonConfig.plugins.share ){
+				jsonConfig.plugins.share.template = shareTemplate;
+			}
 			
 			kWidget.embed('kaltura_player', {
 				'wid': '_243342',
@@ -368,6 +374,7 @@
 				<div id="css-editor" style="width:100%;height:400px;"></div><br>
 				<a href="#" id="update-css" class="btn btn btn-info"> Update CSS </a>
 				<script>
+					var cssOverrides = '';
 					cssEditor = ace.edit("sharetemplate-editor");
 					// editor.setTheme("ace/theme/twilight");
 					cssEditor.getSession().setMode("ace/mode/css");
