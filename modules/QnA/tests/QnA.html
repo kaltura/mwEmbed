@@ -1,11 +1,9 @@
-<!doctype html>
-<html lang="en">
+<html>
 <head>
-	<meta charset="UTF-8">
 	<title>Q and A Demo</title>
-	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
-	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	<script type="text/javascript" src="/html5.kaltura/mwEmbed/tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="/html5.kaltura/mwEmbed/mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="/html5.kaltura/mwEmbed/docs/js/doc-bootstrap.js"></script>
 </head>
 <body>
 	<h1>Q and A Demo</h1>
@@ -14,27 +12,18 @@
 	<br style="clear: both;" /><br />
 <script>
 
-	function onReadyCallback(playerID){
-		window.kdp = document.getElementById( playerID );
-		kdp.kBind( 'showQuestion', function(event){
-			alert("show question ui");
-		});
-	}
-
-
 	kWidget.featureConfig({
 		'targetId': 'kaltura_player',
-		'wid': '_243342',
+		'wid': '_1802381',
 		'uiconf_id' : '21099702',
-		'readyCallback': onReadyCallback,
 		'flashvars': {
-			'ks': 'djJ8MTgwMjM4MXyrVxthy0UlcGKn0s37Dl3k1rIKAiTAf0xdO3hrGiPo2IDX9PUSgQiA5gU5xMmrAq6up1LkAQGSrubu2lcCPD6uOSlVx7Vf1-a0K_7YQ8KIHAE6ndLsJyTZzVNhawfxAPPLOA6N2-etGXXf4yHCj7qUxyadoWBIo7nmAVBBVsWSUXnJauL5lNbLNYDNPIuIu9dC2VZ_C1Io4qpRZqem69_QcRS8_2_IhwtBuHAryRj54aApzf1biagj0mPC15Uhnkteq4M6LG8YdlJrdfRs61Oh',
+			'ks': 'djJ8MTgwMjM4MXzO9KSJZcxG7JHDkCOqgrcqOQe1GA9wFQZeIqv1CzCmWDpSqLP7Updva472d8r0_5KaanmQtS8O0H_0XvT6-i9xnIm1XYPRvOCLxleuX-A8YPFLZ1DFPFxNTMvWw1E5a215s8PeHpDiaSJbo9twc6XGdRNZpGM0cvOLEbBfYmuZ0WKLoaPhj-BYl_MEOhZ8llju7Sic2rsQbsjcaATxwH9AgjGTBcpJLMrIt1B5HbOz7Ufwr7UG3uZx1nLHLEu6sOrl7b6qyAApIqbs1zeaDoxr',
 			'qna': {
 				'plugin': true,
 				'qnaTargetId': 'qnaListHolder'
 			}
 		},
-		'entry_id': "1_haz5dyjq"
+		'entry_id': "1_2isk99gm"
 
 	});
 
