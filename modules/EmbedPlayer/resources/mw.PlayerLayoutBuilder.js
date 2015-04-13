@@ -412,7 +412,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
     getContainerHeight: function() {
         var height = 0;
-        if(mw.isIE()){
+        if(mw.isIE11()){
             height = this.getInterface()[0].clientHeight;
         }else{
             height = this.getInterface().height();
