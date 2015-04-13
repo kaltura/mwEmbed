@@ -420,7 +420,7 @@ function Metrics() {
 	            if (window.top.addEventListener) window.top.addEventListener('blur', aG, false);
 	            else if (window.top.attachEvent) window.top.attachEvent('onblur', aG);
 		    }catch(e){
-			    console.log("NielsenCombined:: error trying to access window.top.addEventListener.");
+			    console.log("NielsenCombined:: iframe detected. onfocus and onblur events will not be tracked.");
 		    }
 	    }
         return ao;

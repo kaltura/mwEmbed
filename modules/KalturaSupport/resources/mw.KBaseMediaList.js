@@ -267,17 +267,24 @@
 			//Only render if medialist item are present
 			if (this.getTemplateData().length > 0) {
 				//Generate new list template data
-				var medialist = this.getTemplateHTML( {meta: this.getMetaData(), mediaList: this.getTemplateData()});
-				//Clear previous list
-				this.getMedialistComponent().empty();
-				//Clear the scroll reference
-				this.$scroll = null;
-				//Add media items to DOM
-				this.getMedialistComponent().append( medialist );
-				this.configMediaListFeatures();
-				$( this.embedPlayer ).trigger( "mediaListLayoutReady" );
+				var _this = this;
+				this.getTemplateHTML( {meta: this.getMetaData(), mediaList: this.getTemplateData()})
+					.then(function(medialist) {
+						//Clear previous list
+						_this.getMedialistComponent().empty();
+						//Clear the scroll reference
+						_this.$scroll = null;
+						//Add media items to DOM
+						_this.getMedialistComponent().append( medialist );
+						_this.configMediaListFeatures();
+						$( _this.embedPlayer ).trigger( "mediaListLayoutReady" );
+						_this.setSelectedMedia( _this.selectedMediaItemIndex );
+					}, function(msg) {
+						mw.log( msg );
+					});
 			}
 		},
+
 		configMediaListFeatures: function(){
 			//Adjust container size
 			this.setMedialistContainerSize();

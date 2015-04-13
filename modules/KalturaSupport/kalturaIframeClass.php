@@ -257,7 +257,7 @@ class kalturaIframeClass {
 			if( ! is_array( $plugin ) ){
 				continue;
 			}
-			$loadInIframe = (isset($plugin['loadInIframe']) && $plugin['loadInIframe'] === true) ? true : false;
+			$loadInIframe = (isset($plugin['loadInIframe']) && $plugin['loadInIframe'] == true) ? true : false;
 			// Only load onPage plugins into iframe If we're in external iframe mode
 			$loadInIframe = ($loadInIframe && isset($_GET['iframeembed']));
 			foreach( $plugin as $attr => $value ){

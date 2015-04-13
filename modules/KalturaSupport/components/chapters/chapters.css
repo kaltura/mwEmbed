@@ -106,6 +106,9 @@
     background-color: rgb(50, 50, 50);
     filter: alpha(opacity=100);
 }
+.chapters > .k-chapters-container .mediaBox:focus{
+
+}
 .chapters > .k-chapters-container .boxImg{
     float: left;
     height: 100%;

@@ -398,9 +398,13 @@
 			if( property == 'timeRemaining' ){
 				if( this.getConfig('formatCountdown')){
 					var timeFormat = mw.KDPMapping.prototype.formatFunctions.timeFormat;
-					this.getScreen().find('.remaining').html(timeFormat(value));
+					this.getScreen().then(function(screen){
+						screen.find('.remaining').html(timeFormat(value));
+					});
 				}else{
-					this.getScreen().find('.remaining').html(value);
+					this.getScreen().then(function(screen){
+						screen.find('.remaining').html(value);
+					});
 				}
 			}
 		},
