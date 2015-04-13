@@ -323,7 +323,7 @@ return array(
         'attributes' => array(
             'onPageJs1' => array(
                 'doc' => "",
-                'initvalue' => "https:\/\/s3-us-west-2.amazonaws.com\/svsg-kaltura-trans-widget\/js\/loader.js",
+                'initvalue' => "http:\/\/s3-us-west-2.amazonaws.com\/media-data-player\/kalturaIntegrated\/stable\/js\/loader.js",
                 'type' => 'hidden'
             ),
             'DynaTransWindowSize' => array(
@@ -337,7 +337,7 @@ return array(
                 'type' => 'string',
             ),
             'DynaTransClientLogo' => array(
-                'initvalue' => "https:\/\/s3-us-west-2.amazonaws.com\/svsg-kaltura-trans-widget\/img\/logo-transparent.png",
+                'initvalue' => "http:\/\/s3-us-west-2.amazonaws.com\/media-data-player\/kalturaIntegrated\/stable\/img\/logo-transparent.png",
                 'doc' => "Client Logo.",
                 'type' => 'string',
             ),
