@@ -79,12 +79,14 @@
 			});
 
 			this.bind('onOpenFullScreen', function () {
-				// check if IE11 and iframe
-				window["resizeScrubber"] = true;
+				// check if IE11 and iframe (KMS-4606)
+                if( mw.isIE11() && ( mw.getConfig('EmbedPlayer.IsIframeServer' ) || mw.getConfig('EmbedPlayer.IsFriendlyIframe') ) ) {
+                    window["resizeScrubberIE11"] = true; // global var for jquery.ui.slider.js - fix jquery defect inside IE11 iframe fullscreen element.outerWidth()
+                }
 			});
 			this.bind('onCloseFullScreen', function () {
-				// check if IE11 and iframe
-				window["resizeScrubber"] = null;
+				if( window["resizeScrubberIE11"]===true )
+                    window["resizeScrubberIE11"] = null; //clear global var used only by jquery in IE11 iframe fullscreen
 			});
 
 			this.bind('playerReady', function (event) {
