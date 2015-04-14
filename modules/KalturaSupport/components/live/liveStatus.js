@@ -54,19 +54,21 @@
 			var _this = this;
 			if( !this.$el ) {
 				var $btnText = $( '<div />')
-					.addClass( 'btn back-to-live-text timers ' + this.noThumbClass + this.getCssClass() )
+					.addClass( 'back-to-live-text timers ' + this.noThumbClass + this.getCssClass() )
 					.text( this.offlineText );
 
-				var $icon  =$( '<div />' ).addClass( 'btn timers '+ this.offlineIconClass + this.getCssClass() );
+
+				var $icon  =$( '<div />' )
+                    .addClass( 'btn timers '+ this.offlineIconClass + this.getCssClass() )
+                    .click( function() {
+                        if ( _this.onAirStatus && _this.getPlayer().isDVR() && _this.prevIconClass != _this.onAirIconClass ) {
+                            _this.backToLive();
+                        }
+                    });
 
 				this.$el = $( '<div />')
 					.addClass( 'back-to-live' + this.getCssClass() )
-					.append( $icon, $btnText )
-					.click( function() {
-						if ( _this.onAirStatus && _this.getPlayer().isDVR() && _this.prevIconClass != _this.onAirIconClass ) {
-							_this.backToLive();
-						}
-					});
+					.append( $icon, $btnText );
 			}
 			return this.$el;
 		},
@@ -82,13 +84,13 @@
 
 		setOffSyncUI: function() {
 			this.getComponent().find('.live-icon').removeClass( this.offlineIconClass + " " + this.onAirIconClass ).addClass( this.unsyncIConClass );
-			this.getComponent().find('.back-to-live-text').text( this.liveText ).removeClass( this.noThumbClass );
+			this.getComponent().find('.back-to-live-text').text( this.liveText );
 			this.updateTooltip( this.tooltip );
 		},
 
 		setLiveUI: function() {
 			this.getComponent().find('.live-icon').removeClass( this.offlineIconClass + " " + this.unsyncIConClass ).addClass( this.onAirIconClass );
-			this.getComponent().find('.back-to-live-text').text( this.liveText ).addClass( this.noThumbClass );
+			this.getComponent().find('.back-to-live-text').text( this.liveText );
 			this.updateTooltip( "" );
 		},
 
