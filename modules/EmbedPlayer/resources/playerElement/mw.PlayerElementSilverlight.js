@@ -112,6 +112,10 @@
 		},
 		onUpdatePlayhead : function ( playheadVal ) {
 			this.currentTime = playheadVal;
+
+		},
+		getMulticastBitrate : function(){
+			this.bitRate = this.playerProxy.MulticastAverageBitRate;
 		},
 		onPause : function() {
 			this.paused = true;

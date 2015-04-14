@@ -2187,6 +2187,10 @@
 			}
 			var _this = this;
 			var $this = $(this);
+			if (this.currentState == "end") {
+				// prevent getting another clipdone event on replay
+				this.seek(0.01, false);
+			}
 			// Store the absolute play time ( to track native events that should not invoke interface updates )
 			mw.log("EmbedPlayer:: play: " + this._propagateEvents + ' isStopped: ' + _this.isStopped());
 			this.absoluteStartPlayTime = new Date().getTime();
@@ -2230,11 +2234,6 @@
 					mw.log("EmbedPlayer:: isInSequence, do NOT play content");
 					return false;
 				}
-			}
-
-			if (this.currentState == "end") {
-				// prevent getting another clipdone event on replay
-				this.seek(0.01, false);
 			}
 
 			// Remove any poster div ( that would overlay the player )
