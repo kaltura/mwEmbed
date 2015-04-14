@@ -1811,8 +1811,7 @@
 		 * Updates the poster HTML
 		 */
 		updatePosterHTML: function () {
-            mw.log('!!EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
-			mw.log('EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
+            mw.log('EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
 			var _this = this;
 
 			if (this.isImagePlayScreen()) {
