@@ -28,6 +28,9 @@
     font-size: 2.4em;
     margin: -31px 0 0 -31px;
 }
+.durationLabel {
+    padding-right: 5px;
+}
 
 .trTitle .largePlayBtn:before {
     position: relative;
@@ -268,7 +271,7 @@
     line-height: 0;
 }
 
-.ri-playlistItem-content-thumb-duration {
+.ri-playlistItem-content-thumb-uration {
     position: absolute;
     z-index: 0;
     right: 0;

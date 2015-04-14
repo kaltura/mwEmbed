@@ -24,8 +24,6 @@
     </div>
 </div>
 <script>
-
-
     //parse query string to an object
     var queryString = function () {
         var query_string = {};
@@ -93,12 +91,13 @@
         'targetId': 'kPlayer',
         'wid': '_'+partnerId,
         'uiconf_id' : uiconfId,
-        //'entry_id' : entryId,
+        'entry_id' : entryId,
         'flashvars': {
             'locale' : 'jp',
+            'autoPlay' : 'true',
             'confFilePath': '{libPath}/modules/tr/resources/trjson.json',
             'trTitle' : {
-                "createTopBar" : false 
+                "createTopBar" : false
             },
             "trTranscript": {
                 "plugin": true,
@@ -116,16 +115,22 @@
             "trControls" : {
                 "plugin" : true,
                 "targetId" : "topFunctions"
-            },
-            'playlistAPI': {
-                'kpl0Id': playlistId,
-                'showControls': false,
-                'includeHeader': false,
-                'mediaItemHeight': 160,
-                'templatePath': '../tr/templates/playlist.tmpl.html',
-                'MinClips': 4
-
             }
+            ,'playlistAPI': {
+                'plugin': false
+            }
+
+//            ,'playlistAPI': {
+//                'autoPlay' : 'true',
+//                'kpl0Id': playlistId,
+////                'kpl0Id': '1_cix73bnr',
+//                'showControls': false,
+//                'includeHeader': false,
+//                'mediaItemHeight': 160,
+//                'templatePath': '../tr/templates/playlist.tmpl.html',
+//                'MinClips': 4
+//
+//            }
 
 
         }
