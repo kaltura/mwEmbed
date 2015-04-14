@@ -278,7 +278,7 @@
 			} else {
 				res = false;
 			}
-			return res;
+			return !res;
 		},
 		getLicenseData: function(assetId){
 			var flavorCustomData = this.kalturaContextData.flavorCustomData[assetId];
