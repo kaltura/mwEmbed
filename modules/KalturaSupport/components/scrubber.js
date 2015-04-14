@@ -141,7 +141,7 @@
 			});
 		},
 		updatePlayheadUI: function (val) {
-			this.getComponent().slider({value: val});
+            this.getComponent().slider('option', 'value', val);
 		},
 		setupThumbPreview: function () {
 			var _this = this;
