@@ -1350,8 +1350,8 @@
 
 		doUpdateLayout: function (skipTrigger) {
 			// Set window height if in iframe:
-			var containerHeight = this.getInterface().height();
-			var newHeight = containerHeight - this.layoutBuilder.getComponentsHeight();
+            var containerHeight = this.layoutBuilder.getContainerHeight();
+            var newHeight = containerHeight - this.layoutBuilder.getComponentsHeight();
 			var currentHeight = this.getVideoHolder().height();
 			var deltaHeight = Math.abs(currentHeight - newHeight);
 			mw.log('EmbedPlayer: doUpdateLayout:: containerHeight: ' +
