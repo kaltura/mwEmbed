@@ -109,11 +109,7 @@
 			if (!this.supportsVolumeControl()) {
 				this.supports.volumeControl = false;
 			}
-			// Check if we already have a selected source and a player in the page,
-			if (this.getPlayerElement() && this.getSrc()) {
-		//		this.getPlayerElement().src(this.getSrc());
-				this.updateDashContext();
-			}
+
 			// Check if we already have a video element an apply bindings ( for native interfaces )
 			if (this.getPlayerElement()) {
 				this.applyMediaElementBindings();
@@ -197,7 +193,7 @@
 				var _this = this;
 				this.dashPlayerInitialized = true;
 				this.playerElement = mw.dash.player( this.pid, {
-					autoplay: _this.autoplay,
+					autoplay: false,
 					controls: false,
 					height: "100%",
 					width: "100%",
@@ -211,6 +207,7 @@
 					$(_this.playerElement.el() ).attr('data-src', _this.getSrc());
 					//Set schedule while paused to true to allow buffering when in paused state
 					_this.playerElement.mediaPlayer.setScheduleWhilePaused(true);
+					_this.updateDashContext();
 					callback();
 				} );
 				this.bindHelper('switchAudioTrack', function (e, data) {
@@ -227,8 +224,6 @@
 		},
 		getDrmConfig: function(){
 			var drmConfig = this.getKalturaConfig('multiDrm');
-
-
 			var licenseBaseUrl = mw.getConfig('Kaltura.UdrmServerURL');
 			if (!licenseBaseUrl) {
 				this.log('Error:: failed to retrieve UDRM license URL ');
@@ -269,13 +264,13 @@
 			var source = this.getSource();
 			var res;
 			if (!(drmConfig.isClear === undefined || drmConfig.isClear === null)){
-				res = !!drmConfig.isClear;
+				res = !(!!drmConfig.isClear);
 			} else if (source){
 				res = ( source.mimeType === "video/ism" || source.mimeType === "video/playreadySmooth" );
 			} else {
 				res = false;
 			}
-			return !res;
+			return res;
 		},
 		getLicenseData: function(assetId){
 			var flavorCustomData = this.kalturaContextData.flavorCustomData[assetId];
@@ -788,9 +783,11 @@
 				this.seek(0.01, false);
 			} else {
 				if ( this.parent_play() ) {
-
-					this.getPlayerElement().play();
-					this.monitor();
+					var _this = this;
+					setTimeout( function () {
+						_this.getPlayerElement().play();
+						_this.monitor();
+					}, (this.mediaLoadedFlag ? 100 : 2000) );
 				} else {
 					mw.log( "EmbedPlayerMultiDRM:: parent play returned false, don't issue play on player element" );
 				}
