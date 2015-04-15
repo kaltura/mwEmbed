@@ -158,6 +158,33 @@
 				window.redrawTimeOutID = setTimeout(function(){_this.redrawOnResize = true;},2000);
 			});
 
+			this.getComponent().bind("horizontalScrollEnd", function(){
+				var data = _this.mediaList.slice();
+				_this.mediaList = $.merge( _this.mediaList, data );
+
+				_this.getTemplateHTML( {meta: _this.getMetaData(), mediaList: data})
+					.then(function(medialist) {
+						_this.getMedialistComponent().find("ul").append(medialist.find("li"));
+						// update "data-mediabox-index" attribute
+						_this.getMedialistComponent().find("li").each(function(index, elm){
+							$(elm).attr("data-mediabox-index", index);
+						});
+
+						_this.getMedialistComponent().find('ul').width((_this.getMediaItemBoxWidth()+1)*_this.mediaList.length);
+						_this.getMedialistComponent().find('.k-carousel').css('width', _this.getMedialistComponent().width() );
+
+						var scrollLeft = Math.abs(parseInt(_this.getComponent().find("ul").css("left")));
+						var hiddenItems = parseInt(scrollLeft / _this.getConfig( 'mediaItemWidth'));
+
+						_this.configMediaListFeatures(true);
+						_this.getMedialistComponent().find('ul').trigger("refresh",[hiddenItems]);
+
+						$( _this.embedPlayer ).trigger( "mediaListLayoutReady" );
+					}, function(msg) {
+						mw.log( msg );
+					});
+			});
+
 			// set responsiveness
 			if ( !mw.isIOS7()) {
 				this.bind( 'resizeEvent' , function () {
@@ -170,7 +197,7 @@
 				_this.setMultiplePlayLists();
 				_this.getComponent().find(".k-description-container").dotdotdot();
 				// keep aspect ratio of thumbnails - crop and center
-				_this.getComponent().find('.k-thumb').each(function () {
+				_this.getComponent().find('.k-thumb').not('.resized').each(function () {
 					var img = $(this)[0];
 					img.onload = function () {
 						if (img.naturalWidth / img.naturalHeight > 16 / 9) {
@@ -185,6 +212,7 @@
 							var deltaHeight = ($(this).height() - 48) / 2 * -1;
 							$(this).css("margin-top", deltaHeight)
 						}
+						$(this).addClass('resized');
 					};
 				});
 			});
@@ -535,11 +563,11 @@
 			this.addMediaItems( items );   // prepare the data to be compatible with KBaseMediaList
 			this.getMedialistHeaderComponent().empty();
 			if ( this.getLayout() === "vertical" ) {
-					this.getMedialistHeaderComponent().prepend( '<span class="playlistTitle">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription">' + items.length + ' ' + gM( 'mwe-embedplayer-videos' ) + '</span>' );
-					this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '"></div>' );
-				} else {
-					this.getMedialistHeaderComponent().prepend( '<span class="playlistTitle horizontalHeader">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription horizontalHeader">(' + items.length + ' ' + gM( 'mwe-embedplayer-videos' ) + ')</span>' );
-					this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '"></div>' );
+				this.getMedialistHeaderComponent().prepend( '<span class="playlistTitle">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription">' + items.length + ' ' + gM( 'mwe-embedplayer-videos' ) + '</span>' );
+				this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '"></div>' );
+			} else {
+				this.getMedialistHeaderComponent().prepend( '<span class="playlistTitle horizontalHeader">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription horizontalHeader">(' + items.length + ' ' + gM( 'mwe-embedplayer-videos' ) + ')</span>' );
+				this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '"></div>' );
 			}
 			if ( this.getConfig( 'showControls' ) === true ) {
 				this.getMedialistHeaderComponent().prepend( '<div class="playlistControls k-' + this.getLayout() + '"><div class="prevBtn playlistBtn"></div><div class="nextBtn playlistBtn"></div></div>' );
