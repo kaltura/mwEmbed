@@ -111,7 +111,7 @@
 			}
 			// Check if we already have a selected source and a player in the page,
 			if (this.getPlayerElement() && this.getSrc()) {
-				this.getPlayerElement().src(this.getSrc());
+		//		this.getPlayerElement().src(this.getSrc());
 				this.updateDashContext();
 			}
 			// Check if we already have a video element an apply bindings ( for native interfaces )
@@ -197,7 +197,7 @@
 				var _this = this;
 				this.dashPlayerInitialized = true;
 				this.playerElement = mw.dash.player( this.pid, {
-					autoplay: false,
+					autoplay: _this.autoplay,
 					controls: false,
 					height: "100%",
 					width: "100%",
@@ -227,10 +227,7 @@
 		},
 		getDrmConfig: function(){
 			var drmConfig = this.getKalturaConfig('multiDrm');
-			if (drmConfig.autoplay){
-				drmConfig.autoplay = false;
-				this.autoplay = true;
-			}
+
 
 			var licenseBaseUrl = mw.getConfig('Kaltura.UdrmServerURL');
 			if (!licenseBaseUrl) {
