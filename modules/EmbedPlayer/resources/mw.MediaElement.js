@@ -292,9 +292,10 @@ mw.MediaElement.prototype = {
 			var bandwidthTarget = $.cookie('EmbedPlayer.UserBandwidth') || this.preferedFlavorBR;
 			$.each( playableSources, function(inx, source ){
 				if( source.bandwidth ){
-					// Check if a native source ( takes president over bandwidth selection )
-					var player = mw.EmbedTypes.getMediaPlayers().getDefaultPlayer( source.mimeType );
-					if ( !player || player.library != 'Native'	) {
+					// Check if a native source ( takes president over bandwidth selection ) - fix for FEC-1764 or for "bit rate selection to work in firefox with single webm flavor", but this change created regression SUP-4213
+
+                    var player = mw.EmbedTypes.getMediaPlayers().getDefaultPlayer( source.mimeType );
+					if ( !player || player.library != 'Native' ) {
 						// continue
 						return true;
 					}
