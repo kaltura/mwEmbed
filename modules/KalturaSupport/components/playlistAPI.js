@@ -57,7 +57,11 @@
 
 			if ( !this.getConfig( 'mediaItemWidth') ){
 				this.widthSetByUser = false;           // user did not specify a required width. We will set to 320 and apply responsive logic on resizeEvent event
-				this.setConfig( 'mediaItemWidth',320); // set default width to 320 if not defined by user
+				if ( this.getLayout() === "horizontal" ){
+					this.setConfig( 'mediaItemWidth', Math.floor($( ".playlistInterface" ).width() / this.getConfig("MinClips")) );
+				}else{
+					this.setConfig( 'mediaItemWidth',320); // set default width to 320 if not defined by user
+				}
 			}
 
 			if (this.getConfig("includeHeader")){
