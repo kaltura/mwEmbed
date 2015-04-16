@@ -13,7 +13,7 @@
 				var sources = embedPlayer.getSources();
 				var drmSources = sources.filter( function ( source ) {
 					return ( ( source.mimeType === "video/dash" ) ||
-					( source.mimeType === "video/ism" || source.mimeType === "video/playreadySmooth" && mw.isChrome() ) );
+					( source.mimeType === "video/ism" || source.mimeType === "video/playreadySmooth" && mw.isChrome() &&  !mw.isMobileDevice()) );
 				} );
 				var isDrmSourceAvailable = drmSources.length > 0;
 				if ( isDrmSourceAvailable ) {
@@ -54,7 +54,7 @@
 			mw.log("Register DASH player and extensions");
 			var multiDRMProtocols = ['video/dash'];
 			//On chrome add smooth stream mimetype support
-			if ( mw.isChrome() ) {
+			if ( mw.isChrome() &&  !mw.isMobileDevice()) {
 				multiDRMProtocols.push( "video/ism" );
 				multiDRMProtocols.push( "video/playreadySmooth" );
 			}
