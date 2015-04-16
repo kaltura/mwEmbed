@@ -519,7 +519,6 @@
 
 					var eventName = mw.isIOS() ? "canplaythrough.seekPrePlay" : "canplay.seekPrePlay";
 					$(vidObj).off(eventName).one(eventName, function () {
-						console.info("passed");
 						_this.restoreEventPropagation();
 						if (vid.duration() > 0) {
 							_this.log("player can seek");
