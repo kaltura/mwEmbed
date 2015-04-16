@@ -48,6 +48,9 @@
 		widthSetByUser: true,    // assuming the user specified the required playlist width. Will be changed if needed in the setup function
 
 		setup: function (embedPlayer) {
+			if ( $(".playlistInterface").length === 0 ){
+				$(".mwPlayerContainer").wrap('<div class="playlistInterface" style="position: relative; width: 100%; height: 100%"></div>');
+			}
 			if (this.getConfig('includeInLayout') === false) { // support hidden playlists - force onPage and hide its div.
 				this.setConfig('onPage', true);
 			}
@@ -158,7 +161,7 @@
 				window.redrawTimeOutID = setTimeout(function(){_this.redrawOnResize = true;},2000);
 			});
 
-			this.getComponent().bind("horizontalScrollEnd", function(){
+			$( this.embedPlayer ).bind("horizontalScrollEnd", function(){
 				var data = _this.mediaList.slice();
 				_this.mediaList = $.merge( _this.mediaList, data );
 
@@ -227,6 +230,9 @@
 					_this.setConfig("initItemEntryId" ,params.initItemEntryId )
 				}
 				_this.getKClient().doRequest(params.playlistParams, function (playlistDataResult) {
+					if (_this.playlistSet.length === 0){
+						_this.playlistSet.push({});
+					}
 					_this.playlistSet[_this.currentPlaylistIndex].items = playlistDataResult; //apply data to the correct playlist in the playlistSet
 					if(params.playlistName){
 						_this.playlistSet[_this.currentPlaylistIndex].name = params.playlistName; //apply data to the correct playlist in the playlistSet
@@ -244,7 +250,7 @@
 		},
 		redrawPlaylist: function(){
 			var _this = this;
-			if (!this.getPlayer().layoutBuilder.isInFullScreen() && this.redrawOnResize) {
+			if (!this.getPlayer().layoutBuilder.isInFullScreen() && this.redrawOnResize && this.redrawOnResize && this.playlistSet.length > 0) {
 				// decide the width of the items. For vertical layout: 3rd of the container. For horizontal: according to MinClips value
 				if ( this.getLayout() === "vertical" ){
 					if ( !this.widthSetByUser ){

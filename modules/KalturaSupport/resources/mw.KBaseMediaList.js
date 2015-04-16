@@ -594,7 +594,7 @@
 					scroll: _this.getConfig('horizontalScrollItems'),
 					speed: speed
 				}).unbind("complete").bind( "complete", function( event, data ) {
-						_this.getComponent().trigger("horizontalScrollEnd");
+						$(_this.embedPlayer).trigger("horizontalScrollEnd");
 					});
 				$cc.find('ul').width((this.getMediaItemBoxWidth()+1)*this.mediaList.length);
 				$cc.find('.k-carousel').css('width', $cc.width() );
