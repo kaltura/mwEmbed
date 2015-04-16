@@ -1,0 +1,140 @@
+{
+	"plugins": {
+		"topBarContainer": {
+			"plugin": true,
+			"hover": false
+		},
+		"controlBarContainer": {
+			"plugin": true,
+			"hover": true
+		},
+		"scrubber": {
+			"plugin": true
+		},
+		"largePlayBtn": {
+			"plugin": true
+		},
+		"playHead": {
+			"plugin": true
+		},
+		"playPauseBtn": {
+			"plugin": true
+		},
+		"volumeControl": {
+			"showSlider": true,
+			"pinVolumeBar": false,
+			"accessibleControls": false,
+			"accessibleVolumeChange": 0.1,
+			"plugin": true
+		},
+		"durationLabel": {
+			"plugin": true,
+			"align": "right"
+		},
+		"currentTimeLabel": {
+			"plugin": true,
+			"align": "right",
+			"order": 51
+		},
+		"keyboardShortcuts": {
+			"volumePercentChange": "0.1",
+			"shortSeekTime": "5",
+			"longSeekTime": "10",
+			"volumeUpKey": "38",
+			"volumeDownKey": "40",
+			"togglePlaybackKey": "32",
+			"shortSeekBackKey": "37",
+			"shortSeekForwardKey": "39",
+			"openFullscreenKey": "70",
+			"closeFullscreenkey": "27",
+			"gotoBeginingKey": "36",
+			"gotoEndKey": "35",
+			"longSeekForwardKey": "ctrl+39",
+			"longSeekBackKey": "ctrl+37",
+			"percentageSeekKeys": "49,50,51,52,53,54,55,56,57",
+			"plugin": true
+		},
+		"closedCaptions": {
+			"plugin": true
+		},
+		"liveCore": {
+			"plugin": true
+		},
+		"liveStatus": {
+			"plugin": true
+		},
+		"liveBackBtn": {
+			"plugin": true
+		},
+		"skipBtn": {
+			"plugin": true
+		},
+		"playlistAPI": {
+			"containerPosition": "bottom",
+			"layout": "horizontal",
+			"includeInLayout": true,
+			"showControls": true,
+			"hideClipPoster": true,
+			"MaxClips": 25,
+			"cssClass": "trTitle",
+			"includeHeader": false,
+			"templatePath": "../tr/templates/playlist.tmpl.html",
+			"mediaItemHeight": 157,
+			"mediaItemWidth": 124,
+			"plugin": true
+		},
+		"trTitle": {
+			"plugin": true
+		},
+		"trTranscript": {
+			"plugin": true
+		},
+		"sourceIcon": {
+			"plugin": true
+		},
+		"titleLabel": {
+			"plugin": true,
+			"align": false
+		}
+	},
+	"uiVars": [
+		{
+			"key": "autoPlay",
+			"value": false,
+			"overrideFlashvar": false
+		},
+		{
+			"key": "autoMute",
+			"value": false,
+			"overrideFlashvar": false
+		},
+		{
+			"key": "enableTooltips",
+			"value": true,
+			"overrideFlashvar": false
+		},
+		{
+			"key": "adsOnReplay",
+			"value": true,
+			"overrideFlashvar": false
+		},
+		{
+			"key": "Kaltura.LeadWithHTML5",
+			"value": true,
+			"overrideFlashvar": false
+		},
+		{
+			"key": "LeadWithHTML5",
+			"value": true,
+			"overrideFlashvar": false
+		},
+		{
+			"key": "KalturaSupport.LeadWithHTML5",
+			"value": true,
+			"overrideFlashvar": false
+		}
+	],
+	"layout": {
+		"skin": "kdark"
+	}
+}
