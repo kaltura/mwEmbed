@@ -60,6 +60,12 @@
 				if (this.pluginName !== opener)
 					this.hideScreen();
 			}, this));
+
+			this.bind('toggleScreen', $.proxy(function (e, screenName){
+				if( this.pluginName === screenName ) {
+					this.toggleScreen();
+				}
+			}, this));
 		},
 
 		bindCleanScreen: function () {
