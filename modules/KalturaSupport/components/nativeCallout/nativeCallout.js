@@ -95,18 +95,22 @@
 			}
 
 			function showNativeCallout() {
-				var htmlMarkup = _this.getTemplateHTML();// {meta: this.getMetaData(), mediaList: this.getTemplateData()}
-				var storeImage =$("<div/>",{"class": _this.getConfig("storeImage")});
-				var storeElement = htmlMarkup.find("#store");
-				storeElement.attr('href', _this.getConfig( "storeUrl" ));//"https://play.google.com/store/apps/details?id=com.kaltura.kms"
-				storeElement.append(storeImage);
-				var $el = _this.getComponent();
-				$el.append(htmlMarkup);
-				_this.embedPlayer.getPlayerPoster().addClass("blur");
-				_this.embedPlayer.getVideoHolder().find(".largePlayBtn").hide();
-				_this.embedPlayer.disablePlayControls();
-				var components = ['fullScreenBtn','logo'];
-				_this.embedPlayer.triggerHelper( "onDisableInterfaceComponents", components );
+				_this.getTemplateHTML()
+					.then(function(htmlMarkup) {
+						var storeImage =$("<div/>",{"class": _this.getConfig("storeImage")});
+						var storeElement = htmlMarkup.find("#store");
+						storeElement.attr('href', _this.getConfig( "storeUrl" ));//"https://play.google.com/store/apps/details?id=com.kaltura.kms"
+						storeElement.append(storeImage);
+						var $el = _this.getComponent();
+						$el.append(htmlMarkup);
+						_this.embedPlayer.getPlayerPoster().addClass("blur");
+						_this.embedPlayer.getVideoHolder().find(".largePlayBtn").hide();
+						_this.embedPlayer.disablePlayControls();
+						var components = ['fullScreenBtn','logo'];
+						_this.embedPlayer.triggerHelper( "onDisableInterfaceComponents", components );
+					}, function(msg) {
+						mw.log( msg );
+					});
 			}
 
 			var url =  _this.getConfig( "mimeName" ) + "?iframeUrl:=" + _this.getConfig( "iframeUrl" );
