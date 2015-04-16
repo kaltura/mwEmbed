@@ -70,7 +70,6 @@
 		},
 
 		loadMedia: function (readyCallback) {
-
 			var _this = this;
 			var srcToPlay = _this.getSrc();
 
@@ -238,14 +237,15 @@
 						playerElement.stretchFill();
 					}
 
-
 					if ( isMimeType("video/mp4")
 						||
 						isMimeType("video/h264")
-					|| _this.isLive()
+						||
+						isMimeType("video/playreadySmooth")
+						||
+						_this.isLive()
 						){
 						_this.durationReceived = true;
-
 					}
 					readyCallback();
 				});
