@@ -146,7 +146,9 @@ mw.PluginManager.add( 'trControls', mw.KBasePlugin.extend({
 	updateTargetWithTemplate: function() {
 		if( this.hasValidTargetElement() ) {
 			var target = this.getTargetElement();
-			target.innerHTML = this.getTemplateHTML().html();
+			this.getTemplateHTML().then(function(html) {
+				target.innerHTML = html.html();
+			});
 		}
 	}
 
