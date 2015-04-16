@@ -365,6 +365,9 @@ mw.MediaElement.prototype = {
 		}
 
 		var codecPref = mw.getConfig( 'EmbedPlayer.CodecPreference');
+		if ( !$.isArray(codecPref) ){
+			codecPref = codecPref.split(",");
+		}
 		if( codecPref ){
 			for(var i =0; i < codecPref.length; i++){
 				var codec = codecPref[ i ];

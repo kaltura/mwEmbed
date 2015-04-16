@@ -1311,8 +1311,6 @@
 				_this.getVideoHolder().hide();
 				_this.getInterface().height(_this.layoutBuilder.getComponentsHeight());
 			}
-			// Update layout
-			this.doUpdateLayout();
 
 			// Update the playerReady flag
 			this.playerReadyFlag = true;
@@ -1320,6 +1318,9 @@
 			// trigger the player ready event;
 			$(this).trigger('playerReady');
 			this.triggerWidgetLoaded();
+
+			// Update layout
+			this.doUpdateLayout();
 
 			// Check if we want to block the player display
 			if (this['data-blockPlayerDisplay']) {
@@ -1350,8 +1351,8 @@
 
 		doUpdateLayout: function (skipTrigger) {
 			// Set window height if in iframe:
-			var containerHeight = this.getInterface().height();
-			var newHeight = containerHeight - this.layoutBuilder.getComponentsHeight();
+            var containerHeight = this.layoutBuilder.getContainerHeight();
+            var newHeight = containerHeight - this.layoutBuilder.getComponentsHeight();
 			var currentHeight = this.getVideoHolder().height();
 			var deltaHeight = Math.abs(currentHeight - newHeight);
 			mw.log('EmbedPlayer: doUpdateLayout:: containerHeight: ' +
@@ -1706,12 +1707,6 @@
 				if (_this.getError()) {
 					// Reset changeMediaStarted flag
 					_this.changeMediaStarted = false;
-					if (_this.playlist) {
-						// Allow user to move to next/previous entries
-						_this.playlist.enablePrevNext();
-						_this.playlist.addClipBindings();
-						_this.layoutBuilder.closeAlert();
-					}
 					_this.showErrorMsg(_this.getError());
 					return;
 				}
@@ -1719,7 +1714,8 @@
 				var changeMediaDoneCallback = function () {
 					// Reset changeMediaStarted flag
 					_this.changeMediaStarted = false;
-
+					//remove black bg when showing poster after change media
+					$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
 					// reload the player
 					if (_this.autoplay && _this.canAutoPlay() ) {
 						if (!_this.isAudioPlayer) {
@@ -1816,8 +1812,7 @@
 		 * Updates the poster HTML
 		 */
 		updatePosterHTML: function () {
-            mw.log('!!EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
-			mw.log('EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
+            mw.log('EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
 			var _this = this;
 
 			if (this.isImagePlayScreen()) {
@@ -2474,11 +2469,11 @@
 
 
 		togglePlayback: function () {
-			if (this.paused) {
-				this.play();
-			} else {
-				this.pause();
-			}
+				if (this.paused) {
+					this.play();
+				} else {
+					this.pause();
+				}
 		},
 		isMuted: function () {
 			return this.muted;

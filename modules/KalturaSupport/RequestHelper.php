@@ -258,7 +258,7 @@ class RequestHelper {
 		// make sure there is no white space
 		$ip = trim( $ip );
 		$s = $ip . "," . time() . "," . microtime( true );
-		return "X_KALTURA_REMOTE_ADDR: " . $s . ',' . md5( $s . "," . $wgKalturaRemoteAddressSalt );
+		return "X-KALTURA-REMOTE-ADDR: " . $s . ',' . md5( $s . "," . $wgKalturaRemoteAddressSalt );
 	}
 
 	public function getCacheSt(){

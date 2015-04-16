@@ -168,6 +168,10 @@
 				if ( _this.localizationCode ){
 					google.ima.settings.setLocale(_this.localizationCode);
 				}
+				// set player type and version
+				google.ima.settings.setPlayerType("kaltura/mwEmbed");
+				google.ima.settings.setPlayerVersion(mw.getConfig("version"));
+
 				if( _this.getConfig( "adTagUrl" ) ) {
 					// Check for adPattern
 					if ( _this.getConfig( 'adPattern' ) ) {
@@ -265,6 +269,8 @@
 			for ( var i=0; i< ignoredVars.length; i++ ) {
 				delete flashVars[ignoredVars[i]];
 			}
+			// add player version as a Flashvar to be used in playerVersion property of ImaSdkSettings
+			flashVars['playerVersion'] = mw.getConfig("version");
 			embedPlayer.setKalturaConfig('kdpVars', 'doubleClick', flashVars);
 			if ( this.localizationCode ){
 				embedPlayer.setKalturaConfig('kdpVars', 'localizationCode', this.localizationCode);
@@ -474,11 +480,6 @@
 		 * Get the content video tag
 		 */
 		getContent:function(){
-			//if we're not in mobile - return null and let double click provide the sibling tag
-			if (!mw.isMobileDevice() ){
-				this.saveTimeWhenSwitchMedia = false;
-				return null;
-			}
 			// Set the content element to player element:
 			var playerElement =  this.embedPlayer.getPlayerElement();
 			//Load the video tag to enable setting the source by doubleClick library
@@ -486,7 +487,7 @@
 				this.playerElementLoaded = true;
 				playerElement.load();
 			}
-			this.saveTimeWhenSwitchMedia = true;
+			this.saveTimeWhenSwitchMedia = mw.isMobileDevice();
 			return playerElement;
 		},
 		getAdContainer: function(){
@@ -637,7 +638,7 @@
 			}
 
 			// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
-			this.getAdDisplayContainer();
+			this.getAdDisplayContainer().initialize();
 
 			// Create ads loader.
 			_this.adsLoader = new google.ima.AdsLoader( _this.adDisplayContainer );
