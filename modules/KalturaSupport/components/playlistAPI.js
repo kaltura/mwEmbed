@@ -161,7 +161,7 @@
 				window.redrawTimeOutID = setTimeout(function(){_this.redrawOnResize = true;},2000);
 			});
 
-			$( this.embedPlayer ).bind("horizontalScrollEnd", function(){
+			$( this.embedPlayer ).bind("scrollEnd", function(){
 				var data = _this.mediaList.slice();
 				_this.mediaList = $.merge( _this.mediaList, data );
 
@@ -173,12 +173,15 @@
 							$(elm).attr("data-mediabox-index", index);
 						});
 
-						_this.getMedialistComponent().find('ul').width((_this.getMediaItemBoxWidth()+1)*_this.mediaList.length);
-						_this.getMedialistComponent().find('.k-carousel').css('width', _this.getMedialistComponent().width() );
+						if (_this.getLayout() === "horizontal"){
+							_this.getMedialistComponent().find('ul').width((_this.getMediaItemBoxWidth()+1)*_this.mediaList.length);
+							_this.getMedialistComponent().find('.k-carousel').css('width', _this.getMedialistComponent().width() );
 
-						var scrollLeft = Math.abs(parseInt(_this.getComponent().find("ul").css("left")));
-						var hiddenItems = parseInt(scrollLeft / _this.getConfig( 'mediaItemWidth'));
-
+							var scrollLeft = Math.abs(parseInt(_this.getComponent().find("ul").css("left")));
+							var hiddenItems = parseInt(scrollLeft / _this.getConfig( 'mediaItemWidth'));
+						}else{
+							_this.$scroll.nanoScroller();
+						}
 						_this.configMediaListFeatures(true);
 						_this.getMedialistComponent().find('ul').trigger("refresh",[hiddenItems]);
 

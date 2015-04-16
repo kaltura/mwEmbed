@@ -594,7 +594,7 @@
 					scroll: _this.getConfig('horizontalScrollItems'),
 					speed: speed
 				}).unbind("complete").bind( "complete", function( event, data ) {
-						$(_this.embedPlayer).trigger("horizontalScrollEnd");
+						$(_this.embedPlayer).trigger("scrollEnd");
 					});
 				$cc.find('ul').width((this.getMediaItemBoxWidth()+1)*this.mediaList.length);
 				$cc.find('.k-carousel').css('width', $cc.width() );
@@ -636,6 +636,10 @@
 				}
 				this.$scroll.on('update', function(e, data){
 					_this.doOnScrollerUpdate(data);
+				});
+				this.$scroll.on("scrollend", function(e){
+					_this.$scroll.nanoScroller({ stop: true });
+					$(_this.embedPlayer).trigger("scrollEnd");
 				});
 			}
 			return this.$scroll;
