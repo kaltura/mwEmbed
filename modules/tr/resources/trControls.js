@@ -1,6 +1,7 @@
 mw.PluginManager.add( 'trControls', mw.KBasePlugin.extend({
 
 	defaultConfig: {
+		shareOutput: "AAA",
 		maxResults: 50,
 		targetId: 'playerControlsContainer',
 		templatePath: '../tr/templates/player-controls.tmpl.html'
@@ -12,9 +13,23 @@ mw.PluginManager.add( 'trControls', mw.KBasePlugin.extend({
 		setTimeout(function(){
 				_this.applyBehavior();
 			}
-		,100)
+		,100);
+		this.loadShortUrl(); //TODO connect to bitly later
 	},
 
+	loadShortUrl: function() {
+
+		var _this = this;
+
+		var url = "http://tinyurl.com/api-create.php?url=https://www.google.com/#safe=off";
+
+		$.getJSON('http://json-tinyurl.appspot.com/?url=' + url + '&callback=?',
+			function(data)
+			{
+				alert(data.tinyurl);
+			}
+		);
+	},
 	applyBehavior: function() {
 		var doc = window['parent'].document;
 		var $parentContainer = $(doc.getElementById('topContainer'));
