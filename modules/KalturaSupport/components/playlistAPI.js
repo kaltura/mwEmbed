@@ -27,7 +27,8 @@
 			'MinClips': 2,
 			'MaxClips': 25,
 			'selectedIndex': 0,
-			'includeHeader': true
+			'includeHeader': true,
+			'renderWhenEmpty': false
 		},
 
 
@@ -74,6 +75,9 @@
 			this.embedPlayer.playlist = true;
 			this.addBindings();
 			this.loadPlaylists();
+			if ( this.getConfig("renderWhenEmpty") ){
+				this.getComponent();
+			}
 		},
 		addBindings: function () {
 			var _this = this;
