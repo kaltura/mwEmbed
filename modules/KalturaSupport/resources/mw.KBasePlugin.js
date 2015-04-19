@@ -129,6 +129,8 @@ mw.KBasePlugin = Class.extend({
 				rawHTML = window.kalturaIframePackageData.templates[ templatePath ];
 				parseTemplate(rawHTML);
 			}
+		}else{
+			parseTemplate(rawHTML);
 		}
 		return defer;
 	},
