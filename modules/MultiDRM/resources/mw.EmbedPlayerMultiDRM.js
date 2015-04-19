@@ -430,26 +430,28 @@
 				return;
 			}
 
+			_this.boundedEventHandler = _this.boundedEventHandler || _this.nativeEventsHandler.bind(this);
 			$.each(_this.nativeEvents, function (inx, eventName) {
 				if (mw.isIOS8() && mw.isIphone() && eventName === "seeking") {
 					return;
 				}
-				var eventHandler = function () {
-					// make sure we propagating events, and the current instance is in the correct closure.
-					if (_this._propagateEvents && _this.instanceOf === _this.instanceOf) {
-						var argArray = $.makeArray(arguments);
-						//if (eventName!=="timeupdate" && eventName!=="progress") console.info(eventName);
-						// Check if there is local handler:
-						if (_this[ '_on' + eventName ]) {
-							_this[ '_on' + eventName ].apply(_this, argArray);
-						} else {
-							// No local handler directly propagate the event to the abstract object:
-							$(_this).trigger(eventName, argArray);
-						}
-					}
-				};
-				vid.off(eventName, eventHandler).on(eventName, eventHandler);
+
+				vid.off(eventName, _this.boundedEventHandler).on(eventName, _this.boundedEventHandler);
 			});
+		},
+		nativeEventsHandler: function (e) {
+			// make sure we propagating events, and the current instance is in the correct closure.
+			if (this._propagateEvents && this.instanceOf === this.instanceOf) {
+				var argArray = $.makeArray(arguments);
+				//if (eventName!=="timeupdate" && eventName!=="progress") console.info(eventName);
+				// Check if there is local handler:
+				if (this[ '_on' + e.type ]) {
+					this[ '_on' + e.type ].apply(this, argArray);
+				} else {
+					// No local handler directly propagate the event to the abstract object:
+					$(this).trigger(e.type, argArray);
+				}
+			}
 		},
 		// basic monitor function to update buffer
 		monitor: function () {
