@@ -1,0 +1,51 @@
+<!doctype>
+<html>
+<head>
+	<title>Test on IE8</title>
+	<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+	<style>
+body, html, .container { padding: 0; margin: 0; height: 100%; }
+body, div { box-sizing: border-box; }
+.container { background: red; position: relative; padding: 50px 0 0 0; }
+.scrollable { overflow: auto; height: 100%; }
+.top, .footer { position: absolute; width: 100%; height: 50px; }
+.top { top:0; background: yellow; }
+.main { height: 100%; background-color: blue; }
+.inner-main { height: 100%; position: relative; padding: 0 0 100px 0; }
+.inner-main.footer-closed { padding-bottom: 30px; }
+.inner-main.no-footer { padding-bottom: 0; }
+.no-footer .footer { display: none; }
+.footer { bottom: 0; height: 100px; background: green; }
+.footer-closed .footer .footer-content { display: none; }
+.footer-closed .footer { height: 30px; }
+	</style>
+</head>
+<body>
+	<div class="container">
+  <div class="top">No Footer</div>
+  <div class="main">
+    <div class="inner-main">
+      <div class="scrollable">
+<p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p><p>
+Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.</p><p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p><p>
+Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.</p>
+    </div>
+      <div class="footer">
+        <div class="title-bar">Show/Hide</div>
+        <div class="footer-content">
+          <div class="ri-mentionedTerms-categories"><div class="ri-mentionedTerms-category"><span class="ri-mentionedTerms-category-caption">companies:</span><span class="ri-mentionedTerms-category-entries"><span class="ri-mentionedTerms-category-entry" data-tmc_id="C000000630">Verizon Communications Inc</span></span></div><div class="ri-mentionedTerms-category"><span class="ri-mentionedTerms-category-caption">geography:</span><span class="ri-mentionedTerms-category-entries"><span class="ri-mentionedTerms-category-entry" data-tmc_id="100150">Jordan</span>, <span class="ri-mentionedTerms-category-entry" data-tmc_id="100299">Texas</span>, <span class="ri-mentionedTerms-category-entry" data-tmc_id="100153">Kentucky</span></span></div><div class="ri-mentionedTerms-category"><span class="ri-mentionedTerms-category-caption">keywords:</span><span class="ri-mentionedTerms-category-entries"><span class="ri-mentionedTerms-category-entry" data-tmc_id="200509">golf</span>, <span class="ri-mentionedTerms-category-entry" data-tmc_id="500191">won</span>, <span class="ri-mentionedTerms-category-entry" data-tmc_id="4294954823">Internet</span>, <span class="ri-mentionedTerms-category-entry" data-tmc_id="4294966734">furniture</span></span></div><div class="ri-mentionedTerms-category"><span class="ri-mentionedTerms-category-caption">people:</span><span class="ri-mentionedTerms-category-entries"><span class="ri-mentionedTerms-category-entry" data-tmc_id="RIP016583">Geoff Prosser</span></span></div></div>
+        </div>
+      </div>  
+    </div>
+  </div>
+</div>
+<script>
+$('.title-bar').click(function(){
+  $('.inner-main').toggleClass('footer-closed');
+});
+$('.top').click(function(){
+  $('.inner-main').toggleClass('no-footer');
+});
+</script>
+</body>
+</html>
