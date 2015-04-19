@@ -150,6 +150,84 @@
 	font-size: 20px;
 }
 
+/* qna entries (Announcements/Threads) */
+
+.qnaInterface .qnaEntryTitle{
+	font-family: Lato;
+	color: #ffffff;
+	font-size: 14px;
+	font-weight: 400;
+	font-style: italic;
+	line-height: 18px;
+	text-align: left;
+	margin-left: 15px;
+	margin-top: 3px;
+}
+
+.qnaInterface .qnaEntryText{
+	font-family: Lato;
+	color: #ffffff;
+	font-size: 13px;
+	font-weight: 200;
+	text-align: left;
+	margin-left: 15px;
+	overflow: auto;
+	margin-bottom: 5px;
+}
+
+.qnaInterface .qnaAnnouncement{
+	background-color: #76c044;
+}
+
+.qnaInterface .qnaEntryListLI{
+	box-shadow: 0px 2px 2px 0px rgba(255, 255, 255, 0.16);
+	width: 100%;
+	margin-bottom: 4px;
+	list-style-type: none;
+	float: left;
+	height: auto;
+	overflow: hidden;
+}
+
+.qnaInterface .qnaAnnouncementTitle{
+	font-family: Lato;
+	color: #ffffff;
+	font-size: 14px;
+	font-weight: 600;
+	font-style: italic;
+	line-height: 9px;
+	text-align: left;
+	margin-top: 5px;
+	margin-left: 10px;
+}
+
+.qnaInterface .qnaAnnouncementTitleClass{
+	font-family: Lato;
+	color: #ffffff;
+	font-size: 13px;
+	font-weight: 300;
+	text-align: left;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	margin-left: 10px;
+}
+
+.qnaInterface .qnaEntryList{
+	list-style: none;
+	margin-left: 0px;
+	overflow: auto;
+	width: 100%;
+
+	/* Firefox */
+	height: -moz-calc(100% - 88px);
+	/* WebKit */
+	height: -webkit-calc(100% - 88px);
+	/* Opera */
+	height: -o-calc(100% - 88px);
+	/* Standard */
+	height: calc(100% - 88px);
+}
+
 /* font icons */
 @font-face {
 	font-family: 'qna';

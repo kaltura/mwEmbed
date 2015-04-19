@@ -12,4 +12,24 @@
             </div>
         </div>
     </div>
+
+    <button data-bind="click: incrementClickCounter">Click me</button>
+
+    <div data-bind='template: { foreach: myObservableArray }' class="qnaEntryList">
+        <div class="qnaEntryListLI" data-bind='css: entryClass, click: $parent.itemRead'>
+            <div data-bind='css: entryTitleClass, text: title'></div>
+            <div data-bind='css: entryTextClass, text: entryText'></div>
+        </div>
+    </div>
+
+    <!--<div data-bind='template: { foreach: planets }'>-->
+        <!--<div data-bind="if: type=='rock'">-->
+            <!--<div data-bind='attr: { "class": "planet " + type }, text: name + " is a rock"'></div>-->
+        <!--</div>-->
+
+        <!--<div data-bind="if: type=='gasgiant'">-->
+            <!--<div data-bind='attr: { "class": "planet " + type }, text: name + " is a gasgiant"'></div>-->
+        <!--</div>-->
+    <!--</div>-->
+
 </div>

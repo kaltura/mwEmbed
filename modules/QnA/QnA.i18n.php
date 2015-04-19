@@ -12,4 +12,6 @@ $messages['en'] = array(
 	'qna-cancel-button-text' => 'Cancel',
 	'qna-send-button-text' => 'Send',
 	'qna-cant-ask-while-not-live' => 'You cant ask a new question while there is no live session',
+	'qna-announcement-title' => 'Announcement',
+    'qna-you-asked' => 'You Asked',
 );

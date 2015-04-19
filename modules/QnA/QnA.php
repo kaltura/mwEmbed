@@ -1,7 +1,7 @@
 <?php
 return array(
 	"qna" => array(
-		'scripts' => array( 'resources/qna.js' ),
+		'scripts' => array( 'resources/qna.js', 'resources/knockout-3.3.0.js' ),
 		'dependencies' => 'mw.KBaseScreen',
 		'kalturaPluginName' => 'qna',
 		'styles' => 'resources/qna.css',
