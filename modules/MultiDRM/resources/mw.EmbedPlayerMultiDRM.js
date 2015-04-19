@@ -242,8 +242,7 @@
 			drmConfig.variantId = assetId;
 			var config = {};
 
-			if (this.shouldGeneratePssh(drmConfig)) {
-				config.generatePSSH = true;
+			if (this.shouldGeneratePssh()) {
 				config.widevineHeader = {
 					"provider": "castlabs",
 					"contentId": this.getAuthenticationToken( assetId ),
@@ -265,12 +264,10 @@
 
 			return drmConfig;
 		},
-		shouldGeneratePssh: function(drmConfig){
+		shouldGeneratePssh: function(){
 			var source = this.getSource();
 			var res;
-			if (!(drmConfig.isClear === undefined || drmConfig.isClear === null)){
-				res = !(!!drmConfig.isClear);
-			} else if (source){
+			if (source){
 				res = ( source.mimeType === "video/ism" || source.mimeType === "video/playreadySmooth" );
 			} else {
 				res = false;
