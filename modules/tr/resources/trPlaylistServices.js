@@ -5,16 +5,60 @@ mw.PluginManager.add( 'trPlaylistServices', mw.KBasePlugin.extend({
 	},
 
 	setup: function() {
+		this.setBindings();
+	},
+	setBindings : function(){
 		var _this = this;
-		setTimeout(function(){
-			_this.loadPlaylist(1);
-		},0)
+		this.bind('trLoadNewPlaylist', $.proxy(function(e,params){
+			_this.loadPlaylist(0,params);
+		}));
+
+		this.bind('playerReady', $.proxy(function(){
+			if(_this.getConfig("loadedOnce")){
+				return;
+			}
+			setTimeout(function(){
+				_this.setConfig("loadedOnce",true);
+				_this.loadPlaylist(1);
+			},151)
+		},this));
+		this.bind('trLoadPlaylistBySearch', $.proxy(function(e,search){
+			this.loadRelatedPlaylist(search)
+		},this));
+
+	},
+	loadRelatedPlaylist : function (search){
+		var ks= "";
+		var _this = this;
+		var params = {
+			"playlistParams" : {
+				"service":"playlist" ,
+				"action":"executefromfilters" ,
+				'ks' : ks,
+				'filters:item0:freeText' : search ,
+				'filters:item0:idNotIn' : _this.embedPlayer.evaluate('{mediaProxy.entry.id}') , 	// don't fetch current entry
+				"totalResults" : _this.getConfig("maxResults")
+			},
+			'autoInsert' : false,
+			'playlistName' : "new name"
+		}
+		debugger;
+		this.embedPlayer.sendNotification('loadExternalPlaylist', params );
+
 	},
 
-	loadPlaylist: function(myTestCase){
+
+	loadPlaylist: function(myTestCase , params){
 		var _this = this;
-		var ks= _this.getKalturaClient().ks;
-		//var ks= "";
+		//var ks= _this.getKalturaClient().ks;
+		var ks= "";
+
+		if(params){
+			params.playlistParams.ks = ks;
+			_this.embedPlayer.sendNotification('loadExternalPlaylist', params );
+			return;
+		}
+
 
 		switch(myTestCase) {
 			case 1:

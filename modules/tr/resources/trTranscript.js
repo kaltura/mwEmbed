@@ -166,7 +166,6 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 		};
 
 		for (var i=0;i<markMyWords.length;i++){
-			mw.log(" processiong ::: " + markMyWords[i])
 			currentText = replaceAllTemp(currentText ,markMyWords[i], '<span class="highlight">' +markMyWords[i]+'</span>')
 		}
 

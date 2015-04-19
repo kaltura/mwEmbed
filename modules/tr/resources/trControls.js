@@ -49,17 +49,11 @@ mw.PluginManager.add( 'trControls', mw.KBasePlugin.extend({
 			$playerInterface.removeClass('fullscreen');
 		});
 
-		//var ks= _this.getKalturaClient().ks;
-		var ks= "MjIyYzc4MmI1NWMwNjJmZmM2ZWQ1YzgzYTBmZGE0MmJmZjcxZTE4NHwyNzAxNzsyNzAxNzsxNDI5MDI2ODkzOzI7MTQyODk0MDQ5My44MjI4O19fQURNSU5fXzI2Njg3Ozs7";
-
 		$(doc).find(".playlist-test1").click(function(){
-
-
 			var params = {
 				"playlistParams" : {
 				"service":"playlist" ,
 				"action":"executefromfilters" ,
-				//'ks' : ks,
 				'filters:item0:freeText' : "ted" , 	// search term here
 				'filters:item0:idNotIn' : _this.embedPlayer.evaluate('{mediaProxy.entry.id}') , 	// don't fetch current entry
 				"totalResults" : _this.getConfig("maxResults")
@@ -68,15 +62,13 @@ mw.PluginManager.add( 'trControls', mw.KBasePlugin.extend({
 				'playlistName' : "new name"
 			}
 
-			player.sendNotification('loadExternalPlaylist', params );
+			player.sendNotification('trLoadNewPlaylist', params );
 		});
 		$(doc).find(".playlist-test2").click(function(){
 			var params = {
 				'playlistParams' : {
 					'service':'playlist' ,
 					'action':'execute' ,
-					//'ks' : _this.getKalturaClient().ks,
-					'ks' : ks,
 					'id' : '_KDP_CTXPL' ,
 					'filter:objectType' : 'KalturaMediaEntryFilterForPlaylist' ,
 					'filter:mediaTypeEqual' : '1' ,
@@ -90,24 +82,11 @@ mw.PluginManager.add( 'trControls', mw.KBasePlugin.extend({
 				'playlistName' : 'new playlist' // override the displayed playlist name
 			}
 
-			player.sendNotification('loadExternalPlaylist', params );
+			player.sendNotification('trLoadNewPlaylist', params );
 		});
 		$(doc).find(".playlist-test3").click(function(){
 			//implement search here
-			var params = {
-				"playlistParams" : {
-					"service": "playlist",
-					"action": "executefromfilters",
-					'ks': ks,
-					'filters:item0:tagsMultiLikeAnd': "timers", 	// search term here
-					'filters:item0:idNotIn': "0_0g8l44yy", 	// dont fetch current entry
-					"totalResults": _this.getConfig("maxResults")
-				},
-				'autoInsert' : true, //if this is set to true the player will load and switch the current video to the new playlist
-				//'initItemEntryId' : '1_cvsg4ghm', // player start playing a specific entry if exist
-				'playlistName' : 'new playlist' // override the displayed playlist name
-			}
-			player.sendNotification('loadExternalPlaylist', params);
+			player.sendNotification('trLoadPlaylistBySearch', "shachar");
 		});
 		$(doc).find(".share-copy").click(function(){
 			player.sendNotification('toggleScreen', 'share');
