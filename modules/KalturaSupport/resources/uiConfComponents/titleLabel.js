@@ -30,11 +30,13 @@
 						_this.getComponent()
 							.attr('title', _this.getConfig('text'))
 							.width(availableWidth)
+							.css('text-align',_this.getConfig('align'))
 							.addClass('truncateText');
 					} else {
 						_this.getComponent()
 							.attr('title', _this.getConfig('text'))
 							.width(availableWidth)
+							.css('text-align',_this.getConfig('align'))
 							.removeClass('truncateText');
 					}
 				}

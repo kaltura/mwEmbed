@@ -257,7 +257,7 @@ class kalturaIframeClass {
 			if( ! is_array( $plugin ) ){
 				continue;
 			}
-			$loadInIframe = (isset($plugin['loadInIframe']) && $plugin['loadInIframe'] === true) ? true : false;
+			$loadInIframe = (isset($plugin['loadInIframe']) && $plugin['loadInIframe'] == true) ? true : false;
 			// Only load onPage plugins into iframe If we're in external iframe mode
 			$loadInIframe = ($loadInIframe && isset($_GET['iframeembed']));
 			foreach( $plugin as $attr => $value ){
@@ -535,7 +535,22 @@ class kalturaIframeClass {
 			// we add an iframe server flag to avoid loading onPage plugins inside the iframe
 			'&iframeServer=true'; 
 	}
-
+	/**
+	 * Get entry name for iFrame title
+	 */
+	private function getEntryTitle()
+	{
+		try{
+		$baseEntry = $this->getEntryResult()->getResult();
+			if( isset( $baseEntry['meta']->name)){
+			return $baseEntry['meta']->name;
+			} else {
+			return "Kaltura Embed Player iFrame";
+			}
+		} catch (Exception $e){
+		return "Kaltura Embed Player iFrame";
+		}
+	}
 
 	/**
 	 * Get the iframe css
@@ -543,7 +558,7 @@ class kalturaIframeClass {
 	function outputIframeHeadCss(){
 		return <<<HTML
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>Kaltura Embed Player iFrame</title>
+	<title>{$this->getEntryTitle()}</title>
 	<style type="text/css">
 		html,body,video {
 			width: 100%;

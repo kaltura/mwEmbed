@@ -118,4 +118,4 @@
 			return false;
 		}
 	};
-} )( mediaWiki, jQuery );
+	} )( mediaWiki, jQuery );

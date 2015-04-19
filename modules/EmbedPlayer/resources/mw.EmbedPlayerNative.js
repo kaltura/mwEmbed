@@ -176,7 +176,7 @@
 			// If switching a Persistent native player update the source:
 			// ( stop and play won't refresh the source  )
 			_this.switchPlaySource(this.getSource(), function () {
-				if (!_this.autoplay && !mw.isMobileDevice()) {
+				if (!_this.autoplay  || ( _this.autoplay && mw.isMobileDevice()) ) {
 					// pause is need to keep pause state, while
 					// switch source calls .play() that some browsers require.
 					// to reflect source switches. Playlists handle pause state so no need to pause in playlist

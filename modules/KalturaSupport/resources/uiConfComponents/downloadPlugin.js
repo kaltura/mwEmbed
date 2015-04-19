@@ -47,6 +47,7 @@
 							.attr( 'title', 'Download Media' )
 							.addClass( "btn icon-download" + this.getCssClass() )
 							.click( function() {
+								if( _this.isDisabled ) return ;
 								_this.getPlayer().triggerHelper('downloadMedia');
 							});
 			}

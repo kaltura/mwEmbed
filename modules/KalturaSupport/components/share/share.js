@@ -109,30 +109,33 @@
 			var embedPlayer = this.getPlayer();
 			this.bind('playerReady', function () {
 				_this.setupPlayerURL();
+				_this.getScreen();
 			});
 			this.bind('preShowScreen', function (event, screenName) {
 				if ( screenName === "share" ){
-					_this.getScreen().addClass('semiTransparentBkg'); // add semi-transparent background for share plugin screen only. Won't affect other screen based plugins
-					_this.shareScreenOpened = true;
-					// add blur effect to video and poster
-					$("#"+embedPlayer.getPlayerElement().id).addClass("blur");
-					embedPlayer.getPlayerPoster().addClass("blur");
-					// prevent keyboard key actions to allow typing in share screen fields
-					embedPlayer.triggerHelper( 'onDisableKeyboardBinding' );
-					// disable all player controls except play button, scrubber and volume control
-					embedPlayer.disablePlayControls(["volumeControl","scrubber","playPauseBtn"]);
-					// setup embed code when the screen opens
-					_this.setupEmbedCode();
-					// set embed code in the UI as the template doesn't load it correctly when using data binding because of the double quotes inside the text
-					$(".embed-input").val(_this.getConfig('embedCode'));
-					// send event for analytics
-					$(embedPlayer).trigger("showShareEvent");
-					// enable playback when the share screen is opened
-					_this.enablePlayDuringScreen = true;
-					// set responsive size
-					if (embedPlayer.getVideoHolder().width() < 400){
-						$(".share").addClass("small");
-					}
+					_this.getScreen().then(function(screen){
+						screen.addClass('semiTransparentBkg'); // add semi-transparent background for share plugin screen only. Won't affect other screen based plugins
+						_this.shareScreenOpened = true;
+						// add blur effect to video and poster
+						$("#"+embedPlayer.getPlayerElement().id).addClass("blur");
+						embedPlayer.getPlayerPoster().addClass("blur");
+						// prevent keyboard key actions to allow typing in share screen fields
+						embedPlayer.triggerHelper( 'onDisableKeyboardBinding' );
+						// disable all player controls except play button, scrubber and volume control
+						embedPlayer.disablePlayControls(["volumeControl","scrubber","playPauseBtn"]);
+						// setup embed code when the screen opens
+						_this.setupEmbedCode();
+						// set embed code in the UI as the template doesn't load it correctly when using data binding because of the double quotes inside the text
+						$(".embed-input").val(_this.getConfig('embedCode'));
+						// send event for analytics
+						$(embedPlayer).trigger("showShareEvent");
+						// enable playback when the share screen is opened
+						_this.enablePlayDuringScreen = true;
+						// set responsive size
+						if (embedPlayer.getVideoHolder().width() < 400){
+							$(".share").addClass("small");
+						}
+					});
 				}
 			});
 			this.bind('preHideScreen', function (event, screenName) {

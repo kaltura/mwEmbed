@@ -20,7 +20,9 @@
 			"showOffButton": true,
 			"toggleActiveCaption": false,
 			"useExternalClosedCaptions": false,
-			"offButtonPosition": "first"
+			"offButtonPosition": "first",
+			// Can be used to force loading specific language and expose to other plugins
+			"forceLoadLanguage": false
 		},
 
 		textSources: [],
@@ -76,7 +78,8 @@
 						if ( !_this.selectedSource ) {
 							_this.selectedSource = caption.source;
 						}
-						_this.addCaption( _this.selectedSource, caption.capId, caption.caption );
+                        var captionContent = _this.parseCaption(caption.caption);
+						_this.addCaption( _this.selectedSource, caption.capId, captionContent );
 					}
 				});
 				this.bind( 'changedClosedCaptions', function () {
@@ -286,6 +289,11 @@
 					_this.textSources = textSources;
 				}]);
 
+				// Handle Force loading of captions
+				if( _this.getConfig('forceLoadLanguage') ) {
+					_this.forceLoadLanguage();
+				}
+
 				if( _this.getConfig('displayCaptions') !== false || ($.cookie( _this.cookieName ) !== 'None' && $.cookie( _this.cookieName )) ){
 					_this.autoSelectSource();
 					if( _this.selectedSource ){
@@ -416,6 +424,16 @@
 			);
 			// Return a "textSource" object:
 			return new mw.TextSource( embedSource );
+		},
+		forceLoadLanguage: function(){
+			var lang = this.getConfig('forceLoadLanguage');
+			var source = this.selectSourceByLangKey( lang );
+			// Found caption
+			if( source && !source.loaded ) {
+				source.load($.proxy(function(){
+					this.getPlayer().triggerHelper('forcedCaptionLoaded', source);
+				},this));
+			}
 		},
 		autoSelectSource: function(){
 			var _this = this;
@@ -813,7 +831,7 @@
 			if( !source.loaded ){
 				this.embedPlayer.getInterface().find('.track').text( gM('mwe-timedtext-loading-text') );
 				source.load(function(){
-					_this.getPlayer().triggerHelper('newClosedCaptionsData');
+					_this.getPlayer().triggerHelper('newClosedCaptionsData' , _this.selectedSource);
 					if( _this.playbackStarted ){
 						_this.monitor();
 					}
@@ -882,7 +900,22 @@
 			// Empty existing text sources
 			this.textSources = [];
 			this.selectedSource = null;
-		}
+		},
+        parseCaption: function(caption){
+            var parsedCaption = caption.content;
+
+            //find timeStamp in caption string (for example: 00:00:01.000 --> 00:00:01.200) and cut it if exists
+            var regExp = /^\d{2}:\d{2}:\d{2}\.\d{3}\s-->\s\d{2}:\d{2}:\d{2}\.\d{3}\s/;
+            if( regExp.test(parsedCaption ))
+                parsedCaption=parsedCaption.replace(regExp,"");
+
+            //find align expression in caption string (for example: align:middle) and cut it if exists
+            regExp = /align:(left|middle|right)/;
+            if( regExp.test(parsedCaption ))
+                parsedCaption=parsedCaption.replace(regExp,"");
+
+            return { "content" : parsedCaption };
+        }
 	}));
 
 } )( window.mw, window.jQuery );

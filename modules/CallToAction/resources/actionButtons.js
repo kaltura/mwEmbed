@@ -30,9 +30,12 @@ mw.PluginManager.add( 'actionButtons', mw.KBaseScreen.extend({
 						if( $spans.length > 1 ) {
 							$spans.eq(1).remove();
 						}
-						$spans.eq(0).after(
-							this.getTemplateHTML(this.getTemplateData())
-						);
+						this.getTemplateHTML(this.getTemplateData())
+							.then(function(htmlMarkup) {
+								$spans.eq(0).after(htmlMarkup);
+							}, function(msg) {
+								mw.log( msg );
+							});
 					}
 				}, this));
 				break;

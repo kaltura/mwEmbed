@@ -248,7 +248,7 @@ mw.MediaElement.prototype = {
 
 		mw.setConfig( 'EmbedPlayer.IgnoreStreamerType', false);
 		//this array contains mimeTypes player should prefer to select, sorted by descending order
-		var typesToCheck = ['video/playreadySmooth', 'video/ism', 'video/multicast'];
+		var typesToCheck = ['video/dash', 'video/playreadySmooth', 'video/ism', 'video/multicast'];
 		for ( var i = 0; i < typesToCheck.length; i++ ) {
 			var matchingSources = this.getPlayableSources( typesToCheck[i], playableSources );
 			if ( matchingSources.length ) {
@@ -292,14 +292,7 @@ mw.MediaElement.prototype = {
 			var bandwidthTarget = $.cookie('EmbedPlayer.UserBandwidth') || this.preferedFlavorBR;
 			$.each( playableSources, function(inx, source ){
 				if( source.bandwidth ){
-					// Check if a native source ( takes president over bandwidth selection )
-					var player = mw.EmbedTypes.getMediaPlayers().getDefaultPlayer( source.mimeType );
-					if ( !player || player.library != 'Native'	) {
-						// continue
-						return true;
-					}
-
-					if( Math.abs( source.bandwidth - bandwidthTarget ) < bandwidthDelta ){
+                    if( Math.abs( source.bandwidth - bandwidthTarget ) < bandwidthDelta ){
 						bandwidthDelta = Math.abs( source.bandwidth - bandwidthTarget );
 						_this.setSource( source );
 					}
@@ -365,6 +358,9 @@ mw.MediaElement.prototype = {
 		}
 
 		var codecPref = mw.getConfig( 'EmbedPlayer.CodecPreference');
+		if ( !$.isArray(codecPref) ){
+			codecPref = codecPref.split(",");
+		}
 		if( codecPref ){
 			for(var i =0; i < codecPref.length; i++){
 				var codec = codecPref[ i ];

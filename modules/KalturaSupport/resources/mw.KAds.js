@@ -124,6 +124,9 @@
 			embedPlayer.bindHelper('prePlayAction' + _this.bindPostfix, function( e, prePlay ){
 				if( loadedAds === null ){
 					embedPlayer.addPlayerSpinner();
+					if (mw.isMobileDevice()){
+						embedPlayer.getPlayerElement().load();
+					}
 					_this.loadAds( function(){
 						loadedAds = true;
 						embedPlayer.unbindHelper('prePlayAction' + _this.bindPostfix);

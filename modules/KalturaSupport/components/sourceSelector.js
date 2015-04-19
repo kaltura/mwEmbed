@@ -68,7 +68,7 @@
 						},1000);
 						//if we're working with kplayer - mp4 can't be seeked - so disable this feature
 						//this only effect native for now
-						if (_this.embedPlayer.instanceOf === "Native") {
+						if (_this.embedPlayer.instanceOf === "Native" && !_this.embedPlayer.isInSequence() ) {
 							// TODO add additional logic for "auto" where multiple bitrates
 							// exist at the same resolution.
 							var selectedSource = _this.embedPlayer.mediaElement.autoSelectSource(_this.embedPlayer.supportsURLTimeEncoding(), _this.embedPlayer.startTime, _this.embedPlayer.pauseTime);
@@ -76,7 +76,7 @@
 								_this.embedPlayer.switchSrc( selectedSource );
 							}
 						} else {
-							mw.log( "sourceSelector - switchOnResize is ignored - Can't switch source since not using native player");
+							mw.log( "sourceSelector - switchOnResize is ignored - Can't switch source since not using native player or during ad playback");
 						}
 					}
 				});
