@@ -425,7 +425,7 @@ class downloadEntry {
 			$preferredBitrate = intval($_GET['preferredBitrate']);
 		}
 		if( isset($_GET['flavorID']) && $_GET['flavorID'] != null){
-			$flavorID = $_GET['flavorID'];
+			$flavorID = intval($_GET['flavorID']);
 		}
 
 		$src = false;
