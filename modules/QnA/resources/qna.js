@@ -207,7 +207,8 @@
 		},
 
 		// Get the Q&A data from the server.
-		getQnaData : function(){
+		getQnaData : function(viewedThreads){
+
 			var qnaEntryArray = [];
 			qnaEntryArray.push( {
 				threadId: "s9oa3cc",
@@ -216,7 +217,7 @@
 				entryTitleClass: "qnaAnnouncementTitle",
 				entryText:"All your bases are belong to us",
 				entryTextClass: "qnaAnnouncementTitleClass",
-				entryClass: "qnaAnnouncement"
+				entryClass: viewedThreads.indexOf("s9oa3cc") > -1 ? "qnaAnnouncementRead" : "qnaAnnouncement"
 			});
 			// The below (commented out) is supposed to simulate a Q&A thread
 			//qnaEntryArray[qnaEntryArray.length] = {
@@ -238,7 +239,7 @@
 				entryTitleClass: "qnaAnnouncementTitle",
 				entryText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum a eros eu quam dictum sagittis. Nam sit amet odio turpis. Morbi mauris nisi, consequat et tortor a, vehicula pharetra sem. Nunc vitae lacus id sapien tristique pretium at non lorem. Integer venenatis lacus nec erat.",
 				entryTextClass: "qnaAnnouncementTitleClass",
-				entryClass: "qnaAnnouncement"
+				entryClass: viewedThreads.indexOf("qyv78a7") > -1 ? "qnaAnnouncementRead" : "qnaAnnouncement"
 			};
 			qnaEntryArray[qnaEntryArray.length] = {
 				threadId: "2dcdvcd",
@@ -247,7 +248,7 @@
 				entryTitleClass: "qnaAnnouncementTitle",
 				entryText:"This is a sample text for an announcement",
 				entryTextClass: "qnaAnnouncementTitleClass",
-				entryClass: "qnaAnnouncement"
+				entryClass: viewedThreads.indexOf("2dcdvcd") > -1 ? "qnaAnnouncementRead" : "qnaAnnouncement"
 			};
 			qnaEntryArray[qnaEntryArray.length] = {
 				threadId: "cch74vv",
@@ -256,13 +257,26 @@
 				entryTitleClass: "qnaAnnouncementTitle",
 				entryText:"just one more announcement...",
 				entryTextClass: "qnaAnnouncementTitleClass",
-				entryClass: "qnaAnnouncement"
+				entryClass: viewedThreads.indexOf("cch74vv") > -1 ? "qnaAnnouncementRead" : "qnaAnnouncement"
 			};
 
 			return qnaEntryArray;
 		},
 
 		AppViewModel : function(plugin) {
+
+			ko.observableArray.fn.refresh = function (item) {
+				var index = this['indexOf'](item);
+				if (index >= 0) {
+					this.splice(index, 1);
+					this.splice(index, 0, item);
+				}
+			};
+
+			var _viewedThreads = [];
+			if (localStorage["_viewedThreads"]) {
+				_viewedThreads = JSON.parse(localStorage["_viewedThreads"]);
+			}
 			var _plugin = plugin;
 			var _this = this;
 			this.myObservableArray = ko.observableArray();
@@ -271,14 +285,25 @@
 
 			_this.incrementClickCounter = function() {
 
-				_this.myObservableArray.unshift(_plugin.getQnaData()[this.numberOfClicks() % _plugin.getQnaData().length]);
+				_this.myObservableArray.unshift(_plugin.getQnaData(_viewedThreads)[this.numberOfClicks() % _plugin.getQnaData(_viewedThreads).length]);
 
 				var previousCount = this.numberOfClicks();
 				this.numberOfClicks(previousCount + 1);
 			};
 
-			_this.itemRead = function(item) {
+			_this.itemRead = function(item, event) {
 				console.log("item of type " + item.type + " with id " + item.threadId + " was clicked");
+
+				// Write to localStorage this item was read
+				if (_viewedThreads.indexOf(item.threadId) < 0 ) {
+					_viewedThreads.push(item.threadId);
+					localStorage["_viewedThreads"] = JSON.stringify(_viewedThreads);
+
+					item.entryClass = "qnaAnnouncementRead";
+
+					_this.myObservableArray[_this.myObservableArray.indexOf(item)] = item;
+					_this.myObservableArray.refresh(item);
+				}
 			};
 		}
 	}));

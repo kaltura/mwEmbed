@@ -15,10 +15,14 @@
 
     <button data-bind="click: incrementClickCounter">Click me</button>
 
-    <div data-bind='template: { foreach: myObservableArray }' class="qnaEntryList">
-        <div class="qnaEntryListLI" data-bind='css: entryClass, click: $parent.itemRead'>
-            <div data-bind='css: entryTitleClass, text: title'></div>
-            <div data-bind='css: entryTextClass, text: entryText'></div>
+    <div class="nano">
+        <div class="nano-content">
+            <div data-bind='template: { foreach: myObservableArray }' class="qnaEntryList">
+                <div class="qnaEntryListLI" data-bind='css: entryClass, click: $parent.itemRead'>
+                    <div data-bind='css: entryTitleClass, text: title'></div>
+                    <div data-bind='css: entryTextClass, text: entryText'></div>
+                </div>
+            </div>
         </div>
     </div>
 
