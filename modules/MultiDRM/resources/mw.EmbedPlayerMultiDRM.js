@@ -215,6 +215,11 @@
 						_this.getPlayerElement().setActiveTrack("audio", data.index);
 					}
 				});
+				this.bindHelper('changeEmbeddedTextTrack', function (e, data) {
+					if (_this.getPlayerElement()) {
+						_this.getPlayerElement().setActiveTrack("text", data.index);
+					}
+				});
 			}
 		},
 		updateDashContext: function(){
@@ -885,24 +890,40 @@
 				this.log('onloadedmetadata metadata ready Update duration:' + duration + ' old dur: ' + this.getDuration());
 				this.setDuration(this.playerElement.duration());
 			}
+
+			var subtitleTracks = player.subtitleTracks();
+			if (subtitleTracks){
+				debugger;
+				var textTrackData = {languages: []};
+				$.each(subtitleTracks, function(index, subtitleTrack){
+					textTrackData.languages.push({
+						'kind'		: 'subtitle',
+						'language'	: subtitleTrack.lang,
+						'srclang' 	: subtitleTrack.lang,
+						'label'		: subtitleTrack.lang,
+						'id'		: subtitleTrack.id,
+						'index'		: textTrackData.languages.length,
+						'title'		: subtitleTrack.trackName
+					});
+				});
+				this.onTextTracksReceived(textTrackData);
+			}
+
 			var audioTracks = player.audioTracks();
 			if (audioTracks){
-				var data = {languages: []};
-				 $.each(audioTracks, function(index, audioTrack){
-					 data.languages.push({
+				var audioTrackData = {languages: []};
+				$.each(audioTracks, function(index, audioTrack){
+					audioTrackData.languages.push({
 						'kind'		: 'audioTrack',
 						'language'	: audioTrack,
 						'srclang' 	: audioTrack,
 						'label'		: audioTrack,
 						'id'		: audioTrack,
-						'index'		: data.languages.length,
+						'index'		: audioTrackData.languages.length,
 						'title'		: audioTrack
-					 });
+					});
 				});
-				this.onAudioTracksReceived(data);
-			}
-			var subtitleTracks = player.subtitleTracks();
-			if (subtitleTracks){
+				this.onAudioTracksReceived(audioTrackData);
 			}
 
 			var _this = this;
@@ -945,6 +966,9 @@
 			this.triggerHelper('audioTrackIndexChanged', data);
 		},
 
+		onTextTracksReceived: function (data) {
+			this.triggerHelper('textTracksReceived', data);
+		},
 
 		/**
 		 * Local method for progress event
