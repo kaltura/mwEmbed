@@ -102,12 +102,7 @@
 					}
 				} );
 			} else {
-				if (this.getConfig("useExternalClosedCaptions")) {
-					this.bind( 'loadExternalClosedCaptions', function ( e, textSources ) {
-						_this.destory();
-						_this.buildMenu( textSources );
-					} );
-				} else {
+				if (!this.getConfig("useExternalClosedCaptions")) {
 					this.bind( 'playerReady', function () {
 						_this.destory();
 						_this.setupTextSources( function () {
@@ -120,6 +115,14 @@
 						_this.monitor();
 					}
 				});
+			}
+			if (this.getConfig("useExternalClosedCaptions")) {
+				this.bind( 'loadExternalClosedCaptions', function ( e, data ) {
+					if ( data && $.isArray( data.languages ) && data.languages.length ) {
+						_this.destory();
+						_this.buildMenu( data.languages );
+					}
+				} );
 			}
 
 			this.bind( 'onplay', function(){
