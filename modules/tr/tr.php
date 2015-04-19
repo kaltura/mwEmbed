@@ -35,6 +35,13 @@ return array(
 		),
 		'kalturaPluginName' => 'trLocale',
 		'messageFile'	=> 'tr.i18n.php'
+	),
+	"trPlaylistServices" =>  array(
+		'scripts' => "resources/trPlaylistServices.js",
+		'dependencies' => array(
+			'mw.KBasePlugin'
+		),
+		'kalturaPluginName' => 'trPlaylistServices'
 	)
 
 );
