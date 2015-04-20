@@ -23,33 +23,33 @@
 		addBindings: function () {
 			var _this = this;
 			var embedPlayer = this.getPlayer();
+            var qnaObject=null;
+            var onVideoTogglePluginButton=null;
+
+            var changeVideoToggleIcon=function() {
+
+                if (!qnaObject.is(":visible")){
+                    onVideoTogglePluginButton.removeClass('icon-qna-close');
+                    onVideoTogglePluginButton.addClass('icon-qna-Ask');
+                } else {
+                    onVideoTogglePluginButton.removeClass('icon-qna-Ask');
+                    onVideoTogglePluginButton.addClass('icon-qna-close');
+                }
 
 			this.bind('layoutBuildDone ended', function (event, screenName) {
 				// add the Q&A toggle button to be on the video
 				embedPlayer.getVideoHolder().append('<div class="qna-on-video-btn icon-qna-close"></div>');
 				_this.getQnaContainer();
-				var qnaObject =  $(window['parent'].document.getElementById(embedPlayer.id )).parent().find( ".qnaInterface" );
-				var onVideoTogglePluginButton = $('.qna-on-video-btn');
 				// register to on click to change the icon of the toggle button
-				$(".qna-on-video-btn").on("click", function(){
 					_this.getQnaContainer();
-					if (qnaObject.is(":visible")){
-						qnaObject.hide();
-						onVideoTogglePluginButton.removeClass('icon-qna-close');
-						onVideoTogglePluginButton.addClass('icon-qna-Ask');
-					} else {
 						qnaObject.show();
-						onVideoTogglePluginButton.removeClass('icon-qna-Ask');
-						onVideoTogglePluginButton.addClass('icon-qna-close');
 					}
 				})
 			});
 
 			this.bind('onOpenFullScreen', function() {
-				$(".qna-on-video-btn").hide();
 			});
 			this.bind('onCloseFullScreen', function() {
-				$(".qna-on-video-btn").show();
 			});
 		},
 
@@ -113,21 +113,13 @@
 			var videoHeight = this.getPlayer().getVideoHolder().height();
 			var buttonHeight = Math.round(videoHeight / 5);
 			var buttonWidth = Math.round(videoHeight / 10);
-			onVideoTogglePluginButton.css({height: buttonHeight + "px"});
-			onVideoTogglePluginButton.css({width: buttonWidth + "px"});
 
 			var borderRadius = buttonWidth + "px 0 0 " + buttonWidth + "px";
-			onVideoTogglePluginButton.css({'-moz-border-radius': borderRadius});
-			onVideoTogglePluginButton.css({'-webkit-border-radius': borderRadius});
-			onVideoTogglePluginButton.css({'border-radius': borderRadius});
 
 			var topOffset = (videoHeight-onVideoTogglePluginButton.height())/2 + "px";
-			onVideoTogglePluginButton.css({top: topOffset});
 
-			onVideoTogglePluginButton.css({'line-height': buttonHeight + "px"});
 
 			var textIndent = (buttonWidth - parseInt(onVideoTogglePluginButton.css('font-size'))) / 2;
-			onVideoTogglePluginButton.css({'text-indent': textIndent + "px"});
 
 		},
 
