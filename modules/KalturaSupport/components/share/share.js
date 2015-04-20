@@ -174,6 +174,10 @@
 				}
 			});
 
+			this.bind( 'AdSupport_StartAdPlayback', function(){
+				_this.closeScreen();
+			});
+
 			this.bind( 'updateLayout', function(event, data){
 				if ( _this.shareScreenOpened ){
 					if (embedPlayer.getVideoHolder().width() < 400){
