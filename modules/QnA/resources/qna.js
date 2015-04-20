@@ -128,7 +128,6 @@
 				this.bindButtons();
 				this.positionQAButtonOnVideoContainer();
 
-				$(".nano").nanoScroller();
 			}
 			return this.$qnaListContainer;
 		},
@@ -320,6 +319,9 @@
 
 				var previousCount = this.numberOfClicks();
 				this.numberOfClicks(previousCount + 1);
+
+				$( window['parent'].document ).find(".nano").nanoScroller();
+				//$(".nano").nanoScroller();
 			};
 
 			_this.itemRead = function(item, event) {
@@ -338,6 +340,9 @@
 			};
 
 			_this.incrementClickCounter();
+			_this.incrementClickCounter();
+			_this.incrementClickCounter();
+
 			setInterval(function(){
 				_this.incrementClickCounter()
 			}, 5000);
