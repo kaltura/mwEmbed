@@ -248,6 +248,8 @@
 					_this.currentClipIndex = -1; //reset index of current clip so "next" will play the first item of the new loaded playlist
 					if(params.autoInsert){
 						_this.playNext();
+					}else{
+						_this.getMedialistComponent().find("li").removeClass("active");
 					}
 				})
 			});
