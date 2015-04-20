@@ -35,21 +35,44 @@
                     onVideoTogglePluginButton.removeClass('icon-qna-Ask');
                     onVideoTogglePluginButton.addClass('icon-qna-close');
                 }
+            };
+
+            this.bind('updateLayout', function () {
+                _this.positionQAButtonOnVideoContainer();
+            });
 
 			this.bind('layoutBuildDone ended', function (event, screenName) {
 				// add the Q&A toggle button to be on the video
 				embedPlayer.getVideoHolder().append('<div class="qna-on-video-btn icon-qna-close"></div>');
 				_this.getQnaContainer();
+				qnaObject =  $(window['parent'].document.getElementById(embedPlayer.id )).parent().find( ".qnaInterface" );
+				onVideoTogglePluginButton = $('.qna-on-video-btn');
 				// register to on click to change the icon of the toggle button
+                onVideoTogglePluginButton.on("click", function(){
+
+                    var openQnaContainer=!qnaObject.is(":visible");
+
+                    if (_this.getPlayer().layoutBuilder.fullScreenManager.isInFullScreen()) {
+                        _this.getPlayer().toggleFullscreen() ;
+                        openQnaContainer=true;
+                    }
+
 					_this.getQnaContainer();
+					if (openQnaContainer){
 						qnaObject.show();
+					} else {
+						qnaObject.hide();
 					}
+                    changeVideoToggleIcon();
 				})
 			});
 
 			this.bind('onOpenFullScreen', function() {
+                qnaObject.hide();
+                changeVideoToggleIcon();
 			});
 			this.bind('onCloseFullScreen', function() {
+                changeVideoToggleIcon();
 			});
 		},
 
@@ -103,16 +126,17 @@
 				ko.applyBindings(new this.AppViewModel(this), this.$qnaListContainer[0]);
 
 				this.bindButtons();
-				this.positionOnVideoButton();
+				this.positionQAButtonOnVideoContainer();
 			}
 			return this.$qnaListContainer;
 		},
 
-		positionOnVideoButton : function(){
+		positionQAButtonOnVideoContainer : function(){
 			var onVideoTogglePluginButton = $('.qna-on-video-btn');
 			var videoHeight = this.getPlayer().getVideoHolder().height();
 			var buttonHeight = Math.round(videoHeight / 5);
-			var buttonWidth = Math.round(videoHeight / 10);
+            buttonHeight=Math.min(buttonHeight,70);
+			var buttonWidth = Math.round(buttonHeight / 2);
 
 			var borderRadius = buttonWidth + "px 0 0 " + buttonWidth + "px";
 
@@ -120,6 +144,15 @@
 
 
 			var textIndent = (buttonWidth - parseInt(onVideoTogglePluginButton.css('font-size'))) / 2;
+			onVideoTogglePluginButton.css(
+                {   '-moz-border-radius': borderRadius,
+                    '-webkit-border-radius': borderRadius,
+                    'border-radius': borderRadius,
+                    height: buttonHeight + "px",
+                    width: buttonWidth + "px",
+                    top: topOffset,
+                    'line-height': buttonHeight + "px",
+                    'text-indent': textIndent + "px"});
 
 		},
 
