@@ -412,7 +412,7 @@
 		openPopup: function (e, network) {
 
 			// Maintain backward compatibility 
-			if( network === undefined ) {
+			if( e && e.originalEvent ) {
 				network = {
 					id: $(e.target).attr('id'),
 					url: $(e.target).parents('a').attr('href')
