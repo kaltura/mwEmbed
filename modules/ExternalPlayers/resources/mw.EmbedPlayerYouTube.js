@@ -508,10 +508,8 @@
 			var yt = this.getPlayerElement();
 			yt.seekTo( seekTime );
 			this.layoutBuilder.onSeek();
-			// Since Youtube don't have a seeked event on mobile devices, we must turn off the seeking flag on mobile devices
-			if ( mw.isMobileDevice() ){
-				this.seeking = false;
-			}
+			// Since Youtube don't have a seeked event , we must turn off the seeking flag
+			this.seeking = false;
 		},
 
 		/**
