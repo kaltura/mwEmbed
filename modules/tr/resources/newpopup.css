@@ -110,7 +110,7 @@ body {
 }
 .enhanced #playerContainer{
     width: 100%;
-    height: 92.5%;
+    height: 92.4%;
     padding: 0;
 }
 .enhanced #kPlayer {
@@ -119,7 +119,7 @@ body {
 .enhanced .share-container{
     float: right;
     left: 0 !important;
-    margin-right: -13px;
+    margin-right: -6px;
 }
 .enhanced .k-horizontal{
     display: none;
