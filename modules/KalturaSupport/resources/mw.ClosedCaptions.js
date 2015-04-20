@@ -118,10 +118,11 @@
 			}
 			if (this.getConfig("useExternalClosedCaptions")) {
 				this.bind( 'loadExternalClosedCaptions', function ( e, data ) {
-					if ( data && $.isArray( data.languages ) && data.languages.length ) {
-						_this.destory();
-						_this.buildMenu( data.languages );
+					if ( !(data && $.isArray( data.languages ) ) ) {
+						data.languages = [];
 					}
+					_this.destory();
+					_this.buildMenu( data.languages );
 				} );
 			}
 
