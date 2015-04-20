@@ -212,9 +212,32 @@
 	margin-left: 10px;
 }
 
-.qnaInterface .qnaAnnouncementTitleClass{
+.qnaInterface .qnaAnnouncementTitleRead{
+	font-family: Lato;
+	color: #414442;
+	font-size: 14px;
+	font-weight: 600;
+	font-style: italic;
+	line-height: 9px;
+	text-align: left;
+	margin-top: 5px;
+	margin-left: 10px;
+}
+
+.qnaInterface .qnaAnnouncementText{
 	font-family: Lato;
 	color: #ffffff;
+	font-size: 13px;
+	font-weight: 300;
+	text-align: left;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	margin-left: 10px;
+}
+
+.qnaInterface .qnaAnnouncementTextRead{
+	font-family: Lato;
+	color: #414442;
 	font-size: 13px;
 	font-weight: 300;
 	text-align: left;

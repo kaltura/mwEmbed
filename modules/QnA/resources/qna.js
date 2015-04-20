@@ -127,6 +127,8 @@
 
 				this.bindButtons();
 				this.positionQAButtonOnVideoContainer();
+
+				$(".nano").nanoScroller();
 			}
 			return this.$qnaListContainer;
 		},
@@ -235,14 +237,15 @@
 		getQnaData : function(viewedThreads){
 
 			var qnaEntryArray = [];
+			var threadId = "s9oa3cc";
 			qnaEntryArray.push( {
-				threadId: "s9oa3cc",
+				threadId: threadId,
 				type: "announcement",
 				title: gM('qna-announcement-title'),
-				entryTitleClass: "qnaAnnouncementTitle",
 				entryText:"All your bases are belong to us",
-				entryTextClass: "qnaAnnouncementTitleClass",
-				entryClass: viewedThreads.indexOf("s9oa3cc") > -1 ? "qnaAnnouncementRead" : "qnaAnnouncement"
+				entryTitleClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementTitleRead" : "qnaAnnouncementTitle",
+				entryTextClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementTextRead" : "qnaAnnouncementText",
+				entryClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementRead" : "qnaAnnouncement"
 			});
 			// The below (commented out) is supposed to simulate a Q&A thread
 			//qnaEntryArray[qnaEntryArray.length] = {
@@ -257,32 +260,35 @@
 			//		{id: "i8a3xw", title:"aaa", text:"fdgfdgdfgsd sdf sf d"},
 			//	]
 			//};
+			threadId = "qyv78a7";
 			qnaEntryArray[qnaEntryArray.length] = {
-				threadId: "qyv78a7",
+				threadId: threadId,
 				type: "announcement",
 				title: gM('qna-announcement-title'),
-				entryTitleClass: "qnaAnnouncementTitle",
 				entryText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum a eros eu quam dictum sagittis. Nam sit amet odio turpis. Morbi mauris nisi, consequat et tortor a, vehicula pharetra sem. Nunc vitae lacus id sapien tristique pretium at non lorem. Integer venenatis lacus nec erat.",
-				entryTextClass: "qnaAnnouncementTitleClass",
-				entryClass: viewedThreads.indexOf("qyv78a7") > -1 ? "qnaAnnouncementRead" : "qnaAnnouncement"
+				entryTitleClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementTitleRead" : "qnaAnnouncementTitle",
+				entryTextClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementTextRead" : "qnaAnnouncementText",
+				entryClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementRead" : "qnaAnnouncement"
 			};
+			threadId = "2dcdvcd";
 			qnaEntryArray[qnaEntryArray.length] = {
-				threadId: "2dcdvcd",
+				threadId: threadId,
 				type: "announcement",
 				title: gM('qna-announcement-title'),
-				entryTitleClass: "qnaAnnouncementTitle",
 				entryText:"This is a sample text for an announcement",
-				entryTextClass: "qnaAnnouncementTitleClass",
-				entryClass: viewedThreads.indexOf("2dcdvcd") > -1 ? "qnaAnnouncementRead" : "qnaAnnouncement"
+				entryTitleClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementTitleRead" : "qnaAnnouncementTitle",
+				entryTextClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementTextRead" : "qnaAnnouncementText",
+				entryClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementRead" : "qnaAnnouncement"
 			};
+			threadId = "cch74vv";
 			qnaEntryArray[qnaEntryArray.length] = {
-				threadId: "cch74vv",
+				threadId: threadId,
 				type: "announcement",
 				title: gM('qna-announcement-title'),
-				entryTitleClass: "qnaAnnouncementTitle",
 				entryText:"just one more announcement...",
-				entryTextClass: "qnaAnnouncementTitleClass",
-				entryClass: viewedThreads.indexOf("cch74vv") > -1 ? "qnaAnnouncementRead" : "qnaAnnouncement"
+				entryTitleClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementTitleRead" : "qnaAnnouncementTitle",
+				entryTextClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementTextRead" : "qnaAnnouncementText",
+				entryClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementRead" : "qnaAnnouncement"
 			};
 
 			return qnaEntryArray;
@@ -330,6 +336,11 @@
 					_this.myObservableArray.refresh(item);
 				}
 			};
+
+			_this.incrementClickCounter();
+			setInterval(function(){
+				_this.incrementClickCounter()
+			}, 5000);
 		}
 	}));
 
