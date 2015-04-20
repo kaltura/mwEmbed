@@ -1312,15 +1312,15 @@
 				_this.getInterface().height(_this.layoutBuilder.getComponentsHeight());
 			}
 
+			// Update layout
+			this.doUpdateLayout();
+
 			// Update the playerReady flag
 			this.playerReadyFlag = true;
 			mw.log("EmbedPlayer:: Trigger: playerReady");
 			// trigger the player ready event;
 			$(this).trigger('playerReady');
 			this.triggerWidgetLoaded();
-
-			// Update layout
-			this.doUpdateLayout();
 
 			// Check if we want to block the player display
 			if (this['data-blockPlayerDisplay']) {
