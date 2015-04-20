@@ -95,6 +95,7 @@
 		shareScreenOpened: false,
 
 		setup: function () {
+			this.setShareConfig();
 			this.setupPlayerURL();
 			this.addBindings();
 
@@ -102,6 +103,31 @@
 			if ( mw.isMobileDevice() || mw.isNativeApp() ){
 				this.setConfig( 'embedEnabled' , false );
 			}
+		},
+
+		setShareConfig: function() {
+			var networks = this.getConfig('shareConfig');
+
+			// in order to support the legacy socialNetworks Flashvar, we will go through it and remove networks that are not specified in socialNetworks
+			var socialNetworks = this.getConfig("socialNetworks").split(",");
+			$.each(networks, function(idx, network){
+				if ( $.inArray(idx, socialNetworks) === -1 ){
+					delete networks[idx];
+				}
+			});
+
+			// remove sms option if we are not inside a native app
+			if ( !mw.isNativeApp() ) {
+				delete networks["sms"];
+			}
+
+			// remove email option if emailEnabled = false
+			if ( this.getConfig("emailEnabled") === false ) {
+				delete networks["email"];
+			}
+
+			// save networks to config
+			this.setConfig( 'shareConfig' , networks );			
 		},
 
 		addBindings: function () {
@@ -150,6 +176,18 @@
 				}
 			});
 
+			// Allow plugins to trigger share for specific platform/network
+			this.bind( 'shareByPlatform', function(e, platform) {
+				var platforms = _this.getConfig('shareConfig');
+				if( platforms[platform] ) {
+					var url = embedPlayer.evaluate(platforms[platform].template);
+					_this.openPopup(null, {
+						id: platform,
+						url: url
+					});
+				}
+			});
+
 			// add API support: register to the "doShare" notification and dispatch the "shareEvent" event with the share link data
 			this.bind( 'doShare', function(event, data){
 				var shareUrl = _this.getConfig('shareURL');
@@ -194,30 +232,8 @@
 			$("#"+this.getPlayer().getPlayerElement().id).removeClass("blur");
 			this.getPlayer().getPlayerPoster().removeClass("blur");
 		},
+
 		getTemplateData: function () {
-			var networks = this.getConfig('shareConfig');
-
-			// in order to support the legacy socialNetworks Flashvar, we will go through it and remove networks that are not specified in socialNetworks
-			var socialNetworks = this.getConfig("socialNetworks").split(",");
-			$.each(networks, function(idx, network){
-				if ( $.inArray(idx, socialNetworks) === -1 ){
-					delete networks[idx];
-				}
-			});
-
-			// remove sms option if we are not inside a native app
-			if ( !mw.isNativeApp() ) {
-				delete networks["sms"];
-			}
-
-			// remove email option if emailEnabled = false
-			if ( this.getConfig("emailEnabled") === false ) {
-				delete networks["email"];
-			}
-
-			// save networks to config
-			this.setConfig( 'shareConfig' , networks );
-
 			return {
 				'share': this,
 				'socialShareEnabled': this.getConfig('socialShareEnabled'),
@@ -225,7 +241,7 @@
 				'allowTimeOffset': this.getConfig('allowTimeOffset'),
 				'allowSecuredEmbed': this.getConfig('allowSecuredEmbed'),
 				'shareURL': this.getConfig('shareURL'),
-				'networks': networks
+				'networks': this.getConfig('shareConfig')
 			};
 		},
 
@@ -393,15 +409,24 @@
 			this.hideScreen();
 		},
 
-		openPopup: function (e) {
+		openPopup: function (e, network) {
+
+			// Maintain backward compatibility 
+			if( network === undefined ) {
+				network = {
+					id: $(e.target).attr('id'),
+					url: $(e.target).parents('a').attr('href')
+				};
+			}
+
 			var embedPlayer = this.getPlayer();
-			var url = $(e.target).parents('a').attr('href');
+			var url = network.url;
 			url = decodeURIComponent(url);        // url was encoded to keep curly brackets for template tokens
 			url = this.getPlayer().evaluate(url); // replace tokens
 
 			if (mw.isNativeApp()) {
 				var networks = this.getConfig('shareConfig');
-				var id = $(e.target).attr('id');
+				var id = network.id;
 				var shareParams = {
 					actionType: 'share',
 					id: id[0].toUpperCase() + id.substr(1),

@@ -28,6 +28,11 @@
 		$('#triggerShareOffset').click(function () {
 			window.kdp.sendNotification('doShare',{"timeOffset":"30"});
 		});
+
+		$('#shareByPlayform').click(function (){
+			var network = $('#selectPlatform').val();
+			window.kdp.sendNotification('shareByPlatform', network);
+		});
 	}
 
 
@@ -72,7 +77,17 @@ kWidget.addReadyCallback(function( playerId ){
 });
 </pre>
 Trigger Share event: <button id="triggerShare" href="#">GO</button><br>
-Trigger Share event with time offset of 30 seconds: <button id="triggerShareOffset" href="#">GO</button>
+Trigger Share event with time offset of 30 seconds: <button id="triggerShareOffset" href="#">GO</button><br/>
+<p>
+	Trigger Share for Platform:
+	<select id="selectPlatform">
+		<option value="facebook">facebook</option>
+		<option value="twitter">twitter</option>
+		<option value="googleplus">googleplus</option>
+		<option value="email">email</option>
+		<option value="linkedin">linkedin</option>
+	</select>&nbsp;
+	<button id="shareByPlayform">Go</button>
 <br><br>
 <b>Shared Link:</b>
 <pre id="shareLink" class="prettyprint" style="display: none"></pre>
