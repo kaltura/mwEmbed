@@ -45,10 +45,11 @@ class mwEmbedLoader {
 		// Include checkUserAgentPlayer code
 		'kWidget/kWidget.checkUserAgentPlayerRules.js',
 		// Get kWidget utilities:
-		'kWidget/kWidget.util.js',	
+		'kWidget/kWidget.util.js',
+		// minimal md5 implementation  
+		'resources/md5/md5.min.js', 
 		// kWidget basic api wrapper
-		//'resources/crypto/MD5.js', // currently commented out sig on api requests 
-		'kWidget/kWidget.api.js',
+		'kWidget/kWidget.api.js'
 	);
 
 	function request() {

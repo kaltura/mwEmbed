@@ -271,14 +271,7 @@ kWidget.api.prototype = {
 		return serviceUrl + mw.getConfig( 'Kaltura.ServiceBase' ) + serviceType;
 	},
 	hashCode: function( str ){
-		var hash = 0;
-		if (str.length == 0) return hash;
-		for (var i = 0; i < str.length; i++) {
-			var currentChar = str.charCodeAt(i);
-			hash = ((hash<<5)-hash)+currentChar;
-			hash = hash & hash; // Convert to 32bit integer
-		}
-		return hash;
+		return window.md5( str );
 	}
 }
 
