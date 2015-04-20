@@ -212,12 +212,6 @@
 				})
 			});
 
-
-
-
-
-
-
 		},
 		redrawPlaylist: function(){
 			var _this = this;
