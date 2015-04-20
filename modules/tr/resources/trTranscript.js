@@ -75,6 +75,7 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 			this.clearData();
 			this.setTranscript(source.captions);
 			this.setMentionedTerms();
+			this.setTranscriptType();
 			//Experimental :) // render the mentioned terms to the transcript
 			try{
 				this.renderHighlightedWords();
@@ -93,6 +94,12 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 	},
 
 
+	setTranscriptType : function(){
+		//decide to show verified or automatic transcript type BY metadta
+
+		//this.mainDoc.find(".ri-transcript-type--verified").addClass("active");
+		//this.mainDoc.find(".ri-transcript-type--automatic").addClass("active");
+	},
 	localSearch : function(searchString){
 		this.mainDoc.find(".transcript-filter").addClass("active");
 	},

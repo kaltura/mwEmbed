@@ -266,8 +266,11 @@ body {
 .ri-transcript-type--verified {
     font-size: 11px;
 }
-.ri-transcript-type--automatic {
+.ri-transcript-type--automatic.active,
+.ri-transcript-type--verified.active {
+    display: block;
 }
+
 .ri-transcript-type {
     text-align: center;
     padding: 8px 0 6px;

@@ -28,8 +28,24 @@
     font-size: 2.4em;
     margin: -31px 0 0 -31px;
 }
+
+.swa-container{
+    clear: both;
+}
+
+.swa-top-item{
+    float: left;
+}
+.input-wrapper.swa-top-item {
+    float: right;
+}
+
 .durationLabel {
     padding-right: 5px;
+}
+
+.playlistAPI .horizontalHeader{
+    display: none !important;
 }
 
 .trTitle .largePlayBtn:before {

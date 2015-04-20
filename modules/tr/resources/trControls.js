@@ -130,8 +130,4 @@ mw.PluginManager.add( 'trControls', mw.KBasePlugin.extend({
 			});
 		}
 	}
-
-	//			this.bind('loadExternalPlaylist', function (e,params) {
-
-
 }));

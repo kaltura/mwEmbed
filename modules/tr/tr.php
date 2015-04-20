@@ -42,6 +42,14 @@ return array(
 			'mw.KBasePlugin'
 		),
 		'kalturaPluginName' => 'trPlaylistServices'
+	),
+	"trSwa" =>  array(
+		'scripts' => "resources/trSwa.js",
+		'dependencies' => array(
+			'mw.KBasePlugin'
+		),
+		'templates' => "../tr/templates/swa.tmpl.html",
+		'kalturaPluginName' => 'trSwa'
 	)
 
 );
