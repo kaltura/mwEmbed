@@ -232,6 +232,29 @@
 	height: calc(100% - 88px);
 }
 
+.qnaInterface .qnaEntryTitleRead{
+	font-family: Lato;
+	color: #414442;
+	font-size: 14px;
+	font-weight: 400;
+	font-style: italic;
+	line-height: 18px;
+	text-align: left;
+	margin-left: 15px;
+	margin-top: 3px;
+}
+
+.qnaInterface .qnaEntryTextRead{
+	font-family: Lato;
+	color: #414442;
+	font-size: 13px;
+	font-weight: 200;
+	text-align: left;
+	margin-left: 15px;
+	overflow: auto;
+	margin-bottom: 5px;
+}
+
 /* font icons */
 @font-face {
 	font-family: 'qna';
