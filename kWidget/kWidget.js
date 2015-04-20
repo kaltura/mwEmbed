@@ -1994,7 +1994,15 @@
 		param: function (obj) {
 			var o = '';
 			var and = '';
+			// always put the kalsig first if present:
+			if( obj['kalsig'] ){
+				o += 'kalsig=' + obj['kalsig'];
+				and = '&';
+			}
 			for (var i in obj) {
+				if( i == 'kalsig' ){
+					continue;
+				}
 				o += and + i + '=' + encodeURIComponent(obj[i]);
 				and = '&';
 			}
