@@ -552,10 +552,7 @@
 				this.setMultiplePlayLists(); // support multiple play lists
 				this.firstLoad = false;
 			}
-
-
 			this.embedPlayer.triggerHelper('playlistSelected');
-
 		},
 		showEmptyPlaylistError: function () {
 			var $this = $(this);
