@@ -3,7 +3,9 @@ mw.PluginManager.add( 'trSwa', mw.KBasePlugin.extend({
 	defaultConfig: {
 		maxResults: 50,
 		targetId: 'k-medialist-header',
-		templatePath: '../tr/templates/swa.tmpl.html'
+		templatePath: '../tr/templates/swa.tmpl.html',
+		headerTitle: 'Top News',
+		selectedTag: 'news'
 	},
 
 	setup: function() {
