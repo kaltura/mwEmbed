@@ -329,6 +329,7 @@
 
 			embedPlayer.triggerHelper('onShowInterfaceComponents', [ showComponentsArr ] );
 			embedPlayer.triggerHelper('onHideInterfaceComponents', [ hideComponentsArr ] );
+			embedPlayer.doUpdateLayout();
 		},
 
 		isDVR: function(){
