@@ -138,6 +138,8 @@ kWidget.api.prototype = {
 			});
 		} catch(e){
 			param['format'] = 9; // jsonp
+			//Delete previous kalSig
+			delete param[ 'kalsig' ];
 			//Regenerate kalSig with amended format
 			var kalSig = this.hashCode( kWidget.param( param ) );
 			// Add kalsig to query:
