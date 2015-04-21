@@ -80,6 +80,10 @@ kWidget.api.prototype = {
 		} else {
 			kWidget.extend( param, requestObject );
 		}
+
+		// set format to JSON ( Access-Control-Allow-Origin:* )
+		param['format'] = 1;
+
 		// Add kalsig to query:
 		param[ 'kalsig' ] = this.hashCode( kWidget.param( param ) );
 		
@@ -129,17 +133,19 @@ kWidget.api.prototype = {
 			if ( forceJSONP ){
 				throw "forceJSONP";
 			}
-			// set format to JSON ( Access-Control-Allow-Origin:* )
-			param['format'] = 1;
 			this.xhrRequest( _this.getApiUrl( serviceType ), param, function( data ){
 				handleDataResult( data );
 			});
 		} catch(e){
 			param['format'] = 9; // jsonp
+			//Regenerate kalSig with amended format
+			var kalSig = this.hashCode( kWidget.param( param ) );
+			// Add kalsig to query:
+			param[ 'kalsig' ] = kalSig;
 			// build the request url: 
 			var requestURL = _this.getApiUrl( serviceType ) + '&' + kWidget.param( param );
 			// try with callback:
-			globalCBName = 'kapi_' + Math.abs( _this.hashCode( kWidget.param( param ) ) );
+			globalCBName = 'kapi_' + Math.abs( kalSig );
 			if( window[ globalCBName ] ){
 				// Update the globalCB name inx.
 				this.callbackIndex++;
