@@ -147,7 +147,7 @@ kWidget.api.prototype = {
 			// build the request url: 
 			var requestURL = _this.getApiUrl( serviceType ) + '&' + kWidget.param( param );
 			// try with callback:
-			globalCBName = 'kapi_' + Math.abs( kalSig );
+			globalCBName = 'kapi_' + kalSig;
 			if( window[ globalCBName ] ){
 				// Update the globalCB name inx.
 				this.callbackIndex++;
