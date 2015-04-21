@@ -113,6 +113,11 @@
 					.addClass( this.pluginName + cssClass + " medialistContainer unselectable k-" + this.getLayout() );
 				if (this.getConfig("includeHeader")){
 					this.$el.append($( '<div />' ).addClass("k-medialist-header k-" + this.getLayout() ));
+					if (this.getLayout() == "vertical"){
+						this.$el.find(".k-medialist-header.k-vertical").height(this.getConfig('verticalHeaderHeight'));
+					}else{
+						this.$el.find(".k-medialist-header.k-horizontal").height(this.getConfig('horizontalHeaderHeight'));
+					}
 				}
 				this.$el.append($( '<div />' ).addClass("k-chapters-container k-" + this.getLayout() ));
 				if (!this.getConfig('parent')){

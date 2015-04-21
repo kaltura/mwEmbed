@@ -19,6 +19,8 @@
 			'includeThumbnail': true,
 			'includeItemNumberPattern': false,
 			'includeMediaItemDuration': true,
+			'horizontalHeaderHeight': 43,
+			'verticalHeaderHeight': 65,
 			'hideClipPoster': true,
 			'loop': false,
 			'overflow': false,
@@ -64,9 +66,9 @@
 				}
 			}
 
-			if (this.getConfig("includeHeader")){
-				this.setConfig('horizontalHeaderHeight', 43);
-				this.setConfig('verticalHeaderHeight', 65);
+			if (!this.getConfig("includeHeader")){
+				this.setConfig('horizontalHeaderHeight', 0);
+				this.setConfig('verticalHeaderHeight', 0);
 			}
 			this.embedPlayer.playlist = true;
 			this.addBindings();
@@ -540,7 +542,7 @@
 					this.getMedialistHeaderComponent().prepend( '<span class="playlistTitle">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription">' + items.length + ' ' + gM( 'mwe-embedplayer-videos' ) + '</span>' );
 					this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '"></div>' );
 				} else {
-					this.getMedialistHeaderComponent().prepend( '<span class="playlistTitle horizontalHeader">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription horizontalHeader">(' + items.length + ' ' + gM( 'mwe-embedplayer-videos' ) + ')</span>' );
+					this.getMedialistHeaderComponent().prepend( '<div class="horizontalHeaderLables"><span class="playlistTitle horizontalHeader">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription horizontalHeader">(' + items.length + ' ' + gM( 'mwe-embedplayer-videos' ) + ')</span></div>' );
 					this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '"></div>' );
 			}
 			if ( this.getConfig( 'showControls' ) === true ) {
