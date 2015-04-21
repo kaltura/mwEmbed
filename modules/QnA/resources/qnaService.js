@@ -14,7 +14,8 @@ DAL for Q&A Module
         // The bind postfix:
         bindPostfix: '.KQnaService',
         liveAQnaIntervalId: null,
-        items:[],
+        items: ko.observableArray(),
+        itemsIndexer: {},
         lastUpdateTime: -1,
 
         init: function (embedPlayer,qnaPlugin) {
@@ -24,13 +25,13 @@ DAL for Q&A Module
             // Setup player ref:
             this.embedPlayer = embedPlayer;
             this.qnaPlugin=qnaPlugin;
-/*
+
             this.requestCuePoints();
 
             if (embedPlayer.isLive()) {
                 this.registerItemNotification();
             }
-*/
+
 
         },
         destroy: function () {
@@ -49,7 +50,7 @@ DAL for Q&A Module
         },
         //returns questions, answers and announcement
         getItems : function() {
-            return [];
+            return this.items;
         },
         submitQuestion: function(question){
             var embedPlayer = this.embedPlayer;
@@ -67,7 +68,13 @@ DAL for Q&A Module
            // mw.log("Submitting a new question: " + question);
 
             _this.getKClient().doRequest(entryRequest, function (result) {
-                    mw.log("added Annotation cue point with id: " + result.id);
+                    if (result.id) {
+                        mw.log("added Annotation cue point with id: " + result.id);
+                        _this.updateCuePoints([result]);
+                    } else{
+                        mw.log("error adding Annotation " + JSON.stringify(result));
+
+                    }
                 },
                 false,
                 function(err){
@@ -86,7 +93,29 @@ DAL for Q&A Module
                 }
             });
 
-            _this.items=newItems;
+            newItems.forEach(function(cuePoint) {
+                if (_this.itemsIndexer.hasOwnProperty(cuePoint.id)) {
+                    //update the item
+                    var index=_this.itemsIndexer[cuePoint.id];
+                    _this.items[index]=_this.annotationCuePointToQAItem(cuePoint);
+                } else {
+                    _this.items.unshift(_this.annotationCuePointToQAItem(cuePoint));
+                }
+            });
+        },
+
+        annotationCuePointToQAItem: function(cuePoint) {
+
+
+            return $.extend(cuePoint,{
+                threadId: "s9oa3cc",
+                type: "announcement",
+                title: gM('qna-announcement-title'),
+                entryText:cuePoint.text,
+                entryTitleClass:  "qnaAnnouncementTitle",
+                entryTextClass:  "qnaAnnouncementText",
+                entryClass:  "qnaAnnouncement"
+            });
         },
         requestCuePoints:function() {
             var _this = this;
@@ -96,16 +125,16 @@ DAL for Q&A Module
                 'service': 'cuepoint_cuepoint',
                 'action': 'list',
                 'filter:entryIdEqual': entryId,
-                'filter:objectType': 'KalturaCuePointFilter',
-                'filter:statusIn': '1,3',
-                'filter:cuePointTypeEqual': 'KalturaAnnotation.Thumb'
+                'filter:objectType': 'KalturaAnnotationFilter',
+               // 'filter:statusIn': '1,3',
+                'filter:orderBy': '+createdAt'
             };
-            var lastUpdatedAt = _this.getLastUpdateTime() + 1;
+            var lastUpdatedAt = _this.lastUpdateTime + 1;
             // Only add lastUpdatedAt filter if any cue points already received
             if (lastUpdatedAt > 0) {
                 request['filter:updatedAtGreaterThanOrEqual'] = lastUpdatedAt;
             }
-            _this.getKalturaClient().doRequest( request,
+            _this.getKClient().doRequest( request,
                 function (data) {
                     // if an error pop out:
                     if (!data || data.code) {
@@ -128,69 +157,7 @@ DAL for Q&A Module
             //Start live cuepoint pulling
             this.liveAQnaIntervalId = setInterval(function () {
                 _this.requestCuePoints();
-            }, mw.getConfig("EmbedPlayer.LiveQandARequestInterval") || 10000);
-        },
-
-
-        // Get the Q&A data from the server.
-        getQnaData : function(viewedThreads){
-
-            var qnaEntryArray = [];
-            var threadId = "s9oa3cc";
-            qnaEntryArray.push( {
-                threadId: threadId,
-                type: "announcement",
-                title: gM('qna-announcement-title'),
-                entryText:"All your bases are belong to us",
-                entryTitleClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementTitleRead" : "qnaAnnouncementTitle",
-                entryTextClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementTextRead" : "qnaAnnouncementText",
-                entryClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementRead" : "qnaAnnouncement"
-            });
-            // The below (commented out) is supposed to simulate a Q&A thread
-            //qnaEntryArray[qnaEntryArray.length] = {
-            //	threadId: "qyv78s1",
-            //	type: "qna_thread",
-            //	title: gM('qna-you-asked'),
-            //	titleClass: "qnaThreadTitle",
-            //	entryText: "gadol",
-            //	entryClass: "qnaThread",
-            //	qnalist: [
-            //		{id: "d873j9", title:"aaa", text:"fdgfdgdfgsd sdf sf d"},
-            //		{id: "i8a3xw", title:"aaa", text:"fdgfdgdfgsd sdf sf d"},
-            //	]
-            //};
-            threadId = "qyv78a7";
-            qnaEntryArray[qnaEntryArray.length] = {
-                threadId: threadId,
-                type: "announcement",
-                title: gM('qna-announcement-title'),
-                entryText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum a eros eu quam dictum sagittis. Nam sit amet odio turpis. Morbi mauris nisi, consequat et tortor a, vehicula pharetra sem. Nunc vitae lacus id sapien tristique pretium at non lorem. Integer venenatis lacus nec erat.",
-                entryTitleClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementTitleRead" : "qnaAnnouncementTitle",
-                entryTextClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementTextRead" : "qnaAnnouncementText",
-                entryClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementRead" : "qnaAnnouncement"
-            };
-            threadId = "2dcdvcd";
-            qnaEntryArray[qnaEntryArray.length] = {
-                threadId: threadId,
-                type: "announcement",
-                title: gM('qna-announcement-title'),
-                entryText:"This is a sample text for an announcement",
-                entryTitleClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementTitleRead" : "qnaAnnouncementTitle",
-                entryTextClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementTextRead" : "qnaAnnouncementText",
-                entryClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementRead" : "qnaAnnouncement"
-            };
-            threadId = "cch74vv";
-            qnaEntryArray[qnaEntryArray.length] = {
-                threadId: threadId,
-                type: "announcement",
-                title: gM('qna-announcement-title'),
-                entryText:"just one more announcement...",
-                entryTitleClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementTitleRead" : "qnaAnnouncementTitle",
-                entryTextClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementTextRead" : "qnaAnnouncementText",
-                entryClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementRead" : "qnaAnnouncement"
-            };
-
-            return qnaEntryArray;
-        },
+            }, mw.getConfig("QandA.RequestInterval") || 10000);
+        }
     };
 })(window.mw, window.jQuery);

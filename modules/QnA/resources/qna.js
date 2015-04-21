@@ -109,6 +109,7 @@
 				this.$qnaListContainer.append(this.getHTML());
 				ko.applyBindings(this.KQnaModule, this.$qnaListContainer[0]);
 
+                this.KQnaModule.applyLayout();
 				this.bindButtons();
 				this.positionQAButtonOnVideoContainer();
 
