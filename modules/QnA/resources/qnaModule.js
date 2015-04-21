@@ -20,6 +20,14 @@
             this.qnaPlugin = qnaPlugin;
             this.qnaService = qnaService;
             this.myObservableArray = qnaService.getItems();
+
+
+            this.itemRead= function(item, event) {
+                console.log("item of type " + item.type + " with id " + item.threadId + " was clicked");
+
+                _this.qnaService.markAsRead(item);
+            }
+
         },
         destroy: function () {
 
@@ -28,6 +36,6 @@
         applyLayout:function() {
 
             $( window['parent'].document ).find(".nano").nanoScroller();
-        }
+        },
     };
 })(window.mw, window.jQuery);

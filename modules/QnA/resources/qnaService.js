@@ -9,13 +9,33 @@ DAL for Q&A Module
     mw.KQnaService = function (embedPlayer,qnaPlugin) {
         return this.init(embedPlayer,qnaPlugin);
     };
+
+    var viewedThreads=(function() {
+        var _viewedThreads = [];
+        if (localStorage["_viewedThreads"]) {
+            _viewedThreads = JSON.parse(localStorage["_viewedThreads"]);
+        }
+        return {
+            markAsRead: function(threadId) {
+                // Write to localStorage this item was read
+                if (_viewedThreads.indexOf(threadId) < 0 ) {
+                    _viewedThreads.push(threadId);
+                    localStorage["_viewedThreads"] = JSON.stringify(_viewedThreads);
+
+                }
+            },
+            isRead:function(threadId) {
+                return _viewedThreads.indexOf(threadId) > -1;
+            }
+        };
+    })();
+
     mw.KQnaService.prototype = {
 
         // The bind postfix:
         bindPostfix: '.KQnaService',
         liveAQnaIntervalId: null,
         items: ko.observableArray(),
-        itemsIndexer: {},
         lastUpdateTime: -1,
 
         init: function (embedPlayer,qnaPlugin) {
@@ -26,14 +46,15 @@ DAL for Q&A Module
             this.embedPlayer = embedPlayer;
             this.qnaPlugin=qnaPlugin;
 
+
             this.requestCuePoints();
 
             if (embedPlayer.isLive()) {
                 this.registerItemNotification();
             }
 
-
         },
+        viewedThreads : viewedThreads,
         destroy: function () {
 
             if (this.liveAQnaIntervalId) {
@@ -81,40 +102,50 @@ DAL for Q&A Module
                     mw.log( "Error: "+ this.bindPostfix +" could not add cue point. Error: " + err );
                 });
         },
-        markAsRead:function(item) {
 
+        markAsRead:function(item) {
+            viewedThreads.markAsRead(item.threadId);
+            this.updateCuePoints([item]);
         },
         updateCuePoints:function(newItems) {
 
             var _this = this;
-            $.each(newItems, function (cuePoint) {
+
+            newItems.forEach(function(cuePoint) {
+
                 if (_this.lastUpdateTime < cuePoint.updatedAt) {
                     _this.lastUpdateTime = cuePoint.updatedAt;
                 }
-            });
+                var item=_this.annotationCuePointToQAItem(cuePoint);
 
-            newItems.forEach(function(cuePoint) {
-                if (_this.itemsIndexer.hasOwnProperty(cuePoint.id)) {
-                    //update the item
-                    var index=_this.itemsIndexer[cuePoint.id];
-                    _this.items[index]=_this.annotationCuePointToQAItem(cuePoint);
-                } else {
-                    _this.items.unshift(_this.annotationCuePointToQAItem(cuePoint));
+                var found=false;
+                for (var i=0;i<_this.items().length;i++) {
+                    if (_this.items()[i].id===cuePoint.id) {
+                        found=true;
+                        _this.items.splice(i, 1);
+                        _this.items.splice(i, 0, item);
+                        break;
+                    }
+                };
+
+                if (!found) {
+                    _this.items.unshift(item);
                 }
             });
         },
 
         annotationCuePointToQAItem: function(cuePoint) {
 
+            var threadId = cuePoint.id;
             return $.extend(cuePoint,{
-                threadId: "s9oa3cc",
+                threadId: threadId,
                 type: "announcement",
                 title: gM('qna-announcement-title'),
                 entryText:cuePoint.text,
-                entryClass:  "qnaAnnouncementRead",
-                entryTitleClass: "qnaAnnouncementTitleRead",
-                entryTextClass: "qnaAnnouncementTextRead",
-                entryIconClass: "qnaAnnouncementIconRead"
+                entryTitleClass: viewedThreads.isRead(threadId)  ? "qnaAnnouncementTitleRead" : "qnaAnnouncementTitle",
+                entryTextClass: viewedThreads.isRead(threadId)  ? "qnaAnnouncementTextRead" : "qnaAnnouncementText",
+                entryClass: viewedThreads.isRead(threadId)  ? "qnaAnnouncementRead" : "qnaAnnouncement",
+                entryIconClass : viewedThreads.isRead(threadId)  ? "qnaAnnouncementIconRead" : "qnaAnnouncementIcon"
             });
         },
         requestCuePoints:function() {
