@@ -20,6 +20,17 @@
 		setup: function () {
 			this.addBindings();
 		},
+        destroy: function(){
+            var _this = this;
+            if (_this.KQnaModule) {
+                _this.KQnaModule.destroy();
+                _this.KQnaModule=null;
+            }
+            if (_this.KQnaService) {
+                _this.KQnaService.destroy();
+                _this.KQnaService=null;
+            }
+        },
 
 		addBindings: function () {
 			var _this = this;
@@ -96,7 +107,7 @@
 				$( iframeParent ).parent().find( "#" + this.getConfig( 'qnaTargetId' ) ).html( "<div class='qnaInterface'></div>" );
 				this.$qnaListContainer = $( iframeParent ).parent().find( ".qnaInterface" );
 				this.$qnaListContainer.append(this.getHTML());
-				ko.applyBindings(new this.KQnaModule.AppViewModel(this), this.$qnaListContainer[0]);
+				ko.applyBindings(this.KQnaModule, this.$qnaListContainer[0]);
 
 				this.bindButtons();
 				this.positionQAButtonOnVideoContainer();
@@ -194,10 +205,6 @@
 			var rawHTML = window.kalturaIframePackageData.templates[ templatePath ];
 
 			return rawHTML;
-
-			//var transformedHTML = mw.util.tmpl( rawHTML );
-			//transformedHTML = transformedHTML(data);
-			//return transformedHTML;
 		}
 
 

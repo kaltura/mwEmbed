@@ -19,14 +19,6 @@
             this.qnaPlugin = qnaPlugin;
             this.qnaService = qnaService;
 
-
-        },
-        destroy: function () {
-
-            $(this.embedPlayer).unbind(this.bindPostfix);
-        },
-        AppViewModel : function(plugin) {
-
             ko.observableArray.fn.refresh = function (item) {
                 var index = this['indexOf'](item);
                 if (index >= 0) {
@@ -39,15 +31,14 @@
             if (localStorage["_viewedThreads"]) {
                 _viewedThreads = JSON.parse(localStorage["_viewedThreads"]);
             }
-            var _plugin = plugin;
-            var _this = this;
+            var _plugin = qnaPlugin;
             this.myObservableArray = ko.observableArray();
 
             this.numberOfClicks = ko.observable(0);
 
             _this.incrementClickCounter = function() {
 
-                _this.myObservableArray.unshift(plugin.KQnaService.getQnaData(_viewedThreads)[this.numberOfClicks() % plugin.KQnaService.getQnaData(_viewedThreads).length]);
+                _this.myObservableArray.unshift(qnaService.getQnaData(_viewedThreads)[this.numberOfClicks() % qnaService.getQnaData(_viewedThreads).length]);
 
                 var previousCount = this.numberOfClicks();
                 this.numberOfClicks(previousCount + 1);
@@ -78,6 +69,11 @@
             setInterval(function(){
                 _this.incrementClickCounter()
             }, 5000);
+
+        },
+        destroy: function () {
+
+            $(this.embedPlayer).unbind(this.bindPostfix);
         }
     };
 })(window.mw, window.jQuery);
