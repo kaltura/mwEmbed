@@ -144,7 +144,8 @@ DAL for Q&A Module
                 entryText:"All your bases are belong to us",
                 entryTitleClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementTitleRead" : "qnaAnnouncementTitle",
                 entryTextClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementTextRead" : "qnaAnnouncementText",
-                entryClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementRead" : "qnaAnnouncement"
+                entryClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementRead" : "qnaAnnouncement",
+                entryIconClass : viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementIconRead" : "qnaAnnouncementIcon"
             });
             // The below (commented out) is supposed to simulate a Q&A thread
             //qnaEntryArray[qnaEntryArray.length] = {
@@ -167,7 +168,8 @@ DAL for Q&A Module
                 entryText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum a eros eu quam dictum sagittis. Nam sit amet odio turpis. Morbi mauris nisi, consequat et tortor a, vehicula pharetra sem. Nunc vitae lacus id sapien tristique pretium at non lorem. Integer venenatis lacus nec erat.",
                 entryTitleClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementTitleRead" : "qnaAnnouncementTitle",
                 entryTextClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementTextRead" : "qnaAnnouncementText",
-                entryClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementRead" : "qnaAnnouncement"
+                entryClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementRead" : "qnaAnnouncement",
+                entryIconClass : viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementIconRead" : "qnaAnnouncementIcon"
             };
             threadId = "2dcdvcd";
             qnaEntryArray[qnaEntryArray.length] = {
@@ -177,7 +179,8 @@ DAL for Q&A Module
                 entryText:"This is a sample text for an announcement",
                 entryTitleClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementTitleRead" : "qnaAnnouncementTitle",
                 entryTextClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementTextRead" : "qnaAnnouncementText",
-                entryClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementRead" : "qnaAnnouncement"
+                entryClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementRead" : "qnaAnnouncement",
+                entryIconClass : viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementIconRead" : "qnaAnnouncementIcon"
             };
             threadId = "cch74vv";
             qnaEntryArray[qnaEntryArray.length] = {
@@ -187,10 +190,11 @@ DAL for Q&A Module
                 entryText:"just one more announcement...",
                 entryTitleClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementTitleRead" : "qnaAnnouncementTitle",
                 entryTextClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementTextRead" : "qnaAnnouncementText",
-                entryClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementRead" : "qnaAnnouncement"
+                entryClass: viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementRead" : "qnaAnnouncement",
+                entryIconClass : viewedThreads.indexOf(threadId) > -1 ? "qnaAnnouncementIconRead" : "qnaAnnouncementIcon"
             };
 
             return qnaEntryArray;
-        },
+        }
     };
 })(window.mw, window.jQuery);

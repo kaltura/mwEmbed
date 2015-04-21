@@ -11,6 +11,7 @@
         qnaService: null,
 
         init: function (embedPlayer,qnaPlugin,qnaService) {
+
             var _this = this;
             // Remove any old bindings:
             this.destroy();
@@ -56,6 +57,10 @@
                     localStorage["_viewedThreads"] = JSON.stringify(_viewedThreads);
 
                     item.entryClass = "qnaAnnouncementRead";
+                    item.entryTitleClass = "qnaAnnouncementTitleRead";
+                    item.entryTextClass = "qnaAnnouncementTextRead";
+                    item.entryIconClass = "qnaAnnouncementIconRead";
+
 
                     _this.myObservableArray[_this.myObservableArray.indexOf(item)] = item;
                     _this.myObservableArray.refresh(item);
