@@ -118,7 +118,7 @@
 
 		positionQAButtonOnVideoContainer : function(){
 			var onVideoTogglePluginButton = $('.qna-on-video-btn');
-			var videoHeight = this.getPlayer().getVideoHolder().height();
+			var videoHeight = this.getPlayer().getInterface().height();
 			var buttonHeight = Math.round(videoHeight / 5);
             buttonHeight=Math.min(buttonHeight,70);
 			var buttonWidth = Math.round(buttonHeight / 2);
