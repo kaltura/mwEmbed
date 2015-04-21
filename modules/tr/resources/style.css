@@ -31,12 +31,32 @@
 
 .swa-container{
     clear: both;
+    height: 22px;
 }
-
+.playlistAPI.medialistContainer .k-horizontal.k-medialist-header{
+    padding-top: 0px;
+}
+.swa-ul{
+    width: 100%;
+    margin-top: 0px;
+    list-style-type:none;
+    white-space:nowrap;
+    overflow-x:auto;
+    height: 14px;
+    -webkit-padding-start : 5px
+}
+.swa.topics-item{
+    display:inline;
+    font-size: 12px;
+    padding-left: 5px;
+    padding-right: 5px;
+    cursor:default;
+}
 .swa-top-item{
     float: left;
 }
 .input-wrapper.swa-top-item {
+    height: 13px;
     float: right;
 }
 
