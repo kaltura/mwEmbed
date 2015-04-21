@@ -19,7 +19,12 @@
             <div class="nano-content">
                 <div data-bind='template: { foreach: myObservableArray }' class="qnaEntryList">
                     <div class="qnaEntryListLI" data-bind='css: entryClass, click: $parent.itemRead'>
-                        <div data-bind='css: entryTitleClass, text: title'></div>
+                        <div>
+                            <div data-bind='css: entryTitleClass, text: title'></div>
+                            <div class="icon-qna-Announcement" data-bind='css: entryIconClass'></div>
+                            <div class="qnaThreadTime">10 Min ago</div>
+                        </div>
+                        <br>
                         <div data-bind='css: entryTextClass, text: entryText'></div>
                     </div>
                 </div>

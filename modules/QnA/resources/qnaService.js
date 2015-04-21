@@ -106,15 +106,15 @@ DAL for Q&A Module
 
         annotationCuePointToQAItem: function(cuePoint) {
 
-
             return $.extend(cuePoint,{
                 threadId: "s9oa3cc",
                 type: "announcement",
                 title: gM('qna-announcement-title'),
                 entryText:cuePoint.text,
-                entryTitleClass:  "qnaAnnouncementTitle",
-                entryTextClass:  "qnaAnnouncementText",
-                entryClass:  "qnaAnnouncement"
+                entryClass:  "qnaAnnouncementRead",
+                entryTitleClass: "qnaAnnouncementTitleRead",
+                entryTextClass: "qnaAnnouncementTextRead",
+                entryIconClass: "qnaAnnouncementIconRead"
             });
         },
         requestCuePoints:function() {

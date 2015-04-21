@@ -208,6 +208,7 @@
 }
 
 .qnaInterface .qnaAnnouncementTitle{
+	float: left;
 	font-family: Lato;
 	color: #ffffff;
 	font-size: 14px;
@@ -220,6 +221,7 @@
 }
 
 .qnaInterface .qnaAnnouncementTitleRead{
+	float: left;
 	font-family: Lato;
 	color: #414442;
 	font-size: 14px;
@@ -232,6 +234,7 @@
 }
 
 .qnaInterface .qnaAnnouncementText{
+	float: left;
 	font-family: Lato;
 	color: #ffffff;
 	font-size: 13px;
@@ -243,6 +246,7 @@
 }
 
 .qnaInterface .qnaAnnouncementTextRead{
+	float: left;
 	font-family: Lato;
 	color: #414442;
 	font-size: 13px;
@@ -293,6 +297,32 @@
 	margin-left: 15px;
 	overflow: auto;
 	margin-bottom: 5px;
+}
+
+.qnaInterface .qnaAnnouncementIconRead{
+	float: left;
+	color: #414442;
+	position: relative;
+	left: 10px;
+	margin-top: 2px;
+	font-size: 17px;
+}
+
+.qnaInterface .qnaAnnouncementIcon{
+	float: left;
+	color: #ffffff;
+	position: relative;
+	left: 10px;
+	margin-top: 2px;
+	font-size: 17px;
+}
+
+.qnaInterface .qnaThreadTime{
+	float: right;
+	position: relative;
+	right: 10px;
+	font-size: 9px;
+	font-weight: 200;
 }
 
 .qnaInterface > input:focus, button:focus {
@@ -356,6 +386,10 @@
 
 .icon-qna-close:before {
 	content: "\e606";
+}
+
+.icon-qna-Announcement:before {
+	content: "\e607";
 }
 
 /** nano scrollbar CSS **/
