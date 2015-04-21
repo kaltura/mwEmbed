@@ -115,6 +115,9 @@
 	float: right;
 	margin-top: 2px;
 }
+.qnaInterface .controlBarBtn:hover {
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);;
+}
 
 .qnaInterface .qnaCancelButton{
 	font-weight: 300;
@@ -150,6 +153,10 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+.qna-on-video-btn:hover {
+
+    text-shadow: 1px 1px 1px  rgba(0, 0, 0, 0.65);
 }
 
 .qna-on-video-btn:before {
