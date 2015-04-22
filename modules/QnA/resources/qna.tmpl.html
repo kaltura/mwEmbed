@@ -22,7 +22,7 @@
                         <div>
                             <div data-bind='css: entryTitleClass, text: title'></div>
                             <div class="icon-qna-Announcement" data-bind='css: entryIconClass'></div>
-                            <div class="qnaThreadTime">10 Min ago</div>
+                            <div class="qnaThreadTime" data-bind='text: createdAt.qnaTimestamp()'></div>
                         </div>
                         <br>
                         <div data-bind='css: entryTextClass, text: entryText'></div>

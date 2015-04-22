@@ -142,6 +142,7 @@ DAL for Q&A Module
                 type: "announcement",
                 title: gM('qna-announcement-title'),
                 entryText:cuePoint.text,
+                createdAt: ko.observable(cuePoint.createdAt),
                 entryTitleClass: viewedThreads.isRead(threadId)  ? "qnaAnnouncementTitleRead" : "qnaAnnouncementTitle",
                 entryTextClass: viewedThreads.isRead(threadId)  ? "qnaAnnouncementTextRead" : "qnaAnnouncementText",
                 entryClass: viewedThreads.isRead(threadId)  ? "qnaAnnouncementRead" : "qnaAnnouncement",
