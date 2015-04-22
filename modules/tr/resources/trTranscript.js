@@ -2,6 +2,7 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 
 	// This plugin will load the transcript data, parse it and inject it to a dedicated div
 	// as HTML. The HTML will hold times attributes for seeking the player
+	// in addition it will load mentioned terms and
 	// TBD - highlight words
 	// TBD if the plugin also needs to injects its HTML or not. We might decide that
 	// another plugin will do that
@@ -19,8 +20,104 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 		this.applyFilterBehavior();
 		this.applyTabsBehavior();
 		this.applyMetionedTermsBehavior();
+		this.loadMentionedTerms();
 	},
 
+	getKClient: function () {
+		if (!this.kClient) {
+			this.kClient = mw.kApiGetPartnerClient(this.embedPlayer.kwidgetid);
+		}
+		return this.kClient;
+	},
+
+	loadMentionedTerms : function (){
+		var _this = this;
+		// load the playlist from API
+		var myRequest = {
+			'ks': '',
+			'service': 'baseentry',
+			'action': 'list',
+			'responseProfile[id]': 12,
+			'filter:metadataObjectTypeEqual': 1,
+			'filter:idIn' : "1_t0vuuvd6"
+		};
+
+		this.getKClient().doRequest(myRequest, function (dataResult) {
+			_this.handleMentionedTerms(dataResult);
+		});
+	},
+	handleMentionedTerms : function (dataResult) {
+		//handle resault for mentioned terms
+		var _this = this;
+		var metadataObjects = dataResult['objects'][0]['relatedObjects']['metadata']['objects'];
+
+		//iterate on all recieved metadata objects fro the response profile
+		for(var i=0 ; i < metadataObjects.length ; i++ ){
+
+			//detect share metadata node
+			if(metadataObjects[i].xml.indexOf("ShareLink") > 0 && metadataObjects[i].xml.indexOf("AllowShare") > 0 ){
+				var sharedLink = $(metadataObjects[i].xml).find("sharelink").text();
+				var allowShare = $(metadataObjects[i].xml).find("AllowShare").text();
+				//TODO - hook to UI & logic
+				continue;
+			}
+
+
+			//detect mentioned terms
+
+			//companies
+
+			if(metadataObjects[i].relatedObjects.companies){
+				for (var k=0; k<metadataObjects[i].relatedObjects.companies.objects.length ; k++){
+					var company = metadataObjects[i].relatedObjects.companies.objects[k];
+					var companyName = $(company.xml).find("Name").text();
+					var companyPermId = $(company.xml).find("PermID").text();
+					var primaryRIC = $(company.xml).find("PrimaryRIC").text();
+					var primaryTicker = $(company.xml).find("PrimaryTicker").text();
+					var newCompany = {
+						companyPermId : companyPermId,
+						companyName : companyName,
+						primaryRIC : primaryRIC,
+						primaryTicker : primaryTicker,
+					}
+					this.getCompanies().push(newCompany);
+				}
+			}
+
+
+			var object = metadataObjects[i].xml;
+			var companiesNodes = $(object).find("company");
+
+			var keywordsNodes = $(object).find("company");
+			var peopleNodes = $(object).find("people");
+			var geographyNodes = $(object).find("geography");
+
+			console.clear();
+
+			if(companiesNodes.length){
+				for (var j=0;j<companiesNodes.length;j++){
+					debugger;
+					console.log("COMPANY  "+ $(companiesNodes[j]).text());
+				}
+			}
+			if(keywordsNodes.length){
+				for (var j=0;j<keywordsNodes.length;j++){
+					console.log("keyword  "+ $(keywordsNodes[j]).text());
+				}
+			}
+			if(peopleNodes.length){
+				for (var j=0;j<peopleNodes.length;j++){
+					console.log("people  "+ $(peopleNodes[j]).text());
+				}
+			}
+			if(geographyNodes.length){
+				for (var j=0;j<geographyNodes.length;j++){
+					console.log("geography "+ $(geographyNodes[j]).text());
+				}
+			}
+
+		}
+	},
 	applyMetionedTermsBehavior : function (){
 		var _this = this;
 		this.mainDoc.find(".mentioned-terms-switch-btn").click(function(e){
@@ -295,9 +392,32 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 			return true;
 		}
 	},
-
 	getTargetElement: function() {
 		return window['parent'].document.getElementById( this.getConfig('targetId') );
+	},
+	getCompanies : function (){
+		if(!this.getConfig("companies")){
+			this.setConfig("companies",[]);
+		}
+		return this.getConfig("companies");
+	},
+	getKeywords : function (){
+		if(!this.getConfig("keywords")){
+			this.setConfig("keywords",[]);
+		}
+		return this.getConfig("keywords");
+	},
+	getPeople : function (){
+		if(!this.getConfig("people")){
+			this.setConfig("people",[]);
+		}
+		return this.getConfig("people");
+	},
+	getGeography : function (){
+		if(!this.getConfig("geography")){
+			this.setConfig("geography",[]);
+		}
+		return this.getConfig("geography");
 	},
 	updateTargetWithTemplate: function() {
 		if( this.hasValidTargetElement() ) {

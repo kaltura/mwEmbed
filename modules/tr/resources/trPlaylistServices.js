@@ -9,7 +9,7 @@ mw.PluginManager.add( 'trPlaylistServices', mw.KBasePlugin.extend({
 	},
 	setBindings : function(){
 
-		this.setConfig("ks" , "MWQ1MDBmODM1ZmFiMmVlZWU4Y2E5NWQ0ODU4OWQwOWRmNDRkY2EwZnwyNzAxNzsyNzAxNzsxNDI5NjAyNDg3OzI7MTQyOTUxNjA4Ny41MDE5O19fQURNSU5fXzI2Njg3Ozs7");
+		this.setConfig("ks" , "djJ8MTg1MTE5MXw4XeiWi1KNL9C7fP9j5D0lcoUzzztrJDJRTA6GfK_sy5-8FtffNVocW3wQkKera_5mL8QGGH3fsAdgE833dT_2mNhy2_SC0LKKjuVi8ljVBKbWMixei6Y57g_WCPSfPdFFru5Iql-havWS7sfsdWSL");
 		//this.setConfig("ks" ,  this.getKalturaClient().ks);
 
 		var _this = this;
@@ -42,6 +42,7 @@ mw.PluginManager.add( 'trPlaylistServices', mw.KBasePlugin.extend({
 	},
 	loadRelatedPlaylist : function (){
 		var ks= this.getConfig("ks");
+
 		var params = {
 			'playlistParams': {
 				'service': 'playlist',
