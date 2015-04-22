@@ -140,13 +140,10 @@ DAL for Q&A Module
             return $.extend(cuePoint,{
                 threadId: threadId,
                 type: "announcement",
+                isRead: ko.observable(viewedThreads.isRead(threadId)),
                 title: gM('qna-announcement-title'),
                 entryText:cuePoint.text,
-                timestamp: ko.observable(cuePoint.createdAt),
-                entryTitleClass: viewedThreads.isRead(threadId)  ? "qnaAnnouncementTitleRead" : "qnaAnnouncementTitle",
-                entryTextClass: viewedThreads.isRead(threadId)  ? "qnaAnnouncementTextRead" : "qnaAnnouncementText",
-                entryClass: viewedThreads.isRead(threadId)  ? "qnaAnnouncementRead" : "qnaAnnouncement",
-                entryIconClass : viewedThreads.isRead(threadId)  ? "qnaAnnouncementIconRead" : "qnaAnnouncementIcon"
+                timestamp: ko.observable(cuePoint.createdAt)
             });
         },
         requestCuePoints:function() {
