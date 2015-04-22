@@ -78,7 +78,7 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 						companyPermId : companyPermId,
 						companyName : companyName,
 						primaryRIC : primaryRIC,
-						primaryTicker : primaryTicker,
+						primaryTicker : primaryTicker
 					}
 					this.getCompanies().push(newCompany);
 				}
