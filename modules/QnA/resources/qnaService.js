@@ -175,7 +175,7 @@ DAL for Q&A Module
                         return;
                     }
                     _this.updateCuePoints(data.objects);
-                    _this.embedPlayer.triggerHelper('KalturaSupport_CuePointsUpdated', [data.totalCount]);
+                   // _this.embedPlayer.triggerHelper('KalturaSupport_CuePointsUpdated', [data.totalCount]);
                 }
             );
         },
@@ -189,7 +189,7 @@ DAL for Q&A Module
             //Start live cuepoint pulling
             this.liveAQnaIntervalId = setInterval(function () {
                 _this.requestCuePoints();
-            }, mw.getConfig("QandA.RequestInterval") || 10000);
+            }, mw.getConfig("qnaPollingInterval") || 10000);
         }
     };
 })(window.mw, window.jQuery);

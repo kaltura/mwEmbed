@@ -21,6 +21,10 @@
             this.qnaService = qnaService;
             this.myObservableArray = qnaService.getItems();
 
+            this.myObservableArray.subscribe(function(newVal){
+                _this.applyLayout();
+            });
+            this.applyLayout();
 
             this.itemRead= function(item, event) {
                 console.log("item of type " + item.type + " with id " + item.threadId + " was clicked");
@@ -35,7 +39,10 @@
         },
         applyLayout:function() {
 
-            $( window['parent'].document ).find(".nano").nanoScroller();
-        },
+            var scroll=$( window['parent'].document ).find(".nano");
+            scroll.find(".nano-content" ).css("z-index", -1);
+            scroll.nanoScroller();
+            scroll.find(".nano-content" ).css("z-index", "");
+        }
     };
 })(window.mw, window.jQuery);
