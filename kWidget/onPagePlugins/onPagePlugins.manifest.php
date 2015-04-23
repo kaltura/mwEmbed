@@ -323,7 +323,7 @@ return array(
         'attributes' => array(
             'onPageJs1' => array(
                 'doc' => "",
-                'initvalue' => "http:\/\/s3-us-west-2.amazonaws.com\/media-data-player\/kalturaIntegrated\/stable\/js\/loader.js",
+                'initvalue' => "http:\/\/mediadataplayer.cdn.cielo24.com\/kalturaIntegrated\/stable\/js\/loader.js",
                 'type' => 'hidden'
             ),
             'DynaTransWindowSize' => array(
@@ -337,7 +337,7 @@ return array(
                 'type' => 'string',
             ),
             'DynaTransClientLogo' => array(
-                'initvalue' => "http:\/\/s3-us-west-2.amazonaws.com\/media-data-player\/kalturaIntegrated\/stable\/img\/logo-transparent.png",
+                'initvalue' => "http:\/\/mediadataplayer.cdn.cielo24.com\/kalturaIntegrated\/stable\/img\/logo-transparent.png",
                 'doc' => "Client Logo.",
                 'type' => 'string',
             ),
