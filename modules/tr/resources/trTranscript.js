@@ -19,7 +19,7 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 		this.setBindings();
 		this.applyFilterBehavior();
 		this.applyTabsBehavior();
-		this.applyMetionedTermsBehavior();
+		this.applyMetionedTermsBoxBehavior();
 		this.loadMentionedTerms();
 	},
 
@@ -34,7 +34,6 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 		var _this = this;
 		// load the playlist from API
 		var myRequest = {
-			'ks': '',
 			'service': 'baseentry',
 			'action': 'list',
 			'responseProfile[id]': 12,
@@ -44,6 +43,7 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 
 		this.getKClient().doRequest(myRequest, function (dataResult) {
 			_this.handleMentionedTerms(dataResult);
+			_this.applyMentionedTermsItemBehavior();
 		});
 	},
 	handleMentionedTerms : function (dataResult) {
@@ -61,12 +61,8 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 				//TODO - hook to UI & logic
 				continue;
 			}
-
-
-			//detect mentioned terms
-
+			//detect mentioned terms and parsing data
 			//companies
-
 			if(metadataObjects[i].relatedObjects.companies){
 				for (var k=0; k<metadataObjects[i].relatedObjects.companies.objects.length ; k++){
 					var company = metadataObjects[i].relatedObjects.companies.objects[k];
@@ -83,42 +79,102 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 					this.getCompanies().push(newCompany);
 				}
 			}
-
-
-			var object = metadataObjects[i].xml;
-			var companiesNodes = $(object).find("company");
-
-			var keywordsNodes = $(object).find("company");
-			var peopleNodes = $(object).find("people");
-			var geographyNodes = $(object).find("geography");
-
-			console.clear();
-
-			if(companiesNodes.length){
-				for (var j=0;j<companiesNodes.length;j++){
-					debugger;
-					console.log("COMPANY  "+ $(companiesNodes[j]).text());
-				}
-			}
-			if(keywordsNodes.length){
-				for (var j=0;j<keywordsNodes.length;j++){
-					console.log("keyword  "+ $(keywordsNodes[j]).text());
-				}
-			}
-			if(peopleNodes.length){
-				for (var j=0;j<peopleNodes.length;j++){
-					console.log("people  "+ $(peopleNodes[j]).text());
-				}
-			}
-			if(geographyNodes.length){
-				for (var j=0;j<geographyNodes.length;j++){
-					console.log("geography "+ $(geographyNodes[j]).text());
-				}
+			//keywords
+			var keywordsArr = $(metadataObjects[i].xml).find("Keyword");
+			for (var k=0; k<keywordsArr.length ; k++){
+				this.getKeywords().push($(keywordsArr[k]).text())
 			}
 
+
+
+			//stab
+			this.getGeography().push("USA");
+			this.getGeography().push("Asia");
+			this.getPeople().push("Eitan Avgil");
+
+			//hooking to UI:
+			//setting companies string and click
+			var companies = this.getCompanies();
+			if(companies.length){
+				var companiesString = "";
+				for (var j=0;j<companies.length;j++){
+					companiesString+='<span class="mentioned-term company" permId="'+companies[j].companyPermId+'" ric="'+companies[j].primaryRIC+'" ticker="'+companies[j].primaryTicker+'"> '+companies[j].companyName+'</span>,';
+				}
+				if(companiesString.length>1){
+					companiesString = companiesString.substring(0, companiesString.length - 1)
+					this.mainDoc.find("#companiesTerms").html(companiesString);
+				}
+			}else{
+				//no keywords found
+				this.mainDoc.find("#companiesTerms").parent().hide();
+			}
+			//setting keywords string and click
+			var keywords = this.getKeywords();
+			if(keywords.length){
+				var kwString = "";
+				for (var j=0;j<keywords.length;j++){
+					kwString+='<span class="mentioned-term keyword"> '+keywords[j]+'</span>,';
+				}
+				if(kwString.length>1){
+					kwString = kwString.substring(0, kwString.length - 1)
+					this.mainDoc.find("#keywordsTerms").html(kwString);
+				}
+			}else{
+				//no keywords found
+				this.mainDoc.find("#keywordsTerms").parent().hide();
+			}
+			//setting people string
+			var people = this.getPeople();
+			if(people.length){
+				var peopleString = "";
+				for (var j=0;j<people.length;j++){
+					peopleString+='<span class="mentioned-term people"> '+people[j]+'</span>,';
+				}
+				if(peopleString.length>1){
+					peopleString = peopleString.substring(0, peopleString.length - 1)
+					this.mainDoc.find("#peopleTerms").html(peopleString);
+				}
+			}else{
+				//no keywords found
+				this.mainDoc.find("#peopleTerms").parent().hide();
+			}
+
+			//setting geography string and click
+			var geography = this.getGeography();
+			if(geography.length){
+				var geographyString = "";
+				for (var j=0;j<geography.length;j++){
+					geographyString+='<span class="mentioned-term geography"> '+geography[j]+'</span>,';
+				}
+				if(geographyString.length>1){
+					geographyString = geographyString.substring(0, geographyString.length - 1)
+					this.mainDoc.find("#geographyTerms").html(geographyString);
+				}
+			}else{
+				//no keywords found
+				this.mainDoc.find("#geographyTerms").parent().hide();
+			}
 		}
 	},
-	applyMetionedTermsBehavior : function (){
+	applyMentionedTermsItemBehavior : function (){
+		var _this = this;
+		this.mainDoc.find(".mentioned-term").click(function(e){
+			var scope = _this;
+			if($(this).hasClass("company")){
+				//alert("This is a company")
+			}
+			if($(this).hasClass("people")){
+				//alert("This is a people")
+			}
+			if($(this).hasClass("geography")){
+				//alert("This is a geography")
+			}
+			if($(this).hasClass("keyword")){
+				//alert("This is a keyword")
+			}
+		})
+	},
+	applyMetionedTermsBoxBehavior : function (){
 		var _this = this;
 		this.mainDoc.find(".mentioned-terms-switch-btn").click(function(e){
 			if($(this).parent().parent().hasClass("collapsed")){
@@ -169,14 +225,14 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 	},
 	setBindings : function (){
 		this.bind('forcedCaptionLoaded', $.proxy(function(event,source){
-			this.clearData();
+			//this.clearData();
 			this.setTranscript(source.captions);
-			this.setMentionedTerms();
+			//this.setMentionedTerms();
 			this.setTranscriptType();
 			//Experimental :) // render the mentioned terms to the transcript
 			try{
-				this.renderHighlightedWords();
-				this.applyBehavior();
+				//this.renderHighlightedWords();
+				//this.applyBehavior();
 			}catch(e){
 				mw.log("Error applying highlighted words " + e)
 			}
@@ -208,7 +264,7 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 		$(doc).find("#"+this.getConfig('transcriptTargetId')).text("");
 		$(doc).find("#peopleTerms").text("");
 		$(doc).find("#companiesTerms").text("");
-		$(doc).find("#locationsTerms").text("");
+		$(doc).find("#geographyTerms").text("");
 		$(doc).find("#keywordsTerms").text("");
 
 	},
@@ -277,82 +333,6 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 		//$(doc).find("#"+this.getConfig('transcriptTargetId')).append(newOutput);
 
 	},
-	setMentionedTerms : function (){
-		//TODO replace this with real data once I get it
-		var mentionedTerms = this.embedPlayer.evaluate("{mediaProxy.entryMetadata}");
-		var people = this.buildMentionedTermsObject(mentionedTerms.People);
-		var company = this.buildMentionedTermsObject(mentionedTerms.Company);
-		var geography = this.buildMentionedTermsObject(mentionedTerms.Geography);
-		var keywords = this.buildMentionedTermsObject(mentionedTerms.Keywords);
-
-		this.renderToHtml(people , "peopleTerms");
-		this.renderToHtml(company , "companiesTerms");
-		this.renderToHtml(geography , "locationsTerms");
-		this.renderToHtml(keywords , "keywordsTerms");
-
-		//Experimental :) Scan all words needs to be marked and pass them to an array
-		var markMyWords = [];
-		if(keywords){
-			for (var i=0;i<keywords.length;i++){
-				markMyWords.push(keywords[i].string);
-			}
-		}
-		if(people){
-			for (var i=0;i<people.length;i++){
-				markMyWords.push(people[i].string);
-			}
-		}
-		if(company){
-			for (var i=0;i<company.length;i++){
-				markMyWords.push(company[i].string);
-			}
-		}
-		if(geography){
-			for (var i=0;i<geography.length;i++){
-				markMyWords.push(geography[i].string);
-			}
-		}
-		this.markMyWords = markMyWords ;
-	},
-	// build data with the mentioned term and the string for the free search
-	// the object will have items with keys for the mentioned term, and string for the search;
-	buildMentionedTermsObject: function(str){
-		if(!str){
-			return;
-		}
-		var arr = str.split(",");
-		var returnArr = [];
-		for (var i=0;i<arr.length;i++){
-			// assumption that each item has a key|string structure
-			var item = {
-				"key" : arr[i].split("|")[0],
-				"string" : arr[i].split("|")[1]
-			};
-			returnArr.push(item);
-		};
-		return returnArr;
-	},
-
-
-	renderToHtml : function(dataArr,targetClass){
-		var doc = window['parent'].document;
-		
-		if (!dataArr){
-			$(doc).find("#"+targetClass).parent().hide();
-			return;
-		}
-		$(doc).find("#"+targetClass).parent().show();
-
-		$(doc).find("#"+targetClass).text("");
-		var htmlString = "";
-		for (var i=0;i<dataArr.length;i++){
-			// need to add the click mechanism later
-			htmlString+="<span trdata="+dataArr[i].string+"> "+ dataArr[i].key +"</span>,";
-		};
-		// remove last string
-		$(doc).find("#"+targetClass).append(htmlString.slice(0,htmlString.length-1));
-	},
-
 
 	setTranscript : function (captions){
 		// copy the transcript data to an object, parse and manipulate it and then inject it
@@ -365,7 +345,6 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 
 		for (var property in captions) {
 			if (captions.hasOwnProperty(property)) {
-				//debugger;
 				var timeStamp = captions[property].start
 				htmlString+='<span index="'+property+'" trtime="'+timeStamp+'">'+captions[property]["content"]+' </span>';
 			}
