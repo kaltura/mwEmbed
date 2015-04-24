@@ -11,7 +11,8 @@
 				'secondScreen': {
 					'size': '25',
 					'widthHeightRatio': ( 3 / 4 ),
-					'startLocation': 'right bottom'
+					'startLocation': 'right bottom',
+					'useVideoFromStreamSelector' : true
 				},
 				'resizable': {
 					'handles': 'ne, se, sw, nw',
@@ -142,7 +143,7 @@
 			initFSM: function () {
 				function StateMachine( states ) {
 					this.states = states;
-					this.indexes = {}; //just for convinience
+					this.indexes = {}; //just for convenience
 					for ( var i = 0; i < this.states.length; i++ ) {
 						this.indexes[this.states[i].name] = i;
 						if ( this.states[i].initial ) {
@@ -344,6 +345,11 @@
 						_this.hideDisplay();
 					}
 				} );
+				if( this.getConfig('secondScreen').useVideoFromStreamSelector ){
+					this.bind('streamsReady', function(){
+						_this.setupSecondaryScreenVideo();
+					});
+				}
 
 				var updateSecondScreenLayout = function (event) {
 					var eventName = mw.isAndroid() ? 'resize' : 'orientationchange';
@@ -545,7 +551,7 @@
 				} );
 				this.bind("onChangeMedia", function(){
 					//Clear the current slide before loading the new media
-					_this.getComponent().find( '#SynchImg' ).attr("src", "");
+					_this.getComponent().find( '#SyncElm' ).attr("src", "");
 				});
 				this.bind("onChangeStream", function(){
 					_this.syncEnabled = false;
@@ -564,6 +570,35 @@
 				this.bind("postDualScreenTransition", function () {
 					_this.applyIntrinsicAspect();
 				});
+			},
+			setupSecondaryScreenVideo: function(){
+				var _this = this;
+				// use the first stream: 
+				if( ! this.getPlayer().plugins['streamSelector'] || !this.getPlayer().plugins['streamSelector'].streams[0] ){
+					this.log("Error no secondary streams present. ")
+					return ;
+				}
+				var stream = this.getPlayer().plugins['streamSelector'].streams[0];
+				// grab the "secondary stream";
+				var sources = kWidgetSupport.getEntryIdSourcesFromPlayerData(this.getPlayer().kpartnerid, stream.data);
+				// just use the first source for now: 
+				var $syncVid =  this.getComponent().find( '#SyncElm' );
+				$syncVid.append(
+					$('<source>').attr( sources[0] )
+				)[0].load();
+				// start playback at onplay time will be kept in sync via sync call.
+				this.bind( 'onplay', function () {
+					$syncVid[0].play();
+				});
+				this.bind( 'onpause', function () {
+					$syncVid[0].pause();
+				});
+				this.bind( 'seeking', function () {
+					$syncVid[0].currentTime = this.getPlayer().currentTime;
+				});
+				this.bind('timeupdate', function(){
+					_this.syncVideoTimes();
+				})
 			},
 			initDisplay: function(){
 				var _this = this;
@@ -674,7 +709,7 @@
 					this.render = false;
 				}
 			},
-
+			
 			//Monitor
 			getComponent: function () {
 				if ( !this.$el ) {
@@ -684,11 +719,16 @@
 						.css( {height: height + 'px', width: width + 'px', "background": "black"} )
 						.addClass( this.getCssClass() + " secondScreen" );
 
+					// if second screen sync is enabled add a video tag (instead of image )
+					var $syncElm = $('<img>');
+					if( this.getConfig('secondScreen').useVideoFromStreamSelector ){
+						$syncElm = $( '<video>' );
+					}
 					this.$el.append(
-						$( '<img>' )
-							.attr( 'id', 'SynchImg' )
+						$syncElm.attr( 'id', 'SyncElm' )
 							.addClass("imagePlayer")
 					);
+					
 				}
 				return this.$el;
 			},
@@ -836,8 +876,14 @@
 							callback();
 						}
 					};
+					// check for video and sync at sync call time if not time aligned. 
+					if( this.getConfig('secondScreen').useVideoFromStreamSelector ){
+						this.syncVideoTimes();
+						return ;
+					}
+					
 					if ( cuePoint ) {
-						var myImg = this.getComponent().find( '#SynchImg' );
+						var myImg = this.getComponent().find( '#SyncElm' );
 						if ( cuePoint.thumbnailUrl ) {
 							myImg.attr( 'src', cuePoint.thumbnailUrl );
 							callCallback();
@@ -848,6 +894,16 @@
 							} );
 						}
 					}
+				}
+			},
+			syncVideoTimes:function(){
+				var syncVid = this.getComponent().find( '#SyncElm' )[0];
+				var syncDetla = this.getPlayer().currentTime - syncVid.currentTime;
+				//this.log( 'syncVideoTimes: ' + syncVid.currentTime + ' main vid time:' + this.getPlayer().currentTime );
+				// if syncvid is out of sync by more then 1 second seek to player time. 
+				if( Math.abs( syncDetla ) > .5 ){
+					this.log( 'SyncDelta is: ' + syncDetla + ' issuing seek on secondary video' );
+					syncVid.currentTime = this.getPlayer().currentTime;
 				}
 			},
 			applyIntrinsicAspect: function(){

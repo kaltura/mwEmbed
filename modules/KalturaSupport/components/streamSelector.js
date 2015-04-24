@@ -43,6 +43,11 @@
 			});
 
 			this.bind('streamsReady', function () {
+				// check if we should hide the menu: 
+				if( _this.getConfig('hideBtn') ){
+					_this.getBtn().hide();
+				}
+				
 				//Indicate that the streams are ready to enable spinning animation on source switching
 				_this.streamsReady = true;
 				//Insert original entry to streams
@@ -65,6 +70,8 @@
 				}
 				_this.buildMenu();
 				_this.onEnable();
+				
+				
 			});
 
 			this.bind('sourceSwitchingEnd', function () {
