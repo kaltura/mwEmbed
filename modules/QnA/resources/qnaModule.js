@@ -41,7 +41,7 @@
 
             var scroll=$( window['parent'].document ).find(".nano");
             scroll.find(".nano-content" ).css("z-index", -1);
-            scroll.nanoScroller();
+            scroll.nanoScroller({ documentContext: window['parent'].document});
             scroll.find(".nano-content" ).css("z-index", "");
         }
     };
