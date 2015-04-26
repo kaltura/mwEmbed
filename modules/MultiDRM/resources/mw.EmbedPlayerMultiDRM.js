@@ -782,7 +782,7 @@
 			var duration = parseInt(this.duration, 10).toFixed(2);
 			var curTime = parseInt(this.getPlayerElementTime(), 10).toFixed(2);
 			if (( this.currentState === "end" ) ||
-				( this.currentState === "pause" && duration === curTime )) {
+				( this.currentState === "pause" && duration === curTime && this.getPlayerElementTime() > 0 )) {
 				this.seek(0.01, false);
 			} else {
 				if ( this.parent_play() ) {
@@ -981,6 +981,22 @@
 			if (e && e.loaded && e.total) {
 				this.updateBufferStatus(e.loaded / e.total);
 				this.progressEventData = e.loaded;
+			}
+		},
+		/**
+		 * buffer under-run
+		 * @private
+		 */
+		_onwaiting: function () {
+			//vod buffer events are being handled by EmbedPlayer.js
+			if (this.isLive()) {
+				this.bufferStart();
+			}
+		},
+
+		_oncanplay: function () {
+			if (this.isLive() && this.buffering) {
+				this.bufferEnd();
 			}
 		},
 		/**
