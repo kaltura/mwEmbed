@@ -80,7 +80,7 @@
 	-webkit-box-shadow:	none;
 	-moz-box-shadow:	none;
 	box-shadow:			none;
-	width: 10px;
+	width: 4px;
 	margin-left: 15px;
 	float: left;
 	cursor: default;
@@ -129,7 +129,8 @@
 
 .qna-on-video-btn {
 	z-index: 99999;
-	background-color : #f0f0f0;
+	/*background-color : #f0f0f0;*/
+	background-color: #ffffff;
 	position: absolute;
 	right: 0;
 	top: 50%;
@@ -205,6 +206,7 @@
 	list-style-type: none;
 	float: left;
 	height: auto;
+	min-height: 80px;
 	overflow: hidden;
 }
 
@@ -217,7 +219,7 @@
 	font-style: italic;
 	line-height: 9px;
 	text-align: left;
-	margin-top: 5px;
+	margin-top: 14px;
 	margin-left: 10px;
 }
 
@@ -230,30 +232,28 @@
 	font-style: italic;
 	line-height: 9px;
 	text-align: left;
-	margin-top: 5px;
+	margin-top: 14px;
 	margin-left: 10px;
 }
 
 .qnaInterface .qnaAnnouncementText{
-	float: left;
 	font-family: 'Lato', Helvetica, Arial;
 	color: #ffffff;
 	font-size: 13px;
 	font-weight: 300;
 	text-align: left;
-	margin-top: 5px;
+	margin-top: 8px;
 	margin-bottom: 5px;
 	margin-left: 10px;
 }
 
 .qnaInterface .qnaAnnouncementTextRead{
-	float: left;
 	font-family: 'Lato', Helvetica, Arial;
 	color: #414442;
 	font-size: 13px;
 	font-weight: 300;
 	text-align: left;
-	margin-top: 5px;
+	margin-top: 8px;
 	margin-bottom: 5px;
 	margin-left: 10px;
 }
@@ -306,7 +306,7 @@
 	color: #414442;
 	position: relative;
 	left: 10px;
-	margin-top: 2px;
+	margin-top: 11px;
 	font-size: 17px;
 }
 
@@ -315,11 +315,12 @@
 	color: #ffffff;
 	position: relative;
 	left: 10px;
-	margin-top: 2px;
+	margin-top: 11px;
 	font-size: 17px;
 }
 
 .qnaInterface .qnaThreadTime{
+	margin-top: 8px;
 	float: right;
 	position: relative;
 	right: 10px;
@@ -329,6 +330,7 @@
 }
 
 .qnaInterface .qnaThreadTimeRead{
+	margin-top: 8px;
 	float: right;
 	position: relative;
 	right: 10px;
@@ -430,7 +432,7 @@
 	display: block;
 }
 .nano > .nano-pane {
-	background : rgba(0,0,0,.25);
+	background : rgba(215,215,215,.7);
 	position   : absolute;
 	width      : 8px;
 	right      : 0;
@@ -447,7 +449,7 @@
 	border-radius         : 5px;
 }
 .nano > .nano-pane > .nano-slider {
-	background: #444;
+	background: #255;
 	background: rgba(0,0,0,.5);
 	position              : relative;
 	margin                : 0 1px;
