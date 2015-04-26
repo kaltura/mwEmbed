@@ -23,7 +23,7 @@
                             <div>
                                 <div data-bind='css: {  "qnaAnnouncementTitle" : !isRead(), "qnaAnnouncementTitleRead" : isRead()}, text: title'></div>
                                 <div class="icon-qna-Announcement" data-bind='css: {  "qnaAnnouncementIcon" : !isRead(), "qnaAnnouncementIconRead" : isRead()}'></div>
-                                <div class="qnaThreadTime" data-bind='text: timestamp.qnaTimestamp()'></div>
+                                <div data-bind='css: {  "qnaThreadTime" : !isRead(), "qnaThreadTimeRead" : isRead()}, text: timestamp.qnaTimestamp()'></div>
                             </div>
                             <br>
                             <div data-bind='css: {  "qnaAnnouncementText" : !isRead(), "qnaAnnouncementTextRead" : isRead()}, text: entryText'></div>

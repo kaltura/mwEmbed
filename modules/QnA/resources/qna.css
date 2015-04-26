@@ -167,7 +167,7 @@
 /* qna entries (Announcements/Threads) */
 
 .qnaInterface .qnaEntryTitle{
-	font-family: Lato;
+	font-family: 'Lato', Helvetica, Arial;
 	color: #ffffff;
 	font-size: 14px;
 	font-weight: 400;
@@ -179,7 +179,7 @@
 }
 
 .qnaInterface .qnaEntryText{
-	font-family: Lato;
+	font-family: 'Lato', Helvetica, Arial;
 	color: #ffffff;
 	font-size: 13px;
 	font-weight: 200;
@@ -209,10 +209,10 @@
 
 .qnaInterface .qnaAnnouncementTitle{
 	float: left;
-	font-family: Lato;
+	font-family: 'Lato', Helvetica, Arial;
 	color: #ffffff;
 	font-size: 14px;
-	font-weight: 600;
+	font-weight: 400;
 	font-style: italic;
 	line-height: 9px;
 	text-align: left;
@@ -222,10 +222,10 @@
 
 .qnaInterface .qnaAnnouncementTitleRead{
 	float: left;
-	font-family: Lato;
+	font-family: 'Lato', Helvetica, Arial;
 	color: #414442;
 	font-size: 14px;
-	font-weight: 600;
+	font-weight: 400;
 	font-style: italic;
 	line-height: 9px;
 	text-align: left;
@@ -235,7 +235,7 @@
 
 .qnaInterface .qnaAnnouncementText{
 	float: left;
-	font-family: Lato;
+	font-family: 'Lato', Helvetica, Arial;
 	color: #ffffff;
 	font-size: 13px;
 	font-weight: 300;
@@ -247,7 +247,7 @@
 
 .qnaInterface .qnaAnnouncementTextRead{
 	float: left;
-	font-family: Lato;
+	font-family: 'Lato', Helvetica, Arial;
 	color: #414442;
 	font-size: 13px;
 	font-weight: 300;
@@ -277,7 +277,7 @@
 }
 
 .qnaInterface .qnaEntryTitleRead{
-	font-family: Lato;
+	font-family: 'Lato', Helvetica, Arial;
 	color: #414442;
 	font-size: 14px;
 	font-weight: 400;
@@ -289,7 +289,7 @@
 }
 
 .qnaInterface .qnaEntryTextRead{
-	font-family: Lato;
+	font-family: 'Lato', Helvetica, Arial;
 	color: #414442;
 	font-size: 13px;
 	font-weight: 200;
@@ -323,6 +323,16 @@
 	right: 10px;
 	font-size: 9px;
 	font-weight: 200;
+	color: #ffffff;
+}
+
+.qnaInterface .qnaThreadTimeRead{
+	float: right;
+	position: relative;
+	right: 10px;
+	font-size: 9px;
+	font-weight: 200;
+	color: #414442;
 }
 
 .qnaInterface > input:focus, button:focus {
