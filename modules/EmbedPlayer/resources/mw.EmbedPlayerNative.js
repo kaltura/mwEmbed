@@ -161,6 +161,7 @@
 						.addClass('playerPoster')
 						.load(function () {
 							_this.applyIntrinsicAspect();
+							$('.playerPoster').attr('alt', _this.posterAlt);
 						})
 				);
 			}
