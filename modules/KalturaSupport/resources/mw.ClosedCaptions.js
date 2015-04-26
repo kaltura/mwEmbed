@@ -28,6 +28,7 @@
 		textSources: [],
 		defaultBottom: 15,
 		lastActiveCaption: null,
+		ended: false,
 
 		setup: function(){
 			var _this = this;
@@ -102,12 +103,7 @@
 					}
 				} );
 			} else {
-				if (this.getConfig("useExternalClosedCaptions")) {
-					this.bind( 'loadExternalClosedCaptions', function ( e, textSources ) {
-						_this.destory();
-						_this.buildMenu( textSources );
-					} );
-				} else {
+				if (!this.getConfig("useExternalClosedCaptions")) {
 					this.bind( 'playerReady', function () {
 						_this.destory();
 						_this.setupTextSources( function () {
@@ -120,6 +116,23 @@
 						_this.monitor();
 					}
 				});
+
+				this.bind( 'ended', function(){
+					_this.ended = true;
+				});
+
+				this.bind( 'playing', function(){
+					_this.ended = false;
+				});
+			}
+			if (this.getConfig("useExternalClosedCaptions")) {
+				this.bind( 'loadExternalClosedCaptions', function ( e, data ) {
+					if ( !(data && $.isArray( data.languages ) ) ) {
+						data.languages = [];
+					}
+					_this.destory();
+					_this.buildMenu( data.languages );
+				} );
 			}
 
 			this.bind( 'onplay', function(){
@@ -160,7 +173,7 @@
 			}
 
 			this.bind( 'onHideControlBar onShowControlBar', function(event, layout ){
-				if ( _this.getPlayer().isOverlayControls() ) {
+				if ( !_this.ended && _this.getPlayer().isOverlayControls() ) {
 					_this.defaultBottom = layout.bottom;
 					// Move the text track down if present
 					_this.getPlayer().getInterface().find( '.track' )

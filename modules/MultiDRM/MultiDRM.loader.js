@@ -115,6 +115,7 @@
 				"merchant": "kaltura"
 			},
 			"sendCustomData": true,
+			"generatePSSH": false,
 			"assetId": null , //coguid //entryid
 			"variantId": null , //flavorid
 			"authenticationToken": null ,
