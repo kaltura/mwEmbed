@@ -1584,19 +1584,12 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'description' => 'Add the Related Videos screen at the end of the video to attract users to watch additional videos.',
 		'attributes' => array_merge($kgDefaultComponentAttr,
 			array(
-				'playlistId' => array(
-					'doc' => 'Playlist Id that will be used as the data source for related items.',
-					'configObject' => "playlistSelectBox",
-					'initvalue' => '',
-					'filter' => "entry",
-					'type' => 'entrySelector'
-				),
-				'entryList' => array(
-					'label' => 'Entry IDs list',
-					'doc' => 'Allows runtime injection of list of related entries seperated by commas.
-						 This will only be used if the playlistId is null.',
-					'type' => 'string'
-				),
+				'entries' => array(
+                    'label' => 'Related Entries Source',
+                    'doc' => 'Select the related entries source.',
+                    'configObject' => "playlistSelectBox",
+                    'type' => 'related'
+                ),
 				'displayOnPlaybackDone' => array(
 					'doc' => 'Display related screen automatically when playback has finished',
 					'type' => 'boolean',
