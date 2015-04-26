@@ -262,6 +262,7 @@
 	list-style: none;
 	margin-left: 0px;
 	overflow: auto;
+	background-color: #ffffff;
 }
 
 .qnaInterface .listHolder{
