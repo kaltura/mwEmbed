@@ -136,10 +136,18 @@ DAL for Q&A Module
 
         annotationCuePointToQAItem: function(cuePoint) {
 
+            var type = "";
+            if (cuePoint.tags == "qna"){
+                type = "qnaThread";
+            }
+            else if (cuePoint.tags == "QnaAnnouncement"){
+                type = "announcement";
+            }
+
             var threadId = cuePoint.id;
             return $.extend(cuePoint,{
                 threadId: threadId,
-                type: "announcement",
+                type: type,
                 isRead: ko.observable(viewedThreads.isRead(threadId)),
                 title: gM('qna-announcement-title'),
                 entryText:cuePoint.text,
