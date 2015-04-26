@@ -1,3 +1,4 @@
+
 (function (mw, $) {
 	"use strict";
 
@@ -7,6 +8,7 @@
 			templatePath: '../QnA/resources/qna.tmpl.html',
 			cssFileName: 'modules/QnA/resources/qna.css'
 		},
+
 
 		getBaseConfig: function() {
 			var parentConfig = this._super();
@@ -18,69 +20,76 @@
 		setup: function () {
 			this.addBindings();
 		},
+        destroy: function(){
+            var _this = this;
+            if (_this.KQnaModule) {
+                _this.KQnaModule.destroy();
+                _this.KQnaModule=null;
+            }
+            if (_this.KQnaService) {
+                _this.KQnaService.destroy();
+                _this.KQnaService=null;
+            }
+        },
 
 		addBindings: function () {
 			var _this = this;
 			var embedPlayer = this.getPlayer();
+            _this.KQnaService = new mw.KQnaService( embedPlayer,_this );
+            _this.KQnaModule = new mw.KQnaModule( embedPlayer,_this, _this.KQnaService  );
+            var qnaObject=null;
+            var onVideoTogglePluginButton=null;
 
-			this.bind('layoutBuildDone', function (event, screenName) {
+            var changeVideoToggleIcon=function() {
+
+                if (!qnaObject.is(":visible")){
+                    onVideoTogglePluginButton.removeClass('icon-qna-close');
+                    onVideoTogglePluginButton.addClass('icon-qna-Ask');
+                } else {
+                    onVideoTogglePluginButton.removeClass('icon-qna-Ask');
+                    onVideoTogglePluginButton.addClass('icon-qna-close');
+                }
+            };
+
+            this.bind('updateLayout', function () {
+                _this.positionQAButtonOnVideoContainer();
+            });
+
+			this.bind('layoutBuildDone ended', function (event, screenName) {
 				// add the Q&A toggle button to be on the video
 				embedPlayer.getVideoHolder().append('<div class="qna-on-video-btn icon-qna-close"></div>');
 				_this.getQnaContainer();
-				var qnaObject =  $(window['parent'].document.getElementById(embedPlayer.id )).parent().find( ".qnaInterface" );
-				var onVideoTogglePluginButton = $('.qna-on-video-btn');
+				qnaObject =  $(window['parent'].document.getElementById(embedPlayer.id )).parent().find( ".qnaInterface" );
+				onVideoTogglePluginButton = $('.qna-on-video-btn');
 				// register to on click to change the icon of the toggle button
-				$(".qna-on-video-btn").on("click", function(){
-					if (qnaObject.is(":visible")){
-						qnaObject.hide();
-						onVideoTogglePluginButton.removeClass('icon-qna-close');
-						onVideoTogglePluginButton.addClass('icon-qna-Ask');
-					} else {
+                onVideoTogglePluginButton.on("click", function(){
+
+                    var openQnaContainer=!qnaObject.is(":visible");
+
+                    if (_this.getPlayer().layoutBuilder.fullScreenManager.isInFullScreen()) {
+                        _this.getPlayer().toggleFullscreen() ;
+                        openQnaContainer=true;
+                    }
+
+					_this.getQnaContainer();
+					if (openQnaContainer){
 						qnaObject.show();
-						onVideoTogglePluginButton.removeClass('icon-qna-Ask');
-						onVideoTogglePluginButton.addClass('icon-qna-close');
+					} else {
+						qnaObject.hide();
 					}
+                    changeVideoToggleIcon();
 				})
 			});
 
 			this.bind('onOpenFullScreen', function() {
-				$(".qna-on-video-btn").hide();
+                qnaObject.hide();
+                changeVideoToggleIcon();
 			});
 			this.bind('onCloseFullScreen', function() {
-				$(".qna-on-video-btn").show();
+                changeVideoToggleIcon();
 			});
 		},
 
-		// Create a cue-point in the server for the question
-		submitQuestion: function(question){
-			var embedPlayer = this.getPlayer();
-			var _this = this;
-
-			var entryRequest = {
-				"service": "cuePoint_cuePoint",
-				"action": "add",
-				"cuePoint:objectType": "KalturaAnnotation",
-				"cuePoint:entryId": embedPlayer.kentryid,
-				"cuePoint:startTime": embedPlayer.currentTime,
-				"cuePoint:text": question,
-				"cuePoint:tags": "qna"
-			};
-
-			_this.getKClient().doRequest(entryRequest, function (result) {
-				mw.log("added Annotation cue point with id: " + result.id);
-			},
-			false,
-			function(err){
-				mw.log( "Error: "+ this.pluginName +" could not add cue point. Error: " + err );
-			});
-		},
-
-		getKClient: function () {
-			if (!this.kClient) {
-				this.kClient = mw.kApiGetPartnerClient(this.embedPlayer.kwidgetid);
-			}
-			return this.kClient;
-		},
 
 		// load the Q&A template to the div with qnaTargetId
 		getQnaContainer: function(){
@@ -98,33 +107,38 @@
 				$( iframeParent ).parent().find( "#" + this.getConfig( 'qnaTargetId' ) ).html( "<div class='qnaInterface'></div>" );
 				this.$qnaListContainer = $( iframeParent ).parent().find( ".qnaInterface" );
 				this.$qnaListContainer.append(this.getHTML());
+				ko.applyBindings(this.KQnaModule, this.$qnaListContainer[0]);
 
+                this.KQnaModule.applyLayout();
 				this.bindButtons();
-				this.positionOnVideoButton();
+				this.positionQAButtonOnVideoContainer();
+
 			}
 			return this.$qnaListContainer;
 		},
 
-		positionOnVideoButton : function(){
+		positionQAButtonOnVideoContainer : function(){
 			var onVideoTogglePluginButton = $('.qna-on-video-btn');
-			var videoHeight = this.getPlayer().getVideoHolder().height();
+			var videoHeight = this.getPlayer().getInterface().height();
 			var buttonHeight = Math.round(videoHeight / 5);
-			var buttonWidth = Math.round(videoHeight / 10);
-			onVideoTogglePluginButton.css({height: buttonHeight + "px"});
-			onVideoTogglePluginButton.css({width: buttonWidth + "px"});
+            buttonHeight=Math.min(buttonHeight,70);
+			var buttonWidth = Math.round(buttonHeight / 2);
 
 			var borderRadius = buttonWidth + "px 0 0 " + buttonWidth + "px";
-			onVideoTogglePluginButton.css({'-moz-border-radius': borderRadius});
-			onVideoTogglePluginButton.css({'-webkit-border-radius': borderRadius});
-			onVideoTogglePluginButton.css({'border-radius': borderRadius});
 
 			var topOffset = (videoHeight-onVideoTogglePluginButton.height())/2 + "px";
-			onVideoTogglePluginButton.css({top: topOffset});
 
-			onVideoTogglePluginButton.css({'line-height': buttonHeight + "px"});
 
 			var textIndent = (buttonWidth - parseInt(onVideoTogglePluginButton.css('font-size'))) / 2;
-			onVideoTogglePluginButton.css({'text-indent': textIndent + "px"});
+			onVideoTogglePluginButton.css(
+                {   '-moz-border-radius': borderRadius,
+                    '-webkit-border-radius': borderRadius,
+                    'border-radius': borderRadius,
+                    height: buttonHeight + "px",
+                    width: buttonWidth + "px",
+                    top: topOffset,
+                    'line-height': buttonHeight + "px",
+                    'text-indent': textIndent + "px"});
 
 		},
 
@@ -137,14 +151,14 @@
 				.off('click')
 				.on('click', function(){
 					var question = parentWindowDocument.find('.qnaQuestionTextArea').val();
-					if (_this.getPlayer().isOffline()){
-						alert(gM('qna-cant-ask-while-not-live'));
-					} else {
+					//if (_this.getPlayer().isOffline()){
+					//	alert(gM('qna-cant-ask-while-not-live'));
+					//} else {
 						if (question !== gM('qna-default-question-box-text')) {
-							_this.submitQuestion(question);
+                            _this.KQnaService.submitQuestion(question);
 							_this.resetTextArea(textArea);
 						}
-					}
+					//}
 				});
 			var cancelButton = parentWindowDocument.find('.qnaCancelButton');
 			cancelButton.text(gM('qna-cancel-button-text'));
@@ -191,10 +205,10 @@
 			var templatePath = this.getConfig( 'templatePath' );
 			var rawHTML = window.kalturaIframePackageData.templates[ templatePath ];
 
-			var transformedHTML = mw.util.tmpl( rawHTML );
-			transformedHTML = transformedHTML(data);
-			return transformedHTML;
+			return rawHTML;
 		}
+
+
 	}));
 
 })(window.mw, window.jQuery);

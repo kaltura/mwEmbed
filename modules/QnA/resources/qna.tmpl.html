@@ -12,4 +12,25 @@
             </div>
         </div>
     </div>
+
+    <!--<button data-bind="click: incrementClickCounter">Click me</button>-->
+    <div class="listHolder">
+        <div class="nano">
+            <div class="nano-content">
+                <div data-bind='template: { foreach: myObservableArray }' class="qnaEntryList">
+                    <div data-bind="if: type === 'announcement'">
+                        <div class="qnaEntryListLI" data-bind='css: {  "qnaAnnouncement" : !isRead(), "qnaAnnouncementRead": isRead()}, click: $parent.itemRead'>
+                            <div>
+                                <div data-bind='css: {  "qnaAnnouncementTitle" : !isRead(), "qnaAnnouncementTitleRead" : isRead()}, text: title'></div>
+                                <div class="icon-qna-Announcement" data-bind='css: {  "qnaAnnouncementIcon" : !isRead(), "qnaAnnouncementIconRead" : isRead()}'></div>
+                                <div data-bind='css: {  "qnaThreadTime" : !isRead(), "qnaThreadTimeRead" : isRead()}, text: timestamp.qnaTimestamp()'></div>
+                            </div>
+                            <br>
+                            <div data-bind='css: {  "qnaAnnouncementText" : !isRead(), "qnaAnnouncementTextRead" : isRead()}, text: entryText'></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
