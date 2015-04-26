@@ -889,15 +889,14 @@
 			}
 
 			var subtitleTracks = player.subtitleTracks();
-			if (subtitleTracks){
-				debugger;
+			if (subtitleTracks && subtitleTracks.length){
 				var textTrackData = {languages: []};
 				$.each(subtitleTracks, function(index, subtitleTrack){
 					textTrackData.languages.push({
 						'kind'		: 'subtitle',
 						'language'	: subtitleTrack.lang,
 						'srclang' 	: subtitleTrack.lang,
-						'label'		: subtitleTrack.lang,
+						'label'		: subtitleTrack.trackName,
 						'id'		: subtitleTrack.id,
 						'index'		: textTrackData.languages.length,
 						'title'		: subtitleTrack.trackName
@@ -907,7 +906,7 @@
 			}
 
 			var audioTracks = player.audioTracks();
-			if (audioTracks){
+			if (audioTracks && audioTracks.length){
 				var audioTrackData = {languages: []};
 				$.each(audioTracks, function(index, audioTrack){
 					audioTrackData.languages.push({
