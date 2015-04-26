@@ -83,6 +83,7 @@
 	width: 10px;
 	margin-left: 15px;
 	float: left;
+	cursor: default;
 }
 
 .qnaInterface .qnaButtonsPipeLable{
