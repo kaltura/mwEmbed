@@ -424,7 +424,9 @@
 
 			var eventStateMap = {
 				'playerReady': 'start',
-				'onplay': 'load',
+				'onplay': function () {
+					return _this.isPlaying() ? 'play' : 'load';
+				},
 				'playing': 'play',
 				'onPauseInterfaceUpdate': 'pause',
 				'onEndedDone': 'end',
