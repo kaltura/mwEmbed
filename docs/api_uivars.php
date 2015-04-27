@@ -625,13 +625,13 @@ $uiVars = array(
 					'default' => '2',
 					'example' => ''
 			),
-			/*'EmbedPlayer.WebKitPlaysInline' => array(
-			 'type' => '',
-					'desc' => "",
-					'default' => '',
+			'EmbedPlayer.WebKitPlaysInline' => array(
+			 		'type' => 'Boolean',
+					'desc' => "Determines if should play the video inline or not",
+					'default' => 'false',
 					'example' => ''
 			),
-			'EmbedPlayer.WebKitAllowAirplay' => array(
+			/*'EmbedPlayer.WebKitAllowAirplay' => array(
 					'type' => '',
 					'desc' => "",
 					'default' => '',
