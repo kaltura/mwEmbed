@@ -23,7 +23,7 @@
 
             this.myObservableArray.subscribe(function(newVal){
                 _this.applyLayout();
-                qnaPlugin.updateUnreadBadge();//newVal.length - _this.qnaService.readThreadsCount());
+                qnaPlugin.updateUnreadBadge();
             });
             this.applyLayout();
 

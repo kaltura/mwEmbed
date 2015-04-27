@@ -93,7 +93,7 @@
 			});
 		},
 
-		updateUnreadBadge(){
+		updateUnreadBadge: function(){
 			var _this = this;
 			// if its a number and is greater then 0 - show & update the badge
 			var num = _this.KQnaModule.getUnreadCount();
