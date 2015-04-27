@@ -51,16 +51,17 @@
                 }
             };
 
-            this.bind('updateLayout', function () {
+            this.bind('updateLayout ended', function () {
                 _this.positionQAButtonOnVideoContainer();
             });
 
 			this.bind('layoutBuildDone ended', function (event, screenName) {
 				// add the Q&A toggle button to be on the video
-				embedPlayer.getVideoHolder().append('<div class="qna-on-video-btn icon-qna-close"></div>');
+				embedPlayer.getVideoHolder().append('<div class="qna-on-video-btn icon-qna-close"><div class="badge"></div></div>');
 				_this.getQnaContainer();
 				qnaObject =  $(window['parent'].document.getElementById(embedPlayer.id )).parent().find( ".qnaInterface" );
 				onVideoTogglePluginButton = $('.qna-on-video-btn');
+
 				// register to on click to change the icon of the toggle button
                 onVideoTogglePluginButton.on("click", function(){
 
@@ -79,6 +80,8 @@
 					}
                     changeVideoToggleIcon();
 				})
+
+				_this.updateUnreadBadge();
 			});
 
 			this.bind('onOpenFullScreen', function() {
@@ -90,6 +93,18 @@
 			});
 		},
 
+		updateUnreadBadge: function(){
+			var _this = this;
+			// if its a number and is greater then 0 - show & update the badge
+			var num = _this.KQnaModule.getUnreadCount();
+			if (isNaN(num) || num <=0 ){
+				$('.badge').hide();
+			}
+			else{
+				$('.badge').text(num);
+				$('.badge').show();
+			}
+		},
 
 		// load the Q&A template to the div with qnaTargetId
 		getQnaContainer: function(){
@@ -126,7 +141,7 @@
 
 			var borderRadius = buttonWidth + "px 0 0 " + buttonWidth + "px";
 
-			var topOffset = (videoHeight-onVideoTogglePluginButton.height())/2 + "px";
+			var topOffset = (videoHeight-buttonHeight)/2 + "px";
 
 
 			var textIndent = (buttonWidth - parseInt(onVideoTogglePluginButton.css('font-size'))) / 2;
@@ -207,7 +222,6 @@
 
 			return rawHTML;
 		}
-
 
 	}));
 
