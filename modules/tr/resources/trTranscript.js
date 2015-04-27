@@ -10,7 +10,8 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 	defaultConfig: {
 		'targetId': 'transcriptContainer',
 		'templatePath': '../tr/templates/transcript.tmpl.html',
-		'transcriptTargetId': 'transcript-body'
+		'transcriptTargetId': 'transcript-body',
+		'responseProfile' : null
 	},
 
 	setup: function() {
@@ -32,15 +33,18 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 
 	loadMentionedTerms : function (){
 		var _this = this;
-		// load the playlist from API
 		var myRequest = {
 			'service': 'baseentry',
 			'action': 'list',
-			'responseProfile[id]': 12,
 			'filter:metadataObjectTypeEqual': 1,
-			'filter:idIn' : "1_t0vuuvd6"
+			'filter:idIn' : this.embedPlayer.evaluate('{mediaProxy.entry.id}')
 		};
-
+		//retrieve response profile attribute
+		if(typeof this.getConfig('responseProfile') == 'number'){
+			myRequest['responseProfile[id]'] = this.getConfig('responseProfile');
+		}else{
+			myRequest['responseProfile[systemName]'] = this.getConfig('responseProfile');
+		}
 		this.getKClient().doRequest(myRequest, function (dataResult) {
 			_this.handleMentionedTerms(dataResult);
 			_this.applyMentionedTermsItemBehavior();
@@ -79,6 +83,22 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 					this.getCompanies().push(newCompany);
 				}
 			}
+			//persons
+			if(metadataObjects[i].relatedObjects.persons){
+				for (var k=0; k<metadataObjects[i].relatedObjects.persons.objects.length ; k++){
+					var person = metadataObjects[i].relatedObjects.persons.objects[k];
+					var newPerson = {
+						FirstName : $(person.xml).find("FirstName").text(),
+						LastName : $(person.xml).find("LastName").text(),
+						MiddleName : $(person.xml).find("MiddleName").text(),
+						PermID : $(person.xml).find("PermID").text(),
+						Prefix : $(person.xml).find("Prefix").text()
+					}
+					newPerson.displayString = (newPerson.Prefix="" ? "" : newPerson.Prefix+" ")+newPerson.FirstName + (newPerson.MiddleName="" ? "" : " "+newPerson.MiddleName+" ") + " "+newPerson.LastName;
+
+					this.getPeople().push(newPerson);
+				}
+			}
 			//keywords
 			var keywordsArr = $(metadataObjects[i].xml).find("Keyword");
 			for (var k=0; k<keywordsArr.length ; k++){
@@ -90,7 +110,7 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 			//stab
 			this.getGeography().push("USA");
 			this.getGeography().push("Asia");
-			this.getPeople().push("Eitan Avgil");
+
 
 			//hooking to UI:
 			//setting companies string and click
@@ -128,7 +148,7 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 			if(people.length){
 				var peopleString = "";
 				for (var j=0;j<people.length;j++){
-					peopleString+='<span class="mentioned-term people"> '+people[j]+'</span>,';
+					peopleString+='<span class="mentioned-term people"> '+people[j].displayString+'</span>,';
 				}
 				if(peopleString.length>1){
 					peopleString = peopleString.substring(0, peopleString.length - 1)

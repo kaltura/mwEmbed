@@ -93,7 +93,7 @@
         'uiconf_id' : uiconfId,
         'entry_id' : entryId,
         'flashvars': {
-            'ks' : 'ZjNmNDRlZmYzOTMxYWYwMjlmODUwZmY5ZGUxMmEwN2I2NmE4YTBkY3wxODUxMTkxOzE4NTExOTE7MTQyOTk3ODAyNzsyOzIwNzEwO2FtaXNoLmdhbmRoaUB0aG9tc29ucmV1dGVycy5jb207',
+            'ks' : '',
             'locale' : 'jp',
             'autoPlay' : 'true',
             'confFilePath': '{libPath}/modules/tr/resources/trjson.json',
@@ -102,7 +102,8 @@
             },
             "trTranscript": {
                 "plugin": true,
-                "targetId" : "captionsContainer"
+                "targetId" : "captionsContainer",
+                "responseProfile" : 12
             },
             "mediaProxy.mediaPlayFrom" : startFrom,
 
@@ -128,8 +129,6 @@
 
             ,'playlistAPI': {
                 'autoPlay' : 'true',
-//                'kpl0Id': playlistId,
-//                'kpl0Id': '1_cix73bnr',
                 'showControls': false,
                 'includeHeader': true,
                 'mediaItemHeight': 160,
