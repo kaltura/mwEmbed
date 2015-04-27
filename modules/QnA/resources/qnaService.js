@@ -26,6 +26,9 @@ DAL for Q&A Module
             },
             isRead:function(threadId) {
                 return _viewedThreads.indexOf(threadId) > -1;
+            },
+            readThreadsCount: function() {
+                return _viewedThreads.length;
             }
         };
     })();
@@ -46,7 +49,6 @@ DAL for Q&A Module
             this.embedPlayer = embedPlayer;
             this.qnaPlugin=qnaPlugin;
 
-
             this.requestCuePoints();
 
             if (embedPlayer.isLive()) {
@@ -54,7 +56,9 @@ DAL for Q&A Module
             }
 
         },
+
         viewedThreads : viewedThreads,
+
         destroy: function () {
 
             if (this.liveAQnaIntervalId) {
@@ -63,16 +67,19 @@ DAL for Q&A Module
             }
             $(this.embedPlayer).unbind(this.bindPostfix);
         },
+
         getKClient: function () {
             if (!this.kClient) {
                 this.kClient = mw.kApiGetPartnerClient(this.embedPlayer.kwidgetid);
             }
             return this.kClient;
         },
+
         //returns questions, answers and announcement
         getItems : function() {
             return this.items;
         },
+
         submitQuestion: function(question){
             var embedPlayer = this.embedPlayer;
             var _this = this;
@@ -107,6 +114,11 @@ DAL for Q&A Module
             viewedThreads.markAsRead(item.threadId);
             this.updateCuePoints([item]);
         },
+
+        readThreadsCount: function() {
+            return viewedThreads.readThreadsCount();
+        },
+
         updateCuePoints:function(newItems) {
 
             var _this = this;
@@ -154,6 +166,7 @@ DAL for Q&A Module
                 timestamp: ko.observable(cuePoint.createdAt)
             });
         },
+
         requestCuePoints:function() {
             var _this = this;
 
@@ -184,12 +197,12 @@ DAL for Q&A Module
                 }
             );
         },
+
         /*
         Currently there is no notification, so we poll the API
          */
         registerItemNotification: function () {
             var _this = this;
-
 
             //Start live cuepoint pulling
             this.liveAQnaIntervalId = setInterval(function () {
