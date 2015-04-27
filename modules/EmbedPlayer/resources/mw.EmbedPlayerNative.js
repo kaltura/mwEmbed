@@ -161,6 +161,7 @@
 						.addClass('playerPoster')
 						.load(function () {
 							_this.applyIntrinsicAspect();
+							$('.playerPoster').attr('alt', _this.posterAlt);
 						})
 				);
 			}
@@ -1325,7 +1326,7 @@
 			vid.play();
 		},
 		isVideoSiblingEnabled: function () {
-			if (mw.isIphone() || mw.isAndroid2() || mw.isAndroid40() || mw.isMobileChrome()
+			if (mw.isIphone() || mw.isAndroid2() || mw.isWindowsPhone() || mw.isAndroid40() || mw.isMobileChrome()
 				||
 				( mw.isIpad() && !mw.isIpad3() )
 				) {

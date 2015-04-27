@@ -1,0 +1,128 @@
+<html>
+<head>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<body>
+<h3>Stand Alone Live Player ( MediaProxy Override )</h3>
+Kaltura support several stand alone player modes. Learn more about
+<a href="../../../docs/api#standAlonePlayerModes">stand alone player modes</a> Kaltura API documentation.
+<br><br>
+This example highlights the <b>MediaProxy Override</b>, and JSON Config. It includes a midroll at 5 seconds,
+and sample entry metadata mapping for thumbnail preview slices..
+<br><br>
+    <div id="kaltura_player" style="width:600px;height:338px;"></div>
+    HLS Live URL : <input type="text" id="HLSUrl_txt" />
+    <button type="button" id="show_btn" value="Show!">Show!</button>
+
+
+
+	<script>
+        mw.setConfig('forceMobileHTML5', true);
+        mw.setConfig('LeadWithHLSOnFlash', true);
+
+        var HLSURL = "";
+		var jsonConfig  = {
+			"plugins":{
+				"topBarContainer": {},
+				"titleLabel": {}, 
+				"controlBarContainer": {
+					"hover": true
+				},
+				"largePlayBtn": {},
+				"scrubber": {
+					'thumbSlicesUrl': '{mediaProxy.entryMetadata.thumbSlicesUrl}'
+				},
+				"vast":{ 
+					"trackCuePoints":"true",
+					"timeout": 4
+				},
+				'skipBtn': {
+					'label': 'Skip Ad'
+				},
+				'noticeMessage': {
+					'text': 'Advertisment {sequenceProxy.timeRemaining|timeFormat}'
+				},
+                "liveCore":{disableLiveCheck:true},
+				"playPauseBtn": {},
+				"volumeControl": {},
+				"fullScreenBtn": {},
+				"durationLabel": {},
+				"currentTimeLabel": {},
+				"sourceSelector": {},
+				"logo": { "visible": false},
+				"infoScreen": {},
+				"share": {},
+				'statistics': {'plugin': false}
+			},
+			"uiVars":[{
+				"key":"autoPlay",
+				"value":false,
+				"overrideFlashvar":false
+			}],
+			"layout":{
+				"skin": "kdark",
+				"cssFiles":[]
+			}
+		};
+		// per entry settings
+		var mediaProxyKalturaToolKitVideo = {
+				'entry':{
+					'id': "key_1",
+					'name': "My ToolKit Video",
+					"description": "Kaltura Player toolkit Description.",
+					"plays":1234,
+					"views":47332,
+					"duration":114,
+					"createdAt":1379965720,
+					"thumbnailUrl": 'http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/640'
+				},
+				"contextData":{
+					'isCountryRestricted': false
+				},
+				'entryMetadata': {
+					'thumbSlicesUrl': 'http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/100/vid_slices/100',
+					'AgeGroup': "16"
+				},
+            'meta':{
+                type:'7',
+                hlsStreamUrl:HLSURL
+            }
+			}
+		
+        if (document.location.href.match(/hlsurl/)){
+            var matched  = document.location.href.match(/hlsurl=(.*)/)[1];
+            var url = decodeURIComponent(matched);
+            mediaProxyKalturaToolKitVideo.meta.hlsStreamUrl = url;
+            embedPlayer();
+        }
+        $('#show_btn' ).click(function(){
+            HLSURL = $("#HLSUrl_txt" ).val();
+            mediaProxyKalturaToolKitVideo.meta.hlsStreamUrl = HLSURL;
+            embedPlayer();
+        })
+		function embedPlayer() {
+            kWidget.embed( 'kaltura_player' , {
+                'wid': '_partnerkey' ,
+                'flashvars': {
+                    'jsonConfig': jsonConfig ,
+                    // per entity settings:
+                    'mediaProxy': mediaProxyKalturaToolKitVideo
+                } ,
+                // ready bindings:
+                'readyCallback': function ( playerId ) {
+                    var kdp = document.getElementById( playerId );
+                    $( '.alertEval a' ).click( function () {
+                        alert( JSON.stringify( kdp.evaluate( $( this ).text() ) ) );
+                        return false;
+                    } );
+
+                }
+            } );
+        }
+	</script>
+	<br>
+
+</body>
+</html>

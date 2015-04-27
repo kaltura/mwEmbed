@@ -55,6 +55,7 @@ class downloadEntry {
 	
 	function redirectDownload() {
 		$flavorUrl = $this->getSourceForUserAgent();
+		$client = $this->getResultObject()->client->getClient();
 		// Redirect to flavor
 		header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 		header("Pragma: no-cache");
@@ -70,12 +71,11 @@ class downloadEntry {
 				$filename = $this->sanitizeFilenameForHeader($filename);
 			}else{
 				$filename = $flavorId . $extension;
-				
 			}
-
-
-			header( 'Content-Disposition: attachment; filename="'.$filename.'"' );
-			readfile( $flavorUrl );
+			$options = new KalturaFlavorAssetUrlOptions();
+			$options->fileName = $filename;
+			$flavorUrl = $client->flavorAsset->getUrl($flavorId,null,false,$options);
+			header("Location: " . $flavorUrl );
 		}
 		else {
 			header("Location: " . $flavorUrl );
@@ -425,7 +425,7 @@ class downloadEntry {
 			$preferredBitrate = intval($_GET['preferredBitrate']);
 		}
 		if( isset($_GET['flavorID']) && $_GET['flavorID'] != null){
-			$flavorID = $_GET['flavorID'];
+			$flavorID = intval($_GET['flavorID']);
 		}
 
 		$src = false;
