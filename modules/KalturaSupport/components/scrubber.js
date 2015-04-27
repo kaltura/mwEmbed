@@ -77,6 +77,18 @@
 			this.bind('reattachTimeUpdate', function () {
 				_this.bindUpdatePlayheadPercent();
 			});
+
+			this.bind('onOpenFullScreen', function () {
+				// check if IE11 and iframe (KMS-4606)
+                if( mw.isIE11() && ( mw.getConfig('EmbedPlayer.IsIframeServer' ) || mw.getConfig('EmbedPlayer.IsFriendlyIframe') ) ) {
+                    window["resizeScrubberIE11"] = true; // global var for jquery.ui.slider.js - fix jquery defect inside IE11 iframe fullscreen element.outerWidth()
+                }
+			});
+			this.bind('onCloseFullScreen', function () {
+				if( window["resizeScrubberIE11"]===true )
+                    window["resizeScrubberIE11"] = null; //clear global var used only by jquery in IE11 iframe fullscreen
+			});
+
 			this.bind('playerReady', function (event) {
 				//Load the strip only if the configuration allows preview. It gets a 404 if you do not have a local flavor
 				if (_this.getConfig("sliderPreview")) {
@@ -129,7 +141,7 @@
 			});
 		},
 		updatePlayheadUI: function (val) {
-			this.getComponent().slider('option', 'value', val);
+            this.getComponent().slider('option', 'value', val);
 		},
 		setupThumbPreview: function () {
 			var _this = this;

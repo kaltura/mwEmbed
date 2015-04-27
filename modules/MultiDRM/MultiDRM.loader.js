@@ -3,38 +3,44 @@
  */
 ( function( mw, $ ) {
 	"use strict";
+	var mseSupported = window['MediaSource'] || window['WebKitMediaSource'];
 	//Load 3rd party plugins if DRM sources are available
 	mw.addKalturaConfCheck( function( embedPlayer, callback ){
 		if( embedPlayer.isPluginEnabled( 'multiDrm' ) ) {
-			registerDashPlayer();
-			var sources = embedPlayer.getSources();
-			var drmSources = sources.filter( function ( source ) {
-				return ( ( source.mimeType === "video/dash" ) ||
-				( source.mimeType === "video/ism" || source.mimeType === "video/playreadySmooth" && mw.isChrome() ) );
-			} );
-			var isDrmSourceAvailable = drmSources.length > 0;
-			if ( isDrmSourceAvailable ) {
-				$.when(
-					$.getScript( mw.getConfig( "EmbedPlayer.clDashPlayerUrl" ) ),
-					$.getScript( mw.getConfig( "EmbedPlayer.dashJsUrl" ) ),
-					$.Deferred( function ( deferred ) {
-						$( deferred.resolve );
-					} )
-				).done( function () {
-						//Get user configuration
-						var drmUserConfig = embedPlayer.getKalturaConfig("multiDrm");
-						//Get default config
-						var drmConfig = getDefaultDrmConfig();
-						//Deep extend custom config
-						$.extend(true, drmConfig, drmUserConfig);
-						embedPlayer.setKalturaConfig("multiDrm", drmConfig);
-						//Set reference for DASH playback engine
-						mw.dash = {
-							player: videojs
-						};
-						callback();
+			if (mseSupported) {
+				mw.log("Media Source Extensions supported on this browser");
+				registerDashPlayer();
+				var sources = embedPlayer.getSources();
+				var drmSources = sources.filter( function ( source ) {
+					return ( ( source.mimeType === "video/dash" ) ||
+					( source.mimeType === "video/ism" || source.mimeType === "video/playreadySmooth" && mw.isChrome() &&  !mw.isMobileDevice()) );
+				} );
+				var isDrmSourceAvailable = drmSources.length > 0;
+				if ( isDrmSourceAvailable ) {
+					mw.log("Media sources found, loading DASH player");
+					$.getScript( mw.getConfig( "EmbedPlayer.clDashPlayerUrl" ), function () {
+						$.getScript( mw.getConfig( "EmbedPlayer.dashJsUrl" ), function () {
+							mw.log("DASH player loaded, setting configuration");
+							//Get user configuration
+							var drmUserConfig = embedPlayer.getKalturaConfig( "multiDrm" );
+							//Get default config
+							var drmConfig = getDefaultDrmConfig();
+							//Deep extend custom config
+							$.extend( true, drmConfig, drmUserConfig );
+							embedPlayer.setKalturaConfig( "multiDrm", drmConfig );
+							//Set reference for DASH playback engine
+							mw.dash = {
+								player: videojs
+							};
+							callback();
+						} );
 					} );
+				} else {
+					mw.log("No media sources found, not loading DASH player");
+					callback();
+				}
 			} else {
+				mw.log("Media Source Extensions not supported on this browser");
 				callback();
 			}
 		} else {
@@ -45,9 +51,10 @@
 	function registerDashPlayer(){
 		// Add multidrm player:
 		$( mw ).bind( 'EmbedPlayerUpdateMediaPlayers' , function ( event , mediaPlayers ) {
+			mw.log("Register DASH player and extensions");
 			var multiDRMProtocols = ['video/dash'];
 			//On chrome add smooth stream mimetype support
-			if ( mw.isChrome() ) {
+			if ( mw.isChrome() &&  !mw.isMobileDevice()) {
 				multiDRMProtocols.push( "video/ism" );
 				multiDRMProtocols.push( "video/playreadySmooth" );
 			}
@@ -108,6 +115,7 @@
 				"merchant": "kaltura"
 			},
 			"sendCustomData": true,
+			"generatePSSH": false,
 			"assetId": null , //coguid //entryid
 			"variantId": null , //flavorid
 			"authenticationToken": null ,

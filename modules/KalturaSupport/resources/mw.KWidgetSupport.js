@@ -442,11 +442,13 @@ mw.KWidgetSupport.prototype = {
 					"data-width": flavorAsset.width,
 					"data-height": flavorAsset.height,
 					"data-bitrate": flavorAsset.bitrate,
-					"data-bandwidth": (flavorAsset.bitrate ? (flavorAsset * 1024) : 0),
+					"data-bandwidth": (flavorAsset.bitrate ? (flavorAsset.bitrate * 1024) : 0),
 					"data-frameRate": flavorAsset.frameRate,
-					"data-flavorid": flavorPartnerData.flavorid,
-					"default": flavorPartnerData["default"]
+					"data-flavorid": flavorPartnerData.flavorid
 				};
+				if (flavorPartnerData["default"] === true){
+					flavorAssetObj["default"] = true;
+				}
 				flavorAssets.push( flavorAssetObj );
 			}
 		} );
@@ -720,9 +722,6 @@ mw.KWidgetSupport.prototype = {
 		var _this = this;
 		var getAttr = function( attrName ){
 			return _this.getPluginConfig( embedPlayer, '', attrName );
-		}
-		if ( getAttr( "Kaltura.ForceJSONP" ) === true ){
-			kWidget.forceJSONP();
 		}
 		// Check for autoplay:
 		var autoPlay = getAttr( 'autoPlay' );

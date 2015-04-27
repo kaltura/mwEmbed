@@ -109,16 +109,13 @@
 			if (!this.supportsVolumeControl()) {
 				this.supports.volumeControl = false;
 			}
-			// Check if we already have a selected source and a player in the page,
-			if (this.getPlayerElement() && this.getSrc()) {
-				this.getPlayerElement().src(this.getSrc());
-				this.updateDashContext();
-			}
+
 			// Check if we already have a video element an apply bindings ( for native interfaces )
 			if (this.getPlayerElement()) {
 				this.applyMediaElementBindings();
 				this.playbackRate = this.getPlayerElement().playbackRate();
 			}
+			var _this = this;
 			this.parent_updateFeatureSupport();
 		},
 		supportsVolumeControl: function () {
@@ -207,10 +204,22 @@
 					techOrder: ['dasheverywhere']
 				}, function(){
 					_this.playerElement = this;
+					$(_this.playerElement.el() ).attr('data-src', _this.getSrc());
 					//Set schedule while paused to true to allow buffering when in paused state
 					_this.playerElement.mediaPlayer.setScheduleWhilePaused(true);
+					_this.updateDashContext();
 					callback();
 				} );
+				this.bindHelper('switchAudioTrack', function (e, data) {
+					if (_this.getPlayerElement()) {
+						_this.getPlayerElement().setActiveTrack("audio", data.index);
+					}
+				});
+				this.bindHelper('changeEmbeddedTextTrack', function (e, data) {
+					if (_this.getPlayerElement()) {
+						_this.getPlayerElement().setActiveTrack("text", data.index);
+					}
+				});
 			}
 		},
 		updateDashContext: function(){
@@ -220,11 +229,6 @@
 		},
 		getDrmConfig: function(){
 			var drmConfig = this.getKalturaConfig('multiDrm');
-			if (drmConfig.autoplay){
-				drmConfig.autoplay = false;
-				this.autoplay = true;
-			}
-
 			var licenseBaseUrl = mw.getConfig('Kaltura.UdrmServerURL');
 			if (!licenseBaseUrl) {
 				this.log('Error:: failed to retrieve UDRM license URL ');
@@ -236,20 +240,26 @@
 			drmConfig.widevineLicenseServerURL = licenseBaseUrl + "?" + licenseData;
 			drmConfig.assetId = this.kentryid;
 			drmConfig.variantId = assetId;
+			var config = {};
 
 			if (this.shouldGeneratePssh()) {
-				var config = {};
-				config.generatePSSH = true;
-				config.isSmoothStreaming = true;
-				config.enableSmoothStreamingCompatibility = true;
 				config.widevineHeader = {
 					"provider": "castlabs",
 					"contentId": this.getAuthenticationToken( assetId ),
 					"policy": ""
 				};
-				$.extend(true, drmConfig, config);
 			}
 
+			var sourceMimeType = this.mediaElement.selectedSource && this.mediaElement.selectedSource.mimeType;
+			if (sourceMimeType === "video/ism" || sourceMimeType === "video/playreadySmooth"){
+				config.isSmoothStreaming = true;
+				config.enableSmoothStreamingCompatibility = true;
+			}
+
+			//Extend the drmConfig with new configuration
+			$.extend(true, drmConfig, config);
+
+			//Give chance to other plugins to review DRM config
 			this.triggerHelper('updateDashContextData', {contextData: drmConfig});
 
 			return drmConfig;
@@ -421,25 +431,29 @@
 				mw.log(" Error: applyMediaElementBindings without player elemnet");
 				return;
 			}
+
+			_this.boundedEventHandler = _this.boundedEventHandler || _this.nativeEventsHandler.bind(this);
 			$.each(_this.nativeEvents, function (inx, eventName) {
 				if (mw.isIOS8() && mw.isIphone() && eventName === "seeking") {
 					return;
 				}
-				vid.off(eventName).on(eventName, function () {
-					// make sure we propagating events, and the current instance is in the correct closure.
-					if (_this._propagateEvents && _this.instanceOf === _this.instanceOf) {
-						var argArray = $.makeArray(arguments);
-						//if (eventName!=="timeupdate" && eventName!=="progress") console.info(eventName);
-						// Check if there is local handler:
-						if (_this[ '_on' + eventName ]) {
-							_this[ '_on' + eventName ].apply(_this, argArray);
-						} else {
-							// No local handler directly propagate the event to the abstract object:
-							$(_this).trigger(eventName, argArray);
-						}
-					}
-				});
+
+				vid.off(eventName, _this.boundedEventHandler).on(eventName, _this.boundedEventHandler);
 			});
+		},
+		nativeEventsHandler: function (e) {
+			// make sure we propagating events, and the current instance is in the correct closure.
+			if (this._propagateEvents && this.instanceOf === this.instanceOf) {
+				var argArray = $.makeArray(arguments);
+				//if (eventName!=="timeupdate" && eventName!=="progress") console.info(eventName);
+				// Check if there is local handler:
+				if (this[ '_on' + e.type ]) {
+					this[ '_on' + e.type ].apply(this, argArray);
+				} else {
+					// No local handler directly propagate the event to the abstract object:
+					$(this).trigger(e.type, argArray);
+				}
+			}
 		},
 		// basic monitor function to update buffer
 		monitor: function () {
@@ -509,7 +523,6 @@
 
 					var eventName = mw.isIOS() ? "canplaythrough.seekPrePlay" : "canplay.seekPrePlay";
 					$(vidObj).off(eventName).one(eventName, function () {
-						console.info("passed");
 						_this.restoreEventPropagation();
 						if (vid.duration() > 0) {
 							_this.log("player can seek");
@@ -577,7 +590,7 @@
 			this.isPauseLoading = false;
 
 			// Make sure the switch source is different:
-			if (!src || src == vid.src()) {
+			if (!src || src == vid.src() || $(vid.el() ).attr('data-src') === src) {
 				if ($.isFunction(switchCallback)) {
 					switchCallback(vid);
 				}
@@ -766,12 +779,21 @@
 		 * play method calls parent_play to update the interface
 		 */
 		play: function () {
-			if (this.parent_play()) {
-
-				this.getPlayerElement().play();
-				this.monitor();
+			var duration = parseInt(this.duration, 10).toFixed(2);
+			var curTime = parseInt(this.getPlayerElementTime(), 10).toFixed(2);
+			if (( this.currentState === "end" ) ||
+				( this.currentState === "pause" && duration === curTime && this.getPlayerElementTime() > 0 )) {
+				this.seek(0.01, false);
 			} else {
-				mw.log("EmbedPlayerMultiDRM:: parent play returned false, don't issue play on kplayer element");
+				if ( this.parent_play() ) {
+					var _this = this;
+					setTimeout( function () {
+						_this.getPlayerElement().play();
+						_this.monitor();
+					}, (this.mediaLoadedFlag ? 100 : 2000) );
+				} else {
+					mw.log( "EmbedPlayerMultiDRM:: parent play returned false, don't issue play on player element" );
+				}
 			}
 		},
 
@@ -851,20 +873,69 @@
 		 * accurately reflect the src duration
 		 */
 		_onloadedmetadata: function () {
-			this.getPlayerElement();
+			var player = this.getPlayerElement();
+			var duration = player.duration();
 
-			// only update duration if we don't have one: ( some browsers give bad duration )
-			// like Android 4 default browser
-			if (!this.duration
+			// Update if there's no duration or actual media duration is not the same as the metadata duration
+			if ((!this.duration || (this.duration !== duration))
 				&&
-				this.playerElement
-				&& !isNaN(this.playerElement.duration)
+				player
+				&& !isNaN(duration)
 				&&
-				isFinite(this.playerElement.duration)
-				) {
-				mw.log('EmbedPlayerNative :onloadedmetadata metadata ready Update duration:' + this.playerElement.duration + ' old dur: ' + this.getDuration());
-				this.setDuration(this.playerElement.duration);
+				isFinite(duration)
+			) {
+				this.log('onloadedmetadata metadata ready Update duration:' + duration + ' old dur: ' + this.getDuration());
+				this.setDuration(this.playerElement.duration());
 			}
+
+			var subtitleTracks = player.subtitleTracks();
+			if (subtitleTracks && subtitleTracks.length){
+				var textTrackData = {languages: []};
+				$.each(subtitleTracks, function(index, subtitleTrack){
+					textTrackData.languages.push({
+						'kind'		: 'subtitle',
+						'language'	: subtitleTrack.lang,
+						'srclang' 	: subtitleTrack.lang,
+						'label'		: subtitleTrack.trackName,
+						'id'		: subtitleTrack.id,
+						'index'		: textTrackData.languages.length,
+						'title'		: subtitleTrack.trackName
+					});
+				});
+				this.onTextTracksReceived(textTrackData);
+			}
+
+			var audioTracks = player.audioTracks();
+			if (audioTracks && audioTracks.length){
+				var audioTrackData = {languages: []};
+				$.each(audioTracks, function(index, audioTrack){
+					audioTrackData.languages.push({
+						'kind'		: 'audioTrack',
+						'language'	: audioTrack,
+						'srclang' 	: audioTrack,
+						'label'		: audioTrack,
+						'id'		: audioTrack,
+						'index'		: audioTrackData.languages.length,
+						'title'		: audioTrack
+					});
+				});
+				this.onAudioTracksReceived(audioTrackData);
+			}
+
+			var _this = this;
+			var update = function(){
+				//Get Playback statistics
+				var stats = player.getPlaybackStatistics();
+
+				if (stats.audio.activeTrack){
+					_this.onAudioTrackSelected({index: stats.audio.activeTrack.id});
+				}
+				if (stats.text.activeTrack){
+				}
+			};
+			update();
+
+			setInterval(function(){update();}, 5000);
 
 			// Check if in "playing" state and we are _propagateEvents events and continue to playback:
 			if (!this.paused && this._propagateEvents) {
@@ -883,6 +954,18 @@
 			}
 		},
 
+		onAudioTracksReceived: function (data) {
+			this.triggerHelper('audioTracksReceived', data);
+		},
+
+		onAudioTrackSelected: function (data) {
+			this.triggerHelper('audioTrackIndexChanged', data);
+		},
+
+		onTextTracksReceived: function (data) {
+			this.triggerHelper('textTracksReceived', data);
+		},
+
 		/**
 		 * Local method for progress event
 		 * fired as the video is downloaded / buffered
@@ -898,6 +981,55 @@
 				this.updateBufferStatus(e.loaded / e.total);
 				this.progressEventData = e.loaded;
 			}
+		},
+		/**
+		 * buffer under-run
+		 * @private
+		 */
+		_onwaiting: function () {
+			//vod buffer events are being handled by EmbedPlayer.js
+			if (this.isLive()) {
+				this.bufferStart();
+			}
+		},
+
+		_oncanplay: function () {
+			if (this.isLive() && this.buffering) {
+				this.bufferEnd();
+			}
+		},
+		/**
+		 * Local method for end of media event
+		 */
+		_onended: function () {
+			if (this.getPlayerElement()) {
+				this.log('onended:' + this.playerElement.currentTime() + ' real dur:' + this.getDuration() + ' ended ' + this._propagateEvents);
+				if (this._propagateEvents && !this.isLive()) {
+					this.onClipDone();
+				}
+			}
+		},
+		/**
+		 * playback error
+		 */
+		_onerror: function ( event ) {
+			if( this.ignoreNextError ) {
+				return;
+			}
+			var _this = this;
+			// this time out is to give $( window ).unload method a chance to be called before showing page unload network errors.
+			// we want to keep this value low to avoid delay in "access control" network errors.
+			setTimeout(function(){
+				if( _this.triggerNetworkErrorsFlag ){
+					var error = {};
+					var player = _this.getPlayerElement();
+					if ( event && player && player.error ) {
+						error.code = player.error().code;
+						error.subtype = player.error().subtype;
+						_this.log( '_onerror: MediaError code: ' + error.code + ', MediaError message: ' + error.subtype);
+					}
+				}
+			}, 100);
 		},
 		/**
 		 * Local method for seeking event
@@ -1034,6 +1166,5 @@
 				return this.getPlayerElement().volume();
 			}
 		}
-
 	};
 })(mediaWiki, jQuery);

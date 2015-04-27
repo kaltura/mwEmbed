@@ -78,7 +78,6 @@
 					}
 
 					$( embedPlayer.getPlayerElement() ).bind('pause' + _this.bindPostfix, function() {
-						if(_this.seekIntervalID) {
 							embedPlayer.disableSwitchSourceCallback = false;
 							// next button was tapped
 							if (embedPlayer.getPlayerElement().currentTime > _this.previousTime + 1
@@ -88,11 +87,11 @@
 								}
 								embedPlayer.getPlayerElement().currentTime = _this.previousTime;
 							}
-						}
 					});
 				});
 
 				$( embedPlayer ).bind('onAdComplete' + _this.bindPostfix, function() {
+					$( embedPlayer.getPlayerElement() ).unbind( 'pause' + _this.bindPostfix );
 					if( _this.seekIntervalID ) {
 						clearInterval(_this.seekIntervalID);
 						_this.seekIntervalID = null;
@@ -125,6 +124,9 @@
 			embedPlayer.bindHelper('prePlayAction' + _this.bindPostfix, function( e, prePlay ){
 				if( loadedAds === null ){
 					embedPlayer.addPlayerSpinner();
+					if (mw.isMobileDevice()){
+						embedPlayer.getPlayerElement().load();
+					}
 					_this.loadAds( function(){
 						loadedAds = true;
 						embedPlayer.unbindHelper('prePlayAction' + _this.bindPostfix);

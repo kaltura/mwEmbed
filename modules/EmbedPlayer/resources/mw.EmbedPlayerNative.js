@@ -161,6 +161,7 @@
 						.addClass('playerPoster')
 						.load(function () {
 							_this.applyIntrinsicAspect();
+							$('.playerPoster').attr('alt', _this.posterAlt);
 						})
 				);
 			}
@@ -176,12 +177,14 @@
 			// If switching a Persistent native player update the source:
 			// ( stop and play won't refresh the source  )
 			_this.switchPlaySource(this.getSource(), function () {
-				if (!_this.autoplay && !mw.isMobileDevice()) {
-					// pause is need to keep pause sate, while
+				if (!_this.autoplay  || ( _this.autoplay && mw.isMobileDevice()) ) {
+					// pause is need to keep pause state, while
 					// switch source calls .play() that some browsers require.
-					// to reflect source swiches.
+					// to reflect source switches. Playlists handle pause state so no need to pause in playlist
 					_this.ignoreNextNativeEvent = true;
-					_this.pause();
+					if ( !_this.playlist ){
+						_this.pause();
+					}
 					_this.updatePosterHTML();
 				}
 				if (!(mw.isIOS7() && mw.isIphone())) {
@@ -1323,7 +1326,7 @@
 			vid.play();
 		},
 		isVideoSiblingEnabled: function () {
-			if (mw.isIphone() || mw.isAndroid2() || mw.isAndroid40() || mw.isMobileChrome()
+			if (mw.isIphone() || mw.isAndroid2() || mw.isWindowsPhone() || mw.isAndroid40() || mw.isMobileChrome()
 				||
 				( mw.isIpad() && !mw.isIpad3() )
 				) {
