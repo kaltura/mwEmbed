@@ -2321,6 +2321,8 @@
 
 			// trigger on play interface updates:
 			this.restoreComponentsHover();
+			//Unmask clipDone guard handler
+			this.shouldEndClip = true;
 			$(this).trigger('onPlayInterfaceUpdate');
 		},
 		/**
@@ -2412,6 +2414,8 @@
 			this.hideSpinner();
 			// trigger on pause interface updates
 			this.disableComponentsHover();
+			//Mask clipDone guard handler
+			this.shouldEndClip = false;
 			$(this).trigger('onPauseInterfaceUpdate');
 		},
 		/**
