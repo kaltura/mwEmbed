@@ -30,7 +30,8 @@
 			'MaxClips': 25,
 			'selectedIndex': 0,
 			'includeHeader': true,
-			'renderWhenEmpty': false
+			'renderWhenEmpty': false,
+			'paging': false
 		},
 
 
@@ -49,6 +50,7 @@
 		playerIsReady: false,
 		redrawOnResize: true,
 		widthSetByUser: true,    // assuming the user specified the required playlist width. Will be changed if needed in the setup function
+		page: 1,                 // start page for paging
 
 		setup: function (embedPlayer) {
 			if ( $(".playlistInterface").length === 0 ){
@@ -168,33 +170,46 @@
 			});
 
 			$( this.embedPlayer ).bind("scrollEnd", function(){
-				var data = _this.mediaList.slice();
-				_this.mediaList = $.merge( _this.mediaList, data );
+				if ( _this.getConfig('paging') ===  true){
+					_this.page++; // move to next page
+					var playlistRequest = {
+						'service': 'playlist',
+						'action': 'execute',
+						'pager:objectType': 'KalturaFilterPager',
+						'pager:pageIndex': _this.page,
+						'pager:pageSize': _this.getConfig('MaxClips'),
+						'id': _this.playlistSet[_this.currentPlaylistIndex].id
+					};
+					_this.getKClient().doRequest(playlistRequest, function (playlistDataResult) {
+						if (playlistDataResult.length){
+							_this.addMediaItems(playlistDataResult);
+							_this.getTemplateHTML( {meta: _this.getMetaData(), mediaList: playlistDataResult})
+								.then(function(medialist) {
+									_this.getMedialistComponent().find("ul").append(medialist.find("li"));
+									// update "data-mediabox-index" attribute
+									_this.getMedialistComponent().find("li").each(function(index, elm){
+										$(elm).attr("data-mediabox-index", index);
+									});
 
-				_this.getTemplateHTML( {meta: _this.getMetaData(), mediaList: data})
-					.then(function(medialist) {
-						_this.getMedialistComponent().find("ul").append(medialist.find("li"));
-						// update "data-mediabox-index" attribute
-						_this.getMedialistComponent().find("li").each(function(index, elm){
-							$(elm).attr("data-mediabox-index", index);
-						});
+									if (_this.getLayout() === "horizontal"){
+										_this.getMedialistComponent().find('ul').width((_this.getMediaItemBoxWidth()+1)*_this.mediaList.length);
+										_this.getMedialistComponent().find('.k-carousel').css('width', _this.getMedialistComponent().width() );
 
-						if (_this.getLayout() === "horizontal"){
-							_this.getMedialistComponent().find('ul').width((_this.getMediaItemBoxWidth()+1)*_this.mediaList.length);
-							_this.getMedialistComponent().find('.k-carousel').css('width', _this.getMedialistComponent().width() );
+										var scrollLeft = Math.abs(parseInt(_this.getComponent().find("ul").css("left")));
+										var hiddenItems = parseInt(scrollLeft / _this.getConfig( 'mediaItemWidth'));
+									}else{
+										_this.$scroll.nanoScroller();
+									}
+									_this.configMediaListFeatures(true);
+									_this.getMedialistComponent().find('ul').trigger("refresh",[hiddenItems]);
 
-							var scrollLeft = Math.abs(parseInt(_this.getComponent().find("ul").css("left")));
-							var hiddenItems = parseInt(scrollLeft / _this.getConfig( 'mediaItemWidth'));
-						}else{
-							_this.$scroll.nanoScroller();
+									$( _this.embedPlayer ).trigger( "mediaListLayoutReady" );
+								}, function(msg) {
+									mw.log( msg );
+								});
 						}
-						_this.configMediaListFeatures(true);
-						_this.getMedialistComponent().find('ul').trigger("refresh",[hiddenItems]);
-
-						$( _this.embedPlayer ).trigger( "mediaListLayoutReady" );
-					}, function(msg) {
-						mw.log( msg );
 					});
+				}
 			});
 
 			// set responsiveness
@@ -542,6 +557,9 @@
 				var playlistRequest = {
 					'service': 'playlist',
 					'action': 'execute',
+					'pager:objectType': 'KalturaFilterPager',
+					'pager:pageIndex': this.page,
+					'pager:pageSize': this.getConfig('MaxClips'),
 					'id': this.playlistSet[_this.currentPlaylistIndex].id
 				};
 				this.getKClient().doRequest(playlistRequest, function (playlistDataResult) {

@@ -170,7 +170,14 @@ class PlaylistResult {
 				foreach( $playlistIds as $playlistId ) {
 					$client->queueServiceActionCall( "playlist", "get", array( 'id' => $playlistId ) );
 				}
-				$client->queueServiceActionCall( "playlist", "execute", array( 'id' => $firstPlaylist ) );
+				$maxClips = $this->uiconf->getPlayerConfig('playlistAPI', 'MaxClips');
+				if (isset($maxClips)){
+					$params = array( 'id' => $firstPlaylist, 'pager:objectType' => 'KalturaFilterPager', 'pager:pageIndex' => 1, 'pager:pageSize' => $maxClips);
+				}else{
+					$params = array( 'id' => $firstPlaylist );
+				}
+
+				$client->queueServiceActionCall( "playlist", "execute", $params );
 				$resultObject = $client->doQueue();
 				$this->responseHeaders = $client->getResponseHeaders();
 				// Check if we got error
