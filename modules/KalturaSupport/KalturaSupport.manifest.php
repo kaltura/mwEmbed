@@ -1590,6 +1590,22 @@ The playhead reflects segment time as if it was the natural stream length.",
                     'configObject' => "playlistSelectBox",
                     'type' => 'related'
                 ),
+				'clickUrl' => array(
+					'doc' => "<p style='text-align: left'>Defines the URL for a related item click</p>
+								If this left blank the click will replace the current video with a new one.
+								example: <b>http://mydomain.com/?videoId={related.selectedEntry.id}</b> as a custom
+								URL with the entry id as postfix",
+					'type' => 'string'
+				),
+				'autoContinueTime' => array(
+					'doc' => 'Number of seconds for auto play.',
+					'type' => 'number'
+				),
+
+				'itemsLimit' => array(
+					'doc' => 'Maximum number of items to show on the related screen.',
+					'type' => 'number'
+				),
 				'displayOnPlaybackDone' => array(
 					'doc' => 'Display related screen automatically when playback has finished',
 					'type' => 'boolean',
@@ -1599,25 +1615,10 @@ The playhead reflects segment time as if it was the natural stream length.",
 					'doc' => 'Should the Next Item be automatically played.',
 					'type' => 'boolean'
 				),
-				'autoContinueTime' => array(
-					'doc' => 'Number of seconds for auto play.',
-					'type' => 'number'
-				),
-				'clickUrl' => array(
-					'doc' => "<p style='text-align: left'>Defines the URL for a related item click</p>
-								If this left blank the click will replace the current video with a new one.
-								example: <b>http://mydomain.com/?videoId={related.selectedEntry.id}</b> as a custom
-								URL with the entry id as postfix",
-					'type' => 'string'
-				),
-				'itemsLimit' => array(
-					'doc' => 'Maximum number of items to show on the related screen.',
-					'type' => 'number'
-				),
 				'storeSession'=> array(
-					'doc' => "Store the played entries across page views in related clips display",
-					'type' => 'boolean'
-				)
+                    'doc' => "Store the played entries across page views in related clips display",
+                    'type' => 'boolean'
+                )
 				/*
 				// hide template path for now, no way for user to provide useful value here.
 				'templatePath' => array(
