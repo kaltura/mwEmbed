@@ -149,11 +149,14 @@ DAL for Q&A Module
         annotationCuePointToQAItem: function(cuePoint) {
 
             var type = "";
+            var title = "";
             if (cuePoint.tags == "qna"){
                 type = "qnaThread";
+                title = gM('qna-you-asked');
             }
             else if (cuePoint.tags == "QnaAnnouncement"){
                 type = "announcement";
+                title = gM('qna-announcement-title');
             }
 
             var threadId = cuePoint.id;
@@ -161,7 +164,7 @@ DAL for Q&A Module
                 threadId: threadId,
                 type: type,
                 isRead: ko.observable(viewedThreads.isRead(threadId)),
-                title: gM('qna-announcement-title'),
+                title: title,
                 entryText:cuePoint.text,
                 timestamp: ko.observable(cuePoint.createdAt)
             });

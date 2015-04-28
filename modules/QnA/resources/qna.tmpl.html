@@ -29,6 +29,16 @@
                             <div data-bind='css: {  "qnaAnnouncementText" : !isRead(), "qnaAnnouncementTextRead" : isRead()}, text: entryText'></div>
                         </div>
                     </div>
+                    <div data-bind="if: type === 'qnaThread'">
+                        <div class="qnaEntryListLI qnaThread">
+                            <div>
+                                <div class="qnaThreadTitle" data-bind='text: title'></div>
+                                <div class="qnaThreadTimeRead" data-bind='text: timestamp.qnaTimestamp()'></div>
+                            </div>
+                            <br>
+                            <div class="qnaThreadText" data-bind='text: entryText'></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
