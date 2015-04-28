@@ -3,15 +3,17 @@
  */
 (function (mw, $) {
     "use strict";
-    ko.subscribable.fn.qnaTimestamp = function () {
+    ko.subscribable.fn.qnaTimestamp = function (currentTime) {
         return ko.pureComputed(function () {
+
+            //var unused = ko.unwrap(currentTime);
 
             var minutesText = " " + gM('qna-timestamp-minutes-text');
             var nowText = gM('qna-timestamp-now-text');
             var multipleHoursText = gM('qna-timestamp-multi-hours-text');
             var singleHourText = gM('qna-timestamp-single-hour-text');
 
-            var nowInSeconds = new Date().getTime() / 1000;
+            var nowInSeconds = ko.unwrap(currentTime) / 1000;
             var secondsSinceTimestamp = nowInSeconds - this();
 
             var hours = parseInt( secondsSinceTimestamp / 3600 );
