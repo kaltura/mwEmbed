@@ -53,7 +53,6 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 	handleMentionedTerms : function (dataResult) {
 		//handle resault for mentioned terms
 		var _this = this;
-		return;
 		var metadataObjects = dataResult['objects'][0]['relatedObjects']['metadata']['objects'];
 
 		//iterate on all recieved metadata objects fro the response profile
@@ -242,7 +241,6 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 		var _this = this;
 		this.bind('forcedCaptionLoaded', $.proxy(function(event,source){
 			//this.clearData();
-			debugger;
 			//TODO connect to new caption asset enhancment once ready.
 			if(source.styleCss.metaadata && source.styleCss.metaadata["font-family"] == 'human'){
 				_this.mainDoc.find(".ri-transcript-type--verified").addClass("active");
