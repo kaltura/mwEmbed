@@ -97,6 +97,9 @@
 			var _this = this;
 			this._propagateEvents = true;
 			$(this.getPlayerElement()).css('position', 'absolute');
+			if (this.inline) {
+				$(this.getPlayerElement()).attr('webkit-playsinline', '');
+			}
 			readyCallback();
 
 			// disable network errors on unload:
@@ -145,8 +148,11 @@
 			}
 			var _this = this;
 			// Hide the player offscreen:
-			this.hidePlayerOffScreen();
-			this.keepPlayerOffScreenFlag = true;
+			if (!this.inline) {
+				this.hidePlayerOffScreen();
+				this.keepPlayerOffScreenFlag = true;
+			}
+
 
 			// Add an image poster:
 			var posterSrc = ( this.poster ) ? this.poster :
@@ -1357,6 +1363,9 @@
 				this.addStartTimeCheck();
 				this.play();
 			}
+		},
+		setInline: function ( state ) {
+			_this.getPlayerElement().attr('webkit-playsinline', '');
 		}
 	};
 })(mediaWiki, jQuery);

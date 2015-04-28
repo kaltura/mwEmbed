@@ -444,6 +444,12 @@ $uiVars = array(
 				'default' => 'false',
 				'example' => '../modules/KalturaSupport/tests/AutoPlay.qunit.html'
 			),
+			'EmbedPlayer.WebKitPlaysInline' => array(
+            			 		'type' => 'Boolean',
+            					'desc' => "Determines if should play the video inline or not",
+            					'default' => 'false',
+            					'example' => ''
+            ),
 			'autoMute' => array(
 				'type' => 'Boolean',
 				'desc' => 'Determine whether to start playback with volume muted (usually used by video ads or homepage auto play videos)',
@@ -625,13 +631,13 @@ $uiVars = array(
 					'default' => '2',
 					'example' => ''
 			),
-			'EmbedPlayer.WebKitPlaysInline' => array(
+			/*'EmbedPlayer.WebKitPlaysInline' => array(
 			 		'type' => 'Boolean',
 					'desc' => "Determines if should play the video inline or not",
 					'default' => 'false',
 					'example' => ''
 			),
-			/*'EmbedPlayer.WebKitAllowAirplay' => array(
+			'EmbedPlayer.WebKitAllowAirplay' => array(
 					'type' => '',
 					'desc' => "",
 					'default' => '',
