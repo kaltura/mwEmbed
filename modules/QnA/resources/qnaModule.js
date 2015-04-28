@@ -52,7 +52,7 @@
 
             var count = 0;
             ko.utils.arrayForEach(_this.myObservableArray(), function(entry) {
-                if (entry.tags == "QnaAnnouncement" && !_this.qnaService.viewedThreads.isRead(entry.id)){
+                if (entry().tags == "QnaAnnouncement" && !_this.qnaService.viewedThreads.isRead(entry().id)){
                     count++;
                 }
             });
