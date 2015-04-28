@@ -701,7 +701,7 @@ $uiVars = array(
 					'type' => 'Boolean',
 					'desc' => "When set to true, the thumbnail is loaded with its original size",
 					'default' => 'false',
-					'example' => ''
+					'example' => '../modules/KalturaSupport/tests/ImageEntry.html'
 			),
 			/*'EmbedPlayer.SourceAttributes' => array(
 			 'type' => '',
