@@ -32,13 +32,6 @@
 
                 _this.qnaService.markAsRead(item);
             }
-
-            setInterval(function(){
-                var data = _this.myObservableArray().slice(0);
-                _this.myObservableArray([]);
-                _this.myObservableArray(data);
-            }, 60000);
-
         },
         destroy: function () {
 

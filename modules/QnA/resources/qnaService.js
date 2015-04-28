@@ -160,14 +160,16 @@ DAL for Q&A Module
             }
 
             var threadId = cuePoint.id;
-            return $.extend(cuePoint,{
+            return ko.observable(
+                $.extend(cuePoint,{
                 threadId: threadId,
                 type: type,
                 isRead: ko.observable(viewedThreads.isRead(threadId)),
                 title: title,
                 entryText:cuePoint.text,
-                timestamp: ko.observable(cuePoint.createdAt)
-            });
+                timestamp: ko.observable(cuePoint.createdAt),
+                currentTime: ko.observable(new Date().getTime())
+            }));
         },
 
         requestCuePoints:function() {
@@ -199,6 +201,11 @@ DAL for Q&A Module
                    // _this.embedPlayer.triggerHelper('KalturaSupport_CuePointsUpdated', [data.totalCount]);
                 }
             );
+
+            // to cause the re-calculation of the timestamp
+            for (var i = 0; i < _this.items().length; i++) {
+                _this.items()[i]().currentTime(new Date().getTime());
+            }
         },
 
         /*
