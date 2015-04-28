@@ -53,32 +53,27 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 	handleMentionedTerms : function (dataResult) {
 		//handle resault for mentioned terms
 		var _this = this;
+		return;
 		var metadataObjects = dataResult['objects'][0]['relatedObjects']['metadata']['objects'];
 
 		//iterate on all recieved metadata objects fro the response profile
 		for(var i=0 ; i < metadataObjects.length ; i++ ){
-
 			//detect share metadata node
 			if(metadataObjects[i].xml.indexOf("ShareLink") > 0 && metadataObjects[i].xml.indexOf("AllowShare") > 0 ){
 				var sharedLink = $(metadataObjects[i].xml).find("sharelink").text();
 				var allowShare = $(metadataObjects[i].xml).find("AllowShare").text();
-				//TODO - hook to UI & logic
 				continue;
 			}
 			//detect mentioned terms and parsing data
 			//companies
 			if(metadataObjects[i].relatedObjects.companies){
 				for (var k=0; k<metadataObjects[i].relatedObjects.companies.objects.length ; k++){
-					var company = metadataObjects[i].relatedObjects.companies.objects[k];
-					var companyName = $(company.xml).find("Name").text();
-					var companyPermId = $(company.xml).find("PermID").text();
-					var primaryRIC = $(company.xml).find("PrimaryRIC").text();
-					var primaryTicker = $(company.xml).find("PrimaryTicker").text();
+					var companyXML = metadataObjects[i].relatedObjects.companies.objects[k].xml;
 					var newCompany = {
-						companyPermId : companyPermId,
-						companyName : companyName,
-						primaryRIC : primaryRIC,
-						primaryTicker : primaryTicker
+						companyPermId : this.trimSpaces($(companyXML).find("PermID").text()),
+						companyName : this.trimSpaces($(companyXML).find("Name").text()),
+						primaryRIC : this.trimSpaces($(companyXML).find("PrimaryRIC").text()),
+						primaryTicker : this.trimSpaces($(companyXML).find("PrimaryTicker").text())
 					}
 					this.getCompanies().push(newCompany);
 				}
@@ -86,16 +81,15 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 			//persons
 			if(metadataObjects[i].relatedObjects.persons){
 				for (var k=0; k<metadataObjects[i].relatedObjects.persons.objects.length ; k++){
-					var person = metadataObjects[i].relatedObjects.persons.objects[k];
+					var personXML = metadataObjects[i].relatedObjects.persons.objects[k].xml;
 					var newPerson = {
-						FirstName : $(person.xml).find("FirstName").text(),
-						LastName : $(person.xml).find("LastName").text(),
-						MiddleName : $(person.xml).find("MiddleName").text(),
-						PermID : $(person.xml).find("PermID").text(),
-						Prefix : $(person.xml).find("Prefix").text()
+						FirstName : this.trimSpaces($(personXML).find("FirstName").text()),
+						LastName : this.trimSpaces($(personXML).find("LastName").text()),
+						MiddleName : this.trimSpaces($(personXML).find("MiddleName").text()),
+						PermID : this.trimSpaces($(personXML).find("PermID").text()),
+						Prefix : this.trimSpaces($(personXML).find("Prefix").text())
 					}
 					newPerson.displayString = (newPerson.Prefix="" ? "" : newPerson.Prefix+" ")+newPerson.FirstName + (newPerson.MiddleName="" ? "" : " "+newPerson.MiddleName+" ") + " "+newPerson.LastName;
-
 					this.getPeople().push(newPerson);
 				}
 			}
@@ -104,8 +98,6 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 			for (var k=0; k<keywordsArr.length ; k++){
 				this.getKeywords().push($(keywordsArr[k]).text())
 			}
-
-
 
 			//stab
 			this.getGeography().push("USA");
@@ -118,7 +110,7 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 			if(companies.length){
 				var companiesString = "";
 				for (var j=0;j<companies.length;j++){
-					companiesString+='<span class="mentioned-term company" permId="'+companies[j].companyPermId+'" ric="'+companies[j].primaryRIC+'" ticker="'+companies[j].primaryTicker+'"> '+companies[j].companyName+'</span>,';
+					companiesString+='<span class="mentioned-term company" permId="'+companies[j].companyPermId+'" ric="'+companies[j].primaryRIC+'" ticker="'+companies[j].primaryTicker+'">'+companies[j].companyName+'</span>,';
 				}
 				if(companiesString.length>1){
 					companiesString = companiesString.substring(0, companiesString.length - 1)
@@ -148,7 +140,7 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 			if(people.length){
 				var peopleString = "";
 				for (var j=0;j<people.length;j++){
-					peopleString+='<span class="mentioned-term people"> '+people[j].displayString+'</span>,';
+					peopleString+='<span class="mentioned-term people" fname="'+people[j].FirstName+'" lname="'+people[j].LastName+'" mname="'+people[j].MiddleName+'" prefix="'+people[j].Prefix+'" permId="'+people[j].PermID+'" > '+people[j].displayString+'</span>,';
 				}
 				if(peopleString.length>1){
 					peopleString = peopleString.substring(0, peopleString.length - 1)
@@ -175,6 +167,9 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 				this.mainDoc.find("#geographyTerms").parent().hide();
 			}
 		}
+	},
+	trimSpaces : function (str){
+		return $.trim(str.replace(/\s{2,}/g,' '));
 	},
 	applyMentionedTermsItemBehavior : function (){
 		var _this = this;
@@ -244,18 +239,21 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 
 	},
 	setBindings : function (){
+		var _this = this;
 		this.bind('forcedCaptionLoaded', $.proxy(function(event,source){
 			//this.clearData();
+			debugger;
+			//TODO connect to new caption asset enhancment once ready.
+			if(source.styleCss.metaadata && source.styleCss.metaadata["font-family"] == 'human'){
+				_this.mainDoc.find(".ri-transcript-type--verified").addClass("active");
+			}else if(source.styleCss.metaadata && source.styleCss.metaadata["font-family"] == 'machine'){
+				_this.mainDoc.find(".ri-transcript-type--automatic").addClass("active");
+			}
 			this.setTranscript(source.captions);
 			//this.setMentionedTerms();
 			this.setTranscriptType();
-			//Experimental :) // render the mentioned terms to the transcript
-			try{
-				//this.renderHighlightedWords();
-				//this.applyBehavior();
-			}catch(e){
-				mw.log("Error applying highlighted words " + e)
-			}
+			this.applyBehavior();
+			this.renderHighlightedWords();
 		},this));
 		this.bind('playerReady', $.proxy(function(){
 			this.clearData();
@@ -269,7 +267,6 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 
 	setTranscriptType : function(){
 		//decide to show verified or automatic transcript type BY metadta
-
 		//this.mainDoc.find(".ri-transcript-type--verified").addClass("active");
 		//this.mainDoc.find(".ri-transcript-type--automatic").addClass("active");
 	},
@@ -286,7 +283,6 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 		$(doc).find("#companiesTerms").text("");
 		$(doc).find("#geographyTerms").text("");
 		$(doc).find("#keywordsTerms").text("");
-
 	},
 	applyBehavior : function (){
 		//apply to transcript
@@ -309,48 +305,28 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 	renderHighlightedWords : function (){
 		var _this = this;
 		var doc = window['parent'].document;
-		var markMyWords = this.markMyWords;
-
-		//TODO replace with regexp later
+		//experimental
 		var currentText = $(doc).find("#"+this.getConfig('transcriptTargetId')).html();
-
-		function replaceAllTemp(str,find, replace) {
-			var ignoreCase=true;
-			var _token;
-			var token=find;
-			var newToken=replace;
-			var i = -1;
-
-			if ( typeof token === "string" ) {
-
-				if ( ignoreCase ) {
-
-					_token = token.toLowerCase();
-
-					while( (
-						i = str.toLowerCase().indexOf(
-							token, i >= 0 ? i + newToken.length : 0
-						) ) !== -1
-						) {
-						str = str.substring( 0, i ) +
-						newToken +
-						str.substring( i + token.length );
-					}
-
-				} else {
-					return this.split( token ).join( newToken );
-				}
-
+		var stringsToReplace = ['oil','HYLD'];
+		for (var i=0;i<stringsToReplace.length;i++){
+			var rep = $(doc).find("#"+this.getConfig('transcriptTargetId')+" span:contains('"+stringsToReplace[i]+"')");
+			for(var j=0;j<rep.length;j++){
+				var output = $(rep[j]).text().replace( stringsToReplace[i] , '<span class="highlight">'+stringsToReplace[i]+'</span>');
+				$(rep[j]).html(output)
 			}
-			return str;
-		};
+		}
 
-		for (var i=0;i<markMyWords.length;i++){
-			currentText = replaceAllTemp(currentText ,markMyWords[i], '<span class="highlight">' +markMyWords[i]+'</span>')
+
+
+		return;
+
+		for (var i=0;i<stringsToReplace.length;i++){
+			var regexp =  new RegExp(stringsToReplace[i], ['g']);
+			currentText = currentText.replace( regexp , '<span class="highlight">'+stringsToReplace[i]+'</span>');
 		}
 
 		$(doc).find("#"+this.getConfig('transcriptTargetId')).html(currentText);
-		//$(doc).find("#"+this.getConfig('transcriptTargetId')).append(newOutput);
+
 
 	},
 
