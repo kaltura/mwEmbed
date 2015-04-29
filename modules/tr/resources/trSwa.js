@@ -10,10 +10,10 @@ mw.PluginManager.add( 'trSwa', mw.KBasePlugin.extend({
 	},
 
 	setup: function() {
-		this.setBinginge();
+		this.setBindings();
 	},
 
-	setBinginge: function() {
+	setBindings: function() {
 		var _this = this;
 		this.bind('playerReady', $.proxy(function(){
 			if(_this.getConfig('loaded')){
@@ -40,13 +40,18 @@ mw.PluginManager.add( 'trSwa', mw.KBasePlugin.extend({
 	loadTopics: function() {
 		//simulate an a-sync callback to BE to load the topics
 		var _this = this;
-		setTimeout(function(){
-			var resultsStabArr = [
-				{id: "1_vjb6n80x", name: "My Playlist Name 1"},
-				{id: "1_kvvdd4ar", name: "My Playlist Name 2"},
-				{id: "0_fxk53kis", name: "My Playlist Name 3"},
-				{id: "0_lsanyawn", name: "My Playlist Name 4"}
-			];
+
+		var loadPlaylists = {
+			'service': 'playlist',
+			'action': 'list',
+			'filter:tagsLike' : this.getConfig("selectedTag")
+		};
+		this.getKClient().doRequest(loadPlaylists, function (dataResult) {
+			//load playlist by a configured tag
+			var resultsStabArr = [];
+			for(var i = 0; i<dataResult.objects.length ; i++){
+				resultsStabArr.push({id:dataResult.objects[i].id , name:dataResult.objects[i].name})
+			}
 			var $ul = $(_this.getTargetElement()).find(".swa-ul");
 			var lis = '';
 			$.each(resultsStabArr, function(idx, item){
@@ -54,8 +59,7 @@ mw.PluginManager.add( 'trSwa', mw.KBasePlugin.extend({
 			});
 			$ul.append(lis);
 			_this.applyBehavior();
-
-		},450)
+		});
 	},
 	applyBehavior: function() {
 		var _this = this;
@@ -75,8 +79,6 @@ mw.PluginManager.add( 'trSwa', mw.KBasePlugin.extend({
 			_this.embedPlayer.sendNotification('trLoadNewPlaylist', params );
 		});
 		$target.find(".swa.search-btn").click(function(){
-			debugger;
-
 			var params = {
 				'playlistParams' : {
 					'service':'playlist' ,
@@ -128,6 +130,12 @@ mw.PluginManager.add( 'trSwa', mw.KBasePlugin.extend({
 				target.innerHTML = html.html();
 			});
 		}
+	},
+	getKClient: function () {
+		if (!this.kClient) {
+			this.kClient = mw.kApiGetPartnerClient(this.embedPlayer.kwidgetid);
+		}
+		return this.kClient;
 	}
 
 

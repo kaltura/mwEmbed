@@ -24,13 +24,28 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 		this.loadMentionedTerms();
 	},
 
-	getKClient: function () {
-		if (!this.kClient) {
-			this.kClient = mw.kApiGetPartnerClient(this.embedPlayer.kwidgetid);
-		}
-		return this.kClient;
-	},
+	setBindings : function (){
+		var _this = this;
+		this.bind('changeMedia', $.proxy(function(){
+				this.setConfig("transcriptLoaded",false);
+				this.setConfig("mentionedTermsLoaded",false);
+			}));
+		this.bind('forcedCaptionLoaded', $.proxy(function(event,source){
+			this.setTranscript(source.captions);
+			this.applyBehavior();
+			this.setConfig("transcriptLoaded",true);
+			this.renderHighlightedWords(this.getConfig("mentionedTerms"));
+		},this));
 
+		this.bind('playerReady', $.proxy(function(){
+			this.clearData();
+		},this));
+
+		this.bind('trLocalSearch', $.proxy(function(e,searchString){
+			//show filter box
+			this.localSearch(searchString)
+		},this));
+	},
 	loadMentionedTerms : function (){
 		var _this = this;
 		var myRequest = {
@@ -46,8 +61,19 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 			myRequest['responseProfile[systemName]'] = this.getConfig('responseProfile');
 		}
 		this.getKClient().doRequest(myRequest, function (dataResult) {
+			_this.setConfig("mentionedTermsLoaded",true);
 			_this.handleMentionedTerms(dataResult);
 			_this.applyMentionedTermsItemBehavior();
+			_this.setConfig("mentionedTerms" , dataResult.objects[0].relatedObjects.mentionedTerm.objects )
+			_this.renderHighlightedWords(_this.getConfig("mentionedTerms"));
+			//set transcript type
+			//TODO connect to new caption asset enhancment once ready.
+			if(dataResult.objects[0].relatedObjects.captionAsset.objects[0].tags == 'human'){
+				_this.mainDoc.find(".ri-transcript-type--verified").addClass("active");
+			}else if(dataResult.objects[0].relatedObjects.captionAsset.objects[0].tags == 'machine'){
+				_this.mainDoc.find(".ri-transcript-type--automatic").addClass("active");
+			}
+
 		});
 	},
 	handleMentionedTerms : function (dataResult) {
@@ -237,42 +263,9 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 		})
 
 	},
-	setBindings : function (){
-		var _this = this;
-		this.bind('forcedCaptionLoaded', $.proxy(function(event,source){
-			//this.clearData();
-			//TODO connect to new caption asset enhancment once ready.
-			if(source.styleCss.metaadata && source.styleCss.metaadata["font-family"] == 'human'){
-				_this.mainDoc.find(".ri-transcript-type--verified").addClass("active");
-			}else if(source.styleCss.metaadata && source.styleCss.metaadata["font-family"] == 'machine'){
-				_this.mainDoc.find(".ri-transcript-type--automatic").addClass("active");
-			}
-			this.setTranscript(source.captions);
-			//this.setMentionedTerms();
-			this.setTranscriptType();
-			this.applyBehavior();
-			this.renderHighlightedWords();
-		},this));
-		this.bind('playerReady', $.proxy(function(){
-			this.clearData();
-		},this));
-		this.bind('trLocalSearch', $.proxy(function(e,searchString){
-			//show filter box
-			this.localSearch(searchString)
-		},this));
-	},
-
-
-	setTranscriptType : function(){
-		//decide to show verified or automatic transcript type BY metadta
-		//this.mainDoc.find(".ri-transcript-type--verified").addClass("active");
-		//this.mainDoc.find(".ri-transcript-type--automatic").addClass("active");
-	},
 	localSearch : function(searchString){
 		this.mainDoc.find(".transcript-filter").addClass("active");
 	},
-
-
 	clearData : function () {
 		//clear UI on transcript and mentioned terms
 		var doc = window['parent'].document;
@@ -300,31 +293,25 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 			this.getPlayer().sendNotification('trLocalSearch',$(event.target).attr("trdata"));
 		},this));
 	},
-	renderHighlightedWords : function (){
-		var _this = this;
+	renderHighlightedWords : function (mentionedTerms){
+		//race condition captions and mentioned terms data loading - both async load
+		if(!this.getConfig("transcriptLoaded") || !this.getConfig("mentionedTermsLoaded") ){
+			return;
+		}
 		var doc = window['parent'].document;
-		//experimental
-		var currentText = $(doc).find("#"+this.getConfig('transcriptTargetId')).html();
-		var stringsToReplace = ['oil','HYLD'];
-		for (var i=0;i<stringsToReplace.length;i++){
-			var rep = $(doc).find("#"+this.getConfig('transcriptTargetId')+" span:contains('"+stringsToReplace[i]+"')");
+		for (var i=0;i<mentionedTerms.length;i++){
+			var textToReplace = mentionedTerms[i].text;
+
+			var rep = $(doc).find("#"+this.getConfig('transcriptTargetId')+" span:contains('"+textToReplace+"')");
+
 			for(var j=0;j<rep.length;j++){
-				var output = $(rep[j]).text().replace( stringsToReplace[i] , '<span class="highlight">'+stringsToReplace[i]+'</span>');
-				$(rep[j]).html(output)
+				//3 sec accuracy
+				if( Math.abs(mentionedTerms[i].startTime-$(rep[j]).attr('trtime')*1000) < 3000 ){
+					var output = $(rep[j]).text().replace( textToReplace , '<span class="highlight">'+textToReplace+'</span>');
+					$(rep[j]).html(output)
+				}
 			}
 		}
-
-
-
-		return;
-
-		for (var i=0;i<stringsToReplace.length;i++){
-			var regexp =  new RegExp(stringsToReplace[i], ['g']);
-			currentText = currentText.replace( regexp , '<span class="highlight">'+stringsToReplace[i]+'</span>');
-		}
-
-		$(doc).find("#"+this.getConfig('transcriptTargetId')).html(currentText);
-
 
 	},
 
@@ -346,9 +333,6 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 		$(doc).find("#"+this.getConfig('transcriptTargetId')).text("");
 		$(doc).find("#"+this.getConfig('transcriptTargetId')).append(htmlString);
 	},
-
-
-
 	hasValidTargetElement: function() {
 		if( !mw.getConfig('EmbedPlayer.IsFriendlyIframe') ){
 			return false;
@@ -399,6 +383,11 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 				target.innerHTML = html.html();
 			});
 		}
+	},
+	getKClient: function () {
+		if (!this.kClient) {
+			this.kClient = mw.kApiGetPartnerClient(this.embedPlayer.kwidgetid);
+		}
+		return this.kClient;
 	}
-
 }));
