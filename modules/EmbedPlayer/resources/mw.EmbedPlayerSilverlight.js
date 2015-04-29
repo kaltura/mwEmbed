@@ -419,6 +419,9 @@
 			mw.log('EmbedPlayerSPlayer::play');
 			var _this = this;
 			if ( this.parent_play() ) {
+				//TODO:: Currently SL player initializes before actual volume is read from cookie, so we set it on play
+				//need to refactor the volume logic and remove this.
+				this.setPlayerElementVolume(this.volume);
 				//bring back the player
 				this.getPlayerContainer().css('visibility', 'visible');
 				if (this.isMulticast) {

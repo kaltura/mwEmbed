@@ -74,6 +74,11 @@ class downloadEntry {
 			}
 			$options = new KalturaFlavorAssetUrlOptions();
 			$options->fileName = $filename;
+
+			$requestConfig = $client->getConfig();
+			array_push($requestConfig->requestHeaders, 'Referer: ' . $this->getResultObject()->request->getReferer());
+			$client->setConfig($requestConfig);
+
 			$flavorUrl = $client->flavorAsset->getUrl($flavorId,null,false,$options);
 			header("Location: " . $flavorUrl );
 		}
@@ -425,7 +430,7 @@ class downloadEntry {
 			$preferredBitrate = intval($_GET['preferredBitrate']);
 		}
 		if( isset($_GET['flavorID']) && $_GET['flavorID'] != null){
-			$flavorID = intval($_GET['flavorID']);
+			$flavorID = $_GET['flavorID'];
 		}
 
 		$src = false;
