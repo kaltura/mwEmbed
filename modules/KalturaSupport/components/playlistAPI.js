@@ -31,7 +31,8 @@
 			'selectedIndex': 0,
 			'includeHeader': true,
 			'renderWhenEmpty': false,
-			'paging': false
+			'paging': false,
+			'pageSize': 25
 		},
 
 
@@ -51,6 +52,7 @@
 		redrawOnResize: true,
 		widthSetByUser: true,    // assuming the user specified the required playlist width. Will be changed if needed in the setup function
 		page: 1,                 // start page for paging
+		pagingDone: false,       // flag for when there are no more entries in the next page so no need to load it
 
 		setup: function (embedPlayer) {
 			if ( $(".playlistInterface").length === 0 ){
@@ -170,14 +172,15 @@
 			});
 
 			$( this.embedPlayer ).bind("scrollEnd", function(){
-				if ( _this.getConfig('paging') ===  true){
+				if ( _this.getConfig('paging') ===  true && !_this.pagingDone ){
 					_this.page++; // move to next page
+					mw.log("Playlist:: scrollEnd event. paging: true: trying to load next playlist page: page="+_this.page+", pageSize"+_this.getConfig('pageSize'));
 					var playlistRequest = {
 						'service': 'playlist',
 						'action': 'execute',
 						'pager:objectType': 'KalturaFilterPager',
 						'pager:pageIndex': _this.page,
-						'pager:pageSize': _this.getConfig('MaxClips'),
+						'pager:pageSize': _this.getConfig('pageSize'),
 						'id': _this.playlistSet[_this.currentPlaylistIndex].id
 					};
 					_this.getKClient().doRequest(playlistRequest, function (playlistDataResult) {
@@ -207,6 +210,8 @@
 								}, function(msg) {
 									mw.log( msg );
 								});
+						}else{
+							_this.pagingDone = true;
 						}
 					});
 				}
@@ -557,11 +562,13 @@
 				var playlistRequest = {
 					'service': 'playlist',
 					'action': 'execute',
-					'pager:objectType': 'KalturaFilterPager',
-					'pager:pageIndex': this.page,
-					'pager:pageSize': this.getConfig('MaxClips'),
 					'id': this.playlistSet[_this.currentPlaylistIndex].id
 				};
+				if (this.getConfig('paging')){
+					playlistRequest['pager:objectType'] = 'KalturaFilterPager';
+					playlistRequest['pager:pageIndex'] = this.page;
+					playlistRequest['pager:pageSize'] = this.getConfig('pageSize');
+				}
 				this.getKClient().doRequest(playlistRequest, function (playlistDataResult) {
 					_this.playlistSet[_this.currentPlaylistIndex].items = playlistDataResult; // save the loaded data to the correct playlist in the playlistSet
 					_this.selectPlaylist(_this.currentPlaylistIndex);

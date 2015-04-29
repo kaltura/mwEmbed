@@ -22,6 +22,7 @@
 				liSize, ulSize, divSize,
 				numVisible, initialItemLength, itemLength, calculatedTo, autoTimeout;
 
+			options.refWindow = $(this).parents('body');
 			initVariables();                    // Set the above variables after initial calculations
 			initStyles();                       // Set the appropriate styles for the carousel div, ul and li
 			initSizes();                        // Set appropriate sizes for the carousel div, ul and li
@@ -150,13 +151,13 @@
 
 			function attachEventHandlers() {
 				if(options.btnPrev) {
-					$(options.btnPrev).click(function() {
+					$(options.btnPrev, options.refWindow).click(function() {
 						return go(calculatedTo - options.scroll);
 					});
 				}
 
 				if(options.btnNext) {
-					$(options.btnNext).click(function() {
+					$(options.btnNext, options.refWindow).click(function() {
 						return go(calculatedTo + options.scroll);
 					});
 				}
@@ -241,12 +242,12 @@
 			}
 
 			function disableOrEnableButtons() {
-				$(options.btnPrev + "," + options.btnNext).removeClass("disabled");
+				$(options.btnPrev + "," + options.btnNext, options.refWindow).removeClass("disabled");
 				if (calculatedTo == 0 && options.btnPrev ){
-					$(options.btnPrev).addClass("disabled");
+					$(options.btnPrev, options.refWindow).addClass("disabled");
 				}
 				if ((calculatedTo + numVisible) >= itemLength && options.btnNext ){
-					$(options.btnNext).addClass("disabled");
+					$(options.btnNext, options.refWindow).addClass("disabled");
 				}
 				if (calculatedTo+options.scroll > itemLength-numVisible){
 					div.trigger("complete",{"itemLength": itemLength});

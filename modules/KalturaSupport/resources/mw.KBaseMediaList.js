@@ -638,7 +638,6 @@
 					_this.doOnScrollerUpdate(data);
 				});
 				this.$scroll.on("scrollend", function(e){
-					_this.$scroll.nanoScroller({ stop: true });
 					$(_this.embedPlayer).trigger("scrollEnd");
 				});
 			}
