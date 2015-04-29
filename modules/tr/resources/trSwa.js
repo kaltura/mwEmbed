@@ -40,18 +40,27 @@ mw.PluginManager.add( 'trSwa', mw.KBasePlugin.extend({
 	loadTopics: function() {
 		//simulate an a-sync callback to BE to load the topics
 		var _this = this;
-		setTimeout(function(scope){
-			var resultsStabArr = ["1_vjb6n80x","1_kvvdd4ar"];
-			for(var i=0;i<resultsStabArr.length;i++){
-				$(scope.getTargetElement()).find(".swa-ul").append('<li class="swa topics-item" playlist="'+resultsStabArr[i]+'">'+resultsStabArr[i]+'</li>');
-			}
-			scope.applyBehavior();
+		setTimeout(function(){
+			var resultsStabArr = [
+				{id: "1_vjb6n80x", name: "My Playlist Name 1"},
+				{id: "1_kvvdd4ar", name: "My Playlist Name 2"},
+				{id: "0_fxk53kis", name: "My Playlist Name 3"},
+				{id: "0_lsanyawn", name: "My Playlist Name 4"}
+			];
+			var $ul = $(_this.getTargetElement()).find(".swa-ul");
+			var lis = '';
+			$.each(resultsStabArr, function(idx, item){
+				lis += '<li class="swa topics-item" playlist="'+item.id+'">'+item.name+'</li>';
+			});
+			$ul.append(lis);
+			_this.applyBehavior();
 
-		},450,this)
+		},450)
 	},
 	applyBehavior: function() {
 		var _this = this;
-		$(this.getTargetElement()).find(".swa.topics-item").click(function(){
+		var $target = $(this.getTargetElement());
+		$target.find(".swa.topics-item").click(function(){
 			var params = {
 				'playlistParams' : {
 					'service':'playlist' ,
@@ -64,8 +73,8 @@ mw.PluginManager.add( 'trSwa', mw.KBasePlugin.extend({
 				'playlistName' : 'new playlist' // override the displayed playlist name
 			};
 			_this.embedPlayer.sendNotification('trLoadNewPlaylist', params );
-		})
-		$(this.getTargetElement()).find(".swa.search-btn").click(function(){
+		});
+		$target.find(".swa.search-btn").click(function(){
 			debugger;
 
 			var params = {
@@ -80,7 +89,16 @@ mw.PluginManager.add( 'trSwa', mw.KBasePlugin.extend({
 				'playlistName' : 'new playlist' // override the displayed playlist name
 			};
 			_this.embedPlayer.sendNotification('trLoadNewPlaylist', params );
-		})
+		});
+
+		$target.find('.jcarousel').jCarouselLite({
+			btnNext: '.next',
+			btnPrev: '.prev',
+			height: 20,
+			mediaItemVisible: 3.5,
+			mouseWheel: true,
+			circular: false
+		});
 	},
 	hasValidTargetElement: function() {
 		var playlistElement = this.embedPlayer.getPluginInstance('playlistAPI').getComponent();
