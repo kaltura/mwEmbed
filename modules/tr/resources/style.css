@@ -42,16 +42,23 @@
 .playlistAPI.trTitle .k-horizontal.k-medialist-header {
 	height: 50px;
 }
-.swa-ul{
-    width: 100%;
-    list-style-type:none;
-    white-space:nowrap;
-    overflow-x:auto;
-    height: 15px;
-    -webkit-padding-start : 5px;
-    border-top: 1px solid #434343;
+.swa-carousel-container {
+	border-top: 1px solid #434343;
 	margin-top: 6px;
 	padding-top: 3px;
+}
+.swa.jcarousel {
+	float: left;
+}
+.swa-ul{
+    width: 95%;
+    list-style-type:none;
+    white-space:nowrap;
+    overflow-x:hidden;
+    height: 20px;
+    -webkit-padding-start : 5px;
+	box-sizing: border-box;
+	margin: 0 5px;
 }
 .swa.topics-item{
     display:inline;
@@ -59,6 +66,8 @@
     padding-left: 4px;
     padding-right: 5px;
     cursor:default;
+    width: 122px;
+    height: 14px;
 }
 .swa-title {
 	padding: 8px 0 0 8px;
@@ -69,10 +78,26 @@
 .swa-top-item{
     float: left;
 }
+.swa-carousel-container .prev, .swa-carousel-container .next {
+	display: block;
+	line-height: 1;
+	float: left;
+	color: #fff;
+	font-size: 23px;
+	text-decoration: none;
+	padding: 0 4px;
+	margin-top: -5px;
+}
+.clear { clear: both; }
+.swa-carousel-container .next { float: right; }
+.swa-carousel-container .prev.disabled, .swa-carousel-container .next.disabled {
+	color: #999; cursor: default;
+}
 .input-wrapper.swa-top-item {
     height: 13px;
     float: right;
 }
+
 
 .durationLabel {
     padding-right: 5px;
