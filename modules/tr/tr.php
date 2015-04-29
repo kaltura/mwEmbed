@@ -46,7 +46,8 @@ return array(
 	"trSwa" =>  array(
 		'scripts' => "resources/trSwa.js",
 		'dependencies' => array(
-			'mw.KBasePlugin'
+			'mw.KBasePlugin',
+			'jCarouse'
 		),
 		'templates' => "../tr/templates/swa.tmpl.html",
 		'kalturaPluginName' => 'trSwa'
