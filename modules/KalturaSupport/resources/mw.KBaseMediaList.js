@@ -156,7 +156,7 @@
 							this.$mediaListContainer = $( iframeParent ).parents().find( ".onpagePlaylistInterface" );
 						} else {
 							$( iframeParent ).after( "<div class='onpagePlaylistInterface'></div>" );
-							this.$mediaListContainer = $( iframeParent ).parents().find( ".onpagePlaylistInterface" );
+							this.$mediaListContainer = $( iframeParent ).parent().find( ".onpagePlaylistInterface" );
 							$( this.$mediaListContainer ).width( $( iframeParent ).width());
 							var containerHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * this.getConfig( 'MinClips' ) + this.getConfig('verticalHeaderHeight') : this.getConfig( "mediaItemHeight" ) + this.getConfig('horizontalHeaderHeight');
 							$( this.$mediaListContainer ).height( containerHeight );
