@@ -40,6 +40,11 @@ DAL for Q&A Module
         liveAQnaIntervalId: null,
         items: ko.observableArray(),
         lastUpdateTime: -1,
+        QandA_ResponseProfile: "QandA_ResponseProfile",
+        QandA_ResponseProfileSystemName: "QandA",
+        QandA_MetadataProfileSystemName: "QandA",
+        QandA_cuePointTag: "qna",
+        useResponseProfile:false,
 
         init: function (embedPlayer,qnaPlugin) {
             var _this = this;
@@ -79,28 +84,63 @@ DAL for Q&A Module
         getItems : function() {
             return this.items;
         },
-
+        createMetadataXmlFromObject:function(obj) {
+            var xml="<metadata>";
+            for(var propertyName in obj) {
+                xml+="<"+propertyName+">"+obj[propertyName]+"</"+propertyName+">";
+            }
+            xml+="</metadata>";
+            return xml;
+        },
         submitQuestion: function(question){
             var embedPlayer = this.embedPlayer;
             var _this = this;
 
-            var entryRequest = {
+            var startTime=new Date();
+
+
+            var xmlData=_this.createMetadataXmlFromObject( { ThreadId: "ABC"});
+
+
+            var createCuePointRequest = {
                 "service": "cuePoint_cuePoint",
                 "action": "add",
                 "cuePoint:objectType": "KalturaAnnotation",
                 "cuePoint:entryId": embedPlayer.kentryid,
                 "cuePoint:startTime": embedPlayer.currentTime,
                 "cuePoint:text": question,
-                "cuePoint:tags": "qna"
+                "cuePoint:tags": this.QandA_cuePointTag,
+                "cuePoint:partnerData": xmlData
             };
-           // mw.log("Submitting a new question: " + question);
+            var listMetadataProfileRequest = {
+                service: "metadata_metadataprofile",
+                action: "list",
+                "filter:systemNameEqual": this.QandA_MetadataProfileSystemName
+            };
+            var addMetadataRequest = {
+                service: "metadata_metadata",
+                action: "add",
+                metadataProfileId: "{2:result:objects:0:id}",
+                objectId: "{1:result:id}",
+                xmlData: xmlData,
+                objectType:"annotationMetadata.Annotation"
+            };
 
-            _this.getKClient().doRequest(entryRequest, function (result) {
-                    if (result.id) {
-                        mw.log("added Annotation cue point with id: " + result.id);
-                        _this.updateCuePoints([result]);
+
+            // mw.log("Submitting a new question: " + question);
+
+            _this.getKClient().doRequest([createCuePointRequest,listMetadataProfileRequest,addMetadataRequest], function (result) {
+                    var endTime=new Date();
+                    var cuePoint=result[0];
+                    var metadata=result[2];
+                    if (cuePoint.id) {
+
+                        _this.updatecuePointWithMetadata(cuePoint,metadata);
+
+                        mw.log("added Annotation cue point with id: " + cuePoint.id+ " took "+(endTime-startTime)+" ms");
+                        _this.updateCuePoints([cuePoint]);
                     } else{
-                        mw.log("error adding Annotation " + JSON.stringify(result));
+                        mw.log("error adding Annotation " + JSON.stringify(cuePoint));
 
                     }
                 },
@@ -125,28 +165,76 @@ DAL for Q&A Module
 
             newItems.forEach(function(cuePoint) {
 
-                if (_this.lastUpdateTime < cuePoint.updatedAt) {
-                    _this.lastUpdateTime = cuePoint.updatedAt;
-                }
                 var item=_this.annotationCuePointToQAItem(cuePoint);
 
-                var found=false;
-                for (var i=0;i<_this.items().length;i++) {
-                    if (_this.items()[i]().id===cuePoint.id) {
-                        found=true;
-                        _this.items.splice(i, 1);
-                        _this.items.splice(i, 0, item);
-                        break;
-                    }
-                };
+                if (item) {
 
-                if (!found) {
-                    _this.items.unshift(item);
+
+                    if (_this.lastUpdateTime < cuePoint.updatedAt) {
+                        _this.lastUpdateTime = cuePoint.updatedAt;
+                    }
+
+                    var found = false;
+                    for (var i = 0; i < _this.items().length; i++) {
+                        if (_this.items()[i]().id === cuePoint.id) {
+                            found = true;
+                            _this.items.splice(i, 1);
+                            _this.items.splice(i, 0, item);
+                            break;
+                        }
+                    }
+                    ;
+
+                    if (!found) {
+                        _this.items.unshift(item);
+                    }
                 }
             });
         },
+        metadataToObject: function(metadata) {
+            var xml = $.parseXML(metadata.xml);
+
+            var $xml = $( xml ).find('metadata').children();
+
+            var obj={};
+            $.each( $xml, function(inx, node){
+                if (node.nodeType===1) {
+                    obj[node.nodeName] = node.textContent;
+                }
+            });
+            return obj;
+        },
+        updatecuePointWithMetadata:function(cuePoint,metadata )
+        {
+            var obj=this.metadataToObject(metadata);
+
+            delete cuePoint.relatedObjects;
+
+            $.extend(cuePoint,{ metadata: obj, metadataId: metadata.id});
+
+        },
 
         annotationCuePointToQAItem: function(cuePoint) {
+
+            if (this.useResponseProfile) {
+                if (cuePoint.relatedObjects &&
+                    cuePoint.relatedObjects[this.QandA_ResponseProfile] &&
+                    cuePoint.relatedObjects[this.QandA_ResponseProfile].objects &&
+                    cuePoint.relatedObjects[this.QandA_ResponseProfile].objects.length>0) {
+                    var metadata=cuePoint.relatedObjects[this.QandA_ResponseProfile].objects[0];
+
+                    this.updatecuePointWithMetadata(cuePoint,metadata);
+
+                    delete cuePoint.relatedObjects;
+
+                } else {
+                    if (!cuePoint.metadata) {
+                        return null;
+                    }
+                }
+            } else {
+                this.updatecuePointWithMetadata(cuePoint,{ xml: cuePoint.partnerData });
+            }
 
             var type = "";
             var title = "";
@@ -181,9 +269,13 @@ DAL for Q&A Module
                 'action': 'list',
                 'filter:entryIdEqual': entryId,
                 'filter:objectType': 'KalturaAnnotationFilter',
-               // 'filter:statusIn': '1,3',
                 'filter:orderBy': '+createdAt'
             };
+
+            if (_this.useResponseProfile) {
+                request["responseProfile:objectType"]="KalturaResponseProfileHolder";
+                request["responseProfile:systemName"]=_this.QandA_ResponseProfileSystemName;
+            }
             var lastUpdatedAt = _this.lastUpdateTime + 1;
             // Only add lastUpdatedAt filter if any cue points already received
             if (lastUpdatedAt > 0) {
