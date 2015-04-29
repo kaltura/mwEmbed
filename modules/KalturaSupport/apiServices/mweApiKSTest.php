@@ -16,7 +16,7 @@ class mweApiKSTest {
 		}
 		$this->partnerId = '243342';
 
-		if( !isset( $_REQUEST['entry_id'] ) || $_REQUEST['entry_id'] != '1_9ln5whcm' ){
+		if( !isset( $_REQUEST['entry_id'] ) ){
 			$this->outputError( 'bad entry_id param');
 		}
 		$this->entryId = '1_9ln5whcm';
