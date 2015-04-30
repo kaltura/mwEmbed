@@ -119,8 +119,8 @@
 				}
 
 				var iframeParent = window['parent'].document.getElementById( this.embedPlayer.id );
-				$( iframeParent ).parent().find( "#" + this.getConfig( 'qnaTargetId' ) ).html( "<div class='qnaInterface'></div>" );
-				this.$qnaListContainer = $( iframeParent ).parent().find( ".qnaInterface" );
+				$( iframeParent ).parents().find( "#" + this.getConfig( 'qnaTargetId' ) ).html( "<div class='qnaInterface'></div>" );
+				this.$qnaListContainer = $( iframeParent ).parents().find( ".qnaInterface" );
 				this.$qnaListContainer.append(this.getHTML());
 				ko.applyBindings(this.KQnaModule, this.$qnaListContainer[0]);
 
