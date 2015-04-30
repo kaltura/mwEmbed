@@ -128,8 +128,8 @@
 					this.$qnaListContainer = $( ".qnaInterface");
 					// resize the video to make place for the playlist according to its position (left, top, right, bottom)
 					if ( this.getConfig( 'containerPosition' ) == 'right' || this.getConfig( 'containerPosition' ) == 'left' ) {
-						$( ".videoHolder, .mwPlayerContainer" ).css( "width", this.$qnaListContainer.width() - 200 + "px" );
-						this.videoWidth = (this.$qnaListContainer.width() - 200);
+						$( ".videoHolder, .mwPlayerContainer" ).css( "width", this.$qnaListContainer.width() - this.getConfig( 'moduleWidth' ) + "px" );
+						this.videoWidth = (this.$qnaListContainer.width() - this.getConfig( 'moduleWidth' ));
 					}
 					if ( this.getConfig( 'containerPosition' ) == 'left' ) {
 						$( ".mwPlayerContainer" ).css( "float", "right" );

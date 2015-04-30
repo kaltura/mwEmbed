@@ -326,7 +326,7 @@
 }
 
 .qnaInterface .listHolder{
-	width: 100%;
+	width: auto;
 
 	/* Firefox */
 	height: -moz-calc(100% - 88px);

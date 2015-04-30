@@ -25,7 +25,6 @@
                 _this.applyLayout();
                 qnaPlugin.updateUnreadBadge();
             });
-            this.applyLayout();
 
             this.itemRead= function(item, event) {
                 console.log("item of type " + item.type + " with id " + item.threadId + " was clicked");
@@ -38,8 +37,9 @@
             $(this.embedPlayer).unbind(this.bindPostfix);
         },
         applyLayout:function() {
-
-            var scroll=$( window['parent'].document ).find(".nano");
+            var _this = this;
+            var scroll = _this.qnaPlugin.getQnaContainer().find(".nano")
+            //var scroll=$( window['parent'].document ).find(".nano");
             scroll.find(".nano-content" ).css("z-index", -1);
             scroll.nanoScroller({ documentContext: window['parent'].document});
             scroll.find(".nano-content" ).css("z-index", "");
