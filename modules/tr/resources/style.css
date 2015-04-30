@@ -30,7 +30,10 @@
     font-size: 2.4em;
     margin: -31px 0 0 -31px;
 }
-
+.swa-playlist { 
+	background-color: #161616;
+	border-bottom: 1px solid #434343; 
+}
 .swa-container{
 	position: relative;
     clear: both;
@@ -68,6 +71,7 @@
     cursor:default;
     width: 122px;
     height: 14px;
+    cursor: pointer;
 }
 .swa-title {
 	padding: 8px 0 0 8px;

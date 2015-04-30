@@ -20,12 +20,8 @@ mw.PluginManager.add( 'trSwa', mw.KBasePlugin.extend({
 				return;
 			}
 			_this.setConfig('loaded' , true);
-			setTimeout(function(){
-				var playlistHeader = $('.'+_this.getConfig('targetId'));
-				playlistHeader.empty();
-				_this.updateTargetWithTemplate();
-				_this.loadTopics();
-			},1000)
+			_this.updateTargetWithTemplate();
+			_this.loadTopics();
 		},this));
 		this.bind('playlistSelected', $.proxy(function(){
 			//TODO once move to 2.30 hook this to see how playlist loading effects this UI. Right now it clears the UI
@@ -103,33 +99,19 @@ mw.PluginManager.add( 'trSwa', mw.KBasePlugin.extend({
 		});
 	},
 	hasValidTargetElement: function() {
-		var playlistElement = this.embedPlayer.getPluginInstance('playlistAPI').getComponent();
-		if( !mw.getConfig('EmbedPlayer.IsFriendlyIframe') ){
-			return false;
-		}
-		var parentTarget = null;
-		try {
-			parentTarget = $(playlistElement).find("."+this.getConfig('targetId'))[0];
-		} catch (e) {
-			this.log('Unable to find element with id of: ' + this.getConfig('targetId') + ' on the parent document');
-			return false;
-		}
-		if( parentTarget ) {
-			return true;
-		}
+		return this.getPlayer().isPluginEnabled('playlistAPI');
 	},
 
 	getTargetElement: function() {
-		return $(this.embedPlayer.getPluginInstance('playlistAPI').getComponent()).find("."+this.getConfig('targetId'))[0];
+		return this.embedPlayer.getPluginInstance('playlistAPI').getComponent();
 	},
 
 	updateTargetWithTemplate: function() {
-		if( this.hasValidTargetElement() ) {
-			var target = this.getTargetElement();
-			this.getTemplateHTML().then(function(html) {
-				target.innerHTML = html.html();
-			});
-		}
+		if( !this.hasValidTargetElement() ) return;
+
+		this.getTemplateHTML().then($.proxy(function(html) {
+			this.getTargetElement().prepend(html.html());
+		},this));
 	},
 	getKClient: function () {
 		if (!this.kClient) {
