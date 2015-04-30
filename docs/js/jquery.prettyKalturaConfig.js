@@ -1033,14 +1033,15 @@
 			 * UiConf tab
 			 */
 			function getUiConfConfig() {
-				var uiText = '';
+				var uiText = '', coma ='';
 				// add uiConf vars
 				$.each(manifestData, function (pAttrName, attr) {
 					if (manifestData[ pAttrName ].attributes) {
 						uiText += '"' + pAttrName + '": { ';
 						$.each(manifestData[ pAttrName ].attributes, function (attrName, attr) {
 							if (attrName != 'plugin' && getAttrValue(attrName) !== null) {
-								uiText += "\n\t\"" + attrName + '" : "' + getAttrValue(attrName) + '" ';
+								uiText += coma + "\n\t\"" + attrName + '" : "' + getAttrValue(attrName) + '"';
+								coma =','
 							}
 						});
 						uiText += "\n}\n";
