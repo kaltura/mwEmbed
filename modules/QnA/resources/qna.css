@@ -12,6 +12,7 @@
 .qnaInterface .qnaQuestionArea{
 	background-color: #00b4d1;
 	overflow: hidden;
+	height: 88px;
 }
 
 .qnaInterface .qnaQuestionBox{
@@ -238,6 +239,10 @@
 	height: auto;
 	min-height: 80px;
 	overflow: hidden;
+}
+
+.qnaInterface .LastQnaEntryListLI{
+	margin-bottom: 0px;
 }
 
 .qnaInterface .qnaAnnouncementTitle{

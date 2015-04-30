@@ -17,7 +17,7 @@
         <div class="nano-content">
             <div data-bind='template: { foreach: myObservableArray }' class="qnaEntryList">
                 <div data-bind="if: type === 'announcement'">
-                    <div class="qnaEntryListLI" data-bind='css: {  "qnaAnnouncement" : !isRead(), "qnaAnnouncementRead": isRead()}, click: $parent.itemRead'>
+                    <div class="qnaEntryListLI" data-bind='css: {  "qnaAnnouncement" : !isRead(), "qnaAnnouncementRead": isRead(), "LastQnaEntryListLI":$index()===$parent.myObservableArray().length-1 }, click: $parent.itemRead'>
                         <div>
                             <div data-bind='css: {  "qnaAnnouncementTitle" : !isRead(), "qnaAnnouncementTitleRead" : isRead()}, text: title'></div>
                             <div class="icon-qna-Announcement" data-bind='css: {  "qnaAnnouncementIcon" : !isRead(), "qnaAnnouncementIconRead" : isRead()}'></div>
@@ -28,7 +28,7 @@
                     </div>
                 </div>
                 <div data-bind="if: type === 'qnaThread'">
-                    <div class="qnaEntryListLI qnaThread">
+                    <div class="qnaEntryListLI qnaThread" data-bind='css: {"LastQnaEntryListLI":$index()===$parent.myObservableArray().length-1}'>
                         <div>
                             <div class="qnaThreadTitle" data-bind='text: title'></div>
                             <div class="qnaThreadTimeRead" data-bind='text: timestamp.qnaTimestamp(currentTime)'></div>
