@@ -48,7 +48,7 @@ mw.PluginManager.add( 'trSwa', mw.KBasePlugin.extend({
 			for(var i = 0; i<dataResult.objects.length ; i++){
 				resultsStabArr.push({id:dataResult.objects[i].id , name:dataResult.objects[i].name})
 			}
-			var $ul = $(_this.getTargetElement()).find(".swa-ul");
+			var $ul = _this.getTargetElement().find(".swa-ul");
 			var lis = '';
 			$.each(resultsStabArr, function(idx, item){
 				lis += '<li class="swa topics-item" playlist="'+item.id+'">'+item.name+'</li>';
@@ -59,7 +59,7 @@ mw.PluginManager.add( 'trSwa', mw.KBasePlugin.extend({
 	},
 	applyBehavior: function() {
 		var _this = this;
-		var $target = $(this.getTargetElement());
+		var $target = this.getTargetElement();
 		$target.find(".swa.topics-item").click(function(){
 			var params = {
 				'playlistParams' : {
@@ -87,6 +87,12 @@ mw.PluginManager.add( 'trSwa', mw.KBasePlugin.extend({
 				'playlistName' : 'new playlist' // override the displayed playlist name
 			};
 			_this.embedPlayer.sendNotification('trLoadNewPlaylist', params );
+		});
+		// Disable keyboard shortcuts when using search
+		$target.find('.search-input').focus(function(){
+			_this.getPlayer().triggerHelper( 'onDisableKeyboardBinding' );
+		}).blur(function(){
+			_this.getPlayer().triggerHelper( 'onEnableKeyboardBinding' );
 		});
 
 		$target.find('.jcarousel').jCarouselLite({
