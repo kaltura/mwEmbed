@@ -27,7 +27,7 @@ date_default_timezone_set('UTC');
  * Set the resource loader path to load.php based on server env.
  */
 $wgServerPort = (($_SERVER['SERVER_PORT']) != '80' && $_SERVER['SERVER_PORT'] != '443')?':'.$_SERVER['SERVER_PORT']:'';
-$wgServer = $wgHTTPProtocol . '://' . $_SERVER['SERVER_NAME'] .$wgServerPort.  dirname( $_SERVER['SCRIPT_NAME'] ) . '/';
+$wgServer = $wgHTTPProtocol . '://' . $_SERVER['SERVER_NAME'] .$wgServerPort. dirname( dirname( $_SERVER['SCRIPT_NAME'] ) ) .'/';
 
 $psRelativePath = '../kwidget-ps/';
 if( isset( $_GET['pskwidgetpath'] ) ){
@@ -36,8 +36,11 @@ if( isset( $_GET['pskwidgetpath'] ) ){
 // The html5-ps settings file path
 $wgKalturaPSHtml5SettingsPath =  realpath( dirname( __FILE__ ) ) . '/../' . $psRelativePath . '/includes/DefaultSettings.php';
 
+// The html5-ps modules dir
+$wgKalturaPSHtml5ModulesDir =  realpath(realpath( dirname( __FILE__ ) ) . '/../' . $psRelativePath . 'ps/modules');
+
 // By default set $wgScriptPath to empty
-$wgScriptPath = '';
+$wgScriptPath = basename(dirname($_SERVER['SCRIPT_NAME'])) . '/';
 
 // Default Load Script path
 $wgLoadScript = $wgServer . $wgScriptPath . 'load.php';
@@ -56,6 +59,15 @@ $d = dir( realpath( dirname( __FILE__ ) )  . '/../modules' );
 while (false !== ($entry = $d->read())) {
 	if( substr( $entry, 0, 1 ) != '.' && !in_array( $entry , $wgMwEmbedEnabledModules ) ){
 		$wgMwEmbedEnabledModules[] = $entry;
+	}
+}
+
+// Enable every module in the "ps/modules" folder
+$wgKwidgetPsEnabledModules = array();
+$dPs = dir( $wgKalturaPSHtml5ModulesDir );
+while (false !== ($entryPs = $dPs->read())) {
+	if( substr( $entryPs, 0, 1 ) != '.' && !in_array( $entryPs , $wgKwidgetPsEnabledModules ) ){
+		$wgKwidgetPsEnabledModules[] = $entryPs;
 	}
 }
 
