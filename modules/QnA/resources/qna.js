@@ -59,7 +59,8 @@
 				// add the Q&A toggle button to be on the video
 				embedPlayer.getVideoHolder().append('<div class="qna-on-video-btn icon-qna-close"><div class="badge"></div></div>');
 				_this.getQnaContainer();
-				qnaObject =  $(window['parent'].document.getElementById(embedPlayer.id )).parents().find( ".qnaInterface" );
+				//qnaObject =  $(window['parent'].document.getElementById(embedPlayer.id )).parent().find( ".qnaInterface" );
+				qnaObject = _this.getQnaContainer().find(".qnaModuleBackground");
 				onVideoTogglePluginButton = $('.qna-on-video-btn');
 
 				// register to on click to change the icon of the toggle button
@@ -109,18 +110,35 @@
 		// load the Q&A template to the div with qnaTargetId
 		getQnaContainer: function(){
 			if (!this.$qnaListContainer) {
-				// Inject external CSS file
-				var cssLink = this.getConfig('cssFileName');
-				if (cssLink) {
-					cssLink = cssLink.toLowerCase().indexOf("http") === 0 ? cssLink : kWidget.getPath() + cssLink; // support external CSS links
-					$( 'head', window.parent.document ).append( '<link type="text/css" rel="stylesheet" href="' + cssLink + '"/>' );
-				} else {
-					mw.log( "Error: "+ this.pluginName +" could not find CSS link" );
+				if ( this.getConfig( 'onPage' ) ) {
+					// Inject external CSS file
+					var cssLink = this.getConfig('cssFileName');
+					if (cssLink) {
+						cssLink = cssLink.toLowerCase().indexOf("http") === 0 ? cssLink : kWidget.getPath() + cssLink; // support external CSS links
+						$('head', window.parent.document).append('<link type="text/css" rel="stylesheet" href="' + cssLink + '"/>');
+					} else {
+						mw.log("Error: " + this.pluginName + " could not find CSS link");
+					}
+
+					var iframeParent = window['parent'].document.getElementById(this.embedPlayer.id);
+					$(iframeParent).parent().find("#" + this.getConfig('qnaTargetId')).html("<div class='qnaInterface'></div>");
+					this.$qnaListContainer = $(iframeParent).parent().find(".qnaInterface");
+				}
+				else{
+					this.$qnaListContainer = $( ".qnaInterface");
+					// resize the video to make place for the playlist according to its position (left, top, right, bottom)
+					if ( this.getConfig( 'containerPosition' ) == 'right' || this.getConfig( 'containerPosition' ) == 'left' ) {
+						$( ".videoHolder, .mwPlayerContainer" ).css( "width", this.$qnaListContainer.width() - 200 + "px" );
+						this.videoWidth = (this.$qnaListContainer.width() - 200);
+					}
+					if ( this.getConfig( 'containerPosition' ) == 'left' ) {
+						$( ".mwPlayerContainer" ).css( "float", "right" );
+					}
+					else{
+						$( ".mwPlayerContainer" ).css( "float", "left" );
+					}
 				}
 
-				var iframeParent = window['parent'].document.getElementById( this.embedPlayer.id );
-				$( iframeParent ).parents().find( "#" + this.getConfig( 'qnaTargetId' ) ).html( "<div class='qnaInterface'></div>" );
-				this.$qnaListContainer = $( iframeParent ).parents().find( ".qnaInterface" );
 				this.$qnaListContainer.append(this.getHTML());
 				ko.applyBindings(this.KQnaModule, this.$qnaListContainer[0]);
 
@@ -159,13 +177,12 @@
 
 		bindButtons : function(){
 			var _this = this;
-			var parentWindowDocument = $( window['parent'].document );
-			var sendButton = parentWindowDocument.find('.qnaSendButton');
+			var sendButton = _this.getQnaContainer().find('.qnaSendButton');
 			sendButton.text(gM('qna-send-button-text'));
 			sendButton
 				.off('click')
 				.on('click', function(){
-					var question = parentWindowDocument.find('.qnaQuestionTextArea').val();
+					var question = _this.getQnaContainer().find('.qnaQuestionTextArea').val();
 					//if (_this.getPlayer().isOffline()){
 					//	alert(gM('qna-cant-ask-while-not-live'));
 					//} else {
@@ -175,7 +192,7 @@
 						}
 					//}
 				});
-			var cancelButton = parentWindowDocument.find('.qnaCancelButton');
+			var cancelButton = _this.getQnaContainer().find('.qnaCancelButton');
 			cancelButton.text(gM('qna-cancel-button-text'));
 			cancelButton
 				.off('click')
@@ -183,7 +200,7 @@
 					_this.resetTextArea(textArea);
 				});
 
-			var textArea = parentWindowDocument.find('.qnaQuestionTextArea');
+			var textArea = _this.getQnaContainer().find('.qnaQuestionTextArea');
 			_this.resetTextArea(textArea);
 			textArea
 				.off('focus')
