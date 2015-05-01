@@ -6,6 +6,20 @@ mw.PluginManager.add( 'trPlaylistServices', mw.KBasePlugin.extend({
 
 	setup: function() {
 		this.setBindings();
+		this.getPlaylistId();
+	},
+	getPlaylistId : function(){
+		var _this = this;
+
+		var myRequest = {
+			'service': 'playlist',
+			'action': 'list',
+			'filter:referenceIdEqual': "TR_RELATED_PLAYLIST"
+
+		};
+		this.getKClient().doRequest(myRequest, function (dataResult) {
+			_this.setConfig( "relatedPlaylistId",dataResult.objects[0].id);
+		});
 	},
 	setBindings : function(){
 
@@ -42,25 +56,29 @@ mw.PluginManager.add( 'trPlaylistServices', mw.KBasePlugin.extend({
 
 	},
 	loadRelatedPlaylist : function (){
-		var ks= this.getConfig("ks");
-		var params = {
-			'playlistParams': {
-				'service': 'playlist',
-				'action': 'execute',
-				'ks': ks,
-				'id': '_KDP_CTXPL',
-				'filter:objectType': 'KalturaMediaEntryFilterForPlaylist',
-				'filter:mediaTypeEqual': '1',
-				'filter:idNotIn': this.embedPlayer.evaluate('{mediaProxy.entry.id}'), 	// dont fetch current entry
-				'playlistContext:objectType': 'KalturaEntryContext',
-				'playlistContext:entryId': this.embedPlayer.evaluate('{mediaProxy.entry.id}'),
-				'totalResults': 50
-			},
-			'autoInsert': false, //if this is set to true the player will load and switch the current video to the new playlist
-			//'initItemEntryId' : '1_cvsg4ghm', // player start playing a specific entry if exist
-			'playlistName': 'new playlist' // override the displayed playlist name
+		if(this.getConfig("loadedOnce") && this.getConfig("relatedPlaylistId")){
+			var ks= this.getConfig("ks");
+			var params = {
+				'playlistParams': {
+					'service': 'playlist',
+					'action': 'execute',
+					'ks': ks,
+					'id': this.getConfig("relatedPlaylistId"),
+					'filter:objectType': 'KalturaMediaEntryFilterForPlaylist',
+					'filter:mediaTypeEqual': '1',
+					'filter:idNotIn': this.embedPlayer.evaluate('{mediaProxy.entry.id}'), 	// dont fetch current entry
+					'playlistContext:objectType': 'KalturaEntryContext',
+					'playlistContext:entryId': this.embedPlayer.evaluate('{mediaProxy.entry.id}'),
+					'totalResults': 50
+				},
+				'autoInsert': false, //if this is set to true the player will load and switch the current video to the new playlist
+				//'initItemEntryId' : '1_cvsg4ghm', // player start playing a specific entry if exist
+				'playlistName': 'new playlist' // override the displayed playlist name
+			}
+			this.embedPlayer.sendNotification('loadExternalPlaylist', params );
 		}
-		this.embedPlayer.sendNotification('loadExternalPlaylist', params );
+
+
 	},
 
 	loadSearchPlaylist : function (search){
@@ -84,6 +102,12 @@ mw.PluginManager.add( 'trPlaylistServices', mw.KBasePlugin.extend({
 			params.ks = this.getConfig("ks")
 		}
 		this.embedPlayer.sendNotification('loadExternalPlaylist', params );
+	},
+	getKClient: function () {
+		if (!this.kClient) {
+			this.kClient = mw.kApiGetPartnerClient(this.embedPlayer.kwidgetid);
+		}
+		return this.kClient;
 	}
 
 
