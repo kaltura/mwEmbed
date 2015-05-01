@@ -1,4 +1,4 @@
-mw.PluginManager.add( 'trSwa', mw.KBasePlugin.extend({
+mw.PluginManager.add('trSwa', mw.KBasePlugin.extend({
 
 	defaultConfig: {
 		maxResults: 50,
@@ -8,91 +8,88 @@ mw.PluginManager.add( 'trSwa', mw.KBasePlugin.extend({
 		selectedTag: 'news',
 		autoNext: true
 	},
-
-	setup: function() {
+	setup: function () {
 		this.setBindings();
 	},
-
-	setBindings: function() {
+	setBindings: function () {
 		var _this = this;
-		this.bind('playerReady', $.proxy(function(){
-			if(_this.getConfig('loaded')){
+		this.bind('playerReady', $.proxy(function () {
+			if (_this.getConfig('loaded')) {
 				return;
 			}
-			_this.setConfig('loaded' , true);
+			_this.setConfig('loaded', true);
 			_this.updateTargetWithTemplate();
 			_this.loadTopics();
-		},this));
-		this.bind('playlistSelected', $.proxy(function(){
+		}, this));
+		this.bind('playlistSelected', $.proxy(function () {
 			//TODO once move to 2.30 hook this to see how playlist loading effects this UI. Right now it clears the UI
 		}))
-		this.bind('playerPlayEnd', $.proxy(function(){
-			if(_this.getConfig('autoNext')){
-				_this.embedPlayer.sendNotification('trLoadNewPlaylist', params );
+		this.bind('playerPlayEnd', $.proxy(function () {
+			if (_this.getConfig('autoNext')) {
+				_this.embedPlayer.sendNotification('trLoadNewPlaylist', params);
 			}
 		}))
-
 	},
-	loadTopics: function() {
+	loadTopics: function () {
 		//simulate an a-sync callback to BE to load the topics
 		var _this = this;
 
 		var loadPlaylists = {
 			'service': 'playlist',
 			'action': 'list',
-			'filter:tagsLike' : this.getConfig("selectedTag")
+			'filter:tagsLike': this.getConfig("selectedTag")
 		};
 		this.getKClient().doRequest(loadPlaylists, function (dataResult) {
 			//load playlist by a configured tag
 			var resultsStabArr = [];
-			for(var i = 0; i<dataResult.objects.length ; i++){
-				resultsStabArr.push({id:dataResult.objects[i].id , name:dataResult.objects[i].name})
+			for (var i = 0; i < dataResult.objects.length; i++) {
+				resultsStabArr.push({id: dataResult.objects[i].id, name: dataResult.objects[i].name})
 			}
 			var $ul = _this.getTargetElement().find(".swa-ul");
 			var lis = '';
-			$.each(resultsStabArr, function(idx, item){
-				lis += '<li class="swa topics-item" playlist="'+item.id+'">'+item.name+'</li>';
+			$.each(resultsStabArr, function (idx, item) {
+				lis += '<li class="swa topics-item" playlist="' + item.id + '">' + item.name + '</li>';
 			});
 			$ul.append(lis);
 			_this.applyBehavior();
 		});
 	},
-	applyBehavior: function() {
+	applyBehavior: function () {
 		var _this = this;
 		var $target = this.getTargetElement();
-		$target.find(".swa.topics-item").click(function(){
+		$target.find(".swa.topics-item").click(function () {
 			var params = {
-				'playlistParams' : {
-					'service':'playlist' ,
-					'action':'execute' ,
-					'id' : $(this).attr('playlist'),
-					'filter:idNotIn' : _this.embedPlayer.evaluate('{mediaProxy.entry.id}') , 	// dont fetch current entry
-					'totalResults' : 50
+				'playlistParams': {
+					'service': 'playlist',
+					'action': 'execute',
+					'id': $(this).attr('playlist'),
+					'filter:idNotIn': _this.embedPlayer.evaluate('{mediaProxy.entry.id}'), 	// dont fetch current entry
+					'totalResults': 50
 				},
-				'autoInsert' : false, //if this is set to true the player will load and switch the current video to the new playlist
-				'playlistName' : 'new playlist' // override the displayed playlist name
+				'autoInsert': false, //if this is set to true the player will load and switch the current video to the new playlist
+				'playlistName': 'new playlist' // override the displayed playlist name
 			};
-			_this.embedPlayer.sendNotification('trLoadNewPlaylist', params );
+			_this.embedPlayer.sendNotification('trLoadNewPlaylist', params);
 		});
-		$target.find(".swa.search-btn").click(function(){
+		$target.find(".swa.search-btn").click(function () {
 			var params = {
-				'playlistParams' : {
-					'service':'playlist' ,
-					'action':'execute' ,
-					'id' : $(this).attr('playlist'),
-					'filter:idNotIn' : _this.embedPlayer.evaluate('{mediaProxy.entry.id}') , 	// dont fetch current entry
-					'totalResults' : 50
+				'playlistParams': {
+					'service': 'playlist',
+					'action': 'execute',
+					'id': $(this).attr('playlist'),
+					'filter:idNotIn': _this.embedPlayer.evaluate('{mediaProxy.entry.id}'), 	// dont fetch current entry
+					'totalResults': 50
 				},
-				'autoInsert' : false, //if this is set to true the player will load and switch the current video to the new playlist
-				'playlistName' : 'new playlist' // override the displayed playlist name
+				'autoInsert': false, //if this is set to true the player will load and switch the current video to the new playlist
+				'playlistName': 'new playlist' // override the displayed playlist name
 			};
-			_this.embedPlayer.sendNotification('trLoadNewPlaylist', params );
+			_this.embedPlayer.sendNotification('trLoadNewPlaylist', params);
 		});
 		// Disable keyboard shortcuts when using search
-		$target.find('.search-input').focus(function(){
-			_this.getPlayer().triggerHelper( 'onDisableKeyboardBinding' );
-		}).blur(function(){
-			_this.getPlayer().triggerHelper( 'onEnableKeyboardBinding' );
+		$target.find('.search-input').focus(function () {
+			_this.getPlayer().triggerHelper('onDisableKeyboardBinding');
+		}).blur(function () {
+			_this.getPlayer().triggerHelper('onEnableKeyboardBinding');
 		});
 
 		$target.find('.jcarousel').jCarouselLite({
@@ -104,20 +101,18 @@ mw.PluginManager.add( 'trSwa', mw.KBasePlugin.extend({
 			circular: false
 		});
 	},
-	hasValidTargetElement: function() {
+	hasValidTargetElement: function () {
 		return this.getPlayer().isPluginEnabled('playlistAPI');
 	},
-
-	getTargetElement: function() {
+	getTargetElement: function () {
 		return this.embedPlayer.getPluginInstance('playlistAPI').getComponent();
 	},
+	updateTargetWithTemplate: function () {
+		if (!this.hasValidTargetElement()) return;
 
-	updateTargetWithTemplate: function() {
-		if( !this.hasValidTargetElement() ) return;
-
-		this.getTemplateHTML().then($.proxy(function(html) {
+		this.getTemplateHTML().then($.proxy(function (html) {
 			this.getTargetElement().prepend(html.html());
-		},this));
+		}, this));
 	},
 	getKClient: function () {
 		if (!this.kClient) {
@@ -125,6 +120,4 @@ mw.PluginManager.add( 'trSwa', mw.KBasePlugin.extend({
 		}
 		return this.kClient;
 	}
-
-
 }));
