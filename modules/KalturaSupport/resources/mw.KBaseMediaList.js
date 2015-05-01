@@ -151,9 +151,9 @@
 
 						$( window['parent'].document ).find( '.onpagePlaylistInterface' ).remove(); // remove any previously created playlists
 						var iframeParent = window['parent'].document.getElementById( this.embedPlayer.id );
-						if ( this.getConfig( 'clipListTargetId' ) && $( iframeParent ).parent().find( "#" + this.getConfig( 'clipListTargetId' ) ).length > 0 ) {
-							$( iframeParent ).parent().find( "#" + this.getConfig( 'clipListTargetId' ) ).html( "<div class='onpagePlaylistInterface'></div>" );
-							this.$mediaListContainer = $( iframeParent ).parent().find( ".onpagePlaylistInterface" );
+						if ( this.getConfig( 'clipListTargetId' ) && $( iframeParent ).parents().find( "#" + this.getConfig( 'clipListTargetId' ) ).length > 0 ) {
+							$( iframeParent ).parents().find( "#" + this.getConfig( 'clipListTargetId' ) ).html( "<div class='onpagePlaylistInterface'></div>" );
+							this.$mediaListContainer = $( iframeParent ).parents().find( ".onpagePlaylistInterface" );
 						} else {
 							$( iframeParent ).after( "<div class='onpagePlaylistInterface'></div>" );
 							this.$mediaListContainer = $( iframeParent ).parent().find( ".onpagePlaylistInterface" );
