@@ -239,11 +239,10 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 			_this.mainDoc.find(".btn.transcript").removeClass("active");
 			_this.mainDoc.find(".btn.info").addClass("active");
 		})
-
-
 		this.mainDoc.find(".transcript-tab")
 	},
 	applyFilterBehavior : function (){
+
 		var _this = this;
 		//hook enter key
 		this.mainDoc.find(".search-input").keyup(function(e){
@@ -258,13 +257,57 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 		//hook clear button
 		this.mainDoc.find(".btn-filter").click(function(e){
 			_this.mainDoc.find(".transcript-filter").removeClass("active");
-			this.mainDoc.find(".ri-transcript-filter-txt").removeClass("active");
+			_this.mainDoc.find(".ri-transcript-filter-txt").removeClass("active");
 			_this.mainDoc.find(".search-input").val("");
+			_this.mainDoc.find("#transcript-body").html(_this.getConfig("originalHTML") );
+			_this.applyBehavior(true);
 		})
 
 	},
 	localSearch : function(searchString){
 		this.mainDoc.find(".transcript-filter").addClass("active");
+		// store local transcript only if there was no previous search
+		if(this.getConfig("originalHTML")){
+			this.mainDoc.find("#transcript-body").html(this.getConfig("originalHTML") );
+		}else{
+			this.setConfig("originalHTML" ,this.mainDoc.find("#transcript-body").html())
+		}
+		var matchingSentences = this.mainDoc.find("#transcript-body span:contains('"+searchString+"')");
+		var searchHtml= $('<div />');
+		for(var i=0;i<matchingSentences.length;i++){
+			//find time to display
+			var timeToShow;
+			if($(matchingSentences[i]).prev().prev().length){
+				//there is a previous cibiling, use its duration
+				timeToShow = $(matchingSentences[i]).prev().prev().attr("trtime");
+			} else if($(matchingSentences[i]).prev().length){
+				timeToShow = $(matchingSentences[i]).prev().attr("trtime");
+			}else{
+				timeToShow = $(matchingSentences[i]).attr("trtime");
+			}
+			timeToShow = mw.seconds2npt( parseInt(timeToShow));
+
+			var nextSentence = $(matchingSentences[i]).next();
+			var next2Sentence = $(matchingSentences[i]).next().next();
+
+			var currentSentence= $('<div />');
+			currentSentence.append($('<span>'+timeToShow+' </span> '));
+			currentSentence.append($(matchingSentences[i]).prev().prev());
+			currentSentence.append($(matchingSentences[i]).prev());
+
+			var sentence = $(matchingSentences[i]);
+			sentence = sentence.text().replace( searchString , '<span class="block-highlight">'+searchString+'</span>');
+			currentSentence.append(sentence);
+
+			currentSentence.append(nextSentence);
+			currentSentence.append(next2Sentence);
+			//var sentences3 = $.merge($.merge($(matchingSentences[i]).prev(),$(matchingSentences[i])),$(matchingSentences[i]).next());
+			//searchHtml+=sentences3;
+			searchHtml.append(currentSentence)
+			searchHtml.append($('<br/>'));
+		}
+		this.mainDoc.find("#transcript-body").html(searchHtml);
+		this.applyBehavior(true);
 	},
 	clearData : function () {
 		//clear UI on transcript and mentioned terms
@@ -275,7 +318,7 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 		$(doc).find("#geographyTerms").text("");
 		$(doc).find("#keywordsTerms").text("");
 	},
-	applyBehavior : function (){
+	applyBehavior : function (onlyOnTranscript){
 		//apply to transcript
 		var _this = this;
 		this.mainDoc.find("#"+this.getConfig('transcriptTargetId')).find("[trtime]").click(function(e){
@@ -286,11 +329,15 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 		//
 		//});
 		//apply behavior to the mentioned terms
+		if(onlyOnTranscript){
+			return;
+		}
+
 		this.mainDoc.find(".mentioned-terms-categories").find("[trdata]").click($.proxy(function(event,source){
 			this.mainDoc.find(".search-input").val($(this).attr("trdata"));
 			this.mainDoc.find(".ri-transcript-filter-term").text($(event.target).attr("trdata"));
 			this.mainDoc.find(".ri-transcript-filter-txt").addClass("active");
-			this.getPlayer().sendNotification('trLocalSearch',$(event.target).attr("trdata"));
+			//this.getPlayer().sendNotification('trLocalSearch',$(event.target).attr("trdata"));
 		},this));
 	},
 	renderHighlightedWords : function (mentionedTerms){
@@ -305,14 +352,13 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 			var rep = $(doc).find("#"+this.getConfig('transcriptTargetId')+" span:contains('"+textToReplace+"')");
 
 			for(var j=0;j<rep.length;j++){
-				//3 sec accuracy
-				if( Math.abs(mentionedTerms[i].startTime-$(rep[j]).attr('trtime')*1000) < 3000 ){
+				//2 sec accuracy
+				if( Math.abs(mentionedTerms[i].startTime-$(rep[j]).attr('trtime')*1000) < 2000 ){
 					var output = $(rep[j]).text().replace( textToReplace , '<span class="highlight">'+textToReplace+'</span>');
 					$(rep[j]).html(output)
 				}
 			}
 		}
-
 	},
 
 	setTranscript : function (captions){
@@ -320,7 +366,6 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 		// to the dedicated div
 		var doc = window['parent'].document;
 		// construct HTML here
-
 		var string = "";
 		var htmlString = "";
 

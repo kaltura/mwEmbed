@@ -90,7 +90,7 @@ body {
     width: 100%;
 }
 .inner-right-container {
-    margin-left: 443px;
+    margin-left: 428px;
     padding: 6px;
     padding-left: 14px;
     font-family: Cabin-Regular;
@@ -481,7 +481,10 @@ body {
 /*  ALL COLLORS DEFINITIONS MUST BE WITH A TOP-LEVEL THEME CLASS NVS */
 /*  ALL COLLORS DEFINITIONS MUST BE WITH A TOP-LEVEL THEME CLASS NVS */
 
-
+.block-highlight{
+    background-color: #0085bf;
+    color: #fff;
+}
 
 .ri-transcript-filter-term {
     color: #0085bf;

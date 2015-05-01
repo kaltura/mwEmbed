@@ -22,9 +22,7 @@ mw.PluginManager.add( 'trPlaylistServices', mw.KBasePlugin.extend({
 		});
 	},
 	setBindings : function(){
-
 		this.setConfig("ks" ,  this.getKalturaClient().ks);
-
 		var _this = this;
 		this.bind('trLoadNewPlaylist', $.proxy(function(e,params){
 			_this.loadPlaylist(params);
@@ -77,8 +75,6 @@ mw.PluginManager.add( 'trPlaylistServices', mw.KBasePlugin.extend({
 			}
 			this.embedPlayer.sendNotification('loadExternalPlaylist', params );
 		}
-
-
 	},
 
 	loadSearchPlaylist : function (search){

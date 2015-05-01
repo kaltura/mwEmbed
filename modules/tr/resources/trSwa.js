@@ -57,6 +57,17 @@ mw.PluginManager.add('trSwa', mw.KBasePlugin.extend({
 	applyBehavior: function () {
 		var _this = this;
 		var $target = this.getTargetElement();
+
+		$target.find(".search-input").keyup(function(e){
+			if (e.keyCode === 13) {
+				var searchTerm = $(e.target).parent().parent().find(".search-input").val();
+				if(searchTerm){
+					_this.embedPlayer.sendNotification('trLoadPlaylistBySearch', searchTerm);
+				}
+			}
+		});
+
+
 		$target.find(".swa.topics-item").click(function () {
 			var params = {
 				'playlistParams': {
@@ -72,18 +83,10 @@ mw.PluginManager.add('trSwa', mw.KBasePlugin.extend({
 			_this.embedPlayer.sendNotification('trLoadNewPlaylist', params);
 		});
 		$target.find(".swa.search-btn").click(function () {
-			var params = {
-				'playlistParams': {
-					'service': 'playlist',
-					'action': 'execute',
-					'id': $(this).attr('playlist'),
-					'filter:idNotIn': _this.embedPlayer.evaluate('{mediaProxy.entry.id}'), 	// dont fetch current entry
-					'totalResults': 50
-				},
-				'autoInsert': false, //if this is set to true the player will load and switch the current video to the new playlist
-				'playlistName': 'new playlist' // override the displayed playlist name
-			};
-			_this.embedPlayer.sendNotification('trLoadNewPlaylist', params);
+			var searchTerm = $(this).parent().parent().find(".search-input").val();
+			if(searchTerm){
+				_this.embedPlayer.sendNotification('trLoadPlaylistBySearch', searchTerm);
+			}
 		});
 		// Disable keyboard shortcuts when using search
 		$target.find('.search-input').focus(function () {
@@ -108,8 +111,9 @@ mw.PluginManager.add('trSwa', mw.KBasePlugin.extend({
 		return this.embedPlayer.getPluginInstance('playlistAPI').getComponent();
 	},
 	updateTargetWithTemplate: function () {
-		if (!this.hasValidTargetElement()) return;
-
+		if (!this.hasValidTargetElement()) {
+			return;
+		}
 		this.getTemplateHTML().then($.proxy(function (html) {
 			this.getTargetElement().prepend(html.html());
 		}, this));
