@@ -53,6 +53,14 @@
 
             this.bind('updateLayout ended', function () {
                 _this.positionQAButtonOnVideoContainer();
+
+				if (!_this.getConfig( 'onPage' )){
+					$('.qnaModuleBackground').css({
+						width: '200px',
+						position: 'relative',
+						float: 'right'
+					});
+				}
             });
 
 			this.bind('layoutBuildDone ended', function (event, screenName) {
@@ -125,6 +133,9 @@
 					this.$qnaListContainer = $(iframeParent).parent().find(".qnaInterface");
 				}
 				else{
+					// wrap the .mwPlayerContainer element with our qnaInterface div
+					$('.mwPlayerContainer').wrap("<div class='qnaInterface' style='position: relative; width: 100%; height: 100%'>")
+
 					this.$qnaListContainer = $( ".qnaInterface");
 					// resize the video to make place for the playlist according to its position (left, top, right, bottom)
 					if ( this.getConfig( 'containerPosition' ) == 'right' || this.getConfig( 'containerPosition' ) == 'left' ) {
@@ -172,7 +183,6 @@
                     top: topOffset,
                     'line-height': buttonHeight + "px",
                     'text-indent': textIndent + "px"});
-
 		},
 
 		bindButtons : function(){

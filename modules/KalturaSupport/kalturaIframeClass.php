@@ -1133,12 +1133,6 @@ HTML;
 			style="position: relative; width: 100%; height: 100%">
 			<?php
 	}
-	if( true ){
-		?>
-		<div class="qnaInterface"
-			style="position: relative; width: 100%; height: 100%">
-			<?php
-	}
 	?>
 	<div class="mwPlayerContainer player-out">
 		<?php echo $this->getVideoHTML(); ?>
