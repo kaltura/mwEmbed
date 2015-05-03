@@ -43,7 +43,7 @@
 			);
 		},
 		getAvailableWidth:function(){
-			return this.embedPlayer.getWidth() - ($('.topBarContainer .btn').length + 1) * 30;
+			return this.embedPlayer.getWidth() - ($('.' + this.getConfig('parent') + ' .btn').length + 1) * 30;
 		},
 		getComponent: function() {
 			if( !this.$el ) {
