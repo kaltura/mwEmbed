@@ -56,7 +56,7 @@
 
 				if (!_this.getConfig( 'onPage' )){
 					$('.qnaModuleBackground').css({
-						width: '200px',
+						width: _this.getConfig( 'moduleWidth' ) + 'px',
 						position: 'relative',
 						float: 'right'
 					});
