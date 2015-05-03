@@ -424,7 +424,9 @@
 
 			var eventStateMap = {
 				'playerReady': 'start',
-				'onplay': 'load',
+				'onplay': function () {
+					return _this.isPlaying() ? 'play' : 'load';
+				},
 				'playing': 'play',
 				'onPauseInterfaceUpdate': 'pause',
 				'onEndedDone': 'end',
@@ -1159,11 +1161,7 @@
 		postSequenceFlag: false,
 		onClipDone: function () {
 			var _this = this;
-			this.shouldEndClip = false;
-			if ( _this.clipDoneTimeout ){
-				clearTimeout(_this.clipDoneTimeout);
-				_this.clipDoneTimeout = null;
-			}
+			this.cancelClipDoneGuard();
 			// Don't run onclipdone if _propagateEvents is off
 			if (!_this._propagateEvents) {
 				return;
@@ -1312,15 +1310,15 @@
 				_this.getInterface().height(_this.layoutBuilder.getComponentsHeight());
 			}
 
+			// Update layout
+			this.doUpdateLayout();
+
 			// Update the playerReady flag
 			this.playerReadyFlag = true;
 			mw.log("EmbedPlayer:: Trigger: playerReady");
 			// trigger the player ready event;
 			$(this).trigger('playerReady');
 			this.triggerWidgetLoaded();
-
-			// Update layout
-			this.doUpdateLayout();
 
 			// Check if we want to block the player display
 			if (this['data-blockPlayerDisplay']) {
@@ -2410,6 +2408,8 @@
 			this.hideSpinner();
 			// trigger on pause interface updates
 			this.disableComponentsHover();
+			//clear clipDone guard handler
+			this.clearClipDoneGuard();
 			$(this).trigger('onPauseInterfaceUpdate');
 		},
 		/**
@@ -2644,8 +2644,8 @@
 
 				if (!_this.seeking) {
 					this.updatePlayheadStatus();
+					this.checkClipDoneCondition();
 				}
-
 
 				// mw.log('trigger:monitor:: ' + this.currentTime );
 				$(_this).trigger('monitorEvent');
@@ -2743,34 +2743,57 @@
 		 * Updates the player time and playhead position based on currentTime
 		 */
 		updatePlayheadStatus: function () {
-			var _this = this;
-
 			if ( this.currentTime >= 0 && this.duration ) {
 				if (!this.userSlide && !this.seeking ) {
 					var playHeadPercent = ( this.currentTime - this.startOffset ) / this.duration;
 					this.updatePlayHead(playHeadPercent);
 				}
+			}
+		},
+		checkClipDoneCondition: function(){
+			if ( this.currentTime >= 0 && this.duration ) {
 				// Check if we are "done"
-				var endPresentationTime = this.duration;
 				if (!this.isLive()) {
-					var endTime =  ( this.currentTime - this.startOffset ) / endPresentationTime  ;
-					if ((this.currentTime - this.startOffset) >= endPresentationTime && !this.isStopped()) {
-						mw.log("EmbedPlayer::updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime);
-						_this.onClipDone();
+					var endPresentationTime = this.duration;
+					var dvrWindow = ( this.currentTime - this.startOffset );
+					var endTimeRatio =  dvrWindow / endPresentationTime  ;
+					if (dvrWindow >= endPresentationTime && !this.isStopped()) {
+						this.log("updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime);
+						this.onClipDone();
 						//sometimes we don't get the "end" event from the player so we trigger clipdone
-					} else if ( endTime >= .99 && !this.isInSequence() && !_this.clipDoneTimeout && this.shouldEndClip) {
-						_this.clipDoneTimeout = setTimeout(function () {
-							if ( _this.shouldEndClip && !_this.isLive() ) {
-								mw.log("EmbedPlayer::updatePlayheadStatus > should run clip done :: " + _this.currentTime);
-								_this.onClipDone();
-							}
-							_this.clipDoneTimeout = null;
-						}, endPresentationTime * 0.02 * 1000)
+					} else if ( endTimeRatio >= .99 && !this.isInSequence()) {
+						this.setClipDoneGuard();
 					}
 				}
 			}
 		},
 
+		setClipDoneGuard: function(){
+			if (!this.clipDoneTimeout && this.shouldEndClip) {
+				var _this = this;
+				var timeoutVal = (this.duration * 0.02 * 1000);
+				this.log( "Setting clip done guard check in " + (timeoutVal / 1000) + " seconds" );
+				this.clipDoneTimeout = setTimeout( function () {
+					if ( _this.shouldEndClip && !_this.isLive() ) {
+						_this.log( "clipDone guard > should run clip done :: " + _this.currentTime );
+						_this.onClipDone();
+					}
+					_this.clipDoneTimeout = null;
+				}, timeoutVal );
+			}
+		},
+		cancelClipDoneGuard: function() {
+			this.log("Cancel clipDone guard");
+			this.shouldEndClip = false;
+			this.clearClipDoneGuard();
+		},
+		clearClipDoneGuard: function() {
+			if ( this.clipDoneTimeout ){
+				this.log("Clear clipDone guard timer");
+				clearTimeout(this.clipDoneTimeout);
+				this.clipDoneTimeout = null;
+			}
+		},
 		/**
 		 * Abstract getPlayerElementTime function
 		 */

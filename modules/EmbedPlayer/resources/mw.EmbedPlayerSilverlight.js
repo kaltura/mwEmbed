@@ -70,7 +70,6 @@
 		},
 
 		loadMedia: function (readyCallback) {
-
 			var _this = this;
 			var srcToPlay = _this.getSrc();
 
@@ -238,13 +237,15 @@
 						playerElement.stretchFill();
 					}
 
-
 					if ( isMimeType("video/mp4")
 						||
 						isMimeType("video/h264")
+						||
+						isMimeType("video/playreadySmooth")
+						||
+						_this.isLive()
 						){
 						_this.durationReceived = true;
-
 					}
 					readyCallback();
 				});
@@ -324,8 +325,8 @@
 		 * parent_play
 		 */
 		onPlay: function () {
-			//workaround to avoid two playing events with autoPlay.
-			if (!this.durationReceived) {
+			////workaround to avoid two playing events with autoPlay.
+			if (!this.durationReceived ) {
 				return;
 			}
 			if (this._propagateEvents) {
@@ -418,6 +419,9 @@
 			mw.log('EmbedPlayerSPlayer::play');
 			var _this = this;
 			if ( this.parent_play() ) {
+				//TODO:: Currently SL player initializes before actual volume is read from cookie, so we set it on play
+				//need to refactor the volume logic and remove this.
+				this.setPlayerElementVolume(this.volume);
 				//bring back the player
 				this.getPlayerContainer().css('visibility', 'visible');
 				if (this.isMulticast) {

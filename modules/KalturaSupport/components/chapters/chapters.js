@@ -312,17 +312,19 @@
 			return $(mediaListString );
 		},
 		getTemplateHTML: function(data){
+			var defer = $.Deferred();
 			//Fetch templates
 			var chapterTemplate = this.getTemplatePartialHTML("chapters");
 			var slideTemplate = this.getTemplatePartialHTML("slides");
 			var listTemplate = this.getTemplatePartialHTML("list");
 			//Return new list HTML string
-			return listTemplate({
+			var $templateHtml = listTemplate({
 				renderChapter: chapterTemplate,
 				renderSlide: slideTemplate,
 				meta: data.meta,
 				mediaList: data.mediaList
 			});
+			return defer.resolve($templateHtml);
 		},
 		getMetaData: function(){
 			var metaData = this._super();
@@ -672,7 +674,7 @@
 						}
 					} )
 					.on( "focus", function () {
-						_this.getPlayer().triggerHelper( "onDisableKeyboardBinding", {disableSingle: true} );
+						_this.getPlayer().triggerHelper( "onDisableKeyboardBinding" );
 						//On each focus render width of dropdown menu
 						searchBoxWrapper.find(".tt-dropdown-menu" ).width(searchFormWrapper.width());
 						_this.maximizeSearchBar();
