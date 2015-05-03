@@ -191,7 +191,7 @@ DAL for Q&A Module
 
             var found = false;
             for (var i = 0; i < _this.items().length; i++) {
-                if (_this.items()[i]().id === item.id) {
+                if (_this.items()[i]().id === item().id) {
                     found = true;
                     _this.items.splice(i, 1);
                     _this.items.splice(i, 0, item);
@@ -317,7 +317,6 @@ DAL for Q&A Module
                         var item=_this.annotationCuePointToItem(cuePoint);
 
                         if (item) {
-
 
                             if (_this.lastUpdateTime < cuePoint.updatedAt) {
                                 _this.lastUpdateTime = cuePoint.updatedAt;
