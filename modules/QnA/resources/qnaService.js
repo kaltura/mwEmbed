@@ -45,7 +45,7 @@ DAL for Q&A Module
         QandA_MetadataProfileSystemName: "QandA",
         QandA_cuePointTag: "qna",
         useResponseProfile: false,
-        QandA_cuePointTypes: {"Assignable":1, "Announcement":2},
+        QandA_cuePointTypes: {"Private":1, "Announcement":2},
 
 
         init: function (embedPlayer, qnaPlugin) {
@@ -115,7 +115,7 @@ DAL for Q&A Module
                 threadId = _this.randomString(8);
             }
 
-            var xmlData = _this.createMetadataXmlFromObject({ThreadId: threadId, Type: "Assignable"});
+            var xmlData = _this.createMetadataXmlFromObject({ThreadId: threadId, Type: "Private"});
 
 
             var createCuePointRequest = {
