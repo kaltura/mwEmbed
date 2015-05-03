@@ -206,12 +206,12 @@ return array(
 				'type' => 'string'
 			),
 			'tags' => array(
-				'doc' => 'Default: "chaptering"� Providing a tag name will grab only annotations which have that tag. 
+				'doc' => 'Default: "chaptering" Providing a tag name will grab only annotations which have that tag.
 									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters in different languages)',
 				'type' => 'string'
 			),
 			'parentName' => array(
-				'doc' => 'Default: "chaptering"� Providing a parentName will force querying only annotations whose parent fits parentName. 
+				'doc' => 'Default: "chaptering" Providing a parentName will force querying only annotations whose parent fits parentName.
 									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters, references, ads).',
 				'type' => 'string'
 			),
@@ -228,7 +228,7 @@ return array(
 				'enum' => array( 'before', 'after', 'left', 'right' )
 			),
 			'overflow' => array(
-				'doc' => 'Defines what should happen in case list of chapters require more space than videos dimensions. Combined with the� layout� and position� parameters, this parameter will cause a prev/next UI to appear if overflow is set to false.',
+				'doc' => 'Defines what should happen in case list of chapters require more space than videos dimensions. Combined with the layout and position parameters, this parameter will cause a prev/next UI to appear if overflow is set to false.',
 				'type' => 'boolean',
 			),
 			'includeThumbnail' => array(
