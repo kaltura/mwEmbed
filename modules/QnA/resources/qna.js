@@ -6,7 +6,8 @@
 
 		defaultConfig: {
 			templatePath: '../QnA/resources/qna.tmpl.html',
-			cssFileName: 'modules/QnA/resources/qna.css'
+			cssFileName: 'modules/QnA/resources/qna.css',
+			onPage: true
 		},
 
 
