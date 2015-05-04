@@ -81,15 +81,6 @@ DAL for Q&A Module
             }
             return this.kClient;
         },
-        randomString: function (string_length) {
-            var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
-            var randomstring = '';
-            for (var i = 0; i < string_length; i++) {
-                var rnum = Math.floor(Math.random() * chars.length);
-                randomstring += chars.substring(rnum, rnum + 1);
-            }
-            return randomstring;
-        },
         //returns questions, answers and announcement
         getItems: function () {
             return this.items;
@@ -113,7 +104,7 @@ DAL for Q&A Module
                 metadata.ThreadId = parent.metadata.ThreadId;
                 metadata.Type="Answer";
             } else {
-                metadata.ThreadId  = _this.randomString(8);
+                //no threadid!
                 metadata.Type="Question";
             }
 
@@ -251,6 +242,11 @@ DAL for Q&A Module
             if (!cuePoint.metadata) {
 
                 metadata={ xml: cuePoint.partnerData, id: null };
+            }
+
+            if (!metadata.threadId) {
+                //take the thread id from cuepoint id
+                metadata.threadId=cuePoint.id;
             }
             if (!this.joinMetadataWithCuepoint(cuePoint,metadata)) {
                 mw.log("Cue point "+cuePoint.id+ " was ignored since it's not a valid one" );
