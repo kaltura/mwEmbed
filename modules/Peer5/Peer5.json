@@ -1,0 +1,9 @@
+{
+    "mw.Peer5": {
+        "scripts": "resources/mw.Peer5.js",
+        "kalturaPluginName": "peer5",
+        "dependencies": [
+            "mw.AdTimeline"
+        ]
+    }
+}
