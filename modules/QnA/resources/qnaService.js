@@ -45,7 +45,7 @@ DAL for Q&A Module
         QandA_MetadataProfileSystemName: "QandA",
         QandA_cuePointTag: "qna",
         useResponseProfile: false,
-        QandA_cuePointTypes: {"Private":1, "Announcement":2},
+        QandA_cuePointTypes: {"Question":1,"Answer":2, "Announcement":3},
 
 
         init: function (embedPlayer, qnaPlugin) {
@@ -108,14 +108,16 @@ DAL for Q&A Module
 
             var startTime = new Date();
 
-            var threadId = null;
+            var metadata= { };
             if (parent) {
-                threadId = parent.metadata.ThreadId;
+                metadata.ThreadId = parent.metadata.ThreadId;
+                metadata.Type="Answer";
             } else {
-                threadId = _this.randomString(8);
+                metadata.ThreadId  = _this.randomString(8);
+                metadata.Type="Question";
             }
 
-            var xmlData = _this.createMetadataXmlFromObject({ThreadId: threadId, Type: "Private"});
+            var xmlData = _this.createMetadataXmlFromObject(metadata);
 
 
             var createCuePointRequest = {
