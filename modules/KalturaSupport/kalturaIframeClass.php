@@ -538,18 +538,18 @@ class kalturaIframeClass {
 	/**
 	 * Get entry name for iFrame title
 	 */
-	private function getEntryTitle()
-	{
-		try{
-		$baseEntry = $this->getEntryResult()->getResult();
-			if( isset( $baseEntry['meta']->name)){
-			return $baseEntry['meta']->name;
-			} else {
+	private function getEntryTitle(){
+		if( !$this->getUiConfResult()->isPlaylist() ){
+			try{
+			$baseEntry = $this->getEntryResult()->getResult();
+				if( isset( $baseEntry['meta']->name) ){
+				return $baseEntry['meta']->name;
+				}
+			} catch (Exception $e){
 			return "Kaltura Embed Player iFrame";
 			}
-		} catch (Exception $e){
-		return "Kaltura Embed Player iFrame";
 		}
+		return "Kaltura Embed Player iFrame";
 	}
 
 	/**
