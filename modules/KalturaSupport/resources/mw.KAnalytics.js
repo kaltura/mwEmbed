@@ -162,7 +162,7 @@ mw.KAnalytics.prototype = {
 		// check for the vars in the correct location:
 		for( var fvKey in flashVarEvents){
 			if( this.embedPlayer.getKalturaConfig( 'statistics', fvKey ) ){
-				eventSet[ flashVarEvents[ fvKey ] ] = encodeURIComponent( this.embedPlayer.getKalturaConfig('', fvKey ) );
+				eventSet[ flashVarEvents[ fvKey ] ] = encodeURIComponent( this.embedPlayer.getKalturaConfig('statistics', fvKey ) );
 			}
 		}
 
