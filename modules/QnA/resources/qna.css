@@ -12,6 +12,7 @@
 .qnaInterface .qnaQuestionArea{
 	background-color: #00b4d1;
 	overflow: hidden;
+	height: 88px;
 }
 
 .qnaInterface .qnaQuestionBox{
@@ -238,6 +239,11 @@
 	height: auto;
 	min-height: 80px;
 	overflow: hidden;
+	line-height: 20px;
+}
+
+.qnaInterface .LastQnaEntryListLI{
+	margin-bottom: 0px;
 }
 
 .qnaInterface .qnaAnnouncementTitle{
@@ -326,7 +332,7 @@
 }
 
 .qnaInterface .listHolder{
-	width: 100%;
+	width: auto;
 
 	/* Firefox */
 	height: -moz-calc(100% - 88px);
