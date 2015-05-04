@@ -59,7 +59,7 @@
 				// add the Q&A toggle button to be on the video
 				embedPlayer.getVideoHolder().append('<div class="qna-on-video-btn icon-qna-close"><div class="badge"></div></div>');
 				_this.getQnaContainer();
-				qnaObject =  $(window['parent'].document.getElementById(embedPlayer.id )).parent().find( ".qnaInterface" );
+				qnaObject =  $(window['parent'].document.getElementById(embedPlayer.id )).parents().find( ".qnaInterface" );
 				onVideoTogglePluginButton = $('.qna-on-video-btn');
 
 				// register to on click to change the icon of the toggle button
@@ -119,8 +119,8 @@
 				}
 
 				var iframeParent = window['parent'].document.getElementById( this.embedPlayer.id );
-				$( iframeParent ).parent().find( "#" + this.getConfig( 'qnaTargetId' ) ).html( "<div class='qnaInterface'></div>" );
-				this.$qnaListContainer = $( iframeParent ).parent().find( ".qnaInterface" );
+				$( iframeParent ).parents().find( "#" + this.getConfig( 'qnaTargetId' ) ).html( "<div class='qnaInterface'></div>" );
+				this.$qnaListContainer = $( iframeParent ).parents().find( ".qnaInterface" );
 				this.$qnaListContainer.append(this.getHTML());
 				ko.applyBindings(this.KQnaModule, this.$qnaListContainer[0]);
 
