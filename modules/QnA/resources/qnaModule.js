@@ -41,7 +41,13 @@
             var scroll = _this.qnaPlugin.getQnaContainer().find(".nano")
             //var scroll=$( window['parent'].document ).find(".nano");
             scroll.find(".nano-content" ).css("z-index", -1);
-            scroll.nanoScroller({ documentContext: window['parent'].document});
+
+            if ($(".qnaInterface").length > 0){
+                scroll.nanoScroller();
+            }
+            else{
+                scroll.nanoScroller({ documentContext: window['parent'].document});
+            }
             scroll.find(".nano-content" ).css("z-index", "");
         },
         getUnreadCount: function(){
