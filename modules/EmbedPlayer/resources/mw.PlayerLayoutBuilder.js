@@ -410,6 +410,16 @@ mw.PlayerLayoutBuilder.prototype = {
 		return height;
 	},
 
+    getContainerHeight: function() {
+        var height = 0;
+        if(mw.isIE11()){
+            height = this.getInterface()[0].clientHeight;
+        }else{
+            height = this.getInterface().height();
+        }
+        return height;
+    },
+
 	initToolTips: function(){
 		var _this = this;
 		this.embedPlayer.bindHelper( 'layoutBuildDone', function(){
@@ -820,7 +830,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			_this.playingFlag = true;
 			setTimeout(function(){
 				_this.playingFlag = false;
-			},500);
+			},1000);
 		});
 		// check for drag: 
 		
@@ -828,7 +838,9 @@ mw.PlayerLayoutBuilder.prototype = {
 		// Check for click
 		$( embedPlayer ).bind( "click" + _this.bindPostfix, function() {
 			if ( mw.isMobileDevice() )  {
-				_this.togglePlayback();
+				if (!_this.playingFlag){
+					_this.togglePlayback();
+				}
 			}
 			else {
 				var playerStatus = embedPlayer.isPlaying();

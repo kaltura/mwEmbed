@@ -424,7 +424,9 @@
 
 			var eventStateMap = {
 				'playerReady': 'start',
-				'onplay': 'load',
+				'onplay': function () {
+					return _this.isPlaying() ? 'play' : 'load';
+				},
 				'playing': 'play',
 				'onPauseInterfaceUpdate': 'pause',
 				'onEndedDone': 'end',
@@ -1311,6 +1313,7 @@
 				_this.getVideoHolder().hide();
 				_this.getInterface().height(_this.layoutBuilder.getComponentsHeight());
 			}
+
 			// Update layout
 			this.doUpdateLayout();
 
@@ -1350,8 +1353,8 @@
 
 		doUpdateLayout: function (skipTrigger) {
 			// Set window height if in iframe:
-			var containerHeight = this.getInterface().height();
-			var newHeight = containerHeight - this.layoutBuilder.getComponentsHeight();
+            var containerHeight = this.layoutBuilder.getContainerHeight();
+            var newHeight = containerHeight - this.layoutBuilder.getComponentsHeight();
 			var currentHeight = this.getVideoHolder().height();
 			var deltaHeight = Math.abs(currentHeight - newHeight);
 			mw.log('EmbedPlayer: doUpdateLayout:: containerHeight: ' +
@@ -1706,12 +1709,6 @@
 				if (_this.getError()) {
 					// Reset changeMediaStarted flag
 					_this.changeMediaStarted = false;
-					if (_this.playlist) {
-						// Allow user to move to next/previous entries
-						_this.playlist.enablePrevNext();
-						_this.playlist.addClipBindings();
-						_this.layoutBuilder.closeAlert();
-					}
 					_this.showErrorMsg(_this.getError());
 					return;
 				}
@@ -1719,7 +1716,8 @@
 				var changeMediaDoneCallback = function () {
 					// Reset changeMediaStarted flag
 					_this.changeMediaStarted = false;
-
+					//remove black bg when showing poster after change media
+					$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
 					// reload the player
 					if (_this.autoplay && _this.canAutoPlay() ) {
 						if (!_this.isAudioPlayer) {
@@ -1816,8 +1814,7 @@
 		 * Updates the poster HTML
 		 */
 		updatePosterHTML: function () {
-            mw.log('!!EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
-			mw.log('EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
+            mw.log('EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
 			var _this = this;
 
 			if (this.isImagePlayScreen()) {
@@ -2324,6 +2321,8 @@
 
 			// trigger on play interface updates:
 			this.restoreComponentsHover();
+			//Unmask clipDone guard handler
+			this.shouldEndClip = true;
 			$(this).trigger('onPlayInterfaceUpdate');
 		},
 		/**
@@ -2415,6 +2414,8 @@
 			this.hideSpinner();
 			// trigger on pause interface updates
 			this.disableComponentsHover();
+			//Mask clipDone guard handler
+			this.shouldEndClip = false;
 			$(this).trigger('onPauseInterfaceUpdate');
 		},
 		/**
@@ -2474,11 +2475,11 @@
 
 
 		togglePlayback: function () {
-			if (this.paused) {
-				this.play();
-			} else {
-				this.pause();
-			}
+				if (this.paused) {
+					this.play();
+				} else {
+					this.pause();
+				}
 		},
 		isMuted: function () {
 			return this.muted;

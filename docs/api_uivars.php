@@ -125,12 +125,6 @@ $uiVars = array(
 					'default' => 'true',
 					'example' => '../modules/KalturaSupport/tests/UseHLS_WhereAvailable.qunit.html'
 			),
-			'Kaltura.ForceJSONP' => array(
-					'type' => 'Boolean',
-					'desc' => 'If API calls should use the JSONP protocol',
-					'default' => 'false',
-					'example' => ''
-			),
 			'LeadWithHLSOnFlash' => array(
 					'type' => 'Boolean',
 					'desc' => 'If Apple HLS streams should be on desktop browsers where Flash and an HLS stream are available',
