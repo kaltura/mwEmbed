@@ -605,11 +605,11 @@
 			this.addMediaItems( items );   // prepare the data to be compatible with KBaseMediaList
 			this.getMedialistHeaderComponent().empty();
 			if ( this.getLayout() === "vertical" ) {
-				this.getMedialistHeaderComponent().prepend( '<span class="playlistTitle">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription">' + items.length + ' ' + gM( 'mwe-embedplayer-videos' ) + '</span>' );
+				this.getMedialistHeaderComponent().prepend( '<span class="playlistTitle">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription">' + this.playlistSet[playlistIndex].content.split(",").length + ' ' + gM( 'mwe-embedplayer-videos' ) + '</span>' );
 				this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '"></div>' );
 				this.getMedialistHeaderComponent().height(this.getConfig('verticalHeaderHeight'));
 			} else {
-				this.getMedialistHeaderComponent().prepend( '<div class="horizontalHeaderLables"><span class="playlistTitle horizontalHeader">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription horizontalHeader">(' + items.length + ' ' + gM( 'mwe-embedplayer-videos' ) + ')</span></div>' );
+				this.getMedialistHeaderComponent().prepend( '<div class="horizontalHeaderLables"><span class="playlistTitle horizontalHeader">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription horizontalHeader">(' + this.playlistSet[playlistIndex].content.split(",").length + ' ' + gM( 'mwe-embedplayer-videos' ) + ')</span></div>' );
 				this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '"></div>' );
 				this.getMedialistHeaderComponent().height(this.getConfig('horizontalHeaderHeight'));
 			}
