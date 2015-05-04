@@ -472,14 +472,37 @@ body {
     padding-left: 10px;
     width: inherit;
 }
+.tr-time-search{
+    display: inline-block;
+    width: 65px;
+    float:left;
+}
+.no-results .no-results-transcript-search{
+    display: block;
+}
+.no-results-transcript-search{
+    width: 100%;
+    text-align: center;
+    display: none;
+}
 
+.tr-content-search{
+    overflow: hidden;
+}
+.tr-search-item{
+    overflow: hidden;
+}
 
+/*  ALL COLORS DEFINITIONS MUST BE WITH A TOP-LEVEL THEME CLASS NVS */
+/*  ALL COLORS DEFINITIONS MUST BE WITH A TOP-LEVEL THEME CLASS NVS */
+.no-results-transcript-search{
+    color: #FFF;
+}
 
+.tr-time-search{
+    color: #fff;
+}
 
-
-
-/*  ALL COLLORS DEFINITIONS MUST BE WITH A TOP-LEVEL THEME CLASS NVS */
-/*  ALL COLLORS DEFINITIONS MUST BE WITH A TOP-LEVEL THEME CLASS NVS */
 
 .block-highlight{
     background-color: #0085bf;

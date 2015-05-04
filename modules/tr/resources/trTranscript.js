@@ -260,25 +260,44 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 			_this.mainDoc.find(".ri-transcript-filter-txt").removeClass("active");
 			_this.mainDoc.find(".search-input").val("");
 			_this.mainDoc.find("#transcript-body").html(_this.getConfig("originalHTML") );
+			_this.mainDoc.find(".transcript-wrapper").parent().removeClass("no-results");
 			_this.applyBehavior(true);
 		})
 
 	},
 	localSearch : function(searchString){
 		this.mainDoc.find(".transcript-filter").addClass("active");
-		// store local transcript only if there was no previous search
+
+		// store local transcript only if there was no previous search, so we can re-assign it to
+		// transcript box in case of
 		if(this.getConfig("originalHTML")){
 			this.mainDoc.find("#transcript-body").html(this.getConfig("originalHTML") );
 		}else{
 			this.setConfig("originalHTML" ,this.mainDoc.find("#transcript-body").html())
 		}
+
+		// TODO optimize:
+		// in-case-sensitivity (the will also find The, ceo will find CEO)
+		// only full words ('the' will not fine therfore)
+		// maybe use regexp instead of jquery
+		// fix bugs
+
+
 		var matchingSentences = this.mainDoc.find("#transcript-body span:contains('"+searchString+"')");
 		var searchHtml= $('<div />');
+
+
+		if(!matchingSentences.length){
+			this.mainDoc.find(".transcript-wrapper").parent().addClass("no-results");
+		}else{
+			this.mainDoc.find(".transcript-wrapper").parent().removeClass("no-results");
+		}
+
 		for(var i=0;i<matchingSentences.length;i++){
 			//find time to display
 			var timeToShow;
 			if($(matchingSentences[i]).prev().prev().length){
-				//there is a previous cibiling, use its duration
+				//there is a previous sibling, use its duration
 				timeToShow = $(matchingSentences[i]).prev().prev().attr("trtime");
 			} else if($(matchingSentences[i]).prev().length){
 				timeToShow = $(matchingSentences[i]).prev().attr("trtime");
@@ -290,17 +309,20 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 			var nextSentence = $(matchingSentences[i]).next();
 			var next2Sentence = $(matchingSentences[i]).next().next();
 
-			var currentSentence= $('<div />');
-			currentSentence.append($('<span>'+timeToShow+' </span> '));
-			currentSentence.append($(matchingSentences[i]).prev().prev());
-			currentSentence.append($(matchingSentences[i]).prev());
-
 			var sentence = $(matchingSentences[i]);
 			sentence = sentence.text().replace( searchString , '<span class="block-highlight">'+searchString+'</span>');
-			currentSentence.append(sentence);
 
-			currentSentence.append(nextSentence);
-			currentSentence.append(next2Sentence);
+			var currentSentence= $('<div class="tr-search-item" />');
+			currentSentence.append($('<div class="tr-time-search" />').append($('<span>'+timeToShow+' </span> ')));
+			currentSentence.append($('<div class="tr-content-search" />')
+				.append($(matchingSentences[i]).prev().prev())
+				.append($(matchingSentences[i]).prev())
+				.append(sentence)
+				.append(nextSentence)
+				.append(next2Sentence)
+			)
+
+
 			//var sentences3 = $.merge($.merge($(matchingSentences[i]).prev(),$(matchingSentences[i])),$(matchingSentences[i]).next());
 			//searchHtml+=sentences3;
 			searchHtml.append(currentSentence)
