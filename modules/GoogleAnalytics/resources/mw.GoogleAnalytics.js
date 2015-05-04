@@ -138,6 +138,14 @@
 
 				});
 			});
+
+			_this.embedPlayer.bindHelper('Kaltura_ConfigChanged', function(event, pluginName, property, value){
+				if( pluginName === "googleAnalytics" ){
+					if(property === "urchinCode") {
+						window._gaq.push(['_setAccount', _this.getConfig('urchinCode')]);
+					}
+				}
+			});
 		},
 
 		/**
