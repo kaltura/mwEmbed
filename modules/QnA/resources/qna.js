@@ -96,9 +96,16 @@
 			this.bind('onOpenFullScreen', function() {
                 qnaObject.hide();
                 changeVideoToggleIcon();
+				if (!_this.getConfig( 'onPage' )) {
+					$( ".videoHolder, .mwPlayerContainer" ).css( "width", "100%" );	}
 			});
 			this.bind('onCloseFullScreen', function() {
                 changeVideoToggleIcon();
+				if (!_this.getConfig( 'onPage' )){
+					setTimeout(function() {
+						$(".videoHolder, .mwPlayerContainer").css("width", _this.$qnaListContainer.width() - _this.getConfig('moduleWidth') + "px");
+					},0);
+				}
 			});
 		},
 
