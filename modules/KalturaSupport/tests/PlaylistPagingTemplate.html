@@ -28,6 +28,7 @@
 </ul>
 <div id='kaltura_player' style="height:450px;width:550px"></div>
 <script>
+	var basePath = document.location.toString().split("PlaylistPagingTemplate")[0];
 	kWidget.featureConfig({
 		'targetId': 'kaltura_player',
 		'wid': '_243342',
@@ -42,7 +43,7 @@
 				'layout': 'horizontal',
 				'containerPosition': 'bottom',
 				'hideClipPoster': true,
-				'onPageCss1' : "http://projects.kaltura.com/playlist/customplaylist.css",
+				'onPageCss1' : basePath + 'externalResources/customplaylist.css',
 				'kpl0Name': "50 items playlist",
 				'kpl0Id': '1_giunvyzh',
 				'paging': true,
@@ -50,8 +51,8 @@
 				'MinClips': 5,
 				'horizontalScrollItems': 5,
 				'mediaItemHeight': 100,
-				'templatePath': 'http://projects.kaltura.com/playlist/customplaylist.tmpl.html',
-				'iframeHTML5Css': 'http://projects.kaltura.com/playlist/customplaylist.css'
+				'templatePath': basePath + 'externalResources/customplaylist.tmpl.html',
+				'iframeHTML5Css': basePath + 'externalResources/customplaylist.css'
 			},
 			'nextPrevBtn':{
 				'plugin': true
@@ -62,6 +63,7 @@
 <br>
 <p>Sample Code:</p>
 <pre class="prettyprint linenums">
+var basePath = document.location.toString().split("PlaylistPagingTemplate")[0];
 kWidget.featureConfig({
 	'targetId': 'kaltura_player',
 	'wid': '_243342',
@@ -76,7 +78,7 @@ kWidget.featureConfig({
 			'layout': 'horizontal',
 			'containerPosition': 'bottom',
 			'hideClipPoster': true,
-			'onPageCss1' : "http://projects.kaltura.com/playlist/customplaylist.css",
+			'onPageCss1' : basePath + 'externalResources/customplaylist.css',
 			'kpl0Name': "50 items playlist",
 			'kpl0Id': '1_giunvyzh',
 			'paging': true,
@@ -84,8 +86,8 @@ kWidget.featureConfig({
 			'MinClips': 5,
 			'horizontalScrollItems': 5,
 			'mediaItemHeight': 100,
-			'templatePath': 'http://projects.kaltura.com/playlist/customplaylist.tmpl.html',
-			'iframeHTML5Css': 'http://projects.kaltura.com/playlist/customplaylist.css'
+			'templatePath': basePath + 'externalResources/customplaylist.tmpl.html',
+			'iframeHTML5Css': basePath + 'externalResources/customplaylist.css'
 		},
 		'nextPrevBtn':{
 			'plugin': true
