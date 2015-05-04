@@ -158,6 +158,10 @@
 				window['iframePlayer'] = event.target;
 				_this.setDuration();
 				_this._playContorls = true;
+				//autoMute
+				if(mw.getConfig('autoMute')){
+					_this.setVolume(0);
+				}
 				//autoplay
 				if(mw.getConfig('autoPlay')){
 					_this.play();
@@ -185,6 +189,10 @@
 				flashPlayer.addEventListener("onStateChange", "onPlayerStateChange");
 				flashPlayer.addEventListener("onError", "onError");
 				_this._playContorls = true;
+				//autoMute
+				if(mw.getConfig('autoMute')){
+					_this.setVolume(0);
+				}
 				//autoplay
 				if(mw.getConfig('autoPlay')){
 					_this.play();
