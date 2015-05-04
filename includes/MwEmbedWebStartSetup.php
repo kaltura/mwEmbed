@@ -109,7 +109,7 @@ global $wgScriptPath;
 # Register / load all the mwEmbed modules
 foreach( $wgMwEmbedEnabledModules as $moduleName ){
 	$modulePath = $wgScriptPath."modules/$moduleName";
-	if( is_file( "$IP/$modulePath/$moduleName.php" ) ){
+	if( is_file( "$IP/$modulePath/$moduleName.json" ) || is_file( "$IP/$modulePath/$moduleName.php" ) ){
 		MwEmbedResourceManager::register( $modulePath );
 	}
 }

@@ -239,6 +239,15 @@ if( is_file( $wgLocalSettingsFile ) ){
 	require_once( $wgLocalSettingsFile );
 }
 
+//Set global configs into $wgMwEmbedModuleConfig in order to enable
+//resource loader to output the config in the response
+// if Manifest urls should be used:
+$wgMwEmbedModuleConfig['Kaltura.UseManifestUrls'] = $wgKalturaUseManifestUrls;
+//Add license server config:
+global $wgKalturaLicenseServerUrl, $wgKalturaUdrmLicenseServerUrl;
+$wgMwEmbedModuleConfig['Kaltura.LicenseServerURL'] = $wgKalturaLicenseServerUrl;
+$wgMwEmbedModuleConfig['Kaltura.UdrmServerURL'] = $wgKalturaUdrmLicenseServerUrl;
+
 // Add Kaltura api services: ( should be part of kaltura module config)
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiKSTest.php' );
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiUiConfJs.php' );

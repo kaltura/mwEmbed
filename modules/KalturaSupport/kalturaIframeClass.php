@@ -682,10 +682,13 @@ HTML;
 		$kalturaSupportModules = array();
 		$moduleDir = realpath( dirname( __FILE__ ) )  . '/..';
 		foreach( $wgMwEmbedEnabledModules as $moduleName ){
-			$modListPath = $moduleDir . '/' . $moduleName . '/' . $moduleName . '.php';
-			if( is_file( $modListPath) ){
+			$modListPath = $moduleDir . '/' . $moduleName . '/' . $moduleName . '.';
+			if( is_file( $modListPath . "json") ){
+			    $moduleInfo = json_decode( file_get_contents($modListPath. 'json'), TRUE );
+                $kalturaSupportModules = array_merge( $kalturaSupportModules, $moduleInfo);
+            } elseif( is_file( $modListPath . "php") ){
 				$kalturaSupportModules = array_merge( $kalturaSupportModules, 
-					include( $modListPath ) 
+					include( $modListPath . "php")
 				);
 			}
 		}
@@ -818,7 +821,9 @@ HTML;
 	}
 
 	function getSkinResources(){
-		$skinsResources = include_once('skins/SkinResources.php');
+	    $skinResourcesUrl = "skins/SkinResources.json";
+        $skinsResources = json_decode( file_get_contents($skinResourcesUrl), TRUE );
+
 		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
 		$skinName = $playerConfig['layout']['skin'];
 		$styles = array();
