@@ -171,7 +171,7 @@ class PlaylistResult {
 					$client->queueServiceActionCall( "playlist", "get", array( 'id' => $playlistId ) );
 				}
 				$maxClips = $this->uiconf->getPlayerConfig('playlistAPI', 'pageSize');
-				if (isset($maxClips)){
+				if (isset($maxClips) && $this->uiconf->getPlayerConfig('playlistAPI', 'paging') === true){
 					$params = array( 'id' => $firstPlaylist, 'pager:objectType' => 'KalturaFilterPager', 'pager:pageIndex' => 1, 'pager:pageSize' => $maxClips);
 				}else{
 					$params = array( 'id' => $firstPlaylist );
