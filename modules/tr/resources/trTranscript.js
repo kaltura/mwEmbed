@@ -68,9 +68,9 @@ mw.PluginManager.add( 'trTranscript', mw.KBasePlugin.extend({
 			_this.renderHighlightedWords(_this.getConfig("mentionedTerms"));
 			//set transcript type
 			//TODO connect to new caption asset enhancment once ready.
-			if(dataResult.objects[0].relatedObjects.captionAsset.objects[0].tags == 'human'){
+			if(dataResult.objects[0].relatedObjects.captionAsset.objects[0].tags.indexOf('') == 'verified'){
 				_this.mainDoc.find(".ri-transcript-type--verified").addClass("active");
-			}else if(dataResult.objects[0].relatedObjects.captionAsset.objects[0].tags == 'machine'){
+			}else{
 				_this.mainDoc.find(".ri-transcript-type--automatic").addClass("active");
 			}
 
