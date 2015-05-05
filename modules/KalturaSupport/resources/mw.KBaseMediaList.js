@@ -36,6 +36,7 @@
 				'fullScreenDisplayOnly': false,
 				'minDisplayWidth': 0,
 				'minDisplayHeight': 0,
+				'horizontalScrollItems': 1,
 				'scrollerCssPath': "resources/nanoScroller/nanoScroller.css"
 			});
 		},
@@ -57,8 +58,8 @@
 			this.bind('updateLayout', function(){
 				if (_this.getPlayer().layoutBuilder.isInFullScreen() ||
 					(!_this.getConfig("fullScreenDisplayOnly") &&
-					_this.getConfig("minDisplayWidth") <= _this.getPlayer().getWidth() &&
-					_this.getConfig("minDisplayHeight") <= _this.getPlayer().getHeight())){
+						_this.getConfig("minDisplayWidth") <= _this.getPlayer().getWidth() &&
+						_this.getConfig("minDisplayHeight") <= _this.getPlayer().getHeight())){
 					_this.render = true;
 				} else {
 					_this.render = false;
@@ -284,8 +285,7 @@
 					});
 			}
 		},
-
-		configMediaListFeatures: function(){
+		configMediaListFeatures: function(scrollRefresh){
 			//Adjust container size
 			this.setMedialistContainerSize();
 			this.setMedialistComponentHeight();
@@ -294,7 +294,9 @@
 			//Attach media items handlers
 			this.attachMediaListHandlers();
 			//Add scroll if applicable
-			this.shouldAddScroll( );
+			if ( !scrollRefresh ){
+				this.shouldAddScroll();
+			}
 		},
 		setMedialistComponentHeight: function(){
 			var _this = this;
@@ -443,7 +445,7 @@
 					if ( this.getLayout() === 'vertical' ) {
 						// give the box a height:
 						this.getComponent().css( 'height',
-								mediaBoxes.length * largestBoxHeight
+							mediaBoxes.length * largestBoxHeight
 						);
 					}
 				}
@@ -454,7 +456,7 @@
 			var hoverInterval = null;
 			var mediaBoxes = this.getMediaListDomElements();
 			mediaBoxes
-				.off('click' )
+				.off('click touchmove touchend' )
 				.on('click', function(){
 					if ( !_this.isDisabled && !_this.isTouchDisabled){
 						// set active media item
@@ -571,6 +573,7 @@
 			return sliceIndex;
 		},
 		addScroll: function(){
+			var _this = this;
 			var isVertical = ( this.getLayout() == 'vertical' );
 			if (isVertical) {
 				this.getScrollComponent();
@@ -588,9 +591,11 @@
 					circular: false,
 					vertical: isVertical,
 					start: this.startFrom,
-					scroll: 1,
+					scroll: _this.getConfig('horizontalScrollItems'),
 					speed: speed
-				} );
+				}).unbind("complete").bind( "complete", function( event, data ) {
+						$(_this.embedPlayer).trigger("scrollEnd");
+					});
 				$cc.find('ul').width((this.getMediaItemBoxWidth()+1)*this.mediaList.length);
 				$cc.find('.k-carousel').css('width', $cc.width() );
 			}
@@ -631,6 +636,9 @@
 				}
 				this.$scroll.on('update', function(e, data){
 					_this.doOnScrollerUpdate(data);
+				});
+				this.$scroll.on("scrollend", function(e){
+					$(_this.embedPlayer).trigger("scrollEnd");
 				});
 			}
 			return this.$scroll;
