@@ -227,7 +227,9 @@
 			// set responsiveness
 			if ( !mw.isIOS7()) {
 				this.bind( 'resizeEvent' , function () {
-					_this.redrawPlaylist();
+					if ( _this.getConfig('onPage') !== true ){ // do not redraw when onPage
+						_this.redrawPlaylist();
+					}
 				} );
 			}
 
