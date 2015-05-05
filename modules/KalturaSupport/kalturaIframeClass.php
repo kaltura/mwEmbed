@@ -125,9 +125,11 @@ class kalturaIframeClass {
 	    return $entryResult;
 	}
 	function shouldRouteServiceUrl(){
-        return ( $this->request->isEmbedServicesEnabled() && $this->request->isEmbedServicesRequest() &&
-               ( $this->getUiConfResult()->getPlayerConfig( null, 'Kaltura.AllowIframeRemoteService' ) === true ) &&
-               ( !empty( $this->getUiConfResult()->getPlayerConfig( null, 'Kaltura.ServiceUrl' ) ) ) );
+	    $allowIframeRemoteService = $this->getUiConfResult()->getPlayerConfig(null, 'Kaltura.AllowIframeRemoteService');
+        $serviceUrl = $this->getUiConfResult()->getPlayerConfig(null, 'Kaltura.ServiceUrl');
+        return ($this->request->isEmbedServicesEnabled() && $this->request->isEmbedServicesRequest() &&
+            ($allowIframeRemoteService === true) &&
+            !empty($serviceUrl));
     }
     function reRouteServiceUrl(){
         $this->client->getClient()->getConfig()->serviceUrl = $this->getUiConfResult()->getPlayerConfig( null, 'Kaltura.ServiceUrl' );
