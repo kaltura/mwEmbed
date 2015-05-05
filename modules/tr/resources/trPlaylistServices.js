@@ -6,16 +6,15 @@ mw.PluginManager.add( 'trPlaylistServices', mw.KBasePlugin.extend({
 
 	setup: function() {
 		this.setBindings();
-		this.getPlaylistId();
+		this.getRelatedPlaylistId();
 	},
-	getPlaylistId : function(){
+	getRelatedPlaylistId : function(){
 		var _this = this;
 
 		var myRequest = {
 			'service': 'playlist',
 			'action': 'list',
 			'filter:referenceIdEqual': "TR_RELATED_PLAYLIST"
-
 		};
 		this.getKClient().doRequest(myRequest, function (dataResult) {
 			_this.setConfig( "relatedPlaylistId",dataResult.objects[0].id);
@@ -36,16 +35,15 @@ mw.PluginManager.add( 'trPlaylistServices', mw.KBasePlugin.extend({
 		this.bind('playerReady', $.proxy(function(){
 			//in case there is a playlisr plugin but no kpl0Url nor kpl0id - the player needs to load a related playlist
 			if( typeof _this.embedPlayer.evaluate("{playlistAPI}") == 'object'
-				&& _this.embedPlayer.evaluate("{playlistAPI.kpl0Url}") == undefined
-				&& _this.embedPlayer.evaluate("{playlistAPI.kpl0idl}") == undefined) {
-				if(_this.getConfig("loadedOnce")){
+				&& _this.embedPlayer.evaluate("{playlistAPI.kpl0Id}") != undefined) {
+					// do not load related if there is a playlist
 					return;
 				}
 				setTimeout(function(){
 					_this.setConfig("loadedOnce",true);
 					_this.loadRelatedPlaylist();
 				},11)
-			}
+
 		},this));
 
 		this.bind('trLoadPlaylistBySearch', $.proxy(function(e,search){

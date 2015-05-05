@@ -11,11 +11,12 @@ mw.PluginManager.add( 'trTitle', mw.KBaseComponent.extend({
 	},
 
 	setup: function() {
+		//debugger;
 		// Add our plugin name as class on player
 		this.getPlayer().getInterface().addClass(this.pluginName);
 		this.setPopupSize();
 		this.registerTemplateHelper();
-		this.bindChangeMedia();
+		this.setBindings();
 		this.injectCssToParent();
 	},
 
@@ -49,12 +50,53 @@ mw.PluginManager.add( 'trTitle', mw.KBaseComponent.extend({
 		});
 	},
 
-	bindChangeMedia: function() {
+	setBindings: function() {
+		var _this = this;
 		this.bind('onChangeMedia', $.proxy(function(){
 			this.getPlayer().setFlashvars('mediaProxy.mediaPlayFrom', 0);
 		},this));
+
+		this.bind('playerReady', $.proxy(function(){
+			if(_this.getConfig("loadedOnce")){
+				//store the entry/playlist only once at load time
+				return;
+			}
+			_this.setConfig("loadedOnce" , true);
+			//in case there is a playlisr plugin but no kpl0Url nor kpl0id - the player needs to load a related playlist
+			if( typeof _this.embedPlayer.evaluate("{playlistAPI}") == 'object'
+				&& _this.embedPlayer.evaluate("{playlistAPI.kpl0Id}") != undefined) {
+				// do not load related if there is a playlist
+				_this.setConfig("mode" , "playlist");
+				_this.setConfig("contentId" , _this.embedPlayer.evaluate("{playlistAPI.kpl0Id}"));
+			}else{
+				_this.setConfig("mode" , "entry");
+				_this.setConfig("contentId" , _this.embedPlayer.evaluate("{mediaProxy.entry.id}"));
+			}
+
+		},this));
+
+
 	},
 
+	reset: function() {
+		//alert(this.getConfig("mode") + "  "+this.getConfig("contentId"));
+		if(this.getConfig("mode") == "playlist"){
+			var params = {
+				"playlistParams" : {
+					"service":"playlist" ,
+					"action":"execute" ,
+					"id" : this.getConfig("contentId")
+				},
+				'autoInsert' : true,
+				'playlistName' : ""
+			}
+			this.embedPlayer.sendNotification("trLoadNewPlaylist",params);
+		}
+		if(this.getConfig("mode") == "entry"){
+			//debugger;
+			this.embedPlayer.sendNotification("changeMedia", {'entryId': this.getConfig("contentId")});
+		}
+	},
 	openPopup: function() {
 		this.getPlayer().sendNotification('doPause');
 		// popup position
@@ -86,10 +128,6 @@ mw.PluginManager.add( 'trTitle', mw.KBaseComponent.extend({
 			wtype : "omnitureWtype"
 		};
 
-
-
-
-
 		var jsonConfig = JSON.stringify(config);
 		window.open( this.getConfig('popupPage')+'#' + jsonConfig, 'trPopup', "width=" + this.popup.width + ",height=" + this.popup.height + ",top=" + top + ",left=" + left );
 	},
@@ -115,7 +153,8 @@ mw.PluginManager.add( 'trTitle', mw.KBaseComponent.extend({
 									.addClass('tr-top-logo')
 									.html('REUTERS&nbsp;<span class="tr-logo-sub">INSIDER</span>'),
 								$('<div />')
-									.addClass('tr-top-btn tr-top-refresh'),
+									.addClass('tr-top-btn tr-top-refresh')
+									.click($.proxy(this.reset, this)),
 								$('<div />')
 									.addClass('tr-top-btn tr-top-popup')
 									.click($.proxy(this.openPopup, this))
