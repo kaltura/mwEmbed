@@ -118,6 +118,14 @@ $wgExternalPlayersSupportedTypes = array('YouTube');
  * TODO move kaltura configuration to KalturaSupport module ( part of New ResourceLoader update ) 
  ********************************************************/
 
+//Embedded services
+//To enable service re routing for entryResult calls
+$wgEnableKalturaEmbedServicesRouting = false;
+//Set trusted domains for re route requests
+$wgKalturaAuthEmbedServicesDomains = array( 'localhost' );
+//To enable overloading proxy data on multirequest
+$wgKalturaEnableProxyData = false;
+
 // To include signed headers with user IPs for IP restriction lookups, input a salt string for 
 // $wgKalturaRemoteAddressSalt configuration option. 
 $wgKalturaRemoteAddressSalt = false;
