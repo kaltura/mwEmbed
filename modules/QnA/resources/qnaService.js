@@ -170,7 +170,7 @@ DAL for Q&A Module
         },
 
         markAsRead: function (item) {
-            viewedThreads.markAsRead(item.threadId);
+            viewedThreads.markAsRead(item.metadata.threadId);
             this.addOrUpdateItem(this.annotationCuePointToItem(item));
         },
 
@@ -247,13 +247,14 @@ DAL for Q&A Module
                 metadata={ xml: cuePoint.partnerData, id: null };
             }
 
-            if (!metadata.threadId) {
-                //take the thread id from cuepoint id
-                metadata.threadId=cuePoint.id;
-            }
             if (!this.joinMetadataWithCuepoint(cuePoint,metadata)) {
                 mw.log("Cue point "+cuePoint.id+ " was ignored since it's not a valid one" );
                 return null;
+            }
+
+            if (!cuePoint.metadata.threadId) {
+                //take the thread id from cue point id
+                cuePoint.metadata.threadId=cuePoint.id;
             }
 
             var tempType=this.QandA_cuePointTypes[cuePoint.metadata.Type];
@@ -271,14 +272,11 @@ DAL for Q&A Module
             var threadId = cuePoint.id;
             return ko.observable(
                 $.extend(cuePoint,{
-                    threadId: threadId,
-                    type: type,
                     isRead: ko.observable(viewedThreads.isRead(threadId)),
                     title: title,
                     entryText:cuePoint.text,
                     timestamp: ko.observable(cuePoint.createdAt),
-                    currentTime: ko.observable(new Date().getTime()),
-                    metadata: cuePoint.metadata
+                    currentTime: ko.observable(new Date().getTime())
                 })
             );
         },
