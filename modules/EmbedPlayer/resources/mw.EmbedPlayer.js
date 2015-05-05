@@ -2764,7 +2764,9 @@
 						mw.log("EmbedPlayer::updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime);
 						_this.onClipDone();
 						//sometimes we don't get the "end" event from the player so we trigger clipdone
-					} else if ( endTime >= .99 && !this.isInSequence() && !_this.clipDoneTimeout && this.shouldEndClip) {
+					} else if ( endTime >= .99 && !this.isInSequence() && !_this.clipDoneTimeout && this.shouldEndClip 
+						&& !this.changeMediaStarted // don't trigger end event while changeMedia is active
+					){
 						_this.clipDoneTimeout = setTimeout(function () {
 							if ( _this.shouldEndClip && !_this.isLive() ) {
 								mw.log("EmbedPlayer::updatePlayheadStatus > should run clip done :: " + _this.currentTime);
