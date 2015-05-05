@@ -37,7 +37,7 @@ if( isset( $_GET['pskwidgetpath'] ) ){
 $wgKalturaPSHtml5SettingsPath =  realpath( dirname( __FILE__ ) ) . '/../' . $psRelativePath . '/includes/DefaultSettings.php';
 
 // The html5-ps modules dir
-$wgKalturaPSHtml5ModulesDir =  realpath(realpath( dirname( __FILE__ ) ) . '/../' . $psRelativePath . 'ps/modules');
+$wgKalturaPSHtml5ModulesDir =  realpath(realpath( dirname( __FILE__ ) ) . '/../' . $psRelativePath . '/ps/modules');
 
 // By default set $wgScriptPath to empty
 $wgScriptPath = basename(dirname($_SERVER['SCRIPT_NAME'])) . '/';
@@ -62,13 +62,15 @@ while (false !== ($entry = $d->read())) {
 	}
 }
 
-// Enable every module in the "ps/modules" folder
+// Enable every module in the "ps/modules" folder of kwidget-ps
 $wgKwidgetPsEnabledModules = array();
-$dPs = dir( $wgKalturaPSHtml5ModulesDir );
-while (false !== ($entryPs = $dPs->read())) {
-	if( substr( $entryPs, 0, 1 ) != '.' && !in_array( $entryPs , $wgKwidgetPsEnabledModules ) ){
-		$wgKwidgetPsEnabledModules[] = $entryPs;
-	}
+if (!empty($wgKalturaPSHtml5ModulesDir)){
+    $dPs = dir( $wgKalturaPSHtml5ModulesDir );
+    while (false !== ($entryPs = $dPs->read())) {
+        if( substr( $entryPs, 0, 1 ) != '.' && !in_array( $entryPs , $wgKwidgetPsEnabledModules ) ){
+            $wgKwidgetPsEnabledModules[] = $entryPs;
+        }
+    }
 }
 
 // Default debug mode
