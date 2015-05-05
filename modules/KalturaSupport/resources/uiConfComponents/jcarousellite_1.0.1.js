@@ -61,7 +61,6 @@
 					if(!options.circular) {     // Enabling / Disabling buttons is applicable in non-circular mode only.
 						disableOrEnableButtons();
 					}
-
 				}
 				return false;
 			}
@@ -185,10 +184,8 @@
 				ul.on("refresh", function(e, start){
 					options.start = start;
 					initVariables();
-					initStyles();
-					initSizes();
 					disableOrEnableButtons();
-					calculatedTo += options.scroll;
+					calculatedTo = start;
 				})
 			}
 
@@ -231,10 +228,11 @@
 				}
 				// If "to" is greater than the max index that we can use to show another set of elements
 				// it means that we will have to reset "to" to a smallest possible index that can show it
+
 				else if(to > itemLength - numVisible) {
 					calculatedTo = itemLength - numVisible;
-				}
 
+				}
 //				console.log("Item Length: " + itemLength + "; " +
 //					"To: " + to + "; " +
 //					"CalculatedTo: " + calculatedTo + "; " +
@@ -250,6 +248,7 @@
 					$(options.btnNext, options.refWindow).addClass("disabled");
 				}
 				if (calculatedTo+options.scroll > itemLength-numVisible){
+					$(options.btnNext, options.refWindow).addClass("disabled");
 					div.trigger("complete",{"itemLength": itemLength});
 				}
 			}

@@ -52,6 +52,7 @@
 		redrawOnResize: true,
 		widthSetByUser: true,    // assuming the user specified the required playlist width. Will be changed if needed in the setup function
 		page: 1,                 // start page for paging
+		pagingInProgress: false, // flag to block paging call during previous paging
 		pagingDone: false,       // flag for when there are no more entries in the next page so no need to load it
 
 		setup: function (embedPlayer) {
@@ -172,7 +173,8 @@
 			});
 
 			$( this.embedPlayer ).bind("scrollEnd", function(){
-				if ( _this.getConfig('paging') ===  true && !_this.pagingDone ){
+				if ( _this.getConfig('paging') ===  true && !_this.pagingDone && !_this.pagingInProgress ){
+					_this.pagingInProgress = true;
 					_this.page++; // move to next page
 					mw.log("Playlist:: scrollEnd event. paging: true: trying to load next playlist page: page="+_this.page+", pageSize"+_this.getConfig('pageSize'));
 					var playlistRequest = {
@@ -208,11 +210,16 @@
 
 									$( _this.embedPlayer ).trigger( "mediaListLayoutReady" );
 								}, function(msg) {
+									_this.page--; // go back to previous page is paging action failed
 									mw.log( msg );
 								});
 						}else{
 							_this.pagingDone = true;
 						}
+						_this.pagingInProgress = false;
+					},false,function(){
+						mw.log("Error: Playlist:: Playlist paging failed.");
+						_this.page--; // go back to previous page is paging action failed
 					});
 				}
 			});
@@ -604,12 +611,14 @@
 			}
 			this.addMediaItems( items );   // prepare the data to be compatible with KBaseMediaList
 			this.getMedialistHeaderComponent().empty();
+			// try to get number of clips from the content property if exists. If not - take from items array
+			var numOfClips = this.playlistSet[playlistIndex].content ? this.playlistSet[playlistIndex].content.split(",").length : this.playlistSet[playlistIndex].items.length
 			if ( this.getLayout() === "vertical" ) {
-				this.getMedialistHeaderComponent().prepend( '<span class="playlistTitle">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription">' + this.playlistSet[playlistIndex].content.split(",").length + ' ' + gM( 'mwe-embedplayer-videos' ) + '</span>' );
+				this.getMedialistHeaderComponent().prepend( '<span class="playlistTitle">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription">' + numOfClips + ' ' + gM( 'mwe-embedplayer-videos' ) + '</span>' );
 				this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '"></div>' );
 				this.getMedialistHeaderComponent().height(this.getConfig('verticalHeaderHeight'));
 			} else {
-				this.getMedialistHeaderComponent().prepend( '<div class="horizontalHeaderLables"><span class="playlistTitle horizontalHeader">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription horizontalHeader">(' + this.playlistSet[playlistIndex].content.split(",").length + ' ' + gM( 'mwe-embedplayer-videos' ) + ')</span></div>' );
+				this.getMedialistHeaderComponent().prepend( '<div class="horizontalHeaderLables"><span class="playlistTitle horizontalHeader">' + this.playlistSet[playlistIndex].name + '</span><span class="playlistDescription horizontalHeader">(' + numOfClips + ' ' + gM( 'mwe-embedplayer-videos' ) + ')</span></div>' );
 				this.getMedialistHeaderComponent().prepend( '<div class="dropDownIcon" title="' + gM( 'mwe-embedplayer-select_playlist' ) + '"></div>' );
 				this.getMedialistHeaderComponent().height(this.getConfig('horizontalHeaderHeight'));
 			}
