@@ -148,7 +148,7 @@
 						// prevent keyboard key actions to allow typing in share screen fields
 						embedPlayer.triggerHelper( 'onDisableKeyboardBinding' );
 						// disable all player controls except play button, scrubber and volume control
-						embedPlayer.disablePlayControls(["volumeControl","scrubber","playPauseBtn"]);
+						embedPlayer.disablePlayControls(["volumeControl","scrubber","playPauseBtn","playlistAPI"]);
 						// setup embed code when the screen opens
 						_this.setupEmbedCode();
 						// set embed code in the UI as the template doesn't load it correctly when using data binding because of the double quotes inside the text
@@ -200,7 +200,7 @@
 			this.bind( 'onplay', function(event, data){
 				if ( _this.shareScreenOpened ){
 					setTimeout(function(){
-						embedPlayer.disablePlayControls(["volumeControl","scrubber","playPauseBtn"]);
+						embedPlayer.disablePlayControls(["volumeControl","scrubber","playPauseBtn","playlistAPI"]);
 					},0);
 				}
 			});
