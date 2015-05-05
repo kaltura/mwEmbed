@@ -141,7 +141,7 @@ class RequestHelper {
 		global $wgKalturaAllowIframeRemoteService;
 		
 		// Check if we allow URL override: 
-		if( $wgKalturaAllowIframeRemoteService == true ){
+		if(( $wgKalturaAllowIframeRemoteService == true ) || $this->isEmbedServicesEnabled()){
 			// Check for urlParameters
 			if( $this->get( $name ) ){
 				return $this->get( $name );
@@ -167,6 +167,24 @@ class RequestHelper {
 				return $wgKalturaUseManifestUrls;
 				break;
 		}
+	}
+
+	function isEmbedServicesEnabled(){
+	    global $wgEnableKalturaEmbedServicesRouting, $wgKalturaAuthEmbedServicesDomains;
+	    if ($wgEnableKalturaEmbedServicesRouting && in_array($_SERVER['HTTP_HOST'], $wgKalturaAuthEmbedServicesDomains )){
+	        return true;
+	    } else {
+	        return false;
+        }
+	}
+
+	function isEmbedServicesRequest(){
+	    $proxyData = $this->getFlashVars("proxyData");
+        return (isset($proxyData) && !empty($proxyData));
+    }
+
+	function getEmbedServicesRequest(){
+	    return $this->getFlashVars("proxyData");
 	}
 
 	public function getUserAgent() {
