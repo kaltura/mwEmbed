@@ -1,0 +1,127 @@
+{
+    "siteCatalyst15": {
+        "description": "SiteCatalyst15 Kaltura analytics implementation. SiteCatalyst15 supports a dynamic set of attributes based on events you want to track and data you want to associate with each event.",
+        "attributes": {
+            "sCodePath": {
+                "doc": "The URL to the Ominture generated sCode file. If null, a local copy of s_code.js is used. Must be set in uiConf not via flashvar.",
+                "type": "urlJS"
+            },
+            "trackEventMonitor": {
+                "doc": "A global callback function for logging Omniture events.",
+                "type": "string"
+            },
+            "trackingServer": {
+                "doc": "The Ominture tracking server.",
+                "type": "string"
+            },
+            "visitorNamespace": {
+                "doc": "The visitor namespace. For example, \"corp1\", per Ominture documentation.",
+                "type": "string"
+            },
+            "account": {
+                "doc": "The Omniture account ID.",
+                "type": "string"
+            },
+            "segmentByMilestones": {
+                "doc": "If events should be segmented by milestones",
+                "type": "bollean"
+            },
+            "contentType": {
+                "doc": "The media content type eVar mapping.",
+                "type": "string"
+            },
+            "timePlayed": {
+                "doc": "Timed played, eEvent mapping.",
+                "type": "string"
+            },
+            "mediaName": {
+                "doc": "The MediaName eVar mapping.",
+                "type": "string"
+            },
+            "mediaSegment": {
+                "doc": "The media segment eVar mapping.",
+                "type": "string"
+            },
+            "mediaSegmentView": {
+                "doc": "The media segment view event mapping.",
+                "type": "string"
+            },
+            "mediaView": {
+                "doc": "The media view, event mapping.",
+                "type": "string"
+            },
+            "mediaComplete": {
+                "doc": "The media complete event mapping.",
+                "type": "string"
+            },
+            "trackMilestones": {
+                "doc": "The milestone targets to be tracked.",
+                "type": "string"
+            },
+            "milestonesEvents": {
+                "doc": "The milestone event mappings.",
+                "type": "string"
+            },
+            "playerLoadedEvent": {
+                "doc": "The player loaded event mapping.",
+                "type": "string"
+            },
+            "playerLoadedEventEvar1": {
+                "doc": "Player loaded associated event data name.",
+                "type": "string"
+            },
+            "playerLoadedEventEvar1Value": {
+                "doc": "The evaluated value of the associated event mapping.",
+                "type": "string"
+            },
+            "openFullscreenEvent": {
+                "doc": "The open fullscreen event mapping.",
+                "type": "string"
+            },
+            "openFullscreenEvar1": {
+                "doc": "The associated event name for openFullscreen event.",
+                "type": "string"
+            },
+            "openFullscreenEvar1Value": {
+                "doc": "The associated event data for openFullscreen event.",
+                "type": "string"
+            },
+            "shareEvent": {
+                "doc": "The shareEvent mapping.",
+                "type": "string"
+            },
+            "shareEventEvar1": {
+                "doc": "An associated event name for shareEvent.",
+                "type": "string"
+            },
+            "shareEventEvar1Value": {
+                "doc": "The associated event data for shareEvent event.",
+                "type": "string"
+            },
+            "shareEventProp1": {
+                "doc": "A named property to send with the share event.",
+                "type": "string"
+            },
+            "shareEventprop1Value": {
+                "doc": "A property value to send with the share event.",
+                "type": "string"
+            },
+            "shareEventEvar2": {
+                "doc": "A secondary associated even name.",
+                "type": "string"
+            },
+            "shareEventEvar2Value": {
+                "doc": "A secondary associated even value.",
+                "type": "string"
+            },
+            "shareEventProp2": {
+                "doc": "A named property to send with the share event.",
+                "type": "string"
+            },
+            "shareEventprop2Value": {
+                "doc": "A property value to send with the share event.",
+                "type": "string"
+            }
+        }
+    }
+}

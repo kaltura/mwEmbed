@@ -1,0 +1,68 @@
+{
+    "widevine": {
+        "description": "The Widevine plugin provides a DRM solution for Kaltura content. Initially, the Kaltura player checks for the Widevine browser plugin and displays a message with a download link if this plugin is missing. <a href=\"http://www.widevine.com/wv_drm.html\" target=\"_blank\"> More info </a>",
+        "attributes": {
+            "useSupportedBrowserMsg": {
+                "label": "Use supported browser message",
+                "doc": "Overrides the default message text when trying to play Widevine content in an unsupported browser (Safari).",
+                "type": "string",
+                "initvalue": "This video is not supported by this browser."
+            },
+            "useSupportedBrowserTitle": {
+                "doc": "Overrides the default title of the message that is displayed when trying to play Widevine content in an unsupported browser.",
+                "type": "string",
+                "initvalue": "Notification"
+            },
+            "useSupportedDeviceMsg": {
+                "label": "Use supported device message",
+                "doc": "Overrides the default message text when trying to play Widevine content in an unsupported device.",
+                "type": "string",
+                "initvalue": "This video requires Adobe Flash Player, which is not supported by your device. You can watch it on devices that support Flash."
+            },
+            "useSupportedDeviceTitle": {
+                "doc": "Overrides the default title of the message that is displayed when trying to play Widevine content in an unsupported device.",
+                "type": "string",
+                "initvalue": "Notification"
+            },
+            "intallFlashMsg": {
+                "label": "Install Flash message",
+                "doc": "Overrides the message that prompts the user to install Flash.",
+                "type": "string",
+                "initvalue": "This video requires Adobe Flash Player, which is currently not available on your browser. Please <a href='http://www.adobe.com/support/flashplayer/downloads.html' target='_blank'> install Adobe Flash Player </a> to view this video."
+            },
+            "installFlashTitle": {
+                "label": "Install Flash title",
+                "doc": "Overrides the title of the message that prompts the user to install Flash.",
+                "type": "string",
+                "initvalue": "Notification"
+            },
+            "useKdpMsg": {
+                "label": "Use KDP message",
+                "doc": "Overrides the message that prompts the user to use KDP.",
+                "type": "hiddenValue",
+                "initvalue": "This video requires Adobe Flash enabled player."
+            },
+            "useKdpTitle": {
+                "label": "Use KDP title",
+                "doc": "Overrides the title of the message that prompts the user to use KDP.",
+                "type": "hiddenValue",
+                "initvalue": "Notification"
+            },
+            "promptStyle": {
+                "doc": "CSS Overrides the default Widevine prompt message style.",
+                "type": "string",
+                "initvalue": "border:solid 1px #eeeeee; position:fixed; z-index:1000; width:100%; height:40px; color:#505050; background-color:#FDFFDB; top:0px; right:0px; left:0px; font-family:arial; font-size:12px;"
+            },
+            "promptText": {
+                "doc": "Overrides the default Widevine prompt message.",
+                "type": "string",
+                "initvalue": "Widevine Video Optimizer plugin is needed for enabling video playback in this page. "
+            },
+            "promptLinkText": {
+                "doc": "Overrides the default Widevine download link text.",
+                "type": "string",
+                "initvalue": "Get Video Optimizer"
+            }
+        }
+    }
+}

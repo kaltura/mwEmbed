@@ -1,5 +1,5 @@
 <?php
-// Include configuration 
+// Include configuration
 require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' );
 require_once( realpath( dirname( __FILE__ ) ) . '/modules/KalturaSupport/KalturaCommon.php' );
 
@@ -7,6 +7,12 @@ require_once( realpath( dirname( __FILE__ ) ) . '/modules/KalturaSupport/Kaltura
 // Include MwEmbedWebStartSetup.php for all of mediawiki support
 if( isset( $_GET['autoembed'] ) ){
 	require_once( realpath( dirname( __FILE__ ) ) . '/modules/ExternalPlayers/ExternalPlayers.php' );
+	$externalPlayersPath =  realpath( dirname( __FILE__ ) ) . '/modules/ExternalPlayers/ExternalPlayers.';
+    if( is_file( $externalPlayersPath . "json" ) ){
+        $plugins = json_decode( file_get_contents($externalPlayersPath . "json"), TRUE );
+    } elseif( is_file( $externalPlayersPath . "php" ) ){
+        $plugins = include($externalPlayersPath . "php");
+    }
 	require ( dirname( __FILE__ ) . '/includes/MwEmbedWebStartSetup.php' );
 	require_once( realpath( dirname( __FILE__ ) ) . '/modules/KalturaSupport/kalturaIframeClass.php' );
 }

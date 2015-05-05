@@ -1,0 +1,29 @@
+{
+    "mw.AdTimeline": {
+        "scripts": [
+            "resources/mw.AdTimeline.js"
+        ],
+        "dependencies": [
+            "mw.BaseAdPlugin",
+            "mw.AdLoader",
+            "mw.VastAdParser"
+        ]
+    },
+    "AdSupport": {
+        "dependencies": [
+            "mw.AdTimeline"
+        ]
+    },
+    "mw.BaseAdPlugin": {
+        "scripts": "resources/mw.BaseAdPlugin.js"
+    },
+    "mw.AdLoader": {
+        "scripts": "resources/mw.AdLoader.js",
+        "dependencies": [
+            "mw.ajaxProxy"
+        ]
+    },
+    "mw.VastAdParser": {
+        "scripts": "resources/mw.VastAdParser.js"
+    }
+}

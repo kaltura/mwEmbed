@@ -1,0 +1,9 @@
+{
+    "kdark": {
+        "dependencies": "mw.EmbedPlayer",
+        "styles": [
+            "skins/kdark/css/layout.css",
+            "skins/kdark/css/icons.css"
+        ]
+    }
+}

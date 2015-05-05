@@ -1,0 +1,13 @@
+{
+    "YouTube": {
+        "description": "YouTube external player",
+        "attributes": {
+            "forceIframe": {
+                "doc": "Force iFrame for testing"
+            },
+            "previewMode": {
+                "doc": "If true, hide the scrubber and fullscreen from the UI."
+            }
+        }
+    }
+}

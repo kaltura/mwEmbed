@@ -673,7 +673,7 @@ HTML;
 	 * Get all the kaltura defined modules from player config
 	 * */
 	function outputKalturaModules(){
-		global $wgMwEmbedEnabledModules;
+		global $wgMwEmbedEnabledModules, $wgKwidgetPsEnabledModules, $wgKalturaPSHtml5ModulesDir;
 		$o='';
 		// Init modules array, always include MwEmbedSupport
 		$moduleList = array( 'mw.MwEmbedSupport' );
@@ -682,37 +682,30 @@ HTML;
 		$kalturaSupportModules = array();
 		$moduleDir = realpath( dirname( __FILE__ ) )  . '/..';
 		foreach( $wgMwEmbedEnabledModules as $moduleName ){
-			$modListPath = $moduleDir . '/' . $moduleName . '/' . $moduleName . '.php';
-			if( is_file( $modListPath) ){
+			$modListPath = $moduleDir . '/' . $moduleName . '/' . $moduleName . '.';
+			if( is_file( $modListPath . "json") ){
+			    $moduleInfo = json_decode( file_get_contents($modListPath. 'json'), TRUE );
+                $kalturaSupportModules = array_merge( $kalturaSupportModules, $moduleInfo);
+            } elseif( is_file( $modListPath . "php") ){
 				$kalturaSupportModules = array_merge( $kalturaSupportModules, 
-					include( $modListPath ) 
+					include( $modListPath . "php")
 				);
 			}
 		}
-		
-		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
 
-		foreach( $kalturaSupportModules as $name => $module ){
-			if( isset( $module[ 'kalturaLoad' ] ) &&  $module['kalturaLoad'] == 'always' ){
-				$this->addModuleTemplate( $module );
-				$moduleList[] = $name;
-			}
-			// Check if the module has a kalturaPluginName and load if set in playerConfig
-			if( isset( $module[ 'kalturaPluginName' ] ) ){
-				if( is_array( $module[ 'kalturaPluginName' ] ) ){
-					foreach($module[ 'kalturaPluginName' ] as $subModuleName ){
-						if( isset( $playerConfig['plugins'][ $subModuleName] )){
-							$this->addModuleTemplate( $module, $playerConfig['plugins'][ $subModuleName ] );
-							$moduleList[] = $name;
-							continue;
-						}
-					}
-				} else if( isset( $playerConfig['plugins'][ $module[ 'kalturaPluginName' ] ] ) ){
-					$this->addModuleTemplate( $module, $playerConfig['plugins'][ $module[ 'kalturaPluginName' ] ] );
-					$moduleList[] = $name;
-				}
-			}
-		}
+		$kalturaSupportPsModules = array();
+
+		foreach( $wgKwidgetPsEnabledModules as $moduleName ){
+            $modListPath = $wgKalturaPSHtml5ModulesDir . '/' . $moduleName . '/' . $moduleName . '.json';
+            if( is_file( $modListPath) ){
+                $moduleInfo = json_decode( file_get_contents( $modListPath ), TRUE );
+                $kalturaSupportPsModules = array_merge( $kalturaSupportPsModules, $moduleInfo);
+            }
+        }
+
+		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
+		$moduleList = array_merge($moduleList, $this->getNeededModules($kalturaSupportModules, $playerConfig));
+		$psModuleList = $this->getNeededModules($kalturaSupportPsModules, $playerConfig);
 
 		// Special cases: handle plugins that have more complex conditional load calls
 		// always include mw.EmbedPlayer
@@ -725,6 +718,7 @@ HTML;
 		}		
 
 		$jsonModuleList = json_encode($moduleList);
+		$jsonPsModuleList = json_encode($psModuleList);
 		$JST = $this->getTemplatesJSON();
 		// export the loading spinner config early on:
 		
@@ -733,6 +727,9 @@ HTML;
 		window.kalturaIframePackageData.templates =  {$JST};
 
 		var moduleList = {$jsonModuleList};
+		var psModuleList = {$jsonPsModuleList};
+
+		moduleList = moduleList.concat(psModuleList);
 		var skinName = "{$skinName}";
 		// IE8 has some issues with RL so we want to remove the skin
 		if( skinName && isIE8 ) {
@@ -750,6 +747,32 @@ HTML;
 		}
 		
 		return $o;
+	}
+
+	function getNeededModules($modules, $playerConfig){
+	    $moduleList = array();
+	    foreach( $modules as $name => $module ){
+            if( isset( $module[ 'kalturaLoad' ] ) &&  $module['kalturaLoad'] == 'always' ){
+                $this->addModuleTemplate( $module );
+                $moduleList[] = $name;
+            }
+            // Check if the module has a kalturaPluginName and load if set in playerConfig
+            if( isset( $module[ 'kalturaPluginName' ] ) ){
+                if( is_array( $module[ 'kalturaPluginName' ] ) ){
+                    foreach($module[ 'kalturaPluginName' ] as $subModuleName ){
+                        if( isset( $playerConfig['plugins'][ $subModuleName] )){
+                            $this->addModuleTemplate( $module, $playerConfig['plugins'][ $subModuleName ] );
+                            $moduleList[] = $name;
+                            continue;
+                        }
+                    }
+                } else if( isset( $playerConfig['plugins'][ $module[ 'kalturaPluginName' ] ] ) ){
+                    $this->addModuleTemplate( $module, $playerConfig['plugins'][ $module[ 'kalturaPluginName' ] ] );
+                    $moduleList[] = $name;
+                }
+            }
+        }
+        return $moduleList;
 	}
 
 	function addModuleTemplate( $module = null, $plugin = null ){
@@ -798,7 +821,9 @@ HTML;
 	}
 
 	function getSkinResources(){
-		$skinsResources = include_once('skins/SkinResources.php');
+	    $skinResourcesUrl = "skins/SkinResources.json";
+        $skinsResources = json_decode( file_get_contents($skinResourcesUrl), TRUE );
+
 		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
 		$skinName = $playerConfig['layout']['skin'];
 		$styles = array();
@@ -1083,7 +1108,7 @@ HTML;
 							loadCustomResourceIncludes(kalturaIframePackageData.skinResources);
 						});
 					}
-					<?php 
+					<?php
 						$this->loadCustomResources(
 							$this->outputKalturaModules() . 
 							'mw.loader.go();'

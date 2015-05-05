@@ -222,10 +222,19 @@ function mwEmbedLoadMsgKeys( $langKey ){
 		if( !is_file( $msgFile ) ) {
 			throw new MWException( "Missing msgFile: " . htmlspecialchars( $msgFile ) . "\n" );
 		}
-		require( $msgFile );
+		$ext = pathinfo($msgFile, PATHINFO_EXTENSION);
+
+		switch ($ext) {
+            case "json":
+                $messages = json_decode( file_get_contents($msgFile), TRUE );
+                break;
+            case "php":
+                require( $msgFile );
+                break;
+        }
 		// First include the English fallback:
 		$wgMessageCache = array_merge( $wgMessageCache, $messages[ 'en' ] );
-		
+
 		// Then override with the current language:
 		if( isset( $messages[ $langKey ] ) ) {
 			$wgMessageCache = array_merge( $wgMessageCache, $messages[ $langKey ] );
