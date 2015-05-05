@@ -104,7 +104,7 @@ function outputConfig(){
 	# Register / load all the mwEmbed modules
 	foreach( $wgMwEmbedEnabledModules as $moduleName ){
         $manifestPath =  realpath( dirname( __FILE__ ) ) .
-                        "/../$moduleName/{$moduleName}.manifest.";
+                        "/../modules/$moduleName/{$moduleName}.manifest.";
         if( is_file( $manifestPath."json" ) ){
             $manifest = json_decode( file_get_contents($manifestPath."json"), TRUE );
             $configRegister = array_merge( $configRegister, $manifest );
