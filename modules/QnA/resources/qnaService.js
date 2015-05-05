@@ -171,7 +171,7 @@ DAL for Q&A Module
 
         markAsRead: function (item) {
             viewedThreads.markAsRead(item.threadId);
-            this.addOrUpdateItem(item);
+            this.addOrUpdateItem(this.annotationCuePointToItem(item));
         },
 
         readThreadsCount: function () {
@@ -184,10 +184,12 @@ DAL for Q&A Module
 
             var found = false;
             for (var i = 0; i < _this.items().length; i++) {
-                if (_this.items()[i]().id === item.id) {
+                if (_this.items()[i]().id === item().id) {
                     found = true;
-                    _this.items.splice(i, 1);
+
                     _this.items.splice(i, 0, item);
+                    _this.items.splice(i+1, 1);
+
                     break;
                 }
             }
@@ -209,6 +211,7 @@ DAL for Q&A Module
                     obj[node.nodeName] = node.textContent;
                 }
             });
+            obj['xml'] = metadata.xml;
             return obj;
         },
         joinMetadataWithCuepoint:function(cuePoint,metadata )
@@ -228,7 +231,7 @@ DAL for Q&A Module
 
         annotationCuePointToItem: function(cuePoint) {
 
-            var metadata=null;
+            var metadata=cuePoint.metadata;
             if (cuePoint.relatedObjects &&
                 cuePoint.relatedObjects[this.QandA_ResponseProfile] &&
                 cuePoint.relatedObjects[this.QandA_ResponseProfile].objects &&
@@ -268,14 +271,16 @@ DAL for Q&A Module
             var threadId = cuePoint.id;
             return ko.observable(
                 $.extend(cuePoint,{
-                threadId: threadId,
-                type: type,
-                isRead: ko.observable(viewedThreads.isRead(threadId)),
-                title: title,
-                entryText:cuePoint.text,
-                timestamp: ko.observable(cuePoint.createdAt),
-                currentTime: ko.observable(new Date().getTime())
-            }));
+                    threadId: threadId,
+                    type: type,
+                    isRead: ko.observable(viewedThreads.isRead(threadId)),
+                    title: title,
+                    entryText:cuePoint.text,
+                    timestamp: ko.observable(cuePoint.createdAt),
+                    currentTime: ko.observable(new Date().getTime()),
+                    metadata: cuePoint.metadata
+                })
+            );
         },
 
         requestCuePoints:function() {
