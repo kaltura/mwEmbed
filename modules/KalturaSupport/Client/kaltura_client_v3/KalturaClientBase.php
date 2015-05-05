@@ -245,9 +245,7 @@ class KalturaClientBase
 
 		$params = array();
 		$files = array();
-		$getServiceUrl = $this->config->serviceUrl;
-		$serviceUrl = $getServiceUrl();
-		$this->log("service url: [" . $serviceUrl . "]");
+        $this->log("service url: [" . $this->config->serviceUrl . "]");
 
 		// append the basic params
 		$this->addParam($params, "apiVersion", $this->apiVersion);
@@ -261,7 +259,7 @@ class KalturaClientBase
 		$signature = $this->signature($params);
 		$this->addParam($params, "kalsig", $signature);
 
-		$url = $serviceUrl . "/api_v3/index.php?service={$call->service}&action={$call->action}";
+        $url = $this->config->serviceUrl . "/api_v3/index.php?service={$call->service}&action={$call->action}";
 		$url .= '&' . http_build_query($params);
 		$this->log("Returned url [$url]");
 		return $url;
@@ -310,9 +308,8 @@ class KalturaClientBase
 
 		$params = array();
 		$files = array();
-		$getServiceUrl = $this->config->serviceUrl;
-		$serviceUrl = $getServiceUrl();
-		$this->log("service url: [" . $serviceUrl . "]");
+
+        $this->log("service url: [" . $this->config->serviceUrl . "]");
 
 		// append the basic params
 		$this->addParam($params, "apiVersion", $this->apiVersion);
@@ -320,7 +317,7 @@ class KalturaClientBase
 		$this->addParam($params, "clientTag", $this->config->clientTag);
 		$this->addParam($params, "ignoreNull", true);
 
-		$url = $serviceUrl."/api_v3/index.php?service=";
+		$url = $this->config->serviceUrl."/api_v3/index.php?service=";
 		if ($this->isMultiRequest)
 		{
 			$url .= "multirequest";

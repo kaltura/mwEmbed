@@ -141,7 +141,7 @@ class RequestHelper {
 		global $wgKalturaAllowIframeRemoteService;
 		
 		// Check if we allow URL override: 
-		if(( $wgKalturaAllowIframeRemoteService == true ) || $this->isEmbedServices()){
+		if(( $wgKalturaAllowIframeRemoteService == true ) || $this->isEmbedServicesEnabled()){
 			// Check for urlParameters
 			if( $this->get( $name ) ){
 				return $this->get( $name );
@@ -169,9 +169,9 @@ class RequestHelper {
 		}
 	}
 
-	function isEmbedServices(){
-	    global $wgKalturaAuthEmbedServicesDomains;
-	    if (in_array($_SERVER['HTTP_HOST'], $wgKalturaAuthEmbedServicesDomains )){
+	function isEmbedServicesEnabled(){
+	    global $wgEnableKalturaEmbedServicesRouting, $wgKalturaAuthEmbedServicesDomains;
+	    if ($wgEnableKalturaEmbedServicesRouting && in_array($_SERVER['HTTP_HOST'], $wgKalturaAuthEmbedServicesDomains )){
 	        return true;
 	    } else {
 	        return false;

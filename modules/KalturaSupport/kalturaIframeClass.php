@@ -114,24 +114,26 @@ class kalturaIframeClass {
 		return $this->entryResult;
 	}
 	function getEntryResultData(){
-	    global $wgKalturaServiceUrl;
-        //Store original service url
-        $orgServiceUrl = $wgKalturaServiceUrl;
-	    //Updaste the service URL if available
-	    $this->updateServiceUrl();
+	    if ($this->shouldRouteServiceUrl()){
+	        $this->reRouteServiceUrl();
+	    }
 	    //Fetch entry results
 	    $entryResult = $this->getEntryResult()->getResult();
-	    //Restore original service url
-	    $wgKalturaServiceUrl = $orgServiceUrl;
+	    if ($this->shouldRouteServiceUrl()){
+            $this->resetServiceUrl();
+        }
 	    return $entryResult;
 	}
-	function updateServiceUrl(){
-        if( $this->request->isEmbedServices() &&
-            ( $this->getUiConfResult()->getPlayerConfig( null, 'Kaltura.AllowIframeRemoteService' ) === true ) &&
-            ( !empty( $this->getUiConfResult()->getPlayerConfig( null, 'Kaltura.ServiceUrl' ) ) ) ){
-            global $wgKalturaServiceUrl;
-            $wgKalturaServiceUrl = $this->getUiConfResult()->getPlayerConfig( null, 'Kaltura.ServiceUrl' );
-        }
+	function shouldRouteServiceUrl(){
+        return ( $this->request->isEmbedServicesEnabled() && $this->request->isEmbedServicesRequest() &&
+               ( $this->getUiConfResult()->getPlayerConfig( null, 'Kaltura.AllowIframeRemoteService' ) === true ) &&
+               ( !empty( $this->getUiConfResult()->getPlayerConfig( null, 'Kaltura.ServiceUrl' ) ) ) );
+    }
+    function reRouteServiceUrl(){
+        $this->client->getClient()->getConfig()->serviceUrl = $this->getUiConfResult()->getPlayerConfig( null, 'Kaltura.ServiceUrl' );
+    }
+    function resetServiceUrl(){
+        $this->client->getClient()->getConfig()->serviceUrl = $this->request->getServiceConfig('ServiceUrl');
     }
 	/**
 	 * Grabs a playlist result object:

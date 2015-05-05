@@ -104,7 +104,7 @@ class EntryResult {
 	}
 	function getCacheKey(){
 		$key = '';
-		if ($this->request->isEmbedServices() && $this->request->isEmbedServicesRequest()){
+		if ($this->request->isEmbedServicesEnabled() && $this->request->isEmbedServicesRequest()){
 			$key.= md5( serialize( $this->request->getEmbedServicesRequest() ) );
 		}
 		if( $this->request->getEntryId() ){
@@ -142,7 +142,7 @@ class EntryResult {
 				$filter->idEqual = $this->request->getEntryId();
 			}
 
-			if ($this->request->isEmbedServices() && $this->request->isEmbedServicesRequest()){
+			if ($this->request->isEmbedServicesEnabled() && $this->request->isEmbedServicesRequest()){
 				$filter->freeText = urlencode(json_encode($this->request->getEmbedServicesRequest()));
 			}
 
@@ -190,16 +190,11 @@ class EntryResult {
 				$namedMultiRequest->addNamedRequest( 'entryCuePoints', "cuepoint_cuepoint", "list", $params );
 			//}
 
-//			if ($this->request->isEmbedServices() && $this->request->isEmbedServicesRequest()){
-//                $x = urlencode(json_encode($this->request->getEmbedServicesRequest()));
-//                $namedMultiRequest->addNamedRequest( 'embedServices', 'embedServices', 'proxyData', array("proxyData" => $x) );
-//            }
-
 			// Get the result object as a combination of baseResult and multiRequest
 			$resultObject = $namedMultiRequest->doQueue();
 			//print_r($resultObject);exit();
 			$this->responseHeaders = $client->getResponseHeaders();
-			
+
 		} catch( Exception $e ){
 			// Update the Exception and pass it upward
 			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );

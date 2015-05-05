@@ -278,13 +278,6 @@ class mwEmbedLoader {
 			$o.="\n".'mw.setConfig(\'Kaltura.ForceFlashOnIE10\', true );' . "\n";
 		}
 
-		//Set Kaltura.ServiceUrl --> used for embed-services redirects
-		if( ( $this->getUiConfObject()->getPlayerConfig( null, 'Kaltura.AllowIframeRemoteService' ) === true ) &&
-		    ( !empty( $this->getUiConfObject()->getPlayerConfig( null, 'Kaltura.ServiceUrl' ) ) ) ){
-		    global $wgKalturaServiceUrl;
-		    $wgKalturaServiceUrl = $this->getUiConfObject()->getPlayerConfig( null, 'Kaltura.ServiceUrl' );
-        }
-
 		if( $this->getUiConfObject()->isJson() ) {
 			$o.="\n"."kWidget.addUserAgentRule('{$this->request()->get('uiconf_id')}', '/.*/', 'leadWithHTML5');";
 		}
@@ -417,7 +410,8 @@ class mwEmbedLoader {
 		if( isset( $_GET['pskwidgetpath'] ) ){
 			$exportedJsConfig[ 'Kaltura.KWidgetPsPath' ] = htmlspecialchars( $_GET['pskwidgetpath'] );
 		}
-		if ($this->request()->isEmbedServices()){
+		//For embed services pass "AllowIframeRemoteService" to client so it will be able to pass back the alternative service URL
+		if ($this->request()->isEmbedServicesEnabled()){
 		    $exportedJsConfig['Kaltura.AllowIframeRemoteService'] = true;
 		}
 		
