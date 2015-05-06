@@ -36,8 +36,6 @@
 		addBindings: function () {
 			var _this = this;
 			var embedPlayer = this.getPlayer();
-            _this.KQnaService = new mw.KQnaService( embedPlayer,_this );
-            _this.KQnaModule = new mw.KQnaModule( embedPlayer,_this, _this.KQnaService  );
             var qnaObject=null;
             var onVideoTogglePluginButton=null;
 
@@ -125,6 +123,7 @@
 
 		// load the Q&A template to the div with qnaTargetId
 		getQnaContainer: function(){
+            var embedPlayer = this.getPlayer();
 			if (!this.$qnaListContainer) {
 				if ( this.getConfig( 'onPage' ) ) {
 					// Inject external CSS file
@@ -159,11 +158,14 @@
 				}
 
 				this.$qnaListContainer.append(this.getHTML());
-				ko.applyBindings(this.KQnaModule, this.$qnaListContainer[0]);
 
-                this.KQnaModule.applyLayout();
 				this.bindButtons();
 				this.positionQAButtonOnVideoContainer();
+                this.KQnaService = new mw.KQnaService( embedPlayer,this );
+                this.KQnaModule = new mw.KQnaModule( embedPlayer,this, this.KQnaService  );
+                ko.applyBindings(this.KQnaModule, this.$qnaListContainer[0]);
+                this.KQnaModule.applyLayout();
+
 
 			}
 			return this.$qnaListContainer;
