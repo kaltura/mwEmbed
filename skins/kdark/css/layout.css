@@ -964,8 +964,14 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	height: 100% !important;
 }
 
-.hover  .ad-skip-label,.ad-skip-btn {
-    bottom: 20px;
+.hover .ad-skip-label {
+    bottom: 30px;
+}
+.hover .ad-skip-btn {
+    bottom: 30px;
+}
+.hover .ad-notice-label {
+    bottom: 40px;
 }
 
 .clearfix:before,.clearfix:after {

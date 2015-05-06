@@ -93,6 +93,7 @@
 				// Add control bar special classes
 				if( this.getConfig('hover') && this.getPlayer().isOverlayControls() ) {
 					this.$el.addClass('hover');
+					this.embedPlayer.getVideoHolder().addClass('hover');
 				} else {
 					this.$el.addClass('block');
 				}
