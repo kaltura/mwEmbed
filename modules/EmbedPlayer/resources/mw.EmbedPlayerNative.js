@@ -161,6 +161,7 @@
 						.addClass('playerPoster')
 						.load(function () {
 							_this.applyIntrinsicAspect();
+							$('.playerPoster').attr('alt', _this.posterAlt);
 						})
 				);
 			}
@@ -446,6 +447,10 @@
 						} else {
 							_this.log("player can't seek - video duration not available, wait for video duration update");
 						}
+					});
+					// manually trigger the loadedmetadata since stopEventPropagation was called but we must have this event triggered during seek operation (SUP-4237)
+					vidObj.off('loadedmetadata.seekPrePlay').one('loadedmetadata.seekPrePlay', function () {
+						_this._onloadedmetadata();
 					});
 					this.log("player can't seek - try to init video element ready state");
 					vid.load();

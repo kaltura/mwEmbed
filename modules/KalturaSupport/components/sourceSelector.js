@@ -18,6 +18,8 @@
 		switchSourceTitle: gM( 'mwe-embedplayer-switch_source' ),
 		saveBackgroundColor: null, // used to save background color upon disable and rotate and return it when enabled again to prevent rotating box around the icon when custom style is applied
 
+        sourcesList: [],
+
 		setup: function(){
 			var _this = this;
 
@@ -198,17 +200,24 @@
 				);
 		},
 		addSourceToMenu: function( source ){
-			var _this = this;;
-			this.getMenu().addItem({
-				'label': this.getSourceTitle( source ),
-				'attributes': {
-					'id': source.getAssetId()
-				},
-				'callback': function(){
-					_this.getPlayer().switchSrc( source );
-				},
-				'active': _this.isSourceSelected( source )
-			});
+			var _this = this;
+
+            var sourceLabel = this.getSourceTitle( source );
+            if( $.inArray(sourceLabel, this.sourcesList) == -1 ) {
+
+                this.sourcesList.push(sourceLabel);
+
+                this.getMenu().addItem({
+                    'label': sourceLabel,
+                    'attributes': {
+                        'id': source.getAssetId()
+                    },
+                    'callback': function () {
+                        _this.getPlayer().switchSrc(source);
+                    },
+                    'active': _this.isSourceSelected(source)
+                });
+            }
 		},
 		getSourceSizeName: function( source ){
 			if( source.getHeight() < 255 ){

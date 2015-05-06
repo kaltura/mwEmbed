@@ -19,8 +19,8 @@ class MwEmbedResourceManager {
 	 */
 	public static function register( $mwEmbedResourcePath ) {
 		global $IP, $wgExtensionMessagesFiles;
-		$fullResourcePath = $IP .'/'. $mwEmbedResourcePath;
-		
+		$fullResourcePath = $IP . '/' . $mwEmbedResourcePath;
+
 		// Get the module name from the end of the path: 
 		$modulePathParts = explode( '/', $mwEmbedResourcePath );
 		$moduleName =  array_pop ( $modulePathParts );
@@ -32,18 +32,38 @@ class MwEmbedResourceManager {
 			throw new MWException(  __METHOD__ . " path has trailing slash: " . htmlspecialchars( $mwEmbedResourcePath) );
 		}
 		
-		// Add module messages if present: 
-		if( is_file( $fullResourcePath . '/' . $moduleName . '.i18n.php' ) ){
-			$wgExtensionMessagesFiles[ 'MwEmbed.' . $moduleName ] = $fullResourcePath . '/' . $moduleName . '.i18n.php';				
+		// Add module messages if present:
+		$msgFileName = $fullResourcePath . '/' . $moduleName . '.i18n';
+		if( is_file( $msgFileName. '.json' ) ){
+		    $wgExtensionMessagesFiles[ 'MwEmbed.' . $moduleName ] = $msgFileName. '.json';
+		} elseif( is_file( $msgFileName. '.php' ) ){
+			$wgExtensionMessagesFiles[ 'MwEmbed.' . $moduleName ] = $msgFileName. '.php';
 		}		
-		// Get the mwEmbed module resource registration: 		
-		$resourceList = include( $fullResourcePath . '/' . $moduleName . '.php' );
-		
+		// Get the mwEmbed module resource registration:
+		$moduleResourceFileName = $fullResourcePath . '/' . $moduleName;
+
+		if( is_file( $moduleResourceFileName. '.json' ) ){
+            $resourceList = json_decode( file_get_contents($moduleResourceFileName. '.json'), TRUE );
+        } else {
+		    $resourceList = include( $moduleResourceFileName . '.php' );
+		}
+
 		// Look for special 'messages' => 'moduleFile' key and load all modules file messages:
 		foreach( $resourceList as $name => $resources ){
 			if( isset( $resources['messageFile'] ) && is_file( $fullResourcePath . '/' .$resources['messageFile'] ) ){
 				$resourceList[ $name ][ 'messages' ] = array();
-				include( $fullResourcePath . '/' .$resources['messageFile'] );
+
+				$ext = pathinfo($fullResourcePath . '/' .$resources['messageFile'], PATHINFO_EXTENSION);
+
+                switch ($ext) {
+                    case "json":
+                        $messages = json_decode( file_get_contents($fullResourcePath . '/' .$resources['messageFile']), TRUE );
+                        break;
+                    case "php":
+                        include( $fullResourcePath . '/' .$resources['messageFile'] );
+                        break;
+                }
+
 				foreach( $messages['en'] as $msgKey => $na ){		
 					 $resourceList[ $name ][ 'messages' ][] = $msgKey;
 				}
@@ -58,13 +78,16 @@ class MwEmbedResourceManager {
 		}
 		
 		// Check for module config ( @@TODO support per-module config )		
-		$configPath =  $fullResourcePath . '/' . $moduleName . '.config.php';  
-		if( is_file( $configPath ) ){
-			self::$moduleConfig = array_merge( self::$moduleConfig, include( $configPath ) );
+		$configPathFileName =  $fullResourcePath . '/' . $moduleName . '.config';
+		if( is_file( $configPathFileName . '.json' ) ){
+		    $moduleConfigObj = json_decode( file_get_contents($configPathFileName. '.json'), TRUE );
+		    self::$moduleConfig = array_merge( self::$moduleConfig, $moduleConfigObj );
+		} elseif( is_file( $configPathFileName . '.php' ) ){
+			self::$moduleConfig = array_merge( self::$moduleConfig, include( $configPathFileName . '.php') );
 		}
-		
+
 		// Add the resource list into the module set with its provided path 
-		self::$moduleSet[ $mwEmbedResourcePath ] = $resourceList;		
+		self::$moduleSet[ $mwEmbedResourcePath ] = $resourceList;
 	}
 	
 	public static function registerConfigVars( &$vars ){

@@ -674,7 +674,7 @@
 						}
 					} )
 					.on( "focus", function () {
-						_this.getPlayer().triggerHelper( "onDisableKeyboardBinding", {disableSingle: true} );
+						_this.getPlayer().triggerHelper( "onDisableKeyboardBinding" );
 						//On each focus render width of dropdown menu
 						searchBoxWrapper.find(".tt-dropdown-menu" ).width(searchFormWrapper.width());
 						_this.maximizeSearchBar();
