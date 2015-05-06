@@ -1707,18 +1707,24 @@
                 "doc": "Draw order of the component within the container.\r\n\t\t\tTogether with alignment, determines component placement of the component. Order is set with respect to siblings on the parent container.",
                 "type": "number"
             },
-            "playlistId": {
-                "doc": "Playlist Id that will be used as the data source for related items.",
-                "configObject": "playlistSelectBox",
-                "initvalue": "",
-                "filter": "entry",
-                "type": "entrySelector"
-            },
-            "entryList": {
-                "label": "Entry IDs list",
-                "doc": "Allows runtime injection of list of related entries seperated by commas.\r\n\t\t\t\t\t\t This will only be used if the playlistId is null.",
-                "type": "string"
-            },
+	        "entries": {
+				"label": "Related Entries Source",
+				"doc": "Select the related entries source.",
+				"configObject": "playlistSelectBox",
+				"type": "related"
+			},
+	        "clickUrl": {
+		        "doc": "<p style='text-align: left'>Defines the URL for a related item click</p>\r\n\t\t\t\t\t\t\t\tIf this left blank the click will replace the current video with a new one.\r\n\t\t\t\t\t\t\t\texample: <b>http://mydomain.com/?videoId={related.selectedEntry.id}</b> as a custom\r\n\t\t\t\t\t\t\t\tURL with the entry id as postfix",
+		        "type": "string"
+	        },
+	        "autoContinueTime": {
+		        "doc": "Number of seconds for auto play.",
+		        "type": "number"
+	        },
+	        "itemsLimit": {
+		        "doc": "Maximum number of items to show on the related screen.",
+		        "type": "number"
+	        },
             "displayOnPlaybackDone": {
                 "doc": "Display related screen automatically when playback has finished",
                 "type": "boolean",
@@ -1727,18 +1733,6 @@
             "autoContinueEnabled": {
                 "doc": "Should the Next Item be automatically played.",
                 "type": "boolean"
-            },
-            "autoContinueTime": {
-                "doc": "Number of seconds for auto play.",
-                "type": "number"
-            },
-            "clickUrl": {
-                "doc": "<p style='text-align: left'>Defines the URL for a related item click</p>\r\n\t\t\t\t\t\t\t\tIf this left blank the click will replace the current video with a new one.\r\n\t\t\t\t\t\t\t\texample: <b>http://mydomain.com/?videoId={related.selectedEntry.id}</b> as a custom\r\n\t\t\t\t\t\t\t\tURL with the entry id as postfix",
-                "type": "string"
-            },
-            "itemsLimit": {
-                "doc": "Maximum number of items to show on the related screen.",
-                "type": "number"
             },
             "storeSession": {
                 "doc": "Store the played entries across page views in related clips display",
