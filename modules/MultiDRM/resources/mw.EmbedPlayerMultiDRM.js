@@ -782,7 +782,7 @@
 			var duration = parseInt(this.duration, 10).toFixed(2);
 			var curTime = parseInt(this.getPlayerElementTime(), 10).toFixed(2);
 			if (( this.currentState === "end" ) ||
-				( this.currentState === "pause" && duration === curTime )) {
+				( this.currentState === "pause" && duration === curTime && this.getPlayerElementTime() > 0 )) {
 				this.seek(0.01, false);
 			} else {
 				if ( this.parent_play() ) {
@@ -889,15 +889,14 @@
 			}
 
 			var subtitleTracks = player.subtitleTracks();
-			if (subtitleTracks){
-				debugger;
+			if (subtitleTracks && subtitleTracks.length){
 				var textTrackData = {languages: []};
 				$.each(subtitleTracks, function(index, subtitleTrack){
 					textTrackData.languages.push({
 						'kind'		: 'subtitle',
 						'language'	: subtitleTrack.lang,
 						'srclang' 	: subtitleTrack.lang,
-						'label'		: subtitleTrack.lang,
+						'label'		: subtitleTrack.trackName,
 						'id'		: subtitleTrack.id,
 						'index'		: textTrackData.languages.length,
 						'title'		: subtitleTrack.trackName
@@ -907,7 +906,7 @@
 			}
 
 			var audioTracks = player.audioTracks();
-			if (audioTracks){
+			if (audioTracks && audioTracks.length){
 				var audioTrackData = {languages: []};
 				$.each(audioTracks, function(index, audioTrack){
 					audioTrackData.languages.push({
@@ -981,6 +980,22 @@
 			if (e && e.loaded && e.total) {
 				this.updateBufferStatus(e.loaded / e.total);
 				this.progressEventData = e.loaded;
+			}
+		},
+		/**
+		 * buffer under-run
+		 * @private
+		 */
+		_onwaiting: function () {
+			//vod buffer events are being handled by EmbedPlayer.js
+			if (this.isLive()) {
+				this.bufferStart();
+			}
+		},
+
+		_oncanplay: function () {
+			if (this.isLive() && this.buffering) {
+				this.bufferEnd();
 			}
 		},
 		/**

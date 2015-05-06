@@ -267,11 +267,10 @@ $(function(){
 
 <a name="kWidget"></a>
 <h2>kWidget Embedding API</h2>
-Embeding into <a href="http://knowledge.kaltura.com/kaltura-player-sdk-ios">Native iOS</a> 
-<br> Embeding into <a href="http://knowledge.kaltura.com/kaltura-player-sdk-android">Native Android</a>
-<br><br>
 The kWidget API is available after you include the Kaltura player library. kWidget provides embedding and basic utility functions.
-<br>Sample Kaltura player library include :
+The Kaltura player library can be embeded into both <a href="http://knowledge.kaltura.com/kaltura-player-sdk-android">Native Android</a>
+ and <a href="http://knowledge.kaltura.com/kaltura-player-sdk-ios">Native iOS</a>.
+<br><br>Sample JavaScript Kaltura player library include :
 <pre class="prettyprint linenums">
 &lt!-- Substitute {partner_id} for your Kaltura partner id, {uiconf_id} for uiconf player id --&gt;
 &lt;script src=&quot;http://cdnapi.kaltura.com/p/{partner_id}/sp/{partnerId}00/embedIframeJs/uiconf_id/{uiconf_id}/partner_id/{partnerId}&quot;&gt;&lt;/script&gt;

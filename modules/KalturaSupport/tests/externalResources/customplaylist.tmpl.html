@@ -1,0 +1,48 @@
+<ul>
+    <% for ( var i = 0; i < mediaList.length; i++ ) { %>
+    <%var mediaItem =  mediaList[i];%>
+    <li class="chapterBox mediaBox" data-mediaBox-index="<%=i%>">
+        <% if (meta.layout == "hotizontal") { %> style="width: <%= mediaItem.width %>px " <% } %>
+        <% if (i > 0) { %>
+        <!--div class="chapterDivider"
+            <% if (meta.layout == "hotizontal") { %> style="height: <%= mediaItem.thumbnail.height %>px " <% } %> >
+        </div-->
+        <% } %>
+        <div class="chapterBoxInner" >
+            <% if( meta.includeThumbnail) { %>
+	        <div class="thumbnailHolder">
+            <img class="k-thumb" alt="Thumbnail for <%=mediaItem.title%>" data-mediaBox-index="<%=i%>" src="<%=mediaItem.thumbnail.url%>"
+                 style="width:<%=mediaItem.thumbnail.width%>px;
+                 height: <%=mediaItem.thumbnail.height%>px"/>
+	        </div>
+            <% } %>
+            <span class="k-title-container" title="<%=mediaItem.title%>">
+                <% if( meta.includeChapterStartTime) { %>
+                <span class="k-start-time">
+                    <span><%=mediaItem.startTimeDisplay%></span>
+                </span>
+                <% } %>
+                <% if( meta.includeItemNumberPattern) { %>
+                <span class="itemNumber"><%=mediaItem.itemNumber%></span>
+                <% } %>
+                <%
+                var chapterTitle = mediaItem.title;
+	            %>
+                <span class="k-title" title="<%=chapterTitle%>"><%=chapterTitle%></span>
+            </span>
+            <%
+            var views = mediaItem.views;
+            %>
+	        <div class="k-views-container">
+                <span class="k-views" title="<%=views%>">views: <%=views%></span>
+	        </div>
+            <% if( meta.includeMediaItemDuration) { %>
+            <span class="k-duration">
+                <!--div class="icon-time"></div-->
+                <span><%=mediaItem.durationDisplay%></span>
+            </span>
+            <% } %>
+        </div>
+    </li>
+    <% } %>
+</ul>

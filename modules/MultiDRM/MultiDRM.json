@@ -1,0 +1,5 @@
+{
+    "mw.EmbedPlayerMultiDRM": {
+        "scripts": "resources/mw.EmbedPlayerMultiDRM.js"
+    }
+}

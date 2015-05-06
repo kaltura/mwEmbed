@@ -177,7 +177,9 @@ kWidget.api.prototype = {
 		var response = data;
 		try {
 			response = JSON.parse( data );
-		}catch(e){}
+		}catch(e){
+			console.log("Error parsing JSON");
+		}
 		return response;
 	},
 	xhrGet: function( url, param, callback ){
@@ -259,7 +261,7 @@ kWidget.api.prototype = {
 	parseParam: function(data){
 		var param = data;
 		//Check if we need to request session
-		if (!this.getKs()) {
+		if (!this.getKs() && (param !== undefined)) {
 			//check if request contains dependent params and if so then update reference object num -
 			// because reference index changed due to addition of multirequest startWidgetSession service
 			var paramParts = param.toString().match( /\{(\d+)(:result:.*)\}/ );

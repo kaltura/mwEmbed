@@ -512,8 +512,8 @@ return array(
 		'attributes' => array_merge($kgDefaultComponentAttr,
 			array(
 				'flavorID' => array(
-					'label' => 'Flavor ID',
-					'doc' => "Flavor ID for the downloaded movie source. When specified, overrides any preferred bitrate settings",
+					'label' => 'Flavor Asset ID',
+					'doc' => "Flavor Asset ID for the downloaded movie source. When specified, overrides any preferred bitrate settings",
 					'type' => 'string',
 					'initvalue' => ''
 				),

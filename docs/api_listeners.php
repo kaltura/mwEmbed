@@ -35,7 +35,7 @@
 			'desc' => 'Dispatched when the player layout is ready and rendered on the screen'
 		),
 		'playerReady' => array(
-			'desc' => 'Dispatches when the player is ready to play the media'
+			'desc' => 'Dispatches when the player is ready to play the media. playerReady event is dispatched  each time media is changed.'
 		),
 		'pluginsLoaded' => array(
 			'callbackArgs' => 'Plugins map object. Every key is a plugin ID, value is the status of the plugin (see PluginStatus class)',
