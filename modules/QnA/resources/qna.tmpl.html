@@ -15,7 +15,7 @@
 
     <div class="listHolder nano">
         <div class="nano-content">
-            <div data-bind='template: { foreach: myObservableArray }' class="qnaEntryList">
+            <div data-bind='template: { foreach: myObservableArray, as: "entry"}' class="qnaEntryList">
                 <div data-bind="if: metadata.Type === 'Announcement'">
                     <div class="qnaEntryListLI" data-bind='css: {  "qnaAnnouncement" : !isRead(), "qnaAnnouncementRead": isRead(), "LastQnaEntryListLI":$index()===$parent.myObservableArray().length-1 }, click: $parent.itemRead'>
                         <div>
@@ -29,12 +29,24 @@
                 </div>
                 <div data-bind="if: metadata.Type === 'Question'">
                     <div class="qnaEntryListLI qnaThread" data-bind='css: {"LastQnaEntryListLI":$index()===$parent.myObservableArray().length-1}'>
-                        <div>
-                            <div class="qnaThreadTitle" data-bind='text: title'></div>
-                            <div class="qnaThreadTimeRead" data-bind='text: timestamp.qnaTimestamp(currentTime)'></div>
+                        <div style="min-height: 80px">
+                            <div>
+                                <div class="qnaThreadTitle" data-bind='text: title'></div>
+                                <div class="qnaThreadTimeRead" data-bind='text: timestamp.qnaTimestamp(currentTime)'></div>
+                            </div>
+                            <br>
+                            <div class="qnaThreadText" data-bind='text: entryText'></div>
                         </div>
-                        <br>
-                        <div class="qnaThreadText" data-bind='text: entryText'></div>
+                        <div data-bind='{ foreach: responses}'>
+                            <div class="qnaEntryListLI">
+                                <div class="ResponseLineSeparator"></div>
+                                <div class="qnaEntryListLI questionResponse">
+                                    <div>
+                                        <div data-bind="text: text"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

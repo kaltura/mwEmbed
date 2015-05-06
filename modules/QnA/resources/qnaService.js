@@ -184,8 +184,24 @@ DAL for Q&A Module
 
             var found = false;
             for (var i = 0; i < _this.items().length; i++) {
+
+                if (_this.items()[i]().id === item().parentId) {
+                    _this.items()[i]().lalala('+');
+                    _this.items()[i]().responses().push(item);
+
+                    // take the item out of the array and push it in again so that knockout will refresh it.
+                    var a = _this.items()[i];
+                    _this.items.splice(i, 1);
+                    _this.items.splice(i, 0, a);
+
+                    found = true;
+                    break;
+                }
+
                 if (_this.items()[i]().id === item().id) {
                     found = true;
+
+                    // check if this is a replacement, or if it's a new entry in an existing thread
 
                     _this.items.splice(i, 0, item);
                     _this.items.splice(i+1, 1);
@@ -214,6 +230,7 @@ DAL for Q&A Module
             obj['xml'] = metadata.xml;
             return obj;
         },
+
         joinMetadataWithCuepoint:function(cuePoint,metadata )
         {
             if (!metadata)
@@ -268,7 +285,6 @@ DAL for Q&A Module
                 title = gM('qna-announcement-title');
             }
 
-
             var threadId = cuePoint.id;
             return ko.observable(
                 $.extend(cuePoint,{
@@ -277,6 +293,8 @@ DAL for Q&A Module
                     entryText:cuePoint.text,
                     timestamp: ko.observable(cuePoint.createdAt),
                     currentTime: ko.observable(new Date().getTime())
+                    ,lalala: ko.observable("-")
+                    ,responses: ko.observableArray()
                 })
             );
         },
@@ -312,7 +330,6 @@ DAL for Q&A Module
                         return;
                     }
 
-
                     data.objects.forEach(function(cuePoint) {
 
                         var item=_this.annotationCuePointToItem(cuePoint);
@@ -325,8 +342,6 @@ DAL for Q&A Module
                             _this.addOrUpdateItem(item);
                         }
                     });
-
-                   // _this.embedPlayer.triggerHelper('KalturaSupport_CuePointsUpdated', [data.totalCount]);
                 }
             );
 

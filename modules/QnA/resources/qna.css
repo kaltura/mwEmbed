@@ -242,8 +242,20 @@
 	line-height: 20px;
 }
 
+.qnaInterface .questionResponse {
+	margin-bottom: 4px;
+}
+
 .qnaInterface .LastQnaEntryListLI{
 	margin-bottom: 0px;
+}
+
+.qnaInterface .ResponseLineSeparator{
+	background-color: #aaaaaa;
+	width: 300px;
+	height: 1px;
+	/*position: relative;*/
+	/*margin-top: 80px*/
 }
 
 .qnaInterface .qnaAnnouncementTitle{
