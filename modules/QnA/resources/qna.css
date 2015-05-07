@@ -406,9 +406,10 @@
 	color: #414442;
 }
 
-.qnaInterface > input:focus, button:focus {
+.qnaInterface > input:focus, button:focus, textarea:focus {
     outline: 0 !important;
 }
+
 
 .qnaInterface > button:hover {
     opacity: 0.7;
