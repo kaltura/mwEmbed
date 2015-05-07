@@ -30,7 +30,7 @@ kWidget.checkUserAgentPlayerRules = function( ruleSet, getMsg ){
 	};
 
     var noFlashMessage = ( mw.getConfig( 'strings.k-no-flash-installed' ) )?
-        mw.getConfig( 'strings.k-no-flash-installed' ) : "Flash does not appear to be installed or active. Please install or activate flash";
+        mw.getConfig( 'strings.k-no-flash-installed' ) : "Flash does not appear to be installed or active. Please install or activate Flash.";
 
     var msgMode = {
         mode: 'forceMsg',
