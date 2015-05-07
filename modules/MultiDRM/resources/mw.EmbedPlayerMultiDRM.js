@@ -204,7 +204,10 @@
 					techOrder: ['dasheverywhere']
 				}, function(){
 					_this.playerElement = this;
-					$(_this.playerElement.el() ).attr('data-src', _this.getSrc());
+					var el = $(_this.playerElement.el() );
+					//Hide native player UI
+					el.find(".vjs-poster, .vjs-control-bar, .vjs-big-play-button" ).css("display", "none");
+					el.attr('data-src', _this.getSrc());
 					//Set schedule while paused to true to allow buffering when in paused state
 					_this.playerElement.mediaPlayer.setScheduleWhilePaused(true);
 					_this.updateDashContext();
