@@ -86,6 +86,7 @@
 
 					//if mobile device
 					if ( kWidget.isMobileDevice() ) {
+						return;
 						msg = _this.getConfig( 'useSupportedDeviceMsg' );
 						title = _this.getConfig( 'useSupportedDeviceTitle' );
 					} else if ( mw.isDesktopSafari() ) {

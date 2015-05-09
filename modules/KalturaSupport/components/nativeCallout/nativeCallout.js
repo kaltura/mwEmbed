@@ -6,6 +6,7 @@
 			"mimeName": null,
 			"iframeUrl": null,
 			'templatePath': 'components/nativeCallout/nativeCallout.tmpl.html',
+			'plugin' : true
 		},
 
 		IOS_STORE_URL: "http://itunes.apple.com/app/id919225951",

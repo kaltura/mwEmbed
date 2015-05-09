@@ -217,7 +217,8 @@ class UiConfResult {
 			'liveStatus' => array(),
 			'reportError' => array(),
 			"sideBarContainer" => array(),
-			"liveAnalytics"=>array()
+			"liveAnalytics"=>array(),
+			"nativeCallout"=>array()
 		);
 
 		$playerConfig['plugins'] = array_merge_recursive($playerConfig['plugins'], $basePlugins);
@@ -545,7 +546,9 @@ class UiConfResult {
 			"keyboardShortcuts" => array(),
 			"liveCore" => array(),
 			"liveStatus" => array(),
-			"reportError" => array()
+			"reportError" => array(),
+						"nativeCallout"=>array()
+
 		);
 
 		$closedCaptionPlugin = array(
