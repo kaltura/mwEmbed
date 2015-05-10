@@ -1519,7 +1519,7 @@ mw.KWidgetSupport.prototype = {
 				deviceSources[inx]['src'] = deviceSources[inx]['src'].substring(0, index) + ksStr +
 					'/referrer/' + referrer +
 					'/clientTag/' + clientTag +
-					'/playSessionId/' + + _this.getGUID() +
+					'/playSessionId/' + _this.getGUID() +
 					deviceSources[inx]['src'].substring(index) ;
 			} else {
 				deviceSources[inx]['src'] = deviceSources[inx]['src'] +
