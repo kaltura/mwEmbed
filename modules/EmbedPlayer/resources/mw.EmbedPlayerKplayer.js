@@ -754,6 +754,8 @@
 				srcUrl = srcUrl + "&seekFrom=" + parseInt(this.startTime) * 1000;
 			}
 
+			srcUrl = srcUrl +"&playSessionId="  + this.evaluate('{configProxy.sessionId}');
+
             //copy clientTag from original playManifest
             if (originalSrc.indexOf("&clientTag=") !== -1) {
                 var clientTag = originalSrc.slice(originalSrc.indexOf("clientTag"));
