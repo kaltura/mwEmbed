@@ -13,16 +13,16 @@ DAL for Q&A Module
             _viewedThreads = JSON.parse(localStorage["_viewedThreads"]);
         }
         return {
-            markAsRead: function(threadId) {
+            markAsRead: function(ThreadId) {
                 // Write to localStorage this item was read
-                if (_viewedThreads.indexOf(threadId) < 0 ) {
-                    _viewedThreads.push(threadId);
+                if (_viewedThreads.indexOf(ThreadId) < 0 ) {
+                    _viewedThreads.push(ThreadId);
                     localStorage["_viewedThreads"] = JSON.stringify(_viewedThreads);
 
                 }
             },
-            isRead:function(threadId) {
-                return _viewedThreads.indexOf(threadId) > -1;
+            isRead:function(ThreadId) {
+                return _viewedThreads.indexOf(ThreadId) > -1;
             },
             readThreadsCount: function() {
                 return _viewedThreads.length;
@@ -30,24 +30,19 @@ DAL for Q&A Module
         };
     })();
 
-    function QnaThread(threadId){
-        this.threadID = threadId;
-        this.entries = ko.observableArray();
+    function QnaThread(ThreadId){
+        var _this = this;
+        _this.ThreadID = ThreadId;
+        _this.entries = ko.observableArray();
 
         this.getThreadID = function(){
-            return this.threadID;
+            return _this.ThreadID;
         };
 
-        this.isRead = ko.observable(viewedThreads.isRead(this.threadID));
-
-        //this.isRead = ko.computed(function(){
-        //    var ret = viewedThreads.isRead(this.getThreadID());
-        //    console.log("isRead for " + this.getThreadID() + " returned " + ret);
-        //    return ret;
-        //}, this);
+        this.isRead = ko.observable(viewedThreads.isRead(_this.threadID));
 
         this.appendEntry = function(entry){
-            this.entries.push(ko.observable(entry));
+            _this.entries.push(ko.observable(entry));
         };
     };
 
@@ -74,8 +69,8 @@ DAL for Q&A Module
             return this.cuePoint().userId;
         };
 
-        this.getThreadId = function(){
-            return this.cuePoint().metadata.threadId;
+        this.getThreadID = function(){
+            return this.cuePoint().metadata.ThreadId;
         };
 
         this.isAnnouncement = function(){
@@ -246,7 +241,6 @@ DAL for Q&A Module
 
         markAsRead: function (thread) {
             viewedThreads.markAsRead(thread.threadID);
-            //this.addOrUpdateEntry(this.annotationCuePointToQnaEntry(thread.entries()[0]().cuePoint()));
             this.updateThread(thread);
         },
 
@@ -260,9 +254,6 @@ DAL for Q&A Module
                 if (_this.QnaThreads()[i]().getThreadID() === qnaThread.threadID){
                     qnaThread.isRead(true);
                     _this.qnaPlugin.updateUnreadBadge();
-                    //_this.QnaThreads()[i](qnaThread);
-                    //_this.QnaThreads.splice(i, 0, ko.observable(qnaThread));
-                    //_this.QnaThreads.splice(i+1, 1);
                     break;
                 }
             }
@@ -277,13 +268,10 @@ DAL for Q&A Module
 
             for (var i = 0; i < _this.QnaThreads().length; i++) {
 
-                //console.log("i=" + i);
-
-                if (_this.QnaThreads()[i]().getThreadID() === qnaEntry.getThreadId())
+                if (_this.QnaThreads()[i]().getThreadID() === qnaEntry.getThreadID())
                 {
                     // look it this entry exists. If so replace it
                     for (var j = 0; j < _this.QnaThreads()[i]().entries().length; j++){
-                        //console.log("j=" + j);
                         if (_this.QnaThreads()[i]().entries()[j]().cuePoint().id === qnaEntry.cuePoint().id){
                             _this.QnaThreads()[i]().entries.splice(j, 0, ko.observable(qnaEntry));
                             _this.QnaThreads()[i]().entries.splice(j+1, 1);
@@ -304,7 +292,7 @@ DAL for Q&A Module
             }
 
             if (!found) {
-                var newThread = new QnaThread(qnaEntry.getThreadId());
+                var newThread = new QnaThread(qnaEntry.getThreadID());
                 newThread.appendEntry(qnaEntry);
                 _this.QnaThreads.unshift(ko.observable(newThread));
             }
@@ -363,9 +351,9 @@ DAL for Q&A Module
                 return null;
             }
 
-            if (!cuePoint.metadata.threadId) {
+            if (!cuePoint.metadata.ThreadId) {
                 //take the thread id from cue point id
-                cuePoint.metadata.threadId=cuePoint.id;
+                cuePoint.metadata.ThreadId=cuePoint.id;
             }
 
             var tempType=this.QandA_cuePointTypes[cuePoint.metadata.Type];
@@ -418,11 +406,6 @@ DAL for Q&A Module
                     });
                 }
             );
-
-            //// to cause the re-calculation of the timestamp
-            //for (var i = 0; i < _this.QnaThreads().length; i++) {
-            //    _this.QnaThreads()[i]().currentTime(new Date().getTime());
-            //}
         },
 
         //Currently there is no notification, so we poll the API

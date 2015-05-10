@@ -33,7 +33,13 @@
                 if (!thread.isRead()) {
                     _this.qnaService.markAsRead(thread);
                 }
-            }
+            };
+
+            // update current time to update display
+            setInterval(function () {
+                _this.currentTime(new Date().getTime());
+            }, mw.getConfig("qnaPollingInterval") || 10000);
+
         },
         destroy: function () {
 
