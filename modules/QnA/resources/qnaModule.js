@@ -19,17 +19,20 @@
             this.embedPlayer = embedPlayer;
             this.qnaPlugin = qnaPlugin;
             this.qnaService = qnaService;
-            this.myObservableArray = qnaService.getItems();
+            this.myObservableArray = qnaService.getQnaThreads();
+            this.currentTime = ko.observable(new Date().getTime());
 
             this.myObservableArray.subscribe(function(newVal){
                 _this.applyLayout();
                 qnaPlugin.updateUnreadBadge();
             });
 
-            this.itemRead= function(item, event) {
-                console.log("item of type " + item.type + " with id " + item.threadId + " was clicked");
+            this.itemRead= function(thread, event) {
+                console.log("thread with id " + thread.threadID + " was clicked");
 
-                _this.qnaService.markAsRead(item);
+                if (!thread.isRead()) {
+                    _this.qnaService.markAsRead(thread);
+                }
             }
         },
         destroy: function () {
@@ -57,8 +60,8 @@
             //return _this.myObservableArray().length - _this.qnaService.readThreadsCount();
 
             var count = 0;
-            ko.utils.arrayForEach(_this.myObservableArray(), function(entry) {
-                if (entry().metadata.Type == "Announcement" && !_this.qnaService.viewedThreads.isRead(entry().id)){
+            ko.utils.arrayForEach(_this.myObservableArray(), function(thread) {
+                if (thread().entries()[0]().getType() == "Announcement" && !thread().isRead()){
                     count++;
                 }
             });

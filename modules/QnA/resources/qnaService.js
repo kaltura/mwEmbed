@@ -6,9 +6,6 @@ DAL for Q&A Module
 
 (function (mw, $) {
     "use strict";
-    mw.KQnaService = function (embedPlayer,qnaPlugin) {
-        return this.init(embedPlayer,qnaPlugin);
-    };
 
     var viewedThreads=(function() {
         var _viewedThreads = [];
@@ -33,12 +30,87 @@ DAL for Q&A Module
         };
     })();
 
+    function QnaThread(threadId){
+        this.threadID = threadId;
+        this.entries = ko.observableArray();
+
+        this.getThreadID = function(){
+            return this.threadID;
+        };
+
+        this.isRead = ko.observable(viewedThreads.isRead(this.threadID));
+
+        //this.isRead = ko.computed(function(){
+        //    var ret = viewedThreads.isRead(this.getThreadID());
+        //    console.log("isRead for " + this.getThreadID() + " returned " + ret);
+        //    return ret;
+        //}, this);
+
+        this.appendEntry = function(entry){
+            this.entries.push(ko.observable(entry));
+        };
+    };
+
+    function QnaEntry(cuePoint){
+
+        this.cuePoint=ko.observable(cuePoint);
+        this.timestamp = ko.observable(this.cuePoint().createdAt);
+
+        //this.type = cuePoint.metadata.Type ? QandA_cuePointTypes.Announcement[cuePoint.metadata.Type] : undefined;
+
+        this.getType = function(){
+            return this.cuePoint().metadata.Type;
+        };
+
+        this.getContent = function(){
+            return this.cuePoint().text;
+        };
+
+        this.getTime = function(){
+            return this.cuePoint().createdAt;
+        };
+
+        this.getOwner = function(){
+            return this.cuePoint().userId;
+        };
+
+        this.getThreadId = function(){
+            return this.cuePoint().metadata.threadId;
+        };
+
+        this.isAnnouncement = function(){
+            return this.type === "Announcement";
+        };
+
+        this.getTitle = function(){
+            if (this.getType() === "Announcement"){
+                return gM('qna-announcement-title');
+            }
+            else{
+                return gM('qna-you-asked');
+            }
+        };
+
+        this.getText = function(){
+            return this.cuePoint().text;
+        };
+
+        this.getCurrentTime = function(){
+            return this.currentTime;
+        };
+    }
+
+
+    mw.KQnaService = function (embedPlayer,qnaPlugin) {
+        return this.init(embedPlayer,qnaPlugin);
+    };
+
     mw.KQnaService.prototype = {
 
         // The bind postfix:
         bindPostfix: '.KQnaService',
         liveAQnaIntervalId: null,
-        items: ko.observableArray(),
+        QnaThreads: ko.observableArray(),
         lastUpdateTime: -1,
         QandA_ResponseProfile: "QandA_ResponseProfile",
         QandA_ResponseProfileSystemName: "QandA",
@@ -81,10 +153,12 @@ DAL for Q&A Module
             }
             return this.kClient;
         },
+
         //returns questions, answers and announcement
-        getItems: function () {
-            return this.items;
+        getQnaThreads: function () {
+            return this.QnaThreads;
         },
+
         createMetadataXmlFromObject: function (obj) {
             var xml = "<metadata>";
             for (var propertyName in obj) {
@@ -93,6 +167,7 @@ DAL for Q&A Module
             xml += "</metadata>";
             return xml;
         },
+
         submitQuestion: function (question, parent) {
             var embedPlayer = this.embedPlayer;
             var _this = this;
@@ -149,11 +224,11 @@ DAL for Q&A Module
                     if (cuePoint.id) {
 
 
-                        var item=_this.annotationCuePointToItem(cuePoint);
+                        var item=_this.annotationCuePointToQnaEntry(cuePoint);
 
                         if (item) {
 
-                            _this.addOrUpdateItem(item);
+                            _this.addOrUpdateEntry(item);
                         }
                         mw.log("added Annotation cue point with id: " + cuePoint.id + " took " + (endTime - startTime) + " ms");
 
@@ -169,50 +244,69 @@ DAL for Q&A Module
                 });
         },
 
-        markAsRead: function (item) {
-            viewedThreads.markAsRead(item.metadata.threadId);
-            this.addOrUpdateItem(this.annotationCuePointToItem(item));
+        markAsRead: function (thread) {
+            viewedThreads.markAsRead(thread.threadID);
+            //this.addOrUpdateEntry(this.annotationCuePointToQnaEntry(thread.entries()[0]().cuePoint()));
+            this.updateThread(thread);
         },
 
         readThreadsCount: function () {
             return viewedThreads.readThreadsCount();
         },
 
-        addOrUpdateItem: function (item) {
-
+        updateThread: function(qnaThread){
             var _this=this;
-
-            var found = false;
-            for (var i = 0; i < _this.items().length; i++) {
-
-                if (_this.items()[i]().id === item().parentId) {
-                    _this.items()[i]().lalala('+');
-                    _this.items()[i]().responses().push(item);
-
-                    // take the item out of the array and push it in again so that knockout will refresh it.
-                    var a = _this.items()[i];
-                    _this.items.splice(i, 1);
-                    _this.items.splice(i, 0, a);
-
-                    found = true;
+            for (var i = 0; i < _this.QnaThreads().length; i++) {
+                if (_this.QnaThreads()[i]().getThreadID() === qnaThread.threadID){
+                    qnaThread.isRead(true);
+                    _this.qnaPlugin.updateUnreadBadge();
+                    //_this.QnaThreads()[i](qnaThread);
+                    //_this.QnaThreads.splice(i, 0, ko.observable(qnaThread));
+                    //_this.QnaThreads.splice(i+1, 1);
                     break;
                 }
+            }
+        },
 
-                if (_this.items()[i]().id === item().id) {
+        // look for a QnaThread for this QnaEntry
+        // if we don't find on we will create it
+        addOrUpdateEntry: function (qnaEntry) {
+
+            var _this=this;
+            var found = false;
+
+            for (var i = 0; i < _this.QnaThreads().length; i++) {
+
+                //console.log("i=" + i);
+
+                if (_this.QnaThreads()[i]().getThreadID() === qnaEntry.getThreadId())
+                {
+                    // look it this entry exists. If so replace it
+                    for (var j = 0; j < _this.QnaThreads()[i]().entries().length; j++){
+                        //console.log("j=" + j);
+                        if (_this.QnaThreads()[i]().entries()[j]().cuePoint().id === qnaEntry.cuePoint().id){
+                            _this.QnaThreads()[i]().entries.splice(j, 0, ko.observable(qnaEntry));
+                            _this.QnaThreads()[i]().entries.splice(j+1, 1);
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        _this.QnaThreads()[i]().appendEntry(qnaEntry);
+                    }
                     found = true;
 
-                    // check if this is a replacement, or if it's a new entry in an existing thread
-
-                    _this.items.splice(i, 0, item);
-                    _this.items.splice(i+1, 1);
+                    _this.QnaThreads.splice(i, 0, _this.QnaThreads()[i]);
+                    _this.QnaThreads.splice(i+1, 1);
 
                     break;
                 }
             }
-            ;
 
             if (!found) {
-                _this.items.unshift(item);
+                var newThread = new QnaThread(qnaEntry.getThreadId());
+                newThread.appendEntry(qnaEntry);
+                _this.QnaThreads.unshift(ko.observable(newThread));
             }
         },
 
@@ -231,8 +325,7 @@ DAL for Q&A Module
             return obj;
         },
 
-        joinMetadataWithCuepoint:function(cuePoint,metadata )
-        {
+        joinMetadataWithCuepoint:function(cuePoint,metadata ){
             if (!metadata)
                 return false;
 
@@ -246,7 +339,8 @@ DAL for Q&A Module
 
         },
 
-        annotationCuePointToItem: function(cuePoint) {
+        // convert a cuePoint from the server to a QnaEntry object
+        annotationCuePointToQnaEntry: function(cuePoint) {
 
             var metadata=cuePoint.metadata;
             if (cuePoint.relatedObjects &&
@@ -276,27 +370,7 @@ DAL for Q&A Module
 
             var tempType=this.QandA_cuePointTypes[cuePoint.metadata.Type];
 
-            var type = "qnaThread";
-            var title = gM('qna-you-asked');
-
-
-            if (tempType === this.QandA_cuePointTypes.Announcement) {
-                type = "announcement";
-                title = gM('qna-announcement-title');
-            }
-
-            var threadId = cuePoint.id;
-            return ko.observable(
-                $.extend(cuePoint,{
-                    isRead: ko.observable(viewedThreads.isRead(threadId)),
-                    title: title,
-                    entryText:cuePoint.text,
-                    timestamp: ko.observable(cuePoint.createdAt),
-                    currentTime: ko.observable(new Date().getTime())
-                    ,lalala: ko.observable("-")
-                    ,responses: ko.observableArray()
-                })
-            );
+            return new QnaEntry(cuePoint);
         },
 
         requestCuePoints:function() {
@@ -332,28 +406,26 @@ DAL for Q&A Module
 
                     data.objects.forEach(function(cuePoint) {
 
-                        var item=_this.annotationCuePointToItem(cuePoint);
+                        var item=_this.annotationCuePointToQnaEntry(cuePoint);
 
                         if (item) {
 
                             if (_this.lastUpdateTime < cuePoint.updatedAt) {
                                 _this.lastUpdateTime = cuePoint.updatedAt;
                             }
-                            _this.addOrUpdateItem(item);
+                            _this.addOrUpdateEntry(item);
                         }
                     });
                 }
             );
 
-            // to cause the re-calculation of the timestamp
-            for (var i = 0; i < _this.items().length; i++) {
-                _this.items()[i]().currentTime(new Date().getTime());
-            }
+            //// to cause the re-calculation of the timestamp
+            //for (var i = 0; i < _this.QnaThreads().length; i++) {
+            //    _this.QnaThreads()[i]().currentTime(new Date().getTime());
+            //}
         },
 
-        /*
-        Currently there is no notification, so we poll the API
-         */
+        //Currently there is no notification, so we poll the API
         registerItemNotification: function () {
             var _this = this;
 
