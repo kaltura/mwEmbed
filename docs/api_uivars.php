@@ -215,6 +215,12 @@ $uiVars = array(
 					'availability' => 'kdp',
 					'example' => ''
 			),
+			'strings.ks-no-flash-installed' => array(
+            					'type' => 'String',
+            					'desc' => 'No Flash installed message for IE8 users. This Flashvar can be used only through mw.setConfig(). For example: mw.setConfig( \'strings.ks-no-flash-installed\' , \'Flash Player nėra įdiegtas jūsų kompiuteryje\' ); Note: IE8 may parse utf-8 characters incorrectly. To translate the message, save the HTML file with UTF-8 encoding and add a META tag to the HEAD of the HTML page: &lt;META http-equiv=Content-Type content=\'text/html; charset=utf-8\'&gt;',
+            					'default' => 'Flash does not appear to be installed or active. Please install or activate Flash.',
+            					'example' => ''
+            ),
 		)
 	),
 	'mediaEntry' => array(

@@ -432,6 +432,16 @@
 							// write out a message:
 							if (elm && elm.parentNode) {
 								var divTarget = document.createElement("div");
+                                divTarget.style.backgroundColor = "#000000";
+                                divTarget.style.color = "#a4a4a4";
+                                divTarget.style.width = elm.style.width;
+                                divTarget.style.height = elm.style.height;
+                                divTarget.style.display = "table-cell";
+                                divTarget.style.verticalAlign = "middle";
+                                divTarget.style.textAlign = "center";
+                                divTarget.style.fontSize = "1.5em";
+                                divTarget.style.fontFamily = "Arial";
+                                divTarget.style.fontWeight = "normal";
 								divTarget.innerHTML = unescape(msg);
 								elm.parentNode.replaceChild(divTarget, elm);
 							}
