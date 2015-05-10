@@ -950,7 +950,8 @@ var mw = ( function ( $, undefined ) {
 					reqBase = {
 						skin: mw.config.get( 'skin' ),
 						lang: mw.config.get( 'wgUserLanguage' ),
-						debug: mw.config.get( 'debug' )
+						debug: mw.config.get( 'debug' ),
+						pskwidgetpath: mw.config.get( 'pskwidgetpath' )
 					};
 					// Split module batch by source and by group.
 					splits = {};
