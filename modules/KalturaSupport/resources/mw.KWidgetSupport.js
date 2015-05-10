@@ -236,10 +236,7 @@ mw.KWidgetSupport.prototype = {
 
 	updatePlayerData: function( embedPlayer,  playerData, callback ){
 		var _this = this;
-		// Check for playerData error:
-		if( playerData.error ){
-			embedPlayer.setError( playerData.error );
-		}
+		this.handlePlayerError(embedPlayer, playerData); // Check for playerData error
 
 		var hasLivestreamConfig = function ( protocol ) {
 			var configurations = playerData.meta.liveStreamConfigurations;
@@ -1001,6 +998,24 @@ mw.KWidgetSupport.prototype = {
 			callback( playerData );
 		});
 	},
+	handlePlayerError: function(embedPlayer, data){
+		var errObj = null;
+		if( data.meta &&  data.meta.code == "INVALID_KS" ){
+			errObj = embedPlayer.getKalturaMsgObject( "NO_KS" );
+		}
+		if( data.error ) {
+			errObj = embedPlayer.getKalturaMsgObject( 'GENERIC_ERROR' );
+			errObj.message = data.error;
+			if( data.meta &&  data.meta.name == "scheduling" ){
+				errObj = embedPlayer.getKalturaMsgObject( "OUT_OF_SCHEDULING" );
+			}
+		}
+
+		if( errObj ) {
+			embedPlayer.hideSpinner();
+			embedPlayer.setError( errObj );
+		}
+	},
 	/**
 	 * handle player data mappings to embedPlayer
 	 */
@@ -1011,19 +1026,8 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.kpartnerid = entryResult.meta.partnerId;
 		}
 
-		// Error handling
-		var errObj = null;
-		if( entryResult.meta &&  entryResult.meta.code == "INVALID_KS" ){
-			errObj = embedPlayer.getKalturaMsgObject( "NO_KS" );
-		}
-		if( entryResult.error ) {
-			errObj = embedPlayer.getKalturaMsgObject( 'GENERIC_ERROR' );
-			errObj.message = entryResult.error;
-		}
-		if( errObj ) {
-			embedPlayer.hideSpinner();
-			embedPlayer.setError( errObj );
-		}
+		this.handlePlayerError(embedPlayer, entryResult); // Error handling
+
 		if (entryResult.entry && entryResult.entry.manualProvider){
 			mw.setConfig("manualProvider",true);
 		}
