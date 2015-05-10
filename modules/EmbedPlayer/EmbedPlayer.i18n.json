@@ -57,7 +57,10 @@
         "mwe-embedplayer-install-silverlight": "This video requires Microsoft Silverlight, which is currently not available on your browser. Please <a href=\"http://www.microsoft.com/silverlight/\" target=\"_blank\"> install Microsoft Silverlight </a> to view this video.",
         "mwe-embedplayer-player-on-air": "LIVE",
         "mwe-embedplayer-player-off-air": "Off Air",
-        "mwe-embedplayer-player-jump-to-live": "Jump to live"
+        "mwe-embedplayer-player-jump-to-live": "Jump to live",
+	    "mwe-embedplayer-related": "Related",
+		"mwe-embedplayer-related-errMsg": "No related<br>videos were<br>found."
+
     },
     "qqq": {
         "mwe-embedplayer-credit-title": "Used as a part of the credit. Parameters:\r\n* $1 - title\r\nThis message is followed by the following messages:\r\n* {{msg-mw|mwe-embedplayer-credit-author}}\r\n* {{msg-mw|mwe-embedplayer-credit-date}}",
