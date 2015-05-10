@@ -28,7 +28,7 @@
             });
 
             this.itemRead= function(thread, event) {
-                console.log("thread with id " + thread.threadID + " was clicked");
+                console.log("thread with id " + thread.ThreadID + " was clicked");
 
                 if (!thread.isRead()) {
                     _this.qnaService.markAsRead(thread);

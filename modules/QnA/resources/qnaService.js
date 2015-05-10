@@ -254,7 +254,7 @@ DAL for Q&A Module
         updateThread: function(qnaThread){
             var _this=this;
             for (var i = 0; i < _this.QnaThreads().length; i++) {
-                if (_this.QnaThreads()[i]().getThreadID() === qnaThread.threadID){
+                if (_this.QnaThreads()[i]().getThreadID() === qnaThread.ThreadID){
                     qnaThread.isRead(true);
                     _this.qnaPlugin.updateUnreadBadge();
                     break;
