@@ -322,12 +322,15 @@
 	color: #414442;
 	font-size: 14px;
 	font-weight: 400;
-	font-style: italic;
 	line-height: 9px;
 	text-align: left;
 	margin-top: 14px;
 	margin-left: 10px;
 	margin-right: 10px; /* If the name of the user reaches teaches the timestamp - make it go down */
+}
+
+.qnaInterface .qnaThreadTitleAnswer{
+	font-style: italic;
 }
 
 .qnaInterface .qnaThreadText{
@@ -345,7 +348,6 @@
 .qnaInterface .qnaEntryList{
 	list-style: none;
 	margin-left: 0px;
-	overflow: auto;
 	background-color: #ffffff;
 }
 
