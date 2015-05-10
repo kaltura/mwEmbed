@@ -81,8 +81,11 @@ DAL for Q&A Module
             if (this.getType() === "Announcement"){
                 return gM('qna-announcement-title');
             }
-            else{
+            else if (this.getType() === "Question"){
                 return gM('qna-you-asked');
+            }
+            else{
+                return gM('qna-answered-by') + " " + this.cuePoint().userId;
             }
         };
 

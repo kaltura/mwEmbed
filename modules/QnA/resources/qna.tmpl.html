@@ -18,7 +18,7 @@
             <div data-bind='template: { foreach: myObservableArray(), as: "thread"}' class="qnaEntryList">
 
                 <div data-bind="if: entries()[0]().getType() === 'Announcement'">
-                    <div class="qnaEntryListLI" data-bind='css: {  "qnaAnnouncement" : !isRead(), "qnaAnnouncementRead": isRead() }, click: $parent.itemRead'>
+                    <div class="qnaEntryListLI" data-bind='css: {  "qnaAnnouncement" : !isRead(), "qnaAnnouncementRead": isRead(), "LastQnaEntryListLI":$index()===$parent.myObservableArray().length-1 }, click: $parent.itemRead'>
                         <div>
                             <div data-bind='css: {  "qnaAnnouncementTitle" : !isRead(), "qnaAnnouncementTitleRead" : isRead()}, text: entries()[0]().getTitle()'></div>
                             <div class="icon-qna-Announcement" data-bind='css: {  "qnaAnnouncementIcon" : !isRead(), "qnaAnnouncementIconRead" : isRead()}'></div>
