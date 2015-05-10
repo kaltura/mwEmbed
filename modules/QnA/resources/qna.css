@@ -226,27 +226,36 @@
 	background-color: #76c044;
 }
 
+.qnaInterface .qnaQuestionsThread{
+	background-color: #f0f0f0;
+	/*position: relative;*/
+}
+
 .qnaInterface .qnaAnnouncementRead{
 	background-color: rgba(118, 192, 68, 0.3);
 }
 
-.qnaInterface .qnaEntryListLI{
+.qnaInterface .qnaThread{
 	box-shadow: 0px 2px 2px 0px rgba(255, 255, 255, 0.16);
 	width: 100%;
-	margin-bottom: 4px;
+	margin-bottom: 6px;
 	list-style-type: none;
-	float: left;
 	height: auto;
 	min-height: 80px;
-	overflow: hidden;
 	line-height: 20px;
+}
+
+.qnaInterface .qnaEntry{
+	position: relative;
+	margin-bottom: 0px;
+	min-height: 80px;
 }
 
 .qnaInterface .questionResponse {
 	margin-bottom: 4px;
 }
 
-.qnaInterface .LastQnaEntryListLI{
+.qnaInterface .qnaThreadLast{
 	margin-bottom: 0px;
 }
 
@@ -254,8 +263,9 @@
 	background-color: #aaaaaa;
 	width: 300px;
 	height: 1px;
-	/*position: relative;*/
-	/*margin-top: 80px*/
+	opacity: 0.5;
+	position: absolute;
+	bottom: 0px;
 }
 
 .qnaInterface .qnaAnnouncementTitle{
@@ -306,10 +316,6 @@
 	margin-left: 10px;
 }
 
-.qnaInterface .qnaThread{
-	background-color: #f0f0f0;
-}
-
 .qnaInterface .qnaThreadTitle{
 	float: left;
 	font-family: 'Lato', Helvetica, Arial;
@@ -322,7 +328,6 @@
 	margin-top: 14px;
 	margin-left: 10px;
 	margin-right: 10px; /* If the name of the user reaches teaches the timestamp - make it go down */
-
 }
 
 .qnaInterface .qnaThreadText{
@@ -336,7 +341,6 @@
 	margin-left: 10px;
 	white-space: pre-wrap;
 }
-
 
 .qnaInterface .qnaEntryList{
 	list-style: none;

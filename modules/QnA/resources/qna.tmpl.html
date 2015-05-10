@@ -18,7 +18,7 @@
             <div data-bind='template: { foreach: myObservableArray(), as: "thread"}' class="qnaEntryList">
 
                 <div data-bind="if: entries()[0]().getType() === 'Announcement'">
-                    <div class="qnaEntryListLI" data-bind='css: {  "qnaAnnouncement" : !isRead(), "qnaAnnouncementRead": isRead(), "LastQnaEntryListLI":$index()===$parent.myObservableArray().length-1 }, click: $parent.itemRead'>
+                    <div class="qnaThread" data-bind='css: {  "qnaAnnouncement" : !isRead(), "qnaAnnouncementRead": isRead(), "qnaThreadLast":$index()===$parent.myObservableArray().length-1 }, click: $parent.itemRead'>
                         <div>
                             <div data-bind='css: {  "qnaAnnouncementTitle" : !isRead(), "qnaAnnouncementTitleRead" : isRead()}, text: entries()[0]().getTitle()'></div>
                             <div class="icon-qna-Announcement" data-bind='css: {  "qnaAnnouncementIcon" : !isRead(), "qnaAnnouncementIconRead" : isRead()}'></div>
@@ -30,14 +30,15 @@
                 </div>
 
                 <div data-bind="if: entries()[0]().getType() === 'Question'">
-                    <div class="qnaEntryListLI qnaThread" data-bind='css: {"LastQnaEntryListLI":$index()===$parent.myObservableArray().length-1}'>
-                        <div data-bind='{ foreach: entries()}'>
-                            <div>
+                    <div class="qnaThread qnaQuestionsThread" data-bind='css: {"qnaThreadLast":$index()===$parent.myObservableArray().length-1}'>
+                        <div data-bind='{ foreach: entries() , as "entry"}'>
+                            <div class="qnaEntry">
                                 <div class="qnaThreadTitle" data-bind='text: getTitle()'></div>
                                 <div class="qnaThreadTimeRead" data-bind='text: timestamp.qnaTimestamp($parents[1].currentTime)'></div>
+                                <br>
+                                <div class="qnaThreadText" data-bind='text: getText()'></div>
+                                <div class="ResponseLineSeparator"></div>
                             </div>
-                            <br>
-                            <div class="qnaThreadText" data-bind='text: getText()'></div>
                         </div>
                     </div>
                 </div>
