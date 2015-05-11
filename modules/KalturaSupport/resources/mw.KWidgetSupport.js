@@ -728,6 +728,11 @@ mw.KWidgetSupport.prototype = {
 		if( autoPlay ){
 			embedPlayer.autoplay = true;
 		}
+		var inline = getAttr( 'EmbedPlayer.WebKitPlaysInline' );
+		if (inline) {
+			embedPlayer.inline = true;
+		}
+
 		
 		// Check for autoMute:
 		var autoMute = getAttr( 'autoMute' );
