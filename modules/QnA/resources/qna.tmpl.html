@@ -30,12 +30,17 @@
                 <div data-bind="if: entries()[0]().getType() === 'Question'">
                     <div class="qnaThread qnaQuestionsThread" data-bind='css: {"qnaThreadLast":$index()===$parent.myObservableArray().length-1}'>
                         <div data-bind='{ foreach: entries() , as "entry"}'>
-                            <div class="qnaEntry">
-                                <div class="qnaThreadTitle" data-bind='css:{"qnaThreadTitleAnswer" : getType() === "Answer"}, text: getTitle()'></div>
-                                <div class="qnaThreadTimeRead" data-bind='text: timestamp.qnaTimestamp($parents[1].currentTime)'></div>
-                                <br>
-                                <div class="qnaThreadText" data-bind='text: getText()'></div>
-                                <div class="ResponseLineSeparator"></div>
+                            <div data-bind="if: !$parent.isCollapsed() || $index()===0">
+                                <div class="qnaEntry">
+                                    <div class="qnaThreadTitle" data-bind='css:{"qnaThreadTitleAnswer" : getType() === "Answer"}, text: getTitle()'></div>
+                                    <div class="qnaThreadTimeRead" data-bind='text: timestamp.qnaTimestamp($parents[1].currentTime)'></div>
+                                    <br>
+                                    <div class="qnaThreadText" data-bind='text: getText()'></div>
+                                        <div data-bind="if: $index()===0 && $parent.entries().length > 1">
+                                        <div class="collapseExpandIcon" data-bind="css:{'icon-qna-collapse': $parent.isCollapsed(), 'icon-qna-expand': !$parent.isCollapsed()}, click: $parents[1].collapseExpandThread"></div>
+                                    </div>
+                                    <div class="ResponseLineSeparator"></div>
+                                </div>
                             </div>
                         </div>
                     </div>

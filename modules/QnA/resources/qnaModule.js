@@ -35,6 +35,13 @@
                 }
             };
 
+            this.collapseExpandThread= function(entry, event) {
+                console.log("collapse / expand for thread with id " + entry.getThreadID() + " was clicked");
+
+                // Get thread by ID and set it to be collapsed / Expanded
+                entry.getThread().isCollapsed(!entry.getThread().isCollapsed());
+            };
+
             // update current time to update display
             setInterval(function () {
                 _this.currentTime(new Date().getTime());

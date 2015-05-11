@@ -30,6 +30,29 @@ DAL for Q&A Module
         };
     })();
 
+    //var collapsedThreads=(function() {
+    //    var _collapsedThreads = [];
+    //    if (localStorage["_collapsedThreads"]) {
+    //        _collapsedThreads = JSON.parse(localStorage["_collapsedThreads"]);
+    //    }
+    //    return {
+    //        markAsRead: function(ThreadId) {
+    //            // Write to localStorage this item was read
+    //            if (_collapsedThreads.indexOf(ThreadId) < 0 ) {
+    //                _collapsedThreads.push(ThreadId);
+    //                localStorage["_collapsedThreads"] = JSON.stringify(_collapsedThreads);
+    //
+    //            }
+    //        },
+    //        isRead:function(ThreadId) {
+    //            return _collapsedThreads.indexOf(ThreadId) > -1;
+    //        },
+    //        readThreadsCount: function() {
+    //            return _collapsedThreads.length;
+    //        }
+    //    };
+    //})();
+
     function QnaThread(ThreadId){
         var _this = this;
         _this.ThreadID = ThreadId;
@@ -40,8 +63,9 @@ DAL for Q&A Module
         };
 
         this.isRead = ko.observable(viewedThreads.isRead(_this.threadID));
-
+        this.isCollapsed = ko.observable(true);
         this.appendEntry = function(entry){
+            entry.setThread(this);
             _this.entries.push(ko.observable(entry));
         };
     };
@@ -51,7 +75,14 @@ DAL for Q&A Module
         this.cuePoint=ko.observable(cuePoint);
         this.timestamp = ko.observable(this.cuePoint().createdAt);
 
-        //this.type = cuePoint.metadata.Type ? QandA_cuePointTypes.Announcement[cuePoint.metadata.Type] : undefined;
+        this.setThread = function(thread){
+            this._thread = thread;
+        };
+
+        this.getThread = function(){
+            var tid = this.getThreadID();
+            return this._thread;
+        };
 
         this.getType = function(){
             return this.cuePoint().metadata.Type;

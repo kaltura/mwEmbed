@@ -238,7 +238,7 @@
 .qnaInterface .qnaThread{
 	box-shadow: 0px 2px 2px 0px rgba(255, 255, 255, 0.16);
 	width: 100%;
-	margin-bottom: 6px;
+	margin-bottom: 4px;
 	list-style-type: none;
 	height: auto;
 	min-height: 80px;
@@ -326,7 +326,7 @@
 	text-align: left;
 	margin-top: 14px;
 	margin-left: 10px;
-	margin-right: 10px; /* If the name of the user reaches teaches the timestamp - make it go down */
+	/*margin-right: 10px; *//* If the name of the user reaches teaches the timestamp - make it go down */
 }
 
 .qnaInterface .qnaThreadTitleAnswer{
@@ -404,6 +404,14 @@
 	left: 10px;
 	margin-top: 11px;
 	font-size: 17px;
+}
+
+.qnaInterface .collapseExpandIcon{
+	position: absolute;
+	bottom: 12px;
+	right: 8px;
+	font-size: 17px;
+	float: right;
 }
 
 .qnaInterface .qnaThreadTime{
@@ -491,6 +499,10 @@
 
 .icon-qna-Announcement:before {
 	content: "\e607";
+}
+
+.icon-qna-collapse:before {
+	content: "\e608";
 }
 
 /** nano scrollbar CSS **/
