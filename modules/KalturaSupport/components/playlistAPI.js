@@ -227,9 +227,7 @@
 			// set responsiveness
 			if ( !mw.isIOS7()) {
 				this.bind( 'resizeEvent' , function () {
-					if ( _this.getConfig('onPage') !== true ){ // do not redraw when onPage
-						_this.redrawPlaylist();
-					}
+					_this.redrawPlaylist();
 				} );
 			}
 
@@ -303,8 +301,10 @@
 				}else{
 					this.setConfig( 'mediaItemWidth', Math.floor($( ".playlistInterface" ).width() / this.getConfig("MinClips")) );
 				}
-				this.$mediaListContainer = null;
-				this.getMedialistContainer();
+				if ( this.getConfig('onPage') !== true ){ // do not refresh mediaListContainer on page
+					this.$mediaListContainer = null;
+					this.getMedialistContainer();
+				}
 				this.renderMediaList();
 			}
 		},
