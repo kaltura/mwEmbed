@@ -483,7 +483,7 @@
 			// Set the content element to player element:
 			var playerElement =  this.embedPlayer.getPlayerElement();
 			//Load the video tag to enable setting the source by doubleClick library
-			if (!this.playerElementLoaded) {
+			if (mw.isMobileDevice() && !this.playerElementLoaded) {
 				this.playerElementLoaded = true;
 				playerElement.load();
 			}
