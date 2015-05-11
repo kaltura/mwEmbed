@@ -7,51 +7,28 @@ DAL for Q&A Module
 (function (mw, $) {
     "use strict";
 
-    var viewedThreads=(function() {
-        var _viewedThreads = [];
-        if (localStorage["_viewedThreads"]) {
-            _viewedThreads = JSON.parse(localStorage["_viewedThreads"]);
+    var viewedEntries=(function() {
+        var _viewedEntries = [];
+        if (localStorage["_viewedEntries"]) {
+            _viewedEntries = JSON.parse(localStorage["_viewedEntries"]);
         }
         return {
-            markAsRead: function(ThreadId) {
+            markAsRead: function(EntryId) {
                 // Write to localStorage this item was read
-                if (_viewedThreads.indexOf(ThreadId) < 0 ) {
-                    _viewedThreads.push(ThreadId);
-                    localStorage["_viewedThreads"] = JSON.stringify(_viewedThreads);
+                if (_viewedEntries.indexOf(EntryId) < 0 ) {
+                    _viewedEntries.push(EntryId);
+                    localStorage["_viewedEntries"] = JSON.stringify(_viewedEntries);
 
                 }
             },
-            isRead:function(ThreadId) {
-                return _viewedThreads.indexOf(ThreadId) > -1;
+            isRead:function(EntryId) {
+                return _viewedEntries.indexOf(EntryId) > -1;
             },
             readThreadsCount: function() {
-                return _viewedThreads.length;
+                return _viewedEntries.length;
             }
         };
     })();
-
-    //var collapsedThreads=(function() {
-    //    var _collapsedThreads = [];
-    //    if (localStorage["_collapsedThreads"]) {
-    //        _collapsedThreads = JSON.parse(localStorage["_collapsedThreads"]);
-    //    }
-    //    return {
-    //        markAsRead: function(ThreadId) {
-    //            // Write to localStorage this item was read
-    //            if (_collapsedThreads.indexOf(ThreadId) < 0 ) {
-    //                _collapsedThreads.push(ThreadId);
-    //                localStorage["_collapsedThreads"] = JSON.stringify(_collapsedThreads);
-    //
-    //            }
-    //        },
-    //        isRead:function(ThreadId) {
-    //            return _collapsedThreads.indexOf(ThreadId) > -1;
-    //        },
-    //        readThreadsCount: function() {
-    //            return _collapsedThreads.length;
-    //        }
-    //    };
-    //})();
 
     function QnaThread(ThreadId){
         var _this = this;
@@ -62,7 +39,7 @@ DAL for Q&A Module
             return _this.ThreadID;
         };
 
-        this.isRead = ko.observable(viewedThreads.isRead(_this.threadID));
+        this.isRead = ko.observable(viewedEntries.isRead(_this.ThreadID));
         this.isCollapsed = ko.observable(true);
         this.appendEntry = function(entry){
             entry.setThread(_this);
@@ -164,7 +141,7 @@ DAL for Q&A Module
 
         },
 
-        viewedThreads: viewedThreads,
+        viewedEntries: viewedEntries,
 
         destroy: function () {
 
@@ -272,13 +249,21 @@ DAL for Q&A Module
                 });
         },
 
-        markAsRead: function (thread) {
-            viewedThreads.markAsRead(thread.threadID);
-            this.updateThread(thread);
+        // item can be either a QnaThread (for an announcement) or a QnaEntry (for a Q&A thread)
+        markAsRead: function (item) {
+
+            if (item.entries !== undefined){
+                viewedEntries.markAsRead(item.ThreadID);
+                this.updateThread(item);
+            }
+            else{
+                viewedEntries.markAsRead(item.cuePoint.ID);
+                this.addOrUpdateEntry(item);
+            }
         },
 
         readThreadsCount: function () {
-            return viewedThreads.readThreadsCount();
+            return viewedEntries.readThreadsCount();
         },
 
         updateThread: function(qnaThread){
