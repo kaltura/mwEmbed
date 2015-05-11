@@ -56,9 +56,9 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 
 		// Be sure to "stop" the target ( Firefox 3x keeps playing
 		// the video even though its been removed from the DOM )
-		if( playerElement.pause ){
-			playerElement.pause();
-		}
+		//if( playerElement.pause ){
+		//	playerElement.pause();
+		//}
 
 		// Allow modules to override the wait for metadata flag:
 		$( mw ).trigger( 'EmbedPlayerWaitForMetaCheck', playerElement );
