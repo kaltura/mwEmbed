@@ -1365,7 +1365,7 @@
 			}
 		},
 		setInline: function ( state ) {
-			_this.getPlayerElement().attr('webkit-playsinline', '');
+			this.getPlayerElement().attr('webkit-playsinline', '');
 		}
 	};
 })(mediaWiki, jQuery);
