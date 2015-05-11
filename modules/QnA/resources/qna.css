@@ -326,7 +326,7 @@
 	text-align: left;
 	margin-top: 14px;
 	margin-left: 10px;
-	/*margin-right: 10px; *//* If the name of the user reaches teaches the timestamp - make it go down */
+	margin-right: 10px; /*If the name of the user reaches teaches the timestamp - make it go down */
 }
 
 .qnaInterface .qnaThreadTitleAnswer{
@@ -343,6 +343,7 @@
 	margin-bottom: 5px;
 	margin-left: 10px;
 	white-space: pre-wrap;
+	padding-bottom: 5px;
 }
 
 .qnaInterface .qnaEntryList{

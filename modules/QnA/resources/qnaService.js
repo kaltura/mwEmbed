@@ -65,7 +65,7 @@ DAL for Q&A Module
         this.isRead = ko.observable(viewedThreads.isRead(_this.threadID));
         this.isCollapsed = ko.observable(true);
         this.appendEntry = function(entry){
-            entry.setThread(this);
+            entry.setThread(_this);
             _this.entries.push(ko.observable(entry));
         };
     };
@@ -80,7 +80,6 @@ DAL for Q&A Module
         };
 
         this.getThread = function(){
-            var tid = this.getThreadID();
             return this._thread;
         };
 
@@ -307,6 +306,7 @@ DAL for Q&A Module
                     // look it this entry exists. If so replace it
                     for (var j = 0; j < _this.QnaThreads()[i]().entries().length; j++){
                         if (_this.QnaThreads()[i]().entries()[j]().cuePoint().id === qnaEntry.cuePoint().id){
+                            qnaEntry.setThread(_this.QnaThreads()[i]());
                             _this.QnaThreads()[i]().entries.splice(j, 0, ko.observable(qnaEntry));
                             _this.QnaThreads()[i]().entries.splice(j+1, 1);
                             found = true;
