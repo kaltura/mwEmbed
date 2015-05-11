@@ -19,7 +19,7 @@ class mweApiKSTest {
 		if( !isset( $_REQUEST['entry_id'] ) ){
 			$this->outputError( 'bad entry_id param');
 		}
-		$this->entryId = '1_9ln5whcm';
+		$this->entryId = $_REQUEST['entry_id'];
 
 		// load library and get ks for given entry:
 		if( !isset( $wgKalturaAdminSecret ) || ( $wgKalturaAdminSecret == null ) ) {
