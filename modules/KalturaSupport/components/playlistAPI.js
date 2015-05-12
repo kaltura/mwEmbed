@@ -32,7 +32,8 @@
 			'includeHeader': true,
 			'renderWhenEmpty': false,
 			'paging': false,
-			'pageSize': 25
+			'pageSize': 25,
+			'stickyControls': false
 		},
 
 
@@ -198,7 +199,7 @@
 
 									if (_this.getLayout() === "horizontal"){
 										_this.getMedialistComponent().find('ul').width((_this.getMediaItemBoxWidth()+1)*_this.mediaList.length);
-										_this.getMedialistComponent().find('.k-carousel').css('width', _this.getMedialistComponent().width() );
+										//_this.getMedialistComponent().find('.k-carousel').css('width', _this.getMedialistComponent().width() );
 
 										var scrollLeft = Math.abs(parseInt(_this.getComponent().find("ul").css("left")));
 										var hiddenItems = parseInt(scrollLeft / _this.getConfig( 'mediaItemWidth'));
@@ -299,7 +300,7 @@
 						}
 					}
 				}else{
-					this.setConfig( 'mediaItemWidth', Math.floor($( ".playlistInterface" ).width() / this.getConfig("MinClips")) );
+					this.setConfig( 'mediaItemWidth', Math.floor(this.getCarouselWidth() / this.getConfig("MinClips")) );
 				}
 				if ( this.getConfig('onPage') !== true ){ // do not refresh mediaListContainer on page
 					this.$mediaListContainer = null;
