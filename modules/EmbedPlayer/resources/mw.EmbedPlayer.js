@@ -3136,7 +3136,7 @@
 				if (!mw.getConfig('EmbedPlayer.DisableBufferingSpinner')) {
 					setTimeout(function () {
 						//avoid spinner for too short buffer
-						if (!_this.isInSequence() && _this.buffering) {
+						if (!_this.isInSequence() && _this.buffering && !_this.paused) {
 							_this.addPlayerSpinner();
 						}
 					}, _this.monitorRate);
