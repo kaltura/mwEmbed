@@ -195,7 +195,7 @@
 			var cuePoints = this.getCuePoints();
 			var cuePointsExist = (cuePoints.length > 0);
 			return (!this.getPlayer().useNativePlayerControls() &&
-				( ( this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) || cuePointsExist));
+				( ( this.getPlayer().isLive() && this.getPlayer().isDvrSupported() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) || cuePointsExist));
 		},
 		getCuePoints: function(){
 			var cuePoints = [];

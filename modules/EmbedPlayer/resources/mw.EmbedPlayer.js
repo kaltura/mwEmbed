@@ -1920,6 +1920,14 @@
 			return false;
 		},
 		/**
+		 * Checks if player supports DVR
+		 *
+		 * @returns boolean true if the mwEmbed player supports DVR, false if not
+		 */
+		isDvrSupported: function(){
+			return (mw.isNativeApp() || !mw.isAndroid());
+		},
+		/**
 		 * Checks if the native player is persistent in the dom since the intial page build out.
 		 */
 		isPersistentNativePlayer: function () {
