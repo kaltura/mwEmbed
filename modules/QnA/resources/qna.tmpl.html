@@ -43,7 +43,7 @@
                     <div class="qnaThread qnaQuestionsThread" data-bind='css: {"qnaThreadLast":$index()===$parent.myObservableArray().length-1}'>
                         <div data-bind='{ foreach: entries() , as "entry"}'>
                             <div data-bind="if: !$parent.isCollapsed() || $index()===0">
-                                <div class="qnaEntry" data-bind="click: $parents[1].itemRead">
+                                <div class="qnaEntry" data-bind="click: $parents[1].EntryClicked">
                                     <div data-bind='css:{   "qnaThreadTitleRead" : !(!isRead() || ($index()===0 && thread.hasUnreadEntries() && $parent.isCollapsed())),
                                                             "qnaThreadTitle": !isRead() || ($index()===0 && thread.hasUnreadEntries() && $parent.isCollapsed()),
                                                             "qnaThreadTitleAnswer" : getType() === "Answer"},
@@ -62,8 +62,7 @@
                                         <div class="collapseExpandIcon"
                                              data-bind="css:{   'icon-qna-collapse': $parent.isCollapsed(),
                                                                 'icon-qna-expand': !$parent.isCollapsed()
-                                                            },
-                                                        click: $parents[1].collapseExpandThread"></div>
+                                                            }"></div>
                                     </div>
                                     <div class="ResponseLineSeparator"></div>
                                 </div>

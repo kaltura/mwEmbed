@@ -27,6 +27,18 @@
                     qnaPlugin.updateUnreadBadge();
                 });
 
+                // An entry in a Q&A thread (not an announcement) was clicked
+                // if it's the first one in the thread - collapse / Expand the thread
+                // if it's not - call itemRead
+                this.EntryClicked = function (entry, event) {
+                    if (entry.getThread().entries()[0]() == entry){
+                        _this.collapseExpandThread(entry, event);
+                    }
+                    else{
+                        _this.itemRead(entry, event);
+                    }
+                };
+
                 this.itemRead = function (item, event) {
                     if (!item.isRead()) {
                         _this.qnaService.markAsRead(item);
