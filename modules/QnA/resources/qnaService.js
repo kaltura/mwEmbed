@@ -21,7 +21,7 @@ DAL for Q&A Module
 
                 }
             },
-            isRead:function(EntryId) {
+            isRead: function(EntryId) {
                 return _viewedEntries.indexOf(EntryId) > -1;
             },
             readThreadsCount: function() {
@@ -45,6 +45,15 @@ DAL for Q&A Module
             entry.setThread(_this);
             _this.entries.push(ko.observable(entry));
         };
+
+        this.hasUnreadEntries = ko.computed(function() {
+            for (var i = 0; i < _this.entries().length; i++) {
+                if(!_this.entries()[i]().isRead()){
+                    return true;
+                }
+            }
+            return false;
+        });
     };
 
     function QnaEntry(cuePoint){

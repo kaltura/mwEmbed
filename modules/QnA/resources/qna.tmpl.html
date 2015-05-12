@@ -17,14 +17,26 @@
         <div class="nano-content">
             <div data-bind='template: { foreach: myObservableArray(), as: "thread"}' class="qnaEntryList">
                 <div data-bind="if: entries()[0]().getType() === 'Announcement'">
-                    <div class="qnaThread" data-bind='css: {  "qnaAnnouncement" : !isRead(), "qnaAnnouncementRead": isRead(), "qnaThreadLast":$index()===$parent.myObservableArray().length-1 }, click: $parent.itemRead'>
+                    <div class="qnaThread"
+                         data-bind='css: {  "qnaAnnouncement" : !isRead(), "qnaAnnouncementRead": isRead(), "qnaThreadLast":$index()===$parent.myObservableArray().length-1 },
+                                    click: $parent.itemRead'>
                         <div>
                             <div data-bind='css: {  "qnaAnnouncementTitle" : !isRead(), "qnaAnnouncementTitleRead" : isRead()}, text: entries()[0]().getTitle()'></div>
-                            <div class="icon-qna-Announcement" data-bind='css: {  "qnaAnnouncementIcon" : !isRead(), "qnaAnnouncementIconRead" : isRead()}'></div>
-                            <div data-bind='css: {  "qnaThreadTime" : !isRead(), "qnaThreadTimeRead" : isRead()}, text: entries()[0]().timestamp.qnaTimestamp($parent.currentTime)'></div>
+                            <div class="icon-qna-Announcement"
+                                 data-bind='css:{  "qnaAnnouncementIcon" : !isRead(),
+                                                    "qnaAnnouncementIconRead" : isRead()
+                                                }'>
+                            </div>
+                            <div data-bind='css: {  "qnaThreadTime" : !isRead(), "qnaThreadTimeRead" : isRead()},
+                                            text: entries()[0]().timestamp.qnaTimestamp($parent.currentTime)'>
+                            </div>
                         </div>
                         <br>
-                        <div data-bind='css: {  "qnaAnnouncementText" : !isRead(), "qnaAnnouncementTextRead" : isRead()}, text: entries()[0]().getText()'></div>
+                        <div data-bind='css:{  "qnaAnnouncementText" : !isRead(),
+                                                "qnaAnnouncementTextRead" : isRead()
+                                            },
+                                        text: entries()[0]().getText()'>
+                        </div>
                     </div>
                 </div>
                 <div data-bind="if: entries()[0]().getType() === 'Question'">
@@ -32,12 +44,26 @@
                         <div data-bind='{ foreach: entries() , as "entry"}'>
                             <div data-bind="if: !$parent.isCollapsed() || $index()===0">
                                 <div class="qnaEntry" data-bind="click: $parents[1].itemRead">
-                                    <div data-bind='css:{"qnaThreadTitleRead" : isRead(), "qnaThreadTitle": !isRead(), "qnaThreadTitleAnswer" : getType() === "Answer"}, text: getTitle()'></div>
-                                    <div class="qnaThreadTimeRead" data-bind='text: timestamp.qnaTimestamp($parents[1].currentTime)'></div>
+                                    <div data-bind='css:{   "qnaThreadTitleRead" : !(!isRead() || ($index()===0 && thread.hasUnreadEntries())),
+                                                            "qnaThreadTitle": !isRead() || ($index()===0 && thread.hasUnreadEntries()),
+                                                            "qnaThreadTitleAnswer" : getType() === "Answer"},
+                                                    text: getTitle()'>
+                                    </div>
+                                    <div class="qnaThreadTimeRead"
+                                         data-bind='text: timestamp.qnaTimestamp($parents[1].currentTime)'>
+                                    </div>
                                     <br>
-                                    <div data-bind='css:{"qnaThreadTextRead" : isRead(), "qnaThreadText": !isRead()}, text: getText()'></div>
-                                        <div data-bind="if: $index()===0 && $parent.entries().length > 1">
-                                        <div class="collapseExpandIcon" data-bind="css:{'icon-qna-collapse': $parent.isCollapsed(), 'icon-qna-expand': !$parent.isCollapsed()}, click: $parents[1].collapseExpandThread"></div>
+                                    <div data-bind='css:{   "qnaThreadTextRead" : !(!isRead() || ($index()===0 && thread.hasUnreadEntries())),
+                                                            "qnaThreadText": !isRead() || ($index()===0 && thread.hasUnreadEntries())
+                                                        },
+                                                    text: getText()'>
+                                    </div>
+                                    <div data-bind="if: $index()===0 && $parent.entries().length > 1">
+                                        <div class="collapseExpandIcon"
+                                             data-bind="css:{   'icon-qna-collapse': $parent.isCollapsed(),
+                                                                'icon-qna-expand': !$parent.isCollapsed()
+                                                            },
+                                                        click: $parents[1].collapseExpandThread"></div>
                                     </div>
                                     <div class="ResponseLineSeparator"></div>
                                 </div>
