@@ -37,7 +37,8 @@
 				'minDisplayWidth': 0,
 				'minDisplayHeight': 0,
 				'horizontalScrollItems': 1,
-				'scrollerCssPath': "resources/nanoScroller/nanoScroller.css"
+				'scrollerCssPath': "resources/nanoScroller/nanoScroller.css",
+				'stickyControls': false
 			});
 		},
 
@@ -580,10 +581,11 @@
 			}else {
 				this.addScrollUiComponents();
 				var $cc = this.getMedialistComponent();
+				var $kcarousel = $cc.find('.k-carousel');
 				this.mediaItemVisible = this.calculateVisibleScrollItems();
 				var speed = mw.isTouchDevice() ? 100: 200;
 				// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
-				$cc.find( '.k-carousel' ).jCarouselLite( {
+				$kcarousel.jCarouselLite( {
 					btnNext: '.k-next',
 					btnPrev: '.k-prev',
 					visible: this.mediaItemVisible,
@@ -597,8 +599,24 @@
 						$(_this.embedPlayer).trigger("scrollEnd");
 					});
 				$cc.find('ul').width((this.getMediaItemBoxWidth()+1)*this.mediaList.length);
-				$cc.find('.k-carousel').css('width', $cc.width() );
+
+				$kcarousel.css('width', this.getCarouselWidth() );
+				if( this.getConfig('stickyControls') ) {
+					$cc.addClass('sticky-controls');
+					this.setMediaBoxesDimensions();
+				}
 			}
+		},
+		getCarouselWidth: function(){
+			var $cc = this.getMedialistComponent();
+			var width = $cc.width();
+			if( !this.getConfig('stickyControls') ) {
+				return width;
+			}
+			$cc.find('.k-prev,.k-next').each(function(){
+				width -= $(this).outerWidth(true);
+			});
+			return 391;
 		},
 		getScrollComponent: function(){
 			if (!this.$scroll){
@@ -664,6 +682,12 @@
 					.addClass( "k-scroll k-next" )
 			);
 
+			if( ! this.getConfig('stickyControls') ) {
+				this.addHoverControls();
+			}
+		},
+		addHoverControls: function(){
+			var $cc = this.getMedialistComponent();
 			// Add media item hover to hide show play buttons:
 			var inKBtn = false;
 			var inContainer = false;
