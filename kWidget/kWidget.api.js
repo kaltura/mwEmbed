@@ -20,6 +20,8 @@ kWidget.api.prototype = {
 	// the default api request method
 	// will dictate if the CDN can cache on a per url basis
 	type: 'auto',
+	// initialize callback index to zero
+	callbackIndex: 0,
 	baseParam: {
 		'apiVersion' : '3.1',
 		'expiry' : '86400',
