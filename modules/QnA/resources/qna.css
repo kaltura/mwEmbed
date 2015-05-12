@@ -317,17 +317,23 @@
 	margin-left: 10px;
 }
 
-.qnaInterface .qnaThreadTitleRead{
+.qnaInterface .qnaThreadTitleRead {
 	float: left;
 	font-family: 'Lato', Helvetica, Arial;
 	color: #414442;
 	font-size: 14px;
 	font-weight: 500;
-	line-height: 9px;
+	line-height: 12px;
 	text-align: left;
 	margin-top: 14px;
 	margin-left: 10px;
-	margin-right: 10px; /*If the name of the user reaches teaches the timestamp - make it go down */
+	width: -moz-calc(100% - 45px);
+	width: -webkit-calc(100% - 45px);
+	width: -o-calc(100% - 45px);
+	width: calc(100% - 45px);
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
 }
 
 .qnaInterface .qnaThreadTitle{
@@ -336,15 +342,27 @@
 	color: #414442;
 	font-size: 14px;
 	font-weight: 700;
-	line-height: 9px;
+	line-height: 12px;
 	text-align: left;
 	margin-top: 14px;
 	margin-left: 10px;
-	margin-right: 10px; /*If the name of the user reaches teaches the timestamp - make it go down */
+	width: -moz-calc(100% - 45px);
+	width: -webkit-calc(100% - 45px);
+	width: -o-calc(100% - 45px);
+	width: calc(100% - 45px);
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+
 }
 
 .qnaInterface .qnaThreadTitleAnswer{
 	font-style: italic;
+	/*margin-right: 20px;*/
+	/*text-overflow: ellipsis;*/
+	/*overflow: hidden;*/
+	/*display:inline-block;*/
+	/*white-space: nowrap;*/
 }
 
 .qnaInterface .qnaThreadText{
