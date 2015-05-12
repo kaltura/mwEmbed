@@ -316,7 +316,7 @@
 	margin-left: 10px;
 }
 
-.qnaInterface .qnaThreadTitle{
+.qnaInterface .qnaThreadTitleRead{
 	float: left;
 	font-family: 'Lato', Helvetica, Arial;
 	color: #414442;
@@ -329,11 +329,37 @@
 	margin-right: 10px; /*If the name of the user reaches teaches the timestamp - make it go down */
 }
 
+.qnaInterface .qnaThreadTitle{
+	float: left;
+	font-family: 'Lato', Helvetica, Arial;
+	color: #414442;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 9px;
+	text-align: left;
+	margin-top: 14px;
+	margin-left: 10px;
+	margin-right: 10px; /*If the name of the user reaches teaches the timestamp - make it go down */
+}
+
 .qnaInterface .qnaThreadTitleAnswer{
 	font-style: italic;
 }
 
 .qnaInterface .qnaThreadText{
+	font-family: 'Lato', Helvetica, Arial;
+	color: #414442;
+	font-size: 13px;
+	font-weight: 300;
+	text-align: left;
+	margin-top: 8px;
+	margin-bottom: 5px;
+	margin-left: 10px;
+	white-space: pre-wrap;
+	padding-bottom: 5px;
+}
+
+.qnaInterface .qnaThreadTextRead{
 	font-family: 'Lato', Helvetica, Arial;
 	color: #414442;
 	font-size: 13px;

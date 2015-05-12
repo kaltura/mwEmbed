@@ -73,16 +73,9 @@
 
                 var count = 0;
                 ko.utils.arrayForEach(_this.myObservableArray(), function (thread) {
-                    if (thread().entries()[0]().getType() === "Announcement") {
-                        if (!thread().isRead()) {
+                    for (var i = 0; i < thread().entries().length; i++) {
+                        if (thread().entries()[i]().getType() !== 'Question' && !thread().entries()[i]().isRead()) {
                             count++;
-                        }
-                    }
-                    else {
-                        for (var i = 0; i < thread().entries().length; i++) {
-                            if (thread().entries()[i]().getType() === 'Answer') {
-                                count++;
-                            }
                         }
                     }
                 });

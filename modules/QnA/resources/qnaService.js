@@ -49,8 +49,16 @@ DAL for Q&A Module
 
     function QnaEntry(cuePoint){
 
+        var _this = this;
+
         this.cuePoint=ko.observable(cuePoint);
         this.timestamp = ko.observable(this.cuePoint().createdAt);
+
+        this.getType = function(){
+            return this.cuePoint().metadata.Type;
+        };
+
+        this.isRead = ko.observable(viewedEntries.isRead(_this.cuePoint().id) || _this.getType() === "Question");
 
         this.setThread = function(thread){
             this._thread = thread;
@@ -58,10 +66,6 @@ DAL for Q&A Module
 
         this.getThread = function(){
             return this._thread;
-        };
-
-        this.getType = function(){
-            return this.cuePoint().metadata.Type;
         };
 
         this.getContent = function(){
@@ -252,12 +256,14 @@ DAL for Q&A Module
         // item can be either a QnaThread (for an announcement) or a QnaEntry (for a Q&A thread)
         markAsRead: function (item) {
 
+            item.isRead(true);
             if (item.entries !== undefined){
+                item.entries()[0]().isRead(true);
                 viewedEntries.markAsRead(item.ThreadID);
                 this.updateThread(item);
             }
             else{
-                viewedEntries.markAsRead(item.cuePoint.ID);
+                viewedEntries.markAsRead(item.cuePoint().id);
                 this.addOrUpdateEntry(item);
             }
         },
@@ -270,7 +276,6 @@ DAL for Q&A Module
             var _this=this;
             for (var i = 0; i < _this.QnaThreads().length; i++) {
                 if (_this.QnaThreads()[i]().getThreadID() === qnaThread.ThreadID){
-                    qnaThread.isRead(true);
                     _this.qnaPlugin.updateUnreadBadge();
                     break;
                 }
@@ -315,6 +320,8 @@ DAL for Q&A Module
                 newThread.appendEntry(qnaEntry);
                 _this.QnaThreads.unshift(ko.observable(newThread));
             }
+
+            _this.qnaPlugin.updateUnreadBadge();
         },
 
         metadataToObject: function(metadata) {
