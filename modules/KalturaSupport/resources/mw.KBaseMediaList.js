@@ -183,18 +183,26 @@
 					}
 
 					if ( this.getConfig( 'containerPosition' ) == 'top' || this.getConfig( 'containerPosition' ) == 'bottom' ) {
-						var playlistHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * this.getConfig( "MinClips" ) + this.getMedialistHeaderComponent().height() : this.getConfig( "mediaItemHeight" ) + this.getConfig('horizontalHeaderHeight');
+						var playlistHeight = this.getPlaylistHeightBasedOnLayout();
 						this.getComponent().height(playlistHeight);
-						$( ".mwPlayerContainer" ).css( "height", this.$mediaListContainer.height() - playlistHeight + "px" );
-						var controlBarHeight = 0;
-						$('.block').each(function() {
-							controlBarHeight += $( this ).outerHeight( true ); // add height of each components container that is not hovering
+						var blockElementsHeight = 0;
+						this.$mediaListContainer.find('> .block').each(function(){
+							blockElementsHeight += $( this ).outerHeight( true );
 						});
-						this.getPlayer().getVideoHolder().css( "height", this.$mediaListContainer.height() - playlistHeight - controlBarHeight + "px" );
+						$( ".mwPlayerContainer" ).css( "height", this.$mediaListContainer.height() - blockElementsHeight - playlistHeight + "px" );
+						this.getPlayer().doUpdateLayout(true);
 					}
 				}
 			}
 			return this.$mediaListContainer;
+		},
+		getPlaylistHeightBasedOnLayout: function(){
+			var itemHeight = this.getConfig( "mediaItemHeight" )
+			if( this.getLayout() === "vertical" ) {
+				return itemHeight * this.getConfig( "MinClips" ) + this.getMedialistHeaderComponent().height();
+			} else {
+				return itemHeight + this.getConfig('horizontalHeaderHeight');
+			} 
 		},
 		// set the size of the playlist container and the video
 		setMedialistContainerSize: function(){
