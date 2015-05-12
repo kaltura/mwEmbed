@@ -44,8 +44,8 @@
                         <div data-bind='{ foreach: entries() , as "entry"}'>
                             <div data-bind="if: !$parent.isCollapsed() || $index()===0">
                                 <div class="qnaEntry" data-bind="click: $parents[1].itemRead">
-                                    <div data-bind='css:{   "qnaThreadTitleRead" : !(!isRead() || ($index()===0 && thread.hasUnreadEntries())),
-                                                            "qnaThreadTitle": !isRead() || ($index()===0 && thread.hasUnreadEntries()),
+                                    <div data-bind='css:{   "qnaThreadTitleRead" : !(!isRead() || ($index()===0 && thread.hasUnreadEntries() && $parent.isCollapsed())),
+                                                            "qnaThreadTitle": !isRead() || ($index()===0 && thread.hasUnreadEntries() && $parent.isCollapsed()),
                                                             "qnaThreadTitleAnswer" : getType() === "Answer"},
                                                     text: getTitle()'>
                                     </div>
@@ -53,8 +53,8 @@
                                          data-bind='text: timestamp.qnaTimestamp($parents[1].currentTime)'>
                                     </div>
                                     <br>
-                                    <div data-bind='css:{   "qnaThreadTextRead" : !(!isRead() || ($index()===0 && thread.hasUnreadEntries())),
-                                                            "qnaThreadText": !isRead() || ($index()===0 && thread.hasUnreadEntries())
+                                    <div data-bind='css:{   "qnaThreadTextRead" : !(!isRead() || ($index()===0 && thread.hasUnreadEntries() && $parent.isCollapsed())),
+                                                            "qnaThreadText": !isRead() || ($index()===0 && thread.hasUnreadEntries() && $parent.isCollapsed())
                                                         },
                                                     text: getText()'>
                                     </div>
