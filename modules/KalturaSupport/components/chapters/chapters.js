@@ -685,13 +685,13 @@
 			}
 		},
 		focusSearchBar: function(){
-			if (this.searchBox){
+			if (this.searchBox && !mw.isMobileDevice()){
 				this.searchBox.focus();
 			}
 
 		},
 		blurSearchBar: function(){
-			if (this.searchBox){
+			if (this.searchBox && !mw.isMobileDevice()){
 				this.searchBox.blur();
 			}
 
