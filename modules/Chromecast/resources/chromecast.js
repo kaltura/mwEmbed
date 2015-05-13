@@ -145,8 +145,6 @@
 
 		onRequestSessionSuccess: function(e) {
 			this.embedPlayer.layoutBuilder.closeAlert();
-			this.embedPlayer.enablePlayControls();
-			this.embedPlayer.disablePlayControls(["chromecast","playPauseBtn","volumeControl","scrubber"]);
 			this.log( "Session success: " + e.sessionId);
 			this.session = e;
 			this.getComponent().css("color","#35BCDA");
