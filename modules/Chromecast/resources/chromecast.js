@@ -456,33 +456,22 @@
 				'<img class="chromecastThumb" src="' + this.embedPlayer.poster + '"></img></div> ' +
 				'<div style="float: left; width: 200px; margin-left: 10px">' +
 				'<span class="chromecastTitle"></span><br>' +
-				'<i class="icon-chromecast chromecastPlayingIcon chromecastPlaying"></i>' +
+				'<div><i class="icon-chromecast chromecastPlayingIcon chromecastPlaying"></i>' +
 				'<span class="chromecastPlaying">Now Playing on Chromecast</span>'+
-//				'<span id="chromecastReceiverName" class="chromecastPlaying">Now Playing on Chromecast</span>'+
-				'</div></div></div>';
+				'<span id="chromecastReceiverName" class="chromecastPlaying chromecastReceiverName"></span>'+
+				'</div></div></div></div>';
 		},
 
 		setPlayingScreen: function(){
 			var factor = $(".chromecastThumb").naturalWidth() / $(".chromecastThumb").naturalHeight();
-			var thumbHeight = this.embedPlayer.getVideoHolder().height() / 3;
-			$(".chromecastThumb").height(thumbHeight);
-			$(".chromecastThumbBorder").height(thumbHeight);
-			$(".chromecastThumb").width(thumbHeight * factor);
-			$(".chromecastThumbBorder").width(thumbHeight * factor);
+			var thumbWidth = this.embedPlayer.getVideoHolder().width() / 4;
+			$(".chromecastThumb").width(thumbWidth);
+			$(".chromecastThumbBorder").width(thumbWidth);
+			$(".chromecastThumb").height(thumbWidth / factor);
+			$(".chromecastThumbBorder").height(thumbWidth / factor);
 			var title = this.embedPlayer.evaluate('{mediaProxy.entry.name}');
-			if( this.embedPlayer.selectedPlayer && this.embedPlayer.selectedPlayer.library != "NativeComponent" ) {
-				$(".chromecastTitle").text(title);
-//				$(".chromecastPlayingIcon").css("margin-left",$(".chromecastThumbBorder").width()+14+'px').css("margin-top",24+'px');
-//				$("#chromecastPlaying").css("margin-left",$(".chromecastThumbBorder").width()+60+'px').css("margin-top",26+'px');
-//				$("#chromecastReceiverName").text(this.embedPlayer.receiverName);
-//				$("#chromecastReceiverName").css("margin-left",$(".chromecastThumbBorder").width()+60+'px').css("margin-top",42+'px');
-			}else{
-				$(".chromecastTitle").text(title);
-//				$(".chromecastPlayingIcon").css("margin-top",$(".chromecastThumbBorder").height()+40+'px');
-//				$("#chromecastPlaying").css("margin-top",$(".chromecastThumbBorder").height()+40+'px').css("margin-left",50+'px');
-//				$("#chromecastReceiverName").text('');
-//				$("#chromecastReceiverName").css("margin-top",$(".chromecastThumbBorder").height()+56+'px').css("margin-left",50+'px');
-			}
+			$(".chromecastTitle").text(title);
+			$("#chromecastReceiverName").text(this.embedPlayer.receiverName);
 		}
 	}));
 } )( window.mw, window.jQuery );

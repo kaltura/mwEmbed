@@ -1,10 +1,20 @@
 .chromecastPlaying{
 	color: #35BCDA;
 	font-size: 13px;
+	position: absolute;
+	margin-left: 48px;
+	width: 50%;
+	margin-top: 13px;
+}
+.chromecastReceiverName{
+	margin-top: 30px;
 }
 .chromecastPlayingIcon{
 	color: #35BCDA;
 	font-size: 36px;
+	float: left;
+	margin-top: 10px;
+	margin-left: 0px;
 }
 .chromecastTitle{
 	color: white;
@@ -17,7 +27,7 @@
 .chromecastPlayback{
 	position: absolute;
 	top: 50%;
-	left: 50%;
-	width: 70%;
+	left: 60%;
+	width: 100%;
 	transform: translate(-50%, -50%);
 }
