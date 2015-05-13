@@ -229,8 +229,10 @@
 
 		hideScreen: function(){
 			this._super();
-			$("#"+this.getPlayer().getPlayerElement().id).removeClass("blur");
-			this.getPlayer().getPlayerPoster().removeClass("blur");
+			if (this.getPlayer().getPlayerElement()) {
+				$( "#" + this.getPlayer().getPlayerElement().id ).removeClass( "blur" );
+				this.getPlayer().getPlayerPoster().removeClass( "blur" );
+			}
 		},
 
 		getTemplateData: function () {
