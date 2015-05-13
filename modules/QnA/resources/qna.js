@@ -6,7 +6,11 @@
 
 		defaultConfig: {
 			templatePath: '../QnA/resources/qna.tmpl.html',
-			cssFileName: 'modules/QnA/resources/qna.css',
+			qnaMainCssFileName: 'modules/QnA/resources/css/qna.css',
+			qnaAnnouncementsCssFileName: 'modules/QnA/resources/css/qna-announcements.css',
+			qnaFontsCssFileName: 'modules/QnA/resources/css/qna-fonts.css',
+			qnaNanoCssFileName: 'modules/QnA/resources/css/qna-nano.css',
+			qnaThreadsListCssFileName: 'modules/QnA/resources/css/qna-threads-list.css',
 			onPage: true
 		},
 
@@ -121,19 +125,26 @@
 			}
 		},
 
+		injectCssToPage: function(cssLink){
+			if (cssLink) {
+				cssLink = cssLink.toLowerCase().indexOf("http") === 0 ? cssLink : kWidget.getPath() + cssLink; // support external CSS links
+				$('head', window.parent.document).append('<link type="text/css" rel="stylesheet" href="' + cssLink + '"/>');
+			} else {
+				mw.log("Error: " + this.pluginName + " could not find CSS link");
+			}
+		},
+
 		// load the Q&A template to the div with qnaTargetId
 		getQnaContainer: function(){
             var embedPlayer = this.getPlayer();
 			if (!this.$qnaListContainer) {
 				if ( this.getConfig( 'onPage' ) ) {
-					// Inject external CSS file
-					var cssLink = this.getConfig('cssFileName');
-					if (cssLink) {
-						cssLink = cssLink.toLowerCase().indexOf("http") === 0 ? cssLink : kWidget.getPath() + cssLink; // support external CSS links
-						$('head', window.parent.document).append('<link type="text/css" rel="stylesheet" href="' + cssLink + '"/>');
-					} else {
-						mw.log("Error: " + this.pluginName + " could not find CSS link");
-					}
+					// Inject external CSS files
+					this.injectCssToPage(this.getConfig('qnaMainCssFileName'));
+					this.injectCssToPage(this.getConfig('qnaAnnouncementsCssFileName'));
+					this.injectCssToPage(this.getConfig('qnaFontsCssFileName'));
+					this.injectCssToPage(this.getConfig('qnaNanoCssFileName'));
+					this.injectCssToPage(this.getConfig('qnaThreadsListCssFileName'));
 
 					var iframeParent = window['parent'].document.getElementById(this.embedPlayer.id);
 					$(iframeParent).parents().find("#" + this.getConfig('qnaTargetId')).html("<div class='qnaInterface'></div>");
