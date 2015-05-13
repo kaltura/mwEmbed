@@ -92,7 +92,7 @@
 				this.$el = $( '<button/>' )
 					.attr( 'title', this.startCastTitle )
 					.addClass( "btn icon-chromecast" + this.getCssClass() )
-					.click( function() {debugger;
+					.click( function() {
 						if( _this.embedPlayer.selectedPlayer && _this.embedPlayer.selectedPlayer.library != "NativeComponent" ) {
 								_this.toggleCast();
 						} else {
@@ -146,6 +146,7 @@
 		onRequestSessionSuccess: function(e) {
 			this.embedPlayer.layoutBuilder.closeAlert();
 			this.embedPlayer.enablePlayControls();
+			this.embedPlayer.disablePlayControls(["chromecast","playPauseBtn","volumeControl","scrubber"]);
 			this.log( "Session success: " + e.sessionId);
 			this.session = e;
 			this.getComponent().css("color","#35BCDA");
@@ -411,6 +412,7 @@
 			this.embedPlayer.disablePlayer();
 			this.embedPlayer.updatePlaybackInterface();
 			this.embedPlayer.play();
+			this.embedPlayer.enablePlayControls();
 		},
 
 		onStopAppSuccess: function() {
