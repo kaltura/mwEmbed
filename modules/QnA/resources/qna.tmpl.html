@@ -39,35 +39,51 @@
                         </div>
                     </div>
                 </div>
+
                 <div data-bind="if: entries()[0]().getType() === 'Question'">
                     <div class="qnaThread qnaQuestionsThread" data-bind='css: {"qnaThreadLast":$index()===$parent.myObservableArray().length-1}'>
+
                         <div data-bind='{ foreach: entries() , as "entry"}'>
+
                             <div data-bind="if: !$parent.isCollapsed() || $index()===0">
+
+                                <div data-bind="if: $index()===0 && thread.hasUnreadEntries() && $parent.isCollapsed()">
+                                    <div class="icon-qna-close qna-bullet-icon qna-bullet-icon-unread"></div>
+                                </div>
+                                <div data-bind="if: $index()===0 && !$parent.isCollapsed()">
+                                    <div class="icon-qna-drop2 qna-bullet-icon qna-bullet-icon-read"></div>
+                                </div>
+                                <div data-bind="if: $index()===$parent.entries().length-1 && !$parent.isCollapsed()">
+                                    <div class="icon-qna-drop qna-bullet-icon qna-bullet-icon-read"></div>
+                                </div>
+                                <div data-bind="if: $index()!==0 && $index()!== $parent.entries().length-1">
+                                    <div class="icon-qna-close qna-bullet-icon qna-bullet-icon-read"></div>
+                                </div>
+
                                 <div class="qnaEntry" data-bind="click: $parents[1].EntryClicked">
+                                    <div data-bind="if: !$parent.isCollapsed()">
+                                        <div class="qna-vertical-line" data-bind="css:{ 'qna-vertical-line-first':$index()===0,
+                                                                                        'qna-vertical-line-last':$index()===$parent.entries().length-1}"></div>
+                                    </div>
                                     <div data-bind='css:{   "qnaThreadTitleRead" : !(!isRead() || ($index()===0 && thread.hasUnreadEntries() && $parent.isCollapsed())),
                                                             "qnaThreadTitle": !isRead() || ($index()===0 && thread.hasUnreadEntries() && $parent.isCollapsed()),
                                                             "qnaThreadTitleAnswer" : getType() === "Answer"},
-                                                    text: getTitle()'>
-                                    </div>
+                                                    text: getTitle()'></div>
                                     <div class="qnaThreadTimeRead"
-                                         data-bind='text: timestamp.qnaTimestamp($parents[1].currentTime)'>
-                                    </div>
+                                         data-bind='text: timestamp.qnaTimestamp($parents[1].currentTime)'></div>
                                     <br>
                                     <div data-bind='css:{   "qnaThreadTextRead" : !(!isRead() || ($index()===0 && thread.hasUnreadEntries() && $parent.isCollapsed())),
                                                             "qnaThreadText": !isRead() || ($index()===0 && thread.hasUnreadEntries() && $parent.isCollapsed())
                                                         },
-                                                    text: getText()'>
-                                    </div>
+                                                    text:getText()'></div>
                                     <div data-bind="if: $index()===0 && $parent.entries().length > 1">
                                         <div class="collapseExpandIcon"
                                              data-bind="css:{   'icon-qna-collapse': $parent.isCollapsed(),
                                                                 'icon-qna-expand': !$parent.isCollapsed()
-                                                            }"></div>
-                                    </div>
-                                    <div class="ResponseLineSeparator"></div>
+                                                            }"></div></div>
+                                    <div class="ResponseLineSeparator" ></div>
                                 </div>
-                            </div>
-                        </div>
+                            </div></div>
                     </div>
                 </div>
             </div>

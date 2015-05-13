@@ -48,6 +48,9 @@
                 this.collapseExpandThread = function (entry, event) {
                     console.log("collapse / expand for thread with id " + entry.getThreadID() + " was clicked");
 
+                    if (entry.getThread().entries().length < 2)
+                        return;
+
                     // Get thread by ID and set it to be collapsed / Expanded
                     entry.getThread().isCollapsed(!entry.getThread().isCollapsed());
                 };

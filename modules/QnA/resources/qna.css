@@ -28,7 +28,6 @@
 	background-color: transparent;
 	font-family: 'Lato', Helvetica, Arial;
 	font-size: 13px;
-	/*font-weight: 100;*/
 	line-height: 14px;
 	text-align: left;
 	color: #ffffff;
@@ -157,10 +156,8 @@
 	background-image: linear-gradient(to bottom, #76c044, #76c044);
 }
 
-
 .qna-on-video-btn {
 	z-index: 99999;
-	/*background-color : #f0f0f0;*/
 	background-color: #ffffff;
 	position: absolute;
 	right: 0;
@@ -199,37 +196,12 @@
 
 /* qna entries (Announcements/Threads) */
 
-.qnaInterface .qnaEntryTitle{
-	font-family: 'Lato', Helvetica, Arial;
-	color: #ffffff;
-	font-size: 14px;
-	font-weight: 400;
-	font-style: italic;
-	line-height: 18px;
-	text-align: left;
-	margin-left: 15px;
-	margin-top: 3px;
-}
-
-.qnaInterface .qnaEntryText{
-	font-family: 'Lato', Helvetica, Arial;
-	color: #ffffff;
-	font-size: 13px;
-	font-weight: 200;
-	text-align: left;
-	margin-left: 15px;
-	overflow: auto;
-	margin-bottom: 5px;
-	white-space: pre-wrap;
-}
-
 .qnaInterface .qnaAnnouncement{
 	background-color: #76c044;
 }
 
 .qnaInterface .qnaQuestionsThread{
 	background-color: #f0f0f0;
-	/*position: relative;*/
 }
 
 .qnaInterface .qnaAnnouncementRead{
@@ -279,7 +251,7 @@
 	line-height: 9px;
 	text-align: left;
 	margin-top: 14px;
-	margin-left: 10px;
+	margin-left: 20px;
 }
 
 .qnaInterface .qnaAnnouncementTitleRead{
@@ -292,7 +264,7 @@
 	line-height: 9px;
 	text-align: left;
 	margin-top: 14px;
-	margin-left: 10px;
+	margin-left: 20px;
 }
 
 .qnaInterface .qnaAnnouncementText{
@@ -303,7 +275,7 @@
 	text-align: left;
 	margin-top: 8px;
 	margin-bottom: 5px;
-	margin-left: 10px;
+	margin-left: 20px;
 }
 
 .qnaInterface .qnaAnnouncementTextRead{
@@ -314,7 +286,7 @@
 	text-align: left;
 	margin-top: 8px;
 	margin-bottom: 5px;
-	margin-left: 10px;
+	margin-left: 20px;
 }
 
 .qnaInterface .qnaThreadTitleRead {
@@ -326,11 +298,11 @@
 	line-height: 12px;
 	text-align: left;
 	margin-top: 14px;
-	margin-left: 10px;
-	width: -moz-calc(100% - 45px);
-	width: -webkit-calc(100% - 45px);
-	width: -o-calc(100% - 45px);
-	width: calc(100% - 45px);
+	margin-left: 20px;
+	width: -moz-calc(100% - 70px);
+	width: -webkit-calc(100% - 70px);
+	width: -o-calc(100% - 70px);
+	width: calc(100% - 70px);
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
@@ -345,11 +317,11 @@
 	line-height: 12px;
 	text-align: left;
 	margin-top: 14px;
-	margin-left: 10px;
-	width: -moz-calc(100% - 45px);
-	width: -webkit-calc(100% - 45px);
-	width: -o-calc(100% - 45px);
-	width: calc(100% - 45px);
+	margin-left: 20px;
+	width: -moz-calc(100% - 70px);
+	width: -webkit-calc(100% - 70px);
+	width: -o-calc(100% - 70px);
+	width: calc(100% - 70px);
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
@@ -358,11 +330,6 @@
 
 .qnaInterface .qnaThreadTitleAnswer{
 	font-style: italic;
-	/*margin-right: 20px;*/
-	/*text-overflow: ellipsis;*/
-	/*overflow: hidden;*/
-	/*display:inline-block;*/
-	/*white-space: nowrap;*/
 }
 
 .qnaInterface .qnaThreadText{
@@ -372,8 +339,7 @@
 	font-weight: 700;
 	text-align: left;
 	margin-top: 8px;
-	margin-bottom: 5px;
-	margin-left: 10px;
+	margin-left: 20px;
 	white-space: pre-wrap;
 	padding-bottom: 5px;
 }
@@ -385,15 +351,14 @@
 	font-weight: 400;
 	text-align: left;
 	margin-top: 8px;
-	margin-bottom: 5px;
-	margin-left: 10px;
+	margin-left: 20px;
 	white-space: pre-wrap;
 	padding-bottom: 5px;
 }
 
 .qnaInterface .qnaEntryList{
-	list-style: none;
-	margin-left: 0px;
+	/*list-style: none;*/
+	/*margin-left: 0px;*/
 	background-color: #ffffff;
 }
 
@@ -408,30 +373,6 @@
 	height: -o-calc(100% - 88px);
 	/* Standard */
 	height: calc(100% - 88px);
-}
-
-.qnaInterface .qnaEntryTitleRead{
-	font-family: 'Lato', Helvetica, Arial;
-	color: #414442;
-	font-size: 14px;
-	font-weight: 400;
-	font-style: italic;
-	line-height: 18px;
-	text-align: left;
-	margin-left: 15px;
-	margin-top: 3px;
-}
-
-.qnaInterface .qnaEntryTextRead{
-	font-family: 'Lato', Helvetica, Arial;
-	color: #414442;
-	font-size: 13px;
-	font-weight: 200;
-	text-align: left;
-	margin-left: 15px;
-	overflow: auto;
-	margin-bottom: 5px;
-	white-space: pre-wrap;
 }
 
 .qnaInterface .qnaAnnouncementIconRead{
@@ -480,10 +421,41 @@
 	color: #414442;
 }
 
+.qnaInterface .qna-bullet-icon{
+	margin-top: 14px;
+	margin-left: 5px;
+	position: absolute;
+	font-size: 13px;
+}
+
+.qnaInterface .qna-bullet-icon-read{
+	color: #d7d7d7;
+}
+
+.qnaInterface .qna-bullet-icon-unread{
+	color: #00b4d1;
+}
+
+.qnaInterface .qna-vertical-line {
+	width: 1px;
+	background-color: #d7d7d7;
+	opacity: 0.5;
+	position: absolute;
+	height:100%;
+	margin-left: 11px;
+}
+
+.qnaInterface .qna-vertical-line-first{
+	margin-top: 20px;
+}
+
+.qnaInterface .qna-vertical-line-last{
+	height: 20px;
+}
+
 .qnaInterface > input:focus, button:focus, textarea:focus {
     outline: 0 !important;
 }
-
 
 .qnaInterface > button:hover {
     opacity: 0.7;
