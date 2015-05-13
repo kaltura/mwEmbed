@@ -23,6 +23,7 @@
 			'visible': false,
 			'align': "right",
 			'applicationID': "DB6462E9",
+			'showTooltip': true,
 			'tooltip': 'Chromecast'
 		},
 		isDisabled: false,
@@ -91,7 +92,7 @@
 				this.$el = $( '<button/>' )
 					.attr( 'title', this.startCastTitle )
 					.addClass( "btn icon-chromecast" + this.getCssClass() )
-					.click( function() {
+					.click( function() {debugger;
 						if( _this.embedPlayer.selectedPlayer && _this.embedPlayer.selectedPlayer.library != "NativeComponent" ) {
 								_this.toggleCast();
 						} else {
@@ -116,6 +117,17 @@
 			var _this = this;
 			if (!this.casting){
 				// launch app
+				this.embedPlayer.showErrorMsg(
+					{'title':'Chromecast Player',
+						'message': gM('mwe-chromecast-connecting'),
+						'props':{
+							'customAlertContainerCssClass': 'connectingMsg',
+							'customAlertTitleCssClass': 'hidden',
+							'textColor': '#ffffff'
+						}
+					}
+				);
+				this.embedPlayer.disablePlayControls(["chromecast"]);
 				chrome.cast.requestSession(
 					function(e){
 						_this.onRequestSessionSuccess(e);
@@ -132,15 +144,19 @@
 		},
 
 		onRequestSessionSuccess: function(e) {
+			this.embedPlayer.layoutBuilder.closeAlert();
+			this.embedPlayer.enablePlayControls();
 			this.log( "Session success: " + e.sessionId);
 			this.session = e;
 			this.getComponent().css("color","#35BCDA");
-			this.getComponent().attr( 'title', this.stopCastTitle );
+			this.updateTooltip(this.stopCastTitle);
 			this.casting = true;
 			this.loadMedia();
 		},
 
 		onLaunchError: function() {
+			this.embedPlayer.layoutBuilder.closeAlert();
+			this.embedPlayer.enablePlayControls();
 			this.log("launch error");
 		},
 
@@ -180,6 +196,8 @@
 		onMediaDiscovered: function(how, mediaSession) {
 			this.log("new media session ID:" + mediaSession.mediaSessionId + ' (' + how + ')');
 			this.currentMediaSession = mediaSession;
+			this.getComponent().css("color","#35BCDA");
+			this.updateTooltip(this.stopCastTitle);
 			var _this = this;
 			mediaSession.addUpdateListener(function(e){_this.onMediaStatusUpdate(e);});
 			this.mediaCurrentTime = this.currentMediaSession.currentTime;
@@ -374,6 +392,7 @@
 				), 
 				this.onError
 			);
+			this.updateTooltip(this.startCastTitle);
 			this.log("media stopped");
 		},
 
@@ -384,7 +403,7 @@
 			// stop casting
 			this.session.stop(this.onStopAppSuccess, this.onError);
 			this.getComponent().css("color","white");
-			this.getComponent().attr( 'title', this.startCastTitle );
+			this.updateTooltip(this.startCastTitle);
 			this.casting = false;
 			// restore native player
 			this.embedPlayer.selectPlayer(this.savedPlayer);
@@ -395,7 +414,7 @@
 		},
 
 		onStopAppSuccess: function() {
-			this.log('Session stopped');
+			console.log('chromecast::Session stopped');
 		},
 
 		onMediaError: function(e) {

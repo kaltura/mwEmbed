@@ -31,3 +31,21 @@
 	width: 100%;
 	transform: translate(-50%, -50%);
 }
+.connectingMsg{
+	z-index: 101;
+	height: 100%;
+	width: 100%;
+	vertical-align: middle;
+	box-sizing: border-box;
+	margin: auto;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	max-width: 80%;
+	max-height: 30%;
+}
+.hidden{
+	visibility: hidden;
+}
