@@ -215,6 +215,10 @@
 	z-index: 3;
 }
 
+.playlistAPI .k-chapters-container.sticky-controls .k-scroll {
+	opacity: 1;
+}
+
 .playlistAPI .k-chapters-container.k-horizontal .k-scroll.k-next {
 	right: 0px;
 	top: 0px;
@@ -309,7 +313,9 @@
 	height: 20px;
 	position: absolute;
 }
-
+.playlistAPI .sticky-controls .k-carousel {
+	margin: 0 20px;
+}
 .playlistAPI .k-chapters-container.k-vertical .k-carousel {
 	float: none;
 }

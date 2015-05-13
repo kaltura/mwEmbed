@@ -37,7 +37,8 @@
 				'minDisplayWidth': 0,
 				'minDisplayHeight': 0,
 				'horizontalScrollItems': 1,
-				'scrollerCssPath': "resources/nanoScroller/nanoScroller.css"
+				'scrollerCssPath': "resources/nanoScroller/nanoScroller.css",
+				'stickyControls': false
 			});
 		},
 
@@ -182,18 +183,26 @@
 					}
 
 					if ( this.getConfig( 'containerPosition' ) == 'top' || this.getConfig( 'containerPosition' ) == 'bottom' ) {
-						var playlistHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * this.getConfig( "MinClips" ) + this.getMedialistHeaderComponent().height() : this.getConfig( "mediaItemHeight" ) + this.getConfig('horizontalHeaderHeight');
+						var playlistHeight = this.getPlaylistHeightBasedOnLayout();
 						this.getComponent().height(playlistHeight);
-						$( ".mwPlayerContainer" ).css( "height", this.$mediaListContainer.height() - playlistHeight + "px" );
-						var controlBarHeight = 0;
-						$('.block').each(function() {
-							controlBarHeight += $( this ).outerHeight( true ); // add height of each components container that is not hovering
+						var blockElementsHeight = 0;
+						this.$mediaListContainer.find('> .block').each(function(){
+							blockElementsHeight += $( this ).outerHeight( true );
 						});
-						this.getPlayer().getVideoHolder().css( "height", this.$mediaListContainer.height() - playlistHeight - controlBarHeight + "px" );
+						$( ".mwPlayerContainer" ).css( "height", this.$mediaListContainer.height() - blockElementsHeight - playlistHeight + "px" );
+						this.getPlayer().doUpdateLayout(true);
 					}
 				}
 			}
 			return this.$mediaListContainer;
+		},
+		getPlaylistHeightBasedOnLayout: function(){
+			var itemHeight = this.getConfig( "mediaItemHeight" )
+			if( this.getLayout() === "vertical" ) {
+				return itemHeight * this.getConfig( "MinClips" ) + this.getMedialistHeaderComponent().height();
+			} else {
+				return itemHeight + this.getConfig('horizontalHeaderHeight');
+			} 
 		},
 		// set the size of the playlist container and the video
 		setMedialistContainerSize: function(){
@@ -580,10 +589,11 @@
 			}else {
 				this.addScrollUiComponents();
 				var $cc = this.getMedialistComponent();
+				var $kcarousel = $cc.find('.k-carousel');
 				this.mediaItemVisible = this.calculateVisibleScrollItems();
 				var speed = mw.isTouchDevice() ? 100: 200;
 				// Add scrolling carousel to clip list ( once dom sizes are up-to-date )
-				$cc.find( '.k-carousel' ).jCarouselLite( {
+				$kcarousel.jCarouselLite( {
 					btnNext: '.k-next',
 					btnPrev: '.k-prev',
 					visible: this.mediaItemVisible,
@@ -597,8 +607,24 @@
 						$(_this.embedPlayer).trigger("scrollEnd");
 					});
 				$cc.find('ul').width((this.getMediaItemBoxWidth()+1)*this.mediaList.length);
-				$cc.find('.k-carousel').css('width', $cc.width() );
+
+				$kcarousel.css('width', this.getCarouselWidth() );
+				if( this.getConfig('stickyControls') ) {
+					$cc.addClass('sticky-controls');
+					this.setMediaBoxesDimensions();
+				}
 			}
+		},
+		getCarouselWidth: function(){
+			var $cc = this.getMedialistComponent();
+			var width = $cc.width();
+			if( !this.getConfig('stickyControls') ) {
+				return width;
+			}
+			$cc.find('.k-prev,.k-next').each(function(){
+				width -= $(this).outerWidth(true);
+			});
+			return 391;
 		},
 		getScrollComponent: function(){
 			if (!this.$scroll){
@@ -664,6 +690,12 @@
 					.addClass( "k-scroll k-next" )
 			);
 
+			if( ! this.getConfig('stickyControls') ) {
+				this.addHoverControls();
+			}
+		},
+		addHoverControls: function(){
+			var $cc = this.getMedialistComponent();
 			// Add media item hover to hide show play buttons:
 			var inKBtn = false;
 			var inContainer = false;
