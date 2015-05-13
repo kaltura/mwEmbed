@@ -67,7 +67,11 @@
 				var cuePoints = this.getCuePoints();
 				var cuePointsExist = (cuePoints.length > 0) ? true : false;
 				return (!this.getPlayer().useNativePlayerControls() &&
-					( ( this.getPlayer().isLive() && this.getPlayer().isDvrSupported() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) || cuePointsExist));
+							(
+								( this.getPlayer().isLive() && this.getPlayer().isDvrSupported() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) ||
+								( !this.getPlayer().isLive() && cuePointsExist )
+							)
+						);
 			},
 			roundPercisionFloat: function(value, exp){
 				// If the exp is undefined or zero...
