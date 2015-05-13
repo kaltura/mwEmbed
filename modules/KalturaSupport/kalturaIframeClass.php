@@ -697,7 +697,7 @@ HTML;
 	 * Get all the kaltura defined modules from player config
 	 * */
 	function outputKalturaModules(){
-		global $wgMwEmbedEnabledModules, $wgKwidgetPsEnabledModules, $wgKalturaPSHtml5ModulesDir;
+		global $wgMwEmbedEnabledModules, $wgKwidgetPsEnabledModules, $wgKalturaPSHtml5ModulesDir, $psRelativePath;
 		$o='';
 		// Init modules array, always include MwEmbedSupport
 		$moduleList = array( 'mw.MwEmbedSupport' );
@@ -744,8 +744,9 @@ HTML;
 		$jsonModuleList = json_encode($moduleList);
 		$jsonPsModuleList = json_encode($psModuleList);
 		$JST = $this->getTemplatesJSON();
+		//Set the kwidget-ps folder for the loader script
+		$o.="mw.config.set('pskwidgetpath', '$psRelativePath');";
 		// export the loading spinner config early on:
-		
 		$o.= <<<HTML
 		// Export our HTML templates
 		window.kalturaIframePackageData.templates =  {$JST};
