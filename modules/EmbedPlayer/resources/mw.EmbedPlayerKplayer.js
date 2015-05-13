@@ -810,7 +810,7 @@
 				return;
 			}
             var sourceIndex = -1; //autoDynamicStreamSwitch = true for adaptive bitrate (Auto)
-            if(source !== "Auto"){
+            if( source !== -1 ){
                 sourceIndex = this.getSourceIndex(source);
             }
 			this.playerObject.sendNotification('doSwitch', { flavorIndex: sourceIndex });

@@ -16,6 +16,7 @@
 		inUpdateLayout:false,
 		selectSourceTitle: gM( 'mwe-embedplayer-select_source' ),
 		switchSourceTitle: gM( 'mwe-embedplayer-switch_source' ),
+        AutoTitle: gM( 'mwe-embedplayer-auto_source' ),
 		saveBackgroundColor: null, // used to save background color upon disable and rotate and return it when enabled again to prevent rotating box around the icon when custom style is applied
 
         sourcesList: [],
@@ -62,6 +63,10 @@
 			this.bind( 'sourceSwitchingEnd', function(newIndex){
                 _this.onEnable();
 			});
+            this.bind( 'onHideControlBar', function(){
+                if ( _this.getMenu().isOpen() )
+                    _this.getMenu().close();
+            });
 
 			// Check for switch on resize option
 			if( this.getConfig( 'switchOnResize' ) ){
@@ -106,25 +111,9 @@
 				return ;
 			}
 
-            if(_this.getPlayer().streamerType != "http" && !_this.getPlayer().isPlaying()){
-                this.getMenu().addItem({
-                    'label': 'Auto',
-                    'active': true
-                });
+            //add Auto for addaptive bitrate streams
+            if ( !this.handleAdaptiveBitrateAndContinue() )
                 return;
-            }
-
-            if(_this.getPlayer().streamerType != "http" && _this.firstPlay){ //add and select Auto for adaptive bitrate
-                this.getMenu().addItem({
-                     'label': 'Auto',
-                    'callback': function () {
-                        _this.getPlayer().switchSrc("Auto");
-                    },
-                     'active': true
-                });
-
-                _this.firstPlay = false;
-            }
 
 			if( sources.length == 1 ){
 				// no need to do building menu logic. 
@@ -224,6 +213,35 @@
 				_this.getPlayer().mediaElement.selectedSource.getSrc()
 				);
 		},
+        handleAdaptiveBitrateAndContinue: function (){
+            //Silverlight smoothStream
+            if( ( this.getPlayer().streamerType === "smoothStream" ) ){
+                this.addAutoToMenu();
+                return true;
+            }
+
+            //HLS, HDS
+            if(  this.getPlayer().streamerType != "http" && !this.getPlayer().isPlaying() ){
+                this.addAutoToMenu();
+                return false;
+            }
+
+            if( this.getPlayer().streamerType != "http" && this.firstPlay ){ //add and select Auto for adaptive bitrate
+                this.addAutoToMenu();
+                this.firstPlay = false;
+            }
+            return true;
+        },
+        addAutoToMenu: function (){
+            var _this = this;
+            this.getMenu().addItem({
+                'label': _this.AutoTitle,
+                'callback': function () {
+                    _this.getPlayer().switchSrc("-1");
+                },
+               'active': true
+            });
+        },
 		addSourceToMenu: function( source ){
 			var _this = this;
 
@@ -244,7 +262,7 @@
                 });
             }
 		},
-		getSourceSizeName: function( source ){
+        getSourceSizeName: function( source ){
 			if( source.getHeight() < 255 ){
 				return '240P';
 			} else if( source.getHeight() < 370 ){
@@ -260,7 +278,7 @@
 		getSourceTitle: function( source ){
 			// We should return "Auto" for Apple HLS
 			if( source.getMIMEType() == 'application/vnd.apple.mpegurl' ) {
-				return 'Auto';
+				return _this.AutoTitle;
 			}
 			var title = '';
 			if( source.getHeight() ){

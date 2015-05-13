@@ -32,6 +32,7 @@ $messages['en'] = array(
 	'mwe-embedplayer-volume-decrease' => 'Decrease Volume',
 	'mwe-embedplayer-select_source' => 'Quality Settings',
 	'mwe-embedplayer-switch_source' => 'switch in progress',
+	'mwe-embedplayer-auto_source' => 'Auto',
 	'mwe-embedplayer-select_stream' => 'Select stream',
     'mwe-embedplayer-switch_stream' => 'switch in progress',
 	//'mwe-embedplayer-player_options' => 'Player options',
