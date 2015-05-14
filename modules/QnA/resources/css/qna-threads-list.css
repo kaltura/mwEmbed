@@ -222,5 +222,5 @@
     height: 1px;
     opacity: 0.3;
     position: absolute;
-    bottom: 0px;
+    bottom: -1px;
 }
