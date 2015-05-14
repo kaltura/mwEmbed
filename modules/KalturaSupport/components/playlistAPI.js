@@ -69,7 +69,8 @@
 			if ( !this.getConfig( 'mediaItemWidth') ){
 				this.widthSetByUser = false;           // user did not specify a required width. We will set to 320 and apply responsive logic on resizeEvent event
 				if ( this.getLayout() === "horizontal" ){
-					this.setConfig( 'mediaItemWidth', Math.floor($( ".playlistInterface" ).width() / this.getConfig("MinClips")) );
+					var width = this.getConfig("fixedControls") ? $( ".playlistInterface" ).width() - this.getConfig("horizontalControlsWidth")*2 : $( ".playlistInterface" ).width();
+					this.setConfig( 'mediaItemWidth', Math.floor(width / this.getConfig("MinClips")) );
 				}else{
 					this.setConfig( 'mediaItemWidth',320); // set default width to 320 if not defined by user
 				}
@@ -199,7 +200,9 @@
 									if (_this.getLayout() === "horizontal"){
 										_this.getMedialistComponent().find('ul').width((_this.getMediaItemBoxWidth()+1)*_this.mediaList.length);
 										_this.getMedialistComponent().find('.k-carousel').css('width', _this.getMedialistComponent().width() );
-
+										if (_this.getConfig('fixedControls')){
+											_this.getComponent().find('.k-carousel').css("margin-left",_this.getConfig("horizontalControlsWidth")).width(_this.getComponent().width() - _this.getConfig("horizontalControlsWidth")*2);
+										}
 										var scrollLeft = Math.abs(parseInt(_this.getComponent().find("ul").css("left")));
 										var hiddenItems = parseInt(scrollLeft / _this.getConfig( 'mediaItemWidth'));
 									}else{
@@ -299,7 +302,8 @@
 						}
 					}
 				}else{
-					this.setConfig( 'mediaItemWidth', Math.floor($( ".playlistInterface" ).width() / this.getConfig("MinClips")) );
+					var width = this.getConfig("fixedControls") ? $( ".playlistInterface" ).width() - this.getConfig("horizontalControlsWidth")*2 : $( ".playlistInterface" ).width();
+					this.setConfig( 'mediaItemWidth', Math.floor(width / this.getConfig("MinClips")) );
 				}
 				if ( this.getConfig('onPage') !== true ){ // do not refresh mediaListContainer on page
 					this.$mediaListContainer = null;

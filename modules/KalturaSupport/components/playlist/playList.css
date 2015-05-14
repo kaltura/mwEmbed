@@ -233,8 +233,17 @@
 .playlistAPI .k-chapters-container .k-next.disabled {
 	visibility: hidden;
 }
+.playlistAPI .k-chapters-container .k-next.fixed.disabled {
+	visibility: visible;
+	cursor: auto;
+	background-color: rgba(255, 255, 255, .1);
+}
 
 .playlistAPI .k-chapters-container .k-next:hover {
+	background-color: rgba(255, 255, 255, .5);
+}
+
+.playlistAPI .k-chapters-container .k-next.fixed {
 	background-color: rgba(255, 255, 255, .5);
 }
 
@@ -246,8 +255,17 @@
 .playlistAPI .k-chapters-container .k-prev.disabled {
 	visibility: hidden;
 }
+.playlistAPI .k-chapters-container .k-prev.fixed.disabled {
+	visibility: visible;
+	cursor: auto;
+	background-color: rgba(255, 255, 255, .1);
+}
 
 .playlistAPI .k-chapters-container .k-prev:hover {
+	background-color: rgba(255, 255, 255, .5);
+}
+
+.playlistAPI .k-chapters-container .k-prev.fixed {
 	background-color: rgba(255, 255, 255, .5);
 }
 
