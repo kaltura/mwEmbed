@@ -49,3 +49,8 @@
 .hidden{
 	visibility: hidden;
 }
+.titleHolder{
+	float: left;
+	width: 200px;
+	margin-left: 10px;
+}

@@ -473,10 +473,10 @@
 				'<div class="chromecastPlayback">' +
 				'<div class="chromecastThumbBorder">' +
 				'<img class="chromecastThumb" src="' + this.embedPlayer.poster + '"></img></div> ' +
-				'<div style="float: left; width: 200px; margin-left: 10px">' +
+				'<div class="titleHolder">' +
 				'<span class="chromecastTitle"></span><br>' +
 				'<div><i class="icon-chromecast chromecastPlayingIcon chromecastPlaying"></i>' +
-				'<span class="chromecastPlaying">Now Playing on Chromecast</span>'+
+				'<span class="chromecastPlaying">' + gM('mwe-chromecast-playing') + '</span>'+
 				'<span id="chromecastReceiverName" class="chromecastPlaying chromecastReceiverName"></span>'+
 				'</div></div></div></div>';
 		},
