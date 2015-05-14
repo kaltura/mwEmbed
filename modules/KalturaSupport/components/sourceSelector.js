@@ -10,7 +10,7 @@
 			"showTooltip": true,
 			"switchOnResize": false,
 			"simpleFormat": true,
-            "dispalyMode": "size" //'size' – displays frame size ( default ), 'bitrate' – displays the bitrate, 'sizebitrate' displays size followed by bitrate
+            "displayMode": "size" //'size' – displays frame size ( default ), 'bitrate' – displays the bitrate, 'sizebitrate' displays size followed by bitrate
 		},
 
 		isDisabled: false,
@@ -283,7 +283,7 @@
 			}
 
             var title = '';
-            switch( this.getConfig( 'dispalyMode' ) ){
+            switch( this.getConfig( 'displayMode' ) ){
                 case 'size' :
                     title = this.getSourceTitleSize(source);
                     break;
