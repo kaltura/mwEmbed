@@ -60,11 +60,14 @@
     content: "\e608";
 }
 
+.icon-qna-bullet:before {
+    content: "\e609";
+}
+
 .qnaInterface .qna-bullet-icon{
-    margin-top: 14px;
     margin-left: 5px;
     position: absolute;
-    font-size: 13px;
+    font-size: 15px;
 }
 
 .qnaInterface .qna-bullet-icon-read{
@@ -73,6 +76,18 @@
 
 .qnaInterface .qna-bullet-icon-unread{
     color: #00b4d1;
+}
+
+.qnaInterface .qna-bullet-icon-bottom-drop{
+    margin-top: 10px;
+}
+
+.qnaInterface .qna-bullet-icon-middle-drop{
+    margin-top: 12px;
+}
+
+.qnaInterface .qna-bullet-icon-top-drop{
+    margin-top: 14px;
 }
 
 .qnaInterface .qnaAnnouncementIconRead{
@@ -95,8 +110,8 @@
 
 .qnaInterface .collapseExpandIcon{
     position: absolute;
-    bottom: 12px;
-    right: 8px;
-    font-size: 17px;
+    bottom: 15px;
+    right: 12px;
+    font-size: 12px;
     float: right;
 }

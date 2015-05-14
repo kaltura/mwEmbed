@@ -47,10 +47,10 @@
     text-align: left;
     margin-top: 14px;
     margin-left: 20px;
-    width: -moz-calc(100% - 70px);
-    width: -webkit-calc(100% - 70px);
-    width: -o-calc(100% - 70px);
-    width: calc(100% - 70px);
+    width: -moz-calc(100% - 90px);
+    width: -webkit-calc(100% - 90px);
+    width: -o-calc(100% - 90px);
+    width: calc(100% - 90px);
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -67,10 +67,10 @@
     text-align: left;
     margin-top: 14px;
     margin-left: 20px;
-    width: -moz-calc(100% - 70px);
-    width: -webkit-calc(100% - 70px);
-    width: -o-calc(100% - 70px);
-    width: calc(100% - 70px);
+    width: -moz-calc(100% - 90px);
+    width: -webkit-calc(100% - 90px);
+    width: -o-calc(100% - 90px);
+    width: calc(100% - 90px);
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -86,8 +86,8 @@
     font-size: 13px;
     font-weight: 700;
     text-align: left;
-    margin-top: 8px;
-    margin-left: 20px;
+    margin-top: 10px;
+    margin-left: 21px;
     white-space: pre-wrap;
     padding-bottom: 5px;
 }
@@ -98,8 +98,8 @@
     font-size: 13px;
     font-weight: 400;
     text-align: left;
-    margin-top: 8px;
-    margin-left: 20px;
+    margin-top: 10px;
+    margin-left: 21px;
     white-space: pre-wrap;
     padding-bottom: 5px;
 }
@@ -153,20 +153,20 @@
 }
 
 .qnaInterface .qnaThreadTime{
-    margin-top: 8px;
+    margin-top: 10px;
     float: right;
     position: relative;
-    right: 10px;
+    right: 14px;
     font-size: 9px;
     font-weight: 200;
     color: #ffffff;
 }
 
 .qnaInterface .qnaThreadTimeRead{
-    margin-top: 8px;
+    margin-top: 10px;
     float: right;
     position: relative;
-    right: 10px;
+    right: 14px;
     font-size: 9px;
     font-weight: 200;
     color: #414442;
@@ -192,7 +192,7 @@
     opacity: 0.5;
     position: absolute;
     height:100%;
-    margin-left: 11px;
+    margin-left: 12px;
 }
 
 .qnaInterface .qna-vertical-line-first{
@@ -206,9 +206,9 @@
 /*line between entries/threads*/
 .qnaInterface .ResponseLineSeparator{
     background-color: #aaaaaa;
-    width: 300px;
+    width: 100%;
     height: 1px;
-    opacity: 0.5;
+    opacity: 0.3;
     position: absolute;
     bottom: 0px;
 }
