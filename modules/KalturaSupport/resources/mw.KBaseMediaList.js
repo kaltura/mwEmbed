@@ -601,7 +601,8 @@
 				$cc.find('ul').width((this.getMediaItemBoxWidth()+1)*this.mediaList.length);
 				$cc.find('.k-carousel').css('width', $cc.width() );
 				if (this.getConfig('fixedControls')){
-					$cc.find('.k-carousel').css("margin-left",this.getConfig("horizontalControlsWidth")).width($cc.width() - this.getConfig("horizontalControlsWidth")*2);
+					var width = $cc.width() - this.getConfig("horizontalControlsWidth") * 2;
+					$cc.find('.k-carousel').css("margin-left",this.getConfig("horizontalControlsWidth")).width(width);
 				}
 			}
 		},
