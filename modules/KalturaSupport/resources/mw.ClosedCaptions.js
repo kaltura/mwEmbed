@@ -171,16 +171,17 @@
 			if( this.getConfig('layout') == 'below'){
 				this.updateBelowVideoCaptionContainer();
 			}
-
-			this.bind( 'onHideControlBar onShowControlBar', function(event, layout ){
-				if ( !_this.ended && _this.getPlayer().isOverlayControls() ) {
-					_this.defaultBottom = layout.bottom;
-					// Move the text track down if present
-					_this.getPlayer().getInterface().find( '.track' )
-						.stop()
-						.animate( layout, 'fast' );
-				}
-			});
+			if ( this.getConfig('layout') == 'ontop' ) {
+				this.bind('onHideControlBar onShowControlBar', function (event, layout) {
+					if (!_this.ended && _this.getPlayer().isOverlayControls()) {
+						_this.defaultBottom = layout.bottom;
+						// Move the text track down if present
+						_this.getPlayer().getInterface().find('.track')
+							.stop()
+							.animate(layout, 'fast');
+					}
+				});
+			}
 
 			this.bind("AdSupport_StartAdPlayback", function(){
 				_this.setConfig('displayCaptions', false);
