@@ -320,7 +320,7 @@
                 if( bits[0] == '0' ){
                     bits = bits.substring(1);
                 }
-                title+= ' ' + bits + 'Mbs ';
+                title+= ' ' + bits + ' Mbs ';
             }
             return title;
         },
