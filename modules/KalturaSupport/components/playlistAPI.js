@@ -201,7 +201,8 @@
 										_this.getMedialistComponent().find('ul').width((_this.getMediaItemBoxWidth()+1)*_this.mediaList.length);
 										_this.getMedialistComponent().find('.k-carousel').css('width', _this.getMedialistComponent().width() );
 										if (_this.getConfig('fixedControls')){
-											_this.getComponent().find('.k-carousel').css("margin-left",_this.getConfig("horizontalControlsWidth")).width(_this.getComponent().width() - _this.getConfig("horizontalControlsWidth")*2);
+											var width = _this.getComponent().width() - _this.getConfig("horizontalControlsWidth") *2 ;
+											_this.getComponent().find('.k-carousel').css("margin-left",_this.getConfig("horizontalControlsWidth")).width(width);
 										}
 										var scrollLeft = Math.abs(parseInt(_this.getComponent().find("ul").css("left")));
 										var hiddenItems = parseInt(scrollLeft / _this.getConfig( 'mediaItemWidth'));
