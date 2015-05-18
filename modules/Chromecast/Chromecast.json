@@ -1,0 +1,15 @@
+{
+    "chromecast": {
+        "scripts": [
+            "resources/chromecastLib.js",
+            "resources/chromecast.js"
+        ],
+        "dependencies": "mw.KBaseComponent",
+        "kalturaPluginName": "chromecast",
+        "styles": "resources/chromecast.css",
+        "messageFile": "Chromecast.i18n.json"
+    },
+    "mw.EmbedPlayerChromecast": {
+        "scripts": "resources/mw.EmbedPlayerChromecast.js"
+    }
+}

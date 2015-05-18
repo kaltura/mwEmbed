@@ -1,0 +1,23 @@
+{
+    "actionButtons": {
+        "scripts": "resources/actionButtons.js",
+        "styles": "resources/call-to-action.css",
+        "dependencies": [
+            "mw.EmbedPlayer",
+            "mw.KBaseScreen"
+        ],
+        "templates": "../CallToAction/templates/action-buttons.tmpl.html",
+        "kalturaPluginName": "actionButtons"
+    },
+    "actionForm": {
+        "scripts": "resources/actionForm.js",
+        "styles": "resources/call-to-action.css",
+        "dependencies": [
+            "mw.EmbedPlayer",
+            "jquery.serialize-object",
+            "mw.KBaseScreen"
+        ],
+        "templates": "../CallToAction/templates/collect-form.tmpl.html",
+        "kalturaPluginName": "actionForm"
+    }
+}

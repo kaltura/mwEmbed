@@ -236,10 +236,7 @@ mw.KWidgetSupport.prototype = {
 
 	updatePlayerData: function( embedPlayer,  playerData, callback ){
 		var _this = this;
-		// Check for playerData error:
-		if( playerData.error ){
-			embedPlayer.setError( playerData.error );
-		}
+		this.handlePlayerError(embedPlayer, playerData); // Check for playerData error
 
 		var hasLivestreamConfig = function ( protocol ) {
 			var configurations = playerData.meta.liveStreamConfigurations;
@@ -728,6 +725,11 @@ mw.KWidgetSupport.prototype = {
 		if( autoPlay ){
 			embedPlayer.autoplay = true;
 		}
+		var inline = getAttr( 'EmbedPlayer.WebKitPlaysInline' );
+		if (inline) {
+			embedPlayer.inline = true;
+		}
+
 		
 		// Check for autoMute:
 		var autoMute = getAttr( 'autoMute' );
@@ -1001,6 +1003,24 @@ mw.KWidgetSupport.prototype = {
 			callback( playerData );
 		});
 	},
+	handlePlayerError: function(embedPlayer, data){
+		var errObj = null;
+		if( data.meta &&  data.meta.code == "INVALID_KS" ){
+			errObj = embedPlayer.getKalturaMsgObject( "NO_KS" );
+		}
+		if( data.error ) {
+			errObj = embedPlayer.getKalturaMsgObject( 'GENERIC_ERROR' );
+			errObj.message = data.error;
+			if( data.meta &&  data.meta.name == "scheduling" ){
+				errObj = embedPlayer.getKalturaMsgObject( "OUT_OF_SCHEDULING" );
+			}
+		}
+
+		if( errObj ) {
+			embedPlayer.hideSpinner();
+			embedPlayer.setError( errObj );
+		}
+	},
 	/**
 	 * handle player data mappings to embedPlayer
 	 */
@@ -1011,19 +1031,8 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.kpartnerid = entryResult.meta.partnerId;
 		}
 
-		// Error handling
-		var errObj = null;
-		if( entryResult.meta &&  entryResult.meta.code == "INVALID_KS" ){
-			errObj = embedPlayer.getKalturaMsgObject( "NO_KS" );
-		}
-		if( entryResult.error ) {
-			errObj = embedPlayer.getKalturaMsgObject( 'GENERIC_ERROR' );
-			errObj.message = entryResult.error;
-		}
-		if( errObj ) {
-			embedPlayer.hideSpinner();
-			embedPlayer.setError( errObj );
-		}
+		this.handlePlayerError(embedPlayer, entryResult); // Error handling
+
 		if (entryResult.entry && entryResult.entry.manualProvider){
 			mw.setConfig("manualProvider",true);
 		}
@@ -1519,10 +1528,12 @@ mw.KWidgetSupport.prototype = {
 				deviceSources[inx]['src'] = deviceSources[inx]['src'].substring(0, index) + ksStr +
 					'/referrer/' + referrer +
 					'/clientTag/' + clientTag +
+					'/playSessionId/' + _this.getGUID() +
 					deviceSources[inx]['src'].substring(index) ;
 			} else {
 				deviceSources[inx]['src'] = deviceSources[inx]['src'] +
 					'?referrer=' + referrer + ksQueryString +
+					'&playSessionId=' + _this.getGUID()+
 					'&clientTag=' + clientTag;
 			}
 		});
@@ -1600,7 +1611,7 @@ mw.KWidgetSupport.prototype = {
 		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/' + format + '/protocol/' + protocol + '/uiConfId/' + embedPlayer.kuiconfid +  '/a.' + extension;
 		// Append KS & Referrer
 		function getKs() {
-			srcUrl += '?referrer=' + base64_encode( _this.getHostPageUrl() );
+			srcUrl += '?referrer=' + base64_encode( _this.getHostPageUrl() ) + '&playSessionId=' + _this.getGUID();
 			var deferred = $.Deferred();
 			var ks = _this.kClient.getKs();
 			if( ks ){

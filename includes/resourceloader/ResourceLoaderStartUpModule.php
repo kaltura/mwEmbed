@@ -178,9 +178,9 @@ class ResourceLoaderStartUpModule extends ResourceLoaderModule {
 	 * @return string
 	 */
 	public function getScript( ResourceLoaderContext $context ) {
-		global $IP, $wgLoadScript, $wgLegacyJavaScriptGlobals;
+		global $IP, $wgScriptPath, $wgLoadScript, $wgLegacyJavaScriptGlobals;
 
-		$out = file_get_contents( "$IP/resources/startup.js" );
+		$out = file_get_contents( "$IP/$wgScriptPath/resources/startup.js" );
 		if ( $context->getOnly() === 'scripts' ) {
 
 			// The core modules:
@@ -240,7 +240,7 @@ class ResourceLoaderStartUpModule extends ResourceLoaderModule {
 	 * @return array|mixed
 	 */
 	public function getModifiedTime( ResourceLoaderContext $context ) {
-		global $IP, $wgCacheEpoch;
+		global $IP, $wgScriptPath, $wgCacheEpoch;
 
 		$hash = $context->getHash();
 		if ( isset( $this->modifiedTime[$hash] ) ) {
@@ -252,7 +252,7 @@ class ResourceLoaderStartUpModule extends ResourceLoaderModule {
 		$loader = $context->getResourceLoader();
 		$loader->preloadModuleInfo( $loader->getModuleNames(), $context );
 
-		$this->modifiedTime[$hash] = filemtime( "$IP/resources/startup.js" );
+		$this->modifiedTime[$hash] = filemtime( "$IP/$wgScriptPath/resources/startup.js" );
 		// ATTENTION!: Because of the line above, this is not going to cause
 		// infinite recursion - think carefully before making changes to this
 		// code!

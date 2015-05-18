@@ -32,6 +32,7 @@ $messages['en'] = array(
 	'mwe-embedplayer-volume-decrease' => 'Decrease Volume',
 	'mwe-embedplayer-select_source' => 'Quality Settings',
 	'mwe-embedplayer-switch_source' => 'switch in progress',
+	'mwe-embedplayer-auto_source' => 'Auto',
 	'mwe-embedplayer-select_stream' => 'Select stream',
     'mwe-embedplayer-switch_stream' => 'switch in progress',
 	//'mwe-embedplayer-player_options' => 'Player options',
@@ -66,6 +67,8 @@ $messages['en'] = array(
 	//'mwe-embedplayer-credits' => 'Credits',
 	//'mwe-embedplayer-about-library'=> 'About Kaltura player',
 	'mwe-timedtext-no-subtitles' => 'No Subtitles',
+	'mwe-embedplayer-related' => 'Related',
+	'mwe-embedplayer-related-errMsg' => 'No related<br>videos were<br>found.',
 	/*'mwe-embedplayer-about-library-desc' => "Kaltura's HTML5 media library enables you to take advantage of the HTML5 &lt;video&gt; and &lt;audio&gt; tags today with a consistent player interface across all major browsers.
 
 [$1 More about the Kaltura player library].",

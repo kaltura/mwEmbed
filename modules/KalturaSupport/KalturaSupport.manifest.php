@@ -512,8 +512,8 @@ return array(
 		'attributes' => array_merge($kgDefaultComponentAttr,
 			array(
 				'flavorID' => array(
-					'label' => 'Flavor ID',
-					'doc' => "Flavor ID for the downloaded movie source. When specified, overrides any preferred bitrate settings",
+					'label' => 'Flavor Asset ID',
+					'doc' => "Flavor Asset ID for the downloaded movie source. When specified, overrides any preferred bitrate settings",
 					'type' => 'string',
 					'initvalue' => ''
 				),
@@ -1584,18 +1584,27 @@ The playhead reflects segment time as if it was the natural stream length.",
 		'description' => 'Add the Related Videos screen at the end of the video to attract users to watch additional videos.',
 		'attributes' => array_merge($kgDefaultComponentAttr,
 			array(
-				'playlistId' => array(
-					'doc' => 'Playlist Id that will be used as the data source for related items.',
-					'configObject' => "playlistSelectBox",
-					'initvalue' => '',
-					'filter' => "entry",
-					'type' => 'entrySelector'
-				),
-				'entryList' => array(
-					'label' => 'Entry IDs list',
-					'doc' => 'Allows runtime injection of list of related entries seperated by commas.
-						 This will only be used if the playlistId is null.',
+				'entries' => array(
+                    'label' => 'Related Entries Source',
+                    'doc' => 'Select the related entries source.',
+                    'configObject' => "playlistSelectBox",
+                    'type' => 'related'
+                ),
+				'clickUrl' => array(
+					'doc' => "<p style='text-align: left'>Defines the URL for a related item click</p>
+								If this left blank the click will replace the current video with a new one.
+								example: <b>http://mydomain.com/?videoId={related.selectedEntry.id}</b> as a custom
+								URL with the entry id as postfix",
 					'type' => 'string'
+				),
+				'autoContinueTime' => array(
+					'doc' => 'Number of seconds for auto play.',
+					'type' => 'number'
+				),
+
+				'itemsLimit' => array(
+					'doc' => 'Maximum number of items to show on the related screen.',
+					'type' => 'number'
 				),
 				'displayOnPlaybackDone' => array(
 					'doc' => 'Display related screen automatically when playback has finished',
@@ -1606,25 +1615,10 @@ The playhead reflects segment time as if it was the natural stream length.",
 					'doc' => 'Should the Next Item be automatically played.',
 					'type' => 'boolean'
 				),
-				'autoContinueTime' => array(
-					'doc' => 'Number of seconds for auto play.',
-					'type' => 'number'
-				),
-				'clickUrl' => array(
-					'doc' => "<p style='text-align: left'>Defines the URL for a related item click</p>
-								If this left blank the click will replace the current video with a new one.
-								example: <b>http://mydomain.com/?videoId={related.selectedEntry.id}</b> as a custom
-								URL with the entry id as postfix",
-					'type' => 'string'
-				),
-				'itemsLimit' => array(
-					'doc' => 'Maximum number of items to show on the related screen.',
-					'type' => 'number'
-				),
 				'storeSession'=> array(
-					'doc' => "Store the played entries across page views in related clips display",
-					'type' => 'boolean'
-				)
+                    'doc' => "Store the played entries across page views in related clips display",
+                    'type' => 'boolean'
+                )
 				/*
 				// hide template path for now, no way for user to provide useful value here.
 				'templatePath' => array(
