@@ -40,7 +40,7 @@
                         <div class="ResponseLineSeparator"></div>
                     </div>
                 </div>
-                <div data-bind="if: entries()[0]().getType() === 'Question'">
+                <div data-bind="if: entries()[0]().getType() === 'Question' || entries()[0]().getType() === 'Answer'">
                     <div class="qnaThread qnaQuestionsThread" data-bind='css: {"qnaThreadLast":$index()===$parent.myObservableArray().length-1}'>
 
                         <div data-bind='{ foreach: entries() , as "entry"}'>

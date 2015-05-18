@@ -32,6 +32,7 @@
                 // if it's not - call itemRead
                 this.EntryClicked = function (entry, event) {
                     if (entry.getThread().entries()[0]() == entry){
+                        entry.getThread().entries.reverse();
                         _this.collapseExpandThread(entry, event);
                     }
                     else{

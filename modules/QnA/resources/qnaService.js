@@ -43,7 +43,12 @@ DAL for Q&A Module
         this.isCollapsed = ko.observable(true);
         this.appendEntry = function(entry){
             entry.setThread(_this);
-            _this.entries.push(ko.observable(entry));
+            if (!_this.isCollapsed()) {
+                _this.entries.push(ko.observable(entry));
+            }
+            else{
+                _this.entries.unshift(ko.observable(entry));
+            }
         };
 
         this.hasUnreadEntries = ko.computed(function() {
@@ -317,10 +322,17 @@ DAL for Q&A Module
                     }
                     found = true;
 
-                    _this.QnaThreads.splice(i, 0, _this.QnaThreads()[i]);
+                    _this.QnaThreads.unshift(_this.QnaThreads()[i]);
                     _this.QnaThreads.splice(i+1, 1);
 
                     break;
+
+                    //var tmp = _this.QnaThreads()[i];
+                    ////_this.QnaThreads.splice(i, 0, _this.QnaThreads()[i]);
+                    ////
+                    //_this.QnaThreads.splice(i, 1);
+                    //_this.QnaThreads.unshift(tmp);
+
                 }
             }
 
