@@ -41,7 +41,7 @@
 }
 
 .icon-qna-expand:before {
-    content: "\e604";
+    content: "\e608";
 }
 
 .icon-qna-Ask:before {
@@ -57,7 +57,7 @@
 }
 
 .icon-qna-collapse:before {
-    content: "\e608";
+    content: "\e604";
 }
 
 .icon-qna-bullet:before {
@@ -76,18 +76,19 @@
 
 .qnaInterface .qna-bullet-icon-unread{
     color: #00b4d1;
+    z-index: 99999;
 }
 
 .qnaInterface .qna-bullet-icon-bottom-drop{
-    margin-top: 10px;
+    margin-top: 11px;
 }
 
 .qnaInterface .qna-bullet-icon-middle-drop{
-    margin-top: 12px;
+    margin-top: 13px;
 }
 
 .qnaInterface .qna-bullet-icon-top-drop{
-    margin-top: 14px;
+    margin-top: 15px;
 }
 
 .qnaInterface .qnaAnnouncementIconRead{
@@ -95,8 +96,8 @@
     color: #414442;
     position: relative;
     left: 10px;
-    margin-top: 11px;
-    font-size: 17px;
+    bottom: 4px;
+    ont-size: 17px;
 }
 
 .qnaInterface .qnaAnnouncementIcon{
@@ -104,14 +105,14 @@
     color: #ffffff;
     position: relative;
     left: 10px;
-    margin-top: 11px;
+    bottom: 4px;
     font-size: 17px;
 }
 
 .qnaInterface .collapseExpandIcon{
     position: absolute;
-    bottom: 15px;
-    right: 12px;
+    top: 14px;
+    right: 15px;
     font-size: 12px;
     float: right;
 }
