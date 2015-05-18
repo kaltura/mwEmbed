@@ -294,20 +294,15 @@
                     title = this.getSourceTitleSizeBitrate(source);
                     break;
             }
-            if( this.getConfig( 'simpleFormat' ) ){
-                if( source.hq ){
-                    title += ' HQ';
-                }
-            } else {
-                // include type if not simple format
-                title += ' ' + source.getMIMEType().replace('video/', '');
-            }
             return title;
 		},
         getSourceTitleSize: function( source ){
             var title = '';
             if( source.getHeight() ){
                 title = this.getSourceSizeName( source );
+                if( this.getConfig( 'displayMode' ) === 'size' && this.getConfig( 'simpleFormat' ) && source.hq ){
+                    title += ' HQ';
+                }
             } else { //fallback for a case we don't have a frame size (height) for the source (for example HLS source)
                 title = this.getSourceTitleBitrate(source);
             }
