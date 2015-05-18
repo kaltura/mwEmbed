@@ -786,6 +786,12 @@ $uiVars = array(
 					'desc' => "If the player should hide the loading spinner when it is in buffering mode",
 					'default' => 'false',
 					'example' => ''
+			),
+			'EmbedPlayer.DisableContextMenu' => array(
+					'type' => 'Boolean',
+					'desc' => "Disables the player's right-click context menu",
+					'default' => 'false',
+					'example' => '../modules/KalturaSupport/tests/ThumbnailEmbedManyPlayers.qunit.html'
 			)
 		)
 	),
