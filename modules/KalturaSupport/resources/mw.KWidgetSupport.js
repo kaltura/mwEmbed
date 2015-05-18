@@ -443,7 +443,7 @@ mw.KWidgetSupport.prototype = {
 					"data-frameRate": flavorAsset.frameRate,
 					"data-flavorid": flavorPartnerData.flavorid
 				};
-				if (flavorPartnerData["default"] === true){
+				if (flavorPartnerData["default"] === "true"){
 					flavorAssetObj["default"] = true;
 				}
 				flavorAssets.push( flavorAssetObj );
