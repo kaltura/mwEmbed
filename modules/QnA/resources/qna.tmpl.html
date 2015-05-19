@@ -94,6 +94,13 @@
                                 </div>
                             </div>
                         </div>
+                        <div data-bind="if: !isCollapsed()">
+                            <div class="qnaReplyBox">
+                                <label class="qnaReplyPipeLabel">|</label>
+                                <textarea class="qnaReplyTextArea" rows="1" data-bind="value: replyText"></textarea>
+                                <button class="qnaReplySendButton" data-bind="click: $parent.inThreadReply.bind($data, replyText)">send</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

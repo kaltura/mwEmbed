@@ -46,6 +46,11 @@
                     }
                 };
 
+                this.inThreadReply = function(replyText, qnaThread) {
+                    _this.qnaService.submitQuestion(replyText(), qnaThread.entries()[qnaThread.entries().length-1]());
+                    qnaThread.replyText(gM("qna-reply-here"));
+                };
+
                 this.collapseExpandThread = function (entry, event) {
                     console.log("collapse / expand for thread with id " + entry.getThreadID() + " was clicked");
 

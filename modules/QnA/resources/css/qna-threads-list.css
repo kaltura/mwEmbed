@@ -207,6 +207,71 @@
     bottom: 4px;
 }
 
+.qnaInterface .qnaReplyBox {
+    background-color: rgba(0, 0, 0, 0.08);
+    width: 100%;
+    height: auto;
+    /*position: relative;*/
+}
+
+.qnaInterface .qnaReplyPipeLabel{
+    background-color: transparent;
+    font-family: 'Lato', Helvetica, Arial;
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 14px;
+    text-align: left;
+    color: #414442;
+    border: transparent;
+    border: none;
+    margin-top: 4px;
+    -webkit-box-shadow:	none;
+    -moz-box-shadow:	none;
+    box-shadow:			none;
+    width: 4px;
+    margin-left: 15px;
+    float: left;
+    cursor: default;
+    position: relative;
+    top: 4px;
+}
+
+.qnaInterface .qnaReplyTextArea{
+    background-color: transparent;
+    position: relative;
+    top: 3px;
+    font-family: 'Lato', Helvetica, Arial;
+    font-size: 13px;
+    line-height: 14px;
+    text-align: left;
+    color: #414442;
+    border: none;
+    margin-top: 2px;
+    -webkit-box-shadow:	none;
+    -moz-box-shadow:	none;
+    box-shadow:			none;
+    resize: none;
+    overflow: hidden;
+    height: auto;
+    /* Firefox */
+    width: -moz-calc(100% - 75px);
+    /* WebKit */
+    width: -webkit-calc(100% - 75px);
+    /* Opera */
+    width: -o-calc(100% - 75px);
+    /* Standard */
+    width: calc(100% - 75px);
+}
+
+.qnaInterface .qnaReplySendButton{
+    width: 40px;
+    border: none;
+    background-color: transparent;
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+}
+
 /*background color for entries / threads*/
 .qnaInterface .qnaAnnouncement{
     background-color: #76c044;

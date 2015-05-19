@@ -59,6 +59,9 @@ DAL for Q&A Module
             }
             return false;
         });
+
+        // This is here so we will be able to save the reply in the context of the thread
+        this.replyText = ko.observable(gM("qna-reply-here"));
     };
 
     function QnaEntry(cuePoint){
@@ -199,12 +202,9 @@ DAL for Q&A Module
 
             var metadata= { };
             if (parent) {
-                metadata.ThreadId = parent.metadata.ThreadId;
-                metadata.Type="Answer";
-            } else {
-                //no threadid!
-                metadata.Type="Question";
+                metadata.ThreadId = parent.cuePoint().metadata.ThreadId;
             }
+                metadata.Type="Question";
 
             var xmlData = _this.createMetadataXmlFromObject(metadata);
 
@@ -220,7 +220,7 @@ DAL for Q&A Module
                 "cuePoint:partnerData": xmlData
             };
             if (parent) {
-                createCuePointRequest["cuePoint:parentId"] = parent.id;
+                createCuePointRequest["cuePoint:parentId"] = parent.cuePoint().id;
             }
 
             var listMetadataProfileRequest = {
