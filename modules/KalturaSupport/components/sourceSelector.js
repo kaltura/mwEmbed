@@ -9,7 +9,8 @@
 			"align": "right",
 			"showTooltip": true,
 			"switchOnResize": false,
-			"simpleFormat": true
+			"simpleFormat": true,
+            "displayMode": "size" //'size' – displays frame size ( default ), 'bitrate' – displays the bitrate, 'sizebitrate' displays size followed by bitrate
 		},
 
 		isDisabled: false,
@@ -280,26 +281,52 @@
 			if( source.getMIMEType() == 'application/vnd.apple.mpegurl' ) {
 				return _this.AutoTitle;
 			}
-			var title = '';
-			if( source.getHeight() ){
-				title+= this.getSourceSizeName( source );
-			} else if ( source.getBitrate() ) {
-				var bits = ( Math.round( source.getBitrate() / 1024 * 10 ) / 10 ) + '';
-				if( bits[0] == '0' ){
-					bits = bits.substring(1);
-				}
-				title+= ' ' + bits + 'Mbs ';
-			}
-			if( this.getConfig( 'simpleFormat' ) ){
-				if( source.hq ){
-					title += ' HQ';
-				}
-			} else {
-				// include type if not simple format
-				title += ' ' + source.getMIMEType().replace('video/', '');
-			}
-			return title;
+
+            var title = '';
+            switch( this.getConfig( 'displayMode' ) ){
+                case 'size' :
+                    title = this.getSourceTitleSize(source);
+                    break;
+                case 'bitrate' :
+                    title = this.getSourceTitleBitrate(source);
+                    break;
+                case 'sizebitrate' :
+                    title = this.getSourceTitleSizeBitrate(source);
+                    break;
+            }
+            return title;
 		},
+        getSourceTitleSize: function( source ){
+            var title = '';
+            if( source.getHeight() ){
+                title = this.getSourceSizeName( source );
+                if( this.getConfig( 'displayMode' ) === 'size' && this.getConfig( 'simpleFormat' ) && source.hq ){
+                    title += ' HQ';
+                }
+            } else { //fallback for a case we don't have a frame size (height) for the source (for example HLS source)
+                title = this.getSourceTitleBitrate(source);
+            }
+            return title;
+        },
+        getSourceTitleBitrate: function( source ){
+            var title = '';
+            if ( source.getBitrate() ) {
+                var bits = ( Math.round( source.getBitrate() / 1024 * 10 ) / 10 ) + '';
+                if( bits[0] == '0' ){
+                    bits = bits.substring(1);
+                }
+                title+= ' ' + bits + ' Mbs ';
+            }
+            return title;
+        },
+        getSourceTitleSizeBitrate: function( source ){
+            var title = '';
+            if( source.getHeight() ){
+                title = this.getSourceSizeName( source ) + ' ';
+            }
+            title += this.getSourceTitleBitrate(source);
+            return title;
+        },
 		toggleMenu: function(){
 			if ( this.isDisabled ) {
 				return;
