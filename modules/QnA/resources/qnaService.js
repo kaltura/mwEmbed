@@ -320,11 +320,12 @@ DAL for Q&A Module
                     if (!found) {
                         _this.QnaThreads()[i]().appendEntry(qnaEntry);
                     }
+
+                    if (!found) {
+                        _this.QnaThreads.unshift(_this.QnaThreads()[i]);
+                        _this.QnaThreads.splice(i + 1, 1);
+                    }
                     found = true;
-
-                    _this.QnaThreads.unshift(_this.QnaThreads()[i]);
-                    _this.QnaThreads.splice(i+1, 1);
-
                     break;
 
                     //var tmp = _this.QnaThreads()[i];
