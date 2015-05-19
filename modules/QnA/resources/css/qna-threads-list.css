@@ -117,6 +117,7 @@
     white-space: pre-wrap;
     top: 10px;
     padding-right: 30px;
+    word-wrap: break-word;
 }
 
 .qnaInterface .qnaThreadTextRead{
@@ -131,6 +132,7 @@
     white-space: pre-wrap;
     top: 10px;
     padding-right: 30px;
+    word-wrap: break-word;
 }
 
 .qnaInterface .qnaAnnouncementTitle{
@@ -168,6 +170,7 @@
     margin-left: 19px;
     margin-right: 14px;
     padding-right: 24px;
+    word-wrap: break-word;
 }
 
 .qnaInterface .qnaAnnouncementTextRead{
@@ -181,6 +184,7 @@
     margin-left: 19px;
     margin-right: 14px;
     padding-right: 24px;
+    word-wrap: break-word;
 }
 
 .qnaInterface .qnaThreadTime{
