@@ -47,6 +47,9 @@
                 };
 
                 this.inThreadReply = function(replyText, qnaThread) {
+                    if (replyText() === gM("qna-reply-here")){
+                        return;
+                    }
                     _this.qnaService.submitQuestion(replyText(), qnaThread.entries()[qnaThread.entries().length-1]());
                     qnaThread.replyText(gM("qna-reply-here"));
                 };
@@ -54,12 +57,14 @@
                 this.clearTextArea = function(qnaThread, event){
                     if (qnaThread.replyText() === gM("qna-reply-here")){
                         qnaThread.replyText("");
+                        qnaThread.isTypingAnswer(true);
                     }
                 };
 
                 this.resetTextArea = function(qnaThread, event){
                     if (qnaThread.replyText() === ""){
                         qnaThread.replyText(gM("qna-reply-here"));
+                        qnaThread.isTypingAnswer(false);
                     }
                 };
 

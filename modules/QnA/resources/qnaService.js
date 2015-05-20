@@ -62,6 +62,8 @@ DAL for Q&A Module
 
         // This is here so we will be able to save the reply in the context of the thread
         this.replyText = ko.observable(gM("qna-reply-here"));
+
+        this.isTypingAnswer = ko.observable(false);
     };
 
     function QnaEntry(cuePoint){

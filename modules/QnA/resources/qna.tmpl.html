@@ -99,11 +99,14 @@
                                 <label class="qnaReplyPipeLabel">|</label>
                                 <textarea class="qnaReplyTextArea"
                                           rows="1"
-                                          data-bind="   value: replyText,
+                                          data-bind="   css:{   'qnaReplyTextAreaText': isTypingAnswer(),
+                                                                'qnaReplyTextAreaPlaceHolderText': !isTypingAnswer()
+                                                        },
+                                                        value: replyText,
                                                         click: $parent.clearTextArea,
                                                         event:{blur: $parent.resetTextArea, wheel: $parent.textAreaScrolled},
                                                         autoReSize: {}"></textarea>
-                                <button class="qnaReplySendButton" data-bind="click: $parent.inThreadReply.bind($data, replyText)">send</button>
+                                <button class="qnaReplySendButton" data-bind="click: $parent.inThreadReply.bind($data, replyText), text: gM('qna-send-button-text')"></button>
                             </div>
                         </div>
                     </div>
