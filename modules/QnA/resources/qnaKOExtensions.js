@@ -38,4 +38,17 @@
 
         }, this);
     }
+
+    ko.bindingHandlers.autoReSize = {
+        init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+            var opts = {
+                context: $(element)
+                , animate: true
+                , cloneClass: 'faketextarea'
+                , maxHeight: 50
+            };
+            $(element).autogrow(opts);
+        }
+    };
+
 })(window.mw, window.jQuery);
