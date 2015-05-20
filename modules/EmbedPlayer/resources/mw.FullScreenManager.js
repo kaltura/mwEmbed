@@ -180,13 +180,6 @@ mw.FullScreenManager.prototype = {
 		this.parentsRelativeList = [];
 		this.parentsFixedList = [];
 
-		// Set the original parent page scale if possible:
-		this.orginalParnetViewPortContent = $doc.find( 'meta[name="viewport"]' ).attr( 'content' );
-
-		if( !this.orginalParnetViewPortContent ) {
-			this.orginalParnetViewPortContent = $doc.find('meta[name="viewport"]').attr('content', 'width=device-width, user-scalable=yes');
-		}
-
 		this.orginalTargetElementLayout = {
 			'style' : $target[0].style.cssText,
 			'width' : $target.width(),
@@ -195,12 +188,6 @@ mw.FullScreenManager.prototype = {
 		mw.log("PlayerControls:: doParentIframeFullscreen> verticalScrollPosition:" + this.verticalScrollPosition);
 
         this.doNativeScroll(context, 0, 0);
-
-		// Make sure the parent page page has a zoom of 1:
-		if( ! $doc.find('meta[name="viewport"]').length ){
-			$doc.find('head').append( $( '<meta />' ).attr('name', 'viewport') );
-		}
-		$doc.find('meta[name="viewport"]').attr('content', 'width=1024, user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1' );
 
 		// iPad 5 supports fixed position in a bad way, use absolute pos for iOS
 		var playerCssPosition = ( mw.isIOS() ) ? 'absolute': 'fixed';
@@ -322,19 +309,6 @@ mw.FullScreenManager.prototype = {
 
 		mw.log("FullScreenManager:: restoreContextPlayer> verticalScrollPosition:" + this.verticalScrollPosition );
 
-		// Restore document zoom:
-		if( this.orginalParnetViewPortContent ){
-			$doc.find('meta[name="viewport"]').attr('content', this.orginalParnetViewPortContent );
-		} else {
-			// Restore user zoom: ( NOTE, there does not appear to be a way to know the
-			// initial scale, so we just restore to 1 in the absence of explicit viewport tag )
-			// In order to restore zoom, we must set maximum-scale to a valid value
-			$doc.find('meta[name="viewport"]').attr('content', 'initial-scale=1, maximum-scale=8, minimum-scale=1, user-scalable=yes' );
-			// Initial scale of 1 is too high. Restoring default scaling.
-			if ( mw.isMobileChrome() ) {
-				$doc.find('meta[name="viewport"]').attr('content', 'user-scalable=yes' );
-			}
-		}
 		if( this.orginalTargetElementLayout ) {
 			$target[0].style.cssText = this.orginalTargetElementLayout.style;
 			$target.attr({
