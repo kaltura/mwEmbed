@@ -443,6 +443,30 @@
                 "type": "number",
                 "initvalue": 1600,
                 "model": "config.uiVars.mediaProxy.preferedFlavorBR"
+            },
+            "displayMode": {
+                "doc": "Configure the display mode to set the type of information to display in the source selector's menu: size, bit-rate or both.",
+                "type": "enum",
+                "enum": [
+                  "size",
+                  "bitrate",
+                  "sizebitrate"
+                ],
+                "initvalue": "size",
+                "options": [
+                  {
+                    "label": "Size",
+                    "value": "size"
+                  },
+                  {
+                    "label": "Bit-rate",
+                    "value": "bitrate"
+                  },
+                  {
+                    "label": "Size and bit-rate",
+                    "value": "sizebitrate"
+                  }
+                ]
             }
         }
     },
