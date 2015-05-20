@@ -577,7 +577,7 @@
 			this.onBitrateChange( data );
 			// TODO if we need to track source index should be top level method per each play interface having it's own adaptive logic
 			//this.mediaElement.setSourceByIndex(data.newIndex);
-			$(this).trigger('sourceSwitchingEnd', [ data ]);
+            $(this).trigger('sourceSwitchingEnd', [ data.newIndex ]);
 		},
 
 		onBitrateChange: function ( data ) {
@@ -811,7 +811,11 @@
 				});
 				return;
 			}
-			this.playerObject.sendNotification('doSwitch', { flavorIndex: this.getSourceIndex(source) });
+            var sourceIndex = -1; //autoDynamicStreamSwitch = true for adaptive bitrate (Auto)
+            if( source !== -1 ){
+                sourceIndex = this.getSourceIndex(source);
+            }
+			this.playerObject.sendNotification('doSwitch', { flavorIndex: sourceIndex });
 		},
 		canAutoPlay: function () {
 			return true;

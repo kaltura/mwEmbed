@@ -443,7 +443,7 @@ mw.KWidgetSupport.prototype = {
 					"data-frameRate": flavorAsset.frameRate,
 					"data-flavorid": flavorPartnerData.flavorid
 				};
-				if (flavorPartnerData["default"] === true){
+				if (flavorPartnerData["default"] === "true"){
 					flavorAssetObj["default"] = true;
 				}
 				flavorAssets.push( flavorAssetObj );
@@ -1611,7 +1611,7 @@ mw.KWidgetSupport.prototype = {
 		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/' + format + '/protocol/' + protocol + '/uiConfId/' + embedPlayer.kuiconfid +  '/a.' + extension;
 		// Append KS & Referrer
 		function getKs() {
-			srcUrl += '?referrer=' + base64_encode( _this.getHostPageUrl() );
+			srcUrl += '?referrer=' + base64_encode( _this.getHostPageUrl() ) + '&playSessionId=' + _this.getGUID();
 			var deferred = $.Deferred();
 			var ks = _this.kClient.getKs();
 			if( ks ){

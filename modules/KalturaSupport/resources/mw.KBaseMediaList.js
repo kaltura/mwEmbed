@@ -37,7 +37,9 @@
 				'minDisplayWidth': 0,
 				'minDisplayHeight': 0,
 				'horizontalScrollItems': 1,
-				'scrollerCssPath': "resources/nanoScroller/nanoScroller.css"
+				'scrollerCssPath': "resources/nanoScroller/nanoScroller.css",
+				'fixedControls': false,
+				'horizontalControlsWidth': 20
 			});
 		},
 
@@ -598,6 +600,10 @@
 					});
 				$cc.find('ul').width((this.getMediaItemBoxWidth()+1)*this.mediaList.length);
 				$cc.find('.k-carousel').css('width', $cc.width() );
+				if (this.getConfig('fixedControls')){
+					var width = $cc.width() - this.getConfig("horizontalControlsWidth") * 2;
+					$cc.find('.k-carousel').css("margin-left",this.getConfig("horizontalControlsWidth")).width(width);
+				}
 			}
 		},
 		getScrollComponent: function(){
@@ -663,38 +669,41 @@
 				$( '<a />' )
 					.addClass( "k-scroll k-next" )
 			);
-
-			// Add media item hover to hide show play buttons:
-			var inKBtn = false;
-			var inContainer = false;
-			var checkHideBtn = function(){
-				setTimeout(function(){
-					if( !inKBtn && !inContainer ){
-						$cc.find('.k-prev,.k-next').animate({'opacity':0});
-					}
-				},0)
-			}
-			var showBtn = function(){
-				$cc.find('.k-prev,.k-next').animate({'opacity':1});
-			}
-			// check for knext
-			$cc.find('.k-prev,.k-next')
-				.hover(function(){
+			if (this.getConfig('fixedControls')){
+				$cc.find('.k-prev,.k-next').addClass("fixed");
+			}else{
+				// Add media item hover to hide show play buttons:
+				var inKBtn = false;
+				var inContainer = false;
+				var checkHideBtn = function(){
+					setTimeout(function(){
+						if( !inKBtn && !inContainer ){
+							$cc.find('.k-prev,.k-next').animate({'opacity':0});
+						}
+					},0)
+				}
+				var showBtn = function(){
+					$cc.find('.k-prev,.k-next').animate({'opacity':1});
+				}
+				// check for knext
+				$cc.find('.k-prev,.k-next')
+					.hover(function(){
+						showBtn();
+						inKBtn = true;
+					},function(){
+						inKBtn = false;
+						checkHideBtn();
+					})
+				$cc.find('.k-carousel').hover( function(){
 					showBtn();
-					inKBtn = true;
-				},function(){
-					inKBtn = false;
+					inContainer = true;
+				}, function(){
+					inContainer = false;
 					checkHideBtn();
 				})
-			$cc.find('.k-carousel').hover( function(){
-				showBtn();
-				inContainer = true;
-			}, function(){
-				inContainer = false;
-				checkHideBtn();
-			})
-			// hide the arrows to start with ( with an animation so users know they are there )
-			$cc.find('.k-prev,.k-next').animate({'opacity':0});
+				// hide the arrows to start with ( with an animation so users know they are there )
+				$cc.find('.k-prev,.k-next').animate({'opacity':0});
+			}
 		},
 		calculateVisibleScrollItems: function(){
 			var $cc = this.getMedialistComponent();

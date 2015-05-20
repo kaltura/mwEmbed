@@ -24,7 +24,7 @@
 				}
 			});
 
-			this.bind('updateLayout', function(){
+			this.bind('layoutBuildDone', function(){
 					var availableWidth = _this.getAvailableWidth(); // available width for title including buttons space and extra space for clarity
 					if (_this.getConfig('truncateLongTitles') && _this.getComponent().width() >= availableWidth) {
 						_this.getComponent()

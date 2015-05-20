@@ -492,6 +492,26 @@ return array(
 				"initvalue" => 1600,
 				"model" => "config.uiVars.mediaProxy.preferedFlavorBR"
 			),
+			'displayMode' => array(
+                'doc' => 'Configure the display mode to set the type of information to display in the source selector's menu: size, bit-rate or both.',
+                'type' => 'enum',
+                'enum' => array('size', 'bitrate', 'sizebitrate'),
+                'initvalue' => 'size',
+                'options' => array(
+                    array(
+                        'label' => 'Size',
+                        'value' => 'size'
+                    ),
+                    array(
+                        'label' => 'Bit-rate',
+                        'value' => 'bitrate'
+                    ),
+                    array(
+                        'label' => 'Size and bit-rate',
+                        'value' => 'sizebitrate'
+                    ),
+                ),
+            ),
 		)
 	),
 	'uiVars' => array(

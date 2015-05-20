@@ -1,0 +1,109 @@
+<html>
+<head>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<body>
+	<h3>Stand Alone Player ( MediaProxy Override ) Silverlight only source</h3>
+	Kaltura support several stand alone player modes. Learn more about 
+	<a href="../../../docs/api#standAlonePlayerModes">stand alone player modes</a> Kaltura API documentation. 
+	<br><br>
+	This example highlights the <b>MediaProxy Override</b>, and JSON Config, with a single Silverlight source.
+	<br><br>
+
+	<div id="kaltura_player" style="width:600px;height:338px;"></div>
+	
+	<script>
+		var jsonConfig  = {
+			"plugins":{
+				"topBarContainer": {},
+				"titleLabel": {}, 
+				"controlBarContainer": {
+					"hover": true
+				},
+				"largePlayBtn": {},
+				"scrubber": {
+					'thumbSlicesUrl': '{mediaProxy.entryMetadata.thumbSlicesUrl}'
+				},
+				"vast":{ 
+					"trackCuePoints":"true",
+					"timeout": 4
+				},
+				'skipBtn': {
+					'label': 'Skip Ad'
+				},
+				'noticeMessage': {
+					'text': 'Advertisment {sequenceProxy.timeRemaining|timeFormat}'
+				},
+				"playPauseBtn": {},
+				"volumeControl": {},
+				"fullScreenBtn": {},
+				"durationLabel": {},
+				"currentTimeLabel": {},
+				"sourceSelector": {},
+				"infoScreen": {},
+				"share": {},
+				'statistics': {'plugin': false},
+			},
+			"layout":{
+				"skin": "kdark",
+				"cssFiles":[]
+			}
+		};
+		// per entry settings
+		var mediaProxyKalturaToolKitVideo = {
+				'entry':{
+					'id': "key_1",
+					'name': "My ToolKit Video",
+					"description": "Kaltura Player toolkit Description.",
+					"plays":1234,
+					"views":47332,
+					"duration":114,
+					"createdAt":1379965720,
+					"thumbnailUrl": 'http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/640'
+				},
+				"contextData":{
+					'isCountryRestricted': false
+				},
+				'entryMetadata': {
+					'thumbSlicesUrl': 'http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/100/vid_slices/100',
+					'AgeGroup': "16"
+				},
+				'sources':[
+					 {
+                         "src":"http://playready.directtaps.net/smoothstreaming/TTLSS720VC1/To_The_Limit_720.ism/Manifest",
+                         "type":"video/ism"
+                     }
+				]
+			}
+		
+		kWidget.embed('kaltura_player', {
+			'wid' : '_partnerkey',
+			'flashvars':{
+				'jsonConfig':jsonConfig,
+				// per entity settings: 
+				'mediaProxy': mediaProxyKalturaToolKitVideo,
+				'LeadWithHLSOnFlash': true,
+				'EmbedPlayer.UseDirectManifestLinks': true
+			},
+			// ready bindings:
+			'readyCallback': function( playerId ){
+				var kdp = document.getElementById( playerId );
+				$('.alertEval a').click(function(){
+					alert( JSON.stringify( kdp.evaluate( $(this).text() ) ) );
+					return false;
+				});
+			}
+		});
+	</script>
+	<br>
+	<div class="alertEval"> Alert Entry data for: 
+		<a href="#">{mediaProxy.entry}</a> | 
+		<a href="#">{mediaProxy.sources}</a> |
+		<a href="#">{mediaProxy.entryCuePoints}</a> |
+		<a href="#">{mediaProxy.entryMetadata}</a>
+	</div>
+	
+</body>
+</html>
