@@ -51,13 +51,7 @@
 		registePlayer: function (proxyElement) {
 			var _this = this;
 			this.proxyElement = proxyElement;
-			for (var i = 0; i < this.playerMethods.length; i++) {
-				(function (method) {
-					_this.proxyElement[method] = function (arg) {
-						_this.execute(method, arg);
-					}
-				})(this.playerMethods[i]);
-			}
+
 			this.proxyElement.attr = function (attributeName, attributeValue) {
 				if (attributeName && attributeValue === undefined) {
 					return _this.proxyElement[ attributeName ];
@@ -68,6 +62,15 @@
 					_this.execute('setAttribute', [ 'language', mw.getConfig('localizationCode') ]);
 				}
 			}
+			
+			for (var i = 0; i < this.playerMethods.length; i++) {
+				(function (method) {
+					_this.proxyElement[method] = function (arg) {
+						_this.execute(method, arg);
+					}
+				})(this.playerMethods[i]);
+			}
+
 
 			//TODO support more than 1 subscribe?
 			this.proxyElement.subscribe = function (callback, eventName) {
