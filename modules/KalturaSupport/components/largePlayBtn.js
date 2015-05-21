@@ -85,7 +85,7 @@
 		getComponent: function() {
 			var _this = this;
 			var eventName = 'click';
-			if (mw.isMobileDevice()){
+			if (mw.isMobileDevice() && !mw.isWindowsPhone()){
 				eventName = 'touchstart';
 			}
 			if( !this.$el ) {
@@ -101,6 +101,9 @@
 							.on(eventName, function(e) {
 								_this.clickButton(e);
 							} );
+				if (!mw.isWindowsPhone()){
+					this.$el.css("border-radius", "0.1em");
+				}
 			}
 			return this.$el;
 		}
