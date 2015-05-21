@@ -54,7 +54,7 @@
     -moz-box-shadow:	none;
     box-shadow:			none;
     width: 4px;
-    margin-left: 15px;
+    margin-left: 10px;
     float: left;
     cursor: default;
 }
@@ -91,7 +91,7 @@
     position: relative;
     width: 130px;
     float: right;
-    margin-right: 10px;
+    margin-right: 12px;
     padding-top: 5px;
     display:inline-block
 }
@@ -112,8 +112,8 @@
 }
 
 .qnaInterface .qnaCancelButton{
-    font-weight: 300;
+    font-weight: 200;
 }
 .qnaInterface .qnaSendButton{
-    font-weight: 500;
+    font-weight: 400;
 }
