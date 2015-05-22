@@ -185,9 +185,10 @@ $wgEnableIpadHTMLControls = true;
 
 $wgKalturaUseManifestUrls = true;
 
-// The admin secret should be set to an integration admin secret key for testing 
-// api actions that require admin rights, like granting a ks for preview / play:
-$wgKalturaAdminSecret = null;
+// The user secret should be set to an integration user secret key for testing 
+// API actions that require user privileges, like granting a KS for preview / play:
+$wgKalturaUserSecret = null;
+$wgKalturaAdminSecret = null; // deprecated
 
 // By default do allow custom resource includes. 
 $wgAllowCustomResourceIncludes = true;
