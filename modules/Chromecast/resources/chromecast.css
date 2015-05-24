@@ -2,23 +2,55 @@
 	color: #35BCDA;
 	font-size: 13px;
 	position: absolute;
+	margin-left: 48px;
+	width: 50%;
+	margin-top: 13px;
+}
+.chromecastReceiverName{
+	margin-top: 30px;
 }
 .chromecastPlayingIcon{
-	 color: #35BCDA;
+	color: #35BCDA;
 	font-size: 36px;
-	 position: absolute;
+	float: left;
+	margin-top: 10px;
+	margin-left: 0px;
 }
 .chromecastTitle{
 	color: white;
-	position: absolute;
+	width: 50%;
 }
 .chromecastThumbBorder{
 	border: 2px solid #ffffff;
-	position: absolute;
+	float: left;
 }
 .chromecastPlayback{
-	margin: 0 auto;
-	width: 90%;
-	height: 30%;
-	margin-top: 20%;
+	position: absolute;
+	top: 50%;
+	left: 60%;
+	width: 100%;
+	transform: translate(-50%, -50%);
+}
+.connectingMsg{
+	z-index: 101;
+	height: 100%;
+	width: 100%;
+	vertical-align: middle;
+	box-sizing: border-box;
+	margin: auto;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	max-width: 80%;
+	max-height: 30%;
+}
+.hidden{
+	visibility: hidden;
+}
+.titleHolder{
+	float: left;
+	width: 200px;
+	margin-left: 10px;
 }
