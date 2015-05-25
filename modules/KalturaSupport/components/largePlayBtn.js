@@ -85,7 +85,7 @@
 		getComponent: function() {
 			var _this = this;
 			var eventName = 'click';
-			if (mw.isMobileDevice()){
+			if (mw.isMobileDevice() && !mw.isWindowsPhone()){
 				eventName = 'touchstart';
 			}
 			if( !this.$el ) {
@@ -94,13 +94,16 @@
 								'tabindex': '-1',
 								'href' : '#',
 								'title' : gM( 'mwe-embedplayer-play_clip' ),
-								'class'	: "icon-play" + this.getCssClass()
+								'class'	: "icon-play " + this.getCssClass()
 							} )
 							.hide()
 							// Add play hook:
 							.on(eventName, function(e) {
 								_this.clickButton(e);
 							} );
+				if ( !mw.isWindowsPhone() ){
+					this.$el.addClass("largePlayBtnBorder");
+				}
 			}
 			return this.$el;
 		}
