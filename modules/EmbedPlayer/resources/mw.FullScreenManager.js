@@ -499,7 +499,7 @@
 		},
 
 		getFsTarget: function(){
-			if( mw.getConfig('EmbedPlayer.IsIframeServer' ) && mw.getConfig('EmbedPlayer.IsFriendlyIframe')){
+			if( mw.getConfig('EmbedPlayer.IsIframeServer' ) && mw.getConfig('EmbedPlayer.IsFriendlyIframe') && !mw.isMobileChrome()){
 				// For desktops that supports native fullscreen api, give iframe as a target
 				var targetId;
 				if( screenfull && screenfull.enabled() ) {
