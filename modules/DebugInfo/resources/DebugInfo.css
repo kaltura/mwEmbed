@@ -1,0 +1,28 @@
+.debug-info {
+    background-color: rgba(20,20,20,0.50);
+    position: absolute;
+    max-width: 60%;
+    overflow: hidden;
+    padding: 5px;
+    margin: 10px;
+    z-index: 0;
+}
+
+.debug-info-close-btn {
+    position: absolute;
+    right:3px;
+    top:3px;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0px;
+    color: #ffffff;
+    font-size: 12px;
+    background: #000000;
+    padding: 3px 3px 3px 3px;
+    text-decoration: none;
+}
+
+.debug-info-close-btn:hover {
+    background: #44535c;
+    text-decoration: none;
+}
