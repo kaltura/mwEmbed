@@ -94,15 +94,15 @@
 								'tabindex': '-1',
 								'href' : '#',
 								'title' : gM( 'mwe-embedplayer-play_clip' ),
-								'class'	: "icon-play" + this.getCssClass()
+								'class'	: "icon-play " + this.getCssClass()
 							} )
 							.hide()
 							// Add play hook:
 							.on(eventName, function(e) {
 								_this.clickButton(e);
 							} );
-				if (!mw.isWindowsPhone()){
-					this.$el.css("border-radius", "0.1em");
+				if ( !mw.isWindowsPhone() ){
+					this.$el.addClass("largePlayBtnBorder");
 				}
 			}
 			return this.$el;
