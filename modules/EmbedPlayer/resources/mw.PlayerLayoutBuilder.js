@@ -97,6 +97,10 @@ mw.PlayerLayoutBuilder.prototype = {
 				this.$interface = $videoHolder.parent( '.mwPlayerContainer' )
 			}
 
+			if( mw.isMobileDevice() ){
+				this.$interface.addClass('mobile');
+			}
+
 			if( mw.isTouchDevice() ){
 				this.$interface.addClass('touch');
 			}
@@ -106,7 +110,11 @@ mw.PlayerLayoutBuilder.prototype = {
 			}
 
 			// Add our skin name as css class
-			this.$interface.addClass( embedPlayer.playerConfig.layout.skin );
+			var skinName = embedPlayer.playerConfig.layout.skin;
+			if (embedPlayer.getRawKalturaConfig("layout") && embedPlayer.getRawKalturaConfig("layout").skin){
+				skinName = embedPlayer.getRawKalturaConfig("layout").skin;
+			}
+			this.$interface.addClass( skinName );
 
 			// clear out base style
 			embedPlayer.style.cssText = '';
