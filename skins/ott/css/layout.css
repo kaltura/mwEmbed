@@ -627,6 +627,7 @@ body {
 
 .controlsContainer {
 	margin-top: 16px;
+	margin-left: 16px;
 	width:100%;
 	display: inline-block;
 }
@@ -635,7 +636,9 @@ body {
 	background-color: #686868;
 	background: rgba(104,104,104,0.6);
 }
-
+.sliderPreviewTime{
+	bottom: 30px !important;
+}
 .ui-tooltip {
 	background-color: #000000;
 	background-repeat: repeat-x;
