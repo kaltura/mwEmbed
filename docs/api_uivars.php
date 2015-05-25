@@ -675,7 +675,13 @@ $uiVars = array(
 			),
 			'EmbedPlayer.EnableIpadNativeFullscreen' => array(
 					'type' => 'Boolean',
-					'desc' => "Whether to use the native device fullscreen call",
+					'desc' => "Whether to use the native device fullscreen call on iPad",
+					'default' => 'false',
+					'example' => ''
+			),
+			'EmbedPlayer.EnableNativeChromeFullscreen' => array(
+					'type' => 'Boolean',
+					'desc' => "Whether to use the native device fullscreen call on Android Chrome",
 					'default' => 'false',
 					'example' => ''
 			),
