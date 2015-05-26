@@ -58,6 +58,7 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 	getSliderConfig: function(){
 		var _this = this;
 		return {
+			orientation: this.getConfig("layout"),
 			range: "min",
 			value: (this.getPlayer().getPlayerElementVolume() * 100),
 			min: 0,
@@ -72,31 +73,46 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 	},
 	addBindings: function() {
 		var _this = this;
+		var mouseOverSlider = false;
 		// If the slider should be shown; 
 		if( this.getConfig('showSlider' ) ) {
 			var openSlider = function () {
 				// restore transition on hover
 				_this.getComponent().removeClass( 'noTransition' );
 				_this.getComponent().addClass( 'open' );
+				if ( _this.getConfig( 'layout' ) === "vertical"){
+					_this.getPlayer().triggerHelper("onComponentsHoverDisabled"); // prevent hovering controls from closing during volume setup
+				}
 			};
 			var closeSlider = function () {
-				if ( !_this.getConfig( 'pinVolumeBar' ) ) {
+				if ( _this.getConfig( 'layout' ) === "horizontal" && !_this.getConfig( 'pinVolumeBar' ) ) {
 					_this.getComponent().removeClass( 'open' );
+				}
+				if ( _this.getConfig( 'layout' ) === "vertical" && !_this.getConfig( 'pinVolumeBar' ) ) {
+					setTimeout(function(){
+						if (!mouseOverSlider){
+							_this.getComponent().removeClass( 'open' );
+							_this.getPlayer().triggerHelper("onComponentsHoverEnabled"); // re-enable hovering controls
+						}
+					},350);
+
 				}
 			};
 
 			// Save component width on data attribute ( used for responsive player )
 			this.bind( 'layoutBuildDone' , function () {
-				// open slider with noTransition: 
-				openSlider();
-				_this.getComponent().addClass( 'noTransition' );
-				// Firefox unable to get component width correctly without timeout
-				setTimeout(function(){
-					// update the slider expand space: 
-					_this.getComponent().data( 'width' , _this.getComponent().width() );
-					// close the slider ( if not pinned ) 
-					closeSlider();
-				},100);
+				if ( _this.getConfig( 'layout' ) === "horizontal"){
+					// open slider with noTransition:
+					openSlider();
+					_this.getComponent().addClass( 'noTransition' );
+					// Firefox unable to get component width correctly without timeout
+					setTimeout(function(){
+						// update the slider expand space:
+						_this.getComponent().data( 'width' , _this.getComponent().width() );
+						// close the slider ( if not pinned )
+						closeSlider();
+					},100);
+				}
 			} );
 		}
 		// Add click bindings
@@ -132,6 +148,7 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 		this.getBtn().focusin(openSlider);
 		this.getBtn().focusout(closeSlider);
 		this.getComponent().hover(openSlider, closeSlider);
+		this.getSliderContainer().hover(function(){mouseOverSlider = true},function(){mouseOverSlider = false});
 
 		this.bind( 'volumeChanged', function(e, percent){
 			_this.updateVolumeUI( percent );
@@ -184,11 +201,17 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 						.attr( {'title': gM( 'mwe-embedplayer-volume-mute' ) ,'id': 'muteBtn'});
 			this.setAccessibility($btn, gM( 'mwe-embedplayer-volume-mute' ));
 			// Add the volume control icon
+			var $sliderContainer = $( '<div />' ).addClass( 'sliderContainer' );
+			if (this.getConfig("layout")=="vertical"){
+				$sliderContainer.append($( '<div />' ).addClass( 'slider' ));
+			}else{
+				$sliderContainer = $( '<div />' ).addClass( 'slider' );
+			}
 			this.$el = $('<div />')
 				.addClass( this.getCssClass() + layoutClass )
 				.append(
 					$btn,
-					$( '<div />' ).addClass( 'slider' )
+					$sliderContainer
 				);
 			// add accessibility controls
 			if (this.getConfig("accessibleControls")){
@@ -211,6 +234,9 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 	},
 	getAccessibilityBtn : function(id){
 		return this.getComponent().find( '#'+id );
+	},
+	getSliderContainer : function(id){
+		return this.getComponent().find( '.sliderContainer' );
 	}
 }));
 
