@@ -140,7 +140,13 @@
 						var mediaItems = _this.createMediaItems(items);
 						if (_this.renderOnData) {
 							_this.renderOnData = false;
+							//Render only items that are in the DVR window, and save future items in temp list
+							var tempList = _this.mediaList;
+							_this.mediaList = items;
+							//Render the items to be shown
 							_this.renderMediaList();
+							//Return all items to media list
+							_this.mediaList = tempList;
 						} else {
 							_this.getComponent().find("ul").append(mediaItems);
 						}
