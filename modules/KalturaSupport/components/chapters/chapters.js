@@ -66,6 +66,10 @@
 				if (!_this.maskChangeStreamEvents) {
 					//Get chapters data from cuepoints
 					var chaptersRawData = _this.getCuePoints();
+					if (_this.getPlayer().isLive()){
+						//Live mode doesn't support chapters so disable toggling
+						_this.disableChapterToggle();
+					}
 					if ( chaptersRawData.length ) {
 						//Sort by time and/or cuepoint type
 						chaptersRawData.sort( function ( a, b ) {
@@ -99,10 +103,6 @@
 							_this.renderMediaList();
 							_this.updateActiveItem();
 						}
-					} else {
-						//If no cuepoints on start then player is in live mode
-						//and there are no chapters in live mode, so disable toggling
-						_this.disableChapterToggle();
 					}
 				}
 			});
