@@ -289,9 +289,10 @@
     position: absolute;
     font-size: 12px;
     font-weight: 300;
-    bottom: 1px;
-    right: 12px;
+    bottom: 3px;
+    right: 11px;
     color: #ffffff;
+    padding: 0px;
 }
 
 .qnaInterface .qnaReplySendButton:hover {
