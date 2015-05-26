@@ -254,6 +254,7 @@ DAL for Q&A Module
                         if (item) {
 
                             _this.addOrUpdateEntry(item);
+                            _this.sortThreads();
                         }
                         mw.log("added Annotation cue point with id: " + cuePoint.id + " took " + (endTime - startTime) + " ms");
 
@@ -281,6 +282,7 @@ DAL for Q&A Module
             else{
                 viewedEntries.markAsRead(item.cuePoint().id);
                 this.addOrUpdateEntry(item);
+                this.qnaPlugin.updateUnreadBadge();
             }
         },
 
@@ -296,6 +298,15 @@ DAL for Q&A Module
                     break;
                 }
             }
+        },
+
+        sortThreads: function(){
+            var _this=this;
+            _this.QnaThreads.sort(
+                function(a, b){
+                    return b().entries()[0]().getTime() - a().entries()[0]().getTime();
+                }
+            );
         },
 
         // look for a QnaThread for this QnaEntry
@@ -322,30 +333,16 @@ DAL for Q&A Module
                     if (!found) {
                         _this.QnaThreads()[i]().appendEntry(qnaEntry);
                     }
-
-                    if (!found) {
-                        _this.QnaThreads.unshift(_this.QnaThreads()[i]);
-                        _this.QnaThreads.splice(i + 1, 1);
-                    }
                     found = true;
                     break;
-
-                    //var tmp = _this.QnaThreads()[i];
-                    ////_this.QnaThreads.splice(i, 0, _this.QnaThreads()[i]);
-                    ////
-                    //_this.QnaThreads.splice(i, 1);
-                    //_this.QnaThreads.unshift(tmp);
-
                 }
             }
 
             if (!found) {
                 var newThread = new QnaThread(qnaEntry.getThreadID());
                 newThread.appendEntry(qnaEntry);
-                _this.QnaThreads.unshift(ko.observable(newThread));
+                _this.QnaThreads.push(ko.observable(newThread));
             }
-
-            _this.qnaPlugin.updateUnreadBadge();
         },
 
         metadataToObject: function(metadata) {
@@ -445,7 +442,6 @@ DAL for Q&A Module
                     data.objects.forEach(function(cuePoint) {
 
                         var item=_this.annotationCuePointToQnaEntry(cuePoint);
-
                         if (item) {
 
                             if (_this.lastUpdateTime < cuePoint.updatedAt) {
@@ -454,6 +450,8 @@ DAL for Q&A Module
                             _this.addOrUpdateEntry(item);
                         }
                     });
+
+                    _this.sortThreads();
                 }
             );
         },
