@@ -229,9 +229,10 @@ body {
 }
 
 .largePlayBtn {
+	display: none !important; /* show only on mobile devices */
 	cursor: pointer;
 	position: absolute;
-	top: 40%;
+	top: 50%;
 	left: 50%;
 	font-size: 30px;
 	margin: -0.79em 0 0 -1em;
@@ -252,6 +253,9 @@ body {
 }
 .play-state .largePlayBtn:before {
 	content: "\e604" !important;
+}
+.mobile .largePlayBtn {
+	display: block !important;
 }
 .scrubber {
 	position: relative;
