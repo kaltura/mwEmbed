@@ -231,15 +231,28 @@ body {
 .largePlayBtn {
 	cursor: pointer;
 	position: absolute;
-	top: 50%;
+	top: 40%;
 	left: 50%;
-	font-size: 3em;
+	font-size: 30px;
 	margin: -0.79em 0 0 -1em;
 	text-decoration: none;
-	border-radius: 0.1em;
-	padding: 12px 20px 12px 25px;
+	width: 44px;
+	height: 50px;
+	border-radius: 35px;
+	padding-left: 26px;
+	padding-top: 20px;
+	background-color: rgba(255,255,255,0.9);
+	color:#59baf3;
 }
-
+.pause-state .largePlayBtn:before {
+	content: "\e605" !important;
+}
+.start-state .largePlayBtn:before {
+	content: "\e605" !important;
+}
+.play-state .largePlayBtn:before {
+	content: "\e604" !important;
+}
 .scrubber {
 	position: relative;
 	height: 3px;
@@ -781,17 +794,6 @@ body {
 
 .btn:focus {
 	outline: 1px dotted #999;
-}
-
-.largePlayBtn {
-	background-color: #222222;
-	background: rgba(0,0,0,0.7);
-	color: #efefef;
-}
-
-.largePlayBtn:hover {
-	background: rgba(0,0,0,1);
-	color: #fff;
 }
 
 .scrubber.disabled {
