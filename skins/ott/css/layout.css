@@ -242,13 +242,15 @@ body {
 
 .scrubber {
 	position: relative;
-	height: 0.6em;
+	height: 3px;
+	border-radius: 1.5px;
+	background-color: rgba(255,255,255,0.3);
 	cursor: pointer;
 }
 .controlsContainer .scrubber{
 	display: inline-block;
 	margin-left:5px;
-	top: -3px;
+	top: -7px;
 }
 .sliderPreviewTime {
 	position: absolute;
@@ -272,6 +274,7 @@ body {
 .scrubber .handle-wrapper {
 	position: relative;
 	margin: 0 0.44em;
+	top: -6px;
 }
 
 .scrubber .watched {
@@ -394,9 +397,11 @@ body {
 	display: block;
 }
 #muteBtn{
-	margin-right: 16px;
+	margin-right: 12px;
+	margin-left: 12px;
 	background-color: transparent;
 	font-size: 26px;
+	width: 36px;
 }
 #muteBtn:hover{
 	background-color: transparent;
@@ -448,11 +453,10 @@ body {
 }
 .timers {
 	position: relative;
-	font-size: 0.84em;
+	font-size: 12px;
 	display: inline;
-	line-height: 2.7em;
 	font-family: Helvetica,Arial;
-	top: -2px;
+	top: -5px;
 }
 
 .currentTimeLabel {
@@ -624,7 +628,7 @@ body {
 }
 
 .controlsContainer {
-	margin-top: 16px;
+	margin-top: 13px;
 	width:100%;
 	display: inline-block;
 }
@@ -813,40 +817,11 @@ body {
 }
 
 .watched {
-	background-color: #2ec7e1;
+	background-color: #59baf3;
 }
 
 .buffered {
-	background-color: #AFAFAF;
-	background: rgba( 102, 102, 102, 0.5 );
-	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
-	filter: alpha(opacity=40);
-	opacity: 0.4;
-	/*background-image:  -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.15)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.15)), color-stop(0.75, rgba(255, 255, 255, 0.15)), color-stop(0.75, transparent), to(transparent));
-	
-background-image:  -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-	
-background-image:  -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-	
-background-image:  -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-	
-background-image:  -ms-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-	
-background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-	
-
-	 */
-/*
-
--webkit-box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
-	
-box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
-	
-
-	
-	
-	border:  1px solid #fff;
-	*/
+	background-color: rgba(255,255,255,0.3);
 }
 
 .scrubber .playHead:hover {
@@ -860,11 +835,11 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 }
 
 .currentTimeLabel {
-	color: #e8e8e8;
+	color: rgba(255,255,255,0.6);
 }
 
 .durationLabel {
-	color: #b1aeab;
+	color: rgba(255,255,255,0.6);
 }
 
 .sourceSelector {
@@ -921,10 +896,13 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 
 .playPauseBtn{
 	margin-left: 16px;
+	margin-right: 12px;
 }
 .fullScreenBtn{
+	font-size: 26px;
 	margin-right: 16px;
-	width: 20px;
+	margin-top: 2px;
+	width: 26px;
 	background-color: transparent;
 }
 .fullScreenBtn:hover{

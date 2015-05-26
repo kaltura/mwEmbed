@@ -81,7 +81,7 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 				_this.getComponent().removeClass( 'noTransition' );
 				_this.getComponent().addClass( 'open' );
 				if ( _this.getConfig( 'layout' ) === "vertical"){
-					_this.getPlayer().triggerHelper("onComponentsHoverDisabled"); // prevent hovering controls from closing during volume setup
+					_this.getPlayer().triggerHelper("onShowSideBar"); // prevent hovering controls from closing during volume setup
 				}
 			};
 			var closeSlider = function () {
@@ -92,7 +92,7 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 					setTimeout(function(){
 						if (!mouseOverSlider){
 							_this.getComponent().removeClass( 'open' );
-							_this.getPlayer().triggerHelper("onComponentsHoverEnabled"); // re-enable hovering controls
+							_this.getPlayer().triggerHelper("onHideSideBar"); // re-enable hovering controls
 						}
 					},350);
 
