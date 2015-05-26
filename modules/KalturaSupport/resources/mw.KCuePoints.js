@@ -162,9 +162,9 @@
 				var updatedCuePoints = [];
 				//Only add new cuepoints or existing cuepoints which have a newer updateAt value
 				$.each(associativeRawCuePoints, function (id, rawCuePoint) {
-					if ((!_this.associativeCuePoints[id]) ||
+					if ((!_this.associativeCuePoints[id]) /*||
 						( _this.associativeCuePoints[id] &&
-							_this.associativeCuePoints[id].updatedAt < rawCuePoint.updatedAt )) {
+							_this.associativeCuePoints[id].updatedAt < rawCuePoint.updatedAt )*/) {
 						_this.associativeCuePoints[id] = rawCuePoint;
 						updatedCuePoints.push(rawCuePoint);
 					}
@@ -264,7 +264,7 @@
 		},
 		getCuePoints: function () {
 			if (!this.embedPlayer.rawCuePoints || !this.embedPlayer.rawCuePoints.length) {
-				return [];
+				this.embedPlayer.rawCuePoints = [];
 			}
 			return this.embedPlayer.rawCuePoints;
 		},
