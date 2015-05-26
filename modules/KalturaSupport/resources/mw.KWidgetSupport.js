@@ -301,7 +301,7 @@ mw.KWidgetSupport.prototype = {
 			// check for Cuepoint data and load cuePoints,
 			// TODO optimize cuePoints as hard or soft dependency on kWidgetSupport
 			if( (playerData.entryCuePoints && playerData.entryCuePoints.length > 0) || ( embedPlayer.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) ) {
-				embedPlayer.rawCuePoints = playerData.entryCuePoints;
+				embedPlayer.rawCuePoints = playerData.entryCuePoints || [];
 				embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
 			}
 			_this.handleUiConf( embedPlayer, callback );
@@ -677,7 +677,7 @@ mw.KWidgetSupport.prototype = {
 			if( embedPlayer.rawCuePoints || ( embedPlayer.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) ){
 				mw.log("KWidgetSupport:: trigger KalturaSupport_CuePointsReady", embedPlayer.rawCuePoints);
 				// Allow other plugins to subscribe to cuePoint ready event:
-				$( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', embedPlayer.rawCuePoints );
+				$( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', [embedPlayer.rawCuePoints] );
 			}
 
 			// Trigger the early player events ( after uiConf handling has a chance to setup bindings
