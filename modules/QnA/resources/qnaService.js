@@ -304,7 +304,9 @@ DAL for Q&A Module
             var _this=this;
             _this.QnaThreads.sort(
                 function(a, b){
-                    return b().entries()[0]().getTime() - a().entries()[0]().getTime();
+                    var a_val = a().isCollapsed() ? a().entries()[0]().getTime() : a().entries()[a().entries().length-1]().getTime();
+                    var b_val = b().isCollapsed() ? b().entries()[0]().getTime() : b().entries()[b().entries().length-1]().getTime();
+                    return b_val - a_val;
                 }
             );
         },
