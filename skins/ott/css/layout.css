@@ -627,7 +627,6 @@ body {
 
 .controlsContainer {
 	margin-top: 16px;
-	margin-left: 16px;
 	width:100%;
 	display: inline-block;
 }
@@ -756,7 +755,7 @@ body {
 	opacity: 1;
 	color: #fff;
 	text-shadow: 0px 0px 10px #fff;*/
-	background-color: #35BCDA;
+	background-color: #59baf3;
 	color: #ffffff;
 }
 
@@ -922,6 +921,12 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	background-image: url(../images/kalturaLogo.png);
 }
 
+.playPauseBtn{
+	margin-left: 16px;
+}
+.fullScreenBtn{
+	margin-right: 16px;
+}
 .mobile .playPauseBtn{
 	display: none !important;
 }
