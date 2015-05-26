@@ -260,6 +260,9 @@
     width: -o-calc(100% - 75px);
     /* Standard */
     width: calc(100% - 75px);
+
+    -webkit-transition: height 100ms; /* Safari */
+    transition: height 100ms;
 }
 
 .qnaInterface .qnaReplyTextAreaPlaceHolderText{
@@ -268,6 +271,14 @@
 
 .qnaInterface .qnaReplyTextAreaText{
     color: rgb(65,68,66);
+}
+
+.qnaInterface .qnaReplyTextAreaPlaceHolderSize{
+    height: 22px;
+}
+
+.qnaInterface .qnaReplyTextAreaSize{
+    height: 50px;
 }
 
 .qnaInterface .qnaReplySendButton{

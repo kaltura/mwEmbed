@@ -52,6 +52,7 @@
                     }
                     _this.qnaService.submitQuestion(replyText(), qnaThread.entries()[qnaThread.entries().length-1]());
                     qnaThread.replyText(gM("qna-reply-here"));
+                    qnaThread.isTypingAnswer(false);
                 };
 
                 this.clearTextArea = function(qnaThread, event){
