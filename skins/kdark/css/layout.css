@@ -248,7 +248,7 @@ body {
 	cursor: pointer;
 }
 .controlsContainer .scrubber{
-	display: inline-block;
+	display: inline-block !important;
 	margin-left:5px;
 	top: -3px;
 }

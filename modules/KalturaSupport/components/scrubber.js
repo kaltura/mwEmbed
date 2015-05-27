@@ -376,7 +376,6 @@
 					this.$el.css({
 						'width': this.getConfig('minWidth')
 					});
-					this.$el.addClass()
 				}
 			}
 			return this.$el;

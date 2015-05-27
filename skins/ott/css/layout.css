@@ -280,7 +280,7 @@ body {
 	cursor: pointer;
 	margin-left: 16px;
 	margin-right: 16px;
-	display: inline-block;
+	display: inline-block !important;
 	top: -7px;
 }
 .mobile .scrubber{

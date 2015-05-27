@@ -306,8 +306,8 @@ mw.PlayerLayoutBuilder.prototype = {
 				_this.getInterface().find('.' + containerId )
 			);
 		});
-		
-		// once complete trigger and event ( so dynamic space components can resize to take remaining space ) 
+
+		// once complete trigger and event ( so dynamic space components can resize to take remaining space )
 		$(this.embedPlayer ).trigger( 'updateComponentsVisibilityDone' )
 	},
 
@@ -532,7 +532,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		_this.addRightClickBinding();
 
 		this.updateLayoutTimeout = null;
-
+		_this.updateComponentsVisibility();
 		b('updateLayout', function(){
 			// Firefox unable to get component width correctly without timeout
 			clearTimeout(_this.updateLayoutTimeout);
