@@ -517,6 +517,11 @@ body {
 	width: 100%;
 	vertical-align: middle;
 	box-sizing: border-box;
+	background-color: rgba(255,255,255,0.9) !important;
+	background-image: none !important;
+	border-radius: 3px !important;
+	max-width: 60%;
+	max-height: 40%;
 }
 
 .alert {
@@ -525,12 +530,16 @@ body {
 	height: 100%;
 	vertical-align: middle;
 }
-
-.alert-title {
-	font-size: 1.8em;
-	padding-left: 1.8em;
-	padding-bottom: 0.6em;
+.alert-text{
+	font-size: 17px !important;
+	color: #666666 !important;
 	text-align: center;
+	font-weight: normal !important;
+}
+.alert-title {
+	border-bottom: 0px;
+	margin-top: 30px;
+	font-weight: bold !important;
 }
 
 .alert-body {
