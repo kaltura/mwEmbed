@@ -253,8 +253,10 @@
 
 			textArea.bind("mousewheel",function(ev) {
 				ev.preventDefault();
-				var scrollTop = $(this).scrollTop();
-				$(this).scrollTop(scrollTop-Math.round(ev.originalEvent.deltaY));
+
+				var ratio = $(this).height() / $(window).height();
+				var deltaY = ev.originalEvent.deltaY * ratio;
+				$(this).scrollTop($(this).scrollTop() - Math.round(deltaY));
 			});
 		},
 

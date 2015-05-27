@@ -72,7 +72,9 @@
                 this.textAreaScrolled = function(data, event) {
                     var elem = event.target;
                     //if (elem.scrollHeight > elem.offsetHeight){
-                        $(elem).scrollTop(elem.scrollTop - Math.round(event.originalEvent.deltaY));
+                        var ratio = $(elem).height() / $(window).height();
+                        var deltaY = event.originalEvent.deltaY * ratio;
+                        $(elem).scrollTop(elem.scrollTop - Math.round(deltaY));
 
                         if (elem.scrollTop !== 0 && elem.scrollHeight !== elem.offsetHeight+elem.scrollTop) {
                             return;

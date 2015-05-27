@@ -107,13 +107,14 @@
     float: right;
     margin-top: 2px;
 }
+
 .qnaInterface .controlBarBtn:hover {
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);;
 }
 
 .qnaInterface .qnaCancelButton{
-    font-weight: 200;
+    font-weight: 300;
 }
 .qnaInterface .qnaSendButton{
-    font-weight: 400;
+    font-weight: 500;
 }
