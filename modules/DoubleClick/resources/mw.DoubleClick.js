@@ -79,7 +79,8 @@
 
 		localizationCode: null,
 
-		init: function( embedPlayer, callback, pluginName ){ alert("init");
+		init: function( embedPlayer, callback, pluginName ){
+			//alert("init");
 			var _this = this;
 			if (mw.getConfig( 'localizationCode' )){
 				_this.localizationCode = mw.getConfig( 'localizationCode' );
@@ -99,7 +100,7 @@
 
 			// remove any old bindings:
 			embedPlayer.unbindHelper( this.bindPostfix );
-			alert("init 102");
+			//alert("init 102");
 			// make sure any old ad Manager is unloaded:
 			var globalAdsManger = $(_this.embedPlayer).data( 'doubleClickAdsMangerRef' );
 			if( globalAdsManger ){
@@ -114,13 +115,13 @@
 				}
 				this.removeAdContainer();
 
-				alert("init 117");
+				//alert("init 117");
 			}
 
 			if ( _this.getConfig( 'leadWithFlash' ) !== undefined ) {
 				_this.leadWithFlash = _this.getConfig( 'leadWithFlash' );
 			}
-			alert("init 123");
+			//alert("init 123");
 			if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
 				_this.isNativeSDK = true;
 				alert("init 126");
@@ -129,7 +130,7 @@
 				});
 				_this.addManagedBinding();
 				callback();
-				alert("init 132");
+				//alert("init 132");
 				return;
 			}
 
@@ -159,15 +160,15 @@
 					});
 					_this.addManagedBinding();
 					callback();
-					alert("init 162");
+					//alert("init 162");
 					return;
 				} else if ( mw.isIE8() || mw.isIE9() ) {   //no flash on IE8/9
 					callback();
-					alert("init 166");
+					//alert("init 166");
 					return;
 				}
 			}
-			alert("170");
+			//alert("170");
 			// Load double click ima per doc:
 			this.loadIma( function(){
 				alert("173 loadIMA");
