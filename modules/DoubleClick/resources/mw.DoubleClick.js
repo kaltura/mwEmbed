@@ -326,6 +326,7 @@
 				} );
 		},
 		addManagedBinding: function(){
+			alert('addManagedBinding');
 			var _this = this;
 			mw.log( "DoubleClick::addManagedBinding" );
 			_this.embedPlayer.bindHelper( 'AdSupport_preroll' + _this.bindPostfix, function( event, sequenceProxy ){
