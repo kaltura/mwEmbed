@@ -54,10 +54,13 @@ JavaScript client library</a>, which offers object mappings
 and works with the code generated in the <a title="testme console" target="_new" href="http://www.kaltura.com/api_v3/testme/index.php">test me console</a>.
 <br><br>
 The kWidget  Direct Server API is included by default every time you include the player library.<br><br>
-Your html5 library include is given to you by the KMC embed dynamic embed code, and looks like this:  
 <pre class="prettyprint linenums">
 &lt;script src="http//cdnapi.kaltura.com/p/{partnerId}/sp/{partnerId}00/embedIframeJs/uiconf_id/{uiconf_id}/partner_id/{partnerId}"&gt;&lt;/script&gt;
-
+&lt;script&gt;
+	new kWidget.api( {
+		'wid' : {partnerId},
+	}).doRequest( requestObject, function( result ){ ... });
+&lt;/script&gt;
 </pre> 
 
 <h3> Custom API query </h3>
