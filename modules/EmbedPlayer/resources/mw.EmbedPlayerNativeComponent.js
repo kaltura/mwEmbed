@@ -297,7 +297,7 @@
 			mw.log("EmbedPlayerNativeComponent:: play::");
 			this.playbackDone = false;
 
-
+			alert('works');
 			//if (this.parent_play()) {
 			//	if (this.getPlayerElement()) { // update player
 					this.getPlayerElement().play();
