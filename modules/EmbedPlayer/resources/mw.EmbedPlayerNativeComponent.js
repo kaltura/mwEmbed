@@ -298,12 +298,12 @@
 			this.playbackDone = false;
 
 
-			if (this.parent_play()) {
-				if (this.getPlayerElement()) { // update player
+			//if (this.parent_play()) {
+			//	if (this.getPlayerElement()) { // update player
 					this.getPlayerElement().play();
-				}
+				//}
 				this.monitor();
-			}
+			//}
 			this.removePoster();
 		},
 
