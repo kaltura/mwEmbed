@@ -122,7 +122,7 @@
 				_this.leadWithFlash = _this.getConfig( 'leadWithFlash' );
 			}
 			//alert("init 123");
-			if ( true || mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
+			if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
 				_this.isNativeSDK = true;
 				alert("init 126");
 				_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
