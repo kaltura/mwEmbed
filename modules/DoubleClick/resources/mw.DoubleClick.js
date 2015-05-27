@@ -161,9 +161,10 @@
 					return;
 				}
 			}
-			debugger;
+			alert("init2");
 			// Load double click ima per doc:
 			this.loadIma( function(){
+				alert("init3 loadIMA");
 				// Determine if we are in managed or kaltura point based mode.
 				if ( _this.localizationCode ){
 					google.ima.settings.setLocale(_this.localizationCode);
