@@ -293,7 +293,7 @@
 		 * calls parent_play to update the interface
 		 */
 
-		play: function () {
+		play: function () {alert("play");
 			mw.log("EmbedPlayerNativeComponent:: play::");
 			this.playbackDone = false;
 
