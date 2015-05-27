@@ -99,7 +99,7 @@
 
 			// remove any old bindings:
 			embedPlayer.unbindHelper( this.bindPostfix );
-
+			alert("init 102");
 			// make sure any old ad Manager is unloaded:
 			var globalAdsManger = $(_this.embedPlayer).data( 'doubleClickAdsMangerRef' );
 			if( globalAdsManger ){
@@ -113,19 +113,23 @@
 
 				}
 				this.removeAdContainer();
+
+				alert("init 117");
 			}
 
 			if ( _this.getConfig( 'leadWithFlash' ) !== undefined ) {
 				_this.leadWithFlash = _this.getConfig( 'leadWithFlash' );
 			}
-
+			alert("init 123");
 			if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
 				_this.isNativeSDK = true;
+				alert("init 126");
 				_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
 					_this.bindChromelessEvents();
 				});
 				_this.addManagedBinding();
 				callback();
+				alert("init 132");
 				return;
 			}
 
@@ -155,16 +159,18 @@
 					});
 					_this.addManagedBinding();
 					callback();
+					alert("init 162");
 					return;
 				} else if ( mw.isIE8() || mw.isIE9() ) {   //no flash on IE8/9
 					callback();
+					alert("init 166");
 					return;
 				}
 			}
-			alert("init2");
+			alert("170");
 			// Load double click ima per doc:
 			this.loadIma( function(){
-				alert("init3 loadIMA");
+				alert("173 loadIMA");
 				// Determine if we are in managed or kaltura point based mode.
 				if ( _this.localizationCode ){
 					google.ima.settings.setLocale(_this.localizationCode);
