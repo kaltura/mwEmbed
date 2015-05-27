@@ -161,7 +161,7 @@
 					return;
 				}
 			}
-
+			debugger;
 			// Load double click ima per doc:
 			this.loadIma( function(){
 				// Determine if we are in managed or kaltura point based mode.
