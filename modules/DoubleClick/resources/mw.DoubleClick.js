@@ -79,7 +79,7 @@
 
 		localizationCode: null,
 
-		init: function( embedPlayer, callback, pluginName ){
+		init: function( embedPlayer, callback, pluginName ){ alert("init");
 			var _this = this;
 			if (mw.getConfig( 'localizationCode' )){
 				_this.localizationCode = mw.getConfig( 'localizationCode' );
@@ -574,7 +574,7 @@
 			return adTagUrl;
 		},
 		// This function requests the ads.
-		requestAds: function( adType ) {
+		requestAds: function( adType ) { alert("0");
 			var _this = this;
 			this.parseAdTagUrlParts(this.embedPlayer, this.pluginName);
 			var adTagUrl = this.adTagUrl;
@@ -631,11 +631,15 @@
 				return;
 			}
 
-			if ( this.isNativeSDK ) {
+			alert("1");
+
+			if ( this.isNativeSDK ) { alert("2");
 				this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', this.getConfig( 'adTagUrl' ));
 				mw.log( "DoubleClick::requestAds: Native SDK player request ad ");
 				return;
 			}
+
+			alert("3");
 
 			// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
 			this.getAdDisplayContainer().initialize();
