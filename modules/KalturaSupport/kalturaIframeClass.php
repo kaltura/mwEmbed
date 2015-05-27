@@ -729,7 +729,7 @@ HTML;
 
 		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
 		$moduleList = array_merge($moduleList, $this->getNeededModules($kalturaSupportModules, $playerConfig));
-		$psModuleList = $this->getNeededModules($kalturaSupportPsModules, $playerConfig);
+		$psModuleList = $this->getNeededModules($kalturaSupportPsModules, $playerConfig, $wgKalturaPSHtml5ModulesDir);
 
 		// Special cases: handle plugins that have more complex conditional load calls
 		// always include mw.EmbedPlayer
@@ -774,11 +774,11 @@ HTML;
 		return $o;
 	}
 
-	function getNeededModules($modules, $playerConfig){
+	function getNeededModules($modules, $playerConfig, $basePath = null){
 	    $moduleList = array();
 	    foreach( $modules as $name => $module ){
             if( isset( $module[ 'kalturaLoad' ] ) &&  $module['kalturaLoad'] == 'always' ){
-                $this->addModuleTemplate( $module );
+                $this->addModuleTemplate( $module, $basePath );
                 $moduleList[] = $name;
             }
             // Check if the module has a kalturaPluginName and load if set in playerConfig
@@ -786,13 +786,13 @@ HTML;
                 if( is_array( $module[ 'kalturaPluginName' ] ) ){
                     foreach($module[ 'kalturaPluginName' ] as $subModuleName ){
                         if( isset( $playerConfig['plugins'][ $subModuleName] )){
-                            $this->addModuleTemplate( $module, $playerConfig['plugins'][ $subModuleName ] );
+                            $this->addModuleTemplate( $module, $playerConfig['plugins'][ $subModuleName ], $basePath );
                             $moduleList[] = $name;
                             continue;
                         }
                     }
                 } else if( isset( $playerConfig['plugins'][ $module[ 'kalturaPluginName' ] ] ) ){
-                    $this->addModuleTemplate( $module, $playerConfig['plugins'][ $module[ 'kalturaPluginName' ] ] );
+                    $this->addModuleTemplate( $module, $playerConfig['plugins'][ $module[ 'kalturaPluginName' ] ], $basePath );
                     $moduleList[] = $name;
                 }
             }
@@ -800,7 +800,7 @@ HTML;
         return $moduleList;
 	}
 
-	function addModuleTemplate( $module = null, $plugin = null ){
+	function addModuleTemplate( $module = null, $plugin = null, $basePath = null){
 		if( !isset($this->templates) ){
 			$this->templates = array();
 		}
@@ -817,17 +817,17 @@ HTML;
 		        foreach ($templatePath as $templateFileName => $templateFilePath){
                     $templateKey = str_replace('{html5ps}', '', $templateFilePath);
                     $templateKey = is_numeric($templateFileName) ? $templateKey : $templateFileName;
-                    $this->templates[ $templateKey ] = $this->loadTemplate( $templateFilePath );
+                    $this->templates[ $templateKey ] = $this->loadTemplate( $templateFilePath, $basePath );
 		        }
 		    } else {
 			    $templateKey = str_replace('{html5ps}', '', $templatePath);
-			    $this->templates[ $templateKey ] = $this->loadTemplate( $templatePath );
+			    $this->templates[ $templateKey ] = $this->loadTemplate( $templatePath, $basePath );
 			}
 		}
 	}
 
-	function loadTemplate( $path = null ){
-		$path = $this->getFilePath( $path );
+	function loadTemplate( $path = null, $basePath = null){
+		$path = $this->getFilePath( $path, $basePath );
 
 		if( !$path ){
 			return false;
@@ -993,11 +993,12 @@ HTML;
 		return ob_get_clean();
 	}
 
-	function getFilePath( $path = null ){
+	function getFilePath( $path = null, $basePath = null ){
 		global $wgKalturaPSHtml5SettingsPath;
 
-
-		if( strpos( $path, '{html5ps}' ) === 0 ) {
+		if (!empty($basePath)){
+			$path = $basePath . '/' . $path;
+		} elseif( strpos( $path, '{html5ps}' ) === 0 ) {
 			$basePath = realpath( dirname( $wgKalturaPSHtml5SettingsPath ) . '/../ps/' );
 			$path = str_replace('{html5ps}', $basePath, $path) ;
 		} else {
