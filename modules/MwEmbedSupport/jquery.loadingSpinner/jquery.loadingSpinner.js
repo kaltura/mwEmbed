@@ -91,7 +91,12 @@
 					});
 					thisSpinner = $this.append( $loadingSpinner);
 				}else{
-					thisSpinner = new Spinner( $.extend( { color: $this.css('color') }, opts ) ).spin( this );
+					if (opts['customSpinner'] === true){
+						var $loadingSpinner = $('<div />').addClass(opts['className']);
+						thisSpinner = $this.append( $loadingSpinner);
+					}else{
+						thisSpinner = new Spinner( $.extend( { color: $this.css('color') }, opts ) ).spin( this );
+					}
 				}
 			}
 		});

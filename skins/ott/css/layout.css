@@ -289,20 +289,26 @@ body {
 .sliderPreviewTime {
 	position: absolute;
 	font-family: Helvetica,Arial;
-	font-size: 12px;
-	font-weight: bold;
-	text-shadow: 0 0 0.3em #000;
+	font-size: 13px;
+	color: #333333;
+	bottom: 4px !important;
+	left: 10px !important;
 }
-
+.sliderPreview .arrow{
+	display: block !important;
+	margin-left: -30px;
+	bottom: -4px !important;
+}
 .sliderPreview {
-	position: absolute;
-	width: 100px;
-	height: 60px;
-	z-index: 9999999999;
-	border: 2px white solid;
-	background-repeat: no-repeat;
-	background-position: center;
-	border-radius: 4px;
+	position: absolute !important;
+	width: 36px !important;
+	height: 24px !important;
+	padding-left: 12px !important;
+	margin-left: -10px !important;
+	z-index: 9999999999 !important;
+	background-color: #ffffff !important;
+	border-radius: 4px !important;
+	top: -30px !important;
 }
 
 .scrubber .handle-wrapper {
@@ -663,9 +669,6 @@ body {
 .mobile.fullscreen .controlsContainer {
 	margin-top: 28px !important;
 }
-.sliderPreviewTime{
-	bottom: 30px !important;
-}
 .ui-tooltip {
 	background-color: #000000;
 	background-repeat: repeat-x;
@@ -865,6 +868,34 @@ body {
 	display: inline !important;
 }
 
+@-webkit-keyframes rotating {
+	from {-webkit-transform: rotate(0deg);}
+	to {-webkit-transform: rotate(359deg);}
+}
+@-moz-keyframes rotating {
+	from {-moz-transform: rotate(0deg);}
+	to {-moz-transform: rotate(359deg);}
+}
+@keyframes rotating {
+	from {-webkit-transform: rotate(0deg);-moz-transform: rotate(0deg);-ms-transform: rotate(0deg);-o-transform: rotate(0deg);transform: rotate(0deg);}
+	to {-webkit-transform: rotate(359deg);-moz-transform: rotate(359deg);-ms-transform: rotate(359deg);-o-transform: rotate(359deg);transform: rotate(359deg);}
+}
+.ottSpinner{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-top: -50px;
+	margin-left: -50px;
+	border-radius: 50%;
+	width: 50px;
+	height: 50px;
+	border: solid 4px #ebebeb;
+	background-color: transparent;
+	border-right-color: #59baf3;
+	-webkit-animation: rotating 0.8s linear infinite;
+	-moz-animation: rotating 0.8s linear infinite;
+	animation: rotating 0.8s linear infinite;
+}
 .sourceSelector {
 	display: inline-block;
 }
