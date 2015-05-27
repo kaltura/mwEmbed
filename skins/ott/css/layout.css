@@ -169,7 +169,12 @@ body {
 	-ms-transition: bottom 0.3s ease-in;
 	transition: bottom 0.3s ease-in;
 }
-
+.mobile .controlBarContainer {
+	height: 42px !important;
+}
+.mobile.fullscreen .controlBarContainer {
+	height: 64px !important;
+}
 
 .controlBarContainer a {
 	text-decoration: none;
@@ -254,20 +259,32 @@ body {
 .play-state .largePlayBtn:before {
 	content: "\e604" !important;
 }
-.mobile .largePlayBtn {
+.mobile.start-state .largePlayBtn {
 	display: block !important;
 }
+.mobile.pause-state .largePlayBtn {
+	display: block !important;
+}
+/*
+.mobile:not(.player-out) .largePlayBtn {
+	display: block !important;
+}
+.mobile.player-out .largePlayBtn {
+	display: none !important;
+}*/
 .scrubber {
 	position: relative;
 	height: 3px;
 	border-radius: 1.5px;
 	background-color: rgba(255,255,255,0.3);
 	cursor: pointer;
-}
-.controlsContainer .scrubber{
+	margin-left: 16px;
+	margin-right: 16px;
 	display: inline-block;
-	margin-left:5px;
 	top: -7px;
+}
+.mobile .scrubber{
+	margin-left: 22px !important;
 }
 .sliderPreviewTime {
 	position: absolute;
@@ -325,12 +342,12 @@ body {
 	z-index: 100;
 	position: absolute;
 	left: 0;
-	top: -0.2em;
-	width: 1.1em; 
-	height: 1.1em;
+	top: -6px;
+	width: 28px;
+	height: 28px;
 	border-radius: 50%;
 	outline: 0;
-	margin-left: -0.38em;
+	margin-left: -13px;
 	/*border: 8px solid #dadada;*/
 	cursor: pointer;
 
@@ -372,13 +389,13 @@ body {
 	     -o-transition-delay:initial, initial;
 	        transition-delay:initial, initial;
 
-	background: rgb(255,255,255); /* Old browsers */
-	background: -moz-linear-gradient(top,  rgba(255,255,255,1) 0%, rgba(204,204,204,1) 50%, rgba(255,255,255,1) 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,1)), color-stop(50%,rgba(204,204,204,1)), color-stop(100%,rgba(255,255,255,1))); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(204,204,204,1) 50%,rgba(255,255,255,1) 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(204,204,204,1) 50%,rgba(255,255,255,1) 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(204,204,204,1) 50%,rgba(255,255,255,1) 100%); /* IE10+ */
-	background: linear-gradient(to bottom,  rgba(255,255,255,1) 0%,rgba(204,204,204,1) 50%,rgba(255,255,255,1) 100%); /* W3C */
+	background: -moz-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,0.22) 31%, rgba(255,255,255,0.22) 100%);
+	background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(255,255,255,1)), color-stop(30%,rgba(255,255,255,1)), color-stop(31%,rgba(255,255,255,0.22)), color-stop(100%,rgba(255,255,255,0.22)));
+	background: -webkit-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%,rgba(255,255,255,1) 30%,rgba(255,255,255,0.22) 31%,rgba(255,255,255,0.22) 100%);
+	background: -o-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%,rgba(255,255,255,1) 30%,rgba(255,255,255,0.22) 31%,rgba(255,255,255,0.22) 100%);
+	background: -ms-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%,rgba(255,255,255,1) 30%,rgba(255,255,255,0.22) 31%,rgba(255,255,255,0.22) 100%);
+	background: radial-gradient(ellipse at center,  rgba(255,255,255,1) 0%,rgba(255,255,255,1) 30%,rgba(255,255,255,0.22) 31%,rgba(255,255,255,0.22) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#38ffffff',GradientType=1 );
 
 }
 
@@ -475,15 +492,6 @@ body {
 	font-family: Helvetica,Arial;
 	top: -5px;
 }
-
-.currentTimeLabel {
-	padding-left: 0.8em;
-}
-
-.durationLabel {
-	padding-left: 0.5em;
-}
-
 .overlay {
 	position: absolute;
 	top: 0;
@@ -649,10 +657,11 @@ body {
 	width:100%;
 	display: inline-block;
 }
-
-.scrubber {
-	background-color: #686868;
-	background: rgba(104,104,104,0.6);
+.mobile .controlsContainer {
+	margin-top: 18px !important;
+}
+.mobile.fullscreen .controlsContainer {
+	margin-top: 28px !important;
 }
 .sliderPreviewTime{
 	bottom: 30px !important;
@@ -831,21 +840,29 @@ body {
 }
 
 .scrubber .playHead:hover {
-	border-color: #fff;
-
-	-webkit-box-shadow: 0 1px 30px rgba(255, 255, 255, 1);
-	box-shadow: 0 1px 30px rgba(255, 255, 255, 1);
-	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
-	filter: alpha(opacity=100);
+	background-color: white;
 	opacity: 1;
 }
 
 .currentTimeLabel {
 	color: rgba(255,255,255,0.6);
 }
+.mobile .currentTimeLabel {
+	display: none !important;
+}
+.mobile.fullscreen .currentTimeLabel {
+	display: inline !important;
+	margin-left: 16px !important;
+}
 
 .durationLabel {
 	color: rgba(255,255,255,0.6);
+}
+.mobile .durationLabel {
+	display: none !important;
+}
+.mobile.fullscreen .durationLabel {
+	display: inline !important;
 }
 
 .sourceSelector {
@@ -911,21 +928,24 @@ body {
 	width: 26px;
 	background-color: transparent;
 }
+.mobile .fullScreenBtn{
+	font-size: 18px !important;
+	margin-top: -14px !important;
+}
+.mobile.fullscreen .fullScreenBtn{
+	font-size: 26px !important;
+	margin-top: -10px !important;
+}
 .fullScreenBtn:hover{
 	background-color: transparent;
 }
 .mobile .playPauseBtn{
 	display: none !important;
 }
+
 .chromecast {
 	font-size: 1.4em;
 }
-/*.playPauseBtn,.fullScreenBtn {
-	border-right: 1px solid rgba(0,0,0,0.7);
-	-webkit-box-shadow: 1px 0px 0px rgba(170, 168, 168, 0.3);
-	box-shadow: 1px 0px 0px rgba(170, 168, 168, 0.3);
-}*/
-
 .ad-component {
 	position: absolute;
 	color: #FFF;
