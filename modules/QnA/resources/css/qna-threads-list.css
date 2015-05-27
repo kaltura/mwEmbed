@@ -17,7 +17,7 @@
 }
 
 .qnaInterface .qnaAnnouncementThread{
-    border-bottom: rgba(170,170,170,0.3) 1px solid
+    border-bottom: rgba(170,170,170,0.7) 1px solid
 }
 
 .qnaInterface .qnaThreadLast{
@@ -35,7 +35,7 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    border-bottom: rgba(170,170,170,0.3) 1px solid
+    border-bottom: rgba(170,170,170,0.7) 1px solid
 }
 
 .qnaInterface .qnaSingleEntry{
@@ -205,6 +205,98 @@
     font-weight: 200;
     color: rgba(65,68,66,0.5);
     bottom: 4px;
+}
+
+.qnaInterface .qnaReplyBox {
+    background-color: rgba(0, 0, 0, 0.08);
+    width: 100%;
+    height: auto;
+}
+
+.qnaInterface .qnaReplyPipeLabel{
+    background-color: transparent;
+    font-family: 'Lato', Helvetica, Arial;
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 14px;
+    text-align: left;
+    color: #414442;
+    border: transparent;
+    border: none;
+    margin-top: 1px;
+    -webkit-box-shadow:	none;
+    -moz-box-shadow:	none;
+    box-shadow:			none;
+    width: 4px;
+    margin-left: 9px;
+    float: left;
+    cursor: default;
+    position: relative;
+    top: 3px;
+}
+
+.qnaInterface .qnaReplyTextArea{
+    background-color: transparent;
+    position: relative;
+    top: 1px;
+    font-family: 'Lato', Helvetica, Arial;
+    font-weight: 300;
+    font-size: 13px;
+    line-height: 14px;
+    text-align: left;
+    border: none;
+    margin-bottom: 4px;
+    -webkit-box-shadow:	none;
+    -moz-box-shadow:	none;
+    box-shadow:			none;
+    resize: none;
+    overflow: hidden;
+    height: auto;
+    /* Firefox */
+    width: -moz-calc(100% - 75px);
+    /* WebKit */
+    width: -webkit-calc(100% - 75px);
+    /* Opera */
+    width: -o-calc(100% - 75px);
+    /* Standard */
+    width: calc(100% - 75px);
+
+    -webkit-transition: height 100ms; /* Safari */
+    transition: height 100ms;
+}
+
+.qnaInterface .qnaReplyTextAreaPlaceHolderText{
+    color: rgba(65,68,66,0.61);
+}
+
+.qnaInterface .qnaReplyTextAreaText{
+    color: rgb(65,68,66);
+}
+
+.qnaInterface .qnaReplyTextAreaPlaceHolderSize{
+    height: 22px;
+}
+
+.qnaInterface .qnaReplyTextAreaSize{
+    height: 50px;
+}
+
+.qnaInterface .qnaReplySendButton{
+    font-family: 'Lato', Helvetica, Arial;
+    width: 40px;
+    border: none;
+    background-color: transparent;
+    position: absolute;
+    font-size: 12px;
+    font-weight: 300;
+    bottom: 3px;
+    right: 11px;
+    color: #ffffff;
+    padding: 0px;
+}
+
+.qnaInterface .qnaReplySendButton:hover {
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);;
 }
 
 /*background color for entries / threads*/

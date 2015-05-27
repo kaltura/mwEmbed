@@ -59,6 +59,11 @@ DAL for Q&A Module
             }
             return false;
         });
+
+        // This is here so we will be able to save the reply in the context of the thread
+        this.replyText = ko.observable(gM("qna-reply-here"));
+
+        this.isTypingAnswer = ko.observable(false);
     };
 
     function QnaEntry(cuePoint){
@@ -199,12 +204,9 @@ DAL for Q&A Module
 
             var metadata= { };
             if (parent) {
-                metadata.ThreadId = parent.metadata.ThreadId;
-                metadata.Type="Answer";
-            } else {
-                //no threadid!
-                metadata.Type="Question";
+                metadata.ThreadId = parent.cuePoint().metadata.ThreadId;
             }
+                metadata.Type="Question";
 
             var xmlData = _this.createMetadataXmlFromObject(metadata);
 
@@ -220,7 +222,7 @@ DAL for Q&A Module
                 "cuePoint:partnerData": xmlData
             };
             if (parent) {
-                createCuePointRequest["cuePoint:parentId"] = parent.id;
+                createCuePointRequest["cuePoint:parentId"] = parent.cuePoint().id;
             }
 
             var listMetadataProfileRequest = {
@@ -252,6 +254,7 @@ DAL for Q&A Module
                         if (item) {
 
                             _this.addOrUpdateEntry(item);
+                            _this.sortThreads();
                         }
                         mw.log("added Annotation cue point with id: " + cuePoint.id + " took " + (endTime - startTime) + " ms");
 
@@ -279,6 +282,7 @@ DAL for Q&A Module
             else{
                 viewedEntries.markAsRead(item.cuePoint().id);
                 this.addOrUpdateEntry(item);
+                this.qnaPlugin.updateUnreadBadge();
             }
         },
 
@@ -294,6 +298,17 @@ DAL for Q&A Module
                     break;
                 }
             }
+        },
+
+        sortThreads: function(){
+            var _this=this;
+            _this.QnaThreads.sort(
+                function(a, b){
+                    var a_val = a().isCollapsed() ? a().entries()[0]().getTime() : a().entries()[a().entries().length-1]().getTime();
+                    var b_val = b().isCollapsed() ? b().entries()[0]().getTime() : b().entries()[b().entries().length-1]().getTime();
+                    return b_val - a_val;
+                }
+            );
         },
 
         // look for a QnaThread for this QnaEntry
@@ -320,30 +335,16 @@ DAL for Q&A Module
                     if (!found) {
                         _this.QnaThreads()[i]().appendEntry(qnaEntry);
                     }
-
-                    if (!found) {
-                        _this.QnaThreads.unshift(_this.QnaThreads()[i]);
-                        _this.QnaThreads.splice(i + 1, 1);
-                    }
                     found = true;
                     break;
-
-                    //var tmp = _this.QnaThreads()[i];
-                    ////_this.QnaThreads.splice(i, 0, _this.QnaThreads()[i]);
-                    ////
-                    //_this.QnaThreads.splice(i, 1);
-                    //_this.QnaThreads.unshift(tmp);
-
                 }
             }
 
             if (!found) {
                 var newThread = new QnaThread(qnaEntry.getThreadID());
                 newThread.appendEntry(qnaEntry);
-                _this.QnaThreads.unshift(ko.observable(newThread));
+                _this.QnaThreads.push(ko.observable(newThread));
             }
-
-            _this.qnaPlugin.updateUnreadBadge();
         },
 
         metadataToObject: function(metadata) {
@@ -443,7 +444,6 @@ DAL for Q&A Module
                     data.objects.forEach(function(cuePoint) {
 
                         var item=_this.annotationCuePointToQnaEntry(cuePoint);
-
                         if (item) {
 
                             if (_this.lastUpdateTime < cuePoint.updatedAt) {
@@ -452,6 +452,8 @@ DAL for Q&A Module
                             _this.addOrUpdateEntry(item);
                         }
                     });
+
+                    _this.sortThreads();
                 }
             );
         },

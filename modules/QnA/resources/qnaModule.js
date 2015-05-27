@@ -46,6 +46,42 @@
                     }
                 };
 
+                this.inThreadReply = function(replyText, qnaThread) {
+                    if (replyText() === gM("qna-reply-here")){
+                        return;
+                    }
+                    _this.qnaService.submitQuestion(replyText(), qnaThread.entries()[qnaThread.entries().length-1]());
+                    qnaThread.replyText(gM("qna-reply-here"));
+                    qnaThread.isTypingAnswer(false);
+                };
+
+                this.clearTextArea = function(qnaThread, event){
+                    if (qnaThread.replyText() === gM("qna-reply-here")){
+                        qnaThread.replyText("");
+                        qnaThread.isTypingAnswer(true);
+                    }
+                };
+
+                this.resetTextArea = function(qnaThread, event){
+                    if (qnaThread.replyText() === ""){
+                        qnaThread.replyText(gM("qna-reply-here"));
+                        qnaThread.isTypingAnswer(false);
+                    }
+                };
+
+                this.textAreaScrolled = function(data, event) {
+                    var elem = event.target;
+                    //if (elem.scrollHeight > elem.offsetHeight){
+                        $(elem).scrollTop(elem.scrollTop - Math.round(event.originalEvent.deltaY));
+
+                        if (elem.scrollTop !== 0 && elem.scrollHeight !== elem.offsetHeight+elem.scrollTop) {
+                            return;
+                        }
+                    //}
+                    // return true to let the default action proceed
+                    return true;
+                };
+
                 this.collapseExpandThread = function (entry, event) {
                     console.log("collapse / expand for thread with id " + entry.getThreadID() + " was clicked");
 

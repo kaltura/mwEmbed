@@ -19,4 +19,5 @@ $messages['en'] = array(
 	'qna-timestamp-multi-hours-text' => 'hrs',
 	'qna-timestamp-single-hour-text' => 'hr',
 	'qna-answered-by' => 'Answered by',
+	'qna-reply-here' => 'Reply here',
 );
