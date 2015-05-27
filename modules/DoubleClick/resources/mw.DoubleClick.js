@@ -341,6 +341,7 @@
 					_this.restorePlayerCallback = callback;
 					// Request ads
 					mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
+					alert('addManagedBinding requestAds for preroll:');
 					_this.requestAds();
 				}
 			});
@@ -579,6 +580,7 @@
 			var _this = this;
 			this.parseAdTagUrlParts(this.embedPlayer, this.pluginName);
 			var adTagUrl = this.adTagUrl;
+			alert(adTagUrl);
 			var cust_params = this.cust_params;
 			// Add any custom params:
 			adTagUrl = _this.addCustomParams( adTagUrl, cust_params );
@@ -633,6 +635,7 @@
 			}
 
 			if ( this.isNativeSDK ) {
+				alert("isNativeSDK");
 				this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', this.getConfig( 'adTagUrl' ));
 				mw.log( "DoubleClick::requestAds: Native SDK player request ad ");
 				return;
