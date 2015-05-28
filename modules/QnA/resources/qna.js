@@ -258,6 +258,11 @@
 				var deltaY = ev.originalEvent.deltaY * ratio;
 				$(this).scrollTop($(this).scrollTop() - Math.round(deltaY));
 			});
+
+			textArea.bind("touchstart",function(ev) {
+				var elem = ev.target;
+				$(elem).css({'overflow':'auto'});
+			});
 		},
 
 		resetTextArea : function(textArea){

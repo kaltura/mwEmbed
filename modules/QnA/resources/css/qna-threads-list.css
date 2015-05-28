@@ -40,6 +40,7 @@
 
 .qnaInterface .qnaSingleEntry{
     padding-right: 24px !important;
+    white-space: nowrap !important;
 }
 
 .qnaInterface .qnaEntryList{

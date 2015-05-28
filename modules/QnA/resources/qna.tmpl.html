@@ -50,32 +50,34 @@
                                     <div class="icon-qna-bullet qna-bullet-icon qna-bullet-icon-unread qna-bullet-icon-middle-drop"></div>
                                 </div>
 
-                                <!--Thread is not collapsed-->
-                                <div data-bind="if: $index()===0 && !$parent.isCollapsed()">
-                                    <div class="icon-qna-drop2 qna-bullet-icon qna-bullet-icon-read qna-bullet-icon-top-drop"></div>
-                                </div>
+                                <div data-bind="if: $parent.entries().length > 1">
+                                    <!--Thread is not collapsed-->
+                                    <div data-bind="if: $index()===0 && !$parent.isCollapsed()">
+                                        <div class="icon-qna-drop2 qna-bullet-icon qna-bullet-icon-read qna-bullet-icon-top-drop"></div>
+                                    </div>
 
-                                <div data-bind="if: $index()===$parent.entries().length-1 && !$parent.isCollapsed()">
-                                    <div data-bind='css:{   "qna-bullet-icon-read": isRead(),
-                                                            "qna-bullet-icon-unread": !isRead()}'
-                                         class="icon-qna-drop qna-bullet-icon qna-bullet-icon-read qna-bullet-icon-bottom-drop"></div>
-                                </div>
+                                    <div data-bind="if: $index()===$parent.entries().length-1 && !$parent.isCollapsed()">
+                                        <div data-bind='css:{   "qna-bullet-icon-read": isRead(),
+                                                                "qna-bullet-icon-unread": !isRead()}'
+                                             class="icon-qna-drop qna-bullet-icon qna-bullet-icon-read qna-bullet-icon-bottom-drop"></div>
+                                    </div>
 
-                                <div data-bind="if: $index()!==0 && $index()!== $parent.entries().length-1">
-                                    <div data-bind='css:{   "qna-bullet-icon-read": isRead(),
-                                                            "qna-bullet-icon-unread": !isRead()}'
-                                         class="icon-qna-bullet qna-bullet-icon qna-bullet-icon-read qna-bullet-icon-middle-drop"></div>
+                                    <div data-bind="if: $index()!==0 && $index()!== $parent.entries().length-1">
+                                        <div data-bind='css:{   "qna-bullet-icon-read": isRead(),
+                                                                "qna-bullet-icon-unread": !isRead()}'
+                                             class="icon-qna-bullet qna-bullet-icon qna-bullet-icon-read qna-bullet-icon-middle-drop"></div>
+                                    </div>
                                 </div>
 
                                 <div class="qnaEntry" data-bind="click: $parents[1].EntryClicked">
-                                    <div data-bind="if: !$parent.isCollapsed()">
+                                    <div data-bind="if: !$parent.isCollapsed() && thread.entries().length > 1">
                                         <div class="qna-vertical-line" data-bind="css:{ 'qna-vertical-line-first':$index()===0,
                                                                                         'qna-vertical-line-last':$index()===$parent.entries().length-1}"></div>
                                     </div>
                                     <div data-bind='css:{   "qnaThreadTextRead" : !(!isRead() || ($index()===0 && thread.hasUnreadEntries() && $parent.isCollapsed())),
                                                             "qnaThreadText": !isRead() || ($index()===0 && thread.hasUnreadEntries() && $parent.isCollapsed()),
                                                             "qnaThreadTitleCollapsed": thread.entries().length > 1 && $parent.isCollapsed(),
-                                                            "qnaSingleEntry": thread.entries().length === 1
+                                                            "qnaSingleEntry": thread.entries().length === 1 && $parent.isCollapsed()
                                                         },
                                                     text:getText()'></div>
 
@@ -86,7 +88,7 @@
                                                     text: getTitle()'></div>
                                     <div class="qnaThreadTimeRead"
                                          data-bind='text: timestamp.qnaTimestamp($parents[1].currentTime)'></div>
-                                    <div data-bind="if: $index()===0 && $parent.entries().length > 1">
+                                    <div data-bind="if: $index()===0">
                                         <div class="collapseExpandIcon"
                                              data-bind="css:{   'icon-qna-collapse': $parent.isCollapsed(),
                                                                 'icon-qna-expand': !$parent.isCollapsed()
@@ -107,7 +109,7 @@
                                                         },
                                                         value: replyText,
                                                         click: $parent.clearTextArea,
-                                                        event:{blur: $parent.resetTextArea, wheel: $parent.textAreaScrolled}">
+                                                        event:{blur: $parent.resetTextArea, wheel: $parent.textAreaScrolled, touchstart:$parent.textAreaTouched}">
                                 </textarea>
                                 <button class="qnaReplySendButton" data-bind="click: $parent.inThreadReply.bind($data, replyText), text: gM('qna-send-button-text')"></button>
                             </div>
