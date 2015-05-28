@@ -182,9 +182,11 @@
 
 				// given an opportunity for ads to load for ads to load:
 				embedPlayer.triggerQueueCallback( 'AdSupport_OnPlayAdLoad',function(){
+					alert('AdSupport_OnPlayAdLoad');
 					mw.log( "AdTimeline:: AdSupport_OnPlayAdLoad ");
 					// Show prerolls:
 					_this.displaySlots( 'preroll', function(){
+						alert('AdSupport_display slot preroll');
 						// Trigger ad complete for prerolls if an ad was played
 						// ( and we are going to play a bumper )
 						if( _this.displayedSlotCount > 0
