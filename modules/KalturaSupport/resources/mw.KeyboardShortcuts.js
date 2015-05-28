@@ -156,7 +156,7 @@
 
 			// Handle single keys
 			if( !ranCallback && this.enableSingleKeyBindings) {
-				this.runCallbackByKeysArr( keyCode, this.singleKeys );
+				ranCallback = this.runCallbackByKeysArr( keyCode, this.singleKeys );
 			}
 			if( ranCallback ){
 				// Prevent the default behavior
