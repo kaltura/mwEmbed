@@ -97,15 +97,17 @@
                             </div>
                         </div>
                         <div data-bind="if: !isCollapsed()">
-                            <div class="qnaReplyBox">
+                            <div class="qnaReplyBox"
+                                 data-bind="css:{
+                                         'qnaReplyBoxSize': !isTypingAnswer(),
+                                         'qnaReplyBoxPlaceHolderSize': isTypingAnswer()
+                                 }">
                                 <label class="qnaReplyPipeLabel">|</label>
                                 <textarea class="qnaReplyTextArea"
                                           maxlength="200"
                                           rows="1"
                                           data-bind="   css:{   'qnaReplyTextAreaText': isTypingAnswer(),
-                                                                'qnaReplyTextAreaPlaceHolderText': !isTypingAnswer(),
-                                                                'qnaReplyTextAreaSize': isTypingAnswer(),
-                                                                'qnaReplyTextAreaPlaceHolderSize': !isTypingAnswer()
+                                                                'qnaReplyTextAreaPlaceHolderText': !isTypingAnswer()
                                                         },
                                                         value: replyText,
                                                         click: $parent.clearTextArea,
