@@ -250,15 +250,10 @@ DAL for Q&A Module
                     createCuePointRequest["cuePoint:parentId"] = parent.cuePoint().id;
                 }
 
-                var listMetadataProfileRequest = {
-                    service: "metadata_metadataprofile",
-                    action: "list",
-                    "filter:systemNameEqual": _this.QandA_MetadataProfileSystemName
-                };
                 var addMetadataRequest = {
                     service: "metadata_metadata",
                     action: "add",
-                    metadataProfileId: "{2:result:objects:0:id}",
+                    metadataProfileId: _this.metadataProfile.id,
                     objectId: "{1:result:id}",
                     xmlData: xmlData,
                     objectType: "annotationMetadata.Annotation"
@@ -267,10 +262,10 @@ DAL for Q&A Module
 
                 // mw.log("Submitting a new question: " + question);
 
-                _this.getKClient().doRequest([createCuePointRequest, listMetadataProfileRequest, addMetadataRequest], function (result) {
+                _this.getKClient().doRequest([createCuePointRequest, addMetadataRequest], function (result) {
                         var endTime = new Date();
                         var cuePoint = result[0];
-                        var metadata = result[2];
+                        var metadata = result[1];
                         if (cuePoint.id && metadata.id) {
 
 
