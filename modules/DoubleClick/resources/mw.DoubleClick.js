@@ -80,6 +80,7 @@
 		localizationCode: null,
 
 		init: function( embedPlayer, callback, pluginName ){
+			//alert("init");
 			var _this = this;
 			if (mw.getConfig( 'localizationCode' )){
 				_this.localizationCode = mw.getConfig( 'localizationCode' );
@@ -99,7 +100,7 @@
 
 			// remove any old bindings:
 			embedPlayer.unbindHelper( this.bindPostfix );
-
+			//alert("init 102");
 			// make sure any old ad Manager is unloaded:
 			var globalAdsManger = $(_this.embedPlayer).data( 'doubleClickAdsMangerRef' );
 			if( globalAdsManger ){
@@ -113,19 +114,23 @@
 
 				}
 				this.removeAdContainer();
+
+				//alert("init 117");
 			}
 
 			if ( _this.getConfig( 'leadWithFlash' ) !== undefined ) {
 				_this.leadWithFlash = _this.getConfig( 'leadWithFlash' );
 			}
-
+			//alert("init 123");
 			if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
 				_this.isNativeSDK = true;
+				alert("init 126");
 				_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
 					_this.bindChromelessEvents();
 				});
 				_this.addManagedBinding();
 				callback();
+				//alert("init 132");
 				return;
 			}
 
@@ -155,15 +160,18 @@
 					});
 					_this.addManagedBinding();
 					callback();
+					//alert("init 162");
 					return;
 				} else if ( mw.isIE8() || mw.isIE9() ) {   //no flash on IE8/9
 					callback();
+					//alert("init 166");
 					return;
 				}
 			}
-
+			//alert("170");
 			// Load double click ima per doc:
 			this.loadIma( function(){
+				alert("173 loadIMA");
 				// Determine if we are in managed or kaltura point based mode.
 				if ( _this.localizationCode ){
 					google.ima.settings.setLocale(_this.localizationCode);
@@ -574,7 +582,7 @@
 			return adTagUrl;
 		},
 		// This function requests the ads.
-		requestAds: function( adType ) {
+		requestAds: function( adType ) { alert("0");
 			var _this = this;
 			this.parseAdTagUrlParts(this.embedPlayer, this.pluginName);
 			var adTagUrl = this.adTagUrl;
@@ -631,11 +639,15 @@
 				return;
 			}
 
-			if ( this.isNativeSDK ) {
+			alert("1");
+
+			if ( this.isNativeSDK ) { alert("2");
 				this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', this.getConfig( 'adTagUrl' ));
 				mw.log( "DoubleClick::requestAds: Native SDK player request ad ");
 				return;
 			}
+
+			alert("3");
 
 			// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
 			this.getAdDisplayContainer().initialize();

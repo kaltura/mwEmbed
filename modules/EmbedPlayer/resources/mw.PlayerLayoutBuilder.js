@@ -101,6 +101,10 @@ mw.PlayerLayoutBuilder.prototype = {
 				this.$interface.addClass('touch');
 			}
 
+			if (mw.isNativeApp()) {
+				this.$interface.addClass('nativeApp');
+			}
+
 			if ( mw.isIE8() ) {
 				this.$interface.addClass('ie8');
 			}

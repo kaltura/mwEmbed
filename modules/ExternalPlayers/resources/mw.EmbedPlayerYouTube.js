@@ -297,7 +297,7 @@
 			this.youtubeProtocol = location.protocol;
 			this.youtubePreFix = this.youtubeProtocol+this.youtubePreFix;
 
-			if( this.supportsFlash() && mw.getConfig("forceIframe") != 1 ){
+			if( this.supportsFlash() && mw.getConfig("forceIframe") == 0 ){
 				// embed chromeless flash
 				if(window['KeyValueParams']){
 					var dataUrl = this.youtubePreFix + this.youtubeEntryId +'&amp;showinfo=0&amp;version=3&ampiv_load_policy=3&amp;' +
