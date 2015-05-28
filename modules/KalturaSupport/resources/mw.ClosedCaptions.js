@@ -33,7 +33,9 @@
 		setup: function(){
 			var _this = this;
 			this.cookieName = this.pluginName + '_languageKey';
-
+setTimeout(function(){
+	_this.getPlayer().triggerHelper("coolEvent",{"items":[{'value':'name1','text':'amir'},{'value':'name2','text':'oren'}]});
+},3000)
 			if( (this.getConfig( 'useCookie' ) && $.cookie( this.cookieName )
 				&&
 				$.cookie( this.cookieName ) == 'None')

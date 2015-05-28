@@ -75,6 +75,7 @@
 
 		getMenu: function(){
 			if ( !this.$menu ){
+				var _this = this;
 				// add menu DIV
 				this.$menu = $('<div class="masterPluginMenu"></div>');
 				var config = this.getConfig('config');
@@ -87,7 +88,9 @@
 				}else{
 					this.$menu.height(this.calculateMenuHeight(config));
 				}
-
+				this.$menu.close = function(){
+					_this.closeMenu();
+				}
 				// render menu
 				this.renderMenu(config);
 
@@ -118,7 +121,9 @@
 					switch (property.type){
 						case 'boolean':
 							var propField = $('<input class="pluginProperty pluginPropertyLabel checkbox" type="checkbox">')
-								.on("change", function(){_this.propertyChanged(plugin.pluginName, property.property, property.type, $(this).is(":checked") )});
+								.on("change", function(){
+									_this.propertyChanged(plugin.pluginName, property.property, property.type, $(this).is(":checked") );
+								});
 							if ( property.updateEvent ){
 								embedPlayer.bindHelper( property.updateEvent, function(e, prop){
 									propField.prop( "checked", prop.value ); // set checkbox value according to value passed on the event
@@ -131,7 +136,24 @@
 						case 'enum':
 							_this.$menu.append('<span class="pluginPropertyLabel">' + property.label + '</span>');
 							var propField = $('<select class="pluginProperty pluginPropertyLabel"></select>')
-								.on("change", function(){_this.propertyChanged(plugin.pluginName, property.property, property.type, $(this).val() )});
+								.on("change", function(){
+									_this.propertyChanged(plugin.pluginName, property.property, property.type, $(this).val() );
+								});
+							var addOptions = function(items){
+								$.each(items, function (i, item) {
+									propField.append($('<option>', {
+										value: item.value,
+										text : item.text
+									}));
+								});
+							}
+							if (property.updateEvent ){
+								embedPlayer.bindHelper( property.updateEvent, function(e, prop){
+									addOptions(prop.items);
+								});
+							}else{
+								addOptions( embedPlayer.getKalturaConfig( plugin.pluginName, property.property ));
+							}
 							_this.$menu.append(propField);
 							break;
 						case 'string':
