@@ -1,6 +1,7 @@
 (function ( mw, $ ) {
 	"use strict";
-	mw.dualScreenControlBar = function (settings){
+	mw.dualScreen = mw.dualScreen || {};
+	mw.dualScreen.dualScreenControlBar = function (settings){
 		this.$controlBar = null;
 		this.embedPlayer = settings.embedPlayer;
 		this.templatePath = settings.templatePath;
@@ -33,7 +34,7 @@
 		this.addBindings();
 	};
 
-	mw.dualScreenControlBar.prototype = {
+	mw.dualScreen.dualScreenControlBar.prototype = {
 		bind: function(name, handler){
 			this.embedPlayer.bindHelper(name, handler);
 		},
