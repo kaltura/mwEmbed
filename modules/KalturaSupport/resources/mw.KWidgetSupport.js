@@ -1611,7 +1611,7 @@ mw.KWidgetSupport.prototype = {
 		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/' + format + '/protocol/' + protocol + '/uiConfId/' + embedPlayer.kuiconfid +  '/a.' + extension;
 		// Append KS & Referrer
 		function getKs() {
-			srcUrl += '?referrer=' + base64_encode( _this.getHostPageUrl() ) + '&playSessionId=' + _this.getGUID();
+			srcUrl += '?referrer=' + base64_encode( _this.getHostPageUrl() ) + '&playSessionId=' + _this.getGUID() + "&clientTag=html5:v" + window[ "MWEMBED_VERSION" ];
 			var deferred = $.Deferred();
 			var ks = _this.kClient.getKs();
 			if( ks ){
