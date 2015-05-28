@@ -955,6 +955,9 @@
 				var newDoc = iframe.contentWindow.document;
 				newDoc.open();
 				newDoc.write(iframeData.content);
+				if ( mw.getConfig("EmbedPlayer.DisableContextMenu") ){
+					newDoc.getElementsByTagName('body')[0].setAttribute("oncontextmenu","return false;");
+				}
 				newDoc.close();
 				// Clear out this global function
 				window[ cbName ] = null;
