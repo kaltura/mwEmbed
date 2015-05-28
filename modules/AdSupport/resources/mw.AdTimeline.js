@@ -182,11 +182,9 @@
 
 				// given an opportunity for ads to load for ads to load:
 				embedPlayer.triggerQueueCallback( 'AdSupport_OnPlayAdLoad',function(){
-					alert('AdSupport_OnPlayAdLoad');
 					mw.log( "AdTimeline:: AdSupport_OnPlayAdLoad ");
 					// Show prerolls:
 					_this.displaySlots( 'preroll', function(){
-						alert('AdSupport_display slot preroll');
 						// Trigger ad complete for prerolls if an ad was played
 						// ( and we are going to play a bumper )
 						if( _this.displayedSlotCount > 0
@@ -316,6 +314,7 @@
 			var sequenceProxy = {};
 			// Get the sequence ad set
 			this.embedPlayer.triggerHelper( 'AdSupport_' + slotType,  [ sequenceProxy ] );
+			alert('2');
 			// Allow plugins to manipulate the sequence proxy ( after build out )
 			this.embedPlayer.triggerHelper( "AdSupport_SequnceProxyBuildDone", [ slotType, sequenceProxy ] );
 			return sequenceProxy;
@@ -332,8 +331,10 @@
 		 */
 		displaySlots: function( slotType, doneCallback ){
 			var _this = this;
+			alert('1');
 			// Setup a sequence timeline set:
 			var sequenceProxy = _this.getSequenceProxy( slotType );
+			alert('4');
 			// Generate a sorted key list:
 			var keyList = [];
 			$.each( sequenceProxy, function(k, na){
@@ -347,7 +348,7 @@
 				doneCallback();
 				return ;
 			}
-
+			alert('5');
 			// Sort the sequence proxy key list:
 			keyList.sort();
 			var seqInx = 0;

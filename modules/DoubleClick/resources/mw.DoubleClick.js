@@ -332,6 +332,7 @@
 			_this.embedPlayer.bindHelper( 'AdSupport_preroll' + _this.bindPostfix, function( event, sequenceProxy ){
 				// Add the slot to the given sequence proxy target target
 				sequenceProxy[ _this.getSequenceIndex( 'preroll' ) ] = function(callback){
+					alert('3');
 					_this.sequenceProxy = sequenceProxy;
 					// if a preroll set it as such:
 					_this.currentAdSlotType = 'preroll';
