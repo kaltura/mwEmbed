@@ -241,12 +241,32 @@ $wgRemoteWebInspector = false;
 $wgKalturaApiFeatures = array();
 
 /*********************************************************
+ * Override Domain:
+********************************************************/
+$wgEnableKalturaOverrideDomain = true;
+$wgKalturaAuthOverrideDomains = array();
+
+/*********************************************************
  * Include local settings override:
 ********************************************************/
 $wgLocalSettingsFile = realpath( dirname( __FILE__ ) ) . '/../LocalSettings.php';
 
 if( is_file( $wgLocalSettingsFile ) ){
 	require_once( $wgLocalSettingsFile );
+}
+
+//Override Domain
+//===============
+//Override here all variables that are using wgServer
+if (isset( $_GET['od'] ) && $wgEnableKalturaOverrideDomain && in_array($_SERVER['HTTP_HOST'], $wgKalturaAuthOverrideDomains )){
+	$wgServer = htmlspecialchars( $_GET['rp'] ) . dirname( dirname( $_SERVER['SCRIPT_NAME'] ) ) .'/';
+
+	// Default Load Script path
+    $wgLoadScript = $wgServer . $wgScriptPath . 'load.php';
+    // Support legacy $wgResourceLoaderUrl url.
+    $wgResourceLoaderUrl = $wgLoadScript;
+
+    $wgMwEmbedProxyUrl =  $wgServer . $wgScriptPath . 'simplePhpXMLProxy.php';
 }
 
 //Set global configs into $wgMwEmbedModuleConfig in order to enable
