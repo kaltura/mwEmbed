@@ -244,7 +244,6 @@ $wgKalturaApiFeatures = array();
  * Override Domain:
 ********************************************************/
 $wgEnableKalturaOverrideDomain = true;
-$wgKalturaAuthOverrideDomains = array();
 
 /*********************************************************
  * Include local settings override:
@@ -258,8 +257,8 @@ if( is_file( $wgLocalSettingsFile ) ){
 //Override Domain
 //===============
 //Override here all variables that are using wgServer
-if (isset( $_GET['od'] ) && $wgEnableKalturaOverrideDomain && in_array($_SERVER['HTTP_HOST'], $wgKalturaAuthOverrideDomains )){
-	$wgServer = htmlspecialchars( $_GET['rp'] ) . dirname( dirname( $_SERVER['SCRIPT_NAME'] ) ) .'/';
+if ( $wgEnableKalturaOverrideDomain && isset( $_GET['od'] ) ){
+	$wgServer = htmlspecialchars( $_GET['od'] ) . dirname( dirname( $_SERVER['SCRIPT_NAME'] ) ) .'/';
 
 	// Default Load Script path
     $wgLoadScript = $wgServer . $wgScriptPath . 'load.php';
