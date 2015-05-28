@@ -60,6 +60,45 @@ DAL for Q&A Module
             return false;
         });
 
+        // Get the timestame of the last Answer on the thread
+        // If there are no answers on the thread - return first question (so thread won't jump on new question).
+        this.lastTimeForSort = function(){
+
+            if (_this.entries()[0]().getType() === "Announcement"){
+                return _this.entries()[0]().getTime();
+            }
+
+            var q_time = undefined;
+            var a_time = undefined;
+
+            for(var i =0; i < _this.entries().length; ++i) {
+                if (_this.entries()[i]().getType() === "Answer"){
+                    if (a_time === undefined){
+                        a_time = _this.entries()[i]().getTime();
+                    }
+                    else if (_this.entries()[i]().getTime() > a_time){
+                        a_time = _this.entries()[i]().getTime();
+                    }
+                }
+                else if (_this.entries()[i]().getType() === "Question"){
+                    if (q_time === undefined){
+                        q_time = _this.entries()[i]().getTime();
+                    }
+                    else if (_this.entries()[i]().getTime() < q_time){
+                        q_time = _this.entries()[i]().getTime();
+                    }
+
+                }
+            }
+
+            if (a_time === undefined){
+                return q_time;
+            }
+
+            return Math.max(a_time,q_time);
+
+        };
+
         // This is here so we will be able to save the reply in the context of the thread
         this.replyText = ko.observable(gM("qna-reply-here"));
 
@@ -304,9 +343,12 @@ DAL for Q&A Module
             var _this=this;
             _this.QnaThreads.sort(
                 function(a, b){
-                    var a_val = a().isCollapsed() ? a().entries()[0]().getTime() : a().entries()[a().entries().length-1]().getTime();
-                    var b_val = b().isCollapsed() ? b().entries()[0]().getTime() : b().entries()[b().entries().length-1]().getTime();
-                    return b_val - a_val;
+
+                    //var a_val = a().isCollapsed() ? a().entries()[0]().getTime() : a().entries()[a().entries().length-1]().getTime();
+                    //var b_val = b().isCollapsed() ? b().entries()[0]().getTime() : b().entries()[b().entries().length-1]().getTime();
+                    //return b_val - a_val;
+
+                    return b().lastTimeForSort() - a().lastTimeForSort();
                 }
             );
         },

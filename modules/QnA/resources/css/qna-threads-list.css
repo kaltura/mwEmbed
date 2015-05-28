@@ -41,6 +41,8 @@
 .qnaInterface .qnaSingleEntry{
     padding-right: 24px !important;
     white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
 }
 
 .qnaInterface .qnaEntryList{
