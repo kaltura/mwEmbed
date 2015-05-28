@@ -418,16 +418,7 @@ class downloadEntry {
 
 	private function sanitizeFilenameForHeader($filename) {
 		strip_tags($filename);
-
-		function match_replace(){
-			return '';
-		};
-
-		$filename = preg_replace_callback(array('/[^(\x20-\x7F)]*/', '/[^\w\-\.\s]+/'),
-			"match_replace",
-			$filename
-		);
-		return $filename;
+		return preg_replace('/[^A-Za-z0-9\-\.\_\~\!\$\&\'\(\)\*\+\,\;\=\:\@]/', '_', $filename);
 	}
 
 	private function getSourceFlavorUrl( $flavorId = false ){
