@@ -523,9 +523,22 @@ body {
 }
 .masterPluginMenu .pluginTitle{
 	color: #555555;
-	margin-left: 10px;
+	margin-left: 12px;
 	font-size: 12px;
 	font-weight: bold;
+	margin-top: 8px;
+	margin-bottom: 8px;
+}
+.masterPluginMenu .pluginPropertyLabel{
+	color: #555555;
+	margin-left: 24px;
+	font-size: 12px;
+}
+.masterPluginMenu .pluginProperty{
+	width: 150px;
+}
+.masterPluginMenu .pluginProperty.checkbox{
+	width: 20px;
 }
 .overlay {
 	position: absolute;

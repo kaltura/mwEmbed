@@ -17,11 +17,18 @@
 		$menu: null,
 
 		setup: function( embedPlayer ) {
+			var _this = this;
 			if ( $.isEmptyObject(this.getConfig("config")) ){
 				this.setConfig( "visible", false ); // remove plugin if no config was specified
 				return;
 			}
-			this.addBindings();
+			// hide specified plugins
+			var config = this.getConfig('config');
+			config.plugins.forEach(function (plugin, index) {
+				_this.embedPlayer.setKalturaConfig( plugin.pluginName, "visible", false );
+			});
+
+			this.getMenu(); // create menu
 		},
 		getComponent: function() {
 			var _this = this;
@@ -48,26 +55,28 @@
 		},
 
 		openMenu: function(x){
-			this.embedPlayer.getVideoHolder().append( this.getMenu(x) );
+			// set menu position
+			var rightPosition = this.embedPlayer.getVideoHolder().width() - x - 20; // set right position for the menu according to the mouse click x position
+			var bottomPosition = 0; // set the menu bottom to the video holder bottom
+			if  ( this.embedPlayer.getKalturaConfig( "controlBarContainer", "hover" ) === true ){
+				bottomPosition = this.embedPlayer.getInterface().find(".controlsContainer").height(); // for hovering controls, update the menu bottom to the controls bar height
+			}
+
+			this.embedPlayer.getVideoHolder().append( this.getMenu().css({"bottom": bottomPosition, "right": rightPosition}) );
 			this.menuOpened = true;
+			this.getPlayer().triggerHelper( 'onDisableKeyboardBinding' );
 		},
 
 		closeMenu: function(){
 			this.getMenu().remove();
 			this.menuOpened = false;
+			this.getPlayer().triggerHelper( 'onEnableKeyboardBinding' );
 		},
 
-		getMenu: function(x){
+		getMenu: function(){
 			if ( !this.$menu ){
-				// set menu position
-				var rightPosition = this.embedPlayer.getVideoHolder().width() - x - 20; // set right position for the menu according to the mouse click x position
-				var bottomPosition = 0; // set the menu bottom to the video holder bottom
-				if  ( this.embedPlayer.getKalturaConfig( "controlBarContainer", "hover" ) === true ){
-					bottomPosition = this.embedPlayer.getInterface().find(".controlsContainer").height(); // for hovering controls, update the menu bottom to the controls bar height
-				}
-
 				// add menu DIV
-				this.$menu = $('<div class="masterPluginMenu"></div>').css({"bottom": bottomPosition, "right": rightPosition});
+				this.$menu = $('<div class="masterPluginMenu"></div>');
 				var config = this.getConfig('config');
 
 				// set menu height
@@ -98,9 +107,63 @@
 		},
 
 		renderMenu: function(config){
+			var _this = this;
+			var embedPlayer = this.getPlayer();
 			if ( config.title && config.title.length ){
 				this.$menu.append('<p class="title">' + config.title + '</p>');
 			}
+			config.plugins.forEach(function (plugin, index) {
+				_this.$menu.append('<p class="pluginTitle">' + plugin.displayName + '</p>');
+				plugin.properties.forEach(function (property, index) {
+					switch (property.type){
+						case 'boolean':
+							var propField = $('<input class="pluginProperty pluginPropertyLabel checkbox" type="checkbox">')
+								.on("change", function(){_this.propertyChanged(plugin.pluginName, property.property, property.type, $(this).is(":checked") )});
+							if ( property.updateEvent ){
+								embedPlayer.bindHelper( property.updateEvent, function(e, prop){
+									propField.prop( "checked", prop.value ); // set checkbox value according to value passed on the event
+								});
+							}else{
+								propField.prop( "checked", embedPlayer.getKalturaConfig( plugin.pluginName, property.property )); // set checkbox value according to property value
+							}
+							_this.$menu.append(propField).append(property.label);
+							break;
+						case 'enum':
+							_this.$menu.append('<span class="pluginPropertyLabel">' + property.label + '</span>');
+							var propField = $('<select class="pluginProperty pluginPropertyLabel"></select>')
+								.on("change", function(){_this.propertyChanged(plugin.pluginName, property.property, property.type, $(this).val() )});
+							_this.$menu.append(propField);
+							break;
+						case 'string':
+						case 'number':
+						case 'float':
+							_this.$menu.append('<span class="pluginPropertyLabel">' + property.label + '</span>');
+							var propField = $('<input class="pluginProperty pluginPropertyLabel" type="text"/>')
+								.on("change", function(){_this.propertyChanged(plugin.pluginName, property.property, property.type, $(this).val() )});
+							if ( property.updateEvent ){
+								embedPlayer.bindHelper( property.updateEvent, function(e, prop){
+									propField.val( prop.value ); // set field value according to value passed on the event
+								});
+							}else{
+								propField.val( embedPlayer.getKalturaConfig( plugin.pluginName, property.property )); // set field value according to property value
+							}
+							_this.$menu.append(propField);
+							break;
+						default:
+							break;
+					}
+				});
+			});
+		},
+
+		propertyChanged: function(plugin, property, type, value){
+			if (type == "number"){
+				value = parseInt(value);
+			}
+			if (type == "float"){
+				value = parseFloat(value);
+			}
+			console.log("---> propertyChanged: plugin: "+plugin+", property: "+property+", type: "+type+", value: "+value);
 		}
 	}));
 
