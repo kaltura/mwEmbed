@@ -515,6 +515,7 @@ body {
 	position: absolute;
 	padding-left: 10px;
 	color: black;
+	z-index: 1;
 }
 .masterPluginMenu .title{
 	color: #333333;
