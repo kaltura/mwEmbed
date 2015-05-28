@@ -326,13 +326,11 @@
 				} );
 		},
 		addManagedBinding: function(){
-			alert('addManagedBinding');
 			var _this = this;
 			mw.log( "DoubleClick::addManagedBinding" );
 			_this.embedPlayer.bindHelper( 'AdSupport_preroll' + _this.bindPostfix, function( event, sequenceProxy ){
 				// Add the slot to the given sequence proxy target target
 				sequenceProxy[ _this.getSequenceIndex( 'preroll' ) ] = function(callback){
-					alert('3');
 					_this.sequenceProxy = sequenceProxy;
 					// if a preroll set it as such:
 					_this.currentAdSlotType = 'preroll';
@@ -342,7 +340,6 @@
 					_this.restorePlayerCallback = callback;
 					// Request ads
 					mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
-					alert('addManagedBinding requestAds for preroll:');
 					_this.requestAds();
 				}
 			});
@@ -581,7 +578,6 @@
 			var _this = this;
 			this.parseAdTagUrlParts(this.embedPlayer, this.pluginName);
 			var adTagUrl = this.adTagUrl;
-			alert(adTagUrl);
 			var cust_params = this.cust_params;
 			// Add any custom params:
 			adTagUrl = _this.addCustomParams( adTagUrl, cust_params );
@@ -636,7 +632,6 @@
 			}
 
 			if ( this.isNativeSDK ) {
-				alert("isNativeSDK");
 				this.embedPlayer.getPlayerElement().attr( 'doubleClickRequestAds', this.getConfig( 'adTagUrl' ));
 				mw.log( "DoubleClick::requestAds: Native SDK player request ad ");
 				return;
