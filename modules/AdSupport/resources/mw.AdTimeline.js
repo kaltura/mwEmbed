@@ -345,7 +345,6 @@
 				doneCallback();
 				return ;
 			}
-
 			// Sort the sequence proxy key list:
 			keyList.sort();
 			var seqInx = 0;
