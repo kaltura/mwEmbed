@@ -508,7 +508,25 @@ body {
 .durationLabel {
 	padding-left: 0.5em;
 }
-
+.masterPluginMenu{
+	width: 200px;
+	background-color: rgba(255,255,255,0.9);
+	border-radius: 3px;
+	position: absolute;
+	padding-left: 10px;
+	color: black;
+}
+.masterPluginMenu .title{
+	color: #333333;
+	font-size: 13px;
+	font-weight: bold;
+}
+.masterPluginMenu .pluginTitle{
+	color: #555555;
+	margin-left: 10px;
+	font-size: 12px;
+	font-weight: bold;
+}
 .overlay {
 	position: absolute;
 	top: 0;
