@@ -453,12 +453,12 @@ body {
 	height: 0px;
 }
 .volumeControl .sliderContainer {
-	margin-top: -175px;
+	margin-top: -145px;
 	width: 36px;
 	display: none;
 	background: #2F2F2F;
 	border-radius: 3px;
-	height: 136px;
+	height: 106px;
 }
 .volumeControl.noTransition .ui-slider-vertical{
 	-moz-transition: none ;
@@ -471,7 +471,7 @@ body {
 	display: block;
 }
 .volumeControl .ui-slider-vertical{
-	height: 108px;
+	height: 78px;
 	margin-left: 17px;
 	top: 14px;
 	width: 3px;

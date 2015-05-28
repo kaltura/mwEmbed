@@ -1476,6 +1476,25 @@
                 "type": "boolean",
                 "initvalue": true
             },
+	        "layout": {
+		        "doc": "Volume slider layout.",
+		        "type": "enum",
+		        "enum": [
+			        "horizontal",
+			        "vertical"
+		        ],
+		        "initvalue": "horizontal",
+		        "options": [
+			        {
+				        "label": "Horizontal",
+				        "value": "horizontal"
+			        },
+			        {
+				        "label": "Vertical",
+				        "value": "vertical"
+			        }
+		        ]
+	        },
             "pinVolumeBar": {
                 "doc": "If the volume slider bar should always be shown.",
                 "type": "boolean",
