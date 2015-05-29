@@ -121,6 +121,7 @@
 					isMimeType("video/ism")
 				) {
 					_this.isMulticast = false;
+                    _this.streamerType = 'smoothStream';
 
 					flashvars.smoothStreamPlayer = true;
 					flashvars.preload = "auto";
@@ -669,7 +670,10 @@
 		},
 		switchSrc: function (source) {
 			if (this.playerObject && this.mediaElement.getPlayableSources().length > 1) {
-				var trackIndex = this.getSourceIndex(source);
+				var trackIndex = -1;
+                if( source !== -1 ) {
+                    trackIndex = this.getSourceIndex(source);
+                }
 				mw.log("EmbedPlayerSPlayer:: switch to track index: " + trackIndex);
 				$(this).trigger('sourceSwitchingStarted', [
 					{ currentBitrate: source.getBitrate() }

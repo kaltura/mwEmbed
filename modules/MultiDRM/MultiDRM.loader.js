@@ -18,8 +18,8 @@
 				var isDrmSourceAvailable = drmSources.length > 0;
 				if ( isDrmSourceAvailable ) {
 					mw.log("Media sources found, loading DASH player");
-					$.getScript( mw.getConfig( "EmbedPlayer.clDashPlayerUrl" ), function () {
-						$.getScript( mw.getConfig( "EmbedPlayer.dashJsUrl" ), function () {
+					$.getScript( embedPlayer.getKalturaConfig( "multiDrm", "clDashPlayerUrl" ), function () {
+						$.getScript( embedPlayer.getKalturaConfig( "multiDrm", "dashJsUrl" ), function () {
 							mw.log("DASH player loaded, setting configuration");
 							//Get user configuration
 							var drmUserConfig = embedPlayer.getKalturaConfig( "multiDrm" );

@@ -66,6 +66,10 @@
 				if (!_this.maskChangeStreamEvents) {
 					//Get chapters data from cuepoints
 					var chaptersRawData = _this.getCuePoints();
+					if (_this.getPlayer().isLive()){
+						//Live mode doesn't support chapters so disable toggling
+						_this.disableChapterToggle();
+					}
 					if ( chaptersRawData.length ) {
 						//Sort by time and/or cuepoint type
 						chaptersRawData.sort( function ( a, b ) {
@@ -99,10 +103,6 @@
 							_this.renderMediaList();
 							_this.updateActiveItem();
 						}
-					} else {
-						//If no cuepoints on start then player is in live mode
-						//and there are no chapters in live mode, so disable toggling
-						_this.disableChapterToggle();
 					}
 				}
 			});
@@ -140,13 +140,20 @@
 						var mediaItems = _this.createMediaItems(items);
 						if (_this.renderOnData) {
 							_this.renderOnData = false;
+							//Render only items that are in the DVR window, and save future items in temp list
+							var tempList = _this.mediaList;
+							_this.mediaList = items;
+							//Render the items to be shown
 							_this.renderMediaList();
+							//Return all items to media list
+							_this.mediaList = tempList;
 						} else {
 							_this.getComponent().find("ul").append(mediaItems);
 						}
 						//Mark current added items index as the index to start scroll from and re-init the scroll logic
 						_this.startFrom = _this.mediaList.length - _this.mediaItemVisible;
 						_this.configMediaListFeatures();
+						_this.renderScroller();
 						_this.updateActiveItem();
 						$( _this.embedPlayer ).trigger( "mediaListLayoutUpdated" );
 					}
@@ -274,7 +281,11 @@
 			var cuePoints = this.getCuePoints();
 			var cuePointsExist = (cuePoints.length > 0);
 			return (!this.getPlayer().useNativePlayerControls() &&
-				( ( this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) || cuePointsExist));
+						(
+							( this.getPlayer().isLive() && this.getPlayer().isDvrSupported() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) ||
+					        ( !this.getPlayer().isLive() && cuePointsExist)
+						)
+					);
 		},
 		getCuePoints: function(){
 			var cuePoints = [];
@@ -685,13 +696,13 @@
 			}
 		},
 		focusSearchBar: function(){
-			if (this.searchBox){
+			if (this.searchBox && !mw.isMobileDevice()){
 				this.searchBox.focus();
 			}
 
 		},
 		blurSearchBar: function(){
-			if (this.searchBox){
+			if (this.searchBox && !mw.isMobileDevice()){
 				this.searchBox.blur();
 			}
 

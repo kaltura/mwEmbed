@@ -210,6 +210,7 @@
 	width: 20px;
 	height: 100%;
 	opacity: .7;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=70)";
 	text-decoration: none;
 	position: absolute;
 	z-index: 3;
@@ -233,9 +234,19 @@
 .playlistAPI .k-chapters-container .k-next.disabled {
 	visibility: hidden;
 }
+.playlistAPI .k-chapters-container .k-next.fixed.disabled {
+	visibility: visible;
+	cursor: auto;
+	opacity: 0.4;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
+}
 
 .playlistAPI .k-chapters-container .k-next:hover {
-	background-color: rgba(255, 255, 255, .5);
+	background-color: #8F8F8F;
+}
+
+.playlistAPI .k-chapters-container .k-next.fixed {
+	background-color: #8F8F8F;
 }
 
 .playlistAPI .k-chapters-container .k-prev {
@@ -246,9 +257,19 @@
 .playlistAPI .k-chapters-container .k-prev.disabled {
 	visibility: hidden;
 }
+.playlistAPI .k-chapters-container .k-prev.fixed.disabled {
+	visibility: visible;
+	cursor: auto;
+	opacity: 0.4;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
+}
 
 .playlistAPI .k-chapters-container .k-prev:hover {
-	background-color: rgba(255, 255, 255, .5);
+	background-color: #8F8F8F;
+}
+
+.playlistAPI .k-chapters-container .k-prev.fixed {
+	background-color: #8F8F8F;
 }
 
 .playlistAPI .k-chapters-container .k-start-time span {

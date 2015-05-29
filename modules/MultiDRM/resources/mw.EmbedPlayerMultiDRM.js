@@ -220,9 +220,19 @@
 				});
 				this.bindHelper('changeEmbeddedTextTrack', function (e, data) {
 					if (_this.getPlayerElement()) {
-						_this.getPlayerElement().setActiveTrack("text", data.index);
+						var stats = _this.getPlayerElement().getPlaybackStatistics();
+						if (stats.text.activeTrack != data.index){
+							_this.getPlayerElement().setActiveTrack( "text", data.index );
+						}
 					}
 				});
+				this.bindHelper('closedCaptionsDisplayed', function () {
+					_this.getPlayerElement().textTrackDisplay.show();
+				});
+				this.bindHelper('closedCaptionsHidden', function () {
+					_this.getPlayerElement().textTrackDisplay.hide();
+				});
+
 			}
 		},
 		updateDashContext: function(){

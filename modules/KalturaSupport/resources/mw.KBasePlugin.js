@@ -113,7 +113,7 @@ mw.KBasePlugin = Class.extend({
 			var templatePath = this.getConfig( 'templatePath' );
 			if( !window.kalturaIframePackageData.templates[ templatePath ]) {
 				this.log('getTemplateHTML:: Template not found in payload - trying async loading');
-				if ( templatePath.indexOf("http") === 0 ){
+				if ( templatePath && templatePath.indexOf("http") === 0 ){
 					$.ajax({
 						url: templatePath
 					}).done(function(data) {

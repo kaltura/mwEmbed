@@ -103,10 +103,9 @@ class EntryResult {
 			!$this->request->hasKS();
 	}
 	function getCacheKey(){
-		global $wgKalturaEnableProxyData;
 		$key = '';
-		if ($wgKalturaEnableProxyData && $this->request->getFlashVars("proxyData")){
-			$key.= md5( serialize( $this->request->getFlashVars("proxyData") ) );
+		if ($this->request->isEmbedServicesEnabled() && $this->request->isEmbedServicesRequest()){
+			$key.= md5( serialize( $this->request->getEmbedServicesRequest() ) );
 		}
 		if( $this->request->getEntryId() ){
 			$key.= $this->request->getEntryId();
@@ -118,7 +117,6 @@ class EntryResult {
 	}
 	function getEntryResultFromApi(){
 		global $wgKalturaApiFeatures;
-		global $wgKalturaEnableProxyData;
 
 		// Check if the API supports entryRedirect feature
 		$supportsEntryRedirect = isset($wgKalturaApiFeatures['entryRedirect']) ? $wgKalturaApiFeatures['entryRedirect'] : false;
@@ -144,8 +142,8 @@ class EntryResult {
 				$filter->idEqual = $this->request->getEntryId();
 			}
 
-			if ($wgKalturaEnableProxyData && $this->request->getFlashVars("proxyData")){
-				$filter->freeText = urlencode(json_encode($this->request->getFlashVars("proxyData")));
+			if ($this->request->isEmbedServicesEnabled() && $this->request->isEmbedServicesRequest()){
+				$filter->freeText = urlencode(json_encode($this->request->getEmbedServicesRequest()));
 			}
 
 			$baseEntryIdx = $namedMultiRequest->addNamedRequest( 'meta', 'baseEntry', 'list', array('filter' => $filter) );
@@ -191,11 +189,12 @@ class EntryResult {
 				$params = array( 'filter' => $filter );
 				$namedMultiRequest->addNamedRequest( 'entryCuePoints', "cuepoint_cuepoint", "list", $params );
 			//}
+
 			// Get the result object as a combination of baseResult and multiRequest
 			$resultObject = $namedMultiRequest->doQueue();
 			//print_r($resultObject);exit();
 			$this->responseHeaders = $client->getResponseHeaders();
-			
+
 		} catch( Exception $e ){
 			// Update the Exception and pass it upward
 			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );

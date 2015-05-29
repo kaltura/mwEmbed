@@ -302,7 +302,7 @@
 					//Reinit the kCuePoints service
 					if( (embedPlayer.rawCuePoints && embedPlayer.rawCuePoints.length > 0)) {
 						embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
-						embedPlayer.triggerHelper('KalturaSupport_CuePointsReady', embedPlayer.rawCuePoints);
+						embedPlayer.triggerHelper('KalturaSupport_CuePointsReady', [embedPlayer.rawCuePoints]);
 					}
 					callback();
 				};

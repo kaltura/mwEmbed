@@ -20,6 +20,8 @@ kWidget.api.prototype = {
 	// the default api request method
 	// will dictate if the CDN can cache on a per url basis
 	type: 'auto',
+	// initialize callback index to zero
+	callbackIndex: 0,
 	baseParam: {
 		'apiVersion' : '3.1',
 		'expiry' : '86400',
@@ -177,7 +179,9 @@ kWidget.api.prototype = {
 		var response = data;
 		try {
 			response = JSON.parse( data );
-		}catch(e){}
+		}catch(e){
+			console.log("Error parsing JSON");
+		}
 		return response;
 	},
 	xhrGet: function( url, param, callback ){
