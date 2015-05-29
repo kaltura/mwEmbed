@@ -22,15 +22,9 @@ class MwEmbedResourceLoader extends ResourceLoader {
 
 		// Register modules shared between mwEmbed and mediaWiki:
 		$MwEmbedSharedResourcesUrl = "{$IP}/{$wgScriptPath}resources/MwEmbedSharedResources.json";
-		// replace multiple // with single / ( TODO investigate if we need both $wgScript & $IP here.
-		$MwEmbedSharedResourcesUrl = str_replace('//', '/', $MwEmbedSharedResourcesUrl);
-		
         $MwEmbedSharedResources = json_decode( file_get_contents($MwEmbedSharedResourcesUrl), TRUE );
         $this->register( $MwEmbedSharedResources );
         $skinResourcesUrl = "{$IP}/{$wgScriptPath}skins/SkinResources.json";
-        // replace multiple // with single / ( TODO investigate if we need both $wgScript & $IP here.
-        $skinResourcesUrl = str_replace('//', '/', $skinResourcesUrl);
-        
         $skinResources = json_decode( file_get_contents($skinResourcesUrl), TRUE );
         $this->register( $skinResources );
 
