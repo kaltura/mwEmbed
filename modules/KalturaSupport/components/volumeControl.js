@@ -88,7 +88,7 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 				if ( _this.getConfig( 'layout' ) === "horizontal" && !_this.getConfig( 'pinVolumeBar' ) ) {
 					_this.getComponent().removeClass( 'open' );
 				}
-				if ( _this.getConfig( 'layout' ) === "vertical" && !_this.getConfig( 'pinVolumeBar' ) ) {
+				if ( _this.getConfig( 'layout' ) === "vertical" ) {
 					setTimeout(function(){
 						if (!mouseOverSlider){
 							_this.getComponent().removeClass( 'open' );
