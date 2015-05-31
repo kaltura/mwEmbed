@@ -205,7 +205,7 @@ body {
 .btnNarrow{
 	width: 1.8em;
 }
-.btn .accessibilityLabel{
+.accessibilityLabel{
 	font-size: 0;
 	height: 1px !important;
 	overflow: hidden;
