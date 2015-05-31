@@ -7,7 +7,6 @@
 				'order': 1,
 				'showTooltip': false,
 				"displayImportance": 'high',
-				'templatePath': 'components/dualScreen/dualScreenControlBar.tmpl.html',
 				'secondScreen': {
 					'size': '25',
 					'widthHeightRatio': ( 3 / 4 ),
@@ -25,8 +24,7 @@
 					'containment': 'parent',
 					'cancel': 'video'
 				},
-				'menuFadeout': 5000,
-
+				'resizeHandlesFadeout': 5000,
 				'mainViewDisplay': 2, // 1 - Main stream, 2 - Presentation
 				'fullScreenDisplayOnly': false,
 				'minDisplayWidth': 0,
@@ -634,13 +632,8 @@
 			},
 			initControlBar: function(){
 				if ( !this.getPlayer().isAudio()) {
-					this.controlBar = new mw.dualScreen.dualScreenControlBar( {
-						embedPlayer: this.getPlayer(),
-						templatePath: this.getConfig( "templatePath" ),
-						menuFadeout: this.getConfig( "menuFadeout" ),
-						cssClass: this.getCssClass(),
-						displayMode: this.displayMode
-					} );
+					this.controlBar = this.getPlayer().plugins.dualScreenControlBar;
+					this.embedPlayer.getInterface().append( this.controlBar.getComponent() );
 				}
 			},
 			hideDisplay: function(){
@@ -749,7 +742,7 @@
 							if(cornerHandleVisibleTimeoutId){
 								clearTimeout(cornerHandleVisibleTimeoutId);
 							}
-							cornerHandleVisibleTimeoutId = setTimeout(function(){_this.hideResizeHandlers();}, _this.getConfig('menuFadeout'));
+							cornerHandleVisibleTimeoutId = setTimeout(function(){_this.hideResizeHandlers();}, _this.getConfig('resizeHandlesFadeout'));
 						}
 					});
 

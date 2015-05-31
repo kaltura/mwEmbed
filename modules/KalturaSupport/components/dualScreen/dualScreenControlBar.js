@@ -1,13 +1,12 @@
 (function ( mw, $ ) {
 	"use strict";
-	mw.dualScreen = mw.dualScreen || {};
-	mw.dualScreen.dualScreenControlBar = function (settings){
-		this.$controlBar = null;
-		this.embedPlayer = settings.embedPlayer;
-		this.templatePath = settings.templatePath;
-		this.menuFadeout = settings.menuFadeout;
-		this.cssClass = settings.cssClass;
-		this.controlBarComponents = {
+	mw.PluginManager.add( 'dualScreenControlBar', mw.KBaseComponent.extend( {
+
+		defaultConfig: {
+			'templatePath': 'components/dualScreen/dualScreenControlBar.tmpl.html',
+			'menuFadeout': 5000
+		},
+		"controlBarComponents": {
 			sideBySide: {
 				id: 'sideBySide',
 				title: 'Side By Side',
@@ -28,25 +27,19 @@
 				title: 'Toggle View',
 				event: "switchView"
 			}
-		};
-		this.disabled = false;
-		this.getComponent();
-		this.addBindings();
-	};
-
-	mw.dualScreen.dualScreenControlBar.prototype = {
-		bind: function(name, handler){
-			this.embedPlayer.bindHelper(name, handler);
+		},
+		disabled: false,
+		setup: function() {
+			this.addBindings();
 		},
 		getComponent: function ( ) {
 			if ( !this.$controlBar ) {
-				var rawHTML = window.kalturaIframePackageData.templates[ this.templatePath ];
+				var rawHTML = window.kalturaIframePackageData.templates[ this.getConfig("templatePath")];
 				var transformedHTML = mw.util.tmpl( rawHTML );
 				transformedHTML = transformedHTML({buttons: this.controlBarComponents});
 				this.$controlBar = $( '<div />' )
-					.addClass( 'controlBar componentOff' + this.cssClass )
+					.addClass( 'controlBar componentOff dualScreen' + this.getCssClass() )
 					.append(transformedHTML);
-				this.embedPlayer.getInterface().append( this.$controlBar );
 				//If top bar exist then position controlBar under it
 				if (this.embedPlayer.getTopBarContainer().length) {
 					var height = this.embedPlayer.getTopBarContainer().height();
@@ -58,10 +51,10 @@
 			}
 			return this.$controlBar;
 		},
-
 		addBindings: function () {
 			//Set control bar visiblity handlers
 			var _this = this;
+			//TODO:hook these events to layoutbuilder events
 			this.embedPlayer.getInterface()
 				.on( 'mousemove touchstart', function(){
 					_this.show();
@@ -165,8 +158,8 @@
 				}
 				this.getComponent().handleTouchTimeoutId = setTimeout( function () {
 					_this.hide();
-				}, this.menuFadeout );
+				}, this.getConfig("menuFadeout"));
 			}
 		}
-	};
+	} ) );
 })( window.mw, window.jQuery );
