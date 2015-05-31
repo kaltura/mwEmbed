@@ -1435,6 +1435,22 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'boolean',
 				'initvalue' => true
 			),
+			'layout' => array(
+                'doc' => 'Volume slider layout.',
+                'type' => 'enum',
+                'enum' => array('horizontal', 'vertical'),
+                'initvalue' => 'horizontal',
+                'options' => array(
+                    array(
+                        'label' => "Horizontal",
+                        'value' => "horizontal"
+                    ),
+                    array(
+                        'label' => "Vertical",
+                        'value' => "vertical"
+                    )
+                )
+            ),
 			'pinVolumeBar' => array(
 				'doc' => 'If the volume slider bar should always be shown.',
 				'type' => 'boolean',
