@@ -1468,31 +1468,50 @@
             }
         }
     },
-    "volumeControl": {
-        "description": "The volume control plugin allows you to control the player volume using mute/unmute buttons and a volume slider.",
-        "attributes": {
-            "showSlider": {
-                "doc": "Show the volume slider.",
-                "type": "boolean",
-                "initvalue": true
-            },
-            "pinVolumeBar": {
-                "doc": "If the volume slider bar should always be shown.",
-                "type": "boolean",
-                "initvalue": false
-            },
-            "accessibleControls": {
-                "doc": "Accessible buttons volume change percent from 0 to 1: The amount of volume that will be added or reduced when using the accessible volume buttons.",
-                "type": "boolean",
-                "initvalue": false
-            },
-            "accessibleVolumeChange": {
-                "doc": "Accessible buttons volume change percent from 0 to 1.",
-                "type": "float",
-                "initvalue": 0.1
-            }
-        }
-    },
+	"volumeControl": {
+		"description": "The volume control plugin allows you to control the player volume using mute/unmute buttons and a volume slider.",
+		"attributes": {
+			"showSlider": {
+				"doc": "Show the volume slider.",
+				"type": "boolean",
+				"initvalue": true
+			},
+			"layout": {
+				"doc": "Volume slider layout.",
+				"type": "enum",
+				"enum": [
+					"horizontal",
+					"vertical"
+				],
+				"initvalue": "horizontal",
+				"options": [
+					{
+						"label": "Horizontal",
+						"value": "horizontal"
+					},
+					{
+						"label": "Vertical",
+						"value": "vertical"
+					}
+				]
+			},
+			"pinVolumeBar": {
+				"doc": "If the volume slider bar should always be shown.",
+				"type": "boolean",
+				"initvalue": false
+			},
+			"accessibleControls": {
+				"doc": "Accessible buttons volume change percent from 0 to 1: The amount of volume that will be added or reduced when using the accessible volume buttons.",
+				"type": "boolean",
+				"initvalue": false
+			},
+			"accessibleVolumeChange": {
+				"doc": "Accessible buttons volume change percent from 0 to 1.",
+				"type": "float",
+				"initvalue": 0.1
+			}
+		}
+	},
     "accessibilityButtons": {
         "description": "The accessibility buttons allow keyboard access to seek forward/backward and current position.",
         "attributes": {
