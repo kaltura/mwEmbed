@@ -109,11 +109,11 @@
 								break;
 						}
 
-						_this.getPlayer().triggerHelper("dualScreenControlsHide");
+						_this.controlBar.hide();
 						if (_this.controlBar){
 							wasDisabled = _this.controlBar.disabled;
 						}
-						_this.getPlayer().triggerHelper("dualScreenControlsDisable");
+						_this.controlBar.disable();
 						_this.getPlayer().disablePlayControls();
 					},
 					stop: function ( event ) {
@@ -128,8 +128,8 @@
 
 						//Only enable and show if controlBar was enabled before transition
 						if (!wasDisabled) {
-							_this.getPlayer().triggerHelper("dualScreenControlsEnable");
-							_this.getPlayer().triggerHelper("dualScreenControlsShow");
+							_this.controlBar.enable();
+							_this.controlBar.show();
 						}
 						$( event.toElement ).one( 'click', function ( e ) {
 							e.stopImmediatePropagation();
@@ -175,14 +175,14 @@
 					var transitionHandlerSet = true;
 					_this.getPlayer().triggerHelper('preDualScreenTransition', [[transitionFrom, transitionTo]]);
 
-					_this.getPlayer().triggerHelper("dualScreenControlsHide");
+					_this.controlBar.hide();
 
 					_this.enableMonitorTransition();
 
 					function transitionendHandler( ) {
 						if ( transitionHandlerSet ) {
 							transitionHandlerSet = false;
-							_this.getPlayer().triggerHelper("dualScreenControlsShow");
+							_this.controlBar.show();
 							_this.disableMonitorTransition();
 							_this.getPlayer().triggerHelper('postDualScreenTransition', [[transitionFrom, transitionTo]]);
 						}
@@ -442,12 +442,12 @@
 				$( context ).bind( eventName, updateSecondScreenLayout);
 
 				this.bind( 'onplay', function () {
-					_this.getPlayer().triggerHelper("dualScreenControlsEnable");
+					_this.controlBar.enable();
 				} );
 
 				this.bind( 'onpause ended playerReady', function () {
-					_this.getPlayer().triggerHelper("dualScreenControlsShow");
-					_this.getPlayer().triggerHelper("dualScreenControlsDisable");
+					_this.controlBar.show();
+					_this.controlBar.disable();
 				} );
 
 				var fsmState = [];
@@ -492,9 +492,9 @@
 					_this.screenShown = true;
 					if (_this.render) {
 						_this.currentScreenNameShown = screenName;
-						_this.getPlayer().triggerHelper("dualScreenControlsEnable");
-						_this.getPlayer().triggerHelper("dualScreenControlsHide");
-						_this.getPlayer().triggerHelper("dualScreenControlsDisable");
+						_this.controlBar.enable();
+						_this.controlBar.hide();
+						_this.controlBar.disable();
 						minimizeSecondDisplay();
 					}
 				} );
@@ -508,8 +508,8 @@
 						//only then preShowScreen
 						setTimeout(function(){
 							if (!_this.screenShown) {
-								_this.getPlayer().triggerHelper("dualScreenControlsEnable");
-								_this.getPlayer().triggerHelper("dualScreenControlsShow");
+								_this.controlBar.enable();
+								_this.controlBar.show();
 							}
 						}, 100);
 					}
@@ -518,7 +518,7 @@
 					_this.fsm.consumeEvent( state );
 				});
 				this.bind("showPlayerControls" , function(){
-					_this.getPlayer().triggerHelper("dualScreenControlsShow");
+					_this.controlBar.show();
 				});
 				this.bind("postDualScreenTransition", function () {
 					//TODO: move to imagePlayer
@@ -638,14 +638,14 @@
 			},
 			hideDisplay: function(){
 				this.getSecondMonitor().obj.css("visibility", "hidden");
-				this.getPlayer().triggerHelper("dualScreenControlsHide");
-				this.getPlayer().triggerHelper("dualScreenControlsDisable");
+				this.controlBar.hide();
+				this.controlBar.disable();
 			},
 			showDisplay: function(){
 				this.getFirstMonitor().obj.css("visibility", "");
 				this.getSecondMonitor().obj.css("visibility", "");
-				this.getPlayer().triggerHelper("dualScreenControlsEnable");
-				this.getPlayer().triggerHelper("dualScreenControlsShow");
+				this.controlBar.enable();
+				this.controlBar.show();
 			},
 			checkRenderConditions: function(){
 				if ( !( this.dragging || this.resizing ) &&
