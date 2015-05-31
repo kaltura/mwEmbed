@@ -1,0 +1,39 @@
+<html>
+<head>
+	<title>Q and A Demo</title>
+	<script type="text/javascript" src="/html5.kaltura/mwEmbed/tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="/html5.kaltura/mwEmbed/mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="/html5.kaltura/mwEmbed/docs/js/doc-bootstrap.js"></script>
+
+</head>
+<body>
+	<h1>Q and A Demo</h1>
+	<div id="kaltura_player" style="width: 585px; height: 330px;float: left;"></div>
+	<div id="qnaListHolder" style="width: 300px; height: 330px; float:left; float: left"></div>
+	<br style="clear: both;" /><br />
+
+<script>
+
+//    mw.setConfig( 'Kaltura.ServiceUrl' , 'http://lbd.kaltura.com' );
+	kWidget.featureConfig({
+		'targetId': 'kaltura_player',
+		'wid': '_1802381',
+		'uiconf_id' : '21099702',
+		'flashvars': {
+			'ks': "djJ8MTgwMjM4MXwI_qcnsK9M9i_gtemGD9Cz9dfopc4rkvlZpt0K_MO2oSGoXmqnlU6H7pxvBj1KEEj3AG_8CpMJLkq985ysPGtpuSduF0cQpjULtjvbz8wNGW3uwk24GTXBHSA9QTOP7jQ=",
+			'qna': {
+				'plugin': true,
+				'qnaTargetId': 'qnaListHolder',
+                'qnaPollingInterval': 5000,
+				'onPage': true,
+				'containerPosition': 'right',
+				'moduleWidth' : '200'
+			}
+		},
+		'entry_id': "1_vqu5rcpb"
+
+	});
+
+</script>
+</body>
+</html>
