@@ -40,6 +40,9 @@
 
 .qnaInterface .qnaSingleEntry{
     padding-right: 24px !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
 }
 
 .qnaInterface .qnaEntryList{
@@ -171,6 +174,7 @@
     margin-right: 14px;
     padding-right: 24px;
     word-wrap: break-word;
+    white-space: pre-wrap;
 }
 
 .qnaInterface .qnaAnnouncementTextRead{
@@ -185,6 +189,7 @@
     margin-right: 14px;
     padding-right: 24px;
     word-wrap: break-word;
+    white-space: pre-wrap;
 }
 
 .qnaInterface .qnaThreadTime{
@@ -210,7 +215,8 @@
 .qnaInterface .qnaReplyBox {
     background-color: rgba(0, 0, 0, 0.08);
     width: 100%;
-    height: auto;
+    -webkit-transition: height 100ms; /* Safari */
+    transition: height 100ms;
 }
 
 .qnaInterface .qnaReplyPipeLabel{
@@ -273,12 +279,20 @@
     color: rgb(65,68,66);
 }
 
-.qnaInterface .qnaReplyTextAreaPlaceHolderSize{
+.qnaInterface .qnaReplyTextAreaSize{
     height: 22px;
 }
 
-.qnaInterface .qnaReplyTextAreaSize{
-    height: 50px;
+.qnaInterface .qnaReplyTextAreaPlaceHolderSize{
+    height: 42px;
+}
+
+.qnaInterface .qnaReplyBoxSize{
+    height: 26px;
+}
+
+.qnaInterface .qnaReplyBoxPlaceHolderSize{
+    height: 54px;
 }
 
 .qnaInterface .qnaReplySendButton{
