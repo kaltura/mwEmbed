@@ -91,9 +91,19 @@ DAL for Q&A Module
                 }
             }
 
+            if (a_time === undefined && q_time === undefined) {
+                console.log("both a_time and q_time are undefined - data error");
+                return 0;
+            }
+
             if (a_time === undefined){
                 return q_time;
             }
+
+            if (q_time === undefined){
+                return a_time;
+            }
+
 
             return Math.max(a_time,q_time);
 
