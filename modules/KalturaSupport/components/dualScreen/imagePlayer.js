@@ -1,39 +1,31 @@
 (function ( mw, $ ) {
 	"use strict";
-	mw.dualScreen = mw.dualScreen || {};
-	mw.dualScreen.imagePlayer = function(settings){
-		this.$el = null;
-		this.embedPlayer = settings.embedPlayer;
-		this.cssClass = settings.cssClass;
-		this.cuePointType = [{
-			"main": mw.KCuePoints.TYPE.THUMB,
-			"sub": [mw.KCuePoints.THUMB_SUB_TYPE.SLIDE]
-		}];
-		this.prefetch = {
-			'durationPercentageUntilNextSequence': 60,
-			'minimumSequenceDuration': 2
-		};
-		this.cuePoints = [];
-		this.syncEnabled = true;
-		this.addBinding();
-	};
+	mw.PluginManager.add( 'imagePlayer', mw.KBaseComponent.extend( {
 
-	mw.dualScreen.imagePlayer.prototype = {
+		defaultConfig: {
+			cuePointType: [{
+				"main": mw.KCuePoints.TYPE.THUMB,
+				"sub": [mw.KCuePoints.THUMB_SUB_TYPE.SLIDE]
+			}],
+			prefetch: {
+				'durationPercentageUntilNextSequence': 60,
+				'minimumSequenceDuration': 2
+			}
+		},
+		cuePoints: [],
+		syncEnabled: true,
+		setup: function(){
+			this.addBinding();
+		},
 		isSafeEnviornment: function () {
 			var cuePoints = this.getCuePoints();
 			var cuePointsExist = (cuePoints.length > 0);
-			return (!this.embedPlayer.useNativePlayerControls() &&
+			return (!this.getPlayer().useNativePlayerControls() &&
 				(
-					( this.embedPlayer.isLive() && this.embedPlayer.isDvrSupported() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) ||
-					( !this.embedPlayer.isLive() && cuePointsExist )
+					( this.getPlayer().isLive() && this.getPlayer().isDvrSupported() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) ||
+					( !this.getPlayer().isLive() && cuePointsExist )
 				)
 			);
-		},
-		bind: function(name, handler){
-			this.embedPlayer.bindHelper(name, handler);
-		},
-		unbind: function(name, handler){
-			this.embedPlayer.unbindHelper(name, handler);
 		},
 		addBinding: function(){
 			var _this = this;
@@ -41,11 +33,11 @@
 				_this.loadAdditionalAssets();
 			} );
 			//In live mode wait for first updatetime that is bigger then 0 for syncing initial slide
-			if (mw.getConfig("EmbedPlayer.LiveCuepoints") && this.embedPlayer.isLive()) {
+			if (mw.getConfig("EmbedPlayer.LiveCuepoints") && this.getPlayer().isLive()) {
 				this.bind( 'timeupdate', function ( ) {
-					if (!_this.embedPlayer.isMulticast &&
-						!_this.embedPlayer.isDVR() &&
-						_this.embedPlayer.currentTime > 0) {
+					if (!_this.getPlayer().isMulticast &&
+						!_this.getPlayer().isDVR() &&
+						_this.getPlayer().currentTime > 0) {
 						_this.unbind('timeupdate');
 					}
 					var cuePoint = _this.getCurrentCuePoint();
@@ -59,7 +51,7 @@
 			} );
 			this.bind( 'KalturaSupport_CuePointReached', function ( e, cuePointObj ) {
 				var cuePoint;
-				$.each(_this.cuePointType, function(i, cuePointType){
+				$.each(_this.getConfig("cuePointType"), function(i, cuePointType){
 					var main = $.isArray(cuePointType.main) ? cuePointType.main : [cuePointType.main];
 					var sub = $.isArray(cuePointType.sub) ? cuePointType.sub : [cuePointType.sub];
 					if ( ( $.inArray( cuePointObj.cuePoint.cuePointType, main ) > -1 ) &&
@@ -114,10 +106,10 @@
 		getCuePoints: function(){
 			var cuePoints = [];
 			var _this = this;
-			if ( this.embedPlayer.kCuePoints ) {
-				$.each( _this.cuePointType, function ( i, cuePointType ) {
+			if ( this.getPlayer().kCuePoints ) {
+				$.each( _this.getConfig("cuePointType"), function ( i, cuePointType ) {
 					$.each( cuePointType.sub, function ( j, cuePointSubType ) {
-						var filteredCuePoints = _this.embedPlayer.kCuePoints.getCuePointsByType( cuePointType.main, cuePointSubType );
+						var filteredCuePoints = _this.getPlayer().kCuePoints.getCuePointsByType( cuePointType.main, cuePointSubType );
 						cuePoints = cuePoints.concat( filteredCuePoints );
 					} );
 				} );
@@ -155,12 +147,12 @@
 		loadAdditionalAssets: function () {
 			if ( this.cuePoints ) {
 				this.cancelPrefetch();
-				var currentTime = this.embedPlayer.currentTime;
+				var currentTime = this.getPlayer().currentTime;
 				var nextCuePoint = this.getNextCuePoint( currentTime * 1000 );
 				if ( nextCuePoint ) {
 					if (!nextCuePoint.loaded) {
 						var nextCuePointTime = nextCuePoint.startTime / 1000;
-						var prefetch = this.prefetch;
+						var prefetch = this.getConfig("prefetch");
 						var delta = nextCuePointTime - currentTime;
 
 						var _this = this;
@@ -262,7 +254,7 @@
 			return false;
 		},
 		getCurrentCuePoint: function ( ) {
-			var currentTime = this.embedPlayer.currentTime *1000;
+			var currentTime = this.getPlayer().currentTime *1000;
 			var cuePoints = this.getCuePoints();
 			var cuePoint;
 			// Start looking for the cue point via time, return first match:
@@ -272,8 +264,8 @@
 				//If clip duration doesn't exist or it's 0 then use current time(in multicast live duration is
 				//always 0)
 				var endTime = cuePoints[i + 1] ? cuePoints[i + 1].startTime :
-					(this.embedPlayer.getDuration() * 1000) ?
-						(this.embedPlayer.getDuration() * 1000) : (currentTime + 1);
+					(this.getPlayer().getDuration() * 1000) ?
+						(this.getPlayer().getDuration() * 1000) : (currentTime + 1);
 				if ( startTime <= currentTime && currentTime < endTime ) {
 					cuePoint = cuePoints[i];
 					break;
@@ -281,7 +273,7 @@
 			}
 			return cuePoint;
 		}
-	};
+	} ) );
 }
 
 )( window.mw, window.jQuery );

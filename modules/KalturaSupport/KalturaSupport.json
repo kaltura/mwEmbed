@@ -81,7 +81,6 @@
 	"dualScreen": {
 		"scripts": [
 			"components/dualScreen/dualScreen.js",
-			"components/dualScreen/imagePlayer.js"
 			"components/dualScreen/fsm.js",
 			"components/dualScreen/dualScreenStatesConfig.js"
 		],
@@ -91,7 +90,8 @@
 		"dependencies": [
 			"mw.KBaseComponent",
 			"jquery.ui.draggable",
-			"jquery.ui.resizable"
+			"jquery.ui.resizable",
+			"imagePlayer",
 			"dualScreenControlBar"
 		],
 		"kalturaPluginName": "dualScreen"
@@ -108,6 +108,15 @@
 			"mw.KBasePlugin"
 		],
 		"kalturaPluginName": "dualScreenControlBar"
+	},
+	"imagePlayer": {
+		"scripts": [
+			"components/dualScreen/imagePlayer.js"
+		],
+		"dependencies": [
+			"mw.KBasePlugin"
+		],
+		"kalturaPluginName": "imagePlayer"
 	},
 	"hammerEvents": {
 		"scripts": "components/hammerEvents/hammerEvents.js",

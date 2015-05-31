@@ -54,9 +54,7 @@
 				this.initMonitors();
 			},
 			isSafeEnviornment: function () {
-				this.screenObj = new mw.dualScreen.imagePlayer({
-					embedPlayer: this.getPlayer()
-				});
+				this.screenObj = this.getPlayer().plugins.imagePlayer;
 				return this.screenObj.isSafeEnviornment();
 				/*var cuePoints = this.getCuePoints();
 				var cuePointsExist = (cuePoints.length > 0) ? true : false;
