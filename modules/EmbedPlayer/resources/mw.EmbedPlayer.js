@@ -1856,8 +1856,10 @@
 		 * Remove the poster
 		 */
 		removePoster: function () {
-			$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
-			$(this).find('.playerPoster').remove();
+			if ( !mw.getConfig("EmbedPlayer.KeepPoster") === true ){
+				$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
+				$(this).find('.playerPoster').remove();
+			}
 		},
 		/**
 		 * Abstract method, must be set by player interface
