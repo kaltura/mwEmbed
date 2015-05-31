@@ -48,20 +48,31 @@
      mw.setConfig('EmbedPlayer.ReplaceSources', [
      {
      'type': 'application/vnd.apple.mpegurl',
-     'src': 'http://kalsegsec-a.akamaihd.net/dc-1/m/ny-live-publish2/kLive/smil:1_oorxcge2_publish.smil/chunklist_b475136.m3u8'
+     'src': 'http://kalsegsec-a.akamaihd.net/dc-0/m/pa-live-publish3/kLive/smil:1_oorxcge2_publish.smil/chunklist_b475136.m3u8'
      }
      ]);
 
      */
+
+    mw.setConfig('EmbedPlayer.ReplaceSources', [
+
+        {
+            'type': 'application/vnd.apple.mpegurl',
+            'src': 'http://kalsegsec-a.akamaihd.net/dc-0/m/pa-live-publish3/kLive/smil:1_oorxcge2_publish.smil/chunklist_b679936.m3u8'
+        }/*,
+        {
+            'type': 'video/multicast',
+            //'src': '239.1.2.3:1234'
+            'src': 'http://192.168.162.48:9000/kMulticast/http://kalsegsec-a.akamaihd.net/dc-0/m/pa-live-publish3/kLive/smil:1_oorxcge2_publish.smil/chunklist_b475136.m3u8'
+        }*/
+
+
+    ]);
     kWidget.featureConfig({
         'targetId': 'kaltura_player',
         'wid': '_931702',
         'uiconf_id' : '21099702',
         'flashvars': {
-          //  'ks': "djJ8MTgwMjM4MXxCCVY1Dn-HnWLfSx8Up9B85GJOqGeQzwuWth7qTjVYzHRO14v6N1Si43nd2yHXfOWbtpysRQTscH_yVhHV5kPhNNompRg-0uKu8hsDz8SgINOACXlOw-nAFvXLfgcxw4w=",
-
-            // per entity settings:
-          //  'mediaProxy': mediaProxyEntry,
 
             'debugInfo': {
                 'plugin': true

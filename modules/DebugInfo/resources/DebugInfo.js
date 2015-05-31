@@ -13,6 +13,7 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
         });
     },
 
+
     $scope:{ },
 
 	iconBtnClass: "icon-debug-info",
@@ -41,61 +42,11 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
 
             }
         })
+
+
     },
 
-    //this is a trick to do "a-la angular" binding
-    bindHtml: function(element) {
 
-        var _this=this;
-        var internal={};
-
-        var $newscope={};
-
-
-        element.find("*").each(function ($index, el) {
-
-            var originalText=el.innerText;
-
-            var matches=originalText.match(/{{(.*)}}/g);
-
-
-            if (matches && matches.length>0) {
-                matches.forEach(function(match) {
-                    var name=match.slice(2,-2);
-
-                    internal[name]=_this.$scope[name];
-
-                    function updateHtml() {
-                        var newContent = originalText.replace(match, internal[name]);
-                        el.innerHTML = newContent;
-                    }
-
-                    updateHtml();
-
-                    Object.defineProperty($newscope, name, {
-                        get: function() {
-                            return internal[name];
-                        },
-                        set: function(newValue) {
-                            try {
-                                if (internal[name] !== newValue) {
-                                    internal[name] = newValue;
-                                    updateHtml();
-                                }
-                            }
-                            catch(e) {
-                                alert(e);
-                            }
-                        }
-                    });
-                });
-            }
-        });
-
-
-
-        this.$scope=$newscope;
-    },
     isVisible:false,
     setVisible:function(visible) {
         if (this.isVisible===visible) {
@@ -107,14 +58,16 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
         this.isVisible=visible;
 
         if (visible) {
-            _this.embedPlayer.getVideoHolder().append("<div class='debug-info'>");
-            var elem=$(".debug-info");
+            _this.embedPlayer.getVideoHolder().append("<div class='mw-debug-info'>");
+            var elem=$(".mw-debug-info");
 
             elem.html(this.getHTML());
 
-            _this.bindHtml(elem);
+            _this.binder=new mw.HtmlBinderHelper();
 
-            $(elem).find(".debug-info-close-btn").click(function() {
+            _this.binder.bind(elem,_this.$scope);
+
+            $(elem).find(".mw-debug-info-close-btn").click(function() {
 
                 _this.setVisible(false);
             });
@@ -126,13 +79,13 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
 
 
         } else {
-            $( ".debug-info").remove();
+            $( ".mw-debug-info").remove();
             clearInterval(this.refreshInterval);
             this.refreshInterval=null;
         }
     },
 	isSafeEnviornment: function() {
-		return true;
+		return !mw.isIE8(); //we don't support IE8 for now
 	},
     getHTML : function(data){
         var templatePath = this.getConfig( 'templatePath' );
@@ -140,8 +93,7 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
 
         return rawHTML;
     },
-    fetchStaticVariable: function() {
-        var html=this.getHTML();
+    refresh: function() {
         var player=this.embedPlayer;
         this.$scope.version=MWEMBED_VERSION;
         this.$scope.entryid= player.kentryid;
@@ -151,12 +103,6 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
         if (source) {
             this.$scope.mimeType=source.mimeType;
         }
-    },
-    refresh: function() {
-
-
-        var player=this.embedPlayer;
-        this.fetchStaticVariable();
         this.$scope.currentState=player.currentState;
         this.$scope.isDVR= player.isDVR();
         this.$scope.buffering= player.buffering;

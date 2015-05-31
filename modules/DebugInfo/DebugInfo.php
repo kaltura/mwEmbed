@@ -1,7 +1,7 @@
 <?php
 return array(
 	"DebugInfo" => array(
-		'scripts' => array('resources/DebugInfo.js'),
+		'scripts' => array('resources/simpleBindingHelper.js','resources/DebugInfo.js'),
 		'dependencies' => array( 'mw.KBaseComponent'),
 		'kalturaPluginName' => 'debugInfo',
 		'styles' => 'resources/DebugInfo.css',
