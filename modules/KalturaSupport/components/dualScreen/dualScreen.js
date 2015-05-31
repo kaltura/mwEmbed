@@ -145,30 +145,6 @@
 				$.extend( _this.getConfig( 'resizable' ), actionsControls );
 			},
 			initFSM: function () {
-				function StateMachine( states ) {
-					this.states = states;
-					this.indexes = {}; //just for convinience
-					for ( var i = 0; i < this.states.length; i++ ) {
-						this.indexes[this.states[i].name] = i;
-						if ( this.states[i].initial ) {
-							this.currentState = this.states[i];
-						}
-					}
-					this.consumeEvent = function ( e ) {
-						if ( this.currentState.events[e] ) {
-							fsmTransitionHandlers(this.currentState.name, e);
-							this.currentState.events[e].action();
-							this.currentState = this.states[this.indexes[this.currentState.events[e].name]];
-						}
-					};
-					this.canConsumeEvent = function ( e ) {
-						return !!this.currentState.events[e];
-					};
-					this.getStatus = function () {
-						return this.currentState.name;
-					};
-				}
-
 				var _this = this;
 
 				var fsmTransitionHandlers = function (transitionFrom, transitionTo) {
@@ -196,135 +172,9 @@
 					}
 				};
 
-				var states = [
-					{
-						'name': 'PiP',
-						'initial': true,
-						'events': {
-							'SbS': {
-								name: 'SbS',
-								action: function () {
-									_this.disableMonitorFeatures( );
-									_this.enableSideBySideView();
+				var selectedStatesMap = mw.isNativeApp() ? mw.dualScreen.nativeAppStates : mw.dualScreen.states;
 
-								}
-							},
-							'hide': {
-								name: 'hide',
-								action: function (  ) {
-									_this.disableMonitorFeatures( );
-									_this.hideMonitor( _this.getSecondMonitor().obj );
-								}
-							},
-							'switchView': {
-								name: 'PiP',
-								action: function () {
-									_this.disableMonitorFeatures( );
-									_this.toggleMainMonitor();
-									_this.enableMonitorFeatures( );
-								}
-							}
-						}
-					},
-					{
-						'name': 'SbS',
-						'events': {
-							'PiP': {
-								name: 'PiP',
-								action: function () {
-									_this.enableMonitorFeatures( );
-									_this.disableSideBySideView();
-								}
-							},
-							'hide': {
-								name: 'hide',
-								action: function () {
-									_this.disableSideBySideView();
-									_this.hideMonitor( _this.getSecondMonitor().obj );
-								}
-							},
-							'switchView': {
-								name: 'SbS',
-								action: function () {
-									_this.toggleSideBySideView();
-									_this.toggleMainMonitor();
-								}
-							}
-						}
-					},
-					{
-						'name': 'hide',
-						'events': {
-							'PiP': {
-								name: 'PiP',
-								action: function () {
-									_this.enableMonitorFeatures( );
-									_this.showMonitor( _this.getSecondMonitor().obj );
-								}
-							},
-							'switchView': {
-								name: 'hide',
-								action: function () {
-									_this.showMonitor( _this.getSecondMonitor().obj );
-									_this.hideMonitor( _this.getFirstMonitor().obj );
-									_this.toggleMainMonitor();
-								}
-							},
-							'SbS': {
-								name: 'SbS',
-								action: function () {
-									_this.enableSideBySideView();
-									_this.showMonitor( _this.getSecondMonitor().obj );
-								}
-							}
-						}
-					}
-				];
-
-				var nativeAppStates = [
-					{
-						'name': 'PiP',
-						'initial': true,
-						'events': {
-							'hide': {
-								name: 'hide',
-								action: function (  ) {
-									_this.disableMonitorFeatures();
-									_this.hideMonitor( _this.getSecondMonitor().obj );
-								}
-							}
-						}
-					},
-					{
-						'name': 'hide',
-						'events': {
-							'PiP': {
-								name: 'PiP',
-								action: function () {
-									if (_this.getPrimary() === _this.getSecondMonitor()) {
-
-										_this.toggleMainMonitor();
-										_this.showMonitor( _this.getFirstMonitor().obj );
-									}
-									_this.enableMonitorFeatures();
-									_this.showMonitor( _this.getSecondMonitor().obj );
-								}
-							},
-							'switchView': {
-								name: 'hide',
-								action: function () {
-									_this.showMonitor( _this.getSecondMonitor().obj );
-									_this.hideMonitor( _this.getFirstMonitor().obj );
-									_this.toggleMainMonitor();
-								}
-							}
-						}
-					}
-				];
-
-				var selectedStatesMap = mw.isNativeApp() ? nativeAppStates : states;
-
-				this.fsm = new StateMachine( selectedStatesMap );
+				this.fsm = new mw.dualScreen.StateMachine( selectedStatesMap, this, fsmTransitionHandlers );
 			},
 			initMonitors: function () {
 				var _this = this;

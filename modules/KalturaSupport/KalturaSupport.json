@@ -82,6 +82,8 @@
 		"scripts": [
 			"components/dualScreen/dualScreen.js",
 			"components/dualScreen/imagePlayer.js"
+			"components/dualScreen/fsm.js",
+			"components/dualScreen/dualScreenStatesConfig.js"
 		],
 		"styles": [
 			"components/dualScreen/dualScreen.css"
