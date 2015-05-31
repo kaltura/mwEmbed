@@ -675,7 +675,13 @@ $uiVars = array(
 			),
 			'EmbedPlayer.EnableIpadNativeFullscreen' => array(
 					'type' => 'Boolean',
-					'desc' => "Whether to use the native device fullscreen call",
+					'desc' => "Whether to use the native device fullscreen call on iPad",
+					'default' => 'false',
+					'example' => ''
+			),
+			'EmbedPlayer.EnableNativeChromeFullscreen' => array(
+					'type' => 'Boolean',
+					'desc' => "Whether to use the native device fullscreen call on Android Chrome",
 					'default' => 'false',
 					'example' => ''
 			),
@@ -786,6 +792,12 @@ $uiVars = array(
 					'desc' => "If the player should hide the loading spinner when it is in buffering mode",
 					'default' => 'false',
 					'example' => ''
+			),
+			'EmbedPlayer.DisableContextMenu' => array(
+					'type' => 'Boolean',
+					'desc' => "Disables the player's right-click context menu",
+					'default' => 'false',
+					'example' => '../modules/KalturaSupport/tests/ThumbnailEmbedManyPlayers.qunit.html'
 			)
 		)
 	),

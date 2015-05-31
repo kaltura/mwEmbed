@@ -1239,21 +1239,13 @@
 		replay: function () {
 			var _this = this;
 			var startTime = 0.01;
-			// Needed to exit current scope of the player and make sure replay happend
+			// Needed to exit current scope of the player and make sure replay happened
 			setTimeout(function () {
 				if (_this.startOffset) {
 					startTime = _this.startOffset;
 				}
-				_this.stopEventPropagation();
-				_this.unbindHelper("seeked.replay").bindOnceHelper("seeked.replay", function () {
-					// Restore events after we rewind the player
-					mw.log("EmbedPlayer::onClipDone:Restore events after we rewind the player");
-					_this.restoreEventPropagation();
-
-					_this.play();
-					return;
-				});
-				_this.seek(startTime);
+				// Set stopAfterSeek to false to init playback after rewind
+				_this.seek(startTime, false);
 			}, 10);
 		},
 
@@ -2924,6 +2916,9 @@
 				mw.log("EmbedPlayer::getCompatibleSource: add " + source.src + ' of type:' + source.type);
 			});
 			var myMediaElement = new mw.MediaElement($media[0]);
+			if ( this.getRawKalturaConfig('mediaProxy') && this.getRawKalturaConfig('mediaProxy').preferedFlavorBR ){
+				myMediaElement.preferedFlavorBR = this.getRawKalturaConfig('mediaProxy').preferedFlavorBR * 1000;
+			}
 			var baseTimeOptions =  {
 				'supportsURLTimeEncoding': this.supportsURLTimeEncoding(),
 				'startTime' :this.startTime,
