@@ -1,0 +1,33 @@
+<html>
+<head>
+    <title>DebugInfo Demo</title>
+    <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+    <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+    <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<body>
+<h1>Multicast Demo</h1>
+<div id="kaltura_player" style="width: 585px; height: 330px;float: left;"></div>
+<br style="clear: both;" /><br />
+
+<script>
+
+    mw.setConfig('EmbedPlayer.ReplaceSources', [
+        {
+            'type': 'video/multicast',
+            //'src': '239.1.2.3:1234'
+            'src': 'http://192.168.162.48:9000/kMulticast/http://kalsegsec-a.akamaihd.net/dc-0/m/pa-live-publish3/kLive/smil:1_oorxcge2_publish.smil/chunklist_b475136.m3u8'
+        }
+    ]);
+    kWidget.featureConfig({
+        'targetId': 'kaltura_player',
+        'wid': '_931702',
+        'uiconf_id' : '21099702',
+        'flashvars': {
+        },
+        'entry_id': "1_oorxcge2"
+
+    });
+</script>
+</body>
+</html>
