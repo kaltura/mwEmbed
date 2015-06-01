@@ -29,11 +29,6 @@
 				_this.embedPlayer.setKalturaConfig( plugin.pluginName, "visible", false );
 			});
 
-			// update tooltip to title if exists
-			if ( config.title ){
-				this.setConfig ("title", config.title);
-			}
-
 			this.getMenu(); // create menu
 		},
 		getComponent: function() {
@@ -105,21 +100,16 @@
 		},
 
 		calculateMenuHeight: function(config){
-			var menuHeight = config.plugins.length * 40; // give each plugin header 40 px
+			var menuHeight = 50 + config.plugins.length * 40; // give each plugin header 40 px and 50px for the title
 			config.plugins.forEach(function (plugin, index) {
 				menuHeight += plugin.properties.length * 30; // give each plugin property 30 px
 			});
-			if ( config.title && config.title.length ){
-				menuHeight += 50; // give 50 pixels for the optional menu title
-			}
 			return menuHeight;
 		},
 
 		renderMenu: function(config){
 			var _this = this;
-			if ( config.title && config.title.length ){
-				this.$menu.append('<p class="title">' + config.title + '</p>');
-			}
+			this.$menu.append('<p class="title">' + this.getConfig("title") + '</p>');
 			config.plugins.forEach(function (plugin, index) {
 				_this.$menu.append('<p class="pluginTitle">' + plugin.displayName + '</p>');
 				plugin.properties.forEach(function (property, index) {
