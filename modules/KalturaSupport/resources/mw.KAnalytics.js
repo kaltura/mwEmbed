@@ -165,6 +165,16 @@ mw.KAnalytics.prototype = {
 				eventSet[ flashVarEvents[ fvKey ] ] = encodeURIComponent( this.embedPlayer.getKalturaConfig('statistics', fvKey ) );
 			}
 		}
+		// hideUserId will remove the userId from the analytics call EVEN if the embed code sends one (unless hashedUserId is in use)
+		if(this.embedPlayer.getKalturaConfig( 'statistics' , 'hideUserId')){
+			delete(eventSet.userId);
+		}
+		// Use this new parameter to send hashed userId in case the partner has limitation about storing users-data on Kaltura database.
+		// This feature
+		if(this.embedPlayer.getKalturaConfig( 'statistics' , 'hashedUserId')){
+			eventSet.userId = this.embedPlayer.getKalturaConfig( 'statistics' , 'hashedUserId');
+		}
+
 
 		// Add referrer parameter
 		eventSet[ 'referrer' ] = encodeURIComponent( mw.getConfig('EmbedPlayer.IframeParentUrl') );
@@ -190,7 +200,8 @@ mw.KAnalytics.prototype = {
 				// error in calling parent page event
 			}
 		}
-		if (this.embedPlayer.getFlashvars('ks')){
+		//hideKS is an attribute that will prevent the request from sending the KS even if the embed code receives one
+		if (this.embedPlayer.getFlashvars('ks') && !this.embedPlayer.getKalturaConfig( 'statistics' , 'hideKs') ){
 			eventRequest['ks'] = this.embedPlayer.getFlashvars('ks');
 		}
 
