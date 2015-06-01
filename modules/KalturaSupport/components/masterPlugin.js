@@ -6,10 +6,11 @@
 			'parent': 'controlsContainer',
 			"align": "right",
 			'order': 100,
+			'width': 220,
 			'showTooltip': true,
 			'displayImportance': "high",
 			'title': "Master Plugin",
-			'iconClass': 'icon-flag',
+			'iconClass': 'icon-cog',
 			'config':{}
 		},
 
@@ -27,6 +28,11 @@
 			config.plugins.forEach(function (plugin, index) {
 				_this.embedPlayer.setKalturaConfig( plugin.pluginName, "visible", false );
 			});
+
+			// update tooltip to title if exists
+			if ( config.title ){
+				this.setConfig ("title", config.title);
+			}
 
 			this.getMenu(); // create menu
 		},
@@ -76,7 +82,7 @@
 			if ( !this.$menu ){
 				var _this = this;
 				// add menu DIV
-				this.$menu = $('<div class="masterPluginMenu"></div>');
+				this.$menu = $('<div class="masterPluginMenu"></div>').width(this.getConfig("width"));
 				var config = this.getConfig('config');
 
 				// set menu height
@@ -111,73 +117,81 @@
 
 		renderMenu: function(config){
 			var _this = this;
-			var embedPlayer = this.getPlayer();
 			if ( config.title && config.title.length ){
 				this.$menu.append('<p class="title">' + config.title + '</p>');
 			}
 			config.plugins.forEach(function (plugin, index) {
 				_this.$menu.append('<p class="pluginTitle">' + plugin.displayName + '</p>');
 				plugin.properties.forEach(function (property, index) {
+					var initialValue = _this.embedPlayer.getKalturaConfig( plugin.pluginName, property.property );
 					switch (property.type){
 						case 'boolean':
 							var propField = $('<input class="pluginProperty pluginPropertyLabel checkbox" type="checkbox">')
 								.on("change", function(){
 									_this.propertyChanged(plugin.pluginName, property.property, property.type, $(this).is(":checked") );
 								});
-							if ( property.updateEvent ){
-								embedPlayer.bindHelper( property.updateEvent, function(e, prop){
-									propField.prop( "checked", prop.value ); // set checkbox value according to value passed on the event
-								});
-							}else{
-								propField.prop( "checked", embedPlayer.getKalturaConfig( plugin.pluginName, property.property )); // set checkbox value according to property value
+							if ( initialValue !== undefined ){
+								propField.prop( "checked", initialValue ); // set checkbox value according to property value
 							}
-							_this.$menu.append(propField).append(property.label);
+							_this.embedPlayer.bindHelper( "updatePropertyEvent", function(e, data){
+								if ( data.plugin === plugin.pluginName && data.property === property.property){
+									propField.prop( "checked", data.value ); // set checkbox value according to value passed on the updatePropertyEvent event
+								}
+							});
+							var wrapper = $('<p><label>' + property.label + '</label></p>');
+							_this.$menu.append(wrapper.find("label").prepend(propField));
 							break;
 						case 'enum':
-							_this.$menu.append('<span class="pluginPropertyLabel">' + property.label + '</span>');
 							var propField = $('<select class="pluginProperty pluginPropertyLabel"></select>')
 								.on("change", function(){
-									_this.propertyChanged(plugin.pluginName, property.property, property.type, $(this).val() );
+									_this.propertyChanged(plugin.pluginName, property.property, property.type, $(this).get(0).selectedIndex );
 								});
 							var addOptions = function(items){
 								$.each(items, function (i, item) {
 									propField.append($('<option>', {
 										value: item.value,
-										text : item.text
+										text : item.label
 									}));
 								});
 							}
-							if (property.updateEvent ){
-								embedPlayer.bindHelper( property.updateEvent, function(e, prop){
-									addOptions(prop.items);
-								});
-							}else{
-								addOptions( embedPlayer.getKalturaConfig( plugin.pluginName, property.property ));
+							if ( initialValue !== undefined && initialValue.length ){
+								addOptions( initialValue ); // set combobox options according to property value
 							}
-							_this.$menu.append(propField);
+							_this.embedPlayer.bindHelper( "updatePropertyEvent", function(e, data){
+								if ( data.plugin === plugin.pluginName && data.property === property.property){
+									addOptions(data.items); // set combobox options according to value passed on the updatePropertyEvent event
+									if ( data.selectedItem ){
+										propField.val(data.selectedItem); // support selected item change
+									}
+								}
+							});
+							var elm = $("<p></p>").append('<span class="pluginPropertyLabel">' + property.label + '</span>').append(propField);
+							_this.$menu.append(elm);
 							break;
 						case 'string':
 						case 'number':
 						case 'float':
-							_this.$menu.append('<span class="pluginPropertyLabel">' + property.label + '</span>');
 							var propField = $('<input class="pluginProperty pluginPropertyLabel" type="text"/>')
 								.on("change", function(){
 									_this.propertyChanged(plugin.pluginName, property.property, property.type, $(this).val() )
 								});
-							if ( property.updateEvent ){
-								embedPlayer.bindHelper( property.updateEvent, function(e, prop){
-									propField.val( prop.value ); // set field value according to value passed on the event
-								});
-							}else{
-								propField.val( embedPlayer.getKalturaConfig( plugin.pluginName, property.property )); // set field value according to property value
+							if ( initialValue !== undefined ){
+								propField.val( initialValue ); // set field value according to property value
 							}
-							_this.$menu.append(propField);
+							_this.embedPlayer.bindHelper( "updatePropertyEvent", function(e, data){
+								if ( data.plugin === plugin.pluginName && data.property === property.property){
+									propField.val( data.value ); // set field value according to value passed on the updatePropertyEvent event
+								}
+							});
+							var elm = $("<p></p>").append('<span class="pluginPropertyLabel">' + property.label + '</span>').append(propField);
+							_this.$menu.append(elm);
 							break;
 						default:
 							break;
 					}
 				});
 			});
+			this.$menu.find(".pluginProperty").not(".checkbox").width(this.getConfig("width")-70);
 		},
 
 		propertyChanged: function(plugin, property, type, value){
@@ -187,7 +201,7 @@
 			if (type == "float"){
 				value = parseFloat(value);
 			}
-			console.log("---> propertyChanged: plugin: "+plugin+", property: "+property+", type: "+type+", value: "+value);
+			this.embedPlayer.triggerHelper("propertyChangedEvent",{"plugin": plugin, "property": property, "value": value})
 		}
 	}));
 
