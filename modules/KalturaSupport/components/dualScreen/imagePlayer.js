@@ -1,7 +1,8 @@
 (function ( mw, $ ) {
 	"use strict";
-	mw.PluginManager.add( 'imagePlayer', mw.KBaseComponent.extend( {
+	mw.dualScreen = mw.dualScreen || {};
 
+	mw.dualScreen.imagePlayer = mw.KBaseComponent.extend({
 		defaultConfig: {
 			cuePointType: [{
 				"main": mw.KCuePoints.TYPE.THUMB,
@@ -273,7 +274,7 @@
 			}
 			return cuePoint;
 		}
-	} ) );
+	} );
 }
 
 )( window.mw, window.jQuery );

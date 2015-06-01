@@ -1,9 +1,10 @@
 (function ( mw, $ ) {
 	"use strict";
-	mw.PluginManager.add( 'dualScreenControlBar', mw.KBaseComponent.extend( {
+	mw.dualScreen = mw.dualScreen || {};
 
+	mw.dualScreen.dualScreenControlBar = mw.KBaseComponent.extend({
 		defaultConfig: {
-			'templatePath': 'components/dualScreen/dualScreenControlBar.tmpl.html',
+			'templatePath': 'dualScreenControlBar',
 			'menuFadeout': 5000
 		},
 		"controlBarComponents": {
@@ -148,5 +149,5 @@
 				}, this.getConfig("menuFadeout"));
 			}
 		}
-	} ) );
+	});
 })( window.mw, window.jQuery );

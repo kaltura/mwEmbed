@@ -3,31 +3,40 @@
 	mw.PluginManager.add( 'dualScreen', mw.KBaseComponent.extend( {
 
 			defaultConfig: {
-				'parent': 'videoHolder',
-				'order': 1,
-				'showTooltip': false,
-				"displayImportance": 'high',
-				'secondScreen': {
-					'sizeRatio': '25',
-					'widthHeightRatio': ( 3 / 4 ),
-					'startLocation': 'right bottom'
+				"parent": "videoHolder",
+				"order": 1,
+				"showTooltip": false,
+				"displayImportance": "high",
+				"cuePointType": [{
+					"main": mw.KCuePoints.TYPE.THUMB,
+					"sub": [mw.KCuePoints.THUMB_SUB_TYPE.SLIDE]
+				}],
+				"prefetch": {
+					"durationPercentageUntilNextSequence": 60,
+					"minimumSequenceDuration": 2
 				},
-				'resizable': {
-					'handles': 'ne, se, sw, nw',
-					'maxWidth': 50,
-					'aspectRatio': true,
-					'minWidth': 100,
-					'containment': 'parent'
+				"secondScreen": {
+					"sizeRatio": "25",
+					"widthHeightRatio": ( 3 / 4 ),
+					"startLocation": "right bottom"
 				},
-				'draggable': {
-					'cursor': 'move',
-					'containment': 'parent'
+				"resizable": {
+					"handles": "ne, se, sw, nw",
+					"maxWidth": 50,
+					"aspectRatio": true,
+					"minWidth": 100,
+					"containment": "parent"
 				},
-				'resizeHandlesFadeout': 5000,
-				'mainViewDisplay': 2, // 1 - Main stream, 2 - Presentation
-				'fullScreenDisplayOnly': false,
-				'minDisplayWidth': 0,
-				'minDisplayHeight': 0,
+				"draggable": {
+					"cursor": "move",
+					"containment": "parent"
+				},
+				"menuFadeout": 5000,
+				"resizeHandlesFadeout": 5000,
+				"mainViewDisplay": 2, // 1 - Main stream, 2 - Presentation
+				"fullScreenDisplayOnly": false,
+				"minDisplayWidth": 0,
+				"minDisplayHeight": 0,
 				"enableKeyboardShortcuts": true,
 				"keyboardShortcutsMap": {
 					"nextState": 81,   // Add q Sign for next state
@@ -47,7 +56,13 @@
 				this.initMonitors();
 			},
 			isSafeEnviornment: function () {
-				this.screenObj = this.getPlayer().plugins.imagePlayer;
+				var _this = this;
+				this.screenObj = new mw.dualScreen.imagePlayer(this.getPlayer(), function(){
+					this.setConfig({
+						"prefetch": _this.getConfig("prefetch"),
+						"cuePointType": _this.getConfig("cuePointType")
+					});
+					}, "imagePlayer");
 				return this.screenObj.isSafeEnviornment();
 			},
 			addBindings: function () {
@@ -152,15 +167,6 @@
 				// Bind orientation change to resize player
 				$( context ).bind( eventName, updateSecondScreenLayout);
 
-				this.bind( 'onplay', function () {
-					_this.controlBar.enable();
-				} );
-
-				this.bind( 'onpause ended playerReady', function () {
-					_this.controlBar.show();
-					_this.controlBar.disable();
-				} );
-
 				var fsmState = [];
 				var secondDisplayMinimized = false;
 				var minimizeSecondDisplay = function(){
@@ -225,18 +231,30 @@
 						}, 100);
 					}
 				} );
-				this.bind("dualScreenStateChange", function(e, state){
+
+				//Consume view state events
+				this.bind( 'dualScreenStateChange', function(e, state){
 					_this.fsm.consumeEvent( state );
 				});
-				this.bind("showPlayerControls" , function(){
-					_this.controlBar.show();
-				});
-				this.bind("postDualScreenTransition", function () {
+
+				this.bind( 'postDualScreenTransition', function () {
 					//TODO: move to imagePlayer
 					_this.screenObj.applyIntrinsicAspect();
 				});
+
+				//Listen to events which affect controls view state
+				this.bind( 'showPlayerControls' , function(){
+					_this.controlBar.show();
+				});
+				this.bind( 'onplay', function () {
+					_this.controlBar.enable();
+				} );
+				this.bind( 'onpause ended playerReady', function () {
+					_this.controlBar.show();
+					_this.controlBar.disable();
+				} );
 				var wasDisabled = false;
-				this.bind("startMonitorInteraction", function(e, type){
+				this.bind( 'startMonitorInteraction', function(){
 					_this.controlBar.hide();
 					if (_this.controlBar){
 						wasDisabled = _this.controlBar.disabled;
@@ -244,7 +262,7 @@
 					_this.controlBar.disable();
 					_this.getPlayer().disablePlayControls();
 				});
-				this.bind("stopMonitorInteraction", function(e, type) {
+				this.bind( 'stopMonitorInteraction', function() {
 					//Only enable and show if controlBar was enabled before transition
 					if ( !wasDisabled ) {
 						_this.controlBar.enable();
@@ -252,6 +270,7 @@
 					}
 					_this.getPlayer().enablePlayControls();
 				});
+
 				if (this.getConfig('enableKeyboardShortcuts')) {
 					this.bind('addKeyBindCallback', function (e, addKeyCallback) {
 						_this.addKeyboardShortcuts(addKeyCallback);
@@ -340,7 +359,10 @@
 			},
 			initControlBar: function(){
 				if ( !this.getPlayer().isAudio()) {
-					this.controlBar = this.getPlayer().plugins.dualScreenControlBar;
+					var _this = this;
+					this.controlBar = new mw.dualScreen.dualScreenControlBar(_this.getPlayer(), function(){
+						this.setConfig('menuFadeout', _this.getConfig('menuFadeout'));
+					}, 'dualScreenControlBar');
 					this.embedPlayer.getInterface().append( this.controlBar.getComponent() );
 				}
 			},
