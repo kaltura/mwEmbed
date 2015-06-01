@@ -402,7 +402,7 @@
             "speeds": {
                 "doc": "The set of selectable speeds, where 1 = 100% speed. Seperated by commas.",
                 "label": "Selectable speeds",
-                "type": "string"
+                "type": "numbersArray"
             }
         }
     },
@@ -1463,7 +1463,7 @@
             },
             "percentageSeekKeys": {
                 "doc": "Comma seperated keys for percentage seek.",
-                "type": "string",
+                "type": "numbersArray",
                 "initvalue": "49,50,51,52,53,54,55,56,57"
             }
         }
