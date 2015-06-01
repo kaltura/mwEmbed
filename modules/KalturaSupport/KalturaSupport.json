@@ -81,6 +81,7 @@
 	"dualScreen": {
 		"scripts": [
 			"components/dualScreen/dualScreen.js",
+			"components/dualScreen/monitor.js",
 			"components/dualScreen/fsm.js",
 			"components/dualScreen/dualScreenStatesConfig.js"
 		],

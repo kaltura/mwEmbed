@@ -18,7 +18,7 @@
 					name: 'hide',
 					action: function (  ) {
 						this.disableMonitorFeatures( );
-						this.hideMonitor( this.getSecondMonitor().obj );
+						this.hideMonitor( );
 					}
 				},
 				'switchView': {
@@ -45,7 +45,7 @@
 					name: 'hide',
 					action: function () {
 						this.disableSideBySideView();
-						this.hideMonitor( this.getSecondMonitor().obj );
+						this.hideMonitor( );
 					}
 				},
 				'switchView': {
@@ -64,22 +64,23 @@
 					name: 'PiP',
 					action: function () {
 						this.enableMonitorFeatures( );
-						this.showMonitor( this.getSecondMonitor().obj );
+						this.showMonitor( );
 					}
 				},
 				'switchView': {
 					name: 'hide',
 					action: function () {
-						this.showMonitor( this.getSecondMonitor().obj );
-						this.hideMonitor( this.getFirstMonitor().obj );
+						this.showMonitor( );
 						this.toggleMainMonitor();
+						this.hideMonitor( );
+
 					}
 				},
 				'SbS': {
 					name: 'SbS',
 					action: function () {
 						this.enableSideBySideView();
-						this.showMonitor( this.getSecondMonitor().obj );
+						this.showMonitor( );
 					}
 				}
 			}
@@ -95,7 +96,7 @@
 					name: 'hide',
 					action: function (  ) {
 						this.disableMonitorFeatures();
-						this.hideMonitor( this.getSecondMonitor().obj );
+						this.hideMonitor( );
 					}
 				}
 			}
@@ -107,20 +108,21 @@
 					name: 'PiP',
 					action: function () {
 						if (this.getPrimary() === this.getSecondMonitor()) {
-
+							this.showMonitor( );
 							this.toggleMainMonitor();
-							this.showMonitor( this.getFirstMonitor().obj );
+
 						}
 						this.enableMonitorFeatures();
-						this.showMonitor( this.getSecondMonitor().obj );
+						this.showMonitor( );
 					}
 				},
 				'switchView': {
 					name: 'hide',
 					action: function () {
-						this.showMonitor( this.getSecondMonitor().obj );
-						this.hideMonitor( this.getFirstMonitor().obj );
+						this.showMonitor( );
 						this.toggleMainMonitor();
+						this.hideMonitor( );
+
 					}
 				}
 			}
