@@ -1,4 +1,4 @@
-(function ( mw, $ ) {
+(function ( mw ) {
 	"use strict";
 	mw.dualScreen = mw.dualScreen || {};
 	mw.dualScreen.states = [
@@ -130,4 +130,4 @@
 	];
 }
 
-)( window.mw, window.jQuery );
+)( window.mw );

@@ -1,4 +1,5 @@
-(function ( mw, $ ) {
+(function ( mw ) {
+	"use strict";
 	mw.dualScreen = mw.dualScreen || {};
 	mw.dualScreen.StateMachine = function( states, context, fsmTransitionHandlers ) {
 		this.states = states;
@@ -27,4 +28,4 @@
 	};
 }
 
-)( window.mw, window.jQuery );
+)( window.mw );
