@@ -3,27 +3,24 @@
     "use strict";
 
 
-    mw.HtmlBinderHelper=function() {
+    mw.HtmlBinderHelper=function(element, $scope) {
 
+        var internal = {};
+        var updaters = {};
         return {
 
-            bind: function (element, $scope) {
+            bind: function () {
 
                 var _this = this;
-                var internal = {};
 
-                var updaters = {};
-
-                for (var propertyName in $scope) {
-                    if ($scope.hasOwnProperty(propertyName)) {
-                        internal[propertyName] = $scope[propertyName];
-                        delete $scope[propertyName];
-                    }
-                }
 
 
                 var defineProp = function (name, updateHtml) {
-
+                    //copy from old defenition
+                    if (!internal.hasOwnProperty(name)) {
+                        internal[name] = $scope[name];
+                        updaters[name] = [];
+                    }
 
                     if (!$scope.hasOwnProperty(name)) {
                         updaters[name] = [];
@@ -48,12 +45,14 @@
                             }
                         });
                     }
-                    ;
                     updaters[name].push(updateHtml);
                 }
 
-                element.find("*").each(function ($index, el) {
+                $('*',element).each(function ($index, el) {
 
+                    if(el.childNodes.length>1) {
+                        return;
+                    }
                     var originalText = el.innerText;
 
                     var matches = originalText.match(/{{(.*)}}/g);

@@ -61,15 +61,20 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
             _this.embedPlayer.getVideoHolder().append("<div class='mw-debug-info'>");
             var elem=$(".mw-debug-info");
 
+
             elem.html(this.getHTML());
 
-            _this.binder=new mw.HtmlBinderHelper();
+            _this.binder=new mw.HtmlBinderHelper(elem,_this.$scope);
 
-            _this.binder.bind(elem,_this.$scope);
+            _this.binder.bind();
 
             $(elem).find(".mw-debug-info-close-btn").click(function() {
 
                 _this.setVisible(false);
+            });
+            $(elem).find(".mw-debug-info-copy-btn").click(function() {
+                alert( $("#mw-debug-info-values").text());
+
             });
 
             _this.refresh();
