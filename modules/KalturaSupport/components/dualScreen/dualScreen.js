@@ -46,6 +46,8 @@
 			monitor: {},
 			displayInitialized: false,
 			render: true,
+			auxScreenMinimized: false,
+			fsmState: [],
 			screenShown: false,
 			currentScreenNameShown: "",
 
@@ -77,134 +79,26 @@
 					}
 				} );
 
-				var updateSecondScreenLayout = function (event) {
-					var eventName = mw.isAndroid() ? 'resize' : 'orientationchange';
-					if (_this.displayInitialized &&
-						!(
-						_this.getAuxMonitor().isUserInteracting() ||
-						_this.screenShown ||
-						( eventName === event.type && !_this.getPlayer().layoutBuilder.isInFullScreen() )
-						)
-					){
-						_this.checkRenderConditions();
-						//Hide monitor and control bar during resizing
-						_this.hideDisplay();
-						//Avoid debouncing of screen resize timeout handler
-						if ( _this.updateSecondScreenLayoutTimeout ) {
-							clearTimeout( _this.updateSecondScreenLayoutTimeout );
-							_this.updateSecondScreenLayoutTimeout = null;
-						}
-						_this.updateSecondScreenLayoutTimeout = setTimeout( function () {
-							_this.updateSecondScreenLayoutTimeout = null;
-							//Calculate new screen ratios
-							var secondScreenProps = _this.getAuxMonitor().prop;
-							var playerWidth = _this.getPlayer().getWidth();
-							var playerHeight = _this.getPlayer().getHeight();
-							var widthRatio = (playerWidth / _this.previousPlayerWidth);
-							var heightRatio = (playerHeight / _this.previousPlayerHeight);
-							//Save current dimensions for next differential calculation
-							_this.previousPlayerWidth = playerWidth;
-							_this.previousPlayerHeight = playerHeight;
+				this.bind( 'postDualScreenTransition', function () {
+					//TODO: move to imagePlayer
+					_this.screenObj.applyIntrinsicAspect();
+				});
 
-							//Calculate and apply new screen properties
-							var screenWidth = secondScreenProps.width.replace( 'px', '' );
-							var screenWidthHeightRatio = _this.getConfig( 'secondScreen' ).widthHeightRatio;
-							var screenTop = secondScreenProps.top.replace( 'px', '' );
-							var screenLeft = secondScreenProps.left.replace( 'px', '' );
-							var newWidth = _this.roundPercisionFloat((screenWidth * widthRatio), -2);
-							var newHeight = _this.roundPercisionFloat(screenWidthHeightRatio * newWidth, -2);
-							var topOffset = _this.roundPercisionFloat((screenTop * heightRatio), -2);
-							var leftOffset = _this.roundPercisionFloat((screenLeft * widthRatio), -2);
-							var screenProps = {
-								height: newHeight + "px",
-								width: newWidth + "px",
-								top: topOffset + "px",
-								left: leftOffset + "px"
-							};
-							if ( newHeight + topOffset > playerHeight ) {
-								screenProps.top = (playerHeight - newHeight) + "px";
-							}
-							if ( newWidth + leftOffset > playerWidth ) {
-								screenProps.left = (playerWidth - newWidth) + "px";
-							}
-
-							var firstScreen = _this.getMainMonitor().obj;
-							var secondScreen = _this.getAuxMonitor().obj;
-							secondScreen.css( screenProps );
-							//TODO: move to image player
-							_this.screenObj.applyIntrinsicAspect();
-							//Store props for transitions
-							_this.getAuxMonitor().prop = screenProps;
-							if ( _this.render ) {
-								//Show monitor and control bar after resizing
-								_this.showDisplay();
-								maximizeSecondDisplay();
-							} else {
-								_this.getPrimary().obj.css("visibility", "");
-								minimizeSecondDisplay();
-							}
-
-							//Calculate screen resize max width
-							var maxWidth = ( ( _this.getPlayer().getWidth() * _this.getConfig( 'resizable' ).maxWidthPercentage ) / 100 );
-							var minWidth = ( ( _this.getPlayer().getWidth() * _this.getConfig( 'secondScreen' ).sizeRatio ) / 100 );
-							firstScreen.resizable( {
-								maxWidth: maxWidth,
-								minWidth: minWidth
-							} );
-							secondScreen.resizable( {
-								maxWidth: maxWidth,
-								minWidth: minWidth
-							} );
-						}, 0 );
-					}
-				};
-				this.bind( 'updateLayout', updateSecondScreenLayout);
+				//Handle layout changes due to layout update(resize and orientation change)
+				this.bind( 'updateLayout', function(e){
+					_this.updateSecondScreenLayout(e);
+				});
 				// Android fires orientationchange too soon, i.e width and height are wrong
 				var eventName = mw.isAndroid() ? 'resize' : 'orientationchange';
 				eventName += this.bindPostFix;
 				var isIframe = (mw.getConfig('EmbedPlayer.IsIframeServer' ) && mw.getConfig('EmbedPlayer.IsFriendlyIframe'));
 				var context = isIframe ? window.parent : window;
 				// Bind orientation change to resize player
-				$( context ).bind( eventName, updateSecondScreenLayout);
+				$( context ).bind( eventName, function(e){
+					_this.updateSecondScreenLayout(e);
+				});
 
-				var fsmState = [];
-				var secondDisplayMinimized = false;
-				var minimizeSecondDisplay = function(){
-					if (!secondDisplayMinimized) {
-						secondDisplayMinimized = true;
-						if (!(_this.getPrimary().isMain && _this.fsm.getStatus() === "hide")) {
-							fsmState.push( _this.fsm.getStatus() );
-							if ( !_this.getPrimary().isMain ) {
-								fsmState.push( 'switchView' );
-								_this.fsm.consumeEvent( 'switchView' );
-							}
-							if ( _this.fsm.getStatus() !== "PiP" ) {
-								_this.fsm.consumeEvent( 'PiP' );
-							}
-
-							_this.fsm.consumeEvent( 'hide' );
-						}
-						_this.getPrimary().obj.css( {'top': '', 'left': '', 'width': '', 'height': ''} ).removeClass( 'firstScreen' );
-						$.each( _this.zIndexObjs, function ( i, obj ) {
-							var zIndex = $( obj ).css( 'z-index' );
-							$( obj ).css( "z-index", zIndex - 4 );
-						} );
-					}
-				};
-				var maximizeSecondDisplay = function(){
-					if (secondDisplayMinimized) {
-						secondDisplayMinimized = false;
-						_this.getPrimary().obj.addClass( 'firstScreen' );
-						$.each(fsmState, function(i, state){
-							_this.fsm.consumeEvent( state );
-						});
-						fsmState = [];
-						$.each(_this.zIndexObjs, function(i, obj){
-							var zIndex = $(obj).css('z-index');
-							$(obj ).css("z-index", zIndex + 4);
-						});
-					}
-				};
+				//Disable/enable plugin view on screen plugins actions
 				this.bind( "preShowScreen", function (e, screenName) {
 					_this.screenShown = true;
 					if (_this.render) {
@@ -212,14 +106,14 @@
 						_this.controlBar.enable();
 						_this.controlBar.hide();
 						_this.controlBar.disable();
-						minimizeSecondDisplay();
+						_this.minimizeSecondDisplay();
 					}
 				} );
 				this.bind( "preHideScreen", function (e, screenName) {
 					_this.screenShown = false;
 					if (_this.render && _this.currentScreenNameShown === screenName) {
 						_this.currentScreenNameShown = "";
-						maximizeSecondDisplay();
+						_this.maximizeSecondDisplay();
 						//Use setTimeout to verify that screens are hidden and not that this is a part of
 						// screens transition --> when going from one screen to another we first emit preHideScreen and
 						//only then preShowScreen
@@ -235,11 +129,6 @@
 				//Consume view state events
 				this.bind( 'dualScreenStateChange', function(e, state){
 					_this.fsm.consumeEvent( state );
-				});
-
-				this.bind( 'postDualScreenTransition', function () {
-					//TODO: move to imagePlayer
-					_this.screenObj.applyIntrinsicAspect();
 				});
 
 				//Listen to events which affect controls view state
@@ -423,7 +312,7 @@
 							if ( isNaN( obj.css( 'z-index' ) ) ) {
 								obj.css( 'z-index', 4 );
 							} else {
-								var zIndex = parseInt(obj.css( 'z-index' ));
+								var zIndex = parseInt(obj.css( 'z-index' ), 10);
 								obj.css( 'z-index', zIndex + 4 );
 							}
 							_this.zIndexObjs.push( obj );
@@ -432,6 +321,7 @@
 				}
 			},
 
+			//Manage display helpers
 			hideDisplay: function(){
 				this.getAuxMonitor().obj.css("visibility", "hidden");
 				this.controlBar.hide();
@@ -442,6 +332,126 @@
 				this.getAuxMonitor().obj.css("visibility", "");
 				this.controlBar.enable();
 				this.controlBar.show();
+			},
+			minimizeSecondDisplay: function(){
+			    if (!this.auxScreenMinimized) {
+					this.auxScreenMinimized = true;
+				    var primaryIsMain = (this.getPrimary() === this.getMainMonitor());
+					if (!(primaryIsMain && this.fsm.getStatus() === "hide")) {
+						this.fsmState.push( this.fsm.getStatus() );
+						if ( !primaryIsMain ) {
+							this.fsmState.push( 'switchView' );
+							this.fsm.consumeEvent( 'switchView' );
+						}
+						if ( this.fsm.getStatus() !== "PiP" ) {
+							this.fsm.consumeEvent( 'PiP' );
+						}
+
+						this.fsm.consumeEvent( 'hide' );
+					}
+					this.getPrimary().obj.css( {'top': '', 'left': '', 'width': '', 'height': ''} ).removeClass( 'firstScreen' );
+					$.each( this.zIndexObjs, function ( i, obj ) {
+						var zIndex = $( obj ).css( 'z-index' );
+						$( obj ).css( "z-index", zIndex - 4 );
+					} );
+				}
+			},
+	        maximizeSecondDisplay: function(){
+				var _this = this;
+		        if (this.auxScreenMinimized) {
+					this.auxScreenMinimized = false;
+					this.getPrimary().obj.addClass( 'firstScreen' );
+					$.each(this.fsmState, function(i, state){
+						_this.fsm.consumeEvent( state );
+					});
+			        this.fsmState = [];
+					$.each(_this.zIndexObjs, function(i, obj){
+						var zIndex = $(obj).css('z-index');
+						$(obj ).css("z-index", zIndex + 4);
+					});
+				}
+			},
+			updateSecondScreenLayout: function (event) {
+				var _this = this;
+				var eventName = mw.isAndroid() ? 'resize' : 'orientationchange';
+				if (this.displayInitialized &&
+					!(
+					this.getAuxMonitor().isUserInteracting() ||
+					this.screenShown ||
+					( eventName === event.type && !this.getPlayer().layoutBuilder.isInFullScreen() )
+					)
+				){
+					this.checkRenderConditions();
+					//Hide monitor and control bar during resizing
+					this.hideDisplay();
+					//Avoid debouncing of screen resize timeout handler
+					if ( this.updateSecondScreenLayoutTimeout ) {
+						clearTimeout( this.updateSecondScreenLayoutTimeout );
+						this.updateSecondScreenLayoutTimeout = null;
+					}
+					this.updateSecondScreenLayoutTimeout = setTimeout( function () {
+						_this.updateSecondScreenLayoutTimeout = null;
+						//Calculate new screen ratios
+						var secondScreenProps = _this.getAuxMonitor().prop;
+						var playerWidth = _this.getPlayer().getWidth();
+						var playerHeight = _this.getPlayer().getHeight();
+						var widthRatio = (playerWidth / _this.previousPlayerWidth);
+						var heightRatio = (playerHeight / _this.previousPlayerHeight);
+						//Save current dimensions for next differential calculation
+						_this.previousPlayerWidth = playerWidth;
+						_this.previousPlayerHeight = playerHeight;
+			
+						//Calculate and apply new screen properties
+						var screenWidth = secondScreenProps.width.replace( 'px', '' );
+						var screenWidthHeightRatio = _this.getConfig( 'secondScreen' ).widthHeightRatio;
+						var screenTop = secondScreenProps.top.replace( 'px', '' );
+						var screenLeft = secondScreenProps.left.replace( 'px', '' );
+						var newWidth = _this.roundPercisionFloat((screenWidth * widthRatio), -2);
+						var newHeight = _this.roundPercisionFloat(screenWidthHeightRatio * newWidth, -2);
+						var topOffset = _this.roundPercisionFloat((screenTop * heightRatio), -2);
+						var leftOffset = _this.roundPercisionFloat((screenLeft * widthRatio), -2);
+						var screenProps = {
+							height: newHeight + "px",
+							width: newWidth + "px",
+							top: topOffset + "px",
+							left: leftOffset + "px"
+						};
+						if ( newHeight + topOffset > playerHeight ) {
+							screenProps.top = (playerHeight - newHeight) + "px";
+						}
+						if ( newWidth + leftOffset > playerWidth ) {
+							screenProps.left = (playerWidth - newWidth) + "px";
+						}
+			
+						var firstScreen = _this.getMainMonitor().obj;
+						var secondScreen = _this.getAuxMonitor().obj;
+						secondScreen.css( screenProps );
+						//TODO: move to image player
+						_this.screenObj.applyIntrinsicAspect();
+						//Store props for transitions
+						_this.getAuxMonitor().prop = screenProps;
+						if ( _this.render ) {
+							//Show monitor and control bar after resizing
+							_this.showDisplay();
+							_this.maximizeSecondDisplay();
+						} else {
+							_this.getPrimary().obj.css("visibility", "");
+							_this.minimizeSecondDisplay();
+						}
+			
+						//Calculate screen resize max width
+						var maxWidth = ( ( _this.getPlayer().getWidth() * _this.getConfig( 'resizable' ).maxWidthPercentage ) / 100 );
+						var minWidth = ( ( _this.getPlayer().getWidth() * _this.getConfig( 'secondScreen' ).sizeRatio ) / 100 );
+						firstScreen.resizable( {
+							maxWidth: maxWidth,
+							minWidth: minWidth
+						} );
+						secondScreen.resizable( {
+							maxWidth: maxWidth,
+							minWidth: minWidth
+						} );
+					}, 0 );
+				}
 			},
 			checkRenderConditions: function(){
 				if ( !this.getAuxMonitor().isUserInteracting() &&
