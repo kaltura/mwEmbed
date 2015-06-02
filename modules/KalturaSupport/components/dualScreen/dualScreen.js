@@ -273,8 +273,11 @@
 					secondaryScreenEl
 				        .off(pointerEvents)
 				        .on( pointerEvents, function ( e ) {
-				                    _this.embedPlayer.triggerHelper( e );
-				            } );
+							//Verify that second screen is not in the middle of user interaction before delegating events
+							if(!_this.getSecondary().isUserInteracting()){
+								_this.embedPlayer.triggerHelper( e );
+							}
+						} );
 
 					primaryScreen.disableFeatures();
 					secondaryScreen.enableFeatures();

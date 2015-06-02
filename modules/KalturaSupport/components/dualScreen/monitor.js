@@ -56,23 +56,20 @@
 					_this.getPlayer().triggerHelper( "startMonitorInteraction", [event.type] );
 				},
 				stop: function ( event ) {
-					switch ( event.type ) {
-						case "dragstop":
-							_this.dragging = false;
-							break;
-						case "resizestop":
-							_this.resizing = false;
-							break;
-					}
+					//Allow all plugins to check against dragging/resizing state before setting it to false
+					setTimeout(function(){
+						switch ( event.type ) {
+							case "dragstop":
+								_this.dragging = false;
+								break;
+							case "resizestop":
+								_this.resizing = false;
+								break;
+						}
 
-					_this.getPlayer().triggerHelper( "stopMonitorInteraction", [event.type] );
+						_this.getPlayer().triggerHelper( "stopMonitorInteraction", [event.type] );
 
-					$( event.toElement ).one( 'click', function ( e ) {
-						e.stopImmediatePropagation();
-						e.preventDefault();
-						e.stopPropagation();
-					} );
-
+					}, 0);
 					_this.prop = $( this ).css( ['top', 'left', 'width', 'height'] );
 				}
 			};
