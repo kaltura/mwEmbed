@@ -31,8 +31,8 @@
 </div>
 <div>
 Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout.html">More about NativeCallout</a><br>
-<label class="radio inline"><input type="radio" name="nativeCallout-web"  checked="checked">Web</label>
-<label class="radio inline"><input type="radio" name="nativeCallout-native" id="">Native Callout</label>
+<label class="radio inline"><input type="radio" name="nativecallout" id="nativeCallout-web"  checked="checked">Web</label>
+<label class="radio inline"><input type="radio" name="nativecallout" id="nativeCallout-native">Native Callout</label>
 <br><br>
 <input type="button" id="generate" value="Create Player" />
 <br><br>
@@ -46,7 +46,7 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
 			$('#streamtype-vod').attr('checked', vals.stvod );
 			$('#streamtype-live').attr('checked', !vals.stvod );
 			$('#nativeCallout-web').attr('checked', vals.ncweb );
-			$('#nativeCallout-web').attr('checked', !vals.ncweb );
+			$('#nativeCallout-native').attr('checked', !vals.ncweb );
 			$('#url').val( vals.url );
 			$('#urlthumb').val( vals.thumb )
 		}
