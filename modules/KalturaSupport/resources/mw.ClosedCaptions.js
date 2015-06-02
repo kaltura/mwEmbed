@@ -757,7 +757,9 @@
 						(  fontsize > 24 )?  emFontMap[ 24 ]+'em' : emFontMap[ 6 ];
 			}
 			if( this.getConfig( 'useGlow' ) && this.getConfig( 'glowBlur' ) && this.getConfig( 'glowColor' ) ) {
-				style[ "text-shadow" ] = '0 0 ' + this.getConfig( 'glowBlur' ) + 'px ' + mw.getHexColor( this.getConfig( 'glowColor' ) );
+				var hShadow = this.getConfig( 'hShadow' ) ? this.getConfig( 'hShadow' ) : 0;
+				var vShadow = this.getConfig( 'vShadow' ) ? this.getConfig( 'vShadow' ) : 0;
+				style[ "text-shadow" ] = hShadow + 'px ' + vShadow + 'px ' + this.getConfig( 'glowBlur' ) + 'px ' + mw.getHexColor( this.getConfig( 'glowColor' ) );
 			}
 			return style;
 		},
