@@ -798,6 +798,12 @@ $uiVars = array(
 					'desc' => "Disables the player's right-click context menu",
 					'default' => 'false',
 					'example' => '../modules/KalturaSupport/tests/ThumbnailEmbedManyPlayers.qunit.html'
+			),
+			'EmbedPlayer.KeepPoster' => array(
+					'type' => 'Boolean',
+					'desc' => "Keeps the entry thumbnail shown during playback (covers the video)",
+					'default' => 'false',
+					'example' => ''
 			)
 		)
 	),
