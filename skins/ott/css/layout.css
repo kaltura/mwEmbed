@@ -499,6 +499,15 @@ body {
 	font-family: Helvetica,Arial;
 	top: -5px;
 }
+/* specific FireFox CSS fixes */
+@-moz-document url-prefix(){
+	.timers {
+		top: -8px;
+	}
+	.scrubber {
+		top: -10px;
+	}
+}
 .overlay {
 	position: absolute;
 	top: 0;
