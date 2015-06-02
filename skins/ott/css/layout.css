@@ -258,6 +258,7 @@ body {
 }
 .play-state .largePlayBtn:before {
 	content: "\e604" !important;
+	margin-left: -4px;
 }
 .mobile.start-state .largePlayBtn {
 	display: block !important;
@@ -265,13 +266,13 @@ body {
 .mobile.pause-state .largePlayBtn {
 	display: block !important;
 }
-/*
+
 .mobile:not(.player-out) .largePlayBtn {
 	display: block !important;
 }
 .mobile.player-out .largePlayBtn {
 	display: none !important;
-}*/
+}
 .scrubber {
 	position: relative;
 	height: 3px;
