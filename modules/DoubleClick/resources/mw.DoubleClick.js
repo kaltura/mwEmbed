@@ -221,10 +221,10 @@
 						var queryStringParamsParts = queryStringParams.split( '&' );
 						for ( var i = 0; i < queryStringParamsParts.length; i++ ) {
 							//Break query string to key-value pair
-							var pair = queryStringParamsParts[i].split( '=' );
+							var equalIndex = queryStringParamsParts[i].indexOf( "=" );
 							//Unescape and try to evaluate key and value
-							var evaluatedKey = embedPlayer.evaluate( unescape( pair[0] ) );
-							var evaluatedValue = embedPlayer.evaluate( unescape( pair[1] ) );
+							var evaluatedKey = embedPlayer.evaluate( unescape( queryStringParamsParts[i].substr(0, equalIndex) ) );
+							var evaluatedValue = embedPlayer.evaluate( unescape( queryStringParamsParts[i].substr( equalIndex + 1 ) ) );
 							//Escape kvp and build evaluated query string param back. exclude cust_params.
 							if (evaluatedKey != 'cust_params'){
 								evaluatedQueryStringParams += escape( evaluatedKey );
