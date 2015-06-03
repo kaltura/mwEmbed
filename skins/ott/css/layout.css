@@ -161,11 +161,11 @@ body {
 	width: 100%;
 	height: 64px;
 	background-color: rgba(0,0,0,0.74);
-	-webkit-transition: bottom 0.3s ease-in;
-	-moz-transition: bottom 0.3s ease-in;
-	-o-transition: bottom 0.3s ease-in;
-	-ms-transition: bottom 0.3s ease-in;
-	transition: bottom 0.3s ease-in;
+	-webkit-transition: bottom 0.2s ease-in;
+	-moz-transition: bottom 0.2s ease-in;
+	-o-transition: bottom 0.2s ease-in;
+	-ms-transition: bottom 0.2s ease-in;
+	transition: bottom 0.2s ease-in;
 }
 .mobile .controlBarContainer {
 	height: 42px !important;
@@ -920,7 +920,7 @@ button, a{
 	border-radius: 50%;
 	width: 50px;
 	height: 50px;
-	border: solid 4px #ebebeb;
+	border: solid 4px rgba(255,255,255,0.7);
 	background-color: transparent;
 	border-right-color: #59baf3;
 	-webkit-animation: rotating 0.8s linear infinite;
