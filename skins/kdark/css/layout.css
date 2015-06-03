@@ -456,6 +456,7 @@ body {
 	background: #2F2F2F;
 	border-radius: 3px;
 	height: 106px;
+	position: absolute;
 }
 .volumeControl.noTransition .ui-slider-vertical{
 	-moz-transition: none ;
