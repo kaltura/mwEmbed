@@ -68,7 +68,7 @@
 
 			this.bind('layoutBuildDone ended', function (event, screenName) {
 				// add the Q&A toggle button to be on the video
-				embedPlayer.getVideoHolder().append('<div class="qna-on-video-btn icon-qna-close"><div class="badge"></div></div>');
+				embedPlayer.getVideoHolder().append('<div class="qna-on-video-btn icon-qna-close"><div class="qna-badge"></div></div>');
 				_this.getQnaContainer();
 				//qnaObject =  $(window['parent'].document.getElementById(embedPlayer.id )).parent().find( ".qnaInterface" );
 				qnaObject = _this.getQnaContainer().find(".qnaModuleBackground");
@@ -117,11 +117,11 @@
 			// if its a number and is greater then 0 - show & update the badge
 			var num = _this.KQnaModule.getUnreadCount();
 			if (isNaN(num) || num <=0 ){
-				$('.badge').hide();
+				$('.qna-badge').hide();
 			}
 			else{
-				$('.badge').text(num);
-				$('.badge').show();
+				$('.qna-badge').text(num);
+				$('.qna-badge').show();
 			}
 		},
 
