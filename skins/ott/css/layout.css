@@ -410,12 +410,6 @@ button, a{
 }
 
 .player-out .hover .playHead {
-	/*
-	-webkit-transform: scale(0, 0);
-	-moz-transform: scale(0, 0);
-	-o-transform: scale(0, 0);
-	-ms-transform: scale(0, 0);
-	transform: scale(0, 0);*/
 	display: none;
 }
 .accessibilityButtons {
@@ -865,12 +859,19 @@ button, a{
 .buffered {
 	background-color: rgba(255,255,255,0.3);
 }
-
 .scrubber .playHead:hover {
-	background-color: white;
+	background: -moz-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,0.22) 31%, rgba(255,255,255,0.22) 100%);
+	background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(255,255,255,1)), color-stop(30%,rgba(255,255,255,1)), color-stop(31%,rgba(255,255,255,0.22)), color-stop(100%,rgba(255,255,255,0.22)));
+	background: -webkit-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%,rgba(255,255,255,1) 30%,rgba(255,255,255,0.22) 31%,rgba(255,255,255,0.22) 100%);
+	background: -o-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%,rgba(255,255,255,1) 30%,rgba(255,255,255,0.22) 31%,rgba(255,255,255,0.22) 100%);
+	background: -ms-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%,rgba(255,255,255,1) 30%,rgba(255,255,255,0.22) 31%,rgba(255,255,255,0.22) 100%);
+	background: radial-gradient(ellipse at center,  rgba(255,255,255,1) 0%,rgba(255,255,255,1) 30%,rgba(255,255,255,0.22) 31%,rgba(255,255,255,0.22) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#38ffffff',GradientType=1 );
+}
+.scrubber .playHead.ui-state-active {
+	background-color: white !important;
 	opacity: 1;
 }
-
 .currentTimeLabel {
 	color: rgba(255,255,255,0.6);
 	margin-left: 20px;
