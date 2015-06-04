@@ -73,26 +73,26 @@
 			// Settings displayed in the interface
 			if (_this.config.c2)
 				comScoreSettings.c2 = _this.config.c2;
-			if (_this.config.labelmapping)
-				comScoreSettings.labelmapping = _this.config.labelmapping;
-			if (_this.config.pageview)
-				comScoreSettings.pageview = _this.config.pageview;
-			if (_this.config.logurl)
-				comScoreSettings.logurl = _this.config.logurl;
-			if (_this.config.persistentlabels)
-				comScoreSettings.persistentlabels = _this.config.persistentlabels;
+			if (_this.config.labelMapping)
+				comScoreSettings.labelmapping = _this.config.labelMapping;
+			if (_this.config.pageView)
+				comScoreSettings.pageview = _this.config.pageView;
+			if (_this.config.logUrl)
+				comScoreSettings.logurl = _this.config.logUrl;
+			if (_this.config.persistentLabels)
+				comScoreSettings.persistentlabels = _this.config.persistentLabels;
 
 			// Not displayed in the interface
 			if (_this.config.debug)
 				comScoreSettings.debug = _this.config.debug;
 			if (_this.config.include)
 				comScoreSettings.include = _this.config.include;
-			if (_this.config.include_prefixes)
-				comScoreSettings.include_prefixes = _this.config.include_prefixes;
+			if (_this.config.includePrefixes)
+				comScoreSettings.include_prefixes = _this.config.includePrefixes;
 			if (_this.config.exclude)
 				comScoreSettings.exclude = _this.config.exclude;
-			if (_this.config.exclude_prefixes)
-				comScoreSettings.exclude_prefixes = _this.config.exclude_prefixes;
+			if (_this.config.excludePrefixes)
+				comScoreSettings.exclude_prefixes = _this.config.excludePrefixes;
 
 			var standalonePluginUrl = this.isSecure() ? this.genericPluginUrlSecure : this.genericPluginUrl;
 			$.getScript(standalonePluginUrl, function(){
@@ -133,7 +133,7 @@
 
 		/* setupConfig: returns plugin attributes from uiConf */
 		setupConfig: function() {
-			this.config = this.embedPlayer.getKalturaConfig( 'comscorestreamingtag' );
+			this.config = this.embedPlayer.getKalturaConfig( 'ComScoreStreamingTag' );
 		},
 
 		addPlayerBindings: function( callback ) {
@@ -153,7 +153,7 @@
 			});
 
 			embedPlayer.bindHelper( 'playerUpdatePlayhead' + _this.bindPostfix, function(event){
-				_this.genericPlugin.log("comscorestreamingtag::   playerUpdatePlayhead ");
+				_this.genericPlugin.log("ComScoreStreamingTag::   playerUpdatePlayhead ");
 			});
 
 			embedPlayer.bindHelper('onplay' + this.bindPostfix, function() {
@@ -206,13 +206,13 @@
 			});
 
 			embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostFix, function(){
-				_this.genericPlugin.log("comscorestreamingtag::   onChangeMedia ");
+				_this.genericPlugin.log("ComScoreStreamingTag::   onChangeMedia ");
 			});
 
 			embedPlayer.bindHelper( 'onPlayerStateChange' + _this.bindPostFix, function(event){
 				// This code appears to never be called?
 				alert("Hello world");
-				_this.genericPlugin.log("comscorestreamingtag::   onPlayerStateChange " + event);
+				_this.genericPlugin.log("ComScoreStreamingTag::   onPlayerStateChange " + event);
 			});
 
 			embedPlayer.bindHelper('onAdOpen' + this.bindPostfix, function(event, adId, networkName, type, index) {

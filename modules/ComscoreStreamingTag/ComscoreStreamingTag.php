@@ -1,11 +1,11 @@
 <?php
 return array(
-   "comscorestreamingtag" =>  array(
+   "ComScoreStreamingTag" =>  array(
       'scripts' => "resources/mw.ComscoreStreamingTag.js",
       'dependencies' => array(
          "mw.EmbedPlayer",
          'mw.ajaxProxy'
       ),
-      'kalturaPluginName' => 'comscorestreamingtag'
+      'kalturaPluginName' => 'ComScoreStreamingTag'
    ),
 );
