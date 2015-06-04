@@ -582,7 +582,7 @@ class kalturaIframeClass {
 	function outputIframeHeadCss(){
 		return <<<HTML
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>Kaltura Embed Player iFrame</title>
+	<title>{$this->getEntryTitle()}</title>
 	<style type="text/css">
 		html,body,video {
 			width: 100%;
