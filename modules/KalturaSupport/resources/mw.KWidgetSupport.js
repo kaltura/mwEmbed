@@ -404,8 +404,11 @@ mw.KWidgetSupport.prototype = {
 	},
 	updateEmbedServicesData: function(embedPlayer, playerData){
 		//Set flavors
+		var _this = this;
 		var flavorAssets = [];
-		$.each( playerData.contextData.flavorAssets, function ( index, flavorAsset ) {
+		var flavorData = playerData.contextData.flavorAssets;
+		var flavorDrmData = this.getFlavorAssetsDrmData(playerData);
+		$.each( flavorData, function ( index, flavorAsset ) {
 			var flavorPartnerData = flavorAsset.partnerData;
 			if (flavorPartnerData.url != "") {
 				var flavorAssetObj = {
@@ -422,6 +425,8 @@ mw.KWidgetSupport.prototype = {
 				if (flavorPartnerData["default"] === "true"){
 					flavorAssetObj["default"] = true;
 				}
+				var drmData = _this.getSourceDrmData(flavorAsset.id, flavorDrmData);
+				$.extend(flavorAssetObj, drmData);
 				flavorAssets.push( flavorAssetObj );
 			}
 		} );
@@ -1293,6 +1298,7 @@ mw.KWidgetSupport.prototype = {
 			return ;
 		}
 		var flavorData = playerData.contextData.flavorAssets;
+		var flavorDrmData = this.getFlavorAssetsDrmData(playerData);
 
 		var protocol = mw.getConfig('Kaltura.Protocol');
 		if( !protocol ){
@@ -1464,6 +1470,9 @@ mw.KWidgetSupport.prototype = {
 				}
 			}
 
+			var assetDrmData = this.getSourceDrmData(source.id, flavorDrmData);
+			$.extend(source, assetDrmData);
+
 			// Add the source ( if a src was defined ):
 			if( source['src'] ){
 				deviceSources.push( source );
@@ -1512,6 +1521,9 @@ mw.KWidgetSupport.prototype = {
 			// We only need single HLS stream
 			var addedHlsStream = false;
 			var validClipAspect = this.getValidAspect( deviceSources );
+			var dashSource;
+			var assetId;
+			var assetDrmData;
 			// Check if mobile device media query
 			if ( mw.isMobileDevice() && mw.isDeviceLessThan480P() && iphoneAdaptiveFlavors.length ) {
 				// Add "iPhone" HLS flavor
@@ -1521,6 +1533,16 @@ mw.KWidgetSupport.prototype = {
 					'type' : 'application/vnd.apple.mpegurl',
 					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
 				});
+				dashSource = {
+					'data-aspect' : validClipAspect,
+					'data-flavorid' : 'mpdLow',
+					'type' : 'application/dash+xml',
+					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneAdaptiveFlavors.join(',')  + '/format/MPEGDASH/protocol/' + protocol + '/a.mpd'
+				};
+				assetId = iphoneAdaptiveFlavors[0];
+				assetDrmData = this.getSourceDrmData(assetId, flavorDrmData);
+				$.extend(dashSource, assetDrmData);
+				deviceSources.push(dashSource);
 				addedHlsStream = true;
 			} else if( ipadAdaptiveFlavors.length ) {
 				// Add "iPad" HLS flavor
@@ -1530,6 +1552,16 @@ mw.KWidgetSupport.prototype = {
 					'type' : 'application/vnd.apple.mpegurl',
 					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
 				});
+				dashSource = {
+					'data-aspect' : validClipAspect,
+					'data-flavorid' : 'mpdHigh',
+					'type' : 'application/dash+xml',
+					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadAdaptiveFlavors.join(',')  + '/format/MPEGDASH/protocol/' + protocol + '/a.mpd'
+				};
+				assetId = ipadAdaptiveFlavors[0];
+				assetDrmData = this.getSourceDrmData(assetId, flavorDrmData);
+				$.extend(dashSource, assetDrmData);
+				deviceSources.push(dashSource);
 			}
 		}
 		this.removedAdaptiveFlavors = false;
@@ -1588,6 +1620,25 @@ mw.KWidgetSupport.prototype = {
 		});
 		
 		return deviceSources;
+	},
+	getFlavorAssetsDrmData: function(playerData){
+		var flavorDrmData = {}
+		if (playerData.contextData.pluginData &&
+			playerData.contextData.pluginData.KalturaDrmEntryContextPluginData &&
+			playerData.contextData.pluginData.KalturaDrmEntryContextPluginData.flavorData){
+			flavorDrmData = playerData.contextData.pluginData.KalturaDrmEntryContextPluginData.flavorData;
+		}
+		return flavorDrmData;
+	},
+	getSourceDrmData: function(id, flavorDrmData){
+		var assetDrmData = flavorDrmData && flavorDrmData[id];
+		var drmData = {};
+		if (assetDrmData) {
+			drmData['data-custom_data'] = assetDrmData['custom_data'];
+			drmData['data-signature'] = assetDrmData.signature;
+			drmData['data-contentId'] = assetDrmData.contentId;
+		}
+		return drmData;
 	},
 	/**
 	 *  "/" and "+" are valid base64 chars. They might break playmanifest URL so we replace them to "_" and "-" accordingly.
