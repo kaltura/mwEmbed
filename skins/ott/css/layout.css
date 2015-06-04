@@ -260,6 +260,9 @@ button, a{
 	content: "\e604" !important;
 	margin-left: -4px;
 }
+.end-state .largePlayBtn:before {
+	content: "\e605" !important;
+}
 .mobile.start-state .largePlayBtn {
 	display: block !important;
 }
