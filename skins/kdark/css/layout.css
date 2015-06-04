@@ -796,6 +796,7 @@ body {
 	background-color: transparent;
 	color: #ccc;
 	text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);
+	outline-offset: -1px;
 }
 
 .btn:hover {
