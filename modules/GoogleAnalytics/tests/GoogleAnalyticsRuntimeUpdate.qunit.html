@@ -111,7 +111,7 @@
 
 				'trackEventMonitor': 'trackFunc',
 				'urchinCode': googleAnalyticsAccountId,
-				'customEvent': 'doPlay,relatedVideoSelect',
+				'customEvent': 'doPlay,relatedVideoSelect,playerReady',
 				'doPlayCategory': "Custom Events",
 
 				'doPlayAction': "playing",
@@ -120,6 +120,10 @@
 				// Enables us to track what entries are being clicked on from related videos
 				'relatedVideoSelectCategory': 'Related Fulfillment',
 				'relatedVideoSelectAction': "{related.selectedEntryId}",
+
+				// Enables us to track what tags are assigned to the related video
+				'playerReadyCategory':'My entry tags',
+				'playerReadyAction':'{mediaProxy.entry.tags}',
 
 				'sendRefId': true
 			},
