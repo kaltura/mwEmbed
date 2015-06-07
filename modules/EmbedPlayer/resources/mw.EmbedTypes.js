@@ -20,9 +20,6 @@ var kplayer = new mw.MediaPlayer('kplayer', ['video/live', 'video/kontiki', 'vid
 // Silverlight
 var splayer = new mw.MediaPlayer('splayer', ['video/playreadySmooth', 'video/ism', 'video/multicast', 'video/h264', 'video/mp4'], 'Silverlight');
 
-// Java based player
-var cortadoPlayer = new mw.MediaPlayer( 'cortado', ['video/ogg', 'audio/ogg', 'application/ogg'], 'Java' );
-
 // Native html5 players
 var oggNativePlayer = new mw.MediaPlayer( 'oggNative', ['video/ogg', 'audio/ogg', 'application/ogg' ], 'Native' );
 var h264NativePlayer = new mw.MediaPlayer( 'h264Native', ['video/h264', 'video/mp4'], 'Native' );
@@ -100,11 +97,6 @@ mw.EmbedTypes = {
 		this.mediaPlayers.addPlayer(splayer);
 	},
 
-	addJavaPlayer: function(){
-		if( !mw.getConfig( 'EmbedPlayer.DisableJava' ) ){
-			this.mediaPlayers.addPlayer( cortadoPlayer );
-		}
-	},
 	addNativeComponentPlayer: function(){
 		this.mediaPlayers.addPlayer( nativeComponentPlayerVideo );
 	},
@@ -128,14 +120,6 @@ mw.EmbedTypes = {
 		// flag that is uniq for mobile devices
 		if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ){
 			this.addNativeComponentPlayer();
-		}
-
-		// Opera will switch off javaEnabled in preferences if java can't be
-		// found. And it doesn't register an application/x-java-applet mime type like
-		// Mozilla does.
-
-		if ( javaEnabled && ( navigator.appName == 'Opera' ) ) {
-			this.addJavaPlayer();
 		}
 
 		// Use core mw.supportsFlash check:
@@ -230,11 +214,6 @@ mw.EmbedTypes = {
 				//	this.mediaPlayers.addPlayer( vlcPlayer );
 				//	continue;
 				//}
-
-				if ( type == 'application/x-java-applet' ) {
-					this.addJavaPlayer();
-					continue;
-				}
 
 				if ( (type == 'video/mpeg' || type == 'video/x-msvideo') ){
 					//pluginName.toLowerCase() == 'vlc multimedia plugin' ) {
