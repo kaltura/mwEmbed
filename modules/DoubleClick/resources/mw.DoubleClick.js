@@ -916,6 +916,8 @@
 
 					// Send a notification to trigger associated events and update ui
 					_this.embedPlayer.sendNotification('doPlay');
+				}else{
+					_this.embedPlayer.getInterface().find(".largePlayBtn").css(	"z-index", 1);
 				}
 			} );
 			adsListener( 'PAUSED', function(){
@@ -940,8 +942,7 @@
 				//$(".doubleClickAd").remove();
 				$(_this.embedPlayer).trigger('onAdComplete',[ad.getAdId(), mw.npt2seconds($(".currentTimeLabel").text())]);
 				_this.duration= -1;
-
-
+				_this.embedPlayer.getInterface().find(".largePlayBtn").css(	"z-index", "");
 			});
 			// Resume content:
 			adsListener( 'CONTENT_RESUME_REQUESTED', function(){
