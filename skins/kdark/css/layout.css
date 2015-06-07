@@ -836,6 +836,9 @@ body {
 	background: rgba(0,0,0,0.7);
 	color: #efefef;
 }
+.largePlayBtn.icon-pause:before {
+	margin-left: -4px;
+}
 
 .largePlayBtn:hover {
 	background: rgba(0,0,0,1);
