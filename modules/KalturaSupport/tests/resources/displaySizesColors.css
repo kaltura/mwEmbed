@@ -1,9 +1,9 @@
 .display-low{
-	background-color: red !important;
+	background-color: #400 !important;
 }
 .display-medium{
-	background-color: yellow !important;
+	background-color: #040 !important;
 }
 .display-high{
-	background-color: green !important;
+	background-color: #004 !important;
 }
