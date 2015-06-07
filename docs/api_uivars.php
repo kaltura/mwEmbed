@@ -397,6 +397,7 @@ $uiVars = array(
 				'type' => 'String',
 				'desc' => 'External thumbnail URL to load instead of the entry default thumbnail. Supports evaluated expressions within curly brackets',
 				'default' => '',
+				'example' => '../modules/KalturaSupport/tests/ThumbnailEmbedExternalThumbnail.html',
 			),
 			'kml' => array(
 				'type' => 'String',
@@ -798,6 +799,12 @@ $uiVars = array(
 					'desc' => "Disables the player's right-click context menu",
 					'default' => 'false',
 					'example' => '../modules/KalturaSupport/tests/ThumbnailEmbedManyPlayers.qunit.html'
+			),
+			'EmbedPlayer.KeepPoster' => array(
+					'type' => 'Boolean',
+					'desc' => "Keeps the entry thumbnail shown during playback (covers the video)",
+					'default' => 'false',
+					'example' => ''
 			)
 		)
 	),

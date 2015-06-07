@@ -556,6 +556,10 @@
 					this.log("Error:: with seek request, media never in ready state");
 					return checkVideoStateDeferred.resolve();
 				}
+				// manually trigger the loadedmetadata since stopEventPropagation was called but we must have this event triggered during seek operation (SUP-4237)
+				$(vidObj).off('loadedmetadata.seekPrePlay').one('loadedmetadata.seekPrePlay', function () {
+					_this._onloadedmetadata();
+				});
 				this.log("player can't seek - wait video element ready state");
 				this.canSeekTimeout = setTimeout(function () {
 					this.canSeekTimeout = null;
