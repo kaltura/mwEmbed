@@ -511,46 +511,6 @@ body {
 .durationLabel {
 	padding-left: 0.5em;
 }
-.masterPluginMenu{
-	background-color: rgba(255,255,255,0.9);
-	border-radius: 3px;
-	position: absolute;
-	padding-left: 10px;
-	color: black;
-	z-index: 10;
-}
-.masterPluginMenu p{
-	margin-top: 8px;
-	margin-bottom: 8px;
-}
-.masterPluginMenu label{
-	letter-spacing: 0px;
-}
-.masterPluginMenu .title{
-	color: #333333;
-	font-size: 13px;
-	font-weight: bold;
-}
-.masterPluginMenu .pluginTitle{
-	color: #555555;
-	margin-left: 20px;
-	font-size: 12px;
-	font-weight: bold;
-	margin-top: 18px;
-	margin-bottom: 8px;
-}
-.masterPluginMenu .pluginPropertyLabel{
-	color: #555555;
-	margin-left: 40px;
-	font-size: 12px;
-}
-.masterPluginMenu label{
-	color: #555555;
-	font-size: 12px;
-}
-.masterPluginMenu .pluginProperty.checkbox{
-	width: 20px;
-}
 .overlay {
 	position: absolute;
 	top: 0;

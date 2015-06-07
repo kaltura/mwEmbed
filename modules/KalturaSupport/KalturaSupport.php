@@ -144,11 +144,6 @@
 			'dependencies' => 'mw.KBaseComponent',
 			'kalturaPluginName' => 'playPauseBtn',
 		),
-		"masterPlugin" => array(
-			'scripts' => "components/masterPlugin.js",
-			'dependencies' => 'mw.KBaseComponent',
-			'kalturaPluginName' => 'masterPlugin',
-		),
 		"nextPrevBtn" => array(
 			'scripts' => "components/nextPrevBtn.js",
 			'dependencies' => 'mw.KBaseComponent',
