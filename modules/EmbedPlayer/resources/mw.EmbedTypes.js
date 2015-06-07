@@ -148,11 +148,6 @@ mw.EmbedTypes = {
 			this.addSilverlightPlayer();
 		}
 
-		// Java ActiveX
-		if( mw.isIE() && this.testActiveX( 'JavaWebStart.isInstalled' ) ) {
-			this.addJavaPlayer();
-		}
-
 		// <video> element
 		if ( ! mw.getConfig('EmbedPlayer.DisableVideoTagSupport' ) // to support testing limited / old browsers
 				&&
