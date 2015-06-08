@@ -81,16 +81,8 @@ if( $kConf->hasParam('overrideDomain') ) {
 	$wgEnableKalturaOverrideDomain = $kConf->get('overrideDomain');
 }
 
-if( $kConf->hasParam('authEmbedServicesDomains') ) {
-	$wgKalturaAuthEmbedServicesDomains = $kConf->get('authEmbedServicesDomains');
-}
-
 if( $kConf->hasParam('enableEmbedServicesRouting') ) {
 	$wgEnableKalturaEmbedServicesRouting = $kConf->get('enableEmbedServicesRouting');
-}
-
-if( $kConf->hasParam('enableProxyData') ) {
-	$wgKalturaEnableProxyData = $kConf->get('enableProxyData');
 }
 
 // A helper function to get full URL of host
