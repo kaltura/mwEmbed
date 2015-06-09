@@ -9,5 +9,4 @@
 $messages = array();
 $messages['en'] = array(
 	'mwe-bigButton-label' => 'Add CuePoint',
-//	'mwe-chromecast-stopcast' => 'Stop casting',
 );
