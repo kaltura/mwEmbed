@@ -122,6 +122,8 @@
 						_this.restoreWindowPlayer();
 					}
 				}
+				// update original view port before calling fullscreen: 
+				_this.orginalParnetViewPortContent = $(doc).find( 'meta[name="viewport"]' ).attr( 'content' );
 				// remove any old binding:
 				doc.removeEventListener(screenfull.raw.fullscreenchange, escapeFullscreen );
 				// Add a binding to catch "escape" fullscreen
