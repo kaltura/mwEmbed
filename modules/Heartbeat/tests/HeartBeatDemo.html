@@ -1,0 +1,81 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Heartbeat Plugin Configuration - Adding Adobe Heartbeat analytics plugin</title>
+        <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+        <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+        <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+    </head>
+
+    <body>
+    <h2>Heartbeat Plugin Configuration - Adding Adobe Heartbeat analytics plugin</h2>
+    <br />
+    <div id="kdp" style="width:600px;height:370px;float:left"></div>
+    <script>
+        function onReadyCallback(playerID){
+            //Add code if needed
+        }
+
+
+        kWidget.featureConfig({
+            'targetId': 'kdp',
+            'wid': '_243342',
+            'uiconf_id' : '21099702',
+            'entry_id' : '1_sf5ovm7u',
+            'readyCallback': onReadyCallback,
+            'flashvars': {
+                'heartbeat': {
+                    plugin: true,
+
+                    visitorId: '9A32525A5492AE7C0A4C98C6@AdobeOrg',
+                    visitorTrackingServer: 'ovppartners.d1.sc.omtrdc.net',
+
+                    appMeasurmentAccount: 'tester',
+                    appMeasurmentTrackingServer: 'ovppartners.d1.sc.omtrdc.net',
+                    appMeasurmentPageName: 'Kaltura Test Page',
+                    appMeasurmentCharSet: 'UTF-8',
+                    appMeasurmentVisitorID: 'test-vid',
+
+                    heartbeatTrackingServer: 'ovppartners.d1.sc.omtrdc.net',
+                    heartbeatPublisher: 'Kaltura test-publisher'
+                }
+            }
+        });
+
+
+    </script>
+    <div style="clear:both"></div>
+    <h3> Adding Adobe Heartbeat analytics plugin </h3>
+    <p>
+        You can configure Adobe Heartbeat plugin inside the heartbeat plugin flashvar.<br />
+    </p>
+    <br />
+    Sample code for Heartbeat configuration:
+        <pre class="prettyprint linenums">
+        kWidget.featureConfig({
+                'targetId': 'kdp',
+                'wid': '_243342',
+                'uiconf_id' : '21099702',
+                'entry_id' : '1_sf5ovm7u',
+                'readyCallback': onReadyCallback,
+                'flashvars': {
+                    'heartbeat': {
+                        plugin: true,
+
+                        visitorId: '9A32525A5492AE7C0A4C98C6@AdobeOrg',
+                        visitorTrackingServer: 'ovppartners.d1.sc.omtrdc.net',
+
+                        appMeasurmentAccount: 'tester',
+                        appMeasurmentTrackingServer: 'ovppartners.d1.sc.omtrdc.net'
+                        appMeasurmentPageName: 'Kaltura Test Page',
+                        appMeasurmentCharSet: 'UTF-8',
+                        appMeasurmentVisitorID: 'test-vid',
+
+                        heartbeatTrackingServer: 'ovppartners.d1.sc.omtrdc.net',
+                        heartbeatPublisher: 'Kaltura test-publisher'
+                    }
+                }
+            });
+        </pre>
+    </body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "chromecast": {
+    "description": "Adobe Hearbeat analytics Kaltura implementation. Adobe Hearbeat supports a dynamic set of attributes based on events you want to track and data you want to associate with each event.",
+    "attributes": {
+      "visitorId": {
+        "doc": "Adobe Marketing Cloud ORG ID (visitorId)",
+        "label": "Adobe Marketing Cloud ORG ID (visitorId)",
+        "type": "string"
+      },
+      "visitorTrackingServer": {
+        "doc": "Adobe Visitor Tracking Server (visitorTrackingServer)",
+        "label": "Adobe Visitor Tracking Server (visitorTrackingServer)",
+        "type": "string"
+      }
+    }
+  }
+}
