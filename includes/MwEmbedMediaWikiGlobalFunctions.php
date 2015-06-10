@@ -301,7 +301,7 @@ function mweGetFilePathFromKey( $key ){
 	global $IP;
 	$hash = sha1( $key );
 	// Pretty darn unlikely cache missmatch:
-	return "$IP/cache/". substr( $hash, 0, 1) . '/' . substr( $hash, 1, 1) .
+	return "$IP/$wgScriptPath/cache/". substr( $hash, 0, 1) . '/' . substr( $hash, 1, 1) .
 			 '/' . substr( $hash, 0, 48 );
 }
 
