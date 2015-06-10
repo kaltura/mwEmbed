@@ -146,19 +146,23 @@
 		),
 		'openFullScreen' => array(
 			'callbackArgs' => 'None',
-			'desc' => 'Player entered full screen mode'
+			'desc' => 'Player entered full screen mode',
+			'example' => '../modules/KalturaSupport/tests/FullscreenOnPlay.html'
 		),
 		'closeFullScreen' => array(
 			'callbackArgs' => 'None',
-			'desc' => 'Player exited from full screen mode'
+			'desc' => 'Player exited from full screen mode',
+			'example' => '../modules/KalturaSupport/tests/FullscreenOnPlay.html'
 		),
 		'hasCloseFullScreen' => array(
 			'callbackArgs' => 'None',
-			'desc' => 'The fullscreen has just closed'
+			'desc' => 'The fullscreen has just closed',
+			'example' => '../modules/KalturaSupport/tests/FullscreenOnPlay.html'
 		),
 		'hasOpenedFullScreen' => array(
 			'callbackArgs' => 'None',
-			'desc' => 'The fullscreen was just activated'
+			'desc' => 'The fullscreen was just activated',
+			'example' => '../modules/KalturaSupport/tests/FullscreenOnPlay.html'
 		),
 		'volumeChanged' => array(
 			'callbackArgs' => 'New volume value',
