@@ -418,11 +418,6 @@ $uiVars = array(
 					'default' => 'null',
 					'availability' => 'kdp',
 			),
-			'relativeCortadoAppletPath' => array(
-				'type' => 'String',
-				'desc' => 'The default location for Java Cortado Applet',
-				'default' => '',
-			),
 			'disableTrackElement' => array(
 				'type' => 'Boolean',
 				'desc' => 'Under iOS - if there are captions within the HLS stream, users should set disableTrackElement to true to prevent caption duplications',
@@ -648,12 +643,6 @@ $uiVars = array(
 					'type' => '',
 					'desc' => "",
 					'default' => '',
-					'example' => ''
-			),
-			'EmbedPlayer.DisableJava' => array(
-					'type' => 'Boolean',
-					'desc' => "If the java cortado player should be disabled",
-					'default' => 'true',
 					'example' => ''
 			),
 			'EmbedPlayer.DisableVideoTagSupport' => array(
