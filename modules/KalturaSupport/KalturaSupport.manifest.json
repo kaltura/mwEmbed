@@ -1478,7 +1478,7 @@
 			},
 			"layout": {
 				"doc": "Volume slider layout.",
-				"type": "enum",
+				"type": "hiddenvalue",
 				"enum": [
 					"horizontal",
 					"vertical"
