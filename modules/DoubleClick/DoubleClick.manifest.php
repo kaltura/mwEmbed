@@ -74,7 +74,7 @@ return array (
 				'label' => 'Lead with flash',
 				'doc' => "If the flash based DFP runtime should be used where flash is available.",
 				'type' => 'boolean',
-				'initvalue'=> false
+				'initvalue'=> true
 			),
 			'debugMode' => array(
 				'label' => 'Debug mode',
