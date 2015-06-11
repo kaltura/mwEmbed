@@ -266,7 +266,7 @@
 		},
 
 		//Media Item
-		renderMediaList: function(){
+		renderMediaList: function(callback){
 			//Only render if medialist item are present
 			if (this.getTemplateData().length > 0) {
 				//Generate new list template data
@@ -282,6 +282,9 @@
 						_this.configMediaListFeatures();
 						$( _this.embedPlayer ).trigger( "mediaListLayoutReady" );
 						_this.setSelectedMedia( _this.selectedMediaItemIndex );
+						if ( callback ){
+							callback();
+						}
 					}, function(msg) {
 						mw.log( msg );
 					});
