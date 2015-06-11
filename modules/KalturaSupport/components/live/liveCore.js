@@ -429,7 +429,7 @@
 			if ( embedPlayer.streamerType != 'http' ) {
 				protocol = embedPlayer.streamerType;
 			}
-            
+
             var requestObj = {
                 'service' : service,
                 'action' : 'islive',
@@ -437,9 +437,9 @@
                 'protocol' : protocol,
                 'partnerId': embedPlayer.kpartnerid
             };
-            if ( mw.isIOS8() )
+            if ( mw.isIOS8() ) {
                 requestObj.rnd = Math.random();
-
+            }
 			_this.getKalturaClient().doRequest( requestObj, function( data ) {
 				var onAirStatus = false;
 				if ( data === true ) {
