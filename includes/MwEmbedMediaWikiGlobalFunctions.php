@@ -298,7 +298,7 @@ function mweSaveFileToCache ( $key, $data){
 	return true;
 }
 function mweGetFilePathFromKey( $key ){
-	global $IP;
+	global $IP, $wgScriptPath;
 	$hash = sha1( $key );
 	// Pretty darn unlikely cache missmatch:
 	return "$IP/$wgScriptPath/cache/". substr( $hash, 0, 1) . '/' . substr( $hash, 1, 1) .
