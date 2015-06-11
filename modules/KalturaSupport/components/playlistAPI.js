@@ -299,6 +299,7 @@
 			if (!this.getPlayer().layoutBuilder.isInFullScreen() && this.redrawOnResize && this.redrawOnResize && this.playlistSet.length > 0) {
 				// decide the width of the items. For vertical layout: 3rd of the container. For horizontal: according to MinClips value
 				if ( this.getLayout() === "vertical" ){
+					var saveScrollTop = $(".nano-content").scrollTop(); // save scrollTop
 					if ( !this.widthSetByUser ){
 						if ( $( ".playlistInterface" ).width() / 3 > this.getConfig( 'mediaItemWidth' ) ) {
 							this.setConfig( 'mediaItemWidth', $( ".playlistInterface" ).width() / 3 );
@@ -314,7 +315,11 @@
 					this.$mediaListContainer = null;
 					this.getMedialistContainer();
 				}
-				this.renderMediaList();
+				this.renderMediaList(function(){
+					if ( _this.getLayout() === "vertical" ){
+						$(".nano-content").scrollTop(saveScrollTop); // restore scrollTop
+					}
+				});
 			}
 		},
 		// called from KBaseMediaList when a media item is clicked - trigger clip play
