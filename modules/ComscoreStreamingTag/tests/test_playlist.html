@@ -7,11 +7,14 @@
 	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 </head>
 <body>
-<h1>
-	VPAID 2.0
-</h1>
+<h1>ComscoreStreamingTag Plugin - playlist</h1>
 <br>
 <div id="myVideoTarget" style="width:650px;height:330px;"></div>
+<i>Analytics events:</i> ( only html5 )<br />
+<textarea id="analyticsLog" rows='15' style="width:340px;"></textarea>
+</div>
+
+<div style="clear:both"></div>
 
 <script>
 	var localPath = document.location.href;
@@ -41,6 +44,7 @@
 				'asyncInit': 'true',
 				'position': "before",
 				'relativeTo': "video",
+				'trackEventMonitor': 'trackEvent',
 				'c2':"1234567",
 				'labelMapping':'test_1="test value",test_2=entry.description',
 				'persistentLabels':'test_0=something else',
@@ -48,6 +52,10 @@
 			}
 		}
 	})
+
+	window['trackEvent'] = function( eventObj ){
+		$( "#analyticsLog" ).append( 'comScore StreamingTag Event:' + JSON.stringify( eventObj) + "\n\n" );
+	}
 </script>
 <br>
 </body>

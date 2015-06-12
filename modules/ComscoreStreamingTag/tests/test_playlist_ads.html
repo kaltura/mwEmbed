@@ -9,7 +9,12 @@
 	<script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<div id="myVideoTarget" style="width:800px;height:330px;float:left"></div>
+<h1>ComscoreStreamingTag Plugin - playlist with ads</h1>
+<br>
+<div id="myVideoTarget" style="width:650px;height:330px;"></div>
+<i>Analytics events:</i> ( only html5 )<br />
+<textarea id="analyticsLog" rows='15' style="width:340px;"></textarea>
+</div>
 
 <script>
 	mw.setConfig("forceMobileHTML5", true);
@@ -48,6 +53,7 @@
 				'asyncInit': 'true',
 				'position': "before",
 				'relativeTo': "video",
+				'trackEventMonitor': 'trackEvent',
 				'c2':"1234567",
 				'labelMapping':'test_1="test value",test_2=entry.description',
 				'persistentLabels':'test_0=something else',
@@ -55,6 +61,10 @@
 			}
 		}
 	});
+
+	window['trackEvent'] = function( eventObj ){
+		$( "#analyticsLog" ).append( 'comScore StreamingTag Event:' + JSON.stringify( eventObj) + "\n\n" );
+	}
 </script>
 
 </body>

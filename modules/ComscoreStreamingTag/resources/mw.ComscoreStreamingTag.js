@@ -12,7 +12,8 @@
 		genericPluginUrlSecure: "https://sb.scorecardresearch.com/c2/plugins/streamingtag_plugin_generic.js",
 		genericPluginUrl: "http://b.scorecardresearch.com/c2/plugins/streamingtag_plugin_generic.js",
 
-		bindPostfix: '.ComscoreStreamingTag',
+		bindPostfix: '.ComScoreStreamingTag',
+		moduleName: 'ComScoreStreamingTag',
 		unknownValue: 'unknown',
 
 		genericPlugin: null, // Placeholder reference for comScore Generic plugin
@@ -73,8 +74,8 @@
 			// Settings displayed in the interface
 			if (_this.config.c2)
 				comScoreSettings.c2 = _this.config.c2;
-			if (_this.config.labelMapping)
-				comScoreSettings.labelmapping = _this.config.labelMapping;
+			//if (_this.config.labelMapping)
+			//comScoreSettings.labelmapping = [];
 			if (_this.config.pageView)
 				comScoreSettings.pageview = _this.config.pageView;
 			if (_this.config.logUrl)
@@ -113,15 +114,20 @@
 				_this.addPlayerBindings( _callback );
 				// We only need to create the StreamingTag Playlist here because the player re-initialises the whole
 				// plugin each time it loads a(nother) content media assets.
-				_this.genericPlugin.setPlaylist(_this.getPlaylistLabels(), true);
+				_this.callGenericPlugin("setPlaylist", _this.getPlaylistLabels(), true);
 			});
+		},
+
+		log: function(message) {
+			//this.genericPlugin.log("ComScoreStreamingTag::   " + message);
+			mw.log("ComScoreStreamingTag::   " + message);
 		},
 
 		setPlayerPluginState: function(newState) {
 			if (newState && newState !== this.currentPlayerPluginState) {
-				this.genericPlugin.log("============================================================");
-				this.genericPlugin.log("PLAYER PLUGIN MOVING TO A NEW STATE: " + this.PlayerPluginState().toString(newState).toUpperCase());
-				this.genericPlugin.log("============================================================");
+				this.log("============================================================");
+				this.log("PLAYER PLUGIN MOVING TO A NEW STATE: " + this.PlayerPluginState().toString(newState).toUpperCase());
+				this.log("============================================================");
 
 				this.currentPlayerPluginState = newState;
 			}
@@ -133,7 +139,21 @@
 
 		/* setupConfig: returns plugin attributes from uiConf */
 		setupConfig: function() {
-			this.config = this.embedPlayer.getKalturaConfig( 'ComScoreStreamingTag' );
+			this.config = this.embedPlayer.getKalturaConfig( this.moduleName );
+		},
+
+		callGenericPlugin:function(){
+			var args = $.makeArray( arguments );
+			var action = args[0];
+			if( parent && parent[ this.config['trackEventMonitor'] ] ){
+				// Translate the event type to make it more human readable
+				if (action == "notify") {
+					args[1] = ns_.StreamSense.PlayerEvents.toString(args[1])
+				}
+				parent[ this.config['trackEventMonitor'] ]( args );
+			}
+			args.splice(0, 1);
+			this.genericPlugin[action].apply(this, args);
 		},
 
 		addPlayerBindings: function( callback ) {
@@ -153,7 +173,7 @@
 			});
 
 			embedPlayer.bindHelper( 'playerUpdatePlayhead' + _this.bindPostfix, function(event){
-				_this.genericPlugin.log("ComScoreStreamingTag::   playerUpdatePlayhead ");
+				_this.log("playerUpdatePlayhead ");
 			});
 
 			embedPlayer.bindHelper('onplay' + this.bindPostfix, function() {
@@ -162,12 +182,11 @@
 					// Clip labels only need to be set once per loaded media asset (ad or content)
 					// and BEFORE the Streaming Tag is notified that the media is playing.
 					if (_this.shouldSetClip) {
-						_this.genericPlugin.setClip(_this.getClipLabels(), false, _this.getMetadata(), true);
+						_this.callGenericPlugin("setClip", _this.getClipLabels(), false, [], true);
 						_this.shouldSetClip = false;
 					}
 					var seek = _this.getPlayerPluginState() == _this.PlayerPluginState().SEEKING;
-					_this.genericPlugin.notify(_this.playerEvents.PLAY, _this.getLabels(seek), _this.getCurrentPosition());
-
+					_this.callGenericPlugin("notify", _this.playerEvents.PLAY, _this.getLabels(seek), _this.getCurrentPosition());
 					_this.setPlayerPluginState(_this.PlayerPluginState().PLAYING);
 				}
 			});
@@ -175,23 +194,23 @@
 			embedPlayer.bindHelper('onpause' + this.bindPostfix, function(event) {
 				if (_this.getPlayerPluginState() == _this.PlayerPluginState().PLAYING) {
 					if (_this.getDuration() == _this.getCurrentPosition()) {
-						_this.genericPlugin.notify(_this.playerEvents.END, _this.getLabels());
+						_this.callGenericPlugin("notify", _this.playerEvents.END, _this.getLabels());
 					}else {
 						_this.setPlayerPluginState(_this.PlayerPluginState().PAUSED);
-						_this.genericPlugin.notify(_this.playerEvents.PAUSE, _this.getLabels(), _this.getCurrentPosition());
+						_this.callGenericPlugin("notify", _this.playerEvents.PAUSE, _this.getLabels(), _this.getCurrentPosition());
 					}
 				}
 			});
 
 			embedPlayer.bindHelper('doStop' + this.bindPostfix, function(event) {
 				_this.setPlayerPluginState(_this.PlayerPluginState().ENDED_PLAYING);
-				_this.genericPlugin.notify(_this.playerEvents.END, _this.getLabels());
+				_this.callGenericPlugin("notify", _this.playerEvents.END, _this.getLabels());
 			});
 
 			embedPlayer.bindHelper('seeked.started' + this.bindPostfix, function(event) {
 				if (_this.getPlayerPluginState() != _this.PlayerPluginState().SEEKING) {
 					_this.setPlayerPluginState(_this.PlayerPluginState().SEEKING);
-					_this.genericPlugin.notify(_this.playerEvents.PAUSE, _this.getLabels(true), _this.getCurrentPosition());
+					_this.callGenericPlugin("notify", _this.playerEvents.PAUSE, _this.getLabels(true), _this.getCurrentPosition());
 				}
 			});
 
@@ -206,13 +225,12 @@
 			});
 
 			embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostFix, function(){
-				_this.genericPlugin.log("ComScoreStreamingTag::   onChangeMedia ");
+				_this.log("onChangeMedia ");
 			});
 
 			embedPlayer.bindHelper( 'onPlayerStateChange' + _this.bindPostFix, function(event){
 				// This code appears to never be called?
-				alert("Hello world");
-				_this.genericPlugin.log("ComScoreStreamingTag::   onPlayerStateChange " + event);
+				_this.log("onPlayerStateChange " + event);
 			});
 
 			embedPlayer.bindHelper('onAdOpen' + this.bindPostfix, function(event, adId, networkName, type, index) {
@@ -227,15 +245,15 @@
 
 				// We need to update the player plugin state before setting up the clip.
 				_this.setPlayerPluginState(_this.PlayerPluginState().AD_PLAYING);
-				_this.genericPlugin.setClip(_this.getClipLabels(), false, _this.getMetadata(), true);
-				_this.genericPlugin.notify(_this.playerEvents.PLAY, _this.getLabels(), 0);
+				_this.callGenericPlugin("setClip", _this.getClipLabels(), false, {}, true);
+				_this.callGenericPlugin("notify", _this.playerEvents.PLAY, _this.getLabels(), 0);
 
 				_this.shouldSetClip = true;
 			});
 
 			embedPlayer.bindHelper('AdSupport_EndAdPlayback' + this.bindPostfix, function() {
 				_this.setPlayerPluginState(_this.PlayerPluginState().AD_ENDED_PLAYING);
-				_this.genericPlugin.notify(_this.playerEvents.END, _this.getLabels());
+				_this.callGenericPlugin("notify", _this.playerEvents.END, _this.getLabels());
 				_this.currentAd.id = "";
 				_this.currentAd.type = "";
 				_this.currentAd.index = 0;
@@ -248,8 +266,8 @@
 
 			embedPlayer.bindHelper('adClick' + this.bindPostfix, function(url) {
 				// When the ad is clicked its also paused
-				_this.genericPlugin.notify(_this.playerEvents.PAUSE, _this.getLabels());
-				_this.genericPlugin.notify(_this.playerEvents.AD_CLICK, _this.getLabels());
+				_this.callGenericPlugin("notify", _this.playerEvents.PAUSE, _this.getLabels());
+				_this.callGenericPlugin("notify", _this.playerEvents.AD_CLICK, _this.getLabels());
 			});
 
 			// release the player
@@ -261,8 +279,6 @@
 		},
 
 		getLabels: function(seek) {
-			this.genericPlugin.log("getLabels");
-
 			//get common labels values
 			this.genericPlugin.setLabel("ns_st_br", this.currentBitrate, true);
 			this.genericPlugin.setLabel("ns_st_ws", this.isFullScreen() ? "full" : "norm", true);
@@ -272,8 +288,6 @@
 		},
 
 		getPlaylistLabels: function() {
-			this.genericPlugin.log("getPlaylistLabels");
-
 			var labels = {};
 
 			var playlist = this.getPlayList();
@@ -303,23 +317,7 @@
 			return labels;
 		},
 
-		getMetadata: function() {
-			var customMetadata = this.embedPlayer.evaluate('{mediaProxy.entryMetadata}');
-			var entryMetadata = this.embedPlayer.evaluate("{mediaProxy.entry}");
-			return [
-				{
-					prefix: '',
-					map: customMetadata
-				},
-				{
-					prefix: 'entry',
-					map: entryMetadata
-				}
-			];
-		},
-
 		getClipLabels: function() {
-			this.genericPlugin.log("getClipLabels");
 			var labels = {};
 
 			if (this.getPlayerPluginState() == this.PlayerPluginState().AD_PLAYING) {
@@ -375,7 +373,50 @@
 				}
 				labels.ns_st_ct = this.getMediaType(true, this.isVideoContent(), this.isLiveStream());
 			}
+			var labelMapping = this.parserRawConfig('labelMapping');
+			for (var attrname in labelMapping) {
+				labels[attrname] = labelMapping[attrname];
+			}
 			return labels;
+		},
+
+		parserRawConfig: function(configName) {
+			var _this = this;
+			var rawConfig = this.embedPlayer.getRawKalturaConfig(this.moduleName, configName)
+			var result = {};
+			rawConfig.split(',').forEach(function(x){
+				var arr = x.split('=');
+				arr[1] && (result[arr[0]] = _this.evaluateString(arr[1]));
+			});
+			return result;
+		},
+
+		evaluateString: function(str) {
+			var hasToEvaluate = false;
+			var valueToEvaluate = "";
+			var result = "";
+			for (var i = 0, len = str.length; i < len; i++) {
+				var c = str.charAt(i);
+				if (c =='{') {
+					hasToEvaluate = true;
+					valueToEvaluate = c;
+				} else if (c=='}' && hasToEvaluate) {
+					valueToEvaluate = valueToEvaluate.concat(c);
+					var value = String(this.embedPlayer.evaluate(valueToEvaluate));
+					result = result.concat(value);
+					hasToEvaluate = false;
+				} else if (hasToEvaluate){
+					valueToEvaluate = valueToEvaluate.concat(c);
+				} else {
+					result = result.concat(c);
+				}
+			}
+			try {
+				result = eval(result);
+			} catch(err) {
+				// Do nothing
+			}
+			return result;
 		},
 
 		getMediaType: function(isContent, isVideo, isLive) {

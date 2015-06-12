@@ -10,16 +10,13 @@
 	<script>mw.setConfig('Kaltura.NoApiCache', true);</script>
   </head>
   <body>
-	<h1>ComscoreStreamingTag Plugin</h1>
-	<br>
-	<div>
-		<div id="ComScoreStreamingTagSettings"></div>
-		<div id="kaltura_player" style="float:left;width:400px;height:330px"></div>
-		<div style="float:left;padding-left:20px;">
-			<i>Analytics events:</i> ( only html5 )<br />
-			<textarea id="analyticsLog" rows='15' ></textarea>
-		</div>
-	</div>
+  <h1>ComscoreStreamingTag Plugin</h1>
+  <br>
+  <div id="kaltura_player" style="float:left;padding-left:10px;width:400px;height:330px;"></div>
+  <i>Analytics events:</i> ( only html5 )<br />
+  <textarea id="analyticsLog" rows='15' style="width:340px;"></textarea>
+  </div>
+
 <div style="clear:both"></div>
 	
 	<script>
@@ -37,11 +34,15 @@
 				'relativeTo': "video",
 				'trackEventMonitor': 'trackEvent',
 				'c2':"1234567",
-				'labelMapping':'test_1="test value",test_2=entry.description',
+				'labelMapping':'test_2="hello " + {mediaProxy.entry.duration} + " bye" + {video.volume}',
 				'persistentLabels':'test_0=something else'
 			}
 		}
 	})
+
+	window['trackEvent'] = function( eventObj ){
+		$( "#analyticsLog" ).append( 'comScore StreamingTag Event:' + JSON.stringify( eventObj) + "\n\n" );
+	}
 	</script>
   </body>
 </html>
