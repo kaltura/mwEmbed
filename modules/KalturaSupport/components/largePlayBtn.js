@@ -5,6 +5,7 @@
 		isDisabled: false,
 		defaultConfig: {
 			'parent': 'videoHolder',
+			'togglePause': true,
 			'order': 1
 		},
 		setup: function() {
@@ -29,10 +30,18 @@
 			
 			this.bind('onChangeMediaDone playerReady onpause onEndedDone onRemovePlayerSpinner', function(){
 				if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
+					_this.$el.removeClass("icon-pause").addClass("icon-play");
 					_this.show();
 				}
 			});
-			this.bind('playing AdSupport_StartAdPlayback onAddPlayerSpinner', function(){
+
+			this.bind('onShowControlBar', function(){
+				if( _this.getConfig("togglePause") && _this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
+					_this.$el.removeClass("icon-play").addClass("icon-pause");
+					_this.show();
+				}
+			});
+			this.bind('playing AdSupport_StartAdPlayback onAddPlayerSpinner onHideControlBar', function(){
 				_this.hide();
 			});
 			this.bind('onPlayerStateChange', function(e, newState, oldState){
@@ -69,8 +78,12 @@
 
 			event.preventDefault();
 			event.stopPropagation();
-			this.getPlayer().triggerHelper( 'goingtoplay' );
-			this.getPlayer().sendNotification('doPlay');
+			if ( this.getConfig("togglePause") && this.getPlayer().isPlaying() ){
+				this.getPlayer().sendNotification('doPause');
+			}else{
+				this.getPlayer().triggerHelper( 'goingtoplay' );
+				this.getPlayer().sendNotification('doPlay');
+			}
 		},
 		onEnable: function(){
 			this.isDisabled = false;
@@ -85,7 +98,7 @@
 		getComponent: function() {
 			var _this = this;
 			var eventName = 'click';
-			if (mw.isMobileDevice()){
+			if (mw.isMobileDevice() && !mw.isWindowsPhone()){
 				eventName = 'touchstart';
 			}
 			if( !this.$el ) {
@@ -94,13 +107,16 @@
 								'tabindex': '-1',
 								'href' : '#',
 								'title' : gM( 'mwe-embedplayer-play_clip' ),
-								'class'	: "icon-play" + this.getCssClass()
+								'class'	: "icon-play " + this.getCssClass()
 							} )
 							.hide()
 							// Add play hook:
 							.on(eventName, function(e) {
 								_this.clickButton(e);
 							} );
+				if ( !mw.isWindowsPhone() ){
+					this.$el.addClass("largePlayBtnBorder");
+				}
 			}
 			return this.$el;
 		}

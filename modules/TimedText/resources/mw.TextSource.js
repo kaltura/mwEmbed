@@ -394,8 +394,8 @@
 			} catch ( e ){
 				// srt should not be xml
 			}
-			// Remove dos newlines
-			var srt = data.replace(/\r+/g, '');
+			// Replace to UNIX-like newlines
+			var srt = data.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 
 			// Trim white space start and end
 			srt = srt.replace(/^\s+|\s+$/g, '');

@@ -12,7 +12,7 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '2.31';
+$wgMwEmbedVersion = '2.32.rc6';
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
@@ -207,10 +207,9 @@ $wgEnableIpadHTMLControls = true;
 
 $wgKalturaUseManifestUrls = true;
 
-// The user secret should be set to an integration user secret key for testing 
-// API actions that require user privileges, like granting a KS for preview / play:
-$wgKalturaUserSecret = null;
-$wgKalturaAdminSecret = null; // deprecated
+// The admin secret should be set to an integration admin secret key for testing 
+// api actions that require admin rights, like granting a ks for preview / play:
+$wgKalturaAdminSecret = null;
 
 // By default do allow custom resource includes. 
 $wgAllowCustomResourceIncludes = true;
@@ -242,12 +241,31 @@ $wgRemoteWebInspector = false;
 $wgKalturaApiFeatures = array();
 
 /*********************************************************
+ * Override Domain:
+********************************************************/
+$wgEnableKalturaOverrideDomain = true;
+
+/*********************************************************
  * Include local settings override:
 ********************************************************/
 $wgLocalSettingsFile = realpath( dirname( __FILE__ ) ) . '/../LocalSettings.php';
 
 if( is_file( $wgLocalSettingsFile ) ){
 	require_once( $wgLocalSettingsFile );
+}
+
+//Override Domain
+//===============
+//Override here all variables that are using wgServer
+if ( $wgEnableKalturaOverrideDomain && isset( $_GET['od'] ) ){
+	$wgServer = htmlspecialchars( $_GET['od'] ) . dirname( dirname( $_SERVER['SCRIPT_NAME'] ) ) .'/';
+
+	// Default Load Script path
+    $wgLoadScript = $wgServer . $wgScriptPath . 'load.php';
+    // Support legacy $wgResourceLoaderUrl url.
+    $wgResourceLoaderUrl = $wgLoadScript;
+
+    $wgMwEmbedProxyUrl =  $wgServer . $wgScriptPath . 'simplePhpXMLProxy.php';
 }
 
 //Set global configs into $wgMwEmbedModuleConfig in order to enable

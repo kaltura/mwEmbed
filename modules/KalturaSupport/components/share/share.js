@@ -172,7 +172,9 @@
 					// restore keyboard actions
 					embedPlayer.triggerHelper( 'onEnableKeyboardBinding' );
 					// re-enable player controls
-					embedPlayer.enablePlayControls();
+					if ( !embedPlayer.isInSequence() ){
+						embedPlayer.enablePlayControls();
+					}
 				}
 			});
 

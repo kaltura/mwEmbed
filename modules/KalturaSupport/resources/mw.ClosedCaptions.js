@@ -172,15 +172,17 @@
 				this.updateBelowVideoCaptionContainer();
 			}
 
-			this.bind( 'onHideControlBar onShowControlBar', function(event, layout ){
-				if ( !_this.ended && _this.getPlayer().isOverlayControls() ) {
-					_this.defaultBottom = layout.bottom;
-					// Move the text track down if present
-					_this.getPlayer().getInterface().find( '.track' )
-						.stop()
-						.animate( layout, 'fast' );
-				}
-			});
+			if ( this.getConfig('layout') == 'ontop' ) {
+				this.bind('onHideControlBar onShowControlBar', function (event, layout) {
+					if (!_this.ended && _this.getPlayer().isOverlayControls()) {
+						_this.defaultBottom = layout.bottom;
+						// Move the text track down if present
+						_this.getPlayer().getInterface().find('.track')
+							.stop()
+							.animate(layout, 'fast');
+					}
+				});
+			}
 
 			this.bind("AdSupport_StartAdPlayback", function(){
 				_this.setConfig('displayCaptions', false);
@@ -744,7 +746,9 @@
 						(  fontsize > 24 )?  emFontMap[ 24 ]+'em' : emFontMap[ 6 ];
 			}
 			if( this.getConfig( 'useGlow' ) && this.getConfig( 'glowBlur' ) && this.getConfig( 'glowColor' ) ) {
-				style[ "text-shadow" ] = '0 0 ' + this.getConfig( 'glowBlur' ) + 'px ' + mw.getHexColor( this.getConfig( 'glowColor' ) );
+				var hShadow = this.getConfig( 'hShadow' ) ? this.getConfig( 'hShadow' ) : 0;
+				var vShadow = this.getConfig( 'vShadow' ) ? this.getConfig( 'vShadow' ) : 0;
+				style[ "text-shadow" ] = hShadow + 'px ' + vShadow + 'px ' + this.getConfig( 'glowBlur' ) + 'px ' + mw.getHexColor( this.getConfig( 'glowColor' ) );
 			}
 			return style;
 		},
@@ -811,7 +815,7 @@
 						}
 					},
 					'active': ( _this.selectedSource === source && _this.getConfig( "displayCaptions" )  )
-				})
+				});
 			});
 
 			this.getActiveCaption();

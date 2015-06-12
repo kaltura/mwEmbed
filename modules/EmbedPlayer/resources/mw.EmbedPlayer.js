@@ -1856,8 +1856,10 @@
 		 * Remove the poster
 		 */
 		removePoster: function () {
-			$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
-			$(this).find('.playerPoster').remove();
+			if ( !mw.getConfig("EmbedPlayer.KeepPoster") === true ){
+				$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
+				$(this).find('.playerPoster').remove();
+			}
 		},
 		/**
 		 * Abstract method, must be set by player interface
@@ -2721,7 +2723,7 @@
 					this.seek(_this.currentTime);
 				}
 			}
-			if (!_this.isLive()) {
+			if (!_this.isLive() && _this.instanceOf != 'ImageOverlay') {
 				if (_this.isPlaying() && _this.currentTime == _this.getPlayerElementTime()) {
 					_this.bufferStart();
 				} else if (_this.buffering) {
@@ -2916,6 +2918,9 @@
 				mw.log("EmbedPlayer::getCompatibleSource: add " + source.src + ' of type:' + source.type);
 			});
 			var myMediaElement = new mw.MediaElement($media[0]);
+			if ( this.getRawKalturaConfig('mediaProxy') && this.getRawKalturaConfig('mediaProxy').preferedFlavorBR ){
+				myMediaElement.preferedFlavorBR = this.getRawKalturaConfig('mediaProxy').preferedFlavorBR * 1000;
+			}
 			var baseTimeOptions =  {
 				'supportsURLTimeEncoding': this.supportsURLTimeEncoding(),
 				'startTime' :this.startTime,
