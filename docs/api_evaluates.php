@@ -8,7 +8,7 @@
 			'example' => '../modules/AdTagUrlSubstitutions/tests/AdTagUrlSubstitutions.html'
 		),
 		'flashVersion' => array(
-			'desc' => "The version of Adobe Flash available. Returns 0,0,0 if Flash is not available.'.
+			'desc' => "The version of Adobe Flash available. Returns 0,0,0 if Flash is not available.",
 			'example' => '../modules/AdTagUrlSubstitutions/tests/AdTagUrlSubstitutions.html'
 		),
 		'sequenceProxy.timeRemaining' => array(
