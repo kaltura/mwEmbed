@@ -53,7 +53,12 @@
 			receiver.on('getCurrentTime', function( callback ){
 				callback( player.currentTime );
 			})
-			
+			receiver.on('setLoop', function(){
+				player.loop = true;
+			});
+			receiver.on('getLoop', function( callback ){
+				callback( player.loop );
+			})
 			// handle events:
 			this.bind('onplay', function(){
 				receiver.emit('play');
