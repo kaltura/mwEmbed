@@ -134,11 +134,7 @@ $wgExternalPlayersSupportedTypes = array('YouTube');
 
 //Embedded services
 //To enable service re routing for entryResult calls
-$wgEnableKalturaEmbedServicesRouting = false;
-//Set trusted domains for re route requests
-$wgKalturaAuthEmbedServicesDomains = array( 'localhost' );
-//To enable overloading proxy data on multirequest
-$wgKalturaEnableProxyData = false;
+$wgEnableKalturaEmbedServicesRouting = true;
 
 // To include signed headers with user IPs for IP restriction lookups, input a salt string for 
 // $wgKalturaRemoteAddressSalt configuration option. 
