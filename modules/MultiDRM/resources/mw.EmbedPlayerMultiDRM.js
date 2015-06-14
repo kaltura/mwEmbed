@@ -251,7 +251,7 @@
 			var licenseData = this.getLicenseData();
 			drmConfig.widevineLicenseServerURL = licenseBaseUrl + "?" + licenseData;
 			drmConfig.assetId = this.kentryid;
-			drmConfig.variantId = this.mediaElement.selectedSource.getAssetId();
+			drmConfig.variantId = this.mediaElement.selectedSource && this.mediaElement.selectedSource.getAssetId();
 			var config = {};
 
 			if (this.shouldGeneratePssh()) {
