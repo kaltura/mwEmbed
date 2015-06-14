@@ -1,5 +1,6 @@
 {
     "mw.EmbedPlayerMultiDRM": {
-        "scripts": "resources/mw.EmbedPlayerMultiDRM.js"
+        "scripts": "resources/mw.EmbedPlayerMultiDRM.js",
+        "messageFile": "MultiDRM.i18n.json"
     }
 }
