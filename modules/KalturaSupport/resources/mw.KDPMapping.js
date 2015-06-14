@@ -271,6 +271,12 @@
 				case 'isHTML5':
 					return true;
 					break;
+				case 'flashVersion':
+					return kWidget.getFlashVersion();
+					break;
+				case 'playerVersion': 
+					return window['MWEMBED_VERSION'];
+					break;
 				case 'sequenceProxy':
 					if( ! embedPlayer.sequenceProxy ){
 						return null;
@@ -316,6 +322,21 @@
 										ct = 0;*/
 									// give the current time - any start offset. 
 									return embedPlayer.currentTime;
+								break;
+								case 'height': 
+									return embedPlayer.getHeight();
+								break;
+								case 'width':
+									return embedPlayer.getWidth();
+								break;
+								case 'position':
+									try{
+										// try to get outer player position in page. 
+										var pos = $("#" + embedPlayer.id, parent.document.body).position();
+										return pos.left + ',' + pos.top;
+									}catch(e){
+										return '0,0';
+									}
 								break;
 							}
 						break;
@@ -383,7 +404,7 @@
 						break;	
 						case 'kalturaMediaFlavorArray':
 							if( ! embedPlayer.kalturaFlavors ){
-							return null;
+								return null;
 							}
 							return embedPlayer.kalturaFlavors;
 						break;

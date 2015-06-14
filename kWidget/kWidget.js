@@ -1700,7 +1700,10 @@
 		 * @param {object} Entry settings used to generate the api url request
 		 */
 		getKalturaThumbUrl: function (settings) {
-
+			//Check if external thumbnailUrl is defined
+			if (settings.flashvars && settings.flashvars.thumbnailUrl !== undefined){
+				return settings.flashvars.thumbnailUrl;
+			}
 			var sizeParam = '';
 			if (settings.width != '100%' && settings.width) {
 				sizeParam += '/width/' + parseInt(settings.width);

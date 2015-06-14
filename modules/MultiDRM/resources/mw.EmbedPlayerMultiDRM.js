@@ -556,6 +556,10 @@
 					this.log("Error:: with seek request, media never in ready state");
 					return checkVideoStateDeferred.resolve();
 				}
+				// manually trigger the loadedmetadata since stopEventPropagation was called but we must have this event triggered during seek operation (SUP-4237)
+				$(vidObj).off('loadedmetadata.seekPrePlay').one('loadedmetadata.seekPrePlay', function () {
+					_this._onloadedmetadata();
+				});
 				this.log("player can't seek - wait video element ready state");
 				this.canSeekTimeout = setTimeout(function () {
 					this.canSeekTimeout = null;
@@ -1037,8 +1041,24 @@
 					var error = {};
 					var player = _this.getPlayerElement();
 					if ( event && player && player.error ) {
-						error.code = player.error().code;
-						error.subtype = player.error().subtype;
+						var playerError = player.error();
+						if (playerError.code === 2){
+							var errorMessage = "";
+							switch(playerError.subtype){
+								case 'MANIFEST_LOAD_ERROR':
+									errorMessage = gM("DRM_MANIFEST_LOAD_ERROR");
+									break;
+								case 'SEGMENT_LOAD_ERROR':
+									errorMessage = gM("DRM_SEGMENT_LOAD_ERROR");
+									break;
+								case 'LICENSE_ACQUISITION_ERROR':
+									errorMessage = gM("DRM_LICENSE_ACQUISITION_ERROR");
+									break;
+							}
+							_this.triggerHelper('embedPlayerError', [ {errorMessage: errorMessage} ]);
+						}
+						error.code = playerError.code;
+						error.subtype = playerError.subtype;
 						_this.log( '_onerror: MediaError code: ' + error.code + ', MediaError message: ' + error.subtype);
 					}
 				}

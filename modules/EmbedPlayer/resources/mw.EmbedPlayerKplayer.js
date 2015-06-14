@@ -146,7 +146,6 @@
 						'switchingChangeStarted': 'onSwitchingChangeStarted',
 						'switchingChangeComplete': 'onSwitchingChangeComplete',
 						'flavorsListChanged': 'onFlavorsListChanged',
-						'enableGui': 'onEnableGui',
 						'liveStreamOffline': 'onLiveEntryOffline',
 						'liveStreamReady': 'onLiveStreamReady',
 						'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions',
