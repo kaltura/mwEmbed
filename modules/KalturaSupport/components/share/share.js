@@ -441,14 +441,19 @@
 				};
 				embedPlayer.doNativeAction(JSON.stringify(shareParams));
 			} else {
-				var opener = window.open(url,'_blank','width=626,height=436');
-				// close the window if this is an email
-				if (url.indexOf("mailto") === 0){
-					setTimeout(function(){
-						opener.close();
-					},2000);
-
+				if ( mw.isIphone() && url.indexOf("mailto") === 0){
+					e.preventDefault();
+					window.location = url;
+				}else{
+					var opener = window.open(url,'_blank','width=626,height=436');
+					// close the window if this is an email
+					if (url.indexOf("mailto") === 0){
+						setTimeout(function(){
+							opener.close();
+						},2000);
+					}
 				}
+				return false;
 			}
 			// send event for analytics
 			$( embedPlayer ).trigger( "socialShareEvent" );
