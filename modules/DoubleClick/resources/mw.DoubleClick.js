@@ -425,7 +425,7 @@
 			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 
 			if (isLinear) {
-				this.embedPlayer.enablePlayControls(["scrubber"]);
+				this.embedPlayer.enablePlayControls(["scrubber","share","infoScreen","related"]);
 			} else {
 				_this.embedPlayer.pause();
 			}
