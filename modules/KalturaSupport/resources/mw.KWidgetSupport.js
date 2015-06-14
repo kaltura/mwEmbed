@@ -1470,7 +1470,7 @@ mw.KWidgetSupport.prototype = {
 				}
 			}
 
-			var assetDrmData = this.getSourceDrmData(source.id, flavorDrmData);
+			var assetDrmData = this.getSourceDrmData(asset.id, flavorDrmData);
 			$.extend(source, assetDrmData);
 
 			// Add the source ( if a src was defined ):
