@@ -74,7 +74,8 @@
 		'srclang',
 		'data-custom_data',
 		'data-signature',
-		'data-contentId'
+		'data-contentId',
+		'data-flavors'
 
 	]);
 
