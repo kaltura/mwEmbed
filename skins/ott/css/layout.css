@@ -276,6 +276,9 @@ button, a{
 .mobile.player-out .largePlayBtn {
 	display: none !important;
 }
+.mobile.seeking-state .largePlayBtn {
+	display: none !important;
+}
 .scrubber {
 	position: relative;
 	height: 3px;
