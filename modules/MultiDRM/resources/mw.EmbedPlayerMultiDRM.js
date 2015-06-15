@@ -291,6 +291,10 @@
 				custom_data: this.mediaElement.selectedSource["custom_data"],
 				signature: this.mediaElement.selectedSource["signature"]
 			};
+			if (this.mediaElement.selectedSource.flavors){
+				licenseData.files = encodeURIComponent(window.btoa(this.mediaElement.selectedSource.flavors));
+			}
+
 			var licenseDataString = "";
 			if (licenseData) {
 				$.each( licenseData, function ( key, val ) {
