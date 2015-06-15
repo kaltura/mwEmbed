@@ -248,17 +248,16 @@
 			}
 
 			//TODO: error handling in case of error
-			var assetId = this.mediaElement.selectedSource.getAssetId();
-			var licenseData = this.getLicenseData(assetId);
+			var licenseData = this.getLicenseData();
 			drmConfig.widevineLicenseServerURL = licenseBaseUrl + "?" + licenseData;
 			drmConfig.assetId = this.kentryid;
-			drmConfig.variantId = assetId;
+			drmConfig.variantId = this.mediaElement.selectedSource && this.mediaElement.selectedSource.getAssetId();
 			var config = {};
 
 			if (this.shouldGeneratePssh()) {
 				config.widevineHeader = {
 					"provider": "castlabs",
-					"contentId": this.getAuthenticationToken( assetId ),
+					"contentId": this.getAuthenticationToken( ),
 					"policy": ""
 				};
 			}
@@ -287,9 +286,11 @@
 			}
 			return res;
 		},
-		getLicenseData: function(assetId){
-			var flavorCustomData = this.kalturaContextData.flavorCustomData[assetId];
-			var licenseData = flavorCustomData.license;
+		getLicenseData: function(){
+			var licenseData = {
+				custom_data: this.mediaElement.selectedSource["custom_data"],
+				signature: this.mediaElement.selectedSource["signature"]
+			};
 			var licenseDataString = "";
 			if (licenseData) {
 				$.each( licenseData, function ( key, val ) {
@@ -298,9 +299,8 @@
 			}
 			return licenseDataString;
 		},
-		getAuthenticationToken: function(assetId){
-			var flavorCustomData = this.kalturaContextData.flavorCustomData[assetId];
-			return flavorCustomData.contentId;
+		getAuthenticationToken: function(){
+			return this.mediaElement.selectedSource["contentId"];
 		},
 		/**
 		 * Get the native player embed code.

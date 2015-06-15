@@ -71,7 +71,10 @@
 		'height',
 		'assetid',
 		'bandwidth',
-		'srclang'
+		'srclang',
+		'data-custom_data',
+		'data-signature',
+		'data-contentId'
 
 	]);
 
