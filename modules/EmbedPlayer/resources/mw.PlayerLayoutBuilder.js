@@ -1233,6 +1233,12 @@ mw.PlayerLayoutBuilder.prototype = {
 		if ( embedPlayer.getInterface().find('.overlay-win').length != 0 ) {
 			return;
 		}
+
+		// remove error message from kalturaIframeClass.php
+		try{
+			embedPlayer.getInterface().parent().find( '#error').remove();
+		}catch(e){}
+
 		if ( typeof alertObj.callbackFunction == 'string' ) {
 			if ( alertObj.isExternal ) {
 				try {
