@@ -136,7 +136,7 @@ class EntryResult {
 			$filter = new KalturaBaseEntryFilter();
 			if( ! $this->request->getEntryId() && $this->request->getReferenceId() ) {
 				$filter->referenceIdEqual = $this->request->getReferenceId();
-			} else if( $supportsEntryRedirect && $this->request->getFlashVars('disableEntryRedirect') !== true ){
+			} else if( $supportsEntryRedirect && $this->uiconf->getPlayerConfig(false, 'disableEntryRedirect') !== true ){
 				$filter->redirectFromEntryId = $this->request->getEntryId();
 			} else {
 				$filter->idEqual = $this->request->getEntryId();
