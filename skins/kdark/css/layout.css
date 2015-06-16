@@ -458,12 +458,10 @@ body {
 	margin-top: -147px;
 	width: 40px;
 	display: none;
-	background-color: rgb(27,27,27);
+	background-color: rgba(27,27,27,.9);
 	border-radius: 3px;
 	height: 97px;
 	position: absolute;
-	opacity: 0.902;
-	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
 }
 .volumeControl.noTransition .ui-slider-vertical{
 	-moz-transition: none ;
@@ -480,7 +478,7 @@ body {
 	margin-left: 17px;
 	top: 14px;
 	width: 6px;
-	background-color: #C1C1C1;
+	background-color: #7c7c7c;
 }
 .volumeControl .sliderContainer .arrow{
 	margin-top: 97px;
