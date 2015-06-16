@@ -1058,6 +1058,11 @@
 					}
 				});
 
+			var mediaBoxes = this.getMediaListDomElements();
+			mediaBoxes.on('mousedown mouseup mouseout', function(){
+					this.blur();
+				});
+
 			this.getComponent().find(".slideBoxToggle")
 				.off("click").on("click", function(e){
 					e.stopPropagation();
