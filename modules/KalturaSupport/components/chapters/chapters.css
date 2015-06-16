@@ -119,10 +119,10 @@
 }
 .mediaBox:focus > .boxOutline  {
     -webkit-transition-delay: 0ms;
-    -moz-box-shadow: inset 0 0 10px #000000;
-    -webkit-box-shadow: inset 0 0 10px #000000;
-    box-shadow: inset 0 0 30px #00d6ff;
-    border: 1px solid #00d6ff;
+    -moz-box-shadow: inset 0 0 10px #FFFFFF;
+    -webkit-box-shadow: inset 0 0 10px #FFFFFF;
+    box-shadow: inset 0 0 30px #FFFFFF;
+    border: 1px solid #FFFFFF;
     box-sizing: border-box;
 }
 
