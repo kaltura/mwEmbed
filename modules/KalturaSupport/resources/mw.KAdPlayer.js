@@ -501,6 +501,23 @@ mw.KAdPlayer.prototype = {
 		this.disablePlayControls();
 		this.clickedBumper = false;
 	},
+	openClickthrough: function(adSlot,clickthrough){
+		this.embedPlayer.sendNotification( 'adClick', {url: clickthrough} );
+		if ( adSlot.videoClickTracking && adSlot.videoClickTracking.length > 0  ) {
+			mw.log("KAdPlayer:: sendBeacon to: " + adSlot.videoClickTracking[0] );
+			for (var i=0; i < adSlot.videoClickTracking.length ; i++){
+				mw.sendBeaconUrl( adSlot.videoClickTracking [i]);
+			}
+			//handle wrapper clickTracking
+			if(adSlot.wrapperData ){
+				adSlot.wrapperData.contents().find('ClickTracking').each(function(a,b){
+					mw.sendBeaconUrl($(b).contents().text());
+					mw.log("KAdPlayer:: sendBeacon to (wrapper): " + $(b).contents().text() );
+				})
+			}
+		}
+		window.open( clickthrough );
+	},
 	addClickthroughSupport:function( adConf, adSlot ){
 		var _this = this;
 		var embedPlayer = _this.embedPlayer;
@@ -523,24 +540,7 @@ mw.KAdPlayer.prototype = {
 							_this.resumeAd();
 						} else {
 							_this.pauseAd();
-							//expose the URL to the
-							embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
-							if ( adSlot.videoClickTracking && adSlot.videoClickTracking.length > 0  ) {
-								mw.log("KAdPlayer:: sendBeacon to: " + adSlot.videoClickTracking[0] );
-								for (var i=0; i < adSlot.videoClickTracking.length ; i++){
-									mw.sendBeaconUrl( adSlot.videoClickTracking [i]);
-								}
-								//handle wrapper clickTracking
-								if(adSlot.wrapperData ){
-
-									adSlot.wrapperData.contents().find('ClickTracking').each(function(a,b){
-										mw.sendBeaconUrl($(b).contents().text());
-										mw.log("KAdPlayer:: sendBeacon to (wrapper): " + $(b).contents().text() );
-									})
-								}
-
-							}
-							window.open( adConf.clickThrough );
+							_this.openClickthrough(adSlot,adConf.clickThrough);
 						}
 					}
 
@@ -1509,6 +1509,12 @@ mw.KAdPlayer.prototype = {
 				VPAIDObj.subscribe( function ( message ) {
 					_this.sendVASTBeacon( adConf.trackingEvents, 'resume', true );
 				}, 'AdPlaying' );
+
+				VPAIDObj.subscribe( function ( clickThroughURL ) {
+					if (isJs){
+						_this.openClickthrough(adSlot, clickThroughURL);
+					}
+				}, 'AdClickThru' );
 
 				if ( isJs ) {
 					//flash vpaid will call initAd itself
