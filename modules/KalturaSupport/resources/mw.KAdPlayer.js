@@ -1519,9 +1519,9 @@ mw.KAdPlayer.prototype = {
 				if ( isJs ) {
 					//flash vpaid will call initAd itself
 					VPAIDObj.initAd( _this.embedPlayer.getWidth(), _this.embedPlayer.getHeight(), 'normal', 512, creativeData, environmentVars );
+					var bindPostFix = ".jsvpaid";
 					if ( adSlot.type == "overlay" ){
 						// add play / pause binding to trigger VPAID pauseAd and resumeAd
-						var bindPostFix = ".jsvpaid";
 						_this.embedPlayer.unbindHelper('onPlayerStateChange' + bindPostFix).bindHelper('onPlayerStateChange' + bindPostFix, function(e, newState, oldState){
 							if( newState == 'pause' && VPAIDObj.pauseAd && typeof VPAIDObj.pauseAd == "function" ){
 								VPAIDObj.pauseAd();
@@ -1538,6 +1538,12 @@ mw.KAdPlayer.prototype = {
 						_this.embedPlayer.unbindHelper('onCloseFullScreen' + bindPostFix).bindHelper('onCloseFullScreen' + bindPostFix, function(){
 							if( VPAIDObj.resizeAd && typeof VPAIDObj.resizeAd == "function" ){
 								setTimeout(function(){VPAIDObj.resizeAd(_this.embedPlayer.width,_this.embedPlayer.height,"normal")},1000);
+							}
+						});
+					}else{
+						_this.embedPlayer.unbindHelper('onAdSkip' + bindPostFix).bindHelper('onAdSkip' + bindPostFix, function(){
+							if( VPAIDObj.stopAd ){
+								VPAIDObj.stopAd();
 							}
 						});
 					}
