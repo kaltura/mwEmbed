@@ -171,7 +171,7 @@ class RequestHelper {
 
 	function isEmbedServicesEnabled(){
 	    global $wgEnableKalturaEmbedServicesRouting, $wgKalturaAuthEmbedServicesDomains;
-	    if ($wgEnableKalturaEmbedServicesRouting && in_array($_SERVER['HTTP_HOST'], $wgKalturaAuthEmbedServicesDomains )){
+	    if ($wgEnableKalturaEmbedServicesRouting){
 	        return true;
 	    } else {
 	        return false;
