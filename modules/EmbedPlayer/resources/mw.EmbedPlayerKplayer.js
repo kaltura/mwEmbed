@@ -367,7 +367,7 @@
 		onPlay: function () {
 			if ( mw.isChrome() && !this.flashActivationRequired && mw.getConfig("EmbedPlayer.EnableFlashActivation") !== false ){
 				this.flashActivationRequired = true;
-				$(".mwEmbedPlayer").hide();
+				$(this).hide();
 			}
 			if (this._propagateEvents) {
 				$(this).trigger("playing");
@@ -541,7 +541,7 @@
 		onUpdatePlayhead: function (playheadValue) {
 			if ( this.flashActivationRequired ){
 				this.flashActivationRequired = false;
-				$(".mwEmbedPlayer").show();
+				$(this).show();
 			}
 			if (this.seeking) {
 				this.seeking = false;
