@@ -1040,11 +1040,12 @@
 			return sourceIndex;
 		},
 		switchSrc: function (source) {
-			var sourceIndex = -1; //autoDynamicStreamSwitch = true for adaptive bitrate (Auto)
 			if( source !== -1 ){
 				this.getPlayerElement().mediaPlayer.setAutoSwitchQuality(false);
-				sourceIndex = this.getSourceIndex(source);
-				this.getPlayerElement().mediaPlayer.setQualityFor("video",sourceIndex);
+				var sourceIndex = this.getSourceIndex(source);
+				if (sourceIndex) {
+					this.getPlayerElement().mediaPlayer.setQualityFor( "video", sourceIndex );
+				}
 			} else {
 				this.getPlayerElement().mediaPlayer.setAutoSwitchQuality(true);
 			}
