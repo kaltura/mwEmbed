@@ -45,7 +45,7 @@
 				callback( player.volume );
 			})
 			receiver.on('getDuration', function( callback ){
-				callback( player.duration );
+				callback( player.getDuration() );
 			})
 			receiver.on('setCurrentTime', function(value){
 				player.seek( value );
@@ -77,7 +77,7 @@
 					'duration': player.duration
 				});
 			});
-			this.bind('ended', function(){
+			this.bind('onEndedDone', function(){
 				receiver.emit('ended');
 			});
 			this.bind('seeked', function(){
