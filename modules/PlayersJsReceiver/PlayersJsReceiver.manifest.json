@@ -1,0 +1,13 @@
+{
+    "playersJsReceiver": {
+        "label": "Players.js Receiver",
+        "description": "Enabels syndication of the kaltura player to embed.ly service. Embed.ly is used in many web platforms such as salesforce, linkedin, yammer and others. Learn more about <a href=\"http://embed.ly/\">embed.ly</a>",
+        "attributes": {
+            "plugin": {
+                "doc": "If the receiver should be activated.",
+                "label": "Enable reciver",
+                "type": "boolean"
+            }
+        }
+    }
+}
