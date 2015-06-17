@@ -148,7 +148,7 @@
 			// Unbind any old bindings:
 			embedPlayer.unbindHelper( _this.bindPostfix );
 
-			embedPlayer.bindHelper( 'SourceChange', function(){
+			embedPlayer.bindHelper( 'SourceChange' + _this.bindPostfix, function(){
 				var selectedSrc = _this.embedPlayer.mediaElement.selectedSource;
 				_this.currentBitrate = selectedSrc.getBitrate();
 			});
@@ -161,7 +161,7 @@
 				_this.log("playerUpdatePlayhead ");
 			});
 
-			embedPlayer.bindHelper('onplay' + this.bindPostfix, function() {
+			embedPlayer.bindHelper('onplay' + _this.bindPostfix, function() {
 				if (_this.getPlayerPluginState() != _this.PlayerPluginState().PLAYING
 					&& _this.getPlayerPluginState()!= _this.PlayerPluginState().AD_PLAYING) {
 					// Clip labels only need to be set once per loaded media asset (ad or content)
@@ -176,7 +176,7 @@
 				}
 			});
 
-			embedPlayer.bindHelper('onpause' + this.bindPostfix, function(event) {
+			embedPlayer.bindHelper('onpause' + _this.bindPostfix, function(event) {
 				if (_this.getPlayerPluginState() == _this.PlayerPluginState().PLAYING) {
 					if (_this.getDuration() == _this.getCurrentPosition()) {
 						_this.callStreamSensePlugin("notify", _this.playerEvents.END, _this.getLabels());
@@ -187,26 +187,26 @@
 				}
 			});
 
-			embedPlayer.bindHelper('doStop' + this.bindPostfix, function(event) {
+			embedPlayer.bindHelper('doStop' + _this.bindPostfix, function(event) {
 				_this.setPlayerPluginState(_this.PlayerPluginState().ENDED_PLAYING);
 				_this.callStreamSensePlugin("notify", _this.playerEvents.END, _this.getLabels());
 			});
 
-			embedPlayer.bindHelper('seeked.started' + this.bindPostfix, function(event) {
+			embedPlayer.bindHelper('seeked.started' + _this.bindPostfix, function(event) {
 				if (_this.getPlayerPluginState() != _this.PlayerPluginState().SEEKING) {
 					_this.setPlayerPluginState(_this.PlayerPluginState().SEEKING);
 					_this.callStreamSensePlugin("notify", _this.playerEvents.PAUSE, _this.getLabels(true), _this.getCurrentPosition());
 				}
 			});
 
-			embedPlayer.bindHelper('onOpenFullScreen' + this.bindPostfix, function() {
+			embedPlayer.bindHelper('onOpenFullScreen' + _this.bindPostfix, function() {
 				_this.inFullScreen = true;
-				this.streamSenseInstance.setLabel("ns_st_ws", this.isFullScreen() ? "full" : "norm", true);
+				this.streamSenseInstance.setLabel("ns_st_ws", _this.isFullScreen() ? "full" : "norm", true);
 			});
 
-			embedPlayer.bindHelper('onCloseFullScreen' + this.bindPostfix, function() {
+			embedPlayer.bindHelper('onCloseFullScreen' + _this.bindPostfix, function() {
 				_this.inFullScreen = false;
-				this.streamSenseInstance.setLabel("ns_st_ws", this.isFullScreen() ? "full" : "norm", true);
+				this.streamSenseInstance.setLabel("ns_st_ws", _this.isFullScreen() ? "full" : "norm", true);
 			});
 
 			embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostFix, function(){
@@ -218,7 +218,7 @@
 				_this.log("onPlayerStateChange " + event);
 			});
 
-			embedPlayer.bindHelper('onAdOpen' + this.bindPostfix, function(event, adId, networkName, type, index) {
+			embedPlayer.bindHelper('onAdOpen' + _this.bindPostfix, function(event, adId, networkName, type, index) {
 				_this.currentAd.id = adId;
 				_this.currentAd.type = type;
 				_this.currentAd.index = index;
@@ -236,7 +236,7 @@
 				_this.shouldSetClip = true;
 			});
 
-			embedPlayer.bindHelper('AdSupport_EndAdPlayback' + this.bindPostfix, function() {
+			embedPlayer.bindHelper('AdSupport_EndAdPlayback' + _this.bindPostfix, function() {
 				_this.setPlayerPluginState(_this.PlayerPluginState().AD_ENDED_PLAYING);
 				_this.callStreamSensePlugin("notify", _this.playerEvents.END, _this.getLabels());
 				_this.currentAd.id = "";
@@ -245,11 +245,11 @@
 				_this.currentAd.duration = 0;
 			});
 
-			embedPlayer.bindHelper('AdSupport_AdUpdateDuration' + this.bindPostfix, function(event, duration) {
+			embedPlayer.bindHelper('AdSupport_AdUpdateDuration' + _this.bindPostfix, function(event, duration) {
 				_this.currentAd.duration = duration * 1000;
 			});
 
-			embedPlayer.bindHelper('adClick' + this.bindPostfix, function(url) {
+			embedPlayer.bindHelper('adClick' + _this.bindPostfix, function(url) {
 				// When the ad is clicked its also paused
 				_this.callStreamSensePlugin("notify", _this.playerEvents.PAUSE, _this.getLabels());
 				_this.callStreamSensePlugin("notify", _this.playerEvents.AD_CLICK, _this.getLabels());
