@@ -155,7 +155,7 @@
 				}else{
 					setTimeout(function(){
 						_this.bind("seeked", function(){
-							_this.updatePlaybackRate( newSpeed );
+							_this.updatePlaybackRate( _this.currentSpeed );
 						});
 						_this.getPlayer().seek( currentPlayTime ); // issue a seek if given new seek time
 					}, 0);
