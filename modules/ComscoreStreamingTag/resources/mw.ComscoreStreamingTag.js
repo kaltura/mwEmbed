@@ -146,7 +146,7 @@
 			var embedPlayer = this.embedPlayer;
 
 			// Unbind any old bindings:
-			_this.embedPlayer.unbindHelper( _this.bindPostfix );
+			embedPlayer.unbindHelper( _this.bindPostfix );
 
 			embedPlayer.bindHelper( 'SourceChange', function(){
 				var selectedSrc = _this.embedPlayer.mediaElement.selectedSource;
