@@ -292,6 +292,11 @@ mw.KApi.prototype = {
 			'pager:pageSize' : 1
 		});
 
+		// check for metadataProfileId flashvar
+		if( typeof kProperties.flashvars['metadataProfileId'] != 'undefined' ){
+			requestObject[requestObject.length-1][ 'metadataProfileIdEqual'] = kProperties.flashvars['metadataProfileId'];
+		}
+
 		if( kProperties.flashvars.getCuePointsData !== false ){
 			requestObject.push({
 				'service' : 'cuepoint_cuepoint',
