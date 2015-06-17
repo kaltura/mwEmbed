@@ -73,10 +73,12 @@
 				'scripts' => 'resources/mw.PluginManager.js'
 			),
 
-			"mw.EmbedPlayerSilverlight"	=> array( 'scripts'=> "resources/mw.EmbedPlayerSilverlight.js",
-			'dependencies' => array(
-				"mw.PlayerElementSilverlight"
-			) ),
+			"mw.EmbedPlayerSilverlight" => array(
+				'scripts'=> "resources/mw.EmbedPlayerSilverlight.js",
+				'dependencies' => array(
+					"mw.PlayerElementSilverlight"
+				)
+			),
 			"mw.EmbedPlayerKplayer"	=> array( 'scripts'=> "resources/mw.EmbedPlayerKplayer.js" ),
 			"mw.EmbedPlayerGeneric"	=> array( 'scripts'=> "resources/mw.EmbedPlayerGeneric.js" ),
 			"mw.EmbedPlayerJava" => array( 'scripts'=> "resources/mw.EmbedPlayerJava.js"),
