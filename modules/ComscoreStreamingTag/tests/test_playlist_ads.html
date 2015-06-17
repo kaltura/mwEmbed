@@ -13,7 +13,7 @@
 <br>
 <div id="myVideoTarget" style="width:650px;height:330px;"></div>
 <i>Analytics events:</i> ( only html5 )<br />
-<textarea id="analyticsLog" rows='15' style="width:340px;"></textarea>
+<textarea id="analyticsLog" rows='15' style="width:450px;"></textarea>
 </div>
 
 <script>
@@ -47,7 +47,7 @@
 				'trackCuePoints': false,
 				'debugMode': false
 			},
-			'ComScoreStreamingTag':{
+			'comScoreStreamingTag':{
 				'debug': true,
 				'plugin': true,
 				'asyncInit': 'true',
@@ -55,7 +55,7 @@
 				'relativeTo': "video",
 				'trackEventMonitor': 'trackEvent',
 				'c2':"1234567",
-				'labelMapping':'test_1="test value",test_2=entry.description',
+				'labelMapping':'test_1="test value",test_2={mediaProxy.entry.description}',
 				'persistentLabels':'test_0=something else',
 				'pageView':'true'
 			}
@@ -63,7 +63,7 @@
 	});
 
 	window['trackEvent'] = function( eventObj ){
-		$( "#analyticsLog" ).append( 'comScore StreamingTag Event:' + JSON.stringify( eventObj) + "\n\n" );
+		$( "#analyticsLog" ).append( 'comScore Event:' + JSON.stringify( eventObj) + "\n\n" );
 	}
 </script>
 

@@ -4,7 +4,7 @@
  */
 
 return array(
-	'ComScoreStreamingTag' => array(
+	'comScoreStreamingTag' => array(
 		'description' => "Supports sending Streaming tag player analytics events to comScore.",
 		'label' => "comScoreStreamingTag",
 		'attributes'=> array(
@@ -15,13 +15,13 @@ return array(
 			),
 
 			'persistentLabels' => array(
-				'doc' => "Advanced configuration setting! Used to specify 'persistent labels' which are added to all measurements. Expects a comma-separated list of 'name=value' assignments. Please do not use this setting unless you are explicitly instructed to do so by your comScore client account representative.",
+				'doc' => "Advanced configuration setting! Used to specify 'persistent labels' which are added to all measurements. Expects a comma-separated list of 'name=value' assignments. Please do not use this setting unless you are explicitly instructed to do so by your comScore client account representative. Evaluations are supported",
 				'label' => "Persistent labels",
 				'type' => 'String',
 			),
 
 			'labelMapping' => array(
-				'doc' => "Used to map media metadata values to specific labels. The mapping is applied to the collected data whenever the player loads new media. Expects a comma-separated list of 'label=mapped-source' assignments. The 'mapped-source' can be a dynamic value - i.e., pointing to media metadata fields - or a static value (needs to be enclosed in quote characters). Please contact your comScore client account representative for more instructions on proper use of this configuration setting.",
+				'doc' => "Used to map media metadata values to specific labels. The mapping is applied to the collected data whenever the player loads new media. Expects a comma-separated list of 'label=mapped-source' assignments. The 'mapped-source' can be a dynamic value - i.e., pointing to media metadata fields - or a static value (needs to be enclosed in quote characters). Please contact your comScore client account representative for more instructions on proper use of this configuration setting. Evaluations are supported",
 				'label' => 'Label mapping',
 				'type' => 'String',
 			),

@@ -14,7 +14,7 @@
   <br>
   <div id="kaltura_player" style="float:left;padding-left:10px;width:400px;height:330px;"></div>
   <i>Analytics events:</i> ( only html5 )<br />
-  <textarea id="analyticsLog" rows='15' style="width:340px;"></textarea>
+  <textarea id="analyticsLog" rows='15' style="width:450px;"></textarea>
   </div>
 
 <div style="clear:both"></div>
@@ -26,7 +26,7 @@
 		'uiconf_id' : '12905712',
 		'entry_id' : '0_uka1msg4',
 		'flashvars': {
-			'ComScoreStreamingTag':{
+			'comScoreStreamingTag':{
 				'plugin': true,
 				'debug': 'true',
 				'asyncInit': 'true',
@@ -41,7 +41,7 @@
 	})
 
 	window['trackEvent'] = function( eventObj ){
-		$( "#analyticsLog" ).append( 'comScore StreamingTag Event:' + JSON.stringify( eventObj) + "\n\n" );
+		$( "#analyticsLog" ).append( 'comScore Event:' + JSON.stringify( eventObj) + "\n\n" );
 	}
 	</script>
   </body>

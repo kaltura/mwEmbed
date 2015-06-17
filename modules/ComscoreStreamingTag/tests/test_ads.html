@@ -11,7 +11,7 @@
 <br>
 <div id="myVideoTarget" style="float:left;padding-left:10px;width:400px;height:330px;"></div>
 	<i>Analytics events:</i> ( only html5 )<br />
-	<textarea id="analyticsLog" rows='15' style="width:340px;"></textarea>
+	<textarea id="analyticsLog" rows='15' style="width:450px;"></textarea>
 </div>
 
 <div style="clear:both"></div>
@@ -33,7 +33,7 @@
 				'numPreroll':"1",
 				'prerollInterval':"1",
 				'prerollStartWith':"1",
-				'prerollUrl':"http://localhost:8888/modules/AdSupport/tests/liverail.xml?random={utility.random}&timestamp={utility.timestamp}&referrer_url={utility.referrer_url}&referrer_host={utility.referrer_host}",
+				'prerollUrl':"/modules/AdSupport/tests/liverail.xml?random={utility.random}&timestamp={utility.timestamp}&referrer_url={utility.referrer_url}&referrer_host={utility.referrer_host}",
 				'preSequence':"1",
 				'postSequence':"1",
 				'timeout':"4"
@@ -43,7 +43,7 @@
 				'text': 'video will start in {sequenceProxy.timeRemaining}'
 			},
 			'adsOnReplay':true,
-			'ComScoreStreamingTag':{
+			'comScoreStreamingTag':{
 				'debug': true,
 				'plugin': true,
 				'asyncInit': 'true',
@@ -51,14 +51,14 @@
 				'relativeTo': "video",
 				'trackEventMonitor': 'trackEvent',
 				'c2':"1234567",
-				'labelMapping':'test_1="test value",test_2=entry.description',
+				'labelMapping':'test_1="test value",test_2={mediaProxy.entry.description}',
 				'persistentLabels':'test_0=something else'
 			}
 		}
 	})
 
 	window['trackEvent'] = function( eventObj ){
-		$( "#analyticsLog" ).append( 'comScore StreamingTag Event:' + JSON.stringify( eventObj) + "\n\n" );
+		$( "#analyticsLog" ).append( 'comScore Event:' + JSON.stringify( eventObj) + "\n\n" );
 	}
 </script>
 <br>

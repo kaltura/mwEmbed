@@ -6,6 +6,6 @@ return array(
          "mw.EmbedPlayer",
          'mw.ajaxProxy'
       ),
-      'kalturaPluginName' => 'ComScoreStreamingTag'
+      'kalturaPluginName' => 'comScoreStreamingTag'
    ),
 );

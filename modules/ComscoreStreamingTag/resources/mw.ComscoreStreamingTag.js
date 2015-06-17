@@ -16,7 +16,7 @@
 		moduleName: 'ComScoreStreamingTag',
 		unknownValue: 'unknown',
 
-		genericPlugin: null, // Placeholder reference for comScore Generic plugin
+		streamSenseInstance: null, // Placeholder reference for comScore Generic plugin
 
 		clipNumberMap: {},
 	    clipNumberCounter: 0,
@@ -30,6 +30,8 @@
 		currentAd: {},
 		currentBitrate: 0,
 		shouldSetClip: true,
+		// Mapping for the module settings and the StreamSense plugin
+		configOptions: {c2:"c2", pageView:"pageview", logUrl:"logurl", persistentLabels:"persistentlabels", debug:"debug", include:"include", includePrefixes:"include_prefixes", exclude:"exclude", excludePrefixes:"exclude_prefixes"},
 
 		PlayerPluginState: function () {
 			var stringMap = [ "initializing", "idle", "new_clip_loaded", "playing", "paused", "ended_playing", "buffering", "seeking", "scrubbing", "ad_playing", "ad_paused", "ad_ended_playing", "destroyed"];
@@ -55,7 +57,6 @@
 
 		init: function( embedPlayer, callback ){
 			this.embedPlayer = embedPlayer;
-			this.setupConfig();
 			this.currentPlayerPluginState = this.PlayerPluginState().INITIALIZING;
 			var _this = this;
 			var _callback = callback;
@@ -71,33 +72,17 @@
 			if (_this.isSecure())
 				comScoreSettings.secure = true;
 
-			// Settings displayed in the interface
-			if (_this.config.c2)
-				comScoreSettings.c2 = _this.config.c2;
-			//if (_this.config.labelMapping)
-			//comScoreSettings.labelmapping = [];
-			if (_this.config.pageView)
-				comScoreSettings.pageview = _this.config.pageView;
-			if (_this.config.logUrl)
-				comScoreSettings.logurl = _this.config.logUrl;
-			if (_this.config.persistentLabels)
-				comScoreSettings.persistentlabels = _this.config.persistentLabels;
-
-			// Not displayed in the interface
-			if (_this.config.debug)
-				comScoreSettings.debug = _this.config.debug;
-			if (_this.config.include)
-				comScoreSettings.include = _this.config.include;
-			if (_this.config.includePrefixes)
-				comScoreSettings.include_prefixes = _this.config.includePrefixes;
-			if (_this.config.exclude)
-				comScoreSettings.exclude = _this.config.exclude;
-			if (_this.config.excludePrefixes)
-				comScoreSettings.exclude_prefixes = _this.config.excludePrefixes;
+			// The configuration naming used in Kaltura are different from the settings in the StreamSense plugin
+			for (var key in _this.configOptions) {
+				if (this.getConfig(key)) {
+					comScoreSettings[_this.configOptions[key]] = this.getConfig(key)
+				}
+			}
 
 			var standalonePluginUrl = this.isSecure() ? this.genericPluginUrlSecure : this.genericPluginUrl;
-			$.getScript(standalonePluginUrl, function(){
-				_this.genericPlugin = new ns_.StreamSense.Plugin(comScoreSettings, _this.reportingPluginName, _this.pluginVersion, _this.playerVersion, {
+
+			kWidget.appendScriptUrl(standalonePluginUrl, function(){
+				_this.streamSenseInstance = new ns_.StreamSense.Plugin(comScoreSettings, _this.reportingPluginName, _this.pluginVersion, _this.playerVersion, {
 					init: function () {
 						_this.playerEvents = ns_.StreamSense.PlayerEvents;
 					},
@@ -114,12 +99,12 @@
 				_this.addPlayerBindings( _callback );
 				// We only need to create the StreamingTag Playlist here because the player re-initialises the whole
 				// plugin each time it loads a(nother) content media assets.
-				_this.callGenericPlugin("setPlaylist", _this.getPlaylistLabels(), true);
-			});
+				_this.callStreamSensePlugin("setPlaylist", _this.getPlaylistLabels(), true);
+			}, document);
 		},
 
 		log: function(message) {
-			//this.genericPlugin.log("ComScoreStreamingTag::   " + message);
+			//this.streamSenseInstance.log("ComScoreStreamingTag::   " + message);
 			mw.log("ComScoreStreamingTag::   " + message);
 		},
 
@@ -137,23 +122,23 @@
 			return this.currentPlayerPluginState;
 		},
 
-		/* setupConfig: returns plugin attributes from uiConf */
-		setupConfig: function() {
-			this.config = this.embedPlayer.getKalturaConfig( this.moduleName );
+		getConfig: function (attr) {
+			return this.embedPlayer.getKalturaConfig(this.moduleName, attr);
 		},
 
-		callGenericPlugin:function(){
+		callStreamSensePlugin:function(){
 			var args = $.makeArray( arguments );
 			var action = args[0];
-			if( parent && parent[ this.config['trackEventMonitor'] ] ){
+			if( parent && parent[ this.getConfig('trackEventMonitor') ] ){
 				// Translate the event type to make it more human readable
+				var parsedArgs = args.slice();
 				if (action == "notify") {
-					args[1] = ns_.StreamSense.PlayerEvents.toString(args[1])
+					parsedArgs[1] = ns_.StreamSense.PlayerEvents.toString(parsedArgs[1])
 				}
-				parent[ this.config['trackEventMonitor'] ]( args );
+				parent[ this.getConfig('trackEventMonitor') ]( parsedArgs );
 			}
 			args.splice(0, 1);
-			this.genericPlugin[action].apply(this, args);
+			this.streamSenseInstance[action].apply(this, args);
 		},
 
 		addPlayerBindings: function( callback ) {
@@ -161,7 +146,7 @@
 			var embedPlayer = this.embedPlayer;
 
 			// Unbind any old bindings:
-			embedPlayer.unbindHelper( _this.bindPostfix );
+			_this.embedPlayer.unbindHelper( _this.bindPostfix );
 
 			embedPlayer.bindHelper( 'SourceChange', function(){
 				var selectedSrc = _this.embedPlayer.mediaElement.selectedSource;
@@ -182,11 +167,11 @@
 					// Clip labels only need to be set once per loaded media asset (ad or content)
 					// and BEFORE the Streaming Tag is notified that the media is playing.
 					if (_this.shouldSetClip) {
-						_this.callGenericPlugin("setClip", _this.getClipLabels(), false, [], true);
+						_this.callStreamSensePlugin("setClip", _this.getClipLabels(), false, [], true);
 						_this.shouldSetClip = false;
 					}
 					var seek = _this.getPlayerPluginState() == _this.PlayerPluginState().SEEKING;
-					_this.callGenericPlugin("notify", _this.playerEvents.PLAY, _this.getLabels(seek), _this.getCurrentPosition());
+					_this.callStreamSensePlugin("notify", _this.playerEvents.PLAY, _this.getLabels(seek), _this.getCurrentPosition());
 					_this.setPlayerPluginState(_this.PlayerPluginState().PLAYING);
 				}
 			});
@@ -194,34 +179,34 @@
 			embedPlayer.bindHelper('onpause' + this.bindPostfix, function(event) {
 				if (_this.getPlayerPluginState() == _this.PlayerPluginState().PLAYING) {
 					if (_this.getDuration() == _this.getCurrentPosition()) {
-						_this.callGenericPlugin("notify", _this.playerEvents.END, _this.getLabels());
+						_this.callStreamSensePlugin("notify", _this.playerEvents.END, _this.getLabels());
 					}else {
 						_this.setPlayerPluginState(_this.PlayerPluginState().PAUSED);
-						_this.callGenericPlugin("notify", _this.playerEvents.PAUSE, _this.getLabels(), _this.getCurrentPosition());
+						_this.callStreamSensePlugin("notify", _this.playerEvents.PAUSE, _this.getLabels(), _this.getCurrentPosition());
 					}
 				}
 			});
 
 			embedPlayer.bindHelper('doStop' + this.bindPostfix, function(event) {
 				_this.setPlayerPluginState(_this.PlayerPluginState().ENDED_PLAYING);
-				_this.callGenericPlugin("notify", _this.playerEvents.END, _this.getLabels());
+				_this.callStreamSensePlugin("notify", _this.playerEvents.END, _this.getLabels());
 			});
 
 			embedPlayer.bindHelper('seeked.started' + this.bindPostfix, function(event) {
 				if (_this.getPlayerPluginState() != _this.PlayerPluginState().SEEKING) {
 					_this.setPlayerPluginState(_this.PlayerPluginState().SEEKING);
-					_this.callGenericPlugin("notify", _this.playerEvents.PAUSE, _this.getLabels(true), _this.getCurrentPosition());
+					_this.callStreamSensePlugin("notify", _this.playerEvents.PAUSE, _this.getLabels(true), _this.getCurrentPosition());
 				}
 			});
 
 			embedPlayer.bindHelper('onOpenFullScreen' + this.bindPostfix, function() {
 				_this.inFullScreen = true;
-				this.genericPlugin.setLabel("ns_st_ws", this.isFullScreen() ? "full" : "norm", true);
+				this.streamSenseInstance.setLabel("ns_st_ws", this.isFullScreen() ? "full" : "norm", true);
 			});
 
 			embedPlayer.bindHelper('onCloseFullScreen' + this.bindPostfix, function() {
 				_this.inFullScreen = false;
-				this.genericPlugin.setLabel("ns_st_ws", this.isFullScreen() ? "full" : "norm", true);
+				this.streamSenseInstance.setLabel("ns_st_ws", this.isFullScreen() ? "full" : "norm", true);
 			});
 
 			embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostFix, function(){
@@ -245,15 +230,15 @@
 
 				// We need to update the player plugin state before setting up the clip.
 				_this.setPlayerPluginState(_this.PlayerPluginState().AD_PLAYING);
-				_this.callGenericPlugin("setClip", _this.getClipLabels(), false, {}, true);
-				_this.callGenericPlugin("notify", _this.playerEvents.PLAY, _this.getLabels(), 0);
+				_this.callStreamSensePlugin("setClip", _this.getClipLabels(), false, {}, true);
+				_this.callStreamSensePlugin("notify", _this.playerEvents.PLAY, _this.getLabels(), 0);
 
 				_this.shouldSetClip = true;
 			});
 
 			embedPlayer.bindHelper('AdSupport_EndAdPlayback' + this.bindPostfix, function() {
 				_this.setPlayerPluginState(_this.PlayerPluginState().AD_ENDED_PLAYING);
-				_this.callGenericPlugin("notify", _this.playerEvents.END, _this.getLabels());
+				_this.callStreamSensePlugin("notify", _this.playerEvents.END, _this.getLabels());
 				_this.currentAd.id = "";
 				_this.currentAd.type = "";
 				_this.currentAd.index = 0;
@@ -266,8 +251,8 @@
 
 			embedPlayer.bindHelper('adClick' + this.bindPostfix, function(url) {
 				// When the ad is clicked its also paused
-				_this.callGenericPlugin("notify", _this.playerEvents.PAUSE, _this.getLabels());
-				_this.callGenericPlugin("notify", _this.playerEvents.AD_CLICK, _this.getLabels());
+				_this.callStreamSensePlugin("notify", _this.playerEvents.PAUSE, _this.getLabels());
+				_this.callStreamSensePlugin("notify", _this.playerEvents.AD_CLICK, _this.getLabels());
 			});
 
 			// release the player
@@ -280,9 +265,9 @@
 
 		getLabels: function(seek) {
 			//get common labels values
-			this.genericPlugin.setLabel("ns_st_br", this.currentBitrate, true);
-			this.genericPlugin.setLabel("ns_st_ws", this.isFullScreen() ? "full" : "norm", true);
-			this.genericPlugin.setLabel("ns_st_vo", this.getVolume(), true);
+			this.streamSenseInstance.setLabel("ns_st_br", this.currentBitrate, true);
+			this.streamSenseInstance.setLabel("ns_st_ws", this.isFullScreen() ? "full" : "norm", true);
+			this.streamSenseInstance.setLabel("ns_st_vo", this.getVolume(), true);
 
 			return seek ? {ns_st_ui: "seek"} : {};
 		},
