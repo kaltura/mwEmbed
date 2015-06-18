@@ -441,7 +441,7 @@ mw.VastAdParser = {
 		// check for empty impression, return empty text instead of trying to decode
 		var urlText = $.trim( $( node ).text() );
 		try {
-			if( ! /[<>#%{}\s|\\^\~\[\]]/.test(decodeURIComponent(urlText)) ){
+			if( ! /[<>`#%{}\s|\\^\~\[\]]/.test(decodeURIComponent(urlText)) ){
 				urlText = decodeURIComponent(urlText)
 			}
 		} catch( e ){
