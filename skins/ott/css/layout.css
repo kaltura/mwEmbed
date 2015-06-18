@@ -190,6 +190,9 @@ body {
 button, a{
 	outline: none !important;
 }
+button::-moz-focus-inner {
+	border: 0;
+}
 .btn {
 	display: inline-block;
 	height: 36px;
