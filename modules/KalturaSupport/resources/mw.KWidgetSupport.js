@@ -1265,7 +1265,7 @@ mw.KWidgetSupport.prototype = {
 		// The referring  url ( can be from the iframe if in iframe mode )
 		var hostUrl = ( mw.getConfig( 'EmbedPlayer.IframeParentUrl') ) ?
 						mw.getConfig( 'EmbedPlayer.IframeParentUrl') :
-						document.URL;
+						( document.referrer || document.URL );
 
 		// If we have hash, remove everything after that
 		if( hostUrl.indexOf("#") !== -1 ) {
