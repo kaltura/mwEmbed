@@ -299,7 +299,7 @@ mw.KWidgetSupport.prototype = {
 				embedPlayer.setLive( true );
 			}
 		} else if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
-			var streamerType = this.resolveFlashStreamerType(embedPlayer);
+			var streamerType = this.resolveFlashStreamerType(embedPlayer, playerData);
 			// Add live stream source
 			this.addLiveEntrySource( embedPlayer, playerData.meta, true, false, streamerType );
 
