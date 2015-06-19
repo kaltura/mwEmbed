@@ -21,7 +21,7 @@ return array(
 			),
 
 			'labelMapping' => array(
-				'doc' => "Used to map media metadata values to specific labels. The mapping is applied to the collected data whenever the player loads new media. Expects a comma-separated list of 'label=mapped-source' assignments. The 'mapped-source' can be a dynamic value - i.e., pointing to media metadata fields - or a static value (needs to be enclosed in quote characters). Please contact your comScore client account representative for more instructions on proper use of this configuration setting. Evaluations are supported",
+				'doc' => "Used to map metadata values to specific labels. The mapping is applied to the collected data whenever the player loads new media. Expects a comma-separated list of 'label=mapped-source' assignments. The 'mapped-source' can be a dynamic value - i.e., the usual substitutions like {mediaProxy.entry.name} - or a static value (which needs to be enclosed in quote characters). Please contact your comScore client account representative for more instructions on proper use of this configuration setting.",
 				'label' => 'Label mapping',
 				'type' => 'String',
 			),
