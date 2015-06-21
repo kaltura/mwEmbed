@@ -1065,7 +1065,7 @@ mw.KWidgetSupport.prototype = {
 		if( data.error ) {
 			errObj = embedPlayer.getKalturaMsgObject( 'GENERIC_ERROR' );
 			errObj.message = data.error;
-			if( data.meta &&  data.meta.name == "scheduling" ){
+			if( data.contextData &&  data.contextData.isScheduledNow === false ){
 				errObj = embedPlayer.getKalturaMsgObject( "OUT_OF_SCHEDULING" );
 			}
 		}
