@@ -77,6 +77,13 @@ if( $kConf->hasMap('playReady') ) {
 		$wgKalturaLicenseServerUrl = $playReadyMap['license_server_url'];
 }
 
+// Get PlayReady License URL
+if( $kConf->hasMap('DRM') ) {
+	$drmMap = $kConf->getMap('DRM');
+	if($drmMap)
+		$wgKalturaUdrmLicenseServerUrl = $drmMap['license_server_url'];
+}
+
 if( $kConf->hasParam('overrideDomain') ) {
 	$wgEnableKalturaOverrideDomain = $kConf->get('overrideDomain');
 }
