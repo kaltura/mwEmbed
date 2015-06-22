@@ -1,0 +1,15 @@
+<ul>
+    <% $.each(mediaList, function(idx, item) { %> 
+    <li class="chapterBox mediaBox ri-playlistItem" data-mediabox-index="<%=idx%>"
+        <% if (meta.layout == "hotizontal") { %> style="width: <%= mediaItem.width %>px " <% } %> >
+        <div class="ri-playlistItem-content">
+            <div class="ri-playlistItem-content-thumb">
+                <div class="ri-playlistItem-content-thumb-image" style="background-image:url(<%=item.thumbnail.url%>);"></div>
+                <div class="ri-playlistItem-content-thumb-play"></div>
+            </div>
+            <div class="ri-playlistItem-content-date" title="<%=item.createdAt%>"><%=formaters.trDateFormat(item.createdAt)%></div>
+            <div class="ri-playlistItem-content-title"><%=item.title%></div>
+        </div>
+    </li>
+    <% }); %>
+</ul>

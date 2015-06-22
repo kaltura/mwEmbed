@@ -1,0 +1,98 @@
+<!doctype>
+<html>
+<head>
+    <title>Reuters Insider</title>
+    <script type="text/javascript" src="../../../../mwEmbedLoader.php"></script>
+    <style>
+        body{
+            margin: 0;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container" style="width: 100%; height: 100%;">
+    <div id="kPlayer" style="width: 100%;; height:100%; float: left"></div>
+</div>
+<script>
+
+
+    //parse query string to an object
+    var queryString = function () {
+        var query_string = {};
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i=0;i<vars.length;i++) {
+            var pair = vars[i].split("=");
+            // If first entry with this name
+            if (typeof query_string[pair[0]] === "undefined") {
+                query_string[pair[0]] = pair[1];
+                // If second entry with this name
+            } else if (typeof query_string[pair[0]] === "string") {
+                var arr = [ query_string[pair[0]], pair[1] ];
+                query_string[pair[0]] = arr;
+                // If third or later entry with this name
+            } else {
+                query_string[pair[0]].push(pair[1]);
+            }
+        }
+        return query_string;
+    } ();
+
+    //defaults TR
+    var entryId = "";
+    var partnerId = 1851191;
+    var playlistId = "1_smuhcro8";
+    var widgetType = "playlist"; //entry or playlist. in case of entry - the playlist will be related
+    var uiconfId = 27493391 ; //this will come from KMS
+    var clipsToShow = 3; //amount of videos to show in playlist
+
+
+    //override by query - simulate KMS parameters map from entry point
+
+    function mapFromTo(query,parameter){
+        if(queryString[query]){
+            this[parameter] = queryString[query];
+        }
+    }
+
+    mapFromTo('partnerId','partnerId');
+    mapFromTo('playlistId','playlistId');
+    mapFromTo('entryId','entryId');
+    mapFromTo('widgetType','widgetType');
+    // mapFromTo('uiconfId','uiconfId');
+    mapFromTo('clipsToShow','clipsToShow');
+    //      example of override
+    //      http://localhost/html5.kaltura/mwEmbed/modules/tr/tests/dev/?partnerId=1851191&playlistId=1_kvvdd4ar&uiconfId=27493391&clipsToShow=3
+
+    mw.setConfig('forceMobileHTML5', true);
+
+    kWidget.embed({
+        'targetId': 'kPlayer',
+        'wid': '_'+partnerId,
+        'uiconf_id' : uiconfId,
+//        'entry_id' : "1_ir11bloa",
+        'flashvars': {
+            'confFilePath': '{libPath}/modules/tr/resources/trjson.json',
+            'playlistAPI': {
+//                'plugin' : false,
+                'kpl0Id': playlistId,
+                'templatePath': '../tr/templates/playlist.tmpl.html',
+                'MinClips': clipsToShow,
+                'showControls': false,
+                'includeHeader': false,
+                'mediaItemHeight': 160,
+                'renderWhenEmpty': true
+            },
+
+            'trPlaylistServices': {
+                'plugin': true
+            }
+
+
+    }
+    });
+
+</script>
+</body>
+</html>
