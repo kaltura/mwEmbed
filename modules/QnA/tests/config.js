@@ -5,5 +5,6 @@ var qna= {
         'onPage': true,
         'containerPosition': 'right',
         'moduleWidth' : '200',
-        'userId': "Shimi"
+        'userId': "Shimi",
+        'allowNewQuestionWhenNotLive': false
     };
