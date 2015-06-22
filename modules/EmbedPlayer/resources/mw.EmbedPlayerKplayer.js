@@ -99,6 +99,9 @@
                     if(mw.getConfig("hlsSegmentBuffer")) {
                         flashvars.KalturaHLS["segmentBuffer"] = mw.getConfig("hlsSegmentBuffer");
                     }
+                    if(mw.getConfig("hlsOverrideTargetDuration")) {
+                        flashvars.KalturaHLS["overrideTargetDuration"] = mw.getConfig("hlsOverrideTargetDuration");
+                    }
 					flashvars.streamerType = _this.streamerType = 'hls';
 				}
 
