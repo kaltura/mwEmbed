@@ -6,7 +6,7 @@
             "plugin": {
                 "doc": "If the receiver should be activated.",
                 "label": "Enable receiver",
-                "type": "hiddenvalue"
+                "type": "hiddenValue"
             }
         }
     }

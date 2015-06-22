@@ -6,7 +6,7 @@
 		    "plugin": {
 			    "doc": "If the multi drm should be activated.",
 			    "label": "Enable multi drm",
-			    "type": "hiddenvalue"
+			    "type": "hiddenValue"
 		    }
 	    }
 
