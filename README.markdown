@@ -61,5 +61,5 @@ Copyright (C) 2007-2012 Kaltura, Wikimedia Foundation
 
 Sub modules and libraries carry specific copyright.
 
-Authors Michael Dale, Ran Yefet, Avi Vaisenberger, Itay Kinnrot, Michal Radwantzor and [many others](https://github.com/kaltura/mwEmbed/graphs/contributors).
+Authors: See [GitHub contributors list](https://github.com/kaltura/mwEmbed/graphs/contributors).
 
