@@ -66,16 +66,17 @@
 					_this.setStream(_this.currentStream);
 				}
 				_this.buildMenu();
-				_this.onEnable();
 			});
 
 			this.bind('sourceSwitchingEnd', function () {
 				if (_this.streamsReady) {
+					_this.getComponent().find('button').removeClass('rotate');
 					_this.onEnable();
 				}
 			});
 
 			this.bind('sourceSwitchingStarted', function () {
+				_this.getComponent().find('button').addClass('rotate');
 				_this.onDisable();
 			});
 
@@ -380,13 +381,11 @@
 		onEnable: function () {
 			this.isDisabled = false;
 			this.updateTooltip(gM('mwe-embedplayer-select_stream'));
-			this.getComponent().find('button').removeClass('rotate');
 			this.getBtn().removeClass('disabled');
 		},
 		onDisable: function () {
 			this.isDisabled = true;
 			this.updateTooltip(gM('mwe-embedplayer-switch_stream'));
-			this.getComponent().find('button').addClass('rotate');
 			this.getComponent().removeClass('open');
 			this.getBtn().addClass('disabled');
 		}
