@@ -165,11 +165,6 @@ mw.KAnalytics.prototype = {
 				eventSet[ flashVarEvents[ fvKey ] ] = encodeURIComponent( this.embedPlayer.getKalturaConfig('statistics', fvKey ) );
 			}
 		}
-		// Use this new parameter to send hashed userId in case the partner has limitation about storing users-data on Kaltura database.
-		// This feature requires a new flashvar 'statistics.hashedUserId'.
-		if(this.embedPlayer.getKalturaConfig( 'statistics' , 'hashedUserId')){
-			eventSet.userId = this.embedPlayer.getKalturaConfig( 'statistics' , 'hashedUserId');
-		}
 		// hideUserId will remove the userId from the analytics call EVEN if the embed code sends one (unless hashedUserId is in use)
 		if(this.embedPlayer.getKalturaConfig( 'statistics' , 'hideUserId') && eventSet.userId){
 			delete(eventSet.userId);
