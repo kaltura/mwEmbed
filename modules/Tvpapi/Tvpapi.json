@@ -1,8 +1,8 @@
 {
-    "tvpapiGetMediaLicenseLink": {
-        "scripts": "resources/getMediaLicenseLink.js",
+    "tvpapiGetLicensedLinks": {
+        "scripts": "resources/getLicensedLinks.js",
         "dependencies": ["mw.KBasePlugin"] ,
-        "kalturaPluginName": "tvpapiGetMediaLicenseLink"
+        "kalturaPluginName": "tvpapiGetLicensedLinks"
     },
     "tvpapiGetLicenseData": {
         "scripts": "resources/getLicenseData.js",

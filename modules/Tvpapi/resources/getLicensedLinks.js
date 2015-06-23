@@ -1,10 +1,10 @@
 (function (mw, $) {
 	"use strict";
 
-	mw.PluginManager.add( 'tvpapiGetMediaLicenseLink', mw.KBasePlugin.extend( {
+	mw.PluginManager.add( 'tvpapiGetLicensedLinks', mw.KBasePlugin.extend( {
 
 		defaultConfig: {
-			"restMethod": "GetMediaLicenseLinks",
+			"restMethod": "GetLicensedLinks",
 			"restApiBaseUrl": "",
 			"baseConfig": {
 				"initObj": {
@@ -80,12 +80,12 @@
 				combinedData["mediaFileID"] = source.assetid;
 				combinedData["baseLink"] = source.src;
 
-				var successHandler = function ( res, status ) {
-					if( res == "" ) {
-						_this.getPlayer().triggerHelper('tvpapiNoSubscription', [status]);
+				var successHandler = function ( res ) {
+					if( res.Status && res.Status.Code !== 0 ) {
+						_this.getPlayer().triggerHelper('tvpapiNoSubscription', [res]);
 					} else {
-						_this.getPlayer().triggerHelper('tvpapiSubscription', [status]);
-						source.src = res;
+						_this.getPlayer().triggerHelper('tvpapiSubscription', [res]);
+						source.src = res.mainUrl;
 					}
 				};
 				var errorHandler = function ( xmlHttpRequest, status ) {
