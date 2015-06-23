@@ -126,6 +126,7 @@ mw.kalturaPluginWrapper(function() {
 		sendPostRequest: function( service, params ) {
 			// Do not send requests during ad playback
 			if( !this.getPlayer().isInSequence() ) {
+				this.getPlayer().triggerHelper(service, [service, params]);
 
 				this.log('sendPostRequest: request: ' + service, params);
 				var _this = this;
