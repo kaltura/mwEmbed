@@ -214,14 +214,15 @@
 				.off('click')
 				.on('click', function(){
 					var question = _this.getQnaContainer().find('.qnaQuestionTextArea').val();
-					//if (_this.getPlayer().isOffline()){
-					//	alert(gM('qna-cant-ask-while-not-live'));
-					//} else {
-						if (question !== gM('qna-default-question-box-text')) {
-                            _this.KQnaService.submitQuestion(question);
-							_this.resetTextArea(textArea);
-						}
-					//}
+
+					if (_this.getPlayer().isOffline() && !_this.getConfig( 'allowNewQuestionWhenNotLive' )){
+						alert(gM('qna-cant-ask-while-not-live'));
+					} else {
+					if (question !== gM('qna-default-question-box-text')) {
+						_this.KQnaService.submitQuestion(question);
+						_this.resetTextArea(textArea);
+					}
+					}
 				});
 			var cancelButton = _this.getQnaContainer().find('.qnaCancelButton');
 			cancelButton.text(gM('qna-cancel-button-text'));
