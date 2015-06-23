@@ -57,9 +57,5 @@ Kaltura HTML5 library is the upstream library for the wikimedia video support in
 
 All mwEmbed code is released under the AGPLv3 unless a different license for a particular library is specified in the applicable library path
 
-Copyright (C) 2007-2012 Kaltura, Wikimedia Foundation
-
-Sub modules and libraries carry specific copyright.
-
 Authors: See [GitHub contributors list](https://github.com/kaltura/mwEmbed/graphs/contributors).
 
