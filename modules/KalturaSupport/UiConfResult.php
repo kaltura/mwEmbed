@@ -217,7 +217,8 @@ class UiConfResult {
 			'liveStatus' => array(),
 			'reportError' => array(),
 			"sideBarContainer" => array(),
-			"liveAnalytics"=>array()
+			"liveAnalytics"=>array(),
+			//"playersJsReceiver" => array()
 		);
 
 		$playerConfig['plugins'] = array_merge_recursive($playerConfig['plugins'], $basePlugins);
