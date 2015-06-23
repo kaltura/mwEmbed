@@ -16,7 +16,9 @@
 			"keyboardShortcutsMap": {
 				"nextStream": 221,   // Add ] Sign for next stream
 				"prevStream": 219,   // Add [ Sigh for previous stream
-				"defaultStream": 220 // Add \ Sigh for default stream
+				"defaultStream": 220, // Add \ Sigh for default stream
+				"openMenu": 83, // Add S Sigh for open menu
+				"closeMenu": "shift+83" // Add Shift+S Sigh for close menu
 			}
 		},
 
@@ -81,7 +83,7 @@
 				_this.streamEnded = true;
 			});
 
-			this.bind("onplay", function () {
+			this.bind("onplay onChangeStreamDone", function () {
 				_this.streamEnded = false;
 			});
 
@@ -176,6 +178,14 @@
 			// Add \ Sigh for default stream
 			addKeyCallback(this.getConfig("keyboardShortcutsMap" ).defaultStream, function () {
 				_this.setStream(_this.getDefaultStream());
+			});
+			// Add S Sigh for open menu
+			addKeyCallback(this.getConfig("keyboardShortcutsMap" ).openMenu, function () {
+				_this.getMenu().open();
+			});
+			// Add Shift+S Sigh for close menu
+			addKeyCallback(this.getConfig("keyboardShortcutsMap" ).closeMenu, function () {
+				_this.getMenu().close();
 			});
 		},
 		getNextStream: function () {
@@ -292,7 +302,7 @@
 					//Reinit the kCuePoints service
 					if( (embedPlayer.rawCuePoints && embedPlayer.rawCuePoints.length > 0)) {
 						embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
-						embedPlayer.triggerHelper('KalturaSupport_CuePointsReady', embedPlayer.rawCuePoints);
+						embedPlayer.triggerHelper('KalturaSupport_CuePointsReady', [embedPlayer.rawCuePoints]);
 					}
 					callback();
 				};

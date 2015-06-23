@@ -55,6 +55,7 @@ class downloadEntry {
 	
 	function redirectDownload() {
 		$flavorUrl = $this->getSourceForUserAgent();
+		$client = $this->getResultObject()->client->getClient();
 		// Redirect to flavor
 		header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 		header("Pragma: no-cache");
@@ -70,12 +71,16 @@ class downloadEntry {
 				$filename = $this->sanitizeFilenameForHeader($filename);
 			}else{
 				$filename = $flavorId . $extension;
-				
 			}
+			$options = new KalturaFlavorAssetUrlOptions();
+			$options->fileName = $filename;
 
+			$requestConfig = $client->getConfig();
+			array_push($requestConfig->requestHeaders, 'Referer: ' . $this->getResultObject()->request->getReferer());
+			$client->setConfig($requestConfig);
 
-			header( 'Content-Disposition: attachment; filename="'.$filename.'"' );
-			readfile( $flavorUrl );
+			$flavorUrl = $client->flavorAsset->getUrl($flavorId,null,false,$options);
+			header("Location: " . $flavorUrl );
 		}
 		else {
 			header("Location: " . $flavorUrl );
@@ -405,16 +410,7 @@ class downloadEntry {
 
 	private function sanitizeFilenameForHeader($filename) {
 		strip_tags($filename);
-
-		function match_replace(){
-			return '';
-		};
-
-		$filename = preg_replace_callback(array('/[^(\x20-\x7F)]*/', '/[^\w\-\.\s]+/'),
-			"match_replace",
-			$filename
-		);
-		return $filename;
+		return preg_replace('/[^A-Za-z0-9\-\.\_\~\!\$\&\'\(\)\*\+\,\;\=\:\@]/', '_', $filename);
 	}
 
 	private function getSourceFlavorUrl( $flavorId = false ){

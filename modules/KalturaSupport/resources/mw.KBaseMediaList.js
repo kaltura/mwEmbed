@@ -36,7 +36,10 @@
 				'fullScreenDisplayOnly': false,
 				'minDisplayWidth': 0,
 				'minDisplayHeight': 0,
-				'scrollerCssPath': "resources/nanoScroller/nanoScroller.css"
+				'horizontalScrollItems': 1,
+				'scrollerCssPath': "resources/nanoScroller/nanoScroller.css",
+				'fixedControls': false,
+				'horizontalControlsWidth': 20
 			});
 		},
 
@@ -57,8 +60,8 @@
 			this.bind('updateLayout', function(){
 				if (_this.getPlayer().layoutBuilder.isInFullScreen() ||
 					(!_this.getConfig("fullScreenDisplayOnly") &&
-					_this.getConfig("minDisplayWidth") <= _this.getPlayer().getWidth() &&
-					_this.getConfig("minDisplayHeight") <= _this.getPlayer().getHeight())){
+						_this.getConfig("minDisplayWidth") <= _this.getPlayer().getWidth() &&
+						_this.getConfig("minDisplayHeight") <= _this.getPlayer().getHeight())){
 					_this.render = true;
 				} else {
 					_this.render = false;
@@ -151,9 +154,9 @@
 
 						$( window['parent'].document ).find( '.onpagePlaylistInterface' ).remove(); // remove any previously created playlists
 						var iframeParent = window['parent'].document.getElementById( this.embedPlayer.id );
-						if ( this.getConfig( 'clipListTargetId' ) && $( iframeParent ).parent().find( "#" + this.getConfig( 'clipListTargetId' ) ).length > 0 ) {
-							$( iframeParent ).parent().find( "#" + this.getConfig( 'clipListTargetId' ) ).html( "<div class='onpagePlaylistInterface'></div>" );
-							this.$mediaListContainer = $( iframeParent ).parent().find( ".onpagePlaylistInterface" );
+						if ( this.getConfig( 'clipListTargetId' ) && $( iframeParent ).parents().find( "#" + this.getConfig( 'clipListTargetId' ) ).length > 0 ) {
+							$( iframeParent ).parents().find( "#" + this.getConfig( 'clipListTargetId' ) ).html( "<div class='onpagePlaylistInterface'></div>" );
+							this.$mediaListContainer = $( iframeParent ).parents().find( ".onpagePlaylistInterface" );
 						} else {
 							$( iframeParent ).after( "<div class='onpagePlaylistInterface'></div>" );
 							this.$mediaListContainer = $( iframeParent ).parent().find( ".onpagePlaylistInterface" );
@@ -267,18 +270,24 @@
 			//Only render if medialist item are present
 			if (this.getTemplateData().length > 0) {
 				//Generate new list template data
-				var medialist = this.getTemplateHTML( {meta: this.getMetaData(), mediaList: this.getTemplateData()});
-				//Clear previous list
-				this.getMedialistComponent().empty();
-				//Clear the scroll reference
-				this.$scroll = null;
-				//Add media items to DOM
-				this.getMedialistComponent().append( medialist );
-				this.configMediaListFeatures();
-				$( this.embedPlayer ).trigger( "mediaListLayoutReady" );
+				var _this = this;
+				this.getTemplateHTML( {meta: this.getMetaData(), mediaList: this.getTemplateData()})
+					.then(function(medialist) {
+						//Clear previous list
+						_this.getMedialistComponent().empty();
+						//Clear the scroll reference
+						_this.$scroll = null;
+						//Add media items to DOM
+						_this.getMedialistComponent().append( medialist );
+						_this.configMediaListFeatures();
+						$( _this.embedPlayer ).trigger( "mediaListLayoutReady" );
+						_this.setSelectedMedia( _this.selectedMediaItemIndex );
+					}, function(msg) {
+						mw.log( msg );
+					});
 			}
 		},
-		configMediaListFeatures: function(){
+		configMediaListFeatures: function(scrollRefresh){
 			//Adjust container size
 			this.setMedialistContainerSize();
 			this.setMedialistComponentHeight();
@@ -287,7 +296,9 @@
 			//Attach media items handlers
 			this.attachMediaListHandlers();
 			//Add scroll if applicable
-			this.shouldAddScroll( );
+			if ( !scrollRefresh ){
+				this.shouldAddScroll();
+			}
 		},
 		setMedialistComponentHeight: function(){
 			var _this = this;
@@ -436,7 +447,7 @@
 					if ( this.getLayout() === 'vertical' ) {
 						// give the box a height:
 						this.getComponent().css( 'height',
-								mediaBoxes.length * largestBoxHeight
+							mediaBoxes.length * largestBoxHeight
 						);
 					}
 				}
@@ -447,7 +458,7 @@
 			var hoverInterval = null;
 			var mediaBoxes = this.getMediaListDomElements();
 			mediaBoxes
-				.off('click' )
+				.off('click touchmove touchend' )
 				.on('click', function(){
 					if ( !_this.isDisabled && !_this.isTouchDisabled){
 						// set active media item
@@ -564,6 +575,7 @@
 			return sliceIndex;
 		},
 		addScroll: function(){
+			var _this = this;
 			var isVertical = ( this.getLayout() == 'vertical' );
 			if (isVertical) {
 				this.getScrollComponent();
@@ -581,11 +593,17 @@
 					circular: false,
 					vertical: isVertical,
 					start: this.startFrom,
-					scroll: 1,
+					scroll: _this.getConfig('horizontalScrollItems'),
 					speed: speed
-				} );
+				}).unbind("complete").bind( "complete", function( event, data ) {
+						$(_this.embedPlayer).trigger("scrollEnd");
+					});
 				$cc.find('ul').width((this.getMediaItemBoxWidth()+1)*this.mediaList.length);
 				$cc.find('.k-carousel').css('width', $cc.width() );
+				if (this.getConfig('fixedControls')){
+					var width = $cc.width() - this.getConfig("horizontalControlsWidth") * 2;
+					$cc.find('.k-carousel').css("margin-left",this.getConfig("horizontalControlsWidth")).width(width);
+				}
 			}
 		},
 		getScrollComponent: function(){
@@ -625,6 +643,9 @@
 				this.$scroll.on('update', function(e, data){
 					_this.doOnScrollerUpdate(data);
 				});
+				this.$scroll.on("scrollend", function(e){
+					$(_this.embedPlayer).trigger("scrollEnd");
+				});
 			}
 			return this.$scroll;
 		},
@@ -648,38 +669,41 @@
 				$( '<a />' )
 					.addClass( "k-scroll k-next" )
 			);
-
-			// Add media item hover to hide show play buttons:
-			var inKBtn = false;
-			var inContainer = false;
-			var checkHideBtn = function(){
-				setTimeout(function(){
-					if( !inKBtn && !inContainer ){
-						$cc.find('.k-prev,.k-next').animate({'opacity':0});
-					}
-				},0)
-			}
-			var showBtn = function(){
-				$cc.find('.k-prev,.k-next').animate({'opacity':1});
-			}
-			// check for knext
-			$cc.find('.k-prev,.k-next')
-				.hover(function(){
+			if (this.getConfig('fixedControls')){
+				$cc.find('.k-prev,.k-next').addClass("fixed");
+			}else{
+				// Add media item hover to hide show play buttons:
+				var inKBtn = false;
+				var inContainer = false;
+				var checkHideBtn = function(){
+					setTimeout(function(){
+						if( !inKBtn && !inContainer ){
+							$cc.find('.k-prev,.k-next').animate({'opacity':0});
+						}
+					},0)
+				}
+				var showBtn = function(){
+					$cc.find('.k-prev,.k-next').animate({'opacity':1});
+				}
+				// check for knext
+				$cc.find('.k-prev,.k-next')
+					.hover(function(){
+						showBtn();
+						inKBtn = true;
+					},function(){
+						inKBtn = false;
+						checkHideBtn();
+					})
+				$cc.find('.k-carousel').hover( function(){
 					showBtn();
-					inKBtn = true;
-				},function(){
-					inKBtn = false;
+					inContainer = true;
+				}, function(){
+					inContainer = false;
 					checkHideBtn();
 				})
-			$cc.find('.k-carousel').hover( function(){
-				showBtn();
-				inContainer = true;
-			}, function(){
-				inContainer = false;
-				checkHideBtn();
-			})
-			// hide the arrows to start with ( with an animation so users know they are there )
-			$cc.find('.k-prev,.k-next').animate({'opacity':0});
+				// hide the arrows to start with ( with an animation so users know they are there )
+				$cc.find('.k-prev,.k-next').animate({'opacity':0});
+			}
 		},
 		calculateVisibleScrollItems: function(){
 			var $cc = this.getMedialistComponent();

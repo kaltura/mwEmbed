@@ -7,6 +7,12 @@ return array(
 		"model" => "basicDisplay",
 		"icon" => "TabBasicSettings",
 		"children"=> array(
+		array(
+                "label" => "Player's ID:",
+                "type" => "readonly",
+                "player-refresh"=> false,
+                "model" => "id"
+            ),
 			array(
 				"label" => "Player's Name",
 				"type" => "text",
@@ -47,13 +53,18 @@ return array(
 					array(
 						"label" => "16/9",
 						"value" => "wide"
-					)
+					),
+                    array(
+                        "label" => "Custom",
+                        "value" => "custom"
+                    )
 				),
 				"showSearch"=> false,
-				"initvalue" => "wide",
-				"helpnote" => "Select aspect ratio for the current preview. Aspect ratio is not saved with the player settings",
-				"type" => "dropdown",
-				"label" => "Aspect Ratio",
+				"allowNegative"=> false,
+				"helpnote" => "Set Player Dimensions",
+				"helpnote2" => "Height will be automatically calculated according to the selected aspect ratio",
+				"type" => "dimensions",
+				"label" => "Player Dimensions",
 				"endline" => "true"
 			),
 			array(

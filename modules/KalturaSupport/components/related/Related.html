@@ -91,7 +91,7 @@
 		relatedEditor.getSession().setMode("ace/mode/json");
 		relatedEditor.setShowPrintMargin(false);
 		// update ace editor data: 
-		relatedEditor.setValue( JSON.stringify( baseCustomRelatedEntries, null, "\t" ) );
+		relatedEditor.setValue( JSON.stringify( baseCustomRelatedEntries, null, "\t" ), -1 );
 		$('#update-related').click(function(){
 			// update template:
 			try{

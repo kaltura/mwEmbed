@@ -410,6 +410,16 @@ mw.PlayerLayoutBuilder.prototype = {
 		return height;
 	},
 
+    getContainerHeight: function() {
+        var height = 0;
+        if(mw.isIE11()){
+            height = this.getInterface()[0].clientHeight;
+        }else{
+            height = this.getInterface().height();
+        }
+        return height;
+    },
+
 	initToolTips: function(){
 		var _this = this;
 		this.embedPlayer.bindHelper( 'layoutBuildDone', function(){
@@ -433,6 +443,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			items: '[data-show-tooltip]',
 			"show": { "delay": 1000 },
 			"hide": { "duration": 0 },
+			"content": function(){return $(this).attr('title');},
 			position: {
 				my: "center bottom-10",
 				at: "center top",
@@ -479,7 +490,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		// Decide which bindings to add based on device capabilities
 		var addPlaybackBindings = function(){
-			if( embedPlayer.getFlashvars('disableOnScreenClick') ){ 
+			if( embedPlayer.getFlashvars('disableOnScreenClick') ){
 				return ;
 			}
 			if( mw.isTouchDevice() ){
@@ -487,7 +498,11 @@ mw.PlayerLayoutBuilder.prototype = {
 					_this.addPlayerTouchBindings();
 				}
 			}
-			_this.addPlayerClickBindings();
+			//if we're in native app android <=4.3 we dont want to add player click bindings
+			if( !(mw.isNativeApp() && ( mw.isAndroid43() || mw.isAndroid41() || mw.isAndroid42() ) ) ) {
+				_this.addPlayerClickBindings();
+			}
+
 		};
 
 		var removePlaybackBindings = function(){
@@ -513,7 +528,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		b('updateLayout', function(){
 			// Firefox unable to get component width correctly without timeout
 			clearTimeout(_this.updateLayoutTimeout);
-			_this.updateLayoutTimeout = setTimeout(function(){ 
+			_this.updateLayoutTimeout = setTimeout(function(){
 				_this.updateComponentsVisibility();
 				_this.updatePlayerSizeClass();
 			},100);
@@ -663,7 +678,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			};
 			$interface.hoverIntent( hoverIntentConfig );
 		}
-		
+
 		// Bind a startTouch to show controls
 		$( embedPlayer ).bind( 'touchstart', function() {
 			_this.showPlayerControls();
@@ -787,7 +802,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			this.playerSizeClass = playerSizeClass;
 			this.getInterface()
 				.removeClass('size-tiny size-small size-medium size-large')
-				.addClass('size-' + this.playerSizeClass);			
+				.addClass('size-' + this.playerSizeClass);
 			this.embedPlayer.triggerHelper('playerSizeClassUpdate', [this.playerSizeClass] );
 		}
 	},
@@ -815,7 +830,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			_this.playingFlag = true;
 			setTimeout(function(){
 				_this.playingFlag = false;
-			},500);
+			},1000);
 		});
 		// check for drag: 
 		
@@ -823,7 +838,9 @@ mw.PlayerLayoutBuilder.prototype = {
 		// Check for click
 		$( embedPlayer ).bind( "click" + _this.bindPostfix, function() {
 			if ( mw.isMobileDevice() )  {
-				_this.togglePlayback();
+				if (!_this.playingFlag){
+					_this.togglePlayback();
+				}
 			}
 			else {
 				var playerStatus = embedPlayer.isPlaying();

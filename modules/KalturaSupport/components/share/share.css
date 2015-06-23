@@ -1,4 +1,7 @@
 @import url(http://fonts.googleapis.com/css?family=Lato:300,400,700,900);
+.share .screen-content{
+	z-index: 1;
+}
 .screen .panel-center {
 	width: 100%;
 	height: 100%;
@@ -70,6 +73,7 @@
 	float: left;
 	margin-bottom: 0px;
 	margin-left: 6px;
+	height: 26px;
 }
 .share .embed-offset-container .share-offset{
 	float: left;
@@ -84,13 +88,13 @@
 }
 .share-secure-lbl{
 	float: left;
-	margin-top: 12px;
+	margin-top: 6px;
 }
 /* labels and alerts */
 .share .share-label{
 	float: left;
 	margin-left: 60px;
-	margin-top: 14px;
+	margin-top: 9px;
 	margin-right: 6px;
 }
 .share .embed-offset-container .share-label{
@@ -99,7 +103,7 @@
 .share-alert{
 	font-size: 11pt;
 	font-family: 'Lato', Helvetica, Arial;
-	text-shadow: 1px 1px #000000;
+	/*text-shadow: 1px 1px #000000;*/
 	color: red;
 	line-height: 28pt;
 	display: none;
@@ -184,7 +188,8 @@
 	border-radius: 28px 28px 28px 28px;
 	-moz-border-radius: 28px 28px 28px 28px;
 	-webkit-border-radius: 28px 28px 28px 28px;
-	border: 1px solid #ffffff;
+	border: 1px solid white;
+	border: 1px solid rgba(255,255,255,0.5);
 	width: 56px;
 	height: 56px;
 	font-size: 2em;
@@ -229,6 +234,7 @@
 	width: 18px;
 	height: 18px;
 	cursor: pointer;
+	z-index: 3;
 }
 .share .share-close:hover{
 	text-shadow: 0px 0px 10px #fff;
@@ -242,7 +248,8 @@
 }
 .small.share .shareembed-input {
 	width: 176px;
-	padding-right: 0px;
+	padding-right: 4px;
+	padding-left: 34px;
 	height: 16px;
 	font-size: 8pt;
 }

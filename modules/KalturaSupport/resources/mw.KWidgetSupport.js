@@ -136,10 +136,8 @@ mw.KWidgetSupport.prototype = {
 				thumbUrl = embedPlayer.evaluate(mw.getConfig('thumbnailUrl'));
 			}
 			var alt = gM('mwe-embedplayer-video-thumbnail-for', embedPlayer.evaluate('{mediaProxy.entry.name}'));
-		  	embedPlayer.updatePoster( thumbUrl, alt );
-			if( embedPlayer.kalturaPlayerMetaData.mediaType === 5 ) {
-		  		embedPlayer.isAudioPlayer = true;
-		  	}		  	
+			embedPlayer.updatePoster( thumbUrl, alt );
+			embedPlayer.isAudioPlayer = ( embedPlayer.kalturaPlayerMetaData.mediaType === 5 );
 		});
 
 		// Add black sources:
@@ -163,27 +161,33 @@ mw.KWidgetSupport.prototype = {
 		});
 
 		// Example how to override embedPlayerError handler
+
 		embedPlayer.shouldHandlePlayerError = false;
-		embedPlayer.bindHelper( 'embedPlayerError' , function ( event, data, doneCallback )  {
+		embedPlayer.bindHelper( 'embedPlayerError' , function ( event , data , doneCallback ) {
 			var displayedAcError = false;
-			// check for AC error: 
-			_this.getEntryIdSourcesFromApi( embedPlayer, embedPlayer.kentryid, function( sources ){
-				// no sources, or access control error. 
-				if( ! sources || sources.message ){
+			// check for AC error:
+			if ( mw.getConfig("manualProvider") ) {
+				embedPlayer.shouldHandlePlayerError = true;
+				embedPlayer.handlePlayerError(data);
+				return;
+			}
+			_this.getEntryIdSourcesFromApi( embedPlayer , embedPlayer.kentryid , function ( sources ) {
+				// no sources, or access control error.
+				if ( !sources || sources.message ) {
 					embedPlayer.showErrorMsg( sources );
 					displayedAcError = true;
 					doneCallback();
 				}
-			});
+			} );
 			// give the above access control message 3 seconds to resolve; else show default network error
-			setTimeout(function(){
-				if( displayedAcError){
+			setTimeout( function () {
+				if ( displayedAcError ) {
 					return;
 				}
-				embedPlayer.handlePlayerError(data, true);
-			}, 3000);
-		});
-		
+				embedPlayer.handlePlayerError( data , true );
+			} , 3000 );
+		} );
+
 		// Support mediaPlayFrom, mediaPlayTo properties
 		embedPlayer.bindHelper( 'Kaltura_SetKDPAttribute', function(e, componentName, property, value){
 			if (!value) {
@@ -232,10 +236,7 @@ mw.KWidgetSupport.prototype = {
 
 	updatePlayerData: function( embedPlayer,  playerData, callback ){
 		var _this = this;
-		// Check for playerData error:
-		if( playerData.error ){
-			embedPlayer.setError( playerData.error );
-		}
+		this.handlePlayerError(embedPlayer, playerData); // Check for playerData error
 
 		var hasLivestreamConfig = function ( protocol ) {
 			var configurations = playerData.meta.liveStreamConfigurations;
@@ -300,7 +301,7 @@ mw.KWidgetSupport.prototype = {
 			// check for Cuepoint data and load cuePoints,
 			// TODO optimize cuePoints as hard or soft dependency on kWidgetSupport
 			if( (playerData.entryCuePoints && playerData.entryCuePoints.length > 0) || ( embedPlayer.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) ) {
-				embedPlayer.rawCuePoints = playerData.entryCuePoints;
+				embedPlayer.rawCuePoints = playerData.entryCuePoints || [];
 				embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
 			}
 			_this.handleUiConf( embedPlayer, callback );
@@ -349,6 +350,26 @@ mw.KWidgetSupport.prototype = {
 				&&
 				mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'application/vnd.apple.mpegurl' ).length ) {
 				// Add live stream source
+				//if we're gettting the source from manual provider(mediaProxy) - add them directly
+				if (playerData.entry && playerData.entry.manualProvider){
+					if (playerData.meta.hdsStreamUrl){
+						embedPlayer.mediaElement.tryAddSource($('<source />')
+							.attr({
+								'src' : playerData.meta.hdsStreamUrl,
+								'type' : 'application/vnd.apple.mpegurl'
+							})[0] );
+					}
+					embedPlayer.mediaElement.tryAddSource(
+						$('<source />')
+							.attr({
+								'src' : playerData.meta.hlsStreamUrl,
+								'type' : 'application/vnd.apple.mpegurl'
+							})[0] );
+
+					embedPlayer.setLive( true );
+					handlePlayerData();
+					return;
+				}
 				_this.addLiveEntrySource( embedPlayer, playerData.meta, false, false, 'applehttp', function() {
 					// Set live property to true
 					embedPlayer.setLive( true );
@@ -418,11 +439,13 @@ mw.KWidgetSupport.prototype = {
 					"data-width": flavorAsset.width,
 					"data-height": flavorAsset.height,
 					"data-bitrate": flavorAsset.bitrate,
-					"data-bandwidth": (flavorAsset.bitrate ? (flavorAsset * 1024) : 0),
+					"data-bandwidth": (flavorAsset.bitrate ? (flavorAsset.bitrate * 1024) : 0),
 					"data-frameRate": flavorAsset.frameRate,
-					"data-flavorid": flavorPartnerData.flavorid,
-					"default": flavorPartnerData["default"]
+					"data-flavorid": flavorPartnerData.flavorid
 				};
+				if (flavorPartnerData["default"] === "true"){
+					flavorAssetObj["default"] = true;
+				}
 				flavorAssets.push( flavorAssetObj );
 			}
 		} );
@@ -654,7 +677,7 @@ mw.KWidgetSupport.prototype = {
 			if( embedPlayer.rawCuePoints || ( embedPlayer.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) ){
 				mw.log("KWidgetSupport:: trigger KalturaSupport_CuePointsReady", embedPlayer.rawCuePoints);
 				// Allow other plugins to subscribe to cuePoint ready event:
-				$( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', embedPlayer.rawCuePoints );
+				$( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', [embedPlayer.rawCuePoints] );
 			}
 
 			// Trigger the early player events ( after uiConf handling has a chance to setup bindings
@@ -697,14 +720,16 @@ mw.KWidgetSupport.prototype = {
 		var getAttr = function( attrName ){
 			return _this.getPluginConfig( embedPlayer, '', attrName );
 		}
-		if ( getAttr( "Kaltura.ForceJSONP" ) === true ){
-			kWidget.forceJSONP();
-		}
 		// Check for autoplay:
 		var autoPlay = getAttr( 'autoPlay' );
 		if( autoPlay ){
 			embedPlayer.autoplay = true;
 		}
+		var inline = getAttr( 'EmbedPlayer.WebKitPlaysInline' );
+		if (inline) {
+			embedPlayer.inline = true;
+		}
+
 		
 		// Check for autoMute:
 		var autoMute = getAttr( 'autoMute' );
@@ -965,6 +990,7 @@ mw.KWidgetSupport.prototype = {
 		// Check for entry cache:
 		if( window.kalturaIframePackageData && window.kalturaIframePackageData.entryResult ){
 			var entryResult =  window.kalturaIframePackageData.entryResult
+
 			this.handlePlayerData( embedPlayer, entryResult );
 			callback( entryResult );
 			// remove the entryResult from the payload
@@ -977,6 +1003,24 @@ mw.KWidgetSupport.prototype = {
 			callback( playerData );
 		});
 	},
+	handlePlayerError: function(embedPlayer, data){
+		var errObj = null;
+		if( data.meta &&  data.meta.code == "INVALID_KS" ){
+			errObj = embedPlayer.getKalturaMsgObject( "NO_KS" );
+		}
+		if( data.error ) {
+			errObj = embedPlayer.getKalturaMsgObject( 'GENERIC_ERROR' );
+			errObj.message = data.error;
+			if( data.meta &&  data.meta.name == "scheduling" ){
+				errObj = embedPlayer.getKalturaMsgObject( "OUT_OF_SCHEDULING" );
+			}
+		}
+
+		if( errObj ) {
+			embedPlayer.hideSpinner();
+			embedPlayer.setError( errObj );
+		}
+	},
 	/**
 	 * handle player data mappings to embedPlayer
 	 */
@@ -987,18 +1031,10 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.kpartnerid = entryResult.meta.partnerId;
 		}
 
-		// Error handling
-		var errObj = null;
-		if( entryResult.meta &&  entryResult.meta.code == "INVALID_KS" ){
-			errObj = embedPlayer.getKalturaMsgObject( "NO_KS" );
-		}
-		if( entryResult.error ) {
-			errObj = embedPlayer.getKalturaMsgObject( 'GENERIC_ERROR' );
-			errObj.message = entryResult.error;
-		}
-		if( errObj ) {
-			embedPlayer.hideSpinner();
-			embedPlayer.setError( errObj );
+		this.handlePlayerError(embedPlayer, entryResult); // Error handling
+
+		if (entryResult.entry && entryResult.entry.manualProvider){
+			mw.setConfig("manualProvider",true);
 		}
 	},
 
@@ -1492,10 +1528,12 @@ mw.KWidgetSupport.prototype = {
 				deviceSources[inx]['src'] = deviceSources[inx]['src'].substring(0, index) + ksStr +
 					'/referrer/' + referrer +
 					'/clientTag/' + clientTag +
+					'/playSessionId/' + _this.getGUID() +
 					deviceSources[inx]['src'].substring(index) ;
 			} else {
 				deviceSources[inx]['src'] = deviceSources[inx]['src'] +
 					'?referrer=' + referrer + ksQueryString +
+					'&playSessionId=' + _this.getGUID()+
 					'&clientTag=' + clientTag;
 			}
 		});
@@ -1573,7 +1611,7 @@ mw.KWidgetSupport.prototype = {
 		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/' + format + '/protocol/' + protocol + '/uiConfId/' + embedPlayer.kuiconfid +  '/a.' + extension;
 		// Append KS & Referrer
 		function getKs() {
-			srcUrl += '?referrer=' + base64_encode( _this.getHostPageUrl() );
+			srcUrl += '?referrer=' + base64_encode( _this.getHostPageUrl() ) + '&playSessionId=' + _this.getGUID() + "&clientTag=html5:v" + window[ "MWEMBED_VERSION" ];
 			var deferred = $.Deferred();
 			var ks = _this.kClient.getKs();
 			if( ks ){
@@ -1628,8 +1666,12 @@ mw.KWidgetSupport.prototype = {
 		var thumbUrl = thumb.url;
 		// Only append width/height params if thumbnail from kaltura service ( could be external thumbnail )
 		if( thumbUrl.indexOf( "thumbnail/entry_id" ) != -1 ){
-			thumbUrl += '/width/' + thumb.width;
-			thumbUrl += '/height/' + thumb.height;
+
+			if( mw.getConfig('EmbedPlayer.ShowOriginalPoster') ){
+				thumbUrl += '/width/0/height/0';
+			} else {
+				thumbUrl += '/width/' + thumb.width + '/height/' + thumb.height;
+			}
 		}
 		return thumbUrl;
 	},

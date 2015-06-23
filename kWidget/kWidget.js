@@ -245,7 +245,10 @@
 			// Support closing menu inside the player
 			if (!mw.getConfig('EmbedPlayer.IsIframeServer')) {
 				document.onclick = function () {
-					player.sendNotification('onFocusOutOfIframe');
+					//If player is destroyed don't send notification
+					if (!_this.destroyedWidgets[ player.id ]) {
+						player.sendNotification( 'onFocusOutOfIframe' );
+					}
 				};
 			}
 			// Check for proxied jsReadyCallback:
@@ -429,6 +432,16 @@
 							// write out a message:
 							if (elm && elm.parentNode) {
 								var divTarget = document.createElement("div");
+                                divTarget.style.backgroundColor = "#000000";
+                                divTarget.style.color = "#a4a4a4";
+                                divTarget.style.width = elm.style.width;
+                                divTarget.style.height = elm.style.height;
+                                divTarget.style.display = "table-cell";
+                                divTarget.style.verticalAlign = "middle";
+                                divTarget.style.textAlign = "center";
+                                divTarget.style.fontSize = "1.5em";
+                                divTarget.style.fontFamily = "Arial";
+                                divTarget.style.fontWeight = "normal";
 								divTarget.innerHTML = unescape(msg);
 								elm.parentNode.replaceChild(divTarget, elm);
 							}
@@ -1416,7 +1429,24 @@
 							;
 						};
 						// add the services.php includes:
-						_this.appendScriptUrl(baseUiConfJsUrl + _this.embedSettingsToUrl(settings) + '&callback=' + cbName);
+						var scriptUrl = baseUiConfJsUrl + _this.embedSettingsToUrl(settings) + '&callback=' + cbName;
+						if (scriptUrl.length > 4096){
+							_this.log( "Warning iframe requests (" + scriptUrl.length + ") exceeds 4096 characters, won't cache on CDN." )
+							$.ajax({
+								type: "POST",
+								dataType: 'text',
+								url: _this.getIframeUrl(),
+								data: _this.embedSettingsToUrl(settings)
+							}).success(function (data) {
+									var contentData = {content: data};
+									window[cbName](contentData);
+								})
+								.error(function (e) {
+									_this.log("Error in player iframe request");
+							});
+						}else{
+							_this.appendScriptUrl(scriptUrl);
+						}
 					} else {
 						// add the callback
 						_this.uiConfScriptLoadListCallbacks[ cbName ].push(callback);
@@ -2155,9 +2185,6 @@
 			url += this.flashVarsToUrl(settings.flashvars);
 
 			return url;
-		},
-		forceJSONP: function(){
-			mw.setConfig( "Kaltura.ForceJSONP", true );
 		},
 		/**
 		 * Overrides flash embed methods, as to optionally support HTML5 injection

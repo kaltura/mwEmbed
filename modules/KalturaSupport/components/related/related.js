@@ -6,9 +6,8 @@
 			parent: "topBarContainer",
 			order: 4,
 			align: "right",
-			tooltip: 'Related',
+			tooltip: gM('mwe-embedplayer-related'),
 			showTooltip: true,
-			//visible: false,
 			itemsLimit: 12,
 			displayOnPlaybackDone: true,
 			autoContinueEnabled: true,
@@ -249,12 +248,11 @@
 		},
 		isValidResult: function( data ){
 			// Check if we got error
-			if( !data
-				||
-				( data.code && data.message )
-				){
-				this.log('Error getting related items: ' + data.message);
-				this.getBtn().hide();
+			if( !data || data.length === 0	||( data.code && data.message )	){
+				var errMsg = data.message ? data.message : 'No related items were found.';
+				this.log('Error getting related items: ' + errMsg );
+				this.updateTooltip(gM('mwe-embedplayer-related-errMsg'));
+				this.onDisable();
 				this.error = true;
 				return false;
 			}
@@ -382,7 +380,9 @@
 			this.getPlayer().sendNotification('changeMedia', data);
 			this.bind('onChangeMediaDone', function(){
 				_this.updateViewedEntries(data.entryId);
-				_this.getPlayer().play();
+				if (_this.getPlayer().canAutoPlay()) {
+					_this.getPlayer().play();
+				}
 				_this.unbind('onChangeMediaDone');
 			});
 			this.hideScreen();
@@ -396,9 +396,13 @@
 			if( property == 'timeRemaining' ){
 				if( this.getConfig('formatCountdown')){
 					var timeFormat = mw.KDPMapping.prototype.formatFunctions.timeFormat;
-					this.getScreen().find('.remaining').html(timeFormat(value));
+					this.getScreen().then(function(screen){
+						screen.find('.remaining').html(timeFormat(value));
+					});
 				}else{
-					this.getScreen().find('.remaining').html(value);
+					this.getScreen().then(function(screen){
+						screen.find('.remaining').html(value);
+					});
 				}
 			}
 		},

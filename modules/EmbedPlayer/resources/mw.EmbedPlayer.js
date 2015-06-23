@@ -424,7 +424,9 @@
 
 			var eventStateMap = {
 				'playerReady': 'start',
-				'onplay': 'load',
+				'onplay': function () {
+					return _this.isPlaying() ? 'play' : 'load';
+				},
 				'playing': 'play',
 				'onPauseInterfaceUpdate': 'pause',
 				'onEndedDone': 'end',
@@ -1159,11 +1161,7 @@
 		postSequenceFlag: false,
 		onClipDone: function () {
 			var _this = this;
-			this.shouldEndClip = false;
-			if ( _this.clipDoneTimeout ){
-				clearTimeout(_this.clipDoneTimeout);
-				_this.clipDoneTimeout = null;
-			}
+			this.cancelClipDoneGuard();
 			// Don't run onclipdone if _propagateEvents is off
 			if (!_this._propagateEvents) {
 				return;
@@ -1241,21 +1239,13 @@
 		replay: function () {
 			var _this = this;
 			var startTime = 0.01;
-			// Needed to exit current scope of the player and make sure replay happend
+			// Needed to exit current scope of the player and make sure replay happened
 			setTimeout(function () {
 				if (_this.startOffset) {
 					startTime = _this.startOffset;
 				}
-				_this.stopEventPropagation();
-				_this.unbindHelper("seeked.replay").bindOnceHelper("seeked.replay", function () {
-					// Restore events after we rewind the player
-					mw.log("EmbedPlayer::onClipDone:Restore events after we rewind the player");
-					_this.restoreEventPropagation();
-
-					_this.play();
-					return;
-				});
-				_this.seek(startTime);
+				// Set stopAfterSeek to false to init playback after rewind
+				_this.seek(startTime, false);
 			}, 10);
 		},
 
@@ -1311,6 +1301,7 @@
 				_this.getVideoHolder().hide();
 				_this.getInterface().height(_this.layoutBuilder.getComponentsHeight());
 			}
+
 			// Update layout
 			this.doUpdateLayout();
 
@@ -1350,8 +1341,8 @@
 
 		doUpdateLayout: function (skipTrigger) {
 			// Set window height if in iframe:
-			var containerHeight = this.getInterface().height();
-			var newHeight = containerHeight - this.layoutBuilder.getComponentsHeight();
+            var containerHeight = this.layoutBuilder.getContainerHeight();
+            var newHeight = containerHeight - this.layoutBuilder.getComponentsHeight();
 			var currentHeight = this.getVideoHolder().height();
 			var deltaHeight = Math.abs(currentHeight - newHeight);
 			mw.log('EmbedPlayer: doUpdateLayout:: containerHeight: ' +
@@ -1706,12 +1697,6 @@
 				if (_this.getError()) {
 					// Reset changeMediaStarted flag
 					_this.changeMediaStarted = false;
-					if (_this.playlist) {
-						// Allow user to move to next/previous entries
-						_this.playlist.enablePrevNext();
-						_this.playlist.addClipBindings();
-						_this.layoutBuilder.closeAlert();
-					}
 					_this.showErrorMsg(_this.getError());
 					return;
 				}
@@ -1719,10 +1704,13 @@
 				var changeMediaDoneCallback = function () {
 					// Reset changeMediaStarted flag
 					_this.changeMediaStarted = false;
-
+					//remove black bg when showing poster after change media
+					$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
 					// reload the player
 					if (_this.autoplay && _this.canAutoPlay() ) {
-						_this.removePoster();
+						if (!_this.isAudioPlayer) {
+							_this.removePoster();
+						}
 						_this.play();
 					}
 
@@ -1814,7 +1802,7 @@
 		 * Updates the poster HTML
 		 */
 		updatePosterHTML: function () {
-			mw.log('EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
+            mw.log('EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
 			var _this = this;
 
 			if (this.isImagePlayScreen()) {
@@ -1915,6 +1903,14 @@
 				}
 			}
 			return false;
+		},
+		/**
+		 * Checks if player supports DVR
+		 *
+		 * @returns boolean true if the mwEmbed player supports DVR, false if not
+		 */
+		isDvrSupported: function(){
+			return (mw.isNativeApp() || !mw.isAndroid());
 		},
 		/**
 		 * Checks if the native player is persistent in the dom since the intial page build out.
@@ -2184,6 +2180,10 @@
 			}
 			var _this = this;
 			var $this = $(this);
+			if (this.currentState == "end") {
+				// prevent getting another clipdone event on replay
+				this.seek(0.01, false);
+			}
 			// Store the absolute play time ( to track native events that should not invoke interface updates )
 			mw.log("EmbedPlayer:: play: " + this._propagateEvents + ' isStopped: ' + _this.isStopped());
 			this.absoluteStartPlayTime = new Date().getTime();
@@ -2227,11 +2227,6 @@
 					mw.log("EmbedPlayer:: isInSequence, do NOT play content");
 					return false;
 				}
-			}
-
-			if (this.currentState == "end") {
-				// prevent getting another clipdone event on replay
-				this.seek(0.01, false);
 			}
 
 			// Remove any poster div ( that would overlay the player )
@@ -2413,6 +2408,8 @@
 			this.hideSpinner();
 			// trigger on pause interface updates
 			this.disableComponentsHover();
+			//clear clipDone guard handler
+			this.clearClipDoneGuard();
 			$(this).trigger('onPauseInterfaceUpdate');
 		},
 		/**
@@ -2472,11 +2469,11 @@
 
 
 		togglePlayback: function () {
-			if (this.paused) {
-				this.play();
-			} else {
-				this.pause();
-			}
+				if (this.paused) {
+					this.play();
+				} else {
+					this.pause();
+				}
 		},
 		isMuted: function () {
 			return this.muted;
@@ -2647,8 +2644,8 @@
 
 				if (!_this.seeking) {
 					this.updatePlayheadStatus();
+					this.checkClipDoneCondition();
 				}
-
 
 				// mw.log('trigger:monitor:: ' + this.currentTime );
 				$(_this).trigger('monitorEvent');
@@ -2746,34 +2743,57 @@
 		 * Updates the player time and playhead position based on currentTime
 		 */
 		updatePlayheadStatus: function () {
-			var _this = this;
-
 			if ( this.currentTime >= 0 && this.duration ) {
 				if (!this.userSlide && !this.seeking ) {
 					var playHeadPercent = ( this.currentTime - this.startOffset ) / this.duration;
 					this.updatePlayHead(playHeadPercent);
 				}
+			}
+		},
+		checkClipDoneCondition: function(){
+			if ( this.currentTime >= 0 && this.duration ) {
 				// Check if we are "done"
-				var endPresentationTime = this.duration;
 				if (!this.isLive()) {
-					var endTime =  ( this.currentTime - this.startOffset ) / endPresentationTime  ;
-					if ((this.currentTime - this.startOffset) >= endPresentationTime && !this.isStopped()) {
-						mw.log("EmbedPlayer::updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime);
-						_this.onClipDone();
+					var endPresentationTime = this.duration;
+					var dvrWindow = ( this.currentTime - this.startOffset );
+					var endTimeRatio =  dvrWindow / endPresentationTime  ;
+					if (dvrWindow >= endPresentationTime && !this.isStopped()) {
+						this.log("updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime);
+						this.onClipDone();
 						//sometimes we don't get the "end" event from the player so we trigger clipdone
-					} else if ( endTime >= .99 && !this.isInSequence() && !_this.clipDoneTimeout && this.shouldEndClip) {
-						_this.clipDoneTimeout = setTimeout(function () {
-							if ( _this.shouldEndClip && !_this.isLive() ) {
-								mw.log("EmbedPlayer::updatePlayheadStatus > should run clip done :: " + _this.currentTime);
-								_this.onClipDone();
-							}
-							_this.clipDoneTimeout = null;
-						}, endPresentationTime * 0.02 * 1000)
+					} else if ( endTimeRatio >= .99 && !this.isInSequence()) {
+						this.setClipDoneGuard();
 					}
 				}
 			}
 		},
 
+		setClipDoneGuard: function(){
+			if (!this.clipDoneTimeout && this.shouldEndClip) {
+				var _this = this;
+				var timeoutVal = (this.duration * 0.02 * 1000);
+				this.log( "Setting clip done guard check in " + (timeoutVal / 1000) + " seconds" );
+				this.clipDoneTimeout = setTimeout( function () {
+					if ( _this.shouldEndClip && !_this.isLive() ) {
+						_this.log( "clipDone guard > should run clip done :: " + _this.currentTime );
+						_this.onClipDone();
+					}
+					_this.clipDoneTimeout = null;
+				}, timeoutVal );
+			}
+		},
+		cancelClipDoneGuard: function() {
+			this.log("Cancel clipDone guard");
+			this.shouldEndClip = false;
+			this.clearClipDoneGuard();
+		},
+		clearClipDoneGuard: function() {
+			if ( this.clipDoneTimeout ){
+				this.log("Clear clipDone guard timer");
+				clearTimeout(this.clipDoneTimeout);
+				this.clipDoneTimeout = null;
+			}
+		},
 		/**
 		 * Abstract getPlayerElementTime function
 		 */
@@ -3116,7 +3136,7 @@
 				if (!mw.getConfig('EmbedPlayer.DisableBufferingSpinner')) {
 					setTimeout(function () {
 						//avoid spinner for too short buffer
-						if (!_this.isInSequence() && _this.buffering) {
+						if (!_this.isInSequence() && _this.buffering && !_this.paused) {
 							_this.addPlayerSpinner();
 						}
 					}, _this.monitorRate);
@@ -3156,7 +3176,7 @@
 				if (!message || message == undefined){
 					message = this.getKalturaMsg('ks-CLIP_NOT_FOUND');
 				}
-				this.showErrorMsg({ title: this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'), message: message });
+                this.showErrorMsg({ title: this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'), message: message });
 
 			}
 		},
@@ -3164,6 +3184,7 @@
 		/**
 		 * Some players parse playmanifest and reload flavors list by calling this function
 		 * @param data
+		 * Exmaple:[{"bandwidth":517120,"type":"video/mp4","assetid":0,"height":0},{"bandwidth":727040,"type":"video/mp4","assetid":1,"height":0},{"bandwidth":1041408,"type":"video/mp4","assetid":2,"height":0}
 		 */
 		onFlavorsListChanged: function (newFlavors) {
 			//we can't use simpleFormat with flavors that came from playmanifest otherwise sourceSelector list won't match

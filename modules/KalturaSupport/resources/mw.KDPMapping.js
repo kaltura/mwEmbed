@@ -528,6 +528,13 @@
 							} else {
 								return "";
 							}
+							break;
+						case 'streamerType':
+							if (embedPlayer){
+								return embedPlayer.streamerType;
+							}
+							return "";
+							break;
 					}
 					break;
 				case 'embedServices':
@@ -1162,23 +1169,6 @@
 					embedPlayer.emptySources();
 					break;
 				case 'changeMedia':
-					// check if we are in a playlist
-					if( embedPlayer.playlist  &&  !notificationData.playlistCall ){
-						var clipList = embedPlayer.playlist.sourceHandler.getClipList();
-						// search playlist for entryId
-						for( var inx =0; inx < clipList.length; inx++ ){
-							var clip = clipList[inx];
-							// todo ( why is this not read from playlist source hander? )
-							var autoContinue = embedPlayer.playlist.sourceHandler.autoContinue
-							if( clip.id == notificationData.entryId ){
-								// issue playlist index update ( not a direct changeMedia call
-								 embedPlayer.playlist.playClip( inx, autoContinue );
-								 // don't continue with normal change media.
-								 return ;
-							}
-						};
-					}
-
 					// Check changeMedia if we don't have entryId and referenceId and they both not -1 - Empty sources
 					if( ( ! notificationData.entryId || notificationData.entryId == "" || notificationData.entryId == -1 )
 						&& ( ! notificationData.referenceId || notificationData.referenceId == "" || notificationData.referenceId == -1 ) 
@@ -1232,6 +1222,7 @@
 							window.kalturaIframePackageData.entryResult = notificationData.mediaProxy;
 							// update plugin possition. Future refactor should treat mediaProxy as plugin  
 							embedPlayer.playerConfig.plugins['mediaProxy'] = notificationData.mediaProxy;
+							embedPlayer.playerConfig.plugins['mediaProxy'].manualProvider = true;
 						}
 						
 						// Run the embedPlayer changeMedia function

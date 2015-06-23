@@ -146,6 +146,9 @@
 // Include our configuration file
 require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' );
 
+require_once( dirname( __FILE__ ) . '/modules/KalturaSupport/KalturaCommon.php' );
+$requestHelper = $container['request_helper'];
+
 function isValidHost( $url = null ){
 	global $kConf;
 	
@@ -240,9 +243,10 @@ if ( !$url ) {
 	// Forward the client ip for GeoLookup: ( geo-lookup server hopefully is not dumb and uses X-Forwarded-For ) 
 	curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 		'X-Forwarded-For: ' . $_SERVER['REMOTE_ADDR'],
+		// Add kaltura x-remote-address headers:
+		$requestHelper->getRemoteAddrHeader(),
 		'Expect:' // used to ignore "100 Continue Header" when using POST
 	));
-	
 	
 	// Forward the user agent:
 	curl_setopt( $ch, CURLOPT_USERAGENT, isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '' );

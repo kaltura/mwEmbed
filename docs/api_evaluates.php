@@ -80,6 +80,15 @@
 		),
 		'utility.referrer_host' => array(
 			'desc' => 'Retrieve the referrer host',
+		),
+		'utility.nativeAd' => array(
+			'desc' => 'The native device identifier, 
+				<a href="https://developer.apple.com/library/ios/documentation/AdSupport/Reference/ASIdentifierManager_Ref/#//apple_ref/occ/instp/ASIdentifierManager/advertisingIdentifier">
+					AdvertisingIdentifier
+				</a> for Apple and <a href="http://developer.android.com/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info.html">
+					AdvertisingIdClient
+				</a> for Android.',
+			'example' => '../modules/KalturaSupport/tests/StandAlonePlayerMediaProxyOverride.html'
 		)
 	);
 ?>

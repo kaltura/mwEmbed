@@ -159,8 +159,8 @@
 				// Start of preSequence
 				embedPlayer.triggerHelper( 'AdSupport_PreSequence');
 
-				mw.log( 'EmbedPlayer::preSeek : prevented seek during ad playback');
 				embedPlayer.unbindHelper("preSeek" + _this.bindPostfix).bindHelper("preSeek" + _this.bindPostfix, function(e, seekTime, stopAfterSeek, stopSeek) {
+					mw.log( 'AdTimeline::preSeek : prevented seek during ad playback');
 					embedPlayer.unbindHelper( "preSeek" + _this.bindPostfix );
 					stopSeek.value = true;
 					_this.pendingSeek = true;
@@ -270,6 +270,8 @@
 						embedPlayer.triggerHelper( 'AdSupport_PostSequenceComplete' );
 						/** TODO support postroll bumper and leave behind */
 						function onPostRollDone(){
+							// Restore interface
+							_this.restorePlayer( "postroll", playedAnAdFlag );
 							// Restore ondone interface:
 							embedPlayer.onDoneInterfaceFlag = true;
 							// on clip done can't be invoked with a stop state ( TOOD clean up end sequence )
@@ -279,7 +281,7 @@
 							// Run the clipdone event:
 							embedPlayer.onClipDone();
 						}
-						if( playedAnAdFlag ){
+						if( playedAnAdFlag && !embedPlayer.isVideoSiblingEnabled()){
 							embedPlayer.switchPlaySource( _this.originalSource, function( video ){
 								// Make sure we pause the video
 								video.pause();
@@ -288,8 +290,6 @@
 									video.pause();
 									$( video ).unbind( '.postSequenceComplete' );
 								});
-								// Restore interface
-								_this.restorePlayer( 'postroll', true );
 								onPostRollDone();
 							});
 						} else {
@@ -441,6 +441,7 @@
 
 			if (this.pendingSeek){
 				this.pendingSeek = false;
+				mw.log( 'AdTimeline:: Seek back to preSeek time');
 				embedPlayer.seek(this.pendingSeekData.seekTime, this.pendingSeekData.stopAfterSeek);
 			} else {
 				//If seek wasn't performed then and ad sequence is over then remove the seek handler

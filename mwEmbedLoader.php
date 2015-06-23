@@ -1,5 +1,5 @@
 <?php
-// Include configuration 
+// Include configuration
 require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' );
 require_once( realpath( dirname( __FILE__ ) ) . '/modules/KalturaSupport/KalturaCommon.php' );
 
@@ -7,6 +7,12 @@ require_once( realpath( dirname( __FILE__ ) ) . '/modules/KalturaSupport/Kaltura
 // Include MwEmbedWebStartSetup.php for all of mediawiki support
 if( isset( $_GET['autoembed'] ) ){
 	require_once( realpath( dirname( __FILE__ ) ) . '/modules/ExternalPlayers/ExternalPlayers.php' );
+	$externalPlayersPath =  realpath( dirname( __FILE__ ) ) . '/modules/ExternalPlayers/ExternalPlayers.';
+    if( is_file( $externalPlayersPath . "json" ) ){
+        $plugins = json_decode( file_get_contents($externalPlayersPath . "json"), TRUE );
+    } elseif( is_file( $externalPlayersPath . "php" ) ){
+        $plugins = include($externalPlayersPath . "php");
+    }
 	require ( dirname( __FILE__ ) . '/includes/MwEmbedWebStartSetup.php' );
 	require_once( realpath( dirname( __FILE__ ) ) . '/modules/KalturaSupport/kalturaIframeClass.php' );
 }
@@ -47,8 +53,8 @@ class mwEmbedLoader {
 		// Get kWidget utilities:
 		'kWidget/kWidget.util.js',	
 		// kWidget basic api wrapper
-		//'resources/crypto/MD5.js', // currently commented out sig on api requests 
-		'kWidget/kWidget.api.js',
+		'resources/crypto/MD5.js',
+		'kWidget/kWidget.api.js'
 	);
 
 	function request() {
@@ -276,7 +282,7 @@ class mwEmbedLoader {
 		}
 		if( $this->getUiConfObject()->getPlayerConfig( null, 'Kaltura.ForceFlashOnIE10' ) === true ){
 			$o.="\n".'mw.setConfig(\'Kaltura.ForceFlashOnIE10\', true );' . "\n";
-		} 
+		}
 
 		if( $this->getUiConfObject()->isJson() ) {
 			$o.="\n"."kWidget.addUserAgentRule('{$this->request()->get('uiconf_id')}', '/.*/', 'leadWithHTML5');";
@@ -382,7 +388,7 @@ class mwEmbedLoader {
 			$wgKalturaUseManifestUrls, $wgHTTPProtocol, $wgKalturaServiceUrl, $wgKalturaServiceBase,
 			$wgKalturaCDNUrl, $wgKalturaStatsServiceUrl,$wgKalturaLiveStatsServiceUrl, $wgKalturaIframeRewrite, $wgEnableIpadHTMLControls,
 			$wgKalturaAllowIframeRemoteService, $wgKalturaUseAppleAdaptive, $wgKalturaEnableEmbedUiConfJs,
-			$wgKalturaGoogleAnalyticsUA;
+			$wgKalturaGoogleAnalyticsUA, $wgHTML5PsWebPath;
 		$exportedJS ='';
 		// Set up globals to be exported as mwEmbed config:
 		$exportedJsConfig= array(
@@ -404,10 +410,15 @@ class mwEmbedLoader {
 			'Kaltura.UseAppleAdaptive' => $wgKalturaUseAppleAdaptive,
 			'Kaltura.EnableEmbedUiConfJs' => $wgKalturaEnableEmbedUiConfJs,
 			'Kaltura.PageGoogleAnalytics' => $wgKalturaGoogleAnalyticsUA,
-			'Kaltura.APITimeout' => 10000
+			'Kaltura.APITimeout' => 10000,
+			'Kaltura.kWidgetPsUrl' => $wgHTML5PsWebPath
 		);
 		if( isset( $_GET['pskwidgetpath'] ) ){
 			$exportedJsConfig[ 'Kaltura.KWidgetPsPath' ] = htmlspecialchars( $_GET['pskwidgetpath'] );
+		}
+		//For embed services pass "AllowIframeRemoteService" to client so it will be able to pass back the alternative service URL
+		if ($this->request()->isEmbedServicesEnabled()){
+		    $exportedJsConfig['Kaltura.AllowIframeRemoteService'] = true;
 		}
 		
 		// Append Custom config:

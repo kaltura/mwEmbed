@@ -70,7 +70,6 @@
 		},
 
 		loadMedia: function (readyCallback) {
-
 			var _this = this;
 			var srcToPlay = _this.getSrc();
 
@@ -122,6 +121,7 @@
 					isMimeType("video/ism")
 				) {
 					_this.isMulticast = false;
+                    _this.streamerType = 'smoothStream';
 
 					flashvars.smoothStreamPlayer = true;
 					flashvars.preload = "auto";
@@ -129,6 +129,7 @@
 					//flashvars.debug = true;
 
 					if (isMimeType("video/playreadySmooth")) {
+						flashvars.preload = "none";
 						var licenseUrl = _this.getKalturaConfig(null, 'playreadyLicenseUrl') || mw.getConfig('Kaltura.LicenseServerURL');
 						if (!licenseUrl) {
 							mw.log('EmbedPlayerSPlayer::Error:: failed to retrieve playready license URL ');
@@ -224,7 +225,8 @@
 						'textTracksReceived': 'onTextTracksReceived',
 						'textTrackSelected': 'onTextTrackSelected',
 						'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions',
-						'error': 'onError'
+						'error': 'onError',
+						'alert': 'onError'
 					};
 
 					_this.playerObject = playerElement;
@@ -235,15 +237,18 @@
 					if (_this.getFlashvars('stretchVideo')) {
 						playerElement.stretchFill();
 					}
-					//readyCallback();
 
 					if ( isMimeType("video/mp4")
 						||
 						isMimeType("video/h264")
+						||
+						isMimeType("video/playreadySmooth")
+						||
+						_this.isLive()
 						){
 						_this.durationReceived = true;
-						readyCallback();
 					}
+					readyCallback();
 				});
 			}
 
@@ -321,8 +326,8 @@
 		 * parent_play
 		 */
 		onPlay: function () {
-			//workaround to avoid two playing events with autoPlay.
-			if (!this.durationReceived) {
+			////workaround to avoid two playing events with autoPlay.
+			if (!this.durationReceived ) {
 				return;
 			}
 			if (this._propagateEvents) {
@@ -379,9 +384,10 @@
 			this.currentTime = this.slCurrentTime = 0;
 		},
 
-		onError: function (data) {
-			mw.log('EmbedPlayerSPlayer::onError ');
-			this.triggerHelper('embedPlayerError', [ JSON.parse(data) ]);
+		onError: function (message) {
+			var data = {errorMessage: message};
+			mw.log('EmbedPlayerSPlayer::onError: ' + message);
+			this.triggerHelper('embedPlayerError', [ data ]);
 		},
 
 		handlePlayerError: function (data) {
@@ -413,7 +419,10 @@
 		play: function () {
 			mw.log('EmbedPlayerSPlayer::play');
 			var _this = this;
-			if (this.durationReceived && this.parent_play()) {
+			if ( this.parent_play() ) {
+				//TODO:: Currently SL player initializes before actual volume is read from cookie, so we set it on play
+				//need to refactor the volume logic and remove this.
+				this.setPlayerElementVolume(this.volume);
 				//bring back the player
 				this.getPlayerContainer().css('visibility', 'visible');
 				if (this.isMulticast) {
@@ -661,7 +670,10 @@
 		},
 		switchSrc: function (source) {
 			if (this.playerObject && this.mediaElement.getPlayableSources().length > 1) {
-				var trackIndex = this.getSourceIndex(source);
+				var trackIndex = -1;
+                if( source !== -1 ) {
+                    trackIndex = this.getSourceIndex(source);
+                }
 				mw.log("EmbedPlayerSPlayer:: switch to track index: " + trackIndex);
 				$(this).trigger('sourceSwitchingStarted', [
 					{ currentBitrate: source.getBitrate() }

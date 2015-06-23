@@ -47,10 +47,16 @@ $uiVars = array(
 			),
 			'Kaltura.ForceFlashOnDesktop' => array(
 					'type' => 'String',
-					'desc' => 'If the player should be forced to use flash on desktop.',
+					'desc' => 'If the player should be forced to use flash on desktop (kdp only).',
 					'default' => 'false',
 					'example' => '../modules/KalturaSupport/tests/ForceFlashOnDesktop.html'
 			),
+			'Kaltura.ForceFlashOnDesktopSafari' => array(
+            					'type' => 'String',
+            					'desc' => 'If the player should be forced to use flash on desktop Safari.',
+            					'default' => 'false',
+            					'example' => '../modules/KalturaSupport/tests/ForceFlashOnDesktopSafari.html'
+            			),
 			'Kaltura.EnableEmbedUiConfJs' => array(
 					'type' => 'String',
 					'desc' => 'If the player should request uiConf Javascript prior to embed',
@@ -118,12 +124,6 @@ $uiVars = array(
 					'desc' => 'If apple HLS streams should be used when available',
 					'default' => 'true',
 					'example' => '../modules/KalturaSupport/tests/UseHLS_WhereAvailable.qunit.html'
-			),
-			'Kaltura.ForceJSONP' => array(
-					'type' => 'Boolean',
-					'desc' => 'If API calls should use the JSONP protocol',
-					'default' => 'false',
-					'example' => ''
 			),
 			'LeadWithHLSOnFlash' => array(
 					'type' => 'Boolean',
@@ -215,6 +215,12 @@ $uiVars = array(
 					'availability' => 'kdp',
 					'example' => ''
 			),
+			'strings.ks-no-flash-installed' => array(
+            					'type' => 'String',
+            					'desc' => 'No Flash installed message for IE8 users. This Flashvar can be used only through mw.setConfig(). For example: mw.setConfig( \'strings.ks-no-flash-installed\' , \'Flash Player nėra įdiegtas jūsų kompiuteryje\' ); Note: IE8 may parse utf-8 characters incorrectly. To translate the message, save the HTML file with UTF-8 encoding and add a META tag to the HEAD of the HTML page: &lt;META http-equiv=Content-Type content=\'text/html; charset=utf-8\'&gt;',
+            					'default' => 'Flash does not appear to be installed or active. Please install or activate Flash.',
+            					'example' => ''
+            ),
 		)
 	),
 	'mediaEntry' => array(
@@ -315,7 +321,13 @@ $uiVars = array(
 				'default' => 'false',
 				'availability' => 'kdp',
 				'example' => ''
-			)
+			),
+			'liveCore.showThumbnailWhenOffline' => array(
+            				'type' => 'Boolean',
+            				'desc' => 'Flag indicating whether the the default thumbnail should be shown if live stream becomes offline',
+            				'default' => 'false',
+            				'example' => ''
+            )
 		)
 	),
 	'layout' => array(
@@ -438,6 +450,12 @@ $uiVars = array(
 				'default' => 'false',
 				'example' => '../modules/KalturaSupport/tests/AutoPlay.qunit.html'
 			),
+			'EmbedPlayer.WebKitPlaysInline' => array(
+            			 		'type' => 'Boolean',
+            					'desc' => "Determines if should play the video inline or not",
+            					'default' => 'false',
+            					'example' => ''
+            ),
 			'autoMute' => array(
 				'type' => 'Boolean',
 				'desc' => 'Determine whether to start playback with volume muted (usually used by video ads or homepage auto play videos)',
@@ -620,9 +638,9 @@ $uiVars = array(
 					'example' => ''
 			),
 			/*'EmbedPlayer.WebKitPlaysInline' => array(
-			 'type' => '',
-					'desc' => "",
-					'default' => '',
+			 		'type' => 'Boolean',
+					'desc' => "Determines if should play the video inline or not",
+					'default' => 'false',
 					'example' => ''
 			),
 			'EmbedPlayer.WebKitAllowAirplay' => array(
@@ -657,7 +675,13 @@ $uiVars = array(
 			),
 			'EmbedPlayer.EnableIpadNativeFullscreen' => array(
 					'type' => 'Boolean',
-					'desc' => "Whether to use the native device fullscreen call",
+					'desc' => "Whether to use the native device fullscreen call on iPad",
+					'default' => 'false',
+					'example' => ''
+			),
+			'EmbedPlayer.EnableNativeChromeFullscreen' => array(
+					'type' => 'Boolean',
+					'desc' => "Whether to use the native device fullscreen call on Android Chrome",
 					'default' => 'false',
 					'example' => ''
 			),
@@ -684,6 +708,12 @@ $uiVars = array(
 					'desc' => "When set to true, movie thumbnail doesn't show upon movie load (before playback starts)",
 					'default' => 'false',
 					'example' => ''
+			),
+			'EmbedPlayer.ShowOriginalPoster' => array(
+					'type' => 'Boolean',
+					'desc' => "When set to true, the thumbnail is loaded with its original size",
+					'default' => 'false',
+					'example' => '../modules/KalturaSupport/tests/ImageEntry.html'
 			),
 			/*'EmbedPlayer.SourceAttributes' => array(
 			 'type' => '',

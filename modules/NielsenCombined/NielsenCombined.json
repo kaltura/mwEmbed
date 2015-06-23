@@ -1,0 +1,6 @@
+{
+    "mw.NielsenCombined": {
+        "scripts": "resources/mw.NielsenCombined.js",
+        "kalturaPluginName": "nielsenCombined"
+    }
+}

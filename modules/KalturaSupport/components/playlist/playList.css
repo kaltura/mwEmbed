@@ -210,6 +210,7 @@
 	width: 20px;
 	height: 100%;
 	opacity: .7;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=70)";
 	text-decoration: none;
 	position: absolute;
 	z-index: 3;
@@ -233,9 +234,19 @@
 .playlistAPI .k-chapters-container .k-next.disabled {
 	visibility: hidden;
 }
+.playlistAPI .k-chapters-container .k-next.fixed.disabled {
+	visibility: visible;
+	cursor: auto;
+	opacity: 0.4;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
+}
 
 .playlistAPI .k-chapters-container .k-next:hover {
-	background-color: rgba(255, 255, 255, .5);
+	background-color: #8F8F8F;
+}
+
+.playlistAPI .k-chapters-container .k-next.fixed {
+	background-color: #8F8F8F;
 }
 
 .playlistAPI .k-chapters-container .k-prev {
@@ -246,9 +257,19 @@
 .playlistAPI .k-chapters-container .k-prev.disabled {
 	visibility: hidden;
 }
+.playlistAPI .k-chapters-container .k-prev.fixed.disabled {
+	visibility: visible;
+	cursor: auto;
+	opacity: 0.4;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
+}
 
 .playlistAPI .k-chapters-container .k-prev:hover {
-	background-color: rgba(255, 255, 255, .5);
+	background-color: #8F8F8F;
+}
+
+.playlistAPI .k-chapters-container .k-prev.fixed {
+	background-color: #8F8F8F;
 }
 
 .playlistAPI .k-chapters-container .k-start-time span {
@@ -401,8 +422,6 @@
 .playlistAPI .k-horizontal.k-medialist-header {
 	background-color: #161616;
 	border-bottom: 1px solid #434343;
-	height: 30px;
-	padding-top: 12px;
 }
 
 .playlistAPI .dropDownIcon {
@@ -420,7 +439,7 @@
 }
 
 .playlistAPI .k-horizontal .dropDownIcon {
-	margin-top: 0px;
+	margin-top: 13px;
 }
 
 .playlistAPI .dropDownIcon:hover {
@@ -482,7 +501,7 @@
 }
 
 .playlistAPI .playlistControls.k-horizontal {
-	top: 2px;
+	top: 13px;
 }
 
 .playlistAPI .playlistBtn {
@@ -528,7 +547,10 @@
 
 .playlistAPI .horizontalHeader {
 	display: inline;
-	paddin-top: 8px;
+	margin-top: 8px;
+}
+.playlistAPI .horizontalHeaderLables {
+	padding-top: 13px;
 }
 
 .playlistAPI .nano > .nano-pane   { background: #888; }

@@ -51,6 +51,18 @@
 		registePlayer: function (proxyElement) {
 			var _this = this;
 			this.proxyElement = proxyElement;
+
+			this.proxyElement.attr = function (attributeName, attributeValue) {
+				if (attributeName && attributeValue === undefined) {
+					return _this.proxyElement[ attributeName ];
+				} else if (attributeName && attributeValue) {
+					_this.proxyElement[attributeName] = attributeValue;
+					_this.execute('setAttribute', [ attributeName, attributeValue ]);
+					_this.proxyElement['language'] = mw.getConfig('localizationCode');
+					_this.execute('setAttribute', [ 'language', mw.getConfig('localizationCode') ]);
+				}
+			}
+			
 			for (var i = 0; i < this.playerMethods.length; i++) {
 				(function (method) {
 					_this.proxyElement[method] = function (arg) {
@@ -58,14 +70,7 @@
 					}
 				})(this.playerMethods[i]);
 			}
-			this.proxyElement.attr = function (attributeName, attributeValue) {
-				if (attributeName && attributeValue === undefined) {
-					return _this.proxyElement[ attributeName ];
-				} else if (attributeName && attributeValue) {
-					_this.proxyElement[attributeName] = attributeValue;
-					_this.execute('setAttribute', [ attributeName, attributeValue ]);
-				}
-			}
+
 
 			//TODO support more than 1 subscribe?
 			this.proxyElement.subscribe = function (callback, eventName) {
@@ -176,7 +181,9 @@
 		getVideoHolderHeight: function () {
 			return this.embedPlayer.getVideoHolder().height();
 		},
-
+		getControlBarHeight: function () {
+			return this.embedPlayer.getControlBarContainer().height();
+		},
 		stringConvertion: function (str) {
 			var value = parseFloat(str);
 

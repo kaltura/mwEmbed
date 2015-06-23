@@ -27,7 +27,16 @@
 			'cssFileName': 'modules/KalturaSupport/components/chapters/chapters.css',
 			'minDisplayWidth': 0,
 			'minDisplayHeight': 0,
-			'chapterSlideBoxRatio': (2/3)
+			'chapterSlideBoxRatio': (2/3),
+			enableKeyboardShortcuts: true,
+			"keyboardShortcutsMap": {
+				"goToActiveTile": "shift+73",   // Add Shift+I Sign for go to active tile
+				"expend": "190",                // Add > Sign for expend current chapter slides
+				"collapse": "188",              // Add < Sign for collapse current chapter slides
+				"expendAll": "shift+190",       // Add Shift+> Sign for expend all slides
+				"collapseAll": "shift+188"      // Add Shift+< Sign for collapse all slides
+
+			}
 		},
 
 		mediaList: [], //Hold the medialist items
@@ -42,6 +51,7 @@
 		barsMinimized: false,
 		searchResultShown: false,
 		chapterToggleEnabled: true,
+		maskKeyboardShortcuts: true,
 
 		setup: function () {
 			this.addBindings();
@@ -56,6 +66,10 @@
 				if (!_this.maskChangeStreamEvents) {
 					//Get chapters data from cuepoints
 					var chaptersRawData = _this.getCuePoints();
+					if (_this.getPlayer().isLive()){
+						//Live mode doesn't support chapters so disable toggling
+						_this.disableChapterToggle();
+					}
 					if ( chaptersRawData.length ) {
 						//Sort by time and/or cuepoint type
 						chaptersRawData.sort( function ( a, b ) {
@@ -76,8 +90,8 @@
 						//Create media items from raw data
 						_this.addMediaItems( chaptersRawData );
 						_this.markMediaItemsAsDisplayed( _this.mediaList );
-						//If no chapters then disable chapter toggling
-						if (_this.chaptersMap.length === 0){
+						//If no chapters or only chapters then disable chapter toggling
+						if (_this.chaptersMap.length === 0 || _this.mediaList.length === _this.chaptersMap.length){
 							_this.disableChapterToggle();
 						}
 						//Need to recalc all durations after we have all the items startTime values
@@ -89,10 +103,6 @@
 							_this.renderMediaList();
 							_this.updateActiveItem();
 						}
-					} else {
-						//If no cuepoints on start then player is in live mode
-						//and there are no chapters in live mode, so disable toggling
-						_this.disableChapterToggle();
 					}
 				}
 			});
@@ -130,13 +140,20 @@
 						var mediaItems = _this.createMediaItems(items);
 						if (_this.renderOnData) {
 							_this.renderOnData = false;
+							//Render only items that are in the DVR window, and save future items in temp list
+							var tempList = _this.mediaList;
+							_this.mediaList = items;
+							//Render the items to be shown
 							_this.renderMediaList();
+							//Return all items to media list
+							_this.mediaList = tempList;
 						} else {
 							_this.getComponent().find("ul").append(mediaItems);
 						}
 						//Mark current added items index as the index to start scroll from and re-init the scroll logic
 						_this.startFrom = _this.mediaList.length - _this.mediaItemVisible;
 						_this.configMediaListFeatures();
+						_this.renderScroller();
 						_this.updateActiveItem();
 						$( _this.embedPlayer ).trigger( "mediaListLayoutUpdated" );
 					}
@@ -190,12 +207,85 @@
 						.find(".k-title-container.mediaBoxText, .k-description-container.mediaBoxText").dotdotdot();
 				}, 100);
 			});
+
+			this.bind('onShowSideBar', function(){
+				//Enable keyboard bindings when menu is visible
+				_this.maskKeyboardShortcuts = false;
+				_this.focusSearchBar();
+			});
+			this.bind('onHideSideBar', function(){
+				_this.blurSearchBar();
+				//Prevent keyboard bindings when menu is hidden
+				_this.maskKeyboardShortcuts = true;
+			});
+			//key bindings
+			if (this.getConfig('enableKeyboardShortcuts')) {
+				this.bind('addKeyBindCallback', function (e, addKeyCallback) {
+					_this.addKeyboardShortcuts(addKeyCallback);
+				});
+			}
+		},
+		addKeyboardShortcuts: function (addKeyCallback) {
+			var _this = this;
+			// Add Shift+I for open side bar
+			addKeyCallback(this.getConfig("keyboardShortcutsMap").goToActiveTile, function () {
+				if (!_this.maskKeyboardShortcuts) {
+					_this.scrollToActiveItem();
+				}
+			});
+			// Add shift+> for expend all slides
+			addKeyCallback(this.getConfig("keyboardShortcutsMap").expendAll, function () {
+				if (!_this.maskKeyboardShortcuts) {
+					_this.expendAll();
+				}
+			});
+			// Add shift+< for collapse all slides
+			addKeyCallback(this.getConfig("keyboardShortcutsMap").collapseAll, function () {
+				if (!_this.maskKeyboardShortcuts) {
+					_this.collapseAll();
+				}
+			});
+			// Add > for expend current chapter slides
+			addKeyCallback(this.getConfig("keyboardShortcutsMap").expend, function () {
+				toggleItemChapter("expand");
+			});
+			// Add > for collapse current chapter slides
+			addKeyCallback(this.getConfig("keyboardShortcutsMap").collapse, function () {
+				toggleItemChapter("collapse");
+			});
+			function toggleItemChapter(toState) {
+				if ( !_this.maskKeyboardShortcuts ) {
+					var chapter;
+					var currentSelectedItem = document.activeElement;
+					var currentSelectedObj = $( currentSelectedItem );
+					var currentSelectedObjType = currentSelectedObj.data( "boxType" );
+					if ( currentSelectedObjType === mw.KCuePoints.THUMB_SUB_TYPE.CHAPTER ) {
+						chapter = currentSelectedItem;
+					} else if ( currentSelectedObjType === mw.KCuePoints.THUMB_SUB_TYPE.SLIDE ) {
+						var slideChapterIndex = currentSelectedObj.data( "chapterIndex" );
+						chapter = _this.getMediaListDomElements()
+							.filter( ".chapterBox[data-chapter-index=" + slideChapterIndex + "]" );
+					}
+					chapter = $(chapter);
+					var chapterCollapsed = (chapter.attr("data-chapter-collapsed") === "true");
+					if ((chapterCollapsed && toState === "expand") || (!chapterCollapsed && toState === "collapse")) {
+						_this.toggleChapter( chapter );
+					}
+					if (!chapterCollapsed && toState === "collapse"){
+						chapter.focus();
+					}
+				}
+			}
 		},
 		isSafeEnviornment: function () {
 			var cuePoints = this.getCuePoints();
 			var cuePointsExist = (cuePoints.length > 0);
 			return (!this.getPlayer().useNativePlayerControls() &&
-				( ( this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) || cuePointsExist));
+						(
+							( this.getPlayer().isLive() && this.getPlayer().isDvrSupported() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) ||
+					        ( !this.getPlayer().isLive() && cuePointsExist)
+						)
+					);
 		},
 		getCuePoints: function(){
 			var cuePoints = [];
@@ -233,17 +323,19 @@
 			return $(mediaListString );
 		},
 		getTemplateHTML: function(data){
+			var defer = $.Deferred();
 			//Fetch templates
 			var chapterTemplate = this.getTemplatePartialHTML("chapters");
 			var slideTemplate = this.getTemplatePartialHTML("slides");
 			var listTemplate = this.getTemplatePartialHTML("list");
 			//Return new list HTML string
-			return listTemplate({
+			var $templateHtml = listTemplate({
 				renderChapter: chapterTemplate,
 				renderSlide: slideTemplate,
 				meta: data.meta,
 				mediaList: data.mediaList
 			});
+			return defer.resolve($templateHtml);
 		},
 		getMetaData: function(){
 			var metaData = this._super();
@@ -275,9 +367,11 @@
 
 				mediaItem = {
 					order: orderId++,
+					tabIndex: 100 + orderId + 1,
 					id: item.id,
 					type: item.subType,
 					title: title,
+					collapsed: true,
 					description: description,
 					thumbnail: {
 						url: thumbnailUrl,
@@ -435,6 +529,7 @@
 				var searchBox = $( "<input/>", {
 					id: 'searchBox',
 					type: 'text',
+					tabindex: 100,
 					placeholder: gM('ks-chapters-search-placeholder'),
 					autocapitalize: "off",
 					autocorrect :"off",
@@ -462,6 +557,9 @@
 					.append( searchBoxWrapper )
 					//clear icon
 					.append( clearSearchBoxContainer );
+
+				//Cache searchBox jquery pointer
+				this.searchBox = searchBox;
 
 				//Add tooltip
 				this.getPlayer().layoutBuilder.setupTooltip(searchFormWrapper.find("#searchBoxCancelIcon"), "arrowTop");
@@ -596,6 +694,18 @@
 						_this.getPlayer().triggerHelper( "onEnableKeyboardBinding" );
 					} );
 			}
+		},
+		focusSearchBar: function(){
+			if (this.searchBox && !mw.isMobileDevice()){
+				this.searchBox.focus();
+			}
+
+		},
+		blurSearchBar: function(){
+			if (this.searchBox && !mw.isMobileDevice()){
+				this.searchBox.blur();
+			}
+
 		},
 		minimizeSearchBar: function(){
 			this.$searchFormWrapper.addClass("minimized");
@@ -910,9 +1020,11 @@
 			var delay = 0.1;
 			this.transitionsToBeFired = 0;
 			var slideBoxes = this.getComponent().find(".slideBox" );
-			slideBoxes.on('transitionend webkitTransitionEnd', function(e){
-				var $target = $( e.target ); // target letter transitionend fired on
-				if ( /transform/i.test( e.originalEvent.propertyName ) ) { // check event fired on "transform" prop
+			slideBoxes
+				.off('transitionend webkitTransitionEnd' )
+				.on('transitionend webkitTransitionEnd', function(e){
+					var $target = $( e.target ); // target letter transitionend fired on
+					if ( /transform/i.test( e.originalEvent.propertyName ) ) { // check event fired on "transform" prop
 					_this.transitionsToBeFired -= 1;
 					_this.transitionsToBeFired = _this.transitionsToBeFired < 0 ? 0 : _this.transitionsToBeFired;
 					$target.css( {transitionDelay: '0ms'} ); // set transition delay to 0 so when 'dropped' class is removed, letter appears instantly
@@ -923,7 +1035,28 @@
 						_this.getPlayer().triggerHelper("slideAnimationEnded");
 					}
 				}
-			});
+				})
+				//Set handler for TAB between chapters and slides
+				.off('focus').on('focus', function(e){
+					//Calculate if TAB forward or TAB backward(SHIFT+TAB)
+					var prev = $(e.relatedTarget ).data("mediaboxIndex");
+					var cur = $(this).data("mediaboxIndex");
+					var direction = (cur-prev) === 1 ? 1 : 0;
+					//Get the associated chapter of the slide
+					var slideChapterIndex = $(this).data( "chapterIndex" );
+					var chapter = _this.getMediaListDomElements()
+						.filter( ".chapterBox[data-chapter-index=" + slideChapterIndex + "]" );
+					chapter = $(chapter);
+					//If slide is under a collapsed chapter then go to associated chapter
+					var chapterCollapsed = (chapter.attr("data-chapter-collapsed") === "true");
+					if (chapterCollapsed){
+						var targetChapter = _this.getMediaListDomElements()
+							.filter( ".chapterBox[data-chapter-index=" + (slideChapterIndex + direction ) + "]" );
+						if (targetChapter) {
+							targetChapter.focus();
+						}
+					}
+				});
 
 			this.getComponent().find(".slideBoxToggle")
 				.off("click").on("click", function(e){
@@ -952,8 +1085,20 @@
 			this.getMedialistFooterComponent()
 				.find(".slideLocator" )
 				.off("click").on("click", function(){
-					_this.scrollToCurrent(_this.selectedMediaItemIndex);
+					_this.scrollToActiveItem();
 				});
+		},
+		collapseAll: function(){
+			if (this.chapterToggleEnabled) {
+				var expandedChapters = this.getMediaListDomElements().filter( ".chapterBox[data-chapter-collapsed=false]" );
+				this.toggleChapter( expandedChapters );
+			}
+		},
+		expendAll: function(){
+			if (this.chapterToggleEnabled) {
+				var collapsedChapters = this.getMediaListDomElements().filter( ".chapterBox[data-chapter-collapsed=true]" );
+				this.toggleChapter( collapsedChapters );
+			}
 		},
 		toggleChapter: function(chapters){
 			var _this = this;
@@ -991,7 +1136,7 @@
 				}, 500);
 			}
 		},
-		scrollToCurrent: function(index){
+		scrollToItem: function(index){
 			var item = this.mediaList[index];
 			var _this = this;
 			if (item) {
@@ -1014,6 +1159,9 @@
 					});
 				});
 			}
+		},
+		scrollToActiveItem: function(){
+			this.scrollToItem(this.selectedMediaItemIndex);
 		},
 		doOnSlideAnimationEnded: function(fn){
 			if (this.inSlideAnimation){

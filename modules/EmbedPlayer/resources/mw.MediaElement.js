@@ -236,7 +236,7 @@ mw.MediaElement.prototype = {
 		$.each( playableSources, function( inx, source ){
 			if ( source.markedDefault ) {
 				mw.log( 'MediaElement::autoSelectSource: Set via marked default: ' + source.markedDefault );
-				hasDefaultSource = true
+				hasDefaultSource = true;
 				_this.setSource( source );
 				return false;
 			}
@@ -248,9 +248,9 @@ mw.MediaElement.prototype = {
 
 		mw.setConfig( 'EmbedPlayer.IgnoreStreamerType', false);
 		//this array contains mimeTypes player should prefer to select, sorted by descending order
-		var typesToCheck = ['video/playreadySmooth', 'video/ism', 'video/multicast'];
+		var typesToCheck = ['video/dash', 'video/playreadySmooth', 'video/ism', 'video/multicast'];
 		for ( var i = 0; i < typesToCheck.length; i++ ) {
-			var matchingSources = this.getPlayableSources( typesToCheck[i] );
+			var matchingSources = this.getPlayableSources( typesToCheck[i], playableSources );
 			if ( matchingSources.length ) {
 				mw.log( 'MediaElement::autoSelectSource: Set prefered mimeType flavor ' + typesToCheck[i] );
 				mw.setConfig( 'EmbedPlayer.IgnoreStreamerType', true);
@@ -259,7 +259,7 @@ mw.MediaElement.prototype = {
 		}
 
 		// Set apple adaptive ( if available )
-		var vndSources = this.getPlayableSources('application/vnd.apple.mpegurl');
+		var vndSources = this.getPlayableSources('application/vnd.apple.mpegurl', playableSources);
 		this.removeSourceFlavor(vndSources);
 		if( vndSources.length && mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'application/vnd.apple.mpegurl' ).length ){
 			// Check for device flags:
@@ -292,14 +292,7 @@ mw.MediaElement.prototype = {
 			var bandwidthTarget = $.cookie('EmbedPlayer.UserBandwidth') || this.preferedFlavorBR;
 			$.each( playableSources, function(inx, source ){
 				if( source.bandwidth ){
-					// Check if a native source ( takes president over bandwidth selection )
-					var player = mw.EmbedTypes.getMediaPlayers().getDefaultPlayer( source.mimeType );
-					if ( !player || player.library != 'Native'	) {
-						// continue
-						return true;
-					}
-
-					if( Math.abs( source.bandwidth - bandwidthTarget ) < bandwidthDelta ){
+                    if( Math.abs( source.bandwidth - bandwidthTarget ) < bandwidthDelta ){
 						bandwidthDelta = Math.abs( source.bandwidth - bandwidthTarget );
 						_this.setSource( source );
 					}
@@ -316,7 +309,7 @@ mw.MediaElement.prototype = {
 
 		// If we have at least one native source, throw out non-native sources
 		// for size based source selection:
-		var nativePlayableSources = this.getNativePlayableSources();
+		var nativePlayableSources = this.getNativePlayableSources(playableSources);
 		this.removeSourceFlavor(nativePlayableSources);
 		// Prefer native playback ( and prefer WebM over ogg and h.264 )
 		var namedSourceSet = {};
@@ -365,6 +358,9 @@ mw.MediaElement.prototype = {
 		}
 
 		var codecPref = mw.getConfig( 'EmbedPlayer.CodecPreference');
+		if ( !$.isArray(codecPref) ){
+			codecPref = codecPref.split(",");
+		}
 		if( codecPref ){
 			for(var i =0; i < codecPref.length; i++){
 				var codec = codecPref[ i ];
@@ -402,7 +398,7 @@ mw.MediaElement.prototype = {
 						return _this.setSource( namedSourceSet[ codec ][0] );
 					}
 				}
-			};
+			}
 		}
 
 		// Set h264 via native or flash fallback
@@ -510,8 +506,8 @@ mw.MediaElement.prototype = {
 	 * Checks if the avaliable sources include native playback
 	 * @return {Array} set of native playable sources
 	 */
-	getNativePlayableSources: function(){
-		var playableSources = this.getPlayableSources();
+	getNativePlayableSources: function(sources){
+		var playableSources = sources || this.getPlayableSources();
 		var nativePlayableSources = [];
 		$.each( playableSources, function(inx, source ){
 			var mimeType = source.mimeType;
@@ -590,18 +586,19 @@ mw.MediaElement.prototype = {
 	 *
 	 * @returns {Array} of playable media sources
 	 */
-	getPlayableSources: function (mimeFilter) {
+	getPlayableSources: function (mimeFilter, sources) {
 		var playableSources = [];
-		 for ( var i = 0; i < this.sources.length; i++ ) {
-			 if ( this.isPlayableType( this.sources[i].mimeType )
+		var sourcesList = sources || this.sources;
+		 for ( var i = 0; i < sourcesList.length; i++ ) {
+			 if ( this.isPlayableType( sourcesList[i].mimeType )
 					 &&
-				( !mimeFilter || this.sources[i].mimeType.indexOf( mimeFilter) != -1  )
+				( !mimeFilter || sourcesList[i].mimeType.indexOf( mimeFilter) != -1  )
 			){
-				 playableSources.push( this.sources[i] );
+				 playableSources.push( sourcesList[i] );
 			}
 		 };
 		 mw.log( "MediaElement::GetPlayableSources mimeFilter:" + mimeFilter + " " +
-				 playableSources.length + ' sources playable out of ' +  this.sources.length );
+				 playableSources.length + ' sources playable out of ' +  sourcesList.length );
 
 		 return playableSources;
 	},

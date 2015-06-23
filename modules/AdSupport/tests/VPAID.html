@@ -81,17 +81,14 @@
 
 
 <script>
-    var localPath = document.location.href;
-    localPath = localPath.split('VPAID.html')[0];
+	var localPath = document.location.href;
+	localPath = localPath.split('VPAID.html')[0];
 	kWidget.featureConfig({
 		'targetId': 'myVideoTarget',
 		'wid': '_243342',
 		'uiconf_id' : '13306622',
 		'entry_id' : '0_uka1msg4',
 		'flashvars': {
-        'debugMode':true,
-      //  'jsTraces':true,
-          //  kdpUrl:'/kdp3/bin-debug/kdp3.swf',
 			'vast': {
 				'plugin' : true,
 				'position': 'before',
@@ -99,15 +96,7 @@
 				'numPreroll':"1",
 				'prerollInterval':"1",
 				'prerollStartWith':"1",
-			   // 'prerollUrl':"http://projects.kaltura.com/Itay/html5VPAID/vpaid.xml",
 				'prerollUrl':localPath+"liverail.xml?random={utility.random}&timestamp={utility.timestamp}&referrer_url={utility.referrer_url}&referrer_host={utility.referrer_host}",
-				//'overlayStartAt':"20",
-			//	'overlayInterval':"300",
-			//	'overlayUrl':"http://projects.kaltura.com/MichalR/vast_overlay.xml",
-			//	'numPostroll':"1",
-			//	'postrollInterval':"1",
-			//	'postrollStartWith':"1",
-			//	'postrollUrl':"http://projects.kaltura.com/mdale/hotelVastAd.xml",
 				'preSequence':"1",
 				'postSequence':"1",
 				'timeout':"4"

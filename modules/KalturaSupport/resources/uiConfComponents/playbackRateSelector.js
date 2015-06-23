@@ -22,6 +22,9 @@
 				return false;
 			}
 			this.bind('playerReady', function(){
+				if ( _this.embedPlayer.isLive() ){
+					deferred.resolve(false);
+				}
 				// check if we have sources that can play with Native library:
 				if (_this.embedPlayer.mediaElement.getNativePlayableSources().length > 0){
 					deferred.resolve(document.createElement( "video" ).playbackRate);
@@ -146,15 +149,17 @@
 			var player = mw.EmbedTypes.getMediaPlayers().getNativePlayer( source.mimeType );
 			this.getPlayer().selectPlayer ( player );
 			this.getPlayer().updatePlaybackInterface( function(){
-				// update playback rate: 
-				_this.updatePlaybackRate( newSpeed );
-				// issue a seek if given new seek time: 
+				// update playback rate:
 				if( currentPlayTime == 0 ){
-					return ;
+					_this.updatePlaybackRate( newSpeed );
+				}else{
+					setTimeout(function(){
+						_this.bind("seeked", function(){
+							_this.updatePlaybackRate( newSpeed );
+						});
+						_this.getPlayer().seek( currentPlayTime ); // issue a seek if given new seek time
+					}, 0);
 				}
-				setTimeout(function(){
-					_this.getPlayer().seek( currentPlayTime );
-				}, 0);
 			});
 		},
 		/**

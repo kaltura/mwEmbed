@@ -18,9 +18,12 @@ With KS:
 <div id="player-with-ks" style="width:400px;height:330px;"> loading ...</div>
 <script>
 	var settingsObj = {
-		'wid': '_929011',
-		'uiconf_id': '16115322',
-		'entry_id': '1_4f9zv9fu',
+		'wid': '_243342',
+        "uiconf_id": 28671571,
+
+        "cache_st": 1425999174,
+        "entry_id": "1_9ln5whcm",
+
 		'flashvars': {
 			'flavorTags': 'widevine_mbr,mbr,web',
 			'widevine': {
@@ -29,7 +32,7 @@ With KS:
 		}
 	};
 	kWidget.embed('player-without-ks', settingsObj);
-	$.getJSON('../../../services.php?service=KSTest&entry_id=1_4f9zv9fu&wid=_929011', function (ksJSON) {
+	$.getJSON('../../../services.php?service=KSTest&entry_id=1_9ln5whcm&wid=_243342', function (ksJSON) {
 		if (!ksJSON || !ksJSON.ks) {
 			$('#playerTarget').text('error getting ks');
 			return;

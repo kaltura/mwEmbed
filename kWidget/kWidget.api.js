@@ -20,6 +20,8 @@ kWidget.api.prototype = {
 	// the default api request method
 	// will dictate if the CDN can cache on a per url basis
 	type: 'auto',
+	// initialize callback index to zero
+	callbackIndex: 0,
 	baseParam: {
 		'apiVersion' : '3.1',
 		'expiry' : '86400',
@@ -80,6 +82,10 @@ kWidget.api.prototype = {
 		} else {
 			kWidget.extend( param, requestObject );
 		}
+
+		// set format to JSON ( Access-Control-Allow-Origin:* )
+		param['format'] = 1;
+
 		// Add kalsig to query:
 		param[ 'kalsig' ] = this.hashCode( kWidget.param( param ) );
 		
@@ -123,21 +129,27 @@ kWidget.api.prototype = {
 		// NOTE kaltura api server should return: 
 		// Access-Control-Allow-Origin:* most browsers support this. 
 		// ( old browsers with large api payloads are not supported )
+		var userAgent = navigator.userAgent.toLowerCase();
+		var forceJSONP = ( userAgent.indexOf('msie 8') !== -1 || userAgent.indexOf('msie 9') !== -1 || userAgent.indexOf('msie 10') !== -1 );
 		try {
-			if ( mw.getConfig( 'Kaltura.ForceJSONP' ) ){
+			if ( forceJSONP ){
 				throw "forceJSONP";
 			}
-			// set format to JSON ( Access-Control-Allow-Origin:* )
-			param['format'] = 1;
 			this.xhrRequest( _this.getApiUrl( serviceType ), param, function( data ){
 				handleDataResult( data );
 			});
 		} catch(e){
 			param['format'] = 9; // jsonp
+			//Delete previous kalSig
+			delete param[ 'kalsig' ];
+			//Regenerate kalSig with amended format
+			var kalSig = this.hashCode( kWidget.param( param ) );
+			// Add kalsig to query:
+			param[ 'kalsig' ] = kalSig;
 			// build the request url: 
 			var requestURL = _this.getApiUrl( serviceType ) + '&' + kWidget.param( param );
 			// try with callback:
-			globalCBName = 'kapi_' + Math.abs( _this.hashCode( kWidget.param( param ) ) );
+			globalCBName = 'kapi_' + kalSig;
 			if( window[ globalCBName ] ){
 				// Update the globalCB name inx.
 				this.callbackIndex++;
@@ -167,7 +179,9 @@ kWidget.api.prototype = {
 		var response = data;
 		try {
 			response = JSON.parse( data );
-		}catch(e){}
+		}catch(e){
+			console.log("Error parsing JSON");
+		}
 		return response;
 	},
 	xhrGet: function( url, param, callback ){
@@ -249,7 +263,7 @@ kWidget.api.prototype = {
 	parseParam: function(data){
 		var param = data;
 		//Check if we need to request session
-		if (!this.getKs()) {
+		if (!this.getKs() && (param !== undefined)) {
 			//check if request contains dependent params and if so then update reference object num -
 			// because reference index changed due to addition of multirequest startWidgetSession service
 			var paramParts = param.toString().match( /\{(\d+)(:result:.*)\}/ );
@@ -271,14 +285,7 @@ kWidget.api.prototype = {
 		return serviceUrl + mw.getConfig( 'Kaltura.ServiceBase' ) + serviceType;
 	},
 	hashCode: function( str ){
-		var hash = 0;
-		if (str.length == 0) return hash;
-		for (var i = 0; i < str.length; i++) {
-			var currentChar = str.charCodeAt(i);
-			hash = ((hash<<5)-hash)+currentChar;
-			hash = hash & hash; // Convert to 32bit integer
-		}
-		return hash;
+		return md5(str);
 	}
 }
 

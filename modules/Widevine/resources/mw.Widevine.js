@@ -46,7 +46,7 @@
 					}
 					return false;
 				}
-				if ( kWidget.supportsFlash() && ! mw.isDesktopSafari() ) {   //add vars to load widevine KDP plugin
+				if ( kWidget.supportsFlash()  ) {   //add vars to load widevine KDP plugin
 					//either all flavors are encrypted or all are not. If the flavor is not widevine don't show wv prompt.
 					if (flavors && flavors.length) {
 						if ( isWVAsset() )  {
