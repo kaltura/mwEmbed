@@ -22,7 +22,8 @@
 			"useExternalClosedCaptions": false,
 			"offButtonPosition": "first",
 			// Can be used to force loading specific language and expose to other plugins
-			"forceLoadLanguage": false
+			"forceLoadLanguage": false,
+			"visible":false
 		},
 
 		textSources: [],
@@ -769,6 +770,9 @@
 			return baseCss;
 		},
 		buildMenu: function( sources ){
+			if( sources.length ){
+				this.setConfig('visible', true)
+			}
 			for ( var i = sources.length - 1; i >= 0; i-- ){
 				if ( sources[i].srclang && sources[i].srclang === "multilingual" ){
 					sources.splice(i, 1); // remove multilingual source from menu
