@@ -249,9 +249,11 @@
 				this.log('Error:: failed to retrieve UDRM license URL ');
 			}
 
+			var vendor = this.getLicenseVendor();
+
 			//TODO: error handling in case of error
 			var licenseData = this.getLicenseData();
-			drmConfig.widevineLicenseServerURL = licenseBaseUrl + "?" + licenseData;
+			drmConfig.widevineLicenseServerURL = licenseBaseUrl + "/cenc/" + vendor + "/license?" + licenseData;
 			drmConfig.assetId = this.kentryid;
 			drmConfig.variantId = this.mediaElement.selectedSource && this.mediaElement.selectedSource.getAssetId();
 			var config = {};
@@ -304,6 +306,13 @@
 				} );
 			}
 			return licenseDataString;
+		},
+		getLicenseVendor: function(){
+			var vendor;
+			if (mw.isChrome()){
+				vendor = "widevine";
+			}
+			return vendor;
 		},
 		getAuthenticationToken: function(){
 			return this.mediaElement.selectedSource["contentId"];
