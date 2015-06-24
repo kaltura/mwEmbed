@@ -14,6 +14,7 @@
 		},
 
 		isDisabled: false,
+		currentSpeed: 1,
 
 		isSafeEnviornment: function(){
 			var _this = this,
@@ -55,6 +56,18 @@
 			});
 			this.bind( 'playbackRateChangeSpeed', function(e, arg ){
 				_this.setSpeedFromApi( arg );
+			});
+			this.bind( 'SourceSelected', function(e, source ){
+				if ( source.src.length && _this.currentSpeed <= 2 ){
+					var src = source.src;
+					var fileName = src.substr(src.lastIndexOf("/"));
+					var base = src.substr(0,src.lastIndexOf("/"));
+					if (source.src.indexOf("playbackRate") !== -1){
+						base = base.substr(0,base.lastIndexOf("playbackRate")-1);
+					}
+					var newSrc = base + "/playbackRate/" + _this.currentSpeed + fileName;
+					source.src = newSrc;
+				}
 			});
 			if( this.getConfig('enableKeyboardShortcuts') ){
 				this.bind( 'addKeyBindCallback', function( e, addKeyCallback ){
@@ -145,6 +158,29 @@
 		handlePlayerInstanceUpdate: function( newSpeed ){
 			var _this = this;
 			var currentPlayTime = this.getPlayer().currentTime;
+
+			this.currentSpeed = newSpeed;
+
+			if (this.currentSpeed <= 2){
+				var selectedSource = this.embedPlayer.mediaElement.autoSelectSource(this.embedPlayer.supportsURLTimeEncoding(), this.embedPlayer.startTime, this.embedPlayer.pauseTime);
+				$(this.embedPlayer).bind("mediaLoaded", function(){
+					alert("mediaLoaded");
+					$(this.embedPlayer).unbind("mediaLoaded");
+					setTimeout(function(){
+						_this.embedPlayer.bindHelper("seeked", function(){
+							_this.embedPlayer.unbindHelper("seeked");
+							_this.embedPlayer.play();
+						});
+						_this.embedPlayer.seek( currentPlayTime ); // issue a seek if given new seek time
+					}, 0);
+				});
+				this.embedPlayer.playerObject.sendNotification("changeMedia", { "entryUrl" : selectedSource.src});
+
+				return;
+			}
+
+
+
 			var source = this.getPlayer().mediaElement.autoSelectNativeSource();
 			var player = mw.EmbedTypes.getMediaPlayers().getNativePlayer( source.mimeType );
 			this.getPlayer().selectPlayer ( player );
