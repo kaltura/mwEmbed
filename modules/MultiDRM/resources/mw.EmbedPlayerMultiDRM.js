@@ -815,6 +815,7 @@
 			var curTime = parseInt(this.getPlayerElementTime(), 10).toFixed(2);
 			if (( this.currentState === "end" ) ||
 				( this.currentState === "pause" && duration === curTime && this.getPlayerElementTime() > 0 )) {
+				this.stopPlayAfterSeek = false;
 				this.seek(0.01, false);
 			} else {
 				if ( this.parent_play() ) {
