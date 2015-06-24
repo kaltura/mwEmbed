@@ -696,6 +696,7 @@ mw.KWidgetSupport.prototype = {
 
 			$.ajax({
 				url: srcURL + qp + "responseFormat=jsonp",
+				timeout: 7000,
 				dataType: 'jsonp',
 				success: function( playmanifest ){
 					var flavors = playmanifest.flavors;
