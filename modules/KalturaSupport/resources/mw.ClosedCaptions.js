@@ -22,8 +22,7 @@
 			"useExternalClosedCaptions": false,
 			"offButtonPosition": "first",
 			// Can be used to force loading specific language and expose to other plugins
-			"forceLoadLanguage": false,
-			"visible":false
+			"forceLoadLanguage": false
 		},
 
 		textSources: [],
@@ -770,9 +769,6 @@
 			return baseCss;
 		},
 		buildMenu: function( sources ){
-			if( sources.length ){
-				this.setConfig('visible', true)
-			}
 			for ( var i = sources.length - 1; i >= 0; i-- ){
 				if ( sources[i].srclang && sources[i].srclang === "multilingual" ){
 					sources.splice(i, 1); // remove multilingual source from menu
@@ -785,9 +781,6 @@
 
 			// Check if we even have textSources
 			if( sources == 0 ){
-				if( this.getConfig('hideWhenEmpty') === true ) {
-					this.getBtn().hide();
-				}
 				this.getMenu().addItem({
 					'label': gM('mwe-timedtext-no-subtitles')
 				});
@@ -799,7 +792,7 @@
 
 				return this.getMenu();
 			} else {
-				this.getBtn().show();
+				this.setConfig('visible', true);
 				// show new timed captions text if exists
 				this.showCaptions();
 			}
