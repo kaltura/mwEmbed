@@ -520,6 +520,47 @@ body {
 	-webkit-box-shadow: 0px 0px 10px #fff;
 	box-shadow: 0px 0px 10px #fff;
 }
+.smartContainerMenu{
+	background-color: rgba(255,255,255,0.9);
+	border-radius: 3px;
+	position: absolute;
+	padding-left: 10px;
+	color: black;
+	z-index: 10;
+}
+.smartContainer p{
+	margin-top: 8px;
+	margin-bottom: 8px;
+}
+.smartContainer label{
+	letter-spacing: 0px;
+}
+.smartContainer .title{
+	color: #333333;
+	font-size: 13px;
+	font-weight: bold;
+}
+.smartContainer .pluginTitle{
+	color: #555555;
+	margin-left: 20px;
+	font-size: 12px;
+	font-weight: bold;
+	margin-top: 18px;
+	margin-bottom: 8px;
+}
+.smartContainer .pluginPropertyLabel{
+	color: #555555;
+	margin-left: 40px;
+	font-size: 12px;
+}
+.smartContainer label{
+	color: #555555;
+	font-size: 12px;
+}
+.smartContainer .pluginProperty.checkbox{
+	width: 20px;
+}
+
 .timers {
 	position: relative;
 	font-size: 0.84em;
