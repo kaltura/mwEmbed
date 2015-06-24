@@ -58,11 +58,11 @@
 			});
 
 			this.bind( 'sourceSwitchingStarted', function(){
-				_this.getComponent().find('button').addClass( 'inProgress' );
+				_this.getComponent().find('button').addClass( 'in-progress-state' );
 				_this.onDisable();
 			});
 			this.bind( 'sourceSwitchingEnd', function(newIndex){
-				_this.getComponent().find('button').removeClass( 'inProgress' );
+				_this.getComponent().find('button').removeClass( 'in-progress-state' );
                 _this.onEnable();
 			});
             this.bind( 'onHideControlBar', function(){
