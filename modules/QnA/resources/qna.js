@@ -277,6 +277,33 @@
 			var rawHTML = window.kalturaIframePackageData.templates[ templatePath ];
 
 			return rawHTML;
+		},
+
+		hideModule: function(hide) {
+			var firstTime = false;
+			var _this = this;
+			if (_this.moduleStatus === undefined){
+				_this.moduleStatus = hide;
+				firstTime = true;
+			}
+			else{
+				if (_this.moduleStatus === hide){
+					return;
+				}
+				else{
+					_this.moduleStatus = hide;
+				}
+			}
+			if (hide) {
+				_this.getQnaContainer().find(".qnaModuleBackground").hide();
+				$('.qna-on-video-btn').hide();
+			}
+			else{
+				if (firstTime) {
+					_this.getQnaContainer().find(".qnaModuleBackground").show();
+				}
+				$('.qna-on-video-btn').show();
+			}
 		}
 
 	}));

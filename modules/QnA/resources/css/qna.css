@@ -7,6 +7,7 @@
 	width: 100%;
 	height: 100%;
 	background-color: #f0f0f0;
+	display: none;
 }
 
 .qna-badge {
@@ -63,6 +64,7 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+	display: none;
 }
 
 .qna-on-video-btn:hover {

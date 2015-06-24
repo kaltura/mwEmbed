@@ -205,6 +205,7 @@ DAL for Q&A Module
             this.embedPlayer = embedPlayer;
             this.qnaPlugin = qnaPlugin;
 
+            this.requestCodeCuePoints();
             this.requestCuePoints();
 
             if (embedPlayer.isLive()) {
@@ -480,6 +481,55 @@ DAL for Q&A Module
             return new QnaEntry(cuePoint);
         },
 
+        requestCodeCuePoints:function() {
+            var _this = this;
+
+            this.boot().then(function() {
+
+
+                var entryId = _this.embedPlayer.kentryid;
+                var request = {
+                    'service': 'cuepoint_cuepoint',
+                    'action': 'list',
+                    'filter:entryIdEqual': entryId,
+                    'filter:cuePointTypeEqual': 'codeCuePoint.Code',
+                    'filter:orderBy': '+createdAt'//,
+                };
+
+                _this.getKClient().doRequest( request,
+                    function (data) {
+                        // if an error pop out:
+                        if (!data || data.code) {
+                            // todo: add error handling
+                            mw.log("Error:: KCuePoints could not retrieve code cue points");
+                            return;
+                        }
+
+                        var disableModule = false;
+                        var announcementOnly = false;
+
+                        data.objects.forEach(function(cuePoint) {
+                            if (cuePoint.code === "ENABLE_QNA"){
+                                disableModule = false;
+                            }
+                            else if (cuePoint.code === "DISABLE_QNA"){
+                                disableModule = true;
+                            }
+
+                            if (cuePoint.code === "ENABLE_ANNOUNCEMENTS_ONLY"){
+                                announcementOnly = true;
+                            }
+                            else if (cuePoint.code === "DISABLE_ANNOUNCEMENTS_ONLY"){
+                                announcementOnly = false;
+                            }
+                        });
+
+                        _this.qnaPlugin.hideModule(disableModule);
+                    }
+                );
+            });
+        },
+
         requestCuePoints:function() {
             var _this = this;
 
@@ -554,6 +604,7 @@ DAL for Q&A Module
             //Start live cuepoint pulling
             this.liveAQnaIntervalId = setInterval(function () {
                 _this.requestCuePoints();
+                _this.requestCodeCuePoints();
             }, _this.qnaPlugin.getConfig("qnaPollingInterval") || 10000);
         }
     };
