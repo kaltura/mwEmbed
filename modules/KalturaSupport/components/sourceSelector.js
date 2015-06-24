@@ -58,11 +58,11 @@
 			});
 
 			this.bind( 'sourceSwitchingStarted', function(){
-				_this.getComponent().find('button').addClass( 'rotate' );
+				_this.getComponent().find('button').addClass( 'inProgress' );
 				_this.onDisable();
 			});
 			this.bind( 'sourceSwitchingEnd', function(newIndex){
-				_this.getComponent().find('button').removeClass( 'rotate' );
+				_this.getComponent().find('button').removeClass( 'inProgress' );
                 _this.onEnable();
 			});
             this.bind( 'onHideControlBar', function(){

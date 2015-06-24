@@ -70,13 +70,13 @@
 
 			this.bind('sourceSwitchingEnd', function () {
 				if (_this.streamsReady) {
-					_this.getComponent().find('button').removeClass('rotate');
+					_this.getComponent().find('button').removeClass('inProgress');
 					_this.onEnable();
 				}
 			});
 
 			this.bind('sourceSwitchingStarted', function () {
-				_this.getComponent().find('button').addClass('rotate');
+				_this.getComponent().find('button').addClass('inProgress');
 				_this.onDisable();
 			});
 
