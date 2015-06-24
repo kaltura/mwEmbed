@@ -9,7 +9,7 @@
 			'width': 220,
 			'showTooltip': true,
 			'displayImportance': "high",
-			'title': "Master Plugin",
+			'title': "Smart Container",
 			'iconClass': 'icon-cog',
 			'config':{}
 		},
