@@ -99,7 +99,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div data-bind="if: !isCollapsed()">
+                        <div data-bind="if: !isCollapsed() && !$parent.announcementOnlyStatus()">
                             <div class="qnaReplyBox"
                                  data-bind="css:{
                                          'qnaReplyBoxSize': !isTypingAnswer(),

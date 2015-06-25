@@ -528,7 +528,9 @@ DAL for Q&A Module
                     'action': 'list',
                     'filter:entryIdEqual': entryId,
                     'filter:cuePointTypeEqual': 'codeCuePoint.Code',
-                    'filter:orderBy': '+createdAt'//,
+                    'filter:orderBy': '-createdAt',
+                    'pager:pageSize': 1,
+                    'pager:pageIndex': 1
                 };
 
 
@@ -570,21 +572,23 @@ DAL for Q&A Module
                         var disableModule = true;
                         var announcementOnly = false;
 
-                        data2.objects.forEach(function(cuePoint) {
-                            if (cuePoint.code === "ENABLE_QNA"){
-                                disableModule = false;
-                            }
-                            else if (cuePoint.code === "DISABLE_QNA"){
-                                disableModule = true;
-                            }
-
-                            if (cuePoint.code === "ENABLE_ANNOUNCEMENTS_ONLY"){
-                                announcementOnly = true;
-                            }
-                            else if (cuePoint.code === "DISABLE_ANNOUNCEMENTS_ONLY"){
-                                announcementOnly = false;
-                            }
-                        });
+                        var cuePoint = data2.objects[0]
+                        if (cuePoint.code === "ENABLE_QNA"){
+                            disableModule = false;
+                            announcementOnly = false;
+                        }
+                        else if (cuePoint.code === "DISABLE_QNA"){
+                            disableModule = true;
+                            announcementOnly = false;
+                        }
+                        else if (cuePoint.code === "ENABLE_ANNOUNCEMENTS_ONLY"){
+                            disableModule = false;
+                            announcementOnly = true;
+                        }
+                        else if (cuePoint.code === "DISABLE_ANNOUNCEMENTS_ONLY"){
+                            disableModule = false;
+                            announcementOnly = false;
+                        }
 
                         _this.qnaPlugin.hideModule(disableModule, announcementOnly);
                     }

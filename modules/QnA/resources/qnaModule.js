@@ -34,6 +34,9 @@
                     if (entry.getThread().entries()[0]() == entry){
                         entry.getThread().entries.reverse();
                         _this.collapseExpandThread(entry, event);
+
+                        _this.applyLayout();
+
                     }
                     else{
                         _this.itemRead(entry, event);
@@ -126,7 +129,7 @@
             },
             announcementOnlyStatus: function(){
                 var _this = this;
-                return _this.qnaPlugin.announcementOnlyStatus;
+                return _this.qnaPlugin.announcementOnlyStatus();
             },
             getUnreadCount: function () {
                 var _this = this;

@@ -58,17 +58,6 @@
             var qnaObject=null;
             var onVideoTogglePluginButton=null;
 
-            //var changeVideoToggleIcon=function() {
-            //
-            //    if (!qnaObject.is(":visible")){
-            //        onVideoTogglePluginButton.removeClass('icon-qna-close');
-            //        onVideoTogglePluginButton.addClass('icon-qna-Ask');
-            //    } else {
-            //        onVideoTogglePluginButton.removeClass('icon-qna-Ask');
-            //        onVideoTogglePluginButton.addClass('icon-qna-close');
-            //    }
-            //};
-
             this.bind('updateLayout ended', function () {
                 _this.positionQAButtonOnVideoContainer();
 
@@ -323,13 +312,21 @@
 
 				if (announcementOnly){
 					_this.getQnaContainer().find(".qnaQuestionArea").hide();
+					$('.qnaReplyBox').hide();
+
+					_this.getQnaContainer().find('.listHolder').height(this.getPlayer().getInterface().height());
+
 				}
 				else{
 					_this.getQnaContainer().find(".qnaQuestionArea").show();
+					$('.qnaReplyBox').show();
+					var newHeight = this.getPlayer().getInterface().height() - _this.getQnaContainer().find('.qnaQuestionArea').height();
+					_this.getQnaContainer().find('.listHolder').height(newHeight);
 				}
 			}
 
 			_this.changeVideoToggleIcon();
+			_this.KQnaModule.applyLayout();
 		}
 
 	}));
