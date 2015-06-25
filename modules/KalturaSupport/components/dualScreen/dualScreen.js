@@ -247,7 +247,7 @@
 				this.monitor.aux = this.monitor.secondary;
 			},
 			initControlBar: function(){
-				if ( !this.getPlayer().isAudio()) {
+				if ( !this.controlBar && !this.getPlayer().isAudio()) {
 					var _this = this;
 					this.controlBar = new mw.dualScreen.dualScreenControlBar(_this.getPlayer(), function(){
 						this.setConfig('menuFadeout', _this.getConfig('menuFadeout'));
