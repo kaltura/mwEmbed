@@ -395,7 +395,7 @@
 					this.updateSecondScreenLayoutTimeout = setTimeout( function () {
 						_this.updateSecondScreenLayoutTimeout = null;
 						//Calculate new screen ratios
-						var secondScreenProps = _this.getAuxMonitor().prop;
+						var secondScreenProps = _this.getAuxMonitor().getProperties();
 						var playerWidth = _this.getPlayer().getWidth();
 						var playerHeight = _this.getPlayer().getHeight();
 						var widthRatio = (playerWidth / _this.previousPlayerWidth);
@@ -426,13 +426,10 @@
 							screenProps.left = (playerWidth - newWidth) + "px";
 						}
 			
-						var firstScreen = _this.getMainMonitor().obj;
-						var secondScreen = _this.getAuxMonitor().obj;
-						secondScreen.css( screenProps );
+						var secondScreen = _this.getAuxMonitor();
+						secondScreen.repaint( screenProps );
 						//TODO: move to image player
 						_this.screenObj.applyIntrinsicAspect();
-						//Store props for transitions
-						_this.getAuxMonitor().prop = screenProps;
 						if ( _this.render ) {
 							//Show monitor and control bar after resizing
 							_this.showDisplay();
@@ -443,13 +440,10 @@
 						}
 			
 						//Calculate screen resize max width
-						var maxWidth = ( ( _this.getPlayer().getWidth() * _this.getConfig( 'resizable' ).maxWidthPercentage ) / 100 );
-						var minWidth = ( ( _this.getPlayer().getWidth() * _this.getConfig( 'secondScreen' ).sizeRatio ) / 100 );
-						firstScreen.resizable( {
-							maxWidth: maxWidth,
-							minWidth: minWidth
-						} );
-						secondScreen.resizable( {
+						var maxWidth = ( ( playerWidth * _this.getConfig( 'resizable' ).maxWidthPercentage ) / 100 );
+						var minWidth = ( ( playerWidth * _this.getConfig( 'secondScreen' ).sizeRatio ) / 100 );
+
+						secondScreen.setResizeLimits( {
 							maxWidth: maxWidth,
 							minWidth: minWidth
 						} );
@@ -457,15 +451,17 @@
 				}
 			},
 			checkRenderConditions: function(){
-				if ( !this.getAuxMonitor().isUserInteracting() &&
-					(this.getPlayer().layoutBuilder.isInFullScreen() ||
-					((!this.getConfig("fullScreenDisplayOnly") &&
-					this.getConfig( "minDisplayWidth" ) <= this.getPlayer().getWidth() &&
-					this.getConfig( "minDisplayHeight" ) <= this.getPlayer().getHeight()) ) ) ) {
-					this.render = true;
-				} else {
-					this.render = false;
-				}
+				this.render = (
+					!this.getAuxMonitor().isUserInteracting() &&
+					(
+						this.getPlayer().layoutBuilder.isInFullScreen() ||
+						(
+							!this.getConfig("fullScreenDisplayOnly") &&
+							this.getConfig( "minDisplayWidth" ) <= this.getPlayer().getWidth() &&
+							this.getConfig( "minDisplayHeight" ) <= this.getPlayer().getHeight()
+						)
+					)
+				);
 			},
 			//Utils
 			roundPercisionFloat: function(value, exp){
@@ -539,11 +535,16 @@
 
 			//Screen view state handlers
 			toggleMainMonitor: function () {
-				var props = this.getAuxMonitor().prop;
 				var curMain = this.getMainMonitor();
 				var curAux =this.getAuxMonitor();
+
+				var resizeLimits = curAux.getResizeLimits();
+				this.monitor.aux.setResizeLimits(resizeLimits);
+				var props = curAux.getProperties();
+
 				curMain.toggleMain(props);
 				curAux.toggleMain();
+
 				this.monitor.main = curAux;
 				this.monitor.aux = curMain;
 			},

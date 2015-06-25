@@ -28,12 +28,27 @@
 				.on('resize', function (e) {
 					e.stopPropagation();
 				})
-				.draggable( $.extend( this.getConfig( 'draggable' ), this.actionsControls() ))
-				.resizable( $.extend( this.getConfig( 'resizable' ), this.actionsControls() ));
+				.draggable( $.extend( this.getConfig( 'draggable' ), this.viewActionHandler() ))
+				.resizable( $.extend( this.getConfig( 'resizable' ), this.viewActionHandler() ));
+		},
+		repaint: function(screenProps){
+			this.prop = screenProps;
+			this.obj.css( screenProps );
+		},
+		getProperties: function(){
+			return this.prop;
 		},
 		position: function(config){
 			this.obj.position( config );
 			this.prop = this.obj.css( ['top', 'left', 'width', 'height'] );
+		},
+		setResizeLimits: function(settings){
+			this.resizeLimits = settings;
+			this.obj.resizable(settings);
+		},
+
+		getResizeLimits: function(){
+			return this.resizeLimits;
 		},
 
 		//Screen interaction handlers(drag/resize)
@@ -125,11 +140,10 @@
 		//Screen view state handlers
 		toggleMain: function (props) {
 			this.setConfig("isMain", !this.getConfig("isMain"));
-			this.prop = props ? props : {};
 			this.obj.attr( 'data-monitor-rule', this.getConfig("isMain") ? mw.dualScreen.monitor.TYPE.PRIMARY : mw.dualScreen.monitor.TYPE.SECONDARY );
 			this.obj.toggleClass( 'firstScreen secondScreen' );
-			if (props){
-				this.obj.css(this.prop);
+			if (!this.getConfig("isMain")){
+				this.repaint(props);
 			}
 		},
 		enableSideBySideView: function () {
