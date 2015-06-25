@@ -522,11 +522,13 @@ body {
 }
 .smartContainerMenu{
 	background-color: rgba(255,255,255,0.9);
-	border-radius: 3px;
+	border-radius: 4px;
 	position: absolute;
 	padding-left: 10px;
 	color: black;
 	z-index: 10;
+	border: 1px solid #aaaaaa;
+	box-shadow: 3px 3px 3px #333333;
 }
 .smartContainerMenu p{
 	margin-top: 8px;
