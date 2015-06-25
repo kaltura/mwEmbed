@@ -90,6 +90,9 @@
 					attrValue = 'true';
 				if (attrValue === false)
 					attrValue = 'false';
+				if( typeof attrValue == 'object' ){
+					return JSON.stringify( attrValue );
+				}
 				return attrValue;
 			}
 
