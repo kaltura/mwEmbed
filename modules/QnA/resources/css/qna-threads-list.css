@@ -343,3 +343,10 @@
 .qnaInterface .qna-vertical-line-last{
     height: 20px;
 }
+
+.qnaInterface .qna-no-messages-text{
+    font-family: 'Lato', Helvetica, Arial;
+    font-size: 20px;
+    text-align: center;
+    margin-top: 50%;
+}

@@ -205,7 +205,6 @@ DAL for Q&A Module
             this.embedPlayer = embedPlayer;
             this.qnaPlugin = qnaPlugin;
 
-            this.requestCodeCuePoints();
             this.requestCuePoints();
 
             if (embedPlayer.isLive()) {
@@ -481,62 +480,14 @@ DAL for Q&A Module
             return new QnaEntry(cuePoint);
         },
 
-        requestCodeCuePoints:function() {
-            var _this = this;
-
-            this.boot().then(function() {
-
-
-                var entryId = _this.embedPlayer.kentryid;
-                var request = {
-                    'service': 'cuepoint_cuepoint',
-                    'action': 'list',
-                    'filter:entryIdEqual': entryId,
-                    'filter:cuePointTypeEqual': 'codeCuePoint.Code',
-                    'filter:orderBy': '+createdAt'//,
-                };
-
-                _this.getKClient().doRequest( request,
-                    function (data) {
-                        // if an error pop out:
-                        if (!data || data.code) {
-                            // todo: add error handling
-                            mw.log("Error:: KCuePoints could not retrieve code cue points");
-                            return;
-                        }
-
-                        var disableModule = false;
-                        var announcementOnly = false;
-
-                        data.objects.forEach(function(cuePoint) {
-                            if (cuePoint.code === "ENABLE_QNA"){
-                                disableModule = false;
-                            }
-                            else if (cuePoint.code === "DISABLE_QNA"){
-                                disableModule = true;
-                            }
-
-                            if (cuePoint.code === "ENABLE_ANNOUNCEMENTS_ONLY"){
-                                announcementOnly = true;
-                            }
-                            else if (cuePoint.code === "DISABLE_ANNOUNCEMENTS_ONLY"){
-                                announcementOnly = false;
-                            }
-                        });
-
-                        _this.qnaPlugin.hideModule(disableModule);
-                    }
-                );
-            });
-        },
-
         requestCuePoints:function() {
             var _this = this;
 
             this.boot().then(function() {
 
-
                 var entryId = _this.embedPlayer.kentryid;
+
+                // build list annotation cue point request
                 var request = {
                     'service': 'cuepoint_cuepoint',
                     'action': 'list',
@@ -570,8 +521,22 @@ DAL for Q&A Module
                 if (lastUpdatedAt > 0) {
                     request['filter:updatedAtGreaterThanOrEqual'] = lastUpdatedAt;
                 }
-                _this.getKClient().doRequest( request,
-                    function (data) {
+
+                // build list code cue point request
+                var codeCuePointListRequest = {
+                    'service': 'cuepoint_cuepoint',
+                    'action': 'list',
+                    'filter:entryIdEqual': entryId,
+                    'filter:cuePointTypeEqual': 'codeCuePoint.Code',
+                    'filter:orderBy': '+createdAt'//,
+                };
+
+
+                _this.getKClient().doRequest( [request, codeCuePointListRequest],
+                    function (resoults) {
+
+                        // process results from 1st request
+                        var data = resoults[0];
                         // if an error pop out:
                         if (!data || data.code) {
                             // todo: add error handling
@@ -592,6 +557,36 @@ DAL for Q&A Module
                         });
 
                         _this.sortThreads();
+
+                        // process results from 2nd request
+                        var data2 = resoults[1];
+                        // if an error pop out:
+                        if (!data2 || data2.code) {
+                            // todo: add error handling
+                            mw.log("Error:: KCuePoints could not retrieve code cue points");
+                            return;
+                        }
+
+                        var disableModule = true;
+                        var announcementOnly = false;
+
+                        data2.objects.forEach(function(cuePoint) {
+                            if (cuePoint.code === "ENABLE_QNA"){
+                                disableModule = false;
+                            }
+                            else if (cuePoint.code === "DISABLE_QNA"){
+                                disableModule = true;
+                            }
+
+                            if (cuePoint.code === "ENABLE_ANNOUNCEMENTS_ONLY"){
+                                announcementOnly = true;
+                            }
+                            else if (cuePoint.code === "DISABLE_ANNOUNCEMENTS_ONLY"){
+                                announcementOnly = false;
+                            }
+                        });
+
+                        _this.qnaPlugin.hideModule(disableModule, announcementOnly);
                     }
                 );
             });
@@ -604,7 +599,6 @@ DAL for Q&A Module
             //Start live cuepoint pulling
             this.liveAQnaIntervalId = setInterval(function () {
                 _this.requestCuePoints();
-                _this.requestCodeCuePoints();
             }, _this.qnaPlugin.getConfig("qnaPollingInterval") || 10000);
         }
     };

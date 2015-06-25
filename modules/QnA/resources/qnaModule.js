@@ -121,6 +121,13 @@
                 }
                 scroll.find(".nano-content").css("z-index", "");
             },
+            getNoMessagesText: function(){
+                return gM("qna-no-messages-text");
+            },
+            announcementOnlyStatus: function(){
+                var _this = this;
+                return _this.qnaPlugin.announcementOnlyStatus;
+            },
             getUnreadCount: function () {
                 var _this = this;
                 // The commented line below is correct, but it also counts regular questions and read counts from other web-cast events

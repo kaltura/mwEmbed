@@ -14,6 +14,7 @@
 			onPage: true
 		},
 
+		announcementOnlyStatus: ko.observable(false),
 
 		getBaseConfig: function() {
 			var parentConfig = this._super();
@@ -37,22 +38,36 @@
             }
         },
 
+		changeVideoToggleIcon: function() {
+			var _this = this;
+			var onVideoTogglePluginButton = $('.qna-on-video-btn');
+			var qnaObject = _this.getQnaContainer().find(".qnaModuleBackground");
+
+			if (!qnaObject.is(":visible")){
+				onVideoTogglePluginButton.removeClass('icon-qna-close');
+				onVideoTogglePluginButton.addClass('icon-qna-Ask');
+			} else {
+				onVideoTogglePluginButton.removeClass('icon-qna-Ask');
+				onVideoTogglePluginButton.addClass('icon-qna-close');
+			}
+		},
+
 		addBindings: function () {
 			var _this = this;
 			var embedPlayer = this.getPlayer();
             var qnaObject=null;
             var onVideoTogglePluginButton=null;
 
-            var changeVideoToggleIcon=function() {
-
-                if (!qnaObject.is(":visible")){
-                    onVideoTogglePluginButton.removeClass('icon-qna-close');
-                    onVideoTogglePluginButton.addClass('icon-qna-Ask');
-                } else {
-                    onVideoTogglePluginButton.removeClass('icon-qna-Ask');
-                    onVideoTogglePluginButton.addClass('icon-qna-close');
-                }
-            };
+            //var changeVideoToggleIcon=function() {
+            //
+            //    if (!qnaObject.is(":visible")){
+            //        onVideoTogglePluginButton.removeClass('icon-qna-close');
+            //        onVideoTogglePluginButton.addClass('icon-qna-Ask');
+            //    } else {
+            //        onVideoTogglePluginButton.removeClass('icon-qna-Ask');
+            //        onVideoTogglePluginButton.addClass('icon-qna-close');
+            //    }
+            //};
 
             this.bind('updateLayout ended', function () {
                 _this.positionQAButtonOnVideoContainer();
@@ -90,7 +105,7 @@
 					} else {
 						qnaObject.hide();
 					}
-                    changeVideoToggleIcon();
+                    _this.changeVideoToggleIcon();
 				})
 
 				_this.updateUnreadBadge();
@@ -98,12 +113,12 @@
 
 			this.bind('onOpenFullScreen', function() {
                 qnaObject.hide();
-                changeVideoToggleIcon();
+				_this.changeVideoToggleIcon();
 				if (!_this.getConfig( 'onPage' )) {
 					$( ".videoHolder, .mwPlayerContainer" ).css( "width", "100%" );	}
 			});
 			this.bind('onCloseFullScreen', function() {
-                changeVideoToggleIcon();
+				_this.changeVideoToggleIcon();
 				if (!_this.getConfig( 'onPage' )){
 					setTimeout(function() {
 						$(".videoHolder, .mwPlayerContainer").css("width", _this.$qnaListContainer.width() - _this.getConfig('moduleWidth') + "px");
@@ -279,19 +294,21 @@
 			return rawHTML;
 		},
 
-		hideModule: function(hide) {
+		hideModule: function(hide, announcementOnly) {
 			var firstTime = false;
 			var _this = this;
 			if (_this.moduleStatus === undefined){
 				_this.moduleStatus = hide;
+				_this.announcementOnlyStatus(announcementOnly);
 				firstTime = true;
 			}
 			else{
-				if (_this.moduleStatus === hide){
+				if (_this.moduleStatus === hide && _this.announcementOnlyStatus() === announcementOnly){
 					return;
 				}
 				else{
 					_this.moduleStatus = hide;
+					_this.announcementOnlyStatus(announcementOnly);
 				}
 			}
 			if (hide) {
@@ -303,7 +320,16 @@
 					_this.getQnaContainer().find(".qnaModuleBackground").show();
 				}
 				$('.qna-on-video-btn').show();
+
+				if (announcementOnly){
+					_this.getQnaContainer().find(".qnaQuestionArea").hide();
+				}
+				else{
+					_this.getQnaContainer().find(".qnaQuestionArea").show();
+				}
 			}
+
+			_this.changeVideoToggleIcon();
 		}
 
 	}));
