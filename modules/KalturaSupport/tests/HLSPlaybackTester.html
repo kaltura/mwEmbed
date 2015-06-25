@@ -31,9 +31,22 @@
 </div>
 <div>
 Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout.html">More about NativeCallout</a><br>
-<label class="radio inline"><input type="radio" name="nativeCallout-web"  checked="checked">Web</label>
-<label class="radio inline"><input type="radio" name="nativeCallout-native" id="">Native Callout</label>
-<br><br>
+<label class="radio inline"><input type="radio" name="nativecallout" id="nativeCallout-web"  checked="checked">Web</label>
+<label class="radio inline"><input type="radio" name="nativecallout" id="nativeCallout-native">Native Callout</label>
+</div>
+<br/>
+<div>
+Flashvars for HLS plugin:
+    <div class="form-group">
+        <label for="segBuffer">hlsSegmentBuffer</label>
+        <input type="number" class="form-control" id="segBuffer" value="2">
+    </div>
+    <div class="form-group">
+        <label for="targetDuration">hlsOverrideTargetDuration</label>
+        <input type="number" class="form-control" id="targetDuration" value="2">
+    </div>
+</div>
+
 <input type="button" id="generate" value="Create Player" />
 <br><br>
 <div id="kaltura_player" style="width:624px; height: 387px;display:block;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject">
@@ -46,9 +59,11 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
 			$('#streamtype-vod').attr('checked', vals.stvod );
 			$('#streamtype-live').attr('checked', !vals.stvod );
 			$('#nativeCallout-web').attr('checked', vals.ncweb );
-			$('#nativeCallout-web').attr('checked', !vals.ncweb );
+			$('#nativeCallout-native').attr('checked', !vals.ncweb );
 			$('#url').val( vals.url );
-			$('#urlthumb').val( vals.thumb )
+			$('#urlthumb').val( vals.thumb );
+            $('#segBuffer').val( vals.hlsSegmentBuffer );
+            $('#targetDuration').val( vals.hlsOverrideTargetDuration );
 		}
 	}catch(err){
 		
@@ -61,11 +76,15 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
 			'stvod':$('#streamtype-vod').is(':checked'),
 			'ncweb':$('#nativeCallout-web').is(':checked'),
 			'url': $('#url').val(),
-			'thumb':  $('#urlthumb').val()
+			'thumb':  $('#urlthumb').val(),
+            'hlsSegmentBuffer': parseInt($('#segBuffer').val()),
+            'hlsOverrideTargetDuration': parseInt($('#targetDuration').val())
 		}));
 		
 		var settings = {
 			"LeadWithHLSOnFlash": true,
+            "hlsSegmentBuffer": parseInt($('#segBuffer').val()),
+            "hlsOverrideTargetDuration": parseInt($('#targetDuration').val()),
              "closedCaptions.showEmbeddedCaptions" : true,
              "mediaProxy": {
      			'entry':{

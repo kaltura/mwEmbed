@@ -37,6 +37,7 @@
 		//when playing live rtmp we increase the timeout until we display the "offline" alert, cuz player takes a while to identify "online" state
 		LIVE_OFFLINE_ALERT_TIMEOUT: 8000,
 		ignoreEnableGui: false,
+		flashActivationRequired: false,
 
 		// Create our player element
 		setup: function (readyCallback) {
@@ -99,6 +100,9 @@
                     if(mw.getConfig("hlsSegmentBuffer")) {
                         flashvars.KalturaHLS["segmentBuffer"] = mw.getConfig("hlsSegmentBuffer");
                     }
+                    if(mw.getConfig("hlsOverrideTargetDuration")) {
+                        flashvars.KalturaHLS["overrideTargetDuration"] = mw.getConfig("hlsOverrideTargetDuration");
+                    }
 					flashvars.streamerType = _this.streamerType = 'hls';
 				}
 
@@ -146,7 +150,6 @@
 						'switchingChangeStarted': 'onSwitchingChangeStarted',
 						'switchingChangeComplete': 'onSwitchingChangeComplete',
 						'flavorsListChanged': 'onFlavorsListChanged',
-						'enableGui': 'onEnableGui',
 						'liveStreamOffline': 'onLiveEntryOffline',
 						'liveStreamReady': 'onLiveStreamReady',
 						'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions',
@@ -365,6 +368,10 @@
 		 * parent_play
 		 */
 		onPlay: function () {
+			if ( mw.isChrome() && !this.flashActivationRequired && mw.getConfig("EmbedPlayer.EnableFlashActivation") !== false ){
+				this.flashActivationRequired = true;
+				$(this).hide();
+			}
 			if (this._propagateEvents) {
 				$(this).trigger("playing");
 				this.hideSpinner();
@@ -535,6 +542,10 @@
 		 * function called by flash at set interval to update the playhead.
 		 */
 		onUpdatePlayhead: function (playheadValue) {
+			if ( this.flashActivationRequired ){
+				this.flashActivationRequired = false;
+				$(this).show();
+			}
 			if (this.seeking) {
 				this.seeking = false;
 			}

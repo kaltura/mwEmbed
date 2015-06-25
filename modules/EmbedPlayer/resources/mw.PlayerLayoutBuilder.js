@@ -97,6 +97,10 @@ mw.PlayerLayoutBuilder.prototype = {
 				this.$interface = $videoHolder.parent( '.mwPlayerContainer' )
 			}
 
+			if( mw.isMobileDevice() ){
+				this.$interface.addClass('mobile');
+			}
+
 			if( mw.isTouchDevice() ){
 				this.$interface.addClass('touch');
 			}
@@ -110,7 +114,11 @@ mw.PlayerLayoutBuilder.prototype = {
 			}
 
 			// Add our skin name as css class
-			this.$interface.addClass( embedPlayer.playerConfig.layout.skin );
+			var skinName = embedPlayer.playerConfig.layout.skin;
+			if (embedPlayer.getRawKalturaConfig("layout") && embedPlayer.getRawKalturaConfig("layout").skin){
+				skinName = embedPlayer.getRawKalturaConfig("layout").skin;
+			}
+			this.$interface.addClass( skinName );
 
 			// clear out base style
 			embedPlayer.style.cssText = '';
@@ -302,8 +310,8 @@ mw.PlayerLayoutBuilder.prototype = {
 				_this.getInterface().find('.' + containerId )
 			);
 		});
-		
-		// once complete trigger and event ( so dynamic space components can resize to take remaining space ) 
+
+		// once complete trigger and event ( so dynamic space components can resize to take remaining space )
 		$(this.embedPlayer ).trigger( 'updateComponentsVisibilityDone' )
 	},
 
@@ -528,7 +536,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		_this.addRightClickBinding();
 
 		this.updateLayoutTimeout = null;
-
+		_this.updateComponentsVisibility();
 		b('updateLayout', function(){
 			// Firefox unable to get component width correctly without timeout
 			clearTimeout(_this.updateLayoutTimeout);
@@ -550,6 +558,14 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		b( 'AdSupport_EndAdPlayback', function(){
 			$interface.removeClass( adPlaybackState );
+		});
+
+		b( 'seeking', function(){
+			$interface.addClass( "seeking-state" );
+		});
+
+		b( 'seeked', function(){
+			$interface.removeClass( "seeking-state" );
 		});
 
 		// Bind to EnableInterfaceComponents
@@ -1237,6 +1253,11 @@ mw.PlayerLayoutBuilder.prototype = {
 		if ( embedPlayer.getInterface().find('.overlay-win').length != 0 ) {
 			return;
 		}
+		// remove error message from kalturaIframeClass.php
+		try{
+			embedPlayer.getInterface().parent().find( '#error').remove();
+		}catch(e){}
+
 		if ( typeof alertObj.callbackFunction == 'string' ) {
 			if ( alertObj.isExternal ) {
 				try {

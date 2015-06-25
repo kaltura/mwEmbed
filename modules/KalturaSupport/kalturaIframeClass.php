@@ -582,7 +582,7 @@ class kalturaIframeClass {
 	function outputIframeHeadCss(){
 		return <<<HTML
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>Kaltura Embed Player iFrame</title>
+	<title>{$this->getEntryTitle()}</title>
 	<style type="text/css">
 		html,body,video {
 			width: 100%;
@@ -737,6 +737,13 @@ HTML;
 
 		// Add our skin as dependency
 		$skinName = (isset( $playerConfig['layout']['skin'] ) && $playerConfig['layout']['skin'] != "") ? $playerConfig['layout']['skin'] : null;
+		$flashvars = $this->request->getFlashVars();
+		if (isset($flashvars) && isset($flashvars['layout'])){
+			$layout = json_decode($flashvars['layout'],true);
+			if (isset($layout) && isset($layout['skin'])){
+				$skinName = $layout['skin'];
+			}
+		}
 		if( $skinName ){
 			$moduleList[] = $skinName;
 		}		

@@ -62,7 +62,21 @@ class PlaylistResult {
 				$this->playlistObject = $this->getPlaylistObjectFromMrss( $firstPlaylist );
 			} else {
 				// kaltura playlist id:
-				$this->playlistObject = $this->getPlaylistObjectFromKalturaApi();
+				// Check for entry cache:
+				if ( !$this->request->hasKS() ){
+					$this->playlistObject = unserialize( $this->cache->get( $this->getCacheKey() ) );
+					if( $this->playlistObject ){
+						return $this->playlistObject;
+					}
+				}
+				// Check if we have a cached result object:
+				if( ! $this->playlistObject ){
+					$this->playlistObject = $this->getPlaylistObjectFromKalturaApi();
+				}
+				//Only cache request that don't have KS
+				if ( !$this->request->hasKS() ){
+					$this->cache->set( $this->getCacheKey(), serialize( $this->playlistObject ) );
+				}
 			}
 		}
 		// check if ac is enabled and filter playlist:
@@ -157,65 +171,57 @@ class PlaylistResult {
 	}
 
 	function getPlaylistObjectFromKalturaApi(){
+		$client = $this->client->getClient();
+		$client->startMultiRequest();
+		$firstPlaylist = $this->getPlaylistId(0);
 
-		$cacheKey = $this->getCacheKey();
-		$this->playlistObject = @unserialize( $this->cache->get( $cacheKey ) );
-		if( $this->playlistObject === false ) {
-			$client = $this->client->getClient();
-			$client->startMultiRequest();
-			$firstPlaylist = $this->getPlaylistId(0);
-
-			try {
-				$playlistIds = $this->getPlaylistIds();
-				foreach( $playlistIds as $playlistId ) {
-					$client->queueServiceActionCall( "playlist", "get", array( 'id' => $playlistId ) );
-				}
-				$maxClips = $this->uiconf->getPlayerConfig('playlistAPI', 'pageSize');
-				if (isset($maxClips) && $this->uiconf->getPlayerConfig('playlistAPI', 'paging') === true){
-					$params = array( 'id' => $firstPlaylist, 'pager:objectType' => 'KalturaFilterPager', 'pager:pageIndex' => 1, 'pager:pageSize' => $maxClips);
-				}else{
-					$params = array( 'id' => $firstPlaylist );
-				}
-
-				$client->queueServiceActionCall( "playlist", "execute", $params );
-				$resultObject = $client->doQueue();
-				$this->responseHeaders = $client->getResponseHeaders();
-				// Check if we got error
-				if(is_array($resultObject[0]) && isset($resultObject[0]['code'])){
-					throw new Exception($resultObject[0]['message']);
-				}
-
-				$i = 0;
-				$playlistResult = array();
-				// Map multi request result to playlist array
-				foreach( $playlistIds as $playlistId ) {
-
-					$resultItem = $resultObject[ $i ];
-
-					if( is_object($resultItem) ) {
-						$playlistResult[ $playlistId ] = array(
-							'id' => $resultItem->id,
-							'name' => $resultItem->name,
-							'content' => $resultItem->playlistContent,
-							'items' => array()
-						);
-					}
-
-					$i++;
-				}
-
-				// Set the last result to first playlist
-				$playlistResult[ $firstPlaylist ]['items'] = $resultObject[ $i ];
-				$this->playlistObject = $playlistResult;
-				$this->cache->set( $cacheKey, serialize( $playlistResult ) );
-
-			} catch( Exception $e ) {
-				// Throw an Exception and pass it upward
-				throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
-				return array();
+		try {
+			$playlistIds = $this->getPlaylistIds();
+			foreach( $playlistIds as $playlistId ) {
+				$client->queueServiceActionCall( "playlist", "get", array( 'id' => $playlistId ) );
 			}
+			$maxClips = $this->uiconf->getPlayerConfig('playlistAPI', 'pageSize');
+			if (isset($maxClips) && $this->uiconf->getPlayerConfig('playlistAPI', 'paging') === true){
+				$params = array( 'id' => $firstPlaylist, 'pager:objectType' => 'KalturaFilterPager', 'pager:pageIndex' => 1, 'pager:pageSize' => $maxClips);
+			}else{
+				$params = array( 'id' => $firstPlaylist );
+			}
+
+			$client->queueServiceActionCall( "playlist", "execute", $params );
+			$resultObject = $client->doQueue();
+			$this->responseHeaders = $client->getResponseHeaders();
+			// Check if we got error
+			if(is_array($resultObject[0]) && isset($resultObject[0]['code'])){
+				throw new Exception($resultObject[0]['message']);
+			}
+
+			$i = 0;
+			$playlistResult = array();
+			// Map multi request result to playlist array
+			foreach( $playlistIds as $playlistId ) {
+
+				$resultItem = $resultObject[ $i ];
+
+				if( is_object($resultItem) ) {
+					$playlistResult[ $playlistId ] = array(
+						'id' => $resultItem->id,
+						'name' => $resultItem->name,
+						'content' => $resultItem->playlistContent,
+						'items' => array()
+					);
+				}
+
+				$i++;
+			}
+
+			// Set the last result to first playlist
+			$playlistResult[ $firstPlaylist ]['items'] = $resultObject[ $i ];
+			$this->playlistObject = $playlistResult;
+		} catch( Exception $e ) {
+			// Throw an Exception and pass it upward
+			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
+			return array();
 		}
-		
 		
 		return $this->playlistObject;
 	}

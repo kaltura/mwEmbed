@@ -429,13 +429,18 @@
 			if ( embedPlayer.streamerType != 'http' ) {
 				protocol = embedPlayer.streamerType;
 			}
-			_this.getKalturaClient().doRequest( {
-				'service' : service,
-				'action' : 'islive',
-				'id' : embedPlayer.kentryid,
-				'protocol' : protocol,
-				'partnerId': embedPlayer.kpartnerid
-			}, function( data ) {
+
+            var requestObj = {
+                'service' : service,
+                'action' : 'islive',
+                'id' : embedPlayer.kentryid,
+                'protocol' : protocol,
+                'partnerId': embedPlayer.kpartnerid
+            };
+            if ( mw.isIOS8() ) {
+                requestObj.rnd = Math.random();
+            }
+			_this.getKalturaClient().doRequest( requestObj, function( data ) {
 				var onAirStatus = false;
 				if ( data === true ) {
 					onAirStatus = true;

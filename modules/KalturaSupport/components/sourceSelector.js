@@ -238,7 +238,7 @@
             this.getMenu().addItem({
                 'label': _this.AutoTitle,
                 'callback': function () {
-                    _this.getPlayer().switchSrc("-1");
+                    _this.getPlayer().switchSrc(-1);
                 },
                'active': true
             });
@@ -279,7 +279,7 @@
 		getSourceTitle: function( source ){
 			// We should return "Auto" for Apple HLS
 			if( source.getMIMEType() == 'application/vnd.apple.mpegurl' ) {
-				return _this.AutoTitle;
+				return this.AutoTitle;
 			}
 
             var title = '';
