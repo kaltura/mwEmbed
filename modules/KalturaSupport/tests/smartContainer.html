@@ -30,7 +30,13 @@
 				'glowBlur': 4,
 				'glowColor': '0x133693',
 				'showEmbeddedCaptions': false,
+				'visible': false,
 				"plugin":true
+			},
+			'sourceSelector': {
+				'plugin':true,
+				'visible': false,
+				'switchOnResize': true
 			},
 			'smartContainer': {
 				'plugin': true,
@@ -57,9 +63,14 @@
 							'displayName': 'Quality Settings:',
 							'properties':[
 								{
-									'property':'source',
-									'label': 'Select Quality:',
-									'type': 'string'
+									'property':'switchOnResize',
+									'label': 'Switch source on resize',
+									'type': 'boolean'
+								},
+								{
+									'property':'sources',
+									'label': 'Select source quality',
+									'type': 'enum'
 								}
 							]
 						}

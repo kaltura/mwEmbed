@@ -18,17 +18,11 @@
 		$menu: null,
 
 		setup: function( embedPlayer ) {
-			var _this = this;
 			if ( $.isEmptyObject(this.getConfig("config")) ){
 				this.setConfig( "visible", false ); // remove plugin if no config was specified
 				return;
 			}
-			// hide specified plugins
-			var config = this.getConfig('config');
-			config.plugins.forEach(function (plugin, index) {
-				_this.embedPlayer.setKalturaConfig( plugin.pluginName, "visible", false );
-			});
-
+			this.addBindings();
 			this.getMenu(); // create menu
 		},
 		getComponent: function() {
@@ -44,6 +38,19 @@
 			return this.$el;
 		},
 		addBindings: function() {
+			var _this = this;
+			this.bind( 'layoutBuildDone updatePropertyEvent', function(){
+				// hide specified plugins
+				var config = _this.getConfig('config');
+				config.plugins.forEach(function (plugin, index) {
+					_this.embedPlayer.setKalturaConfig( plugin.pluginName, "visible", false );
+				});
+			});
+
+			this.bind( 'onOpenFullScreen onCloseFullScreen', function(){
+				_this.closeMenu();
+			});
+
 			var _this = this;
 		},
 		toggleMenu: function(x) {
