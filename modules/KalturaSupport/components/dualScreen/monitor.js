@@ -40,7 +40,7 @@
 		isUserInteracting: function(){
 			return this.dragging || this.resizing;
 		},
-		actionsControls: function(){
+		viewActionHandler: function(){
 			var _this = this;
 			return {
 				start: function ( event ) {
@@ -74,11 +74,11 @@
 				}
 			};
 		},
-		enableFeatures: function ( ) {
+		enableUserActions: function ( ) {
 			this.obj.draggable( 'enable' ).resizable( 'enable' );
 			this.addResizeHandlers();
 		},
-		disableFeatures: function ( ) {
+		disableUserActions: function ( ) {
 			this.obj.draggable( 'disable' ).resizable( 'disable' );
 			this.removeResizeHandlers();
 		},

@@ -220,11 +220,11 @@
 						if ( transitionHandlerSet ) {
 							transitionHandlerSet = false;
 							_this.controlBar.show();
-							_this.disableMonitorTransition();
+							_this.disableTransitions();
 							_this.getPlayer().triggerHelper('postDualScreenTransition', [[transitionFrom, transitionTo]]);
 						}
 					});
-					_this.enableMonitorTransition();
+					_this.enableTransitions();
 				};
 
 				var selectedStatesMap = mw.isNativeApp() ? mw.dualScreen.nativeAppStates : mw.dualScreen.states;
@@ -279,8 +279,8 @@
 							}
 						} );
 
-					primaryScreen.disableFeatures();
-					secondaryScreen.enableFeatures();
+					primaryScreen.disableUserActions();
+					secondaryScreen.enableUserActions();
 
 					this.positionSecondScreen();
 
@@ -567,19 +567,19 @@
 			},
 
 			//Screen interaction handlers(drag/resize)
-			enableMonitorFeatures: function ( ) {
-				this.getAuxMonitor().enableFeatures();
+			enableUserActions: function ( ) {
+				this.getAuxMonitor().enableUserActions();
 			},
-			disableMonitorFeatures: function ( ) {
-				this.getAuxMonitor().disableFeatures();
+			disableUserActions: function ( ) {
+				this.getAuxMonitor().disableUserActions();
 			},
 
 			//Screen animation controller
-			enableMonitorTransition: function () {
+			enableTransitions: function () {
 				this.getMainMonitor().enableTransition();
 				this.getAuxMonitor().enableTransition();
 			},
-			disableMonitorTransition: function () {
+			disableTransitions: function () {
 				this.getMainMonitor().disableTransition();
 				this.getAuxMonitor().disableTransition();
 			}

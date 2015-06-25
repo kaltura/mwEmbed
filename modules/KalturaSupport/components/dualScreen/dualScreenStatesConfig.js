@@ -9,7 +9,7 @@
 				'SbS': {
 					name: 'SbS',
 					action: function () {
-						this.disableMonitorFeatures( );
+						this.disableUserActions( );
 						this.enableSideBySideView();
 
 					}
@@ -17,16 +17,16 @@
 				'hide': {
 					name: 'hide',
 					action: function (  ) {
-						this.disableMonitorFeatures( );
+						this.disableUserActions( );
 						this.hideMonitor( );
 					}
 				},
 				'switchView': {
 					name: 'PiP',
 					action: function () {
-						this.disableMonitorFeatures( );
+						this.disableUserActions( );
 						this.toggleMainMonitor();
-						this.enableMonitorFeatures( );
+						this.enableUserActions( );
 					}
 				}
 			}
@@ -37,7 +37,7 @@
 				'PiP': {
 					name: 'PiP',
 					action: function () {
-						this.enableMonitorFeatures( );
+						this.enableUserActions( );
 						this.disableSideBySideView();
 					}
 				},
@@ -63,7 +63,7 @@
 				'PiP': {
 					name: 'PiP',
 					action: function () {
-						this.enableMonitorFeatures( );
+						this.enableUserActions( );
 						this.showMonitor( );
 					}
 				},
@@ -95,7 +95,7 @@
 				'hide': {
 					name: 'hide',
 					action: function (  ) {
-						this.disableMonitorFeatures();
+						this.disableUserActions();
 						this.hideMonitor( );
 					}
 				}
@@ -112,7 +112,7 @@
 							this.toggleMainMonitor();
 
 						}
-						this.enableMonitorFeatures();
+						this.enableUserActions();
 						this.showMonitor( );
 					}
 				},
