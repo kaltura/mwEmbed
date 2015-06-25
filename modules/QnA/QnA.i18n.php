@@ -20,5 +20,5 @@ $messages['en'] = array(
 	'qna-timestamp-single-hour-text' => 'hr',
 	'qna-answered-by' => 'Answered by',
 	'qna-reply-here' => 'Reply here',
-	'qna-no-messages-text' => 'There are no messages available'
+	'qna-no-messages-text' => 'Nothing to see here :)'
 );

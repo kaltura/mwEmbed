@@ -60,6 +60,7 @@
 
             this.bind('updateLayout ended', function () {
                 _this.positionQAButtonOnVideoContainer();
+				_this.updateQnaListHolderSize();
 
 				if (!_this.getConfig( 'onPage' )){
 					$('.qnaModuleBackground').css({
@@ -176,6 +177,7 @@
 
 				this.bindButtons();
 				this.positionQAButtonOnVideoContainer();
+				this.updateQnaListHolderSize();
                 this.KQnaService = new mw.KQnaService( embedPlayer,this );
                 this.KQnaModule = new mw.KQnaModule( embedPlayer,this, this.KQnaService  );
                 ko.applyBindings(this.KQnaModule, this.$qnaListContainer[0]);
@@ -208,6 +210,15 @@
                     top: topOffset,
                     'line-height': buttonHeight + "px",
                     'text-indent': textIndent + "px"});
+		},
+
+		updateQnaListHolderSize : function(){
+			var _this = this;
+			var newHeight = this.getPlayer().getInterface().height();
+			if (!_this.announcementOnlyStatus()){
+				newHeight -= _this.getQnaContainer().find('.qnaQuestionArea').height();
+			}
+			_this.getQnaContainer().find('.listHolder').height(newHeight);
 		},
 
 		bindButtons : function(){
@@ -313,18 +324,14 @@
 				if (announcementOnly){
 					_this.getQnaContainer().find(".qnaQuestionArea").hide();
 					$('.qnaReplyBox').hide();
-
-					_this.getQnaContainer().find('.listHolder').height(this.getPlayer().getInterface().height());
-
 				}
 				else{
 					_this.getQnaContainer().find(".qnaQuestionArea").show();
 					$('.qnaReplyBox').show();
-					var newHeight = this.getPlayer().getInterface().height() - _this.getQnaContainer().find('.qnaQuestionArea').height();
-					_this.getQnaContainer().find('.listHolder').height(newHeight);
 				}
 			}
 
+			_this.updateQnaListHolderSize();
 			_this.changeVideoToggleIcon();
 			_this.KQnaModule.applyLayout();
 		}
