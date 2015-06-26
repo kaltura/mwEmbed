@@ -3082,7 +3082,7 @@
 			if (!this.isStopped()) {
 				this.isFlavorSwitching = true;
 				// Get the exact play time from the video element ( instead of parent embed Player )
-				var oldMediaTime = this.getPlayerElement().currentTime;
+				var oldMediaTime = this.currentTime;
 				var oldPaused = this.paused;
 				// Do a live switch
 				this.playerSwitchSource(source, function (vid) {
