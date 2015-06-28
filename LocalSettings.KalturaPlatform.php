@@ -78,8 +78,8 @@ if( $kConf->hasMap('playReady') ) {
 }
 
 // Get PlayReady License URL
-if( $kConf->hasMap('DRM') ) {
-	$drmMap = $kConf->getMap('DRM');
+if( $kConf->hasMap('drm') ) {
+	$drmMap = $kConf->getMap('drm');
 	if($drmMap)
 		$wgKalturaUdrmLicenseServerUrl = $drmMap['license_server_url'];
 }

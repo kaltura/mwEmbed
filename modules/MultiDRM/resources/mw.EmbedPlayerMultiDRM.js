@@ -876,7 +876,7 @@
 		 * onPlay function callback from the kaltura flash player directly call the
 		 * parent_play
 		 */
-		onPlay: function () {
+		_onplay: function () {
 			this.log(" OnPlay:: propogate:" + this._propagateEvents + ' paused: ' + this.paused);
 			// if using native controls make sure the inteface does not block the native controls interface:
 			if (this.useNativePlayerControls() && $(this).find('video ').length == 0) {
