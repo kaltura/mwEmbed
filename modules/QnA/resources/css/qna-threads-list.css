@@ -350,3 +350,38 @@
     text-align: center;
     margin-top: 50%;
 }
+
+.qnaInterface .qnaListHiderTextHolder{
+    position: relative;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+}
+
+.qnaInterface .qnaListHiderIcon{
+    height: 60px;
+    position: relative;
+    font-size: 50px;
+    text-align: center;
+    color: rgba(84, 85, 84, 0.549);
+    left: 50%;
+    left: -moz-calc(50% - 25px);
+    left: -webkit-calc(50% - 25px);
+    left: -o-calc(50% - 25px);
+    left: calc(50% - 25px);
+}
+
+.qnaInterface .qnaListHiderText{
+    position: relative;
+    font-size: 15px;
+    text-align: center;
+    font-family: 'Lato', Helvetica, Arial;
+    color: rgba(84, 85, 84, 0.549);
+    font-weight: 600;
+    margin-left: 10px;
+    margin-right: 10px;
+}

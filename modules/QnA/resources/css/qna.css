@@ -10,6 +10,14 @@
 	display: none;
 }
 
+.qnaInterface .qnaModuleBackground2{
+	width: 100%;
+	height: 100%;
+	background-color: #f0f0f0;
+	display: none;
+	position: relative;
+}
+
 .qna-badge {
 	display: block;
 	position: absolute;

@@ -127,9 +127,21 @@
             getNoMessagesText: function(){
                 return gM("qna-no-messages-text");
             },
+            qnaListHiderText: function() {
+                return gM('qna-list-hider-text');
+                //return "Q&A is currently disabled for this session. Please check back later."
+            },
             announcementOnlyStatus: function(){
                 var _this = this;
                 return _this.qnaPlugin.announcementOnlyStatus();
+            },
+            moduleStatus: function(){
+                var _this = this;
+                return _this.qnaPlugin.moduleStatus();
+            },
+            moduleOnPage: function(){
+                var _this = this;
+                return _this.qnaPlugin.getConfig( 'onPage' );
             },
             getUnreadCount: function () {
                 var _this = this;
