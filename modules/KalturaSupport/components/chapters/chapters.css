@@ -163,6 +163,7 @@
 }
 .chapters > .k-chapters-container .k-title-container{
     opacity: 1;
+    filter: alpha(opacity=100);
 }
 
 .chapters > .k-chapters-container .chapterBox > .boxImg{
