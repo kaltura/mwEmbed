@@ -502,6 +502,47 @@ button::-moz-focus-inner {
 	width: 0px;
 	height: 0px;
 }
+.smartContainerMenu{
+	background-color: rgba(255,255,255,0.9);
+	border-radius: 3px;
+	position: absolute;
+	padding-left: 10px;
+	color: #666666;
+	z-index: 10;
+}
+.smartContainerMenu p{
+	margin-top: 8px;
+	margin-bottom: 8px;
+}
+.smartContainerMenu label{
+	letter-spacing: 0px;
+}
+.smartContainerMenu .title{
+	color: #333333;
+	font-size: 13px;
+	font-weight: bold;
+}
+.smartContainerMenu .pluginTitle{
+	color: #555555;
+	margin-left: 20px;
+	font-size: 12px;
+	font-weight: bold;
+	margin-top: 18px;
+	margin-bottom: 8px;
+}
+.smartContainerMenu .pluginPropertyLabel{
+	color: #555555;
+	margin-left: 40px;
+	font-size: 12px;
+}
+.smartContainerMenu label{
+	color: #555555;
+	font-size: 12px;
+}
+.smartContainerMenu .pluginProperty.checkbox{
+	width: 20px;
+}
+
 .timers {
 	position: relative;
 	font-size: 12px;
@@ -993,6 +1034,17 @@ button::-moz-focus-inner {
 .playPauseBtn{
 	margin-left: 16px;
 	margin-right: 12px;
+}
+.smartContainer{
+	font-size: 26px;
+	margin-right: 10px;
+	margin-left: 10px;
+	margin-top: 2px;
+	width: 46px;
+	background-color: transparent;
+}
+.smartContainer:hover{
+	background-color: transparent;
 }
 .fullScreenBtn{
 	font-size: 26px;

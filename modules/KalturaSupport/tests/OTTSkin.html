@@ -44,7 +44,46 @@
 			"loadingSpinner":{
 				"customSpinner": true,
 				"className": "ottSpinner"
+			},
+			'closedCaptions': {
+				'layout': 'ontop',
+				'useCookie': true,
+				'defaultLanguageKey': 'en',
+				'whiteListLanguagesCodes': 'en,es,fr,jp',
+				'fontsize': 12,
+				'bg' : '0x335544',
+				'fontFamily' : 'Arial',
+				'fontColor' : '0xFFFFFF',
+				'useGlow' : 'false',
+				'glowBlur': 4,
+				'glowColor': '0x133693',
+				'showEmbeddedCaptions': false,
+				'visible': false,
+				"plugin":true
+			},
+			'smartContainer': {
+				'plugin': true,
+				'tooltip': 'Language Settings',
+				'iconClass': 'icon-globe',
+				'align': null,
+				"order": 40,
+				'config':{
+					'plugins':[
+						{
+							'pluginName':'closedCaptions',
+							'displayName': 'Subtitles:',
+							'properties':[
+								{
+									'property':'captions',
+									'label': 'Select language',
+									'type': 'enum'
+								}
+							]
+						}
+					]
+				}
 			}
+
 		}
 	});
 </script>

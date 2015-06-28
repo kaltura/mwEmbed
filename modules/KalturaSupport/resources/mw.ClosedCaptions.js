@@ -804,6 +804,8 @@
 				// Allow plugins to integrate with captions menu
 				this.getPlayer().triggerHelper('captionsMenuReady');
 
+				this.getPlayer().triggerHelper("updatePropertyEvent",{"plugin": this.pluginName, "property": "captions", "items": [{'label':gM('mwe-timedtext-no-subtitles'), 'value':gM('mwe-timedtext-no-subtitles')}]});
+
 				return this.getMenu();
 			} else {
 				this.getBtn().show();

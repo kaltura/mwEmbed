@@ -9,7 +9,8 @@
 			'width': 220,
 			'showTooltip': true,
 			'displayImportance': "high",
-			'title': "Smart Container",
+			'title': null,
+			'tooltip': null,
 			'iconClass': 'icon-cog',
 			'config':{}
 		},
@@ -29,11 +30,13 @@
 			var _this = this;
 			if( !this.$el ) {
 				this.$el = $( '<button />' )
-					.attr( 'title', this.getConfig('title') )
 					.addClass( this.getConfig('iconClass') + " btn " + this.getCssClass() )
 					.click( function(e) {
 						_this.toggleMenu( e.clientX ); // pass the mouse pointer x position to set the menu position
 					});
+				if (this.getConfig("tooltip")){
+					this.$el.attr( 'title', this.getConfig('tooltip') )
+				}
 			}
 			return this.$el;
 		},
@@ -67,7 +70,7 @@
 			var rightPosition = this.embedPlayer.getVideoHolder().width() - x - 20; // set right position for the menu according to the mouse click x position
 			var bottomPosition = 0; // set the menu bottom to the video holder bottom
 			if  ( this.embedPlayer.getKalturaConfig( "controlBarContainer", "hover" ) === true ){
-				bottomPosition = this.embedPlayer.getInterface().find(".controlsContainer").height(); // for hovering controls, update the menu bottom to the controls bar height
+				bottomPosition = this.embedPlayer.getInterface().find(".controlBarContainer").height(); // for hovering controls, update the menu bottom to the controls bar height
 			}
 			this.getMenu().css({"bottom": bottomPosition, "right": rightPosition}).show();
 			this.menuOpened = true;
@@ -116,7 +119,9 @@
 
 		renderMenu: function(config){
 			var _this = this;
-			this.$menu.append('<p class="title">' + this.getConfig("title") + '</p>');
+			if (this.getConfig("title")){
+				this.$menu.append('<p class="title">' + this.getConfig("title") + '</p>');
+			}
 			config.plugins.forEach(function (plugin, index) {
 				_this.$menu.append('<p class="pluginTitle">' + plugin.displayName + '</p>');
 				plugin.properties.forEach(function (property, index) {
