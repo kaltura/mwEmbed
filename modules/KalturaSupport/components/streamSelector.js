@@ -67,6 +67,7 @@
 					_this.setActiveMenuItem();
 				}
 				_this.buildMenu();
+				_this.onEnable();
 			});
 
 			this.bind('sourceSwitchingEnd', function () {
