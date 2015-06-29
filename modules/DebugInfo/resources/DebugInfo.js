@@ -22,6 +22,7 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
         var _this = this;
 
 
+
         this.bind('layoutBuildDone ended', function (event, screenName) {
 
         });
@@ -64,6 +65,11 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
 
             elem.html(this.getHTML());
 
+            _this.$scope.getFileName=function(url){
+                var index=url.lastIndexOf('/');
+                return index<0  ? url : url.substring(index+1);
+            }
+
             _this.binder=new mw.HtmlBinderHelper(elem,_this.$scope);
 
             _this.binder.bind();
@@ -82,10 +88,34 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
             },1000);
 
 
+            this.bind("debugInfoReceived", function( e, data ){
+                var $scope=_this.$scope;
+
+                if( data.info && data.info == "Playing segment"){
+                    $scope.hlsCurrentSegment=data.uri;
+                }
+                if( data.info && data.info == "Downloading segment"){
+                    $scope.hlsDownloadingSegment=data.uri;
+                }
+                if( data.info && data.info == "Finished processing segment"){
+                    $scope.hlsLastProcessedSegment=data.uri;
+                }
+                if( data.bufferLength ){
+                    $scope.bufferLength=data.bufferLength;
+                }
+                if( data.droppedFrames ){
+                    $scope.droppedFrames=data.droppedFrames;
+                }
+                if( data.currentBitrate ){
+                    $scope.currentBitrate=data.currentBitrate;
+                }
+            });
+
         } else {
             $( ".mw-debug-info").remove();
             clearInterval(this.refreshInterval);
             this.refreshInterval=null;
+            this.unbind('debugInfoReceived');
         }
     },
 	isSafeEnviornment: function() {

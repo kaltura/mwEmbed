@@ -13,6 +13,36 @@
 
                 var _this = this;
 
+                var parser=function(originalText,updateHtml) {
+                    var matches = originalText.match(/{{(.*)}}/g);
+
+
+                    if (matches && matches.length > 0) {
+                        matches.forEach(function (match) {
+                            var name = match.slice(2, -2);
+
+                            var filterIndex=name.indexOf('|');
+                            var filter;
+                            if (filterIndex>0) {
+                                var filterName=name.substring(filterIndex+1).trim();
+                                name=name.substring(0,filterIndex).trim();
+                                filter=$scope[filterName];
+                            }
+
+                            var updater=function() {
+                                var newContent = originalText.replace(match, internal[name]);
+                                if (filter) {
+                                    newContent=filter(newContent);
+                                }
+                                updateHtml(newContent);
+                            }
+
+                            defineProp(name, updater);
+
+                            updater();
+                        });
+                    }
+                }
 
 
                 var defineProp = function (name, updateHtml) {
@@ -72,48 +102,20 @@
                     }
                     var originalText = el.innerText;
 
-                    var matches = originalText.match(/{{(.*)}}/g);
-
-
-                    if (matches && matches.length > 0) {
-                        matches.forEach(function (match) {
-                            var name = match.slice(2, -2);
-
-
-                            function updateHtml() {
-                                var newContent = originalText.replace(match, internal[name]);
-                                el.innerHTML = newContent;
-                            }
-
-                            defineProp(name, updateHtml);
-
-                            updateHtml();
-                        });
-                    }
+                    parser(originalText, function(newContent) {
+                        el.innerHTML = newContent;
+                    });
 
 
                     $(el.attributes).each(function (index, element) {
                         var elementName = element.name;
                         var originalValue = element.value;
 
-                        var matches = originalValue.match(/{{(.*)}}/g);
 
+                        parser(originalValue, function(newContent) {
+                            element.value = newContent;
+                        });
 
-                        if (matches && matches.length > 0) {
-                            matches.forEach(function (match) {
-                                var name = match.slice(2, -2);
-
-
-                                function updateHtml() {
-                                    var newContent = originalValue.replace(match, internal[name]);
-                                    element.value = newContent;
-                                }
-
-                                defineProp(name, updateHtml);
-
-                                updateHtml();
-                            });
-                        }
 
                     });
 

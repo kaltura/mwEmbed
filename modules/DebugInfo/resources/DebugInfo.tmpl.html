@@ -9,7 +9,12 @@
     <div>currentState: {{currentState}}</div>
     <div>source: {{source}}</div>
     <div show="hls" style="background-color: #333">
-        <div>buffering: {{buffering}}</div>
+        <span>current:</span><a class="mw-debug-info-a" href="{{hlsCurrentSegment}}">{{hlsCurrentSegment | getFileName}}</a>
+        <span>downloading:</span><a class="mw-debug-info-a" href="{{hlsDownloadingSegment}}">{{hlsDownloadingSegment | getFileName}}</a>
+        <span>processed:</span><a class="mw-debug-info-a" href="{{hlsLastProcessedSegment}}">{{hlsLastProcessedSegment | getFileName}}</a>
+        <div>Buffer: {{bufferLength}}</div>
+        <div>droppedFrames: {{droppedFrames}}</div>
+        <div>currentBitrate: {{currentBitrate}}</div>
     </div>
 </div>
 <a href="#" class="mw-debug-info-copy-btn" >Copy</a>
