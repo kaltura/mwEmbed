@@ -11,8 +11,6 @@
 
             bind: function () {
 
-                var _this = this;
-
                 var parser=function(originalText,updateHtml) {
                     var matches = originalText.match(/{{(.*)}}/g);
 
@@ -35,14 +33,14 @@
                                     newContent=filter(newContent);
                                 }
                                 updateHtml(newContent);
-                            }
+                            };
 
                             defineProp(name, updater);
 
                             updater();
                         });
                     }
-                }
+                };
 
 
                 var defineProp = function (name, updateHtml) {
@@ -76,13 +74,13 @@
                         });
                     }
                     updaters[name].push(updateHtml);
-                }
+                };
 
                 $('*',element).each(function ($index, el) {
 
-                    var shouldShowValue=el.getAttribute("show");
+                    var shouldShowValue=el.getAttribute("ng-show");
                     if (shouldShowValue) {
-                        function updateHtml() {
+                        var updateHtml=function() {
                             var newContent =  internal[shouldShowValue];
                             if (newContent) {
                                 el.style.display = "inherit";
@@ -90,7 +88,7 @@
                                 el.style.display = "none";
                             }
 
-                        }
+                        };
 
                         defineProp(shouldShowValue, updateHtml);
 
@@ -108,7 +106,7 @@
 
 
                     $(el.attributes).each(function (index, element) {
-                        var elementName = element.name;
+                        //var elementName = element.name;
                         var originalValue = element.value;
 
 

@@ -4,7 +4,6 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
 
 	defaultConfig: {
 		templatePath: '../debugInfo/resources/DebugInfo.tmpl.html',
-        onPage: true,
         cssFileName: 'modules/debugInfo/resources/DebugInfo.css'
 	},
     getBaseConfig: function() {
@@ -68,7 +67,7 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
             _this.$scope.getFileName=function(url){
                 var index=url.lastIndexOf('/');
                 return index<0  ? url : url.substring(index+1);
-            }
+            };
 
             _this.binder=new mw.HtmlBinderHelper(elem,_this.$scope);
 
