@@ -27,25 +27,7 @@
 			_this.getPlayer().removePlayerError();
 			_this.getPlayer().addPlayerSpinner();
 			
-			// load the authentication iframe:
-			$('body').append(
-				$( '<iframe style="width:0px;height:0px;border:none;overflow:hidden;" id="auth-frame">' )
-				.attr('src', _this.getConfig('authFrameUrl') )
-				.load( function(){
-					var authFrame = this;
-					// give it 250ms for DOM to be ready
-					setTimeout(function(){
-						_this.log( 'Send Auth check to iframe: ' + _this.getConfig('authFrameUrl') );
-						$( authFrame )[0].contentWindow.postMessage( 'kaltura-externalAuth-check',  '*');
-					}, 250);
-				})
-			);
-			// timeout for the auth page loading error
-			//setTimeout(function(){
-				//_this.getPlayer().showErrorMsg(
-				//	_this.getPlayer().getKalturaMsgObject('ks-externalAuth-timeout')
-				//);
-			//}, 1000 * _this.getConfig('authFrameTimeout'));
+			_this.addIframeKsPage();
 			
 			// Receive messages: 
 			window.addEventListener("message", function( event){
@@ -60,6 +42,34 @@
 					_this.getPlayer().enablePlayControls();
 				}
 			}, false );
+		},
+		addIframeKsPage: function(){
+			var _this = this;
+			var authFrame = null;
+			// remove any existing auth-frame:
+			$('#auth-frame').remove();
+			// load the authentication iframe:
+			$('body').append(
+				$( '<iframe style="width:0px;height:0px;border:none;overflow:hidden;" id="auth-frame">' )
+				.attr('src', _this.getConfig('authFrameUrl') )
+				.load( function(){
+					authFrame = this;
+					// give it 250ms for DOM to be ready
+					setTimeout(function(){
+						_this.log( 'Send Auth check to iframe: ' + _this.getConfig('authFrameUrl') );
+						$( authFrame )[0].contentWindow.postMessage( 'kaltura-externalAuth-check',  '*');
+					}, 250);
+				})
+			);
+			// check for overall timeout: 
+			setTimeout(function(){
+				if( !authFrame ){
+					_this.getPlayer().showErrorMsg(
+						_this.getPlayer().getKalturaMsgObject('ks-externalAuth-error-timeout')
+					);
+				}
+			},this.getConfig('authFrameTimeout') * 1000 );
+			
 		},
 		handleError:function(errorType){
 			switch( errorType ){
@@ -90,6 +100,17 @@
 						 "menubar=no,location=yes,resizable=no,scrollbars=no,status=no" +
 						 "left=50,top=100,width=400,height=250" 
 					));
+					var interval = window.setInterval(function() {
+						try {
+							if (authPage == null || authPage.closed) {
+								window.clearInterval(interval);
+								_this.addIframeKsPage();
+							}
+						}
+						catch (e) {
+						}
+					}, 250);
+					return false;
 				}
 			};
 			this.getPlayer().layoutBuilder.displayAlert(alertObj);

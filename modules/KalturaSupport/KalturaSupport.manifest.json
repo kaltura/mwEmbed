@@ -1790,5 +1790,18 @@
                 "type": "string"
             }
         }
+    },
+    "externalAuth":{
+        "description": "Support external authentication via iframe postMessage exchange.",
+        "attributes": {
+            "on": {
+                "doc": "The list of named hammer events to track seperated by spaces.",
+                "type": "string"
+            },
+            "options": {
+                "doc": "JSON object of hammer initialization options",
+                "type": "string"
+            }
+        }
     }
 }

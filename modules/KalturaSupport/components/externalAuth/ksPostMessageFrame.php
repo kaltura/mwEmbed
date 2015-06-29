@@ -31,6 +31,15 @@ function getKs(){
 		switch( $_REQUEST['action'] ){
 			case 'login':
 				$_SESSION['isAuthenticated'] = true;
+				// close the window after the user logs in
+				?>
+				User is login, window will close in 1 second:
+				<script>
+				setTimeout(function(){
+					self.close();
+				},1000);
+				</script>
+				<?php 
 			break;
 			case 'logout':
 				$_SESSION['isAuthenticated'] = false;

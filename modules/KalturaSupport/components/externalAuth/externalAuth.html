@@ -18,7 +18,8 @@
 	var localPath = document.location.href;
 	var authFrameUrl = localPath.split('externalAuth.html')[0] + 'ksPostMessageFrame.php';
 	var doPlayerEmbed = function(){
-		kWidget.embed( 'kaltura_player', {
+		kWidget.featureConfig( {
+			'targetId': 'kaltura_player',
 			'wid' : '_243342',
 			'uiconf_id': '12905712',
 			'entry_id': '0_mjbelixh',
@@ -53,6 +54,44 @@ If you have already authenticated, you may need to clear your session to see end
 	});
 </script>
 <h3> Implementation of postMessage frame page </h3>
-First check if uses is logged in, then check if yes pass KS back over iframe.
+The external auth plugin will load a iframe url inside. This iframe page is responsible for communicating to the external auth plugin if the user is authenticated:
+<pre class="prettyprint linenums">
+&lt;script&gt;
+/ listen to login respond with ks, error login or error domain: 
+window.addEventListener("message", function( event ){
+	// the data of the check will be: kaltura-externalAuth-check
+	if( event.data == 'kaltura-externalAuth-check' ){
+		var originDomain  = event.origin.split('/').slice(2,3)[0];
+		// origin domain should almost always be cdnapisec.kaltura.com ( unless in an on-prem setup )
+		if( isValidDomain( originDomain ) ){
+			// check if you have a KS and retun it. 
+			if( ks ){
+				event.source.postMessage( JSON.stringify( {'ks': ks}),  event.origin);
+			} else {
+				event.source.postMessage( JSON.stringify( {'error': 'login'}),  event.origin);
+			}
+		} else {
+			event.source.postMessage( JSON.stringify( {'error': 'domain'}),  event.origin);
+		}
+	}
+});
+&lt;/script&gt;
+</pre>
+<h3> What type of KS should be used? </h3>
+Since this player is just responsible for playback a special KS should be generated specific to playback. This will minimize exposure of additional permissions to the playback context:
+<pre class="prettyprint linenums">
+$conf = new KalturaConfiguration( '243342' );
+$conf->serviceUrl = $wgKalturaServiceUrl;
+$conf->serviceBase = $wgKalturaServiceBase;
+$client = new KalturaClient( $conf );
+
+return $client->session->start ( $wgKalturaUserSecret,
+	$_SERVER['REMOTE_ADDR'],
+	KalturaSessionType::USER,
+	'243342',
+	3600, // expire in one hour
+	"sview:0_mjbelixh" // give permission to "view" a given entry
+);
+</pre>
 </body>
 </html>
