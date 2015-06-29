@@ -69,7 +69,7 @@
 						position: 'relative',
 						float: 'right'
 					});
-					$('.qnaModuleBackground2').css({
+					$('.qnaModuleBackgroundHider').css({
 						width: _this.getConfig( 'moduleWidth' ) + 'px',
 						position: 'relative',
 						float: 'right'
@@ -320,14 +320,14 @@
 			if (hide) {
 				_this.getQnaContainer().find(".qnaModuleBackground").hide();
 				if (!_this.getConfig( 'onPage' )) {
-					_this.getQnaContainer().find(".qnaModuleBackground2").show();
+					_this.getQnaContainer().find(".qnaModuleBackgroundHider").show();
 				}
 				$('.qna-on-video-btn').hide();
 			}
 			else{
 				if (firstTime) {
 					if (!_this.getConfig( 'onPage' )) {
-						_this.getQnaContainer().find(".qnaModuleBackground2").hide();
+						_this.getQnaContainer().find(".qnaModuleBackgroundHider").hide();
 					}
 					_this.getQnaContainer().find(".qnaModuleBackground").show();
 				}
@@ -339,7 +339,7 @@
 				}
 				else{
 					if (!_this.getConfig( 'onPage' )) {
-						_this.getQnaContainer().find(".qnaModuleBackground2").hide();
+						_this.getQnaContainer().find(".qnaModuleBackgroundHider").hide();
 					}
 					_this.getQnaContainer().find(".qnaQuestionArea").show();
 					$('.qnaReplyBox').show();

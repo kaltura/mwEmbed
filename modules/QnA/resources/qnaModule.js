@@ -129,7 +129,6 @@
             },
             qnaListHiderText: function() {
                 return gM('qna-list-hider-text');
-                //return "Q&A is currently disabled for this session. Please check back later."
             },
             announcementOnlyStatus: function(){
                 var _this = this;
