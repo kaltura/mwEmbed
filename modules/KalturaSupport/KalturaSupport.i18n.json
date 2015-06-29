@@ -72,6 +72,11 @@
         "ks-chapters-slide-start-time": "Slide start time",
         "ks-chapters-slide-duration": "Slide duration",
         "ks-sidebar-toggleBtn": "Navigation",
+        "ks-externalAuth-timeout": "The authentication servuce could not be loaded",
+        "ks-externalAuth-login-title": "Please login",
+        "ks-externalAuth-login": "Please login to view video content.",
+        "ks-externalAuth-login-btn": "login",
+        "ks-externalAuth-error-domain": "This player is not hosted on a approved domain",
         "ks-FLASH-BLOCKED-TITLE": "Flash is not active",
         "ks-FLASH-BLOCKED": "Flash does not appear to be installed or active.<br>Please <a href='http:\/\/get.adobe.com\/flashplayer\/' target='_blank'>install<\/a> or <a href='http:\/\/knowledge.kaltura.com\/faq\/how-activate-flash-safari-desktop' target='_blank'>activate<\/a> flash"
     },

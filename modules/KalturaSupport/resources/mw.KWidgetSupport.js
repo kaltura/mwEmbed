@@ -1007,6 +1007,7 @@ mw.KWidgetSupport.prototype = {
 		var errObj = null;
 		if( data.meta &&  data.meta.code == "INVALID_KS" ){
 			errObj = embedPlayer.getKalturaMsgObject( "NO_KS" );
+			errObj.code = "NO_KS";
 		}
 		if( data.error ) {
 			errObj = embedPlayer.getKalturaMsgObject( 'GENERIC_ERROR' );
@@ -1053,28 +1054,34 @@ mw.KWidgetSupport.prototype = {
 		if( ac.isAdmin ){
 			return true;
 		}
+		var getErrorObj = function( msgKey){
+			var errorObj = embedPlayer.getKalturaMsgObject( msgKey );
+			errorObj.code = msgKey;
+			return errorObj;
+		};
+		
 		if( ac.isCountryRestricted ){
-			return embedPlayer.getKalturaMsgObject( 'UNAUTHORIZED_COUNTRY' );
+			return getErrorObj( 'UNAUTHORIZED_COUNTRY' );
 		}
 		if( ac.isScheduledNow === 0 ){
-			return embedPlayer.getKalturaMsgObject( 'OUT_OF_SCHEDULING' );
+			return getErrorObj( 'OUT_OF_SCHEDULING' );
 		}
 		if( ac.isIpAddressRestricted ) {
-			return embedPlayer.getKalturaMsgObject( 'UNAUTHORIZED_IP_ADDRESS' );
+			return getErrorObj( 'UNAUTHORIZED_IP_ADDRESS' );
 		}
 		if( ac.isSessionRestricted && ac.previewLength === -1 ){
-			return embedPlayer.getKalturaMsgObject( 'NO_KS' );
+			return getErrorObj( 'NO_KS' );
 		}
 		if( ac.isSiteRestricted ){
-			return embedPlayer.getKalturaMsgObject( 'UNAUTHORIZED_DOMAIN' );
+			return getErrorObj( 'UNAUTHORIZED_DOMAIN' );
 		}
 		// This is normally handled at the iframe level, but check is included here for completeness
 		if( ac.isUserAgentRestricted ){
-			return embedPlayer.getKalturaMsgObject( 'USER_AGENT_RESTRICTED' );
+			return getErrorObj( 'USER_AGENT_RESTRICTED' );
 		}
 		// New AC API
 		if( ac.accessControlActions && ac.accessControlActions.length ) {
-			var msgObj = embedPlayer.getKalturaMsgObject( 'GENERIC_ERROR' );
+			var msgObj = getErrorObj( 'GENERIC_ERROR' );
 			var err = false;
 			$.each( ac.accessControlActions, function() {
 				if( this.type == 1 ) {
@@ -1085,7 +1092,7 @@ mw.KWidgetSupport.prototype = {
 							err = true;
 						});
 					} else {
-						msgObj = embedPlayer.getKalturaMsgObject( 'NO_KS' );
+						msgObj = getErrorObj( 'NO_KS' );
 						err = true;
 					}
 				}

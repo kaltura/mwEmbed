@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>External Auth</title>
+<script type="text/javascript" src="../../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../../docs/js/doc-bootstrap.js"></script>
+
+</head>
+<body>
+<h2>External Auth plugin</h2>
+<br />
+<div id="kdoc-more-desc">Demonstrates basic external auth support. This API enables an player iframe to request authentication from a parent application that provides KS tokens ( like kaltura mediaSpace ) </div>
+<div id="kaltura_player" style="width:600px;height:370px;float:left"></div>
+
+<script type="text/javascript" src="../../tests/resources/qunit-kaltura-bootstrap.js"></script>
+<script>
+	var localPath = document.location.href;
+	var authFrameUrl = localPath.split('externalAuth.html')[0] + 'ksPostMessageFrame.php';
+	var doPlayerEmbed = function(){
+		kWidget.embed( 'kaltura_player', {
+			'wid' : '_243342',
+			'uiconf_id': '12905712',
+			'entry_id': '0_mjbelixh',
+			'flashvars':{
+				'externalAuth':{
+					'plugin': true,
+					'authFrameUrl' : authFrameUrl,
+					'authFrameTimeout': 4
+				}
+			}
+		});
+	}
+	doPlayerEmbed();
+</script>
+<div style="clear:both"></div>
+<br>
+If you have already authenticated, you may need to clear your session to see end to end example:<br>
+<input id="logout" type="button" value="Logout"></input>
+<input id="login" type="button" value="Show login window"></input>
+<script>
+	$('#logout').click(function(){
+		$.get( authFrameUrl + '?action=logout' );
+		// refresh player embed: 
+		doPlayerEmbed();
+	})
+	$('#login').click(function(){
+		var authPage = (window.open( authFrameUrl, 
+				'kalturaauth',
+				 "menubar=no,location=yes,resizable=no,scrollbars=no,status=no" +
+				 "left=50,top=100,width=400,height=250" 
+			));
+	});
+</script>
+<h3> Implementation of postMessage frame page </h3>
+First check if uses is logged in, then check if yes pass KS back over iframe.
+</body>
+</html>

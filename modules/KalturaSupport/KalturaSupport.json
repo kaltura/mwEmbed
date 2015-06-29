@@ -414,5 +414,10 @@
 		"scripts": "components/reportError.js",
 		"dependencies": "mw.KBaseComponent",
 		"kalturaPluginName": "reportError"
+	},
+	"externalAuth":{
+		"scripts" : "components/externalAuth/externalAuth.js",
+		"dependencies" : "mw.KBasePlugin",
+		"kalturaPluginName" : "externalAuth"
 	}
 }
