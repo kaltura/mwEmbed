@@ -8,6 +8,9 @@
 	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 	<style>
 		#url, #urlthumb, #playingSeg, #downloadingSeg, #processedSeg  { width: 400px; height:20px; vertical-align: middle;}
+        th, td {text-align: left; padding: 0px 10px; border: 1px solid darkgray; height: 28px}
+        td input {margin: 0 !important; border:0 !important;}
+
 	</style>
 </head>
 
@@ -36,48 +39,55 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
 </div>
 <br/>
 <div>
-<b>Flashvars for HLS plugin:</b><br/>
-    <div class="form-group">
-        <label for="segBuffer">hlsSegmentBuffer</label>
-        <input type="number" class="form-control" id="segBuffer" value="-1"/>
-    </div>
-    <div class="form-group">
-        <label for="targetDuration">hlsOverrideTargetDuration</label>
-        <input type="number" class="form-control" id="targetDuration" value="-1"/>
-    </div>
-</div>
-
+<b>Flashvars for HLS plugin:</b>
+<table>
+    <tbody>
+    <tr>
+        <th scope="row">hlsSegmentBuffer</th>
+        <td><input type="number" class="form-control" id="segBuffer" value="-1"/></td>
+    </tr>
+    <tr>
+        <th scope="row">hlsOverrideTargetDuration</th>
+        <td><input type="number" class="form-control" id="targetDuration" value="-1"/></td>
+    </tr>
+</table>
+    <br/>
 <input type="button" id="generate" value="Create Player" />
 <br><br>
 <div id="kaltura_player" style="width:624px; height: 387px;display:block;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject">
 </div>
+<br/><br/>
+<b>Debug Info for HLS plugin:</b>
+
+<table>
+    <tr>
+        <th>Buffer length (in seconds)</th>
+        <th>Dropped frames</th>
+        <th>Current bitrate</th>
+    </tr>
+    <tr>
+        <td><label id="bufferLen"/></td>
+        <td><label id="droppedFrames"/></td>
+        <td><label id="currentBitrate"/></td>
+    </tr>
+</table>
 <br/>
-<b>Debug Info for HLS plugin:</b><br/>
-<div class="form-group">
-    <label for="bufferLen">Buffer length (in seconds)</label>
-    <input type="number" class="form-control" id="bufferLen" value="-1"/>
-</div>
-<div class="form-group">
-    <label for="droppedFrames">Dropped frames</label>
-    <input type="number" class="form-control" id="droppedFrames" value="-1"/>
-</div>
-<div class="form-group">
-    <label for="currentBitrate">Current bitrate</label>
-    <input type="number" class="form-control" id="currentBitrate" value="-1"/>
-</div>
-<div class="form-group">
-    <label for="playingSeg">Playing segment</label>
-    <input type="text" class="form-control" id="playingSeg" />
-</div>
-<div class="form-group">
-    <label for="downloadingSeg">Downloading segment</label>
-    <input type="text" class="form-control" id="downloadingSeg" />
-</div>
-<div class="form-group">
-    <label for="processedSeg">Finished processing segment</label>
-    <input type="text" class="form-control" id="processedSeg" />
-</div>
-</div>
+<table>
+    <tbody>
+    <tr>
+        <th scope="row">Downloading segment</th>
+        <td><label id="downloadingSeg"/></td>
+    </tr>
+    <tr>
+        <th scope="row">Finished processing segment</th>
+        <td><label id="processedSeg"/></td>
+    </tr>
+    <tr>
+        <th scope="row">Playing segment</th>
+        <td><label id="playingSeg"/></td>
+    </tr>
+    </tbody>
+</table>
 
 <script>
     // update form based on hash values if present:
@@ -179,22 +189,22 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
                     ts = url[url.length-2] + ".ts";
                 }
                 if( data.info && data.info == "Playing segment"){
-                    $('#playingSeg').val( ts );
+                    $('#playingSeg').text( ts );
                 }
                 if( data.info && data.info == "Downloading segment"){
-                    $('#downloadingSeg').val( ts);
+                    $('#downloadingSeg').text( ts);
                 }
                 if( data.info && data.info == "Finished processing segment"){
-                    $('#processedSeg').val( ts );
+                    $('#processedSeg').text( ts );
                 }
                 if( data.bufferLength ){
-                    $('#bufferLen').val( data.bufferLength );
+                    $('#bufferLen').text( data.bufferLength );
                 }
                 if( data.droppedFrames ){
-                    $('#droppedFrames').val( data.droppedFrames );
+                    $('#droppedFrames').text( data.droppedFrames );
                 }
                 if( data.currentBitrate ){
-                    $('#currentBitrate').val( data.currentBitrate );
+                    $('#currentBitrate').text( data.currentBitrate );
                 }
             });
         });
