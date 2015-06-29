@@ -1,3 +1,10 @@
+<!--<div data-bind="if: !moduleStatus() && !moduleOnPage()">-->
+<div class="qnaModuleBackgroundHider">
+    <div class="qnaListHiderTextHolder">
+        <div class="qnaListHiderIcon icon-qna-Ask"></div>
+        <div class="qnaListHiderText" data-bind="text: qnaListHiderText()"></div>
+    </div>
+</div>
 <div class="qnaModuleBackground">
     <div class="qnaQuestionArea">
         <div class="qnaQuestionBox">
@@ -15,6 +22,9 @@
 
     <div class="listHolder nano">
         <div class="nano-content">
+            <div data-bind="if: myObservableArray().length === 0 && announcementOnlyStatus()">
+                <div class="qna-no-messages-text" data-bind="text: getNoMessagesText()"></div>
+            </div>
             <div data-bind='template: { foreach: myObservableArray(), as: "thread"}' class="qnaEntryList">
                 <div data-bind="if: entries()[0]().getType() === 'Announcement'">
                     <div class="qnaThread qnaAnnouncementThread"
@@ -96,7 +106,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div data-bind="if: !isCollapsed()">
+                        <div data-bind="if: !isCollapsed() && !$parent.announcementOnlyStatus()">
                             <div class="qnaReplyBox"
                                  data-bind="css:{
                                          'qnaReplyBoxSize': !isTypingAnswer(),

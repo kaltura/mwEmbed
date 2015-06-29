@@ -34,6 +34,9 @@
                     if (entry.getThread().entries()[0]() == entry){
                         entry.getThread().entries.reverse();
                         _this.collapseExpandThread(entry, event);
+
+                        _this.applyLayout();
+
                     }
                     else{
                         _this.itemRead(entry, event);
@@ -120,6 +123,24 @@
                     scroll.nanoScroller({documentContext: window['parent'].document});
                 }
                 scroll.find(".nano-content").css("z-index", "");
+            },
+            getNoMessagesText: function(){
+                return gM("qna-no-messages-text");
+            },
+            qnaListHiderText: function() {
+                return gM('qna-list-hider-text');
+            },
+            announcementOnlyStatus: function(){
+                var _this = this;
+                return _this.qnaPlugin.announcementOnlyStatus();
+            },
+            moduleStatus: function(){
+                var _this = this;
+                return _this.qnaPlugin.moduleStatus();
+            },
+            moduleOnPage: function(){
+                var _this = this;
+                return _this.qnaPlugin.getConfig( 'onPage' );
             },
             getUnreadCount: function () {
                 var _this = this;
