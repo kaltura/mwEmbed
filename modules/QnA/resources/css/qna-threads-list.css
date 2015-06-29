@@ -368,11 +368,6 @@
     font-size: 50px;
     text-align: center;
     color: rgba(84, 85, 84, 0.549);
-    left: 50%;
-    left: -moz-calc(50% - 25px);
-    left: -webkit-calc(50% - 25px);
-    left: -o-calc(50% - 25px);
-    left: calc(50% - 25px);
 }
 
 .qnaInterface .qnaListHiderText{
