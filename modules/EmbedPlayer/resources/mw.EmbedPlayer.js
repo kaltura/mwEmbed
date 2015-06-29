@@ -2184,6 +2184,7 @@
 			var $this = $(this);
 			if (this.currentState == "end") {
 				// prevent getting another clipdone event on replay
+				this.stopPlayAfterSeek = false;
 				this.seek(0.01, false);
 			}
 			// Store the absolute play time ( to track native events that should not invoke interface updates )
