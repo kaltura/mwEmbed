@@ -74,7 +74,6 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
             });
             $(elem).find(".mw-debug-info-copy-btn").click(function() {
                 alert( $("#mw-debug-info-values").text());
-
             });
 
             _this.refresh();
@@ -111,6 +110,7 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
         this.$scope.currentState=player.currentState;
         this.$scope.isDVR= player.isDVR();
         this.$scope.buffering= player.buffering;
+        this.$scope.hls=this.$scope.src.indexOf("m3u8")>=0;
     }
 
 }));

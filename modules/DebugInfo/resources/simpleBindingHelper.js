@@ -50,6 +50,23 @@
 
                 $('*',element).each(function ($index, el) {
 
+                    var shouldShowValue=el.getAttribute("show");
+                    if (shouldShowValue) {
+                        function updateHtml() {
+                            var newContent =  internal[shouldShowValue];
+                            if (newContent) {
+                                el.style.display = "inherit";
+                            } else {
+                                el.style.display = "none";
+                            }
+
+                        }
+
+                        defineProp(shouldShowValue, updateHtml);
+
+                        updateHtml();
+
+                    }
                     if(el.childNodes.length>1) {
                         return;
                     }
