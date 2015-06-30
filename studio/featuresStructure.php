@@ -116,6 +116,7 @@ return array(
 			"theme" => "",
 			"infoScreen" => "",
 			"share" => "",
+			"playersJsReceiver" => "",
 			"related" => "",
 			"playlistAPI" => "",
 			"nextPrevBtn" => ""
@@ -172,6 +173,7 @@ return array(
 			"playbackRateSelector" => "",
 			"restrictUserAgent" => "",
 			"widevine" => "",
+			"multiDrm" => "",
 			"sourceSelector" => "",
 			"download" => "",
 			"nativeCallout" => "",

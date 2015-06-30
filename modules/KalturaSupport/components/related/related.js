@@ -389,6 +389,17 @@
 		},
 		onConfigChange: function( property, value ){
 			this._super( property, value );
+			if ( property === 'entryList' ){
+				var _this = this;
+				this.getEntriesFromList( value, function(data){
+					_this.updateTemplateData(data);
+					var keepScreenOpen = _this.isScreenVisible(); // save screen status so we can reopen it after switching entryList
+					_this.removeScreen(); // we must remove screen to clear the DOM from old entryList thumbnails
+					if (keepScreenOpen){
+						_this.showScreen(); // reopen screen if needed
+					}
+				} );
+			}
 			if( !this.isScreenVisible() ) {
 				return;
 			}

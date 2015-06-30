@@ -99,6 +99,9 @@
                     if(mw.getConfig("hlsSegmentBuffer")) {
                         flashvars.KalturaHLS["segmentBuffer"] = mw.getConfig("hlsSegmentBuffer");
                     }
+                    if(mw.getConfig("hlsOverrideTargetDuration")) {
+                        flashvars.KalturaHLS["overrideTargetDuration"] = mw.getConfig("hlsOverrideTargetDuration");
+                    }
 					flashvars.streamerType = _this.streamerType = 'hls';
 				}
 
@@ -146,7 +149,6 @@
 						'switchingChangeStarted': 'onSwitchingChangeStarted',
 						'switchingChangeComplete': 'onSwitchingChangeComplete',
 						'flavorsListChanged': 'onFlavorsListChanged',
-						'enableGui': 'onEnableGui',
 						'liveStreamOffline': 'onLiveEntryOffline',
 						'liveStreamReady': 'onLiveStreamReady',
 						'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions',

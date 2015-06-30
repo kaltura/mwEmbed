@@ -56,6 +56,7 @@ class downloadEntry {
 	function redirectDownload() {
 		$flavorUrl = $this->getSourceForUserAgent();
 		$client = $this->getResultObject()->client->getClient();
+		$mediaType = $this->getResultObject()->entryResultObj['meta']->mediaType;
 		// Redirect to flavor
 		header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 		header("Pragma: no-cache");
@@ -72,15 +73,22 @@ class downloadEntry {
 			}else{
 				$filename = $flavorId . $extension;
 			}
-			$options = new KalturaFlavorAssetUrlOptions();
-			$options->fileName = $filename;
 
-			$requestConfig = $client->getConfig();
-			array_push($requestConfig->requestHeaders, 'Referer: ' . $this->getResultObject()->request->getReferer());
-			$client->setConfig($requestConfig);
+			if( $mediaType ==! 2 ){
+				$options = new KalturaFlavorAssetUrlOptions();
+				$options->fileName = $filename;
 
-			$flavorUrl = $client->flavorAsset->getUrl($flavorId,null,false,$options);
-			header("Location: " . $flavorUrl );
+				$requestConfig = $client->getConfig();
+				array_push($requestConfig->requestHeaders, 'Referer: ' . $this->getResultObject()->request->getReferer());
+				$client->setConfig($requestConfig);
+
+				$flavorUrl = $client->flavorAsset->getUrl($flavorId,null,false,$options);
+				header("Location: " . $flavorUrl );
+
+			}else{
+				header( 'Content-Disposition: attachment; filename="'.$filename.'"' );
+				readfile( $flavorUrl );
+			}
 		}
 		else {
 			header("Location: " . $flavorUrl );

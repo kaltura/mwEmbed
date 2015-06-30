@@ -5,5 +5,12 @@
             "skins/kdark/css/layout.css",
             "skins/kdark/css/icons.css"
         ]
-    }
+    },
+	"ott": {
+		"dependencies": "mw.EmbedPlayer",
+		"styles": [
+			"skins/ott/css/layout.css",
+			"skins/ott/css/icons.css"
+		]
+	}
 }

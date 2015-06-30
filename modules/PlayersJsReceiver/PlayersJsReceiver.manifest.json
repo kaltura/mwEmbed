@@ -1,0 +1,13 @@
+{
+    "playersJsReceiver": {
+        "label": "Enable embed.ly embeds",
+        "description": "Enables embed.ly sharing of the Kaltura player. Embed.ly is generic embed service used by many web platfroms such as linkedin, salesforce and yammer. You can lean more at <a href='http://embed.ly' target='_blank'>embed.ly</a>",
+        "attributes": {
+            "plugin": {
+                "doc": "If the receiver should be activated.",
+                "label": "Enable receiver",
+                "type": "hiddenValue"
+            }
+        }
+    }
+}
