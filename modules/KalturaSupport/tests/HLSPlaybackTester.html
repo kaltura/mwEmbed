@@ -115,6 +115,13 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
         if ($('#targetDuration').val() === ""){
             $('#targetDuration').val( -1 );
         }
+        $('#droppedFrames').text("");
+        $('#currentBitrate').text("");
+        $('#bufferLen').text("");
+        $('#playingSeg').text("");
+        $('#processedSeg').text("");
+        $('#downloadingSeg').text("");
+
 		// poulate hash url 
 		window.location.hash = encodeURIComponent( JSON.stringify( {
 			'stvod':$('#streamtype-vod').is(':checked'),
