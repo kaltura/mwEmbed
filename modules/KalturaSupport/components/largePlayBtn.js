@@ -36,7 +36,7 @@
 			});
 
 			this.bind('onShowControlBar', function(){
-				if( _this.getConfig("togglePause") && _this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
+				if( !mw.isIE8() && _this.getConfig("togglePause") && _this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
 					_this.$el.removeClass("icon-play").addClass("icon-pause");
 					_this.show();
 				}
