@@ -11,7 +11,7 @@
 		 	'defaultSpeed': '1',
 			'speeds': ".5,.75,1,1.5,2",
 			'enableKeyboardShortcuts': true,
-			'serverSpeedPlayback': true
+			'serverSpeedPlayback': false
 		},
 
 		isDisabled: false,
