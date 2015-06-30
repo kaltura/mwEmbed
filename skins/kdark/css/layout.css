@@ -459,6 +459,7 @@ body {
 	margin-top: -147px;
 	width: 40px;
 	display: none;
+	background: rgb(27,27,27);
 	background-color: rgba(27,27,27,.9);
 	border-radius: 3px;
 	height: 97px;
