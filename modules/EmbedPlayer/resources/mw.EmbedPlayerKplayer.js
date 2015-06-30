@@ -161,7 +161,8 @@
 						'hlsEndList': 'onHlsEndList',
 						'mediaError': 'onMediaError',
 						'bitrateChange': 'onBitrateChange',
-                        'textTracksReceived': 'onTextTracksReceived'
+                        'textTracksReceived': 'onTextTracksReceived',
+                        'debugInfoReceived': 'onDebugInfoReceived'
 					};
 				_this.playerObject = this.getElement();
 					$.each(bindEventMap, function (bindName, localMethod) {
@@ -685,6 +686,15 @@
 		onAudioTrackSelected: function (data) {
 			this.triggerHelper('audioTrackIndexChanged', data);
 		},
+
+        onDebugInfoReceived: function (data){
+            var msg = '';
+            for (var prop in data) {
+                msg += prop + ': ' + data[prop]+' | ';
+            }
+            this.triggerHelper('debugInfoReceived', data);
+            mw.log("EmbedPlayerKplayer:: onDebugInfoReceived | " + msg);
+        },
 
 		/**
 		 * Get the embed player time
