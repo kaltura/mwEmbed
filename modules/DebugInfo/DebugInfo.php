@@ -5,6 +5,6 @@ return array(
 		'dependencies' => array( 'mw.KBaseComponent'),
 		'kalturaPluginName' => 'debugInfo',
 		'styles' => 'resources/DebugInfo.css',
-		'templates' => "../debugInfo/resources/DebugInfo.tmpl.html"
+		'templates' => "../DebugInfo/resources/DebugInfo.tmpl.html"
 	),
 );
