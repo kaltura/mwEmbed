@@ -188,7 +188,7 @@ body {
 }
 
 button, a{
-	outline: none !important;
+	outline: 0 !important;
 }
 button::-moz-focus-inner {
 	border: 0;
@@ -806,8 +806,6 @@ button::-moz-focus-inner {
 	font-size: 20px;
 	background-color: rgba(255,255,255,0.18);
 	color: rgba(255,255,255,0.6);
-}
-.btn:focus {
 	outline: 0;
 }
 .btn:hover {
