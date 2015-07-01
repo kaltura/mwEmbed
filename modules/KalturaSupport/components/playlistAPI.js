@@ -539,7 +539,10 @@
 						_this.switchPlaylist( $( this ).attr( 'data-index' ) );
 					} );
 				}
-				_this.getComponent().find(".dropDownIcon").show();
+				setTimeout(function(){
+					_this.getComponent().find(".dropDownIcon").show();
+				},250);
+
 			}
 		},
 
