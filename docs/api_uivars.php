@@ -51,12 +51,12 @@ $uiVars = array(
 					'default' => 'false',
 					'example' => '../modules/KalturaSupport/tests/ForceFlashOnDesktop.html'
 			),
-			'Kaltura.ForceFlashOnDesktopSafari' => array(
-            					'type' => 'String',
-            					'desc' => 'If the player should be forced to use flash on desktop Safari.',
-            					'default' => 'false',
-            					'example' => '../modules/KalturaSupport/tests/ForceFlashOnDesktopSafari.html'
-            			),
+			'ForceFlashOnDesktopSafari' => array(
+				'type' => 'String',
+				'desc' => 'If the player should be forced to use flash on desktop Safari.',
+				'default' => 'false',
+				'example' => '../modules/KalturaSupport/tests/ForceFlashOnDesktopSafari.html'
+			),
 			'Kaltura.EnableEmbedUiConfJs' => array(
 					'type' => 'String',
 					'desc' => 'If the player should request uiConf Javascript prior to embed',
