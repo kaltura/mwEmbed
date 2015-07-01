@@ -3,7 +3,7 @@
 mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
 
 	defaultConfig: {
-		templatePath: '../debugInfo/resources/DebugInfo.tmpl.html',
+		templatePath: '../DebugInfo/resources/DebugInfo.tmpl.html',
         cssFileName: 'modules/debugInfo/resources/DebugInfo.css'
 	},
     getBaseConfig: function() {
