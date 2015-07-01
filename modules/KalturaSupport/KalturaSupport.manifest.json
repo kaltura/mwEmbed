@@ -1794,13 +1794,14 @@
     "externalAuth":{
         "description": "Support external authentication via iframe postMessage exchange.",
         "attributes": {
-            "on": {
-                "doc": "The list of named hammer events to track seperated by spaces.",
-                "type": "string"
+            "authFrameUrl": {
+                "doc": "The external auth frame url. This iframe will be embded in the player iframe and should call postMessage with a KS or login action",
+                "type": "url"
             },
-            "options": {
-                "doc": "JSON object of hammer initialization options",
-                "type": "string"
+            "authFrameTimeout": {
+                "doc": "The time given to load the authFrame URL before time out error is displayed in seconds.",
+                "initvalue": 10,
+                "type": "number"
             }
         }
     }
