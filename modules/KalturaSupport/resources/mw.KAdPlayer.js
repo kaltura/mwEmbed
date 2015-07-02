@@ -359,7 +359,9 @@ mw.KAdPlayer.prototype = {
 					_this.addAdBindings( vid, adSlot, adConf );
 					$( _this.embedPlayer ).trigger( 'playing' ); // this will update the player UI to playing mode
                     // trigger ad play event
-                    $(_this.embedPlayer).trigger("onAdPlay",[adConf.id]);
+                    $(vid).on("loadeddata", function(){
+                        $(_this.embedPlayer).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex, vid.duration, vid.currentSrc]);
+                    });
                     if (_this.embedPlayer.muted){
                         _this.adSibling.changeVolume(0);
                     }

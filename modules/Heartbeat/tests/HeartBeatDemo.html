@@ -16,6 +16,14 @@
             //Add code if needed
         }
 
+        function heartbeatTrackingLog( eventStr, eventPayload ){
+            $t = $('#heartbeatTracking');
+            $t.append( eventStr );
+            if( eventPayload ){
+                $t.append( ": " + JSON.stringify( eventPayload ) );
+            }
+            $t.append( "\n" );
+        }
 
         kWidget.featureConfig({
             'targetId': 'kdp',
@@ -26,18 +34,46 @@
             'flashvars': {
                 'heartbeat': {
                     plugin: true,
+                    trackEventMonitor: 'heartbeatTrackingLog',
 
                     visitorId: '9A32525A5492AE7C0A4C98C6@AdobeOrg',
                     visitorTrackingServer: 'ovppartners.d1.sc.omtrdc.net',
 
-                    appMeasurmentAccount: 'tester',
+                    appMeasurmentAccount: 'ovppkaltura',
                     appMeasurmentTrackingServer: 'ovppartners.d1.sc.omtrdc.net',
                     appMeasurmentPageName: 'Kaltura Test Page',
                     appMeasurmentCharSet: 'UTF-8',
                     appMeasurmentVisitorID: 'test-vid',
 
-                    heartbeatTrackingServer: 'ovppartners.d1.sc.omtrdc.net',
-                    heartbeatPublisher: 'Kaltura test-publisher'
+                    heartbeatTrackingServer: 'heartbeats.omtrdc.net',
+                    heartbeatPublisher: 'ovpkaltura'
+                },/*
+                'vast': {
+                    'plugin' : true,
+                    'numPreroll':"1",
+                    'prerollInterval':"1",
+                    'prerollStartWith':"1",
+                    'prerollUrl':"http://ad3.liverail.com/?LR_PUBLISHER_ID=1331&LR_CAMPAIGN_ID=229&LR_SCHEMA=vast2",
+                    'overlayStartAt':"5",
+                    'overlayInterval':"300",
+                    'overlayUrl':"http://ad3.liverail.com/?LR_PUBLISHER_ID=1331&LR_CAMPAIGN_ID=228&LR_SCHEMA=vast2",
+                    'numPostroll':"1",
+                    'postrollInterval':"1",
+                    'postrollStartWith':"1",
+                    'postrollUrl':"http://ad3.liverail.com/?LR_PUBLISHER_ID=1331&LR_CAMPAIGN_ID=229&LR_SCHEMA=vast2",
+                    'preSequence':"1",
+                    'postSequence':"1",
+                    'timeout':"4"
+                },*/
+                'doubleClick':{
+                    'plugin':true,
+                    'leadWithFlash': false,
+                    'path' : 'http://cdnbakmi.kaltura.com/content/uiconf/ps/veria/kdp3.9.1/plugins/doubleclickPlugin.swf',
+                    'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dlinear',
+                    'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dimageoverlay',
+                    'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=%2F3510761%2FadRulesSampleTags&ciu_szs=160x600%2C300x250%2C728x90&cust_params=adrule%3Dpremidpostwithpod&impl=s&gdfp_req=1&env=vp&ad_rule=1&vid=12345&cmsid=3601&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]',
+                    'disableCompanionAds' : false,
+                    'debugMode':false
                 }
             }
         });
@@ -65,17 +101,20 @@
                         visitorId: '9A32525A5492AE7C0A4C98C6@AdobeOrg',
                         visitorTrackingServer: 'ovppartners.d1.sc.omtrdc.net',
 
-                        appMeasurmentAccount: 'tester',
+                        appMeasurmentAccount: 'ovppkaltura',
                         appMeasurmentTrackingServer: 'ovppartners.d1.sc.omtrdc.net'
                         appMeasurmentPageName: 'Kaltura Test Page',
                         appMeasurmentCharSet: 'UTF-8',
                         appMeasurmentVisitorID: 'test-vid',
 
-                        heartbeatTrackingServer: 'ovppartners.d1.sc.omtrdc.net',
-                        heartbeatPublisher: 'Kaltura test-publisher'
+                        heartbeatTrackingServer: 'heartbeats.omtrdc.net',
+                        heartbeatPublisher: 'ovpkaltura'
                     }
                 }
             });
         </pre>
+    <br>
+    <p>Event log for HeartBeat dispatch events. You can also monitor your network console.  </p>
+    <textarea id="heartbeatTracking" style="width:700px;height:250px;"></textarea>
     </body>
 </html>

@@ -1,5 +1,6 @@
 {
-  "chromecast": {
+  "heartbeat": {
+    "label": "heartbeat",
     "description": "Adobe Hearbeat analytics Kaltura implementation. Adobe Hearbeat supports a dynamic set of attributes based on events you want to track and data you want to associate with each event.",
     "attributes": {
       "visitorId": {
@@ -10,6 +11,11 @@
       "visitorTrackingServer": {
         "doc": "Adobe Visitor Tracking Server (visitorTrackingServer)",
         "label": "Adobe Visitor Tracking Server (visitorTrackingServer)",
+        "type": "string"
+      },
+      "trackEventMonitor": {
+        "doc": "Function called on parent page for every event.",
+        "label": "Event monitor function name",
         "type": "string"
       }
     }
