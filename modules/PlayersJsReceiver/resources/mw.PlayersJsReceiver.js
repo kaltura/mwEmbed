@@ -77,7 +77,7 @@
 					'duration': player.duration
 				});
 			});
-			// use "ended" not onEndDone, because loop never triggers onEndDone.
+			// use "ended" not onEndDone, because when loop is active onEndDone is not triggered.
 			this.bind('ended', function(){
 				receiver.emit('ended');
 			});
