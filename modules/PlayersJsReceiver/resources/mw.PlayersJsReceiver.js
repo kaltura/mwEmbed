@@ -77,7 +77,8 @@
 					'duration': player.duration
 				});
 			});
-			this.bind('onEndedDone', function(){
+			// use "ended" not onClipDone, because loop never triggers onCLipDone.
+			this.bind('ended', function(){
 				receiver.emit('ended');
 			});
 			this.bind('seeked', function(){
