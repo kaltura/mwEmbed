@@ -11,35 +11,87 @@
 	<link rel="stylesheet" href="resources/displaySizesColors.css" />
 </head>
 <body>
-<h2>Resizable</h2>
+<h2>Resizable many active plugins</h2>
 Also moves the control bar to take up available space till min size.  
 <br />
-	<h3>Display Priority Key: <span class="display-low">Low</span>
-	<span class="display-medium">Medium</span> <span class="display-high">High</span> : Press + / - to change component sizes</h3>
-	<div id="resizable" style="width: 680px; height: 333px; padding: 1.5em;" class="ui-widget-content">
+	<h3>Display Priority Key: <span class="display-low" style="color:#FFF">Low</span>
+	<span class="display-medium" style="color:#FFF">Medium</span> 
+	<span class="display-high" style="color:#FFF">High</span> : Press + / - to change component sizes</h3>
+	<div id="resizable" style="width: 1000px; height: 333px; padding: 1.5em;" class="ui-widget-content">
 		<div id="playerTarget" style="width: 100%; height: 100%;"></div>
 	</div>
 	<script>
 		var kdp;
 		var addedComponets = {
-			'titleLabel':{
+			'scrubber':{
+				'plugin':true
+			},
+			'titleLabel': {
 				'plugin': true,
-				'parent': "controlsContainer"
+				"align": "left",
+				"text": '{mediaProxy.entry.name}'
+			},
+			'watermark': {
+				'plugin' : "true",
+				'watermarkPath' : "http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png",
+				'watermarkClickPath' : "http://www.kaltura.com/",
+				'watermarkPosition' : "bottomLeft",
+				'padding' : null,
+			},
+			'volumeControl':{
+				"pinVolumeBar": true
 			},
 			'infoScreen':{
 				'plugin': true,
 				'parent': "controlsContainer"
 			},
 			'related': {
-				plugin: true,
-				playlistId: "1_qui13sz2",
-				autoContinueTime: 5,
+				'plugin': true,
+				'playlistId': "1_zx9gv0bi",
+				'autoContinueTime': 5,
 				'parent': "controlsContainer"
 			},
 			'share':{
 				'plugin' : true,
 				'parent': "controlsContainer"
 			},
+			"liveCore":{
+				"plugin":true,
+				"disableLiveCheck":true
+			},
+	        "liveStatus":{"plugin":true},
+			/* LC player: */
+			'streamSelector':{
+				'plugin' : true,
+				'parent': "controlsContainer"
+			},
+            'dualScreen': {'plugin': true,},
+            'streamSelector': {'plugin': true},
+            'sideBarContainer': {
+                'plugin': true,
+                'position': 'left',
+                'clickToClose': false
+            },
+            'chapters': {
+                'plugin': true,
+                'layout': 'vertical',
+                'thumbnailWidth': 80,
+                'thumbnailRotator': false
+            },
+            /*playlist */
+            'playlistAPI': {
+				'plugin' : true,
+				'includeInLayout': true,
+				'kpl0Id': "1_zx9gv0bi",
+				'kpl0Name': "Most popular",
+				'autoContinue': true,
+				'autoPlay': false,
+				'loop': false
+			},
+            
+			'nextPrevBtn': {'plugin': true},
+			
+			'chromecast':{'plugin': true},
 			'sourceSelector':{'plugin': true},
 			'closedCaptions':{'plugin': true},
 			'moderation':{'plugin': true},
@@ -50,9 +102,9 @@ Also moves the control bar to take up available space till min size.
 		// add iframe to flashvars: 
 		fv["IframeCustomPluginCss1"] = "resources/displaySizesColors.css";
 		kWidget.embed( 'playerTarget', {
-			'wid': '_243342',
-			'uiconf_id' : '21099702',
-			'entry_id' : '0_uka1msg4',
+			"wid": "_1877111",
+	        "uiconf_id": "27949061",
+			'entry_id' : '0_fzhw8tst',
 			'flashvars': fv,
 			'readyCallback': function( playerId ){
 				kdp = $('#' + playerId )[0];

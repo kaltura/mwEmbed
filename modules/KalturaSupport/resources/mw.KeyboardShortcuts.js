@@ -156,7 +156,7 @@
 
 			// Handle single keys
 			if( !ranCallback && this.enableSingleKeyBindings) {
-				this.runCallbackByKeysArr( keyCode, this.singleKeys );
+				ranCallback = this.runCallbackByKeysArr( keyCode, this.singleKeys );
 			}
 			if( ranCallback ){
 				// Prevent the default behavior
@@ -281,7 +281,7 @@
 			}
 		},
 		closeFullscreenkeyCallback: function(){
-			if( this.getPlayer().getInterface().hasClass('fullscreen') ){
+			if( this.getPlayer().getInterface().hasClass('fullscreen') && this.getPlayer().layoutBuilder.fullScreenManager.inFullScreen ){
 				this.getPlayer().toggleFullscreen();
 			}
 		},

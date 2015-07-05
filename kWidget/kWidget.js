@@ -955,6 +955,9 @@
 				var newDoc = iframe.contentWindow.document;
 				newDoc.open();
 				newDoc.write(iframeData.content);
+				if ( mw.getConfig("EmbedPlayer.DisableContextMenu") ){
+					newDoc.getElementsByTagName('body')[0].setAttribute("oncontextmenu","return false;");
+				}
 				newDoc.close();
 				// Clear out this global function
 				window[ cbName ] = null;
@@ -1697,7 +1700,10 @@
 		 * @param {object} Entry settings used to generate the api url request
 		 */
 		getKalturaThumbUrl: function (settings) {
-
+			//Check if external thumbnailUrl is defined
+			if (settings.flashvars && settings.flashvars.thumbnailUrl !== undefined){
+				return settings.flashvars.thumbnailUrl;
+			}
 			var sizeParam = '';
 			if (settings.width != '100%' && settings.width) {
 				sizeParam += '/width/' + parseInt(settings.width);

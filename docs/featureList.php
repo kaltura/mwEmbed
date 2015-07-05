@@ -353,6 +353,10 @@
 							'title' => 'Thumbnail embed',
 							'path' => 'KalturaSupport/tests/ThumbnailEmbedManyPlayers.qunit.html',
 						),
+						'responsive' => array(
+							'title' => "Responsive embed",
+							'path' => 'KalturaSupport/tests/RWDMinimal.html',
+						),
 						'NativeCallout'=> array(
 							'title' => 'Native callout',
 							'path' => 'KalturaSupport/tests/NativeCalloutComingSoon.html',

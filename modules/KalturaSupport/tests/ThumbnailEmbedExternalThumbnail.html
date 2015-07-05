@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Thumbnail embed with external thumbnail</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+
+</head>
+<body>
+<h2> Thumbnail embed with external thumbnail</h2>
+The thumbnail embed method takes the same arguments as "kWidget.embed". <br>
+Thumbnail embed will pass all the configuration to the kWidget.embed when the user "click" on the play button.<br>
+To set an external thumbnail pass the following Flashvar: "thumbnailUrl"="http://..".<br>
+<br/>
+<div id="kaltura_player" style="width:400px;height:300px;"></div>
+<script>
+	kWidget.thumbEmbed({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id': '21099702',
+		'entry_id': '0_uka1msg4',
+		'flashvars':{
+			"thumbnailUrl":"http://player.kaltura.com/docs/images/logo-145.png"
+		}
+	});
+</script>
+<br/>
+<pre class="prettyprint linenums">
+&lt;div id=&quot;kaltura_player&quot; style=&quot;width:400px;height:300px;&quot;&gt;&lt;/div&gt;
+&lt;script&gt;
+	kWidget.thumbEmbed({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id': '21099702',
+		'entry_id': '0_uka1msg4',
+		'flashvars':{
+			"thumbnailUrl":"http://player.kaltura.com/docs/images/logo-145.png"
+		}
+	});
+&lt;/script&gt;
+</pre>
+
+</body>
+</html>

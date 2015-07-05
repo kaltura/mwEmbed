@@ -231,10 +231,18 @@
 	position: absolute;
 	margin-left: 12px;
 	margin-top: 12px;
-	width: 18px;
-	height: 18px;
+	width: 22px;
+	height: 22px;
 	cursor: pointer;
 	z-index: 3;
+}
+.nativeApp .share .share-close{
+	color: #d3d3d3;
+	background-color: rgba(0,0,0,0.7);
+	padding-left: 9px;
+	padding-top: 9px;
+	width: 22px;
+	height: 22px;
 }
 .share .share-close:hover{
 	text-shadow: 0px 0px 10px #fff;

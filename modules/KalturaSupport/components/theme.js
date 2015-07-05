@@ -24,6 +24,9 @@
 			// update drop shadow after the layout is ready
 			this.bind('layoutBuildDone', function(){
 				_this.onConfigChange('buttonsIconColorDropShadow', _this.getConfig('buttonsIconColorDropShadow'));
+				if ( mw.isIE() ){
+					$(".btn").not(".playHead").css({'margin-left': 1+'px','margin-right': 1+'px'});
+				}
 			});
 		},
 		onConfigChange: function( property, value ){

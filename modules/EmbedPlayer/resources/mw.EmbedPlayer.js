@@ -1856,8 +1856,10 @@
 		 * Remove the poster
 		 */
 		removePoster: function () {
-			$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
-			$(this).find('.playerPoster').remove();
+			if ( !mw.getConfig("EmbedPlayer.KeepPoster") === true ){
+				$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
+				$(this).find('.playerPoster').remove();
+			}
 		},
 		/**
 		 * Abstract method, must be set by player interface
@@ -2182,6 +2184,7 @@
 			var $this = $(this);
 			if (this.currentState == "end") {
 				// prevent getting another clipdone event on replay
+				this.stopPlayAfterSeek = false;
 				this.seek(0.01, false);
 			}
 			// Store the absolute play time ( to track native events that should not invoke interface updates )
@@ -2721,7 +2724,7 @@
 					this.seek(_this.currentTime);
 				}
 			}
-			if (!_this.isLive()) {
+			if (!_this.isLive() && _this.instanceOf != 'ImageOverlay') {
 				if (_this.isPlaying() && _this.currentTime == _this.getPlayerElementTime()) {
 					_this.bufferStart();
 				} else if (_this.buffering) {
@@ -2916,6 +2919,9 @@
 				mw.log("EmbedPlayer::getCompatibleSource: add " + source.src + ' of type:' + source.type);
 			});
 			var myMediaElement = new mw.MediaElement($media[0]);
+			if ( this.getRawKalturaConfig('mediaProxy') && this.getRawKalturaConfig('mediaProxy').preferedFlavorBR ){
+				myMediaElement.preferedFlavorBR = this.getRawKalturaConfig('mediaProxy').preferedFlavorBR * 1000;
+			}
 			var baseTimeOptions =  {
 				'supportsURLTimeEncoding': this.supportsURLTimeEncoding(),
 				'startTime' :this.startTime,
@@ -3071,28 +3077,26 @@
 				{ currentBitrate: currentBR }
 			]);
 			this.mediaElement.setSource(source);
-			$(this).trigger('sourceSwitchingEnd', [
-				{ newBitrate: source.getBitrate() }
-			]);
-			if (!this.isStopped()) {
-				this.isFlavorSwitching = true;
-				// Get the exact play time from the video element ( instead of parent embed Player )
-				var oldMediaTime = this.getPlayerElement().currentTime;
-				var oldPaused = this.paused;
-				// Do a live switch
-				this.playerSwitchSource(source, function (vid) {
-					// issue a seek
-					setTimeout(function () {
-						_this.addBlackScreen();
-						_this.hidePlayerOffScreen();
-						_this.unbindHelper("seeked.switchSrc" ).bindOnceHelper("seeked.switchSrc", function () {
-							_this.removeBlackScreen();
-							_this.restorePlayerOnScreen();
-						});
-						_this.seek(oldMediaTime, oldPaused);
-					}, 100);
-				});
-			}
+			this.isFlavorSwitching = true;
+			// Get the exact play time from the video element ( instead of parent embed Player )
+			var oldMediaTime = this.getPlayerElement().currentTime;
+			var oldPaused = this.paused;
+			// Do a live switch
+			this.playerSwitchSource(source, function (vid) {
+				// issue a seek
+				setTimeout(function () {
+					_this.addBlackScreen();
+					_this.hidePlayerOffScreen();
+					_this.unbindHelper("seeked.switchSrc" ).bindOnceHelper("seeked.switchSrc", function () {
+						_this.removeBlackScreen();
+						_this.restorePlayerOnScreen();
+						$(_this).trigger('sourceSwitchingEnd', [
+							{ newBitrate: source.getBitrate() }
+						]);
+					});
+					_this.seek(oldMediaTime, oldPaused);
+				}, 100);
+			});
 		},
 		/**
 		 * Used for livestream: will be called when clicking on "back to live" button

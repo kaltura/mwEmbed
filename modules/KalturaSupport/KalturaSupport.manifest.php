@@ -446,7 +446,7 @@ return array(
 			'speeds' => array(
 				'doc' => "The set of selectable speeds, where 1 = 100% speed. Seperated by commas.",
 				'label' => 'Selectable speeds',
-				'type' => 'string'
+				'type' => 'numbersArray'
 			)
 		)
 	),
@@ -1422,7 +1422,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			),
 			'percentageSeekKeys' => array(
 				'doc' => 'Comma seperated keys for percentage seek.',
-				'type' => 'string',
+				'type' => 'numbersArray',
 				'initvalue' => "49,50,51,52,53,54,55,56,57",
 			)
 		)
@@ -1435,6 +1435,22 @@ The playhead reflects segment time as if it was the natural stream length.",
 				'type' => 'boolean',
 				'initvalue' => true
 			),
+			'layout' => array(
+                'doc' => 'Volume slider layout.',
+                'type' => 'enum',
+                'enum' => array('horizontal', 'vertical'),
+                'initvalue' => 'horizontal',
+                'options' => array(
+                    array(
+                        'label' => "Horizontal",
+                        'value' => "horizontal"
+                    ),
+                    array(
+                        'label' => "Vertical",
+                        'value' => "vertical"
+                    )
+                )
+            ),
 			'pinVolumeBar' => array(
 				'doc' => 'If the volume slider bar should always be shown.',
 				'type' => 'boolean',
