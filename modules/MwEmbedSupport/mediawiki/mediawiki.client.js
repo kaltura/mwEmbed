@@ -90,6 +90,17 @@
 	mw.isAndroidChromeNativeBrowser = function () {
 		return ( mw.isAndroid() && mw.isChrome() );
 	};
+	mw.isOldAndroidChromeNativeBrowser = function () {
+		var isAndroidMobile = userAgent.indexOf('Android') > -1 && userAgent.indexOf('Mozilla/5.0') > -1 && userAgent.indexOf('AppleWebKit') > -1;
+		var regExAppleWebKit = new RegExp(/AppleWebKit\/([\d.]+)/);
+		var resultAppleWebKitRegEx = regExAppleWebKit.exec(userAgent);
+		var appleWebKitVersion = (resultAppleWebKitRegEx === null ? null : parseFloat(regExAppleWebKit.exec(userAgent)[1]));
+		var regExChrome = new RegExp(/Chrome\/([\d.]+)/);
+		var resultChromeRegEx = regExChrome.exec(userAgent);
+		var chromeVersion = (resultChromeRegEx === null ? null : parseFloat(regExChrome.exec(userAgent)[1]));
+		var isAndroidBrowser = isAndroidMobile && (appleWebKitVersion !== null && appleWebKitVersion < 537) || (chromeVersion !== null && chromeVersion < 30);
+		return isAndroidBrowser;
+	};
 	mw.isMobileChrome = function () {
 		return ( mw.isAndroid4andUp()
 			&&
