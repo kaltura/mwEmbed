@@ -91,7 +91,11 @@
 		return ( mw.isAndroid() && mw.isChrome() );
 	};
 	mw.isOldAndroidChromeNativeBrowser = function () {
-		return mw.isAndroidChromeNativeBrowser() && parseInt(userAgent.match(/Chrome\/([0-9][0-9])/)[1]) < 30;
+		var regExpResult = userAgent.match(/Chrome\/([0-9][0-9])/);
+		if ( $.isArray( regExpResult ) && regExpResult.length > 1 ){
+			return mw.isAndroidChromeNativeBrowser() && parseInt( regExpResult[1] ) < 30;
+		}
+		return false;
 	};
 	mw.isMobileChrome = function () {
 		return ( mw.isAndroid4andUp()
