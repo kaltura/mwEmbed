@@ -12,39 +12,120 @@
 </head>
 <body>
 <h2>Resizable Player Inline Scrubber</h2>
-Also moves the control bar to take up availiable space till min size.  
+Enables the control bar scrubber to take up all available space until reaching min size.  <BR>
+Skin: 
+<label class="radio inline"><input type="radio" name="skin" id="OVP" checked="checked">OVP</label>
+<label class="radio inline"><input type="radio" name="skin"  id="OTT" >OTT</label>
 <br />
-	<h3>Display Priority Key: <span class="display-low">Low</span>
-	<span class="display-medium">Medium</span> <span class="display-high">High</span> : Press + / - to change component sizes</h3>
-	<div id="resizable" style="width: 680px; height: 333px; padding: 1.5em;" class="ui-widget-content">
+	<h3>Display Priority Key: <span class="display-low" style="color:#FFF">Low</span>
+	<span class="display-medium" style="color:#FFF">Medium</span> 
+	<span class="display-high" style="color:#FFF">High</span> : Press + / - to change component sizes</h3>
+	<div id="resizable" style="width: 900px; height: 333px; padding: 1.5em;" class="ui-widget-content">
 		<div id="playerTarget" style="width: 100%; height: 100%;"></div>
 	</div>
 	<script>
-		kWidget.embed( 'playerTarget', {
-			'wid': '_243342',
-			'uiconf_id' : '21099702',
-			'entry_id' : '0_uka1msg4',
-			'flashvars': {
-				'scrubber': {
-					'parent': 'controlsContainer',
-					'minWidth': 100
-				},
-				'titleLabel.plugin': true,
-				'infoScreen.plugin': true,
-				'related': {
-					plugin: true,
-					playlistId: "1_qui13sz2",
-					autoContinueTime: 5
-				},
-				'share.plugin': true,
-				'sourceSelector.plugin': true,
-				'closedCaptions.plugin': true,
-				'moderation.plugin': true,
-				'captureThumbnail.plugin': true,
-				'playbackRateSelector.plugin': true,
-				"IframeCustomPluginCss1" : "resources/displaySizesColors.css"
+		var embedSettings = {
+			'scrubber': {
+				'parent': 'controlsContainer',
+				'minWidth': 100
+			},
+			'infoScreen':{
+				'plugin': true,
+				'parent': "controlsContainer"
+			},
+			'related': {
+				'plugin': true,
+				'playlistId': "1_qui13sz2",
+				'autoContinueTime': 5,
+				'parent': "controlsContainer"
+			},
+			'volumeControl':{
+				'pinVolumeBar': true
+			},
+			'share':{
+				'plugin' : true,
+				'parent': "controlsContainer"
+			},
+			"liveCore":{
+				"plugin":true,
+				"disableLiveCheck":true
+			},
+			"liveStatus":{"plugin":true},
+			/* LC player: */
+			'streamSelector':{
+				'plugin' : true,
+				'parent': "controlsContainer"
+			},
+			'dualScreen': {'plugin': true,},
+			'streamSelector': {'plugin': true},
+			'sideBarContainer': {
+			    'plugin': true,
+			    'position': 'left',
+			    'clickToClose': false
+			},
+			'chapters': {
+			    'plugin': true,
+			    'layout': 'vertical',
+			    'thumbnailWidth': 80,
+			    'thumbnailRotator': false
+			},
+			/*playlist */
+			'nextPrevBtn': {'plugin': true},
+			
+			'chromecast':{'plugin': true},
+			'sourceSelector':{'plugin': true},
+			'closedCaptions':{'plugin': true},
+			'moderation':{'plugin': true},
+			'captureThumbnail':{'plugin': true},
+			'playbackRateSelector':{'plugin': true}
+		};
+		var ottSettings = {
+			"layout":{
+				"skin":"ott"
+			},
+			'controlBarContainer': {
+				'plugin': true,
+				"hover": true
+			},
+			'scrubber': {
+				'parent': 'controlsContainer',
+				'minWidth': 50,
+				'order': 22,
+				'showOnlyTime': true
+			},
+			'logo':{
+				'plugin': false
+			},
+			"volumeControl":{
+				"layout": "vertical",
+				"order": 40
+			},
+			"durationLabel":{
+				"prefix":" "
+			},
+			"loadingSpinner":{
+				"customSpinner": true,
+				"className": "ottSpinner"
 			}
+		};
+		function doEmbedPlayer(settings){
+			kWidget.embed( 'playerTarget', {
+				'wid': '_243342',
+				'uiconf_id' : '21099702',
+				'entry_id' : '0_uka1msg4',
+				'flashvars': settings
+			});
+		}
+		
+		$('#OVP,#OTT').click(function(){
+			var curentEmbedSettings = $.extend([], embedSettings);
+			if( $(this).attr('id') == 'OTT' ){
+				curentEmbedSettings = $.extend([], embedSettings, ottSettings );
+			}
+			doEmbedPlayer(curentEmbedSettings);
 		});
+		doEmbedPlayer(embedSettings);
+		
 		$(window).keypress(function(e){
 			var bodyElement =  $('#playerTarget iframe').get(0).contentWindow.document.body;
 

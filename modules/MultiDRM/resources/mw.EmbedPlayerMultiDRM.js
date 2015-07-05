@@ -81,6 +81,8 @@
 			'volumechange'
 		],
 
+		streamerType: 'dash',
+
 		// Native player supported feature set
 		supports: {
 			'playHead': true,
@@ -247,18 +249,19 @@
 				this.log('Error:: failed to retrieve UDRM license URL ');
 			}
 
+			var vendor = this.getLicenseVendor();
+
 			//TODO: error handling in case of error
-			var assetId = this.mediaElement.selectedSource.getAssetId();
-			var licenseData = this.getLicenseData(assetId);
-			drmConfig.widevineLicenseServerURL = licenseBaseUrl + "?" + licenseData;
+			var licenseData = this.getLicenseData();
+			drmConfig.widevineLicenseServerURL = licenseBaseUrl + "/cenc/" + vendor + "/license?" + licenseData;
 			drmConfig.assetId = this.kentryid;
-			drmConfig.variantId = assetId;
+			drmConfig.variantId = this.mediaElement.selectedSource && this.mediaElement.selectedSource.getAssetId();
 			var config = {};
 
 			if (this.shouldGeneratePssh()) {
 				config.widevineHeader = {
 					"provider": "castlabs",
-					"contentId": this.getAuthenticationToken( assetId ),
+					"contentId": this.getAuthenticationToken( ),
 					"policy": ""
 				};
 			}
@@ -287,9 +290,15 @@
 			}
 			return res;
 		},
-		getLicenseData: function(assetId){
-			var flavorCustomData = this.kalturaContextData.flavorCustomData[assetId];
-			var licenseData = flavorCustomData.license;
+		getLicenseData: function(){
+			var licenseData = {
+				custom_data: this.mediaElement.selectedSource["custom_data"],
+				signature: this.mediaElement.selectedSource["signature"]
+			};
+			if (this.mediaElement.selectedSource.flavors){
+				licenseData.files = encodeURIComponent(window.btoa(this.mediaElement.selectedSource.flavors));
+			}
+
 			var licenseDataString = "";
 			if (licenseData) {
 				$.each( licenseData, function ( key, val ) {
@@ -298,9 +307,15 @@
 			}
 			return licenseDataString;
 		},
-		getAuthenticationToken: function(assetId){
-			var flavorCustomData = this.kalturaContextData.flavorCustomData[assetId];
-			return flavorCustomData.contentId;
+		getLicenseVendor: function(){
+			var vendor;
+			if (mw.isChrome()){
+				vendor = "widevine";
+			}
+			return vendor;
+		},
+		getAuthenticationToken: function(){
+			return this.mediaElement.selectedSource["contentId"];
 		},
 		/**
 		 * Get the native player embed code.
@@ -800,6 +815,7 @@
 			var curTime = parseInt(this.getPlayerElementTime(), 10).toFixed(2);
 			if (( this.currentState === "end" ) ||
 				( this.currentState === "pause" && duration === curTime && this.getPlayerElementTime() > 0 )) {
+				this.stopPlayAfterSeek = false;
 				this.seek(0.01, false);
 			} else {
 				if ( this.parent_play() ) {
@@ -861,7 +877,7 @@
 		 * onPlay function callback from the kaltura flash player directly call the
 		 * parent_play
 		 */
-		onPlay: function () {
+		_onplay: function () {
 			this.log(" OnPlay:: propogate:" + this._propagateEvents + ' paused: ' + this.paused);
 			// if using native controls make sure the inteface does not block the native controls interface:
 			if (this.useNativePlayerControls() && $(this).find('video ').length == 0) {
@@ -890,68 +906,34 @@
 		 * accurately reflect the src duration
 		 */
 		_onloadedmetadata: function () {
-			var player = this.getPlayerElement();
-			var duration = player.duration();
-
 			// Update if there's no duration or actual media duration is not the same as the metadata duration
-			if ((!this.duration || (this.duration !== duration))
-				&&
-				player
-				&& !isNaN(duration)
-				&&
-				isFinite(duration)
-			) {
-				this.log('onloadedmetadata metadata ready Update duration:' + duration + ' old dur: ' + this.getDuration());
-				this.setDuration(this.playerElement.duration());
-			}
+			this.updateVideoDuration();
 
-			var subtitleTracks = player.subtitleTracks();
-			if (subtitleTracks && subtitleTracks.length){
-				var textTrackData = {languages: []};
-				$.each(subtitleTracks, function(index, subtitleTrack){
-					textTrackData.languages.push({
-						'kind'		: 'subtitle',
-						'language'	: subtitleTrack.lang,
-						'srclang' 	: subtitleTrack.lang,
-						'label'		: subtitleTrack.trackName,
-						'id'		: subtitleTrack.id,
-						'index'		: textTrackData.languages.length,
-						'title'		: subtitleTrack.trackName
-					});
-				});
-				this.onTextTracksReceived(textTrackData);
-			}
-
-			var audioTracks = player.audioTracks();
-			if (audioTracks && audioTracks.length){
-				var audioTrackData = {languages: []};
-				$.each(audioTracks, function(index, audioTrack){
-					audioTrackData.languages.push({
-						'kind'		: 'audioTrack',
-						'language'	: audioTrack,
-						'srclang' 	: audioTrack,
-						'label'		: audioTrack,
-						'id'		: audioTrack,
-						'index'		: audioTrackData.languages.length,
-						'title'		: audioTrack
-					});
-				});
-				this.onAudioTracksReceived(audioTrackData);
-			}
+			//Check and add manifest data
+			this.addSubtitleTracks();
+			this.addAudioTracks();
+			this.addAbrFlavors();
 
 			var _this = this;
 			var update = function(){
+				var player = _this.getPlayerElement();
 				//Get Playback statistics
 				var stats = player.getPlaybackStatistics();
 
-				if (stats.audio.activeTrack){
-					_this.onAudioTrackSelected({index: stats.audio.activeTrack.id});
+				var videoData = stats.video.activeTrack;
+				if (videoData){
 				}
-				if (stats.text.activeTrack){
+				var audioData = stats.audio.activeTrack;
+				if (audioData){
+					_this.onAudioTrackSelected({index: audioData.id});
+				}
+				var textData = stats.text.activeTrack;
+				if (textData){
 				}
 			};
+			//Run initial update to get active video/audio/caption tracks
 			update();
-
+			//Validate status every 5 sec
 			setInterval(function(){update();}, 5000);
 
 			// Check if in "playing" state and we are _propagateEvents events and continue to playback:
@@ -970,6 +952,115 @@
 				this.mediaLoadedFlag = true;
 			}
 		},
+		updateVideoDuration: function(){
+			var player = this.getPlayerElement();
+			var duration = player.duration();
+			if ((!this.duration || (this.duration !== duration))
+				&&
+				player
+				&& !isNaN(duration)
+				&&
+				isFinite(duration)
+			) {
+				this.log('onloadedmetadata metadata ready Update duration:' + duration + ' old dur: ' + this.getDuration());
+				this.setDuration(this.playerElement.duration());
+			}
+		},
+		addSubtitleTracks: function(){
+			var player = this.getPlayerElement();
+			var subtitleTracks = player.subtitleTracks();
+			if (subtitleTracks && subtitleTracks.length){
+				var textTrackData = {languages: []};
+				$.each(subtitleTracks, function(index, subtitleTrack){
+					textTrackData.languages.push({
+						'kind'		: 'subtitle',
+						'language'	: subtitleTrack.lang,
+						'srclang' 	: subtitleTrack.lang,
+						'label'		: subtitleTrack.trackName,
+						'id'		: subtitleTrack.id,
+						'index'		: textTrackData.languages.length,
+						'title'		: subtitleTrack.trackName
+					});
+				});
+				this.onTextTracksReceived(textTrackData);
+			}
+		},
+		addAudioTracks: function(){
+			var player = this.getPlayerElement();
+			var audioTracks = player.audioTracks();
+			if (audioTracks && audioTracks.length){
+				var audioTrackData = {languages: []};
+				$.each(audioTracks, function(index, audioTrack){
+					audioTrackData.languages.push({
+						'kind'		: 'audioTrack',
+						'language'	: audioTrack,
+						'srclang' 	: audioTrack,
+						'label'		: audioTrack,
+						'id'		: audioTrack,
+						'index'		: audioTrackData.languages.length,
+						'title'		: audioTrack
+					});
+				});
+				this.onAudioTracksReceived(audioTrackData);
+			}
+		},
+		addAbrFlavors: function(){
+			var player = this.getPlayerElement();
+			var stats = player.getPlaybackStatistics();
+			var videoData = stats.video.activeTrack;
+			if (videoData.representations){
+				var representations = videoData.representations;
+				if (representations && representations.length > 0){
+					var flavors = representations.map(function(rep){
+						var sourceAspect = Math.round( ( rep.width / rep.height )  * 100 )  / 100;
+						// Setup a source object:
+						return {
+							'data-bandwidth' : rep.bandwidth,
+							'data-width' : rep.width,
+							'data-height' : rep.height,
+							'data-aspect' : sourceAspect,
+							'type': 'application/dash+xml',
+							'data-frameRate': rep.frameRate,
+							'data-assetid': rep.id
+						};
+					});
+					this.onFlavorsListChanged(flavors);
+				}
+			}
+		},
+		getSources: function(){
+			// check if manifest defined flavors have been defined:
+			if( this.manifestAdaptiveFlavors.length ){
+				return this.manifestAdaptiveFlavors;
+			}
+			return this.parent_getSources();
+		},
+		getSourceIndex: function (source) {
+			var sourceIndex = null;
+			$.each( this.getSources(), function( currentIndex, currentSource ) {
+				if (source.getAssetId() == currentSource.getAssetId()) {
+					sourceIndex = currentIndex;
+					return false;
+				}
+			});
+			// check for null, a zero index would evaluate false
+			if( sourceIndex == null ){
+				this.log("Error could not find source: " + source.getSrc());
+			}
+			return sourceIndex;
+		},
+		switchSrc: function (source) {
+			if( source !== -1 ){
+				this.getPlayerElement().mediaPlayer.setAutoSwitchQuality(false);
+				var sourceIndex = this.getSourceIndex(source);
+				if (sourceIndex) {
+					this.getPlayerElement().mediaPlayer.setQualityFor( "video", sourceIndex );
+				}
+			} else {
+				this.getPlayerElement().mediaPlayer.setAutoSwitchQuality(true);
+			}
+		},
+
 
 		onAudioTracksReceived: function (data) {
 			this.triggerHelper('audioTracksReceived', data);
@@ -1041,8 +1132,24 @@
 					var error = {};
 					var player = _this.getPlayerElement();
 					if ( event && player && player.error ) {
-						error.code = player.error().code;
-						error.subtype = player.error().subtype;
+						var playerError = player.error();
+						if (playerError.code === 2){
+							var errorMessage = "";
+							switch(playerError.subtype){
+								case 'MANIFEST_LOAD_ERROR':
+									errorMessage = gM("DRM_MANIFEST_LOAD_ERROR");
+									break;
+								case 'SEGMENT_LOAD_ERROR':
+									errorMessage = gM("DRM_SEGMENT_LOAD_ERROR");
+									break;
+								case 'LICENSE_ACQUISITION_ERROR':
+									errorMessage = gM("DRM_LICENSE_ACQUISITION_ERROR");
+									break;
+							}
+							_this.triggerHelper('embedPlayerError', [ {errorMessage: errorMessage} ]);
+						}
+						error.code = playerError.code;
+						error.subtype = playerError.subtype;
 						_this.log( '_onerror: MediaError code: ' + error.code + ', MediaError message: ' + error.subtype);
 					}
 				}

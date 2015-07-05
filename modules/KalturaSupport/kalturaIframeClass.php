@@ -737,6 +737,13 @@ HTML;
 
 		// Add our skin as dependency
 		$skinName = (isset( $playerConfig['layout']['skin'] ) && $playerConfig['layout']['skin'] != "") ? $playerConfig['layout']['skin'] : null;
+		$flashvars = $this->request->getFlashVars();
+		if (isset($flashvars) && isset($flashvars['layout'])){
+			$layout = json_decode($flashvars['layout'],true);
+			if (isset($layout) && isset($layout['skin'])){
+				$skinName = $layout['skin'];
+			}
+		}
 		if( $skinName ){
 			$moduleList[] = $skinName;
 		}		

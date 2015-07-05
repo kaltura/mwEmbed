@@ -746,7 +746,9 @@
 						(  fontsize > 24 )?  emFontMap[ 24 ]+'em' : emFontMap[ 6 ];
 			}
 			if( this.getConfig( 'useGlow' ) && this.getConfig( 'glowBlur' ) && this.getConfig( 'glowColor' ) ) {
-				style[ "text-shadow" ] = '0 0 ' + this.getConfig( 'glowBlur' ) + 'px ' + mw.getHexColor( this.getConfig( 'glowColor' ) );
+				var hShadow = this.getConfig( 'hShadow' ) ? this.getConfig( 'hShadow' ) : 0;
+				var vShadow = this.getConfig( 'vShadow' ) ? this.getConfig( 'vShadow' ) : 0;
+				style[ "text-shadow" ] = hShadow + 'px ' + vShadow + 'px ' + this.getConfig( 'glowBlur' ) + 'px ' + mw.getHexColor( this.getConfig( 'glowColor' ) );
 			}
 			return style;
 		},
@@ -767,6 +769,11 @@
 			return baseCss;
 		},
 		buildMenu: function( sources ){
+			for ( var i = sources.length - 1; i >= 0; i-- ){
+				if ( sources[i].srclang && sources[i].srclang === "multilingual" ){
+					sources.splice(i, 1); // remove multilingual source from menu
+				}
+			}
 			var _this = this;
 			mw.log('closedCaptions::buildMenu with sources: ', sources);
 			// Destroy the old menu
@@ -813,7 +820,7 @@
 						}
 					},
 					'active': ( _this.selectedSource === source && _this.getConfig( "displayCaptions" )  )
-				})
+				});
 			});
 
 			this.getActiveCaption();

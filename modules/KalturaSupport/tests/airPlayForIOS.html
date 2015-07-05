@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Player Skin 2.0 + JSON Config</title>
+	<title>Native callout with airPlay plugin</title>
 	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
@@ -56,7 +56,7 @@
 	<script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-	<h1>Player Skin 2.0 + JSON Config + airPlay plugin</h1>
+	<h1>Native callout with airPlay plugin</h1>
 	<br />
 	<div id="kaltura_player" style="width: 300px; height: 330px;"></div>
 	<br style="clear: both;" /><br />
@@ -66,11 +66,13 @@
 		'wid': '_243342',
 		'uiconf_id' : '21099702',
 		'flashvars': {
-			"confFilePath": "{libPath}/modules/KalturaSupport/tests/confFiles/jsonConfig.json",
 			"related.playlistId": "1_qui13sz2",
 			"airPlay":{
 				"plugin":true
 			},
+			"nativeCallout":{
+				"plugin":true
+			}
 		},
 		"entry_id": "0_c0r624gh" // Entry with captions
 	});

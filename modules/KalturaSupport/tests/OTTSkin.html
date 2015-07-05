@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title> MediaGo Skin</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+
+</head>
+<body>
+<h2> MediaGo Skin </h2>
+
+<div id="kaltura_player" style="width:800px;height:440px;"></div>
+<script>
+	kWidget.featureConfig({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id' : '12905712',
+		'entry_id' : '0_7dmu2xhz',
+		'flashvars': {
+			"layout":{
+				"skin":"ott"
+			},
+			'controlBarContainer': {
+				'plugin': true,
+				"hover": true
+			},
+			'scrubber': {
+				'parent': 'controlsContainer',
+				'minWidth': 50,
+				'order': 22,
+				'showOnlyTime': true
+			},
+			'logo':{
+				'plugin': false
+			},
+			"volumeControl":{
+				"layout": "vertical",
+				"order": 40
+			},
+			"durationLabel":{
+				"prefix":" "
+			},
+			"loadingSpinner":{
+				"customSpinner": true,
+				"className": "ottSpinner"
+			}
+		}
+	});
+</script>
+<br>
+
+</body>
+</html>
