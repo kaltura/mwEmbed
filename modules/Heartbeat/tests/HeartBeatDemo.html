@@ -32,28 +32,32 @@
             'entry_id' : '1_sf5ovm7u',
             'readyCallback': onReadyCallback,
             'flashvars': {
+                //'LeadWithHLSOnFlash':true,
                 'heartbeat': {
-                    plugin: true,
-                    trackEventMonitor: 'heartbeatTrackingLog',
+                    'plugin' : true,
+                    'trackEventMonitor': 'heartbeatTrackingLog',
 
-                    visitorId: '9A32525A5492AE7C0A4C98C6@AdobeOrg',
-                    visitorTrackingServer: 'ovppartners.d1.sc.omtrdc.net',
+                    'visitorId': '9A32525A5492AE7C0A4C98C6@AdobeOrg',
+                    'visitorTrackingServer': 'ovppartners.d1.sc.omtrdc.net',
 
-                    appMeasurmentAccount: 'ovppkaltura',
-                    appMeasurmentTrackingServer: 'ovppartners.d1.sc.omtrdc.net',
-                    appMeasurmentPageName: 'Kaltura Test Page',
-                    appMeasurmentCharSet: 'UTF-8',
-                    appMeasurmentVisitorID: 'test-vid',
+                    'appMeasurementAccount': 'ovppkaltura',
+                    'appMeasurementTrackingServer': 'ovppartners.d1.sc.omtrdc.net',
+                    'appMeasurementPageName': 'Kaltura Test Page',
+                    'appMeasurementCharSet': 'UTF-8',
+                    'appMeasurementVisitorID': 'test-vid',
 
-                    heartbeatTrackingServer: 'heartbeats.omtrdc.net',
-                    heartbeatPublisher: 'ovpkaltura'
-                },/*
+                    'heartbeatTrackingServer': 'heartbeats.omtrdc.net',
+                    'heartbeatPublisher': 'ovpkaltura'
+                },
+                'skipBtn': {
+                    'label': 'Skip Ad'
+                },
                 'vast': {
                     'plugin' : true,
                     'numPreroll':"1",
                     'prerollInterval':"1",
                     'prerollStartWith':"1",
-                    'prerollUrl':"http://ad3.liverail.com/?LR_PUBLISHER_ID=1331&LR_CAMPAIGN_ID=229&LR_SCHEMA=vast2",
+                    'prerollUrl':"http://projects.kaltura.com/MichalR/vast3_demo.xml",
                     'overlayStartAt':"5",
                     'overlayInterval':"300",
                     'overlayUrl':"http://ad3.liverail.com/?LR_PUBLISHER_ID=1331&LR_CAMPAIGN_ID=228&LR_SCHEMA=vast2",
@@ -64,7 +68,7 @@
                     'preSequence':"1",
                     'postSequence':"1",
                     'timeout':"4"
-                },*/
+                }/*,
                 'doubleClick':{
                     'plugin':true,
                     'leadWithFlash': false,
@@ -74,18 +78,21 @@
                     'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=%2F3510761%2FadRulesSampleTags&ciu_szs=160x600%2C300x250%2C728x90&cust_params=adrule%3Dpremidpostwithpod&impl=s&gdfp_req=1&env=vp&ad_rule=1&vid=12345&cmsid=3601&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]',
                     'disableCompanionAds' : false,
                     'debugMode':false
-                }
+                }*/
             }
         });
 
 
     </script>
     <div style="clear:both"></div>
+    <p/>
+    <p>Event log for HeartBeat dispatch events. You can also monitor your network console.  </p>
+    <textarea id="heartbeatTracking" style="width:700px;height:250px;"></textarea>
+    <br>
     <h3> Adding Adobe Heartbeat analytics plugin </h3>
     <p>
         You can configure Adobe Heartbeat plugin inside the heartbeat plugin flashvar.<br />
     </p>
-    <br />
     Sample code for Heartbeat configuration:
         <pre class="prettyprint linenums">
         kWidget.featureConfig({
@@ -101,11 +108,11 @@
                         visitorId: '9A32525A5492AE7C0A4C98C6@AdobeOrg',
                         visitorTrackingServer: 'ovppartners.d1.sc.omtrdc.net',
 
-                        appMeasurmentAccount: 'ovppkaltura',
-                        appMeasurmentTrackingServer: 'ovppartners.d1.sc.omtrdc.net'
-                        appMeasurmentPageName: 'Kaltura Test Page',
-                        appMeasurmentCharSet: 'UTF-8',
-                        appMeasurmentVisitorID: 'test-vid',
+                        appMeasurementAccount: 'ovppkaltura',
+                        appMeasurementTrackingServer: 'ovppartners.d1.sc.omtrdc.net'
+                        appMeasurementPageName: 'Kaltura Test Page',
+                        appMeasurementCharSet: 'UTF-8',
+                        appMeasurementVisitorID: 'test-vid',
 
                         heartbeatTrackingServer: 'heartbeats.omtrdc.net',
                         heartbeatPublisher: 'ovpkaltura'
@@ -113,8 +120,5 @@
                 }
             });
         </pre>
-    <br>
-    <p>Event log for HeartBeat dispatch events. You can also monitor your network console.  </p>
-    <textarea id="heartbeatTracking" style="width:700px;height:250px;"></textarea>
     </body>
 </html>

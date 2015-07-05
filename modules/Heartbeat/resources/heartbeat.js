@@ -8,7 +8,7 @@
 
         defaultConfig: {
             trackEventMonitor: null, // A callback function to track what's being tracked / sent to heartbeat
-            debugLogging: true //TODO: set this parameter to false by the end of development
+            debugLogging: false //TODO: set this parameter to false by the end of development
         },
 
         setup: function() {
@@ -23,12 +23,15 @@
 
         addBindings: function() {
             var _this = this;
-            this.embedPlayer.bindHelper( 'mediaReady', function(){ _this.trackVideoLoad(); } ); //TODO: find load event for all kind of players
+            this.embedPlayer.bindHelper( 'firstPlay', function(){ _this.trackSessionStart(); } );
             this.embedPlayer.bindHelper( 'onplay', function(){ _this.trackPlay(); } );
             this.embedPlayer.bindHelper('seeking', function(){ _this.trackSeekStart(); });
             this.embedPlayer.bindHelper('seeked', function(){ _this.trackSeekEnd(); });
             this.embedPlayer.bindHelper('onpause', function(){ _this.trackPaused(); });
-            this.embedPlayer.bindHelper('playerPlayEnd', function(){ _this.trackComplete(); });
+            this.embedPlayer.bindHelper('playerPlayEnd', function(){ _this.trackComplete(); });//playbackComplete
+            this.embedPlayer.bindHelper('bufferStartEvent', function(){ _this.trackBufferStart(); });
+            this.embedPlayer.bindHelper('bufferEndEvent', function(){ _this.trackBufferEnd(); });
+            this.embedPlayer.bindHelper('sourceSwitchingEnd', function(){ _this.trackBitrateChangeEnd(); });
 
             this.embedPlayer.bindHelper('onAdPlay', function(event, adID, adSystem, type, adIndex, adDuration, mediaName){
                 _this.trackAdStart({id:adID, position:adIndex, length:adDuration, name:mediaName}); });
@@ -41,22 +44,22 @@
             var visitor = new Visitor(this.getConfig('visitorId'));
             visitor.trackingServer = this.getConfig('visitorTrackingServer');
 
-            //define appMeasurment component
+            //define appMeasurement component
             this.appMeasurement = new AppMeasurement();
             this.appMeasurement.visitor = visitor;
-            this.appMeasurement.trackingServer = this.getConfig('appMeasurmentTrackingServer');
-            this.appMeasurement.account = this.getConfig('appMeasurmentAccount');
-            this.appMeasurement.pageName = this.getConfig('appMeasurmentPageName');
-            this.appMeasurement.charSet = this.getConfig('appMeasurmentCharSet');
-            this.appMeasurement.visitorID = this.getConfig('appMeasurmentVisitorID');
+            this.appMeasurement.trackingServer = this.getConfig('appMeasurementTrackingServer');
+            this.appMeasurement.account = this.getConfig('appMeasurementAccount');
+            this.appMeasurement.pageName = this.getConfig('appMeasurementPageName');
+            this.appMeasurement.charSet = this.getConfig('appMeasurementCharSet');
+            this.appMeasurement.visitorID = this.getConfig('appMeasurementVisitorID');
         },
 
         isValidConfiguration: function(){
             if( this.getConfig('visitorId') &&
                 this.getConfig('visitorTrackingServer') &&
-                this.getConfig('appMeasurmentTrackingServer') &&
-                this.getConfig('appMeasurmentAccount') &&
-                this.getConfig('appMeasurmentVisitorID') &&
+                this.getConfig('appMeasurementTrackingServer') &&
+                this.getConfig('appMeasurementAccount') &&
+                this.getConfig('appMeasurementVisitorID') &&
                 this.getConfig('heartbeatTrackingServer') &&
                 this.getConfig('heartbeatPublisher') ){
                 return true;
@@ -93,10 +96,11 @@
 
         configureVideoPlayerPlugin: function(){
             var videoPlayerPluginConfig = new ADB.va.plugins.videoplayer.VideoPlayerPluginConfig();
-
-            //TODO: check and add all possible configuration parameters
-
-            videoPlayerPluginConfig.debugLogging = this.getConfig('debugLogging');
+            if (this.getConfig('AdobeVideoPlayerPluginDebugLogging') ){
+                videoPlayerPluginConfig.debugLogging = this.getConfig('AdobeVideoPlayerPluginDebugLogging');
+            }else{
+                videoPlayerPluginConfig.debugLogging = this.getConfig('debugLogging');
+            }
             this.videoPlayerPlugin.configure(videoPlayerPluginConfig);
         },
 
@@ -104,10 +108,11 @@
             var aaPluginConfig = new ADB.va.plugins.aa.AdobeAnalyticsPluginConfig();
             if ( this.getConfig('heartbeatChannel') )
                 aaPluginConfig.channel = this.getConfig('heartbeatChannel');
-
-            //TODO: check and add all possible configuration parameters
-
-            aaPluginConfig.debugLogging = this.getConfig('debugLogging');
+            if (this.getConfig('adobeAnalyticsDebugLogging') ){
+                aaPluginConfig.debugLogging = this.getConfig('adobeAnalyticsDebugLogging');
+            }else{
+                aaPluginConfig.debugLogging = this.getConfig('debugLogging');
+            }
             this.adobeAnalyticsPlugin.configure(aaPluginConfig);
         },
 
@@ -115,23 +120,31 @@
             var ahPluginConfig = new ADB.va.plugins.ah.AdobeHeartbeatPluginConfig(
                 this.getConfig('heartbeatTrackingServer'),
                 this.getConfig('heartbeatPublisher'));
+
             if ( this.getConfig('heartbeatOVP') )
                 ahPluginConfig.ovp = this.getConfig('heartbeatOVP');
             if (this.getConfig('heartbeatSDK') )
                 ahPluginConfig.sdk = this.getConfig('heartbeatSDK');
+            if (this.getConfig('heartbeatSSL') )
+                ahPluginConfig.ssl = this.getConfig('heartbeatSSL');
+            if (this.getConfig('heartbeatQuietMode') )
+                ahPluginConfig.quietMode = this.getConfig('heartbeatQuietMode');
 
-            //TODO: check and add all possible configuration parameters
-
-            ahPluginConfig.debugLogging = this.getConfig('debugLogging');
+            if (this.getConfig('heartbeatDebugLogging') ){
+                ahPluginConfig.debugLogging = this.getConfig('heartbeatDebugLogging');
+            }else{
+                ahPluginConfig.debugLogging = this.getConfig('debugLogging');
+            }
             this.heartbeatPlugin.configure(ahPluginConfig);
         },
 
         configureHeartbeatLib: function(){
             var configData = new ADB.va.HeartbeatConfig();
-
-            //TODO: check and add all possible configuration parameters
-
-            configData.debugLogging = this.getConfig('debugLogging');
+            if (this.getConfig('heartbeatLibDebugLogging') ){
+                configData.debugLogging = this.getConfig('heartbeatLibDebugLogging');
+            }else{
+                configData.debugLogging = this.getConfig('debugLogging');
+            }
             this.heartbeatLib.configure(configData);
         },
 
@@ -141,6 +154,12 @@
             });
             this.videoPlayerPlugin.trackVideoLoad();
             this.sendTrackEventMonitor("trackVideoLoad");
+        },
+
+        trackSessionStart: function(){
+            this.trackVideoLoad();
+            this.videoPlayerPlugin.trackSessionStart();
+            this.sendTrackEventMonitor("trackSessionStart");
         },
 
         trackPlay: function(){
@@ -167,6 +186,21 @@
         trackPaused: function(){
             this.videoPlayerPlugin.trackPause();
             this.sendTrackEventMonitor("trackPaused");
+        },
+
+        trackBufferStart: function(){
+            this.videoPlayerPlugin.trackBufferStart();
+            this.sendTrackEventMonitor("trackBufferStart");
+        },
+
+        trackBufferEnd: function(){
+            this.videoPlayerPlugin.trackBufferComplete();
+            this.sendTrackEventMonitor("trackBufferEnd");
+        },
+
+        trackBitrateChangeEnd: function(){
+            this.videoPlayerPlugin.trackBitrateChange();
+            this.sendTrackEventMonitor("trackBitrateChangeEnd");
         },
 
         setAdInfo: function(adData){

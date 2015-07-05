@@ -360,7 +360,7 @@ mw.KAdPlayer.prototype = {
 					$( _this.embedPlayer ).trigger( 'playing' ); // this will update the player UI to playing mode
                     // trigger ad play event
                     $(vid).on("loadeddata", function(){
-                        $(_this.embedPlayer).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex, vid.duration, vid.currentSrc]);
+                        $(_this.embedPlayer).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex+1, vid.duration, vid.currentSrc]);
                     });
                     if (_this.embedPlayer.muted){
                         _this.adSibling.changeVolume(0);
@@ -935,7 +935,7 @@ mw.KAdPlayer.prototype = {
 		if (nonLinearConf.width === undefined){
 			waitForNonLinear();
 		}
-		$( this.embedPlayer ).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex]);
+		$( this.embedPlayer ).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex+1]);
 		this.setImgSrc(nonLinearConf, 'overlayAd');
 
 		// Show the overlay update its position and content

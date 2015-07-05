@@ -90,7 +90,8 @@
         videoInfo.name = _this.config.playerName || _this.player.evaluate('{mediaProxy.entry}').name;
         videoInfo.length = _this.config.playerLength || _this.player.evaluate('{mediaProxy.entry}').duration;
         videoInfo.playerName = _this.config.playerPlayerName || _this.player.kuiconfid;
-        videoInfo.playhead = _this.player.currentTime;
+        videoInfo.playhead = _this.player.getPlayerElementTime();
+
         if ( _this.config.playerStreamType )
             videoInfo.streamType = _this.config.playerStreamType;
         else
@@ -112,7 +113,18 @@
     };
 
     KalturaVideoPlayerPluginDelegate.prototype.getQoSInfo = function() {
-        return null;
+        var qos = new ADB.va.plugins.videoplayer.QoSInfo();
+
+        if( _this.player.getCurrentBitrate() !== -1 ){
+            qos.bitrate = _this.player.getCurrentBitrate();
+        }
+
+        //TODO: add additional parameters
+        //qos.fps =
+        //qos.droppedFrames =
+        //qos.startupTime =
+
+        return qos;
     };
 
     KalturaVideoPlayerPluginDelegate.prototype.onError = function(errorInfo) {
