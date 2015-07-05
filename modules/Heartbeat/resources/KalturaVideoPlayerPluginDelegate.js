@@ -81,7 +81,7 @@
             }
         };
 
-    }
+    };
 
     KalturaVideoPlayerPluginDelegate.prototype.getVideoInfo = function() {
         var videoInfo = new ADB.va.plugins.videoplayer.VideoInfo();
@@ -92,10 +92,11 @@
         videoInfo.playerName = _this.config.playerPlayerName || _this.player.kuiconfid;
         videoInfo.playhead = _this.player.getPlayerElementTime();
 
-        if ( _this.config.playerStreamType )
+        if ( _this.config.playerStreamType ) {
             videoInfo.streamType = _this.config.playerStreamType;
-        else
+        }else {
             videoInfo.streamType = _this.player.isLive() ? ADB.va.plugins.videoplayer.AssetType.ASSET_TYPE_LIVE : ADB.va.plugins.videoplayer.AssetType.ASSET_TYPE_VOD;
+        }
 
         return videoInfo;
     };

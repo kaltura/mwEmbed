@@ -7,7 +7,7 @@
     $.extend(KalturaHeartbeatPluginDelegate.prototype, ADB.va.plugins.ah.AdobeHeartbeatPluginDelegate.prototype);
 
     function KalturaHeartbeatPluginDelegate() {
-    }
+    };
 
     KalturaHeartbeatPluginDelegate.prototype.onError = function(errorInfo) {
         console.log("AdobeHeartbeatPlugin error: " + errorInfo.getMessage() + " | " + errorInfo.getDetails());

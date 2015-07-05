@@ -106,8 +106,9 @@
 
         configureAdobeAnalyticsPlugin: function(){
             var aaPluginConfig = new ADB.va.plugins.aa.AdobeAnalyticsPluginConfig();
-            if ( this.getConfig('heartbeatChannel') )
+            if ( this.getConfig('heartbeatChannel') ){
                 aaPluginConfig.channel = this.getConfig('heartbeatChannel');
+            }
             if (this.getConfig('adobeAnalyticsDebugLogging') ){
                 aaPluginConfig.debugLogging = this.getConfig('adobeAnalyticsDebugLogging');
             }else{
@@ -121,14 +122,18 @@
                 this.getConfig('heartbeatTrackingServer'),
                 this.getConfig('heartbeatPublisher'));
 
-            if ( this.getConfig('heartbeatOVP') )
+            if ( this.getConfig('heartbeatOVP') ){
                 ahPluginConfig.ovp = this.getConfig('heartbeatOVP');
-            if (this.getConfig('heartbeatSDK') )
+            }
+            if (this.getConfig('heartbeatSDK') ) {
                 ahPluginConfig.sdk = this.getConfig('heartbeatSDK');
-            if (this.getConfig('heartbeatSSL') )
+            }
+            if (this.getConfig('heartbeatSSL') ) {
                 ahPluginConfig.ssl = this.getConfig('heartbeatSSL');
-            if (this.getConfig('heartbeatQuietMode') )
+            }
+            if (this.getConfig('heartbeatQuietMode') ) {
                 ahPluginConfig.quietMode = this.getConfig('heartbeatQuietMode');
+            }
 
             if (this.getConfig('heartbeatDebugLogging') ){
                 ahPluginConfig.debugLogging = this.getConfig('heartbeatDebugLogging');

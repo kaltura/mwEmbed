@@ -7,7 +7,7 @@
     $.extend(KalturaHeartbeatDelegate.prototype, ADB.va.HeartbeatDelegate.prototype);
 
     function KalturaHeartbeatDelegate() {
-    }
+    };
 
     KalturaHeartbeatDelegate.prototype.onError = function(errorInfo) {
         mw.log("HeartBeat plugin ::  HeartbeatDelegate error: " + errorInfo.getMessage() + " | " + errorInfo.getDetails());
