@@ -54,3 +54,15 @@
 	width: 200px;
 	margin-left: 10px;
 }
+/* smartphone - portrait web*/
+@media screen and (max-device-width: 480px) and (orientation: portrait){  /*2*/
+	.chromecastPlayback{
+		left: 10%;
+	}
+}
+/* smartphone - landscape web*/
+@media only screen and (max-device-width: 640px) and (orientation: landscape) {
+	.chromecastPlayback{
+		left: 10%;
+	}
+}

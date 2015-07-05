@@ -64,6 +64,7 @@
 				//TODO: handle default stream selection???
 				if (_this.getPlayer().kentryid != _this.currentStream.id) {
 					_this.setStream(_this.currentStream);
+					_this.setActiveMenuItem();
 				}
 				_this.buildMenu();
 				_this.onEnable();
@@ -71,11 +72,13 @@
 
 			this.bind('sourceSwitchingEnd', function () {
 				if (_this.streamsReady) {
+					_this.getComponent().find('button').removeClass('in-progress-state');
 					_this.onEnable();
 				}
 			});
 
 			this.bind('sourceSwitchingStarted', function () {
+				_this.getComponent().find('button').addClass('in-progress-state');
 				_this.onDisable();
 			});
 
@@ -170,14 +173,17 @@
 			// Add ] Sign for next stream
 			addKeyCallback(this.getConfig("keyboardShortcutsMap").nextStream, function () {
 				_this.setStream(_this.getNextStream());
+				_this.setActiveMenuItem();
 			});
 			// Add [ Sigh for previous stream
 			addKeyCallback(this.getConfig("keyboardShortcutsMap").prevStream, function () {
 				_this.setStream(_this.getPrevStream());
+				_this.setActiveMenuItem();
 			});
 			// Add \ Sigh for default stream
 			addKeyCallback(this.getConfig("keyboardShortcutsMap" ).defaultStream, function () {
 				_this.setStream(_this.getDefaultStream());
+				_this.setActiveMenuItem();
 			});
 			// Add S Sigh for open menu
 			addKeyCallback(this.getConfig("keyboardShortcutsMap" ).openMenu, function () {
@@ -237,6 +243,10 @@
 			}
 			this.getMenu().setActive({'key': 'id', 'val': this.getCurrentStreamIndex()});
 		},
+		setActiveMenuItem: function() {
+			var index = this.getCurrentStreamIndex();
+			this.getMenu().setActive(index);
+		},
 		addStreamToMenu: function (id, stream) {
 			var _this = this;
 			var active = (this.getCurrentStreamIndex() == id);
@@ -257,6 +267,7 @@
 			var stream = this.streams[id];
 			if (stream) {
 				this.setStream(stream);
+				this.setActiveMenuItem();
 			} else {
 				this.log("Error - invalid stream id");
 			}
@@ -380,13 +391,11 @@
 		onEnable: function () {
 			this.isDisabled = false;
 			this.updateTooltip(gM('mwe-embedplayer-select_stream'));
-			this.getComponent().find('button').removeClass('rotate');
 			this.getBtn().removeClass('disabled');
 		},
 		onDisable: function () {
 			this.isDisabled = true;
 			this.updateTooltip(gM('mwe-embedplayer-switch_stream'));
-			this.getComponent().find('button').addClass('rotate');
 			this.getComponent().removeClass('open');
 			this.getBtn().addClass('disabled');
 		}

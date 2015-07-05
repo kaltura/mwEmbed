@@ -538,10 +538,11 @@
 					this.getComponent().find( ".playlistItem" ).on( "click", function () {
 						_this.switchPlaylist( $( this ).attr( 'data-index' ) );
 					} );
-					setTimeout(function(){
-						_this.getComponent().find(".dropDownIcon").show();
-					},100);
 				}
+				setTimeout(function(){
+					_this.getComponent().find(".dropDownIcon").show();
+				},250);
+
 			}
 		},
 

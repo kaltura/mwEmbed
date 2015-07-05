@@ -769,6 +769,11 @@
 			return baseCss;
 		},
 		buildMenu: function( sources ){
+			for ( var i = sources.length - 1; i >= 0; i-- ){
+				if ( sources[i].srclang && sources[i].srclang === "multilingual" ){
+					sources.splice(i, 1); // remove multilingual source from menu
+				}
+			}
 			var _this = this;
 			mw.log('closedCaptions::buildMenu with sources: ', sources);
 			// Destroy the old menu

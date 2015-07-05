@@ -55,13 +55,14 @@
 					}
 				}
 				_this.getMenu().setActive({'key': 'id', 'val': selectedId});
-				_this.onEnable();
 			});
 
 			this.bind( 'sourceSwitchingStarted', function(){
+				_this.getComponent().find('button').addClass( 'in-progress-state' );
 				_this.onDisable();
 			});
 			this.bind( 'sourceSwitchingEnd', function(newIndex){
+				_this.getComponent().find('button').removeClass( 'in-progress-state' );
                 _this.onEnable();
 			});
             this.bind( 'onHideControlBar', function(){
@@ -364,7 +365,6 @@
 		onEnable: function(){
 			this.isDisabled = false;
 			this.updateTooltip( this.selectSourceTitle );
-			this.getComponent().find('button').removeClass( 'rotate' );
 			this.getBtn().removeClass( 'disabled' );
 			if (this.saveBackgroundColor){
 				this.getComponent().find('button').attr('style', 'background-color: ' + this.saveBackgroundColor + ' !important');
@@ -373,7 +373,6 @@
 		onDisable: function(){
 			this.isDisabled = true;
 			this.updateTooltip( this.switchSourceTitle );
-			this.getComponent().find('button').addClass( 'rotate' );
 			this.saveBackgroundColor = this.getComponent().find('button').css("background-color");
 			this.getComponent().find('button').attr('style', 'background-color: null !important');
 			this.getComponent().removeClass( 'open' );

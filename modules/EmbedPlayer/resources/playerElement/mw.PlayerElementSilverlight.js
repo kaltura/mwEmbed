@@ -100,7 +100,9 @@
 					width:"100%",height:"100%",
 					background:"transparent",
 					windowless:"true",
-					version: "4.0.60310.0" },
+					version: "4.0.60310.0",
+					EnableGPUAcceleration:"true"
+				 },
 				{
 					onError: "onError" + playerId,
 					enableHtmlAccess: "true" },

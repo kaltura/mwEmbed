@@ -37,6 +37,7 @@
 		//when playing live rtmp we increase the timeout until we display the "offline" alert, cuz player takes a while to identify "online" state
 		LIVE_OFFLINE_ALERT_TIMEOUT: 8000,
 		ignoreEnableGui: false,
+		flashActivationRequired: false,
 
 		// Create our player element
 		setup: function (readyCallback) {
@@ -160,7 +161,8 @@
 						'hlsEndList': 'onHlsEndList',
 						'mediaError': 'onMediaError',
 						'bitrateChange': 'onBitrateChange',
-                        'textTracksReceived': 'onTextTracksReceived'
+                        'textTracksReceived': 'onTextTracksReceived',
+                        'debugInfoReceived': 'onDebugInfoReceived'
 					};
 				_this.playerObject = this.getElement();
 					$.each(bindEventMap, function (bindName, localMethod) {
@@ -367,6 +369,10 @@
 		 * parent_play
 		 */
 		onPlay: function () {
+			if ( mw.isChrome() && !this.flashActivationRequired && mw.getConfig("EmbedPlayer.EnableFlashActivation") !== false ){
+				this.flashActivationRequired = true;
+				$(this).hide();
+			}
 			if (this._propagateEvents) {
 				$(this).trigger("playing");
 				this.hideSpinner();
@@ -537,6 +543,10 @@
 		 * function called by flash at set interval to update the playhead.
 		 */
 		onUpdatePlayhead: function (playheadValue) {
+			if ( this.flashActivationRequired ){
+				this.flashActivationRequired = false;
+				$(this).show();
+			}
 			if (this.seeking) {
 				this.seeking = false;
 			}
@@ -676,6 +686,15 @@
 		onAudioTrackSelected: function (data) {
 			this.triggerHelper('audioTrackIndexChanged', data);
 		},
+
+        onDebugInfoReceived: function (data){
+            var msg = '';
+            for (var prop in data) {
+                msg += prop + ': ' + data[prop]+' | ';
+            }
+            this.triggerHelper('debugInfoReceived', data);
+            mw.log("EmbedPlayerKplayer:: onDebugInfoReceived | " + msg);
+        },
 
 		/**
 		 * Get the embed player time

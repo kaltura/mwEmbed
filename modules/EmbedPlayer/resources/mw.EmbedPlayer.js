@@ -2184,6 +2184,7 @@
 			var $this = $(this);
 			if (this.currentState == "end") {
 				// prevent getting another clipdone event on replay
+				this.stopPlayAfterSeek = false;
 				this.seek(0.01, false);
 			}
 			// Store the absolute play time ( to track native events that should not invoke interface updates )
@@ -3076,28 +3077,26 @@
 				{ currentBitrate: currentBR }
 			]);
 			this.mediaElement.setSource(source);
-			$(this).trigger('sourceSwitchingEnd', [
-				{ newBitrate: source.getBitrate() }
-			]);
-			if (!this.isStopped()) {
-				this.isFlavorSwitching = true;
-				// Get the exact play time from the video element ( instead of parent embed Player )
-				var oldMediaTime = this.getPlayerElement().currentTime;
-				var oldPaused = this.paused;
-				// Do a live switch
-				this.playerSwitchSource(source, function (vid) {
-					// issue a seek
-					setTimeout(function () {
-						_this.addBlackScreen();
-						_this.hidePlayerOffScreen();
-						_this.unbindHelper("seeked.switchSrc" ).bindOnceHelper("seeked.switchSrc", function () {
-							_this.removeBlackScreen();
-							_this.restorePlayerOnScreen();
-						});
-						_this.seek(oldMediaTime, oldPaused);
-					}, 100);
-				});
-			}
+			this.isFlavorSwitching = true;
+			// Get the exact play time from the video element ( instead of parent embed Player )
+			var oldMediaTime = this.getPlayerElement().currentTime;
+			var oldPaused = this.paused;
+			// Do a live switch
+			this.playerSwitchSource(source, function (vid) {
+				// issue a seek
+				setTimeout(function () {
+					_this.addBlackScreen();
+					_this.hidePlayerOffScreen();
+					_this.unbindHelper("seeked.switchSrc" ).bindOnceHelper("seeked.switchSrc", function () {
+						_this.removeBlackScreen();
+						_this.restorePlayerOnScreen();
+						$(_this).trigger('sourceSwitchingEnd', [
+							{ newBitrate: source.getBitrate() }
+						]);
+					});
+					_this.seek(oldMediaTime, oldPaused);
+				}, 100);
+			});
 		},
 		/**
 		 * Used for livestream: will be called when clicking on "back to live" button
