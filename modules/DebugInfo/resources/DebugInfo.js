@@ -4,7 +4,8 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
 
 	defaultConfig: {
 		templatePath: '../DebugInfo/resources/DebugInfo.tmpl.html',
-        cssFileName: 'modules/debugInfo/resources/DebugInfo.css'
+        cssFileName: 'modules/debugInfo/resources/DebugInfo.css',
+        isVisible:false
 	},
     getBaseConfig: function() {
         var parentConfig = this._super();
@@ -34,7 +35,9 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
         this.bind('playerReady', function () {
         });
 
-       // _this.setVisible(true);
+        if (_this.getConfig( 'isVisible' )) {
+            _this.setVisible(true);
+        }
         $(document).keydown(function(e){
 
             if ( e.altKey && e.ctrlKey && e.keyCode===68) {
@@ -46,6 +49,42 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
 
     },
 
+    bindToHlsEvents:function() {
+        var _this = this;
+        this.bind("debugInfoReceived", function( e, data ){
+            var $scope=_this.$scope;
+
+            if( data.info && data.info == "Playing segment"){
+                $scope.hlsCurrentSegment=data.uri;
+            }
+            if( data.info && data.info == "Downloading segment"){
+                $scope.hlsDownloadingSegment=data.uri;
+            }
+            if( data.info && data.info == "Finished processing segment"){
+                $scope.hlsLastProcessedSegment=data.uri;
+            }
+            if( data.bufferLength ){
+                $scope.bufferLength=data.bufferLength;
+            }
+            if( data.droppedFrames ){
+                $scope.droppedFrames=data.droppedFrames;
+            }
+            if( data.currentBitrate ){
+                $scope.currentBitrate=data.currentBitrate;
+            }
+        });
+    },
+    bindToMulticastEvents:function() {
+        var _this = this;
+        this.bind("mcDiagnoseInfoReceived", function( e, data ){
+            var $scope=_this.$scope;
+
+
+            if( data.currentBitrate ){
+                $scope.currentBitrate=data.currentBitrate;
+            }
+        });
+    },
 
     isVisible:false,
     setVisible:function(visible) {
@@ -87,28 +126,9 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
             },1000);
 
 
-            this.bind("debugInfoReceived", function( e, data ){
-                var $scope=_this.$scope;
+            this.bindToHlsEvents();
+            this.bindToMulticastEvents();
 
-                if( data.info && data.info == "Playing segment"){
-                    $scope.hlsCurrentSegment=data.uri;
-                }
-                if( data.info && data.info == "Downloading segment"){
-                    $scope.hlsDownloadingSegment=data.uri;
-                }
-                if( data.info && data.info == "Finished processing segment"){
-                    $scope.hlsLastProcessedSegment=data.uri;
-                }
-                if( data.bufferLength ){
-                    $scope.bufferLength=data.bufferLength;
-                }
-                if( data.droppedFrames ){
-                    $scope.droppedFrames=data.droppedFrames;
-                }
-                if( data.currentBitrate ){
-                    $scope.currentBitrate=data.currentBitrate;
-                }
-            });
 
         } else {
             $( ".mw-debug-info").remove();
@@ -135,11 +155,15 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
         var source= player.getSource();
         if (source) {
             this.$scope.mimeType=source.mimeType;
+            this.$scope.multicast= (source.mimeType==="video/multicast");
+            this.$scope.hls= (source.mimeType==="application/vnd.apple.mpegurl");
+        } else {
+            this.$scope.hls=false;
+            this.$scope.multicast=false;
         }
         this.$scope.currentState=player.currentState;
         this.$scope.isDVR= player.isDVR();
         this.$scope.buffering= player.buffering;
-        this.$scope.hls=this.$scope.src.indexOf("m3u8")>=0;
     }
 
 }));
