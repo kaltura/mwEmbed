@@ -1,0 +1,16 @@
+{
+  "heartbeat": {
+    "scripts": [
+      "resources/VisitorAPI.js",
+      "resources/AppMeasurement.js",
+      "resources/VideoHeartbeat.min.js",
+      "resources/KalturaVideoPlayerPluginDelegate.js",
+      "resources/KalturaAdobeAnalyticsPluginDelegate.js",
+      "resources/KalturaHeartbeatPluginDelegate.js",
+      "resources/KalturaHeartbeatDelegate.js",
+      "resources/heartbeat.js"
+    ],
+    "dependencies": "mw.KBasePlugin",
+    "kalturaPluginName": "heartbeat"
+  }
+}

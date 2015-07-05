@@ -188,7 +188,7 @@ body {
 }
 
 button, a{
-	outline: none !important;
+	outline: 0 !important;
 }
 button::-moz-focus-inner {
 	border: 0;
@@ -277,6 +277,9 @@ button::-moz-focus-inner {
 	display: block !important;
 }
 .mobile.player-out .largePlayBtn {
+	display: none !important;
+}
+.mobile.seeking-state .largePlayBtn {
 	display: none !important;
 }
 .scrubber {
@@ -803,8 +806,8 @@ button::-moz-focus-inner {
 	font-size: 20px;
 	background-color: rgba(255,255,255,0.18);
 	color: rgba(255,255,255,0.6);
+	outline: 0;
 }
-
 .btn:hover {
 	/*
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";

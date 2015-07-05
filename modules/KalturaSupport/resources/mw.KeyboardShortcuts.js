@@ -281,7 +281,7 @@
 			}
 		},
 		closeFullscreenkeyCallback: function(){
-			if( this.getPlayer().getInterface().hasClass('fullscreen') ){
+			if( this.getPlayer().getInterface().hasClass('fullscreen') && this.getPlayer().layoutBuilder.fullScreenManager.inFullScreen ){
 				this.getPlayer().toggleFullscreen();
 			}
 		},
