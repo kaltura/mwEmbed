@@ -1563,6 +1563,9 @@ mw.KAdPlayer.prototype = {
 						} )
 						.attr( 'id', vpaidId )
 				);
+				if (adSlot.type !== "overlay"){
+					_this.embedPlayer.getVideoHolder().find("#" + vpaidId).css("background-color","#000000");
+				}
 			}
 			if ( adConf.vpaid.flash && mw.EmbedTypes.getMediaPlayers().getDefaultPlayer( adConf.vpaid.flash.type ) ) { //flash vpaid
 				var playerParams = {
@@ -1576,7 +1579,7 @@ mw.KAdPlayer.prototype = {
 				if ( adConf.adParameters ) {
 					playerParams.vpaidAdParameters = escape( adConf.adParameters );
 				}
-				if ( adConf.vpaid.flash.width) {
+				if ( adConf.vpaid.flash.width ) {
 					playerParams.vpaidAdWidth = adConf.vpaid.flash.width;
 					playerParams.vpaidAdHeight = adConf.vpaid.flash.height;
 				}
