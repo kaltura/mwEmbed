@@ -37,7 +37,7 @@
 	var player = new playerjs.Player( document.getElementById('kaltura_player') );
 	var supportedMethods = [ 'play', 'pause', 'getPaused', 'mute', 
 		'unmute', 'getMuted', 'setVolume .5', 'getVolume', 'getDuration', 
-		'setCurrentTime 10s', 'getCurrentTime', 'setLoop', 'getLoop'
+		'setCurrentTime 10s', 'getCurrentTime', 'setLoop true', 'getLoop'
 	];
 	var supportedEvents = ['progress', 'timeupdate', 'play', 'pause', 'ended', 'seeked', 'error'];
 	$('#methods').text('Loading ...');
@@ -53,6 +53,10 @@
 					}
 					if( method == 'setVolume .5'){
 						player.setVolume('.5')
+						return;
+					}
+					if( method == 'setLoop true'){
+						player.setLoop( true );
 						return;
 					}
 					player[method](function(value){
