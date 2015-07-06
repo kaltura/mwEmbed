@@ -8,7 +8,7 @@
 
         defaultConfig: {
             trackEventMonitor: null, // A callback function to track what's being tracked / sent to heartbeat
-            debugLogging: false //TODO: set this parameter to false by the end of development
+            debugLogging: false
         },
 
         setup: function() {
@@ -16,27 +16,49 @@
                 this.setupHeartBeatPluginFail();
                 return;
             }
-            this.setupAdobeVars();
-            this.setupHeartBeatPlugin();
-            this.addBindings();
+            this.loadAdobeClasses();
         },
 
-        addBindings: function() {
+        isValidConfiguration: function(){
+            if( this.getConfig('visitorId') &&
+                this.getConfig('visitorTrackingServer') &&
+                this.getConfig('appMeasurementTrackingServer') &&
+                this.getConfig('appMeasurementAccount') &&
+                this.getConfig('appMeasurementVisitorID') &&
+                this.getConfig('heartbeatTrackingServer') &&
+                this.getConfig('heartbeatPublisher') ){
+                return true;
+            }
+            return false;
+        },
+
+        loadAdobeClasses: function(){
             var _this = this;
-            this.embedPlayer.bindHelper( 'firstPlay', function(){ _this.trackSessionStart(); } );
-            this.embedPlayer.bindHelper( 'onplay', function(){ _this.trackPlay(); } );
-            this.embedPlayer.bindHelper('seeking', function(){ _this.trackSeekStart(); });
-            this.embedPlayer.bindHelper('seeked', function(){ _this.trackSeekEnd(); });
-            this.embedPlayer.bindHelper('onpause', function(){ _this.trackPaused(); });
-            this.embedPlayer.bindHelper('playerPlayEnd', function(){ _this.trackComplete(); });//playbackComplete
-            this.embedPlayer.bindHelper('bufferStartEvent', function(){ _this.trackBufferStart(); });
-            this.embedPlayer.bindHelper('bufferEndEvent', function(){ _this.trackBufferEnd(); });
-            this.embedPlayer.bindHelper('sourceSwitchingEnd', function(){ _this.trackBitrateChangeEnd(); });
+            var VisitorAPIPath = mw.getMwEmbedPath()+"modules/Heartbeat/resources/VisitorAPI.js";
+            var AppMeasurementPath = mw.getMwEmbedPath()+"modules/Heartbeat/resources/AppMeasurement.js";
+            var VideoHeartbeatPath = mw.getMwEmbedPath()+"modules/Heartbeat/resources/VideoHeartbeat.min.js";
 
-            this.embedPlayer.bindHelper('onAdPlay', function(event, adID, adSystem, type, adIndex, adDuration, mediaName){
-                _this.trackAdStart({id:adID, position:adIndex, length:adDuration, name:mediaName}); });
-            this.embedPlayer.bindHelper('onAdComplete', function(){ _this.trackAdComplete(); });
-
+            $.ajax({
+                url: VisitorAPIPath,
+                dataType: "script",
+                success: function(result){
+                    $.ajax({
+                        url: AppMeasurementPath,
+                        dataType: "script",
+                        success: function(result){
+                            $.ajax({
+                                url: VideoHeartbeatPath,
+                                dataType: "script",
+                                success: function(result){
+                                    _this.setupAdobeVars();
+                                    _this.setupHeartBeatPlugin();
+                                    _this.addBindings();
+                                }
+                            });
+                        }
+                    });
+                }
+            });
         },
 
         setupAdobeVars: function(){
@@ -54,17 +76,22 @@
             this.appMeasurement.visitorID = this.getConfig('appMeasurementVisitorID');
         },
 
-        isValidConfiguration: function(){
-            if( this.getConfig('visitorId') &&
-                this.getConfig('visitorTrackingServer') &&
-                this.getConfig('appMeasurementTrackingServer') &&
-                this.getConfig('appMeasurementAccount') &&
-                this.getConfig('appMeasurementVisitorID') &&
-                this.getConfig('heartbeatTrackingServer') &&
-                this.getConfig('heartbeatPublisher') ){
-                return true;
-            }
-            return false;
+        addBindings: function() {
+            var _this = this;
+            this.embedPlayer.bindHelper( 'firstPlay', function(){ _this.trackSessionStart(); } );
+            this.embedPlayer.bindHelper( 'onplay', function(){ _this.trackPlay(); } );
+            this.embedPlayer.bindHelper('seeking', function(){ _this.trackSeekStart(); });
+            this.embedPlayer.bindHelper('seeked', function(){ _this.trackSeekEnd(); });
+            this.embedPlayer.bindHelper('onpause', function(){ _this.trackPaused(); });
+            this.embedPlayer.bindHelper('postEnded', function(){ _this.trackComplete(); });
+            this.embedPlayer.bindHelper('bufferStartEvent', function(){ _this.trackBufferStart(); });
+            this.embedPlayer.bindHelper('bufferEndEvent', function(){ _this.trackBufferEnd(); });
+            this.embedPlayer.bindHelper('sourceSwitchingEnd', function(){ _this.trackBitrateChangeEnd(); });
+
+            this.embedPlayer.bindHelper('onAdPlay', function(event, adID, adSystem, type, adIndex, adDuration, mediaName){
+                _this.trackAdStart({id:adID, position:adIndex, length:adDuration, name:mediaName}); });
+            this.embedPlayer.bindHelper('onAdComplete', function(){ _this.trackAdComplete(); });
+
         },
 
         setupHeartBeatPlugin: function(){
@@ -209,10 +236,10 @@
         },
 
         setAdInfo: function(adData){
-            if (adData.id) { this.videoPlayerPlugin._delegate.setAdInfo({id:adData.id}); };
-            if (adData.position) { this.videoPlayerPlugin._delegate.setAdInfo({position:adData.position}); };
-            if (adData.length) { this.videoPlayerPlugin._delegate.setAdInfo({length:adData.length}); };
-            if (adData.name) { this.videoPlayerPlugin._delegate.setAdInfo({name:adData.name}) };
+            if (adData.id) { this.videoPlayerPlugin._delegate.setAdInfo({id:adData.id}); }
+            if (adData.position) { this.videoPlayerPlugin._delegate.setAdInfo({position:adData.position}); }
+            if (adData.length) { this.videoPlayerPlugin._delegate.setAdInfo({length:adData.length}); }
+            if (adData.name) { this.videoPlayerPlugin._delegate.setAdInfo({name:adData.name}); }
         },
 
         trackAdStart: function(adData){

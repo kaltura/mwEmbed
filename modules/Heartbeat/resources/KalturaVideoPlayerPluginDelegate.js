@@ -1,7 +1,7 @@
 /**
  * Created by einatr on 6/8/15.
  */
-(function() {
+(function(mw, $) {
     'use strict';
     $.extend(KalturaVideoPlayerPluginDelegate.prototype, ADB.va.plugins.videoplayer.VideoPlayerPluginDelegate.prototype);
 
@@ -40,7 +40,7 @@
         _this.setAdBreakInfo = function (info){
             if( !_this.adBreakInfo ){
                 _this.adBreakInfo = new ADB.va.plugins.videoplayer.AdBreakInfo();//new ADB.va.AdBreakInfo();
-                _this.adBreakInfo.playerName = "";
+                _this.adBreakInfo.playerName = _this.config.playerName || _this.player.evaluate('{mediaProxy.entry}').name;
                 _this.adBreakInfo.name = "";
                 _this.adBreakInfo.position = 1;
                 _this.adBreakInfo.startTime = -1;
@@ -81,7 +81,7 @@
             }
         };
 
-    };
+    }
 
     KalturaVideoPlayerPluginDelegate.prototype.getVideoInfo = function() {
         var videoInfo = new ADB.va.plugins.videoplayer.VideoInfo();
@@ -102,6 +102,9 @@
     };
 
     KalturaVideoPlayerPluginDelegate.prototype.getAdBreakInfo = function() {
+        if(!_this.adBreakInfo){
+            _this.setAdBreakInfo({});
+        }
         return _this.adBreakInfo;
     };
 
@@ -134,4 +137,4 @@
 
     // Export symbols.
     window.KalturaVideoPlayerPluginDelegate = KalturaVideoPlayerPluginDelegate;
-})();
+})(window.mw, window.jQuery);
