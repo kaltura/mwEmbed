@@ -79,7 +79,7 @@ mw.KBasePlugin = Class.extend({
 		data.player = this.embedPlayer;
 		data.entry = this.embedPlayer.kalturaPlayerMetaData;
 		data.entryMetadata = this.embedPlayer.kalturaEntryMetaData;
-		data.formaters = mw.formaters;
+		data.formaters = mw.formaters().getAll();
 
 		var defer = $.Deferred();
 
