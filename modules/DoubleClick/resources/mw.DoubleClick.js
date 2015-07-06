@@ -867,8 +867,10 @@
 				if( mw.isIpad() && _this.embedPlayer.getPlayerElement().paused ) {
 					_this.embedPlayer.getPlayerElement().play();
 				}
+                var adPosition =  0;
+                if ( ad.getAdPodInfo() && ad.getAdPodInfo().getAdPosition() ){ adPosition = ad.getAdPodInfo().getAdPosition() }
 				// trigger ad play event
-				$(_this.embedPlayer).trigger("onAdPlay",[ad.getAdId(),ad.getAdSystem(),currentAdSlotType]);
+                $(_this.embedPlayer).trigger("onAdPlay",[ad.getAdId(),ad.getAdSystem(),currentAdSlotType,adPosition,ad.getDuration()]);
 				// This changes player state to the relevant value ( play-state )
 				$(_this.embedPlayer).trigger("playing");
 				// Check for ad Stacking ( two starts in less then 250ms )
@@ -987,7 +989,7 @@
 				// set volume when ad starts to enable autoMute. TODO: remove next line once DoubleClick fix their bug when setting adsManager.volume before ad starts
 				_this.embedPlayer.setPlayerElementVolume(_this.embedPlayer.volume);
 				// trigger ad play event
-				$(_this.embedPlayer).trigger("onAdPlay",[adInfo.adID]);
+				$(_this.embedPlayer).trigger("onAdPlay",[adInfo.adID, null, null, 0, adInfo.duration]); //index is missing =0 by now
 				// This changes player state to the relevant value ( play-state )
 				$(_this.embedPlayer).trigger("playing");
 				$(_this.embedPlayer).trigger("onplay");

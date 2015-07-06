@@ -378,6 +378,9 @@
 						'width': this.getConfig('minWidth')
 					});
 				}
+				this.$el.on("mouseup", function(){
+					_this.hideThumbnailPreview();
+				});
 			}
 			return this.$el;
 		}

@@ -443,7 +443,7 @@
 				if (!_this.getConfig("autoPlay")) {
 					setTimeout(function(){
 						embedPlayer.play();
-					},100); // timeout is required when loading live entries
+					},500); // timeout is required when loading live entries
 				}
 			});
 			mw.log("PlaylistAPI::playClip::changeMedia entryId: " + id);
