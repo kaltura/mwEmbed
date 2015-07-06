@@ -5,13 +5,55 @@
 ( function ( $, mw ) {
 	"use strict";
 
-	mw.util.registerTemplateHelper = function( name, callback ){
-		if( $.isFunction(mw.formaters[ name ]) ) {
-			mw.log('mw.util.registerTemplateHelper: callback: "' + name + '" already exists.');
-			return;
-		}
-		mw.formaters[ name ] = callback;
+	var formatersStorage = {};
+	mw.formaters = function() {
+
+		var registerOne = function(name, callback) {
+			// Make sure name is a string
+			if( typeof name !== 'string' ) {
+				mw.log('mw.formaters.registerOne: name parameter must be a string, ' + typeof name + ' given');
+				return;
+			}
+			// Make sure callback is a fuction
+			if( !$.isFunction(callback) ) {
+				mw.log('mw.formaters.registerOne: callback parameter must be a function, ' + typeof callback + ' given');
+				return;
+			}
+			// Make sure we don't overwrite existsing formater
+			if( $.isFunction(formatersStorage[ name ]) ) {
+				mw.log('mw.formaters.registerOne: callback: "' + name + '" already exists.');
+				return;
+			}
+			// Save it
+			formatersStorage[ name ] = callback;
+		};
+
+		// Public API
+		return {
+			register: function(name, callback) {
+				if($.isPlainObject(name)) {
+					$.each(name, registerOne);
+				} else {
+					registerOne(name, callback);
+				}
+			},
+			get: function(name) {
+				if( !$.isFunction(formatersStorage[ name ]) ) {
+					throw new Exception("Formater: " + name + " does not exists, make sure to register it first with mw.formaters().register(name,callback)");
+				}
+				return formatersStorage[ name ];
+			},
+			getAll: function() {
+				return formatersStorage;
+			},
+			exists: function(name) {
+				return $.isFunction(formatersStorage[ name ]);
+			}
+		};
 	};
+
+	// Expose old method name for backward compatiblity
+	mw.util.registerTemplateHelper = mw.formaters().register;
 
 	// Is a given variable an object?
 	var isObject = function(obj) {
