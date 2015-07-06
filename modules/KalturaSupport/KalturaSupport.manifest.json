@@ -1774,7 +1774,7 @@
                 "initvalue": true
             },
             "sendContextWithPlaylist": {
-                "doc": "Send context id with the playlist (_KDP_CTXPL sends this automatically)",
+                "doc": "Send context with the playlist (_KDP_CTXPL sends this automatically)",
                 "type": "boolean",
                 "initvalue": false
             },
