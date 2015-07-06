@@ -12,6 +12,7 @@
 			displayOnPlaybackDone: true,
 			autoContinueEnabled: true,
 			autoContinueTime: null,
+			sendContextWithPlaylist: false,
 			templatePath: 'components/related/related.tmpl.html',
 			playlistId: null,
 			formatCountdown : false,
@@ -237,7 +238,7 @@
 			var _this = this;
 			// check for valid playlist id:
 			if( this.getConfig( 'playlistId' ) ){
-				return this.getEntriesFromPlaylistId( this.getConfig( 'playlistId' ), callback);
+					return this.getEntriesFromPlaylistId( this.getConfig( 'playlistId' ), callback , this.getConfig( 'sendContextWithPlaylist' ) );
 			}
 			// check for entry list:
 			if( this.getConfig( 'entryList' ) ){

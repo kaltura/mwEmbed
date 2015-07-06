@@ -1773,6 +1773,11 @@
                 "type": "boolean",
                 "initvalue": true
             },
+            "sendContextWithPlaylist": {
+                "doc": "Send context id with the playlist (_KDP_CTXPL sends this automatically)",
+                "type": "boolean",
+                "initvalue": false
+            },
             "autoContinueEnabled": {
                 "doc": "Should the Next Item be automatically played.",
                 "type": "boolean"
