@@ -16,8 +16,7 @@
 		 * cases where a native player is dipalyed such as iPhone.
 		 */
 		isPersistantPlayBtn: function(){
-			return mw.isAndroid2() || this.getPlayer().isLinkPlayer() || 
-					( mw.isIphone() && mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen' ) );
+			return (mw.isAndroid2() || this.getPlayer().isLinkPlayer() || ( mw.isIphone() && mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen' )) && !mw.isWindowsPhone() );
 		},
 		addBindings: function() {
 			var _this = this;
@@ -30,7 +29,7 @@
 			
 			this.bind('onChangeMediaDone playerReady onpause onEndedDone onRemovePlayerSpinner', function(){
 				if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
-					_this.$el.removeClass("icon-pause").addClass("icon-play");
+					_this.getComponent().removeClass("icon-pause").addClass("icon-play");
 					_this.show();
 				}
 			});

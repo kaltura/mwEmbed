@@ -79,3 +79,37 @@
 .icon-globe:before {
 	content: "\e600";
 }
+.icon-x:before {
+	content: "\e60f";
+}
+.icon-attachment:before {
+	content: "\e610";
+}
+.icon-cc:before {
+	content: "\e611";
+}
+.icon-back:before {
+	content: "\e612";
+}
+.icon-camera:before {
+	content: "\e613";
+}
+.icon-flag:before {
+	content: "\e614";
+}
+.icon-forward:before {
+	content: "\e615";
+}
+.icon-info:before {
+	content: "\e616";
+}
+.icon-related:before {
+	content: "\e617";
+}
+.icon-settings:before {
+	content: "\e618";
+}
+.icon-share:before {
+	content: "\e619";
+}
+
