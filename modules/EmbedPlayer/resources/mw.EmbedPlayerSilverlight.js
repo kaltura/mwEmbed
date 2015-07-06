@@ -73,6 +73,14 @@
 
 		},
 
+		fillDiagnostics: function(diagObj) {
+			if (diagObj) {
+
+				if (this.multiastServerUr) {
+					diagObj.multiastServerUrl = this.multiastServerUrl;
+				}
+			}
+		},
 
 		loadMedia: function (readyCallback) {
 
@@ -104,6 +112,7 @@
 				//we got an multicast server that we need to redirect
 				if (resolvedSrc.indexOf("http")===0)
 				{
+					_this.multiastServerUrl=resolvedSrc;
 
 					var startFailover=function() {
 

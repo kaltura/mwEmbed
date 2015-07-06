@@ -158,23 +158,14 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
 
         if (this.$scope.multicast) {
             var mcPlayer = player.getPlayerElement();
-            if( mcPlayer !== undefined ) {
+            if( mcPlayer && mcPlayer.getMultivcastDiagnostics ) {
                 var data = mcPlayer.getMultivcastDiagnostics();
-                if( data.currentBitrate && data.currentBitrate !== undefined){
-                    this.$scope.currentBitrate=data.currentBitrate;
-                }
-                if( data.mcAddress && data.mcAddress !== undefined  ) {
-                    this.$scope.mcAddress = data.mcAddress;
-                }
-                if( data.InputFps && data.InputFps !== undefined ) {
-                    this.$scope.mcInputFps = data.InputFps;
-                }
-                if( data.RenderFps && data.RenderFps !== undefined ) {
-                    this.$scope.mcRenderFps = data.RenderFps;
-                }
-                if( data.RenderDroppedFps && data.RenderDroppedFps !== undefined ) {
-                    this.$scope.mcRenderDroppedFps = data.RenderDroppedFps;
-                }
+                this.$scope.currentBitrate=data.currentBitrate;
+                this.$scope.mcAddress = data.mcAddress;
+                this.$scope.mcInputFps = data.InputFps;
+                this.$scope.mcRenderFps = data.RenderFps;
+                this.$scope.mcRenderDroppedFps = data.RenderDroppedFps;
+                this.$scope.multiastServerUrl=data.multiastServerUrl;
             }
         }
     }
