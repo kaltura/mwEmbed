@@ -16,8 +16,7 @@
 		 * cases where a native player is dipalyed such as iPhone.
 		 */
 		isPersistantPlayBtn: function(){
-			return mw.isAndroid2() || this.getPlayer().isLinkPlayer() || 
-					( mw.isIphone() && mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen' ) );
+			return (mw.isAndroid2() || this.getPlayer().isLinkPlayer() || ( mw.isIphone() && mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen' )) && !mw.isWindowsPhone() );
 		},
 		addBindings: function() {
 			var _this = this;
