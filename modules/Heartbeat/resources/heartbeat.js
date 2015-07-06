@@ -13,7 +13,7 @@
 
         setup: function() {
             if ( !this.isValidConfiguration() ) {
-                this.setupHeartBeatPluginFail();
+                this.setupHeartBeatPluginFail("missing required configuration values");
                 return;
             }
             this.loadAdobeClasses();
@@ -34,23 +34,14 @@
 
         loadAdobeClasses: function(){
             var _this = this;
-            var VisitorAPIPath = mw.getMwEmbedPath()+"modules/Heartbeat/resources/VisitorAPI.js";
-            var AppMeasurementPath = mw.getMwEmbedPath()+"modules/Heartbeat/resources/AppMeasurement.js";
-
-            $.ajax({
-                url: VisitorAPIPath,
-                dataType: "script",
-                success: function(result){
-                    $.ajax({
-                        url: AppMeasurementPath,
-                        dataType: "script",
-                        success: function(result){
-                            _this.setupAdobeVars();
-                            _this.setupHeartBeatPlugin();
-                            _this.addBindings();
-                        }
-                    });
-                }
+            var loadVisitor = $.ajax(mw.getMwEmbedPath()+"modules/Heartbeat/resources/VisitorAPI.js");
+            var loadAppMeasurement = $.ajax(mw.getMwEmbedPath()+"modules/Heartbeat/resources/AppMeasurement.js");
+            $.when(loadVisitor, loadAppMeasurement).then(function() {
+                _this.setupAdobeVars();
+                _this.setupHeartBeatPlugin();
+                _this.addBindings();
+            }, function() {//error
+                _this.setupHeartBeatPluginFail("failed to load Adobe scripts");
             });
         },
 
@@ -106,12 +97,8 @@
             this.configureHeartbeatLib();
         },
 
-        setupHeartBeatPluginFail: function(){
-            mw.log("HeartBeat plugin :: setupHeartBeatPluginFail");
-        },
-
-        setupHeartBeatPluginWarn: function(){
-            mw.log("HeartBeat plugin :: setupHeartBeatPluginWarn");
+        setupHeartBeatPluginFail: function(msg){
+            mw.log("HeartBeat plugin :: setupHeartBeatPluginFail :: "+msg);
         },
 
         configureVideoPlayerPlugin: function(){
