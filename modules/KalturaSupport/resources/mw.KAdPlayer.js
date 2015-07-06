@@ -1553,18 +1553,11 @@ mw.KAdPlayer.prototype = {
 			if ( $( '#' + vpaidId ).length == 0 ) {
 				_this.embedPlayer.getVideoHolder().append(
 					$( '<div />' )
-						.css( {
-							'position': 'absolute',
-							'top': '0px',
-							'left': '0px',
-							'z-index': 2000,
-							'width': '100%',
-							'height': '100%'
-						} )
+						.addClass( 'vpaidContainer' )
 						.attr( 'id', vpaidId )
 				);
 				if (adSlot.type !== "overlay"){
-					_this.embedPlayer.getVideoHolder().find("#" + vpaidId).css("background-color","#000000");
+					_this.embedPlayer.getVideoHolder().find("#" + vpaidId).addClass("blackBackground");
 				}
 			}
 			if ( adConf.vpaid.flash && mw.EmbedTypes.getMediaPlayers().getDefaultPlayer( adConf.vpaid.flash.type ) ) { //flash vpaid
