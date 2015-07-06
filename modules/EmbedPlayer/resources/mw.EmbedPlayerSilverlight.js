@@ -12,6 +12,8 @@
 		//default playback start time to wait before falling back to unicast in millisecods
 		defaultMulticastStartTimeout: 10000,
 		defaultMulticastKeepAliveInterval: 10000,
+		defaultMulticastKESKtimeout: 10000,
+		multicastAddress:null,
 		defaultEnableMulticastFallback:true,
 		containerId: null,
 		// List of supported features:
@@ -79,11 +81,11 @@
 
 			var connectToMulticastServer=function(resolvedSrc) {
 
-				var _this = this;
 				var deferred = $.Deferred();
 
 				$.ajax({
 					url: resolvedSrc,
+					timeout: _this.getKalturaConfig(null, 'multicastKESKtimeout') || _this.defaultMulticastKESKtimeout,
 					dataType: 'jsonp',
 					success: function (multicastDetails) {
 
@@ -103,21 +105,72 @@
 				if (resolvedSrc.indexOf("http")===0)
 				{
 
-					connectToMulticastServer(resolvedSrc).then(function(multicastDetails) {
+					var startFailover=function() {
 
-						mw.log('EmbedPlayerSPlayer got multicast details from KES: ' + JSON.stringify(multicastDetails));
+						_this.isError = true;
+						//TODO handle failover
+					}
 
+					var startMultiastServerKeepAlive=function() {
 
-						var multicastAddress = multicastDetails.multicastAddress + ":" + multicastDetails.multicastPort;
-						mw.log('multicastAddress= ' + multicastAddress);
-
-						doEmbedFunc(multicastAddress);
+						if (_this.keepAliveMCInterval) {
+							return;
+						}
 
 						var interval = _this.getKalturaConfig(null, 'multicastKeepAliveInterval') || _this.defaultMulticastKeepAliveInterval;
 
-						_this.keepAliveMCInterval=setInterval(function () {
-							connectToMulticastServer(resolvedSrc);
+						_this.keepAliveMCInterval = setInterval(function () {
+							try {
+								connectToMulticastServer(resolvedSrc).then(onMultiastServerResponse,startFailover);
+							}
+							catch (e) {
+								mw.log('connectToMulticastServer failed ' + e.message + ' ' + e.stack);
+								startFailover();
+							}
 						}, interval);
+					}
+
+					var onMultiastServerResponse=function(response) {
+
+						mw.log('EmbedPlayerSPlayer got multicast details from KES: ' + JSON.stringify(response));
+
+
+						//verify we got a valid response from KES
+						if (response.multicastAddress && response.multicastPort && response.hls) {
+
+							var multicastAddress = response.multicastAddress + ":" + response.multicastPort;
+							mw.log('multicastAddress= ' + multicastAddress);
+
+							//first time
+							if (!_this.multicastAddress) {
+
+								_this.multicastAddress=multicastAddress;
+								doEmbedFunc(multicastAddress);
+
+
+								startMultiastServerKeepAlive();
+
+							} else {
+
+								if (_this.multicastAddress!==multicastAddress) {
+									startFailover();
+								} else {
+									//mw.log('keep alive sent successfully');
+								}
+							}
+						} else {
+							mw.log('Invalid multicast address/port returned from KES');
+
+							_this.isError = true;
+							fallbackToUnicast();
+
+						}
+					}
+
+					connectToMulticastServer(resolvedSrc).then(onMultiastServerResponse, function() {
+						mw.log('Error fetching url: '+resolvedSrc);
+						_this.isError = true;
+						fallbackToUnicast();
 					});
 
 
@@ -127,17 +180,23 @@
 				}
 			}
 
+			var handleFailoverFromSrcUrl=function() {
+				mw.log('Error fetching url: '+_this.getSrc());
+				_this.isError = true
+				fallbackToUnicast();
+			}
+
 			//in multicast we must first check if payer is live
 			var getMulticastStreamAddress = function () {
 				$(_this).trigger('checkIsLive', [ function (onAirStatus) {
 					if (onAirStatus) {
-						_this.resolveSrcURL(_this.getSrc()).then(handleMulticast);
+						_this.resolveSrcURL(_this.getSrc()).then(handleMulticast,handleFailoverFromSrcUrl);
 					} else {
 						//stream is offline, stream address can be retrieved when online
 						_this.bindHelper("liveOnline" + _this.bindPostfix, function () {
 							_this.unbindHelper("liveOnline" + _this.bindPostfix);
 							_this.addPlayerSpinner();
-							_this.resolveSrcURL(_this.getSrc()).then(handleMulticast);
+							_this.resolveSrcURL(_this.getSrc()).then(handleMulticast,handleFailoverFromSrcUrl);
 							//no need to save readyCallback since it was already called
 							_this.readyCallbackFunc = undefined;
 
@@ -736,6 +795,11 @@
 
 		clean: function () {
 			$(this.getPlayerContainer()).remove();
+
+			if (this.keepAliveMCInterval) {
+				clearInterval(this.keepAliveMCInterval)
+				this.keepAliveMCInterval=null;
+			}
 		},
 
 		callIfReady: function (callback) {
