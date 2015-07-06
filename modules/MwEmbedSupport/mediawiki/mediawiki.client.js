@@ -92,7 +92,7 @@
 	};
 	mw.isOldAndroidChromeNativeBrowser = function () {
 		var regExpResult = userAgent.match(/Chrome\/([0-9][0-9])/);
-		if ( $.isArray( regExpResult ) && regExpResult.length > 1 ){
+		if ( regExpResult instanceof Array && regExpResult.length > 1 ){
 			return mw.isAndroidChromeNativeBrowser() && parseInt( regExpResult[1] ) < 30;
 		}
 		return false;
