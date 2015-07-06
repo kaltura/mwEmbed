@@ -115,7 +115,7 @@
 
                     _this.playerTime(embedPlayer.currentTime);
 
-                }, 100);
+                }, 500);
 
             },
             destroy: function () {
