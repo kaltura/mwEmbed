@@ -53,7 +53,10 @@
 	};
 
 	// Expose old method name for backward compatiblity
-	mw.util.registerTemplateHelper = mw.formaters().register;
+	mw.util.registerTemplateHelper = function(name, callback) {
+		mw.log('[Deprecated] mw.util.registerTemplateHelper is deprecated. please use mw.formaters().register method');
+		mw.formaters().register(name, callback);
+	};
 
 	// Is a given variable an object?
 	var isObject = function(obj) {
