@@ -238,7 +238,7 @@
 			var _this = this;
 			// check for valid playlist id:
 			if( this.getConfig( 'playlistId' ) ){
-					return this.getEntriesFromPlaylistId( this.getConfig( 'playlistId' ), callback , this.getConfig( 'sendContextWithPlaylist' ) );
+				return this.getEntriesFromPlaylistId( this.getConfig( 'playlistId' ), callback , this.getConfig( 'sendContextWithPlaylist' ) );
 			}
 			// check for entry list:
 			if( this.getConfig( 'entryList' ) ){
