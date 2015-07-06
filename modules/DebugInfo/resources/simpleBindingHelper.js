@@ -32,6 +32,9 @@
                                 if (filter) {
                                     newContent=filter(newContent);
                                 }
+                                if (!newContent) {
+                                    newContent="";
+                                }
                                 updateHtml(newContent);
                             };
 

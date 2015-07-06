@@ -74,18 +74,9 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
             }
         });
     },
+
     bindToMulticastEvents:function() {
-        var _this = this;
-        this.bind("mcDiagnoseInfoReceived", function( e, data ){
-            var $scope=_this.$scope;
-
-
-            if( data.currentBitrate ){
-                $scope.currentBitrate=data.currentBitrate;
-            }
-        });
     },
-
     isVisible:false,
     setVisible:function(visible) {
         if (this.isVisible===visible) {
@@ -164,6 +155,28 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
         this.$scope.currentState=player.currentState;
         this.$scope.isDVR= player.isDVR();
         this.$scope.buffering= player.buffering;
+
+        if (this.$scope.multicast) {
+            var mcPlayer = player.getPlayerElement();
+            if( mcPlayer !== undefined ) {
+                var data = mcPlayer.getMultivcastDiagnostics();
+                if( data.currentBitrate && data.currentBitrate !== undefined){
+                    this.$scope.currentBitrate=data.currentBitrate;
+                }
+                if( data.mcAddress && data.mcAddress !== undefined  ) {
+                    this.$scope.mcAddress = data.mcAddress;
+                }
+                if( data.InputFps && data.InputFps !== undefined ) {
+                    this.$scope.mcInputFps = data.InputFps;
+                }
+                if( data.RenderFps && data.RenderFps !== undefined ) {
+                    this.$scope.mcRenderFps = data.RenderFps;
+                }
+                if( data.RenderDroppedFps && data.RenderDroppedFps !== undefined ) {
+                    this.$scope.mcRenderDroppedFps = data.RenderDroppedFps;
+                }
+            }
+        }
     }
 
 }));
