@@ -359,7 +359,13 @@ mw.KAdPlayer.prototype = {
 					_this.addAdBindings( vid, adSlot, adConf );
 					$( _this.embedPlayer ).trigger( 'playing' ); // this will update the player UI to playing mode
                     // trigger ad play event
-                    $(_this.embedPlayer).trigger("onAdPlay",[adConf.id]);
+                    _this.waitingForLoadedData = true;
+                    $(vid).on("loadeddata", function(){
+                        if(_this.waitingForLoadedData){
+                            $(_this.embedPlayer).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex+1, vid.duration, vid.currentSrc]);
+                            _this.waitingForLoadedData = false;
+                        }
+                    });
                     if (_this.embedPlayer.muted){
                         _this.adSibling.changeVolume(0);
                     }
@@ -933,7 +939,7 @@ mw.KAdPlayer.prototype = {
 		if (nonLinearConf.width === undefined){
 			waitForNonLinear();
 		}
-		$( this.embedPlayer ).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex]);
+		$( this.embedPlayer ).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex+1]);
 		this.setImgSrc(nonLinearConf, 'overlayAd');
 
 		// Show the overlay update its position and content
@@ -1356,7 +1362,7 @@ mw.KAdPlayer.prototype = {
 					}
 				}
 				var finishPlaying = function () {
-					if ( isJs ) {
+                    if ( isJs ) {
 						_this.embedPlayer.getInterface().find( '.mwEmbedPlayer' ).show();
 					}
 					$( '#' + vpaidId ).remove();
@@ -1384,6 +1390,7 @@ mw.KAdPlayer.prototype = {
 				}, 'AdLinearChange' );
 
 				VPAIDObj.subscribe( function () {
+
 					_this.getVPAIDDurtaion = function () {
 						//TODO add this to flash vpaid
 						return VPAIDObj.getAdRemainingTime();
@@ -1472,6 +1479,7 @@ mw.KAdPlayer.prototype = {
 
 				VPAIDObj.subscribe( function ( message ) {
 					_this.sendVASTBeacon( adConf.trackingEvents, 'start' );
+                    $(_this.embedPlayer).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex+1, VPAIDObj.duration, VPAIDObj.id]);
 				}, 'AdVideoStart' );
 
 				VPAIDObj.subscribe( function ( message ) {
