@@ -380,3 +380,37 @@
     margin-left: 10px;
     margin-right: 10px;
 }
+
+
+.qnaInterface .AnswerOnAirTriangle {
+    width: 0;
+    height: 0;
+    border-top: 26px solid #8dc63f;
+    border-right: 26px solid transparent;
+}
+
+.qnaInterface .qnaAnswerOnAirText{
+    position: relative;
+    font-family: 'Lato', Helvetica, Arial;
+    color: #414442;
+    font-size: 13px;
+    font-weight: 300;
+    text-align: left;
+    top: -8px;
+    margin-left: 19px;
+    margin-right: 14px;
+    padding-right: 24px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+.qnaInterface .qnaAnswerOnAirTitle{
+    float: left;
+    font-family: 'Lato', Helvetica, Arial;
+    color: #8dc63f;
+    font-size: 10px;
+    font-weight: 400;
+    font-style: italic;
+    line-height: 25px;
+    text-align: left;
+    margin-left: 19px;
+}

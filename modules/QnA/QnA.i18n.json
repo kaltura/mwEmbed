@@ -5,14 +5,14 @@
 		"qna-send-button-text": "Send",
 		"qna-cant-ask-while-not-live": "You cant ask a new question while there is no live session",
 		"qna-announcement-title": "Announcement",
-		"qna-you-asked": "You Asked",
+		"qna-you-asked": "me",
 		"qna-timestamp-minutes-text": "mins",
 		"qna-timestamp-now-text": "Now",
 		"qna-timestamp-multi-hours-text": "hrs",
 		"qna-timestamp-single-hour-text": "hr",
-		"qna-answered-by": "Answered by",
 		"qna-reply-here": "Reply here",
 		"qna-no-messages-text": "Nothing to see here :)",
-		"qna-list-hider-text": "QnA is currently disabled for this session. Please check back later."
+		"qna-list-hider-text": "QnA is currently disabled for this session. Please check back later.",
+	  	"qna-answer-on-air": "Currently Answering"
 	}
 }

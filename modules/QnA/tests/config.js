@@ -6,5 +6,5 @@ var qna= {
         'containerPosition': 'right',
         'moduleWidth' : '200',
         'userId': "Shimi",
-        'allowNewQuestionWhenNotLive': false
+        'allowNewQuestionWhenNotLive': true
     };

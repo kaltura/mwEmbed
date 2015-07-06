@@ -20,12 +20,13 @@
                 this.qnaPlugin = qnaPlugin;
                 this.qnaService = qnaService;
                 this.myObservableArray = qnaService.getQnaThreads();
+                this.myObservableAnswerOnAirQueue = qnaService.AnswerOnAirQueue;
                 this.currentTime = ko.observable(new Date().getTime());
-
                 this.myObservableArray.subscribe(function (newVal) {
                     _this.applyLayout();
                     qnaPlugin.updateUnreadBadge();
                 });
+                this.playerTime = ko.observable(embedPlayer.currentTime);
 
                 // An entry in a Q&A thread (not an announcement) was clicked
                 // if it's the first one in the thread - collapse / Expand the thread
@@ -104,6 +105,17 @@
                 setInterval(function () {
                     _this.currentTime(new Date().getTime());
                 }, mw.getConfig("qnaPollingInterval") || 10000);
+
+                setInterval(function() {
+                    // if it's the first time we get a time (the player just started playing)
+                    // clear the answer on air queue from stuff that are too old.
+                    if (_this.playerTime() === 0 && embedPlayer.currentTime > 0){
+                        _this.qnaService.AnswerOnAirQueueUpdate(embedPlayer.currentTime);
+                    }
+
+                    _this.playerTime(embedPlayer.currentTime);
+
+                }, 100);
 
             },
             destroy: function () {

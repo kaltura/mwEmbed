@@ -163,8 +163,11 @@ DAL for Q&A Module
             else if (this.getType() === "Question"){
                 return gM('qna-you-asked');
             }
+            else if (this.getType() === "AnswerOnAir"){
+                return gM('qna-answer-on-air');
+            }
             else{
-                return gM('qna-answered-by') + " " + this.cuePoint().userId;
+                return this.cuePoint().userId;
             }
         };
 
@@ -188,10 +191,11 @@ DAL for Q&A Module
         bindPostfix: '.KQnaService',
         liveAQnaIntervalId: null,
         QnaThreads: ko.observableArray(),
+        AnswerOnAirQueue: ko.observableArray(),
         lastUpdateTime: -1,
         QandA_ResponseProfile: "QandA_ResponseProfile",
         QandA_ResponseProfileSystemName: "QandA",
-        QandA_MetadataProfileSystemName: "Kaltura-QnA",
+        QandA_MetadataProfileSystemName: "Kaltura-QnA-DEV",
         QandA_cuePointTag: "qna",
         QandA_cuePointTypes: {"Question":1,"Answer":2, "Announcement":3},
         bootPromise:null,
@@ -377,10 +381,6 @@ DAL for Q&A Module
             _this.QnaThreads.sort(
                 function(a, b){
 
-                    //var a_val = a().isCollapsed() ? a().entries()[0]().getTime() : a().entries()[a().entries().length-1]().getTime();
-                    //var b_val = b().isCollapsed() ? b().entries()[0]().getTime() : b().entries()[b().entries().length-1]().getTime();
-                    //return b_val - a_val;
-
                     return b().lastTimeForSort() - a().lastTimeForSort();
                 }
             );
@@ -480,6 +480,38 @@ DAL for Q&A Module
             return new QnaEntry(cuePoint);
         },
 
+        AnswerOnAirQueueUpdate:function(currentPlayerTime){
+            var _this = this;
+            if (_this.AnswerOnAirQueue().length === 0){
+                return;
+            }
+
+            while (parseInt(_this.AnswerOnAirQueue()[0]().cuePoint().endTime) < currentPlayerTime*1000){
+                _this.AnswerOnAirQueue.shift();
+            }
+
+            if (_this.AnswerOnAirQueue().length > 0){
+                if (_this.AnswerOnAirQueue()[0]().cuePoint().endTime !== undefined){
+
+                    setTimeout(function() {
+                        _this.AnswerOnAirQueueUpdate(_this.qnaPlugin.embedPlayer.currentTime);
+                    },parseInt(_this.AnswerOnAirQueue()[0]().cuePoint().endTime) - currentPlayerTime*1000);
+                }
+            }
+        },
+
+        addOrUpdateAnswerOnAir: function(item){
+            var _this = this;
+
+            for (var i = 0; i < _this.AnswerOnAirQueue().length; i++) {
+                if (_this.AnswerOnAirQueue()[i]().cuePoint().id === item.cuePoint().id) {
+                    _this.AnswerOnAirQueue()[i](item);
+                    return;
+                }
+            }
+            _this.AnswerOnAirQueue.push(ko.observable(item));
+        },
+
         requestCuePoints:function() {
             var _this = this;
 
@@ -512,7 +544,11 @@ DAL for Q&A Module
                     //find all announcements
                     'filter:advancedSearch:items:item1:objectType': "KalturaSearchCondition",
                     'filter:advancedSearch:items:item1:field': "/*[local-name()='metadata']/*[local-name()='Type']",
-                    'filter:advancedSearch:items:item1:value': "Announcement"
+                    'filter:advancedSearch:items:item1:value': "Announcement",
+
+                    'filter:advancedSearch:items:item2:objectType': "KalturaSearchCondition",
+                    'filter:advancedSearch:items:item2:field': "/*[local-name()='metadata']/*[local-name()='Type']",
+                    'filter:advancedSearch:items:item2:value': "AnswerOnAir"
                 };
 
 
@@ -554,7 +590,15 @@ DAL for Q&A Module
                                 if (_this.lastUpdateTime < cuePoint.updatedAt) {
                                     _this.lastUpdateTime = cuePoint.updatedAt;
                                 }
-                                _this.addOrUpdateEntry(item);
+                                if (item.getType() === "AnswerOnAir"){
+
+                                    _this.addOrUpdateAnswerOnAir(item);
+                                    _this.AnswerOnAirQueueUpdate(_this.qnaPlugin.embedPlayer.currentTime);
+
+                                }
+                                else {
+                                    _this.addOrUpdateEntry(item);
+                                }
                             }
                         });
 
@@ -573,7 +617,12 @@ DAL for Q&A Module
                         var announcementOnly = false;
 
                         var cuePoint = data2.objects[0]
-                        if (cuePoint.code === "ENABLE_QNA"){
+
+                        if (cuePoint === undefined || cuePoint.code === undefined){
+                            disableModule = true;
+                            announcementOnly = false;
+                        }
+                        else if (cuePoint.code === "ENABLE_QNA"){
                             disableModule = false;
                             announcementOnly = false;
                         }
