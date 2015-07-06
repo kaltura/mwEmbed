@@ -595,8 +595,8 @@
 				var expArr = expression.split('|');
 				expression = expArr[0];
 				formatFunc = expArr[1];
-				if( typeof this.formatFunctions[ formatFunc ] == 'function' ){
-					formatFunc = this.formatFunctions[ formatFunc ];
+				if( mw.formaters().exists(formatFunc) ){
+					formatFunc = mw.formaters().get(formatFunc);
 				} else {
 					formatFunc = null;
 				}
