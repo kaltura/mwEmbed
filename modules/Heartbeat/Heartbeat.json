@@ -1,8 +1,6 @@
 {
   "heartbeat": {
     "scripts": [
-      "resources/VisitorAPI.js",
-      "resources/AppMeasurement.js",
       "resources/VideoHeartbeat.min.js",
       "resources/KalturaVideoPlayerPluginDelegate.js",
       "resources/KalturaAdobeAnalyticsPluginDelegate.js",

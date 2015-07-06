@@ -36,7 +36,6 @@
             var _this = this;
             var VisitorAPIPath = mw.getMwEmbedPath()+"modules/Heartbeat/resources/VisitorAPI.js";
             var AppMeasurementPath = mw.getMwEmbedPath()+"modules/Heartbeat/resources/AppMeasurement.js";
-            var VideoHeartbeatPath = mw.getMwEmbedPath()+"modules/Heartbeat/resources/VideoHeartbeat.min.js";
 
             $.ajax({
                 url: VisitorAPIPath,
@@ -46,15 +45,9 @@
                         url: AppMeasurementPath,
                         dataType: "script",
                         success: function(result){
-                            $.ajax({
-                                url: VideoHeartbeatPath,
-                                dataType: "script",
-                                success: function(result){
-                                    _this.setupAdobeVars();
-                                    _this.setupHeartBeatPlugin();
-                                    _this.addBindings();
-                                }
-                            });
+                            _this.setupAdobeVars();
+                            _this.setupHeartBeatPlugin();
+                            _this.addBindings();
                         }
                     });
                 }
