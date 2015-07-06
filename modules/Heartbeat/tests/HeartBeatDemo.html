@@ -25,6 +25,9 @@
             $t.append( "\n" );
         }
 
+        var localPath = document.location.href;
+        localPath = localPath.split('HeartBeatDemo.html')[0];
+
         kWidget.featureConfig({
             'targetId': 'kdp',
             'wid': '_243342',
@@ -57,7 +60,9 @@
                     'numPreroll':"1",
                     'prerollInterval':"1",
                     'prerollStartWith':"1",
-                    'prerollUrl':"http://projects.kaltura.com/MichalR/vast3_demo.xml",
+                    'prerollUrl':"http://projects.kaltura.com/MichalR/vast3_demo.xml", //2 HTML5 ads
+                    //'prerollUrl':"http://ad3.liverail.com/?LR_PUBLISHER_ID=1331&LR_CAMPAIGN_ID=229&LR_SCHEMA=vast2", //1 HTML5 ad
+                    //'prerollUrl':localPath+"liverailOnlyFlash.xml?random={utility.random}&timestamp={utility.timestamp}&referrer_url={utility.referrer_url}&referrer_host={utility.referrer_host}", //1 Flash ad (VPAID)
                     'overlayStartAt':"5",
                     'overlayInterval':"300",
                     'overlayUrl':"http://ad3.liverail.com/?LR_PUBLISHER_ID=1331&LR_CAMPAIGN_ID=228&LR_SCHEMA=vast2",
