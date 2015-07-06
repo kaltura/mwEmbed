@@ -197,7 +197,7 @@
 		},
 		onDisable: function () {
 			this.isDisabled = true;
-			this.updateTooltip(gM('mwe-embedplayer-switch_audio'));
+			this.updateTooltip(gM('mwe-embedplayer-select_audio'));
 			this.getComponent().removeClass('open');
 			this.getBtn().addClass('disabled');
 		}
