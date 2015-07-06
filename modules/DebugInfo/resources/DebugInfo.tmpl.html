@@ -17,12 +17,11 @@
         <div>currentBitrate: {{currentBitrate}}</div>
     </div>
     <div ng-show="multicast" style="background-color: #333">
-        <span>multicast Address:</span><div>{{mcAddress}}</div>
-        <span>bitrate:</span><a class="mw-debug-info-a" href="{{currentBitrate}}">{{currentBitrate}}</a><br>
-        <span>input   fps:</span><a class="mw-debug-info-a" href="{{mcInputFps}}">{{mcInputFps}}</a><br>
-        <span>render  fps:</span><a class="mw-debug-info-a" href="{{mcRenderFps}}">{{mcRenderFps}}</a><br>
-        <span>dropped fps:</span><a class="mw-debug-info-a" href="{{mcRenderDroppedFps}}">{{mcRenderDroppedFps}}</a><br>
-        </div>
+        <div>multicast Address: {{mcAddress}}</div>
+        <div>bitrate: {{currentBitrate}}</div>
+        <div>input   fps: {{mcInputFps}}</div>
+        <div>render  fps: {{mcRenderFps}}</div>
+        <div>dropped fps: {{mcRenderDroppedFps}}</div>
     </div>
 </div>
 <a href="#" class="mw-debug-info-copy-btn" >Copy</a>
