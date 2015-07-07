@@ -838,6 +838,7 @@
 					'class': "offBtn"
 				},
 				'callback': function(){
+					_this.selectedSource = null;
 					_this.setConfig('displayCaptions', false);
 					// also update the cookie to "None"
 					_this.getPlayer().setCookie( _this.cookieName, 'None' );
