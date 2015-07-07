@@ -101,9 +101,6 @@
 					if ( data.property === "sources" ){
 						_this.getMenu().$el.find("li a")[data.value].click();
 					}
-					if ( data.property === "switchOnResize"){
-						_this.setConfig( "switchOnResize", data.value );
-					}
 				}
 			});
 		},

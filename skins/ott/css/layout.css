@@ -511,28 +511,16 @@ button::-moz-focus-inner {
 	z-index: 10;
 }
 .smartContainerMenu p{
-	margin-top: 8px;
-	margin-bottom: 8px;
+	margin-top: 18px;
+	margin-bottom: 18px;
 }
 .smartContainerMenu label{
 	letter-spacing: 0px;
 }
-.smartContainerMenu .title{
-	color: #333333;
-	font-size: 13px;
-	font-weight: bold;
-}
-.smartContainerMenu .pluginTitle{
-	color: #555555;
-	margin-left: 20px;
-	font-size: 12px;
-	font-weight: bold;
-	margin-top: 18px;
-	margin-bottom: 8px;
-}
+
 .smartContainerMenu .pluginPropertyLabel{
 	color: #555555;
-	margin-left: 40px;
+	margin-left: 10px;
 	font-size: 12px;
 }
 .smartContainerMenu label{
@@ -540,7 +528,9 @@ button::-moz-focus-inner {
 	font-size: 12px;
 }
 .smartContainerMenu .pluginProperty.checkbox{
-	width: 20px;
+	width: 14px;
+	margin-top: 18px;
+	margin-bottom: 18px;
 }
 
 .timers {

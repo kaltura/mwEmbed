@@ -56,9 +56,6 @@
 					if ( data.property === "captions" ){
 						_this.getMenu().$el.find("li a")[data.value].click();
 					}
-					if ( data.property === "useCookie"){
-						_this.setConfig( "useCookie", data.value );
-					}
 				}
 			});
 

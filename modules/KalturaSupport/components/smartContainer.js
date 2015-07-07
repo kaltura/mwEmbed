@@ -9,7 +9,6 @@
 			'width': 220,
 			'showTooltip': true,
 			'displayImportance': "high",
-			'title': null,
 			'tooltip': null,
 			'iconClass': 'icon-cog',
 			'config':{}
@@ -88,42 +87,20 @@
 				var _this = this;
 				// add menu DIV
 				this.$menu = $('<div class="smartContainerMenu"></div>').width(this.getConfig("width"));
-				var config = this.getConfig('config');
-
-				// set menu height
-				var menuHeight = this.calculateMenuHeight(config);
-				if ( menuHeight > this.embedPlayer.getVideoHolder().height() - 20 ){
-					this.$menu.height(this.embedPlayer.getVideoHolder().height() - 20);
-					this.$menu.css("overflow-y","scroll");
-				}else{
-					this.$menu.height(this.calculateMenuHeight(config));
-				}
 				this.$menu.close = function(){
 					_this.closeMenu();
 				}
 				// render menu
-				this.renderMenu(config);
-				this.embedPlayer.getVideoHolder().append( this.$menu.hide());
-
+				this.renderMenu();
+				this.embedPlayer.getVideoHolder().append( this.$menu.hide() );
 			}
 			return this.$menu;
 		},
 
-		calculateMenuHeight: function(config){
-			var menuHeight = 50 + config.plugins.length * 40; // give each plugin header 40 px and 50px for the title
-			config.plugins.forEach(function (plugin, index) {
-				menuHeight += plugin.properties.length * 30; // give each plugin property 30 px
-			});
-			return menuHeight;
-		},
-
-		renderMenu: function(config){
+		renderMenu: function(){
 			var _this = this;
-			if (this.getConfig("title")){
-				this.$menu.append('<p class="title">' + this.getConfig("title") + '</p>');
-			}
+			var config = this.getConfig('config');
 			config.plugins.forEach(function (plugin, index) {
-				_this.$menu.append('<p class="pluginTitle">' + plugin.displayName + '</p>');
 				plugin.properties.forEach(function (property, index) {
 					var initialValue = _this.embedPlayer.getKalturaConfig( plugin.pluginName, property.property );
 					switch (property.type){
@@ -193,7 +170,7 @@
 					}
 				});
 			});
-			this.$menu.find(".pluginProperty").not(".checkbox").width(this.getConfig("width")-70);
+			this.$menu.find(".pluginProperty").not(".checkbox").width(this.getConfig("width")-120).css({"float":"right","margin-right": "15px"});
 		},
 
 		propertyChanged: function(plugin, property, type, value){
