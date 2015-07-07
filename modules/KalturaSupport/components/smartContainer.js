@@ -52,8 +52,6 @@
 			this.bind( 'onOpenFullScreen onCloseFullScreen', function(){
 				_this.closeMenu();
 			});
-
-			var _this = this;
 		},
 		toggleMenu: function(x) {
 			if ( this.isDisabled ){return};
@@ -66,7 +64,7 @@
 
 		openMenu: function(x){
 			// set menu position
-			var rightPosition = this.embedPlayer.getVideoHolder().width() - x - 20; // set right position for the menu according to the mouse click x position
+			var rightPosition = this.embedPlayer.getVideoHolder().width() - x - this.getComponent().width()/2; // set right position for the menu according to the mouse click x position
 			var bottomPosition = 0; // set the menu bottom to the video holder bottom
 			if  ( this.embedPlayer.getKalturaConfig( "controlBarContainer", "hover" ) === true ){
 				bottomPosition = this.embedPlayer.getInterface().find(".controlBarContainer").height(); // for hovering controls, update the menu bottom to the controls bar height
