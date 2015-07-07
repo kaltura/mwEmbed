@@ -320,7 +320,8 @@
 				settings.flashvars = {};
 			}
 
-			if (document.URL.indexOf('forceKalturaNativeComponentPlayer') !== -1) {
+			if ( document.URL.indexOf('forceKalturaNativeComponentPlayer') !== -1 ||
+				document.URL.indexOf('forceKalturaNative') !== -1) {
 				settings.flashvars["nativeCallout"] = { plugin: true }
 			}
 
