@@ -71,8 +71,8 @@
             });
 
 			// Check for switch on resize option
-			this.bind( 'updateLayout', function(){
-				if( _this.getConfig( 'switchOnResize' ) ){
+			if( this.getConfig( 'switchOnResize' ) ){
+				this.bind( 'updateLayout', function(){
 					// workaround to avoid the amount of 'updateLayout' events
 					// !seeking will avoid getting current time equal to 0
 					if ( !_this.inUpdateLayout && !_this.embedPlayer.seeking ){
@@ -93,9 +93,8 @@
 							mw.log( "sourceSelector - switchOnResize is ignored - Can't switch source since not using native player or during ad playback");
 						}
 					}
-				}
-			});
-
+				});
+			}
 
 			this.embedPlayer.bindHelper("propertyChangedEvent", function(event, data){
 				if ( data.plugin === _this.pluginName ){
