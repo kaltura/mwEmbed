@@ -27,13 +27,7 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
 
         });
 
-        this.bind('sourceSwitchingEnd',function(event,source){
-            _this.$scope.source=source ? source.newBitrate : 0;
-        });
 
-
-        this.bind('playerReady', function () {
-        });
 
         if (_this.getConfig( 'isVisible' )) {
             _this.setVisible(true);
@@ -108,7 +102,14 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
                 _this.setVisible(false);
             });
             $(elem).find(".mw-debug-info-copy-btn").click(function() {
-                alert( $("#mw-debug-info-values").text());
+                var obj={};
+
+                Object.getOwnPropertyNames(_this.$scope).forEach(function(val, idx, array) {
+
+                    obj[val]=_this.$scope[val];
+                });
+
+                alert( JSON.stringify(obj));
             });
 
             _this.refresh();

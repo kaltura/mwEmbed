@@ -1725,6 +1725,10 @@ mw.KWidgetSupport.prototype = {
 		if( ks ){
 			srcUrl += '&ks=' + ks;
 		}
+		//special case for silverlight MC, so we get an error right away and not wait for timeout
+		if (isSilverlight) {
+			srcUrl+="&suppress_error_code=true"
+		}
 		//add source
 		mw.log( 'KWidgetSupport::addLiveEntrySource: Add Live Entry Source - ' + srcUrl );
 		embedPlayer.mediaElement.tryAddSource(
