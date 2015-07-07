@@ -235,6 +235,9 @@ mw.KWidgetSupport.prototype = {
 	},
 
 	updatePlayerData: function( embedPlayer,  playerData, callback ){
+		// Handle entry data
+		this.updatePlayerEntryData(embedPlayer, playerData);
+		this.updatePlayerMetaData(embedPlayer, playerData);
 		// Check for playerData error
 		this.handlePlayerError(embedPlayer, playerData);
 		this.updatePlayerContextData(embedPlayer, playerData);
@@ -255,10 +258,6 @@ mw.KWidgetSupport.prototype = {
 		// check for entry id not found:
 		if( this.isNoEntryId(playerData) ){
 			this.handleNoEntryId();
-		}
-		else {
-			this.updatePlayerEntryData(embedPlayer, playerData);
-			this.updatePlayerMetaData(embedPlayer, playerData);
 		}
 		// Check access controls ( must come after addPlayerMethods for custom messages )
 		this.initCuePointsService(embedPlayer, playerData);
