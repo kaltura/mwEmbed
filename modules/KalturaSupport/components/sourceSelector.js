@@ -71,8 +71,8 @@
             });
 
 			// Check for switch on resize option
-			if( this.getConfig( 'switchOnResize' ) ){
-				this.bind( 'updateLayout', function(){
+			this.bind( 'updateLayout', function(){
+				if( _this.getConfig( 'switchOnResize' ) ){
 					// workaround to avoid the amount of 'updateLayout' events
 					// !seeking will avoid getting current time equal to 0
 					if ( !_this.inUpdateLayout && !_this.embedPlayer.seeking ){
@@ -93,8 +93,17 @@
 							mw.log( "sourceSelector - switchOnResize is ignored - Can't switch source since not using native player or during ad playback");
 						}
 					}
-				});
-			}
+				}
+			});
+
+
+			this.embedPlayer.bindHelper("propertyChangedEvent", function(event, data){
+				if ( data.plugin === _this.pluginName ){
+					if ( data.property === "sources" ){
+						_this.getMenu().$el.find("li a")[data.value].click();
+					}
+				}
+			});
 		},
 		getSources: function(){
 			return this.getPlayer().getSources();
@@ -181,7 +190,7 @@
 					prevSource = source;
 				});
 			}
-
+			var items = [];
 			var prevSource = null;
 			$.each( sources, function( sourceIndex, source ) {
 				if( source.skip ){
@@ -204,9 +213,14 @@
 								)
 						){
 						_this.addSourceToMenu( source );
+						var label = _this.getSourceTitle( source )
+						items.push({'label':label, 'value':label});
 					}
 				}
 			});
+			// dispatch event to be used by a master plugin if defined
+			this.getPlayer().triggerHelper("updatePropertyEvent",{"plugin": this.pluginName, "property": "sources", "items": items, "selectedItem": this.getMenu().$el.find('.active a').text()});
+
 		},
 		isSourceSelected: function( source ){
 			var _this = this;

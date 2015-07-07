@@ -51,6 +51,14 @@
 				}
 			}
 
+			this.embedPlayer.bindHelper("propertyChangedEvent", function(event, data){
+				if ( data.plugin === _this.pluginName ){
+					if ( data.property === "captions" ){
+						_this.getMenu().$el.find("li a")[data.value].click();
+					}
+				}
+			});
+
 			if ( this.getConfig('showEmbeddedCaptions') === true ) {
 
 				if ( this.getConfig('showEmbeddedCaptionsStyle') === true ) {
@@ -800,6 +808,8 @@
 				// Allow plugins to integrate with captions menu
 				this.getPlayer().triggerHelper('captionsMenuReady');
 
+				this.getPlayer().triggerHelper("updatePropertyEvent",{"plugin": this.pluginName, "property": "captions", "items": [{'label':gM('mwe-timedtext-no-subtitles'), 'value':gM('mwe-timedtext-no-subtitles')}]});
+
 				return this.getMenu();
 			} else {
 				this.getBtn().show();
@@ -812,6 +822,7 @@
 				this.addOffButton();
 			}
 
+			var items = [];
 			// Add text sources
 			$.each(sources, function( idx, source ){
 				_this.getMenu().addItem({
@@ -828,6 +839,7 @@
 					},
 					'active': ( _this.selectedSource === source && _this.getConfig( "displayCaptions" )  )
 				});
+				items.push({'label':source.label, 'value':source.label});
 			});
 
 			this.getActiveCaption();
@@ -835,6 +847,13 @@
 			if( this.getConfig('showOffButton') && this.getConfig('offButtonPosition') == 'last' ) {
 				this.addOffButton();
 			}
+
+			if ( this.getConfig('showOffButton')){
+				items.unshift({'label':'Off', 'value':'Off'});
+			}
+
+			// dispatch event to be used by a master plugin if defined
+			this.getPlayer().triggerHelper("updatePropertyEvent",{"plugin": this.pluginName, "property": "captions", "items": items, "selectedItem": this.getMenu().$el.find('.active a').text()});
 
 			// Allow plugins to integrate with captions menu
 			this.getPlayer().triggerHelper('captionsMenuReady');

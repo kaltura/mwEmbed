@@ -105,6 +105,11 @@
 	"hammer": {
 		"scripts": "components/hammerEvents/hammer.min.js"
 	},
+	"smartContainer": {
+		"scripts": "components/smartContainer.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "smartContainer"
+	},
 	"chapters": {
 		"scripts": "components/chapters/chapters.js",
 		"styles": "components/chapters/chapters.css",

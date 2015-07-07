@@ -522,6 +522,38 @@ body {
 	-webkit-box-shadow: 0px 0px 10px #fff;
 	box-shadow: 0px 0px 10px #fff;
 }
+.smartContainerMenu{
+	background-color: rgba(255,255,255,0.9);
+	border-radius: 4px;
+	position: absolute;
+	padding-left: 10px;
+	color: black;
+	z-index: 10;
+	border: 1px solid #aaaaaa;
+	box-shadow: 3px 3px 3px #333333;
+}
+.smartContainerMenu p{
+	margin-top: 18px;
+	margin-bottom: 18px;
+}
+.smartContainerMenu label{
+	letter-spacing: 0px;
+}
+.smartContainerMenu .pluginPropertyLabel{
+	color: #555555;
+	margin-left: 10px;
+	font-size: 12px;
+}
+.smartContainerMenu label{
+	color: #555555;
+	font-size: 12px;
+}
+.smartContainerMenu .pluginProperty.checkbox{
+	width: 14px;
+	margin-top: 18px;
+	margin-bottom: 18px;
+}
+
 .timers {
 	position: relative;
 	font-size: 0.84em;
