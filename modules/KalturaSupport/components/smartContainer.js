@@ -6,7 +6,7 @@
 			'parent': 'controlsContainer',
 			"align": "right",
 			'order': 100,
-			'width': 220,
+			'width': 320,
 			'showTooltip': true,
 			'displayImportance': "high",
 			'tooltip': null,
@@ -103,7 +103,7 @@
 					var initialValue = _this.embedPlayer.getKalturaConfig( plugin.pluginName, property.property );
 					switch (property.type){
 						case 'boolean':
-							var propField = $('<input class="pluginProperty pluginPropertyLabel checkbox" type="checkbox">')
+							var propField = $('<input class="pluginProperty checkbox" type="checkbox">')
 								.on("change", function(){
 									_this.propertyChanged(plugin.pluginName, property.property, property.type, $(this).is(":checked") );
 								});
@@ -119,17 +119,28 @@
 							_this.$menu.append(wrapper.find("label").prepend(propField));
 							break;
 						case 'enum':
-							var propField = $('<select class="pluginProperty pluginPropertyLabel"></select>')
+							var propField = $('<select class="pluginProperty hidden"></select>')
 								.on("change", function(){
 									_this.propertyChanged(plugin.pluginName, property.property, property.type, $(this).get(0).selectedIndex );
 								});
+							var fakeCombo = $("<div><span></span><i class='icon-caret'></i></div>").addClass("fakeCombo pluginProperty");
+							var menu = $("<ul></ul>");
 							var addOptions = function(items){
 								$.each(items, function (i, item) {
 									propField.append($('<option>', {
 										value: item.value,
 										text : item.label
 									}));
+									if ( i === items.length - 1 ){
+										menu.append($("<li></li>").addClass("last").text(item.label).append($("<i></i>").addClass("icon-check")));
+									}else{
+										menu.append($("<li></li>").text(item.label).append($("<i></i>").addClass("icon-check")));
+									}
+									if ( i === 0 ){
+										fakeCombo.find('span').text(item.label);
+									}
 								});
+								menu.css("margin-top", -1 * items.length * 40 -38 + "px");
 							}
 							if ( initialValue !== undefined && initialValue.length ){
 								addOptions( initialValue ); // set combobox options according to property value
@@ -139,16 +150,18 @@
 									addOptions(data.items); // set combobox options according to value passed on the updatePropertyEvent event
 									if ( data.selectedItem ){
 										propField.val(data.selectedItem); // support selected item change
+										fakeCombo.find('span').text(data.selectedItem);
+										menu.find("li:contains("+data.selectedItem+")").addClass("active");
 									}
 								}
 							});
-							var elm = $("<p></p>").append('<span class="pluginPropertyLabel">' + property.label + '</span>').append(propField);
+							var elm = $("<p></p>").append('<span class="pluginPropertyLabel">' + property.label + '</span>').append(fakeCombo).append(propField).append(menu);
 							_this.$menu.append(elm);
 							break;
 						case 'string':
 						case 'number':
 						case 'float':
-							var propField = $('<input class="pluginProperty pluginPropertyLabel" type="text"/>')
+							var propField = $('<input class="pluginProperty" type="text"/>')
 								.on("change", function(){
 									_this.propertyChanged(plugin.pluginName, property.property, property.type, $(this).val() )
 								});
@@ -168,7 +181,7 @@
 					}
 				});
 			});
-			this.$menu.find(".pluginProperty").not(".checkbox").width(this.getConfig("width")-120).css({"float":"right","margin-right": "15px"});
+			//this.$menu.find(".pluginProperty").not(".checkbox").css({"float":"right","margin-right": "30px"});
 		},
 
 		propertyChanged: function(plugin, property, type, value){

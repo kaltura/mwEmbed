@@ -61,6 +61,27 @@
 				'visible': false,
 				"plugin":true
 			},
+			'sourceSelector': {
+				'plugin':true,
+				'visible': false,
+				'switchOnResize': true
+			},
+			'closedCaptions': {
+				'layout': 'ontop',
+				'useCookie': true,
+				'defaultLanguageKey': 'en',
+				'whiteListLanguagesCodes': 'en,es,fr,jp',
+				'fontsize': 12,
+				'bg' : '0x335544',
+				'fontFamily' : 'Arial',
+				'fontColor' : '0xFFFFFF',
+				'useGlow' : 'false',
+				'glowBlur': 4,
+				'glowColor': '0x133693',
+				'showEmbeddedCaptions': false,
+				'visible': false,
+				"plugin":true
+			},
 			'smartContainer': {
 				'plugin': true,
 				'tooltip': 'Language Settings',
@@ -75,6 +96,15 @@
 								{
 									'property':'captions',
 									'label': 'Language:',
+									'type': 'enum'
+								}
+							]
+						},{
+							'pluginName':'sourceSelector',
+							'properties':[
+								{
+									'property':'sources',
+									'label': 'Quality:',
 									'type': 'enum'
 								}
 							]

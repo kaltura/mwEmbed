@@ -526,22 +526,19 @@ body {
 	background-color: rgba(255,255,255,0.9);
 	border-radius: 4px;
 	position: absolute;
-	padding-left: 10px;
 	color: black;
 	z-index: 10;
-	border: 1px solid #aaaaaa;
-	box-shadow: 3px 3px 3px #333333;
 }
 .smartContainerMenu p{
-	margin-top: 18px;
-	margin-bottom: 18px;
+	margin-top: 30px;
+	margin-bottom: 30px;
 }
 .smartContainerMenu label{
 	letter-spacing: 0px;
 }
 .smartContainerMenu .pluginPropertyLabel{
 	color: #555555;
-	margin-left: 10px;
+	margin-left: 30px;
 	font-size: 12px;
 }
 .smartContainerMenu label{
@@ -553,7 +550,33 @@ body {
 	margin-top: 18px;
 	margin-bottom: 18px;
 }
-
+.smartContainerMenu .hidden{
+	visibility: hidden;
+	width: 0px;
+	height: 0px;
+}
+.smartContainerMenu .fakeCombo{
+	font-size: 11px;
+	font-weight: bold;
+	letter-spacing: 2px;text-transform: uppercase;
+	padding-top: 12px;
+	padding-bottom: 12px;
+	padding-left: 14px;
+	padding-right: 14px;
+	color: #999999;
+	border: 1px solid #999999;
+	border-radius: 3px;
+	width: 130px;
+	float: right;
+	margin-right: 30px;
+	margin-top: -8px;
+	cursor: pointer;
+}
+.smartContainerMenu .fakeCombo>i{
+	font-size: 8px;
+	float: right;
+	margin-top: 2px;
+}
 .timers {
 	position: relative;
 	font-size: 0.84em;

@@ -190,6 +190,7 @@
 				});
 			}
 			var items = [];
+			var itemLabels = [];
 			var prevSource = null;
 			$.each( sources, function( sourceIndex, source ) {
 				if( source.skip ){
@@ -213,7 +214,10 @@
 						){
 						_this.addSourceToMenu( source );
 						var label = _this.getSourceTitle( source )
-						items.push({'label':label, 'value':label});
+						if ($.inArray(label, itemLabels) === -1){
+							itemLabels.push(label)
+							items.push({'label':label, 'value':label});
+						}
 					}
 				}
 			});
