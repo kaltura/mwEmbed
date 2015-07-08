@@ -49,7 +49,7 @@
 				});
 			});
 
-			this.bind( 'onOpenFullScreen onCloseFullScreen', function(){
+			this.bind( 'onOpenFullScreen onCloseFullScreen onHideControlBar', function(){
 				_this.closeMenu();
 			});
 		},
@@ -75,6 +75,7 @@
 		},
 
 		closeMenu: function(){
+			this.getMenu().find("ul").hide();
 			this.getMenu().hide();
 			this.menuOpened = false;
 			this.getPlayer().triggerHelper( 'onEnableKeyboardBinding' );
@@ -140,6 +141,13 @@
 										fakeCombo.find('span').text(item.label);
 									}
 								});
+								menu.find("li").on("click", function(){
+									menu.find("li").removeClass("active");
+									$(this).addClass("active");
+									fakeCombo.find('span').text($(this).text());
+									propField.val($(this).text()).change();
+									menu.hide();
+								});
 								menu.css("margin-top", -1 * items.length * 40 -38 + "px");
 							}
 							if ( initialValue !== undefined && initialValue.length ){
@@ -156,6 +164,9 @@
 								}
 							});
 							var elm = $("<p></p>").append('<span class="pluginPropertyLabel">' + property.label + '</span>').append(fakeCombo).append(propField).append(menu);
+							fakeCombo.on("click", function(){
+								menu.toggle();
+							});
 							_this.$menu.append(elm);
 							break;
 						case 'string':
