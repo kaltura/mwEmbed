@@ -3,7 +3,7 @@
  */
 ( function( mw, $ ) {
 	"use strict";
-	var mseSupported = window['MediaSource'] || window['WebKitMediaSource'];
+	var mseSupported = (window['MediaSource'] || window['WebKitMediaSource']) && mw.isChrome();
 	//Load 3rd party plugins if DRM sources are available
 	mw.addKalturaConfCheck( function( embedPlayer, callback ){
 		if( embedPlayer.isPluginEnabled( 'multiDrm' ) ) {
