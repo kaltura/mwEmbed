@@ -211,7 +211,14 @@
 			this.playerProxy.stretchFill();
 		},
 		getMultivcastDiagnostics: function(){
-			return this.playerProxy.getDiagnostics();
+			var diag= this.playerProxy.getDiagnostics();
+			if (this.element &&
+				this.element.targetObj &&
+				this.element.targetObj.fillDiagnostics) {
+
+				this.element.targetObj.fillDiagnostics(diag);
+			}
+			return diag;
 		},
 		/**
 		 * Bind a Player Function,

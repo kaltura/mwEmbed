@@ -27,13 +27,7 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
 
         });
 
-        this.bind('sourceSwitchingEnd',function(event,source){
-            _this.$scope.source=source ? source.newBitrate : 0;
-        });
 
-
-        this.bind('playerReady', function () {
-        });
 
         if (_this.getConfig( 'isVisible' )) {
             _this.setVisible(true);
@@ -108,7 +102,14 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
                 _this.setVisible(false);
             });
             $(elem).find(".mw-debug-info-copy-btn").click(function() {
-                alert( $("#mw-debug-info-values").text());
+                var obj={};
+
+                Object.getOwnPropertyNames(_this.$scope).forEach(function(val, idx, array) {
+
+                    obj[val]=_this.$scope[val];
+                });
+
+                alert( JSON.stringify(obj));
             });
 
             _this.refresh();
@@ -158,23 +159,14 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
 
         if (this.$scope.multicast) {
             var mcPlayer = player.getPlayerElement();
-            if( mcPlayer !== undefined ) {
+            if( mcPlayer && mcPlayer.getMultivcastDiagnostics ) {
                 var data = mcPlayer.getMultivcastDiagnostics();
-                if( data.currentBitrate && data.currentBitrate !== undefined){
-                    this.$scope.currentBitrate=data.currentBitrate;
-                }
-                if( data.mcAddress && data.mcAddress !== undefined  ) {
-                    this.$scope.mcAddress = data.mcAddress;
-                }
-                if( data.InputFps && data.InputFps !== undefined ) {
-                    this.$scope.mcInputFps = data.InputFps;
-                }
-                if( data.RenderFps && data.RenderFps !== undefined ) {
-                    this.$scope.mcRenderFps = data.RenderFps;
-                }
-                if( data.RenderDroppedFps && data.RenderDroppedFps !== undefined ) {
-                    this.$scope.mcRenderDroppedFps = data.RenderDroppedFps;
-                }
+                this.$scope.currentBitrate=data.currentBitrate;
+                this.$scope.mcAddress = data.mcAddress;
+                this.$scope.mcInputFps = data.InputFps;
+                this.$scope.mcRenderFps = data.RenderFps;
+                this.$scope.mcRenderDroppedFps = data.RenderDroppedFps;
+                this.$scope.multiastServerUrl=data.multiastServerUrl;
             }
         }
     }

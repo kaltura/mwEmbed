@@ -7,7 +7,6 @@
     <div>buffering: {{buffering}}</div>
     <div>mimeType: {{mimeType}}</div>
     <div>currentState: {{currentState}}</div>
-    <div>source: {{source}}</div>
     <div ng-show="hls" style="background-color: #333">
         <span>current:</span><a class="mw-debug-info-a" href="{{hlsCurrentSegment}}">{{hlsCurrentSegment | getFileName}}</a><br>
         <span>downloading:</span><a class="mw-debug-info-a" href="{{hlsDownloadingSegment}}">{{hlsDownloadingSegment | getFileName}}</a><br>
@@ -17,6 +16,7 @@
         <div>currentBitrate: {{currentBitrate}}</div>
     </div>
     <div ng-show="multicast" style="background-color: #333">
+        <div class="mw-debug-info-text" title="{{multiastServerUrl}}">KES: {{multiastServerUrl}}</div>
         <div>multicast Address: {{mcAddress}}</div>
         <div>bitrate: {{currentBitrate}}</div>
         <div>input   fps: {{mcInputFps}}</div>

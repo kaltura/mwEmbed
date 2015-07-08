@@ -73,6 +73,14 @@
 
 		},
 
+		fillDiagnostics: function(diagObj) {
+			if (diagObj) {
+
+				if (this.multiastServerUr) {
+					diagObj.multiastServerUrl = this.multiastServerUrl;
+				}
+			}
+		},
 
 		loadMedia: function (readyCallback) {
 
@@ -87,9 +95,9 @@
 					url: resolvedSrc,
 					timeout: _this.getKalturaConfig(null, 'multicastKESKtimeout') || _this.defaultMulticastKESKtimeout,
 					dataType: 'jsonp',
-					success: function (multicastDetails) {
+					success: function (response) {
 
-						return deferred.resolve(multicastDetails);
+						return deferred.resolve(response);
 					},
 					error: function () {
 						return deferred.reject();
@@ -99,13 +107,14 @@
 				return deferred.promise();
 			}
 
-			var handleMulticast =function(resolvedSrc) {
+			var handleMulticastPlayManifest =function(resolvedSrc) {
 
 				//we got an multicast server that we need to redirect
 				if (resolvedSrc.indexOf("http")===0)
 				{
+					_this.multiastServerUrl=resolvedSrc;
 
-					var startFailover=function() {
+					var startFailoverFromMulticastServer=function() {
 
 						_this.isError = true;
 						//TODO handle failover
@@ -121,11 +130,11 @@
 
 						_this.keepAliveMCInterval = setInterval(function () {
 							try {
-								connectToMulticastServer(resolvedSrc).then(onMultiastServerResponse,startFailover);
+								connectToMulticastServer(resolvedSrc).then(onMultiastServerResponse,startFailoverFromMulticastServer);
 							}
 							catch (e) {
 								mw.log('connectToMulticastServer failed ' + e.message + ' ' + e.stack);
-								startFailover();
+								startFailoverFromMulticastServer();
 							}
 						}, interval);
 					}
@@ -153,7 +162,7 @@
 							} else {
 
 								if (_this.multicastAddress!==multicastAddress) {
-									startFailover();
+									startFailoverFromMulticastServer();
 								} else {
 									//mw.log('keep alive sent successfully');
 								}
@@ -180,8 +189,8 @@
 				}
 			}
 
-			var handleFailoverFromSrcUrl=function() {
-				mw.log('Error fetching url: '+_this.getSrc());
+			var handleFailoverFromPlayManifest=function() {
+				mw.log('Error calling play manifest: '+_this.getSrc());
 				_this.isError = true
 				fallbackToUnicast();
 			}
@@ -190,13 +199,13 @@
 			var getMulticastStreamAddress = function () {
 				$(_this).trigger('checkIsLive', [ function (onAirStatus) {
 					if (onAirStatus) {
-						_this.resolveSrcURL(_this.getSrc()).then(handleMulticast,handleFailoverFromSrcUrl);
+						_this.resolveSrcURL(_this.getSrc()).then(handleMulticastPlayManifest,handleFailoverFromPlayManifest);
 					} else {
 						//stream is offline, stream address can be retrieved when online
 						_this.bindHelper("liveOnline" + _this.bindPostfix, function () {
 							_this.unbindHelper("liveOnline" + _this.bindPostfix);
 							_this.addPlayerSpinner();
-							_this.resolveSrcURL(_this.getSrc()).then(handleMulticast,handleFailoverFromSrcUrl);
+							_this.resolveSrcURL(_this.getSrc()).then(handleMulticastPlayManifest,handleFailoverFromPlayManifest);
 							//no need to save readyCallback since it was already called
 							_this.readyCallbackFunc = undefined;
 

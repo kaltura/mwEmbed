@@ -1725,6 +1725,7 @@ mw.KWidgetSupport.prototype = {
 		if( ks ){
 			srcUrl += '&ks=' + ks;
 		}
+
 		//add source
 		mw.log( 'KWidgetSupport::addLiveEntrySource: Add Live Entry Source - ' + srcUrl );
 		embedPlayer.mediaElement.tryAddSource(

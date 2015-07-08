@@ -90,6 +90,13 @@
 	mw.isAndroidChromeNativeBrowser = function () {
 		return ( mw.isAndroid() && mw.isChrome() );
 	};
+	mw.isOldAndroidChromeNativeBrowser = function () {
+		var regExpResult = userAgent.match(/Chrome\/([0-9][0-9])/);
+		if ( regExpResult instanceof Array && regExpResult.length > 1 ){
+			return mw.isAndroidChromeNativeBrowser() && parseInt( regExpResult[1] ) < 30;
+		}
+		return false;
+	};
 	mw.isMobileChrome = function () {
 		return ( mw.isAndroid4andUp()
 			&&
@@ -97,7 +104,7 @@
 			)
 	};
 	mw.isWindowsPhone = function () {
-		return (  userAgent.indexOf('Windows Phone') != -1 );
+		return (  userAgent.indexOf('Windows Phone') != -1 || (userAgent.indexOf('Windows') != -1 && userAgent.indexOf('Touch') != -1  && userAgent.indexOf('Tablet') === -1));
 	};
 	mw.isIOS = function () {
 		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() );
