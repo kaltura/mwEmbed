@@ -1502,8 +1502,8 @@ timeout: 7000,
 		// for now the only usecase is microsoft edge browser
 		if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' )  &&
 			this.originalStreamerType &&
-			this.originalStreamerType != "hls" &&
-			 mw.getConfig("LeadWithHLSOnFlash")== null 	){
+			this.originalStreamerType !== "hls" &&
+			 mw.getConfig("LeadWithHLSOnFlash") === null 	){
 			    deviceSources = this.removeAdaptiveFlavors( deviceSources );
 		}
 
