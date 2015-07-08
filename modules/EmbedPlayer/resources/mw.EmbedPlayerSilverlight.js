@@ -318,7 +318,7 @@
 						}
 					}, timeout);
 				}
-
+				_this.autoplay = _this.autoplay || _this.isMulticast;
 				flashvars.autoplay = _this.autoplay;
 				flashvars.isLive = _this.isLive();
 				flashvars.isDVR = ( _this.isDVR() == 1 );
@@ -541,7 +541,7 @@
 					});
 					this.playerObject.reloadMedia();
 				} else {
-					this.playerObject.play();
+					_this.playerObject.play();
 				}
 				this.monitor();
 			} else {
