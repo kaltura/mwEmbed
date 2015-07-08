@@ -82,6 +82,7 @@ Flashvars for HLS plugin:
 		}));
 		
 		var settings = {
+            "audioSelector":{plugin:true},
 			"LeadWithHLSOnFlash": true,
             "hlsSegmentBuffer": parseInt($('#segBuffer').val()),
             "hlsOverrideTargetDuration": parseInt($('#targetDuration').val()),
@@ -105,7 +106,8 @@ Flashvars for HLS plugin:
 				}
 			];
 		}
-		// set sources for live: 
+
+        // set sources for live:
 		if( $('#streamtype-live').is(':checked') ){
 			settings.mediaProxy.meta = {
 					// set live ENUM type

@@ -175,6 +175,11 @@
 		"dependencies": "mw.KBaseComponent",
 		"kalturaPluginName": "fullScreenBtn"
 	},
+        "audioSelector":{
+            "scripts":  "components/audioSelector.js",
+                "dependencies":"mw.KBaseComponent" ,
+                    "kalturaPluginName":"audioSelector"
+        } ,
 	"expandToggleBtn": {
 		"scripts": "components/expandToggleBtn.js",
 		"dependencies": "mw.KBaseButton",
