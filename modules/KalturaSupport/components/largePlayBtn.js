@@ -30,14 +30,14 @@
 			
 			this.bind('onChangeMediaDone playerReady onpause onEndedDone onRemovePlayerSpinner', function(){
 				if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
-					_this.$el.removeClass("icon-pause").addClass("icon-play");
+					_this.getComponent().removeClass("icon-pause").addClass("icon-play");
 					_this.show();
 				}
 			});
 
 			this.bind('onShowControlBar', function(){
 				if( !mw.isIE8() && _this.getConfig("togglePause") && _this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
-					_this.$el.removeClass("icon-play").addClass("icon-pause");
+					_this.getComponent().removeClass("icon-play").addClass("icon-pause");
 					_this.show();
 				}
 			});
