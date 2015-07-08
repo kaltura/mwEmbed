@@ -528,17 +528,18 @@ body {
 	position: absolute;
 	color: black;
 	z-index: 10;
+	width: 220px;
 }
 .smartContainerMenu p{
-	margin-top: 30px;
-	margin-bottom: 30px;
+	margin-top: 20px;
+	margin-bottom: 20px;
 }
 .smartContainerMenu label{
 	letter-spacing: 0px;
 }
 .smartContainerMenu .pluginPropertyLabel{
 	color: #555555;
-	margin-left: 30px;
+	margin-left: 20px;
 	font-size: 12px;
 }
 .smartContainerMenu label{
@@ -556,20 +557,20 @@ body {
 	height: 0px;
 }
 .smartContainerMenu .fakeCombo{
-	font-size: 11px;
+	font-size: 9px;
 	font-weight: bold;
 	letter-spacing: 2px;text-transform: uppercase;
-	padding-top: 12px;
-	padding-bottom: 12px;
-	padding-left: 14px;
-	padding-right: 14px;
+	padding-top: 6px;
+	padding-bottom: 6px;
+	padding-left: 7px;
+	padding-right: 7px;
 	color: #999999;
 	border: 1px solid #999999;
 	border-radius: 3px;
-	width: 130px;
+	width: 80px;
 	float: right;
-	margin-right: 30px;
-	margin-top: -8px;
+	margin-right: 20px;
+	margin-top: -2px;
 	cursor: pointer;
 }
 .smartContainerMenu .fakeCombo>i{
@@ -577,6 +578,48 @@ body {
 	float: right;
 	margin-top: 2px;
 }
+.smartContainerMenu ul{
+	background-color: white;
+	border: 1px solid #999999;
+	width: 74px;
+	float: right;
+	margin-right: 20px;
+	border-radius: 3px;
+	padding-right: 10px;
+	padding-left: 10px;
+	position: relative;
+	display: none;
+}
+.smartContainerMenu li{
+	list-style-type: none;
+	color: #666666;
+	font-size: 11px;
+	padding-top: 6px;
+	padding-bottom: 6px;
+	border-bottom: 1px solid #cccccc;
+	padding-left: 0px;
+	cursor: pointer;
+	height: 14px;
+}
+.smartContainerMenu li:hover{
+	font-weight: bold;
+}
+.smartContainerMenu li.last{
+	border-bottom: 0px;
+}
+.smartContainerMenu li.active{
+	font-weight: bold;
+}
+.smartContainerMenu li>i{
+	font-size: 9px;
+	float: right;
+	margin-top: 2px;
+	display: none;
+}
+.smartContainerMenu li.active>i{
+	display: block;
+}
+
 .timers {
 	position: relative;
 	font-size: 0.84em;

@@ -508,6 +508,7 @@ button::-moz-focus-inner {
 	position: absolute;
 	color: #666666;
 	z-index: 10;
+	width: 320px;
 }
 .smartContainerMenu p{
 	margin-top: 30px;
@@ -579,6 +580,7 @@ button::-moz-focus-inner {
 	border-bottom: 1px solid #cccccc;
 	padding-left: 0px;
 	cursor: pointer;
+	height: 18px;
 }
 .smartContainerMenu li:hover{
 	font-weight: bold;

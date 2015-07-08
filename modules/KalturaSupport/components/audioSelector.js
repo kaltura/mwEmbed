@@ -43,12 +43,14 @@
 			});
 
 			this.bind( 'audioTracksReceived' ,function(e,data){
-					if ( data.languages && data.languages.length > 0 ) {
-						var tracks = data.languages;
-						_this.streams = tracks;
-						_this.buildMenu();
-						_this.streamsReady = true;
-					}
+				if ( data.languages && data.languages.length > 0 ) {
+					var tracks = data.languages;
+					_this.streams = tracks;
+					_this.setStream(_this.getDefaultStream());
+					_this.buildMenu();
+					_this.streamsReady = true;
+					_this.onEnable();
+				}
 			});
 
 			this.bind('audioTrackIndexChanged', function (e, arg) {
@@ -60,6 +62,14 @@
 					_this.addKeyboardShortcuts(addKeyCallback);
 				});
 			}
+
+			this.embedPlayer.bindHelper("propertyChangedEvent", function(event, data){
+				if ( data.plugin === _this.pluginName ){
+					if ( data.property === "sources" ){
+						_this.getMenu().$el.find("li a")[data.value].click();
+					}
+				}
+			});
 		},
 
 
@@ -115,9 +125,10 @@
 				//this.destroy();
 				return;
 			}
-
+			var items = [];
 			$.each(this.streams, function (streamIndex, stream) {
 				_this.addStreamToMenu(streamIndex, stream);
+				items.push({'label':stream.label, 'value':stream.label});
 			});
 			var actualWidth = this.getMenu().$el.width();
 			var labelWidthPercentage = parseInt(this.getConfig("labelWidthPercentage")) / 100;
@@ -126,6 +137,9 @@
 				this.getMenu().$el.find('a').width(labelWidth);
 			}
 			this.getMenu().setActive({'key': 'id', 'val': this.getCurrentStreamIndex()});
+			// dispatch event to be used by a master plugin if defined
+			this.getPlayer().triggerHelper("updatePropertyEvent",{"plugin": this.pluginName, "property": "sources", "items": items, "selectedItem": this.getMenu().$el.find('.active a').text()});
+
 		},
 		addStreamToMenu: function (id, stream) {
 			var _this = this;
@@ -152,6 +166,7 @@
 			}
 		},
 		setStream: function (stream) {
+			this.currentStream = stream;
 			this.embedPlayer.triggerHelper('switchAudioTrack', {index: stream.index });
 			this.embedPlayer.seek( this.embedPlayer.currentTime );
 		},

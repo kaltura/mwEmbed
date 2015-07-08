@@ -6,7 +6,6 @@
 			'parent': 'controlsContainer',
 			"align": "right",
 			'order': 100,
-			'width': 320,
 			'showTooltip': true,
 			'displayImportance': "high",
 			'tooltip': null,
@@ -85,7 +84,7 @@
 			if ( !this.$menu ){
 				var _this = this;
 				// add menu DIV
-				this.$menu = $('<div class="smartContainerMenu"></div>').width(this.getConfig("width"));
+				this.$menu = $('<div class="smartContainerMenu"></div>');
 				this.$menu.close = function(){
 					_this.closeMenu();
 				}
@@ -125,6 +124,7 @@
 									_this.propertyChanged(plugin.pluginName, property.property, property.type, $(this).get(0).selectedIndex );
 								});
 							var fakeCombo = $("<div><span></span><i class='icon-caret'></i></div>").addClass("fakeCombo pluginProperty");
+							fakeCombo.find('span').text(gM("mwe-embedplayer-no-source"));
 							var menu = $("<ul></ul>");
 							var addOptions = function(items){
 								$.each(items, function (i, item) {
@@ -148,7 +148,9 @@
 									propField.val($(this).text()).change();
 									menu.hide();
 								});
-								menu.css("margin-top", -1 * items.length * 40 -38 + "px");
+								var menuItemHeight = menu.find("li").height() +  2 * parseInt(menu.find("li").css("padding-top"));
+								menu.css("margin-top", -1 * (items.length+1) * menuItemHeight - items.length + parseInt(fakeCombo.css("margin-top"))/2 + "px");
+
 							}
 							if ( initialValue !== undefined && initialValue.length ){
 								addOptions( initialValue ); // set combobox options according to property value
@@ -159,13 +161,15 @@
 									if ( data.selectedItem ){
 										propField.val(data.selectedItem); // support selected item change
 										fakeCombo.find('span').text(data.selectedItem);
-										menu.find("li:contains("+data.selectedItem+")").addClass("active");
+										menu.find("li").filter(function(){return $(this).text() === data.selectedItem;}).addClass("active");
 									}
 								}
 							});
 							var elm = $("<p></p>").append('<span class="pluginPropertyLabel">' + property.label + '</span>').append(fakeCombo).append(propField).append(menu);
 							fakeCombo.on("click", function(){
-								menu.toggle();
+								if (menu.find("li").length){
+									menu.toggle();
+								}
 							});
 							_this.$menu.append(elm);
 							break;
