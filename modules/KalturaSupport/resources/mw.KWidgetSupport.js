@@ -1588,6 +1588,15 @@ mw.KWidgetSupport.prototype = {
 			deviceSources = this.removeAdaptiveFlavors( deviceSources );
 		}
 
+		// if we have streamertype that is not hls and we support hls on the native player - we'll use kplayer + hls - we want to eliminate  this option
+		// for now the only usecase is microsoft edge browser
+		if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' )  &&
+			this.originalStreamerType &&
+			this.originalStreamerType !== "hls" &&
+			 mw.getConfig("LeadWithHLSOnFlash") === null 	){
+			    deviceSources = this.removeAdaptiveFlavors( deviceSources );
+		}
+
 		//TODO: Remove duplicate webm and h264 flavors
 		/*if (mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'h264Native' ) && mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'webmNative' )) {
 			//remove someone if duplicate
