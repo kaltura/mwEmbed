@@ -535,14 +535,7 @@
 			if (this.durationReceived && this.parent_play()) {
 				//bring back the player
 				this.getPlayerContainer().css('visibility', 'visible');
-				if (this.isMulticast) {
-					this.bindHelper("durationChange", function () {
-						_this.playerObject.play();
-					});
-					this.playerObject.reloadMedia();
-				} else {
-					_this.playerObject.play();
-				}
+				_this.playerObject.play();
 				this.monitor();
 			} else {
 				mw.log("EmbedPlayerSPlayer:: parent play returned false, don't issue play on splayer element");
