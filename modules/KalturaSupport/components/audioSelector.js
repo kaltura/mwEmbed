@@ -8,6 +8,7 @@
 			"order": 61,
 			"displayImportance": 'low',
 			"align": "right",
+			"iconClass": "icon-audio",
 			"showTooltip": true,
 			"labelWidthPercentage": 33,
 			"defaultStream": 1,

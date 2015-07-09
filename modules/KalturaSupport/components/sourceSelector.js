@@ -10,6 +10,7 @@
 			"showTooltip": true,
 			"switchOnResize": false,
 			"simpleFormat": true,
+			"iconClass": "icon-cog",
             "displayMode": "size" //'size' – displays frame size ( default ), 'bitrate' – displays the bitrate, 'sizebitrate' displays size followed by bitrate
 		},
 

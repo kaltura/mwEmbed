@@ -6,6 +6,7 @@
 			"parent": "controlsContainer",
 			"order": 62,
 			"displayImportance": "high",
+			"iconClass": "icon-cc",
 			"align": "right",
 			"showTooltip": true,
 			"layout": "ontop", // "below"

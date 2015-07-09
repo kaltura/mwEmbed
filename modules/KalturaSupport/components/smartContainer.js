@@ -22,7 +22,6 @@
 				return;
 			}
 			this.addBindings();
-			this.getMenu(); // create menu
 		},
 		getComponent: function() {
 			var _this = this;
@@ -50,6 +49,10 @@
 
 			this.bind( 'onOpenFullScreen onCloseFullScreen onHideControlBar', function(){
 				_this.closeMenu();
+			});
+
+			this.bind( 'playerReady', function(){
+				_this.getMenu(); // create menu
 			});
 		},
 		toggleMenu: function(x) {
@@ -99,6 +102,7 @@
 			var _this = this;
 			var config = this.getConfig('config');
 			config.plugins.forEach(function (plugin, index) {
+				var iconClass = _this.embedPlayer.getKalturaConfig( plugin.pluginName, "iconClass" );
 				plugin.properties.forEach(function (property, index) {
 					var initialValue = _this.embedPlayer.getKalturaConfig( plugin.pluginName, property.property );
 					switch (property.type){
@@ -115,7 +119,8 @@
 									propField.prop( "checked", data.value ); // set checkbox value according to value passed on the updatePropertyEvent event
 								}
 							});
-							var wrapper = $('<p><label>' + property.label + '</label></p>');
+							var wrapper = $('<p><i class="pluginIcon"></i><label>' + property.label + '</label></p>');
+							wrapper.find(".pluginIcon").addClass(iconClass);
 							_this.$menu.append(wrapper.find("label").prepend(propField));
 							break;
 						case 'enum':
@@ -165,7 +170,7 @@
 									}
 								}
 							});
-							var elm = $("<p></p>").append('<span class="pluginPropertyLabel">' + property.label + '</span>').append(fakeCombo).append(propField).append(menu); // create the plugin DOM element
+							var elm = $('<p><i class="pluginIcon"></i></p>').append('<span class="pluginPropertyLabel">' + property.label + '</span>').append(fakeCombo).append(propField).append(menu); // create the plugin DOM element
 							fakeCombo.on("click", function(){ // open and close menu on click
 								$(".smartContainerMenu").find("ul").each(function(){ // close all other menus
 									if ( this !== menu[0] ){
@@ -175,6 +180,9 @@
 								if ( menu.find("li").length ){  // don't open empty menus
 									menu.toggle(); // open / close menu
 								}
+							});
+							elm.find(".pluginIcon").addClass(iconClass).on("click", function(){
+								propField.focus();
 							});
 							_this.$menu.append(elm); // add plugin menu to DOM
 							break;
@@ -193,7 +201,8 @@
 									propField.val( data.value ); // set field value according to value passed on the updatePropertyEvent event
 								}
 							});
-							var elm = $("<p></p>").append('<span class="pluginPropertyLabel">' + property.label + '</span>').append(propField);
+							var elm = $('<p><i class="pluginIcon"></i></p>').append('<span class="pluginPropertyLabel">' + property.label + '</span>').append(propField);
+							elm.find(".pluginIcon").addClass(iconClass);
 							_this.$menu.append(elm);
 							break;
 						default:

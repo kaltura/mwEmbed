@@ -510,9 +510,49 @@ button::-moz-focus-inner {
 	z-index: 10;
 	width: 320px;
 }
+.mobile .smartContainerMenu{
+	background-color: rgba(0,0,0,0.6);
+	border-radius: 0px;
+	position: absolute;
+	color: #ffffff;
+	z-index: 10;
+	width: 100%;
+	height: 100%;
+	left: 0px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
 .smartContainerMenu p{
 	margin-top: 30px;
 	margin-bottom: 30px;
+}
+.smartContainerMenu .pluginIcon{
+	display: none;
+}
+.mobile .smartContainerMenu .pluginIcon{
+	display: block;
+	font-size: 78px;
+	padding-left: 20px;
+	padding-right: 20px;
+}
+.mobile .smartContainerMenu .pluginPropertyLabel{
+	display: none;
+}
+.mobile .smartContainerMenu .fakeCombo{
+	display: none;
+}
+.mobile .smartContainerMenu .hidden{
+	position: absolute;
+	visibility: visible;
+	width: 120px;
+	height: 120px;
+	margin-top: -120px;
+	opacity: 0;
+	-webkit-appearance: menulist-button;
 }
 .smartContainerMenu label{
 	letter-spacing: 0px;
@@ -796,6 +836,7 @@ button::-moz-focus-inner {
 .mobile.fullscreen .controlsContainer {
 	margin-top: 28px !important;
 }
+
 .ui-tooltip {
 	background-color: #000000;
 	background-repeat: repeat-x;
@@ -1108,7 +1149,7 @@ button::-moz-focus-inner {
 	width: 26px;
 	background-color: transparent;
 }
-.mobile .fullScreenBtn{
+.mobile .controlsContainer .comp{
 	font-size: 18px !important;
 	margin-top: -14px !important;
 }
