@@ -167,6 +167,9 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
                 this.$scope.mcRenderFps = data.RenderFps;
                 this.$scope.mcRenderDroppedFps = data.RenderDroppedFps;
                 this.$scope.multiastServerUrl=data.multiastServerUrl;
+                this.$scope.mcPacketLoss=data.PacketLoss;
+                this.$scope.mcPacketLossRate=data.PacketLossRate;
+                this.$scope.mcPacketsPerSec=data.PacketRate;
             }
         }
     }
