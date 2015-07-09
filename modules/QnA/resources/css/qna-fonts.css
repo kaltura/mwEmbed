@@ -64,6 +64,10 @@
     content: "\e609";
 }
 
+.icon-qna-answeronair:before {
+    content: "\e60a";
+}
+
 .qnaInterface .qna-bullet-icon{
     margin-left: 5px;
     position: absolute;
@@ -110,9 +114,19 @@
 }
 
 .qnaInterface .collapseExpandIcon{
+    color: #414442;
     position: absolute;
     top: 14px;
     right: 17px;
     font-size: 12px;
+    float: right;
+}
+
+.qnaInterface .answerOnAirIcon{
+    color: #414442;
+    position: absolute;
+    bottom: 8px;
+    right: 20px;
+    font-size: 16px;
     float: right;
 }

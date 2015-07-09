@@ -163,8 +163,11 @@ DAL for Q&A Module
             else if (this.getType() === "Question"){
                 return gM('qna-you-asked');
             }
+            else if (this.getType() === "AnswerOnAir"){
+                return gM('qna-answer-on-air');
+            }
             else{
-                return gM('qna-answered-by') + " " + this.cuePoint().userId;
+                return this.cuePoint().userId;
             }
         };
 
@@ -188,10 +191,11 @@ DAL for Q&A Module
         bindPostfix: '.KQnaService',
         liveAQnaIntervalId: null,
         QnaThreads: ko.observableArray(),
+        AnswerOnAirQueue: ko.observableArray(),
         lastUpdateTime: -1,
         QandA_ResponseProfile: "QandA_ResponseProfile",
         QandA_ResponseProfileSystemName: "QandA",
-        QandA_MetadataProfileSystemName: "Kaltura-QnA",
+        QandA_MetadataProfileSystemName: "Kaltura-QnA-DEV",
         QandA_cuePointTag: "qna",
         QandA_cuePointTypes: {"Question":1,"Answer":2, "Announcement":3},
         bootPromise:null,
@@ -293,7 +297,8 @@ DAL for Q&A Module
                     "cuePoint:startTime": embedPlayer.currentTime,
                     "cuePoint:text": question,
                     "cuePoint:tags": _this.QandA_cuePointTag,
-                    'cuePoint:isPublic': 1
+                    "cuePoint:isPublic": 1,
+                    "cuePoint:searchableOnEntry": 0
                 };
                 if (parent) {
                     createCuePointRequest["cuePoint:parentId"] = parent.cuePoint().id;
@@ -376,10 +381,6 @@ DAL for Q&A Module
             var _this=this;
             _this.QnaThreads.sort(
                 function(a, b){
-
-                    //var a_val = a().isCollapsed() ? a().entries()[0]().getTime() : a().entries()[a().entries().length-1]().getTime();
-                    //var b_val = b().isCollapsed() ? b().entries()[0]().getTime() : b().entries()[b().entries().length-1]().getTime();
-                    //return b_val - a_val;
 
                     return b().lastTimeForSort() - a().lastTimeForSort();
                 }
@@ -480,13 +481,46 @@ DAL for Q&A Module
             return new QnaEntry(cuePoint);
         },
 
+        AnswerOnAirQueueUpdate:function(currentPlayerTime){
+            var _this = this;
+            if (_this.AnswerOnAirQueue().length === 0){
+                return;
+            }
+
+            while( _this.AnswerOnAirQueue().length > 0 && parseInt(_this.AnswerOnAirQueue()[0]().cuePoint().endTime) < currentPlayerTime*1000 && parseInt(_this.AnswerOnAirQueue()[0]().cuePoint().endTime) !== 0){
+                _this.AnswerOnAirQueue.shift();
+            }
+
+            if (_this.AnswerOnAirQueue().length > 0){
+                if (_this.AnswerOnAirQueue()[0]().cuePoint().endTime !== undefined && _this.AnswerOnAirQueue()[0]().cuePoint().endTime > 0){
+
+                    setTimeout(function() {
+                        _this.AnswerOnAirQueueUpdate(_this.qnaPlugin.embedPlayer.currentTime);
+                    },parseInt(_this.AnswerOnAirQueue()[0]().cuePoint().endTime) - currentPlayerTime*1000);
+                }
+            }
+        },
+
+        addOrUpdateAnswerOnAir: function(item){
+            var _this = this;
+
+            for (var i = 0; i < _this.AnswerOnAirQueue().length; i++) {
+                if (_this.AnswerOnAirQueue()[i]().cuePoint().id === item.cuePoint().id) {
+                    _this.AnswerOnAirQueue()[i](item);
+                    return;
+                }
+            }
+            _this.AnswerOnAirQueue.push(ko.observable(item));
+        },
+
         requestCuePoints:function() {
             var _this = this;
 
             this.boot().then(function() {
 
-
                 var entryId = _this.embedPlayer.kentryid;
+
+                // build list annotation cue point request
                 var request = {
                     'service': 'cuepoint_cuepoint',
                     'action': 'list',
@@ -511,7 +545,11 @@ DAL for Q&A Module
                     //find all announcements
                     'filter:advancedSearch:items:item1:objectType': "KalturaSearchCondition",
                     'filter:advancedSearch:items:item1:field': "/*[local-name()='metadata']/*[local-name()='Type']",
-                    'filter:advancedSearch:items:item1:value': "Announcement"
+                    'filter:advancedSearch:items:item1:value': "Announcement",
+
+                    'filter:advancedSearch:items:item2:objectType': "KalturaSearchCondition",
+                    'filter:advancedSearch:items:item2:field': "/*[local-name()='metadata']/*[local-name()='Type']",
+                    'filter:advancedSearch:items:item2:value': "AnswerOnAir"
                 };
 
 
@@ -520,8 +558,24 @@ DAL for Q&A Module
                 if (lastUpdatedAt > 0) {
                     request['filter:updatedAtGreaterThanOrEqual'] = lastUpdatedAt;
                 }
-                _this.getKClient().doRequest( request,
-                    function (data) {
+
+                // build list code cue point request
+                var codeCuePointListRequest = {
+                    'service': 'cuepoint_cuepoint',
+                    'action': 'list',
+                    'filter:entryIdEqual': entryId,
+                    'filter:cuePointTypeEqual': 'codeCuePoint.Code',
+                    'filter:orderBy': '-createdAt',
+                    'pager:pageSize': 1,
+                    'pager:pageIndex': 1
+                };
+
+
+                _this.getKClient().doRequest( [request, codeCuePointListRequest],
+                    function (resoults) {
+
+                        // process results from 1st request
+                        var data = resoults[0];
                         // if an error pop out:
                         if (!data || data.code) {
                             // todo: add error handling
@@ -537,11 +591,56 @@ DAL for Q&A Module
                                 if (_this.lastUpdateTime < cuePoint.updatedAt) {
                                     _this.lastUpdateTime = cuePoint.updatedAt;
                                 }
-                                _this.addOrUpdateEntry(item);
+                                if (item.getType() === "AnswerOnAir"){
+
+                                    _this.addOrUpdateAnswerOnAir(item);
+                                    _this.AnswerOnAirQueueUpdate(_this.qnaPlugin.embedPlayer.currentTime);
+
+                                }
+                                else {
+                                    _this.addOrUpdateEntry(item);
+                                }
                             }
                         });
 
                         _this.sortThreads();
+
+                        // process results from 2nd request
+                        var data2 = resoults[1];
+                        // if an error pop out:
+                        if (!data2 || data2.code) {
+                            // todo: add error handling
+                            mw.log("Error:: KCuePoints could not retrieve code cue points");
+                            return;
+                        }
+
+                        var disableModule = true;
+                        var announcementOnly = false;
+
+                        var cuePoint = data2.objects[0]
+
+                        if (cuePoint === undefined || cuePoint.code === undefined){
+                            disableModule = true;
+                            announcementOnly = false;
+                        }
+                        else if (cuePoint.code === "ENABLE_QNA"){
+                            disableModule = false;
+                            announcementOnly = false;
+                        }
+                        else if (cuePoint.code === "DISABLE_QNA"){
+                            disableModule = true;
+                            announcementOnly = false;
+                        }
+                        else if (cuePoint.code === "ENABLE_ANNOUNCEMENTS_ONLY"){
+                            disableModule = false;
+                            announcementOnly = true;
+                        }
+                        else if (cuePoint.code === "DISABLE_ANNOUNCEMENTS_ONLY"){
+                            disableModule = false;
+                            announcementOnly = false;
+                        }
+
+                        _this.qnaPlugin.hideModule(disableModule, announcementOnly);
                     }
                 );
             });

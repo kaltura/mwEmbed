@@ -20,12 +20,13 @@
                 this.qnaPlugin = qnaPlugin;
                 this.qnaService = qnaService;
                 this.myObservableArray = qnaService.getQnaThreads();
+                this.myObservableAnswerOnAirQueue = qnaService.AnswerOnAirQueue;
                 this.currentTime = ko.observable(new Date().getTime());
-
                 this.myObservableArray.subscribe(function (newVal) {
                     _this.applyLayout();
                     qnaPlugin.updateUnreadBadge();
                 });
+                this.playerTime = ko.observable(embedPlayer.currentTime);
 
                 // An entry in a Q&A thread (not an announcement) was clicked
                 // if it's the first one in the thread - collapse / Expand the thread
@@ -34,6 +35,9 @@
                     if (entry.getThread().entries()[0]() == entry){
                         entry.getThread().entries.reverse();
                         _this.collapseExpandThread(entry, event);
+
+                        _this.applyLayout();
+
                     }
                     else{
                         _this.itemRead(entry, event);
@@ -50,9 +54,15 @@
                     if (replyText() === gM("qna-reply-here")){
                         return;
                     }
-                    _this.qnaService.submitQuestion(replyText(), qnaThread.entries()[qnaThread.entries().length-1]());
-                    qnaThread.replyText(gM("qna-reply-here"));
-                    qnaThread.isTypingAnswer(false);
+
+                    if (_this.qnaPlugin.getPlayer().isOffline() && !_this.qnaPlugin.getConfig( 'allowNewQuestionWhenNotLive' )){
+                        alert(gM('qna-cant-ask-while-not-live'));
+                    } else {
+
+                        _this.qnaService.submitQuestion(replyText(), qnaThread.entries()[qnaThread.entries().length - 1]());
+                        qnaThread.replyText(gM("qna-reply-here"));
+                        qnaThread.isTypingAnswer(false);
+                    }
                 };
 
                 this.clearTextArea = function(qnaThread, event){
@@ -102,6 +112,17 @@
                     _this.currentTime(new Date().getTime());
                 }, mw.getConfig("qnaPollingInterval") || 10000);
 
+                setInterval(function() {
+                    // if it's the first time we get a time (the player just started playing)
+                    // clear the answer on air queue from stuff that are too old.
+                    if (_this.playerTime() === 0 && embedPlayer.currentTime > 0){
+                        _this.qnaService.AnswerOnAirQueueUpdate(embedPlayer.currentTime);
+                    }
+
+                    _this.playerTime(embedPlayer.currentTime);
+
+                }, 500);
+
             },
             destroy: function () {
 
@@ -120,6 +141,24 @@
                     scroll.nanoScroller({documentContext: window['parent'].document});
                 }
                 scroll.find(".nano-content").css("z-index", "");
+            },
+            getNoMessagesText: function(){
+                return gM("qna-no-messages-text");
+            },
+            qnaListHiderText: function() {
+                return gM('qna-list-hider-text');
+            },
+            announcementOnlyStatus: function(){
+                var _this = this;
+                return _this.qnaPlugin.announcementOnlyStatus();
+            },
+            moduleStatus: function(){
+                var _this = this;
+                return _this.qnaPlugin.moduleStatus();
+            },
+            moduleOnPage: function(){
+                var _this = this;
+                return _this.qnaPlugin.getConfig( 'onPage' );
             },
             getUnreadCount: function () {
                 var _this = this;
