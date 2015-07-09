@@ -76,7 +76,7 @@
 		fillDiagnostics: function(diagObj) {
 			if (diagObj) {
 
-				if (this.multiastServerUr) {
+				if (this.multiastServerUrl) {
 					diagObj.multiastServerUrl = this.multiastServerUrl;
 				}
 			}
