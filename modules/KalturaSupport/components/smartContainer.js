@@ -74,6 +74,8 @@
 			this.getMenu().css({"bottom": bottomPosition, "right": rightPosition}).show();
 			this.menuOpened = true;
 			this.getPlayer().triggerHelper( 'onDisableKeyboardBinding' );
+			this.getPlayer().triggerHelper( 'onComponentsHoverDisabled' );
+
 		},
 
 		closeMenu: function(){
@@ -89,11 +91,16 @@
 				// add menu DIV
 				this.$menu = $('<div class="smartContainerMenu"></div>');
 				this.$menu.close = function(){
+					_this.getPlayer().triggerHelper( 'onComponentsHoverEnabled' );
 					_this.closeMenu();
 				}
 				// render menu
 				this.renderMenu();
 				this.embedPlayer.getVideoHolder().append( this.$menu.hide() );
+				$(".mobile .smartContainerMenu").on("click", function(){
+					_this.getPlayer().triggerHelper( 'onComponentsHoverEnabled' );
+					_this.closeMenu();
+				});
 			}
 			return this.$menu;
 		},
@@ -127,6 +134,10 @@
 							var propField = $('<select class="pluginProperty hidden"></select>') // create a select combo box (hidden)
 								.on("change", function(){
 									_this.propertyChanged(plugin.pluginName, property.property, property.type, $(this).get(0).selectedIndex );
+								})
+								.on("click", function(e){
+									e.preventDefault();
+									return false;
 								});
 							var fakeCombo = $("<div><span></span><i class='icon-caret'></i></div>").addClass("fakeCombo pluginProperty"); // show instead of select box
 							fakeCombo.find('span').text(gM("mwe-embedplayer-no-source")); // inital text shown when no data is available
@@ -181,9 +192,7 @@
 									menu.toggle(); // open / close menu
 								}
 							});
-							elm.find(".pluginIcon").addClass(iconClass).on("click", function(){
-								propField.focus();
-							});
+							elm.find(".pluginIcon").addClass(iconClass);
 							_this.$menu.append(elm); // add plugin menu to DOM
 							break;
 						case 'string':
@@ -210,7 +219,6 @@
 					}
 				});
 			});
-			//this.$menu.find(".pluginProperty").not(".checkbox").css({"float":"right","margin-right": "30px"});
 		},
 
 		propertyChanged: function(plugin, property, type, value){

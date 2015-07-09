@@ -530,9 +530,61 @@ body {
 	z-index: 10;
 	width: 220px;
 }
+.mobile .smartContainerMenu{
+	background-color: rgba(0,0,0,0.6);
+	border-radius: 0px;
+	position: absolute;
+	color: #ffffff;
+	z-index: 10;
+	width: 100%;
+	height: 100%;
+	left: 0px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-box-pack: center;
+	-moz-box-pack: center;
+	-ms-flex-pack: center;
+	-webkit-justify-content: center;
+	justify-content: center;
+	-webkit-box-align: center;
+	-moz-box-align: center;
+	-ms-flex-align: center;
+	-webkit-align-items: center;
+	align-items: center;
+}
 .smartContainerMenu p{
 	margin-top: 20px;
 	margin-bottom: 20px;
+}
+.smartContainerMenu .pluginIcon{
+	display: none;
+}
+.mobile .smartContainerMenu .pluginIcon{
+	display: block;
+	font-size: 64px;
+	padding-left: 30px;
+	padding-right: 30px;
+}
+.mobile .smartContainerMenu .pluginPropertyLabel{
+	display: none;
+}
+.mobile .smartContainerMenu .fakeCombo{
+	display: none;
+}
+.mobile .smartContainerMenu .hidden{
+	position: absolute;
+	visibility: visible;
+	width: 130px;
+	height: 100px;
+	margin-top: -80px;
+	opacity: 0;
+	-webkit-appearance: menulist-button;
 }
 .smartContainerMenu label{
 	letter-spacing: 0px;
