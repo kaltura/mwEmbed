@@ -39,7 +39,7 @@
 			this.bind('playerReady', function () {
 				if (!_this.streamsReady) {
 					_this.onDisable();
-
+					_this.getPlayer().triggerHelper("updatePropertyEvent",{"plugin": _this.pluginName, "property": "sources", "items": [{'label':gM("mwe-timedtext-no-audio"),'value':gM("mwe-timedtext-no-audio")}], "selectedItem": gM("mwe-timedtext-no-audio")});
 				}
 			});
 
