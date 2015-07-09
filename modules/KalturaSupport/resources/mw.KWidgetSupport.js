@@ -1590,7 +1590,7 @@ mw.KWidgetSupport.prototype = {
 
 		// if we have streamertype that is not hls and we support hls on the native player - we'll use kplayer + hls - we want to eliminate  this option
 		// for now the only usecase is microsoft edge browser
-		if ( mw.EmbedTypes.supportsFlash()  &&
+		if ( mw.supportsFlash()  &&
 			this.originalStreamerType &&
 			this.originalStreamerType !== "hls" &&
 			 mw.getConfig("LeadWithHLSOnFlash") === null 	){
