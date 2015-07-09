@@ -1,0 +1,23 @@
+<a href="#" class="mw-debug-info-close-btn">X</a>
+<div id="mw-debug-info-values">
+    <div>version: {{version}}</div>
+    <div class="mw-debug-info-text" title="{{src}}">src: {{src}}</div>
+    <div>entryid: {{entryid}}</div>
+    <div>kuiconf: {{kuiconf}}</div>
+    <div>buffering: {{buffering}}</div>
+    <div>mimeType: {{mimeType}}</div>
+    <div>currentState: {{currentState}}</div>
+    <div>source: {{source}}</div>
+    <div ng-show="hls" style="background-color: #333">
+        <span>current:</span><a class="mw-debug-info-a" href="{{hlsCurrentSegment}}">{{hlsCurrentSegment | getFileName}}</a><br>
+        <span>downloading:</span><a class="mw-debug-info-a" href="{{hlsDownloadingSegment}}">{{hlsDownloadingSegment | getFileName}}</a><br>
+        <span>processed:</span><a class="mw-debug-info-a" href="{{hlsLastProcessedSegment}}">{{hlsLastProcessedSegment | getFileName}}</a><br>
+        <div>Buffer: {{bufferLength}}</div>
+        <div>droppedFrames: {{droppedFrames}}</div>
+        <div>currentBitrate: {{currentBitrate}}</div>
+    </div>
+</div>
+<a href="#" class="mw-debug-info-copy-btn" >Copy</a>
+
+
+

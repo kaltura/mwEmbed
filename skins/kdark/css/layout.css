@@ -52,102 +52,103 @@ body {
 }
 
 .sideBarContainerReminder{
-    padding: 10px;
-    position: absolute;
-    cursor: pointer;
-    text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.6);
+	padding: 10px;
+	position: absolute;
+	cursor: pointer;
+	text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.6);
 }
 #sideBarContainerReminderContainer{
-    font-size: 32px;
-    color: rgb(255, 255, 255);
+	font-size: 32px;
+	color: rgb(255, 255, 255);
 }
 @media all and  (max-width: 640px) {
-    #sideBarContainerReminderContainer{
-        font-size: 24px;
-    }
+	#sideBarContainerReminderContainer{
+		font-size: 24px;
+	}
 }
 .sideBarContainerReminder:hover div{
-    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
-    filter: alpha(opacity=100);
-    opacity: 1;
-    color: #fff;
-    text-shadow: 0px 0px 10px #fff;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+	filter: alpha(opacity=100);
+	opacity: 1;
+	color: #fff;
+	text-shadow: 0px 0px 10px #fff;
 }
 .sideBarContainerReminder.active div{
-    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
-    filter: alpha(opacity=100);
-    opacity: 1;
-    color: #fff;
-    text-shadow: 0px 0px 10px #fff;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+	filter: alpha(opacity=100);
+	opacity: 1;
+	color: #fff;
+	text-shadow: 0px 0px 10px #fff;
 }
 .sideBarContainerReminder.left{
-    left: -30%;
-    -webkit-transition: left 0.3s ease-in;
-    -moz-transition: left 0.3s ease-in;
-    -o-transition: left 0.3s ease-in;
-    -ms-transition: left 0.3s ease-in;
-    transition: left 0.3s ease-in;
+	left: -30%;
+	-webkit-transition: left 0.3s ease-in;
+	-moz-transition: left 0.3s ease-in;
+	-o-transition: left 0.3s ease-in;
+	-ms-transition: left 0.3s ease-in;
+	transition: left 0.3s ease-in;
 }
 .sideBarContainerReminder.left.open{
-    left: 0px;
+	left: 0px;
 }
 .sideBarContainerReminder.left.shifted{
-    left: 30%;
+	left: 30%;
 }
 .sideBarContainerReminder.right{
-    right: -30%;
-    -webkit-transition: right 0.3s ease-in;
-    -moz-transition: right 0.3s ease-in;
-    -o-transition: right 0.3s ease-in;
-    -ms-transition: right 0.3s ease-in;
-    transition: right 0.3s ease-in;
+	right: -30%;
+	-webkit-transition: right 0.3s ease-in;
+	-moz-transition: right 0.3s ease-in;
+	-o-transition: right 0.3s ease-in;
+	-ms-transition: right 0.3s ease-in;
+	transition: right 0.3s ease-in;
 }
 .sideBarContainerReminder.right.open{
-    right: 0px;
+	right: 0px;
 }
 .sideBarContainerReminder.right.shifted{
-    right: 30%;
+	right: 30%;
 }
 
 .sideBarContainer {
-    position: absolute;
-    top: 0;
-    width: 30%;
-    z-index: 100;
-    box-sizing:border-box;
-    height: 100%;
-    /*padding: 1%;*/
+	position: absolute;
+	top: 0;
+	width: 30%;
+	z-index: 100;
+	box-sizing:border-box;
+	height: 100%;
+	/*padding: 1%;*/
 
-    -webkit-transition: left 0.3s ease-in, right 0.3s ease-in;
-    -moz-transition: left 0.3s ease-in, right 0.3s ease-in;
-    -o-transition: left 0.3s ease-in, right 0.3s ease-in;
-    -ms-transition: left 0.3s ease-in, right 0.3s ease-in;
-    transition: left 0.3s ease-in, right 0.3s ease-in;
+	-webkit-transition: left 0.3s ease-in, right 0.3s ease-in;
+	-moz-transition: left 0.3s ease-in, right 0.3s ease-in;
+	-o-transition: left 0.3s ease-in, right 0.3s ease-in;
+	-ms-transition: left 0.3s ease-in, right 0.3s ease-in;
+	transition: left 0.3s ease-in, right 0.3s ease-in;
 
-    background: rgba(0,0,0,0.7);
-    background: -moz-linear-gradient(top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.7) 100%);
-    background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(0,0,0,0.7)), color-stop(100%, rgba(0,0,0,0.7)));
-    background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0.7) 0%, rgba(0,0,0, 0.7) 100%);
-    background: -o-linear-gradient(top, rgba(0, 0, 0, 0.7) 0%, rgba(0,0,0, 0.7) 100%);
-    background: -ms-linear-gradient(top, rgba(0, 0, 0, 0.7) 0%, rgba(0,0,0, 0.7) 100%);
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0,0,0, 0.7) 100%);
-    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=70) progid:DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#000000', GradientType=0 );
+	background: rgb(0,0,0);
+	-ms-filter: progid:DXImageTransform.Microsoft.Alpha(opacity=70);
+	background: rgba(0,0,0,0.7);
+	background: -moz-linear-gradient(top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.7) 100%);
+	background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(0,0,0,0.7)), color-stop(100%, rgba(0,0,0,0.7)));
+	background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0.7) 0%, rgba(0,0,0, 0.7) 100%);
+	background: -o-linear-gradient(top, rgba(0, 0, 0, 0.7) 0%, rgba(0,0,0, 0.7) 100%);
+	background: -ms-linear-gradient(top, rgba(0, 0, 0, 0.7) 0%, rgba(0,0,0, 0.7) 100%);
+	background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0,0,0, 0.7) 100%);
 }
 
 .sideBarContainer.left{
-    left: -30%;
+	left: -30%;
 }
 .sideBarContainer.openBtn {
-    z-index: 99;
+	z-index: 99;
 }
 .sideBarContainer.left.openBtn{
-    left: 0;
+	left: 0;
 }
 .sideBarContainer.right{
-    right: -30%;
+	right: -30%;
 }
 .sideBarContainer.right.openBtn{
-    right: 0;
+	right: 0;
 }
 
 .titleLabel {
@@ -211,7 +212,12 @@ body {
 	overflow: hidden;
 	display: block;
 }
-
+.accessibilityLabel{
+	font-size: 0;
+	height: 1px !important;
+	overflow: hidden;
+	display: block;
+}
 .dropup {
 	position: relative;
 	height: 100%;
@@ -233,8 +239,10 @@ body {
 	font-size: 3em;
 	margin: -0.79em 0 0 -1em;
 	text-decoration: none;
-	border-radius: 0.1em;
 	padding: 12px 20px 12px 25px;
+}
+.largePlayBtnBorder{
+	border-radius: 0.1em;
 }
 
 .scrubber {
@@ -243,7 +251,7 @@ body {
 	cursor: pointer;
 }
 .controlsContainer .scrubber{
-	display: inline-block;
+	display: inline-block !important;
 	margin-left:5px;
 	top: -3px;
 }
@@ -303,7 +311,7 @@ body {
 	position: absolute;
 	left: 0;
 	top: -0.2em;
-	width: 1.1em; 
+	width: 1.1em;
 	height: 1.1em;
 	border-radius: 50%;
 	outline: 0;
@@ -313,41 +321,41 @@ body {
 
 	/*transform*/
 	-webkit-transform:scale(1, 1);
-	   -moz-transform:scale(1, 1);
-	    -ms-transform:scale(1, 1);
-	     -o-transform:scale(1, 1);
-	        transform:scale(1, 1);
+	-moz-transform:scale(1, 1);
+	-ms-transform:scale(1, 1);
+	-o-transform:scale(1, 1);
+	transform:scale(1, 1);
 	/*transform-origin*/
 	-webkit-transform-origin:50% 50%;
-	   -moz-transform-origin:50% 50%;
-	    -ms-transform-origin:50% 50%;
-	     -o-transform-origin:50% 50%;
-	        transform-origin:50% 50%;
+	-moz-transform-origin:50% 50%;
+	-ms-transform-origin:50% 50%;
+	-o-transform-origin:50% 50%;
+	transform-origin:50% 50%;
 	/*transition*/
 	-webkit-transition:-webkit-transform-origin 0.1s ease-out, -webkit-transform 0.1s ease-out;
-	   -moz-transition:   -moz-transform-origin 0.1s ease-out, -moz-transform 0.1s ease-out;
-	     -o-transition:     -o-transform-origin 0.1s ease-out, -o-transform 0.1s ease-out;
-	        transition:        transform-origin 0.1s ease-out, transform 0.1s ease-out;
+	-moz-transition:   -moz-transform-origin 0.1s ease-out, -moz-transform 0.1s ease-out;
+	-o-transition:     -o-transform-origin 0.1s ease-out, -o-transform 0.1s ease-out;
+	transition:        transform-origin 0.1s ease-out, transform 0.1s ease-out;
 	/*transition-property*/
 	-webkit-transition-property:-webkit-transform-origin, -webkit-transform;
-	   -moz-transition-property:   -moz-transform-origin, -moz-transform;
-	     -o-transition-property:     -o-transform-origin, -o-transform;
-	        transition-property:        transform-origin, transform;
+	-moz-transition-property:   -moz-transform-origin, -moz-transform;
+	-o-transition-property:     -o-transform-origin, -o-transform;
+	transition-property:        transform-origin, transform;
 	/*transition-duration*/
 	-webkit-transition-duration:0.3s, 0.3s;
-	   -moz-transition-duration:0.3s, 0.3s;
-	     -o-transition-duration:0.3s, 0.3s;
-	        transition-duration:0.3s, 0.3s;
+	-moz-transition-duration:0.3s, 0.3s;
+	-o-transition-duration:0.3s, 0.3s;
+	transition-duration:0.3s, 0.3s;
 	/*transition-timing-function*/
 	-webkit-transition-timing-function:ease-out, ease-out;
-	   -moz-transition-timing-function:ease-out, ease-out;
-	     -o-transition-timing-function:ease-out, ease-out;
-	        transition-timing-function:ease-out, ease-out;
+	-moz-transition-timing-function:ease-out, ease-out;
+	-o-transition-timing-function:ease-out, ease-out;
+	transition-timing-function:ease-out, ease-out;
 	/*transition-delay*/
 	-webkit-transition-delay:initial, initial;
-	   -moz-transition-delay:initial, initial;
-	     -o-transition-delay:initial, initial;
-	        transition-delay:initial, initial;
+	-moz-transition-delay:initial, initial;
+	-o-transition-delay:initial, initial;
+	transition-delay:initial, initial;
 
 	background: rgb(255,255,255); /* Old browsers */
 	background: -moz-linear-gradient(top,  rgba(255,255,255,1) 0%, rgba(204,204,204,1) 50%, rgba(255,255,255,1) 100%); /* FF3.6+ */
@@ -384,14 +392,16 @@ body {
 	display: inline-block;
 	height: 100%;
 }
-
-.volumeControl .slider {
+.volumeControl.vertical{
+	width: 36px;
+}
+.volumeControl .ui-slider-horizontal.slider {
 	display: inline-block;
 	width: 0;
 	background: #7c7c7c;
 	height: 0.5em;
 	top: -2px;
-	
+
 	-webkit-transition: width 0.3s ease-in-out;
 	-moz-transition: width 0.3s ease-in-out;
 	-o-transition: width 0.3s ease-in-out;
@@ -399,23 +409,23 @@ body {
 	transition: width 0.3s ease-in-out;
 	cursor: pointer;
 }
-.volumeControl.noTransition .slider{
+.volumeControl.noTransition .ui-slider-horizontal.slider{
 	-moz-transition: none ;
 	-webkit-transition: none ;
 	-o-transition: width 0 ease-in;
 	transition: none;
 }
 
-.volumeControl.open .slider {
+.volumeControl.open .ui-slider-horizontal.slider {
 	width: 5em;
 	margin-right: 10px;
 }
 
-.volumeControl .ui-slider-handle {
+.volumeControl .ui-slider-horizontal .ui-slider-handle {
 	display: none;
 }
 
-.volumeControl .ui-slider-range-min {
+.volumeControl .ui-slider-horizontal .ui-slider-range-min {
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=85)";
 	filter: alpha(opacity=85);
 	opacity: 0.85;
@@ -433,7 +443,7 @@ body {
 	box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.3);
 }
 
-.volumeControl .ui-slider-range-min:hover {
+.volumeControl .ui-slider-horizontal .ui-slider-range-min:hover {
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
 	filter: alpha(opacity=100);
 	opacity: 1;
@@ -445,6 +455,223 @@ body {
 	width: 0px;
 	height: 0px;
 }
+.volumeControl .sliderContainer {
+	margin-top: -147px;
+	width: 40px;
+	display: none;
+	background: rgb(27,27,27);
+	background-color: rgba(27,27,27,.9);
+	border-radius: 3px;
+	height: 97px;
+	position: absolute;
+}
+.volumeControl.noTransition .ui-slider-vertical{
+	-moz-transition: none ;
+	-webkit-transition: none ;
+	-o-transition: width 0 ease-in;
+	transition: none;
+}
+
+.volumeControl.open .sliderContainer {
+	display: block;
+}
+.volumeControl .ui-slider-vertical{
+	height: 69px;
+	margin-left: 17px;
+	top: 14px;
+	width: 6px;
+	background-color: #7c7c7c;
+}
+.volumeControl .sliderContainer .arrow{
+	margin-top: 97px;
+	margin-left: 11px;
+	width: 0;
+	height: 0;
+	border-style: solid;
+	border-width: 10px 9px 0 9px;
+	border-color: rgb(27,27,27) transparent transparent transparent;
+	position: absolute;
+}
+.volumeControl .ui-slider-vertical .ui-slider-handle {
+	display: none;
+}
+
+.volumeControl .ui-slider-vertical .ui-slider-range-min {
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=85)";
+	filter: alpha(opacity=85);
+	opacity: 0.85;
+	background-color: #fff;
+	background-repeat: repeat-x;
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dddddd));
+
+	background: -webkit-linear-gradient(top, #ffffff, #dddddd);
+	background: -moz-linear-gradient(top, #ffffff, #dddddd);
+	background: -o-linear-gradient(top, #ffffff, #dddddd);
+	background: -ms-linear-gradient(top, #ffffff, #dddddd);
+	background: linear-gradient(top, #ffffff, #dddddd);
+
+	-webkit-box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.3);
+	box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.3);
+}
+
+.volumeControl .ui-slider-vertical .ui-slider-range-min:hover {
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+	filter: alpha(opacity=100);
+	opacity: 1;
+
+	-webkit-box-shadow: 0px 0px 10px #fff;
+	box-shadow: 0px 0px 10px #fff;
+}
+.smartContainerMenu{
+	background-color: rgba(255,255,255,0.9);
+	border-radius: 4px;
+	position: absolute;
+	color: black;
+	z-index: 10;
+	width: 220px;
+}
+.mobile .smartContainerMenu{
+	background-color: rgba(0,0,0,0.6);
+	border-radius: 0px;
+	position: absolute;
+	color: #ffffff;
+	z-index: 10;
+	width: 100%;
+	height: 100%;
+	left: 0px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-box-pack: center;
+	-moz-box-pack: center;
+	-ms-flex-pack: center;
+	-webkit-justify-content: center;
+	justify-content: center;
+	-webkit-box-align: center;
+	-moz-box-align: center;
+	-ms-flex-align: center;
+	-webkit-align-items: center;
+	align-items: center;
+}
+.smartContainerMenu p{
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+.smartContainerMenu .pluginIcon{
+	display: none;
+}
+.mobile .smartContainerMenu .pluginIcon{
+	display: block;
+	font-size: 64px;
+	padding-left: 30px;
+	padding-right: 30px;
+}
+.mobile .smartContainerMenu .pluginPropertyLabel{
+	display: none;
+}
+.mobile .smartContainerMenu .fakeCombo{
+	display: none;
+}
+.mobile .smartContainerMenu .hidden{
+	position: absolute;
+	visibility: visible;
+	width: 130px;
+	height: 100px;
+	margin-top: -80px;
+	opacity: 0;
+	-webkit-appearance: menulist-button;
+}
+.smartContainerMenu label{
+	letter-spacing: 0px;
+}
+.smartContainerMenu .pluginPropertyLabel{
+	color: #555555;
+	margin-left: 20px;
+	font-size: 12px;
+}
+.smartContainerMenu label{
+	color: #555555;
+	font-size: 12px;
+}
+.smartContainerMenu .pluginProperty.checkbox{
+	width: 14px;
+	margin-top: 18px;
+	margin-bottom: 18px;
+}
+.smartContainerMenu .hidden{
+	visibility: hidden;
+	width: 0px;
+	height: 0px;
+}
+.smartContainerMenu .fakeCombo{
+	font-size: 9px;
+	font-weight: bold;
+	letter-spacing: 2px;text-transform: uppercase;
+	padding-top: 6px;
+	padding-bottom: 6px;
+	padding-left: 7px;
+	padding-right: 7px;
+	color: #999999;
+	border: 1px solid #999999;
+	border-radius: 3px;
+	width: 80px;
+	float: right;
+	margin-right: 20px;
+	margin-top: -2px;
+	cursor: pointer;
+}
+.smartContainerMenu .fakeCombo>i{
+	font-size: 8px;
+	float: right;
+	margin-top: 2px;
+}
+.smartContainerMenu ul{
+	background-color: white;
+	border: 1px solid #999999;
+	width: 74px;
+	float: right;
+	margin-right: 20px;
+	border-radius: 3px;
+	padding-right: 10px;
+	padding-left: 10px;
+	position: relative;
+	display: none;
+}
+.smartContainerMenu li{
+	list-style-type: none;
+	color: #666666;
+	font-size: 11px;
+	padding-top: 6px;
+	padding-bottom: 6px;
+	border-bottom: 1px solid #cccccc;
+	padding-left: 0px;
+	cursor: pointer;
+	height: 14px;
+}
+.smartContainerMenu li:hover{
+	font-weight: bold;
+}
+.smartContainerMenu li.last{
+	border-bottom: 0px;
+}
+.smartContainerMenu li.active{
+	font-weight: bold;
+}
+.smartContainerMenu li>i{
+	font-size: 9px;
+	float: right;
+	margin-top: 2px;
+	display: none;
+}
+.smartContainerMenu li.active>i{
+	display: block;
+}
+
 .timers {
 	position: relative;
 	font-size: 0.84em;
@@ -461,7 +688,6 @@ body {
 .durationLabel {
 	padding-left: 0.5em;
 }
-
 .overlay {
 	position: absolute;
 	top: 0;
@@ -659,9 +885,9 @@ body {
 	background: linear-gradient(top, #000000, #000000);
 
 	z-index: 1000;
-    font-weight: bold;
+	font-weight: bold;
 	font-size: 0.85em;
-    letter-spacing: 0px;
+	letter-spacing: 0px;
 	color: #aaaaaa;
 	border-radius: 2px;
 	padding: 2px 5px;
@@ -750,6 +976,7 @@ body {
 	background-color: transparent;
 	color: #ccc;
 	text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);
+	outline-offset: -1px;
 }
 
 .btn:hover {
@@ -786,6 +1013,9 @@ body {
 	background-color: #222222;
 	background: rgba(0,0,0,0.7);
 	color: #efefef;
+}
+.largePlayBtn.icon-pause:before {
+	margin-left: -4px;
 }
 
 .largePlayBtn:hover {
@@ -839,17 +1069,17 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 	
 
 	 */
-/*
+	/*
 
--webkit-box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
-	
-box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
-	
+	-webkit-box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 
-	
-	
-	border:  1px solid #fff;
-	*/
+	box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
+
+
+
+
+		border:  1px solid #fff;
+		*/
 }
 
 .scrubber .playHead:hover {
@@ -906,7 +1136,7 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	right: 0;
 	max-width: 100%;
 	max-height: 100%;
-    border: 0px;
+	border: 0px;
 }
 
 .kaltura-logo {
@@ -965,13 +1195,13 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 }
 
 .hover .ad-skip-label {
-    bottom: 30px;
+	bottom: 30px;
 }
 .hover .ad-skip-btn {
-    bottom: 30px;
+	bottom: 30px;
 }
 .hover .ad-notice-label {
-    bottom: 40px;
+	bottom: 40px;
 }
 
 .clearfix:before,.clearfix:after {
@@ -989,7 +1219,7 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	padding: 5px;
 }
 .watermark img{
-    border: 0px;
+	border: 0px;
 }
 .watermark.topRight {
 	top: 0; right: 0;
@@ -1007,15 +1237,15 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 .screen {
 	display: none;
 	position: absolute;
-	width: 100%; 
-	height: 100%; 
-	top: 0; 
+	width: 100%;
+	height: 100%;
+	top: 0;
 	left: 0;
 	/* z-index: 3;*/
 	box-sizing: border-box;
 	padding-top: 2.3em;
 	background-color:#000;
-	
+
 	background-image: linear-gradient(top, #000000 10%, #3E3E3E 90%);
 	background-image: -o-linear-gradient(top, #000000 10%, #3E3E3E 90%);
 	background-image: -moz-linear-gradient(top, #000000 10%, #3E3E3E 90%);
@@ -1088,8 +1318,8 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	position: relative;
 	height: 100%;
 }
-.infoScreen .created { 
-	font-size: 1.11em; 
+.infoScreen .created {
+	font-size: 1.11em;
 	font-weight: bold;
 	padding-bottom: 10px;
 	margin-bottom: 10px;
@@ -1112,10 +1342,10 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	width: 100%;
 	height: auto;
 }
-.rotate{
-    -webkit-animation:spin 3s linear infinite;
-    -moz-animation:spin 3s linear infinite;
-    animation:spin 3s linear infinite;
+.in-progress-state{
+	-webkit-animation:spin 3s linear infinite;
+	-moz-animation:spin 3s linear infinite;
+	animation:spin 3s linear infinite;
 	outline: 0 !important;
 }
 
@@ -1141,46 +1371,46 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 }
 
 .AlertMessageTransparent{
-    background-color : transparent;
-    padding : 5px;
-    font-weight : normal !important;
-    font-size: 1.5em;
-    color: #a4a4a4;
-    opacity: 0.5;
-    text-align: center;
+	background-color : transparent;
+	padding : 5px;
+	font-weight : normal !important;
+	font-size: 1.5em;
+	color: #a4a4a4;
+	opacity: 0.5;
+	text-align: center;
 }
 
 .AlertTitleTransparent{
-    background-color : transparent;
+	background-color : transparent;
 
-    font-weight : normal !important;
-    font-size: 1.8em ;
-    color: #a4a4a4;
-    opacity: 0.5;
-    text-align: center;
+	font-weight : normal !important;
+	font-size: 1.8em ;
+	color: #a4a4a4;
+	opacity: 0.5;
+	text-align: center;
 }
 
 .AlertContainerTransparent{
-    background-color : transparent;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    -webkit-transform: translate(-50%, -50%);
-    -moz-transform:    translate(-50%, -50%);
-    -ms-transform:     translate(-50%, -50%);
-    -o-transform:      translate(-50%, -50%);
-    transform:         translate(-50%, -50%);
-    color: white;
+	background-color : transparent;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translate(-50%, -50%);
+	-moz-transform:    translate(-50%, -50%);
+	-ms-transform:     translate(-50%, -50%);
+	-o-transform:      translate(-50%, -50%);
+	transform:         translate(-50%, -50%);
+	color: white;
 }
 
 
 .flashBlockAlertContainer{
-    background-color : transparent;
-    position: fixed;
-    top: 40%;
-    text-align: center;
-    width: 100%;
-    color: white;
+	background-color : transparent;
+	position: fixed;
+	top: 40%;
+	text-align: center;
+	width: 100%;
+	color: white;
 }
 
 .blur{
@@ -1189,6 +1419,17 @@ box-shadow:  0px 1px 0px rgba(0, 0, 0, 0.3);
 	-o-filter: blur(5px);
 	-ms-filter: blur(5px);
 	filter: blur(5px);
+}
+.vpaidContainer{
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 2000;
+	width: 100%;
+	height: 100%;
+}
+.blackBackground{
+	background-color: #000000;
 }
 @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }

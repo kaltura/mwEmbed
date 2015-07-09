@@ -10,6 +10,7 @@
 			"showTooltip": true,
 			"switchOnResize": false,
 			"simpleFormat": true,
+			"iconClass": "icon-cog",
             "displayMode": "size" //'size' – displays frame size ( default ), 'bitrate' – displays the bitrate, 'sizebitrate' displays size followed by bitrate
 		},
 
@@ -55,13 +56,14 @@
 					}
 				}
 				_this.getMenu().setActive({'key': 'id', 'val': selectedId});
-				_this.onEnable();
 			});
 
 			this.bind( 'sourceSwitchingStarted', function(){
+				_this.getComponent().find('button').addClass( 'in-progress-state' );
 				_this.onDisable();
 			});
 			this.bind( 'sourceSwitchingEnd', function(newIndex){
+				_this.getComponent().find('button').removeClass( 'in-progress-state' );
                 _this.onEnable();
 			});
             this.bind( 'onHideControlBar', function(){
@@ -94,6 +96,14 @@
 					}
 				});
 			}
+
+			this.embedPlayer.bindHelper("propertyChangedEvent", function(event, data){
+				if ( data.plugin === _this.pluginName ){
+					if ( data.property === "sources" ){
+						_this.getMenu().$el.find("li a")[data.value].click();
+					}
+				}
+			});
 		},
 		getSources: function(){
 			return this.getPlayer().getSources();
@@ -180,7 +190,8 @@
 					prevSource = source;
 				});
 			}
-
+			var items = [];
+			var itemLabels = [];
 			var prevSource = null;
 			$.each( sources, function( sourceIndex, source ) {
 				if( source.skip ){
@@ -203,9 +214,17 @@
 								)
 						){
 						_this.addSourceToMenu( source );
+						var label = _this.getSourceTitle( source )
+						if ($.inArray(label, itemLabels) === -1){
+							itemLabels.push(label)
+							items.push({'label':label, 'value':label});
+						}
 					}
 				}
 			});
+			// dispatch event to be used by a master plugin if defined
+			this.getPlayer().triggerHelper("updatePropertyEvent",{"plugin": this.pluginName, "property": "sources", "items": items, "selectedItem": this.getMenu().$el.find('.active a').text()});
+
 		},
 		isSourceSelected: function( source ){
 			var _this = this;
@@ -238,7 +257,7 @@
             this.getMenu().addItem({
                 'label': _this.AutoTitle,
                 'callback': function () {
-                    _this.getPlayer().switchSrc("-1");
+                    _this.getPlayer().switchSrc(-1);
                 },
                'active': true
             });
@@ -279,7 +298,7 @@
 		getSourceTitle: function( source ){
 			// We should return "Auto" for Apple HLS
 			if( source.getMIMEType() == 'application/vnd.apple.mpegurl' ) {
-				return _this.AutoTitle;
+				return this.AutoTitle;
 			}
 
             var title = '';
@@ -364,7 +383,6 @@
 		onEnable: function(){
 			this.isDisabled = false;
 			this.updateTooltip( this.selectSourceTitle );
-			this.getComponent().find('button').removeClass( 'rotate' );
 			this.getBtn().removeClass( 'disabled' );
 			if (this.saveBackgroundColor){
 				this.getComponent().find('button').attr('style', 'background-color: ' + this.saveBackgroundColor + ' !important');
@@ -373,7 +391,6 @@
 		onDisable: function(){
 			this.isDisabled = true;
 			this.updateTooltip( this.switchSourceTitle );
-			this.getComponent().find('button').addClass( 'rotate' );
 			this.saveBackgroundColor = this.getComponent().find('button').css("background-color");
 			this.getComponent().find('button').attr('style', 'background-color: null !important');
 			this.getComponent().removeClass( 'open' );

@@ -13,7 +13,9 @@
 			'kpl0Id': null,
 			'titleLimit': 36,
 			'descriptionLimit': 32,
+			'resizeThumbnails': true,
 			'thumbnailWidth': 86,
+			'thumbnailHeight': 48,
 			'mediaItemWidth': null,
 			'mediaItemHeight': 70,
 			'includeThumbnail': true,
@@ -240,24 +242,26 @@
 				_this.setMultiplePlayLists();
 				_this.getComponent().find(".k-description-container").dotdotdot();
 				// keep aspect ratio of thumbnails - crop and center
-				_this.getComponent().find('.k-thumb').not('.resized').each(function () {
-					var img = $(this)[0];
-					img.onload = function () {
-						if (img.naturalWidth / img.naturalHeight > 16 / 9) {
-							$(this).height(48);
-							$(this).width(img.naturalHeight * 16 / 9);
-							var deltaWidth = ($(this).width() - 86) / 2 * -1;
-							$(this).css("margin-left", deltaWidth)
-						}
-						if (img.naturalWidth / img.naturalHeight < 16 / 9) {
-							$(this).width(86);
-							$(this).height(img.naturalWidth * 9 / 16);
-							var deltaHeight = ($(this).height() - 48) / 2 * -1;
-							$(this).css("margin-top", deltaHeight)
-						}
-						$(this).addClass('resized');
-					};
-				});
+				if ( _this.getConfig("resizeThumbnails") ){
+					_this.getComponent().find('.k-thumb').not('.resized').each(function () {
+						var img = $(this)[0];
+						img.onload = function () {
+							if (img.naturalWidth / img.naturalHeight > 16 / 9) {
+								$(this).height(_this.getConfig('thumbnailHeight'));
+								$(this).width(img.naturalHeight * 16 / 9);
+								var deltaWidth = ($(this).width() - _this.getConfig('thumbnailWidth')) / 2 * -1;
+								$(this).css("margin-left", deltaWidth)
+							}
+							if (img.naturalWidth / img.naturalHeight < 16 / 9) {
+								$(this).width(_this.getConfig('thumbnailWidth'));
+								$(this).height(img.naturalWidth * 9 / 16);
+								var deltaHeight = ($(this).height() - _this.getConfig('thumbnailHeight')) / 2 * -1;
+								$(this).css("margin-top", deltaHeight)
+							}
+							$(this).addClass('resized');
+						};
+					});
+				}
 			});
 
 
@@ -295,6 +299,7 @@
 			if (!this.getPlayer().layoutBuilder.isInFullScreen() && this.redrawOnResize && this.redrawOnResize && this.playlistSet.length > 0) {
 				// decide the width of the items. For vertical layout: 3rd of the container. For horizontal: according to MinClips value
 				if ( this.getLayout() === "vertical" ){
+					var saveScrollTop = this.getMedialistComponent().find(".nano-content").scrollTop(); // save scrollTop
 					if ( !this.widthSetByUser ){
 						if ( $( ".playlistInterface" ).width() / 3 > this.getConfig( 'mediaItemWidth' ) ) {
 							this.setConfig( 'mediaItemWidth', $( ".playlistInterface" ).width() / 3 );
@@ -310,7 +315,11 @@
 					this.$mediaListContainer = null;
 					this.getMedialistContainer();
 				}
-				this.renderMediaList();
+				this.renderMediaList(function(){
+					if ( _this.getLayout() === "vertical" ){
+						_this.getMedialistComponent().find(".nano-content").scrollTop(saveScrollTop); // restore scrollTop
+					}
+				});
 			}
 		},
 		// called from KBaseMediaList when a media item is clicked - trigger clip play
@@ -434,7 +443,7 @@
 				if (!_this.getConfig("autoPlay")) {
 					setTimeout(function(){
 						embedPlayer.play();
-					},100); // timeout is required when loading live entries
+					},500); // timeout is required when loading live entries
 				}
 			});
 			mw.log("PlaylistAPI::playClip::changeMedia entryId: " + id);
@@ -529,10 +538,11 @@
 					this.getComponent().find( ".playlistItem" ).on( "click", function () {
 						_this.switchPlaylist( $( this ).attr( 'data-index' ) );
 					} );
-					setTimeout(function(){
-						_this.getComponent().find(".dropDownIcon").show();
-					},100);
 				}
+				setTimeout(function(){
+					_this.getComponent().find(".dropDownIcon").show();
+				},250);
+
 			}
 		},
 

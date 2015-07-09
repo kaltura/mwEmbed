@@ -77,6 +77,21 @@ if( $kConf->hasMap('playReady') ) {
 		$wgKalturaLicenseServerUrl = $playReadyMap['license_server_url'];
 }
 
+// Get PlayReady License URL
+if( $kConf->hasMap('drm') ) {
+	$drmMap = $kConf->getMap('drm');
+	if($drmMap)
+		$wgKalturaUdrmLicenseServerUrl = $drmMap['license_server_url'];
+}
+
+if( $kConf->hasParam('overrideDomain') ) {
+	$wgEnableKalturaOverrideDomain = $kConf->get('overrideDomain');
+}
+
+if( $kConf->hasParam('enableEmbedServicesRouting') ) {
+	$wgEnableKalturaEmbedServicesRouting = $kConf->get('enableEmbedServicesRouting');
+}
+
 // A helper function to get full URL of host
 function wgGetUrl( $hostKey = null ) {
 	global $wgHTTPProtocol, $wgServerPort, $kConf;

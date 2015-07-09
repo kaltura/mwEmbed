@@ -1,0 +1,76 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+	<title>Ad tag url substitutions</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+  </head>
+  <body>
+	<h1>
+	Ad tag URL substitutions
+	</h1>
+	This page demonstrate ad tag url substitutions. 
+	<br>
+<div id="kaltura_player" style="width:400px;height:330px;"></div>
+<h3>Raw Ad Tag Url:</h3>
+<pre id="rawurl"></pre>
+<h3>Evaluated Ad Tag Url:</h3>
+<pre id="evaluated"></pre>
+
+<script>
+	var adTagUrl ='http://projects.kaltura.com/mdale/hotelVastAd.xml?' +
+			'&displayMgr=kaltura_player' + 
+			'&displayMgrVer={playerVersion}' +
+			'&playerWidth={video.player.width}' +
+			'&playerHeight={video.player.height}' + 
+			'&playerPosition={video.player.position}' + 
+			'&episode={mediaProxy.entryMetadata.Show}' + 
+			'&mediaId={mediaProxy.entry.id}' +
+			'&mediaTitle={mediaProxy.entry.name}' + 
+			'&mediaDesc={mediaProxy.entry.description}' +
+			'&series={mediaProxy.entryMetadata.Show}' + 
+			'&season={mediaProxy.entryMetadata.Show}' + 
+			'&mediaUrl={mediaProxy.entry.downloadUrl}' + 
+			'&categories={mediaProxy.entry.categories}' + 
+			'&keywords={mediaProxy.entry.tags}' + 
+			'&rating={mediaProxy.entryMetadata.AgeConsent}' + 
+			'&context={utility.referrer_host}' + 
+			'&livestream={mediaProxy.isLive}' +
+			'&srcPageUrl={utility.referrer_url}' + 
+			'&contentLength={mediaProxy.entry.duration}' + 
+			'&flashVersion={flashVersion}'+
+			'&userRating={mediaProxy.entry.rank}' + 
+			'&videoQuality=' + 
+			'&srcRelationship=';
+	
+	kWidget.embed({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id' : '13306622',
+		'entry_id' : '1_sf5ovm7u',
+		'flashvars': {
+			'metadataProfileId': 3282,
+			'requiredMetadataFields' : true,
+			'vast': {
+				'numPreroll':"1", 
+				'prerollUrl': adTagUrl, 
+				'preSequence':"1",
+				'loadAdsOnPlay': true
+			},
+			'adsOnReplay':true
+		},
+		'readyCallback': function( playerId ){
+			var kdp = $('#' + playerId )[0];
+			
+			kdp.kBind('mediaReady', function(){
+				$("#rawurl").html( adTagUrl.replace(/&/g, '<br>&amp;' ) );
+				$("#evaluated").html( 
+					kdp.evaluate( kdp.evaluate('{vast.prerollUrl}') ).replace( /&/g, '<br>&amp;' ) );
+			});
+		}
+	})
+</script>
+	
+  </body>
+</html>

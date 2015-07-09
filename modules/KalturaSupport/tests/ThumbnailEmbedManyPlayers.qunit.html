@@ -8,12 +8,14 @@
 </head>
 <body>
 <h2> Thumbnail embed </h2>
-The thumbnail embed method takes the same arguments as "kWidget.embed". 
-Thumbnail embed will pass all the configuration to the kWidget.embed when the user "click" on the play button.
+The thumbnail embed method takes the same arguments as "kWidget.embed". <br>
+Thumbnail embed will pass all the configuration to the kWidget.embed when the user "click" on the play button.<br>
+The player context menu can be disabled by setting the "EmbedPlayer.DisableContextMenu" UIVar to true.<br><br>
 <pre class="prettyprint linenums">
 &lt;div id=&quot;myEmbedTarget&quot; style=&quot;width:400px;height:330px;&quot;&gt;&lt;/div&gt;
 &lt;script src=&quot;{{HTML5LibraryURL}}&quot;&gt;&lt;/script&gt;
 &lt;script&gt;
+	mw.setConfig("EmbedPlayer.DisableContextMenu",true);
 	kWidget.thumbEmbed({
 		'targetId': 'myEmbedTarget',
 		'wid': '_243342',
@@ -158,8 +160,9 @@ if( window.QUnit ){
 						}
 					}
 				}
-				
+
 				if( useThumbEmbed ){
+					mw.setConfig("EmbedPlayer.DisableContextMenu",true);
 					kWidget.thumbEmbed( kWidgetEmbedSettings );
 				} else {
 					kWidget.embed( kWidgetEmbedSettings );
