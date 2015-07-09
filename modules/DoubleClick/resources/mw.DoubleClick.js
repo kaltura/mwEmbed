@@ -560,7 +560,9 @@
 		// https://developers.google.com/interactive-media-ads/docs/sdks/googlehtml5_apis#ima.SimpleAdsRequest
 		addAdRequestParams: function( adTagUrl ){
 			var _this = this;
-			var paramSep =  adTagUrl.indexOf( '?' ) === -1 ? '?' : '&';
+			if( adTagUrl ){
+				var paramSep = adTagUrl.indexOf( '?' ) === -1 ? '?' : '&';
+			}
 			var adRequestMap = {
 				'contentId' : 'vid',
 				'cmsId' : 'cmsid'
