@@ -10,6 +10,7 @@
 			"showTooltip": true,
 			"switchOnResize": false,
 			"simpleFormat": true,
+			"iconClass": "icon-cog",
             "displayMode": "size" //'size' – displays frame size ( default ), 'bitrate' – displays the bitrate, 'sizebitrate' displays size followed by bitrate
 		},
 
@@ -190,6 +191,7 @@
 				});
 			}
 			var items = [];
+			var itemLabels = [];
 			var prevSource = null;
 			$.each( sources, function( sourceIndex, source ) {
 				if( source.skip ){
@@ -213,7 +215,10 @@
 						){
 						_this.addSourceToMenu( source );
 						var label = _this.getSourceTitle( source )
-						items.push({'label':label, 'value':label});
+						if ($.inArray(label, itemLabels) === -1){
+							itemLabels.push(label)
+							items.push({'label':label, 'value':label});
+						}
 					}
 				}
 			});
