@@ -119,37 +119,37 @@
 							_this.$menu.append(wrapper.find("label").prepend(propField));
 							break;
 						case 'enum':
-							var propField = $('<select class="pluginProperty hidden"></select>')
+							var propField = $('<select class="pluginProperty hidden"></select>') // create a select combo box (hidden)
 								.on("change", function(){
 									_this.propertyChanged(plugin.pluginName, property.property, property.type, $(this).get(0).selectedIndex );
 								});
-							var fakeCombo = $("<div><span></span><i class='icon-caret'></i></div>").addClass("fakeCombo pluginProperty");
-							fakeCombo.find('span').text(gM("mwe-embedplayer-no-source"));
-							var menu = $("<ul></ul>");
-							var addOptions = function(items){
+							var fakeCombo = $("<div><span></span><i class='icon-caret'></i></div>").addClass("fakeCombo pluginProperty"); // show instead of select box
+							fakeCombo.find('span').text(gM("mwe-embedplayer-no-source")); // inital text shown when no data is available
+							var menu = $("<ul></ul>");                                    // the UL will be the dropdown menu of the combo box
+							var addOptions = function(items){                             // add items to the menu - add to bothe the original hidden select box and the UL menu
 								$.each(items, function (i, item) {
-									propField.append($('<option>', {
+									propField.append($('<option>', {                      // add item to hidden select box
 										value: item.value,
 										text : item.label
 									}));
 									if ( i === items.length - 1 ){
-										menu.append($("<li></li>").addClass("last").text(item.label).append($("<i></i>").addClass("icon-check")));
+										menu.append($("<li></li>").addClass("last").text(item.label).append($("<i></i>").addClass("icon-check"))); // add last item - don't add a separator lone after it
 									}else{
-										menu.append($("<li></li>").text(item.label).append($("<i></i>").addClass("icon-check")));
+										menu.append($("<li></li>").text(item.label).append($("<i></i>").addClass("icon-check"))); // add a regular item with a separator line after it
 									}
 									if ( i === 0 ){
-										fakeCombo.find('span').text(item.label);
+										fakeCombo.find('span').text(item.label); // set the initial value shown to the first item value
 									}
 								});
-								menu.find("li").on("click", function(){
-									menu.find("li").removeClass("active");
-									$(this).addClass("active");
-									fakeCombo.find('span').text($(this).text());
-									propField.val($(this).text()).change();
-									menu.hide();
+								menu.find("li").on("click", function(){           // click on menu item handler
+									menu.find("li").removeClass("active");        // remove active class from all menu items
+									$(this).addClass("active");                   // add active class to selected menu item
+									fakeCombo.find('span').text($(this).text());  // update value of the fake combo box menu
+									propField.val($(this).text()).change();       // update hidden select box value and trigger a change event to trigger the propertyChanged method
+									menu.hide();                                  // close the menu
 								});
-								var menuItemHeight = menu.find("li").height() +  2 * parseInt(menu.find("li").css("padding-top"));
-								menu.css("margin-top", -1 * (items.length+1) * menuItemHeight - items.length + parseInt(fakeCombo.css("margin-top"))/2 + "px");
+								var menuItemHeight = menu.find("li").height() +  2 * parseInt(menu.find("li").css("padding-top")); // calculate menu item height to be used for the menu vertical position calculation
+								menu.css("margin-top", -1 * (items.length+1) * menuItemHeight - items.length + parseInt(fakeCombo.css("margin-top"))/2 + "px"); // set menu vertical position according to its size and the fake combo size
 
 							}
 							if ( initialValue !== undefined && initialValue.length ){
@@ -165,13 +165,18 @@
 									}
 								}
 							});
-							var elm = $("<p></p>").append('<span class="pluginPropertyLabel">' + property.label + '</span>').append(fakeCombo).append(propField).append(menu);
-							fakeCombo.on("click", function(){
-								if (menu.find("li").length){
-									menu.toggle();
+							var elm = $("<p></p>").append('<span class="pluginPropertyLabel">' + property.label + '</span>').append(fakeCombo).append(propField).append(menu); // create the plugin DOM element
+							fakeCombo.on("click", function(){ // open and close menu on click
+								$(".smartContainerMenu").find("ul").each(function(){ // close all other menus
+									if ( this !== menu[0] ){
+										$(this).hide();
+									}
+								});
+								if ( menu.find("li").length ){  // don't open empty menus
+									menu.toggle(); // open / close menu
 								}
 							});
-							_this.$menu.append(elm);
+							_this.$menu.append(elm); // add plugin menu to DOM
 							break;
 						case 'string':
 						case 'number':
