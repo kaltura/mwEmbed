@@ -47,6 +47,7 @@
 					var tracks = data.languages;
 					_this.streams = tracks;
 					_this.setStream(_this.getDefaultStream());
+					_this.getComponent().find("ul").show();
 					_this.buildMenu();
 					_this.streamsReady = true;
 					_this.onEnable();
@@ -179,10 +180,10 @@
 		getComponent: function () {
 			var _this = this;
 			if (!this.$el) {
-				var $menu = $('<ul />');
+				var $menu = $('<ul />').hide();
 				//TODO: need icon from Shlomit!
 				var $button = $('<button />')
-					.addClass('btn icon-switchSource')
+					.addClass('btn icon-audio')
 					.attr('title', gM('mwe-embedplayer-select_audio'))
 					.click(function (e) {
 						_this.toggleMenu();

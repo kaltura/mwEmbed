@@ -65,6 +65,7 @@ you can use the generic selector below, but it's slower:
 .icon-on-air,
 .icon-toggle,
 .icon-locator,
+.icon-audio,
 .icon-toggleAll{
 	font-family: 'icomoon';
 	speak: none;
@@ -233,5 +234,8 @@ you can use the generic selector below, but it's slower:
 }
 .icon-toggleAll:before {
     content: "\e626";
+}
+.icon-audio:before {
+    content: "\e627";
 }
 
