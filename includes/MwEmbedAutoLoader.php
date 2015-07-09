@@ -77,7 +77,7 @@ class AutoLoader {
 		if ( substr( $filename, 0, 1 ) != '/' && substr( $filename, 1, 1 ) != ':' ) {
 			$IP = getenv( 'MW_INSTALL_PATH' );
             if ( $IP === false ) {
-            	$IP = realpath( '.' );
+            	$IP = realpath( dirname( __FILE__ ) . '/../');
             }
 			$filename = "$IP/$filename";
 		}

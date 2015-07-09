@@ -54,7 +54,7 @@ define( 'MEDIAWIKI', true );
 # dirname( __FILE__ ) would do.
 $IP = getenv( 'MW_INSTALL_PATH' );
 if ( $IP === false ) {
-	$IP = realpath( '.' );
+	$IP = realpath( dirname( __FILE__ ) . '/../');
 }
 
 

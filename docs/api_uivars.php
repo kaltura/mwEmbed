@@ -51,12 +51,12 @@ $uiVars = array(
 					'default' => 'false',
 					'example' => '../modules/KalturaSupport/tests/ForceFlashOnDesktop.html'
 			),
-			'Kaltura.ForceFlashOnDesktopSafari' => array(
-            					'type' => 'String',
-            					'desc' => 'If the player should be forced to use flash on desktop Safari.',
-            					'default' => 'false',
-            					'example' => '../modules/KalturaSupport/tests/ForceFlashOnDesktopSafari.html'
-            			),
+			'ForceFlashOnDesktopSafari' => array(
+				'type' => 'String',
+				'desc' => 'If the player should be forced to use flash on desktop Safari.',
+				'default' => 'false',
+				'example' => '../modules/KalturaSupport/tests/ForceFlashOnDesktopSafari.html'
+			),
 			'Kaltura.EnableEmbedUiConfJs' => array(
 					'type' => 'String',
 					'desc' => 'If the player should request uiConf Javascript prior to embed',
@@ -397,6 +397,7 @@ $uiVars = array(
 				'type' => 'String',
 				'desc' => 'External thumbnail URL to load instead of the entry default thumbnail. Supports evaluated expressions within curly brackets',
 				'default' => '',
+				'example' => '../modules/KalturaSupport/tests/ThumbnailEmbedExternalThumbnail.html',
 			),
 			'kml' => array(
 				'type' => 'String',
@@ -416,11 +417,6 @@ $uiVars = array(
 					'desc' => "Valid uiConf XML result, that is used by the 'KDP wrapper'; A Flash application that wraps the KDP for caching purposes",
 					'default' => 'null',
 					'availability' => 'kdp',
-			),
-			'relativeCortadoAppletPath' => array(
-				'type' => 'String',
-				'desc' => 'The default location for Java Cortado Applet',
-				'default' => '',
 			),
 			'disableTrackElement' => array(
 				'type' => 'Boolean',
@@ -649,12 +645,6 @@ $uiVars = array(
 					'default' => '',
 					'example' => ''
 			),
-			'EmbedPlayer.DisableJava' => array(
-					'type' => 'Boolean',
-					'desc' => "If the java cortado player should be disabled",
-					'default' => 'true',
-					'example' => ''
-			),
 			'EmbedPlayer.DisableVideoTagSupport' => array(
 					'type' => '',
 					'desc' => "",
@@ -798,6 +788,12 @@ $uiVars = array(
 					'desc' => "Disables the player's right-click context menu",
 					'default' => 'false',
 					'example' => '../modules/KalturaSupport/tests/ThumbnailEmbedManyPlayers.qunit.html'
+			),
+			'EmbedPlayer.KeepPoster' => array(
+					'type' => 'Boolean',
+					'desc' => "Keeps the entry thumbnail shown during playback (covers the video)",
+					'default' => 'false',
+					'example' => ''
 			)
 		)
 	),

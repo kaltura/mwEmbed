@@ -385,7 +385,7 @@
 }
 
 [class^="icon-share-"], [class*=" icon-share-"] {
-	font-family: 'share';
+	font-family: 'share' !important;
 	speak: none;
 	font-style: normal;
 	font-weight: normal;

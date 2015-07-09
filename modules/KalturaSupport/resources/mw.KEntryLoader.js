@@ -101,6 +101,10 @@ mw.KEntryLoader.prototype = {
 			'filter:objectIdEqual' : entryIdValue,
 			'pager:pageSize' : 1
 		});
+		// Check for metadataProfileId flashvar
+		if( typeof kProperties.flashvars['metadataProfileId'] != 'undefined' ){
+			requestObject[requestObject.length-1][ 'filter:metadataProfileIdEqual'] = kProperties.flashvars['metadataProfileId'];
+		}
 
 		if( kProperties.flashvars.getCuePointsData !== false ){
 			requestObject.push({

@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Smart Container</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<body>
+<h1>Smart Container</h1>
+<br>
+<div id="myVideoTarget" style="width:400px;height:330px;"></div>
+<script>
+	kWidget.featureConfig({
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '13306622',
+		'entry_id' : '0_uka1msg4',
+		'flashvars': {
+			'closedCaptions': {
+				'layout': 'ontop',
+				'useCookie': true,
+				'defaultLanguageKey': 'en',
+				'whiteListLanguagesCodes': 'en,es,fr,jp',
+				'fontsize': 12,
+				'bg' : '0x335544',
+				'fontFamily' : 'Arial',
+				'fontColor' : '0xFFFFFF',
+				'useGlow' : 'false',
+				'glowBlur': 4,
+				'glowColor': '0x133693',
+				'showEmbeddedCaptions': false,
+				'visible': false,
+				"plugin":true
+			},
+			'sourceSelector': {
+				'plugin':true,
+				'visible': false,
+				'switchOnResize': true
+			},
+			'smartContainer': {
+				'plugin': true,
+				'tooltip': 'Global Settings',
+				'config':{
+					'plugins':[
+						{
+							'pluginName':'closedCaptions',
+							'properties':[
+								{
+									'property':'captions',
+									'label': 'Language:',
+									'type': 'enum'
+								}
+							]
+						},{
+							'pluginName':'sourceSelector',
+							'properties':[
+								{
+									'property':'sources',
+									'label': 'Quality:',
+									'type': 'enum'
+								}
+							]
+						}
+					]
+				}
+			}
+		}
+	})
+</script>
+</body>
+</html>

@@ -9,7 +9,7 @@ require_once( dirname( __FILE__ ) . '../../Client/KalturaClientHelper.php' );
 
 class mweApiKSTest {
 	function run(){
-		global $wgKalturaAdminSecret;
+		global $wgKalturaUserSecret;
 		// validate params ( hard coded to test a particular test file / account )
 		if( !isset( $_REQUEST['wid'] ) ||  $_REQUEST['wid'] != '_243342' ){
 			$this->outputError( 'bad widget param');
@@ -22,18 +22,19 @@ class mweApiKSTest {
 		$this->entryId = $_REQUEST['entry_id'];
 
 		// load library and get ks for given entry:
-		if( !isset( $wgKalturaAdminSecret ) || ( $wgKalturaAdminSecret == null ) ) {
-			$this->outputError( 'no admin ks configured');
+		if( !isset( $wgKalturaUserSecret ) || ( $wgKalturaUserSecret == null ) ) {
+			$this->outputError( 'no user ks configured');
 		}
 	
 		$client = $this->getClient();
-		$ks = $client->session->start ( $wgKalturaAdminSecret, 
+		$ks = $client->session->start ( $wgKalturaUserSecret, 
 				$_SERVER['REMOTE_ADDR'], 
-				KalturaSessionType::ADMIN, 
+				KalturaSessionType::USER, 
 				$this->partnerId, 
 				3600, // expire in one hour
 				"sview:{$this->entryId}" // give permision to "view" the entry
 			);
+		
 		header( 'Content-type: text/javascript');
 		echo json_encode(array('ks' => $ks ) );
 	}

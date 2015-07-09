@@ -84,6 +84,7 @@
 		},
 		getComponent: function(){
 			if( !this.$el ) {
+				var _this = this;
 				var $controlsContainer = $('<div />').addClass('controlsContainer');
 				// Add control bar 				
 				this.$el = $('<div />')
@@ -92,7 +93,13 @@
 
 				// Add control bar special classes
 				if( this.getConfig('hover') && this.getPlayer().isOverlayControls() ) {
-					this.$el.addClass('hover');
+					this.$el.addClass('hover')
+						.on("mouseenter", function(){
+							_this.forceOnScreen = true;
+						})
+						.on("mouseleave", function(){
+							_this.forceOnScreen = false;
+						});
 					this.embedPlayer.getVideoHolder().addClass('hover');
 				} else {
 					this.$el.addClass('block');
