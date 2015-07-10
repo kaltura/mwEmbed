@@ -52,7 +52,7 @@ class EntryResult {
 		}
 		return array(
 			"Cache-Control: public, max-age=$wgKalturaUiConfCacheTime, max-stale=0",
-			"Expires: " . gmdate( "D, d M Y H:i:s", $saveTime + $wgKalturaUiConfCacheTime ) . " GM",
+			"Expires: " . gmdate( "D, d M Y H:i:s", $saveTime + $wgKalturaUiConfCacheTime ) . " GMT",
 		);
 	}
 	
