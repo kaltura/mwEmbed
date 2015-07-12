@@ -265,6 +265,7 @@
 					isMimeType("video/ism")
 				) {
 					_this.isMulticast = false;
+					_this.streamerType = 'smoothStream';
 
 					flashvars.smoothStreamPlayer = true;
 					flashvars.preload = "auto";
@@ -272,6 +273,7 @@
 					//flashvars.debug = true;
 
 					if (isMimeType("video/playreadySmooth")) {
+						flashvars.preload = "none";
 						var licenseUrl = _this.getKalturaConfig(null, 'playreadyLicenseUrl') || mw.getConfig('Kaltura.LicenseServerURL');
 						if (!licenseUrl) {
 							mw.log('EmbedPlayerSPlayer::Error:: failed to retrieve playready license URL ');
@@ -352,7 +354,8 @@
 						'textTracksReceived': 'onTextTracksReceived',
 						'textTrackSelected': 'onTextTrackSelected',
 						'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions',
-						'error': 'onError'
+						'error': 'onError',
+						'alert': 'onError'
 					};
 
 					_this.playerObject = playerElement;
@@ -368,10 +371,14 @@
 					if ( isMimeType("video/mp4")
 						||
 						isMimeType("video/h264")
+						||
+						isMimeType("video/playreadySmooth")
+						||
+						_this.isLive()
 					){
 						_this.durationReceived = true;
-						readyCallback();
 					}
+					readyCallback();
 				});
 			}
 
@@ -508,8 +515,9 @@
 		},
 
 		onError: function (data) {
-			mw.log('EmbedPlayerSPlayer::onError ');
-			this.triggerHelper('embedPlayerError', [ JSON.parse(data) ]);
+			var data = {errorMessage: message};
+			mw.log('EmbedPlayerSPlayer::onError: ' + message);
+			this.triggerHelper('embedPlayerError', [ data ]);
 		},
 
 		handlePlayerError: function (data) {
@@ -541,8 +549,10 @@
 		play: function () {
 			mw.log('EmbedPlayerSPlayer::play');
 			var _this = this;
-			if (this.durationReceived && this.parent_play()) {
-				//bring back the player
+			if (this.parent_play()) {
+				//TODO:: Currently SL player initializes before actual volume is read from cookie, so we set it on play
+				//need to refactor the volume logic and remove this.
+				this.setPlayerElementVolume(this.volume);
 				this.getPlayerContainer().css('visibility', 'visible');
 				_this.playerObject.play();
 				this.monitor();
@@ -782,6 +792,11 @@
 		},
 		switchSrc: function (source) {
 			if (this.playerObject && this.mediaElement.getPlayableSources().length > 1) {
+				var trackIndex = -1;
+				if( source !== -1 ) {
+					trackIndex = this.getSourceIndex(source);
+				}
+
 				var trackIndex = this.getSourceIndex(source);
 				mw.log("EmbedPlayerSPlayer:: switch to track index: " + trackIndex);
 				$(this).trigger('sourceSwitchingStarted', [
