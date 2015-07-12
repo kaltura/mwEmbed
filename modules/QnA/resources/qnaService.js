@@ -195,7 +195,7 @@ DAL for Q&A Module
         lastUpdateTime: -1,
         QandA_ResponseProfile: "QandA_ResponseProfile",
         QandA_ResponseProfileSystemName: "QandA",
-        QandA_MetadataProfileSystemName: "Kaltura-QnA-DEV",
+        QandA_MetadataProfileSystemName: "Kaltura-QnA",
         QandA_cuePointTag: "qna",
         QandA_cuePointTypes: {"Question":1,"Answer":2, "Announcement":3},
         bootPromise:null,
