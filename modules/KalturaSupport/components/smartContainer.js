@@ -143,6 +143,8 @@
 							fakeCombo.find('span').text(gM("mwe-embedplayer-no-source")); // inital text shown when no data is available
 							var menu = $("<ul></ul>");                                    // the UL will be the dropdown menu of the combo box
 							var addOptions = function(items){                             // add items to the menu - add to bothe the original hidden select box and the UL menu
+								menu.empty();
+								propField.empty();
 								$.each(items, function (i, item) {
 									propField.append($('<option>', {                      // add item to hidden select box
 										value: item.value,
