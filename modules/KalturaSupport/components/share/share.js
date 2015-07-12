@@ -96,8 +96,8 @@
 
 		setup: function () {
 			this.setShareConfig();
-			this.setupPlayerURL();
-			this.addBindings();
+            this.setupPlayerURL();
+            this.addBindings();
 
 			// disable embed option on mobile and native
 			if ( mw.isMobileDevice() || mw.isNativeApp() ){

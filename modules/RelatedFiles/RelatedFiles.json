@@ -1,0 +1,12 @@
+{
+  "relatedFiles": {
+    "scripts": [
+      "resources/relatedFiles.js"
+    ],
+    "dependencies": "mw.KBaseScreen",
+    "kalturaPluginName": "relatedFiles",
+    "styles": "resources/relatedFiles.css",
+    "templates": "../RelatedFiles/resources/relatedFiles.tmpl.html",
+    "messageFile": "RelatedFiles.i18n.json"
+  }
+}

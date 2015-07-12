@@ -1,0 +1,13 @@
+{
+  "relatedFiles": {
+    "label": "relatedFiles",
+    "description": "RelatedFiles plugin enables you to view/download the files that related to the entry you're playing",
+    "attributes": {
+      "downloadEnabled": {
+        "doc": "Enables you to download the files that related to the entry you're playing",
+        "type": "true",
+        "initvalue": true
+      }
+    }
+  }
+}
