@@ -64,17 +64,22 @@ class PlaylistResult {
 				// kaltura playlist id:
 				// Check for entry cache:
 				if ( !$this->request->hasKS() ){
+					// Check if we have a cached result object
 					$this->playlistObject = unserialize( $this->cache->get( $this->getCacheKey() ) );
-					if( $this->playlistObject ){
-						return $this->playlistObject;
+					// If no cache, then request data from API
+					if( !$this->playlistObject ){
+						$foundInCache = false;
+						$this->playlistObject = $this->getPlaylistObjectFromKalturaApi();
+					} else {
+						$foundInCache = true;
 					}
-				}
-				// Check if we have a cached result object:
-				if( ! $this->playlistObject ){
+				} else {
+					$foundInCache = false;
 					$this->playlistObject = $this->getPlaylistObjectFromKalturaApi();
 				}
+
 				//Only cache request that don't have KS
-				if ( !$this->request->hasKS() ){
+				if ( !$foundInCache && !$this->request->hasKS() ){
 					$this->cache->set( $this->getCacheKey(), serialize( $this->playlistObject ) );
 				}
 			}
