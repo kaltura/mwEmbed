@@ -514,7 +514,7 @@
 			this.currentTime = this.slCurrentTime = 0;
 		},
 
-		onError: function (data) {
+		onError: function (message) {
 			var data = {errorMessage: message};
 			mw.log('EmbedPlayerSPlayer::onError: ' + message);
 			this.triggerHelper('embedPlayerError', [ data ]);
@@ -553,6 +553,7 @@
 				//TODO:: Currently SL player initializes before actual volume is read from cookie, so we set it on play
 				//need to refactor the volume logic and remove this.
 				this.setPlayerElementVolume(this.volume);
+				//bring back the player
 				this.getPlayerContainer().css('visibility', 'visible');
 				_this.playerObject.play();
 				this.monitor();
