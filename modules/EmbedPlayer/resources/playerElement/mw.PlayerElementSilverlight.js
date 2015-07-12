@@ -102,7 +102,8 @@
 					background:"transparent",
 					windowless:"true",
 					version: "4.0.60310.0",
-					 EnableGPUAcceleration:"true"
+					 EnableGPUAcceleration:"true",
+					 debug:mw.getConfig('debug')
 				 },
 				{
 					onError: "onError" + playerId,

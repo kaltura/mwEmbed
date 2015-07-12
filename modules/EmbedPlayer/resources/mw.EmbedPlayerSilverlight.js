@@ -81,31 +81,32 @@
 				}
 			}
 		},
+		connectToKES:function(resolvedSrc) {
+
+			var deferred = $.Deferred();
+
+			$.ajax({
+				url: resolvedSrc,
+				timeout: this.getKalturaConfig(null, 'multicastKESKtimeout') || this.defaultMulticastKESKtimeout,
+				dataType: 'jsonp',
+				success: function (response) {
+
+					return deferred.resolve(response);
+				},
+				error: function () {
+					return deferred.reject();
+				}
+			});
+
+			return deferred.promise();
+		},
 
 		loadMedia: function (readyCallback) {
 
 			var _this = this;
 			var srcToPlay = _this.getSrc();
 
-			var connectToMulticastServer=function(resolvedSrc) {
 
-				var deferred = $.Deferred();
-
-				$.ajax({
-					url: resolvedSrc,
-					timeout: _this.getKalturaConfig(null, 'multicastKESKtimeout') || _this.defaultMulticastKESKtimeout,
-					dataType: 'jsonp',
-					success: function (response) {
-
-						return deferred.resolve(response);
-					},
-					error: function () {
-						return deferred.reject();
-					}
-				});
-
-				return deferred.promise();
-			}
 
 			var handleMulticastPlayManifest =function(resolvedSrc) {
 
@@ -130,16 +131,16 @@
 
 						_this.keepAliveMCInterval = setInterval(function () {
 							try {
-								connectToMulticastServer(resolvedSrc).then(onMultiastServerResponse,startFailoverFromMulticastServer);
+								_this.connectToKES(resolvedSrc).then(onKESResponse,startFailoverFromMulticastServer);
 							}
 							catch (e) {
-								mw.log('connectToMulticastServer failed ' + e.message + ' ' + e.stack);
+								mw.log('connectToKES failed ' + e.message + ' ' + e.stack);
 								startFailoverFromMulticastServer();
 							}
 						}, interval);
 					}
 
-					var onMultiastServerResponse=function(response) {
+					var onKESResponse=function(response) {
 
 						mw.log('EmbedPlayerSPlayer got multicast details from KES: ' + JSON.stringify(response));
 
@@ -176,7 +177,7 @@
 						}
 					}
 
-					connectToMulticastServer(resolvedSrc).then(onMultiastServerResponse, function() {
+					_this.connectToKES(resolvedSrc).then(onKESResponse, function() {
 						mw.log('Error fetching url: '+resolvedSrc);
 						_this.isError = true;
 						fallbackToUnicast();
@@ -549,7 +550,7 @@
 		play: function () {
 			mw.log('EmbedPlayerSPlayer::play');
 			var _this = this;
-			if (this.parent_play()) {
+			if (this.durationReceived && this.parent_play()) {
 				//TODO:: Currently SL player initializes before actual volume is read from cookie, so we set it on play
 				//need to refactor the volume logic and remove this.
 				this.setPlayerElementVolume(this.volume);
