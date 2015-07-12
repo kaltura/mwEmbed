@@ -382,6 +382,7 @@
 
 		_ondurationchange: function () {
 			mw.log( "EmbedPlayerNativeComponent:: onDurationChange::" + this.getPlayerElement().duration );
+			$(this).trigger('durationChange', this.getPlayerElement().duration);
 		},
 
 		/**
