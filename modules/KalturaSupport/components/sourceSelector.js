@@ -10,6 +10,7 @@
 			"showTooltip": true,
 			"switchOnResize": false,
 			"simpleFormat": true,
+			"iconClass": "icon-cog",
             "displayMode": "size" //'size' – displays frame size ( default ), 'bitrate' – displays the bitrate, 'sizebitrate' displays size followed by bitrate
 		},
 
@@ -95,6 +96,14 @@
 					}
 				});
 			}
+
+			this.embedPlayer.bindHelper("propertyChangedEvent", function(event, data){
+				if ( data.plugin === _this.pluginName ){
+					if ( data.property === "sources" ){
+						_this.getMenu().$el.find("li a")[data.value].click();
+					}
+				}
+			});
 		},
 		getSources: function(){
 			return this.getPlayer().getSources();
@@ -181,7 +190,8 @@
 					prevSource = source;
 				});
 			}
-
+			var items = [];
+			var itemLabels = [];
 			var prevSource = null;
 			$.each( sources, function( sourceIndex, source ) {
 				if( source.skip ){
@@ -204,9 +214,17 @@
 								)
 						){
 						_this.addSourceToMenu( source );
+						var label = _this.getSourceTitle( source )
+						if ($.inArray(label, itemLabels) === -1){
+							itemLabels.push(label)
+							items.push({'label':label, 'value':label});
+						}
 					}
 				}
 			});
+			// dispatch event to be used by a master plugin if defined
+			this.getPlayer().triggerHelper("updatePropertyEvent",{"plugin": this.pluginName, "property": "sources", "items": items, "selectedItem": this.getMenu().$el.find('.active a').text()});
+
 		},
 		isSourceSelected: function( source ){
 			var _this = this;

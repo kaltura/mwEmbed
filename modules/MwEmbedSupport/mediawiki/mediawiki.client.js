@@ -55,28 +55,28 @@
 		return  /OS 3_/.test(userAgent) && mw.isIpad();
 	};
 	mw.isAndroid44 = function () {
-		return ( userAgent.indexOf('Android 4.4') != -1 );
+		return ( userAgent.indexOf('Android 4.4') != -1  && userAgent.indexOf('Windows') === -1 );
 	};
 	mw.isAndroid43 = function () {
-		return ( userAgent.indexOf('Android 4.3') != -1 );
+		return ( userAgent.indexOf('Android 4.3') != -1  && userAgent.indexOf('Windows') === -1 );
 	};
 	mw.isAndroid42 = function () {
-		return ( userAgent.indexOf('Android 4.2') != -1 );
+		return ( userAgent.indexOf('Android 4.2') != -1  && userAgent.indexOf('Windows') === -1 );
 	};
 	mw.isAndroid41 = function () {
-		return ( userAgent.indexOf('Android 4.1') != -1 );
+		return ( userAgent.indexOf('Android 4.1') != -1  && userAgent.indexOf('Windows') === -1 );
 	};
 	mw.isAndroid40 = function () {
-		return ( userAgent.indexOf('Android 4.0') != -1 );
+		return ( userAgent.indexOf('Android 4.0') != -1  && userAgent.indexOf('Windows') === -1 );
 	};
 	mw.isAndroid2 = function () {
-		return ( userAgent.indexOf('Android 2.') != -1 );
+		return ( userAgent.indexOf('Android 2.') != -1  && userAgent.indexOf('Windows') === -1 );
 	};
 	mw.isAndroid = function () {
-		return ( userAgent.indexOf('Android') != -1 );
+		return ( userAgent.indexOf('Android') != -1 && userAgent.indexOf('Windows') === -1);
 	};
 	mw.isAndroid4andUp = function () {
-		return ( (userAgent.indexOf('Android 4.') != -1) || (userAgent.indexOf('Android 5.') != -1) );
+		return ( (userAgent.indexOf('Android 4.') != -1) || (userAgent.indexOf('Android 5.') != -1) && userAgent.indexOf('Windows') === -1 );
 	};
 	mw.isFirefox = function () {
 		return ( userAgent.indexOf('Firefox') != -1 );

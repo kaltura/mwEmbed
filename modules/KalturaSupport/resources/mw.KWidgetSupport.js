@@ -235,6 +235,9 @@ mw.KWidgetSupport.prototype = {
 	},
 
 	updatePlayerData: function( embedPlayer,  playerData, callback ){
+		// Handle entry data
+		this.updatePlayerEntryData(embedPlayer, playerData);
+		this.updatePlayerMetaData(embedPlayer, playerData);
 		// Check for playerData error
 		this.handlePlayerError(embedPlayer, playerData);
 		this.updatePlayerContextData(embedPlayer, playerData);
@@ -255,10 +258,6 @@ mw.KWidgetSupport.prototype = {
 		// check for entry id not found:
 		if( this.isNoEntryId(playerData) ){
 			this.handleNoEntryId();
-		}
-		else {
-			this.updatePlayerEntryData(embedPlayer, playerData);
-			this.updatePlayerMetaData(embedPlayer, playerData);
 		}
 		// Check access controls ( must come after addPlayerMethods for custom messages )
 		this.initCuePointsService(embedPlayer, playerData);
@@ -1588,6 +1587,20 @@ mw.KWidgetSupport.prototype = {
 		// Prefer H264 flavor over HLS on Android
 		if( !this.removedAdaptiveFlavors && mw.isAndroid() && hasH264Flavor && !mw.getConfig( 'Kaltura.LeadHLSOnAndroid' ) ) {
 			deviceSources = this.removeAdaptiveFlavors( deviceSources );
+		}
+
+		// PRemove adaptive sources on Windows Phone
+		if( mw.isWindowsPhone() ) {
+			deviceSources = this.removeAdaptiveFlavors( deviceSources );
+		}
+
+		// if we have streamertype that is not hls and we support hls on the native player - we'll use kplayer + hls - we want to eliminate  this option
+		// for now the only usecase is microsoft edge browser
+		if ( mw.supportsFlash()  &&
+			this.originalStreamerType &&
+			this.originalStreamerType !== "hls" &&
+			 mw.getConfig("LeadWithHLSOnFlash") === null 	){
+			    deviceSources = this.removeAdaptiveFlavors( deviceSources );
 		}
 
 		//TODO: Remove duplicate webm and h264 flavors

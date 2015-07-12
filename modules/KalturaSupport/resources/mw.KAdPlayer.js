@@ -1538,16 +1538,6 @@ mw.KAdPlayer.prototype = {
 								VPAIDObj.resumeAd();
 							}
 						});
-						_this.embedPlayer.unbindHelper('onOpenFullScreen' + bindPostFix).bindHelper('onOpenFullScreen' + bindPostFix, function(){
-							if( VPAIDObj.resizeAd && typeof VPAIDObj.resizeAd == "function" ){
-								setTimeout(function(){VPAIDObj.resizeAd($(window).width(),$(window).height(),"fullscreen")},1000);
-							}
-						});
-						_this.embedPlayer.unbindHelper('onCloseFullScreen' + bindPostFix).bindHelper('onCloseFullScreen' + bindPostFix, function(){
-							if( VPAIDObj.resizeAd && typeof VPAIDObj.resizeAd == "function" ){
-								setTimeout(function(){VPAIDObj.resizeAd(_this.embedPlayer.width,_this.embedPlayer.height,"normal")},1000);
-							}
-						});
 					}else{
 						_this.embedPlayer.unbindHelper('onAdSkip' + bindPostFix).bindHelper('onAdSkip' + bindPostFix, function(){
 							if( VPAIDObj.stopAd ){
@@ -1555,6 +1545,16 @@ mw.KAdPlayer.prototype = {
 							}
 						});
 					}
+					_this.embedPlayer.unbindHelper('onOpenFullScreen' + bindPostFix).bindHelper('onOpenFullScreen' + bindPostFix, function(){
+						if( VPAIDObj.resizeAd && typeof VPAIDObj.resizeAd == "function" ){
+							setTimeout(function(){VPAIDObj.resizeAd($(window).width(),$(window).height(),"fullscreen")},1000);
+						}
+					});
+					_this.embedPlayer.unbindHelper('onCloseFullScreen' + bindPostFix).bindHelper('onCloseFullScreen' + bindPostFix, function(){
+						if( VPAIDObj.resizeAd && typeof VPAIDObj.resizeAd == "function" ){
+							setTimeout(function(){VPAIDObj.resizeAd(_this.embedPlayer.width,_this.embedPlayer.height,"normal")},1000);
+						}
+					});
 				}
 			}
 			//add the vpaid container
