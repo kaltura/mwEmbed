@@ -83,6 +83,7 @@
 		},
 		connectToKES:function(resolvedSrc) {
 
+			mw.log('connectToKES ' + resolvedSrc);
 			var deferred = $.Deferred();
 
 			$.ajax({
@@ -100,121 +101,153 @@
 
 			return deferred.promise();
 		},
+		handleMulticastPlayManifest:function(resolvedSrc,doEmbedFunc) {
 
+			mw.log('handleMulticastPlayManifest ' + resolvedSrc);
+			var _this=this;
+			//we got an multicast server that we need to redirect
+			if (resolvedSrc.indexOf("http")===0)
+			{
+				this.multiastServerUrl=resolvedSrc;
+
+				var startFailoverFromMulticastServer=function() {
+
+					this.isError = true;
+					//TODO handle failover
+				}
+
+				var startMultiastServerKeepAlive=function() {
+
+					if (_this.keepAliveMCInterval) {
+						return;
+					}
+
+					var interval = _this.getKalturaConfig(null, 'multicastKeepAliveInterval') || _this.defaultMulticastKeepAliveInterval;
+
+					_this.keepAliveMCInterval = setInterval(function () {
+						try {
+							_this.connectToKES(resolvedSrc).then(onKESResponse,startFailoverFromMulticastServer);
+						}
+						catch (e) {
+							mw.log('connectToKES failed ' + e.message + ' ' + e.stack);
+							startFailoverFromMulticastServer();
+						}
+					}, interval);
+				}
+
+				var onKESResponse=function(response) {
+
+					mw.log('EmbedPlayerSPlayer got multicast details from KES: ' + JSON.stringify(response));
+
+
+					//verify we got a valid response from KES
+					if (response.multicastAddress && response.multicastPort && response.hls) {
+
+						var multicastAddress = response.multicastAddress + ":" + response.multicastPort;
+						mw.log('multicastAddress= ' + multicastAddress);
+
+						//first time
+						if (!_this.multicastAddress) {
+
+							_this.multicastAddress=multicastAddress;
+							doEmbedFunc(multicastAddress);
+
+
+							startMultiastServerKeepAlive();
+
+						} else {
+
+							if (_this.multicastAddress!==multicastAddress) {
+								startFailoverFromMulticastServer();
+							} else {
+								//mw.log('keep alive sent successfully');
+							}
+						}
+					} else {
+						mw.log('Invalid multicast address/port returned from KES');
+
+						_this.isError = true;
+						_this.fallbackToUnicast();
+
+					}
+				}
+
+				_this.connectToKES(resolvedSrc).then(onKESResponse, function() {
+					mw.log('Error fetching url: '+resolvedSrc);
+					_this.isError = true;
+					_this.fallbackToUnicast();
+				});
+
+
+			} else {
+				//TODO handle fallback resolvedSrc
+				doEmbedFunc(resolvedSrc);
+			}
+		},
+		fallbackToUnicast:function() {
+			var _this=this;
+			var enableMulticastFallback = _this.getKalturaConfig(null, 'enableMulticastFallback') || _this.defaultEnableMulticastFallback;
+			if (enableMulticastFallback) {
+				//remove current source to fallback to unicast if multicast failed
+				for (var i = 0; i < _this.mediaElement.sources.length; i++) {
+					if (_this.mediaElement.sources[i] == _this.mediaElement.selectedSource) {
+						if (_this.playerObject) {
+							_this.playerObject.stop();
+						}
+						_this.mediaElement.sources.splice(i, 1);
+
+						_this.setupSourcePlayer();
+						return;
+					}
+				}
+			} else {
+				var errorObj = { message: gM('ks-LIVE-STREAM-NOT-AVAILABLE'), title: gM('ks-ERROR') };
+				_this.showErrorMsg(errorObj);
+			}
+			_this.readyCallbackFunc = undefined;
+		},
+		handleFailoverFromPlayManifest:function() {
+			mw.log('Error calling play manifest: '+_this.getSrc());
+			this.isError = true
+			this.fallbackToUnicast();
+		},
+		//in multicast we must first check if payer is live
+		loadMulticast: function (doEmbedFunc) {
+			mw.log('loadMulticast');
+			var _this=this;
+			$(_this).trigger('checkIsLive', [ function (onAirStatus) {
+
+				function resolve() {
+
+					_this.resolveSrcURL(_this.getSrc()).then(function(result) {
+						_this.handleMulticastPlayManifest(result,doEmbedFunc);
+					},_this.handleFailoverFromPlayManifest);
+
+				}
+				if (onAirStatus) {
+					resolve();
+				} else {
+					//stream is offline, stream address can be retrieved when online
+					_this.bindHelper("liveOnline" + _this.bindPostfix, function () {
+						_this.unbindHelper("liveOnline" + _this.bindPostfix);
+						_this.addPlayerSpinner();
+
+						resolve();
+
+						//no need to save readyCallback since it was already called
+						_this.readyCallbackFunc = undefined;
+
+					});
+					readyCallback();
+				}
+			}]);
+		},
 		loadMedia: function (readyCallback) {
 
 			var _this = this;
 			var srcToPlay = _this.getSrc();
 
 
-
-			var handleMulticastPlayManifest =function(resolvedSrc) {
-
-				//we got an multicast server that we need to redirect
-				if (resolvedSrc.indexOf("http")===0)
-				{
-					_this.multiastServerUrl=resolvedSrc;
-
-					var startFailoverFromMulticastServer=function() {
-
-						_this.isError = true;
-						//TODO handle failover
-					}
-
-					var startMultiastServerKeepAlive=function() {
-
-						if (_this.keepAliveMCInterval) {
-							return;
-						}
-
-						var interval = _this.getKalturaConfig(null, 'multicastKeepAliveInterval') || _this.defaultMulticastKeepAliveInterval;
-
-						_this.keepAliveMCInterval = setInterval(function () {
-							try {
-								_this.connectToKES(resolvedSrc).then(onKESResponse,startFailoverFromMulticastServer);
-							}
-							catch (e) {
-								mw.log('connectToKES failed ' + e.message + ' ' + e.stack);
-								startFailoverFromMulticastServer();
-							}
-						}, interval);
-					}
-
-					var onKESResponse=function(response) {
-
-						mw.log('EmbedPlayerSPlayer got multicast details from KES: ' + JSON.stringify(response));
-
-
-						//verify we got a valid response from KES
-						if (response.multicastAddress && response.multicastPort && response.hls) {
-
-							var multicastAddress = response.multicastAddress + ":" + response.multicastPort;
-							mw.log('multicastAddress= ' + multicastAddress);
-
-							//first time
-							if (!_this.multicastAddress) {
-
-								_this.multicastAddress=multicastAddress;
-								doEmbedFunc(multicastAddress);
-
-
-								startMultiastServerKeepAlive();
-
-							} else {
-
-								if (_this.multicastAddress!==multicastAddress) {
-									startFailoverFromMulticastServer();
-								} else {
-									//mw.log('keep alive sent successfully');
-								}
-							}
-						} else {
-							mw.log('Invalid multicast address/port returned from KES');
-
-							_this.isError = true;
-							fallbackToUnicast();
-
-						}
-					}
-
-					_this.connectToKES(resolvedSrc).then(onKESResponse, function() {
-						mw.log('Error fetching url: '+resolvedSrc);
-						_this.isError = true;
-						fallbackToUnicast();
-					});
-
-
-				} else {
-					//TODO handle fallback resolvedSrc
-					doEmbedFunc(resolvedSrc);
-				}
-			}
-
-			var handleFailoverFromPlayManifest=function() {
-				mw.log('Error calling play manifest: '+_this.getSrc());
-				_this.isError = true
-				fallbackToUnicast();
-			}
-
-			//in multicast we must first check if payer is live
-			var getMulticastStreamAddress = function () {
-				$(_this).trigger('checkIsLive', [ function (onAirStatus) {
-					if (onAirStatus) {
-						_this.resolveSrcURL(_this.getSrc()).then(handleMulticastPlayManifest,handleFailoverFromPlayManifest);
-					} else {
-						//stream is offline, stream address can be retrieved when online
-						_this.bindHelper("liveOnline" + _this.bindPostfix, function () {
-							_this.unbindHelper("liveOnline" + _this.bindPostfix);
-							_this.addPlayerSpinner();
-							_this.resolveSrcURL(_this.getSrc()).then(handleMulticastPlayManifest,handleFailoverFromPlayManifest);
-							//no need to save readyCallback since it was already called
-							_this.readyCallbackFunc = undefined;
-
-						});
-						readyCallback();
-					}
-				}]);
-			};
 
 			//if error occured- don't try to load playmanifest, return
 			if (!$.isEmptyObject(this.playerError)) {
@@ -229,27 +262,7 @@
 				return false;
 			};
 
-			var fallbackToUnicast=function() {
-				var enableMulticastFallback = _this.getKalturaConfig(null, 'enableMulticastFallback') || _this.defaultEnableMulticastFallback;
-				if (enableMulticastFallback) {
-					//remove current source to fallback to unicast if multicast failed
-					for (var i = 0; i < _this.mediaElement.sources.length; i++) {
-						if (_this.mediaElement.sources[i] == _this.mediaElement.selectedSource) {
-							if (_this.playerObject) {
-								_this.playerObject.stop();
-							}
-							_this.mediaElement.sources.splice(i, 1);
 
-							_this.setupSourcePlayer();
-							return;
-						}
-					}
-				} else {
-					var errorObj = { message: gM('ks-LIVE-STREAM-NOT-AVAILABLE'), title: gM('ks-ERROR') };
-					_this.showErrorMsg(errorObj);
-				}
-				_this.readyCallbackFunc = undefined;
-			}
 
 			var doEmbedFunc = function (resolvedSrc) {
 				var flashvars = {
@@ -325,7 +338,7 @@
 					setTimeout(function () {
 						if (!_this.durationReceived) {
 							_this.isError = true
-							fallbackToUnicast();
+							_this.fallbackToUnicast();
 
 						}
 					}, timeout);
@@ -384,7 +397,7 @@
 			}
 
 			if (_this.isLive()) {
-				getMulticastStreamAddress();
+				_this.loadMulticast(doEmbedFunc);
 			} else {
 				_this.resolveSrcURL(_this.getSrc()).then(doEmbedFunc);
 			}
