@@ -463,6 +463,7 @@
                 this.getEntryUrl().then(function (srcToPlay) {
                     _this.play();
                 });
+                return;
             }
 			var shouldDisable = false;
 			if (this.isLive() && this.paused) {
