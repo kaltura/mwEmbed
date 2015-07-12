@@ -188,6 +188,8 @@
 			var _this=this;
 			var enableMulticastFallback = _this.getKalturaConfig(null, 'enableMulticastFallback') || _this.defaultEnableMulticastFallback;
 			if (enableMulticastFallback) {
+
+				mw.log('fallbackToUnicast: try unicast');
 				//remove current source to fallback to unicast if multicast failed
 				for (var i = 0; i < _this.mediaElement.sources.length; i++) {
 					if (_this.mediaElement.sources[i] == _this.mediaElement.selectedSource) {
@@ -201,13 +203,14 @@
 					}
 				}
 			} else {
+				mw.log("fallbackToUnicast: stop here since we don't allow multicast failver");
 				var errorObj = { message: gM('ks-LIVE-STREAM-NOT-AVAILABLE'), title: gM('ks-ERROR') };
 				_this.showErrorMsg(errorObj);
 			}
 			_this.readyCallbackFunc = undefined;
 		},
 		handleFailoverFromPlayManifest:function() {
-			mw.log('Error calling play manifest: '+_this.getSrc());
+			mw.log('Error calling play manifest: '+this.getSrc());
 			this.isError = true
 			this.fallbackToUnicast();
 		},
@@ -221,7 +224,9 @@
 
 					_this.resolveSrcURL(_this.getSrc()).then(function(result) {
 						_this.handleMulticastPlayManifest(result,doEmbedFunc);
-					},_this.handleFailoverFromPlayManifest);
+					},function() {
+						_this.handleFailoverFromPlayManifest();
+					});
 
 				}
 				if (onAirStatus) {

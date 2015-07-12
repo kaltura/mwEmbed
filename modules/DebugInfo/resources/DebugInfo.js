@@ -114,7 +114,12 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
 
             _this.refresh();
             this.refreshInterval=setInterval(function() {
-                _this.refresh();
+                try {
+                    _this.refresh();
+                }
+                catch(e) {
+                    mw.log('debugInfo refresh failed ' + e.message + ' ' + e.stack);
+                }
             },1000);
 
 
