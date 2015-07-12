@@ -210,7 +210,7 @@
 		stretchFill: function() {
 			this.playerProxy.stretchFill();
 		},
-		getMultivcastDiagnostics: function(){
+		getMulticastDiagnostics: function(){
 			var diag= this.playerProxy.getDiagnostics();
 			if (this.element &&
 				this.element.targetObj &&
