@@ -1,5 +1,5 @@
 
-(function (mw, $) {
+(function (mw, $, ko) {
 	"use strict";
 
 	mw.PluginManager.add('qna', mw.KBasePlugin.extend({
@@ -77,11 +77,10 @@
 				}
             });
 
-			this.bind('layoutBuildDone ended', function (event, screenName) {
+			this.bind('layoutBuildDone', function (event, screenName) {
 				// add the Q&A toggle button to be on the video
 				embedPlayer.getVideoHolder().append('<div class="qna-on-video-btn icon-qna-close"><div class="qna-badge"></div></div>');
 				_this.getQnaContainer();
-				//qnaObject =  $(window['parent'].document.getElementById(embedPlayer.id )).parent().find( ".qnaInterface" );
 				qnaObject = _this.getQnaContainer().find(".qnaModuleBackground");
 				onVideoTogglePluginButton = $('.qna-on-video-btn');
 
@@ -138,8 +137,12 @@
 
 		injectCssToPage: function(cssLink){
 			if (cssLink) {
-				cssLink = cssLink.toLowerCase().indexOf("http") === 0 ? cssLink : kWidget.getPath() + cssLink; // support external CSS links
-				$('head', window.parent.document).append('<link type="text/css" rel="stylesheet" href="' + cssLink + '"/>');
+				try{
+					cssLink = cssLink.toLowerCase().indexOf("http") === 0 ? cssLink : kWidget.getPath() + cssLink; // support external CSS links
+					$('head', window.parent.document).append('<link type="text/css" rel="stylesheet" href="' + cssLink + '"/>');
+				}catch(e){
+					mw.log("failed to inject css " + cssLink + " to page. Exception: " + e);
+				}
 			} else {
 				mw.log("Error: " + this.pluginName + " could not find CSS link");
 			}
@@ -149,6 +152,17 @@
 		getQnaContainer: function(){
             var embedPlayer = this.getPlayer();
 			if (!this.$qnaListContainer) {
+
+				// for unfriendly iFrames, where we can't access window['parent'] we set on page to true
+				if ( !this.getConfig( 'onPage' ) ) {
+					try{
+						var parent = window['parent'];
+					}catch(e){
+						this.setConfig('onPage', true);
+						mw.log("cant access window['parent'] - setting to true");
+					}
+				}
+
 				if ( this.getConfig( 'onPage' ) ) {
 					// Inject external CSS files
 					this.injectCssToPage(this.getConfig('qnaMainCssFileName'));
@@ -157,21 +171,25 @@
 					this.injectCssToPage(this.getConfig('qnaNanoCssFileName'));
 					this.injectCssToPage(this.getConfig('qnaThreadsListCssFileName'));
 
-					var iframeParent = window['parent'].document.getElementById(this.embedPlayer.id);
-					$(iframeParent).parents().find("#" + this.getConfig('qnaTargetId')).html("<div class='qnaInterface'></div>");
-					this.$qnaListContainer = $(iframeParent).parents().find(".qnaInterface");
+					try{
+						var iframeParent = $('#'+this.embedPlayer.id, window['parent'].document)[0];
+						$(iframeParent).parents().find("#" + this.getConfig('qnaTargetId')).html("<div class='qnaInterface'></div>");
+						this.$qnaListContainer = $(iframeParent).parents().find(".qnaInterface");
+					}catch(e){
+						mw.log("failed to access window['parent'] for creating $qnaListContainer");
+					}
 				}
 				else{
 					// wrap the .mwPlayerContainer element with our qnaInterface div
-					$('.mwPlayerContainer').wrap("<div class='qnaInterface' style='position: relative; width: 100%; height: 100%'>")
+					$('.mwPlayerContainer').wrap("<div class='qnaInterface' style='position: relative; width: 100%; height: 100%'>");
 
 					this.$qnaListContainer = $( ".qnaInterface");
 					// resize the video to make place for the playlist according to its position (left, top, right, bottom)
-					if ( this.getConfig( 'containerPosition' ) == 'right' || this.getConfig( 'containerPosition' ) == 'left' ) {
+					if ( this.getConfig( 'containerPosition' ) === 'right' || this.getConfig( 'containerPosition' ) === 'left' ) {
 						$( ".videoHolder, .mwPlayerContainer" ).css( "width", this.$qnaListContainer.width() - this.getConfig( 'moduleWidth' ) + "px" );
 						this.videoWidth = (this.$qnaListContainer.width() - this.getConfig( 'moduleWidth' ));
 					}
-					if ( this.getConfig( 'containerPosition' ) == 'left' ) {
+					if ( this.getConfig( 'containerPosition' ) === 'left' ) {
 						$( ".mwPlayerContainer" ).css( "float", "right" );
 					}
 					else{
@@ -230,6 +248,7 @@
 		bindButtons : function(){
 			var _this = this;
 			var sendButton = _this.getQnaContainer().find('.qnaSendButton');
+			var textArea = _this.getQnaContainer().find('.qnaQuestionTextArea');
 			sendButton.text(gM('qna-send-button-text'));
 			sendButton
 				.off('click')
@@ -253,15 +272,14 @@
 					_this.resetTextArea(textArea);
 				});
 
-			var textArea = _this.getQnaContainer().find('.qnaQuestionTextArea');
 			_this.resetTextArea(textArea);
 			textArea
 				.off('focus')
 				.on('focus', function(){
 					if (textArea.val() === gM('qna-default-question-box-text')) {
-						textArea.css({'font-weight': 300});
 						textArea.val('');
-						textArea.css({'color': '#ffffff'});
+						textArea.removeClass("qnaInterface qnaQuestionTextAreaNotTyping");
+						textArea.addClass("qnaInterface qnaQuestionTextAreaTyping");
 					}
 				});
 
@@ -281,7 +299,7 @@
 				$(this).scrollTop($(this).scrollTop() - Math.round(deltaY));
 			});
 
-			textArea.bind("touchstart",function(ev) {
+			textArea.one("touchstart",function(ev) {
 				var elem = ev.target;
 				$(elem).css({'overflow':'auto'});
 			});
@@ -289,11 +307,11 @@
 
 		resetTextArea : function(textArea){
 			textArea.val(gM('qna-default-question-box-text'));
-			textArea.css({'font-weight': 300});
-			textArea.css({'color': 'rgba(255, 240, 240, 0.61)'});
+			textArea.removeClass("qnaInterface qnaQuestionTextAreaTyping");
+			textArea.addClass("qnaInterface qnaQuestionTextAreaNotTyping");
 		},
 
-		getHTML : function(data){
+		getHTML : function(){
 			var templatePath = this.getConfig( 'templatePath' );
 			var rawHTML = window.kalturaIframePackageData.templates[ templatePath ];
 
@@ -353,4 +371,4 @@
 
 	}));
 
-})(window.mw, window.jQuery);
+})(window.mw, window.jQuery, window.ko);
