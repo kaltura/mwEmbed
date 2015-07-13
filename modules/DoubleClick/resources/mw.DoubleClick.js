@@ -153,7 +153,11 @@
 							_this.embedPlayer.getPlayerElement().pause();
 						}
 					});
-					_this.addManagedBinding();
+					if (this.getConfig("adTagUrl")){
+						_this.addManagedBinding();
+					}else{
+						_this.handleCuePoints();
+					}
 					callback();
 					return;
 				} else if ( mw.isIE8() || mw.isIE9() ) {   //no flash on IE8/9
@@ -186,6 +190,8 @@
 						// No defined ad pattern always use managed bindings
 						_this.addManagedBinding();
 					}
+				}else{
+					_this.handleCuePoints();
 				}
 				// Issue the callback to continue player build out:
 				callback();
@@ -199,6 +205,23 @@
 			}
 			$( _this.embedPlayer ).data( 'doubleClickRestore',restoreOnInit );
 
+		},
+		handleCuePoints: function(){
+			var _this = this;
+			$( this.embedPlayer ).bind('KalturaSupport_AdOpportunity', function( event, cuePointWrapper ) {
+				if( cuePointWrapper.cuePoint.protocolType == 1 ){ // Check for  protocolType == 1 ( type = vast )
+					_this.adTagUrl = cuePointWrapper.cuePoint.sourceUrl;
+					_this.copyFlashvarsToKDP(_this.embedPlayer, _this.pluginName);
+					if (cuePointWrapper.cuePoint.adType == 1){ // linear video
+						_this.embedPlayer.pause();
+						_this.embedPlayer.addPlayerSpinner();
+						_this.currentAdSlotType = "midroll";
+					}else{
+						_this.currentAdSlotType = "overlay";
+					}
+					_this.requestAds();
+				}
+			});
 		},
 		removeAdContainer: function(){
 			var $containerAd = $('#' + this.getAdContainerId() );
