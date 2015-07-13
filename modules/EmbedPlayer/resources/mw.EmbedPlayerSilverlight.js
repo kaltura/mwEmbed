@@ -215,7 +215,7 @@
 			this.fallbackToUnicast();
 		},
 		//in multicast we must first check if payer is live
-		loadMulticast: function (doEmbedFunc) {
+		loadMulticast: function (doEmbedFunc,readyCallback) {
 			mw.log('loadMulticast');
 			var _this=this;
 			$(_this).trigger('checkIsLive', [ function (onAirStatus) {
@@ -402,7 +402,7 @@
 			}
 
 			if (_this.isLive()) {
-				_this.loadMulticast(doEmbedFunc);
+				_this.loadMulticast(doEmbedFunc,readyCallback);
 			} else {
 				_this.resolveSrcURL(_this.getSrc()).then(doEmbedFunc);
 			}
