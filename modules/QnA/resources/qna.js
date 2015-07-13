@@ -319,22 +319,12 @@
 		},
 
 		hideModule: function(hide, announcementOnly) {
-			var firstTime = false;
 			var _this = this;
-			if (_this.moduleStatus() === undefined){
-				_this.moduleStatus(hide);
-				_this.announcementOnlyStatus(announcementOnly);
-				firstTime = true;
-			}
-			else{
-				if (_this.moduleStatus() === hide && _this.announcementOnlyStatus() === announcementOnly){
-					return;
-				}
-				else{
-					_this.moduleStatus(hide);
-					_this.announcementOnlyStatus(announcementOnly);
-				}
-			}
+			var firstTime = (_this.moduleStatus() === undefined);
+
+			_this.moduleStatus(hide);
+			_this.announcementOnlyStatus(announcementOnly);
+
 			if (hide) {
 				_this.getQnaContainer().find(".qnaModuleBackground").hide();
 				if (!_this.getConfig( 'onPage' )) {
@@ -343,22 +333,21 @@
 				$('.qna-on-video-btn').hide();
 			}
 			else{
+				$('.qna-on-video-btn').show();
+				if (!_this.getConfig( 'onPage' )) {
+					_this.getQnaContainer().find(".qnaModuleBackgroundHider").hide();
+				}
+
+				// open the module only if this is the first time
 				if (firstTime) {
-					if (!_this.getConfig( 'onPage' )) {
-						_this.getQnaContainer().find(".qnaModuleBackgroundHider").hide();
-					}
 					_this.getQnaContainer().find(".qnaModuleBackground").show();
 				}
-				$('.qna-on-video-btn').show();
 
 				if (announcementOnly){
 					_this.getQnaContainer().find(".qnaQuestionArea").hide();
 					$('.qnaReplyBox').hide();
 				}
 				else{
-					if (!_this.getConfig( 'onPage' )) {
-						_this.getQnaContainer().find(".qnaModuleBackgroundHider").hide();
-					}
 					_this.getQnaContainer().find(".qnaQuestionArea").show();
 					$('.qnaReplyBox').show();
 				}
