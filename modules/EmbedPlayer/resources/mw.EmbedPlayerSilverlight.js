@@ -11,6 +11,10 @@
 		playerPrefix: 'EmbedPlayerSilverlight',
 		//default playback start time to wait before falling back to unicast in millisecods
 		defaultMulticastStartTimeout: 10000,
+		defaultMulticastKeepAliveInterval: 10000,
+		defaultMulticastKESKtimeout: 10000,
+		multicastAddress:null,
+		defaultEnableMulticastFallback:true,
 		containerId: null,
 		// List of supported features:
 		supports: {
@@ -69,29 +73,186 @@
 
 		},
 
+		fillDiagnostics: function(diagObj) {
+			if (diagObj) {
+
+				if (this.multiastServerUrl) {
+					diagObj.multiastServerUrl = this.multiastServerUrl;
+				}
+			}
+		},
+		connectToKES:function(resolvedSrc) {
+
+			mw.log('connectToKES ' + resolvedSrc);
+			var deferred = $.Deferred();
+
+			$.ajax({
+				url: resolvedSrc,
+				timeout: this.getKalturaConfig(null, 'multicastKESKtimeout') || this.defaultMulticastKESKtimeout,
+				dataType: 'jsonp',
+				success: function (response) {
+
+					return deferred.resolve(response);
+				},
+				error: function () {
+					return deferred.reject();
+				}
+			});
+
+			return deferred.promise();
+		},
+		handleMulticastPlayManifest:function(resolvedSrc,doEmbedFunc) {
+
+			mw.log('handleMulticastPlayManifest ' + resolvedSrc);
+			var _this=this;
+			//we got an multicast server that we need to redirect
+			if (resolvedSrc.indexOf("http")===0)
+			{
+				this.multiastServerUrl=resolvedSrc;
+
+				var startFailoverFromMulticastServer=function() {
+
+					this.isError = true;
+					//TODO handle failover
+				}
+
+				var startMultiastServerKeepAlive=function() {
+
+					if (_this.keepAliveMCInterval) {
+						return;
+					}
+
+					var interval = _this.getKalturaConfig(null, 'multicastKeepAliveInterval') || _this.defaultMulticastKeepAliveInterval;
+
+					_this.keepAliveMCInterval = setInterval(function () {
+						try {
+							_this.connectToKES(resolvedSrc).then(onKESResponse,startFailoverFromMulticastServer);
+						}
+						catch (e) {
+							mw.log('connectToKES failed ' + e.message + ' ' + e.stack);
+							startFailoverFromMulticastServer();
+						}
+					}, interval);
+				}
+
+				var onKESResponse=function(response) {
+
+					mw.log('EmbedPlayerSPlayer got multicast details from KES: ' + JSON.stringify(response));
+
+
+					//verify we got a valid response from KES
+					if (response.multicastAddress && response.multicastPort && response.hls) {
+
+						var multicastAddress = response.multicastAddress + ":" + response.multicastPort;
+						mw.log('multicastAddress= ' + multicastAddress);
+
+						//first time
+						if (!_this.multicastAddress) {
+
+							_this.multicastAddress=multicastAddress;
+							doEmbedFunc(multicastAddress);
+
+
+							startMultiastServerKeepAlive();
+
+						} else {
+
+							if (_this.multicastAddress!==multicastAddress) {
+								startFailoverFromMulticastServer();
+							} else {
+								//mw.log('keep alive sent successfully');
+							}
+						}
+					} else {
+						mw.log('Invalid multicast address/port returned from KES');
+
+						_this.isError = true;
+						_this.fallbackToUnicast();
+
+					}
+				}
+
+				_this.connectToKES(resolvedSrc).then(onKESResponse, function() {
+					mw.log('Error fetching url: '+resolvedSrc);
+					_this.isError = true;
+					_this.fallbackToUnicast();
+				});
+
+
+			} else {
+				//TODO handle fallback resolvedSrc
+				doEmbedFunc(resolvedSrc);
+			}
+		},
+		fallbackToUnicast:function() {
+			var _this=this;
+			var enableMulticastFallback = _this.getKalturaConfig(null, 'enableMulticastFallback') || _this.defaultEnableMulticastFallback;
+			if (enableMulticastFallback) {
+
+				mw.log('fallbackToUnicast: try unicast');
+				//remove current source to fallback to unicast if multicast failed
+				for (var i = 0; i < _this.mediaElement.sources.length; i++) {
+					if (_this.mediaElement.sources[i] == _this.mediaElement.selectedSource) {
+						if (_this.playerObject) {
+							_this.playerObject.stop();
+						}
+						_this.mediaElement.sources.splice(i, 1);
+
+						_this.setupSourcePlayer();
+						return;
+					}
+				}
+			} else {
+				mw.log("fallbackToUnicast: stop here since we don't allow multicast failver");
+				var errorObj = { message: gM('ks-LIVE-STREAM-NOT-AVAILABLE'), title: gM('ks-ERROR') };
+				_this.showErrorMsg(errorObj);
+			}
+			_this.readyCallbackFunc = undefined;
+		},
+		handleFailoverFromPlayManifest:function() {
+			mw.log('Error calling play manifest: '+this.getSrc());
+			this.isError = true
+			this.fallbackToUnicast();
+		},
+		//in multicast we must first check if payer is live
+		loadMulticast: function (doEmbedFunc,readyCallback) {
+			mw.log('loadMulticast');
+			var _this=this;
+			$(_this).trigger('checkIsLive', [ function (onAirStatus) {
+
+				function resolve() {
+
+					_this.resolveSrcURL(_this.getSrc()).then(function(result) {
+						_this.handleMulticastPlayManifest(result,doEmbedFunc);
+					},function() {
+						_this.handleFailoverFromPlayManifest();
+					});
+
+				}
+				if (onAirStatus) {
+					resolve();
+				} else {
+					//stream is offline, stream address can be retrieved when online
+					_this.bindHelper("liveOnline" + _this.bindPostfix, function () {
+						_this.unbindHelper("liveOnline" + _this.bindPostfix);
+						_this.addPlayerSpinner();
+
+						resolve();
+
+						//no need to save readyCallback since it was already called
+						_this.readyCallbackFunc = undefined;
+
+					});
+					readyCallback();
+				}
+			}]);
+		},
 		loadMedia: function (readyCallback) {
+
 			var _this = this;
 			var srcToPlay = _this.getSrc();
 
-			//in multicast we must first check if payer is live
-			var getMulticastStreamAddress = function () {
-				$(_this).trigger('checkIsLive', [ function (onAirStatus) {
-					if (onAirStatus) {
-						_this.resolveSrcURL(_this.getSrc()).then(doEmbedFunc);
-					} else {
-						//stream is offline, stream address can be retrieved when online
-						_this.bindHelper("liveOnline" + _this.bindPostfix, function () {
-							_this.unbindHelper("liveOnline" + _this.bindPostfix);
-							_this.addPlayerSpinner();
-							_this.resolveSrcURL(_this.getSrc()).then(doEmbedFunc);
-							//no need to save readyCallback since it was already called
-							_this.readyCallbackFunc = undefined;
 
-						});
-						readyCallback();
-					}
-				}]);
-			};
 
 			//if error occured- don't try to load playmanifest, return
 			if (!$.isEmptyObject(this.playerError)) {
@@ -106,22 +267,24 @@
 				return false;
 			};
 
+
+
 			var doEmbedFunc = function (resolvedSrc) {
 				var flashvars = {
 					startvolume: _this.volume
 				}
 				if ( isMimeType("video/mp4")
-					|| 
+					||
 					isMimeType("video/h264")
 				){
 					flashvars.entryURL = resolvedSrc;
 				} else if(
 					isMimeType("video/playreadySmooth")
-						|| 
+					||
 					isMimeType("video/ism")
 				) {
 					_this.isMulticast = false;
-                    _this.streamerType = 'smoothStream';
+					_this.streamerType = 'smoothStream';
 
 					flashvars.smoothStreamPlayer = true;
 					flashvars.preload = "auto";
@@ -160,6 +323,7 @@
 
 					}
 				} else if (isMimeType("video/multicast")) {
+
 					_this.isMulticast = true;
 					_this.bindHelper("liveOffline", function () {
 						//if stream became offline
@@ -172,35 +336,19 @@
 					flashvars.streamAddress = resolvedSrc;
 					//flashvars.debug = true;
 
+
 					//check if multicast not available
 					var timeout = _this.getKalturaConfig(null, 'multicastStartTimeout') || _this.defaultMulticastStartTimeout;
 					_this.isError = false;
 					setTimeout(function () {
 						if (!_this.durationReceived) {
 							_this.isError = true
-							if (_this.getKalturaConfig(null, 'enableMulticastFallback') == true) {
-								//remove current source to fallback to unicast if multicast failed
-								for (var i = 0; i < _this.mediaElement.sources.length; i++) {
-									if (_this.mediaElement.sources[i] == _this.mediaElement.selectedSource) {
-										if (_this.playerObject) {
-											_this.playerObject.stop();
-										}
-										_this.mediaElement.sources.splice(i, 1);
+							_this.fallbackToUnicast();
 
-										_this.setupSourcePlayer();
-										return;
-									}
-								}
-							} else {
-								var errorObj = { message: gM('ks-LIVE-STREAM-NOT-AVAILABLE'), title: gM('ks-ERROR') };
-								_this.showErrorMsg(errorObj);
-							}
-
-							_this.readyCallbackFunc = undefined;
 						}
 					}, timeout);
 				}
-
+				_this.autoplay = _this.autoplay || _this.isMulticast;
 				flashvars.autoplay = _this.autoplay;
 				flashvars.isLive = _this.isLive();
 				flashvars.isDVR = ( _this.isDVR() == 1 );
@@ -237,6 +385,7 @@
 					if (_this.getFlashvars('stretchVideo')) {
 						playerElement.stretchFill();
 					}
+					//readyCallback();
 
 					if ( isMimeType("video/mp4")
 						||
@@ -245,7 +394,7 @@
 						isMimeType("video/playreadySmooth")
 						||
 						_this.isLive()
-						){
+					){
 						_this.durationReceived = true;
 					}
 					readyCallback();
@@ -253,7 +402,7 @@
 			}
 
 			if (_this.isLive()) {
-				getMulticastStreamAddress();
+				_this.loadMulticast(doEmbedFunc,readyCallback);
 			} else {
 				_this.resolveSrcURL(_this.getSrc()).then(doEmbedFunc);
 			}
@@ -326,8 +475,8 @@
 		 * parent_play
 		 */
 		onPlay: function () {
-			////workaround to avoid two playing events with autoPlay.
-			if (!this.durationReceived ) {
+			//workaround to avoid two playing events with autoPlay.
+			if (!this.durationReceived) {
 				return;
 			}
 			if (this._propagateEvents) {
@@ -419,20 +568,13 @@
 		play: function () {
 			mw.log('EmbedPlayerSPlayer::play');
 			var _this = this;
-			if ( this.parent_play() ) {
+			if (this.durationReceived && this.parent_play()) {
 				//TODO:: Currently SL player initializes before actual volume is read from cookie, so we set it on play
 				//need to refactor the volume logic and remove this.
 				this.setPlayerElementVolume(this.volume);
 				//bring back the player
 				this.getPlayerContainer().css('visibility', 'visible');
-				if (this.isMulticast) {
-					this.bindHelper("durationChange", function () {
-						_this.playerObject.play();
-					});
-					this.playerObject.reloadMedia();
-				} else {
-					this.playerObject.play();
-				}
+				_this.playerObject.play();
 				this.monitor();
 			} else {
 				mw.log("EmbedPlayerSPlayer:: parent play returned false, don't issue play on splayer element");
@@ -671,9 +813,11 @@
 		switchSrc: function (source) {
 			if (this.playerObject && this.mediaElement.getPlayableSources().length > 1) {
 				var trackIndex = -1;
-                if( source !== -1 ) {
-                    trackIndex = this.getSourceIndex(source);
-                }
+				if( source !== -1 ) {
+					trackIndex = this.getSourceIndex(source);
+				}
+
+				var trackIndex = this.getSourceIndex(source);
 				mw.log("EmbedPlayerSPlayer:: switch to track index: " + trackIndex);
 				$(this).trigger('sourceSwitchingStarted', [
 					{ currentBitrate: source.getBitrate() }
@@ -688,6 +832,11 @@
 
 		clean: function () {
 			$(this.getPlayerContainer()).remove();
+
+			if (this.keepAliveMCInterval) {
+				clearInterval(this.keepAliveMCInterval)
+				this.keepAliveMCInterval=null;
+			}
 		},
 
 		callIfReady: function (callback) {

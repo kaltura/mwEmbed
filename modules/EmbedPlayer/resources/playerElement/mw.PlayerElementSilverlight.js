@@ -10,6 +10,7 @@
 			this.id = playerId;
 			this.targetObj = target;
 			var xapPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/silverlight-player/Player.xap';
+
 			//var xapPath = 'http://192.168.162.72/lightKdp/Player.xap';
 			window["onError" + playerId]=function(sender, args){
 				var appSource = "";
@@ -100,10 +101,14 @@
 					width:"100%",height:"100%",
 					background:"transparent",
 					windowless:"true",
-					version: "4.0.60310.0" },
+					version: "4.0.60310.0",
+					 EnableGPUAcceleration:"true",
+					 debug:mw.getConfig('debug')
+				 },
 				{
 					onError: "onError" + playerId,
-					enableHtmlAccess: "true" },
+					enableHtmlAccess: "true"
+				},
 				params
 			//	context: "row4"
 			);
@@ -206,7 +211,16 @@
 		stretchFill: function() {
 			this.playerProxy.stretchFill();
 		},
+		getMulticastDiagnostics: function(){
+			var diag= this.playerProxy.getDiagnostics();
+			if (this.element &&
+				this.element.targetObj &&
+				this.element.targetObj.fillDiagnostics) {
 
+				this.element.targetObj.fillDiagnostics(diag);
+			}
+			return diag;
+		},
 		/**
 		 * Bind a Player Function,
 		 *

@@ -28,7 +28,13 @@
                             }
 
                             var updater=function() {
-                                var newContent = originalText.replace(match, internal[name]);
+
+                                var value=internal[name];
+                                if (!value) {
+                                    value="";
+                                }
+
+                                var newContent = originalText.replace(match,value);
                                 if (filter) {
                                     newContent=filter(newContent);
                                 }
