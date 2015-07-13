@@ -1518,9 +1518,9 @@ mw.KAdPlayer.prototype = {
 					_this.sendVASTBeacon( adConf.trackingEvents, 'resume', true );
 				}, 'AdPlaying' );
 
-				VPAIDObj.subscribe( function ( clickThroughURL ) {
-					if (isJs){
-						_this.openClickthrough(adSlot, clickThroughURL);
+				VPAIDObj.subscribe( function ( url, id, playerHandles ) {
+					if (isJs && playerHandles){
+						_this.openClickthrough(adSlot, url);
 					}
 				}, 'AdClickThru' );
 
