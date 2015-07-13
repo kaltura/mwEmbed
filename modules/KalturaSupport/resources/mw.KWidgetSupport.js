@@ -235,6 +235,9 @@ mw.KWidgetSupport.prototype = {
 	},
 
 	updatePlayerData: function( embedPlayer,  playerData, callback ){
+		// Handle entry data
+		this.updatePlayerEntryData(embedPlayer, playerData);
+		this.updatePlayerMetaData(embedPlayer, playerData);
 		// Check for playerData error
 		this.handlePlayerError(embedPlayer, playerData);
 		this.updatePlayerContextData(embedPlayer, playerData);
@@ -256,10 +259,6 @@ mw.KWidgetSupport.prototype = {
 		if( this.isNoEntryId(playerData) ){
 			this.handleNoEntryId();
 		}
-		else {
-			this.updatePlayerEntryData(embedPlayer, playerData);
-			this.updatePlayerMetaData(embedPlayer, playerData);
-		}
 		// Check access controls ( must come after addPlayerMethods for custom messages )
 		this.initCuePointsService(embedPlayer, playerData);
 		this.handleUiConf( embedPlayer, callback );
@@ -279,9 +278,15 @@ mw.KWidgetSupport.prototype = {
 			mw.setConfig("LeadWithHLSOnFlash", true);
 		}
 
-		var multicastSource = this.getLiveMulticastSource(playerData);
-		if (multicastSource){
+		var legacyMulticastSource = this.getLegacyLiveMulticastSource(playerData);
+		if (legacyMulticastSource){
 			this.addLiveEntrySource( embedPlayer, playerData.meta, false, true, 'multicast_silverlight');
+			isStreamSupported = true;
+			embedPlayer.setLive( true );
+		}
+
+		if (embedPlayer.getFlashvars("LeadWithUnicastToMulticast")===true) {
+			this.addLiveEntrySource( embedPlayer, playerData.meta, false, true, 'applehttp_to_mc');
 			isStreamSupported = true;
 			embedPlayer.setLive( true );
 		}
@@ -337,7 +342,7 @@ mw.KWidgetSupport.prototype = {
 		}
 		return hasOnlyHLS;
 	},
-	getLiveMulticastSource: function(playerData){
+	getLegacyLiveMulticastSource: function(playerData){
 		var source = null;
 		if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'splayer' ) ) {
 			if ( playerData.contextData && playerData.contextData.flavorAssets ) {
@@ -1584,6 +1589,20 @@ mw.KWidgetSupport.prototype = {
 			deviceSources = this.removeAdaptiveFlavors( deviceSources );
 		}
 
+		// PRemove adaptive sources on Windows Phone
+		if( mw.isWindowsPhone() ) {
+			deviceSources = this.removeAdaptiveFlavors( deviceSources );
+		}
+
+		// if we have streamertype that is not hls and we support hls on the native player - we'll use kplayer + hls - we want to eliminate  this option
+		// for now the only usecase is microsoft edge browser
+		if ( mw.supportsFlash()  &&
+			this.originalStreamerType &&
+			this.originalStreamerType !== "hls" &&
+			 mw.getConfig("LeadWithHLSOnFlash") === null 	){
+			    deviceSources = this.removeAdaptiveFlavors( deviceSources );
+		}
+
 		//TODO: Remove duplicate webm and h264 flavors
 		/*if (mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'h264Native' ) && mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'webmNative' )) {
 			//remove someone if duplicate
@@ -1719,6 +1738,7 @@ mw.KWidgetSupport.prototype = {
 		if( ks ){
 			srcUrl += '&ks=' + ks;
 		}
+
 		//add source
 		mw.log( 'KWidgetSupport::addLiveEntrySource: Add Live Entry Source - ' + srcUrl );
 		embedPlayer.mediaElement.tryAddSource(
