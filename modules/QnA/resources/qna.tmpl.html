@@ -111,7 +111,7 @@
                                                     text: getTitle()'></div>
                                     <div class="qnaThreadTimeRead"
                                          data-bind='text: timestamp.qnaTimestamp($parents[1].currentTime)'></div>
-                                    <div data-bind="if: $index()===0">
+                                    <div data-bind="if: $index()===0 && (thread.entries().length > 1 || !$parents[1].announcementOnlyStatus())">
                                         <div class="collapseExpandIcon"
                                              data-bind="css:{   'icon-qna-collapse': $parent.isCollapsed(),
                                                                 'icon-qna-expand': !$parent.isCollapsed()
