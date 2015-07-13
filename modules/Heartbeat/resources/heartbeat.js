@@ -175,8 +175,10 @@
         },
 
         trackPlay: function(){
-            this.videoPlayerPlugin.trackPlay();
-            this.sendTrackEventMonitor("trackPlay");
+            if(!this.getPlayer().sequenceProxy.isInSequence){// don't send trackPlay if the player plays an ad
+                this.videoPlayerPlugin.trackPlay();
+                this.sendTrackEventMonitor("trackPlay");
+            }
         },
 
         trackComplete: function(){
