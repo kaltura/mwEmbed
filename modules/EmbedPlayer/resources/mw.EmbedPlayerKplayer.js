@@ -461,6 +461,7 @@
 			mw.log('EmbedPlayerKplayer::play');
             if(this.unresolvedSrcURL){
                 this.getEntryUrl().then(function (srcToPlay) {
+                    _this.unresolvedSrcURL = false;
                     _this.play();
                 });
                 return;
