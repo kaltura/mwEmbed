@@ -79,6 +79,8 @@
 
 		localizationCode: null,
 
+		manualAds: false,
+
 		init: function( embedPlayer, callback, pluginName ){
 			var _this = this;
 			if (mw.getConfig( 'localizationCode' )){
@@ -96,6 +98,8 @@
 			// reset the contentDoneFlag flags:
 			this.contentDoneFlag = null;
 			this.allAdsCompletedFlag = null;
+
+			this.manualAds = !!this.getConfig("adTagUrl") === false;
 
 			// remove any old bindings:
 			embedPlayer.unbindHelper( this.bindPostfix );
@@ -154,7 +158,7 @@
 						}
 					});
 					_this.addManagedBinding();
-					if (!this.getConfig("adTagUrl")){
+					if (_this.manualAds){
 						_this.handleCuePoints();
 					}
 					callback();
@@ -175,7 +179,7 @@
 				google.ima.settings.setPlayerType("kaltura/mwEmbed");
 				google.ima.settings.setPlayerVersion(mw.getConfig("version"));
 
-				if( _this.getConfig( "adTagUrl" ) ) {
+				if( !_this.manualAds ) {
 					// Check for adPattern
 					if ( _this.getConfig( 'adPattern' ) ) {
 						var adIndex = _this.getAdPatternIndex();
@@ -213,7 +217,6 @@
 					_this.adTagUrl = cuePointWrapper.cuePoint.sourceUrl;
 					_this.copyFlashvarsToKDP(_this.embedPlayer, _this.pluginName);
 					if (cuePointWrapper.cuePoint.adType == 1){ // linear video
-						_this.embedPlayer.pause();
 						_this.embedPlayer.addPlayerSpinner();
 						_this.currentAdSlotType = "midroll";
 					}else{
@@ -539,7 +542,9 @@
 			return 'adContainer' + this.embedPlayer.id;
 		},
 		hideAdContainer: function () {
-			$("#" + this.getAdContainerId()).hide();
+			if (!this.manualAds){
+				$("#" + this.getAdContainerId()).hide();
+			}
 		},
 		getAdDisplayContainer: function(){
 			//  Create the ad display container. Use an existing DOM element
@@ -600,6 +605,10 @@
 		},
 		// This function requests the ads.
 		requestAds: function( adType ) {
+			if (!this.adTagUrl && $.isFunction(this.restorePlayerCallback))
+			{
+				this.restorePlayerCallback();
+			}
 			var _this = this;
 			this.parseAdTagUrlParts(this.embedPlayer, this.pluginName);
 			var adTagUrl = this.adTagUrl;
