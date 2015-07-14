@@ -34,11 +34,11 @@
 		),
 		'video.player.width' => array(
 			'desc' => 'The current video player width in pixels.',
-			'example' => '../modules/AdTagUrlSubstitutions/tests/AdTagUrlSubstitutions.html'
+			'example' => '../modules/AdSupport/tests/AdTagUrlSubstitutions.html'
 		),
 		'video.player.height' => array(
 			'desc' => 'The current video player height in pixels.',
-			'example' => '../modules/AdTagUrlSubstitutions/tests/AdTagUrlSubstitutions.html'
+			'example' => '../modules/AdSupport/tests/AdTagUrlSubstitutions.html'
 		),
 		'duration' => array(
 			'desc' => 'Current video duration in seconds',
