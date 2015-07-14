@@ -153,9 +153,8 @@
 							_this.embedPlayer.getPlayerElement().pause();
 						}
 					});
-					if (this.getConfig("adTagUrl")){
-						_this.addManagedBinding();
-					}else{
+					_this.addManagedBinding();
+					if (!this.getConfig("adTagUrl")){
 						_this.handleCuePoints();
 					}
 					callback();
@@ -191,6 +190,7 @@
 						_this.addManagedBinding();
 					}
 				}else{
+					_this.addManagedBinding();
 					_this.handleCuePoints();
 				}
 				// Issue the callback to continue player build out:
