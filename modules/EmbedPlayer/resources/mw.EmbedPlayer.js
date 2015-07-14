@@ -1903,7 +1903,9 @@
 			// iPad can use html controls if its a persistantPlayer in the dom before loading )
 			// else it needs to use native controls:
 			if (mw.isIpad()) {
-				if (this.isPersistentNativePlayer() && mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') === true) {
+				if (mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen') && this.layoutBuilder && this.layoutBuilder.isInFullScreen()){
+					return true;
+				} else if (this.isPersistentNativePlayer() && mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') === true) {
 					return false;
 				} else {
 					// Set warning that your trying to do iPad controls without
