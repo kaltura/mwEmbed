@@ -1,0 +1,129 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Heartbeat Plugin Configuration - Adding Adobe Heartbeat analytics plugin</title>
+        <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+        <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+        <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+    </head>
+
+    <body>
+    <h2>Heartbeat Plugin Configuration - Adding Adobe Heartbeat analytics plugin</h2>
+    <br />
+    <div id="kdp" style="width:600px;height:370px;float:left"></div>
+    <script>
+        function onReadyCallback(playerID){
+            //Add code if needed
+        }
+
+        function heartbeatTrackingLog( eventStr, eventPayload ){
+            $t = $('#heartbeatTracking');
+            $t.append( eventStr );
+            if( eventPayload ){
+                $t.append( ": " + JSON.stringify( eventPayload ) );
+            }
+            $t.append( "\n" );
+        }
+
+        var localPath = document.location.href;
+        localPath = localPath.split('HeartBeatDemo.html')[0];
+
+        kWidget.featureConfig({
+            'targetId': 'kdp',
+            'wid': '_243342',
+            'uiconf_id' : '21099702',
+            'entry_id' : '1_sf5ovm7u',
+            'readyCallback': onReadyCallback,
+            'flashvars': {
+                //'LeadWithHLSOnFlash':true,
+                'heartbeat': {
+                    'plugin' : true,
+                    'trackEventMonitor': 'heartbeatTrackingLog',
+
+                    'visitorId': '9A32525A5492AE7C0A4C98C6@AdobeOrg',
+                    'visitorTrackingServer': 'ovppartners.d1.sc.omtrdc.net',
+
+                    'appMeasurementAccount': 'ovppkaltura',
+                    'appMeasurementTrackingServer': 'ovppartners.d1.sc.omtrdc.net',
+                    'appMeasurementPageName': 'Kaltura Test Page',
+                    'appMeasurementCharSet': 'UTF-8',
+                    'appMeasurementVisitorID': 'test-vid',
+
+                    'heartbeatTrackingServer': 'heartbeats.omtrdc.net',
+                    'heartbeatPublisher': 'ovpkaltura'
+                },
+                'skipBtn': {
+                    'label': 'Skip Ad'
+                },
+                'vast': {
+                    'plugin' : true,
+                    'numPreroll':"1",
+                    'prerollInterval':"1",
+                    'prerollStartWith':"1",
+                    'prerollUrl':"http://projects.kaltura.com/MichalR/vast3_demo.xml", //2 HTML5 ads
+                    //'prerollUrl':"http://ad3.liverail.com/?LR_PUBLISHER_ID=1331&LR_CAMPAIGN_ID=229&LR_SCHEMA=vast2", //1 HTML5 ad
+                    //'prerollUrl':localPath+"liverailOnlyFlash.xml?random={utility.random}&timestamp={utility.timestamp}&referrer_url={utility.referrer_url}&referrer_host={utility.referrer_host}", //1 Flash ad (VPAID)
+                    'overlayStartAt':"5",
+                    'overlayInterval':"300",
+                    'overlayUrl':"http://ad3.liverail.com/?LR_PUBLISHER_ID=1331&LR_CAMPAIGN_ID=228&LR_SCHEMA=vast2",
+                    'numPostroll':"1",
+                    'postrollInterval':"1",
+                    'postrollStartWith':"1",
+                    'postrollUrl':"http://ad3.liverail.com/?LR_PUBLISHER_ID=1331&LR_CAMPAIGN_ID=229&LR_SCHEMA=vast2",
+                    'preSequence':"1",
+                    'postSequence':"1",
+                    'timeout':"4"
+                }/*,
+                'doubleClick':{
+                    'plugin':true,
+                    'leadWithFlash': false,
+                    'path' : 'http://cdnbakmi.kaltura.com/content/uiconf/ps/veria/kdp3.9.1/plugins/doubleclickPlugin.swf',
+                    'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dlinear',
+                    'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dimageoverlay',
+                    'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=%2F3510761%2FadRulesSampleTags&ciu_szs=160x600%2C300x250%2C728x90&cust_params=adrule%3Dpremidpostwithpod&impl=s&gdfp_req=1&env=vp&ad_rule=1&vid=12345&cmsid=3601&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]',
+                    'disableCompanionAds' : false,
+                    'debugMode':false
+                }*/
+            }
+        });
+
+
+    </script>
+    <div style="clear:both"></div>
+    <p/>
+    <p>Event log for HeartBeat dispatch events. You can also monitor your network console.  </p>
+    <textarea id="heartbeatTracking" style="width:700px;height:250px;"></textarea>
+    <br>
+    <h3> Adding Adobe Heartbeat analytics plugin </h3>
+    <p>
+        You can configure Adobe Heartbeat plugin inside the heartbeat plugin flashvar.<br />
+    </p>
+    Sample code for Heartbeat configuration:
+        <pre class="prettyprint linenums">
+        kWidget.featureConfig({
+                'targetId': 'kdp',
+                'wid': '_243342',
+                'uiconf_id' : '21099702',
+                'entry_id' : '1_sf5ovm7u',
+                'readyCallback': onReadyCallback,
+                'flashvars': {
+                    'heartbeat': {
+                        plugin: true,
+
+                        visitorId: '9A32525A5492AE7C0A4C98C6@AdobeOrg',
+                        visitorTrackingServer: 'ovppartners.d1.sc.omtrdc.net',
+
+                        appMeasurementAccount: 'ovppkaltura',
+                        appMeasurementTrackingServer: 'ovppartners.d1.sc.omtrdc.net'
+                        appMeasurementPageName: 'Kaltura Test Page',
+                        appMeasurementCharSet: 'UTF-8',
+                        appMeasurementVisitorID: 'test-vid',
+
+                        heartbeatTrackingServer: 'heartbeats.omtrdc.net',
+                        heartbeatPublisher: 'ovpkaltura'
+                    }
+                }
+            });
+        </pre>
+    </body>
+</html>

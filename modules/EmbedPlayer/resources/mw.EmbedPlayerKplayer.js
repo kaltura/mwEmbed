@@ -37,6 +37,8 @@
 		//when playing live rtmp we increase the timeout until we display the "offline" alert, cuz player takes a while to identify "online" state
 		LIVE_OFFLINE_ALERT_TIMEOUT: 8000,
 		ignoreEnableGui: false,
+		flashActivationRequired: false,
+        unresolvedSrcURL: false,
 
 		// Create our player element
 		setup: function (readyCallback) {
@@ -160,7 +162,8 @@
 						'hlsEndList': 'onHlsEndList',
 						'mediaError': 'onMediaError',
 						'bitrateChange': 'onBitrateChange',
-                        'textTracksReceived': 'onTextTracksReceived'
+                        'textTracksReceived': 'onTextTracksReceived',
+                        'debugInfoReceived': 'onDebugInfoReceived'
 					};
 				_this.playerObject = this.getElement();
 					$.each(bindEventMap, function (bindName, localMethod) {
@@ -367,6 +370,10 @@
 		 * parent_play
 		 */
 		onPlay: function () {
+			if ( mw.isChrome() && !this.flashActivationRequired && mw.getConfig("EmbedPlayer.EnableFlashActivation") !== false ){
+				this.flashActivationRequired = true;
+				$(this).hide();
+			}
 			if (this._propagateEvents) {
 				$(this).trigger("playing");
 				this.hideSpinner();
@@ -450,8 +457,16 @@
 		 * play method calls parent_play to update the interface
 		 */
 		play: function () {
+            var _this = this;
 			mw.log('EmbedPlayerKplayer::play');
-			var shouldDisable = false
+            if(this.unresolvedSrcURL){
+                this.getEntryUrl().then(function (srcToPlay) {
+                    _this.unresolvedSrcURL = false;
+                    _this.play();
+                });
+                return;
+            }
+			var shouldDisable = false;
 			if (this.isLive() && this.paused) {
 				shouldDisable = true;
 			}
@@ -537,6 +552,10 @@
 		 * function called by flash at set interval to update the playhead.
 		 */
 		onUpdatePlayhead: function (playheadValue) {
+			if ( this.flashActivationRequired ){
+				this.flashActivationRequired = false;
+				$(this).show();
+			}
 			if (this.seeking) {
 				this.seeking = false;
 			}
@@ -677,6 +696,15 @@
 			this.triggerHelper('audioTrackIndexChanged', data);
 		},
 
+        onDebugInfoReceived: function (data){
+            var msg = '';
+            for (var prop in data) {
+                msg += prop + ': ' + data[prop]+' | ';
+            }
+            this.triggerHelper('debugInfoReceived', data);
+            mw.log("EmbedPlayerKplayer:: onDebugInfoReceived | " + msg);
+        },
+
 		/**
 		 * Get the embed player time
 		 */
@@ -703,14 +731,17 @@
 		 * Get the URL to pass to KDP according to the current streamerType
 		 */
 		getEntryUrl: function () {
+            var _this = this;
 			var deferred = $.Deferred();
 			var originalSrc = this.mediaElement.selectedSource.getSrc();
 			if (this.isHlsSource(this.mediaElement.selectedSource)) {
 
 				this.resolveSrcURL(originalSrc)
 					.then(function (srcToPlay) {
+                        _this.unresolvedSrcURL = false;
 						deferred.resolve(srcToPlay);
 					}, function () { //error
+                        _this.unresolvedSrcURL = true;
 						deferred.resolve(originalSrc);
 					});
 				return deferred;

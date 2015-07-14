@@ -758,7 +758,7 @@
 
 					// issue the play request:
 					vid.play();
-					if (mw.isIOS()) {
+					if (mw.isMobileDevice()) {
 						setTimeout(function () {
 							handleSwitchCallback();
 						}, 100);

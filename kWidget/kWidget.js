@@ -320,7 +320,8 @@
 				settings.flashvars = {};
 			}
 
-			if (document.URL.indexOf('forceKalturaNativeComponentPlayer') !== -1) {
+			if ( document.URL.indexOf('forceKalturaNativeComponentPlayer') !== -1 ||
+				document.URL.indexOf('forceKalturaNative') !== -1) {
 				settings.flashvars["nativeCallout"] = { plugin: true }
 			}
 
@@ -1563,7 +1564,7 @@
 			return (/msie 8/.test(navigator.userAgent.toLowerCase()));
 		},
 		isAndroid: function () {
-			return (navigator.userAgent.indexOf('Android ') != -1);
+			return (navigator.userAgent.indexOf('Android ') !== -1 && navigator.userAgent.indexOf('Windows') === -1);
 		},
 		isWindowsDevice: function () {
 			var appVer = navigator.appVersion;

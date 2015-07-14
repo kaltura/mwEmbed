@@ -1478,7 +1478,7 @@
 			},
 			"layout": {
 				"doc": "Volume slider layout.",
-				"type": "hiddenvalue",
+				"type": "enum",
 				"enum": [
 					"horizontal",
 					"vertical"
@@ -1772,6 +1772,11 @@
                 "doc": "Display related screen automatically when playback has finished",
                 "type": "boolean",
                 "initvalue": true
+            },
+            "sendContextWithPlaylist": {
+                "doc": "Send context with the playlist (_KDP_CTXPL sends this automatically)",
+                "type": "boolean",
+                "initvalue": false
             },
             "autoContinueEnabled": {
                 "doc": "Should the Next Item be automatically played.",
