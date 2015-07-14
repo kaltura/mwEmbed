@@ -104,7 +104,7 @@
                     if(el.childNodes.length>1) {
                         return;
                     }
-                    var originalText = el.innerText;
+                    var originalText = el.innerHTML;
 
                     parser(originalText, function(newContent) {
                         el.innerHTML = newContent;
