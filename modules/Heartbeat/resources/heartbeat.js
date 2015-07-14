@@ -76,7 +76,7 @@
                 _this.trackAdStart({id:adID, position:adIndex, length:adDuration, name:mediaName}); });
             this.embedPlayer.bindHelper('onAdComplete', function(){ _this.trackAdComplete(); });
 
-            this.bindHelper('embedPlayerError', function (e, data) { _this.trackPlayerError(_this.getPlayer().getErrorMessage(data)); });
+            this.embedPlayer.bindHelper('embedPlayerError', function (e, data) { _this.trackPlayerError(_this.getPlayer().getErrorMessage(data)); });
         },
 
         setupHeartBeatPlugin: function(){
