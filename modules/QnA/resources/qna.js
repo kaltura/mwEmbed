@@ -115,7 +115,7 @@
 			this.bind('onCloseFullScreen', function() {
 				_this.changeVideoToggleIcon();
 				if (!_this.getConfig( 'onPage' )){
-					$(".videoHolder, .mwPlayerContainer").css("width", _this.originalPlayerWidth - _this.getConfig('moduleWidth') + "px");
+					$(".videoHolder, .mwPlayerContainer").css("width", _this.originalPlayerWidth + "px");
 				}
 			});
 		},
@@ -179,14 +179,18 @@
 				}
 				else{
 					// wrap the .mwPlayerContainer element with our qnaInterface div
-					$('.mwPlayerContainer').wrap("<div class='qnaInterface' style='position: relative; width: 100%; height: 100%'>");
+					var floatDirection = this.getConfig( 'containerPosition' ) ? this.getConfig( 'containerPosition' ) : "right";
+					var qnaInterfaceElementText = "<div class='qnaInterface' style='position: relative; width: " + this.getConfig( 'moduleWidth' ) + "px; height: 100%; float:" + floatDirection + "'>";
+
+					$('.mwPlayerContainer').after(qnaInterfaceElementText);
 
 					this.$qnaListContainer = $( ".qnaInterface");
+
 					// resize the video to make place for the playlist according to its position (left, top, right, bottom)
 					if ( this.getConfig( 'containerPosition' ) === 'right' || this.getConfig( 'containerPosition' ) === 'left' ) {
-						$( ".videoHolder, .mwPlayerContainer" ).css( "width", this.$qnaListContainer.width() - this.getConfig( 'moduleWidth' ) + "px" );
-						this.videoWidth = (this.$qnaListContainer.width() - this.getConfig( 'moduleWidth' ));
+						$( ".videoHolder, .mwPlayerContainer" ).css( "width", $( ".videoHolder").width() - this.getConfig( 'moduleWidth' ) + "px" );
 					}
+
 					if ( this.getConfig( 'containerPosition' ) === 'left' ) {
 						$( ".mwPlayerContainer" ).css( "float", "right" );
 					}
@@ -196,7 +200,7 @@
 				}
 
 				this.$qnaListContainer.append(this.getHTML());
-				this.originalPlayerWidth = this.$qnaListContainer.width();
+				this.originalPlayerWidth = $( ".videoHolder").width();
 
 				this.bindButtons();
 				this.positionQAButtonOnVideoContainer();
