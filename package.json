@@ -9,7 +9,7 @@
     "mediaWiki"
   ],
   "dependencies": {
-    "mwEmbed-Dash-Everywhere": "git+https://github.com/kaltura/mwEmbed-Dash-Everywhere.git#v2.8.0"
+    "mwEmbed-Dash-Everywhere": "git+ssh://github.com/kaltura/mwEmbed-Dash-Everywhere.git#v2.8.4"
   },
   "homepage": "https://github.com/kaltura/mwEmbed/"
 }
