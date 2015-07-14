@@ -101,7 +101,7 @@
 						qnaObject.hide();
 					}
                     _this.changeVideoToggleIcon();
-				})
+				});
 
 				_this.updateUnreadBadge();
 			});
@@ -115,9 +115,7 @@
 			this.bind('onCloseFullScreen', function() {
 				_this.changeVideoToggleIcon();
 				if (!_this.getConfig( 'onPage' )){
-					setTimeout(function() {
-						$(".videoHolder, .mwPlayerContainer").css("width", _this.$qnaListContainer.width() - _this.getConfig('moduleWidth') + "px");
-					},0);
+					$(".videoHolder, .mwPlayerContainer").css("width", _this.originalPlayerWidth - _this.getConfig('moduleWidth') + "px");
 				}
 			});
 		},
@@ -198,6 +196,7 @@
 				}
 
 				this.$qnaListContainer.append(this.getHTML());
+				this.originalPlayerWidth = this.$qnaListContainer.width();
 
 				this.bindButtons();
 				this.positionQAButtonOnVideoContainer();
