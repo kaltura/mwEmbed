@@ -104,6 +104,9 @@
                     if(mw.getConfig("hlsOverrideTargetDuration")) {
                         flashvars.KalturaHLS["overrideTargetDuration"] = mw.getConfig("hlsOverrideTargetDuration");
                     }
+                    if(mw.getConfig("hlsLogs")) {
+                        flashvars.KalturaHLS["sendLogs"] = mw.getConfig("hlsLogs");
+                    }
 					flashvars.streamerType = _this.streamerType = 'hls';
 				}
 
