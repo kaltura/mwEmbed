@@ -80,6 +80,7 @@
 		localizationCode: null,
 
 		manualAds: false,
+		adCuePoints: [],
 
 		init: function( embedPlayer, callback, pluginName ){
 			var _this = this;
@@ -213,7 +214,7 @@
 		handleCuePoints: function(){
 			var _this = this;
 			$( this.embedPlayer ).bind('KalturaSupport_AdOpportunity', function( event, cuePointWrapper ) {
-				if( cuePointWrapper.cuePoint.protocolType == 1 ){ // Check for  protocolType == 1 ( type = vast )
+				if( cuePointWrapper.cuePoint.protocolType == 1 && _this.adCuePoints.indexOf(cuePointWrapper.cuePoint.id) === -1 ){ // Check for  protocolType == 1 ( type = vast )
 					_this.adTagUrl = cuePointWrapper.cuePoint.sourceUrl;
 					_this.copyFlashvarsToKDP(_this.embedPlayer, _this.pluginName);
 					if (cuePointWrapper.cuePoint.adType == 1){ // linear video
@@ -222,6 +223,7 @@
 					}else{
 						_this.currentAdSlotType = "overlay";
 					}
+					_this.adCuePoints.push(cuePointWrapper.cuePoint.id);
 					_this.requestAds();
 				}
 			});
@@ -605,9 +607,13 @@
 		},
 		// This function requests the ads.
 		requestAds: function( adType ) {
-			if (!this.adTagUrl && $.isFunction(this.restorePlayerCallback))
-			{
-				this.restorePlayerCallback();
+			if (!this.adTagUrl){
+				if ($.isFunction(this.restorePlayerCallback))
+				{
+					this.restorePlayerCallback();
+				}
+				this.getAdDisplayContainer().initialize();
+				return;
 			}
 			var _this = this;
 			this.parseAdTagUrlParts(this.embedPlayer, this.pluginName);
@@ -833,6 +839,12 @@
 						_this.embedPlayer.play();
 						_this.embedPlayer.restorePlayerOnScreen();
 						_this.embedPlayer.hideSpinner();
+						setTimeout(function(){
+							if (_this.timeToReturn){
+								_this.embedPlayer.onLoadedCallback();
+							}
+						},100);
+
 					};
 					_this.embedPlayer.adTimeline.displaySlots( 'midroll' ,restoreMidroll);
 				}
@@ -1155,14 +1167,6 @@
 				},100);
 			},'adsLoadError', true);
 
-		},
-
-		isPageshowEventSupported: function() {
-			if( mw.isIOS8() ) {
-				return false;
-			}
-
-			return true;
 		},
 
 		getPlayerSize: function(){
