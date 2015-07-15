@@ -1,0 +1,19 @@
+{
+  "quiz": {
+    "scripts":["resources/quiz.js"],
+    "dependencies": "mw.KBaseScreen",
+    "kalturaPluginName": "quiz",
+    "styles": "resources/quiz.css",
+    "templates":{
+      "quizstart": "../Quiz/resources/templates/quiz.tmpl.html"
+    },
+    "messageFile": "Quiz.i18n.json"
+  },
+  "bigButton":{
+    "scripts" :["resources/bigButton.js"],
+    "dependencies": "mw.KBaseButton",
+    "kalturaPluginName": "bigButton",
+    "styles": "resources/bigButton.css",
+    "messageFile": "BigButton.i18n.json"
+  }
+}

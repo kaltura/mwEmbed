@@ -1,0 +1,243 @@
+.quiz .quiz-label{
+	color: yellow;
+}
+
+.screen {
+    /*background: #3399FF !important;*/
+    background-image: url(BACKGROUND.png)!important;
+    background-size: 100% 100%;
+}
+
+center {
+    margin-left: auto;
+    margin-right: auto;
+
+}
+a{
+    font-size: 2.9vw;
+    text-decoration: none;
+    color: white;
+}
+
+h1 {
+    font-size: 5.9vw;
+    color: white;
+    font-weight: bold;
+}
+
+h2 {
+    font-size: 3.9vw;
+    color: white;
+    font-weight: normal;
+}
+
+.title-text{
+    font-size: 5.9vw;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+}
+.sub-text{
+    font-size: 2.5vw;
+    color: white;
+    text-align: center;
+    font-weight: 100;
+
+
+}
+.confirm-box{
+    position: relative;
+    width: 50%;
+    height:10vw;
+    overflow: hidden;
+    background-color: #00dcff;
+    display: table;
+    margin:0 auto;
+    text-align: center;
+    vertical-align: middle;
+    color: white;
+    line-height:10vw;
+}
+.confirm-box:hover{
+    cursor:pointer;
+}
+
+
+/*.rectangle-box{*/
+    /*position: relative;*/
+    /*width: 50%;*/
+    /*overflow: hidden;*/
+    /*background-color: #00dcff;*/
+    /*display: table;*/
+    /*margin:0 auto;*/
+
+/*}*/
+/*.rectangle-box:before{*/
+    /*content: "";*/
+    /*display: block;*/
+    /*padding-top: 20%;*/
+/*}*/
+/*.rectangle-content{*/
+    /*position:  absolute;*/
+    /*top: 0;*/
+    /*left: 0;*/
+    /*bottom: 0;*/
+    /*right: 0;*/
+    /*color: white;*/
+    /*font-size: 2.9vw*/
+/*}*/
+/*.rectangle-content div {*/
+    /*display: table;*/
+    /*width: 100%;*/
+    /*height: 100%;*/
+/*}*/
+/*.rectangle-content span {*/
+    /*display: table-cell;*/
+    /*text-align: center;*/
+    /*vertical-align: middle;*/
+    /*color: white*/
+/*}*/
+
+/**/
+.header-container{
+}
+
+.display{
+    position:relative;
+}
+.question-container{
+    padding-top: 1vw;
+}
+.display-question{
+    /*font-family: Lato;*/
+    margin-left: auto;
+    margin-right: auto;
+    color:  #ffffff;
+    font-size: 2.9vw;
+    font-weight: 700;
+    text-align:center;
+    width:80%;
+    word-wrap: break-word;
+    /*transform: scaleX(1.0022); *//* width and height properties ommitted due to transform */
+}
+.single-answer-box-bk{
+    width: 96vw;
+    height:4vw;
+    padding-top: 1.8vw;
+    padding-bottom: 1.8vw;
+    margin-top:1vw;
+    overflow: hidden;
+    background-image: url(AnswerBg.png);
+    background-size: 100% 100%;
+
+}
+.single-answer-box{
+    display: inline-block;
+    width: 96vw;
+    color:white;
+    font-size: 2.2vw;
+
+    text-align:center;
+    vertical-align: middle;
+}
+
+.single-answer-box:hover{
+    cursor: pointer;
+    /*padding-top: 1.9vw;*/
+    /*padding-bottom: 1.9vw;*/
+
+}
+.single-answer-box-apply {
+    display: inline-block;
+    width:20vw;
+    float: right;
+    text-align:center;
+    /*margin-top:1vw;*/
+    /*padding-top: 1.8vw;*/
+    /*padding-bottom: 1.8vw;*/
+}
+.single-answer-box-apply:hover {
+    cursor: pointer;
+}
+
+.ftr-container{
+    padding-top: 1vw;
+    /*width: 100%;*/
+    /*position: absolute;*/
+    /*bottom: 0;*/
+}
+.ftr-left{
+    display: inline-block;
+    /*margin-left: 2vw;*/
+}
+.ftr-right{
+    display: inline-block;
+    width: 33vw;
+    float: right;
+    text-align: right;
+}
+.ftr-right:hover {
+    cursor: pointer;
+}
+.hint-box{
+    width: 9vw;
+    height: 10vw;
+    background-image: url(Hint.png);
+    float: right;
+    margin-top: -10vw;
+    color:black;
+    line-height: 10vw;
+    font-weight: 700;
+
+    text-align: center;
+    background-size: 100% 100%;
+    vertical-align: middle;
+}
+.hint-box:hover{
+    cursor: pointer;
+}
+
+.q-box{
+    width: 10vw;
+    height: 11vw;
+    line-height:11vw;
+    background-image: url(hexaTransp.png);
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    background-size: 100% 100%;
+}
+.q-box-false{
+    width: 10vw;
+    height: 11vw;
+    line-height:11vw;
+    background-image: url(Submitted_Wrong.png);
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    background-size: 100% 100%;
+}
+.q-box-false:hover{
+    cursor: pointer;
+}
+
+.q-box,:hover{
+    cursor: pointer;
+}
+.display-content{
+    text-align: center;
+}
+
+.gotItBox{
+    width: 15vw;
+    height: 10vw;
+    float: right;
+    margin-top: 19vw;
+    line-height: 10vw;
+    font-weight: 700;
+    text-align: center;
+    vertical-align: middle;
+    border: gray;
+    border-style: solid;
+
+}
