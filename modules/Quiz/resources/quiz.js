@@ -48,6 +48,7 @@
             ];
 
             _this.getKClient().doRequest(getQuizuserEntryIdAndQuizParams, function (data) {
+                if  (data[0].totalCount == 0) {alert('Error Connecting to Quiz');return}
                 if (!$.isEmptyObject(data[0].objects[0])) {
                     _this.kQuizUserEntryId = data[0].objects[0].id;
                     if (data[0].objects[0].status == 2){
@@ -67,6 +68,7 @@
                         _this._getQuestionCpAPI(_this._populateCpObject);
                     });
                 }
+
                 $.quizParams = data[1];
             });
             this.addBindings();
@@ -538,6 +540,7 @@
         _populateCpObject:function(data){
             var _this = this;
             var cpArray = [];
+
                 for (var i = 0; i < (data[0].objects.length); i++) {
                     var arr = [];
                     $.each(data[0].objects[i].optionalAnswers , function( key, value ) {
