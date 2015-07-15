@@ -184,7 +184,7 @@ class ResourceLoaderStartUpModule extends ResourceLoaderModule {
 		if ( $context->getOnly() === 'scripts' ) {
 
 			// The core modules:
-			$modules = array( 'jquery', 'mediawiki' );
+			$modules = array( 'jquery', 'mediawiki');
 			wfRunHooks( 'ResourceLoaderGetStartupModules', array( &$modules ) );
 
 			// Get the latest version
@@ -218,11 +218,23 @@ class ResourceLoaderStartUpModule extends ResourceLoaderModule {
 				"\t" . Xml::encodeJsCall( 'mw.config.set', array( $configuration ) ) .
 				"};\n";
 
-			// Conditional script injection
-			$out .= "if ( isCompatible() ) {\n" .
-				"\t" . Xml::encodeJsCall( 'writeScript', array(  $wgLoadScript . '?' . wfArrayToCGI( $query )  ) ) .
-				"}\n" .
-				"delete isCompatible;";
+				$fauxRequest = new WebRequest;
+				$modulesToLoad = array();
+				$resourceLoader =   $context->getResourceLoader();
+                 foreach ( $modules as $moduleName ) {
+                      $modulesToLoad[$moduleName] =  $resourceLoader->getModule( $moduleName );
+                 }
+                $s = $context->getResourceLoader()->makeModuleResponse( new MwEmbedResourceLoaderContext( $context->getResourceLoader(), $fauxRequest ) ,
+                    $modulesToLoad,
+                    array()
+                );
+                $out.=$s;
+
+//			// Conditional script injection
+//			$out .= "if ( isCompatible() ) {\n" .
+//				"\t" . Xml::encodeJsCall( 'writeScript', array(  $wgLoadScript . '?' . wfArrayToCGI( $query )  ) ) .
+//				"}\n" .
+//				"delete isCompatible;";
 		}
 
 		return $out;

@@ -60,7 +60,19 @@
 
 		// Remove any duplicates in the dependencySet:
 		dependencySet = $.unique( dependencySet );
-
+		 if (window.bringitall){
+			 setTimeout(function()
+			 {
+				 window.gM = mw.jqueryMsg.getMessageFunction( {} );
+				 mw.processEmbedPlayers( playerSelect , readyCallback );
+			 },50);
+			 return;
+		 }
+		if (window.bringitall){
+			window.gM = mw.jqueryMsg.getMessageFunction( {} );
+			mw.processEmbedPlayers( playerSelect, readyCallback );
+			return;
+		}
 		// Do the request and process the playerElements with updated dependency set
 		mediaWiki.loader.using( dependencySet, function(){
 			// Setup enhanced language support:
