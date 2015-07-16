@@ -38,6 +38,7 @@
 		LIVE_OFFLINE_ALERT_TIMEOUT: 8000,
 		ignoreEnableGui: false,
 		flashActivationRequired: false,
+        unresolvedSrcURL: false,
 
 		// Create our player element
 		setup: function (readyCallback) {
@@ -102,6 +103,9 @@
                     }
                     if(mw.getConfig("hlsOverrideTargetDuration")) {
                         flashvars.KalturaHLS["overrideTargetDuration"] = mw.getConfig("hlsOverrideTargetDuration");
+                    }
+                    if(mw.getConfig("hlsLogs")) {
+                        flashvars.KalturaHLS["sendLogs"] = mw.getConfig("hlsLogs");
                     }
 					flashvars.streamerType = _this.streamerType = 'hls';
 				}
@@ -456,8 +460,19 @@
 		 * play method calls parent_play to update the interface
 		 */
 		play: function () {
+            var _this = this;
 			mw.log('EmbedPlayerKplayer::play');
-			var shouldDisable = false
+            if(this.unresolvedSrcURL){
+                this.getEntryUrl().then(function (srcToPlay) {
+                    _this.unresolvedSrcURL = false;
+                    _this.playerObject.sendNotification('changeMedia', {
+                        entryUrl: srcToPlay
+                    });
+                    _this.play();
+                });
+                return;
+            }
+			var shouldDisable = false;
 			if (this.isLive() && this.paused) {
 				shouldDisable = true;
 			}
@@ -722,14 +737,17 @@
 		 * Get the URL to pass to KDP according to the current streamerType
 		 */
 		getEntryUrl: function () {
+            var _this = this;
 			var deferred = $.Deferred();
 			var originalSrc = this.mediaElement.selectedSource.getSrc();
 			if (this.isHlsSource(this.mediaElement.selectedSource)) {
 
 				this.resolveSrcURL(originalSrc)
 					.then(function (srcToPlay) {
+                        _this.unresolvedSrcURL = false;
 						deferred.resolve(srcToPlay);
 					}, function () { //error
+                        _this.unresolvedSrcURL = true;
 						deferred.resolve(originalSrc);
 					});
 				return deferred;
