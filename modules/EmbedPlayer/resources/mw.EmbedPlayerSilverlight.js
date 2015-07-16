@@ -79,6 +79,9 @@
 				if (this.multiastServerUrl) {
 					diagObj.multiastServerUrl = this.multiastServerUrl;
 				}
+				if (this.multicastSessionId) {
+					diagObj.multicastSessionId = this.multicastSessionId;
+				}
 			}
 		},
 		connectToKES:function(resolvedSrc) {
@@ -112,8 +115,12 @@
 
 				var startFailoverFromMulticastServer=function() {
 
-					this.isError = true;
-					//TODO handle failover
+					mw.log('startFailoverFromMulticastServer');
+					if (_this.playerObject) {
+						_this.playerObject.stop();
+					}
+					_this.isError = true;
+					_this.setupSourcePlayer();
 				}
 
 				var startMultiastServerKeepAlive=function() {
@@ -144,12 +151,13 @@
 					if (response.multicastAddress && response.multicastPort && response.hls) {
 
 						var multicastAddress = response.multicastAddress + ":" + response.multicastPort;
-						mw.log('multicastAddress= ' + multicastAddress);
+						mw.log('multicastAddress= ' + multicastAddress+ " id="+response.id);
 
 						//first time
 						if (!_this.multicastAddress) {
 
 							_this.multicastAddress=multicastAddress;
+							_this.multicastSessionId=response.id;
 							doEmbedFunc(multicastAddress);
 
 
@@ -157,7 +165,7 @@
 
 						} else {
 
-							if (_this.multicastAddress!==multicastAddress) {
+							if (_this.multicastAddress!==multicastAddress || response.id!==_this.multicastSessionId) {
 								startFailoverFromMulticastServer();
 							} else {
 								//mw.log('keep alive sent successfully');

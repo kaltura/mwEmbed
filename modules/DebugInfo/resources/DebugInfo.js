@@ -174,6 +174,7 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
                 this.$scope.multiastServerUrl=data.multiastServerUrl;
                 this.$scope.mcPacketLoss=data.PacketLoss;
                 this.$scope.mcPacketsPerSec=data.PacketRate;
+                this.$scope.multicastSessionId=data.multicastSessionId;
             }
         }
     }
