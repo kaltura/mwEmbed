@@ -1538,7 +1538,7 @@ mw.KWidgetSupport.prototype = {
 					'data-aspect' : validClipAspect,
 					'data-flavorid' : 'mpdLow',
 					'type' : 'application/dash+xml',
-					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneAdaptiveFlavors.join(',')  + '/format/MPEGDASH/protocol/' + protocol + '/a.mpd',
+					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneAdaptiveFlavors.join(',')  + '/format/mpegdash/protocol/' + protocol + '/a.mpd',
 					'data-flavors': iphoneAdaptiveFlavors.join(',')
 				};
 				assetId = iphoneAdaptiveFlavors[0];
@@ -1558,7 +1558,7 @@ mw.KWidgetSupport.prototype = {
 					'data-aspect' : validClipAspect,
 					'data-flavorid' : 'mpdHigh',
 					'type' : 'application/dash+xml',
-					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadAdaptiveFlavors.join(',')  + '/format/MPEGDASH/protocol/' + protocol + '/a.mpd',
+					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadAdaptiveFlavors.join(',')  + '/format/mpegdash/protocol/' + protocol + '/a.mpd',
 					'data-flavors': ipadAdaptiveFlavors.join(',')
 				};
 				assetId = ipadAdaptiveFlavors[0];
