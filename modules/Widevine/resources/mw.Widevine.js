@@ -109,6 +109,10 @@
 				}
 			});
 		},
+		isSafeEnviornment: function(){
+			//Allow widevine only on native APP
+			return mw.isNativeApp();
+		},
 		
 		widevineObj: function(){
 			var _this = this;
