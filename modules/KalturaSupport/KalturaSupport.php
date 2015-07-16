@@ -378,4 +378,9 @@
 				'dependencies' => 'mw.KBaseComponent',
 				'kalturaPluginName' => 'reportError'
 		),
+		"contextMenu" => array(
+				'scripts' => "components/contextMenu.js",
+				'dependencies' => 'jquery',
+				'kalturaPluginName' => 'contextMenu'
+		),
 	);

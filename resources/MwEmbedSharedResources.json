@@ -441,6 +441,10 @@
     "jquery.mwExtension": {
         "scripts": "resources/jquery/jquery.mwExtension.js"
     },
+    "jquery.contextmenu": {
+        "scripts": "resources/jquery.contextmenu/jquery.contextmenu.js",
+        "styles": "resources/jquery.contextmenu/jquery.contextmenu.css"
+    },
     "touchSwipe": {
         "scripts": "resources/touchSwipe/jquery.touchSwipe.min.js",
         "dependencies": "jquery"

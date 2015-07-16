@@ -1797,6 +1797,20 @@
             }
         }
     },
+    "contextMenu": {
+        "description": "Enable a custom Context Menu when a user right click the player, user may add custom items to the menu with custom events",
+        "type": "featuremenu",
+        "label": "contextMenu",
+        "model": "config.plugins.contextMenu",
+        "attributes": {
+            "keyValuePairs": {
+                "doc": "Key / Value pairs of menu items name and their actions",
+                "label": "Menu Items to add:",
+                "initvalue": "",
+                "type": "keyValuePairs"
+            }
+        }
+    },
     "hammerEvents": {
         "description": "Support Hammer.js events against the player canvas.",
         "attributes": {
