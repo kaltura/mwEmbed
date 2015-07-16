@@ -14,17 +14,15 @@
 
         },
         enableMenu: function() {
-            var _this = this;
             var embedPlayer = this.getPlayer();
             $.contextMenu({
                 selector: '#' + embedPlayer.id,
-                items: _this.menuItems
+                items: this.menuItems
             });
         },
         // Get all menu name and their actions from configuration in KMC Studio.
         // build menu first from the names and addBindings for each menu item with the right aciton.
         buildMenu: function() {
-            var _this = this;
             return this.menuItems = this.getConfig('menuItems');
 
         },
