@@ -55,7 +55,7 @@
             }
 
             //var kdpPath = mwEmbedPath + 'modules/EmbedPlayer/binPlayers/kaltura-player/kdp3.swf';
-            var kdpPath = "http://localhost/chromeless-kdp/KDP3/bin-debug/kdp3.swf";
+           var kdpPath = "http://localhost/repo/chromeless-kdp/KDP3/bin-debug/kdp3.swf";
 
             // check for ForceFlashOnDesktopSafari and if so set interval in order to try to detect flash player (run 3 times)
             if(mw.getConfig("ForceFlashOnDesktopSafari")) {
@@ -120,7 +120,7 @@
                     bgcolor :			"#000000",
                     allowNetworking : 	"all",
                     version :			[10,0],
-                    wmode : 			"transparent"
+                    wmode : 			"direct"
                 },
                 flashvars
             );

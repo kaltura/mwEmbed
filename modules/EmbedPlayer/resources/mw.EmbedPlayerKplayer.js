@@ -106,6 +106,19 @@
                     }
                     if(mw.getConfig("hlsLogs")) {
                         flashvars.KalturaHLS["sendLogs"] = mw.getConfig("hlsLogs");
+	                    var func = ["onManifest","onNextRequest","onDownload","onCurrentTime","onTag"];
+	                    for (var index=0;index<func.length ;index++){
+
+		                    (function() {
+			                    var x =  func[index];
+			                    if ( x ) {
+				                    window[x] = function (a,b,c,d,e,f,g,h) {
+					                    debugger;
+					                    parent.window[x]( a,b,c,d,e,f,g,h );
+				                    }
+			                    }
+		                    })();
+	                    }
                     }
 					flashvars.streamerType = _this.streamerType = 'hls';
 				}
