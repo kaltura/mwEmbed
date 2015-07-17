@@ -1798,7 +1798,7 @@
         }
     },
     "contextMenu": {
-        "description": "Enable a custom Context Menu when a user right click the player, user may add custom items to the menu with custom events",
+        "description": "Overwrite the default context menu. <br>Menu items can be added by setting a value to the desired action. The set value will be the display name of the action",
         "type": "featuremenu",
         "label": "contextMenu",
         "model": "config.plugins.contextMenu",
@@ -1819,38 +1819,38 @@
                 "initvalue": "10"
             },
             "volumeUp": {
-                "doc": "Volume Up Menu Display name.",
+                "doc": "Volume up menu display name.",
                 "type": "string",
-                "initvalue": ""
+                "initvalue": "Volume Up"
             },
             "volumeDown": {
-                "doc": "Volume Down Menu Display name.",
+                "doc": "Volume down menu display name.",
                 "type": "string",
                 "initvalue": ""
             },
             "togglePlayback": {
-                "doc": "Playback toggle Key.",
-                "type": "number",
-                "initvalue": "32"
+                "doc": "Toggle playback",
+                "type": "string",
+                "initvalue": ""
             },
             "shortSeekBack": {
-                "doc": "Short Seek back key.",
+                "doc": "Short seek menu item display name",
                 "type": "number",
                 "initvalue": "37"
             },
             "shortSeekForward": {
-                "doc": "Short Seek long key.",
+                "doc": "Short seek menu item display name.",
                 "type": "number",
                 "initvalue": "39"
             },
             "openFullscreen": {
-                "doc": "Open Full Screen Menu Display name.",
+                "doc": "Open fullscreen menu display name.",
                 "type": "string",
                 "initvalue": "Open Fullscreen"
             },
             "closeFullscreen": {
                 "label": "Strings to overwrite:",
-                "doc": "Close Full Screen Menu Display name.",
+                "doc": "Close fullscreen menu display name.",
                 "type": "string",
                 "initvalue": "Close Fullscreen"
             },

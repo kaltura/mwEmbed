@@ -20,14 +20,15 @@
     position: absolute;
     list-style-type: none;
     font-size: 12px;
-    padding: 1px;
-    margin: 2px;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    -webkit-user-select: none;
-    -webkit-user-drag: none;
+    padding: 20px;
+    margin: 20px;
+    padding-right: 20px;
+    /*-moz-user-select: none;*/
+    /*-ms-user-select: none;*/
+    /*-webkit-user-select: none;*/
+    /*-webkit-user-drag: none;*/
 
-    border: 0.1em solid #EEE;
+    border: 0.1em solid rgba(238, 238, 238, 0);
     /*background: #EEE;*/
 
     -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
@@ -44,11 +45,11 @@
     outline: none;
     padding: 1px 1px 1px 24px;
     position: relative;
-    border: 1px solid #ccc;
+    /*border: 1px solid #ccc;*/
     z-index: 2147483647;
     overflow: auto;
     background: #fff;
-    border-radius: 2px;
+    /*border-radius: 2px;*/
     /*padding: 2px 2px 2px 24px;*/
     /*background-color: rgba(0, 0, 0, 1);*/
     /*position: relative;*/
@@ -73,7 +74,8 @@
 
 .context-menu-item.hover {
     cursor: pointer;
-    background-color: #39F;
+    background-color: #333;
+    color: #fff;
 }
 
 .context-menu-item.disabled {

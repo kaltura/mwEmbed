@@ -4,6 +4,8 @@
 
         defaultConfig: {
             showTooltip: true,
+            "shortSeekTime": 5,
+            "longSeekTime": 10,
             volumePercentChange: 0.1,
             volumeUp: null,
             volumeDown: null,
@@ -11,18 +13,29 @@
             play: null,
             openFullscreen: null,
             toggleFullscreen: null,
+            shortSeekBack: null,
+            longSeekBack: null,
+            shortSeekForward: null,
+            longSeekForward: null,
             gotoEnd: null,
             gotoBegining: null,
 
         },
+        canSeek: false,
         menuItems: {},
         menuItemsNames: [
-            'volumeUp', 'volumeDown', 'pause', 'play','openFullscreen', 'toggleFullscreen'
-            , 'gotoBegining', 'gotoEnd'
+            'volumeUp', 'volumeDown', 'pause', 'play','openFullscreen', 'toggleFullscreen',
+            'gotoBegining', 'gotoEnd', 'shortSeekBack', 'longSeekBack', 'shortSeekForward',
+            'longSeekForward'
         ],
         setup: function () {
+            var _this = this;
             this.buildMenu();
             this.addBindings();
+
+            this.bind('updateBufferPercent', function(){
+                _this.canSeek = true;
+            });
             this.enableMenu();
 
         },
@@ -101,6 +114,52 @@
         },
         toggleFullscreenCallback: function(){
             this.getPlayer().toggleFullscreen();
+        },
+        seek: function( seekType, direction ){
+            if( !this.canSeek ){
+                return false;
+            }
+            var seekTimeConfig = (seekType == 'short') ? 'shortSeekTime' : 'longSeekTime';
+            var seekTime = parseFloat(this.getConfig(seekTimeConfig));
+            var currentTime = parseFloat(this.getPlayer().currentTime);
+            var newCurrentTime = 0;
+            if( direction == 'back' ){
+                newCurrentTime = currentTime - seekTime;
+                if( newCurrentTime < 0 ){
+                    newCurrentTime = 0;
+                }
+            } else {
+                newCurrentTime = currentTime + seekTime;
+                if( newCurrentTime > parseFloat(this.getPlayer().getDuration()) ){
+                    newCurrentTime = parseFloat(this.getPlayer().getDuration());
+                }
+            }
+            this.getPlayer().seek( newCurrentTime );
+        },
+        shortSeekBackCallback: function(){
+            this.seek( 'short', 'back' );
+        },
+        longSeekBackCallback: function(){
+            this.seek( 'long', 'back' );
+        },
+        shortSeekForwardCallback: function(){
+            this.seek( 'short', 'forward' );
+        },
+        longSeekForwardCallback: function(){
+            this.seek( 'long', 'forward' );
+        },
+        percentageSeekCallback: function( keyCode ){
+            if( !this.canSeek ) {
+                return false;
+            }
+            var _this = this;
+            var getPercentage = function(){
+                var percentArr = _this.getConfig('percentageSeekKeys').split(",");
+                var idx = $.inArray(keyCode.toString(), percentArr);
+                return ((idx + 1) * 0.1 ).toFixed(2);
+            };
+            var seekTime = getPercentage() * this.getPlayer().getDuration();
+            this.getPlayer().seek( seekTime );
         },
         gotoBeginingCallback: function(){
             if( !this.canSeek ) {
