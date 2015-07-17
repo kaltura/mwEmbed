@@ -1803,11 +1803,66 @@
         "label": "contextMenu",
         "model": "config.plugins.contextMenu",
         "attributes": {
-            "keyValuePairs": {
-                "doc": "Key / Value pairs of menu items name and their actions",
-                "label": "Menu Items to add:",
-                "initvalue": "",
-                "type": "keyValuePairs"
+            "volumePercentChange": {
+                "doc": "Volume change percent, from 0 to 1.",
+                "type": "float",
+                "initvalue": "0.1"
+            },
+            "shortSeekTime": {
+                "doc": "Short seek time in seconds.",
+                "type": "number",
+                "initvalue": "5"
+            },
+            "longSeekTime": {
+                "doc": "Long seek time in seconds.",
+                "type": "number",
+                "initvalue": "10"
+            },
+            "volumeUp": {
+                "doc": "Volume Up Menu Display name.",
+                "type": "string",
+                "initvalue": ""
+            },
+            "volumeDown": {
+                "doc": "Volume Down Menu Display name.",
+                "type": "string",
+                "initvalue": ""
+            },
+            "togglePlayback": {
+                "doc": "Playback toggle Key.",
+                "type": "number",
+                "initvalue": "32"
+            },
+            "shortSeekBack": {
+                "doc": "Short Seek back key.",
+                "type": "number",
+                "initvalue": "37"
+            },
+            "shortSeekForward": {
+                "doc": "Short Seek long key.",
+                "type": "number",
+                "initvalue": "39"
+            },
+            "openFullscreen": {
+                "doc": "Open Full Screen Menu Display name.",
+                "type": "string",
+                "initvalue": "Open Fullscreen"
+            },
+            "closeFullscreen": {
+                "label": "Strings to overwrite:",
+                "doc": "Close Full Screen Menu Display name.",
+                "type": "string",
+                "initvalue": "Close Fullscreen"
+            },
+            "gotoBegining": {
+                "doc": "Go to the beginning of the video",
+                "type": "string",
+                "initvalue": "Go To Start"
+            },
+            "gotoEnd": {
+                "doc": "Go to the end of the video.",
+                "type": "string",
+                "initvalue": "Go To End"
             }
         }
     },

@@ -16,6 +16,10 @@
 							'title' => 'Keyboard Shortcuts',
 							'path' => 'KalturaSupport/tests/KeyboardShortcuts.html'
 						),
+						'ContextMenu' => array(
+							'title' => 'Context Menu',
+							'path' => 'KalturaSupport/tests/contextMenu.html'
+						),
 						'CaptionsKalturaApi' => array(
 							'title' => 'Captions API',
 							'path' => 'KalturaSupport/tests/ClosedCaptions.html',
