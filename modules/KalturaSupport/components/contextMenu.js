@@ -4,15 +4,14 @@
 
         defaultConfig: {
             showTooltip: true,
-            theme: 'aggressive-theme333',
+            theme: 'normal',
             shortSeekTime: 5,
             longSeekTime: 10,
-            menuColor: '',
             volumePercentChange: 0.1,
             volumeUp: null,
             volumeDown: null,
-            pause: null,
-            play: null,
+            pause: 'Pause',
+            play: 'Play',
             openFullscreen: null,
             toggleFullscreen: null,
             shortSeekBack: null,
@@ -21,20 +20,22 @@
             longSeekForward: null,
             gotoEnd: null,
             gotoBegining: null,
+            toggleMute: null,
 
         },
         canSeek: false,
         menuItems: {},
         menuItemsNames: [
-            'volumeUp', 'volumeDown', 'pause', 'play','openFullscreen', 'toggleFullscreen',
+            'volumeUp', 'volumeDown','openFullscreen', 'toggleFullscreen',
             'gotoBegining', 'gotoEnd', 'shortSeekBack', 'longSeekBack', 'shortSeekForward',
-            'longSeekForward'
+            'longSeekForward', 'togglePlayback', 'play', 'pause', 'toggleMute'
         ],
         themes: ['normal','aggressive-theme','aggressive-theme-black'],
         setup: function () {
             var _this = this;
             this.buildMenu();
-            this.log('menu got builded')
+            console.log(mw.related);
+            this.log('menu was built')
             this.addBindings();
 
             this.bind('updateBufferPercent', function(){
@@ -59,12 +60,7 @@
         },
         addStyle: function() {
             var theme = this.getConfig('theme');
-            if (this.themeExists(theme)) {
-                $('.context-menu-item').addClass(theme);
-                return;
-            }
-            this.log('Requested theme does not exist');
-            return false;
+            return (this.themeExists(theme)) ? $('.context-menu-item').addClass(theme) : this.log('Requested theme does not exist');
 
         },
         themeExists: function(theme) {
@@ -76,10 +72,16 @@
         buildMenu: function() {
             var _this = this;
             $.each(this.menuItemsNames, function(index, itemName) {
-                if (_this.getConfig(itemName))
-                    _this.menuItems[itemName] = {
+                if (_this.getConfig(itemName)) {
+                    if (itemName === 'play' || itemName === 'pause') {
+                        return _this.menuItems['togglePlayback'] = {
+                            'name': _this.getConfig('play')
+                        }
+                    }
+                    return _this.menuItems[itemName] = {
                         'name': _this.getConfig(itemName)
                     }
+                }
             })
 
         },
@@ -116,6 +118,9 @@
             this.getPlayer().setVolume( newVolumeVal, true );
         },
         togglePlaybackCallback: function(){
+
+            var text = ( this.getPlayer().isPlaying() ) ? this.getConfig('play') : this.getConfig('pause');
+            $('#togglePlayback').html(text);
             var notificationName = ( this.getPlayer().isPlaying() ) ? 'doPause' : 'doPlay';
             this.getPlayer().sendNotification( notificationName );
             return false;
@@ -131,7 +136,11 @@
             }
         },
         toggleFullscreenCallback: function(){
+
             this.getPlayer().toggleFullscreen();
+        },
+        toggleMuteCallback: function(){
+            this.getPlayer().toggleMute();
         },
         seek: function( seekType, direction ){
             if( !this.canSeek ){

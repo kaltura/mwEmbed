@@ -1065,7 +1065,7 @@ var // currently active contextMenu trigger
                                     k.callbacks[key] = item.callback;
                                 }
                             });
-                            $('<span></span>').text(item._name || item.name || "").appendTo($t);
+                            $('<span></span>').attr('id', key).text(item._name || item.name || "").appendTo($t);
                             break;
                     }
                     

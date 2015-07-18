@@ -417,7 +417,7 @@
 	},
 	"contextMenu": {
 	  "scripts": "components/contextMenu.js",
-	  "dependencies": ["jquery","mw.KBasePlugin", "jquery.contextmenu"],
+	  "dependencies": ["jquery","mw.KBasePlugin", "jquery.contextmenu", "related"],
 	  "kalturaPluginName": "contextMenu"
 	}
 
