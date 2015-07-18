@@ -13,7 +13,7 @@
  */
 
 .context-menu-list {
-
+    color:#333;
     min-width: 120px;
     max-width: 250px;
     display: inline-block;
@@ -23,36 +23,26 @@
     padding: 20px;
     margin: 20px;
     padding-right: 20px;
-    /*-moz-user-select: none;*/
-    /*-ms-user-select: none;*/
-    /*-webkit-user-select: none;*/
-    /*-webkit-user-drag: none;*/
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
 
     border: 0.1em solid rgba(238, 238, 238, 0);
-    /*background: #EEE;*/
-
-    -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-    -moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-    -ms-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-    -o-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-
+    -webkit-box-shadow: 0 0 10px rgba(34,44,55,0.3);
+    -moz-box-shadow: 0 0 10px rgba(34,44,55,0.3);
+    box-shadow: 0 0 10px rgba(34,44,55,0.3);
     font-family: Verdana, Arial, Helvetica, sans-serif;
     font-size: 11px;
 }
 
 .context-menu-item {
     outline: none;
-    padding: 1px 1px 1px 24px;
+    padding: 2px 25px 2px;
     position: relative;
-    /*border: 1px solid #ccc;*/
     z-index: 2147483647;
     overflow: auto;
     background: #fff;
-    /*border-radius: 2px;*/
-    /*padding: 2px 2px 2px 24px;*/
-    /*background-color: rgba(0, 0, 0, 1);*/
-    /*position: relative;*/
     -webkit-user-select: none;
     -moz-user-select: -moz-none;
     -ms-user-select: none;
@@ -72,7 +62,7 @@
     user-select: text;
 }
 
-.context-menu-item.hover {
+.context-menu-item:hover {
     cursor: pointer;
     background-color: #333;
     color: #fff;
@@ -82,27 +72,11 @@
     color: #666;
 }
 
-.context-menu-input.hover,
-.context-menu-item.disabled.hover {
+.context-menu-input:hover,
+.context-menu-item.disabled:hover {
     cursor: default;
     background-color: #EEE;
 }
-
-
-/* icons
-    #protip:
-    In case you want to use sprites for icons (which I would suggest you do) have a look at
-    http://css-tricks.com/13224-pseudo-spriting/ to get an idea of how to implement 
-    .context-menu-item.icon:before {}
- */
-.context-menu-item.icon { min-height: 18px; background-repeat: no-repeat; background-position: 4px 2px; list-style-type: none;}
-.context-menu-item.icon-edit { background-image: url(images/page_white_edit.png); }
-.context-menu-item.icon-cut { background-image: url(images/cut.png); }
-.context-menu-item.icon-copy { background-image: url(images/page_white_copy.png); }
-.context-menu-item.icon-paste { background-image: url(images/page_white_paste.png); }
-.context-menu-item.icon-delete { background-image: url(images/page_white_delete.png); }
-.context-menu-item.icon-add { background-image: url(images/page_white_add.png); }
-.context-menu-item.icon-quit { background-image: url(images/door.png); }
 
 /* vertically align inside labels */
 .context-menu-input > label > * { vertical-align: top; }
@@ -140,14 +114,13 @@
     top: 5px;
 }
 
-.context-menu-item.hover > .context-menu-list {
+.context-menu-item:hover > .context-menu-list {
     display: block;
 }
 
 .context-menu-accesskey {
     text-decoration: underline;
 }
-
 
 .context-menu-list {
     font-size: 12px;
@@ -161,8 +134,7 @@
 .context-menu-item {
     display: block;
     margin: 0;
-    padding: 0 25px;
-    color: #333;
+    padding: 2px 25px 2px;
     font-size: 13px;
     text-decoration: none;
     white-space: nowrap;
@@ -190,4 +162,18 @@ body {
     line-height: 1;
     text-align: left;
     text-align: start;
+}
+.aggressive-theme {
+    background: rgba(4, 255, 160, 0.88);
+
+}
+.aggressive-theme:hover, .aggressive-theme-black:hover {
+    background-color: rgba(74, 0, 255, 0.86);
+}
+.aggressive-theme-black {
+    background: rgba(0, 0, 0, 1);
+    color: rgba(255, 255, 255, 0.68);
+}
+.aggressive-theme-black:hover {
+
 }

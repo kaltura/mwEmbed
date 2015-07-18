@@ -4,8 +4,10 @@
 
         defaultConfig: {
             showTooltip: true,
-            "shortSeekTime": 5,
-            "longSeekTime": 10,
+            theme: 'aggressive-theme333',
+            shortSeekTime: 5,
+            longSeekTime: 10,
+            menuColor: '',
             volumePercentChange: 0.1,
             volumeUp: null,
             volumeDown: null,
@@ -28,15 +30,20 @@
             'gotoBegining', 'gotoEnd', 'shortSeekBack', 'longSeekBack', 'shortSeekForward',
             'longSeekForward'
         ],
+        themes: ['normal','aggressive-theme','aggressive-theme-black'],
         setup: function () {
             var _this = this;
             this.buildMenu();
+            this.log('menu got builded')
             this.addBindings();
 
             this.bind('updateBufferPercent', function(){
                 _this.canSeek = true;
             });
+            this.log('bindings were added')
             this.enableMenu();
+            this.log('menu enabled')
+            this.addStyle();
 
         },
         enableMenu: function() {
@@ -50,8 +57,22 @@
                 });
             }
         },
-        // Get all menu name and their actions from configuration in KMC Studio.
-        // build menu first from the names and addBindings for each menu item with the right aciton.
+        addStyle: function() {
+            var theme = this.getConfig('theme');
+            if (this.themeExists(theme)) {
+                $('.context-menu-item').addClass(theme);
+                return;
+            }
+            this.log('Requested theme does not exist');
+            return false;
+
+        },
+        themeExists: function(theme) {
+            if (this.themes.indexOf(theme) !== -1 ) {
+                return true
+            }
+            return false;
+        },
         buildMenu: function() {
             var _this = this;
             $.each(this.menuItemsNames, function(index, itemName) {
@@ -59,13 +80,11 @@
                     _this.menuItems[itemName] = {
                         'name': _this.getConfig(itemName)
                     }
-
             })
 
         },
         addBindings: function () {
             var _this = this;
-            //get the actions from the config and add bindings to the right menu item.
             $.each(this.menuItems, function(action, item){
                 this.callback = function() {
                     _this.getCallback(action);
@@ -79,7 +98,6 @@
             }
         },
         volumeUpCallback: function(){
-
             var currentVolume = parseFloat(this.getPlayer().getPlayerElementVolume());
             var volumePercentChange = parseFloat(this.getConfig('volumePercentChange'));
             var newVolumeVal = (currentVolume + volumePercentChange).toFixed(2);

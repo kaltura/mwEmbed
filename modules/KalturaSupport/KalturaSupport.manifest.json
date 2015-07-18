@@ -1803,6 +1803,27 @@
         "label": "contextMenu",
         "model": "config.plugins.contextMenu",
         "attributes": {
+            "theme": {
+                "doc": "The Theme of the menu. effects text, background and hover colors",
+                "type": "enum",
+                "initvalue": "normal-theme",
+                "enum": [
+                    "normal-theme",
+                    "aggressive-theme",
+                    "aggressive-theme-black"
+                ],
+                "options": [
+                    {
+                        "label": "Default theme",
+                        "value": "normal-theme"
+                    },
+                    {
+                        "label": "Aggressive colours theme",
+                        "value": "aggressive-theme"
+                    }
+
+                ]
+            },
             "volumePercentChange": {
                 "doc": "Volume change percent, from 0 to 1.",
                 "type": "float",
