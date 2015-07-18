@@ -2,8 +2,8 @@
     background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFW…mdkSyOXRtfnO3Onf7OPd7U37X6pFxyq2EURYzhHWXx3wIMAHqAXFj/hFWxAAAAAElFTkSuQmCC) no-repeat 10px center;
 }
 .share .shareembed-input {
-    font-size: 12pt;
-    font-family: 'Lato', Helvetica, Arial;
+    font-size: 18px;
+    font-family: 'Open sans', Aria, sans-serif;
     font-weight: 400;
     border-radius: 2px 2px 2px 2px;
     -moz-border-radius: 2px 2px 2px 2px;
@@ -24,9 +24,9 @@
     float: left;
 }
 
-ul, li, ol, input, select, button, a {
+ul, li, .contextmenu-input{
     font-family: 'Open sans', Aria, sans-serif;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 300;
     line-height: 1.714em;
     -webkit-font-smoothing: antialiased !important;
@@ -35,12 +35,18 @@ a {
     text-decoration: none;
     color: #4099FF;
 }
+.contextmenu {
+    padding-top:3%;
+    padding-bottom: 3%;
+}
+.contextmenu-input {
 
+}
 
 /* ================================= */
 /* --------- TRANSITION CSS --------- */
 /* ================================= */
-a, header.BGdark .logo a img, header, header.BGdark, .BGsecondary, #serviceList .carousel-indicators > li img, .BGdark .rightnav, .main-menu li, ul li, ul li:before, .otherServices .link span i, .otherServices li, .otherServices img, .otherServices li h6, .member img, .otherServices .link, .member .info, .member .info h6, .galleryImg a span, .galleryImg img, .contactInfo p i, .contactInfo p, .social ul li a i, .btn, .social li i, .panel-default > .panel-heading h4.active a {
+a, ul li, ul li:before {
     -webkit-transition: all 0.3s ease-in-out;
     -moz-transition: all 0.3s ease-in-out;
     -ms-transition: all 0.3s ease-in-out;
