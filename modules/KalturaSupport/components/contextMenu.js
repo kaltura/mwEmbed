@@ -108,7 +108,7 @@
         },
         volumeDownCallback: function(){
             var currentVolume = parseFloat(this.getPlayer().getPlayerElementVolume());
-            var volumePercentChange = parseFloat(0.1);
+            var volumePercentChange = parseFloat(this.getConfig('volumePercentChange'));
             var newVolumeVal = (currentVolume - volumePercentChange).toFixed(2);
             if( newVolumeVal < 0 ) {
                 newVolumeVal = 0;
