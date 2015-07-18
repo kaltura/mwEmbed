@@ -1399,7 +1399,7 @@
             "shortSeekTime": {
                 "doc": "Short seek time in seconds.",
                 "type": "number",
-                "initvalue": "5"
+                "initvalue": "55"
             },
             "longSeekTime": {
                 "doc": "Long seek time in seconds.",
