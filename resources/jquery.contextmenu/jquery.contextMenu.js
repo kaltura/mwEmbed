@@ -215,7 +215,7 @@ var // currently active contextMenu trigger
         // contextmenu show dispatcher
         contextmenu: function(e) {
             var $this = $(this);
-            
+
             // disable actual context-menu if we are using the right mouse button as the trigger
             if (e.data.trigger == 'right') {
                 e.preventDefault();
@@ -224,11 +224,13 @@ var // currently active contextMenu trigger
             
             // abort native-triggered events unless we're triggering on right click
             if (e.data.trigger != 'right' && e.originalEvent) {
+
                 return;
             }
             
             // abort event if menu is visible for this trigger
             if ($this.hasClass('context-menu-active')) {
+
                 return;
             }
             
@@ -237,7 +239,7 @@ var // currently active contextMenu trigger
                 // http://www.whatwg.org/specs/web-apps/current-work/multipage/interactive-elements.html#context-menus
                 // var evt = jQuery.Event("show", { data: data, pageX: e.pageX, pageY: e.pageY, relatedTarget: this });
                 // e.data.$menu.trigger(evt);
-                
+
                 $currentTrigger = $this;
                 if (e.data.build) {
                     var built = e.data.build($currentTrigger, e);
@@ -272,13 +274,14 @@ var // currently active contextMenu trigger
         click: function(e) {
             e.preventDefault();
             e.stopImmediatePropagation();
+
             $(this).trigger($.Event("contextmenu", { data: e.data, pageX: e.pageX, pageY: e.pageY }));
         },
         // contextMenu right-click trigger
         mousedown: function(e) {
             // register mouse down
             var $this = $(this);
-            
+
             // hide any previous menus
             if ($currentTrigger && $currentTrigger.length && !$currentTrigger.is($this)) {
                 $currentTrigger.data('contextMenu').$menu.trigger('contextmenu:hide');
@@ -286,7 +289,7 @@ var // currently active contextMenu trigger
             
             // activate on right click
             if (e.button == 2) {
-                console.log('from e.button event');
+
                 $currentTrigger = $this.data('contextMenuActive', true);
             }
         },
@@ -1311,7 +1314,7 @@ $.contextMenu = function(operation, options) {
                     }, '.context-menu-list')
                     .on('mouseup.contextMenu', '.context-menu-input', handle.inputClick)
                     .on({
-                        'mouseup.contextMenu': handle.itemClick,
+                        'mousedown.contextMenu': handle.itemClick,
                         'contextmenu:focus.contextMenu': handle.focusItem,
                         'contextmenu:blur.contextMenu': handle.blurItem,
                         'contextmenu.contextMenu': handle.abortevent,

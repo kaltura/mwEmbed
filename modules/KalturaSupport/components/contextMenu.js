@@ -34,7 +34,6 @@
         setup: function () {
             var _this = this;
             this.buildMenu();
-            console.log(mw.related);
             this.log('menu was built')
             this.addBindings();
 
