@@ -1849,6 +1849,11 @@
                 "type": "string",
                 "initvalue": ""
             },
+            "grabEmbedCode" : {
+                "doc": "Display embed code on screen - the menu display name.",
+                "type": "string",
+                "initvalue": "Grab embed code"
+            },
             "play": {
                 "doc": "Play menu item display name *pause value must be defined as well",
                 "type": "string",

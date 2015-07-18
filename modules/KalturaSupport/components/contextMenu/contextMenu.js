@@ -22,7 +22,7 @@
             longSeekForward: null,
             gotoEnd: null,
             grabEmbedCode: 'Grab Embed Code',
-            togglePlayControls: 'Toggle Controlls',
+            togglePlayControls: 'Toggle Controls',
             gotoBegining: null,
             toggleMute: null,
 
