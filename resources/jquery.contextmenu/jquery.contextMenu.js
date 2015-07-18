@@ -286,6 +286,7 @@ var // currently active contextMenu trigger
             
             // activate on right click
             if (e.button == 2) {
+                console.log('from e.button event');
                 $currentTrigger = $this.data('contextMenuActive', true);
             }
         },

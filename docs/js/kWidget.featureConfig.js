@@ -115,7 +115,6 @@
 			}
 			return false;
 		})
-		console.log(embedOptions.flashvars);
 		// Display pretty config box:
 		$( '#' + embedOptions.targetId + '_doc' ).prettyKalturaConfig(
 				firstPluginId, 
