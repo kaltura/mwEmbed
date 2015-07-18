@@ -1,9 +1,11 @@
 ( function( mw, $ ) {"use strict";
 
-    mw.PluginManager.add( 'contextMenu', mw.KBasePlugin.extend({
+    mw.PluginManager.add( 'contextMenu', mw.KBaseScreen.extend({
 
         defaultConfig: {
             showTooltip: true,
+            parent: "topBarContainer",
+            templatePath: 'components/contextMenu/contextMenu.tmpl.html',
             theme: 'normal',
             shortSeekTime: 5,
             longSeekTime: 10,
@@ -19,6 +21,7 @@
             shortSeekForward: null,
             longSeekForward: null,
             gotoEnd: null,
+            grabEmbedCode: 'Grab Embed Code',
             togglePlayControls: 'Toggle Controlls',
             gotoBegining: null,
             toggleMute: null,
@@ -29,7 +32,8 @@
         menuItemsNames: [
             'volumeUp', 'volumeDown','openFullscreen', 'toggleFullscreen',
             'gotoBegining', 'gotoEnd', 'shortSeekBack', 'longSeekBack', 'shortSeekForward',
-            'longSeekForward', 'togglePlayback', 'play', 'pause', 'toggleMute', 'togglePlayControls'
+            'longSeekForward', 'togglePlayback', 'play', 'pause', 'toggleMute', 'togglePlayControls',
+            'grabEmbedCode'
         ],
         themes: ['normal','aggressive-theme','aggressive-theme-black'],
         setup: function () {
@@ -87,9 +91,9 @@
             })
 
         },
-        addToggleMenuItem: function(items, callback){
-
-        },
+        /*
+        ** @TODO Create a way to add more toggle buttons instead of adding each one manually.
+         */
         addBindings: function () {
             var _this = this;
             $.each(this.menuItems, function(action, item){
@@ -105,6 +109,7 @@
             }
         },
         volumeUpCallback: function(){
+            var _this = this;
             var embedPlayer = this.getPlayer();
             var currentVolume = parseFloat(this.getPlayer().getPlayerElementVolume());
             var volumePercentChange = parseFloat(this.getConfig('volumePercentChange'));
@@ -130,11 +135,11 @@
         },
         togglePlaybackCallback: function(){
             var embedPlayer = this.getPlayer();
+
             if ( embedPlayer._playContorls) {
                 var text = ( embedPlayer.isPlaying() ) ? this.getConfig('play') : this.getConfig('pause');
                 $('#togglePlayback').html(text);
                 var notificationName = ( embedPlayer.isPlaying() ) ? 'doPause' : 'doPlay';
-
                 embedPlayer.sendNotification(notificationName);
                 return false;
             }
@@ -213,6 +218,49 @@
                 return false;
             }
             this.getPlayer().seek(this.getPlayer().getDuration());
+        },
+        grabEmbedCodeCallback: function(){
+            var _this = this;
+            this.setConfig('shareURL', this.getKalturaShareURL());
+            this.openScreen();
+
+        },
+        openScreen: function(){
+            var _this = this;
+            var embedPlayer = this.getPlayer();
+            this.getScreen().then(function(screen) {
+                _this.showScreen();
+                screen.addClass('semiTransparentBkg'); // add semi-transparent background for share plugin screen only. Won't affect other screen based plugins
+                _this.shareScreenOpened = true;
+                // add blur effect to video and poster
+                $("#" + embedPlayer.getPlayerElement().id).addClass("blur");
+                embedPlayer.getPlayerPoster().addClass("blur");
+            });
+        },
+        getKalturaShareURL: function () {
+            var uiConfId = this.getConfig("shareUiconfID") ? this.getConfig("shareUiconfID") : this.getPlayer().kuiconfid;
+            return mw.getConfig('Kaltura.ServiceUrl') + '/index.php/extwidget/preview' +
+                '/partner_id/' + this.getPlayer().kpartnerid +
+                '/uiconf_id/' + uiConfId +
+                '/entry_id/' + this.getPlayer().kentryid + '/embed/dynamic';
+        },
+        closeScreen: function(){
+            $(".embed-offset-container").hide();
+            $(".embed-container>.share-copy-btn").hide();
+            $(".share-offset-container").hide();
+            $(".share-container>.share-copy-btn").hide();
+            $(".share-offset").val("00:00");
+            $(".share-alert").hide();
+            $('.share-secured').attr('checked', false);
+            this.enablePlayDuringScreen = false;
+            this.hideScreen();
+        },
+        hideScreen: function(){
+            this._super();
+            if (this.getPlayer().getPlayerElement()) {
+                $( "#" + this.getPlayer().getPlayerElement().id ).removeClass( "blur" );
+                this.getPlayer().getPlayerPoster().removeClass( "blur" );
+            }
         },
         isSafeEnviornment: function () {
             return !mw.isIpad() || ( mw.isIpad() && mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') !== false );

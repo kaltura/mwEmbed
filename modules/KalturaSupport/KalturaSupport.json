@@ -416,8 +416,10 @@
 		"kalturaPluginName": "reportError"
 	},
 	"contextMenu": {
-	  "scripts": "components/contextMenu.js",
-	  "dependencies": ["jquery","mw.KBasePlugin", "jquery.contextmenu", "related"],
+	  "scripts": "components/contextMenu/contextMenu.js",
+	  "templates": "components/contextMenu/contextMenu.tmpl.html",
+	  "styles": "components/contextMenu/contextMenu.css",
+	  "dependencies": ["jquery","mw.KBaseScreen", "jquery.contextmenu"],
 	  "kalturaPluginName": "contextMenu"
 	}
 
