@@ -19,6 +19,7 @@
             shortSeekForward: null,
             longSeekForward: null,
             gotoEnd: null,
+            togglePlayControls: 'Toggle Controlls',
             gotoBegining: null,
             toggleMute: null,
 
@@ -28,12 +29,14 @@
         menuItemsNames: [
             'volumeUp', 'volumeDown','openFullscreen', 'toggleFullscreen',
             'gotoBegining', 'gotoEnd', 'shortSeekBack', 'longSeekBack', 'shortSeekForward',
-            'longSeekForward', 'togglePlayback', 'play', 'pause', 'toggleMute'
+            'longSeekForward', 'togglePlayback', 'play', 'pause', 'toggleMute', 'togglePlayControls'
         ],
         themes: ['normal','aggressive-theme','aggressive-theme-black'],
         setup: function () {
             var _this = this;
             this.buildMenu();
+
+
             this.log('menu was built')
             this.addBindings();
 
@@ -84,6 +87,9 @@
             })
 
         },
+        addToggleMenuItem: function(items, callback){
+
+        },
         addBindings: function () {
             var _this = this;
             $.each(this.menuItems, function(action, item){
@@ -99,6 +105,7 @@
             }
         },
         volumeUpCallback: function(){
+            var embedPlayer = this.getPlayer();
             var currentVolume = parseFloat(this.getPlayer().getPlayerElementVolume());
             var volumePercentChange = parseFloat(this.getConfig('volumePercentChange'));
             var newVolumeVal = (currentVolume + volumePercentChange).toFixed(2);
@@ -106,6 +113,11 @@
                 newVolumeVal = 1;
             }
             this.getPlayer().setVolume( newVolumeVal, true );
+        },
+        togglePlayControlsCallback: function(){
+            var _this = this;
+            var embedPlayer = this.getPlayer();
+            return ( embedPlayer._playContorls) ? embedPlayer.disablePlayControls() : embedPlayer.enablePlayControls();
         },
         volumeDownCallback: function(){
             var currentVolume = parseFloat(this.getPlayer().getPlayerElementVolume());
@@ -117,12 +129,15 @@
             this.getPlayer().setVolume( newVolumeVal, true );
         },
         togglePlaybackCallback: function(){
+            var embedPlayer = this.getPlayer();
+            if ( embedPlayer._playContorls) {
+                var text = ( embedPlayer.isPlaying() ) ? this.getConfig('play') : this.getConfig('pause');
+                $('#togglePlayback').html(text);
+                var notificationName = ( embedPlayer.isPlaying() ) ? 'doPause' : 'doPlay';
 
-            var text = ( this.getPlayer().isPlaying() ) ? this.getConfig('play') : this.getConfig('pause');
-            $('#togglePlayback').html(text);
-            var notificationName = ( this.getPlayer().isPlaying() ) ? 'doPause' : 'doPlay';
-            this.getPlayer().sendNotification( notificationName );
-            return false;
+                embedPlayer.sendNotification(notificationName);
+                return false;
+            }
         },
         openFullscreenCallback: function(){
             if( !this.getPlayer().getInterface().hasClass('fullscreen') ){
