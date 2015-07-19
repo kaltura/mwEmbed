@@ -113,7 +113,6 @@
 			                    var x =  func[index];
 			                    if ( x ) {
 				                    window[x] = function (a,b,c,d,e,f,g,h) {
-					                    debugger;
 					                    parent.window[x]( a,b,c,d,e,f,g,h );
 				                    }
 			                    }

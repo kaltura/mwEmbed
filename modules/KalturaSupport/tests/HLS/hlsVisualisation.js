@@ -91,7 +91,6 @@
     function onNextRequest(payload)
     {
         // Note the last requests so we can animate their state.
-        payload = JSON.parse(payload);
         if(payload.url === null || payload.kind === "bestEffortDownload") {
             return;
         }
@@ -103,7 +102,6 @@
     // Called by HLS plugin to note download events for segments.
     function onDownload(payload)
     {
-        payload = JSON.parse(payload);
         // Events are:
         //      open - just opened.
         //      opened - open completed.
