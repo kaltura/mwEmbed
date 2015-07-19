@@ -622,9 +622,7 @@ DAL for Q&A Module
                         // process results from 2nd request
                         var data2 = resoults[1];
                         // if an error pop out:
-                        if (!data2 || data2.code) {
-                            // todo: add error handling
-                            mw.log("Error:: KCuePoints could not retrieve code cue points");
+                        if (!data2 || !data2.objects || data2.objects.length < 1) {
                             return;
                         }
 
