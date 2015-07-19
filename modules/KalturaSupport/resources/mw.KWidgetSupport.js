@@ -1539,7 +1539,7 @@ mw.KWidgetSupport.prototype = {
 					'data-flavorid' : 'mpdLow',
 					'type' : 'application/dash+xml',
 					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneAdaptiveFlavors.join(',')  + '/format/mpegdash/protocol/' + protocol + '/a.mpd',
-					'data-flavors': iphoneAdaptiveFlavors.join(',')
+					'flavors': iphoneAdaptiveFlavors.join(',')
 				};
 				assetId = iphoneAdaptiveFlavors[0];
 				assetDrmData = this.getSourceDrmData(assetId, flavorDrmData);
@@ -1559,7 +1559,7 @@ mw.KWidgetSupport.prototype = {
 					'data-flavorid' : 'mpdHigh',
 					'type' : 'application/dash+xml',
 					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadAdaptiveFlavors.join(',')  + '/format/mpegdash/protocol/' + protocol + '/a.mpd',
-					'data-flavors': ipadAdaptiveFlavors.join(',')
+					'flavors': ipadAdaptiveFlavors.join(',')
 				};
 				assetId = ipadAdaptiveFlavors[0];
 				assetDrmData = this.getSourceDrmData(assetId, flavorDrmData);
@@ -1625,7 +1625,7 @@ mw.KWidgetSupport.prototype = {
 		return deviceSources;
 	},
 	getFlavorAssetsDrmData: function(playerData){
-		var flavorDrmData = {}
+		var flavorDrmData = {};
 		if (playerData.contextData.pluginData &&
 			playerData.contextData.pluginData.KalturaDrmEntryContextPluginData &&
 			playerData.contextData.pluginData.KalturaDrmEntryContextPluginData.flavorData){
@@ -1637,9 +1637,9 @@ mw.KWidgetSupport.prototype = {
 		var assetDrmData = flavorDrmData && flavorDrmData[id];
 		var drmData = {};
 		if (assetDrmData) {
-			drmData['data-custom_data'] = assetDrmData['custom_data'];
-			drmData['data-signature'] = assetDrmData.signature;
-			drmData['data-contentId'] = assetDrmData.contentId;
+			drmData.custom_data = assetDrmData.custom_data;
+			drmData.signature = assetDrmData.signature;
+			drmData.contenId = assetDrmData.contentId;
 		}
 		return drmData;
 	},
