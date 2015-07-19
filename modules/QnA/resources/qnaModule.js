@@ -110,7 +110,15 @@
                 }, mw.getConfig("qnaPollingInterval") || 10000);
 
                 $( embedPlayer ).bind('firstPlay', function () {
-                    _this.qnaService.AnswerOnAirQueueUpdate(embedPlayer.currentTime);
+                    // after the first play embedPlayer.currentTime is 0.
+                    // wait till we get a real time and refresh the answer on air queue
+                    var clearAnswerOnAirQueueInterval = setInterval(function() {
+                        if (embedPlayer.currentTime > 0)
+                        {
+                            _this.qnaService.AnswerOnAirQueueUpdate(embedPlayer.currentTime);
+                            clearInterval(clearAnswerOnAirQueueInterval);
+                        }
+                    }, 100);
                 });
 
                 $( embedPlayer ).bind('timeupdate', function () {
