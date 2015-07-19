@@ -342,6 +342,9 @@
 
 				// use css("display", "block") since .show() restores the previous value, and the previous value is hide
 				$('.qna-on-video-btn').css("display", "block");
+
+				console.log("0 qna-on-video-btn display is " + $('.qna-on-video-btn').css('display'));
+
 				if (!_this.getConfig( 'onPage' )) {
 					_this.getQnaContainer().find(".qnaModuleBackgroundHider").hide();
 				}
@@ -360,10 +363,11 @@
 					$('.qnaReplyBox').show();
 				}
 			}
-
+			console.log("1 qna-on-video-btn display is " + $('.qna-on-video-btn').css('display'));
 			_this.updateQnaListHolderSize();
 			_this.changeVideoToggleIcon();
 			_this.KQnaModule.applyLayout();
+			console.log("2 qna-on-video-btn display is " + $('.qna-on-video-btn').css('display'));
 		}
 
 	}));
