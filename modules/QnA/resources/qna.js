@@ -322,6 +322,7 @@
 		},
 
 		hideModule: function(hide, announcementOnly) {
+			console.log("hide= " + hide + " announcementOnly= " + announcementOnly);
 			var _this = this;
 			var firstTime = (_this.moduleStatus() === undefined);
 
