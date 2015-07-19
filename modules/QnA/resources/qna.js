@@ -333,10 +333,11 @@
 				if (!_this.getConfig( 'onPage' )) {
 					_this.getQnaContainer().find(".qnaModuleBackgroundHider").show();
 				}
-				$('.qna-on-video-btn').hide();
+				$('.qna-on-video-btn').css("display", "none");
 			}
 			else{
-				$('.qna-on-video-btn').show();
+				// use css("display", "block") since .show() restores the previous value, and the previous value is hide
+				$('.qna-on-video-btn').css("display", "block");
 				if (!_this.getConfig( 'onPage' )) {
 					_this.getQnaContainer().find(".qnaModuleBackgroundHider").hide();
 				}
