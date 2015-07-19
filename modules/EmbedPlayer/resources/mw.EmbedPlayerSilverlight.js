@@ -130,7 +130,11 @@
 
 					if (isMimeType("video/playreadySmooth")) {
 						flashvars.preload = "none";
-						var licenseUrl = _this.getKalturaConfig(null, 'playreadyLicenseUrl') || mw.getConfig('Kaltura.LicenseServerURL');
+						//var licenseUrl = _this.getKalturaConfig(null, 'playreadyLicenseUrl') || mw.getConfig('Kaltura.LicenseServerURL');
+						var licenseBaseUrl = mw.getConfig('Kaltura.UdrmServerURL');
+						var licenseData = this.mediaElement.getLicenseUriComponent();
+						var licenseUrl = licenseBaseUrl + "/playready/license?" + licenseData;
+
 						if (!licenseUrl) {
 							mw.log('EmbedPlayerSPlayer::Error:: failed to retrieve playready license URL ');
 						} else {
