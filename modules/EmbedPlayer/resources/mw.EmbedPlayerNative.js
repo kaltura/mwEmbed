@@ -758,7 +758,7 @@
 
 					// issue the play request:
 					vid.play();
-					if (mw.isIOS()) {
+					if (mw.isMobileDevice()) {
 						setTimeout(function () {
 							handleSwitchCallback();
 						}, 100);
@@ -1035,6 +1035,10 @@
 				if (this._propagateEvents) {
 					this.triggerHelper('seeking');
 				}
+			}else if (this.useNativePlayerControls()) {
+				//In native controls the seek event is fired every time the scrubber is moved, even if user didn't
+				//finish dragging it, so update seek target on each event received
+				this.currentSeekTargetTime = this.getPlayerElement().currentTime;
 			}
 		},
 		/**

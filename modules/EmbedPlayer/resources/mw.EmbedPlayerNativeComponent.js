@@ -297,6 +297,9 @@
 			mw.log("EmbedPlayerNativeComponent:: play::");
 			this.playbackDone = false;
 
+			this.unbindHelper('replayEvent').bindHelper('replayEvent',function(){
+				this.getPlayerElement().replay();
+			});
 
 			if (this.parent_play()) {
 				if (this.getPlayerElement()) { // update player
@@ -382,6 +385,7 @@
 
 		_ondurationchange: function () {
 			mw.log( "EmbedPlayerNativeComponent:: onDurationChange::" + this.getPlayerElement().duration );
+			$(this).trigger('durationChange', this.getPlayerElement().duration);
 		},
 
 		/**

@@ -359,7 +359,13 @@ mw.KAdPlayer.prototype = {
 					_this.addAdBindings( vid, adSlot, adConf );
 					$( _this.embedPlayer ).trigger( 'playing' ); // this will update the player UI to playing mode
                     // trigger ad play event
-                    $(_this.embedPlayer).trigger("onAdPlay",[adConf.id]);
+                    _this.waitingForLoadedData = true;
+                    $(vid).on("loadeddata", function(){
+                        if(_this.waitingForLoadedData){
+                            $(_this.embedPlayer).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex+1, vid.duration, vid.currentSrc]);
+                            _this.waitingForLoadedData = false;
+                        }
+                    });
                     if (_this.embedPlayer.muted){
                         _this.adSibling.changeVolume(0);
                     }
@@ -501,6 +507,23 @@ mw.KAdPlayer.prototype = {
 		this.disablePlayControls();
 		this.clickedBumper = false;
 	},
+	openClickthrough: function(adSlot,clickthrough){
+		this.embedPlayer.sendNotification( 'adClick', {url: clickthrough} );
+		if ( adSlot.videoClickTracking && adSlot.videoClickTracking.length > 0  ) {
+			mw.log("KAdPlayer:: sendBeacon to: " + adSlot.videoClickTracking[0] );
+			for (var i=0; i < adSlot.videoClickTracking.length ; i++){
+				mw.sendBeaconUrl( adSlot.videoClickTracking [i]);
+			}
+			//handle wrapper clickTracking
+			if(adSlot.wrapperData ){
+				adSlot.wrapperData.contents().find('ClickTracking').each(function(a,b){
+					mw.sendBeaconUrl($(b).contents().text());
+					mw.log("KAdPlayer:: sendBeacon to (wrapper): " + $(b).contents().text() );
+				})
+			}
+		}
+		window.open( clickthrough );
+	},
 	addClickthroughSupport:function( adConf, adSlot ){
 		var _this = this;
 		var embedPlayer = _this.embedPlayer;
@@ -523,24 +546,7 @@ mw.KAdPlayer.prototype = {
 							_this.resumeAd();
 						} else {
 							_this.pauseAd();
-							//expose the URL to the
-							embedPlayer.sendNotification( 'adClick', {url: adConf.clickThrough} );
-							if ( adSlot.videoClickTracking && adSlot.videoClickTracking.length > 0  ) {
-								mw.log("KAdPlayer:: sendBeacon to: " + adSlot.videoClickTracking[0] );
-								for (var i=0; i < adSlot.videoClickTracking.length ; i++){
-									mw.sendBeaconUrl( adSlot.videoClickTracking [i]);
-								}
-								//handle wrapper clickTracking
-								if(adSlot.wrapperData ){
-
-									adSlot.wrapperData.contents().find('ClickTracking').each(function(a,b){
-										mw.sendBeaconUrl($(b).contents().text());
-										mw.log("KAdPlayer:: sendBeacon to (wrapper): " + $(b).contents().text() );
-									})
-								}
-
-							}
-							window.open( adConf.clickThrough );
+							_this.openClickthrough(adSlot,adConf.clickThrough);
 						}
 					}
 
@@ -933,7 +939,7 @@ mw.KAdPlayer.prototype = {
 		if (nonLinearConf.width === undefined){
 			waitForNonLinear();
 		}
-		$( this.embedPlayer ).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex]);
+		$( this.embedPlayer ).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex+1]);
 		this.setImgSrc(nonLinearConf, 'overlayAd');
 
 		// Show the overlay update its position and content
@@ -962,7 +968,7 @@ mw.KAdPlayer.prototype = {
 			})
 			.addClass("btn icon-close")
 			.click(function(){
-				sendBeacon("close");
+				sendBeacon("close");//TODO: trigger event (adComplete or adClosed or adDismissed or whatever)
 				$( this ).parent().fadeOut('fast');
 				return false;
 			})
@@ -1356,7 +1362,7 @@ mw.KAdPlayer.prototype = {
 					}
 				}
 				var finishPlaying = function () {
-					if ( isJs ) {
+                    if ( isJs ) {
 						_this.embedPlayer.getInterface().find( '.mwEmbedPlayer' ).show();
 					}
 					$( '#' + vpaidId ).remove();
@@ -1384,6 +1390,7 @@ mw.KAdPlayer.prototype = {
 				}, 'AdLinearChange' );
 
 				VPAIDObj.subscribe( function () {
+
 					_this.getVPAIDDurtaion = function () {
 						//TODO add this to flash vpaid
 						return VPAIDObj.getAdRemainingTime();
@@ -1472,6 +1479,7 @@ mw.KAdPlayer.prototype = {
 
 				VPAIDObj.subscribe( function ( message ) {
 					_this.sendVASTBeacon( adConf.trackingEvents, 'start' );
+                    $(_this.embedPlayer).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex+1, VPAIDObj.duration, VPAIDObj.id]);
 				}, 'AdVideoStart' );
 
 				VPAIDObj.subscribe( function ( message ) {
@@ -1510,12 +1518,18 @@ mw.KAdPlayer.prototype = {
 					_this.sendVASTBeacon( adConf.trackingEvents, 'resume', true );
 				}, 'AdPlaying' );
 
+				VPAIDObj.subscribe( function ( url, id, playerHandles ) {
+					if (isJs && playerHandles){
+						_this.openClickthrough(adSlot, url);
+					}
+				}, 'AdClickThru' );
+
 				if ( isJs ) {
 					//flash vpaid will call initAd itself
 					VPAIDObj.initAd( _this.embedPlayer.getWidth(), _this.embedPlayer.getHeight(), 'normal', 512, creativeData, environmentVars );
+					var bindPostFix = ".jsvpaid";
 					if ( adSlot.type == "overlay" ){
 						// add play / pause binding to trigger VPAID pauseAd and resumeAd
-						var bindPostFix = ".jsvpaid";
 						_this.embedPlayer.unbindHelper('onPlayerStateChange' + bindPostFix).bindHelper('onPlayerStateChange' + bindPostFix, function(e, newState, oldState){
 							if( newState == 'pause' && VPAIDObj.pauseAd && typeof VPAIDObj.pauseAd == "function" ){
 								VPAIDObj.pauseAd();
@@ -1524,33 +1538,35 @@ mw.KAdPlayer.prototype = {
 								VPAIDObj.resumeAd();
 							}
 						});
-						_this.embedPlayer.unbindHelper('onOpenFullScreen' + bindPostFix).bindHelper('onOpenFullScreen' + bindPostFix, function(){
-							if( VPAIDObj.resizeAd && typeof VPAIDObj.resizeAd == "function" ){
-								setTimeout(function(){VPAIDObj.resizeAd($(window).width(),$(window).height(),"fullscreen")},1000);
-							}
-						});
-						_this.embedPlayer.unbindHelper('onCloseFullScreen' + bindPostFix).bindHelper('onCloseFullScreen' + bindPostFix, function(){
-							if( VPAIDObj.resizeAd && typeof VPAIDObj.resizeAd == "function" ){
-								setTimeout(function(){VPAIDObj.resizeAd(_this.embedPlayer.width,_this.embedPlayer.height,"normal")},1000);
+					}else{
+						_this.embedPlayer.unbindHelper('onAdSkip' + bindPostFix).bindHelper('onAdSkip' + bindPostFix, function(){
+							if( VPAIDObj.stopAd ){
+								VPAIDObj.stopAd();
 							}
 						});
 					}
+					_this.embedPlayer.unbindHelper('onOpenFullScreen' + bindPostFix).bindHelper('onOpenFullScreen' + bindPostFix, function(){
+						if( VPAIDObj.resizeAd && typeof VPAIDObj.resizeAd == "function" ){
+							setTimeout(function(){VPAIDObj.resizeAd($(window).width(),$(window).height(),"fullscreen")},1000);
+						}
+					});
+					_this.embedPlayer.unbindHelper('onCloseFullScreen' + bindPostFix).bindHelper('onCloseFullScreen' + bindPostFix, function(){
+						if( VPAIDObj.resizeAd && typeof VPAIDObj.resizeAd == "function" ){
+							setTimeout(function(){VPAIDObj.resizeAd(_this.embedPlayer.width,_this.embedPlayer.height,"normal")},1000);
+						}
+					});
 				}
 			}
 			//add the vpaid container
 			if ( $( '#' + vpaidId ).length == 0 ) {
 				_this.embedPlayer.getVideoHolder().append(
 					$( '<div />' )
-						.css( {
-							'position': 'absolute',
-							'top': '0px',
-							'left': '0px',
-							'z-index': 2000,
-							'width': '100%',
-							'height': '100%'
-						} )
+						.addClass( 'vpaidContainer' )
 						.attr( 'id', vpaidId )
 				);
+				if (adSlot.type !== "overlay"){
+					_this.embedPlayer.getVideoHolder().find("#" + vpaidId).addClass("blackBackground");
+				}
 			}
 			if ( adConf.vpaid.flash && mw.EmbedTypes.getMediaPlayers().getDefaultPlayer( adConf.vpaid.flash.type ) ) { //flash vpaid
 				var playerParams = {
@@ -1564,7 +1580,7 @@ mw.KAdPlayer.prototype = {
 				if ( adConf.adParameters ) {
 					playerParams.vpaidAdParameters = escape( adConf.adParameters );
 				}
-				if ( adConf.vpaid.flash.width) {
+				if ( adConf.vpaid.flash.width ) {
 					playerParams.vpaidAdWidth = adConf.vpaid.flash.width;
 					playerParams.vpaidAdHeight = adConf.vpaid.flash.height;
 				}

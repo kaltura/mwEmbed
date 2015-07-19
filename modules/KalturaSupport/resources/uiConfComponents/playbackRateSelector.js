@@ -10,18 +10,24 @@
 		 	"showTooltip": true,
 		 	'defaultSpeed': '1',
 			'speeds': ".5,.75,1,1.5,2",
-			'enableKeyboardShortcuts': true
+			'enableKeyboardShortcuts': true,
+			'serverSpeedPlayback': false
 		},
 
 		isDisabled: false,
+		currentSpeed: 1,
+		manifestSource: null,
 
 		isSafeEnviornment: function(){
 			var _this = this,
 			deferred = $.Deferred();
-			if ( mw.isMobileDevice() ){
+			if ( mw.isMobileDevice() && !this.getConfig("serverSpeedPlayback")){
 				return false;
 			}
 			this.bind('playerReady', function(){
+				if ( _this.getConfig("serverSpeedPlayback") === true ){
+					deferred.resolve(true);
+				}
 				if ( _this.embedPlayer.isLive() ){
 					deferred.resolve(false);
 				}
@@ -48,6 +54,17 @@
 			this.bind( 'playerReady', function(){
 				_this.buildMenu();
 			});
+
+			this.bind( 'onChangeMediaDone', function(){
+				_this.manifestSource = null;
+			});
+
+			this.bind( 'SourceSelected', function(e, source){
+				if (source.src.indexOf("playManifest") !== -1 && (source.src.indexOf("/a.f4m") !== -1 || source.src.indexOf("/a.m3u8") !==-1)){
+					_this.manifestSource = source.src;
+				}
+			});
+
 			this.bind( 'onRemovePlayerSpinner', function(){
 				 if ( _this.getPlayer().getPlayerElement() ) {
 					 _this.getPlayer().getPlayerElement().playbackRate = _this.currentSpeed;
@@ -56,6 +73,7 @@
 			this.bind( 'playbackRateChangeSpeed', function(e, arg ){
 				_this.setSpeedFromApi( arg );
 			});
+
 			if( this.getConfig('enableKeyboardShortcuts') ){
 				this.bind( 'addKeyBindCallback', function( e, addKeyCallback ){
 					_this.addKeyboardShortcuts( addKeyCallback );
@@ -136,7 +154,7 @@
 			this.log('Set Speed to: ' + newSpeed);
 			this.currentSpeed = newSpeed;
 			// check if we need to switch interfaces: 
-			if( this.getPlayer().instanceOf != 'Native' ){
+			if( this.getPlayer().instanceOf != 'Native' || (mw.isMobileDevice() && this.getConfig("serverSpeedPlayback"))){
 				this.handlePlayerInstanceUpdate( newSpeed );
 				return ;
 			}
@@ -145,22 +163,63 @@
 		handlePlayerInstanceUpdate: function( newSpeed ){
 			var _this = this;
 			var currentPlayTime = this.getPlayer().currentTime;
-			var source = this.getPlayer().mediaElement.autoSelectNativeSource();
-			var player = mw.EmbedTypes.getMediaPlayers().getNativePlayer( source.mimeType );
-			this.getPlayer().selectPlayer ( player );
-			this.getPlayer().updatePlaybackInterface( function(){
-				// update playback rate:
-				if( currentPlayTime == 0 ){
-					_this.updatePlaybackRate( newSpeed );
-				}else{
-					setTimeout(function(){
-						_this.bind("seeked", function(){
-							_this.updatePlaybackRate( newSpeed );
-						});
-						_this.getPlayer().seek( currentPlayTime ); // issue a seek if given new seek time
-					}, 0);
+			this.currentSpeed = newSpeed;
+			if (this.getConfig("serverSpeedPlayback") && this.currentSpeed <= 2 && (this.getPlayer().instanceOf === 'Kplayer' || mw.isMobileDevice()) && this.manifestSource){
+				var source = this.manifestSource;
+
+				var fileName = source.substr(source.lastIndexOf("/"));
+				var base = source.substr(0,source.lastIndexOf("/"));
+				if (fileName.indexOf("/a.f4m") === 0){
+					base = base.substr(0,base.length-3);
 				}
-			});
+				if (source.indexOf("playbackRate") !== -1){
+					base = base.substr(0,base.lastIndexOf("playbackRate")-1);
+				}
+				var newSrc = base + "/playbackRate/" + this.currentSpeed + fileName;
+				this.updatePlaybackRate( newSpeed );
+
+				if ( currentPlayTime > 0 ){
+					$(this.embedPlayer).bind("playing", function(){
+						$(_this.embedPlayer).unbind("playing");
+						setTimeout(function(){
+							if (mw.isIOS()){
+								_this.getPlayer().getPlayerElement().currentTime =  currentPlayTime / newSpeed ;
+							}else{
+								_this.embedPlayer.seek( currentPlayTime / newSpeed );
+							}
+						},0);
+					});
+				}
+
+				if (mw.isMobileDevice()){
+					this.getPlayer().getPlayerElement().src = newSrc;
+					this.getPlayer().mediaElement.selectedSource.src = newSrc;
+					if (mw.isIOS()){
+						this.getPlayer().getPlayerElement().load();
+					}
+				}else{
+					this.embedPlayer.playerObject.sendNotification("changeMedia", { "entryUrl" : newSrc});
+					this.embedPlayer.play();
+				}
+			}else{
+				var source = this.getPlayer().mediaElement.autoSelectNativeSource();
+				var player = mw.EmbedTypes.getMediaPlayers().getNativePlayer( source.mimeType );
+				this.getPlayer().selectPlayer ( player );
+				this.getPlayer().updatePlaybackInterface( function(){
+					// update playback rate:
+					if( currentPlayTime == 0 ){
+						_this.updatePlaybackRate( newSpeed );
+					}else{
+						setTimeout(function(){
+							_this.bind("seeked", function(){
+								_this.updatePlaybackRate( newSpeed );
+								_this.unbind("seeked");
+							});
+							_this.getPlayer().seek( currentPlayTime ); // issue a seek if given new seek time
+						}, 0);
+					}
+				});
+			}
 		},
 		/**
 		 * updatePlaybackRate issues a call to native player element to update playbackRate to target speed.
