@@ -722,7 +722,9 @@
 			// previously and the content element, so the SDK can track content
 			// and play ads automatically.
 			//
-			_this.adsManager = loadedEvent.getAdsManager( this.embedPlayer );
+			var adsRenderingSettings = new google.ima.AdsRenderingSettings();
+			adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
+			this.adsManager = loadedEvent.getAdsManager( this.embedPlayer, adsRenderingSettings );
 			if ( _this.adManager != null ) {
 				_this.adManagerLoaded = true;
 			}
@@ -839,12 +841,6 @@
 						_this.embedPlayer.play();
 						_this.embedPlayer.restorePlayerOnScreen();
 						_this.embedPlayer.hideSpinner();
-						setTimeout(function(){
-							if (_this.timeToReturn){
-								_this.embedPlayer.onLoadedCallback();
-							}
-						},100);
-
 					};
 					_this.embedPlayer.adTimeline.displaySlots( 'midroll' ,restoreMidroll);
 				}
