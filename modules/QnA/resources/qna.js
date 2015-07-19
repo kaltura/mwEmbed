@@ -337,6 +337,9 @@
 				$('.qna-on-video-btn').css("display", "none");
 			}
 			else{
+
+				console.log("qna-on-video-btn element" + $('.qna-on-video-btn'));
+
 				// use css("display", "block") since .show() restores the previous value, and the previous value is hide
 				$('.qna-on-video-btn').css("display", "block");
 				if (!_this.getConfig( 'onPage' )) {
