@@ -360,6 +360,10 @@
 					_this.currentAdSlotType = 'postroll';
 					// Setup the restore callback
 					_this.postRollCallback = callback;
+					//no need to request ads
+					if ( _this.isLinear === false || _this.allAdsCompletedFlag || _this.adLoaderErrorFlag ){
+						_this.restorePlayer(true);
+					}
 				}
 			});
 			_this.embedPlayer.bindHelper('Kaltura_SendNotification' + this.bindPostfix, function (event, notificationName, notificationData) {
