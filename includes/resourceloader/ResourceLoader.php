@@ -166,7 +166,7 @@ class ResourceLoader {
 					break;
 				case 'minify-css':
 					$result = CSSMin::minify( $data );
-					$result .= "\n\n/* cache key: $key */\n";
+					$result .= "/* cache key: $key */";
 					break;
 			}
 
