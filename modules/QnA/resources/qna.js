@@ -212,7 +212,7 @@
 				// wait till we can verify a css property was loaded
 				var fakeListener = setInterval(function(){
 					console.log('_this.$qnaListContainer.find(".qnaModuleBackground").css("width") =' + _this.$qnaListContainer.find(".qnaModuleBackground").css("width"));
-					if(_this.$qnaListContainer.find(".qnaModuleBackground").css("width") !== undefined){
+					if(_this.$qnaListContainer.find(".qnaModuleBackground").css("display") === "none"){
 						clearInterval(fakeListener);
 						// after the css was loaded, creadte the main objects
 						_this.KQnaService = new mw.KQnaService( embedPlayer, _this );
