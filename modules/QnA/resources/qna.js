@@ -148,6 +148,7 @@
 
 		// load the Q&A template to the div with qnaTargetId
 		getQnaContainer: function(){
+			var _this = this;
             var embedPlayer = this.getPlayer();
 			if (!this.$qnaListContainer) {
 
@@ -163,11 +164,11 @@
 
 				if ( this.getConfig( 'onPage' ) ) {
 					// Inject external CSS files
-					this.injectCssToPage(this.getConfig('qnaMainCssFileName'));
 					this.injectCssToPage(this.getConfig('qnaAnnouncementsCssFileName'));
 					this.injectCssToPage(this.getConfig('qnaFontsCssFileName'));
 					this.injectCssToPage(this.getConfig('qnaNanoCssFileName'));
 					this.injectCssToPage(this.getConfig('qnaThreadsListCssFileName'));
+					this.injectCssToPage(this.getConfig('qnaMainCssFileName')); //should be last, since we we it to test css was loaded
 
 					try{
 						var iframeParent = $('#'+this.embedPlayer.id, window['parent'].document)[0];
@@ -205,10 +206,20 @@
 				this.bindButtons();
 				this.positionQAButtonOnVideoContainer();
 				this.updateQnaListHolderSize();
-                this.KQnaService = new mw.KQnaService( embedPlayer,this );
-                this.KQnaModule = new mw.KQnaModule( embedPlayer,this, this.KQnaService  );
-                ko.applyBindings(this.KQnaModule, this.$qnaListContainer[0]);
-                this.KQnaModule.applyLayout();
+
+				// wait till we can verify a css property was loaded
+				var fakeListener = setInterval(function(){
+					console.log('_this.$qnaListContainer.find(".qnaModuleBackground").css("width") =' + _this.$qnaListContainer.find(".qnaModuleBackground").css("width"));
+					if(_this.$qnaListContainer.find(".qnaModuleBackground").css("width") !== undefined){
+						clearInterval(fakeListener);
+						// after the css was loaded, creadte the main objects
+						_this.KQnaService = new mw.KQnaService( embedPlayer, _this );
+						_this.KQnaModule = new mw.KQnaModule( embedPlayer, _this, _this.KQnaService  );
+						ko.applyBindings(_this.KQnaModule, _this.$qnaListContainer[0]);
+						_this.KQnaModule.applyLayout();
+
+					}
+				},50);
 
 
 			}
