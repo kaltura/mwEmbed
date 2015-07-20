@@ -20,7 +20,7 @@
  * @file
  * @author Roan Kattouw
  * @author Trevor Parscal
- * c
+ * 
  * modified for mwEmbed Resource Loader requirements by:
  * @author Michael Dale
  *

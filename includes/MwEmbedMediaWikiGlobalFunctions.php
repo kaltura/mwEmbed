@@ -224,8 +224,14 @@ function mwEmbedLoadMsgKeys( $langKey ){
 		}
 		$ext = pathinfo($msgFile, PATHINFO_EXTENSION);
 
-
-        $messages = json_decode( file_get_contents($msgFile), TRUE );
+		switch ($ext) {
+            case "json":
+                $messages = json_decode( file_get_contents($msgFile), TRUE );
+                break;
+            case "php":
+                require( $msgFile );
+                break;
+        }
 		// First include the English fallback:
 		$wgMessageCache = array_merge( $wgMessageCache, $messages[ 'en' ] );
 
