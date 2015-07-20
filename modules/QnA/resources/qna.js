@@ -146,6 +146,29 @@
 			}
 		},
 
+		// wait for the css classes we have logic for are loaded
+		// do it by verifying some properties get a value from css
+		verifyCssLoaded : function(qnaContainer){
+
+			if (this.verifyCssLoadedPromise) {
+				return this.verifyCssLoadedPromise;
+			}
+			var deferred = $.Deferred();
+			this.verifyCssLoadedPromise = deferred;
+
+			var waitCssLoaded = setInterval(function () {
+				if ((qnaContainer.find(".qnaModuleBackground").css("display") === "none") &&
+					($(".qna-on-video-btn").css("position") === "absolute") &&
+					(qnaContainer.find(".nano-content").css("position") === "absolute")) {
+
+					clearInterval(waitCssLoaded);
+					deferred.resolve();
+				}
+			}, 50);
+
+			return deferred;
+		},
+
 		// load the Q&A template to the div with qnaTargetId
 		getQnaContainer: function(){
 			var _this = this;
@@ -207,19 +230,20 @@
 				this.positionQAButtonOnVideoContainer();
 				this.updateQnaListHolderSize();
 
-				// wait till we can verify a css property was loaded
-				var fakeListener = setInterval(function(){
-					if(_this.$qnaListContainer.find(".qnaModuleBackground").css("display") === "none"){
-						clearInterval(fakeListener);
-						// after the css was loaded, creadte the main objects
-						_this.KQnaService = new mw.KQnaService( embedPlayer, _this );
-						_this.KQnaModule = new mw.KQnaModule( embedPlayer, _this, _this.KQnaService  );
+				// Create the KQnaService and KQnaModule after css were loaded
+				if ( this.getConfig( 'onPage' ) ) {
+					this.verifyCssLoaded(_this.$qnaListContainer).then(function(){
+						_this.KQnaService = new mw.KQnaService(embedPlayer, _this);
+						_this.KQnaModule = new mw.KQnaModule(embedPlayer, _this, _this.KQnaService);
 						ko.applyBindings(_this.KQnaModule, _this.$qnaListContainer[0]);
 						_this.KQnaModule.applyLayout();
-
-					}
-				},50);
-
+					});
+				}else{ // for in player plugin don't wait for css to load
+					_this.KQnaService = new mw.KQnaService(embedPlayer, _this);
+					_this.KQnaModule = new mw.KQnaModule(embedPlayer, _this, _this.KQnaService);
+					ko.applyBindings(_this.KQnaModule, _this.$qnaListContainer[0]);
+					_this.KQnaModule.applyLayout();
+				}
 
 			}
 			return this.$qnaListContainer;
