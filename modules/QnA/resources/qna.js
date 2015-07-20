@@ -164,13 +164,11 @@
 
 				if ( this.getConfig( 'onPage' ) ) {
 					// Inject external CSS files
-					console.log("starting to inject css");
 					this.injectCssToPage(this.getConfig('qnaAnnouncementsCssFileName'));
 					this.injectCssToPage(this.getConfig('qnaFontsCssFileName'));
 					this.injectCssToPage(this.getConfig('qnaNanoCssFileName'));
 					this.injectCssToPage(this.getConfig('qnaThreadsListCssFileName'));
 					this.injectCssToPage(this.getConfig('qnaMainCssFileName')); //should be last, since we we it to test css was loaded
-					console.log("done injecting css");
 
 					try{
 						var iframeParent = $('#'+this.embedPlayer.id, window['parent'].document)[0];
@@ -211,7 +209,6 @@
 
 				// wait till we can verify a css property was loaded
 				var fakeListener = setInterval(function(){
-					console.log('_this.$qnaListContainer.find(".qnaModuleBackground").css("width") =' + _this.$qnaListContainer.find(".qnaModuleBackground").css("width"));
 					if(_this.$qnaListContainer.find(".qnaModuleBackground").css("display") === "none"){
 						clearInterval(fakeListener);
 						// after the css was loaded, creadte the main objects
@@ -335,7 +332,6 @@
 		},
 
 		hideModule: function(hide, announcementOnly) {
-			console.log("hide= " + hide + " announcementOnly= " + announcementOnly);
 			var _this = this;
 			var firstTime = (_this.moduleStatus() === undefined);
 
@@ -350,14 +346,8 @@
 				$('.qna-on-video-btn').css("display", "none");
 			}
 			else{
-
-				console.log("qna-on-video-btn element" + $('.qna-on-video-btn'));
-				console.log("qna-on-video-btn display is " + $('.qna-on-video-btn').css('display'));
-
 				// use css("display", "block") since .show() restores the previous value, and the previous value is hide
 				$('.qna-on-video-btn').css("display", "block");
-
-				console.log("0 qna-on-video-btn display is " + $('.qna-on-video-btn').css('display'));
 
 				if (!_this.getConfig( 'onPage' )) {
 					_this.getQnaContainer().find(".qnaModuleBackgroundHider").hide();
@@ -377,13 +367,10 @@
 					$('.qnaReplyBox').show();
 				}
 			}
-			console.log("1 qna-on-video-btn display is " + $('.qna-on-video-btn').css('display'));
 			_this.updateQnaListHolderSize();
 			_this.changeVideoToggleIcon();
 			_this.KQnaModule.applyLayout();
-			console.log("2 qna-on-video-btn display is " + $('.qna-on-video-btn').css('display'));
 		}
-
 	}));
 
 })(window.mw, window.jQuery, window.ko);
