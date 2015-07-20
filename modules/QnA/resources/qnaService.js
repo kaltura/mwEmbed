@@ -179,6 +179,9 @@ DAL for Q&A Module
         };
 
         this.getText = function(){
+            if (this.getType() === "AnswerOnAir"){
+                return '"' + this.cuePoint().text + '"';
+            }
             return this.cuePoint().text;
         };
 
