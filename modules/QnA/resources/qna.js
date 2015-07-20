@@ -164,11 +164,13 @@
 
 				if ( this.getConfig( 'onPage' ) ) {
 					// Inject external CSS files
+					console.log("starting to inject css");
 					this.injectCssToPage(this.getConfig('qnaAnnouncementsCssFileName'));
 					this.injectCssToPage(this.getConfig('qnaFontsCssFileName'));
 					this.injectCssToPage(this.getConfig('qnaNanoCssFileName'));
 					this.injectCssToPage(this.getConfig('qnaThreadsListCssFileName'));
 					this.injectCssToPage(this.getConfig('qnaMainCssFileName')); //should be last, since we we it to test css was loaded
+					console.log("done injecting css");
 
 					try{
 						var iframeParent = $('#'+this.embedPlayer.id, window['parent'].document)[0];
