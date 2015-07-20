@@ -1,0 +1,13 @@
+{
+	"debugInfo":{
+		"label":"DebugInfo",
+		"description":"Debug information overlay.",
+		"attributes":{
+			"parent":{
+				"doc" :"Parent container for component. Components include default placement, leave as null if unsure.",
+				"type" :"enum",
+				"enum":["topBarContainer", "videoHolder", "controlsContainer"]
+			}
+		}
+	}
+}

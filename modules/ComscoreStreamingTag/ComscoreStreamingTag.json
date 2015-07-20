@@ -1,0 +1,12 @@
+{
+  "ComScoreStreamingTag": {
+    "scripts": [
+      "resources/mw.ComscoreStreamingTag.js"
+    ],
+    "dependencies": [
+      "mw.EmbedPlayer",
+      "mw.ajaxProxy"
+    ],
+    "kalturaPluginName": "comScoreStreamingTag"
+  }
+}

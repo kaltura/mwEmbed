@@ -122,6 +122,8 @@
 						_this.restoreWindowPlayer();
 					}
 				}
+				// update original view port before calling fullscreen:
+				_this.orginalParnetViewPortContent = $(doc).find( 'meta[name="viewport"]' ).attr( 'content' );
 				// remove any old binding:
 				doc.removeEventListener(screenfull.raw.fullscreenchange, escapeFullscreen );
 				// Add a binding to catch "escape" fullscreen
@@ -130,7 +132,7 @@
 				screenfull.request(fsTarget, doc);
 			};
 			// Check for native support for fullscreen and we are in an iframe server
-			if( !this.fullScreenApiExcludes() && screenfull && screenfull.enabled(doc) ) {
+			if( !this.fullScreenApiExcludes() && screenfull && screenfull.enabled(doc) && !mw.isOldAndroidChromeNativeBrowser()) {
 				callFullScreenAPI();
 			} else {
 				if(!this.fullScreenApiExcludes() && mw.isAndroidChromeNativeBrowser()){
@@ -499,7 +501,7 @@
 		},
 
 		getFsTarget: function(){
-			if( mw.getConfig('EmbedPlayer.IsIframeServer' ) && mw.getConfig('EmbedPlayer.IsFriendlyIframe') && !mw.isMobileChrome()){
+			if( (mw.getConfig('EmbedPlayer.IsIframeServer' ) && mw.getConfig('EmbedPlayer.IsFriendlyIframe')) ||  mw.isOldAndroidChromeNativeBrowser()){
 				// For desktops that supports native fullscreen api, give iframe as a target
 				var targetId;
 				if( screenfull && screenfull.enabled() ) {

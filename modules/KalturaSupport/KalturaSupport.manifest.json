@@ -437,13 +437,6 @@
                 "type": "boolean",
                 "initvalue": true
             },
-            "0": {
-                "doc": "Preferred flavor bitrate",
-                "label": "Preferred flavor bitrate",
-                "type": "number",
-                "initvalue": 1600,
-                "model": "config.uiVars.mediaProxy.preferedFlavorBR"
-            },
             "displayMode": {
                 "doc": "Configure the display mode to set the type of information to display in the source selector's menu: size, bit-rate or both.",
                 "type": "enum",
@@ -1772,6 +1765,11 @@
                 "doc": "Display related screen automatically when playback has finished",
                 "type": "boolean",
                 "initvalue": true
+            },
+            "sendContextWithPlaylist": {
+                "doc": "Send context with the playlist (_KDP_CTXPL sends this automatically)",
+                "type": "boolean",
+                "initvalue": false
             },
             "autoContinueEnabled": {
                 "doc": "Should the Next Item be automatically played.",

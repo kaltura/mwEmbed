@@ -88,6 +88,9 @@ var kdocPlayerStartTime = new Date().getTime();
 if( typeof kWidget != 'undefined' && kWidget.addReadyCallback ){
 	var kdocTimePerPlayer = {};
 	kWidget.addReadyCallback( function( pId ){
+		if( ! $( '#' + pId ).length ){
+			return ;
+		}
 		$( '#' + pId )[0].kBind("playerReady.pTimeReady", function(){
 			if( kdocTimePerPlayer[ pId] ){
 				return ;
