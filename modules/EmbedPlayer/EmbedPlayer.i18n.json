@@ -15,6 +15,7 @@
         "mwe-embedplayer-switch_source": "switch in progress",
         "mwe-embedplayer-auto_source": "Auto",
         "mwe-embedplayer-select_stream": "Select stream",
+	    "mwe-embedplayer-select_audio": "Select audio",
         "mwe-embedplayer-switch_stream": "switch in progress",
         "mwe-embedplayer-timed_text": "Closed Captions",
         "mwe-embedplayer-seek_forward": "Seek forward",
@@ -35,6 +36,7 @@
         "mwe-embedplayer-player_expend": "Expand player",
         "mwe-embedplayer-player_retract": "Shrink player",
         "mwe-timedtext-no-subtitles": "No Subtitles",
+	    "mwe-timedtext-no-audio": "No Tracks",
         "mwe-embedplayer-for_best_experience": "For a better video playback experience we recommend a [$1 HTML5 video browser].",
         "mwe-embedplayer-do_not_warn_again": "In the future, do not show this message",
         "mwe-embedplayer-seeking": "seeking",
@@ -60,7 +62,8 @@
         "mwe-embedplayer-player-off-air": "Off Air",
         "mwe-embedplayer-player-jump-to-live": "Jump to live",
 	    "mwe-embedplayer-related": "Related",
-		"mwe-embedplayer-related-errMsg": "No related<br>videos were<br>found."
+		"mwe-embedplayer-related-errMsg": "No related<br>videos were<br>found.",
+	    "mwe-embedplayer-no-source": "No sources"
 
     },
     "qqq": {
