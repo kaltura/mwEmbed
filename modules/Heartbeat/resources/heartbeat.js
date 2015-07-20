@@ -76,6 +76,7 @@
                 _this.trackAdStart({id:adID, position:adIndex, length:adDuration, name:mediaName}); });
             this.embedPlayer.bindHelper('onAdComplete', function(){ _this.trackAdComplete(); });
 
+            this.embedPlayer.bindHelper('embedPlayerError', function (e, data) { _this.trackPlayerError(_this.getPlayer().getErrorMessage(data)); });
         },
 
         setupHeartBeatPlugin: function(){
@@ -175,8 +176,10 @@
         },
 
         trackPlay: function(){
-            this.videoPlayerPlugin.trackPlay();
-            this.sendTrackEventMonitor("trackPlay");
+            if(!this.getPlayer().sequenceProxy.isInSequence){// don't send trackPlay if the player plays an ad
+                this.videoPlayerPlugin.trackPlay();
+                this.sendTrackEventMonitor("trackPlay");
+            }
         },
 
         trackComplete: function(){
@@ -244,6 +247,11 @@
         trackChapterComplete: function(){
             this.videoPlayerPlugin.trackChapterComplete();
             this.sendTrackEventMonitor("trackChapterComplete");
+        },
+
+        trackPlayerError: function(msg){
+            this.videoPlayerPlugin.trackVideoPlayerError(msg);
+            this.sendTrackEventMonitor("trackPlayerError");
         },
 
         sendTrackEventMonitor: function(methodName) {

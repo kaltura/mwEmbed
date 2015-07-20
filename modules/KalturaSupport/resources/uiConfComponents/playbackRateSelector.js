@@ -21,10 +21,13 @@
 		isSafeEnviornment: function(){
 			var _this = this,
 			deferred = $.Deferred();
-			if ( mw.isMobileDevice() ){
+			if ( mw.isMobileDevice() && !this.getConfig("serverSpeedPlayback")){
 				return false;
 			}
 			this.bind('playerReady', function(){
+				if ( _this.getConfig("serverSpeedPlayback") === true ){
+					deferred.resolve(true);
+				}
 				if ( _this.embedPlayer.isLive() ){
 					deferred.resolve(false);
 				}
@@ -151,7 +154,7 @@
 			this.log('Set Speed to: ' + newSpeed);
 			this.currentSpeed = newSpeed;
 			// check if we need to switch interfaces: 
-			if( this.getPlayer().instanceOf != 'Native' ){
+			if( this.getPlayer().instanceOf != 'Native' || (mw.isMobileDevice() && this.getConfig("serverSpeedPlayback"))){
 				this.handlePlayerInstanceUpdate( newSpeed );
 				return ;
 			}
@@ -161,7 +164,7 @@
 			var _this = this;
 			var currentPlayTime = this.getPlayer().currentTime;
 			this.currentSpeed = newSpeed;
-			if (this.getConfig("serverSpeedPlayback") && this.currentSpeed <= 2 && this.getPlayer().instanceOf === 'Kplayer' && this.manifestSource){
+			if (this.getConfig("serverSpeedPlayback") && this.currentSpeed <= 2 && (this.getPlayer().instanceOf === 'Kplayer' || mw.isMobileDevice()) && this.manifestSource){
 				var source = this.manifestSource;
 
 				var fileName = source.substr(source.lastIndexOf("/"));
@@ -173,20 +176,31 @@
 					base = base.substr(0,base.lastIndexOf("playbackRate")-1);
 				}
 				var newSrc = base + "/playbackRate/" + this.currentSpeed + fileName;
+				this.updatePlaybackRate( newSpeed );
 
 				if ( currentPlayTime > 0 ){
 					$(this.embedPlayer).bind("playing", function(){
 						$(_this.embedPlayer).unbind("playing");
 						setTimeout(function(){
-							_this.embedPlayer.seek( currentPlayTime / newSpeed );
+							if (mw.isIOS()){
+								_this.getPlayer().getPlayerElement().currentTime =  currentPlayTime / newSpeed ;
+							}else{
+								_this.embedPlayer.seek( currentPlayTime / newSpeed );
+							}
 						},0);
-
 					});
 				}
 
-				this.updatePlaybackRate( newSpeed );
-				this.embedPlayer.playerObject.sendNotification("changeMedia", { "entryUrl" : newSrc});
-				this.embedPlayer.play();
+				if (mw.isMobileDevice()){
+					this.getPlayer().getPlayerElement().src = newSrc;
+					this.getPlayer().mediaElement.selectedSource.src = newSrc;
+					if (mw.isIOS()){
+						this.getPlayer().getPlayerElement().load();
+					}
+				}else{
+					this.embedPlayer.playerObject.sendNotification("changeMedia", { "entryUrl" : newSrc});
+					this.embedPlayer.play();
+				}
 			}else{
 				var source = this.getPlayer().mediaElement.autoSelectNativeSource();
 				var player = mw.EmbedTypes.getMediaPlayers().getNativePlayer( source.mimeType );
