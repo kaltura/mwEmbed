@@ -38,15 +38,17 @@
 				{ plugin: 'true', loadingPolicy: 'preInitialize', asyncInit: 'true', isWv: true});
 
 			this.bind( 'playerReady', function() {
-				var flavors = _this.getPlayer().mediaElement.getPlayableSources("video/wvm");
-				if (flavors && flavors.length) {
+				var wvmFlavors = _this.getPlayer().mediaElement.getPlayableSources("video/wvm");
+				var allFlavors = _this.getPlayer().mediaElement.getPlayableSources();
+				if (allFlavors && allFlavors.length) {
 					//if we received wv flavors we can play them. so set native component WV server
-					if ( flavors[0].objectType == "KalturaWidevineFlavorAsset" || flavors[0].getFlavorId() == "wvm" ) {
+					if ( wvmFlavors && wvmFlavors.length && wvmFlavors[0].objectType == "KalturaWidevineFlavorAsset" || wvmFlavors[0].getFlavorId() == "wvm" ) {
 						if ( _this.getPlayer().selectedPlayer.library == "NativeComponent" ) {
 							_this.getPlayer().getPlayerElement().attr( 'wvServerKey', _this.widevineObj().getEmmUrl()
-								+ "&format=widevine&flavorAssetId=" + flavors[0].getAssetId() + "&ks=" + _this.kClient.getKs() );
+								+ "&format=widevine&flavorAssetId=" + wvmFlavors[0].getAssetId() + "&ks=" + _this.kClient.getKs() );
 						}
 					}
+					// If we don't have widevine flavors, but other flavors then let player handle them
 				} else {
 					//hide default "no source found" alert
 					_this.getPlayer().setKalturaConfig(null, 'disableAlerts', true);
