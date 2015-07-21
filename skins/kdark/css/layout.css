@@ -660,6 +660,9 @@ body {
 	padding-left: 0px;
 	cursor: pointer;
 	height: 18px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 .smartContainerMenu li:hover{
 	font-weight: bold;
