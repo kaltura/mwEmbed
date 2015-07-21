@@ -560,6 +560,14 @@ mw.PlayerLayoutBuilder.prototype = {
 			$interface.removeClass( adPlaybackState );
 		});
 
+		b( 'seeking', function(){
+			$interface.addClass( "seeking-state" );
+		});
+
+		b( 'seeked', function(){
+			$interface.removeClass( "seeking-state" );
+		});
+
 		// Bind to EnableInterfaceComponents
 		b( 'onEnableInterfaceComponents', function() {
 			_this.controlsDisabled = false;

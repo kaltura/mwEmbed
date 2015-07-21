@@ -201,8 +201,9 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 						.attr( {'title': gM( 'mwe-embedplayer-volume-mute' ) ,'id': 'muteBtn'});
 			this.setAccessibility($btn, gM( 'mwe-embedplayer-volume-mute' ));
 			// Add the volume control icon
-			var $sliderContainer = $( '<div />' ).addClass( 'sliderContainer' );
+			var $sliderContainer = $( '<div />' ).addClass( 'sliderContainer');
 			if (this.getConfig("layout")=="vertical"){
+				$sliderContainer.append($( '<div />' ).addClass( 'arrow' ));
 				$sliderContainer.append($( '<div />' ).addClass( 'slider' ));
 			}else{
 				$sliderContainer = $( '<div />' ).addClass( 'slider' );
