@@ -11,6 +11,7 @@
 			'scrubberColor': null,
 			'watchedSliderColor':null,
 			'bufferedSliderColor':null,
+			'timeLabelColor':null,
 			'buttonsIconColorDropShadow': null,
 			'dropShadowColor': null,
 			'applyToLargePlayButton': true
@@ -72,6 +73,10 @@
 					case 'bufferedSliderColor':
 						$(".buffered").attr("style","background-color: " + value + " !important");
 						$(".buffered").attr("style","background:"  + value + " !important");
+						break;
+					case 'timeLabelColor':
+						$(".currentTimeLabel").attr("style","color: " + value + " !important");
+						$(".durationLabel").attr("style","color:"  + value + " !important");
 						break;
 					case 'buttonsIconColorDropShadow':
 						if (value == true){
