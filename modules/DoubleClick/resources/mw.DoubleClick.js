@@ -216,6 +216,13 @@
 						_this.currentAdSlotType = "midroll";
 					}else{
 						_this.currentAdSlotType = "overlay";
+						if ( _this.getConfig("timeout") ){ // support timeout Flashvar for overlays
+							setTimeout(function(){
+								if ( _this.adsManager ){
+									_this.adsManager.stop();
+								}
+							}, parseFloat( _this.getConfig("timeout") ) * 1000);
+						}
 					}
 					_this.adCuePoints.push(cuePointWrapper.cuePoint.id);
 					_this.requestAds();
