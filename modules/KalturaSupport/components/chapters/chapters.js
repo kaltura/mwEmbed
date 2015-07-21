@@ -891,7 +891,7 @@
 		//UI Handlers
 		mediaClicked: function (mediaIndex) {
 			//Only apply seek if DVR is supported
-			if (!this.getPlayer().isDVR()) {
+			if (this.getPlayer().isDVR()) {
 				// start playback
 				this.getPlayer().sendNotification('doPlay');
 				// see to start time and play ( +.1 to avoid highlight of prev chapter )
