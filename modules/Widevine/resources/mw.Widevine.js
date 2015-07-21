@@ -83,10 +83,10 @@
 				}
 			});
 		},
-		//isSafeEnviornment: function(){
-		//	//Allow widevine only on native APP
-		//	return (mw.isNativeApp() === true);
-		//},
+		isSafeEnviornment: function(){
+			//Allow widevine only on native APP
+			return (mw.isNativeApp() === true);
+		},
 		
 		widevineObj: function(){
 			var _this = this;
