@@ -79,7 +79,7 @@
 
 		localizationCode: null,
 
-		manualAds: false,
+		trackCuePoints: false,
 		adCuePoints: [],
 
 		init: function( embedPlayer, callback, pluginName ){
@@ -100,7 +100,7 @@
 			this.contentDoneFlag = null;
 			this.allAdsCompletedFlag = null;
 
-			this.manualAds = !!this.getConfig("adTagUrl") === false;
+			this.trackCuePoints = !!this.getConfig("trackCuePoints") === true;
 
 			// remove any old bindings:
 			embedPlayer.unbindHelper( this.bindPostfix );
@@ -141,6 +141,9 @@
 			}else{
 				embedPlayer.setKalturaConfig( 'doubleClick', 'countdownText',null);
 			}
+			if ( this.trackCuePoints ){
+				this.handleCuePoints();
+			}
 			if ( mw.isIE8() || mw.isIE9() || _this.leadWithFlash ) {
 				if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
 					mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
@@ -159,9 +162,6 @@
 						}
 					});
 					_this.addManagedBinding();
-					if (_this.manualAds){
-						_this.handleCuePoints();
-					}
 					callback();
 					return;
 				} else if ( mw.isIE8() || mw.isIE9() ) {   //no flash on IE8/9
@@ -180,23 +180,17 @@
 				google.ima.settings.setPlayerType("kaltura/mwEmbed");
 				google.ima.settings.setPlayerVersion(mw.getConfig("version"));
 
-				if( !_this.manualAds ) {
-					// Check for adPattern
-					if ( _this.getConfig( 'adPattern' ) ) {
-						var adIndex = _this.getAdPatternIndex();
-						mw.log( "DoubleClick:: adPattern: " + _this.getConfig( 'adPattern' ) +
-							" on index: " + adIndex );
-						if ( adIndex === 'A' ) {
-							// Managed bindings
-							_this.addManagedBinding();
-						}
-					} else {
-						// No defined ad pattern always use managed bindings
+				// Check for adPattern
+				if ( _this.getConfig( 'adPattern' ) ) {
+					var adIndex = _this.getAdPatternIndex();
+					mw.log( "DoubleClick:: adPattern: " + _this.getConfig( 'adPattern' ) + " on index: " + adIndex );
+					if ( adIndex === 'A' ) {
+						// Managed bindings
 						_this.addManagedBinding();
 					}
-				}else{
+				} else {
+					// No defined ad pattern always use managed bindings
 					_this.addManagedBinding();
-					_this.handleCuePoints();
 				}
 				// Issue the callback to continue player build out:
 				callback();
@@ -544,9 +538,7 @@
 			return 'adContainer' + this.embedPlayer.id;
 		},
 		hideAdContainer: function () {
-			if (!this.manualAds){
-				$("#" + this.getAdContainerId()).hide();
-			}
+			$("#" + this.getAdContainerId()).hide();
 		},
 		getAdDisplayContainer: function(){
 			//  Create the ad display container. Use an existing DOM element
