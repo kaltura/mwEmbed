@@ -723,6 +723,7 @@
 			//
 			var adsRenderingSettings = new google.ima.AdsRenderingSettings();
 			adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
+			adsRenderingSettings.useStyledNonLinearAds = true;
 			this.adsManager = loadedEvent.getAdsManager( this.embedPlayer, adsRenderingSettings );
 			if ( _this.adManager != null ) {
 				_this.adManagerLoaded = true;
