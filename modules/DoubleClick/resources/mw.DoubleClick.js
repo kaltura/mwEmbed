@@ -394,6 +394,13 @@
 						_this.restorePlayer(true);
 					}
 				}
+				if ( _this.getConfig("postrollUrl") ){
+					_this.contentDoneFlag = true;
+					_this.adTagUrl = _this.getConfig("postrollUrl");
+					_this.currentAdSlotType = "postroll";
+					_this.copyFlashvarsToKDP(_this.embedPlayer, _this.pluginName);
+					_this.requestAds("postroll");
+				}
 			});
 			_this.embedPlayer.bindHelper('Kaltura_SendNotification' + this.bindPostfix, function (event, notificationName, notificationData) {
 				if (_this.playingLinearAd) {
