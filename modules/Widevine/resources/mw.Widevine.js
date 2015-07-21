@@ -38,7 +38,6 @@
 				{ plugin: 'true', loadingPolicy: 'preInitialize', asyncInit: 'true', isWv: true});
 
 			this.bind( 'playerReady', function() {
-				debugger;
 				var flavors = _this.getPlayer().mediaElement.getPlayableSources("video/wvm");
 				if (flavors && flavors.length) {
 					//if we received wv flavors we can play them. so set native component WV server
