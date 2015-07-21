@@ -1,13 +1,14 @@
-.quiz .quiz-label{
-	color: yellow;
+body{
+
 }
 
-.screen {
-    /*background: #3399FF !important;*/
-    background-image: url(BACKGROUND.png)!important;
+.screen{
+    /*z-index: 10;*/
+    background-image:url("BACKGROUND.png")!important;
     background-size: 100% 100%;
-}
+    position: absolute;
 
+}
 center {
     margin-left: auto;
     margin-right: auto;
@@ -20,9 +21,16 @@ a{
 }
 
 h1 {
-    font-size: 5.9vw;
-    color: white;
-    font-weight: bold;
+
+    font-family: 'Lato', Helvetica, Arial, serif
+;
+    color: #ffffff;
+    font-size: 10vw;;
+    font-weight: 900;
+    line-height: 10vw;
+    text-align: left;
+    transform: scaleY(1.0002);
+
 }
 
 h2 {
@@ -43,6 +51,7 @@ h2 {
     text-align: center;
     font-weight: 100;
 
+    margin-bottom: 2vw;
 
 }
 .confirm-box{
@@ -54,6 +63,7 @@ h2 {
     display: table;
     margin:0 auto;
     text-align: center;
+    font-size: 3vw;
     vertical-align: middle;
     color: white;
     line-height:10vw;
@@ -63,45 +73,13 @@ h2 {
 }
 
 
-/*.rectangle-box{*/
-    /*position: relative;*/
-    /*width: 50%;*/
-    /*overflow: hidden;*/
-    /*background-color: #00dcff;*/
-    /*display: table;*/
-    /*margin:0 auto;*/
-
-/*}*/
-/*.rectangle-box:before{*/
-    /*content: "";*/
-    /*display: block;*/
-    /*padding-top: 20%;*/
-/*}*/
-/*.rectangle-content{*/
-    /*position:  absolute;*/
-    /*top: 0;*/
-    /*left: 0;*/
-    /*bottom: 0;*/
-    /*right: 0;*/
-    /*color: white;*/
-    /*font-size: 2.9vw*/
-/*}*/
-/*.rectangle-content div {*/
-    /*display: table;*/
-    /*width: 100%;*/
-    /*height: 100%;*/
-/*}*/
-/*.rectangle-content span {*/
-    /*display: table-cell;*/
-    /*text-align: center;*/
-    /*vertical-align: middle;*/
-    /*color: white*/
-/*}*/
-
-/**/
 .header-container{
 }
+.answers-container{
+    position: absolute;
+    top: 24%;
 
+}
 .display{
     position:relative;
 }
@@ -109,7 +87,6 @@ h2 {
     padding-top: 1vw;
 }
 .display-question{
-    /*font-family: Lato;*/
     margin-left: auto;
     margin-right: auto;
     color:  #ffffff;
@@ -118,7 +95,6 @@ h2 {
     text-align:center;
     width:80%;
     word-wrap: break-word;
-    /*transform: scaleX(1.0022); *//* width and height properties ommitted due to transform */
 }
 .single-answer-box-bk{
     width: 96vw;
@@ -127,10 +103,11 @@ h2 {
     padding-bottom: 1.8vw;
     margin-top:1vw;
     overflow: hidden;
-    background-image: url(AnswerBg.png);
+    background: url(AnswerBg.png);
     background-size: 100% 100%;
-
 }
+
+
 .single-answer-box{
     display: inline-block;
     width: 96vw;
@@ -141,17 +118,13 @@ h2 {
     vertical-align: middle;
 }
 
-.single-answer-box:hover{
-    cursor: pointer;
-    /*padding-top: 1.9vw;*/
-    /*padding-bottom: 1.9vw;*/
-
-}
 .single-answer-box-apply {
     display: inline-block;
     width:20vw;
     float: right;
     text-align:center;
+    font-size: 2.9vw;
+    margin-right: -0.9vw
     /*margin-top:1vw;*/
     /*padding-top: 1.8vw;*/
     /*padding-bottom: 1.8vw;*/
@@ -161,20 +134,24 @@ h2 {
 }
 
 .ftr-container{
-    padding-top: 1vw;
-    /*width: 100%;*/
-    /*position: absolute;*/
-    /*bottom: 0;*/
+    /*padding-top: 1vw;*/
+    width: 100%;
+    position: absolute;
+    bottom: 0;
 }
 .ftr-left{
     display: inline-block;
+    color:black;
+    font-size: 2.9vw;
     /*margin-left: 2vw;*/
 }
 .ftr-right{
     display: inline-block;
-    width: 33vw;
+    font-size: 2.9vw;
+    /*width: 33vw;*/
     float: right;
     text-align: right;
+    padding-right: 5vw;
 }
 .ftr-right:hover {
     cursor: pointer;
@@ -184,11 +161,12 @@ h2 {
     height: 10vw;
     background-image: url(Hint.png);
     float: right;
-    margin-top: -10vw;
+    margin-top: -7vw;
+    margin-bottom: 2vw;
     color:black;
     line-height: 10vw;
     font-weight: 700;
-
+    font-size: 2vw;
     text-align: center;
     background-size: 100% 100%;
     vertical-align: middle;
@@ -226,18 +204,91 @@ h2 {
 }
 .display-content{
     text-align: center;
+    font-size: 3vw;
 }
 
 .gotItBox{
+
     width: 15vw;
     height: 10vw;
-    float: right;
-    margin-top: 19vw;
     line-height: 10vw;
     font-weight: 700;
     text-align: center;
+    font-size: 3vw;
     vertical-align: middle;
-    border: gray;
+    border: white;
     border-style: solid;
+    border-width: thin;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin-bottom: 2vw;
+    margin-right: 2vw;
 
 }
+.yourAnswer{
+    color: white;
+    font-size: 3vw;
+    margin-top: 1vw;
+}
+
+.reviewAnswerPlace{
+    text-align: left;
+    margin-left: 27vw;
+    margin-top: 8vw;
+}
+.theQuestion{
+    font-size: 4vw;
+    color:white;
+}
+.yourAnswerText{
+    font-size: 4vw;
+    color: white;
+    margin-top: 2vw;
+}
+.correctAnswer{
+    color: white;
+    font-size: 3vw;
+    margin-top: 1vw;
+}
+.correctAnswerText{
+    font-size: 4vw;
+    color: white;
+    margin-top: 3vw;
+
+}
+.wrongAnswer{
+    text-decoration:line-through;
+    color:#362b36;
+}
+
+/*.reviewAnswer {*/
+    /*display: table;*/
+    /*position: absolute;*/
+    /*height: 100%;*/
+    /*width: 100%;*/
+/*}*/
+
+/*.reviewAnswerNrDiv{*/
+    /*width: 20vw;*/
+    /*float: left;*/
+/*}*/
+
+.reviewAnswerNr{
+
+    width: 17vw;
+    height: 18vw;
+    background-image: url(answerNr.png);
+    text-align: center;
+
+    line-height: 18vw;
+    font-weight: 700;
+    font-size: 8vw;
+    background-size: 100% 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 6vw;
+    margin: auto;
+}
+

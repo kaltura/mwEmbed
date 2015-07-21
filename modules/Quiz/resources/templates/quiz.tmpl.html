@@ -6,7 +6,7 @@
 <% } %>
 <% if( quiz.state === "question") { %>
 <div class="header-container">
-    <div class="display-question"><%=quiz.question%></div>
+    <div class="display-question"></div>
 </div>
 <div class="answers-container"></div>
 <div class = "ftr-container">
@@ -25,18 +25,34 @@
 
 <% if (quiz.state === "reviewAnswer"){%>
 <div class="header-container"></div>
-<div class="sub-text"></div>
-<div class="theQuestion"></div>
-<div class="yourAnswer"></div>
-<div class="correctAnswer"></div>
-<div class="whyButton"></div>
+
+<!--<div class="reviewAnswer">-->
+
+
+    <!--<div class ="reviewAnswerNrDiv" >-->
+        <div class = "reviewAnswerNr"> </div>
+    <!--</div>-->
+    <div class ="reviewAnswerPlace" >
+
+        <div class="theQuestion"></div>
+        <!--<div class="header-container"></div>-->
+        <div class="yourAnswerText"></div>
+        <div class="yourAnswer"></div>
+        <div class="correctAnswerText"></div>
+        <div class="correctAnswer"></div>
+
+
+    </div>
 <div class="gotItBox"></div>
+
+<!--</div>-->
+
 <% } %>
 
 <% if (quiz.state === "why"){%>
 <div class="header-container"></div>
 <div class="sub-text"></div>
-<div class = "hint-container"></div>
+<div class="hint-container"></div>
 <div class="confirm-box"></div>
 <% } %>
 
@@ -46,6 +62,3 @@
 <div class="confirm-box"></div>
 <% } %>
 
-<% if( quiz.state === "thankyou") { %>
-<h1>Thank You</h1>
-<% } %>
