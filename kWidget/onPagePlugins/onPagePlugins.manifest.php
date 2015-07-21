@@ -72,7 +72,6 @@ return array(
 			)
 		)
 	),
-
 	'videoDetailsBlock' => array(
 	 	'description' => 'This plugin creates a block that includes a title, description paragraph and list of tags of the currently playing media entry. The block will be appended to the player\'s div or be added to a given target div (the contents of the target div will be replaced). The design of the block is determined by the CSS of the plugin. Check out the integrate options for various configurations such as overriding the block title, show transition and more.',
 		'attributes' => array(
@@ -319,67 +318,102 @@ return array(
 		)
 	),
     'cielo24Transcriptions' => array(
-        'description' => 'Adds a Cielo24 Transcription widget to the page.',
+        'description' => 'Adds a Cielo24 Media Data Player widget to the page.',
         'attributes' => array(
             'onPageJs1' => array(
-                'doc' => "",
-                'initvalue' => "http:\/\/mediadataplayer.cdn.cielo24.com\/kalturaIntegrated\/stable\/js\/loader.js",
+                'doc' => "URL for the widgets JavaScript",
+                'initvalue' => "\/\/mediadataplayer.cdn.cielo24.com\/v2\/stabl\/kaltura.js",
                 'type' => 'hidden'
             ),
             'DynaTransWindowSize' => array(
-                'initvalue' => 400,
                 'doc' => "The height of the widget.",
+                'initvalue' => 400,
                 'type' => 'number',
             ),
             'DynaTransWindowTitle' => array(
-                'initvalue' => 'Media Data Player',
                 'doc' => "Widget title.",
+                'initvalue' => 'cielo24 Media Data Player',
                 'type' => 'string',
             ),
             'DynaTransClientLogo' => array(
-                'initvalue' => "http:\/\/mediadataplayer.cdn.cielo24.com\/kalturaIntegrated\/stable\/img\/logo-transparent.png",
-                'doc' => "Client Logo.",
+                'doc' => "URL to display in the widgets footer.",
+                'initvalue' => "https:\/\/mediadataplayer.cdn.cielo24.com\/v2\/stable\/widget\/img\/logo-transparent.png",
                 'type' => 'string',
             ),
             'DynaTransHideGear' => array(
-                'doc' => "If set to true, gear icon will be hidden.",
+                'doc' => "If set to true, the settings icon will be hidden.",
                 'type' => 'boolean',
                 'initvalue' => false
             ),
             'DynaTransHideShare' => array(
-                'doc' => "If set to true, share icon will be hidden.",
+                'doc' => "If set to true, the social sharing icon will be hidden.",
                 'type' => 'boolean',
                 'initvalue' => false
             ),
             'DynaTransHidePrint' => array(
-                'doc' => "If set to true, print icon will be hidden.",
+                'doc' => "If set to true, the print icon will be hidden.",
                 'type' => 'boolean',
                 'initvalue' => false
             ),
             'DynaTransHideDownload' => array(
-                'doc' => "If set to true, download icon will be hidden.",
+                'doc' => "If set to true, the transcript download icon will be hidden.",
                 'type' => 'boolean',
                 'initvalue' => false
             ),
             'DynaTransHideLeftMenu' => array(
-                'doc' => "If set to true, left menu icon will be hidden.",
+                'doc' => "If set to true, metadata menu icon will be hidden.",
                 'type' => 'boolean',
                 'initvalue' => false
             ),
             'DynaTransHideSpeakers' => array(
-                'doc' => "If set to true, speakers will be hidden.",
+                'doc' => "If set to true, speaker names will be hidden by default.",
                 'type' => 'boolean',
-                'initvalue' => false
+                'initvalue' => true
             ),
             'DynaTransHideTimestamps' => array(
-                'doc' => "If set to true, timestamps will be hidden.",
+                'doc' => "If set to true, timestamps will be hidden by default.",
+                'type' => 'boolean',
+                'initvalue' => true
+            ),
+            'DynaTransAutoscrollOff' => array(
+                'doc' => "If set to true, auto-scrolling will be disabled by default.",
                 'type' => 'boolean',
                 'initvalue' => false
             ),
-            'DynaTransAutoscrollOff' => array(
-                'doc' => "If set to true, autoscrolling feature will be switched off.",
+            'DynaTransWidgetUrl' => array(
+                'doc' => "URL for the widgets html.",
+                'initvalue' => "https:\/\/mediadataplayer.cdn.cielo24.com\/v2\/stable\/widget\/widget.html",
+                'type' => 'hidden',
+            ),            
+            'DynaTransHideMetaSpeakers' => array(
+                'doc' => "If set to true, the speakers option in the metadata menu will be hidden.",
                 'type' => 'boolean',
                 'initvalue' => false
+            ),
+            'DynaTransHideMetaTopics' => array(
+                'doc' => "If set to true, the topics option in the metadata menu will be hidden.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransMetaKeywords' => array(
+                'doc' => "If set to true, the keywords option in the metadata menu will be hidden.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransAdditionalCSS' => array(
+                'doc' => "Additional CSS to inject into the page that hosts the player. (Optional)",
+                'type' => 'string',
+                'initvalue' => "#wrapper.video{margin-bottom:-56.25%}.action-edit #wrapper.video{margin-bottom:0}#mediaContainer #wrapper.video{height:auto;padding-bottom:0}#mediaContainer #wrapper.video #player div.kWidgetIframeContainer{position:relative;height:400px;left:auto;top:auto}.entryTitle,.stat_data{margin-top:20px}#mediaContainer #wrapper.video #player div#cielo24-iframe-wrapper-kplayer{background:#FFF;height:auto;left:auto;position:relative;top:auto;width:auto}#mediaContainer #wrapper.video #player #cielo24-iframe-wrapper-kplayer iframe{background-color:#FFF;height:inherit;left:unset;position:unset;top:unset;width:none}"
+            ),
+            'DynaTransEnableAdditionalCSS' => array(
+                'doc' => "If set to true, the additional CSS will be injected into the page that hosts the player.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
+            'DynaTransTargetDivId' => array(
+                'doc' => "The HTML div into which the player should be rendered. (Optional)",
+                'type' => 'string',
+                'initvalue' => ""
             ),
         )
     ),
