@@ -107,9 +107,10 @@
 			};
 
 			var doEmbedFunc = function (resolvedSrc) {
+				resolvedSrc = encodeURIComponent(resolvedSrc);
 				var flashvars = {
 					startvolume: _this.volume
-				}
+				};
 				if ( isMimeType("video/mp4")
 					|| 
 					isMimeType("video/h264")
@@ -138,14 +139,14 @@
 						if (!licenseUrl) {
 							mw.log('EmbedPlayerSPlayer::Error:: failed to retrieve playready license URL ');
 						} else {
-							flashvars.licenseURL = licenseUrl;
+							flashvars.licenseURL = encodeURIComponent(licenseUrl);
 						}
 
 						var customData = {
 							partnerId: _this.kpartnerid,
 							ks: _this.getFlashvars('ks'),
 							entryId: _this.kentryid
-						}
+						};
 						if (_this.b64Referrer) {
 							flashvars.referrer = _this.b64Referrer;
 						}
@@ -156,7 +157,7 @@
 						}
 						var eventObj = {
 							customString: customDataString
-						}
+						};
 
 						$(_this).trigger('challengeCustomData', eventObj);
 
@@ -181,7 +182,7 @@
 					_this.isError = false;
 					setTimeout(function () {
 						if (!_this.durationReceived) {
-							_this.isError = true
+							_this.isError = true;
 							if (_this.getKalturaConfig(null, 'enableMulticastFallback') == true) {
 								//remove current source to fallback to unicast if multicast failed
 								for (var i = 0; i < _this.mediaElement.sources.length; i++) {
