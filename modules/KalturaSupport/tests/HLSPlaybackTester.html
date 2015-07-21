@@ -64,11 +64,13 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
         <th>Buffer length (in seconds)</th>
         <th>Dropped frames</th>
         <th>Current bitrate</th>
+        <th>Current FPS</th>
     </tr>
     <tr>
         <td><label id="bufferLen"/></td>
         <td><label id="droppedFrames"/></td>
         <td><label id="currentBitrate"/></td>
+        <td><label id="currentFPS"/></td>
     </tr>
 </table>
 <br/>
@@ -121,6 +123,7 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
         $('#playingSeg').text("");
         $('#processedSeg').text("");
         $('#downloadingSeg').text("");
+        $('#currentFPS').text("");
 
 		// poulate hash url 
 		window.location.hash = encodeURIComponent( JSON.stringify( {
@@ -213,6 +216,9 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
                 }
                 if( data.currentBitrate ){
                     $('#currentBitrate').text( data.currentBitrate );
+                }
+                if( data.FPS ){
+                    $('#currentFPS').text( data.FPS );
                 }
             });
         });
