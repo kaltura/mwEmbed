@@ -1,0 +1,85 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>TVPAPI Analytics Events</title>
+    <!--<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>-->
+    <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+    <!--<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>-->
+
+    <script type="text/javascript">
+
+        function onReadyCallback(playerID){
+            var kdp = document.getElementById(playerID );
+            var eventsTracking = document.getElementById("eventsTracking");
+
+            function addText(text){
+                s=document.createElement("span");
+                s.innerHTML = text + "</br>";
+                eventsTracking.appendChild(s);
+            }
+
+            kdp.addJsListener("MediaMark", function(e, data){
+                addText(e + ": " + data.Action);
+            });
+
+            kdp.addJsListener("MediaHit", function(e, data){
+                addText(e + ": " + JSON.stringify(data));
+            });
+        }
+
+    </script>
+
+    <!--<script type="text/javascript" src="../../../modules/KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>-->
+
+</head>
+<body>
+<h1>
+    TVPAPI Analytics Events
+</h1>
+<p>This test page demonstrates analytics events flow.</p>
+
+
+<br><br>
+<div id="myVideoTarget" style="width:400px;height:330px;"></div>
+
+<script>
+    mw.setConfig('forceMobileHTML5', true);
+    mw.setConfig("Kaltura.ServiceUrl", "http://localhost/html5.kaltura/embed-services/main.php");
+    kWidget.embed({
+        'targetId': 'myVideoTarget',
+        'wid': '_1726172',
+        'uiconf_id' : '8413350',
+        'entry_id' : '257282',
+        'readyCallback': onReadyCallback,
+        'flashvars': {
+            "proxyData": {
+                "initObj": {
+                    "ApiUser": "tvpapi_198",
+                    "UDID": "E39CE359C4EF4DF5A15BDF6E44C8BA23",
+                    "DomainID": 315530,
+                    "Platform": "iPad",
+                    "ApiPass": "11111",
+                    "Locale": {
+                        "LocaleDevice": null,
+                        "LocaleUserState": "Unknown",
+                        "LocaleCountry": null,
+                        "LocaleLanguage": "en"
+                    },
+                    "SiteGuid": "639809"
+                },
+                "tagsMetas": [],
+                "MediaID": 257282,
+                "iMediaID": 257282,
+                "mediaID": 257282,
+                "picSize": "144X81",
+                "pageSize": 24,
+                "pageIndex": 0
+            }
+        }
+    });
+</script>
+<br>
+<p>Event log for MediaHit and MediaMark events:  </p>
+<div id="eventsTracking" style="width:450px;height:250px;border: 1px solid black; overflow-y: auto; padding-left: 5px"></div>
+</body>
+</html>

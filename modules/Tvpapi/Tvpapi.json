@@ -1,0 +1,17 @@
+{
+    "tvpapiGetLicensedLinks": {
+        "scripts": "resources/getLicensedLinks.js",
+        "dependencies": ["mw.KBasePlugin"] ,
+        "kalturaPluginName": "tvpapiGetLicensedLinks"
+    },
+    "tvpapiGetLicenseData": {
+        "scripts": "resources/getLicenseData.js",
+        "dependencies": ["mw.KBasePlugin"],
+        "kalturaPluginName": "tvpapiGetLicenseData"
+    },
+    "tvpapiAnalytics": {
+        "scripts": "resources/tvpapiAnalytics.js",
+        "dependencies": ["mw.KBasePlugin"],
+        "kalturaPluginName": "tvpapiAnalytics"
+    }
+}
