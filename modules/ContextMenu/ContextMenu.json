@@ -1,7 +1,7 @@
 {
     "contextMenu": {
         "scripts": "resources/contextMenu.js",
-        "templates": "../ContextMenu/templates/contextMenu.htm",
+        "templates": "../ContextMenu/templates/contextMenu.tmpl.html",
         "styles": "resources/contextMenu.css",
         "dependencies": ["jquery","mw.KBaseScreen", "jquery.contextmenu"],
         "kalturaPluginName": "contextMenu"

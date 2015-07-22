@@ -5,7 +5,7 @@
         defaultConfig: {
             showTooltip: true,
             parent: "topBarContainer",
-            templatePath: 'components/contextMenu/contextMenu.tmpl.html',
+            templatePath: '../ContextMenu/templates/contextMenu.tmpl.html',
             theme: 'normal',
             shortSeekTime: 5,
             longSeekTime: 10,
@@ -35,21 +35,17 @@
             'volumeUp', 'volumeDown','openFullscreen', 'toggleFullscreen',
             'gotoBegining', 'gotoEnd', 'shortSeekBack', 'longSeekBack', 'shortSeekForward',
             'longSeekForward', 'togglePlayback', 'play', 'pause', 'toggleMute', 'togglePlayControls',
-            'grabEmbedCode', 'related'
+            'grabEmbedCode'
         ],
         themes: ['normal-theme','aggressive-theme','aggressive-theme-black'],
         setup: function () {
             var _this = this;
             this.buildMenu(this.menuItemsList);
-
-
             this.log('menu was built')
             this.getRegisteredPlugins(function() {
                 _this.buildMenu(_this.externalPlugins);
             });
-
             this.addBindings();
-
             this.bind('updateBufferPercent', function(){
                 _this.canSeek = true;
             });
@@ -130,7 +126,7 @@
                 if (plugin.getConfig('contextMenu')){
                         this.log(pluginID + " plugin was added to the context menu");
                         this.externalPlugins.push(plugin.getConfig('contextMenu'))
-                    break;
+
                 }
             }
             callback();

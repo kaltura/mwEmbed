@@ -11,7 +11,6 @@
 			showTooltip: true,
 			displayImportance: 'medium',
 			templatePath: 'components/share/share.tmpl.html',
-
 			usePreviewPlayer: false,
 			previewPlayerEnabled: false,
 
