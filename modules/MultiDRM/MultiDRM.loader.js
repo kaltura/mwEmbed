@@ -21,39 +21,27 @@
 					var clDashPlayerUrl = embedPlayer.getKalturaConfig( "multiDrm", "clDashPlayerUrl" ) || mw.getMwEmbedPath() + "node_modules/mwEmbed-Dash-Everywhere/video.js";
 					var dashJsUrl = embedPlayer.getKalturaConfig( "multiDrm", "dashJsUrl" ) || mw.getMwEmbedPath() + "node_modules/mwEmbed-Dash-Everywhere/cldasheverywhere.min.js";
 					if (clDashPlayerUrl && dashJsUrl) {
-						$.ajax({
-							url: clDashPlayerUrl,
-							dataType: "script",
-							cache: true,
-							success: $.ajax({
-								url: dashJsUrl,
-								dataType: "script",
-								cache: true,
-								success: function () {
-									mw.log("DASH player loaded, setting configuration");
-									//Get user configuration
-									var drmUserConfig = embedPlayer.getKalturaConfig("multiDrm");
-									//Get default config
-									var drmConfig = getDefaultDrmConfig();
-									//Deep extend custom config
-									$.extend(true, drmConfig, drmUserConfig);
-									embedPlayer.setKalturaConfig("multiDrm", drmConfig);
-									//Set reference for DASH playback engine
-									mw.dash = {
-										player: videojs
-									};
-									callback();
-								},
-								error: function(){
-									mw.log("Error::Playback engine couldn't be found");
-									callback();
-								}
-							}),
-							error: function(){
+						$.getScript( clDashPlayerUrl)
+							.then(function(){return $.getScript( dashJsUrl)})
+							.done(function(){
+								mw.log("DASH player loaded, setting configuration");
+								//Get user configuration
+								var drmUserConfig = embedPlayer.getKalturaConfig("multiDrm");
+								//Get default config
+								var drmConfig = getDefaultDrmConfig();
+								//Deep extend custom config
+								$.extend(true, drmConfig, drmUserConfig);
+								embedPlayer.setKalturaConfig("multiDrm", drmConfig);
+								//Set reference for DASH playback engine
+								mw.dash = {
+									player: videojs
+								};
+								callback();
+							})
+							.fail(function( ) {
 								mw.log("Error::Playback engine couldn't be found");
 								callback();
-							}
-						});
+							});
 					} else {
 						mw.log("Playback engine couldn't be found, not loading DASH player");
 						callback();

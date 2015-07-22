@@ -34,8 +34,16 @@
 
         loadAdobeClasses: function(){
             var _this = this;
-            var loadVisitor = $.ajax(mw.getMwEmbedPath()+"modules/Heartbeat/resources/VisitorAPI.js");
-            var loadAppMeasurement = $.ajax(mw.getMwEmbedPath()+"modules/Heartbeat/resources/AppMeasurement.js");
+            var loadVisitor = $.ajax({
+                url: mw.getMwEmbedPath()+"modules/Heartbeat/resources/VisitorAPI.js",
+                dataType : "script",
+                timeout : 5000
+            });
+            var loadAppMeasurement = $.ajax({
+                url: mw.getMwEmbedPath()+"modules/Heartbeat/resources/AppMeasurement.js",
+                dataType : "script",
+                timeout : 5000
+            });
             $.when(loadVisitor, loadAppMeasurement).then(function() {
                 _this.setupAdobeVars();
                 _this.setupHeartBeatPlugin();

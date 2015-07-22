@@ -563,7 +563,7 @@ class kalturaIframeClass {
 	 * Get entry name for iFrame title
 	 */
 	private function getEntryTitle(){
-		if( !$this->getUiConfResult()->isPlaylist() ){
+		if(!$this->error && !$this->getUiConfResult()->isPlaylist() ){
 			try{
 			$baseEntry = $this->getEntryResult()->getResult();
 				if( isset( $baseEntry['meta']->name) ){
