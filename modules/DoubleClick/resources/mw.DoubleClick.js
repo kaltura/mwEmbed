@@ -210,7 +210,6 @@
 			$( this.embedPlayer ).bind('KalturaSupport_AdOpportunity', function( event, cuePointWrapper ) {
 				if( cuePointWrapper.cuePoint.protocolType == 1 && _this.adCuePoints.indexOf(cuePointWrapper.cuePoint.id) === -1 ){ // Check for  protocolType == 1 ( type = vast )
 					_this.adTagUrl = cuePointWrapper.cuePoint.sourceUrl;
-					_this.copyFlashvarsToKDP(_this.embedPlayer, _this.pluginName);
 					if (cuePointWrapper.cuePoint.adType == 1){ // linear video
 						_this.embedPlayer.addPlayerSpinner();
 						_this.currentAdSlotType = "midroll";
@@ -294,7 +293,7 @@
 			flashVars['cust_params'] = this.cust_params;
 
 			//we shouldn't send these params, they are unnecessary and break the flash object
-			var ignoredVars = ['path', 'customParams', 'preSequence', 'postSequence' ];
+			var ignoredVars = ['path', 'customParams', 'preSequence', 'postSequence', 'postrollUrl' ];
 			for ( var i=0; i< ignoredVars.length; i++ ) {
 				delete flashVars[ignoredVars[i]];
 			}
@@ -398,7 +397,6 @@
 					_this.contentDoneFlag = true;
 					_this.adTagUrl = _this.getConfig("postrollUrl");
 					_this.currentAdSlotType = "postroll";
-					_this.copyFlashvarsToKDP(_this.embedPlayer, _this.pluginName);
 					_this.requestAds("postroll");
 				}
 			});
@@ -1330,7 +1328,7 @@
 				this.adsManager.unload();
 			}
 			if (this.embedPlayer.sequenceProxy.isInSequence){
-				this.restorePlayer();
+				this.restorePlayer(this.contentDoneFlag);
 			}
 		},
 		restorePlayer: function( onContentComplete, adPlayed ){
