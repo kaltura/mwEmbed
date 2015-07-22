@@ -29,6 +29,7 @@
 		} ,
 		requestedSrcIndex: null ,
 		durationReceived: false ,
+		gotFirstMulticastFrame: false,
 		readyCallbackFunc: undefined ,
 		isMulticast: false ,
 		isError: false ,
@@ -309,7 +310,7 @@
 					var timeout = _this.getKalturaConfig( null , 'multicastStartTimeout' ) || _this.defaultMulticastStartTimeout;
 					_this.isError = false;
 					setTimeout( function () {
-						if ( !_this.durationReceived ) {
+						if ( !_this.gotFirstMulticastFrame ) {
 							_this.isError = true;
 							_this.fallbackToUnicast();
 						}
@@ -461,6 +462,10 @@
 		} ,
 
 		onDurationChange: function ( data , id ) {
+
+			if (this.isLive()) {
+				this.gotFirstMulticastFrame=true;
+			}
 			//first durationChange indicate player is ready
 			if ( !this.durationReceived ) {
 				//hide player until we click play
