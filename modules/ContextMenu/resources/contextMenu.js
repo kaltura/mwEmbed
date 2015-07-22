@@ -21,27 +21,33 @@
             shortSeekForward: null,
             longSeekForward: null,
             gotoEnd: null,
+            related: 'Related',
             grabEmbedCode: 'Grab Embed Code',
             togglePlayControls: 'Toggle Controls',
             gotoBegining: null,
             toggleMute: null,
 
         },
+        externalPlugins: [],
         canSeek: false,
         menuItems: {},
-        menuItemsNames: [
+        menuItemsList: [
             'volumeUp', 'volumeDown','openFullscreen', 'toggleFullscreen',
             'gotoBegining', 'gotoEnd', 'shortSeekBack', 'longSeekBack', 'shortSeekForward',
             'longSeekForward', 'togglePlayback', 'play', 'pause', 'toggleMute', 'togglePlayControls',
-            'grabEmbedCode'
+            'grabEmbedCode', 'related'
         ],
-        themes: ['normal','aggressive-theme','aggressive-theme-black'],
+        themes: ['normal-theme','aggressive-theme','aggressive-theme-black'],
         setup: function () {
             var _this = this;
-            this.buildMenu();
+            this.buildMenu(this.menuItemsList);
 
 
             this.log('menu was built')
+            this.getRegisteredPlugins(function() {
+                _this.buildMenu(_this.externalPlugins);
+            });
+
             this.addBindings();
 
             this.bind('updateBufferPercent', function(){
@@ -70,45 +76,66 @@
 
         },
         themeExists: function(theme) {
-            if (this.themes.indexOf(theme) !== -1 ) {
-                return true
-            }
-            return false;
+            return (this.themes.indexOf(theme) !== -1 );
+
         },
-        buildMenu: function() {
+        buildMenu: function(menuItems) {
             var _this = this;
-            $.each(this.menuItemsNames, function(index, itemName) {
-                if (_this.getConfig(itemName)) {
+            $.each(menuItems, function(index, itemName) {
+
+                if (_this.getConfig(itemName) || _this.isFromExternalPlugin(itemName)) {
                     if (itemName === 'play' || itemName === 'pause') {
                         return _this.menuItems['togglePlayback'] = {
                             'name': _this.getConfig('play')
                         }
                     }
                     return _this.menuItems[itemName] = {
-                        'name': _this.getConfig(itemName)
+                        'name': _this.getConfig(itemName) || itemName
                     }
                 }
             })
-
+        },
+        isFromExternalPlugin: function(action) {
+            return (this.externalPlugins.indexOf(action) !== -1 );
         },
         /*
         ** @TODO Create a way to add more toggle buttons instead of adding each one manually.
          */
         addBindings: function () {
             var _this = this;
+            var embedPlayer = this.getPlayer();
             $.each(this.menuItems, function(action, item){
+
+                if (! _this.isFromExternalPlugin(action) ) {
+
+                    return this.callback = function (trigger) {
+                        _this.getCallback(action, trigger);
+                    }
+                }
+
                 this.callback = function() {
-                    _this.getCallback(action);
+                    embedPlayer.triggerHelper('contextMenu');
                 }
             });
         },
-        getCallback: function(action) {
+        getCallback: function(action, trigger) {
             var callBack = action + 'Callback';
             if( typeof this[ callBack ] === 'function' ) {
-                return this[ callBack ]();
+                return this[ callBack ](trigger);
             }
         },
-        volumeUpCallback: function(){
+        getRegisteredPlugins: function(callback) {
+            for (var pluginID in this.getPlayer().plugins){
+                var plugin = this.getPlayer().plugins[pluginID];
+                if (plugin.getConfig('contextMenu')){
+                        this.log(pluginID + " plugin was added to the context menu");
+                        this.externalPlugins.push(plugin.getConfig('contextMenu'))
+                    break;
+                }
+            }
+            callback();
+        },
+        volumeUpCallback: function(t){
             var _this = this;
             var embedPlayer = this.getPlayer();
             var currentVolume = parseFloat(this.getPlayer().getPlayerElementVolume());
