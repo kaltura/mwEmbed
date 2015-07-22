@@ -1717,6 +1717,7 @@ mw.KWidgetSupport.prototype = {
 		var _this = this;
 		var extension;
 		var mimeType;
+		var baseFlavorUrl=this.getBaseFlavorUrl(entry.partnerId);
 		var format = streamerType;
 		var protocol;
 		if ( isFlash ) {
@@ -1731,6 +1732,9 @@ mw.KWidgetSupport.prototype = {
 			extension = 'f4m';
 			protocol = 'http';
 			mimeType = 'video/multicast';
+			if (baseFlavorUrl.indexOf("https")===0) {
+				protocol = 'https';
+			}
 
 		} else {
 			embedPlayer.setFlashvars( 'streamerType', 'http' );
@@ -1739,7 +1743,7 @@ mw.KWidgetSupport.prototype = {
 			mimeType = 'application/vnd.apple.mpegurl';
 		}
 
-		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/' + format + '/protocol/' + protocol + '/uiConfId/' + embedPlayer.kuiconfid +  '/a.' + extension;
+		var srcUrl = baseFlavorUrl + '/entryId/' + entry.id + '/format/' + format + '/protocol/' + protocol + '/uiConfId/' + embedPlayer.kuiconfid +  '/a.' + extension;
 		// Append KS & Referrer
 		srcUrl += '?referrer=' + base64_encode( _this.getHostPageUrl() ) + '&playSessionId=' + _this.getGUID();
 		var deferred = $.Deferred();
