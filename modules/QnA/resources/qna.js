@@ -178,7 +178,7 @@
 				// for unfriendly iFrames, where we can't access window['parent'] we set on page to true
 				if ( !this.getConfig( 'onPage' ) ) {
 					try{
-						var parent = window['parent'];
+						var parent = window['parent'].document;
 					}catch(e){
 						this.setConfig('onPage', true);
 						mw.log("cant access window['parent'] - setting to true");
