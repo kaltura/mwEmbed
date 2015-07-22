@@ -190,7 +190,7 @@ mw.KWidgetSupport.prototype = {
 
 		// Support mediaPlayFrom, mediaPlayTo properties
 		embedPlayer.bindHelper( 'Kaltura_SetKDPAttribute', function(e, componentName, property, value){
-			if (!value) {
+			if (!value && value !== 0) {
 				return;
 			}
 			var segmentChange = false;

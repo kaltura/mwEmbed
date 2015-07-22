@@ -726,6 +726,13 @@
                 "doc": "Slider buffer color",
                 "type": "color"
             },
+            "timeLabelColor": {
+                "label": "Time label color",
+                "initvalue": "#ffffff",
+                "player-refresh": "theme.timeLabelColor",
+                "doc": "Time label color",
+                "type": "color"
+            },
             "buttonsIconColorDropShadow": {
                 "label": "Apply drop shadow to icons",
                 "initvalue": true,

@@ -117,6 +117,10 @@
 				mw.log( "KAds::All ads have been loaded" );
 				callback();
 			});
+			// disable overlays on native devices
+			if (embedPlayer.useNativePlayerControls()){
+				_this.embedPlayer.setKalturaConfig('vast', 'supportOverlays', false);
+			}
 		},
 		handleAdsOnPlay: function( embedPlayer ){
 			var _this = this;
