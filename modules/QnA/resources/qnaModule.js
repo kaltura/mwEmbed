@@ -105,10 +105,11 @@
                 };
 
                 // update current time to update display
-                this.currentTimeInterval = setInterval(function () {
-                    _this.currentTime(new Date().getTime());
-                }, mw.getConfig("qnaPollingInterval") || 10000);
-
+                if (this.currentTimeInterval === null) {
+                    this.currentTimeInterval = setInterval(function () {
+                        _this.currentTime(new Date().getTime());
+                    }, mw.getConfig("qnaPollingInterval") || 10000);
+                }
                 $( embedPlayer ).bind('firstPlay', function () {
                     // after the first play embedPlayer.currentTime is 0.
                     // wait till we get a real time and refresh the answer on air queue
@@ -129,6 +130,7 @@
             },
             destroy: function () {
                 clearInterval(this.currentTimeInterval);
+                this.currentTimeInterval = null;
                 clearInterval(this.answerOnAirQueueUpdateInterval);
                 $(this.embedPlayer).unbind(this.bindPostfix);
             },
