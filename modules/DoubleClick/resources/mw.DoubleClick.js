@@ -283,9 +283,6 @@
 		},
 		copyFlashvarsToKDP: function(embedPlayer, pluginName){
 			var flashVars = embedPlayer.getKalturaConfig(pluginName);
-			if (flashVars['countdownText']) {
-				flashVars['countdownText'] = escape(flashVars['countdownText']); // escape countdownText to support & and ' characters
-			}
 
 			this.parseAdTagUrlParts(embedPlayer, pluginName);
 			//Escape adTagUrl to prevent flash string parsing error
@@ -293,7 +290,7 @@
 			flashVars['cust_params'] = this.cust_params;
 
 			//we shouldn't send these params, they are unnecessary and break the flash object
-			var ignoredVars = ['path', 'customParams', 'preSequence', 'postSequence', 'postrollUrl' ];
+			var ignoredVars = ['path', 'customParams', 'preSequence', 'postSequence', 'postrollUrl', 'countdownText' ];
 			for ( var i=0; i< ignoredVars.length; i++ ) {
 				delete flashVars[ignoredVars[i]];
 			}
@@ -566,6 +563,29 @@
 			}
 			return this.adDisplayContainer;
 		},
+		addSkipSupport: function(){
+			var _this = this;
+			if ( this.embedPlayer.getRawKalturaConfig('skipBtn') && this.embedPlayer.getVideoHolder().find(".ad-skip-btn").length === 0){
+				this.embedPlayer.getVideoHolder().append(
+					$('<span />')
+						.text( "Skip Ad" )
+						.addClass( 'ad-component ad-skip-btn' )
+						.css({"position": "fixed","margin-bottom": 36+"px", "float": "right", "display": "none"})
+						.on("click", function(e){
+							e.stopPropagation();
+							e.preventDefault();
+							$( _this.embedPlayer).trigger( 'onAdSkip' );
+							if ( _this.isChromeless ){
+								_this.embedPlayer.getPlayerElement().sendNotification( 'skipAd' );
+							}else{
+								_this.adsManager.stop();
+							}
+							$(this).hide();
+							return false;
+						})
+				)
+			}
+		},
 		/**
 		 * Adds custom params to ad url.
 		 */
@@ -620,6 +640,7 @@
 				return;
 			}
 			var _this = this;
+			this.addSkipSupport();
 			this.parseAdTagUrlParts(this.embedPlayer, this.pluginName);
 			var adTagUrl = this.adTagUrl;
 			var cust_params = this.cust_params;
@@ -944,6 +965,7 @@
 				}
 				_this.adActive = true;
 				if (_this.isLinear) {
+					$(".ad-skip-btn").show();
 					_this.playingLinearAd = true;
 					// hide spinner:
 					_this.embedPlayer.hideSpinner();
@@ -992,6 +1014,7 @@
 				$(_this.embedPlayer).trigger('onAdComplete',[ad.getAdId(), mw.npt2seconds($(".currentTimeLabel").text())]);
 				_this.duration= -1;
 				_this.embedPlayer.getInterface().find(".largePlayBtn").css(	"z-index", "");
+				$(".ad-skip-btn").hide();
 			});
 			// Resume content:
 			adsListener( 'CONTENT_RESUME_REQUESTED', function(){
@@ -1076,12 +1099,15 @@
 					setTimeout(function(){
 						_this.embedPlayer.getPlayerElement().play();
 					},250);
+				}else{
+					$(".ad-skip-btn").show();
 				}
 			},'adLoaded', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				mw.log("DoubleClick:: adCompleted");
 				$(_this.embedPlayer).trigger('onAdComplete',[adInfo.adID, mw.npt2seconds($(".currentTimeLabel").text())]);
+				$(".ad-skip-btn").hide();
 			},'adCompleted', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
