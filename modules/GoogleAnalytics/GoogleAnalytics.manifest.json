@@ -12,6 +12,11 @@
                 "label": "Event monitor function name",
                 "type": "string"
             },
+            "anonymizeIp": {
+				"doc" : "If the google anonymizeIp flag should be set to anonymize user reports within google analytics.",
+				"label": "Anonymize Ips",
+				"type" : "boolean"
+			},
             "customEvent": {
                 "doc": "Comma separated list of events you want to track.",
                 "label": "Custom events list",
