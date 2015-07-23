@@ -54,18 +54,21 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
 </table>
     <br/>
 <input type="button" id="generate" value="Create Player" />
+<input type="button" id="showVisualisation" value="Show Visualisation" />
 <br><br>
 <div id="kaltura_player" style="width:624px; height: 387px;display:block;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject">
 </div>
 <br/><br/>
-<!-- HLS OSMF debug visualization -->
-<b>HLS logs visualisation:</b>
-<br>(enabled only if <b>hlsLogs</b> flashvar is true)
-<br>
-<input type="button" value="Switch Mode" onclick="onSwitchClick();"/><br>
-<canvas id="canvas" width="1024" height="256"></canvas>
-<br/><br/>
 
+<!-- HLS OSMF debug visualization -->
+<div id="visualisation" style="display: none">
+    <b>HLS logs visualisation:</b>
+    <br>(enabled only if <b>hlsLogs</b> flashvar is true)
+    <br>
+    <input type="button" value="Switch Mode" onclick="onSwitchClick();"/><br>
+    <canvas id="canvas" width="1024" height="256"></canvas>
+    <br/><br/>
+</div>
 <b>Debug Info for HLS plugin:</b>
 
 <table>
@@ -73,11 +76,13 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
         <th>Buffer length (in seconds)</th>
         <th>Dropped frames</th>
         <th>Current bitrate</th>
+        <th>Current FPS</th>
     </tr>
     <tr>
         <td><label id="bufferLen"/></td>
         <td><label id="droppedFrames"/></td>
         <td><label id="currentBitrate"/></td>
+        <td><label id="currentFPS"/></td>
     </tr>
 </table>
 <br/>
@@ -130,6 +135,7 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
         $('#playingSeg').text("");
         $('#processedSeg').text("");
         $('#downloadingSeg').text("");
+        $('#currentFPS').text("");
 
 		// poulate hash url 
 		window.location.hash = encodeURIComponent( JSON.stringify( {
@@ -225,9 +231,23 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
                 if( data.currentBitrate ){
                     $('#currentBitrate').text( data.currentBitrate );
                 }
+                if( data.FPS ){
+                    $('#currentFPS').text( data.FPS );
+                }
             });
         });
+
 	});
+
+    // handle click event
+    $('#showVisualisation').click( function() {
+        $('#visualisation').toggle();
+
+        if($('#kaltura_player_ifp').is(':visible') && $('#visualisation').is(':visible')){
+            // Initiate buffer rendering.
+            requestAnimationFrame(redrawBuffer);
+        }
+    });
 </script>
 
 

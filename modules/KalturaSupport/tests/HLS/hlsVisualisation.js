@@ -76,9 +76,10 @@
     var timeOffset = 0;
     // Maximum amount to allow scrolling back.
     var timeOffset_max = 120;
-    // Initiate buffer rendering.
-    requestAnimationFrame(redrawBuffer);
+
     setInterval(function() { bufferDirty = true; }, 100);
+
+
     // Called by HLS plugin to update manifest state.
     function onManifest(payload)
     {
@@ -245,8 +246,10 @@
         {
             console.log("hlsVisualisation :: Initializing tag debug view.");
 
-            this.window.addEventListener("mousewheel", adjustZoom, false);
-            this.window.addEventListener("DOMMouseScroll", adjustZoom, false);
+            if(this.window) {
+                this.window.addEventListener("mousewheel", adjustZoom, false);
+                this.window.addEventListener("DOMMouseScroll", adjustZoom, false);
+            }
             canvas.addEventListener("mousedown", onMouseDown, false);
             canvas.addEventListener("mousemove", onMouseMove, false);
             canvas.addEventListener("mouseup", onMouseUp, false);
