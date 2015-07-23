@@ -1,0 +1,36 @@
+<html>
+<head>
+	<title>Q and A Demo</title>
+	<script type="text/javascript" src="/html5.kaltura/mwEmbed/tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="/html5.kaltura/mwEmbed/mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="/html5.kaltura/mwEmbed/docs/js/doc-bootstrap.js"></script>
+	<meta charset=UTF-8>
+
+	<script type="text/javascript" src="config.js"></script>
+
+</head>
+<body>
+	<h1>Q and A Demo</h1>
+	<div id="kaltura_player" style="width: 585px; height: 330px;float: left;"></div>
+	<div id="qnaListHolder" style="width: 300px; height: 330px; float:left; float: left"></div>
+	<br style="clear: both;" /><br />
+
+<script>
+
+
+//    mw.setConfig( 'Kaltura.ServiceUrl' , 'http://lbd.kaltura.com' );
+	kWidget.featureConfig({
+		'targetId': 'kaltura_player',
+		'wid': '_1802381',
+		'uiconf_id' : '21099702',
+		'flashvars': {
+			'ks': "djJ8MTgwMjM4MXwZO2muDHAhLvUDHUuHi5huWiDY2qcPxNqBuxcrMuwIONxdhsKRMrydiT9FfLIJSojjGNSuDM4zbAyhigRS8miPMe_fdzpsXHqDGShaPjaBDGDA6ia2AgXUNHL3pZJ77Mw=",
+			'qna': qna
+		},
+		'entry_id': "0_lvosyhlc"
+
+	});
+
+</script>
+</body>
+</html>

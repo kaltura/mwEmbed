@@ -477,6 +477,9 @@
             if(this.unresolvedSrcURL){
                 this.getEntryUrl().then(function (srcToPlay) {
                     _this.unresolvedSrcURL = false;
+                    _this.playerObject.sendNotification('changeMedia', {
+                        entryUrl: srcToPlay
+                    });
                     _this.play();
                 });
                 return;
