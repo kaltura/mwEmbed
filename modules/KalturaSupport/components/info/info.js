@@ -7,6 +7,7 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 		order: 3,
 		align: "right",
 		tooltip: 'Info',
+		contextMenu: "Info Screen",
 		showTooltip: true,
 		usePreviewPlayer: true,
 		previewPlayerEnabled: true,
@@ -14,12 +15,22 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 	},
 	iconBtnClass: "icon-info",
 	setup: function () {
+		var _this = this;
+		this.bind('contextMenu', function(event, data) {
+
+			if (data === _this.getConfig('contextMenu')) {
+				console.log('testing');
+				_this.showScreen();
+			}
+		});
 		if (mw.isNativeApp()) {
 			this.setConfig("showTooltip",false);
 			this.setConfig("usePreviewPlayer",false);
 		}
 	},
 	addScreenBindings: function(){
+		var _this = this;
+
 		if (mw.isNativeApp()) {
 			$(".infoScreen .panel-right").removeClass("panel-right");
 		}

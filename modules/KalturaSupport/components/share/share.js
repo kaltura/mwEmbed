@@ -136,6 +136,11 @@
 				_this.setupPlayerURL();
 				_this.getScreen();
 			});
+			this.bind('contextMenu', function(event, data) {
+				if (data === _this.getConfig('contextMenu')) {
+					_this.showScreen();
+				}
+			});
 			this.bind('preShowScreen', function (event, screenName) {
 				if ( screenName === "share" ){
 					_this.getScreen().then(function(screen){

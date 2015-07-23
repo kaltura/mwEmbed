@@ -101,23 +101,21 @@
             var _this = this;
             var embedPlayer = this.getPlayer();
             $.each(this.menuItems, function(action, item){
-
                 if (! _this.isFromExternalPlugin(action) ) {
-
-                    return this.callback = function (trigger) {
-                        _this.getCallback(action, trigger);
+                    return this.callback = function () {
+                        _this.getCallback(action);
                     }
                 }
-
                 this.callback = function() {
-                    embedPlayer.triggerHelper('contextMenu');
+                    embedPlayer.triggerHelper('contextMenu', action);
                 }
             });
+
         },
-        getCallback: function(action, trigger) {
+        getCallback: function(action) {
             var callBack = action + 'Callback';
             if( typeof this[ callBack ] === 'function' ) {
-                return this[ callBack ](trigger);
+                return this[ callBack ]();
             }
         },
         getRegisteredPlugins: function(callback) {
@@ -126,7 +124,6 @@
                 if (plugin.getConfig('contextMenu')){
                         this.log(pluginID + " plugin was added to the context menu");
                         this.externalPlugins.push(plugin.getConfig('contextMenu'))
-
                 }
             }
             callback();
