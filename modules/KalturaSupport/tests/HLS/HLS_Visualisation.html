@@ -51,6 +51,10 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
         <th scope="row">hlsOverrideTargetDuration</th>
         <td><input type="number" class="form-control" id="targetDuration" value="-1"/></td>
     </tr>
+    <tr>
+        <th scope="row">hlsLogs</th>
+        <td><input type="checkbox" class="form-control" id="hlsLogs" value="" checked/></td>
+    </tr>
 </table>
     <br/>
 <input type="button" id="generate" value="Create Player" />
@@ -116,6 +120,7 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
 			$('#urlthumb').val( vals.thumb );
             $('#segBuffer').val( vals.hlsSegmentBuffer );
             $('#targetDuration').val( vals.hlsOverrideTargetDuration );
+            $('#hlsLogs-native').attr('checked', vals.hlsLogs );
 		}
 	}catch(err){
 		
@@ -152,7 +157,7 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
             "ForceFlashOnDesktopSafari": true,
             "hlsSegmentBuffer": parseInt($('#segBuffer').val()),
             "hlsOverrideTargetDuration": parseInt($('#targetDuration').val()),
-            "hlsLogs": "true",
+            "hlsLogs": $('#hlsLogs').is(':checked'),
             "sourceSelector.plugin" : true,
             "closedCaptions.showEmbeddedCaptions" : true,
             'debugInfo': {
