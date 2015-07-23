@@ -81,6 +81,7 @@
 
 		trackCuePoints: false,
 		adCuePoints: [],
+		skipTimeoutId: null,
 
 		init: function( embedPlayer, callback, pluginName ){
 			var _this = this;
@@ -566,9 +567,13 @@
 		addSkipSupport: function(){
 			var _this = this;
 			if ( this.embedPlayer.getRawKalturaConfig('skipBtn') && this.embedPlayer.getVideoHolder().find(".ad-skip-btn").length === 0){
+				var label = "Skip Ad";
+				if( this.embedPlayer.getKalturaConfig( 'skipBtn', 'label' ) ){
+					label = this.embedPlayer.getKalturaConfig( 'skipBtn', 'label' );
+				}
 				this.embedPlayer.getVideoHolder().append(
 					$('<span />')
-						.text( "Skip Ad" )
+						.text( label )
 						.addClass( 'ad-component ad-skip-btn' )
 						.css({"position": "fixed","margin-bottom": 36+"px", "float": "right", "display": "none"})
 						.on("click", function(e){
@@ -583,8 +588,34 @@
 							$(this).hide();
 							return false;
 						})
-				)
+				);
+				if ( this.embedPlayer.getRawKalturaConfig('skipNotice') && this.embedPlayer.getVideoHolder().find(".ad-skip-label").length === 0){
+					this.embedPlayer.getVideoHolder().append(
+						$('<span />')
+							.addClass( 'ad-component ad-skip-label' )
+							.css({"position": "fixed","margin-bottom": 36+"px", "float": "right", "display": "none"})
+					);
+				}
 			}
+		},
+		showSkipBtn: function(){
+			if( this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' ) ){
+				$(".ad-skip-label").show();
+				this.skipTimeoutId = setTimeout(function(){
+					$(".ad-skip-btn").show();
+					$(".ad-skip-label").hide();
+				},parseFloat(this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' ) * 1000))
+			}else{
+				$(".ad-skip-btn").show();
+				$(".ad-skip-label").hide();
+			}
+		},
+		hideSkipBtn: function(){
+			if( this.skipTimeoutId !== null ){
+				clearTimeout(this.skipTimeoutId);
+				this.skipTimeoutId = null;
+			}
+			$(".ad-skip-btn").hide();
 		},
 		/**
 		 * Adds custom params to ad url.
@@ -965,7 +996,7 @@
 				}
 				_this.adActive = true;
 				if (_this.isLinear) {
-					$(".ad-skip-btn").show();
+					_this.showSkipBtn();
 					_this.playingLinearAd = true;
 					// hide spinner:
 					_this.embedPlayer.hideSpinner();
@@ -1014,7 +1045,7 @@
 				$(_this.embedPlayer).trigger('onAdComplete',[ad.getAdId(), mw.npt2seconds($(".currentTimeLabel").text())]);
 				_this.duration= -1;
 				_this.embedPlayer.getInterface().find(".largePlayBtn").css(	"z-index", "");
-				$(".ad-skip-btn").hide();
+				_this.hideSkipBtn();
 			});
 			// Resume content:
 			adsListener( 'CONTENT_RESUME_REQUESTED', function(){
@@ -1100,14 +1131,14 @@
 						_this.embedPlayer.getPlayerElement().play();
 					},250);
 				}else{
-					$(".ad-skip-btn").show();
+					_this.showSkipBtn();
 				}
 			},'adLoaded', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				mw.log("DoubleClick:: adCompleted");
 				$(_this.embedPlayer).trigger('onAdComplete',[adInfo.adID, mw.npt2seconds($(".currentTimeLabel").text())]);
-				$(".ad-skip-btn").hide();
+				_this.hideSkipBtn();
 			},'adCompleted', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
@@ -1144,6 +1175,11 @@
 				}
 				if (_this.getConfig('countdownText')){
 					_this.embedPlayer.getInterface().find(".ad-notice-label").text(_this.getConfig('countdownText'));
+				}
+				if ( _this.embedPlayer.getInterface().find(".ad-skip-label").length ){
+					var offsetRemaining = Math.max(Math.ceil(parseFloat(_this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' )) - adInfo.time), 0);
+					_this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining', offsetRemaining );
+					_this.embedPlayer.getInterface().find(".ad-skip-label").text(_this.embedPlayer.evaluate(_this.embedPlayer.getRawKalturaConfig('skipNotice','text')));
 				}
 			},'adRemainingTimeChange', true);
 
@@ -1339,6 +1375,11 @@
 			}
 			if (_this.getConfig('countdownText')){
 				this.embedPlayer.getInterface().find(".ad-notice-label").text(_this.getConfig('countdownText'));
+			}
+			if ( _this.embedPlayer.getInterface().find(".ad-skip-label").length ){
+				var offsetRemaining = Math.max(Math.ceil(parseFloat(_this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' )) - (_this.duration - _this.adsManager.getRemainingTime())), 0);
+				_this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining', offsetRemaining );
+				_this.embedPlayer.getInterface().find(".ad-skip-label").text(_this.embedPlayer.evaluate(_this.embedPlayer.getRawKalturaConfig('skipNotice','text')));
 			}
 		},
 
