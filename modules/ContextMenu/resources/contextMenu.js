@@ -40,6 +40,7 @@
         themes: ['normal-theme','aggressive-theme','aggressive-theme-black'],
         setup: function () {
             var _this = this;
+
             this.buildMenu(this.menuItemsList);
             this.log('menu was built')
             this.getRegisteredPlugins(function() {
@@ -61,7 +62,7 @@
             if ( ! $.isEmptyObject(this.menuItems)) {
                 $.contextMenu({
                     '_this': _this,
-                    selector: '#' + embedPlayer.id,
+                    selector: '.mwPlayerContainer',
                     items: this.menuItems
                 });
             }

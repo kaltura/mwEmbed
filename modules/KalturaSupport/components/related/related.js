@@ -48,10 +48,9 @@
 				_this.getItemsData();
 			});
 			this.bind('contextMenu', function(event, data) {
-
 				if (data === _this.getConfig('contextMenu')) {
-					console.log('testing');
-					_this.showScreen();
+					_this._hideAllScreens();
+					_this.toggleScreen();
 				}
 			});
 

@@ -138,7 +138,7 @@
 			});
 			this.bind('contextMenu', function(event, data) {
 				if (data === _this.getConfig('contextMenu')) {
-					_this.showScreen();
+					return (_this.isScreenVisible()) ? _this.closeScreen() :_this.showScreen();
 				}
 			});
 			this.bind('preShowScreen', function (event, screenName) {
