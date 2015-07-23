@@ -22,7 +22,7 @@
 			var _this = this;
 			this.bind('showInlineDownloadLink', function(e, linkUrl){
 				_this.getComponent().attr({
-					'href': linkUrl,
+					'href': linkUrl.replace('playSessionId=','playSessionId=noev-'),
 					'target': '_blank'
 				});
 			});
