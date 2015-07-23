@@ -124,6 +124,9 @@
 			if ( _this.getConfig( 'leadWithFlash' ) !== undefined ) {
 				_this.leadWithFlash = _this.getConfig( 'leadWithFlash' );
 			}
+			if ( _this.getConfig( 'prerollUrl' ) !== undefined ) {
+				_this.adTagUrl = _this.getConfig( 'prerollUrl' );
+			}
 
 			if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
 				_this.isNativeSDK = true;
@@ -291,7 +294,7 @@
 			flashVars['cust_params'] = this.cust_params;
 
 			//we shouldn't send these params, they are unnecessary and break the flash object
-			var ignoredVars = ['path', 'customParams', 'preSequence', 'postSequence', 'postrollUrl', 'countdownText' ];
+			var ignoredVars = ['path', 'customParams', 'preSequence', 'postSequence', 'postrollUrl', 'countdownText', 'prerollUrl' ];
 			for ( var i=0; i< ignoredVars.length; i++ ) {
 				delete flashVars[ignoredVars[i]];
 			}
@@ -387,7 +390,7 @@
 					// Setup the restore callback
 					_this.postRollCallback = callback;
 					//no need to request ads
-					if ( _this.isLinear === false || _this.allAdsCompletedFlag || _this.adLoaderErrorFlag ){
+					if ( _this.getConfig("adTagUrl") && ( _this.isLinear === false || _this.allAdsCompletedFlag || _this.adLoaderErrorFlag) ){
 						_this.restorePlayer(true);
 					}
 				}
@@ -891,8 +894,10 @@
 							_this.embedPlayer.onLoadedCallback = function() {
 								//Restore original onLoadedCallback
 								_this.embedPlayer.onLoadedCallback = orgOnLoadedCallback;
-								_this.embedPlayer.seek( _this.timeToReturn );
-								_this.timeToReturn = null;
+								if ( _this.getConfig("adTagUrl") ){
+									_this.embedPlayer.seek( _this.timeToReturn );
+									_this.timeToReturn = null;
+								}
 							};
 						}
 						_this.embedPlayer.play();
@@ -951,10 +956,11 @@
 					// if on iPad hide the quicktime logo:
 					_this.hidePlayerOffScreen( _this.getAdContainer() );
 					// show notice message
-					_this.embedPlayer.getInterface().find(".ad-notice-label").show();
+					_this.embedPlayer.getInterface().find(".ad-notice-label").text("").show();
 					// Monitor ad progress
 					_this.monitorAdProgress();
 				} else{
+					_this.embedPlayer.getInterface().find(".ad-notice-label").hide();
 					_this.restorePlayer();
 				}
 
@@ -1399,7 +1405,7 @@
 			}
 		},
 		restorePlayer: function( onContentComplete, adPlayed ){
-			if (this.isdestroy){
+			if (this.isdestroy && this.getConfig("adTagUrl")){ // DFP trafficed and already destroyed
 				return;
 			}
 			mw.log("DoubleClick::restorePlayer: content complete:" + onContentComplete);
@@ -1461,9 +1467,11 @@
 		destroy:function(){
 			// remove any old bindings:
 			var _this = this;
-			this.embedPlayer.unbindHelper( this.bindPostfix );
+			if ( this.getConfig("adTagUrl")  ){
+				this.embedPlayer.unbindHelper( this.bindPostfix );
+			}
 			if (!this.isChromeless){
-				if ( this.playingLinearAd ) {
+				if ( this.getConfig("adTagUrl") && this.playingLinearAd ) {
 					this.restorePlayer(true);
 				}
 				setTimeout(function(){

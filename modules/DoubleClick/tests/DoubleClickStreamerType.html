@@ -22,22 +22,30 @@
 		'entry_id' : '1_a3njcsia',
 		//'entry_id' : '0_yltk01fp',
 		'flashvars': {
-			'streamerType': 'hdnetwork',
 			'doubleClick':{
 				'plugin':true,
-				//'trackCuePoints': true,
-				'postrollUrl':"http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&cust_params=sample_ct%3Dlinear&correlator=[timestamp]",
+				'trackCuePoints': true,
+				'postrollUrl':'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&cust_params=sample_ct%3Dlinear&correlator=[timestamp]',
+				'prerollUrl':'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dlinear',
 				//'timeout': 5,
-				//'leadWithFlash': false,
+				'leadWithFlash': false,
 				'path' : 'http://cdnbakmi.kaltura.com/content/uiconf/ps/veria/kdp3.9.1/plugins/doubleclickPlugin.swf',
 				//'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dlinear',
-				'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dimageoverlay',
+				//'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=400x300&iu=%2F6062%2Fiab_vast_samples&ciu_szs=300x250%2C728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]&cust_params=iab_vast_samples%3Dimageoverlay',
 				//'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpremidpost&cmsid=496&vid=short_onecue&correlator=[timestamp]',
 				'disableCompanionAds' : false,
-				'debugMode':false
+				'debugMode':false,
+				'enableCountDown': true,
+				'countdownText': "Video will start in {sequenceProxy.timeRemaining} seconds"
 			},
 			'skipBtn':{
-				'plugin': true
+				'plugin': true,
+				'label': "Skip me...",
+				'skipOffset': 5
+			},
+			'skipNotice':{
+				'plugin': true,
+				'text': "You can skip this ad in {sequenceProxy.skipOffsetRemaining} seconds"
 			},
 			//'debugMode':'true',
 			'adsOnReplay':true
