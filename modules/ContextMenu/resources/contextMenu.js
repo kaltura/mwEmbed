@@ -42,11 +42,17 @@
         setup: function () {
             var _this = this;
             this.setRegisteredPlugins();
-            var menu = this.initMenu(this.menuItemsList, this.externalPlugins);
+            this.menu = this.initMenu(this.menuItemsList, this.externalPlugins);
             this.bind('updateBufferPercent', function(){
                 _this.canSeek = true;
             });
+            this.disableMenu();
+            this.enableMenu();
             this.addStyle();
+            setTimeout(function() {
+                _this.openMenu();
+            }, 2000)
+
 
         },
         /**
@@ -55,23 +61,30 @@
          *
          * the imperative mood.
          *
-         * @param {object} items list of items to be added to the menu.
+         * @param {object|array} items list of items to be added to the menu.
          * this will ensure future support for ordering and such.
          *
          * @param {object} externalItems list of external plugins/items to be added to the menu.
-         * @return {string} User name
+         * @return {object} returns a new menu object.
          */
         initMenu: function(items, externalItems) {
             var _this = this;
-            function Menu( items, externalItems ) {
+            function Menu( items, externalItems) {
                 this.items = {};
+                this.selector = '.mwPlayerContainer';
                 this.addPluginsToMenu(externalItems);
                 this.setItems(items);
-
-                this.enableMenu();
+                this.activateMenu();
             }
+
+            function object(o) {
+                function F() {};
+                F.prototype = o;
+                return new F();
+            };
             Menu.prototype = {
 
+                selector: 'mwPlayerContainer',
                 setItems: function(items) {
                     var that = this;
                     $.each(items, function(key, value) {
@@ -87,6 +100,9 @@
                 },
                 isMenuItemEnabled: function(item) {
                     return ( !! _this.getConfig(item) )
+                },
+                getComponent: function() {
+                    return $(this.selector);
                 },
                 addPluginsToMenu: function(itemsToAdd) {
                     var that = this;
@@ -109,13 +125,31 @@
                     return that;
                 },
                 getItems: function() {
-
+                    var arr = [];
+                    $.each(this.items, function(key, value) {
+                        arr.push(key);
+                    });
+                    return arr;
                 },
-                enableMenu: function() {
+                toString: function() {
+                    var arr = [];
+                    var _this = this;
+                    $.each(this.items, function(key, value) {
+                       arr.push(_this.items[key].name);
+                    });
+                    return arr;
+                },
+                activateMenu: function() {
                     $.contextMenu({
-                        selector: '.mwPlayerContainer',
+                        selector: this.selector,
                         items: this.items
                     });
+                },
+                enableMenu: function() {
+                    this.getComponent().contextMenu(true);
+                },
+                disableMenu: function() {
+                    this.getComponent().contextMenu(false);
                 },
                 getCallback: function(action) {
                     var callBack = action + 'Callback';
@@ -125,7 +159,20 @@
                 }
 
             };
-            return new Menu(items, externalItems);
+            return object(new Menu(items, externalItems));
+
+        },
+        openMenu: function() {
+            $('.mwPlayerContainer').triggerHandler('contextMenu');
+        },
+        closeMenu: function() {
+
+        },
+        disableMenu: function() {
+            return this.menu.disableMenu();
+        },
+        enableMenu: function() {
+            return this.menu.enableMenu();
         },
         addStyle: function() {
             var theme = this.getConfig('theme');
