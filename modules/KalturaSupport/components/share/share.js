@@ -137,8 +137,11 @@
 				_this.getScreen();
 			});
 			this.bind('contextMenu', function(event, data) {
-				if (data === _this.getConfig('contextMenu')) {
-					return (_this.isScreenVisible()) ? _this.closeScreen() :_this.showScreen();
+				_this.closeScreen()
+				if (data(_this) === _this.getConfig('contextMenu')) {
+					embedPlayer.triggerHelper('closeOpenScreens');
+					 _this.isScreenVisible() ? _this.closeScreen() :_this.showScreen();
+
 				}
 			});
 			this.bind('preShowScreen', function (event, screenName) {

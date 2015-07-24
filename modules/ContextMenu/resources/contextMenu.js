@@ -6,66 +6,126 @@
             showTooltip: true,
             parent: "topBarContainer",
             templatePath: '../ContextMenu/templates/contextMenu.tmpl.html',
-            theme: 'normal',
+            theme: 'normal-theme',
             shortSeekTime: 5,
             longSeekTime: 10,
             volumePercentChange: 0.1,
             volumeUp: null,
             volumeDown: null,
-            pause: 'Pause',
-            play: 'Play',
+            aboutUrl: 'http://player.kaltura.com',
+            pause: null,
+            play: null,
             openFullscreen: null,
             toggleFullscreen: null,
             shortSeekBack: null,
             longSeekBack: null,
             shortSeekForward: null,
             longSeekForward: null,
-            gotoEnd: null,
-            related: 'Related',
-            grabEmbedCode: 'Grab Embed Code',
+            gotoEnd: 'Go To End',
+            grabEmbedCode: 'null',
             togglePlayControls: 'Toggle Controls',
+            about: 'About Kaltura Player',
             gotoBegining: null,
             toggleMute: null,
 
         },
-        externalPlugins: [],
+        externalPlugins: {},
         canSeek: false,
         menuItems: {},
         menuItemsList: [
             'volumeUp', 'volumeDown','openFullscreen', 'toggleFullscreen',
             'gotoBegining', 'gotoEnd', 'shortSeekBack', 'longSeekBack', 'shortSeekForward',
             'longSeekForward', 'togglePlayback', 'play', 'pause', 'toggleMute', 'togglePlayControls',
-            'grabEmbedCode'
+            'about'
         ],
         themes: ['normal-theme','aggressive-theme','aggressive-theme-black'],
         setup: function () {
             var _this = this;
-
-            this.buildMenu(this.menuItemsList);
-            this.log('menu was built')
-            this.getRegisteredPlugins(function() {
-                _this.buildMenu(_this.externalPlugins);
-            });
-            this.addBindings();
+            this.setRegisteredPlugins();
+            var menu = this.initMenu(this.menuItemsList, this.externalPlugins);
             this.bind('updateBufferPercent', function(){
                 _this.canSeek = true;
             });
-            this.log('bindings were added')
-            this.enableMenu();
-            this.log('menu enabled')
             this.addStyle();
 
         },
-        enableMenu: function() {
+        /**
+         * Initialize the context menu.
+         *
+         *
+         * the imperative mood.
+         *
+         * @param {object} items list of items to be added to the menu.
+         * this will ensure future support for ordering and such.
+         *
+         * @param {object} externalItems list of external plugins/items to be added to the menu.
+         * @return {string} User name
+         */
+        initMenu: function(items, externalItems) {
             var _this = this;
-            var embedPlayer = this.getPlayer();
-            if ( ! $.isEmptyObject(this.menuItems)) {
-                $.contextMenu({
-                    '_this': _this,
-                    selector: '.mwPlayerContainer',
-                    items: this.menuItems
-                });
+            function Menu( items, externalItems ) {
+                this.items = {};
+                this.addPluginsToMenu(externalItems);
+                this.setItems(items);
+
+                this.enableMenu();
             }
+            Menu.prototype = {
+
+                setItems: function(items) {
+                    var that = this;
+                    $.each(items, function(key, value) {
+                        if ( that.isMenuItemEnabled(value) )
+                        return that.items[value] = {
+                            'name': _this.getConfig(value),
+                            'callback': function() {
+                                that.getCallback(value)
+                            }
+                        }
+                    });
+                    return that;
+                },
+                isMenuItemEnabled: function(item) {
+                    return ( !! _this.getConfig(item) )
+                },
+                addPluginsToMenu: function(itemsToAdd) {
+                    var that = this;
+                    var embedPlayer = _this.getPlayer();
+                    $.each(itemsToAdd, function(key, item) {
+                        that.items[key] = {
+                            'name': item,
+                            'callback': function() {
+                                embedPlayer.triggerHelper('contextMenu',
+                                    function(object) {
+                                        if (object.pluginName !== key) {
+                                            return item;
+                                        }
+                                        object._hideAllScreens();
+                                        object.toggleScreen();
+                                    });
+                                }
+                            }
+                    });
+                    return that;
+                },
+                getItems: function() {
+
+                },
+                enableMenu: function() {
+                    $.contextMenu({
+                        selector: '.mwPlayerContainer',
+                        items: this.items
+                    });
+                },
+                getCallback: function(action) {
+                    var callBack = action + 'Callback';
+                    if( typeof _this[ callBack ] === 'function' ) {
+                        return _this[ callBack ]();
+                    }
+                }
+
+            };
+            return new Menu(items, externalItems);
         },
         addStyle: function() {
             var theme = this.getConfig('theme');
@@ -76,60 +136,20 @@
             return (this.themes.indexOf(theme) !== -1 );
 
         },
-        buildMenu: function(menuItems) {
-            var _this = this;
-            $.each(menuItems, function(index, itemName) {
-
-                if (_this.getConfig(itemName) || _this.isFromExternalPlugin(itemName)) {
-                    if (itemName === 'play' || itemName === 'pause') {
-                        return _this.menuItems['togglePlayback'] = {
-                            'name': _this.getConfig('play')
-                        }
-                    }
-                    return _this.menuItems[itemName] = {
-                        'name': _this.getConfig(itemName) || itemName
-                    }
-                }
-            })
-        },
-        isFromExternalPlugin: function(action) {
-            return (this.externalPlugins.indexOf(action) !== -1 );
-        },
-        /*
-        ** @TODO Create a way to add more toggle buttons instead of adding each one manually.
-         */
-        addBindings: function () {
-            var _this = this;
-            var embedPlayer = this.getPlayer();
-            $.each(this.menuItems, function(action, item){
-                if (! _this.isFromExternalPlugin(action) ) {
-                    return this.callback = function () {
-                        _this.getCallback(action);
-                    }
-                }
-                this.callback = function() {
-                    embedPlayer.triggerHelper('contextMenu', action);
-                }
-            });
-
-        },
-        getCallback: function(action) {
-            var callBack = action + 'Callback';
-            if( typeof this[ callBack ] === 'function' ) {
-                return this[ callBack ]();
-            }
-        },
-        getRegisteredPlugins: function(callback) {
+        setRegisteredPlugins: function(callback) {
             for (var pluginID in this.getPlayer().plugins){
                 var plugin = this.getPlayer().plugins[pluginID];
                 if (plugin.getConfig('contextMenu')){
-                        this.log(pluginID + " plugin was added to the context menu");
-                        this.externalPlugins.push(plugin.getConfig('contextMenu'))
+                    this.log(pluginID + " plugin was added to the context menu");
+                    this.externalPlugins[pluginID] = (plugin.getConfig('contextMenu'));
                 }
             }
-            callback();
         },
-        volumeUpCallback: function(t){
+        aboutCallback: function() {
+            var url = (this.getConfig('aboutUrl'));
+            window.open(url, '_blank');
+        },
+        volumeUpCallback: function(){
             var _this = this;
             var embedPlayer = this.getPlayer();
             var currentVolume = parseFloat(this.getPlayer().getPlayerElementVolume());
@@ -159,7 +179,6 @@
 
             if ( embedPlayer._playContorls) {
                 var text = ( embedPlayer.isPlaying() ) ? this.getConfig('play') : this.getConfig('pause');
-                $('#togglePlayback').html(text);
                 var notificationName = ( embedPlayer.isPlaying() ) ? 'doPause' : 'doPlay';
                 embedPlayer.sendNotification(notificationName);
                 return false;

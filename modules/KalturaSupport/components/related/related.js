@@ -48,10 +48,7 @@
 				_this.getItemsData();
 			});
 			this.bind('contextMenu', function(event, data) {
-				if (data === _this.getConfig('contextMenu')) {
-					_this._hideAllScreens();
-					_this.toggleScreen();
-				}
+				data(_this);
 			});
 
 			this.bind('onOpenFullScreen', function() {

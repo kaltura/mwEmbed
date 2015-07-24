@@ -17,11 +17,9 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 	setup: function () {
 		var _this = this;
 		this.bind('contextMenu', function(event, data) {
-			if (data === _this.getConfig('contextMenu')) {
-				_this._hideAllScreens();
-				_this.toggleScreen();
-			}
+			data(_this);
 		});
+
 		if (mw.isNativeApp()) {
 			this.setConfig("showTooltip",false);
 			this.setConfig("usePreviewPlayer",false);
