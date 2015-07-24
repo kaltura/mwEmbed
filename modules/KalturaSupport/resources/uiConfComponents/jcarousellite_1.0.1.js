@@ -22,6 +22,20 @@
 				liSize, ulSize, divSize,
 				numVisible, initialItemLength, itemLength, calculatedTo, autoTimeout;
 
+			// Reveal public interface, but keep plugin chainable
+			if (!$.data(this, "plugin_jCarouselLite")) {
+				$.data(this, "plugin_jCarouselLite", {
+					scrollTo: function (index) {
+						var targetIndex = Math.floor(index / options.scroll) * options.scroll;
+
+						if (index >= 0 && index < itemLength &&
+							calculatedTo !== targetIndex) {
+							go(targetIndex);
+						}
+					}
+				});
+			}
+
 			options.refWindow = $(this).parents('body');
 			initVariables();                    // Set the above variables after initial calculations
 			initStyles();                       // Set the appropriate styles for the carousel div, ul and li

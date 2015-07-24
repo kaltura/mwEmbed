@@ -543,10 +543,15 @@
 			// should be implemented by component;
 		},
 		setSelectedMedia: function(mediaIndex){
-			var mediaBoxes = this.getMediaListDomElements();
+			var mediaBoxes = this.getMediaListDomElements(),
+				jCarousel = this.getMedialistComponent()
+					.find('.k-carousel').data('plugin_jCarouselLite');
 			mediaBoxes.removeClass( 'active');
 			this.selectedMediaItemIndex = mediaIndex;
 			$( mediaBoxes[mediaIndex] ).addClass( 'active'); //li[data-chapter-index='" + activeIndex + "']
+			if (jCarousel) {
+				jCarousel.scrollTo(mediaIndex);
+			}
 		},
 		getActiveItem: function(){
 			return this.getComponent().find( "li[data-mediaBox-index='" + this.selectedMediaItemIndex + "']" );
