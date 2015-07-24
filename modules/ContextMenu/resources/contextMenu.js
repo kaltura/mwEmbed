@@ -12,7 +12,6 @@
             volumePercentChange: 0.1,
             volumeUp: null,
             volumeDown: null,
-            aboutUrl: 'http://player.kaltura.com',
             pause: null,
             play: null,
             openFullscreen: null,
@@ -24,8 +23,9 @@
             gotoEnd: 'Go To End',
             grabEmbedCode: 'null',
             togglePlayControls: 'Toggle Controls',
+            aboutUrl: 'http://player.kaltura.com',
             about: 'About Kaltura Player',
-            gotoBegining: null,
+            gotoBeginning: null,
             toggleMute: null,
 
         },
@@ -46,14 +46,7 @@
             this.bind('updateBufferPercent', function(){
                 _this.canSeek = true;
             });
-            this.disableMenu();
-            this.enableMenu();
             this.addStyle();
-            setTimeout(function() {
-                _this.openMenu();
-            }, 2000)
-
-
         },
         /**
          * Initialize the context menu.
@@ -111,6 +104,10 @@
                         that.items[key] = {
                             'name': item,
                             'callback': function() {
+
+                                // Return a callback for each external plugin
+                                // plugin that wants to be added to the menu, will have to
+                                // call the return
                                 embedPlayer.triggerHelper('contextMenu',
                                     function(object) {
                                         if (object.pluginName !== key) {
@@ -294,7 +291,7 @@
             var seekTime = getPercentage() * this.getPlayer().getDuration();
             this.getPlayer().seek( seekTime );
         },
-        gotoBeginingCallback: function(){
+        gotoBeginningCallback: function(){
             if( !this.canSeek ) {
                 return false;
             }
