@@ -18,7 +18,7 @@
 						),
 						'ContextMenu' => array(
 							'title' => 'Context Menu',
-							'path' => 'KalturaSupport/tests/contextMenu.html'
+							'path' => 'ContextMenu/tests/contextMenu.html'
 						),
 						'CaptionsKalturaApi' => array(
 							'title' => 'Captions API',

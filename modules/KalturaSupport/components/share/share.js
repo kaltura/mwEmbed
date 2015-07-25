@@ -19,7 +19,7 @@
 			allowTimeOffset: true,
 			allowSecuredEmbed: true,
 			emailEnabled: true,
-
+			contextMenu: "Grab embed Code",
 			socialShareURL: 'smart', // 'parent' or 'http://custom.url/entry/{mediaProxy.entry.id}'
 			socialNetworks: 'facebook,twitter,googleplus,email,linkedin,sms',
 			shareUiconfID: null,
@@ -136,7 +136,7 @@
 				_this.setupPlayerURL();
 				_this.getScreen();
 			});
-			this.bind('contextMenu', function(event, data) {
+			this.bind('contextMenu', function() {
 				// Adding a call to this plugin custom close screen.
 				// since this plugin does not comply with other KBaseScreen plugins.
 				// Cannot use _hideAllScreens(), thus, need to manually close

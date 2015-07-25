@@ -163,17 +163,3 @@ body {
     text-align: left;
     text-align: start;
 }
-.aggressive-theme {
-    background: rgba(4, 255, 160, 0.88);
-
-}
-.aggressive-theme:hover, .aggressive-theme-black:hover {
-    background-color: rgba(74, 0, 255, 0.86);
-}
-.aggressive-theme-black {
-    background: rgba(0, 0, 0, 1);
-    color: rgba(255, 255, 255, 0.68);
-}
-.aggressive-theme-black:hover {
-
-}

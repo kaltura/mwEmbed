@@ -47,10 +47,6 @@
 				// Load items data
 				_this.getItemsData();
 			});
-			this.bind('contextMenu', function(event, data) {
-				data(_this);
-			});
-
 			this.bind('onOpenFullScreen', function() {
 				setTimeout(function(){
 					$('.item-inner img').each(function() {

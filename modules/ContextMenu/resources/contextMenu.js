@@ -27,9 +27,7 @@
             toggleMute: null,
 
         },
-        externalPlugins: {},
         canSeek: false,
-        menuItems: {},
         menuItemsList: [
             'volumeUp', 'volumeDown', 'toggleFullscreen',
             'gotoBegining', 'gotoEnd', 'shortSeekBack', 'longSeekBack', 'shortSeekForward',
@@ -39,12 +37,13 @@
         themes: ['normal-theme','aggressive-theme','aggressive-theme-black'],
         setup: function () {
             var _this = this;
-            this.setRegisteredPlugins();
-            this.menu = this.initMenu(this.menuItemsList, this.externalPlugins);
+            this.menu = this.initMenu(
+                this.createItemsWithCallbacks(),
+                this.getConfig('theme')
+            );
             this.bind('updateBufferPercent', function(){
                 _this.canSeek = true;
             });
-            this.addStyle();
         },
         /**
          * Initialize the context menu.
@@ -58,53 +57,25 @@
          * @param {object} externalItems list of external plugins/items to be added to the menu.
          * @return {object} returns a new menu object.
          */
-        initMenu: function(items, externalItems) {
-            var _super = this;
+        initMenu: function(items, theme) {
 
-            function Menu( items, externalItems) {
-                this.items = {};
+            function Menu( items, theme ) {
+                this.items = items;
+                this.theme = theme;
                 this.selector = '.mwPlayerContainer';
-                this.addPluginsToMenu(externalItems);
-                this.setItems(items);
                 this.activateMenu();
+                this.setTheme(theme);
             }
 
             Menu.prototype = {
 
-                selector: 'mwPlayerContainer',
-                setItems: function(items) {
-                    var _this = this;
-                    $.each(items, function(key, value) {
-                        if ( _this.isMenuItemEnabled(value) )
-                        return _this.items[value] = {
-                            'name': _super.getConfig(value),
-                            'callback': function() {
-                                _this.getCallback(value)
-                            }
-                        }
-                    });
-                    return _this;
-                },
-                isMenuItemEnabled: function(item) {
-                    return ( !! _super.getConfig(item) )
-                },
                 getComponent: function() {
+
                     return $(this.selector);
-                },
-                addPluginsToMenu: function(itemsToAdd) {
-                    var _this = this;
-                    $.each(itemsToAdd, function(key, item) {
-                        console.log(item.callback);
-                        _this.items[key] = {
-                            'name': item.name,
-                            'callback': item.callback
-                        }
-                    });
-                    return this;
                 },
                 getItems: function() {
                     var arr = [];
-                    $.each(this.items, function(key, value) {
+                    $.each(this.items, function(key) {
                         arr.push(key);
                     });
                     return arr;
@@ -112,39 +83,43 @@
                 toString: function() {
                     var arr = [];
                     var _this = this;
-                    $.each(this.items, function(key, value) {
+                    $.each(this.items, function(key) {
                        arr.push(_this.items[key].name);
                     });
                     return arr;
+                },
+                getMenu: function () {
+                    var menu = {};
+                    $.each( $.contextMenu.menus, function(key, obj) {
+                        menu = obj ? obj : menu;
+                    });
+                    return menu.$menu;
                 },
                 activateMenu: function() {
                     $.contextMenu({
                         selector: this.selector,
                         items: this.items
                     });
+
                 },
                 enableMenu: function() {
-                    this.getComponent().contextMenu(true);
+                    return this.getComponent().contextMenu(true);
                 },
                 disableMenu: function() {
-                    this.getComponent().contextMenu(false);
+                    return this.getComponent().contextMenu(false);
                 },
-                getCallback: function(action) {
-                    var callBack = action + 'Callback';
-                    if( typeof _super[ callBack ] === 'function' ) {
-                        return _super[ callBack ]();
-                    }
-                }
-
+                setTheme: function(theme) {
+                    return  this.getMenu().addClass(this.theme = theme);
+                },
+                getCurrentTheme: function() {
+                    return this.theme;
+                },
             };
-            return new Menu(items, externalItems);
+            return new Menu( items , theme );
 
         },
-        openMenu: function() {
-            $('.mwPlayerContainer').triggerHandler('contextMenu');
-        },
-        closeMenu: function() {
-
+        isMenuItemEnabled: function(item) {
+            return ( !! this.getConfig(item) )
         },
         disableMenu: function() {
             return this.menu.disableMenu();
@@ -152,21 +127,23 @@
         enableMenu: function() {
             return this.menu.enableMenu();
         },
-        addStyle: function() {
-            var theme = this.getConfig('theme');
-            return (this.themeExists(theme)) ? $('.context-menu-item').addClass(theme) : this.log('Requested theme does not exist');
-
+        changeTheme: function(theme) {
+            if (this.themeExists(theme)) {
+                this.log('menu theme was changed to ' + theme);
+                return this.menu.setTheme(theme);
+            }
+            this.log('Theme does not exist!');
         },
         themeExists: function(theme) {
             return (this.themes.indexOf(theme) !== -1 );
-
         },
-        setRegisteredPlugins: function() {
+        createItemsWithCallbacks: function() {
             var _this = this;
+            var items = {};
             $.each(this.getPlayer().plugins, function(pluginID, plugin) {
                 if (plugin.getConfig('contextMenu')){
                     _this.log(pluginID + ' was added to the context menu!');
-                    _this.externalPlugins[pluginID] = {
+                    items[pluginID] = {
                         'name': plugin.getConfig('contextMenu'),
                         'callback': function() {
                             // Trigger event for analytics or other plugins that want to consume it.
@@ -176,6 +153,23 @@
                     }
                 }
             });
+            $.each(this.menuItemsList, function(key, value) {
+                if ( _this.isMenuItemEnabled(value) )
+                    return items[value] = {
+                        'name': _this.getConfig(value),
+                        'callback': function() {
+                            _this.getCallback(value)
+                        }
+                    }
+            });
+            return items;
+        },
+        getCallback: function(action) {
+            var callBack = action + 'Callback';
+            if( typeof this[ callBack ] === 'function' ) {
+                return this[ callBack ]();
+            }
+            this.log('The action:' + action + 'has no callback defined!');
         },
         aboutCallback: function() {
 
@@ -235,11 +229,11 @@
                 if( newCurrentTime < 0 ){
                     newCurrentTime = 0;
                 }
-            } else {
-                newCurrentTime = currentTime + seekTime;
-                if( newCurrentTime > parseFloat(this.getPlayer().getDuration()) ){
-                    newCurrentTime = parseFloat(this.getPlayer().getDuration());
-                }
+                return this.getPlayer().seek( newCurrentTime );
+            }
+            newCurrentTime = currentTime + seekTime;
+            if( newCurrentTime > parseFloat(this.getPlayer().getDuration()) ){
+                newCurrentTime = parseFloat(this.getPlayer().getDuration());
             }
             this.getPlayer().seek( newCurrentTime );
         },
