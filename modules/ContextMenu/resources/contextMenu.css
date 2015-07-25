@@ -24,23 +24,14 @@
     float: left;
 }
 
-ul, li, .contextmenu-input{
+.context-menu-list .context-menu-item, .contextmenu-input{
     font-family: 'Open sans', Aria, sans-serif;
-    font-size: 18px;
     font-weight: 300;
-    line-height: 1.714em;
     -webkit-font-smoothing: antialiased !important;
-}
-a {
-    text-decoration: none;
-    color: #4099FF;
 }
 .contextmenu {
     padding-top:3%;
     padding-bottom: 3%;
-}
-.contextmenu-input {
-
 }
 
 /* ================================= */
