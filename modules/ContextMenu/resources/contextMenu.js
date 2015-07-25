@@ -172,7 +172,6 @@
             this.log('The action:' + action + 'has no callback defined!');
         },
         aboutCallback: function() {
-
             var url = this.getConfig('aboutUrl');
             window.open(url, '_blank');
         },

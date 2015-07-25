@@ -774,8 +774,7 @@ var // currently active contextMenu trigger
                 opt = data.contextMenu,
                 root = data.contextMenuRoot;
 
-            $this.addClass('hover')
-                .siblings('.hover').trigger('contextmenu:blur');
+
             
             // remember selected
             opt.$selected = root.$selected = $this;
