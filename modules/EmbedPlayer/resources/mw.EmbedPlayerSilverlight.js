@@ -304,6 +304,7 @@
 
 					flashvars.multicastPlayer = true;
 					flashvars.streamAddress = resolvedSrc;
+					flashvars.sourceAddress = location.hostname;
 					//flashvars.debug = true;
 
 					//check if multicast not available
