@@ -15,19 +15,12 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 	},
 	iconBtnClass: "icon-info",
 	setup: function () {
-		var _this = this;
-		this.bind('contextMenu', function(event, data) {
-			data(_this);
-		});
-
 		if (mw.isNativeApp()) {
 			this.setConfig("showTooltip",false);
 			this.setConfig("usePreviewPlayer",false);
 		}
 	},
 	addScreenBindings: function(){
-		var _this = this;
-
 		if (mw.isNativeApp()) {
 			$(".infoScreen .panel-right").removeClass("panel-right");
 		}

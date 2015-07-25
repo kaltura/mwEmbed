@@ -14,14 +14,12 @@
             volumeDown: null,
             pause: null,
             play: null,
-            openFullscreen: null,
             toggleFullscreen: null,
             shortSeekBack: null,
             longSeekBack: null,
             shortSeekForward: null,
             longSeekForward: null,
-            gotoEnd: 'Go To End',
-            grabEmbedCode: 'null',
+            gotoEnd: null,
             togglePlayControls: 'Toggle Controls',
             aboutUrl: 'http://player.kaltura.com',
             about: 'About Kaltura Player',
@@ -33,7 +31,7 @@
         canSeek: false,
         menuItems: {},
         menuItemsList: [
-            'volumeUp', 'volumeDown','openFullscreen', 'toggleFullscreen',
+            'volumeUp', 'volumeDown', 'toggleFullscreen',
             'gotoBegining', 'gotoEnd', 'shortSeekBack', 'longSeekBack', 'shortSeekForward',
             'longSeekForward', 'togglePlayback', 'play', 'pause', 'toggleMute', 'togglePlayControls',
             'about'
@@ -61,7 +59,8 @@
          * @return {object} returns a new menu object.
          */
         initMenu: function(items, externalItems) {
-            var _this = this;
+            var _super = this;
+
             function Menu( items, externalItems) {
                 this.items = {};
                 this.selector = '.mwPlayerContainer';
@@ -70,56 +69,38 @@
                 this.activateMenu();
             }
 
-            function object(o) {
-                function F() {};
-                F.prototype = o;
-                return new F();
-            };
             Menu.prototype = {
 
                 selector: 'mwPlayerContainer',
                 setItems: function(items) {
-                    var that = this;
+                    var _this = this;
                     $.each(items, function(key, value) {
-                        if ( that.isMenuItemEnabled(value) )
-                        return that.items[value] = {
-                            'name': _this.getConfig(value),
+                        if ( _this.isMenuItemEnabled(value) )
+                        return _this.items[value] = {
+                            'name': _super.getConfig(value),
                             'callback': function() {
-                                that.getCallback(value)
+                                _this.getCallback(value)
                             }
                         }
                     });
-                    return that;
+                    return _this;
                 },
                 isMenuItemEnabled: function(item) {
-                    return ( !! _this.getConfig(item) )
+                    return ( !! _super.getConfig(item) )
                 },
                 getComponent: function() {
                     return $(this.selector);
                 },
                 addPluginsToMenu: function(itemsToAdd) {
-                    var that = this;
-                    var embedPlayer = _this.getPlayer();
+                    var _this = this;
                     $.each(itemsToAdd, function(key, item) {
-                        that.items[key] = {
-                            'name': item,
-                            'callback': function() {
-
-                                // Return a callback for each external plugin
-                                // plugin that wants to be added to the menu, will have to
-                                // call the return
-                                embedPlayer.triggerHelper('contextMenu',
-                                    function(object) {
-                                        if (object.pluginName !== key) {
-                                            return item;
-                                        }
-                                        object._hideAllScreens();
-                                        object.toggleScreen();
-                                    });
-                                }
-                            }
+                        console.log(item.callback);
+                        _this.items[key] = {
+                            'name': item.name,
+                            'callback': item.callback
+                        }
                     });
-                    return that;
+                    return this;
                 },
                 getItems: function() {
                     var arr = [];
@@ -150,13 +131,13 @@
                 },
                 getCallback: function(action) {
                     var callBack = action + 'Callback';
-                    if( typeof _this[ callBack ] === 'function' ) {
-                        return _this[ callBack ]();
+                    if( typeof _super[ callBack ] === 'function' ) {
+                        return _super[ callBack ]();
                     }
                 }
 
             };
-            return object(new Menu(items, externalItems));
+            return new Menu(items, externalItems);
 
         },
         openMenu: function() {
@@ -180,21 +161,28 @@
             return (this.themes.indexOf(theme) !== -1 );
 
         },
-        setRegisteredPlugins: function(callback) {
-            for (var pluginID in this.getPlayer().plugins){
-                var plugin = this.getPlayer().plugins[pluginID];
+        setRegisteredPlugins: function() {
+            var _this = this;
+            $.each(this.getPlayer().plugins, function(pluginID, plugin) {
                 if (plugin.getConfig('contextMenu')){
-                    this.log(pluginID + " plugin was added to the context menu");
-                    this.externalPlugins[pluginID] = (plugin.getConfig('contextMenu'));
+                    _this.log(pluginID + ' was added to the context menu!');
+                    _this.externalPlugins[pluginID] = {
+                        'name': plugin.getConfig('contextMenu'),
+                        'callback': function() {
+                            // Trigger event for analytics or other plugins that want to consume it.
+                            _this.getPlayer().triggerHelper('contextMenu', {'plugin': pluginID});
+                            plugin.isScreenVisible() ? plugin.hideScreen() : plugin.showScreen();
+                        }
+                    }
                 }
-            }
+            });
         },
         aboutCallback: function() {
-            var url = (this.getConfig('aboutUrl'));
+
+            var url = this.getConfig('aboutUrl');
             window.open(url, '_blank');
         },
         volumeUpCallback: function(){
-            var _this = this;
             var embedPlayer = this.getPlayer();
             var currentVolume = parseFloat(this.getPlayer().getPlayerElementVolume());
             var volumePercentChange = parseFloat(this.getConfig('volumePercentChange'));
@@ -202,10 +190,9 @@
             if( newVolumeVal > 1 ){
                 newVolumeVal = 1;
             }
-            this.getPlayer().setVolume( newVolumeVal, true );
+            embedPlayer.setVolume( newVolumeVal, true );
         },
         togglePlayControlsCallback: function(){
-            var _this = this;
             var embedPlayer = this.getPlayer();
             return ( embedPlayer._playContorls) ? embedPlayer.disablePlayControls() : embedPlayer.enablePlayControls();
         },
@@ -226,16 +213,6 @@
                 var notificationName = ( embedPlayer.isPlaying() ) ? 'doPause' : 'doPlay';
                 embedPlayer.sendNotification(notificationName);
                 return false;
-            }
-        },
-        openFullscreenCallback: function(){
-            if( !this.getPlayer().getInterface().hasClass('fullscreen') ){
-                this.getPlayer().toggleFullscreen();
-            }
-        },
-        closeFullscreenCallback: function(){
-            if( this.getPlayer().getInterface().hasClass('fullscreen') ){
-                this.getPlayer().toggleFullscreen();
             }
         },
         toggleFullscreenCallback: function(){
@@ -302,49 +279,6 @@
                 return false;
             }
             this.getPlayer().seek(this.getPlayer().getDuration());
-        },
-        grabEmbedCodeCallback: function(){
-            var _this = this;
-            this.setConfig('shareURL', this.getKalturaShareURL());
-            this.openScreen();
-
-        },
-        openScreen: function(){
-            var _this = this;
-            var embedPlayer = this.getPlayer();
-            this.getScreen().then(function(screen) {
-                _this.showScreen();
-                screen.addClass('semiTransparentBkg'); // add semi-transparent background for share plugin screen only. Won't affect other screen based plugins
-                _this.shareScreenOpened = true;
-                // add blur effect to video and poster
-                $("#" + embedPlayer.getPlayerElement().id).addClass("blur");
-                embedPlayer.getPlayerPoster().addClass("blur");
-            });
-        },
-        getKalturaShareURL: function () {
-            var uiConfId = this.getConfig("shareUiconfID") ? this.getConfig("shareUiconfID") : this.getPlayer().kuiconfid;
-            return mw.getConfig('Kaltura.ServiceUrl') + '/index.php/extwidget/preview' +
-                '/partner_id/' + this.getPlayer().kpartnerid +
-                '/uiconf_id/' + uiConfId +
-                '/entry_id/' + this.getPlayer().kentryid + '/embed/dynamic';
-        },
-        closeScreen: function(){
-            $(".embed-offset-container").hide();
-            $(".embed-container>.share-copy-btn").hide();
-            $(".share-offset-container").hide();
-            $(".share-container>.share-copy-btn").hide();
-            $(".share-offset").val("00:00");
-            $(".share-alert").hide();
-            $('.share-secured').attr('checked', false);
-            this.enablePlayDuringScreen = false;
-            this.hideScreen();
-        },
-        hideScreen: function(){
-            this._super();
-            if (this.getPlayer().getPlayerElement()) {
-                $( "#" + this.getPlayer().getPlayerElement().id ).removeClass( "blur" );
-                this.getPlayer().getPlayerPoster().removeClass( "blur" );
-            }
         },
         isSafeEnviornment: function () {
             return !mw.isIpad() || ( mw.isIpad() && mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') !== false );

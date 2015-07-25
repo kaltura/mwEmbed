@@ -137,12 +137,12 @@
 				_this.getScreen();
 			});
 			this.bind('contextMenu', function(event, data) {
-				_this.closeScreen()
-				if (data(_this) === _this.getConfig('contextMenu')) {
-					embedPlayer.triggerHelper('closeOpenScreens');
-					 _this.isScreenVisible() ? _this.closeScreen() :_this.showScreen();
+				// Adding a call to this plugin custom close screen.
+				// since this plugin does not comply with other KBaseScreen plugins.
+				// Cannot use _hideAllScreens(), thus, need to manually close
+				// this screen each time other plugin screen is opened.
 
-				}
+				_this.closeScreen();
 			});
 			this.bind('preShowScreen', function (event, screenName) {
 				if ( screenName === "share" ){
