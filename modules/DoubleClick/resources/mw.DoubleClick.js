@@ -213,7 +213,7 @@
 			var _this = this;
 			$( this.embedPlayer ).bind('KalturaSupport_AdOpportunity', function( event, cuePointWrapper ) {
 				if( cuePointWrapper.cuePoint.protocolType == 1 && _this.adCuePoints.indexOf(cuePointWrapper.cuePoint.id) === -1 ){ // Check for  protocolType == 1 ( type = vast )
-					_this.adTagUrl = cuePointWrapper.cuePoint.sourceUrl;
+					_this.adTagUrl = cuePointWrapper.cuePoint.sourceUrl+"&r="+Math.random();
 					if (cuePointWrapper.cuePoint.adType == 1){ // linear video
 						_this.embedPlayer.addPlayerSpinner();
 						_this.currentAdSlotType = "midroll";
@@ -1295,7 +1295,10 @@
 					_this.contentDoneFlag = true;
 					_this.adsLoader.contentComplete();
 					_this.embedPlayer._propagateEvents = false;
-					return false;
+				}
+				if (!_this.getConfig("adTagUrl") && !_this.getConfig("postrollUrl")){
+					_this.currentAdSlotType = "postroll";
+					_this.restorePlayer(true);
 				}
 
 			});
@@ -1437,7 +1440,11 @@
 				// managed complete ... call clip done if content complete.
 				if( onContentComplete ){
 					if (_this.postRollCallback){
-						_this.postRollCallback();
+						if (!mw.isMobileDevice()){
+							_this.postRollCallback();
+						}else{
+							_this.adsLoader.contentComplete();
+						}
 					}
 					this.isdestroy = true;
 					this.destroy();
@@ -1467,7 +1474,7 @@
 		destroy:function(){
 			// remove any old bindings:
 			var _this = this;
-			if ( this.getConfig("adTagUrl")  ){
+			if ( this.getConfig("adTagUrl") || this.currentAdSlotType === "postroll" ){
 				this.embedPlayer.unbindHelper( this.bindPostfix );
 			}
 			if (!this.isChromeless){
@@ -1485,7 +1492,7 @@
 					this.embedPlayer.getPlayerElement().sendNotification( 'destroy' );
 				}
 			}
-			this.contentDoneFlag= false;
+			this.contentDoneFlag = false;
 		}
 	};
 
