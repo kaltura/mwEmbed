@@ -75,7 +75,7 @@
 
 				this.bind( 'postDualScreenTransition', function () {
 					//TODO: move to imagePlayer
-					_this.screenObj.applyIntrinsicAspect();
+					_this.secondPlayer.applyIntrinsicAspect();
 				});
 
 				//Handle layout changes due to layout update(resize and orientation change)
@@ -256,17 +256,23 @@
 					this.previousPlayerWidth = this.getPlayer().getWidth();
 					this.previousPlayerHeight = this.getPlayer().getHeight();
 
-					var primaryScreenEl = this.getPlayer().getVideoDisplay();
-					var secondaryScreenEl = this.getComponent();
-					var primaryScreen = this.display[mw.dualScreen.display.TYPE.PRIMARY];
-					var secondaryScreen = this.display[mw.dualScreen.display.TYPE.SECONDARY];
-					primaryScreen.attachView(primaryScreenEl);
-					secondaryScreen.attachView(secondaryScreenEl);
+					//Get display containers, primary is the original video display, containing the video element,
+					//Secondary is the dual screen, so need to populate it with the second player component
+					var primaryPlayerContainer = this.getPlayer().getVideoDisplay();
+					var secondaryPlayerContainer = this.getComponent();
+					secondaryPlayerContainer.append( this.secondPlayer.getComponent());
 
-					secondaryScreenEl.append( this.screenObj.getComponent());
+					//Attach the primaryPlayerContainer to the primary display
+					var primaryDisplay = this.display[mw.dualScreen.display.TYPE.PRIMARY];
+					primaryDisplay.attachView(primaryPlayerContainer);
 
+					//Attach the secondaryDisplay to the second display
+					var secondaryDisplay = this.display[mw.dualScreen.display.TYPE.SECONDARY];
+					secondaryDisplay.attachView(secondaryPlayerContainer);
+
+					//Proxy pointer events from the second screen to the embedPlayer layer
 					var pointerEvents = "click dblclick touchstart touchend";
-					secondaryScreenEl
+					secondaryPlayerContainer
 				        .off(pointerEvents)
 				        .on( pointerEvents, function ( e ) {
 							//Verify that second screen is not in the middle of user interaction before delegating events
@@ -275,10 +281,12 @@
 							}
 						} );
 
-					primaryScreen.disableUserActions();
-					secondaryScreen.enableUserActions();
+					//Enable user actions on the secondary/Aux screen
+					primaryDisplay.disableUserActions();
+					secondaryDisplay.enableUserActions();
 
-					this.positionSecondScreen();
+					//Set initial position of the secondary/Aux screen
+					this.positionSecondDisplay();
 
 					var showLoadingSlide = function () {
 						if ( !_this.secondDisplayReady && _this.render && mw.getConfig( "EmbedPlayer.LiveCuepoints" ) ) {
@@ -286,6 +294,7 @@
 						}
 					};
 
+					//Set initial view state according to configuration and playback engine
 					if ( this.getConfig( "mainViewDisplay" ) === 2 && !mw.isNativeApp() ||
 					     this.getPlayer().isAudio()) {
 						this.bind( 'postDualScreenTransition.spinnerPostFix', function () {
@@ -425,7 +434,7 @@
 						var secondScreen = _this.getAuxDisplay();
 						secondScreen.repaint( screenProps );
 						//TODO: move to image player
-						_this.screenObj.applyIntrinsicAspect();
+						_this.secondPlayer.applyIntrinsicAspect();
 						if ( _this.render ) {
 							//Show display and control bar after resizing
 							_this.enableView();
@@ -479,7 +488,7 @@
 				return +(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp));
 			},
 
-			//Second Screen controller
+			//player controllers
 			initSecondPlayer: function(){
 				var _this = this;
 				if (true) {
@@ -517,7 +526,7 @@
 			getAuxDisplay: function () {
 				return this.display.aux;
 			},
-			positionSecondScreen: function(){
+			positionSecondDisplay: function(){
 				var location = this.getConfig( 'secondScreen' ).startLocation.toLowerCase().split(" ");
 				switch(location[0]){
 					case "right":
