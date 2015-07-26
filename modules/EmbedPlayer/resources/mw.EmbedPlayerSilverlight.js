@@ -115,12 +115,13 @@
 					if ( response && response.multicastAddress && response.multicastPort && response.hls ) {
 
 						var multicastAddress = response.multicastAddress + ":" + response.multicastPort;
-						mw.log( 'multicastAddress= ' + multicastAddress );
+						mw.log( 'multicastAddress= ' + multicastAddress + " " +response.multicastSourceAddress);
 
 						//first time
 						if ( !_this.multicastAddress ) {
 
 							_this.multicastAddress = multicastAddress;
+							_this.multicastSourceAddress=response.multicastSourceAddress;
 							doEmbedFunc( multicastAddress );
 							startMultiastServerKeepAlive();
 
@@ -304,7 +305,9 @@
 
 					flashvars.multicastPlayer = true;
 					flashvars.streamAddress = resolvedSrc;
-					flashvars.sourceAddress = location.hostname;
+					if (_this.multicastSourceAddress) {
+						flashvars.sourceAddress = _this.multicastSourceAddress;
+					}
 					//flashvars.debug = true;
 
 					//check if multicast not available
