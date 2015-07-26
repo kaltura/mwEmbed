@@ -361,7 +361,7 @@
 					// Setup the restore callback
 					_this.postRollCallback = callback;
 					//no need to request ads
-					if ( _this.isLinear === false || _this.allAdsCompletedFlag || _this.adLoaderErrorFlag ){
+					if ( !_this.isLinear || _this.allAdsCompletedFlag || _this.adLoaderErrorFlag ){
 						_this.restorePlayer(true);
 					}
 				}
@@ -1052,7 +1052,11 @@
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				mw.log("DoubleClick:: allAdsCompleted");
 				setTimeout(function(){
-					_this.restorePlayer(true);
+					var isContentComplete = true;
+					if (mw.isNativeApp()) {
+						isContentComplete = _this.currentAdSlotType == 'postroll';
+					}
+					_this.restorePlayer(isContentComplete);
 				},0);
 				if (_this.currentAdSlotType == 'postroll'){
 					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', _this.entryDuration );
