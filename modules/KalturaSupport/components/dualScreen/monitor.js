@@ -2,7 +2,7 @@
 	"use strict";
 	mw.dualScreen = mw.dualScreen || {};
 
-	mw.dualScreen.monitor = mw.KBasePlugin.extend({
+	mw.dualScreen.display = mw.KBasePlugin.extend({
 		defaultConfig: {
 			isMain: false
 		},
@@ -16,15 +16,15 @@
 		},
 		attachView: function(el){
 			this.obj = el;
-			var classes = "dualScreen dualScreenMonitor ";
+			var classes = "dualScreen dualScreenDisplay ";
 			var isMain = this.getConfig("isMain");
 			classes += isMain ? "firstScreen" : "secondScreen";
 
-			var dataRule = isMain ? mw.dualScreen.monitor.TYPE.PRIMARY : mw.dualScreen.monitor.TYPE.SECONDARY;
+			var dataRule = isMain ? mw.dualScreen.display.TYPE.PRIMARY : mw.dualScreen.display.TYPE.SECONDARY;
 
 			this.obj
 				.addClass( classes )
-				.attr( 'data-monitor-rule', dataRule)
+				.attr( 'data-display-rule', dataRule)
 				.on('resize', function (e) {
 					e.stopPropagation();
 				})
@@ -68,7 +68,7 @@
 							break;
 					}
 
-					_this.getPlayer().triggerHelper( "startMonitorInteraction", [event.type] );
+					_this.getPlayer().triggerHelper( "startDisplayInteraction", [event.type] );
 				},
 				stop: function ( event ) {
 					//Allow all plugins to check against dragging/resizing state before setting it to false
@@ -82,7 +82,7 @@
 								break;
 						}
 
-						_this.getPlayer().triggerHelper( "stopMonitorInteraction", [event.type] );
+						_this.getPlayer().triggerHelper( "stopDisplayInteraction", [event.type] );
 
 					}, 0);
 					_this.prop = $( this ).css( ['top', 'left', 'width', 'height'] );
@@ -140,7 +140,7 @@
 		//Screen view state handlers
 		toggleMain: function (props) {
 			this.setConfig("isMain", !this.getConfig("isMain"));
-			this.obj.attr( 'data-monitor-rule', this.getConfig("isMain") ? mw.dualScreen.monitor.TYPE.PRIMARY : mw.dualScreen.monitor.TYPE.SECONDARY );
+			this.obj.attr( 'data-display-rule', this.getConfig("isMain") ? mw.dualScreen.display.TYPE.PRIMARY : mw.dualScreen.display.TYPE.SECONDARY );
 			this.obj.toggleClass( 'firstScreen secondScreen' );
 			if (!this.getConfig("isMain")){
 				this.repaint(props);
@@ -168,7 +168,7 @@
 			this.obj.addClass( 'screenTransition' );
 			var _this = this;
 			var transitionendHandler = function(){
-				_this.getPlayer().triggerHelper("monitorTransitionEnded");
+				_this.getPlayer().triggerHelper("displayTransitionEnded");
 			};
 			if ( mw.getConfig( 'EmbedPlayer.AnimationSupported') ) {
 				this.obj.one( 'transitionend webkitTransitionEnd', transitionendHandler );
@@ -190,7 +190,7 @@
 		}
 	});
 
-	mw.dualScreen.monitor.TYPE = {
+	mw.dualScreen.display.TYPE = {
 		PRIMARY: "primary",
 		SECONDARY: "secondary"
 	};

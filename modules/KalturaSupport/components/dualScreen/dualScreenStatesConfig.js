@@ -18,14 +18,14 @@
 					name: 'hide',
 					action: function (  ) {
 						this.disableUserActions( );
-						this.hideMonitor( );
+						this.hideDisplay( );
 					}
 				},
 				'switchView': {
 					name: 'PiP',
 					action: function () {
 						this.disableUserActions( );
-						this.toggleMainMonitor();
+						this.toggleMainDisplay();
 						this.enableUserActions( );
 					}
 				}
@@ -45,14 +45,14 @@
 					name: 'hide',
 					action: function () {
 						this.disableSideBySideView();
-						this.hideMonitor( );
+						this.hideDisplay( );
 					}
 				},
 				'switchView': {
 					name: 'SbS',
 					action: function () {
 						this.toggleSideBySideView();
-						this.toggleMainMonitor();
+						this.toggleMainDisplay();
 					}
 				}
 			}
@@ -64,15 +64,15 @@
 					name: 'PiP',
 					action: function () {
 						this.enableUserActions( );
-						this.showMonitor( );
+						this.showDisplay( );
 					}
 				},
 				'switchView': {
 					name: 'hide',
 					action: function () {
-						this.showMonitor( );
-						this.toggleMainMonitor();
-						this.hideMonitor( );
+						this.showDisplay( );
+						this.toggleMainDisplay();
+						this.hideDisplay( );
 
 					}
 				},
@@ -80,7 +80,7 @@
 					name: 'SbS',
 					action: function () {
 						this.enableSideBySideView();
-						this.showMonitor( );
+						this.showDisplay( );
 					}
 				}
 			}
@@ -96,7 +96,7 @@
 					name: 'hide',
 					action: function (  ) {
 						this.disableUserActions();
-						this.hideMonitor( );
+						this.hideDisplay( );
 					}
 				}
 			}
@@ -107,21 +107,21 @@
 				'PiP': {
 					name: 'PiP',
 					action: function () {
-						if (this.getPrimary() === this.getSecondMonitor()) {
-							this.showMonitor( );
-							this.toggleMainMonitor();
+						if (this.getPrimary() === this.getAuxDisplay()) {
+							this.showDisplay( );
+							this.toggleMainDisplay();
 
 						}
 						this.enableUserActions();
-						this.showMonitor( );
+						this.showDisplay( );
 					}
 				},
 				'switchView': {
 					name: 'hide',
 					action: function () {
-						this.showMonitor( );
-						this.toggleMainMonitor();
-						this.hideMonitor( );
+						this.showDisplay( );
+						this.toggleMainDisplay();
+						this.hideDisplay( );
 
 					}
 				}
