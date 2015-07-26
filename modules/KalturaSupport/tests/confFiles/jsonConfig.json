@@ -5,7 +5,7 @@
       "controlBarContainer": {
          "hover": true
       },
-      "largePlayBtn": {},
+     "pipBtn":{},
       "scrubber": {},
       "playPauseBtn": {},
       "volumeControl": {},

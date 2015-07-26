@@ -135,6 +135,10 @@
 		// Known Limitation - It will return false for iOS8 Simulator
 		return ( /OS 8_/.test(userAgent) || /Version\/8/.test(userAgent) ) && mw.isIOS();
 	};
+	mw.isIOS9 = function () {
+		// Known Limitation - It will return false for iOS8 Simulator
+		return ( /OS 9_/.test(userAgent) || /Version\/9/.test(userAgent) ) && mw.isIOS();
+	};
 
 	mw.isSilk = function () {
 		return /\bSilk\b/.test(userAgent);
