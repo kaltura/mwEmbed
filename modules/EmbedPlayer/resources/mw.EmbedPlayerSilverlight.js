@@ -122,6 +122,7 @@
 
 							_this.multicastAddress = multicastAddress;
 							_this.multicastSourceAddress=response.multicastSourceAddress;
+							_this.multicastPolicyOverMulticastEnabled = response.multicastPolicyOverMulticastEnabled;
 							doEmbedFunc( multicastAddress );
 							startMultiastServerKeepAlive();
 
@@ -308,6 +309,7 @@
 					if (_this.multicastSourceAddress) {
 						flashvars.sourceAddress = _this.multicastSourceAddress;
 					}
+					flashvars.multicastPolicyOverMulticastEnabled = _this.multicastPolicyOverMulticastEnabled;
 					//flashvars.debug = true;
 
 					//check if multicast not available
