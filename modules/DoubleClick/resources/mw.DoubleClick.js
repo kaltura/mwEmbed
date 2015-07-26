@@ -1052,7 +1052,11 @@
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				mw.log("DoubleClick:: allAdsCompleted");
 				setTimeout(function(){
-					_this.restorePlayer(true);
+					var isContentCompleted = true;
+					if (mw.isNativeApp()) {
+						isContentCompleted = _this.currentAdSlotType == 'postroll';
+					}
+					_this.restorePlayer(isContentCompleted);
 				},0);
 				if (_this.currentAdSlotType == 'postroll'){
 					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', _this.entryDuration );
