@@ -58,16 +58,8 @@
 				this.initDisplays();
 			},
 			isSafeEnviornment: function () {
-				var _this = this;
-				//this.screenObj = new mw.dualScreen.imagePlayer(this.getPlayer(), function(){
-				//	this.setConfig({
-				//		"prefetch": _this.getConfig("prefetch"),
-				//		"cuePointType": _this.getConfig("cuePointType")
-				//	});
-				//	}, "imagePlayer");
-				this.screenObj = new mw.dualScreen.videoPlayer(this.getPlayer(), function(){}, "videoPlayer");
-
-				return this.screenObj.isSafeEnviornment();
+				this.initSecondPlayer();
+				return this.secondPlayer.isSafeEnviornment();
 			},
 			addBindings: function () {
 				var _this = this;
@@ -487,6 +479,20 @@
 				return +(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp));
 			},
 
+			//Second Screen controller
+			initSecondPlayer: function(){
+				var _this = this;
+				if (true) {
+					this.secondPlayer = new mw.dualScreen.imagePlayer(this.getPlayer(), function () {
+						this.setConfig({
+							"prefetch": _this.getConfig("prefetch"),
+							"cuePointType": _this.getConfig("cuePointType")
+						});
+					}, "imagePlayer");
+				} else {
+					this.secondPlayer = new mw.dualScreen.videoPlayer(this.getPlayer(), function(){}, "videoPlayer");
+				}
+			},
 			//Display
 			getComponent: function () {
 				if ( !this.$el ) {
