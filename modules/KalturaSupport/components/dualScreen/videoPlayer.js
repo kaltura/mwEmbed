@@ -37,7 +37,6 @@
             if (!this.$el) {
                 var _this = this;
                 var player = this.getPlayer();
-                debugger;
                 switch(player.instanceOf){
                     case "Native":
                         this.$el =
