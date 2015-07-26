@@ -84,6 +84,8 @@
 			"components/dualScreen/dualScreenControlBar.js",
 			"components/dualScreen/monitor.js",
 			"components/dualScreen/imagePlayer.js",
+			"components/dualScreen/videoPlayer.js",
+			"components/dualScreen/videoSync.js",
 			"components/dualScreen/fsm.js",
 			"components/dualScreen/dualScreenStatesConfig.js"
 		],

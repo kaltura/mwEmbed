@@ -59,12 +59,14 @@
 			},
 			isSafeEnviornment: function () {
 				var _this = this;
-				this.screenObj = new mw.dualScreen.imagePlayer(this.getPlayer(), function(){
-					this.setConfig({
-						"prefetch": _this.getConfig("prefetch"),
-						"cuePointType": _this.getConfig("cuePointType")
-					});
-					}, "imagePlayer");
+				//this.screenObj = new mw.dualScreen.imagePlayer(this.getPlayer(), function(){
+				//	this.setConfig({
+				//		"prefetch": _this.getConfig("prefetch"),
+				//		"cuePointType": _this.getConfig("cuePointType")
+				//	});
+				//	}, "imagePlayer");
+				this.screenObj = new mw.dualScreen.videoPlayer(this.getPlayer(), function(){}, "videoPlayer");
+
 				return this.screenObj.isSafeEnviornment();
 			},
 			addBindings: function () {
@@ -268,6 +270,8 @@
 					var secondaryScreen = this.monitor[mw.dualScreen.monitor.TYPE.SECONDARY];
 					primaryScreen.attachView(primaryScreenEl);
 					secondaryScreen.attachView(secondaryScreenEl);
+
+					secondaryScreenEl.append( this.screenObj.getComponent());
 
 					var pointerEvents = "click dblclick touchstart touchend";
 					secondaryScreenEl
@@ -490,9 +494,8 @@
 					var height = width * this.getConfig('secondScreen').widthHeightRatio;
 					this.$el = $( '<div />' )
 						.css( {height: height + 'px', width: width + 'px', "background": "black"} )
-						.addClass( this.getCssClass() );
-
-					this.$el.append( this.screenObj.getComponent());
+						.addClass( this.getCssClass() )
+						.attr("id", "secondScreen");
 				}
 				return this.$el;
 			},
