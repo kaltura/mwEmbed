@@ -968,7 +968,7 @@ mw.KAdPlayer.prototype = {
 			})
 			.addClass("btn icon-close")
 			.click(function(){
-				sendBeacon("close");
+				sendBeacon("close");//TODO: trigger event (adComplete or adClosed or adDismissed or whatever)
 				$( this ).parent().fadeOut('fast');
 				return false;
 			})
@@ -1518,9 +1518,9 @@ mw.KAdPlayer.prototype = {
 					_this.sendVASTBeacon( adConf.trackingEvents, 'resume', true );
 				}, 'AdPlaying' );
 
-				VPAIDObj.subscribe( function ( clickThroughURL ) {
-					if (isJs){
-						_this.openClickthrough(adSlot, clickThroughURL);
+				VPAIDObj.subscribe( function ( url, id, playerHandles ) {
+					if (isJs && playerHandles){
+						_this.openClickthrough(adSlot, url);
 					}
 				}, 'AdClickThru' );
 
