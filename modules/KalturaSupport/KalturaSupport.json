@@ -82,6 +82,7 @@
 		"scripts": [
 			"components/dualScreen/dualScreen.js",
 			"components/dualScreen/dualScreenControlBar.js",
+			"components/dualScreen/displays.js",
 			"components/dualScreen/monitor.js",
 			"components/dualScreen/imagePlayer.js",
 			"components/dualScreen/videoPlayer.js",

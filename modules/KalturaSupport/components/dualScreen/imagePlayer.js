@@ -93,7 +93,7 @@
 			var $img = this.getComponent();
 			var imgContainer = this.getComponent().parent();
 			//Make sure both image player and display are initialized
-			if( $img.length && imgContainer.length/*&& this.displayInitialized*/){
+			if( $img.length && imgContainer.length/*&& this.viewInitialized*/){
 				var pHeight = imgContainer.height();
 				// Check for intrinsic width and maintain aspect ratio
 				var pWidth = parseInt( $img.naturalWidth() / $img.naturalHeight() * pHeight, 10);
