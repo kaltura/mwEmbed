@@ -58,7 +58,7 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
 </table>
     <br/>
 <input type="button" id="generate" value="Create Player" />
-<input type="button" id="showVisualisation" value="Show Visualisation" />
+<input type="button" id="showVisualisation" value="Show/Hide Visualisation Animation" />
 <br><br>
 <div id="kaltura_player" style="width:624px; height: 387px;display:block;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject">
 </div>
@@ -125,9 +125,25 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
 	}catch(err){
 		
 	}
-	
+
 	// handle click event 
 	$('#generate').click( function() {
+        //save the current state of the hlsLogs checkbox
+        var _this = this;
+        _this.hlsLogsIsChecked = $('#hlsLogs').is(':checked'); //used later on inside kWidget ReadyCallback
+
+        //hide visualization controls if hlsLogs check box is unchecked
+        if(_this.hlsLogsIsChecked){
+            $('#showVisualisation').show();
+        }else{
+            $('#showVisualisation').hide();
+            $('#visualisation').hide();
+        }
+
+        //clear canvas
+        stopDrawing();
+
+        //clear debug info fields
         if ($('#segBuffer').val() === ""){
             $('#segBuffer').val( -1 );
         }
@@ -211,6 +227,9 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
 		});
 
         kWidget.addReadyCallback(function( playerId ){
+            if(_this.hlsLogsIsChecked) {
+                startDrawing();
+            }
             var kdp = document.getElementById( playerId );
             kdp.kBind("debugInfoReceived", function( data ){
                 var ts;
@@ -247,11 +266,6 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
     // handle click event
     $('#showVisualisation').click( function() {
         $('#visualisation').toggle();
-
-        if($('#kaltura_player_ifp').is(':visible') && $('#visualisation').is(':visible')){
-            // Initiate buffer rendering.
-            requestAnimationFrame(redrawBuffer);
-        }
     });
 </script>
 
