@@ -1130,8 +1130,8 @@
         }
     },
     "skipBtn": {
-        "label": "Vast skip button",
-        "description": "Vast skip button settings",
+        "label": "Skip button",
+        "description": "Vast / DoubleClick skip button settings",
         "attributes": {
             "skipBtn": {
                 "doc": "Skip button label.",
@@ -1150,8 +1150,8 @@
         }
     },
     "skipNotice": {
-        "label": "Vast skip notice",
-        "description": "Vast skip notice",
+        "label": "Skip notice",
+        "description": "Vast / DoubleClick skip notice",
         "attributes": {
             "text": {
                 "doc": "Skip notice text (can use evaluated expressions)",
