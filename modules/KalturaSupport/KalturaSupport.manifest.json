@@ -1163,8 +1163,8 @@
         }
     },
     "noticeMessage": {
-        "label": "Vast notice message",
-        "description": "Vast notice message",
+        "label": "Notice message",
+        "description": "Vast / DoubleClick notice message",
         "attributes": {
             "text": {
                 "doc": "Notice message (can use evaluated expressions)",

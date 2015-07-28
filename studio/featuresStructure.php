@@ -153,11 +153,11 @@ return array(
             ),
 			"bumper" => "",
 			"vast" => "",
-			"noticeMessage" => "",
 			"doubleClick" => "",
 			"freeWheel" => "",
 			"skipBtn" => "",
-            "skipNotice" => ""
+            "skipNotice" => "",
+            "noticeMessage" => ""
 		)
 	),
 	"plugins"=> array(

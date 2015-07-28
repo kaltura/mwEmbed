@@ -138,6 +138,10 @@
 				return;
 			}
 
+			if ( this.embedPlayer.getRawKalturaConfig('noticeMessage')){
+				embedPlayer.setKalturaConfig( 'doubleClick', 'enableCountDown',true );
+				embedPlayer.setKalturaConfig( 'doubleClick', 'countdownText',this.embedPlayer.getRawKalturaConfig('noticeMessage','text') );
+			}
 			if ( this.getConfig( 'enableCountDown' ) === true){
 				if ( !_this.getConfig( 'countdownText' ) ){
 					embedPlayer.setKalturaConfig( 'doubleClick', 'countdownText','Advertisement: Video will resume in {sequenceProxy.timeRemaining} seconds');
@@ -145,6 +149,7 @@
 			}else{
 				embedPlayer.setKalturaConfig( 'doubleClick', 'countdownText',null);
 			}
+
 			if ( this.trackCuePoints ){
 				this.handleCuePoints();
 			}
