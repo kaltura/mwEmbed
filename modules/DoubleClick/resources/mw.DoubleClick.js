@@ -1165,7 +1165,7 @@
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				mw.log("DoubleClick:: allAdsCompleted");
 				setTimeout(function(){
-					_this.restorePlayer(true);
+					_this.restorePlayer( _this.currentAdSlotType === "postroll" );
 				},0);
 				if (_this.currentAdSlotType == 'postroll'){
 					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', _this.entryDuration );
