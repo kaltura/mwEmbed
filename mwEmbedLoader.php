@@ -96,7 +96,7 @@ class mwEmbedLoader {
 		}
 		
 		// Support Etag and 304
-		if( $wgEnableScriptDebug == false && @trim($_SERVER['HTTP_IF_NONE_MATCH']) == $this->getOutputHash( $o ) ){
+		if( $wgEnableScriptDebug == false && @trim($_SERVER['HTTP_IF_NONE_MATCH']) == "W/\"" . $this->getOutputHash( $o ) . "\"" ){
 			header("HTTP/1.1 304 Not Modified");
 			exit();
 		}
@@ -459,7 +459,7 @@ class mwEmbedLoader {
 	private function sendHeaders( $o ){
 		global $wgEnableScriptDebug;
 		
-		header("Etag: \"" . $this->getOutputHash( $o ) . "\"" );
+		header("Etag: W/\"" . $this->getOutputHash( $o ) . "\"" );
 		header("Content-Type: text/javascript");
 		if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 			header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
