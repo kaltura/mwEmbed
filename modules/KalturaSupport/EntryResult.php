@@ -52,7 +52,7 @@ class EntryResult {
 		}
 		return array(
 			"Cache-Control: public, max-age=$wgKalturaUiConfCacheTime, max-stale=0",
-			"Expires: " . gmdate( "D, d M Y H:i:s", $saveTime + $wgKalturaUiConfCacheTime ) . " GM",
+			"Expires: " . gmdate( "D, d M Y H:i:s", $saveTime + $wgKalturaUiConfCacheTime ) . " GMT",
 		);
 	}
 	
@@ -136,7 +136,7 @@ class EntryResult {
 			$filter = new KalturaBaseEntryFilter();
 			if( ! $this->request->getEntryId() && $this->request->getReferenceId() ) {
 				$filter->referenceIdEqual = $this->request->getReferenceId();
-			} else if( $supportsEntryRedirect && $this->request->getFlashVars('disableEntryRedirect') !== true ){
+			} else if( $supportsEntryRedirect && $this->uiconf->getPlayerConfig(false, 'disableEntryRedirect') !== true ){
 				$filter->redirectFromEntryId = $this->request->getEntryId();
 			} else {
 				$filter->idEqual = $this->request->getEntryId();

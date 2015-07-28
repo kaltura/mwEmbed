@@ -488,8 +488,8 @@ class mwEmbedLoader {
 				$max_age = 60; 
 			}
 			header("Cache-Control: public, max-age=$max_age max-stale=0");
-			header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $max_age) . 'GMT');
-			header('Last-Modified: ' . gmdate('D, d M Y H:i:s', time()) . 'GMT');
+			header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $max_age) . ' GMT');
+			header('Last-Modified: ' . gmdate('D, d M Y H:i:s', time()) . ' GMT');
 		}
 	}
 }

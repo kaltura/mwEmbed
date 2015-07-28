@@ -235,6 +235,7 @@
 	height: 22px;
 	cursor: pointer;
 	z-index: 3;
+	color: white;
 }
 .nativeApp .share .share-close{
 	color: #d3d3d3;
@@ -385,7 +386,7 @@
 }
 
 [class^="icon-share-"], [class*=" icon-share-"] {
-	font-family: 'share';
+	font-family: 'share' !important;
 	speak: none;
 	font-style: normal;
 	font-weight: normal;

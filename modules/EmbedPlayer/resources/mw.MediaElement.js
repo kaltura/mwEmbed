@@ -248,7 +248,7 @@ mw.MediaElement.prototype = {
 
 		mw.setConfig( 'EmbedPlayer.IgnoreStreamerType', false);
 		//this array contains mimeTypes player should prefer to select, sorted by descending order
-		var typesToCheck = ['application/dash+xml', 'video/playreadySmooth', 'video/ism', 'video/multicast'];
+		var typesToCheck = ['application/dash+xml', 'video/playreadySmooth', 'video/ism', 'video/multicast', 'video/wvm'];
 		for ( var i = 0; i < typesToCheck.length; i++ ) {
 			var matchingSources = this.getPlayableSources( typesToCheck[i], playableSources );
 			if ( matchingSources.length ) {
@@ -617,6 +617,30 @@ mw.MediaElement.prototype = {
 				}
 			}
 		}
+	},
+	getLicenseData: function(){
+		var licenseData = {
+			custom_data: this.selectedSource["custom_data"],
+			signature: this.selectedSource["signature"]
+		};
+		if (this.selectedSource.flavors){
+			licenseData.files = encodeURIComponent(window.btoa(this.selectedSource.flavors));
+		}
+
+		return licenseData;
+	},
+	getLicenseUriComponent: function(){
+		var licenseData = this.getLicenseData();
+		var licenseDataString = "";
+		if (licenseData) {
+			$.each( licenseData, function ( key, val ) {
+				licenseDataString += key + "=" + val + "&";
+			} );
+		}
+		return licenseDataString;
+	},
+	getAuthenticationToken: function(){
+		return this.selectedSource["contentId"];
 	}
 };
 

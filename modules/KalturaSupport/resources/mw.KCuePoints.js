@@ -7,12 +7,29 @@
 	mw.KCuePoints = function (embedPlayer) {
 		return this.init(embedPlayer);
 	};
+	mw.KCuePoints.TYPE = {
+		AD: "adCuePoint.Ad",
+		ANNOTATION: "annotation.Annotation",
+		CODE: "codeCuePoint.Code",
+		EVENT: "eventCuePoint.Event",
+		THUMB: "thumbCuePoint.Thumb",
+		QUIZ_QUESTION: "quiz.QUIZ_QUESTION"
+	};
+	mw.KCuePoints.THUMB_SUB_TYPE = {
+		SLIDE: 1,
+		CHAPTER: 2
+	};
 	mw.KCuePoints.prototype = {
 
 		// The bind postfix:
 		bindPostfix: '.kCuePoints',
 		midCuePointsArray: [],
 		liveCuePointsIntervalId: null,
+		supportedCuePoints: [
+			mw.KCuePoints.TYPE.CODE,
+			mw.KCuePoints.TYPE.THUMB,
+			mw.KCuePoints.TYPE.QUIZ_QUESTION
+		],
 
 		init: function (embedPlayer) {
 			var _this = this;
@@ -23,6 +40,7 @@
 
 			// Process cue points
 			embedPlayer.bindHelper('KalturaSupport_CuePointsReady' + this.bindPostfix, function () {
+				_this.initSupportedCuepointTypes();
 				_this.processCuePoints();
 				// Add player bindings:
 				_this.addPlayerBindings();
@@ -63,6 +81,17 @@
 			});
 
 			this.midCuePointsArray = newCuePointsArray;
+		},
+		initSupportedCuepointTypes: function(){
+			//Initial flashvars configuration arrives in form of comma-separated string,
+			//so turn it into array of supported types.
+			var supportedCuePoints = mw.getConfig("EmbedPlayer.SupportedCuepointTypes", this.supportedCuePoints);
+
+			if ($.type(supportedCuePoints) === "string"){
+				supportedCuePoints = supportedCuePoints.split(",")
+			}
+
+			mw.setConfig("EmbedPlayer.SupportedCuepointTypes", supportedCuePoints);
 		},
 		requestThumbAsset: function (cuePoints, callback) {
 			var _this = this;
@@ -356,15 +385,14 @@
 			var cuePointWrapper = {
 				'cuePoint': rawCuePoint
 			};
-			if (rawCuePoint.cuePointType == 'codeCuePoint.Code' || rawCuePoint.cuePointType == 'thumbCuePoint.Thumb') {
-				// Code type cue point ( make it easier for people grepping the code base for an event )
-				eventName = 'KalturaSupport_CuePointReached';
-			} else if (rawCuePoint.cuePointType == 'adCuePoint.Ad') {
+			if (rawCuePoint.cuePointType == 'adCuePoint.Ad') {
 				// Ad type cue point
 				eventName = 'KalturaSupport_AdOpportunity';
 				cuePointWrapper.context = this.getVideoAdType(rawCuePoint);
+			} else if($.inArray(rawCuePoint.cuePointType, mw.getConfig("EmbedPlayer.SupportedCuepointTypes")) !== -1){
+				// Code type cue point ( make it easier for people grepping the code base for an event )
+				eventName = 'KalturaSupport_CuePointReached';
 			} else {
-				// Ignore all others cue points types
 				return;
 			}
 			mw.log('mw.KCuePoints :: Trigger event: ' + eventName + ' - ' + rawCuePoint.cuePointType + ' at: ' + rawCuePoint.startTime);
@@ -435,17 +463,6 @@
 			// anything else, return zero
 			return 0;
 		}
-	};
-	mw.KCuePoints.TYPE = {
-		AD: "adCuePoint.Ad",
-		ANNOTATION: "annotation.Annotation",
-		CODE: "codeCuePoint.Code",
-		EVENT: "eventCuePoint.Event",
-		THUMB: "thumbCuePoint.Thumb"
-	};
-	mw.KCuePoints.THUMB_SUB_TYPE = {
-		SLIDE: 1,
-		CHAPTER: 2
 	};
 
 })(window.mw, window.jQuery);
