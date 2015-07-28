@@ -1187,11 +1187,7 @@
 				if (_this.getConfig('countdownText')){
 					_this.embedPlayer.getInterface().find(".ad-notice-label").text(_this.getConfig('countdownText'));
 				}
-				if ( _this.embedPlayer.getInterface().find(".ad-skip-label").length ){
-					var offsetRemaining = Math.max(Math.ceil(parseFloat(_this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' )) - adInfo.time), 0);
-					_this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining', offsetRemaining );
-					_this.embedPlayer.getInterface().find(".ad-skip-label").text(_this.embedPlayer.evaluate(_this.embedPlayer.getRawKalturaConfig('skipNotice','text')));
-				}
+				_this.updateRemainingAdTime(adInfo.time);
 			},'adRemainingTimeChange', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
@@ -1390,13 +1386,16 @@
 			if (_this.getConfig('countdownText')){
 				this.embedPlayer.getInterface().find(".ad-notice-label").text(_this.getConfig('countdownText'));
 			}
-			if ( _this.embedPlayer.getInterface().find(".ad-skip-label").length ){
-				var offsetRemaining = Math.max(Math.ceil(parseFloat(_this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' )) - (_this.duration - _this.adsManager.getRemainingTime())), 0);
-				_this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining', offsetRemaining );
-				_this.embedPlayer.getInterface().find(".ad-skip-label").text(_this.embedPlayer.evaluate(_this.embedPlayer.getRawKalturaConfig('skipNotice','text')));
-			}
+			_this.updateRemainingAdTime(_this.duration - _this.adsManager.getRemainingTime());
 		},
 
+		updateRemainingAdTime: function(remainTime){
+			if ( this.embedPlayer.getInterface().find(".ad-skip-label").length ){
+				var offsetRemaining = Math.max(Math.ceil(parseFloat(this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' )) - remainTime), 0);
+				this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining', offsetRemaining );
+				this.embedPlayer.getInterface().find(".ad-skip-label").text(this.embedPlayer.evaluate( this.embedPlayer.getRawKalturaConfig('skipNotice','text')) );
+			}
+		},
 		// Handler for various ad errors.
 		onAdError: function( errorEvent ) {
 			var errorMsg = ( typeof errorEvent.getError != 'undefined' ) ? errorEvent.getError() : errorEvent;
