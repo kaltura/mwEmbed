@@ -101,7 +101,7 @@
 			this.contentDoneFlag = null;
 			this.allAdsCompletedFlag = null;
 
-			this.trackCuePoints = !!this.getConfig("trackCuePoints") === true;
+			this.trackCuePoints = this.getConfig("trackCuePoints") == true && !_this.getConfig( 'adTagUrl' );
 
 			// remove any old bindings:
 			embedPlayer.unbindHelper( this.bindPostfix );
@@ -124,7 +124,7 @@
 			if ( _this.getConfig( 'leadWithFlash' ) !== undefined ) {
 				_this.leadWithFlash = _this.getConfig( 'leadWithFlash' );
 			}
-			if ( _this.getConfig( 'prerollUrl' ) !== undefined ) {
+			if ( _this.getConfig( 'prerollUrl' ) !== undefined && !_this.getConfig( 'adTagUrl' )) {
 				_this.adTagUrl = _this.getConfig( 'prerollUrl' );
 			}
 
@@ -399,7 +399,7 @@
 						_this.restorePlayer(true);
 					}
 				}
-				if ( _this.getConfig("postrollUrl") ){
+				if ( _this.getConfig("postrollUrl") && !_this.getConfig("adTagUrl") ){
 					_this.contentDoneFlag = true;
 					_this.adTagUrl = _this.getConfig("postrollUrl");
 					_this.currentAdSlotType = "postroll";
@@ -1165,7 +1165,7 @@
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				mw.log("DoubleClick:: allAdsCompleted");
 				setTimeout(function(){
-					_this.restorePlayer( _this.currentAdSlotType === "postroll" );
+					_this.restorePlayer( true );
 				},0);
 				if (_this.currentAdSlotType == 'postroll'){
 					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', _this.entryDuration );
