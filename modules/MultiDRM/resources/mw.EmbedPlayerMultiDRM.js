@@ -249,11 +249,10 @@
 				this.log('Error:: failed to retrieve UDRM license URL ');
 			}
 
-			var vendor = this.getLicenseVendor();
-
 			//TODO: error handling in case of error
-			var licenseData = this.getLicenseData();
-			drmConfig.widevineLicenseServerURL = licenseBaseUrl + "/cenc/" + vendor + "/license?" + licenseData;
+			var licenseData = this.mediaElement.getLicenseUriComponent();
+			drmConfig.widevineLicenseServerURL = licenseBaseUrl + "/cenc/widevine/license?" + licenseData;
+			drmConfig.playReadyLicenseServerURL = licenseBaseUrl + "/cenc/playready/license?" + licenseData;
 			drmConfig.assetId = this.kentryid;
 			drmConfig.variantId = this.mediaElement.selectedSource && this.mediaElement.selectedSource.getAssetId();
 			var config = {};
@@ -261,7 +260,7 @@
 			if (this.shouldGeneratePssh()) {
 				config.widevineHeader = {
 					"provider": "castlabs",
-					"contentId": this.getAuthenticationToken( ),
+					"contentId": this.mediaElement.getAuthenticationToken( ),
 					"policy": ""
 				};
 			}
@@ -289,33 +288,6 @@
 				res = false;
 			}
 			return res;
-		},
-		getLicenseData: function(){
-			var licenseData = {
-				custom_data: this.mediaElement.selectedSource["custom_data"],
-				signature: this.mediaElement.selectedSource["signature"]
-			};
-			if (this.mediaElement.selectedSource.flavors){
-				licenseData.files = encodeURIComponent(window.btoa(this.mediaElement.selectedSource.flavors));
-			}
-
-			var licenseDataString = "";
-			if (licenseData) {
-				$.each( licenseData, function ( key, val ) {
-					licenseDataString += key + "=" + val + "&";
-				} );
-			}
-			return licenseDataString;
-		},
-		getLicenseVendor: function(){
-			var vendor;
-			if (mw.isChrome()){
-				vendor = "widevine";
-			}
-			return vendor;
-		},
-		getAuthenticationToken: function(){
-			return this.mediaElement.selectedSource["contentId"];
 		},
 		/**
 		 * Get the native player embed code.
@@ -815,6 +787,7 @@
 			var curTime = parseInt(this.getPlayerElementTime(), 10).toFixed(2);
 			if (( this.currentState === "end" ) ||
 				( this.currentState === "pause" && duration === curTime && this.getPlayerElementTime() > 0 )) {
+				this.stopPlayAfterSeek = false;
 				this.seek(0.01, false);
 			} else {
 				if ( this.parent_play() ) {
@@ -876,7 +849,7 @@
 		 * onPlay function callback from the kaltura flash player directly call the
 		 * parent_play
 		 */
-		onPlay: function () {
+		_onplay: function () {
 			this.log(" OnPlay:: propogate:" + this._propagateEvents + ' paused: ' + this.paused);
 			// if using native controls make sure the inteface does not block the native controls interface:
 			if (this.useNativePlayerControls() && $(this).find('video ').length == 0) {

@@ -84,6 +84,10 @@
 				_this.embedPlayer.disablePlayer();
 				_this.embedPlayer.updatePlaybackInterface()
 			});
+
+			$( this.embedPlayer).bind('chromecastShowConnectingMsg', function(){
+				_this.showConnectingMessage();
+			});
 		},
 
 		getComponent: function() {
@@ -110,6 +114,19 @@
 			return this.$el;
 		},
 
+		showConnectingMessage: function(){
+			this.embedPlayer.showErrorMsg(
+				{'title':'Chromecast Player',
+					'message': gM('mwe-chromecast-connecting'),
+					'props':{
+						'customAlertContainerCssClass': 'connectingMsg',
+						'customAlertTitleCssClass': 'hidden',
+						'textColor': '#ffffff'
+					}
+				}
+			);
+		},
+
 		toggleCast : function(){
 			if (this.isDisabled){
 				return false;
@@ -117,16 +134,7 @@
 			var _this = this;
 			if (!this.casting){
 				// launch app
-				this.embedPlayer.showErrorMsg(
-					{'title':'Chromecast Player',
-						'message': gM('mwe-chromecast-connecting'),
-						'props':{
-							'customAlertContainerCssClass': 'connectingMsg',
-							'customAlertTitleCssClass': 'hidden',
-							'textColor': '#ffffff'
-						}
-					}
-				);
+				this.showConnectingMessage();
 				this.embedPlayer.disablePlayControls(["chromecast"]);
 				chrome.cast.requestSession(
 					function(e){

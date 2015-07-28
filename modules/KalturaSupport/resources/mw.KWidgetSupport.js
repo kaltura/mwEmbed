@@ -190,7 +190,7 @@ mw.KWidgetSupport.prototype = {
 
 		// Support mediaPlayFrom, mediaPlayTo properties
 		embedPlayer.bindHelper( 'Kaltura_SetKDPAttribute', function(e, componentName, property, value){
-			if (!value) {
+			if (!value && value !== 0) {
 				return;
 			}
 			var segmentChange = false;
@@ -235,6 +235,9 @@ mw.KWidgetSupport.prototype = {
 	},
 
 	updatePlayerData: function( embedPlayer,  playerData, callback ){
+		// Handle entry data
+		this.updatePlayerEntryData(embedPlayer, playerData);
+		this.updatePlayerMetaData(embedPlayer, playerData);
 		// Check for playerData error
 		this.handlePlayerError(embedPlayer, playerData);
 		this.updatePlayerContextData(embedPlayer, playerData);
@@ -255,10 +258,6 @@ mw.KWidgetSupport.prototype = {
 		// check for entry id not found:
 		if( this.isNoEntryId(playerData) ){
 			this.handleNoEntryId();
-		}
-		else {
-			this.updatePlayerEntryData(embedPlayer, playerData);
-			this.updatePlayerMetaData(embedPlayer, playerData);
 		}
 		// Check access controls ( must come after addPlayerMethods for custom messages )
 		this.initCuePointsService(embedPlayer, playerData);
@@ -425,7 +424,7 @@ mw.KWidgetSupport.prototype = {
 				if (flavorPartnerData["default"] === "true"){
 					flavorAssetObj["default"] = true;
 				}
-				var drmData = _this.getSourceDrmData(flavorAsset.id, flavorDrmData);
+				var drmData = _this.getFlavorAssetDrmData(flavorAsset.id, flavorDrmData);
 				$.extend(flavorAssetObj, drmData);
 				flavorAssets.push( flavorAssetObj );
 			}
@@ -696,6 +695,7 @@ mw.KWidgetSupport.prototype = {
 
 			$.ajax({
 				url: srcURL + qp + "responseFormat=jsonp",
+				timeout: 7000,
 				dataType: 'jsonp',
 				success: function( playmanifest ){
 					var flavors = playmanifest.flavors;
@@ -1316,6 +1316,8 @@ mw.KWidgetSupport.prototype = {
 
 		// Flag that indecate if we have H264 flavor
 		var hasH264Flavor = false;
+		// Flag that indecate if we have ISM flavor
+		var hasIsmFlavor = false;
 		// Add all avaliable sources:
 		for( var i = 0 ; i < flavorData.length; i ++ ) {
 
@@ -1468,9 +1470,10 @@ mw.KWidgetSupport.prototype = {
 				} else {
 					source['type'] = 'video/ism';
 				}
+				hasIsmFlavor = true;
 			}
 
-			var assetDrmData = this.getSourceDrmData(asset.id, flavorDrmData);
+			var assetDrmData = this.getFlavorAssetDrmData(asset.id, flavorDrmData);
 			$.extend(source, assetDrmData);
 
 			// Add the source ( if a src was defined ):
@@ -1520,49 +1523,39 @@ mw.KWidgetSupport.prototype = {
 		) {
 			// We only need single HLS stream
 			var addedHlsStream = false;
-			var validClipAspect = this.getValidAspect( deviceSources );
-			var dashSource;
-			var assetId;
-			var assetDrmData;
 			// Check if mobile device media query
-			if ( mw.isMobileDevice() && mw.isDeviceLessThan480P() && iphoneAdaptiveFlavors.length ) {
-				// Add "iPhone" HLS flavor
-				deviceSources.push({
-					'data-aspect' : validClipAspect,
-					'data-flavorid' : 'iPhoneNew',
-					'type' : 'application/vnd.apple.mpegurl',
-					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
+			if (iphoneAdaptiveFlavors.length || ipadAdaptiveFlavors.length) {
+				var validClipAspect = this.getValidAspect(deviceSources);
+				var lowResolutionDevice = (mw.isMobileDevice() && mw.isDeviceLessThan480P() && iphoneAdaptiveFlavors.length);
+				var targetFlavors = lowResolutionDevice ? iphoneAdaptiveFlavors : ipadAdaptiveFlavors;
+				var assetId = targetFlavors[0];
+
+				var hlsSource = this.generateAbrSource({
+					entryId: asset.entryId,
+					flavorUrl: flavorUrl,
+					flavorId: (lowResolutionDevice ? 'iPhoneNew' : 'iPadNew'),
+					type: 'application/vnd.apple.mpegurl',
+					flavors: targetFlavors,
+					format: "applehttp",
+					ext: "m3u8",
+					protocol: protocol,
+					clipAspect: validClipAspect
 				});
-				dashSource = {
-					'data-aspect' : validClipAspect,
-					'data-flavorid' : 'mpdLow',
-					'type' : 'application/dash+xml',
-					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneAdaptiveFlavors.join(',')  + '/format/MPEGDASH/protocol/' + protocol + '/a.mpd',
-					'data-flavors': iphoneAdaptiveFlavors.join(',')
-				};
-				assetId = iphoneAdaptiveFlavors[0];
-				assetDrmData = this.getSourceDrmData(assetId, flavorDrmData);
-				$.extend(dashSource, assetDrmData);
-				deviceSources.push(dashSource);
+				deviceSources.push(hlsSource);
 				addedHlsStream = true;
-			} else if( ipadAdaptiveFlavors.length ) {
-				// Add "iPad" HLS flavor
-				deviceSources.push({
-					'data-aspect' : validClipAspect,
-					'data-flavorid' : 'iPadNew',
-					'type' : 'application/vnd.apple.mpegurl',
-					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
+
+				var dashSource = this.generateAbrSource({
+					entryId: asset.entryId,
+					flavorUrl: flavorUrl,
+					flavorId: (lowResolutionDevice ? 'mpdLow' : 'mpdHigh'),
+					type: 'application/dash+xml',
+					flavors: targetFlavors,
+					format: "mpegdash",
+					ext: "mpd",
+					protocol: protocol,
+					clipAspect: validClipAspect
 				});
-				dashSource = {
-					'data-aspect' : validClipAspect,
-					'data-flavorid' : 'mpdHigh',
-					'type' : 'application/dash+xml',
-					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadAdaptiveFlavors.join(',')  + '/format/MPEGDASH/protocol/' + protocol + '/a.mpd',
-					'data-flavors': ipadAdaptiveFlavors.join(',')
-				};
-				assetId = ipadAdaptiveFlavors[0];
-				assetDrmData = this.getSourceDrmData(assetId, flavorDrmData);
-				$.extend(dashSource, assetDrmData);
+				this.attachFlavorAssetDrmData(dashSource, assetId, flavorDrmData);
 				deviceSources.push(dashSource);
 			}
 		}
@@ -1581,6 +1574,20 @@ mw.KWidgetSupport.prototype = {
 		// Prefer H264 flavor over HLS on Android
 		if( !this.removedAdaptiveFlavors && mw.isAndroid() && hasH264Flavor && !mw.getConfig( 'Kaltura.LeadHLSOnAndroid' ) ) {
 			deviceSources = this.removeAdaptiveFlavors( deviceSources );
+		}
+
+		// PRemove adaptive sources on Windows Phone
+		if( mw.isWindowsPhone() ) {
+			deviceSources = this.removeAdaptiveFlavors( deviceSources );
+		}
+
+		// if we have streamertype that is not hls and we support hls on the native player - we'll use kplayer + hls - we want to eliminate  this option
+		// for now the only usecase is microsoft edge browser
+		if ( mw.supportsFlash()  &&
+			this.originalStreamerType &&
+			this.originalStreamerType !== "hls" &&
+			 mw.getConfig("LeadWithHLSOnFlash") === null 	){
+			    deviceSources = this.removeAdaptiveFlavors( deviceSources );
 		}
 
 		//TODO: Remove duplicate webm and h264 flavors
@@ -1623,8 +1630,24 @@ mw.KWidgetSupport.prototype = {
 		
 		return deviceSources;
 	},
+	generateAbrSource: function(options){
+		var flavorsString = options.flavors.join(',');
+		var dashSource = {
+			'data-aspect' : options.clipAspect,
+			'data-flavorid' : options.flavorId,
+			'type' : options.type,
+			'src' : options.flavorUrl + '/entryId/' + options.entryId + '/flavorIds/' + flavorsString + '/format/' + options.format + '/protocol/' + options.protocol + '/a.' + options.ext,
+			'flavors': flavorsString
+		};
+		return dashSource;
+	},
+	attachFlavorAssetDrmData: function(source, assetId, flavorDrmData){
+		var assetDrmData = this.getFlavorAssetDrmData(assetId, flavorDrmData);
+		$.extend(source, assetDrmData);
+		return source;
+	},
 	getFlavorAssetsDrmData: function(playerData){
-		var flavorDrmData = {}
+		var flavorDrmData = {};
 		if (playerData.contextData.pluginData &&
 			playerData.contextData.pluginData.KalturaDrmEntryContextPluginData &&
 			playerData.contextData.pluginData.KalturaDrmEntryContextPluginData.flavorData){
@@ -1632,13 +1655,13 @@ mw.KWidgetSupport.prototype = {
 		}
 		return flavorDrmData;
 	},
-	getSourceDrmData: function(id, flavorDrmData){
+	getFlavorAssetDrmData: function(id, flavorDrmData){
 		var assetDrmData = flavorDrmData && flavorDrmData[id];
 		var drmData = {};
 		if (assetDrmData) {
-			drmData['data-custom_data'] = assetDrmData['custom_data'];
-			drmData['data-signature'] = assetDrmData.signature;
-			drmData['data-contentId'] = assetDrmData.contentId;
+			drmData.custom_data = assetDrmData.custom_data;
+			drmData.signature = assetDrmData.signature;
+			drmData.contenId = assetDrmData.contentId;
 		}
 		return drmData;
 	},

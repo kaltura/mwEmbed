@@ -414,8 +414,8 @@ class kalturaIframeClass {
 		}
 		// Cache for $wgKalturaUiConfCacheTime
 		header( "Cache-Control: public, max-age=$expireTime, max-stale=0");
-		header( "Last-Modified: " . gmdate( "D, d M Y H:i:s", $lastModified) . "GMT");
-		header( "Expires: " . gmdate( "D, d M Y H:i:s", $lastModified + $expireTime ) . " GM" );
+		header( "Last-Modified: " . gmdate( "D, d M Y H:i:s", $lastModified) . " GMT");
+		header( "Expires: " . gmdate( "D, d M Y H:i:s", $lastModified + $expireTime ) . " GMT" );
 		// alwayse set cross orgin headers:
 		header( "Access-Control-Allow-Origin: *" );
 	}
@@ -563,7 +563,7 @@ class kalturaIframeClass {
 	 * Get entry name for iFrame title
 	 */
 	private function getEntryTitle(){
-		if( !$this->getUiConfResult()->isPlaylist() ){
+		if(!$this->error && !$this->getUiConfResult()->isPlaylist() ){
 			try{
 			$baseEntry = $this->getEntryResult()->getResult();
 				if( isset( $baseEntry['meta']->name) ){
@@ -681,6 +681,10 @@ HTML;
 			if (isset($theme['bufferedSliderColor'])){
                 $customStyle = $customStyle . '.buffered {background-color: ' . $theme['bufferedSliderColor'] . '!important}';
             }
+			if (isset($theme['timeLabelColor'])){
+				$customStyle = $customStyle . '.currentTimeLabel {color: ' . $theme['timeLabelColor'] . '!important}';
+				$customStyle = $customStyle . '.durationLabel {color: ' . $theme['timeLabelColor'] . '!important}';
+			}
             if (isset($theme['buttonsIconColorDropShadow']) && isset($theme['dropShadowColor'])){
                 $customStyle = $customStyle . '.btn {text-shadow: ' . $theme['dropShadowColor'] . '!important}';
             }

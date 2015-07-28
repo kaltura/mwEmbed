@@ -890,10 +890,14 @@
 		},
 		//UI Handlers
 		mediaClicked: function (mediaIndex) {
-			// start playback
-			this.getPlayer().sendNotification('doPlay');
-			// see to start time and play ( +.1 to avoid highlight of prev chapter )
-			this.getPlayer().sendNotification('doSeek', ( this.mediaList[mediaIndex].startTime ) + 0.1);
+			//Only apply seek in VOD or in live if DVR is supported
+			if ((this.getPlayer().isLive() && this.getPlayer().isDVR()) ||
+				!this.getPlayer().isLive()) {
+				// start playback
+				this.getPlayer().sendNotification('doPlay');
+				// see to start time and play ( +.1 to avoid highlight of prev chapter )
+				this.getPlayer().sendNotification('doSeek', ( this.mediaList[mediaIndex].startTime ) + 0.1);
+			}
 		},
 		doOnScrollerUpdate: function(data){
 			//If maximum scroll has changed then reset last position

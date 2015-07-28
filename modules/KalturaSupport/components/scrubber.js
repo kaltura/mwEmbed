@@ -315,7 +315,7 @@
 				start: function (event, ui) {
 					embedPlayer.userSlide = true;
 					// Release the mouse when player is not focused
-					$(_this.getPlayer()).one('hidePlayerControls', function () {
+					$(_this.getPlayer()).one('hidePlayerControls onFocusOutOfIframe', function () {
 						$(document).trigger('mouseup');
 					});
 				},
@@ -378,6 +378,9 @@
 						'width': this.getConfig('minWidth')
 					});
 				}
+				this.$el.on("mouseup", function(){
+					_this.hideThumbnailPreview();
+				});
 			}
 			return this.$el;
 		}
