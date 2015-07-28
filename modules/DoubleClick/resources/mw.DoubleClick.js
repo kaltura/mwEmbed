@@ -218,7 +218,7 @@
 			var _this = this;
 			$( this.embedPlayer ).bind('KalturaSupport_AdOpportunity', function( event, cuePointWrapper ) {
 				if( cuePointWrapper.cuePoint.protocolType == 1 && _this.adCuePoints.indexOf(cuePointWrapper.cuePoint.id) === -1 ){ // Check for  protocolType == 1 ( type = vast )
-					_this.adTagUrl = cuePointWrapper.cuePoint.sourceUrl+"&r="+Math.random();
+					_this.adTagUrl = cuePointWrapper.cuePoint.sourceUrl;
 					if (cuePointWrapper.cuePoint.adType == 1){ // linear video
 						_this.embedPlayer.addPlayerSpinner();
 						_this.currentAdSlotType = "midroll";
