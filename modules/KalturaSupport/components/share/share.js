@@ -445,7 +445,11 @@
 					e.preventDefault();
 					window.location = url;
 				}else{
-					var opener = window.open(url,'_blank','width=626,height=436');
+					if (mw.isEdge()){
+						var opener = window.open(url);
+					}else{
+						var opener = window.open(url,'_blank','width=626,height=436');
+					}
 					// close the window if this is an email
 					if (url.indexOf("mailto") === 0){
 						setTimeout(function(){
