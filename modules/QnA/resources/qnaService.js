@@ -244,7 +244,7 @@ DAL for Q&A Module
 
             this.getKClient().doRequest([listMetadataProfileRequest], function (result) {
                 _this.metadataProfile = result[0].objects[0];
-                _this.userId=_this.qnaPlugin.getConfig("userId");
+                _this.userId=_this.qnaPlugin.getUserID();
                 deferred.resolve();
             });
 
@@ -559,6 +559,7 @@ DAL for Q&A Module
                     'filter:advancedSearch:items:item1:field': "/*[local-name()='metadata']/*[local-name()='Type']",
                     'filter:advancedSearch:items:item1:value': "Announcement",
 
+                    //find all AnswerOnAir cue points
                     'filter:advancedSearch:items:item2:objectType': "KalturaSearchCondition",
                     'filter:advancedSearch:items:item2:field': "/*[local-name()='metadata']/*[local-name()='Type']",
                     'filter:advancedSearch:items:item2:value': "AnswerOnAir"
