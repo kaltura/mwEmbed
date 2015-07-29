@@ -1,1 +1,8 @@
-hello
+<div class="relatedFilesContainer">
+    <% $.each(files, function(idx, file){ %>
+        <div class="file">
+
+                <a class="" data-click="download" href="<%=file.id%>"><%=file.filename%></a>
+        </div>
+    <% }); %>
+</div>

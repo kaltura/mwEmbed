@@ -1,35 +1,7 @@
-/**
- * Created by einatr on 7/9/15.
- */
-(function (mw, $) {
-    "use strict";
+.relatedFilesContainer{
+    background-color: #ff0000;
+}
 
-    mw.PluginManager.add('relatedFiles', mw.KBaseScreen.extend({
-
-        defaultConfig: {
-            parent: "controlsContainer",
-            align: "right",
-            tooltip: gM('mwe-embedplayer-relatedFiles'),
-            showTooltip: true,
-            displayImportance: 'medium',
-            templatePath: 'relatedFiles.tmpl.html',
-
-            downloadEnabled: true
-        },
-
-        iconBtnClass: "icon-share",//"icon-relatedFiles",
-        relatedFilesList: [],
-
-        setup: function () {
-            //alert("setup");
-        },
-        getTemplateData: function () {
-            return {
-                'relatedFiles': this,
-                'downloadEnabled': this.getConfig('downloadEnabled'),
-                'files': this.relatedFilesList
-            };
-        }
-    }));
-
-})(window.mw, window.jQuery);
+.file{
+    color:blue;
+}

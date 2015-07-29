@@ -21,6 +21,7 @@
         relatedFilesList: [],
 
         setup: function () {
+            //TODO: make plugin icon disabled; - onEnable/onDisable
             this.addBindings();
         },
 
@@ -55,6 +56,7 @@
             for(var i=0; i < attachments.length; i++){
                 _this.relatedFilesList.push(_this.createFile(attachments[i]));
             }
+            //TODO: make plugin icon enabled
         },
 
         createFile: function(attachment){
@@ -77,20 +79,25 @@
             var file={};
             file.filename = attachment.filename;
             file.size = attachment.size;
+            file.id = attachment.id;
 
+            return file;
+        },
+
+        download: function(e, id){
+            //alert(id);
             var urlRequest = {
                 'service': 'attachment_attachmentasset',
                 'action': 'geturl',
-                'id': attachment.id
+                'id': id
             };
 
-            this.getKClient().doRequest(urlRequest, function (urlResult) {
-                file.url = urlResult;
-                return file; //make promisse!!!
-            });
+             this.getKClient().doRequest(urlRequest, function (urlResult) {
+                 console.log(urlResult);
+             });
 
         },
-//TODO: make icone desabled till relatedFilesList is full
+
         getTemplateData: function () {
             return {
                 'relatedFiles': this,
