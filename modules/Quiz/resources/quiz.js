@@ -51,8 +51,11 @@
             ];
 
             _this.getKClient().doRequest(getQuizuserEntryIdAndQuizParams, function (data) {
-                if  (data[0].totalCount == 0) {alert('Error Connecting to Quiz');return}
-                if (!$.isEmptyObject(data[0].objects[0])) {
+                if (typeof data[0].code !== 'undefined' || typeof data[1].code !== 'undefined') {
+                    console.log('Error Connecting to Quiz : ' + (data[0].code));
+                    return
+                }
+                if (data[0].totalCount > 0 &&  !$.isEmptyObject(data[0].objects[0])  ) {
                     _this.kQuizUserEntryId = data[0].objects[0].id;
 
                     switch(String(data[0].objects[0].status)) {
