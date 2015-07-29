@@ -171,10 +171,13 @@
 		} ,
 		fallbackToUnicast: function () {
 			var _this = this;
+
 			var enableMulticastFallback = _this.getKalturaConfig( null , 'enableMulticastFallback' ) || _this.defaultEnableMulticastFallback;
 			if ( enableMulticastFallback ) {
 
 				mw.log( 'fallbackToUnicast: try unicast' );
+				_this.firstPlay=true;
+				_this.stopped=true;
 				//remove current source to fallback to unicast if multicast failed
 				for ( var i = 0 ; i < _this.mediaElement.sources.length ; i++ ) {
 					if ( _this.mediaElement.sources[i] == _this.mediaElement.selectedSource ) {
