@@ -46,6 +46,7 @@
 						_this.setOffSyncUI();
 					}
 					_this.prevIconClass = _this.unsyncIConClass;
+                    _this.getPlayer().setLiveOffSynch(true);
 				}
 			});
 
@@ -63,6 +64,9 @@
                     .click( function() {
                         if ( _this.onAirStatus && _this.getPlayer().isDVR() && _this.prevIconClass != _this.onAirIconClass ) {
                             _this.backToLive();
+                            _this.getPlayer().setLiveOffSynch(false);
+                        }else{
+                            _this.getPlayer().setLiveOffSynch(true);
                         }
                     });
 

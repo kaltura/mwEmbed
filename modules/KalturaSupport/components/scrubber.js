@@ -141,6 +141,10 @@
 			});
 		},
 		updatePlayheadUI: function (val) {
+            if( this.embedPlayer.isDVR() && !this.getPlayer().isLiveOffSynch() ) {
+                this.getComponent().slider('option', 'value', 999);
+                return;
+            }
             this.getComponent().slider('option', 'value', val);
 		},
 		setupThumbPreview: function () {
