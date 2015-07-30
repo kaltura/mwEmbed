@@ -584,7 +584,7 @@
 						.text( label )
 						.addClass( 'ad-component ad-skip-btn' )
 						.css({"position": "fixed","margin-bottom": 36+"px", "float": "right", "display": "none"})
-						.on("click", function(e){
+						.on("click touchstart", function(e){
 							e.stopPropagation();
 							e.preventDefault();
 							$( _this.embedPlayer).trigger( 'onAdSkip' );
