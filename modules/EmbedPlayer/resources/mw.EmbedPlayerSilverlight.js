@@ -34,6 +34,7 @@
 		isMulticast: false ,
 		isError: false ,
 		readyFuncs: [] ,
+		activeXid : "CKalturaClientAgentLauncher_ScriptableLabelControl",
 		// Create our player element
 		setup: function ( readyCallback ) {
 			var _this = this;
@@ -96,6 +97,47 @@
 			} );
 			return deferred.promise();
 		} ,
+		stopActiveX:function() {
+			$('#' + this.activeXid).remove();
+		},
+		runActiveX:function(multicastAddress) {
+			mw.log( 'run CKalturaClientAgentLauncher_ScriptableLabelControl');
+
+			try {
+
+
+				if (typeof window.external.msActiveXFilteringEnabled != "undefined"
+					&& window.external.msActiveXFilteringEnabled() == true) {
+					mw.log('msActiveXFilteringEnabled!!!');
+
+					return;
+				}
+
+				$('#' + this.activeXid).remove();
+				mw.log('create CKalturaClientAgentLauncher');
+				var cabPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/silverlight-player/Kaltura.eCDN.ClientAgent.ActiveX.CAB';
+
+				///add activex for authentication
+				$(".videoHolder").append("<object id='"+this.activeXid+"' " +
+					"codebase='"+cabPath+"'" +
+					" classid='CLSID:B4F3D882-ADF2-4674-8DC7-1A3AF3616CB7'>" +
+					"</object>");
+
+				try{
+					var ax = $('#' + this.activeXid)[0];
+						mw.log('before');
+						ax.Launch(multicastAddress);
+						mw.log('after');
+					}
+					catch (e) {
+						mw.log('exception ' + e.message);
+					}
+
+			} catch(e) {
+				mw.log('exception ' + e.message+  " "+ e.stack);
+
+			}
+		},
 		handleMulticastPlayManifest: function ( resolvedSrc , doEmbedFunc ) {
 			mw.log( 'handleMulticastPlayManifest ' + resolvedSrc );
 			var _this = this;
@@ -120,6 +162,7 @@
 						//first time
 						if ( !_this.multicastAddress ) {
 
+							_this.multicastAddressIp=response.multicastAddress;
 							_this.multicastAddress = multicastAddress;
 							_this.multicastSourceAddress=response.multicastSourceAddress;
 							_this.multicastPolicyOverMulticastEnabled = response.multicastPolicyOverMulticastEnabled;
@@ -170,6 +213,7 @@
 			}
 		} ,
 		fallbackToUnicast: function () {
+			this.stopActiveX();
 			var _this = this;
 
             if ( this.playerObject ) {
@@ -326,6 +370,10 @@
 							_this.fallbackToUnicast();
 						}
 					} , timeout );
+
+
+					_this.runActiveX(_this.multicastAddressIp);
+
 				}
 				_this.autoplay = _this.autoplay || _this.isMulticast;
 				flashvars.autoplay = _this.autoplay;
@@ -476,6 +524,7 @@
 
 			if (this.isLive()) {
 				this.gotFirstMulticastFrame=true;
+				this.stopActiveX();
 			}
 			//first durationChange indicate player is ready
 			if ( !this.durationReceived ) {
