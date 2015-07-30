@@ -98,11 +98,17 @@
 				//add OSMF HLS Plugin if the source is HLS
 				if (_this.isHlsSource(_this.mediaElement.selectedSource)) {
 					flashvars.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
-                    if(mw.getConfig("hlsSegmentBuffer")) {
-                        flashvars.KalturaHLS["segmentBuffer"] = mw.getConfig("hlsSegmentBuffer");
+                    if(mw.getConfig("hlsLiveSegmentBuffer")) {
+                        flashvars.KalturaHLS["liveSegmentBuffer"] = mw.getConfig("hlsLiveSegmentBuffer");
                     }
-                    if(mw.getConfig("hlsOverrideTargetDuration")) {
-                        flashvars.KalturaHLS["overrideTargetDuration"] = mw.getConfig("hlsOverrideTargetDuration");
+                    if(mw.getConfig("hlsInitialBufferTime")) {
+                        flashvars.KalturaHLS["initialBufferTime"] = mw.getConfig("hlsInitialBufferTime");
+                    }
+                    if(mw.getConfig("hlsExpandedBufferTime")) {
+                        flashvars.KalturaHLS["expandedBufferTime"] = mw.getConfig("hlsExpandedBufferTime");
+                    }
+                    if(mw.getConfig("hlsMaxBufferTime")) {
+                        flashvars.KalturaHLS["maxBufferTime"] = mw.getConfig("hlsMaxBufferTime");
                     }
                     if(mw.getConfig("hlsLogs")) {
                         flashvars.KalturaHLS["sendLogs"] = mw.getConfig("hlsLogs");
