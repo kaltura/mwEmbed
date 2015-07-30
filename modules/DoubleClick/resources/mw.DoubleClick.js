@@ -787,7 +787,9 @@
 			// and play ads automatically.
 			//
 			var adsRenderingSettings = new google.ima.AdsRenderingSettings();
-			adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
+			if (!this.getConfig("adTagUrl")){
+				adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true; // for manual VAST, get the SDK to restore the player
+			}
 			adsRenderingSettings.useStyledNonLinearAds = true;
 			this.adsManager = loadedEvent.getAdsManager( this.embedPlayer, adsRenderingSettings );
 			if ( _this.adManager != null ) {
@@ -1450,11 +1452,7 @@
 				// managed complete ... call clip done if content complete.
 				if( onContentComplete ){
 					if (_this.postRollCallback){
-						if (!mw.isMobileDevice()){
-							_this.postRollCallback();
-						}else{
-							_this.adsLoader.contentComplete();
-						}
+						_this.postRollCallback();
 					}
 					this.isdestroy = true;
 					this.destroy();
