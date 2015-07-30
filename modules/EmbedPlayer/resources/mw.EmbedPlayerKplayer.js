@@ -883,7 +883,7 @@
                 var _this = this;
                 this.bindHelper('bufferEndEvent', function () {
                     _this.unbindHelper('bufferEndEvent');
-                    _this.playerObject.seek(this.getDuration());
+                    _this.playerObject.seek(_this.getDuration());
                     //Unfreeze scrubber
                     _this.syncMonitor();
                 });
