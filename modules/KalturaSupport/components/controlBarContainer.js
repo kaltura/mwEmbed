@@ -9,8 +9,8 @@
 		keepOnScreen: false,
 
 		setup: function(){
-			// Exit if we're using native controls
-			if( this.getPlayer().useNativePlayerControls() ) {
+			// Exit if we're using native controls, and is not audio player
+			if( this.getPlayer().useNativePlayerControls() && !this.getPlayer().isAudioPlayer ) {
 				this.getPlayer().enableNativeControls();
 				return;
 			}

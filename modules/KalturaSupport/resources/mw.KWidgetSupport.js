@@ -137,7 +137,6 @@ mw.KWidgetSupport.prototype = {
 			}
 			var alt = gM('mwe-embedplayer-video-thumbnail-for', embedPlayer.evaluate('{mediaProxy.entry.name}'));
 			embedPlayer.updatePoster( thumbUrl, alt );
-			embedPlayer.isAudioPlayer = ( embedPlayer.kalturaPlayerMetaData.mediaType === 5 );
 		});
 
 		// Add black sources:
@@ -253,6 +252,8 @@ mw.KWidgetSupport.prototype = {
 		}
 		// Check for "image" mediaType ( 2 )
 		this.updateImagePlayerData(embedPlayer, playerData);
+		// Check for "audio" mediaType ( 5 )
+		this.updateAudioPlayerData(embedPlayer, playerData);
 		// Check for external media:
 		this.updateExternalPlayerData(embedPlayer, playerData);
 		// check for entry id not found:
@@ -468,6 +469,9 @@ mw.KWidgetSupport.prototype = {
 					.get( 0 )
 			);
 		}
+	},
+	updateAudioPlayerData: function(embedPlayer, playerData){
+		embedPlayer.isAudioPlayer = playerData.meta.mediaType === 5;
 	},
 	updateExternalPlayerData: function(embedPlayer, playerData){
 		// Check for external media:
