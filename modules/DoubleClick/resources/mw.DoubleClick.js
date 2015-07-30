@@ -583,7 +583,7 @@
 					$('<span />')
 						.text( label )
 						.addClass( 'ad-component ad-skip-btn' )
-						.css({"position": "fixed","margin-bottom": 36+"px", "float": "right", "display": "none"})
+						.css({"position": "absolute", "float": "right", "display": "none"})
 						.on("click touchstart", function(e){
 							e.stopPropagation();
 							e.preventDefault();
@@ -601,7 +601,7 @@
 					this.embedPlayer.getVideoHolder().append(
 						$('<span />')
 							.addClass( 'ad-component ad-skip-label' )
-							.css({"position": "fixed","margin-bottom": 36+"px", "float": "right", "display": "none"})
+							.css({"position": "absolute", "float": "right", "display": "none"})
 					);
 				}
 			}
