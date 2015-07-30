@@ -1142,7 +1142,9 @@
 						_this.embedPlayer.getPlayerElement().play();
 					},250);
 				}else{
-					_this.showSkipBtn();
+					if (!adInfo.skippable){
+						_this.showSkipBtn();
+					}
 				}
 			},'adLoaded', true);
 
