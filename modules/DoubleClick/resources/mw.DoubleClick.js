@@ -1009,7 +1009,9 @@
 				}
 				_this.adActive = true;
 				if (_this.isLinear) {
-					_this.showSkipBtn();
+					if (!ad.isSkippable()){
+						_this.showSkipBtn();
+					}
 					_this.playingLinearAd = true;
 					// hide spinner:
 					_this.embedPlayer.hideSpinner();
