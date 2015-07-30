@@ -6,6 +6,7 @@
 			"parent": "controlsContainer",
 			"order": 62,
 			"displayImportance": "high",
+			"iconClass": "icon-cc",
 			"align": "right",
 			"showTooltip": true,
 			"layout": "ontop", // "below"
@@ -50,6 +51,14 @@
 					this.defaultBottom += this.embedPlayer.layoutBuilder.getHeight();
 				}
 			}
+
+			this.embedPlayer.bindHelper("propertyChangedEvent", function(event, data){
+				if ( data.plugin === _this.pluginName ){
+					if ( data.property === "captions" ){
+						_this.getMenu().$el.find("li a")[data.value].click();
+					}
+				}
+			});
 
 			if ( this.getConfig('showEmbeddedCaptions') === true ) {
 
@@ -416,7 +425,7 @@
 			}
 
 			var captionsSrc;
-			if( mw.isIphone() && !mw.getConfig('disableTrackElement') ) {
+			if( mw.isIphone() && !mw.getConfig('disableTrackElement') && !this.getConfig('forceLoadLanguage') ) {
 				// getting generated vtt file from dfxp/srt
 				captionsSrc = mw.getConfig('Kaltura.ServiceUrl') +
 							"/api_v3/index.php/service/caption_captionasset/action/serveWebVTT/captionAssetId/" +
@@ -800,6 +809,8 @@
 				// Allow plugins to integrate with captions menu
 				this.getPlayer().triggerHelper('captionsMenuReady');
 
+				this.getPlayer().triggerHelper("updatePropertyEvent",{"plugin": this.pluginName, "property": "captions", "items": [{'label':gM('mwe-timedtext-no-subtitles'), 'value':gM('mwe-timedtext-no-subtitles')}]});
+
 				return this.getMenu();
 			} else {
 				this.getBtn().show();
@@ -812,6 +823,7 @@
 				this.addOffButton();
 			}
 
+			var items = [];
 			// Add text sources
 			$.each(sources, function( idx, source ){
 				_this.getMenu().addItem({
@@ -828,6 +840,7 @@
 					},
 					'active': ( _this.selectedSource === source && _this.getConfig( "displayCaptions" )  )
 				});
+				items.push({'label':source.label, 'value':source.label});
 			});
 
 			this.getActiveCaption();
@@ -835,6 +848,13 @@
 			if( this.getConfig('showOffButton') && this.getConfig('offButtonPosition') == 'last' ) {
 				this.addOffButton();
 			}
+
+			if ( this.getConfig('showOffButton')){
+				items.unshift({'label':'Off', 'value':'Off'});
+			}
+
+			// dispatch event to be used by a master plugin if defined
+			this.getPlayer().triggerHelper("updatePropertyEvent",{"plugin": this.pluginName, "property": "captions", "items": items, "selectedItem": this.getMenu().$el.find('.active a').text()});
 
 			// Allow plugins to integrate with captions menu
 			this.getPlayer().triggerHelper('captionsMenuReady');
@@ -847,6 +867,7 @@
 					'class': "offBtn"
 				},
 				'callback': function(){
+					_this.selectedSource = null;
 					_this.setConfig('displayCaptions', false);
 					// also update the cookie to "None"
 					_this.getPlayer().setCookie( _this.cookieName, 'None' );

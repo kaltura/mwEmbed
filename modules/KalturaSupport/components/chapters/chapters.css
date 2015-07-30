@@ -243,7 +243,6 @@
 }
 
 .chapterBox.collapsed .slideBoxToggle{
-    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
     -webkit-transform: rotate(-90deg);
     -moz-transform: rotate(-90deg);
     -ms-transform: rotate(-90deg);

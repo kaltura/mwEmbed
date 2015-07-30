@@ -22,7 +22,7 @@
 			var _this = this;
 			this.bind('showInlineDownloadLink', function(e, linkUrl){
 				_this.getComponent().attr({
-					'href': linkUrl,
+					'href': linkUrl.replace('playSessionId=','playSessionId=noev-'),
 					'target': '_blank'
 				});
 			});
@@ -36,7 +36,7 @@
 
 			this.bind('onShowControlBar', function(){
 				if( !mw.isIE8() && _this.getConfig("togglePause") && _this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
-					_this.$el.removeClass("icon-play").addClass("icon-pause");
+					_this.getComponent().removeClass("icon-play").addClass("icon-pause");
 					_this.show();
 				}
 			});

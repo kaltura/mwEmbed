@@ -502,6 +502,156 @@ button::-moz-focus-inner {
 	width: 0px;
 	height: 0px;
 }
+.smartContainerMenu{
+	background-color: rgba(255,255,255,0.9);
+	border-radius: 3px;
+	position: absolute;
+	color: #666666;
+	z-index: 10;
+	width: 320px;
+}
+.mobile .smartContainerMenu{
+	background-color: rgba(0,0,0,0.6);
+	border-radius: 0px;
+	position: absolute;
+	color: #ffffff;
+	z-index: 10;
+	width: 100%;
+	height: 100%;
+	left: 0px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-box-pack: center;
+	-moz-box-pack: center;
+	-ms-flex-pack: center;
+	-webkit-justify-content: center;
+	justify-content: center;
+	-webkit-box-align: center;
+	-moz-box-align: center;
+	-ms-flex-align: center;
+	-webkit-align-items: center;
+	align-items: center;
+}
+.smartContainerMenu p{
+	margin-top: 30px;
+	margin-bottom: 30px;
+}
+.smartContainerMenu .pluginIcon{
+	display: none;
+}
+.mobile .smartContainerMenu .pluginIcon{
+	display: block;
+	font-size: 78px;
+	padding-left: 30px;
+	padding-right: 30px;
+}
+.mobile .smartContainerMenu .pluginPropertyLabel{
+	display: none;
+}
+.mobile .smartContainerMenu .fakeCombo{
+	display: none;
+}
+.mobile .smartContainerMenu .hidden{
+	position: absolute;
+	visibility: visible;
+	width: 130px;
+	height: 100px;
+	margin-top: -100px;
+	opacity: 0;
+	-webkit-appearance: menulist-button;
+}
+.smartContainerMenu label{
+	letter-spacing: 0px;
+}
+
+.smartContainerMenu .pluginPropertyLabel{
+	color: #666666;
+	margin-left: 30px;
+	font-size: 17px;
+}
+.smartContainerMenu label{
+	color: #555555;
+	font-size: 12px;
+}
+.smartContainerMenu .pluginProperty.checkbox{
+	width: 14px;
+	margin-top: 30px;
+}
+.smartContainerMenu .hidden{
+	position: absolute;
+	visibility: hidden;
+	width: 0px;
+	height: 0px;
+}
+.smartContainerMenu .fakeCombo{
+	font-size: 11px;
+	font-weight: bold;
+	letter-spacing: 2px;text-transform: uppercase;
+	padding-top: 12px;
+	padding-bottom: 12px;
+	padding-left: 14px;
+	padding-right: 14px;
+	color: #999999;
+	border: 1px solid #999999;
+	border-radius: 3px;
+	width: 130px;
+	float: right;
+	margin-right: 30px;
+	margin-top: -8px;
+	cursor: pointer;
+}
+.smartContainerMenu .fakeCombo>i{
+	font-size: 8px;
+	float: right;
+	margin-top: 2px;
+}
+.smartContainerMenu ul{
+	background-color: white;
+	border: 1px solid #999999;
+	width: 138px;
+	float: right;
+	margin-right: 30px;
+	border-radius: 3px;
+	padding-right: 10px;
+	padding-left: 10px;
+	position: relative;
+	display: none;
+}
+.smartContainerMenu li{
+	list-style-type: none;
+	color: #666666;
+	font-size: 16px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #cccccc;
+	padding-left: 0px;
+	cursor: pointer;
+	height: 18px;
+}
+.smartContainerMenu li:hover{
+	font-weight: bold;
+}
+.smartContainerMenu li.last{
+	border-bottom: 0px;
+}
+.smartContainerMenu li.active{
+	font-weight: bold;
+}
+.smartContainerMenu li>i{
+	font-size: 9px;
+	float: right;
+	margin-top: 2px;
+	display: none;
+}
+.smartContainerMenu li.active>i{
+	display: block;
+}
 .timers {
 	position: relative;
 	font-size: 12px;
@@ -698,6 +848,7 @@ button::-moz-focus-inner {
 .mobile.fullscreen .controlsContainer {
 	margin-top: 28px !important;
 }
+
 .ui-tooltip {
 	background-color: #000000;
 	background-repeat: repeat-x;
@@ -992,6 +1143,17 @@ button::-moz-focus-inner {
 	margin-left: 16px;
 	margin-right: 12px;
 }
+.smartContainer{
+	font-size: 26px;
+	margin-right: 10px;
+	margin-left: 10px;
+	margin-top: 2px;
+	width: 46px;
+	background-color: transparent;
+}
+.smartContainer:hover{
+	background-color: transparent;
+}
 .fullScreenBtn{
 	font-size: 26px;
 	margin-right: 16px;
@@ -999,7 +1161,7 @@ button::-moz-focus-inner {
 	width: 26px;
 	background-color: transparent;
 }
-.mobile .fullScreenBtn{
+.mobile .controlsContainer .comp{
 	font-size: 18px !important;
 	margin-top: -14px !important;
 }
@@ -1284,6 +1446,15 @@ button::-moz-focus-inner {
 }
 .blackBackground{
 	background-color: #000000;
+}
+/* closed captions overwrite */
+.ttmlStyled {
+	color: white !important;
+	font-size: 22px !important;
+	text-shadow: 0px 1px 5px #000000 !important;
+	text-align: center !important;
+	line-height: 26px !important;
+	background: none !important;
 }
 @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }

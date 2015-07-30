@@ -1903,7 +1903,9 @@
 			// iPad can use html controls if its a persistantPlayer in the dom before loading )
 			// else it needs to use native controls:
 			if (mw.isIpad()) {
-				if (this.isPersistentNativePlayer() && mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') === true) {
+				if (mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen') && this.layoutBuilder && this.layoutBuilder.isInFullScreen()){
+					return true;
+				} else if (this.isPersistentNativePlayer() && mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') === true) {
 					return false;
 				} else {
 					// Set warning that your trying to do iPad controls without
@@ -3090,8 +3092,8 @@
             ]);
             if (!this.isStopped()) {
                 this.isFlavorSwitching = true;
-                // Get the exact play time from the video element ( instead of parent embed Player )
-                var oldMediaTime = this.getPlayerElement().currentTime;
+	            // Get the exact play time
+	            var oldMediaTime = this.currentTime;
                 var oldPaused = this.paused;
                 // Do a live switch
                 this.playerSwitchSource(source, function (vid) {
@@ -3184,15 +3186,20 @@
 
         handlePlayerError: function (data, shouldHandlePlayerError) {
             if (this.shouldHandlePlayerError || shouldHandlePlayerError) {
-                var message = data ? data : this.getKalturaMsg('ks-CLIP_NOT_FOUND');
-                /* there are two formats used to represent error messages*/
-                message = message.errorMessage !== undefined ? message.errorMessage : message;
-                if (!message || message == undefined){
-                    message = this.getKalturaMsg('ks-CLIP_NOT_FOUND');
-                }
+                var message = this.getErrorMessage(data);
                 this.showErrorMsg({ title: this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'), message: message });
 
             }
+        },
+
+        getErrorMessage: function(data){
+            var message = data ? data : this.getKalturaMsg('ks-CLIP_NOT_FOUND');
+            /* there are two formats used to represent error messages*/
+            message = message.errorMessage !== undefined ? message.errorMessage : message;
+            if (!message || message == undefined){
+                message = this.getKalturaMsg('ks-CLIP_NOT_FOUND');
+            }
+            return message;
         },
 
         /**

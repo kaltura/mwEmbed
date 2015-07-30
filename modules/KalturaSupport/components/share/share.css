@@ -235,6 +235,7 @@
 	height: 22px;
 	cursor: pointer;
 	z-index: 3;
+	color: white;
 }
 .nativeApp .share .share-close{
 	color: #d3d3d3;

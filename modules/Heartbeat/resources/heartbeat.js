@@ -34,8 +34,16 @@
 
         loadAdobeClasses: function(){
             var _this = this;
-            var loadVisitor = $.ajax(mw.getMwEmbedPath()+"modules/Heartbeat/resources/VisitorAPI.js");
-            var loadAppMeasurement = $.ajax(mw.getMwEmbedPath()+"modules/Heartbeat/resources/AppMeasurement.js");
+            var loadVisitor = $.ajax({
+                url: mw.getMwEmbedPath()+"modules/Heartbeat/resources/VisitorAPI.js",
+                dataType : "script",
+                timeout : 5000
+            });
+            var loadAppMeasurement = $.ajax({
+                url: mw.getMwEmbedPath()+"modules/Heartbeat/resources/AppMeasurement.js",
+                dataType : "script",
+                timeout : 5000
+            });
             $.when(loadVisitor, loadAppMeasurement).then(function() {
                 _this.setupAdobeVars();
                 _this.setupHeartBeatPlugin();
@@ -76,6 +84,7 @@
                 _this.trackAdStart({id:adID, position:adIndex, length:adDuration, name:mediaName}); });
             this.embedPlayer.bindHelper('onAdComplete', function(){ _this.trackAdComplete(); });
 
+            this.embedPlayer.bindHelper('embedPlayerError', function (e, data) { _this.trackPlayerError(_this.getPlayer().getErrorMessage(data)); });
         },
 
         setupHeartBeatPlugin: function(){
@@ -175,8 +184,10 @@
         },
 
         trackPlay: function(){
-            this.videoPlayerPlugin.trackPlay();
-            this.sendTrackEventMonitor("trackPlay");
+            if(!this.getPlayer().sequenceProxy.isInSequence){// don't send trackPlay if the player plays an ad
+                this.videoPlayerPlugin.trackPlay();
+                this.sendTrackEventMonitor("trackPlay");
+            }
         },
 
         trackComplete: function(){
@@ -244,6 +255,11 @@
         trackChapterComplete: function(){
             this.videoPlayerPlugin.trackChapterComplete();
             this.sendTrackEventMonitor("trackChapterComplete");
+        },
+
+        trackPlayerError: function(msg){
+            this.videoPlayerPlugin.trackVideoPlayerError(msg);
+            this.sendTrackEventMonitor("trackPlayerError");
         },
 
         sendTrackEventMonitor: function(methodName) {
