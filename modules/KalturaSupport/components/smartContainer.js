@@ -167,7 +167,7 @@
 									menu.hide();                                  // close the menu
 								});
 								var menuItemHeight = menu.find("li").height() +  2 * parseInt(menu.find("li").css("padding-top")); // calculate menu item height to be used for the menu vertical position calculation
-								menu.css("margin-top", -1 * (items.length+1) * menuItemHeight - items.length + parseInt(fakeCombo.css("margin-top"))/2 + "px"); // set menu vertical position according to its size and the fake combo size
+								menu.css("margin-top", -1 * (items.length+1) * menuItemHeight + 7 + "px"); // set menu vertical position according to its size
 
 							}
 							if ( initialValue !== undefined && initialValue.length ){
