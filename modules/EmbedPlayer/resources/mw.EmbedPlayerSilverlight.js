@@ -172,24 +172,26 @@
 		fallbackToUnicast: function () {
 			var _this = this;
 
+            if ( this.playerObject ) {
+                this.playerObject.stop();
+            }
+            this.stopped = true;
+
 			var enableMulticastFallback = _this.getKalturaConfig( null , 'enableMulticastFallback' ) || _this.defaultEnableMulticastFallback;
 			if ( enableMulticastFallback ) {
-
 				mw.log( 'fallbackToUnicast: try unicast' );
-				_this.firstPlay=true;
-				_this.stopped=true;
-				//remove current source to fallback to unicast if multicast failed
+                //remove current source to fallback to unicast if multicast failed
 				for ( var i = 0 ; i < _this.mediaElement.sources.length ; i++ ) {
 					if ( _this.mediaElement.sources[i] == _this.mediaElement.selectedSource ) {
-						if ( _this.playerObject ) {
-							_this.playerObject.stop();
-						}
-						_this.mediaElement.sources.splice( i , 1 );
-
-						_this.setupSourcePlayer();
-						return;
-					}
+                        _this.mediaElement.sources.splice(i, 1);
+                        break;
+                    }
 				}
+                _this.bindHelper("playerReady", function(){
+                    _this.firstPlay = true; //resume live playback when the new player is ready
+                    return;
+                });
+                _this.setupSourcePlayer(); //switch player
 			} else {
 				mw.log( "fallbackToUnicast: stop here since we don't allow multicast failver" );
 				var errorObj = {message: gM( 'ks-LIVE-STREAM-NOT-AVAILABLE' ) , title: gM( 'ks-ERROR' )};
