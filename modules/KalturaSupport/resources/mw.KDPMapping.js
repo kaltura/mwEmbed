@@ -82,7 +82,7 @@
 		},
 
 		registerDefaultFormaters: function() {
-			mw.formaters().register({
+			mw.util.formaters().register({
 				timeFormat: function( value ){
 					return mw.seconds2npt( parseFloat(value) );
 				},
@@ -595,8 +595,8 @@
 				var expArr = expression.split('|');
 				expression = expArr[0];
 				formatFunc = expArr[1];
-				if( mw.formaters().exists(formatFunc) ){
-					formatFunc = mw.formaters().get(formatFunc);
+				if( mw.util.formaters().exists(formatFunc) ){
+					formatFunc = mw.util.formaters().get(formatFunc);
 				} else {
 					formatFunc = null;
 				}
