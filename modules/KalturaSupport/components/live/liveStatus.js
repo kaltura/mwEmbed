@@ -39,17 +39,21 @@
 				}
 			} );
 
-			this.bind( 'seeked seeking onpause', function() {
+			this.bind( 'seeked seeking onpause', function(e, currentTime) {
 				if ( _this.getPlayer().isDVR() ) {
 					//live is off-synch
 					if ( _this.onAirStatus ) {
 						_this.setOffSyncUI();
 					}
 					_this.prevIconClass = _this.unsyncIConClass;
-                    _this.getPlayer().setLiveOffSynch(true);
+
+                    if(currentTime && _this.getPlayer().getDuration() - currentTime < 10){ // if user seeks 1 second or less near the live edge -> move back to live
+                        _this.backToLive();
+                    }else {
+                        _this.getPlayer().setLiveOffSynch(true);
+                    }
 				}
 			});
-
 		},
 		getComponent: function() {
 			var _this = this;
@@ -64,7 +68,6 @@
                     .click( function() {
                         if ( _this.onAirStatus && _this.getPlayer().isDVR() && _this.prevIconClass != _this.onAirIconClass ) {
                             _this.backToLive();
-                            _this.getPlayer().setLiveOffSynch(false);
                         }else{
                             _this.getPlayer().setLiveOffSynch(true);
                         }
@@ -83,6 +86,7 @@
 			}  else {
 				this.getPlayer().removePoster();
 				this.getPlayer().backToLive();
+                this.getPlayer().setLiveOffSynch(false);
 			}
 		},
 
