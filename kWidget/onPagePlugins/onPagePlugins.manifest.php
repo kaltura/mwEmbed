@@ -403,7 +403,7 @@ return array(
             'DynaTransAdditionalCSS' => array(
                 'doc' => "Additional CSS to inject into the page that hosts the player. (Optional)",
                 'type' => 'string',
-                'initvalue' => "#wrapper.video{margin-bottom:-56.25%}.action-edit #wrapper.video{margin-bottom:0}#mediaContainer #wrapper.video{height:auto;padding-bottom:0}#mediaContainer #wrapper.video #player div.kWidgetIframeContainer{position:relative;height:400px;left:auto;top:auto}.entryTitle,.stat_data{margin-top:20px}#mediaContainer #wrapper.video #player div#cielo24-iframe-wrapper-kplayer{background:#FFF;height:auto;left:auto;position:relative;top:auto;width:auto}#mediaContainer #wrapper.video #player #cielo24-iframe-wrapper-kplayer iframe{background-color:#FFF;height:inherit;left:unset;position:unset;top:unset;width:none}"
+                'initvalue' => ".action-edit #wrapper.video{margin-bottom:0}#mediaContainer #wrapper.video{height:auto;padding-bottom:0 !important}#mediaContainer #wrapper.video #player div.kWidgetIframeContainer{position:relative;height:400px;left:auto;top:auto}.entryTitle,.stat_data{margin-top:20px}#mediaContainer #wrapper.video #player div#cielo24-iframe-wrapper-kplayer{background:#FFF;height:auto;left:auto;position:relative;top:auto;width:auto}#mediaContainer #wrapper.video #player #cielo24-iframe-wrapper-kplayer iframe{background-color:#FFF;height:inherit;left:unset;position:unset;top:unset;width:none}"
             ),
             'DynaTransEnableAdditionalCSS' => array(
                 'doc' => "If set to true, the additional CSS will be injected into the page that hosts the player.",
