@@ -46,7 +46,7 @@
 					case 'buttonsColor':
 						$(".btn").not(".playHead").attr("style","background-color: " + value + " !important; color: "+ this.getConfig('buttonsIconColor') +" !important; text-shadow: "+ this.getConfig('dropShadowColor') +" !important");
 						if (this.getConfig('applyToLargePlayButton')) {
-							$(".largePlayBtn").attr("style", "background-color: " + value + " !important");
+							$(".largePlayBtn").attr("style", "background-color: " + value + " !important; color: "+ this.getConfig('buttonsIconColor') +" !important;");
 						}
 						break;
 					case 'buttonsIconColor':
