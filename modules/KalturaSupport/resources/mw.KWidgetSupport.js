@@ -1046,12 +1046,19 @@ mw.KWidgetSupport.prototype = {
 				var entryResult =  window.kalturaIframePackageData.entryResult;
 				_this.handlePlayerData( embedPlayer, entryResult );
 				//if we dont have special widgetID or the KS is defined continue as usual
-				if ( "_" + embedPlayer.kpartnerid == playerRequest.widget_id || !$.isNullOrUndefined(_this.kClient.getKs())  ) {
+				if ( "_" + embedPlayer.kpartnerid == playerRequest.widget_id || _this.kClient.getKs() ) {
 					callback( entryResult );
 				}else{
 					//if we have special widgetID and we dont have a KS - ask for KS before continue the process
 					this.kClient.forceKs(playerRequest.widget_id,function(ks) {
 						_this.kClient.setKs( ks );
+						if ( window.kalturaIframePackageData.playerConfig && !window.kalturaIframePackageData.playerConfig.vars ) {
+							window.kalturaIframePackageData.playerConfig.vars = {};
+						}
+						window.kalturaIframePackageData.playerConfig.vars.ks = ks;
+						callback( entryResult );
+					},function(){
+						mw.log("Error occur while trying to create widget KS");
 						callback( entryResult );
 					});
 				}

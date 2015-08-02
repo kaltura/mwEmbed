@@ -57,7 +57,7 @@ kWidget.api.prototype = {
 	getKs: function(){
 		return this.ks;
 	},
-	forceKs:function(wid,callback){
+	forceKs:function(wid,callback,errorCallback){
 		if( this.getKs() ){
 			callback( this.getKs() );
 			return true;
@@ -73,7 +73,7 @@ kWidget.api.prototype = {
 		this.doRequest( param, function( data ){
 			_this.ks = data.ks;
 			callback( _this.ks );
-		});
+		},null,errorCallback);
 	},
 	/**
 	 * Do an api request and get data in callback
