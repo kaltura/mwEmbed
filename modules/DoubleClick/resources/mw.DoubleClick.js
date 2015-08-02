@@ -79,6 +79,10 @@
 
 		localizationCode: null,
 
+		trackCuePoints: false,
+		adCuePoints: [],
+		skipTimeoutId: null,
+
 		init: function( embedPlayer, callback, pluginName ){
 			var _this = this;
 			if (mw.getConfig( 'localizationCode' )){
@@ -96,6 +100,8 @@
 			// reset the contentDoneFlag flags:
 			this.contentDoneFlag = null;
 			this.allAdsCompletedFlag = null;
+
+			this.trackCuePoints = this.getConfig("trackCuePoints") == true && !_this.getConfig( 'adTagUrl' );
 
 			// remove any old bindings:
 			embedPlayer.unbindHelper( this.bindPostfix );
@@ -118,6 +124,9 @@
 			if ( _this.getConfig( 'leadWithFlash' ) !== undefined ) {
 				_this.leadWithFlash = _this.getConfig( 'leadWithFlash' );
 			}
+			if ( _this.getConfig( 'prerollUrl' ) !== undefined && !_this.getConfig( 'adTagUrl' )) {
+				_this.adTagUrl = _this.getConfig( 'prerollUrl' );
+			}
 
 			if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
 				_this.isNativeSDK = true;
@@ -129,12 +138,20 @@
 				return;
 			}
 
+			if ( this.embedPlayer.getRawKalturaConfig('noticeMessage')){
+				embedPlayer.setKalturaConfig( 'doubleClick', 'enableCountDown',true );
+				embedPlayer.setKalturaConfig( 'doubleClick', 'countdownText',this.embedPlayer.getRawKalturaConfig('noticeMessage','text') );
+			}
 			if ( this.getConfig( 'enableCountDown' ) === true){
 				if ( !_this.getConfig( 'countdownText' ) ){
 					embedPlayer.setKalturaConfig( 'doubleClick', 'countdownText','Advertisement: Video will resume in {sequenceProxy.timeRemaining} seconds');
 				}
 			}else{
 				embedPlayer.setKalturaConfig( 'doubleClick', 'countdownText',null);
+			}
+
+			if ( this.trackCuePoints ){
+				this.handleCuePoints();
 			}
 			if ( mw.isIE8() || mw.isIE9() || _this.leadWithFlash ) {
 				if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
@@ -172,20 +189,17 @@
 				google.ima.settings.setPlayerType("kaltura/mwEmbed");
 				google.ima.settings.setPlayerVersion(mw.getConfig("version"));
 
-				if( _this.getConfig( "adTagUrl" ) ) {
-					// Check for adPattern
-					if ( _this.getConfig( 'adPattern' ) ) {
-						var adIndex = _this.getAdPatternIndex();
-						mw.log( "DoubleClick:: adPattern: " + _this.getConfig( 'adPattern' ) +
-							" on index: " + adIndex );
-						if ( adIndex === 'A' ) {
-							// Managed bindings
-							_this.addManagedBinding();
-						}
-					} else {
-						// No defined ad pattern always use managed bindings
+				// Check for adPattern
+				if ( _this.getConfig( 'adPattern' ) ) {
+					var adIndex = _this.getAdPatternIndex();
+					mw.log( "DoubleClick:: adPattern: " + _this.getConfig( 'adPattern' ) + " on index: " + adIndex );
+					if ( adIndex === 'A' ) {
+						// Managed bindings
 						_this.addManagedBinding();
 					}
+				} else {
+					// No defined ad pattern always use managed bindings
+					_this.addManagedBinding();
 				}
 				// Issue the callback to continue player build out:
 				callback();
@@ -199,6 +213,29 @@
 			}
 			$( _this.embedPlayer ).data( 'doubleClickRestore',restoreOnInit );
 
+		},
+		handleCuePoints: function(){
+			var _this = this;
+			$( this.embedPlayer ).bind('KalturaSupport_AdOpportunity', function( event, cuePointWrapper ) {
+				if( cuePointWrapper.cuePoint.protocolType == 1 && _this.adCuePoints.indexOf(cuePointWrapper.cuePoint.id) === -1 ){ // Check for  protocolType == 1 ( type = vast )
+					_this.adTagUrl = cuePointWrapper.cuePoint.sourceUrl;
+					if (cuePointWrapper.cuePoint.adType == 1){ // linear video
+						_this.embedPlayer.addPlayerSpinner();
+						_this.currentAdSlotType = "midroll";
+					}else{
+						_this.currentAdSlotType = "overlay";
+						if ( _this.getConfig("timeout") ){ // support timeout Flashvar for overlays
+							setTimeout(function(){
+								if ( _this.adsManager ){
+									_this.adsManager.stop();
+								}
+							}, parseFloat( _this.getConfig("timeout") ) * 1000);
+						}
+					}
+					_this.adCuePoints.push(cuePointWrapper.cuePoint.id);
+					_this.requestAds();
+				}
+			});
 		},
 		removeAdContainer: function(){
 			var $containerAd = $('#' + this.getAdContainerId() );
@@ -255,9 +292,6 @@
 		},
 		copyFlashvarsToKDP: function(embedPlayer, pluginName){
 			var flashVars = embedPlayer.getKalturaConfig(pluginName);
-			if (flashVars['countdownText']) {
-				flashVars['countdownText'] = escape(flashVars['countdownText']); // escape countdownText to support & and ' characters
-			}
 
 			this.parseAdTagUrlParts(embedPlayer, pluginName);
 			//Escape adTagUrl to prevent flash string parsing error
@@ -265,7 +299,7 @@
 			flashVars['cust_params'] = this.cust_params;
 
 			//we shouldn't send these params, they are unnecessary and break the flash object
-			var ignoredVars = ['path', 'customParams', 'preSequence', 'postSequence' ];
+			var ignoredVars = ['path', 'customParams', 'preSequence', 'postSequence', 'postrollUrl', 'countdownText', 'prerollUrl' ];
 			for ( var i=0; i< ignoredVars.length; i++ ) {
 				delete flashVars[ignoredVars[i]];
 			}
@@ -361,9 +395,15 @@
 					// Setup the restore callback
 					_this.postRollCallback = callback;
 					//no need to request ads
-					if ( _this.isLinear === false || _this.allAdsCompletedFlag || _this.adLoaderErrorFlag ){
+					if ( _this.getConfig("adTagUrl") && ( _this.isLinear === false || _this.allAdsCompletedFlag || _this.adLoaderErrorFlag) ){
 						_this.restorePlayer(true);
 					}
+				}
+				if ( _this.getConfig("postrollUrl") && !_this.getConfig("adTagUrl") ){
+					_this.contentDoneFlag = true;
+					_this.adTagUrl = _this.getConfig("postrollUrl");
+					_this.currentAdSlotType = "postroll";
+					_this.requestAds("postroll");
 				}
 			});
 			_this.embedPlayer.bindHelper('Kaltura_SendNotification' + this.bindPostfix, function (event, notificationName, notificationData) {
@@ -532,6 +572,59 @@
 			}
 			return this.adDisplayContainer;
 		},
+		addSkipSupport: function(){
+			var _this = this;
+			if ( this.embedPlayer.getRawKalturaConfig('skipBtn') && this.embedPlayer.getVideoHolder().find(".ad-skip-btn").length === 0){
+				var label = "Skip Ad";
+				if( this.embedPlayer.getKalturaConfig( 'skipBtn', 'label' ) ){
+					label = this.embedPlayer.getKalturaConfig( 'skipBtn', 'label' );
+				}
+				this.embedPlayer.getVideoHolder().append(
+					$('<span />')
+						.text( label )
+						.addClass( 'ad-component ad-skip-btn' )
+						.css({"position": "absolute", "float": "right", "display": "none"})
+						.on("click touchstart", function(e){
+							e.stopPropagation();
+							e.preventDefault();
+							$( _this.embedPlayer).trigger( 'onAdSkip' );
+							if ( _this.isChromeless ){
+								_this.embedPlayer.getPlayerElement().sendNotification( 'skipAd' );
+							}else{
+								_this.adsManager.stop();
+							}
+							$(this).hide();
+							return false;
+						})
+				);
+				if ( this.embedPlayer.getRawKalturaConfig('skipNotice') && this.embedPlayer.getVideoHolder().find(".ad-skip-label").length === 0){
+					this.embedPlayer.getVideoHolder().append(
+						$('<span />')
+							.addClass( 'ad-component ad-skip-label' )
+							.css({"position": "absolute", "float": "right", "display": "none"})
+					);
+				}
+			}
+		},
+		showSkipBtn: function(){
+			if( this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' ) ){
+				$(".ad-skip-label").show();
+				this.skipTimeoutId = setTimeout(function(){
+					$(".ad-skip-btn").show();
+					$(".ad-skip-label").hide();
+				},parseFloat(this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' ) * 1000))
+			}else{
+				$(".ad-skip-btn").show();
+				$(".ad-skip-label").hide();
+			}
+		},
+		hideSkipBtn: function(){
+			if( this.skipTimeoutId !== null ){
+				clearTimeout(this.skipTimeoutId);
+				this.skipTimeoutId = null;
+			}
+			$(".ad-skip-btn").hide();
+		},
 		/**
 		 * Adds custom params to ad url.
 		 */
@@ -577,7 +670,16 @@
 		},
 		// This function requests the ads.
 		requestAds: function( adType ) {
+			if (!this.adTagUrl){
+				if ($.isFunction(this.restorePlayerCallback))
+				{
+					this.restorePlayerCallback();
+				}
+				this.getAdDisplayContainer().initialize();
+				return;
+			}
 			var _this = this;
+			this.addSkipSupport();
 			this.parseAdTagUrlParts(this.embedPlayer, this.pluginName);
 			var adTagUrl = this.adTagUrl;
 			var cust_params = this.cust_params;
@@ -684,7 +786,12 @@
 			// previously and the content element, so the SDK can track content
 			// and play ads automatically.
 			//
-			_this.adsManager = loadedEvent.getAdsManager( this.embedPlayer );
+			var adsRenderingSettings = new google.ima.AdsRenderingSettings();
+			if (!this.getConfig("adTagUrl")){
+				adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true; // for manual VAST, get the SDK to restore the player
+			}
+			adsRenderingSettings.useStyledNonLinearAds = true;
+			this.adsManager = loadedEvent.getAdsManager( this.embedPlayer, adsRenderingSettings );
 			if ( _this.adManager != null ) {
 				_this.adManagerLoaded = true;
 			}
@@ -794,8 +901,10 @@
 							_this.embedPlayer.onLoadedCallback = function() {
 								//Restore original onLoadedCallback
 								_this.embedPlayer.onLoadedCallback = orgOnLoadedCallback;
-								_this.embedPlayer.seek( _this.timeToReturn );
-								_this.timeToReturn = null;
+								if ( _this.getConfig("adTagUrl") ){
+									_this.embedPlayer.seek( _this.timeToReturn );
+									_this.timeToReturn = null;
+								}
 							};
 						}
 						_this.embedPlayer.play();
@@ -854,10 +963,11 @@
 					// if on iPad hide the quicktime logo:
 					_this.hidePlayerOffScreen( _this.getAdContainer() );
 					// show notice message
-					_this.embedPlayer.getInterface().find(".ad-notice-label").show();
+					_this.embedPlayer.getInterface().find(".ad-notice-label").text("").show();
 					// Monitor ad progress
 					_this.monitorAdProgress();
 				} else{
+					_this.embedPlayer.getInterface().find(".ad-notice-label").hide();
 					_this.restorePlayer();
 				}
 
@@ -899,6 +1009,9 @@
 				}
 				_this.adActive = true;
 				if (_this.isLinear) {
+					if (!ad.isSkippable()){
+						_this.showSkipBtn();
+					}
 					_this.playingLinearAd = true;
 					// hide spinner:
 					_this.embedPlayer.hideSpinner();
@@ -947,6 +1060,7 @@
 				$(_this.embedPlayer).trigger('onAdComplete',[ad.getAdId(), mw.npt2seconds($(".currentTimeLabel").text())]);
 				_this.duration= -1;
 				_this.embedPlayer.getInterface().find(".largePlayBtn").css(	"z-index", "");
+				_this.hideSkipBtn();
 			});
 			// Resume content:
 			adsListener( 'CONTENT_RESUME_REQUESTED', function(){
@@ -1031,12 +1145,17 @@
 					setTimeout(function(){
 						_this.embedPlayer.getPlayerElement().play();
 					},250);
+				}else{
+					if (!adInfo.skippable){
+						_this.showSkipBtn();
+					}
 				}
 			},'adLoaded', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				mw.log("DoubleClick:: adCompleted");
 				$(_this.embedPlayer).trigger('onAdComplete',[adInfo.adID, mw.npt2seconds($(".currentTimeLabel").text())]);
+				_this.hideSkipBtn();
 			},'adCompleted', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
@@ -1078,6 +1197,7 @@
 				if (_this.getConfig('countdownText')){
 					_this.embedPlayer.getInterface().find(".ad-notice-label").text(_this.getConfig('countdownText'));
 				}
+				_this.updateRemainingAdTime(adInfo.time);
 			},'adRemainingTimeChange', true);
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
@@ -1127,14 +1247,6 @@
 				},100);
 			},'adsLoadError', true);
 
-		},
-
-		isPageshowEventSupported: function() {
-			if( mw.isIOS8() ) {
-				return false;
-			}
-
-			return true;
 		},
 
 		getPlayerSize: function(){
@@ -1193,7 +1305,10 @@
 					_this.contentDoneFlag = true;
 					_this.adsLoader.contentComplete();
 					_this.embedPlayer._propagateEvents = false;
-					return false;
+				}
+				if (!_this.getConfig("adTagUrl") && !_this.getConfig("postrollUrl")){
+					_this.currentAdSlotType = "postroll";
+					_this.restorePlayer(true);
 				}
 
 			});
@@ -1280,8 +1395,16 @@
 			if (_this.getConfig('countdownText')){
 				this.embedPlayer.getInterface().find(".ad-notice-label").text(_this.getConfig('countdownText'));
 			}
+			_this.updateRemainingAdTime(_this.duration - _this.adsManager.getRemainingTime());
 		},
 
+		updateRemainingAdTime: function(remainTime){
+			if ( this.embedPlayer.getInterface().find(".ad-skip-label").length ){
+				var offsetRemaining = Math.max(Math.ceil(parseFloat(this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' )) - remainTime), 0);
+				this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining', offsetRemaining );
+				this.embedPlayer.getInterface().find(".ad-skip-label").text(this.embedPlayer.evaluate( this.embedPlayer.getRawKalturaConfig('skipNotice','text')) );
+			}
+		},
 		// Handler for various ad errors.
 		onAdError: function( errorEvent ) {
 			var errorMsg = ( typeof errorEvent.getError != 'undefined' ) ? errorEvent.getError() : errorEvent;
@@ -1294,11 +1417,11 @@
 				this.adsManager.unload();
 			}
 			if (this.embedPlayer.sequenceProxy.isInSequence){
-				this.restorePlayer();
+				this.restorePlayer(this.contentDoneFlag);
 			}
 		},
 		restorePlayer: function( onContentComplete, adPlayed ){
-			if (this.isdestroy){
+			if (this.isdestroy && this.getConfig("adTagUrl")){ // DFP trafficed and already destroyed
 				return;
 			}
 			mw.log("DoubleClick::restorePlayer: content complete:" + onContentComplete);
@@ -1360,9 +1483,11 @@
 		destroy:function(){
 			// remove any old bindings:
 			var _this = this;
-			this.embedPlayer.unbindHelper( this.bindPostfix );
+			if ( this.getConfig("adTagUrl") || this.currentAdSlotType === "postroll" ){
+				this.embedPlayer.unbindHelper( this.bindPostfix );
+			}
 			if (!this.isChromeless){
-				if ( this.playingLinearAd ) {
+				if ( this.getConfig("adTagUrl") && this.playingLinearAd ) {
 					this.restorePlayer(true);
 				}
 				setTimeout(function(){
@@ -1376,7 +1501,7 @@
 					this.embedPlayer.getPlayerElement().sendNotification( 'destroy' );
 				}
 			}
-			this.contentDoneFlag= false;
+			this.contentDoneFlag = false;
 		}
 	};
 
