@@ -645,6 +645,7 @@ mw.KWidgetSupport.prototype = {
 
 			$.ajax({
 				url: srcURL + qp + "responseFormat=jsonp",
+timeout: 7000,
 				dataType: 'jsonp',
 				success: function( playmanifest ){
 					var flavors = playmanifest.flavors;
@@ -1518,12 +1519,12 @@ mw.KWidgetSupport.prototype = {
 				var index = deviceSources[inx]['src'].lastIndexOf('/a.');
 				deviceSources[inx]['src'] = deviceSources[inx]['src'].substring(0, index) + ksStr +
 					'/referrer/' + referrer +
-					'/clientTag/' + clientTag +
+					'/clientTag/' + clientTag +'/playSessionId/' + _this.getGUID() +
 					deviceSources[inx]['src'].substring(index) ;
 			} else {
 				deviceSources[inx]['src'] = deviceSources[inx]['src'] +
 					'?referrer=' + referrer + ksQueryString +
-					'&clientTag=' + clientTag;
+					'&clientTag=' + clientTag + '&playSessionId=' + _this.getGUID();
 			}
 		});
 		
@@ -1600,7 +1601,7 @@ mw.KWidgetSupport.prototype = {
 		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/' + format + '/protocol/' + protocol + '/uiConfId/' + embedPlayer.kuiconfid +  '/a.' + extension;
 		// Append KS & Referrer
 		function getKs() {
-			srcUrl += '?referrer=' + base64_encode( _this.getHostPageUrl() );
+			srcUrl += '?referrer=' + base64_encode( _this.getHostPageUrl() ) + '&playSessionId=' + _this.getGUID()+ "&clientTag=html5:v" + window[ "MWEMBED_VERSION" ];
 			var deferred = $.Deferred();
 			var ks = _this.kClient.getKs();
 			if( ks ){
