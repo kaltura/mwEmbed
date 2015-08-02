@@ -13,7 +13,7 @@
 		defaultMulticastStartTimeout: 10000 ,
 		defaultMulticastKeepAliveInterval: 10000 ,
 		defaultMulticastKESKtimeout: 10000 ,
-		defaultMulticastKESKrety: 2000 ,
+		defaultMulticastKESStartInterval: 2000 ,
 		multicastAddress: null ,
 		defaultEnableMulticastFallback: true ,
 		containerId: null ,
@@ -107,23 +107,27 @@
 			if ( resolvedSrc.indexOf( "http" ) === 0 ) {
 				this.multiastServerUrl = resolvedSrc;
 				var startFailoverFromMulticastServer = function () {
-					_this.isError = true;
 
-					if ( _this.playerObject ) {
-						_this.playerObject.stop();
+					if (_this.couldConnectToKES) {
+						_this.isError = true;
+
+						if (_this.playerObject) {
+							_this.playerObject.stop();
+						}
+						_this.stopped = true;
+
+
+						_this.bindHelper("playerReady", function () {
+							_this.firstPlay = true; //resume live playback when the new player is ready
+						});
+						_this.setupSourcePlayer(); //switch player
 					}
-					_this.stopped = true;
-
-
-					_this.bindHelper("playerReady", function(){
-						_this.firstPlay = true; //resume live playback when the new player is ready
-					});
-					_this.setupSourcePlayer(); //switch player
 				};
 				var onKESResponse = function ( response ) {
 
 					mw.log( 'EmbedPlayerSPlayer got multicast details from KES: ' + JSON.stringify( response ) );
 
+					_this.couldConnectToKES=true;
 
 					//verify we got a valid response from KES
 					if ( response && response.multicastAddress && response.multicastPort && response.hls ) {
@@ -139,7 +143,6 @@
 							_this.multicastPolicyOverMulticastEnabled = response.multicastPolicyOverMulticastEnabled;
 							_this.multicastSessionId = response.id;
 							doEmbedFunc( multicastAddress );
-							startMultiastServerKeepAlive();
 
 						} else {
 							if ( _this.multicastAddress !== multicastAddress ||
@@ -152,28 +155,27 @@
 					} else {
 						if (response && response.state==="Loading") {
 
-							var retryTime= this.getKalturaConfig( null , 'multicastKESKrety' ) || this.defaultMulticastKESKrety ,
-							mw.log('KES still loading, retrying in '+retryTime+' msec');
-							_this.keepMCStartTimeout =setTimeout(function() {
-								_this.connectToKES( resolvedSrc ).then(onKESResponse, startFailoverFromMulticastServer);
-								_this.keepMCStartTimeout=null;
-							},retryTime);
+							mw.log('KES still loading, retrying later');
 						} else {
-							mw.log( 'Invalid multicast address/port returned from KES' );
-							_this.isError = true;
-							_this.fallbackToUnicast();
+							if ( !_this.multicastAddress ) { //only if we never got multicast result we should display that, otherwise just keepon trying
+								mw.log('Invalid multicast address/port returned from KES');
+								_this.isError = true;
+								var errorObj = {message: gM('ks-LIVE-STREAM-NOT-AVAILABLE'), title: gM('ks-ERROR')};
+								_this.showErrorMsg(errorObj);
+							}
 						}
 					}
 				};
 
-				var startMultiastServerKeepAlive = function () {
-					if ( _this.keepAliveMCInterval ) {
-						return;
-					}
+				var startConnectToKESTimer = function () {
 
-					var interval = _this.getKalturaConfig( null , 'multicastKeepAliveInterval' ) || _this.defaultMulticastKeepAliveInterval;
 
-					_this.keepAliveMCInterval = setInterval( function () {
+					var retryTime= _this.getKalturaConfig( null , 'multicastKESStartInterval' ) || this.defaultMulticastKESStartInterval;
+
+					if (_this.couldConnectToKES)
+						retryTime=_this.getKalturaConfig( null , 'multicastKeepAliveInterval' ) || _this.defaultMulticastKeepAliveInterval;
+
+					_this.keepAliveMCTimeout = setTimeout( function () {
 						try {
 							_this.connectToKES( resolvedSrc ).then( onKESResponse , startFailoverFromMulticastServer );
 						}
@@ -181,16 +183,15 @@
 							mw.log( 'connectToKES failed ' + e.message + ' ' + e.stack );
 							startFailoverFromMulticastServer();
 						}
-					} , interval );
+						finally {
+							startConnectToKESTimer();
+						}
+					} , retryTime );
 				};
 
-				_this.connectToKES( resolvedSrc ).then( onKESResponse , function () {
-					mw.log( 'Error fetching url: ' + resolvedSrc );
-					_this.isError = true;
-					_this.fallbackToUnicast();
-				} );
+				startConnectToKESTimer();
+
 			} else {
-				//TODO handle fallback resolvedSrc
 				doEmbedFunc( resolvedSrc );
 			}
 		} ,
@@ -838,13 +839,9 @@
 		clean: function () {
 			$( this.getPlayerContainer() ).remove();
 
-			if ( this.keepAliveMCInterval ) {
-				clearInterval( this.keepAliveMCInterval );
-				this.keepAliveMCInterval = null;
-			}
-			if (this.keepMCStartTimeout) {
-				clearTimeout( this.keepMCStartTimeout );
-				this.keepMCStartTimeout = null;
+			if ( this.keepAliveMCTimeout ) {
+				clearTimeout( this.keepAliveMCTimeout );
+				this.keepAliveMCTimeout = null;
 			}
 		} ,
 
