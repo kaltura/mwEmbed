@@ -216,7 +216,7 @@
 								_this.unbind("seeked");
 							});
 							_this.getPlayer().seek( currentPlayTime ); // issue a seek if given new seek time
-						}, 0);
+						}, 200);
 					}
 				});
 			}
