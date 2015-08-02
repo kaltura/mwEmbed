@@ -1285,11 +1285,10 @@
 
 			embedPlayer.bindHelper( 'updateLayout' + this.bindPostfix, function() {
 				if( _this.adActive ){
-					var width = embedPlayer.getInterface().width();
-					var height = embedPlayer.getInterface().height()
-					mw.log( "DoubleClick::onResizePlayer: size:" + width + ' x ' + height );
+					var size = _this.getPlayerSize();
+					mw.log( "DoubleClick::onResizePlayer: size:" + size.width + ' x ' + size.height );
 					// Resize the ad manager on player resize: ( no support for animate )
-					_this.adsManager.resize( width, height, google.ima.ViewMode.NORMAL );
+					_this.adsManager.resize( size.width, size.height, google.ima.ViewMode.NORMAL );
 				}
 			});
 
