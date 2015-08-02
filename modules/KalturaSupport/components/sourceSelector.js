@@ -70,6 +70,9 @@
                 if ( _this.getMenu().isOpen() )
                     _this.getMenu().close();
             });
+			this.bind( 'onChangeMedia', function(){
+				_this.sourcesList = [];
+			});
 
 			// Check for switch on resize option
 			if( this.getConfig( 'switchOnResize' ) ){
