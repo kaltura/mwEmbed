@@ -12,7 +12,7 @@
 		//default playback start time to wait before falling back to unicast in millisecods
 		defaultMulticastStartTimeout: 10000 ,
 		defaultMulticastKeepAliveInterval: 10000 ,
-		defaultMulticastKESKtimeout: 10000 ,
+		defaultMulticastKESKtimeout: 15000 ,
 		multicastAddress: null ,
 		defaultEnableMulticastFallback: true ,
 		containerId: null ,
@@ -78,6 +78,9 @@
 				if ( this.multiastServerUrl ) {
 					diagObj.multiastServerUrl = this.multiastServerUrl;
 				}
+				if (this.multicastSessionId) {
+					diagObj.multicastSessionId = this.multicastSessionId;
+				}
 			}
 		} ,
 		connectToKES: function ( resolvedSrc ) {
@@ -103,8 +106,18 @@
 			if ( resolvedSrc.indexOf( "http" ) === 0 ) {
 				this.multiastServerUrl = resolvedSrc;
 				var startFailoverFromMulticastServer = function () {
-					this.isError = true;
-					//TODO handle failover
+					_this.isError = true;
+
+					if ( _this.playerObject ) {
+						_this.playerObject.stop();
+					}
+					_this.stopped = true;
+
+
+					_this.bindHelper("playerReady", function(){
+						_this.firstPlay = true; //resume live playback when the new player is ready
+					});
+					_this.setupSourcePlayer(); //switch player
 				};
 				var onKESResponse = function ( response ) {
 
@@ -115,7 +128,7 @@
 					if ( response && response.multicastAddress && response.multicastPort && response.hls ) {
 
 						var multicastAddress = response.multicastAddress + ":" + response.multicastPort;
-						mw.log( 'multicastAddress= ' + multicastAddress + " " +response.multicastSourceAddress);
+						mw.log( 'multicastAddress: ' + multicastAddress+ ' KES: '+response.multicastSourceAddress);
 
 						//first time
 						if ( !_this.multicastAddress ) {
@@ -123,11 +136,13 @@
 							_this.multicastAddress = multicastAddress;
 							_this.multicastSourceAddress=response.multicastSourceAddress;
 							_this.multicastPolicyOverMulticastEnabled = response.multicastPolicyOverMulticastEnabled;
+							_this.multicastSessionId = response.id;
 							doEmbedFunc( multicastAddress );
 							startMultiastServerKeepAlive();
 
 						} else {
-							if ( _this.multicastAddress !== multicastAddress ) {
+							if ( _this.multicastAddress !== multicastAddress ||
+								_this.multicastSessionId !== response.id ) {
 								startFailoverFromMulticastServer();
 							} else {
 								//mw.log('keep alive sent successfully');
@@ -137,7 +152,6 @@
 						mw.log( 'Invalid multicast address/port returned from KES' );
 						_this.isError = true;
 						_this.fallbackToUnicast();
-
 					}
 				};
 
@@ -189,7 +203,6 @@
 				}
                 _this.bindHelper("playerReady", function(){
                     _this.firstPlay = true; //resume live playback when the new player is ready
-                    return;
                 });
                 _this.setupSourcePlayer(); //switch player
 			} else {
