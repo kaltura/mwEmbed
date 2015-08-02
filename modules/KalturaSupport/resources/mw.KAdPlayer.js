@@ -1340,7 +1340,7 @@ mw.KAdPlayer.prototype = {
 		var _this = this;
 		var VPAIDObj = null;
 		var vpaidId = this.getVPAIDId();
-		var creativeData = {};
+		var creativeData = { 'AdParameters': adConf.adParameters };
 		var environmentVars = {
 			slot: _this.embedPlayer.getVideoHolder().get(0),
 			videoSlot:  _this.embedPlayer.getPlayerElement(),
