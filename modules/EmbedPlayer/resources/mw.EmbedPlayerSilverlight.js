@@ -169,7 +169,7 @@
 				var startConnectToKESTimer = function () {
 
 
-					var retryTime= _this.getKalturaConfig( null , 'multicastKESStartInterval' ) || this.defaultMulticastKESStartInterval;
+					var retryTime= _this.getKalturaConfig( null , 'multicastKESStartInterval' ) || _this.defaultMulticastKESStartInterval;
 
 					if (_this.multicastSessionId)
 						retryTime=_this.getKalturaConfig( null , 'multicastKeepAliveInterval' ) || _this.defaultMulticastKeepAliveInterval;
