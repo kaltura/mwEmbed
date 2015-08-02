@@ -354,7 +354,9 @@ mw.PlayerLayoutBuilder.prototype = {
 					if ( !$first.data( 'forceHide' ) ) {
 						var $comp = $first.show();
 						nextWidth = _this.getComponentWidth( $comp );
-						$comp.hide();
+						if( mw.getConfig('EmbedPlayer.IsFriendlyIframe') ) {
+							$comp.hide();
+						}
 						//break;
 						return false;
 					}
