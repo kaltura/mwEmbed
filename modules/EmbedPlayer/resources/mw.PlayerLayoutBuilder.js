@@ -434,7 +434,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	initToolTips: function(){
 		var _this = this;
-		this.embedPlayer.bindHelper( 'layoutBuildDone', function(){
+		this.embedPlayer.bindHelper( 'layoutBuildDone mediaListLayoutReady', function(){
 			_this.setupTooltip()
 			_this.setupTooltip(_this.getInterface().find(".tooltipBelow"), "arrowTop");
 		});
@@ -450,14 +450,14 @@ mw.PlayerLayoutBuilder.prototype = {
 		}
 		var	tooltips = elm ? elm : this.getInterface();
 		var arrowType = arrowDirection ? arrowDirection : "arrow";
-
+		var myPosition = tooltips.offset().top > 0 ? "center bottom+55" : "center bottom-10";
 		tooltips.tooltip({
 			items: '[data-show-tooltip]',
 			"show": { "delay": 1000 },
 			"hide": { "duration": 0 },
 			"content": function(){return $(this).attr('title');},
 			position: {
-				my: "center bottom-10",
+				my: myPosition,
 				at: "center top",
 				using: function( position, feedback ) {
 					$( this ).css( position );
