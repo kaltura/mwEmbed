@@ -108,7 +108,7 @@
 				this.multiastServerUrl = resolvedSrc;
 				var startFailoverFromMulticastServer = function () {
 
-					if (_this.couldConnectToKES) {
+					if (_this.multicastSessionId) {
 						_this.isError = true;
 
 						if (_this.playerObject) {
@@ -127,7 +127,6 @@
 
 					mw.log( 'EmbedPlayerSPlayer got multicast details from KES: ' + JSON.stringify( response ) );
 
-					_this.couldConnectToKES=true;
 
 					//verify we got a valid response from KES
 					if ( response && response.multicastAddress && response.multicastPort && response.hls ) {
@@ -157,7 +156,7 @@
 
 							mw.log('KES still loading, retrying later');
 						} else {
-							if ( !_this.multicastAddress ) { //only if we never got multicast result we should display that, otherwise just keepon trying
+							if ( !_this.multicastSessionId ) { //only if we never got multicast result we should display that, otherwise just keepon trying
 								mw.log('Invalid multicast address/port returned from KES');
 								_this.isError = true;
 								var errorObj = {message: gM('ks-LIVE-STREAM-NOT-AVAILABLE'), title: gM('ks-ERROR')};
@@ -172,7 +171,7 @@
 
 					var retryTime= _this.getKalturaConfig( null , 'multicastKESStartInterval' ) || this.defaultMulticastKESStartInterval;
 
-					if (_this.couldConnectToKES)
+					if (_this.multicastSessionId)
 						retryTime=_this.getKalturaConfig( null , 'multicastKeepAliveInterval' ) || _this.defaultMulticastKeepAliveInterval;
 
 					_this.keepAliveMCTimeout = setTimeout( function () {
