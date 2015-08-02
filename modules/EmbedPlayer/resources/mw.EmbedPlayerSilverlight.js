@@ -12,7 +12,8 @@
 		//default playback start time to wait before falling back to unicast in millisecods
 		defaultMulticastStartTimeout: 10000 ,
 		defaultMulticastKeepAliveInterval: 10000 ,
-		defaultMulticastKESKtimeout: 15000 ,
+		defaultMulticastKESKtimeout: 10000 ,
+		defaultMulticastKESKrety: 2000 ,
 		multicastAddress: null ,
 		defaultEnableMulticastFallback: true ,
 		containerId: null ,
@@ -128,13 +129,13 @@
 					if ( response && response.multicastAddress && response.multicastPort && response.hls ) {
 
 						var multicastAddress = response.multicastAddress + ":" + response.multicastPort;
-						mw.log( 'multicastAddress: ' + multicastAddress+ ' KES: '+response.multicastSourceAddress);
+						mw.log( 'multicastAddress: ' + multicastAddress + ' KES: ' + response.multicastSourceAddress);
 
 						//first time
 						if ( !_this.multicastAddress ) {
 
 							_this.multicastAddress = multicastAddress;
-							_this.multicastSourceAddress=response.multicastSourceAddress;
+							_this.multicastSourceAddress = response.multicastSourceAddress;
 							_this.multicastPolicyOverMulticastEnabled = response.multicastPolicyOverMulticastEnabled;
 							_this.multicastSessionId = response.id;
 							doEmbedFunc( multicastAddress );
@@ -142,16 +143,26 @@
 
 						} else {
 							if ( _this.multicastAddress !== multicastAddress ||
-								_this.multicastSessionId !== response.id ) {
+								 _this.multicastSessionId !== response.id ) {
 								startFailoverFromMulticastServer();
 							} else {
 								//mw.log('keep alive sent successfully');
 							}
 						}
 					} else {
-						mw.log( 'Invalid multicast address/port returned from KES' );
-						_this.isError = true;
-						_this.fallbackToUnicast();
+						if (response && response.state==="Loading") {
+
+							var retryTime= this.getKalturaConfig( null , 'multicastKESKrety' ) || this.defaultMulticastKESKrety ,
+							mw.log('KES still loading, retrying in '+retryTime+' msec');
+							_this.keepMCStartTimeout =setTimeout(function() {
+								_this.connectToKES( resolvedSrc ).then(onKESResponse, startFailoverFromMulticastServer);
+								_this.keepMCStartTimeout=null;
+							},retryTime);
+						} else {
+							mw.log( 'Invalid multicast address/port returned from KES' );
+							_this.isError = true;
+							_this.fallbackToUnicast();
+						}
 					}
 				};
 
@@ -828,8 +839,12 @@
 			$( this.getPlayerContainer() ).remove();
 
 			if ( this.keepAliveMCInterval ) {
-				clearInterval( this.keepAliveMCInterval )
+				clearInterval( this.keepAliveMCInterval );
 				this.keepAliveMCInterval = null;
+			}
+			if (this.keepMCStartTimeout) {
+				clearTimeout( this.keepMCStartTimeout );
+				this.keepMCStartTimeout = null;
 			}
 		} ,
 
