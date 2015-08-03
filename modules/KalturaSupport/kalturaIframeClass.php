@@ -177,6 +177,9 @@ class kalturaIframeClass {
 		if( isset( $playerConfig['vars']['EmbedPlayer.WebKitAllowAirplay'] ) ){
 			$o.= 'x-webkit-airplay="allow" ';
 		}
+		if( isset( $playerConfig['vars']['EmbedPlayer.WebKitPlaysInline'] ) ){
+			$o.= 'webkit-playsinline ';
+		}
 
 		// Add any additional attributes:
 		foreach( $videoTagMap as $key => $val ){
