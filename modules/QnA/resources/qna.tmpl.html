@@ -134,9 +134,13 @@
                                                                 'qnaReplyTextAreaSize': !isTypingAnswer(),
                                                                 'qnaReplyTextAreaPlaceHolderSize': isTypingAnswer()
                                                         },
-                                                        value: replyText,
-                                                        click: $parent.clearTextArea,
-                                                        event:{blur: $parent.resetTextArea, wheel: $parent.textAreaScrolled, touchstart:$parent.textAreaTouched}">
+                                                        textInput: replyText,
+                                                        event:{
+                                                            focus: $parent.clearTextArea,
+                                                            blur: $parent.resetTextArea,
+                                                            wheel: $parent.textAreaScrolled,
+                                                            touchstart:$parent.textAreaTouched,
+                                                            keypress:$parent.replyOnEnter}">
                                 </textarea>
                                 <button class="qnaReplySendButton" data-bind="click: $parent.inThreadReply.bind($data, replyText), text: gM('qna-send-button-text')"></button>
                             </div>

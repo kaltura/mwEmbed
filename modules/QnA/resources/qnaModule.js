@@ -54,7 +54,11 @@
 
                 this.inThreadReply = function(replyText, qnaThread) {
                     if (replyText() === gM("qna-reply-here")){
-                        return;
+                        return false;
+                    }
+                    // protection from empty string
+                    if (!(/\S/.test(replyText()))){
+                        return false;
                     }
 
                     if (_this.qnaPlugin.getPlayer().isOffline() && !_this.qnaPlugin.getConfig( 'allowNewQuestionWhenNotLive' )){
@@ -64,7 +68,9 @@
                         _this.qnaService.submitQuestion(replyText(), qnaThread.entries()[qnaThread.entries().length - 1]());
                         qnaThread.replyText(gM("qna-reply-here"));
                         qnaThread.isTypingAnswer(false);
+                        return true;
                     }
+                    return false;
                 };
 
                 this.clearTextArea = function(qnaThread, event){
@@ -96,6 +102,18 @@
                 this.textAreaTouched = function(data, event) {
                     var elem = event.target;
                     $(elem).css({'overflow':'auto'});
+                    return true;
+                };
+
+                this.replyOnEnter=function(qnaThread,e){
+                    // if its an enter, and the shift|alt|ctrl were not down - submit the question
+                    if (e.keyCode === 13 && !e.altKey && !e.shiftKey && !e.ctrlKey){
+                        if(_this.inThreadReply(qnaThread.replyText, qnaThread)) {
+                            e.target.blur();
+                        }
+                        // Prevent default
+                        return false;
+                    }
                     return true;
                 };
 
