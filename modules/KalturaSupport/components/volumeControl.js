@@ -24,7 +24,7 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 	setup: function( embedPlayer ) {
 		this.addBindings();
 		var _this = this;
-		this.cookieName = this.pluginName + '_volumeValue';
+		this.cookieName = this.pluginName + '_volumeValue' + this.getPlayer().pid;;
 		this.bind( 'playerReady ' , function () {
 			if ( (_this.getConfig( 'useCookie' ) && $.cookie( _this.cookieName ) ) ) {
 				var volumeValue = parseInt( $.cookie( _this.cookieName ) );
