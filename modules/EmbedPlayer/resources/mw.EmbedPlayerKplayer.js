@@ -582,8 +582,12 @@
 			}
 			if (this.seeking) {
 				this.seeking = false;
-			}
-			this.flashCurrentTime = playheadValue;
+                this.flashCurrentTime = playheadValue;
+			}else {
+                if( this.flashCurrentTime < playheadValue){
+                    this.flashCurrentTime = playheadValue;
+                }
+            }
 			$(this).trigger('timeupdate');
 		},
 
@@ -879,7 +883,17 @@
 		},
 		backToLive: function () {
 			this.triggerHelper('movingBackToLive');
-			this.playerObject.sendNotification('goLive');
+            this.playerObject.sendNotification('goLive');
+
+            if(this.buffering){
+                var _this = this;
+                this.bindHelper('bufferEndEvent', function () {
+                    _this.unbindHelper('bufferEndEvent');
+                    _this.playerObject.seek(_this.getDuration());
+                    //Unfreeze scrubber
+                    _this.syncMonitor();
+                });
+            }
 		},
 		setKPlayerAttribute: function (host, prop, val) {
 			this.playerObject.setKDPAttribute(host, prop, val);

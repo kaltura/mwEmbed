@@ -139,6 +139,9 @@
 		// Live stream player?
 		"live": false,
 
+        // Live stream only - not playing live edge, user paused or seeked to play DVR content
+        "liveOffSynch": false,
+
 		// Is Audio Player (defined in kWidgetSupport)
 		"isAudioPlayer": false,
 
@@ -3015,6 +3018,17 @@
 			return false;
 
 		},
+
+        isLiveOffSynch: function () {
+            return this.liveOffSynch;
+        },
+
+        setLiveOffSynch: function (status) {
+            if( status !== this.liveOffSynch ) {
+                this.liveOffSynch = status;
+                $(this).trigger('onLiveOffSynchChanged', [status]);
+            }
+        },
 
 		disableComponentsHover: function () {
 			if (this.layoutBuilder) {
