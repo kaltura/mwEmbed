@@ -214,9 +214,13 @@
 					var floatDirection = this.getConfig( 'containerPosition' ) ? this.getConfig( 'containerPosition' ) : "right";
 					var qnaInterfaceElementText = "<div class='qnaInterface' style='position: relative; width: " + this.getConfig( 'moduleWidth' ) + "px; height: 100%; float:" + floatDirection + "'>";
 
-					$('.mwPlayerContainer').after(qnaInterfaceElementText);
+					var ret1 = $('.mwPlayerContainer').after(qnaInterfaceElementText);
+
+					console.log("qnaPlugin - after res= " + ret1);
 
 					this.$qnaListContainer = $( ".qnaInterface");
+
+					console.log("qnaPlugin - this.$qnaListContainer= " + this.$qnaListContainer);
 
 					// resize the video to make place for the playlist according to its position (left, top, right, bottom)
 					if ( this.getConfig( 'containerPosition' ) === 'right' || this.getConfig( 'containerPosition' ) === 'left' ) {
