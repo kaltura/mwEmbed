@@ -26,7 +26,9 @@
 		},
 
 		setup: function () {
+			var _this = this;
 			console.log("qnaPlugin - in setup");
+			console.log("qnaPlugin - onPage=" + _this.getConfig( 'onPage' ));
 			this.addBindings();
 		},
         destroy: function(){
