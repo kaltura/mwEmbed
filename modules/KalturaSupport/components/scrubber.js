@@ -28,7 +28,6 @@
 			// make sure insert mode reflects parent type:
 			if (this.getConfig('parent') == 'controlsContainer') {
 				this.setConfig('insertMode', 'lastChild');
-                this.liveEdge = 95;
 			}
 			this.addBindings();
             if (this.isSliderPreviewEnabled()) {
