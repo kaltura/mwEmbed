@@ -711,7 +711,10 @@ mw.KWidgetSupport.prototype = {
 						//if we get more then 1 flavors we dont need the redirect so we'll use the same url
 						// the playmanifest service will return the manifest directly.
 					} else if (flavors && flavors.length > 1){
-						deferred.resolve( srcURL );
+						if (srcURL.indexOf("applehttp_to_mc")===-1)
+							deferred.resolve( srcURL );
+						else
+							deferred.resolve( playmanifest );
 					} else {
 						deferred.reject();
 					}

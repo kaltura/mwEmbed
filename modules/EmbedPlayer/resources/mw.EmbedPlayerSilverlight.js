@@ -103,6 +103,28 @@
 		handleMulticastPlayManifest: function ( resolvedSrc , doEmbedFunc ) {
 			mw.log( 'handleMulticastPlayManifest ' + resolvedSrc );
 			var _this = this;
+
+			if ($.isPlainObject(resolvedSrc)) {
+				mw.log( 'handleMulticastPlayManifest ' + JSON.stringify( resolvedSrc) );
+				var bestFlavour=null;
+				if (resolvedSrc.flavors) {
+					resolvedSrc.flavors.forEach(function (flavour) {
+						if (!bestFlavour || flavour.bitrate > bestFlavour.bitrate) {
+							bestFlavour = flavour;
+						}
+					});
+				}
+				_this.resolvedSrc=resolvedSrc;
+				if (bestFlavour) {
+					resolvedSrc = bestFlavour.url;
+				} else {
+
+					mw.log('Invalid play manifest');
+					_this.isError = true;
+					var errorObj = {message: gM('ks-LIVE-STREAM-NOT-AVAILABLE'), title: gM('ks-ERROR')};
+					_this.showErrorMsg(errorObj);
+				}
+			}
 			//we got an multicast server that we need to redirect
 			if ( resolvedSrc.indexOf( "http" ) === 0 ) {
 				this.multiastServerUrl = resolvedSrc;
