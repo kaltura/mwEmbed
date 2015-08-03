@@ -13,6 +13,7 @@
 		defaultMulticastStartTimeout: 10000 ,
 		defaultMulticastKeepAliveInterval: 10000 ,
 		defaultMulticastKESKtimeout: 10000 ,
+		defaultMulticastKESStartInterval: 2000 ,
 		multicastAddress: null ,
 		defaultEnableMulticastFallback: true ,
 		containerId: null ,
@@ -78,6 +79,9 @@
 				if ( this.multiastServerUrl ) {
 					diagObj.multiastServerUrl = this.multiastServerUrl;
 				}
+				if (this.multicastSessionId) {
+					diagObj.multicastSessionId = this.multicastSessionId;
+				}
 			}
 		} ,
 		connectToKES: function ( resolvedSrc ) {
@@ -99,12 +103,47 @@
 		handleMulticastPlayManifest: function ( resolvedSrc , doEmbedFunc ) {
 			mw.log( 'handleMulticastPlayManifest ' + resolvedSrc );
 			var _this = this;
+
+			if ($.isPlainObject(resolvedSrc)) {
+				mw.log( 'handleMulticastPlayManifest ' + JSON.stringify( resolvedSrc) );
+				var bestFlavour=null;
+				if (resolvedSrc.flavors) {
+					resolvedSrc.flavors.forEach(function (flavour) {
+						if (!bestFlavour || flavour.bitrate > bestFlavour.bitrate) {
+							bestFlavour = flavour;
+						}
+					});
+				}
+				_this.resolvedSrc=resolvedSrc;
+				if (bestFlavour) {
+					resolvedSrc = bestFlavour.url;
+				} else {
+
+					mw.log('Invalid play manifest');
+					_this.isError = true;
+					var errorObj = {message: gM('ks-LIVE-STREAM-NOT-AVAILABLE'), title: gM('ks-ERROR')};
+					_this.showErrorMsg(errorObj);
+				}
+			}
 			//we got an multicast server that we need to redirect
 			if ( resolvedSrc.indexOf( "http" ) === 0 ) {
 				this.multiastServerUrl = resolvedSrc;
 				var startFailoverFromMulticastServer = function () {
-					this.isError = true;
-					//TODO handle failover
+
+					if (_this.multicastSessionId) {
+						_this.isError = true;
+
+						if (_this.playerObject) {
+							_this.playerObject.stop();
+						}
+						_this.stopped = true;
+
+
+						_this.bindHelper("playerReady", function () {
+							_this.firstPlay = true; //resume live playback when the new player is ready
+						});
+						_this.setupSourcePlayer(); //switch player
+					}
 				};
 				var onKESResponse = function ( response ) {
 
@@ -115,40 +154,49 @@
 					if ( response && response.multicastAddress && response.multicastPort && response.hls ) {
 
 						var multicastAddress = response.multicastAddress + ":" + response.multicastPort;
-						mw.log( 'multicastAddress= ' + multicastAddress + " " +response.multicastSourceAddress);
+						mw.log( 'multicastAddress: ' + multicastAddress + ' KES: ' + response.multicastSourceAddress);
 
 						//first time
 						if ( !_this.multicastAddress ) {
 
 							_this.multicastAddress = multicastAddress;
-							_this.multicastSourceAddress=response.multicastSourceAddress;
+							_this.multicastSourceAddress = response.multicastSourceAddress;
 							_this.multicastPolicyOverMulticastEnabled = response.multicastPolicyOverMulticastEnabled;
+							_this.multicastSessionId = response.id;
 							doEmbedFunc( multicastAddress );
-							startMultiastServerKeepAlive();
 
 						} else {
-							if ( _this.multicastAddress !== multicastAddress ) {
+							if ( _this.multicastAddress !== multicastAddress ||
+								 _this.multicastSessionId !== response.id ) {
 								startFailoverFromMulticastServer();
 							} else {
 								//mw.log('keep alive sent successfully');
 							}
 						}
 					} else {
-						mw.log( 'Invalid multicast address/port returned from KES' );
-						_this.isError = true;
-						_this.fallbackToUnicast();
+						if (response && response.state==="Loading") {
 
+							mw.log('KES still loading, retrying later');
+						} else {
+							if ( !_this.multicastSessionId ) { //only if we never got multicast result we should display that, otherwise just keepon trying
+								mw.log('Invalid multicast address/port returned from KES');
+								_this.isError = true;
+								var errorObj = {message: gM('ks-LIVE-STREAM-NOT-AVAILABLE'), title: gM('ks-ERROR')};
+								_this.showErrorMsg(errorObj);
+							}
+						}
 					}
 				};
 
-				var startMultiastServerKeepAlive = function () {
-					if ( _this.keepAliveMCInterval ) {
-						return;
-					}
+				var startConnectToKESTimer = function () {
 
-					var interval = _this.getKalturaConfig( null , 'multicastKeepAliveInterval' ) || _this.defaultMulticastKeepAliveInterval;
 
-					_this.keepAliveMCInterval = setInterval( function () {
+					var retryTime= _this.getKalturaConfig( null , 'multicastKESStartInterval' ) || _this.defaultMulticastKESStartInterval;
+
+					if (_this.multicastSessionId)
+						retryTime=_this.getKalturaConfig( null , 'multicastKeepAliveInterval' ) || _this.defaultMulticastKeepAliveInterval;
+
+					_this.keepAliveMCTimeout = setTimeout( function () {
 						try {
 							_this.connectToKES( resolvedSrc ).then( onKESResponse , startFailoverFromMulticastServer );
 						}
@@ -156,16 +204,15 @@
 							mw.log( 'connectToKES failed ' + e.message + ' ' + e.stack );
 							startFailoverFromMulticastServer();
 						}
-					} , interval );
+						finally {
+							startConnectToKESTimer();
+						}
+					} , retryTime );
 				};
 
-				_this.connectToKES( resolvedSrc ).then( onKESResponse , function () {
-					mw.log( 'Error fetching url: ' + resolvedSrc );
-					_this.isError = true;
-					_this.fallbackToUnicast();
-				} );
+				startConnectToKESTimer();
+
 			} else {
-				//TODO handle fallback resolvedSrc
 				doEmbedFunc( resolvedSrc );
 			}
 		} ,
@@ -189,7 +236,6 @@
 				}
                 _this.bindHelper("playerReady", function(){
                     _this.firstPlay = true; //resume live playback when the new player is ready
-                    return;
                 });
                 _this.setupSourcePlayer(); //switch player
 			} else {
@@ -814,9 +860,9 @@
 		clean: function () {
 			$( this.getPlayerContainer() ).remove();
 
-			if ( this.keepAliveMCInterval ) {
-				clearInterval( this.keepAliveMCInterval )
-				this.keepAliveMCInterval = null;
+			if ( this.keepAliveMCTimeout ) {
+				clearTimeout( this.keepAliveMCTimeout );
+				this.keepAliveMCTimeout = null;
 			}
 		} ,
 
