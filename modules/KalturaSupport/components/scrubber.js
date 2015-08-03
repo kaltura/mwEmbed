@@ -22,10 +22,7 @@
         liveEdge: 98,
 
 		isSliderPreviewEnabled: function () {
-			if( this.embedPlayer.isLive() && !this.isDisabled ) {
-                return true;
-            }
-            return this.getConfig("sliderPreview") && !this.isDisabled;
+			return this.getConfig("sliderPreview") && !this.isDisabled && !this.embedPlayer.isLive();
 		},
 		setup: function (embedPlayer) {
 			// make sure insert mode reflects parent type:
@@ -250,7 +247,7 @@
 				);
 		},
 		showThumbnailPreview: function (data) {
-			var showOnlyTime = this.embedPlayer.isLive() ? true : this.getConfig("showOnlyTime");
+			var showOnlyTime = this.getConfig("showOnlyTime");
 			if (!this.isSliderPreviewEnabled() || !this.thumbnailsLoaded) {
 				return;
 			}
