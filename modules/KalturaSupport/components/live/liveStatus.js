@@ -39,22 +39,23 @@
 				}
 			} );
 
-			this.bind( 'seeked seeking onpause', function(e, currentTime) {
+			this.bind( 'seeked seeking onpause onLiveOffSynchChanged', function(e, param) {
 				if ( _this.getPlayer().isDVR() ) {
-					//live is off-synch
-					if ( _this.onAirStatus ) {
-						_this.setOffSyncUI();
-					}
-					_this.prevIconClass = _this.unsyncIConClass;
-
-                    if(currentTime && _this.getPlayer().getDuration() - currentTime < 10){ // if user seeks 1 second or less near the live edge -> move back to live
+					if( e.type === 'onLiveOffSynchChanged' && param === false ){
+                        // synch with Live edge
                         _this.backToLive();
                     }else {
+                        // live is off-synch
                         _this.getPlayer().setLiveOffSynch(true);
+                        if ( _this.onAirStatus ) {
+                            _this.setOffSyncUI();
+                        }
+                        _this.prevIconClass = _this.unsyncIConClass;
                     }
 				}
 			});
 		},
+
 		getComponent: function() {
 			var _this = this;
 			if( !this.$el ) {
@@ -67,7 +68,7 @@
                     .addClass( 'btn timers '+ this.offlineIconClass + this.getCssClass() )
                     .click( function() {
                         if ( _this.onAirStatus && _this.getPlayer().isDVR() && _this.prevIconClass != _this.onAirIconClass ) {
-                            _this.backToLive();
+                            _this.getPlayer().setLiveOffSynch(false);
                         }else{
                             _this.getPlayer().setLiveOffSynch(true);
                         }
@@ -86,7 +87,6 @@
 			}  else {
 				this.getPlayer().removePoster();
 				this.getPlayer().backToLive();
-                this.getPlayer().setLiveOffSynch(false);
 			}
 		},
 

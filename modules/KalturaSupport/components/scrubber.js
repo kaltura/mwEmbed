@@ -19,18 +19,22 @@
 
 		waitForFirstPlay: false,
 		updateEnabled: true,
+        liveEdge: 98,
 
 		isSliderPreviewEnabled: function () {
-			
-			return this.getConfig("sliderPreview") && !this.isDisabled && !this.embedPlayer.isLive();
+			if( this.embedPlayer.isLive() && !this.isDisabled ) {
+                return true;
+            }
+            return this.getConfig("sliderPreview") && !this.isDisabled;
 		},
 		setup: function (embedPlayer) {
 			// make sure insert mode reflects parent type:
 			if (this.getConfig('parent') == 'controlsContainer') {
 				this.setConfig('insertMode', 'lastChild');
+                this.liveEdge = 95;
 			}
 			this.addBindings();
-			if (this.isSliderPreviewEnabled()) {
+            if (this.isSliderPreviewEnabled()) {
 				this.setupThumbPreview();
 			}
 		},
@@ -141,12 +145,23 @@
 			});
 		},
 		updatePlayheadUI: function (val) {
-            if( this.embedPlayer.isDVR() && !this.getPlayer().isLiveOffSynch() ) {
-                this.getComponent().slider('option', 'value', 999);
-                return;
+            if( this.embedPlayer.isDVR() ) {
+                this.checkForLiveEdge();
+                if( !this.getPlayer().isLiveOffSynch()) {
+                    this.getComponent().slider('option', 'value', 999);
+                    return;
+                }
             }
             this.getComponent().slider('option', 'value', val);
 		},
+        checkForLiveEdge: function (){
+            var playHeadPercent = (this.getPlayHeadComponent().position().left + this.getPlayHeadComponent().width()/2) / this.getComponent().width();
+            playHeadPercent = parseInt(playHeadPercent*100);
+
+            if( this.getPlayer().isLiveOffSynch() && playHeadPercent > this.liveEdge -1 ){
+                this.getPlayer().setLiveOffSynch(false);
+            }
+        },
 		setupThumbPreview: function () {
 			var _this = this;
 			this.thumbnailsLoaded = false;
@@ -200,7 +215,7 @@
 		},
 		loadThumbnails: function (callback) {
 			var _this = this;
-			if (this.getConfig("showOnlyTime")) {
+			if ( this.embedPlayer.isLive() || this.getConfig("showOnlyTime")) {
 				this.loadedThumb = true;
 			}
 			if (!this.loadedThumb) {
@@ -235,7 +250,7 @@
 				);
 		},
 		showThumbnailPreview: function (data) {
-			var showOnlyTime = this.getConfig("showOnlyTime");
+			var showOnlyTime = this.embedPlayer.isLive() ? true : this.getConfig("showOnlyTime");
 			if (!this.isSliderPreviewEnabled() || !this.thumbnailsLoaded) {
 				return;
 			}
@@ -282,7 +297,10 @@
 			perc = perc > 1 ? 1 : perc;
 			var currentTime = this.duration * perc;
 			var thumbWidth = showOnlyTime ? $sliderPreviewTime.width() : this.getConfig("thumbWidth");
-
+            if(currentTime > this.embedPlayer.currentTime){
+                //currentTime = currentTime - (currentTime - this.embedPlayer.currentTime);
+            }
+console.log("--- currentTime = "+currentTime+" | this.embedPlayer.currentTime = "+this.embedPlayer.currentTime);
 			$sliderPreview.css({top: top, left: sliderLeft });
 			if (!showOnlyTime) {
 				$sliderPreview.css({'background-image': 'url(\'' + this.getThumbSlicesUrl() + '\')',
@@ -355,6 +373,9 @@
 				$slider.html('<span class="accessibilityLabel">' + title + '</span>');
 			}
 		},
+        getPlayHeadComponent: function () {
+            return this.getComponent().find('.playHead');
+        },
 		getComponent: function () {
 			var _this = this;
 			if (!this.$el) {

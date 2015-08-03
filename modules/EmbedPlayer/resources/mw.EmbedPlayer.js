@@ -3017,7 +3017,10 @@
         },
 
         setLiveOffSynch: function (status) {
-            this.liveOffSynch = status;
+            if( status !== this.liveOffSynch ) {
+                this.liveOffSynch = status;
+                $(this).trigger('onLiveOffSynchChanged', [status]);
+            }
         },
 
 		disableComponentsHover: function () {
