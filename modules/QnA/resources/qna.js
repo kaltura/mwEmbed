@@ -214,7 +214,9 @@
 					var floatDirection = this.getConfig( 'containerPosition' ) ? this.getConfig( 'containerPosition' ) : "right";
 					var qnaInterfaceElementText = "<div class='qnaInterface' style='position: relative; width: " + this.getConfig( 'moduleWidth' ) + "px; height: 100%; float:" + floatDirection + "'>";
 
+					console.log("qnaPlugin - before after");
 					var ret1 = $('.mwPlayerContainer').after(qnaInterfaceElementText);
+					console.log("qnaPlugin - after after");
 
 					console.log("qnaPlugin - after res= " + ret1);
 
