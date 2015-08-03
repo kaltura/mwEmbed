@@ -2544,7 +2544,14 @@
 			if (percent != 0) {
 				this.muted = false;
 			}
-
+			if( triggerChange !== false ){
+				if (this.previousVolume === 0 && this.volume > 0){
+					$( _this ).trigger('unmute', percent );
+				}
+				if (this.previousVolume > 0 && this.volume === 0){
+					$( _this ).trigger('mute', percent );
+				}
+			}
 			// Update the playerElement volume
 			this.setPlayerElementVolume(percent);
 			//mw.log("EmbedPlayer:: setVolume:: " + percent + ' trigger volumeChanged: ' + triggerChange );
@@ -3106,8 +3113,8 @@
             ]);
             if (!this.isStopped()) {
                 this.isFlavorSwitching = true;
-                // Get the exact play time from the video element ( instead of parent embed Player )
-                var oldMediaTime = this.getPlayerElement().currentTime;
+	            // Get the exact play time
+	            var oldMediaTime = this.currentTime;
                 var oldPaused = this.paused;
                 // Do a live switch
                 this.playerSwitchSource(source, function (vid) {
