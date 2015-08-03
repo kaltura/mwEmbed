@@ -18,6 +18,7 @@
 		announcementOnlyStatus: ko.observable(false),
 
 		getBaseConfig: function() {
+			console.log("qnaPlugin - in getBaseConfig");
 			var parentConfig = this._super();
 			return $.extend({}, parentConfig, {
 				qnaTargetId: null
@@ -25,9 +26,11 @@
 		},
 
 		setup: function () {
+			console.log("qnaPlugin - in setup");
 			this.addBindings();
 		},
         destroy: function(){
+			console.log("qnaPlugin - in destroy");
             var _this = this;
             if (_this.KQnaModule) {
                 _this.KQnaModule.destroy();
@@ -40,6 +43,7 @@
         },
 
 		changeVideoToggleIcon: function() {
+			console.log("qnaPlugin - in changeVideoToggleIcon");
 			var _this = this;
 			var onVideoTogglePluginButton = $('.qna-on-video-btn');
 			var qnaObject = _this.getQnaContainer().find(".qnaModuleBackground");
@@ -54,6 +58,7 @@
 		},
 
 		addBindings: function () {
+			console.log("qnaPlugin - in addBindings");
 			var _this = this;
 			var embedPlayer = this.getPlayer();
             var qnaObject=null;
@@ -171,6 +176,7 @@
 
 		// load the Q&A template to the div with qnaTargetId
 		getQnaContainer: function(){
+			console.log("qnaPlugin - in getQnaContainer");
 			var _this = this;
             var embedPlayer = this.getPlayer();
 			if (!this.$qnaListContainer) {
@@ -250,6 +256,7 @@
 		},
 
 		positionQAButtonOnVideoContainer : function(){
+			console.log("qnaPlugin - in positionQAButtonOnVideoContainer");
 			var onVideoTogglePluginButton = $('.qna-on-video-btn');
 			var videoHeight = this.getPlayer().getInterface().height();
 			var buttonHeight = Math.round(videoHeight / 5);
@@ -274,6 +281,7 @@
 		},
 
 		updateQnaListHolderSize : function(){
+			console.log("qnaPlugin - in updateQnaListHolderSize");
 			var _this = this;
 			var newHeight = this.getPlayer().getInterface().height();
 			if (!_this.announcementOnlyStatus()){
@@ -283,6 +291,7 @@
 		},
 
 		bindButtons : function(){
+			console.log("qnaPlugin - in bindButtons");
 			var _this = this;
 			var sendButton = _this.getQnaContainer().find('.qnaSendButton');
 			var textArea = _this.getQnaContainer().find('.qnaQuestionTextArea');
@@ -356,6 +365,7 @@
 		},
 
 		hideModule: function(hide, announcementOnly) {
+			console.log("qnaPlugin - in hideModule");
 			var _this = this;
 			var firstTime = (_this.moduleStatus() === undefined);
 
