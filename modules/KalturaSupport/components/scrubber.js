@@ -293,14 +293,10 @@
 				$(".arrow").hide();
 			}
 
-			var perc = data.val / 1000;
+            var perc = data.val / 1000;
 			perc = perc > 1 ? 1 : perc;
 			var currentTime = this.duration * perc;
 			var thumbWidth = showOnlyTime ? $sliderPreviewTime.width() : this.getConfig("thumbWidth");
-            if(currentTime > this.embedPlayer.currentTime){
-                //currentTime = currentTime - (currentTime - this.embedPlayer.currentTime);
-            }
-console.log("--- currentTime = "+currentTime+" | this.embedPlayer.currentTime = "+this.embedPlayer.currentTime);
 			$sliderPreview.css({top: top, left: sliderLeft });
 			if (!showOnlyTime) {
 				$sliderPreview.css({'background-image': 'url(\'' + this.getThumbSlicesUrl() + '\')',
