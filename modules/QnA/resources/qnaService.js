@@ -307,7 +307,6 @@ DAL for Q&A Module
                     "cuePoint:entryId": embedPlayer.kentryid,
                     "cuePoint:startTime": embedPlayer.currentTime,
                     "cuePoint:text": question,
-                    "cuePoint:tags": _this.QandA_cuePointTag,
                     "cuePoint:isPublic": 1,
                     "cuePoint:searchableOnEntry": 0
                 };
@@ -324,27 +323,33 @@ DAL for Q&A Module
                     objectType: "annotationMetadata.Annotation"
                 };
 
+                var updateCuePointRequestAddQnaTag = {
+                    "service": "cuePoint_cuePoint",
+                    "action": "update",
+                    "id": "{1:result:id}",
+                    "cuePoint:objectType": "KalturaAnnotation",
+                    "cuePoint:tags": _this.QandA_cuePointTag
+                };
 
                 // mw.log("Submitting a new question: " + question);
 
-                _this.getKClient().doRequest([createCuePointRequest, addMetadataRequest], function (result) {
-                        var endTime = new Date();
-                        var cuePoint = result[0];
-                        var metadata = result[1];
-                        if (cuePoint.id && metadata.id) {
+                _this.getKClient().doRequest([createCuePointRequest, addMetadataRequest, updateCuePointRequestAddQnaTag], function (result) {
 
+                    var endTime = new Date();
+                    var cuePoint = result[2];
+                    var metadata = result[1];
+                    if (cuePoint.id && metadata.id) {
 
-                            cuePoint.metadata={ xml: metadata.xml, id: metadata.id };
+                        cuePoint.metadata = {xml: metadata.xml, id: metadata.id};
 
-                            var item = _this.annotationCuePointToQnaEntry(cuePoint);
+                        var item = _this.annotationCuePointToQnaEntry(cuePoint);
 
-                            if (item) {
+                        if (item) {
+                            _this.addOrUpdateEntry(item);
+                            _this.sortThreads();
+                        }
 
-                                _this.addOrUpdateEntry(item);
-                                _this.sortThreads();
-                            }
-                            mw.log("added Annotation cue point with id: " + cuePoint.id + " took " + (endTime - startTime) + " ms");
-
+                        mw.log("added Annotation cue point with id: " + cuePoint.id + " took " + (endTime - startTime) + " ms");
 
                         } else {
                             mw.log("error adding Annotation " + JSON.stringify(result));
