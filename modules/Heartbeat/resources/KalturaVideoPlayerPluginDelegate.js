@@ -11,9 +11,22 @@
         _this = this;
         _this.player = player;
         _this.config = config;
+        _this.videoInfo = null;
         _this.adInfo = null;
         _this.adBreakInfo = null;
         _this.chapterInfo = null;
+
+
+        _this.setConstVideoInfo = function(){
+            _this.videoInfo = new ADB.va.plugins.videoplayer.VideoInfo();
+            _this.videoInfo.playerName = _this.config.playerPlayerName || _this.player.kuiconfid;
+            if ( _this.config.playerStreamType ) {
+                _this.videoInfo.streamType = _this.config.playerStreamType;
+            }else {
+                _this.videoInfo.streamType = _this.player.isLive() ? ADB.va.plugins.videoplayer.AssetType.ASSET_TYPE_LIVE : ADB.va.plugins.videoplayer.AssetType.ASSET_TYPE_VOD;
+            }
+        };
+
 
         _this.setAdInfo = function(info){
             if ( !_this.adInfo ){
@@ -84,21 +97,17 @@
     }
 
     KalturaVideoPlayerPluginDelegate.prototype.getVideoInfo = function() {
-        var videoInfo = new ADB.va.plugins.videoplayer.VideoInfo();
-
-        videoInfo.id = _this.config.playerId || _this.player.evaluate('{mediaProxy.entry}').id;
-        videoInfo.name = _this.config.playerName || _this.player.evaluate('{mediaProxy.entry}').name;
-        videoInfo.length = _this.config.playerLength || _this.player.evaluate('{mediaProxy.entry}').duration;
-        videoInfo.playerName = _this.config.playerPlayerName || _this.player.kuiconfid;
-        videoInfo.playhead = _this.player.getPlayerElementTime();
-
-        if ( _this.config.playerStreamType ) {
-            videoInfo.streamType = _this.config.playerStreamType;
-        }else {
-            videoInfo.streamType = _this.player.isLive() ? ADB.va.plugins.videoplayer.AssetType.ASSET_TYPE_LIVE : ADB.va.plugins.videoplayer.AssetType.ASSET_TYPE_VOD;
+        if( !_this.videoInfo ) {
+            _this.setConstVideoInfo();
         }
+        if(_this.player.evaluate('{mediaProxy.entry}')) {
+            _this.videoInfo.id = _this.config.playerId || _this.player.evaluate('{mediaProxy.entry}').id;
+            _this.videoInfo.name = _this.config.playerName || _this.player.evaluate('{mediaProxy.entry}').name;
+            _this.videoInfo.length = _this.config.playerLength || _this.player.evaluate('{mediaProxy.entry}').duration;
+        }
+        _this.videoInfo.playhead = _this.player.getPlayerElementTime();
 
-        return videoInfo;
+        return _this.videoInfo;
     };
 
     KalturaVideoPlayerPluginDelegate.prototype.getAdBreakInfo = function() {
