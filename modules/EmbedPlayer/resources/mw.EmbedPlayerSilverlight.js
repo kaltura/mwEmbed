@@ -306,6 +306,7 @@
 					||
 					isMimeType( "video/ism" )
 				) {
+					resolvedSrc = encodeURIComponent(resolvedSrc);
 					_this.isMulticast = false;
 					_this.streamerType = 'smoothStream';
 
@@ -320,7 +321,7 @@
 						if ( !licenseUrl ) {
 							mw.log( 'EmbedPlayerSPlayer::Error:: failed to retrieve playready license URL ' );
 						} else {
-							flashvars.licenseURL = licenseUrl;
+							flashvars.licenseURL = encodeURIComponent(licenseUrl);
 						}
 
 						var customData = {
@@ -843,8 +844,6 @@
 				if ( source !== -1 ) {
 					trackIndex = this.getSourceIndex( source );
 				}
-
-				var trackIndex = this.getSourceIndex( source );
 				mw.log( "EmbedPlayerSPlayer:: switch to track index: " + trackIndex );
 				$( this ).trigger( 'sourceSwitchingStarted' , [
 					{currentBitrate: source.getBitrate()}
