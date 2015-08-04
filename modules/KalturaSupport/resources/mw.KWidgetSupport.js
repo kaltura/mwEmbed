@@ -278,9 +278,15 @@ mw.KWidgetSupport.prototype = {
 			mw.setConfig("LeadWithHLSOnFlash", true);
 		}
 
-		var multicastSource = this.getLiveMulticastSource(playerData);
-		if (multicastSource){
+		var legacyMulticastSource = this.getLegacyLiveMulticastSource(playerData);
+		if (legacyMulticastSource){
 			this.addLiveEntrySource( embedPlayer, playerData.meta, false, true, 'multicast_silverlight');
+			isStreamSupported = true;
+			embedPlayer.setLive( true );
+		}
+
+		if (embedPlayer.getFlashvars("LeadWithUnicastToMulticast")===true) {
+			this.addLiveEntrySource( embedPlayer, playerData.meta, false, true, 'applehttp_to_mc');
 			isStreamSupported = true;
 			embedPlayer.setLive( true );
 		}
@@ -336,7 +342,7 @@ mw.KWidgetSupport.prototype = {
 		}
 		return hasOnlyHLS;
 	},
-	getLiveMulticastSource: function(playerData){
+	getLegacyLiveMulticastSource: function(playerData){
 		var source = null;
 		if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'splayer' ) ) {
 			if ( playerData.contextData && playerData.contextData.flavorAssets ) {
@@ -705,7 +711,10 @@ mw.KWidgetSupport.prototype = {
 						//if we get more then 1 flavors we dont need the redirect so we'll use the same url
 						// the playmanifest service will return the manifest directly.
 					} else if (flavors && flavors.length > 1){
-						deferred.resolve( srcURL );
+						if (srcURL.indexOf("applehttp_to_mc")===-1)
+							deferred.resolve( srcURL );
+						else
+							deferred.resolve( playmanifest );
 					} else {
 						deferred.reject();
 					}
@@ -1728,6 +1737,7 @@ mw.KWidgetSupport.prototype = {
 		var _this = this;
 		var extension;
 		var mimeType;
+		var baseFlavorUrl=this.getBaseFlavorUrl(entry.partnerId);
 		var format = streamerType;
 		var protocol;
 		if ( isFlash ) {
@@ -1742,6 +1752,9 @@ mw.KWidgetSupport.prototype = {
 			extension = 'f4m';
 			protocol = 'http';
 			mimeType = 'video/multicast';
+			if (baseFlavorUrl.indexOf("https")===0) {
+				protocol = 'https';
+			}
 
 		} else {
 			embedPlayer.setFlashvars( 'streamerType', 'http' );
@@ -1750,7 +1763,7 @@ mw.KWidgetSupport.prototype = {
 			mimeType = 'application/vnd.apple.mpegurl';
 		}
 
-		var srcUrl = this.getBaseFlavorUrl(entry.partnerId) + '/entryId/' + entry.id + '/format/' + format + '/protocol/' + protocol + '/uiConfId/' + embedPlayer.kuiconfid +  '/a.' + extension;
+		var srcUrl = baseFlavorUrl + '/entryId/' + entry.id + '/format/' + format + '/protocol/' + protocol + '/uiConfId/' + embedPlayer.kuiconfid +  '/a.' + extension;
 		// Append KS & Referrer
 		srcUrl += '?referrer=' + base64_encode( _this.getHostPageUrl() ) + '&playSessionId=' + _this.getGUID();
 		var deferred = $.Deferred();
@@ -1758,6 +1771,7 @@ mw.KWidgetSupport.prototype = {
 		if( ks ){
 			srcUrl += '&ks=' + ks;
 		}
+
 		//add source
 		mw.log( 'KWidgetSupport::addLiveEntrySource: Add Live Entry Source - ' + srcUrl );
 		embedPlayer.mediaElement.tryAddSource(
