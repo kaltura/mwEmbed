@@ -388,7 +388,7 @@
 			if (hide) {
 				_this.getQnaContainer().find(".qnaModuleBackground").hide();
 				if (!_this.getConfig( 'onPage' )) {
-					_this.getQnaContainer().find(".qnaModuleBackgroundHider").show();
+					_this.getQnaContainer().find(".qnaModuleBackgroundHider").css("display", "block");
 				}
 				$('.qna-on-video-btn').css("display", "none");
 			}
@@ -397,21 +397,21 @@
 				$('.qna-on-video-btn').css("display", "block");
 
 				if (!_this.getConfig( 'onPage' )) {
-					_this.getQnaContainer().find(".qnaModuleBackgroundHider").hide();
+					_this.getQnaContainer().find(".qnaModuleBackgroundHider").css("display", "none");
 				}
 
 				// open the module only if this is the first time
 				if (firstTime) {
-					_this.getQnaContainer().find(".qnaModuleBackground").show();
+					_this.getQnaContainer().find(".qnaModuleBackground").css("display", "block");
 				}
 
 				if (announcementOnly){
-					_this.getQnaContainer().find(".qnaQuestionArea").hide();
-					$('.qnaReplyBox').hide();
+					_this.getQnaContainer().find(".qnaQuestionArea").css("display", "none");
+					$('.qnaReplyBox').css("display", "none");
 				}
 				else{
-					_this.getQnaContainer().find(".qnaQuestionArea").show();
-					$('.qnaReplyBox').show();
+					_this.getQnaContainer().find(".qnaQuestionArea").css("display", "block");
+					$('.qnaReplyBox').css("display", "block");
 				}
 			}
 			_this.updateQnaListHolderSize();
