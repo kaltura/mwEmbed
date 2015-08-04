@@ -388,30 +388,41 @@
 			if (hide) {
 				_this.getQnaContainer().find(".qnaModuleBackground").hide();
 				if (!_this.getConfig( 'onPage' )) {
+					console.log("qnaPlugin - in hideModule before qnaModuleBackgroundHider - block");
 					_this.getQnaContainer().find(".qnaModuleBackgroundHider").css("display", "block");
+					console.log("qnaPlugin - in hideModule after qnaModuleBackgroundHider - block");
 				}
 				$('.qna-on-video-btn').css("display", "none");
 			}
 			else{
+				console.log("qnaPlugin - in hideModule hide is false 0");
 				// use css("display", "block") since .show() restores the previous value, and the previous value is hide
 				$('.qna-on-video-btn').css("display", "block");
-
+				console.log("qnaPlugin - in hideModule hide is false 1");
 				if (!_this.getConfig( 'onPage' )) {
+					console.log("qnaPlugin - in hideModule hide is false 2");
 					_this.getQnaContainer().find(".qnaModuleBackgroundHider").css("display", "none");
+					console.log("qnaPlugin - in hideModule hide is false 3");
 				}
 
 				// open the module only if this is the first time
 				if (firstTime) {
+					console.log("qnaPlugin - in hideModule hide is false 4");
 					_this.getQnaContainer().find(".qnaModuleBackground").css("display", "block");
+					console.log("qnaPlugin - in hideModule hide is false 5");
 				}
 
 				if (announcementOnly){
+					console.log("qnaPlugin - in hideModule hide is false - announcementOnly 0");
 					_this.getQnaContainer().find(".qnaQuestionArea").css("display", "none");
 					$('.qnaReplyBox').css("display", "none");
+					console.log("qnaPlugin - in hideModule hide is false - announcementOnly 1");
 				}
 				else{
+					console.log("qnaPlugin - in hideModule hide is false - NOT announcementOnly 0");
 					_this.getQnaContainer().find(".qnaQuestionArea").css("display", "block");
 					$('.qnaReplyBox').css("display", "block");
+					console.log("qnaPlugin - in hideModule hide is false - NOT announcementOnly 1");
 				}
 			}
 			_this.updateQnaListHolderSize();
