@@ -139,6 +139,9 @@
 		// Live stream player?
 		"live": false,
 
+        // Live stream only - not playing live edge, user paused or seeked to play DVR content
+        "liveOffSynch": false,
+
 		// Is Audio Player (defined in kWidgetSupport)
 		"isAudioPlayer": false,
 
@@ -2541,7 +2544,14 @@
 			if (percent != 0) {
 				this.muted = false;
 			}
-
+			if( triggerChange !== false ){
+				if (this.previousVolume === 0 && this.volume > 0){
+					$( _this ).trigger('unmute', percent );
+				}
+				if (this.previousVolume > 0 && this.volume === 0){
+					$( _this ).trigger('mute', percent );
+				}
+			}
 			// Update the playerElement volume
 			this.setPlayerElementVolume(percent);
 			//mw.log("EmbedPlayer:: setVolume:: " + percent + ' trigger volumeChanged: ' + triggerChange );
@@ -3009,6 +3019,17 @@
 
 		},
 
+        isLiveOffSynch: function () {
+            return this.liveOffSynch;
+        },
+
+        setLiveOffSynch: function (status) {
+            if( status !== this.liveOffSynch ) {
+                this.liveOffSynch = status;
+                $(this).trigger('onLiveOffSynchChanged', [status]);
+            }
+        },
+
 		disableComponentsHover: function () {
 			if (this.layoutBuilder) {
 				this.layoutBuilder.keepControlsOnScreen = true;
@@ -3092,8 +3113,8 @@
             ]);
             if (!this.isStopped()) {
                 this.isFlavorSwitching = true;
-                // Get the exact play time from the video element ( instead of parent embed Player )
-                var oldMediaTime = this.getPlayerElement().currentTime;
+	            // Get the exact play time
+	            var oldMediaTime = this.currentTime;
                 var oldPaused = this.paused;
                 // Do a live switch
                 this.playerSwitchSource(source, function (vid) {
