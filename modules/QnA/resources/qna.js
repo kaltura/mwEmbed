@@ -183,13 +183,13 @@
             var embedPlayer = this.getPlayer();
 			if (!this.$qnaListContainer) {
 
-				// for unfriendly iFrames, where we can't access window['parent'] we set on page to true
-				if ( !this.getConfig( 'onPage' ) ) {
+				// for unfriendly iFrames, where we can't access window['parent'] we set on page to false
+				if ( this.getConfig( 'onPage' ) ) {
 					try{
 						var parent = window['parent'].document;
 					}catch(e){
 						console.log("qnaPlugin - cant access window.parent.document - setting onPage to true!!!1 exception is: " + e);
-						this.setConfig('onPage', true);
+						this.setConfig('onPage', false);
 						mw.log("cant access window['parent'] - setting to true");
 					}
 				}
