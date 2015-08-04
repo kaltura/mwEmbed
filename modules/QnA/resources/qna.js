@@ -193,7 +193,10 @@
 					}
 				}
 
+				console.log("qnaPlugin - in getQnaContainer onPage=" + _this.getConfig( 'onPage' ));
+
 				if ( this.getConfig( 'onPage' ) ) {
+					console.log("qnaPlugin - in getQnaContainer - on page");
 					// Inject external CSS files
 					this.injectCssToPage(this.getConfig('qnaAnnouncementsCssFileName'));
 					this.injectCssToPage(this.getConfig('qnaFontsCssFileName'));
@@ -210,6 +213,7 @@
 					}
 				}
 				else{
+					console.log("qnaPlugin - in getQnaContainer - NOT on page");
 					// wrap the .mwPlayerContainer element with our qnaInterface div
 					var floatDirection = this.getConfig( 'containerPosition' ) ? this.getConfig( 'containerPosition' ) : "right";
 					var qnaInterfaceElementText = "<div class='qnaInterface' style='position: relative; width: " + this.getConfig( 'moduleWidth' ) + "px; height: 100%; float:" + floatDirection + "'>";
