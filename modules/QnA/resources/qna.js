@@ -188,6 +188,7 @@
 					try{
 						var parent = window['parent'].document;
 					}catch(e){
+						console.log("qnaPlugin - cant access window.parent.document - setting onPage to true!!!1 exception is: " + e);
 						this.setConfig('onPage', true);
 						mw.log("cant access window['parent'] - setting to true");
 					}
