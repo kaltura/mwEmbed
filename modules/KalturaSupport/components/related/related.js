@@ -407,7 +407,7 @@
 
 			if( property == 'timeRemaining' ){
 				if( this.getConfig('formatCountdown')){
-					var timeFormat = mw.KDPMapping.prototype.formatFunctions.timeFormat;
+					var timeFormat = mw.util.formaters().get('timeFormat');
 					this.getScreen().then(function(screen){
 						screen.find('.remaining').html(timeFormat(value));
 					});
