@@ -1,4 +1,5 @@
-mw.kalturaPluginWrapper(function() {
+(function (mw, $) {
+	"use strict";
 
 	mw.PluginManager.add( 'tvpapiAnalytics', mw.KBasePlugin.extend({
 
@@ -156,4 +157,4 @@ mw.kalturaPluginWrapper(function() {
 		}
 
 	}));
-});
+})(window.mw, window.jQuery);
