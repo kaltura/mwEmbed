@@ -244,7 +244,7 @@ DAL for Q&A Module
 
             this.getKClient().doRequest([listMetadataProfileRequest], function (result) {
                 _this.metadataProfile = result[0].objects[0];
-                _this.userId=_this.qnaPlugin.getConfig("userId");
+                _this.userId=_this.qnaPlugin.getUserID();
                 deferred.resolve();
             });
 
