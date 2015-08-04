@@ -18,6 +18,7 @@
 		announcementOnlyStatus: ko.observable(false),
 
 		getBaseConfig: function() {
+			console.log("qnaPlugin - in getBaseConfig");
 			var parentConfig = this._super();
 			return $.extend({}, parentConfig, {
 				qnaTargetId: null
@@ -25,9 +26,13 @@
 		},
 
 		setup: function () {
+			var _this = this;
+			console.log("qnaPlugin - in setup");
+			console.log("qnaPlugin - onPage=" + _this.getConfig( 'onPage' ));
 			this.addBindings();
 		},
         destroy: function(){
+			console.log("qnaPlugin - in destroy");
             var _this = this;
             if (_this.KQnaModule) {
                 _this.KQnaModule.destroy();
@@ -40,6 +45,7 @@
         },
 
 		changeVideoToggleIcon: function() {
+			console.log("qnaPlugin - in changeVideoToggleIcon");
 			var _this = this;
 			var onVideoTogglePluginButton = $('.qna-on-video-btn');
 			var qnaObject = _this.getQnaContainer().find(".qnaModuleBackground");
@@ -54,6 +60,7 @@
 		},
 
 		addBindings: function () {
+			console.log("qnaPlugin - in addBindings");
 			var _this = this;
 			var embedPlayer = this.getPlayer();
             var qnaObject=null;
@@ -171,21 +178,26 @@
 
 		// load the Q&A template to the div with qnaTargetId
 		getQnaContainer: function(){
+			console.log("qnaPlugin - in getQnaContainer");
 			var _this = this;
             var embedPlayer = this.getPlayer();
 			if (!this.$qnaListContainer) {
 
-				// for unfriendly iFrames, where we can't access window['parent'] we set on page to true
-				if ( !this.getConfig( 'onPage' ) ) {
+				// for unfriendly iFrames, where we can't access window['parent'] we set on page to false
+				if ( this.getConfig( 'onPage' ) ) {
 					try{
 						var parent = window['parent'].document;
 					}catch(e){
-						this.setConfig('onPage', true);
+						console.log("qnaPlugin - cant access window.parent.document - setting onPage to true!!!1 exception is: " + e);
+						this.setConfig('onPage', false);
 						mw.log("cant access window['parent'] - setting to true");
 					}
 				}
 
+				console.log("qnaPlugin - in getQnaContainer onPage=" + _this.getConfig( 'onPage' ));
+
 				if ( this.getConfig( 'onPage' ) ) {
+					console.log("qnaPlugin - in getQnaContainer - on page");
 					// Inject external CSS files
 					this.injectCssToPage(this.getConfig('qnaAnnouncementsCssFileName'));
 					this.injectCssToPage(this.getConfig('qnaFontsCssFileName'));
@@ -202,13 +214,20 @@
 					}
 				}
 				else{
+					console.log("qnaPlugin - in getQnaContainer - NOT on page");
 					// wrap the .mwPlayerContainer element with our qnaInterface div
 					var floatDirection = this.getConfig( 'containerPosition' ) ? this.getConfig( 'containerPosition' ) : "right";
 					var qnaInterfaceElementText = "<div class='qnaInterface' style='position: relative; width: " + this.getConfig( 'moduleWidth' ) + "px; height: 100%; float:" + floatDirection + "'>";
 
-					$('.mwPlayerContainer').after(qnaInterfaceElementText);
+					console.log("qnaPlugin - before after");
+					var ret1 = $('.mwPlayerContainer').after(qnaInterfaceElementText);
+					console.log("qnaPlugin - after after");
+
+					console.log("qnaPlugin - after res= " + ret1);
 
 					this.$qnaListContainer = $( ".qnaInterface");
+
+					console.log("qnaPlugin - this.$qnaListContainer= " + this.$qnaListContainer);
 
 					// resize the video to make place for the playlist according to its position (left, top, right, bottom)
 					if ( this.getConfig( 'containerPosition' ) === 'right' || this.getConfig( 'containerPosition' ) === 'left' ) {
@@ -250,6 +269,7 @@
 		},
 
 		positionQAButtonOnVideoContainer : function(){
+			console.log("qnaPlugin - in positionQAButtonOnVideoContainer");
 			var onVideoTogglePluginButton = $('.qna-on-video-btn');
 			var videoHeight = this.getPlayer().getInterface().height();
 			var buttonHeight = Math.round(videoHeight / 5);
@@ -274,6 +294,7 @@
 		},
 
 		updateQnaListHolderSize : function(){
+			console.log("qnaPlugin - in updateQnaListHolderSize");
 			var _this = this;
 			var newHeight = this.getPlayer().getInterface().height();
 			if (!_this.announcementOnlyStatus()){
@@ -283,6 +304,7 @@
 		},
 
 		bindButtons : function(){
+			console.log("qnaPlugin - in bindButtons");
 			var _this = this;
 			var sendButton = _this.getQnaContainer().find('.qnaSendButton');
 			var textArea = _this.getQnaContainer().find('.qnaQuestionTextArea');
@@ -356,6 +378,7 @@
 		},
 
 		hideModule: function(hide, announcementOnly) {
+			console.log("qnaPlugin - in hideModule");
 			var _this = this;
 			var firstTime = (_this.moduleStatus() === undefined);
 
@@ -365,30 +388,41 @@
 			if (hide) {
 				_this.getQnaContainer().find(".qnaModuleBackground").hide();
 				if (!_this.getConfig( 'onPage' )) {
-					_this.getQnaContainer().find(".qnaModuleBackgroundHider").show();
+					console.log("qnaPlugin - in hideModule before qnaModuleBackgroundHider - block");
+					_this.getQnaContainer().find(".qnaModuleBackgroundHider").css("display", "block");
+					console.log("qnaPlugin - in hideModule after qnaModuleBackgroundHider - block");
 				}
 				$('.qna-on-video-btn').css("display", "none");
 			}
 			else{
+				console.log("qnaPlugin - in hideModule hide is false 0");
 				// use css("display", "block") since .show() restores the previous value, and the previous value is hide
 				$('.qna-on-video-btn').css("display", "block");
-
+				console.log("qnaPlugin - in hideModule hide is false 1");
 				if (!_this.getConfig( 'onPage' )) {
-					_this.getQnaContainer().find(".qnaModuleBackgroundHider").hide();
+					console.log("qnaPlugin - in hideModule hide is false 2");
+					_this.getQnaContainer().find(".qnaModuleBackgroundHider").css("display", "none");
+					console.log("qnaPlugin - in hideModule hide is false 3");
 				}
 
 				// open the module only if this is the first time
 				if (firstTime) {
-					_this.getQnaContainer().find(".qnaModuleBackground").show();
+					console.log("qnaPlugin - in hideModule hide is false 4");
+					_this.getQnaContainer().find(".qnaModuleBackground").css("display", "block");
+					console.log("qnaPlugin - in hideModule hide is false 5");
 				}
 
 				if (announcementOnly){
-					_this.getQnaContainer().find(".qnaQuestionArea").hide();
-					$('.qnaReplyBox').hide();
+					console.log("qnaPlugin - in hideModule hide is false - announcementOnly 0");
+					_this.getQnaContainer().find(".qnaQuestionArea").css("display", "none");
+					$('.qnaReplyBox').css("display", "none");
+					console.log("qnaPlugin - in hideModule hide is false - announcementOnly 1");
 				}
 				else{
-					_this.getQnaContainer().find(".qnaQuestionArea").show();
-					$('.qnaReplyBox').show();
+					console.log("qnaPlugin - in hideModule hide is false - NOT announcementOnly 0");
+					_this.getQnaContainer().find(".qnaQuestionArea").css("display", "block");
+					$('.qnaReplyBox').css("display", "block");
+					console.log("qnaPlugin - in hideModule hide is false - NOT announcementOnly 1");
 				}
 			}
 			_this.updateQnaListHolderSize();
