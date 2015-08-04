@@ -130,23 +130,28 @@ mw.kalturaPluginWrapper(function() {
 
 				this.log('sendPostRequest: request: ' + service, params);
 				var _this = this;
-				$.ajax({
-					url: this.getPlayer().getFlashvars('TVPAPIBaseUrl') + service,
-					data: JSON.stringify(params),
-					crossDomain: true,
-					type: 'POST',
-					dataType: 'text',
-					success: function (data) {
-						_this.log('sendPostRequest: response for ' + service + ': ' + data);
-						if (data == '"Concurrent"') {
-							_this.concurrentFlag = true;
-							_this.getPlayer().triggerHelper('tvpapiShowConcurrent');
+				var TVPAPIBaseUrl = this.getPlayer().getFlashvars('TVPAPIBaseUrl');
+				if (TVPAPIBaseUrl) {
+					$.ajax({
+						url: TVPAPIBaseUrl + service,
+						data: JSON.stringify(params),
+						crossDomain: true,
+						type: 'POST',
+						dataType: 'text',
+						success: function (data) {
+							_this.log('sendPostRequest: response for ' + service + ': ' + data);
+							if (data == '"Concurrent"') {
+								_this.concurrentFlag = true;
+								_this.getPlayer().triggerHelper('tvpapiShowConcurrent');
+							}
+						},
+						error: function (xhr, textStatus, errorThrown) {
+							_this.log('sendPostRequest error', errorThrown);
 						}
-					},
-					error: function (xhr, textStatus, errorThrown) {
-						_this.log('sendPostRequest error', errorThrown);
-					}
-				});
+					});
+				} else {
+					this.log('sendPostRequest error - can\'t find TVPAPI base url');
+				}
 			}
 		}
 
