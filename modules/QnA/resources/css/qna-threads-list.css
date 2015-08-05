@@ -418,3 +418,14 @@
     text-align: left;
     margin-left: 19px;
 }
+
+.qnaInterface .qnaAnswerOnAirHolder{
+    overflow: hidden;
+    height: auto;
+    background-color: #ffffff;
+}
+
+.qnaInterface .qnaAnswerOnAir{
+    margin-bottom: 4px;
+    background-color: #f0f0f0;
+}
