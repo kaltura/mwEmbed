@@ -130,7 +130,7 @@
 				this.multiastServerUrl = resolvedSrc;
 				var startFailoverFromMulticastServer = function () {
 
-					mw.log( 'startFailoverFromMulticastServer: ' );
+					mw.log( 'startFailoverFromMulticastServer ' );
 					if (_this.multicastSessionId) {
 						_this.isError = true;
 
@@ -257,11 +257,6 @@
 				_this.showErrorMsg( errorObj );
 			}
 			_this.readyCallbackFunc = undefined;
-		} ,
-		handleFailoverFromPlayManifest: function () {
-			mw.log( 'Error calling play manifest: ' + this.getSrc() );
-			this.isError = true;
-			this.fallbackToUnicast();
 		} ,
 		//in live we must first check if player is live
 		loadLive: function ( doEmbedFunc , readyCallback ) {
