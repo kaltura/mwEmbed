@@ -100,7 +100,8 @@
                                     <div data-bind='css:{   "qnaThreadTextRead" : !(!isRead() || ($index()===0 && thread.hasUnreadEntries() && $parent.isCollapsed())),
                                                             "qnaThreadText": !isRead() || ($index()===0 && thread.hasUnreadEntries() && $parent.isCollapsed()),
                                                             "qnaThreadTitleCollapsed": thread.entries().length > 1 && $parent.isCollapsed(),
-                                                            "qnaSingleEntry": thread.entries().length === 1 && $parent.isCollapsed()
+                                                            "qnaSingleEntry": thread.entries().length === 1 && $parent.isCollapsed(),
+                                                            "qnaThreadTextAnswer" : isAnswer()
                                                         },
                                                     text:getText()'></div>
 

@@ -133,6 +133,10 @@ DAL for Q&A Module
             return this.cuePoint().metadata.Type;
         };
 
+        this.isAnswer = function(){
+            return this.getType() === "Answer";
+        };
+
         this.isRead = ko.observable(viewedEntries.isRead(_this.cuePoint().id) || _this.getType() === "Question");
 
         this.setThread = function(thread){
@@ -157,10 +161,6 @@ DAL for Q&A Module
 
         this.getThreadID = function(){
             return this.cuePoint().metadata.ThreadId;
-        };
-
-        this.isAnnouncement = function(){
-            return this.type === "Announcement";
         };
 
         this.getTitle = function(){
