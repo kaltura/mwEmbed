@@ -315,6 +315,7 @@
 					||
 					isMimeType( "video/h264" )
 				) {
+					resolvedSrc = encodeURIComponent(resolvedSrc);
 					flashvars.entryURL = resolvedSrc;
 				} else if (
 					isMimeType( "video/playreadySmooth" )

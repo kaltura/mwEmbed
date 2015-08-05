@@ -13,12 +13,13 @@
 <script>
 
     var localhost="192.168.163.88";
-    var multicast=true;
-    var ism=false;
-    var hls=true;
+    var multicast=false;
+    var ism=true;
+    var hls=false;
     var hlssource='http://'+localhost+':1935/live/abc123/playlist.m3u8';
     //var hlssource='http://kalsegsec-a.akamaihd.net/dc-1/m/ny-live-publish3/kLive/smil:1_oorxcge2_publish.smil/chunklist_b2096000.m3u8';
     var ismsource='http://'+localhost+':1935/live/abc123/Manifest';
+    ismsource="http://tglsch8a-s.akamaihd.net/live/234736_234737/channel8.isml/Manifest";
 
     var replaceSources=[];
     if (multicast) {

@@ -80,6 +80,10 @@
 		localizationCode: null,
 
 		trackCuePoints: false,
+
+		//override cuepoint url with the preroll url
+		overrideCuePointWithPreRoll: false,
+
 		adCuePoints: [],
 		skipTimeoutId: null,
 
@@ -103,6 +107,8 @@
 
 			this.trackCuePoints = this.getConfig("trackCuePoints") == true && !_this.getConfig( 'adTagUrl' );
 
+			this.overrideCuePointWithPreRoll = this.getConfig("overrideCuePointWithPreRoll")  == true && !_this.getConfig( 'adTagUrl' );
+
 			// remove any old bindings:
 			embedPlayer.unbindHelper( this.bindPostfix );
 
@@ -111,7 +117,7 @@
 			if( globalAdsManger ){
 				mw.log( "DoubleClick::unload old adManger" );
 				if ( $.isFunction( globalAdsManger.destroy ) ) {
-					var resotreFunction = $( _this.embedPlayer ).data( 'doubleClickRestore');
+					var resotreFunction = $( _this.embedPlayer ).data( 'doubleClickRestore' );
 					if (  $.isFunction(resotreFunction) ){
 						resotreFunction();
 					}
@@ -179,6 +185,11 @@
 				}
 			}
 
+			//if we got till here we're going to use the javascript - check if we have spacific javascript configuration
+			if ( _this.getConfig( 'prerollUrlJS' ) !== undefined && !_this.getConfig( 'adTagUrl' )) {
+				_this.adTagUrl = _this.getConfig( 'prerollUrlJS' );
+			}
+
 			// Load double click ima per doc:
 			this.loadIma( function(){
 				// Determine if we are in managed or kaltura point based mode.
@@ -218,9 +229,11 @@
 			var _this = this;
 			$( this.embedPlayer ).bind('KalturaSupport_AdOpportunity', function( event, cuePointWrapper ) {
 				if( cuePointWrapper.cuePoint.protocolType == 1 && _this.adCuePoints.indexOf(cuePointWrapper.cuePoint.id) === -1 ){ // Check for  protocolType == 1 ( type = vast )
-					_this.adTagUrl = cuePointWrapper.cuePoint.sourceUrl;
+					if ( !_this.overrideCuePointWithPreRoll ) {
+						_this.adTagUrl = cuePointWrapper.cuePoint.sourceUrl;
+					}
+
 					if (cuePointWrapper.cuePoint.adType == 1){ // linear video
-						_this.embedPlayer.addPlayerSpinner();
 						_this.currentAdSlotType = "midroll";
 					}else{
 						_this.currentAdSlotType = "overlay";
@@ -299,7 +312,7 @@
 			flashVars['cust_params'] = this.cust_params;
 
 			//we shouldn't send these params, they are unnecessary and break the flash object
-			var ignoredVars = ['path', 'customParams', 'preSequence', 'postSequence', 'postrollUrl', 'countdownText', 'prerollUrl' ];
+			var ignoredVars = ['path', 'customParams', 'preSequence', 'postSequence', 'postrollUrl','postrollUrlJS', 'countdownText', 'prerollUrl','prerollUrlJS' ];
 			for ( var i=0; i< ignoredVars.length; i++ ) {
 				delete flashVars[ignoredVars[i]];
 			}
@@ -398,6 +411,17 @@
 					if ( _this.getConfig("adTagUrl") && ( _this.isLinear === false || _this.allAdsCompletedFlag || _this.adLoaderErrorFlag) ){
 						_this.restorePlayer(true);
 					}
+				};
+
+				//if we're in JS mode - check if we have spacific JS configuration for the postroll
+				if ( !_this.isChromeless &&
+					_this.getConfig("postrollUrlJS") &&
+					!_this.getConfig("adTagUrl")){
+					_this.contentDoneFlag = true;
+					_this.adTagUrl = _this.getConfig("postrollUrlJS");
+					_this.currentAdSlotType = "postroll";
+					_this.requestAds("postroll");
+					return;
 				}
 				if ( _this.getConfig("postrollUrl") && !_this.getConfig("adTagUrl") ){
 					_this.contentDoneFlag = true;

@@ -244,14 +244,17 @@
             }
 
             //HLS, HDS
-            
+
             if (this.getPlayer().streamerType !== "http" && mw.isNativeApp()) {
             	this.sourcesList = [];
                 this.addAutoToMenu();
                 return true;
             }
-            
-            if(  this.getPlayer().streamerType != "http" && !this.getPlayer().isPlaying() ){
+
+            if ( this.getPlayer().streamerType != "http" && !this.getPlayer().isPlaying() ){
+                if(this.getPlayer().streamerType !== "hls" && !mw.EmbedTypes.getMediaPlayers().isSupportedPlayer('kplayer')){ //If flash disabled, player fallback to http progressive, but the streamerType might still be hdnetwork
+                    return true;
+                }
                 this.addAutoToMenu();
                 return false;
             }
