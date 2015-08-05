@@ -67,7 +67,7 @@ DAL for Q&A Module
             return false;
         });
 
-        // Get the timestame of the last Answer on the thread
+        // Get the timestamp of the last Answer on the thread
         // If there are no answers on the thread - return first question (so thread won't jump on new question).
         this.lastTimeForSort = function(){
 
@@ -376,6 +376,13 @@ DAL for Q&A Module
                 viewedEntries.markAsRead(item.cuePoint().id);
                 this.addOrUpdateEntry(item);
                 this.qnaPlugin.updateUnreadBadge();
+            }
+        },
+
+        markThreadAsRead: function(qnaThread){
+            var _this = this;
+            for(var i=0; i < qnaThread.entries().length; i++){
+                _this.markAsRead(qnaThread.entries()[i]());
             }
         },
 
