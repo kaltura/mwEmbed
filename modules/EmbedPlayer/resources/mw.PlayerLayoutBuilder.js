@@ -451,26 +451,30 @@ mw.PlayerLayoutBuilder.prototype = {
 			return;
 		}
 		var	tooltips = elm ? elm : this.getInterface();
-		var arrowType = arrowDirection ? arrowDirection : "arrow";
-		var myPosition = tooltips.offset().top > 0 ? "center bottom+55" : "center bottom-10";
-		tooltips.tooltip({
-			items: '[data-show-tooltip]',
-			"show": { "delay": 1000 },
-			"hide": { "duration": 0 },
-			"content": function(){return $(this).attr('title');},
-			position: {
-				my: myPosition,
-				at: "center top",
-				using: function( position, feedback ) {
-					$( this ).css( position );
-					$( "<div>" )
-						.addClass( arrowType )
-						.addClass( feedback.vertical )
-						.addClass( feedback.horizontal )
-						.appendTo( this );
+		if (tooltips && tooltips.length > 0) {
+			var arrowType = arrowDirection ? arrowDirection : "arrow";
+			var myPosition = tooltips.offset().top > 0 ? "center bottom+55" : "center bottom-10";
+			tooltips.tooltip( {
+				items: '[data-show-tooltip]' ,
+				"show": {"delay": 1000} ,
+				"hide": {"duration": 0} ,
+				"content": function () {
+					return $( this ).attr( 'title' );
+				} ,
+				position: {
+					my: myPosition ,
+					at: "center top" ,
+					using: function ( position , feedback ) {
+						$( this ).css( position );
+						$( "<div>" )
+							.addClass( arrowType )
+							.addClass( feedback.vertical )
+							.addClass( feedback.horizontal )
+							.appendTo( this );
+					}
 				}
-			}
-		});
+			} );
+		}
 	},
 	/**
 	* Get minimal width for interface overlay
