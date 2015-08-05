@@ -12,35 +12,57 @@
 
 <script>
 
-    mw.setConfig('EmbedPlayer.ReplaceSources', [
-        {
-            //'type': 'application/vnd.apple.mpegurl',
-            'type': 'video/multicast',
+    var localhost="192.168.163.88";
+    var multicast=true;
+    var ism=false;
+    var hls=true;
+    var hlssource='http://'+localhost+':1935/live/abc123/playlist.m3u8';
+    //var hlssource='http://kalsegsec-a.akamaihd.net/dc-1/m/ny-live-publish3/kLive/smil:1_oorxcge2_publish.smil/chunklist_b2096000.m3u8';
+    var ismsource='http://'+localhost+':1935/live/abc123/Manifest';
+
+    var replaceSources=[];
+    if (multicast) {
+        replaceSources.push( {
+        'type': 'video/multicast',
             //'src': '239.1.2.3:1234'
             //'src': 'http://192.168.163.88:9000/kMulticast/http://192.168.163.88:1935/live/abc123/playlist.m3u8'
-            'src': 'http://10.0.0.12:9000/kMulticast/http://kalsegsec-a.akamaihd.net/dc-1/m/ny-live-publish3/kLive/smil:1_oorxcge2_publish.smil/chunklist_b2096000.m3u8'
-          //  'src': 'http://10.0.0.12:9000/kMulticast/http://10.0.0.12:1935/live/abc123/playlist.m3u8'
-        },
-        {
+            //  'src': 'http://10.0.0.15:9000/kMulticast/http://kalsegsec-a.akamaihd.net/dc-1/m/ny-live-publish3/kLive/smil:1_oorxcge2_publish.smil/chunklist_b2096000.m3u8'
+                'src': 'http://'+localhost+':9000/kMulticast/'+hlssource
+        });
+    }
+
+    if (ism) {
+
+        replaceSources.push({
+            'type': 'video/ism',
+            'src': ismsource
+        });
+    }
+    if (hls) {
+
+        replaceSources.push({
             'type': 'application/vnd.apple.mpegurl',
-            'src': 'http://10.0.0.12:1935/live/abc123/playlist.m3u8',
-          //  'src': 'http://kalsegsec-a.akamaihd.net/dc-1/m/ny-live-publish3/kLive/smil:1_oorxcge2_publish.smil/chunklist_b2096000.m3u8'
-        }
-    ]);
+            'src': hlssource
+        });
+    }
+
+    if (replaceSources.length>0) {
+        mw.setConfig('EmbedPlayer.ReplaceSources', replaceSources);
+    }
     kWidget.featureConfig({
         'targetId': 'kaltura_player',
         'wid': '_931702',
         'uiconf_id' : '21099702',
         'flashvars': {
-            "liveCore":{"plugin":true} ,
+            "liveCore":{"plugin":true, "disableLiveCheck":true} ,
 
-            LeadWithHLSOnFlash:true,
-            'LeadWithUnicastToMulticast': true,
+            //LeadWithHLSOnFlash:true,
+          // 'LeadWithUnicastToMulticast': true,
             'debugInfo': {
                 'plugin': true,
                 'isVisible':true
-            },
-            'autoPlay': true
+            }
+          //  'autoPlay': true
         },
         'entry_id': "1_oorxcge2"
 

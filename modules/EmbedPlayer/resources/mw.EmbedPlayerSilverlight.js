@@ -130,6 +130,7 @@
 				this.multiastServerUrl = resolvedSrc;
 				var startFailoverFromMulticastServer = function () {
 
+					mw.log( 'startFailoverFromMulticastServer: ' );
 					if (_this.multicastSessionId) {
 						_this.isError = true;
 
@@ -140,6 +141,7 @@
 
 
 						_this.bindHelper("playerReady", function () {
+							mw.log( 'playerReady called, resetting firstPlay' );
 							_this.firstPlay = true; //resume live playback when the new player is ready
 						});
 						_this.setupSourcePlayer(); //switch player
@@ -164,12 +166,17 @@
 							_this.multicastPolicyOverMulticastEnabled = response.multicastPolicyOverMulticastEnabled;
 							_this.multicastSessionId = response.id;
 							doEmbedFunc( multicastAddress );
+							//keep alive
+							startConnectToKESTimer();
 
 						} else {
 							if ( _this.multicastAddress !== multicastAddress ||
 								 _this.multicastSessionId !== response.id ) {
+								mw.log( 'detected multicastAddress or multicastSessionId changed' );
 								startFailoverFromMulticastServer();
 							} else {
+								//keep alive
+								startConnectToKESTimer();
 								//mw.log('keep alive sent successfully');
 							}
 						}
@@ -177,12 +184,17 @@
 						if (response && response.state==="Loading") {
 
 							mw.log('KES still loading, retrying later');
+							//retry
+							startConnectToKESTimer();
 						} else {
 							if ( !_this.multicastSessionId ) { //only if we never got multicast result we should display that, otherwise just keepon trying
 								mw.log('Invalid multicast address/port returned from KES');
 								_this.isError = true;
 								var errorObj = {message: gM('ks-LIVE-STREAM-NOT-AVAILABLE'), title: gM('ks-ERROR')};
 								_this.showErrorMsg(errorObj);
+							} else {
+								//we already got multicast working at the past, retry to connect to KES∂
+								startConnectToKESTimer();
 							}
 						}
 					}
@@ -190,6 +202,10 @@
 
 				var startConnectToKESTimer = function () {
 
+					//in case of fallback to unicast we don't want to restart by accident
+					if (!_this.isMulticast) {
+						return;
+					}
 
 					var retryTime= _this.getKalturaConfig( null , 'multicastKESStartInterval' ) || _this.defaultMulticastKESStartInterval;
 
@@ -202,9 +218,6 @@
 						}
 						catch ( e ) {
 							mw.log( 'connectToKES failed ' + e.message + ' ' + e.stack );
-							startFailoverFromMulticastServer();
-						}
-						finally {
 							startConnectToKESTimer();
 						}
 					} , retryTime );
@@ -250,27 +263,29 @@
 			this.isError = true;
 			this.fallbackToUnicast();
 		} ,
-		//in multicast we must first check if payer is live
-		loadMulticast: function ( doEmbedFunc , readyCallback ) {
-			mw.log( 'loadMulticast' );
+		//in live we must first check if player is live
+		loadLive: function ( doEmbedFunc , readyCallback ) {
+			mw.log( 'loadLive' );
 			var _this = this;
 			$( _this ).trigger( 'checkIsLive' , [function ( onAirStatus ) {
-				var resolve = function () {
-					_this.resolveSrcURL( _this.getSrc() ).then( function ( result ) {
-						_this.handleMulticastPlayManifest( result , doEmbedFunc );
-					} , function () {
-						_this.handleFailoverFromPlayManifest();
-					} );
+				var startSilverlight = function () {
+					_this.resolveSrcURL(_this.getSrc()).then(function (result) {
 
-				};
+						if (_this.isMulticast) {
+							_this.handleMulticastPlayManifest(result, doEmbedFunc);
+						} else {
+							doEmbedFunc(result);
+						}
+					});
+				}
 				if ( onAirStatus ) {
-					resolve();
+					startSilverlight();
 				} else {
 					//stream is offline, stream address can be retrieved when online
 					_this.bindHelper( "liveOnline" + _this.bindPostfix , function () {
 						_this.unbindHelper( "liveOnline" + _this.bindPostfix );
 						_this.addPlayerSpinner();
-						resolve();
+						startSilverlight();
 						//no need to save readyCallback since it was already called
 						_this.readyCallbackFunc = undefined;
 					} );
@@ -307,7 +322,6 @@
 					isMimeType( "video/ism" )
 				) {
 					resolvedSrc = encodeURIComponent(resolvedSrc);
-					_this.isMulticast = false;
 					_this.streamerType = 'smoothStream';
 
 					flashvars.smoothStreamPlayer = true;
@@ -348,7 +362,6 @@
 					}
 				} else if ( isMimeType( "video/multicast" ) ) {
 
-					_this.isMulticast = true;
 					_this.bindHelper( "liveOffline" , function () {
 						//if stream became offline
 						if ( _this.playerObject ) {
@@ -427,7 +440,8 @@
 			}
 
 			if ( _this.isLive() ) {
-				_this.loadMulticast( doEmbedFunc , readyCallback );
+				_this.isMulticast= isMimeType( "video/multicast" );
+				_this.loadLive( doEmbedFunc , readyCallback );
 			} else {
 				_this.resolveSrcURL( _this.getSrc() ).then( doEmbedFunc );
 			}
@@ -594,9 +608,9 @@
 		 * play method calls parent_play to update the interface
 		 */
 		play: function () {
-			mw.log( 'EmbedPlayerSPlayer::play' );
+			mw.log( 'EmbedPlayerSPlayer::play' + this.isMulticast + ""+this.durationReceived);
 			var _this = this;
-			if ( this.durationReceived && this.parent_play() ) {
+			if ( (!this.isMulticast || this.durationReceived) && this.parent_play() ) {
 				//TODO:: Currently SL player initializes before actual volume is read from cookie, so we set it on play
 				//need to refactor the volume logic and remove this.
 				this.setPlayerElementVolume( this.volume );
