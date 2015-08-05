@@ -1,84 +1,127 @@
-body{
+@font-face {
+    font-family: 'LatoLight';
+    src: url('./fonts/Lato-Light.eot');
+    src: url('./fonts/Lato-Light.eot?#iefix') format('embedded-opentype'),
+    url('./fonts/Lato-Light.woff') format('woff');
+    font-style: normal;
+    font-weight: normal;
+}
+@font-face {
+    font-family: 'LatoBlack';
+    src: url('./fonts/Lato-Black.eot');
+    src: url('./fonts/Lato-Black.eot?#iefix') format('embedded-opentype'),
+    url('./fonts/Lato-Black.woff') format('woff');
+    font-style: normal;
+    font-weight: normal;
+}
+@font-face {
+    font-family: 'Lato';
+    src: url('./fonts/Lato-Bold.eot'); /* IE9 Compat Modes */
+    src: url('./fonts/Lato-Bold.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('./fonts/Lato-Bold.woff') format('woff');
+    font-style: normal;
+    font-weight: bold;
+}
+@font-face {
+    font-family: 'Lato-Regular';
+    src: url('./fonts/Lato-Regular.eot'); /* IE9 Compat Modes */
+    src: url('./fonts/Lato-Regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('./fonts/Lato-Regular.woff') format('woff');
+    font-style: normal;
+    font-weight: bold;
+}
+.ivqContainer{
+    position: relative;
+    height: 90%;
+}
+.bottomContainer{
+    position: fixed;
+    bottom: 8vw;
+    width: 100%;
+}
+.welcome {
+    font-family: "LatoBlack";
+    padding-top: 4vw;
+    padding-left: 4vw;
+    color: #ffffff;
+    font-size: 8vw;
+    font-weight: 900;
+    text-align: left;
+    transform: scaleY(1.0002);
+}
 
+.welcomeMessage{
+    font-family: "LatoLight";
+    color: #ffffff;
+    padding-left: 4vw;
+    padding-top: 6vh;
+    font-size: 5.5vh;
+    font-weight: 300;
+    text-align: left;
+    transform: scaleY(1.0009);
+    width: 92vw;
+}
+.InvideoTipMessage {
+    font-size: 4vh;
+}
+.screen-content {
+    position:fixed;
+    bottom:0px;
+    width:100%;
+    height: inherit;
 }
 
 .screen{
-    /*z-index: 10;*/
     background-image:url("BACKGROUND.png")!important;
-    background-size: 100% 100%;
+    background-size: cover;
     position: absolute;
-
 }
 center {
     margin-left: auto;
     margin-right: auto;
-
 }
-a{
-    font-size: 2.9vw;
-    text-decoration: none;
-    color: white;
-}
-
-h1 {
-
-    font-family: 'Lato', Helvetica, Arial, serif
-;
-    color: #ffffff;
-    font-size: 10vw;;
-    font-weight: 900;
-    line-height: 10vw;
-    text-align: left;
-    transform: scaleY(1.0002);
-
-}
-
-h2 {
-    font-size: 3.9vw;
-    color: white;
-    font-weight: normal;
-}
-
 .title-text{
+    font-family: "LatoBlack";
     font-size: 5.9vw;
     color: white;
     font-weight: bold;
     text-align: center;
+    padding-top: 7vh;
+
 }
 .sub-text{
+    font-family: "LatoLight";
     font-size: 2.5vw;
     color: white;
     text-align: center;
     font-weight: 100;
-
-    margin-bottom: 2vw;
-
 }
 .confirm-box{
-    position: relative;
-    width: 50%;
+    font-family: "Lato";
+    font-size: 3vw;
+    font-weight: 700;
+    text-align: center;
+    color: white;
+    width: 30%;
     height:10vw;
     overflow: hidden;
     background-color: #00dcff;
     display: table;
     margin:0 auto;
-    text-align: center;
-    font-size: 3vw;
     vertical-align: middle;
-    color: white;
     line-height:10vw;
+    border-radius: 6px;
+    box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.23);
 }
 .confirm-box:hover{
     cursor:pointer;
 }
-
-
 .header-container{
+
 }
 .answers-container{
     position: absolute;
-    top: 24%;
-
+    top: 21vh;
 }
 .display{
     position:relative;
@@ -87,67 +130,100 @@ h2 {
     padding-top: 1vw;
 }
 .display-question{
+    font-family: "Lato";
     margin-left: auto;
     margin-right: auto;
-    color:  #ffffff;
+    color: #ffffff;
     font-size: 2.9vw;
     font-weight: 700;
-    text-align:center;
-    width:80%;
+    text-align: center;
+    width: 80%;
     word-wrap: break-word;
+    padding-top: 11vh;
+}
+.single-answer-box-bk.wide{
+    width: 96vw;
+    margin-left: 1vw;
+
+}
+.single-answer-box-bk:hover:not(.wide){
+    background-image: url(AnswerBG_hover.png);
 }
 .single-answer-box-bk{
-    width: 96vw;
-    height:4vw;
+    width: 92vw;
+    height: 4vw;
+    margin-left: 3vw;
     padding-top: 1.8vw;
     padding-bottom: 1.8vw;
     margin-top:1vw;
     overflow: hidden;
-    background: url(AnswerBg.png);
+    background-image: url(AnswerBG.png);
     background-size: 100% 100%;
 }
 
+.single-answer-box-bk-apply{
+     background-image: url(ApplyBG.png);
+ }
+
+.single-answer-box-bk-applied{
+    background-image: url(ApplliedBG.png);
+}
 
 .single-answer-box{
+    font-family: "Lato-Regular";
     display: inline-block;
     width: 96vw;
     color:white;
     font-size: 2.2vw;
-
     text-align:center;
     vertical-align: middle;
+    margin-top: 1.5vh;
 }
-
+.single-answer-box-small{
+    font-family: "Lato-Regular";
+    width: 76vw;
+    overflow: hidden;
+    color: black;
+    display: inline-block;
+    font-size: 2vw;
+    text-align: center;
+    vertical-align: middle;
+    margin-top: 1.5vh;
+}
 .single-answer-box-apply {
     display: inline-block;
-    width:20vw;
+    width: 16vw;
+    height:100%;
     float: right;
-    text-align:center;
-    font-size: 2.9vw;
-    margin-right: -0.9vw
-    /*margin-top:1vw;*/
-    /*padding-top: 1.8vw;*/
-    /*padding-bottom: 1.8vw;*/
+    text-align: center;
+    font-size: 1.9vw;
+    font-weight: 400;
+    margin-right: 0.1vw;
+    margin-top: 1.5vh;
+
 }
 .single-answer-box-apply:hover {
     cursor: pointer;
 }
 
 .ftr-container{
-    /*padding-top: 1vw;*/
     width: 100%;
     position: absolute;
-    bottom: 0;
+    bottom: 11vh;
 }
 .ftr-left{
+    font-family: "LatoBlack";
+    font-weight: 400;
     display: inline-block;
-    color:black;
-    font-size: 2.9vw;
-    /*margin-left: 2vw;*/
+    color: rgba(0, 0, 0, 0.7);
+    font-size: 2vw;
+    margin-left: 2vw;
 }
 .ftr-right{
+    font-family: "LatoBlack";
     display: inline-block;
-    font-size: 2.9vw;
+    font-size: 2vw;
+    font-weight: 900;
     /*width: 33vw;*/
     float: right;
     text-align: right;
@@ -156,14 +232,14 @@ h2 {
 .ftr-right:hover {
     cursor: pointer;
 }
-.hint-box{
+.hint-why-box {
     width: 9vw;
     height: 10vw;
     background-image: url(Hint.png);
     float: right;
-    margin-top: -7vw;
+    margin-top: 3vh;
     margin-bottom: 2vw;
-    color:black;
+    color: black;
     line-height: 10vw;
     font-weight: 700;
     font-size: 2vw;
@@ -171,11 +247,36 @@ h2 {
     background-size: 100% 100%;
     vertical-align: middle;
 }
-.hint-box:hover{
+.hint-why-box:hover{
+    cursor: pointer;
+}
+.close-button{
+    width: 3vw;
+    height: 3vw;
+    background-image: url(close.png);
+    float: right;
+    background-size: 100% 100%;
+    margin-top: 7vh;
+    margin-right: 3vw;
+}
+
+.close-button:hover{
     cursor: pointer;
 }
 
+.hint-container {
+    font-family: "LatoLight";
+    color: #ffffff;
+    font-size: 5vw;
+    font-weight: 300;
+    text-align: center;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
 .q-box{
+    ont-family: "LatoLight";
+    font-size: 5vw;
     width: 10vw;
     height: 11vw;
     line-height:11vw;
@@ -184,8 +285,12 @@ h2 {
     text-align: center;
     vertical-align: middle;
     background-size: 100% 100%;
+    margin-left: 1vw;
 }
+
 .q-box-false{
+    font-family: "LatoLight";
+    font-size: 5vw;
     width: 10vw;
     height: 11vw;
     line-height:11vw;
@@ -194,6 +299,7 @@ h2 {
     text-align: center;
     vertical-align: middle;
     background-size: 100% 100%;
+    margin-left: 1vw;
 }
 .q-box-false:hover{
     cursor: pointer;
@@ -202,13 +308,16 @@ h2 {
 .q-box,:hover{
     cursor: pointer;
 }
-.display-content{
+
+.q-boxtent{
+    position: relative;
+    top: 25%;
+    transform: translateY(-50%);
     text-align: center;
     font-size: 3vw;
 }
 
 .gotItBox{
-
     width: 15vw;
     height: 10vw;
     line-height: 10vw;
@@ -222,7 +331,7 @@ h2 {
     position: absolute;
     bottom: 0;
     right: 0;
-    margin-bottom: 2vw;
+    margin-bottom: 12vh;
     margin-right: 2vw;
 
 }
@@ -235,29 +344,35 @@ h2 {
 .reviewAnswerPlace{
     text-align: left;
     margin-left: 27vw;
-    margin-top: 8vw;
+    margin-top: 21vh;
 }
 .theQuestion{
-    font-size: 4vw;
+    font-size: 3vw;
     color:white;
 }
 .yourAnswerText{
-    font-size: 4vw;
+    font-size: 3vw;
     color: white;
     margin-top: 2vw;
 }
 .correctAnswer{
+    font-family: "LatoLight";
+    font-weight: 300;
+    transform: scaleY(1.0009);
     color: white;
     font-size: 3vw;
     margin-top: 1vw;
 }
 .correctAnswerText{
-    font-size: 4vw;
+    font-size: 3vw;
     color: white;
     margin-top: 3vw;
 
 }
 .wrongAnswer{
+    font-family: "LatoLight";
+    font-weight: 300;
+    transform: scaleY(1.0009);
     text-decoration:line-through;
     color:#362b36;
 }
@@ -275,8 +390,7 @@ h2 {
 /*}*/
 
 .reviewAnswerNr{
-
-    width: 17vw;
+    width: 16vw;
     height: 18vw;
     background-image: url(answerNr.png);
     text-align: center;
@@ -290,5 +404,65 @@ h2 {
     bottom: 0;
     left: 6vw;
     margin: auto;
+}
+
+.pie{
+    background-image: url(pie.png);
+    background-size: 100% 100%;
+    width: 2vw;
+    height: 2vw;
+    /*float: right;*/
+    margin-left: 1vw;
+    margin-right: 1vw;
+}
+.submit-score{
+
+
+}
+
+
+.left-arrow{
+    width: 15vw;
+    height: 15vw;
+    background-image: url(slider.prev.png);
+    background-size: 100% 100%;
+    position: relative;
+    z-index:99;
+    float: left;
+}
+
+
+.right-arrow{
+    width: 15vw;
+    height: 15vw;
+    background-image: url(slider.next.png);
+    float: right;
+    display: block;
+     background-size: 100% 100%;
+}
+.dispay-all-container{
+    position: relative;
+    top: 35%;
+    transform: translateY(-89%);
+}
+
+.hexagon-container{
+    text-align: center;
+    font-size: 3vw;
+    width: 70%;
+    margin-left: 13vw;
+    margin-top: 3vh;
+}
+ol.first-row{
+    width: 100%;
+    position: relative;
+    right: 1vw;
+    margin-top: 0%;
+}
+ol.second-row{
+    width: 100%;
+    position: relative;
+    right: 6vw;
+    margin-top: -7%;
 }
 
