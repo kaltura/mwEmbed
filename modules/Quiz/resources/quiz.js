@@ -73,10 +73,11 @@
                     else {
                         var createQuizuserEntryId = {
                             'service': 'userEntry',
-                            'action': 'get',
+                            'action': 'add',
                             'userEntry:objectType': 'KalturaQuizUserEntry',
                             'userEntry:entryId': _this.embedPlayer.kentryid
                         };
+
                         _this.getKClient().doRequest(createQuizuserEntryId, function (data) {
                             if (data.objectType){
                                 console.log('Add KQ user entry id err -->', data.code, data.message);
@@ -105,6 +106,7 @@
                     }
                     _this.entryData = data;
                     _this._initParams();
+
                     if (_this.state == 'deleted') {
                         _this._showDeletedScreen()
                     } else {
@@ -170,7 +172,8 @@
             var _this = this;
             _this.state = 'welcome';
             _this.showScreen();
-
+            var kdp = this.getPlayer();
+            kdp.sendNotification('doPause');
             $(".welcome").html(gM('mwe-quiz-welcome'));
             $.grep($.quizParams.uiAttributes, function (e) {
                 switch(e.key){
@@ -183,14 +186,6 @@
                         }
                         break;
                 }
-                //if (e.key == "welcomeMessage") {
-                //    $(".welcomeMessage").html(e.value);
-                //}
-                //if (e.key == "inVideoTip") {
-                //    if (e){
-                //        $(".InvideoTipMessage").html(gM('mwe-quiz-invideoTip'));
-                //    }
-                //}
             });
             $(".confirm-box").html(gM('mwe-quiz-continue'))
                 .on('click', function () {
@@ -201,6 +196,8 @@
             var _this = this;
             _this.state = 'contentScreen';
             _this.showScreen();
+            var kdp = this.getPlayer();
+            kdp.sendNotification('doPause');
             $(".title-text").html(gM('mwe-quiz-no-longer-exist'));
             $(".confirm-box").html(gM('mwe-quiz-continue'))
                 .on('click', function () {
