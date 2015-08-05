@@ -227,13 +227,13 @@
             var embedPlayer = this.getPlayer();
 			if (!this.$qnaListContainer) {
 
-				// for unfriendly iFrames, where we can't access window['parent'] we set on page to true
-				if ( !this.getConfig( 'onPage' ) ) {
+				// for unfriendly iFrames, where we can't access window['parent'] we set on page to false
+				if ( this.getConfig( 'onPage' ) ) {
 					try{
 						var parent = window['parent'].document;
 					}catch(e){
-						this.setConfig('onPage', true);
-						mw.log("cant access window['parent'] - setting to true");
+						this.setConfig('onPage', false);
+						mw.log("cant access window['parent'] - setting to false");
 					}
 				}
 
