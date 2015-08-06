@@ -23,14 +23,25 @@
             _this.videoInfo.playerName = _this.config.playerPlayerName || _this.player.kuiconfid;
         };
 
+        _this.initadBreakInfo = function(){
+            _this.adBreakInfo = new ADB.va.plugins.videoplayer.AdBreakInfo();
+            _this.adBreakInfo.playerName = _this.config.playerPlayerName || _this.player.kuiconfid;
+            _this.adBreakInfo.name = "";
+            _this.adBreakInfo.position = 1;
+            _this.adBreakInfo.startTime = -1;
+        };
+
+        _this.initAdInfo = function(){
+            _this.adInfo = new ADB.va.plugins.videoplayer.AdInfo();
+            _this.adInfo.id = "";
+            _this.adInfo.name = "";
+            _this.adInfo.length = -1;
+            _this.adInfo.position = 1;
+        };
 
         _this.setAdInfo = function(info){
             if ( !_this.adInfo ){
-                _this.adInfo = new ADB.va.plugins.videoplayer.AdInfo();//new ADB.va.AdInfo();
-                _this.adInfo.id = "";
-                _this.adInfo.name = "";
-                _this.adInfo.length = -1;
-                _this.adInfo.position = 1;
+                _this.initAdInfo();
             }
             if ( info.id ) {
                 _this.adInfo.id = info.id;
@@ -48,14 +59,7 @@
 
         _this.setAdBreakInfo = function (info){
             if( !_this.adBreakInfo ){
-                _this.adBreakInfo = new ADB.va.plugins.videoplayer.AdBreakInfo();//new ADB.va.AdBreakInfo();
-                _this.adBreakInfo.playerName = _this.config.playerName || _this.player.evaluate('{mediaProxy.entry}').name;
-                _this.adBreakInfo.name = "";
-                _this.adBreakInfo.position = 1;
-                _this.adBreakInfo.startTime = -1;
-            }
-            if ( info.playerName ) {
-                _this.adBreakInfo.playerName = info.playerName;
+                _this.initadBreakInfo();
             }
             if ( info.name ) {
                 _this.adBreakInfo.name = info.name;
@@ -70,7 +74,7 @@
 
         _this.setChapterInfo = function (info){
             if ( !_this.chapterInfo ){
-                _this.chapterInfo = new ADB.va.plugins.videoplayer.chapterInfo();//new ADB.va.ChapterInfo();
+                _this.chapterInfo = new ADB.va.plugins.videoplayer.chapterInfo();
                 _this.chapterInfo.name = "";
                 _this.chapterInfo.length = -1;
                 _this.chapterInfo.position = 1;

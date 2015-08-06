@@ -362,7 +362,7 @@ mw.KAdPlayer.prototype = {
                     _this.waitingForLoadedData = true;
                     $(vid).on("loadeddata", function(){
                         if(_this.waitingForLoadedData){
-                            $(_this.embedPlayer).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex+1, vid.duration, vid.currentSrc]);
+                            $(_this.embedPlayer).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex+1, vid.duration, vid.currentSrc, adSlot.sequencedAds ? adConf.sequence : null]);// adSlot.sequencedAds = POD
                             _this.waitingForLoadedData = false;
                         }
                     });
