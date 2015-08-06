@@ -115,7 +115,6 @@
 					'statistics': {'plugin': false},
 					"multiDrm": {
 						'plugin': true,
-						debug:true,
 						"licenseRequestTimeout": 5000,
 						"manifestRequestTimeout": 5000,
 						"fragmentRequestTimeout": 5000,
@@ -192,7 +191,6 @@
 			}
 			//Process the form request into a player mediaProxy data object
 			function processRequest(data){
-				debugger;
 				var mediaProxyData = jQuery.extend(true, {}, baseMediaProxyData);
 				mediaProxyData.sources.push({
 					"src": data.MPD,
