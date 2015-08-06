@@ -235,13 +235,14 @@
 			var kdpVersion = player.evaluate('{playerStatusProxy.kdpVersion}');
 			//set the load time attribute supported in version kdp 3.7.x
 			if (mw.versionIsAtLeast('v3.7.0', kdpVersion)) {
-				player.kBind("kdpReady", function () {
-					_this.loadTime[ widgetId ] = ((new Date().getTime() - _this.startTime[ widgetId ] ) / 1000.0).toFixed(2);
-					player.setKDPAttribute("playerStatusProxy", "loadTime", _this.loadTime[ widgetId ]);
-					_this.log("Player (" + widgetId + "):" + _this.loadTime[ widgetId ]);
+				_this.log("Error: Unsuported KDP version");
+			} else{
+				player.kBind('mediaReady', function () {
+					// Set the load time against startTime for the current playerId:
+					player.setKDPAttribute("playerStatusProxy", "loadTime", 
+							( (new Date().getTime() - _this.startTime[ widgetId ] ) / 1000.0 ).toFixed(2) );
 				});
 			}
-
 			// Support closing menu inside the player
 			if (!mw.getConfig('EmbedPlayer.IsIframeServer')) {
 				document.onclick = function () {
@@ -312,7 +313,8 @@
 			if (!settings.flashvars) {
 				settings.flashvars = {};
 			}
-
+			
+			// set player load check at start embed method call
 			this.startTime[targetId] = new Date().getTime();
 
 			// Check if we have flashvars object

@@ -477,10 +477,6 @@
 								return 'ready';
 							}
 							return null;
-
-						break;
-						case 'loadTime':
-						return kWidget.loadTime[embedPlayer.kwidgetid];
 						break;
 					}
 				break;
