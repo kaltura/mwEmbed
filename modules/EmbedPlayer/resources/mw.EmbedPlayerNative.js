@@ -435,7 +435,8 @@
 					[0].load();
 			}
 
-			if ( (vid.readyState < 1) || (this.getDuration() === 0)) {
+			var videoReadyState = mw.isIOS8() ? 2 : 1; // on iOS8 wait for video state 1 (dataloaded) instead of 1 (metadataloaded)
+			if ( (vid.readyState < videoReadyState) || (this.getDuration() === 0)) {
 				// if on the first call ( and video not ready issue load, play
 				if (callbackCount == 0 && vid.paused) {
 					this.stopEventPropagation();

@@ -98,14 +98,32 @@
 				//add OSMF HLS Plugin if the source is HLS
 				if (_this.isHlsSource(_this.mediaElement.selectedSource)) {
 					flashvars.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
-                    if(mw.getConfig("hlsSegmentBuffer")) {
-                        flashvars.KalturaHLS["segmentBuffer"] = mw.getConfig("hlsSegmentBuffer");
+                    if(mw.getConfig("hlsLiveSegmentBuffer")) {
+                        flashvars.KalturaHLS["liveSegmentBuffer"] = mw.getConfig("hlsLiveSegmentBuffer");
                     }
-                    if(mw.getConfig("hlsOverrideTargetDuration")) {
-                        flashvars.KalturaHLS["overrideTargetDuration"] = mw.getConfig("hlsOverrideTargetDuration");
+                    if(mw.getConfig("hlsInitialBufferTime")) {
+                        flashvars.KalturaHLS["initialBufferTime"] = mw.getConfig("hlsInitialBufferTime");
+                    }
+                    if(mw.getConfig("hlsExpandedBufferTime")) {
+                        flashvars.KalturaHLS["expandedBufferTime"] = mw.getConfig("hlsExpandedBufferTime");
+                    }
+                    if(mw.getConfig("hlsMaxBufferTime")) {
+                        flashvars.KalturaHLS["maxBufferTime"] = mw.getConfig("hlsMaxBufferTime");
                     }
                     if(mw.getConfig("hlsLogs")) {
                         flashvars.KalturaHLS["sendLogs"] = mw.getConfig("hlsLogs");
+	                    var func = ["onManifest","onNextRequest","onDownload","onCurrentTime","onTag"];
+	                    for (var index=0;index<func.length ;index++){
+
+		                    (function() {
+			                    var x =  func[index];
+			                    if ( x ) {
+				                    window[x] = function (a,b,c,d,e,f,g,h) {
+					                    parent.window[x]( a,b,c,d,e,f,g,h );
+				                    }
+			                    }
+		                    })();
+	                    }
                     }
 					flashvars.streamerType = _this.streamerType = 'hls';
 				}
@@ -564,8 +582,12 @@
 			}
 			if (this.seeking) {
 				this.seeking = false;
-			}
-			this.flashCurrentTime = playheadValue;
+                this.flashCurrentTime = playheadValue;
+			}else {
+                if( this.flashCurrentTime < playheadValue){
+                    this.flashCurrentTime = playheadValue;
+                }
+            }
 			$(this).trigger('timeupdate');
 		},
 
@@ -861,7 +883,17 @@
 		},
 		backToLive: function () {
 			this.triggerHelper('movingBackToLive');
-			this.playerObject.sendNotification('goLive');
+            this.playerObject.sendNotification('goLive');
+
+            if(this.buffering){
+                var _this = this;
+                this.bindHelper('bufferEndEvent', function () {
+                    _this.unbindHelper('bufferEndEvent');
+                    _this.playerObject.seek(_this.getDuration());
+                    //Unfreeze scrubber
+                    _this.syncMonitor();
+                });
+            }
 		},
 		setKPlayerAttribute: function (host, prop, val) {
 			this.playerObject.setKDPAttribute(host, prop, val);
