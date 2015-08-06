@@ -224,15 +224,14 @@
 				config.laType = this.value;
 				switch (config.laType) {
 					case "Widevine":
-						$('#selectbasic').find('#Playready').attr('disabled', true);
 						$('#customData').attr('disabled', true);
+						$('#license').removeAttr('disabled');
 						break;
 					case "Playready":
-						$('#selectbasic').find('#Widevine').attr('disabled', true);
+						$('#customData').removeAttr('disabled');
+						$('#license').removeAttr('disabled');
 						break;
 					default:
-						$('#selectbasic').find('#Playready').attr('disabled', true);
-						$('#selectbasic').find('#Widevine').attr('disabled', true);
 						$('#license').attr('disabled', true);
 						$('#customData').attr('disabled', true);
 				}
