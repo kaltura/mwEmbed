@@ -12,6 +12,7 @@
         _this.player = player;
         _this.config = config;
         _this.videoInfo = null;
+        _this.qos = null;
         _this.adInfo = null;
         _this.adBreakInfo = null;
         _this.chapterInfo = null;
@@ -126,10 +127,12 @@
     };
 
     KalturaVideoPlayerPluginDelegate.prototype.getQoSInfo = function() {
-        var qos = new ADB.va.plugins.videoplayer.QoSInfo();
-
-        if( _this.player.getCurrentBitrate() !== -1 ){
-            qos.bitrate = _this.player.getCurrentBitrate();
+        if( !_this.qos ){
+            _this.qos = new ADB.va.plugins.videoplayer.QoSInfo();
+        }
+        var bitrate = _this.player.getCurrentBitrate();
+        if( bitrate !== -1 ){
+            _this.qos.bitrate = bitrate;
         }
 
         //TODO: add additional parameters
@@ -137,7 +140,7 @@
         //qos.droppedFrames =
         //qos.startupTime =
 
-        return qos;
+        return _this.qos;
     };
 
     KalturaVideoPlayerPluginDelegate.prototype.onError = function(errorInfo) {
