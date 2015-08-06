@@ -3242,9 +3242,11 @@
         },
 
         getCurrentBitrate: function(){
-            if (this.mediaElement.selectedSource) {
+            if ( !this.isLive() && this.mediaElement.selectedSource) {
+                //progressive download
                 return this.mediaElement.selectedSource.getBitrate();
             }
+            //adaptive bitrate
             return this.currentBitrate;
         }
 	};
