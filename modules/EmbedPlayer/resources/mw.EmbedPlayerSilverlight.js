@@ -332,7 +332,7 @@
 							this.log('Error:: failed to retrieve playready UDRM license URL ');
 						}
 						//TODO: error handling in case of error
-						var licenseData = this.mediaElement.getLicenseUriComponent();
+						var licenseData = _this.mediaElement.getLicenseUriComponent();
 						if (!licenseData) {
 							this.log('Error:: failed to retrieve playready UDRM license data ');
 						}
