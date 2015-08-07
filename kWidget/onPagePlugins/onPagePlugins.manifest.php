@@ -415,6 +415,16 @@ return array(
                 'type' => 'string',
                 'initvalue' => ""
             ),
+            'DynaTransSearchVar' => array(
+                'doc' => "If passing a search parameter sets variable name (Optional)",
+                'type' => 'string',
+                'initvalue' => ""
+            ),    
+            'DynaTransScrollbar' => array(
+                'doc' => "Opion to set search scrollbar to be horizontal or vertical, default is vertical. (Optional)",
+                'type' => 'string',
+                'initvalue' => "vertical"    
+            ),
         )
     ),
 );
