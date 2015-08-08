@@ -122,6 +122,11 @@
 		/** 
 		 * Layout Components 
 		 **/
+        "aria" => array(
+            'scripts' => "components/aria/aria.js",
+            'dependencies' => 'mw.KBaseComponent',
+            'kalturaPluginName' => 'aria',
+        ),
 		"theme" => array(
 			'scripts' => "components/theme.js",
 			'dependencies' => 'mw.KBaseComponent',
