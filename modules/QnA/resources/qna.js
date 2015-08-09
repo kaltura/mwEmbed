@@ -334,6 +334,28 @@
 			_this.getQnaContainer().find('.listHolder').height(newHeight);
 		},
 
+		submitQuestion : function(){
+			var _this = this;
+			var textArea = _this.getQnaContainer().find('.qnaQuestionTextArea');
+			var question = textArea.val();
+
+			// protection from empty string
+			if (!(/\S/.test(question))){
+				return false;
+			}
+
+			if (_this.getPlayer().isOffline() && !_this.getConfig( 'allowNewQuestionWhenNotLive' )){
+				alert(gM('qna-cant-ask-while-not-live'));
+			} else {
+				if (question !== gM('qna-default-question-box-text')) {
+					_this.KQnaService.submitQuestion(question);
+					_this.resetTextArea(textArea);
+					return true;
+				}
+			}
+			return false;
+		},
+
 		bindButtons : function(){
 			var _this = this;
 			var sendButton = _this.getQnaContainer().find('.qnaSendButton');
@@ -342,16 +364,7 @@
 			sendButton
 				.off('click')
 				.on('click', function(){
-					var question = _this.getQnaContainer().find('.qnaQuestionTextArea').val();
-
-					if (_this.getPlayer().isOffline() && !_this.getConfig( 'allowNewQuestionWhenNotLive' )){
-						alert(gM('qna-cant-ask-while-not-live'));
-					} else {
-					if (question !== gM('qna-default-question-box-text')) {
-						_this.KQnaService.submitQuestion(question);
-						_this.resetTextArea(textArea);
-					}
-					}
+					_this.submitQuestion();
 				});
 			var cancelButton = _this.getQnaContainer().find('.qnaCancelButton');
 			cancelButton.text(gM('qna-cancel-button-text'));
@@ -379,6 +392,16 @@
 						_this.resetTextArea(textArea);
 					}
 				});
+
+			textArea.keydown(function(e){
+				// if its an enter, and the shift|alt|ctrl were not down - submit the question
+				if (e.keyCode === 13 && !e.altKey && !e.shiftKey && !e.ctrlKey){
+					if (_this.submitQuestion()) {
+						e.target.blur();
+					}
+					e.preventDefault();
+				}
+			});
 
 			textArea.bind("mousewheel",function(ev) {
 				ev.preventDefault();
