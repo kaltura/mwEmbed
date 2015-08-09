@@ -100,6 +100,12 @@
 			} );
 			return deferred.promise();
 		} ,
+		refreshSilverlightMulticastParams: function () {
+			mw.log( 'detected multicastAddress or multicastSessionId changed' );
+			if (this.playerObject) {
+				this.playerObject.changeMulticastParams(this.multicastAddress, this.multicastSourceAddress, this.multicastPolicyOverMulticastEnabled);
+			}
+		} ,
 		handleMulticastPlayManifest: function ( resolvedSrc , doEmbedFunc ) {
 			mw.log( 'handleMulticastPlayManifest ' + resolvedSrc );
 			var _this = this;
@@ -128,25 +134,7 @@
 			//we got an multicast server that we need to redirect
 			if ( resolvedSrc.indexOf( "http" ) === 0 ) {
 				this.multiastServerUrl = resolvedSrc;
-				var startFailoverFromMulticastServer = function () {
 
-					mw.log( 'startFailoverFromMulticastServer ' );
-					if (_this.multicastSessionId) {
-						_this.isError = true;
-
-						if (_this.playerObject) {
-							_this.playerObject.stop();
-						}
-						_this.stopped = true;
-
-
-						_this.bindHelper("playerReady", function () {
-							mw.log( 'playerReady called, resetting firstPlay' );
-							_this.firstPlay = true; //resume live playback when the new player is ready
-						});
-						_this.setupSourcePlayer(); //switch player
-					}
-				};
 				var onKESResponse = function ( response ) {
 
 					mw.log( 'EmbedPlayerSPlayer got multicast details from KES: ' + JSON.stringify( response ) );
@@ -159,28 +147,27 @@
 						mw.log( 'multicastAddress: ' + multicastAddress + ' KES: ' + response.multicastSourceAddress);
 
 						//first time
-						if ( !_this.multicastAddress ) {
+						if ( !_this.multicastAddress ||
+							_this.multicastAddress !== multicastAddress ||
+							_this.multicastSessionId !== response.id ) {
 
+							var firstTime = ( _this.multicastAddress == null);
 							_this.multicastAddress = multicastAddress;
 							_this.multicastSourceAddress = response.multicastSourceAddress;
 							_this.multicastPolicyOverMulticastEnabled = response.multicastPolicyOverMulticastEnabled;
 							_this.multicastSessionId = response.id;
-							doEmbedFunc( multicastAddress );
-							//keep alive
-							startConnectToKESTimer();
 
-						} else {
-							if ( _this.multicastAddress !== multicastAddress ||
-								 _this.multicastSessionId !== response.id ) {
-								mw.log( 'detected multicastAddress or multicastSessionId changed' );
-								startFailoverFromMulticastServer();
+							if (firstTime) {
+								doEmbedFunc(multicastAddress);
 							} else {
-								//keep alive
-								startConnectToKESTimer();
-								//mw.log('keep alive sent successfully');
+								_this.refreshSilverlightMulticastParams();
 							}
+
 						}
+						//keep alive
+						startConnectToKESTimer();
 					} else {
+						//if we got a response from KES that it's still loading, don't do anything
 						if (response && response.state==="Loading") {
 
 							mw.log('KES still loading, retrying later');
@@ -214,7 +201,12 @@
 
 					_this.keepAliveMCTimeout = setTimeout( function () {
 						try {
-							_this.connectToKES( resolvedSrc ).then( onKESResponse , startFailoverFromMulticastServer );
+							_this.connectToKES( resolvedSrc ).then( onKESResponse ,
+								function() {
+									mw.log( 'no response from KES retry' );
+									startConnectToKESTimer();
+								}
+							);
 						}
 						catch ( e ) {
 							mw.log( 'connectToKES failed ' + e.message + ' ' + e.stack );
