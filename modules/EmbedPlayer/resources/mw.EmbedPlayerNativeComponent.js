@@ -71,7 +71,10 @@
 			'chromecastDeviceConnected',
 			'chromecastDeviceDisConnected',
 			'textTracksReceived',
-			'loadEmbeddedCaptions'
+			'loadEmbeddedCaptions',
+			'flavorsListChanged',
+			'sourceSwitchingStarted',
+			'sourceSwitchingEnd',
 		],
 
 		// Native player supported feature set
@@ -79,7 +82,7 @@
 			'playHead': true,
 			'pause': true,
 			'fullscreen': true,
-			'SourceSelector': false,
+			'SourceSelector': true,
 			'timeDisplay': true,
 			'volumeControl': false,
 			'overlays': true
@@ -367,6 +370,37 @@
 			return true;
 		},
 
+		_onflavorsListChanged: function(event, data) {
+//			mw.log("_onFlavorsListChanged", event, data);
+			
+			// Build an array with this format:
+			// [{"assetid":0,"bandwidth":517120,"type":"video/mp4","height":0},{"assetid":1,"bandwidth":727040,"type":"video/mp4","height":0},{"assetid":2,"bandwidth":1041408,"type":"video/mp4","height":0}]
+			// 
+			
+			var flavorsList = []
+			$.each(data.tracks, function(idx, obj) {
+				var flavor = {
+					assetid: obj.originalIndex,
+					originalIndex: obj.originalIndex,
+					bandwidth: obj.bitrate,
+					height: obj.height,
+					width: obj.width,
+					type: "video/mp4", // not sure about that
+				}
+				flavorsList.push(flavor);
+			});
+			
+			this.onFlavorsListChanged(flavorsList);
+		},
+
+		_onsourceSwitchingStarted: function(event, data) {
+			$(this).trigger('sourceSwitchingStarted', data);
+		},
+
+		_onsourceSwitchingEnd: function(event, data) {
+            $(this).trigger('sourceSwitchingEnd', data);
+		},
+
 		_onloadEmbeddedCaptions: function (event, data) {
 
 			this.triggerHelper('onTextData', data);
@@ -584,7 +618,34 @@
 				return false;
 			}
 			return true;
+		},
+		
+		getSources: function(){
+			// check if manifest defined flavors have been defined:
+			if( this.manifestAdaptiveFlavors.length ){
+				return this.manifestAdaptiveFlavors;
+			}
+			return this.parent_getSources();
+		},
+		getSourceIndex: function (source) {
+			var sourceIndex = null;
+			$.each( this.getSources(), function( currentIndex, currentSource ) {
+				if (source.getAssetId() == currentSource.getAssetId()) {
+					sourceIndex = currentIndex;
+					return false;
+				}
+			});
+			// check for null, a zero index would evaluate false
+			if( sourceIndex == null ){
+				this.log("Error could not find source: " + source.getSrc());
+			}
+			return sourceIndex;
+		},
+		switchSrc: function (source) {
+			var sourceIndex = (source === -1) ? -1 : source.assetid; 
+			this.getPlayerElement().switchFlavor(sourceIndex);
 		}
+
 	};
 })(mediaWiki, jQuery);
 

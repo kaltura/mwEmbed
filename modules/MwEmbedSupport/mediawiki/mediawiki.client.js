@@ -14,10 +14,10 @@
 		return mw.getConfig("EmbedPlayer.ForceNativeComponent");
 	};
 	mw.isIphone = function () {
-		return ( mw.getConfig("EmbedPlayer.ForceNativeComponent") !== true && navigator.userAgent.indexOf('iPhone') != -1 && !mw.isIpad() ) || mw.isIpod();
+		return ( mw.getConfig("EmbedPlayer.ForceNativeComponent") !== true && userAgent.indexOf('iPhone') != -1 && !mw.isIpad() ) || mw.isIpod();
 	};
 	mw.isIE = function () {
-		return (/msie/.test(userAgent.toLowerCase()) || /trident/.test(navigator.userAgent.toLowerCase()));
+		return (/msie/.test(userAgent.toLowerCase()) || /trident/.test(userAgent.toLowerCase()));
 	};
 	mw.isIE7 = function () {
 		return (/msie 7/.test(userAgent.toLowerCase()));
@@ -29,7 +29,10 @@
 		return (/msie 9/.test(userAgent.toLowerCase()));
 	};
     mw.isIE11 = function () {
-        return (/trident\/7.0/.test(navigator.userAgent.toLowerCase()));
+        return (/trident\/7.0/.test(userAgent.toLowerCase()));
+    };
+	mw.isEdge = function () {
+        return (/edge/.test(userAgent.toLowerCase()));
     };
 	mw.isDesktopSafari = function () {
 		return (/safari/).test(userAgent.toLowerCase()) && !mw.isMobileDevice() && !mw.isChrome();

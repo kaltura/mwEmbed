@@ -968,7 +968,7 @@ mw.KAdPlayer.prototype = {
 			})
 			.addClass("btn icon-close")
 			.click(function(){
-				sendBeacon("close");//TODO: trigger event (adComplete or adClosed or adDismissed or whatever)
+				sendBeacon("close");
 				$( this ).parent().fadeOut('fast');
 				return false;
 			})

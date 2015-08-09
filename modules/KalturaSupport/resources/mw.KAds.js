@@ -117,6 +117,10 @@
 				mw.log( "KAds::All ads have been loaded" );
 				callback();
 			});
+			// disable overlays on native devices
+			if (embedPlayer.useNativePlayerControls()){
+				_this.embedPlayer.setKalturaConfig('vast', 'supportOverlays', false);
+			}
 		},
 		handleAdsOnPlay: function( embedPlayer ){
 			var _this = this;
@@ -541,7 +545,7 @@
 				)
 			};
 
-			$( embedPlayer ).bind( 'monitorEvent', function(){
+			$( embedPlayer ).bind( 'monitorEvent' + this.bindPostfix, function(){
 				if( (embedPlayer.currentTime > overlayConfig.start) && (embedPlayer.currentTime < overlayConfig.end) && !startOvelrayDisplayed && !embedPlayer.evaluate('{sequenceProxy.isInSequence}') ){
 					lastDisplay = embedPlayer.currentTime;
 					startOvelrayDisplayed = true;
