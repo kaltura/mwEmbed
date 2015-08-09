@@ -15,7 +15,6 @@
             usePreviewPlayer: false,
             previewPlayerEnabled: false
         },
-
         entryData: null,
         state: "start",
         currentQuestionNumber: 0,
@@ -29,10 +28,11 @@
         score: null,
         sliceArray: [],
         hexPosContainerPos:0,
+        isSeekingIVQ:false,
 
         setup: function () {
-            var _this = this;
-            var getQuizuserEntryIdAndQuizParams = [{
+            var _this = this,quizStatus;
+                       var getQuizuserEntryIdAndQuizParams = [{
                 'service': 'userEntry',
                 'action': 'list',
                 'filter:objectType': 'KalturaQuizUserEntryFilter',
@@ -54,12 +54,15 @@
                     }
                 });
                 $.quizParams = data[1];
-
-                if (data[0].totalCount > 0 &&  !$.isEmptyObject(data[0].objects[0])  ) {
+                //$.grep(data[0], function (e) {
+                //    if (e.status){quizStatus = e.status; }
+                //});
+                if (data[0].totalCount > 0 &&  !$.isEmptyObject(data[0].objects[0])) {
                     _this.kQuizUserEntryId = data[0].objects[0].id;
+                  //  switch (quizStatus){
                     switch (String(data[0].objects[0].status)) {
                         case 'quiz.3':
-                            _this.score = (data[0].objects[1].score);
+                            _this.score = (data[0].objects[0].score);
                             _this._getQuestionCpAPI(_this._populateCpObject);
                             break;
                         case '1':
@@ -68,26 +71,27 @@
                         case '2':
                             _this.state = "deleted";
                             break;
-                            }
                     }
-                    else {
-                        var createQuizuserEntryId = {
-                            'service': 'userEntry',
-                            'action': 'add',
-                            'userEntry:objectType': 'KalturaQuizUserEntry',
-                            'userEntry:entryId': _this.embedPlayer.kentryid
-                        };
+                }
+                else {
+                    var createQuizuserEntryId = {
+                        'service': 'userEntry',
+                        'action': 'add',
+                        'userEntry:objectType': 'KalturaQuizUserEntry',
+                        'userEntry:entryId': _this.embedPlayer.kentryid
+                    };
 
-                        _this.getKClient().doRequest(createQuizuserEntryId, function (data) {
-                            if (data.objectType){
-                                console.log('Add KQ user entry id err -->', data.code, data.message);
-                                return false
-                            }
-                        _this.kQuizUserEntryId = data.id;
-                        _this._getQuestionCpAPI(_this._populateCpObject);
-                        });
-                    }
-                });
+                    _this.getKClient().doRequest(createQuizuserEntryId, function (data) {
+                        if (data.objectType){
+                            console.log('Add KQ user entry id err -->', data.code, data.message);
+                            return false
+                        }
+                    _this.kQuizUserEntryId = data.id;
+                    _this._getQuestionCpAPI(_this._populateCpObject);
+                    });
+                }
+            });
+
             this.addBindings();
         },
         addBindings: function () {
@@ -114,10 +118,9 @@
                     }
                 });
             });
-
             this.bind('KalturaSupport_CuePointReached', function (e, cuePointObj) {
                 _this.qCuePointHandler(e, cuePointObj);
-            });
+           });
         },
         getKClient: function () {
             if (!this.kClient) {
@@ -126,39 +129,20 @@
             return this.kClient;
         },
         getTemplateHTML: function (data) {
-            var _this = this;
             var defer = $.Deferred();
-            this.getPlayer().disablePlayControls();
             var quizStartTemplate = this.getTemplatePartialHTML("quizstart");
 
             var $template = $(quizStartTemplate({
                 'quiz': this,
                 quizStartTemplate: quizStartTemplate
             }));
-
-            $template
-                .find('[data-click],[data-notification]')
-                .click(function (e) {
-                    var data = $(this).data();
-                    return _this.handleClick(e, data);
-                });
-
             return defer.resolve($template);
         },
-        handleClick: function (e, data) {
-            e.preventDefault();
-            if (data.click && $.isFunction(this[data.click])) {
-                this[data.click](e, data);
-            }
-            if (data.notification) {
-                this.getPlayer().sendNotification(data.notification, data);
-            }
-            return false;
-        },
-        continuePlay: function () {
-            this.removeScreen();
-            this.getPlayer().enablePlayControls();
-            this.getPlayer().play();
+         continuePlay: function () {
+             var _this = this,player = _this.getPlayer();
+       //      player.enablePlayControls();
+             console.log('play');
+             player.play();
         },
         _initParams: function () {
             var _this = this;
@@ -171,9 +155,8 @@
         _showWelcomeScreen: function () {
             var _this = this;
             _this.state = 'welcome';
-            _this.showScreen();
-            var kdp = this.getPlayer();
-            kdp.sendNotification('doPause');
+            _this.removeShowScreen('welcome');
+
             $(".welcome").html(gM('mwe-quiz-welcome'));
             $.grep($.quizParams.uiAttributes, function (e) {
                 switch(e.key){
@@ -189,20 +172,18 @@
             });
             $(".confirm-box").html(gM('mwe-quiz-continue'))
                 .on('click', function () {
-                    _this.checkIfDone(0);
+                 _this.checkIfDone(0);
             });
         },
         _showDeletedScreen: function () {
             var _this = this;
             _this.state = 'contentScreen';
             _this.showScreen();
-            var kdp = this.getPlayer();
-            kdp.sendNotification('doPause');
             $(".title-text").html(gM('mwe-quiz-no-longer-exist'));
             $(".confirm-box").html(gM('mwe-quiz-continue'))
                 .on('click', function () {
                     $(document).off();
-                    _this.removeScreen();
+                    if (_this.isScreenVisible()) _this.removeScreen();
                     _this.continuePlay();
                 });
         },
@@ -213,6 +194,8 @@
         },
         qCuePointHandler: function (e, cuePointObj) {
             var _this = this;
+
+            if (_this.getPlayer().seeking) return;
             if (!$.quizParams.showCorrectAfterSubmission && _this.score) return;
 
             $.each($.cpObject.cpArray, function (key, val) {
@@ -221,6 +204,7 @@
                     _this.setCurrentQuestion(key);
                 }
             });
+
         },
 
         showUnAnswered: function (cPo, questionNr) {
@@ -229,7 +213,6 @@
         },
         showAnswered: function (cPo, questionNr) {
             var _this = this;
-
             $.each(cPo.answeres, function (key, value) {
 
                 if (key == $.cpObject.cpArray[questionNr].selectedAnswer) {
@@ -280,7 +263,7 @@
                 }
 
                 $(this).delay(2000).fadeOut(function () {
-                    _this.removeScreen();
+                    if (_this.isScreenVisible()) _this.removeScreen();
                     _this.checkIfDone(questionNr)
                 });
             });
@@ -318,12 +301,13 @@
         },
         _addAnswerAPI: function (questionNr, quizSetAnswer) {
             var _this = this;
-            _this.getKClient().doRequest(quizSetAnswer, function (data) {
-            //new kWidget.api({'wid': _this.getKClient().wid}).doRequest(quizSetAnswer, function (data) {
+            //_this.getKClient().doRequest(quizSetAnswer, function (data) {
+            new kWidget.api({'wid': _this.getKClient().wid}).doRequest(quizSetAnswer, function (data) {
                 if (data.objectType){
                     console.log('Add Update answer err -->', data.code, data.message);
                     return false
                 }
+
                 $.cpObject.cpArray[_this.q2i(questionNr)].isCorrect = data.isCorrect;
                 $.cpObject.cpArray[_this.q2i(questionNr)].explanation = data.explenation;
                 $.cpObject.cpArray[_this.q2i(questionNr)].correctAnswerKeys = data.correctAnswerKeys;
@@ -349,7 +333,7 @@
         },
         checkIfDone: function (questionNr) {
             var _this = this;
-            if (_this.score != null) {
+            if (_this.score !=null) {
                 _this._submitted(_this.score);
             } else {
                 if ($.isEmptyObject($.grep($.cpObject.cpArray, function (el) {
@@ -382,9 +366,11 @@
             $(".header-container").prepend("<div class ='hint-why-box'>"+ buttonText +"</div>")
                 .on('click', function () {
                     _this.removeShowScreen("hintWhyScreen");
+                    $(".screen-content" ).addClass('bk-gradient');
                     $(".header-container").addClass('close-button')
                         .on('click', function () {
-                            _this.removeScreen();
+                            $(".screen-content" ).removeClass('bk-gradient');
+                            if (_this.isScreenVisible()) _this.removeScreen();
                             switch(HWSelector){
                                 case 'hint':_this.setCurrentQuestion(questionNr);
                                             break;
@@ -399,8 +385,6 @@
         setCurrentQuestion: function (questionNr) {
             var _this = this,cPo = $.cpObject.cpArray[questionNr];
             _this.removeShowScreen("question");
-            $(document).off();
-
             if ($.cpObject.cpArray[questionNr].hintText){
                 _this._displayHW('hint',questionNr,(gM('mwe-quiz-hint')),$.cpObject.cpArray[questionNr].hintText)
             }
@@ -408,7 +392,7 @@
             $.each(cPo.answeres, function (key, value) {
                 $(".answers-container").append(
                     "<div class ='single-answer-box-bk'>" +
-                    "<div class ='single-answer-box' id=" + key + ">" + value + "</div></div>"
+                    "<div class ='single-answer-box' id=" + key + "><p>" + value + "</p></div></div>"
                 );
             });
             if (cPo.isAnswerd) {
@@ -430,11 +414,11 @@
             }
             if (this.reviewMode) {
                 $(".ftr-left").html("DONE REVIEW").on('click', function () {
-                    _this.removeScreen();
+                    if (_this.isScreenVisible()) _this.removeScreen();
                     _this.allCompleted();
                 });
                 $(".ftr-right").html("REVIEW NEXT QUESTION").on('click', function () {
-                    _this.removeScreen();
+                    if (_this.isScreenVisible()) _this.removeScreen();
                     function nextQuestionNr(questionNr) {
                         if (questionNr == $.cpObject.cpArray.length - 1) {
                             return 0;
@@ -470,9 +454,7 @@
             });
             $(".confirm-box").html("Submit");
             $(document).on('click', '.confirm-box', function () {
-
                 _this._submitQuizApi();
-
             });
         },
         _submitQuizApi: function () {
@@ -500,31 +482,27 @@
                 $(".sub-text").html("you completed the quiz, your score is " + score + " ");
             } else {
                 if ($.isEmptyObject(_this.sliceArray)) {
-                    _this.sliceArray = _this.buildSliceArr(5);
+                    _this.sliceArray = _this.buildSliceArr(4);
                 }
                 $(".sub-text").html("you completed the quiz, your score is " + score + " press any question to review submission ");
                 _this.displayHex(_this.setHexContainerPos("current"));
                      $(document).on('click', '.q-box', function () {
-                         _this.removeScreen();
-                         _this.state = "reviewAnswer";
+                         _this.removeShowScreen("reviewAnswer");
                          _this.reviewAnswer($(this).attr('id'));
                      });
                      $(document).on('click', '.q-box-false', function () {
-                         _this.removeScreen();
-                         _this.state = "reviewAnswer";
+                         _this.removeShowScreen("reviewAnswer");
                          _this.reviewAnswer($(this).attr('id'));
                      });
             }
             $(".confirm-box").html("Ok")
                 .on('click', function () {
-                    $(document).off();
                     _this.removeShowScreen("contentScreen");
                     $(".title-text").html("Thank You.").addClass("hint-container");
                     $("div").removeClass('confirm-box');
                     $(this).delay(1000).fadeIn(function () {
-                        _this.removeScreen();
                         _this.continuePlay();
-                    });
+                        });
                 });
         },
         reviewAnswer: function (selectedQuestion) {
@@ -632,12 +610,12 @@
             $.cpObject.cpArray = cpArray;
         },
         removeShowScreen:function(state){
-            var _this = this;
-            $(document).off();
-            if (_this.isScreenVisible()) _this.removeScreen();
+            var _this = this,player = _this.getPlayer();;
+            _this.removeScreen();
+            player.pause();
             _this.state = state;
             _this.showScreen();
-
+          //  player.disablePlayControls();
         },
         i2q: function (i) {
             return parseInt(i) + 1;
@@ -663,7 +641,8 @@
             $.each(cPo.slice(rStart, rEnd), function (i, data) {
             el = document.createElement('li');
                var className = (function () {
-                    if (data.isCorrect) {
+
+                   if (data.isCorrect) {
                         return 'q-box';
                     }
                     else {

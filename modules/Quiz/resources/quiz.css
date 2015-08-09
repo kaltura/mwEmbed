@@ -99,21 +99,40 @@ center {
 .confirm-box{
     font-family: "Lato";
     font-size: 3vw;
-    font-weight: 700;
+    font-weight: bold;
     text-align: center;
-    color: white;
+    color: rgb(255, 255, 255);
     width: 30%;
     height:10vw;
     overflow: hidden;
-    background-color: #00dcff;
     display: table;
     margin:0 auto;
     vertical-align: middle;
     line-height:10vw;
     border-radius: 6px;
-    box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.23);
+    background-color: rgb(0, 204, 255);
+    box-shadow: 1.414px 1.414px 0px 0px rgba(0, 0, 0, 0.23);
+}
+.confirm-box{
+    font-family: "Lato";
+    font-size: 3vw;
+    font-weight: bold;
+    text-align: center;
+    color: rgb(255, 255, 255);
+    width: 30%;
+    height:10vw;
+    overflow: hidden;
+    display: table;
+    margin:0 auto;
+    vertical-align: middle;
+    line-height:10vw;
+    border-radius: 6px;
+    background-color: rgb(0, 204, 255);
+    box-shadow: 1.414px 1.414px 0px 0px rgba(0, 0, 0, 0.23);
 }
 .confirm-box:hover{
+    background-color: rgb(255, 255, 255);
+    color: rgb(27, 203, 255);
     cursor:pointer;
 }
 .header-container{
@@ -134,7 +153,7 @@ center {
     margin-left: auto;
     margin-right: auto;
     color: #ffffff;
-    font-size: 2.9vw;
+    font-size: 2.3vw;
     font-weight: 700;
     text-align: center;
     width: 80%;
@@ -169,36 +188,52 @@ center {
     background-image: url(ApplliedBG.png);
 }
 
-.single-answer-box{
+.single-answer-box {
     font-family: "Lato-Regular";
-    display: inline-block;
-    width: 96vw;
-    color:white;
     font-size: 2.2vw;
-    text-align:center;
-    vertical-align: middle;
-    margin-top: 1.5vh;
+    position:absolute;
+    display:table;
+    margin-left: auto;
+    margin-right: auto;
+    width: 91vw;
+    height: 8vh;
+    color: white;
 }
-.single-answer-box-small{
+
+
+.single-answer-box p{
+display: table-cell;
+text-align: center;
+vertical-align: middle;
+}
+.single-answer-box-small {
     font-family: "Lato-Regular";
-    width: 76vw;
+    font-size: 2vw;
+    font-weight: 700;
     overflow: hidden;
     color: black;
-    display: inline-block;
-    font-size: 2vw;
+    position:absolute;
+    display:table;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80vw;
+    height: 8vh;
+    float: left;
+}
+.single-answer-box-small p{
+    display: table-cell;
     text-align: center;
     vertical-align: middle;
-    margin-top: 1.5vh;
 }
 .single-answer-box-apply {
     display: inline-block;
-    width: 16vw;
-    height:100%;
+    width: 14vw;
+    height: 100%;
     float: right;
     text-align: center;
     font-size: 1.9vw;
     font-weight: 400;
-    margin-right: 0.1vw;
+    margin-right: 1.3vw;
     margin-top: 1.5vh;
 
 }
@@ -224,7 +259,6 @@ center {
     display: inline-block;
     font-size: 2vw;
     font-weight: 900;
-    /*width: 33vw;*/
     float: right;
     text-align: right;
     padding-right: 5vw;
@@ -233,19 +267,20 @@ center {
     cursor: pointer;
 }
 .hint-why-box {
+    font-family: "Lato";
+    font-weight: 700;
+    font-size: 2vw;
+    text-align: center;
     width: 9vw;
     height: 10vw;
     background-image: url(Hint.png);
     float: right;
     margin-top: 3vh;
     margin-bottom: 2vw;
-    color: black;
     line-height: 10vw;
-    font-weight: 700;
-    font-size: 2vw;
-    text-align: center;
     background-size: 100% 100%;
     vertical-align: middle;
+    color: rgb(78, 166, 240);
 }
 .hint-why-box:hover{
     cursor: pointer;
@@ -267,7 +302,7 @@ center {
 .hint-container {
     font-family: "LatoLight";
     color: #ffffff;
-    font-size: 5vw;
+    font-size: 4vw;
     font-weight: 300;
     text-align: center;
     position: relative;
@@ -347,8 +382,9 @@ center {
     margin-top: 21vh;
 }
 .theQuestion{
-    font-size: 3vw;
-    color:white;
+    font-size: 2.4vw;
+    color: white;
+    padding-right: 16vw;
 }
 .yourAnswerText{
     font-size: 3vw;
@@ -360,8 +396,9 @@ center {
     font-weight: 300;
     transform: scaleY(1.0009);
     color: white;
-    font-size: 3vw;
+    font-size: 2.4vw;
     margin-top: 1vw;
+    padding-right: 16vw;
 }
 .correctAnswerText{
     font-size: 3vw;
@@ -373,28 +410,17 @@ center {
     font-family: "LatoLight";
     font-weight: 300;
     transform: scaleY(1.0009);
-    text-decoration:line-through;
-    color:#362b36;
+    text-decoration: line-through;
+    color: #362b36;
+    padding-right: 16vw;
+    font-size: 2.4vw;
 }
-
-/*.reviewAnswer {*/
-    /*display: table;*/
-    /*position: absolute;*/
-    /*height: 100%;*/
-    /*width: 100%;*/
-/*}*/
-
-/*.reviewAnswerNrDiv{*/
-    /*width: 20vw;*/
-    /*float: left;*/
-/*}*/
 
 .reviewAnswerNr{
     width: 16vw;
     height: 18vw;
     background-image: url(answerNr.png);
     text-align: center;
-
     line-height: 18vw;
     font-weight: 700;
     font-size: 8vw;
@@ -411,30 +437,21 @@ center {
     background-size: 100% 100%;
     width: 2vw;
     height: 2vw;
-    /*float: right;*/
     margin-left: 1vw;
     margin-right: 1vw;
 }
-.submit-score{
-
-
-}
-
-
 .left-arrow{
-    width: 15vw;
-    height: 15vw;
+    width: 5vw;
+    height: 5vw;
     background-image: url(slider.prev.png);
     background-size: 100% 100%;
     position: relative;
     z-index:99;
     float: left;
 }
-
-
 .right-arrow{
-    width: 15vw;
-    height: 15vw;
+    width: 5vw;
+    height: 5vw;
     background-image: url(slider.next.png);
     float: right;
     display: block;
@@ -465,4 +482,10 @@ ol.second-row{
     right: 6vw;
     margin-top: -7%;
 }
+.bk-gradient{
+    background-color: rgb(0, 190, 238);
+}
+.display-content{
 
+
+}
