@@ -244,8 +244,7 @@
             }
 
             //HLS, HDS
-
-            if (this.getPlayer().streamerType !== "http" && mw.isNativeApp()) {
+            if (mw.isNativeApp()) {
             	this.sourcesList = [];
                 this.addAutoToMenu();
                 return true;
