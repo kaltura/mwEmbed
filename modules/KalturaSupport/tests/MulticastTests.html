@@ -11,35 +11,37 @@
 <br style="clear: both;" /><br />
 
 <script>
-
     var localhost="192.168.163.88";
-    var multicast=false;
-    var ism=true;
-    var hls=false;
+    //var localhost="10.0.0.15";
+
+    //   var ismSource='http://'+localhost+':1935/live/abc123/Manifest';
+    //ismsource="http://tglsch8a-s.akamaihd.net/live/234736_234737/channel8.isml/Manifest";
+
+    var hls=true;
     var hlssource='http://'+localhost+':1935/live/abc123/playlist.m3u8';
     //var hlssource='http://kalsegsec-a.akamaihd.net/dc-1/m/ny-live-publish3/kLive/smil:1_oorxcge2_publish.smil/chunklist_b2096000.m3u8';
-    var ismsource='http://'+localhost+':1935/live/abc123/Manifest';
-    ismsource="http://tglsch8a-s.akamaihd.net/live/234736_234737/channel8.isml/Manifest";
+
+    var multicast='http://'+localhost+':9000/kMulticast/'+hlssource;
+//    var multicast='239.1.2.3:5552';
 
     var replaceSources=[];
-    if (multicast) {
+    if (window.multicast) {
         replaceSources.push( {
         'type': 'video/multicast',
-            //'src': '239.1.2.3:1234'
-            //'src': 'http://192.168.163.88:9000/kMulticast/http://192.168.163.88:1935/live/abc123/playlist.m3u8'
-            //  'src': 'http://10.0.0.15:9000/kMulticast/http://kalsegsec-a.akamaihd.net/dc-1/m/ny-live-publish3/kLive/smil:1_oorxcge2_publish.smil/chunklist_b2096000.m3u8'
-                'src': 'http://'+localhost+':9000/kMulticast/'+hlssource
+            'src': multicast
+
         });
     }
 
-    if (ism) {
+    if (window.ism) {
+
 
         replaceSources.push({
             'type': 'video/ism',
             'src': ismsource
         });
     }
-    if (hls) {
+    if (window.hlssource) {
 
         replaceSources.push({
             'type': 'application/vnd.apple.mpegurl',
@@ -55,15 +57,15 @@
         'wid': '_931702',
         'uiconf_id' : '21099702',
         'flashvars': {
-            "liveCore":{"plugin":true, "disableLiveCheck":true} ,
+            "liveCore":{"plugin":true} ,
 
-            //LeadWithHLSOnFlash:true,
-          // 'LeadWithUnicastToMulticast': true,
+            'LeadWithHLSOnFlash':true,
+           'LeadWithUnicastToMulticast': true,
             'debugInfo': {
                 'plugin': true,
                 'isVisible':true
-            }
-          //  'autoPlay': true
+            },
+           'autoPlay': true
         },
         'entry_id': "1_oorxcge2"
 

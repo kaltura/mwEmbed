@@ -161,6 +161,11 @@
 				this.bindPlayerFunction( eventName, methodName );
 			}
 		},
+		changeMulticastParams: function( multicastGroup, sourceAddress,multicastPolicyOverMulticastEnabled ) {
+			if ( this.playerElement ) {
+				this.playerElement.changeMulticastParams( multicastGroup, sourceAddress, multicastPolicyOverMulticastEnabled);
+			}
+		},
 
 		removeJsListener: function( eventName, methodName ) {
 			if ( this.playerElement ) {
