@@ -140,8 +140,8 @@
 					function(e){
 						_this.onRequestSessionSuccess(e);
 					}, 
-					function(){
-						_this.onLaunchError();
+					function(error){
+						_this.onLaunchError(error);
 					}
 				);
 			}else{
@@ -161,10 +161,10 @@
 			this.loadMedia();
 		},
 
-		onLaunchError: function() {
+		onLaunchError: function(error) {
 			this.embedPlayer.layoutBuilder.closeAlert();
 			this.embedPlayer.enablePlayControls();
-			this.log("launch error");
+			this.log("launch error: "+error.code);
 		},
 
 		initializeCastApi: function() {

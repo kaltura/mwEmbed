@@ -69,7 +69,7 @@ kWidget.api.prototype = {
 			'widgetId': wid
 		};
 		// add in the base parameters:
-		var param = $.extend( { 'service' : 'session' }, this.baseParam, ksParam );
+		var param = kWidget.extend( { 'service' : 'session' }, this.baseParam, ksParam );
 		this.doRequest( param, function( data ){
 			_this.ks = data.ks;
 			callback( _this.ks );

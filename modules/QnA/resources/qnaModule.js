@@ -10,6 +10,7 @@
             qnaPlugin: null,
             qnaService: null,
             currentTimeInterval: null,
+            waitFirstPlayInterval: null,
             answerOnAirQueueUpdateInterval: null,
 
             init: function (embedPlayer, qnaPlugin, qnaService) {
@@ -54,7 +55,11 @@
 
                 this.inThreadReply = function(replyText, qnaThread) {
                     if (replyText() === gM("qna-reply-here")){
-                        return;
+                        return false;
+                    }
+                    // protection from empty string
+                    if (!(/\S/.test(replyText()))){
+                        return false;
                     }
 
                     if (_this.qnaPlugin.getPlayer().isOffline() && !_this.qnaPlugin.getConfig( 'allowNewQuestionWhenNotLive' )){
@@ -64,7 +69,9 @@
                         _this.qnaService.submitQuestion(replyText(), qnaThread.entries()[qnaThread.entries().length - 1]());
                         qnaThread.replyText(gM("qna-reply-here"));
                         qnaThread.isTypingAnswer(false);
+                        return true;
                     }
+                    return false;
                 };
 
                 this.clearTextArea = function(qnaThread, event){
@@ -99,6 +106,18 @@
                     return true;
                 };
 
+                this.replyOnEnter=function(qnaThread,e){
+                    // if its an enter, and the shift|alt|ctrl were not down - submit the question
+                    if (e.keyCode === 13 && !e.altKey && !e.shiftKey && !e.ctrlKey){
+                        if(_this.inThreadReply(qnaThread.replyText, qnaThread)) {
+                            e.target.blur();
+                        }
+                        // Prevent default
+                        return false;
+                    }
+                    return true;
+                };
+
                 this.collapseExpandThread = function (entry, event) {
                     // Get thread by ID and set it to be collapsed / Expanded
                     entry.getThread().isCollapsed(!entry.getThread().isCollapsed());
@@ -110,17 +129,15 @@
                         _this.currentTime(new Date().getTime());
                     }, mw.getConfig("qnaPollingInterval") || 10000);
                 }
-                $( embedPlayer ).bind('firstPlay', function () {
-                    // after the first play embedPlayer.currentTime is 0.
-                    // wait till we get a real time and refresh the answer on air queue
-                    var clearAnswerOnAirQueueInterval = setInterval(function() {
-                        if (embedPlayer.currentTime > 0)
-                        {
+
+                if (this.waitFirstPlayInterval === null){
+                    this.waitFirstPlayInterval = setInterval(function(){
+                        if (embedPlayer.currentTime > 0){
                             _this.qnaService.AnswerOnAirQueueUpdate(embedPlayer.currentTime);
-                            clearInterval(clearAnswerOnAirQueueInterval);
+                            clearInterval(_this.waitFirstPlayInterval);
                         }
                     }, 100);
-                });
+                }
 
                 $( embedPlayer ).bind('timeupdate', function () {
                     _this.playerTime(embedPlayer.currentTime);
