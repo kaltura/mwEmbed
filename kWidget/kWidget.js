@@ -492,22 +492,23 @@
 			style.type = 'text/css';
 			var imagePath = this.getPath() + '/modules/MwEmbedSupport/skins/common/images/';
 
-			var cssText = '.kWidgetCentered {max-height: 100%; ' +
-				'max-width: 100%; ' +
-				'position: absolute; ' +
-				'top: 0; left: 0; right: 0; bottom: 0; ' +
-				'margin: auto; ' +
+			var cssText = '.kWidgetCentered {' +
+					'max-height: 100%; ' +
+					'max-width: 100%; ' +
+					'position: absolute; ' +
+					'top: 0; left: 0; right: 0; bottom: 0; ' +
+					'margin: auto; ' +
 				'} ' + "\n" +
 				'.kWidgetPlayBtn { ' +
-				'cursor:pointer;' +
-				'height: 53px !important;;' +
-				'width: 70px !important;' +
-				'top: 50% !important;; left: 50% !important;; margin-top: -26.5px; margin-left: -35px; ' +
-				'background: url(\'' + imagePath + 'player_big_play_button.png\') !important;;' +
-				'z-index: 1;' +
+					'cursor:pointer;' +
+					'height: 53px;' +
+					'width: 70px;' +
+					'top: 50%; left: 50%; margin-top: -26.5px; margin-left: -35px; ' +
+					'background: url(\'' + imagePath + 'player_big_play_button.png\') ;' +
+					'z-index: 1;' +
 				'} ' + "\n" +
 				'.kWidgetPlayBtn:hover{ ' +
-				'background: url(\'' + imagePath + 'player_big_play_button_hover.png\');"' +
+					'background: url(\'' + imagePath + 'player_big_play_button_hover.png\');"' +
 				'} ';
 			if (this.isIE()) {
 				style.styleSheet.cssText = cssText;

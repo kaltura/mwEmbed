@@ -190,7 +190,7 @@ mw.KWidgetSupport.prototype = {
 
 		// Support mediaPlayFrom, mediaPlayTo properties
 		embedPlayer.bindHelper( 'Kaltura_SetKDPAttribute', function(e, componentName, property, value){
-			if (!value) {
+			if (!value && value !== 0) {
 				return;
 			}
 			var segmentChange = false;
@@ -278,9 +278,15 @@ mw.KWidgetSupport.prototype = {
 			mw.setConfig("LeadWithHLSOnFlash", true);
 		}
 
-		var multicastSource = this.getLiveMulticastSource(playerData);
-		if (multicastSource){
+		var legacyMulticastSource = this.getLegacyLiveMulticastSource(playerData);
+		if (legacyMulticastSource){
 			this.addLiveEntrySource( embedPlayer, playerData.meta, false, true, 'multicast_silverlight');
+			isStreamSupported = true;
+			embedPlayer.setLive( true );
+		}
+
+		if (embedPlayer.getFlashvars("LeadWithUnicastToMulticast")===true) {
+			this.addLiveEntrySource( embedPlayer, playerData.meta, false, true, 'applehttp_to_mc');
 			isStreamSupported = true;
 			embedPlayer.setLive( true );
 		}
@@ -336,7 +342,7 @@ mw.KWidgetSupport.prototype = {
 		}
 		return hasOnlyHLS;
 	},
-	getLiveMulticastSource: function(playerData){
+	getLegacyLiveMulticastSource: function(playerData){
 		var source = null;
 		if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'splayer' ) ) {
 			if ( playerData.contextData && playerData.contextData.flavorAssets ) {
@@ -705,7 +711,10 @@ mw.KWidgetSupport.prototype = {
 						//if we get more then 1 flavors we dont need the redirect so we'll use the same url
 						// the playmanifest service will return the manifest directly.
 					} else if (flavors && flavors.length > 1){
-						deferred.resolve( srcURL );
+						if (srcURL.indexOf("applehttp_to_mc")===-1)
+							deferred.resolve( srcURL );
+						else
+							deferred.resolve( playmanifest );
 					} else {
 						deferred.reject();
 					}
@@ -1025,37 +1034,54 @@ mw.KWidgetSupport.prototype = {
 		this.kClient = mw.kApiGetPartnerClient( playerRequest.widget_id );
 		this.kClient.setKs( embedPlayer.getFlashvars( 'ks' ) );
 
-		// Check for playlist cache based
-		if( window.kalturaIframePackageData && window.kalturaIframePackageData.playlistResult ){
-			var pl = window.kalturaIframePackageData.playlistResult;
-			for( var plId in pl ) break;
-			if( pl[plId].content.indexOf('<?xml') === 0 ){
-				// convert to comma seperated entries
-				var entryList = [];
-				for( var i in pl[plId].items ){
-					entryList.push( pl[plId].items[i].id );
+			// Check for playlist cache based
+			if( window.kalturaIframePackageData && window.kalturaIframePackageData.playlistResult ){
+				var pl = window.kalturaIframePackageData.playlistResult;
+				for( var plId in pl ) break;
+				if( pl[plId].content.indexOf('<?xml') === 0 ){
+					// convert to comma seperated entries
+					var entryList = [];
+					for( var i in pl[plId].items ){
+						entryList.push( pl[plId].items[i].id );
+					}
+					pl[plId].content = entryList.join(',');
 				}
-				pl[plId].content = entryList.join(',');
+				embedPlayer.kalturaPlaylistData = pl;
+				delete( window.kalturaIframePackageData.playlistResult );
 			}
-			embedPlayer.kalturaPlaylistData = pl;
-			delete( window.kalturaIframePackageData.playlistResult );
-		}
 
-		// Check for entry cache:
-		if( window.kalturaIframePackageData && window.kalturaIframePackageData.entryResult ){
-			var entryResult =  window.kalturaIframePackageData.entryResult
+			// Check for entry cache:
+			if( window.kalturaIframePackageData && window.kalturaIframePackageData.entryResult ){
+				var entryResult =  window.kalturaIframePackageData.entryResult;
+				_this.handlePlayerData( embedPlayer, entryResult );
+				//if we dont have special widgetID or the KS is defined continue as usual
+				if ( "_" + embedPlayer.kpartnerid == playerRequest.widget_id || _this.kClient.getKs() ) {
+					callback( entryResult );
+				}else{
+					//if we have special widgetID and we dont have a KS - ask for KS before continue the process
+					this.kClient.forceKs(playerRequest.widget_id,function(ks) {
+						_this.kClient.setKs( ks );
+						if ( window.kalturaIframePackageData.playerConfig && !window.kalturaIframePackageData.playerConfig.vars ) {
+							window.kalturaIframePackageData.playerConfig.vars = {};
+						}
+						window.kalturaIframePackageData.playerConfig.vars.ks = ks;
+						callback( entryResult );
+					},function(){
+						mw.log("Error occur while trying to create widget KS");
+						callback( entryResult );
+					});
+				}
+				// remove the entryResult from the payload
+				delete( window.kalturaIframePackageData.entryResult );
+				return ;
+			}
+			// Run the request:
+			_this.kClient = mw.kApiEntryLoader( playerRequest, function( playerData ) {
+				_this.handlePlayerData( embedPlayer , playerData );
+				callback( playerData );
+			});
 
-			this.handlePlayerData( embedPlayer, entryResult );
-			callback( entryResult );
-			// remove the entryResult from the payload
-			delete( window.kalturaIframePackageData.entryResult );
-			return ;
-		}
-		// Run the request:
-		this.kClient = mw.kApiEntryLoader( playerRequest, function( playerData ){
-			_this.handlePlayerData(embedPlayer, playerData );
-			callback( playerData );
-		});
+
 	},
 	handlePlayerError: function(embedPlayer, data){
 		var errObj = null;
@@ -1741,6 +1767,7 @@ mw.KWidgetSupport.prototype = {
 		if( ks ){
 			srcUrl += '&ks=' + ks;
 		}
+
 		//add source
 		mw.log( 'KWidgetSupport::addLiveEntrySource: Add Live Entry Source - ' + srcUrl );
 		embedPlayer.mediaElement.tryAddSource(

@@ -980,7 +980,7 @@
 			var player = this.getPlayerElement();
 			var stats = player.getPlaybackStatistics();
 			var videoData = stats.video.activeTrack;
-			if (videoData.representations){
+			if (videoData && videoData.representations){
 				var representations = videoData.representations;
 				if (representations && representations.length > 0){
 					var flavors = representations.map(function(rep){

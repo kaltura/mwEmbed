@@ -13,7 +13,10 @@
 			'promptText': 'Widevine Video Optimizer plugin is needed for enabling video playback in this page. ',
 			'promptLinkText': 'Get Video Optimizer',
 			'PromptRestartChromeAfterInstall' : 'Download of the plugin installer will start immediately. Note that you must restart your Chrome browser after running the installer',
-			'promptTitle' : 'Notification'
+			'promptTitle' : 'Notification',
+			'signon_url': 'https://staging.shibboleth.tv/widevine/cypherpc/cgi-bin/SignOn.cgi',
+			'log_url': 'https://staging.shibboleth.tv/widevine/cypherpc/cgi-bin/LogEncEvent.cgi',
+			'emm_url': 'http://www.kaltura.com/api_v3/index.php?service=widevine_widevinedrm&action=getLicense'
 		},
 		kClient: null,
 		setup: function(){
@@ -102,9 +105,9 @@
 
 			// Set the head end server 
 
-			var signon_url = "https://staging.shibboleth.tv/widevine/cypherpc/cgi-bin/SignOn.cgi";
-			var log_url = "https://staging.shibboleth.tv/widevine/cypherpc/cgi-bin/LogEncEvent.cgi";
-			var emm_url="http://www.kaltura.com/api_v3/index.php?service=widevine_widevinedrm&action=getLicense";
+			var signon_url = _this.getConfig( 'signon_url');
+			var log_url = _this.getConfig( 'log_url');
+			var emm_url = _this.getConfig( 'emm_url');
 			var widevineSrcPath = {
 				mac:'WidevineMediaOptimizer.dmg',
 				ie:'WidevineMediaOptimizerIE.exe',

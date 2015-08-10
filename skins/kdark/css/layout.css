@@ -528,7 +528,7 @@ body {
 	position: absolute;
 	color: black;
 	z-index: 10;
-	width: 220px;
+
 }
 .mobile .smartContainerMenu{
 	background-color: rgba(0,0,0,0.6);
@@ -592,6 +592,7 @@ body {
 .smartContainerMenu .pluginPropertyLabel{
 	color: #555555;
 	margin-left: 20px;
+	margin-right: 10px;
 	font-size: 12px;
 }
 .smartContainerMenu label{
@@ -607,6 +608,7 @@ body {
 	visibility: hidden;
 	width: 0px;
 	height: 0px;
+	position: absolute;
 }
 .smartContainerMenu .fakeCombo{
 	font-size: 9px;
@@ -643,11 +645,11 @@ body {
 	border: 1px solid #999999;
 	width: 84px;
 	float: right;
-	margin-right: 20px;
+	right: 20px;
 	border-radius: 3px;
 	padding-right: 10px;
 	padding-left: 10px;
-	position: relative;
+	position: absolute;
 	display: none;
 }
 .smartContainerMenu li{
@@ -660,7 +662,6 @@ body {
 	padding-left: 0px;
 	cursor: pointer;
 	height: 18px;
-	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
