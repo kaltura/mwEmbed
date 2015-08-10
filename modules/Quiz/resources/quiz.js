@@ -47,6 +47,8 @@
 
             ];
             _this.getKClient().doRequest(getQuizuserEntryIdAndQuizParams, function (data) {
+                console.log("Params->");
+                console.log(data);
                 $.grep(data, function (e) {
                     if (e.objectType){
                         console.log('Connect to quiz err -->', e.code, e.message);
@@ -91,7 +93,6 @@
                     });
                 }
             });
-
             this.addBindings();
         },
         addBindings: function () {
@@ -110,7 +111,9 @@
                     }
                     _this.entryData = data;
                     _this._initParams();
-
+                    if (embedPlayer.autoplay) {
+                        embedPlayer.sendNotification('doStop');
+                    }
                     if (_this.state == 'deleted') {
                         _this._showDeletedScreen()
                     } else {
@@ -118,9 +121,22 @@
                     }
                 });
             });
+
             this.bind('KalturaSupport_CuePointReached', function (e, cuePointObj) {
+                if(!_this.isSeekingIVQ)
                 _this.qCuePointHandler(e, cuePointObj);
            });
+
+            this.bind('showScreen', function () {
+                embedPlayer.disablePlayControls()
+            });
+
+            this.bind('seeked', function () {
+                setTimeout(function () {_this.isSeekingIVQ = false;}, 0);
+            });
+            this.bind('seeking', function () {
+                _this.isSeekingIVQ = true;
+            });
         },
         getKClient: function () {
             if (!this.kClient) {
@@ -140,13 +156,13 @@
         },
          continuePlay: function () {
              var _this = this,player = _this.getPlayer();
-       //      player.enablePlayControls();
-             console.log('play');
+             player.enablePlayControls();
              player.play();
         },
         _initParams: function () {
             var _this = this;
             $.grep($.quizParams.uiAttributes, function (e) {
+
                 if (e.key == "canSkip") {
                     _this.canSkip = (e.value) ;
                 }
@@ -183,21 +199,17 @@
             $(".confirm-box").html(gM('mwe-quiz-continue'))
                 .on('click', function () {
                     $(document).off();
-                    if (_this.isScreenVisible()) _this.removeScreen();
                     _this.continuePlay();
                 });
         },
-
         _gotoScrubberPos: function (questionNr) {
             var kdp = this.getPlayer();
             kdp.sendNotification('doSeek', ($.cpObject.cpArray[questionNr].startTime) / 900);
         },
         qCuePointHandler: function (e, cuePointObj) {
             var _this = this;
-
             if (_this.getPlayer().seeking) return;
             if (!$.quizParams.showCorrectAfterSubmission && _this.score) return;
-
             $.each($.cpObject.cpArray, function (key, val) {
                 if ($.cpObject.cpArray[key].startTime === cuePointObj.cuePoint.startTime) {
                     _this.currentQuestionNumber = key;
@@ -206,7 +218,6 @@
             });
 
         },
-
         showUnAnswered: function (cPo, questionNr) {
             var _this = this;
             _this._selectAnswerConroller(cPo, questionNr);
@@ -417,17 +428,20 @@
                     if (_this.isScreenVisible()) _this.removeScreen();
                     _this.allCompleted();
                 });
-                $(".ftr-right").html("REVIEW NEXT QUESTION").on('click', function () {
-                    if (_this.isScreenVisible()) _this.removeScreen();
-                    function nextQuestionNr(questionNr) {
-                        if (questionNr == $.cpObject.cpArray.length - 1) {
-                            return 0;
-                        } else {
-                            return ++questionNr;
+                if ($.cpObject.cpArray.length > 0) {
+                    $(".ftr-right").html("REVIEW NEXT QUESTION").on('click', function () {
+                        if (_this.isScreenVisible()) _this.removeScreen();
+                        function nextQuestionNr(questionNr) {
+                            if (questionNr == $.cpObject.cpArray.length - 1) {
+                                return 0;
+                            } else {
+                                return ++questionNr;
+                            }
                         }
-                    }
-                    _this.setCurrentQuestion(nextQuestionNr(questionNr));
-                });
+
+                        _this.setCurrentQuestion(nextQuestionNr(questionNr));
+                    });
+                }
             } else {
                 $(".ftr-left").append($('<span>' + ' QUESTION ' + this.i2q(questionNr) + '/' + $.cpObject.cpArray.length + '</span>').css("float", "right"))
                     .append($('<div></div>').addClass("pie").css("float", "right"))
@@ -537,6 +551,7 @@
         },
         _getQuestionCpAPI: function (callback) {
             var _this = this;
+            var embedPlayer = this.embedPlayer;
             var getCp = [{
                 'service': 'cuepoint_cuepoint',
                 'action': 'list',
@@ -554,11 +569,15 @@
                     'filter:cuePointTypeEqual': 'quiz.QUIZ_ANSWER'
                 }];
             _this.getKClient().doRequest(getCp, function (data) {
+                console.log("QA CP->");
+                console.log(data);
                 $.grep(data, function (e) {
                         if (e.objectType){
                             console.log('Get CP question or answer err -->', e.code, e.message);
                         }
                     });
+                //var scrubber = embedPlayer.getInterface().find(".scrubber");
+                //scrubber.append('<div id="tooltip" style="width: 20px; height: 40px; background-color: red; position: absolute; margin-top: -40px; margin-left: 50px"></div>')
                 callback(data);
             });
         },
@@ -615,7 +634,8 @@
             player.pause();
             _this.state = state;
             _this.showScreen();
-          //  player.disablePlayControls();
+
+
         },
         i2q: function (i) {
             return parseInt(i) + 1;
