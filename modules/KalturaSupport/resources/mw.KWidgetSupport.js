@@ -1583,6 +1583,20 @@ mw.KWidgetSupport.prototype = {
 				});
 				this.attachFlavorAssetDrmData(dashSource, assetId, flavorDrmData);
 				deviceSources.push(dashSource);
+
+				var ismSource = this.generateAbrSource({
+					entryId: asset.entryId,
+					flavorUrl: flavorUrl,
+					flavorId: "ism",
+					type: 'video/playreadySmooth',
+					flavors: targetFlavors,
+					format: "sl",
+					ext: "ism",
+					protocol: protocol,
+					clipAspect: validClipAspect
+				});
+				this.attachFlavorAssetDrmData(ismSource, assetId, flavorDrmData);
+				deviceSources.push(ismSource);
 			}
 		}
 		this.removedAdaptiveFlavors = false;
