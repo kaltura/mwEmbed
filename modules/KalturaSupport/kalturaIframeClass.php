@@ -596,7 +596,9 @@ class kalturaIframeClass {
 			color: #fff;
 			overflow: hidden;
 		}
-		
+		video::-webkit-media-controls {
+			display:none !important;
+		}
 		div,video {
 			margin: 0;
 			padding: 0;
