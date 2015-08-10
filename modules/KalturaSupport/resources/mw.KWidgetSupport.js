@@ -224,7 +224,7 @@ mw.KWidgetSupport.prototype = {
 		var _this = this;
 		mw.log( "KWidgetSupport::loadAndUpdatePlayerData" );
 		// Load all the player configuration from kaltura:
-		_this.loadPlayerData( embedPlayer, function( playerData ){
+		_this.loadPlayerData(embedPlayer).then(_this.hookInit).then( function( playerData ){
 			if( !playerData ){
 				mw.log("KWidgetSupport::loadAndUpdatePlayerData> error no player data!");
 				callback();
@@ -232,6 +232,40 @@ mw.KWidgetSupport.prototype = {
 			}
 			_this.updatePlayerData( embedPlayer, playerData, callback );
 		});
+	},
+
+	hookInit: function(data,embedPlayer){
+		var deferred = $.Deferred();
+		if (mw.getConfig("IP_Service_URL")) {
+			$.ajax({
+				url:mw.getConfig("IP_Service_URL"),
+				timeout:4000,
+				success:function(value){
+					var injectParam = function(src,param){
+						return src.replace( /playmanifest/ig ,"playManifest/" + param );
+					};
+					embedPlayer.bindHelper("SourceSelected", function(event,source){
+						if (  source.src.toLowerCase().indexOf("playmanifest") > -1 &&
+							source.src.toLowerCase().indexOf("clientip") === -1) {
+							source.src = injectParam(source.src,"clientip/" +window.btoa(value));
+						}
+					});
+					deferred.resolve(data);
+					window.kalturaIframePackageData.playerConfig.vars.ip = value;
+
+				},
+				error:function(error){
+					mw.log("error occur while trying to get the ip from service url:" + error);
+
+					//we want to still load the player
+					deferred.resolve(data);
+				}
+			});
+			return deferred.promise();
+		}
+
+		deferred.resolve(data);
+		return deferred.promise();
 	},
 
 	updatePlayerData: function( embedPlayer,  playerData, callback ){
@@ -999,11 +1033,12 @@ mw.KWidgetSupport.prototype = {
 	 */
 	loadPlayerData: function( embedPlayer, callback ){
 		var _this = this;
+		var deferred = $.Deferred();
 		var playerRequest = {};
 		// Check for widget id
 		if( ! embedPlayer.kwidgetid ){
 			mw.log( "Error: missing required widget paramater ( kwidgetid ) ");
-			callback( false );
+			deferred.resolve( false );
 			return ;
 		} else {
 			playerRequest.widget_id = embedPlayer.kwidgetid;
@@ -1047,7 +1082,7 @@ mw.KWidgetSupport.prototype = {
 				_this.handlePlayerData( embedPlayer, entryResult );
 				//if we dont have special widgetID or the KS is defined continue as usual
 				if ( "_" + embedPlayer.kpartnerid == playerRequest.widget_id || _this.kClient.getKs() ) {
-					callback( entryResult );
+					deferred.resolve( entryResult,embedPlayer );
 				}else{
 					//if we have special widgetID and we dont have a KS - ask for KS before continue the process
 					this.kClient.forceKs(playerRequest.widget_id,function(ks) {
@@ -1056,21 +1091,23 @@ mw.KWidgetSupport.prototype = {
 							window.kalturaIframePackageData.playerConfig.vars = {};
 						}
 						window.kalturaIframePackageData.playerConfig.vars.ks = ks;
-						callback( entryResult );
+						deferred.resolve( entryResult,embedPlayer );
 					},function(){
 						mw.log("Error occur while trying to create widget KS");
-						callback( entryResult );
+						deferred.resolve( entryResult, embedPlayer );
 					});
 				}
 				// remove the entryResult from the payload
 				delete( window.kalturaIframePackageData.entryResult );
-				return ;
+				return deferred.promise();
 			}
 			// Run the request:
 			_this.kClient = mw.kApiEntryLoader( playerRequest, function( playerData ) {
 				_this.handlePlayerData( embedPlayer , playerData );
-				callback( playerData );
+				deferred.resolve( playerData,embedPlayer );
 			});
+
+		return deferred.promise();
 
 
 	},
