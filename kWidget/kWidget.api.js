@@ -57,16 +57,6 @@ kWidget.api.prototype = {
 	getKs: function(){
 		return this.ks;
 	},
-	/**
-	 * mimic jQuery extend method as we might not have jQuery available in the hosting page
-	 */
-	extend: function(){
-		for ( var i = 1; i < arguments.length; i++ )
-			for ( var key in arguments[i] )
-				if ( arguments[i].hasOwnProperty(key) )
-					arguments[0][key] = arguments[i][key];
-		return arguments[0];
-	},
 	forceKs:function(wid,callback,errorCallback){
 		if( this.getKs() ){
 			callback( this.getKs() );
@@ -79,7 +69,7 @@ kWidget.api.prototype = {
 			'widgetId': wid
 		};
 		// add in the base parameters:
-		var param = this.extend( { 'service' : 'session' }, this.baseParam, ksParam );
+		var param = kWidget.extend( { 'service' : 'session' }, this.baseParam, ksParam );
 		this.doRequest( param, function( data ){
 			_this.ks = data.ks;
 			callback( _this.ks );
