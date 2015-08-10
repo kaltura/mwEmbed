@@ -121,10 +121,6 @@
 			this.bind( 'postEnded', function(){
 				_this.sendBeacon( 'stop' );
 			})
-			
-			this.bind( 'postEnded', function(){
-				_this.sendBeacon( 'stop' );
-			})
 		},
 		bindPingTracking: function(){
 			var previusPingTime = playRequestStartTime;
