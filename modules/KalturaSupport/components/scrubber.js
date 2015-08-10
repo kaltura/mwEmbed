@@ -122,6 +122,11 @@
 					_this.updateEnabled = true;
 				}
 			});
+            this.bind("onPlayerStateChange", function (e, newState, oldState) {
+                if(newState === 'pause') {
+                    _this.paused = true;
+                }
+            });
 		},
 		bindUpdatePlayheadPercent: function () {
 			var _this = this;
@@ -141,7 +146,7 @@
 			});
 		},
 		updatePlayheadUI: function (val) {
-            if( this.embedPlayer.isDVR() ) {
+            if( this.getPlayer().instanceOf !== 'Native' && this.getPlayer().isPlaying() && !this.paused && this.embedPlayer.isDVR() ) {
                 this.checkForLiveEdge();
                 if( !this.getPlayer().isLiveOffSynch()) {
                     this.getComponent().slider('option', 'value', 999);
@@ -149,6 +154,9 @@
                 }
             }
             this.getComponent().slider('option', 'value', val);
+            if(this.paused && this.getPlayer().isPlaying()){
+                this.paused = false;
+            }
 		},
         checkForLiveEdge: function (){
             var playHeadPercent = (this.getPlayHeadComponent().position().left + this.getPlayHeadComponent().width()/2) / this.getComponent().width();
