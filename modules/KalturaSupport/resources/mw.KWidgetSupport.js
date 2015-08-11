@@ -269,6 +269,11 @@ mw.KWidgetSupport.prototype = {
 		}
 	},
 	isLive: function(playerData){
+		if (playerData &&  playerData.meta &&
+			(playerData.meta.sourceType === "32" ||
+			playerData.meta.sourceType === "33") ){
+			mw.setConfig("LeadWithHLSOnFlash",true);
+		}
 		return playerData.meta && ( playerData.meta.type == 7 || playerData.meta.type == 8 );
 	},
 	updateLivePlayerData: function(embedPlayer, playerData){
