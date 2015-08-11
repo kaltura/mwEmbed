@@ -13,11 +13,27 @@
 	This page demonstrate ad tag url substitutions. 
 	<br>
 <div id="kaltura_player" style="width:400px;height:330px;"></div>
+<a href="#" id="changeMedia">Change Entry</a>
+<script>
+var entries = ['0_swup5zao', '1_sf5ovm7u'];
+kWidget.addReadyCallback(function(playerId){
+	var kdp = $('#' + playerId)[0];
+	$('#changeMedia').click(function(){
+		if( kdp.evaluate('{mediaProxy.entry.id}') == entries[0] ){
+			kdp.sendNotification('changeMedia', {'entryId' : entries[1] } );
+		} else {
+			kdp.sendNotification('changeMedia', {'entryId' : entries[0] } );
+		}
+	});
+});
+</script>
 <h3>Raw Ad Tag Url:</h3>
+This URL represents a sample ad tag URL that is used to configure a Kaltura player. 
+Evaluation properties are documented in the <a href="http://player.kaltura.com/docs/api#evaluate-desc">kaltura player api documentation</a> page. <br><br>
 <pre id="rawurl"></pre>
 <h3>Evaluated Ad Tag Url:</h3>
+This represent the evaluated ad tag url that the player will send to the ad server:<br><br>
 <pre id="evaluated"></pre>
-
 <script>
 	var adTagUrl ='http://projects.kaltura.com/mdale/hotelVastAd.xml?' +
 			'&displayMgr=kaltura_player' + 
@@ -40,9 +56,9 @@
 			'&srcPageUrl={utility.referrer_url}' + 
 			'&contentLength={mediaProxy.entry.duration}' + 
 			'&flashVersion={flashVersion}'+
-			'&userRating={mediaProxy.entry.rank}' + 
-			'&videoQuality=' + 
-			'&srcRelationship=';
+			'&userRating={mediaProxy.entry.rank}';
+			/*'&videoQuality=' + 
+			'&srcRelationship=';*/
 	
 	kWidget.embed({
 		'targetId': 'kaltura_player',
@@ -66,7 +82,8 @@
 			kdp.kBind('mediaReady', function(){
 				$("#rawurl").html( adTagUrl.replace(/&/g, '<br>&amp;' ) );
 				$("#evaluated").html( 
-					kdp.evaluate( kdp.evaluate('{vast.prerollUrl}') ).replace( /&/g, '<br>&amp;' ) );
+					kdp.evaluate( kdp.evaluate('{vast.prerollUrl}') ).replace( /&/g, '<br>&amp;' ) 
+				);
 			});
 		}
 	})
