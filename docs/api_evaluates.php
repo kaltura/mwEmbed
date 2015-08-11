@@ -5,11 +5,11 @@
 		),
 		'playerVersion' => array(
 			'desc' => 'The current version of the player library. Versions are represented in major.minor.point format',
-			'example' => '../modules/AdTagUrlSubstitutions/tests/AdTagUrlSubstitutions.html'
+			'example' => '../modules/AdSupport/tests/AdTagUrlSubstitutions.html'
 		),
 		'flashVersion' => array(
 			'desc' => 'The version of Adobe Flash available. Returns 0,0,0 if Flash is not available.',
-			'example' => '../modules/AdTagUrlSubstitutions/tests/AdTagUrlSubstitutions.html'
+			'example' => '../modules/AdSupport/tests/AdTagUrlSubstitutions.html'
 		),
 		'sequenceProxy.timeRemaining' => array(
 			'desc' => 'Time remaining until the end of the current ads sequence',
@@ -34,11 +34,11 @@
 		),
 		'video.player.width' => array(
 			'desc' => 'The current video player width in pixels.',
-			'example' => '../modules/AdTagUrlSubstitutions/tests/AdTagUrlSubstitutions.html'
+			'example' => '../modules/AdSupport/tests/AdTagUrlSubstitutions.html'
 		),
 		'video.player.height' => array(
 			'desc' => 'The current video player height in pixels.',
-			'example' => '../modules/AdTagUrlSubstitutions/tests/AdTagUrlSubstitutions.html'
+			'example' => '../modules/AdSupport/tests/AdTagUrlSubstitutions.html'
 		),
 		'duration' => array(
 			'desc' => 'Current video duration in seconds',
