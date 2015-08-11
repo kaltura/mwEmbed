@@ -17,11 +17,20 @@
     //   var ismSource='http://'+localhost+':1935/live/abc123/Manifest';
     //ismsource="http://tglsch8a-s.akamaihd.net/live/234736_234737/channel8.isml/Manifest";
 
-    var hls=true;
-    var hlssource='http://'+localhost+':1935/live/abc123/playlist.m3u8';
+    /*
+     resolvedSrc={ "flavors": [
+     {url: "http://192.168.163.88:9000/kMulticast/http://192.168.163.88:1935/live/abc123/playlist55.m3u8", bitrate:55},
+     {url: "http://192.168.163.88:9000/kMulticast/http://192.168.163.88:1935/live/abc123/playlist855.m3u8", bitrate:855},
+     {url: "http://192.168.163.88:9000/kMulticast/192.168.163.88:1935/live/abc123/playlist515.m3u8", bitrate:515},
+     {url: "http://192.168.163.188:9000/kMulticast/192.168.163.188:1935/live/abc123/playlist55.m3u8", bitrate:55},
+     {url: "http://192.168.163.188:9000/kMulticast/192.168.163.188:1935/live/abc123/playlist515.m3u8", bitrate:515},
+     {url: "http://192.168.163.188:9000/kMulticast/192.168.163.188:1935/live/abc123/playlist2515.m3u8", bitrate:2515}]
+     }
+     */
+    //var hlssource='http://'+localhost+':1935/live/abc123/playlist.m3u8';
     //var hlssource='http://kalsegsec-a.akamaihd.net/dc-1/m/ny-live-publish3/kLive/smil:1_oorxcge2_publish.smil/chunklist_b2096000.m3u8';
 
-    var multicast='http://'+localhost+':9000/kMulticast/'+hlssource;
+   // var multicast='http://'+localhost+':9000/kMulticast/'+hlssource;
 //    var multicast='239.1.2.3:5552';
 
     var replaceSources=[];
@@ -54,8 +63,8 @@
     }
     kWidget.featureConfig({
         'targetId': 'kaltura_player',
-        'wid': '_931702',
-        'uiconf_id' : '21099702',
+        'wid': '_1742181',
+        'uiconf_id' : '27889722',
         'flashvars': {
             "liveCore":{"plugin":true} ,
 
@@ -67,7 +76,7 @@
             },
            'autoPlay': true
         },
-        'entry_id': "1_oorxcge2"
+        'entry_id': "1_lha5zenv"
 
     });
 </script>
