@@ -233,10 +233,8 @@
 
 						mw.log('KES still loading, retrying later');
 					} else {
-						if ( !_this.multicastSessionId ) { //only if we never got multicast result we should display that, otherwise just keepon trying
-							mw.log('Invalid multicast address/port returned from KES');
-							_this.selectNextKES();
-						}
+						mw.log('Got error from KES, switch to another one and keep trying');
+						_this.selectNextKES();
 					}
 				}
 				startConnectToKESTimer();
