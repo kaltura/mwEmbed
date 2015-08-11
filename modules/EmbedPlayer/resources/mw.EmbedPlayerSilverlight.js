@@ -162,11 +162,6 @@
 		selectNextKES: function(removeCurrent) {
 
 			var index=this._availableMulticastManifests.indexOf(this.multiastServerUrl);
-			if (removeCurrent && index>=0) {
-				mw.log( 'selectNextKES removing ' + this.multiastServerUrl );
-
-				this._availableMulticastManifests=this._availableMulticastManifests.splice(index,0)
-			}
 
 			if (this._availableMulticastManifests.length==0) {
 				this.multiastServerUrl=null;
@@ -175,8 +170,6 @@
 				var errorObj = {message: gM('ks-LIVE-STREAM-NOT-AVAILABLE'), title: gM('ks-ERROR')};
 				this.showErrorMsg(errorObj);
 			} else {
-
-
 				index = (index + 1) % this._availableMulticastManifests.length;
 				this.multiastServerUrl = this._availableMulticastManifests[index];
 				mw.log('selectNextKES selected ' + this.multiastServerUrl);
@@ -242,7 +235,7 @@
 					} else {
 						if ( !_this.multicastSessionId ) { //only if we never got multicast result we should display that, otherwise just keepon trying
 							mw.log('Invalid multicast address/port returned from KES');
-							_this.selectNextKES(true);
+							_this.selectNextKES();
 						}
 					}
 				}
