@@ -14,6 +14,7 @@
 		defaultMulticastKeepAliveInterval: 10000 ,
 		defaultMulticastKESKtimeout: 10000 ,
 		defaultMulticastKESStartInterval: 2000 ,
+		defaultMaxAllowedMulticastBitrate: 90000 ,
 		multicastAddress: null ,
 		defaultEnableMulticastFallback: true ,
 		containerId: null ,
@@ -72,17 +73,21 @@
 				}
 			} );
 		} ,
+		getMulticastDiagnostics: function() {
 
-		fillDiagnostics: function ( diagObj ) {
-			if ( diagObj ) {
-
-				if ( this.multiastServerUrl ) {
-					diagObj.multiastServerUrl = this.multiastServerUrl;
-				}
-				if (this.multicastSessionId) {
-					diagObj.multicastSessionId = this.multicastSessionId;
-				}
+			var diagObj={};
+			if ( this.playerObject ) {
+				diagObj = this.playerObject.getMulticastDiagnostics();
 			}
+
+			if ( this.multiastServerUrl ) {
+				diagObj.multiastServerUrl = this.multiastServerUrl;
+			}
+			if (this.multicastSessionId) {
+				diagObj.multicastSessionId = this.multicastSessionId;
+			}
+
+			return diagObj;
 		} ,
 		connectToKES: function ( resolvedSrc ) {
 			mw.log( 'connectToKES ' + resolvedSrc );
@@ -106,120 +111,176 @@
 				this.playerObject.changeMulticastParams(this.multicastAddress, this.multicastSourceAddress, this.multicastPolicyOverMulticastEnabled);
 			}
 		} ,
+
+		processMulticastMultiFlavorsStream: function(flavors) {
+
+			var KESMapping={};
+
+			flavors.forEach(function(flavor) {
+				var uri = new mw.Uri(flavor.url);
+				var lastIndex=flavor.url.lastIndexOf("/kLive");
+				var key=flavor.url.substring(0,lastIndex);
+
+				var index = flavor.url.indexOf("kMulticast/") + 11;
+				//var hls = flavor.url.substring(index);
+				if (!KESMapping.hasOwnProperty(key)) {
+					KESMapping[key] = {"flavors": [], "baseUrl": flavor.url.substring(0, index)};
+				}
+				var obj = KESMapping[key];
+
+				obj.flavors.push({uri: uri, bitrate: flavor.bitrate});
+			});
+
+			var maxAllowedMulticastBitrate= this.getKalturaConfig( null , 'maxAllowedMulticastBitrate' ) || this.defaultMaxAllowedMulticastBitrate;
+
+			this._availableMulticastManifests=[];
+			for(var key in KESMapping) {
+
+				var KESFlavors=KESMapping[key].flavors;
+
+				//sort by  bitrate  (descending)
+				KESFlavors.sort(function(a, b) {
+					return b.bitrate - a.bitrate;
+				});
+				//filter out all bitrates bigger than maximum allowed
+				var filtered=KESFlavors.filter(function(flavor) {
+					return flavor.bitrate<maxAllowedMulticastBitrate;
+				});
+				if (filtered.length>0) {
+					var selectedFlavor = filtered[0];
+					selectedFlavor.uri.query["maxAllowedBitrate"]=maxAllowedMulticastBitrate;
+					if (selectedFlavor.bitrate>0) {
+						selectedFlavor.uri.query["bitrate"] = selectedFlavor.bitrate;
+					}
+
+					mw.log('Adding another MulticastManifests: '+selectedFlavor.uri.toString());
+					this._availableMulticastManifests.push(selectedFlavor.uri.toString());
+				}
+			}
+
+		} ,
+		selectNextKES: function(removeCurrent) {
+
+			var index=this._availableMulticastManifests.indexOf(this.multiastServerUrl);
+			if (removeCurrent && index>=0) {
+				mw.log( 'selectNextKES removing ' + this.multiastServerUrl );
+
+				this._availableMulticastManifests=this._availableMulticastManifests.splice(index,0)
+			}
+
+			if (this._availableMulticastManifests.length==0) {
+				this.multiastServerUrl=null;
+				mw.log('selectNextKES no available multicast manifests ');
+				this.isError = true;
+				var errorObj = {message: gM('ks-LIVE-STREAM-NOT-AVAILABLE'), title: gM('ks-ERROR')};
+				this.showErrorMsg(errorObj);
+			} else {
+
+
+				index = (index + 1) % this._availableMulticastManifests.length;
+				this.multiastServerUrl = this._availableMulticastManifests[index];
+				mw.log('selectNextKES selected ' + this.multiastServerUrl);
+			}
+
+		} ,
 		handleMulticastPlayManifest: function ( resolvedSrc , doEmbedFunc ) {
 			mw.log( 'handleMulticastPlayManifest ' + resolvedSrc );
 			var _this = this;
 
+
 			if ($.isPlainObject(resolvedSrc)) {
 				mw.log( 'handleMulticastPlayManifest ' + JSON.stringify( resolvedSrc) );
-				var bestFlavour=null;
-				if (resolvedSrc.flavors) {
-					resolvedSrc.flavors.forEach(function (flavour) {
-						if (!bestFlavour || flavour.bitrate > bestFlavour.bitrate) {
-							bestFlavour = flavour;
-						}
-					});
-				}
-				_this.resolvedSrc=resolvedSrc;
-				if (bestFlavour) {
-					resolvedSrc = bestFlavour.url;
-				} else {
 
-					mw.log('Invalid play manifest');
-					_this.isError = true;
-					var errorObj = {message: gM('ks-LIVE-STREAM-NOT-AVAILABLE'), title: gM('ks-ERROR')};
-					_this.showErrorMsg(errorObj);
+				_this.processMulticastMultiFlavorsStream(resolvedSrc.flavors);
+			}  else {
+				//we got an multicast server that we need to redirect
+				if ( resolvedSrc.indexOf( "http" ) === 0 ) {
+
+					_this.processMulticastMultiFlavorsStream([ { url: resolvedSrc, bitrate: 0} ]);
+				} else {
+					//legacy multicast
+					doEmbedFunc( resolvedSrc );
+					return;
 				}
 			}
-			//we got an multicast server that we need to redirect
-			if ( resolvedSrc.indexOf( "http" ) === 0 ) {
-				this.multiastServerUrl = resolvedSrc;
-
-				var onKESResponse = function ( response ) {
-
-					mw.log( 'EmbedPlayerSPlayer got multicast details from KES: ' + JSON.stringify( response ) );
 
 
-					//verify we got a valid response from KES
-					if ( response && response.multicastAddress && response.multicastPort && response.hls ) {
+			var onKESResponse = function ( response ) {
 
-						var multicastAddress = response.multicastAddress + ":" + response.multicastPort;
-						mw.log( 'multicastAddress: ' + multicastAddress + ' KES: ' + response.multicastSourceAddress);
+				mw.log( 'EmbedPlayerSPlayer got multicast details from KES: ' + JSON.stringify( response ) );
 
-						//first time
-						if ( !_this.multicastAddress ||
-							_this.multicastAddress !== multicastAddress ||
-							_this.multicastSessionId !== response.id ) {
 
-							var firstTime = ( _this.multicastAddress == null);
-							_this.multicastAddress = multicastAddress;
-							_this.multicastSourceAddress = response.multicastSourceAddress;
-							_this.multicastPolicyOverMulticastEnabled = response.multicastPolicyOverMulticastEnabled;
-							_this.multicastSessionId = response.id;
+				//verify we got a valid response from KES
+				if ( response && response.multicastAddress && response.multicastPort && response.hls ) {
 
-							if (firstTime) {
-								doEmbedFunc(multicastAddress);
-							} else {
-								_this.refreshSilverlightMulticastParams();
-							}
+					var multicastAddress = response.multicastAddress + ":" + response.multicastPort;
+					mw.log( 'multicastAddress: ' + multicastAddress + ' KES: ' + response.multicastSourceAddress);
 
-						}
-						//keep alive
-						startConnectToKESTimer();
-					} else {
-						//if we got a response from KES that it's still loading, don't do anything
-						if (response && response.state==="Loading") {
+					//first time
+					if ( !_this.multicastAddress ||
+						_this.multicastAddress !== multicastAddress ||
+						_this.multicastSessionId !== response.id ) {
 
-							mw.log('KES still loading, retrying later');
-							//retry
-							startConnectToKESTimer();
+						var firstTime = ( _this.multicastAddress == null);
+						_this.multicastAddress = multicastAddress;
+						_this.multicastSourceAddress = response.multicastSourceAddress;
+						_this.multicastPolicyOverMulticastEnabled = response.multicastPolicyOverMulticastEnabled;
+						_this.multicastSessionId = response.id;
+
+						if (firstTime) {
+							doEmbedFunc(multicastAddress);
 						} else {
-							if ( !_this.multicastSessionId ) { //only if we never got multicast result we should display that, otherwise just keepon trying
-								mw.log('Invalid multicast address/port returned from KES');
-								_this.isError = true;
-								var errorObj = {message: gM('ks-LIVE-STREAM-NOT-AVAILABLE'), title: gM('ks-ERROR')};
-								_this.showErrorMsg(errorObj);
-							} else {
-								//we already got multicast working at the past, retry to connect to KES∂
+							_this.refreshSilverlightMulticastParams();
+						}
+
+					}
+				} else {
+					//if we got a response from KES that it's still loading, don't do anything
+					if (response && response.state==="Loading") {
+
+						mw.log('KES still loading, retrying later');
+					} else {
+						if ( !_this.multicastSessionId ) { //only if we never got multicast result we should display that, otherwise just keepon trying
+							mw.log('Invalid multicast address/port returned from KES');
+							_this.selectNextKES(true);
+						}
+					}
+				}
+				startConnectToKESTimer();
+			};
+
+			var startConnectToKESTimer = function () {
+
+				//in case of fallback to unicast we don't want to restart by accident
+				if (!_this.isMulticast || !_this.multiastServerUrl) {
+					return;
+				}
+
+				var retryTime= _this.getKalturaConfig( null , 'multicastKESStartInterval' ) || _this.defaultMulticastKESStartInterval;
+
+				if (_this.multicastSessionId)
+					retryTime=_this.getKalturaConfig( null , 'multicastKeepAliveInterval' ) || _this.defaultMulticastKeepAliveInterval;
+
+				_this.keepAliveMCTimeout = setTimeout( function () {
+					try {
+						_this.connectToKES( _this.multiastServerUrl ).then( onKESResponse ,
+							function() {
+								mw.log( 'no response from KES... switch KES and retry' );
+								_this.selectNextKES();
 								startConnectToKESTimer();
 							}
-						}
+						);
 					}
-				};
-
-				var startConnectToKESTimer = function () {
-
-					//in case of fallback to unicast we don't want to restart by accident
-					if (!_this.isMulticast) {
-						return;
+					catch ( e ) {
+						mw.log( 'connectToKES failed ' + e.message + ' ' + e.stack );
+						startConnectToKESTimer();
 					}
+				} , retryTime );
+			};
 
-					var retryTime= _this.getKalturaConfig( null , 'multicastKESStartInterval' ) || _this.defaultMulticastKESStartInterval;
 
-					if (_this.multicastSessionId)
-						retryTime=_this.getKalturaConfig( null , 'multicastKeepAliveInterval' ) || _this.defaultMulticastKeepAliveInterval;
-
-					_this.keepAliveMCTimeout = setTimeout( function () {
-						try {
-							_this.connectToKES( resolvedSrc ).then( onKESResponse ,
-								function() {
-									mw.log( 'no response from KES retry' );
-									startConnectToKESTimer();
-								}
-							);
-						}
-						catch ( e ) {
-							mw.log( 'connectToKES failed ' + e.message + ' ' + e.stack );
-							startConnectToKESTimer();
-						}
-					} , retryTime );
-				};
-
-				startConnectToKESTimer();
-
-			} else {
-				doEmbedFunc( resolvedSrc );
-			}
+			_this.selectNextKES();
+			startConnectToKESTimer();
 		} ,
 		fallbackToUnicast: function () {
 			var _this = this;
