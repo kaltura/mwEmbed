@@ -763,11 +763,15 @@
 			var deferred = $.Deferred();
 			var originalSrc = this.mediaElement.selectedSource.getSrc();
 			if (this.isHlsSource(this.mediaElement.selectedSource)) {
+                // add timeAlignedRenditions indicator (Live HLS only)
+                if( this.isLive() ) {
+                    originalSrc = originalSrc + "&timeAlignedRenditions=true";
+                }
 
 				this.resolveSrcURL(originalSrc)
 					.then(function (srcToPlay) {
                         _this.unresolvedSrcURL = false;
-						deferred.resolve(srcToPlay);
+                        deferred.resolve(srcToPlay);
 					}, function () { //error
                         _this.unresolvedSrcURL = true;
 						deferred.resolve(originalSrc);
@@ -802,7 +806,11 @@
 				+ ksString + "/uiConfId/" + this.kuiconfid + this.getPlaymanifestArg("referrerSig", "referrerSig")
 				+ this.getPlaymanifestArg("tags", "flavorTags") + "/a/a." + fileExt + "?referrer=" + this.b64Referrer;
 
-			if (srcUrl.indexOf("&seekFrom=") !== -1) {
+            // add timeAlignedRenditions indicator in the case of HLS
+            if ( this.isLive() && this.isHlsSource(this.mediaElement.selectedSource) ) {
+                srcUrl = srcUrl + "&timeAlignedRenditions=true";
+            }
+            if (srcUrl.indexOf("&seekFrom=") !== -1) {
 				srcUrl = srcUrl.substr(0, srcUrl.indexOf("&seekFrom="));
 			}
 			if (srcUrl.indexOf("&clipTo=") !== -1) {
