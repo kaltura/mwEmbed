@@ -1010,7 +1010,7 @@
                 var podPosition;
                 var podStartTime;
 
-                if( ad.getAdPodInfo().getPodIndex() !== -1) {
+                if( ad.getAdPodInfo() && ad.getAdPodInfo().getPodIndex() !== -1) {
                     podPosition = ad.getAdPodInfo().getPodIndex()+1;
                     podStartTime = ad.getAdPodInfo().getTimeOffset();
                 }
