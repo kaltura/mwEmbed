@@ -1004,9 +1004,18 @@
 					_this.embedPlayer.getPlayerElement().play();
 				}
                 var adPosition =  0;
-                if ( ad.getAdPodInfo() && ad.getAdPodInfo().getAdPosition() ){ adPosition = ad.getAdPodInfo().getAdPosition() }
-				// trigger ad play event
-                $(_this.embedPlayer).trigger("onAdPlay",[ad.getAdId(),ad.getAdSystem(),currentAdSlotType,adPosition,ad.getDuration()]);
+                if ( ad.getAdPodInfo() && ad.getAdPodInfo().getAdPosition() ){ adPosition = ad.getAdPodInfo().getAdPosition(); }
+
+                // collect POD parameters is exists (ad.getAdPodInfo().getPodIndex() exists = POD)
+                var podPosition;
+                var podStartTime;
+
+                if( ad.getAdPodInfo().getPodIndex() !== -1) {
+                    podPosition = ad.getAdPodInfo().getPodIndex()+1;
+                    podStartTime = ad.getAdPodInfo().getTimeOffset();
+                }
+                // trigger ad play event
+                $(_this.embedPlayer).trigger("onAdPlay",[ad.getAdId(),ad.getAdSystem(),currentAdSlotType,adPosition,ad.getDuration(), podPosition, podStartTime]);
 				// This changes player state to the relevant value ( play-state )
 				$(_this.embedPlayer).trigger("playing");
 				// Check for ad Stacking ( two starts in less then 250ms )

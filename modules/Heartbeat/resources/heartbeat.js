@@ -80,8 +80,8 @@
             this.embedPlayer.bindHelper('bufferEndEvent', function(){ _this.trackBufferEnd(); });
             this.embedPlayer.bindHelper('sourceSwitchingEnd', function(){ _this.trackBitrateChangeEnd(); });
 
-            this.embedPlayer.bindHelper('onAdPlay', function(event, adID, adSystem, type, adIndex, adDuration, mediaName, podSequence){
-                _this.trackAdStart({id:adID, position:adIndex, length:adDuration, name:mediaName, podPosition:podSequence}); });
+            this.embedPlayer.bindHelper('onAdPlay', function(event, adID, adSystem, type, adIndex, adDuration, mediaName, podPosition, podStartTime){
+                _this.trackAdStart({id:adID, position:adIndex, length:adDuration, name:mediaName, podPosition:podPosition, podStartTime:podStartTime}); });
             this.embedPlayer.bindHelper('onAdComplete', function(){ _this.trackAdComplete(); });
 
             this.embedPlayer.bindHelper('embedPlayerError', function (e, data) { _this.trackPlayerError(_this.getPlayer().getErrorMessage(data)); });
@@ -242,7 +242,7 @@
         setPodInfo: function(adData){
             var data = {
                 name: adData.name ? adData.name : "",
-                startTime: this.getPlayer().currentTime,
+                startTime: adData.podStartTime,
                 position: adData.podPosition
             };
             this.videoPlayerPlugin._delegate.setAdBreakInfo(data);
