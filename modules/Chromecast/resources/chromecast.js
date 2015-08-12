@@ -22,9 +22,10 @@
 			'order': 7,
 			'visible': false,
 			'align': "right",
-			'applicationID': "DB6462E9",
+			'applicationID': "46509854", //"DB6462E9", // 46509854
 			'showTooltip': true,
-			'tooltip': 'Chromecast'
+			'tooltip': 'Chromecast',
+			'debugReceiver': false
 		},
 		isDisabled: false,
 
@@ -47,6 +48,8 @@
 		stopCastTitle: gM( 'mwe-chromecast-stopcast' ),
 
 		receiverName: '',
+		drmConfig: null,
+		MESSAGE_NAMESPACE: 'urn:x-cast:com.kaltura.cast.player',
 
 		setup: function( embedPlayer ) {
 			var _this = this;
@@ -87,6 +90,10 @@
 
 			$( this.embedPlayer).bind('chromecastShowConnectingMsg', function(){
 				_this.showConnectingMessage();
+			});
+
+			$( this.embedPlayer).bind('updateDashContextData', function(e, drmConfig){
+				_this.drmConfig = drmConfig;
 			});
 		},
 
@@ -236,7 +243,9 @@
 					_this.embedPlayer.receiverName = _this.session.receiver.friendlyName;
 					// set volume and position according to the video settings before switching players
 					_this.setVolume(null, _this.savedVolume);
-					_this.seekMedia(_this.savedPosition / _this.currentMediaSession.media.duration * 100);
+					if (_this.currentMediaSession.media.duration){
+						_this.seekMedia(_this.savedPosition / _this.currentMediaSession.media.duration * 100);
+					}
 					// update media duration for durationLable component
 					_this.embedPlayer.mediaLoaded(_this.currentMediaSession);
 					// play media
@@ -381,6 +390,15 @@
 
 			this.request.customData = json;
 
+			// add DRM support
+			if (this.drmConfig){
+				this.sendMessage({'type': 'license', 'value': this.drmConfig.contextData.widevineLicenseServerURL});
+				this.log("set license URL to: " + this.drmConfig.contextData.widevineLicenseServerURL);
+			}
+			// set receiver debug if needed
+			if ( this.getConfig("debugReceiver") ){
+				this.sendMessage({'type': 'show', 'target': 'debug'});
+			}
 			this.session.loadMedia(this.request, 
 				_this.onMediaDiscovered.bind(this, 'loadMedia'), 
 				_this.onMediaError
@@ -412,6 +430,7 @@
 			this.getComponent().css("color","white");
 			this.updateTooltip(this.startCastTitle);
 			this.casting = false;
+			this.embedPlayer.getInterface().find(".chromecastScreen").remove();
 			// restore native player
 			this.embedPlayer.selectPlayer(this.savedPlayer);
 			this.savedPlayer = null;
@@ -422,11 +441,11 @@
 		},
 
 		onStopAppSuccess: function() {
-			console.log('chromecast::Session stopped');
+			this.log('Session stopped');
 		},
 
 		onMediaError: function(e) {
-			this.log("media error");
+			this.log("media error: "+ e.code);
 		},
 
 		receiverListener: function(e) {
@@ -454,13 +473,12 @@
 		getChromecastSource: function(){
 			// find the best quality MP4 source
 			var sources = this.embedPlayer.mediaElement.sources;
-			var requiredMimetype = "video/mp4";
 			var videoSize = 0;
 			var newSource = null;
 			var i = 0;
 			for ( i=0 ; i < sources.length; i++){
 				var source = sources[i];
-				if (source.mimeType === requiredMimetype && parseInt(source.sizebytes) > videoSize){
+				if ((source.mimeType === 'video/mp4' || source.mimeType === 'application/dash+xml') && parseInt(source.sizebytes) > videoSize){
 					newSource = source;
 					videoSize = parseInt(newSource.sizebytes);
 				}
@@ -477,7 +495,7 @@
 
 
 		getPlayingScreen: function(){
-			return '<div style="background-color: #000000; opacity: 0.7; width: 100%; height: 100%; font-family: Arial; position: absolute">' +
+			return '<div class="chromecastScreen" style="background-color: #000000; opacity: 0.7; width: 100%; height: 100%; font-family: Arial; position: absolute">' +
 				'<div class="chromecastPlayback">' +
 				'<div class="chromecastThumbBorder">' +
 				'<img class="chromecastThumb" src="' + this.embedPlayer.poster + '"></img></div> ' +
@@ -499,6 +517,23 @@
 			var title = this.embedPlayer.evaluate('{mediaProxy.entry.name}');
 			$(".chromecastTitle").text(title);
 			$("#chromecastReceiverName").text(this.embedPlayer.receiverName);
+		},
+
+		sendMessage: function(message) {
+			var _this = this;
+			if (this.session != null) {
+				this.session.sendMessage( this.MESSAGE_NAMESPACE, message, this.onMsgSuccess.bind(this,
+					'Message sent: ' + message), this.onMsgError);
+			}
+		},
+
+		onMsgSuccess: function(message) {
+			this.log(message);
+		},
+
+		onMsgError: function(message) {
+			this.log(message);
 		}
+
 	}));
 } )( window.mw, window.jQuery );
