@@ -570,7 +570,7 @@ DAL for Q&A Module
                     'filter:advancedSearch:items:item2:value': "AnswerOnAir"
                 };
 
-                var lastUpdatedAt = _this.lastUpdateTime + 1;
+                var lastUpdatedAt = _this.lastUpdateTime;
                 // Only add lastUpdatedAt filter if any cue points already received
                 if (lastUpdatedAt > 0) {
                     request['filter:updatedAtGreaterThanOrEqual'] = lastUpdatedAt;
