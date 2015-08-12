@@ -763,8 +763,8 @@
 			var deferred = $.Deferred();
 			var originalSrc = this.mediaElement.selectedSource.getSrc();
 			if (this.isHlsSource(this.mediaElement.selectedSource)) {
-                // add timeAlignedRenditions indicator (Live HLS only)
-                if( this.isLive() ) {
+                // add timeAlignedRenditions indicator (Kaltura Live HLS only)
+                if( this.isLive() &&  mw.getConfig('isLiveKalturaHLS') ) {
                     originalSrc = originalSrc + "&timeAlignedRenditions=true";
                 }
 
@@ -806,10 +806,6 @@
 				+ ksString + "/uiConfId/" + this.kuiconfid + this.getPlaymanifestArg("referrerSig", "referrerSig")
 				+ this.getPlaymanifestArg("tags", "flavorTags") + "/a/a." + fileExt + "?referrer=" + this.b64Referrer;
 
-            // add timeAlignedRenditions indicator in the case of HLS
-            if ( this.isLive() && this.isHlsSource(this.mediaElement.selectedSource) ) {
-                srcUrl = srcUrl + "&timeAlignedRenditions=true";
-            }
             if (srcUrl.indexOf("&seekFrom=") !== -1) {
 				srcUrl = srcUrl.substr(0, srcUrl.indexOf("&seekFrom="));
 			}

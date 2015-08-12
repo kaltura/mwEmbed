@@ -282,6 +282,7 @@ mw.KWidgetSupport.prototype = {
 			(playerData.meta.sourceType === "32" ||
 			playerData.meta.sourceType === "33") ){
 			mw.setConfig("LeadWithHLSOnFlash",true);
+            mw.setConfig("isLiveKalturaHLS",true);
 		}
 
 		var legacyMulticastSource = this.getLegacyLiveMulticastSource(playerData);
