@@ -24,11 +24,12 @@
         showResultOnAnswer: false,
         canDownloadQuestions: '',
         canSkip: null,
-        showTotalScore: '',
+        showTotalScore:null,
         score: null,
         sliceArray: [],
         hexPosContainerPos:0,
         isSeekingIVQ:false,
+        bubbleClick:false,
 
         setup: function () {
             var _this = this,quizStatus;
@@ -92,6 +93,12 @@
                     _this._getQuestionCpAPI(_this._populateCpObject);
                     });
                 }
+                if (_this.state == 'deleted') {
+                    _this._showDeletedScreen()
+                } else {
+                    _this._showWelcomeScreen();
+                }
+
             });
             this.addBindings();
         },
@@ -114,21 +121,26 @@
                     if (embedPlayer.autoplay) {
                         embedPlayer.sendNotification('doStop');
                     }
-                    if (_this.state == 'deleted') {
-                        _this._showDeletedScreen()
-                    } else {
-                        _this._showWelcomeScreen();
-                    }
+                    //if (_this.state == 'deleted') {
+                    //    _this._showDeletedScreen()
+                    //} else {
+                    //    _this._showWelcomeScreen();
+                    //}
                 });
             });
 
             this.bind('KalturaSupport_CuePointReached', function (e, cuePointObj) {
                 if(!_this.isSeekingIVQ)
                 _this.qCuePointHandler(e, cuePointObj);
+
            });
 
             this.bind('showScreen', function () {
                 embedPlayer.disablePlayControls()
+            });
+
+            this.bind('onplay', function () {
+               _this.displayBubbles();
             });
 
             this.bind('seeked', function () {
@@ -163,8 +175,11 @@
             var _this = this;
             $.grep($.quizParams.uiAttributes, function (e) {
 
+                if (e.key == "showTotalScore") {
+                    _this.showTotalScore = (e.value ==='true') ;
+                }
                 if (e.key == "canSkip") {
-                    _this.canSkip = (e.value) ;
+                    _this.canSkip = (e.value ==='true') ;
                 }
             });
         },
@@ -203,8 +218,9 @@
                 });
         },
         _gotoScrubberPos: function (questionNr) {
-            var kdp = this.getPlayer();
-            kdp.sendNotification('doSeek', ($.cpObject.cpArray[questionNr].startTime) / 900);
+            var player = this.getPlayer();
+        //    player.sendNotification('doSeek', ($.cpObject.cpArray[questionNr].startTime) / 900);
+            player.sendNotification('doSeek', ($.cpObject.cpArray[questionNr].startTime) / 900);
         },
         qCuePointHandler: function (e, cuePointObj) {
             var _this = this;
@@ -273,7 +289,7 @@
                     console.log('Error add question')
                 }
 
-                $(this).delay(2000).fadeOut(function () {
+                $(this).delay(1800).fadeOut(function () {
                     if (_this.isScreenVisible()) _this.removeScreen();
                     _this.checkIfDone(questionNr)
                 });
@@ -312,13 +328,12 @@
         },
         _addAnswerAPI: function (questionNr, quizSetAnswer) {
             var _this = this;
-            //_this.getKClient().doRequest(quizSetAnswer, function (data) {
-            new kWidget.api({'wid': _this.getKClient().wid}).doRequest(quizSetAnswer, function (data) {
+            _this.getKClient().doRequest(quizSetAnswer, function (data) {
+           // new kWidget.api({'wid': _this.getKClient().wid}).doRequest(quizSetAnswer, function (data) {
                 if (data.objectType){
                     console.log('Add Update answer err -->', data.code, data.message);
                     return false
                 }
-
                 $.cpObject.cpArray[_this.q2i(questionNr)].isCorrect = data.isCorrect;
                 $.cpObject.cpArray[_this.q2i(questionNr)].explanation = data.explenation;
                 $.cpObject.cpArray[_this.q2i(questionNr)].correctAnswerKeys = data.correctAnswerKeys;
@@ -327,7 +342,7 @@
             return true
         },
         almostDone: function (unAnswerdArr) {
-            var _this = this;
+            var _this = this,player = _this.getPlayer();
             _this.removeShowScreen("contentScreen");
             $("div").removeClass('confirm-box');
             $(".title-text").html("Almost Done");
@@ -339,7 +354,9 @@
 
             $(document).on('click', '.q-box', function () {
                 var selectQ = $(this).attr('id');
+                player.enablePlayControls();
                 _this._gotoScrubberPos(selectQ);
+                _this.setCurrentQuestion(selectQ);
             });
         },
         checkIfDone: function (questionNr) {
@@ -347,6 +364,7 @@
             if (_this.score !=null) {
                 _this._submitted(_this.score);
             } else {
+
                 if ($.isEmptyObject($.grep($.cpObject.cpArray, function (el) {
                         return el.isAnswerd === false
                     }))) {
@@ -438,7 +456,6 @@
                                 return ++questionNr;
                             }
                         }
-
                         _this.setCurrentQuestion(nextQuestionNr(questionNr));
                     });
                 }
@@ -449,6 +466,10 @@
                 if (_this.canSkip) {
                     $(".ftr-right").html("SKIP FOR NOW").on('click', function () {
                         _this.checkIfDone(questionNr);
+                    });
+                }else if(!_this.canSkip && $.cpObject.cpArray[questionNr].isAnswerd ){
+                    $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {
+                        _this.continuePlay()
                     });
                 }
             }
@@ -466,9 +487,13 @@
                 this.currentQuestionNumber = $(this).attr('id');
                 _this.setCurrentQuestion(this.currentQuestionNumber);
             });
-            $(".confirm-box").html("Submit");
-            $(document).on('click', '.confirm-box', function () {
+            $(".confirm-box").html("Submit")
+            $('.confirm-box').on('click', function () {
+                $(this).off('click')
+                $(this).html("Please Wait")
+
                 _this._submitQuizApi();
+
             });
         },
         _submitQuizApi: function () {
@@ -483,8 +508,15 @@
                 console.log('Submit Quiz err -->',data.code, data.message);
                 return false
             }
+                setTimeout(function () {
+                    _this._getQuestionCpAPI(_this._populateCpObject)
+
+                }, 0);
                 _this.score = data.score;
-                _this._submitted(data.score);
+                setTimeout(function () {
+                    _this._submitted(data.score);
+                },2500);
+
             });
         },
         _submitted: function (score) {
@@ -492,23 +524,31 @@
             var cPo = $.cpObject.cpArray;
             _this.removeShowScreen("hexScreen");
             $(".title-text").html("Submitted");
-            if (!$.quizParams.showCorrectAfterSubmission) {
-                $(".sub-text").html("you completed the quiz, your score is " + score + " ");
-            } else {
-                if ($.isEmptyObject(_this.sliceArray)) {
-                    _this.sliceArray = _this.buildSliceArr(4);
+
+            if (_this.showTotalScore){
+                if (!$.quizParams.showCorrectAfterSubmission) {
+
+                    $(".sub-text").html("You completed the quiz, your score is " + score + " ");
+
+                } else {
+                    if ($.isEmptyObject(_this.sliceArray)) {
+                        _this.sliceArray = _this.buildSliceArr(4);
+                    }
+                    $(".sub-text").html("you completed the quiz, your score is " + score + " press any question to review submission ");
+                    _this.displayHex(_this.setHexContainerPos("current"));
+                    $(document).on('click', '.q-box', function () {
+                        _this.removeShowScreen("reviewAnswer");
+                        _this.reviewAnswer($(this).attr('id'));
+                    });
+                    $(document).on('click', '.q-box-false', function () {
+                        _this.removeShowScreen("reviewAnswer");
+                        _this.reviewAnswer($(this).attr('id'));
+                    });
                 }
-                $(".sub-text").html("you completed the quiz, your score is " + score + " press any question to review submission ");
-                _this.displayHex(_this.setHexContainerPos("current"));
-                     $(document).on('click', '.q-box', function () {
-                         _this.removeShowScreen("reviewAnswer");
-                         _this.reviewAnswer($(this).attr('id'));
-                     });
-                     $(document).on('click', '.q-box-false', function () {
-                         _this.removeShowScreen("reviewAnswer");
-                         _this.reviewAnswer($(this).attr('id'));
-                     });
+            }else{
+                $(".sub-text").html("You completed the quiz");
             }
+
             $(".confirm-box").html("Ok")
                 .on('click', function () {
                     _this.removeShowScreen("contentScreen");
@@ -537,10 +577,10 @@
 
             $(".correctAnswer").html(function () {
                 if (!$.isEmptyObject($.cpObject.cpArray[selectedQuestion].correctAnswerKeys)) {
+
                     return $.cpObject.cpArray[selectedQuestion]
                             .answeres[
-                                $.cpObject.cpArray[selectedQuestion]
-                                .correctAnswerKeys[0].value
+                                _this.q2i($.cpObject.cpArray[selectedQuestion].correctAnswerKeys[0].value)
                              ];
                 }
                 else {return "not defined"}
@@ -576,8 +616,6 @@
                             console.log('Get CP question or answer err -->', e.code, e.message);
                         }
                     });
-                //var scrubber = embedPlayer.getInterface().find(".scrubber");
-                //scrubber.append('<div id="tooltip" style="width: 20px; height: 40px; background-color: red; position: absolute; margin-top: -40px; margin-left: 50px"></div>')
                 callback(data);
             });
         },
@@ -627,15 +665,15 @@
                 });
             }
             $.cpObject.cpArray = cpArray;
+            console.log("cpArray->");
+            console.log($.cpObject.cpArray);
         },
         removeShowScreen:function(state){
-            var _this = this,player = _this.getPlayer();;
+            var _this = this,player = _this.getPlayer();
             _this.removeScreen();
             player.pause();
             _this.state = state;
             _this.showScreen();
-
-
         },
         i2q: function (i) {
             return parseInt(i) + 1;
@@ -744,6 +782,40 @@
                     _this._addHexLeftArrow();
                 }
             }
+        },
+        displayBubbles:function(){
+            var embedPlayer = this.embedPlayer;
+            var scrubber = embedPlayer.getInterface().find(".scrubber");
+            var _this = this;
+            var cPo = $.cpObject.cpArray;
+            var displayClass;
+
+            _this.bubbleClick = false;
+
+            embedPlayer.getInterface().find(".bubble-cont").empty().remove();
+            embedPlayer.getInterface().find(".bubble").empty().remove();
+
+            scrubber.parent().prepend('<div class="bubble-cont"></div>');
+
+                $.each(cPo, function (key, val) {
+
+                    displayClass = val.isAnswerd ? "bubble bubble-ans" : "bubble bubble-un-ans";
+                    var pos = Math.round(((val.startTime/_this.entryData.msDuration)*100) * 10)/10;
+                        $('.bubble-cont').append($('<div id ="' + key + '" style="margin-left:' + pos + '%">' +
+                        _this.i2q(key) + ' </div>')
+                            .addClass(displayClass));
+
+                  })
+                //};
+                    //$('.tooltip').on('click', function () {
+                    //  _this.bubbleClick = true;
+                    // _this.getPlayer().pause();
+                    //  _this._gotoScrubberPos($(this).attr('id'));
+                    //console.log(($(this).attr('id'))+'  onclick==============================================');
+                   // });
+
         }
+
+
     }));
 })(window.mw, window.jQuery);

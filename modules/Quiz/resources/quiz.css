@@ -371,8 +371,11 @@ vertical-align: middle;
 
 }
 .yourAnswer{
+    font-family: "LatoLight";
+    font-weight: 300;
+    transform: scaleY(1.0009)
     color: white;
-    font-size: 3vw;
+    font-size: 2.4vw;
     margin-top: 1vw;
 }
 
@@ -487,5 +490,38 @@ ol.second-row{
 }
 .display-content{
 
+
+}
+
+.bubble{
+    position: fixed;
+    width: 3vw;
+    height: 3vw;
+    text-align: center;
+    font-size: 1vw;
+    /* padding-top: 2vh; */
+
+    background-size: 100% 100%;
+     z-index: 999;
+    line-height: 3vw;
+}
+.bubble-cont{
+    margin-top: -9px;
+    position: absolute;
+}
+.bubble-un-ans{
+    color: black;
+     background-image: url(bubble-un-ans.png);
+ }
+.bubble-ans{
+    color: white;
+    background-image: url(bubble-ans.png);
+
+}
+.bubble-un-ans:hover{
+    background-image: url(bubble-un-ans-h.png);
+}
+.bubble-ans:hover{
+    background-image: url(bubble-ans-h.png);
 
 }
