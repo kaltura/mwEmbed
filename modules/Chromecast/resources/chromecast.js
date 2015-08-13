@@ -37,6 +37,7 @@
 		session: null,
 		request: null,
 		updateInterval: null,
+		autoPlay: true,
 
 		monitorInterval: null,
 
@@ -248,8 +249,9 @@
 					}
 					// update media duration for durationLable component
 					_this.embedPlayer.mediaLoaded(_this.currentMediaSession);
-					// play media
-					_this.embedPlayer.play();
+					if (_this.autoPlay){
+						_this.embedPlayer.play();
+					}
 					$(_this.embedPlayer).html(_this.getPlayingScreen());
 					$(".chromecastThumb").load(function(){
 						setTimeout(function(){
@@ -357,7 +359,9 @@
 				//this.session = null;
 				// make sure we are still on Chromecast player since session will be lost when returning to the native player as well
 				if ( this.getPlayer().instanceOf === "Chromecast" && this.currentMediaSession.idleReason === "FINISHED" ){
-					this.embedPlayer.clipDone();
+					this.embedPlayer.clipDone(); // trigger clipDone
+					this.autoPlay = false;       // set autoPlay to false for rewind
+					this.loadMedia();            // reload the media for rewind
 				}
 			}
 		},
@@ -441,11 +445,11 @@
 		},
 
 		onStopAppSuccess: function() {
-			this.log('Session stopped');
+			console.log("Chromecast: Session stopped");
 		},
 
 		onMediaError: function(e) {
-			this.log("media error: "+ e.code);
+			console.log("Chromecast: media error: "+ e.code);
 		},
 
 		receiverListener: function(e) {
@@ -466,8 +470,8 @@
 			});
 		},
 
-		onError: function() {
-			this.log("error");
+		onError: function(e) {
+			console.log("Chromecast: Error. code: " + e.code + ", description: " + e.description);
 		},
 
 		getChromecastSource: function(){
