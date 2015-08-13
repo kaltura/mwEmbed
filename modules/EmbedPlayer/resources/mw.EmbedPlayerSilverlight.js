@@ -172,6 +172,12 @@
 			} else {
 				index = (index + 1) % this._availableMulticastManifests.length;
 				this.multiastServerUrl = this._availableMulticastManifests[index];
+
+				//connect KES with https instead of http when page is https
+				if (window.location.protocol === "https:" &&
+					this.multiastServerUrl.indexOf("http://")===0) {
+					this.multiastServerUrl=this.multiastServerUrl.replace("http://","https://");
+				}
 				mw.log('selectNextKES selected ' + this.multiastServerUrl);
 			}
 
