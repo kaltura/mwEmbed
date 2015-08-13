@@ -25,7 +25,8 @@
 			'applicationID': "46509854", //"DB6462E9", // 46509854
 			'showTooltip': true,
 			'tooltip': 'Chromecast',
-			'debugReceiver': false
+			'debugReceiver': false,
+			'receiverLogo': false
 		},
 		isDisabled: false,
 
@@ -258,6 +259,10 @@
 							_this.setPlayingScreen();
 						},0);
 					});
+					// hide kaltura logo
+					if ( _this.getConfig("receiverLogo") ){
+						_this.sendMessage({'type': 'hide', 'target': 'logo'});
+					}
 				},300);
 				if (_this.monitorInterval !== null){
 					clearInterval(_this.monitorInterval);
@@ -402,6 +407,10 @@
 			// set receiver debug if needed
 			if ( this.getConfig("debugReceiver") ){
 				this.sendMessage({'type': 'show', 'target': 'debug'});
+			}
+			// set kaltura logo if needed
+			if ( this.getConfig("receiverLogo") ){
+				this.sendMessage({'type': 'show', 'target': 'logo'});
 			}
 			this.session.loadMedia(this.request, 
 				_this.onMediaDiscovered.bind(this, 'loadMedia'), 

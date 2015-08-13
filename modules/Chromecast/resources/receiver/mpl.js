@@ -306,13 +306,17 @@ onload = function() {
     if (payload['type'] === 'show') {
       if (payload['target'] === 'debug') {
         document.getElementById('messages').style.display = 'block';
-      } else {
-        document.getElementById('receiverVideoElement').style.display = 'block';
+      } if (payload['target'] === 'logo') {
+		    document.getElementById('logo').style.display = 'block';
+	    } else {
+            document.getElementById('receiverVideoElement').style.display = 'block';
       }
     } else if (payload['type'] === 'hide') {
       if (payload['target'] === 'debug') {
         document.getElementById('messages').style.display = 'none';
-      } else {
+      } if (payload['target'] === 'logo') {
+		    document.getElementById('logo').style.opacity = 0;
+	    } else {
         document.getElementById('receiverVideoElement').style.display = 'none';
       }
     } else if (payload['type'] === 'ENABLE_CC') {
