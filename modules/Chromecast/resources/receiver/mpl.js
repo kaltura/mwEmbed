@@ -40,7 +40,7 @@ var mediaPlayer = null;  // an instance of cast.player.api.Player
  */
 onload = function() {
   mediaElement = document.getElementById('receiverVideoElement');
-  mediaElement.autoplay = true;
+  mediaElement.autoplay = false;
 
   /**
   play – The process of play has started
@@ -689,16 +689,22 @@ onload = function() {
       console.log('### Media Protocol Identified as ' + ext);
       setDebugMessage('mediaProtocol', ext);
 
-      // Advanced Playback - HLS, MPEG DASH, SMOOTH STREAMING
-      // Player registers to listen to the media element events through the
-      // mediaHost property of the  mediaElement
-      mediaPlayer = new cast.player.api.Player(mediaHost);
-      if (liveStreaming) {
-        mediaPlayer.load(protocol, Infinity);
-      }
-      else {
-        mediaPlayer.load(protocol, initialTimeIndexSeconds);
-      }
+
+    if (protocol === null) {
+	    // Call on original handler
+	    mediaManager['onLoadOrig'](event); // Call on the original callback
+    } else {
+	    // Advanced Playback - HLS, MPEG DASH, SMOOTH STREAMING
+	    // Player registers to listen to the media element events through the
+	    // mediaHost property of the  mediaElement
+	    mediaPlayer = new cast.player.api.Player(mediaHost);
+	    if (liveStreaming) {
+		    mediaPlayer.load(protocol, Infinity);
+	    }
+	    else {
+		    mediaPlayer.load(protocol, initialTimeIndexSeconds);
+	    }
+    }
       setDebugMessage('mediaHostState', 'success');
     }
   };
