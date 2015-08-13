@@ -97,20 +97,42 @@ mw.AdLoader = {
 	 * 		The type of string
 	 */
 	getAdFormat: function( xmlObject ){
-		if(xmlObject &&  xmlObject.childNodes ){
-			var rootNodeName = xmlObject.childNodes[0].nodeName;
+		if ( xmlObject && xmlObject.childNodes ) {
+			var childNodes = xmlObject.childNodes, node, nodeNameLC;
 
-			//ie8 get the xml as node in the xml
-			if (rootNodeName && rootNodeName.toLowerCase() == "xml" && xmlObject.childNodes[1]){
-				rootNodeName =   xmlObject.childNodes[1].nodeName;
+			// Loop over all child nodes searching for the first element node
+			for ( var i = 0, iMax = childNodes.length; i < iMax; i++ ) {
+				node = xmlObject.childNodes[i];
+
+				// Check if the node is an element
+				if ( node.nodeType === 1 ) {
+
+					// Lower-case nodeName for string checking
+					nodeNameLC = node.nodeName.toLowerCase();
+
+					// Catch special case -
+					// If the node name is XML, assume it is the XML header,
+					// continue onto checking the next element
+					if ( nodeNameLC === "xml" && i < iMax-1 ) {
+						continue;
+					}
+
+					// Check if the node is the required vast type node
+					if ( nodeNameLC === 'vast' ||
+							nodeNameLC === 'videoadservingtemplate' ) {
+
+						// Success, the first element is a Vast element
+						return 'vast';
+					}
+					else {
+						// The First Element was not a Vast Element,
+						break;
+					}
+				}
 			}
 		}
-		if( rootNodeName && (
-				rootNodeName.toLowerCase() == 'vast' ||
-				rootNodeName.toLowerCase() == 'videoadservingtemplate' )
-		){
-			return 'vast';
-		}
+
+		// Catch-all
 		return 'unknown';
 	},
 
