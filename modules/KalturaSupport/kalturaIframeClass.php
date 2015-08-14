@@ -937,7 +937,7 @@ HTML;
 				// check for returned errors: 
 				echo json_encode( $payload );
 			?>;
-			var isIE8 = /msie 8/.test(navigator.userAgent.toLowerCase());
+			var isIE8 = document.documentMode === 8;
 		</script>
 		<script type="text/javascript">
 			<!-- Include the mwEmbedStartup script inline will initialize the resource loader -->
