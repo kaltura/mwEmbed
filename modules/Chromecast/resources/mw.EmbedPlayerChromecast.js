@@ -98,10 +98,10 @@
 			return this.vid;
 		},
 
-		seek: function(percentage) {
-			mw.log("seek "+percentage);
+		seek: function(position) {
+			mw.log("seek to "+position);
 			this.seeking = true;
-			$(this).trigger("chromecastSeek", [percentage * 100]);
+			$(this).trigger("chromecastSeek", [position / this.vid.duration * 100]);
 			$(this.vid).trigger("seek");
 		},
 
