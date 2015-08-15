@@ -282,6 +282,8 @@
 		fallbackToUnicast: function () {
 			var _this = this;
 
+			this.isError = true;
+
             if ( this.playerObject ) {
                 this.playerObject.stop();
             }
@@ -320,6 +322,12 @@
 							_this.handleMulticastPlayManifest(result, doEmbedFunc);
 						} else {
 							doEmbedFunc(result);
+						}
+					},
+					function() { //play manifest retunred error
+						if (_this.isMulticast) {
+							mw.log("got error from resolveSrcURL doing fallbackToUnicast");
+							_this.fallbackToUnicast();
 						}
 					});
 				}
@@ -436,7 +444,6 @@
 					_this.isError = false;
 					setTimeout( function () {
 						if ( !_this.gotFirstMulticastFrame ) {
-							_this.isError = true;
 							_this.fallbackToUnicast();
 						}
 					} , timeout );
