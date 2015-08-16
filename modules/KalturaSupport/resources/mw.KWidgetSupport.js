@@ -1589,8 +1589,7 @@ mw.KWidgetSupport.prototype = {
 		if( mw.getConfig('Kaltura.UseFlavorIdsUrls') && !$.isEmptyObject(flavorDrmData)) {
 			var validClipAspect = this.getValidAspect(deviceSources);
 			//Only add mpeg dash CENC on the fly if dash sources exist
-			dashAdaptiveFlavors = "1_dh9dzimj,1_n5xfjlf4,1_9dqrjeoe,1_hh7m52c5,1_d48l5epv,1_ly57kn1p,1_t8lhrw1n,1_wse0g16o".split(",");
-			if (1||dashAdaptiveFlavors.length) {
+			if (dashAdaptiveFlavors.length) {
 				var dashSource = this.generateAbrSource({
 					entryId: asset.entryId,
 					flavorUrl: flavorUrl,
