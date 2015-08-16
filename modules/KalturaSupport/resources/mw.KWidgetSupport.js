@@ -1577,33 +1577,36 @@ mw.KWidgetSupport.prototype = {
 				deviceSources.push(hlsSource);
 				addedHlsStream = true;
 
-				var dashSource = this.generateAbrSource({
-					entryId: asset.entryId,
-					flavorUrl: flavorUrl,
-					flavorId: (lowResolutionDevice ? 'mpdLow' : 'mpdHigh'),
-					type: 'application/dash+xml',
-					flavors: targetFlavors,
-					format: "mpegdash",
-					ext: "mpd",
-					protocol: protocol,
-					clipAspect: validClipAspect
-				});
-				this.attachFlavorAssetDrmData(dashSource, assetId, flavorDrmData);
-				deviceSources.push(dashSource);
+				//Only support ABR on-the-fly for DRM protected entries
+				if (!$.isEmptyObject(flavorDrmData)) {
+					var dashSource = this.generateAbrSource({
+						entryId: asset.entryId,
+						flavorUrl: flavorUrl,
+						flavorId: (lowResolutionDevice ? 'mpdLow' : 'mpdHigh'),
+						type: 'application/dash+xml',
+						flavors: targetFlavors,
+						format: "mpegdash",
+						ext: "mpd",
+						protocol: protocol,
+						clipAspect: validClipAspect
+					});
+					this.attachFlavorAssetDrmData(dashSource, assetId, flavorDrmData);
+					deviceSources.push(dashSource);
 
-				var ismSource = this.generateAbrSource({
-					entryId: asset.entryId,
-					flavorUrl: flavorUrl,
-					flavorId: "ism",
-					type: 'video/playreadySmooth',
-					flavors: targetFlavors,
-					format: "sl",
-					ext: "ism",
-					protocol: protocol,
-					clipAspect: validClipAspect
-				});
-				this.attachFlavorAssetDrmData(ismSource, assetId, flavorDrmData);
-				deviceSources.push(ismSource);
+					var ismSource = this.generateAbrSource({
+						entryId: asset.entryId,
+						flavorUrl: flavorUrl,
+						flavorId: "ism",
+						type: 'video/playreadySmooth',
+						flavors: targetFlavors,
+						format: "sl",
+						ext: "ism",
+						protocol: protocol,
+						clipAspect: validClipAspect
+					});
+					this.attachFlavorAssetDrmData(ismSource, assetId, flavorDrmData);
+					deviceSources.push(ismSource);
+				}
 			}
 		}
 		this.removedAdaptiveFlavors = false;
