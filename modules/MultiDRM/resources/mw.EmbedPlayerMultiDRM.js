@@ -183,10 +183,7 @@
 					_this.getNativePlayerHtml()
 				);
 
-				this.initDashPlayer();
-				this.updateDashContext();
-				// Directly run postEmbedActions ( if playerElement is not available it will retry )
-				this.postEmbedActions();
+				this.initDashPlayer(this.postEmbedActions.bind(this));
 			}
 
 		},
@@ -212,8 +209,11 @@
 					el.attr('data-src', _this.getSrc());
 					//Set schedule while paused to true to allow buffering when in paused state
 					_this.playerElement.mediaPlayer.setScheduleWhilePaused(true);
+					//Continue only after manifest loaded event has been dispatched
+					this.one("manifestLoaded", function(){
+						callback();
+					});
 					_this.updateDashContext();
-					callback();
 				} );
 				this.bindHelper('switchAudioTrack', function (e, data) {
 					if (_this.getPlayerElement()) {
@@ -751,29 +751,29 @@
 						}
 					}
 
+					this.playerElement.one("manifestLoaded", function(){
+						// issue the play request:
+						vid.play();
+						if (mw.isIOS()) {
+							setTimeout(function () {
+								handleSwitchCallback();
+							}, 100);
+						}
+						// check if ready state is loading or doing anything ( iOS play restriction )
+						// give iOS 5 seconds to ~start~ loading media
+						setTimeout(function () {
+							// Check that the player got out of readyState 0
+							if (vid.readyState === 0 && $.isFunction(switchCallback) && !_this.canAutoPlay()) {
+								_this.log(" Error: possible play without user click gesture, issue callback");
+								// hand off to the swtich callback method.
+								handleSwitchCallback();
+								// make sure we are in a pause state ( failed to change and play media );
+								_this.pause();
+							}
+						}, 10000);
+					});
 					//Update dash player context
 					this.updateDashContext();
-					// issue the play request:
-					vid.play();
-					if (mw.isIOS()) {
-						setTimeout(function () {
-							handleSwitchCallback();
-						}, 100);
-					}
-					// check if ready state is loading or doing anything ( iOS play restriction )
-					// give iOS 5 seconds to ~start~ loading media
-					setTimeout(function () {
-						// Check that the player got out of readyState 0
-						if (vid.readyState === 0 && $.isFunction(switchCallback) && !_this.canAutoPlay()) {
-							_this.log(" Error: possible play without user click gesture, issue callback");
-							// hand off to the swtich callback method.
-							handleSwitchCallback();
-							// make sure we are in a pause state ( failed to change and play media );
-							_this.pause();
-						}
-					}, 10000);
-
-
 				} catch (e) {
 					this.log("Error: switching source playback failed");
 				}
