@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Chromecast Demo</title>
+	<title>Chromecast DRM support</title>
 	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
 	<script>mw.setConfig('forceMobileHTML5', true);</script>
 </head>
 <body>
-	<h1>Chromecast Demo</h1>
+	<h1>Chromecast DRM support</h1>
 	<div id="kaltura_player" style="width: 460px; height: 260px;float: left;"></div>
 	<br style="clear: both;" /><br />
 <script>
@@ -20,6 +20,7 @@
 		'flashvars': {
 			'chromecast': {
 				'plugin': true,
+				'applicationID': '46509854',
 				'receiverLogo': true,
 				'debugReceiver': false
 			},

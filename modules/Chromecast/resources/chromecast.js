@@ -22,7 +22,7 @@
 			'order': 7,
 			'visible': false,
 			'align': "right",
-			'applicationID': "46509854", // DB6462E9: Chromecast default receiver, 46509854: Kaltura custom receiver supporting DRM, HLS and smooth streaming
+			'applicationID': "DB6462E9", // DB6462E9: Chromecast default receiver, 46509854: Kaltura custom receiver supporting DRM, HLS and smooth streaming
 			'showTooltip': true,
 			'tooltip': 'Chromecast',
 			'debugReceiver': false,
@@ -178,7 +178,7 @@
 
 		initializeCastApi: function() {
 			var _this = this;
-			var sessionRequest = new chrome.cast.SessionRequest(this.getConfig("applicationID")); // 'Castv2Player'
+			var sessionRequest = new chrome.cast.SessionRequest(this.getConfig("applicationID").toString()); // 'Castv2Player'
 			var apiConfig = new chrome.cast.ApiConfig(sessionRequest,
 				function(event){
 					_this.sessionListener(event);
