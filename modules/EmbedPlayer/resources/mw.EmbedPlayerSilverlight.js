@@ -373,12 +373,12 @@
 						flashvars.preload = "none";
 						var licenseBaseUrl = mw.getConfig('Kaltura.UdrmServerURL');
 						if (!licenseBaseUrl) {
-							this.log('Error:: failed to retrieve playready UDRM license URL ');
+							_this.log('Error:: failed to retrieve playready UDRM license URL ');
 						}
 						//TODO: error handling in case of error
 						var licenseData = _this.mediaElement.getLicenseUriComponent();
 						if (!licenseData) {
-							this.log('Error:: failed to retrieve playready UDRM license data ');
+							_this.log('Error:: failed to retrieve playready UDRM license data ');
 						}
 						//Concat all URL parts
 						var licenseUrl = licenseBaseUrl + "/playready/license?" + licenseData;
