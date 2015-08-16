@@ -1343,6 +1343,7 @@ mw.KWidgetSupport.prototype = {
 		// Setup the src defines
 		var ipadAdaptiveFlavors = [];
 		var iphoneAdaptiveFlavors = [];
+		var dashAdaptiveFlavors = [];
 
 		// Setup flavorUrl
 		var flavorUrl = _this.getBaseFlavorUrl(partnerId);
@@ -1534,6 +1535,11 @@ mw.KWidgetSupport.prototype = {
 				ipadAdaptiveFlavors.push( asset.id );
 				iphoneAdaptiveFlavors.push( asset.id );
 			}
+
+			// Add DASH flavor to DASH flavor Ids list
+			if( $.inArray( 'dash', tags ) != -1 ){
+				dashAdaptiveFlavors.push( asset.id );
+			}
 		} // end source loop
 
 		// Make sure all the sources have valid aspect ratios ( if not get from other sources )
@@ -1576,39 +1582,50 @@ mw.KWidgetSupport.prototype = {
 				});
 				deviceSources.push(hlsSource);
 				addedHlsStream = true;
-
-				//Only support ABR on-the-fly for DRM protected entries
-				if (!$.isEmptyObject(flavorDrmData)) {
-					var dashSource = this.generateAbrSource({
-						entryId: asset.entryId,
-						flavorUrl: flavorUrl,
-						flavorId: (lowResolutionDevice ? 'mpdLow' : 'mpdHigh'),
-						type: 'application/dash+xml',
-						flavors: targetFlavors,
-						format: "mpegdash",
-						ext: "mpd",
-						protocol: protocol,
-						clipAspect: validClipAspect
-					});
-					this.attachFlavorAssetDrmData(dashSource, assetId, flavorDrmData);
-					deviceSources.push(dashSource);
-
-					var ismSource = this.generateAbrSource({
-						entryId: asset.entryId,
-						flavorUrl: flavorUrl,
-						flavorId: "ism",
-						type: 'video/playreadySmooth',
-						flavors: targetFlavors,
-						format: "sl",
-						ext: "ism",
-						protocol: protocol,
-						clipAspect: validClipAspect
-					});
-					this.attachFlavorAssetDrmData(ismSource, assetId, flavorDrmData);
-					deviceSources.push(ismSource);
-				}
 			}
 		}
+
+		//Only support ABR on-the-fly for DRM protected entries
+		if( mw.getConfig('Kaltura.UseFlavorIdsUrls') && !$.isEmptyObject(flavorDrmData)) {
+			var validClipAspect = this.getValidAspect(deviceSources);
+			//Only add mpeg dash CENC on the fly if dash sources exist
+			dashAdaptiveFlavors = "1_dh9dzimj,1_n5xfjlf4,1_9dqrjeoe,1_hh7m52c5,1_d48l5epv,1_ly57kn1p,1_t8lhrw1n,1_wse0g16o".split(",");
+			if (1||dashAdaptiveFlavors.length) {
+				var dashSource = this.generateAbrSource({
+					entryId: asset.entryId,
+					flavorUrl: flavorUrl,
+					flavorId: 'mpd',
+					type: 'application/dash+xml',
+					flavors: dashAdaptiveFlavors,
+					format: "mpegdash",
+					ext: "mpd",
+					protocol: "http",
+					clipAspect: validClipAspect
+				});
+				this.attachFlavorAssetDrmData(dashSource, dashAdaptiveFlavors[0], flavorDrmData);
+				deviceSources.push(dashSource);
+			}
+			//Only add playready on the fly if pre-encrypted doesn't exist
+			if ((iphoneAdaptiveFlavors.length || ipadAdaptiveFlavors.length) &&
+				this.getSourceByAttribute(deviceSources, "type", "video/playreadySmooth").length === 0) {
+				var targetFlavors = ipadAdaptiveFlavors.length ? ipadAdaptiveFlavors : iphoneAdaptiveFlavors;
+				var assetId = targetFlavors[0];
+				var ismSource = this.generateAbrSource({
+					entryId: asset.entryId,
+					flavorUrl: flavorUrl,
+					flavorId: "ism",
+					type: 'video/playreadySmooth',
+					flavors: targetFlavors,
+					format: "sl",
+					ext: "ism",
+					protocol: "http",
+					clipAspect: validClipAspect
+				});
+				this.attachFlavorAssetDrmData(ismSource, assetId, flavorDrmData);
+				deviceSources.push(ismSource);
+			}
+		}
+
 		this.removedAdaptiveFlavors = false;
 		// Apple adaptive streaming is broken for short videos
 		// remove adaptive sources if duration is less then 10 seconds,
@@ -1714,6 +1731,13 @@ mw.KWidgetSupport.prototype = {
 			drmData.contenId = assetDrmData.contentId;
 		}
 		return drmData;
+	},
+	getSourceByAttribute: function(source, attribute, value){
+		return $.grep(source, function( a ){
+			if( a[attribute] == value ){
+				return true;
+			}
+		});
 	},
 	/**
 	 *  "/" and "+" are valid base64 chars. They might break playmanifest URL so we replace them to "_" and "-" accordingly.
