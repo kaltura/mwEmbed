@@ -5,14 +5,6 @@
 		var chromecastSupportedProtocols = ['video/mp4'];
 		var chromecastPlayer = new mw.MediaPlayer( 'chromecast', chromecastSupportedProtocols, 'Chromecast' );
 		mediaPlayers.addPlayer( chromecastPlayer );
-		// add 
-		$.each( chromecastSupportedProtocols, function(inx, mimeType){
-			if( mediaPlayers.defaultPlayers[ mimeType ] ){
-				mediaPlayers.defaultPlayers[ mimeType ].push( 'Chromecast' );
-				return true;
-			}
-			mediaPlayers.defaultPlayers[ mimeType ] = ['Chromecast'];
-		});
 	});
 
 	mw.PluginManager.add( 'chromecast', mw.KBaseComponent.extend({
@@ -488,10 +480,11 @@
 			var sources = this.embedPlayer.mediaElement.sources;
 			var videoSize = 0;
 			var newSource = null;
+			var supportedMimeTypes = ['video/mp4', 'application/dash+xml', 'application/vnd.apple.mpegurl'];
 			var i = 0;
 			for ( i=0 ; i < sources.length; i++){
 				var source = sources[i];
-				if ((source.mimeType === 'video/mp4' || source.mimeType === 'application/dash+xml') && parseInt(source.sizebytes) > videoSize){
+				if ($.inArray(source.mimeType, supportedMimeTypes) !== -1 && parseInt(source.sizebytes) > videoSize){
 					newSource = source;
 					videoSize = parseInt(newSource.sizebytes);
 				}
