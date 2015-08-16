@@ -278,6 +278,13 @@ mw.KWidgetSupport.prototype = {
 			mw.setConfig("LeadWithHLSOnFlash", true);
 		}
 
+		if (playerData &&  playerData.meta &&
+			(playerData.meta.sourceType === "32" ||
+			playerData.meta.sourceType === "33") ){
+			mw.setConfig("LeadWithHLSOnFlash",true);
+            mw.setConfig("isLiveKalturaHLS",true);
+		}
+
 		var legacyMulticastSource = this.getLegacyLiveMulticastSource(playerData);
 		if (legacyMulticastSource){
 			this.addLiveEntrySource( embedPlayer, playerData.meta, false, true, 'multicast_silverlight');
@@ -1570,19 +1577,36 @@ mw.KWidgetSupport.prototype = {
 				deviceSources.push(hlsSource);
 				addedHlsStream = true;
 
-				var dashSource = this.generateAbrSource({
-					entryId: asset.entryId,
-					flavorUrl: flavorUrl,
-					flavorId: (lowResolutionDevice ? 'mpdLow' : 'mpdHigh'),
-					type: 'application/dash+xml',
-					flavors: targetFlavors,
-					format: "mpegdash",
-					ext: "mpd",
-					protocol: protocol,
-					clipAspect: validClipAspect
-				});
-				this.attachFlavorAssetDrmData(dashSource, assetId, flavorDrmData);
-				deviceSources.push(dashSource);
+				//Only support ABR on-the-fly for DRM protected entries
+				if (!$.isEmptyObject(flavorDrmData)) {
+					var dashSource = this.generateAbrSource({
+						entryId: asset.entryId,
+						flavorUrl: flavorUrl,
+						flavorId: (lowResolutionDevice ? 'mpdLow' : 'mpdHigh'),
+						type: 'application/dash+xml',
+						flavors: targetFlavors,
+						format: "mpegdash",
+						ext: "mpd",
+						protocol: protocol,
+						clipAspect: validClipAspect
+					});
+					this.attachFlavorAssetDrmData(dashSource, assetId, flavorDrmData);
+					deviceSources.push(dashSource);
+
+					var ismSource = this.generateAbrSource({
+						entryId: asset.entryId,
+						flavorUrl: flavorUrl,
+						flavorId: "ism",
+						type: 'video/playreadySmooth',
+						flavors: targetFlavors,
+						format: "sl",
+						ext: "ism",
+						protocol: protocol,
+						clipAspect: validClipAspect
+					});
+					this.attachFlavorAssetDrmData(ismSource, assetId, flavorDrmData);
+					deviceSources.push(ismSource);
+				}
 			}
 		}
 		this.removedAdaptiveFlavors = false;

@@ -7,7 +7,7 @@
 	//Load 3rd party plugins if DRM sources are available
 	mw.addKalturaConfCheck( function( embedPlayer, callback ){
 		if( embedPlayer.isPluginEnabled( 'multiDrm' ) ) {
-			if (mseSupported && mw.isChrome()) {
+			if (mseSupported) {
 				mw.log("Media Source Extensions supported on this browser");
 				registerDashPlayer();
 				var sources = embedPlayer.getSources();

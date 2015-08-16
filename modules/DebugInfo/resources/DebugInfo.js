@@ -163,9 +163,8 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
         this.$scope.buffering= player.buffering;
 
         if (this.$scope.multicast) {
-            var mcPlayer = player.getPlayerElement();
-            if( mcPlayer && mcPlayer.getMulticastDiagnostics ) {
-                var data = mcPlayer.getMulticastDiagnostics();
+            if( player && $.isFunction(player.getMulticastDiagnostics) ) {
+                var data = player.getMulticastDiagnostics();
                 this.$scope.currentBitrate=data.currentBitrate;
                 this.$scope.mcAddress = data.mcAddress;
                 this.$scope.mcInputFps = data.InputFps;

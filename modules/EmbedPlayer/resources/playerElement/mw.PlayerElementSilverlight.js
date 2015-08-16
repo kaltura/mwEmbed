@@ -217,14 +217,11 @@
 			this.playerProxy.stretchFill();
 		},
 		getMulticastDiagnostics: function(){
-			var diag= this.playerProxy.getDiagnostics();
-			if (this.element &&
-				this.element.targetObj &&
-				this.element.targetObj.fillDiagnostics) {
-
-				this.element.targetObj.fillDiagnostics(diag);
+			if (this.playerProxy) {
+				return this.playerProxy.getDiagnostics();
+			} else {
+				return {}
 			}
-			return diag;
 		},
 		/**
 		 * Bind a Player Function,
