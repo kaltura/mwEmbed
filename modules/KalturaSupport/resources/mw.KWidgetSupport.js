@@ -1606,7 +1606,7 @@ mw.KWidgetSupport.prototype = {
 			}
 			//Only add playready on the fly if pre-encrypted doesn't exist
 			if ((iphoneAdaptiveFlavors.length || ipadAdaptiveFlavors.length) &&
-				this.getSourceByAttribute(deviceSources, "type", "video/playreadySmooth").length === 0) {
+				this.getSourcesByAttribute(deviceSources, "type", "video/playreadySmooth").length === 0) {
 				var targetFlavors = ipadAdaptiveFlavors.length ? ipadAdaptiveFlavors : iphoneAdaptiveFlavors;
 				var assetId = targetFlavors[0];
 				var ismSource = this.generateAbrSource({
@@ -1731,7 +1731,7 @@ mw.KWidgetSupport.prototype = {
 		}
 		return drmData;
 	},
-	getSourceByAttribute: function(source, attribute, value){
+	getSourcesByAttribute: function(source, attribute, value){
 		return $.grep(source, function( a ){
 			if( a[attribute] == value ){
 				return true;
