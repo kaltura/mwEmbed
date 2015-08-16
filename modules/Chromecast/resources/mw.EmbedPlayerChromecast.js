@@ -48,11 +48,12 @@
 		},
 
 		clipDone: function() {
-			mw.log("clip done");
+			mw.log("Chromecast::clip done");
 			if (this.vid.mediaFinishedCallback){
 				this.vid.mediaFinishedCallback();
 			}
 			$(this.vid).trigger("ended");
+			this.onClipDone();
 		},
 
 		play: function() {
