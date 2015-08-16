@@ -14,7 +14,7 @@
 			addBindings: function() {
 				var _this = this;
 
-				this.bind('onpause', function(){
+				this.bind('onpause onRemovePlayerSpinner', function(){
 					if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
 						_this.show();
 					}
@@ -26,8 +26,11 @@
 					if( newState == 'load' ){
 						_this.hide(true);
 					}
-					if( newState == 'pause' && _this.getPlayer().isPauseLoading ){
+					if( newState == 'pause' && _this.getPlayer().isPauseLoading ) {
 						_this.hide();
+					}
+					if (newState == 'start') {
+						_this.hide(true);
 					}
 				});
 			},
