@@ -296,6 +296,12 @@ mw.KWidgetSupport.prototype = {
 			this.addLiveEntrySource( embedPlayer, playerData.meta, false, true, 'applehttp_to_mc');
 			isStreamSupported = true;
 			embedPlayer.setLive( true );
+			if (embedPlayer.getFlashvars("disableMulticastFallback")) {
+
+				//don't keep collecting
+				return;
+			}
+
 		}
 
 		if( this.hasHlsSourcse(playerData) &&

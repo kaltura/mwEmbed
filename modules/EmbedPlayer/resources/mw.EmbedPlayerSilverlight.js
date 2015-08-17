@@ -16,7 +16,7 @@
 		defaultMulticastKESStartInterval: 2000 ,
 		defaultMaxAllowedMulticastBitrate: 90000 ,
 		multicastAddress: null ,
-		defaultEnableMulticastFallback: true ,
+		defaultDisableMulticastFallback: false ,
 		containerId: null ,
 		// List of supported features:
 		supports: {
@@ -172,6 +172,12 @@
 			} else {
 				index = (index + 1) % this._availableMulticastManifests.length;
 				this.multiastServerUrl = this._availableMulticastManifests[index];
+
+				//connect KES with https instead of http when page is https
+				if (window.location.protocol === "https:" &&
+					this.multiastServerUrl.indexOf("http://")===0) {
+					this.multiastServerUrl=this.multiastServerUrl.replace("http://","https://");
+				}
 				mw.log('selectNextKES selected ' + this.multiastServerUrl);
 			}
 
@@ -276,13 +282,15 @@
 		fallbackToUnicast: function () {
 			var _this = this;
 
+			this.isError = true;
+
             if ( this.playerObject ) {
                 this.playerObject.stop();
             }
             this.stopped = true;
 
-			var enableMulticastFallback = _this.getKalturaConfig( null , 'enableMulticastFallback' ) || _this.defaultEnableMulticastFallback;
-			if ( enableMulticastFallback ) {
+			var disableMulticastFallback = _this.getKalturaConfig( null , 'disableMulticastFallback' ) || _this.defaultDisableMulticastFallback;
+			if ( !disableMulticastFallback ) {
 				mw.log( 'fallbackToUnicast: try unicast' );
                 //remove current source to fallback to unicast if multicast failed
 				for ( var i = 0 ; i < _this.mediaElement.sources.length ; i++ ) {
@@ -297,7 +305,7 @@
                 _this.setupSourcePlayer(); //switch player
 			} else {
 				mw.log( "fallbackToUnicast: stop here since we don't allow multicast failver" );
-				var errorObj = {message: gM( 'ks-LIVE-STREAM-NOT-AVAILABLE' ) , title: gM( 'ks-ERROR' )};
+				var errorObj = {message: gM( 'ks-LIVE-STREAM-NOT-SUPPORTED' ) , title: gM( 'ks-ERROR' )};
 				_this.showErrorMsg( errorObj );
 			}
 			_this.readyCallbackFunc = undefined;
@@ -314,6 +322,12 @@
 							_this.handleMulticastPlayManifest(result, doEmbedFunc);
 						} else {
 							doEmbedFunc(result);
+						}
+					},
+					function() { //play manifest retunred error
+						if (_this.isMulticast) {
+							mw.log("got error from resolveSrcURL doing fallbackToUnicast");
+							_this.fallbackToUnicast();
 						}
 					});
 				}
@@ -430,7 +444,6 @@
 					_this.isError = false;
 					setTimeout( function () {
 						if ( !_this.gotFirstMulticastFrame ) {
-							_this.isError = true;
 							_this.fallbackToUnicast();
 						}
 					} , timeout );
