@@ -199,6 +199,7 @@
 				// set player type and version
 				google.ima.settings.setPlayerType("kaltura/mwEmbed");
 				google.ima.settings.setPlayerVersion(mw.getConfig("version"));
+				google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.INSECURE);
 
 				// Check for adPattern
 				if ( _this.getConfig( 'adPattern' ) ) {
