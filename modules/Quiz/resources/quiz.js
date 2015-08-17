@@ -29,11 +29,12 @@
         sliceArray: [],
         hexPosContainerPos:0,
         isSeekingIVQ:false,
-        bubbleClick:false,
+
+
 
         setup: function () {
-            var _this = this,quizStatus;
-                       var getQuizuserEntryIdAndQuizParams = [{
+            var _this = this;
+            var getQuizuserEntryIdAndQuizParams = [{
                 'service': 'userEntry',
                 'action': 'list',
                 'filter:objectType': 'KalturaQuizUserEntryFilter',
@@ -47,22 +48,25 @@
             }
 
             ];
+
+
+
             _this.getKClient().doRequest(getQuizuserEntryIdAndQuizParams, function (data) {
-                console.log("Params->");
+                console.log("Quiz Params -->");
                 console.log(data);
+
                 $.grep(data, function (e) {
                     if (e.objectType){
                         console.log('Connect to quiz err -->', e.code, e.message);
-                        return false
+                        _this._errMsg();
+                        return false;
                     }
                 });
+
                 $.quizParams = data[1];
-                //$.grep(data[0], function (e) {
-                //    if (e.status){quizStatus = e.status; }
-                //});
+
                 if (data[0].totalCount > 0 &&  !$.isEmptyObject(data[0].objects[0])) {
                     _this.kQuizUserEntryId = data[0].objects[0].id;
-                  //  switch (quizStatus){
                     switch (String(data[0].objects[0].status)) {
                         case 'quiz.3':
                             _this.score = (data[0].objects[0].score);
@@ -72,7 +76,7 @@
                             _this._getQuestionCpAPI(_this._populateCpObject);
                             break;
                         case '2':
-                            _this.state = "deleted";
+                            _this._errMsg();
                             break;
                     }
                 }
@@ -87,18 +91,14 @@
                     _this.getKClient().doRequest(createQuizuserEntryId, function (data) {
                         if (data.objectType){
                             console.log('Add KQ user entry id err -->', data.code, data.message);
-                            return false
+                            _this._errMsg();
+                            return false;
                         }
                     _this.kQuizUserEntryId = data.id;
                     _this._getQuestionCpAPI(_this._populateCpObject);
                     });
                 }
-                if (_this.state == 'deleted') {
-                    _this._showDeletedScreen()
-                } else {
                     _this._showWelcomeScreen();
-                }
-
             });
             this.addBindings();
         },
@@ -113,19 +113,15 @@
                 };
                 _this.getKClient().doRequest(entryRequest, function (data) {
                     if (data.objectType){
+                        _this._errMsg();
                         console.log('Get entry data err -->', data.code, data.message);
-                        return false
+                        return false;
                     }
                     _this.entryData = data;
                     _this._initParams();
                     if (embedPlayer.autoplay) {
                         embedPlayer.sendNotification('doStop');
                     }
-                    //if (_this.state == 'deleted') {
-                    //    _this._showDeletedScreen()
-                    //} else {
-                    //    _this._showWelcomeScreen();
-                    //}
                 });
             });
 
@@ -149,6 +145,11 @@
             this.bind('seeking', function () {
                 _this.isSeekingIVQ = true;
             });
+
+            this.bind('playerReady', function () {
+                _this._showWelcomeScreen();
+            });
+
         },
         getKClient: function () {
             if (!this.kClient) {
@@ -166,7 +167,7 @@
             }));
             return defer.resolve($template);
         },
-         continuePlay: function () {
+         _continuePlay: function () {
              var _this = this,player = _this.getPlayer();
              player.enablePlayControls();
              player.play();
@@ -186,8 +187,8 @@
         _showWelcomeScreen: function () {
             var _this = this;
             _this.state = 'welcome';
-            _this.removeShowScreen('welcome');
-
+            _this.showScreen();
+            //_this.removeShowScreen('welcome');
             $(".welcome").html(gM('mwe-quiz-welcome'));
             $.grep($.quizParams.uiAttributes, function (e) {
                 switch(e.key){
@@ -206,25 +207,15 @@
                  _this.checkIfDone(0);
             });
         },
-        _showDeletedScreen: function () {
-            var _this = this;
-            _this.state = 'contentScreen';
-            _this.showScreen();
-            $(".title-text").html(gM('mwe-quiz-no-longer-exist'));
-            $(".confirm-box").html(gM('mwe-quiz-continue'))
-                .on('click', function () {
-                    $(document).off();
-                    _this.continuePlay();
-                });
-        },
+
         _gotoScrubberPos: function (questionNr) {
             var player = this.getPlayer();
-        //    player.sendNotification('doSeek', ($.cpObject.cpArray[questionNr].startTime) / 900);
             player.sendNotification('doSeek', ($.cpObject.cpArray[questionNr].startTime) / 900);
+
         },
         qCuePointHandler: function (e, cuePointObj) {
             var _this = this;
-            if (_this.getPlayer().seeking) return;
+
             if (!$.quizParams.showCorrectAfterSubmission && _this.score) return;
             $.each($.cpObject.cpArray, function (key, val) {
                 if ($.cpObject.cpArray[key].startTime === cuePointObj.cuePoint.startTime) {
@@ -287,6 +278,7 @@
 
                 if (!_this._submitAnswer(questionNr,selectedAnswer)) {
                     console.log('Error add question')
+                    _this._errMsg();
                 }
 
                 $(this).delay(1800).fadeOut(function () {
@@ -329,9 +321,9 @@
         _addAnswerAPI: function (questionNr, quizSetAnswer) {
             var _this = this;
             _this.getKClient().doRequest(quizSetAnswer, function (data) {
-           // new kWidget.api({'wid': _this.getKClient().wid}).doRequest(quizSetAnswer, function (data) {
                 if (data.objectType){
                     console.log('Add Update answer err -->', data.code, data.message);
+                    _this._errMsg();
                     return false
                 }
                 $.cpObject.cpArray[_this.q2i(questionNr)].isCorrect = data.isCorrect;
@@ -345,8 +337,8 @@
             var _this = this,player = _this.getPlayer();
             _this.removeShowScreen("contentScreen");
             $("div").removeClass('confirm-box');
-            $(".title-text").html("Almost Done");
-            $(".sub-text").html("It appears that the following questions remained unanswered" + "</br>" + "Press on relevant question to answer");
+            $(".title-text").html(gM('mwe-quiz-almostDone'));
+            $(".sub-text").html(gM('mwe-quiz-remainUnAnswered') + "</br>" + gM('mwe-quiz-pressRelevatToAnswer'));
 
             $.each(unAnswerdArr, function (key, value) {
                 $(".display-content").append("<div class ='q-box' id=" + value + ">" + _this.i2q(value) + "</div>");
@@ -371,10 +363,12 @@
                     _this.allCompleted();
                 }
                 else {
+                    console.log($.cpObject.cpArray.length);
+
                     if (questionNr === ($.cpObject.cpArray.length) - 1) {
                         _this.almostDone(_this.getUnansweredQuestNrs());
                     } else {
-                        _this.continuePlay();
+                        _this._continuePlay();
                     }
                 }
             }
@@ -437,17 +431,17 @@
             var _this = this;
             if (_this.score) {
                 $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {
-                    _this.continuePlay()
+                    _this._continuePlay()
                 });
                 return
             }
             if (this.reviewMode) {
-                $(".ftr-left").html("DONE REVIEW").on('click', function () {
+                $(".ftr-left").html(gM('mwe-quiz-doneReview')).on('click', function () {
                     if (_this.isScreenVisible()) _this.removeScreen();
                     _this.allCompleted();
                 });
                 if ($.cpObject.cpArray.length > 0) {
-                    $(".ftr-right").html("REVIEW NEXT QUESTION").on('click', function () {
+                    $(".ftr-right").html(gM('mwe-quiz-reviewNextQ')).on('click', function () {
                         if (_this.isScreenVisible()) _this.removeScreen();
                         function nextQuestionNr(questionNr) {
                             if (questionNr == $.cpObject.cpArray.length - 1) {
@@ -460,16 +454,16 @@
                     });
                 }
             } else {
-                $(".ftr-left").append($('<span>' + ' QUESTION ' + this.i2q(questionNr) + '/' + $.cpObject.cpArray.length + '</span>').css("float", "right"))
+                $(".ftr-left").append($('<span> ' + gM('mwe-quiz-question') + ' ' + this.i2q(questionNr) + '/' + $.cpObject.cpArray.length + '</span>').css("float", "right"))
                     .append($('<div></div>').addClass("pie").css("float", "right"))
                     .append($('<span>' + (_this.getUnansweredQuestNrs()).length + ' UN-ANSWERED' + '</span>').css("float", "right"));
                 if (_this.canSkip) {
-                    $(".ftr-right").html("SKIP FOR NOW").on('click', function () {
+                    $(".ftr-right").html(gM('mwe-quiz-skipForNow')).on('click', function () {
                         _this.checkIfDone(questionNr);
                     });
                 }else if(!_this.canSkip && $.cpObject.cpArray[questionNr].isAnswerd ){
                     $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {
-                        _this.continuePlay()
+                        _this._continuePlay()
                     });
                 }
             }
@@ -506,6 +500,7 @@
             _this.getKClient().doRequest(submitQuizParams, function (data) {
             if (data.objectType){
                 console.log('Submit Quiz err -->',data.code, data.message);
+                _this._errMsg();
                 return false
             }
                 setTimeout(function () {
@@ -555,7 +550,7 @@
                     $(".title-text").html("Thank You.").addClass("hint-container");
                     $("div").removeClass('confirm-box');
                     $(this).delay(1000).fadeIn(function () {
-                        _this.continuePlay();
+                        _this._continuePlay();
                         });
                 });
         },
@@ -614,13 +609,14 @@
                 $.grep(data, function (e) {
                         if (e.objectType){
                             console.log('Get CP question or answer err -->', e.code, e.message);
+                            _this._errMsg();
                         }
                     });
                 callback(data);
             });
         },
         _populateCpObject: function (data) {
-            var _this = this,cpArray = [];
+            var cpArray = [];
             for (var i = 0; i < (data[0].objects.length); i++) {
                 var arr = [];
                 $.each(data[0].objects[i].optionalAnswers, function (key, value) {
@@ -786,11 +782,7 @@
         displayBubbles:function(){
             var embedPlayer = this.embedPlayer;
             var scrubber = embedPlayer.getInterface().find(".scrubber");
-            var _this = this;
-            var cPo = $.cpObject.cpArray;
-            var displayClass;
-
-            _this.bubbleClick = false;
+            var _this = this,displayClass,cPo = $.cpObject.cpArray;
 
             embedPlayer.getInterface().find(".bubble-cont").empty().remove();
             embedPlayer.getInterface().find(".bubble").empty().remove();
@@ -805,14 +797,37 @@
                         _this.i2q(key) + ' </div>')
                             .addClass(displayClass));
 
-                  })
-                //};
-                    //$('.tooltip').on('click', function () {
-                    //  _this.bubbleClick = true;
-                    // _this.getPlayer().pause();
-                    //  _this._gotoScrubberPos($(this).attr('id'));
-                    //console.log(($(this).attr('id'))+'  onclick==============================================');
-                   // });
+                  });
+            if (_this.canSkip) {
+
+                $('.bubble').on('click', function () {
+
+                    //var pl = _this.getPlayer();
+                    //pl.pause();
+                    //pl.stopPlayAfterSeek = true;
+                //    setTimeout(function () {
+                //    }, 0);
+                    //pl.sendNotification('doPause');
+
+                    _this.embedPlayer.sendNotification('doPause');
+
+              //
+                    _this.setCurrentQuestion($(this).attr('id'));
+
+                    _this._gotoScrubberPos($(this).attr('id'));
+
+                });
+            }
+        },
+        _errMsg:function(){
+            var _this = this;
+             _this.removeShowScreen("contentScreen");
+            $(".title-text").html(gM('mwe-quiz-err-msg'));
+            $(".confirm-box").html(gM('mwe-quiz-continue'))
+                .on('click', function () {
+                    $(document).off();
+                    _this._continuePlay();
+                });
 
         }
 

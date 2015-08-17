@@ -2,13 +2,19 @@
   "en": {
     "mwe-quiz-welcome":"Welcome",
     "mwe-quiz-continue":"Continue",
-    "mwe-quiz-no-longer-exist":"This Quiz no longer exist.",
+    "mwe-quiz-err-msg":"Quiz not ready, please try later.",
     "mwe-quiz-applied":"Applied",
     "mwe-quiz-apply":"Apply",
     "mwe-quiz-next":"CONTINUE",
     "mwe-quiz-why":"WHY",
     "mwe-quiz-hint":"HINT",
-    "mwe-quiz-invideoTip":"Answers are submitted at the end of the quiz. All questions must be answered."
-
+    "mwe-quiz-invideoTip":"Answers are submitted at the end of the quiz. All questions must be answered.",
+    "mwe-quiz-almostDone":"Almost Done",
+    "mwe-quiz-remainUnAnswered":"It appears that the following questions remained unanswered",
+    "mwe-quiz-pressRelevatToAnswer":"Press on relevant question to answer",
+    "mwe-quiz-doneReview":"DONE REVIEW",
+    "mwe-quiz-reviewNextQ":"REVIEW NEXT QUESTION",
+    "mwe-quiz-question":"QUESTION",
+    "mwe-quiz-skipForNow":"SKIP FOR NOW"
 }
 }
