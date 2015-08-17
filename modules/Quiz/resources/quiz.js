@@ -30,8 +30,6 @@
         hexPosContainerPos:0,
         isSeekingIVQ:false,
 
-
-
         setup: function () {
             var _this = this;
             var getQuizuserEntryIdAndQuizParams = [{
@@ -48,8 +46,6 @@
             }
 
             ];
-
-
 
             _this.getKClient().doRequest(getQuizuserEntryIdAndQuizParams, function (data) {
                 console.log("Quiz Params -->");
@@ -119,9 +115,9 @@
                     }
                     _this.entryData = data;
                     _this._initParams();
-                    if (embedPlayer.autoplay) {
-                        embedPlayer.sendNotification('doStop');
-                    }
+                    //if (embedPlayer.autoplay) {
+                    //    embedPlayer.sendNotification('doStop');
+                    //}
                 });
             });
 
@@ -135,6 +131,8 @@
                 embedPlayer.disablePlayControls()
             });
 
+
+
             this.bind('onplay', function () {
                _this.displayBubbles();
             });
@@ -142,12 +140,14 @@
             this.bind('seeked', function () {
                 setTimeout(function () {_this.isSeekingIVQ = false;}, 0);
             });
-            this.bind('seeking', function () {
+            _this.bind('seeking', function () {
                 _this.isSeekingIVQ = true;
             });
 
             this.bind('playerReady', function () {
-                _this._showWelcomeScreen();
+                if (embedPlayer.autoplay) {
+                    embedPlayer.sendNotification('doStop');
+                }
             });
 
         },
@@ -185,10 +185,11 @@
             });
         },
         _showWelcomeScreen: function () {
+
             var _this = this;
             _this.state = 'welcome';
             _this.showScreen();
-            //_this.removeShowScreen('welcome');
+
             $(".welcome").html(gM('mwe-quiz-welcome'));
             $.grep($.quizParams.uiAttributes, function (e) {
                 switch(e.key){
@@ -363,8 +364,6 @@
                     _this.allCompleted();
                 }
                 else {
-                    console.log($.cpObject.cpArray.length);
-
                     if (questionNr === ($.cpObject.cpArray.length) - 1) {
                         _this.almostDone(_this.getUnansweredQuestNrs());
                     } else {
@@ -801,34 +800,21 @@
             if (_this.canSkip) {
 
                 $('.bubble').on('click', function () {
-
-                    //var pl = _this.getPlayer();
-                    //pl.pause();
-                    //pl.stopPlayAfterSeek = true;
-                //    setTimeout(function () {
-                //    }, 0);
-                    //pl.sendNotification('doPause');
-
+                    _this.unbind('seeking');
+                    _this.getPlayer().stopPlayAfterSeek = true;
                     _this.embedPlayer.sendNotification('doPause');
-
-              //
-                    _this.setCurrentQuestion($(this).attr('id'));
-
                     _this._gotoScrubberPos($(this).attr('id'));
-
+                    _this.setCurrentQuestion($(this).attr('id'));
+                    _this.bind('seeking', function () {
+                        _this.isSeekingIVQ = true;
+                    });
                 });
             }
         },
         _errMsg:function(){
             var _this = this;
              _this.removeShowScreen("contentScreen");
-            $(".title-text").html(gM('mwe-quiz-err-msg'));
-            $(".confirm-box").html(gM('mwe-quiz-continue'))
-                .on('click', function () {
-                    $(document).off();
-                    _this._continuePlay();
-                });
-
+            $(".sub-text").html(gM('mwe-quiz-err-msg'));
         }
 
 

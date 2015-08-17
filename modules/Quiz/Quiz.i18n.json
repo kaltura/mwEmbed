@@ -2,7 +2,7 @@
   "en": {
     "mwe-quiz-welcome":"Welcome",
     "mwe-quiz-continue":"Continue",
-    "mwe-quiz-err-msg":"Quiz not ready, please try later.",
+    "mwe-quiz-err-msg":"“An error occurred, please refresh your browser and try again. If the error persists please contact your administrator",
     "mwe-quiz-applied":"Applied",
     "mwe-quiz-apply":"Apply",
     "mwe-quiz-next":"CONTINUE",
