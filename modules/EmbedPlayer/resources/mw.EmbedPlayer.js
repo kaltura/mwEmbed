@@ -3083,149 +3083,149 @@
 				currentBR = this.mediaElement.selectedSource.getBitrate();
 			}
 
-            $(this).trigger('sourceSwitchingStarted', [
-                { currentBitrate: currentBR }
-            ]);
-            this.mediaElement.setSource(source);
-            $(this).trigger('sourceSwitchingEnd', [
-                { newBitrate: source.getBitrate() }
-            ]);
-            if (!this.isStopped()) {
-                this.isFlavorSwitching = true;
-                // Get the exact play time from the video element ( instead of parent embed Player )
-                var oldMediaTime = this.getPlayerElement().currentTime;
-                var oldPaused = this.paused;
-                // Do a live switch
-                this.playerSwitchSource(source, function (vid) {
-                    // issue a seek
-                    setTimeout(function () {
-                        _this.addBlackScreen();
-                        _this.hidePlayerOffScreen();
-                        _this.unbindHelper("seeked.switchSrc" ).bindOnceHelper("seeked.switchSrc", function () {
-                            _this.removeBlackScreen();
-                            _this.restorePlayerOnScreen();
-                        });
-                        _this.seek(oldMediaTime, oldPaused);
-                    }, 100);
-                });
-            }
-        },
-        /**
-         * Used for livestream: will be called when clicking on "back to live" button
-         *
-         */
-        backToLive: function () {
-            mw.log('Error player does not support back to live');
-        },
-        hidePlayerOffScreen: function() {
-            mw.log('EmbedPlayer:: hidePlayerOffScreen: Notice player does not support hide player off screen');
-        },
-        restorePlayerOnScreen: function() {
-            mw.log('EmbedPlayer:: restorePlayerOnScreen: Notice player does not support restore player on screen');
-        },
-        /**
-         * add storageId parameter to all "playmanifest" sources
-         * @param storageId
-         */
-        setStorageId: function (storageId) {
-            this.setFlashvars("storageId", storageId);
-            if (this.mediaElement) {
-                $.each(this.mediaElement.sources, function (sourceIndex, source) {
-                    //add storageId only if its a playmanifest source
-                    if (source.src.indexOf("playManifest") !== -1) {
-                        if (source.src.indexOf("storageId") !== -1) {
-                            source.src = source.src.replace(/(.*storageId=)([0-9]+)/, "$1" + storageId);
-                        } else {
-                            source.src += (( source.src.indexOf('?') === -1) ? '?' : '&') + "storageId=" + storageId;
-                        }
-                    }
-                });
-            }
-        },
+			$(this).trigger('sourceSwitchingStarted', [
+				{ currentBitrate: currentBR }
+			]);
+			this.mediaElement.setSource(source);
+			$(this).trigger('sourceSwitchingEnd', [
+				{ newBitrate: source.getBitrate() }
+			]);
+			if (!this.isStopped()) {
+				this.isFlavorSwitching = true;
+				// Get the exact play time from the video element ( instead of parent embed Player )
+				var oldMediaTime = this.getPlayerElement().currentTime;
+				var oldPaused = this.paused;
+				// Do a live switch
+				this.playerSwitchSource(source, function (vid) {
+					// issue a seek
+					setTimeout(function () {
+						_this.addBlackScreen();
+						_this.hidePlayerOffScreen();
+						_this.unbindHelper("seeked.switchSrc" ).bindOnceHelper("seeked.switchSrc", function () {
+							_this.removeBlackScreen();
+							_this.restorePlayerOnScreen();
+						});
+						_this.seek(oldMediaTime, oldPaused);
+					}, 100);
+				});
+			}
+		},
+		/**
+		 * Used for livestream: will be called when clicking on "back to live" button
+		 *
+		 */
+		backToLive: function () {
+			mw.log('Error player does not support back to live');
+		},
+		hidePlayerOffScreen: function() {
+			mw.log('EmbedPlayer:: hidePlayerOffScreen: Notice player does not support hide player off screen');
+		},
+		restorePlayerOnScreen: function() {
+			mw.log('EmbedPlayer:: restorePlayerOnScreen: Notice player does not support restore player on screen');
+		},
+		/**
+		 * add storageId parameter to all "playmanifest" sources
+		 * @param storageId
+		 */
+		setStorageId: function (storageId) {
+			this.setFlashvars("storageId", storageId);
+			if (this.mediaElement) {
+				$.each(this.mediaElement.sources, function (sourceIndex, source) {
+					//add storageId only if its a playmanifest source
+					if (source.src.indexOf("playManifest") !== -1) {
+						if (source.src.indexOf("storageId") !== -1) {
+							source.src = source.src.replace(/(.*storageId=)([0-9]+)/, "$1" + storageId);
+						} else {
+							source.src += (( source.src.indexOf('?') === -1) ? '?' : '&') + "storageId=" + storageId;
+						}
+					}
+				});
+			}
+		},
 
-        bufferStart: function () {
-            if (!this.isInSequence() && !this.buffering) {
-                var _this = this;
-                this.buffering = true;
-                mw.log("EmbedPlayer::bufferStart");
-                $(this).trigger('bufferStartEvent');
-                if (!mw.getConfig('EmbedPlayer.DisableBufferingSpinner')) {
-                    setTimeout(function () {
-                        //avoid spinner for too short buffer
-                        if (!_this.isInSequence() && _this.buffering && !_this.paused) {
-                            _this.addPlayerSpinner();
-                        }
-                    }, _this.monitorRate);
-                }
-            }
+		bufferStart: function () {
+			if (!this.isInSequence() && !this.buffering) {
+				var _this = this;
+				this.buffering = true;
+				mw.log("EmbedPlayer::bufferStart");
+				$(this).trigger('bufferStartEvent');
+				if (!mw.getConfig('EmbedPlayer.DisableBufferingSpinner')) {
+					setTimeout(function () {
+						//avoid spinner for too short buffer
+						if (!_this.isInSequence() && _this.buffering && !_this.paused) {
+							_this.addPlayerSpinner();
+						}
+					}, _this.monitorRate);
+				}
+			}
 
-        },
+		},
 
-        bufferEnd: function () {
-            if (!this.isInSequence() && this.buffering) {
-                this.buffering = false;
-                mw.log("EmbedPlayer::bufferEnd");
-                $(this).trigger('bufferEndEvent');
-                if (!mw.getConfig('EmbedPlayer.DisableBufferingSpinner')) {
-                    this.hideSpinner();
-                }
-            }
-        },
+		bufferEnd: function () {
+			if (!this.isInSequence() && this.buffering) {
+				this.buffering = false;
+				mw.log("EmbedPlayer::bufferEnd");
+				$(this).trigger('bufferEndEvent');
+				if (!mw.getConfig('EmbedPlayer.DisableBufferingSpinner')) {
+					this.hideSpinner();
+				}
+			}
+		},
 
-        getKalturaAttributeConfig: function (attr) {
-            return this.getKalturaConfig(null, attr);
-        },
+		getKalturaAttributeConfig: function (attr) {
+			return this.getKalturaConfig(null, attr);
+		},
 
-        isVideoSiblingEnabled: function () {
-            if (mw.getConfig("DisableVideoSibling")) {
-                return false;
-            } else {
-                return true;
-            }
-        },
+		isVideoSiblingEnabled: function () {
+			if (mw.getConfig("DisableVideoSibling")) {
+				return false;
+			} else {
+				return true;
+			}
+		},
 
-        handlePlayerError: function (data, shouldHandlePlayerError) {
-            if (this.shouldHandlePlayerError || shouldHandlePlayerError) {
-                var message = this.getErrorMessage(data);
-                this.showErrorMsg({ title: this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'), message: message });
+		handlePlayerError: function (data, shouldHandlePlayerError) {
+			if (this.shouldHandlePlayerError || shouldHandlePlayerError) {
+				var message = this.getErrorMessage(data);
+				this.showErrorMsg({ title: this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'), message: message });
 
-            }
-        },
+			}
+		},
 
-        getErrorMessage: function(data){
-            var message = data ? data : this.getKalturaMsg('ks-CLIP_NOT_FOUND');
-            /* there are two formats used to represent error messages*/
-            message = message.errorMessage !== undefined ? message.errorMessage : message;
-            if (!message || message == undefined){
-                message = this.getKalturaMsg('ks-CLIP_NOT_FOUND');
-            }
-            return message;
-        },
+		getErrorMessage: function(data){
+			var message = data ? data : this.getKalturaMsg('ks-CLIP_NOT_FOUND');
+			/* there are two formats used to represent error messages*/
+			message = message.errorMessage !== undefined ? message.errorMessage : message;
+			if (!message || message == undefined){
+				message = this.getKalturaMsg('ks-CLIP_NOT_FOUND');
+			}
+			return message;
+		},
 
-        /**
-         * Some players parse playmanifest and reload flavors list by calling this function
-         * @param data
-         * Exmaple:[{"bandwidth":517120,"type":"video/mp4","assetid":0,"height":0},{"bandwidth":727040,"type":"video/mp4","assetid":1,"height":0},{"bandwidth":1041408,"type":"video/mp4","assetid":2,"height":0}
-         */
-        onFlavorsListChanged: function (newFlavors) {
-            //we can't use simpleFormat with flavors that came from playmanifest otherwise sourceSelector list won't match
-            // to what is actually being played
-            this.setKDPAttribute('sourceSelector', 'simpleFormat', false);
-            // update the manifest defined flavor set:
-            this.manifestAdaptiveFlavors = [];
-            var _this = this;
-            $.each(newFlavors, function(inx, flavor){
-                _this.manifestAdaptiveFlavors.push( new mw.MediaSource( flavor ) )
-            });
-            $(this).trigger( 'sourcesReplaced' );;
-        },
+		/**
+		 * Some players parse playmanifest and reload flavors list by calling this function
+		 * @param data
+		 * Exmaple:[{"bandwidth":517120,"type":"video/mp4","assetid":0,"height":0},{"bandwidth":727040,"type":"video/mp4","assetid":1,"height":0},{"bandwidth":1041408,"type":"video/mp4","assetid":2,"height":0}
+		 */
+		onFlavorsListChanged: function (newFlavors) {
+			//we can't use simpleFormat with flavors that came from playmanifest otherwise sourceSelector list won't match
+			// to what is actually being played
+			this.setKDPAttribute('sourceSelector', 'simpleFormat', false);
+			// update the manifest defined flavor set:
+			this.manifestAdaptiveFlavors = [];
+			var _this = this;
+			$.each(newFlavors, function(inx, flavor){
+				_this.manifestAdaptiveFlavors.push( new mw.MediaSource( flavor ) )
+			});
+			$(this).trigger( 'sourcesReplaced' );;
+		},
 
-        getCurrentBitrate: function(){
-            if (this.mediaElement.selectedSource) {
-                return this.mediaElement.selectedSource.getBitrate();
-            }
-            return this.currentBitrate;
-        }
+		getCurrentBitrate: function(){
+			if (this.mediaElement.selectedSource) {
+				return this.mediaElement.selectedSource.getBitrate();
+			}
+			return this.currentBitrate;
+		}
 	};
 
 })(window.mw, window.jQuery);
