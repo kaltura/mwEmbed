@@ -385,18 +385,24 @@
 
 					if ( isMimeType( "video/playreadySmooth" ) ) {
 						flashvars.preload = "none";
-						var licenseBaseUrl = mw.getConfig('Kaltura.UdrmServerURL');
-						if (!licenseBaseUrl) {
-							_this.log('Error:: failed to retrieve playready UDRM license URL ');
+						//Check for user defined DRM server else use uDRM
+						var overrideDrmServerURL = mw.getConfig('Kaltura.overrideDrmServerURL');
+						var licenseUrl;
+						if (overrideDrmServerURL) {
+							licenseUrl = overrideDrmServerURL;
+						} else {
+							var licenseBaseUrl = mw.getConfig('Kaltura.UdrmServerURL');
+							if (!licenseBaseUrl) {
+								_this.log('Error:: failed to retrieve playready UDRM license URL ');
+							}
+							//TODO: error handling in case of error
+							var licenseData = _this.mediaElement.getLicenseUriComponent();
+							if (!licenseData) {
+								_this.log('Error:: failed to retrieve playready UDRM license data ');
+							}
+							//Concat all URL parts
+							licenseUrl = licenseBaseUrl + "/playready/license?" + licenseData;
 						}
-						//TODO: error handling in case of error
-						var licenseData = _this.mediaElement.getLicenseUriComponent();
-						if (!licenseData) {
-							_this.log('Error:: failed to retrieve playready UDRM license data ');
-						}
-						//Concat all URL parts
-						var licenseUrl = licenseBaseUrl + "/playready/license?" + licenseData;
-
 						//Encode URL so it can be passed via HTML tag
 						flashvars.licenseURL = encodeURIComponent(licenseUrl);
 
@@ -415,7 +421,7 @@
 						}
 						var eventObj = {
 							customString: customDataString
-						}
+						};
 
 						$( _this ).trigger( 'challengeCustomData' , eventObj );
 

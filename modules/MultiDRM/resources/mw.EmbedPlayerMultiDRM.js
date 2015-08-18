@@ -244,15 +244,22 @@
 		},
 		getDrmConfig: function(){
 			var drmConfig = this.getKalturaConfig('multiDrm');
-			var licenseBaseUrl = mw.getConfig('Kaltura.UdrmServerURL');
-			if (!licenseBaseUrl) {
-				this.log('Error:: failed to retrieve UDRM license URL ');
-			}
+			//Check for user defined DRM server else use uDRM
+			var overrideDrmServerURL = mw.getConfig('Kaltura.overrideDrmServerURL');
+			if (overrideDrmServerURL) {
+				drmConfig.widevineLicenseServerURL = overrideDrmServerURL;
+				drmConfig.playReadyLicenseServerURL = overrideDrmServerURL;
+			} else {
+				var licenseBaseUrl = mw.getConfig('Kaltura.UdrmServerURL');
+				if (!licenseBaseUrl) {
+					this.log('Error:: failed to retrieve UDRM license URL ');
+				}
 
-			//TODO: error handling in case of error
-			var licenseData = this.mediaElement.getLicenseUriComponent();
-			drmConfig.widevineLicenseServerURL = licenseBaseUrl + "/cenc/widevine/license?" + licenseData;
-			drmConfig.playReadyLicenseServerURL = licenseBaseUrl + "/cenc/playready/license?" + licenseData;
+				//TODO: error handling in case of error
+				var licenseData = this.mediaElement.getLicenseUriComponent();
+				drmConfig.widevineLicenseServerURL = licenseBaseUrl + "/cenc/widevine/license?" + licenseData;
+				drmConfig.playReadyLicenseServerURL = licenseBaseUrl + "/cenc/playready/license?" + licenseData;
+			}
 			drmConfig.assetId = this.kentryid;
 			drmConfig.variantId = this.mediaElement.selectedSource && this.mediaElement.selectedSource.getAssetId();
 			var config = {};
