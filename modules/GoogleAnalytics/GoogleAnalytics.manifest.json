@@ -12,6 +12,16 @@
                 "label": "Event monitor function name",
                 "type": "string"
             },
+            "trackingCategory":{
+            	"doc": "The default category to be used for all default player events.",
+                "label": "Event category override",
+                "type": "string"
+            },
+			"optionalLabel":{
+				"doc": "The default label to be used for all default player events.",
+                "label": "Label override",
+                "type": "string"
+			},
             "anonymizeIp": {
 				"doc" : "If the google anonymizeIp flag should be set to anonymize user reports within google analytics.",
 				"label": "Anonymize Ips",
@@ -35,6 +45,11 @@
             "doPlayValue": {
                 "doc": "Value sent to Google Analytics for prefixed event",
                 "label": "Value for event",
+                "type": "string"
+            },
+             "doPlayLabel": {
+                "doc": "Allows for custom labels overrides for the prefixed event.",
+                "label": "Label string",
                 "type": "string"
             }
         }
