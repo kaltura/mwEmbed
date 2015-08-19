@@ -112,7 +112,7 @@
 				'trackEventMonitor': 'trackFunc',
 				'urchinCode': googleAnalyticsAccountId,
 				'anonymizeIp': false,
-				'customEvent': 'doPlay,relatedVideoSelect,playerReady',
+				'customEvent': 'doPlay,relatedVideoSelect,playerReady,mediaError,bufferEndEvent',
 				'doPlayCategory': "Custom Events",
 				
 				'doPlayAction': "playing",
@@ -124,6 +124,14 @@
 				// Enables us to track what tags are assigned to the related video
 				'playerReadyCategory':'My entry tags',
 				'playerReadyAction':'{mediaProxy.entry.tags}',
+				
+				// sample error reporting: 
+				'mediaErrorCategory': "Media error",
+				'mediaErrorAction': "{mediaProxy.entry.id}",
+
+				'bufferEndEventCategory': "Buffer Events",
+				'bufferEndEventAction': "bufferEnd",
+				'bufferEndEventValue': "{video.buffer.lastBufferDurationMs}",
 				
 				'sendRefId': true
 			},
@@ -141,11 +149,16 @@
 			$('.changeMedia').click(function () {
 				kdp.sendNotification('changeMedia', {'entryId': '1_sf5ovm7u' });
 			})
+			$('.mediaError').click(function(){
+				kdp.sendNotification( 'changeMedia',{'entryId': 'invalid' } );
+				kdp.sendNotification( 'doPlay' );
+			});
 		}
 	})
 </script>
 <br>
-<a class="changeMedia" href=#">Change Media</a> <br>
+<a class="mediaError" href="#">Trigger media Error</a> <br>
+<a class="changeMedia" href=#">Change Media</a> <br><br>
 <i>Google Analytics events: </i><br/>
 <table id="gAnalyticsLog" border="1" width="700">
 	<tr id="eventRowDesc">

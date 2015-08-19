@@ -3149,6 +3149,7 @@
 				this.buffering = true;
 				mw.log("EmbedPlayer::bufferStart");
 				$(this).trigger('bufferStartEvent');
+				this.bufferStartTime = new Date().getTime();
 				if (!mw.getConfig('EmbedPlayer.DisableBufferingSpinner')) {
 					setTimeout(function () {
 						//avoid spinner for too short buffer
@@ -3165,7 +3166,11 @@
 			if (!this.isInSequence() && this.buffering) {
 				this.buffering = false;
 				mw.log("EmbedPlayer::bufferEnd");
-				$(this).trigger('bufferEndEvent');
+				this.bufferEndTime = new Date().getTime();
+				// update lastBufferDuration
+				this.lastBufferDuration = ( ( this.bufferEndTime - this.bufferStartTime ) / 1000 ).toFixed(3);
+				// trigger event: 
+				$(this).trigger('bufferEndEvent', {'bufferDuration': this.lastBufferDuration});
 				if (!mw.getConfig('EmbedPlayer.DisableBufferingSpinner')) {
 					this.hideSpinner();
 				}
