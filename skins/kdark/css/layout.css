@@ -1063,7 +1063,7 @@ body {
 
 .buffered {
 	background-color: #AFAFAF;
-	background: rgba( 102, 102, 102, 0.5 );
+	background: rgba(255, 255, 255, 0.7);
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
 	filter: alpha(opacity=40);
 	opacity: 0.4;
