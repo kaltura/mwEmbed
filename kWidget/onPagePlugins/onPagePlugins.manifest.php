@@ -325,7 +325,7 @@ return array(
                 'initvalue' => "\/\/mediadataplayer.cdn.cielo24.com\/v2\/stabl\/kaltura.js",
                 'type' => 'hidden'
             ),
-            'DynaTransWindowSize' => array(
+            'DynaTransWindowHeight' => array(
                 'doc' => "The height of the widget.",
                 'initvalue' => 400,
                 'type' => 'number',
@@ -421,7 +421,7 @@ return array(
                 'initvalue' => ""
             ),    
             'DynaTransScrollbar' => array(
-                'doc' => "Opion to set search scrollbar to be horizontal or vertical, default is vertical. (Optional)",
+                'doc' => "Option to set search scrollbar to be horizontal or vertical, default is vertical. (Optional)",
                 'type' => 'string',
                 'initvalue' => "vertical"    
             ),
