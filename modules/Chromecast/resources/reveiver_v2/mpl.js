@@ -1,17 +1,3 @@
-// Copyright 2014 Google Inc. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the 'License');
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an 'AS IS' BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 var senders = {};  // a list of Chrome senders
 var liveStreaming = false;  // a flag to indicate live streaming or not
 var maxBW = null;  // maximum bandwidth
@@ -26,8 +12,7 @@ var licenseCredentials = false;  // a flag to indicate license credentials
 var streamVideoBitrates;  // bitrates of video stream selected
 var streamAudioBitrates;  // bitrates of audio stream selected
 
-// an instance of cast.receiver.CastReceiverManager
-var castReceiverManager = null;
+var castReceiverManager = null; // an instance of cast.receiver.CastReceiverManager
 var mediaManager = null;  // an instance of cast.receiver.MediaManager
 var messageBus = null;  // custom message bus
 var mediaElement = null;  // media element
@@ -35,27 +20,14 @@ var mediaHost = null;  // an instance of cast.player.api.Host
 var mediaProtocol = null;  // an instance of cast.player.api.Protocol
 var mediaPlayer = null;  // an instance of cast.player.api.Player
 
-/*
- * onLoad method as entry point to initialize custom receiver
- */
 onload = function() {
+  cast.receiver.logger.setLevelValue(cast.receiver.LoggerLevel.DEBUG);
+  cast.player.api.setLoggerLevel(cast.player.api.LoggerLevel.DEBUG);
   mediaElement = document.getElementById('receiverVideoElement');
   mediaElement.autoplay = false;
-
-  /**
-  play – The process of play has started
-  waiting – When the video stops due to buffering
-  volumechange – volume has changed
-  stalled – trying to get data, but not available
-  ratechange – some speed changed
-  canplay – It is possible to start playback, but no guarantee of not buffering
-  canplaythrough – It seems likely that we can play w/o buffering issues
-  ended – the video has finished
-  error – error occured during loading of the video
-  playing – when the video has started playing
-  seeking – started seeking
-  seeked – seeking has completed
-  **/
+  mediaManager = new cast.receiver.MediaManager(mediaElement);
+  castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
+  messageBus = castReceiverManager.getCastMessageBus('urn:x-cast:com.kaltura.cast.player');
 
   mediaElement.addEventListener('loadstart', function(e) {
     console.log('######### MEDIA ELEMENT LOAD START');
@@ -186,29 +158,6 @@ onload = function() {
   });
 
   /**
-  * Sets the log verbosity level.
-  *
-  * Debug logging (all messages).
-  * DEBUG
-  *
-  * Verbose logging (sender messages).
-  * VERBOSE
-  *
-  * Info logging (events, general logs).
-  * INFO
-  *
-  * Error logging (errors).
-  * ERROR
-  *
-  * No logging.
-  * NONE
-  **/
-  cast.receiver.logger.setLevelValue(cast.receiver.LoggerLevel.DEBUG);
-  cast.player.api.setLoggerLevel(cast.player.api.LoggerLevel.DEBUG);
-
-  castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
-
-  /**
   * Called to process 'ready' event. Only called after calling
   * castReceiverManager.start(config) and the
   * system becomes ready to start receiving messages.
@@ -276,25 +225,6 @@ onload = function() {
         ' -- muted? ' + event.data['muted']);
   };
 
-  /**
-  * Use the messageBus to listen for incoming messages on a virtual channel
-  * using a namespace string.Also use messageBus to send messages back to a
-  * sender or broadcast a message to all senders.
-  *
-  * You can check the cast.receiver.CastMessageBus.MessageType that a message
-  * bus processes though a call to getMessageType. As well, you get the
-  * namespace of a message bus by calling getNamespace()
-  */
-  messageBus = castReceiverManager.getCastMessageBus('urn:x-cast:com.kaltura.cast.player');
-  /**
-  * The namespace urn:x-cast:com.google.cast.sample.mediaplayer is used to
-  * identify the protocol of showing/hiding the heads up display messages
-  * (The messages defined at the beginning of the html).
-  *
-  * The protocol consists of one string message: show
-  * In the case of the message value not being show - the assumed value is hide.
-  * @param {Object} event A returned object from callback
-  **/
   messageBus.onMessage = function(event) {
     console.log('### Message Bus - Media Message: ' + JSON.stringify(event));
     setDebugMessage('messageBusMessage', event);
@@ -361,15 +291,39 @@ onload = function() {
         customData = payload['value'];
         setDebugMessage('customData', customData);
     } else if (payload['type'] === 'embed'){
-	    window.messageBus.broadcast("embedNotSupported");
+	    var publisherID = payload['publisherID'];
+	    var uiconfID = payload['uiconfID'];
+	    var entryID = payload['entryID'];
+	    mw.setConfig("EmbedPlayer.HidePosterOnStart", true);
+	    kWidget.embed({
+		    "targetId": "kaltura_player",
+		    "wid": "_" + publisherID,
+		    "uiconf_id": uiconfID,
+		    "readyCallback": function( playerId ){
+			    var kdp = document.getElementById( playerId );
+			    var iframe = kdp.getElementsByTagName("iframe");
+			    var innerDoc = iframe[0].contentDocument || iframe.contentWindow.document;
+			    var vid = innerDoc.getElementsByTagName("video")[0];
+			    mediaElement = vid;
+			    mediaManager = new cast.receiver.MediaManager(mediaElement);
+			    messageBus.broadcast("readyForMedia");
+			    kdp.sendNotification("doPlay");
+			    kdp.sendNotification("doPause");
+		    },
+		    "flashvars": {
+			    'controlBarContainer': {
+				    'plugin': true,
+				    "hover": true
+			    }
+		    },
+		    "cache_st": 1438601385,
+		    "entry_id": entryID
+	    });
     } else {
 		licenseUrl = null;
 	}
     // broadcast(event['data']);
   };
-
-
-  mediaManager = new cast.receiver.MediaManager(mediaElement);
 
   /**
   * Called when the media ends.
@@ -598,6 +552,7 @@ onload = function() {
   * @param {Object} event
   */
   mediaManager.onLoad = function(event) {
+	  messageBus.broadcast("mediaManager.onLoad");
     console.log('### Media Manager - LOAD: ' + JSON.stringify(event));
     setDebugMessage('mediaManagerMessage', 'LOAD ' + JSON.stringify(event));
 
@@ -736,7 +691,7 @@ onload = function() {
   * @type {number|undefined}
   * 10 minutes for testing, use default 10sec in prod by not setting this value
   **/
-  appConfig.maxInactivity = 6000;
+  appConfig.maxInactivity = 60000;
 
   /**
   * Initializes the system manager. The application should call this method when

@@ -18,7 +18,8 @@
 			'showTooltip': true,
 			'tooltip': 'Chromecast',
 			'debugReceiver': false,
-			'receiverLogo': false
+			'receiverLogo': false,
+			'useKalturaPlayer': false
 		},
 		isDisabled: false,
 
@@ -137,13 +138,15 @@
 				// launch app
 				this.showConnectingMessage();
 				this.embedPlayer.disablePlayControls(["chromecast"]);
+				var sessionRequest = new chrome.cast.SessionRequest(this.getConfig("applicationID").toString(), [chrome.cast.Capability.VIDEO_OUT], 60000);
 				chrome.cast.requestSession(
 					function(e){
 						_this.onRequestSessionSuccess(e);
 					}, 
 					function(error){
 						_this.onLaunchError(error);
-					}
+					},
+					sessionRequest
 				);
 			}else{
 				// stop casting
@@ -159,7 +162,28 @@
 			this.getComponent().css("color","#35BCDA");
 			this.updateTooltip(this.stopCastTitle);
 			this.casting = true;
-			this.loadMedia();
+			// set receiver debug if needed
+			if ( this.getConfig("debugReceiver") ){
+				this.sendMessage({'type': 'show', 'target': 'debug'});
+			}
+			// set kaltura logo if needed
+			if ( this.getConfig("receiverLogo") ){
+				this.sendMessage({'type': 'show', 'target': 'logo'});
+			}
+			if (this.getConfig("useKalturaPlayer") === true){
+				//alert("entryID="+this.embedPlayer.kentryid+", uiconfid="+this.embedPlayer.kuiconfid+", publisherid="+this.embedPlayer.kwidgetid.substr(1));
+				this.sendMessage({'type': 'embed', 'publisherID': this.embedPlayer.kwidgetid.substr(1), 'uiconfID': this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid});
+			} else {
+				this.loadMedia();
+			}
+
+			var _this = this;
+			this.session.addMessageListener(this.MESSAGE_NAMESPACE, function(namespace, message){
+				_this.log("Got Message From Receiver: "+message);
+				if (message == "readyForMedia"){
+					_this.loadMedia();
+				}
+			});
 		},
 
 		onLaunchError: function(error) {
@@ -396,16 +420,9 @@
 				this.sendMessage({'type': 'license', 'value': this.drmConfig.contextData.widevineLicenseServerURL});
 				this.log("set license URL to: " + this.drmConfig.contextData.widevineLicenseServerURL);
 			}
-			// set receiver debug if needed
-			if ( this.getConfig("debugReceiver") ){
-				this.sendMessage({'type': 'show', 'target': 'debug'});
-			}
-			// set kaltura logo if needed
-			if ( this.getConfig("receiverLogo") ){
-				this.sendMessage({'type': 'show', 'target': 'logo'});
-			}
-			this.session.loadMedia(this.request, 
-				_this.onMediaDiscovered.bind(this, 'loadMedia'), 
+
+			this.session.loadMedia(this.request,
+				_this.onMediaDiscovered.bind(this, 'loadMedia'),
 				_this.onMediaError
 			);
 
@@ -529,7 +546,7 @@
 			var _this = this;
 			if (this.session != null) {
 				this.session.sendMessage( this.MESSAGE_NAMESPACE, message, this.onMsgSuccess.bind(this,
-					'Message sent: ' + message), this.onMsgError);
+					'Message sent: ' + JSON.stringify(message)), this.onMsgError);
 			}
 		},
 
