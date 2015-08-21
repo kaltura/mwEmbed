@@ -321,8 +321,8 @@ return array(
         'description' => 'Adds a Cielo24 Media Data Player widget to the page.',
         'attributes' => array(
             'onPageJs1' => array(
-                'doc' => "URL for the widgets JavaScript",
-                'initvalue' => "\/\/mediadataplayer.cdn.cielo24.com\/v2\/stabl\/kaltura.js",
+                'doc' => "URL for the widget JavaScript.",
+                'initvalue' => "\/\/mediadataplayer.cdn.cielo24.com\/v2\/stable\/kaltura.js",
                 'type' => 'hidden'
             ),
             'DynaTransWindowHeight' => array(
@@ -336,7 +336,7 @@ return array(
                 'type' => 'string',
             ),
             'DynaTransClientLogo' => array(
-                'doc' => "URL to display in the widgets footer.",
+                'doc' => "URL to display in the widget footer.",
                 'initvalue' => "https:\/\/mediadataplayer.cdn.cielo24.com\/v2\/stable\/widget\/img\/logo-transparent.png",
                 'type' => 'string',
             ),
@@ -361,7 +361,7 @@ return array(
                 'initvalue' => false
             ),
             'DynaTransHideLeftMenu' => array(
-                'doc' => "If set to true, metadata menu icon will be hidden.",
+                'doc' => "If set to true, the metadata menu icon will be hidden.",
                 'type' => 'boolean',
                 'initvalue' => false
             ),
@@ -381,7 +381,7 @@ return array(
                 'initvalue' => false
             ),
             'DynaTransWidgetUrl' => array(
-                'doc' => "URL for the widgets html.",
+                'doc' => "URL for the widget html.",
                 'initvalue' => "https:\/\/mediadataplayer.cdn.cielo24.com\/v2\/stable\/widget\/widget.html",
                 'type' => 'hidden',
             ),            
@@ -419,11 +419,11 @@ return array(
                 'doc' => "If passing a search parameter sets variable name (Optional)",
                 'type' => 'string',
                 'initvalue' => ""
-            ),    
+            ),
             'DynaTransScrollbar' => array(
                 'doc' => "Option to set search scrollbar to be horizontal or vertical, default is vertical. (Optional)",
                 'type' => 'string',
-                'initvalue' => "vertical"    
+                'initvalue' => "vertical"
             ),
         )
     ),
