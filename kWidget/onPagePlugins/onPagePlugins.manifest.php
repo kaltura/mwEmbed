@@ -72,6 +72,7 @@ return array(
 			)
 		)
 	),
+
 	'videoDetailsBlock' => array(
 	 	'description' => 'This plugin creates a block that includes a title, description paragraph and list of tags of the currently playing media entry. The block will be appended to the player\'s div or be added to a given target div (the contents of the target div will be replaced). The design of the block is determined by the CSS of the plugin. Check out the integrate options for various configurations such as overriding the block title, show transition and more.',
 		'attributes' => array(
@@ -205,12 +206,12 @@ return array(
 				'type' => 'string'
 			),
 			'tags' => array(
-				'doc' => 'Default: "chaptering" Providing a tag name will grab only annotations which have that tag.
+				'doc' => 'Default: "chaptering"â Providing a tag name will grab only annotations which have that tag. 
 									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters in different languages)',
 				'type' => 'string'
 			),
 			'parentName' => array(
-				'doc' => 'Default: "chaptering" Providing a parentName will force querying only annotations whose parent fits parentName.
+				'doc' => 'Default: "chaptering"â Providing a parentName will force querying only annotations whose parent fits parentName. 
 									This allows multiple types of cuePoints to be stored on the same entry (e.g. chapters, references, ads).',
 				'type' => 'string'
 			),
@@ -227,7 +228,7 @@ return array(
 				'enum' => array( 'before', 'after', 'left', 'right' )
 			),
 			'overflow' => array(
-				'doc' => 'Defines what should happen in case list of chapters require more space than videos dimensions. Combined with the layout and position parameters, this parameter will cause a prev/next UI to appear if overflow is set to false.',
+				'doc' => 'Defines what should happen in case list of chapters require more space than videos dimensions. Combined with theâ layoutâ and positionâ parameters, this parameter will cause a prev/next UI to appear if overflow is set to false.',
 				'type' => 'boolean',
 			),
 			'includeThumbnail' => array(
@@ -336,7 +337,7 @@ return array(
                 'type' => 'string',
             ),
             'DynaTransClientLogo' => array(
-                'doc' => "URL to display in the widget footer.",
+                'doc' => "Logo to display in the widget footer.",
                 'initvalue' => "https:\/\/mediadataplayer.cdn.cielo24.com\/v2\/stable\/widget\/img\/logo-transparent.png",
                 'type' => 'string',
             ),
