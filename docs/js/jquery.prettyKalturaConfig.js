@@ -249,7 +249,10 @@
 						var editHolder = this;
 
 						var getValueDispaly = function (attrName) {
-							var attrValue = getAttrValue(attrName) || '<i>null</i>';
+							var attrValue = getAttrValue(attrName);
+							if( ! attrValue ){
+								return '<i>null</i>';
+							}
 							// stringy if object: 
 							if (typeof attrValue == 'object') {
 								attrValue = JSON.stringify(attrValue);
@@ -264,6 +267,10 @@
 										),
 									attrValue
 								)
+							}
+							if( getAttrType(attrName) == 'string' || getAttrType(attrName) == "hiddenValue" ){
+								// escape any html: 
+								attrValue = $('<span>').text( attrValue );
 							}
 							return attrValue
 						}
