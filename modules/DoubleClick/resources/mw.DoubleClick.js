@@ -617,6 +617,9 @@
 								_this.embedPlayer.getPlayerElement().sendNotification( 'skipAd' );
 							}else{
 								_this.adsManager.stop();
+								if (_this.currentAdSlotType === "postroll" && _this.getConfig( 'adTagUrl' ) ){
+									_this.restorePlayer(true);
+								}
 							}
 							$(this).hide();
 							return false;
