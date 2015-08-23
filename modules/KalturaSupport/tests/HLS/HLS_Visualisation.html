@@ -63,6 +63,10 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
         <th scope="row">hlsLogs</th>
         <td><input type="checkbox" class="form-control" id="hlsLogs" value="" checked/></td>
     </tr>
+    <tr>
+        <th scope="row">wmode</th>
+        <td><input type="text" class="form-control" id="wmode" value="transparent" /></td>
+    </tr>
 </table>
     <br/>
 <input type="button" id="generate" value="Create Player" />
@@ -131,6 +135,7 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
             $('#exBuffer').val( vals.hlsExpandedBufferTime );
             $('#maxBuffer').val( vals.hlsMaxBufferTime );
             $('#hlsLogs').attr('checked', vals.hlsLogs );
+            $('#wmode' ).val(vals.wmode);
 		}
 	}catch(err){
 		
@@ -184,7 +189,8 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
             'hlsInitialBufferTime': parseInt($('#iniBuffer').val()),
             'hlsExpandedBufferTime': parseInt($('#exBuffer').val()),
             'hlsMaxBufferTime': parseInt($('#maxBuffer').val()),
-            "hlsLogs": $('#hlsLogs').is(':checked')
+            "hlsLogs": $('#hlsLogs').is(':checked'),
+            "wmode":$('#wmode' ).val()
 		}));
 		
 		var settings = {
@@ -197,6 +203,7 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
             "hlsLogs": $('#hlsLogs').is(':checked'),
             "sourceSelector.plugin" : true,
             "closedCaptions.showEmbeddedCaptions" : true,
+            "wmode":$('#wmode' ).val(),
             'debugInfo': {
                 'plugin': true
             },

@@ -4,7 +4,7 @@
         <div class="qnaListHiderText" data-bind="text: qnaListHiderText()"></div>
     </div>
 </div>
-<div class="qnaModuleBackground">
+<div class="qnaModuleBackground" style="display: none">
     <div class="qnaQuestionArea">
         <div class="qnaQuestionBox">
             <label class="qnaPipeLabel">|</label>
@@ -23,14 +23,16 @@
         <div class="nano-content">
 
             <div data-bind="if: myObservableAnswerOnAirQueue().length > 0 && playerTime() > 0 && playerTime()*1000 >= myObservableAnswerOnAirQueue()[0]().cuePoint().startTime">
-                <div class="qnaThread qnaEntry">
-                    <div class = "AnswerOnAirTriangle"></div>
-                    <div class="qnaAnswerOnAirText" data-bind="text: myObservableAnswerOnAirQueue()[0]().getText()">
-                    </div>
-                    <div>
-                        <div class="qnaAnswerOnAirTitle" data-bind="text: myObservableAnswerOnAirQueue()[0]().getTitle()">
+                <div class="qnaAnswerOnAirHolder">
+                    <div class="qnaThread qnaEntry qnaAnswerOnAir">
+                        <div class = "AnswerOnAirTriangle"></div>
+                        <div class="qnaAnswerOnAirText" data-bind="text: myObservableAnswerOnAirQueue()[0]().getText()">
                         </div>
-                        <div class="answerOnAirIcon icon-qna-answeronair"></div>
+                        <div>
+                            <div class="qnaAnswerOnAirTitle" data-bind="text: myObservableAnswerOnAirQueue()[0]().getTitle()">
+                            </div>
+                            <div class="answerOnAirIcon icon-qna-answeronair"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -100,7 +102,8 @@
                                     <div data-bind='css:{   "qnaThreadTextRead" : !(!isRead() || ($index()===0 && thread.hasUnreadEntries() && $parent.isCollapsed())),
                                                             "qnaThreadText": !isRead() || ($index()===0 && thread.hasUnreadEntries() && $parent.isCollapsed()),
                                                             "qnaThreadTitleCollapsed": thread.entries().length > 1 && $parent.isCollapsed(),
-                                                            "qnaSingleEntry": thread.entries().length === 1 && $parent.isCollapsed()
+                                                            "qnaSingleEntry": thread.entries().length === 1 && $parent.isCollapsed(),
+                                                            "qnaThreadTextAnswer" : isAnswer()
                                                         },
                                                     text:getText()'></div>
 
@@ -151,5 +154,3 @@
         </div>
     </div>
 </div>
-
-<!--autoReSize: isTypingAnswer-->

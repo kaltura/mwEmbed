@@ -97,7 +97,7 @@
 		getComponent: function() {
 			var _this = this;
 			var eventName = 'click';
-			if (mw.isMobileDevice() && !mw.isWindowsPhone()){
+			if ( mw.isAndroid() ){
 				eventName = 'touchstart';
 			}
 			if( !this.$el ) {
