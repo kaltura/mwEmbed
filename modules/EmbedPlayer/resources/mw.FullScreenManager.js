@@ -277,7 +277,7 @@
 			var updateSizeByDevice = function() {
 				if ( mw.isAndroid() ) {
 					setTimeout(updateTargetSize, 10);
-				} else if (mw.isIOS8()){
+				} else if (mw.isIOS8_9()){
 					setTimeout(updateTargetSize, 500);
 				} else{
 					updateTargetSize();
