@@ -1107,7 +1107,7 @@
 				if ( _this.currentAdSlotType != 'postroll') {
 					_this.restorePlayer();
 
-					if( mw.isIOS8() && mw.isIpad()  ) {
+					if( mw.isIOS8_9() && mw.isIpad()  ) {
 						$( _this.embedPlayer.getPlayerElement() ).attr('preload',"metadata" );
 					}
 				}
