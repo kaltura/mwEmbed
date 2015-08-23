@@ -11,7 +11,6 @@
 			showTooltip: true,
 			displayImportance: 'medium',
 			templatePath: 'components/share/share.tmpl.html',
-
 			usePreviewPlayer: false,
 			previewPlayerEnabled: false,
 
@@ -20,7 +19,7 @@
 			allowTimeOffset: true,
 			allowSecuredEmbed: true,
 			emailEnabled: true,
-
+			contextMenu: "Grab embed Code",
 			socialShareURL: 'smart', // 'parent' or 'http://custom.url/entry/{mediaProxy.entry.id}'
 			socialNetworks: 'facebook,twitter,googleplus,email,linkedin,sms',
 			shareUiconfID: null,
@@ -136,6 +135,14 @@
 			this.bind('playerReady', function () {
 				_this.setupPlayerURL();
 				_this.getScreen();
+			});
+			this.bind('contextMenu', function() {
+				// Adding a call to this plugin custom close screen.
+				// since this plugin does not comply with other KBaseScreen plugins.
+				// Cannot use _hideAllScreens(), thus, need to manually close
+				// this screen each time other plugin screen is opened.
+
+				_this.closeScreen();
 			});
 			this.bind('preShowScreen', function (event, screenName) {
 				if ( screenName === "share" ){

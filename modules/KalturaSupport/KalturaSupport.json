@@ -425,4 +425,5 @@
 		"dependencies": "mw.KBaseComponent",
 		"kalturaPluginName": "reportError"
 	}
+
 }

@@ -7,6 +7,7 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 		order: 3,
 		align: "right",
 		tooltip: 'Info',
+		contextMenu: "Info Screen",
 		showTooltip: true,
 		usePreviewPlayer: true,
 		previewPlayerEnabled: true,

@@ -48,7 +48,6 @@
 				// Load items data
 				_this.getItemsData();
 			});
-
 			this.bind('onOpenFullScreen', function() {
 				setTimeout(function(){
 					$('.item-inner img').each(function() {

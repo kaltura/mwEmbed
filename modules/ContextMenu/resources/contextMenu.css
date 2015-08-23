@@ -1,0 +1,62 @@
+.share .share-input {
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFW…mdkSyOXRtfnO3Onf7OPd7U37X6pFxyq2EURYzhHWXx3wIMAHqAXFj/hFWxAAAAAElFTkSuQmCC) no-repeat 10px center;
+}
+.share .shareembed-input {
+    font-size: 18px;
+    font-family: 'Open sans', Aria, sans-serif;
+    font-weight: 400;
+    border-radius: 2px 2px 2px 2px;
+    -moz-border-radius: 2px 2px 2px 2px;
+    -webkit-border-radius: 2px 2px 2px 2px;
+    border: 1px solid rgb(127, 127, 127);
+    border: 1px solid rgba(255, 255, 255, .5);
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    padding-right: 20px;
+    width: 265px;
+    height: 36px;
+    color: white;
+    color: rgba(255, 255, 255, 0.502);
+    padding-left: 40px;
+    background-color: rgba(26, 26, 26, 0.102) !important;
+    cursor: auto;
+    margin-bottom: 12px;
+    float: left;
+}
+
+.context-menu-list .context-menu-item, .contextmenu-input{
+    font-family: 'Open sans', Aria, sans-serif;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased !important;
+}
+.contextmenu {
+    padding-top:3%;
+    padding-bottom: 3%;
+}
+
+.aggressive-theme li{
+    background: rgba(4, 255, 160, 0.88);
+
+}
+.aggressive-theme li:hover , .aggressive-theme-black li:hover {
+    background: rgba(74, 0, 255, 0.86);
+}
+.aggressive-theme-black li{
+    background: rgba(0, 0, 0, 1);
+    color: rgba(255, 255, 255, 0.68);
+}
+.aggressive-theme-black li:hover {
+
+}
+
+/* ================================= */
+/* --------- TRANSITION CSS --------- */
+/* ================================= */
+a, ul li, ul li:before {
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -ms-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+}
+

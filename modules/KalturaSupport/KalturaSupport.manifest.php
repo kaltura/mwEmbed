@@ -1358,7 +1358,7 @@ The playhead reflects segment time as if it was the natural stream length.",
 			'shortSeekTime' => array(
 				'doc' => 'Short seek time in seconds.',
 				'type' => 'number',
-				'initvalue' => '5'
+				'initvalue' => '500'
 			),
 			'longSeekTime' => array(
 				'doc' => 'Long seek time in seconds.',
