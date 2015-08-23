@@ -1604,7 +1604,7 @@ mw.KWidgetSupport.prototype = {
 					flavors: dashAdaptiveFlavors,
 					format: "mpegdash",
 					ext: "mpd",
-					protocol: "http",
+					protocol: protocol,
 					clipAspect: validClipAspect
 				});
 				this.attachFlavorAssetDrmData(dashSource, dashAdaptiveFlavors[0], flavorDrmData);
@@ -1623,7 +1623,7 @@ mw.KWidgetSupport.prototype = {
 					flavors: targetFlavors,
 					format: "sl",
 					ext: "ism",
-					protocol: "http",
+					protocol: protocol,
 					clipAspect: validClipAspect
 				});
 				this.attachFlavorAssetDrmData(ismSource, assetId, flavorDrmData);
