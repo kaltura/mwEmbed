@@ -310,12 +310,12 @@ body {
 	z-index: 100;
 	position: absolute;
 	left: 0;
-	top: -0.2em;
-	width: 1.1em;
-	height: 1.1em;
+	top: -0.18em;
+	width: 0.9em;
+	height: 0.9em;
 	border-radius: 50%;
 	outline: 0;
-	margin-left: -0.72em;
+	margin-left: -0.535em;
 	/*border: 8px solid #dadada;*/
 	cursor: pointer;
 
