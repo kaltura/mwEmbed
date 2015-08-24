@@ -817,6 +817,11 @@
                 "initvalue": true,
                 "type": "boolean"
             },
+            "embedCodeTemplate":{
+                "doc": "Enables the customization of the embed code template, leave empty to use iframe default.",
+                "initvalue": "",
+                "type": "hiddenValue"
+            },
             "allowTimeOffset": {
                 "doc": "Allow setting a time offset for the entry.",
                 "initvalue": true,
