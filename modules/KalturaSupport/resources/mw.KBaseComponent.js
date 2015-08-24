@@ -6,6 +6,7 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 	getBaseConfig: function(){
 		return {
 			'visible': true,
+			'hideWhenEmpty':false,
 			'disableable': true,
 			'showTooltip': false,
 			'accessibilityLabels': true
@@ -30,6 +31,9 @@ mw.KBaseComponent = mw.KBasePlugin.extend({
 			this.componentType = pluginName;
 		}
 		this._addBindings();
+		if( this.getConfig('hideWhenEmpty') == true ){
+			this.setConfig('visible', false)
+		}
 	},
 	_addBindings: function(){
 		var _this = this;
