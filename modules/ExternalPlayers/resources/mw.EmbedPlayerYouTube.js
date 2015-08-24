@@ -384,6 +384,25 @@
 
 			})
 		},
+		changeMedia: function(){
+			var _this = this;
+			// all we have is the entry ID. We need to get the YouTube video ID
+			var request = {
+				'service': 'baseEntry',
+				'action': 'get',
+				'entryId': this.kentryid
+			};
+			this.getKClient().doRequest(request, function (entryDataResult) {
+				_this.getPlayerElement().loadVideoById(entryDataResult.referenceId);
+				_this.parent_changeMedia();
+			});
+		},
+		getKClient: function () {
+			if (!this.kClient) {
+				this.kClient = mw.kApiGetPartnerClient(this.kwidgetid);
+			}
+			return this.kClient;
+		},
 		supportsVolumeControl: function(){
 			// if ipad no.
 			return true;
