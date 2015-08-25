@@ -1699,7 +1699,7 @@
 
 			//If we are change playing media add a ready binding:
 			var bindName = 'playerReady.changeMedia';
-			$this.unbind(bindName).bind(bindName, function () {
+			$this.one(bindName, function () {
 				mw.log('EmbedPlayer::changeMedia playerReady callback');
 				// hide the loading spinner:
 				_this.hideSpinner();
