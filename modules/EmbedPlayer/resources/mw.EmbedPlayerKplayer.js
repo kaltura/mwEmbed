@@ -763,9 +763,9 @@
 			var deferred = $.Deferred();
 			var originalSrc = this.mediaElement.selectedSource.getSrc();
 			if (this.isHlsSource(this.mediaElement.selectedSource)) {
-                // add flashPlayer indicator (Kaltura Live HLS only)
+                // add playerType=flash indicator (Kaltura Live HLS only)
                 if( this.isLive() &&  mw.getConfig('isLiveKalturaHLS') ) {
-                    originalSrc = originalSrc + "&flashPlayer=true";
+                    originalSrc = originalSrc + "&playerType=flash";
                 }
 
 				this.resolveSrcURL(originalSrc)
