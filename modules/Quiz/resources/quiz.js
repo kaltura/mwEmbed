@@ -221,10 +221,10 @@
             });
 
         },
-        showUnAnswered: function (cPo, questionNr) {
-            var _this = this;
-            _this._selectAnswerConroller(cPo, questionNr);
-        },
+        //showUnAnswered: function (cPo, questionNr) {
+        //    var _this = this;
+        //    _this._selectAnswerConroller(cPo, questionNr);
+        //},
         showAnswered: function (cPo, questionNr) {
             var _this = this;
             $.each(cPo.answeres, function (key, value) {
@@ -238,14 +238,13 @@
                     });
                 }
             });
-            if ($.quizParams.allowAnswerUpdate) {
+            if ($.quizParams.allowAnswerUpdate ) {
                 _this._selectAnswerConroller(cPo, questionNr);
             }
         },
         _selectAnswerConroller: function (cPo, questionNr) {
-            var _this = this;
-            var selectedAnswer = null;
-            if (typeof _this.score !== 'null') return;
+            var _this = this,selectedAnswer = null;
+            if (_this.score !== null) return;
 
             $(document).off();
             $('.single-answer-box-bk' ).on('click',function(){
@@ -419,7 +418,8 @@
                 _this.showAnswered(cPo, questionNr);
             }
             else {
-                _this.showUnAnswered(cPo, questionNr);
+                _this._selectAnswerConroller(cPo, questionNr);
+                //_this.showUnAnswered(cPo, questionNr);
             }
             this.addFooter(questionNr);
         },
