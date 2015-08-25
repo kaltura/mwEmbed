@@ -245,7 +245,8 @@
         _selectAnswerConroller: function (cPo, questionNr) {
             var _this = this;
             var selectedAnswer = null;
-            if (_this.score) return;
+            if (typeof _this.score !== 'null') return;
+
             $(document).off();
             $('.single-answer-box-bk' ).on('click',function(){
                 $('.single-answer-box-bk').each(function (index) {
