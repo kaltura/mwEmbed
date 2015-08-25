@@ -763,9 +763,9 @@
 			var deferred = $.Deferred();
 			var originalSrc = this.mediaElement.selectedSource.getSrc();
 			if (this.isHlsSource(this.mediaElement.selectedSource)) {
-                // add timeAlignedRenditions indicator (Kaltura Live HLS only)
+                // add flashPlayer indicator (Kaltura Live HLS only)
                 if( this.isLive() &&  mw.getConfig('isLiveKalturaHLS') ) {
-                    originalSrc = originalSrc + "&timeAlignedRenditions=true";
+                    originalSrc = originalSrc + "&flashPlayer=true";
                 }
 
 				this.resolveSrcURL(originalSrc)
