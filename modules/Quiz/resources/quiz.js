@@ -52,7 +52,7 @@
                 console.log(data);
 
                 $.grep(data, function (e) {
-                    if (e.objectType){
+                    if (e.objectType || data[1].uiAttributes === undefined ){
                         console.log('Connect to quiz err -->', e.code, e.message);
                         _this._errMsg();
                         return false;
@@ -65,7 +65,7 @@
                     _this.kQuizUserEntryId = data[0].objects[0].id;
                     switch (String(data[0].objects[0].status)) {
                         case 'quiz.3':
-                            _this.score = (data[0].objects[0].score);
+                            _this.score = Math.round(data[0].objects[0].score *100);
                             _this._getQuestionCpAPI(_this._populateCpObject);
                             break;
                         case '1':
@@ -73,6 +73,7 @@
                             break;
                         case '2':
                             _this._errMsg();
+                            return false;
                             break;
                     }
                 }
@@ -94,7 +95,7 @@
                     _this._getQuestionCpAPI(_this._populateCpObject);
                     });
                 }
-                    _this._showWelcomeScreen();
+
             });
             this.addBindings();
         },
@@ -115,9 +116,6 @@
                     }
                     _this.entryData = data;
                     _this._initParams();
-                    //if (embedPlayer.autoplay) {
-                    //    embedPlayer.sendNotification('doStop');
-                    //}
                 });
             });
 
@@ -128,13 +126,17 @@
            });
 
             this.bind('showScreen', function () {
-                embedPlayer.disablePlayControls()
+                embedPlayer.disablePlayControls();
             });
 
 
+            this.bind('firstPlay', function () {
+                setTimeout(function () {_this._showWelcomeScreen();},300);
+                embedPlayer.pause();
+            });
 
             this.bind('onplay', function () {
-               _this.displayBubbles();
+                _this.displayBubbles();
             });
 
             this.bind('seeked', function () {
@@ -144,11 +146,8 @@
                 _this.isSeekingIVQ = true;
             });
 
-            this.bind('playerReady', function () {
-                if (embedPlayer.autoplay) {
-                    embedPlayer.sendNotification('doStop');
-                }
-            });
+//            this.bind('playerReady', function () {
+//            });
 
         },
         getKClient: function () {
@@ -185,34 +184,30 @@
             });
         },
         _showWelcomeScreen: function () {
-
             var _this = this;
-            _this.state = 'welcome';
-            _this.showScreen();
-
-            $(".welcome").html(gM('mwe-quiz-welcome'));
-            $.grep($.quizParams.uiAttributes, function (e) {
-                switch(e.key){
-                    case 'welcomeMessage':
-                        $(".welcomeMessage").html(e.value);
-                        break;
-                    case 'inVideoTip':
-                        if (e){
-                            $(".InvideoTipMessage").html(gM('mwe-quiz-invideoTip'));
-                        }
-                        break;
-                }
-            });
-            $(".confirm-box").html(gM('mwe-quiz-continue'))
-                .on('click', function () {
-                 _this.checkIfDone(0);
-            });
+            _this.removeShowScreen("welcome");
+                $(".welcome").html(gM('mwe-quiz-welcome'));
+                $.grep($.quizParams.uiAttributes, function (e) {
+                    switch(e.key){
+                        case 'welcomeMessage':
+                            $(".welcomeMessage").html(e.value);
+                            break;
+                        case 'inVideoTip':
+                            if (e){
+                                $(".InvideoTipMessage").html(gM('mwe-quiz-invideoTip'));
+                            }
+                            break;
+                    }
+                });
+                $(".confirm-box").html(gM('mwe-quiz-continue'))
+                    .on('click', function () {
+                        _this.checkIfDone(0);
+                    });
         },
 
         _gotoScrubberPos: function (questionNr) {
             var player = this.getPlayer();
             player.sendNotification('doSeek', ($.cpObject.cpArray[questionNr].startTime) / 900);
-
         },
         qCuePointHandler: function (e, cuePointObj) {
             var _this = this;
@@ -233,7 +228,6 @@
         showAnswered: function (cPo, questionNr) {
             var _this = this;
             $.each(cPo.answeres, function (key, value) {
-
                 if (key == $.cpObject.cpArray[questionNr].selectedAnswer) {
                     $('#' + key).parent().addClass("wide single-answer-box-bk-applied");
                     $('#' + key).removeClass('single-answer-box')
@@ -242,7 +236,6 @@
                             .after($('<div></div>').addClass("single-answer-box-apply").text(gM('mwe-quiz-applied'))
                         )
                     });
-
                 }
             });
             if ($.quizParams.allowAnswerUpdate) {
@@ -280,6 +273,7 @@
                 if (!_this._submitAnswer(questionNr,selectedAnswer)) {
                     console.log('Error add question')
                     _this._errMsg();
+                    return false;
                 }
 
                 $(this).delay(1800).fadeOut(function () {
@@ -289,6 +283,7 @@
             });
         },
         _submitAnswer:function(questionNr,selectedAnswer){
+
             var _this = this,answerParams = {};
             $.cpObject.cpArray[questionNr].selectedAnswer = selectedAnswer;
 
@@ -320,30 +315,32 @@
             );
         },
         _addAnswerAPI: function (questionNr, quizSetAnswer) {
+
             var _this = this;
             _this.getKClient().doRequest(quizSetAnswer, function (data) {
                 if (data.objectType){
                     console.log('Add Update answer err -->', data.code, data.message);
                     _this._errMsg();
-                    return false
+                    return false;
                 }
+                $.cpObject.cpArray[_this.q2i(questionNr)].answerCpId = data.id;
                 $.cpObject.cpArray[_this.q2i(questionNr)].isCorrect = data.isCorrect;
                 $.cpObject.cpArray[_this.q2i(questionNr)].explanation = data.explenation;
                 $.cpObject.cpArray[_this.q2i(questionNr)].correctAnswerKeys = data.correctAnswerKeys;
 
             });
-            return true
+            return true;
         },
         almostDone: function (unAnswerdArr) {
             var _this = this,player = _this.getPlayer();
-            _this.removeShowScreen("contentScreen");
+
+            _this.removeShowScreen("hexScreen");
+
             $("div").removeClass('confirm-box');
             $(".title-text").html(gM('mwe-quiz-almostDone'));
             $(".sub-text").html(gM('mwe-quiz-remainUnAnswered') + "</br>" + gM('mwe-quiz-pressRelevatToAnswer'));
 
-            $.each(unAnswerdArr, function (key, value) {
-                $(".display-content").append("<div class ='q-box' id=" + value + ">" + _this.i2q(value) + "</div>");
-            });
+            _this.displayHex(_this.setHexContainerPos("current"),unAnswerdArr);
 
             $(document).on('click', '.q-box', function () {
                 var selectQ = $(this).attr('id');
@@ -376,7 +373,7 @@
             var unanswerdArr = [];
             $.each($.cpObject.cpArray, function (key, val) {
                 if ($.cpObject.cpArray[key].isAnswerd === false) {
-                    unanswerdArr.push($.cpObject.cpArray[key].key);
+                    unanswerdArr.push($.cpObject.cpArray[key]);
                 }
             });
             if ($.isEmptyObject(unanswerdArr)) return false;
@@ -397,7 +394,7 @@
                                 case 'hint':_this.setCurrentQuestion(questionNr);
                                             break;
                                 case 'why': _this.state = "reviewAnswer";
-                                            _this.reviewAnswer(_this.score);
+                                            _this.reviewAnswer(questionNr);
                                             break;
                             }
                         });
@@ -473,6 +470,7 @@
             _this.removeShowScreen("contentScreen");
             $(".title-text").html("Completed");
             $(".sub-text").html("Take a moment to review your answeres below, or go ahead and submit.");
+
             $.each($.cpObject.cpArray, function (key, value) {
                 $(".display-content").append("<div class ='q-box' id=" + key + ">" + _this.i2q(key) + "</div>");
             });
@@ -506,30 +504,30 @@
                     _this._getQuestionCpAPI(_this._populateCpObject)
 
                 }, 0);
-                _this.score = data.score;
+
+                _this.score = Math.round(data.score *100);
                 setTimeout(function () {
-                    _this._submitted(data.score);
+                    _this._submitted(_this.score);
                 },2500);
 
             });
         },
         _submitted: function (score) {
-            var _this = this,leftRightArrow="current";
-            var cPo = $.cpObject.cpArray;
+            var _this = this,cpArray = $.cpObject.cpArray;
             _this.removeShowScreen("hexScreen");
+
             $(".title-text").html("Submitted");
 
             if (_this.showTotalScore){
                 if (!$.quizParams.showCorrectAfterSubmission) {
 
-                    $(".sub-text").html("You completed the quiz, your score is " + score + " ");
+                    $(".sub-text").html(gM('mwe-quiz-completedScore') + score + " %");
 
                 } else {
-                    if ($.isEmptyObject(_this.sliceArray)) {
-                        _this.sliceArray = _this.buildSliceArr(4);
-                    }
-                    $(".sub-text").html("you completed the quiz, your score is " + score + " press any question to review submission ");
-                    _this.displayHex(_this.setHexContainerPos("current"));
+                    $(".sub-text").html(gM('mwe-quiz-completedScore') + score + " % " + gM('mwe-quiz-reviewSubmit'));
+
+                    _this.displayHex(_this.setHexContainerPos("current"),cpArray);
+
                     $(document).on('click', '.q-box', function () {
                         _this.removeShowScreen("reviewAnswer");
                         _this.reviewAnswer($(this).attr('id'));
@@ -540,13 +538,13 @@
                     });
                 }
             }else{
-                $(".sub-text").html("You completed the quiz");
+                $(".sub-text").html(gM('mwe-quiz-completedQuiz'));
             }
 
-            $(".confirm-box").html("Ok")
+            $(".confirm-box").html(gM('mwe-quiz-ok'))
                 .on('click', function () {
                     _this.removeShowScreen("contentScreen");
-                    $(".title-text").html("Thank You.").addClass("hint-container");
+                    $(".title-text").html(gM('mwe-quiz-thankYou')).addClass("hint-container");
                     $("div").removeClass('confirm-box');
                     $(this).delay(1000).fadeIn(function () {
                         _this._continuePlay();
@@ -669,6 +667,10 @@
             player.pause();
             _this.state = state;
             _this.showScreen();
+
+            var embedPlayer = this.embedPlayer;
+            embedPlayer.getInterface().find(".bubble-cont").empty().remove();
+            embedPlayer.getInterface().find(".bubble").empty().remove();
         },
         i2q: function (i) {
             return parseInt(i) + 1;
@@ -688,19 +690,23 @@
             } while (i < $.cpObject.cpArray.length);
             return arr;
         },
-        makeHexRow: function (rStart,rEnd,rowNumber) {
-            var cPo = $.cpObject.cpArray,ol,el,_this = this;
+        makeHexRow: function (rStart,rEnd,rowNumber,cpArray) {
+            var ol,el,_this = this;
+
             ol = document.createElement('ol');
-            $.each(cPo.slice(rStart, rEnd), function (i, data) {
+            $.each(cpArray.slice(rStart, rEnd), function (i, data) {
             el = document.createElement('li');
                var className = (function () {
 
-                   if (data.isCorrect) {
-                        return 'q-box';
-                    }
-                    else {
-                        return 'q-box-false';
-                    }
+                  if (data.isCorrect===null)
+                    return 'q-box';
+
+                  if (data.isCorrect) {
+                    return 'q-box';
+                  }
+                  else {
+                    return 'q-box-false';
+                  }
                 })();
                $(el).addClass(className).attr("id", data.key).append(_this.i2q(data.key));
                switch(rowNumber){
@@ -711,15 +717,18 @@
             });
             $(".hexagon-container").append(ol).hide().fadeIn('fast');
         },
-        displayHex:function (hexPositionContDisplay){
+        displayHex:function (hexPositionContDisplay,cpArray){
             var _this = this;
-            var displayData = $.grep(_this.sliceArray, function (element, index) {
+
+            _this.sliceArray = _this.buildSliceArr(4);
+            var displayRows = $.grep(_this.sliceArray, function (element, index) {
                 return element.rContPos == hexPositionContDisplay;
             });
-            $.each(displayData,function(key,val){
-                _this.makeHexRow(val.rStart,val.rEnd+1,key);
+
+            $.each(displayRows,function(key,val){
+                _this.makeHexRow(val.rStart,val.rEnd+1,key,cpArray);
             });
-            _this._checkHexStatusForArrow();
+            _this._checkHexStatusForArrow(cpArray);
         },
         setHexContainerPos:function(action){
             var posNr,_this = this;
@@ -730,25 +739,25 @@
             }
             return posNr;
         },
-        _addHexRightArrow:function(){
+        _addHexRightArrow:function(cpArray){
             var _this = this;
             $( "<div></div>" ).insertBefore( ".hexagon-container")
-                .addClass("right-arrow").hide().fadeIn('slow')
+                .addClass("right-arrow").hide().fadeIn('fast')
                 .on('click', function(){
                     $( ".hexagon-container" ).empty();
-                    _this.displayHex(_this.setHexContainerPos("right"));
+                    _this.displayHex(_this.setHexContainerPos("right"),cpArray);
                 });
         },
-        _addHexLeftArrow:function(){
+        _addHexLeftArrow:function(cpArray){
             var _this = this;
             $( "<div></div>" ).insertBefore( ".hexagon-container")
-                .addClass("left-arrow").hide().fadeIn('slow')
+                .addClass("left-arrow").hide().fadeIn('fast')
                 .on('click', function(){
                     $( ".hexagon-container" ).empty();
-                    _this.displayHex(_this.setHexContainerPos("left"));
+                    _this.displayHex(_this.setHexContainerPos("left"),cpArray);
                 });
         },
-        _checkHexStatusForArrow:function(){
+        _checkHexStatusForArrow:function(cpArray){
             var _this = this;
             var lastPos = ((_this.sliceArray.slice(-1))[0].rContPos);
             var sliceArrLen =_this.sliceArray.length;
@@ -756,7 +765,7 @@
             if  (_this.hexPosContainerPos == 0  && sliceArrLen >= 3) {
                 $(".left-arrow").remove();
                 if ($(".right-arrow").length == 0){
-                    _this._addHexRightArrow();
+                    _this._addHexRightArrow(cpArray);
                 }
             }else if  (_this.hexPosContainerPos == 0  && sliceArrLen <= 2) {
                 if ($(".right-arrow").length != 0) $(".right-arrow").remove();
@@ -766,15 +775,15 @@
             else if (_this.hexPosContainerPos == lastPos && sliceArrLen  >= 3 ){
                 $(".right-arrow").remove();
                 if ($(".left-arrow").length == 0){
-                    _this._addHexLeftArrow();
+                    _this._addHexLeftArrow(cpArray);
                 }
             }
             else  {
                 if ($(".right-arrow").length == 0){
-                    _this._addHexRightArrow();
+                    _this._addHexRightArrow(cpArray);
                 }
                 if ($(".left-arrow").length == 0){
-                    _this._addHexLeftArrow();
+                    _this._addHexLeftArrow(cpArray);
                 }
             }
         },
@@ -791,30 +800,30 @@
                 $.each(cPo, function (key, val) {
 
                     displayClass = val.isAnswerd ? "bubble bubble-ans" : "bubble bubble-un-ans";
+
                     var pos = Math.round(((val.startTime/_this.entryData.msDuration)*100) * 10)/10;
                         $('.bubble-cont').append($('<div id ="' + key + '" style="margin-left:' + pos + '%">' +
                         _this.i2q(key) + ' </div>')
-                            .addClass(displayClass));
-
-                  });
-            if (_this.canSkip) {
-
-                $('.bubble').on('click', function () {
-                    _this.unbind('seeking');
-                    _this.getPlayer().stopPlayAfterSeek = true;
-                    _this.embedPlayer.sendNotification('doPause');
-                    _this._gotoScrubberPos($(this).attr('id'));
-                    _this.setCurrentQuestion($(this).attr('id'));
-                    _this.bind('seeking', function () {
-                        _this.isSeekingIVQ = true;
+                            .addClass(displayClass)
+                        );
                     });
-                });
-            }
+                    if (_this.canSkip) {
+                        $('.bubble').on('click', function () {
+                            _this.unbind('seeking');
+                            _this.getPlayer().stopPlayAfterSeek = true;
+                            _this.embedPlayer.sendNotification('doPause');
+                            _this._gotoScrubberPos($(this).attr('id'));
+                            _this.bind('seeking', function () {
+                                _this.isSeekingIVQ = true;
+                            });
+                        });
+                    }
         },
         _errMsg:function(){
             var _this = this;
              _this.removeShowScreen("contentScreen");
             $(".sub-text").html(gM('mwe-quiz-err-msg'));
+            $("div").removeClass('confirm-box');
         }
 
 

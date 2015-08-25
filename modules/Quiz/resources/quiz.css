@@ -446,24 +446,22 @@ vertical-align: middle;
 .left-arrow{
     width: 5vw;
     height: 5vw;
-    background-image: url(slider.prev.png);
     background-size: 100% 100%;
-    position: relative;
-    z-index:99;
+    margin-top: 12vh;
+    background-image: url(slider.prev.png);
     float: left;
+    z-index:99;
 }
 .right-arrow{
     width: 5vw;
     height: 5vw;
+    background-size: 100% 100%;
+    margin-top: 12vh;
     background-image: url(slider.next.png);
     float: right;
-    display: block;
-     background-size: 100% 100%;
 }
 .dispay-all-container{
-    position: relative;
-    top: 35%;
-    transform: translateY(-89%);
+    margin-top: 7vh;
 }
 
 .hexagon-container{
@@ -477,13 +475,13 @@ ol.first-row{
     width: 100%;
     position: relative;
     right: 1vw;
-    margin-top: 0%;
+    /*margin-top:0%;*/
 }
 ol.second-row{
     width: 100%;
     position: relative;
-    right: 6vw;
-    margin-top: -7%;
+    right: 6.3vw;
+    margin-top: -6.7%;
 }
 .bk-gradient{
     background-color: rgb(0, 190, 238);

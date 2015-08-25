@@ -2,7 +2,7 @@
   "en": {
     "mwe-quiz-welcome":"Welcome",
     "mwe-quiz-continue":"Continue",
-    "mwe-quiz-err-msg":"“An error occurred, please refresh your browser and try again. If the error persists please contact your administrator",
+    "mwe-quiz-err-msg":"An error occurred, please refresh your browser and try again. If the error persists please contact your administrator",
     "mwe-quiz-applied":"Applied",
     "mwe-quiz-apply":"Apply",
     "mwe-quiz-next":"CONTINUE",
@@ -15,6 +15,12 @@
     "mwe-quiz-doneReview":"DONE REVIEW",
     "mwe-quiz-reviewNextQ":"REVIEW NEXT QUESTION",
     "mwe-quiz-question":"QUESTION",
-    "mwe-quiz-skipForNow":"SKIP FOR NOW"
+    "mwe-quiz-skipForNow":"SKIP FOR NOW",
+    "mwe-quiz-completedScore":"You completed the quiz, your score is ",
+    "mwe-quiz-reviewSubmit":"press any question to review submission",
+    "mwe-quiz-thankYou":"Thank You.",
+    "mwe-quiz-ok":"Ok",
+    "mwe-quiz-completedQuiz":"You completed the quiz"
+
 }
 }
