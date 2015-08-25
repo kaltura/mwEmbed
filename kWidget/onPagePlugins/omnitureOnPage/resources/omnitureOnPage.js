@@ -39,8 +39,6 @@ kWidget.addReadyCallback( function( playerId ){
 						// process any queued events now that sCode is available:
 						_this.proccessMediaQueue();
 						_this.proccessNotificationQueue();
-						// once sCode is ready setup the monitor
-						_this.setupMonitor();
 					});
 					// bind for events as soon as layout is Ready ( proxy events while player checks for sCode )
 					_this.bindCustomEvents();
@@ -80,6 +78,8 @@ kWidget.addReadyCallback( function( playerId ){
 				}
 
 				_this.sCodeLoaded = true;
+				// once sCode is ready setup the monitor
+				_this.setupMonitor();
 
 				if(callback) {
 					callback();
