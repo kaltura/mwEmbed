@@ -16,7 +16,7 @@
 			this.bind( 'durationChange', function(event, duration){
 				if( !_this.getPlayer().isInSequence() ){
 					_this.contentDuration = duration;
-					_this.updateUI( duration );
+					_this.updateUI( Math.floor(duration) );
 				}
 			});
 			// Support duration for Ads
