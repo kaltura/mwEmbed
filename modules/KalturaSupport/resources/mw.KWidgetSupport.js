@@ -130,7 +130,7 @@ mw.KWidgetSupport.prototype = {
 				height: embedPlayer.getHeight()
 			});
 			if( embedPlayer.getFlashvars( 'loadThumbnailWithKs' ) === true ) {
-				thumbUrl += '?ks=' + embedPlayer.getFlashvars('ks');
+				thumbUrl += '/ks/' + embedPlayer.getFlashvars('ks');
 			}
 			if (mw.getConfig('thumbnailUrl')) {
 				thumbUrl = embedPlayer.evaluate(mw.getConfig('thumbnailUrl'));
