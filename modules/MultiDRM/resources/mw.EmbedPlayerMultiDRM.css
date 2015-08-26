@@ -1,0 +1,3 @@
+div[class^="vjs-"] {
+    display: none;
+}

@@ -290,6 +290,9 @@
 
 		playerPrefix: 'BasePlayer',
 
+        // stores current bitrate for adaptive bitrate video
+        currentBitrate: -1,
+
 		/**
 		 * embedPlayer
 		 *
@@ -786,6 +789,10 @@
 			this.bindHelper('embedPlayerError', function (e, data) {
 				_this.handlePlayerError(data);
 			});
+
+            this.bindHelper('bitrateChange', function (e, data) {
+                _this.currentBitrate = data;
+            });
 
 			// Check for source replace configuration:
 			if (mw.getConfig('EmbedPlayer.ReplaceSources')) {
@@ -1865,8 +1872,10 @@
 		 * Remove the poster
 		 */
 		removePoster: function () {
-			$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
-			$(this).find('.playerPoster').remove();
+			if ( !mw.getConfig("EmbedPlayer.KeepPoster") === true ){
+				$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
+				$(this).find('.playerPoster').remove();
+			}
 		},
 		/**
 		 * Abstract method, must be set by player interface
@@ -1896,14 +1905,16 @@
 
 			// Do some device detection devices that don't support overlays
 			// and go into full screen once play is clicked:
-			if ((mw.isAndroidNativeBrowser() || mw.isIphone())) {
+			if ((mw.isAndroidNativeBrowser() || mw.isIphone()) && !mw.isWindowsPhone()) {
 				return true;
 			}
 
 			// iPad can use html controls if its a persistantPlayer in the dom before loading )
 			// else it needs to use native controls:
 			if (mw.isIpad()) {
-				if (this.isPersistentNativePlayer() && mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') === true) {
+				if (mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen') && this.layoutBuilder && this.layoutBuilder.isInFullScreen()){
+					return true;
+				} else if (this.isPersistentNativePlayer() && mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') === true) {
 					return false;
 				} else {
 					// Set warning that your trying to do iPad controls without
@@ -2191,6 +2202,7 @@
 			var $this = $(this);
 			if (this.currentState == "end") {
 				// prevent getting another clipdone event on replay
+				this.stopPlayAfterSeek = false;
 				this.seek(0.01, false);
 			}
 			// Store the absolute play time ( to track native events that should not invoke interface updates )
@@ -2730,7 +2742,7 @@
 					this.seek(_this.currentTime);
 				}
 			}
-			if (!_this.isLive()) {
+			if (!_this.isLive() && _this.instanceOf != 'ImageOverlay') {
 				if (_this.isPlaying() && _this.currentTime == _this.getPlayerElementTime()) {
 					_this.bufferStart();
 				} else if (_this.buffering) {
@@ -2925,6 +2937,9 @@
 				mw.log("EmbedPlayer::getCompatibleSource: add " + source.src + ' of type:' + source.type);
 			});
 			var myMediaElement = new mw.MediaElement($media[0]);
+			if ( this.getRawKalturaConfig('mediaProxy') && this.getRawKalturaConfig('mediaProxy').preferedFlavorBR ){
+				myMediaElement.preferedFlavorBR = this.getRawKalturaConfig('mediaProxy').preferedFlavorBR * 1000;
+			}
 			var baseTimeOptions =  {
 				'supportsURLTimeEncoding': this.supportsURLTimeEncoding(),
 				'startTime' :this.startTime,
@@ -3076,6 +3091,7 @@
 			if (this.mediaElement.selectedSource) {
 				currentBR = this.mediaElement.selectedSource.getBitrate();
 			}
+
 			$(this).trigger('sourceSwitchingStarted', [
 				{ currentBitrate: currentBR }
 			]);
@@ -3179,15 +3195,20 @@
 
 		handlePlayerError: function (data, shouldHandlePlayerError) {
 			if (this.shouldHandlePlayerError || shouldHandlePlayerError) {
-				var message = data ? data : this.getKalturaMsg('ks-CLIP_NOT_FOUND');
-				/* there are two formats used to represent error messages*/
-				message = message.errorMessage !== undefined ? message.errorMessage : message;
-				if (!message || message == undefined){
-					message = this.getKalturaMsg('ks-CLIP_NOT_FOUND');
-				}
-                this.showErrorMsg({ title: this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'), message: message });
+				var message = this.getErrorMessage(data);
+				this.showErrorMsg({ title: this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'), message: message });
 
 			}
+		},
+
+		getErrorMessage: function(data){
+			var message = data ? data : this.getKalturaMsg('ks-CLIP_NOT_FOUND');
+			/* there are two formats used to represent error messages*/
+			message = message.errorMessage !== undefined ? message.errorMessage : message;
+			if (!message || message == undefined){
+				message = this.getKalturaMsg('ks-CLIP_NOT_FOUND');
+			}
+			return message;
 		},
 
 		/**
@@ -3199,13 +3220,20 @@
 			//we can't use simpleFormat with flavors that came from playmanifest otherwise sourceSelector list won't match
 			// to what is actually being played
 			this.setKDPAttribute('sourceSelector', 'simpleFormat', false);
-			// update the manifest defined flavor set: 
+			// update the manifest defined flavor set:
 			this.manifestAdaptiveFlavors = [];
 			var _this = this;
 			$.each(newFlavors, function(inx, flavor){
 				_this.manifestAdaptiveFlavors.push( new mw.MediaSource( flavor ) )
 			});
 			$(this).trigger( 'sourcesReplaced' );;
+		},
+
+		getCurrentBitrate: function(){
+			if (this.mediaElement.selectedSource) {
+				return this.mediaElement.selectedSource.getBitrate();
+			}
+			return this.currentBitrate;
 		}
 	};
 

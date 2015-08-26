@@ -20,11 +20,7 @@
 			// If detected browser flash support should be ignored, and flash support,
 			// set to false. This will eliminate support for flash based playback.
 			'EmbedPlayer.DisableHTML5FlashFallback'=> false,
-	
-			// If the java cortado player should be disabled, true by default,
-			// some installs that only have free codecs should leave this enabled.
-			'EmbedPlayer.DisableJava' => true,
-			
+
 			// Can be used to set player sources via configuration, useful in cases,
 			// where metadata is loaded from an api, but actual sources need to be pointed
 			// to another location at runtime via config

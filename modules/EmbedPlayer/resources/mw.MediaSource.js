@@ -71,7 +71,12 @@
 		'height',
 		'assetid',
 		'bandwidth',
-		'srclang'
+		'srclang',
+		//DRM info
+		'custom_data',
+		'signature',
+		'contentId',
+		'flavors'
 
 	]);
 

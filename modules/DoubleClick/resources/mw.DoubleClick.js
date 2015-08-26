@@ -221,10 +221,10 @@
 						var queryStringParamsParts = queryStringParams.split( '&' );
 						for ( var i = 0; i < queryStringParamsParts.length; i++ ) {
 							//Break query string to key-value pair
-							var pair = queryStringParamsParts[i].split( '=' );
+							var equalIndex = queryStringParamsParts[i].indexOf( "=" );
 							//Unescape and try to evaluate key and value
-							var evaluatedKey = embedPlayer.evaluate( unescape( pair[0] ) );
-							var evaluatedValue = embedPlayer.evaluate( unescape( pair[1] ) );
+							var evaluatedKey = embedPlayer.evaluate( unescape( queryStringParamsParts[i].substr(0, equalIndex) ) );
+							var evaluatedValue = embedPlayer.evaluate( unescape( queryStringParamsParts[i].substr( equalIndex + 1 ) ) );
 							//Escape kvp and build evaluated query string param back. exclude cust_params.
 							if (evaluatedKey != 'cust_params'){
 								evaluatedQueryStringParams += escape( evaluatedKey );
@@ -361,7 +361,7 @@
 					// Setup the restore callback
 					_this.postRollCallback = callback;
 					//no need to request ads
-					if ( !_this.isLinear || _this.allAdsCompletedFlag || _this.adLoaderErrorFlag ){
+					if ( _this.isLinear === false || _this.allAdsCompletedFlag || _this.adLoaderErrorFlag ){
 						_this.restorePlayer(true);
 					}
 				}
@@ -425,7 +425,7 @@
 			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 
 			if (isLinear) {
-				this.embedPlayer.enablePlayControls(["scrubber"]);
+				this.embedPlayer.enablePlayControls(["scrubber","share","infoScreen","related"]);
 			} else {
 				_this.embedPlayer.pause();
 			}
@@ -560,7 +560,9 @@
 		// https://developers.google.com/interactive-media-ads/docs/sdks/googlehtml5_apis#ima.SimpleAdsRequest
 		addAdRequestParams: function( adTagUrl ){
 			var _this = this;
-			var paramSep =  adTagUrl.indexOf( '?' ) === -1 ? '?' : '&';
+			if( adTagUrl ){
+				var paramSep = adTagUrl.indexOf( '?' ) === -1 ? '?' : '&';
+			}
 			var adRequestMap = {
 				'contentId' : 'vid',
 				'cmsId' : 'cmsid'
@@ -867,8 +869,10 @@
 				if( mw.isIpad() && _this.embedPlayer.getPlayerElement().paused ) {
 					_this.embedPlayer.getPlayerElement().play();
 				}
+                var adPosition =  0;
+                if ( ad.getAdPodInfo() && ad.getAdPodInfo().getAdPosition() ){ adPosition = ad.getAdPodInfo().getAdPosition() }
 				// trigger ad play event
-				$(_this.embedPlayer).trigger("onAdPlay",[ad.getAdId(),ad.getAdSystem(),currentAdSlotType]);
+                $(_this.embedPlayer).trigger("onAdPlay",[ad.getAdId(),ad.getAdSystem(),currentAdSlotType,adPosition,ad.getDuration()]);
 				// This changes player state to the relevant value ( play-state )
 				$(_this.embedPlayer).trigger("playing");
 				// Check for ad Stacking ( two starts in less then 250ms )
@@ -916,6 +920,8 @@
 
 					// Send a notification to trigger associated events and update ui
 					_this.embedPlayer.sendNotification('doPlay');
+				}else{
+					_this.embedPlayer.getInterface().find(".largePlayBtn").css(	"z-index", 1);
 				}
 			} );
 			adsListener( 'PAUSED', function(){
@@ -940,8 +946,7 @@
 				//$(".doubleClickAd").remove();
 				$(_this.embedPlayer).trigger('onAdComplete',[ad.getAdId(), mw.npt2seconds($(".currentTimeLabel").text())]);
 				_this.duration= -1;
-
-
+				_this.embedPlayer.getInterface().find(".largePlayBtn").css(	"z-index", "");
 			});
 			// Resume content:
 			adsListener( 'CONTENT_RESUME_REQUESTED', function(){
@@ -986,7 +991,7 @@
 				// set volume when ad starts to enable autoMute. TODO: remove next line once DoubleClick fix their bug when setting adsManager.volume before ad starts
 				_this.embedPlayer.setPlayerElementVolume(_this.embedPlayer.volume);
 				// trigger ad play event
-				$(_this.embedPlayer).trigger("onAdPlay",[adInfo.adID]);
+				$(_this.embedPlayer).trigger("onAdPlay",[adInfo.adID, null, null, 0, adInfo.duration]); //index is missing =0 by now
 				// This changes player state to the relevant value ( play-state )
 				$(_this.embedPlayer).trigger("playing");
 				$(_this.embedPlayer).trigger("onplay");

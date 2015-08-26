@@ -4,12 +4,12 @@
 			'desc' => 'A flag specifying if the current player is an HTML5 player (Universal player)',
 		),
 		'playerVersion' => array(
-			'desc' => "The current version of the player library. Versions are represented in major.minor.point format",
-			'example' => '../modules/AdTagUrlSubstitutions/tests/AdTagUrlSubstitutions.html'
+			'desc' => 'The current version of the player library. Versions are represented in major.minor.point format',
+			'example' => '../modules/AdSupport/tests/AdTagUrlSubstitutions.html'
 		),
 		'flashVersion' => array(
 			'desc' => 'The version of Adobe Flash available. Returns 0,0,0 if Flash is not available.',
-			'example' => '../modules/AdTagUrlSubstitutions/tests/AdTagUrlSubstitutions.html'
+			'example' => '../modules/AdSupport/tests/AdTagUrlSubstitutions.html'
 		),
 		'sequenceProxy.timeRemaining' => array(
 			'desc' => 'Time remaining until the end of the current ads sequence',
@@ -34,18 +34,18 @@
 		),
 		'video.player.width' => array(
 			'desc' => 'The current video player width in pixels.',
-			'example' => '../modules/AdTagUrlSubstitutions/tests/AdTagUrlSubstitutions.html'
+			'example' => '../modules/AdSupport/tests/AdTagUrlSubstitutions.html'
 		),
 		'video.player.height' => array(
 			'desc' => 'The current video player height in pixels.',
-			'example' => '../modules/AdTagUrlSubstitutions/tests/AdTagUrlSubstitutions.html'
+			'example' => '../modules/AdSupport/tests/AdTagUrlSubstitutions.html'
 		),
 		'duration' => array(
 			'desc' => 'Current video duration in seconds',
 		),
 		'mediaProxy.entry' => array(
-			'desc' => "Return or set all entry properties. Entry properties include: 
-					'id','name','description','plays','views','duration','createdAt', 'thumbnailUrl' and others. 
+			'desc' => "Return or set all entry properties. Entry properties include:
+					'id','name','description','plays','views','duration','createdAt', 'thumbnailUrl' and others.
 				See Kaltura <a target=\"_new\" href=\"http://www.kaltura.com/api_v3/testmeDoc/?object=KalturaBaseEntry\">base entry object</a>,
 				in Kaltura API definition for full set of properties.",
 			'example' => '../modules/KalturaSupport/tests/StandAlonePlayerMediaProxyOverride.html'
@@ -98,7 +98,7 @@
 			'desc' => 'Retrieve the referrer host',
 		),
 		'utility.nativeAd' => array(
-			'desc' => 'The native device identifier, 
+			'desc' => 'The native device identifier,
 				<a href="https://developer.apple.com/library/ios/documentation/AdSupport/Reference/ASIdentifierManager_Ref/#//apple_ref/occ/instp/ASIdentifierManager/advertisingIdentifier">
 					AdvertisingIdentifier
 				</a> for Apple and <a href="http://developer.android.com/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info.html">

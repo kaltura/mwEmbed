@@ -397,6 +397,7 @@ $uiVars = array(
 				'type' => 'String',
 				'desc' => 'External thumbnail URL to load instead of the entry default thumbnail. Supports evaluated expressions within curly brackets',
 				'default' => '',
+				'example' => '../modules/KalturaSupport/tests/ThumbnailEmbedExternalThumbnail.html',
 			),
 			'kml' => array(
 				'type' => 'String',
@@ -416,11 +417,6 @@ $uiVars = array(
 					'desc' => "Valid uiConf XML result, that is used by the 'KDP wrapper'; A Flash application that wraps the KDP for caching purposes",
 					'default' => 'null',
 					'availability' => 'kdp',
-			),
-			'relativeCortadoAppletPath' => array(
-				'type' => 'String',
-				'desc' => 'The default location for Java Cortado Applet',
-				'default' => '',
 			),
 			'disableTrackElement' => array(
 				'type' => 'Boolean',
@@ -451,11 +447,11 @@ $uiVars = array(
 				'example' => '../modules/KalturaSupport/tests/AutoPlay.qunit.html'
 			),
 			'EmbedPlayer.WebKitPlaysInline' => array(
-            			 		'type' => 'Boolean',
-            					'desc' => "Determines if should play the video inline or not",
-            					'default' => 'false',
-            					'example' => ''
-            ),
+			 		'type' => 'Boolean',
+					'desc' => "Determines if should play the video inline when inside a webview on iOS.",
+					'default' => 'false',
+					'example' => ''
+			),
 			'autoMute' => array(
 				'type' => 'Boolean',
 				'desc' => 'Determine whether to start playback with volume muted (usually used by video ads or homepage auto play videos)',
@@ -649,12 +645,6 @@ $uiVars = array(
 					'default' => '',
 					'example' => ''
 			),
-			'EmbedPlayer.DisableJava' => array(
-					'type' => 'Boolean',
-					'desc' => "If the java cortado player should be disabled",
-					'default' => 'true',
-					'example' => ''
-			),
 			'EmbedPlayer.DisableVideoTagSupport' => array(
 					'type' => '',
 					'desc' => "",
@@ -790,6 +780,18 @@ $uiVars = array(
 			'EmbedPlayer.DisableBufferingSpinner' => array(
 					'type' => 'Boolean',
 					'desc' => "If the player should hide the loading spinner when it is in buffering mode",
+					'default' => 'false',
+					'example' => ''
+			),
+			'EmbedPlayer.DisableContextMenu' => array(
+					'type' => 'Boolean',
+					'desc' => "Disables the player's right-click context menu",
+					'default' => 'false',
+					'example' => '../modules/KalturaSupport/tests/ThumbnailEmbedManyPlayers.qunit.html'
+			),
+			'EmbedPlayer.KeepPoster' => array(
+					'type' => 'Boolean',
+					'desc' => "Keeps the entry thumbnail shown during playback (covers the video)",
 					'default' => 'false',
 					'example' => ''
 			)
