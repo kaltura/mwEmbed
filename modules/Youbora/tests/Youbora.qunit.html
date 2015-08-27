@@ -13,7 +13,7 @@
 			// Support tracking analytics events:
 			window['trackYouboraAnalyticsEvent'] = function(eventId, data){
 				// append event data.
-				$('#analyticsLog').append( eventId + ": " +  data + "\n" );
+				$('#analyticsLog').prepend( eventId + ": " +  data + "\n" );
 			}
 		</script>
 	</head>
@@ -35,9 +35,9 @@
 					}
 				},
 				'readyCallback': function(){
-					$('#kaltura_player').css('float', 'left').after('<div id="analyticsContainer" style="float:left;padding-left:20px;" >'+
+					$('#kaltura_player').css('float', 'left').after('<div style="clear:both"></div><div id="analyticsContainer" style="float:left;" >'+
 						'<i>Analytics events:</i><br />' +
-							'<textarea id="analyticsLog" style="width:500px;height:280px;" ></textarea>' +
+							'<textarea id="analyticsLog" style="width:800px;height:280px;" ></textarea>' +
 						'</div>'
 					)
 				}

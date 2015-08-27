@@ -88,23 +88,20 @@
 				_this.unbind('timeupdate');
 				_this.sendBeacon( 'joinTime', {
 					'time': new Date().getTime() - playRequestStartTime,
-					'eventTime': this.embedPlayer.currentTime,
+					'eventTime': _this.embedPlayer.currentTime,
 				});
 			});
 			// track buffer under run 
 			var startBufferClock = null;
-			this.bind( 'playerStateChange', function( playerState ){
-				if( playerState == 'buffering' ){
-					var startBufferClock = new Date().getTime() ;
-				}
-				if( playerState == 'playing' && startBufferClock ){
-					startBufferClock = null;
-					_this.sendBeacon( 'bufferUnderrun', {
-						'time': _this.embedPlayer.currentTime,
-						'duration': new Date().getTime() - startBufferClock,
-					});
-				}
-			})
+			this.bind('bufferStartEvent',function(){
+				startBufferClock = new Date().getTime() ;
+			});
+			this.bind('bufferEndEvent',function(){
+				_this.sendBeacon( 'bufferUnderrun', {
+					'time': _this.embedPlayer.currentTime,
+					'duration': new Date().getTime() - startBufferClock,
+				});
+			});
 			var userHasPaused = false;
 			// track pause: 
 			this.bind( 'onpause', function( playerState ){
@@ -119,25 +116,29 @@
 			});
 			// track content end:
 			this.bind( 'postEnded', function(){
-				_this.sendBeacon( 'stop' );
+				_this.sendBeacon( 'stop', {
+					'diffTime': new Date().getTime() - _this.previusPingTime
+				});
 			})
 		},
 		bindPingTracking: function(){
-			var previusPingTime = playRequestStartTime;
+			var _this = this;
+			// start previusPingTime at bind time: 
+			this.previusPingTime = new Date().getTime();
 			setInterval(function(){
 				// only issue pings while playing: 
 				if( _this.embedPlayer.isPlaying() ){
 					_this.sendBeacon( 'ping',{
-						'pingTime': ( new Date().getTime() - previusPingTime / 1000.0 ).toFixed(), // round seconds
+						'pingTime': (( new Date().getTime() - _this.previusPingTime )  / 1000 ).toFixed(), // round seconds
 						'bitrate': _this.embedPlayer.mediaElement.selectedSource.getBitrate(),
 						'time': _this.embedPlayer.currentTime,
 						// totalBytes, // value is only sent along with the dataType parameter. If the bitrate parameter is sent, then this one is not needed.
 						'dataType': 0, // Kaltura does not really do RTMP streams any more. 
-						'diffTime': new Date().getTime() - previusPingTime,
+						'diffTime': new Date().getTime() - _this.previusPingTime
 						// 'nodeHost' //String that indicates the CDN’s Node Host
 					});
 					// update previusPingTime 
-					previusPingTime = new Date().getTime();
+					_this.previusPingTime = new Date().getTime();
 				}
 			}, this.pingTime * 1000 );
 		}, 
@@ -214,7 +215,7 @@
 					// error could not log event.
 				}
 			}
-			var beaconUrl = '//' + this.host + '/' + action + this.getBaseParams() + 
+			var beaconUrl = '//' + this.host + '/' + action + this.getBaseParams() + '&' +
 				$.param( payload );
 			
 			// issue a get for the beacon url
