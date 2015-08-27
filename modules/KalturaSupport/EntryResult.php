@@ -58,13 +58,16 @@ class EntryResult {
 	
 	function getResult(){
 		$mediaProxyOverride = json_decode(json_encode( $this->uiconf->getPlayerConfig( 'mediaProxy' ) ), true);
-		// check for user supplied mediaProxy override of entryResult
-		if( $mediaProxyOverride && isset( $mediaProxyOverride['entry'] ) ){
-			$mediaProxyOverride['entry']['manualProvider'] = 'true';
-			return $mediaProxyOverride;
-		}
+
 		// Check for entry or reference Id
 		if( ! $this->request->getEntryId() && ! $this->request->getReferenceId() ) {
+			
+			// check for user supplied mediaProxy override of entryResult
+			if( $mediaProxyOverride && isset( $mediaProxyOverride['entry'] ) ){
+				$mediaProxyOverride['entry']['manualProvider'] = 'true';
+				return $mediaProxyOverride;
+			}
+			
 			return array();
 		}
 		
@@ -93,6 +96,14 @@ class EntryResult {
 		if ($this->error) {
 			$this->entryResultObj['error'] = $this->error;
 		}
+		// merge in mediaProxy values if set:
+		if( $mediaProxyOverride ){
+			$this->entryResultObj = array_replace_recursive($this->entryResultObj,  $mediaProxyOverride);
+			if( isset( $mediaProxyOverride['sources'] ) ){
+				$mediaProxyOverride['entry']['manualProvider'] = 'true';
+			}
+		}
+		
 		return $this->entryResultObj;
 	}
 	function isCachable(){
