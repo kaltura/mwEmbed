@@ -937,7 +937,7 @@ HTML;
 				// check for returned errors: 
 				echo json_encode( $payload );
 			?>;
-			var isIE8 = /msie 8/.test(navigator.userAgent.toLowerCase());
+			var isIE8 = document.documentMode === 8;
 		</script>
 		<script type="text/javascript">
 			<!-- Include the mwEmbedStartup script inline will initialize the resource loader -->
@@ -1192,9 +1192,18 @@ HTML;
 	<?php echo $this->outputSkinCss(); ?>
 	<?php echo $this->outputCustomCss(); ?>
 
-	<!--[if lt IE 10]>
-	<script type="text/javascript" src="<?php echo $this->getPath(); ?>resources/PIE/PIE.js"></script>
-	<![endif]-->
+	<script type="text/javascript">
+		(function (document) {
+			if (!document.documentMode || document.documentMode > 9) {
+				return;
+			}
+
+			var tag = document.createElement('script');
+			tag.type = 'text/javascript';
+			tag.src = "<?php echo $this->getPath(); ?>resources/PIE/PIE.js";
+			document.getElementsByTagName('head')[0].appendChild(tag);
+		})(window.document);
+	</script>
 </head>
 <body>
 <?php echo $this->getKalturaIframeScripts(); ?>
