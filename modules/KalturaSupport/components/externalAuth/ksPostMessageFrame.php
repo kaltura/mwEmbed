@@ -48,7 +48,7 @@ function getKs(){
 	}
 ?>
 <div id="login" >
-	<form method="post" action="ksPostMessageFrame.php">
+	<form method="get" action="ksPostMessageFrame.php">
 		<input type="hidden" name="action" value="login">
 		Demonstrates external Authentication flow for Kaltura player plugin, input any login value.
 		<p><input type="text" name="login" value="" placeholder="Username or Email"></p>
@@ -57,7 +57,7 @@ function getKs(){
 	</form>
 </div>
 <div id="authenticated">
-	<form method="post" action="ksPostMessageFrame.php">
+	<form method="get" action="ksPostMessageFrame.php">
 		<input type="hidden" name="action" value="logout">
 		<p class="submit"><input type="submit" name="commit" value="Logout"></p>
 	</form>
