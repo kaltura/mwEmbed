@@ -120,11 +120,13 @@ mw.KAdPlayer.prototype = {
 
 		// Setup some configuration for done state:
 		adSlot.doneFunctions = [];
+		// skip offset can be stored on the button or the vast plugin :(
+		var skipOffset =  _this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' ) ||  _this.embedPlayer.getKalturaConfig( 'vast', 'skipOffset' )
 		// set skip offset from config for all adds if defined 
-		if( _this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' ) ){
+		if( skipOffset ){
 			var i = 0;
 			for( i = 0; i < adSlot.ads.length; i++ ){
-				adSlot.ads[i].skipoffset =  _this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' );
+				adSlot.ads[i].skipoffset = skipOffset;
 			}
 		}
 
