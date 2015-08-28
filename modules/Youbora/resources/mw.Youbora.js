@@ -44,7 +44,7 @@
 				_this.viewIndex++;
 			});
 			// get the data setup: 
-			var setupUrl = '//nqs.nice264.com/data' + this.getBaseParams();
+			var setupUrl = '//nqs.nice264.com/data?' + $.param( this.getBaseParams() );
 			$.get( setupUrl, function(xmlData){
 				_this.host = $(xmlData).find('h').text();
 				_this.pingTime = $(xmlData).find('pt').text();
@@ -55,52 +55,21 @@
 		},
 		addBindings:function(){
 			var _this = this;
-			var playRequestStartTime = null;
-			var firstPlayDone = false; 
-			this.bind('firstPlay', function(){
-				_this.unbind('firstPlay');
-				// on play send the "start" action: 
-				var beaconObj = {
-					'resource': _this.getCurrentVideoSrc(),
-					// 'transcode' // not presently used. 
-					'live': _this.embedPlayer.isLive(),
-					'properties': JSON.stringify( _this.getMediaProperties() ),
-					'user': "", // should be the active user id, not presently set .
-					'referer': _this.embedPlayer.evaluate('{utility.referrer_url}'),
-					'totalBytes': "", // could potentially be populated if we use XHR for iframe payload + static loader + DASH MSE for segments )
-					'pingTime': _this.pingTime,
-				};
-				for( var i = 1; i < 10; i++ ){
-					// see if the param config is populated ( don't use getConfig evaluated value, as it could evaluate to false ) 
-					if( _this.embedPlayer.getRawKalturaConfig( "youbora", "param" + i ) ){
-						beaconObj[ "param" + i ] = _this.getConfig( "param" + i );
-					}
-				}
-				_this.sendBeacon( 'start', beaconObj );
-				playRequestStartTime = new Date().getTime();
-				firstPlayDone = true;
-				// start "ping monitoring"
-				_this.bindPingTracking();
-			});
+			this.playRequestStartTime = null;
+			this.firstPlayDone = false; 
+			this.bindFirstPlay();
+			//unbind any prev session: 
+			this.unbind('bufferEndEvent');
+					
 			// track joinTime ( time between play and positive time )
 			this.bind('timeupdate', function(){
 				// only track the first timeupdate:
 				_this.unbind('timeupdate');
 				_this.sendBeacon( 'joinTime', {
-					'time': new Date().getTime() - playRequestStartTime,
+					'time': new Date().getTime() - _this.playRequestStartTime,
 					'eventTime': _this.embedPlayer.currentTime,
 				});
-			});
-			// track buffer under run 
-			var startBufferClock = null;
-			this.bind('bufferStartEvent',function(){
-				startBufferClock = new Date().getTime() ;
-			});
-			this.bind('bufferEndEvent',function(){
-				_this.sendBeacon( 'bufferUnderrun', {
-					'time': _this.embedPlayer.currentTime,
-					'duration': new Date().getTime() - startBufferClock,
-				});
+				_this.bindBufferEvents();
 			});
 			var userHasPaused = false;
 			// track pause: 
@@ -119,27 +88,71 @@
 				_this.sendBeacon( 'stop', {
 					'diffTime': new Date().getTime() - _this.previusPingTime
 				});
+				
+				// -> increment index 
+				_this.viewIndex++;
+				_this.bindFirstPlay();
 			})
+		},
+		bindBufferEvents: function(){
+			var _this = this;
+			// track buffer under run 
+			var startBufferClock = null;
+			this.bind('bufferStartEvent',function(){
+				// check 
+				startBufferClock = new Date().getTime() ;
+			});
+			this.bind('bufferEndEvent',function(){
+				_this.sendBeacon( 'bufferUnderrun', {
+					'time': _this.embedPlayer.currentTime,
+					'duration': new Date().getTime() - startBufferClock,
+				});
+			});
+		},
+		bindFirstPlay:function(){
+			var _this = this;
+			this.bind('firstPlay', function(){
+				_this.unbind('firstPlay');
+				// on play send the "start" action: 
+				var beaconObj = {
+					'resource': _this.getCurrentVideoSrc(),
+					// 'transcode' // not presently used. 
+					'live': _this.embedPlayer.isLive(),
+					'properties': JSON.stringify( _this.getMediaProperties() ),
+					'user': "", // should be the active user id, not presently set .
+					'referer': _this.embedPlayer.evaluate('{utility.referrer_url}'),
+					'totalBytes': "0", // could potentially be populated if we use XHR for iframe payload + static loader + DASH MSE for segments )
+					'pingTime': _this.pingTime,
+				};
+				for( var i = 1; i < 10; i++ ){
+					// see if the param config is populated ( don't use getConfig evaluated value, as it could evaluate to false ) 
+					if( _this.embedPlayer.getRawKalturaConfig( "youbora", "param" + i ) ){
+						beaconObj[ "param" + i ] = _this.getConfig( "param" + i );
+					}
+				}
+				_this.sendBeacon( 'start', beaconObj );
+				_this.playRequestStartTime = new Date().getTime();
+				_this.firstPlayDone = true;
+				// start "ping monitoring"
+				_this.bindPingTracking();
+			});
 		},
 		bindPingTracking: function(){
 			var _this = this;
 			// start previusPingTime at bind time: 
 			this.previusPingTime = new Date().getTime();
 			setInterval(function(){
-				// only issue pings while playing: 
-				if( _this.embedPlayer.isPlaying() ){
-					_this.sendBeacon( 'ping',{
-						'pingTime': (( new Date().getTime() - _this.previusPingTime )  / 1000 ).toFixed(), // round seconds
-						'bitrate': _this.embedPlayer.mediaElement.selectedSource.getBitrate(),
-						'time': _this.embedPlayer.currentTime,
-						// totalBytes, // value is only sent along with the dataType parameter. If the bitrate parameter is sent, then this one is not needed.
-						'dataType': 0, // Kaltura does not really do RTMP streams any more. 
-						'diffTime': new Date().getTime() - _this.previusPingTime
-						// 'nodeHost' //String that indicates the CDN’s Node Host
-					});
-					// update previusPingTime 
-					_this.previusPingTime = new Date().getTime();
-				}
+				_this.sendBeacon( 'ping',{
+					'pingTime': (( new Date().getTime() - _this.previusPingTime )  / 1000 ).toFixed(), // round seconds
+					'bitrate': _this.embedPlayer.mediaElement.selectedSource.getBitrate(),
+					'time': _this.embedPlayer.currentTime,
+					'totalBytes':"0", // value is only sent along with the dataType parameter. If the bitrate parameter is sent, then this one is not needed.
+					'dataType': "0", // Kaltura does not really do RTMP streams any more. 
+					'diffTime': new Date().getTime() - _this.previusPingTime
+					// 'nodeHost' //String that indicates the CDN’s Node Host
+				});
+				// update previusPingTime 
+				_this.previusPingTime = new Date().getTime();
 			}, this.pingTime * 1000 );
 		}, 
 		getMediaProperties: function(){
@@ -161,7 +174,7 @@
 		},
 		getDeviceObj: function(){
 			return {
-				'￼manufacturer': "",
+				'manufacturer': "",
 				'type': "",
 				'year': "", 
 				'firmware': ""
@@ -181,10 +194,12 @@
 			return this.embedPlayer.evaluate( '{mediaProxy.entry.' + prop + '}' ); 
 		},
 		getBaseParams: function(){
-			var parms = '?system=' + this.getConfig('accountName') + 
-			'&pluginVersion=' + this.getPluginVersion();
-			if( this.viewCode ){
-				parms += '&code=' + this.viewCode;
+			var parms = {
+				'system' : this.getConfig('accountName'),
+				'pluginVersion': this.getPluginVersion()
+			};
+			if( this.getViewCode() ){
+				parms['code'] = this.getViewCode();
 			}
 			return parms;
 		},
@@ -207,7 +222,7 @@
 			if( !payload ){
 				payload = {};
 			}
-			
+			payload = $.extend({}, this.getBaseParams(), payload );
 			if ( this.getConfig( 'trackEventMonitor' ) ) {
 				try{
 					window.parent[ this.getConfig( 'trackEventMonitor' ) ]( action, JSON.stringify( payload ) );
@@ -215,13 +230,15 @@
 					// error could not log event.
 				}
 			}
-			var beaconUrl = '//' + this.host + '/' + action + this.getBaseParams() + '&' +
-				$.param( payload );
+			var beaconUrl = '//' + this.host + '/' + action + $.param( payload );
 			
 			// issue a get for the beacon url
 			$.get( beaconUrl );
 		},
 		getViewCode: function(){
+			if( ! this.viewCode ){
+				return null;
+			}
 			return this.viewCode + "_" + this.viewIndex;
 		},
 		getCurrentVideoSrc: function(){

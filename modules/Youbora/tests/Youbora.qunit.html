@@ -20,30 +20,70 @@
 
 	<body>
 		<h2> Youbora Media Analytics and QoS </h2>
-		<div id="player_container" style="float:left;" >
 		<div id="kaltura_player" style="width:470px;height:300px"></div>
-		<script>
-		//	mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
-			kWidget.featureConfig({
-				'targetId' : 'kaltura_player',
-				'wid': '_243342',
-				'uiconf_id' : '12905712',
-				'entry_id' : '1_sf5ovm7u',
-				'flashvars' : {
-					'youbora' : {
-						'trackEventMonitor': 'trackYouboraAnalyticsEvent',
-					}
-				},
-				'readyCallback': function(){
-					$('#kaltura_player').css('float', 'left').after('<div style="clear:both"></div><div id="analyticsContainer" style="float:left;" >'+
-						'<i>Analytics events:</i><br />' +
-							'<textarea id="analyticsLog" style="width:800px;height:280px;" ></textarea>' +
-						'</div>'
-					)
-				}
-			});
-		</script>
+		<div id="ads">
+			<H3>Ads:</H3>
+			<input style="height:20px;" id="adscheck" type="checkbox"> Run Preroll + midroll at 5 seconds<br>
 		</div>
+		<script>
+			//	mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
+			function doPlayerEmbed( settings ){
+				var embedObj ={
+					'targetId' : 'kaltura_player',
+					'wid': '_243342',
+					'uiconf_id' : '12905712',
+					'entry_id' : '1_sf5ovm7u',
+					'flashvars' : settings,
+					'readyCallback': function(){
+						$('#ads').after('<div id="analyticsContainer" style="width:100%;float:left;" >'+
+							'<i>Analytics events:</i><br />' +
+								'<textarea id="analyticsLog" style="width:100%;height:280px;" ></textarea>' +
+							'</div>'
+						)
+					}
+				};
+				if( $('#kaltura_player_doc').length ){
+					kWidget.embed( embedObj );
+				} else{
+					kWidget.featureConfig( embedObj );
+				}
+			}
+		</script>
+		<script> 
+			var getSettings = function () { 
+				return {'youbora': {
+					'trackEventMonitor': 'trackYouboraAnalyticsEvent',
+					}
+				}
+			}
+			$('#adscheck').click(function(){
+				var settings = getSettings();
+				if( this.checked ){
+					settings['vast'] = {
+						'numPreroll' : 1,
+						'storeSession': false,
+						'prerollUrl' : 'http://projects.kaltura.com/mdale/hotelVastAd.xml',
+						'timeout' : 4,
+						'preSequence' : 1
+					};
+					settings['skipBtn'] = {
+						'label': 'Skip Ad',
+						'skipOffset': 1
+					};
+					settings['mediaProxy'] ={
+						'entryCuePoints': [{
+							"protocolType": 1,
+							"adType": 1, 
+							"cuePointType": "adCuePoint.Ad",
+							"startTime": 5000,
+							"sourceUrl": "http://projects.kaltura.com/mdale/hotelVastAd.xml"
+						}]
+					}
+				}
+				doPlayerEmbed( settings );
+			})
+			doPlayerEmbed( getSettings() );
+		</script>
 	</body>
 
 </html>
