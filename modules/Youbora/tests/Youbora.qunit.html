@@ -35,6 +35,7 @@
 					'entry_id' : '1_sf5ovm7u',
 					'flashvars' : settings,
 					'readyCallback': function(){
+						$('#analyticsContainer').remove();
 						$('#ads').after('<div id="analyticsContainer" style="width:100%;float:left;" >'+
 							'<i>Analytics events:</i><br />' +
 								'<textarea id="analyticsLog" style="width:100%;height:280px;" ></textarea>' +

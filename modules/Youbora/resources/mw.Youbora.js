@@ -58,7 +58,7 @@
 			this.playRequestStartTime = null;
 			this.firstPlayDone = false; 
 			this.bindFirstPlay();
-			//unbind any prev session: 
+			// unbind any prev session events:
 			this.unbind('bufferEndEvent');
 					
 			// track joinTime ( time between play and positive time )
@@ -99,13 +99,18 @@
 			// track buffer under run 
 			var startBufferClock = null;
 			this.bind('bufferStartEvent',function(){
-				// check 
-				startBufferClock = new Date().getTime() ;
-			});
-			this.bind('bufferEndEvent',function(){
-				_this.sendBeacon( 'bufferUnderrun', {
-					'time': _this.embedPlayer.currentTime,
-					'duration': new Date().getTime() - startBufferClock,
+				// ignore buffer events during seek: 
+				if( _this.embedPlayer.seeking ){
+					return ;
+				}
+				startBufferClock = new Date().getTime();
+				_this.unbind('bufferEndEvent');
+				_this.bind('bufferEndEvent',function(){
+					// ignore buffer events during seek: 
+					_this.sendBeacon( 'bufferUnderrun', {
+						'time': _this.embedPlayer.currentTime,
+						'duration': new Date().getTime() - startBufferClock,
+					});
 				});
 			});
 		},
