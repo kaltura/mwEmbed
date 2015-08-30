@@ -357,7 +357,7 @@ mw.KAdPlayer.prototype = {
 
 
 			_this.playVideoSibling(
-			targetSource,
+				targetSource,
 				function( vid ) {
 					_this.addAdBindings( vid, adSlot, adConf );
 					$( _this.embedPlayer ).trigger( 'playing' ); // this will update the player UI to playing mode
@@ -468,7 +468,7 @@ mw.KAdPlayer.prototype = {
 					_this.pauseAd();
 					return false;
 				});
-				// prevent mouseup propegation to prevent the clickthrough url to open on IE8 / IE9 (see mw.PlayerLayoutBuilder.js, line 567)
+				// prevent mouseup propagation to prevent the clickthrough url to open on IE8 / IE9 (see mw.PlayerLayoutBuilder.js, line 567)
 				$( '#' + iconId ).bind('mouseup', function(e){
 					e = e || window.event;
 					e.preventDefault();
@@ -484,6 +484,24 @@ mw.KAdPlayer.prototype = {
 			
 			adConf.selectedIcon = icon;		
 		}
+		// add any available ad metadata before triggering onAdOpen
+		this.embedPlayer.adTimeline.updateSequenceProxy(
+			'activePluginMetadata',
+			{
+				'ID': adConf.id,
+				'width': targetSource.width,
+				'height': targetSource.height,
+				'mimeType': targetSource.type,
+				'url': targetSource.getSrc(),
+				'duration': adConf.duration, // can also be read from AdSupport_AdUpdateDuration event
+				'type': adSlot.type, // value could be preroll/midroll/postroll
+				'name': adSlot.adSystem,
+				'title': adSlot.title, // not commonly present
+				'description' : adSlot.description,
+				'iabCategory': null, // not available
+				'CampaignID': null // not available 
+			}
+		);
 		// Fire Impression
 		this.fireImpressionBeacons( adConf );
 		// dispatch adOpen event

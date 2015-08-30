@@ -29,19 +29,34 @@
 			"accountName": 'kaltura',
 			"trackEventMonitor": null,
 			// default custom params: 
-			"param1": "{playerStatusProxy.loadTime}"
+			"param1": "{playerStatusProxy.loadTime}",
+			// player id
+			"param2": "{configProxy.kw.uiconfid}"
 		},
 		// the view index is incremented as users views multiple clips in a given play session. 
+		// set to -1 by default to have always increment "start" start at zero.
 		viewIndex: 0,
 		// if beacon requests are sent before youbora is setup queue them: 
 		queuedBeacons: [],
+		// current ad:
+		currentAd:{},
+		// timestamp for ad complete: 
+		adCompleteTime: null,
+		// the active ping interval:
+		activePingInterval: null,
+		
 		
 		setup: function(){
 			var _this = this;
 			// init function defines a manual callback ( needs to be set on every new 'stream' )
-			this.bind('changeMedia', function(){
-				// if viewing content in a single session increment the view index
+			this.bind('onChangeMedia', function(){
+				// clear ping interval
+				clearInterval( _this.activePingInterval );
+				_this.activePingInterval = null;
+			});
+			this.bind('onChangeMediaDone', function(){
 				_this.viewIndex++;
+				_this.addBindings();
 			});
 			// get the data setup: 
 			var setupUrl = '//nqs.nice264.com/data?' + $.param( this.getBaseParams() );
@@ -60,19 +75,77 @@
 			this.bindFirstPlay();
 			// unbind any prev session events:
 			this.unbind('bufferEndEvent');
-					
-			// track joinTime ( time between play and positive time )
-			this.bind('timeupdate', function(){
-				// only track the first timeupdate:
-				_this.unbind('timeupdate');
-				_this.sendBeacon( 'joinTime', {
-					'time': new Date().getTime() - _this.playRequestStartTime,
-					'eventTime': _this.embedPlayer.currentTime,
+			// track content end:
+			this.bind( 'postEnded', function(){
+				_this.sendBeacon( 'stop', {
+					'diffTime': new Date().getTime() - _this.previusPingTime
 				});
-				_this.bindBufferEvents();
+				// reset the firstPlay flag:
+				_this.embedPlayer.firstPlay = true;
+				// -> increment index 
+				_this.viewIndex++;
+				_this.bindFirstPlay();
 			});
-			var userHasPaused = false;
+			this.bindAdEvents();
+		},
+		bindAdEvents: function(){
+			var _this = this;
+			this.unbind('onAdOpen');
+			this.bind( 'onAdOpen', function(event, adId, networkName, type, index) {
+				_this.currentAd.id = adId;
+				_this.currentAd.type = type;
+				_this.currentAd.index = index;
+				_this.bind( 'onAdComplete', function() {
+					_this.adCompleteTime = new Date().getTime();
+					_this.sendBeacon( 'stop', {
+						'diffTime': new Date().getTime() - _this.previusPingTime
+					});
+					// after ad completes increment view index
+					_this.viewIndex++;
+				});
+				// wait for ad duration update to trigger ad start event
+				_this.bind('AdSupport_AdUpdateDuration', function(e, duration){
+					_this.unbind("AdSupport_AdUpdateDuration");
+					var adMetadata = _this.embedPlayer.evaluate( '{sequenceProxy.activePluginMetadata}' );
+					// issue youbora ad start (  just "start" with ad metadata )
+					var beaconObj = {
+						'resource': adMetadata.url,
+						// 'transcode' // not presently used. 
+						'live': _this.embedPlayer.isLive(),
+						'properties': JSON.stringify({ 	
+							'filename':  adMetadata.type + "_" + ( adMetadata.name || "" ),
+							'content_id': adMetadata.ID,
+							'content_metadata': {
+								"title": adMetadata.title,
+								"duration": duration, 
+							},
+						}),
+						'referer': _this.embedPlayer.evaluate('{utility.referrer_url}'),
+						'totalBytes': "0",
+						'pingTime': _this.pingTime,
+					};
+					beaconObj = $.extend( beaconObj, _this.getCustomParams() );
+					_this.sendBeacon( 'start', beaconObj );
+					
+					// start ping tracking: 
+					_this.bindPingTracking();
+				});
+			});
+		},
+		getCustomParams: function(){
+			var paramObj = {};
+			for( var i = 1; i < 10; i++ ){
+				// see if the param config is populated ( don't use getConfig evaluated value, as it could evaluate to false ) 
+				if( this.embedPlayer.getRawKalturaConfig( "youbora", "param" + i ) ){
+					paramObj[ "param" + i ] = this.getConfig( "param" + i );
+				}
+			}
+			return paramObj;
+		},
+		bindPlaybackEvents: function(){
+			var _this = this;
 			// track pause: 
+			var userHasPaused = false;
 			this.bind( 'onpause', function( playerState ){
 				_this.sendBeacon( 'pause' );
 				userHasPaused = true;
@@ -81,21 +154,9 @@
 			this.bind( 'onplay', function( playerState ){
 				if( userHasPaused ){
 					_this.sendBeacon( 'resume' );
+					userHasPaused = false;
 				}
 			});
-			// track content end:
-			this.bind( 'postEnded', function(){
-				_this.sendBeacon( 'stop', {
-					'diffTime': new Date().getTime() - _this.previusPingTime
-				});
-				
-				// -> increment index 
-				_this.viewIndex++;
-				_this.bindFirstPlay();
-			})
-		},
-		bindBufferEvents: function(){
-			var _this = this;
 			// track buffer under run 
 			var startBufferClock = null;
 			this.bind('bufferStartEvent',function(){
@@ -105,7 +166,19 @@
 				}
 				startBufferClock = new Date().getTime();
 				_this.unbind('bufferEndEvent');
+				var seekDoneTime = null;
+				_this.bind('seeked', function(){
+					seekDoneTime = new Date().getTime();
+				})
 				_this.bind('bufferEndEvent',function(){
+					// if less then 250 ms from seek end don't trigger underrun:
+					if( seekDoneTime && (new Date().getTime() - seekDoneTime ) < 250 ){
+						return ;
+					}
+					// if less then 250 ms from ad end don't trigger underrun:
+					if( _this.adCompleteTime && (new Date().getTime() - _this.adCompleteTime ) < 250 ){
+						
+					}
 					// ignore buffer events during seek: 
 					_this.sendBeacon( 'bufferUnderrun', {
 						'time': _this.embedPlayer.currentTime,
@@ -116,6 +189,11 @@
 		},
 		bindFirstPlay:function(){
 			var _this = this;
+			// unbind any existing events: 
+			this.unbind( 'bufferStartEvent');
+			this.unbind( 'onpause' );
+			this.unbind(  'onplay' );
+
 			this.bind('firstPlay', function(){
 				_this.unbind('firstPlay');
 				// on play send the "start" action: 
@@ -129,24 +207,37 @@
 					'totalBytes': "0", // could potentially be populated if we use XHR for iframe payload + static loader + DASH MSE for segments )
 					'pingTime': _this.pingTime,
 				};
-				for( var i = 1; i < 10; i++ ){
-					// see if the param config is populated ( don't use getConfig evaluated value, as it could evaluate to false ) 
-					if( _this.embedPlayer.getRawKalturaConfig( "youbora", "param" + i ) ){
-						beaconObj[ "param" + i ] = _this.getConfig( "param" + i );
-					}
-				}
+				beaconObj = $.extend( beaconObj, _this.getCustomParams() );
 				_this.sendBeacon( 'start', beaconObj );
 				_this.playRequestStartTime = new Date().getTime();
 				_this.firstPlayDone = true;
 				// start "ping monitoring"
 				_this.bindPingTracking();
+				_this.bindFirstJoin();
+			});
+		},
+		bindFirstJoin: function(){
+			var _this = this;
+			// track joinTime ( time between play and positive time )
+			this.bind('timeupdate', function(){
+				// only track the first timeupdate:
+				_this.unbind('timeupdate');
+				_this.sendBeacon( 'joinTime', {
+					'time': new Date().getTime() - _this.playRequestStartTime,
+					'eventTime': _this.embedPlayer.currentTime,
+				});
+				_this.bindPlaybackEvents();
 			});
 		},
 		bindPingTracking: function(){
 			var _this = this;
+			// don't start ping tracking if already active
+			if( this.activePingInterval ){
+				return ;
+			}
 			// start previusPingTime at bind time: 
 			this.previusPingTime = new Date().getTime();
-			setInterval(function(){
+			this.activePingInterval = setInterval(function(){
 				_this.sendBeacon( 'ping',{
 					'pingTime': (( new Date().getTime() - _this.previusPingTime )  / 1000 ).toFixed(), // round seconds
 					'bitrate': _this.embedPlayer.mediaElement.selectedSource.getBitrate(),
@@ -201,7 +292,8 @@
 		getBaseParams: function(){
 			var parms = {
 				'system' : this.getConfig('accountName'),
-				'pluginVersion': this.getPluginVersion()
+				'pluginVersion': this.getPluginVersion(),
+				'randomNumber': Math.floor(Math.random()*90000) + 10000 // 5 digit random number.
 			};
 			if( this.getViewCode() ){
 				parms['code'] = this.getViewCode();

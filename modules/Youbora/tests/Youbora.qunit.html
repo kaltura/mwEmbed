@@ -21,57 +21,30 @@
 	<body>
 		<h2> Youbora Media Analytics and QoS </h2>
 		<div id="kaltura_player" style="width:470px;height:300px"></div>
-		<div id="ads">
-			<H3>Ads:</H3>
-			<input style="height:20px;" id="adscheck" type="checkbox"> Run Preroll + midroll at 5 seconds<br>
-		</div>
+		<a id="changeMedia" href="#">ChangeMedia</a>
 		<script>
-			//	mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
-			function doPlayerEmbed( settings ){
-				var embedObj ={
-					'targetId' : 'kaltura_player',
-					'wid': '_243342',
-					'uiconf_id' : '12905712',
-					'entry_id' : '1_sf5ovm7u',
-					'flashvars' : settings,
-					'readyCallback': function(){
-						$('#analyticsContainer').remove();
-						$('#ads').after('<div id="analyticsContainer" style="width:100%;float:left;" >'+
-							'<i>Analytics events:</i><br />' +
-								'<textarea id="analyticsLog" style="width:100%;height:280px;" ></textarea>' +
-							'</div>'
-						)
-					}
-				};
-				if( $('#kaltura_player_doc').length ){
-					kWidget.embed( embedObj );
-				} else{
-					kWidget.featureConfig( embedObj );
-				}
-			}
-		</script>
-		<script> 
-			var getSettings = function () { 
-				return {'youbora': {
-					'trackEventMonitor': 'trackYouboraAnalyticsEvent',
-					}
-				}
-			}
-			$('#adscheck').click(function(){
-				var settings = getSettings();
-				if( this.checked ){
-					settings['vast'] = {
+			kWidget.featureConfig({
+				'targetId' : 'kaltura_player',
+				'wid': '_243342',
+				'uiconf_id' : '12905712',
+				'entry_id' : '1_sf5ovm7u',
+				'flashvars' : {
+					'youbora': {
+						'trackEventMonitor': 'trackYouboraAnalyticsEvent',
+					},
+					'vast': {
 						'numPreroll' : 1,
 						'storeSession': false,
 						'prerollUrl' : 'http://projects.kaltura.com/mdale/hotelVastAd.xml',
 						'timeout' : 4,
-						'preSequence' : 1
-					};
-					settings['skipBtn'] = {
+						'preSequence' : 1,
+						'trackCuePoints': true
+					},
+					'skipBtn':{
 						'label': 'Skip Ad',
 						'skipOffset': 1
-					};
-					settings['mediaProxy'] ={
+					},
+					'mediaProxy':{
 						'entryCuePoints': [{
 							"protocolType": 1,
 							"adType": 1, 
@@ -80,10 +53,17 @@
 							"sourceUrl": "http://projects.kaltura.com/mdale/hotelVastAd.xml"
 						}]
 					}
+				},
+				'readyCallback': function(){
+					$('#changeMedia').click(function(){
+						$('#kaltura_player')[0].sendNotification( 'changeMedia', { 'entryId':'0_swup5zao' } );
+					}).after('<div id="analyticsContainer" style="width:100%;float:left;" >'+
+						'<i>Analytics events:</i><br />' +
+							'<textarea id="analyticsLog" style="width:100%;height:280px;" ></textarea>' +
+						'</div>'
+					)
 				}
-				doPlayerEmbed( settings );
-			})
-			doPlayerEmbed( getSettings() );
+			});
 		</script>
 	</body>
 

@@ -61,6 +61,14 @@ mw.VastAdParser = {
 			if ($ad.find('AdSystem')){
 				currentAd.adSystem = $ad.find('AdSystem').text();
 			}
+			// set AdTitle
+			if ($ad.find('AdTitle')){
+				currentAd.title = $ad.find('AdTitle').text();
+			}
+			// set Description
+			if ($ad.find('Description')){
+				currentAd.description = $ad.find('Description').text();
+			}
 
 			// Set impression urls
 			currentAd.impressions = [];
