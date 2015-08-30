@@ -58,7 +58,6 @@ class EntryResult {
 	
 	function getResult(){
 		$mediaProxyOverride = json_decode(json_encode( $this->uiconf->getPlayerConfig( 'mediaProxy' ) ), true);
-
 		// Check for entry or reference Id
 		if( ! $this->request->getEntryId() && ! $this->request->getReferenceId() ) {
 			
@@ -67,32 +66,27 @@ class EntryResult {
 				$mediaProxyOverride['entry']['manualProvider'] = 'true';
 				return $mediaProxyOverride;
 			}
-			
 			return array();
 		}
 		
-		// Check for entry cache:
+		// Check for entry non-expired entry cache:
 		if ( !$this->request->hasKS() ){
-            $this->entryResultObj = unserialize( $this->cache->get( $this->getCacheKey() ) );
-            if( $this->entryResultObj ){
-                return $this->entryResultObj;
-            }
-        }
-		
-		// Check if we have a cached result object:
+			$this->entryResultObj = unserialize( $this->cache->get( $this->getCacheKey() ) );
+		}
+
+		// Check if we have need to load from api
 		if( ! $this->entryResultObj ){
 			$this->entryResultObj = $this->getEntryResultFromApi();
+			// if no errors, not admin and we have access, and we have a fresh API result, add to cache.
+			// note playback will always go through playManifest
+			// so we don't care if we cache where one users has permission but another does not.
+			// we never cache admin or ks users access so would never expose info that not defined across anonymous regional access.
+			if( $this->isCachable() ){
+				$this->cache->set( $this->getCacheKey(), serialize( $this->entryResultObj ) );
+				$this->cache->set( $this->getCacheKey() + '_savetime', time() );
+			}
 		}
-		// if no errors, not admin and we have access, add to cache. 
-		// note playback will always go through playManifest 
-		// so we don't care if we cache where one users has permission but another does not. 
-		// we never cache admin or ks users access so would never expose info that not defined across anonymous regional access. 
-		if( $this->isCachable() ){
-			$this->cache->set( $this->getCacheKey(), serialize( $this->entryResultObj ) );
-			$this->cache->set( $this->getCacheKey() + '_savetime', time() );
-		}
-		
-		//check if we have errors on the entry
+		// check if we have errors on the entry
 		if ($this->error) {
 			$this->entryResultObj['error'] = $this->error;
 		}
@@ -103,7 +97,6 @@ class EntryResult {
 				$mediaProxyOverride['entry']['manualProvider'] = 'true';
 			}
 		}
-		
 		return $this->entryResultObj;
 	}
 	function isCachable(){
