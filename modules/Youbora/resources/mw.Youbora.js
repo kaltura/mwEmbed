@@ -165,19 +165,21 @@
 					return ;
 				}
 				startBufferClock = new Date().getTime();
-				_this.unbind('bufferEndEvent');
 				var seekDoneTime = null;
 				_this.bind('seeked', function(){
 					seekDoneTime = new Date().getTime();
 				})
+				_this.unbind('bufferEndEvent');
 				_this.bind('bufferEndEvent',function(){
-					// if less then 250 ms from seek end don't trigger underrun:
-					if( seekDoneTime && (new Date().getTime() - seekDoneTime ) < 250 ){
+					// if less then 1000 ms from seek end don't trigger underrun:
+					_this.log("bufferEndEvent:: detla from seek end:" + (new Date().getTime() - seekDoneTime ) );
+					if( seekDoneTime && (new Date().getTime() - seekDoneTime ) < 1000 ){
 						return ;
 					}
-					// if less then 250 ms from ad end don't trigger underrun:
-					if( _this.adCompleteTime && (new Date().getTime() - _this.adCompleteTime ) < 250 ){
-						
+					// if less then 1000 ms from ad end don't trigger underrun:
+					_this.log("bufferEndEvent:: detla from ad end:" + (new Date().getTime() -  _this.adCompleteTime ) );
+					if( _this.adCompleteTime && (new Date().getTime() - _this.adCompleteTime ) < 1000 ){
+						return ;
 					}
 					// ignore buffer events during seek: 
 					_this.sendBeacon( 'bufferUnderrun', {
