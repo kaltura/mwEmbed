@@ -338,7 +338,7 @@ mw.KAdPlayer.prototype = {
 	 */
 	displayVideoFile: function( adSlot, adConf ){
 		var _this = this;
-        _this.podStartTime = _this.embedPlayer.currentTime;
+		_this.podStartTime = _this.embedPlayer.currentTime;
 		// check that we have a video to display:
 		var targetSource =  _this.embedPlayer.getCompatibleSource( adConf.videoFiles );
 		if( !targetSource ){
@@ -357,28 +357,28 @@ mw.KAdPlayer.prototype = {
 
 
 			_this.playVideoSibling(
-            targetSource,
+			targetSource,
 				function( vid ) {
 					_this.addAdBindings( vid, adSlot, adConf );
 					$( _this.embedPlayer ).trigger( 'playing' ); // this will update the player UI to playing mode
-                    // trigger ad play event
-                    _this.waitingForLoadedData = true;
-                    $(vid).on("loadeddata", function(){
-                        if(_this.waitingForLoadedData){
-                            // collect POD parameters is exists (adSlot.sequencedAds = POD)
-                            var podPosition;
-                            var podStartTime;
-                            if(adSlot.sequencedAds) {
-                                podPosition = adConf.sequence;
-                                podStartTime = _this.podStartTime;
-                            }
-                            $(_this.embedPlayer).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex+1, vid.duration, vid.currentSrc, podPosition, podStartTime]);
-                            _this.waitingForLoadedData = false;
-                        }
-                    });
-                    if (_this.embedPlayer.muted){
-                        _this.adSibling.changeVolume(0);
-                    }
+					// trigger ad play event
+					_this.waitingForLoadedData = true;
+					$(vid).on("loadeddata", function(){
+						if(_this.waitingForLoadedData){
+							// collect POD parameters is exists (adSlot.sequencedAds = POD)
+							var podPosition;
+							var podStartTime;
+							if(adSlot.sequencedAds) {
+								podPosition = adConf.sequence;
+								podStartTime = _this.podStartTime;
+							}
+							$(_this.embedPlayer).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex+1, vid.duration, vid.currentSrc, podPosition, podStartTime]);
+							_this.waitingForLoadedData = false;
+						}
+					});
+					if (_this.embedPlayer.muted){
+						_this.adSibling.changeVolume(0);
+					}
 				},
 				function(){
 					adSlot.playbackDone();
@@ -486,8 +486,8 @@ mw.KAdPlayer.prototype = {
 		}
 		// Fire Impression
 		this.fireImpressionBeacons( adConf );
-        // dispatch adOpen event
-        $( this.embedPlayer).trigger( 'onAdOpen',[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex] );
+		// dispatch adOpen event
+		$( this.embedPlayer).trigger( 'onAdOpen',[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex] );
 	},
 	pauseAd: function(){
 		if (this.embedPlayer.evaluate("{vast.pauseAdOnClick}") !== false) {
@@ -730,27 +730,27 @@ mw.KAdPlayer.prototype = {
 		$( embedPlayer ).bind('volumeChanged' + _this.trackingBindPostfix, function( e, changeValue ){
 			// when using siblings we need to adjust the sibling volume on volumeChange evnet.
 			if( _this.isVideoSiblingEnabled() && _this.adSibling) {
-                _this.adSibling.changeVolume(changeValue);
+				_this.adSibling.changeVolume(changeValue);
 
 			}
 		});
 
-        embedPlayer.bindHelper( 'doPause' + _this.trackingBindPostfix, function(){
-		    if( _this.isVideoSiblingEnabled() && _this.adSibling) {
-			    $( _this.embedPlayer ).trigger( 'onPauseInterfaceUpdate' ); // update player interface
-		    } else if ( !_this.isVideoSiblingEnabled() ) {
+		embedPlayer.bindHelper( 'doPause' + _this.trackingBindPostfix, function(){
+			if( _this.isVideoSiblingEnabled() && _this.adSibling) {
+				$( _this.embedPlayer ).trigger( 'onPauseInterfaceUpdate' ); // update player interface
+			} else if ( !_this.isVideoSiblingEnabled() ) {
 				$( embedPlayer ).trigger( "onPlayerStateChange", ["pause", _this.embedPlayer.currentState] );
 			}
 			vid.pause();
 
-        });
+		});
 
-        embedPlayer.bindHelper( 'doPlay' + _this.trackingBindPostfix, function(){
-		    if( _this.isVideoSiblingEnabled() && _this.adSibling) {
-			    $( _this.embedPlayer ).trigger( 'playing' ); // update player interface
-		    }
-            vid.play();
-        });
+		embedPlayer.bindHelper( 'doPlay' + _this.trackingBindPostfix, function(){
+			if( _this.isVideoSiblingEnabled() && _this.adSibling) {
+				$( _this.embedPlayer ).trigger( 'playing' ); // update player interface
+			}
+			vid.play();
+		});
 
 		if( !embedPlayer.isPersistentNativePlayer() ) {
 			// Make sure we remove large play button
@@ -770,15 +770,15 @@ mw.KAdPlayer.prototype = {
 
 		}
 	},
-    /**
-     * Skip all ad slots if set:
-     */
+	/**
+	 * Skip all ad slots if set:
+	 */
 	stop: function(){
-      if( this.currentAdSlot && ( this.currentAdSlot.adIndex < this.currentAdSlot.ads.length ) ){
-            this.currentAdSlot.playbackDone( true );
-        }
-    },
-    /**
+	  if( this.currentAdSlot && ( this.currentAdSlot.adIndex < this.currentAdSlot.ads.length ) ){
+			this.currentAdSlot.playbackDone( true );
+		}
+	},
+	/**
 	 * @param timeString string in HH:MM:SS.mmm format
 	 * returns value in seconds
 	 **/
@@ -1171,8 +1171,8 @@ mw.KAdPlayer.prototype = {
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining', offsetRemaining );
 				if (offsetRemaining <= 0) {
 					_this.sendVASTBeacon( trackingEvents, 'progress' );
-                    $('#' + _this.embedPlayer.id + '_ad_skipNotice' ).remove();
-                    $('#' + _this.embedPlayer.id + '_ad_skipBtn' ).show();
+					$('#' + _this.embedPlayer.id + '_ad_skipNotice' ).remove();
+					$('#' + _this.embedPlayer.id + '_ad_skipBtn' ).show();
 				}
 			}
 			if (adConf.selectedIcon) {
@@ -1372,7 +1372,7 @@ mw.KAdPlayer.prototype = {
 					}
 				}
 				var finishPlaying = function () {
-                    if ( isJs ) {
+					if ( isJs ) {
 						_this.embedPlayer.getInterface().find( '.mwEmbedPlayer' ).show();
 					}
 					$( '#' + vpaidId ).remove();
@@ -1489,7 +1489,7 @@ mw.KAdPlayer.prototype = {
 
 				VPAIDObj.subscribe( function ( message ) {
 					_this.sendVASTBeacon( adConf.trackingEvents, 'start' );
-                    $(_this.embedPlayer).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex+1, VPAIDObj.duration, VPAIDObj.id]);
+					$(_this.embedPlayer).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex+1, VPAIDObj.duration, VPAIDObj.id]);
 				}, 'AdVideoStart' );
 
 				VPAIDObj.subscribe( function ( message ) {
