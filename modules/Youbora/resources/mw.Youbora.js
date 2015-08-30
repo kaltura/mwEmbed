@@ -159,7 +159,7 @@
 			});
 			// track buffer under run 
 			var startBufferClock = null;
-			// track seek times for seek false possitives 
+			// track seek times for seek false positives 
 			var seekTime = null;
 			// update seek time both at start and end of seek ( sometime buffer end happens before seek end )
 			_this.unbind('preSeek');
