@@ -159,21 +159,24 @@
 			});
 			// track buffer under run 
 			var startBufferClock = null;
+			// track seek times for seek false possitives 
+			var seekTime = null;
+			// update seek time both at start and end of seek ( sometime buffer end happens before seek end )
+			_this.unbind('preSeek');
+			_this.bind('preSeek', function(){
+				seekTime = new Date().getTime();
+			})
 			this.bind('bufferStartEvent',function(){
-				// ignore buffer events during seek: 
-				if( _this.embedPlayer.seeking ){
-					return ;
-				}
 				startBufferClock = new Date().getTime();
-				var seekDoneTime = null;
+				_this.unbind('seeked');
 				_this.bind('seeked', function(){
-					seekDoneTime = new Date().getTime();
+					seekTime = new Date().getTime();
 				})
 				_this.unbind('bufferEndEvent');
 				_this.bind('bufferEndEvent',function(){
 					// if less then 1000 ms from seek end don't trigger underrun:
-					_this.log("bufferEndEvent:: detla from seek end:" + (new Date().getTime() - seekDoneTime ) );
-					if( seekDoneTime && (new Date().getTime() - seekDoneTime ) < 1000 ){
+					_this.log("bufferEndEvent:: detla from seek time:" + (new Date().getTime() - seekTime ) );
+					if( seekTime && (new Date().getTime() - seekTime ) < 1000 ){
 						return ;
 					}
 					// if less then 1000 ms from ad end don't trigger underrun:
