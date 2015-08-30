@@ -171,7 +171,6 @@ class UiConfResult {
 		}
 		// Get our flashVars
 		$vars = $this->normalizeFlashVars();
-
 		// Add uiVars into vars array
 		if ( isset($playerConfig['uiVars']) ) {
 			foreach( $playerConfig['uiVars'] as $key=>$value ) {
