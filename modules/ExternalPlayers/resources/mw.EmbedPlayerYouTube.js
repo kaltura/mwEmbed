@@ -393,7 +393,9 @@
 				'entryId': this.kentryid
 			};
 			this.getKClient().doRequest(request, function (entryDataResult) {
-				_this.getPlayerElement().loadVideoById(entryDataResult.referenceId);
+				if (entryDataResult.referenceId){
+					_this.getPlayerElement().loadVideoById(entryDataResult.referenceId);
+				}
 				_this.parent_changeMedia();
 			});
 		},
