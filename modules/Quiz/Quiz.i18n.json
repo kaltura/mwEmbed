@@ -20,7 +20,16 @@
     "mwe-quiz-reviewSubmit":"press any question to review submission",
     "mwe-quiz-thankYou":"Thank You.",
     "mwe-quiz-ok":"Ok",
-    "mwe-quiz-completedQuiz":"You completed the quiz"
+    "mwe-quiz-completedQuiz":"You completed the quiz",
+    "mwe-quiz-TakeAMoment":"Take a moment to",
+    "mwe-quiz-review":"Review",
+    "mwe-quiz-yourAnswers":"your answers",
+    "mwe-quiz-or":"or",
+    "mwe-quiz-goAhead":"go ahead and",
+    "mwe-quiz-submit":"Submit"
+
+
+
 
 }
 }
