@@ -11,6 +11,7 @@
 			'scrubberColor': null,
 			'watchedSliderColor':null,
 			'bufferedSliderColor':null,
+			'timeLabelColor':null,
 			'buttonsIconColorDropShadow': null,
 			'dropShadowColor': null,
 			'applyToLargePlayButton': true
@@ -45,7 +46,7 @@
 					case 'buttonsColor':
 						$(".btn").not(".playHead").attr("style","background-color: " + value + " !important; color: "+ this.getConfig('buttonsIconColor') +" !important; text-shadow: "+ this.getConfig('dropShadowColor') +" !important");
 						if (this.getConfig('applyToLargePlayButton')) {
-							$(".largePlayBtn").attr("style", "background-color: " + value + " !important");
+							$(".largePlayBtn").attr("style", "background-color: " + value + " !important; color: "+ this.getConfig('buttonsIconColor') +" !important;");
 						}
 						break;
 					case 'buttonsIconColor':
@@ -72,6 +73,10 @@
 					case 'bufferedSliderColor':
 						$(".buffered").attr("style","background-color: " + value + " !important");
 						$(".buffered").attr("style","background:"  + value + " !important");
+						break;
+					case 'timeLabelColor':
+						$(".currentTimeLabel").attr("style","color: " + value + " !important");
+						$(".durationLabel").attr("style","color:"  + value + " !important");
 						break;
 					case 'buttonsIconColorDropShadow':
 						if (value == true){

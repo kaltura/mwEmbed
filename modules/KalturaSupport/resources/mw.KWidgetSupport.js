@@ -190,7 +190,7 @@ mw.KWidgetSupport.prototype = {
 
 		// Support mediaPlayFrom, mediaPlayTo properties
 		embedPlayer.bindHelper( 'Kaltura_SetKDPAttribute', function(e, componentName, property, value){
-			if (!value) {
+			if (!value && value !== 0) {
 				return;
 			}
 			var segmentChange = false;
@@ -278,11 +278,30 @@ mw.KWidgetSupport.prototype = {
 			mw.setConfig("LeadWithHLSOnFlash", true);
 		}
 
-		var multicastSource = this.getLiveMulticastSource(playerData);
-		if (multicastSource){
+		if (playerData &&  playerData.meta &&
+			(playerData.meta.sourceType === "32" ||
+			playerData.meta.sourceType === "33") ){
+			mw.setConfig("LeadWithHLSOnFlash",true);
+            mw.setConfig("isLiveKalturaHLS",true);
+		}
+
+		var legacyMulticastSource = this.getLegacyLiveMulticastSource(playerData);
+		if (legacyMulticastSource){
 			this.addLiveEntrySource( embedPlayer, playerData.meta, false, true, 'multicast_silverlight');
 			isStreamSupported = true;
 			embedPlayer.setLive( true );
+		}
+
+		if (embedPlayer.getFlashvars("LeadWithUnicastToMulticast")===true) {
+			this.addLiveEntrySource( embedPlayer, playerData.meta, false, true, 'applehttp_to_mc');
+			isStreamSupported = true;
+			embedPlayer.setLive( true );
+			if (embedPlayer.getFlashvars("disableMulticastFallback")) {
+
+				//don't keep collecting
+				return;
+			}
+
 		}
 
 		if( this.hasHlsSourcse(playerData) &&
@@ -336,7 +355,7 @@ mw.KWidgetSupport.prototype = {
 		}
 		return hasOnlyHLS;
 	},
-	getLiveMulticastSource: function(playerData){
+	getLegacyLiveMulticastSource: function(playerData){
 		var source = null;
 		if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'splayer' ) ) {
 			if ( playerData.contextData && playerData.contextData.flavorAssets ) {
@@ -424,7 +443,7 @@ mw.KWidgetSupport.prototype = {
 				if (flavorPartnerData["default"] === "true"){
 					flavorAssetObj["default"] = true;
 				}
-				var drmData = _this.getSourceDrmData(flavorAsset.id, flavorDrmData);
+				var drmData = _this.getFlavorAssetDrmData(flavorAsset.id, flavorDrmData);
 				$.extend(flavorAssetObj, drmData);
 				flavorAssets.push( flavorAssetObj );
 			}
@@ -705,7 +724,10 @@ mw.KWidgetSupport.prototype = {
 						//if we get more then 1 flavors we dont need the redirect so we'll use the same url
 						// the playmanifest service will return the manifest directly.
 					} else if (flavors && flavors.length > 1){
-						deferred.resolve( srcURL );
+						if (srcURL.indexOf("applehttp_to_mc")===-1)
+							deferred.resolve( srcURL );
+						else
+							deferred.resolve( playmanifest );
 					} else {
 						deferred.reject();
 					}
@@ -1025,37 +1047,54 @@ mw.KWidgetSupport.prototype = {
 		this.kClient = mw.kApiGetPartnerClient( playerRequest.widget_id );
 		this.kClient.setKs( embedPlayer.getFlashvars( 'ks' ) );
 
-		// Check for playlist cache based
-		if( window.kalturaIframePackageData && window.kalturaIframePackageData.playlistResult ){
-			var pl = window.kalturaIframePackageData.playlistResult;
-			for( var plId in pl ) break;
-			if( pl[plId].content.indexOf('<?xml') === 0 ){
-				// convert to comma seperated entries
-				var entryList = [];
-				for( var i in pl[plId].items ){
-					entryList.push( pl[plId].items[i].id );
+			// Check for playlist cache based
+			if( window.kalturaIframePackageData && window.kalturaIframePackageData.playlistResult ){
+				var pl = window.kalturaIframePackageData.playlistResult;
+				for( var plId in pl ) break;
+				if( pl[plId].content.indexOf('<?xml') === 0 ){
+					// convert to comma seperated entries
+					var entryList = [];
+					for( var i in pl[plId].items ){
+						entryList.push( pl[plId].items[i].id );
+					}
+					pl[plId].content = entryList.join(',');
 				}
-				pl[plId].content = entryList.join(',');
+				embedPlayer.kalturaPlaylistData = pl;
+				delete( window.kalturaIframePackageData.playlistResult );
 			}
-			embedPlayer.kalturaPlaylistData = pl;
-			delete( window.kalturaIframePackageData.playlistResult );
-		}
 
-		// Check for entry cache:
-		if( window.kalturaIframePackageData && window.kalturaIframePackageData.entryResult ){
-			var entryResult =  window.kalturaIframePackageData.entryResult
+			// Check for entry cache:
+			if( window.kalturaIframePackageData && window.kalturaIframePackageData.entryResult ){
+				var entryResult =  window.kalturaIframePackageData.entryResult;
+				_this.handlePlayerData( embedPlayer, entryResult );
+				//if we dont have special widgetID or the KS is defined continue as usual
+				if ( "_" + embedPlayer.kpartnerid == playerRequest.widget_id || _this.kClient.getKs() ) {
+					callback( entryResult );
+				}else{
+					//if we have special widgetID and we dont have a KS - ask for KS before continue the process
+					this.kClient.forceKs(playerRequest.widget_id,function(ks) {
+						_this.kClient.setKs( ks );
+						if ( window.kalturaIframePackageData.playerConfig && !window.kalturaIframePackageData.playerConfig.vars ) {
+							window.kalturaIframePackageData.playerConfig.vars = {};
+						}
+						window.kalturaIframePackageData.playerConfig.vars.ks = ks;
+						callback( entryResult );
+					},function(){
+						mw.log("Error occur while trying to create widget KS");
+						callback( entryResult );
+					});
+				}
+				// remove the entryResult from the payload
+				delete( window.kalturaIframePackageData.entryResult );
+				return ;
+			}
+			// Run the request:
+			_this.kClient = mw.kApiEntryLoader( playerRequest, function( playerData ) {
+				_this.handlePlayerData( embedPlayer , playerData );
+				callback( playerData );
+			});
 
-			this.handlePlayerData( embedPlayer, entryResult );
-			callback( entryResult );
-			// remove the entryResult from the payload
-			delete( window.kalturaIframePackageData.entryResult );
-			return ;
-		}
-		// Run the request:
-		this.kClient = mw.kApiEntryLoader( playerRequest, function( playerData ){
-			_this.handlePlayerData(embedPlayer, playerData );
-			callback( playerData );
-		});
+
 	},
 	handlePlayerError: function(embedPlayer, data){
 		var errObj = null;
@@ -1310,12 +1349,15 @@ mw.KWidgetSupport.prototype = {
 		// Setup the src defines
 		var ipadAdaptiveFlavors = [];
 		var iphoneAdaptiveFlavors = [];
+		var dashAdaptiveFlavors = [];
 
 		// Setup flavorUrl
 		var flavorUrl = _this.getBaseFlavorUrl(partnerId);
 
 		// Flag that indecate if we have H264 flavor
 		var hasH264Flavor = false;
+		// Flag that indecate if we have ISM flavor
+		var hasIsmFlavor = false;
 		// Add all avaliable sources:
 		for( var i = 0 ; i < flavorData.length; i ++ ) {
 
@@ -1468,9 +1510,10 @@ mw.KWidgetSupport.prototype = {
 				} else {
 					source['type'] = 'video/ism';
 				}
+				hasIsmFlavor = true;
 			}
 
-			var assetDrmData = this.getSourceDrmData(asset.id, flavorDrmData);
+			var assetDrmData = this.getFlavorAssetDrmData(asset.id, flavorDrmData);
 			$.extend(source, assetDrmData);
 
 			// Add the source ( if a src was defined ):
@@ -1498,6 +1541,11 @@ mw.KWidgetSupport.prototype = {
 				ipadAdaptiveFlavors.push( asset.id );
 				iphoneAdaptiveFlavors.push( asset.id );
 			}
+
+			// Add DASH flavor to DASH flavor Ids list
+			if( $.inArray( 'dash', tags ) != -1 ){
+				dashAdaptiveFlavors.push( asset.id );
+			}
 		} // end source loop
 
 		// Make sure all the sources have valid aspect ratios ( if not get from other sources )
@@ -1520,52 +1568,69 @@ mw.KWidgetSupport.prototype = {
 		) {
 			// We only need single HLS stream
 			var addedHlsStream = false;
-			var validClipAspect = this.getValidAspect( deviceSources );
-			var dashSource;
-			var assetId;
-			var assetDrmData;
 			// Check if mobile device media query
-			if ( mw.isMobileDevice() && mw.isDeviceLessThan480P() && iphoneAdaptiveFlavors.length ) {
-				// Add "iPhone" HLS flavor
-				deviceSources.push({
-					'data-aspect' : validClipAspect,
-					'data-flavorid' : 'iPhoneNew',
-					'type' : 'application/vnd.apple.mpegurl',
-					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
+			if (iphoneAdaptiveFlavors.length || ipadAdaptiveFlavors.length) {
+				var validClipAspect = this.getValidAspect(deviceSources);
+				var lowResolutionDevice = (mw.isMobileDevice() && mw.isDeviceLessThan480P() && iphoneAdaptiveFlavors.length);
+				var targetFlavors = lowResolutionDevice ? iphoneAdaptiveFlavors : ipadAdaptiveFlavors;
+				var assetId = targetFlavors[0];
+
+				var hlsSource = this.generateAbrSource({
+					entryId: asset.entryId,
+					flavorUrl: flavorUrl,
+					flavorId: (lowResolutionDevice ? 'iPhoneNew' : 'iPadNew'),
+					type: 'application/vnd.apple.mpegurl',
+					flavors: targetFlavors,
+					format: "applehttp",
+					ext: "m3u8",
+					protocol: protocol,
+					clipAspect: validClipAspect
 				});
-				dashSource = {
-					'data-aspect' : validClipAspect,
-					'data-flavorid' : 'mpdLow',
-					'type' : 'application/dash+xml',
-					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneAdaptiveFlavors.join(',')  + '/format/MPEGDASH/protocol/' + protocol + '/a.mpd',
-					'data-flavors': iphoneAdaptiveFlavors.join(',')
-				};
-				assetId = iphoneAdaptiveFlavors[0];
-				assetDrmData = this.getSourceDrmData(assetId, flavorDrmData);
-				$.extend(dashSource, assetDrmData);
-				deviceSources.push(dashSource);
+				deviceSources.push(hlsSource);
 				addedHlsStream = true;
-			} else if( ipadAdaptiveFlavors.length ) {
-				// Add "iPad" HLS flavor
-				deviceSources.push({
-					'data-aspect' : validClipAspect,
-					'data-flavorid' : 'iPadNew',
-					'type' : 'application/vnd.apple.mpegurl',
-					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
-				});
-				dashSource = {
-					'data-aspect' : validClipAspect,
-					'data-flavorid' : 'mpdHigh',
-					'type' : 'application/dash+xml',
-					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadAdaptiveFlavors.join(',')  + '/format/MPEGDASH/protocol/' + protocol + '/a.mpd',
-					'data-flavors': ipadAdaptiveFlavors.join(',')
-				};
-				assetId = ipadAdaptiveFlavors[0];
-				assetDrmData = this.getSourceDrmData(assetId, flavorDrmData);
-				$.extend(dashSource, assetDrmData);
-				deviceSources.push(dashSource);
 			}
 		}
+
+		//Only support ABR on-the-fly for DRM protected entries
+		if( mw.getConfig('Kaltura.UseFlavorIdsUrls') && !$.isEmptyObject(flavorDrmData)) {
+			var validClipAspect = this.getValidAspect(deviceSources);
+			//Only add mpeg dash CENC on the fly if dash sources exist
+			if (dashAdaptiveFlavors.length) {
+				var dashSource = this.generateAbrSource({
+					entryId: asset.entryId,
+					flavorUrl: flavorUrl,
+					flavorId: 'mpd',
+					type: 'application/dash+xml',
+					flavors: dashAdaptiveFlavors,
+					format: "mpegdash",
+					ext: "mpd",
+					protocol: protocol,
+					clipAspect: validClipAspect
+				});
+				this.attachFlavorAssetDrmData(dashSource, dashAdaptiveFlavors[0], flavorDrmData);
+				deviceSources.push(dashSource);
+			}
+			//Only add playready on the fly if pre-encrypted doesn't exist
+			if ((iphoneAdaptiveFlavors.length || ipadAdaptiveFlavors.length) &&
+				this.getSourcesByAttribute(deviceSources, "type", "video/playreadySmooth").length === 0) {
+				var targetFlavors = ipadAdaptiveFlavors.length ? ipadAdaptiveFlavors : iphoneAdaptiveFlavors;
+				var assetId = targetFlavors[0];
+				var ismSource = this.generateAbrSource({
+					entryId: asset.entryId,
+					flavorUrl: flavorUrl,
+					flavorId: "ism",
+					type: 'video/playreadySmooth',
+					flavors: targetFlavors,
+					format: "sl",
+					ext: "ism",
+					protocol: protocol,
+					clipAspect: validClipAspect
+				});
+				this.attachFlavorAssetDrmData(ismSource, assetId, flavorDrmData);
+				deviceSources.push(ismSource);
+			}
+		}
+
 		this.removedAdaptiveFlavors = false;
 		// Apple adaptive streaming is broken for short videos
 		// remove adaptive sources if duration is less then 10 seconds,
@@ -1637,8 +1702,24 @@ mw.KWidgetSupport.prototype = {
 		
 		return deviceSources;
 	},
+	generateAbrSource: function(options){
+		var flavorsString = options.flavors.join(',');
+		var dashSource = {
+			'data-aspect' : options.clipAspect,
+			'data-flavorid' : options.flavorId,
+			'type' : options.type,
+			'src' : options.flavorUrl + '/entryId/' + options.entryId + '/flavorIds/' + flavorsString + '/format/' + options.format + '/protocol/' + options.protocol + '/a.' + options.ext,
+			'flavors': flavorsString
+		};
+		return dashSource;
+	},
+	attachFlavorAssetDrmData: function(source, assetId, flavorDrmData){
+		var assetDrmData = this.getFlavorAssetDrmData(assetId, flavorDrmData);
+		$.extend(source, assetDrmData);
+		return source;
+	},
 	getFlavorAssetsDrmData: function(playerData){
-		var flavorDrmData = {}
+		var flavorDrmData = {};
 		if (playerData.contextData.pluginData &&
 			playerData.contextData.pluginData.KalturaDrmEntryContextPluginData &&
 			playerData.contextData.pluginData.KalturaDrmEntryContextPluginData.flavorData){
@@ -1646,15 +1727,22 @@ mw.KWidgetSupport.prototype = {
 		}
 		return flavorDrmData;
 	},
-	getSourceDrmData: function(id, flavorDrmData){
+	getFlavorAssetDrmData: function(id, flavorDrmData){
 		var assetDrmData = flavorDrmData && flavorDrmData[id];
 		var drmData = {};
 		if (assetDrmData) {
-			drmData['data-custom_data'] = assetDrmData['custom_data'];
-			drmData['data-signature'] = assetDrmData.signature;
-			drmData['data-contentId'] = assetDrmData.contentId;
+			drmData.custom_data = assetDrmData.custom_data;
+			drmData.signature = assetDrmData.signature;
+			drmData.contenId = assetDrmData.contentId;
 		}
 		return drmData;
+	},
+	getSourcesByAttribute: function(source, attribute, value){
+		return $.grep(source, function( a ){
+			if( a[attribute] == value ){
+				return true;
+			}
+		});
 	},
 	/**
 	 *  "/" and "+" are valid base64 chars. They might break playmanifest URL so we replace them to "_" and "-" accordingly.
@@ -1732,6 +1820,7 @@ mw.KWidgetSupport.prototype = {
 		if( ks ){
 			srcUrl += '&ks=' + ks;
 		}
+
 		//add source
 		mw.log( 'KWidgetSupport::addLiveEntrySource: Add Live Entry Source - ' + srcUrl );
 		embedPlayer.mediaElement.tryAddSource(

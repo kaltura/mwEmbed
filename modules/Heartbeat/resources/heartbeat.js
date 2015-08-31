@@ -34,8 +34,16 @@
 
         loadAdobeClasses: function(){
             var _this = this;
-            var loadVisitor = $.ajax(mw.getMwEmbedPath()+"modules/Heartbeat/resources/VisitorAPI.js");
-            var loadAppMeasurement = $.ajax(mw.getMwEmbedPath()+"modules/Heartbeat/resources/AppMeasurement.js");
+            var loadVisitor = $.ajax({
+                url: mw.getMwEmbedPath()+"modules/Heartbeat/resources/VisitorAPI.js",
+                dataType : "script",
+                timeout : 5000
+            });
+            var loadAppMeasurement = $.ajax({
+                url: mw.getMwEmbedPath()+"modules/Heartbeat/resources/AppMeasurement.js",
+                dataType : "script",
+                timeout : 5000
+            });
             $.when(loadVisitor, loadAppMeasurement).then(function() {
                 _this.setupAdobeVars();
                 _this.setupHeartBeatPlugin();
@@ -72,8 +80,8 @@
             this.embedPlayer.bindHelper('bufferEndEvent', function(){ _this.trackBufferEnd(); });
             this.embedPlayer.bindHelper('sourceSwitchingEnd', function(){ _this.trackBitrateChangeEnd(); });
 
-            this.embedPlayer.bindHelper('onAdPlay', function(event, adID, adSystem, type, adIndex, adDuration, mediaName){
-                _this.trackAdStart({id:adID, position:adIndex, length:adDuration, name:mediaName}); });
+            this.embedPlayer.bindHelper('onAdPlay', function(event, adID, adSystem, type, adIndex, adDuration, mediaName, podPosition, podStartTime){
+                _this.trackAdStart({id:adID, position:adIndex, length:adDuration, name:mediaName, podPosition:podPosition, podStartTime:podStartTime}); });
             this.embedPlayer.bindHelper('onAdComplete', function(){ _this.trackAdComplete(); });
 
             this.embedPlayer.bindHelper('embedPlayerError', function (e, data) { _this.trackPlayerError(_this.getPlayer().getErrorMessage(data)); });
@@ -219,10 +227,25 @@
         },
 
         setAdInfo: function(adData){
-            if (adData.id) { this.videoPlayerPlugin._delegate.setAdInfo({id:adData.id}); }
-            if (adData.position) { this.videoPlayerPlugin._delegate.setAdInfo({position:adData.position}); }
-            if (adData.length) { this.videoPlayerPlugin._delegate.setAdInfo({length:adData.length}); }
-            if (adData.name) { this.videoPlayerPlugin._delegate.setAdInfo({name:adData.name}); }
+            if( adData.podPosition ){
+                this.setPodInfo(adData);
+            }
+            var data = {
+                id: adData.id,
+                position: adData.position,
+                length: adData.length,
+                name: adData.name ? adData.name : ""
+            };
+            this.videoPlayerPlugin._delegate.setAdInfo(data);
+        },
+
+        setPodInfo: function(adData){
+            var data = {
+                name: adData.name ? adData.name : "",
+                startTime: adData.podStartTime,
+                position: adData.podPosition
+            };
+            this.videoPlayerPlugin._delegate.setAdBreakInfo(data);
         },
 
         trackAdStart: function(adData){

@@ -28,7 +28,7 @@ mw.MediaPlayers.prototype = {
 		this.loadPreferences();
 
 		// Set up default players order for each library type
-		this.defaultPlayers['video/wvm'] = ['Kplayer', 'NativeComponent'];
+		this.defaultPlayers['video/wvm'] = ['NativeComponent'];
 		this.defaultPlayers['video/live'] = ['Kplayer'];
 		this.defaultPlayers['video/kontiki'] = ['Kplayer'];
 		this.defaultPlayers['video/x-flv'] = ['Kplayer', 'Vlc'];
@@ -53,7 +53,6 @@ mw.MediaPlayers.prototype = {
 
 		this.defaultPlayers['image/jpeg'] = ['ImageOverlay'];
 		this.defaultPlayers['image/png'] = ['ImageOverlay'];
-
 		if ( mw.getConfig("LeadWithHLSOnFlash") ) {
 			this.defaultPlayers['application/vnd.apple.mpegurl'].push('Kplayer');
 		}

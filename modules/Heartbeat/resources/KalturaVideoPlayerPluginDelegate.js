@@ -11,17 +11,37 @@
         _this = this;
         _this.player = player;
         _this.config = config;
+        _this.videoInfo = null;
+        _this.qos = null;
         _this.adInfo = null;
         _this.adBreakInfo = null;
         _this.chapterInfo = null;
 
+
+        _this.initVideoInfo = function(){
+            _this.videoInfo = new ADB.va.plugins.videoplayer.VideoInfo();
+            _this.videoInfo.playerName = _this.config.playerPlayerName || _this.player.kuiconfid;
+        };
+
+        _this.initadBreakInfo = function(){
+            _this.adBreakInfo = new ADB.va.plugins.videoplayer.AdBreakInfo();
+            _this.adBreakInfo.playerName = _this.config.playerPlayerName || _this.player.kuiconfid;
+            _this.adBreakInfo.name = "";
+            _this.adBreakInfo.position = 1;
+            _this.adBreakInfo.startTime = -1;
+        };
+
+        _this.initAdInfo = function(){
+            _this.adInfo = new ADB.va.plugins.videoplayer.AdInfo();
+            _this.adInfo.id = "";
+            _this.adInfo.name = "";
+            _this.adInfo.length = -1;
+            _this.adInfo.position = 1;
+        };
+
         _this.setAdInfo = function(info){
             if ( !_this.adInfo ){
-                _this.adInfo = new ADB.va.plugins.videoplayer.AdInfo();//new ADB.va.AdInfo();
-                _this.adInfo.id = "";
-                _this.adInfo.name = "";
-                _this.adInfo.length = -1;
-                _this.adInfo.position = 1;
+                _this.initAdInfo();
             }
             if ( info.id ) {
                 _this.adInfo.id = info.id;
@@ -39,14 +59,7 @@
 
         _this.setAdBreakInfo = function (info){
             if( !_this.adBreakInfo ){
-                _this.adBreakInfo = new ADB.va.plugins.videoplayer.AdBreakInfo();//new ADB.va.AdBreakInfo();
-                _this.adBreakInfo.playerName = _this.config.playerName || _this.player.evaluate('{mediaProxy.entry}').name;
-                _this.adBreakInfo.name = "";
-                _this.adBreakInfo.position = 1;
-                _this.adBreakInfo.startTime = -1;
-            }
-            if ( info.playerName ) {
-                _this.adBreakInfo.playerName = info.playerName;
+                _this.initadBreakInfo();
             }
             if ( info.name ) {
                 _this.adBreakInfo.name = info.name;
@@ -61,7 +74,7 @@
 
         _this.setChapterInfo = function (info){
             if ( !_this.chapterInfo ){
-                _this.chapterInfo = new ADB.va.plugins.videoplayer.chapterInfo();//new ADB.va.ChapterInfo();
+                _this.chapterInfo = new ADB.va.plugins.videoplayer.chapterInfo();
                 _this.chapterInfo.name = "";
                 _this.chapterInfo.length = -1;
                 _this.chapterInfo.position = 1;
@@ -84,21 +97,22 @@
     }
 
     KalturaVideoPlayerPluginDelegate.prototype.getVideoInfo = function() {
-        var videoInfo = new ADB.va.plugins.videoplayer.VideoInfo();
-
-        videoInfo.id = _this.config.playerId || _this.player.evaluate('{mediaProxy.entry}').id;
-        videoInfo.name = _this.config.playerName || _this.player.evaluate('{mediaProxy.entry}').name;
-        videoInfo.length = _this.config.playerLength || _this.player.evaluate('{mediaProxy.entry}').duration;
-        videoInfo.playerName = _this.config.playerPlayerName || _this.player.kuiconfid;
-        videoInfo.playhead = _this.player.getPlayerElementTime();
-
-        if ( _this.config.playerStreamType ) {
-            videoInfo.streamType = _this.config.playerStreamType;
-        }else {
-            videoInfo.streamType = _this.player.isLive() ? ADB.va.plugins.videoplayer.AssetType.ASSET_TYPE_LIVE : ADB.va.plugins.videoplayer.AssetType.ASSET_TYPE_VOD;
+        if( !_this.videoInfo ) {
+            _this.initVideoInfo();
         }
+        if(_this.player.evaluate('{mediaProxy.entry}')) {
+            _this.videoInfo.id = _this.config.playerId || _this.player.evaluate('{mediaProxy.entry}').id;
+            _this.videoInfo.name = _this.config.playerName || _this.player.evaluate('{mediaProxy.entry}').name;
+            _this.videoInfo.length = _this.config.playerLength || _this.player.evaluate('{mediaProxy.entry}').duration;
+        }
+        if ( _this.config.playerStreamType ) {
+            _this.videoInfo.streamType = _this.config.playerStreamType;
+        }else {
+            _this.videoInfo.streamType = _this.player.isLive() ? ADB.va.plugins.videoplayer.AssetType.ASSET_TYPE_LIVE : ADB.va.plugins.videoplayer.AssetType.ASSET_TYPE_VOD;
+        }
+        _this.videoInfo.playhead = _this.player.getPlayerElementTime();
 
-        return videoInfo;
+        return _this.videoInfo;
     };
 
     KalturaVideoPlayerPluginDelegate.prototype.getAdBreakInfo = function() {
@@ -117,10 +131,12 @@
     };
 
     KalturaVideoPlayerPluginDelegate.prototype.getQoSInfo = function() {
-        var qos = new ADB.va.plugins.videoplayer.QoSInfo();
-
-        if( _this.player.getCurrentBitrate() !== -1 ){
-            qos.bitrate = _this.player.getCurrentBitrate();
+        if( !_this.qos ){
+            _this.qos = new ADB.va.plugins.videoplayer.QoSInfo();
+        }
+        var bitrate = _this.player.getCurrentBitrate();
+        if( bitrate !== -1 ){
+            _this.qos.bitrate = bitrate;
         }
 
         //TODO: add additional parameters
@@ -128,7 +144,7 @@
         //qos.droppedFrames =
         //qos.startupTime =
 
-        return qos;
+        return _this.qos;
     };
 
     KalturaVideoPlayerPluginDelegate.prototype.onError = function(errorInfo) {

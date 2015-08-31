@@ -85,9 +85,12 @@
 		initSupportedCuepointTypes: function(){
 			//Initial flashvars configuration arrives in form of comma-separated string,
 			//so turn it into array of supported types.
-			var supportedCuePoints = mw.getConfig("EmbedPlayer.SupportedCuepointTypes", "");
-			supportedCuePoints = (supportedCuePoints.length > 0) ? supportedCuePoints.split(",") :
-				this.supportedCuePoints;
+			var supportedCuePoints = mw.getConfig("EmbedPlayer.SupportedCuepointTypes", this.supportedCuePoints);
+
+			if ($.type(supportedCuePoints) === "string"){
+				supportedCuePoints = supportedCuePoints.split(",")
+			}
+
 			mw.setConfig("EmbedPlayer.SupportedCuepointTypes", supportedCuePoints);
 		},
 		requestThumbAsset: function (cuePoints, callback) {

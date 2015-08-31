@@ -563,7 +563,7 @@ class kalturaIframeClass {
 	 * Get entry name for iFrame title
 	 */
 	private function getEntryTitle(){
-		if( !$this->getUiConfResult()->isPlaylist() ){
+		if(!$this->error && !$this->getUiConfResult()->isPlaylist() ){
 			try{
 			$baseEntry = $this->getEntryResult()->getResult();
 				if( isset( $baseEntry['meta']->name) ){
@@ -596,7 +596,9 @@ class kalturaIframeClass {
 			color: #fff;
 			overflow: hidden;
 		}
-		
+		video::-webkit-media-controls {
+			display:none !important;
+		}
 		div,video {
 			margin: 0;
 			padding: 0;
@@ -681,6 +683,10 @@ HTML;
 			if (isset($theme['bufferedSliderColor'])){
                 $customStyle = $customStyle . '.buffered {background-color: ' . $theme['bufferedSliderColor'] . '!important}';
             }
+			if (isset($theme['timeLabelColor'])){
+				$customStyle = $customStyle . '.currentTimeLabel {color: ' . $theme['timeLabelColor'] . '!important}';
+				$customStyle = $customStyle . '.durationLabel {color: ' . $theme['timeLabelColor'] . '!important}';
+			}
             if (isset($theme['buttonsIconColorDropShadow']) && isset($theme['dropShadowColor'])){
                 $customStyle = $customStyle . '.btn {text-shadow: ' . $theme['dropShadowColor'] . '!important}';
             }
