@@ -474,12 +474,13 @@ kWidget.addReadyCallback( function( playerId ){
 				if(this.getConfig("overridePlayerName") != undefined ){
 					s.Media.playerName = String(this.getConfig("overridePlayerName"));
 				}
-
+				// re-evaluate mediaName even it it was already pushed to the stack
+				argSet[0] = this.getMediaName();
 		 		switch( cmd ) {
-		 			case 'open': 
-		 				s.Media.open(argSet[0], argSet[1], argSet[2]);
+		 			case 'open':
+						s.Media.open(argSet[0], argSet[1], argSet[2]);
 		 			break;
-		 			case 'play': 
+		 			case 'play':
 		 				s.Media.play(argSet[0], argSet[1]);
 		 			break;
 		 			case 'stop':
