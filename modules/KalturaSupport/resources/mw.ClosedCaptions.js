@@ -797,6 +797,11 @@
 
 			// Check if we even have textSources
 			if( sources == 0 ){
+				this.setConfig('displayCaptions', false);
+
+				if( this.getConfig('hideWhenEmpty') === true ) {
+					this.getBtn().hide();
+				}
 				this.getMenu().addItem({
 					'label': gM('mwe-timedtext-no-subtitles')
 				});
