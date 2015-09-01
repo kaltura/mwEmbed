@@ -815,6 +815,9 @@
 
 				return this.getMenu();
 			} else {
+				if( this.getConfig('hideWhenEmpty') == true ){
+					this.setConfig('visible', true)
+				}
 				this.getBtn().show();
 				// show new timed captions text if exists
 				this.showCaptions();
