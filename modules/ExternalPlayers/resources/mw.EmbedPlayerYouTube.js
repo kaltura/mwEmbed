@@ -530,10 +530,8 @@
 			}
 			this.unbindHelper( this.bindPostfix ); // remove bindings
 			// remove scripts from head
-			var youTubeLib = document.getElementById("youTubeLib");
-			youTubeLib.parentElement.removeChild(youTubeLib);
-			var youYunrWidgetApi = document.getElementById("www-widgetapi-script");
-			youYunrWidgetApi.parentElement.removeChild(youYunrWidgetApi);
+			$("#youTubeLib").remove();
+			$("#www-widgetapi-script").remove();
 		},
 
 		/**
