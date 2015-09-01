@@ -188,8 +188,14 @@
 			var _this = this;
 			mw.log("TextSource::getCaptionsFromTMML", data);
 			// set up display information:
+
 			var captions = [];
-			var xml = ( $( data ).find("tt").length ) ? data : $.parseXML( data );
+			var parsedData = data;
+			//check if TTML contains &
+			if( typeof(data) == "string" ) {
+				parsedData = data.replace(/&amp;/g, '&').replace(/&/g, '&amp;');
+			}
+			var xml = ( $( parsedData ).find("tt").length ) ? parsedData : $.parseXML( parsedData );
 			// Check for parse error:
 			try {
 				if( !xml || $( xml ).find('parsererror').length ){
@@ -202,10 +208,19 @@
 			}
 
 			this.parseStylesTTML( xml );
-
+			var captionLineToRemove = [];
 			$( xml ).find( 'p' ).each( function( inx, p ){
 				captions.push( _this.parseCaptionObjTTML( p ) );
+				if (captions.length>1){
+					if (captions[inx-1].start == captions[inx].start) {
+						captions[inx-1].content = (captions[inx-1].content).concat(captions[inx].content);
+						captionLineToRemove.push(inx);
+					}
+				}
 			});
+			for (var inx = captionLineToRemove.length-1; inx >= 0; inx--){
+				captions.splice(captionLineToRemove[inx],1)
+			}
 			return captions;
 		},
 		parseStylesTTML: function( xml ) {
@@ -360,6 +375,8 @@
 				nodeString += '</' + node.nodeName + '>';
 				return nodeString;
 			}
+			// be sure to return an empty string where node.childNodes is empty
+			return '';
 		},
 		/**
 		 * srt timed text parse handle:
@@ -377,8 +394,8 @@
 			} catch ( e ){
 				// srt should not be xml
 			}
-			// Remove dos newlines
-			var srt = data.replace(/\r+/g, '');
+			// Replace to UNIX-like newlines
+			var srt = data.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 
 			// Trim white space start and end
 			srt = srt.replace(/^\s+|\s+$/g, '');
@@ -392,7 +409,7 @@
 			for (var i = 0; i < caplist.length; i++) {
 		 		var captionText = "";
 				var caption = false;
-				captionText = caplist[i].trim();
+				captionText = caplist[i].replace(/^\s+|\s+$/g, '');
 				var s = captionText.split(/\n/);
 				if (s.length < 2) {
 					// file format error or comment lines

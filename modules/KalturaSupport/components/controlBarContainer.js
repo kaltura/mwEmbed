@@ -31,6 +31,7 @@
 			});
 			this.bind( 'layoutBuildDone ended', function(){
 				_this.show();
+
 			});
 
 			// Bind hover events
@@ -38,6 +39,7 @@
 				// Show / Hide controlbar on hover
 				this.bind( 'showPlayerControls', function(e, data){
 					_this.show();
+
 				});
 				this.bind( 'hidePlayerControls', function(){
 					_this.hide();
@@ -49,6 +51,12 @@
 				this.bind( 'onComponentsHoverEnabled', function(){
 					_this.keepOnScreen = false;
 					_this.hide();
+				});
+				this.bind( 'onHideSideBar', function(){
+					_this.forceOnScreen = false;
+				});
+				this.bind( 'onShowSideBar', function(){
+					_this.forceOnScreen = true;
 				});
 			} else {
 				this.getPlayer().isControlsVisible = true;
@@ -65,16 +73,18 @@
 			$interface.removeClass( 'player-out' );
 		},
 		hide: function(){
-			if( this.keepOnScreen ) return;
+			if( this.keepOnScreen || this.forceOnScreen) return;
 			this.getPlayer().isControlsVisible = false;
 			this.getComponent().removeClass( 'open' );
 			var $interface = this.embedPlayer.getInterface();
 			$interface.addClass( 'player-out' );
 			// Allow interface items to update:
 			this.getPlayer().triggerHelper('onHideControlBar', {'bottom' : 15} );
+
 		},
 		getComponent: function(){
 			if( !this.$el ) {
+				var _this = this;
 				var $controlsContainer = $('<div />').addClass('controlsContainer');
 				// Add control bar 				
 				this.$el = $('<div />')
@@ -83,7 +93,14 @@
 
 				// Add control bar special classes
 				if( this.getConfig('hover') && this.getPlayer().isOverlayControls() ) {
-					this.$el.addClass('hover');
+					this.$el.addClass('hover')
+						.on("mouseenter", function(){
+							_this.forceOnScreen = true;
+						})
+						.on("mouseleave", function(){
+							_this.forceOnScreen = false;
+						});
+					this.embedPlayer.getVideoHolder().addClass('hover');
 				} else {
 					this.$el.addClass('block');
 				}

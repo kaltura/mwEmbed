@@ -6,9 +6,10 @@
 			align: "right",
 			parent: "controlsContainer",
 			displayImportance: "low",
-			downloadName:"video",
+			downloadName: '{mediaProxy.entry.name}',
 			showTooltip: true,
 			preferredBitrate: '',
+			flavorID: '',
 		 	order: 53
 		},
 		isSafeEnviornment: function(){
@@ -21,6 +22,7 @@
 			});
 		},
 		downloadMedia: function() {
+			var ks =  this.getKalturaClient().getKs();
 			var downloadUrl = mw.getMwEmbedPath() + '/modules/KalturaSupport/download.php/wid/';
 				downloadUrl += this.getPlayer().kwidgetid + '/uiconf_id/' + this.getPlayer().kuiconfid;
 				downloadUrl += '/entry_id/' + this.getPlayer().kentryid + '?forceDownload=true';
@@ -28,8 +30,14 @@
 				if ( this.getConfig( 'preferredBitrate' ) != '' && this.getConfig( 'preferredBitrate' ) != null ){
 					downloadUrl += '&preferredBitrate=' + encodeURIComponent( this.getConfig( 'preferredBitrate' ));
 				}
-				downloadUrl += '&ks=' + this.getPlayer().getFlashvars('ks');
-				
+			    if ( this.getConfig( 'flavorID' ) != '' && this.getConfig( 'flavorID' ) != null ){
+					downloadUrl += '&flavorID=' + encodeURIComponent( this.getConfig( 'flavorID' ));
+				}
+
+				if( ks ){
+					downloadUrl += '&ks=' + ks;
+				}
+			
 			window.open( downloadUrl );
 		},
 		getComponent: function() {
@@ -39,6 +47,7 @@
 							.attr( 'title', 'Download Media' )
 							.addClass( "btn icon-download" + this.getCssClass() )
 							.click( function() {
+								if( _this.isDisabled ) return ;
 								_this.getPlayer().triggerHelper('downloadMedia');
 							});
 			}

@@ -286,14 +286,14 @@ class WebRequest {
 	 * Get a request header, or false if it isn't set
 	 * @param $name String: case-insensitive header name
 	 */
-	public function getHeader( $name ) {
-		$name = strtoupper( $name );
-		if ( !$this->headers ) {
-			foreach ( apache_request_headers() as $tempName => $tempValue ) {
-				$this->headers[ strtoupper( $tempName ) ] = $tempValue;
+	public function getHeader($name) {
+		$name = strtoupper($name);
+		if (!$this->headers && function_exists('apache_request_headers')) {
+			foreach (apache_request_headers() as $tempName => $tempValue) {
+				$this->headers[strtoupper( $tempName )] = $tempValue;
 			}
 		}
-		if ( isset( $this->headers[$name] ) ) {
+		if (isset($this->headers[$name])) {
 			return $this->headers[$name];
 		} else {
 			return false;

@@ -50,8 +50,14 @@
 }
 .mwEmbedPlayerTransparent{
 	background-color: black;
-	opacity: 0;
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+}
+.mwEmbedPlayerTransparentComp{
+	background-color: rgba(0,0,0,0);
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+}
+.mwEmbedPlayerBlackBkg{
+	background-color: rgba(0,0,0,1);
 }
 .mwEmbedPlayer object {
 	position: absolute;

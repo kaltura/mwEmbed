@@ -70,9 +70,9 @@ $container['cache_helper'] = $container->share(function ($c) {
 	}
 	$request = $c['request_helper'];
 
-	// Check for Cache st
-	if( intval($request->getCacheSt()) > time() ) {
-		$useCache = false;
+	// Check for Cache st   + check that the cache_st is less then 15 min from now
+	if( intval($request->getCacheSt()) > time()  && intval($request->getCacheSt()) < time() + 900 ) {
+ 		$useCache = false;
 	}
 
 	$className = ($useCache) ? 'file_cache_adapter' : 'no_cache_adapter';
@@ -89,7 +89,7 @@ $container['client_helper'] = $container->share(function ($c) {
 	// Setup client config
 	$config = array(
 		'ClientTag'			=>	'html5iframe:' . $c['mwembed_version'] . ',cache_st: ' . $request->getCacheSt(),
-		'ServiceUrl'		=>	$request->getServiceConfig('ServiceUrl'),
+        'ServiceUrl'		=>	$request->getServiceConfig('ServiceUrl'),
 		'ServiceBase'		=>	$request->getServiceConfig('ServiceBase'),
 		'ServiceTimeout'	=>	$c['service_timeout'],
 		'UserAgent'			=>	$request->getUserAgent(),

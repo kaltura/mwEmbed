@@ -1,0 +1,66 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Scrubber thumbnail options</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	<script type="text/javascript">
+		function jsKalturaPlayerTest(videoId) {
+
+			// Name this module
+			module("Scrubber");
+
+			var $iframe = $('#' + videoId + '_ifp').contents();
+			var iframeContext = window.frames['kaltura_player_ifp'];
+			var kdp = $('#' + videoId)[0];
+
+			asyncTest("Iframe in DOM", function () {
+				ok($('#' + videoId + '_ifp').length, 'iframe found');
+				equal(typeof iframeContext, 'object', "iframe JavaScript context available");
+				start();
+			});
+
+			asyncTest("Iframe layout elements", function () {
+				kalturaQunitWaitForPlayer(function () {
+					ok($iframe.find('.largePlayBtn').length, ".largePlayBtn found");
+					ok($iframe.find('.playPauseBtn').length, ".playPauseBtn found");
+					runTitleTest();
+					start();
+				});
+			});
+
+			function runTitleTest() {
+				asyncTest("sliderPreview present", function () {
+					// Test page context config:
+					ok($iframe.find('.sliderPreview').length, ".sliderPreview found");
+
+					start();
+				});
+			}
+		}
+	</script>
+	<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+	<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Title player test </h2>
+
+<div id="kaltura_player" style="width:400px;height:330px;"></div>
+<script>
+	kWidget.featureConfig({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id': '5677072',
+		'entry_id': '0_uka1msg4',
+		'flashvars': {
+			'scrubber': {
+				'plugin': true,
+				"sliderPreview": true,
+				"showOnlyTime": false
+			}
+		}
+	});
+</script>
+</body>
+</html>

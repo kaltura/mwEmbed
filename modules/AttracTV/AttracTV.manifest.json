@@ -1,0 +1,15 @@
+{
+    "AttracTV": {
+        "description": "",
+        "attributes": {
+            "barId": {
+                "doc": "Your Bar Id taken from attracTV Studio",
+                "type": "string"
+            },
+            "publisherKey": {
+                "doc": "Your Publisher Key",
+                "type": "string"
+            }
+        }
+    }
+}

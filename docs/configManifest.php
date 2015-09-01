@@ -22,15 +22,15 @@ function outputConfig(){
 			'path' => array(
 				'hideEdit' => true
 			),
-			'width' => array(
+			'loadInIframe' => array(
+					'doc' => "If the on-page-plugin should be loaded inside the iframe,
+				for share and embeds that don't include on-page JavaScript",
+					'type' => 'boolean',
+					'hideEdit' => true,
+			),
+			/*'width' => array(
 				'doc' => "The width of the plugin",
 				'value' => '0%',
-				'hideEdit' => true,
-			),
-			'loadInIframe' => array(
-				'doc' => "If the on-page-plugin should be loaded inside the iframe, 
-					for share and embeds that don't include on-page JavaScript",
-				'type' => 'boolean',
 				'hideEdit' => true,
 			),
 			'height' => array(
@@ -45,7 +45,7 @@ function outputConfig(){
 			),
 			'relativeTo' => array(
 				'hideEdit' => true
-			),
+			),*/
 			'position' => array(
 				'hideEdit' => true
 			),
@@ -103,11 +103,14 @@ function outputConfig(){
 
 	# Register / load all the mwEmbed modules
 	foreach( $wgMwEmbedEnabledModules as $moduleName ){
-		$manifestPath =  realpath( dirname( __FILE__ ) ) .
-						"/../modules/$moduleName/{$moduleName}.manifest.php";
-		if( is_file( $manifestPath ) ){
-			$configRegister = array_merge( $configRegister, include( $manifestPath ) );
-		}
+        $manifestPath =  realpath( dirname( __FILE__ ) ) .
+                        "/../modules/$moduleName/{$moduleName}.manifest.";
+        if( is_file( $manifestPath."json" ) ){
+            $manifest = json_decode( file_get_contents($manifestPath."json"), TRUE );
+            $configRegister = array_merge( $configRegister, $manifest );
+        } elseif( is_file( $manifestPath."php" ) ){
+            $configRegister = array_merge( $configRegister, include( $manifestPath."php" ) );
+        }
 	}
 	
 	# Register all the onPage scripts:

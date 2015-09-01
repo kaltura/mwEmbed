@@ -102,13 +102,6 @@ mw.KAnalytics.prototype = {
 	 */
 	sendAnalyticsEvent: function( KalturaStatsEventKey ){
 		var _this = this;
-		// make sure we have a KS
-		this.kClient.getKS( function( ks ){
-			_this.doSendAnalyticsEvent( ks, KalturaStatsEventKey );
-		});
-	},
-	doSendAnalyticsEvent: function( ks, KalturaStatsEventKey ){
-		var _this = this;
 		mw.log("KAnalytics :: doSendAnalyticsEvent > " + KalturaStatsEventKey );
 		// Kalutra analytics does not collect info for ads:
 		if( this.embedPlayer.evaluate('{sequenceProxy.isInSequence}') ){
@@ -169,9 +162,14 @@ mw.KAnalytics.prototype = {
 		// check for the vars in the correct location:
 		for( var fvKey in flashVarEvents){
 			if( this.embedPlayer.getKalturaConfig( 'statistics', fvKey ) ){
-				eventSet[ flashVarEvents[ fvKey ] ] = encodeURIComponent( this.embedPlayer.getKalturaConfig('', fvKey ) );
+				eventSet[ flashVarEvents[ fvKey ] ] = encodeURIComponent( this.embedPlayer.getKalturaConfig('statistics', fvKey ) );
 			}
 		}
+		// hideUserId will remove the userId from the analytics call EVEN if the embed code sends one (unless hashedUserId is in use)
+		if(this.embedPlayer.getKalturaConfig( 'statistics' , 'hideUserId') && eventSet.userId){
+			delete(eventSet.userId);
+		}
+
 
 		// Add referrer parameter
 		eventSet[ 'referrer' ] = encodeURIComponent( mw.getConfig('EmbedPlayer.IframeParentUrl') );
@@ -197,9 +195,13 @@ mw.KAnalytics.prototype = {
 				// error in calling parent page event
 			}
 		}
+		//hideKS is an attribute that will prevent the request from sending the KS even if the embed code receives one
+		if (this.embedPlayer.getFlashvars('ks') && !this.embedPlayer.getKalturaConfig( 'statistics' , 'hideKs') ){
+			eventRequest['ks'] = this.embedPlayer.getFlashvars('ks');
+		}
 
 		// Do the api request:
-		this.kClient.doRequest( eventRequest );
+		this.kClient.doRequest( eventRequest, null, true );
 	},
 
 	/**
@@ -308,28 +310,30 @@ mw.KAnalytics.prototype = {
 
 
 		// Send updates based on logic present in StatisticsMediator.as
-		if( !_this._p25Once && percent >= .25  &&  seekPercent <= .25 ) {
+		if ( !embedPlayer.isLive() ){
+			if( !_this._p25Once && percent >= .25  &&  seekPercent <= .25 ) {
 
-			_this._p25Once = true;
-			_this.sendAnalyticsEvent( 'PLAY_REACHED_25' );
-			$( embedPlayer ).trigger( "firstQuartile" );
+				_this._p25Once = true;
+				_this.sendAnalyticsEvent( 'PLAY_REACHED_25' );
+				$( embedPlayer ).trigger( "firstQuartile" );
 
-		} else if ( !_this._p50Once && percent >= .50 && seekPercent < .50 ) {
+			} else if ( !_this._p50Once && percent >= .50 && seekPercent < .50 ) {
 
-			_this._p50Once = true;
-			_this.sendAnalyticsEvent( 'PLAY_REACHED_50' );
-			$( embedPlayer ).trigger( "secondQuartile" );
+				_this._p50Once = true;
+				_this.sendAnalyticsEvent( 'PLAY_REACHED_50' );
+				$( embedPlayer ).trigger( "secondQuartile" );
 
-		} else if( !_this._p75Once && percent >= .75 && seekPercent < .75 ) {
+			} else if( !_this._p75Once && percent >= .75 && seekPercent < .75 ) {
 
-			_this._p75Once = true;
-			_this.sendAnalyticsEvent( 'PLAY_REACHED_75' );
-			$( embedPlayer ).trigger( "thirdQuartile" );
+				_this._p75Once = true;
+				_this.sendAnalyticsEvent( 'PLAY_REACHED_75' );
+				$( embedPlayer ).trigger( "thirdQuartile" );
 
-		} else if(  !_this._p100Once && percent >= .98 && seekPercent < 1) {
+			} else if(  !_this._p100Once && percent >= .98 && seekPercent < 1) {
 
-			_this._p100Once = true;
-			_this.sendAnalyticsEvent( 'PLAY_REACHED_100' );
+				_this._p100Once = true;
+				_this.sendAnalyticsEvent( 'PLAY_REACHED_100' );
+			}
 		}
 	}
 };

@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Playlist with custom template and paging</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+
+	<script type="text/javascript">
+		// Enable uiconf js which includes external resources
+		mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
+	</script>
+
+
+</head>
+<body>
+<h2>Playlist with custom template and paging</h2>
+<p>This following playlist demonstrates using custom template and CSS files and server side paging.</p>
+<p>The following parameters are used to utilize these features:</p>
+<ul>
+	<li><b>templatePath</b>: Link to the template file used to render each entry in the playlist. <b>Note</b>: The file name must end with ".tmpl.html".</li>
+	<li><b>iframeHTML5Css</b>: Link to the custom CSS file. Use this file to override the regular playlist CSS classes.</li>
+	<li><b>onPageCss1</b>: Link to the custom CSS file used when using an onPage playlist.</li>
+	<li><b>paging</b>: When set to true will invoke server side paging according to the pageSize property value. Default is false.</li>
+	<li><b>pageSize</b>: Number of entries to fetch from the server for each page.</li>
+	<li><b>horizontalScrollItems</b>: Number of items to scroll horizontally when clicking the scroll button.</li>
+	<li><b>mediaItemHeight</b>: Sets the height of the playlist items.</li>
+</ul>
+<div id='kaltura_player' style="height:450px;width:550px"></div>
+<script>
+	var basePath = document.location.toString().split("PlaylistPagingTemplate")[0];
+	kWidget.featureConfig({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id': '25975211',
+		'flashvars': {
+			'playlistAPI':{
+				'autoContinue': true,
+				'includeInLayout': true,
+				'autoPlay': false,
+				'loop': false,
+				'onPage': false,
+				'layout': 'horizontal',
+				'containerPosition': 'bottom',
+				'hideClipPoster': true,
+				'onPageCss1' : basePath + 'externalResources/customplaylist.css',
+				'kpl0Name': "50 items playlist",
+				'kpl0Id': '1_giunvyzh',
+				'paging': true,
+				'pageSize': 10,
+				'MinClips': 5,
+				'horizontalScrollItems': 5,
+				'mediaItemHeight': 100,
+				'templatePath': basePath + 'externalResources/customplaylist.tmpl.html',
+				'iframeHTML5Css': basePath + 'externalResources/customplaylist.css'
+			}
+		}
+	});
+</script>
+<br>
+<p>Sample Code:</p>
+<pre class="prettyprint linenums">
+var basePath = document.location.toString().split("PlaylistPagingTemplate")[0];
+kWidget.featureConfig({
+	'targetId': 'kaltura_player',
+	'wid': '_243342',
+	'uiconf_id': '25975211',
+	'flashvars': {
+		'playlistAPI':{
+			'autoContinue': true,
+			'includeInLayout': true,
+			'autoPlay': false,
+			'loop': false,
+			'onPage': false,
+			'layout': 'horizontal',
+			'containerPosition': 'bottom',
+			'hideClipPoster': true,
+			'onPageCss1' : basePath + 'externalResources/customplaylist.css',
+			'kpl0Name': "50 items playlist",
+			'kpl0Id': '1_giunvyzh',
+			'paging': true,
+			'pageSize': 10,
+			'MinClips': 5,
+			'horizontalScrollItems': 5,
+			'mediaItemHeight': 100,
+			'templatePath': basePath + 'externalResources/customplaylist.tmpl.html',
+			'iframeHTML5Css': basePath + 'externalResources/customplaylist.css'
+		}
+	}
+});
+</pre>
+</body>
+</html>

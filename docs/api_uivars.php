@@ -47,9 +47,15 @@ $uiVars = array(
 			),
 			'Kaltura.ForceFlashOnDesktop' => array(
 					'type' => 'String',
-					'desc' => 'If the player should be forced to use flash on desktop.',
+					'desc' => 'If the player should be forced to use flash on desktop (kdp only).',
 					'default' => 'false',
 					'example' => '../modules/KalturaSupport/tests/ForceFlashOnDesktop.html'
+			),
+			'ForceFlashOnDesktopSafari' => array(
+				'type' => 'String',
+				'desc' => 'If the player should be forced to use flash on desktop Safari.',
+				'default' => 'false',
+				'example' => '../modules/KalturaSupport/tests/ForceFlashOnDesktopSafari.html'
 			),
 			'Kaltura.EnableEmbedUiConfJs' => array(
 					'type' => 'String',
@@ -119,6 +125,24 @@ $uiVars = array(
 					'default' => 'true',
 					'example' => '../modules/KalturaSupport/tests/UseHLS_WhereAvailable.qunit.html'
 			),
+			'LeadWithHLSOnFlash' => array(
+					'type' => 'Boolean',
+					'desc' => 'If Apple HLS streams should be on desktop browsers where Flash and an HLS stream are available',
+					'default' => 'false',
+					'example' => '../modules/KalturaSupport/tests/LeadWithHLSOnFlash.html'
+			),
+			'forceHDS' => array(
+            					'type' => 'Boolean',
+            					'desc' => 'Force HDS streamerType for Kaltura Live (HLS by default)',
+            					'default' => 'false',
+            					'example' => ''
+            ),
+            'ignoreAkamaiHD' => array(
+                        					'type' => 'Boolean',
+                        					'desc' => 'Play HDS without AkamaiHD plugin (the plugin is loaded by default for HDNETWORK or HDNETWORK_HDS streamerTypes)',
+                        					'default' => 'false',
+                        					'example' => ''
+                        ),
 			'host' => array(
 					'type' => 'String',
 					'desc' => 'The URL of the Kaltura server to work with',
@@ -203,6 +227,12 @@ $uiVars = array(
 					'availability' => 'kdp',
 					'example' => ''
 			),
+			'strings.ks-no-flash-installed' => array(
+            					'type' => 'String',
+            					'desc' => 'No Flash installed message for IE8 users. This Flashvar can be used only through mw.setConfig(). For example: mw.setConfig( \'strings.ks-no-flash-installed\' , \'Flash Player nėra įdiegtas jūsų kompiuteryje\' ); Note: IE8 may parse utf-8 characters incorrectly. To translate the message, save the HTML file with UTF-8 encoding and add a META tag to the HEAD of the HTML page: &lt;META http-equiv=Content-Type content=\'text/html; charset=utf-8\'&gt;',
+            					'default' => 'Flash does not appear to be installed or active. Please install or activate Flash.',
+            					'example' => ''
+            ),
 		)
 	),
 	'mediaEntry' => array(
@@ -235,8 +265,8 @@ $uiVars = array(
 			),
 			'streamerType' => array(
 				'type' => 'String',
-				'desc' => 'The media source streaming protocol to use (http / rtmp / live / hdnetwork)',
-				'default' => 'http',
+				'desc' => 'The media source streaming protocol to use (http / rtmp / live / hdnetwork / auto ). Auto will select http or adaptive based on content length and protocols available on the platform.',
+				'default' => 'auto',
 				'example' => ''
 			),
 			'streamerUrl' => array(
@@ -303,7 +333,13 @@ $uiVars = array(
 				'default' => 'false',
 				'availability' => 'kdp',
 				'example' => ''
-			)
+			),
+			'liveCore.showThumbnailWhenOffline' => array(
+            				'type' => 'Boolean',
+            				'desc' => 'Flag indicating whether the the default thumbnail should be shown if live stream becomes offline',
+            				'default' => 'false',
+            				'example' => ''
+            )
 		)
 	),
 	'layout' => array(
@@ -368,14 +404,18 @@ $uiVars = array(
 				'desc' => 'Use to load the uiConf XML and skin assets from predefined path when debugging or loading KDP from local file system',
 				'default' => 'false',
 				'availability' => 'kdp',
-				'example' => ''
+			),
+			'thumbnailUrl' => array(
+				'type' => 'String',
+				'desc' => 'External thumbnail URL to load instead of the entry default thumbnail. Supports evaluated expressions within curly brackets',
+				'default' => '',
+				'example' => '../modules/KalturaSupport/tests/ThumbnailEmbedExternalThumbnail.html',
 			),
 			'kml' => array(
 				'type' => 'String',
 				'desc' => 'The source from which to load the KDP uiConf (KML=Kaltura Meta ui Language). If undefined, the kml will be loaded from the Kaltura server via uiConf.get api. Options are: local / inject',
 				'default' => 'undefined',
 				'availability' => 'kdp',
-				'example' => ''
 			),
 			'kmlPath' => array(
 					'type' => 'String',
@@ -389,13 +429,6 @@ $uiVars = array(
 					'desc' => "Valid uiConf XML result, that is used by the 'KDP wrapper'; A Flash application that wraps the KDP for caching purposes",
 					'default' => 'null',
 					'availability' => 'kdp',
-					'example' => ''
-			),
-			'relativeCortadoAppletPath' => array(
-				'type' => 'String',
-				'desc' => 'The default location for Java Cortado Applet',
-				'default' => '',
-				'example' => ''
 			),
 			'disableTrackElement' => array(
 				'type' => 'Boolean',
@@ -407,7 +440,6 @@ $uiVars = array(
 				'type' => 'Boolean',
 				'desc' => 'When set to true, first tries to load the HTML5 player and if loading fails, loads the Flash player',
 				'default' => 'false',
-				'example' => ''
 			),
 			'KalturaSupport.PlayerConfig' => array(
 				'type' => 'Object',
@@ -426,6 +458,12 @@ $uiVars = array(
 				'default' => 'false',
 				'example' => '../modules/KalturaSupport/tests/AutoPlay.qunit.html'
 			),
+			'EmbedPlayer.WebKitPlaysInline' => array(
+			 		'type' => 'Boolean',
+					'desc' => "Determines if should play the video inline when inside a webview on iOS.",
+					'default' => 'false',
+					'example' => ''
+			),
 			'autoMute' => array(
 				'type' => 'Boolean',
 				'desc' => 'Determine whether to start playback with volume muted (usually used by video ads or homepage auto play videos)',
@@ -437,6 +475,12 @@ $uiVars = array(
 				'desc' => 'Indicates whether the media should be played again after playback has completed',
 				'default' => 'false',
 				'example' => '../modules/KalturaSupport/tests/Loop.qunit.html'
+			),
+			'enableControlsDuringAd' => array(
+				'type' => 'Boolean',
+				'desc' => 'If true, play pause button will be active during ad playback',
+				'default' => 'false',
+				'example' => '../modules/KalturaSupport/tests/AdEnableControls.html'
 			),
 			'adsOnReplay' => array(
 				'type' => 'Boolean',
@@ -569,7 +613,7 @@ $uiVars = array(
 					'type' => 'Boolean',
 					'desc' => "Determines if mwEmbed should use the Native player controls. This will prevent video tag rewriting and skinning. Useful for devices such as iPad / iPod that don't fully support DOM overlays or don't expose full-screen functionality to JavaScript",
 					'default' => 'false',
-					'example' => ''
+					'example' => '../modules/KalturaSupport/tests/iPadNativeControls.html'
 			),
 			'EmbedPlayer.EnableIpadHTMLControls' => array(
 					'type' => 'Boolean',
@@ -590,9 +634,9 @@ $uiVars = array(
 					'example' => ''
 			),
 			'EmbedPlayer.EnableURLTimeEncoding' => array(
-					'type' => 'String',
-					'desc' => "Determines if embedPlayer should support server side temporal URLs for seeking. Options are Flash|always|none",
-					'default' => 'flash',
+					'type' => 'Boolean',
+					'desc' => "Determines if embedPlayer should support server side temporal URLs for seeking",
+					'default' => false,
 					'example' => ''
 			),
 			'EmbedPlayer.DefaultImageDuration' => array(
@@ -602,21 +646,15 @@ $uiVars = array(
 					'example' => ''
 			),
 			/*'EmbedPlayer.WebKitPlaysInline' => array(
-			 'type' => '',
-					'desc' => "",
-					'default' => '',
+			 		'type' => 'Boolean',
+					'desc' => "Determines if should play the video inline or not",
+					'default' => 'false',
 					'example' => ''
 			),
 			'EmbedPlayer.WebKitAllowAirplay' => array(
 					'type' => '',
 					'desc' => "",
 					'default' => '',
-					'example' => ''
-			),
-			'EmbedPlayer.DisableJava' => array(
-					'type' => 'Boolean',
-					'desc' => "If the java cortado player should be disabled",
-					'default' => 'true',
 					'example' => ''
 			),
 			'EmbedPlayer.DisableVideoTagSupport' => array(
@@ -639,7 +677,13 @@ $uiVars = array(
 			),
 			'EmbedPlayer.EnableIpadNativeFullscreen' => array(
 					'type' => 'Boolean',
-					'desc' => "Whether to use the native device fullscreen call",
+					'desc' => "Whether to use the native device fullscreen call on iPad",
+					'default' => 'false',
+					'example' => ''
+			),
+			'EmbedPlayer.EnableNativeChromeFullscreen' => array(
+					'type' => 'Boolean',
+					'desc' => "Whether to use the native device fullscreen call on Android Chrome",
 					'default' => 'false',
 					'example' => ''
 			),
@@ -666,6 +710,12 @@ $uiVars = array(
 					'desc' => "When set to true, movie thumbnail doesn't show upon movie load (before playback starts)",
 					'default' => 'false',
 					'example' => ''
+			),
+			'EmbedPlayer.ShowOriginalPoster' => array(
+					'type' => 'Boolean',
+					'desc' => "When set to true, the thumbnail is loaded with its original size",
+					'default' => 'false',
+					'example' => '../modules/KalturaSupport/tests/ImageEntry.html'
 			),
 			/*'EmbedPlayer.SourceAttributes' => array(
 			 'type' => '',
@@ -707,7 +757,7 @@ $uiVars = array(
 					'type' => 'Boolean',
 					'desc' => "Force loading the legacy KDP Flash video player.",
 					'default' => 'false',
-					'example' => ''
+					'example' => '../modules/KalturaSupport/tests/ForceKPlayer.qunit.html'
 			),
 			'EmbedPlayer.ForceSPlayer' => array(
 					'type' => 'Boolean',
@@ -742,6 +792,18 @@ $uiVars = array(
 			'EmbedPlayer.DisableBufferingSpinner' => array(
 					'type' => 'Boolean',
 					'desc' => "If the player should hide the loading spinner when it is in buffering mode",
+					'default' => 'false',
+					'example' => ''
+			),
+			'EmbedPlayer.DisableContextMenu' => array(
+					'type' => 'Boolean',
+					'desc' => "Disables the player's right-click context menu",
+					'default' => 'false',
+					'example' => '../modules/KalturaSupport/tests/ThumbnailEmbedManyPlayers.qunit.html'
+			),
+			'EmbedPlayer.KeepPoster' => array(
+					'type' => 'Boolean',
+					'desc' => "Keeps the entry thumbnail shown during playback (covers the video)",
 					'default' => 'false',
 					'example' => ''
 			)
@@ -803,5 +865,3 @@ $uiVars = array(
 		)
 	)
 );
-
-

@@ -109,9 +109,7 @@ mw.EmbedPlayerVlc = {
 	seek : function( percent ) {
 		this.getPlayerElement();
 		// Use the parent (re) embed with new seek url method if urlTimeEncoding is supported.
-		if ( this.supportsURLTimeEncoding() ) {
-			this.parent_seek( percent );
-		} else if ( this.playerElement ) {
+		if (this.playerElement) {
 			this.seeking = true;
 			mw.log( "EmbedPlayerVlc:: seek to: " + percent )
 			if ( ( this.playerElement.input.state == 3 ) && ( this.playerElement.input.position != percent ) )

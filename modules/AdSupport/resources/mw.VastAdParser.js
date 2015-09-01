@@ -33,7 +33,7 @@ mw.VastAdParser = {
 			var adUrl = $vast.find('VASTAdTagURI').text();
 			addVideoClicksIfExist();
 			mw.log('VastAdParser:: Found vast wrapper, load ad: ' + adUrl);
-			mw.AdLoader.load( adUrl, callback, true , $vast );
+			mw.AdLoader.load( adUrl, callback, true , $vast, null );
 			return ;
 		}
 
@@ -136,12 +136,12 @@ mw.VastAdParser = {
 
 				// Add the video source ( if an html5 compatible type )
 				var type  = $( mediaFile ).attr('type') ? $( mediaFile ).attr('type') : $( mediaFile ).attr('creativeType');
-				var delivery  = $( mediaFile ).attr('delivery');
+				//var delivery  = $( mediaFile ).attr('delivery');
 
 				//we dont support streaming method (break with rtmp
-				if ( delivery === "streaming" ){
-					type = "none";
-				}
+				//if ( delivery === "streaming" ){
+				//	type = "none";
+				//}
 				// Normalize mp4 into h264 format:
 				if( type  == 'video/x-mp4' || type == 'video/mp4' ){
 					type = 'video/h264';
@@ -206,11 +206,19 @@ mw.VastAdParser = {
 			$ad.find('CompanionAds Companion').each( function( na, companionNode ){
 				var staticResource = _this.getResourceObject( companionNode );
 				if( staticResource ){
+
+					staticResource.trackingEvents = [];
+					$(companionNode).find( 'trackingEvents Tracking' ).each( function( na, trackingNode ){
+						staticResource.trackingEvents.push({
+							'eventName' : $( trackingNode ).attr('event'),
+							'beaconUrl' : _this.getURLFromNode( trackingNode )
+						});
+					});
 					// Add the staticResourceto the ad config:
 					currentAd.companions.push( staticResource );
 				}
 			});
-			
+
 			// look for icons
 			currentAd.icons = [];
 			$ad.find('Icons Icon').each( function( na, icon ){
@@ -361,15 +369,20 @@ mw.VastAdParser = {
 						);
 					}
 					// Add the image to the $companionHtml
-					if( $( companionNode ).find('CompanionClickThrough').text() != '' ){
+					if( $( companionNode ).find('CompanionClickThrough,NonLinearClickThrough').text() != '' ){
 						$companionHtml = $('<a />')
 							.attr({
 								'href' : _this.getURLFromNode(
 									$( companionNode ).find('CompanionClickThrough,NonLinearClickThrough')[0]
-								)
+								),
+								'target' : '_new'
 							}).append( $img );
 					} else {
 						$companionHtml = $img;
+					}
+					// support non-linear clickthrough tracking
+					if( $( companionNode ).find('NonLinearClickTracking').text() != '' ){
+						$companionHtml.attr("data-NonLinearClickTracking", $(companionNode).find('NonLinearClickTracking').text());
 					}
 				break;
 				case 'application/x-shockwave-flash':
@@ -428,7 +441,9 @@ mw.VastAdParser = {
 		// check for empty impression, return empty text instead of trying to decode
 		var urlText = $.trim( $( node ).text() );
 		try {
-			urlText = decodeURIComponent( urlText )
+			if( ! /[<>`#%{}\s|\\^\~\[\]]/.test(decodeURIComponent(urlText)) && !mw.getConfig('disableVastDecodeURI') ){
+				urlText = decodeURIComponent(urlText)
+			}
 		} catch( e ){
 			mw.log("BastError url includes non-utf chars? ")
 		}

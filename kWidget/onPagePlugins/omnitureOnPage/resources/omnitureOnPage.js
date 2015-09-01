@@ -30,13 +30,15 @@ kWidget.addReadyCallback( function( playerId ){
 
 			// Check for on-page s-code that already exists
 			this.bind('layoutReady', function(){
+				// check that plugin is enabled: 
+				if( _this.getConfig('plugin') == false ){
+					return ;
+				}
 				if ( !_this.layoutReadyCalled ){
 					_this.sCodeCheck(function(){
 						// process any queued events now that sCode is available:
 						_this.proccessMediaQueue();
 						_this.proccessNotificationQueue();
-						// once sCode is ready setup the monitor
-						_this.setupMonitor();
 					});
 					// bind for events as soon as layout is Ready ( proxy events while player checks for sCode )
 					_this.bindCustomEvents();
@@ -76,12 +78,15 @@ kWidget.addReadyCallback( function( playerId ){
 				}
 
 				_this.sCodeLoaded = true;
+				// once sCode is ready setup the monitor
+				_this.setupMonitor();
 
 				if(callback) {
 					callback();
 				}
 			}, function(){
-				// failed to load scode: 
+				// failed to load scode:
+				_this.kdp.sendNotification("omnitureScodeError");
 				_this.log( "Error: failed to load s-code")
 			})
 		},
@@ -134,24 +139,23 @@ kWidget.addReadyCallback( function( playerId ){
 		getMediaPlayerName: function(){
 			return 'Kaltura Omniture OnPage v' + mw.getConfig('version'); 
 		},
+
+		trimSpaces: function(str) {
+			// shortcut to custom data with trimming spaces if exists
+			str = str.replace(/^\s+/, '');
+			for (var i = str.length - 1; i >= 0; i--) {
+				if (/\S/.test(str.charAt(i))) {
+					str = str.substring(0, i + 1);
+					break;
+				}
+			}
+			return str;
+		},
+
 		getMediaName: function(){
 	 		var _this = this;
-	 		// shortcut to custom data with trimming spaces if exists
-
-			var trimSpaces = function(str) {
-				str = str.replace(/^\s+/, '');
-				for (var i = str.length - 1; i >= 0; i--) {
-					if (/\S/.test(str.charAt(i))) {
-						str = str.substring(0, i + 1);
-						break;
-					}
-				}
-				return str;
-			}
-
-
 	 		var g = function( key ){
-	 			return trimSpaces(_this.getAttr( 'mediaProxy.entryMetadata.' + key ) || '_');
+	 			return _this.trimSpaces(_this.getAttr( 'mediaProxy.entryMetadata.' + key ) || '_');
 	 		}
  			switch( _this.getConfig( 'concatMediaName' ) ){
  				case 'doluk':
@@ -164,6 +168,12 @@ kWidget.addReadyCallback( function( playerId ){
  						].join(':').replace(/\s/g, "_");
  				break;
  			}
+			// this allows to override the media name by configuration E.G. MY_PREFIX_{mediaProxy.entry.id}
+			// will output a media name with prefix.
+			if(_this.getConfig( 'mediaName' )) {
+				return _this.kdp.evaluate(_this.getConfig( 'mediaName' ));
+			}
+
 			return this.entryData.name;
 		},
 		getDuration: function(){
@@ -233,11 +243,18 @@ kWidget.addReadyCallback( function( playerId ){
 			var trackEvents = ['OPEN', 'PLAY', 'STOP', 'SECONDS', 'MILESTONE'];
 			var monitorCount = 0;
 			var trackedClose = false;
-			s.Media.autoTrack= true;
-			s.Media.trackWhilePlaying = true;
+			s.Media.autoTrack= typeof this.getConfig('autoTrack') == 'undefined' ? true : this.getConfig('autoTrack') ;
+			s.Media.trackWhilePlaying = typeof this.getConfig('trackWhilePlaying')  == 'undefined' ? true : this.getConfig('trackWhilePlaying');
 			s.Media.trackMilestones="25,50,75";
 			s.Media.monitor = function ( s, media ) {
-				if ( $.inArray( media.event, trackEvents ) !== -1 ) {
+				var inArray = false;
+				for (var i = 0; i < trackEvents.length; i++){
+					if(media.event ===  trackEvents[i]){
+						inArray = true;
+						break;
+					}
+				}
+				if( inArray ) {
 					trackMediaWithExtraEvars();
 				}
 				if( media.event == 'CLOSE' ){
@@ -268,7 +285,6 @@ kWidget.addReadyCallback( function( playerId ){
 			var _this = this;
 			var firstPlay = true;
 			var ignoreFirstChangeMedia = true;
-
 			// setup shortcuts:
 			var stop = function(){
 				_this.runMediaCommand( "stop", _this.getMediaName(), _this.getCurrentTime() );
@@ -281,17 +297,20 @@ kWidget.addReadyCallback( function( playerId ){
 				if( firstPlay ){
 					return;
 				}
-				stop();
 				_this.runMediaCommand( "close", _this.getMediaName() );
 				firstPlay = true;
 			};
 			var adOpen = function(adID, adSystem, type, adIndex){
-				_this.runMediaCommand( "openAd",adID, -1, adSystem, _this.getMediaName(), type, adIndex);
+				if ( type !== "overlay" ){
+					_this.runMediaCommand( "openAd",adID, -1, adSystem, _this.getMediaName(), type, adIndex);
+				}
 			};
-			var complete = function(adID, position){
-				_this.runMediaCommand( "complete",adID, position);
-				_this.runMediaCommand( "stop",adID, position);
-				_this.runMediaCommand( "close",adID);
+			var complete = function(adID, position, type){
+				if ( type !== "overlay" ){
+					_this.runMediaCommand( "complete",adID, position);
+					_this.runMediaCommand( "stop",adID, position);
+					_this.runMediaCommand( "close",adID);
+				}
 			};
 
 			this.bind('entryReady', function() {
@@ -299,16 +318,17 @@ kWidget.addReadyCallback( function( playerId ){
 				_this.cacheEntryMetadata();
 			});
 			// Run open on first play:
-			this.bind( 'playerPlayed', function(){
+			this.bind( 'firstPlay', function(){
 				if( firstPlay ){
-					_this.runMediaCommand( "open", 
-						_this.getMediaName(), 
-						_this.getDuration(), 
-						_this.getMediaPlayerName() 
-					)
+					if ( _this.getConfig( 'triggerPlayFirst' ) === true ){
+						play();
+						_this.runMediaCommand( "open", _this.getMediaName(), _this.getDuration(), _this.getMediaPlayerName() );
+					}else{
+						_this.runMediaCommand( "open", _this.getMediaName(), _this.getDuration(), _this.getMediaPlayerName() );
+						play();
+					}
 				}
 				firstPlay = false;
-				play();
 			});
 			this.bind( 'playerSeekStart', function() {
 				// Ignore HTML5 seek to 0 on PlayerPlayEnd
@@ -321,6 +341,7 @@ kWidget.addReadyCallback( function( playerId ){
 				play();
 			});
 			this.bind( 'doPause', stop );
+			this.bind( 'AdSupport_midSequenceComplete', play );
 			this.bind( 'playerPlayEnd', function(){
 				close();
 			});
@@ -340,8 +361,10 @@ kWidget.addReadyCallback( function( playerId ){
 			});
 			this.bind('onAdOpen', adOpen);
 			this.bind('onAdComplete', complete);
-			this.bind('onAdPlay', function(adName){
-				_this.runMediaCommand( "play",adName, 0);
+			this.bind('onAdPlay', function(adName, adSystem, type, adIndex){
+				if ( type !== "overlay" ){
+					_this.runMediaCommand( "play",adName, 0);
+				}
 			});
 		},
 
@@ -364,7 +387,7 @@ kWidget.addReadyCallback( function( playerId ){
 					_this.bind( eventName, function(){
 						_this.sendNotification( eventId, eventName );
 					});
-				}($.trim(customEvents[i])));
+				}(_this.trimSpaces(customEvents[i])));
 			}		
 		},
 
@@ -448,15 +471,16 @@ kWidget.addReadyCallback( function( playerId ){
 	 			// not working :(
 	 			//s.Media[cmd].apply( this, args );
 
-				if(this.getConfig("s.Media.playerName")){
-					s.Media.playerName = this.getConfig("s.Media.playerName")
+				if(this.getConfig("overridePlayerName") != undefined ){
+					s.Media.playerName = String(this.getConfig("overridePlayerName"));
 				}
-
+				// re-evaluate mediaName even it it was already pushed to the stack
+				argSet[0] = this.getMediaName();
 		 		switch( cmd ) {
-		 			case 'open': 
-		 				s.Media.open(argSet[0], argSet[1], argSet[2]);
+		 			case 'open':
+						s.Media.open(argSet[0], argSet[1], argSet[2]);
 		 			break;
-		 			case 'play': 
+		 			case 'play':
 		 				s.Media.play(argSet[0], argSet[1]);
 		 			break;
 		 			case 'stop':

@@ -6,25 +6,38 @@
 			parent: "topBarContainer",
 			order: 4,
 			align: "right",
-			tooltip: 'Related',
+			tooltip: gM('mwe-embedplayer-related'),
 			showTooltip: true,
-			//visible: false,
 			itemsLimit: 12,
 			displayOnPlaybackDone: true,
 			autoContinueEnabled: true,
 			autoContinueTime: null,
+			sendContextWithPlaylist: false,
 			templatePath: 'components/related/related.tmpl.html',
 			playlistId: null,
 			formatCountdown : false,
 			clickUrl : null,
-			enableAccessControlExclusion:false
+			enableAccessControlExclusion:false,
+			storeSession: false
 		},
 		viewedEntries: [],
 		iconBtnClass: 'icon-related',
+		confPrefix: 'related',
 		timerRunning:false,
+		loadedThumbnails: 0,
+		numOfEntries: 0,
+		updateStoredSession: true,
 
 		setup: function(){
 			var _this = this;
+			// check for storedSession of viewed entries:
+			if( this.getConfig('storeSession') ){
+				var rawViewed = $.cookie( this.confPrefix + '_viewedEntries' );
+				if( rawViewed ){
+					this.viewedEntries = JSON.parse( rawViewed );
+				}
+			}
+			
 			this.bind('playerReady', function(){
 				// Stop timer
 				_this.stopTimer();
@@ -45,7 +58,7 @@
 						$(this).height("100%");
 					});
 					_this.resizeThumbs();
-				},200)
+				},200);
 
 			});
 			this.bind('onCloseFullScreen', function() {
@@ -57,7 +70,7 @@
 						$(this).height("100%");
 					});
 					_this.resizeThumbs();
-				},200)
+				},200);
 			});
 
 			if( this.getConfig('displayOnPlaybackDone') ){
@@ -72,21 +85,33 @@
 				});
 			}
 
-			this.bind('replayEvent', function(){
+			this.bind('replayEvent preSequence', function(){
 				_this.stopTimer();
 			});
 		},
 
 		showScreen: function(){
+			var _this = this;
 			this._super(); // this is an override of showScreen in mw.KBaseScreen.js - call super
-			this.resizeThumbs();
+			if (this.numOfEntries > 0 && this.loadedThumbnails < this.numOfEntries) { // related data was loaded but thumbnails were not loaded yet
+				$('.item-inner').each(function () {
+					var img = $(this).find("img")[0];
+					img.onload = function () {
+						_this.loadedThumbnails++;
+						if (_this.loadedThumbnails == _this.numOfEntries) { // check if all thumbnails were loaded
+							_this.resizeThumbs(); // resize thumbnails according to aspect ratio
+						}
+					}
+				});
+			} else { // all thumbnails were loaded - we can resize according to aspect ratio
+				this.resizeThumbs();
+			}
 		},
 
 		resizeThumbs: function(){
 			// resize and crop from center all thumbnails
 			$('.item-inner').each(function() {
 				// set css class according to image aspect ratio
-				console.log( $(this).width() / $(this).height());
 				var cssClass = $(this).width() / $(this).height() > 1.45 ? 'wide' : 'square';
 				$(this).find("img").removeClass().addClass(cssClass);
 				var img = $(this).find("img")[0];
@@ -94,31 +119,30 @@
 				var divWidth = $(this).width();    // save img div container width for cropping logic
 				var divHeight = $(this).height();  // save img div container height for cropping logic
 
-				// crop image from center. use a timeout to make sure the image is already resized before changing its margins
-				setTimeout(function(){
-					if (cssClass == 'wide'){
-						var heightOffset = ($(img).height()-divHeight)/2;
-						if (heightOffset > 0){
-							$(img).css("margin-top", heightOffset * (-1) + 'px');
-						}else{
-							$(img).width($(img).width()*divHeight/$(img).height());
-							$(img).height(divHeight);
-							var widthOffset = ($(img).width()-divWidth)/2;
-							$(img).css("margin-left", widthOffset * (-1) + 'px');
-						}
-					}else{
-						var widthOffset = ($(img).width()-divWidth)/2;
-						if (widthOffset > 0){
-							$(img).css("margin-left", widthOffset * (-1) + 'px');
-						}else{
-							$(img).height($(img).height()*divWidth/$(img).width());
-							$(img).width(divWidth);
-							var heightOffset = ($(img).height()-divHeight)/2;
-							$(img).css("margin-top", heightOffset * (-1) + 'px');
-						}
+				// crop image from center
+				var heightOffset, widthOffset;
+				var $img = $(img);
+				if (cssClass === 'wide') {
+					heightOffset = ($img.height() - divHeight) / 2;
+					if (heightOffset > 0) {
+						$img.css("margin-top", heightOffset * (-1) + 'px');
+					} else {
+						$img.width($img.width() * divHeight / $img.height());
+						$img.height(divHeight);
+						widthOffset = ($img.width() - divWidth) / 2;
+						$img.css("margin-left", widthOffset * (-1) + 'px');
 					}
-
-				},200);
+				} else {
+					widthOffset = ($img.width() - divWidth) / 2;
+					if (widthOffset > 0) {
+						$img.css("margin-left", widthOffset * (-1) + 'px');
+					} else {
+						$img.height($img.height() * divWidth / $img.width());
+						$img.width(divWidth);
+						heightOffset = ($img.height() - divHeight) / 2;
+						$img.css("margin-top", heightOffset * (-1) + 'px');
+					}
+				}
 			});
 		},
 
@@ -138,7 +162,6 @@
 					// Make sure we change media only if related is visible and we have next item
 					if( _this.isScreenVisible() && _this.templateData && _this.templateData.nextItem ){
 						_this.changeMedia( null, {entryId: _this.templateData.nextItem.id} );
-						_this.viewedEntries.push(_this.templateData.nextItem.id);
 					}
 				}
 			};
@@ -177,38 +200,45 @@
 
 				// Allow other plugins to inject data
 				this.getPlayer().triggerQueueCallback( 'relatedData', function( args ){
-					// Get data from event
-					if( args ){
-						_this.templateData = args[0];
+					// See if the data from event will work:
+					if( args && args[0] && args[0].length ){
+						_this.updateTemplateData( args[0] );
 						callback();
 						return ;
 					}
 					_this.getDataFromApi( function(data){
-						// make sure entries that were already viewed are the last in the data array
-						for (var i = 0; i < _this.viewedEntries.length; i++){
-							for (var j = 0; j < data.length; j++){
-								if (data[j].id === _this.viewedEntries[i]){ // entry was already viewed - move it to the last place in the data array
-									var entry = data.splice(j,1)[0];
-									data.push(entry);
-								}
-							}
-						}
-						_this.templateData = {
-							nextItem: data.splice(0,1)[0],
-							moreItems: data
-						};
+						_this.updateTemplateData( data );
+						callback();
 					});
 				});
-				return;
 			}
-			callback();
-			return;
+		},
+		updateTemplateData: function( data ){
+			this.numOfEntries = data.length;
+			// make sure entries that were already viewed are the last in the data array
+			if ( this.viewedEntries.length <= data.length ){
+				for (var i = 0; i < this.viewedEntries.length; i++){
+					for (var j = 0; j < data.length; j++){
+						if (data[j].id === this.viewedEntries[i]){ // entry was already viewed - move it to the last place in the data array
+							var entry = data.splice(j,1)[0];
+							data.push(entry);
+						}
+					}
+				}
+			}else{
+				this.viewedEntries = [];
+				this.updateStoredSession = false;
+			}
+			this.templateData = {
+				nextItem: data.splice(0,1)[0],
+				moreItems: data
+			};
 		},
 		getDataFromApi: function( callback ){
 			var _this = this;
 			// check for valid playlist id:
 			if( this.getConfig( 'playlistId' ) ){
-				return this.getEntriesFromPlaylistId( this.getConfig( 'playlistId' ), callback);
+				return this.getEntriesFromPlaylistId( this.getConfig( 'playlistId' ), callback , this.getConfig( 'sendContextWithPlaylist' ) );
 			}
 			// check for entry list:
 			if( this.getConfig( 'entryList' ) ){
@@ -219,12 +249,11 @@
 		},
 		isValidResult: function( data ){
 			// Check if we got error
-			if( !data
-				||
-				( data.code && data.message )
-				){
-				this.log('Error getting related items: ' + data.message);
-				this.getBtn().hide();
+			if( !data || data.length === 0	||( data.code && data.message )	){
+				var errMsg = data.message ? data.message : 'No related items were found.';
+				this.log('Error getting related items: ' + errMsg );
+				this.updateTooltip(gM('mwe-embedplayer-related-errMsg'));
+				this.onDisable();
 				this.error = true;
 				return false;
 			}
@@ -251,7 +280,7 @@
 						break;
 					}
 					var entryId = entrylistArry[i];
-					for(var j in data){
+					for(var j = 0; j < data.length; j++){
 						if( data[j]['id'] == entryId){
 							orderedData.push( data.splice( j, 1)[0] );
 						}
@@ -302,9 +331,23 @@
 			});
 		},
 
+		updateViewedEntries: function (entryId) {
+			if ($.inArray(entryId, this.viewedEntries) == -1) {
+				this.viewedEntries.push(entryId)
+			}
+			// update the session var if storing sessions:
+			if ( this.updateStoredSession && this.getConfig('storeSession') ) {
+				$.cookie(this.confPrefix + '_viewedEntries', JSON.stringify(this.viewedEntries));
+			}
+		},
+
 		changeMedia: function( e, data ){
 			this.stopTimer();
 			var _this = this;
+			// update the selected entry:
+			if( data && data.entryId ){
+				this.setConfig('selectedEntryId', data.entryId );
+			}
 			//look for the entry in case this is a click
 			if(this.getConfig('clickUrl')){
 				if(this.templateData.nextItem.id && this.templateData.nextItem.id == data.entryId ){
@@ -325,6 +368,7 @@
 			this.getPlayer().sendNotification('relatedVideoSelect', data);
 
 			if(this.getConfig('clickUrl')){
+				this.updateViewedEntries(data.id);
 				try {
 					window.parent.location.href = this.getConfig('clickUrl');
 					return;
@@ -336,23 +380,41 @@
 
 			this.getPlayer().sendNotification('changeMedia', data);
 			this.bind('onChangeMediaDone', function(){
-				_this.getPlayer().play();
+				_this.updateViewedEntries(data.entryId);
+				if (_this.getPlayer().canAutoPlay()) {
+					_this.getPlayer().play();
+				}
 				_this.unbind('onChangeMediaDone');
 			});
 			this.hideScreen();
 		},
 		onConfigChange: function( property, value ){
 			this._super( property, value );
+			if ( property === 'entryList' ){
+				var _this = this;
+				this.getEntriesFromList( value, function(data){
+					_this.updateTemplateData(data);
+					var keepScreenOpen = _this.isScreenVisible(); // save screen status so we can reopen it after switching entryList
+					_this.removeScreen(); // we must remove screen to clear the DOM from old entryList thumbnails
+					if (keepScreenOpen){
+						_this.showScreen(); // reopen screen if needed
+					}
+				} );
+			}
 			if( !this.isScreenVisible() ) {
 				return;
 			}
 
 			if( property == 'timeRemaining' ){
 				if( this.getConfig('formatCountdown')){
-					var timeFormat = mw.KDPMapping.prototype.formatFunctions.timeFormat;
-					this.getScreen().find('.remaining').html(timeFormat(value));
+					var timeFormat = mw.util.formaters().get('timeFormat');
+					this.getScreen().then(function(screen){
+						screen.find('.remaining').html(timeFormat(value));
+					});
 				}else{
-					this.getScreen().find('.remaining').html(value);
+					this.getScreen().then(function(screen){
+						screen.find('.remaining').html(value);
+					});
 				}
 			}
 		},

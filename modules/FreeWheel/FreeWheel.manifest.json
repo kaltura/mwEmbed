@@ -1,0 +1,54 @@
+{
+    "freeWheel": {
+        "label": "FreeWheel",
+        "description": "FreeWheel gives enterprise-level media companies the infrastructure they \r\n\t\tneed to create scaled, profitable content businesses in the new media landscape. \r\n\t\tLearn more about <a href=\"http://www.freewheel.tv/\" target=\"_blank\">FreeWheel offerings</a>. <br>\r\n\t\tKaltura supports a full featured FreeWheel ad network integration for both HTML5 and flash players.<br>\r\n\t\t<b>Note:</b> Internet Explorer 8 supports only the Flash player integration.",
+        "attributes": {
+            "adManagerUrl": {
+                "doc": "The FreeWheel ad manager SWF URL.",
+                "label": "Ad manager SWF URL",
+                "type": "url"
+            },
+            "adManagerJsUrl": {
+                "doc": "The FreeWheel ad manager JavaScript URL. Must be set in uiConf not via flashvar.",
+                "label": "Ad manager JavaScript URL",
+                "type": "url"
+            },
+            "serverUrl": {
+                "doc": "The FreeWheel ad server",
+                "label": "Ad server URL",
+                "type": "url"
+            },
+            "networkId": {
+                "doc": "The network ID property, for retrieving FreeWheel ads.",
+                "type": "string"
+            },
+            "playerProfile": {
+                "doc": "The player profile ID for Flash, for identifying the Flash player.",
+                "label": "Player profile id",
+                "type": "string"
+            },
+            "playerProfileHTML5": {
+                "doc": "The player profile ID for HTML5, for identifying the HTML5 player",
+                "label": "Player HTML5 profile ID",
+                "type": "string"
+            },
+            "siteSectionId": {
+                "doc": "The site section ID used to segment ad retrieval per site section.",
+                "type": "string"
+            },
+            "useKalturaTemporalSlots": {
+                "doc": "If Kaltura cuePoints should be used for ad opportunities.",
+                "label": "Use Kaltura cue points.",
+                "type": "boolean"
+            },
+            "videoAssetId": {
+                "doc": "Asset ID, for FreeWheel ad targeting.",
+                "type": "string"
+            },
+            "videoAssetFallbackId": {
+                "doc": "Fallback asset ID, if the initial asset does not have targeting info.",
+                "type": "string"
+            }
+        }
+    }
+}

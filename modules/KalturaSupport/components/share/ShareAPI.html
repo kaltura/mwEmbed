@@ -1,0 +1,99 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Share Plugin API</title>
+	<script type="text/javascript" src="../../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<body>
+<h2>Share Plugin API</h2>
+<br />
+<div id="kdp" style="width:600px;height:370px;float:left"></div>
+<script type="text/javascript" src="../../tests/resources/qunit-kaltura-bootstrap.js"></script>
+<script>
+	function onReadyCallback(playerID){
+		window.kdp = document.getElementById( playerID );
+		kdp.kBind( 'shareEvent', function(event){
+			// retrieve the share link
+			var shareLink = event.shareLink;
+			$("#shareLink").text(shareLink);
+			$("#shareLink").show();
+		});
+
+		$('#triggerShare').click(function () {
+			window.kdp.sendNotification('doShare');
+		});
+
+		$('#triggerShareOffset').click(function () {
+			window.kdp.sendNotification('doShare',{"timeOffset":"30"});
+		});
+
+		$('#shareByPlayform').click(function (){
+			var network = $('#selectPlatform').val();
+			window.kdp.sendNotification('shareByPlatform', network);
+		});
+	}
+
+
+	kWidget.featureConfig({
+		'targetId': 'kdp',
+		'wid': '_243342',
+		'uiconf_id' : '21099702',
+		'entry_id' : '1_sf5ovm7u',
+		'readyCallback': onReadyCallback,
+		'flashvars': {
+			'share': {
+				'plugin': true,
+				'parent': "topBarContainer",
+				'order': 3,
+				'socialShareURL': 'smart',
+				'socialNetworks': 'facebook,twitter,googleplus,email,linkedin,sms'
+			},
+			'topBarContainer.plugin': true
+		}
+	});
+</script>
+<div style="clear:both"></div>
+<h3> Share plugin API </h3>
+<p>
+The Share plugin provides JavaScript API for triggering the shared link generation and retrieval as well as invoking the share operation itself:<br><br>
+<b>"doShare" Notification: </b>is used to trigger the shared link generation. You can specify the required time offset by sending a configuration object, for example: { "timeOffset" : "30" }<br>
+<b>"shareEvent" Event: </b>is triggered by the plugin once the shared link is generated. It provides access to the 	generated shared link by accessing the event's "sharedLink" property.<br>
+<b>"shareByPlatform" Notification: </b>is used to invoke the share operation without displaying the Share UI on top of the player. The required network is send as a parameter.
+</p>
+<br>
+Sample code for Share API:
+<pre class="prettyprint linenums">
+kWidget.addReadyCallback(function( playerId ){
+	var kdp = $('#' + playerId)[0];
+	kdp.kBind( 'shareEvent', function(event){
+		// retrieve the share link
+		var shareLink = event.shareLink;
+	});
+	// trigger share event
+	kdp.sendNotification( 'doShare' );
+	// trigger share event with time offset
+	kdp.sendNotification( 'doShare', { "timeOffset" : "30" } );
+	// trigger shareByPlatform event
+	kdp.sendNotification( 'shareByPlatform', 'facebook' );
+});
+</pre>
+Trigger Share event: <button id="triggerShare" href="#">GO</button><br>
+Trigger Share event with time offset of 30 seconds: <button id="triggerShareOffset" href="#">GO</button><br/>
+<b>Generated Shared Link:</b>
+<pre id="shareLink" class="prettyprint"> </pre>
+<p>
+	Trigger Share for Platform:
+	<select id="selectPlatform" style="margin-top: 9px">
+		<option value="facebook">facebook</option>
+		<option value="twitter">twitter</option>
+		<option value="googleplus">googleplus</option>
+		<option value="email">email</option>
+		<option value="linkedin">linkedin</option>
+	</select>&nbsp;
+	<button id="shareByPlayform">Go</button>
+<br><br>
+<br/><br/>
+</body>
+</html>

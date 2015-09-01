@@ -1,0 +1,86 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Swipe events with Hammer.js</title>
+		<script type="text/javascript" src="../../../../tests/qunit/qunit-bootstrap.js"></script>
+		<script type="text/javascript" src="../../../../mwEmbedLoader.php"></script>
+		<script type="text/javascript" src="../../../../docs/js/doc-bootstrap.js"></script>
+		<style>
+			pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+			.string { color: green; }
+			.number { color: darkorange; }
+			.boolean { color: blue; }
+			.null { color: magenta; }
+			.key { color: red; }
+		</style>
+	</head>
+	<body>
+	<h2> Swipe events with Hammer.js </h2>
+		<br />
+	<div id="kaltura_player" style="width:600px;height:336px;float:left">
+	</div>
+	<span id="kdoc-more-desc"><br>
+		You can learn more about <a target="_new" href="http://hammerjs.github.io/api/#hammer.defaults">supported options</a> and
+		<a target="_new" href="http://hammerjs.github.io/api/#hammer.input-event">event listeners</a> in hammer.js documentation.
+	</span>
+	<script type="text/javascript" src="../../tests/resources/qunit-kaltura-bootstrap.js"></script>
+	<script>
+		kWidget.featureConfig({
+			'targetId': 'kaltura_player',
+			'wid' : '_243342',
+			'uiconf_id' : '20540612',
+			'entry_id' : '1_sf5ovm7u',
+			'flashvars': {
+				'hammerEvents': {
+					'plugin' : "true",
+					'options': { dragLockToAxis: true },
+					'on': "release dragleft dragright swipeleft swiperight"
+				}
+			},
+			'readyCallback': function(playerId){
+				var kdp = $("#" + playerId )[0];
+				kdp.kBind('hammerEvent', function(hammerEvent){
+					// remove some pointers: 
+					delete hammerEvent['changedPointers'];
+					delete hammerEvent['srcEvent'];
+					delete hammerEvent['target'];
+					delete hammerEvent['pointers'];
+					hammerEvent['preventDefault'] = '/* function */';
+					
+					$('#eventlog').prepend( 
+						$('<pre>').html( 
+							syntaxHighlight( 
+								JSON.stringify(hammerEvent, undefined, 4) 
+							) 
+						).css({
+							'float': 'left',
+							'width': '400px;'
+						})
+					);
+				})
+			}
+		});
+		function syntaxHighlight(json) {
+			json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+			return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+				var cls = 'number';
+				if (/^"/.test(match)) {
+					if (/:$/.test(match)) {
+						cls = 'key';
+					} else {
+						cls = 'string';
+					}
+				} else if (/true|false/.test(match)) {
+					cls = 'boolean';
+				} else if (/null/.test(match)) {
+					cls = 'null';
+				}
+				return '<span class="' + cls + '">' + match + '</span>';
+			});
+		}
+	</script>
+		<div style="clear:both"></div>
+		<h3> Event log:</h3>
+		<div id="eventlog"></div>
+	</body>
+</html>

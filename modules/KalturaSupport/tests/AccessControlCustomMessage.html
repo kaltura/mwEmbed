@@ -28,24 +28,26 @@ function jsKalturaPlayerTest( videoId ){
 <body>
 <h2>Custom Message AC KS </h2>
 Learn more about <a target="_new" href="http://knowledge.kaltura.com/kaltura-media-access-control-model">kaltura access controls</a> in the knowledge center article. 
-Custom access control messages can be set in the uiConf strings section: 
+<br><br>Custom access control messages can be set in the uiConf strings section: 
 <pre class="prettyprint linenums">
-&lt;strings&gt;<br/>    &lt;string key=&quot;NO_KS&quot;  value=&quot;My NO_KS UiConf String&quot; /&gt;<br/>&lt;/strings&gt;
-</pre>
+'strings': {
+	'NO_KS': 'My custom string'
+}</pre>
 
-<br />
-<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
-allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
-xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
-resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/7849782/entry_id/0_89wvaqxn" 
-data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/7849782/entry_id/0_89wvaqxn">
-	<param name="allowFullScreen" value="true" />
-	<param name="allowNetworking" value="all" />
-	<param name="allowScriptAccess" value="always" />
-	<param name="bgcolor" value="#000000" />
-	<param name="flashVars" value="&externalInterfaceDisabled=false" />
-	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/7849782/entry_id/0_89wvaqxn" />
-</object>
+<div id="kaltura_player" style="width:400px;height:330px;"></div>
+<script>
+kWidget.embed({
+	targetId:'kaltura_player',
+	wid : '_243342',
+	uiconf_id: '7849782',
+	entry_id: '0_89wvaqxn',
+	flashvars:{
+		'strings': {
+			'NO_KS': 'My custom string'
+		}
+	}
+});
+</script>
 <h2> Thubmnail Embed </h2>
 Thumbnail embed displays the access control message after clicking play:
 <div id="kaltura_player_ac_thumb" style="width:400px;height:330px;">
@@ -55,7 +57,12 @@ kWidget.thumbEmbed({
 	targetId:'kaltura_player_ac_thumb',
 	wid : '_243342',
 	uiconf_id: '7849782',
-	entry_id: '0_89wvaqxn'
+	entry_id: '0_89wvaqxn',
+	flashvars:{
+		'strings': {
+			'NO_KS': 'My custom string'
+		}
+	}
 })
 </script>
 </body>

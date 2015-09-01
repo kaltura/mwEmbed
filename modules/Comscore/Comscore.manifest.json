@@ -1,0 +1,73 @@
+{
+    "comscore": {
+        "description": "Supports sending player analytics events to comScore.",
+        "label": "comScore",
+        "attributes": {
+            "cTagsMap": {
+                "doc": "URL to a comScore XML tag mapping file.",
+                "label": "Comscore XML tag mapping file path",
+                "type": "url"
+            },
+            "trackEventMonitor": {
+                "doc": "Function called on parent page for every event.",
+                "label": "Event function name",
+                "type": "string"
+            },
+            "c2": {
+                "doc": "Party who delivered the content.",
+                "label": "Content party",
+                "type": "url"
+            },
+            "c3": {
+                "doc": "Owner of the content(Content producer).",
+                "label": "Content owner",
+                "type": "url"
+            },
+            "c3attributeKey": {
+                "doc": "Mapping file attribute key for content owner.",
+                "label": "Content owner attribute key",
+                "type": "string"
+            },
+            "c3Value": {
+                "doc": "value key for content owner.",
+                "label": "Content owner value key.",
+                "type": "string"
+            },
+            "c4": {
+                "doc": "Location/site where content was viewed.",
+                "label": "Content view site.",
+                "type": "url"
+            },
+            "c4attributeKey": {
+                "doc": "Mapping file attribute key for site/location.",
+                "label": "Site mapping attribute key",
+                "type": "string"
+            },
+            "c4Value": {
+                "doc": "value key for site/location.",
+                "label": "Site value key",
+                "type": "string"
+            },
+            "c5": {
+                "doc": "Genre and type of content.",
+                "label": "Content type",
+                "type": "url"
+            },
+            "c5attributeKey": {
+                "doc": "Mapping file attribute key for genre and type.",
+                "label": "Type attribute key",
+                "type": "string"
+            },
+            "c5Value": {
+                "doc": "value key for site/location",
+                "label": "Site value key",
+                "type": "string"
+            },
+            "c6": {
+                "doc": "Show level reporting; campaign reporting; episode reporting",
+                "label": "Level reporting",
+                "type": "url"
+            }
+        }
+    }
+}

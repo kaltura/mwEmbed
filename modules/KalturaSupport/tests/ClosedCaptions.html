@@ -15,8 +15,16 @@ kWidget.addReadyCallback( function( playerId ) {
 	kdp.kBind('newClosedCaptionsData', function(){
 		$('#log').append( "newClosedCaptionsData -- A caption asset had been loaded<br>");
 	});
-	kdp.kBind('changedClosedCaptions', function(){
-		$('#log').append( "ccChanged -- Caption asset as been changed<br />"	);
+	kdp.kBind('changedClosedCaptions', function(event){
+		$('#log').append( "ccChanged -- Caption asset has been changed, selected Language is: " + event.language + "<br />"	);
+	});
+
+	kdp.kBind('closedCaptionsHidden', function(){
+		$('#log').append( "ccHidden -- Caption asset is hidden<br />"	);
+	});
+
+	kdp.kBind('closedCaptionsDisplayed', function(event){
+		$('#log').append( "ccDisplayed -- Caption asset is displayed, selected Language is: " + event.language + "<br />"	);
 	});
 		
 	$( '#showCaptions' ).click(function(){
@@ -39,9 +47,25 @@ kWidget.addReadyCallback( function( playerId ) {
 <div style="clear:both">
 <br>
 
+<h2> Captions selection logic </h2>
+<pre>
+ 1. Check if there is an existing cookie (created by the player),<br>    which remembers a language preferred by the user.
+
+   <div style="color:red; display:inline;"> Note:</div> if user selected specific caption, it is saved in a cookie,<br>    and the next time that he reloads the page, that cookie will be checked and preferred.
+
+ 2. If there was no existing cookie, check if default caption is set for the entry via the <br>    KMC, or FlashVar (defaultLanguageKey), if there is, use it.
+
+   <div style="color:red; display:inline;"> Note:</div> on iOS devices defaultLanguageKey takes effect only if the user device is set to<br>    auto(Recommended), otherwise the caption selected by the user is used.
+
+ 3. If cases 1 or 2, did not occur, check for user's browser language and,<br>    select the relevant caption.
+
+ 4. If none of the above occurred, select the first available caption.
+
+</pre>
+
 <h2> Captions API</h2>
 The Kaltura captions API enables you to hide and show captions via javascript. <br>
-<!-- 
+
 <a href="#" id="showCaptions">Show Captions</a>
 <pre class="prettyprint linenums">
 kdp.sendNotification( 'showClosedCaptions' );
@@ -50,7 +74,7 @@ kdp.sendNotification( 'showClosedCaptions' );
 <pre class="prettyprint linenums">
 kdp.sendNotification( 'hideClosedCaptions' );
 </pre>
- -->
+
 <a href="#" id="toggleCaptions">Toggle Captions</a>
 <pre class="prettyprint linenums">
 kdp.sendNotification( 'showHideClosedCaptions');
@@ -61,11 +85,12 @@ kdp.sendNotification( 'showHideClosedCaptions');
 		'targetId': 'myVideoTarget',
 		'wid': '_243342',
 		'uiconf_id': '20540612',
-		'entry_id': '1_23pqn2nu',
+		'entry_id': '0_uka1msg4',
 		'flashvars': {
 			'disableTrackElement': true,
 			'closedCaptions': {
 				'hideWhenEmpty': true,
+                'whiteListLanguagesCodes': 'en,es,fr,jp',
 				'layout': 'ontop',
 				'useCookie': true,
 				'defaultLanguageKey': 'en',
@@ -93,7 +118,7 @@ kdp.sendNotification( 'showHideClosedCaptions');
 <div style="clear:both"></div>
 <h3>Log caption events:</h3>
 <pre class="prettyprint linenums">
-kdp.kBind('ccDataLoaded', function(){<br/>	$('#log').append( &quot;ccDataLoaded -- All captions has been loaded&lt;br&gt;&quot; );<br/>});<br/>kdp.kBind('newClosedCaptionsData', function(){<br/>	$('#log').append( &quot;newClosedCaptionsData -- A caption asset had been loaded&lt;br&gt;&quot;);<br/>});<br/>kdp.kBind('changedClosedCaptions', function(){<br/>	$('#log').append( &quot;ccChanged -- Caption asset as been changed&quot;	);<br/>});
+kdp.kBind('ccDataLoaded', function(){<br/>	$('#log').append( &quot;ccDataLoaded -- All captions has been loaded&lt;br&gt;&quot; );<br/>});<br/>kdp.kBind('newClosedCaptionsData', function(){<br/>	$('#log').append( &quot;newClosedCaptionsData -- A caption asset had been loaded&lt;br&gt;&quot;);<br/>});<br/>kdp.kBind('changedClosedCaptions', function(event){<br/>	$('#log').append( &quot;ccChanged -- Caption asset has been changed, selected language is: " + event.language + "&lt;br&gt;&quot;);<br/>});<br/>kdp.kBind('closedCaptionsHidden', function(){<br/>	$('#log').append( &quot;ccHidden -- Caption asset is hidden&lt;br&gt;&quot;);<br/>});<br/>kdp.kBind('ccDisplayed', function(event){<br/>	$('#log').append( &quot;ccDisplayed -- Caption asset is displayed, selected language is: " + event.language + "&lt;br&gt;&quot;);<br/>});
 </pre>
 Event Log:
 <div id="log"></div>

@@ -170,12 +170,12 @@
 	<a name="Whitepaper" id="Whitepaper"></a><br>
 	<div class="blurb-right">
 		<div class="blurb-img" style="margin-top:20px">
-			<a title="studio" rel="lightbox[27]" href="http://site.kaltura.com/Select_the_Best_Video_Player.html" class="cboxElement">
+			<a title="studio" rel="lightbox[27]" href="http://site.kaltura.com/Kaltura_WhitePaper_Selecting_a_Video_Player_in_Todays_Digital_World_2015.html" class="cboxElement">
 				<img class="shadow" title="whitepaper" src="images/whitepaper.jpg">
 			</a>
 		</div>
 		<div class="blurb-img" style="margin-top:40px;float:left;">
-			<a title="studio" rel="lightbox[27]" href="http://site.kaltura.com/Select_the_Best_Video_Player.html" class="cboxElement">
+			<a title="studio" rel="lightbox[27]" href="http://site.kaltura.com/Kaltura_WhitePaper_Selecting_a_Video_Player_in_Todays_Digital_World_2015.html" class="cboxElement">
 				<img title="whitepaper" src="images/Whitepaper-download-button.gif">
 			</a>
 		</div>

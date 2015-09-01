@@ -1,0 +1,11 @@
+<ul>
+    <% for ( var i = 0; i < mediaList.length; i++ ) { %>
+        <%var mediaItem =  mediaList[i];%>
+        <% if (mediaItem.type === 2) {%>
+            <%=renderChapter({mediaItem: mediaItem, meta: meta})%>
+        <%} %>
+        <% if (mediaItem.type === 1) {%>
+            <%=renderSlide({mediaItem: mediaItem, meta: meta})%>
+        <%} %>
+    <% } %>
+</ul>

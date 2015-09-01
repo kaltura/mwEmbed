@@ -6,20 +6,30 @@
 			"parent": "controlsContainer",
 			"order": 62,
 			"displayImportance": "high",
+			"iconClass": "icon-cc",
 			"align": "right",
 			"showTooltip": true,
 			"layout": "ontop", // "below"
 			"displayCaptions": null, // null will use user preference
 			"defaultLanguageKey": null,
+			"whiteListLanguagesCodes": null, //white list the languages by languages codes (e.g. 'en,fr' will remove all items but English and French if they exist)
 			"useCookie": true,
 			"hideWhenEmpty": false,
 			"showEmbeddedCaptions": false,
 			"hideClosedCaptions": false,
-			"showEmbeddedCaptionsStyle": false
+			"showEmbeddedCaptionsStyle": false,
+			"showOffButton": true,
+			"toggleActiveCaption": false,
+			"useExternalClosedCaptions": false,
+			"offButtonPosition": "first",
+			// Can be used to force loading specific language and expose to other plugins
+			"forceLoadLanguage": false
 		},
 
 		textSources: [],
 		defaultBottom: 15,
+		lastActiveCaption: null,
+		ended: false,
 
 		setup: function(){
 			var _this = this;
@@ -27,9 +37,9 @@
 
 			if( (this.getConfig( 'useCookie' ) && $.cookie( this.cookieName )
 				&&
-				$.cookie( this.cookieName ) == 'None'
-				&&
-				this.getConfig('displayCaptions') === null)
+				$.cookie( this.cookieName ) == 'None')
+				||
+				this.getConfig('displayCaptions') === null
 				||
 				( this.getConfig( 'hideClosedCaptions') === true )
 			){
@@ -42,7 +52,16 @@
 				}
 			}
 
+			this.embedPlayer.bindHelper("propertyChangedEvent", function(event, data){
+				if ( data.plugin === _this.pluginName ){
+					if ( data.property === "captions" ){
+						_this.getMenu().$el.find("li a")[data.value].click();
+					}
+				}
+			});
+
 			if ( this.getConfig('showEmbeddedCaptions') === true ) {
+
 				if ( this.getConfig('showEmbeddedCaptionsStyle') === true ) {
 					this.bind( 'textTrackIndexChanged', function( e, captionData ) {
 						if ( captionData.ttml ) {
@@ -69,7 +88,8 @@
 						if ( !_this.selectedSource ) {
 							_this.selectedSource = caption.source;
 						}
-						_this.addCaption( _this.selectedSource, caption.capId, caption.caption );
+                        var captionContent = _this.parseCaption(caption.caption);
+						_this.addCaption( _this.selectedSource, caption.capId, captionContent );
 					}
 				});
 				this.bind( 'changedClosedCaptions', function () {
@@ -78,37 +98,58 @@
 					_this.embedPlayer.getInterface().find( '.track' ).empty();
 					_this.getPlayer().triggerHelper( 'changeEmbeddedTextTrack', _this.selectedSource );
 				});
+				this.bind( 'textTracksReceived', function ( e, data ) {
+					if ( data && $.isArray( data.languages ) && data.languages.length ) {
+						_this.destory();
+						var newSources = [];
+						$.each( data.languages, function ( inx, src ) {
+							var source = new mw.TextSource( $.extend( { srclang: src.label }, src ) );
+							//no need to load embedded captions
+							source.loaded = true;
+							newSources.push( source );
+						} );
+						_this.buildMenu( newSources );
+					}
+				} );
 			} else {
-				this.bind( 'playerReady', function(){
+				if (!this.getConfig("useExternalClosedCaptions")) {
+					this.bind( 'playerReady', function () {
+						_this.destory();
+						_this.setupTextSources( function () {
+							_this.buildMenu( _this.textSources );
+						} );
+					} );
+					outOfBandCaptionEventHandlers.call(this);
+				}
+
+			}
+			if (this.getConfig("useExternalClosedCaptions")) {
+				this.bind( 'loadExternalClosedCaptions', function ( e, data ) {
+					if ( !(data && $.isArray( data.languages ) ) ) {
+						data.languages = [];
+					}
 					_this.destory();
-					_this.setupTextSources(function(){
-						_this.buildMenu( _this.textSources );
-					});
-				});
+					_this.buildMenu( data.languages );
+				} );
+				outOfBandCaptionEventHandlers.call(this);
+			}
+
+			function outOfBandCaptionEventHandlers(){
+				var _this = this;
 				this.bind( 'timeupdate', function(){
 					if( _this.getConfig('displayCaptions') === true && _this.selectedSource ){
 						_this.monitor();
 					}
 				});
-				this.bind( 'loadExternalClosedCaptions', function(e, textSources ){
-					_this.destory();
-					_this.buildMenu( textSources );
+
+				this.bind( 'ended', function(){
+					_this.ended = true;
+				});
+
+				this.bind( 'playing', function(){
+					_this.ended = false;
 				});
 			}
-
-			this.bind( 'textTracksReceived', function( e, data ){
-				if ( data && data.languages ) {
-					_this.destory();
-					var newSources = [];
-					$.each( data.languages, function( inx, src ){
-						var source =  new mw.TextSource( $.extend( { srclang: src.label }, src ) );
-						//no need to load embedded captions
-						source.loaded = true;
-						newSources.push( source );
-					});
-					_this.buildMenu( newSources );
-				}
-			});
 
 			this.bind( 'onplay', function(){
 				_this.playbackStarted = true;
@@ -125,6 +166,18 @@
 				}
 			});
 
+			this.bind( 'showClosedCaptions', function(){
+				if( _this.getConfig('displayCaptions') === false ){
+					_this.setConfig('displayCaptions', true);
+				}
+			});
+
+			this.bind( 'hideClosedCaptions', function(){
+				if( _this.getConfig('displayCaptions') === true ){
+					_this.setConfig('displayCaptions', false);
+				}
+			});
+
 			this.bind( 'onCloseFullScreen onOpenFullScreen', function(){
 				if (_this.getConfig("displayCaptions") == true){
 					_this.updateTextSize();
@@ -135,14 +188,28 @@
 				this.updateBelowVideoCaptionContainer();
 			}
 
-			this.bind( 'onHideControlBar onShowControlBar', function(event, layout ){
-				if ( _this.getPlayer().isOverlayControls() ) {
-					_this.defaultBottom = layout.bottom;
-					// Move the text track down if present
-					_this.getPlayer().getInterface().find( '.track' )
-						.stop()
-						.animate( layout, 'fast' );
-				}
+			if ( this.getConfig('layout') == 'ontop' ) {
+				this.bind('onHideControlBar onShowControlBar', function (event, layout) {
+					if (!_this.ended && _this.getPlayer().isOverlayControls()) {
+						_this.defaultBottom = layout.bottom;
+						// Move the text track down if present
+						_this.getPlayer().getInterface().find('.track')
+							.stop()
+							.animate(layout, 'fast');
+					}
+				});
+			}
+
+			this.bind("AdSupport_StartAdPlayback", function(){
+				_this.setConfig('displayCaptions', false);
+				_this.hideCaptions();
+			});
+			this.bind("AdSupport_EndAdPlayback", function(){
+				_this.setConfig('displayCaptions', true);
+				_this.showCaptions();
+			});
+			this.bind("playSegmentEvent", function(){
+				_this.updateTimeOffset();
 			});
 		},
 		updateTextSize: function(){
@@ -197,15 +264,25 @@
 		},
 		hideCaptions: function(){
 			if( !this.getConfig('displayCaptions') || this.textSources.length === 0 ) {
+				this.getMenu().clearActive();
+				if (this.getConfig('showOffButton')){
+						this.getMenu().$el.find('.offBtn').addClass('active');
+				}
 				this.getCaptionsOverlay().hide();
 				var $cc = this.embedPlayer.getInterface().find('.captionContainer' );
 				$cc.remove();
 				this.embedPlayer.doUpdateLayout();
+				this.getPlayer().triggerHelper('closedCaptionsHidden');
 			}
 		},
 		showCaptions: function(){
 			if( this.getConfig('displayCaptions') ) {
+				this.getMenu().clearActive();
 				this.getCaptionsOverlay().show();
+				if( this.selectedSource != null ) {
+					this.getPlayer().triggerHelper('closedCaptionsDisplayed', {language: this.selectedSource.label});
+					this.getMenu().$el.find("li").eq(this.lastActiveCaption).addClass('active');
+				}
 				if( this.getConfig('layout') == 'below' ) {
 					this.updateBelowVideoCaptionContainer();
 				}
@@ -217,9 +294,15 @@
 			} 
 			return null;
 		},
+		updateTimeOffset: function(){
+			// support server side clipping
+			if ( this.embedPlayer.supportsURLTimeEncoding() && this.embedPlayer.startTime ){
+				this.timeOffset = this.embedPlayer.startTime;
+			}
+		},
 		setupTextSources: function( callback ){
 			var _this = this;
-
+			this.updateTimeOffset();
 			// Get from <track> elements
 			$.each( this.getPlayer().getTextTracks(), function( inx, textSource ){
 				_this.textSources.push( new mw.TextSource( textSource ) );
@@ -237,7 +320,12 @@
 					_this.textSources = textSources;
 				}]);
 
-				if( _this.getConfig('displayCaptions') !== false ){
+				// Handle Force loading of captions
+				if( _this.getConfig('forceLoadLanguage') ) {
+					_this.forceLoadLanguage();
+				}
+
+				if( _this.getConfig('displayCaptions') !== false || ($.cookie( _this.cookieName ) !== 'None' && $.cookie( _this.cookieName )) ){
 					_this.autoSelectSource();
 					if( _this.selectedSource ){
 						_this.setTextSource(_this.selectedSource, false);
@@ -259,11 +347,31 @@
 				'action' : 'list',
 				'filter:objectType' : 'KalturaAssetFilter',
 				'filter:entryIdEqual' : this.getPlayer().kentryid,
-				'filter:statusEqual' : 2
+				'filter:statusEqual' : 2,
+				'pager:pageSize': 50
 			}, function( data ) {
 				mw.log( "mw.ClosedCaptions:: loadCaptionsFromApi: " + data.totalCount, data.objects );
 				if( data.objects && data.objects.length ){
+					// white list languages by their label
+					if( _this.getConfig("whiteListLanguagesCodes") != null){
+						mw.log( "mw.ClosedCaptions:: whitelist : " + _this.getConfig("whiteListLanguagesCodes") );
+						var whiteListedLaguages = new Array();
+						var whiteListArr = _this.getConfig("whiteListLanguagesCodes").split(",");
+						for(var j=0 ; j<whiteListArr.length ; j++){
+							for(var i=data.objects.length-1 ; i > -1 ; i--){
+								if( data.objects[i].languageCode == whiteListArr[j]){
+									whiteListedLaguages.push(data.objects[i]);
+								}
+							}
+						}
+						data.objects = whiteListedLaguages;
+						if(!data.objects.length && _this.getConfig("hideWhenEmpty") == true){
+							_this.getBtn().hide();
+						}
+
+					}
 					_this.loadCaptionsURLsFromApi( data.objects, callback );
+
 				} else {
 					// No captions
 					callback([]);
@@ -286,10 +394,14 @@
 			if ( multiRequest.length ) {
 				this.getKalturaClient().doRequest( multiRequest, function( result ) {
 					var captionsURLs = {};
-					// Store captions URLs in array
-					$.each( result, function( idx, captionUrl ) {
-						captionsURLs[ captionIds[ idx ] ] = captionUrl;
-					} );
+					if( typeof result == 'string'){
+						captionsURLs[ captionIds[ 0 ] ] = result;
+					} else {
+						// Store captions URLs in array
+						$.each( result, function( idx, captionUrl ) {
+							captionsURLs[ captionIds[ idx ] ] = captionUrl;
+						} );
+					}
 					// Store caption URLs locally
 					_this.captionURLs = captionsURLs;
 					// Done adding source issue callback
@@ -300,15 +412,20 @@
 		},
 		getTextSourceFromDB: function( dbTextSource ) {
 			var _this = this;
-			if( dbTextSource.fileExt == '' ){
+			if( !dbTextSource.fileExt ){
 				// TODO other format mappings?
-				if( dbTextSource.format == '2' ){
-					dbTextSource.fileExt = 'xml';
+				switch( dbTextSource.format ){
+					case '1':
+						dbTextSource.fileExt = 'srt';
+						break;
+					case '2':
+						dbTextSource.fileExt = 'xml';
+						break;
 				}
 			}
 
 			var captionsSrc;
-			if( mw.isIphone() && !mw.getConfig('disableTrackElement') ) {
+			if( mw.isIphone() && !mw.getConfig('disableTrackElement') && !this.getConfig('forceLoadLanguage') ) {
 				// getting generated vtt file from dfxp/srt
 				captionsSrc = mw.getConfig('Kaltura.ServiceUrl') +
 							"/api_v3/index.php/service/caption_captionasset/action/serveWebVTT/captionAssetId/" +
@@ -317,6 +434,10 @@
 			} else {
 				captionsSrc = this.getCaptionURL( dbTextSource.id ) + '/.' + dbTextSource.fileExt;
 			}
+
+			this.bind( 'onChangeMediaDone', function () {
+				_this.embedPlayer.getInterface().find( 'track').remove();
+			});
 
 			// Try to insert the track source:
 			var embedSource = this.embedPlayer.mediaElement.tryAddSource(
@@ -334,6 +455,16 @@
 			);
 			// Return a "textSource" object:
 			return new mw.TextSource( embedSource );
+		},
+		forceLoadLanguage: function(){
+			var lang = this.getConfig('forceLoadLanguage');
+			var source = this.selectSourceByLangKey( lang );
+			// Found caption
+			if( source && !source.loaded ) {
+				source.load($.proxy(function(){
+					this.getPlayer().triggerHelper('forcedCaptionLoaded', source);
+				},this));
+			}
 		},
 		autoSelectSource: function(){
 			var _this = this;
@@ -363,9 +494,18 @@
 				if( source ){
 					this.log('autoSelectSource: select by defaultLanguageKey: ' + defaultLangKey);
 					this.selectedSource = source;
+					this.embedPlayer.getInterface().find( '[srclang='+ defaultLangKey +']').attr("default", "true");
 					return ;
 				}				
 			}
+            // Get source by "default" property
+            if ( !this.selectedSource ) {
+                source = this.selectDefaultSource();
+                if( source ){
+                    this.log('autoSelectSource: select by default caption');
+                    this.selectedSource = source;
+                }
+            }
 			// Get from $_SERVER['HTTP_ACCEPT_LANGUAGE']
 			if( !this.selectedSource && mw.getConfig('Kaltura.UserLanguage') ){
 				$.each(mw.getConfig('Kaltura.UserLanguage'), function(lang, priority){
@@ -376,14 +516,6 @@
 						return true;
 					}
 				});
-			}
-			// Get source by "default" property
-			if ( !this.selectedSource ) {
-				source = this.selectDefaultSource();
-				if( source ){
-					this.log('autoSelectSource: select by default caption');
-					this.selectedSource = source;
-				}
 			}
 			// Else, get the first caption
 			if( !this.selectedSource ){
@@ -630,7 +762,9 @@
 						(  fontsize > 24 )?  emFontMap[ 24 ]+'em' : emFontMap[ 6 ];
 			}
 			if( this.getConfig( 'useGlow' ) && this.getConfig( 'glowBlur' ) && this.getConfig( 'glowColor' ) ) {
-				style[ "text-shadow" ] = '0 0 ' + this.getConfig( 'glowBlur' ) + 'px ' + mw.getHexColor( this.getConfig( 'glowColor' ) );
+				var hShadow = this.getConfig( 'hShadow' ) ? this.getConfig( 'hShadow' ) : 0;
+				var vShadow = this.getConfig( 'vShadow' ) ? this.getConfig( 'vShadow' ) : 0;
+				style[ "text-shadow" ] = hShadow + 'px ' + vShadow + 'px ' + this.getConfig( 'glowBlur' ) + 'px ' + mw.getHexColor( this.getConfig( 'glowColor' ) );
 			}
 			return style;
 		},
@@ -644,20 +778,27 @@
 				'text-align': 'center',
 				'z-index': 2
 			};
-			baseCss =$.extend( baseCss, this.getInterfaceSizeTextCss({
+			baseCss = $.extend( baseCss, this.getInterfaceSizeTextCss({
 				'width' :  this.embedPlayer.getInterface().width(),
 				'height' : this.embedPlayer.getInterface().height()
 			}));
 			return baseCss;
 		},
 		buildMenu: function( sources ){
+			for ( var i = sources.length - 1; i >= 0; i-- ){
+				if ( sources[i].srclang && sources[i].srclang === "multilingual" ){
+					sources.splice(i, 1); // remove multilingual source from menu
+				}
+			}
 			var _this = this;
-
+			mw.log('closedCaptions::buildMenu with sources: ', sources);
 			// Destroy the old menu
 			this.getMenu().destroy();
 
 			// Check if we even have textSources
 			if( sources == 0 ){
+				this.setConfig('displayCaptions', false);
+
 				if( this.getConfig('hideWhenEmpty') === true ) {
 					this.getBtn().hide();
 				}
@@ -667,33 +808,76 @@
 				// hide old timed captions text
 				this.hideCaptions();
 
+				// Allow plugins to integrate with captions menu
+				this.getPlayer().triggerHelper('captionsMenuReady');
+
+				this.getPlayer().triggerHelper("updatePropertyEvent",{"plugin": this.pluginName, "property": "captions", "items": [{'label':gM('mwe-timedtext-no-subtitles'), 'value':gM('mwe-timedtext-no-subtitles')}]});
+
 				return this.getMenu();
 			} else {
+				if( this.getConfig('hideWhenEmpty') == true ){
+					this.setConfig('visible', true)
+				}
 				this.getBtn().show();
 				// show new timed captions text if exists
 				this.showCaptions();
 			}
 
-			// Add Off item
-			this.getMenu().addItem({
-				'label': 'Off',
-				'callback': function(){
-					_this.setConfig('displayCaptions', false);
-					// also update the cookie to "None"
-					_this.getPlayer().setCookie( _this.cookieName, 'None' );
-				},
-				'active': ! _this.getConfig( "displayCaptions" ) 
-			});
+			// Add Off item as first element
+			if( this.getConfig('showOffButton') && this.getConfig('offButtonPosition') == 'first' ) {
+				this.addOffButton();
+			}
 
+			var items = [];
 			// Add text sources
 			$.each(sources, function( idx, source ){
 				_this.getMenu().addItem({
 					'label': source.label,
 					'callback': function(){
-						_this.setTextSource( source );
+						// If this caption is the same as current caption, toggle off captions
+						if( _this.getConfig('toggleActiveCaption') && _this.selectedSource === source ) {
+							_this.selectedSource = null;
+							_this.setConfig('displayCaptions', false);
+						} else {
+							_this.setTextSource( source );
+							_this.getActiveCaption();
+						}
 					},
 					'active': ( _this.selectedSource === source && _this.getConfig( "displayCaptions" )  )
-				})
+				});
+				items.push({'label':source.label, 'value':source.label});
+			});
+
+			this.getActiveCaption();
+			// Add Off item as last element
+			if( this.getConfig('showOffButton') && this.getConfig('offButtonPosition') == 'last' ) {
+				this.addOffButton();
+			}
+
+			if ( this.getConfig('showOffButton')){
+				items.unshift({'label':'Off', 'value':'Off'});
+			}
+
+			// dispatch event to be used by a master plugin if defined
+			this.getPlayer().triggerHelper("updatePropertyEvent",{"plugin": this.pluginName, "property": "captions", "items": items, "selectedItem": this.getMenu().$el.find('.active a').text()});
+
+			// Allow plugins to integrate with captions menu
+			this.getPlayer().triggerHelper('captionsMenuReady');
+		},
+		addOffButton: function() {
+			var _this = this;
+			this.getMenu().addItem({
+				'label': 'Off',
+				'attributes': {
+					'class': "offBtn"
+				},
+				'callback': function(){
+					_this.selectedSource = null;
+					_this.setConfig('displayCaptions', false);
+					// also update the cookie to "None"
+					_this.getPlayer().setCookie( _this.cookieName, 'None' );
+				},
+				'active': ! _this.getConfig( "displayCaptions" ) 
 			});
 		},
 		setTextSource: function( source, setCookie ){
@@ -702,7 +886,7 @@
 			if( !source.loaded ){
 				this.embedPlayer.getInterface().find('.track').text( gM('mwe-timedtext-loading-text') );
 				source.load(function(){
-					_this.getPlayer().triggerHelper('newClosedCaptionsData');
+					_this.getPlayer().triggerHelper('newClosedCaptionsData' , _this.selectedSource);
 					if( _this.playbackStarted ){
 						_this.monitor();
 					}
@@ -711,6 +895,7 @@
 			this.selectedSource = source;
 
 			if( !this.getConfig('displayCaptions') ){
+				_this.getActiveCaption();
 				this.setConfig('displayCaptions', true );
 			}
 			// Save to cookie
@@ -718,7 +903,19 @@
 				this.getPlayer().setCookie( this.cookieName, source.srclang.toLowerCase() );
 			}
 
-			this.getPlayer().triggerHelper('changedClosedCaptions');
+			this.getPlayer().triggerHelper('changedClosedCaptions', {language: this.selectedSource.label ? this.selectedSource.label : ""});
+		},
+		getActiveCaption: function(){
+			var _this = this;
+			var currentActiveCaption = this.getMenu().$el.find('.active').index();
+			if( this.lastActiveCaption === null ) {
+				_this.lastActiveCaption = currentActiveCaption;
+				return _this.lastActiveCaption;
+			}
+			if( this.lastActiveCaption != currentActiveCaption ) {
+				_this.lastActiveCaption = currentActiveCaption;
+				return _this.lastActiveCaption;
+			}
 		},
 		getComponent: function(){
 			var _this = this;
@@ -758,7 +955,22 @@
 			// Empty existing text sources
 			this.textSources = [];
 			this.selectedSource = null;
-		}
+		},
+        parseCaption: function(caption){
+            var parsedCaption = caption.content;
+
+            //find timeStamp in caption string (for example: 00:00:01.000 --> 00:00:01.200) and cut it if exists
+            var regExp = /^\d{2}:\d{2}:\d{2}\.\d{3}\s-->\s\d{2}:\d{2}:\d{2}\.\d{3}\s/;
+            if( regExp.test(parsedCaption ))
+                parsedCaption=parsedCaption.replace(regExp,"");
+
+            //find align expression in caption string (for example: align:middle) and cut it if exists
+            regExp = /align:(left|middle|right)/;
+            if( regExp.test(parsedCaption ))
+                parsedCaption=parsedCaption.replace(regExp,"");
+
+            return { "content" : parsedCaption };
+        }
 	}));
 
 } )( window.mw, window.jQuery );

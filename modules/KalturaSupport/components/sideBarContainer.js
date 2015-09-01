@@ -5,10 +5,23 @@
 		defaultConfig: {
 			'hover': true,
 			'clickToClose': false,
-			'position': 'left'
+			'closeTimeout': 2000,
+			'position': 'left',
+			'fullScreenDisplayOnly': false,
+			'minDisplayWidth': 0,
+			'minDisplayHeight': 0,
+			'toggleBtnLabel': null,
+			enableKeyboardShortcuts: true,
+			"keyboardShortcutsMap": {
+				"open": "ctrl+79",   // Add ctrl+o Sign for next stream
+				"close": "ctrl+alt+79"   // Add ctrl+alt+o Sigh for previous stream
+			}
 		},
-
+		enabled: true,
+		render: true,
+		currentScreenNameShown: "",
 		keepOnScreen: false,
+		openAfterDisable: false,
 
 		setup: function(){
 			// Bind player
@@ -22,72 +35,192 @@
 				_this.getComponent().after(_this.$elHelper);
 			});
 			this.bind( 'layoutBuildDone ended', function(){
-				_this.getComponentReminder().off('click').on('click', function(){
-					if (_this.getConfig('isSideBarOpen')) {
-						_this.setConfig( 'isSideBarOpen', 'false' );
-						if (_this.getConfig('clickToClose')) {
-							_this.getComponentReminder().removeClass( 'shifted' );
-							_this.getComponent().removeClass( 'openBtn' );
-						}
-					} else {
-						_this.setConfig( 'isSideBarOpen', 'true' );
-						_this.getComponentReminder().addClass( 'shifted' );
-						_this.getComponent().addClass( 'openBtn' );
+				var disableClosingTimeout = function(){
+					if (_this.closeBarTimeout){
+						clearTimeout(_this.closeBarTimeout);
+						_this.closeBarTimeout = null;
 					}
+				};
+				_this.getComponentReminder().off('click touchstart').on('click touchstart', function(e){
+					e.stopPropagation();
+					e.preventDefault();
+					disableClosingTimeout();
+					_this.toggleSideBar();
+					return false;
 				});
 				if (!_this.getConfig('clickToClose')) {
-					_this.getComponent().on( 'mouseleave', function () {
-						_this.setConfig( 'isSideBarOpen', 'false' );
-						_this.getComponent().removeClass( 'openBtn' );
-						_this.getComponentReminder().removeClass( 'shifted' );
-					} );
+					_this.getComponent()
+						.on( 'mouseleave', function () {
+							disableClosingTimeout();
+							_this.closeBarTimeout = setTimeout(function(){
+								_this.closeBarTimeout = null;
+								if (_this.getConfig('isSideBarOpen')) {
+									_this.close();
+								}
+							}, _this.getConfig("closeTimeout"));
+						} )
+						.on('mouseenter', function () {
+							disableClosingTimeout();
+						});
+				}
+			});
+			this.bind( 'onDisableInterfaceComponents', function( event, excludedComponents ){
+				if( $.inArray( _this.pluginName, excludedComponents ) == -1) {
+					_this.enabled = false;
+					_this.hideReminder();
+				}
+			});
+			this.bind( 'onEnableInterfaceComponents', function( event, excludedComponents ){
+				if( $.inArray( _this.pluginName, excludedComponents ) == -1) {
+					_this.enabled = true;
+					_this.showReminder();
+				}
+			});
+			this.bind( 'preShowScreen', function( event, screenName ){
+				_this.currentScreenNameShown = screenName;
+				_this.enabled = false;
+				_this.hideReminder();
+			});
+			this.bind( 'preHideScreen', function( event, screenName ){
+				if (_this.currentScreenNameShown === screenName) {
+					_this.currentScreenNameShown = "";
+					_this.enabled = true;
+					_this.showReminder();
+				}
+			});
+			this.bind('updateLayout', function(){
+				if (_this.getPlayer().layoutBuilder.isInFullScreen() ||
+					(!_this.getConfig("fullScreenDisplayOnly") &&
+					_this.getConfig("minDisplayWidth") <= _this.getPlayer().getWidth() &&
+					_this.getConfig("minDisplayHeight") <= _this.getPlayer().getHeight())){
+					_this.render = true;
+					//Sidebar height is player height without the top and bottom bars
+					_this.setHeight();
+					_this.showReminder();
+				} else {
+					_this.render = false;
+					_this.hideReminder();
 				}
 			});
 
 			// If have no components, hide
 			this.bind('layoutBuildDone', function(){
 				if( !_this.getComponent().children().length ){
-					_this.destroy();
+					_this.getComponent().hide();
+					_this.getComponentReminder().hide();
+				}
+			});
+			this.bind('onChangeMedia', function(){
+				_this.close();
+			});
+			this.bind('onChangeMediaDone', function(){
+				if( _this.getComponent().children().length ) {
+					_this.getComponent().show();
+					_this.getComponentReminder().show();
+				} else {
+					_this.getComponent().hide();
+					_this.getComponentReminder().hide();
 				}
 			});
 
-			this.bind('updateLayout', function(){
-				_this.getComponent().css('height', _this.getPlayer().getVideoHolder().height());
+			this.bind( 'layoutBuildDone ended', function(){
+				_this.setHeight();
+				_this.showReminder();
 			});
 
 			// Bind hover events
 			if( this.getConfig('hover') ){
 				// Show / Hide controlbar on hover
 				this.bind( 'showPlayerControls', function(e, data){
-					_this.show();
+					_this.showReminder();
 				});
 				this.bind( 'hidePlayerControls', function(){
-					_this.hide();
+					_this.hideReminder();
 				});
 				this.bind( 'onComponentsHoverDisabled', function(){
 					_this.keepOnScreen = true;
-					_this.show();
+					_this.showReminder();
 				});
-				this.bind( 'onComponentsHoverEnabled', function(){
+				this.bind( 'onComponentsHoverEnabled preHideScreen', function(){
 					_this.keepOnScreen = false;
 				});
 			}
+
+			//key bindings
+			if (this.getConfig('enableKeyboardShortcuts')) {
+				this.bind('addKeyBindCallback', function (e, addKeyCallback) {
+					_this.addKeyboardShortcuts(addKeyCallback);
+				});
+			}
 		},
-		show: function(){
-			this.getComponentReminder().addClass( 'open' );
-			// Trigger the screen overlay with layout info:
-			this.getPlayer().triggerHelper( 'onShowSidelBar', {
-				'top' : this.getComponentReminder().height() + 15
+		addKeyboardShortcuts: function (addKeyCallback) {
+			var _this = this;
+			// Add ctrl+O for open side bar
+			addKeyCallback(this.getConfig("keyboardShortcutsMap").open, function () {
+				_this.open();
+			});
+			// Add ctrl+Alt+O for close side bar
+			addKeyCallback(this.getConfig("keyboardShortcutsMap").close, function () {
+				_this.close();
 			});
 		},
-		hide: function(){
-
-			if( this.keepOnScreen || (this.getConfig('clickToClose') && this.getConfig( 'isSideBarOpen'))) return;
+		showReminder: function(){
+			if (this.enabled && this.render) {
+				this.getComponentReminder().addClass( 'open' );
+				if ( this.openAfterDisable ) {
+					this.openAfterDisable = false;
+					this.getComponentReminder().trigger( "click" );
+				}
+			}
+		},
+		hideReminder: function(){
+			if( this.enabled && this.render && (this.keepOnScreen || (this.getConfig('clickToClose') && this.getConfig( 'isSideBarOpen')))) return;
+			if ( this.getConfig( 'isSideBarOpen' ) ) {
+				this.openAfterDisable = true;
+			}
 			this.setConfig( 'isSideBarOpen', 'false' );
 			this.getComponentReminder().removeClass( 'open shifted' );
 			this.getComponent().removeClass( 'openBtn' );
+		},
+		toggleSideBar: function(){
+			if (this.getConfig('isSideBarOpen')) {
+				this.close();
+			} else {
+				this.open();
+			}
+		},
+		open: function(){
+			if (this.render) {
+				this.setConfig( 'isSideBarOpen', 'true' );
+				this.getComponentReminder().addClass( 'shifted' );
+				this.getComponent().addClass( 'openBtn' );
+				// Trigger the screen overlay with layout info:
+				this.getPlayer().triggerHelper( 'onShowSideBar');
+				this.getPlayer().triggerHelper('clearTooltip');
+				this.getPlayer().triggerHelper( 'onComponentsHoverDisabled');
+			}
+		},
+		close: function(){
+			this.setConfig( 'isSideBarOpen', 'false' );
+			this.getComponent().removeClass( 'openBtn' );
+			this.getComponentReminder().removeClass( 'shifted' );
 			// Allow interface items to update:
-			this.getPlayer().triggerHelper('onHideSideBar', {'top' : 15} );
+			this.getPlayer().triggerHelper('onHideSideBar');
+			this.getPlayer().triggerHelper('clearTooltip');
+			this.getPlayer().triggerHelper( 'onComponentsHoverEnabled');
+		},
+		setHeight: function(){
+			var height = this.getPlayer().getHeight() - this.getPlayer().getControlBarContainer().height();
+			if (this.getPlayer().getTopBarContainer().length){
+				height -= this.getPlayer().getTopBarContainer().height();
+				//If topbar exist then add top value
+				this.getComponent().css('top', this.getPlayer().getTopBarContainer().height());
+				this.getComponentReminder().css('top', this.getPlayer().getTopBarContainer().height());
+			} else {
+				this.getComponent().css('top', 0);
+				this.getComponentReminder().css('top', 0);
+			}
+			this.getComponent().css('height', height);
 		},
 		getComponent: function(){
 			if( !this.$el ) {
@@ -111,16 +244,15 @@
 				var _this = this;
 				// Add control bar
 
-				this.$elHelper = $('<div>' )
-					.addClass( 'sideBarContainerReminder ' + _this.getConfig('position') )
-					.append($('<div>' )
-						.addClass( 'TocBtnBorder ' + _this.getConfig('position') ))
-					.append($('<div>' )
-						.append($('<div>' )
-							.addClass( 'icon-list' ))
-						.addClass( 'icon-list-container' )
-						);
+				var title = this.getConfig("toggleBtnLabel") || gM("ks-sidebar-toggleBtn");
 
+				this.$elHelper = $('<div>' )
+					.addClass( 'sideBarContainerReminder tooltipBelow ' + _this.getConfig('position') )
+					.prop("title", title)
+					.attr("data-show-tooltip", true)
+					.append($('<div id="sideBarContainerReminderContainer">' )
+						.addClass( 'icon-chapterMenu' )
+					);
 
 				// Add control bar special classes
 				if( this.getConfig('hover') ) {

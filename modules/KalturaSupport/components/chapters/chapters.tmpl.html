@@ -1,0 +1,43 @@
+<li class="mediaBox chapterBox collapsed"
+    data-chapter-index="<%=mediaItem.chapterNumber%>"
+    data-obj-id="<%=mediaItem.id%>"
+    data-box-type="<%=mediaItem.type%>"
+    data-mediaBox-index="<%=mediaItem.order%>"
+    data-chapter-collapsed="true"
+    tabindex="<%=mediaItem.tabIndex%>">
+
+    <div class="boxImg">
+        <img src="<%=mediaItem.thumbnail.url%>" alt="Thumbnail for <%=mediaItem.title%>"/>
+    </div>
+    <div class="boxInfo">
+        <div class="chapterNumberWrapper">
+            <div class="chapterRibbon" title="<%=meta.titles.chapterNumber%>" data-show-tooltip="true"></div>
+            <%
+                var ribbonChapterNumber = (mediaItem.chapterNumber + 1);
+                if (ribbonChapterNumber.toString().length === 1){
+                    ribbonChapterNumber = "0" + ribbonChapterNumber;
+                }
+            %>
+            <span class="chapterNumber"><%=ribbonChapterNumber%></span>
+        </div>
+        <div class="k-title-container mediaBoxText">
+            <span class="k-chapter-title" title="<%=mediaItem.title%>" data-show-tooltip="true"><%=mediaItem.title%></span>
+        </div>
+        <div class="k-description-container mediaBoxText">
+            <span class="k-description" title="<%=mediaItem.description%>" data-show-tooltip="true"><%=mediaItem.description%></span>
+        </div>
+        <span class="mediaBoxText k-chapter-time" title="<%=meta.titles.chapterStartTime%>" data-show-tooltip="true">
+            <span class="icon-start_time"></span>
+            <span><%=mediaItem.startTimeDisplay%></span>
+        </span>
+        <span class="k-duration mediaBoxText k-chapter-time" title="<%=meta.titles.chapterDuration%>" data-show-tooltip="true">
+            <span class="icon-duration"></span>
+            <span id="mediaItemDuration"><%=mediaItem.durationDisplay%></span>
+        </span>
+    </div>
+    <div class="boxShadow"></div>
+    <div class="boxOutline"></div>
+    <% if (mediaItem.hasChildren){%>
+    <div class="slideBoxToggle icon-toggle" title="<%=meta.titles.chapterToggle%>" data-show-tooltip="true"></div>
+    <%}%>
+</li>

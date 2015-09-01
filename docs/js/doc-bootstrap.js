@@ -39,10 +39,11 @@ if( !window.QUnit ){
 	);
 	// check if we should enable google analytics: 
 	// TODO remove dependency on mw
-	if( typeof mw != 'undefined' && mw.getConfig( 'Kaltura.PageGoogleAalytics' ) ) {
+	if( typeof mw != 'undefined' && mw.getConfig( 'Kaltura.PageGoogleAnalytics' ) ) {
 		var _gaq = _gaq || [];
-		_gaq.push(['_setAccount', mw.getConfig( 'Kaltura.PageGoogleAalytics' ) ]);
+		_gaq.push(['_setAccount', mw.getConfig( 'Kaltura.PageGoogleAnalytics' )]);
 		_gaq.push(['_trackPageview']);
+
 		(function() {
 			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
 			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
@@ -85,16 +86,30 @@ try{
 // clock player render time
 var kdocPlayerStartTime = new Date().getTime();
 if( typeof kWidget != 'undefined' && kWidget.addReadyCallback ){
-	var alreadyRun = false;
+	var kdocTimePerPlayer = {};
 	kWidget.addReadyCallback( function( pId ){
-		$( '#' + pId )[0].kBind("mediaReady.pTimeReady", function(){
-			if( alreadyRun ){
+		if( ! $( '#' + pId ).length ){
+			return ;
+		}
+		$( '#' + pId )[0].kBind("playerReady.pTimeReady", function(){
+			if( kdocTimePerPlayer[ pId] ){
 				return ;
 			}
 			alreadyRun = true;
+			var readyTime = ( new Date().getTime() - kdocPlayerStartTime )/1000;
+			var fileName = location.pathname.split('/').pop();
+			// trigger the google track event if set:: 
+			if( window['_gaq'] ){
+				// send feature page load time event:
+				_gaq.push(['_trackEvent', 'FeaturePage', 'PlayerLoadTimeMs', fileName, readyTime*1000]);
+			}
 			// note kUnbind seems to unbind all mediaReady
 			//$( '#' + pId )[0].kUnbind(".pTimeReady");
-			$('body').append( '<div class="kdocPlayerRenderTime" style="clear:both;"><span style="font-size:11px;">player ready in:<i>' + ( new Date().getTime() - kdocPlayerStartTime )/1000 + '</i> seconds</span></div>');
+			kdocTimePerPlayer[ pId ] = ( new Date().getTime() - kdocPlayerStartTime )/1000;
+			// note kUnbind seems to unbind all mediaReady
+			$( '#' + pId )[0].kUnbind(".pTimeReady");
+			$('body').append( '<div class="kdocPlayerRenderTime" style="clear:both;"><span style="font-size:11px;">' + pId + ' ready in: <i>' + 
+					kdocTimePerPlayer[ pId ] + '</i> seconds</span></div>');
 			if( document.URL.indexOf( 'noparent=') === -1 && parent && parent.sycnIframeContentHeight ){
 				parent.sycnIframeContentHeight();
 			}

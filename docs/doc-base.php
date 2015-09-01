@@ -1,6 +1,7 @@
 <?php 	
 // Some includes for output of configuration options
 require_once( realpath( dirname( __FILE__ ) ) . '/../includes/DefaultSettings.php' );
+
 /**
  * Docs configuration 
  */
@@ -64,5 +65,9 @@ if(		isset( $featureList[ $pathParts[0] ] )
 ){
 	$kdocPageTitle = $featureList[ $pathParts[0] ]['featureSets'][ $pathParts[1] ]['testfiles'][ $pathParts[2] ]['title'];
 }
-
+// send cache for 10 min headers:
+$cacheTime = 60 * 10;
+// Send cache headers: 
+header( "Expires: " . gmdate("D, d M Y H:i:s", time() + $cacheTime) . " GMT" );
+header( "Cache-Control: public, max-age=$cacheTime, must-revalidate" );
 ?>

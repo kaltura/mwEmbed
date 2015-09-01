@@ -9,14 +9,14 @@
 <body>
 <h2>Info Screen</h2>
 <br />
-<div id="kdp" style="width:600px;height:370px;float:left"></div>
+<div id="kaltura_player" style="width:600px;height:370px;float:left"></div>
 <script type="text/javascript" src="../../tests/resources/qunit-kaltura-bootstrap.js"></script>
 <script>
 	kWidget.featureConfig({
-		'targetId': 'kdp',
-		'wid': '_811441',
-		'uiconf_id' : '11824841',
-		'entry_id' : '1_3fxkoyn2',
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id' : '12905712',
+		'entry_id' : '0_uka1msg4',
 		'flashvars': {
 			'infoScreen': {
 				plugin: true,
@@ -28,9 +28,16 @@
 				template: ""
 			},
 			'topBarContainer.plugin': true,
+		},
+		'readyCallback': function( playerId ){
+			var kdp = $('#' + playerId )[0];
+			$('#changeMedia').click(function(){
+				kdp.sendNotification('changeMedia', {'entryId' : '1_sf5ovm7u' });
+			})
 		}
 	});
 </script>
-
+<div style="clear:both"></div><br>
+<a id="changeMedia" href="#">change media</a> -- calling change media while info panel is displayed will close info panel. 
 </body>
 </html>

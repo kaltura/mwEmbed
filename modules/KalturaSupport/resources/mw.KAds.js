@@ -22,10 +22,19 @@
 		confPrefix: 'vast',
 		config:{},
 
+		previousTime: 0,
+		seekIntervalID: null,
+		enableCORS:true,
+
 		init: function( embedPlayer, callback ){
 			var _this = this;
+
 			// Inherit BaseAdPlugin
 			mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
+
+			if( _this.getConfig('enableCORS') === false){
+				this.enableCORS = false;
+			}
 
 			_this.embedPlayer = embedPlayer;
 
@@ -61,18 +70,93 @@
 				});
 			}
 
+			// Disable seek for VAST in iPhone
+			if( !embedPlayer.getKalturaConfig('vast', 'allowSeekWithNativeControls') && mw.isIphone() ) {
+				$( embedPlayer ).bind('onAdOpen' + _this.bindPostfix, function() {
+					if( !_this.seekIntervalID ) {
+						_this.seekIntervalID = _this.seekIntervalTrigger();
+					}
+
+					$( embedPlayer.getPlayerElement() ).bind('pause' + _this.bindPostfix, function() {
+							embedPlayer.disableSwitchSourceCallback = false;
+							// next button was tapped
+							if (embedPlayer.getPlayerElement().currentTime > _this.previousTime + 1
+								|| embedPlayer.getPlayerElement().currentTime == _this.previousTime) {
+								if (embedPlayer.disableSwitchSourceCallback != null) {
+									embedPlayer.disableSwitchSourceCallback = true;
+								}
+								embedPlayer.getPlayerElement().currentTime = _this.previousTime;
+							}
+					});
+				});
+
+				$( embedPlayer ).bind('onAdComplete' + _this.bindPostfix, function() {
+					$( embedPlayer.getPlayerElement() ).unbind( 'pause' + _this.bindPostfix );
+					if( _this.seekIntervalID ) {
+						clearInterval(_this.seekIntervalID);
+						_this.seekIntervalID = null;
+					}
+				});
+			}
+
 			// Reset displayedCuePoints array if adsOnReplay is true
 			if( embedPlayer.getFlashvars( 'adsOnReplay' ) === true ) {
 				embedPlayer.bindHelper('ended' + _this.bindPostfix, function() {
 					_this.displayedCuePoints = [];
 				});
 			}
-
-			// Load the Ads from uiConf
+			
+			// Check if we should only load ads when played: 
+			if( _this.getConfig('loadAdsOnPlay') == true ){
+				_this.handleAdsOnPlay( embedPlayer );
+				callback();
+				return ;
+			}
+			// load the Ads from uiConf
 			_this.loadAds( function(){
 				mw.log( "KAds::All ads have been loaded" );
 				callback();
 			});
+			// disable overlays on native devices
+			if (embedPlayer.useNativePlayerControls()){
+				_this.embedPlayer.setKalturaConfig('vast', 'supportOverlays', false);
+			}
+		},
+		handleAdsOnPlay: function( embedPlayer ){
+			var _this = this;
+			var loadedAds = null;
+			embedPlayer.bindHelper('prePlayAction' + _this.bindPostfix, function( e, prePlay ){
+				if( loadedAds === null ){
+					embedPlayer.addPlayerSpinner();
+					if (mw.isMobileDevice()){
+						embedPlayer.getPlayerElement().load();
+					}
+					_this.loadAds( function(){
+						loadedAds = true;
+						embedPlayer.unbindHelper('prePlayAction' + _this.bindPostfix);
+						embedPlayer.play();
+					});
+				}
+				// block playback while ads are loaded.
+				if( loadedAds !== true ){
+					prePlay.allowPlayback = false;
+				}
+				// set loadingAds to false to only load ads once. 
+				loadedAds = false;
+			});
+		},
+		seekIntervalTrigger: function() {
+			var _this = this;
+
+			return setInterval( function() {
+				if( parseInt(_this.embedPlayer.getPlayerElement().currentTime - _this.previousTime) > 1 ) {
+					_this.embedPlayer.getPlayerElement().currentTime = _this.previousTime;
+					return;
+				}
+
+				_this.previousTime = _this.embedPlayer.getPlayerElement().currentTime;
+
+			}, 1000);
 		},
 
 		/**
@@ -128,7 +212,8 @@
 				};
 
 				_this.addSequenceProxyBinding( adType, adConfigWrapper, _this.getSequenceIndex( adType ) );
-			});
+			},
+			false, null, {enableCORS: _this.enableCORS});
 		},
 		/**
 		 * load and display an ad
@@ -199,9 +284,8 @@
 				$.extend( adsCuePointConf, baseDisplayConf );
 
 				var originalSource = embedPlayer.getSource();
-				var seekPerc = ( parseFloat( cuePoint.startTime / 1000 ) / parseFloat( embedPlayer.duration ) );
+				var seekTime = parseFloat( cuePoint.startTime / 1000 );
 				var oldDuration = embedPlayer.duration;
-				var vidDuration = embedPlayer.getPlayerElement().duration;
 
 				// Set switch back function
 				var doneCallback = function() {
@@ -244,13 +328,15 @@
 									embedPlayer.play();
 								}
 
-								embedPlayer.setCurrentTime( seekPerc * embedPlayer.getDuration(), function(){
+								embedPlayer.unbindHelper("seeked.midroll").bindOnceHelper("seeked.midroll", function () {
 									if( !mw.isIOS() ) {
 										embedPlayer.play();
 									}
 									embedPlayer.restorePlayerOnScreen();
 									embedPlayer.hideSpinner();
-								} );
+								});
+
+								embedPlayer.seek(seekTime, false);
 							}
 						});
 					} else {
@@ -277,7 +363,8 @@
 				}
 				_this.adPlayer.display( adsCuePointConf, doneCallback, adDuration );
 
-			});
+			},
+			false, null, {enableCORS: _this.enableCORS});
 		},
 
 		// Load all the ads per the $adConfig
@@ -318,7 +405,7 @@
 			// check if we are storing ads session:
 			if( this.embedPlayer.getKalturaConfig( this.confPrefix, 'storeSession' ) ){
 				// no object usage for this
-				$.cookie( this.confPrefix + '_' + key, value );
+				$.cookie( this.confPrefix + '_' + key, value, {path: '/'} );
 			}
 
 			if ( !this.embedPlayer[ this.confPrefix ] ) {
@@ -358,7 +445,7 @@
 					_this.setPersistentConfig( 'contentIndex', 0);
 				}
 				// always increment contentIndex ( starts on 1 ):
-				_this.setPersistentConfig( 'contentIndex', _this.getPersistentConfig( 'contentIndex') + 1 );
+				_this.setPersistentConfig( 'contentIndex', parseInt(_this.getPersistentConfig( 'contentIndex')) + 1 );
 				// check if we should play an ad:
 				if( _this.getPersistentConfig( 'contentIndex') >= startWith
 					&&
@@ -399,7 +486,8 @@
 							// play next ad
 							_this.displayAdNumAds( displayCount, adType, adConfig,  callback);
 						});
-					});
+					},
+					false, null, {enableCORS: _this.enableCORS});
 				}else {
 					_this.adPlayer.display( adConfig, function(){
 						// play next ad ( or continue to callback )
@@ -457,7 +545,7 @@
 				)
 			};
 
-			$( embedPlayer ).bind( 'monitorEvent', function(){
+			$( embedPlayer ).bind( 'monitorEvent' + this.bindPostfix, function(){
 				if( (embedPlayer.currentTime > overlayConfig.start) && (embedPlayer.currentTime < overlayConfig.end) && !startOvelrayDisplayed && !embedPlayer.evaluate('{sequenceProxy.isInSequence}') ){
 					lastDisplay = embedPlayer.currentTime;
 					startOvelrayDisplayed = true;
@@ -539,8 +627,9 @@
 					mw.AdLoader.load( _this.getAdUrl( adType ) , function( adDisplayConf ){
 						mw.log("KalturaAds loaded: " + adType );
 						loadQueueCount--;
-						addAdCheckLoadDone( adType,  $.extend({}, _this.getBaseAdConf( adType ), adDisplayConf ) );
-					});
+						addAdCheckLoadDone( adType,  $.extend({}, _this.getBaseAdConf( adType ), adDisplayConf ));
+					},
+					false, null, {enableCORS: _this.enableCORS});
 				} else {
 					// No async request
 					adConfigSet[ adType ] = _this.getBaseAdConf( adType );
@@ -590,6 +679,10 @@
 			}
 			this.embedPlayer.adTimeline && this.embedPlayer.adTimeline.restorePlayer( null, adPlaying );
 			$( this.embedPlayer ).unbind( this.bindPostfix );
+
+			if( mw.isIphone() ) {
+				$( this.embedPlayer.getPlayerElement() ).unbind( this.bindPostfix );
+			}
 		}
 	};
 

@@ -34,7 +34,8 @@ authPage.prototype = {
 			return ;
 		}
 		// we are displaying a gui ( probably won't get a postMessage with origin use refer )
-		this.authRequestOrigin  = document.referrer.split('/').slice(0,3).join('/');
+		var ref = (document.referrer.length > 0) ? document.referrer : window.opener.location.href;
+		this.authRequestOrigin  = ref.split('/').slice(0,3).join('/');
 		// Check if user is logged in: 
 		if( !_this.isAuthenticated() ){
 			this.showLoginForm();

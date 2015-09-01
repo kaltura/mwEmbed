@@ -103,6 +103,7 @@
 		firstPlay: true,
 
 		bindPostfix: '.AdTimeline',
+		pendingSeek: false,
 
 		currentAdSlotType: null,
 
@@ -112,20 +113,9 @@
 		 *			embedPlayer The embedPlayer object
 		 */
 		init: function(embedPlayer) {
-			var nua = navigator.userAgent;
-			var is_native_android_browser = ((nua.indexOf('Mozilla/5.0') > -1 &&
-				nua.indexOf('Android ') > -1 &&
-				nua.indexOf('AppleWebKit') > -1) &&
-				!(nua.indexOf('Chrome') > -1));
-
-			if( !is_native_android_browser ||
-				mw.isAndroid40() ||
-				mw.getConfig( "EmbedPlayer.ForceNativeComponent") )
-			{
-				this.embedPlayer = embedPlayer;
-				// Bind to the "play" and "end"
-				this.bindPlayer();
-			}
+			this.embedPlayer = embedPlayer;
+			// Bind to the "play" and "end"
+			this.bindPlayer();
 		},
 
 		/**
@@ -168,6 +158,17 @@
 
 				// Start of preSequence
 				embedPlayer.triggerHelper( 'AdSupport_PreSequence');
+
+				embedPlayer.unbindHelper("preSeek" + _this.bindPostfix).bindHelper("preSeek" + _this.bindPostfix, function(e, seekTime, stopAfterSeek, stopSeek) {
+					mw.log( 'AdTimeline::preSeek : prevented seek during ad playback');
+					embedPlayer.unbindHelper( "preSeek" + _this.bindPostfix );
+					stopSeek.value = true;
+					_this.pendingSeek = true;
+					_this.pendingSeekData = {
+						seekTime: seekTime,
+						stopAfterSeek: stopAfterSeek
+					};
+				});
 
 				//Setup a playedAnAdFlag
 				var playedAnAdFlag = false;
@@ -215,12 +216,7 @@
 							};
 							// Check if the src does not match original src if
 							// so switch back and restore original bindings
-							if ( embedPlayer.kAds
-								&&
-								embedPlayer.kAds.adPlayer
-								&&
-								!embedPlayer.kAds.adPlayer.isVideoSiblingEnabled()
-								){
+							if ( ! embedPlayer.isVideoSiblingEnabled() ) {
 								// restore the original source:
 								embedPlayer.switchPlaySource( _this.originalSource, completeFunc);
 							} else {
@@ -243,7 +239,7 @@
 			// So that playlist next clip or other end bindings don't get triggered.
 			embedPlayer.bindHelper( 'ended' + _this.bindPostfix, function( event ){
 
-				if (embedPlayer.replayEventCount > 0 && !embedPlayer.adsOnReplay){
+				if ( embedPlayer.isInSequence() || ( embedPlayer.replayEventCount > 0 && !embedPlayer.adsOnReplay) ){
 					return; // don't show postroll ads on replay if the adsOnReplay Flashvar is set to false
 				}
 
@@ -274,6 +270,8 @@
 						embedPlayer.triggerHelper( 'AdSupport_PostSequenceComplete' );
 						/** TODO support postroll bumper and leave behind */
 						function onPostRollDone(){
+							// Restore interface
+							_this.restorePlayer( "postroll", playedAnAdFlag );
 							// Restore ondone interface:
 							embedPlayer.onDoneInterfaceFlag = true;
 							// on clip done can't be invoked with a stop state ( TOOD clean up end sequence )
@@ -283,7 +281,7 @@
 							// Run the clipdone event:
 							embedPlayer.onClipDone();
 						}
-						if( playedAnAdFlag ){
+						if( playedAnAdFlag && !embedPlayer.isVideoSiblingEnabled()){
 							embedPlayer.switchPlaySource( _this.originalSource, function( video ){
 								// Make sure we pause the video
 								video.pause();
@@ -292,8 +290,6 @@
 									video.pause();
 									$( video ).unbind( '.postSequenceComplete' );
 								});
-								// Restore interface
-								_this.restorePlayer( 'postroll', true );
 								onPostRollDone();
 							});
 						} else {
@@ -394,7 +390,7 @@
 			// Stop the native embedPlayer events so we can play the preroll and bumper
 			embedPlayer.stopEventPropagation();
 			// TODO read the add disable control bar to ad config and check that here.
-			var components = ['fullScreenBtn','logo'];
+			var components = ['fullScreenBtn','logo','volumeControl'];
 			if (mw.getConfig('enableControlsDuringAd')) {
 				components.push('playPauseBtn');
 			}
@@ -403,6 +399,10 @@
 			embedPlayer.playInterfaceUpdate();
 			// make sure to hide the spinner
 			embedPlayer.hideSpinner();
+			// hide poster when not using ad sibling
+			if ( !embedPlayer.isVideoSiblingEnabled() ){
+				embedPlayer.removePoster();
+			}
 			// Set inSequence property to "true"
 			embedPlayer.sequenceProxy.isInSequence = true;
 			// Trigger preroll started ( Note: updateUiForAdPlayback is our only
@@ -438,10 +438,25 @@
 				return;
 			}
 			embedPlayer.restoreEventPropagation();
+
+			if (this.pendingSeek){
+				this.pendingSeek = false;
+				mw.log( 'AdTimeline:: Seek back to preSeek time');
+				embedPlayer.seek(this.pendingSeekData.seekTime, this.pendingSeekData.stopAfterSeek);
+			} else {
+				//If seek wasn't performed then and ad sequence is over then remove the seek handler
+				embedPlayer.unbindHelper( "preSeek" + this.bindPostfix );
+			}
+
 			embedPlayer.enablePlayControls();
 			embedPlayer.seeking = false;
 			// restore in sequence property;
 			embedPlayer.sequenceProxy.isInSequence = false;
+
+			// restore poster when not using ad sibling
+			if ( !embedPlayer.isVideoSiblingEnabled()  ){
+				embedPlayer.updatePosterHTML();
+			}
 
 			// issue the ad triggers if an ad was played.
 			if( playedAd ){

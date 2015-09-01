@@ -235,42 +235,39 @@
 			}
 
 			// Api sources require that a api query
-			_this.getKalturaClient().getKS( function( ks ) {
-				mw.log( 'KTimedText:: loadTextSources> from api');
-				_this.ksCache = ks;
-				_this.getTextSourcesFromApi( function( dbTextSources ) {
-					var multiRequest = [];
-					var captionIds = [];
-					$.each( dbTextSources, function( inx, dbTextSource ) {
-						multiRequest.push(
-							{ 
-								'service' : 'caption_captionasset',
-								'action' : 'getUrl',
-								'id' : dbTextSource.id
-							}
-						);
-						captionIds.push(dbTextSource.id);
-					});
-					if ( multiRequest.length ) {
-						_this.getKalturaClient().doRequest( multiRequest, function( results ) {
-							var captionsURLs = {};
-							$.each( results, function( idx, url ) {
-								captionsURLs[ captionIds[idx] ] = url;
-							} );
-							$.each( dbTextSources, function( inx, dbTextSource ) {
-								dbTextSource.src = captionsURLs[ dbTextSource.id ];
-								mw.log( 'KTimedText:: loadTextSources> add textSources from db:' + inx );
-								_this.textSources.push(
-									_this.getTextSourceFromDB( dbTextSource )
-								);
-							});
-							$( _this.embedPlayer ).trigger( 'KalturaSupport_CCDataLoaded' );
-							// Done adding source issue callback
-							mw.log( 'KTimedText:: loadTextSources> total source count: ' + _this.textSources.length );
-							callback();
-						} );
-					}
+			mw.log( 'KTimedText:: loadTextSources> from api');
+			_this.getTextSourcesFromApi( function( dbTextSources ) {
+				var multiRequest = [];
+				var captionIds = [];
+				$.each( dbTextSources, function( inx, dbTextSource ) {
+					multiRequest.push(
+						{ 
+							'service' : 'caption_captionasset',
+							'action' : 'getUrl',
+							'id' : dbTextSource.id
+						}
+					);
+					captionIds.push(dbTextSource.id);
 				});
+				if ( multiRequest.length ) {
+					_this.getKalturaClient().doRequest( multiRequest, function( results ) {
+						var captionsURLs = {};
+						$.each( results, function( idx, url ) {
+							captionsURLs[ captionIds[idx] ] = url;
+						} );
+						$.each( dbTextSources, function( inx, dbTextSource ) {
+							dbTextSource.src = captionsURLs[ dbTextSource.id ];
+							mw.log( 'KTimedText:: loadTextSources> add textSources from db:' + inx );
+							_this.textSources.push(
+								_this.getTextSourceFromDB( dbTextSource )
+							);
+						});
+						$( _this.embedPlayer ).trigger( 'KalturaSupport_CCDataLoaded' );
+						// Done adding source issue callback
+						mw.log( 'KTimedText:: loadTextSources> total source count: ' + _this.textSources.length );
+						callback();
+					} );
+				}
 			});
 		},
 		/**
@@ -278,7 +275,7 @@
 		 */
 		getTextSourcesFromApi: function( callback ) {
 			var _this = this;
-			this.getKalturaClient().doRequest( {
+			this.getKalturaClient().doRequest({
 				'service' : 'caption_captionasset',
 				'action' : 'list',
 				'filter:objectType' : 'KalturaAssetFilter',
@@ -370,7 +367,7 @@
 			var params = {
 				'action': 'serve',
 				'captionAssetId': captionId,
-				'ks': this.ksCache
+				'ks': this.getKalturaClient().getKs()
 			};
 			var kalsig = this.getKalturaClient().getSignature( params );
 			var baseUrl = mw.getConfig( 'Kaltura.ServiceUrl' ) + mw.getConfig( 'Kaltura.ServiceBase' ).replace( 'index.php', '' );

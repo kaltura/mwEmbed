@@ -31,8 +31,11 @@
 		'layoutReady' => array(
 			'desc' => 'Dispatched when the init macro command is done and the layout is ready'
 		),
+		'layoutBuildDone' => array(
+			'desc' => 'Dispatched when the player layout is ready and rendered on the screen'
+		),
 		'playerReady' => array(
-			'desc' => 'Dispatches when the player is ready to play the media'
+			'desc' => 'Dispatches when the player is ready to play the media. playerReady event is dispatched  each time media is changed.'
 		),
 		'pluginsLoaded' => array(
 			'callbackArgs' => 'Plugins map object. Every key is a plugin ID, value is the status of the plugin (see PluginStatus class)',
@@ -81,10 +84,14 @@
 		),
 		'mediaLoaded' => array(
 			'callbackArgs' => 'None',
-			'desc' => 'From version 3.5.0, this notification replaces the MEDIA_READY notification as the catalyst for the MediaReadyCommand. This notification is indicative that the MediaElement constructed under the MediaProxy function prepareMediaElement is loaded into the OSMF MediaPlayer.'
+			'desc' => 'MediaLoaded is triggered between each content load. i.e once between every item in a playlist. 
+				It indicates the mediaProxy is populated with entry metadata and the metadata from the content media asset or manifest has been loaded'
 		)
 	);
 	$eventsPlayerStates = array(
+		'firstPlay' => array(
+			'desc' => 'Triggered once per content entry when first played. If user initiates a replay this is a new content playback sequence and will triger firstPlay again.'
+		),
 		'firstQuartile' => array(
 			'desc' => 'The player reached 25% of the entry playback'
 		),
@@ -122,7 +129,8 @@
 		),
 		'playerPlayed' => array(
 			'callbackArgs' => 'None',
-			'desc' => 'The player is now in play state'
+			'desc' => 'Triggered when the player enters a play state. This event be triggered multiple times during a single playback session.
+				For example, playerPlayed will be triggered between ads and when the user plays content after pausing it.'
 		),
 		'playerSeekStart' => array(
 			'callbackArgs' => 'None',
@@ -138,19 +146,23 @@
 		),
 		'openFullScreen' => array(
 			'callbackArgs' => 'None',
-			'desc' => 'Player entered full screen mode'
+			'desc' => 'Player entered full screen mode',
+            'example' => '../modules/KalturaSupport/tests/FullscreenOnPlay.html'
 		),
 		'closeFullScreen' => array(
 			'callbackArgs' => 'None',
-			'desc' => 'Player exited from full screen mode'
+			'desc' => 'Player exited from full screen mode',
+            'example' => '../modules/KalturaSupport/tests/FullscreenOnPlay.html'
 		),
 		'hasCloseFullScreen' => array(
 			'callbackArgs' => 'None',
-			'desc' => 'The fullscreen has just closed'
+			'desc' => 'The fullscreen has just closed',
+            'example' => '../modules/KalturaSupport/tests/FullscreenOnPlay.html'
 		),
 		'hasOpenedFullScreen' => array(
 			'callbackArgs' => 'None',
-			'desc' => 'The fullscreen was just activated'
+			'desc' => 'The fullscreen was just activated',
+            'example' => '../modules/KalturaSupport/tests/FullscreenOnPlay.html'
 		),
 		'volumeChanged' => array(
 			'callbackArgs' => 'New volume value',
@@ -185,6 +197,15 @@
 			'callbackArgs' => 'true / false',
 			'desc' => 'Dispatches when the player starts or stops buffering'
 		),
+		'bufferStartEvent' => array(
+			'desc' => 'Dispatches when the player starts buffering',
+			'example' => '../modules/KalturaSupport/tests/PlayerBufferTest.qunit.html'
+		),
+		'bufferEndEvent' => array(
+			'callbackArgs' => 'bufferTime: The amount of time since last buffer start event.',
+			'desc' => 'Dispatches when the player starts buffering',
+			'example' => '../modules/KalturaSupport/tests/PlayerBufferTest.qunit.html'
+		),
 		'scrubberDragStart' => array(
 			'callbackArgs' => 'None',
 			'desc' => 'The scrubber had started being dragged',
@@ -217,6 +238,11 @@
 			'callbackArgs' => 'Cue Points Map. Object mapping between start-times and arrays of the cue points found on that start-time',
 			'desc' => "Notification fired when the player has successfully loaded an entry's cue-point configuration"
 		),
+		'cuePointReached' => array(
+			'callbackArgs' => 'Current cuePoint object. Return Object with context and a cuePoint object',
+			'desc' => "Notification fired when the player reaches a cuePoint",
+			'example' => '../modules/KalturaSupport/components/related/CuePointsMidrollVast.html'
+		),
 		'switchingChangeStarted' => array(
 			'callbackArgs' => 'newIndex: The index of the bitrate the player started switching to. If auto, send -1, newBitrate: The bitrate the player started switching to. If auto, send null',
 			'desc' => 'Notification dispatched when the player has started switching to a different dynamic bitrate'
@@ -228,13 +254,26 @@
 		'playbackComplete' => array(
 			'callbackArgs' => 'None',
 			'desc' => 'Signifies the end of a media in the player (can be either ad or content)'
+		),
+		'closedCaptionsHidden' => array(
+			'callbackArgs' => 'None',
+			'desc' => 'Notification dispatched when captions are hidden'
+		),
+		'closedCaptionsDisplayed' => array(
+			'callbackArgs' => 'language: the selected language',
+			'desc' => 'Notification dispatched when captions are displayed'
+		),
+		'changedClosedCaptions' => array(
+			'callbackArgs' => 'language: the new selected language',
+			'desc' => 'Notification dispatched when captions language is changed'
 		)
 	);
 
 	$eventAds = array(
 		'adOpportunity' => array(
 			'callbackArgs' => 'context: context of the ad opportunity: pre, post, mid, cuePoint: the cue point object',
-			'desc' => "Notification fired when the player's time progress reaches an ad cue point"
+			'desc' => "Notification fired when the player's time progress reaches an ad cue point",
+			"example" => "../modules/KalturaSupport/tests/CuePointsMidrollVast.html"
 		),
 		'sequenceItemPlayStart' => array(
 			'callbackArgs' => 'sequenceContext: pre / post / mid / main (see SequenceContextType class), currentIndex: index of current item',
@@ -306,6 +345,48 @@
 			'callbackArgs' => 'timeSlot: pre / post / mid / main (see SequenceContextType class)',
 			'desc' => 'Defines the value of the type property of 75% of ad notification',
 			'availability' => 'kdp'
+		),
+		'adErrorEvent' => array(
+			'callbackArgs' => 'None',
+			'desc' => 'Fired when an ad fails to load (applicable to all ad systems)'
+		)
+	);
+	$playlists = array(
+		'relatedVideoSelect' => array(
+			'callbackArgs' => 'An object with "entryId" property with the current selected entry as a value.',
+			'callbackType' => 'object',
+			'desc' => 'Called when user clicks or auto continues to a related video.',
+			'example' => '../modules/KalturaSupport/components/related/Related.html'
+		),
+		'playlistReady' => array(
+			'props' => 'None',
+			'desc' => 'The playlist layout is ready.',
+			'example' => '../modules/KalturaSupport/tests/PlaylistEvents.qunit.html'
+		),
+		'playlistPlayNext' => array(
+			'props' => 'None',
+			'desc' => 'The next clip was requested.',
+			'example' => '../modules/KalturaSupport/tests/PlaylistEvents.qunit.html'
+		),
+		'playlistPlayPrevious' => array(
+			'props' => 'None',
+			'desc' => 'The previous clip was requested.',
+			'example' => '../modules/KalturaSupport/tests/PlaylistEvents.qunit.html'
+		),
+		'playlistFirstEntry' => array(
+			'props' => 'None',
+			'desc' => 'The first clip in the playlist was loaded.',
+			'example' => '../modules/KalturaSupport/tests/PlaylistEvents.qunit.html'
+		),
+		'playlistMiddleEntry' => array(
+			'props' => 'None',
+			'desc' => 'A clip that is not the first or the last clip in the playlist was loaded.',
+			'example' => '../modules/KalturaSupport/tests/PlaylistEvents.qunit.html'
+		),
+		'playlistLastEntry' => array(
+			'props' => 'None',
+			'desc' => 'The last clip in the playlist was loaded.',
+			'example' => '../modules/KalturaSupport/tests/PlaylistEvents.qunit.html'
 		)
 	);
 ?>

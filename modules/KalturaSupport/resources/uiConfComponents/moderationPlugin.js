@@ -17,6 +17,7 @@
 		},
 
 		drawModal: function() {
+			if (this.isDisabled) return;
 			var _this = this;
 
 			var isPlaying = this.getPlayer().isPlaying();

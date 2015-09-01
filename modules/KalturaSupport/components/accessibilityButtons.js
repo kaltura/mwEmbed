@@ -56,7 +56,7 @@
 					newCurrentTime = parseFloat(this.getPlayer().getDuration());
 				}
 			}
-			this.getPlayer().seek( newCurrentTime / this.getPlayer().getDuration() );
+			this.getPlayer().seek( newCurrentTime );
 		},
 		getCssClass: function() {
 			var cssClass = ' comp ' + this.pluginName + ' ';

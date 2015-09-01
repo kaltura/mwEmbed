@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Source Switching Events Test</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	<script type="text/javascript">
+		function jsKalturaPlayerTest( videoId ){
+
+			// Name this module
+			module( "Source Switching Test" );
+			var kdp = $('#' + videoId )[0];
+			var $iframe = $('#' + videoId + '_ifp').contents();
+
+			window['onSwitchingStarted'] = function( params ) {
+				kdp.removeJsListener('switchingChangeStarted', 'onSwitchingStarted');
+				start();
+				ok( true, "Switching started" );
+				kdp.addJsListener('switchingChangeComplete', 'onSwitchingEnded');
+			}
+			window['onSwitchingEnded'] = function( params ) {
+				kdp.removeJsListener('switchingChangeComplete', 'onSwitchingEnded');
+				start();
+				//verify we switched to the request bitrate
+				equal( 1211, params.newBitrate, 'Switched to heightest bitrate' );
+			}
+
+			asyncTest("Bitrate Switching Test", function(){
+				kalturaQunitWaitForPlayer(function(){
+					setTimeout( function() {
+						kdp.addJsListener('switchingChangeStarted', 'onSwitchingStarted');
+						//select highest bitrate ( in this test entry: 1211 BR )
+						$iframe.find('.dropdown-menu').find('li').find('a')[0].click();
+					}, 100);
+				});
+			});
+
+		}
+	</script>
+	<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+	<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Source Switching Events Test </h2>
+Events should be sent whenever player performs manual / automatic quality switch.
+
+<br />
+
+<div id="kaltura_player" style="width:400px;height:330px;"></div>
+<script>
+	kWidget.featureConfig({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id' : '12905712',
+		'entry_id' : '0_c0r624gh',
+		'flashvars': {
+			'autoPlay': true,
+			'mediaProxy.preferedFlavorBR': 600,
+			'sourceSelector': {
+				'plugin': true
+			}
+		}
+	});
+</script>
+</body>
+</html>

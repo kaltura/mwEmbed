@@ -167,8 +167,8 @@
 		*
 		* @param {Float} seekPercent Percentage to seek into the virtual player
 		*/
-		seek: function( seekPercent ) {
-			this.lastPauseTime = seekPercent * this.getDuration();
+		seek: function( seekTime ) {
+			this.lastPauseTime = seekTime;
 			this.seeking = false;
 			// start seeking:
 			$( this ).trigger( 'seeking' );
@@ -314,10 +314,8 @@
 				this.currentTime = 0;
 			} else if( this.paused ) {
 				this.currentTime = this.lastPauseTime;
-				mw.log( 'paused time: ' + this.currentTime );
 			} else {
 				this.currentTime = ( ( new Date().getTime() - this.clockStartTime ) / 1000 ) + this.lastPauseTime;
-				mw.log( 'clock time: ' + this.currentTime );
 			}
 			return this.currentTime;
 		}

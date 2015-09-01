@@ -37,6 +37,8 @@ mw.PlayerLayoutBuilder.prototype = {
 
 	layoutReady: false,
 
+	keepControlsOnScreen: false,
+
 	playingFlag: false,
 	// Display importance available values
 	importanceSet: ['low', 'medium', 'high'],
@@ -50,8 +52,9 @@ mw.PlayerLayoutBuilder.prototype = {
 		var _this = this;
 		this.embedPlayer = embedPlayer;
 		this.fullScreenManager = new mw.FullScreenManager( embedPlayer );
-
-        $(document.body).append($('<div style="display: block" class="cssChecker"></div>'));
+		var animationSupported = this.checkAnimationSupport();
+		mw.setConfig( 'EmbedPlayer.AnimationSupported', animationSupported );
+		$(document.body).append($('<div style="display: block" class="cssChecker"></div>'));
 
 		// Return the layoutBuilder Object:
 		return this;
@@ -94,8 +97,16 @@ mw.PlayerLayoutBuilder.prototype = {
 				this.$interface = $videoHolder.parent( '.mwPlayerContainer' )
 			}
 
+			if( mw.isMobileDevice() ){
+				this.$interface.addClass('mobile');
+			}
+
 			if( mw.isTouchDevice() ){
 				this.$interface.addClass('touch');
+			}
+
+			if (mw.isNativeApp()) {
+				this.$interface.addClass('nativeApp');
 			}
 
 			if ( mw.isIE8() ) {
@@ -103,7 +114,11 @@ mw.PlayerLayoutBuilder.prototype = {
 			}
 
 			// Add our skin name as css class
-			this.$interface.addClass( embedPlayer.playerConfig.layout.skin );
+			var skinName = embedPlayer.playerConfig.layout.skin;
+			if (embedPlayer.getRawKalturaConfig("layout") && embedPlayer.getRawKalturaConfig("layout").skin){
+				skinName = embedPlayer.getRawKalturaConfig("layout").skin;
+			}
+			this.$interface.addClass( skinName );
 
 			// clear out base style
 			embedPlayer.style.cssText = '';
@@ -260,6 +275,9 @@ mw.PlayerLayoutBuilder.prototype = {
 		// Trigger layoutBuildDone ( old event: controlBarBuildDone )
 		this.layoutReady = true;
 		this.embedPlayer.triggerHelper( 'layoutBuildDone' );
+		try{
+			window.parent.postMessage('layoutBuildDone','*');
+		}catch(e){}
 	},
 
 	drawComponents: function( $parent, components ) {
@@ -292,8 +310,8 @@ mw.PlayerLayoutBuilder.prototype = {
 				_this.getInterface().find('.' + containerId )
 			);
 		});
-		
-		// once complete trigger and event ( so dynamic space components can resize to take remaining space ) 
+
+		// once complete trigger and event ( so dynamic space components can resize to take remaining space )
 		$(this.embedPlayer ).trigger( 'updateComponentsVisibilityDone' )
 	},
 
@@ -336,7 +354,9 @@ mw.PlayerLayoutBuilder.prototype = {
 					if ( !$first.data( 'forceHide' ) ) {
 						var $comp = $first.show();
 						nextWidth = _this.getComponentWidth( $comp );
-						$comp.hide();
+						if( mw.getConfig('EmbedPlayer.IsFriendlyIframe') ) {
+							$comp.hide();
+						}
 						//break;
 						return false;
 					}
@@ -404,44 +424,57 @@ mw.PlayerLayoutBuilder.prototype = {
 		return height;
 	},
 
+    getContainerHeight: function() {
+        var height = 0;
+        if(mw.isIE11()){
+            height = this.getInterface()[0].clientHeight;
+        }else{
+            height = this.getInterface().height();
+        }
+        return height;
+    },
+
 	initToolTips: function(){
+		var _this = this;
+		this.embedPlayer.bindHelper( 'layoutBuildDone mediaListLayoutReady', function(){
+			_this.setupTooltip()
+			_this.setupTooltip(_this.getInterface().find(".tooltipBelow"), "arrowTop");
+		});
+		//Remove tooltip on UI state changes
+		this.embedPlayer.bindHelper( 'hidePlayerControls clearTooltip', function(){
+			_this.getInterface().siblings(".ui-tooltip").remove();
+		});
+	},
+	setupTooltip: function(elm, arrowDirection){
 		// exit if not enabled
 		if( !this.embedPlayer.enableTooltips || kWidget.isIE8() ) {
 			return;
 		}
-		var _this = this;
-		this.embedPlayer.bindHelper( 'layoutBuildDone', function(){
-			_this.getInterface().tooltip({
-				items: '[data-show-tooltip]',
-				  position: {
-					my: "center bottom-10",
-					at: "center top",
-					  using: function( position, feedback ) {
-						  $( this ).css( position );
-						  $( "<div>" )
-							  .addClass( "arrow" )
-							  .addClass( feedback.vertical )
-							  .addClass( feedback.horizontal )
-							  .appendTo( this );
-					  }
-				  }
-				});
-			_this.getInterface().find(".tooltipBelow").tooltip({
-				items: '[data-show-tooltip]',
+		var	tooltips = elm ? elm : this.getInterface();
+		if (tooltips && tooltips.length > 0) {
+			var arrowType = arrowDirection ? arrowDirection : "arrow";
+			var myPosition = tooltips.offset().top > 0 ? "center bottom+55" : "center bottom-10";
+			tooltips.tooltip( {
+				items: '[data-show-tooltip]' ,
+				"show": {"delay": 1000} ,
+				"hide": {"duration": 0} ,
+				"content": function () {
+					return $( this ).attr( 'title' );
+				} ,
 				position: {
-					my: "center bottom-10",
-					at: "center top",
-					using: function( position, feedback ) {
+					my: myPosition ,
+					at: "center top" ,
+					using: function ( position , feedback ) {
 						$( this ).css( position );
 						$( "<div>" )
-							.addClass( "arrowTop" )
+							.addClass( arrowType )
 							.addClass( feedback.vertical )
 							.addClass( feedback.horizontal )
 							.appendTo( this );
 					}
 				}
-			});
-		});
+			} );
+		}
 	},
 	/**
 	* Get minimal width for interface overlay
@@ -475,16 +508,19 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		// Decide which bindings to add based on device capabilities
 		var addPlaybackBindings = function(){
-			if( embedPlayer.getFlashvars('disableOnScreenClick') ){ 
+			if( embedPlayer.getFlashvars('disableOnScreenClick') ){
 				return ;
 			}
 			if( mw.isTouchDevice() ){
 				if( !( mw.isAndroid() && mw.isMobileChrome() ) ){
 					_this.addPlayerTouchBindings();
-					return;
 				}
 			}
-			_this.addPlayerClickBindings();
+			//if we're in native app android <=4.3 we dont want to add player click bindings
+			if( !(mw.isNativeApp() && ( mw.isAndroid43() || mw.isAndroid41() || mw.isAndroid42() ) ) ) {
+				_this.addPlayerClickBindings();
+			}
+
 		};
 
 		var removePlaybackBindings = function(){
@@ -493,9 +529,8 @@ mw.PlayerLayoutBuilder.prototype = {
 			}
 			if( mw.isTouchDevice() ){
 				_this.removePlayerTouchBindings();
-			} else {
-				_this.removePlayerClickBindings();
 			}
+			_this.removePlayerClickBindings();
 		};
 
 		_this.onControlBar = false;
@@ -507,11 +542,11 @@ mw.PlayerLayoutBuilder.prototype = {
 		_this.addRightClickBinding();
 
 		this.updateLayoutTimeout = null;
-
+		_this.updateComponentsVisibility();
 		b('updateLayout', function(){
 			// Firefox unable to get component width correctly without timeout
 			clearTimeout(_this.updateLayoutTimeout);
-			_this.updateLayoutTimeout = setTimeout(function(){ 
+			_this.updateLayoutTimeout = setTimeout(function(){
 				_this.updateComponentsVisibility();
 				_this.updatePlayerSizeClass();
 			},100);
@@ -529,6 +564,14 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		b( 'AdSupport_EndAdPlayback', function(){
 			$interface.removeClass( adPlaybackState );
+		});
+
+		b( 'seeking', function(){
+			$interface.addClass( "seeking-state" );
+		});
+
+		b( 'seeked', function(){
+			$interface.removeClass( "seeking-state" );
 		});
 
 		// Bind to EnableInterfaceComponents
@@ -558,16 +601,24 @@ mw.PlayerLayoutBuilder.prototype = {
 		});
 
 		// IE8 does not trigger click events on Flash objects
-		if( (embedPlayer.adSiblingFlashPlayer || embedPlayer.instanceOf == 'Kplayer') && 
+		if( (embedPlayer.adSiblingFlashPlayer || embedPlayer.instanceOf == 'Kplayer') &&
 			(mw.isIE8() || mw.isIE9()) ){
 			embedPlayer.getVideoHolder().bind('mouseup', function(){
-				$( embedPlayer ).trigger('click');
+				if (embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence){
+					$( embedPlayer ).trigger('click');
+				}
 			});
-		}		
+		}
 
 		// add the player click / touch bindings
 		addPlaybackBindings();
 		this.addControlsVisibilityBindings();
+
+		// if overlaying controls add hide show player binding.
+		if( embedPlayer.isOverlayControls() && mw.hasMouseEvents() ){
+			this.addMouseMoveBinding(this.getInterface());
+			this.addMouseMoveHandler();
+		}
 
 		mw.log( 'trigger::addControlBindingsEvent' );
 		embedPlayer.triggerHelper( 'addControlBindingsEvent' );
@@ -584,6 +635,8 @@ mw.PlayerLayoutBuilder.prototype = {
 			touchStartPos = e.originalEvent.touches[0].pageY; //starting point
 		})
 		.bind( 'touchend' + this.bindPostfix, function(e) {
+			e.preventDefault();
+			e.stopPropagation();
 			// remove drag binding:
 			if ( _this.embedPlayer.isControlsVisible || _this.embedPlayer.useNativePlayerControls()) {
                 touchEndPos = e.originalEvent.changedTouches[0].pageY; //ending point
@@ -599,10 +652,29 @@ mw.PlayerLayoutBuilder.prototype = {
 		$( this.embedPlayer ).unbind( "touchstart" + this.bindPostfix );
         $( this.embedPlayer ).unbind( "touchend" + this.bindPostfix );
 	},
+
+	// Class to add on interface when mouse is out
+	outPlayerClass: 'player-out',
+	hideControlsTimeout: null,
+	showPlayerControls: function(){
+		clearTimeout(this.hideControlsTimeout);
+		this.getInterface().removeClass( this.outPlayerClass );
+		this.removeTouchOverlay();
+		this.embedPlayer.triggerHelper( 'showPlayerControls' );
+	},
+	hidePlayerControls: function(){
+		if (!this.embedPlayer.paused ||
+			this.embedPlayer.isInSequence()){
+			this.getInterface().addClass( this.outPlayerClass );
+			this.addTouchOverlay();
+			this.embedPlayer.triggerHelper( 'hidePlayerControls' );
+		}
+	},
+
 	addControlsVisibilityBindings: function(){
 		var embedPlayer = this.embedPlayer;
 		var _this = this;
-		var $interface = embedPlayer.getInterface();
+		var $interface = this.getInterface();
 
 		// Add recommend firefox if we have non-native playback:
 		if ( _this.checkNativeWarning( ) ) {
@@ -618,46 +690,122 @@ mw.PlayerLayoutBuilder.prototype = {
 			);
 		}
 
-		var outPlayerClass = 'player-out';
-
-		var showPlayerControls = function(){
-			clearTimeout(hideControlsTimeout);
-			$interface.removeClass( outPlayerClass );
-			embedPlayer.triggerHelper( 'showPlayerControls' );
-		};
-		var hidePlayerControls = function(){
-			if (!embedPlayer.paused){
-				$interface.addClass( outPlayerClass );
-				embedPlayer.triggerHelper( 'hidePlayerControls' );
-			}
-		};
-
 		// Check if we should display the interface:
 		if ( mw.hasMouseEvents() ) {
 			var hoverIntentConfig = {
 				'sensitivity': 100,
 				'timeout' : mw.getConfig('EmbedPlayer.HoverOutTimeout'),
 				'over' : function(){
-					showPlayerControls();
+					_this.showPlayerControls();
 				},
 				'out' : function(){
-					hidePlayerControls();
+					_this.hidePlayerControls();
 				}
 			};
 			$interface.hoverIntent( hoverIntentConfig );
 		}
 
-		var hideControlsTimeout = null;
-		
 		// Bind a startTouch to show controls
 		$( embedPlayer ).bind( 'touchstart', function() {
-			showPlayerControls();
-			hideControlsTimeout = setTimeout(function(){
-				hidePlayerControls();
+			_this.showPlayerControls();
+			_this.hideControlsTimeout = setTimeout(function(){
+				_this.hidePlayerControls();
 			}, 5000);
 			return true;
 		} );
 	},
+
+	addMouseMoveBinding: function(elem){
+		if (elem) {
+			var _this = this;
+			// Bind mouse move in interface to hide control bar
+			_this.mouseMovedFlag = false;
+			var oldX = 0, oldY = 0;
+			$( elem ).mousemove( function ( event ) {
+				// debounce mouse movements
+				if ( Math.abs( oldX - event.pageX ) > 4 || Math.abs( oldY - event.pageY ) > 4 ) {
+					_this.mouseMovedFlag = true;
+				}
+				oldX = event.pageX;
+				oldY = event.pageY;
+			} ).mouseout( function ( event ) {
+				//Clear mouseMoveFlag when moving mouse out of player
+				_this.mouseMovedFlag = false;
+			} );
+		} else {
+			mw.log("addMouseMoveBinding: no element supplied");
+		}
+	},
+	addMouseMoveHandler: function(){
+		var _this = this;
+		// Check every 2 seconds reset flag status if controls are overlay
+		var checkMovedMouse = function(){
+			if( _this.mouseMovedFlag ){
+				_this.mouseMovedFlag = false;
+				_this.showPlayerControls();
+				// Once we move the mouse keep displayed for 4 seconds
+				_this.checkMovedMouseTimeout = setTimeout( checkMovedMouse, mw.getConfig('EmbedPlayer.MouseMoveTimeout') );
+			} else {
+				// Check for mouse movement every 250ms
+				_this.hidePlayerControls();
+				_this.checkMovedMouseTimeout = setTimeout( checkMovedMouse, 250 );
+			}
+		};
+		// start monitoring for moving mouse
+		checkMovedMouse();
+	},
+	removeMouseMoveHandler: function(){
+		clearTimeout(this.checkMovedMouseTimeout);
+		this.checkMovedMouseTimeout = null;
+	},
+	addTouchOverlay: function(){
+		if ( mw.isTouchDevice() &&
+			!this.keepControlsOnScreen  &&
+			this.embedPlayer.getKalturaConfig( "controlBarContainer", "hover" )) {
+			var _this = this;
+			if ( this.getInterface().find( '#touchOverlay' ).length == 0 ) {
+				var touchOverlay= this.getInterface().find('.controlBarContainer').before(
+					$('<div />')
+						.css({
+							'position': 'absolute',
+							'top': 0,
+							'width': '100%',
+							'height': '100%',
+							'z-index': 1
+						})
+						.attr( 'id', "touchOverlay" )
+						.bind( 'touchstart click', function( event ) {
+							// Don't propogate the event to the document
+							if (event.stopPropagation ) {
+								event.stopPropagation();
+								if ( event.stopImmediatePropagation )  {
+									event.stopImmediatePropagation();
+								}
+							} else {
+								event.cancelBubble = true; // IE model
+							}
+							event.preventDefault();
+							_this.removeMouseMoveHandler();
+							//without setTimeout event still propagates
+							setTimeout( function() {
+								_this.mouseMovedFlag = true;
+								_this.showPlayerControls();
+								_this.addMouseMoveHandler();
+								_this.getInterface().find( '#touchOverlay' ).remove();
+							}, 500);
+
+						})
+				);
+				this.addMouseMoveBinding(touchOverlay);
+			}
+		}
+	},
+	removeTouchOverlay: function(){
+		if ( mw.isTouchDevice() && this.getInterface().find( '#touchOverlay' ).length != 0 ) {
+			this.getInterface().find( '#touchOverlay' ).remove();
+		}
+	},
+
 	// Hold the current player size class
 	// The value is null so we will trigger playerSizeClassUpdate on first update
 	playerSizeClass: null,
@@ -680,7 +828,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			this.playerSizeClass = playerSizeClass;
 			this.getInterface()
 				.removeClass('size-tiny size-small size-medium size-large')
-				.addClass('size-' + this.playerSizeClass);			
+				.addClass('size-' + this.playerSizeClass);
 			this.embedPlayer.triggerHelper('playerSizeClassUpdate', [this.playerSizeClass] );
 		}
 	},
@@ -708,13 +856,17 @@ mw.PlayerLayoutBuilder.prototype = {
 			_this.playingFlag = true;
 			setTimeout(function(){
 				_this.playingFlag = false;
-			},500);
+			},1000);
 		});
-
+		// check for drag: 
+		
+		
 		// Check for click
 		$( embedPlayer ).bind( "click" + _this.bindPostfix, function() {
 			if ( mw.isMobileDevice() )  {
-				_this.togglePlayback();
+				if (!_this.playingFlag){
+					_this.togglePlayback();
+				}
 			}
 			else {
 				var playerStatus = embedPlayer.isPlaying();
@@ -973,7 +1125,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		this.displayOptionsMenuFlag = true;
 
 		if ( !this.supportedComponents[ 'overlays' ] ) {
-			embedPlayer.stop();
+			embedPlayer.pause();
 		}
 
 		// Check if overlay window is already present:
@@ -1034,12 +1186,12 @@ mw.PlayerLayoutBuilder.prototype = {
 					.addClass( 'ui-icon ui-icon-closethick' )
 			);
 		}
-
+		var margin = $(".topBarContainer").length === 0 ? '0 10px 10px 0' : '22px 10px 10px 0'; // if we have a topBarContainer - push the content 22 pixels down
 		var overlayMenuCss = {
 			'height' : '100%',
 			'width' : '100%',
 			'position' : 'absolute',
-			'margin': '0 10px 10px 0',
+			'margin': margin,
 			'overflow' : 'auto',
 			'padding' : '4px',
 			'z-index' : 3
@@ -1104,53 +1256,78 @@ mw.PlayerLayoutBuilder.prototype = {
 		// Check if callback is external or internal (Internal by default)
 
 		// Check if overlay window is already present:
-		if ( embedPlayer.getInterface().find( '.overlay-win' ).length != 0 ) {
+		if ( embedPlayer.getInterface().find('.overlay-win').length != 0 ) {
 			return;
 		}
-		if( typeof alertObj.callbackFunction == 'string' ) {
-		if ( alertObj.isExternal ) {
-			try{
-				callback = window.parent[ alertObj.callbackFunction ];
-			} catch ( e ){
-				// could not call parent method
+		// remove error message from kalturaIframeClass.php
+		try{
+			embedPlayer.getInterface().parent().find( '#error').remove();
+		}catch(e){}
+
+		if ( typeof alertObj.callbackFunction == 'string' ) {
+			if ( alertObj.isExternal ) {
+				try {
+					callback = window.parent[ alertObj.callbackFunction ];
+				} catch ( e ) {
+					// could not call parent method
 				}
 			} else {
 				callback = window[ alertObj.callbackFunction ];
 			}
-		} else if( typeof alertObj.callbackFunction == 'function' ) {
+		} else if ( typeof alertObj.callbackFunction == 'function' ) {
 			// Make life easier for internal usage of the listener mapping by supporting
 			// passing a callback by function ref
 			callback = alertObj.callbackFunction;
 		} else {
 			// don't throw an error; display alert callback is optional
 			// mw.log( "PlayerLayoutBuilder :: displayAlert :: Error: bad callback type" );
-			callback = function() {};
+			callback = function () {};
 		}
 
 		var $container = $( '<div />' ).addClass( 'alert-container' );
 		var $title = $( '<div />' ).text( alertObj.title ).addClass( 'alert-title alert-text' );
-		if ( alertObj.props && alertObj.props.titleTextColor ) {
-			$title.removeClass( 'alert-text' );
-			$title.css( 'color', mw.getHexColor( alertObj.props.titleTextColor ) );
-		}
+		var $buttonsContainer = $( '<div />' ).addClass( 'alert-buttons-container' );
 		var $message = $( '<div />' ).html( alertObj.message ).addClass( 'alert-message alert-text' );
 		if ( alertObj.isError ) {
 			$message.addClass( 'error' );
 		}
-		if ( alertObj.props && alertObj.props.textColor ) {
-			$message.removeClass( 'alert-text' );
-			$message.css( 'color', mw.getHexColor( alertObj.props.textColor ) );
+		
+		if ( alertObj.props ) {
+
+			if ( alertObj.props.customAlertContainerCssClass ) {
+				$container.removeClass( 'alert-container' );
+				$container.addClass( alertObj.props.customAlertContainerCssClass );
+			}
+
+			if ( alertObj.props.customAlertTitleCssClass ) {
+				$title.removeClass( 'alert-text alert-title' );
+				$title.addClass( alertObj.props.customAlertTitleCssClass );
+			}
+			if ( alertObj.props.titleTextColor ) {
+				$title.removeClass('alert-text');
+				$title.css('color', mw.getHexColor( alertObj.props.titleTextColor ) );
+			}
+
+			if ( alertObj.props.customAlertMessageCssClass ){
+				$message.removeClass( 'alert-text alert-message' );
+				$message.addClass( alertObj.props.customAlertMessageCssClass );
+			}
+			if ( alertObj.props.textColor ) {
+				$message.removeClass( 'alert-text' );
+				$message.css( 'color', mw.getHexColor(alertObj.props.textColor ) );
+			}
+
+			if ( alertObj.props.buttonRowSpacing ) {
+				$buttonsContainer.css( 'margin-top', alertObj.props.buttonRowSpacing );
+			}
 		}
-		var $buttonsContainer = $( '<div />' ).addClass( 'alert-buttons-container' );
-		if ( alertObj.props && alertObj.props.buttonRowSpacing ) {
-			$buttonsContainer.css( 'margin-top', alertObj.props.buttonRowSpacing );
-		}
+
 		var $buttonSet = alertObj.buttons || [];
 
 		// If no button was passed display just OK button
 		var buttonsNum = $buttonSet.length;
 		if ( buttonsNum == 0 && !alertObj.noButtons ) {
-			$buttonSet = ["OK"];
+			$buttonSet = [ "OK" ];
 			buttonsNum++;
 		}
 
@@ -1158,7 +1335,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			$container.addClass( 'alert-container-with-buttons' );
 		}
 
-		$.each( $buttonSet, function(i) {
+		$.each( $buttonSet, function( i ) {
 			var label = this.toString();
 			var $currentButton = $( '<button />' )
 			.addClass( 'alert-button' )
@@ -1167,14 +1344,17 @@ mw.PlayerLayoutBuilder.prototype = {
 					callback( eventObject );
 					_this.closeAlert( alertObj.keepOverlay );
 				} );
-			if ( alertObj.props && alertObj.props.buttonHeight ) {
-				$currentButton.css( 'height', alertObj.props.buttonHeight );
-			}
-			// Apply buttons spacing only when more than one is present
-			if (buttonsNum > 1) {
-				if (i < buttonsNum-1) {
-					if ( alertObj.props && alertObj.props.buttonSpacing ) {
-						$currentButton.css( 'margin-right', alertObj.props.buttonSpacing );
+
+			if ( alertObj.props) {
+				if ( alertObj.props.buttonHeight ) {
+					$currentButton.css( 'height', alertObj.props.buttonHeight );
+				}
+				// Apply buttons spacing only when more than one is present
+				if (buttonsNum > 1) {
+					if (i < buttonsNum - 1) {
+						if ( alertObj.props.buttonSpacing ) {
+							$currentButton.css('margin-right', alertObj.props.buttonSpacing);
+						}
 					}
 				}
 			}
@@ -1208,7 +1388,34 @@ mw.PlayerLayoutBuilder.prototype = {
 	* 'w' The width of the component
 	* 'h' The height of the component ( if height is undefined the height of the control bar is used )
 	*/
-	components: {}
+	components: {},
+
+	checkAnimationSupport: function ( elm ) {
+		elm = elm || document.body || document.documentElement;
+		var animation = false,
+			animationstring = 'animation',
+			keyframeprefix = '',
+			domPrefixes = 'Webkit Moz O ms Khtml'.split( ' ' ),
+			pfx = '';
+
+		if ( elm.style.animationName !== undefined ) {
+			animation = true;
+		}
+
+		if ( animation === false ) {
+			for ( var i = 0; i < domPrefixes.length; i++ ) {
+				if ( elm.style[ domPrefixes[i] + 'AnimationName' ] !== undefined ) {
+					pfx = domPrefixes[ i ];
+					animationstring = pfx + 'Animation';
+					keyframeprefix = '-' + pfx.toLowerCase() + '-';
+					animation = true;
+					break;
+				}
+			}
+		}
+
+		return animation;
+	}
 };
 
 } )( window.mediaWiki, window.jQuery );

@@ -9,14 +9,20 @@
 			"align": "right",
 			"showTooltip": true,
 			"switchOnResize": false,
-			"simpleFormat": true
+			"simpleFormat": true,
+			"iconClass": "icon-cog",
+            "displayMode": "size" //'size' – displays frame size ( default ), 'bitrate' – displays the bitrate, 'sizebitrate' displays size followed by bitrate
 		},
 
 		isDisabled: false,
 		inUpdateLayout:false,
 		selectSourceTitle: gM( 'mwe-embedplayer-select_source' ),
 		switchSourceTitle: gM( 'mwe-embedplayer-switch_source' ),
+        AutoTitle: gM( 'mwe-embedplayer-auto_source' ),
 		saveBackgroundColor: null, // used to save background color upon disable and rotate and return it when enabled again to prevent rotating box around the icon when custom style is applied
+
+        sourcesList: [],
+        firstPlay:false,
 
 		setup: function(){
 			var _this = this;
@@ -24,6 +30,10 @@
 			this.bind( 'playerReady sourcesReplaced', function(){
 				_this.buildMenu();
 			});
+
+            this.bind( 'firstPlay', function(){
+                _this.firstPlay = true;
+            });
 
 			this.bind( 'SourceChange', function(){
 				var selectedSrc = _this.getPlayer().mediaElement.selectedSource;
@@ -46,14 +56,22 @@
 					}
 				}
 				_this.getMenu().setActive({'key': 'id', 'val': selectedId});
-				_this.onEnable();
 			});
 
 			this.bind( 'sourceSwitchingStarted', function(){
+				_this.getComponent().find('button').addClass( 'in-progress-state' );
 				_this.onDisable();
 			});
-			this.bind( 'sourceSwitchingEnd', function(){
-				_this.onEnable();
+			this.bind( 'sourceSwitchingEnd', function(newIndex){
+				_this.getComponent().find('button').removeClass( 'in-progress-state' );
+                _this.onEnable();
+			});
+            this.bind( 'onHideControlBar', function(){
+                if ( _this.getMenu().isOpen() )
+                    _this.getMenu().close();
+            });
+			this.bind( 'onChangeMedia', function(){
+				_this.sourcesList = [];
 			});
 
 			// Check for switch on resize option
@@ -68,22 +86,30 @@
 						},1000);
 						//if we're working with kplayer - mp4 can't be seeked - so disable this feature
 						//this only effect native for now
-						if (_this.embedPlayer.instanceOf === "Native") {
+						if (_this.embedPlayer.instanceOf === "Native" && !_this.embedPlayer.isInSequence() ) {
 							// TODO add additional logic for "auto" where multiple bitrates
 							// exist at the same resolution.
-							var selectedSource = _this.embedPlayer.mediaElement.autoSelectSource();
+							var selectedSource = _this.embedPlayer.mediaElement.autoSelectSource(_this.embedPlayer.supportsURLTimeEncoding(), _this.embedPlayer.startTime, _this.embedPlayer.pauseTime);
 							if ( selectedSource ) { // source was found
 								_this.embedPlayer.switchSrc( selectedSource );
 							}
 						} else {
-							mw.log( "sourceSelector - switchOnResize is ignored - Can't switch source since not using native player");
+							mw.log( "sourceSelector - switchOnResize is ignored - Can't switch source since not using native player or during ad playback");
 						}
 					}
 				});
 			}
+
+			this.embedPlayer.bindHelper("propertyChangedEvent", function(event, data){
+				if ( data.plugin === _this.pluginName ){
+					if ( data.property === "sources" ){
+						_this.getMenu().$el.find("li a")[data.value].click();
+					}
+				}
+			});
 		},
 		getSources: function(){
-			return this.getPlayer().mediaElement.getPlayableSources();
+			return this.getPlayer().getSources();
 		},
 
 		buildMenu: function(){
@@ -92,12 +118,16 @@
 			// Destroy old menu
 			this.getMenu().destroy();
 
-			var sources = this.getSources();
+			var sources = this.getSources().slice(0);
 
 			if( ! sources.length ){
 				_this.log("Error with getting sources");
 				return ;
 			}
+
+            //add Auto for addaptive bitrate streams
+            if ( !this.handleAdaptiveBitrateAndContinue() )
+                return;
 
 			if( sources.length == 1 ){
 				// no need to do building menu logic. 
@@ -163,7 +193,8 @@
 					prevSource = source;
 				});
 			}
-
+			var items = [];
+			var itemLabels = [];
 			var prevSource = null;
 			$.each( sources, function( sourceIndex, source ) {
 				if( source.skip ){
@@ -186,9 +217,17 @@
 								)
 						){
 						_this.addSourceToMenu( source );
+						var label = _this.getSourceTitle( source )
+						if ($.inArray(label, itemLabels) === -1){
+							itemLabels.push(label)
+							items.push({'label':label, 'value':label});
+						}
 					}
 				}
 			});
+			// dispatch event to be used by a master plugin if defined
+			this.getPlayer().triggerHelper("updatePropertyEvent",{"plugin": this.pluginName, "property": "sources", "items": items, "selectedItem": this.getMenu().$el.find('.active a').text()});
+
 		},
 		isSourceSelected: function( source ){
 			var _this = this;
@@ -197,20 +236,65 @@
 				_this.getPlayer().mediaElement.selectedSource.getSrc()
 				);
 		},
+        handleAdaptiveBitrateAndContinue: function (){
+            //Silverlight smoothStream
+            if( ( this.getPlayer().streamerType === "smoothStream" ) ){
+                this.addAutoToMenu();
+                return true;
+            }
+
+            //HLS, HDS
+            if (mw.isNativeApp()) {
+            	this.sourcesList = [];
+                this.addAutoToMenu();
+                return true;
+            }
+
+            if ( this.getPlayer().streamerType != "http" && !this.getPlayer().isPlaying() ){
+                if(this.getPlayer().streamerType !== "hls" && !mw.EmbedTypes.getMediaPlayers().isSupportedPlayer('kplayer')){ //If flash disabled, player fallback to http progressive, but the streamerType might still be hdnetwork
+                    return true;
+                }
+                this.addAutoToMenu();
+                return false;
+            }
+
+            if( this.getPlayer().streamerType != "http" && this.firstPlay ){ //add and select Auto for adaptive bitrate
+                this.addAutoToMenu();
+                this.firstPlay = false;
+            }
+            return true;
+        },
+        addAutoToMenu: function (){
+            var _this = this;
+            this.getMenu().addItem({
+                'label': _this.AutoTitle,
+                'callback': function () {
+                    _this.getPlayer().switchSrc(-1);
+                },
+               'active': true
+            });
+        },
 		addSourceToMenu: function( source ){
-			var _this = this;;
-			this.getMenu().addItem({
-				'label': this.getSourceTitle( source ),
-				'attributes': {
-					'id': source.getAssetId()
-				},
-				'callback': function(){
-					_this.getPlayer().switchSrc( source );
-				},
-				'active': _this.isSourceSelected( source )
-			});
+			var _this = this;
+
+            var sourceLabel = this.getSourceTitle( source );
+            if( $.inArray(sourceLabel, this.sourcesList) == -1 ) {
+
+                this.sourcesList.push(sourceLabel);
+
+                this.getMenu().addItem({
+                    'label': sourceLabel,
+                    'attributes': {
+                        'id': source.getAssetId()
+                    },
+                    'callback': function () {
+                        _this.getPlayer().switchSrc(source);
+                    },
+                    'active': _this.isSourceSelected(source)
+                });
+            }
 		},
-		getSourceSizeName: function( source ){
+        getSourceSizeName: function( source ){
 			if( source.getHeight() < 255 ){
 				return '240P';
 			} else if( source.getHeight() < 370 ){
@@ -226,28 +310,54 @@
 		getSourceTitle: function( source ){
 			// We should return "Auto" for Apple HLS
 			if( source.getMIMEType() == 'application/vnd.apple.mpegurl' ) {
-				return 'Auto';
+				return this.AutoTitle;
 			}
-			var title = '';
-			if( source.getHeight() ){
-				title+= this.getSourceSizeName( source );
-			} else if ( source.getBitrate() ) {
-				var bits = ( Math.round( source.getBitrate() / 1024 * 10 ) / 10 ) + '';
-				if( bits[0] == '0' ){
-					bits = bits.substring(1);
-				}
-				title+= ' ' + bits + 'Mbs ';
-			}
-			if( this.getConfig( 'simpleFormat' ) ){
-				if( source.hq ){
-					title += ' HQ';
-				}
-			} else {
-				// include type if not simple format
-				title += ' ' + source.getMIMEType().replace('video/', '');
-			}
-			return title;
+
+            var title = '';
+            switch( this.getConfig( 'displayMode' ) ){
+                case 'size' :
+                    title = this.getSourceTitleSize(source);
+                    break;
+                case 'bitrate' :
+                    title = this.getSourceTitleBitrate(source);
+                    break;
+                case 'sizebitrate' :
+                    title = this.getSourceTitleSizeBitrate(source);
+                    break;
+            }
+            return title;
 		},
+        getSourceTitleSize: function( source ){
+            var title = '';
+            if( source.getHeight() ){
+                title = this.getSourceSizeName( source );
+                if( this.getConfig( 'displayMode' ) === 'size' && this.getConfig( 'simpleFormat' ) && source.hq ){
+                    title += ' HQ';
+                }
+            } else { //fallback for a case we don't have a frame size (height) for the source (for example HLS source)
+                title = this.getSourceTitleBitrate(source);
+            }
+            return title;
+        },
+        getSourceTitleBitrate: function( source ){
+            var title = '';
+            if ( source.getBitrate() ) {
+                var bits = ( Math.round( source.getBitrate() / 1024 * 10 ) / 10 ) + '';
+                if( bits[0] == '0' ){
+                    bits = bits.substring(1);
+                }
+                title+= ' ' + bits + ' Mbs ';
+            }
+            return title;
+        },
+        getSourceTitleSizeBitrate: function( source ){
+            var title = '';
+            if( source.getHeight() ){
+                title = this.getSourceSizeName( source ) + ' ';
+            }
+            title += this.getSourceTitleBitrate(source);
+            return title;
+        },
 		toggleMenu: function(){
 			if ( this.isDisabled ) {
 				return;
@@ -285,7 +395,6 @@
 		onEnable: function(){
 			this.isDisabled = false;
 			this.updateTooltip( this.selectSourceTitle );
-			this.getComponent().find('button').removeClass( 'rotate' );
 			this.getBtn().removeClass( 'disabled' );
 			if (this.saveBackgroundColor){
 				this.getComponent().find('button').attr('style', 'background-color: ' + this.saveBackgroundColor + ' !important');
@@ -294,7 +403,6 @@
 		onDisable: function(){
 			this.isDisabled = true;
 			this.updateTooltip( this.switchSourceTitle );
-			this.getComponent().find('button').addClass( 'rotate' );
 			this.saveBackgroundColor = this.getComponent().find('button').css("background-color");
 			this.getComponent().find('button').attr('style', 'background-color: null !important');
 			this.getComponent().removeClass( 'open' );

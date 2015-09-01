@@ -32,8 +32,7 @@ class RequestHelper {
 		'height'=> null,
 		'playerId' => null,
 		'vid_sec' => null,
-		'vid_slices' => null,
-		'jsonConfig' => null
+		'vid_slices' => null
 	);
 
 
@@ -64,30 +63,31 @@ class RequestHelper {
 			}
 		}
 
-		// Check for urlParameters in the request:
+		// TODO refactor this parameter sanitation  
 		foreach( $this->urlParameters as $attributeKey => $na){
 			if( isset( $_REQUEST[ $attributeKey ] ) ){
 				// set the url parameter and don't let any html in:
-				if( is_array( $_REQUEST[$attributeKey] ) ){
-					$payLoad = array();
-					foreach( $_REQUEST[$attributeKey] as $key => $val ){
-						$payLoad[$key] = htmlspecialchars( $val );
-					}
-					$this->urlParameters[ $attributeKey ] = $payLoad;
-				} else {
-					$this->urlParameters[ $attributeKey ] = htmlspecialchars( $_REQUEST[$attributeKey] );
-				}
+				$this->urlParameters[ $attributeKey ] = $_REQUEST[ $attributeKey ];
 			}
 		}
+		
 		// support CORS for IE9 and lower
 		global $HTTP_RAW_POST_DATA;
-		if (count($_POST)==0 && count($HTTP_RAW_POST_DATA)>0 && strpos($HTTP_RAW_POST_DATA,'jsonConfig')!==false){
-			// remove "jsonConfig=" from raw data string
-			$config = substr($HTTP_RAW_POST_DATA, 11);
-			// set the unescaped jsonConfig raw data string in the URL parameters
-			$this->urlParameters[ 'jsonConfig' ] = (html_entity_decode(preg_replace("/%u([0-9a-f]{3,4})/i", "&#x\\1;", urldecode($config)), null, 'UTF-8'));
+		if ( count($_POST) == 0 && count( $HTTP_RAW_POST_DATA) > 0 ){
+			parse_str($HTTP_RAW_POST_DATA, (
+					html_entity_decode(
+					preg_replace("/%u([0-9a-f]{3,4})/i", "&#x\\1;",
+								urldecode($HTTP_RAW_POST_DATA)
+							),
+						null,
+						'UTF-8')
+					));
+			foreach( $data as $k => $v){
+				$this->urlParameters[ $k ] = $v;
+			}
 		}
-		// string to bollean  
+
+		// string to boolean  
 		foreach( $this->urlParameters as $k=>$v){
 			if( $v == 'false'){
 				$this->urlParameters[$k] = false;
@@ -141,7 +141,7 @@ class RequestHelper {
 		global $wgKalturaAllowIframeRemoteService;
 		
 		// Check if we allow URL override: 
-		if( $wgKalturaAllowIframeRemoteService == true ){
+		if(( $wgKalturaAllowIframeRemoteService == true ) || $this->isEmbedServicesEnabled()){
 			// Check for urlParameters
 			if( $this->get( $name ) ){
 				return $this->get( $name );
@@ -167,6 +167,24 @@ class RequestHelper {
 				return $wgKalturaUseManifestUrls;
 				break;
 		}
+	}
+
+	function isEmbedServicesEnabled(){
+	    global $wgEnableKalturaEmbedServicesRouting, $wgKalturaAuthEmbedServicesDomains;
+	    if ($wgEnableKalturaEmbedServicesRouting){
+	        return true;
+	    } else {
+	        return false;
+        }
+	}
+
+	function isEmbedServicesRequest(){
+	    $proxyData = $this->getFlashVars("proxyData");
+        return (isset($proxyData) && !empty($proxyData));
+    }
+
+	function getEmbedServicesRequest(){
+	    return $this->getFlashVars("proxyData");
 	}
 
 	public function getUserAgent() {
@@ -258,7 +276,7 @@ class RequestHelper {
 		// make sure there is no white space
 		$ip = trim( $ip );
 		$s = $ip . "," . time() . "," . microtime( true );
-		return "X_KALTURA_REMOTE_ADDR: " . $s . ',' . md5( $s . "," . $wgKalturaRemoteAddressSalt );
+		return "X-KALTURA-REMOTE-ADDR: " . $s . ',' . md5( $s . "," . $wgKalturaRemoteAddressSalt );
 	}
 
 	public function getCacheSt(){

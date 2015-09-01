@@ -39,6 +39,12 @@
 			this.bind('onPlayerStateChange', function(e, newState, oldState ){
 				_this.updateUI( newState, oldState );
 			});
+                this.bind('onOpenFullScreen', function () {
+                    try {
+                    _this.getComponent().focus();
+                    } catch(e){}
+                });
+
 		},
 		updateUI: function( newState, oldState ){
 			var removeIconClasses = this.playIconClass + ' ' + this.pauseIconClass + ' ' + this.replayIconClass;

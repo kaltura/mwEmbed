@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Lead with HLS with Flash</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Lead with HLS with Flash </h2>
+<span id="kdoc-more-desc">Demos Flash HLS for desktop browsers where flash and a HLS stream is available.</span>
+<div id="myVideoTarget" style="width:560px;height:330px;float:left">
+</div>
+<script>
+	// clear the companions 
+	kWidget.featureConfig({
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '13645452',
+		'entry_id' : '1_sf5ovm7u',
+		'flashvars': {
+			'LeadWithHLSOnFlash': true,
+            'Kaltura.ForceFlashOnDesktop' : true,
+            'EmbedPlayer.ForceKPlayer' : true
+		}
+	})
+</script>
+
+
+</body>
+</html>

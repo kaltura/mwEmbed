@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Playlist with DoubleClick ads</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+
+	<script type="text/javascript">
+		// Enable uiconf js which includes external resources
+		mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
+
+		function jsKalturaPlayerTest( videoId ){
+			// Name this module
+			module( "playlist" );
+			var kdp = $('#' + videoId )[0];
+			var $iframe = $('#' + videoId + '_ifp').contents();
+
+			asyncTest( "Check Doubleclick ad playing in playlist entry", function(){
+				kalturaQunitWaitForPlayer(function(){
+					stop();
+				});
+			});
+			setTimeout(function(){
+				ok( $( $iframe).find( '.medialistContainer' ).length > 0 , "Found playlist div" );
+				ok( $( $iframe).find( '.mwPlayerContainer.adplay-state' ).length > 0 , "Doubleclick ad is playing" );
+				start();
+			},5000);
+		}
+
+	</script>
+	<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+	<script type="text/javascript" src="../../../modules/KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+
+</head>
+<body>
+<h2>Playlist with DoubleClick ads</h2>
+<p>This page demonstrates a playlist with a DoubleClick preroll played before each clip.<br>
+The playlist is disabled during the ad playback.</p>
+<div id='kaltura_player' style="height:365px;width:650px"></div>
+<script>
+	kWidget.featureConfig({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id': '25975211',
+		'flashvars': {
+			'playlistAPI':{
+				'autoContinue': true,
+				'includeInLayout': true,
+				'autoPlay': true,
+				'loop': false,
+				'onPage': false,
+				'layout': 'vertical',
+				'containerPosition': 'left',
+				'kpl0Name': "test 4 item playlist",
+				'kpl0Id': '0_q79jh71b'
+			},
+			'doubleClick':{
+				'plugin':true,
+				'path' : 'http://cdnbakmi.kaltura.com/content/uiconf/ps/veria/kdp3.9.1/plugins/doubleclickPlugin.swf',
+				'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x360&iu=/6062/iab_vast_samples/skippable&ciu_szs=300x250,728x90&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&correlator=[timestamp]',
+				'disableCompanionAds' : false,
+				'debugMode':false
+			}
+		}
+	});
+</script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+	<title>Playlist Inline Item Entry</title>
+		<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	  <script type="text/javascript">
+		  // Enable uiconf js which includes external resources
+		  mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
+
+		  function jsKalturaPlayerTest( videoId ){
+			  // Name this module
+			  module( "playlist" );
+			  var kdp = $('#' + videoId )[0];
+			  var $iframe = $('#' + videoId + '_ifp').contents();
+
+			  asyncTest( "Check for playlist initial entry id", function(){
+				  kalturaQunitWaitForPlayer(function(){
+					  // look for the playlist:
+					  ok( $( $iframe).find( '.medialistContainer.k-vertical' ).length > 0 , "Found vertical playlist" );
+					  equal ( kdp.evaluate('{mediaProxy.entry.id}'), kdp.evaluate('{playlistAPI.initItemEntryId}'), "clip id='0_ntovmku5' is playing");
+					  start();
+				  });
+			  });
+		  }
+
+	  </script>
+	  <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+	  <script type="text/javascript" src="../../../modules/KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+	</head>
+   <body>
+   	<h3> Playlist Initial Entry </h3> 
+	<div id="kaltura_player" style="width:650px;height:400px;"></div>
+	<span id="kdoc-more-desc"><br>This demo highlights starting with the 3rd item in the playlist ( 0_ntovmku5 ). </span>
+	<script>
+		kWidget.featureConfig({
+			'targetId': 'kaltura_player',
+			'wid': '_243342',
+			'uiconf_id': '25975211',
+			'flashvars':{
+				'playlistAPI':{
+					'initItemEntryId': '0_ntovmku5',
+					'autoPlay': true,
+					'includeInLayout': true,
+					'kpl0Name': 'test 4 item playlist',
+					'kpl0Url': 'http://www.kaltura.com/index.php/partnerservices2/executeplaylist?uid=&partner_id=243342&subp_id=24334200&format=8&ks={ks}&playlist_id=0_q79jh71b'
+				}
+			}
+		})
+	</script>
+  </body>
+</html>

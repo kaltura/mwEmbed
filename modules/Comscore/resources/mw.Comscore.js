@@ -288,7 +288,7 @@ mw.Comscore.prototype = {
 	comScoreBeacon: function( beaconObject ) {
 		var _this = this;
 
-		var loadUrl = (document.location.protocol == "https:" ? "https://sb." : "http://b");
+		var loadUrl = (document.location.protocol == "https:" ? "https://sb." : "http://b.");
 		loadUrl += "scorecardresearch.com/p?";
 
 		// Setup C7 - Page URL Param

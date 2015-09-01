@@ -7,6 +7,12 @@ return array(
 		"model" => "basicDisplay",
 		"icon" => "TabBasicSettings",
 		"children"=> array(
+		array(
+                "label" => "Player's ID:",
+                "type" => "readonly",
+                "player-refresh"=> false,
+                "model" => "id"
+            ),
 			array(
 				"label" => "Player's Name",
 				"type" => "text",
@@ -25,12 +31,12 @@ return array(
 //				"source" => "getTags"
 //			),
 			array(
-				"label" => "Preview entry",
+				"label" => "Preview entry / playlist",
 				"type" => "select2data",
 				"allow-custom-values" => true,
 				"source" => "listEntries",
 				"query" => "queryEntries",
-				"helpnote" => "Select entry",
+				"helpnote" => "Select entry / playlist",
 				"player-refresh"=> true,
 				"endline" => "true",
 				"width" => "100%",
@@ -47,13 +53,18 @@ return array(
 					array(
 						"label" => "16/9",
 						"value" => "wide"
-					)
+					),
+                    array(
+                        "label" => "Custom",
+                        "value" => "custom"
+                    )
 				),
 				"showSearch"=> false,
-				"initvalue" => "wide",
-				"helpnote" => "Select aspect ratio for the current preview. Aspect ratio is not saved with the player settings",
-				"type" => "dropdown",
-				"label" => "Aspect Ratio",
+				"allowNegative"=> false,
+				"helpnote" => "Set Player Dimensions",
+				"helpnote2" => "Height will be automatically calculated according to the selected aspect ratio",
+				"type" => "dimensions",
+				"label" => "Player Dimensions",
 				"endline" => "true"
 			),
 			array(
@@ -105,7 +116,10 @@ return array(
 			"theme" => "",
 			"infoScreen" => "",
 			"share" => "",
-			"related" => ""
+			"playersJsReceiver" => "",
+			"related" => "",
+			"playlistAPI" => "",
+			"nextPrevBtn" => ""
 		)
 	),
 	"analytics"=> array(
@@ -140,7 +154,10 @@ return array(
 			"bumper" => "",
 			"vast" => "",
 			"doubleClick" => "",
-			"freeWheel" => ""
+			"freeWheel" => "",
+			"skipBtn" => "",
+            "skipNotice" => "",
+            "noticeMessage" => ""
 		)
 	),
 	"plugins"=> array(
@@ -156,8 +173,11 @@ return array(
 			"playbackRateSelector" => "",
 			"restrictUserAgent" => "",
 			"widevine" => "",
+			"multiDrm" => "",
 			"sourceSelector" => "",
 			"download" => "",
+			"nativeCallout" => "",
+			"strings" => "",
 			"uiVars" => ""
 		)
 	)

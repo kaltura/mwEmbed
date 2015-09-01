@@ -19,13 +19,18 @@
 
 		setup: function() {
 			var _this = this;
-			if ( kWidget.supportsFlash() ) {
+			// known limitation - kplayer is not supported on Safari desktop
+			if ( kWidget.supportsFlash() && !mw.isDesktopSafari() ) {
 				mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true ); //only kplayer supports audio description
 				this.getPlayer().setKalturaConfig('kdpVars', 'audioDescription',
 						{ plugin: 'true', volume: this.getConfig( 'volume' ) } );
 				
 				this.bind("playerReady", function(){
-					_this.updateAudioFile();
+					if (_this.embedPlayer.selectedPlayer.library === "Kplayer"){
+						_this.updateAudioFile();
+					}else{
+						_this.getComponent().hide();
+					}
 				})
 			} else { //hide the button if we don't support flash
 				// TODO should hide show based at changeMeida / playerReady time, i.e a clip without flash flavors ? 

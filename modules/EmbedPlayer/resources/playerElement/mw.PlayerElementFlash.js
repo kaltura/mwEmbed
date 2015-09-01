@@ -16,7 +16,9 @@
 		listenerCounter: 0,
 		targetObj: null,
 		initialized: false,
-
+        detectFlashInterval: null,
+        detectFlashIntervalLoops: 3,
+        flashDetected: false,
 		/**
 		 * initialize the class, creates flash embed
 		 * @param containerId container for the flash embed
@@ -26,93 +28,119 @@
 		 * @param readyCallback to run when player is ready
 		 * @returns {*}
 		 */
-		init: function( containerId , playerId , elementFlashvars, target, readyCallback ){
-			var _this = this;
-			this.element = this;			
-			this.id = playerId;
-			this.targetObj = target;
+		init: function( containerId , playerId , elementFlashvars, target, readyCallback, failCallback ){
+            var _this = this;
+            this.element = this;
+            this.id = playerId;
+            this.targetObj = target;
 
-			var flashvars = {};
-			flashvars.jsCallBackReadyFunc = this.jsReadyFunName;
-			flashvars.externalInterfaceDisabled = "false";
-			flashvars.disableOnScreenClick = true;
+            var flashvars = {};
+            flashvars.jsCallBackReadyFunc = this.jsReadyFunName;
+            flashvars.externalInterfaceDisabled = "false";
+            flashvars.disableOnScreenClick = true;
 
-			//if debug mode
-			if( mw.getConfig( 'debug', true ) ){
-				flashvars.debugMode = 'true';
+            //if debug mode
+            if( mw.getConfig( 'debug', true ) ){
+                flashvars.debugMode = 'true';
+            }
+
+            if ( elementFlashvars ) {
+                $.extend ( flashvars, elementFlashvars );
+            }
+
+            var mwEmbedPath = mw.getMwEmbedPath();
+            //replace protocol with page protocol
+            if ( window.location.protocol ) {
+                mwEmbedPath = window.location.protocol + mwEmbedPath.substring( mwEmbedPath.indexOf(":") + 1);
+            }
+
+             var kdpPath = mwEmbedPath + 'modules/EmbedPlayer/binPlayers/kaltura-player/kdp3.swf';
+            //var kdpPath = "http://localhost/chromeless-kdp/KDP3/bin-debug/kdp3.swf";
+
+            // check for ForceFlashOnDesktopSafari and if so set interval in order to try to detect flash player (run 3 times)
+            if(mw.getConfig("ForceFlashOnDesktopSafari")) {
+                _this.detectFlashInterval = setInterval(function () {
+                    _this.detectFlash(failCallback);
+                }, 500);
+            }
+
+            window[this.jsReadyFunName] = function( playerId ){
+                if (!_this.initialized) {
+                    _this.initialized = true;
+
+                    _this.flashDetected = true; // used in order to clear detectFlash interval
+                    clearInterval(_this.detectFlashInterval); // stop trying to detect flash
+
+                    // We wrap everything in setTimeout to avoid Firefox race condition with empty cache
+                    setTimeout( function () {
+                        _this.playerElement = $( '#' + playerId )[0];
+
+                        //if this is the target object: add event listeners
+                        //if a different object is the target: it should take care of its listeners (such as embedPlayerKPlayer)
+                        if ( !_this.targetObj ) {
+                            _this.targetObj = _this;
+
+                            var bindEventMap = {
+                                'playerPaused': 'onPause',
+                                'playerPlayed': 'onPlay',
+                                'durationChange': 'onDurationChange',
+                                'playbackComplete': 'onClipDone',
+                                'playerUpdatePlayhead': 'onUpdatePlayhead',
+                                'playerSeekEnd': 'onPlayerSeekEnd',
+                                'alert': 'onAlert',
+                                'mute': 'onMute',
+                                'unmute': 'onUnMute',
+                                'volumeChanged': 'onVolumeChanged',
+                                'mediaError' : 'onMediaError'
+                            };
+
+                            $.each( bindEventMap, function ( bindName, localMethod ) {
+                                _this.bindPlayerFunction( bindName, localMethod );
+                            } );
+                        }
+
+                        //imitate html5 video readyState
+                        _this.readyState = 4;
+                        // Run ready callback
+                        if ( $.isFunction( readyCallback ) ) {
+                            readyCallback.apply( _this );
+                        }
+
+                        //notify player is ready
+                        $( _this ).trigger( 'playerJsReady' );
+                    }, 0 );
+                }
+            };
+			var wmode = "transparent";
+			if (mw.getConfig("wmode")){
+				wmode = mw.getConfig("wmode");
 			}
+            // attributes and params:
+            flashembed( containerId,
+                {
+                    id :				playerId,
+                    src : 				kdpPath,
+                    bgcolor :			"#000000",
+                    allowNetworking : 	"all",
+                    version :			[10,0],
+                    wmode : 			wmode
+                },
+                flashvars
+            );
 
-			if ( elementFlashvars ) {
-				$.extend ( flashvars, elementFlashvars );
-			}
+            return this;
 
-			var mwEmbedPath = mw.getMwEmbedPath();
-			//replace protocol with page protocol
-			if ( window.location.protocol ) {
-				mwEmbedPath = window.location.protocol + mwEmbedPath.substring( mwEmbedPath.indexOf(":") + 1);
-			}
+        },
+        detectFlash: function(failCallback){
+            mw.log("PlayerElementFlash::detectFlash::detect loop " + this.detectFlashIntervalLoops);
 
-			var kdpPath = mwEmbedPath + 'modules/EmbedPlayer/binPlayers/kaltura-player/kdp3.swf';
-			// var kdpPath = "http://localhost/chromeless-kdp/KDP3/bin-debug/kdp3.swf";
-
-			window[this.jsReadyFunName] = function( playerId ){
-				if (!_this.initialized) {
-					_this.initialized = true;
-					// We wrap everything in setTimeout to avoid Firefox race condition with empty cache
-					setTimeout( function () {
-						_this.playerElement = $( '#' + playerId )[0];
-
-						//if this is the target object: add event listeners
-						//if a different object is the target: it should take care of its listeners (such as embedPlayerKPlayer)
-						if ( !_this.targetObj ) {
-							_this.targetObj = _this;
-
-							var bindEventMap = {
-								'playerPaused': 'onPause',
-								'playerPlayed': 'onPlay',
-								'durationChange': 'onDurationChange',
-								'playbackComplete': 'onClipDone',
-								'playerUpdatePlayhead': 'onUpdatePlayhead',
-								'playerSeekEnd': 'onPlayerSeekEnd',
-								'alert': 'onAlert',
-								'mute': 'onMute',
-								'unmute': 'onUnMute',
-								'volumeChanged': 'onVolumeChanged'
-							};
-
-							$.each( bindEventMap, function ( bindName, localMethod ) {
-								_this.bindPlayerFunction( bindName, localMethod );
-							} );
-						}
-
-						//imitate html5 video readyState
-						_this.readyState = 4;
-						// Run ready callback
-						if ( $.isFunction( readyCallback ) ) {
-							readyCallback.apply( _this );
-						}
-
-						//notify player is ready
-						$( _this ).trigger( 'playerJsReady' );
-					}, 0 );
-				}
-			};
-
-			// attributes and params:
-			flashembed( containerId,
-				{
-					id :				playerId,
-					src : 				kdpPath,
-					bgcolor :			"#000000",
-					allowNetworking : 	"all",
-					version :			[10,0],
-					wmode : 			"transparent"
-				},
-				flashvars
-			);
-
-			return this;
-		},
+            if(!this.flashDetected && this.detectFlashIntervalLoops==0 ){
+                mw.log("PlayerElementFlash::detectFlash::failed to detecting Flash Player");
+                clearInterval(this.detectFlashInterval); // stop trying to detect flash
+                failCallback(); //trigger fail callback -> goes to the EmbeadPlayerKplayer in order to displayAlert with ks-FLASH-BLOCKED message
+            }
+            this.detectFlashIntervalLoops--;
+        },
 		play: function(){
 			this.sendNotification( 'doPlay' );
 		},
@@ -151,6 +179,15 @@
 		addJsListener: function( eventName, methodName ) {
 			if ( this.playerElement ) {
 				this.bindPlayerFunction( eventName, methodName );
+			}
+		},
+		removeJsListener: function( eventName, methodName ) {
+			if ( this.playerElement ) {
+				mw.log( 'PlayerElementFlash:: unbindPlayerFunction:' + eventName );
+				// The kaltura kdp can only call a global function by given name
+				var gKdpCallbackName = 'kdp_' + methodName + '_cb_' + this.id.replace(/[^a-zA-Z 0-9]+/g,'');
+				// Remove the listener ( if it exists already )
+				this.playerElement.removeJsListener( eventName, gKdpCallbackName );
 			}
 		},
 		getCurrentTime: function() {
@@ -230,7 +267,7 @@
 			$( this ).trigger( 'seeked' );
 		},
 		onAlert : function ( data, id ) {
-			//TODO?
+			//TDDO?
 		},
 		onMute: function () {
 			this.muted = true;
@@ -241,6 +278,9 @@
 		onVolumeChanged: function ( data ) {
 			this.volume = data.newVolume;
 			$( this).trigger( 'volumechange' );
+		},
+		onMediaError: function () {
+			$( this).trigger( 'error' );
 		},
 		redrawObject: function ( timeout ) {
 			var _this = this;

@@ -1,0 +1,11 @@
+{
+	"moduleName": "ott",
+	"name": "OTT HTML5 player skin",
+	"version": "1.0.0",
+	"author": "Amir Chervinsky",
+
+	"cssFiles": [
+		"css/layout.css",
+		"css/icons.css"
+	]
+}

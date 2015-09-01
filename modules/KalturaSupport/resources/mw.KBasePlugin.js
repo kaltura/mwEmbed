@@ -79,38 +79,74 @@ mw.KBasePlugin = Class.extend({
 		data.player = this.embedPlayer;
 		data.entry = this.embedPlayer.kalturaPlayerMetaData;
 		data.entryMetadata = this.embedPlayer.kalturaEntryMetaData;
+		data.formaters = mw.util.formaters().getAll();
+
+		var defer = $.Deferred();
+
+		var parseTemplate = function(rawHTML){
+			var transformedHTML = mw.util.tmpl( rawHTML );
+			transformedHTML = transformedHTML(data);
+			var evaluatedHTML = $.trim( _this.embedPlayer.evaluate( transformedHTML ) );
+			var $templateHtml = $( '<span class="tmpl">' + evaluatedHTML + '</span>' );
+
+			$templateHtml
+				.find('[data-click],[data-notification]')
+				.click(function(e){
+					var data = $(this).data();
+					return _this.handleClick( e, data );
+				});
+
+			// Handle form submission
+			$templateHtml.find('[data-submit]').submit(function(e){
+				var cb = $(this).data('submit');
+				if( $.isFunction( _this[cb] ) ) {
+					_this[cb](e);
+				}
+				return false;
+			});
+			defer.resolve($templateHtml);
+		}
 
 		// First get template from 'template' config
 		var rawHTML = this.getConfig( 'template', true );
 		if( !rawHTML ){
 			var templatePath = this.getConfig( 'templatePath' );
-			if( !templatePath || !window.kalturaIframePackageData.templates[ templatePath ]) {
+			if( !window.kalturaIframePackageData.templates[ templatePath ]) {
+				this.log('getTemplateHTML:: Template not found in payload - trying async loading');
+				if ( templatePath && templatePath.indexOf("http") === 0 ){
+					$.ajax({
+						url: templatePath
+					}).done(function(data) {
+							window.kalturaIframePackageData.templates[ templatePath ] = rawHTML = data;
+							parseTemplate(rawHTML);
+						}).fail(function(data) {
+							defer.reject("mw.KBasePlugin::Error occur when trying to load external template from: " + templatePath);
+						});
+				}else{
+					defer.reject("mw.KBasePlugin::Could not load external template: " + templatePath + ". Must be a full url starting with http.");
+				}
+			}else{
+				rawHTML = window.kalturaIframePackageData.templates[ templatePath ];
+				parseTemplate(rawHTML);
+			}
+		}else{
+			parseTemplate(rawHTML);
+		}
+		return defer;
+	},
+	getTemplatePartialHTML: function( partialName, settings ){
+		// First get template from 'template' config
+		var rawHTML = this.getConfig( 'template', true );
+		if( !rawHTML ){
+			if( !partialName || !window.kalturaIframePackageData.templates[ partialName ]) {
 				this.log('getTemplateHTML:: Template not found');
 				return '';
 			}
-			rawHTML = window.kalturaIframePackageData.templates[ templatePath ];
+			rawHTML = window.kalturaIframePackageData.templates[ partialName ];
 		}
-		var transformedHTML = mw.util.tmpl( rawHTML, data );
-		var evaluatedHTML = $.trim( this.embedPlayer.evaluate( transformedHTML ) );
-		var $templateHtml = $( '<span>' + evaluatedHTML + '</span>' );
+		var transformedHTML = mw.util.tmpl( rawHTML, settings );
 
-		$templateHtml
-			.find('[data-click],[data-notification]')
-			.click(function(e){
-				var data = $(this).data();
-				return _this.handleClick( e, data );
-			});
-
-		// Handle form submission
-		$templateHtml.find('[data-submit]').submit(function(e){
-			var cb = $(this).data('submit');
-			if( $.isFunction( _this[cb] ) ) {
-				_this[cb](e);
-			}
-			return false;
-		});
-
-		return $templateHtml;
+		return transformedHTML;
 	},
 	handleClick: function( e, data ){
 
@@ -143,8 +179,11 @@ mw.KBasePlugin = Class.extend({
 		return this.embedPlayer.bindHelper( bindEventsString, callback);
 	},
 	unbind: function( eventName ){
-		eventName += this.bindPostFix;
-		return this.embedPlayer.unbindHelper( eventName );
+		var fullEventName = eventName + this.bindPostFix;
+		if (eventName === null || eventName === undefined){
+			fullEventName = this.bindPostFix;
+		}
+		return this.embedPlayer.unbindHelper( fullEventName );
 	},
 	log: function( msg ){
 		mw.log( this.pluginName + '::' + msg );

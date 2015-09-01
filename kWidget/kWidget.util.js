@@ -120,6 +120,24 @@
         var sliceIndex = Math.ceil( sliceCount * perc );
         return sliceIndex;
     };
+	kWidget.sanitize = function( str ){
+		if (str){
+			str = str.replace(/<(?:.|\n)*?>/gm, '');
+		}
+		return str;
+	};
+	kWidget.getHashParam = function(key) {
+		var hash = window.location.hash;
+		if ( hash ){
+			var hashParams = hash.split("&");
+			for ( var i=0; i < hashParams.length; i++ ){
+				if ( hashParams[i].indexOf( key+"=" ) !== -1 ){
+					return hashParams[i].split("=")[1];
+				}
+			}
+		}
+		return false;
+	};
 
 	
 })(window.kWidget);
