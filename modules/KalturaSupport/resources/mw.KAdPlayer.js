@@ -1554,7 +1554,7 @@ mw.KAdPlayer.prototype = {
 
 				if ( isJs ) {
 					//flash vpaid will call initAd itself
-					VPAIDObj.initAd( _this.embedPlayer.getWidth(), _this.embedPlayer.getHeight(), 'normal', 512, creativeData, environmentVars );
+					VPAIDObj.initAd( _this.embedPlayer.getWidth(), _this.embedPlayer.getVideoHolder().height(), 'normal', 512, creativeData, environmentVars );
 					var bindPostFix = ".jsvpaid";
 					if ( adSlot.type == "overlay" ){
 						// add play / pause binding to trigger VPAID pauseAd and resumeAd
