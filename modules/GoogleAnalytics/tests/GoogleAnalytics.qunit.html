@@ -94,7 +94,8 @@
 
 <div id="kaltura_player" style="width:400px;height:300px"></div>
 <div id="kdoc-more-desc"><br>This google analytics example highlights custom tracking events. Notice the 
-"related" event within the GA log when selecting a related video.</div>
+"related" event within the GA log when selecting a related video.<br>
+Time spent buffering tracked via <a href="../../../docs/api#video.buffer.lastBufferDuration">lastBufferDuration</a></div>
 <script>
 	// Use the configured analtyics ua or hard code the player.kaltura.com acocunt:
 	var googleAnalyticsAccountId = mw.getConfig( 'Kaltura.PageGoogleAnalytics' ) ? mw.getConfig( 'Kaltura.PageGoogleAnalytics' ): "UA-2078931-34";
@@ -112,7 +113,8 @@
 				'trackEventMonitor': 'trackFunc',
 				'urchinCode': googleAnalyticsAccountId,
 				'anonymizeIp': false,
-				
+				'customEvent': 'doPlay,relatedVideoSelect,playerReady,mediaError,bufferEndEvent',
+
 				'trackingCategory': "Kaltura Video Events",
 				'optionalLabel': "{mediaProxy.entry.referenceId}|{mediaProxy.entry.name}|{mediaProxy.entry.id}|{configProxy.kw.id}|{configProxy.kw.uiConfId}",
 				
@@ -130,6 +132,14 @@
 				'playerReadyCategory':'My entry tags',
 				'playerReadyAction':'{mediaProxy.entry.tags}',
 				
+				// sample error reporting: 
+				'mediaErrorCategory': "Error events",
+				'mediaErrorAction': "MediaError",
+
+				'bufferEndEventCategory': "Buffer Events",
+				'bufferEndEventAction': "bufferEnd",
+				'bufferEndEventValue': "{video.buffer.lastBufferDurationMs}",
+				
 				'sendRefId': true
 			},
 			'related': {
@@ -146,11 +156,18 @@
 			$('.changeMedia').click(function () {
 				kdp.sendNotification('changeMedia', {'entryId': '1_sf5ovm7u' });
 			})
+			$('.mediaError').click(function(){
+				var embedPlayer = $( '#' + playerId + '_ifp' ).contents().find('#' + playerId )[0];
+				embedPlayer.showPlayerError();
+				embedPlayer.showErrorMsg({'title': "Forced Demo Error", 'message': "Forced Demo media error."});
+				
+			});
 		}
 	})
 </script>
 <br>
-<a class="changeMedia" href=#">Change Media</a> <br>
+<a class="mediaError" href="#">Trigger media Error</a> <br>
+<a class="changeMedia" href=#">Change Media</a> <br><br>
 <i>Google Analytics events: </i><br/>
 <table id="gAnalyticsLog" border="1" width="700">
 	<tr id="eventRowDesc">
