@@ -233,6 +233,10 @@
             $.each(cPo.answeres, function (key, value) {
                 if (key == $.cpObject.cpArray[questionNr].selectedAnswer) {
                     $('#' + key).parent().addClass("wide single-answer-box-bk-applied");
+
+                    if (_this.reviewMode){
+                        $('#' + key).parent().addClass('disable')
+                    }
                     $('#' + key).removeClass('single-answer-box')
                         .addClass(function(){
                             $(this).addClass('single-answer-box-small')
@@ -250,11 +254,16 @@
             if (_this.score !== null) return;
 
             $('.single-answer-box-bk' ).on('click',function(){
-                $('.single-answer-box-bk').each(function (index) {
+                if(_this.reviewMode) {
+                    if ($(this).hasClass('disable')) return false;
+                    $('.answers-container').find('.disable').removeClass('disable');
+                }
+                $('.single-answer-box-bk').each(function () {
                     $(this).removeClass('wide single-answer-box-bk-apply single-answer-box-bk-applied');
                     $('.single-answer-box-apply').empty().remove();
                     $(this).children().removeClass('single-answer-box-small').addClass('single-answer-box');
                 });
+
                 $(this).addClass("wide")
                     .addClass('single-answer-box-bk-apply')
                     .children().removeClass('single-answer-box')
@@ -265,10 +274,9 @@
                     });
                 selectedAnswer =  $('.single-answer-box-small').attr('id');
             });
-
-            $(document).on('click', '.single-answer-box-apply', function (index) {
+            $(document).off( 'click', '.single-answer-box-apply' )
+            .on('click', '.single-answer-box-apply', function () {
                 $('.single-answer-box-apply').text(gM('mwe-quiz-applied'))
-                    .off( 'click', "**" )
                     .parent().removeClass('single-answer-box-bk-apply').hide().fadeOut('fast')
                     .addClass('single-answer-box-bk-applied').hide().fadeIn('fast');
 
@@ -281,7 +289,7 @@
             });
         },
         _submitAnswer:function(questionNr,selectedAnswer){
-
+console.log('call to submit');
             var _this = this,answerParams = {};
             $.cpObject.cpArray[questionNr].selectedAnswer = selectedAnswer;
 
@@ -313,9 +321,12 @@
                 );
         },
         _addAnswerAPI: function (questionNr, quizSetAnswer) {
+        console.log("add answer api--------------------");
             var _this = this;
             _this.getKClient().doRequest(quizSetAnswer, function (data) {
-                    if (data.objectType) {
+                console.log(quizSetAnswer);
+                console.log(data);
+                if (data.objectType) {
                         console.log('Add Update answer err -->', data.code, data.message);
                         _this._errMsg();
                     }else{
@@ -476,7 +487,6 @@
                     + gM('mwe-quiz-goAhead')+ '<strong> '+ gM('mwe-quiz-submit') +' </strong>'
             );
 
-
             $(".review-button").html(gM('mwe-quiz-review'))
             $(".review-button").on('click', function () {
                 _this.setCurrentQuestion(0);
@@ -556,7 +566,7 @@
         reviewAnswer: function (selectedQuestion) {
             var _this = this;
             _this.showScreen();
-            $(document).off();
+         //   $(document).off();
             if ($.cpObject.cpArray[selectedQuestion].explanation ){
                 _this._displayHW('why',selectedQuestion,(gM('mwe-quiz-why')),$.cpObject.cpArray[selectedQuestion].explanation)
             }
