@@ -114,10 +114,16 @@ Time spent buffering tracked via <a href="../../../docs/api#video.buffer.lastBuf
 				'urchinCode': googleAnalyticsAccountId,
 				'anonymizeIp': false,
 				'customEvent': 'doPlay,relatedVideoSelect,playerReady,mediaError,bufferEndEvent',
+
+				'trackingCategory': "Kaltura Video Events",
+				'optionalLabel': "{mediaProxy.entry.referenceId}|{mediaProxy.entry.name}|{mediaProxy.entry.id}|{configProxy.kw.id}|{configProxy.kw.uiConfId}",
+				
+				'customEvent': 'doPlay,relatedVideoSelect,playerReady',
 				'doPlayCategory': "Custom Events",
 				
 				'doPlayAction': "playing",
 				'doPlayValue': "1",
+				'doPlayLabel': "My custom play label: {mediaProxy.entry.id}",
 				
 				// Enables us to track what entries are being clicked on from related videos
 				'relatedVideoSelectCategory': 'Related Fulfillment',

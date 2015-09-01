@@ -5,12 +5,10 @@
 ( function ( $, mw ) {
 	"use strict";
 
-	mw.util.registerTemplateHelper = function( name, callback ){
-		if( $.isFunction(mw.formaters[ name ]) ) {
-			mw.log('mw.util.registerTemplateHelper: callback: "' + name + '" already exists.');
-			return;
-		}
-		mw.formaters[ name ] = callback;
+	// Expose old method name for backward compatiblity
+	mw.util.registerTemplateHelper = function(name, callback) {
+		mw.log('[Deprecated] mw.util.registerTemplateHelper is deprecated. please use mw.util.formaters().register method');
+		mw.util.formaters().register(name, callback);
 	};
 
 	// Is a given variable an object?

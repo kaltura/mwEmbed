@@ -170,7 +170,7 @@
 				var _this = this;
 				_this.calculateBuffer(true);
 				_this.kClient = mw.kApiGetPartnerClient( _this.embedPlayer.kwidgetid );
-				if (_this.embedPlayer.isMulticast) {
+				if ( _this.embedPlayer.isMulticast && $.isFunction( _this.embedPlayer.getMulticastBitrate ) ) {
 					_this.currentBitRate = _this.embedPlayer.getMulticastBitrate();
 				}
 				var liveStatsEvent = {

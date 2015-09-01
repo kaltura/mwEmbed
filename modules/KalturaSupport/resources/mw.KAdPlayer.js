@@ -336,6 +336,7 @@ mw.KAdPlayer.prototype = {
 	 */
 	displayVideoFile: function( adSlot, adConf ){
 		var _this = this;
+        _this.podStartTime = _this.embedPlayer.currentTime;
 		// check that we have a video to display:
 		var targetSource =  _this.embedPlayer.getCompatibleSource( adConf.videoFiles );
 		if( !targetSource ){
@@ -362,7 +363,14 @@ mw.KAdPlayer.prototype = {
                     _this.waitingForLoadedData = true;
                     $(vid).on("loadeddata", function(){
                         if(_this.waitingForLoadedData){
-                            $(_this.embedPlayer).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex+1, vid.duration, vid.currentSrc]);
+                            // collect POD parameters is exists (adSlot.sequencedAds = POD)
+                            var podPosition;
+                            var podStartTime;
+                            if(adSlot.sequencedAds) {
+                                podPosition = adConf.sequence;
+                                podStartTime = _this.podStartTime;
+                            }
+                            $(_this.embedPlayer).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex+1, vid.duration, vid.currentSrc, podPosition, podStartTime]);
                             _this.waitingForLoadedData = false;
                         }
                     });
@@ -968,7 +976,7 @@ mw.KAdPlayer.prototype = {
 			})
 			.addClass("btn icon-close")
 			.click(function(){
-				sendBeacon("close");//TODO: trigger event (adComplete or adClosed or adDismissed or whatever)
+				sendBeacon("close");
 				$( this ).parent().fadeOut('fast');
 				return false;
 			})
@@ -1526,7 +1534,7 @@ mw.KAdPlayer.prototype = {
 
 				if ( isJs ) {
 					//flash vpaid will call initAd itself
-					VPAIDObj.initAd( _this.embedPlayer.getWidth(), _this.embedPlayer.getHeight(), 'normal', 512, creativeData, environmentVars );
+					VPAIDObj.initAd( _this.embedPlayer.getWidth(), _this.embedPlayer.getVideoHolder().height(), 'normal', 512, creativeData, environmentVars );
 					var bindPostFix = ".jsvpaid";
 					if ( adSlot.type == "overlay" ){
 						// add play / pause binding to trigger VPAID pauseAd and resumeAd
