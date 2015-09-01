@@ -459,11 +459,11 @@ $uiVars = array(
 				'example' => '../modules/KalturaSupport/tests/AutoPlay.qunit.html'
 			),
 			'EmbedPlayer.WebKitPlaysInline' => array(
-            			 		'type' => 'Boolean',
-            					'desc' => "Determines if should play the video inline or not",
-            					'default' => 'false',
-            					'example' => ''
-            ),
+			 		'type' => 'Boolean',
+					'desc' => "Determines if should play the video inline when inside a webview on iOS.",
+					'default' => 'false',
+					'example' => ''
+			),
 			'autoMute' => array(
 				'type' => 'Boolean',
 				'desc' => 'Determine whether to start playback with volume muted (usually used by video ads or homepage auto play videos)',
