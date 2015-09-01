@@ -437,7 +437,7 @@
                 'protocol' : protocol,
                 'partnerId': embedPlayer.kpartnerid
             };
-            if ( mw.isIOS8() ) {
+            if ( mw.isIOS8_9() ) {
                 requestObj.rnd = Math.random();
             }
 			_this.getKalturaClient().doRequest( requestObj, function( data ) {

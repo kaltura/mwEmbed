@@ -39,8 +39,6 @@ kWidget.addReadyCallback( function( playerId ){
 						// process any queued events now that sCode is available:
 						_this.proccessMediaQueue();
 						_this.proccessNotificationQueue();
-						// once sCode is ready setup the monitor
-						_this.setupMonitor();
 					});
 					// bind for events as soon as layout is Ready ( proxy events while player checks for sCode )
 					_this.bindCustomEvents();
@@ -80,6 +78,8 @@ kWidget.addReadyCallback( function( playerId ){
 				}
 
 				_this.sCodeLoaded = true;
+				// once sCode is ready setup the monitor
+				_this.setupMonitor();
 
 				if(callback) {
 					callback();
@@ -474,12 +474,13 @@ kWidget.addReadyCallback( function( playerId ){
 				if(this.getConfig("overridePlayerName") != undefined ){
 					s.Media.playerName = String(this.getConfig("overridePlayerName"));
 				}
-
+				// re-evaluate mediaName even it it was already pushed to the stack
+				argSet[0] = this.getMediaName();
 		 		switch( cmd ) {
-		 			case 'open': 
-		 				s.Media.open(argSet[0], argSet[1], argSet[2]);
+		 			case 'open':
+						s.Media.open(argSet[0], argSet[1], argSet[2]);
 		 			break;
-		 			case 'play': 
+		 			case 'play':
 		 				s.Media.play(argSet[0], argSet[1]);
 		 			break;
 		 			case 'stop':
