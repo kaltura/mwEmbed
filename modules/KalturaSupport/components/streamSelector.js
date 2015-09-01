@@ -94,7 +94,7 @@
 			});
 
 			this.bind('onChangeMedia', function () {
-				console.info("_this.streamChanging: " + _this.streamChanging);
+				_this.log("_this.streamChanging: " + _this.streamChanging);
 				if (!_this.streamChanging){
 					_this.streams = [];
 					_this.getMenu().destroy();
