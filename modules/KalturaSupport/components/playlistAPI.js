@@ -102,7 +102,7 @@
 				}
 
 				// prevent iframe resize layout refresh  on iOS8
-				if ( mw.isIOS8() ){
+				if ( mw.isIOS8_9() ){
 					_this.redrawOnResize = false;
 				}
 

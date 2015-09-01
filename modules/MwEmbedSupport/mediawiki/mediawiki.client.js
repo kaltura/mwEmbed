@@ -139,6 +139,14 @@
 		return ( /OS 8_/.test(userAgent) || /Version\/8/.test(userAgent) ) && mw.isIOS();
 	};
 
+	mw.isIOS9 = function () {
+		return ( /OS 9_/.test(userAgent) || /Version\/9/.test(userAgent) ) && mw.isIOS();
+	};
+
+	mw.isIOS8_9 = function () {
+		return mw.isIOS8() || mw.isIOS9();
+	};
+
 	mw.isSilk = function () {
 		return /\bSilk\b/.test(userAgent);
 	};
