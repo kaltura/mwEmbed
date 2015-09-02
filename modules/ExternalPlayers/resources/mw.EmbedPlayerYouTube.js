@@ -555,13 +555,20 @@
 		 *			percentage Percentage of total stream length to seek to
 		 */
 		seek : function( seekTime ){
+			mw.log("Seeking to: " + seekTime);
+			var _this = this;
 			this.seeking = true;
 			$( this ).trigger( 'seeking' );
 			var yt = this.getPlayerElement();
 			yt.seekTo( seekTime );
 			this.layoutBuilder.onSeek();
-			// Since Youtube don't have a seeked event , we must turn off the seeking flag
+			// Since Youtube don't have a seeked event , we must turn off the seeking flag and restore pause state if needed
 			this.seeking = false;
+			if ( !this.isPlaying() ){
+				setTimeout(function(){
+					_this.pause();
+				},500);
+			}
 		},
 
 		/**
