@@ -649,8 +649,6 @@ console.log('call to submit');
         },
         _populateCpObject: function (data) {
             var cpArray = [];
-
-           debugger
             for (var i = 0; i < (data[0].objects.length); i++) {
                 var arr = [];
                 $.each(data[0].objects[i].optionalAnswers, function (key, value) {
@@ -695,7 +693,6 @@ console.log('call to submit');
                 });
             }
             $.cpObject.cpArray = cpArray;
-       debugger
             console.log("cpArray->");
             console.log($.cpObject.cpArray);
         },
