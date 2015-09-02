@@ -564,7 +564,7 @@ ol.second-row{
     line-height: 3vw;
 }
 .bubble-cont{
-    margin-top: -1.5vh;
+    margin-top: -2.3vh;
     position: absolute;
 }
 .bubble-un-ans{
@@ -581,5 +581,4 @@ ol.second-row{
 }
 .bubble-ans:hover{
     background-image: url(bubble-ans-h.png);
-
 }

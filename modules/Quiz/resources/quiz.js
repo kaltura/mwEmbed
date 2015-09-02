@@ -64,6 +64,8 @@
 
                 if (data[0].totalCount > 0 &&  !$.isEmptyObject(data[0].objects[0])) {
                     _this.kQuizUserEntryId = data[0].objects[0].id;
+                    console.log('kQuizUserEntryId-----> ' +_this.kQuizUserEntryId);
+
                     switch (String(data[0].objects[0].status)) {
                         case 'quiz.3':
                             _this.score = Math.round(data[0].objects[0].score *100);
@@ -87,12 +89,15 @@
                     };
 
                     _this.getKClient().doRequest(createQuizuserEntryId, function (data) {
+                        console.log('create user entry Id->');
+                        console.log(data);
                         if (data.objectType){
                             console.log('Add KQ user entry id err -->', data.code, data.message);
                             _this._errMsg();
                             return false;
                         }
                         _this.kQuizUserEntryId = data.id;
+                        console.log('kQuizUserEntryId-----> ' +_this.kQuizUserEntryId);
                         _this._getQuestionCpAPI(_this._populateCpObject);
                     });
                 }
@@ -131,8 +136,9 @@
             });
 
             this.bind('firstPlay', function () {
-                setTimeout(function () {_this._showWelcomeScreen();},300);
-                embedPlayer.pause();
+                setTimeout(function () {
+                    _this._showWelcomeScreen();
+                    } ,250);
             });
 
 //            this.bind('onplay', function () {
@@ -192,24 +198,42 @@
         },
         _showWelcomeScreen: function () {
             var _this = this;
+
             _this.removeShowScreen("welcome");
+
             $(".welcome").html(gM('mwe-quiz-welcome'));
-            $.grep($.quizParams.uiAttributes, function (e) {
-                switch(e.key){
-                    case 'welcomeMessage':
-                        $(".welcomeMessage").html(e.value);
-                        break;
-                    case 'inVideoTip':
-                        if (e){
-                            $(".InvideoTipMessage").html(gM('mwe-quiz-invideoTip'));
-                        }
-                        break;
-                }
-            });
-            $(".confirm-box").html(gM('mwe-quiz-continue'))
-                .on('click', function () {
-                    _this.checkIfDone(0);
+            $(".confirm-box").html(gM('mwe-quiz-plsWait'));
+
+
+            _this._checkCuepointsReady(function(){
+                $.grep($.quizParams.uiAttributes, function (e) {
+                    switch(e.key){
+                        case 'welcomeMessage':
+                            $(".welcomeMessage").html(e.value);
+                            break;
+                        case 'inVideoTip':
+                            if (e){
+                                $(".InvideoTipMessage").html(gM('mwe-quiz-invideoTip'));
+                            }
+                            break;
+                    }
                 });
+                $(".confirm-box").html(gM('mwe-quiz-continue'))
+                    .on('click', function () {
+                        _this.checkIfDone(0);
+                    });
+
+            });
+        },
+
+       _checkCuepointsReady:function(callback){
+           var intrVal;
+           intrVal = setInterval(function () {
+               if ($.cpObject.cpArray.length > 0){
+                   clearInterval(intrVal);
+                   callback()
+               }
+           }, 500);
         },
 
         _gotoScrubberPos: function (questionNr) {
@@ -495,7 +519,7 @@ console.log('call to submit');
             $(".confirm-box-review").html(gM('mwe-quiz-submit'))
             $(".confirm-box-review").on('click', function () {
                 $(this).off('click')
-                $(this).html("Please Wait")
+                $(this).html(gM('mwe-quiz-plsWait'))
                 _this._submitQuizApi();
             });
         },
@@ -566,7 +590,6 @@ console.log('call to submit');
         reviewAnswer: function (selectedQuestion) {
             var _this = this;
             _this.showScreen();
-         //   $(document).off();
             if ($.cpObject.cpArray[selectedQuestion].explanation ){
                 _this._displayHW('why',selectedQuestion,(gM('mwe-quiz-why')),$.cpObject.cpArray[selectedQuestion].explanation)
             }
