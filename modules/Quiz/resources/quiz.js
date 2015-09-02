@@ -138,7 +138,7 @@
             this.bind('firstPlay', function () {
                 setTimeout(function () {
                     _this._showWelcomeScreen();
-                    } ,250);
+                    } ,310);
             });
 
 //            this.bind('onplay', function () {
@@ -206,6 +206,7 @@
 
 
             _this._checkCuepointsReady(function(){
+
                 $.grep($.quizParams.uiAttributes, function (e) {
                     switch(e.key){
                         case 'welcomeMessage':
@@ -313,7 +314,6 @@
             });
         },
         _submitAnswer:function(questionNr,selectedAnswer){
-console.log('call to submit');
             var _this = this,answerParams = {};
             $.cpObject.cpArray[questionNr].selectedAnswer = selectedAnswer;
 
