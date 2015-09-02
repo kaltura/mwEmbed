@@ -58,6 +58,10 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
         <th scope="row">hlsMaxBufferTime</th>
         <td><input type="number" class="form-control" id="maxBuffer" value="-1"/></td>
     </tr>
+    <tr>
+        <th scope="row">DVR</th>
+        <td><input type="checkbox" class="form-control" id="dvr" /></td>
+    </tr>
 </table>
     <br/>
 <input type="button" id="generate" value="Create Player" />
@@ -114,6 +118,7 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
             $('#iniBuffer').val( vals.hlsInitialBufferTime );
             $('#exBuffer').val( vals.hlsExpandedBufferTime );
             $('#maxBuffer').val( vals.hlsMaxBufferTime );
+            $('#dvr' ).attr('checked', vals.dvr );
 		}
 	}catch(err){
 		
@@ -150,8 +155,10 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
             'hlsLiveSegmentBuffer': parseInt($('#segBuffer').val()),
             'hlsInitialBufferTime': parseInt($('#iniBuffer').val()),
             'hlsExpandedBufferTime': parseInt($('#exBuffer').val()),
-            'hlsMaxBufferTime': parseInt($('#maxBuffer').val())
-		}));
+            'hlsMaxBufferTime': parseInt($('#maxBuffer').val()),
+            'dvr':  $('#dvr').is(':checked')
+
+        }));
 		
 		var settings = {
 			"LeadWithHLSOnFlash": true,
@@ -192,7 +199,11 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
 					"type": 7, 
 					// set live stream HLS url: 
 					"hlsStreamUrl":  $('#url').val()
+
 			};
+            if ($('#dvr').is(':checked')){
+                settings['mediaProxy']['meta']['dvrStatus']  = true;
+            }
 			// enable liveCore plugin, without 'api based is-stream-live checks':
 			settings.liveCore = { 
 					"plugin":true, 

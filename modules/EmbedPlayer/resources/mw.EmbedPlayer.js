@@ -1699,7 +1699,7 @@
 
 			//If we are change playing media add a ready binding:
 			var bindName = 'playerReady.changeMedia';
-			$this.unbind(bindName).bind(bindName, function () {
+			$this.one(bindName, function () {
 				mw.log('EmbedPlayer::changeMedia playerReady callback');
 				// hide the loading spinner:
 				_this.hideSpinner();
@@ -3162,6 +3162,7 @@
 				this.buffering = true;
 				mw.log("EmbedPlayer::bufferStart");
 				$(this).trigger('bufferStartEvent');
+				this.bufferStartTime = new Date().getTime();
 				if (!mw.getConfig('EmbedPlayer.DisableBufferingSpinner')) {
 					setTimeout(function () {
 						//avoid spinner for too short buffer
@@ -3178,7 +3179,11 @@
 			if (!this.isInSequence() && this.buffering) {
 				this.buffering = false;
 				mw.log("EmbedPlayer::bufferEnd");
-				$(this).trigger('bufferEndEvent');
+				this.bufferEndTime = new Date().getTime();
+				// update lastBufferDuration
+				this.lastBufferDuration = ( ( this.bufferEndTime - this.bufferStartTime ) / 1000 ).toFixed(3);
+				// trigger event: 
+				$(this).trigger('bufferEndEvent', {'bufferDuration': this.lastBufferDuration});
 				if (!mw.getConfig('EmbedPlayer.DisableBufferingSpinner')) {
 					this.hideSpinner();
 				}
