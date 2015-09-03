@@ -390,6 +390,9 @@
 			var _this = this;
 			this.playerReady.promise().then(function(){
 				callback();
+				if(mw.getConfig('autoPlay')){
+				    _this.play();
+				}
 			});
 		},
 		changeMedia: function(){
