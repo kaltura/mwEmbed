@@ -49,13 +49,18 @@
 		setup: function( embedPlayer ) {
 			var _this = this;
 			this.addBindings();
-			window['__onGCastApiAvailable'] = function(loaded, errorInfo) {
-				if (loaded) {
+			var ticks = 0;
+			 var intervalID = setInterval(function(){
+				 ticks++;
+				if( typeof chrome !== "undefined" && typeof chrome.cast !== "undefined" ){
 					_this.initializeCastApi();
-				} else {
-					_this.log(errorInfo);
+					clearInterval(intervalID);
+				}else{
+					if (ticks === 40){ // cancel check after 10 seconds
+						clearInterval(intervalID);
+					}
 				}
-			};
+			},250);
 		},
 
 		addBindings: function() {
