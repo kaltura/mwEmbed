@@ -125,7 +125,7 @@
 				this.supports.volumeControl = false;
 			}
 			// Check if we already have a selected source and a player in the page,
-			if (this.getPlayerElement() && this.getSrc()) {
+			if (this.getPlayerElement() && this.getSrc() && !mw.isIE()) {
 				$(this.getPlayerElement()).attr('src', this.getSrc());
 			}
 			// Check if we already have a video element an apply bindings ( for native interfaces )
@@ -192,9 +192,6 @@
 						_this.pause();
 					}
 					_this.updatePosterHTML();
-				}
-				if (!(mw.isIOS7() && mw.isIphone())) {
-					_this.changeMediaCallback = null;
 				}
 				callback();
 			});
@@ -301,7 +298,7 @@
 				return;
 			}
 			// Update the player source ( if needed )
-			if ($(vid).attr('src') != this.getSrc(this.currentTime)) {
+			if ($(vid).attr('src') != this.getSrc(this.currentTime) && !mw.isIE()) {
 				$(vid).attr('src', this.getSrc(this.currentTime));
 			}
 
@@ -354,7 +351,7 @@
 				return;
 			}
 			$.each(_this.nativeEvents, function (inx, eventName) {
-				if (mw.isIOS8() && mw.isIphone() && eventName === "seeking") {
+				if (mw.isIOS8_9() && mw.isIphone() && eventName === "seeking") {
 					return;
 				}
 				$(vid).unbind(eventName + '.embedPlayerNative').bind(eventName + '.embedPlayerNative', function () {
@@ -402,7 +399,7 @@
 				this.hidePlayerOffScreen();
 			}
 
-			if ( seekTime === 0 && this.isLive() && mw.isIpad() && !mw.isIOS8() ) {
+			if ( seekTime === 0 && this.isLive() && mw.isIpad() && !mw.isIOS8_9() ) {
 				//seek to 0 doesn't work well on live on iOS < 8
 				seekTime = 0.01;
 				this.log( "doSeek: fix seekTime to 0.01" );
@@ -435,7 +432,7 @@
 					[0].load();
 			}
 
-			var videoReadyState = mw.isIOS8() ? 2 : 1; // on iOS8 wait for video state 1 (dataloaded) instead of 1 (metadataloaded)
+			var videoReadyState = mw.isIOS8_9() ? 2 : 1; // on iOS8 wait for video state 1 (dataloaded) instead of 1 (metadataloaded)
 			if ( (vid.readyState < videoReadyState) || (this.getDuration() === 0)) {
 				// if on the first call ( and video not ready issue load, play
 				if (callbackCount == 0 && vid.paused) {
@@ -866,7 +863,7 @@
 							$(_this).hide();
 						}
 						// if it's iOS8 the player won't play
-						if (!mw.isIOS8()) {
+						if (!mw.isIOS8_9()) {
 							// update the preload attribute to auto
 							$(_this.getPlayerElement()).attr('preload', "auto");
 						}
@@ -1074,7 +1071,7 @@
 			// we don't want to trigger the seek event for these "fake" onseeked triggers
 			if ((this.mediaElement.selectedSource.getMIMEType() === 'application/vnd.apple.mpegurl') &&
 				( ( Math.abs(this.currentSeekTargetTime - this.getPlayerElement().currentTime) > 2) ||
-				( this.currentSeekTargetTime > 0.01 && ( mw.isIpad() && !mw.isIOS8() ) ) ) ) {
+				( this.currentSeekTargetTime > 0.01 && ( mw.isIpad() && !mw.isIOS8_9() ) ) ) ) {
 
 				this.log( "Error: seeked triggred with time mismatch: target:" +
 					this.currentSeekTargetTime + ' actual:' + this.getPlayerElement().currentTime );
@@ -1363,7 +1360,7 @@
 				if (newSource) {
 					this.switchSrc(newSource);
 				}
-				if (mw.isIOS8()){
+				if (mw.isIOS8_9()){
 					this.play();
 				}
 			} else {

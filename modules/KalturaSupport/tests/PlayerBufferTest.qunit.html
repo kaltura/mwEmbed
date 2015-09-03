@@ -37,22 +37,60 @@
 	<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h1>Player Buffer Test</h1>
+<h1>Player Buffer Events</h1>
 <br />
-<div id="kaltura_player" style="width: 585px; height: 330px;float: left;"></div>
-<br style="clear: both;" /><br />
+<div id="kaltura_player" style="width: 585px; height: 330px;"></div>
+<br style="clear: both;" />
 <script>
-	kWidget.featureConfig({
+	kWidget.embed({
 		'targetId': 'kaltura_player',
 		'wid': '_243342',
 		'uiconf_id' : '21099702',
-		'flashvars': {
-			"confFilePath": "{libPath}/modules/KalturaSupport/tests/confFiles/jsonConfig.json",
-			"related.playlistId": "1_qui13sz2"
-		},
-		"entry_id": "0_c0r624gh"
+		"entry_id": "1_sf5ovm7u",
+		'readyCallback': function( playerId ){
+			var kdp = document.getElementById(playerId);
+			kdp.kBind('bufferProgress', function(event){
+				$('.bufferEvents').prepend( "bufferProgress: " + event.newTime + " sec,  buffered: " +
+						( kdp.evaluate("{video.buffer.percent}") * 100 ).toFixed(2) + "%\n" );
+			})
+			kdp.kBind('bufferStartEvent', function(){
+				$('.bufferEvents').prepend( "bufferStartEvent\n");
+			})
+			kdp.kBind('bufferEndEvent', function( event ){
+				// to access buffer duration you can read the event object or evaluate against mediaProxy 
+				// for the latest buffer duration both in float seconds. 
+				var bufferDuration = event.bufferDuration || kdp.evaluate("{video.buffer.lastBufferDuration}");
+				$('.bufferEvents').prepend( "bufferEndEvent: bufferrTime: " + bufferDuration + " currentTime: " + 
+					kdp.evaluate("{video.player.currentTime}") + "\n" );
+			})
+		}
 	});
 </script>
-
+<h3> Buffer events: </h3>
+<textarea class="bufferEvents" style="width:600px;height:100px;"></textarea>
+<h3> Tracking buffer events:</h3>
+<a href="../../../docs/api#bufferProgress">Buffer events</a> and <a href="../../../docs/api#video.buffer.lastBufferDuration">buffer evaluates</a> 
+are documented on the player API page.<br><br>
+<pre class="prettyprint linenums">
+&lt;script&gt;
+kWidget.addReadyCallback(function( playerId ){
+	var kdp = document.getElementById(playerId);
+	kdp.kBind('bufferProgress', function(event){
+		$('.bufferEvents').prepend( "bufferProgress: " + event.newTime + " sec,  buffered: " +
+				( kdp.evaluate("{video.buffer.percent}") * 100 ).toFixed(2) + "%\n" );
+	})
+	kdp.kBind('bufferStartEvent', function(){
+		$('.bufferEvents').prepend( "bufferStartEvent\n");
+	})
+	kdp.kBind('bufferEndEvent', function( event ){
+		// to access buffer duration you can read the event object or evaluate against mediaProxy 
+		// for the latest buffer duration both in float seconds. 
+		var bufferDuration = event.bufferDuration || kdp.evaluate("{video.buffer.duration}");
+		$('.bufferEvents').prepend( "bufferEndEvent: bufferrTime: " + bufferDuration + " currentTime: " + 
+			kdp.evaluate("{video.player.currentTime}") + "\n" );
+	})
+});
+&lt;/script&gt;
+</pre>
 </body>
 </html>

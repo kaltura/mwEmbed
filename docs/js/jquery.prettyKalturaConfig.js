@@ -333,6 +333,9 @@
 							}
 
 							var attVal = getAttrValue(attrName);
+							if( getAttrType( attrName ) == 'json' ){
+								attVal = JSON.parse( attVal );
+							}
 							if (attVal !== null) {
 								configuredFlashvars[ pName ] [ attrName ] = attVal;
 							}

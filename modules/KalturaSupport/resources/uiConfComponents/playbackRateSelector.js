@@ -56,6 +56,10 @@
 			});
 
 			this.bind( 'onChangeMediaDone', function(){
+				_this.currentSpeed = 1;
+				_this.getBtn().text( '1x' );
+				_this.buildMenu();
+
 				_this.manifestSource = null;
 			});
 

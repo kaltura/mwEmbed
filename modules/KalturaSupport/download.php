@@ -74,7 +74,7 @@ class downloadEntry {
 				$filename = $flavorId . $extension;
 			}
 
-			if( $mediaType ==! 2 ){
+			if( $mediaType !== 2 ){
 				$options = new KalturaFlavorAssetUrlOptions();
 				$options->fileName = $filename;
 

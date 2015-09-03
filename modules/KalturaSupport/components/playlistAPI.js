@@ -67,6 +67,7 @@
 			this.minClips = parseInt(this.getConfig('MinClips'));
 			//Backward compatibility setting - set autoplay on embedPlayer instead of playlist
 			this.getPlayer().autoplay = (this.getConfig('autoPlay') == true);
+			mw.setConfig("autoPlay", this.getPlayer().autoplay);
 
 			if ( !this.getConfig( 'mediaItemWidth') ){
 				this.widthSetByUser = false;           // user did not specify a required width. We will set to 320 and apply responsive logic on resizeEvent event
@@ -102,7 +103,7 @@
 				}
 
 				// prevent iframe resize layout refresh  on iOS8
-				if ( mw.isIOS8() ){
+				if ( mw.isIOS8_9() ){
 					_this.redrawOnResize = false;
 				}
 
