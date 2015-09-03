@@ -66,6 +66,9 @@
 					_this.setStream(_this.currentStream);
 					_this.setActiveMenuItem();
 				}
+                if( !_this.getConfig('hideUI') ){
+                    _this.getBtn().show();
+                }
 				_this.buildMenu();
 				_this.onEnable();
 			});
@@ -91,6 +94,10 @@
 			this.bind('changeStream', function (e, arg) {
 				_this.externalSetStream(arg);
 			});
+
+            this.bind('initDualScreen', function () {
+               _this.setConfig('hideUI', true);
+            });
 
 			if (this.getConfig('enableKeyboardShortcuts')) {
 				this.bind('addKeyBindCallback', function (e, addKeyCallback) {
@@ -367,12 +374,14 @@
 					.attr('title', gM('mwe-embedplayer-select_stream'))
 					.click(function (e) {
 						_this.toggleMenu();
-					});
+					})
+                    .hide();
 				this.setAccessibility($button, gM('mwe-embedplayer-select_stream'));
 				this.$el = $('<div />')
 					.addClass('dropup' + this.getCssClass())
 					.append($button, $menu);
 			}
+
 			return this.$el;
 		},
 		getMenu: function () {

@@ -52,7 +52,7 @@
 			currentScreenNameShown: "",
 
 			setup: function ( ) {
-				this.initConfig();
+                this.initConfig();
 				this.initDisplays();
 				this.initFSM();
 				this.addBindings();
@@ -64,7 +64,8 @@
 			addBindings: function () {
 				var _this = this;
 				this.bind( 'playerReady', function (  ) {
-					_this.checkRenderConditions();
+                    _this.getPlayer().triggerHelper('initDualScreen');
+                    _this.checkRenderConditions();
 					_this.initView();
 					_this.initControlBar();
 					if (!_this.render) {
@@ -487,7 +488,7 @@
 			//player controllers
 			initSecondPlayer: function(){
 				var _this = this;
-				if (true) {
+                if (true) {
 					this.secondPlayer = new mw.dualScreen.imagePlayer(this.getPlayer(), function () {
 						this.setConfig({
 							"prefetch": _this.getConfig("prefetch"),
