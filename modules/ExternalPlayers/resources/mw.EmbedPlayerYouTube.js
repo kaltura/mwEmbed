@@ -569,6 +569,7 @@
 			this.seeking = false;
 			if ( !this.isPlaying() ){
 				setTimeout(function(){
+					$( _this ).trigger( 'seeked' );
 					_this.pause();
 				},500);
 			}
