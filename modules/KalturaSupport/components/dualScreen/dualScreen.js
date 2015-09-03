@@ -488,6 +488,7 @@
 			//player controllers
 			initSecondPlayer: function(){
 				var _this = this;
+                /*
                 if (true) {
 					this.secondPlayer = new mw.dualScreen.imagePlayer(this.getPlayer(), function () {
 						this.setConfig({
@@ -498,6 +499,8 @@
 				} else {
 					this.secondPlayer = new mw.dualScreen.videoPlayer(this.getPlayer(), function(){}, "videoPlayer");
 				}
+				*/
+                 this.secondPlayer = new mw.dualScreen.videoPlayer(this.getPlayer(), function(){}, "videoPlayer");
 			},
 
 			//Display

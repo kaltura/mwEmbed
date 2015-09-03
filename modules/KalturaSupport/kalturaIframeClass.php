@@ -596,7 +596,9 @@ class kalturaIframeClass {
 			color: #fff;
 			overflow: hidden;
 		}
-		
+		video::-webkit-media-controls {
+			display:none !important;
+		}
 		div,video {
 			margin: 0;
 			padding: 0;
@@ -650,7 +652,7 @@ HTML;
 			$theme = $playerConfig['plugins']['theme'];
 			$customStyle = '<style type="text/css">';
 			if (isset($theme['buttonsSize'])){
-				$customStyle = $customStyle . 'body {font-size: ' . $theme['buttonsSize'] . 'px}';
+				$customStyle = $customStyle . '.controlsContainer, .topBarContainer {font-size: ' . $theme['buttonsSize'] . 'px}';
 			}
 			if (isset($theme['buttonsColor'])){
 				$customStyle = $customStyle . '.btn {background-color: ' . $theme['buttonsColor'] . '}';

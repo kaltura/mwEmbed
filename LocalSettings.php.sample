@@ -5,7 +5,6 @@
  * See includes/DefaultSettings.php for a configuration options
  * 
  */
- 
 // For development you should always set $wgEnableScriptDebug to true
 $wgEnableScriptDebug = false;
 

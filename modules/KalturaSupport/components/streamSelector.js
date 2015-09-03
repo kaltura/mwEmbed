@@ -1,5 +1,5 @@
 (function (mw, $, kWidget) {
-	"use strict";
+    "use strict";
 
 	mw.PluginManager.add('streamSelector', mw.KBaseComponent.extend({
 

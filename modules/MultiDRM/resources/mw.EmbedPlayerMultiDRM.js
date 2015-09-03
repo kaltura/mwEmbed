@@ -183,10 +183,7 @@
 					_this.getNativePlayerHtml()
 				);
 
-				this.initDashPlayer();
-				this.updateDashContext();
-				// Directly run postEmbedActions ( if playerElement is not available it will retry )
-				this.postEmbedActions();
+				this.initDashPlayer(this.postEmbedActions.bind(this));
 			}
 
 		},
@@ -212,8 +209,11 @@
 					el.attr('data-src', _this.getSrc());
 					//Set schedule while paused to true to allow buffering when in paused state
 					_this.playerElement.mediaPlayer.setScheduleWhilePaused(true);
+					//Continue only after manifest loaded event has been dispatched
+					this.one("manifestLoaded", function(){
+						callback();
+					});
 					_this.updateDashContext();
-					callback();
 				} );
 				this.bindHelper('switchAudioTrack', function (e, data) {
 					if (_this.getPlayerElement()) {
@@ -244,15 +244,22 @@
 		},
 		getDrmConfig: function(){
 			var drmConfig = this.getKalturaConfig('multiDrm');
-			var licenseBaseUrl = mw.getConfig('Kaltura.UdrmServerURL');
-			if (!licenseBaseUrl) {
-				this.log('Error:: failed to retrieve UDRM license URL ');
-			}
+			//Check for user defined DRM server else use uDRM
+			var overrideDrmServerURL = mw.getConfig('Kaltura.overrideDrmServerURL');
+			if (overrideDrmServerURL) {
+				drmConfig.widevineLicenseServerURL = overrideDrmServerURL;
+				drmConfig.playReadyLicenseServerURL = overrideDrmServerURL;
+			} else {
+				var licenseBaseUrl = mw.getConfig('Kaltura.UdrmServerURL');
+				if (!licenseBaseUrl) {
+					this.log('Error:: failed to retrieve UDRM license URL ');
+				}
 
-			//TODO: error handling in case of error
-			var licenseData = this.mediaElement.getLicenseUriComponent();
-			drmConfig.widevineLicenseServerURL = licenseBaseUrl + "/cenc/widevine/license?" + licenseData;
-			drmConfig.playReadyLicenseServerURL = licenseBaseUrl + "/cenc/playready/license?" + licenseData;
+				//TODO: error handling in case of error
+				var licenseData = this.mediaElement.getLicenseUriComponent();
+				drmConfig.widevineLicenseServerURL = licenseBaseUrl + "/cenc/widevine/license?" + licenseData;
+				drmConfig.playReadyLicenseServerURL = licenseBaseUrl + "/cenc/playready/license?" + licenseData;
+			}
 			drmConfig.assetId = this.kentryid;
 			drmConfig.variantId = this.mediaElement.selectedSource && this.mediaElement.selectedSource.getAssetId();
 			var config = {};
@@ -434,7 +441,7 @@
 
 			_this.boundedEventHandler = _this.boundedEventHandler || _this.nativeEventsHandler.bind(this);
 			$.each(_this.nativeEvents, function (inx, eventName) {
-				if (mw.isIOS8() && mw.isIphone() && eventName === "seeking") {
+				if (mw.isIOS8_9() && mw.isIphone() && eventName === "seeking") {
 					return;
 				}
 
@@ -482,7 +489,7 @@
 				this.hidePlayerOffScreen();
 			}
 
-			if ( seekTime === 0 && this.isLive() && mw.isIpad() && !mw.isIOS8() ) {
+			if ( seekTime === 0 && this.isLive() && mw.isIpad() && !mw.isIOS8_9() ) {
 				//seek to 0 doesn't work well on live on iOS < 8
 				seekTime = 0.01;
 				this.log( "doSeek: fix seekTime to 0.01" );
@@ -751,29 +758,29 @@
 						}
 					}
 
+					this.playerElement.one("manifestLoaded", function(){
+						// issue the play request:
+						vid.play();
+						if (mw.isIOS()) {
+							setTimeout(function () {
+								handleSwitchCallback();
+							}, 100);
+						}
+						// check if ready state is loading or doing anything ( iOS play restriction )
+						// give iOS 5 seconds to ~start~ loading media
+						setTimeout(function () {
+							// Check that the player got out of readyState 0
+							if (vid.readyState === 0 && $.isFunction(switchCallback) && !_this.canAutoPlay()) {
+								_this.log(" Error: possible play without user click gesture, issue callback");
+								// hand off to the swtich callback method.
+								handleSwitchCallback();
+								// make sure we are in a pause state ( failed to change and play media );
+								_this.pause();
+							}
+						}, 10000);
+					});
 					//Update dash player context
 					this.updateDashContext();
-					// issue the play request:
-					vid.play();
-					if (mw.isIOS()) {
-						setTimeout(function () {
-							handleSwitchCallback();
-						}, 100);
-					}
-					// check if ready state is loading or doing anything ( iOS play restriction )
-					// give iOS 5 seconds to ~start~ loading media
-					setTimeout(function () {
-						// Check that the player got out of readyState 0
-						if (vid.readyState === 0 && $.isFunction(switchCallback) && !_this.canAutoPlay()) {
-							_this.log(" Error: possible play without user click gesture, issue callback");
-							// hand off to the swtich callback method.
-							handleSwitchCallback();
-							// make sure we are in a pause state ( failed to change and play media );
-							_this.pause();
-						}
-					}, 10000);
-
-
 				} catch (e) {
 					this.log("Error: switching source playback failed");
 				}
@@ -980,7 +987,7 @@
 			var player = this.getPlayerElement();
 			var stats = player.getPlaybackStatistics();
 			var videoData = stats.video.activeTrack;
-			if (videoData.representations){
+			if (videoData && videoData.representations){
 				var representations = videoData.representations;
 				if (representations && representations.length > 0){
 					var flavors = representations.map(function(rep){
@@ -1193,7 +1200,7 @@
 			// we don't want to trigger the seek event for these "fake" onseeked triggers
 			if ((this.mediaElement.selectedSource.getMIMEType() === 'application/vnd.apple.mpegurl') &&
 				( ( Math.abs(this.currentSeekTargetTime - this.getPlayerElement().currentTime) > 2) ||
-				( this.currentSeekTargetTime > 0.01 && ( mw.isIpad() && !mw.isIOS8() ) ) ) ) {
+				( this.currentSeekTargetTime > 0.01 && ( mw.isIpad() && !mw.isIOS8_9() ) ) ) ) {
 
 				this.log( "Error: seeked triggred with time mismatch: target:" +
 				this.currentSeekTargetTime + ' actual:' + this.getPlayerElement().currentTime );

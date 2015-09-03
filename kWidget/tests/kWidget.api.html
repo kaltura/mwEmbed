@@ -96,7 +96,7 @@ var customPartnerId = '_243342';
 
 // grab from hash: 
 try{
-	var hashPayload = JSON.parse( window.location.hash.substring( 1 ) ); 
+	var hashPayload = JSON.parse( decodeURIComponent( window.location.hash.substring( 1 ) ) ); 
 	customQuery = hashPayload.req;
 	customPartnerId = hashPayload.p;
 } catch (e ){

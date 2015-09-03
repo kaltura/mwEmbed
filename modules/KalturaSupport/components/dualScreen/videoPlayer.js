@@ -11,7 +11,8 @@
             prefetch: {
                 'durationPercentageUntilNextSequence': 60,
                 'minimumSequenceDuration': 2
-            }
+            },
+            srcUrl :''
         },
         cuePoints: [],
         syncEnabled: true,
@@ -33,6 +34,11 @@
                 _this.syncEnabled = true;
             });
         },
+
+        //Native src = http://cdnapi.kaltura.com/p/1726172/sp/172617200/playManifest/entryId/0_14ytdv7d/flavorId/0_i7jx15cw/format/url/protocol/http/a.mp4?referrer=aHR0cDovL2xvY2FsaG9zdA==&amp;playSessionId=5b361a4d-742e-8700-21f6-00d87628b56b&amp;clientTag=html5:v2.33.rc2
+        //Kplayer src = http://cdnapi.kaltura.com/p/1726172/sp/172617200/playManifest/entryId/0_14ytdv7d/flavorId/0_i7jx15cw/format/url/protocol/http/a.mp4?referrer=aHR0cDovL2xvY2FsaG9zdA==&playSessionId=5b361a4d-742e-8700-21f6-00d87628b56b&clientTag=html5:v2.33.rc2
+        //splayer src = http://cdnapi.kaltura.com/p/1726172/sp/172617200/playManifest/entryId/0_14ytdv7d/flavorId/0_i7jx15cw/format/url/protocol/http/a.mp4?referrer=aHR0cDovL2xvY2FsaG9zdA==&playSessionId=5b361a4d-742e-8700-21f6-00d87628b56b&clientTag=html5:v2.33.rc2
+
         getComponent: function () {
             if (!this.$el) {
                 var _this = this;
@@ -43,8 +49,7 @@
                             $('<video>')
                                 .attr('id', 'vidSibling_obj')
                                 .attr('muted', 'true')
-                                .attr('src', 'http://cdnapi.kaltura.com/p/1726172/sp/172617200/playManifest/entryId/0_14ytdv7d/flavorId/0_i7jx15cw/format/url'+
-                                '/protocol/http/a.mp4?referrer=aHR0cDovL2xvY2FsaG9zdA==&amp;playSessionId=5b361a4d-742e-8700-21f6-00d87628b56b&amp;clientTag=html5:v2.33.rc2')
+                                .attr('src', _this. srcUrl)
                                 .addClass("videoPlayer")
                                 .on("loadstart", this.sync.bind(this));
                         this.$el.get(0).setCurrentTime = function(time){ _this.$el.get(0).currentTime = time;};
@@ -56,7 +61,7 @@
                         var fv = {
                             "autoMute": true,
                             "streamerType": "http",
-                            "entryUrl": encodeURI("http://cdnapi.kaltura.com/p/1726172/sp/172617200/playManifest/entryId/0_14ytdv7d/flavorId/0_i7jx15cw/format/url/protocol/http/a.mp4?referrer=aHR0cDovL2xvY2FsaG9zdA==&playSessionId=5b361a4d-742e-8700-21f6-00d87628b56b&clientTag=html5:v2.33.rc2"),
+                            "entryUrl": encodeURI(_this. srcUrl),
                             "entryDuration": 298,
                             "isMp4": true,
                             "isLive": false,
@@ -79,7 +84,7 @@
                             isDVR:false,
                             isLive:false,
                             startvolume: 0,
-                            "entryUrl": encodeURI("http://cdnapi.kaltura.com/p/1726172/sp/172617200/playManifest/entryId/0_14ytdv7d/flavorId/0_i7jx15cw/format/url/protocol/http/a.mp4?referrer=aHR0cDovL2xvY2FsaG9zdA==&playSessionId=5b361a4d-742e-8700-21f6-00d87628b56b&clientTag=html5:v2.33.rc2")
+                            "entryUrl": encodeURI(_this. srcUrl)
 
                         };
                         var vidSibling = new mw.PlayerElementSilverlight( "secondScreen", "vidSibling_obj", fv, null, function () {
