@@ -1751,16 +1751,14 @@
 				vidParams += '/vid_slices/' + settings.vid_slices;
 			}
 
-			var flashVars = {};
-
 			// Add the ks if set ( flashvar overrides settings based ks )
 			if (settings.ks) {
-				flashVars[ 'ks' ] = settings.ks;
+				vidParams+= '/ks/' + settings.ks;
 			}
 			if (settings.flashvars && settings.flashvars.ks) {
-				flashVars[ 'ks' ] = settings.flashvars.ks;
+				vidParams+= '/ks/' + settings.flashvars.ks;
 			}
-
+			var flashVars = {};
 			// Add referenceId if set
 			if (settings.flashvars && settings.flashvars.referenceId) {
 				flashVars[ 'referenceId' ] = settings.flashvars.referenceId;
