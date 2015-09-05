@@ -114,7 +114,7 @@
 
 			var ua = navigator.userAgent;
 			// Check if browser should use flash ( IE < 9 )
-			var ieMatch = ua.match( /MSIE\s([0-9]+)/ );
+			var ieMatch = document.documentMode ? ['', document.documentMode] : ua.match(/MSIE\s([0-9]+)/);
 			if ( (ieMatch && parseInt( ieMatch[1] ) < 9) || document.URL.indexOf( 'forceFlash' ) !== -1 ) {
 				mw.setConfig( 'Kaltura.ForceFlashOnDesktop' , true );
 			}
@@ -1000,7 +1000,7 @@
 			var iframeRequest = this.getIframeRequest( widgetElm, settings );
 
 			// -----> IE8 and IE9 hack to solve Studio issues. SUP-3795. Should be handled from PHP side and removed <----
-			var isLowIE = /msie 8/.test(navigator.userAgent.toLowerCase()) || /msie 9/.test(navigator.userAgent.toLowerCase());
+			var isLowIE = document.documentMode && document.documentMode < 10;
 			if ( isLowIE && settings.flashvars.jsonConfig ){
 				jsonConfig = settings.flashvars.jsonConfig;
 				delete settings.flashvars.jsonConfig;
@@ -1587,7 +1587,7 @@
 			return /\bMSIE\b/.test(navigator.userAgent);
 		},
 		isIE8: function () {
-			return (/msie 8/.test(navigator.userAgent.toLowerCase()));
+			return document.documentMode === 8;
 		},
 		isAndroid: function () {
 			return (navigator.userAgent.indexOf('Android ') !== -1 && navigator.userAgent.indexOf('Windows') === -1);
@@ -1668,7 +1668,7 @@
 			 */
 			if (mw.getConfig('Kaltura.ForceFlashOnIE10')) {
 				var ua = navigator.userAgent;
-				var ie10Match = ua.match(/MSIE\s10/);
+				var ie10Match = document.documentMode === 10;
 				if (ie10Match) {
 					return false;
 				}
