@@ -34,8 +34,7 @@
 			'includeHeader': true,
 			'renderWhenEmpty': false,
 			'paging': false,
-			'pageSize': 25,
-			'showEmptyPlaylistError': true
+			'pageSize': 25
 
 		},
 
