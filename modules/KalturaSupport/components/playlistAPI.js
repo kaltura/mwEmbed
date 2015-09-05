@@ -34,8 +34,8 @@
 			'includeHeader': true,
 			'renderWhenEmpty': false,
 			'paging': false,
-			'pageSize': 25
-
+			'pageSize': 25,
+			'showEmptyPlaylistError': true
 		},
 
 
@@ -650,7 +650,7 @@
 				} );
 			}
 
-			if (items.length === 0 && (this.firstLoad || this.getConfig('showEmptyPlaylistError'))) {
+			if (items.length === 0 && this.getConfig('showEmptyPlaylistError')) {
 				//If no items then show error message
 				this.showEmptyPlaylistError();
 				this.configMediaListFeatures();
