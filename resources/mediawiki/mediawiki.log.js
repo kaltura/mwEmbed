@@ -38,7 +38,6 @@
 				if ( mw.config.get('autoScrollDebugTarget') === true ){
 					target.scrollTop( Number.MAX_VALUE );
 				}
-				return;
 			}
 		}
 		// Try to use an existing console
