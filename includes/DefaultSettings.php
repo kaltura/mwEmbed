@@ -250,20 +250,6 @@ if( is_file( $wgLocalSettingsFile ) ){
 	require_once( $wgLocalSettingsFile );
 }
 
-//Override Domain
-//===============
-//Override here all variables that are using wgServer
-if ( $wgEnableKalturaOverrideDomain && isset( $_GET['od'] ) ){
-	$wgServer = htmlspecialchars( $_GET['od'] ) . dirname( dirname( $_SERVER['SCRIPT_NAME'] ) ) .'/';
-
-	// Default Load Script path
-    $wgLoadScript = $wgServer . $wgScriptPath . 'load.php';
-    // Support legacy $wgResourceLoaderUrl url.
-    $wgResourceLoaderUrl = $wgLoadScript;
-
-    $wgMwEmbedProxyUrl =  $wgServer . $wgScriptPath . 'simplePhpXMLProxy.php';
-}
-
 //Set global configs into $wgMwEmbedModuleConfig in order to enable
 //resource loader to output the config in the response
 // if Manifest urls should be used:
