@@ -23,10 +23,10 @@
 		return (/msie 7/.test(userAgent.toLowerCase()));
 	};
 	mw.isIE8 = function () {
-		return (/msie 8/.test(userAgent.toLowerCase()));
+		return document.documentMode === 8;
 	};
 	mw.isIE9 = function () {
-		return (/msie 9/.test(userAgent.toLowerCase()));
+		return document.documentMode === 9;
 	};
     mw.isIE11 = function () {
         return (/trident\/7.0/.test(userAgent.toLowerCase()));
