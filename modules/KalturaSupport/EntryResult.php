@@ -100,9 +100,7 @@ class EntryResult {
 		return $this->entryResultObj;
 	}
 	function isCachable(){
-	   ChromePhp::warn($this->error );
-
-		return !$this->error 
+		return !$this->error
 				&& 
 			$this->isAccessControlAllowed( $this->entryResultObj ) 
 				&&
@@ -220,18 +218,18 @@ class EntryResult {
 			$this->error = 'Error invalid KS';
 			return array();
 		}
-//
-		if( is_array( $resultObject['contextData'] ) && isset( $resultObject['contextData']['code'] ) && $resultObject['contextData']['code'] == 'ENTRY_ID_NOT_FOUND' ){
-            $this->error = 'No source video was found';
-            return array();
-        }
 
-        //if the video is still uploading or converting
-        if ( isset($resultObject['meta']) &&  isset( $resultObject['meta']->status ) &&
-            ($resultObject['meta']->status == 0  || $resultObject['meta']->status == 1)){
-                    $this->error = 'No source video was found - Entry in process';
-                    return array();
-                }
+		if( is_array( $resultObject['contextData'] ) && isset( $resultObject['contextData']['code'] ) && $resultObject['contextData']['code'] == 'ENTRY_ID_NOT_FOUND' ){
+			$this->error = 'No source video was found';
+			return array();
+		}
+
+		//if the video is still uploading or converting
+		if ( isset($resultObject['meta']) &&  isset( $resultObject['meta']->status ) &&
+			($resultObject['meta']->status == 0  || $resultObject['meta']->status == 1)){
+				$this->error = 'No source video was found - Entry in process';
+				return array();
+		}
 
 		
 		// Set partner id from entry meta data
