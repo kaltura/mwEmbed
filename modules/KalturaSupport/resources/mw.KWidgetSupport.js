@@ -266,6 +266,32 @@ mw.KWidgetSupport.prototype = {
 	updatePlayerContextData: function(embedPlayer, playerData){
 		if( playerData.contextData ){
 			embedPlayer.kalturaContextData = playerData.contextData;
+			if (playerData.contextData &&
+				$.isArray(playerData.contextData.accessControlActions)) {
+
+				var kalturaAccessControlModifyRequestHostRegexActions= $.grep(playerData.contextData.accessControlActions,function(action) {
+					return action.type===7;////KalturaAccessControlModifyRequestHostRegexAction
+				});
+
+				if (kalturaAccessControlModifyRequestHostRegexActions.length>0) {
+					var action=kalturaAccessControlModifyRequestHostRegexActions[0];
+
+					if (action.pattern && action.replacement) {
+						var regExp=new RegExp(action.pattern, "i");
+						var urlsToModify = ['Kaltura.ServiceUrl','Kaltura.StatsServiceUrl','Kaltura.ServiceBase','Kaltura.LiveStatsServiceUrl'];
+						urlsToModify.forEach(function (key) {
+							var serviceUrl = mw.config.get(key);
+							var match = serviceUrl.match( regExp );
+
+							if (match) {
+								serviceUrl = serviceUrl.replace(regExp, action.replacement);
+								mw.config.set(key, serviceUrl);
+							}
+
+						});
+					}
+				}
+			}
 		}
 	},
 	isLive: function(playerData){
