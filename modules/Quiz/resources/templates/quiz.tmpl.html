@@ -32,8 +32,12 @@
 <div class="ivqContainer">
     <div class="title-text"></div>
     <div class="sub-text"></div>
-    <div class="dispay-all-container">
-        <div class="hexagon-container"></div>
+    <div class="display-all-container">
+        <div class ="hex-row">
+            <div class="hex-column  left-arrow"></div>
+            <div class="hex-column  right-arrow"></div>
+            <div class="hex-column hexagon-container"></div>
+        </div>
     </div>
     <div class="bottomContainer">
         <div class="confirm-box"></div>
@@ -59,11 +63,11 @@
 
 <% if (quiz.state === "completed"){%>
 <div class="ivqContainer">
-    <div class="title-text padding14"></div>
-    <div class="sub-text"></div>
-    <div class="review-BottomContainer">
-        <div class="review-button"></div>
-        <div class="confirm-box-review"></div>
+    <div class="title-text padding23"></div>
+    <div class="sub-text margin-top4"></div>
+    <div class="completed-BottonContainer">
+        <div class="review-button button-box-attr font-Lato2"></div>
+        <div class="submit-button button-box-attr font-Lato2"></div>
     </div>
 </div>
 <% } %>

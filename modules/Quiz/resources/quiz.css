@@ -30,6 +30,26 @@
     font-style: normal;
     font-weight: bold;
 }
+h2{
+    font-size: 3vw;
+}
+.padding14{
+    padding-top: 14vh;
+}
+.padding23{
+    padding-top: 23vh;
+}
+center {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.font-Lato2{
+    font-family: "Lato";
+    font-size: 2vw;
+    text-align: center;
+    color: rgb(255, 255, 255);
+}
 .ivqContainer{
     position: relative;
     height: 90%;
@@ -39,13 +59,10 @@
     bottom: 8vw;
     width: 100%;
 }
-
-.review-BottomContainer{
-    margin-top:14vh;
+.completed-BottonContainer{
+    margin-top:9vh;
     width: 100%;
     text-align: center;
-    height: 100%;;
-
 
 }
 .welcome {
@@ -84,10 +101,6 @@
     background-image:url("BACKGROUND.png")!important;
     background-size: cover;
     position: absolute;
-}
-center {
-    margin-left: auto;
-    margin-right: auto;
 }
 .title-text{
     font-family: "LatoBlack";
@@ -291,68 +304,39 @@ vertical-align: middle;
 .close-button:hover{
     cursor: pointer;
 }
+.margin-top13{
+    margin-top: 13vh !important;
+}
+.margin-top4{
+    margin-top: 4vh !important;
+}
 
-.review-button{
-    font-family: "Lato";
-    font-size: 3vw;
-    font-weight: bold;
-    text-align: center;
-    color: rgb(255, 255, 255);
-    width: 30%;
-    height:10vw;
-    overflow: hidden;
-    display: inline-block;
-    margin:0 auto;
-    vertical-align: middle;
-    line-height:10vw;
+.button-box-attr{
     border-radius: 6px;
     background-color: rgb(0, 204, 255);
     box-shadow: 1.414px 1.414px 0px 0px rgba(0, 0, 0, 0.23);
+    line-height: 7vw;
+    height: 10.5vh;
+    width: 22%;
+}
 
-
+.submit-button{
+    margin-left: 3vw;
+    overflow: hidden;
+    display: inline-block;
+    /*vertical-align: middle;*/
 }
-.padding14{
-    padding-top: 14vh;
-}
-.confirm-box-review{
-font-family: "Lato";
-font-size: 3vw;
-font-weight: bold;
-text-align: center;
-color: rgb(255, 255, 255);
-width: 30%;
-height:10vw;
-overflow: hidden;
-display: inline-block;
-margin:0 auto;
-vertical-align: middle;
-line-height:10vw;
-border-radius: 6px;
-background-color: rgb(0, 204, 255);
-box-shadow: 1.414px 1.414px 0px 0px rgba(0, 0, 0, 0.23);
-}
-.confirm-box-review:hover {
+.submit-button:hover {
     background-color: rgb(255, 255, 255);
     color: rgb(27, 203, 255);
     cursor: pointer;
 }
+
 .review-button{
-    font-family: "Lato";
-    font-size: 3vw;
-    font-weight: bold;
-    text-align: center;
-    color: rgb(255, 255, 255);
-    width: 30%;
-    height:10vw;
     overflow: hidden;
     display: inline-block;
-    margin:0 auto;
-    vertical-align: middle;
-    line-height:10vw;
-    border-radius: 6px;
-    background-color: rgb(0, 204, 255);
-    box-shadow: 1.414px 1.414px 0px 0px rgba(0, 0, 0, 0.23);
-}
+    margin: 0 auto;
+ }
 .review-button:hover{
     background-color: rgb(255, 255, 255);
     color: rgb(27, 203, 255);
@@ -403,7 +387,6 @@ box-shadow: 1.414px 1.414px 0px 0px rgba(0, 0, 0, 0.23);
 .q-box,:hover{
     cursor: pointer;
 }
-
 .q-boxtent{
     position: relative;
     top: 25%;
@@ -411,7 +394,6 @@ box-shadow: 1.414px 1.414px 0px 0px rgba(0, 0, 0, 0.23);
     text-align: center;
     font-size: 3vw;
 }
-
 .gotItBox{
     width: 15vw;
     height: 10vw;
@@ -428,17 +410,15 @@ box-shadow: 1.414px 1.414px 0px 0px rgba(0, 0, 0, 0.23);
     right: 0;
     margin-bottom: 12vh;
     margin-right: 2vw;
-
 }
 .yourAnswer{
     font-family: "LatoLight";
     font-weight: 300;
-    transform: scaleY(1.0009)
+    transform: scaleY(1.0009);
     color: white;
     font-size: 2.4vw;
     margin-top: 1vw;
 }
-
 .reviewAnswerPlace{
     text-align: left;
     margin-left: 27vw;
@@ -494,15 +474,6 @@ box-shadow: 1.414px 1.414px 0px 0px rgba(0, 0, 0, 0.23);
     left: 6vw;
     margin: auto;
 }
-
-.pie{
-    background-image: url(pie.png);
-    background-size: 100% 100%;
-    width: 2vw;
-    height: 2vw;
-    margin-left: 1vw;
-    margin-right: 1vw;
-}
 .left-arrow{
     width: 5vw;
     height: 5vw;
@@ -510,7 +481,7 @@ box-shadow: 1.414px 1.414px 0px 0px rgba(0, 0, 0, 0.23);
     margin-top: 12vh;
     background-image: url(slider.prev.png);
     float: left;
-    z-index:99;
+
 }
 .right-arrow{
     width: 5vw;
@@ -520,47 +491,46 @@ box-shadow: 1.414px 1.414px 0px 0px rgba(0, 0, 0, 0.23);
     background-image: url(slider.next.png);
     float: right;
 }
-.dispay-all-container{
-    margin-top: 7vh;
+.display-all-container{
+    margin-top: 3vh;
+}
+
+.hex-column{
+ }
+
+.vertical-center {
+    position:relative;
+    top:50%;
+    transform:translateY(-50%);
 }
 
 .hexagon-container{
     text-align: center;
     font-size: 3vw;
-    width: 70%;
-    margin-left: 13vw;
-    margin-top: 3vh;
+    width: 78vw;
+    margin: 0px auto;
 }
 ol.first-row{
-    width: 100%;
-    position: relative;
-    right: 1vw;
-    /*margin-top:0%;*/
+    padding: 0;
 }
 ol.second-row{
-    width: 100%;
-    position: relative;
-    right: 6.3vw;
-    margin-top: -6.7%;
+    margin-top: -8vh;
+    padding-left: 0vw;
 }
 .bk-gradient{
     background-color: rgb(0, 190, 238);
 }
 .display-content{
 
-
 }
-
 .bubble{
     position: fixed;
     width: 3vw;
     height: 3vw;
     text-align: center;
     font-size: 1vw;
-    /* padding-top: 2vh; */
-
     background-size: 100% 100%;
-     z-index: 999;
+    z-index: 999;
     line-height: 3vw;
 }
 .bubble-cont{
@@ -581,4 +551,12 @@ ol.second-row{
 }
 .bubble-ans:hover{
     background-image: url(bubble-ans-h.png);
+}
+.pie{
+    background-image: url(pie.png);
+    background-size: 100% 100%;
+    width: 2vw;
+    height: 2vw;
+    margin-left: 1vw;
+    margin-right: 1vw;
 }

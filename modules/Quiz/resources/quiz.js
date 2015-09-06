@@ -151,6 +151,10 @@
                 _this.isSeekingIVQ = true;
             });
 
+            this.bind('mediaError', function () {
+                alert('');
+            });
+
             embedPlayer.addJsListener( 'kdpReady', function(){
                 if (embedPlayer.autoplay) embedPlayer.autoplay = false;
                 embedPlayer.removeJsListener( 'kdpReady');
@@ -204,7 +208,6 @@
             $(".welcome").html(gM('mwe-quiz-welcome'));
             $(".confirm-box").html(gM('mwe-quiz-plsWait'));
 
-
             _this._checkCuepointsReady(function(){
 
                 $.grep($.quizParams.uiAttributes, function (e) {
@@ -221,7 +224,10 @@
                 });
                 $(".confirm-box").html(gM('mwe-quiz-continue'))
                     .on('click', function () {
-                        _this.checkIfDone(0);
+                     //   var anUnswered = _this.getUnansweredQuestNrs();
+                     //   if (anUnswered) _this.almostDone(anUnswered);
+
+                    _this.checkIfDone(0);
                     });
 
             });
@@ -239,7 +245,7 @@
 
         _gotoScrubberPos: function (questionNr) {
             var player = this.getPlayer();
-            player.sendNotification('doSeek', ($.cpObject.cpArray[questionNr].startTime) / 900);
+            player.sendNotification('doSeek', ($.cpObject.cpArray[questionNr].startTime) / 999);
         },
         qCuePointHandler: function (e, cuePointObj) {
             var _this = this;
@@ -257,11 +263,11 @@
             var _this = this;
             $.each(cPo.answeres, function (key, value) {
                 if (key == $.cpObject.cpArray[questionNr].selectedAnswer) {
-                    $('#' + key).parent().addClass("wide single-answer-box-bk-applied");
+                    $('#' + key).parent().addClass("wide single-answer-box-bk-applied disable");
 
-                    if (_this.reviewMode){
-                        $('#' + key).parent().addClass('disable')
-                    }
+                    //if (_this.reviewMode){
+                    //    $('#' + key).parent().addClass('disable')
+                    //}
                     $('#' + key).removeClass('single-answer-box')
                         .addClass(function(){
                             $(this).addClass('single-answer-box-small')
@@ -279,11 +285,12 @@
             if (_this.score !== null) return;
 
             $('.single-answer-box-bk' ).on('click',function(){
-                if(_this.reviewMode) {
+               // if(_this.reviewMode) {
                     if ($(this).hasClass('disable')) return false;
                     $('.answers-container').find('.disable').removeClass('disable');
-                }
+                //}
                 $('.single-answer-box-bk').each(function () {
+
                     $(this).removeClass('wide single-answer-box-bk-apply single-answer-box-bk-applied');
                     $('.single-answer-box-apply').empty().remove();
                     $(this).children().removeClass('single-answer-box-small').addClass('single-answer-box');
@@ -301,9 +308,11 @@
             });
             $(document).off( 'click', '.single-answer-box-apply' )
             .on('click', '.single-answer-box-apply', function () {
-                $('.single-answer-box-apply').text(gM('mwe-quiz-applied'))
+                    if ($(this).hasClass('disable')) return false;
+                    $('.single-answer-box-apply').addClass('disable')
+                    .text(gM('mwe-quiz-applied'))
                     .parent().removeClass('single-answer-box-bk-apply').hide().fadeOut('fast')
-                    .addClass('single-answer-box-bk-applied').hide().fadeIn('fast');
+                    .addClass('single-answer-box-bk-applied disable').hide().fadeIn('fast');
 
                 _this._submitAnswer(questionNr,selectedAnswer);
 
@@ -345,7 +354,7 @@
                 );
         },
         _addAnswerAPI: function (questionNr, quizSetAnswer) {
-        console.log("add answer api--------------------");
+        console.log("add answer api set answer get data  --------------------");
             var _this = this;
             _this.getKClient().doRequest(quizSetAnswer, function (data) {
                 console.log(quizSetAnswer);
@@ -361,7 +370,7 @@
                     }
                 });
         },
-        almostDone: function (unAnswerdArr) {
+        almostDone: function (unAnsweredArr) {
             var _this = this,embedPlayer = _this.getPlayer();
 
             _this.removeShowScreen("hexScreen");
@@ -370,7 +379,7 @@
             $(".title-text").html(gM('mwe-quiz-almostDone'));
             $(".sub-text").html(gM('mwe-quiz-remainUnAnswered') + '</br>' + gM('mwe-quiz-pressRelevatToAnswer'));
 
-            _this.displayHex(_this.setHexContainerPos("current"),unAnswerdArr);
+            _this.displayHex(_this.setHexContainerPos("current"),unAnsweredArr);
 
             $(document).on('click', '.q-box', function () {
                 var selectQ = $(this).attr('id');
@@ -440,16 +449,13 @@
 
             $(".display-question").text(cPo.question);
             $.each(cPo.answeres, function (key, value) {
-
-                //   $(".answers-container").
-
-                $(".answers-container").append(
-                    "<div class ='single-answer-box-bk'>" +
-                    "<div class ='single-answer-box' id=" + key + "><p>" + value + "</p></div></div>"
-                );
-                //  $(this).text($(this).html());
-
+                var div= $("<div class ='single-answer-box-bk'>"
+                    + "<div class ='single-answer-box' id="
+                    + key + "><p></p></div></div>");
+                div.find('p').text(value);
+                div.appendTo('.answers-container');
             });
+
             if (cPo.isAnswerd) {
                 _this.showAnswered(cPo, questionNr);
             }
@@ -506,18 +512,18 @@
             _this.removeShowScreen("completed");
             $(".title-text").html("Completed");
 
-            $(".sub-text").html(gM('mwe-quiz-TakeAMoment') + '<strong> '+ gM('mwe-quiz-review') +' </strong>'
+            $(".sub-text").html(gM('mwe-quiz-TakeAMoment') + '<strong> '+ gM('mwe-quiz-review').toLowerCase() +' </strong>'
                     + gM('mwe-quiz-yourAnswers') + '</br><strong> '+ gM('mwe-quiz-or') +' </strong>'
-                    + gM('mwe-quiz-goAhead')+ '<strong> '+ gM('mwe-quiz-submit') +' </strong>'
+                    + gM('mwe-quiz-goAhead')+ '<strong> '+ gM('mwe-quiz-submit').toLowerCase() +' </strong>'
             );
 
             $(".review-button").html(gM('mwe-quiz-review'))
-            $(".review-button").on('click', function () {
+                .on('click', function () {
                 _this.setCurrentQuestion(0);
             });
 
-            $(".confirm-box-review").html(gM('mwe-quiz-submit'))
-            $(".confirm-box-review").on('click', function () {
+            $(".submit-button").html(gM('mwe-quiz-submit'))
+                .on('click', function () {
                 $(this).off('click')
                 $(this).html(gM('mwe-quiz-plsWait'))
                 _this._submitQuizApi();
@@ -557,10 +563,10 @@
             if (_this.showTotalScore){
                 if (!$.quizParams.showCorrectAfterSubmission) {
 
-                    $(".sub-text").html(gM('mwe-quiz-completedScore') + score + " %");
+                    $(".sub-text").html(gM('mwe-quiz-completedScore') + '<h2>' + score + '</h2>');// %");
 
                 } else {
-                    $(".sub-text").html(gM('mwe-quiz-completedScore') + score + " % " + gM('mwe-quiz-reviewSubmit'));
+                    $(".sub-text").html(gM('mwe-quiz-completedScore') + '<h2>' + score + '</h2>' + gM('mwe-quiz-reviewSubmit'));
 
                     _this.displayHex(_this.setHexContainerPos("current"),cpArray);
 
@@ -577,7 +583,7 @@
                 $(".sub-text").html(gM('mwe-quiz-completedQuiz'));
             }
 
-            $(".confirm-box").html(gM('mwe-quiz-ok'))
+            $(".confirm-box").html(gM('mwe-quiz-done'))
                 .on('click', function () {
                     _this.removeShowScreen("contentScreen");
                     $(".title-text").html(gM('mwe-quiz-thankYou')).addClass("hint-container");
@@ -712,21 +718,80 @@
         q2i: function (i) {
             return parseInt(i) - 1;
         },
-        buildSliceArr: function (step) {
-            var i = 0,arr = [],rStart,rEnd,cp = 0,swicher = false;
+
+        displayHex:function (hexPositionContDisplay,cpArray){
+            var _this = this,embedPlayer = this.getPlayer();
+
+            _this.sliceArray = _this.buildSliceArr(6,cpArray.length);
+            var displayRows = $.grep(_this.sliceArray, function (element, index) {
+                return element.rContPos == hexPositionContDisplay;
+            });
+
+            $.each(displayRows,function(key,val){
+               var rowHexElements =  _this.makeHexRow(val.rStart,val.rEnd+1,key,cpArray);
+               embedPlayer.getInterface().find(".hexagon-container").append(rowHexElements);
+            });
+            embedPlayer.getInterface().find(".display-all-container").hide().fadeIn(400);
+
+            if((embedPlayer.getInterface().find(".second-row").length) == 0 ){
+                embedPlayer.getInterface().find(".display-all-container").addClass("margin-top13");
+                embedPlayer.getInterface().find(".left-arrow").addClass("margin-top4");
+            }
+            else{
+                embedPlayer.getInterface().find(".display-all-container").removeClass("margin-top13");
+                embedPlayer.getInterface().find(".left-arrow").removeClass("margin-top4");
+            }
+
+            switch(_this._checkHexStatusForArrow()) {
+                case 'none':
+                    $(".right-arrow").off().hide();
+                    $(".left-arrow").off().hide();
+                    return;
+                    break;
+                case 'left':
+                    $(".right-arrow").hide();
+                    $(".left-arrow").show();
+                    break;
+                case 'right':
+                    $(".left-arrow").hide();
+                    $(".right-arrow").show();
+                    break;
+                case 'both':
+                    $(".left-arrow").show();
+                    $(".right-arrow").show();
+                    break;
+            }
+
+            $(".right-arrow").off().on('click', function(){
+                embedPlayer.getInterface().find(".hexagon-container").empty();
+                _this.displayHex(_this.setHexContainerPos("right"),cpArray);
+
+            });
+
+            $(".left-arrow").off().on('click', function(){
+                embedPlayer.getInterface().find(".hexagon-container").empty();
+                _this.displayHex(_this.setHexContainerPos("left"),cpArray);
+            });
+        },
+        buildSliceArr: function (hexInRow,cpArrayLen) {
+            var i = 0,arr = [],rStart,rEnd,cp = 0,switcher = false,hexInRow2 = hexInRow - 1;
             do {
                 rStart = i;
-                rEnd = i + step;
-                arr.push({rStart: i, rEnd: i + step,rContPos: cp});
-                i = rEnd + 1;
-                if (swicher) cp ++;
-                swicher = !swicher;
-            } while (i < $.cpObject.cpArray.length);
+                rEnd = i + hexInRow;
+                if (!switcher) {
+                    arr.push({rStart: i, rEnd: i + hexInRow, rContPos: cp});
+                }
+                else {
+                    arr.push({rStart: i, rEnd: i + hexInRow2 , rContPos: cp});
+                }
+                    i = rEnd + 1;
+                if (switcher) cp ++;
+                switcher = !switcher;
+            } while (i < cpArrayLen);
             return arr;
         },
         makeHexRow: function (rStart,rEnd,rowNumber,cpArray) {
             var ol,el,_this = this;
-
             ol = document.createElement('ol');
             $.each(cpArray.slice(rStart, rEnd), function (i, data) {
                 el = document.createElement('li');
@@ -749,23 +814,12 @@
                 }
                 ol.appendChild(el);
             });
-            $(".hexagon-container").append(ol).hide().fadeIn('fast');
+            return ol;
         },
-        displayHex:function (hexPositionContDisplay,cpArray){
-            var _this = this;
 
-            _this.sliceArray = _this.buildSliceArr(4);
-            var displayRows = $.grep(_this.sliceArray, function (element, index) {
-                return element.rContPos == hexPositionContDisplay;
-            });
-
-            $.each(displayRows,function(key,val){
-                _this.makeHexRow(val.rStart,val.rEnd+1,key,cpArray);
-            });
-            _this._checkHexStatusForArrow(cpArray);
-        },
         setHexContainerPos:function(action){
             var posNr,_this = this;
+
             switch(action){
                 case "current": posNr = _this.hexPosContainerPos;break;
                 case "right": posNr = ++_this.hexPosContainerPos;break;
@@ -773,58 +827,31 @@
             }
             return posNr;
         },
-        _addHexRightArrow:function(cpArray){
-            var _this = this;
-            $( "<div></div>" ).insertBefore( ".hexagon-container")
-                .addClass("right-arrow").hide().fadeIn('fast')
-                .on('click', function(){
-                    $( ".hexagon-container" ).empty();
-                    _this.displayHex(_this.setHexContainerPos("right"),cpArray);
-                });
-        },
-        _addHexLeftArrow:function(cpArray){
-            var _this = this;
-            $( "<div></div>" ).insertBefore( ".hexagon-container")
-                .addClass("left-arrow").hide().fadeIn('fast')
-                .on('click', function(){
-                    $( ".hexagon-container" ).empty();
-                    _this.displayHex(_this.setHexContainerPos("left"),cpArray);
-                });
-        },
-        _checkHexStatusForArrow:function(cpArray){
+
+        _checkHexStatusForArrow:function(){
             var _this = this;
             var lastPos = ((_this.sliceArray.slice(-1))[0].rContPos);
             var sliceArrLen =_this.sliceArray.length;
 
-            if  (_this.hexPosContainerPos == 0  && sliceArrLen >= 3) {
-                $(".left-arrow").remove();
-                if ($(".right-arrow").length == 0){
-                    _this._addHexRightArrow(cpArray);
-                }
-            }else if  (_this.hexPosContainerPos == 0  && sliceArrLen <= 2) {
-                if ($(".right-arrow").length != 0) $(".right-arrow").remove();
-                $(".left-arrow").remove();
+            if  (_this.hexPosContainerPos == 0  && sliceArrLen <= 2) {
+                return 'none';
+            }
 
+            if  (_this.hexPosContainerPos == 0  && sliceArrLen >= 3) {
+                return 'right';
             }
             else if (_this.hexPosContainerPos == lastPos && sliceArrLen  >= 3 ){
-                $(".right-arrow").remove();
-                if ($(".left-arrow").length == 0){
-                    _this._addHexLeftArrow(cpArray);
-                }
+                return 'left';
             }
             else  {
-                if ($(".right-arrow").length == 0){
-                    _this._addHexRightArrow(cpArray);
-                }
-                if ($(".left-arrow").length == 0){
-                    _this._addHexLeftArrow(cpArray);
-                }
+                return 'both';
             }
         },
-        displayBubbles:function(){
-            var embedPlayer = this.getPlayer();
+
+            displayBubbles:function(){
+            var  _this = this,embedPlayer = this.getPlayer();
             var scrubber = embedPlayer.getInterface().find(".scrubber");
-            var _this = this,displayClass,cPo = $.cpObject.cpArray;
+            var displayClass,cPo = $.cpObject.cpArray;
 
             embedPlayer.getInterface().find(".bubble-cont").empty().remove();
             embedPlayer.getInterface().find(".bubble").empty().remove();
