@@ -199,6 +199,7 @@
 				// set player type and version
 				google.ima.settings.setPlayerType("kaltura/mwEmbed");
 				google.ima.settings.setPlayerVersion(mw.getConfig("version"));
+				google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.INSECURE);
 
 				// Check for adPattern
 				if ( _this.getConfig( 'adPattern' ) ) {
@@ -616,6 +617,9 @@
 								_this.embedPlayer.getPlayerElement().sendNotification( 'skipAd' );
 							}else{
 								_this.adsManager.stop();
+								if (_this.currentAdSlotType === "postroll" && _this.getConfig( 'adTagUrl' ) ){
+									_this.restorePlayer(true);
+								}
 							}
 							$(this).hide();
 							return false;
@@ -1106,7 +1110,7 @@
 				if ( _this.currentAdSlotType != 'postroll') {
 					_this.restorePlayer();
 
-					if( mw.isIOS8() && mw.isIpad()  ) {
+					if( mw.isIOS8_9() && mw.isIpad()  ) {
 						$( _this.embedPlayer.getPlayerElement() ).attr('preload',"metadata" );
 					}
 				}

@@ -551,6 +551,15 @@
         "doc": "The initial bitrate to be selected.",
         "type": "number"
     },
+    "mediaProxy":{
+      "description": "To override mediaProxy object.",
+      "attributes": {
+         "entryCuePoints":{
+             "doc":"To override entry supplied cuePoints.",
+             "type": "json"
+         }
+      }
+    },
     "segmentScrubber.plugin": {
         "doc": "Virtaulzies the playhead to selected segment of time.",
         "type": "boolean"
@@ -646,7 +655,7 @@
         "description": "The Kaltura custom logo plugin.",
         "attributes": {
             "watermarkPath": {
-                "doc": "URL path to plugin image.",
+                "doc": "URL path to plugin image. For default controls height, logo can be 20 by 20 pixel png.",
                 "type": "url"
             },
             "watermarkClickPath": {
@@ -816,6 +825,11 @@
                 "doc": "Display Embed code.",
                 "initvalue": true,
                 "type": "boolean"
+            },
+            "embedCodeTemplate":{
+                "doc": "Enables the customization of the embed code template, leave empty to use iframe default.",
+                "initvalue": "",
+                "type": "hiddenValue"
             },
             "allowTimeOffset": {
                 "doc": "Allow setting a time offset for the entry.",

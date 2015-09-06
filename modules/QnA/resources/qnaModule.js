@@ -41,9 +41,9 @@
 
                         _this.applyLayout();
 
-                    }
-                    else{
-                        _this.itemRead(entry, event);
+                        if (entry.getThread().isCollapsed()){
+                            _this.qnaService.markThreadAsRead(entry.getThread());
+                        }
                     }
                 };
 
@@ -67,6 +67,7 @@
                     } else {
 
                         _this.qnaService.submitQuestion(replyText(), qnaThread.entries()[qnaThread.entries().length - 1]());
+                        _this.qnaService.markThreadAsRead(qnaThread);
                         qnaThread.replyText(gM("qna-reply-here"));
                         qnaThread.isTypingAnswer(false);
                         return true;

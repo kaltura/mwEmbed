@@ -652,7 +652,7 @@ HTML;
 			$theme = $playerConfig['plugins']['theme'];
 			$customStyle = '<style type="text/css">';
 			if (isset($theme['buttonsSize'])){
-				$customStyle = $customStyle . 'body {font-size: ' . $theme['buttonsSize'] . 'px}';
+				$customStyle = $customStyle . '.controlsContainer, .topBarContainer {font-size: ' . $theme['buttonsSize'] . 'px}';
 			}
 			if (isset($theme['buttonsColor'])){
 				$customStyle = $customStyle . '.btn {background-color: ' . $theme['buttonsColor'] . '}';
@@ -943,7 +943,7 @@ HTML;
 				// check for returned errors: 
 				echo json_encode( $payload );
 			?>;
-			var isIE8 = /msie 8/.test(navigator.userAgent.toLowerCase());
+			var isIE8 = document.documentMode === 8;
 		</script>
 		<script type="text/javascript">
 			<!-- Include the mwEmbedStartup script inline will initialize the resource loader -->

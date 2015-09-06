@@ -557,7 +557,7 @@
 		},
 
 		isSecure:  function () {
-			return mw.getConfig('Kaltura.Protocol') == 'https:';
+			return mw.getConfig('Kaltura.Protocol') == 'https';
 		}
 	};
 

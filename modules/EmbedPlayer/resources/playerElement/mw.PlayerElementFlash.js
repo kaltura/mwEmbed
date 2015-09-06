@@ -111,7 +111,10 @@
                     }, 0 );
                 }
             };
-
+			var wmode = "transparent";
+			if (mw.getConfig("wmode")){
+				wmode = mw.getConfig("wmode");
+			}
             // attributes and params:
             flashembed( containerId,
                 {
@@ -120,7 +123,7 @@
                     bgcolor :			"#000000",
                     allowNetworking : 	"all",
                     version :			[10,0],
-                    wmode : 			"transparent"
+                    wmode : 			wmode
                 },
                 flashvars
             );

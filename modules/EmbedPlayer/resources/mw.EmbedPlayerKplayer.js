@@ -95,6 +95,11 @@
 					flashvars.selectedFlavorIndex = _this.getSourceIndex(_this.mediaElement.selectedSource);
 				}
 
+                //add ignoreAkamaiHD to the flashvars if added by user (HDS start time)
+                if(mw.getConfig("ignoreAkamaiHD")) {
+                    flashvars.ignoreAkamaiHD = mw.getConfig("ignoreAkamaiHD");
+                }
+
 				//add OSMF HLS Plugin if the source is HLS
 				if (_this.isHlsSource(_this.mediaElement.selectedSource)) {
 					flashvars.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
@@ -763,9 +768,9 @@
 			var deferred = $.Deferred();
 			var originalSrc = this.mediaElement.selectedSource.getSrc();
 			if (this.isHlsSource(this.mediaElement.selectedSource)) {
-                // add timeAlignedRenditions indicator (Kaltura Live HLS only)
+                // add playerType=flash indicator (Kaltura Live HLS only)
                 if( this.isLive() &&  mw.getConfig('isLiveKalturaHLS') ) {
-                    originalSrc = originalSrc + "&timeAlignedRenditions=true";
+                    originalSrc = originalSrc + "&playerType=flash";
                 }
 
 				this.resolveSrcURL(originalSrc)

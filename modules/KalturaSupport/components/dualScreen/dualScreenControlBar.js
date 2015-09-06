@@ -6,6 +6,7 @@
 		this.templatePath = settings.templatePath;
 		this.menuFadeout = settings.menuFadeout;
 		this.cssClass = settings.cssClass;
+		this.nativeAppTooltip = "Switching content<br/>on current view<br/>is not yet<br/>supported.<br/><br/>Try single view";
 		this.controlBarComponents = {
 			sideBySide: {
 				id: 'sideBySide',
@@ -29,13 +30,14 @@
 			}
 		};
 		this.disabled = false;
+		this.bindSuffix = ".dualScreenControlBar";
 		this.getComponent();
 		this.addBindings();
 	};
 
 	mw.dualScreenControlBar.prototype = {
 		bind: function(name, handler){
-			this.embedPlayer.bindHelper(name, handler);
+			this.embedPlayer.bindHelper(name + this.bindSuffix, handler);
 		},
 		getComponent: function ( ) {
 			if ( !this.$controlBar ) {
@@ -57,15 +59,26 @@
 			}
 			return this.$controlBar;
 		},
+		getControlBarDropShadow: function() {
+			var _this = this;
+			if (!this.$controlBarDropShadow) {
+				this.$controlBarDropShadow = $("<div class='dualScreen controlBarShadow componentAnimation'></div>")
+					.addClass('componentOff')
+					.on("click mouseover mousemove mouseout touchstart touchend", function (e) {
+						_this.embedPlayer.triggerHelper(e);
+					});
+			}
+			return this.$controlBarDropShadow;
+		},
 
 		addBindings: function () {
 			//Set control bar visiblity handlers
 			var _this = this;
 			this.embedPlayer.getInterface()
-				.on( 'mousemove touchstart', function(){
+				.on( 'mousemove'+this.bindSuffix +' touchstart' + this.bindSuffix, function(){
 					_this.show();
 				})
-				.on( 'mouseleave', function(){
+				.on( 'mouseleave' + this.bindSuffix, function(){
 					if (!mw.isMobileDevice()){
 						_this.hide();
 					}
@@ -85,20 +98,14 @@
 			});
 
 			//add drop shadow containers for control bar
-			this.embedPlayer.getVideoHolder()
-				.prepend($("<div class='dualScreen controlBarShadow componentAnimation'></div>")
-					.addClass('componentOff')
-					.on("click mouseover mousemove mouseout touchstart touchend", function(e){
-						_this.embedPlayer.triggerHelper(e);
-					})
-			);
+			this.embedPlayer.getVideoHolder().prepend(this.getControlBarDropShadow());
 
 			//Cache buttons
 			var buttons = _this.getComponent().find( "span" );
 			var switchBtn = buttons.filter('[data-type="switch"]');
 			//Attach control bar action handlers
 			_this.getComponent()
-				.on( 'click touchstart', 'li > span', function (e) {
+				.on( 'click' +this.bindSuffix +' touchstart' + this.bindSuffix, 'li > span', function (e) {
 					e.stopPropagation();
 					e.preventDefault();
 					var btn = _this.controlBarComponents[this.id];
@@ -112,7 +119,7 @@
 						if (this.id === _this.controlBarComponents.pip.id){
 							switchBtn
 								.addClass("disabled")
-								.tooltip( "option", "content", nativeAppTooltip);
+								.tooltip( "option", "content", _this.nativeAppTooltip);
 						} else if(this.id === _this.controlBarComponents.singleView.id){
 							switchBtn.tooltip( "option", "content", _this.controlBarComponents.switchView.title);
 						}
@@ -124,9 +131,9 @@
 				} );
 
 			if (mw.isNativeApp()){
-				var nativeAppTooltip = "Switching content<br/>on current view<br/>is not yet<br/>supported.<br/><br/>Try single view";
+
 				switchBtn.addClass("disabled" )
-					.attr("title", nativeAppTooltip );
+					.attr("title", this.nativeAppTooltip );
 			}
 
 			//Set tooltips
@@ -166,6 +173,30 @@
 					_this.hide();
 				}, this.menuFadeout );
 			}
+		},
+		set: function(id){
+			if (id) {
+				var component = this.getComponent();
+				var buttons = $("span[data-type=state]", component);
+				buttons.not("#" + id).removeClass("disabled");
+				buttons.filter("#" + id).addClass("disabled");
+				if (mw.isNativeApp()) {
+					var switchBtn = $('span[data-type="switch"]', component);
+					switchBtn
+						.addClass("disabled")
+						.tooltip("option", "content", this.nativeAppTooltip);
+
+				}
+			}
+		},
+		destroy: function(){
+			this.embedPlayer.unbindHelper(this.bindSuffix);
+			this.getComponent().off(this.bindSuffix);
+			this.embedPlayer.getInterface().off(this.bindSuffix);
+			this.getComponent().remove();
+			this.getControlBarDropShadow().remove();
+			this.$controlBar = null;
+			this.$controlBarDropShadow = null;
 		}
 	};
 })( window.mw, window.jQuery );

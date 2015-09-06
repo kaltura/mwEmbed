@@ -23,10 +23,10 @@
 		return (/msie 7/.test(userAgent.toLowerCase()));
 	};
 	mw.isIE8 = function () {
-		return (/msie 8/.test(userAgent.toLowerCase()));
+		return document.documentMode === 8;
 	};
 	mw.isIE9 = function () {
-		return (/msie 9/.test(userAgent.toLowerCase()));
+		return document.documentMode === 9;
 	};
     mw.isIE11 = function () {
         return (/trident\/7.0/.test(userAgent.toLowerCase()));
@@ -137,6 +137,14 @@
 	mw.isIOS8 = function () {
 		// Known Limitation - It will return false for iOS8 Simulator
 		return ( /OS 8_/.test(userAgent) || /Version\/8/.test(userAgent) ) && mw.isIOS();
+	};
+
+	mw.isIOS9 = function () {
+		return ( /OS 9_/.test(userAgent) || /Version\/9/.test(userAgent) ) && mw.isIOS();
+	};
+
+	mw.isIOS8_9 = function () {
+		return mw.isIOS8() || mw.isIOS9();
 	};
 
 	mw.isSilk = function () {

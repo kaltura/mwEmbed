@@ -249,7 +249,10 @@
 						var editHolder = this;
 
 						var getValueDispaly = function (attrName) {
-							var attrValue = getAttrValue(attrName) || '<i>null</i>';
+							var attrValue = getAttrValue(attrName);
+							if( ! attrValue ){
+								return '<i>null</i>';
+							}
 							// stringy if object: 
 							if (typeof attrValue == 'object') {
 								attrValue = JSON.stringify(attrValue);
@@ -264,6 +267,10 @@
 										),
 									attrValue
 								)
+							}
+							if( getAttrType(attrName) == 'string' || getAttrType(attrName) == "hiddenValue" ){
+								// escape any html: 
+								attrValue = $('<span>').text( attrValue );
 							}
 							return attrValue
 						}
@@ -326,6 +333,9 @@
 							}
 
 							var attVal = getAttrValue(attrName);
+							if( getAttrType( attrName ) == 'json' ){
+								attVal = JSON.parse( attVal );
+							}
 							if (attVal !== null) {
 								configuredFlashvars[ pName ] [ attrName ] = attVal;
 							}
@@ -696,10 +706,10 @@
 						.click(function () {
 							// update hash url with settings:
 							var win = ( self == top ) ? window : top;
-							win.location.hash = encodeURIComponent('config=' + JSON.stringify(
-								getChangedSettingsHash()
-							)
-							)
+							win.location.hash = encodeURIComponent( JSON.stringify(
+									getChangedSettingsHash()
+								)
+							);
 
 							flashvarCallback(getConfiguredFlashvars());
 							// restore disabled class ( now that the player is up-to-date )
@@ -866,7 +876,7 @@
 				var shareUrl = '';
 				// check if we are in an iframe or top level page: 
 				var doc = ( self == top ) ? document : top.document;
-				shareUrl = doc.URL.split('#')[0] + '#config=' + JSON.stringify(
+				shareUrl = doc.URL.split('#')[0] + '#' + JSON.stringify(
 					getChangedSettingsHash()
 				);
 
