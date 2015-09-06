@@ -130,7 +130,7 @@ mw.KWidgetSupport.prototype = {
 				height: embedPlayer.getHeight()
 			});
 			if( embedPlayer.getFlashvars( 'loadThumbnailWithKs' ) === true ) {
-				thumbUrl += '?ks=' + embedPlayer.getFlashvars('ks');
+				thumbUrl += '/ks/' + embedPlayer.getFlashvars('ks');
 			}
 			if (mw.getConfig('thumbnailUrl')) {
 				thumbUrl = embedPlayer.evaluate(mw.getConfig('thumbnailUrl'));
@@ -266,6 +266,32 @@ mw.KWidgetSupport.prototype = {
 	updatePlayerContextData: function(embedPlayer, playerData){
 		if( playerData.contextData ){
 			embedPlayer.kalturaContextData = playerData.contextData;
+			if (playerData.contextData &&
+				$.isArray(playerData.contextData.accessControlActions)) {
+
+				var kalturaAccessControlModifyRequestHostRegexActions= $.grep(playerData.contextData.accessControlActions,function(action) {
+					return action.type===7;////KalturaAccessControlModifyRequestHostRegexAction
+				});
+
+				if (kalturaAccessControlModifyRequestHostRegexActions.length>0) {
+					var action=kalturaAccessControlModifyRequestHostRegexActions[0];
+
+					if (action.pattern && action.replacement) {
+						var regExp=new RegExp(action.pattern, "i");
+						var urlsToModify = ['Kaltura.ServiceUrl','Kaltura.StatsServiceUrl','Kaltura.ServiceBase','Kaltura.LiveStatsServiceUrl'];
+						urlsToModify.forEach(function (key) {
+							var serviceUrl = mw.config.get(key);
+							var match = serviceUrl.match( regExp );
+
+							if (match) {
+								serviceUrl = serviceUrl.replace(regExp, action.replacement);
+								mw.config.set(key, serviceUrl);
+							}
+
+						});
+					}
+				}
+			}
 		}
 	},
 	isLive: function(playerData){
@@ -278,11 +304,14 @@ mw.KWidgetSupport.prototype = {
 			mw.setConfig("LeadWithHLSOnFlash", true);
 		}
 
-		if (playerData &&  playerData.meta &&
+		if ( playerData &&  playerData.meta &&
 			(playerData.meta.sourceType === "32" ||
-			playerData.meta.sourceType === "33") ){
+			playerData.meta.sourceType === "33") &&
+            !mw.getConfig('forceHDS') ){
+
 			mw.setConfig("LeadWithHLSOnFlash",true);
             mw.setConfig("isLiveKalturaHLS",true);
+
 		}
 
 		var legacyMulticastSource = this.getLegacyLiveMulticastSource(playerData);
@@ -1733,7 +1762,7 @@ mw.KWidgetSupport.prototype = {
 		if (assetDrmData) {
 			drmData.custom_data = assetDrmData.custom_data;
 			drmData.signature = assetDrmData.signature;
-			drmData.contenId = assetDrmData.contentId;
+			drmData.contentId = assetDrmData.contentId;
 		}
 		return drmData;
 	},
