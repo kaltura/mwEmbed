@@ -175,8 +175,12 @@
 			if ( this.getConfig("receiverLogo") ){
 				this.sendMessage({'type': 'show', 'target': 'logo'});
 			}
+			// add DRM support
+			if (this.drmConfig){
+				this.sendMessage({'type': 'license', 'value': this.drmConfig.contextData.widevineLicenseServerURL});
+				this.log("set license URL to: " + this.drmConfig.contextData.widevineLicenseServerURL);
+			}
 			if (this.getConfig("useKalturaPlayer") === true){
-				//alert("entryID="+this.embedPlayer.kentryid+", uiconfid="+this.embedPlayer.kuiconfid+", publisherid="+this.embedPlayer.kwidgetid.substr(1));
 				this.sendMessage({'type': 'embed', 'publisherID': this.embedPlayer.kwidgetid.substr(1), 'uiconfID': this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid});
 			} else {
 				this.loadMedia();
@@ -419,12 +423,6 @@
 			};
 
 			this.request.customData = json;
-
-			// add DRM support
-			if (this.drmConfig){
-				this.sendMessage({'type': 'license', 'value': this.drmConfig.contextData.widevineLicenseServerURL});
-				this.log("set license URL to: " + this.drmConfig.contextData.widevineLicenseServerURL);
-			}
 
 			this.session.loadMedia(this.request,
 				_this.onMediaDiscovered.bind(this, 'loadMedia'),
