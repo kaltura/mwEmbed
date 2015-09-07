@@ -340,6 +340,12 @@
 					$(_this.getPlayer()).one('hidePlayerControls onFocusOutOfIframe', function () {
 						$(document).trigger('mouseup');
 					});
+					// display playhead on mobile seek
+					if(mw.isMobileDevice()) {
+						$(".scrubber .playHead").css({
+							"transform": "scale(1, 1)"
+						});
+					}
 				},
 				slide: function (event, ui) {
 					_this.updateAttr(ui);
@@ -355,6 +361,14 @@
 						embedPlayer.userSlide = false;
 						embedPlayer.seeking = true;
 						embedPlayer.seek(seekTime);
+						// hide playhead on mobile seek end
+						if(mw.isMobileDevice()) {
+							setTimeout(function(){
+								$(".scrubber .playHead").css({
+									"transform":"scale(0, 0)"
+								});
+							}, 2000);
+						}
 					}
 				}
 			};
