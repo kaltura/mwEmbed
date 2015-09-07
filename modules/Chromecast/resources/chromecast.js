@@ -183,6 +183,7 @@
 			if (this.getConfig("useKalturaPlayer") === true){
 				this.sendMessage({'type': 'embed', 'publisherID': this.embedPlayer.kwidgetid.substr(1), 'uiconfID': this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid});
 			} else {
+				this.sendMessage({'type': 'load'});
 				this.loadMedia();
 			}
 
@@ -270,7 +271,7 @@
 					_this.embedPlayer.receiverName = _this.session.receiver.friendlyName;
 					// set volume and position according to the video settings before switching players
 					_this.setVolume(null, _this.savedVolume);
-					if (_this.currentMediaSession.media.duration){
+					if (_this.currentMediaSession.media.duration && _this.savedPosition > 0){
 						_this.seekMedia(_this.savedPosition / _this.currentMediaSession.media.duration * 100);
 					}
 					// update media duration for durationLable component
