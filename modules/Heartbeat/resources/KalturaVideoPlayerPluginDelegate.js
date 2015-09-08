@@ -116,6 +116,9 @@
     };
 
     KalturaVideoPlayerPluginDelegate.prototype.getAdBreakInfo = function() {
+        if( !_this.adBreakInfo ) {
+            _this.initadBreakInfo();
+        }
         return _this.adBreakInfo;
     };
 
