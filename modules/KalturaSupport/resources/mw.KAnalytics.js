@@ -76,6 +76,7 @@ mw.KAnalytics.prototype = {
 		this.embedPlayer = embedPlayer;
 		if( ! this.kClient ) {
 			this.kClient = mw.kApiGetPartnerClient( embedPlayer.kwidgetid );
+			this.delay = this.embedPlayer.getKalturaConfig( 'statistics', 'delay' ) ? this.embedPlayer.getKalturaConfig( 'statistics', 'delay' )*1000 : 0;
 		}
 		// Remove any old bindings:
 		$( embedPlayer ).unbind( this.bindPostFix );
@@ -216,7 +217,9 @@ mw.KAnalytics.prototype = {
 		// Setup shortcut anonymous function for player bindings
 		var b = function( hookName, eventType ){
 			$( _this.embedPlayer ).bind( hookName + _this.bindPostFix, function(){
-				_this.sendAnalyticsEvent( eventType );
+				setTimeout( function(){
+					_this.sendAnalyticsEvent( eventType );
+				},_this.delay)
 			});
 		};
 
