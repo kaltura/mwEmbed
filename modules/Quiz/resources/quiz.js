@@ -38,7 +38,7 @@
                 'action': 'list',
                 'filter:objectType': 'KalturaQuizUserEntryFilter',
                 'filter:entryIdEqual': _this.embedPlayer.kentryid,
-                'filter:userIdEqualCurrent':'1',
+               'filter:userIdEqualCurrent':'1',
                 'filter:orderBy': '-createdAt'
             }, {
                 'service': 'quiz_quiz',
@@ -53,7 +53,8 @@
                 console.log(data);
 
                 $.grep(data, function (e) {
-                    if (e.objectType || data[1].uiAttributes === undefined ){
+
+                    if ( data[1].uiAttributes === undefined ){
                         console.log('Connect to quiz err -->', e.code, e.message);
                         _this._errMsg();
                         return false;
@@ -91,11 +92,11 @@
                     _this.getKClient().doRequest(createQuizuserEntryId, function (data) {
                         console.log('create user entry Id->');
                         console.log(data);
-                        if (data.objectType){
-                            console.log('Add KQ user entry id err -->', data.code, data.message);
-                            _this._errMsg();
-                            return false;
-                        }
+                        //if (data.objectType==='KalturaAPIException'){
+                        //    console.log('Add KQ user entry id err -->', data.code, data.message);
+                        //    _this._errMsg();
+                        //    return false;
+                        //}
                         _this.kQuizUserEntryId = data.id;
                         console.log('created kQuizUserEntryId-----> ' +_this.kQuizUserEntryId);
                         _this._getQuestionCpAPI(_this._populateCpObject);
@@ -115,11 +116,15 @@
                     'entryId': embedPlayer.kentryid
                 };
                 _this.getKClient().doRequest(entryRequest, function (data) {
-                    if (data.objectType){
-                        _this._errMsg();
-                        console.log('Get entry data err -->', data.code, data.message);
-                        return false;
-                    }
+
+
+                      //  if (data.objectType.indexOf("exception") >= 0){}
+                    //        debugger
+                    //if (data.objectType==='KalturaAPIException'){
+                    //    _this._errMsg();
+                    //    console.log('Get entry data err -->', data.code, data.message);
+                    //    return false;
+                    //}
                     _this.entryData = data;
                     _this._initParams();
 
@@ -266,7 +271,7 @@
                     $('#' + key).removeClass('single-answer-box')
                         .addClass(function(){
                             $(this).addClass('single-answer-box-small')
-                                .after($('<div></div>').addClass("single-answer-box-apply").text(gM('mwe-quiz-applied'))
+                                .after($('<div></div>').addClass("single-answer-box-apply disable").text(gM('mwe-quiz-applied'))
                             )
                         });
                 }
@@ -355,15 +360,15 @@
                _this.getKClient().doRequest(quizSetAnswer, function (data) {
                    console.log(quizSetAnswer);
                    console.log(data);
-                   if (data.objectType) {
-                       console.log('Add Update answer err -->', data.code, data.message);
-                       _this._errMsg();
-                   } else {
+                   //if (data.objectType==='KalturaAPIException') {
+                   //    console.log('Add Update answer err -->', data.code, data.message);
+                   //    _this._errMsg();
+                   //} else {
                        $.cpObject.cpArray[_this.q2i(questionNr)].answerCpId = data.id;
                        $.cpObject.cpArray[_this.q2i(questionNr)].isCorrect = data.isCorrect;
                        $.cpObject.cpArray[_this.q2i(questionNr)].explanation = data.explanation;
                        $.cpObject.cpArray[_this.q2i(questionNr)].correctAnswerKeys = data.correctAnswerKeys;
-                   }
+                 //  }
                });
         },
         almostDone: function (unAnsweredArr) {
@@ -538,11 +543,11 @@
                 console.log('submit quiz --');
                 console.log(data);
 
-                if (data.objectType){
-                    console.log('Submit Quiz err -->',data.code, data.message);
-                    _this._errMsg();
-                    return false
-                }
+                //if (data.objectType==='KalturaAPIException'){
+                //    console.log('Submit Quiz err -->',data.code, data.message);
+                //    _this._errMsg();
+                //    return false
+                //}
                 $.cpObject = {};
 
                 _this._getQuestionCpAPI(_this._populateCpObject)
@@ -653,7 +658,7 @@
                 console.log("QA CP->");
                 console.log(data);
                 $.grep(data, function (e) {
-                    if (e.objectType){
+                    if (e.objectType==='KalturaAPIException'){
                         console.log('Get CP question or answer err -->', e.code, e.message);
                         _this._errMsg();
                     }
