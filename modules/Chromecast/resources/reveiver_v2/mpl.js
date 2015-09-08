@@ -19,15 +19,13 @@ var mediaElement = null;  // media element
 var mediaHost = null;  // an instance of cast.player.api.Host
 var mediaProtocol = null;  // an instance of cast.player.api.Protocol
 var mediaPlayer = null;  // an instance of cast.player.api.Player
+var playerInitialized = false;
 
 onload = function () {
 	cast.receiver.logger.setLevelValue(cast.receiver.LoggerLevel.DEBUG);
 	cast.player.api.setLoggerLevel(cast.player.api.LoggerLevel.DEBUG);
 
-//	mediaElement = document.getElementById('receiverVideoElement');
-//	mediaElement.autoplay = false;
 	mediaManager = new cast.receiver.MediaManager(document.getElementById('receiverVideoElement'));
-//	setMediaElementEvents(mediaElement);
 
 	castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
 	messageBus = castReceiverManager.getCastMessageBus('urn:x-cast:com.kaltura.cast.player');
@@ -104,7 +102,13 @@ onload = function () {
 		} else if (payload['type'] === 'customData') {
 			customData = payload['value'];
 			setDebugMessage('customData', customData);
-		} else if (payload['type'] === 'embed') {
+		} else if (payload['type'] === 'load') {
+			mediaElement = document.getElementById('receiverVideoElement');
+			mediaElement.autoplay = false;
+			setMediaElementEvents(mediaElement);
+			mediaManager.setMediaElement(mediaElement);
+			setMediaManagerEvents();
+		} else if (payload['type'] === 'embed' && !playerInitialized) {
 			var publisherID = payload['publisherID'];
 			var uiconfID = payload['uiconfID'];
 			var entryID = payload['entryID'];
@@ -117,27 +121,35 @@ onload = function () {
 				"wid": "_" + publisherID,
 				"uiconf_id": uiconfID,
 				"readyCallback": function (playerId) {
-					messageBus.broadcast("here1");
-					var kdp = document.getElementById(playerId);
-					var iframe = kdp.getElementsByTagName("iframe");
-					var innerDoc = iframe[0].contentDocument || iframe.contentWindow.document;
-					mediaElement = innerDoc.getElementsByTagName("video")[0];
-					mediaElement.autoplay = false;
-					setMediaElementEvents(mediaElement);
+					if (!playerInitialized){
+						playerInitialized = true;
+						//setTimeout(function(){
+						var kdp = document.getElementById(playerId);
+						var iframe = kdp.getElementsByTagName("iframe");
+						var innerDoc = iframe[0].contentDocument || iframe.contentWindow.document;
+						mediaElement = innerDoc.getElementsByTagName("video")[0];
+						mediaElement.autoplay = false;
+						setMediaElementEvents(mediaElement);
 
-					mediaManager.setMediaElement(mediaElement);
-					setMediaManagerEvents();
+						//mediaManager.resetMediaElement();
+						mediaManager.setMediaElement(mediaElement);
+						setMediaManagerEvents();
+						messageBus.broadcast("readyForMedia");
 
-					messageBus.broadcast("readyForMedia");
+						kdp.sendNotification("doPlay");
+						//kdp.sendNotification("doPause");
+						//},7000);
 
-					kdp.sendNotification("doPlay");
-					kdp.sendNotification("doPause");
+					}
 
 				},
 				"flashvars": {
 					'controlBarContainer': {
 						'plugin': true,
 						"hover": true
+					},
+					"multiDrm": {
+						'plugin': false
 					}
 				},
 				"cache_st": 1438601385,

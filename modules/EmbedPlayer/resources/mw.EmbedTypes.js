@@ -31,6 +31,9 @@ var webmNativePlayer = new mw.MediaPlayer( 'webmNative', ['video/webm'], 'Native
 // Image Overlay player ( extends native )
 var imageOverlayPlayer = new mw.MediaPlayer( 'imageOverlay', ['image/jpeg', 'image/png'], 'ImageOverlay' );
 
+// Chromecast receiver
+var chromecastReceiverPlayer = new mw.MediaPlayer( 'chromecastReceiver', ['video/h264', 'video/mp4'], 'ChromecastReceiver' );
+
 // VLC player
 //var vlcMimeList = ['video/ogg', 'audio/ogg', 'audio/mpeg', 'application/ogg', 'video/x-flv', 'video/mp4', 'video/h264', 'video/x-msvideo', 'video/mpeg', 'video/3gp'];
 //var vlcPlayer = new mw.MediaPlayer( 'vlc-player', vlcMimeList, 'Vlc' );
@@ -256,6 +259,9 @@ mw.EmbedTypes = {
 		return hasObj;
 	},
 
+	getChromecastReceiverPlayer : function () {
+		return chromecastReceiverPlayer;
+	},
 	getKplayer : function () {
 		return kplayer;
 	},
