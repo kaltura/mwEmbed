@@ -20,6 +20,9 @@
 			this.addBindings();
 		},
 		isSafeEnviornment: function(){
+			if( (mw.isIE9() || mw.isIE8()) && !mw.getConfig('EmbedPlayer.IsFriendlyIframe') ){
+				return false;
+			}
 			return mw.getConfig( 'EmbedPlayer.EnableFullscreen' );
 		},
 		getComponent: function() {

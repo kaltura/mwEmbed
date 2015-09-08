@@ -120,11 +120,13 @@ mw.KAdPlayer.prototype = {
 
 		// Setup some configuration for done state:
 		adSlot.doneFunctions = [];
+		// skip offset can be stored on the button or the vast plugin :(
+		var skipOffset =  _this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' ) ||  _this.embedPlayer.getKalturaConfig( 'vast', 'skipOffset' )
 		// set skip offset from config for all adds if defined 
-		if( _this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' ) ){
+		if( skipOffset ){
 			var i = 0;
 			for( i = 0; i < adSlot.ads.length; i++ ){
-				adSlot.ads[i].skipoffset =  _this.embedPlayer.getKalturaConfig( 'skipBtn', 'skipOffset' );
+				adSlot.ads[i].skipoffset = skipOffset;
 			}
 		}
 
@@ -336,7 +338,7 @@ mw.KAdPlayer.prototype = {
 	 */
 	displayVideoFile: function( adSlot, adConf ){
 		var _this = this;
-        _this.podStartTime = _this.embedPlayer.currentTime;
+		_this.podStartTime = _this.embedPlayer.currentTime;
 		// check that we have a video to display:
 		var targetSource =  _this.embedPlayer.getCompatibleSource( adConf.videoFiles );
 		if( !targetSource ){
@@ -355,28 +357,28 @@ mw.KAdPlayer.prototype = {
 
 
 			_this.playVideoSibling(
-            targetSource,
+				targetSource,
 				function( vid ) {
 					_this.addAdBindings( vid, adSlot, adConf );
 					$( _this.embedPlayer ).trigger( 'playing' ); // this will update the player UI to playing mode
-                    // trigger ad play event
-                    _this.waitingForLoadedData = true;
-                    $(vid).on("loadeddata", function(){
-                        if(_this.waitingForLoadedData){
-                            // collect POD parameters is exists (adSlot.sequencedAds = POD)
-                            var podPosition;
-                            var podStartTime;
-                            if(adSlot.sequencedAds) {
-                                podPosition = adConf.sequence;
-                                podStartTime = _this.podStartTime;
-                            }
-                            $(_this.embedPlayer).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex+1, vid.duration, vid.currentSrc, podPosition, podStartTime]);
-                            _this.waitingForLoadedData = false;
-                        }
-                    });
-                    if (_this.embedPlayer.muted){
-                        _this.adSibling.changeVolume(0);
-                    }
+					// trigger ad play event
+					_this.waitingForLoadedData = true;
+					$(vid).on("loadeddata", function(){
+						if(_this.waitingForLoadedData){
+							// collect POD parameters is exists (adSlot.sequencedAds = POD)
+							var podPosition;
+							var podStartTime;
+							if(adSlot.sequencedAds) {
+								podPosition = adConf.sequence;
+								podStartTime = _this.podStartTime;
+							}
+							$(_this.embedPlayer).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex+1, vid.duration, vid.currentSrc, podPosition, podStartTime]);
+							_this.waitingForLoadedData = false;
+						}
+					});
+					if (_this.embedPlayer.muted){
+						_this.adSibling.changeVolume(0);
+					}
 				},
 				function(){
 					adSlot.playbackDone();
@@ -466,7 +468,7 @@ mw.KAdPlayer.prototype = {
 					_this.pauseAd();
 					return false;
 				});
-				// prevent mouseup propegation to prevent the clickthrough url to open on IE8 / IE9 (see mw.PlayerLayoutBuilder.js, line 567)
+				// prevent mouseup propagation to prevent the clickthrough url to open on IE8 / IE9 (see mw.PlayerLayoutBuilder.js, line 567)
 				$( '#' + iconId ).bind('mouseup', function(e){
 					e = e || window.event;
 					e.preventDefault();
@@ -482,10 +484,28 @@ mw.KAdPlayer.prototype = {
 			
 			adConf.selectedIcon = icon;		
 		}
+		// add any available ad metadata before triggering onAdOpen
+		this.embedPlayer.adTimeline.updateSequenceProxy(
+			'activePluginMetadata',
+			{
+				'ID': adConf.id,
+				'width': targetSource.width,
+				'height': targetSource.height,
+				'mimeType': targetSource.type,
+				'url': targetSource.getSrc(),
+				'duration': adConf.duration, // can also be read from AdSupport_AdUpdateDuration event
+				'type': adSlot.type, // value could be preroll/midroll/postroll
+				'name': adSlot.adSystem,
+				'title': adSlot.title, // not commonly present
+				'description' : adSlot.description,
+				'iabCategory': null, // not available
+				'CampaignID': null // not available 
+			}
+		);
 		// Fire Impression
 		this.fireImpressionBeacons( adConf );
-        // dispatch adOpen event
-        $( this.embedPlayer).trigger( 'onAdOpen',[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex] );
+		// dispatch adOpen event
+		$( this.embedPlayer).trigger( 'onAdOpen',[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex] );
 	},
 	pauseAd: function(){
 		if (this.embedPlayer.evaluate("{vast.pauseAdOnClick}") !== false) {
@@ -728,27 +748,27 @@ mw.KAdPlayer.prototype = {
 		$( embedPlayer ).bind('volumeChanged' + _this.trackingBindPostfix, function( e, changeValue ){
 			// when using siblings we need to adjust the sibling volume on volumeChange evnet.
 			if( _this.isVideoSiblingEnabled() && _this.adSibling) {
-                _this.adSibling.changeVolume(changeValue);
+				_this.adSibling.changeVolume(changeValue);
 
 			}
 		});
 
-        embedPlayer.bindHelper( 'doPause' + _this.trackingBindPostfix, function(){
-		    if( _this.isVideoSiblingEnabled() && _this.adSibling) {
-			    $( _this.embedPlayer ).trigger( 'onPauseInterfaceUpdate' ); // update player interface
-		    } else if ( !_this.isVideoSiblingEnabled() ) {
+		embedPlayer.bindHelper( 'doPause' + _this.trackingBindPostfix, function(){
+			if( _this.isVideoSiblingEnabled() && _this.adSibling) {
+				$( _this.embedPlayer ).trigger( 'onPauseInterfaceUpdate' ); // update player interface
+			} else if ( !_this.isVideoSiblingEnabled() ) {
 				$( embedPlayer ).trigger( "onPlayerStateChange", ["pause", _this.embedPlayer.currentState] );
 			}
 			vid.pause();
 
-        });
+		});
 
-        embedPlayer.bindHelper( 'doPlay' + _this.trackingBindPostfix, function(){
-		    if( _this.isVideoSiblingEnabled() && _this.adSibling) {
-			    $( _this.embedPlayer ).trigger( 'playing' ); // update player interface
-		    }
-            vid.play();
-        });
+		embedPlayer.bindHelper( 'doPlay' + _this.trackingBindPostfix, function(){
+			if( _this.isVideoSiblingEnabled() && _this.adSibling) {
+				$( _this.embedPlayer ).trigger( 'playing' ); // update player interface
+			}
+			vid.play();
+		});
 
 		if( !embedPlayer.isPersistentNativePlayer() ) {
 			// Make sure we remove large play button
@@ -768,15 +788,15 @@ mw.KAdPlayer.prototype = {
 
 		}
 	},
-    /**
-     * Skip all ad slots if set:
-     */
+	/**
+	 * Skip all ad slots if set:
+	 */
 	stop: function(){
-      if( this.currentAdSlot && ( this.currentAdSlot.adIndex < this.currentAdSlot.ads.length ) ){
-            this.currentAdSlot.playbackDone( true );
-        }
-    },
-    /**
+	  if( this.currentAdSlot && ( this.currentAdSlot.adIndex < this.currentAdSlot.ads.length ) ){
+			this.currentAdSlot.playbackDone( true );
+		}
+	},
+	/**
 	 * @param timeString string in HH:MM:SS.mmm format
 	 * returns value in seconds
 	 **/
@@ -1169,8 +1189,8 @@ mw.KAdPlayer.prototype = {
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'skipOffsetRemaining', offsetRemaining );
 				if (offsetRemaining <= 0) {
 					_this.sendVASTBeacon( trackingEvents, 'progress' );
-                    $('#' + _this.embedPlayer.id + '_ad_skipNotice' ).remove();
-                    $('#' + _this.embedPlayer.id + '_ad_skipBtn' ).show();
+					$('#' + _this.embedPlayer.id + '_ad_skipNotice' ).remove();
+					$('#' + _this.embedPlayer.id + '_ad_skipBtn' ).show();
 				}
 			}
 			if (adConf.selectedIcon) {
@@ -1370,7 +1390,7 @@ mw.KAdPlayer.prototype = {
 					}
 				}
 				var finishPlaying = function () {
-                    if ( isJs ) {
+					if ( isJs ) {
 						_this.embedPlayer.getInterface().find( '.mwEmbedPlayer' ).show();
 					}
 					$( '#' + vpaidId ).remove();
@@ -1487,7 +1507,7 @@ mw.KAdPlayer.prototype = {
 
 				VPAIDObj.subscribe( function ( message ) {
 					_this.sendVASTBeacon( adConf.trackingEvents, 'start' );
-                    $(_this.embedPlayer).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex+1, VPAIDObj.duration, VPAIDObj.id]);
+					$(_this.embedPlayer).trigger("onAdPlay",[adConf.id, adConf.adSystem, adSlot.type, adSlot.adIndex+1, VPAIDObj.duration, VPAIDObj.id]);
 				}, 'AdVideoStart' );
 
 				VPAIDObj.subscribe( function ( message ) {
@@ -1534,7 +1554,7 @@ mw.KAdPlayer.prototype = {
 
 				if ( isJs ) {
 					//flash vpaid will call initAd itself
-					VPAIDObj.initAd( _this.embedPlayer.getWidth(), _this.embedPlayer.getHeight(), 'normal', 512, creativeData, environmentVars );
+					VPAIDObj.initAd( _this.embedPlayer.getWidth(), _this.embedPlayer.getVideoHolder().height(), 'normal', 512, creativeData, environmentVars );
 					var bindPostFix = ".jsvpaid";
 					if ( adSlot.type == "overlay" ){
 						// add play / pause binding to trigger VPAID pauseAd and resumeAd
