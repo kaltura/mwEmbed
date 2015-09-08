@@ -64,7 +64,7 @@
 
                 if (data[0].totalCount > 0 &&  !$.isEmptyObject(data[0].objects[0])) {
                     _this.kQuizUserEntryId = data[0].objects[0].id;
-                    console.log('kQuizUserEntryId-----> ' +_this.kQuizUserEntryId);
+                    console.log('exist kQuizUserEntryId-----> ' +_this.kQuizUserEntryId);
 
                     switch (String(data[0].objects[0].status)) {
                         case 'quiz.3':
@@ -97,17 +97,17 @@
                             return false;
                         }
                         _this.kQuizUserEntryId = data.id;
-                        console.log('kQuizUserEntryId-----> ' +_this.kQuizUserEntryId);
+                        console.log('created kQuizUserEntryId-----> ' +_this.kQuizUserEntryId);
                         _this._getQuestionCpAPI(_this._populateCpObject);
                     });
                 }
-
             });
             this.addBindings();
         },
         addBindings: function () {
             var _this = this;
             var embedPlayer = this.getPlayer();
+            var firstPlay = true;
             this.bind('layoutBuildDone', function () {
                 var entryRequest = {
                     'service': 'baseEntry',
@@ -128,6 +128,8 @@
 
             this.bind('KalturaSupport_CuePointReached', function (e, cuePointObj) {
                 if(!_this.isSeekingIVQ) _this.qCuePointHandler(e, cuePointObj);
+                if(_this.enablePlayDuringScreen) _this.enablePlayDuringScreen = false;
+
             });
 
             this.bind('showScreen', function () {
@@ -136,23 +138,21 @@
             });
 
             this.bind('firstPlay', function () {
-                setTimeout(function () {
-                    _this._showWelcomeScreen();
-                    } ,310);
+                _this.enablePlayDuringScreen = true;
+                embedPlayer.pause();
+                embedPlayer.sendNotification('doStop');
+                _this._showWelcomeScreen();
             });
 
-//            this.bind('onplay', function () {
-  //          });
+            this.bind('onplay', function (e) {
+
+          });
 
             this.bind('seeked', function () {
                 setTimeout(function () {_this.isSeekingIVQ = false;}, 0);
             });
             this.bind('seeking', function () {
                 _this.isSeekingIVQ = true;
-            });
-
-            this.bind('mediaError', function () {
-                alert('');
             });
 
             embedPlayer.addJsListener( 'kdpReady', function(){
@@ -183,6 +183,7 @@
         _continuePlay: function () {
             var _this = this, embedPlayer = this.getPlayer();
             if (!_this.isErr) {
+                if (_this.isScreenVisible())_this.removeScreen();
                 embedPlayer.enablePlayControls();
                 embedPlayer.play();
                 _this.displayBubbles();
@@ -202,9 +203,7 @@
         },
         _showWelcomeScreen: function () {
             var _this = this;
-
             _this.removeShowScreen("welcome");
-
             $(".welcome").html(gM('mwe-quiz-welcome'));
             $(".confirm-box").html(gM('mwe-quiz-plsWait'));
 
@@ -224,9 +223,6 @@
                 });
                 $(".confirm-box").html(gM('mwe-quiz-continue'))
                     .on('click', function () {
-                     //   var anUnswered = _this.getUnansweredQuestNrs();
-                     //   if (anUnswered) _this.almostDone(anUnswered);
-
                     _this.checkIfDone(0);
                     });
 
@@ -264,7 +260,6 @@
             $.each(cPo.answeres, function (key, value) {
                 if (key == $.cpObject.cpArray[questionNr].selectedAnswer) {
                     $('#' + key).parent().addClass("wide single-answer-box-bk-applied disable");
-
                     //if (_this.reviewMode){
                     //    $('#' + key).parent().addClass('disable')
                     //}
@@ -354,21 +349,22 @@
                 );
         },
         _addAnswerAPI: function (questionNr, quizSetAnswer) {
-        console.log("add answer api set answer get data  --------------------");
+        console.log("add answer api get data  --------------------");
             var _this = this;
-            _this.getKClient().doRequest(quizSetAnswer, function (data) {
-                console.log(quizSetAnswer);
-                console.log(data);
-                if (data.objectType) {
-                        console.log('Add Update answer err -->', data.code, data.message);
-                        _this._errMsg();
-                    }else{
-                    $.cpObject.cpArray[_this.q2i(questionNr)].answerCpId = data.id;
-                    $.cpObject.cpArray[_this.q2i(questionNr)].isCorrect = data.isCorrect;
-                    $.cpObject.cpArray[_this.q2i(questionNr)].explanation = data.explanation;
-                    $.cpObject.cpArray[_this.q2i(questionNr)].correctAnswerKeys = data.correctAnswerKeys;
-                    }
-                });
+
+               _this.getKClient().doRequest(quizSetAnswer, function (data) {
+                   console.log(quizSetAnswer);
+                   console.log(data);
+                   if (data.objectType) {
+                       console.log('Add Update answer err -->', data.code, data.message);
+                       _this._errMsg();
+                   } else {
+                       $.cpObject.cpArray[_this.q2i(questionNr)].answerCpId = data.id;
+                       $.cpObject.cpArray[_this.q2i(questionNr)].isCorrect = data.isCorrect;
+                       $.cpObject.cpArray[_this.q2i(questionNr)].explanation = data.explanation;
+                       $.cpObject.cpArray[_this.q2i(questionNr)].correctAnswerKeys = data.correctAnswerKeys;
+                   }
+               });
         },
         almostDone: function (unAnsweredArr) {
             var _this = this,embedPlayer = _this.getPlayer();
@@ -376,7 +372,7 @@
             _this.removeShowScreen("hexScreen");
 
             $("div").removeClass('confirm-box');
-            $(".title-text").html(gM('mwe-quiz-almostDone'));
+            $(".title-text").html(gM('mwe-quiz-almostDone')).addClass("padding14");
             $(".sub-text").html(gM('mwe-quiz-remainUnAnswered') + '</br>' + gM('mwe-quiz-pressRelevatToAnswer'));
 
             _this.displayHex(_this.setHexContainerPos("current"),unAnsweredArr);
@@ -492,9 +488,11 @@
                     });
                 }
             } else {
-                $(".ftr-left").append($('<span> ' + gM('mwe-quiz-question') + ' ' + this.i2q(questionNr) + '/' + $.cpObject.cpArray.length + '</span>').css("float", "right"))
-                    .append($('<div></div>').addClass("pie").css("float", "right"))
-                    .append($('<span>' + (_this.getUnansweredQuestNrs()).length + ' UN-ANSWERED' + '</span>').css("float", "right"));
+                $(".ftr-left").append($('<span> ' + gM('mwe-quiz-question') + ' ' + this.i2q(questionNr) + '/'
+                                + $.cpObject.cpArray.length + '</span>').css("float", "right"))
+                            .append($('<div></div>').addClass("pie").css("float", "right"))
+                            .append($('<span>' + (_this.getUnansweredQuestNrs()).length + ' '
+                                + gM('mwe-quiz-unanswered') + '</span>').css("float", "right"));
                 if (_this.canSkip) {
                     $(".ftr-right").html(gM('mwe-quiz-skipForNow')).on('click', function () {
                         _this.checkIfDone(questionNr);
@@ -537,20 +535,32 @@
                 'id': _this.kQuizUserEntryId
             };
             _this.getKClient().doRequest(submitQuizParams, function (data) {
+                console.log('submit quiz --');
+                console.log(data);
+
                 if (data.objectType){
                     console.log('Submit Quiz err -->',data.code, data.message);
                     _this._errMsg();
                     return false
                 }
-                setTimeout(function () {
-                    _this._getQuestionCpAPI(_this._populateCpObject)
+                $.cpObject = {};
 
-                }, 0);
+                _this._getQuestionCpAPI(_this._populateCpObject)
 
-                _this.score = Math.round(data.score *100);
-                setTimeout(function () {
+                _this._checkCuepointsReady(function(){
+                    _this.score = Math.round(data.score *100);
                     _this._submitted(_this.score);
-                },2500);
+                });
+
+                //setTimeout(function () {
+                //    _this._getQuestionCpAPI(_this._populateCpObject)
+                //
+                //}, 0);
+
+//                _this.score = Math.round(data.score *100);
+ //               setTimeout(function () {
+  //                  _this._submitted(_this.score);
+   //             },2500);
 
             });
         },
@@ -558,15 +568,13 @@
             var _this = this,cpArray = $.cpObject.cpArray;
             _this.removeShowScreen("hexScreen");
 
-            $(".title-text").html("Submitted");
+            $(".title-text").html("Submitted").addClass("padding8");
 
             if (_this.showTotalScore){
                 if (!$.quizParams.showCorrectAfterSubmission) {
-
-                    $(".sub-text").html(gM('mwe-quiz-completedScore') + '<h2>' + score + '</h2>');// %");
-
+                    $(".sub-text").html(gM('mwe-quiz-completedScore') + '<span class="scoreBig">' + score + '</span>');// %");
                 } else {
-                    $(".sub-text").html(gM('mwe-quiz-completedScore') + '<h2>' + score + '</h2>' + gM('mwe-quiz-reviewSubmit'));
+                    $(".sub-text").html(gM('mwe-quiz-completedScore') + '<span class="scoreBig">' + score + '</span></br>' + gM('mwe-quiz-reviewSubmit'));
 
                     _this.displayHex(_this.setHexContainerPos("current"),cpArray);
 
@@ -600,13 +608,13 @@
                 _this._displayHW('why',selectedQuestion,(gM('mwe-quiz-why')),$.cpObject.cpArray[selectedQuestion].explanation)
             }
             $(".reviewAnswerNr").append(_this.i2q(selectedQuestion));
-            $(".theQuestion").html("Q:  " + $.cpObject.cpArray[selectedQuestion].question);
-            $(".yourAnswerText").html("Your Answer:");
+            $(".theQuestion").html(gM('mwe-quiz-q') + "  " + $.cpObject.cpArray[selectedQuestion].question);
+            $(".yourAnswerText").html(gM('mwe-quiz-yourAnswer'));
             $(".yourAnswer").html($.cpObject.cpArray[selectedQuestion].answeres[$.cpObject.cpArray[selectedQuestion].selectedAnswer]);
             if (!$.cpObject.cpArray[selectedQuestion].isCorrect) {
                 $(".yourAnswer").addClass("wrongAnswer")
             }
-            $(".correctAnswerText").html("Correct Answer:");
+            $(".correctAnswerText").html(gM('mwe-quiz-correctAnswer'));
 
             $(".correctAnswer").html(function () {
                 if (!$.isEmptyObject($.cpObject.cpArray[selectedQuestion].correctAnswerKeys)) {
@@ -616,15 +624,15 @@
                         _this.q2i($.cpObject.cpArray[selectedQuestion].correctAnswerKeys[0].value)
                         ];
                 }
-                else {return "not defined"}
+                else {return " "}
             });
-            $('.gotItBox').html("Got It !").bind('click', function () {
+            $('.gotItBox').html(gM('mwe-quiz-gotIt')).bind('click', function () {
                 _this._submitted(_this.score);
             });
         },
         _getQuestionCpAPI: function (callback) {
             var _this = this;
-            var embedPlayer = this.embedPlayer;
+          //  var embedPlayer = this.embedPlayer;
             var getCp = [{
                 'service': 'cuepoint_cuepoint',
                 'action': 'list',
@@ -695,7 +703,6 @@
                     cpId: data[0].objects[i].id,
                     cpEntryId: data[0].objects[i].entryId,
                     answerCpId: ansP.answerCpId
-
                 });
             }
             $.cpObject.cpArray = cpArray;
@@ -704,11 +711,9 @@
         },
         removeShowScreen:function(state){
             var _this = this,embedPlayer = this.getPlayer();
-           // embedPlayer.pause();
             this.removeScreen();
             _this.state = state;
             this.showScreen();
-
             embedPlayer.getInterface().find(".bubble-cont").empty().remove();
             embedPlayer.getInterface().find(".bubble").empty().remove();
         },
@@ -723,6 +728,7 @@
             var _this = this,embedPlayer = this.getPlayer();
 
             _this.sliceArray = _this.buildSliceArr(6,cpArray.length);
+            console.log(_this.sliceArray);
             var displayRows = $.grep(_this.sliceArray, function (element, index) {
                 return element.rContPos == hexPositionContDisplay;
             });
@@ -734,12 +740,20 @@
             embedPlayer.getInterface().find(".display-all-container").hide().fadeIn(400);
 
             if((embedPlayer.getInterface().find(".second-row").length) == 0 ){
-                embedPlayer.getInterface().find(".display-all-container").addClass("margin-top13");
+                embedPlayer.getInterface().find(".display-all-container").addClass("margin-top7");
                 embedPlayer.getInterface().find(".left-arrow").addClass("margin-top4");
             }
             else{
-                embedPlayer.getInterface().find(".display-all-container").removeClass("margin-top13");
+                embedPlayer.getInterface().find(".display-all-container").removeClass("margin-top7");
                 embedPlayer.getInterface().find(".left-arrow").removeClass("margin-top4");
+
+
+                if($(".second-row li").length % 2 == 0){
+                    embedPlayer.getInterface().find(".second-row").removeClass("padding-left11");
+                }
+                else{
+                    embedPlayer.getInterface().find(".second-row").addClass("padding-left11");
+                }
             }
 
             switch(_this._checkHexStatusForArrow()) {
@@ -779,12 +793,14 @@
                 rStart = i;
                 rEnd = i + hexInRow;
                 if (!switcher) {
+                    rEnd = i + hexInRow;
                     arr.push({rStart: i, rEnd: i + hexInRow, rContPos: cp});
                 }
                 else {
+                    rEnd = i + hexInRow2;
                     arr.push({rStart: i, rEnd: i + hexInRow2 , rContPos: cp});
                 }
-                    i = rEnd + 1;
+                i = rEnd + 1;
                 if (switcher) cp ++;
                 switcher = !switcher;
             } while (i < cpArrayLen);
@@ -885,8 +901,6 @@
         _errMsg:function(){
             var _this = this;
             _this.isErr = true;
-         //   var embedPlayer = this.getPlayer();
-         // embedPlayer.pause();
             _this.removeShowScreen("contentScreen");
             $(".sub-text").html(gM('mwe-quiz-err-msg'));
             $("div").removeClass('confirm-box');
