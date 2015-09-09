@@ -32,9 +32,9 @@
 					if (newState == 'start') {
 						_this.hide(true);
 					}
-                    if (newState == 'play') {
-                        _this.hide(true);
-                    }
+					if (newState == 'play') {
+						_this.hide(true);
+					}
 				});
 			},
 			show: function(){
