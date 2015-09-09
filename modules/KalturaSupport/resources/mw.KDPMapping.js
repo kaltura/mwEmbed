@@ -1239,6 +1239,9 @@
 						}
 						// Update the entry id
 						embedPlayer.kentryid = notificationData.entryId;
+						if (notificationData.referenceId){
+							embedPlayer.referenceId = notificationData.referenceId;
+						}
 						// Clear player & entry meta
 						embedPlayer.kalturaPlayerMetaData = null;
 						embedPlayer.kalturaEntryMetaData = null;

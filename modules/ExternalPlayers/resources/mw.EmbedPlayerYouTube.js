@@ -362,6 +362,17 @@
 				}
 			});
 
+			this.bindHelper ('onChangeMedia' + this.bindPostfix , function(){
+				if (mw.isMobileDevice()){
+					$(".largePlayBtn").css("opacity",1);
+					$(".mwEmbedPlayer").width("100%");
+					$( _this ).trigger( 'onEnableInterfaceComponents', []);
+				}
+				if (_this.referenceId){
+					_this.getPlayerElement().loadVideoById(_this.referenceId);
+				}
+			});
+
 			this.bindHelper ('playerReady' + this.bindPostfix , function(){
 				$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
 				if (mw.isMobileDevice()){
@@ -410,26 +421,6 @@
 				        _this.play();
 					}
 				}
-			});
-		},
-		changeMedia: function(){
-			var _this = this;
-			if (mw.isMobileDevice()){
-				$(".largePlayBtn").css("opacity",1);
-				$(".mwEmbedPlayer").width("100%");
-				$( _this ).trigger( 'onEnableInterfaceComponents', []);
-			}
-			// all we have is the entry ID. We need to get the YouTube video ID
-			var request = {
-				'service': 'baseEntry',
-				'action': 'get',
-				'entryId': this.kentryid
-			};
-			this.getKClient().doRequest(request, function (entryDataResult) {
-				if (entryDataResult.referenceId){
-					_this.getPlayerElement().loadVideoById(entryDataResult.referenceId);
-				}
-				_this.parent_changeMedia();
 			});
 		},
 		getKClient: function () {
