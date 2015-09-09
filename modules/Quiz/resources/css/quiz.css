@@ -46,6 +46,10 @@
 .padding23{
     padding-top:23vh !important;
 }
+.padding35{
+    padding-top:35vh !important;
+}
+
 center {
     margin-left: auto;
     margin-right: auto;
@@ -79,7 +83,7 @@ center {
 }
 .welcome {
     font-family: "LatoBlack";
-    padding-top: 4vw;
+    padding-top: 7vw;
     padding-left: 4vw;
     color: #ffffff;
     font-size: 8vw;
@@ -90,17 +94,26 @@ center {
 
 .welcomeMessage{
     font-family: "LatoLight";
+    font-size: 5.4vh;
     color: #ffffff;
     padding-left: 4vw;
     padding-top: 6vh;
-    font-size: 5.5vh;
+    font-weight: 300;
+    text-align: left;
+    transform: scaleY(1.0009);
+    width: 77vw;
+}
+.InvideoTipMessage {
+    font-family: "LatoLight";
+    font-size: 4vh;
+    color: #ffffff;
+    padding-left: 4vw;
+    padding-top: 7vh;
     font-weight: 300;
     text-align: left;
     transform: scaleY(1.0009);
     width: 92vw;
-}
-.InvideoTipMessage {
-    font-size: 5vh;
+
 }
 .screen-content {
     position:fixed;
@@ -141,20 +154,20 @@ center {
 
 .confirm-box{
     font-family: "Lato";
-    font-size: 3vw;
-    font-weight: bold;
+    font-size: 2.4vw;
     text-align: center;
     color: rgb(255, 255, 255);
-    width: 30%;
-    height:8vw;
+    width: 28%;
+    height: 8vw;
     overflow: hidden;
     display: table;
-    margin:0 auto;
+    margin: 0 auto;
     vertical-align: middle;
-    line-height:8vw;
+    line-height: 8vw;
     border-radius: 6px;
     background-color: rgb(0, 204, 255);
     box-shadow: 1.414px 1.414px 0px 0px rgba(0, 0, 0, 0.23);
+
 }
 .confirm-box:hover{
     background-color: rgb(255, 255, 255);
@@ -257,20 +270,6 @@ vertical-align: middle;
     width: 79vw;
     height: 8vh;
     float: left;
-
-
-    /*font-family: "Lato-Regular";*/
-    /*font-size: 2vw;*/
-    /*font-weight: 700;*/
-    /*overflow: hidden;*/
-    /*color: black;*/
-    /*position:absolute;*/
-    /*display:table;*/
-    /*margin-left: auto;*/
-    /*margin-right: auto;*/
-    /*width: 80vw;*/
-    /*height: 8vh;*/
-    /*float: left;*/
 }
 .single-answer-box-small p{
     display: table-cell;
@@ -467,8 +466,8 @@ vertical-align: middle;
 }
 .reviewAnswerPlace{
     text-align: left;
-    margin-left: 27vw;
-    margin-top: 21vh;
+    margin-left: 26vw;
+    margin-top: 16vh;
 }
 .theQuestion{
     font-size: 2.4vw;
