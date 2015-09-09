@@ -413,14 +413,16 @@
 				}
 			}
 
+			var mobileAutoPlay = true;
 			// mobile devices have a autoPlay restriction, we issue a raw play call on
 			// the video tag to "capture the user gesture" so that future
 			// javascript play calls can work
-			if (mw.isMobileDevice() && embedPlayer.firstPlay && load) {
+			if (mw.isMobileDevice() && load) {
 				mw.log("Playlist:: issue load call to capture click for iOS");
 				try {
 					embedPlayer.getPlayerElement().load();
 				} catch (e) {
+					mobileAutoPlay = false;
 					mw.log("Playlist:: could not load video - possibly restricted video");
 				}
 			}
@@ -441,10 +443,14 @@
 				embedPlayer.triggerHelper(eventToTrigger);
 				_this.loadingEntry = false; // Update the loadingEntry flag//
 				// play clip that was selected when autoPlay=false. if autoPlay=true, the embedPlayer will do that for us.
-				if (!_this.getConfig("autoPlay")) {
+				if (!_this.getConfig("autoPlay") && mobileAutoPlay && embedPlayer.instanceOf !== "YouTube") {
 					setTimeout(function(){
 						embedPlayer.play();
 					},500); // timeout is required when loading live entries
+				}
+				if (mw.isMobileDevice() && !mobileAutoPlay){
+					mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
+					embedPlayer.updatePosterHTML();
 				}
 			});
 			mw.log("PlaylistAPI::playClip::changeMedia entryId: " + id);

@@ -24,10 +24,11 @@
 		playerEmbedFlag: false,
 		//Flag holdinng end state
 		hasEnded: false,
-
+		ytMobilePlayed: false,
 		//the youtube entry id
 		youtubeEntryId : "",
 		playerReady: null,
+		isPlaylist: false,
 		//the youtube preFix
 		//TODO grab from a configuration
 		youtubePreFix : "//www.youtube.com/apiplayer?video_id=",
@@ -79,6 +80,7 @@
 						_this.hasEnded = true;
 						break;
 					case 1:
+						_this.ytMobilePlayed = true;
 						if (_this.hasEnded){
 							_this.hasEnded = false;
 							return;
@@ -164,7 +166,7 @@
 					_this.setVolume(0);
 				}
 				//autoplay
-				if(mw.getConfig('autoPlay')){
+				if(mw.getConfig('autoPlay') && !mw.isMobileDevice()){
 					_this.play();
 				}else{
 					window['hidePlayer']();
@@ -209,6 +211,7 @@
 				$('.ui-icon-arrowthickstop-1-s').hide();
 				$('.ui-icon-flag').hide();
 				var embedPlayer = $('#' + window["pid"].replace( 'pid_', '' ) )[0];
+				_this.isPlaylist = embedPlayer.playlist;
 				var playerVars;
 				//basic configuration
 				playerVars = {
@@ -363,7 +366,7 @@
 				$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
 				if (mw.isMobileDevice()){
 					_this._playContorls = false;
-					$( _this ).trigger( 'onDisableInterfaceComponents', [] );
+					$( _this ).trigger( 'onDisableInterfaceComponents', [["playlistAPI"]] );
 				}
 			});
 
@@ -388,15 +391,34 @@
 		},
 		changeMediaCallback: function (callback) {
 			var _this = this;
+			if (mw.isMobileDevice()){
+				$(".largePlayBtn").css("opacity",0);
+				$(".mwEmbedPlayer").width(0);
+			}
 			this.playerReady.promise().then(function(){
 				callback();
-				if(mw.getConfig('autoPlay')){
-				    _this.play();
+				if( mw.getConfig('autoPlay') || _this.isPlaylist){
+					if (mw.isMobileDevice()){
+						if (_this.ytMobilePlayed){
+							_this.play();
+						}else{
+							_this.getPlayerElement().stopVideo();
+							_this._playContorls = false;
+							$( _this ).trigger( 'onDisableInterfaceComponents', [["playlistAPI"]] );
+						}
+					}else{
+				        _this.play();
+					}
 				}
 			});
 		},
 		changeMedia: function(){
 			var _this = this;
+			if (mw.isMobileDevice()){
+				$(".largePlayBtn").css("opacity",1);
+				$(".mwEmbedPlayer").width("100%");
+				$( _this ).trigger( 'onEnableInterfaceComponents', []);
+			}
 			// all we have is the entry ID. We need to get the YouTube video ID
 			var request = {
 				'service': 'baseEntry',
