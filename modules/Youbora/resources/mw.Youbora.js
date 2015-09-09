@@ -332,7 +332,7 @@
 					// error could not log event.
 				}
 			}
-			var beaconUrl = '//' + this.host + '/' + action + $.param( payload );
+			var beaconUrl = '//' + this.host + '/' + action + '?' +  $.param( payload );
 			
 			// issue a get for the beacon url
 			$.get( beaconUrl );
