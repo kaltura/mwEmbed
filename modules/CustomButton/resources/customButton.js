@@ -70,7 +70,7 @@
 			getComponent: function() {
 				var _this = this;
 				var eventName = 'click';
-				if (mw.isMobileDevice()){
+				if (mw.isAndroid()){
 					eventName = 'touchstart';
 				}
 				if( !this.$el ) {
