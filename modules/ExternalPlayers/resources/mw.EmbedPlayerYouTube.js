@@ -166,7 +166,7 @@
 					_this.setVolume(0);
 				}
 				//autoplay
-				if(mw.getConfig('autoPlay') && !mw.isMobileDevice()){
+				if(mw.getConfig('autoPlay') && _this.canAutoPlay()){
 					_this.play();
 				}else{
 					window['hidePlayer']();
@@ -422,6 +422,9 @@
 					}
 				}
 			});
+		},
+		canAutoPlay: function(){
+			return !mw.isMobileDevice() || (mw.isMobileDevice() && this.ytMobilePlayed);
 		},
 		getKClient: function () {
 			if (!this.kClient) {
