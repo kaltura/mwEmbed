@@ -5,7 +5,8 @@
 			isDisabled: false,
 			defaultConfig: {
 				'parent': 'videoHolder',
-				'order': 20
+				'order': 20,
+                'eventName' : 'custom_button_clicked'
 			},
 			setup: function() {
 				this.addBindings();
@@ -55,7 +56,7 @@
 			clickButton: function( event ){
 				event.preventDefault();
 				event.stopPropagation();
-				this.getPlayer().sendNotification('custom_button_clicked', this.embedPlayer.currentTime);
+				this.getPlayer().sendNotification(this.getConfig('eventName'), this.embedPlayer.currentTime);
 			},
 			onEnable: function(){
 				this.isDisabled = false;
