@@ -1,6 +1,6 @@
 {
 	"bigButton":{
-		"description":"Big Button Description.",
+		"description":"Custom Button Description.",
 		"attributes" : {
 			"parent": {
 				"doc":"Parent container for component. Components include default placement, leave as null if unsure.",

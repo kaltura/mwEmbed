@@ -1,5 +1,5 @@
 ( function( mw, $ ) {"use strict";
-	mw.PluginManager.add( 'bigButton', mw.KBaseComponent.extend({
+	mw.PluginManager.add( 'customButton', mw.KBaseComponent.extend({
 			//indicates we were explicitly asked to show the button (will be used when re-enabling the button)
 			shouldShow : false,
 			isDisabled: false,
@@ -55,7 +55,7 @@
 			clickButton: function( event ){
 				event.preventDefault();
 				event.stopPropagation();
-				this.getPlayer().sendNotification('big_button_clicked', this.embedPlayer.currentTime);
+				this.getPlayer().sendNotification('custom_button_clicked', this.embedPlayer.currentTime);
 			},
 			onEnable: function(){
 				this.isDisabled = false;
@@ -78,7 +78,7 @@
 						.attr( {
 							'tabindex': '-1',
 							'href' : '#',
-							'title' : gM( 'mwe-bigButton-label' ),
+							'title' : gM( 'mwe-customButton-label' ),
 							'class'	: this.getCssClass()
 						} )
 						.hide()

@@ -1,4 +1,4 @@
-.bigButton {
+.customButton {
 	cursor: pointer;
 	position: absolute;
 	top: 50%;
@@ -7,13 +7,13 @@
 	margin: -0.79em 0 0 -1em;
 	text-decoration: none;
 	border-radius: 0.1em;
-	background-image: url("AddQ_up.svg");
+	background-image: url("../imgs/AddQ_up.svg");
 	background-size: 86px 96px;
 	background-repeat: no-repeat;
 	width: 86px;
 	height: 96px;
 }
 
-.bigButton:hover {
-	background-image: url("AddQ_hover.svg");
+.customButton:hover {
+	background-image: url("../imgs/AddQ_hover.svg");
 }
