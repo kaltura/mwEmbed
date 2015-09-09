@@ -601,10 +601,13 @@
 //		if ( this.getPlayerElement() && this.playerElement.sendNotification ){
 //			this.playerElement.sendNotification('changeVolume', percentage);
 //		}
-			var yt = this.getPlayerElement();
-			if(yt.setVolume) {
-				yt.setVolume(percentage * 100);
-			}
+			var _this = this;
+			this.playerReady.promise().then(function(){
+				var yt = _this.getPlayerElement();
+				if(yt.setVolume) {
+					yt.setVolume(percentage * 100);
+				}
+			});
 		},
 
 		/**
