@@ -1,32 +1,32 @@
 @font-face {
     font-family: 'LatoLight';
-    src: url('./fonts/Lato-Light.eot');
-    src: url('./fonts/Lato-Light.eot?#iefix') format('embedded-opentype'),
-    url('./fonts/Lato-Light.woff') format('woff');
+    src: url('../fonts/Lato-Light.eot');
+    src: url('../fonts/Lato-Light.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/Lato-Light.woff') format('woff');
     font-style: normal;
     font-weight: normal;
 }
 @font-face {
     font-family: 'LatoBlack';
-    src: url('./fonts/Lato-Black.eot');
-    src: url('./fonts/Lato-Black.eot?#iefix') format('embedded-opentype'),
-    url('./fonts/Lato-Black.woff') format('woff');
+    src: url('../fonts/Lato-Black.eot');
+    src: url('../fonts/Lato-Black.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/Lato-Black.woff') format('woff');
     font-style: normal;
     font-weight: normal;
 }
 @font-face {
     font-family: 'Lato';
-    src: url('./fonts/Lato-Bold.eot'); /* IE9 Compat Modes */
-    src: url('./fonts/Lato-Bold.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-    url('./fonts/Lato-Bold.woff') format('woff');
+    src: url('../fonts/Lato-Bold.eot'); /* IE9 Compat Modes */
+    src: url('../fonts/Lato-Bold.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('../fonts/Lato-Bold.woff') format('woff');
     font-style: normal;
     font-weight: bold;
 }
 @font-face {
     font-family: 'Lato-Regular';
-    src: url('./fonts/Lato-Regular.eot'); /* IE9 Compat Modes */
-    src: url('./fonts/Lato-Regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-    url('./fonts/Lato-Regular.woff') format('woff');
+    src: url('../fonts/Lato-Regular.eot'); /* IE9 Compat Modes */
+    src: url('../fonts/Lato-Regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('../fonts/Lato-Regular.woff') format('woff');
     font-style: normal;
     font-weight: bold;
 }
@@ -52,6 +52,9 @@ center {
 }
 .padding-left11{
  padding-left: 11vw !important;
+}
+.font-size3{
+    font-size: 3vw;
 }
 .font-Lato2{
     font-family: "Lato";
@@ -107,7 +110,7 @@ center {
 }
 
 .screen{
-    background-image:url("BACKGROUND.png")!important;
+    background-image:url("../images/BACKGROUND.png")!important;
     background-size: cover;
     position: absolute;
 }
@@ -120,6 +123,14 @@ center {
     padding-top: 7vh;
 
 }
+
+.thank-you{
+    font-family: "Lato";
+    font-size: 6.2vw;
+    padding-top: 41vh;
+
+}
+
 .sub-text{
     font-family: "LatoLight";
     font-size: 2.5vw;
@@ -155,7 +166,7 @@ center {
 }
 .answers-container{
     position: absolute;
-    top: 21vh;
+    top: 23vh;
 }
 .display{
     position:relative;
@@ -181,7 +192,7 @@ center {
 
 }
 .single-answer-box-bk:hover:not(.wide){
-    background-image: url(AnswerBG_hover.png);
+    background-image: url(../images/AnswerBG_hover.png);
 }
 .single-answer-box-bk{
     width: 92vw;
@@ -191,28 +202,39 @@ center {
     padding-bottom: 1.8vw;
     margin-top:1vw;
     overflow: hidden;
-    background-image: url(AnswerBG.png);
+    background-image: url(../images/AnswerBG.png);
     background-size: 100% 100%;
 }
 
 .single-answer-box-bk-apply{
-     background-image: url(ApplyBG.png);
+     background-image: url(../images/ApplyBG.png);
  }
 
 .single-answer-box-bk-applied{
-    background-image: url(ApplliedBG.png);
+    background-image: url(../images/ApplliedBG.png);
 }
 
 .single-answer-box {
     font-family: "Lato-Regular";
     font-size: 2.2vw;
-    position:absolute;
-    display:table;
-    margin-left: auto;
+    display: table;
+    margin-left: 1vw;
     margin-right: auto;
-    width: 91vw;
+    width: 90vw;
+    color: #FFF;
+    position: absolute;
     height: 8vh;
-    color: white;
+    margin-top: -1vh;
+
+    /*font-family: "Lato-Regular";*/
+    /*font-size: 2.2vw;*/
+    /*position:absolute;*/
+    /*display:table;*/
+    /*margin-left: auto;*/
+    /*margin-right: auto;*/
+    /*width: 91vw;*/
+    /*height: 8vh;*/
+    /*color: white;*/
 }
 
 
@@ -223,17 +245,32 @@ vertical-align: middle;
 }
 .single-answer-box-small {
     font-family: "Lato-Regular";
-    font-size: 2vw;
+    font-size: 1.9vw;
     font-weight: 700;
     overflow: hidden;
-    color: black;
-    position:absolute;
-    display:table;
-    margin-left: auto;
+    color: #000;
+    position: absolute;
+    display: table;
+    margin-left: 1vw;
     margin-right: auto;
-    width: 80vw;
+    margin-top: 0vh;
+    width: 79vw;
     height: 8vh;
     float: left;
+
+
+    /*font-family: "Lato-Regular";*/
+    /*font-size: 2vw;*/
+    /*font-weight: 700;*/
+    /*overflow: hidden;*/
+    /*color: black;*/
+    /*position:absolute;*/
+    /*display:table;*/
+    /*margin-left: auto;*/
+    /*margin-right: auto;*/
+    /*width: 80vw;*/
+    /*height: 8vh;*/
+    /*float: left;*/
 }
 .single-answer-box-small p{
     display: table-cell;
@@ -266,14 +303,14 @@ vertical-align: middle;
     font-weight: 400;
     display: inline-block;
     color: rgba(0, 0, 0, 0.7);
-    font-size: 2vw;
+    font-size: 1.7vw;
     margin-left: 2vw;
 }
 .ftr-right{
     font-family: "LatoBlack";
     display: inline-block;
-    font-size: 2vw;
-    font-weight: 900;
+    font-size: 1.7vw;
+    font-weight: 400;
     float: right;
     text-align: right;
     padding-right: 5vw;
@@ -288,7 +325,7 @@ vertical-align: middle;
     text-align: center;
     width: 9vw;
     height: 10vw;
-    background-image: url(Hint.png);
+    background-image: url(../images/Hint.png);
     float: right;
     margin-top: 3vh;
     margin-bottom: 2vw;
@@ -303,7 +340,7 @@ vertical-align: middle;
 .close-button{
     width: 3vw;
     height: 3vw;
-    background-image: url(close.png);
+    background-image: url(../images/close.png);
     float: right;
     background-size: 100% 100%;
     margin-top: 7vh;
@@ -368,7 +405,7 @@ vertical-align: middle;
     width: 10vw;
     height: 11vw;
     line-height:11vw;
-    background-image: url(hexaTransp.png);
+    background-image: url(../images/hexaTransp.png);
     display: inline-block;
     text-align: center;
     vertical-align: middle;
@@ -382,7 +419,7 @@ vertical-align: middle;
     width: 10vw;
     height: 11vw;
     line-height:11vw;
-    background-image: url(Submitted_Wrong.png);
+    background-image: url(../images/Submitted_Wrong.png);
     display: inline-block;
     text-align: center;
     vertical-align: middle;
@@ -471,7 +508,7 @@ vertical-align: middle;
 .reviewAnswerNr{
     width: 16vw;
     height: 18vw;
-    background-image: url(answerNr.png);
+    background-image: url(../images/answerNr.png);
     text-align: center;
     line-height: 18vw;
     font-weight: 700;
@@ -488,7 +525,7 @@ vertical-align: middle;
     height: 5vw;
     background-size: 100% 100%;
     margin-top: 12vh;
-    background-image: url(slider.prev.png);
+    background-image: url(../images/slider.prev.png);
     float: left;
 
 }
@@ -497,7 +534,7 @@ vertical-align: middle;
     height: 5vw;
     background-size: 100% 100%;
     margin-top: 12vh;
-    background-image: url(slider.next.png);
+    background-image: url(../images/slider.next.png);
     float: right;
 }
 .display-all-container{
@@ -548,21 +585,21 @@ ol.second-row{
 }
 .bubble-un-ans{
     color: black;
-     background-image: url(bubble-un-ans.png);
+     background-image: url(../images/bubble-un-ans.png);
  }
 .bubble-ans{
     color: white;
-    background-image: url(bubble-ans.png);
+    background-image: url(../images/bubble-ans.png);
 
 }
 .bubble-un-ans:hover{
-    background-image: url(bubble-un-ans-h.png);
+    background-image: url(../images/bubble-un-ans-h.png);
 }
 .bubble-ans:hover{
-    background-image: url(bubble-ans-h.png);
+    background-image: url(../images/bubble-ans-h.png);
 }
 .pie{
-    background-image: url(pie.png);
+    background-image: url(../images/pie.png);
     background-size: 100% 100%;
     width: 2vw;
     height: 2vw;
