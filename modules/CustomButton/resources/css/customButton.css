@@ -12,8 +12,10 @@
 	background-repeat: no-repeat;
 	width: 86px;
 	height: 96px;
+    outline: none;
 }
 
-.customButton:hover {
+.customButton:hover, .customButton:focus {
 	background-image: url("../imgs/AddQ_hover.svg");
+    outline: none;
 }
