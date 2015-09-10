@@ -58,25 +58,28 @@
 				this.addBindings();
 			},
 			isSafeEnviornment: function () {
-				this.initSecondPlayer();
-				return this.secondPlayer.isSafeEnviornment();
+                var _this = this;
+                var deferred = $.Deferred();
+                this.initSecondPlayer().then(function(){
+                    deferred.resolve(true);
+                }, function () { //url for second screen not found or not valid
+                   deferred.resolve(false);
+                });
+                return deferred.promise();
 			},
 			addBindings: function () {
 				var _this = this;
-				this.bind( 'playerReady', function (  ) {
-                    _this.getPlayer().triggerHelper('initDualScreen');
-                    _this.checkRenderConditions();
-					_this.initView();
-					_this.initControlBar();
-					if (!_this.render) {
-						_this.displays.getPrimary().obj.css( {'top': '', 'left': '', 'width': '', 'height': ''} ).removeClass( 'firstScreen' );
-						_this.displays.hideDisplay();
-					}
+                this.bind( 'playerReady', function (  ) {
+                    if( !_this.secondPlayer ){
+                        _this.waitForSecondScreen = setInterval(function () {_this.renderDualScreenView();}, 500);
+                    }
 				} );
 
 				this.bind( 'postDualScreenTransition', function () {
 					//TODO: move to imagePlayer
-					_this.secondPlayer.applyIntrinsicAspect();
+                    if(_this.secondPlayer) {
+                        _this.secondPlayer.applyIntrinsicAspect();
+                    }
 				});
 
 				//Handle layout changes due to layout update(resize and orientation change)
@@ -97,10 +100,12 @@
 				this.bind( "preShowScreen", function (e, screenName) {
 					_this.screenShown = true;
 					if (_this.render) {
-						_this.currentScreenNameShown = screenName;
-						_this.controlBar.enable();
-						_this.controlBar.hide();
-						_this.controlBar.disable();
+                        _this.currentScreenNameShown = screenName;
+                        if (_this.controlBar) {
+                            _this.controlBar.enable();
+                            _this.controlBar.hide();
+                            _this.controlBar.disable();
+                        }
 						_this.minimizeSecondDisplay();
 					}
 				} );
@@ -113,7 +118,7 @@
 						// screens transition --> when going from one screen to another we first emit preHideScreen and
 						//only then preShowScreen
 						setTimeout(function(){
-							if (!_this.screenShown) {
+							if (!_this.screenShown && _this.controlBar) {
 								_this.controlBar.enable();
 								_this.controlBar.show();
 							}
@@ -128,27 +133,33 @@
 
 				//Listen to events which affect controls view state
 				this.bind( 'showPlayerControls' , function(){
-					_this.controlBar.show();
+                    if (_this.controlBar) {
+                        _this.controlBar.show();
+                    }
 				});
 				this.bind( 'onplay', function () {
-					_this.controlBar.enable();
-				} );
+                    if (_this.controlBar) {
+                        _this.controlBar.enable();
+                    }
+                } );
 				this.bind( 'onpause ended playerReady', function () {
-					_this.controlBar.show();
-					_this.controlBar.disable();
-				} );
+                    if (_this.controlBar) {
+                        _this.controlBar.show();
+                        _this.controlBar.disable();
+                    }
+                } );
 				var wasDisabled = false;
 				this.bind( 'startDisplayInteraction', function(){
-					_this.controlBar.hide();
-					if (_this.controlBar){
+                    if (_this.controlBar){
+                        _this.controlBar.hide();
 						wasDisabled = _this.controlBar.disabled;
+                        _this.controlBar.disable();
 					}
-					_this.controlBar.disable();
 					_this.getPlayer().disablePlayControls();
 				});
 				this.bind( 'stopDisplayInteraction', function() {
 					//Only enable and show if controlBar was enabled before transition
-					if ( !wasDisabled ) {
+					if ( !wasDisabled && _this.controlBar ) {
 						_this.controlBar.enable();
 						_this.controlBar.show();
 					}
@@ -185,7 +196,25 @@
 					_this.getPlayer().triggerHelper('dualScreenStateChange', "switchView");
 				});
 			},
-
+            renderDualScreenView: function(){
+                if( this.secondPlayer ) {
+                    mw.log("DualScreen :: renderDualScreenView init");
+                    clearInterval(this.waitForSecondScreen);
+                    this.checkRenderConditions();
+                    this.initView();
+                    this.initControlBar();
+                    if (!this.render) {
+                        this.displays.getPrimary().obj.css({
+                            'top': '',
+                            'left': '',
+                            'width': '',
+                            'height': ''
+                        }).removeClass('firstScreen');
+                        this.displays.hideDisplay();
+                    }
+                    this.embedPlayer.triggerHelper("allPlayersReady");
+                }
+            },
 			initConfig: function () {
 				var maxWidthPercentage = this.getConfig( 'resizable' ).maxWidth;
 				var playerWidth = this.getPlayer().getWidth();
@@ -208,13 +237,15 @@
 				var fsmTransitionHandlers = function (transitionFrom, transitionTo) {
 					var transitionHandlerSet = true;
 					_this.getPlayer().triggerHelper('preDualScreenTransition', [[transitionFrom, transitionTo]]);
-
-					_this.controlBar.hide();
-
+                    if (_this.controlBar) {
+                        _this.controlBar.hide();
+                    }
 					_this.bind("displayTransitionEnded", function ( ) {
 						if ( transitionHandlerSet ) {
 							transitionHandlerSet = false;
-							_this.controlBar.show();
+                            if (_this.controlBar) {
+                                _this.controlBar.show();
+                            }
 							_this.displays.disableTransitions();
 							_this.getPlayer().triggerHelper('postDualScreenTransition', [[transitionFrom, transitionTo]]);
 						}
@@ -252,12 +283,13 @@
 					this.viewInitialized = true;
 					this.previousPlayerWidth = this.getPlayer().getWidth();
 					this.previousPlayerHeight = this.getPlayer().getHeight();
-
 					//Get display containers, primary is the original video display, containing the video element,
 					//Secondary is the dual screen, so need to populate it with the second player component
 					var primaryPlayerContainer = this.getPlayer().getVideoDisplay();
 					var secondaryPlayerContainer = this.getComponent();
-					secondaryPlayerContainer.append( this.secondPlayer.getComponent());
+                    if(this.secondPlayer) {
+                        secondaryPlayerContainer.append(this.secondPlayer.getComponent());
+                    }
 
 					//Attach the primaryPlayerContainer to the primary display
 					var primaryDisplay = this.displays.getPrimary();
@@ -329,14 +361,18 @@
 			//Manage display helpers
 			disableView: function(){
 				this.displays.getAuxDisplay().obj.css("visibility", "hidden");
-				this.controlBar.hide();
-				this.controlBar.disable();
+                if (this.controlBar) {
+                    this.controlBar.hide();
+                    this.controlBar.disable();
+                }
 			},
 			enableView: function(){
 				this.displays.getMainDisplay().obj.css("visibility", "");
 				this.displays.getAuxDisplay().obj.css("visibility", "");
-				this.controlBar.enable();
-				this.controlBar.show();
+                if (this.controlBar) {
+                    this.controlBar.enable();
+                    this.controlBar.show();
+                }
 			},
 			minimizeSecondDisplay: function(){
 			    if (!this.auxScreenMinimized) {
@@ -431,7 +467,9 @@
 						var secondScreen = _this.displays.getAuxDisplay();
 						secondScreen.repaint( screenProps );
 						//TODO: move to image player
-						_this.secondPlayer.applyIntrinsicAspect();
+                        if(_this.secondPlayer) {
+                            _this.secondPlayer.applyIntrinsicAspect();
+                        }
 						if ( _this.render ) {
 							//Show display and control bar after resizing
 							_this.enableView();
@@ -487,22 +525,105 @@
 
 			//player controllers
 			initSecondPlayer: function(){
-				var _this = this;
-                /*
-                if (true) {
-					this.secondPlayer = new mw.dualScreen.imagePlayer(this.getPlayer(), function () {
-						this.setConfig({
-							"prefetch": _this.getConfig("prefetch"),
-							"cuePointType": _this.getConfig("cuePointType")
-						});
-					}, "imagePlayer");
-				} else {
-					this.secondPlayer = new mw.dualScreen.videoPlayer(this.getPlayer(), function(){}, "videoPlayer");
-				}
-				*/
-                 this.secondPlayer = new mw.dualScreen.videoPlayer(this.getPlayer(), function(){}, "videoPlayer");
+                var _this = this;
+                var deferred = $.Deferred();
+
+                this.loadStreamSelector()
+                    .then(function () {
+                        _this.loadSeconScreen().then(function(){
+                            deferred.resolve(true);
+                        });
+                    }, function () { //error
+                        deferred.resolve(false);
+                    });
+                return deferred.promise();
 			},
 
+            loadStreamSelector: function(){
+                var _this = this;
+                var deferred = $.Deferred();
+
+                this.streamSelector = new mw.streamSelector.selector(this.getPlayer(), function(){
+                    this.setConfig({
+                        "hideUI": true
+                    });
+                    this.ready.promise().then(function(){
+                        deferred.resolve();
+                    });
+                }, "streamSelector");
+                return deferred.promise();
+            },
+
+            loadSeconScreen: function(){
+                var deferred = $.Deferred();
+                //TODO: add logic for choosing ImageScreen (PPT) or VideoScreen (screen capture video or second video) instead of this.streamSelector.getNextStream()
+                /*
+                 if (true) {
+                 this.secondPlayer = new mw.dualScreen.imagePlayer(this.getPlayer(), function () {
+                 this.setConfig({
+                 "prefetch": _this.getConfig("prefetch"),
+                 "cuePointType": _this.getConfig("cuePointType")
+                 });
+                 }, "imagePlayer");
+                 } else {
+                 this.secondPlayer = new mw.dualScreen.videoPlayer(this.getPlayer(), function(){}, "videoPlayer");
+                 }
+                 */
+
+                var secondStream = this.streamSelector.getNextStream();
+                if( secondStream.id === this.embedPlayer.evaluate("{mediaProxy.entry.id}") ){
+                    deferred.resolve(false);
+                    return;
+                }
+
+                var masterSource = this.getPlayer().mediaElement.selectedSource;
+                var assetId = this.findClosestSecondFlavor(masterSource, secondStream);
+                if( !assetId ){
+                    deferred.resolve(false);
+                    return;
+                }
+
+                var secondScreenUrl = this.getSlaveUrl(masterSource, secondStream.id, assetId);
+                this.secondPlayer = new mw.dualScreen.videoPlayer(this.getPlayer(), function () {
+                    this.initPlayerElement(secondScreenUrl);
+                    deferred.resolve(true);
+                }, "videoPlayer");
+
+                return deferred.promise();
+            },
+
+            findClosestSecondFlavor: function(masterSource, secondStream){
+                var assetId;
+                var masterSourceBitrate = masterSource.getBitrate();
+                mw.log("DualScreen :: master source bitrate = "+ masterSourceBitrate);
+                var relevantFlavors = secondStream.data.contextData.flavorAssets.filter(function(flavor){
+                    return flavor.tags === masterSource.tags;
+                });
+                if( relevantFlavors.length > 0) {
+                   var selectedFlavor = relevantFlavors[0];
+                   mw.log("DualScreen :: available bitrate for second screen = "+ relevantFlavors[0].bitrate);
+                   var diff = Math.abs(masterSourceBitrate - selectedFlavor.bitrate);
+                   for (var ind = 1; ind < relevantFlavors.length; ind++) {
+                       mw.log("DualScreen :: available bitrate for second screen = "+ relevantFlavors[ind].bitrate);
+                       var newdiff = Math.abs(masterSourceBitrate - relevantFlavors[ind].bitrate);
+                       if (newdiff < diff) {
+                           diff = newdiff;
+                           selectedFlavor = relevantFlavors[ind];
+                        }
+                   }
+                   mw.log("DualScreen :: selected second source bitrate = " + selectedFlavor.bitrate);
+                   assetId = selectedFlavor.id;
+                }
+                return assetId;
+            },
+
+            getSlaveUrl: function(masterSource, slaveId, slaveAssetId){
+                //replace entryID of master player with the entryID of the slaveStream
+                var slaveUrl = masterSource.src.replace(this.embedPlayer.evaluate("{mediaProxy.entry.id}"), slaveId);
+                //replace assetid (flavor id) of master player with the assetid (flavor id) of the slaveStream
+                slaveUrl = slaveUrl.replace(masterSource.assetid, slaveAssetId);
+                return slaveUrl;
+            },
 			//Display
 			getComponent: function () {
 				if ( !this.$el ) {
@@ -538,7 +659,7 @@
 					at: location[0]+location[1],
 					of: $( this.getPlayer().getInterface() )
 				});
-			},
+			}
 		} )
 	);
 }
