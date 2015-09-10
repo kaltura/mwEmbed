@@ -62,7 +62,6 @@ function getKs(){
 		<p class="submit"><input type="submit" name="commit" value="Logout"></p>
 	</form>
 </div>
-
 <script>
 	// if users is logged in output "KS"
 	var ks = <?php
@@ -104,8 +103,6 @@ function getKs(){
 			}
 		}
 	});
-		
-	
 </script>
 </body>
 </html>
