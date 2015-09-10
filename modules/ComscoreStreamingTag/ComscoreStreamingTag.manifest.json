@@ -28,26 +28,6 @@
         "label": "Enable debug logging",
         "type": "boolean"
       },
-      "include": {
-        "doc": "Advanced configuration setting! Used to specify media metadata fields which should be automatically included in the collected data. Expects a comma-separated list of field names. To include all metadata fields, use value '_all_'. Please note that any included fields might eventually be excluded by the 'exclude' and 'exclude_prefixes' configuration settings, which take precedence over the 'include' configuration setting. Please do not use this setting unless you are explicitly instructed to do so by your comScore client account representative.",
-        "label": "Include metadata fields",
-        "type": "String"
-      },
-      "exclude": {
-        "doc": "Advanced configuration setting! Used to specify media metadata fields which should not be automatically included in the collected data. Expects a comma-separated list of field names. Takes precedence over the 'include' and 'include prefixes' configuration settings. Please do not use this setting unless you are explicitly instructed to do so by your comScore client account representative.",
-        "label": "Exclude metadata fields",
-        "type": "String"
-      },
-      "includePrefixes": {
-        "doc": "Advanced configuration setting! Used to specify prefixes of media metadata fields which should be automatically included in the collected data. Expects a comma-separated list of field name prefixes. Please note that any fields that are included because they match the supplied prefixes might eventually be excluded by the 'exclude' and 'exclude_prefixes' configuration settings, which take precedence over the 'include' configuration setting. Please do not use this setting unless you are explicitly instructed to do so by your comScore client account representative.",
-        "label": "Include metadata field prefixes",
-        "type": "String"
-      },
-      "excludePrefixes": {
-        "doc": "Advanced configuration setting! Used to specify prefixes of media metadata fields which should not be automatically included in the collected data. Expects a comma-separated list of field name prefixes. Takes precedence over the 'include' and 'include prefixes' configuration settings. Please do not use this setting unless you are explicitly instructed to do so by your comScore client account representative.",
-        "label": "Exclude metadata field prefixes",
-        "type": "String"
-      },
       "pageView": {
         "doc": "Advanced configuration setting! Used to instruct the plugin to send a page impression measurement when loaded. Please do not use this setting unless you are explicitly instructed to do so by your comScore client account representative.",
         "label": "Send page impression",
