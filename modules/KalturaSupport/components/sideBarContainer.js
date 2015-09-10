@@ -106,9 +106,23 @@
 			// If have no components, hide
 			this.bind('layoutBuildDone', function(){
 				if( !_this.getComponent().children().length ){
-					_this.destroy();
+					_this.getComponent().hide();
+					_this.getComponentReminder().hide();
 				}
 			});
+			this.bind('onChangeMedia', function(){
+				_this.close();
+			});
+			this.bind('onChangeMediaDone', function(){
+				if( _this.getComponent().children().length ) {
+					_this.getComponent().show();
+					_this.getComponentReminder().show();
+				} else {
+					_this.getComponent().hide();
+					_this.getComponentReminder().hide();
+				}
+			});
+
 			this.bind( 'layoutBuildDone ended', function(){
 				_this.setHeight();
 				_this.showReminder();

@@ -130,7 +130,7 @@ mw.KWidgetSupport.prototype = {
 				height: embedPlayer.getHeight()
 			});
 			if( embedPlayer.getFlashvars( 'loadThumbnailWithKs' ) === true ) {
-				thumbUrl += '?ks=' + embedPlayer.getFlashvars('ks');
+				thumbUrl += '/ks/' + embedPlayer.getFlashvars('ks');
 			}
 			if (mw.getConfig('thumbnailUrl')) {
 				thumbUrl = embedPlayer.evaluate(mw.getConfig('thumbnailUrl'));
@@ -278,11 +278,14 @@ mw.KWidgetSupport.prototype = {
 			mw.setConfig("LeadWithHLSOnFlash", true);
 		}
 
-		if (playerData &&  playerData.meta &&
+		if ( playerData &&  playerData.meta &&
 			(playerData.meta.sourceType === "32" ||
-			playerData.meta.sourceType === "33") ){
+			playerData.meta.sourceType === "33") &&
+            !mw.getConfig('forceHDS') ){
+
 			mw.setConfig("LeadWithHLSOnFlash",true);
             mw.setConfig("isLiveKalturaHLS",true);
+
 		}
 
 		var legacyMulticastSource = this.getLegacyLiveMulticastSource(playerData);
@@ -1733,7 +1736,7 @@ mw.KWidgetSupport.prototype = {
 		if (assetDrmData) {
 			drmData.custom_data = assetDrmData.custom_data;
 			drmData.signature = assetDrmData.signature;
-			drmData.contenId = assetDrmData.contentId;
+			drmData.contentId = assetDrmData.contentId;
 		}
 		return drmData;
 	},

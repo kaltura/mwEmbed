@@ -310,6 +310,25 @@
 						case 'volume':
 							return embedPlayer.volume;
 							break;
+						case 'buffer':
+							switch( objectPath[2] ){
+								case 'lastBufferDuration':
+									return embedPlayer.lastBufferDuration || 0;
+								break;
+								case 'lastBufferDurationMs':
+									return ( embedPlayer.lastBufferDuration ) ? embedPlayer.lastBufferDuration*1000 : 0;
+								break;
+								case 'bufferEndTime':
+									return embedPlayer.bufferEndTime;
+								break;
+								case 'bufferStartTime':
+									return embedPlayer.bufferStartTime;
+								break;
+								case 'percent': 
+									return ( embedPlayer.bufferedPercent );
+								break;
+							}
+							break;
 						case 'player':
 							switch( objectPath[2] ){
 								case 'currentTime':
@@ -477,10 +496,6 @@
 								return 'ready';
 							}
 							return null;
-
-						break;
-						case 'loadTime':
-						return kWidget.loadTime[embedPlayer.kwidgetid];
 						break;
 					}
 				break;
@@ -1224,6 +1239,9 @@
 						}
 						// Update the entry id
 						embedPlayer.kentryid = notificationData.entryId;
+						if (notificationData.referenceId){
+							embedPlayer.referenceId = notificationData.referenceId;
+						}
 						// Clear player & entry meta
 						embedPlayer.kalturaPlayerMetaData = null;
 						embedPlayer.kalturaEntryMetaData = null;
