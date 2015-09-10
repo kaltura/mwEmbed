@@ -44,6 +44,8 @@
 		adCompleteTime: null,
 		// the active ping interval:
 		activePingInterval: null,
+		// the flag for active viewcode generation  
+		settingUpViewCodeFlag: null,
 		
 		
 		setup: function(){
@@ -53,20 +55,35 @@
 				// clear ping interval
 				clearInterval( _this.activePingInterval );
 				_this.activePingInterval = null;
+				// on changeMedia clear out viewCode
+				_this.viewCode = null;
 			});
 			this.bind('onChangeMediaDone', function(){
-				_this.viewIndex++;
 				_this.addBindings();
+				_this.setupViewCode();
 			});
-			// get the data setup: 
+			this.addBindings();
+			this.setupViewCode();
+		},
+		setupViewCode: function(){
+			var _this = this;
+			if( this.settingUpViewCodeFlag ){
+				this.log( "setupViewCode -> skiped viewCode is already being generated.")
+			}
+			
+			this.settingUpViewCodeFlag = true;
+			// setup and view code: 
 			var setupUrl = '//nqs.nice264.com/data?' + $.param( this.getBaseParams() );
 			$.get( setupUrl, function(xmlData){
 				_this.host = $(xmlData).find('h').text();
 				_this.pingTime = $(xmlData).find('pt').text();
 				_this.viewCode = $(xmlData).find('c').text();
-				_this.hanldeQueue()
+				
+				_this.log( "setup viewCode: " + _this.viewCode );
+				// update async view code generation flag. 
+				_this.settingUpViewCodeFlag = false;
+				_this.hanldeQueue();
 			});
-			this.addBindings();
 		},
 		addBindings:function(){
 			var _this = this;
@@ -80,13 +97,19 @@
 				_this.sendBeacon( 'stop', {
 					'diffTime': new Date().getTime() - _this.previusPingTime
 				});
+				clearInterval( _this.activePingInterval );
+				_this.activePingInterval = null;
 				// reset the firstPlay flag:
 				_this.embedPlayer.firstPlay = true;
-				// -> increment index 
-				_this.viewIndex++;
+				// on end clear out viewCode: 
+				_this.viewCode = null;
 				_this.bindFirstPlay();
 			});
 			this.bindAdEvents();
+		},
+		incrementViewIndex: function(){
+			this.viewIndex++;
+			this.log( "increment viewIndex: " + this.viewIndex );
 		},
 		bindAdEvents: function(){
 			var _this = this;
@@ -95,15 +118,21 @@
 				_this.currentAd.id = adId;
 				_this.currentAd.type = type;
 				_this.currentAd.index = index;
+				// on midroll or  increment before ad events:
+				if( type == 'midroll' ||  type == 'postroll'){
+					_this.incrementViewIndex();
+				}
+				_this.unbind( 'onAdComplete');
 				_this.bind( 'onAdComplete', function() {
 					_this.adCompleteTime = new Date().getTime();
-					_this.sendBeacon( 'stop', {
+					/*_this.sendBeacon( 'stop', {
 						'diffTime': new Date().getTime() - _this.previusPingTime
-					});
+					});*/
 					// after ad completes increment view index
-					_this.viewIndex++;
+					_this.incrementViewIndex();
 				});
 				// wait for ad duration update to trigger ad start event
+				_this.unbind( 'AdSupport_AdUpdateDuration');
 				_this.bind('AdSupport_AdUpdateDuration', function(e, duration){
 					_this.unbind("AdSupport_AdUpdateDuration");
 					var adMetadata = _this.embedPlayer.evaluate( '{sequenceProxy.activePluginMetadata}' );
@@ -146,11 +175,13 @@
 			var _this = this;
 			// track pause: 
 			var userHasPaused = false;
+			this.unbind( 'onpause');
 			this.bind( 'onpause', function( playerState ){
 				_this.sendBeacon( 'pause' );
 				userHasPaused = true;
 			});
 			// after first play, track resume:
+			this.unbind( 'onplay');
 			this.bind( 'onplay', function( playerState ){
 				if( userHasPaused ){
 					_this.sendBeacon( 'resume' );
@@ -166,14 +197,24 @@
 			_this.bind('preSeek', function(){
 				seekTime = new Date().getTime();
 			})
+			// clear out startBufferClock
+			this.bind('postEnded', function(){
+				startBufferClock = null;
+			});
 			this.bind('bufferStartEvent',function(){
 				startBufferClock = new Date().getTime();
+				_this.log("bufferStartEvent:: startBufferClock: " + startBufferClock);
 				_this.unbind('seeked');
 				_this.bind('seeked', function(){
 					seekTime = new Date().getTime();
 				})
 				_this.unbind('bufferEndEvent');
 				_this.bind('bufferEndEvent',function(){
+					if( !startBufferClock || startBufferClock > new Date().getTime() ){
+						_this.log("startBufferClock null or predates current time");
+						return;
+					}
+					_this.log("bufferEndEvent:: time since start:" + ( startBufferClock > new Date().getTime() ) );
 					// if less then 1000 ms from seek end don't trigger underrun:
 					_this.log("bufferEndEvent:: detla from seek time:" + (new Date().getTime() - seekTime ) );
 					if( seekTime && (new Date().getTime() - seekTime ) < 1000 ){
@@ -181,9 +222,11 @@
 					}
 					// if less then 1000 ms from ad end don't trigger underrun:
 					_this.log("bufferEndEvent:: detla from ad end:" + (new Date().getTime() -  _this.adCompleteTime ) );
-					if( _this.adCompleteTime && (new Date().getTime() - _this.adCompleteTime ) < 1000 ){
+					if( _this.adCompleteTime && (new Date().getTime() - _this.adCompleteTime ) < 1000  ){
 						return ;
 					}
+					seekTime = null;
+					_this.adCompleteTime = null;
 					// ignore buffer events during seek: 
 					_this.sendBeacon( 'bufferUnderrun', {
 						'time': _this.embedPlayer.currentTime,
@@ -250,7 +293,7 @@
 					'totalBytes':"0", // value is only sent along with the dataType parameter. If the bitrate parameter is sent, then this one is not needed.
 					'dataType': "0", // Kaltura does not really do RTMP streams any more. 
 					'diffTime': new Date().getTime() - _this.previusPingTime
-					// 'nodeHost' //String that indicates the CDNâ€™s Node Host
+					// 'nodeHost' //String that indicates the CDNâ Node Host
 				});
 				// update previusPingTime 
 				_this.previusPingTime = new Date().getTime();
@@ -317,8 +360,9 @@
 		},
 		sendBeacon: function( action, payload ){
 			// queue if we are not ready for beacons: 
-			if( !this.host ){
-				this.queuedBeacons.push( [action, payload ] )
+			if( !this.viewCode ){
+				this.queuedBeacons.push( [action, payload ] );
+				this.setupViewCode();
 				return ;
 			}
 			if( !payload ){
@@ -332,6 +376,7 @@
 					// error could not log event.
 				}
 			}
+			this.log( action + " :: " + JSON.stringify( payload ) );
 			var beaconUrl = '//' + this.host + '/' + action + '?' +  $.param( payload );
 			
 			// issue a get for the beacon url
