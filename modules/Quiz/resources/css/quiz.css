@@ -30,6 +30,27 @@
     font-style: normal;
     font-weight: bold;
 }
+body:after
+{
+    content: url(../images/BACKGROUND.png)
+    url(../images/AnswerBG_hover.png)
+    url(../images/AnswerBG.png)
+    url(../images/ApplyBG.png)
+    url(../images/ApplliedBG.png)
+    url(../images/Hint.png)
+    url(../images/close.png)
+    url(../images/hexaTransp.png)
+    url(../images/Submitted_Wrong.png)
+    url(../images/answerNr.png)
+    url(../images/slider.prev.png)
+    url(../images/slider.next.png)
+    url(../images/bubble-un-ans.png)
+    url(../images/bubble-ans.png)
+    url(../images/bubble-un-ans-h.png)
+    url(../images/bubble-ans-h.png)
+    url(../images/pie.png);
+    display: none;
+}
 .scoreBig{
     font-size: 3vw;
     font-weight: 900;
@@ -50,10 +71,10 @@
     padding-top:35vh !important;
 }
 
-center {
-    margin-left: auto;
-    margin-right: auto;
-}
+/*center {*/
+    /*margin-left: auto;*/
+    /*margin-right: auto;*/
+/*}*/
 .padding-left11{
  padding-left: 11vw !important;
 }
@@ -238,16 +259,6 @@ center {
     position: absolute;
     height: 8vh;
     margin-top: -1vh;
-
-    /*font-family: "Lato-Regular";*/
-    /*font-size: 2.2vw;*/
-    /*position:absolute;*/
-    /*display:table;*/
-    /*margin-left: auto;*/
-    /*margin-right: auto;*/
-    /*width: 91vw;*/
-    /*height: 8vh;*/
-    /*color: white;*/
 }
 
 
@@ -557,13 +568,22 @@ vertical-align: middle;
 }
 ol.first-row{
     padding: 0;
+    -webkit-transform-style: preserve-3d;
+    -moz-transform-style: preserve-3d;
+    transform-style: preserve-3d;
 }
 ol.second-row{
     margin-top: -8vh;
     padding-left: 0vw;
+    -webkit-transform-style: preserve-3d;
+    -moz-transform-style: preserve-3d;
+    transform-style: preserve-3d;
 }
 .bk-gradient{
     background-color: rgb(0, 190, 238);
+}
+.solid-bk{
+    background-color:#00ace5;
 }
 .display-content{
 

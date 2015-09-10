@@ -38,7 +38,7 @@
                 'action': 'list',
                 'filter:objectType': 'KalturaQuizUserEntryFilter',
                 'filter:entryIdEqual': _this.embedPlayer.kentryid,
-               'filter:userIdEqualCurrent':'1',
+                'filter:userIdEqualCurrent':'1',
                 'filter:orderBy': '-createdAt'
             }, {
                 'service': 'quiz_quiz',
@@ -190,10 +190,10 @@
             $.grep($.quizParams.uiAttributes, function (e) {
 
                 if (e.key == "showTotalScore") {
-                    _this.showTotalScore = (e.value ==='true') ;
+                    _this.showTotalScore = (e.value.toLowerCase() ==='true') ;
                 }
                 if (e.key == "canSkip") {
-                    _this.canSkip = (e.value ==='true') ;
+                    _this.canSkip = (e.value.toLowerCase() ==='true') ;
                 }
             });
         },
@@ -350,6 +350,7 @@
                }
                else {
                    $.cpObject.cpArray[_this.q2i(questionNr)].answerCpId = data.id;
+                  // todo remove check
                    $.cpObject.cpArray[_this.q2i(questionNr)].isCorrect = data.isCorrect;
                    $.cpObject.cpArray[_this.q2i(questionNr)].explanation = data.explanation;
                    $.cpObject.cpArray[_this.q2i(questionNr)].correctAnswerKeys = data.correctAnswerKeys;
@@ -413,7 +414,7 @@
             $(".header-container").prepend("<div class ='hint-why-box'>"+ buttonText +"</div>")
                 .on('click', function () {
                     _this.removeShowScreen("hintWhyScreen");
-                    $(".screen-content" ).addClass('bk-gradient');
+                    $(".screen-content" ).addClass('solid-bk');
                     $(".header-container").addClass('close-button')
                         .on('click', function () {
                             $(".screen-content" ).removeClass('bk-gradient');
