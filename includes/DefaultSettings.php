@@ -6,6 +6,12 @@
  *
  */
 
+if (isset($_SERVER["HTTP_X_FORWARDED_HOST"]))
+{
+	 $_SERVER["HTTP_HOST"] = $_SERVER["HTTP_X_FORWARDED_HOST"];
+	 $_SERVER["SERVER_NAME"] = $_SERVER["HTTP_X_FORWARDED_HOST"];
+}
+
 // The default cache directory
 $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 
