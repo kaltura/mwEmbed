@@ -188,7 +188,6 @@
 						if (!_this.displays.getPrimary().isMain){
 							_this.fsm.consumeEvent('switchView');
 						}
-						_this.positionSecondDisplay();
 						//Reset the control bar
 						if (_this.controlBar) {
 							_this.controlBar.destroy();
@@ -275,7 +274,7 @@
 				this.fsm = new mw.dualScreen.StateMachine( selectedStatesMap, this.displays, fsmTransitionHandlers );
 			},
 			initDisplays: function () {
-				var _this = this;				
+				var _this = this;
 				this.displays = new mw.dualScreen.displays(this.getPlayer(), function () {
 					this.setConfig({
 						resizeHandlesFadeout: _this.getConfig( 'resizeHandlesFadeout' ),
