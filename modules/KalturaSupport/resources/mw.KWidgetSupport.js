@@ -1736,7 +1736,7 @@ mw.KWidgetSupport.prototype = {
 		if (assetDrmData) {
 			drmData.custom_data = assetDrmData.custom_data;
 			drmData.signature = assetDrmData.signature;
-			drmData.contenId = assetDrmData.contentId;
+			drmData.contentId = assetDrmData.contentId;
 		}
 		return drmData;
 	},

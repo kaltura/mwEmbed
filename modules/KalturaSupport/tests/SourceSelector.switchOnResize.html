@@ -41,13 +41,27 @@ Demonstrate switching sources as player changes sizes.
 			'sourceSelector': {
 				'switchOnResize': true
 			},
-			"confFilePath": "{libPath}/modules/KalturaSupport/tests/confFiles/jsonConfig.json",
 			"controlBarContainer": {
 				"hover": false
 			}
+		}, 
+		"confFilePath": "{libPath}/modules/KalturaSupport/tests/confFiles/jsonConfig.json",
+		'readyCallback':function(playerId){
+			var kdp = $('#' + playerId )[0];
+			$('<div>').append(
+				$('<a href="#">hide</a>').click(function(){
+					kdp.setKDPAttribute( 'sourceSelector', 'visible', false);
+				}),
+				$('<span>').text(' / '),
+				$('<a href="#">show</a>').click(function(){
+					kdp.setKDPAttribute( 'sourceSelector', 'visible', true);
+				}),
+				$('<span>').text( ' source selector ')
+			).insertAfter( '#sizes' )
 		}
 	})
 </script>
+
 
 </body>
 </html>

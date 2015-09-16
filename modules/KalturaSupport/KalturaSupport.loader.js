@@ -15,6 +15,7 @@
 			'kentryid' : null, // mediaProxy.entry.id
 			'kwidgetid' : null,
 			'kuiconfid' : null,
+			'referenceId': null,
 			// helps emulate the kdp behavior of not updating currentTime until a seek is complete.
 			'kPreSeekTime': null,
 			// Kaltura player Metadata exported across the iframe

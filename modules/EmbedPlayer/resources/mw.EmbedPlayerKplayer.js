@@ -888,7 +888,7 @@
 			this.playerObject.sendNotification('doSwitch', { flavorIndex: sourceIndex });
 		},
 		canAutoPlay: function () {
-			return true;
+			return (!this.isLive() || (this.isLive() && !this.isOffline()));
 		},
 		backToLive: function () {
 			this.triggerHelper('movingBackToLive');
