@@ -26,6 +26,7 @@
 		streams: [],
 		streamsReady: false,
 		streamEnded: false,
+		streamChanging: false,
 
 		setup: function () {
 			this.addBindings();
@@ -92,6 +93,15 @@
 				_this.externalSetStream(arg);
 			});
 
+			this.bind('onChangeMedia', function () {
+				if (!_this.streamChanging){
+						_this.streams = [];
+						_this.getMenu().destroy();
+						_this.onDisable();
+						_this.streamsReady = false;
+					}
+			});
+
 			if (this.getConfig('enableKeyboardShortcuts')) {
 				this.bind('addKeyBindCallback', function (e, addKeyCallback) {
 					_this.addKeyboardShortcuts(addKeyCallback);
@@ -121,8 +131,9 @@
 			// do the api request
 			this.getKalturaClient().doRequest(requestObject, function (data) {
 				// Validate result
-				if (data && _this.isValidResult(data[0])) {
+				if (data && _this.isValidResult(data[0] && data[0].totalCount > 0)) {
 					_this.createStreamList(data);
+					_this.getBtn().show();
 				} else {
 					mw.log('streamSelector::Error retrieving streams, disabling component');
 					_this.getBtn().hide();
@@ -275,6 +286,7 @@
 			if (this.currentStream != stream) {
 				var _this = this;
 				var embedPlayer = this.getPlayer();
+				this.streamChanging = true;
 				embedPlayer.triggerHelper('onChangeStream', [_this.currentStream.id]);
 				//Set reference to active stream
 				this.currentStream = stream;
@@ -334,6 +346,7 @@
 							embedPlayer.removeBlackScreen();
 							//Return poster to allow display of poster on clip done
 							mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
+							_this.streamChanging = false;
 							embedPlayer.triggerHelper('onChangeStreamDone', [_this.currentStream.id]);
 						});
 						//Add black screen before seek to avoid flashing of video
