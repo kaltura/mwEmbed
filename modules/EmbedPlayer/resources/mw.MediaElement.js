@@ -634,7 +634,10 @@ mw.MediaElement.prototype = {
 		var licenseDataString = "";
 		if (licenseData) {
 			$.each( licenseData, function ( key, val ) {
-				licenseDataString += key + "=" + val + "&";
+				//Only concatenate keys with actual values
+				if (val) {
+					licenseDataString += key + "=" + val + "&";
+				}
 			} );
 		}
 		return licenseDataString;

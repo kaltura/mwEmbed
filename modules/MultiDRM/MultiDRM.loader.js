@@ -28,7 +28,7 @@
 								//Get user configuration
 								var drmUserConfig = embedPlayer.getKalturaConfig("multiDrm");
 								//Get default config
-								var drmConfig = getDefaultDrmConfig();
+								var drmConfig = getDefaultDrmConfig(embedPlayer.kpartnerid);
 								//Deep extend custom config
 								$.extend(true, drmConfig, drmUserConfig);
 								embedPlayer.setKalturaConfig("multiDrm", drmConfig);
@@ -117,26 +117,20 @@
 		};
 	}
 
-	function getDefaultDrmConfig(){
+	function getDefaultDrmConfig(partnerId){
 		var defaultConfig = {
 			"drm": "auto",
 			"customData": {
-				"userId": null ,
-				"sessionId": "castlab-session" ,
+				"userId": partnerId ,
+				"sessionId": "castlab-session",
 				"merchant": "kaltura"
 			},
-			"sendCustomData": true,
+			"sendCustomData": false,
 			"generatePSSH": false,
-			"assetId": null , //coguid //entryid
-			"variantId": null , //flavorid
 			"authenticationToken": null ,
 			"widevineLicenseServerURL": null,
 			"accessLicenseServerURL": null,
-			"autoplay": false,
-			"widht":"100%",
-			"height":"100%",
 			"flashFile": mw.getConfig("EmbedPlayer.dashAsUrl"),
-			"controls": false ,
 			"techs": ["dashjs", "dashas"] ,
 			"debug": false
 		};
