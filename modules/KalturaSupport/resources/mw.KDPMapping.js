@@ -13,19 +13,6 @@
 	};
 	mw.KDPMapping.prototype = {
 
-		// ability to format expressions
-		formatFunctions: {
-			timeFormat: function( value ){
-				return mw.seconds2npt( parseFloat(value) );
-			},
-			dateFormat: function( value ){
-				var date = new Date( value * 1000 );
-				return date.toDateString();
-			},
-			numberWithCommas: function( value ){
-				return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-			}
-		},
 		// global list of kdp listening callbacks
 		listenerList: {},
 		/**
@@ -33,9 +20,7 @@
 		*/
 		init: function( embedPlayer ){
 			var _this = this;
-			
-			// Expose formatFunctions as mw.formaters
-			mw.formaters = this.formatFunctions;
+			this.registerDefaultFormaters();
 
 			// player api:
 			var kdpApiMethods = [ 'addJsListener', 'removeJsListener', 'sendNotification',
@@ -94,6 +79,21 @@
 			if( !runCallbackOnParent ) {
 				window.kWidget.jsCallbackReady( embedPlayer.id );
 			}
+		},
+
+		registerDefaultFormaters: function() {
+			mw.util.formaters().register({
+				timeFormat: function( value ){
+					return mw.seconds2npt( parseFloat(value) );
+				},
+				dateFormat: function( value ){
+					var date = new Date( value * 1000 );
+					return date.toDateString();
+				},
+				numberWithCommas: function( value ){
+					return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+				}
+			});
 		},
 
 		/**
@@ -310,6 +310,25 @@
 						case 'volume':
 							return embedPlayer.volume;
 							break;
+						case 'buffer':
+							switch( objectPath[2] ){
+								case 'lastBufferDuration':
+									return embedPlayer.lastBufferDuration || 0;
+								break;
+								case 'lastBufferDurationMs':
+									return ( embedPlayer.lastBufferDuration ) ? embedPlayer.lastBufferDuration*1000 : 0;
+								break;
+								case 'bufferEndTime':
+									return embedPlayer.bufferEndTime;
+								break;
+								case 'bufferStartTime':
+									return embedPlayer.bufferStartTime;
+								break;
+								case 'percent': 
+									return ( embedPlayer.bufferedPercent );
+								break;
+							}
+							break;
 						case 'player':
 							switch( objectPath[2] ){
 								case 'currentTime':
@@ -477,10 +496,6 @@
 								return 'ready';
 							}
 							return null;
-
-						break;
-						case 'loadTime':
-						return kWidget.loadTime[embedPlayer.kwidgetid];
 						break;
 					}
 				break;
@@ -595,8 +610,8 @@
 				var expArr = expression.split('|');
 				expression = expArr[0];
 				formatFunc = expArr[1];
-				if( typeof this.formatFunctions[ formatFunc ] == 'function' ){
-					formatFunc = this.formatFunctions[ formatFunc ];
+				if( mw.util.formaters().exists(formatFunc) ){
+					formatFunc = mw.util.formaters().get(formatFunc);
 				} else {
 					formatFunc = null;
 				}

@@ -99,72 +99,72 @@
 		checkEnvironment: function () {
 			// Note forceMobileHTML5 url flag be disabled by uiConf on the iframe side of the player
 			// with:
-			if (document.URL.indexOf('forceMobileHTML5') !== -1 && !mw.getConfig('disableForceMobileHTML5')
-				) {
-				mw.setConfig('forceMobileHTML5', true);
+			if ( document.URL.indexOf( 'forceMobileHTML5' ) !== -1 && !mw.getConfig( 'disableForceMobileHTML5' )
+			) {
+				mw.setConfig( 'forceMobileHTML5' , true );
 			}
 			// Check for debugKalturaPlayer in url and set debug mode to true
-			if (document.URL.indexOf('debugKalturaPlayer') !== -1) {
-				mw.setConfig('debug', true);
+			if ( document.URL.indexOf( 'debugKalturaPlayer' ) !== -1 ) {
+				mw.setConfig( 'debug' , true );
 			}
 			// Check for forceKPlayer in the URL
-			if (document.URL.indexOf('forceKPlayer') !== -1) {
-				mw.setConfig('EmbedPlayer.ForceKPlayer', true);
+			if ( document.URL.indexOf( 'forceKPlayer' ) !== -1 ) {
+				mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
 			}
 
 			var ua = navigator.userAgent;
 			// Check if browser should use flash ( IE < 9 )
-			var ieMatch = ua.match(/MSIE\s([0-9]+)/);
-			if ((ieMatch && parseInt(ieMatch[1]) < 9) || document.URL.indexOf('forceFlash') !== -1) {
-				mw.setConfig('Kaltura.ForceFlashOnDesktop', true);
+			var ieMatch = ua.match( /MSIE\s([0-9]+)/ );
+			if ( (ieMatch && parseInt( ieMatch[1] ) < 9) || document.URL.indexOf( 'forceFlash' ) !== -1 ) {
+				mw.setConfig( 'Kaltura.ForceFlashOnDesktop' , true );
 			}
 
 			// Blackberry does not really support html5
-			if (ua.indexOf('BlackBerry') != -1) {
-				mw.setConfig('EmbedPlayer.DisableVideoTagSupport', true);
-				mw.setConfig('EmbedPlayer.NotPlayableDownloadLink', true);
+			if ( ua.indexOf( 'BlackBerry' ) != -1 ) {
+				mw.setConfig( 'EmbedPlayer.DisableVideoTagSupport' , true );
+				mw.setConfig( 'EmbedPlayer.NotPlayableDownloadLink' , true );
 			}
 
-			if (ua.indexOf('kalturaNativeCordovaPlayer') != -1) {
-				mw.setConfig('EmbedPlayer.ForceNativeComponent', true);
+			if ( ua.indexOf( 'kalturaNativeCordovaPlayer' ) != -1 ) {
+				mw.setConfig( 'EmbedPlayer.ForceNativeComponent' , true );
 
-				if (!mw.getConfig('EmbedPlayer.IsIframeServer')) {
+				if ( !mw.getConfig( 'EmbedPlayer.IsIframeServer' ) ) {
 					var cordovaPath;
 					var cordovaKWidgetPath;
-					if (this.isAndroid()) {
+					if ( this.isAndroid() ) {
 						cordovaPath = "/modules/EmbedPlayer/binPlayers/cordova/android/cordova.js";
 					} else {
 						cordovaPath = "/modules/EmbedPlayer/binPlayers/cordova/ios/cordova.js";
 					}
 					cordovaKWidgetPath = "/kWidget/cordova.kWidget.js";
-					document.write('<script src="' + this.getPath() + cordovaPath + '"></scr' + 'ipt>');
-					document.write('<script src="' + this.getPath() + cordovaKWidgetPath + '"></scr' + 'ipt>');
+					document.write( '<script src="' + this.getPath() + cordovaPath + '"></scr' + 'ipt>' );
+					document.write( '<script src="' + this.getPath() + cordovaKWidgetPath + '"></scr' + 'ipt>' );
 				}
 			}
 
 			// iOS less than 5 does not play well with HLS:
-			if (/(iPhone|iPod|iPad)/i.test(ua)) {
-				if (/OS [2-4]_\d(_\d)? like Mac OS X/i.test(ua)
+			if ( /(iPhone|iPod|iPad)/i.test( ua ) ) {
+				if ( /OS [2-4]_\d(_\d)? like Mac OS X/i.test( ua )
 					||
-					(/CPU like Mac OS X/i.test(ua) )
-					) {
-					mw.setConfig('Kaltura.UseAppleAdaptive', false);
+					(/CPU like Mac OS X/i.test( ua ) )
+				) {
+					mw.setConfig( 'Kaltura.UseAppleAdaptive' , false );
 				}
 			}
 
 			// Set iframe config if in the client page, will be passed to the iframe along with other config
-			if (!mw.getConfig('EmbedPlayer.IsIframeServer')) {
-				mw.setConfig('EmbedPlayer.IframeParentUrl', document.URL);
-				mw.setConfig('EmbedPlayer.IframeParentTitle', document.title);
-				mw.setConfig('EmbedPlayer.IframeParentReferrer', document.referrer);
+			if ( !mw.getConfig( 'EmbedPlayer.IsIframeServer' ) ) {
+				mw.setConfig( 'EmbedPlayer.IframeParentUrl' , document.URL );
+				mw.setConfig( 'EmbedPlayer.IframeParentTitle' , document.title );
+				mw.setConfig( 'EmbedPlayer.IframeParentReferrer' , document.referrer );
 
 				// Fix for iOS 5 not rendering iframe correctly when moving back/forward
 				// http://stackoverflow.com/questions/7988967/problems-with-page-cache-in-ios-5-safari-when-navigating-back-unload-event-not
-				if (/(iPhone|iPod|iPad)/i.test(navigator.userAgent)) {
-					if (/OS [1-5](.*) like Mac OS X/i.test(navigator.userAgent)) {
-						window.onpageshow = function (evt) {
+				if ( /(iPhone|iPod|iPad)/i.test( navigator.userAgent ) ) {
+					if ( /OS [1-5](.*) like Mac OS X/i.test( navigator.userAgent ) ) {
+						window.onpageshow = function ( evt ) {
 							// If persisted then it is in the page cache, force a reload of the page.
-							if (evt.persisted) {
+							if ( evt.persisted ) {
 								document.body.style.display = "none";
 								location.reload();
 							}
@@ -172,6 +172,29 @@
 					}
 				}
 			}
+
+
+			// Check if using staging server on non-staging site:
+			if (
+				// make sure this is Kaltura SaaS we are checking:
+			mw.getConfig( "Kaltura.ServiceUrl" ).indexOf( 'kaltura.com' ) != -1
+			&&
+				// check that the library is not on production
+			this.getPath().indexOf( 'i.kaltura.com' ) == -1
+			&&
+				// check that we player is not on a staging site:
+			window.location.host != 'kgit.html5video.org'
+			&&
+			window.location.host != 'player.kaltura.com'
+			&&
+			window.location.host != 'localhost'
+			) {
+				if ( console && console.error ) {
+					console.error( "Error: Using non-prodcution version of kaltura player library. Please see http://knowledge.kaltura.com/production-player-urls" )
+				}
+			}
+
+
 		},
 
 		/**
@@ -235,13 +258,14 @@
 			var kdpVersion = player.evaluate('{playerStatusProxy.kdpVersion}');
 			//set the load time attribute supported in version kdp 3.7.x
 			if (mw.versionIsAtLeast('v3.7.0', kdpVersion)) {
-				player.kBind("kdpReady", function () {
-					_this.loadTime[ widgetId ] = ((new Date().getTime() - _this.startTime[ widgetId ] ) / 1000.0).toFixed(2);
-					player.setKDPAttribute("playerStatusProxy", "loadTime", _this.loadTime[ widgetId ]);
-					_this.log("Player (" + widgetId + "):" + _this.loadTime[ widgetId ]);
+				_this.log("Error: Unsuported KDP version");
+			} else{
+				player.kBind('mediaReady', function () {
+					// Set the load time against startTime for the current playerId:
+					player.setKDPAttribute("playerStatusProxy", "loadTime", 
+							( (new Date().getTime() - _this.startTime[ widgetId ] ) / 1000.0 ).toFixed(2) );
 				});
 			}
-
 			// Support closing menu inside the player
 			if (!mw.getConfig('EmbedPlayer.IsIframeServer')) {
 				document.onclick = function () {
@@ -312,7 +336,8 @@
 			if (!settings.flashvars) {
 				settings.flashvars = {};
 			}
-
+			
+			// set player load check at start embed method call
 			this.startTime[targetId] = new Date().getTime();
 
 			// Check if we have flashvars object

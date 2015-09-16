@@ -545,7 +545,7 @@
 				)
 			};
 
-			$( embedPlayer ).bind( 'monitorEvent', function(){
+			$( embedPlayer ).bind( 'monitorEvent' + this.bindPostfix, function(){
 				if( (embedPlayer.currentTime > overlayConfig.start) && (embedPlayer.currentTime < overlayConfig.end) && !startOvelrayDisplayed && !embedPlayer.evaluate('{sequenceProxy.isInSequence}') ){
 					lastDisplay = embedPlayer.currentTime;
 					startOvelrayDisplayed = true;

@@ -19,9 +19,9 @@
 
 		waitForFirstPlay: false,
 		updateEnabled: true,
+        liveEdge: 98,
 
 		isSliderPreviewEnabled: function () {
-			
 			return this.getConfig("sliderPreview") && !this.isDisabled && !this.embedPlayer.isLive();
 		},
 		setup: function (embedPlayer) {
@@ -30,7 +30,7 @@
 				this.setConfig('insertMode', 'lastChild');
 			}
 			this.addBindings();
-			if (this.isSliderPreviewEnabled()) {
+            if (this.isSliderPreviewEnabled()) {
 				this.setupThumbPreview();
 			}
 		},
@@ -122,6 +122,11 @@
 					_this.updateEnabled = true;
 				}
 			});
+            this.bind("onPlayerStateChange", function (e, newState, oldState) {
+                if(newState === 'pause') {
+                    _this.paused = true;
+                }
+            });
 		},
 		bindUpdatePlayheadPercent: function () {
 			var _this = this;
@@ -141,8 +146,26 @@
 			});
 		},
 		updatePlayheadUI: function (val) {
+            if( this.getPlayer().instanceOf !== 'Native' && this.getPlayer().isPlaying() && !this.paused && this.embedPlayer.isDVR() ) {
+                this.checkForLiveEdge();
+                if( !this.getPlayer().isLiveOffSynch()) {
+                    this.getComponent().slider('option', 'value', 999);
+                    return;
+                }
+            }
             this.getComponent().slider('option', 'value', val);
+            if(this.paused && this.getPlayer().isPlaying()){
+                this.paused = false;
+            }
 		},
+        checkForLiveEdge: function (){
+            var playHeadPercent = (this.getPlayHeadComponent().position().left + this.getPlayHeadComponent().width()/2) / this.getComponent().width();
+            playHeadPercent = parseInt(playHeadPercent*100);
+
+            if( this.getPlayer().isLiveOffSynch() && playHeadPercent > this.liveEdge -1 ){
+                this.getPlayer().setLiveOffSynch(false);
+            }
+        },
 		setupThumbPreview: function () {
 			var _this = this;
 			this.thumbnailsLoaded = false;
@@ -196,7 +219,7 @@
 		},
 		loadThumbnails: function (callback) {
 			var _this = this;
-			if (this.getConfig("showOnlyTime")) {
+			if ( this.embedPlayer.isLive() || this.getConfig("showOnlyTime")) {
 				this.loadedThumb = true;
 			}
 			if (!this.loadedThumb) {
@@ -274,11 +297,10 @@
 				$(".arrow").hide();
 			}
 
-			var perc = data.val / 1000;
+            var perc = data.val / 1000;
 			perc = perc > 1 ? 1 : perc;
 			var currentTime = this.duration * perc;
 			var thumbWidth = showOnlyTime ? $sliderPreviewTime.width() : this.getConfig("thumbWidth");
-
 			$sliderPreview.css({top: top, left: sliderLeft });
 			if (!showOnlyTime) {
 				$sliderPreview.css({'background-image': 'url(\'' + this.getThumbSlicesUrl() + '\')',
@@ -351,6 +373,9 @@
 				$slider.html('<span class="accessibilityLabel">' + title + '</span>');
 			}
 		},
+        getPlayHeadComponent: function () {
+            return this.getComponent().find('.playHead');
+        },
 		getComponent: function () {
 			var _this = this;
 			if (!this.$el) {

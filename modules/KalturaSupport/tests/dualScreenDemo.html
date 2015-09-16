@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Player Skin 2.0 + JSON Config</title>
+    <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+    <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+    <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<body>
+<h1>Dual Screen Test Page</h1>
+<br />
+<div id="kaltura_player" style="width: 960px; height: 640px;float: left;"></div>
+<br style="clear: both;" /><br />
+<script>
+    kWidget.featureConfig({
+        'targetId': 'kaltura_player',
+        'wid': '_1082371',
+        'uiconf_id' : '28376981',
+        'entry_id': "0_jiucb063",
+        'flashvars': {
+            "EmbedPlayer.SpinnerTarget": "videoHolder",
+            "chapters": {
+                plugin: true
+            },
+            "sideBarContainer": {
+                "clickToClose": true
+            },
+            "dualScreen": {
+                plugin: true
+            },
+            streamSelector: {
+                plugin: true
+            },
+            "infoScreen": {
+                plugin: true,
+                parent: "controlsContainer",
+                order: 3,
+                align: "right",
+                minWidth: 400,
+                minWidthClass: 'infoScreenSmall',
+                template: ""
+            }
+        }
+    });
+</script>
+</body>
+</html>

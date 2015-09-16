@@ -1,0 +1,266 @@
+<html>
+<head>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	<style type="text/css">
+		.content {
+			width: 70%;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		h2{
+			text-align: center;
+		}
+		#myForm{
+			box-shadow: 0 0 20px rgba(0,0,0,0.8);
+			padding: 20px;
+		}
+		#myForm fieldset{
+			text-align: center;
+		}
+		#myForm input{
+			background-color: #f2f2f2;
+			margin: 10px;
+			color: #444;
+			width: 100%;
+
+		}
+		#myForm select{
+			float: left;
+			margin: 10px;
+		}
+		#kaltura_player{
+			margin: 0 auto;
+
+		}
+	</style>
+</head>
+<body>
+	<div class="content">
+		<h2>DRM TEST AREA</h2>
+		<hr>
+		<div class="row-fluid well well-large">
+			<p>This example highlights the <b>DASH support</b> (using MediaProxy Override and JSON Config)</p>
+			<p>
+				Kaltura Player enables playing CENC encrypted medias over DASH via browser MSE/EME without depending on external plugins.
+			</p>
+		</div>
+		<div class="row-fluid">
+			<div class="span12">
+				<form class="form-horizontal" id="myForm">
+					<fieldset>
+						<input id="MPD" name="MPD" type="url" placeholder="MPD URL" class="input-xlarge" required="">
+						<input id="license" name="license" type="url" placeholder="LA URL" class="input-xlarge">
+
+						<select id="selectbasic" name="selectbasic" class="input-xlarge">
+							<option id="Widevine">Widevine</option>
+							<option id="Playready" >Playready</option>
+							<option id="NoDRM">No DRM</option>
+						</select>
+
+						<input id="customData" name="customData" type="text" placeholder="Playready specific custom data header info" class="input-xlarge">
+					</fieldset>
+					<fieldset>
+
+						<button id="submit" name="submit" class="btn btn-primary">Reload Media Info!</button>
+					</fieldset>
+				</form>
+			</div>
+			<div class="span12" class="playerContainer">
+				<div id="kaltura_player" style="width:600px;height:338px;background-color:black"></div>
+			</div>
+		</div>
+	</div>
+	<script>
+		(function(app){
+			var config = {
+				laType: "Widevine"
+			};
+			var keySystems = {
+				'widevine'  : ['com.widevine.alpha'],
+				'playready' : ['com.microsoft.playready', 'com.youtube.playready']
+			};
+			//Player plugins config
+			var jsonConfig  = {
+				"plugins":{
+					"topBarContainer": {},
+					"titleLabel": {},
+					"controlBarContainer": {
+						"hover": true
+					},
+					"largePlayBtn": {},
+					"scrubber": {
+						'thumbSlicesUrl': '{mediaProxy.entryMetadata.thumbSlicesUrl}'
+					},
+					"vast":{
+						"trackCuePoints":"true",
+						"timeout": 4
+					},
+					'skipBtn': {
+						'label': 'Skip Ad'
+					},
+					'noticeMessage': {
+						'text': 'Advertisment {sequenceProxy.timeRemaining|timeFormat}'
+					},
+					"playPauseBtn": {},
+					"volumeControl": {},
+					"fullScreenBtn": {},
+					"durationLabel": {},
+					"currentTimeLabel": {},
+					"sourceSelector": {},
+					"logo": { "visible": false},
+					"infoScreen": {},
+					"share": {},
+					'statistics': {'plugin': false},
+					"multiDrm": {
+						'plugin': true,
+						"licenseRequestTimeout": 5000,
+						"manifestRequestTimeout": 5000,
+						"fragmentRequestTimeout": 5000,
+						"ABRParameters": {
+							"downloadRatioSafetyFactor": 1.5,
+							"qualitySwitchThreshold": 2000,
+							"bandwidthSafetyFactor" : 1.5,
+							"minBufferLength": 8,
+							"maxBufferLength": 15,
+							"disableBufferOccupancyRule": true,
+							"limitThroughputRule": true
+						}
+					}
+				},
+				"uiVars":[{
+					"key":"autoPlay",
+					"value":false,
+					"overrideFlashvar":false
+				}],
+				"layout":{
+					"skin": "kdark",
+					"cssFiles":[]
+				}
+			};
+			// Base entry settings
+			var baseMediaProxyData = {
+				'entry':{
+					'id': "key_2",
+					'name': "UDRM Test",
+					"description": "UDRM Test",
+					"plays":1234,
+					"views":47332,
+					"duration":114,
+					"createdAt":1379965720,
+					"updatedAt":1384465538,
+					"thumbnailUrl": 'http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/0_c0r624gh/version/100004/width/640'
+				},
+				"contextData":{
+					'isCountryRestricted': false
+				},
+				'entryMetadata': {
+					'thumbSlicesUrl': 'http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/0_c0r624gh/version/100004/width/100/vid_slices/100',
+					'AgeGroup': "16"
+				},
+				'sources':[]
+			}
+			//Methods
+			//Load player with test vector data
+			function loadPlayer(mediaProxyData, licenseServer){
+				kWidget.embed('kaltura_player', {
+					'wid' : '_partnerkey',
+					"entry_id": "xxx",
+					'flashvars':{
+						'jsonConfig':jsonConfig,
+						'mediaProxy': mediaProxyData
+					},
+					'readyCallback': function( playerId ) {
+						if (licenseServer) {
+							var kdp = document.getElementById(playerId);
+
+							kdp.addJsListener('updateDashContextData', function (data) {
+								switch (config.laType) {
+									case "Widevine":
+										data.contextData.widevineLicenseServerURL = licenseServer;
+										break;
+									case "Playready":
+										data.contextData.playReadyLicenseServerURL = licenseServer;
+										break;
+								}
+							});
+						}
+					}
+				});
+			}
+			//Process the form request into a player mediaProxy data object
+			function processRequest(data){
+				var mediaProxyData = jQuery.extend(true, {}, baseMediaProxyData);
+				mediaProxyData.sources.push({
+					"src": data.MPD,
+					"width":"640",
+					"height":"360",
+					"type":"application/dash+xml"
+				});
+
+				loadPlayer(mediaProxyData, data.license);
+
+				return false;
+			}
+			//Override form submit and load player with test vector
+			$('#myForm').on('submit', function(e){
+				e.preventDefault();
+				var formDataStr = $(this).serialize();
+				var formDataKvp = formDataStr.split("&");
+
+				var collection = {};
+
+				formDataKvp.forEach(function(kvp) {
+					kvp = kvp.split("=");
+					collection[kvp[0]] = window.decodeURIComponent(kvp[1]);
+				});
+				processRequest(collection);
+				return false;
+			})
+			$('#selectbasic').on('change', function(data) {
+				config.laType = this.value;
+				switch (config.laType) {
+					case "Widevine":
+						$('#customData').attr('disabled', true);
+						$('#license').removeAttr('disabled');
+						break;
+					case "Playready":
+						$('#customData').removeAttr('disabled');
+						$('#license').removeAttr('disabled');
+						break;
+					default:
+						$('#license').attr('disabled', true);
+						$('#customData').attr('disabled', true);
+				}
+			});
+			$( document ).ready(function(){
+				var ua = navigator.userAgent;
+				if (isChrome(ua)) {
+					$('#selectbasic').find('#Playready').attr('disabled', true);
+					$('#selectbasic').find('#Widevine').attr('selected', true);
+					$('#customData').attr('disabled', true);
+				} else if (isIE11(ua) || isEdge(ua)) {
+					$('#selectbasic').find('#Widevine').attr('disabled', true);
+					$('#selectbasic').find('#Playready').attr('selected', true);
+				} else {
+					$('#selectbasic').find('#Playready').attr('disabled', true);
+					$('#selectbasic').find('#Widevine').attr('disabled', true);
+					$('#selectbasic').find('#NoDRM').attr('selected', true);
+					$('#license').attr('disabled', true);
+					$('#customData').attr('disabled', true);
+				}
+			});
+			var isChrome = function (ua) {
+				return ( ua.indexOf('Chrome') != -1 );
+			};
+			var isIE11 = function (ua) {
+				return (/trident\/7.0/.test(ua.toLowerCase()));
+			};
+			var isEdge = function (ua) {
+				return (/edge/.test(ua.toLowerCase()));
+			};
+		})({});
+	</script>
+</body>
+</html>

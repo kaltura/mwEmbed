@@ -56,6 +56,10 @@
 			});
 
 			this.bind( 'onChangeMediaDone', function(){
+				_this.currentSpeed = 1;
+				_this.getBtn().text( '1x' );
+				_this.buildMenu();
+
 				_this.manifestSource = null;
 			});
 
@@ -166,7 +170,7 @@
 			this.currentSpeed = newSpeed;
 			if (this.getConfig("serverSpeedPlayback") && this.currentSpeed <= 2 && (this.getPlayer().instanceOf === 'Kplayer' || mw.isMobileDevice()) && this.manifestSource){
 				var source = this.manifestSource;
-
+				currentPlayTime = currentPlayTime / this.currentSpeed;
 				var fileName = source.substr(source.lastIndexOf("/"));
 				var base = source.substr(0,source.lastIndexOf("/"));
 				if (fileName.indexOf("/a.f4m") === 0){
@@ -216,7 +220,7 @@
 								_this.unbind("seeked");
 							});
 							_this.getPlayer().seek( currentPlayTime ); // issue a seek if given new seek time
-						}, 0);
+						}, 200);
 					}
 				});
 			}
