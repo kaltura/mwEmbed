@@ -1173,6 +1173,7 @@
 				_this.isLinear = adInfo.isLinear;
 				if (!_this.isLinear && _this.isChromeless ){
 					$(".mwEmbedPlayer").hide();
+					mw.setConfig("EmbedPlayer.EnableFlashActivation", false);
 				}
 				var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
 				// dispatch adOpen event
