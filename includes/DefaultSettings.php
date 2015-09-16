@@ -6,13 +6,19 @@
  *
  */
 
+if (isset($_SERVER["HTTP_X_FORWARDED_HOST"]))
+{
+	 $_SERVER["HTTP_HOST"] = $_SERVER["HTTP_X_FORWARDED_HOST"];
+	 $_SERVER["SERVER_NAME"] = $_SERVER["HTTP_X_FORWARDED_HOST"];
+}
+
 // The default cache directory
 $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '2.35.rc13';
+$wgMwEmbedVersion = '2.35.rc15';
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {

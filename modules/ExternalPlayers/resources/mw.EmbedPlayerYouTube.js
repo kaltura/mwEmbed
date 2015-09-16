@@ -375,7 +375,7 @@
 
 			this.bindHelper ('playerReady' + this.bindPostfix , function(){
 				$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
-				if (mw.isMobileDevice()){
+				if (!_this.canAutoPlay()){
 					_this._playContorls = false;
 					$( _this ).trigger( 'onDisableInterfaceComponents', [["playlistAPI"]] );
 				}

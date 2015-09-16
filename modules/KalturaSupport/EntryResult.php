@@ -219,7 +219,8 @@ class EntryResult {
 			return array();
 		}
 
-		if( is_array( $resultObject['contextData'] ) && isset( $resultObject['contextData']['code'] ) && $resultObject['contextData']['code'] == 'ENTRY_ID_NOT_FOUND' ){
+        $vars = $this->uiconf->playerConfig['vars'];
+		if( is_array( $resultObject['contextData'] ) && isset( $resultObject['contextData']['code'] ) && $resultObject['contextData']['code'] == 'ENTRY_ID_NOT_FOUND' && !isset($vars['referenceId'])){
 			$this->error = 'No source video was found';
 			return array();
 		}
