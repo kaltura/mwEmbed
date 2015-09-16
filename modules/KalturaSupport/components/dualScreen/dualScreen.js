@@ -64,8 +64,7 @@
 			addBindings: function () {
 				var _this = this;
 				this.bind( 'playerReady', function (  ) {
-                    _this.getPlayer().triggerHelper('initDualScreen');
-                    _this.checkRenderConditions();
+					_this.checkRenderConditions();
 					_this.initView();
 					_this.initControlBar();
 					if (!_this.render) {
