@@ -60,7 +60,7 @@
 			},
 			isSafeEnviornment: function () {
 				this.initSecondPlayer();
-				return ( this.isPlaylistPersistent() || this.secondPlayer.isSafeEnviornment() );
+				return ( this.isPlaylistPersistent() || this.secondPlayer.canRender() );
 			},
 			isPlaylistPersistent: function(){
 				return (this.getPlayer().playerConfig &&
@@ -72,7 +72,7 @@
 				var _this = this;
 				this.bind( 'playerReady', function (  ) {
 					if (_this.syncEnabled){
-						if (_this.secondPlayer.isSafeEnviornment()) {
+						if (_this.secondPlayer.canRender()) {
 							_this.log("render condition are not met - initializing");
 							_this.getPlayer().triggerHelper("preHideScreen", "disabledScreen");
 							_this.disabled = false;
@@ -152,14 +152,20 @@
 
 				//Listen to events which affect controls view state
 				this.bind( 'showPlayerControls' , function(){
-						_this.controlBar.show();
+						if (!_this.disabled) {
+							_this.controlBar.show();
+						}
 				});
 				this.bind( 'onplay', function () {
-					_this.controlBar.enable();
+						if (!_this.disabled) {
+							_this.controlBar.enable();
+						}
 				} );
 				this.bind( 'onpause ended playerReady', function () {
-					_this.controlBar.show();
-					_this.controlBar.disable();
+						if (!_this.disabled) {
+							_this.controlBar.show();
+							_this.controlBar.disable();
+						}
 				} );
 				var wasDisabled = false;
 				this.bind( 'startDisplayInteraction', function(){
@@ -285,13 +291,15 @@
 				}, "dualScreenDisplays");
 			},
 			initControlBar: function(){
-				if ( !this.getPlayer().isAudio()) {
-					var _this = this;
-					this.controlBar = new mw.dualScreen.dualScreenControlBar(_this.getPlayer(), function(){
-						this.setConfig('menuFadeout', _this.getConfig('menuFadeout'));
-					}, 'dualScreenControlBar');
-					this.embedPlayer.getInterface().append( this.controlBar.getComponent() );
+				var _this = this;
+				this.controlBar = new mw.dualScreen.dualScreenControlBar(_this.getPlayer(), function(){
+					this.setConfig('menuFadeout', _this.getConfig('menuFadeout'));
+				}, 'dualScreenControlBar');
+				if ( this.getPlayer().isAudio()) {
+					this.controlBar.hide();
+					this.controlBar.disable();
 				}
+				this.embedPlayer.getInterface().append( this.controlBar.getComponent() );
 			},
 			initView: function(){
 				var _this = this;
@@ -445,7 +453,7 @@
 					this.updateSecondScreenLayoutTimeout = setTimeout( function () {
 						if (_this.disabled) {
 							_this.log("request update screen layout - got status 'disabled' while trying to update");
-							_this.getPrimary().obj.css("visibility", "");
+							_this.displays.getPrimary().obj.css("visibility", "");
 							_this.minimizeSecondDisplay();
 						} else {
 							_this.updateSecondScreenLayoutTimeout = null;
