@@ -524,7 +524,9 @@
 			// Also update the embedPlayer poster
 			this.parent_updatePoster(src);
 
-			if (mw.getConfig('EmbedPlayer.HidePosterOnStart') === true) {
+			if(	mw.getConfig('EmbedPlayer.HidePosterOnStart') === true
+				&&
+				!(this.getPlayerElement() && this.getPlayerElement().ended && mw.getConfig('EmbedPlayer.ShowPosterOnStop'))){
 				return;
 			}
 			if (this.getPlayerElement()) {
