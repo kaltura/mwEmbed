@@ -104,6 +104,7 @@
 		_onpause: function () {
 			this.paused = true;
 			this.layoutBuilder.showPlayerControls();
+			$(this).trigger('onPlayerStateChange', [ "pause", "play" ]);
 			this.parent_pause();
 		},
 
@@ -114,6 +115,7 @@
 			this.paused = false;
 			this.stopped = false;
 			this.layoutBuilder.hidePlayerControls();
+			$(this).trigger('onPlayerStateChange', [ "play", "pause" ]);
 			this.parent_play();
 		},
 		// override these functions so embedPlayer won't try to sync time
