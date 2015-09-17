@@ -119,7 +119,7 @@
 		_onplay: function () {
 			this.paused = false;
 			this.stopped = false;
-			$(this).trigger("onplay");
+			$(this).trigger("playing");
 			this.layoutBuilder.hidePlayerControls();
 			this.parent_play();
 		},
