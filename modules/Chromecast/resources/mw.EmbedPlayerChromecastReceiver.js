@@ -51,6 +51,7 @@
 
 		setup: function( readyCallback ) {
 			this.vid = this.getPlayerElement();
+			this.applyMediaElementBindings();
 			mw.log('EmbedPlayerChromecastReceiver:: Setup. Video element: '+this.getPlayerElement().toString());
 			$(this).trigger("chromecastReceiverLoaded",[this.getPlayerElement()]);
 			var _this = this;
@@ -66,12 +67,6 @@
 			readyCallback();
 		},
 
-		updateFeatureSupport: function () {
-			// Check if we already have a video element an apply bindings ( for native interfaces )
-			if (this.getPlayerElement()) {
-				this.applyMediaElementBindings();
-			}
-		},
 		/**
 		 * Apply media element bindings
 		 */
@@ -108,7 +103,6 @@
 		 */
 		_onpause: function () {
 			this.paused = true;
-			$(this).trigger("onPlayerStateChange","pause");
 			this.layoutBuilder.showPlayerControls();
 			this.parent_pause();
 		},
@@ -119,7 +113,6 @@
 		_onplay: function () {
 			this.paused = false;
 			this.stopped = false;
-			$(this).trigger("onPlayerStateChange","play");
 			this.layoutBuilder.hidePlayerControls();
 			this.parent_play();
 		},
