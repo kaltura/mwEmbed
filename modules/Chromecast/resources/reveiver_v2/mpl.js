@@ -115,7 +115,9 @@ onload = function () {
 			mw.setConfig("EmbedPlayer.HidePosterOnStart", true);
 			mw.setConfig("debug", true);
 			mw.setConfig("debugTarget", "kdebug");
+			mw.setConfig("debugFilter", "!!!");
 			mw.setConfig("autoScrollDebugTarget", true);
+			mw.setConfig("chromecastReceiver", true);
 			kWidget.embed({
 				"targetId": "kaltura_player",
 				"wid": "_" + publisherID,
@@ -123,25 +125,19 @@ onload = function () {
 				"readyCallback": function (playerId) {
 					if (!playerInitialized){
 						playerInitialized = true;
-						//setTimeout(function(){
 						var kdp = document.getElementById(playerId);
-						var iframe = kdp.getElementsByTagName("iframe");
-						var innerDoc = iframe[0].contentDocument || iframe.contentWindow.document;
-						mediaElement = innerDoc.getElementsByTagName("video")[0];
-						mediaElement.autoplay = false;
-						setMediaElementEvents(mediaElement);
-
-						//mediaManager.resetMediaElement();
-						mediaManager.setMediaElement(mediaElement);
-						setMediaManagerEvents();
-						messageBus.broadcast("readyForMedia");
-
-						kdp.sendNotification("doPlay");
-						//kdp.sendNotification("doPause");
-						//},7000);
-
+						kdp.kBind("chromecastReceiverLoaded", function( video ){
+							while(video.attributes.length > 0){
+								video.removeAttribute(video.attributes[0].name);
+							}
+							mediaElement = video;// document.getElementById('vid');
+							mediaElement.autoplay = false;
+							setMediaElementEvents(mediaElement);
+							mediaManager.setMediaElement(mediaElement);
+							setMediaManagerEvents();
+							messageBus.broadcast("readyForMedia");
+						});
 					}
-
 				},
 				"flashvars": {
 					'controlBarContainer': {

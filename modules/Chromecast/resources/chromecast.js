@@ -182,6 +182,16 @@
 			}
 			if (this.getConfig("useKalturaPlayer") === true){
 				this.sendMessage({'type': 'embed', 'publisherID': this.embedPlayer.kwidgetid.substr(1), 'uiconfID': this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid});
+				this.embedPlayer.showErrorMsg(
+					{'title':'Chromecast Player',
+						'message': gM('mwe-chromecast-loading'),
+						'props':{
+							'customAlertContainerCssClass': 'connectingMsg',
+							'customAlertTitleCssClass': 'hidden',
+							'textColor': '#ffffff'
+						}
+					}
+				);
 			} else {
 				this.sendMessage({'type': 'load'});
 				this.loadMedia();
@@ -236,6 +246,7 @@
 		},
 
 		onMediaDiscovered: function(how, mediaSession) {
+			this.embedPlayer.layoutBuilder.closeAlert();
 			this.log("new media session ID:" + mediaSession.mediaSessionId + ' (' + how + ')');
 			this.currentMediaSession = mediaSession;
 			this.getComponent().css("color","#35BCDA");
@@ -471,6 +482,7 @@
 		},
 
 		onMediaError: function(e) {
+			this.embedPlayer.layoutBuilder.closeAlert();
 			console.log("Chromecast: media error: "+ e.code);
 		},
 

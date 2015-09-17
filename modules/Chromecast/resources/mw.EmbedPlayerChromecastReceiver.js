@@ -12,7 +12,8 @@
 			'playHead' : true,
 			'pause' : true,
 			'stop' : true,
-			'volumeControl' : true
+			'volumeControl' : true,
+			'overlays': true
 		},
 		seeking: false,
 		startOffset: 0,
@@ -23,6 +24,30 @@
 		vid: null,
 		monitorInterval: null,
 		receiverName: '',
+		nativeEvents: [
+			'loadstart',
+			'progress',
+			'suspend',
+			'abort',
+			'error',
+			'emptied',
+			'stalled',
+			'play',
+			'pause',
+			'loadedmetadata',
+			'loadeddata',
+			'waiting',
+			'playing',
+			'canplay',
+			'canplaythrough',
+			'seeking',
+			'seeked',
+			'timeupdate',
+			'ended',
+			'ratechange',
+			'durationchange',
+			'volumechange'
+		],
 
 		setup: function( readyCallback ) {
 			this.vid = this.getPlayerElement();
@@ -41,6 +66,63 @@
 			readyCallback();
 		},
 
+		updateFeatureSupport: function () {
+			// Check if we already have a video element an apply bindings ( for native interfaces )
+			if (this.getPlayerElement()) {
+				this.applyMediaElementBindings();
+			}
+		},
+		/**
+		 * Apply media element bindings
+		 */
+		applyMediaElementBindings: function () {
+			var _this = this;
+			this.log("MediaElementBindings");
+			var vid = this.getPlayerElement();
+			if (!vid) {
+				this.log(" Error: applyMediaElementBindings without player elemnet");
+				return;
+			}
+			$.each(_this.nativeEvents, function (inx, eventName) {
+				if (mw.isIOS8_9() && mw.isIphone() && eventName === "seeking") {
+					return;
+				}
+				$(vid).unbind(eventName + '.embedPlayerChromecastReceiver').bind(eventName + '.embedPlayerChromecastReceiver', function () {
+					// make sure we propagating events, and the current instance is in the correct closure.
+					if (_this._propagateEvents && _this.instanceOf == 'ChromecastReceiver') {
+						var argArray = $.makeArray(arguments);
+						// Check if there is local handler:
+						if (_this[ '_on' + eventName ]) {
+							_this[ '_on' + eventName ].apply(_this, argArray);
+						} else {
+							// No local handler directly propagate the event to the abstract object:
+							$(_this).trigger(eventName, argArray);
+						}
+					}
+				});
+			});
+		},
+
+		/**
+		 * Handle the native paused event
+		 */
+		_onpause: function () {
+			this.paused = true;
+			$(this).trigger("onpause");
+			this.layoutBuilder.showPlayerControls();
+			this.parent_pause();
+		},
+
+		/**
+		 * Handle the native play event
+		 */
+		_onplay: function () {
+			this.paused = false;
+			this.stopped = false;
+			$(this).trigger("onplay");
+			this.layoutBuilder.hidePlayerControls();
+			this.parent_play();
+		},
 		// override these functions so embedPlayer won't try to sync time
 		syncCurrentTime: function(){},
 
@@ -64,9 +146,9 @@
 //			$(this).trigger( 'monitorEvent' );
 //		},
 //
-//		getPlayerElementTime: function(){
-//			return this.currentTime;
-//		},
+		getPlayerElementTime: function(){
+			return this.getPlayerElement().currentTime;
+		},
 //
 //		clipDone: function() {
 //			mw.log("Chromecast::clip done");
