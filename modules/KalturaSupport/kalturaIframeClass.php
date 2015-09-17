@@ -510,7 +510,7 @@ class kalturaIframeClass {
 		$_GET['lang'] = $this->getLangKey();
 		// include skin and language in cache path, as a custom param needed for startup
 		$cachePath = $wgScriptCacheDirectory . '/startup.' .
-			$wgMwEmbedVersion . $_GET['skin'] . $_GET['lang'] . $wgHTTPProtocol . '.min.js';
+			$wgMwEmbedVersion . $_GET['skin'] . $_GET['lang'] . $wgHTTPProtocol . '.' . $_SERVER['SERVER_NAME'] . '.min.js';
 			
 		// check for cached startup:
 		if( !$wgEnableScriptDebug){
