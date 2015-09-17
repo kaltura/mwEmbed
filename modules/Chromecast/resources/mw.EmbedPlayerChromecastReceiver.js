@@ -108,7 +108,7 @@
 		 */
 		_onpause: function () {
 			this.paused = true;
-			$(this).trigger("onpause");
+			$(this).trigger("onPlayerStateChange","pause");
 			this.layoutBuilder.showPlayerControls();
 			this.parent_pause();
 		},
@@ -119,7 +119,7 @@
 		_onplay: function () {
 			this.paused = false;
 			this.stopped = false;
-			$(this).trigger("playing");
+			$(this).trigger("onPlayerStateChange","play");
 			this.layoutBuilder.hidePlayerControls();
 			this.parent_play();
 		},
