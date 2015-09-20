@@ -33,7 +33,7 @@ class RequestHelper {
 		'playerId' => null,
 		'vid_sec' => null,
 		'vid_slices' => null,
-		'bringitall' => null
+		'inlineScript' => null
 	);
 
 

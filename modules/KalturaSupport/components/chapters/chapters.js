@@ -533,7 +533,9 @@
 					placeholder: gM('ks-chapters-search-placeholder'),
 					autocapitalize: "off",
 					autocorrect :"off",
-					autocomplete: "off"} );
+
+				}).
+					attr("autocomplete", "off");
 				var searchBoxWrapper = $( "<div/>", {"id": "searchBoxWrapper"} )
 					.append( searchBox );
 				var clearSearchBoxContainer = $( "<div/>", {

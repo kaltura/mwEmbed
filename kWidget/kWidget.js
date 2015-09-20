@@ -1116,7 +1116,7 @@
 				'</div>' +
 				'</div>' +
 				// issue play on the silent black video ( to capture iOS gesture )
-				'<script>document.getElementById(\'' + targetId + '\').play();</script>' +
+				'<scr'+'ipt>document.getElementById(\'' + targetId + '\').play();</scr'+'ipt>' +
 				'<div id="scriptsHolder"></div>' +
 				'</body>' +
 				'</html>'

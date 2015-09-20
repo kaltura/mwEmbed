@@ -119,7 +119,7 @@ class ResourceLoaderStartUpModule extends ResourceLoaderModule {
 
 		// Register sources
 		$out .= $resourceLoader->makeLoaderSourcesScript( $resourceLoader->getSources() );
-		
+
 		// Register modules
 		foreach ( $resourceLoader->getModuleNames() as $name ) {
 			$module = $resourceLoader->getModule( $name );
@@ -165,6 +165,10 @@ class ResourceLoaderStartUpModule extends ResourceLoaderModule {
 				}
 			}
 		}
+		global $wgScriptCacheDirectory, $wgMwEmbedVersion;
+		$cachePath = $wgScriptCacheDirectory . '/registrations.' .
+        			$wgMwEmbedVersion . $_GET['skin'] . $_GET['lang'] . '.min.json';
+			@file_put_contents($cachePath, json_encode($registrations));
 		$out .= ResourceLoader::makeLoaderRegisterScript( $registrations );
 
 		wfProfileOut( __METHOD__ );
@@ -189,14 +193,14 @@ class ResourceLoaderStartUpModule extends ResourceLoaderModule {
 
 			// Get the latest version
 			$version = 0;
-			
+
 			foreach ( $modules as $moduleName ) {
 				$version = max( $version,
 					$context->getResourceLoader()->getModule( $moduleName )->getModifiedTime( $context )
 				);
 			}
-			
-			
+
+
 			// Build load query for StartupModules
 			$query = array(
 				'modules' => ResourceLoader::makePackedModulesString( $modules ),
@@ -214,7 +218,7 @@ class ResourceLoaderStartUpModule extends ResourceLoaderModule {
 			$registrations = self::getModuleRegistrations( $context );
 			$out .= "var startUp = function() {\n" .
 				"\tmw.config = new " . Xml::encodeJsCall( 'mw.Map', array( $wgLegacyJavaScriptGlobals ) ) . "\n" .
-				"\t$registrations\n" . 
+				"\t$registrations\n" .
 				"\t" . Xml::encodeJsCall( 'mw.config.set', array( $configuration ) ) .
 				"};\n";
 

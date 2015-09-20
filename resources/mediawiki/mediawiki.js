@@ -1211,7 +1211,6 @@ var mw = ( function ( $, undefined ) {
 				 * @param error {Function} callback to execute when if dependencies have a errors (optional)
 				 */
 				using: function ( dependencies, ready, error ) {
-					debugger;
 					var tod = typeof dependencies;
 					// Validate input
 					if ( tod !== 'object' && tod !== 'string' ) {

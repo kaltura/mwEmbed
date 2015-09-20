@@ -144,10 +144,10 @@
 						var cssLink = this.getConfig('cssFileName');
 						if (cssLink) {
 							//Scroller CSS
-							$( 'head', window.parent.document ).append( '<link type="text/css" rel="stylesheet" href="' + kWidget.getPath() + this.getConfig("scrollerCssPath") + '"/>' );
+							$( 'head', window.parent.document ).append( '<li' + 'nk type="text/css" rel="stylesheet" hr' + 'ef="' + kWidget.getPath() + this.getConfig("scrollerCssPath") + '"/>' );
 							//Plugin CSS
 							cssLink = cssLink.toLowerCase().indexOf("http") === 0 ? cssLink : kWidget.getPath() + cssLink; // support external CSS links
-							$( 'head', window.parent.document ).append( '<link type="text/css" rel="stylesheet" href="' + cssLink + '"/>' );
+							$( 'head', window.parent.document ).append( '<li' + 'nk type="text/css" rel="stylesheet" hr' + 'ef="' + cssLink + '"/>' );
 						} else {
 							mw.log( "Error: "+ this.pluginName +" could not find CSS link" );
 						}
