@@ -51,7 +51,7 @@ mw.AdLoader = {
 			url: adUrl,
 			ajaxOptions: ajaxOptions,
 			success: function( resultXML ) {
-				_this.handleResult( resultXML, callback );
+				_this.handleResult( resultXML, callback, ajaxOptions );
 			},
 			error: function( error ) {
 				mw.log("Error: AdLoader failed to load:" + adUrl);
@@ -59,7 +59,7 @@ mw.AdLoader = {
 			}
 		});
 	},
-	handleResult: function(data, callback ){
+	handleResult: function(data, callback, ajaxOptions ){
 		var _this = this;
 		// If our data is a string we need to parse it as XML
 		if( typeof data === 'string' ) {
@@ -80,7 +80,7 @@ mw.AdLoader = {
 				// If we have lots of ad formats we could conditionally load them here:
 				// 'mw.VastAdParser' is a dependency of adLoader
 				mw.load( 'mw.VastAdParser', function(){
-					mw.VastAdParser.parse( data, callback , _this.wrapperData);
+					mw.VastAdParser.parse( data, callback , _this.wrapperData, ajaxOptions );
 				});
 				return ;
 			break;
