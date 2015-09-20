@@ -11,11 +11,11 @@
 	Runtime Cuepoints
 	</h1>
 	<br>
-<div id="myVideoTarget" style="width:400px;height:330px;"></div>
+<div id="kaltura_player" style="width:400px;height:330px;"></div>
 
 <script>
 	kWidget.featureConfig({
-		'targetId': 'myVideoTarget',
+		'targetId': 'kaltura_player',
 		'wid': '_243342',
 		'uiconf_id' : '13306622',
 		'entry_id' : '0_uka1msg4',
@@ -37,7 +37,28 @@
 </script>
 	<h3> How to set cuePoints at Runtime </h3>
 	<pre class="prettyprint linenums">
-
+&lt;script&gt;
+	kWidget.featureConfig({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id' : '13306622',
+		'entry_id' : '0_uka1msg4',
+		'flashvars': {
+			'vast': {
+				'trackCuePoints': true
+			},
+			'mediaProxy':{
+				'entryCuePoints': [{
+					"protocolType": 1,
+					"adType": 1, 
+					"cuePointType": "adCuePoint.Ad",
+					"startTime": 5000,
+					"sourceUrl": "http://projects.kaltura.com/mdale/hotelVastAd.xml"
+				}]
+			}
+		},
+	})
+&lt;/script&gt;
 	</pre>
   </body>
 </html>
