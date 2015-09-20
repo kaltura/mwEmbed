@@ -131,88 +131,9 @@
 			$(this).trigger( 'monitorEvent' );
 		},
 
-//		updatePlayhead: function (currentTime, duration) {
-//			this.currentTime = currentTime;
-//			this.vid.currentTime = currentTime;
-//			if ( !this.seeking && !this.userSlide) {
-//				$(this).trigger("updatePlayHeadPercent",[ currentTime / duration ]);
-//				$( this ).trigger( 'timeupdate' );
-//			}
-//			$(this).trigger( 'monitorEvent' );
-//		},
-//
 		getPlayerElementTime: function(){
 			return this.getPlayerElement().currentTime;
 		},
-//
-//		clipDone: function() {
-//			mw.log("Chromecast::clip done");
-//			if (this.vid.mediaFinishedCallback){
-//				this.vid.mediaFinishedCallback();
-//			}
-//			$(this.vid).trigger("ended");
-//			this.onClipDone();
-//		},
-//
-//		play: function() {
-//			$(this).trigger("chromecastPlay");
-//			$(this.vid).trigger("onplay");
-//			this.parent_play();
-//			$(this).trigger("playing");
-//			this.hideSpinner();
-//		},
-//
-//		pause: function() {
-//			$(this).trigger("chromecastPause");
-//			$(this.vid).trigger("onpause");
-//			this.parent_pause();
-//		},
-//
-//		switchPlaySource: function( source, switchCallback, doneCallback ){
-//			$(this).trigger("chromecastSwitchMedia", [source.src, source.mimeType]);
-//			if (switchCallback){
-//				this.vid.mediaLoadedCallback = switchCallback;
-//			}
-//			if (doneCallback){
-//				this.vid.mediaFinishedCallback = doneCallback;
-//			}
-//		},
-//
-//		mediaLoaded: function(mediaSession){
-//			var _this = this;
-//			this.vid.currentTime = mediaSession.currentTime;
-//			this.updateDuration(mediaSession.media.duration);
-//			if (this.vid.mediaLoadedCallback){
-//				this.vid.mediaLoadedCallback(this.vid);
-//			}
-//		},
-//
-//		updateDuration: function(duration){
-//			this.vid.duration = duration;
-//			this.duration = duration;
-//			$( this ).trigger( 'durationChange',[duration] );
-//		},
-//
-		getPlayerElement: function () {
-			this.playerElement = $('#' + this.pid).get(0);
-			return this.playerElement;
-		},
-//
-//		seek: function(position) {
-//			mw.log("seek to "+position);
-//			this.seeking = true;
-//			$(this).trigger("chromecastSeek", [position / this.vid.duration * 100]);
-//			$(this.vid).trigger("seek");
-//		},
-//
-//		setPlayerElementVolume: function(percentage) {
-//			$(this).trigger("chromecastSetVolume",[percentage]);
-//		},
-//
-//		onPlayerSeekEnd: function () {
-//			$( this ).trigger( 'seeked' );
-//			this.seeking = false;
-//		},
 
 		isVideoSiblingEnabled: function() {
 			return false;

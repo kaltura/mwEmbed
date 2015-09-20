@@ -571,7 +571,7 @@
 		},
 
 		onMsgError: function(message) {
-			this.log(message);
+			mw.log(message);
 		}
 
 	}));
