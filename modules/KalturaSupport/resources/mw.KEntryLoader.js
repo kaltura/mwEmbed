@@ -36,9 +36,11 @@ mw.KEntryLoader.prototype = {
 		}
 		// Local method to fill the cache key and run the associated callback
 		var fillCacheAndRunCallback = function( namedData ){
-			_this.playerLoaderCache[ _this.getCacheKey( kProperties ) ] = namedData;
+			if ( !mw.getConfig("DisableEntryCache") ) {
+				_this.playerLoaderCache[_this.getCacheKey( kProperties )] = namedData;
+			}
 			callback( namedData );
-		}
+		};
 
 		// If we don't have entryId and referenceId return an error
 		if( !kProperties.flashvars.referenceId && !kProperties.entry_id ) {
