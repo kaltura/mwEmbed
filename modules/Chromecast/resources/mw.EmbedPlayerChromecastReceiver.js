@@ -131,6 +131,11 @@
 			$(this).trigger( 'monitorEvent' );
 		},
 
+		getPlayerElement: function () {
+			this.playerElement = $('#' + this.pid).get(0);
+			return this.playerElement;
+		},
+
 		getPlayerElementTime: function(){
 			return this.getPlayerElement().currentTime;
 		},
