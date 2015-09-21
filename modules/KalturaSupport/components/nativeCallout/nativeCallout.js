@@ -113,7 +113,8 @@
 					});
 			}
 
-			var url =  _this.getConfig( "mimeName" ) + "?iframeUrl:=" + _this.getConfig( "iframeUrl" );
+			var url =  "http://kgit.html5video.org/kalturaToolKit/" + "?iframeUrl=" + _this.getConfig( "iframeUrl" );
+			window.open(url);
 			if ( mw.isAndroid() ) {
 				var popup = [];
 				setTimeout(function(){
