@@ -36,7 +36,7 @@ mw.KEntryLoader.prototype = {
 		}
 		// Local method to fill the cache key and run the associated callback
 		var fillCacheAndRunCallback = function( namedData ){
-			if ( !mw.getConfig("DisableEntryCache") ) {
+			if ( !mw.getConfig("EmbedPlayer.DisableEntryCache") ) {
 				_this.playerLoaderCache[_this.getCacheKey( kProperties )] = namedData;
 			}
 			callback( namedData );
