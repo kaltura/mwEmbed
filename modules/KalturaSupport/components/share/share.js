@@ -194,7 +194,7 @@
 			this.bind( 'doShare', function(event, data){
 				var shareUrl = _this.getConfig('shareURL');
 				if ( data && data.timeOffset ){
-					shareUrl += "#t="+data.timeOffset;
+					shareUrl += "?t="+data.timeOffset;
 				}
 				embedPlayer.triggerHelper( 'shareEvent', { "shareLink" : shareUrl } );
 			});
@@ -366,9 +366,9 @@
 
 		setShareTimeOffset: function(offset){
 			var shareLink = $(".share-input").val();
-			shareLink = shareLink.split("#")[0];
+			shareLink = shareLink.split("?")[0];
 			if ( this.validateTimeOffset(offset) ){
-				shareLink = shareLink + "#t=" + offset;
+				shareLink = shareLink + "?t=" + offset;
 			}
 			$(".share-input").val(shareLink);
 			this.setConfig("shareURL", shareLink);
