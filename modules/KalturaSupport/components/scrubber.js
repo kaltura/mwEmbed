@@ -242,16 +242,18 @@
 			if( this.getConfig('thumbSlicesUrl')  ){
 				return this.getConfig('thumbSlicesUrl');
 			}
+			var thumbReq = {
+				'partner_id': this.embedPlayer.kpartnerid,
+				'uiconf_id': this.embedPlayer.kuiconfid,
+				'entry_id': this.embedPlayer.kentryid,
+				'width': this.getConfig("thumbWidth"),
+				'vid_slices': this.getSliceCount(this.duration)
+			}
+			if ( this.getPlayer().getFlashvars( 'loadThumbnailWithKs' )  ){
+				thumbReq[ 'ks' ] = this.getPlayer().getFlashvars('ks');
+			}
 			// else get thumb slices from helper:
-			return kWidget.getKalturaThumbUrl(
-					{
-						'partner_id': this.embedPlayer.kpartnerid,
-						'uiconf_id': this.embedPlayer.kuiconfid,
-						'entry_id': this.embedPlayer.kentryid,
-						'width': this.getConfig("thumbWidth"),
-						'vid_slices': this.getSliceCount(this.duration)
-					}
-				);
+			return kWidget.getKalturaThumbUrl( thumbReq );
 		},
 		showThumbnailPreview: function (data) {
 			var showOnlyTime = this.getConfig("showOnlyTime");
@@ -310,7 +312,7 @@
 			} else {
 				$sliderPreview.css("border", "0px");
 			}
-			$(".playHead .arrow").css("left", thumbWidth / 2 - 6);
+			$(".scrubber .arrow").css("left", thumbWidth / 2 - 4);
 			$sliderPreviewTime.text(kWidget.seconds2npt(currentTime));
 			$sliderPreviewTime.css({bottom: 2, left: thumbWidth / 2 - $sliderPreviewTime.width() / 2 + 3});
 			$sliderPreview.css("width", thumbWidth);

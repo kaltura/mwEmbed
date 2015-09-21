@@ -46,8 +46,10 @@ $wgCDNAssetPath = $wgKalturaCDNUrl;
 // Default Kaltura Cache Path
 $wgScriptCacheDirectory = $kConf->get('cache_root_path') . '/html5/' . $wgKalturaVersion;
 
-$wgLoadScript = $wgKalturaServiceUrl . '/html5/html5lib/' . $wgKalturaVersion . '/load.php';
-$wgResourceLoaderUrl = $wgLoadScript;
+if (strpos($_SERVER["HTTP_HOST"], "kaltura.com")){
+	$wgLoadScript = $wgKalturaServiceUrl . '/html5/html5lib/' . $wgKalturaVersion . '/load.php';
+	$wgResourceLoaderUrl = $wgLoadScript;
+}
 
 // Salt for proxy the user IP address to Kaltura API
 if( $kConf->hasParam('remote_addr_header_salt') ) {

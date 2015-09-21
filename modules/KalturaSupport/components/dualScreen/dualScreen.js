@@ -377,28 +377,30 @@
 			addBindings: function () {
 				var _this = this;
 				this.bind( 'playerReady', function (  ) {
-					var cuePoints = _this.getCuePoints();
-					var cuePointsExist = (cuePoints.length > 0);
-					if (cuePointsExist || _this.isLiveCuepoints()) {
-						_this.log("render condition are not met - initializing");
-						_this.getPlayer().triggerHelper("preHideScreen", "disabledScreen");
-						_this.disabled = false;
-						_this.checkRenderConditions();
-						_this.initDisplay();
-						_this.initControlBar();
-						if (!_this.render) {
-							_this.getPrimary().obj.css({
-								'top': '',
-								'left': '',
-								'width': '',
-								'height': ''
-							}).removeClass('firstScreen');
-							_this.hideDisplay();
+					if (_this.syncEnabled){
+						var cuePoints = _this.getCuePoints();
+						var cuePointsExist = (cuePoints.length > 0);
+						if (cuePointsExist || _this.isLiveCuepoints()) {
+							_this.log("render condition are not met - initializing");
+							_this.getPlayer().triggerHelper("preHideScreen", "disabledScreen");
+							_this.disabled = false;
+							_this.checkRenderConditions();
+							_this.initDisplay();
+							_this.initControlBar();
+							if (!_this.render) {
+								_this.getPrimary().obj.css({
+									'top': '',
+									'left': '',
+									'width': '',
+									'height': ''
+								}).removeClass('firstScreen');
+								_this.hideDisplay();
+							}
+						} else {
+							_this.log("render condition are not met - disabling");
+							_this.getPlayer().triggerHelper("preShowScreen", "disabledScreen");
+							_this.disabled = true;
 						}
-					} else {
-						_this.log("render condition are not met - disabling");
-						_this.getPlayer().triggerHelper("preShowScreen", "disabledScreen");
-						_this.disabled = true;
 					}
 				} );
 

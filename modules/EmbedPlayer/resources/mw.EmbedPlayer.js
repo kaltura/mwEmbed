@@ -721,6 +721,7 @@
 			if (!mw.getConfig('EmbedPlayer.IgnoreStreamerType')
 				&& !this.isImageSource()   //not an image entry
 				&& this.streamerType != 'http'
+				&& source.mimeType !== "video/youtube"
 				&& mw.EmbedTypes.getMediaPlayers().isSupportedPlayer('kplayer')) {
 				targetPlayer = mw.EmbedTypes.getKplayer();
 			} else {

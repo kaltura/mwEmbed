@@ -113,8 +113,9 @@
 			this.bind('onChangeMedia', function(){
 				_this.close();
 			});
-			this.bind('onChangeMediaDone', function(){
-				if( _this.getComponent().children().length ) {
+			this.bind('onChangeMediaDone layoutChange', function(){
+				var children = _this.getComponent().children();
+				if( children.length && (children.filter('*[data-visibility="visible"]').length > 0 )) {
 					_this.getComponent().show();
 					_this.getComponentReminder().show();
 				} else {
