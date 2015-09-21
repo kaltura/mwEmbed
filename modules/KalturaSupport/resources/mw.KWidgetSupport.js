@@ -109,6 +109,8 @@ mw.KWidgetSupport.prototype = {
 			if( ks ){
 				downloadUrl += '/ks/' + ks;
 			}
+			downloadUrl += '/?playSessionId=' + _this.getGUID();
+
 			downloadUrlCallback( downloadUrl );
 		});
 		
