@@ -302,31 +302,5 @@
             }
             return $list;
         }
-
-        /**
-         * Converts a module map to the form of prefix and suffix { foo: [ 'bar', 'baz' ], bar: [ 'baz, 'quux' ] }
-         * and then reduces it to a string of the form foo.bar,baz|bar.baz,quux
-         */
-        function buildModulesString($modules){
-            $moduleMap = array(); // { prefix: [ suffixes ] }
-            for ( $i = 0; $i < count($modules); $i += 1 ) {
-                // Determine how many bytes this module would add to the query string
-                $lastDotIndex = strripos($modules[$i],  '.' );
-                // Note that these substr() calls work even if lastDotIndex == -1
-                $prefix = substr($modules[$i], 0, $lastDotIndex );
-                $lastDotIndex = is_numeric($lastDotIndex) ? $lastDotIndex : -1;
-                $suffix = substr($modules[$i], ($lastDotIndex + 1) );
-                if ( !isset($moduleMap[$prefix]) ) {
-                    $moduleMap[$prefix] = array();
-                }
-                array_push($moduleMap[$prefix], $suffix );
-            }
-            $arr = array();
-            foreach ( $moduleMap as $prefix=>$groupModules) {
-                $p = $prefix === '' ? '' : $prefix . '.';
-                array_push($arr, ( $p . implode($groupModules, ',') ) );
-            }
-            return implode($arr, '|');
-        }
     }
 ?>

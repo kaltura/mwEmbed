@@ -817,7 +817,32 @@ HTML;
 		$o = "";
 		$modules = array();
 
-		$modulesRegistry = $this->getModulesRegistry();
+		$resolvedModuleDependencyList = $this->getModuleDependencyList($moduleList);
+
+		// "Fake" the request headers as ResourceLoaderContext derives it's data for module resolving from them
+		$_GET['only'] = NULL;
+		$_GET['modules'] = ResourceLoader::makePackedModulesString( $resolvedModuleDependencyList );
+
+		$fauxRequest = new WebRequest;
+		$resourceLoader = new MwEmbedResourceLoader();
+		foreach ($resolvedModuleDependencyList as $moduleName){
+			$modules[$moduleName] = $resourceLoader->getModule( $moduleName );
+		}
+		$s = $resourceLoader->makeModuleResponse(
+			new MwEmbedResourceLoaderContext( $resourceLoader, $fauxRequest ) ,
+			$modules,
+			array()
+		);
+		$o.='window.inlineScript = true;';
+		$o.=$s;
+		$resolvedModuleDependencyList = array_merge($resolvedModuleDependencyList);
+		$o.= ResourceLoader::makeLoaderStateScript(
+						array_fill_keys( $resolvedModuleDependencyList , 'ready' ) );
+		return $o;
+	}
+
+	function getModuleDependencyList($moduleList){
+		$modulesRegistry = $this->getModulesRegistry($moduleList);
 
 		$loader = new loader();
 		$loader->register($modulesRegistry);
@@ -833,25 +858,7 @@ HTML;
 		));
 
 		$moduleList = $loader->resolveDependencies($moduleList);
-		$moduleString = $loader->buildModulesString($moduleList);
-		// "Fake" the request headers as ResourceLoaderContext derives it's data for module resolving from them
-		$_GET['only'] = NULL;
-		$_GET['modules'] = $moduleString;
-
-		$fauxRequest = new WebRequest;
-		$resourceLoader = new MwEmbedResourceLoader();
-		foreach ($moduleList as $moduleName){
-			$modules[$moduleName] = $resourceLoader->getModule( $moduleName );
-		}
-		$s = $resourceLoader->makeModuleResponse(
-			new MwEmbedResourceLoaderContext( $resourceLoader, $fauxRequest ) ,
-			$modules,
-			array()
-		);
-		$o.='window.inlineScript = true;';
-		$o.=$s;
-
-		return $o;
+		return $moduleList;
 	}
 
 	function getModulesRegistry(){

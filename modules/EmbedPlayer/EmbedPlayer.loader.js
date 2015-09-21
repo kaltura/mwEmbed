@@ -62,7 +62,7 @@
 		dependencySet = $.unique( dependencySet );
 		var processPlayer = function(){
 			// Setup enhanced language support:
-			// window.gM = mw.jqueryMsg.getMessageFunction( {} );
+			 window.gM = mw.jqueryMsg.getMessageFunction( {} );
 			mw.processEmbedPlayers( playerSelect , readyCallback );
 		};
 
