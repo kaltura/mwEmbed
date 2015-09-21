@@ -603,12 +603,12 @@ $uiVars = array(
 					'default' => '',
 					'example' => ''
 			),
-			/*'EmbedPlayer.iPhoneShowHTMLPlayScreen' => array(
+			'EmbedPlayer.DisableEntryCache' => array(
 			 'type' => '',
-					'desc' => "",
-					'default' => '',
-					'example' => ''
-			),*/
+					'desc' => "When set to true, entry data is not saved in the player cache. This can improve performances, especially when using long play lists",
+					'default' => 'false',
+					'example' => '../modules/KalturaSupport/tests/PlaylistEvents.qunit.html'
+			),
 			'EmbedPlayer.NativeControls' => array(
 					'type' => 'Boolean',
 					'desc' => "Determines if mwEmbed should use the Native player controls. This will prevent video tag rewriting and skinning. Useful for devices such as iPad / iPod that don't fully support DOM overlays or don't expose full-screen functionality to JavaScript",
