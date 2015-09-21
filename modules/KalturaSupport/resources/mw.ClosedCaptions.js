@@ -39,8 +39,6 @@
 				&&
 				$.cookie( this.cookieName ) == 'None')
 				||
-				this.getConfig('displayCaptions') === null
-				||
 				( this.getConfig( 'hideClosedCaptions') === true )
 			){
 				this.setConfig('displayCaptions', false );
