@@ -526,7 +526,7 @@
 
 			if(	mw.getConfig('EmbedPlayer.HidePosterOnStart') === true
 				&&
-				!(this.getPlayerElement() && this.getPlayerElement().ended && mw.getConfig('EmbedPlayer.ShowPosterOnStop'))){
+				!(this.currentState=="end" && mw.getConfig('EmbedPlayer.ShowPosterOnStop'))){
 				return;
 			}
 			if (this.getPlayerElement()) {
