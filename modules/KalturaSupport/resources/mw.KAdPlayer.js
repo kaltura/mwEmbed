@@ -1580,7 +1580,7 @@ mw.KAdPlayer.prototype = {
 					});
 					_this.embedPlayer.unbindHelper('onCloseFullScreen' + bindPostFix).bindHelper('onCloseFullScreen' + bindPostFix, function(){
 						if( VPAIDObj.resizeAd && typeof VPAIDObj.resizeAd == "function" ){
-							setTimeout(function(){VPAIDObj.resizeAd(_this.embedPlayer.width,_this.embedPlayer.height,"normal")},1000);
+							setTimeout(function(){VPAIDObj.resizeAd(_this.embedPlayer.getWidth(),_this.embedPlayer.getVideoHolder().height(),"normal")},1000);
 						}
 					});
 				}
