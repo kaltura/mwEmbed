@@ -835,7 +835,6 @@ HTML;
 		);
 		$o.='window.inlineScript = true;';
 		$o.=$s;
-		$resolvedModuleDependencyList = array_merge($resolvedModuleDependencyList);
 		$o.= ResourceLoader::makeLoaderStateScript(
 						array_fill_keys( $resolvedModuleDependencyList , 'ready' ) );
 		return $o;
