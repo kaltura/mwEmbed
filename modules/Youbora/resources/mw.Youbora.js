@@ -68,12 +68,14 @@
 		setupViewCode: function(){
 			var _this = this;
 			if( this.settingUpViewCodeFlag ){
-				this.log( "setupViewCode -> skiped viewCode is already being generated.")
+				this.log( "setupViewCode -> skiped viewCode is already being generated.");
+				return ;
 			}
-			
 			this.settingUpViewCodeFlag = true;
 			// setup and view code: 
-			var setupUrl = '//nqs.nice264.com/data?' + $.param( this.getBaseParams() );
+			var payload = this.getBaseParams();
+			payload['pluginVersion'] = this.getPluginVersion();
+			var setupUrl = '//nqs.nice264.com/data?' + $.param( payload );
 			$.get( setupUrl, function(xmlData){
 				_this.host = $(xmlData).find('h').text();
 				_this.pingTime = $(xmlData).find('pt').text();
@@ -290,8 +292,8 @@
 					'pingTime': (( new Date().getTime() - _this.previusPingTime )  / 1000 ).toFixed(), // round seconds
 					'bitrate': _this.embedPlayer.mediaElement.selectedSource.getBitrate(),
 					'time': _this.embedPlayer.currentTime,
-					'totalBytes':"0", // value is only sent along with the dataType parameter. If the bitrate parameter is sent, then this one is not needed.
-					'dataType': "0", // Kaltura does not really do RTMP streams any more. 
+					//'totalBytes':"0", // value is only sent along with the dataType parameter. If the bitrate parameter is sent, then this one is not needed.
+					//'dataType': "0", // Kaltura does not really do RTMP streams any more. 
 					'diffTime': new Date().getTime() - _this.previusPingTime
 					// 'nodeHost' //String that indicates the CDNâ Node Host
 				});
@@ -340,7 +342,6 @@
 		getBaseParams: function(){
 			var parms = {
 				'system' : this.getConfig('accountName'),
-				'pluginVersion': this.getPluginVersion(),
 				'randomNumber': Math.floor(Math.random()*90000) + 10000 // 5 digit random number.
 			};
 			if( this.getViewCode() ){
@@ -360,7 +361,7 @@
 		},
 		sendBeacon: function( action, payload ){
 			// queue if we are not ready for beacons: 
-			if( !this.viewCode ){
+			if( this.viewCode === null ){
 				this.queuedBeacons.push( [action, payload ] );
 				this.setupViewCode();
 				return ;
@@ -369,6 +370,11 @@
 				payload = {};
 			}
 			payload = $.extend({}, this.getBaseParams(), payload );
+			// special case only send pluginVersion on start and error beacons: 
+			if( action == 'start' || action == 'error' ){
+				payload['pluginVersion'] = this.getPluginVersion();
+			}
+			
 			if ( this.getConfig( 'trackEventMonitor' ) ) {
 				try{
 					window.parent[ this.getConfig( 'trackEventMonitor' ) ]( action, JSON.stringify( payload ) );
@@ -383,7 +389,7 @@
 			$.get( beaconUrl );
 		},
 		getViewCode: function(){
-			if( ! this.viewCode ){
+			if( typeof this.viewCode != 'string' ){
 				return null;
 			}
 			return this.viewCode + "_" + this.viewIndex;
