@@ -24,6 +24,7 @@
 				"audioType": "", 
 				"audioChannels": ""
 			},
+			"userId": null,
 			"youboraVersion":'2.0.0',
 			// by default configured against the "kaltura" house account
 			"accountName": 'kaltura',
@@ -252,7 +253,7 @@
 					// 'transcode' // not presently used. 
 					'live': _this.embedPlayer.isLive(),
 					'properties': JSON.stringify( _this.getMediaProperties() ),
-					'user': "", // should be the active user id, not presently set .
+					'user': _this.getConfig('userId') || "", // should be the active user id,
 					'referer': _this.embedPlayer.evaluate('{utility.referrer_url}'),
 					'totalBytes': "0", // could potentially be populated if we use XHR for iframe payload + static loader + DASH MSE for segments )
 					'pingTime': _this.pingTime,
