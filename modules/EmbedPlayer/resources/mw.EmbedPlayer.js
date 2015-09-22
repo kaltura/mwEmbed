@@ -1677,7 +1677,9 @@
 			}
 
 			// Add a loader to the embed player:
-			this.pauseLoading();
+			this.isPauseLoading = true;
+			this.pause();
+			this.addPlayerSpinner();
 
 			// Stop the monitor
 			this.stopMonitor();
