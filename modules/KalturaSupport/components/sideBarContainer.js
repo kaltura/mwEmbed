@@ -106,9 +106,24 @@
 			// If have no components, hide
 			this.bind('layoutBuildDone', function(){
 				if( !_this.getComponent().children().length ){
-					_this.destroy();
+					_this.getComponent().hide();
+					_this.getComponentReminder().hide();
 				}
 			});
+			this.bind('onChangeMedia', function(){
+				_this.close();
+			});
+			this.bind('onChangeMediaDone layoutChange', function(){
+				var children = _this.getComponent().children();
+				if( children.length && (children.filter('*[data-visibility="visible"]').length > 0 )) {
+					_this.getComponent().show();
+					_this.getComponentReminder().show();
+				} else {
+					_this.getComponent().hide();
+					_this.getComponentReminder().hide();
+				}
+			});
+
 			this.bind( 'layoutBuildDone ended', function(){
 				_this.setHeight();
 				_this.showReminder();

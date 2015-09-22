@@ -44,7 +44,7 @@
 			return	"##" +
 					_this.getConfig("userId") + "HashSeparator" +
 					_this.getKSHash(_this.getPlayer().getFlashvars().ks) +
-					_this.getRandomInt(10000,99999).toString() +
+					_this.getRandomInt(10000,99999999).toString() +
 					"##";
 		},
 

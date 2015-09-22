@@ -617,6 +617,9 @@
 								_this.embedPlayer.getPlayerElement().sendNotification( 'skipAd' );
 							}else{
 								_this.adsManager.stop();
+								if (_this.currentAdSlotType === "postroll" && _this.getConfig( 'adTagUrl' ) ){
+									_this.restorePlayer(true);
+								}
 							}
 							$(this).hide();
 							return false;
@@ -1107,7 +1110,7 @@
 				if ( _this.currentAdSlotType != 'postroll') {
 					_this.restorePlayer();
 
-					if( mw.isIOS8() && mw.isIpad()  ) {
+					if( mw.isIOS8_9() && mw.isIpad()  ) {
 						$( _this.embedPlayer.getPlayerElement() ).attr('preload',"metadata" );
 					}
 				}
@@ -1170,6 +1173,7 @@
 				_this.isLinear = adInfo.isLinear;
 				if (!_this.isLinear && _this.isChromeless ){
 					$(".mwEmbedPlayer").hide();
+					mw.setConfig("EmbedPlayer.EnableFlashActivation", false);
 				}
 				var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
 				// dispatch adOpen event

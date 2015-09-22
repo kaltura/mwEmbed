@@ -39,7 +39,9 @@
 				'horizontalScrollItems': 1,
 				'scrollerCssPath': "resources/nanoScroller/nanoScroller.css",
 				'fixedControls': false,
-				'horizontalControlsWidth': 20
+				'horizontalControlsWidth': 20,
+				'showEmptyPlaylistError': true
+
 			});
 		},
 
@@ -56,7 +58,6 @@
 		_addBindings: function () {
 			var _this = this;
 			this._super();
-
 			this.bind('updateLayout', function(){
 				if (_this.getPlayer().layoutBuilder.isInFullScreen() ||
 					(!_this.getConfig("fullScreenDisplayOnly") &&
@@ -182,7 +183,6 @@
 					if ( this.getConfig( 'containerPosition' ) == 'left' ) {
 						$( ".mwPlayerContainer" ).css( "float", "right" );
 					}
-
 					if ( this.getConfig( 'containerPosition' ) == 'top' || this.getConfig( 'containerPosition' ) == 'bottom' ) {
 						var playlistHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * this.getConfig( "MinClips" ) + this.getMedialistHeaderComponent().height() : this.getConfig( "mediaItemHeight" ) + this.getConfig('horizontalHeaderHeight');
 						this.getComponent().height(playlistHeight);
@@ -268,7 +268,7 @@
 		//Media Item
 		renderMediaList: function(callback){
 			//Only render if medialist item are present
-			if (this.getTemplateData().length > 0) {
+			if ( this.getTemplateData().length > 0 || ( this.getTemplateData().length === 0 && !this.getConfig('showEmptyPlaylistError') ) ) {
 				//Generate new list template data
 				var _this = this;
 				this.getTemplateHTML( {meta: this.getMetaData(), mediaList: this.getTemplateData()})

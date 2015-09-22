@@ -14,11 +14,11 @@ mw.VastAdParser = {
 	 */
 	parse: function( xmlObject, callback , wrapperData ){
 		var _this = this;
-        // in case there is a wrapper for this ad - keep the data so we will be able to track the wrapper events later
-        this.wrapperData = null;
-        if(wrapperData){
-            this.wrapperData = wrapperData;
-        }
+		// in case there is a wrapper for this ad - keep the data so we will be able to track the wrapper events later
+		this.wrapperData = null;
+		if(wrapperData){
+			this.wrapperData = wrapperData;
+		}
 		var adConf = {};
 		var $vast = $( xmlObject );
 
@@ -57,10 +57,18 @@ mw.VastAdParser = {
 				currentAd.duration = mw.npt2seconds( $ad.find( 'duration' ).text() );
 			}
 
-            // set ad system
-            if ($ad.find('AdSystem')){
-                currentAd.adSystem = $ad.find('AdSystem').text();
-            }
+			// set ad system
+			if ($ad.find('AdSystem')){
+				currentAd.adSystem = $ad.find('AdSystem').text();
+			}
+			// set AdTitle
+			if ($ad.find('AdTitle')){
+				currentAd.title = $ad.find('AdTitle').text();
+			}
+			// set Description
+			if ($ad.find('Description')){
+				currentAd.description = $ad.find('Description').text();
+			}
 
 			// Set impression urls
 			currentAd.impressions = [];
@@ -106,29 +114,29 @@ mw.VastAdParser = {
 				});
 			});
 
-            //handle wrapper events if exists
-            if(_this.wrapperData){
+			//handle wrapper events if exists
+			if(_this.wrapperData){
 
-                //impression of wrapper:
-                var $impressionWrapper = $(_this.wrapperData).contents().find('Wrapper Impression');
-                if($impressionWrapper.length){
-                    $impressionWrapper.each( function( na, trackingNode ){
-                        currentAd.impressions.unshift({
-                            'beaconUrl' : $(trackingNode).text()
-                        });
-                    });
-                }
-                //events
-                var $wrapperEvents = $(_this.wrapperData).contents().find('Wrapper Creatives TrackingEvents Tracking');
-                if($wrapperEvents.length){
-                    $wrapperEvents.each( function( na, trackingNode ){
-                        currentAd.trackingEvents.push({
-                            'eventName' : $( trackingNode ).attr('event'),
-                            'beaconUrl' : _this.getURLFromNode( trackingNode )
-                        });
-                    });
-                }
-            }
+				//impression of wrapper:
+				var $impressionWrapper = $(_this.wrapperData).contents().find('Wrapper Impression');
+				if($impressionWrapper.length){
+					$impressionWrapper.each( function( na, trackingNode ){
+						currentAd.impressions.unshift({
+							'beaconUrl' : $(trackingNode).text()
+						});
+					});
+				}
+				//events
+				var $wrapperEvents = $(_this.wrapperData).contents().find('Wrapper Creatives TrackingEvents Tracking');
+				if($wrapperEvents.length){
+					$wrapperEvents.each( function( na, trackingNode ){
+						currentAd.trackingEvents.push({
+							'eventName' : $( trackingNode ).attr('event'),
+							'beaconUrl' : _this.getURLFromNode( trackingNode )
+						});
+					});
+				}
+			}
 
 			currentAd.videoFiles = [];
 			// Set the media file:
@@ -247,7 +255,7 @@ mw.VastAdParser = {
 		if (_this.videoClickTrackingUrl != undefined){
 			adConf.videoClickTracking.push(_this.videoClickTrackingUrl);
 		}
-        adConf.wrapperData = _this.wrapperData;
+		adConf.wrapperData = _this.wrapperData;
 		// Run callback we adConf data
 		callback( adConf );
 	},
@@ -441,7 +449,7 @@ mw.VastAdParser = {
 		// check for empty impression, return empty text instead of trying to decode
 		var urlText = $.trim( $( node ).text() );
 		try {
-			if( ! /[<>`#%{}\s|\\^\~\[\]]/.test(decodeURIComponent(urlText)) ){
+			if( ! /[<>`#%{}\s|\\^\~\[\]]/.test(decodeURIComponent(urlText)) && !mw.getConfig('disableVastDecodeURI') ){
 				urlText = decodeURIComponent(urlText)
 			}
 		} catch( e ){
