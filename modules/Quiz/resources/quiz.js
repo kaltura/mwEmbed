@@ -130,11 +130,14 @@
                 embedPlayer.pause();
             });
 
-            this.bind('firstPlay', function () {
-                _this.enablePlayDuringScreen = true;
-                embedPlayer.pause();
-                embedPlayer.sendNotification('doStop');
-                _this._showWelcomeScreen();
+
+            this.bind('prePlayAction', function (e, data) {
+                if(_this.getPlayer().firstPlay && !_this.firstPlay){
+                    data.allowPlayback = false;
+                    _this.firstPlay=true;
+                    _this.enablePlayDuringScreen = true;
+                    _this._showWelcomeScreen();
+                }
             });
 
             this.bind('seeked', function () {
