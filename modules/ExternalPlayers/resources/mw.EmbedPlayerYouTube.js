@@ -582,10 +582,10 @@
 			yt.seekTo( seekTime );
 			this.layoutBuilder.onSeek();
 			// Since Youtube don't have a seeked event , we must turn off the seeking flag and restore pause state if needed
-			this.seeking = false;
 			if ( !this.isPlaying() ){
 				setTimeout(function(){
 					$( _this ).trigger( 'seeked' );
+					_this.seeking = false;
 					_this.pause();
 				},500);
 			}
