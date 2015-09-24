@@ -183,22 +183,25 @@
 					_this.page++; // move to next page
 					mw.log("Playlist:: scrollEnd event. paging: true: trying to load next playlist page: page="+_this.page+", pageSize"+_this.getConfig('pageSize'));
 
-					// check if current playlist has custom params
-					var playlistRequest = _this.playlistSet[_this.currentPlaylistIndex].playlistParams || {
-						'service': 'playlist',
-						'action': 'execute',
-						'pager:objectType': 'KalturaFilterPager',
-						'pager:pageIndex': _this.page,
-						'pager:pageSize': _this.getConfig('pageSize'),
-						'id': _this.playlistSet[_this.currentPlaylistIndex].id
-					};
-
-					// extend with paging props
-					$.extend(playlistRequest, {
-						'pager:objectType': 'KalturaFilterPager',
-						'pager:pageIndex': _this.page,
-						'pager:pageSize': _this.getConfig('pageSize'),
-					});
+					var playlistRequest;
+					if (_this.playlistSet[_this.currentPlaylistIndex].playlistParams) {
+						// use saved params and extend them with paging params
+						playlistRequest = $.extend(_this.playlistSet[_this.currentPlaylistIndex].playlistParams, {
+							'pager:objectType': 'KalturaFilterPager',
+							'pager:pageIndex': _this.page,
+							'pager:pageSize': _this.getConfig('pageSize')
+						});
+					} else {
+						// create params
+						playlistRequest = {
+							'service': 'playlist',
+							'action': 'execute',
+							'pager:objectType': 'KalturaFilterPager',
+							'pager:pageIndex': _this.page,
+							'pager:pageSize': _this.getConfig('pageSize'),
+							'id': _this.playlistSet[_this.currentPlaylistIndex].id
+						};
+					}
 
 					_this.getKClient().doRequest(playlistRequest, function (playlistDataResult) {
 						if (playlistDataResult.length){
