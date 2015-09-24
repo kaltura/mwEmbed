@@ -543,11 +543,13 @@ mw.KAdPlayer.prototype = {
 				mw.sendBeaconUrl( adSlot.videoClickTracking [i]);
 			}
 			//handle wrapper clickTracking
-			if(adSlot.wrapperData ){
-				adSlot.wrapperData.contents().find('ClickTracking').each(function(a,b){
-					mw.sendBeaconUrl($(b).contents().text());
-					mw.log("KAdPlayer:: sendBeacon to (wrapper): " + $(b).contents().text() );
-				})
+			if( adSlot.wrapperData && adSlot.wrapperData.length > 0 ){
+				for ( var i = 0, iMax = adSlot.wrapperData.length; i < iMax; i++) {
+					adSlot.wrapperData[i].contents().find('ClickTracking').each(function(a,b){
+						mw.sendBeaconUrl($(b).contents().text());
+						mw.log("KAdPlayer:: sendBeacon to (wrapper): " + $(b).contents().text() );
+					})
+				}
 			}
 		}
 		window.open( clickthrough );

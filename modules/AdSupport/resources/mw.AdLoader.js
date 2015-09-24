@@ -14,15 +14,17 @@ mw.AdLoader = {
 	 * 		Function called with ad payload once ad content is loaded.
 	 * @param {boolean} wrapped
 	 * 		(optional) used to increase the internal counter
-	 * @param {XML} wrapperData
-	 * 		(optional) in case this loader is being called from a wrapper, preserve the wrapper data and pass it to the
-     * 		inner ad so it can parse and send its events
+	 * @param {array} wrapperData
+	 * 		(optional) in case this loader is being after loading a wrapper, preserve all previous wrapper data and pass it to the
+	 * 		inner ad so it can parse and send all events
 	 * @param {object} ajaxOptions
 	 * 		(optional) additional ajax options, e.g. withCredentials
 	 */
 	load: function( adUrl, callback, wrapped , wrapperData, ajaxOptions ){
 		var _this = this;
-        this.wrapperData = null;
+		if(wrapperData == null) {
+			wrapperData = [];
+		}
 
 		adUrl = _this.replaceCacheBuster(adUrl);
 		
@@ -33,7 +35,6 @@ mw.AdLoader = {
 
 		// Increase counter if the vast is wrapped, otherwise reset
 		if( wrapped ) {
-            this.wrapperData = wrapperData ;
 			this.currentCounter++;
 		} else {
 			this.currentCounter = 0;
@@ -51,7 +52,7 @@ mw.AdLoader = {
 			url: adUrl,
 			ajaxOptions: ajaxOptions,
 			success: function( resultXML ) {
-				_this.handleResult( resultXML, callback, ajaxOptions );
+				_this.handleResult( resultXML, callback, wrapperData, ajaxOptions );
 			},
 			error: function( error ) {
 				mw.log("Error: AdLoader failed to load:" + adUrl);
@@ -59,7 +60,7 @@ mw.AdLoader = {
 			}
 		});
 	},
-	handleResult: function(data, callback, ajaxOptions ){
+	handleResult: function(data, callback, wrapperData, ajaxOptions ){
 		var _this = this;
 		// If our data is a string we need to parse it as XML
 		if( typeof data === 'string' ) {
@@ -80,7 +81,7 @@ mw.AdLoader = {
 				// If we have lots of ad formats we could conditionally load them here:
 				// 'mw.VastAdParser' is a dependency of adLoader
 				mw.load( 'mw.VastAdParser', function(){
-					mw.VastAdParser.parse( data, callback , _this.wrapperData, ajaxOptions );
+					mw.VastAdParser.parse( data, callback , wrapperData, ajaxOptions );
 				});
 				return ;
 			break;
