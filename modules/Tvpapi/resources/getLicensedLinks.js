@@ -52,7 +52,7 @@
 		},
 
 		getMediaLicenseLink: function(event, source){
-			var baseUrl = "http://stg.eu.tvinci.com/tvpapi_v3_3/gateways/jsonpostgw.aspx?m=";
+			var baseUrl = this.getPlayer().getKalturaConfig( null, 'TVPAPIBaseUrl' ) || this.getConfig( "restApiBaseUrl" );
 			var restMethod = this.getConfig("restMethod");
 			if (baseUrl != "" && restMethod != "") {
 				var url = baseUrl + restMethod;
@@ -84,7 +84,7 @@
 					var url = getResponseLink(res);
 					if( url ) {
 						_this.getPlayer().triggerHelper('tvpapiSubscription', [res]);
-						source.src = getResponseLink(res);
+						source.src = url;
 					} else {
 						_this.getPlayer().triggerHelper('tvpapiNoSubscription', [res]);
 					}
