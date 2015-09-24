@@ -23,7 +23,7 @@
 				},
 				"mediaFileID": "",
 				"baseLink": ""
-			},
+			}
 		},
 
 		isDisabled: false,
@@ -75,22 +75,28 @@
 					return combinedData;
 				};
 
-				var combinedData = merge( baseConfig, proxyConfig );
+				var combinedData = $.extend(true, baseConfig, proxyConfig );// merge( baseConfig, proxyConfig );
 
 				combinedData["mediaFileID"] = source.assetid;
-				combinedData["baseLink"] = source.src;
+				combinedData["baseLink"] = combinedData["basicLink"] =  source.src;
 
 				var successHandler = function ( res ) {
-					if( res.Status && res.Status.Code !== 0 ) {
-						_this.getPlayer().triggerHelper('tvpapiNoSubscription', [res]);
-					} else {
+					var url = getResponseLink(res);
+					if( url ) {
 						_this.getPlayer().triggerHelper('tvpapiSubscription', [res]);
-						source.src = res.mainUrl;
+						source.src = url;
+					} else {
+						_this.getPlayer().triggerHelper('tvpapiNoSubscription', [res]);
 					}
 				};
 				var errorHandler = function ( xmlHttpRequest, status ) {
 					//TODO:Handle error - dispatch event
 				};
+
+				var getResponseLink = function(res) {
+					return res.mainUrl ||
+						( res.licensed_link && res.licensed_link.main_url );
+				}
 
 				$.ajax( {
 					url: url,
