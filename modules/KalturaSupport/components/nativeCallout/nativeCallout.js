@@ -113,8 +113,8 @@
 					});
 			}
 
-			var url =  "http://kgit.html5video.org/kalturaToolKit/" + "?iframeUrl=" + _this.getConfig( "iframeUrl" );
-			window.open(url);
+			//var url =  _this.getConfig( "mimeName" ) + "?iframeUrl:=" + _this.getConfig( "iframeUrl" );
+			var url = "http://kgit.html5video.org/pulls/2178/modules/KalturaSupport/tests/nativeCallout.html?forceKalturaNativeComponentPlayer";
 			if ( mw.isAndroid() ) {
 				var popup = [];
 				setTimeout(function(){
