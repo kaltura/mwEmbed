@@ -1547,7 +1547,6 @@
 					downloadUrl = dlUrl;
 				}
 			});
-
 			$(this).trigger('showInlineDownloadLink', [downloadUrl]);
 		},
 		/**

@@ -34,7 +34,8 @@
 			'includeHeader': true,
 			'renderWhenEmpty': false,
 			'paging': false,
-			'pageSize': 25
+			'pageSize': 25,
+			'showEmptyPlaylistError': true
 		},
 
 
@@ -181,14 +182,27 @@
 					_this.pagingInProgress = true;
 					_this.page++; // move to next page
 					mw.log("Playlist:: scrollEnd event. paging: true: trying to load next playlist page: page="+_this.page+", pageSize"+_this.getConfig('pageSize'));
-					var playlistRequest = {
-						'service': 'playlist',
-						'action': 'execute',
-						'pager:objectType': 'KalturaFilterPager',
-						'pager:pageIndex': _this.page,
-						'pager:pageSize': _this.getConfig('pageSize'),
-						'id': _this.playlistSet[_this.currentPlaylistIndex].id
-					};
+
+					var playlistRequest;
+					if (_this.playlistSet[_this.currentPlaylistIndex].playlistParams) {
+						// use saved params and extend them with paging params
+						playlistRequest = $.extend(_this.playlistSet[_this.currentPlaylistIndex].playlistParams, {
+							'pager:objectType': 'KalturaFilterPager',
+							'pager:pageIndex': _this.page,
+							'pager:pageSize': _this.getConfig('pageSize')
+						});
+					} else {
+						// create params
+						playlistRequest = {
+							'service': 'playlist',
+							'action': 'execute',
+							'pager:objectType': 'KalturaFilterPager',
+							'pager:pageIndex': _this.page,
+							'pager:pageSize': _this.getConfig('pageSize'),
+							'id': _this.playlistSet[_this.currentPlaylistIndex].id
+						};
+					}
+
 					_this.getKClient().doRequest(playlistRequest, function (playlistDataResult) {
 						if (playlistDataResult.length){
 							_this.addMediaItems(playlistDataResult);
@@ -279,10 +293,19 @@
 						_this.playlistSet.push({});
 					}
 					_this.playlistSet[_this.currentPlaylistIndex].items = playlistDataResult; //apply data to the correct playlist in the playlistSet
+					_this.playlistSet[_this.currentPlaylistIndex].playlistParams = params.playlistParams; // save current playlis params for paging
+
+					// reset paging if available
+					if (params.playlistParams['pager:pageIndex']) {
+						_this.page = params.playlistParams['pager:pageIndex'];
+						_this.pagingDone = false;
+						_this.pagingInProgress = false;
+					}
 					if(params.playlistName){
 						_this.playlistSet[_this.currentPlaylistIndex].name = params.playlistName; //apply data to the correct playlist in the playlistSet
 					}
 					_this.selectPlaylist(_this.currentPlaylistIndex);
+					_this.redrawPlaylist();
 					_this.currentClipIndex = -1; //reset index of current clip so "next" will play the first item of the new loaded playlist
 					if(params.autoInsert){
 						_this.playNext();
@@ -657,7 +680,7 @@
 				} );
 			}
 
-			if (items.length === 0){
+			if (items.length === 0 && this.getConfig('showEmptyPlaylistError')){
 				//If no items then show error message
 				this.showEmptyPlaylistError();
 				this.configMediaListFeatures();
@@ -712,6 +735,12 @@
 				this.embedPlayer.setError(null);
 				this.embedPlayer.layoutBuilder.closeAlert();
 				this.embedPlayer.layoutBuilder.closeMenuOverlay();
+			}
+		},
+		onDisable: function(){
+			//Only disable if ad is being displayed
+			if (this.getPlayer().isInSequence()){
+				this._super();
 			}
 		}
 	})

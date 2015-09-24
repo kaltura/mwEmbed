@@ -94,13 +94,12 @@
 			});
 
 			this.bind('onChangeMedia', function () {
-				_this.log("_this.streamChanging: " + _this.streamChanging);
 				if (!_this.streamChanging){
-					_this.streams = [];
-					_this.getMenu().destroy();
-					_this.onDisable();
-					_this.streamsReady = false;
-				}
+						_this.streams = [];
+						_this.getMenu().destroy();
+						_this.onDisable();
+						_this.streamsReady = false;
+					}
 			});
 
 			if (this.getConfig('enableKeyboardShortcuts')) {
