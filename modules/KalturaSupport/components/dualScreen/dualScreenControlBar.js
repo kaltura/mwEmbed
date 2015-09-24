@@ -33,7 +33,7 @@
 
 		nativeAppTooltip: "Switching content<br/>on current view<br/>is not yet<br/>supported.<br/><br/>Try single view",
 		setup: function() {
-			this.bindSuffix = "." + this.pluginName;
+			this.postFix = "." + this.pluginName;
 			this.addBindings();
 		},
 		getComponent: function ( ) {
@@ -71,10 +71,10 @@
 			var _this = this;
 			//TODO:hook these events to layoutbuilder events
 			this.embedPlayer.getInterface()
-				.on( 'mousemove' + this.bindSuffix +' touchstart' + this.bindSuffix, function(){
+				.on( 'mousemove' + this.postFix +' touchstart' + this.postFix, function(){
 					_this.show();
 				})
-				.on( 'mouseleave' + this.bindSuffix, function(){
+				.on( 'mouseleave' + this.postFix, function(){
 					if (!mw.isMobileDevice()){
 						_this.hide();
 					}
@@ -88,7 +88,7 @@
 			var switchBtn = buttons.filter('[data-type="switch"]');
 			//Attach control bar action handlers
 			_this.getComponent()
-				.on( 'click' + this.bindSuffix + ' touchstart' + this.bindSuffix, 'li > span', function (e) {
+				.on( 'click' + this.postFix + ' touchstart' + this.postFix, 'li > span', function (e) {
 					e.stopPropagation();
 					e.preventDefault();
 					var btn = _this.controlBarComponents[this.id];
@@ -170,9 +170,9 @@
 			}
 		},
 		destroy: function() {
-			this.embedPlayer.unbindHelper(this.bindSuffix);
-			this.getComponent().off(this.bindSuffix);
-			this.embedPlayer.getInterface().off(this.bindSuffix);
+			this.embedPlayer.unbindHelper(this.postFix);
+			this.getComponent().off(this.postFix);
+			this.embedPlayer.getInterface().off(this.postFix);
 			this.getComponent().remove();
 			this.getControlBarDropShadow().remove();
 			this.$controlBar = null;
