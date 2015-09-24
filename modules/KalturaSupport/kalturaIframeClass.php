@@ -596,7 +596,7 @@ class kalturaIframeClass {
 			color: #fff;
 			overflow: hidden;
 		}
-		video::-webkit-media-controls {
+		video::-webkit-media-controls-start-playback-button {
 			display:none !important;
 		}
 		div,video {
