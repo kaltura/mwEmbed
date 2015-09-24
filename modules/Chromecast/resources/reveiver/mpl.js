@@ -25,7 +25,10 @@ onload = function () {
 	cast.receiver.logger.setLevelValue(cast.receiver.LoggerLevel.DEBUG);
 	cast.player.api.setLoggerLevel(cast.player.api.LoggerLevel.DEBUG);
 
-	mediaManager = new cast.receiver.MediaManager(document.getElementById('receiverVideoElement'));
+	mediaElement = document.getElementById('receiverVideoElement');
+	mediaElement.autoplay = false;
+	setMediaElementEvents(mediaElement);
+	mediaManager = new cast.receiver.MediaManager(mediaElement);
 
 	castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
 	messageBus = castReceiverManager.getCastMessageBus('urn:x-cast:com.kaltura.cast.player');
@@ -113,10 +116,12 @@ onload = function () {
 			var uiconfID = payload['uiconfID'];
 			var entryID = payload['entryID'];
 			mw.setConfig("EmbedPlayer.HidePosterOnStart", true);
-			mw.setConfig("debug", true);
-			mw.setConfig("debugTarget", "kdebug");
-			mw.setConfig("debugFilter", "!!!");
-			mw.setConfig("autoScrollDebugTarget", true);
+			if (payload['debugKalturaPlayer'] == true){
+				mw.setConfig("debug", true);
+				mw.setConfig("debugTarget", "kdebug");
+				mw.setConfig("autoScrollDebugTarget", true);
+				document.getElementById('kdebug').style.display = 'block';
+			}
 			mw.setConfig("chromecastReceiver", true);
 			kWidget.embed({
 				"targetId": "kaltura_player",

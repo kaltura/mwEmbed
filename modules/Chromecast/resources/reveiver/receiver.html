@@ -57,7 +57,6 @@
             -o-transition: opacity 3s ease-in-out;
             opacity: 1;
         }
-        /*
         #kdebug{
             position: absolute;
             right: 0px;
@@ -71,11 +70,12 @@
             font-family: Arial;
             font-size: 11px;
             z-index: 10;
-        }*/
+            display: none;
+        }
     </style>
     <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
     <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/mediaplayer/1.0.0/media_player.js"></script>
-    <script src="http://192.168.160.246/html5.kaltura/mwEmbed/mwEmbedLoader.php"></script>
+    <script src="http://kgit.html5video.org/pulls/2170/mwEmbedLoader.php"></script>
     <script type="text/javascript" src="mpl.js"></script>
 </head>
 
@@ -116,8 +116,8 @@
     <span>Segment Credentials: <span id="segmentCredentials">false</span></span>
     <span>License Credentials: <span id="licenseCredentials">false</span></span>
 </div>
-<video id="receiverVideoElement" style="height:95%; width:100%; visibility: hidden"></video>
+<video id="receiverVideoElement" style="height:95%; width:100%"></video>
 <div id="logo"></div>
-<!--div id="kdebug"></div-->
+<div id="kdebug"></div>
 </body>
 </html>

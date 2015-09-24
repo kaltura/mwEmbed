@@ -19,7 +19,8 @@
 			'tooltip': 'Chromecast',
 			'debugReceiver': false,
 			'receiverLogo': false,
-			'useKalturaPlayer': false
+			'useKalturaPlayer': false,
+			'debugKalturaPlayer': false
 		},
 		isDisabled: false,
 
@@ -181,7 +182,7 @@
 				this.log("set license URL to: " + this.drmConfig.contextData.widevineLicenseServerURL);
 			}
 			if (this.getConfig("useKalturaPlayer") === true){
-				this.sendMessage({'type': 'embed', 'publisherID': this.embedPlayer.kwidgetid.substr(1), 'uiconfID': this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid});
+				this.sendMessage({'type': 'embed', 'publisherID': this.embedPlayer.kwidgetid.substr(1), 'uiconfID': this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid, 'debugKalturaPlayer': this.getConfig("debugKalturaPlayer")});
 				this.embedPlayer.showErrorMsg(
 					{'title':'Chromecast Player',
 						'message': gM('mwe-chromecast-loading'),
