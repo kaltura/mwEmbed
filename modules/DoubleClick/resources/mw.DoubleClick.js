@@ -819,6 +819,7 @@
 				adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true; // for manual VAST, get the SDK to restore the player
 			}
 			adsRenderingSettings.useStyledNonLinearAds = true;
+			adsRenderingSettings.mimeTypes = ["video/mp4"];
 			this.adsManager = loadedEvent.getAdsManager( this.embedPlayer, adsRenderingSettings );
 			if ( _this.adManager != null ) {
 				_this.adManagerLoaded = true;
