@@ -113,9 +113,11 @@
 					});
 			}
 
-			//var url =  _this.getConfig( "mimeName" ) + "?iframeUrl:=" + _this.getConfig( "iframeUrl" );
-			var url = "http://kgit.html5video.org/pulls/2178/modules/KalturaSupport/tests/nativeCallout.html?forceKalturaNativeComponentPlayer";
-			if ( mw.isIOS() ) {
+			var url =  _this.getConfig( "mimeName" ) + "?iframeUrl:=" + _this.getConfig( "iframeUrl" );debugger;
+			if (!mw.isIOS9()) {
+				url = _this.getConfig("iframeUrl");
+			}
+			if ( mw.isAndroid() || mw.isIOS9()) {
 				var popup = [];
 				setTimeout(function(){
 					popup.close();
