@@ -113,10 +113,13 @@
 					});
 			}
 
-			//var url =  _this.getConfig( "mimeName" ) + "?iframeUrl:=" + _this.getConfig( "iframeUrl" );
-			var url = "http://kgit.html5video.org/pulls/2178/modules/KalturaSupport/tests/nativeCallout.html?forceKalturaNativeComponentPlayer";
+			var url =  _this.getConfig( "mimeName" ) + "?iframeUrl:=" + _this.getConfig( "iframeUrl" );
+			if (mw.isIOS9()) {
+				url = _this.getConfig( "iframeUrl" );
+			}
+			//var url = "http://kgit.html5video.org/pulls/2178/modules/KalturaSupport/tests/nativeCallout.html?forceKalturaNativeComponentPlayer";
 			//var url = "http://10.0.0.8/html5.kaltura/mwEmbed/modules/KalturaSupport/tests/nativeCallout.html?forceKalturaNativeComponentPlayer";
-			if ( mw.isIOS() ) {
+			if ( mw.isIOS9() || mw.isAndroid() ) {
 
 					var popup = [];
 				setTimeout(function(){
