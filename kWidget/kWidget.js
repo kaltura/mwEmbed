@@ -182,6 +182,8 @@
 				// check that the library is not on production
 			this.getPath().indexOf( 'i.kaltura.com' ) == -1
 			&&
+			this.getPath().indexOf( 'isec.kaltura.com' ) == -1
+			&&
 				// check that we player is not on a staging site:
 			window.location.host != 'kgit.html5video.org'
 			&&
