@@ -160,14 +160,6 @@
 				_this.playPrevious();
 			});
 
-			$(this.embedPlayer).bind('onDisableInterfaceComponents', function (event) {
-				_this.getMedialistHeaderComponent().find(".playlistBtn").addClass("disabled");
-			});
-
-			$(this.embedPlayer).bind('onEnableInterfaceComponents', function (event) {
-				_this.getMedialistHeaderComponent().find(".playlistBtn").removeClass("disabled");
-			});
-
 			$( this.embedPlayer ).bind('onOpenFullScreen', function() {
 				_this.redrawOnResize = false;
 				clearTimeout(window.redrawTimeOutID);
@@ -740,11 +732,14 @@
 		onDisable: function(){
 			//Only disable if ad is being displayed
 			if (this.getPlayer().isInSequence()){
+				this.getMedialistHeaderComponent().find(".playlistBtn").addClass("disabled");
 				this._super();
 			}
+		},
+		onEnable: function(){
+			this.getMedialistHeaderComponent().find(".playlistBtn").removeClass("disabled");
+			this._super();
 		}
 	})
-
 	);
-
 })(window.mw, window.jQuery);
