@@ -123,7 +123,8 @@
 				_this.currentAd.index = index;
 				// on midroll or  increment before ad events:
 				if( type == 'midroll' ||  type == 'postroll'){
-					_this.incrementViewIndex();
+					// do not increment index during ads
+					//_this.incrementViewIndex();
 				}
 				_this.unbind( 'onAdComplete');
 				_this.bind( 'onAdComplete', function() {
@@ -131,12 +132,14 @@
 					/*_this.sendBeacon( 'stop', {
 						'diffTime': new Date().getTime() - _this.previusPingTime
 					});*/
-					// after ad completes increment view index
-					_this.incrementViewIndex();
+					// do not increment index during ads
+					//_this.incrementViewIndex();
 				});
 				// wait for ad duration update to trigger ad start event
 				_this.unbind( 'AdSupport_AdUpdateDuration');
 				_this.bind('AdSupport_AdUpdateDuration', function(e, duration){
+					// TODO add YouBora logic
+					return false;
 					_this.unbind("AdSupport_AdUpdateDuration");
 					var adMetadata = _this.embedPlayer.evaluate( '{sequenceProxy.activePluginMetadata}' );
 					// issue youbora ad start (  just "start" with ad metadata )
@@ -180,12 +183,20 @@
 			var userHasPaused = false;
 			this.unbind( 'onpause');
 			this.bind( 'onpause', function( playerState ){
+				// ignore if pause is within .5 seconds of end of video: 
+				if( ( _this.embedPlayer.duration - _this.embedPlayer.currentTime ) < .5  ){
+					return ;
+				}
 				_this.sendBeacon( 'pause' );
 				userHasPaused = true;
 			});
 			// after first play, track resume:
 			this.unbind( 'onplay');
 			this.bind( 'onplay', function( playerState ){
+				// ignore if resume if within .5 seconds of end of video: 
+				if( ( _this.embedPlayer.duration - _this.embedPlayer.currentTime ) < .5  ){
+					return ;
+				}
 				if( userHasPaused ){
 					_this.sendBeacon( 'resume' );
 					userHasPaused = false;
