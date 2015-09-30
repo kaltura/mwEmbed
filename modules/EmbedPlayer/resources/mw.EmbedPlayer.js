@@ -2333,10 +2333,6 @@
 
 			// trigger on play interface updates:
 			this.restoreComponentsHover();
-
-			// restore monitoring playback 
-			this.startMonitor();
-
 			$(this).trigger('onPlayInterfaceUpdate');
 		},
 		/**
