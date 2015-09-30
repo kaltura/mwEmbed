@@ -34,7 +34,8 @@
 			'includeHeader': true,
 			'renderWhenEmpty': false,
 			'paging': false,
-			'pageSize': 25
+			'pageSize': 25,
+			'showEmptyPlaylistError': true
 		},
 
 
@@ -67,6 +68,7 @@
 			this.minClips = parseInt(this.getConfig('MinClips'));
 			//Backward compatibility setting - set autoplay on embedPlayer instead of playlist
 			this.getPlayer().autoplay = (this.getConfig('autoPlay') == true);
+			mw.setConfig("autoPlay", this.getPlayer().autoplay);
 
 			if ( !this.getConfig( 'mediaItemWidth') ){
 				this.widthSetByUser = false;           // user did not specify a required width. We will set to 320 and apply responsive logic on resizeEvent event
@@ -102,7 +104,7 @@
 				}
 
 				// prevent iframe resize layout refresh  on iOS8
-				if ( mw.isIOS8() ){
+				if ( mw.isIOS8_9() ){
 					_this.redrawOnResize = false;
 				}
 
@@ -158,14 +160,6 @@
 				_this.playPrevious();
 			});
 
-			$(this.embedPlayer).bind('onDisableInterfaceComponents', function (event) {
-				_this.getMedialistHeaderComponent().find(".playlistBtn").addClass("disabled");
-			});
-
-			$(this.embedPlayer).bind('onEnableInterfaceComponents', function (event) {
-				_this.getMedialistHeaderComponent().find(".playlistBtn").removeClass("disabled");
-			});
-
 			$( this.embedPlayer ).bind('onOpenFullScreen', function() {
 				_this.redrawOnResize = false;
 				clearTimeout(window.redrawTimeOutID);
@@ -180,14 +174,27 @@
 					_this.pagingInProgress = true;
 					_this.page++; // move to next page
 					mw.log("Playlist:: scrollEnd event. paging: true: trying to load next playlist page: page="+_this.page+", pageSize"+_this.getConfig('pageSize'));
-					var playlistRequest = {
-						'service': 'playlist',
-						'action': 'execute',
-						'pager:objectType': 'KalturaFilterPager',
-						'pager:pageIndex': _this.page,
-						'pager:pageSize': _this.getConfig('pageSize'),
-						'id': _this.playlistSet[_this.currentPlaylistIndex].id
-					};
+
+					var playlistRequest;
+					if (_this.playlistSet[_this.currentPlaylistIndex].playlistParams) {
+						// use saved params and extend them with paging params
+						playlistRequest = $.extend(_this.playlistSet[_this.currentPlaylistIndex].playlistParams, {
+							'pager:objectType': 'KalturaFilterPager',
+							'pager:pageIndex': _this.page,
+							'pager:pageSize': _this.getConfig('pageSize')
+						});
+					} else {
+						// create params
+						playlistRequest = {
+							'service': 'playlist',
+							'action': 'execute',
+							'pager:objectType': 'KalturaFilterPager',
+							'pager:pageIndex': _this.page,
+							'pager:pageSize': _this.getConfig('pageSize'),
+							'id': _this.playlistSet[_this.currentPlaylistIndex].id
+						};
+					}
+
 					_this.getKClient().doRequest(playlistRequest, function (playlistDataResult) {
 						if (playlistDataResult.length){
 							_this.addMediaItems(playlistDataResult);
@@ -278,10 +285,19 @@
 						_this.playlistSet.push({});
 					}
 					_this.playlistSet[_this.currentPlaylistIndex].items = playlistDataResult; //apply data to the correct playlist in the playlistSet
+					_this.playlistSet[_this.currentPlaylistIndex].playlistParams = params.playlistParams; // save current playlis params for paging
+
+					// reset paging if available
+					if (params.playlistParams['pager:pageIndex']) {
+						_this.page = params.playlistParams['pager:pageIndex'];
+						_this.pagingDone = false;
+						_this.pagingInProgress = false;
+					}
 					if(params.playlistName){
 						_this.playlistSet[_this.currentPlaylistIndex].name = params.playlistName; //apply data to the correct playlist in the playlistSet
 					}
 					_this.selectPlaylist(_this.currentPlaylistIndex);
+					_this.redrawPlaylist();
 					_this.currentClipIndex = -1; //reset index of current clip so "next" will play the first item of the new loaded playlist
 					if(params.autoInsert){
 						_this.playNext();
@@ -399,6 +415,7 @@
 
 			var _this = this;
 			var id = _this.mediaList[clipIndex].id;
+			var referenceId = _this.mediaList[clipIndex].referenceId ? _this.mediaList[clipIndex].referenceId : null;
 			if (!embedPlayer) {
 				mw.log("Error: Playlist:: playClip called with null embedPlayer ");
 				return;
@@ -412,14 +429,16 @@
 				}
 			}
 
+			var mobileAutoPlay = true;
 			// mobile devices have a autoPlay restriction, we issue a raw play call on
 			// the video tag to "capture the user gesture" so that future
 			// javascript play calls can work
-			if (mw.isMobileDevice() && embedPlayer.firstPlay && load) {
+			if (mw.isMobileDevice() && load) {
 				mw.log("Playlist:: issue load call to capture click for iOS");
 				try {
 					embedPlayer.getPlayerElement().load();
 				} catch (e) {
+					mobileAutoPlay = false;
 					mw.log("Playlist:: could not load video - possibly restricted video");
 				}
 			}
@@ -440,10 +459,14 @@
 				embedPlayer.triggerHelper(eventToTrigger);
 				_this.loadingEntry = false; // Update the loadingEntry flag//
 				// play clip that was selected when autoPlay=false. if autoPlay=true, the embedPlayer will do that for us.
-				if (!_this.getConfig("autoPlay")) {
+				if (!_this.getConfig("autoPlay") && mobileAutoPlay && embedPlayer.canAutoPlay()) {
 					setTimeout(function(){
 						embedPlayer.play();
 					},500); // timeout is required when loading live entries
+				}
+				if (mw.isMobileDevice() && !mobileAutoPlay){
+					mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
+					embedPlayer.updatePosterHTML();
 				}
 			});
 			mw.log("PlaylistAPI::playClip::changeMedia entryId: " + id);
@@ -456,7 +479,7 @@
 			//embedPlayer.changeMediaStarted = false;
 			if (!this.firstPlay) {
 				this.loadingEntry = id; // Update the loadingEntry flag
-				embedPlayer.sendNotification("changeMedia", {'entryId': id, 'playlistCall': true});
+				embedPlayer.sendNotification("changeMedia", {'entryId': id, 'playlistCall': true, 'referenceId': referenceId});
 			} else {
 				embedPlayer.triggerHelper(eventToTrigger);
 			}
@@ -649,7 +672,7 @@
 				} );
 			}
 
-			if (items.length === 0){
+			if (items.length === 0 && this.getConfig('showEmptyPlaylistError')){
 				//If no items then show error message
 				this.showEmptyPlaylistError();
 				this.configMediaListFeatures();
@@ -705,9 +728,18 @@
 				this.embedPlayer.layoutBuilder.closeAlert();
 				this.embedPlayer.layoutBuilder.closeMenuOverlay();
 			}
+		},
+		onDisable: function(){
+			//Only disable if ad is being displayed
+			if (this.getPlayer().isInSequence()){
+				this.getMedialistHeaderComponent().find(".playlistBtn").addClass("disabled");
+				this._super();
+			}
+		},
+		onEnable: function(){
+			this.getMedialistHeaderComponent().find(".playlistBtn").removeClass("disabled");
+			this._super();
 		}
 	})
-
 	);
-
 })(window.mw, window.jQuery);

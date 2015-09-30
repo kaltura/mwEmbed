@@ -100,6 +100,11 @@
 				window._gaq.push([ '_setDomainName', 'none' ]);
 				window._gaq.push([ '_setAllowLinker', true ]);
 			}
+			// check if we should anonymize Ips, from google docs: 
+			// https://developers.google.com/analytics/devguides/collection/gajs/methods/gaJSApi_gat#_gat._anonymizeIp
+			if( this.getConfig( 'anonymizeIp' ) ){
+				window._gaq.push(['_gat._anonymizeIp']);
+			}
 			window._gaq.push([ '_trackPageview' ]);
 			var ga = document.createElement('script');
 			ga.type = 'text/javascript';
@@ -247,7 +252,7 @@
 				return false;
 			}
 
-			var eventCategory = this.trackingCategory;
+			var eventCategory = this.getConfig("trackingCategory") || this.trackingCategory;
 			var eventAction = methodName;
 			var customEvents = [];
 
@@ -298,6 +303,10 @@
 					}
 				}
 
+			}
+			// check for configured optionalLabel override: 
+			if( this.getConfig('optionalLabel') ){
+				return  this.getConfig('optionalLabel');
 			}
 			return ( refString + clipTitle + "|" + entryId + "|" + widgetId + "|" +uiconfId  );
 		},

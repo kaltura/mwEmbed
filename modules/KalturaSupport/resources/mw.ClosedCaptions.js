@@ -39,8 +39,6 @@
 				&&
 				$.cookie( this.cookieName ) == 'None')
 				||
-				this.getConfig('displayCaptions') === null
-				||
 				( this.getConfig( 'hideClosedCaptions') === true )
 			){
 				this.setConfig('displayCaptions', false );
@@ -425,7 +423,7 @@
 			}
 
 			var captionsSrc;
-			if( mw.isIphone() && !mw.getConfig('disableTrackElement') ) {
+			if( mw.isIphone() && !mw.getConfig('disableTrackElement') && !this.getConfig('forceLoadLanguage') ) {
 				// getting generated vtt file from dfxp/srt
 				captionsSrc = mw.getConfig('Kaltura.ServiceUrl') +
 							"/api_v3/index.php/service/caption_captionasset/action/serveWebVTT/captionAssetId/" +
@@ -797,6 +795,8 @@
 
 			// Check if we even have textSources
 			if( sources == 0 ){
+				this.setConfig('displayCaptions', false);
+
 				if( this.getConfig('hideWhenEmpty') === true ) {
 					this.getBtn().hide();
 				}
@@ -813,6 +813,9 @@
 
 				return this.getMenu();
 			} else {
+				if( this.getConfig('hideWhenEmpty') == true ){
+					this.setConfig('visible', true)
+				}
 				this.getBtn().show();
 				// show new timed captions text if exists
 				this.showCaptions();

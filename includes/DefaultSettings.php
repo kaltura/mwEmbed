@@ -6,13 +6,19 @@
  *
  */
 
+if (isset($_SERVER["HTTP_X_FORWARDED_HOST"]))
+{
+	 $_SERVER["HTTP_HOST"] = $_SERVER["HTTP_X_FORWARDED_HOST"];
+	 $_SERVER["SERVER_NAME"] = $_SERVER["HTTP_X_FORWARDED_HOST"];
+}
+
 // The default cache directory
 $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '2.33.rc15';
+$wgMwEmbedVersion = '2.36.rc2';
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
@@ -248,20 +254,6 @@ $wgLocalSettingsFile = realpath( dirname( __FILE__ ) ) . '/../LocalSettings.php'
 
 if( is_file( $wgLocalSettingsFile ) ){
 	require_once( $wgLocalSettingsFile );
-}
-
-//Override Domain
-//===============
-//Override here all variables that are using wgServer
-if ( $wgEnableKalturaOverrideDomain && isset( $_GET['od'] ) ){
-	$wgServer = htmlspecialchars( $_GET['od'] ) . dirname( dirname( $_SERVER['SCRIPT_NAME'] ) ) .'/';
-
-	// Default Load Script path
-    $wgLoadScript = $wgServer . $wgScriptPath . 'load.php';
-    // Support legacy $wgResourceLoaderUrl url.
-    $wgResourceLoaderUrl = $wgLoadScript;
-
-    $wgMwEmbedProxyUrl =  $wgServer . $wgScriptPath . 'simplePhpXMLProxy.php';
 }
 
 //Set global configs into $wgMwEmbedModuleConfig in order to enable

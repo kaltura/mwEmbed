@@ -74,7 +74,7 @@ class downloadEntry {
 				$filename = $flavorId . $extension;
 			}
 
-			if( $mediaType ==! 2 ){
+			if( $mediaType !== 2 ){
 				$options = new KalturaFlavorAssetUrlOptions();
 				$options->fileName = $filename;
 
@@ -288,7 +288,7 @@ class downloadEntry {
 		if( $kResultObject->request->getServiceConfig( 'UseManifestUrls' ) ){
 			foreach($this->sources as & $source ){
 				if( isset( $source['src'] )){
-					$source['src'] .= '?ks=' . $kResultObject->client->getKS() . '&referrer=' . $this->getReferer();
+					$source['src'] .= '?ks=' . $kResultObject->client->getKS() . '&referrer=' . $this->getReferer().'&playSessionId='.$this->getPlaySession();
 				}
 			}
 		}
@@ -307,6 +307,11 @@ class downloadEntry {
 			return $_GET['referrer'];
 		} else {
 			return base64_encode( $this->getResultObject()->request->getReferer() );
+		}
+	}
+	private function getPlaySession(){
+		if( isset($_GET['playSessionId']) ) {
+			return $_GET['playSessionId'];
 		}
 	}
 	public function getSourceForUserAgent(){

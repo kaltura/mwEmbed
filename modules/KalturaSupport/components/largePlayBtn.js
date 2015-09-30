@@ -22,7 +22,7 @@
 			var _this = this;
 			this.bind('showInlineDownloadLink', function(e, linkUrl){
 				_this.getComponent().attr({
-					'href': linkUrl,
+					'href': linkUrl.replace('playSessionId=','playSessionId=noev-'),
 					'target': '_blank'
 				});
 			});
@@ -97,7 +97,7 @@
 		getComponent: function() {
 			var _this = this;
 			var eventName = 'click';
-			if (mw.isMobileDevice() && !mw.isWindowsPhone()){
+			if ( mw.isAndroid() ){
 				eventName = 'touchstart';
 			}
 			if( !this.$el ) {

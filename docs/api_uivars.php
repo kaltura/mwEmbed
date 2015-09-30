@@ -131,6 +131,18 @@ $uiVars = array(
 					'default' => 'false',
 					'example' => '../modules/KalturaSupport/tests/LeadWithHLSOnFlash.html'
 			),
+			'forceHDS' => array(
+            					'type' => 'Boolean',
+            					'desc' => 'Force HDS streamerType for Kaltura Live (HLS by default)',
+            					'default' => 'false',
+            					'example' => ''
+            ),
+            'ignoreAkamaiHD' => array(
+                        					'type' => 'Boolean',
+                        					'desc' => 'Play HDS without AkamaiHD plugin (the plugin is loaded by default for HDNETWORK or HDNETWORK_HDS streamerTypes)',
+                        					'default' => 'false',
+                        					'example' => ''
+                        ),
 			'host' => array(
 					'type' => 'String',
 					'desc' => 'The URL of the Kaltura server to work with',
@@ -447,11 +459,11 @@ $uiVars = array(
 				'example' => '../modules/KalturaSupport/tests/AutoPlay.qunit.html'
 			),
 			'EmbedPlayer.WebKitPlaysInline' => array(
-            			 		'type' => 'Boolean',
-            					'desc' => "Determines if should play the video inline or not",
-            					'default' => 'false',
-            					'example' => ''
-            ),
+			 		'type' => 'Boolean',
+					'desc' => "Determines if should play the video inline when inside a webview on iOS.",
+					'default' => 'false',
+					'example' => ''
+			),
 			'autoMute' => array(
 				'type' => 'Boolean',
 				'desc' => 'Determine whether to start playback with volume muted (usually used by video ads or homepage auto play videos)',
@@ -591,12 +603,12 @@ $uiVars = array(
 					'default' => '',
 					'example' => ''
 			),
-			/*'EmbedPlayer.iPhoneShowHTMLPlayScreen' => array(
+			'EmbedPlayer.DisableEntryCache' => array(
 			 'type' => '',
-					'desc' => "",
-					'default' => '',
-					'example' => ''
-			),*/
+					'desc' => "When set to true, entry data is not saved in the player cache. This can improve performances, especially when using long play lists",
+					'default' => 'false',
+					'example' => '../modules/KalturaSupport/tests/PlaylistEvents.qunit.html'
+			),
 			'EmbedPlayer.NativeControls' => array(
 					'type' => 'Boolean',
 					'desc' => "Determines if mwEmbed should use the Native player controls. This will prevent video tag rewriting and skinning. Useful for devices such as iPad / iPod that don't fully support DOM overlays or don't expose full-screen functionality to JavaScript",

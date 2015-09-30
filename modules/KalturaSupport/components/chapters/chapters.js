@@ -99,6 +99,7 @@
 						//Set data initialized flag for handlers to start working
 						_this.dataIntialized = true;
 						if ( _this.renderOnData ) {
+							_this.show();
 							_this.renderOnData = false;
 							_this.renderMediaList();
 							_this.updateActiveItem();
@@ -139,6 +140,7 @@
 						//Create DOM markup and append to list
 						var mediaItems = _this.createMediaItems(items);
 						if (_this.renderOnData) {
+							_this.show();
 							_this.renderOnData = false;
 							//Render only items that are in the DVR window, and save future items in temp list
 							var tempList = _this.mediaList;
@@ -163,9 +165,11 @@
 			this.bind('playerReady', function () {
 				if (!_this.maskChangeStreamEvents) {
 					if ( _this.dataIntialized ) {
+						_this.show();
 						_this.renderMediaList();
 						_this.updateActiveItem();
 					} else {
+						_this.hide();
 						_this.renderOnData = true;
 					}
 					_this.renderSearchBar();
@@ -174,10 +178,10 @@
 			});
 
 			this.bind('hide', function () {
-				_this.getComponent().hide();
+				_this.hide();
 			});
 			this.bind('show', function () {
-				_this.getComponent().show();
+				_this.show();
 			});
 
 			this.bind('updatePlayHeadPercent', function () {
@@ -278,14 +282,28 @@
 			}
 		},
 		isSafeEnviornment: function () {
+			return (!this.getPlayer().useNativePlayerControls() &&
+				(
+					this.isLiveCuepoints() ||
+					this.isPlaylistPersistent() ||
+					this.isVodCuepoints()
+				)
+			);
+		},
+		isLiveCuepoints: function(){
+			return this.getPlayer().isLive() && this.getPlayer().isDvrSupported() && mw.getConfig("EmbedPlayer.LiveCuepoints");
+		},
+		isPlaylistPersistent: function(){
+			return (this.getPlayer().playerConfig &&
+			this.getPlayer().playerConfig.plugins &&
+			this.getPlayer().playerConfig.plugins.playlistAPI &&
+			this.getPlayer().playerConfig.plugins.playlistAPI.plugin !== false);
+		},
+		isVodCuepoints: function(){
 			var cuePoints = this.getCuePoints();
 			var cuePointsExist = (cuePoints.length > 0);
-			return (!this.getPlayer().useNativePlayerControls() &&
-						(
-							( this.getPlayer().isLive() && this.getPlayer().isDvrSupported() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) ||
-					        ( !this.getPlayer().isLive() && cuePointsExist)
-						)
-					);
+			return !this.getPlayer().isLive() && cuePointsExist;
+
 		},
 		getCuePoints: function(){
 			var cuePoints = [];
@@ -892,8 +910,9 @@
 		},
 		//UI Handlers
 		mediaClicked: function (mediaIndex) {
-			//Only apply seek if DVR is supported
-			if (!this.getPlayer().isDVR()) {
+			//Only apply seek in VOD or in live if DVR is supported
+			if ((this.getPlayer().isLive() && this.getPlayer().isDVR()) ||
+				!this.getPlayer().isLive()) {
 				// start playback
 				this.getPlayer().sendNotification('doPlay');
 				// see to start time and play ( +.1 to avoid highlight of prev chapter )
@@ -1183,6 +1202,16 @@
 			} else {
 				fn.apply(this);
 			}
+		},
+		show: function(){
+			this.getComponent().show();
+			this.getComponent().attr("data-visibility", "visible");
+			this.getPlayer().triggerHelper("layoutChange." + this.getConfig("parent"));
+		},
+		hide: function(){
+			this.getComponent().hide();
+			this.getComponent().attr("data-visibility", "hidden");
+			this.getPlayer().triggerHelper("layoutChange." + this.getConfig("parent"));
 		}
 	}));
 })(window.mw, window.jQuery);

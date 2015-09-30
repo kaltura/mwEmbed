@@ -14,22 +14,25 @@
 		return mw.getConfig("EmbedPlayer.ForceNativeComponent");
 	};
 	mw.isIphone = function () {
-		return ( mw.getConfig("EmbedPlayer.ForceNativeComponent") !== true && navigator.userAgent.indexOf('iPhone') != -1 && !mw.isIpad() ) || mw.isIpod();
+		return ( mw.getConfig("EmbedPlayer.ForceNativeComponent") !== true && userAgent.indexOf('iPhone') != -1 && !mw.isIpad() ) || mw.isIpod();
 	};
 	mw.isIE = function () {
-		return (/msie/.test(userAgent.toLowerCase()) || /trident/.test(navigator.userAgent.toLowerCase()));
+		return (/msie/.test(userAgent.toLowerCase()) || /trident/.test(userAgent.toLowerCase()));
 	};
 	mw.isIE7 = function () {
 		return (/msie 7/.test(userAgent.toLowerCase()));
 	};
 	mw.isIE8 = function () {
-		return (/msie 8/.test(userAgent.toLowerCase()));
+		return document.documentMode === 8;
 	};
 	mw.isIE9 = function () {
-		return (/msie 9/.test(userAgent.toLowerCase()));
+		return document.documentMode === 9;
 	};
     mw.isIE11 = function () {
-        return (/trident\/7.0/.test(navigator.userAgent.toLowerCase()));
+        return (/trident\/7.0/.test(userAgent.toLowerCase()));
+    };
+	mw.isEdge = function () {
+        return (/edge/.test(userAgent.toLowerCase()));
     };
 	mw.isDesktopSafari = function () {
 		return (/safari/).test(userAgent.toLowerCase()) && !mw.isMobileDevice() && !mw.isChrome();
@@ -134,6 +137,14 @@
 	mw.isIOS8 = function () {
 		// Known Limitation - It will return false for iOS8 Simulator
 		return ( /OS 8_/.test(userAgent) || /Version\/8/.test(userAgent) ) && mw.isIOS();
+	};
+
+	mw.isIOS9 = function () {
+		return ( /OS 9_/.test(userAgent) || /Version\/9/.test(userAgent) ) && mw.isIOS();
+	};
+
+	mw.isIOS8_9 = function () {
+		return mw.isIOS8() || mw.isIOS9();
 	};
 
 	mw.isSilk = function () {

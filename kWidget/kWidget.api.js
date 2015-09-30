@@ -57,6 +57,24 @@ kWidget.api.prototype = {
 	getKs: function(){
 		return this.ks;
 	},
+	forceKs:function(wid,callback,errorCallback){
+		if( this.getKs() ){
+			callback( this.getKs() );
+			return true;
+		}
+		var _this = this;
+		// Add the Kaltura session ( if not already set )
+		var ksParam = {
+			'action' : 'startwidgetsession',
+			'widgetId': wid
+		};
+		// add in the base parameters:
+		var param = kWidget.extend( { 'service' : 'session' }, this.baseParam, ksParam );
+		this.doRequest( param, function( data ){
+			_this.ks = data.ks;
+			callback( _this.ks );
+		},null,errorCallback);
+	},
 	/**
 	 * Do an api request and get data in callback
 	 */
@@ -130,7 +148,7 @@ kWidget.api.prototype = {
 		// Access-Control-Allow-Origin:* most browsers support this. 
 		// ( old browsers with large api payloads are not supported )
 		var userAgent = navigator.userAgent.toLowerCase();
-		var forceJSONP = ( userAgent.indexOf('msie 8') !== -1 || userAgent.indexOf('msie 9') !== -1 || userAgent.indexOf('msie 10') !== -1 );
+		var forceJSONP = document.documentMode && document.documentMode <= 10;
 		try {
 			if ( forceJSONP ){
 				throw "forceJSONP";
