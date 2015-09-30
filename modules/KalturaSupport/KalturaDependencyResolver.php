@@ -1,5 +1,5 @@
 <?php
-    class loader{
+    class KalturaDependencyResolver{
         /**
          * Mapping of registered modules
          *
@@ -79,7 +79,7 @@
          *  block before document ready and load async after. If not set, true will
          *  be assumed if loading a URL, and false will be assumed otherwise.
          */
-        function resolveDependencies( $modules ) {
+        function getDependencies( $modules ) {
             $filtered = array();
 
             // Validate input

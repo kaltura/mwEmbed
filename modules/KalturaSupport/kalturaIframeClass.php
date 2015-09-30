@@ -3,7 +3,7 @@
  * Kaltura iFrame class:
  */
 require_once 'KalturaCommon.php';
-require_once 'dependencyResolver.php';
+require_once 'KalturaDependencyResolver.php';
 
 class kalturaIframeClass {
 
@@ -849,11 +849,11 @@ HTML;
 	function getModuleDependencyList($moduleList){
 		$modulesRegistry = $this->getModulesRegistry($moduleList);
 
-		$loader = new loader();
-		$loader->register($modulesRegistry);
+		$kalturaDependencyResolver = new KalturaDependencyResolver();
+		$kalturaDependencyResolver->register($modulesRegistry);
 
 		// Set the startup modules state to ready cause they were already included in startup load
-		$loader->setState(array(
+		$kalturaDependencyResolver->setState(array(
 			"jquery" => "ready",
 			"mediawiki" => "ready",
 			"mw.MwEmbedSupport" => "ready",
@@ -862,7 +862,7 @@ HTML;
 			"jquery.loadingSpinner" => "ready"
 		));
 
-		$moduleList = $loader->resolveDependencies($moduleList);
+		$moduleList = $kalturaDependencyResolver->getDependencies($moduleList);
 		return $moduleList;
 	}
 
