@@ -1839,7 +1839,10 @@ mw.KWidgetSupport.prototype = {
 		} else {
 			embedPlayer.setFlashvars( 'streamerType', 'http' );
 			extension = 'm3u8';
-			protocol = 'http';
+			protocol = mw.getConfig('Kaltura.Protocol');
+			if( !protocol ){
+				protocol = window.location.protocol.replace(':','');
+			}
 			mimeType = 'application/vnd.apple.mpegurl';
 		}
 
