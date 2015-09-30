@@ -201,6 +201,12 @@
 				google.ima.settings.setPlayerVersion(mw.getConfig("version"));
 				google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.INSECURE);
 
+				// Set num of redirects for VAST wrapper ads, higher means bigger latency!
+				var numRedirects = mw.getConfig("numRedirects");
+				if(numRedirects) {
+					google.ima.settings.setNumRedirects(numRedirects);
+				}
+
 				// Check for adPattern
 				if ( _this.getConfig( 'adPattern' ) ) {
 					var adIndex = _this.getAdPatternIndex();
@@ -819,11 +825,6 @@
 				adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true; // for manual VAST, get the SDK to restore the player
 			}
 			adsRenderingSettings.useStyledNonLinearAds = true;
-
-			//On android we sometimes gets m3u8 which failed - patch to overcome it.
-			if ( mw.isAndroid() ) {
-				adsRenderingSettings.mimeTypes = ["video/mp4"];
-			}
 			this.adsManager = loadedEvent.getAdsManager( this.embedPlayer, adsRenderingSettings );
 			if ( _this.adManager != null ) {
 				_this.adManagerLoaded = true;
