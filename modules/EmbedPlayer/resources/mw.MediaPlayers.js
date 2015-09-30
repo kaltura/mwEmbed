@@ -135,7 +135,7 @@ mw.MediaPlayers.prototype = {
 		// mw.log( "get defaultPlayer for " + mimeType );
 		var mimePlayers = this.getMIMETypePlayers( mimeType );
 		if (mw.getConfig( 'chromecastReceiver')) {
-			 return mw.EmbedTypes.getChromecastReceiverPlayer();
+			return this.getPlayerById('chromecastReceiver');
 		}
 		if ( mw.getConfig( 'EmbedPlayer.ForceNativeComponent' ) && this.isSupportedPlayer( 'nativeComponentPlayer' )) {
 			var nativeComponentPlayer = mw.EmbedTypes.getNativeComponentPlayerVideo();

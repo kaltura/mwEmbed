@@ -17,6 +17,7 @@
 			'applicationID': "DB6462E9", // DB6462E9: Chromecast default receiver, 46509854: Kaltura custom receiver supporting DRM, HLS and smooth streaming
 			'showTooltip': true,
 			'tooltip': 'Chromecast',
+			'receiverMode': false,
 			'debugReceiver': false,
 			'receiverLogo': false,
 			'useKalturaPlayer': false,
@@ -48,6 +49,9 @@
 		MESSAGE_NAMESPACE: 'urn:x-cast:com.kaltura.cast.player',
 
 		setup: function( embedPlayer ) {
+			if ( this.getConfig("receiverMode") === true ){
+				return; // don't initialize Chroemcast when running on the custom receiver
+			}
 			var _this = this;
 			this.addBindings();
 			var ticks = 0;

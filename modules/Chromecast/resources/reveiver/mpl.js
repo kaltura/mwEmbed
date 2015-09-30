@@ -119,6 +119,7 @@ onload = function () {
 			if (payload['debugKalturaPlayer'] == true){
 				mw.setConfig("debug", true);
 				mw.setConfig("debugTarget", "kdebug");
+				//mw.setConfig("debugFilter", "---");
 				mw.setConfig("autoScrollDebugTarget", true);
 				document.getElementById('kdebug').style.display = 'block';
 			}
@@ -151,6 +152,10 @@ onload = function () {
 					},
 					"multiDrm": {
 						'plugin': false
+					},
+					'chromecast': {
+						'plugin': true,
+						'receiverMode': true
 					}
 				},
 				"cache_st": 1438601385,
