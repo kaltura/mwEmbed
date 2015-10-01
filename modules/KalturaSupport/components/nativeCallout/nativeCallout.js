@@ -113,8 +113,8 @@
 					});
 			}
 
-			var url =  _this.getConfig( "mimeName" ) + "?iframeUrl:=" + _this.getConfig( "iframeUrl" );
-			if ( mw.isAndroid() ) {
+			var url =  "https://kalturaplay.appspot.com/play?" + _this.getConfig( "iframeUrl" );
+			if ( mw.isAndroid() || mw.isIOS()) {
 				var popup = [];
 				setTimeout(function(){
 					popup.close();
