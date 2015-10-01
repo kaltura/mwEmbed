@@ -1,0 +1,18 @@
+{
+	"Paint": {
+		"kalturaPluginName": "Paint",
+		"templates": {
+			"paint": "resources/paint.tmpl.html"
+		},
+		"dependencies": [
+			"mw.KBaseScreen"
+		],
+		"scripts": [
+			"resources/Paint.js"
+		],
+		"styles": [
+			"resources/Paint.css"
+		],
+		"messageFile": "resources/Paint.i18n.json"
+	}
+}
