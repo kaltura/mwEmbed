@@ -77,7 +77,15 @@
         "ks-DUAL-SCREEN-SBS": "Side By Side",
         "ks-DUAL-SCREEN-HIDE": "Single View",
         "ks-DUAL-SCREEN-PIP": "Picture In Picture",
-        "ks-DUAL-SCREEN-SWITCH": "Toggle View"
+        "ks-DUAL-SCREEN-SWITCH": "Toggle View",
+        "ks-MODERATION-CANCEL": "Cancel",
+        "ks-MODERATION-SUBMIT": "Submit",
+        "ks-MODERATION-DONE": "Done",
+        "ks-MODERATION-REPORT": "Report",
+        "ks-MODERATION-REASON-SEX": "Sexual Content",
+        "ks-MODERATION-REASON-VIOLENCE": "Violent Or Repulsive",
+        "ks-MODERATION-REASON-HARMFUL": "Harmful Or Dangerous Act",
+        "ks-MODERATION-REASON-SPAM": "Spam / Commercials"
     },
     "fr": {
         "ks-UNAUTHORIZED_DOMAIN_TITLE": "Domaine non autoris�",
