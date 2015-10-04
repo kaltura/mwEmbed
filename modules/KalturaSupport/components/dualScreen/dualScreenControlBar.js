@@ -10,22 +10,22 @@
 		"controlBarComponents": {
 			sideBySide: {
 				id: 'sideBySide',
-				title: 'Side By Side',
+				title: gM("ks-DUAL-SCREEN-SBS"),
 				event: "SbS"
 			},
 			singleView: {
 				id: 'singleView',
-				title: 'Single View',
+				title: gM("ks-DUAL-SCREEN-HIDE"),
 				event: "hide"
 			},
 			pip: {
 				id: 'pip',
-				title: 'Picture In Picture',
+				title: gM("ks-DUAL-SCREEN-PIP"),
 				event: "PiP"
 			},
 			switchView: {
 				id: 'switchView',
-				title: 'Toggle View',
+				title: gM("ks-DUAL-SCREEN-SWITCH"),
 				event: "switchView"
 			}
 		},
