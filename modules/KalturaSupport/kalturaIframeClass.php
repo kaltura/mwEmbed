@@ -705,7 +705,8 @@ HTML;
 	 * Get all the kaltura defined modules from player config
 	 * */
 	function outputKalturaModules(){
-		global $wgMwEmbedEnabledModules, $wgKwidgetPsEnabledModules, $wgKalturaPSHtml5ModulesDir, $psRelativePath;
+		global $wgMwEmbedEnabledModules, $wgKwidgetPsEnabledModules, $wgKalturaPSHtml5ModulesDir, $psRelativePath,
+		$wgEnableScriptDebug;
 		$o='';
 		// Init modules array, always include MwEmbedSupport
 		$moduleList = array( 'mw.MwEmbedSupport' );
@@ -777,7 +778,8 @@ HTML;
 				moduleList.splice( itemToDelete, 1);
 		}
 HTML;
-		if ($this->inlineScript ){
+		// inline scripts if debug mode is off and flag is set:
+		if ($this->inlineScript && !$wgEnableScriptDebug ){
 			$o.= $this->outputInlineScript(array_merge($moduleList, $psModuleList));
 		} else {
 			$o.= 'mw.config.set(\'KalturaSupport.DepModuleList\', moduleList);mw.loader.load(moduleList);';
@@ -941,7 +943,7 @@ HTML;
 	}
 
 	function getKalturaIframeScripts(){
-	    global $wgMwEmbedVersion, $wgKalturaApiFeatures;
+	    global $wgMwEmbedVersion, $wgKalturaApiFeatures, $wgEnableScriptDebug;
 		ob_start();
 		?>
 		<script type="text/javascript">
@@ -964,9 +966,9 @@ HTML;
 				} else {
 					// include kWiget script if not already avaliable
 					<?php
-					if ($this->inlineScript){
+					if ($this->inlineScript && !$wgEnableScriptDebug ){
 						$response = file_get_contents($this->getMwEmbedLoaderLocation());
-						print_r($response);
+						//print_r($response);
 					} else {
 					?>
 						document.write('<script src="<?php echo $this->getMwEmbedLoaderLocation() ?>"></scr' + 'ipt>' );
