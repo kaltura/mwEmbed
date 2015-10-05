@@ -353,7 +353,6 @@
 		},
 		getBaseParams: function(){
 			var parms = {
-				'system' : this.getConfig('accountName'),
 				'randomNumber': Math.floor(Math.random()*90000) + 10000 // 5 digit random number.
 			};
 			if( this.getViewCode() ){
@@ -385,6 +384,10 @@
 			// special case only send pluginVersion on start and error beacons: 
 			if( action == 'start' || action == 'error' ){
 				payload['pluginVersion'] = this.getPluginVersion();
+			}
+			// system is only sent for data, start, or error
+			if( action == 'data' || action == 'start' || action == 'error'){
+				payload['system'] = this.getConfig('accountName');
 			}
 			
 			if ( this.getConfig( 'trackEventMonitor' ) ) {
