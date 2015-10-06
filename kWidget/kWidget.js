@@ -1272,7 +1272,8 @@
 					runtimeSettings[i] = {};
 					for( var j in settings[i] ){
 						// Special Case a few falshvars that are alwayse coppied to iframe:
-						if( j == 'inlineScript'
+						if( j == 'inlineScript' ||
+							j == 'autoPlay'
 							// ( there will be more of these ). 
 						){
 							runtimeSettings[i][j] = settings[i][j];
