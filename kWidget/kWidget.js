@@ -259,7 +259,7 @@
 			}
 			// extend the element with kBind kUnbind:
 			this.extendJsListener(player);
-			
+
 			// check for inlineSciprts mode original settings: 
 			if( this.widgetOriginalSettings[widgetId] ){
 				// TODO these settings may be a bit late for plugins config ( should be set earlier in build out )
@@ -268,7 +268,6 @@
 					player.sendNotification('changeMedia', {'entryId': _this.widgetOriginalSettings[widgetId].entry_id} );
 				} );
 				//player.sendNotification('changeMedia', {'entryId': this.widgetOriginalSettings[widgetId].entry_id} );
-				return ;
 			}
 
 			var kdpVersion = player.evaluate('{playerStatusProxy.kdpVersion}');
