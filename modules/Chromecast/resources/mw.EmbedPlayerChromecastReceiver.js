@@ -6,7 +6,7 @@
 	mw.EmbedPlayerChromecastReceiver = {
 		// Instance name:
 		instanceOf : 'ChromecastReceiver',
-		bindPostfix: '.ccPlayer',
+		bindPostfix: '.embedPlayerChromecastReceiver',
 		// List of supported features:
 		supports : {
 			'playHead' : true,
@@ -57,9 +57,6 @@
 			var _this = this;
 			this._propagateEvents = true;
 			$(this.getPlayerElement()).css('position', 'absolute');
-			if (this.inline) {
-				$(this.getPlayerElement()).attr('webkit-playsinline', '');
-			}
 			if (this.monitorInterval !== null){
 				clearInterval(this.monitorInterval);
 			}
@@ -79,10 +76,7 @@
 				return;
 			}
 			$.each(_this.nativeEvents, function (inx, eventName) {
-				if (mw.isIOS8_9() && mw.isIphone() && eventName === "seeking") {
-					return;
-				}
-				$(vid).unbind(eventName + '.embedPlayerChromecastReceiver').bind(eventName + '.embedPlayerChromecastReceiver', function () {
+				$(vid).unbind(eventName + _this.bindPostfix).bind(eventName + _this.bindPostfix, function () {
 					// make sure we propagating events, and the current instance is in the correct closure.
 					if (_this._propagateEvents && _this.instanceOf == 'ChromecastReceiver') {
 						var argArray = $.makeArray(arguments);
