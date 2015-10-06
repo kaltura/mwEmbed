@@ -20,6 +20,9 @@
 
 		// Stores widgets that are ready:
 		readyWidgets: {},
+		
+		// stores original embed settings per widget:
+		widgetOriginalSettings: {},
 
 		// First ready callback issued
 		readyCallbacks: [],
@@ -242,7 +245,7 @@
 			var _this = this;
 
 			_this.log("jsCallbackReady for " + widgetId);
-
+			
 			if (this.destroyedWidgets[ widgetId ]) {
 				// don't issue ready callbacks on destroyed widgets:
 				return;
@@ -256,6 +259,17 @@
 			}
 			// extend the element with kBind kUnbind:
 			this.extendJsListener(player);
+			
+			// check for inlineSciprts mode original settings: 
+			if( this.widgetOriginalSettings[widgetId] ){
+				// TODO these settings may be a bit late for plugins config ( should be set earlier in build out )
+				// for now just null out settings and changeMedia:
+				player.kBind( 'kdpEmpty', function(){
+					player.sendNotification('changeMedia', {'entryId': _this.widgetOriginalSettings[widgetId].entry_id} );
+				} );
+				//player.sendNotification('changeMedia', {'entryId': this.widgetOriginalSettings[widgetId].entry_id} );
+				return ;
+			}
 
 			var kdpVersion = player.evaluate('{playerStatusProxy.kdpVersion}');
 			//set the load time attribute supported in version kdp 3.7.x
@@ -979,28 +993,48 @@
 			// get the callback name:
 			var cbName = this.getIframeCbName(targetId);
 
-			// Do a normal async content inject:
-			window[ cbName ] = function (iframeData) {
-				var newDoc = iframe.contentWindow.document;
-				newDoc.open();
-				newDoc.write(iframeData.content);
-				if ( mw.getConfig("EmbedPlayer.DisableContextMenu") ){
-					newDoc.getElementsByTagName('body')[0].setAttribute("oncontextmenu","return false;");
-				}
-				newDoc.close();
-				// Clear out this global function
-				window[ cbName ] = null;
-			};
-			
 			// Try and  get playload from local cache ( autoEmbed )
 			if (this.iframeAutoEmbedCache[ targetId ]) {
 				window[ cbName ](this.iframeAutoEmbedCache[ targetId ]);
 				return ;
 			}
-
-			// Check if we need to use post ( where flashvars excceed 2K string )
+			
 			var iframeRequest = this.getIframeRequest( widgetElm, settings );
-
+			
+			// Do a normal async content inject:
+			window[ cbName ] = function ( iframeData ) {
+				var newDoc = iframe.contentWindow.document;
+				newDoc.open();
+				newDoc.write(iframeData.content);
+				// TODO are we sure this needs to be on this side of the iframe?
+				if ( mw.getConfig("EmbedPlayer.DisableContextMenu") ){
+					newDoc.getElementsByTagName('body')[0].setAttribute("oncontextmenu","return false;");
+				}
+				newDoc.close();
+				// if empty populate for the first time: 
+				if(  _this.isInlineScirptRequest(settings) 
+						&& 
+					( ! _this.getFromStorage( iframeRequest ) || _this.getFromStorage(iframeRequest) == "null" ) 
+				) {
+					_this.setStorage( iframeRequest, iframeData.content );
+				}
+				// after being set, await async update to cache object:
+				window[ cbName ] = function(iframeData){
+					// only populate the cache if request was an inlines scripts request. 
+					if( _this.isInlineScirptRequest(settings) ){
+						_this.setStorage( iframeRequest, iframeData.content );
+					}
+				};
+			};
+			// try to get payload from localStorage cache 
+			var iframeData = this.getFromStorage( iframeRequest );
+			if( !mw.getConfig('debug') && iframeData && iframeData != "null" ){
+				window[ cbName ]({'content' : iframeData });
+				// we don't retrun here, instead we run the get request to update the uiconf storage 
+				// TODO this should just be a 304 check not a full download of the iframe ( normally )
+				// return ;
+			}
+			
 			// -----> IE8 and IE9 hack to solve Studio issues. SUP-3795. Should be handled from PHP side and removed <----
 			var isLowIE = document.documentMode && document.documentMode < 10;
 			if ( isLowIE && settings.flashvars.jsonConfig ){
@@ -1048,6 +1082,21 @@
 			// do an iframe payload request:
 			_this.appendScriptUrl( iframeUrl +'&callback=' + cbName );
 		},
+		getFromStorage: function( cacheKey ){
+			var storage = window['localStorage']
+			if ( storage && storage.getItem ) {
+				return storage.getItem( cacheKey );
+			}
+		},
+		setStorage: function( cacheKey, value ){
+			var stroage = window['localStorage'];
+			if( stroage && stroage.setItem ){
+				stroage.setItem( cacheKey, value);
+			}
+		},
+		/**
+		 * Returns the callback name for an iframe
+		 */
 		getIframeCbName: function (iframeId) {
 			var _this = this;
 			var inx = 0;
@@ -1060,6 +1109,7 @@
 			}
 			return cbName;
 		},
+		// TODO does this need to be part of the kWidget library? 
 		resizeOvelayByHolderSize: function (overlaySize, parentSize, ratio) {
 			var overlayRatio = overlaySize.width / overlaySize.height;
 
@@ -1199,12 +1249,65 @@
 				'&callback=' + cbName +
 				'&parts=1');
 		},
+		isInlineScirptRequest: function( settings ){
+			// don't inline scripts in debug mode: 
+			if( mw.getConfig('debug') ){
+				return false;
+			}
+			// check for inlineScript flag: 
+			if( settings.flashvars['inlineScript'] ){
+				return true;
+			}
+			return false;
+		},
+		// retruns only the runtime config 
+		getRuntimeSettings: function( settings ){
+			var runtimeSettings = {}
+			for( var i in settings ){
+				// entry id should never be included ( hurts player iframe cache )
+				if( i == 'entry_id' ){
+					continue;
+				}
+				if( i =='flashvars' ){
+					// add flashvars container:
+					runtimeSettings[i] = {};
+					for( var j in settings[i] ){
+						// Special Case a few falshvars that are alwayse coppied to iframe:
+						if( j == 'inlineScript'
+							// ( there will be more of these ). 
+						){
+							runtimeSettings[i][j] = settings[i][j];
+							continue;
+						}
+						if( typeof settings[i][j] == 'object' ){
+							// Set an empty plugin if any value is presnet ( note this means .plugin=false overrides do still load the plugin
+							// but this is "OK" because the client is likely setting this at runtime on purpuse. Its more value 
+							// to get a cache hit all time time indepdendently of alterting enabaled disabled flag. 
+							// Plugin diablement will still be read during runtime player buildout. 
+							runtimeSettings[i][j]={};
+						}
+					}
+					// don't do high level copy of flashvars
+					continue;
+				}
+				runtimeSettings[ i ] = settings[i];
+			}
+			return runtimeSettings;
+		},
 		/**
 		 * Build the iframe request from supplied settings:
 		 */
-		getIframeRequest: function (elm, settings) {
+		getIframeRequest: function (elm, requestSettings) {
+			var settings = requestSettings;
+			// Check if its a inline scirpts setup: 
+			if( this.isInlineScirptRequest( requestSettings ) ){
+				// segment out all configuration 
+				settings = this.getRuntimeSettings( requestSettings );
+				this.widgetOriginalSettings [elm.id] = requestSettings;
+			}
+			
 			// Get the base set of kaltura params ( entry_id, uiconf_id etc )
-			var iframeRequest = this.embedSettingsToUrl(settings);
+			var iframeRequest = this.embedSettingsToUrl( settings );
 
 			// Add the player id:
 			iframeRequest += '&playerId=' + elm.id

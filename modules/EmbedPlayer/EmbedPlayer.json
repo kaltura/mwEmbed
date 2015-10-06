@@ -69,7 +69,7 @@
     "mw.EmbedPlayerKplayer": {
         "scripts": "resources/mw.EmbedPlayerKplayer.js",
         "dependencies": [
-        	"mw.KWidgetSupport",
+            "mw.KWidgetSupport",
             "base64_encode"
         ]
     },

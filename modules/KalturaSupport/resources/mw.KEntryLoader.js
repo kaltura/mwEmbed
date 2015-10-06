@@ -28,19 +28,16 @@ mw.KEntryLoader.prototype = {
 		var kProperties = this.kProperties;
 		// Normalize flashVars
 		kProperties.flashvars = kProperties.flashvars || {};
-
-		if( this.getCacheKey( kProperties ) && this.playerLoaderCache[ this.getCacheKey( kProperties ) ] ){
-			mw.log( "KApi:: playerLoader load from cache: " + !!( this.playerLoaderCache[ this.getCacheKey( kProperties ) ] ) );
-			callback( this.playerLoaderCache[ this.getCacheKey( kProperties ) ] );
-			return ;
-		}
-		// Local method to fill the cache key and run the associated callback
-		var fillCacheAndRunCallback = function( namedData ){
-			if ( !mw.getConfig("EmbedPlayer.DisableEntryCache") ) {
-				_this.playerLoaderCache[_this.getCacheKey( kProperties )] = namedData;
+		
+		var entryResult = this.getFromStorage( this.getCacheKey( kProperties ) );
+		if( entryResult ){
+			mw.log("KEntryLoader::loaded from storage");
+			callback( entryResult );
+			// issue async check for cache purge / update 
+			callback = function(){
+				mw.log("KEntryLoader:: async update of entry object");
 			}
-			callback( namedData );
-		};
+		}
 
 		// If we don't have entryId and referenceId return an error
 		if( !kProperties.flashvars.referenceId && !kProperties.entry_id ) {
@@ -118,15 +115,19 @@ mw.KEntryLoader.prototype = {
 				'filter:entryIdEqual' : entryIdValue
 			});
 		}
-		_this.getNamedDataFromRequest( requestObject, fillCacheAndRunCallback );
+		_this.getNamedDataFromAPI( requestObject, function( namedData ){
+			if ( !mw.getConfig("EmbedPlayer.DisableEntryCache") ) {
+				_this.setStorage( _this.getCacheKey( kProperties ), namedData); 
+			}
+			callback( namedData );
+		} );
 	},
-
 	/**
-	 * Do the player data Request and populate named dat
+	 * Do the player data Request and populate named data
 	 * @pram {object} requestObject Request object
 	 * @parm {function} callback Function called with named data
 	 */
-	getNamedDataFromRequest: function( requestObject, callback ){
+	getNamedDataFromAPI: function( requestObject, callback ){
 		var _this = this;
 		// Do the request and pass along the callback
 		this.clinet.doRequest( requestObject, function( data ){
@@ -168,31 +169,49 @@ mw.KEntryLoader.prototype = {
 			$.each( $xml, function(inx, node){
 				result[ node.nodeName ] = node.textContent;
 			});
-		}
+		} 
 		return result;
 	},
+	getFromStorage: function( cacheKey ){
+		var storage = window['localStorage']
+		if ( storage && storage.getItem ) {
+			return JSON.parse( storage.getItem( cacheKey) );
+		}
+	},
+	setStorage: function( cacheKey, value ){
+		var stroage = window['localStorage'];
+		if( stroage && stroage.setItem ){
+			stroage.setItem( cacheKey, JSON.stringify( value) );
+		}
+	},
 	/**
-	 * Get a string representation of the query string
+	 * Get a cache key for entry request
 	 * @param kProperties
 	 * @return
 	 */
-	getCacheKey: function( kProperties ){
-		var rKey = '';
-		if( kProperties ){
-			$.each(kProperties, function( inx, value ){
-				if( inx == 'flashvars' ){
-					// add in the flashvars that can vary the api response
-					if( typeof kProperties.flashvars == 'object'){
-						rKey += kProperties.flashvars.getCuePointsData;
-						rKey += kProperties.flashvars.ks;
-						rKey += kProperties.flashvars.referenceId;
+	getCacheKey: function( settings ){
+		var cacheKey = '';
+		if( settings ){
+			for(var i in settings){
+				if( i == 'flashvars' ){
+					for(var j in settings){
+						if( j == 'getCuePointsData'  ||
+							j =='ks'  ||
+							j == 'referenceId' 
+						){
+							cacheKey += settings[i][j];
+						}
 					}
-				} else {
-					rKey+=inx + '_' + value;
+				} else if( 
+					i == 'entry_id' ||
+					i == 'partner_id' ||
+					i == 'wid' 
+				){
+					cacheKey += i + '_' + settings[i];
 				}
-			});
+			};
 		}
-		return rKey;
+		return cacheKey;
 	}
 };
 
