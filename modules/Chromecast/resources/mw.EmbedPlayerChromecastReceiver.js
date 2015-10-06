@@ -2,12 +2,9 @@
 ( function( mw, $ ) { "use strict";
 	// Add chromecast player:
 	$( mw ).bind('EmbedPlayerUpdateMediaPlayers', function( event, mediaPlayers ){
-		var playerConfig = window.kalturaIframePackageData.playerConfig;
-		if ( playerConfig.plugins.chromecast.receiverMode ){
-			var chromecastSupportedProtocols = ['video/h264', 'video/mp4'];
-			var chromecastReceiverPlayer = new mw.MediaPlayer('chromecastReceiver', chromecastSupportedProtocols, 'ChromecastReceiver');
-			mediaPlayers.addPlayer(chromecastReceiverPlayer);
-		}
+		var chromecastSupportedProtocols = ['video/h264', 'video/mp4'];
+		var chromecastReceiverPlayer = new mw.MediaPlayer('chromecastReceiver', chromecastSupportedProtocols, 'ChromecastReceiver');
+		mediaPlayers.addPlayer(chromecastReceiverPlayer);
 	});
 
 	mw.EmbedPlayerChromecastReceiver = {
