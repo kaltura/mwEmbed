@@ -23,8 +23,8 @@
         showCorrectKeyOnAnswer: false,
         showResultOnAnswer: false,
         canDownloadQuestions: '',
-        canSkip: null,
-        showTotalScore:null,
+        canSkip: true,
+        showTotalScore:true,
         score: null,
         sliceArray: [],
         hexPosContainerPos:0,
@@ -117,6 +117,7 @@
             });
 
             this.bind('KalturaSupport_CuePointReached', function (e, cuePointObj) {
+
                 if(!_this.isSeekingIVQ){
                     _this.qCuePointHandler(e, cuePointObj)
                 }
@@ -130,12 +131,15 @@
                 embedPlayer.pause();
             });
 
-            this.bind('firstPlay', function () {
-                _this.enablePlayDuringScreen = true;
-                embedPlayer.pause();
-                embedPlayer.sendNotification('doStop');
-                _this._showWelcomeScreen();
+            this.bind('prePlayAction', function (e, data) {
+                if(_this.getPlayer().firstPlay && !_this.firstPlay){
+                    data.allowPlayback = false;
+                    _this.firstPlay=true;
+                    _this.enablePlayDuringScreen = true;
+                    _this._showWelcomeScreen();
+                }
             });
+
 
             this.bind('seeked', function () {
                 setTimeout(function () {
@@ -188,7 +192,6 @@
         _initParams: function () {
             var _this = this;
             $.grep($.quizParams.uiAttributes, function (e) {
-
                 if (e.key == "showTotalScore") {
                     _this.showTotalScore = (e.value.toLowerCase() ==='true') ;
                 }
@@ -237,7 +240,7 @@
 
         _gotoScrubberPos: function (questionNr) {
             var _this = this,embedPlayer = _this.getPlayer();
-            embedPlayer.sendNotification('doSeek', ($.cpObject.cpArray[questionNr].startTime) / 999);
+            embedPlayer.sendNotification('doSeek', (($.cpObject.cpArray[questionNr].startTime) /1000)+0.1);
         },
         qCuePointHandler: function (e, cuePointObj) {
             var _this = this;
@@ -557,10 +560,10 @@
                 if (!$.quizParams.showCorrectAfterSubmission) {
                     $(".title-text").addClass("padding35");
                     $(".sub-text").html(gM('mwe-quiz-completedScore')
-                        + '<span class="scoreBig">' + score + '</span>');
+                        + '<span class="scoreBig">' + score + '</span>' + ' %');
                 } else {
                     $(".sub-text").html(gM('mwe-quiz-completedScore')
-                        + '<span class="scoreBig">' + score + '</span></br>'
+                        + '<span class="scoreBig">' + score + '</span>' + ' %' + '</br>'
                         + gM('mwe-quiz-reviewSubmit'));
 
                     _this.displayHex(_this.setHexContainerPos("current"),cpArray);
@@ -631,7 +634,8 @@
                 'action': 'list',
                 'filter:objectType': 'KalturaAnswerCuePointFilter',
                 'filter:entryIdEqual': _this.embedPlayer.kentryid,
-                'filter:userIdEqualCurrent':'1',
+              //  'filter:userIdEqualCurrent':'1',
+                'filter:quizUserEntryIdEqual':_this.kQuizUserEntryId,
                 'filter:cuePointTypeEqual': 'quiz.QUIZ_ANSWER'
             }];
             _this.getKClient().doRequest(getCp, function (data) {
