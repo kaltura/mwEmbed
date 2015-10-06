@@ -16,6 +16,7 @@ class thumbnailEntry {
 	var $entryResult = null; // lazy init
 	
 	function redirectThumbnail(){
+		global $container;
 		// We don't check access controls, this happens in the real player once embed
 		$kEntryObject = $this->getEntryObject();
 		try {
@@ -29,6 +30,7 @@ class thumbnailEntry {
 		$height = $kEntryObject->request->get('height');
 		$vid_slices = $kEntryObject->request->get('vid_slices');
 		$vid_sec = $kEntryObject->request->get('vid_sec');
+		$ks = $container['request_helper']->get('ks');
 
 		// Send public cache header for 5 min
 		header("Cache-Control: public, max-age=300");
@@ -44,6 +46,8 @@ class thumbnailEntry {
 			  	$thumbUrl .= $vid_slices ? '/vid_slices/' . intval( $vid_slices ) : '';
 			  	// add vid_sec support
 			  	$thumbUrl .= $vid_sec ? '/vid_sec/' . intval( $vid_sec ) : '';
+			  	// check for ks: 
+			  	$thumbUrl .= $ks ? '/ks/' . $ks : '';
 			}
 			header( "Location: " . $thumbUrl );
 		} else {

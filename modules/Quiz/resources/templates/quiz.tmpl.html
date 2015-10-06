@@ -1,8 +1,12 @@
 <% if( quiz.state === "welcome") { %>
-<h1><span >Welcome</span></h1>
-<div class="sub-text"></div>
-<div class='confirm-box'></div>
-
+<div class="ivqContainer">
+    <div class="welcome"></div>
+    <div class="welcomeMessage"></div>
+    <div class="InvideoTipMessage"></div>
+    <div class="bottomContainer">
+        <div class="confirm-box"></div>
+    </div>
+</div>
 <% } %>
 <% if( quiz.state === "question") { %>
 <div class="header-container">
@@ -13,52 +17,57 @@
     <div class="ftr-left"></div>
     <div class="ftr-right"></div>
 </div>
-
 <% } %>
-
 <% if (quiz.state === "contentScreen"){%>
-<div class="title-text"></div>
-<div class="sub-text"></div>
-<div class="display-content"></div>
-<div class='confirm-box'></div>
+<div class="ivqContainer">
+    <div class="title-text"></div>
+    <div class="sub-text"></div>
+    <div class="display-content"></div>
+    <div class="bottomContainer">
+        <div class="confirm-box"></div>
+    </div>
+</div>
 <% } %>
-
+<% if (quiz.state === "hexScreen"){%>
+<div class="ivqContainer">
+    <div class="title-text"></div>
+    <div class="sub-text"></div>
+    <div class="display-all-container">
+        <div class ="hex-row">
+            <div class="hex-column  left-arrow" style="display: none;"></div>
+            <div class="hex-column  right-arrow" style="display: none;" ></div>
+            <div class="hex-column hexagon-container"></div>
+        </div>
+    </div>
+    <div class="bottomContainer">
+        <div class="confirm-box"></div>
+    </div>
+</div>
+<% } %>
 <% if (quiz.state === "reviewAnswer"){%>
-<div class="header-container"></div>
-
-<!--<div class="reviewAnswer">-->
-
-
-    <!--<div class ="reviewAnswerNrDiv" >-->
-        <div class = "reviewAnswerNr"> </div>
-    <!--</div>-->
+    <div class="header-container"></div>
+    <div class = "reviewAnswerNr"> </div>
     <div class ="reviewAnswerPlace" >
-
         <div class="theQuestion"></div>
-        <!--<div class="header-container"></div>-->
         <div class="yourAnswerText"></div>
         <div class="yourAnswer"></div>
         <div class="correctAnswerText"></div>
         <div class="correctAnswer"></div>
-
-
     </div>
 <div class="gotItBox"></div>
-
-<!--</div>-->
-
+<% } %>
+<% if (quiz.state === "hintWhyScreen"){%>
+    <div class="header-container"></div>
+    <div class="hint-container"></div>
 <% } %>
 
-<% if (quiz.state === "why"){%>
-<div class="header-container"></div>
-<div class="sub-text"></div>
-<div class="hint-container"></div>
-<div class="confirm-box"></div>
+<% if (quiz.state === "completed"){%>
+<div class="ivqContainer">
+    <div class="title-text padding23"></div>
+    <div class="sub-text margin-top4"></div>
+    <div class="completed-BottonContainer">
+        <div class="review-button button-box-attr font-Lato2"></div>
+        <div class="submit-button button-box-attr font-Lato2"></div>
+    </div>
+</div>
 <% } %>
-
-<% if( quiz.state === "hint") { %>
-<h2>hint</h2>
-<div class = "hint-container"></div>
-<div class="confirm-box"></div>
-<% } %>
-

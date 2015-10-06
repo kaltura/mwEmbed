@@ -74,7 +74,7 @@
 					"barColor": '#394F8F'
 				}
 			},
-			embedCodeTemplate: '<iframe src="//cdnapi.kaltura.com/p/{mediaProxy.entry.partnerId}/sp/{mediaProxy.entry.partnerId}00/embedIframeJs/uiconf_id/{configProxy.kw.uiConfId}/partner_id/{mediaProxy.entry.partnerId}?iframeembed=true&playerId={configProxy.targetId}&entry_id={mediaProxy.entry.id}&flashvars[streamerType]=auto" width="560" height="395" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0"></iframe>',
+			embedCodeTemplate: '<iframe src="//' + mw.getConfig("Kaltura.ServiceUrl").substr(mw.getConfig("Kaltura.ServiceUrl").indexOf("//")+2) + '/p/{mediaProxy.entry.partnerId}/sp/{mediaProxy.entry.partnerId}00/embedIframeJs/uiconf_id/{configProxy.kw.uiConfId}/partner_id/{mediaProxy.entry.partnerId}?iframeembed=true&playerId={configProxy.targetId}&entry_id={mediaProxy.entry.id}&flashvars[streamerType]=auto" width="560" height="395" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0"></iframe>',
 			embedOptions: {
 				"streamerType": "auto",
 				"uiconfID": null,
@@ -449,7 +449,9 @@
 					// close the window if this is an email
 					if (url.indexOf("mailto") === 0){
 						setTimeout(function(){
-							opener.close();
+							if (opener && typeof opener.close === 'function') {
+								opener.close();
+							}
 						},2000);
 					}
 				}

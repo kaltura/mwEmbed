@@ -437,13 +437,6 @@
                 "type": "boolean",
                 "initvalue": true
             },
-            "0": {
-                "doc": "Preferred flavor bitrate",
-                "label": "Preferred flavor bitrate",
-                "type": "number",
-                "initvalue": 1600,
-                "model": "config.uiVars.mediaProxy.preferedFlavorBR"
-            },
             "displayMode": {
                 "doc": "Configure the display mode to set the type of information to display in the source selector's menu: size, bit-rate or both.",
                 "type": "enum",
@@ -558,6 +551,15 @@
         "doc": "The initial bitrate to be selected.",
         "type": "number"
     },
+    "mediaProxy":{
+      "description": "To override mediaProxy object.",
+      "attributes": {
+         "entryCuePoints":{
+             "doc":"To override entry supplied cuePoints.",
+             "type": "json"
+         }
+      }
+    },
     "segmentScrubber.plugin": {
         "doc": "Virtaulzies the playhead to selected segment of time.",
         "type": "boolean"
@@ -653,7 +655,7 @@
         "description": "The Kaltura custom logo plugin.",
         "attributes": {
             "watermarkPath": {
-                "doc": "URL path to plugin image.",
+                "doc": "URL path to plugin image. For default controls height, logo can be 20 by 20 pixel png.",
                 "type": "url"
             },
             "watermarkClickPath": {
@@ -731,6 +733,13 @@
                 "initvalue": "#AFAFAF",
                 "player-refresh": "theme.bufferedSliderColor",
                 "doc": "Slider buffer color",
+                "type": "color"
+            },
+            "timeLabelColor": {
+                "label": "Time label color",
+                "initvalue": "#ffffff",
+                "player-refresh": "theme.timeLabelColor",
+                "doc": "Time label color",
                 "type": "color"
             },
             "buttonsIconColorDropShadow": {
@@ -816,6 +825,11 @@
                 "doc": "Display Embed code.",
                 "initvalue": true,
                 "type": "boolean"
+            },
+            "embedCodeTemplate":{
+                "doc": "Enables the customization of the embed code template, leave empty to use iframe default.",
+                "initvalue": "",
+                "type": "hiddenValue"
             },
             "allowTimeOffset": {
                 "doc": "Allow setting a time offset for the entry.",
@@ -1137,8 +1151,8 @@
         }
     },
     "skipBtn": {
-        "label": "Vast skip button",
-        "description": "Vast skip button settings",
+        "label": "Skip button",
+        "description": "Vast / DoubleClick skip button settings",
         "attributes": {
             "skipBtn": {
                 "doc": "Skip button label.",
@@ -1157,8 +1171,8 @@
         }
     },
     "skipNotice": {
-        "label": "Vast skip notice",
-        "description": "Vast skip notice",
+        "label": "Skip notice",
+        "description": "Vast / DoubleClick skip notice",
         "attributes": {
             "text": {
                 "doc": "Skip notice text (can use evaluated expressions)",
@@ -1170,8 +1184,8 @@
         }
     },
     "noticeMessage": {
-        "label": "Vast notice message",
-        "description": "Vast notice message",
+        "label": "Notice message",
+        "description": "Vast / DoubleClick notice message",
         "attributes": {
             "text": {
                 "doc": "Notice message (can use evaluated expressions)",

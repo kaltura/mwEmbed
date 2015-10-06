@@ -1,0 +1,431 @@
+.qnaInterface .qnaThread{
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0px 2px 2px 0px rgba(255, 255, 255, 0.16);
+    width: 100%;
+    margin-bottom: 6px;
+    list-style-type: none;
+    height: auto;
+    min-height: 65px;
+    line-height: 20px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.qnaInterface .qnaAnnouncementThread{
+    border-bottom: rgba(170,170,170,0.7) 1px solid
+}
+
+.qnaInterface .qnaThreadLast{
+    margin-bottom: 0px;
+}
+
+.qnaInterface .qnaEntry{
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 0px;
+    min-height: 65px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    border-bottom: rgba(170,170,170,0.7) 1px solid
+}
+
+.qnaInterface .qnaSingleEntry{
+    padding-right: 24px !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
+}
+
+.qnaInterface .qnaEntryList{
+    background-color: #ffffff;
+}
+
+.qnaInterface .listHolder{
+    width: auto;
+
+    /* Firefox */
+    height: -moz-calc(100% - 88px);
+    /* WebKit */
+    height: -webkit-calc(100% - 88px);
+    /* Opera */
+    height: -o-calc(100% - 88px);
+    /* Standard */
+    height: calc(100% - 88px);
+}
+
+.qnaInterface .qnaThreadTitle{
+    float: left;
+    font-family: 'Lato', Helvetica, Arial;
+    color: rgba(65,68,66,0.5);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 13px;
+    text-align: left;
+    margin-left: 19px;
+    width: -moz-calc(100% - 90px);
+    width: -webkit-calc(100% - 90px);
+    width: -o-calc(100% - 90px);
+    width: calc(100% - 90px);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.qnaInterface .qnaThreadTitleRead {
+    float: left;
+    font-family: 'Lato', Helvetica, Arial;
+    color: rgba(65,68,66,0.5);
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 13px;
+    text-align: left;
+    margin-left: 19px;
+    width: -moz-calc(100% - 90px);
+    width: -webkit-calc(100% - 90px);
+    width: -o-calc(100% - 90px);
+    width: calc(100% - 90px);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.qnaInterface .qnaThreadTitleCollapsed{
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap !important;
+}
+
+.qnaInterface .qnaThreadTitleAnswer{
+    font-style: italic;
+}
+
+.qnaInterface .qnaThreadTextAnswer{
+    font-style: italic;
+}
+
+.qnaInterface .qnaThreadText{
+    position: relative;
+    font-family: 'Lato', Helvetica, Arial;
+    color: #414442;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: left;
+    margin-left: 19px;
+    margin-right: 14px;
+    white-space: pre-wrap;
+    top: 10px;
+    padding-right: 30px;
+    word-wrap: break-word;
+}
+
+.qnaInterface .qnaThreadTextRead{
+    position: relative;
+    font-family: 'Lato', Helvetica, Arial;
+    color: #414442;
+    font-size: 13px;
+    font-weight: 400;
+    text-align: left;
+    margin-left: 19px;
+    margin-right: 14px;
+    white-space: pre-wrap;
+    top: 10px;
+    padding-right: 30px;
+    word-wrap: break-word;
+}
+
+.qnaInterface .qnaAnnouncementTitle{
+    float: left;
+    font-family: 'Lato', Helvetica, Arial;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 400;
+    font-style: italic;
+    line-height: 9px;
+    text-align: left;
+    margin-left: 19px;
+}
+
+.qnaInterface .qnaAnnouncementTitleRead{
+    float: left;
+    font-family: 'Lato', Helvetica, Arial;
+    color: #414442;
+    font-size: 10px;
+    font-weight: 400;
+    font-style: italic;
+    line-height: 9px;
+    text-align: left;
+    margin-left: 19px;
+}
+
+.qnaInterface .qnaAnnouncementText{
+    position: relative;
+    font-family: 'Lato', Helvetica, Arial;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 300;
+    text-align: left;
+    top: 10px;
+    margin-left: 19px;
+    margin-right: 14px;
+    padding-right: 24px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.qnaInterface .qnaAnnouncementTextRead{
+    position: relative;
+    font-family: 'Lato', Helvetica, Arial;
+    color: #414442;
+    font-size: 13px;
+    font-weight: 400;
+    text-align: left;
+    top: 10px;
+    margin-left: 19px;
+    margin-right: 14px;
+    padding-right: 24px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.qnaInterface .qnaThreadTime{
+    float: right;
+    position: relative;
+    right: 19px;
+    font-size: 9px;
+    font-weight: 200;
+    color: #ffffff;
+    bottom: 4px;
+}
+
+.qnaInterface .qnaThreadTimeRead{
+    float: right;
+    position: relative;
+    right: 19px;
+    font-size: 9px;
+    font-weight: 200;
+    color: rgba(65,68,66,0.5);
+    bottom: 4px;
+}
+
+.qnaInterface .qnaReplyBox {
+    background-color: rgba(0, 0, 0, 0.08);
+    width: 100%;
+    -webkit-transition: height 100ms; /* Safari */
+    transition: height 100ms;
+}
+
+.qnaInterface .qnaReplyPipeLabel{
+    background-color: transparent;
+    font-family: 'Lato', Helvetica, Arial;
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 14px;
+    text-align: left;
+    color: #414442;
+    border: transparent;
+    border: none;
+    margin-top: 1px;
+    -webkit-box-shadow:	none;
+    -moz-box-shadow:	none;
+    box-shadow:			none;
+    width: 4px;
+    margin-left: 9px;
+    float: left;
+    cursor: default;
+    position: relative;
+    top: 3px;
+}
+
+.qnaInterface .qnaReplyTextArea{
+    background-color: transparent;
+    position: relative;
+    top: 1px;
+    font-family: 'Lato', Helvetica, Arial;
+    font-weight: 300;
+    font-size: 13px;
+    line-height: 14px;
+    text-align: left;
+    border: none;
+    margin-bottom: 4px;
+    -webkit-box-shadow:	none;
+    -moz-box-shadow:	none;
+    box-shadow:			none;
+    resize: none;
+    overflow: hidden;
+    height: auto;
+    /* Firefox */
+    width: -moz-calc(100% - 75px);
+    /* WebKit */
+    width: -webkit-calc(100% - 75px);
+    /* Opera */
+    width: -o-calc(100% - 75px);
+    /* Standard */
+    width: calc(100% - 75px);
+
+    -webkit-transition: height 100ms; /* Safari */
+    transition: height 100ms;
+}
+
+.qnaInterface .qnaReplyTextAreaPlaceHolderText{
+    color: rgba(65,68,66,0.61);
+}
+
+.qnaInterface .qnaReplyTextAreaText{
+    color: rgb(65,68,66);
+}
+
+.qnaInterface .qnaReplyTextAreaSize{
+    height: 22px;
+}
+
+.qnaInterface .qnaReplyTextAreaPlaceHolderSize{
+    height: 42px;
+}
+
+.qnaInterface .qnaReplyBoxSize{
+    height: 26px;
+}
+
+.qnaInterface .qnaReplyBoxPlaceHolderSize{
+    height: 54px;
+}
+
+.qnaInterface .qnaReplySendButton{
+    font-family: 'Lato', Helvetica, Arial;
+    width: 40px;
+    border: none;
+    background-color: transparent;
+    position: absolute;
+    font-size: 12px;
+    font-weight: 500;
+    bottom: 3px;
+    right: 11px;
+    color: #ffffff;
+    padding: 0px;
+}
+
+.qnaInterface .qnaReplySendButton:hover {
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);;
+}
+
+/*background color for entries / threads*/
+.qnaInterface .qnaAnnouncement{
+    background-color: #76c044;
+}
+
+.qnaInterface .qnaAnnouncementRead{
+    background-color: rgba(118, 192, 68, 0.3);
+}
+
+.qnaInterface .qnaQuestionsThread{
+    background-color: #f0f0f0;
+}
+
+/*line connecting thread messages*/
+.qnaInterface .qna-vertical-line {
+    width: 1px;
+    background-color: #d7d7d7;
+    opacity: 0.5;
+    position: absolute;
+    height:100%;
+    margin-left: 12px;
+}
+
+.qnaInterface .qna-vertical-line-first{
+    margin-top: 20px;
+}
+
+.qnaInterface .qna-vertical-line-last{
+    height: 20px;
+}
+
+.qnaInterface .qna-no-messages-text{
+    font-family: 'Lato', Helvetica, Arial;
+    font-size: 20px;
+    text-align: center;
+    margin-top: 50%;
+}
+
+.qnaInterface .qnaListHiderTextHolder{
+    position: relative;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+}
+
+.qnaInterface .qnaListHiderIcon{
+    height: 60px;
+    position: relative;
+    font-size: 50px;
+    text-align: center;
+    color: rgba(84, 85, 84, 0.549);
+}
+
+.qnaInterface .qnaListHiderText{
+    position: relative;
+    font-size: 15px;
+    text-align: center;
+    font-family: 'Lato', Helvetica, Arial;
+    color: rgba(84, 85, 84, 0.549);
+    font-weight: 600;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+
+.qnaInterface .AnswerOnAirTriangle {
+    width: 0;
+    height: 0;
+    border-top: 26px solid #8dc63f;
+    border-right: 26px solid transparent;
+}
+
+.qnaInterface .qnaAnswerOnAirText{
+    position: relative;
+    font-family: 'Lato', Helvetica, Arial;
+    color: #414442;
+    font-size: 13px;
+    font-weight: 300;
+    text-align: left;
+    top: -8px;
+    margin-left: 19px;
+    margin-right: 14px;
+    padding-right: 24px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+.qnaInterface .qnaAnswerOnAirTitle{
+    float: left;
+    font-family: 'Lato', Helvetica, Arial;
+    color: #8dc63f;
+    font-size: 10px;
+    font-weight: 400;
+    font-style: italic;
+    line-height: 25px;
+    text-align: left;
+    margin-left: 19px;
+}
+
+.qnaInterface .qnaAnswerOnAirHolder{
+    overflow: hidden;
+    height: auto;
+    background-color: #ffffff;
+}
+
+.qnaInterface .qnaAnswerOnAir{
+    margin-bottom: 6px;
+    background-color: #f0f0f0;
+}

@@ -72,10 +72,11 @@
 		'assetid',
 		'bandwidth',
 		'srclang',
-		'data-custom_data',
-		'data-signature',
-		'data-contentId',
-		'data-flavors'
+		//DRM info
+		'custom_data',
+		'signature',
+		'contentId',
+		'flavors'
 
 	]);
 

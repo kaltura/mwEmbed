@@ -13,13 +13,15 @@
 			'promptText': 'Widevine Video Optimizer plugin is needed for enabling video playback in this page. ',
 			'promptLinkText': 'Get Video Optimizer',
 			'PromptRestartChromeAfterInstall' : 'Download of the plugin installer will start immediately. Note that you must restart your Chrome browser after running the installer',
-			'promptTitle' : 'Notification'
+			'promptTitle' : 'Notification',
+			'signon_url': 'https://staging.shibboleth.tv/widevine/cypherpc/cgi-bin/SignOn.cgi',
+			'log_url': 'https://staging.shibboleth.tv/widevine/cypherpc/cgi-bin/LogEncEvent.cgi',
+			'emm_url': 'http://www.kaltura.com/api_v3/index.php?service=widevine_widevinedrm&action=getLicense'
 		},
 		kClient: null,
 		setup: function(){
 			var _this = this;
 
-			mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
 			this.kClient = mw.kApiGetPartnerClient( this.getPlayer().kwidgetid );
 			//generate KS if missing
 			if( !this.kClient.getKs() ){
@@ -39,75 +41,56 @@
 				{ plugin: 'true', loadingPolicy: 'preInitialize', asyncInit: 'true', isWv: true});
 
 			this.bind( 'playerReady', function() {
-				var flavors = _this.getPlayer().mediaElement.getPlayableSources();
-				var isWVAsset = function() {
-					if ( flavors && flavors.length && ( flavors[0].objectType == "KalturaWidevineFlavorAsset" || flavors[0].getFlavorId() == "wvm" ) ) {
-						return true;
-					}
-					return false;
-				}
-				if ( kWidget.supportsFlash()  ) {   //add vars to load widevine KDP plugin
-					//either all flavors are encrypted or all are not. If the flavor is not widevine don't show wv prompt.
-					if (flavors && flavors.length) {
-						if ( isWVAsset() )  {
-							if (flavors[0].getTags().indexOf('widevine_mbr') != -1 ) {
-								_this.getPlayer().setFlashvars( 'forceDynamicStream', 'true' );
-								if ( _this.getPlayer().setKPlayerAttribute ) {
-									_this.getPlayer().setKPlayerAttribute('configProxy.flashvars', 'forceDynamicStream', 'true');
-									_this.getPlayer().setKPlayerAttribute('configProxy.flashvars', 'ks', _this.kClient.getKs());
-									_this.getPlayer().setKPlayerAttribute('widevine.content', 'mediaWidth', flavors[0].width);
-									_this.getPlayer().setKPlayerAttribute('widevine.content', 'mediaHeight', flavors[0].height);
-
-								}
-								//hide the source selector until we receive the embedded flavors from the wvm package
-								_this.getPlayer().setKDPAttribute( 'sourceSelector' , 'visible', false);
-							}
-							if ( ! _this.widevineObj().init() ) {
-								var downloadText = _this.widevineObj().getDownloadText();
-								title = _this.getConfig( 'promptTitle' );
-								msg = downloadText;
-							}
+				var wvmFlavors = _this.getPlayer().mediaElement.getPlayableSources("video/wvm");
+				var allFlavors = _this.getPlayer().mediaElement.getPlayableSources();
+				if (allFlavors && allFlavors.length) {
+					//if we received wv flavors we can play them. so set native component WV server
+					if ( wvmFlavors && wvmFlavors.length && wvmFlavors[0].objectType == "KalturaWidevineFlavorAsset" || wvmFlavors[0].getFlavorId() == "wvm" ) {
+						if ( _this.getPlayer().selectedPlayer.library == "NativeComponent" ) {
+							_this.getPlayer().getPlayerElement().attr( 'wvServerKey', _this.widevineObj().getEmmUrl()
+								+ "&format=widevine&flavorAssetId=" + wvmFlavors[0].getAssetId() + "&ks=" + _this.kClient.getKs() );
 						}
 					}
+					// If we don't have widevine flavors, but other flavors then let player handle them
 				} else {
-					if (flavors && flavors.length) {
-						if ( isWVAsset() ) {
-							if ( _this.getPlayer().selectedPlayer.library == "NativeComponent" ) {
-								_this.getPlayer().getPlayerElement().attr( 'wvServerKey', _this.widevineObj().getEmmUrl()
-									+ "&format=widevine&flavorAssetId=" + flavors[0].getAssetId() + "&ks=" + _this.kClient.getKs() );
-							}
-						}
-						//if we received non wv flavors we can play them. continue.
-						return;
-					}
-
 					//hide default "no source found" alert
 					_this.getPlayer().setKalturaConfig(null, 'disableAlerts', true);
 
 					//if mobile device
-					if ( kWidget.isMobileDevice() ) {
-						msg = _this.getConfig( 'useSupportedDeviceMsg' );
-						title = _this.getConfig( 'useSupportedDeviceTitle' );
-					} else if ( mw.isDesktopSafari() ) {
-						msg = _this.getConfig( 'useSupportedBrowserMsg' );
-						title = _this.getConfig( 'useSupportedBrowserTitle' );
+					if (kWidget.isMobileDevice()) {
+						msg = _this.getConfig('useSupportedDeviceMsg');
+						title = _this.getConfig('useSupportedDeviceTitle');
+					} else if (mw.isDesktopSafari()) {
+						msg = _this.getConfig('useSupportedBrowserMsg');
+						title = _this.getConfig('useSupportedBrowserTitle');
 					} else {
 						//flash is not installed - prompt to install flash
-						if ( navigator.mimeTypes [ 'application/x-shockwave-flash' ] == undefined ) {
-							msg = _this.getConfig( 'intallFlashMsg' );
-							title = _this.getConfig( 'installFlashTitle' );
+						if (navigator.mimeTypes ['application/x-shockwave-flash'] == undefined) {
+							msg = _this.getConfig('intallFlashMsg');
+							title = _this.getConfig('installFlashTitle');
 						} else { //else prompt to use kdp
-							msg = _this.getConfig( 'useKdpMsg' );
-							title = _this.getConfig( 'useKdpTitle' );
+							msg = _this.getConfig('useKdpMsg');
+							title = _this.getConfig('useKdpTitle');
 						}
 					}
-				}
-				if (msg && title) {
-					_this.getPlayer().autoplay = false;
-					_this.getPlayer().layoutBuilder.displayAlert( { keepOverlay:true, message: msg, title: title, noButtons: true});
-					_this.getPlayer().disablePlayControls();
+
+
+					if (msg && title) {
+						_this.getPlayer().autoplay = false;
+						_this.getPlayer().layoutBuilder.displayAlert({
+							keepOverlay: true,
+							message: msg,
+							title: title,
+							noButtons: true
+						});
+						_this.getPlayer().disablePlayControls();
+					}
 				}
 			});
+		},
+		isSafeEnviornment: function(){
+			//Allow widevine only on native APP
+			return (mw.isNativeApp() === true);
 		},
 		
 		widevineObj: function(){
@@ -122,9 +105,9 @@
 
 			// Set the head end server 
 
-			var signon_url = "https://staging.shibboleth.tv/widevine/cypherpc/cgi-bin/SignOn.cgi";
-			var log_url = "https://staging.shibboleth.tv/widevine/cypherpc/cgi-bin/LogEncEvent.cgi";
-			var emm_url="http://www.kaltura.com/api_v3/index.php?service=widevine_widevinedrm&action=getLicense";
+			var signon_url = _this.getConfig( 'signon_url');
+			var log_url = _this.getConfig( 'log_url');
+			var emm_url = _this.getConfig( 'emm_url');
 			var widevineSrcPath = {
 				mac:'WidevineMediaOptimizer.dmg',
 				ie:'WidevineMediaOptimizerIE.exe',
