@@ -885,7 +885,6 @@
             $(handleBubbleclick).on('click', function () {
                 _this.unbind('seeking');
                 embedPlayer.stopPlayAfterSeek = true;
-                setTimeout(function () { embedPlayer.pause();}, 0);
                 _this._gotoScrubberPos($(this).attr('id'));
                 _this.bind('seeking', function () {
                     _this.isSeekingIVQ = true;
