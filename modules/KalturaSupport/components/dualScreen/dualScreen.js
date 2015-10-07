@@ -591,7 +591,7 @@
 						});
 					}
 				};
-				this.bind("preShowScreen", function (e, screenName) {
+				this.bind("preShowScreen AdSupport_StartAdPlayback", function (e, screenName) {
 					_this.screenShown = true;
 					if (_this.render) {
 						_this.currentScreenNameShown = screenName;
@@ -601,7 +601,7 @@
 						minimizeSecondDisplay();
 					}
 				} );
-				this.bind("preHideScreen", function (e, screenName) {
+				this.bind("preHideScreen AdSupport_EndAdPlayback", function (e, screenName) {
 					_this.screenShown = false;
 					if (_this.render && _this.currentScreenNameShown === screenName) {
 						_this.currentScreenNameShown = "";
