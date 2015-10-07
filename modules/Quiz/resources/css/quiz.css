@@ -49,6 +49,7 @@ body:after
     url(../images/bubble-un-ans-h.png)
     url(../images/bubble-ans-h.png)
     url(../images/pie.png);
+    url(../images/pdf-download.png);
     display: none;
 }
 .scoreBig{
@@ -111,6 +112,7 @@ body:after
     font-weight: 900;
     text-align: left;
     transform: scaleY(1.0002);
+    width: 50%;
 }
 
 .welcomeMessage{
@@ -625,3 +627,26 @@ ol.second-row{
     margin-left: 1vw;
     margin-right: 1vw;
 }
+
+.pdf-download{
+    float: right;
+    margin-right: 2vw;
+    margin-top: -24vh;
+    width: 10vw;
+
+}
+.pdf-download-img{
+    background-size: 100% 100%;
+    width: 10vw;
+    height: 18vh;
+    background-image: url(../images/pdf-download.png);
+
+
+}
+.pdf-download-txt{
+    text-align: center;
+    font-size: 2vw;
+
+}
+
+
