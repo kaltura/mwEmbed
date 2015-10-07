@@ -207,9 +207,6 @@
 				mw.log( "EmbedPlayerImageOverlay:: playerSwitchSource, embedPlayerHTML callback" );
 				_this.applyIntrinsicAspect();
 				_this.play();
-				if( switchCallback ){
-					switchCallback( _this );
-				}
 				// Wait for ended event to trigger
 				$( _this ).bind( 'ended.playerSwitchSource', function(){
 					_this.stopMonitor();
@@ -219,6 +216,9 @@
 					}
 				});
 			});
+			if( switchCallback ){
+				switchCallback( this );
+			}
 		},
 		/** issue a load call on native element, so we can play it in the future */
 		captureUserGesture: function(){
