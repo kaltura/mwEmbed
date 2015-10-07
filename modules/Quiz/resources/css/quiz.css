@@ -110,6 +110,7 @@ body:after
     font-size: 8vw;
     font-weight: 900;
     text-align: left;
+    width:50%;
 }
 
 .welcomeMessage{
