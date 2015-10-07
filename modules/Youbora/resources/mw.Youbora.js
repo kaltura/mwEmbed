@@ -302,7 +302,7 @@
 			this.activePingInterval = setInterval(function(){
 				_this.sendBeacon( 'ping',{
 					'pingTime': (( new Date().getTime() - _this.previusPingTime )  / 1000 ).toFixed(), // round seconds
-					'bitrate': _this.embedPlayer.mediaElement.selectedSource.getBitrate(),
+					'bitrate': _this.embedPlayer.mediaElement.selectedSource.getBitrate() || -1,
 					'time': _this.embedPlayer.currentTime,
 					//'totalBytes':"0", // value is only sent along with the dataType parameter. If the bitrate parameter is sent, then this one is not needed.
 					//'dataType': "0", // Kaltura does not really do RTMP streams any more. 
