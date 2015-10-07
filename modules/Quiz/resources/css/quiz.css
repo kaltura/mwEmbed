@@ -93,7 +93,7 @@ body:after
 }
 .bottomContainer{
     position: fixed;
-    bottom: 8vw;
+    bottom: 10vw;
     width: 100%;
 }
 .completed-BottonContainer{
@@ -104,13 +104,12 @@ body:after
 }
 .welcome {
     font-family: "LatoBlack";
-    padding-top: 7vw;
+    padding-top: 1vw;
     padding-left: 4vw;
     color: #ffffff;
     font-size: 8vw;
     font-weight: 900;
     text-align: left;
-    transform: scaleY(1.0002);
 }
 
 .welcomeMessage{
@@ -137,13 +136,10 @@ body:after
 
 }
 .screen-content {
-    position:fixed;
-    bottom:0px;
-    width:100%;
-    height: inherit;
+    height: 100%;
 }
 
-.screen{
+.screen.quiz {
     background-image:url("../images/BACKGROUND.png")!important;
     background-size: cover;
     position: absolute;
@@ -161,7 +157,7 @@ body:after
 .thank-you{
     font-family: "Lato";
     font-size: 6.2vw;
-    padding-top: 41vh;
+    padding-top: 32vh;
 
 }
 
@@ -201,6 +197,7 @@ body:after
 .answers-container{
     position: absolute;
     top: 23vh;
+    margin-left: -1.5vw;
 }
 .display{
     position:relative;
@@ -218,7 +215,7 @@ body:after
     text-align: center;
     width: 80%;
     word-wrap: break-word;
-    padding-top: 11vh;
+    padding-top: 1vh;
 }
 .single-answer-box-bk.wide{
     width: 96vw;
@@ -303,10 +300,10 @@ vertical-align: middle;
     cursor: pointer;
 }
 
-.ftr-container{
+.ftr-container {
     width: 100%;
     position: absolute;
-    bottom: 11vh;
+    bottom: 1vh;
 }
 .ftr-left{
     font-family: "LatoBlack";
@@ -478,7 +475,7 @@ vertical-align: middle;
 .reviewAnswerPlace{
     text-align: left;
     margin-left: 26vw;
-    margin-top: 16vh;
+    margin-top: 3vh;
 }
 .theQuestion{
     font-size: 3vw;
