@@ -182,7 +182,7 @@
 			// check that the library loaded from kgit or player.kaltura.com
 			( this.getPath().indexOf( 'kgit.html5video.org' ) =! -1 || this.getPath().indexOf( 'player.kaltura.com' ) != -1 )
 			&&
-			// check that we player is not on a staging site:
+			// check that the player is not on a staging site:
 			window.location.host != 'kgit.html5video.org'
 			&&
 			window.location.host != 'player.kaltura.com'
