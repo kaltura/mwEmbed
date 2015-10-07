@@ -250,6 +250,7 @@
 
         _gotoScrubberPos: function (questionNr) {
             var _this = this,embedPlayer = _this.getPlayer();
+            embedPlayer.stopPlayAfterSeek = true;
             embedPlayer.sendNotification('doSeek', (($.cpObject.cpArray[questionNr].startTime) /1000)+0.1);
         },
         qCuePointHandler: function (e, cuePointObj) {
@@ -884,7 +885,7 @@
 
             $(handleBubbleclick).on('click', function () {
                 _this.unbind('seeking');
-                embedPlayer.stopPlayAfterSeek = true;
+             //   embedPlayer.stopPlayAfterSeek = true;
                 _this._gotoScrubberPos($(this).attr('id'));
                 _this.bind('seeking', function () {
                     _this.isSeekingIVQ = true;
