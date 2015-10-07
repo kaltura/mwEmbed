@@ -218,16 +218,16 @@
                             }
                             break;
                         case 'canDownloadQuestions':
-                            if (e.value ==='true'){
-                                $(".pdf-download").prepend('<div class="pdf-download-img">' +
-                                '</div><div class="pdf-download-txt">'
-                                + gM('mwe-quiz-pdf')+'</div>');
-
-                                $(".pdf-download-img").on('click',function(){
-                                   _this._downloadPDF();
-                                   $(".pdf-download-img").off();
-                                })
-                            }
+                            //if (e.value ==='true'){
+                            //    $(".pdf-download").prepend('<div class="pdf-download-img">' +
+                            //    '</div><div class="pdf-download-txt">'
+                            //    + gM('mwe-quiz-pdf')+'</div>');
+                            //
+                            //    $(".pdf-download-img").on('click',function(){
+                            //       _this._downloadPDF();
+                            //       $(".pdf-download-img").off();
+                            //    })
+                            //}
                             break;
                     }
                 });
@@ -908,7 +908,6 @@
                 'action': 'servepdf',
                 'entryId': _this.embedPlayer.kentryid
             };
-
             _this.getKClient().doRequest(quizPDF, function(data) {
                 if (!_this._checkApiResponse('Get pdf err -->',data)){
                     return false;
