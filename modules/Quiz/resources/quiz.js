@@ -385,7 +385,9 @@
             $(document).on('click', '.q-box', function () {
                 var selectQ = $(this).attr('id');
                 embedPlayer.enablePlayControls();
-                _this._gotoScrubberPos(selectQ);
+                if ((_this.q2i($.cpObject.cpArray.length)) != (parseInt(selectQ))) {
+                    _this._gotoScrubberPos(selectQ);
+                }
                 _this.setCurrentQuestion(selectQ);
             });
         },
@@ -885,7 +887,6 @@
 
             $(handleBubbleclick).on('click', function () {
                 _this.unbind('seeking');
-             //   embedPlayer.stopPlayAfterSeek = true;
                 _this._gotoScrubberPos($(this).attr('id'));
                 _this.bind('seeking', function () {
                     _this.isSeekingIVQ = true;
