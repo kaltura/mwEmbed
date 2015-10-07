@@ -176,18 +176,20 @@
 
 			// Check if using staging server on non-staging site:
 			if (
-				// make sure this is Kaltura SaaS we are checking:
+			// make sure this is Kaltura SaaS we are checking:
 			mw.getConfig( "Kaltura.ServiceUrl" ).indexOf( 'kaltura.com' ) != -1
 			&&
-				// check that the library is not on production
-			this.getPath().indexOf( 'i.kaltura.com' ) == -1
+			// check that the library loaded from kgit or player.kaltura.com
+			( this.getPath().indexOf( 'kgit.html5video.org' ) =! -1 || this.getPath().indexOf( 'player.kaltura.com' ) != -1 )
 			&&
-				// check that we player is not on a staging site:
+			// check that we player is not on a staging site:
 			window.location.host != 'kgit.html5video.org'
 			&&
 			window.location.host != 'player.kaltura.com'
 			&&
 			window.location.host != 'localhost'
+			&&
+			window.location.host != 'projects.kaltura.com'
 			) {
 				if ( console && console.error ) {
 					console.error( "Error: Using non-prodcution version of kaltura player library. Please see http://knowledge.kaltura.com/production-player-urls" )
