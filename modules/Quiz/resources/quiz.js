@@ -22,7 +22,6 @@
         reviewMode: false,
         showCorrectKeyOnAnswer: false,
         showResultOnAnswer: false,
-        canDownloadQuestions: '',
         canSkip: true,
         showTotalScore:true,
         score: null,
@@ -214,10 +213,21 @@
                             $(".welcomeMessage").html(e.value);
                             break;
                         case 'inVideoTip':
-
                             if (e.value ==='true'){
                                 $(".InvideoTipMessage").html(gM('mwe-quiz-invideoTip'));
                             }
+                            break;
+                        case 'canDownloadQuestions':
+                            //if (e.value ==='true'){
+                            //    $(".pdf-download").prepend('<div class="pdf-download-img">' +
+                            //    '</div><div class="pdf-download-txt">'
+                            //    + gM('mwe-quiz-pdf')+'</div>');
+                            //
+                            //    $(".pdf-download-img").on('click',function(){
+                            //       _this._downloadPDF();
+                            //       $(".pdf-download-img").off();
+                            //    })
+                            //}
                             break;
                     }
                 });
@@ -240,6 +250,7 @@
 
         _gotoScrubberPos: function (questionNr) {
             var _this = this,embedPlayer = _this.getPlayer();
+            embedPlayer.stopPlayAfterSeek = true;
             embedPlayer.sendNotification('doSeek', (($.cpObject.cpArray[questionNr].startTime) /1000)+0.1);
         },
         qCuePointHandler: function (e, cuePointObj) {
@@ -874,8 +885,7 @@
 
             $(handleBubbleclick).on('click', function () {
                 _this.unbind('seeking');
-                embedPlayer.stopPlayAfterSeek = true;
-                setTimeout(function () { embedPlayer.pause();}, 0);
+             //   embedPlayer.stopPlayAfterSeek = true;
                 _this._gotoScrubberPos($(this).attr('id'));
                 _this.bind('seeking', function () {
                     _this.isSeekingIVQ = true;
@@ -892,6 +902,19 @@
                return true;
            }
     },
+        _downloadPDF:function(){
+            var _this = this;
+            var quizPDF = {
+                'service': 'quiz_quiz',
+                'action': 'servepdf',
+                'entryId': _this.embedPlayer.kentryid
+            };
+            _this.getKClient().doRequest(quizPDF, function(data) {
+                if (!_this._checkApiResponse('Get pdf err -->',data)){
+                    return false;
+                }
+            });
+        },
         _errMsg:function(errMsg,data){
             var _this = this;
             mw.log(errMsg, data);
