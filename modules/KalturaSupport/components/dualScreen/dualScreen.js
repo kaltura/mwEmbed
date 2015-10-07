@@ -380,12 +380,13 @@
 					if (_this.syncEnabled){
 						var cuePoints = _this.getCuePoints();
 						var cuePointsExist = (cuePoints.length > 0);
+						_this.initDisplay();
 						if (cuePointsExist || _this.isLiveCuepoints()) {
 							_this.log("render condition are not met - initializing");
 							_this.getPlayer().triggerHelper("preHideScreen", "disabledScreen");
 							_this.disabled = false;
 							_this.checkRenderConditions();
-							_this.initDisplay();
+							_this.setInitialView();
 							_this.initControlBar();
 							if (!_this.render) {
 								_this.getPrimary().obj.css({
@@ -721,27 +722,6 @@
 
 					this.positionSecondScreen();
 				}
-				var showLoadingSlide = function () {
-					if ( !_this.secondDisplayReady && _this.render && mw.getConfig( "EmbedPlayer.LiveCuepoints" ) ) {
-						//TODO: add information slide for no current slide available
-					}
-				};
-
-				if ( this.getConfig( "mainViewDisplay" ) === 2 && !mw.isNativeApp() ||
-					this.getPlayer().isAudio()) {
-					this.bind( 'postDualScreenTransition.spinnerPostFix', function () {
-						_this.unbind( 'postDualScreenTransition.spinnerPostFix' );
-						showLoadingSlide();
-					} );
-					setTimeout( function () {
-						_this.fsm.consumeEvent( "switchView" );
-						if (_this.getPlayer().isAudio()){
-							_this.fsm.consumeEvent( "hide" );
-						}
-					}, 1000 );
-				} else {
-					showLoadingSlide();
-				}
 
 				//dualScreen components are set on z-index 1-3, so set all other components to zIndex 4 or above
 				this.zIndexObjs = [];
@@ -758,6 +738,29 @@
 						_this.zIndexObjs.push( obj );
 					}
 				} );
+			},
+			setInitialView: function(){
+				var _this = this;
+				var showLoadingSlide = function () {
+					if ( !_this.secondDisplayReady && _this.render && mw.getConfig( "EmbedPlayer.LiveCuepoints" ) ) {
+						//TODO: add information slide for no current slide available
+					}
+				};
+				if ( this.getConfig( "mainViewDisplay" ) === 2 && !mw.isNativeApp() ||
+					this.getPlayer().isAudio()) {
+					this.bind( 'postDualScreenTransition.spinnerPostFix', function () {
+						_this.unbind( 'postDualScreenTransition.spinnerPostFix' );
+						showLoadingSlide();
+					} );
+					setTimeout( function () {
+						_this.fsm.consumeEvent( "switchView" );
+						if (_this.getPlayer().isAudio()){
+							_this.fsm.consumeEvent( "hide" );
+						}
+					}, 1000 );
+				} else {
+					showLoadingSlide();
+				}
 			},
 			initControlBar: function(){
 				if ( !this.getPlayer().isAudio() && !this.controlBar) {
