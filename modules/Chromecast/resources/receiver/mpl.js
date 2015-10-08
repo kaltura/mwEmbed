@@ -124,6 +124,7 @@ onload = function () {
 				document.getElementById('kdebug').style.display = 'block';
 			}
 			mw.setConfig("chromecastReceiver", true);
+			mw.setConfig("Kaltura.ExcludedModules", "chromecast");
 			kWidget.embed({
 				"targetId": "kaltura_player",
 				"wid": "_" + publisherID,
@@ -153,9 +154,11 @@ onload = function () {
 					"multiDrm": {
 						'plugin': false
 					},
-					'chromecast': {
-						'plugin': true,
-						'receiverMode': true
+					"embedPlayerChromecastReceiver": {
+						'plugin': true
+					},
+					"chromecast": {
+						'plugin': true
 					}
 				},
 				"cache_st": 1438601385,
