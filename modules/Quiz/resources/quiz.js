@@ -29,6 +29,7 @@
         hexPosContainerPos:0,
         isSeekingIVQ:false,
         isErr: false,
+        alowLastQuestionSeekTemp:false,
 
         setup: function () {
             var _this = this;
@@ -141,6 +142,7 @@
 
 
             this.bind('seeked', function () {
+                _this.alowLastQuestionSeekTemp = false;
                 setTimeout(function () {
                     _this.isSeekingIVQ = false;}, 0);
             });
@@ -157,6 +159,7 @@
             embedPlayer.addJsListener( 'playerPlayEnd', function(){
                 var anUnswered = _this.getUnansweredQuestNrs();
                 if (anUnswered) {
+                    _this.alowLastQuestionSeekTemp = true;
                     _this.almostDone(anUnswered);
                 }
             });
@@ -389,7 +392,10 @@
                 .on('click', '.q-box', function () {
                 var selectQ = $(this).attr('id');
                 embedPlayer.enablePlayControls();
-                if ((_this.q2i($.cpObject.cpArray.length)) != (parseInt(selectQ))) {
+                if ((_this.q2i($.cpObject.cpArray.length)) != (parseInt(selectQ)) ) {
+                    _this._gotoScrubberPos(selectQ);
+                }
+                if (_this.alowLastQuestionSeekTemp){
                     _this._gotoScrubberPos(selectQ);
                 }
                 _this.setCurrentQuestion(selectQ);
