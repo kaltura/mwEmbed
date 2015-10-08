@@ -182,6 +182,9 @@
             if (!_this.isErr) {
                 if (_this.isScreenVisible()){
                     _this.removeScreen();
+                    if (_this.isSeekingIVQ) {
+                        embedPlayer.stopPlayAfterSeek = false;
+                    }
                 }
                 embedPlayer.enablePlayControls();
                 embedPlayer.play();
@@ -382,7 +385,8 @@
 
             _this.displayHex(_this.setHexContainerPos("current"),unAnsweredArr);
 
-            $(document).on('click', '.q-box', function () {
+            $(document).off('click','.q-box')
+                .on('click', '.q-box', function () {
                 var selectQ = $(this).attr('id');
                 embedPlayer.enablePlayControls();
                 if ((_this.q2i($.cpObject.cpArray.length)) != (parseInt(selectQ))) {
@@ -414,6 +418,7 @@
                 }
             }
         },
+
         getUnansweredQuestNrs: function () {
             var unanswerdArr = [];
             $.each($.cpObject.cpArray, function (key, val) {
@@ -430,7 +435,6 @@
             $(".header-container").prepend("<div class ='hint-why-box'>"+ buttonText +"</div>")
                 .on('click', function () {
                     _this.removeShowScreen("hintWhyScreen");
-                    $(".screen-content" ).addClass('solid-bk');
                     $(".header-container").addClass('close-button')
                         .on('click', function () {
                             $(".screen-content" ).removeClass('bk-gradient');
@@ -581,11 +585,13 @@
 
                     _this.displayHex(_this.setHexContainerPos("current"),cpArray);
 
-                    $(document).on('click', '.q-box', function () {
+                    $(document).off('click','.q-box')
+                        .on('click', '.q-box', function () {
                         _this.removeShowScreen("reviewAnswer");
                         _this.reviewAnswer($(this).attr('id'));
                     });
-                    $(document).on('click', '.q-box-false', function () {
+                    $(document).off('click','.q-box-false')
+                        .on('click', '.q-box-false', function () {
                         _this.removeShowScreen("reviewAnswer");
                         _this.reviewAnswer($(this).attr('id'));
                     });
@@ -647,7 +653,6 @@
                 'action': 'list',
                 'filter:objectType': 'KalturaAnswerCuePointFilter',
                 'filter:entryIdEqual': _this.embedPlayer.kentryid,
-              //  'filter:userIdEqualCurrent':'1',
                 'filter:quizUserEntryIdEqual':_this.kQuizUserEntryId,
                 'filter:cuePointTypeEqual': 'quiz.QUIZ_ANSWER'
             }];
