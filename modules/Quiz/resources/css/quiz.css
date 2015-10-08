@@ -92,8 +92,8 @@ body:after
     height: 90%;
 }
 .bottomContainer{
-    position: fixed;
-    bottom: 10vw;
+    position: absolute;
+    bottom: -4vw;
     width: 100%;
 }
 .completed-BottonContainer{
@@ -335,8 +335,7 @@ vertical-align: middle;
     height: 10vw;
     background-image: url(../images/Hint.png);
     float: right;
-    margin-top: 3vh;
-    margin-bottom: 2vw;
+    margin-top: -5vh;
     line-height: 10vw;
     background-size: 100% 100%;
     vertical-align: middle;
@@ -351,7 +350,7 @@ vertical-align: middle;
     background-image: url(../images/close.png);
     float: right;
     background-size: 100% 100%;
-    margin-top: 7vh;
+    margin-top: 0;
     margin-right: 3vw;
 }
 
@@ -580,9 +579,7 @@ ol.second-row{
 .bk-gradient{
     background-color: rgb(0, 190, 238);
 }
-.solid-bk{
-    background-color:#00ace5;
-}
+
 .display-content{
 
 }
