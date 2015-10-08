@@ -383,8 +383,8 @@
 						_this.initDisplay();
 						if (cuePointsExist || _this.isLiveCuepoints()) {
 							_this.log("render condition are not met - initializing");
-							_this.getPlayer().triggerHelper("preHideScreen", "disabledScreen");
 							_this.disabled = false;
+							_this.getPlayer().triggerHelper("preHideScreen", "disabledScreen");
 							_this.checkRenderConditions();
 							_this.setInitialView();
 							_this.initControlBar();
@@ -594,6 +594,7 @@
 				};
 				this.bind("preShowScreen AdSupport_StartAdPlayback", function (e, screenName) {
 					_this.screenShown = true;
+					screenName = (screenName.indexOf("roll") !== -1) ? "disabledScreen" : screenName;
 					if (_this.render) {
 						_this.currentScreenNameShown = screenName;
 						_this.getPlayer().triggerHelper("dualScreenControlsEnable");
@@ -604,7 +605,8 @@
 				} );
 				this.bind("preHideScreen AdSupport_EndAdPlayback", function (e, screenName) {
 					_this.screenShown = false;
-					if (_this.render && _this.currentScreenNameShown === screenName) {
+					screenName = (screenName.indexOf("roll") !== -1) ? "disabledScreen" : screenName;
+					if (!_this.disabled && _this.render && _this.currentScreenNameShown === screenName) {
 						_this.currentScreenNameShown = "";
 						maximizeSecondDisplay();
 						//Use setTimeout to verify that screens are hidden and not that this is a part of
