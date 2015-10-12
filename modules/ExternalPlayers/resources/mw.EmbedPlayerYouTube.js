@@ -410,6 +410,12 @@
 				callback();
 				if( mw.getConfig('autoPlay') || _this.isPlaylist){
 					if (mw.isMobileDevice()){
+						if (mw.isIphone()){
+							$(".largePlayBtn").hide();
+							setTimeout(function(){
+								_this.hideSpinner();
+							},250);
+						}
 						if (_this.ytMobilePlayed){
 							_this.play();
 						}else{
