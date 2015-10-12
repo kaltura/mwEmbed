@@ -103,6 +103,10 @@
 			}
 			this.setDataIfExsits( 'subCategory', dataObject );
 			this.setDataIfExsits( 'eventName', dataObject );
+			
+			this.setDataIfExsits( 'show', dataObject );
+			this.setDataIfExsits( 'viewerId', dataObject );
+			this.setDataIfExsits( 'contentType', dataObject);
 
 			return dataObject;
 		},

@@ -46,6 +46,18 @@
             "eventName": {
                 "doc": "Override the default value for the eventName field, custom set by event",
                 "type": "string"
+            },
+            "show": {
+            	"doc": "To set the show attribute sent with events",
+            	"type": "string"
+            },
+            "viewerId": {
+            	"doc": "To set the viewerId attribute sent with events",
+            	"type": "string"
+            },
+            "contentType": {
+            	"doc": "To set the contentType attribute sent with events",
+            	"type": "string"
             }
         }
     }
