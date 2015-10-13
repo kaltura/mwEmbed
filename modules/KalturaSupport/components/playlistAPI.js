@@ -412,7 +412,7 @@
 				if (this.getLayout() === "vertical") {
 					this.getMedialistComponent().find(".nano-content").scrollTop(clipIndex * this.getConfig("mediaItemHeight"));
 				}else{
-					this.getMedialistComponent().find('ul').trigger("goto",[clipIndex]);
+					this.getMedialistComponent().find( '.k-carousel' )[0].jCarouselLiteGo(clipIndex);
 				}
 			}
 			this.setConfig("selectedIndex", clipIndex);    // save it to the config so it can be retrieved using the API
