@@ -1,8 +1,13 @@
-<div class="relatedFilesContainer">
-    <% $.each(files, function(idx, file){ %>
-        <div class="file">
-
-                <a class="" data-click="download" href="<%=file.id%>"><%=file.filename%></a>
-        </div>
-    <% }); %>
+<div class="related-files">
+  <% $.each(files, function(idx, file){ %>
+  <div class="related-files__file related-file" data-click="download" data-id="<%=file.id%>" title="<%=file.filename%>">
+    <div class="related-file__icon-wrap">
+      <span class="related-file__icon related-file__icon--<%=file.type%>"></span>
+    </div>
+    <div class="related-file__info-wrap">
+      <div class="related-file__name"><%=file.filename%></div>
+      <div class="related-file__date"><%=file.createdAtFormatted%></div>
+    </div>
+  </div>
+  <% }); %>
 </div>

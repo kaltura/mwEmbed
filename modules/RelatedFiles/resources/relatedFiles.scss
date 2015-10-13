@@ -1,0 +1,150 @@
+@font-face {
+  font-family: 'docicons';
+  src: url('fonts/docicons.eot?#iefix') format('embedded-opentype'),
+    url('fonts/docicons.woff') format('woff'),
+    url('fonts/docicons.ttf')  format('truetype'),
+    url('fonts/docicons.svg#docicons') format('svg');
+}
+
+.hide-important {
+  display: none !important;
+}
+
+.screen.relatedFiles {
+  background: rgba(0, 0, 0, 0.87);
+
+  .screen-content {
+    height: 100%;
+    overflow: auto;
+
+    &::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    &::-webkit-scrollbar-button {
+      width: 10px;
+      height: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #7a7a7a;
+      border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover, &::-webkit-scrollbar-thumb:active {
+      background-color: #6a6a6a;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+  }
+}
+
+.related-files {
+
+  &__file {
+    color: #fff;
+    border-bottom: 1px solid #444;
+    transition: background-color 0.15s ease-out;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+}
+
+.related-file {
+  overflow: hidden;
+  padding: 8px;
+  cursor: pointer;
+
+  &__icon-wrap {
+    float: left;
+    width: 32px;
+    text-align: center;
+  }
+
+  &__icon {
+    font-family: 'docicons';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    font-size: 32px;
+    line-height: 32px;
+
+    &--word:before {
+      content: '\e608';
+      color: #64B5F6;
+    }
+
+    &--excel:before {
+      content: '\e607';
+      color: #81C784;
+    }
+
+    &--open-ofice:before {
+      content: '\e600';
+      color: #FF7043;
+    }
+
+    &--pdf:before {
+      content: '\e601';
+      color: #F44336;
+    }
+
+    &--archive:before {
+      content: '\e602';
+      color: #FFF176;
+    }
+
+    &--picture:before {
+      content: '\e606';
+      color: #4DD0E1;
+    }
+
+    &--audio:before {
+      content: '\e606';
+      color: #4DD0E1;
+    }
+
+    &--video:before {
+      content: '\e603';
+      color: #F44336;
+    }
+
+    &--unknown:before {
+      content: '\e605';
+      color: #ccc;
+    }
+
+    &--text:before {
+      content: '\e609';
+      color: #FFF176;
+    }
+  }
+
+  &__info-wrap {
+    overflow: hidden;
+    padding-left: 8px;
+  }
+
+  &__name {
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__date {
+    font-size: 14px;
+    color: #ddd;
+  }
+}
