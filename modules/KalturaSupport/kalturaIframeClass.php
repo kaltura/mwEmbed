@@ -596,6 +596,11 @@ class kalturaIframeClass {
 			color: #fff;
 			overflow: hidden;
 		}
+		@-moz-document url-prefix() {
+			img:-moz-loading {
+				visibility: hidden;
+			}
+		}
 		video::-webkit-media-controls-start-playback-button {
 			display:none !important;
 		}
