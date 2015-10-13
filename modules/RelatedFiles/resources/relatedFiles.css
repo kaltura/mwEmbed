@@ -1,7 +1,92 @@
-.relatedFilesContainer{
-    background-color: #ff0000;
-}
+@font-face {
+  font-family: 'docicons';
+  src: url("fonts/docicons.eot?#iefix") format("embedded-opentype"), url("fonts/docicons.woff") format("woff"), url("fonts/docicons.ttf") format("truetype"), url("fonts/docicons.svg#docicons") format("svg"); }
+.hide-important {
+  display: none !important; }
 
-.file{
-    color:blue;
-}
+.screen.relatedFiles {
+  background: rgba(0, 0, 0, 0.87); }
+  .screen.relatedFiles .screen-content {
+    height: 100%;
+    overflow: auto; }
+    .screen.relatedFiles .screen-content::-webkit-scrollbar {
+      width: 10px;
+      height: 10px; }
+    .screen.relatedFiles .screen-content::-webkit-scrollbar-button {
+      width: 10px;
+      height: 10px; }
+    .screen.relatedFiles .screen-content::-webkit-scrollbar-thumb {
+      background-color: #7a7a7a;
+      border-radius: 10px; }
+    .screen.relatedFiles .screen-content::-webkit-scrollbar-thumb:hover, .screen.relatedFiles .screen-content::-webkit-scrollbar-thumb:active {
+      background-color: #6a6a6a; }
+    .screen.relatedFiles .screen-content::-webkit-scrollbar-track {
+      background: transparent; }
+
+.related-files__file {
+  color: #fff;
+  border-bottom: 1px solid #444;
+  transition: background-color 0.15s ease-out; }
+  .related-files__file:hover {
+    background-color: rgba(255, 255, 255, 0.2); }
+  .related-files__file:last-child {
+    border-bottom: 0; }
+
+.related-file {
+  overflow: hidden;
+  padding: 8px;
+  cursor: pointer; }
+  .related-file__icon-wrap {
+    float: left;
+    width: 32px;
+    text-align: center; }
+  .related-file__icon {
+    font-family: 'docicons';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    font-size: 32px;
+    line-height: 32px; }
+    .related-file__icon--word:before {
+      content: '\e608';
+      color: #64B5F6; }
+    .related-file__icon--excel:before {
+      content: '\e607';
+      color: #81C784; }
+    .related-file__icon--open-ofice:before {
+      content: '\e600';
+      color: #FF7043; }
+    .related-file__icon--pdf:before {
+      content: '\e601';
+      color: #F44336; }
+    .related-file__icon--archive:before {
+      content: '\e602';
+      color: #FFF176; }
+    .related-file__icon--picture:before {
+      content: '\e606';
+      color: #4DD0E1; }
+    .related-file__icon--audio:before {
+      content: '\e606';
+      color: #4DD0E1; }
+    .related-file__icon--video:before {
+      content: '\e603';
+      color: #F44336; }
+    .related-file__icon--unknown:before {
+      content: '\e605';
+      color: #ccc; }
+    .related-file__icon--text:before {
+      content: '\e609';
+      color: #FFF176; }
+  .related-file__info-wrap {
+    overflow: hidden;
+    padding-left: 8px; }
+  .related-file__name {
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; }
+  .related-file__date {
+    font-size: 14px;
+    color: #ddd; }

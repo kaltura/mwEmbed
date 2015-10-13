@@ -49,6 +49,8 @@ you can use the generic selector below, but it's slower:
 .icon-download,
 .icon-close,
 .icon-ad,
+.icon-check,
+.icon-caret,
 .icon-list,
 .icon-chromecast,
 .icon-next,
@@ -63,7 +65,9 @@ you can use the generic selector below, but it's slower:
 .icon-on-air,
 .icon-toggle,
 .icon-locator,
-.icon-toggleAll{
+.icon-audio,
+.icon-toggleAll,
+.icon-attachment{
 	font-family: 'icomoon';
 	speak: none;
 	font-style: normal;
@@ -101,7 +105,12 @@ you can use the generic selector below, but it's slower:
 .icon-checkmark:before {
 	content: "\e606";
 }
-
+.icon-check:before {
+	content: "\e606";
+}
+.icon-caret:before {
+	content: "\e624";
+}
 .icon-cc:before {
 	content: "\e607";
 }
@@ -227,4 +236,9 @@ you can use the generic selector below, but it's slower:
 .icon-toggleAll:before {
     content: "\e626";
 }
-
+.icon-audio:before {
+    content: "\e627";
+}
+.icon-attachment:before {
+    content: "\e628";
+}
