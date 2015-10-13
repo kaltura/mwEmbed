@@ -181,6 +181,10 @@
 					setupAutoScroll();
 				}
 
+				ul.on("goto", function(e, target){
+					go(target);
+				})
+
 				ul.on("refresh", function(e, start){
 					options.start = start;
 					initVariables();

@@ -406,8 +406,15 @@
 		},
 
 		// play a clip according to the passed index. If autoPlay is set to false - the clip will be loaded but not played
-		playMedia: function (clipIndex, load) {
+		playMedia: function (clipIndex, load, autoScrollToMedia) {
 			this.setSelectedMedia(clipIndex);              // this will highlight the selected clip in the UI
+			if ( autoScrollToMedia ){
+				if (this.getLayout() === "vertical") {
+					this.getMedialistComponent().find(".nano-content").scrollTop(clipIndex * this.getConfig("mediaItemHeight"));
+				}else{
+					this.getMedialistComponent().find('ul').trigger("goto",[clipIndex]);
+				}
+			}
 			this.setConfig("selectedIndex", clipIndex);    // save it to the config so it can be retrieved using the API
 			this.embedPlayer.setKalturaConfig('playlistAPI', 'dataProvider', {'content': this.playlistSet, 'selectedIndex': this.getConfig('selectedIndex')}); // for API backward compatibility
 			this.currentClipIndex = clipIndex; // save clip index for next / previous calls
@@ -502,12 +509,12 @@
 			if (this.getConfig("autoContinue") == true) {
 				$(this.embedPlayer).unbind('postEnded' + this.bindPostFix).bind('postEnded' + this.bindPostFix, function () {
 					mw.log("PlaylistAPI:: postEnded > on inx: " + clipIndex);
-					_this.playNext();
+					_this.playNext(true);
 				});
 			}
 		},
 
-		playNext: function () {
+		playNext: function (autoScrollToMedia) {
 			if (this.isDisabled || this.loadingEntry) {
 				return;
 			}
@@ -517,7 +524,7 @@
 			if (this.currentClipIndex != null && this.currentClipIndex < this.mediaList.length - 1) {
 				this.currentClipIndex++;
 				this.setSelectedMedia(this.currentClipIndex);
-				this.playMedia(this.currentClipIndex, true);
+				this.playMedia(this.currentClipIndex, true, autoScrollToMedia);
 			}
 			$(this.embedPlayer).trigger('playlistPlayNext');
 		},
@@ -687,14 +694,14 @@
 						var found = false;
 						for ( var i = 0; i < items.length; i++ ) {
 							if ( items[i].id === this.getConfig( 'initItemEntryId' ) ) {
-								this.playMedia( i );
+								this.playMedia( i, false, true );
 								found = true;
 								break;
 							}
 						}
 					}
 					if ( (this.getConfig( 'initItemEntryId' ) && !found) || !(this.getConfig( 'initItemEntryId' )) ) {
-						this.playMedia( this.getConfig( 'selectedIndex' ) );
+						this.playMedia( this.getConfig( 'selectedIndex' ), false, true );
 					}
 				}
 			}
