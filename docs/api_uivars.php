@@ -645,6 +645,12 @@ $uiVars = array(
 					'default' => '2',
 					'example' => ''
 			),
+			'EmbedPlayer.SeekTargetThreshold'  => array(
+					'type' => 'Number',
+					'desc' => "Seek target precision threshold. Will not seek if difference between playback element time and seek target time is lower then the specified value",
+					'default' => '0.1',
+					'example' => ''
+			),
 			/*'EmbedPlayer.WebKitPlaysInline' => array(
 			 		'type' => 'Boolean',
 					'desc' => "Determines if should play the video inline or not",

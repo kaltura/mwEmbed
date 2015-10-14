@@ -1092,7 +1092,7 @@
 
 			// Check if currentTime is already set to the seek target:
 			var playerElementTime = parseFloat(this.getPlayerElementTime()).toFixed(2);
-			if (Math.abs(playerElementTime - seekTime) < 0.1) {
+			if (Math.abs(playerElementTime - seekTime) < mw.getConfig("EmbedPlayer.SeekTargetThreshold", 0.1)) {
 				mw.log("EmbedPlayer:: seek: current time matches seek target: " +
 					playerElementTime + ' ~== ' + seekTime );
 				if (this.seeking) {
