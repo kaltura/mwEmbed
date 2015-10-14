@@ -81,12 +81,15 @@
       color: #FFF176; }
   .related-file__info-wrap {
     overflow: hidden;
+    margin-left: 32px;
     padding-left: 8px; }
   .related-file__name {
-    font-size: 16px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis; }
+    font-size: 16px; }
   .related-file__date {
     font-size: 14px;
     color: #ddd; }
+
+.related-file__name, .related-file__date {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; }

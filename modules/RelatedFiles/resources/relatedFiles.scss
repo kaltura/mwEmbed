@@ -133,18 +133,24 @@
 
   &__info-wrap {
     overflow: hidden;
+    margin-left: 32px;
     padding-left: 8px;
   }
 
   &__name {
+    @extend %ellipsis;
     font-size: 16px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 
   &__date {
+    @extend %ellipsis;
     font-size: 14px;
     color: #ddd;
   }
+}
+
+%ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
