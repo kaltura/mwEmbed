@@ -647,7 +647,7 @@ $uiVars = array(
 			),
 			'EmbedPlayer.SeekTargetThreshold'  => array(
 					'type' => 'Number',
-					'desc' => "Seek target precision threshold. Will not seek if difference between playback element time and seek target time is lower then the specified value",
+					'desc' => "Seek target precision threshold. Will not seek if difference between playback element time and seek target time is lower than the specified value",
 					'default' => '0.1',
 					'example' => ''
 			),
