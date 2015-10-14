@@ -414,7 +414,7 @@
 							$(".largePlayBtn").hide();
 							setTimeout(function(){
 								_this.hideSpinner();
-							},250);
+							},350);
 						}
 						if (_this.ytMobilePlayed){
 							_this.play();
