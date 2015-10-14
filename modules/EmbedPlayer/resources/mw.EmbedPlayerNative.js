@@ -524,7 +524,7 @@
 			// Also update the embedPlayer poster
 			this.parent_updatePoster(src);
 
-			if(mw.getConfig('EmbedPlayer.HidePosterOnStart') === true){
+			if (mw.getConfig('EmbedPlayer.HidePosterOnStart') === true) {
 				return;
 			}
 			if (this.getPlayerElement()) {
