@@ -594,7 +594,7 @@
 			}
 			elm.innerHTML = '' +
 				'<div style="position: relative; width: 100%; height: 100%;">' +
-				'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl(settings) + '" >' +
+				'<input type="image" alt="play video content" class="kWidgetCentered" src="' + this.getKalturaThumbUrl(settings) + '" >' +
 				'<div class="kWidgetCentered kWidgetPlayBtn" ' +
 				'id="' + targetId + '_playBtn"' +
 				'></div></div>';
