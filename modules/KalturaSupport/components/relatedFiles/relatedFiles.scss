@@ -43,9 +43,10 @@
 }
 
 .related-files {
+  position: relative;
+  color: #fff;
 
   &__file {
-    color: #fff;
     border-bottom: 1px solid #444;
     transition: background-color 0.15s ease-out;
 
@@ -55,6 +56,24 @@
 
     &:last-child {
       border-bottom: 0;
+    }
+  }
+
+  &__close-btn {
+    @extend %docicon;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 8px 8px 26px 26px;
+    font-size: 14px;
+    cursor: pointer;
+
+    &:hover {
+      text-shadow: #fff 0px 0px 10px;
+    }
+
+    &:before {
+      content: '\e60a';
     }
   }
 }
@@ -71,12 +90,7 @@
   }
 
   &__icon {
-    font-family: 'docicons';
-    speak: none;
-    font-style: normal;
-    font-weight: normal;
-    font-variant: normal;
-    text-transform: none;
+    @extend %docicon;
     font-size: 32px;
     line-height: 32px;
 
@@ -133,18 +147,33 @@
 
   &__info-wrap {
     overflow: hidden;
+    margin-left: 32px;
     padding-left: 8px;
   }
 
   &__name {
+    @extend %ellipsis;
     font-size: 16px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 
   &__date {
+    @extend %ellipsis;
     font-size: 14px;
     color: #ddd;
   }
+}
+
+%docicon {
+  font-family: 'docicons';
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+}
+
+%ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

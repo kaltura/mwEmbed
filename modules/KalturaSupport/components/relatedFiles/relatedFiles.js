@@ -20,7 +20,7 @@
       tooltip: gM('mwe-embedplayer-relatedFiles'),
       showTooltip: true,
       displayImportance: 'medium',
-      templatePath: '../RelatedFiles/resources/relatedFiles.tmpl.html',
+      templatePath: 'components/relatedFiles/relatedFiles.tmpl.html',
 
       downloadEnabled: true,
       directDownloadSingleFile: false
@@ -53,7 +53,8 @@
 
       this.getComponent().unbind('click');
       this.getComponent().click(function () {
-        if (_this.getConfig('directDownloadSingleFile') &&
+        if (_this.getConfig('downloadEnabled') &&
+            _this.getConfig('directDownloadSingleFile') &&
             _this.relatedFilesList.length === 1) {
           _this.doDownload(_this.relatedFilesList[0].id);
         } else {
@@ -214,20 +215,14 @@
     },
 
     enable: function enable() {
-      var l = this.relatedFilesList.length;
-
-      // check if related files list is not empty
-      // and there's no logical collision between
-      // downloadEnabled and directDownloadSingleFile flags
-      if (l && (l !== 1 ||
-          !this.getConfig('directDownloadSingleFile') ||
-          this.getConfig('downloadEnabled'))) {
+      if (this.relatedFilesList.length) {
         this.getComponent().removeClass('hide-important');
       }
     },
 
     resolveType: function resolveType(attachment) {
       var extension = (attachment.fileExt || '').toLowerCase();
+      var format;
       var group;
       var ar;
       var i;
@@ -241,15 +236,14 @@
         }
       }
 
-      switch (Number(attachment.format)) {
-      case 1:
-      case 3:
+      format = Number(attachment.format);
+      if (format === 1 || format === 3) {
         return 'text';
-      case 2:
+      } else if (format === 2) {
         return 'video';
-      default:
-        return 'unknown';
       }
+
+      return 'unknown';
     },
 
     formatDate: function formatDate(unixTimestamp) {
