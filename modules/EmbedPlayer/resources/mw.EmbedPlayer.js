@@ -1092,9 +1092,9 @@
 
 			// Check if currentTime is already set to the seek target:
 			var playerElementTime = parseFloat(this.getPlayerElementTime()).toFixed(2);
-			if (playerElementTime === seekTime) {
+			if (Math.abs(playerElementTime - seekTime) < 0.1) {
 				mw.log("EmbedPlayer:: seek: current time matches seek target: " +
-					playerElementTime + ' == ' + seekTime);
+					playerElementTime + ' ~== ' + seekTime );
 				if (this.seeking) {
 					this.seeking = false;
 					$(this).trigger('seeked');
