@@ -23,14 +23,27 @@
     .screen.relatedFiles .screen-content::-webkit-scrollbar-track {
       background: transparent; }
 
-.related-files__file {
-  color: #fff;
-  border-bottom: 1px solid #444;
-  transition: background-color 0.15s ease-out; }
-  .related-files__file:hover {
-    background-color: rgba(255, 255, 255, 0.2); }
-  .related-files__file:last-child {
-    border-bottom: 0; }
+.related-files {
+  position: relative;
+  color: #fff; }
+  .related-files__file {
+    border-bottom: 1px solid #444;
+    transition: background-color 0.15s ease-out; }
+    .related-files__file:hover {
+      background-color: rgba(255, 255, 255, 0.2); }
+    .related-files__file:last-child {
+      border-bottom: 0; }
+  .related-files__close-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 8px 8px 26px 26px;
+    font-size: 14px;
+    cursor: pointer; }
+    .related-files__close-btn:hover {
+      text-shadow: white 0px 0px 10px; }
+    .related-files__close-btn:before {
+      content: '\e60a'; }
 
 .related-file {
   overflow: hidden;
@@ -41,12 +54,6 @@
     width: 32px;
     text-align: center; }
   .related-file__icon {
-    font-family: 'docicons';
-    speak: none;
-    font-style: normal;
-    font-weight: normal;
-    font-variant: normal;
-    text-transform: none;
     font-size: 32px;
     line-height: 32px; }
     .related-file__icon--word:before {
@@ -88,6 +95,14 @@
   .related-file__date {
     font-size: 14px;
     color: #ddd; }
+
+.related-files__close-btn, .related-file__icon {
+  font-family: 'docicons';
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none; }
 
 .related-file__name, .related-file__date {
   white-space: nowrap;

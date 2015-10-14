@@ -180,11 +180,11 @@
 		"dependencies": "mw.KBaseComponent",
 		"kalturaPluginName": "fullScreenBtn"
 	},
-        "audioSelector":{
-            "scripts":  "components/audioSelector.js",
-                "dependencies":"mw.KBaseComponent" ,
-                    "kalturaPluginName":"audioSelector"
-        } ,
+				"audioSelector":{
+						"scripts":  "components/audioSelector.js",
+								"dependencies":"mw.KBaseComponent" ,
+										"kalturaPluginName":"audioSelector"
+				} ,
 	"expandToggleBtn": {
 		"scripts": "components/expandToggleBtn.js",
 		"dependencies": "mw.KBaseButton",
@@ -277,6 +277,13 @@
 			"mw.KBaseScreen"
 		],
 		"kalturaPluginName": "share"
+	},
+	"relatedFiles": {
+		"scripts": "components/relatedFiles/relatedFiles.js",
+		"dependencies": "mw.KBaseScreen",
+		"kalturaPluginName": "relatedFiles",
+		"styles": "components/relatedFiles/relatedFiles.css",
+		"templates": "components/relatedFiles/relatedFiles.tmpl.html"
 	},
 	"playServerUrls": {
 		"scripts": "components/playServerUrls.js",

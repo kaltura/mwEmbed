@@ -27,6 +27,8 @@
         "mwe-embedplayer-empty_playlist": "No source video was found in the selected playlist",
         "mwe-embedplayer-videos": "videos",
         "mwe-embedplayer-download_clip": "Download video",
+        "mwe-embedplayer-relatedFiles": "Related Files",
+        "mwe-relatedFiles-closeScreen": "Close",
         "mwe-embedplayer-share": "Share",
         "mwe-share-startTimeLbl": "Start video at",
         "mwe-share-secureEmbedLbl": "Secured embed",

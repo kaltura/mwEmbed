@@ -20,7 +20,7 @@
       tooltip: gM('mwe-embedplayer-relatedFiles'),
       showTooltip: true,
       displayImportance: 'medium',
-      templatePath: '../RelatedFiles/resources/relatedFiles.tmpl.html',
+      templatePath: 'components/relatedFiles/relatedFiles.tmpl.html',
 
       downloadEnabled: true,
       directDownloadSingleFile: false
