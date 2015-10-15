@@ -92,7 +92,7 @@
 <h2> Google Analytics </h2>
 <br/>
 
-<div id="kaltura_player" style="width:400px;height:300px"></div>
+<div id="kaltura_player" style="width:400px;height:330px"></div>
 <div id="kdoc-more-desc"><br>This google analytics example highlights custom tracking events. Notice the 
 "related" event within the GA log when selecting a related video.<br>
 Time spent buffering tracked via <a href="../../../docs/api#video.buffer.lastBufferDuration">lastBufferDuration</a></div>
@@ -113,12 +113,11 @@ Time spent buffering tracked via <a href="../../../docs/api#video.buffer.lastBuf
 				'trackEventMonitor': 'trackFunc',
 				'urchinCode': googleAnalyticsAccountId,
 				'anonymizeIp': false,
-				'customEvent': 'doPlay,relatedVideoSelect,playerReady,mediaError,bufferEndEvent',
+				'customEvent': 'doPlay,relatedVideoSelect,playerReady,NoSourcesCustomError,bufferEndEvent,mediaError,embedPlayerError',
 
 				'trackingCategory': "Kaltura Video Events",
 				'optionalLabel': "{mediaProxy.entry.referenceId}|{mediaProxy.entry.name}|{mediaProxy.entry.id}|{configProxy.kw.id}|{configProxy.kw.uiConfId}",
 				
-				'customEvent': 'doPlay,relatedVideoSelect,playerReady',
 				'doPlayCategory': "Custom Events",
 				
 				'doPlayAction': "playing",
@@ -132,11 +131,18 @@ Time spent buffering tracked via <a href="../../../docs/api#video.buffer.lastBuf
 				'playerReadyCategory':'My entry tags',
 				'playerReadyAction':'{mediaProxy.entry.tags}',
 				
-				// sample error reporting: 
-				'mediaErrorCategory': "Error events",
-				'mediaErrorAction': "MediaError",
+				// generic media error triggered against error display:
+				'mediaErrorCategory' : "Error events",
+				'mediaErrorAction' : " MediaError event",
+				
+				'embedPlayerErrorCategory': "Error events",
+				'embedPlayerErrorAction': "Streaming Error",
+				
+				// specific error reporting: 
+				'NoSourcesCustomErrorCategory': "Error events",
+				'NoSourcesCustomErrorAction': "No Sources Error",
 
-				'bufferEndEventCategory': "Buffer Events",
+				'bufferEndEventCategory': "Buffer events",
 				'bufferEndEventAction': "bufferEnd",
 				'bufferEndEventValue': "{video.buffer.lastBufferDurationMs}",
 				
@@ -155,21 +161,27 @@ Time spent buffering tracked via <a href="../../../docs/api#video.buffer.lastBuf
 			$('#gAnalyticsLog tr:not(#eventRowDesc)').remove();
 			$('.changeMedia').click(function () {
 				kdp.sendNotification('changeMedia', {'entryId': '1_sf5ovm7u' });
+				return false;
 			})
+			$('.changeMediaInvalid').click(function(){
+				kdp.sendNotification('changeMedia', {'entryId': '1_invalid' });
+				return false;
+			});
 			$('.mediaError').click(function(){
 				var embedPlayer = $( '#' + playerId + '_ifp' ).contents().find('#' + playerId )[0];
 				embedPlayer.showPlayerError();
 				embedPlayer.showErrorMsg({'title': "Forced Demo Error", 'message': "Forced Demo media error."});
-				
+				return false;
 			});
 		}
 	})
 </script>
 <br>
 <a class="mediaError" href="#">Trigger media Error</a> <br>
-<a class="changeMedia" href=#">Change Media</a> <br><br>
+<a class="changeMedia" href="#">Change Media</a>  <br>
+<a class="changeMediaInvalid" href="#">Change to invalid entry</a><br><br>
 <i>Google Analytics events: </i><br/>
-<table id="gAnalyticsLog" border="1" width="700">
+<table id="gAnalyticsLog" border="1" width="90%">
 	<tr id="eventRowDesc">
 		<td>Category</td>
 		<td>Action</td>
