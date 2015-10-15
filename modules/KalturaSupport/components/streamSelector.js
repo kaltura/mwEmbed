@@ -136,7 +136,7 @@
 					_this.getBtn().show();
 				} else {
 					mw.log('streamSelector::Error retrieving streams, disabling component');
-					_this.getBtn().hide();
+					_this.$el.hide();
 				}
 			});
 		},
@@ -160,7 +160,7 @@
 				} );
 			} else {
 				mw.log('streamSelector::No streams avaialble, disabling component');
-				_this.getBtn().hide();
+				_this.$el.hide();
 			}
 			_this.embedPlayer.triggerHelper('streamsReady');
 		},
