@@ -6,7 +6,7 @@
 
 	mw.ComscoreStreamingTag.prototype = {
 
-		pluginVersion: "1.0.2",
+		pluginVersion: "1.0.3",
 		reportingPluginName: "kaltura",
 		playerVersion: mw.getConfig('version'),
 		genericPluginUrlSecure: "https://sb.scorecardresearch.com/c2/plugins/streamingtag_plugin_generic.js",
@@ -22,7 +22,7 @@
 	    clipNumberCounter: 0,
 		playerEvents: null,
 		inFullScreen: false,
-		currentPlayerPluginState: null,
+		currentPlayerPluginState: null, // Keep track of the comScore pluguin state
 		bandwidth: 0,
 		lastCuePointUpdateTime: -1,
 		adCuePoints: null,
@@ -30,8 +30,12 @@
 		currentAd: {},
 		currentBitrate: 0,
 		shouldSetClip: true,
+		buffering: false,
+		seeking: false,
+		playing: false,
+		lastKnownwPercentage: 0,
 		// Mapping for the module settings and the StreamSense plugin
-		configOptions: {c2:"c2", pageView:"pageview", logUrl:"logurl", persistentLabels:"persistentlabels", debug:"debug", include:"include", includePrefixes:"include_prefixes", exclude:"exclude", excludePrefixes:"exclude_prefixes"},
+		configOptions: {c2:"c2", pageView:"pageview", logUrl:"logurl", persistentLabels:"persistentlabels", debug:"debug"},
 
 		PlayerPluginState: function () {
 			var stringMap = [ "initializing", "idle", "new_clip_loaded", "playing", "paused", "ended_playing", "buffering", "seeking", "scrubbing", "ad_playing", "ad_paused", "ad_ended_playing", "destroyed"];
@@ -108,6 +112,40 @@
 			mw.log("ComScoreStreamingTag::   " + message);
 		},
 
+		setClip: function() {
+			// Clip labels only need to be set once per loaded media asset (ad or content)
+			// and BEFORE the Streaming Tag is notified that the media is playing.
+			if (this.shouldSetClip) {
+				this.callStreamSensePlugin("setClip", this.getClipLabels(), false, [], true);
+				this.shouldSetClip = false;
+			}
+		},
+
+		onPlay: function() {
+			if (this.playing
+				&& !this.buffering
+				&& !this.seeking
+			    && this.getPlayerPluginState() != this.PlayerPluginState().PLAYING
+				&& this.getPlayerPluginState()!= this.PlayerPluginState().AD_PLAYING) {
+				this.setClip();
+				var seek = this.getPlayerPluginState() == this.PlayerPluginState().SEEKING;
+				this.callStreamSensePlugin("notify", this.playerEvents.PLAY, this.getLabels(seek), this.getCurrentPosition());
+				this.setPlayerPluginState(this.PlayerPluginState().PLAYING);
+			}
+		},
+
+		onPause: function() {
+			if (this.getPlayerPluginState() == this.PlayerPluginState().PLAYING) {
+				var seek = this.getPlayerPluginState() == this.PlayerPluginState().SEEKING;
+				if (this.getDuration() == this.getCurrentPosition()) {
+					this.callStreamSensePlugin("notify", this.playerEvents.END, this.getLabels(seek));
+				}else {
+					this.setPlayerPluginState(this.PlayerPluginState().PAUSED);
+					this.callStreamSensePlugin("notify", this.playerEvents.PAUSE, this.getLabels(seek), this.getCurrentPosition());
+				}
+			}
+		},
+
 		setPlayerPluginState: function(newState) {
 			if (newState && newState !== this.currentPlayerPluginState) {
 				this.log("============================================================");
@@ -150,7 +188,32 @@
 
 			embedPlayer.bindHelper( 'SourceChange' + _this.bindPostfix, function(){
 				var selectedSrc = _this.embedPlayer.mediaElement.selectedSource;
-				_this.currentBitrate = selectedSrc.getBitrate();
+				_this.currentBitrate = selectedSrc.getBitrate() * 1024;
+			});
+
+			embedPlayer.bindHelper( 'bufferStartEvent' + _this.bindPostfix, function(){
+				_this.buffering = true;
+				_this.setClip();
+				_this.callStreamSensePlugin("notify", _this.playerEvents.BUFFER, {}, _this.getCurrentPosition());
+			});
+
+			embedPlayer.bindHelper( 'bufferEndEvent' + _this.bindPostfix, function(){
+				_this.buffering = false;
+			});
+
+			embedPlayer.bindHelper( 'updatePlayHeadPercent' + _this.bindPostfix, function(){
+				var args = $.makeArray( arguments );
+				var percent = args[1];
+				if (percent != _this.lastKnownwPercentage && !_this.seeking && !_this.buffering) {
+					if (percent > _this.lastKnownwPercentage) {
+						_this.onPlay();
+					} else {
+						_this.onPause();
+					}
+				} else {
+					_this.onPause();
+				}
+				_this.lastKnownwPercentage = percent;
 			});
 
 			embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostfix, function(){
@@ -162,41 +225,30 @@
 			});
 
 			embedPlayer.bindHelper('onplay' + _this.bindPostfix, function() {
-				if (_this.getPlayerPluginState() != _this.PlayerPluginState().PLAYING
-					&& _this.getPlayerPluginState()!= _this.PlayerPluginState().AD_PLAYING) {
-					// Clip labels only need to be set once per loaded media asset (ad or content)
-					// and BEFORE the Streaming Tag is notified that the media is playing.
-					if (_this.shouldSetClip) {
-						_this.callStreamSensePlugin("setClip", _this.getClipLabels(), false, [], true);
-						_this.shouldSetClip = false;
-					}
-					var seek = _this.getPlayerPluginState() == _this.PlayerPluginState().SEEKING;
-					_this.callStreamSensePlugin("notify", _this.playerEvents.PLAY, _this.getLabels(seek), _this.getCurrentPosition());
-					_this.setPlayerPluginState(_this.PlayerPluginState().PLAYING);
-				}
+				_this.playing = true;
 			});
 
 			embedPlayer.bindHelper('onpause' + _this.bindPostfix, function(event) {
-				if (_this.getPlayerPluginState() == _this.PlayerPluginState().PLAYING) {
-					if (_this.getDuration() == _this.getCurrentPosition()) {
-						_this.callStreamSensePlugin("notify", _this.playerEvents.END, _this.getLabels());
-					}else {
-						_this.setPlayerPluginState(_this.PlayerPluginState().PAUSED);
-						_this.callStreamSensePlugin("notify", _this.playerEvents.PAUSE, _this.getLabels(), _this.getCurrentPosition());
-					}
-				}
+				_this.playing = false;
+				_this.onPause();
 			});
 
 			embedPlayer.bindHelper('doStop' + _this.bindPostfix, function(event) {
 				_this.setPlayerPluginState(_this.PlayerPluginState().ENDED_PLAYING);
-				_this.callStreamSensePlugin("notify", _this.playerEvents.END, _this.getLabels());
+				var seek = _this.getPlayerPluginState() == _this.PlayerPluginState().SEEKING;
+				_this.callStreamSensePlugin("notify", _this.playerEvents.END, _this.getLabels(seek));
 			});
 
 			embedPlayer.bindHelper('seeked.started' + _this.bindPostfix, function(event) {
-				if (_this.getPlayerPluginState() != _this.PlayerPluginState().SEEKING) {
+				_this.seeking = true;
+				if (_this.playing && _this.getPlayerPluginState() != _this.PlayerPluginState().SEEKING) {
 					_this.setPlayerPluginState(_this.PlayerPluginState().SEEKING);
 					_this.callStreamSensePlugin("notify", _this.playerEvents.PAUSE, _this.getLabels(true), _this.getCurrentPosition());
 				}
+			});
+
+			embedPlayer.bindHelper('seeked.stopped' + _this.bindPostfix, function(event) {
+				_this.seeking = false;
 			});
 
 			embedPlayer.bindHelper('onOpenFullScreen' + _this.bindPostfix, function() {
@@ -347,6 +399,7 @@
 				labels.ns_st_pn = this.getPartNumber(); // Current part number of the content asset.
 				labels.ns_st_tp = this.getTotalNumberOfContentParts(); // Total number of content asset parts.
 				labels.ns_st_pr = this.getMediaName(); // Media title from CMS.
+				labels.ns_st_ep = this.getMediaName(); // Media title from CMS.
 				labels.ns_st_cu = this.getClipURL() || this.unknownValue; // Media streaming URL.
 				labels.ns_st_cl = this.getDuration(); // Length of the content asset in milliseconds.
 				labels.ns_st_cs = this.getPlayerSize(); // Content dimensions (uses player dimensions).
@@ -369,38 +422,23 @@
 			var _this = this;
 			var rawConfig = this.embedPlayer.getRawKalturaConfig(this.moduleName, configName)
 			var result = {};
-			rawConfig.split(',').forEach(function(x){
-				var arr = x.split('=');
-				arr[1] && (result[arr[0]] = _this.evaluateString(arr[1]));
+			// Split and trim the spaces
+			rawConfig.split(/ *, */g).forEach(function(x) {
+				// Create two groups, one for the label name and the second one for the label value without any "
+				var re = /([^=]+)="?([^"]+)"?/g;
+				var arr = re.exec(x);
+				arr[2] && (result[arr[1]] = _this.evaluateString(arr[2]));
 			});
 			return result;
 		},
 
 		evaluateString: function(str) {
-			var hasToEvaluate = false;
-			var valueToEvaluate = "";
-			var result = "";
-			for (var i = 0, len = str.length; i < len; i++) {
-				var c = str.charAt(i);
-				if (c =='{') {
-					hasToEvaluate = true;
-					valueToEvaluate = c;
-				} else if (c=='}' && hasToEvaluate) {
-					valueToEvaluate = valueToEvaluate.concat(c);
-					var value = String(this.embedPlayer.evaluate(valueToEvaluate));
-					result = result.concat(value);
-					hasToEvaluate = false;
-				} else if (hasToEvaluate){
-					valueToEvaluate = valueToEvaluate.concat(c);
-				} else {
-					result = result.concat(c);
-				}
-			}
-			try {
-				result = eval(result);
-			} catch(err) {
-				// Do nothing
-			}
+			var _this = this;
+			// Match all the elements inside {}
+			var re = /{[^}]+}/g;
+			var result = str.replace(re, function(match, p1, p2) {
+				return _this.embedPlayer.evaluate(p1)
+			});
 			return result;
 		},
 
