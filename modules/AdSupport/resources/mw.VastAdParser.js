@@ -12,7 +12,7 @@ mw.VastAdParser = {
 	 * VAST support
 	 * Convert the vast ad display format into a display conf:
 	 */
-	parse: function( xmlObject, callback , wrapperData, originalAjaxOptions ){
+	parse: function( xmlObject, callback , wrapperData, originalAjaxOptions, adLoader ){
 		var _this = this;
 		// in case there is a wrapper for this ad - keep the data so we will be able to track the wrapper events later
 		if (wrapperData == null) {
@@ -31,9 +31,10 @@ mw.VastAdParser = {
 		if( $vast.find('Wrapper').length && $vast.find('VASTAdTagURI').length) {
 			wrapperData.push($vast);
 			var adUrl = $vast.find('VASTAdTagURI').text();
+			adUrl=adLoader.embedPlayer.evaluate(adUrl);
 			addVideoClicksIfExist();
 			mw.log('VastAdParser:: Found vast wrapper, load ad: ' + adUrl);
-			mw.AdLoader.load( adUrl, callback, true , wrapperData, originalAjaxOptions );
+			adLoader.load( adUrl, callback, true , wrapperData, originalAjaxOptions );
 			return ;
 		}
 
