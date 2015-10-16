@@ -250,6 +250,15 @@ body {
 	height: 0.6em;
 	cursor: pointer;
 }
+.scrubber .cuepoint{
+	position: absolute;
+	background: white;
+	width: 2px;
+	height: 100%;
+}
+.adplay-state .cuepoint{
+	display:none;
+}
 .controlsContainer .scrubber{
 	display: inline-block !important;
 	margin-left:5px;
