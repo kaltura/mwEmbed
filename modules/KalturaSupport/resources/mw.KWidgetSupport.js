@@ -1505,6 +1505,13 @@ mw.KWidgetSupport.prototype = {
 				source['type'] = 'video/webm; codecs="vp8, vorbis';
 			}
 
+			// Check for mov source
+			if( asset.fileExt && asset.fileExt == 'mov' ){
+				source['src'] = src + '/a.mov';
+				source['data-flavorid'] = 'mov';
+				source['type'] = 'video/mp4';
+			}
+
 			// Check for 3gp source
 			if( asset.fileExt && asset.fileExt == '3gp' ){
 				source['src'] = src + '/a.3gp';
