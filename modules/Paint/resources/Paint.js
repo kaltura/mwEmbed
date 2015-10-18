@@ -4,19 +4,11 @@
 
         defaultConfig: {
             parent: "controlsContainer",
-            order: 5,
-            align: "right",
-            //tooltip: gM('mwe-quiz-tooltip'),
-            visible: false,
-            showTooltip: false,
-            displayImportance: 'medium',
             templatePath: '../Paint/resources/templates/paint.tmpl.html',
-            usePreviewPlayer: false,
-            previewPlayerEnabled: false
+            editMode : false
         },
         //plugin parameters
         kClient : null,
-        editMode : true,
         canvas : null,
         canvasCtx : null,
         canvasWidth : 0,
@@ -33,10 +25,8 @@
 
 		setup: function(){
             var embedPlayer = this.getPlayer();
-            this.editMode = (embedPlayer.getFlashvars().editMode !== 'undefined') ?
-                                embedPlayer.getFlashvars().editMode : false;
-            this.playerWidth = embedPlayer.getWidth();
-            this.playerHeight = embedPlayer.getHeight();
+            this.editMode = (this.getConfig('editMode') !== 'undefined') ?
+                                this.getConfig('editMode') : this.defaultConfig.editMode;
 			//Plugin setup, all actions which needs to be done on plugin loaded and before playerReady event
 			this.addBindings();
 		},
@@ -44,6 +34,20 @@
 		addBindings:function(){
             var _this = this;
             var embedPlayer = this.getPlayer();
+            this.bind('onOpenFullScreen', function() {
+                //listen to event only when resizing the player window
+                _this.bind('updateLayout', function() {
+                    _this._initCanvasDimensions();
+                    _this.unbind('updateLayout');
+                });
+            });
+            this.bind('onCloseFullScreen', function() {
+                //listen to event only when resizing the player window
+                _this.bind('updateLayout', function() {
+                    _this._initCanvasDimensions();
+                    _this.unbind('updateLayout');
+                });
+            });
             if(this.editMode) {
                 this.bind('showScreen', function () {
                     embedPlayer.disablePlayControls();
@@ -55,12 +59,13 @@
                 });
             }else {
                 this.bind('KalturaSupport_CuePointReached', function (e, cuePointObj) {
-                    console.log('cuepoint reached');
                     if(cuePointObj.cuePoint){
                         _this._showPainterCanvas(cuePointObj.cuePoint);
                         if(_this.enablePlayDuringScreen) {
                             _this.enablePlayDuringScreen = false;
                         }
+                        //removing the 'play' icon from the middle of the screen
+                        $('.largePlayBtnBorder').css('display', 'none');
                     }
                 });
             }
@@ -78,7 +83,6 @@
         },
 
         removeShowScreen:function(){
-            var embedPlayer = this.getPlayer();
             this.removeScreen();
             this.showScreen();
         },
@@ -91,11 +95,7 @@
         _initCanvas : function(cp) {
             //init paint canvas parameters
             this.canvas = document.getElementById('painterCanvas');
-            var embedPlayer = this.getPlayer();
-            this.canvas.width = this.canvasWidth = embedPlayer.getWidth();
-            this.canvas.height = this.canvasHeight = embedPlayer.getHeight();
-            $(this.canvas).width(this.canvasWidth);
-            $(this.canvas).height(this.canvasHeight);
+            this._initCanvasDimensions();
             this.canvasCtx = this.canvas.getContext("2d");
             if(this.editMode) {
                 this._initCanvasEditMode();
@@ -122,7 +122,8 @@
             if(cp.description) {
                 var img = new Image;
                 img.onload = function(){
-                    _this.canvasCtx.drawImage(img,0,0); // Or at whatever offset you like
+                    //making sure resizing the player will effect the paint as well
+                    _this.canvasCtx.drawImage(img,0,0,img.width,img.height,0,0,_this.canvasWidth,_this.canvasHeight);
                 };
                 img.src = cp.description;
             }
@@ -157,6 +158,15 @@
                 _this._savePaintCuePoint();
                 _this._continuePlay();
             });
+        },
+
+        _initCanvasDimensions : function() {
+            if(this.canvas) {
+                this.canvas.width = this.canvasWidth = this.getPlayer().getPlayerWidth();
+                this.canvas.height = this.canvasHeight = this.getPlayer().getPlayerHeight();
+                $(this.canvas).width(this.canvasWidth);
+                $(this.canvas).height(this.canvasHeight);
+            }
         },
 
         _color : function (color) {
