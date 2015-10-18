@@ -101,7 +101,7 @@
 				window._gaq.push( ['_setAllowLinker' , true] );
 			}
 
-			if (mw.getConfig('allowLinker')) {
+			if (_this.getConfig('allowLinker')) {
 				window._gaq.push( ['_setAllowLinker' , true] );
 			}
 			// check if we should anonymize Ips, from google docs: 
