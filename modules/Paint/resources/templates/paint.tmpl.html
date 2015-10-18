@@ -1,11 +1,14 @@
 <% if( paint.editMode) { %>
 <!--color box-->
 <div id="painterColors">
-    <div class="colorBoxItem" id="blue"></div>
-    <div class="colorBoxItem" id="red"></div>
-    <div class="colorBoxItem" id="yellow"></div>
-    <div class="colorBoxItem" id="green"></div>
-    <button class="paintCtrl" id="savePaint">Save</button>
+    <div class="colorBoxItem icon-paint-pencil2" id="blue"></div>
+    <div class="colorBoxItem icon-paint-pencil2" id="red"></div>
+    <div class="colorBoxItem icon-paint-pencil2" id="yellow"></div>
+    <div class="colorBoxItem icon-paint-pencil2" id="green"></div>
+</div>
+<div id="painterControllers">
+    <i class="paintCtrl icon-paint-checkmark" id="paintSave"></i>
+    <i class="paintCtrl icon-paint-cross" id="paintCancel"></i>
 </div>
 <% } %>
 <!--painting canvas-->

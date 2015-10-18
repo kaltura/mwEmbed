@@ -11,7 +11,8 @@
 			"resources/Paint.js"
 		],
 		"styles": [
-			"resources/css/paint.css"
+			"resources/css/paint.css",
+			"resources/css/fonts.css"
 		],
 		"messageFile": "Paint.i18n.json"
 	}
