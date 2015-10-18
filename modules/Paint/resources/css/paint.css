@@ -1,0 +1,31 @@
+.screen.Paint {
+    background-image: none;
+    background-color: transparent;
+}
+
+#painterColors {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+
+.colorBoxItem {
+    width:30px;
+    height:30px;
+}
+
+#blue {
+    background:blue;
+}
+
+#green {
+    background:green;
+}
+
+#yellow {
+    background: yellow;
+}
+
+#red {
+    background: red;
+}
