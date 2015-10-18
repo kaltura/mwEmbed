@@ -1,6 +1,11 @@
 .screen.Paint {
     background-image: none;
     background-color: transparent;
+    padding: 0 !important;
+}
+
+.screen-content {
+    padding: 0 !important;
 }
 
 #painterColors {
