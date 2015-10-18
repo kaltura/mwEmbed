@@ -154,8 +154,11 @@
 
         _initControllersListeners : function() {
             var _this = this;
-            $('#savePaint').click(function(){
+            $('#paintSave').click(function(){
                 _this._savePaintCuePoint();
+                _this._continuePlay();
+            });
+            $('#paintCancel').click(function(){
                 _this._continuePlay();
             });
         },
