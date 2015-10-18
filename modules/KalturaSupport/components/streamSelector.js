@@ -133,7 +133,7 @@
 				// Validate result
 				if (data && _this.isValidResult(data[0] && data[0].totalCount > 0)) {
 					_this.createStreamList(data);
-					_this.getBtn().show();
+					_this.$el.show();
 				} else {
 					mw.log('streamSelector::Error retrieving streams, disabling component');
 					_this.$el.hide();
