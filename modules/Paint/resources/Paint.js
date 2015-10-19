@@ -8,6 +8,7 @@
             editMode : false
         },
         //plugin parameters
+        duringEdit : false,
         kClient : null,
         canvas : null,
         canvasCtx : null,
@@ -50,12 +51,25 @@
             });
             if(this.editMode) {
                 this.bind('showScreen', function () {
-                    embedPlayer.disablePlayControls();
+                    //embedPlayer.disablePlayControls();
+                    _this.duringEdit = true;
+                    $('.largePlayBtn').css('display', 'none');
                     embedPlayer.pause();
                 });
 
                 this.bind('onpause', function () {
                     _this._showPainterCanvas();
+                });
+
+                this.bind('onPauseInterfaceUpdate', function () {
+                    //continue to hide big play icon if still in editing
+                    if(_this.duringEdit) {
+                        $('.largePlayBtn').css('display', 'none');
+                    }
+                });
+
+                this.bind('onplay', function () {
+                    _this.duringEdit = false;
                 });
             }else {
                 this.bind('KalturaSupport_CuePointReached', function (e, cuePointObj) {
@@ -65,7 +79,7 @@
                             _this.enablePlayDuringScreen = false;
                         }
                         //removing the 'play' icon from the middle of the screen
-                        $('.largePlayBtnBorder').css('display', 'none');
+                        $('.largePlayBtn').css('display', 'none');
                     }
                 });
             }
@@ -155,10 +169,12 @@
         _initControllersListeners : function() {
             var _this = this;
             $('#paintSave').click(function(){
+                _this.duringEdit = false;
                 _this._savePaintCuePoint();
                 _this._continuePlay();
             });
             $('#paintCancel').click(function(){
+                _this.duringEdit = false;
                 _this._continuePlay();
             });
         },
