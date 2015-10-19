@@ -14,7 +14,7 @@
 			'order': 7,
 			'visible': false,
 			'align': "right",
-			'applicationID': "DB6462E9", // DB6462E9: Chromecast default receiver, 46509854: Kaltura custom receiver supporting DRM, HLS and smooth streaming
+			'applicationID': "FFCC6D19", // DB6462E9: Chromecast default receiver, FFCC6D19: Kaltura custom receiver supporting DRM, HLS and smooth streaming
 			'showTooltip': true,
 			'tooltip': 'Chromecast',
 			'receiverMode': false,
