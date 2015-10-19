@@ -153,11 +153,11 @@
 			});
 
 			$(this.embedPlayer).bind('playNextClip', function (event) {
-				_this.playNext();
+				_this.playNext(true);
 			});
 
 			$(this.embedPlayer).bind('playPreviousClip', function (event) {
-				_this.playPrevious();
+				_this.playPrevious(true);
 			});
 
 			$( this.embedPlayer ).bind('onOpenFullScreen', function() {
@@ -529,14 +529,14 @@
 			$(this.embedPlayer).trigger('playlistPlayNext');
 		},
 
-		playPrevious: function () {
+		playPrevious: function (autoScrollToMedia) {
 			if (this.isDisabled || this.loadingEntry) {
 				return;
 			}
 			if (this.currentClipIndex != null && this.currentClipIndex > 0) {
 				this.currentClipIndex--;
 				this.setSelectedMedia(this.currentClipIndex);
-				this.playMedia(this.currentClipIndex, true);
+				this.playMedia(this.currentClipIndex, true, autoScrollToMedia);
 			}
 			$(this.embedPlayer).trigger('playlistPlayPrevious');
 		},
@@ -672,10 +672,10 @@
 			if ( this.getConfig( 'showControls' ) === true ) {
 				this.getMedialistHeaderComponent().prepend( '<div class="playlistControls k-' + this.getLayout() + '"><div class="prevBtn playlistBtn"></div><div class="nextBtn playlistBtn"></div></div>' );
 				this.getMedialistHeaderComponent().find( ".playlistControls .nextBtn" ).on( "click", function () {
-					_this.playNext()
+					_this.playNext(true)
 				} );
 				this.getMedialistHeaderComponent().find( ".playlistControls .prevBtn" ).on( "click", function () {
-					_this.playPrevious()
+					_this.playPrevious(true)
 				} );
 			}
 

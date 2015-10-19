@@ -72,13 +72,16 @@
 				var _this = this;
 				this.bind( 'playerReady', function (  ) {
 					if (_this.syncEnabled){
+						_this.initView();
+						_this.initControlBar();
 						if (_this.secondPlayer.canRender()) {
-							_this.log("render condition are not met - initializing");
-							_this.getPlayer().triggerHelper("preHideScreen", "disabledScreen");
-							_this.disabled = false;
+							_this.log("render condition are met - initializing");
 							_this.checkRenderConditions();
-							_this.initView();
-							_this.initControlBar();
+							if (_this.disabled){
+								_this.disabled = false;
+								_this.restoreView("disabledScreen");
+							}
+							_this.setInitialView();
 							if (!_this.render) {
 								_this.getPrimary().obj.css({
 									'top': '',
@@ -90,8 +93,10 @@
 							}
 						} else {
 							_this.log("render condition are not met - disabling");
-							_this.getPlayer().triggerHelper("preShowScreen", "disabledScreen");
-							_this.disabled = true;
+							if (!_this.disabled){
+								_this.minimizeView("disabledScreen");
+								_this.disabled = true;
+							}
 						}
 					}
 				} );
@@ -115,34 +120,18 @@
 					_this.updateSecondScreenLayout(e);
 				});
 
-				//Disable/enable plugin view on screen plugins actions
+				//Disable/enable plugin view on screen plugins and ads actions
+				this.bind( "AdSupport_StartAdPlayback", function (e, screenName) {
+					_this.minimizeView("disabledScreen");
+				} );
+				this.bind( "AdSupport_EndAdPlayback", function (e, screenName) {
+					_this.restoreView("disabledScreen");
+				} );
 				this.bind( "preShowScreen", function (e, screenName) {
-					_this.screenShown = true;
-					if (_this.render) {
-						_this.currentScreenNameShown = screenName;
-						if (!_this.disabled) {
-							_this.controlBar.enable();
-							_this.controlBar.hide();
-							_this.controlBar.disable();
-						}
-						_this.minimizeSecondDisplay();
-					}
+					_this.minimizeView(screenName);
 				} );
 				this.bind( "preHideScreen", function (e, screenName) {
-					_this.screenShown = false;
-					if (_this.render && _this.currentScreenNameShown === screenName) {
-						_this.currentScreenNameShown = "";
-						_this.maximizeSecondDisplay();
-						//Use setTimeout to verify that screens are hidden and not that this is a part of
-						// screens transition --> when going from one screen to another we first emit preHideScreen and
-						//only then preShowScreen
-						setTimeout(function(){
-							if (!_this.screenShown) {
-								_this.controlBar.enable();
-								_this.controlBar.show();
-							}
-						}, 100);
-					}
+					_this.restoreView(screenName);
 				} );
 
 				//Consume view state events
@@ -157,12 +146,12 @@
 						}
 				});
 				this.bind( 'onplay', function () {
-						if (!_this.disabled) {
+						if (!_this.disabled && !_this.getPlayer().isAudio()) {
 							_this.controlBar.enable();
 						}
 				} );
 				this.bind( 'onpause ended playerReady', function () {
-						if (!_this.disabled) {
+						if (!_this.disabled && _this.controlBar && !_this.getPlayer().isAudio()) {
 							_this.controlBar.show();
 							_this.controlBar.disable();
 						}
@@ -170,9 +159,7 @@
 				var wasDisabled = false;
 				this.bind( 'startDisplayInteraction', function(){
 					_this.controlBar.hide();
-					if (_this.controlBar){
-						wasDisabled = _this.controlBar.disabled;
-					}
+					wasDisabled = _this.controlBar.disabled;
 					_this.controlBar.disable();
 					_this.getPlayer().disablePlayControls();
 				});
@@ -197,7 +184,7 @@
 						//Reset the control bar
 						if (_this.controlBar) {
 							_this.controlBar.destroy();
-							//_this.controlBar = null;
+							_this.controlBar = null;
 						}
 					}
 				});
@@ -262,12 +249,15 @@
 					var transitionHandlerSet = true;
 					_this.getPlayer().triggerHelper('preDualScreenTransition', [[transitionFrom, transitionTo]]);
 
-					_this.controlBar.hide();
-
+					if (!_this.disabled) {
+						_this.controlBar.hide();
+					}
 					_this.bind("displayTransitionEnded", function ( ) {
 						if ( transitionHandlerSet ) {
 							transitionHandlerSet = false;
-							_this.controlBar.show();
+							if (!_this.disabled && !_this.getPlayer().isAudio()) {
+								_this.controlBar.show();
+							}
 							_this.displays.disableTransitions();
 							_this.getPlayer().triggerHelper('postDualScreenTransition', [[transitionFrom, transitionTo]]);
 						}
@@ -292,14 +282,16 @@
 			},
 			initControlBar: function(){
 				var _this = this;
-				this.controlBar = new mw.dualScreen.dualScreenControlBar(_this.getPlayer(), function(){
-					this.setConfig('menuFadeout', _this.getConfig('menuFadeout'));
-				}, 'dualScreenControlBar');
-				if ( this.getPlayer().isAudio()) {
-					this.controlBar.hide();
-					this.controlBar.disable();
+				if (!this.controlBar) {
+					this.controlBar = new mw.dualScreen.dualScreenControlBar(_this.getPlayer(), function () {
+						this.setConfig('menuFadeout', _this.getConfig('menuFadeout'));
+					}, 'dualScreenControlBar');
+					if (this.getPlayer().isAudio()) {
+						this.controlBar.hide();
+						this.controlBar.disable();
+					}
+					this.embedPlayer.getInterface().append(this.controlBar.getComponent());
 				}
-				this.embedPlayer.getInterface().append( this.controlBar.getComponent() );
 			},
 			initView: function(){
 				var _this = this;
@@ -340,6 +332,25 @@
 					//Set initial position of the secondary/Aux screen
 					this.positionSecondDisplay();
 				}
+
+				//dualScreen components are set on z-index 1-3, so set all other components to zIndex 4 or above
+				this.zIndexObjs = [];
+				$.each( this.embedPlayer.getVideoHolder().children(), function ( index, childNode ) {
+					var obj = $( childNode );
+					var classList = obj.attr( 'class' ) ? obj.attr( 'class' ).split( /\s+/ ) : [];
+					if ( $.inArray( "dualScreen", classList ) === -1 ) {
+						if ( isNaN( obj.css( 'z-index' ) ) ) {
+							obj.css( 'z-index', 4 );
+						} else {
+							var zIndex = parseInt(obj.css( 'z-index' ), 10);
+							obj.css( 'z-index', zIndex + 4 );
+						}
+						_this.zIndexObjs.push( obj );
+					}
+				} );
+			},
+			setInitialView: function(){
+				var _this = this;
 				var showLoadingSlide = function () {
 					if ( !_this.secondDisplayReady && _this.render && mw.getConfig( "EmbedPlayer.LiveCuepoints" ) ) {
 						//TODO: add information slide for no current slide available
@@ -362,22 +373,6 @@
 				} else {
 					showLoadingSlide();
 				}
-
-				//dualScreen components are set on z-index 1-3, so set all other components to zIndex 4 or above
-				this.zIndexObjs = [];
-				$.each( this.embedPlayer.getVideoHolder().children(), function ( index, childNode ) {
-					var obj = $( childNode );
-					var classList = obj.attr( 'class' ) ? obj.attr( 'class' ).split( /\s+/ ) : [];
-					if ( $.inArray( "dualScreen", classList ) === -1 ) {
-						if ( isNaN( obj.css( 'z-index' ) ) ) {
-							obj.css( 'z-index', 4 );
-						} else {
-							var zIndex = parseInt(obj.css( 'z-index' ), 10);
-							obj.css( 'z-index', zIndex + 4 );
-						}
-						_this.zIndexObjs.push( obj );
-					}
-				} );
 			},
 
 			//Manage display helpers
@@ -389,8 +384,39 @@
 			enableView: function(){
 				this.displays.getMainDisplay().obj.css("visibility", "");
 				this.displays.getAuxDisplay().obj.css("visibility", "");
-				this.controlBar.enable();
-				this.controlBar.show();
+				if (!this.getPlayer().isAudio()) {
+					this.controlBar.enable();
+					this.controlBar.show();
+				}
+			},
+			minimizeView: function(screenName){
+				this.screenShown = true;
+				if (this.render) {
+					this.currentScreenNameShown = screenName;
+					if (!this.disabled && !this.getPlayer().isAudio()) {
+						this.controlBar.enable();
+						this.controlBar.hide();
+						this.controlBar.disable();
+					}
+					this.minimizeSecondDisplay();
+				}
+			},
+			restoreView: function(screenName){
+				this.screenShown = false;
+				if (!this.disabled && this.render && this.currentScreenNameShown === screenName) {
+					this.currentScreenNameShown = "";
+					this.maximizeSecondDisplay();
+					//Use setTimeout to verify that screens are hidden and not that this is a part of
+					// screens transition --> when going from one screen to another we first emit preHideScreen and
+					//only then preShowScreen
+					var _this = this;
+					setTimeout(function(){
+						if (!_this.screenShown && !_this.disabled && !_this.getPlayer().isAudio()) {
+							_this.controlBar.enable();
+							_this.controlBar.show();
+						}
+					}, 100);
+				}
 			},
 			minimizeSecondDisplay: function(){
 			    if (!this.auxScreenMinimized) {
@@ -493,7 +519,7 @@
 							secondScreen.repaint(screenProps);
 							//TODO: move to image player
 							_this.secondPlayer.applyIntrinsicAspect();
-							if (_this.render) {
+							if (!_this.disabled && _this.render) {
 								//Show display and control bar after resizing
 								_this.enableView();
 								_this.maximizeSecondDisplay();
