@@ -28,7 +28,7 @@
             var embedPlayer = this.getPlayer();
             this.editMode = (this.getConfig('editMode') !== 'undefined') ?
                                 this.getConfig('editMode') : this.defaultConfig.editMode;
-			//Plugin setup, all actions which needs to be done on plugin loaded and before playerReady event
+			//Plugin setup, all plugin related actions which need to be done are loaded
 			this.addBindings();
 		},
 
@@ -85,10 +85,10 @@
             }
         },
 
+        //loads the plugin template html (loaded by parent plugin)
         getTemplateHTML: function (data) {
             var defer = $.Deferred();
             var paintTemplate = this.getTemplatePartialHTML("paint");
-
             var $template = $(paintTemplate({
                 'paint': this,
                 paintTemplate: paintTemplate
@@ -96,16 +96,19 @@
             return defer.resolve($template);
         },
 
+        //initialize current screen and trigger showScreen event
         removeShowScreen:function(){
             this.removeScreen();
             this.showScreen();
         },
 
+        //show the canvas on top of the player
         _showPainterCanvas : function(cp){
             this.removeShowScreen();
             this._initCanvas(cp);
         },
 
+        //init canvas object and its' parameters
         _initCanvas : function(cp) {
             //init paint canvas parameters
             this.canvas = document.getElementById('painterCanvas');
@@ -120,29 +123,33 @@
             }
         },
 
+        //init canvas for edit mode
         _initCanvasEditMode : function() {
             //init canvas painter listeners
             this._initCanvasListeners();
             //init color box paints listeners
             this._initColorBoxListeners();
             //init canvas controllers
-            this._initControllersListeners();
+            this._initCommandsListeners();
             //set default color
             this._color("yellow");
         },
 
+        //init canvas for view mode
         _initCanvasDisplayMode : function(cp) {
             var _this = this;
+            //if there is a paint cue point draw the image
             if(cp.description) {
                 var img = new Image;
                 img.onload = function(){
-                    //making sure resizing the player will effect the paint as well
+                    //making sure resizing the player will effect the canvas paint as well
                     _this.canvasCtx.drawImage(img,0,0,img.width,img.height,0,0,_this.canvasWidth,_this.canvasHeight);
                 };
                 img.src = cp.description;
             }
         },
 
+        //initiate canvas mouse events listeners
         _initCanvasListeners : function() {
             var _this = this;
             _this.canvas.addEventListener("mousemove", function (e) {
@@ -159,6 +166,7 @@
             }, false);
         },
 
+        //initiate color boxes listeners
         _initColorBoxListeners : function() {
             var _this = this;
             $('.colorBoxItem').each(function(index) {
@@ -166,7 +174,8 @@
             });
         },
 
-        _initControllersListeners : function() {
+        //initiate save and cancel commands
+        _initCommandsListeners : function() {
             var _this = this;
             $('#paintSave').click(function(){
                 _this.duringEdit = false;
@@ -179,6 +188,7 @@
             });
         },
 
+        //sets canvas width and height (element and object)
         _initCanvasDimensions : function() {
             if(this.canvas) {
                 this.canvas.width = this.canvasWidth = this.getPlayer().getPlayerWidth();
@@ -188,6 +198,7 @@
             }
         },
 
+        //canvas chosen color for painting
         _color : function (color) {
             switch (color) {
                 case "green":
@@ -216,6 +227,7 @@
             $('#painterCanvas').css('z-index','1');
         },
 
+        //drawing coordinates function
         _findxy : function findxy(res, e) {
             if (res == 'down') {
                 this.prevX = this.currX;
@@ -247,6 +259,7 @@
             }
         },
 
+        //drawing function
         _draw : function() {
             this.canvasCtx.beginPath();
             this.canvasCtx.moveTo(this.prevX, this.prevY);
@@ -257,6 +270,7 @@
             this.canvasCtx.closePath();
         },
 
+        //saving the canvas painting as a cue point for current entry
         _savePaintCuePoint : function() {
             var _this = this;
             var embedPlayer = this.embedPlayer;
@@ -277,6 +291,17 @@
             });
         },
 
+        //make the player playing the media again
+        _continuePlay: function () {
+            var embedPlayer = this.getPlayer();
+            if (this.isScreenVisible()){
+                this.removeScreen();
+            }
+            embedPlayer.enablePlayControls();
+            embedPlayer.play();
+        },
+
+        //get current client
         _getKClient: function () {
             if (!this.kClient) {
                 this.kClient = mw.kApiGetPartnerClient(this.embedPlayer.kwidgetid);
@@ -284,6 +309,7 @@
             return this.kClient;
         },
 
+        //checks the response from the server
         _checkApiResponse:function(msg,data){
             var _this = this;
             if(data){
@@ -295,30 +321,7 @@
                 }
             }
             return false;
-        },
-
-        _continuePlay: function () {
-            var embedPlayer = this.getPlayer();
-            if (this.isScreenVisible()){
-                this.removeScreen();
-            }
-            embedPlayer.enablePlayControls();
-            embedPlayer.play();
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		
+        
 	} ) );
 } ) ( window.mw, window.jQuery );	
