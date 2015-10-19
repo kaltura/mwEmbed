@@ -27,11 +27,12 @@
         streams: [],
         streamsReady: null,
         streamEnded: false,
-        ready: null,
+        readyAndHasStreams: null,
 
         setup: function () {
+            this.unbind();
             this.addBindings();
-            this.ready = $.Deferred();
+            this.readyAndHasStreams = $.Deferred();
         },
         destroy: function () {
             this._super();
@@ -41,7 +42,7 @@
             var _this = this;
 
             this.bind('playerReady', function () {
-                if (!_this.streamsReady) {
+                if (!_this.streamsReady && !_this.getConfig('hideUI')) {// in the case the streamSelector is loaded not by the pluginManager, the getStreams will be triggered by the loader class
                     _this.onDisable();
                     _this.getStreams();
                 }
@@ -69,10 +70,14 @@
                     _this.setStream(_this.currentStream);
                     _this.setActiveMenuItem();
                 }
-                if( !_this.getConfig('hideUI') ){
+                if (!_this.getConfig('hideUI')) {
                     _this.getBtn().show();
                 }
-                _this.ready.resolve();
+                if (_this.streams.length > 1) {
+                    _this.readyAndHasStreams.resolve(true);
+                } else {
+                    _this.readyAndHasStreams.resolve(false);
+                }
 
                 _this.buildMenu();
                 _this.onEnable();

@@ -34,9 +34,13 @@
                 mediagroups;
 
             // Allow only if no `mediaGroup` property exists
-            elements = elements.filter(function( elem ) {
-                return !elem.mediaGroup;
-            });
+            //Currently we don't support native mediaGroups. In the future, when native mediaGroups will be fully implemented in the browsers, our custom implementation should be removed
+            //As for now, only in Safari native mediaGroups implementation exists, but we still don't support it.
+            if( !mw.isDesktopSafari() ) {
+                elements = elements.filter(function (elem) {
+                    return !elem.mediaGroup;
+                });
+            }
 
             // Filter for groupnames
             mediagroups = elements.map(function( elem ) {
