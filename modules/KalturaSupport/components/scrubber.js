@@ -38,7 +38,6 @@
 			var _this = this;
 			this.bind('durationChange', function (event, duration) {
 				_this.duration = duration;
-				mw.log('---duration-updated' + event + ' ' + duration);
 			});
 
 			// check if parent is controlsContainer
@@ -131,7 +130,7 @@
 		},
 		bindUpdatePlayheadPercent: function () {
 			var _this = this;
-			this.bind('updatePlayHeadPercent', function (e, perc) {mw.log('--->>>>updatePlayHeadPercent  ' + e);
+			this.bind('updatePlayHeadPercent', function (e, perc) {
 				_this.updatePlayheadPercentUI(perc);
 			});
 		},

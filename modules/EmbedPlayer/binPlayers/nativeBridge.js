@@ -160,8 +160,6 @@
 				this.proxyElement['paused'] = true;
 			}
 
-			console.log("---" + eventName + " " + jsEventValue);
-
 			$(this.proxyElement).trigger(eventName, [jsEventValue]);
 
 
