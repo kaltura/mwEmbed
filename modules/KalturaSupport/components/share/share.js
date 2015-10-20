@@ -475,7 +475,7 @@
 		},
 		// setup embed code
 		setupEmbedCode: function(){
-			var embedCode = this.getConfig("embedCodeTemplate",true)
+			var embedCode = this.getConfig("embedCodeTemplate",true);
 			var embedConfig = this.getConfig("embedOptions");
 			var embedPlayer = this.getPlayer();
 
