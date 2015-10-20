@@ -74,7 +74,7 @@
 					"barColor": '#394F8F'
 				}
 			},
-			embedCodeTemplate: '<iframe src="//' + mw.getConfig("Kaltura.ServiceUrl").substr(mw.getConfig("Kaltura.ServiceUrl").indexOf("//")+2) + '/p/{mediaProxy.entry.partnerId}/sp/{mediaProxy.entry.partnerId}00/embedIframeJs/uiconf_id/{configProxy.kw.uiConfId}/partner_id/{mediaProxy.entry.partnerId}?iframeembed=true&playerId={configProxy.targetId}&entry_id={mediaProxy.entry.id}&flashvars[streamerType]=auto" width="560" height="395" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0"></iframe>',
+			embedCodeTemplate: '<iframe src="' + mw.getConfig("Kaltura.ServiceUrl") + '/p/{mediaProxy.entry.partnerId}/sp/{mediaProxy.entry.partnerId}00/embedIframeJs/uiconf_id/{configProxy.kw.uiConfId}/partner_id/{mediaProxy.entry.partnerId}?iframeembed=true&playerId={configProxy.targetId}&entry_id={mediaProxy.entry.id}&flashvars[streamerType]=auto" width="560" height="395" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0"></iframe>',
 			embedOptions: {
 				"streamerType": "auto",
 				"uiconfID": null,
@@ -304,15 +304,21 @@
 			});
 
 			// handle secured embed
-			$(".share-secured").on("click", function(){
-				var embedCode = $(".embed-input").val();
-				if ($(this).is(':checked')){
-					embedCode = embedCode.split("cdnapi.kaltura.com").join("cdnapisec.kaltura.com");
-				}else{
-					embedCode = embedCode.split("cdnapisec.kaltura.com").join("cdnapi.kaltura.com");
-				}
-				$(".embed-input").val(embedCode);
-			});
+			if ( mw.getConfig("Kaltura.ServiceUrl").indexOf(".kaltura.com") !== -1 ){
+				$(".share-secured").on("click", function(){
+					var embedCode = $(".embed-input").val();
+					if ($(this).is(':checked')){
+						embedCode = embedCode.split("http://cdnapi.kaltura.com").join("https://cdnapisec.kaltura.com");
+					}else{
+						embedCode = embedCode.split("https://cdnapisec.kaltura.com").join("http://cdnapi.kaltura.com");
+					}
+					$(".embed-input").val(embedCode);
+				});
+				$('.share-secured').prop('checked', mw.getConfig("Kaltura.ServiceUrl").indexOf("https") === 0); // initial check state according to ServiceUrl
+			}else{
+				// on prem - hide the security checkbox as the security settings are derived from the ServiceUrl
+				$(".share-secured, .share-secure-lbl").hide();
+			}
 
 			// handle scroll buttons
 			var deltaScroll = $(".share-icons-container .icon-border").width() + parseInt($(".share-icons-container .icon-border").css("margin-right"))*2;
@@ -469,7 +475,7 @@
 		},
 		// setup embed code
 		setupEmbedCode: function(){
-			var embedCode = this.getConfig("embedCodeTemplate",true);
+			var embedCode = this.getConfig("embedCodeTemplate",true)
 			var embedConfig = this.getConfig("embedOptions");
 			var embedPlayer = this.getPlayer();
 
