@@ -139,9 +139,9 @@
 				//set undefined
 				eventValue = void(0);
 			}
-
+			var jsEventValue;
 			if (eventValue != undefined) {
-				var jsEventValue = this.stringConvertion(eventValue);
+				jsEventValue = this.stringConvertion(eventValue);
 			}
 
 			if (eventName == 'timeupdate') {
@@ -160,7 +160,10 @@
 				this.proxyElement['paused'] = true;
 			}
 
+			console.log("---" + eventName + " " + jsEventValue);
+
 			$(this.proxyElement).trigger(eventName, [jsEventValue]);
+
 
 			if (this.subscribed[eventName]) {
 				this.subscribed[eventName](jsEventValue);
