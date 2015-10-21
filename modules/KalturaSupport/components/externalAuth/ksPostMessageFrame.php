@@ -30,7 +30,8 @@ function getKs(){
 	if( isset( $_REQUEST['action'] ) ){
 		switch( $_REQUEST['action'] ){
 			case 'login':
-				$_SESSION['isAuthenticated'] = true;
+				$_COOKIE['isAuthenticated'] = true;
+				setcookie("isAuthenticated", true, time() + 3600*24);
 				// close the window after the user logs in
 				?>
 				User is login, window will close in 1 second:
@@ -42,7 +43,8 @@ function getKs(){
 				<?php 
 			break;
 			case 'logout':
-				$_SESSION['isAuthenticated'] = false;
+				$_COOKIE['isAuthenticated'] = false;
+				setcookie("isAuthenticated", false, time() + 3600*24);
 			break;
 		}
 	}
@@ -65,7 +67,7 @@ function getKs(){
 <script>
 	// if users is logged in output "KS"
 	var ks = <?php
-		if( isset( $_SESSION['isAuthenticated'] ) && $_SESSION['isAuthenticated'] == true ){
+		if( isset( $_COOKIE['isAuthenticated'] ) && $_COOKIE['isAuthenticated'] == true ){
 			echo '"' . getKs() . '";';
 		} else {
 			echo 'null;';
