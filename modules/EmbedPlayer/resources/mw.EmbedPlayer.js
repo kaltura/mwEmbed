@@ -1420,7 +1420,8 @@
 			if (typeof errorObj == 'string') {
 				this.playerError = {
 					'title': _this.getKalturaMsg('ks-GENERIC_ERROR_TITLE'),
-					'message': errorObj
+					'message': errorObj,
+					'code' : 'GENERIC_ERROR'
 				}
 				return;
 
@@ -1506,7 +1507,17 @@
 			// If no error is given assume missing sources:
 			this.showNoInlinePlabackSupport();
 		},
-
+		/*
+		 * Removes the player error currently being displayed
+		 */
+		removePlayerError:function(){
+			$('#error').remove();
+			// Clear out the player error div:
+			this.getInterface().find('.error').remove();
+			this.layoutBuilder.closeAlert();
+			this.layoutBuilder.closeMenuOverlay();
+		},
+		
 		isLinkPlayerFlag: false,
 		isLinkPlayer: function () {
 			return this.isLinkPlayerFlag;
@@ -1693,10 +1704,8 @@
 			this['data-blockPlayerDisplay'] = null;
 			$this.attr('data-blockPlayerDisplay', '');
 
-			// Clear out the player error div:
-			this.getInterface().find('.error').remove();
-			this.layoutBuilder.closeAlert();
-			this.layoutBuilder.closeMenuOverlay();
+			// Remove the player errro:
+			this.removePlayerError();
 
 			//If we are change playing media add a ready binding:
 			var bindName = 'playerReady.changeMedia';
