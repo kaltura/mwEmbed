@@ -88,10 +88,10 @@
                 });
 
                 //only for first initialization of paint cue points on the scrubber
-                this.bind('onplay', function () {
-                    _this.displayBubbles();
-                    _this.unbind('onplay');
-                });
+                //this.bind('onplay', function () {
+                //    _this.displayBubbles();
+                //    _this.unbind('onplay');
+                //});
             }
         },
 
