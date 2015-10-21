@@ -261,7 +261,7 @@
 			var customEvents = [];
 
 			if (this.getConfig('customEvent')) {
-				customEvents = this.getConfig('customEvent').split(',');
+				customEvents = this.getConfig('customEvent').replace(/ /g,'').split(',');
 				if ($.inArray(methodName, customEvents) != -1) {
 					if (this.getConfig(methodName + "Category")) {
 						eventCategory = this.getConfig(methodName + "Category");
