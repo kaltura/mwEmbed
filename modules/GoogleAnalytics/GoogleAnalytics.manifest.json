@@ -31,6 +31,11 @@
 		        "doc" : "If the google anonymizeIp flag should be set to anonymize user reports within google analytics.",
 		        "label": "Anonymize Ips",
 		        "type" : "boolean"
+	        },
+	        "allowLinker": {
+		        "doc" : "Enables Google Analytics to do Cross-domain tracking.",
+		        "label": "Allow linker",
+		        "type" : "boolean"
 	        }
         }
     }
