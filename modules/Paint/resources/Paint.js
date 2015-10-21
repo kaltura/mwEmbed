@@ -1,5 +1,6 @@
 (function ( mw, $ ) {
 	"use strict";
+    $.paintCpObjects = [];
 	mw.PluginManager.add( 'Paint', mw.KBaseScreen.extend( {
 
         defaultConfig: {
@@ -28,6 +29,9 @@
             var embedPlayer = this.getPlayer();
             this.editMode = (this.getConfig('editMode') !== 'undefined') ?
                                 this.getConfig('editMode') : this.defaultConfig.editMode;
+            if(!this.editMode){
+                this.getAllPaintCuePoints();
+            }
 			//Plugin setup, all plugin related actions which need to be done are loaded
 			this.addBindings();
 		},
@@ -82,6 +86,12 @@
                         $('.largePlayBtn').css('display', 'none');
                     }
                 });
+
+                //only for first initialization of paint cue points on the scrubber
+                this.bind('onplay', function () {
+                    _this.displayBubbles();
+                    _this.unbind('onplay');
+                });
             }
         },
 
@@ -96,10 +106,61 @@
             return defer.resolve($template);
         },
 
+        //retrieve all current entry related code cue points
+        getAllPaintCuePoints : function() {
+            var _this = this;
+            var embedPlayer = this.getPlayer();
+            var getCps = {
+                'service': 'cuepoint_cuepoint',
+                'action': 'list',
+                'filter:entryIdEqual': embedPlayer.kentryid,
+                'filter:objectType': 'KalturaCodeCuePointFilter',
+                'filter:orderBy': '+startTime'
+            };
+            this._getKClient().doRequest(getCps, function (data) {
+                if(data.objects != null && data.objects.length > 0) {
+                    $.paintCpObjects = data.objects;
+                }
+            });
+        },
+
+        displayBubbles : function() {
+            var _this = this;
+            var embedPlayer = this.getPlayer();
+            var msDuration = embedPlayer.evaluate('{mediaProxy.entry.msDuration}');
+            var scrubber = embedPlayer.getInterface().find(".scrubber");
+            var cPo = $.paintCpObjects;
+
+            //cleaning current bubbles display
+            embedPlayer.getInterface().find(".paint-bubble-container").empty().remove();
+            embedPlayer.getInterface().find(".paint-bubble").empty().remove();
+
+            scrubber.parent().prepend('<div class="paint-bubble-container"></div>');
+
+            $.each(cPo, function (key, val) {
+                //percentage position for each cue point. calculation of cp start time and entry video length
+                var pos = (Math.round(((val.startTime/msDuration)*100) * 10)/10)-1;
+                $('.paint-bubble-container')
+                    .append($('<div id ="' + key + '" style="margin-left:' + pos + '%">'
+                            + (parseInt(key) + 1) + ' </div>')
+                    .addClass("paint-bubble"));
+            });
+
+            $('.paint-bubble').on('click', function () {
+                _this._gotoScrubberPos($(this).attr('id'));
+            });
+        },
+
         //initialize current screen and trigger showScreen event
-        removeShowScreen:function(){
+        removeShowScreen : function(){
             this.removeScreen();
             this.showScreen();
+        },
+
+        _gotoScrubberPos : function (cuePointId) {
+            var embedPlayer = this.getPlayer();
+            embedPlayer.stopPlayAfterSeek = true;
+            embedPlayer.sendNotification('doSeek', (($.paintCpObjects[cuePointId].startTime) /1000)+0.1);
         },
 
         //show the canvas on top of the player
