@@ -34,7 +34,8 @@
 			'includeHeader': true,
 			'renderWhenEmpty': false,
 			'paging': false,
-			'pageSize': 25
+			'pageSize': 25,
+			'showEmptyPlaylistError': true
 		},
 
 
@@ -67,6 +68,7 @@
 			this.minClips = parseInt(this.getConfig('MinClips'));
 			//Backward compatibility setting - set autoplay on embedPlayer instead of playlist
 			this.getPlayer().autoplay = (this.getConfig('autoPlay') == true);
+			mw.setConfig("autoPlay", this.getPlayer().autoplay);
 
 			if ( !this.getConfig( 'mediaItemWidth') ){
 				this.widthSetByUser = false;           // user did not specify a required width. We will set to 320 and apply responsive logic on resizeEvent event
@@ -102,7 +104,7 @@
 				}
 
 				// prevent iframe resize layout refresh  on iOS8
-				if ( mw.isIOS8() ){
+				if ( mw.isIOS8_9() ){
 					_this.redrawOnResize = false;
 				}
 
@@ -399,6 +401,7 @@
 
 			var _this = this;
 			var id = _this.mediaList[clipIndex].id;
+			var referenceId = _this.mediaList[clipIndex].referenceId ? _this.mediaList[clipIndex].referenceId : null;
 			if (!embedPlayer) {
 				mw.log("Error: Playlist:: playClip called with null embedPlayer ");
 				return;
@@ -412,14 +415,16 @@
 				}
 			}
 
+			var mobileAutoPlay = true;
 			// mobile devices have a autoPlay restriction, we issue a raw play call on
 			// the video tag to "capture the user gesture" so that future
 			// javascript play calls can work
-			if (mw.isMobileDevice() && embedPlayer.firstPlay && load) {
+			if (mw.isMobileDevice() && load) {
 				mw.log("Playlist:: issue load call to capture click for iOS");
 				try {
 					embedPlayer.getPlayerElement().load();
 				} catch (e) {
+					mobileAutoPlay = false;
 					mw.log("Playlist:: could not load video - possibly restricted video");
 				}
 			}
@@ -440,10 +445,14 @@
 				embedPlayer.triggerHelper(eventToTrigger);
 				_this.loadingEntry = false; // Update the loadingEntry flag//
 				// play clip that was selected when autoPlay=false. if autoPlay=true, the embedPlayer will do that for us.
-				if (!_this.getConfig("autoPlay")) {
+				if (!_this.getConfig("autoPlay") && mobileAutoPlay && embedPlayer.canAutoPlay()) {
 					setTimeout(function(){
 						embedPlayer.play();
 					},500); // timeout is required when loading live entries
+				}
+				if (mw.isMobileDevice() && !mobileAutoPlay){
+					mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
+					embedPlayer.updatePosterHTML();
 				}
 			});
 			mw.log("PlaylistAPI::playClip::changeMedia entryId: " + id);
@@ -456,7 +465,7 @@
 			//embedPlayer.changeMediaStarted = false;
 			if (!this.firstPlay) {
 				this.loadingEntry = id; // Update the loadingEntry flag
-				embedPlayer.sendNotification("changeMedia", {'entryId': id, 'playlistCall': true});
+				embedPlayer.sendNotification("changeMedia", {'entryId': id, 'playlistCall': true, 'referenceId': referenceId});
 			} else {
 				embedPlayer.triggerHelper(eventToTrigger);
 			}
@@ -649,7 +658,7 @@
 				} );
 			}
 
-			if (items.length === 0){
+			if (items.length === 0 && this.getConfig('showEmptyPlaylistError')) {
 				//If no items then show error message
 				this.showEmptyPlaylistError();
 				this.configMediaListFeatures();

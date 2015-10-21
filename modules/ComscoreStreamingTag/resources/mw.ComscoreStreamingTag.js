@@ -6,7 +6,7 @@
 
 	mw.ComscoreStreamingTag.prototype = {
 
-		pluginVersion: "1.0.0",
+		pluginVersion: "1.0.2",
 		reportingPluginName: "kaltura",
 		playerVersion: mw.getConfig('version'),
 		genericPluginUrlSecure: "https://sb.scorecardresearch.com/c2/plugins/streamingtag_plugin_generic.js",
@@ -201,12 +201,12 @@
 
 			embedPlayer.bindHelper('onOpenFullScreen' + _this.bindPostfix, function() {
 				_this.inFullScreen = true;
-				this.streamSenseInstance.setLabel("ns_st_ws", _this.isFullScreen() ? "full" : "norm", true);
+				_this.streamSenseInstance.setLabel("ns_st_ws", _this.isFullScreen() ? "full" : "norm", true);
 			});
 
 			embedPlayer.bindHelper('onCloseFullScreen' + _this.bindPostfix, function() {
 				_this.inFullScreen = false;
-				this.streamSenseInstance.setLabel("ns_st_ws", _this.isFullScreen() ? "full" : "norm", true);
+				_this.streamSenseInstance.setLabel("ns_st_ws", _this.isFullScreen() ? "full" : "norm", true);
 			});
 
 			embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostFix, function(){

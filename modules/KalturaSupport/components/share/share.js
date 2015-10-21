@@ -449,7 +449,9 @@
 					// close the window if this is an email
 					if (url.indexOf("mailto") === 0){
 						setTimeout(function(){
-							opener.close();
+							if (opener && typeof opener.close === 'function') {
+								opener.close();
+							}
 						},2000);
 					}
 				}

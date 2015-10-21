@@ -79,6 +79,7 @@
 			});
 
 			this.bind( 'playerReady', function() {
+				_this.onAirStatus = true;
 				_this.isLiveChanged();
 			} );
 
@@ -111,7 +112,7 @@
 						_this.addPoster();
 						_this.getPlayer().enablePlayControls();
 					}else{
-						_this.getPlayer().disablePlayControls();
+						_this.getPlayer().disablePlayControls(["playlistAPI"]);
 					}
 				}
 
@@ -143,7 +144,7 @@
                                     });
                                 }
 
-							    _this.getPlayer().disablePlayControls();
+							    _this.getPlayer().disablePlayControls(["playlistAPI"]);
                             }
                         }
 					}, _this.getConfig( 'offlineAlertOffest' ) );
@@ -166,7 +167,7 @@
 
 					//reload livestream
 					if ( !embedPlayer.firstPlay && _this.isDVR() ) {
-						embedPlayer.disablePlayControls();
+						embedPlayer.disablePlayControls(["playlistAPI"]);
 						var shouldPause = !embedPlayer.isPlaying();
 						var playingEvtName = "playing.backToLive";
 						embedPlayer.bindHelper( playingEvtName , function() {
@@ -262,7 +263,7 @@
 				if ( !this.getConfig("disableLiveCheck")) {
 					//the controls will be enabled upon liveStatus==true notification
 					_this.removePoster();
-					embedPlayer.disablePlayControls();
+					embedPlayer.disablePlayControls(["playlistAPI"]);
 				}
 				_this.addLiveStreamStatusMonitor();
 				//hide source selector until we support live streams switching
@@ -437,7 +438,7 @@
                 'protocol' : protocol,
                 'partnerId': embedPlayer.kpartnerid
             };
-            if ( mw.isIOS8() ) {
+            if ( mw.isIOS8_9() ) {
                 requestObj.rnd = Math.random();
             }
 			_this.getKalturaClient().doRequest( requestObj, function( data ) {

@@ -162,7 +162,9 @@
 				}
 				dataObject['playerLoadtime'] = embedPlayer.evaluate( '{playerStatusProxy.loadTime}' );
 				_this.sendEventLog( 'playerLoadtime', dataObject['playerLoadtime'] );
-				embedPlayer.getPlayerElement().sendNotification( 'setMediaAnalyticsData', dataObject );
+				if( embedPlayer.getPlayerElement() ){
+					embedPlayer.getPlayerElement().sendNotification( 'setMediaAnalyticsData', dataObject );
+				}
 			});
 		},
 

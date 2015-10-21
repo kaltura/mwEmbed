@@ -551,6 +551,15 @@
         "doc": "The initial bitrate to be selected.",
         "type": "number"
     },
+    "mediaProxy":{
+      "description": "To override mediaProxy object.",
+      "attributes": {
+         "entryCuePoints":{
+             "doc":"To override entry supplied cuePoints.",
+             "type": "json"
+         }
+      }
+    },
     "segmentScrubber.plugin": {
         "doc": "Virtaulzies the playhead to selected segment of time.",
         "type": "boolean"
