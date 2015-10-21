@@ -82,7 +82,7 @@ function getKs(){
 	var isValidDomain = function( domain ){
 		// domain list is just for "demo" URLs. Prodcution implementation 
 		// would check secure Kaltura iframe server: https://cdnapisec.kaltura.com
-		var domainList = ["localhost", "kgit.html5video.org", "player.kaltura.com"];
+		var domainList = ["localhost", "kgit.html5video.org", "player.kaltura.com", '50.19.86.65'];
 		for( var i=0; i < domainList.length; i++){
 			if( domain == domainList[i] ){
 				return true;
