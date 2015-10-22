@@ -177,8 +177,12 @@
 					this.$mediaListContainer = $( ".playlistInterface");
 					// resize the video to make place for the playlist according to its position (left, top, right, bottom)
 					if ( this.getConfig( 'containerPosition' ) == 'right' || this.getConfig( 'containerPosition' ) == 'left' ) {
-						$( ".videoHolder, .mwPlayerContainer" ).css( "width", this.$mediaListContainer.width() - this.getConfig( "mediaItemWidth" ) + "px" );
-						this.videoWidth = (this.$mediaListContainer.width() - this.getConfig( "mediaItemWidth" ));
+						var clipsWidth = parseInt(this.getConfig("mediaItemWidth"));
+						if ( this.getConfig("mediaItemWidth").toString().indexOf("%") !== -1 ){
+							clipsWidth = this.$mediaListContainer.width() * clipsWidth / 100;
+						}
+						$( ".videoHolder, .mwPlayerContainer" ).width(this.$mediaListContainer.width() - clipsWidth);
+						this.videoWidth = (this.$mediaListContainer.width() - clipsWidth);
 					}
 					if ( this.getConfig( 'containerPosition' ) == 'left' ) {
 						$( ".mwPlayerContainer" ).css( "float", "right" );
