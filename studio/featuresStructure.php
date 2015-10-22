@@ -85,6 +85,12 @@ return array(
                 "endline" => "true",
                 "model" => "config.plugins.controlBarContainer.hover"
             ),
+            array(
+                "label" => "Localization code",
+                "type" => "text",
+                "endline" => "true",
+                "model" => "config.enviornmentConfig.localizationCode"
+            ),
 			array(
 				"label" => "Last Update",
 				"type" => "readonly",
