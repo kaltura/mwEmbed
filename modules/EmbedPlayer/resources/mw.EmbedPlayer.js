@@ -1833,7 +1833,9 @@
 			}
 
 			$(this).find(".playerPoster").remove();
-			if (mw.getConfig('EmbedPlayer.HidePosterOnStart') === true) {
+			if(	mw.getConfig('EmbedPlayer.HidePosterOnStart') === true
+				&&
+				!(this.currentState=="end" && mw.getConfig('EmbedPlayer.ShowPosterOnStop'))){
 				return;
 			}
 			// support IE9 and IE10 compatibility modes
