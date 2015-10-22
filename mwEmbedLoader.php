@@ -279,6 +279,10 @@ class mwEmbedLoader {
 			$o.="\n".'mw.setConfig(\'Kaltura.ForceFlashOnIE10\', true );' . "\n";
 		}
 
+		if( $this->getUiConfObject()->getPlayerConfig( null, 'Kaltura.SupressNonProductionUrlsWarning' ) === true ){
+			$o.="\n".'mw.setConfig(\'Kaltura.SupressNonProductionUrlsWarning\', true );' . "\n";
+		}
+
 		if( $this->getUiConfObject()->isJson() ) {
 			$o.="\n"."kWidget.addUserAgentRule('{$this->request()->get('uiconf_id')}', '/.*/', 'leadWithHTML5');";
 		}
@@ -383,7 +387,7 @@ class mwEmbedLoader {
 			$wgKalturaUseManifestUrls, $wgHTTPProtocol, $wgKalturaServiceUrl, $wgKalturaServiceBase,
 			$wgKalturaCDNUrl, $wgKalturaStatsServiceUrl,$wgKalturaLiveStatsServiceUrl, $wgKalturaIframeRewrite, $wgEnableIpadHTMLControls,
 			$wgKalturaAllowIframeRemoteService, $wgKalturaUseAppleAdaptive, $wgKalturaEnableEmbedUiConfJs,
-			$wgKalturaGoogleAnalyticsUA, $wgHTML5PsWebPath;
+			$wgKalturaGoogleAnalyticsUA, $wgHTML5PsWebPath, $wgKalturaSupressNonProductionUrlsWarning;
 		$exportedJS ='';
 		// Set up globals to be exported as mwEmbed config:
 		$exportedJsConfig= array(
@@ -405,6 +409,7 @@ class mwEmbedLoader {
 			'Kaltura.UseAppleAdaptive' => $wgKalturaUseAppleAdaptive,
 			'Kaltura.EnableEmbedUiConfJs' => $wgKalturaEnableEmbedUiConfJs,
 			'Kaltura.PageGoogleAnalytics' => $wgKalturaGoogleAnalyticsUA,
+			'Kaltura.SupressNonProductionUrlsWarning' => $wgKalturaSupressNonProductionUrlsWarning,
 			'Kaltura.APITimeout' => 10000,
 			'Kaltura.kWidgetPsUrl' => $wgHTML5PsWebPath
 		);

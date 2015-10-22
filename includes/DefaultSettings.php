@@ -222,6 +222,9 @@ $wgKalturaPartnerDisableAppleAdaptive = array();
 // By default use apple adaptive if we have the ability
 $wgKalturaUseAppleAdaptive = true;
 
+//Supress the error message generated for domains using Kaltura player via non-production URLS of player (e.g. kgit, player.kaltura.com etc)
+$wgKalturaSupressNonProductionUrlsWarning = false;
+
 /********************************************************
  *  Authentication configuration variables
  *******************************************************/
