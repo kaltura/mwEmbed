@@ -1836,7 +1836,9 @@
 				if ( mw.getConfig('autoPlay') && !mw.isMobileDevice()){
 				return;
 			}
-				if ( mw.getConfig('EmbedPlayer.HidePosterOnStart') === true) {
+				if ( mw.getConfig('EmbedPlayer.HidePosterOnStart') === true
+					&&
+					!(this.currentState=="end" && mw.getConfig('EmbedPlayer.ShowPosterOnStop')) ) {
 				return;
 			}
 			// support IE9 and IE10 compatibility modes
