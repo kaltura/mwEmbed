@@ -88,7 +88,6 @@
 			$( this.embedPlayer ).bind('onOpenFullScreen', function() {
 				if ( !_this.getConfig( 'parent') ){
 					_this.getComponent().hide();
-					$(".videoHolder").width("100%");
 				}
 			});
 
@@ -96,7 +95,6 @@
 			$( this.embedPlayer ).bind('onCloseFullScreen', function() {
 				if ( !_this.getConfig( 'parent') ){
 					_this.getComponent().show();
-					$(".videoHolder").width(_this.videoWidth+"px");
 				}
 			});
 
@@ -181,8 +179,7 @@
 						if ( this.getConfig("mediaItemWidth").toString().indexOf("%") !== -1 ){
 							clipsWidth = this.$mediaListContainer.width() * clipsWidth / 100;
 						}
-						$( ".videoHolder, .mwPlayerContainer" ).width(this.$mediaListContainer.width() - clipsWidth);
-						this.videoWidth = (this.$mediaListContainer.width() - clipsWidth);
+						$( ".mwPlayerContainer" ).width(this.$mediaListContainer.width() - clipsWidth);
 					}
 					if ( this.getConfig( 'containerPosition' ) == 'left' ) {
 						$( ".mwPlayerContainer" ).css( "float", "right" );
