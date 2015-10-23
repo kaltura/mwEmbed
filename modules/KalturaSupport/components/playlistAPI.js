@@ -35,7 +35,8 @@
 			'renderWhenEmpty': false,
 			'paging': false,
 			'pageSize': 25,
-			'showEmptyPlaylistError': true
+			'showEmptyPlaylistError': true,
+			'forceMediaItemWidthBasedOnMinClips': false
 		},
 
 
@@ -325,7 +326,15 @@
 					}
 				}else{
 					var width = this.getConfig("fixedControls") ? $( ".playlistInterface" ).width() - this.getConfig("horizontalControlsWidth")*2 : $( ".playlistInterface" ).width();
-					this.setConfig( 'mediaItemWidth', Math.floor(width / this.getConfig("MinClips")) );
+					var mediaItemWidth;
+
+					if (this.getConfig('forceMediaItemWidthBasedOnMinClips')) {
+						mediaItemWidth = Math.floor(width / this.minClips);
+					} else {
+						mediaItemWidth = Math.floor(width / this.getConfig("MinClips"));
+					}
+
+					this.setConfig('mediaItemWidth', mediaItemWidth);
 				}
 				if ( this.getConfig('onPage') !== true ){ // do not refresh mediaListContainer on page
 					this.$mediaListContainer = null;
