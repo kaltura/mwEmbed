@@ -86,8 +86,9 @@ return array(
                 "model" => "config.plugins.controlBarContainer.hover"
             ),
             array(
-                "label" => "Localization code",
+                "label" => "Localization code:",
                 "type" => "text",
+                "size" => "small",
                 "endline" => "true",
                 "model" => "config.enviornmentConfig.localizationCode"
             ),
