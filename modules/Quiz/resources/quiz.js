@@ -54,8 +54,11 @@
             });
 
             this.bind('KalturaSupport_CuePointReached', function (e, cuePointObj) {
+console.log(" ========== KalturaSupport_CuePointReached");
+console.log(" ========== isSeekingIVQ =  " + _this.isSeekingIVQ);
 
                 if(!_this.isSeekingIVQ){
+
                     _this.KIVQModule.cuePointReachedHandler(e, cuePointObj)
                 }
                 if(_this.enablePlayDuringScreen) {
@@ -81,11 +84,12 @@
 
             this.bind('seeked', function () {
                 _this.alowLastQuestionSeekTemp = false;
-                setTimeout(function () {
-                    _this.isSeekingIVQ = false;}, 0);
+                _this.isSeekingIVQ = false;
+ console.log('===== bind seeked   isSeekingIVQ = ' + _this.isSeekingIVQ )
             });
             this.bind('seeking', function () {
                 _this.isSeekingIVQ = true;
+console.log('===== bind seeking   isSeekingIVQ = ' + _this.isSeekingIVQ )
             });
 
             embedPlayer.addJsListener( 'kdpReady', function(){
@@ -477,12 +481,8 @@
                 handleBubbleclick = '.bubble-ans';
             }
 
-            $(handleBubbleclick).on('click', function () {
-                _this.unbind('seeking');
+            $(handleBubbleclick).off().on('click', function () {
                 _this.KIVQModule.gotoScrubberPos($(this).attr('id'));
-                _this.bind('seeking', function () {
-                    _this.isSeekingIVQ = true;
-                });
             });
         },
         _downloadPDF:function(){

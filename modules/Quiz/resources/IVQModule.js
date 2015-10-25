@@ -218,16 +218,24 @@
                 }
             },
             gotoScrubberPos: function (questionNr) {
+                console.log("IVQ trigger do seek ===========" );
+
                 var _this = this;
+                questionNr = parseInt(questionNr);
+                _this.currentQuestionNumber = questionNr;
                 _this.embedPlayer.stopPlayAfterSeek = true;
-                _this.embedPlayer.sendNotification('doSeek', (($.cpObject.cpArray[questionNr].startTime) /1000)+0.1);
+                _this.embedPlayer.sendNotification('doSeek', (($.cpObject.cpArray[questionNr].startTime) /1000));//+1
             },
             cuePointReachedHandler: function (e, cuePointObj) {
                 var _this = this;
 
-                if (!$.quizParams.showCorrectAfterSubmission && _this.score !== null) return;
+                if (!$.quizParams.showCorrectAfterSubmission && _this.score !== null) {
+                    return
+                }
                 $.each($.cpObject.cpArray, function (key, val) {
                     if ($.cpObject.cpArray[key].startTime === cuePointObj.cuePoint.startTime) {
+                        console.log('cuepoint reached display question ' +key );
+
                         _this.currentQuestionNumber = key;
                         _this.quizPlugin.ssSetCurrentQuestion(key);
                     }
