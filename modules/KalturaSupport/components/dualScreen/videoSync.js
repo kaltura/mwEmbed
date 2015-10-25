@@ -16,39 +16,31 @@
             });
         },
         setMediaGroups: function(groups){
-            var mediagroupId = this.getPlayer().pid+"_mediagroup";
-            this.embedPlayer.setAttribute("mediagroup", mediagroupId);
-            this.embedPlayer.setAttribute("mediagroupmaster", "true");
+            var mediagroupId = this.getPlayer().pid+"_kMediaGroup";
+            this.embedPlayer.setAttribute("kMediaGroup", mediagroupId);
+            this.embedPlayer.setAttribute("kMediaGroupMaster", "true");
             groups.forEach(function(element){
-                $(element).attr("mediagroup", mediagroupId);
+                $(element).attr("kMediaGroup", mediagroupId);
             });
 
-            //TODO: handle native support in mediaGroup
-            //if ( "mediaGroup" in document.createElement("video") ){
-            //    return;
-            //}
-
-            var nodelist = document.querySelectorAll( "[mediagroup]" ),
+            var nodelist = document.querySelectorAll( "[kMediaGroup]" ),
                 elements = [].slice.call( nodelist ),
                 filtereds = {},
                 mediagroups;
 
             // Allow only if no `mediaGroup` property exists
-            //Currently we don't support native mediaGroups. In the future, when native mediaGroups will be fully implemented in the browsers, our custom implementation should be removed
-            //As for now, only in Safari native mediaGroups implementation exists, but we still don't support it.
-            if( !mw.isDesktopSafari() ) {
-                elements = elements.filter(function (elem) {
-                    return !elem.mediaGroup;
-                });
-            }
+            //Currently we don't support native mediaGroups. In the future, when native mediaGroups will be fully implemented in the browsers, our custom implementation might be removed
+            elements = elements.filter(function (elem) {
+                return !elem.mediaGroup;
+            });
 
             // Filter for groupnames
             mediagroups = elements.map(function( elem ) {
-                return elem.getAttribute( "mediagroup" );
+                return elem.getAttribute( "kMediaGroup" );
             }).filter(function( val, i, array ) {
                 if ( !filtereds[ val ] ) {
                     filtereds[ val ] = elements.filter(function( elem ) {
-                        return elem.getAttribute( "mediagroup" ) === val;
+                        return elem.getAttribute( "kMediaGroup" ) === val;
                     });
                     return true;
                 }
@@ -58,23 +50,24 @@
             // Iterate all collected mediagroup names
             // Call mediaGroup() with group name and nodelist params
             mediagroups.forEach(function( group ) {
-                this.mediaGroup( group, filtereds[ group ] );
+                this.kMediaGroup( group, filtereds[ group ] );
             }.bind(this));
         },
-        mediaGroup: function( group, elements ) {
+
+        kMediaGroup: function( group, elements ) {
 
             var controller, slaves,
                 ready = 0;
 
             // Get the single controller element
             controller = elements.filter(function( elem ) {
-                return elem.getAttribute("mediagroupmaster") || !!elem.controls || elem.getAttribute("controls", true);
+                return elem.getAttribute("kMediaGroupMaster") || !!elem.controls || elem.getAttribute("controls", true);
             })[ 0 ];
 
             // Filter nodelist for all elements that will
             // be controlled by the	controller element
             slaves = elements.filter(function( elem ) {
-                return !elem.controls && !elem.getAttribute("mediagroupmaster");
+                return !elem.controls && !elem.getAttribute("kMediaGroupMaster");
             });
 
             if ( !controller ) {
@@ -102,8 +95,9 @@
             // that is not yet seekable
             elements.forEach(function( elem ) {
 
-                // Set the actual element IDL property `mediaGroup`
-                elem.mediaGroup = elem.getAttribute( "mediagroup" );
+                // Set the actual element IDL property `kMediaGroup`
+                //Currently we don't support native mediaGroups. In the future, when native mediaGroups will be fully implemented in the browsers, our custom implementation might be removed
+                elem.kMediaGroup = elem.getAttribute( "kMediaGroup" );
 
                 $(elem).on( "canplay", canPlay, false );
             });

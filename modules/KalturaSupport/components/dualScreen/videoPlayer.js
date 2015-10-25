@@ -38,8 +38,8 @@
             });
 
             this.bind("bitrateChange", function (e, newBitrate) {
-                mw.log("DualScreen :: master screen :: sourceSwitchingStarted :: newBitrate = " + newBitrate);
-                //TODO: find closest bitrate and send notification to flash
+                mw.log("DualScreen :: MASTER :: sourceSwitchingStarted :: newBitrate = " + newBitrate);
+                //TODO: find closest bitrate and send notification to flash (should support both - progressive download and adaptive bitrate)
                 //switchSrc(newBitrate);
             });
 
@@ -82,14 +82,7 @@
                     .attr('src', this.url)
                     .addClass("videoPlayer")
                     .on("loadstart", this.sync.bind(this));
-            this.$el.get(0).setCurrentTime = function(time){
-                try{
-                    _this.$el.get(0).currentTime = time;
-                }catch(err){
-                    mw.log("--- err = "+err.message);
-                }
-
-            };
+            this.$el.get(0).setCurrentTime = function(time){ _this.$el.get(0).currentTime = time; };
             this.$el.get(0).getCurrentTime = function(){ return _this.$el.get(0).currentTime;};
             this.$el.get(0).supportsPlaybackrate =  true;
         },
@@ -109,6 +102,7 @@
             if(this.url.indexOf('m3u8') > 0){
                 fv.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
                 fv.streamerType = "hls";
+                fv.autoDynamicStreamSwitch = "false";
             }else{
                 fv.isMp4 = true;
                 if( mw.getConfig('streamerType') ){
@@ -118,31 +112,24 @@
                 }
             }
 
-            var vidSibling = new mw.PlayerElementFlash( "secondScreen", "vidSibling_obj", fv, null, function () {
-                /*
+            var vidSibling = new mw.PlayerElementFlash( "secondScreen", "vidSibling_obj", fv, _this, function () {
                 var bindEventMap = {
                     'switchingChangeStarted': 'onSwitchingChangeStarted',
                     'switchingChangeComplete': 'onSwitchingChangeComplete',
                     'flavorsListChanged': 'onFlavorsListChanged',
 
-                    'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions',
                     'bufferChange': 'onBufferChange',
 
                     'mediaLoaded': 'onMediaLoaded',
 
                     'mediaError': 'onMediaError',
                     'bitrateChange': 'onBitrateChange',
-                    'textTracksReceived': 'onTextTracksReceived',
                     'debugInfoReceived': 'onDebugInfoReceived'
                 };
                 _this.playerObject = this.getElement();
                 $.each(bindEventMap, function (bindName, localMethod) {
                     _this.playerObject.addJsListener(bindName, localMethod);
                 });
-                if (_this.startTime !== undefined && _this.startTime != 0 && !_this.supportsURLTimeEncoding()) {
-                    _this.playerObject.setKDPAttribute('mediaProxy', 'mediaPlayFrom', _this.startTime);
-                }
-                */
                 _this.sync();
                 this.playerElement.play = this.play;
                 this.playerElement.pause = this.pause;
@@ -190,18 +177,22 @@
         },
 
         //kplayer events
-        onFlavorsListChanged: function (data, id) {
-            var newFlavors = data.flavors;
-            this.manifestAdaptiveFlavors = [];
-            var _this = this;
-            $.each(newFlavors, function(inx, flavor){
-                _this.manifestAdaptiveFlavors.push( new mw.MediaSource( flavor ) );
-            });
-            mw.log("DualScreen :: second screen :: videoPlayer :: onFlavorsListChanged :: manifestAdaptiveFlavors = " + this.manifestAdaptiveFlavors.toString());
+        onFlavorsListChanged: function (data) {
+            mw.log("DualScreen :: second screen :: videoPlayer :: got FlavorsList");
+            this.manifestAdaptiveFlavors = data.flavors;
+            for(var i=0; i<this.manifestAdaptiveFlavors.length; i++){
+                mw.log("DualScreen :: second screen :: videoPlayer :: onFlavorsListChanged :: AdaptiveFlavor = " + this.manifestAdaptiveFlavors[i].bandwidth);
+            }
         },
 
-        onSwitchingChangeStarted: function (data, id) {
-            mw.log("DualScreen :: second screen :: videoPlayer :: onSwitchingChangeStarted :: data = " + data +" :: id = "+ id);
+        onMediaLoaded: function(){
+            mw.log("DualScreen :: second screen :: videoPlayer :: onMediaLoaded");
+            //lock second player on lowest bitrate
+            //this.playerObject.sendNotification('doSwitch', { flavorIndex: 0 });
+        },
+
+        onSwitchingChangeStarted: function (data) {
+            mw.log("DualScreen :: second screen :: videoPlayer :: onSwitchingChangeStarted :: currentBitrate = " + data.currentBitrate + "  |  data.currentIndex = " + data.currentIndex);
         },
 
         onSwitchingChangeComplete: function (data, id) {
@@ -244,6 +235,24 @@
                 mw.log("EmbedPlayerKplayer:: Error could not find source: " + source.getSrc());
             }
             return sourceIndex;
+            */
+        },
+
+        onMediaError: function(data){
+            mw.log("DualScreen :: second screen :: videoPlayer :: onMediaError :: error: " + data);
+        },
+
+        onBitrateChange: function(data){
+            mw.log("DualScreen :: second screen :: videoPlayer :: onBitrateChange " + data);
+        },
+
+        onDebugInfoReceived: function(data){
+            /*
+            var msg = '';
+            for (var prop in data) {
+                msg += prop + ': ' + data[prop]+' | ';
+            }
+            mw.log("--- DualScreen :: second screen :: videoPlayer :: onDebugInfoReceived | " + msg);
             */
         }
     });
