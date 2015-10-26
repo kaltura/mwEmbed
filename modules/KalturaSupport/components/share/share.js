@@ -325,7 +325,7 @@
 			$(".share-icons-scroller .next-btn").on("click", function(){
 				$(".share-icons-scroller .back-btn").show();
 				$('.share-icons-container').animate({scrollLeft: '+='+deltaScroll }, 300, function(){
-					if ($('.share-icons-container').scrollLeft()/deltaScroll === ($(".icon-border").length - 5) ){
+					if (Math.round($('.share-icons-container').scrollLeft()/deltaScroll) === ($(".icon-border").length - 5) ){
 						$(".share-icons-scroller .next-btn").hide();
 					}
 				});

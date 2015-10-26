@@ -154,6 +154,10 @@
 	cursor: pointer;
 	display: none;
 }
+.mobile .share .back-btn{
+    margin-top: 32px;
+    font-size: 1.5em;
+}
 .share .back-btn:hover{
 	text-shadow: 0px 0px 10px #fff;
 }
@@ -167,6 +171,10 @@
 }
 .share .next-btn:hover{
 	text-shadow: 0px 0px 10px #fff;
+}
+.mobile .share .next-btn{
+    margin-top: 32px;
+    font-size: 1.5em;
 }
 /* icon placeholder */
 .share .share-icons-scroller{
@@ -195,6 +203,28 @@
 	font-size: 2em;
 	margin-right: 6px;
 	display: inline-block;
+}
+.mobile .share .share-input-container{
+   margin-top: 40px;
+}
+.mobile .share .share-icons-container{
+    height: 88px;
+    width: 332px;
+    margin-left: 20px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: left;
+}
+.mobile .share .icon-border{
+    border: 0px;
+    opacity: 0.7;
+}
+.mobile .share .icon-border{
+    font-size: 4em;
+}
+.mobile .share.semiTransparentBkg{
+    background-color: rgb(0, 0, 0);
+    opacity: 0.8;
 }
 .share .share-network{
 	margin-top: 15px;
@@ -237,6 +267,9 @@
 	cursor: pointer;
 	z-index: 3;
 	color: white;
+}
+.mobile .share .share-close{
+    right: 12px;
 }
 .nativeApp .share .share-close{
 	color: #d3d3d3;
@@ -440,3 +473,21 @@
 	content: "\e609";
 }
 
+.mobile .icon-share-twitter:before {
+    content: "\e917";
+}
+.mobile .icon-share-email:before {
+    content: "\e918";
+}
+.mobile .icon-share-google:before {
+    content: "\e919";
+}
+.mobile .icon-share-facebook:before {
+    content: "\e91a";
+}
+.mobile .icon-share-linkedin:before {
+    content: "\e91b";
+}
+.icon-share-sms:before {
+    content: "\e91d";
+}
