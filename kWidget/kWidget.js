@@ -172,6 +172,31 @@
 					}
 				}
 			}
+
+
+			// Check if using staging server on non-staging site:
+			if (
+				// make sure this is Kaltura SaaS we are checking:
+			mw.getConfig( "Kaltura.ServiceUrl" ).indexOf( 'kaltura.com' ) != -1
+			&&
+				// check that the library is not on production
+			this.getPath().indexOf( 'i.kaltura.com' ) == -1
+			&&
+			this.getPath().indexOf( 'isec.kaltura.com' ) == -1
+			&&
+				// check that we player is not on a staging site:
+			window.location.host != 'kgit.html5video.org'
+			&&
+			window.location.host != 'player.kaltura.com'
+			&&
+			window.location.host != 'localhost'
+			) {
+				if ( console && console.error ) {
+					console.error( "Error: Using non-prodcution version of kaltura player library. Please see http://knowledge.kaltura.com/production-player-urls" )
+				}
+			}
+
+
 		},
 
 		/**
@@ -569,7 +594,7 @@
 			}
 			elm.innerHTML = '' +
 				'<div style="position: relative; width: 100%; height: 100%;">' +
-				'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl(settings) + '" >' +
+				'<input type="image" alt="play video content" class="kWidgetCentered" src="' + this.getKalturaThumbUrl(settings) + '" >' +
 				'<div class="kWidgetCentered kWidgetPlayBtn" ' +
 				'id="' + targetId + '_playBtn"' +
 				'></div></div>';

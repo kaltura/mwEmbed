@@ -32,9 +32,20 @@ mw.KWidgetSupport.prototype = {
 
 	addStringsSupport: function(){
 		window.getStringByKey = function(key){
+
+
 			var playerConfig = window.kalturaIframePackageData.playerConfig;
-			if (playerConfig && playerConfig.plugins && playerConfig.plugins.strings && playerConfig.plugins.strings[key]){
-				return playerConfig.plugins.strings[key];
+			var localizationCode = window.kalturaIframePackageData.enviornmentConfig["localizationCode"] || false;
+			if (playerConfig && playerConfig.plugins && playerConfig.plugins.strings ){
+				if (localizationCode && playerConfig.plugins.strings[localizationCode + "." + key]){ // handle flat localized keys
+					return playerConfig.plugins.strings[localizationCode + "." + key];
+				}else if (localizationCode && playerConfig.plugins.strings[localizationCode] && playerConfig.plugins.strings[localizationCode][key]){ // handle nested localized keys
+					return playerConfig.plugins.strings[localizationCode][key];
+				}else if (playerConfig.plugins.strings[key]){ // handle non-localized keys
+					return playerConfig.plugins.strings[key];
+				}else{
+					return false;
+				}
 			}else{
 				return false;
 			}
@@ -109,6 +120,8 @@ mw.KWidgetSupport.prototype = {
 			if( ks ){
 				downloadUrl += '/ks/' + ks;
 			}
+			downloadUrl += '/?playSessionId=' + _this.getGUID();
+
 			downloadUrlCallback( downloadUrl );
 		});
 		
@@ -1503,6 +1516,13 @@ mw.KWidgetSupport.prototype = {
 				source['type'] = 'video/webm; codecs="vp8, vorbis';
 			}
 
+			// Check for mov source
+			if( asset.fileExt && asset.fileExt == 'mov' ){
+				source['src'] = src + '/a.mov';
+				source['data-flavorid'] = 'mov';
+				source['type'] = 'video/mp4';
+			}
+
 			// Check for 3gp source
 			if( asset.fileExt && asset.fileExt == '3gp' ){
 				source['src'] = src + '/a.3gp';
@@ -1837,7 +1857,10 @@ mw.KWidgetSupport.prototype = {
 		} else {
 			embedPlayer.setFlashvars( 'streamerType', 'http' );
 			extension = 'm3u8';
-			protocol = 'http';
+			protocol = mw.getConfig('Kaltura.Protocol');
+			if( !protocol ){
+				protocol = window.location.protocol.replace(':','');
+			}
 			mimeType = 'application/vnd.apple.mpegurl';
 		}
 
