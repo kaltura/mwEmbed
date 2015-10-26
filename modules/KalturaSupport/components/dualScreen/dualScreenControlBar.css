@@ -2,7 +2,6 @@
     padding-top: 10px;
     padding-right: 10px;
     z-index: 3;
-    cursor: pointer;
     position: absolute;
     top: 0;
     right: 0;
@@ -16,34 +15,69 @@ ul.inline, ol.inline {
     padding: 0;
 }
 
+li{
+    clear: both;
+    float: right;
+}
+
 #displayControlBar{
-    cursor: pointer;
+    /* cursor: pointer; */
 }
-#displayControlBar li {
-    display: inline;
-    list-style-type: none;
-}
+
 .controlBarBtn {
-    display: inline;
-    font-size:32px;
-    padding-left: 20px;
-    cursor: pointer;
+    float: right;
+    font-size:70px;
     text-shadow: 0px 0px 1px rgba(0, 0, 0, 0.4);
     color: rgb(255, 255, 255);
+    cursor: pointer;
 }
-.controlBarBtn.last{
-    padding-left: 0px;
+
+.stateSelected{
+    position: absolute;
+    right: 10px;
 }
-#seperator {
-    padding-left: 10px;
-    padding-right: 10px;
+
+.streamBtn{
+    width: 78px;
+    height: 52px;
+    border: 2px solid white;
+    border-radius: 5px;
+    margin-right: 30px;
+}
+
+.separator {
+    font-size:28px;
+    vertical-align: middle;
+    cursor: default !important;
+    width: 6px;
+}
+
+#separator{
+    line-height: 70px;
+}
+
+#separatorStreams{
+    line-height: 78px;
+}
+
+#placeHolder{
+    opacity: 0;
+}
+
+.subMenuHidden{
+    visibility: hidden !important;
+    cursor: initial !important;
+}
+
+.subMenuVisible{
+    visibility: visible !important;
 }
 
 /*@media all and  (max-width: 640px) {*/
 /*#displayControlBar{*/
 /*width:220px;*/
 /*}*/
-/*.controlBarBtn, #seperator {*/
+/*.controlBarBtn, #separator {*/
 /*font-size:24px;*/
 /*}*/
 /*}*/
@@ -52,12 +86,12 @@ ul.inline, ol.inline {
     #displayControlBar{
         width:210px;
     }
-    .controlBarBtn, #seperator {
+    .controlBarBtn, #separator {
         font-size:24px;
     }
 }
 
-.controlBarBtn:not(.dualScreen-seperator):hover {
+.controlBarBtn:not(.dualScreen-separator):hover {
     -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
     filter: alpha(opacity=100);
     opacity: 1;
@@ -118,20 +152,27 @@ ul.inline, ol.inline {
 }
 
 .dualScreen-pip:before {
-    content: "\e600";
-}
-.dualScreen-seperator:before {
     content: "\e601";
 }
+.dualScreen-separator:before {
+    content: "\e605";
+}
 .dualScreen-switchView:before {
-    content: "\e602";
+    content: "\e600";
 }
 .dualScreen-transformhandle:before {
-    content: "\e603";
+    content: "\e606";
 }
 .dualScreen-sidebyside:before {
-    content: "\e604";
+    content: "\e603";
 }
 .dualScreen-singleView:before {
-    content: "\e605";
+    content: "\e602";
+}
+.dualScreen-contentSelection:before {
+    content: "\e604";
+}
+
+.contentSelection{
+    margin-top: 4px;
 }

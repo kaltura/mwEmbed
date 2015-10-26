@@ -1,19 +1,30 @@
 <div id="displayControlBar">
     <ul class="inline">
         <li>
-            <span id="pip" class="controlBarBtn dualScreen-pip tooltipBelow disabled" data-type="state" title="<%=buttons.pip.title%>"></span>
+            <span id="switchView" class="controlBarBtn dualScreen-switchView tooltipBelow" data-type="switch" title="<%=buttons.switchView.title%>"></span>
         </li>
         <li>
-            <span id="sideBySide" class="controlBarBtn dualScreen-sidebyside tooltipBelow" data-type="state" title="<%=buttons.sideBySide.title%>"></span>
+            <span id="placeHolder" class="controlBarBtn dualScreen-separator"></span>
+            <span id="separator" class="controlBarBtn dualScreen-separator subMenuHidden separator" data-type="state"></span>
+
+            <span id="pip" class="controlBarBtn dualScreen-pip stateSelected tooltipBelow" data-type="state" title="<%=buttons.pip.title%>"></span>
+            <span id="sideBySide" class="controlBarBtn dualScreen-sidebyside subMenuHidden tooltipBelow" data-type="state" title="<%=buttons.sideBySide.title%>"></span>
+            <span id="singleView" class="controlBarBtn dualScreen-singleView subMenuHidden tooltipBelow" data-type="state" title="<%=buttons.singleView.title%>"></span>
         </li>
+        <!--
         <li>
-            <span id="singleView" class="controlBarBtn dualScreen-singleView tooltipBelow" data-type="state" title="<%=buttons.singleView.title%>"></span>
+            <span id="chooseStream" class="controlBarBtn dualScreen-contentSelection contentSelection tooltipBelow" data-type="contentSelection" title="<%=buttons.contentSelection.title%>"></span>
+
+            <span id="separatorStreams" class="controlBarBtn dualScreen-separator subMenuHidden separator" data-type="state"></span>
+
+            <span>
+                <img class="streamBtn" title="" src="http://cdnsecakmi.kaltura.com/p/959472/sp/95947200/thumbnail/entry_id/0_peh6469l/version/100000/acv/222">
+            </span>
+
+            <span>
+                <img class="streamBtn" title="" src="http://cdnsecakmi.kaltura.com/p/959472/sp/95947200/thumbnail/entry_id/0_mc4bu29f/version/100000/acv/282">
+            </span>
         </li>
-        <li>
-            <span id="seperator" class="controlBarBtn dualScreen-seperator"></span>
-        </li>
-        <li>
-            <span id="switchView" class="controlBarBtn dualScreen-switchView tooltipBelow last" data-type="switch" title="<%=buttons.switchView.title%>"></span>
-        </li>
+        -->
     </ul>
 </div>

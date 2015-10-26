@@ -51,6 +51,7 @@
 			fsmState: [],
 			screenShown: false,
 			currentScreenNameShown: "",
+            streamSelectorLoaded: false,
 
 			setup: function ( ) {
 				this.initConfig();
@@ -59,8 +60,20 @@
 				this.addBindings();
 			},
 			isSafeEnviornment: function () {
-				this.initSecondPlayer();
-				return ( this.isPlaylistPersistent() || this.secondPlayer.canRender() );
+                //TODO: block spalyer
+                var _this = this;
+                var deferred = $.Deferred();
+                this.initSecondPlayer().then(function(){
+                    deferred.resolve(true);
+                }, function () { //url for second screen not found or not valid
+                    //TODO: validate channel playlist logic (test page needed) - configuration can be found here: http://externaltests.dev.kaltura.com/player/library/channel_playlist/v.playlist_LC_autoPlay.html (uiconf: 15135421)
+                    if( _this.isPlaylistPersistent()) {
+                        deferred.resolve(true);
+                        return;
+                    }
+                   deferred.resolve(false);
+                });
+                return deferred.promise();
 			},
 			isPlaylistPersistent: function(){
 				return (this.getPlayer().playerConfig &&
@@ -70,40 +83,19 @@
 			},
 			addBindings: function () {
 				var _this = this;
-				this.bind( 'playerReady', function (  ) {
-					if (_this.syncEnabled){
-						_this.initView();
-						_this.initControlBar();
-						if (_this.secondPlayer.canRender()) {
-							_this.log("render condition are met - initializing");
-							_this.checkRenderConditions();
-							if (_this.disabled){
-								_this.disabled = false;
-								_this.restoreView("disabledScreen");
-							}
-							_this.setInitialView();
-							if (!_this.render) {
-								_this.getPrimary().obj.css({
-									'top': '',
-									'left': '',
-									'width': '',
-									'height': ''
-								}).removeClass('firstScreen');
-								_this.hideDisplay();
-							}
-						} else {
-							_this.log("render condition are not met - disabling");
-							if (!_this.disabled){
-								_this.minimizeView("disabledScreen");
-								_this.disabled = true;
-							}
-						}
-					}
+                this.bind( 'playerReady', function (  ) {
+                    if( _this.secondPlayer ){
+                        _this.renderDualScreenView();
+                    }else{
+                        _this.waitForSecondScreen = setInterval(function () {_this.renderDualScreenView();}, 500);
+                    }
 				} );
 
 				this.bind( 'postDualScreenTransition', function () {
 					//TODO: move to imagePlayer
-					_this.secondPlayer.applyIntrinsicAspect();
+                    if( _this.secondPlayer ) {
+                        _this.secondPlayer.applyIntrinsicAspect();
+                    }
 				});
 
 				//Handle layout changes due to layout update(resize and orientation change)
@@ -225,7 +217,84 @@
 					_this.getPlayer().triggerHelper('dualScreenStateChange', "switchView");
 				});
 			},
+            renderDualScreenView: function(){
+                if( this.secondPlayer ) {
+                    mw.log("DualScreen :: renderDualScreenView init");
+                    clearInterval(this.waitForSecondScreen);
+                    
+                    if (this.syncEnabled) {
+                        var _this = this;
+                        this.initView();
+                        this.loadStreamSelector()
+                            .then(function () {
+                                _this.initControlBar();
+                            }, function () { // master entry doesn't has sub-entries
+                                if (_this.streamSelector) {
+                                    _this.streamSelector.destroy();
+                                }
+                                _this.initControlBar();
+                            });
 
+                        if (_this.secondPlayer.canRender()) {
+                            _this.log("render condition are met - initializing");
+                            _this.checkRenderConditions();
+                            if (_this.disabled){
+                                _this.disabled = false;
+                                _this.restoreView("disabledScreen");
+                            }
+                            _this.setInitialView();
+                            if (!_this.render) {
+                                _this.getPrimary().obj.css({
+                                    'top': '',
+                                    'left': '',
+                                    'width': '',
+                                    'height': ''
+                                }).removeClass('firstScreen');
+                                _this.hideDisplay();
+                            }
+                        } else {
+                            _this.log("render condition are not met - disabling");
+                            if (!_this.disabled){
+                                _this.minimizeView("disabledScreen");
+                                _this.disabled = true;
+                            }
+                        }
+                    }
+                    
+                    /*
+
+                     if (_this.syncEnabled){
+                     _this.initView();
+                     _this.initControlBar();
+                     if (_this.secondPlayer.canRender()) {
+                     _this.log("render condition are met - initializing");
+                     _this.checkRenderConditions();
+                     if (_this.disabled){
+                     _this.disabled = false;
+                     _this.restoreView("disabledScreen");
+                     }
+                     _this.setInitialView();
+                     if (!_this.render) {
+                     _this.getPrimary().obj.css({
+                     'top': '',
+                     'left': '',
+                     'width': '',
+                     'height': ''
+                     }).removeClass('firstScreen');
+                     _this.hideDisplay();
+                     }
+                     } else {
+                     _this.log("render condition are not met - disabling");
+                     if (!_this.disabled){
+                     _this.minimizeView("disabledScreen");
+                     _this.disabled = true;
+                     }
+                     }
+                     }
+                     
+                     */
+                }
+            },
 			initConfig: function () {
 				var maxWidthPercentage = this.getConfig( 'resizable' ).maxWidth;
 				var playerWidth = this.getPlayer().getWidth();
@@ -281,18 +350,60 @@
 				}, "dualScreenDisplays");
 			},
 			initControlBar: function(){
-				var _this = this;
-				if (!this.controlBar) {
-					this.controlBar = new mw.dualScreen.dualScreenControlBar(_this.getPlayer(), function () {
-						this.setConfig('menuFadeout', _this.getConfig('menuFadeout'));
-					}, 'dualScreenControlBar');
-					if (this.getPlayer().isAudio()) {
-						this.controlBar.hide();
-						this.controlBar.disable();
-					}
-					this.embedPlayer.getInterface().append(this.controlBar.getComponent());
+				if ( !this.controlBar && !this.getPlayer().isAudio()) {
+                    var _this = this;
+                    var streams = this.initStreams()
+                        .then(function () {
+                            _this.loadControlBar(streams);
+                        });
 				}
 			},
+            initStreams: function(){
+                var _this = this;
+                var deferred = $.Deferred();
+                var streams = [];
+                if(this.streamSelector && ( this.streamSelector.streams.length > 3 || (this.getPlayer().kCuePoints && this.streamSelector.streams.length > 2) ) ){
+                    //create stream object for each entity [stream, type, meta (thumbnail url, video url)]
+                    for(var i= 0; i < this.streamSelector.streams.length; i++){
+                        var slaveURL = this.getSlaveUrl();
+                        if(slaveURL) {
+                            streams.push({
+                                type: "video",
+                                meta: {
+                                    thumbnailUrl: this.streamSelector.streams[i].data.meta.thumbnailUrl,
+                                    videoURL: slaveURL
+                                },
+                                stream: this.streamSelector.streams[i]
+                            });
+                        }
+                    }
+                    //add image stream object if there are cue-points
+                    if(this.getPlayer().kCuePoints){
+                        streams.push( {
+                            type: "image",
+                            meta: {
+                                thumbnailUrl: this.secondPlayer.getPoster() //TODO: get thumbnail for the first cue-point even if the second screen is video (in the future it might be possible to load 2 videos at the beginning, instead of ppt + video, depends on configuration)
+                            }
+                        } );
+                    }
+                    return deferred.resolve(streams);
+                }else{
+                    return deferred.resolve(null);
+                }
+                return deferred.promise();
+            },
+            loadControlBar: function(streams){
+                var _this = this;
+                this.controlBar = new mw.dualScreen.dualScreenControlBar(_this.getPlayer(), function(){
+                    this.setConfig('menuFadeout', _this.getConfig('menuFadeout'));
+                    this.setStreams(streams);
+                }, 'dualScreenControlBar');
+                if (this.getPlayer().isAudio()) {
+                    this.controlBar.hide();
+                    this.controlBar.disable();
+                }
+                this.embedPlayer.getInterface().append( this.controlBar.getComponent() );
+            },
 			initView: function(){
 				var _this = this;
 				if (!this.viewInitialized) {
@@ -304,7 +415,9 @@
 					//Secondary is the dual screen, so need to populate it with the second player component
 					var primaryPlayerContainer = this.getPlayer().getVideoDisplay();
 					var secondaryPlayerContainer = this.getComponent();
-					secondaryPlayerContainer.append( this.secondPlayer.getComponent());
+                    if(this.secondPlayer) {
+                        secondaryPlayerContainer.append(this.secondPlayer.getComponent());
+                    }
 
 					//Attach the primaryPlayerContainer to the primary display
 					var primaryDisplay = this.displays.getPrimary();
@@ -577,14 +690,172 @@
 
 			//player controllers
 			initSecondPlayer: function(){
-				var _this = this;
-				this.secondPlayer = new mw.dualScreen.imagePlayer(this.getPlayer(), function () {
-					this.setConfig({
-						"prefetch": _this.getConfig("prefetch"),
-						"cuePointType": _this.getConfig("cuePointType")
-					});
-				}, "imagePlayer");
+                var _this = this;
+                var deferred = $.Deferred();
+
+                //check if entry has cue-points (PPT presentation has been recorded)
+                if (this.getPlayer().kCuePoints) {
+                  //load second screen as imagePlayer
+                  this.loadSeconScreenImage().then(function () {
+                      deferred.resolve(true);
+                  });
+                } else {
+                   //load second screen as videoPlayer (if there are video su-entries for the main entry - load streamSelector in order to check this)
+                   //TODO: add ResponseProfile filter at the php stage in order o add indicator to the entry metadata if the entry has sub-entries.
+                   this.loadStreamSelector()
+                       .then(function () {
+                           _this.loadSeconScreenVideo().then(function () {
+                               deferred.resolve(true);
+                           });
+                       }, function () { // master entry doesn't has sub-entries
+                           if( _this.streamSelector ){
+                               _this.streamSelector.destroy();
+                           }
+                           deferred.resolve(false);
+                       });
+                }
+
+                return deferred.promise();
 			},
+
+            loadSeconScreenImage: function(){
+                var _this = this;
+                var deferred = $.Deferred();
+
+                this.secondPlayer = new mw.dualScreen.imagePlayer(this.getPlayer(), function () {
+                    this.setConfig({
+                        "prefetch": _this.getConfig("prefetch"),
+                        "cuePointType": _this.getConfig("cuePointType")
+                    });
+                    deferred.resolve(true);
+                }, "imagePlayer");
+
+                return deferred.promise();
+            },
+
+            loadStreamSelector: function(){
+                var _this = this;
+                var deferred = $.Deferred();
+                //TODO: add IE8/IE7 limitation!
+
+                if( !this.streamSelector && !this.streamSelectorLoaded ) {
+                    this.streamSelector = new mw.streamSelector.selector(this.getPlayer(), function () {
+                        this.setConfig({
+                            "hideUI": true
+                        });
+                        this.getStreams();
+                        this.readyAndHasStreams.promise().then(function () {
+                            deferred.resolve(true);
+                        }, function () { // master entry doesn't has sub-entries
+                            _this.streamSelectorLoaded = true; //prevent to load streamSelector again in the future
+                            deferred.resolve(false);
+                        });
+                    }, "streamSelector");
+                }else{
+                    return deferred.resolve();
+                }
+                return deferred.promise();
+            },
+
+            loadSeconScreenVideo: function(){
+                var deferred = $.Deferred();
+
+                var secondScreenUrl = this.getSlaveUrl();
+                if( !secondScreenUrl ){
+                    deferred.resolve(false);
+                    return;
+                }
+
+                this.secondPlayer = new mw.dualScreen.videoPlayer(this.getPlayer(), function () {
+                    this.setUrl(secondScreenUrl);
+                    deferred.resolve(true);
+                }, "videoPlayer");
+
+                return deferred.promise();
+            },
+
+            getSlaveUrl: function(){
+                var secondScreenUrl;
+
+                var secondStream = this.streamSelector.getNextStream();
+                if( secondStream.id === this.embedPlayer.evaluate("{mediaProxy.entry.id}") ){
+                    return;
+                }
+
+                var masterSource = this.getPlayer().mediaElement.selectedSource;
+
+                //adaptive bit-rate
+                if( masterSource.src.indexOf('m3u8') > 0 || ( mw.getConfig('streamerType') && mw.getConfig('streamerType') !== 'http' ) ){
+                    secondScreenUrl = this.getSlaveAdaptiveUrl(masterSource, secondStream);
+                }else {
+                    // progressive download
+                    var assetId = this.findClosestPlayableFlavor(masterSource, secondStream);
+                    if (!assetId) {
+                        return;
+                    }
+                    secondScreenUrl = this.getSlavePrigressiveUrl(masterSource, secondStream.id, assetId);
+                }
+                return secondScreenUrl;
+            },
+
+            findClosestPlayableFlavor: function(masterSource, secondStream){
+                var assetId;
+
+                var masterSourceBitrate = masterSource.getBitrate();
+                mw.log("DualScreen :: master source bitrate = " + masterSourceBitrate);
+                var relevantFlavors = secondStream.data.contextData.flavorAssets.filter(function (flavor) {
+                    return flavor.tags === masterSource.tags;
+                });
+                if (relevantFlavors.length > 0) {
+                    var selectedFlavor = relevantFlavors[0];
+                    mw.log("DualScreen :: available bitrate for second screen = " + relevantFlavors[0].bitrate);
+                    var diff = Math.abs(masterSourceBitrate - selectedFlavor.bitrate);
+                    for (var ind = 1; ind < relevantFlavors.length; ind++) {
+                        mw.log("DualScreen :: available bitrate for second screen = " + relevantFlavors[ind].bitrate);
+                        var newdiff = Math.abs(masterSourceBitrate - relevantFlavors[ind].bitrate);
+                        if (newdiff < diff) {
+                            diff = newdiff;
+                            selectedFlavor = relevantFlavors[ind];
+                        }
+                    }
+                    mw.log("DualScreen :: selected second source bitrate = " + selectedFlavor.bitrate);
+                    assetId = selectedFlavor.id;
+                }
+
+                return assetId;
+            },
+
+            getSlavePrigressiveUrl: function(masterSource, slaveId, slaveAssetId){
+                //replace entryID of master player with the entryID of the slaveStream
+                var slaveUrl = masterSource.src.replace(this.embedPlayer.evaluate("{mediaProxy.entry.id}"), slaveId);
+                //replace assetid (flavor id) of master player with the assetid (flavor id) of the slaveStream
+                slaveUrl = slaveUrl.replace(masterSource.assetid, slaveAssetId);
+                return slaveUrl;
+            },
+
+            getSlaveAdaptiveUrl: function(masterSource, secondStream){
+                var slaveUrl;
+                //OSMF-HLS and HDS
+                //TODO: make HDS work! as for now slave video doesn't run as HDS (flash loads mp4 progressive download)
+                var relevantFlavors = secondStream.data.contextData.flavorAssets.filter(function (flavor) {
+                    return flavor.tags.indexOf("ipadnew") !== -1;
+                });
+                if(relevantFlavors.length === 0){
+                    return;
+                }
+
+                //replace entryID of master player with the entryID of the slaveStream
+                slaveUrl = masterSource.src.replace(this.embedPlayer.evaluate("{mediaProxy.entry.id}"), secondStream.id);
+
+                var flavors=relevantFlavors[0].id;
+                for (var i = 1; i<relevantFlavors.length; i++){
+                    flavors = flavors+","+relevantFlavors[i].id;
+                }
+
+                //replace flavors (all available flavor ids) of master player with the available flavor ids of the slaveStream
+                slaveUrl = slaveUrl.replace(masterSource.flavors, flavors);
+                return slaveUrl;
+            },
 
 			//Display
 			getComponent: function () {
