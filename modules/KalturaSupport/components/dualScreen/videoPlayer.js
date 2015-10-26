@@ -41,11 +41,13 @@
                 _this.syncEnabled = true;
             });
 
-            //adaptive bitrate or profressive download via flash
+            //adaptive bitrate or
             this.bind("bitrateChange", function (e, newBitrate) {
                 mw.log("--- DualScreen :: MASTER :: sourceSwitchingStarted :: newBitrate = " + newBitrate);
-                //TODO: find closest bitrate and send notification to flash (should support both - progressive download and adaptive bitrate)
+                //TODO: find closest bitrate and send notification to flash (should be supported only for adaptive bitrate)
                 //switchSrc(newBitrate);
+
+                // progressive download via flash should be dealt by dual screen (findClosestPlayableFlavor)
             });
 
             //progressive download native

@@ -70,9 +70,6 @@
                     _this.setStream(_this.currentStream);
                     _this.setActiveMenuItem();
                 }
-                if (!_this.getConfig('hideUI')) {
-                    _this.getBtn().show();
-                }
                 if (_this.streams.length > 1) {
                     _this.readyAndHasStreams.resolve(true);
                 } else {
@@ -145,7 +142,9 @@
                 // Validate result
                 if (data && _this.isValidResult(data[0] && data[0].totalCount > 0)) {
                     _this.createStreamList(data);
-                    _this.getBtn().show();
+                    if (!_this.getConfig('hideUI')) {
+                        _this.getBtn().show();
+                    }
                 } else {
                     mw.log('streamSelector::Error retrieving streams, disabling component');
                     _this.getBtn().hide();
