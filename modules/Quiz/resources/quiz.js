@@ -54,11 +54,7 @@
             });
 
             this.bind('KalturaSupport_CuePointReached', function (e, cuePointObj) {
-console.log(" ========== KalturaSupport_CuePointReached");
-console.log(" ========== isSeekingIVQ =  " + _this.isSeekingIVQ);
-
                 if(!_this.isSeekingIVQ){
-
                     _this.KIVQModule.cuePointReachedHandler(e, cuePointObj)
                 }
                 if(_this.enablePlayDuringScreen) {
@@ -84,12 +80,11 @@ console.log(" ========== isSeekingIVQ =  " + _this.isSeekingIVQ);
 
             this.bind('seeked', function () {
                 _this.alowLastQuestionSeekTemp = false;
-                _this.isSeekingIVQ = false;
- console.log('===== bind seeked   isSeekingIVQ = ' + _this.isSeekingIVQ )
+                setTimeout(function () {
+                    _this.isSeekingIVQ = false;}, 0);
             });
             this.bind('seeking', function () {
                 _this.isSeekingIVQ = true;
-console.log('===== bind seeking   isSeekingIVQ = ' + _this.isSeekingIVQ )
             });
 
             embedPlayer.addJsListener( 'kdpReady', function(){
@@ -106,7 +101,7 @@ console.log('===== bind seeking   isSeekingIVQ = ' + _this.isSeekingIVQ )
                 }
             });
         },
-        getKClient: function () {//remove this
+        getKClient: function () {
             if (!this.kClient) {
                 this.kClient = mw.kApiGetPartnerClient(this.embedPlayer.kwidgetid);
             }
@@ -481,8 +476,14 @@ console.log('===== bind seeking   isSeekingIVQ = ' + _this.isSeekingIVQ )
                 handleBubbleclick = '.bubble-ans';
             }
 
+
             $(handleBubbleclick).off().on('click', function () {
+               _this.unbind('seeking');
                 _this.KIVQModule.gotoScrubberPos($(this).attr('id'));
+                _this.bind('seeking', function () {
+                    _this.isSeekingIVQ = true;
+                });
+
             });
         },
         _downloadPDF:function(){
