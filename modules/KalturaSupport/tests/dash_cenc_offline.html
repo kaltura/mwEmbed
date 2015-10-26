@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>Playback Rate Player test</title>
+    <title>Offline demo</title>
     <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
     <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
     <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
@@ -13,8 +13,7 @@
     <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> Playback Rate ( HTML5 only ) </h2>
-Note you must use <b>progressive delivery</b> for playback rate control, and not all HTML5 browsers support playback rate.
+<h2>Offline demo</h2>
 <div id="myVideoTarget" style="width:600px;height:375px;"></div>
 <br>
 
@@ -33,26 +32,6 @@ Note you must use <b>progressive delivery</b> for playback rate control, and not
 
 
 </script>
-
-<br>
-Example code: log rate changes and bind buttons to update named rates:
-<pre class="prettyprint linenums">
-kWidget.addReadyCallback( function( playerId ){
-	var kdp = document.getElementById( playerId );
-	// Log playback rate changes:
-	kdp.kBind('updatedPlaybackRate', function( newRate ){
-		$("#changeLog").append( "Set playback rate to x" + newRate + "\n" );
-	});
-	// Update rate on button click
-	$('.rate-buttons button').click(function(){
-		kdp.sendNotification('playbackRateChangeSpeed', $( this ).attr('data-rate') );
-	})
-})
-</pre>
-Change log:
-<pre style="max-width:800px" id="changeLog"></pre>
-<p><p>
-
 
 </body>
 </html>
