@@ -120,6 +120,11 @@
 		"dependencies": "mw.KBaseComponent",
 		"kalturaPluginName": "smartContainer"
 	},
+  "smartContainer": {
+    "scripts": "components/offline.js",
+    "dependencies": "mw.KBasePlugin",
+    "kalturaPluginName": "offline"
+  },
 	"chapters": {
 		"scripts": "components/chapters/chapters.js",
 		"styles": "components/chapters/chapters.css",
