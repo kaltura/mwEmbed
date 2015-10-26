@@ -476,28 +476,13 @@
                 handleBubbleclick = '.bubble-ans';
             }
 
-
             $(handleBubbleclick).off().on('click', function () {
-               _this.unbind('seeking');
+                _this.unbind('seeking');
                 _this.KIVQModule.gotoScrubberPos($(this).attr('id'));
                 _this.bind('seeking', function () {
                     _this.isSeekingIVQ = true;
                 });
-
-            });
-        },
-        _downloadPDF:function(){
-            var _this = this;
-            var quizPDF = {
-                'service': 'quiz_quiz',
-                'action': 'servepdf',
-                'entryId': _this.embedPlayer.kentryid
-            };
-            _this.getKClient().doRequest(quizPDF, function(data) {
-                if (!_this._checkApiResponse('Get pdf err -->',data)){
-                    return false;
-                }
             });
         }
-    }));
+     }));
 })(window.mw, window.jQuery);

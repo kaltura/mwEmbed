@@ -1,20 +1,17 @@
+/**
+ * Created by mark.feder on 10/13/2015.
+ */
 (function (mw, $) {
     "use strict";
         mw.KIVQApi = function (embedPlayer) {
         return this.init(embedPlayer);
     };
     if (!(mw.KIVQApi.prototype = {
-
-            // The bind postfix:
             bindPostfix: '.KIVQApi',
-         //   qnaService: null,
-
             init: function (embedPlayer) {
 
                 var _this = this;
-                // Remove any old bindings:
                 this.destroy();
-                // Setup player ref:
                 this.embedPlayer = embedPlayer;
 
                 this.getUserEntryIdAndQuizParams = function(callback){
@@ -121,12 +118,9 @@
                 });
             };
 
-            },// init end
+            },
             destroy: function () {
-                //clearInterval(this.currentTimeInterval);
-                //this.currentTimeInterval = null;
-                //clearInterval(this.answerOnAirQueueUpdateInterval);
-                //$(this.embedPlayer).unbind(this.bindPostfix);
+
             },
 
             getKClient: function () {

@@ -28,7 +28,6 @@
                 this.destroy();
                 this.embedPlayer = embedPlayer;
                 this.quizPlugin = quizPlugin;
-
             },
 
             setupQuiz:function(){
@@ -279,13 +278,13 @@
                     if (!_this.checkApiResponse('Add question err -->',data)){
                         return false;
                     }else {
-                      //  $.cpObject.cpArray[_this.q2i(questionNr)].answerCpId = data.id;
                         $.cpObject.cpArray[questionNr].answerCpId = data.id;
                     }
                 })
             },
+
             displayHex:function (hexPositionContDisplay,cpArray){
-                var _this = this;//,embedPlayer = this.getPlayer();
+                var _this = this;
                 var numberOfQuestionsInRow = 6;
                 _this.sliceArray = _this.buildHexSliceArr(numberOfQuestionsInRow,cpArray.length);
 
