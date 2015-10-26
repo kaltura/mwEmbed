@@ -73,7 +73,19 @@
         "ks-chapters-slide-duration": "Slide duration",
         "ks-sidebar-toggleBtn": "Navigation",
         "ks-FLASH-BLOCKED-TITLE": "Flash is not active",
-        "ks-FLASH-BLOCKED": "Flash does not appear to be installed or active.<br>Please <a href='http:\/\/get.adobe.com\/flashplayer\/' target='_blank'>install<\/a> or <a href='http:\/\/knowledge.kaltura.com\/faq\/how-activate-flash-safari-desktop' target='_blank'>activate<\/a> flash"
+        "ks-FLASH-BLOCKED": "Flash does not appear to be installed or active.<br>Please <a href='http:\/\/get.adobe.com\/flashplayer\/' target='_blank'>install<\/a> or <a href='http:\/\/knowledge.kaltura.com\/faq\/how-activate-flash-safari-desktop' target='_blank'>activate<\/a> flash",
+        "ks-DUAL-SCREEN-SBS": "Side By Side",
+        "ks-DUAL-SCREEN-HIDE": "Single View",
+        "ks-DUAL-SCREEN-PIP": "Picture In Picture",
+        "ks-DUAL-SCREEN-SWITCH": "Toggle View",
+        "ks-MODERATION-CANCEL": "Cancel",
+        "ks-MODERATION-SUBMIT": "Submit",
+        "ks-MODERATION-DONE": "Done",
+        "ks-MODERATION-REPORT": "Report",
+        "ks-MODERATION-REASON-SEX": "Sexual Content",
+        "ks-MODERATION-REASON-VIOLENCE": "Violent Or Repulsive",
+        "ks-MODERATION-REASON-HARMFUL": "Harmful Or Dangerous Act",
+        "ks-MODERATION-REASON-SPAM": "Spam / Commercials"
     },
     "fr": {
         "ks-UNAUTHORIZED_DOMAIN_TITLE": "Domaine non autoris�",

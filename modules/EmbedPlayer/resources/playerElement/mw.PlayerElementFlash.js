@@ -57,8 +57,12 @@
                 mwEmbedPath = window.location.protocol + mwEmbedPath.substring( mwEmbedPath.indexOf(":") + 1);
             }
 
-             var kdpPath = mwEmbedPath + 'modules/EmbedPlayer/binPlayers/kaltura-player/kdp3.swf';
+            var kdpPath = mwEmbedPath + 'modules/EmbedPlayer/binPlayers/kaltura-player/kdp3.swf';
             //var kdpPath = "http://localhost/chromeless-kdp/KDP3/bin-debug/kdp3.swf";
+
+            if (mw.getConfig('forceNoKdpCache')) {
+                kdpPath += '?' + new Date().getTime();
+            }
 
             // check for ForceFlashOnDesktopSafari and if so set interval in order to try to detect flash player (run 3 times)
             if(mw.getConfig("ForceFlashOnDesktopSafari")) {

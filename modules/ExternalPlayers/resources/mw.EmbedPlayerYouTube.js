@@ -24,10 +24,11 @@
 		playerEmbedFlag: false,
 		//Flag holdinng end state
 		hasEnded: false,
-
+		ytMobilePlayed: false,
 		//the youtube entry id
 		youtubeEntryId : "",
 		playerReady: null,
+		isPlaylist: false,
 		//the youtube preFix
 		//TODO grab from a configuration
 		youtubePreFix : "//www.youtube.com/apiplayer?video_id=",
@@ -79,6 +80,7 @@
 						_this.hasEnded = true;
 						break;
 					case 1:
+						_this.ytMobilePlayed = true;
 						if (_this.hasEnded){
 							_this.hasEnded = false;
 							return;
@@ -164,7 +166,7 @@
 					_this.setVolume(0);
 				}
 				//autoplay
-				if(mw.getConfig('autoPlay')){
+				if(mw.getConfig('autoPlay') && _this.canAutoPlay()){
 					_this.play();
 				}else{
 					window['hidePlayer']();
@@ -209,6 +211,7 @@
 				$('.ui-icon-arrowthickstop-1-s').hide();
 				$('.ui-icon-flag').hide();
 				var embedPlayer = $('#' + window["pid"].replace( 'pid_', '' ) )[0];
+				_this.isPlaylist = embedPlayer.playlist;
 				var playerVars;
 				//basic configuration
 				playerVars = {
@@ -359,11 +362,22 @@
 				}
 			});
 
+			this.bindHelper ('onChangeMedia' + this.bindPostfix , function(){
+				if (mw.isMobileDevice()){
+					$(".largePlayBtn").css("opacity",1);
+					$(".mwEmbedPlayer").width("100%");
+					$( _this ).trigger( 'onEnableInterfaceComponents', []);
+				}
+				if (_this.referenceId){
+					_this.getPlayerElement().loadVideoById(_this.referenceId);
+				}
+			});
+
 			this.bindHelper ('playerReady' + this.bindPostfix , function(){
 				$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
-				if (mw.isMobileDevice()){
+				if (!_this.canAutoPlay()){
 					_this._playContorls = false;
-					$( _this ).trigger( 'onDisableInterfaceComponents', [] );
+					$( _this ).trigger( 'onDisableInterfaceComponents', [["playlistAPI"]] );
 				}
 			});
 
@@ -388,27 +402,35 @@
 		},
 		changeMediaCallback: function (callback) {
 			var _this = this;
+			if (mw.isMobileDevice()){
+				$(".largePlayBtn").css("opacity",0);
+				$(".mwEmbedPlayer").width(0);
+			}
 			this.playerReady.promise().then(function(){
 				callback();
-				if(mw.getConfig('autoPlay')){
-				    _this.play();
+				if( mw.getConfig('autoPlay') || _this.isPlaylist){
+					if (mw.isMobileDevice()){
+						if (mw.isIphone()){
+							$(".largePlayBtn").hide();
+							setTimeout(function(){
+								_this.hideSpinner();
+							},350);
+						}
+						if (_this.ytMobilePlayed){
+							_this.play();
+						}else{
+							_this.getPlayerElement().stopVideo();
+							_this._playContorls = false;
+							$( _this ).trigger( 'onDisableInterfaceComponents', [["playlistAPI"]] );
+						}
+					}else{
+				        _this.play();
+					}
 				}
 			});
 		},
-		changeMedia: function(){
-			var _this = this;
-			// all we have is the entry ID. We need to get the YouTube video ID
-			var request = {
-				'service': 'baseEntry',
-				'action': 'get',
-				'entryId': this.kentryid
-			};
-			this.getKClient().doRequest(request, function (entryDataResult) {
-				if (entryDataResult.referenceId){
-					_this.getPlayerElement().loadVideoById(entryDataResult.referenceId);
-				}
-				_this.parent_changeMedia();
-			});
+		canAutoPlay: function(){
+			return !mw.isMobileDevice() || (mw.isMobileDevice() && this.ytMobilePlayed);
 		},
 		getKClient: function () {
 			if (!this.kClient) {
@@ -561,16 +583,53 @@
 			mw.log("Seeking to: " + seekTime);
 			var _this = this;
 			this.seeking = true;
+			this.stopSeekWatchDog();
 			$( this ).trigger( 'seeking' );
 			var yt = this.getPlayerElement();
+			var currentTime = this.getPlayerElementTime();
 			yt.seekTo( seekTime );
 			this.layoutBuilder.onSeek();
 			// Since Youtube don't have a seeked event , we must turn off the seeking flag and restore pause state if needed
-			this.seeking = false;
 			if ( !this.isPlaying() ){
 				setTimeout(function(){
+					$( _this ).trigger( 'seeked' );
+					_this.seeking = false;
 					_this.pause();
 				},500);
+			} else {
+				this.startSeekWatchDog(currentTime);
+			}
+		},
+		startSeekWatchDog: function(refTime){
+			this.log("startSeekWatchDog");
+			var interval = 1000;
+			var lastTime = refTime;
+			var _this = this;
+			var yt = this.getPlayerElement();
+			this.checkPlayerTime = function () {
+				if(yt.getPlayerState() == YT.PlayerState.PLAYING ) {
+					var t = yt.getCurrentTime();
+					///expecting 1 second interval , with 500 ms margin
+					if (Math.abs(t - lastTime - 1) > 0.5) {
+						// if seek threshold was detected and we're still in seeking state fire event
+						if(_this.seeking) {
+							$(_this).trigger('seeked');
+							_this.seeking = false;
+						}
+						_this.stopSeekWatchDog();
+						return;
+					}
+				}
+				lastTime = yt.getCurrentTime();
+				_this.watchDogTimer = setTimeout(_this.checkPlayerTime, interval); /// repeat function call in 1 second
+			};
+			this.watchDogTimer = setTimeout(this.checkPlayerTime, interval);
+		},
+		stopSeekWatchDog: function(){
+			this.log("stopSeekWatchDog");
+			if (this.watchDogTimer){
+				clearTimeout(this.watchDogTimer);
+				this.watchDogTimer = null;
 			}
 		},
 
@@ -584,10 +643,13 @@
 //		if ( this.getPlayerElement() && this.playerElement.sendNotification ){
 //			this.playerElement.sendNotification('changeVolume', percentage);
 //		}
-			var yt = this.getPlayerElement();
-			if(yt.setVolume) {
-				yt.setVolume(percentage * 100);
-			}
+			var _this = this;
+			this.playerReady.promise().then(function(){
+				var yt = _this.getPlayerElement();
+				if(yt.setVolume) {
+					yt.setVolume(percentage * 100);
+				}
+			});
 		},
 
 		/**

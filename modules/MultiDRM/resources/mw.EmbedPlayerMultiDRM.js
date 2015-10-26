@@ -1032,7 +1032,7 @@
 			if( source !== -1 ){
 				this.getPlayerElement().mediaPlayer.setAutoSwitchQuality(false);
 				var sourceIndex = this.getSourceIndex(source);
-				if (sourceIndex) {
+				if (sourceIndex != null) {
 					this.getPlayerElement().mediaPlayer.setQualityFor( "video", sourceIndex );
 				}
 			} else {

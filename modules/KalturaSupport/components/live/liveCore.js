@@ -79,6 +79,7 @@
 			});
 
 			this.bind( 'playerReady', function() {
+				_this.onAirStatus = true;
 				_this.isLiveChanged();
 			} );
 

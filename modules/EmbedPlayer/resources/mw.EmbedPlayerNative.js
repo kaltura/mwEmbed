@@ -193,9 +193,6 @@
 					}
 					_this.updatePosterHTML();
 				}
-				if (!(mw.isIOS7() && mw.isIphone())) {
-					_this.changeMediaCallback = null;
-				}
 				callback();
 			});
 		},

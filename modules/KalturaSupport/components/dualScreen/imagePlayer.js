@@ -18,7 +18,7 @@
 		setup: function(){
 			this.addBinding();
 		},
-		isSafeEnviornment: function () {
+		canRender: function () {
 			var cuePoints = this.getCuePoints();
 			var cuePointsExist = (cuePoints.length > 0);
 			return (!this.getPlayer().useNativePlayerControls() &&

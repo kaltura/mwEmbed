@@ -10,22 +10,22 @@
 		"controlBarComponents": {
 			sideBySide: {
 				id: 'sideBySide',
-				title: 'Side By Side',
+				title: gM("ks-DUAL-SCREEN-SBS"),
 				event: "SbS"
 			},
 			singleView: {
 				id: 'singleView',
-				title: 'Single View',
+				title: gM("ks-DUAL-SCREEN-HIDE"),
 				event: "hide"
 			},
 			pip: {
 				id: 'pip',
-				title: 'Picture In Picture',
+				title: gM("ks-DUAL-SCREEN-PIP"),
 				event: "PiP"
 			},
 			switchView: {
 				id: 'switchView',
-				title: 'Toggle View',
+				title: gM("ks-DUAL-SCREEN-SWITCH"),
 				event: "switchView"
 			},
             contentSelection: {
@@ -35,9 +35,12 @@
             }
 		},
 		disabled: false,
+
+		nativeAppTooltip: "Switching content<br/>on current view<br/>is not yet<br/>supported.<br/><br/>Try single view",
         streams: [],
 
 		setup: function() {
+			this.postFix = "." + this.pluginName;
 			this.addBindings();
 		},
 
@@ -64,28 +67,33 @@
 			}
 			return this.$controlBar;
 		},
+		getControlBarDropShadow: function() {
+			var _this = this;
+			if (!this.$controlBarDropShadow) {
+				this.$controlBarDropShadow = $("<div class='dualScreen controlBarShadow componentAnimation'></div>")
+					.addClass('componentOff')
+					.on("click mouseover mousemove mouseout touchstart touchend", function (e) {
+						_this.embedPlayer.triggerHelper(e);
+				});
+			}
+			return this.$controlBarDropShadow;
+		},
 		addBindings: function () {
 			//Set control bar visiblity handlers
 			var _this = this;
 			//TODO:hook these events to layoutbuilder events
 			this.embedPlayer.getInterface()
-				.on( 'mousemove touchstart', function(){
+				.on( 'mousemove' + this.postFix +' touchstart' + this.postFix, function(){
 					_this.show();
 				})
-				.on( 'mouseleave', function(){
+				.on( 'mouseleave' + this.postFix, function(){
 					if (!mw.isMobileDevice()){
 						_this.hide();
 					}
 				});
 
 			//add drop shadow containers for control bar
-			this.embedPlayer.getVideoHolder()
-				.prepend($("<div class='dualScreen controlBarShadow componentAnimation'></div>")
-					.addClass('componentOff')
-					.on("click mouseover mousemove mouseout touchstart touchend", function(e){
-						_this.embedPlayer.triggerHelper(e);
-					})
-			);
+			this.embedPlayer.getVideoHolder().prepend(this.getControlBarDropShadow());
 
 			//Cache buttons
 			var buttons = _this.getComponent().find( "span" );
@@ -95,7 +103,7 @@
 
 			//Attach control bar action handlers
 			_this.getComponent()
-				.on( 'click touchstart', 'li > span', function (e) {
+				.on( 'click' + this.postFix + ' touchstart' + this.postFix, 'li > span', function (e) {
 					e.stopPropagation();
 					e.preventDefault();
 					var btn = _this.controlBarComponents[this.id];
@@ -116,7 +124,7 @@
 						if (this.id === _this.controlBarComponents.pip.id){
 							switchBtn
 								.addClass("disabled")
-								.tooltip( "option", "content", nativeAppTooltip);
+								.tooltip( "option", "content", _this.nativeAppTooltip);
 						} else if(this.id === _this.controlBarComponents.singleView.id){
 							switchBtn.tooltip( "option", "content", _this.controlBarComponents.switchView.title);
 						}
@@ -128,9 +136,7 @@
 				} );
 
 			if (mw.isNativeApp()){
-				var nativeAppTooltip = "Switching content<br/>on current view<br/>is not yet<br/>supported.<br/><br/>Try single view";
-				switchBtn.addClass("disabled" )
-					.attr("title", nativeAppTooltip );
+				switchBtn.addClass("disabled" ).attr("title", _this.nativeAppTooltip );
 			}
 
 			//Set tooltips (each row separately)
@@ -175,6 +181,29 @@
 					_this.hide();
 				}, this.getConfig("menuFadeout"));
 			}
+		},
+		set: function(id){
+			if (id) {
+				var component = this.getComponent();
+				var buttons = $("span[data-type=state]", component);
+				buttons.not("#" + id).removeClass("disabled");
+				buttons.filter("#" + id).addClass("disabled");
+				if (mw.isNativeApp()) {
+					var switchBtn = $('span[data-type="switch"]', component);
+					switchBtn
+						.addClass("disabled")
+						.tooltip("option", "content", this.nativeAppTooltip);
+				}
+			}
+		},
+		destroy: function() {
+			this.embedPlayer.unbindHelper(this.postFix);
+			this.getComponent().off(this.postFix);
+			this.embedPlayer.getInterface().off(this.postFix);
+			this.getComponent().remove();
+			this.getControlBarDropShadow().remove();
+			this.$controlBar = null;
+			this.$controlBarDropShadow = null;
 		}
 	});
 })( window.mw, window.jQuery );

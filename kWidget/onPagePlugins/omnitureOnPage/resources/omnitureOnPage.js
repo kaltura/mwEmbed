@@ -474,8 +474,10 @@ kWidget.addReadyCallback( function( playerId ){
 				if(this.getConfig("overridePlayerName") != undefined ){
 					s.Media.playerName = String(this.getConfig("overridePlayerName"));
 				}
-				// re-evaluate mediaName even it it was already pushed to the stack
-				argSet[0] = this.getMediaName();
+			    if ( !s.inAd && cmd !== 'openAd') {
+				    // re-evaluate mediaName even it it was already pushed to the stack
+				    argSet[0] = this.getMediaName();
+			    }
 		 		switch( cmd ) {
 		 			case 'open':
 						s.Media.open(argSet[0], argSet[1], argSet[2]);
@@ -488,8 +490,10 @@ kWidget.addReadyCallback( function( playerId ){
 		 			break;
 		 			case 'close':
 		 				s.Media.close(argSet[0]);
+					    s.inAd = false;
 		 			break;
 					case 'openAd':
+						s.inAd = true;
 		 				s.Media.openAd(argSet[0], argSet[1], argSet[2],argSet[3], argSet[4], argSet[5]);
 		 			break;
 					case 'complete':

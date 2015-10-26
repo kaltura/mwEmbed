@@ -31,6 +31,7 @@
 				'flashvars' : {
 					'youbora': {
 						'trackEventMonitor': 'trackYouboraAnalyticsEvent',
+						"userId": "my-user-id"
 					},
 					'vast': {
 						'numPreroll' : 1,
@@ -55,6 +56,7 @@
 					}
 				},
 				'readyCallback': function(){
+					$('#analyticsContainer').remove();
 					$('#changeMedia').click(function(){
 						$('#kaltura_player')[0].sendNotification( 'changeMedia', { 'entryId':'0_swup5zao' } );
 					}).after('<div id="analyticsContainer" style="width:100%;float:left;" >'+

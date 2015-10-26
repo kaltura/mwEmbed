@@ -39,8 +39,6 @@
 				&&
 				$.cookie( this.cookieName ) == 'None')
 				||
-				this.getConfig('displayCaptions') === null
-				||
 				( this.getConfig( 'hideClosedCaptions') === true )
 			){
 				this.setConfig('displayCaptions', false );
@@ -153,9 +151,11 @@
 
 			this.bind( 'onplay', function(){
 				_this.playbackStarted = true;
+				_this.getMenu().close();
 			});
 			this.bind( 'hidePlayerControls', function(){
 				_this.getComponent().removeClass( 'open' );
+				_this.getMenu().close();
 			});
 
 			this.bind( 'showHideClosedCaptions', function(){

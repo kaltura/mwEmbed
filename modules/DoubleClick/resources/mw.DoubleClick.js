@@ -201,6 +201,12 @@
 				google.ima.settings.setPlayerVersion(mw.getConfig("version"));
 				google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.INSECURE);
 
+				// Set num of redirects for VAST wrapper ads, higher means bigger latency!
+				var numRedirects = _this.getConfig("numRedirects");
+				if(numRedirects) {
+					google.ima.settings.setNumRedirects(numRedirects);
+				}
+
 				// Check for adPattern
 				if ( _this.getConfig( 'adPattern' ) ) {
 					var adIndex = _this.getAdPatternIndex();
@@ -1173,6 +1179,7 @@
 				_this.isLinear = adInfo.isLinear;
 				if (!_this.isLinear && _this.isChromeless ){
 					$(".mwEmbedPlayer").hide();
+					mw.setConfig("EmbedPlayer.EnableFlashActivation", false);
 				}
 				var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
 				// dispatch adOpen event

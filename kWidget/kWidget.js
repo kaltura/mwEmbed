@@ -114,7 +114,7 @@
 
 			var ua = navigator.userAgent;
 			// Check if browser should use flash ( IE < 9 )
-			var ieMatch = ua.match( /MSIE\s([0-9]+)/ );
+			var ieMatch = document.documentMode ? ['', document.documentMode] : ua.match(/MSIE\s([0-9]+)/);
 			if ( (ieMatch && parseInt( ieMatch[1] ) < 9) || document.URL.indexOf( 'forceFlash' ) !== -1 ) {
 				mw.setConfig( 'Kaltura.ForceFlashOnDesktop' , true );
 			}
@@ -181,6 +181,8 @@
 			&&
 				// check that the library is not on production
 			this.getPath().indexOf( 'i.kaltura.com' ) == -1
+			&&
+			this.getPath().indexOf( 'isec.kaltura.com' ) == -1
 			&&
 				// check that we player is not on a staging site:
 			window.location.host != 'kgit.html5video.org'
@@ -592,7 +594,7 @@
 			}
 			elm.innerHTML = '' +
 				'<div style="position: relative; width: 100%; height: 100%;">' +
-				'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl(settings) + '" >' +
+				'<input type="image" alt="play video content" class="kWidgetCentered" src="' + this.getKalturaThumbUrl(settings) + '" >' +
 				'<div class="kWidgetCentered kWidgetPlayBtn" ' +
 				'id="' + targetId + '_playBtn"' +
 				'></div></div>';
@@ -1000,7 +1002,7 @@
 			var iframeRequest = this.getIframeRequest( widgetElm, settings );
 
 			// -----> IE8 and IE9 hack to solve Studio issues. SUP-3795. Should be handled from PHP side and removed <----
-			var isLowIE = /msie 8/.test(navigator.userAgent.toLowerCase()) || /msie 9/.test(navigator.userAgent.toLowerCase());
+			var isLowIE = document.documentMode && document.documentMode < 10;
 			if ( isLowIE && settings.flashvars.jsonConfig ){
 				jsonConfig = settings.flashvars.jsonConfig;
 				delete settings.flashvars.jsonConfig;
@@ -1587,7 +1589,7 @@
 			return /\bMSIE\b/.test(navigator.userAgent);
 		},
 		isIE8: function () {
-			return (/msie 8/.test(navigator.userAgent.toLowerCase()));
+			return document.documentMode === 8;
 		},
 		isAndroid: function () {
 			return (navigator.userAgent.indexOf('Android ') !== -1 && navigator.userAgent.indexOf('Windows') === -1);
@@ -1668,7 +1670,7 @@
 			 */
 			if (mw.getConfig('Kaltura.ForceFlashOnIE10')) {
 				var ua = navigator.userAgent;
-				var ie10Match = ua.match(/MSIE\s10/);
+				var ie10Match = document.documentMode === 10;
 				if (ie10Match) {
 					return false;
 				}
@@ -1751,16 +1753,14 @@
 				vidParams += '/vid_slices/' + settings.vid_slices;
 			}
 
-			var flashVars = {};
-
 			// Add the ks if set ( flashvar overrides settings based ks )
 			if (settings.ks) {
-				flashVars[ 'ks' ] = settings.ks;
+				vidParams+= '/ks/' + settings.ks;
 			}
 			if (settings.flashvars && settings.flashvars.ks) {
-				flashVars[ 'ks' ] = settings.flashvars.ks;
+				vidParams+= '/ks/' + settings.flashvars.ks;
 			}
-
+			var flashVars = {};
 			// Add referenceId if set
 			if (settings.flashvars && settings.flashvars.referenceId) {
 				flashVars[ 'referenceId' ] = settings.flashvars.referenceId;

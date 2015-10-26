@@ -25,6 +25,10 @@
             return true;
         },
 
+        canRender: function(){
+          return true;
+        },
+
         addBinding: function () {
             var _this = this;
             this.bind("onChangeMedia", function () {
@@ -37,12 +41,30 @@
                 _this.syncEnabled = true;
             });
 
+            //adaptive bitrate or profressive download via flash
             this.bind("bitrateChange", function (e, newBitrate) {
-                mw.log("DualScreen :: MASTER :: sourceSwitchingStarted :: newBitrate = " + newBitrate);
+                mw.log("--- DualScreen :: MASTER :: sourceSwitchingStarted :: newBitrate = " + newBitrate);
                 //TODO: find closest bitrate and send notification to flash (should support both - progressive download and adaptive bitrate)
                 //switchSrc(newBitrate);
             });
 
+            //progressive download native
+            this.bind("sourceSwitchingEnd", function (e, newBitrate) {
+                mw.log("--- DualScreen :: MASTER :: sourceSwitchingEnd :: newBitrate = " + newBitrate.newBitrate);
+                //TODO: should be dealt by dual screen (findClosestPlayableFlavor)
+            });
+
+            this.bind("bufferStartEvent", function () {
+                mw.log("DualScreen :: MASTER :: bufferStartEvent");
+                //pause the slave video
+            });
+
+            this.bind("bufferEndEvent", function () {
+                mw.log("DualScreen :: MASTER :: bufferEndEvent");
+                //resume the slave video
+            });
+
+            //TODO: decide what to do in the case of slave player buffering
         },
 
         setUrl: function(url){
@@ -102,7 +124,7 @@
             if(this.url.indexOf('m3u8') > 0){
                 fv.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
                 fv.streamerType = "hls";
-                fv.autoDynamicStreamSwitch = "false";
+                fv.autoDynamicStreamSwitch = "false"; //doesn't work TODO: implement  'mediaProxy.preferedFlavorBR, while resolving this issue
             }else{
                 fv.isMp4 = true;
                 if( mw.getConfig('streamerType') ){
@@ -183,6 +205,7 @@
             for(var i=0; i<this.manifestAdaptiveFlavors.length; i++){
                 mw.log("DualScreen :: second screen :: videoPlayer :: onFlavorsListChanged :: AdaptiveFlavor = " + this.manifestAdaptiveFlavors[i].bandwidth);
             }
+            //TODO: after the master stabilized on some bitrate, find closest bitrate inside manifestAdaptiveFlavors and switch the bitrate of the slave player
         },
 
         onMediaLoaded: function(){
@@ -202,44 +225,18 @@
         },
 
         switchSrc: function (source) {
-            /*
-            var _this = this;
-            //http requires source switching, all other switch will be handled by OSMF in KDP
-            if (this.streamerType == 'http' && !this.getKalturaAttributeConfig('forceDynamicStream')) {
-                //other streamerTypes will update the source upon "switchingChangeComplete"
-                this.mediaElement.setSource(source);
-                this.getEntryUrl().then(function (srcToPlay) {
-                    _this.playerObject.setKDPAttribute('mediaProxy', 'entryUrl', srcToPlay);
-                    _this.playerObject.sendNotification('doSwitch', { flavorIndex: _this.getSourceIndex(source) });
-                });
-                return;
-            }
-            var sourceIndex = -1; //autoDynamicStreamSwitch = true for adaptive bitrate (Auto)
-            if( source !== -1 ){
-                sourceIndex = this.getSourceIndex(source);
-            }
-            this.playerObject.sendNotification('doSwitch', { flavorIndex: sourceIndex });
-            */
+            this.playerObject.sendNotification('doSwitch', { flavorIndex: this.getSourceIndex(source) });
         },
+
         getSourceIndex: function (source) {
-            /*
-            var sourceIndex = null;
-            $.each( this.getSources(), function( currentIndex, currentSource ) {
-                if (source.getAssetId() == currentSource.getAssetId()) {
-                    sourceIndex = currentIndex;
-                    return false;
-                }
-            });
-            // check for null, a zero index would evaluate false
-            if( sourceIndex == null ){
-                mw.log("EmbedPlayerKplayer:: Error could not find source: " + source.getSrc());
-            }
+            var sourceIndex = 0; //autoDynamicStreamSwitch (adaptive bitrate) can't be enabled in the slave player, so sourceIndex can't ever be -1
+            //TODO: if this.manifestAdaptiveFlavors !== undefined -> find closest flavor index for adaptive bitrate, else -> find closest source index for progressive download
             return sourceIndex;
-            */
         },
 
         onMediaError: function(data){
             mw.log("DualScreen :: second screen :: videoPlayer :: onMediaError :: error: " + data);
+            //TODO: handle error
         },
 
         onBitrateChange: function(data){
