@@ -43,7 +43,7 @@
 
             //adaptive bitrate or
             this.bind("bitrateChange", function (e, newBitrate) {
-                mw.log("--- DualScreen :: MASTER :: sourceSwitchingStarted :: newBitrate = " + newBitrate);
+                mw.log("DualScreen :: MASTER :: bitrateChange :: newBitrate = " + newBitrate);
                 //TODO: find closest bitrate and send notification to flash (should be supported only for adaptive bitrate)
                 //switchSrc(newBitrate);
 
@@ -52,18 +52,18 @@
 
             //progressive download native
             this.bind("sourceSwitchingEnd", function (e, newBitrate) {
-                mw.log("--- DualScreen :: MASTER :: sourceSwitchingEnd :: newBitrate = " + newBitrate.newBitrate);
+                mw.log("DualScreen :: MASTER :: sourceSwitchingEnd :: newBitrate = " + newBitrate.newBitrate ? newBitrate.newBitrate : newBitrate);
                 //TODO: should be dealt by dual screen (findClosestPlayableFlavor)
             });
 
             this.bind("bufferStartEvent", function () {
-                mw.log("DualScreen :: MASTER :: bufferStartEvent");
-                //pause the slave video
+                //mw.log("DualScreen :: MASTER :: bufferStartEvent");
+                //start timer. if buffering is more than a second -> pause the slave video
             });
 
             this.bind("bufferEndEvent", function () {
-                mw.log("DualScreen :: MASTER :: bufferEndEvent");
-                //resume the slave video
+                //mw.log("DualScreen :: MASTER :: bufferEndEvent");
+                //kill the timer (if exists and resume the slave video
             });
 
             //TODO: decide what to do in the case of slave player buffering
@@ -126,7 +126,8 @@
             if(this.url.indexOf('m3u8') > 0){
                 fv.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
                 fv.streamerType = "hls";
-                fv.autoDynamicStreamSwitch = "false"; //doesn't work TODO: implement  'mediaProxy.preferedFlavorBR, while resolving this issue
+                //current solution brings only one bitrate, so there is no way to change bitrate in the future to the bigger one. TODO: we should be able to load all the flavors, but fix the stream on the lowest bitrate.
+                fv.KalturaHLS["targetBitrate"] = 100; //TODO: implement 'mediaProxy.preferedFlavorBR' for EmbedPlayerKplayer. source selector should still get all the bitrates and select the current selected.
             }else{
                 fv.isMp4 = true;
                 if( mw.getConfig('streamerType') ){
