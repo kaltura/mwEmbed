@@ -71,7 +71,7 @@
 			if (!this.$el) {
 				this.$el = $('<div />')
 					.addClass("timers" + this.getCssClass())
-					.text('0:00');
+					.text(mw.seconds2npt(this.embedPlayer.duration));
 			}
 			return this.$el;
 		},
