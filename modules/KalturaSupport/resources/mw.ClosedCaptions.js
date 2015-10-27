@@ -797,9 +797,6 @@
 
 			// Check if we even have textSources
 			if( sources == 0 ){
-				if( this.getConfig('hideWhenEmpty') === true ) {
-					this.getBtn().hide();
-				}
 				this.getMenu().addItem({
 					'label': gM('mwe-timedtext-no-subtitles')
 				});
@@ -813,7 +810,7 @@
 
 				return this.getMenu();
 			} else {
-				this.getBtn().show();
+				this.setConfig('visible', true);
 				// show new timed captions text if exists
 				this.showCaptions();
 			}
