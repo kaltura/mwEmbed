@@ -80,7 +80,7 @@ mw.PlayerLayoutBuilder.prototype = {
 				$videoDisplay.parent('.videoDisplay').wrap(
 					$('<div />').addClass( 'videoHolder' )
 				);
-			}			
+			}
 
 			var $videoHolder = $videoDisplay.parent( '.videoHolder' );
 			if( $videoHolder.parent( '.mwPlayerContainer' ).length == 0 ){
@@ -113,6 +113,8 @@ mw.PlayerLayoutBuilder.prototype = {
 				this.$interface.addClass('ie8');
 			}
 
+			this.$interface.addClass(this.getUserAgentClassNames());
+
 			// Add our skin name as css class
 			var skinName = embedPlayer.playerConfig.layout.skin;
 			if (embedPlayer.getRawKalturaConfig("layout") && embedPlayer.getRawKalturaConfig("layout").skin){
@@ -123,7 +125,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			// clear out base style
 			embedPlayer.style.cssText = '';
 		}
-		return this.$interface;		
+		return this.$interface;
 	},
 	isInFullScreen: function() {
 		return this.fullScreenManager.isInFullScreen();
@@ -1409,6 +1411,141 @@ mw.PlayerLayoutBuilder.prototype = {
 		}
 
 		return animation;
+	},
+
+	getUserAgentClassNames: function () {
+		var unknown = 'unknown',
+			brPrefix = 'ua',
+			osPrefix = 'os',
+			featurePrefix = 'ft',
+			verPrefix = 'ver',
+			brVer = navigator.appVersion,
+			brAgt = navigator.userAgent,
+			brName = unknown,
+			brParsedVersion = unknown,
+			brMajorVersion = unknown,
+			brTests = [
+				{s:'opera', brn:'Opera', brv:'Version'},
+				{s:'opera', brn:'OPR'},
+				{s:'ie', brn:'MSIE'},
+				{s:'ie', brn:'Trident/', brv:'rv:'},
+				{s:'chrome', brn:'Chrome'},
+				{s:'chrome', brn:'CriOS'},
+				{s:'safari', brn:'Safari', brv:'Version'},
+				{s:'firefox', brn:'Firefox'}
+			],
+			osFullName = unknown,
+			osName = unknown,
+			osVer = unknown,
+			osNameTests = [
+				{s:'win 10', r:/(Windows 10.0|Windows NT 10.0)/},
+				{s:'win 8_1', r:/(Windows 8.1|Windows NT 6.3)/},
+				{s:'win 8', r:/(Windows 8|Windows NT 6.2)/},
+				{s:'win 7', r:/(Windows 7|Windows NT 6.1)/},
+				{s:'win vista', r:/Windows NT 6.0/},
+				{s:'win xp', r:/(Windows NT 5.1|Windows XP)/},
+				{s:'win 2000', r:/(Windows NT 5.0|Windows 2000)/},
+				{s:'win me', r:/(Win 9x 4.90|Windows ME)/},
+				{s:'win 98', r:/(Windows 98|Win98)/},
+				{s:'win 95', r:/(Windows 95|Win95|Windows_95)/},
+				{s:'win ce', r:/Windows CE/},
+				{s:'android', r:/Android/},
+				{s:'openbsd', r:/OpenBSD/},
+				{s:'sunos', r:/SunOS/},
+				{s:'linux', r:/(Linux|X11)/},
+				{s:'ios', r:/(iPhone|iPad|iPod)/},
+				{s:'osx', r:/(Mac OS X)/},
+				{s:'qnx', r:/QNX/},
+				{s:'unix', r:/UNIX/},
+				{s:'beos', r:/BeOS/},
+				{s:'os2', r:/OS\/2/}
+			],
+			osVerTests = {
+				win: {r:/win (.*)/, ctx:osFullName, idx:1},
+				osx: {r:/Mac OS X (10[\.\_\d]+)/, ctx:brAgt, idx:1},
+				android: {r:/Android ([\.\_\d]+)/, ctx:brAgt, idx: 1},
+				ios: {r:/OS (\d+)_(\d+)_?(\d+)?/, ctx:brVer, idx: 1}
+			},
+			ftTests = {
+				touch: function () {
+					return (('ontouchstart' in window) || (navigator.MaxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
+				},
+				mouse: function () {
+					return !ftTests.touch();
+				}
+			},
+			i, len, offset,
+			classNames = [];
+
+		// get browser name and version
+		for (i = 0, len = brTests.length; i < len; ++i) {
+			if ((offset = brAgt.indexOf(brTests[i].brn)) > -1) {
+				brName = brTests[i].s;
+				brParsedVersion = brAgt.substring(offset + brTests[i].brn.length + 1);
+				if (brTests[i].brv && (offset = brAgt.indexOf(brTests[i].brv)) > -1) {
+					brParsedVersion = brAgt.substring(offset + brTests[i].brv.length + 1);
+				}
+				brMajorVersion = getMajorVersion(brParsedVersion, '; )');
+				break;
+			}
+		}
+
+		// get os name and version
+		for (i = 0, len = osNameTests.length; i < len; ++i) {
+			if (osNameTests[i].r.test(brAgt)) {
+				osFullName = osNameTests[i].s;
+				osName = osFullName.split(' ')[0];
+				if (osVerTests[osName]) {
+					osVer = osVerTests[osName].r.exec(osVerTests[osName].ctx)[osVerTests[osName].idx].replace(/\./g, '_').split('_').splice(0, 2).join('_');
+				}
+				break;
+			}
+		}
+
+		// test for features
+		for (i in ftTests) {
+			if (ftTests.hasOwnProperty(i) && typeof ftTests[i] === 'function' && ftTests[i]()) {
+				classNames.push([featurePrefix, i].join('-'));
+			}
+		}
+
+		if (brName !== unknown) {
+			classNames.push(
+				[brPrefix, brName].join('-'),
+				[brPrefix, verPrefix, brMajorVersion].join('-')
+			);
+		}
+
+		if (osName !== unknown) {
+			classNames.push(
+				[osPrefix, osName].join('-'),
+				[osPrefix, verPrefix, osVer].join('-')
+			);
+		}
+
+		return classNames.join(' ');
+
+
+		function getMajorVersion(version, charsToTrim) {
+			var i, len, index, majorVer;
+
+			charsToTrim = charsToTrim || '';
+			version = version || '';
+
+			for (i = 0, len = charsToTrim.length; i < len; ++i) {
+				if ((index = version.indexOf(charsToTrim[i])) > -1) {
+					version = version.substring(0, index);
+				}
+			}
+
+			majorVer = parseInt('' + version, 10);
+
+			if (isNaN(majorVer)) {
+				majorVer = parseInt(brVer, 10);
+			}
+
+			return majorVer;
+		}
 	}
 };
 
