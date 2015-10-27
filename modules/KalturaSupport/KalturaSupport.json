@@ -88,7 +88,8 @@
 			"components/dualScreen/videoPlayer.js",
 			"components/dualScreen/videoSync.js",
 			"components/dualScreen/fsm.js",
-			"components/dualScreen/dualScreenStatesConfig.js"
+			"components/dualScreen/dualScreenStatesConfig.js",
+            "components/streamSelectorUtils.js"
 		],
 		"styles": [
 			"components/dualScreen/dualScreen.css",

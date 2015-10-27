@@ -1,34 +1,23 @@
 (function (mw, $, kWidget) {
     "use strict";
-    mw.PluginManager.add('streamSelector', mw.KBaseComponent.extend({
+    mw.streamSelectorUtils = mw.streamSelectorUtils || {};
+
+    mw.streamSelectorUtils.selector = mw.KBaseComponent.extend({
 
         defaultConfig: {
-            "parent": "controlsContainer",
-            "order": 61,
-            "displayImportance": 'low',
-            "align": "right",
-            "showTooltip": true,
-            "labelWidthPercentage": 33,
             "defaultStream": 1,
-            "maxNumOfStream": 4,
-            "enableKeyboardShortcuts": true,
-            "keyboardShortcutsMap": {
-                "nextStream": 221,   // Add ] Sign for next stream
-                "prevStream": 219,   // Add [ Sigh for previous stream
-                "defaultStream": 220, // Add \ Sigh for default stream
-                "openMenu": 83, // Add S Sigh for open menu
-                "closeMenu": "shift+83" // Add Shift+S Sigh for close menu
-            }
+            "maxNumOfStream": 4
         },
 
-        isDisabled: false,
         streams: [],
         streamsReady: null,
         streamEnded: false,
+        readyAndHasStreams: null,
 		streamChanging: false,
 
         setup: function () {
             this.addBindings();
+            this.readyAndHasStreams = $.Deferred();
         },
         destroy: function () {
             this._super();
@@ -37,14 +26,7 @@
         addBindings: function () {
             var _this = this;
 
-            this.bind('playerReady', function () {
-                if (!_this.streamsReady) {
-                    _this.onDisable();
-                    _this.getStreams();
-                }
-            });
-
-            this.bind('streamsReady', function () {
+            this.bind('StreamListReady', function () {
                 //Indicate that the streams are ready to enable spinning animation on source switching
                 _this.streamsReady = true;
                 //Insert original entry to streams
@@ -55,29 +37,16 @@
                         contextData: _this.getPlayer().kalturaContextData
                     }
                 });
-                //Set default stream
-                if (( _this.getConfig("defaultStream") < 1) || ( _this.getConfig("defaultStream") > _this.streams.length )) {
-                    this.log("Error - default stream id is out of bounds, setting to 1");
-                    _this.setConfig("defaultStream", 1);
-                }
                 _this.currentStream = _this.getDefaultStream();
-                //TODO: handle default stream selection???
-                if (_this.getPlayer().kentryid != _this.currentStream.id) {
+
+                if (_this.getPlayer().kentryid !== _this.currentStream.id) {
                     _this.setStream(_this.currentStream);
-                    _this.setActiveMenuItem();
                 }
-                _this.buildMenu();
-                _this.onEnable();
-            });
-
-            this.bind('sourceSwitchingEnd', function () {
-                if (_this.streamsReady) {
-                    _this.onEnable();
+                if (_this.streams.length > 1) {
+                    _this.readyAndHasStreams.resolve(true);
+                } else {
+                    _this.readyAndHasStreams.resolve(false);
                 }
-            });
-
-            this.bind('sourceSwitchingStarted', function () {
-                _this.onDisable();
             });
 
             this.bind("ended", function () {
@@ -95,17 +64,9 @@
             this.bind('onChangeMedia', function () {
                 if (!_this.streamChanging){
                     _this.streams = [];
-                    _this.getMenu().destroy();
-                    _this.onDisable();
                     _this.streamsReady = false;
                 }
             });
-
-            if (this.getConfig('enableKeyboardShortcuts')) {
-                this.bind('addKeyBindCallback', function (e, addKeyCallback) {
-                    _this.addKeyboardShortcuts(addKeyCallback);
-                });
-            }
         },
         getStreams: function () {
             var _this = this;
@@ -132,10 +93,8 @@
                 // Validate result
                 if (data && _this.isValidResult(data[0] && data[0].totalCount > 0)) {
                     _this.createStreamList(data);
-                    _this.getBtn().show();
                 } else {
                     mw.log('streamSelector::Error retrieving streams, disabling component');
-                    _this.getBtn().hide();
                 }
             });
         },
@@ -158,10 +117,9 @@
                     }
                 } );
             } else {
-                mw.log('streamSelector::No streams avaialble, disabling component');
-                _this.getBtn().hide();
+                mw.log('streamSelectorUtil::No streams avaialble');
             }
-            _this.embedPlayer.triggerHelper('streamsReady');
+            _this.embedPlayer.triggerHelper('StreamListReady');
         },
         isValidResult: function (data) {
             // Check if we got error
@@ -176,32 +134,7 @@
             this.error = false;
             return true;
         },
-        addKeyboardShortcuts: function (addKeyCallback) {
-            var _this = this;
-            // Add ] Sign for next stream
-            addKeyCallback(this.getConfig("keyboardShortcutsMap").nextStream, function () {
-                _this.setStream(_this.getNextStream());
-                _this.setActiveMenuItem();
-            });
-            // Add [ Sigh for previous stream
-            addKeyCallback(this.getConfig("keyboardShortcutsMap").prevStream, function () {
-                _this.setStream(_this.getPrevStream());
-                _this.setActiveMenuItem();
-            });
-            // Add \ Sigh for default stream
-            addKeyCallback(this.getConfig("keyboardShortcutsMap" ).defaultStream, function () {
-                _this.setStream(_this.getDefaultStream());
-                _this.setActiveMenuItem();
-            });
-            // Add S Sigh for open menu
-            addKeyCallback(this.getConfig("keyboardShortcutsMap" ).openMenu, function () {
-                _this.getMenu().open();
-            });
-            // Add Shift+S Sigh for close menu
-            addKeyCallback(this.getConfig("keyboardShortcutsMap" ).closeMenu, function () {
-                _this.getMenu().close();
-            });
-        },
+
         getNextStream: function () {
             if (this.streams[this.getCurrentStreamIndex() + 1]) {
                 return this.streams[this.getCurrentStreamIndex() + 1];
@@ -228,49 +161,6 @@
             });
             return index;
         },
-        buildMenu: function () {
-            var _this = this;
-
-            // Destroy old menu
-            this.getMenu().destroy();
-
-            if (!this.streams.length) {
-                this.log("Error with getting streams");
-                //this.destroy();
-                return;
-            }
-
-            $.each(this.streams, function (streamIndex, stream) {
-                _this.addStreamToMenu(streamIndex, stream);
-            });
-            var actualWidth = this.getMenu().$el.width();
-            var labelWidthPercentage = parseInt(this.getConfig("labelWidthPercentage")) / 100;
-            var labelWidth = this.getPlayer().getWidth() * labelWidthPercentage;
-            if (actualWidth > labelWidth) {
-                this.getMenu().$el.find('a').width(labelWidth);
-            }
-            this.getMenu().setActive({'key': 'id', 'val': this.getCurrentStreamIndex()});
-        },
-        setActiveMenuItem: function() {
-            var index = this.getCurrentStreamIndex();
-            this.getMenu().setActive(index);
-        },
-        addStreamToMenu: function (id, stream) {
-            var _this = this;
-            var active = (this.getCurrentStreamIndex() == id);
-            var streamName = stream.data.meta.name;
-            this.getMenu().addItem({
-                'label': streamName,
-                'attributes': {
-                    'id': id
-                },
-                'callback': function () {
-                    _this.setStream(stream);
-                },
-                'active': active
-            });
-            this.getMenu().$el.find("a").addClass("truncateText");
-        },
         externalSetStream: function (id) {
             var stream = this.streams[id];
             if (stream) {
@@ -282,7 +172,7 @@
         },
         setStream: function (stream) {
             this.log("set stream");
-            if (this.currentStream != stream) {
+            if (this.currentStream !== stream) {
                 var _this = this;
                 var embedPlayer = this.getPlayer();
                 this.streamChanging = true;
@@ -363,54 +253,13 @@
                 this.log("selected stream is already the active stream");
             }
         },
-        toggleMenu: function () {
-            if (this.isDisabled) {
-                return;
-            }
-            this.getMenu().toggle();
-        },
         getComponent: function () {
             var _this = this;
             if (!this.$el) {
-                var $menu = $('<ul />');
-                //TODO: need icon from Shlomit!
-                var $button = $('<button />')
-                    .addClass('btn icon-switchSource')
-                    .attr('title', gM('mwe-embedplayer-select_stream'))
-                    .click(function (e) {
-                        _this.toggleMenu();
-                    })
-                    .hide();
-                this.setAccessibility($button, gM('mwe-embedplayer-select_stream'));
-                this.$el = $('<div />')
-                    .addClass('dropup' + this.getCssClass())
-                    .append($button, $menu);
+                this.$el = $('<div />');
             }
-
             return this.$el;
-        },
-        getMenu: function () {
-            if (!this.menu) {
-                this.menu = new mw.KMenu(this.getComponent().find('ul'), {
-                    tabIndex: this.getBtn().attr('tabindex')
-                });
-            }
-            return this.menu;
-        },
-        getBtn: function () {
-            return this.getComponent().find('button');
-        },
-        onEnable: function () {
-            this.isDisabled = false;
-            this.updateTooltip(gM('mwe-embedplayer-select_stream'));
-            this.getBtn().removeClass('disabled');
-        },
-        onDisable: function () {
-            this.isDisabled = true;
-            this.updateTooltip(gM('mwe-embedplayer-switch_stream'));
-            this.getComponent().removeClass('open');
-            this.getBtn().addClass('disabled');
         }
-    }));
+    });
 
 })(window.mw, window.jQuery, kWidget);

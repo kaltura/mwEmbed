@@ -739,10 +739,7 @@
                 //TODO: add IE8/IE7 limitation!
 
                 if( !this.streamSelector && !this.streamSelectorLoaded ) {
-                    this.streamSelector = new mw.streamSelector.selector(this.getPlayer(), function () {
-                        this.setConfig({
-                            "hideUI": true
-                        });
+                    this.streamSelector = new mw.streamSelectorUtils.selector(this.getPlayer(), function () {
                         this.getStreams();
                         this.readyAndHasStreams.promise().then(function () {
                             deferred.resolve(true);
@@ -750,7 +747,7 @@
                             _this.streamSelectorLoaded = true; //prevent to load streamSelector again in the future
                             deferred.resolve(false);
                         });
-                    }, "streamSelector");
+                    }, "streamSelectorUtils");
                 }else{
                     return deferred.resolve();
                 }
