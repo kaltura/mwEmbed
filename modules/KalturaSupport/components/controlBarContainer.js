@@ -9,6 +9,9 @@
 		keepOnScreen: false,
 
 		setup: function(){
+			if (mw.isMobileDevice()){
+				this.setConfig("hover", true);
+			}
 			// Exit if we're using native controls
 			if( this.getPlayer().useNativePlayerControls() ) {
 				this.getPlayer().enableNativeControls();
