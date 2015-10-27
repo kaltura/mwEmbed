@@ -1446,3 +1446,32 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
 @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+
+@-webkit-keyframes rotating {
+    from {-webkit-transform: rotate(0deg);}
+    to {-webkit-transform: rotate(359deg);}
+}
+@-moz-keyframes rotating {
+    from {-moz-transform: rotate(0deg);}
+    to {-moz-transform: rotate(359deg);}
+}
+@keyframes rotating {
+    from {-webkit-transform: rotate(0deg);-moz-transform: rotate(0deg);-ms-transform: rotate(0deg);-o-transform: rotate(0deg);transform: rotate(0deg);}
+    to {-webkit-transform: rotate(359deg);-moz-transform: rotate(359deg);-ms-transform: rotate(359deg);-o-transform: rotate(359deg);transform: rotate(359deg);}
+}
+.customSpinner{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -50px;
+    margin-left: -50px;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    border: solid 4px rgba(255,255,255,0.7);
+    background-color: transparent;
+    border-right-color: #59baf3;
+    -webkit-animation: rotating 0.8s linear infinite;
+    -moz-animation: rotating 0.8s linear infinite;
+    animation: rotating 0.8s linear infinite;
+}
