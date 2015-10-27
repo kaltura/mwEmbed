@@ -32,9 +32,20 @@ mw.KWidgetSupport.prototype = {
 
 	addStringsSupport: function(){
 		window.getStringByKey = function(key){
+
+
 			var playerConfig = window.kalturaIframePackageData.playerConfig;
-			if (playerConfig && playerConfig.plugins && playerConfig.plugins.strings && playerConfig.plugins.strings[key]){
-				return playerConfig.plugins.strings[key];
+			var localizationCode = window.kalturaIframePackageData.enviornmentConfig["localizationCode"] || false;
+			if (playerConfig && playerConfig.plugins && playerConfig.plugins.strings ){
+				if (localizationCode && playerConfig.plugins.strings[localizationCode + "." + key]){ // handle flat localized keys
+					return playerConfig.plugins.strings[localizationCode + "." + key];
+				}else if (localizationCode && playerConfig.plugins.strings[localizationCode] && playerConfig.plugins.strings[localizationCode][key]){ // handle nested localized keys
+					return playerConfig.plugins.strings[localizationCode][key];
+				}else if (playerConfig.plugins.strings[key]){ // handle non-localized keys
+					return playerConfig.plugins.strings[key];
+				}else{
+					return false;
+				}
 			}else{
 				return false;
 			}
@@ -1503,6 +1514,13 @@ mw.KWidgetSupport.prototype = {
 				source['src'] = src + '/a.webm';
 				source['data-flavorid'] = 'webm';
 				source['type'] = 'video/webm; codecs="vp8, vorbis';
+			}
+
+			// Check for mov source
+			if( asset.fileExt && asset.fileExt == 'mov' ){
+				source['src'] = src + '/a.mov';
+				source['data-flavorid'] = 'mov';
+				source['type'] = 'video/mp4';
 			}
 
 			// Check for 3gp source

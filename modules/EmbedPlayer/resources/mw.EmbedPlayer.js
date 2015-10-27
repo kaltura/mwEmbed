@@ -1092,9 +1092,9 @@
 
 			// Check if currentTime is already set to the seek target:
 			var playerElementTime = parseFloat(this.getPlayerElementTime()).toFixed(2);
-			if (playerElementTime === seekTime) {
+			if (Math.abs(playerElementTime - seekTime) < mw.getConfig("EmbedPlayer.SeekTargetThreshold", 0.1)) {
 				mw.log("EmbedPlayer:: seek: current time matches seek target: " +
-					playerElementTime + ' == ' + seekTime);
+					playerElementTime + ' ~== ' + seekTime );
 				if (this.seeking) {
 					this.seeking = false;
 					$(this).trigger('seeked');
@@ -1833,7 +1833,10 @@
 			}
 
 			$(this).find(".playerPoster").remove();
-			if (mw.getConfig('EmbedPlayer.HidePosterOnStart') === true) {
+				if ( mw.getConfig('autoPlay') && !mw.isMobileDevice()){
+				return;
+			}
+				if ( mw.getConfig('EmbedPlayer.HidePosterOnStart') === true) {
 				return;
 			}
 			// support IE9 and IE10 compatibility modes

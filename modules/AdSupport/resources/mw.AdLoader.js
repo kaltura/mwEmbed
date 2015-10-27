@@ -1,10 +1,21 @@
 ( function( mw, $ ) { "use strict";
 
-mw.AdLoader = {
+mw.AdLoader = function( embedPlayer ) {
+	// Create an AdLoader
+	return this.init( embedPlayer );
+};
+
+mw.AdLoader.prototype = {
+
 	// Vast response can return Wrapper that points to another vast
 	// this varible holds the max number of redirects to follow
 	maxRedirects: 5,
 	currentCounter: 0,
+
+	init: function( embedPlayer ){
+		this.embedPlayer = embedPlayer;
+	},
+
 	/**
 	 * Get ad display configuration object from a url
 	 *
@@ -81,7 +92,7 @@ mw.AdLoader = {
 				// If we have lots of ad formats we could conditionally load them here:
 				// 'mw.VastAdParser' is a dependency of adLoader
 				mw.load( 'mw.VastAdParser', function(){
-					mw.VastAdParser.parse( data, callback , wrapperData, ajaxOptions );
+					mw.VastAdParser.parse( data, callback , wrapperData, ajaxOptions, _this );
 				});
 				return ;
 			break;
