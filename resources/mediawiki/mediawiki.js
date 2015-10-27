@@ -1432,7 +1432,9 @@ var mw = ( function ( $, undefined ) {
 					return s.replace(/&#([0-9]{1,3});/gi, function (match, numStr) {
 						var num = parseInt(numStr, 10); // read num as normal number
 						return String.fromCharCode(num);
-					});
+					})
+						.replace(/&amp;/g, '&')
+						.replace(/&lt;br\s*\/&gt;/g,'<br/>');
 				},
 
 				/**
