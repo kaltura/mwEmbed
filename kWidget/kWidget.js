@@ -1031,7 +1031,8 @@
 				window[ cbName ]({'content' : iframeData });
 				// we don't retrun here, instead we run the get request to update the uiconf storage 
 				// TODO this should just be a 304 check not a full download of the iframe ( normally )
-				// return ;
+				// RETURN UNTIL WE HAVE 30$ check in palce. 
+				return ;
 			}
 			
 			// -----> IE8 and IE9 hack to solve Studio issues. SUP-3795. Should be handled from PHP side and removed <----
