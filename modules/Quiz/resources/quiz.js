@@ -21,7 +21,6 @@
         showCorrectKeyOnAnswer: false,
         showResultOnAnswer: false,
         isSeekingIVQ:false,
-        alowLastQuestionSeekTemp:false,
 
         setup: function () {
             var _this = this;
@@ -79,7 +78,6 @@
             });
 
             this.bind('seeked', function () {
-                _this.alowLastQuestionSeekTemp = false;
                 setTimeout(function () {
                     _this.isSeekingIVQ = false;}, 0);
             });
@@ -96,7 +94,6 @@
             embedPlayer.addJsListener( 'playerPlayEnd', function(){
                 var anUnswered = _this.KIVQModule.getUnansweredQuestNrs();
                 if (anUnswered) {
-                    _this.alowLastQuestionSeekTemp = true;
                     _this.ssAlmostDone(anUnswered);
                 }
             });
@@ -172,13 +169,9 @@
 
             $(document).off('click','.q-box')
                 .on('click', '.q-box', function () {
-                var selectQ = $(this).attr('id');
-                if ((_this.KIVQModule.q2i($.cpObject.cpArray.length)) != (parseInt(selectQ)) ) {
-                    _this.KIVQModule.gotoScrubberPos(selectQ);
-                }
-                if (_this.alowLastQuestionSeekTemp){
-                    _this.KIVQModule.gotoScrubberPos(selectQ);
-                }
+                var selectQ = parseInt($(this).attr('id'));
+
+                _this.KIVQModule.gotoScrubberPos(selectQ);
                 _this.ssSetCurrentQuestion(selectQ);
             });
         },
@@ -280,12 +273,12 @@
                     $(document).off('click','.q-box')
                         .on('click', '.q-box', function () {
                         _this.removeShowScreen("reviewAnswer");
-                        _this.ssReviewAnswer($(this).attr('id'));
+                        _this.ssReviewAnswer(parseInt($(this).attr('id')));
                     });
                     $(document).off('click','.q-box-false')
                         .on('click', '.q-box-false', function () {
                         _this.removeShowScreen("reviewAnswer");
-                        _this.ssReviewAnswer($(this).attr('id'));
+                        _this.ssReviewAnswer(parseInt($(this).attr('id')));
                     });
                 }
             }else{
@@ -475,10 +468,10 @@
             else{
                 handleBubbleclick = '.bubble-ans';
             }
-
-            $(handleBubbleclick).off().on('click', function () {
+            $('.bubble','.bubble-ans','.bubble-un-ans').off();
+            $(handleBubbleclick).on('click', function () {
                 _this.unbind('seeking');
-                _this.KIVQModule.gotoScrubberPos($(this).attr('id'));
+                _this.KIVQModule.gotoScrubberPos(parseInt($(this).attr('id')));
                 _this.bind('seeking', function () {
                     _this.isSeekingIVQ = true;
                 });

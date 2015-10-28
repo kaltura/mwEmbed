@@ -19,6 +19,8 @@
             isErr: false,
             quizSubmitted:false,
             intrVal:null,
+            almostDoneDisplaySwithcer:true,
+
 
             init: function (embedPlayer,quizPlugin) {
                 var _this = this;
@@ -192,8 +194,13 @@
                         _this.quizPlugin.ssAllCompleted();
                     }
                     else {
-                        if ((questionNr === ($.cpObject.cpArray.length) - 1)) {
-                            _this.quizPlugin.ssAlmostDone(_this.getUnansweredQuestNrs());
+                        if ((questionNr === ($.cpObject.cpArray.length) - 1)  ) {
+                            if (_this.almostDoneDisplaySwithcer){
+                                _this.quizPlugin.ssAlmostDone(_this.getUnansweredQuestNrs());
+                                _this.almostDoneDisplaySwithcer = false;
+                            }else{
+                                _this.continuePlay();
+                            }
                         } else {
                             _this.continuePlay();
                         }
@@ -203,7 +210,6 @@
             continuePlay: function () {
                 var _this = this;
                 if (!_this.isErr) {
-
                     if (_this.quizPlugin.isScreenVisible()){
                         _this.quizPlugin.removeScreen();
                         if (_this.quizPlugin.isSeekingIVQ ) {
@@ -214,19 +220,18 @@
                     _this.embedPlayer.triggerHelper( 'onEnableKeyboardBinding' );
                     _this.embedPlayer.play();
                     _this.quizPlugin.displayBubbles();
+                    _this.almostDoneDisplaySwithcer = true;
                 }
             },
             gotoScrubberPos: function (questionNr) {
                 var _this = this;
-                questionNr = parseInt(questionNr);
                 _this.currentQuestionNumber = questionNr;
                 _this.embedPlayer.stopPlayAfterSeek = true;
                 _this.embedPlayer.sendNotification('doSeek', (($.cpObject.cpArray[questionNr].startTime) /1000)+1);
             },
             cuePointReachedHandler: function (e, cuePointObj) {
                 var _this = this;
-
-                if (!$.quizParams.showCorrectAfterSubmission && _this.score !== null) {
+                if (!$.quizParams.showCorrectAfterSubmission && _this.quizSubmitted) {
                     return
                 }
                 $.each($.cpObject.cpArray, function (key, val) {
