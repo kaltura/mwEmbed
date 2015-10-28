@@ -15,6 +15,7 @@
 			var _this = this;
 			if ( mw.isMobileDevice() ){
 				this.setConfig("prefix","");
+				this.getComponent().data("width",0.1);
 			}
 			this.bind( 'durationChange', function(event, duration){
 				if( !_this.getPlayer().isInSequence() ){
