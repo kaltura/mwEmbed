@@ -74,13 +74,15 @@ mw.PlayerLayoutBuilder.prototype = {
 			}
 
 			var $videoDisplay = $embedPlayer.parent('.videoDisplay');
-
+			if( $videoDisplay.find('.controlBarShadow').length == 0 ){
+				$(".mwEmbedPlayer").before('<div class="controlBarShadow"></div>');
+			}
 			// build the videoHolder wrapper if needed
 			if( $videoDisplay.parent('.videoHolder').length == 0 ){
 				$videoDisplay.parent('.videoDisplay').wrap(
-					$('<div />').addClass( 'videoHolder' )
+					$('<div />').addClass( 'videoHolder')
 				);
-			}			
+			}
 
 			var $videoHolder = $videoDisplay.parent( '.videoHolder' );
 			if( $videoHolder.parent( '.mwPlayerContainer' ).length == 0 ){
@@ -543,6 +545,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 		this.updateLayoutTimeout = null;
 		_this.updateComponentsVisibility();
+		_this.updatePlayerSizeClass();
 		b('updateLayout', function(){
 			// Firefox unable to get component width correctly without timeout
 			clearTimeout(_this.updateLayoutTimeout);

@@ -156,7 +156,13 @@ body {
 	padding: 8px 0 0 10px;
 	color: white;
 }
-
+.mobile .titleLabel{
+    padding-bottom: 0.8em;
+    margin-left: 0.8em;
+    text-shadow: 0px 0px 5.6px rgba(0, 0, 0, 0.15);
+    font-size: 1.125em;
+    font-family: 'Lato', Helvetica, Arial;
+}
 .controlBarContainer {
 	position: absolute;
 	bottom: 0;
@@ -929,6 +935,7 @@ body {
 	display: inline-block;
 }
 .mobile .controlsContainer{
+    position: relative;
     background: transparent;
     border-top: 0px;
     box-shadow: none;
@@ -1534,4 +1541,15 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     -webkit-animation: rotating 0.8s linear infinite;
     -moz-animation: rotating 0.8s linear infinite;
     animation: rotating 0.8s linear infinite;
+}
+.mobile .controlBarShadow{
+    background: rgba(0,0,0,0.25);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    transition: opacity 400ms ease-out;
+}
+.mobile.player-out .controlBarShadow{
+    opacity: 0;
 }
