@@ -1,0 +1,16 @@
+@startuml
+skinparam handwritten true
+class dualScreenControlBar
+
+dualScreenControlBar -right-> DND
+DND ..> StreamSelector : <<streamTargetSelected>>
+StreamSelector -left-> players
+
+
+skinparam class {
+	BackgroundColor #DDDDDD
+	ArrowColor black
+	BorderColor #DDDDDD
+}
+
+@enduml

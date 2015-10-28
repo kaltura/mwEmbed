@@ -182,6 +182,8 @@
 				// check that the library is not on production
 			this.getPath().indexOf( 'i.kaltura.com' ) == -1
 			&&
+			this.getPath().indexOf( 'isec.kaltura.com' ) == -1
+			&&
 				// check that we player is not on a staging site:
 			window.location.host != 'kgit.html5video.org'
 			&&
@@ -592,7 +594,7 @@
 			}
 			elm.innerHTML = '' +
 				'<div style="position: relative; width: 100%; height: 100%;">' +
-				'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl(settings) + '" >' +
+				'<input type="image" alt="play video content" class="kWidgetCentered" src="' + this.getKalturaThumbUrl(settings) + '" >' +
 				'<div class="kWidgetCentered kWidgetPlayBtn" ' +
 				'id="' + targetId + '_playBtn"' +
 				'></div></div>';

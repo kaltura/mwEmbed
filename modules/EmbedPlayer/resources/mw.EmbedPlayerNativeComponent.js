@@ -139,9 +139,37 @@
 		embedPlayerHTML: function () {
 		},
 
+		// Build the licenseUri (if needed) and send it to the native component as the "licenseUri" attribute.
+		pushLicenseUri: function () {
+			var licenseServer = mw.getConfig('Kaltura.UdrmServerURL');
+			var licenseParams = this.mediaElement.getLicenseUriComponent();
+			
+			if (licenseServer && licenseParams) {
+				var licenseUri;
+				// Build licenseUri by mimeType.
+				var sourceMimeType = this.mediaElement.selectedSource && this.mediaElement.selectedSource.mimeType;
+				switch (sourceMimeType) {
+					case "video/wvm":
+						// widevine classic
+						licenseUri = licenseServer + "/widevine/license?" + licenseParams;
+						break;
+					case "application/dash+xml":
+						// widevine modular, because we don't have any other dash DRM right now.
+						licenseUri = licenseServer + "/cenc/widevine/license?" + licenseParams;
+						break;
+					default:
+						break;
+				}
+				if (licenseUri) {
+					this.getPlayerElement().attr('licenseUri', licenseUri);
+				}
+			}
+		},
+
 		setSrcAttribute: function( source ) {
 			this.getPlayerElement().attr('src', source);
 			this.playingSource =  source;
+			this.pushLicenseUri();
 		},
 
 		playerSwitchSource: function (source, switchCallback, doneCallback) {
@@ -418,8 +446,11 @@
 		},
 
 		_ondurationchange: function () {
-			mw.log( "EmbedPlayerNativeComponent:: onDurationChange::" + this.getPlayerElement().duration );
-			$(this).trigger('durationChange', this.getPlayerElement().duration);
+			mw.log( "EmbedPlayerNativeComponent:: onDurationChange::" + this.getPlayerElement().duration )
+			this.playerElement = this.getPlayerElement();
+			if (this.playerElement && !isNaN(this.playerElement.duration) && isFinite(this.playerElement.duration)) {
+				this.setDuration(this.getPlayerElement().duration);
+			}
 		},
 
 		/**
@@ -540,6 +571,9 @@
 		_onprogress: function (event, progress) {
 			if (typeof progress !== 'undefined') {
 				this.updateBufferStatus(progress);
+				if (!this.seeking) {
+					this.updatePlayHead(progress);
+				}
 				if(progress < 0.9){
 					if(!this.showProgressSpinner) {
 						this.addPlayerSpinner();

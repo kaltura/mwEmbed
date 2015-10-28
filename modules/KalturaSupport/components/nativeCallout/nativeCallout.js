@@ -77,7 +77,7 @@
 			function preventPopup() {
 				clearTimeout(timeout);
 				timeout = null;
-				window.removeEventListener( 'pagehide', preventPopup );
+				window.removeEventListener('pagehide', preventPopup);
 			}
 
 			function isHidden() {
@@ -96,54 +96,53 @@
 
 			function showNativeCallout() {
 				_this.getTemplateHTML()
-					.then(function(htmlMarkup) {
-						var storeImage =$("<div/>",{"class": _this.getConfig("storeImage")});
+					.then(function (htmlMarkup) {
+						var storeImage = $("<div/>", {"class": _this.getConfig("storeImage")});
 						var storeElement = htmlMarkup.find("#store");
-						storeElement.attr('href', _this.getConfig( "storeUrl" ));//"https://play.google.com/store/apps/details?id=com.kaltura.kms"
+						storeElement.attr('href', _this.getConfig("storeUrl"));//"https://play.google.com/store/apps/details?id=com.kaltura.kms"
 						storeElement.append(storeImage);
 						var $el = _this.getComponent();
 						$el.append(htmlMarkup);
 						_this.embedPlayer.getPlayerPoster().addClass("blur");
 						_this.embedPlayer.getVideoHolder().find(".largePlayBtn").hide();
 						_this.embedPlayer.disablePlayControls();
-						var components = ['fullScreenBtn','logo'];
-						_this.embedPlayer.triggerHelper( "onDisableInterfaceComponents", components );
-					}, function(msg) {
-						mw.log( msg );
+						var components = ['fullScreenBtn', 'logo'];
+						_this.embedPlayer.triggerHelper("onDisableInterfaceComponents", components);
+					}, function (msg) {
+						mw.log(msg);
 					});
 			}
 
-			var url =  _this.getConfig( "mimeName" ) + "?iframeUrl:=" + _this.getConfig( "iframeUrl" );
-			if ( mw.isAndroid() ) {
+			var url = _this.getConfig("mimeName") + "?iframeUrl:=" + _this.getConfig("iframeUrl");
+			if (mw.isIOS9() || mw.isAndroid()) {
+				url = "https://kalturaplay.appspot.com/play?" + _this.getConfig("iframeUrl");
 				var popup = [];
-				setTimeout(function(){
+				setTimeout(function () {
 					popup.close();
 					//show the open play store splash screen
-					setTimeout(function(){
-						if (isHidden()){
+					setTimeout(function () {
+						if (isHidden()) {
 							//app is loaded
-						}else{
+						} else {
 							showNativeCallout();
 						}
-					},1000);
-				},1000);
-
+					}, 1000);
+				}, 1000);
 				popup = window.open(url);
-
 			} else {
 				$('<iframe />')
 					.attr('src', url)
 					.attr('style', 'display:none;')
 					.appendTo('body');
 
-				timeout = setTimeout(function() {
-					if (isHidden()){
+				timeout = setTimeout(function () {
+					if (isHidden()) {
 						//app is loaded
-					}else{
+					} else {
 						showNativeCallout();
 					}
 				}, 1000);
-				window.addEventListener( 'pagehide', preventPopup );
+				window.addEventListener('pagehide', preventPopup);
 			}
 		}
 	}));

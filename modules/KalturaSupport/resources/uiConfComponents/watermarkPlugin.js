@@ -11,13 +11,17 @@
 			"hideTimeout": 0
 		},
 		isSafeEnviornment: function(){
-			return !!this.getConfig('img');
+			return this.getConfig('img') || this.getConfig('watermarkPath');
 		},
 		setup: function(){
 			var _this = this;
 			// support legacy position config: 
 			if( this.getConfig('watermarkPosition') ){
 				this.setConfig('cssClass', this.getConfig('watermarkPosition'));
+			}
+			// support legacy path config:
+			if( this.getConfig('watermarkPath') ){
+				this.setConfig('img', this.getConfig('watermarkPath'));
 			}
 			this.bind('AdSupport_StartAdPlayback', function(){
 				_this.getComponent().hide();
@@ -33,7 +37,7 @@
 						_this.timeoutWatermark();
 				});
 
-			};
+			}
 		},
 		getComponent: function(){
 			var _this = this;
