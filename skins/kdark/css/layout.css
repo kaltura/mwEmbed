@@ -1,3 +1,4 @@
+@import url(http://fonts.googleapis.com/css?family=Lato:300,400,700,900);
 body {
 	letter-spacing: 0.04em;
 	/*Disable the default behavior of an Anchor in jQuery Mobile (iOS)*/
@@ -174,7 +175,7 @@ body {
 }
 
 .controlBarContainer.hover {
-	bottom: -2.6em;
+	bottom: -3.2em;
 	z-index: 100;
 }
 
@@ -193,6 +194,12 @@ body {
 	border: 0;
 	font-size: 1.1em;
 }
+.mobile .btn {
+    font-size: 2.6em;
+    width: 1.3em;
+    font-weight: bold;
+    margin-top: -0.2em;
+}
 .btnFixed {
 	display: inline-block;
 	height: 100%;
@@ -202,6 +209,9 @@ body {
 	cursor: pointer;
 	border: 0;
 	font-size: 1.1em;
+}
+.mobile .btnFixed{
+    width: 1.3em;
 }
 .btnNarrow{
 	width: 1.8em;
@@ -249,11 +259,19 @@ body {
 	position: relative;
 	height: 0.6em;
 	cursor: pointer;
+    background-color: #686868;
+    background: rgba(104,104,104,0.6);
 }
 .controlsContainer .scrubber{
 	display: inline-block !important;
 	margin-left:5px;
 	top: -3px;
+}
+.mobile .controlsContainer .scrubber{
+    height: 10px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.8);
+    margin-left: 20px;
 }
 .sliderPreviewTime {
 	position: absolute;
@@ -366,7 +384,16 @@ body {
 	background: linear-gradient(to bottom,  rgba(255,255,255,1) 0%,rgba(204,204,204,1) 50%,rgba(255,255,255,1) 100%); /* W3C */
 
 }
-
+.mobile .scrubber .playHead {
+    border-radius: 14px;
+    background: rgb(255, 255, 255);
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0px 20px 50px 0px rgba(0, 0, 0, 0.2);
+    width: 14px;
+    height: 14px;
+    margin-top: 5px;
+    margin-left: -0.2em;
+}
 .player-out .hover .playHead {
 	/*
 	-webkit-transform: scale(0, 0);
@@ -473,6 +500,7 @@ body {
 }
 
 .volumeControl.open .sliderContainer {
+	display: block;
 	display: block;
 }
 .volumeControl .ui-slider-vertical{
@@ -689,16 +717,36 @@ body {
 	font-size: 0.84em;
 	display: inline;
 	line-height: 2.7em;
-	font-family: Helvetica,Arial;
+	font-family: 'Lato', Helvetica, Arial;
 	top: -2px;
 }
 
+.mobile .timers{
+    position: absolute;
+    margin-top: 14px;
+    font-weight: bold;
+}
 .currentTimeLabel {
 	padding-left: 0.8em;
+    color: #e8e8e8;
+}
+
+.mobile .currentTimeLabel {
+	margin-left: 10px;
+    color: #ffffff;
 }
 
 .durationLabel {
 	padding-left: 0.5em;
+    color: #b1aeab;
+}
+
+.mobile .durationLabel {
+    margin-left: -2.1em;
+    width: 0px;
+    text-align: right;
+    padding-left: 0;
+    color: #ffffff;
 }
 .overlay {
 	position: absolute;
@@ -879,12 +927,12 @@ body {
 	width:100%;
 	display: inline-block;
 }
-
-.scrubber {
-	background-color: #686868;
-	background: rgba(104,104,104,0.6);
+.mobile .controlsContainer{
+    background: transparent;
+    border-top: 0px;
+    box-shadow: none;
+    height: 40px;
 }
-
 .ui-tooltip {
 	background-color: #000000;
 	background-repeat: repeat-x;
@@ -1060,6 +1108,11 @@ body {
 .watched {
 	background-color: #2ec7e1;
 }
+.mobile .watched {
+	background-color: #00D6FF;
+    border-bottom-left-radius: 10px;
+    border-top-left-radius: 10px;
+}
 
 .buffered {
 	background-color: #AFAFAF;
@@ -1104,14 +1157,6 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 	opacity: 1;
 }
 
-.currentTimeLabel {
-	color: #e8e8e8;
-}
-
-.durationLabel {
-	color: #b1aeab;
-}
-
 .sourceSelector {
 	display: inline-block;
 }
@@ -1138,7 +1183,9 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 	height: 100%;
 	position: relative;
 }
-
+.mobile .controlBarContainer .logo{
+    margin-top: -0.1em;
+}
 .logo img {
 	margin: auto;
 	position: absolute;
@@ -1470,7 +1517,7 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     height: 50px;
     border: solid 4px rgba(255,255,255,0.7);
     background-color: transparent;
-    border-right-color: #59baf3;
+    border-right-color: #00d6ff;
     -webkit-animation: rotating 0.8s linear infinite;
     -moz-animation: rotating 0.8s linear infinite;
     animation: rotating 0.8s linear infinite;
