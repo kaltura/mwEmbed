@@ -13,9 +13,6 @@
 			title: null,
 			img: null
 		},
-		isSafeEnviornment: function(){
-			return !mw.isMobileDevice();
-		},
 		getComponent: function () {
 			var _this = this;
 			if (!this.$el) {
