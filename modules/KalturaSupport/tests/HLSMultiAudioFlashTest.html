@@ -21,22 +21,23 @@
 	mw.setConfig("LeadWithHLSOnFlash", true);
 
 
-	kWidget.embed({
+	kWidget.featureConfig({
 		"targetId": "kaltura_player",
 		"wid": "_243342",
 		"uiconf_id": "12905712",
 		"flashvars": {
-            "audioSelector": {plugin: true} ,
-
+			"audioSelector": {
+				"plugin": true
+			},
 			"streamerType": "auto",
 			"mediaProxy": {
-	  			'entry':{
-	 				'name': "Obama Video",
-	 				"thumbnailUrl": "http://www.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_2kbfzmku/version/100000/width/560"
-	 			},
-	 			'sources':[
-			  		{
-			  			'type' : 'application/vnd.apple.mpegurl',
+				'entry':{
+					'name': "Obama Video",
+					"thumbnailUrl": "http://www.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_2kbfzmku/version/100000/width/560"
+				},
+				'sources':[
+					{
+						'type' : 'application/vnd.apple.mpegurl',
 						'src' : 'http://pa-www.kaltura.com/content/shared/erank/multi_audio.m3u8'
 					}
 				]
