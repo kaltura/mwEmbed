@@ -468,8 +468,8 @@ kWidget.addReadyCallback( function( playerId ){
 		runMediaCommandWithArgs: function( args ){
 
 			var eventsTimeout = 0; //eventsTimeout is a new configuration, delay time in seconds
-			if (this.getConfig(eventsTimeout)){
-				eventsTimeout = this.getConfig(eventsTimeout)*1000;
+			if (this.getConfig("eventsTimeout")){
+				eventsTimeout = this.getConfig("eventsTimeout")*1000;
 			}
 			var _args = args;
 			var _this = this;
@@ -490,6 +490,7 @@ kWidget.addReadyCallback( function( playerId ){
 					argSet[0] = _this.getMediaName();
 					switch( cmd ) {
 						case 'open':
+							console.log("---- 4 open");
 							//re evaluate all additional evars and props
 							_this.setupEvarsAndProps();
 							s.Media.open(argSet[0], argSet[1], argSet[2]);
