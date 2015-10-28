@@ -43,9 +43,9 @@
                     _this.setStream(_this.currentStream);
                 }
                 if (_this.streams.length > 1) {
-                    _this.readyAndHasStreams.resolve(true);
+                    _this.readyAndHasStreams.resolve();
                 } else {
-                    _this.readyAndHasStreams.resolve(false);
+                    _this.readyAndHasStreams.reject();
                 }
             });
 
@@ -95,6 +95,7 @@
                     _this.createStreamList(data);
                 } else {
                     mw.log('streamSelector::Error retrieving streams, disabling component');
+                    _this.readyAndHasStreams.reject();
                 }
             });
         },

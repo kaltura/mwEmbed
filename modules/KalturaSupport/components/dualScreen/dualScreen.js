@@ -64,14 +64,14 @@
                 var _this = this;
                 var deferred = $.Deferred();
                 this.initSecondPlayer().then(function(){
-                    deferred.resolve(true);
+                    deferred.resolve();
                 }, function () { //url for second screen not found or not valid
                     //TODO: validate channel playlist logic (test page needed) - configuration can be found here: http://externaltests.dev.kaltura.com/player/library/channel_playlist/v.playlist_LC_autoPlay.html (uiconf: 15135421)
                     if( _this.isPlaylistPersistent()) {
-                        deferred.resolve(true);
+                        deferred.resolve();
                         return;
                     }
-                   deferred.resolve(false);
+                   deferred.reject();
                 });
                 return deferred.promise();
 			},
@@ -133,33 +133,35 @@
 
 				//Listen to events which affect controls view state
 				this.bind( 'showPlayerControls' , function(){
-						if (!_this.disabled) {
+						if ( _this.controlBar && !_this.disabled ) {
 							_this.controlBar.show();
 						}
 				});
 				this.bind( 'onplay', function () {
-						if (!_this.disabled && !_this.getPlayer().isAudio()) {
+						if ( _this.controlBar && !_this.disabled && !_this.getPlayer().isAudio() ) {
 							_this.controlBar.enable();
 						}
 				} );
 				this.bind( 'onpause ended playerReady', function () {
-						if (!_this.disabled && _this.controlBar && !_this.getPlayer().isAudio()) {
+						if ( _this.controlBar && !_this.disabled && !_this.getPlayer().isAudio() ) {
 							_this.controlBar.show();
 							_this.controlBar.disable();
 						}
 				} );
 				var wasDisabled = false;
 				this.bind( 'startDisplayInteraction', function(){
-					_this.controlBar.hide();
-					wasDisabled = _this.controlBar.disabled;
-					_this.controlBar.disable();
-					_this.getPlayer().disablePlayControls();
+					if( _this.controlBar ) {
+                        _this.controlBar.hide();
+                        wasDisabled = _this.controlBar.disabled;
+                        _this.controlBar.disable();
+                        _this.getPlayer().disablePlayControls();
+                    }
 				});
 				this.bind( 'stopDisplayInteraction', function() {
 					//Only enable and show if controlBar was enabled before transition
-					if ( !wasDisabled ) {
-						_this.controlBar.enable();
-						_this.controlBar.show();
+					if ( _this.controlBar && !wasDisabled ) {
+                            _this.controlBar.enable();
+                            _this.controlBar.show();
 					}
 					_this.getPlayer().enablePlayControls();
 				});
@@ -174,7 +176,7 @@
 							_this.fsm.consumeEvent('switchView');
 						}
 						//Reset the control bar
-						if (_this.controlBar) {
+						if ( _this.controlBar ) {
 							_this.controlBar.destroy();
 							_this.controlBar = null;
 						}
@@ -318,13 +320,13 @@
 					var transitionHandlerSet = true;
 					_this.getPlayer().triggerHelper('preDualScreenTransition', [[transitionFrom, transitionTo]]);
 
-					if (!_this.disabled) {
+					if ( _this.controlBar && !_this.disabled ) {
 						_this.controlBar.hide();
 					}
 					_this.bind("displayTransitionEnded", function ( ) {
 						if ( transitionHandlerSet ) {
 							transitionHandlerSet = false;
-							if (!_this.disabled && !_this.getPlayer().isAudio()) {
+							if ( _this.controlBar && !_this.disabled && !_this.getPlayer().isAudio() ) {
 								_this.controlBar.show();
 							}
 							_this.displays.disableTransitions();
@@ -524,7 +526,7 @@
 					//only then preShowScreen
 					var _this = this;
 					setTimeout(function(){
-						if (!_this.screenShown && !_this.disabled && !_this.getPlayer().isAudio()) {
+						if ( _this.controlBar && !_this.screenShown && !_this.disabled && !_this.getPlayer().isAudio() ) {
 							_this.controlBar.enable();
 							_this.controlBar.show();
 						}
@@ -697,7 +699,7 @@
                 if (this.getPlayer().kCuePoints) {
                   //load second screen as imagePlayer
                   this.loadSeconScreenImage().then(function () {
-                      deferred.resolve(true);
+                      deferred.resolve();
                   });
                 } else {
                    //load second screen as videoPlayer (if there are video su-entries for the main entry - load streamSelector in order to check this)
@@ -705,13 +707,13 @@
                    this.loadStreamSelector()
                        .then(function () {
                            _this.loadSeconScreenVideo().then(function () {
-                               deferred.resolve(true);
+                               deferred.resolve();
                            });
                        }, function () { // master entry doesn't has sub-entries
                            if( _this.streamSelector ){
                                _this.streamSelector.destroy();
                            }
-                           deferred.resolve(false);
+                           deferred.reject();
                        });
                 }
 
@@ -727,7 +729,7 @@
                         "prefetch": _this.getConfig("prefetch"),
                         "cuePointType": _this.getConfig("cuePointType")
                     });
-                    deferred.resolve(true);
+                    deferred.resolve();
                 }, "imagePlayer");
 
                 return deferred.promise();
@@ -742,10 +744,10 @@
                     this.streamSelector = new mw.streamSelectorUtils.selector(this.getPlayer(), function () {
                         this.getStreams();
                         this.readyAndHasStreams.promise().then(function () {
-                            deferred.resolve(true);
+                            deferred.resolve();
                         }, function () { // master entry doesn't has sub-entries
                             _this.streamSelectorLoaded = true; //prevent to load streamSelector again in the future
-                            deferred.resolve(false);
+                            deferred.reject();
                         });
                     }, "streamSelectorUtils");
                 }else{
@@ -759,13 +761,13 @@
 
                 var secondScreenUrl = this.getSlaveUrl();
                 if( !secondScreenUrl ){
-                    deferred.resolve(false);
+                    deferred.reject();
                     return;
                 }
 
                 this.secondPlayer = new mw.dualScreen.videoPlayer(this.getPlayer(), function () {
                     this.setUrl(secondScreenUrl);
-                    deferred.resolve(true);
+                    deferred.resolve();
                 }, "videoPlayer");
 
                 return deferred.promise();
