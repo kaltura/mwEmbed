@@ -424,6 +424,9 @@
     "flavorComboControllerScreen": {
         "description": "The Kaltura flavor selector plugin."
     },
+    "audioSelector": {
+        "description": "Enables users to select from audio tracks active in the stream."
+    },
     "sourceSelector": {
         "description": "Enables users to select the video quality.",
         "attributes": {
