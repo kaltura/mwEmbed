@@ -248,7 +248,7 @@
                 .on('click', function () {
                 $(this).off('click');
                 $(this).html(gM('mwe-quiz-plsWait'));
-                 _this.KIVQModule.setSubmitQuiz();
+                _this.KIVQModule.setSubmitQuiz();
             });
         },
 
@@ -285,7 +285,7 @@
                 $(".title-text").addClass("padding35");
                 $(".sub-text").html(gM('mwe-quiz-completedQuiz'));
             }
-            $(".confirm-box").html(gM('mwe-quiz-done'))
+            $(".confirm-box").html(gM('mwe-quiz-done')).off()
                 .on('click', function () {
                     _this.removeShowScreen("contentScreen");
                     $(".title-text").html(gM('mwe-quiz-thankYou')).addClass('thank-you');

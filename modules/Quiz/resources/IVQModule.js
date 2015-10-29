@@ -35,22 +35,21 @@
             setupQuiz:function(){
                 var _this = this;
 
-                _this.KIVQApi.getUserEntryIdAndQuizParams( function(data){
-                    if (!_this.checkApiResponse('User Entry err-->',data[0])){
+                _this.KIVQApi.getUserEntryIdAndQuizParams( function(data) {
+                    if (!_this.checkApiResponse('User Entry err-->', data[0])) {
                         return false;
                     }
-                    if (!_this.checkApiResponse('Quiz Params err-->',data[1])){
+                    if (!_this.checkApiResponse('Quiz Params err-->', data[1])) {
                         return false;
                     }
-                    else{
+                    else {
                         $.quizParams = data[1];
-
                         $.grep($.quizParams.uiAttributes, function (e) {
                             if (e.key == "showTotalScore") {
-                                _this.showTotalScore = (e.value.toLowerCase() ==='true') ;
+                                _this.showTotalScore = (e.value.toLowerCase() === 'true');
                             }
                             if (e.key == "canSkip") {
-                                _this.canSkip = (e.value.toLowerCase() ==='true') ;
+                                _this.canSkip = (e.value.toLowerCase() === 'true');
                             }
                         });
 
@@ -72,7 +71,9 @@
                         }
                     }
                     _this.setUserEntryId(data);
-                    _this.getQuestionsAndAnswers(_this.populateCpObject);
+                    _this.checkUserEntryIdReady(function(){
+                        _this.getQuestionsAndAnswers(_this.populateCpObject);
+                    });
                 });
             },
 
@@ -95,9 +96,7 @@
                     _this.kQuizUserEntryId = data[0].objects[0].id;
                 }
                 else{
-
                     _this.KIVQApi.createQuizUserEntryId(function(userData){
-
                         if (!_this.checkApiResponse('Add KQ user entry id err -->',userData)){
                             return false;
                         }
@@ -240,6 +239,15 @@
                         _this.quizPlugin.ssSetCurrentQuestion(key);
                     }
                 });
+            },
+            checkUserEntryIdReady:function(callback){
+                var _this = this;
+                _this.intrVal = setInterval(function () {
+                    if (_this.kQuizUserEntryId){
+                        clearInterval(_this.intrVal);
+                        callback()
+                    }
+                }, 500);
             },
             checkCuepointsReady:function(callback){
                 var _this = this;
@@ -457,7 +465,6 @@
             },
             destroy: function () {
                 var _this = this;
-
                 clearInterval(_this.intrVal);
                 _this.intrVal = null;
             }
