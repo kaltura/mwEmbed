@@ -448,6 +448,7 @@ kWidget.addReadyCallback( function( playerId ){
 				this.log( 'Addtional eVars and Values length does not match' );
 			}
 			// append the custom evars and props:
+			s.Media.trackVars = "";
 			s.Media.trackVars += ',' + additionalEvarsAndProps;
 
 			this.trackMediaWithExtraEvars = function() {
@@ -490,10 +491,10 @@ kWidget.addReadyCallback( function( playerId ){
 					argSet[0] = _this.getMediaName();
 					switch( cmd ) {
 						case 'open':
-							console.log("---- 4 open");
-							//re evaluate all additional evars and props
+							//re evaluate all additional evars and props for the new media
 							_this.setupEvarsAndProps();
 							s.Media.open(argSet[0], argSet[1], argSet[2]);
+							_this.previousName = argSet[0];
 							break;
 						case 'play':
 							s.Media.play(argSet[0], argSet[1]);
@@ -502,7 +503,7 @@ kWidget.addReadyCallback( function( playerId ){
 							s.Media.stop(argSet[0], argSet[1]);
 							break;
 						case 'close':
-							s.Media.close(argSet[0]);
+							s.Media.close(_this.previousName);
 							break;
 						case 'openAd':
 							s.Media.openAd(argSet[0], argSet[1], argSet[2],argSet[3], argSet[4], argSet[5]);
@@ -515,7 +516,6 @@ kWidget.addReadyCallback( function( playerId ){
 							break;
 					}
 				} catch( e ) {
-					debugger;
 					_this.log( "Error: Omniture, trying to run media command:" + cmd + " failed: \n" + e );
 				}
 				// audit if trackEventMonitor is set:
