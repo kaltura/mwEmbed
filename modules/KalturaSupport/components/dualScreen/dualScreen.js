@@ -493,8 +493,10 @@
 			//Manage display helpers
 			disableView: function(){
 				this.displays.getAuxDisplay().obj.css("visibility", "hidden");
-				this.controlBar.hide();
-				this.controlBar.disable();
+                if(this.controlBar) {
+                    this.controlBar.hide();
+                    this.controlBar.disable();
+                }
 			},
 			enableView: function(){
 				this.displays.getMainDisplay().obj.css("visibility", "");

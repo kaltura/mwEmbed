@@ -94,7 +94,7 @@
                 if (data && _this.isValidResult(data[0] && data[0].totalCount > 0)) {
                     _this.createStreamList(data);
                 } else {
-                    mw.log('streamSelector::Error retrieving streams, disabling component');
+                    mw.log('streamSelectorUtil::Error retrieving streams, disabling component');
                     _this.readyAndHasStreams.reject();
                 }
             });
@@ -124,11 +124,9 @@
         },
         isValidResult: function (data) {
             // Check if we got error
-            if (!data
-                ||
-                ( data.code && data.message )
-            ) {
-                mw.log('streamSelector::Error, invalid result: ' + data.message);
+            if (!data || ( data.code && data.message ) ) {
+                var msg = data.message ? ': ' + data.message : '.';
+                mw.log('streamSelectorUtil::Error, invalid result' + msg);
                 this.error = true;
                 return false;
             }
