@@ -10,6 +10,7 @@
             qnaPlugin: null,
             qnaService: null,
             currentTimeInterval: null,
+            waitFirstPlayInterval: null,
             answerOnAirQueueUpdateInterval: null,
 
             init: function (embedPlayer, qnaPlugin, qnaService) {
@@ -110,17 +111,16 @@
                         _this.currentTime(new Date().getTime());
                     }, mw.getConfig("qnaPollingInterval") || 10000);
                 }
-                $( embedPlayer ).bind('firstPlay', function () {
-                    // after the first play embedPlayer.currentTime is 0.
-                    // wait till we get a real time and refresh the answer on air queue
-                    var clearAnswerOnAirQueueInterval = setInterval(function() {
+
+                if (this.waitFirstPlayInterval === null){
+                    this.waitFirstPlayInterval = setInterval(function(){
                         if (embedPlayer.currentTime > 0)
                         {
                             _this.qnaService.AnswerOnAirQueueUpdate(embedPlayer.currentTime);
-                            clearInterval(clearAnswerOnAirQueueInterval);
+                            clearInterval(_this.waitFirstPlayInterval);
                         }
                     }, 100);
-                });
+                }
 
                 $( embedPlayer ).bind('timeupdate', function () {
                     _this.playerTime(embedPlayer.currentTime);
