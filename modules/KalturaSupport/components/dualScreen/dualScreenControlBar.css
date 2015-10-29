@@ -1,6 +1,6 @@
 .controlBar{
     padding-top: 10px;
-    padding-right: 10px;
+    padding-right: 20px;
     z-index: 3;
     position: absolute;
     top: 0;
@@ -18,6 +18,7 @@ ul.inline, ol.inline {
 li{
     clear: both;
     float: right;
+    padding-bottom: 40px;
 }
 
 #displayControlBar{
@@ -26,7 +27,7 @@ li{
 
 .controlBarBtn {
     float: right;
-    font-size:70px;
+    font-size: 36px;
     text-shadow: 0px 0px 1px rgba(0, 0, 0, 0.4);
     color: rgb(255, 255, 255);
     cursor: pointer;
@@ -34,7 +35,8 @@ li{
 
 .stateSelected{
     position: absolute;
-    right: 10px;
+    right: 20px;
+    margin-right: 0px !important;
 }
 
 .streamBtn{
@@ -46,22 +48,24 @@ li{
 }
 
 .separator {
-    font-size:28px;
+    font-size: 15px;
     vertical-align: middle;
     cursor: default !important;
     width: 6px;
+    margin-right: 0px !important;
 }
 
 #separator{
-    line-height: 70px;
+    line-height: 36px;
 }
 
 #separatorStreams{
-    line-height: 78px;
+    line-height: 36px;
 }
 
 #placeHolder{
     opacity: 0;
+    margin-left: 13px;
 }
 
 .subMenuHidden{
@@ -71,23 +75,35 @@ li{
 
 .subMenuVisible{
     visibility: visible !important;
+    margin-right: 29px;
 }
 
-/*@media all and  (max-width: 640px) {*/
-/*#displayControlBar{*/
-/*width:220px;*/
-/*}*/
-/*.controlBarBtn, #separator {*/
-/*font-size:24px;*/
-/*}*/
-/*}*/
-
-@media all and  (max-width: 640px) {
+@media all and  (max-width: 500px), screen and (max-height: 300px) {
     #displayControlBar{
-        width:210px;
+        /*width:250px;*/
     }
-    .controlBarBtn, #separator {
-        font-size:24px;
+    .controlBarBtn{
+        font-size:26px;
+    }
+    li{
+        padding-bottom: 22px;
+    }
+
+    #separator {
+        line-height: 26px;
+    }
+    .separator {
+        font-size: 10px;
+    }
+    .subMenuVisible{
+        margin-right: 20px;
+    }
+    #placeHolder{
+        margin-left: 7px;
+    }
+
+    #separatorStreams{
+        line-height: 26px;
     }
 }
 
