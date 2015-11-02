@@ -94,13 +94,12 @@
 			});
 
 			this.bind('onChangeMedia', function () {
-				_this.log("_this.streamChanging: " + _this.streamChanging);
 				if (!_this.streamChanging){
-					_this.streams = [];
-					_this.getMenu().destroy();
-					_this.onDisable();
-					_this.streamsReady = false;
-				}
+						_this.streams = [];
+						_this.getMenu().destroy();
+						_this.onDisable();
+						_this.streamsReady = false;
+					}
 			});
 
 			if (this.getConfig('enableKeyboardShortcuts')) {
@@ -134,10 +133,10 @@
 				// Validate result
 				if (data && _this.isValidResult(data[0] && data[0].totalCount > 0)) {
 					_this.createStreamList(data);
-					_this.getBtn().show();
+					_this.$el.show();
 				} else {
 					mw.log('streamSelector::Error retrieving streams, disabling component');
-					_this.getBtn().hide();
+					_this.$el.hide();
 				}
 			});
 		},
@@ -161,7 +160,7 @@
 				} );
 			} else {
 				mw.log('streamSelector::No streams avaialble, disabling component');
-				_this.getBtn().hide();
+				_this.$el.hide();
 			}
 			_this.embedPlayer.triggerHelper('streamsReady');
 		},

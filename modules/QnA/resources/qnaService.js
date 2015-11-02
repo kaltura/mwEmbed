@@ -335,21 +335,21 @@ DAL for Q&A Module
 
                 _this.getKClient().doRequest([createCuePointRequest, addMetadataRequest, updateCuePointRequestAddQnaTag], function (result) {
 
-                    var endTime = new Date();
-                    var cuePoint = result[2];
-                    var metadata = result[1];
-                    if (cuePoint.id && metadata.id) {
+                        var endTime = new Date();
+                        var cuePoint = result[2];
+                        var metadata = result[1];
+                        if (cuePoint.id && metadata.id) {
 
-                        cuePoint.metadata = {xml: metadata.xml, id: metadata.id};
+                            cuePoint.metadata = {xml: metadata.xml, id: metadata.id};
 
-                        var item = _this.annotationCuePointToQnaEntry(cuePoint);
+                            var item = _this.annotationCuePointToQnaEntry(cuePoint);
 
-                        if (item) {
-                            _this.addOrUpdateEntry(item);
-                            _this.sortThreads();
-                        }
+                            if (item) {
+                                _this.addOrUpdateEntry(item);
+                                _this.sortThreads();
+                            }
 
-                        mw.log("added Annotation cue point with id: " + cuePoint.id + " took " + (endTime - startTime) + " ms");
+                            mw.log("added Annotation cue point with id: " + cuePoint.id + " took " + (endTime - startTime) + " ms");
 
                         } else {
                             mw.log("error adding Annotation " + JSON.stringify(result));
@@ -652,6 +652,7 @@ DAL for Q&A Module
 
                         _this.moduleStatusLastUpdateTime = cuePoint.updatedAt;
 
+                        //TODO remove this once all procuders app will be upgraded to latest
                         if (cuePoint.code === "ENABLE_QNA"){
                             disableModule = false;
                             announcementOnly = false;
@@ -667,6 +668,17 @@ DAL for Q&A Module
                         else if (cuePoint.code === "DISABLE_ANNOUNCEMENTS_ONLY"){
                             disableModule = false;
                             announcementOnly = false;
+                        }
+
+                        if (cuePoint.tags && cuePoint.tags.indexOf("WEBCASTSTATETAG")>=0) {
+                            try {
+                                var webCastingState=JSON.parse(cuePoint.code);
+                                disableModule=!webCastingState["QnA"];
+                                announcementOnly=!disableModule && webCastingState["AnnouncementsOnly"];
+                            }
+                            catch(e) {
+                                mw.log("Error:: Error parsing WEBCASTSTATETAG code cue point "+ e.message+ " "+ e.stack);
+                            }
                         }
 
                         _this.qnaPlugin.hideModule(disableModule, announcementOnly);

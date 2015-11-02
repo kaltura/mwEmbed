@@ -201,6 +201,12 @@
 				google.ima.settings.setPlayerVersion(mw.getConfig("version"));
 				google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.INSECURE);
 
+				// Set num of redirects for VAST wrapper ads, higher means bigger latency!
+				var numRedirects = _this.getConfig("numRedirects");
+				if(numRedirects) {
+					google.ima.settings.setNumRedirects(numRedirects);
+				}
+
 				// Check for adPattern
 				if ( _this.getConfig( 'adPattern' ) ) {
 					var adIndex = _this.getAdPatternIndex();

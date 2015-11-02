@@ -941,6 +941,14 @@ var mw = ( function ( $, undefined ) {
 				 * Requests dependencies from server, loading and executing when things when ready.
 				 */
 				work: function () {
+					if ( mw.getConfig("Kaltura.ExcludedModules") ){
+						var excludedModules = mw.getConfig("Kaltura.ExcludedModules").split(",");
+						$.each(excludedModules, function( index, value ) {
+							if (registry[value]){
+								delete registry[value];
+							}
+						});
+					}
 					var	reqBase, splits, maxQueryLength, q, b, bSource, bGroup, bSourceGroup,
 						source, group, g, i, modules, maxVersion, sourceLoadScript,
 						currReqBase, currReqBaseLength, moduleMap, l,
@@ -1211,6 +1219,15 @@ var mw = ( function ( $, undefined ) {
 				 * @param error {Function} callback to execute when if dependencies have a errors (optional)
 				 */
 				using: function ( dependencies, ready, error ) {
+					if ( mw.getConfig("Kaltura.ExcludedModules") ){
+						var excludedModules = mw.getConfig("Kaltura.ExcludedModules").split(",");
+						$.each(excludedModules, function( index, value ) {
+							var pos = dependencies.indexOf(value);
+							if (pos !== -1){
+								dependencies.splice(pos,1);
+							}
+						});
+					}
 					var tod = typeof dependencies;
 					// Validate input
 					if ( tod !== 'object' && tod !== 'string' ) {
@@ -1415,7 +1432,9 @@ var mw = ( function ( $, undefined ) {
 					return s.replace(/&#([0-9]{1,3});/gi, function (match, numStr) {
 						var num = parseInt(numStr, 10); // read num as normal number
 						return String.fromCharCode(num);
-					});
+					})
+						.replace(/&amp;/g, '&')
+						.replace(/&lt;br\s*\/&gt;/g,'<br/>');
 				},
 
 				/**

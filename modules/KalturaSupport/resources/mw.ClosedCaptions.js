@@ -39,8 +39,6 @@
 				&&
 				$.cookie( this.cookieName ) == 'None')
 				||
-				this.getConfig('displayCaptions') === null
-				||
 				( this.getConfig( 'hideClosedCaptions') === true )
 			){
 				this.setConfig('displayCaptions', false );
@@ -117,6 +115,7 @@
 						_this.destory();
 						_this.setupTextSources( function () {
 							_this.buildMenu( _this.textSources );
+							_this.unbind('playerReady');
 						} );
 					} );
 					outOfBandCaptionEventHandlers.call(this);
@@ -153,9 +152,11 @@
 
 			this.bind( 'onplay', function(){
 				_this.playbackStarted = true;
+				_this.getMenu().close();
 			});
 			this.bind( 'hidePlayerControls', function(){
 				_this.getComponent().removeClass( 'open' );
+				_this.getMenu().close();
 			});
 
 			this.bind( 'showHideClosedCaptions', function(){

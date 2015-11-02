@@ -596,6 +596,11 @@ class kalturaIframeClass {
 			color: #fff;
 			overflow: hidden;
 		}
+		@-moz-document url-prefix() {
+			img:-moz-loading {
+				visibility: hidden;
+			}
+		}
 		video::-webkit-media-controls-start-playback-button {
 			display:none !important;
 		}
@@ -1198,9 +1203,16 @@ HTML;
 	<?php echo $this->outputSkinCss(); ?>
 	<?php echo $this->outputCustomCss(); ?>
 
-	<!--[if lt IE 10]>
-	<script type="text/javascript" src="<?php echo $this->getPath(); ?>resources/PIE/PIE.js"></script>
-	<![endif]-->
+	<script type="text/javascript">
+		(function (document) {
+			if (document.documentMode && document.documentMode <= 9) {
+				var tag = document.createElement('script');
+				tag.type = 'text/javascript';
+				tag.src = "<?php echo $this->getPath(); ?>resources/PIE/PIE.js";
+				document.getElementsByTagName('head')[0].appendChild(tag);
+			}
+		})(window.document);
+	</script>
 </head>
 <body>
 <?php echo $this->getKalturaIframeScripts(); ?>
