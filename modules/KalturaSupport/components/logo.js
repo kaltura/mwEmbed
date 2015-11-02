@@ -22,7 +22,7 @@
 						.attr({
 							alt: this.getConfig('title'),
 							src: this.getConfig('img')
-						});
+						}).removeAttr("width height");
 				}
 				this.$el = $('<div />')
 					.addClass(this.getCssClass())
