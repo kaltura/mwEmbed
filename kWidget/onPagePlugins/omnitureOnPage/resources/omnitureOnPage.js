@@ -210,8 +210,8 @@ kWidget.addReadyCallback( function( playerId ){
 				this.log( 'Addtional eVars and Values length does not match' );
 			}
 			// append the custom evars and props:
+			s.Media.trackVars = undefined;
 			s.Media.trackVars += ',' + additionalEvarsAndProps;
-
 			var _this = this;
 
 			this.trackMediaWithExtraEvars = function() {
@@ -255,8 +255,8 @@ kWidget.addReadyCallback( function( playerId ){
 			var trackedClose = false;
 			s.Media.autoTrack= typeof this.getConfig('autoTrack') == 'undefined' ? true : this.getConfig('autoTrack') ;
 			s.Media.trackWhilePlaying = typeof this.getConfig('trackWhilePlaying')  == 'undefined' ? true : this.getConfig('trackWhilePlaying');
-			if(this.getConfig(trackMilestones)){
-				s.Media = this.getConfig(trackMilestones);
+			if(this.getConfig("trackMilestones")){
+				s.Media = this.getConfig("trackMilestones");
 			}else{
 				s.Media.trackMilestones="25,50,75";
 			}
