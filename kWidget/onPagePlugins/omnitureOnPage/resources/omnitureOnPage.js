@@ -183,29 +183,15 @@ kWidget.addReadyCallback( function( playerId ){
 		getCurrentTime: function(){
 			return Math.floor( parseInt(this.getAttr('video.player.currentTime')) );
 		},
-		/*
-		Support passing global evars to all events
-		
-		sample attribute config: 
-		additionalEvarsAndProps="eVar51,eVar52,eVar53,eVar54,prop44"
-		additionalEvarsAndPropsValues="{mediaProxy.entry.creatorId},
-			{mediaProxy.entry.createdAt},{configProxy.flashvars.referer},
-			{mediaProxy.entry.duration},{configProxy.flashvars.streamerType}" 
-		*/
-		setupMonitor: function() {
-			// Exit if sCode not loaded
-			if( !this.sCodeLoaded) {
-				return ;
-			}
 
-			var _this = this;
+		setupEvarsAndProps : function(){
 			var extraEvars = [];
 			var extraEvarsValues = [];
-			
-			this.log( 'setupMonitor' );
-			
-			// get local ref to the sCode s var:
 			var s = window[ this.getSCodeName() ];
+
+			this.log( 'setupMonitor' );
+
+			// get local ref to the sCode s var:
 
 			// Check for additional eVars and eVars values
 			var additionalEvarsAndProps = this.getConfig('additionalEvarsAndProps');
@@ -225,8 +211,10 @@ kWidget.addReadyCallback( function( playerId ){
 			}
 			// append the custom evars and props:
 			s.Media.trackVars += ',' + additionalEvarsAndProps;
-			
-			var trackMediaWithExtraEvars = function() {
+
+			var _this = this;
+
+			this.trackMediaWithExtraEvars = function() {
 				for( var i=0; i < extraEvars.length; i++ ) {
 					(function(key, val) {
 						_this.log('omnitureOnPage:: eVar: ' + key + ' - eValue: ' + val);
@@ -238,6 +226,26 @@ kWidget.addReadyCallback( function( playerId ){
 				s.Media.track( _this.getMediaName() );
 			};
 
+		},
+
+		/*
+		Support passing global evars to all events
+		
+		sample attribute config: 
+		additionalEvarsAndProps="eVar51,eVar52,eVar53,eVar54,prop44"
+		additionalEvarsAndPropsValues="{mediaProxy.entry.creatorId},
+			{mediaProxy.entry.createdAt},{configProxy.flashvars.referer},
+			{mediaProxy.entry.duration},{configProxy.flashvars.streamerType}" 
+		*/
+		setupMonitor: function() {
+			// Exit if sCode not loaded
+			if( !this.sCodeLoaded) {
+				return ;
+			}
+			var s = window[ this.getSCodeName() ];
+
+			this.setupEvarsAndProps();
+
 			// Check if we have monitor function
 			var originalMediaFunc = s.Media.monitor;
 			
@@ -247,7 +255,14 @@ kWidget.addReadyCallback( function( playerId ){
 			var trackedClose = false;
 			s.Media.autoTrack= typeof this.getConfig('autoTrack') == 'undefined' ? true : this.getConfig('autoTrack') ;
 			s.Media.trackWhilePlaying = typeof this.getConfig('trackWhilePlaying')  == 'undefined' ? true : this.getConfig('trackWhilePlaying');
-			s.Media.trackMilestones="25,50,75";
+			if(this.getConfig(trackMilestones)){
+				s.Media = this.getConfig(trackMilestones);
+			}else{
+				s.Media.trackMilestones="25,50,75";
+			}
+
+
+			var _this = this;
 			s.Media.monitor = function ( s, media ) {
 				var inArray = false;
 				for (var i = 0; i < trackEvents.length; i++){
@@ -257,12 +272,12 @@ kWidget.addReadyCallback( function( playerId ){
 					}
 				}
 				if( inArray ) {
-					trackMediaWithExtraEvars();
+					_this.trackMediaWithExtraEvars();
 				}
 				if( media.event == 'CLOSE' ){
 					if( !trackedClose){
 						trackedClose = true;
-						trackMediaWithExtraEvars();
+						_this.trackMediaWithExtraEvars();
 					}
 				}
 				// Special case the MONITOR event.
@@ -271,7 +286,7 @@ kWidget.addReadyCallback( function( playerId ){
 					if( monitorCount == _this.getConfig( 'monitorEventInterval' ) ){
 						monitorCount = 0;
 						_this.log( "Track MONITOR" );
-						trackMediaWithExtraEvars();
+						_this.trackMediaWithExtraEvars();
 					}
 				}
 				if (media.mediaEvent == "MILESTONE"){
@@ -463,60 +478,80 @@ kWidget.addReadyCallback( function( playerId ){
 			}
 		},
 		runMediaCommandWithArgs: function( args ){
-			var cmd = args[0];
-	 		var argSet = args.slice( 1 );
-	 		
-	 		var s = window[ this.getSCodeName() ];
-	 		try {
-	 			// When using argSet.join we turn all arguments to string, we need to send them with the same type 
-	 			//eval( this.getSCodeName() + '.Media.' + cmd + '("' + argSet.join('","') + '");');
-	 			// not working :(
-	 			//s.Media[cmd].apply( this, args );
 
-				if(this.getConfig("overridePlayerName") != undefined ){
-					s.Media.playerName = String(this.getConfig("overridePlayerName"));
+
+			var eventsTimeout = 0; //eventsTimeout is a new configuration, delay time in seconds
+			if (this.getConfig("eventsTimeout")){
+					eventsTimeout = this.getConfig("eventsTimeout")*1000;
+			}
+			_this = this;
+			var _args = args;
+
+
+			setTimeout(function(){
+
+
+				var s = window[ _this.getSCodeName() ];
+				var cmd = _args[0];
+				var argSet = _args.slice( 1 );
+				try {
+					// When using argSet.join we turn all arguments to string, we need to send them with the same type
+					//eval( this.getSCodeName() + '.Media.' + cmd + '("' + argSet.join('","') + '");');
+					// not working :(
+					//s.Media[cmd].apply( this, args );
+
+					if(_this.getConfig("overridePlayerName") != undefined ){
+						s.Media.playerName = String(_this.getConfig("overridePlayerName"));
+					}
+					if ( !s.inAd && cmd !== 'openAd') {
+						// re-evaluate mediaName even it it was already pushed to the stack
+						argSet[0] = _this.getMediaName();
+					}
+					switch( cmd ) {
+						case 'open':
+							_this.setupEvarsAndProps();
+							s.Media.open(argSet[0], argSet[1], argSet[2]);
+							_this.previousName = argSet[0];
+						break;
+						case 'play':
+							s.Media.play(argSet[0], argSet[1]);
+						break;
+						case 'stop':
+							s.Media.stop(argSet[0], argSet[1]);
+						break;
+						case 'close':
+							if(s.inAd){
+								s.Media.close(argSet[0]);
+							} else{
+								s.Media.close(_this.previousName);
+							}
+							s.inAd = false;
+						break;
+						case 'openAd':
+							s.inAd = true;
+							s.Media.openAd(argSet[0], argSet[1], argSet[2],argSet[3], argSet[4], argSet[5]);
+						break;
+						case 'complete':
+							s.Media.complete(argSet[0], argSet[1]);
+							break;
+						case 'monitor':
+							s.Media.monitor(argSet[0], argSet[1]);
+							break;
+					}
+				} catch( e ) {
+					_this.log( "Error: Omniture, trying to run media command:" + cmd + " failed: \n" + e );
 				}
-			    if ( !s.inAd && cmd !== 'openAd') {
-				    // re-evaluate mediaName even it it was already pushed to the stack
-				    argSet[0] = this.getMediaName();
-			    }
-		 		switch( cmd ) {
-		 			case 'open':
-						s.Media.open(argSet[0], argSet[1], argSet[2]);
-		 			break;
-		 			case 'play':
-		 				s.Media.play(argSet[0], argSet[1]);
-		 			break;
-		 			case 'stop':
-		 				s.Media.stop(argSet[0], argSet[1]);
-		 			break;
-		 			case 'close':
-		 				s.Media.close(argSet[0]);
-					    s.inAd = false;
-		 			break;
-					case 'openAd':
-						s.inAd = true;
-		 				s.Media.openAd(argSet[0], argSet[1], argSet[2],argSet[3], argSet[4], argSet[5]);
-		 			break;
-					case 'complete':
-						s.Media.complete(argSet[0], argSet[1]);
-						break;
-					case 'monitor':
-						s.Media.monitor(argSet[0], argSet[1]);
-						break;
-		 		}
-		 	} catch( e ) {
-	 			this.log( "Error: Omniture, trying to run media command:" + cmd + " failed: \n" + e );
-	 		}
-	 		// audit if trackEventMonitor is set:
-	 		if( this.getConfig( 'trackEventMonitor') ){
-		 		try{
-		 			if( window[ this.getConfig( 'trackEventMonitor') ] ){
-		 				window[ this.getConfig( 'trackEventMonitor') ]( this.getSCodeName() + 
-		 					'.Media.' + cmd + '( "' + argSet.join('", "') + '" )' );
-		 			}
-		 		} catch ( e ){}
-	 		}
+				// audit if trackEventMonitor is set:
+				if( _this.getConfig( 'trackEventMonitor') ){
+					try{
+						if( window[ _this.getConfig( 'trackEventMonitor') ] ){
+							window[ _this.getConfig( 'trackEventMonitor') ]( _this.getSCodeName() +
+								'.Media.' + cmd + '( "' + argSet.join('", "') + '" )' );
+						}
+					} catch ( e ){}
+				}
+
+			},eventsTimeout)
 	 	},
 
 		/**
