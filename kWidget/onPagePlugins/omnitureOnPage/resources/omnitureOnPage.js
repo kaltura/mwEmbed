@@ -260,8 +260,6 @@ kWidget.addReadyCallback( function( playerId ){
 			}else{
 				s.Media.trackMilestones="25,50,75";
 			}
-
-
 			var _this = this;
 			s.Media.monitor = function ( s, media ) {
 				var inArray = false;
@@ -478,13 +476,10 @@ kWidget.addReadyCallback( function( playerId ){
 			}
 		},
 		runMediaCommandWithArgs: function( args ){
-
-
 			var eventsTimeout = 0; //eventsTimeout is a new configuration, delay time in seconds
 			if (this.getConfig("eventsTimeout")){
 					eventsTimeout = this.getConfig("eventsTimeout")*1000;
 			}
-
 			_this = this;
 			var _args = args;
 			if(eventsTimeout){
@@ -525,10 +520,10 @@ kWidget.addReadyCallback( function( playerId ){
 						s.Media.stop(argSet[0], argSet[1]);
 						break;
 					case 'close':
-						if(s.inAd){
-							s.Media.close(argSet[0]);
-						} else{
+						if(this.getConfig("dynamicMediaName") == true){
 							s.Media.close(this.previousName);
+						}else{
+							s.Media.close(argSet[0]);
 						}
 						s.inAd = false;
 						break;
