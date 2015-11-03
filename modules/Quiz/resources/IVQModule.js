@@ -240,20 +240,29 @@
                     }
                 });
             },
+
             checkUserEntryIdReady:function(callback){
                 var _this = this;
+                if (_this.intrVal){
+                    _this.intrVal = false;
+                }
                 _this.intrVal = setInterval(function () {
                     if (_this.kQuizUserEntryId){
                         clearInterval(_this.intrVal);
+                        _this.intrVal = false;
                         callback()
                     }
                 }, 500);
             },
             checkCuepointsReady:function(callback){
                 var _this = this;
+                if (_this.intrVal){
+                    _this.intrVal = false;
+                }
                 _this.intrVal = setInterval(function () {
                     if ($.cpObject.cpArray){
                         clearInterval(_this.intrVal);
+                        _this.intrVal = false;
                         callback()
                     }
                 }, 500);
