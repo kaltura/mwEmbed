@@ -484,75 +484,80 @@ kWidget.addReadyCallback( function( playerId ){
 			if (this.getConfig("eventsTimeout")){
 					eventsTimeout = this.getConfig("eventsTimeout")*1000;
 			}
+
 			_this = this;
 			var _args = args;
-
-
-			setTimeout(function(){
-
-
-				var s = window[ _this.getSCodeName() ];
-				var cmd = _args[0];
-				var argSet = _args.slice( 1 );
-				try {
-					// When using argSet.join we turn all arguments to string, we need to send them with the same type
-					//eval( this.getSCodeName() + '.Media.' + cmd + '("' + argSet.join('","') + '");');
-					// not working :(
-					//s.Media[cmd].apply( this, args );
-
-					if(_this.getConfig("overridePlayerName") != undefined ){
-						s.Media.playerName = String(_this.getConfig("overridePlayerName"));
-					}
-					if ( !s.inAd && cmd !== 'openAd') {
-						// re-evaluate mediaName even it it was already pushed to the stack
-						argSet[0] = _this.getMediaName();
-					}
-					switch( cmd ) {
-						case 'open':
-							_this.setupEvarsAndProps();
-							s.Media.open(argSet[0], argSet[1], argSet[2]);
-							_this.previousName = argSet[0];
-						break;
-						case 'play':
-							s.Media.play(argSet[0], argSet[1]);
-						break;
-						case 'stop':
-							s.Media.stop(argSet[0], argSet[1]);
-						break;
-						case 'close':
-							if(s.inAd){
-								s.Media.close(argSet[0]);
-							} else{
-								s.Media.close(_this.previousName);
-							}
-							s.inAd = false;
-						break;
-						case 'openAd':
-							s.inAd = true;
-							s.Media.openAd(argSet[0], argSet[1], argSet[2],argSet[3], argSet[4], argSet[5]);
-						break;
-						case 'complete':
-							s.Media.complete(argSet[0], argSet[1]);
-							break;
-						case 'monitor':
-							s.Media.monitor(argSet[0], argSet[1]);
-							break;
-					}
-				} catch( e ) {
-					_this.log( "Error: Omniture, trying to run media command:" + cmd + " failed: \n" + e );
-				}
-				// audit if trackEventMonitor is set:
-				if( _this.getConfig( 'trackEventMonitor') ){
-					try{
-						if( window[ _this.getConfig( 'trackEventMonitor') ] ){
-							window[ _this.getConfig( 'trackEventMonitor') ]( _this.getSCodeName() +
-								'.Media.' + cmd + '( "' + argSet.join('", "') + '" )' );
-						}
-					} catch ( e ){}
-				}
-
-			},eventsTimeout)
+			if(eventsTimeout){
+				setTimeout(function(){
+					_this.executeMediaCommandWithArgs(_args);
+				} , eventsTimeout )
+			}else{
+				this.executeMediaCommandWithArgs(args);
+			}
 	 	},
+		executeMediaCommandWithArgs : function(args){
+			var s = window[ this.getSCodeName() ];
+			var cmd = args[0];
+			var argSet = args.slice( 1 );
+			try {
+				// When using argSet.join we turn all arguments to string, we need to send them with the same type
+				//eval( this.getSCodeName() + '.Media.' + cmd + '("' + argSet.join('","') + '");');
+				// not working :(
+				//s.Media[cmd].apply( this, args );
+
+				if(this.getConfig("overridePlayerName") != undefined ){
+					s.Media.playerName = String(this.getConfig("overridePlayerName"));
+				}
+				if ( !s.inAd && cmd !== 'openAd') {
+					// re-evaluate mediaName even it it was already pushed to the stack
+					argSet[0] = this.getMediaName();
+				}
+				switch( cmd ) {
+					case 'open':
+						this.setupEvarsAndProps();
+						s.Media.open(argSet[0], argSet[1], argSet[2]);
+						this.previousName = argSet[0];
+						break;
+					case 'play':
+						s.Media.play(argSet[0], argSet[1]);
+						break;
+					case 'stop':
+						s.Media.stop(argSet[0], argSet[1]);
+						break;
+					case 'close':
+						if(s.inAd){
+							s.Media.close(argSet[0]);
+						} else{
+							s.Media.close(this.previousName);
+						}
+						s.inAd = false;
+						break;
+					case 'openAd':
+						s.inAd = true;
+						s.Media.openAd(argSet[0], argSet[1], argSet[2],argSet[3], argSet[4], argSet[5]);
+						break;
+					case 'complete':
+						s.Media.complete(argSet[0], argSet[1]);
+						break;
+					case 'monitor':
+						s.Media.monitor(argSet[0], argSet[1]);
+						break;
+				}
+			} catch( e ) {
+				this.log( "Error: Omniture, trying to run media command:" + cmd + " failed: \n" + e );
+			}
+			// audit if trackEventMonitor is set:
+			if( this.getConfig( 'trackEventMonitor') ){
+				try{
+					if( window[ this.getConfig( 'trackEventMonitor') ] ){
+						window[ this.getConfig( 'trackEventMonitor') ]( this.getSCodeName() +
+						'.Media.' + cmd + '( "' + argSet.join('", "') + '" )' );
+					}
+				} catch ( e ){}
+			}
+
+		},
+
 
 		/**
 	 	 * Dispatches an event to omniture via the s.track(); call
