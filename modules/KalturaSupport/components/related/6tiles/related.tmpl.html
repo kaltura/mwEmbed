@@ -1,0 +1,32 @@
+<div class="related__items-wrap">
+  <div class="related__items-inner-wrap">
+    <div class="related__items">
+      <% $.each([].concat(nextItem, moreItems), function(index, item) { %>
+      <div
+        class="related__item related-item"
+        data-entry-id="<%=item.id%>"
+        data-entry-index="<%=index%>"
+        data-click="changeMedia"
+        >
+        <div class="related-item__inner">
+          <div class="related-item__thumbnail-wrap">
+            <div class="related-item__thumbnail-inner">
+              <img
+                class="related-item__thumbnail"
+                alt="<%=item.name%>"
+                src="<%=item.thumbnailUrl%>/width/240/height/135/type/3" />
+            </div>
+          </div>
+          <div class="related-item__title-wrap">
+            <div class="related-item__title-inner">
+              <div class="related-item__title">
+                <%=item.name%>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% }); %>
+    </div>
+  </div>
+</div>
