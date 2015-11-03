@@ -21,6 +21,7 @@
         showCorrectKeyOnAnswer: false,
         showResultOnAnswer: false,
         isSeekingIVQ:false,
+        inFullScreen : false,
 
         setup: function () {
             var _this = this;
@@ -34,7 +35,6 @@
         addBindings: function () {
             var _this = this;
             var embedPlayer = this.getPlayer();
-            var firstPlay = true;
 
             this.bind('layoutBuildDone', function () {
                 var entryRequest = {
@@ -65,14 +65,13 @@
                 embedPlayer.pause();
                 embedPlayer.disablePlayControls();
                 embedPlayer.triggerHelper( 'onDisableKeyboardBinding' );
-
             });
 
             this.bind('prePlayAction', function (e, data) {
                 if(_this.getPlayer().firstPlay && !_this.firstPlay){
                     data.allowPlayback = false;
-                    _this.firstPlay=true;
-                    _this.enablePlayDuringScreen = true;
+                    _this.firstPlay = true;
+                    _this.enablePlayDuringScreen = false;
                     _this.ssWelcome();
                 }
             });
@@ -97,6 +96,20 @@
                     _this.ssAlmostDone(anUnswered);
                 }
             });
+            embedPlayer.bindHelper('onOpenFullScreen', function() {
+                _this.inFullScreen = true;
+                if (!_this.isScreenVisible()) {
+                   _this.displayBubbles();
+               }
+            });
+            embedPlayer.bindHelper('onCloseFullScreen', function() {
+                _this.inFullScreen = false;
+                if (!_this.isScreenVisible()) {
+                    _this.displayBubbles();
+                }
+            });
+
+
         },
         getKClient: function () {
             if (!this.kClient) {
@@ -232,9 +245,10 @@
             var _this = this;
             this.reviewMode = true;
             _this.removeShowScreen("completed");
-            $(".title-text").html("Completed");
 
-            $(".sub-text").html(gM('mwe-quiz-TakeAMoment') + '<strong> '+ gM('mwe-quiz-review').toLowerCase() +' </strong>'
+            $(".title-text").addClass('padding20').html(gM('mwe-quiz-completed'));
+
+            $(".sub-text").addClass('margin-top4').html(gM('mwe-quiz-TakeAMoment') + '<strong> '+ gM('mwe-quiz-review').toLowerCase() +' </strong>'
                     + gM('mwe-quiz-yourAnswers') + '</br><strong> '+ gM('mwe-quiz-or') +' </strong>'
                     + gM('mwe-quiz-goAhead')+ '<strong> '+ gM('mwe-quiz-submit').toLowerCase() +' </strong>'
             );
@@ -408,7 +422,9 @@
             if (this.reviewMode) {
                 $(".ftr-left").html(gM('mwe-quiz-doneReview')).on('click', function () {
                     _this.ssAllCompleted();
-                });
+                }).append($('<span>  ' + gM('mwe-quiz-question') + ' ' + this.KIVQModule.i2q(questionNr)
+                + '/' + $.cpObject.cpArray.length + '</span>'));
+
                 if ($.cpObject.cpArray.length > 1) {
                     $(".ftr-right").html(gM('mwe-quiz-reviewNextQ')).on('click', function () {
                         if (_this.isScreenVisible()) _this.removeScreen();
@@ -446,7 +462,14 @@
             displayBubbles:function(){
             var  _this = this,embedPlayer = this.getPlayer(),handleBubbleclick;
             var scrubber = embedPlayer.getInterface().find(".scrubber");
-            var displayClass,cPo = $.cpObject.cpArray;
+            var displayClass,bubbleIsFS,cPo = $.cpObject.cpArray;
+
+            if (_this.inFullScreen) {
+                bubbleIsFS = "bubble-fullscreen";
+            }
+            else{
+                bubbleIsFS = "bubble-window"
+            }
 
             embedPlayer.getInterface().find(".bubble-cont").empty().remove();
             embedPlayer.getInterface().find(".bubble").empty().remove();
@@ -454,7 +477,7 @@
             scrubber.parent().prepend('<div class="bubble-cont"></div>');
 
             $.each(cPo, function (key, val) {
-                displayClass = val.isAnswerd ? "bubble bubble-ans" : "bubble bubble-un-ans";
+                displayClass = val.isAnswerd ? "bubble bubble-ans " + bubbleIsFS : "bubble bubble-un-ans " + bubbleIsFS;
                 var pos = (Math.round(((val.startTime/_this.entryData.msDuration)*100) * 10)/10)-1;
                 $('.bubble-cont').append($('<div id ="' + key + '" style="margin-left:' + pos + '%">' +
                     _this.KIVQModule.i2q(key) + ' </div>')
