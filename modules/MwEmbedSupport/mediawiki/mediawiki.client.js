@@ -154,7 +154,7 @@
 		// mw.isIOSV() methods check mw.isIOS(), but because of the OR operator it will be checked multiple times. 
 		// Short-circuit to save many calls.
 		return mw.isIOS() && (mw.isIOS3() || mw.isIOS4() || mw.isIOS5() || mw.isIOS6() || mw.isIOS7() || mw.isIOS8());
-	}
+	};
 	
 	mw.isIOS8_9 = function () {
 		return mw.isIOS8() || mw.isIOS9();
