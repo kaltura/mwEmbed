@@ -214,8 +214,10 @@ kWidget.addReadyCallback( function( playerId ){
 				extraEvars = additionalEvarsAndProps.split(",");
 			}
 			if( additionalEvarsAndPropsValues ){
-				additionalEvarsAndPropsValues = this.kdp.evaluate(additionalEvarsAndPropsValues);
 				extraEvarsValues = additionalEvarsAndPropsValues.split(",");
+				for( var j=0; j < extraEvarsValues.length; j++ ) {
+					extraEvarsValues[j] = this.kdp.evaluate(extraEvarsValues[j]);
+				}
 			}
 			// Compare length between eVars and eVars values
 			if( extraEvars.length !== extraEvarsValues.length ) {
