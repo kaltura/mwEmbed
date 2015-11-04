@@ -8,7 +8,7 @@
 	
 	<!-- Facebook Open Graph tags -->
 	<meta property="og:title" content="Kaltura Player: Share Plugin example" />
-	<meta property="og:url" content="http://player.kaltura.com/modules/KalturaSupport/components/share/Share.html">
+	<meta property="og:url" content="http://player.kaltura.com/modules/KalturaSupport/components/share/SharePlaylist.html">
 	<meta property="og:description" content="Kaltura Player: Share plugin demonstrates the ease of which social share can be configured with the kaltura player toolkit." />
 	<meta property="og:type" content="video" />
 	<meta property="og:image" content="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/400" />
@@ -20,15 +20,15 @@
 	<meta property="og:site_name" content="Kaltura" />
 	
 	<!-- Facebook iframe embed  -->
-	<meta property="og:video:url" content="https://cdnapisec.kaltura.com/p/243342/sp/24334200/embedIframeJs/uiconf_id/28685261/partner_id/243342?iframeembed=true&playerId=kaltura_player&entry_id=1_sf5ovm7u">
-	<meta property="og:video:secure_url" content="https://cdnapisec.kaltura.com/p/243342/sp/24334200/embedIframeJs/uiconf_id/28685261/partner_id/243342?iframeembed=true&playerId=kaltura_player&entry_id=1_sf5ovm7u">
+	<meta property="og:video:url" content="https://cdnapisec.kaltura.com/p/243342/sp/24334200/embedIframeJs/uiconf_id/32070891/partner_id/243342?iframeembed=true">
+	<meta property="og:video:secure_url" content="https://cdnapisec.kaltura.com/p/243342/sp/24334200/embedIframeJs/uiconf_id/32070891/partner_id/243342?iframeembed=true">
 	<meta property="og:video:type" content="text/html">
 	<meta property="og:video:width" content="560">
 	<meta property="og:video:height" content="395">
 	
 	<!--  legacy swf embed:  -->
-	<meta property="og:video:url" content="https://cdnapisec.kaltura.com/index.php/kwidget/cache_st/1423160141/wid/_243342/uiconf_id/28685261/entry_id/1_sf5ovm7u" />
-	<meta property="og:video:secure_url" content="https://cdnapisec.kaltura.com/index.php/kwidget/cache_st/1423160141/wid/_243342/uiconf_id/28685261/entry_id/1_sf5ovm7u" />
+	<meta property="og:video:url" content="https://cdnapisec.kaltura.com/index.php/kwidget/cache_st/1423160141/wid/_243342/uiconf_id/32070891/entry_id/1_sf5ovm7u" />
+	<meta property="og:video:secure_url" content="https://cdnapisec.kaltura.com/index.php/kwidget/cache_st/1423160141/wid/_243342/uiconf_id/32070891/entry_id/1_sf5ovm7u" />
 	<meta property="og:video:type" content="application/x-shockwave-flash"> 
 	<meta property="og:video:width" content="600" />
 	<meta property="og:video:height" content="376" />	
@@ -39,14 +39,14 @@
 	<meta name="twitter:title" content="Kaltura Player: Share Plugin example">
 	<meta name="twitter:description" content="Kaltura presenting the new v2 player">
 	<meta name="twitter:image" content="https://cdnsecakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/400">
-	<meta name="twitter:player" content="https://cdnapisec.kaltura.com/p/243342/sp/24334200/embedIframeJs/uiconf_id/28685261/partner_id/243342?iframeembed=true&playerId=kaltura_player&entry_id=1_sf5ovm7u">
+	<meta name="twitter:player" content="https://cdnapisec.kaltura.com/p/243342/sp/24334200/embedIframeJs/uiconf_id/32070891/partner_id/243342?iframeembed=true">
 	<meta name="twitter:player:width" content="600">
 	<meta name="twitter:player:height" content="376">
 	<meta name="twitter:player:stream" content="https://cdnapisec.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_sf5ovm7u/flavorId/1_d2uwy7vv/format/url/protocol/http/a.mp4">
 	<meta name="twitter:player:stream:content_type" content="video/mp4; codecs=&quot;avc1.42E01E1, mp4a.40.2&quot;">
 </head>
 <body>
-<h2>Share Plugin</h2>
+<h2>Share Playlist Plugin Example</h2>
 <br />
 <div id="kdp" style="width:600px;height:376px;float:left"></div>
 <script type="text/javascript" src="../../tests/resources/qunit-kaltura-bootstrap.js"></script>
@@ -54,7 +54,7 @@
 	kWidget.featureConfig({
 		'targetId': 'kdp',
 		'wid': '_243342',
-		'uiconf_id' : '28685261',
+		'uiconf_id' : '32070891',
 		'entry_id' : '1_sf5ovm7u',
 		'flashvars': {
 			'share': {
@@ -63,14 +63,14 @@
 				'order': 3,
 				'socialShareURL': 'smart',
 				'socialNetworks': 'facebook,twitter,googleplus,email,linkedin,sms',
-				'embedCodeTemplate': '<iframe src="//cdnapi.kaltura.com/p/{mediaProxy.entry.partnerId}/sp/{mediaProxy.entry.partnerId}00/embedIframeJs/uiconf_id/{configProxy.kw.uiConfId}/partner_id/{mediaProxy.entry.partnerId}?iframeembed=true&playerId={configProxy.targetId}&entry_id={mediaProxy.entry.id}&flashvars[streamerType]=auto" width="560" height="395" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0"></iframe>'
+				'embedCodeTemplate': '<iframe src="//cdnapi.kaltura.com/p/{mediaProxy.entry.partnerId}/sp/{mediaProxy.entry.partnerId}00/embedIframeJs/uiconf_id/{configProxy.kw.uiConfId}/partner_id/{mediaProxy.entry.partnerId}?iframeembed=true&playerId={configProxy.targetId}" width="560" height="395" allowfullscreen webkitallowfullscreen mozAllowFullScreen frameborder="0"></iframe>'
 			},
 			'autoPlay': false,
 		}
 	});
 </script>
 <div style="clear:both"></div>
-Also see <a href="SharePlaylist.html">SharePlaylist</a> example.
+Also see <a href="Share.html">basic share</a> example.
 <h3> Supporting Twitter Cards </h3>
 You can lean more about twitter cards in the detailed <a href="https://dev.twitter.com/docs/cards">twitter card documentation</a> <br>
 <br><b>Sample Kaltura player Twitter card markup: </b>
@@ -79,7 +79,7 @@ You can lean more about twitter cards in the detailed <a href="https://dev.twitt
 &lt;meta name=&quot;twitter:title&quot; content=&quot;Kaltura Player: Share Plugin example&quot;&gt;
 &lt;meta name=&quot;twitter:description&quot; content=&quot;Kaltura presenting the new v2 player&quot;&gt;
 &lt;meta name=&quot;twitter:image&quot; content=&quot;https://cdnsecakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_sf5ovm7u/version/100003/width/400&quot;&gt;
-&lt;meta name=&quot;twitter:player&quot; content=&quot;https://cdnapisec.kaltura.com/p/243342/sp/24334200/embedIframeJs/uiconf_id/28685261/partner_id/243342?iframeembed=true&amp;playerId=kaltura_player&amp;entry_id=1_sf5ovm7u&quot;&gt;
+&lt;meta name=&quot;twitter:player&quot; content=&quot;https://cdnapisec.kaltura.com/p/243342/sp/24334200/embedIframeJs/uiconf_id/32070891/partner_id/243342?iframeembed=true&amp;playerId=kaltura_player&amp;entry_id=1_sf5ovm7u&quot;&gt;
 &lt;meta name=&quot;twitter:player:width&quot; content=&quot;600&quot;&gt;
 &lt;meta name=&quot;twitter:player:height&quot; content=&quot;370&quot;&gt;
 &lt;-- To support twiter native app embeds include content stream --&gt;
@@ -105,15 +105,15 @@ Facebook supports html5 player embeds via <a href="https://developers.facebook.c
 &lt;meta property=&quot;og:site_name&quot; content=&quot;Kaltura&quot; /&gt;
 
 &lt;!-- Facebook iframe embed  --&gt;
-&lt;meta property=&quot;og:video:url&quot; content=&quot;https://cdnapisec.kaltura.com/p/243342/sp/24334200/embedIframeJs/uiconf_id/28685261/partner_id/243342?iframeembed=true&amp;playerId=kaltura_player&amp;entry_id=1_sf5ovm7u&quot;&gt;
-&lt;meta property=&quot;og:video:secure_url&quot; content=&quot;https://cdnapisec.kaltura.com/p/243342/sp/24334200/embedIframeJs/uiconf_id/28685261/partner_id/243342?iframeembed=true&amp;playerId=kaltura_player&amp;entry_id=1_sf5ovm7u&amp;&quot;&gt;
+&lt;meta property=&quot;og:video:url&quot; content=&quot;https://cdnapisec.kaltura.com/p/243342/sp/24334200/embedIframeJs/uiconf_id/32070891/partner_id/243342?iframeembed=true&amp;playerId=kaltura_player&amp;entry_id=1_sf5ovm7u&quot;&gt;
+&lt;meta property=&quot;og:video:secure_url&quot; content=&quot;https://cdnapisec.kaltura.com/p/243342/sp/24334200/embedIframeJs/uiconf_id/32070891/partner_id/243342?iframeembed=true&amp;playerId=kaltura_player&amp;entry_id=1_sf5ovm7u&amp;&quot;&gt;
 &lt;meta property=&quot;og:video:type&quot; content=&quot;text/html&quot;&gt;
 &lt;meta property=&quot;og:video:width&quot; content=&quot;560&quot;&gt;
 &lt;meta property=&quot;og:video:height&quot; content=&quot;395&quot;&gt;
 
 &lt;!--  legacy swf embed:  --&gt;
-&lt;meta property=&quot;og:video:url&quot; content=&quot;https://cdnapisec.kaltura.com/index.php/kwidget/cache_st/1423160141/wid/_243342/uiconf_id/28685261/entry_id/1_sf5ovm7u&quot; /&gt;
-&lt;meta property=&quot;og:video:secure_url&quot; content=&quot;https://cdnapisec.kaltura.com/index.php/kwidget/cache_st/1423160141/wid/_243342/uiconf_id/28685261/entry_id/1_sf5ovm7u&quot; /&gt;
+&lt;meta property=&quot;og:video:url&quot; content=&quot;https://cdnapisec.kaltura.com/index.php/kwidget/cache_st/1423160141/wid/_243342/uiconf_id/32070891/entry_id/1_sf5ovm7u&quot; /&gt;
+&lt;meta property=&quot;og:video:secure_url&quot; content=&quot;https://cdnapisec.kaltura.com/index.php/kwidget/cache_st/1423160141/wid/_243342/uiconf_id/32070891/entry_id/1_sf5ovm7u&quot; /&gt;
 &lt;meta property=&quot;og:video:type&quot; content=&quot;application/x-shockwave-flash&quot;&gt; 
 &lt;meta property=&quot;og:video:width&quot; content=&quot;600&quot; /&gt;
 &lt;meta property=&quot;og:video:height&quot; content=&quot;370&quot; /&gt;	

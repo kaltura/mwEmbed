@@ -477,8 +477,8 @@ class mwEmbedLoader {
 			}
 		} else {
 			
-			// Default expire time for the loader to 3 hours ( kaltura version always have diffrent version tags; for new versions )
-			$max_age = 60*60*3;
+			// Default expire time for the loader to 10 min ( we support 304 not modified so no need for long expire )
+			$max_age = 60*10;
 			// if the loader request includes uiConf set age to 10 min ( uiConf updates should propgate in ~10 min )
 			if( $this->request()->get('uiconf_id') ){
 				$max_age = 60*10;
