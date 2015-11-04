@@ -480,7 +480,7 @@ kWidget.addReadyCallback( function( playerId ){
 			if (this.getConfig("eventsTimeout")){
 					eventsTimeout = this.getConfig("eventsTimeout")*1000;
 			}
-			_this = this;
+			var _this = this;
 			var _args = args;
 			if(eventsTimeout){
 				setTimeout(function(){
