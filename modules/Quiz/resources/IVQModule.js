@@ -126,6 +126,15 @@
                     }
                 });
             },
+            getIvqPDF:function(entryId){
+                var _this = this;
+                _this.KIVQApi.downloadIvqPDF(entryId, function(data){
+                    if (!_this.checkApiResponse('Download PDF  err -->',data)){
+                        return false;
+                    }
+                });
+            },
+
             populateCpObject: function (data) {
                 var cpArray = [];
                 for (var i = 0; i < (data[0].objects.length); i++) {
@@ -236,7 +245,7 @@
                 $.each($.cpObject.cpArray, function (key, val) {
                     if ($.cpObject.cpArray[key].startTime === cuePointObj.cuePoint.startTime) {
                         _this.currentQuestionNumber = key;
-                        _this.quizPlugin.ssSetCurrentQuestion(key);
+                        _this.quizPlugin.ssSetCurrentQuestion(key,false);
                     }
                 });
             },

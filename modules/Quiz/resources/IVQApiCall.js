@@ -118,6 +118,17 @@
                 });
             };
 
+                this.downloadIvqPDF = function (EntryId,callback) {
+                    var downloadPdf = {
+                        'service': 'quiz_quiz',
+                        'action': 'getUrl',
+                        'quizOutputType':1,
+                        'entryId': EntryId
+                    };
+                    _this.getKClient().doRequest(downloadPdf, function (data) {
+                        callback(data);
+                    });
+                };
             },
             destroy: function () {
 

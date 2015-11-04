@@ -22,6 +22,7 @@
         showResultOnAnswer: false,
         isSeekingIVQ:false,
         inFullScreen : false,
+        keepQuestionScreenON:false,
 
         setup: function () {
             var _this = this;
@@ -153,11 +154,11 @@
                             //    + gM('mwe-quiz-pdf')+'</div>');
                             //
                             //    $(".pdf-download-img").on('click',function(){
-                            //       _this._downloadPDF();
+                            //       _this.KIVQModule.getIvqPDF(_this.embedPlayer.kentryid);
                             //       $(".pdf-download-img").off();
                             //    })
                             //}
-                            break;
+                            //break;
                     }
                 });
                 $(".confirm-box").html(gM('mwe-quiz-continue'))
@@ -184,8 +185,8 @@
                 .on('click', '.q-box', function () {
                 var selectQ = parseInt($(this).attr('id'));
 
-                _this.KIVQModule.gotoScrubberPos(selectQ);
-                _this.ssSetCurrentQuestion(selectQ);
+              _this.KIVQModule.gotoScrubberPos(selectQ);
+              _this.ssSetCurrentQuestion(selectQ,false);
             });
         },
 
@@ -202,7 +203,7 @@
                             }
                             switch(HWSelector){
                                 case 'hint':
-                                    _this.ssSetCurrentQuestion(questionNr);
+                                    _this.ssSetCurrentQuestion(questionNr,false);
                                     break;
                                 case 'why':
                                     _this.state = "reviewAnswer";
@@ -213,9 +214,23 @@
                     $(".hint-container").append(displayText);
                 })
         },
-        ssSetCurrentQuestion: function (questionNr) {
+
+        ssSetCurrentQuestion: function (questionNr,replaceContentNoReload) {
             var _this = this,cPo = $.cpObject.cpArray[questionNr];
-            _this.removeShowScreen("question");
+            var  embedPlayer = this.getPlayer();
+
+            if (replaceContentNoReload) {
+console.log("set templete==============");
+                _this.setQuestionTemplate();
+                //embedPlayer.getInterface().find(
+                //    '.display-question,' +
+                //    '.answers-container,' +
+                //    '.ftr-left,' +
+                //    '.ftr-right')
+                //    .empty();
+            }else{
+                _this.removeShowScreen("question");
+            }
 
             if ($.cpObject.cpArray[questionNr].hintText){
                 _this.ssDisplayHW('hint',questionNr,
@@ -255,7 +270,7 @@
 
             $(".review-button").html(gM('mwe-quiz-review'))
                 .on('click', function () {
-                _this.ssSetCurrentQuestion(0);
+                _this.ssSetCurrentQuestion(0,true);
             });
 
             $(".submit-button").html(gM('mwe-quiz-submit'))
@@ -422,12 +437,12 @@
             if (this.reviewMode) {
                 $(".ftr-left").html(gM('mwe-quiz-doneReview')).on('click', function () {
                     _this.ssAllCompleted();
-                }).append($('<span>  ' + gM('mwe-quiz-question') + ' ' + this.KIVQModule.i2q(questionNr)
+                }).append($('<span>   ' + gM('mwe-quiz-question') + ' ' + this.KIVQModule.i2q(questionNr)
                 + '/' + $.cpObject.cpArray.length + '</span>'));
 
                 if ($.cpObject.cpArray.length > 1) {
-                    $(".ftr-right").html(gM('mwe-quiz-reviewNextQ')).on('click', function () {
-                        if (_this.isScreenVisible()) _this.removeScreen();
+                    $(".ftr-right").html(gM('mwe-quiz-reviewNextQ')).off().on('click', function () {
+                       // if (_this.isScreenVisible()) _this.removeScreen();
                         function nextQuestionNr(questionNr) {
                             if (questionNr == $.cpObject.cpArray.length - 1) {
                                 return 0;
@@ -435,7 +450,7 @@
                                 return ++questionNr;
                             }
                         }
-                        _this.ssSetCurrentQuestion(nextQuestionNr(questionNr));
+                        _this.ssSetCurrentQuestion(nextQuestionNr(questionNr),true);
                     });
                 }
             } else {
@@ -459,6 +474,20 @@
                 }
             }
         },
+
+        setQuestionTemplate:function(){
+            var  embedPlayer = this.getPlayer();
+            var questionContainer = embedPlayer.getInterface().find('.screen-content').empty();
+            $(questionContainer).append('' +
+            '<div class="header-container">' +
+            '<div class="display-question"></div>' +
+            '</div>' +
+            ' <div class="answers-container"></div>' +
+            ' <div class = "ftr-container">' +
+            '<div class="ftr-left"></div>' +
+            '<div class="ftr-right"></div>' +
+            '</div>')
+        },
             displayBubbles:function(){
             var  _this = this,embedPlayer = this.getPlayer(),handleBubbleclick;
             var scrubber = embedPlayer.getInterface().find(".scrubber");
@@ -468,7 +497,7 @@
                 bubbleIsFS = "bubble-fullscreen";
             }
             else{
-                bubbleIsFS = "bubble-window"
+                bubbleIsFS = "bubble-window";
             }
 
             embedPlayer.getInterface().find(".bubble-cont").empty().remove();
