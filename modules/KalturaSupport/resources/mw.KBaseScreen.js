@@ -99,7 +99,7 @@
 					this.getPlayer().restoreComponentsHover();
 				}
 
-				if ( !this.enablePlayDuringScreen ){
+				if ( !this.enablePlayDuringScreen && this.isScreenVisible() ){
 					this.getScreen().then(function(screen){
 						screen.fadeOut( 400 );
 					});

@@ -201,6 +201,12 @@
 				google.ima.settings.setPlayerVersion(mw.getConfig("version"));
 				google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.INSECURE);
 
+				// Set num of redirects for VAST wrapper ads, higher means bigger latency!
+				var numRedirects = _this.getConfig("numRedirects");
+				if(numRedirects) {
+					google.ima.settings.setNumRedirects(numRedirects);
+				}
+
 				// Check for adPattern
 				if ( _this.getConfig( 'adPattern' ) ) {
 					var adIndex = _this.getAdPatternIndex();
@@ -1139,6 +1145,7 @@
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				mw.log("DoubleClick:: adStart");
+				_this.embedPlayer.sequenceProxy.isInSequence = true;
 				// set volume when ad starts to enable autoMute. TODO: remove next line once DoubleClick fix their bug when setting adsManager.volume before ad starts
 				_this.embedPlayer.setPlayerElementVolume(_this.embedPlayer.volume);
 				// trigger ad play event
@@ -1270,7 +1277,6 @@
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				mw.log("DoubleClick:: contentPauseRequested");
 				_this.entryDuration = _this.embedPlayer.getDuration();
-				_this.embedPlayer.sequenceProxy.isInSequence = true;
 				_this.embedPlayer.stopMonitor();
 				_this.playingLinearAd = true;
 			},'contentPauseRequested', true);
