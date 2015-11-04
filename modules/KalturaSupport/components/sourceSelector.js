@@ -11,7 +11,8 @@
 			"switchOnResize": false,
 			"simpleFormat": true,
 			"iconClass": "icon-cog",
-            "displayMode": "size" //'size' – displays frame size ( default ), 'bitrate' – displays the bitrate, 'sizebitrate' displays size followed by bitrate
+            "displayMode": "size", //'size' – displays frame size ( default ), 'bitrate' – displays the bitrate, 'sizebitrate' displays size followed by bitrate
+            "hideSource": false
 		},
 
 		isDisabled: false,
@@ -128,6 +129,15 @@
             //add Auto for addaptive bitrate streams
             if ( !this.handleAdaptiveBitrateAndContinue() )
                 return;
+
+            if (this.getConfig('hideSource')) {
+                // find and remove 'source' flavours (by tag)
+                $.each(sources.slice(0), function (sourceIndex, source) {
+                    if ((source.tags || '').split(',').indexOf('source') >= 0) {
+                        sources.splice(sourceIndex, 1);
+                    }
+                });
+            }
 
 			if( sources.length == 1 ){
 				// no need to do building menu logic. 
