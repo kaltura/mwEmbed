@@ -99,7 +99,7 @@
 				_this.getPlayer().hideSpinner();
 				var $flagScreen = $( '<div />' )
 					.append(
-						$( '<h3 />' ).text( 'Thank you for sharing your concerns' ),
+						$( '<h3 />' ).text( gM("ks-MODERATION-THANKS") ),
 						$( '<div />' ).append(
 							$( '<button />' )
 								.addClass( 'ui-state-default ui-corner-all copycode' )
