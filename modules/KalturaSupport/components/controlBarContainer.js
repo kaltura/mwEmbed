@@ -34,7 +34,9 @@
 			});
 			this.bind( 'layoutBuildDone ended', function(){
 				_this.show();
-
+			});
+			this.bind( 'onOpenFullScreen', function(){
+				_this.forceOnScreen = false;
 			});
 
 			// Bind hover events

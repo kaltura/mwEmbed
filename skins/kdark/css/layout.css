@@ -212,9 +212,13 @@ body {
 .mobile .btn {
     font-size: 1.6em;
     width: 2.3em;
-    font-weight: bold;
     margin-top: -0.4em;
     color: white;
+    outline: 0;
+    text-shadow: none;
+}
+.mobile .btn:focus {
+    outline: 0;
 }
 .mobile .topBarContainer .btn {
     margin-top: 0em;
@@ -1113,7 +1117,11 @@ body {
 }
 
 .largePlayBtn:hover {
-	background: rgba(0,0,0,1);
+	background-color: rgba(0,0,0,1);
+	color: #fff;
+}
+.mobile .largePlayBtn:hover {
+    background-color: rgba(0,214,255,0.75);
 	color: #fff;
 }
 
