@@ -107,6 +107,7 @@
 			this.setDataIfExsits( 'show', dataObject );
 			this.setDataIfExsits( 'viewerId', dataObject );
 			this.setDataIfExsits( 'contentType', dataObject);
+			this.setDataIfExsits( 'contentLength', dataObject);
 
 			return dataObject;
 		},
