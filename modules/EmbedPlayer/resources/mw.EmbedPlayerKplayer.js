@@ -189,7 +189,8 @@
 						'mediaError': 'onMediaError',
 						'bitrateChange': 'onBitrateChange',
                         'textTracksReceived': 'onTextTracksReceived',
-                        'debugInfoReceived': 'onDebugInfoReceived'
+                        'debugInfoReceived': 'onDebugInfoReceived',
+                        'id3tag': 'onId3tag'
 					};
 				_this.playerObject = this.getElement();
 					$.each(bindEventMap, function (bindName, localMethod) {
@@ -736,6 +737,11 @@
             }
             this.triggerHelper('debugInfoReceived', data);
             mw.log("EmbedPlayerKplayer:: onDebugInfoReceived | " + msg);
+        },
+
+        onId3tag: function (data) {
+            var id3Tag = window.atob(data.data);
+            this.triggerHelper('onEmbeddedData', id3Tag);
         },
 
 		/**
