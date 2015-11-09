@@ -51,7 +51,13 @@ body {
 .topBarContainer.block {
 	position: static;
 }
-
+.mobile .topBarContainer{
+    background: transparent;
+}
+.mobile .topBarContainer.hover{
+    background: transparent;
+    height: 3.6em;
+}
 .sideBarContainerReminder{
 	padding: 10px;
 	position: absolute;
@@ -159,9 +165,12 @@ body {
 .mobile .titleLabel{
     padding-bottom: 0.8em;
     margin-left: 0.8em;
-    text-shadow: 0px 0px 5.6px rgba(0, 0, 0, 0.15);
+    text-shadow: 0px 0px 2.4px rgba(0, 0, 0, 0.12);
     font-size: 1.125em;
     font-family: 'Lato', Helvetica, Arial;
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    line-height: 1.333;
 }
 .controlBarContainer {
 	position: absolute;
@@ -181,7 +190,7 @@ body {
 }
 
 .controlBarContainer.hover {
-	bottom: -3.2em;
+	bottom: -3.6em;
 	z-index: 100;
 }
 
@@ -201,10 +210,14 @@ body {
 	font-size: 1.1em;
 }
 .mobile .btn {
-    font-size: 2.6em;
-    width: 1.3em;
+    font-size: 1.6em;
+    width: 2.3em;
     font-weight: bold;
-    margin-top: -0.2em;
+    margin-top: -0.4em;
+    color: white;
+}
+.mobile .topBarContainer .btn {
+    margin-top: 0em;
 }
 .btnFixed {
 	display: inline-block;
@@ -277,6 +290,7 @@ body {
     height: 10px;
     border-radius: 10px;
     background: rgba(255,255,255,0.8);
+    box-shadow: 0px 0px 2.4px 1.6px rgba(0, 0, 0, 0.12);
     margin-left: 20px;
 }
 .sliderPreviewTime {
@@ -397,8 +411,8 @@ body {
     box-shadow: 0px 20px 50px 0px rgba(0, 0, 0, 0.2);
     width: 14px;
     height: 14px;
-    margin-top: 5px;
-    margin-left: -0.2em;
+    margin-top: 2px;
+    margin-left: -0.4em;
 }
 .player-out .hover .playHead {
 	/*
@@ -731,10 +745,10 @@ body {
     position: absolute;
     margin-top: 14px;
     font-weight: bold;
-    text-shadow: 0px 0px 2.8px rgba(0, 0, 0, 0.15);
+    text-shadow: 0px 0px 2.4px rgba(0, 0, 0, 0.12);
 }
 .currentTimeLabel {
-	padding-left: 0.8em;
+	padding-left: 1em;
     color: #e8e8e8;
 }
 
@@ -939,7 +953,7 @@ body {
     background: transparent;
     border-top: 0px;
     box-shadow: none;
-    height: 40px;
+    height: 44px;
 }
 .ui-tooltip {
 	background-color: #000000;
@@ -1095,7 +1109,7 @@ body {
     padding-top: 0.6em;
     background-color: rgba(0,214,255,0.75);
     color: #ffffff;
-    box-shadow: 0px 1px 8.5px 1.5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 0px 1.2px 0.8px rgba(0, 0, 0, 0.12);
 }
 
 .largePlayBtn:hover {
@@ -1205,6 +1219,7 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 }
 .mobile .controlBarContainer .logo{
     margin-top: -0.1em;
+    width: 2.8em;
 }
 .logo img {
 	margin: auto;

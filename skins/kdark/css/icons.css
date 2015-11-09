@@ -185,77 +185,78 @@
     content: "\e627";
 }
 
-.mobile .icon-split:before {
+.mobile .icon-related:before {
     content: "\e900";
 }
-.mobile .icon-single:before {
+.mobile .icon-viewpoint:before {
     content: "\e901";
 }
-.mobile .icon-viewpoint:before {
+.mobile .icon-split:before {
     content: "\e902";
 }
-.mobile .icon-mainslide:before {
+.mobile .icon-single:before {
     content: "\e903";
 }
-.mobile .icon-swap:before {
+.mobile .icon-mainslide:before {
     content: "\e904";
 }
-.mobile .icon-download:before {
+.mobile .icon-swap:before {
     content: "\e905";
 }
-.mobile .icon-attachments:before {
+.mobile .icon-download:before {
     content: "\e906";
 }
-.mobile .icon-flag:before {
+.mobile .icon-attachments:before {
     content: "\e907";
 }
-.mobile .icon-speedrate:before {
+.mobile .icon-flag:before {
     content: "\e908";
 }
-.mobile .icon-cc:before {
+.mobile .icon-speedrate:before {
     content: "\e909";
 }
-.mobile .icon-info:before {
+.mobile .icon-cc:before {
     content: "\e90a";
 }
-.mobile .icon-richmedia:before {
+.mobile .icon-info:before {
     content: "\e90b";
 }
-.mobile .icon-next:before {
+.mobile .icon-richmedia:before {
     content: "\e90c";
 }
-.mobile .icon-prev:before {
+.mobile .icon-next:before {
     content: "\e90d";
 }
-.mobile .icon-pause:before {
+.mobile .icon-prev:before {
     content: "\e90e";
 }
-.mobile .icon-play:before {
+.mobile .icon-pause:before {
     content: "\e90f";
 }
-.mobile .icon-expand:before {
+.mobile .icon-play:before {
     content: "\e910";
 }
-.mobile .icon-contract:before {
+.mobile .icon-expand:before {
     content: "\e911";
 }
-.mobile .icon-airplay:before {
+.mobile .icon-contract:before {
     content: "\e912";
 }
-.mobile .icon-chromecast:before {
+.mobile .icon-airplay:before {
     content: "\e913";
 }
-.mobile .icon-more:before {
+.mobile .icon-chromecast:before {
     content: "\e914";
 }
-.mobile .icon-share:before {
+.mobile .icon-more:before {
     content: "\e915";
 }
-.mobile .icon-settings:before {
+.mobile .icon-share:before {
     content: "\e916";
 }
-.mobile .icon-related:before {
-    content: "\e91c";
+.mobile .icon-settings:before {
+    content: "\e917";
 }
+
 
 
