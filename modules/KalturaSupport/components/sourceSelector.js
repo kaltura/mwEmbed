@@ -131,12 +131,7 @@
                 return;
 
             if (this.getConfig('hideSource')) {
-                // find and remove 'source' flavours (by tag)
-                $.each(sources.slice(0), function (sourceIndex, source) {
-                    if ((source.tags || '').split(',').indexOf('source') >= 0) {
-                        sources.splice(sourceIndex, 1);
-                    }
-                });
+                this.getPlayer().mediaElement.removeSourceFlavor(sources);
             }
 
 			if( sources.length == 1 ){
