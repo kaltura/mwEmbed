@@ -115,6 +115,7 @@
 						_this.destory();
 						_this.setupTextSources( function () {
 							_this.buildMenu( _this.textSources );
+							_this.unbind('playerReady');
 						} );
 					} );
 					outOfBandCaptionEventHandlers.call(this);
