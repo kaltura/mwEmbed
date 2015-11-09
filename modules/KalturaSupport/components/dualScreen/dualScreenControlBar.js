@@ -1,53 +1,49 @@
 (function ( mw, $ ) {
 	"use strict";
-	mw.dualScreenControlBar = function (settings){
-		this.$controlBar = null;
-		this.embedPlayer = settings.embedPlayer;
-		this.templatePath = settings.templatePath;
-		this.menuFadeout = settings.menuFadeout;
-		this.cssClass = settings.cssClass;
-		this.nativeAppTooltip = "Switching content<br/>on current view<br/>is not yet<br/>supported.<br/><br/>Try single view";
-		this.controlBarComponents = {
+	mw.dualScreen = mw.dualScreen || {};
+
+	mw.dualScreen.dualScreenControlBar = mw.KBaseComponent.extend({
+		defaultConfig: {
+			'templatePath': 'dualScreenControlBar',
+			'menuFadeout': 5000
+		},
+		"controlBarComponents": {
 			sideBySide: {
 				id: 'sideBySide',
-				title: 'Side By Side',
+				title: gM("ks-DUAL-SCREEN-SBS"),
 				event: "SbS"
 			},
 			singleView: {
 				id: 'singleView',
-				title: 'Single View',
+				title: gM("ks-DUAL-SCREEN-HIDE"),
 				event: "hide"
 			},
 			pip: {
 				id: 'pip',
-				title: 'Picture In Picture',
+				title: gM("ks-DUAL-SCREEN-PIP"),
 				event: "PiP"
 			},
 			switchView: {
 				id: 'switchView',
-				title: 'Toggle View',
+				title: gM("ks-DUAL-SCREEN-SWITCH"),
 				event: "switchView"
 			}
-		};
-		this.disabled = false;
-		this.bindSuffix = ".dualScreenControlBar";
-		this.getComponent();
-		this.addBindings();
-	};
+		},
+		disabled: false,
 
-	mw.dualScreenControlBar.prototype = {
-		bind: function(name, handler){
-			this.embedPlayer.bindHelper(name + this.bindSuffix, handler);
+		nativeAppTooltip: "Switching content<br/>on current view<br/>is not yet<br/>supported.<br/><br/>Try single view",
+		setup: function() {
+			this.postFix = "." + this.pluginName;
+			this.addBindings();
 		},
 		getComponent: function ( ) {
 			if ( !this.$controlBar ) {
-				var rawHTML = window.kalturaIframePackageData.templates[ this.templatePath ];
+				var rawHTML = window.kalturaIframePackageData.templates[ this.getConfig("templatePath")];
 				var transformedHTML = mw.util.tmpl( rawHTML );
 				transformedHTML = transformedHTML({buttons: this.controlBarComponents});
 				this.$controlBar = $( '<div />' )
-					.addClass( 'controlBar componentOff' + this.cssClass )
+					.addClass( 'controlBar componentOff dualScreen' + this.getCssClass() )
 					.append(transformedHTML);
-				this.embedPlayer.getInterface().append( this.$controlBar );
 				//If top bar exist then position controlBar under it
 				if (this.embedPlayer.getTopBarContainer().length) {
 					var height = this.embedPlayer.getTopBarContainer().height();
@@ -66,36 +62,23 @@
 					.addClass('componentOff')
 					.on("click mouseover mousemove mouseout touchstart touchend", function (e) {
 						_this.embedPlayer.triggerHelper(e);
-					});
+				});
 			}
 			return this.$controlBarDropShadow;
 		},
-
 		addBindings: function () {
 			//Set control bar visiblity handlers
 			var _this = this;
+			//TODO:hook these events to layoutbuilder events
 			this.embedPlayer.getInterface()
-				.on( 'mousemove'+this.bindSuffix +' touchstart' + this.bindSuffix, function(){
+				.on( 'mousemove' + this.postFix +' touchstart' + this.postFix, function(){
 					_this.show();
 				})
-				.on( 'mouseleave' + this.bindSuffix, function(){
+				.on( 'mouseleave' + this.postFix, function(){
 					if (!mw.isMobileDevice()){
 						_this.hide();
 					}
 				});
-
-			this.bind("dualScreenControlsHide", function(){
-				_this.hide();
-			});
-			this.bind("dualScreenControlsShow", function(){
-				_this.show();
-			});
-			this.bind("dualScreenControlsDisable", function(){
-				_this.disable();
-			});
-			this.bind("dualScreenControlsEnable", function(){
-				_this.enable();
-			});
 
 			//add drop shadow containers for control bar
 			this.embedPlayer.getVideoHolder().prepend(this.getControlBarDropShadow());
@@ -105,7 +88,7 @@
 			var switchBtn = buttons.filter('[data-type="switch"]');
 			//Attach control bar action handlers
 			_this.getComponent()
-				.on( 'click' +this.bindSuffix +' touchstart' + this.bindSuffix, 'li > span', function (e) {
+				.on( 'click' + this.postFix + ' touchstart' + this.postFix, 'li > span', function (e) {
 					e.stopPropagation();
 					e.preventDefault();
 					var btn = _this.controlBarComponents[this.id];
@@ -131,9 +114,7 @@
 				} );
 
 			if (mw.isNativeApp()){
-
-				switchBtn.addClass("disabled" )
-					.attr("title", this.nativeAppTooltip );
+				switchBtn.addClass("disabled" ).attr("title", _this.nativeAppTooltip );
 			}
 
 			//Set tooltips
@@ -171,7 +152,7 @@
 				}
 				this.getComponent().handleTouchTimeoutId = setTimeout( function () {
 					_this.hide();
-				}, this.menuFadeout );
+				}, this.getConfig("menuFadeout"));
 			}
 		},
 		set: function(id){
@@ -185,18 +166,17 @@
 					switchBtn
 						.addClass("disabled")
 						.tooltip("option", "content", this.nativeAppTooltip);
-
 				}
 			}
 		},
-		destroy: function(){
-			this.embedPlayer.unbindHelper(this.bindSuffix);
-			this.getComponent().off(this.bindSuffix);
-			this.embedPlayer.getInterface().off(this.bindSuffix);
+		destroy: function() {
+			this.embedPlayer.unbindHelper(this.postFix);
+			this.getComponent().off(this.postFix);
+			this.embedPlayer.getInterface().off(this.postFix);
 			this.getComponent().remove();
 			this.getControlBarDropShadow().remove();
 			this.$controlBar = null;
 			this.$controlBarDropShadow = null;
 		}
-	};
+	});
 })( window.mw, window.jQuery );

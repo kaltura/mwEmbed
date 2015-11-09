@@ -97,8 +97,12 @@
 			window._gaq = window._gaq || [];
 			window._gaq.push([ '_setAccount', _this.getConfig('urchinCode') ]);
 			if (mw.getConfig('debug')) {
-				window._gaq.push([ '_setDomainName', 'none' ]);
-				window._gaq.push([ '_setAllowLinker', true ]);
+				window._gaq.push( ['_setDomainName' , 'none'] );
+				window._gaq.push( ['_setAllowLinker' , true] );
+			}
+
+			if (_this.getConfig('allowLinker')) {
+				window._gaq.push( ['_setAllowLinker' , true] );
 			}
 			// check if we should anonymize Ips, from google docs: 
 			// https://developers.google.com/analytics/devguides/collection/gajs/methods/gaJSApi_gat#_gat._anonymizeIp

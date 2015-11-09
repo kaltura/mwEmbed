@@ -41,7 +41,6 @@
 				'fixedControls': false,
 				'horizontalControlsWidth': 20,
 				'showEmptyPlaylistError': true
-
 			});
 		},
 

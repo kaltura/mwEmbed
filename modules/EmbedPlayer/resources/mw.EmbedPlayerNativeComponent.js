@@ -418,8 +418,11 @@
 		},
 
 		_ondurationchange: function () {
-			mw.log( "EmbedPlayerNativeComponent:: onDurationChange::" + this.getPlayerElement().duration );
-			$(this).trigger('durationChange', this.getPlayerElement().duration);
+			mw.log( "EmbedPlayerNativeComponent:: onDurationChange::" + this.getPlayerElement().duration )
+			this.playerElement = this.getPlayerElement();
+			if (this.playerElement && !isNaN(this.playerElement.duration) && isFinite(this.playerElement.duration)) {
+				this.setDuration(this.getPlayerElement().duration);
+			}
 		},
 
 		/**
@@ -540,6 +543,9 @@
 		_onprogress: function (event, progress) {
 			if (typeof progress !== 'undefined') {
 				this.updateBufferStatus(progress);
+				if (!this.seeking) {
+					this.updatePlayHead(progress);
+				}
 				if(progress < 0.9){
 					if(!this.showProgressSpinner) {
 						this.addPlayerSpinner();

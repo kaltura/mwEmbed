@@ -112,7 +112,7 @@
 						_this.addPoster();
 						_this.getPlayer().enablePlayControls();
 					}else{
-						_this.getPlayer().disablePlayControls(["playlistAPI"]);
+						_this.getPlayer().disablePlayControls();
 					}
 				}
 
@@ -144,7 +144,7 @@
                                     });
                                 }
 
-							    _this.getPlayer().disablePlayControls(["playlistAPI"]);
+							    _this.getPlayer().disablePlayControls();
                             }
                         }
 					}, _this.getConfig( 'offlineAlertOffest' ) );
@@ -167,7 +167,7 @@
 
 					//reload livestream
 					if ( !embedPlayer.firstPlay && _this.isDVR() ) {
-						embedPlayer.disablePlayControls(["playlistAPI"]);
+						embedPlayer.disablePlayControls();
 						var shouldPause = !embedPlayer.isPlaying();
 						var playingEvtName = "playing.backToLive";
 						embedPlayer.bindHelper( playingEvtName , function() {
@@ -263,7 +263,7 @@
 				if ( !this.getConfig("disableLiveCheck")) {
 					//the controls will be enabled upon liveStatus==true notification
 					_this.removePoster();
-					embedPlayer.disablePlayControls(["playlistAPI"]);
+					embedPlayer.disablePlayControls();
 				}
 				_this.addLiveStreamStatusMonitor();
 				//hide source selector until we support live streams switching

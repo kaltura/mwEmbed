@@ -11,5 +11,9 @@
     },
     "mw.EmbedPlayerChromecast": {
         "scripts": "resources/mw.EmbedPlayerChromecast.js"
-    }
+    },
+	"mw.EmbedPlayerChromecastReceiver": {
+		"scripts": "resources/mw.EmbedPlayerChromecastReceiver.js",
+		"kalturaPluginName": "embedPlayerChromecastReceiver"
+	}
 }

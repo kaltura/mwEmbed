@@ -1,0 +1,9 @@
+{
+  "customButton":{
+    "scripts" :["resources/customButton.js"],
+    "dependencies": "mw.KBaseButton",
+    "kalturaPluginName": "customButton",
+    "styles": "resources/css/customButton.css",
+    "messageFile": "CustomButton.i18n.json"
+  }
+}
