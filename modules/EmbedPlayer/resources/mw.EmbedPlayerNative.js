@@ -5,7 +5,7 @@
  */
 (function (mw, $) {
 	"use strict";
-
+	
 	mw.EmbedPlayerNative = {
 
 		//Instance Name
@@ -823,18 +823,6 @@
 			var vid = this.getPlayerElement();
 			// parent.$('body').append( $('<a />').attr({ 'style': 'position: absolute; top:0;left:0;', 'target': '_blank', 'href': this.getPlayerElement().src }).text('SRC') );
 			var _this = this;
-
-			var nativeCalloutPlugin = {
-				'exist': false
-			};
-			if (mw.isMobileDevice()) {
-				this.triggerHelper('nativePlayCallout', [ nativeCalloutPlugin ]);
-			}
-
-			if (nativeCalloutPlugin.exist) {
-				// if nativeCallout plugin exist play implementation is changed
-				return;
-			}
 
 			// if starting playback from stoped state and not in an ad or otherise blocked controls state:
 			// restore player:

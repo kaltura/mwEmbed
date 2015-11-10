@@ -109,6 +109,11 @@
 			if( this.getConfig( 'anonymizeIp' ) ){
 				window._gaq.push(['_gat._anonymizeIp']);
 			}
+			// set correct utmp when unfriendly iframe
+			if ( !mw.getConfig('EmbedPlayer.IsFriendlyIframe' ) && typeof(document.referrer)!= 'undefined' ){
+				//get path and remove everything after ? and # in the URL to send clean path to GA
+				window._gaq.push(['_set', 'page', document.referrer.replace(/^[^:]+:\/\/[^/]+/, '').replace(/#.*/, '').replace(/\?.*/, '')]);
+			}
 			window._gaq.push([ '_trackPageview' ]);
 			var ga = document.createElement('script');
 			ga.type = 'text/javascript';
