@@ -35,9 +35,6 @@
 			this.bind( 'layoutBuildDone ended', function(){
 				_this.show();
 			});
-			this.bind( 'onOpenFullScreen', function(){
-				_this.forceOnScreen = false;
-			});
 
 			// Bind hover events
 			if( this.getConfig('hover') ){
@@ -102,7 +99,7 @@
 						.on("mouseenter", function(){
 							_this.forceOnScreen = true;
 						})
-						.on("mouseleave", function(){
+						.on("mouseleave click", function(){
 							_this.forceOnScreen = false;
 						});
 					this.embedPlayer.getVideoHolder().addClass('hover');
