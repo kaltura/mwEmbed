@@ -1391,6 +1391,7 @@ mw.KWidgetSupport.prototype = {
 		// Setup the src defines
 		var ipadAdaptiveFlavors = [];
 		var iphoneAdaptiveFlavors = [];
+		var androidNativeAdaptiveFlavors = [];
 		var dashAdaptiveFlavors = [];
 
 		// Setup flavorUrl
@@ -1591,6 +1592,11 @@ mw.KWidgetSupport.prototype = {
 				iphoneAdaptiveFlavors.push( asset.id );
 			}
 
+			// Add android SDK h246 base profile flavor Ids list
+			if( $.inArray( 'h264b', tags ) != -1 ){
+				androidNativeAdaptiveFlavors.push( asset.id );
+			}
+
 			// Add DASH flavor to DASH flavor Ids list
 			if( $.inArray( 'dash', tags ) != -1 ){
 				dashAdaptiveFlavors.push( asset.id );
@@ -1618,10 +1624,20 @@ mw.KWidgetSupport.prototype = {
 			// We only need single HLS stream
 			var addedHlsStream = false;
 			// Check if mobile device media query
-			if (iphoneAdaptiveFlavors.length || ipadAdaptiveFlavors.length) {
+			if (iphoneAdaptiveFlavors.length || ipadAdaptiveFlavors.length || androidNativeAdaptiveFlavors.length) {
 				var validClipAspect = this.getValidAspect(deviceSources);
 				var lowResolutionDevice = (mw.isMobileDevice() && mw.isDeviceLessThan480P() && iphoneAdaptiveFlavors.length);
-				var targetFlavors = lowResolutionDevice ? iphoneAdaptiveFlavors : ipadAdaptiveFlavors;
+				var targetFlavors;
+				if (androidNativeAdaptiveFlavors.length && mw.isNativeApp() && mw.isAndroid()){
+					//Android h264b
+					targetFlavors = androidNativeAdaptiveFlavors;
+				} else if (lowResolutionDevice){
+					//iPhone
+					targetFlavors = iphoneAdaptiveFlavors;
+				} else {
+					//iPad
+					targetFlavors = ipadAdaptiveFlavors;
+				}
 				var assetId = targetFlavors[0];
 
 				var hlsSource = this.generateAbrSource({
@@ -1638,6 +1654,8 @@ mw.KWidgetSupport.prototype = {
 				deviceSources.push(hlsSource);
 				addedHlsStream = true;
 			}
+
+
 		}
 
 		//Only support ABR on-the-fly for DRM protected entries
