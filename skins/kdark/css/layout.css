@@ -236,6 +236,9 @@ body {
 .mobile .btnFixed{
     width: 1.3em;
 }
+.mobile .playbackRateSelector .btn{
+    font-family: 'Lato', Helvetica, Arial;;
+}
 .btnNarrow{
 	width: 1.8em;
 }
