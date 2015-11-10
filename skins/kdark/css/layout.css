@@ -223,6 +223,13 @@ body {
 .mobile .topBarContainer .btn {
     margin-top: 0em;
 }
+.mobileMenuSelect{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    -webkit-appearance: menulist-button;
+}
 .btnFixed {
 	display: inline-block;
 	height: 100%;
