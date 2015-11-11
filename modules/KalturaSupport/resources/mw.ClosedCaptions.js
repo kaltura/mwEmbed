@@ -158,7 +158,7 @@
 				_this.getMenu().close();
 			});
 
-			this.bind( 'showHideClosedCaptions', function(){
+			this.bind( 'showHideClosedCaptions preHideScreen', function(){
 				if( _this.getConfig('displayCaptions') === true ){
 					_this.setConfig('displayCaptions', false);
 				} else {
@@ -172,7 +172,7 @@
 				}
 			});
 
-			this.bind( 'hideClosedCaptions', function(){
+			this.bind( 'hideClosedCaptions preShowScreen', function(){
 				if( _this.getConfig('displayCaptions') === true ){
 					_this.setConfig('displayCaptions', false);
 				}
