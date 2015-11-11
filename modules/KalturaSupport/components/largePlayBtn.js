@@ -27,8 +27,8 @@
 				});
 			});
 			
-			this.bind('onChangeMediaDone playerReady onpause onEndedDone onRemovePlayerSpinner', function(){
-				if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
+			this.bind('onChangeMediaDone playerReady onpause onEndedDone onRemovePlayerSpinner showPlayerControls', function(){
+				if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() && !_this.embedPlayer.changeMediaStarted ){
 					_this.getComponent().removeClass("icon-pause").addClass("icon-play");
 					_this.show();
 				}

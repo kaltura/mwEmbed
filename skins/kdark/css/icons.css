@@ -225,9 +225,11 @@
     content: "\e90c";
 }
 .mobile .icon-next:before {
+    font-size: 32px;
     content: "\e90d";
 }
 .mobile .icon-prev:before {
+    font-size: 32px;
     content: "\e90e";
 }
 .mobile .icon-pause:before {

@@ -449,6 +449,21 @@ body {
 	display: inline-block;
 	height: 100%;
 }
+.mobile .nextPrevBtn {
+    width: 100%;
+}
+.mobile .nextPrevBtn>.btn {
+    position: relative;
+    margin-top: 0.5em;
+}
+
+.mobile .nextPrevBtn>.btn.icon-prev {
+    margin-left: 20%;
+}
+.mobile .nextPrevBtn>.btn.icon-next {
+    float: right;
+    margin-right: 20%;
+}
 .volumeControl {
 	display: inline-block;
 	height: 100%;
