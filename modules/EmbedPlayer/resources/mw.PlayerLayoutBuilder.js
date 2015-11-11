@@ -660,6 +660,9 @@ mw.PlayerLayoutBuilder.prototype = {
 		clearTimeout(this.hideControlsTimeout);
 		this.getInterface().removeClass( this.outPlayerClass );
 		this.removeTouchOverlay();
+		if (this.isInFullScreen()){
+			this.$interface.find(".mwEmbedPlayer").removeClass("noCursor");
+		}
 		this.embedPlayer.triggerHelper( 'showPlayerControls' );
 	},
 	hidePlayerControls: function(){
@@ -667,6 +670,9 @@ mw.PlayerLayoutBuilder.prototype = {
 			this.embedPlayer.isInSequence()){
 			this.getInterface().addClass( this.outPlayerClass );
 			this.addTouchOverlay();
+			if (this.isInFullScreen()){
+				this.$interface.find(".mwEmbedPlayer").addClass("noCursor");
+			}
 			this.embedPlayer.triggerHelper( 'hidePlayerControls' );
 		}
 	},
