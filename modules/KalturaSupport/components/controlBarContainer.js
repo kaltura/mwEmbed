@@ -50,7 +50,15 @@
 					_this.keepOnScreen = true;
 					_this.show();
 				});
-				this.bind( 'onComponentsHoverEnabled', function(){
+				this.bind( 'hideScreen', function(){
+					if (!_this.embedPlayer.paused){
+						_this.keepOnScreen = false;
+						_this.hide();
+					}else{
+						_this.show();
+					}
+				});
+				this.bind( 'onComponentsHoverEnabled showScreen', function(){
 					_this.keepOnScreen = false;
 					_this.hide();
 				});

@@ -51,6 +51,11 @@
 					_this.hide();
 				}
 			});
+			this.bind( 'hideScreen', function(){
+				if (mw.isMobileDevice() && _this.getPlayer().paused){
+					_this.show();
+				}
+			});
 		},
 		show: function(){
 			if ( !this.isDisabled ) {

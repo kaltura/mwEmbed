@@ -234,6 +234,7 @@
     content: "\e90f";
 }
 .mobile .icon-play:before {
+    margin-left: 2px;
     content: "\e910";
 }
 .mobile .icon-expand:before {
