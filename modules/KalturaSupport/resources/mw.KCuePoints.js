@@ -331,14 +331,30 @@
 		 * @param {Number} time Time in milliseconds
 		 */
 		getNextCuePoint: function (time) {
-			if (!isNaN(time) && time >= 0) {
+            if (!isNaN(time) && time >= 0) {
 				var cuePoints = this.midCuePointsArray;
-				// Start looking for the cue point via time, return first match:
-				for (var i = 0; i < cuePoints.length; i++) {
-					if (cuePoints[i].startTime >= time) {
-						return cuePoints[i];
-					}
-				}
+                if( this.embedPlayer.isLive() && !this.embedPlayer.isDVR() ){
+                    //Live NO DVR
+                    // Start looking for the cue point via time, return LAST match:
+                    var lastCuePoint;
+                    var currentTime = parseInt(time/1000);
+
+                    for (var i = 0; i < cuePoints.length; i++) {
+                            if ( cuePoints[i].createdAt <= currentTime ) {
+                                lastCuePoint = cuePoints[i];
+                            }
+                    }
+                    if(lastCuePoint){
+                        return lastCuePoint;
+                    }
+                }else{
+                    // Start looking for the cue point via time, return FIRST match:
+                    for (var i = 0; i < cuePoints.length; i++) {
+                        if (cuePoints[i].startTime >= time) {
+                            return cuePoints[i];
+                        }
+                    }
+                }
 			}
 			// No cue point found in range return false:
 			return false;
