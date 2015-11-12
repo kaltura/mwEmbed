@@ -29,6 +29,7 @@
 
                         break;
                 }
+                mw.log("id3Tag plugin :: got tag | time = " + mw.seconds2npt(time));
                 _this.getPlayer().setCurrentTime(time);
 			});
 		}

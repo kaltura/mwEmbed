@@ -332,22 +332,11 @@
 		 */
 		getNextCuePoint: function (time) {
             if (!isNaN(time) && time >= 0) {
-				var cuePoints = this.midCuePointsArray;
-                if( this.embedPlayer.isLive() && !this.embedPlayer.isDVR() ){
+				if( this.embedPlayer.isLive() && !this.embedPlayer.isDVR() ){
                     //Live NO DVR
-                    // Start looking for the cue point via time, return LAST match:
-                    var lastCuePoint;
-                    var currentTime = parseInt(time/1000);
-
-                    for (var i = 0; i < cuePoints.length; i++) {
-                            if ( cuePoints[i].createdAt <= currentTime ) {
-                                lastCuePoint = cuePoints[i];
-                            }
-                    }
-                    if(lastCuePoint){
-                        return lastCuePoint;
-                    }
+                    return this.getNextLiveCuePoint(parseInt(time/1000));
                 }else{
+                    var cuePoints = this.midCuePointsArray;
                     // Start looking for the cue point via time, return FIRST match:
                     for (var i = 0; i < cuePoints.length; i++) {
                         if (cuePoints[i].startTime >= time) {
@@ -359,6 +348,22 @@
 			// No cue point found in range return false:
 			return false;
 		},
+        getNextLiveCuePoint: function (time) {
+            var cuePoints = this.getCuePointsByType(mw.KCuePoints.TYPE.THUMB);
+            // TODO: sort the cuePoitns by createdAt
+
+            // Start looking for the cue point via time, return LAST match:
+            var lastCuePoint;
+            for (var i = 0; i < cuePoints.length; i++) {
+                if ( cuePoints[i].createdAt <= time ) {
+                    lastCuePoint = cuePoints[i];
+                }
+            }
+            if(lastCuePoint){
+                mw.log("KCuePoints :: getNextLiveCuePoint :: currentTime " + mw.seconds2npt(time) + " | lastCuePoint.createdAt " + mw.seconds2npt(lastCuePoint.createdAt));
+                return lastCuePoint;
+            }
+        },
 		/**
 		 * Returns the previous cuePoint object for requested time
 		 * @param {Number} time Time in milliseconds
