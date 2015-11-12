@@ -18,10 +18,14 @@
 			this.bind( 'addLayoutContainer', function() {
 				_this.getPlayer().getVideoHolder().before( _this.getComponent() );
 			});
-			this.bind( 'layoutBuildDone ended', function(){
+			this.bind( 'ended', function(){
 				_this.show();
 			});
-
+			this.bind( 'layoutBuildDone', function(){
+				if (!mw.isMobileDevice()){
+					_this.show();
+				}
+			});
 			// If have no components, hide
 			this.bind('layoutBuildDone', function(){
 				if( !_this.getComponent().children().length ){

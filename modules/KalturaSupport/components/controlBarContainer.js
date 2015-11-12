@@ -32,8 +32,13 @@
 			this.bind( 'showInlineDownloadLink', function(){
 				_this.hide();
 			});
-			this.bind( 'layoutBuildDone ended', function(){
+			this.bind( 'ended', function(){
 				_this.show();
+			});
+			this.bind( 'layoutBuildDone', function(){
+				if (!mw.isMobileDevice()){
+					_this.show();
+				}
 			});
 
 			// Bind hover events

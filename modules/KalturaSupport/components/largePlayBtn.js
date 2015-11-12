@@ -103,7 +103,7 @@
 			var _this = this;
 			var eventName = 'click';
 			if ( mw.isAndroid() ){
-				eventName = 'touchstart';
+				eventName += ' touchstart';
 			}
 			if( !this.$el ) {
 				this.$el = $( '<a />' )

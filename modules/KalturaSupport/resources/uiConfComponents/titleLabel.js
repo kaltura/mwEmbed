@@ -17,6 +17,9 @@
 				this.bind('onHideControlBar', function(){
 					_this.$el.fadeOut();
 				});
+				this.bind('layoutBuildDone', function(){
+					_this.$el.hide();
+				});
 				this.bind('onShowControlBar', function(){
 					_this.$el.fadeIn();
 				});
