@@ -110,6 +110,7 @@
 					_this.layoutBuilder.closeAlert();
 				}
 			});
+            $(this).bind('firstPlay', this.parseTextTracks());
 		},
 		/**
 		 * Updates the supported features given the "type of player"
@@ -487,16 +488,20 @@
 		 * @param {Function} callback
 		 * 		Function called once time has been set.
 		 */
-		setCurrentTime: function( seekTime ) {
-			this.log("setCurrentTime seekTime:" + seekTime );
-			// Try to update the playerElement time:
-			try {
-				var vid = this.getPlayerElement();
-				vid.currentTime = this.currentSeekTargetTime;
-			} catch (e) {
-				this.log("Error: Could not set video tag seekTime");
-				this.triggerHelper("seeked");
-			}
+		setCurrentTime: function( time ) {
+            if( this.isLive() && !this.isDVR() ){
+                this.LiveCurrentTime = time;
+            }else {
+                this.log("setCurrentTime seekTime:" + time);
+                // Try to update the playerElement time:
+                try {
+                    var vid = this.getPlayerElement();
+                    vid.currentTime = this.currentSeekTargetTime;
+                } catch (e) {
+                    this.log("Error: Could not set video tag seekTime");
+                    this.triggerHelper("seeked");
+                }
+            }
 		},
 		/**
 		 * Get the embed player time
@@ -510,6 +515,9 @@
 				this.stop();
 				return false;
 			}
+            if( this.isLive() && !this.isDVR() ){
+                return this.LiveCurrentTime;
+            }
 			var ct = this.playerElement.currentTime;
 			// Return 0 or a positive number:
 			if (!ct || isNaN(ct) || ct < 0 || !isFinite(ct)) {
@@ -1360,6 +1368,34 @@
 		},
 		setInline: function ( state ) {
 			this.getPlayerElement().attr('webkit-playsinline', '');
-		}
+		},
+        parseTextTracks: function(){
+            var vid = this.getPlayerElement();
+            var _this = this;
+            var interval = setInterval(function() {
+                for (var i = 0; i < vid.textTracks.length; i++) {
+                    //TODO: add audio support
+
+                    //if Live + No DVR add id3 tags support
+                    if (vid.textTracks[i].kind === "metadata" && _this.isLive() && !_this.isDVR()) {
+                        _this.id3Tag(vid, i);
+                        clearInterval(interval);
+                        vid.textTracks[i].mode = "hidden";
+                    }
+                }
+            }, 500);
+        },
+        id3Tag: function(vid, i){
+            var _this = this;
+            vid.textTracks[i].addEventListener("cuechange", function (evt) {
+                try {
+                    var id3Tag = evt.currentTarget.cues[evt.currentTarget.cues.length - 1].value.data;
+                    _this.triggerHelper('onId3Tag', id3Tag);
+                }
+                catch (e) {
+                    mw.log("Native player :: id3Tag :: ERROR :: "+e);
+                }
+            }, false);
+        }
 	};
 })(mediaWiki, jQuery);
