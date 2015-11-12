@@ -207,6 +207,9 @@
 .mobile .share .share-input-container{
    margin-top: 40px;
 }
+.mobile .small.share .share-input-container{
+   margin-top: 24px;
+}
 .mobile .share .share-icons-container{
     height: 88px;
     width: 332px;
@@ -259,17 +262,14 @@
 
 /* close button */
 .share .share-close{
-	position: absolute;
-	margin-left: 12px;
-	margin-top: 12px;
-	width: 22px;
-	height: 22px;
+    float: right;
+    margin-top: -30px;
 	cursor: pointer;
 	z-index: 3;
 	color: white;
 }
 .mobile .share .share-close{
-    right: 12px;
+    margin-top: -15px;
 }
 .nativeApp .share .share-close{
 	color: #d3d3d3;
@@ -303,6 +303,9 @@
 .small.share .share-icons-scroller{
 	width: 260px;
 	height: 32px;
+}
+.mobile .small.share .share-icons-scroller{
+	width: 270px;
 }
 .small.share .share-icons-container{
 	width: 222px;
@@ -341,8 +344,6 @@
 	margin-top: 0px;
 }
 .small.share .share-close{
-	margin-left: 4px;
-	margin-top: 4px;
 	font-size: 10px;
 }
 .small.share .next-btn{
@@ -488,6 +489,6 @@
 .mobile .icon-share-linkedin:before {
     content: "\e91b";
 }
-.icon-share-sms:before {
+.mobile .icon-share-sms:before {
     content: "\e91d";
 }
