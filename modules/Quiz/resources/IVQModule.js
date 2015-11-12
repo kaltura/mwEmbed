@@ -9,18 +9,17 @@
     if (!(mw.KIVQModule.prototype = {
             kQuizUserEntryId: null,
             score: null,
-            embedPlayer:null,
+            embedPlayer: null,
             quizPlugin: null,
             currentQuestionNumber: null,
-            showTotalScore:false,
+            showGradeAfterSubmission: false,
             canSkip: false,
-            hexPosContainerPos:0,
+            hexPosContainerPos: 0,
             sliceArray: [],
             isErr: false,
-            quizSubmitted:false,
-            intrVal:null,
-            almostDoneDisplaySwithcer:true,
-
+            quizSubmitted: false,
+            intrVal: null,
+            almostDoneDisplaySwithcer: true,
 
             init: function (embedPlayer,quizPlugin) {
                 var _this = this;
@@ -45,9 +44,6 @@
                     else {
                         $.quizParams = data[1];
                         $.grep($.quizParams.uiAttributes, function (e) {
-                            if (e.key == "showTotalScore") {
-                                _this.showTotalScore = (e.value.toLowerCase() === 'true');
-                            }
                             if (e.key == "canSkip") {
                                 _this.canSkip = (e.value.toLowerCase() === 'true');
                             }
@@ -56,7 +52,7 @@
                         if (data[0].totalCount > 0) {
                             switch (String(data[0].objects[0].status)) {
                                 case 'quiz.3':
-                                    if (_this.showTotalScore) {
+                                    if ($.quizParams.showGradeAfterSubmission) {
                                         _this.score = Math.round(data[0].objects[0].score * 100);
                                     }
                                     _this.quizSubmitted = true;
@@ -123,14 +119,17 @@
                             _this.quizPlugin.ssSubmitted(_this.score);
                             _this.quizSubmitted = true;
                         });
+                        _this.sendIVQMesageToListener();
+
                     }
                 });
             },
             getIvqPDF:function(entryId){
                 var _this = this;
                 _this.KIVQApi.downloadIvqPDF(entryId, function(data){
+                    window.location.assign(data);
                     if (!_this.checkApiResponse('Download PDF  err -->',data)){
-                        return false;
+                            return false;
                     }
                 });
             },
@@ -464,12 +463,19 @@
             },
             checkApiResponse:function(msg,data){
                 var _this = this;
-                if (data.objectType.indexOf("Exception") >= 0){
+                if (data.objectType.indexOf("Exception") >= 0 ){
                     _this.errMsg(msg, data );
                     return false;
                 }
                 else{
                     return true;
+                }
+            },
+            sendIVQMesageToListener:function(){
+                try {
+                    window.parent.postMessage("QuizSubmitted", "*");
+                } catch (e) {
+                    mw.log('postMessage listener of parent is undefined: ', e);
                 }
             },
             errMsg:function(errMsg,data){
