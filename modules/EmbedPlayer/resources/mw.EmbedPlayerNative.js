@@ -1361,7 +1361,9 @@
 				this.pause();
 				this.currentTime = 0;
 				this.addStartTimeCheck();
-				this.play();
+				if (this.canAutoPlay()) {
+					this.play();
+				}
 			}
 		},
 		setInline: function ( state ) {
