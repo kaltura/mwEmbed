@@ -499,7 +499,7 @@
 			enableView: function(){
 				this.displays.getMainDisplay().obj.css("visibility", "");
 				this.displays.getAuxDisplay().obj.css("visibility", "");
-				if (!this.getPlayer().isAudio()) {
+				if (this.controlBar && !this.getPlayer().isAudio()) {
 					this.controlBar.enable();
 					this.controlBar.show();
 				}
