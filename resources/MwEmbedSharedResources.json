@@ -457,5 +457,8 @@
     "dotdotdot": {
         "scripts": "resources/jquery.dotdotdot/jquery.dotdotdot.min.js",
         "dependencies": "jquery"
+    },
+    "threejs":{
+      "scripts": "resources/threejs/three.js"
     }
 }
