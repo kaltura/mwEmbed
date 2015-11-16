@@ -15,7 +15,7 @@ ul.inline, ol.inline {
     padding: 0;
 }
 
-li{
+.controlBar li{
     clear: both;
     float: right;
     padding-bottom: 40px;
