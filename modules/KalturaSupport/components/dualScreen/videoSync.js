@@ -137,10 +137,11 @@
 
             $(controller).on("seeked", function(){
                 this.mediaGroupSync(controller, slaves);
-                if (controller.paused)
-                slaves.forEach(function(slave){
-                    slave.play();
-                });
+                if ( !controller.paused ) {
+                    slaves.forEach(function (slave) {
+                        slave.play();
+                    });
+                }
             }.bind(this));
 
             $(controller).on("ended", function() {
