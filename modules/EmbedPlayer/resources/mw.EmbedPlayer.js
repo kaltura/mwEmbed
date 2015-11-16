@@ -1095,18 +1095,13 @@
 			if (Math.abs(playerElementTime - seekTime) < mw.getConfig("EmbedPlayer.SeekTargetThreshold", 0.1)) {
 				mw.log("EmbedPlayer:: seek: current time matches seek target: " +
 					playerElementTime + ' ~== ' + seekTime );
-				if (this.seeking) {
-					this.seeking = false;
-					$(this).trigger('seeked');
-				}
-				this.seekedHandler();
-				return;
+				$(this).trigger('seeked');
+			} else {
+				var _this = this;
+				this.canSeek().then(function () {
+					_this.doSeek(seekTime, stopAfterSeek);
+				});
 			}
-
-			var _this = this;
-			this.canSeek().then(function(){
-				_this.doSeek(seekTime, stopAfterSeek);
-			});
 		},
 		/**
 		 * seekedHandler function handles all players seeked teardown operations

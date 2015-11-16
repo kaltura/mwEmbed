@@ -11,7 +11,8 @@
 			"switchOnResize": false,
 			"simpleFormat": true,
 			"iconClass": "icon-cog",
-            "displayMode": "size" //'size' – displays frame size ( default ), 'bitrate' – displays the bitrate, 'sizebitrate' displays size followed by bitrate
+            "displayMode": "size", //'size' – displays frame size ( default ), 'bitrate' – displays the bitrate, 'sizebitrate' displays size followed by bitrate
+            "hideSource": false
 		},
 
 		isDisabled: false,
@@ -128,6 +129,10 @@
             //add Auto for addaptive bitrate streams
             if ( !this.handleAdaptiveBitrateAndContinue() )
                 return;
+
+            if (this.getConfig('hideSource')) {
+                this.getPlayer().mediaElement.removeSourceFlavor(sources);
+            }
 
 			if( sources.length == 1 ){
 				// no need to do building menu logic. 
