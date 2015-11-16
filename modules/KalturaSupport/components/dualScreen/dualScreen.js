@@ -231,9 +231,7 @@
                             .then(function () {
                                 _this.initControlBar();
                             }, function () { // master entry doesn't has sub-entries
-                                if (_this.streamSelector) {
-                                    _this.streamSelector.destroy();
-                                }
+                                _this.destroyStreamSelector();
                                 _this.initControlBar();
                             });
 
@@ -710,11 +708,13 @@
                        .then(function () {
                            _this.loadSeconScreenVideo().then(function () {
                                deferred.resolve(true);
+                           },
+                           function(){
+                               _this.destroyStreamSelector();
+                               deferred.resolve(false);
                            });
                        }, function () { // master entry doesn't has sub-entries
-                           if( _this.streamSelector ){
-                               _this.streamSelector.destroy();
-                           }
+                           _this.destroyStreamSelector();
                            deferred.reject();
                        });
                 }
@@ -758,13 +758,18 @@
                 return deferred.promise();
             },
 
+            destroyStreamSelector: function(){
+                if( this.streamSelector ){
+                    this.streamSelector.destroy();
+                }
+            },
+
             loadSeconScreenVideo: function(){
                 var deferred = $.Deferred();
 
                 var secondScreenUrl = this.getSlaveUrl();
                 if( !secondScreenUrl ){
-                    deferred.resolve(false); deferred.reject();
-                    return;
+                    return deferred.reject();
                 }
 
                 this.secondPlayer = new mw.dualScreen.videoPlayer(this.getPlayer(), function () {
@@ -779,7 +784,7 @@
                 var secondScreenUrl;
 
                 var secondStream = this.streamSelector.getNextStream();
-                if( secondStream.id === this.embedPlayer.evaluate("{mediaProxy.entry.id}") ){
+                if( !secondStream || secondStream.id === this.embedPlayer.evaluate("{mediaProxy.entry.id}") ){
                     return;
                 }
 
