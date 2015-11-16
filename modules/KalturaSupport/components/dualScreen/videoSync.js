@@ -201,14 +201,7 @@
                     // if marked for seeking
                     if (doSeek) {
                         this.log("Seeking slave to " + (controller.currentTime + seekAhead));
-                        if (slave.setCurrentTime(controller.currentTime + seekAhead)) {
-                            slave.play();
-                            if (!controller.paused) {
-                                slave.play();
-                            } else {
-                                slave.pause();
-                            }
-                        }
+                        slave.setCurrentTime(controller.currentTime + seekAhead);
                     }
 
                 }.bind(this));
