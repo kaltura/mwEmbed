@@ -495,7 +495,7 @@
 			}
 			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 
-			if (isLinear) {
+			if (isLinear && !this.isNativeSDK) {
 				this.embedPlayer.enablePlayControls(["scrubber","share","infoScreen","related"]);
 			} else {
 				_this.embedPlayer.pause();
