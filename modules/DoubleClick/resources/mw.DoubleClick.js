@@ -495,7 +495,7 @@
 			}
 			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 
-			if (isLinear) {
+			if (isLinear && !this.isNativeSDK) {
 				this.embedPlayer.enablePlayControls(["scrubber","share","infoScreen","related"]);
 			} else {
 				_this.embedPlayer.pause();
@@ -1215,11 +1215,8 @@
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				mw.log("DoubleClick:: allAdsCompleted");
 				setTimeout(function(){
-					var isContentCompleted = true;
-					if (mw.isNativeApp()) {
-						isContentCompleted = _this.currentAdSlotType == 'postroll';
-					}
-					_this.restorePlayer(isContentCompleted);
+					// content completed
+					_this.restorePlayer(true);
 				},0);
 				if (_this.currentAdSlotType == 'postroll'){
 					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', _this.entryDuration );

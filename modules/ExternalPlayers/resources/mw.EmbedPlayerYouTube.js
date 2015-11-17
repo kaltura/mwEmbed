@@ -180,7 +180,8 @@
 						_this.hideSpinner();
 					},250);
 				}
-
+				mw.log("EmbedPlayerYouTube:: Trigger: playerReady for HTML5 player");
+				$(_this).trigger('playerReady');
 			};
 			// YOUTUBE FLASH PLAYER READY
 			window['onYouTubePlayerReady'] = function( playerIdStr ){
@@ -202,6 +203,8 @@
 				}else{
 					window['hidePlayer']();
 				}
+				mw.log("EmbedPlayerYouTube:: Trigger: playerReady for Flash player");
+				$(_this).trigger('playerReady');
 			};
 			// YOUTUBE IFRAME READY
 			window['onYouTubeIframeAPIReady'] = function( playerIdStr ){

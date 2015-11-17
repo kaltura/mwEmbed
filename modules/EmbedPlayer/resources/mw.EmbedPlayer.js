@@ -1313,9 +1313,13 @@
 
 			// Update the playerReady flag
 			this.playerReadyFlag = true;
-			mw.log("EmbedPlayer:: Trigger: playerReady");
-			// trigger the player ready event;
-			$(this).trigger('playerReady');
+			// trigger the player ready event unless we are loading Youtube external player which triggers its own playerReady event (SUP-5072);
+			if ( this.mediaElement && this.mediaElement.selectedSource && this.mediaElement.selectedSource.mimeType === "video/youtube") {
+				mw.log("EmbedPlayer:: Loading Youtube player. playerReady event to be dispatched by Youtube player.");
+			}else{
+				mw.log("EmbedPlayer:: Trigger: playerReady");
+				$(this).trigger('playerReady');
+			}
 			this.triggerWidgetLoaded();
 
 			// Check if we want to block the player display
