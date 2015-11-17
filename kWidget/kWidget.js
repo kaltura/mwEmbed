@@ -583,7 +583,8 @@
 			if (!settings.flashvars) {
 				settings.flashvars = {};
 			}
-
+			// autoPlay media after thumbnail interaction
+			settings.flashvars.autoPlay = true;
 			// inject the centered css rule ( if not already )
 			this.addThumbCssRules();
 
@@ -594,7 +595,7 @@
 			}
 			elm.innerHTML = '' +
 				'<div style="position: relative; width: 100%; height: 100%;">' +
-				'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl(settings) + '" >' +
+				'<input type="image" alt="play video content" class="kWidgetCentered" src="' + this.getKalturaThumbUrl(settings) + '" >' +
 				'<div class="kWidgetCentered kWidgetPlayBtn" ' +
 				'id="' + targetId + '_playBtn"' +
 				'></div></div>';
@@ -608,9 +609,6 @@
 				settings.readyCallback = function (playerId) {
 					// issue a play ( since we already clicked the play button )
 					var kdp = document.getElementById(playerId);
-					kdp.kBind('mediaReady', function () {
-						kdp.sendNotification('doPlay');
-					});
 					if (typeof orgEmbedCallback == 'function') {
 						orgEmbedCallback(playerId);
 					}
