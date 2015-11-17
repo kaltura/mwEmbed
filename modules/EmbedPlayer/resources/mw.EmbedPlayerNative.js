@@ -1386,16 +1386,16 @@
 
                     //if Live + No DVR add id3 tags support
                     if (vid.textTracks[i].kind === "metadata" && _this.isLive() && !_this.isDVR()) {
-                        _this.id3Tag(vid, i);
+                        _this.id3Tag(vid.textTracks[i]);
                         clearInterval(interval);
                         vid.textTracks[i].mode = "hidden";
                     }
                 }
             }, 500);
         },
-        id3Tag: function(vid, i){
+        id3Tag: function(metadataTrack){
             var _this = this;
-            vid.textTracks[i].addEventListener("cuechange", function (evt) {
+            metadataTrack.addEventListener("cuechange", function (evt) {
                 try {
                     var id3Tag = evt.currentTarget.cues[evt.currentTarget.cues.length - 1].value.data;
                     _this.triggerHelper('onId3Tag', id3Tag);
