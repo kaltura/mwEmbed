@@ -175,7 +175,7 @@
 					this.currentSpeed = this.currentSpeed.toFixed(1);
 				}
 				var source = this.manifestSource;
-				if (this.manifestSource.indexOf("/a.m3u8") !== -1){ // for HLS, since the movie duration changes, we need to recalculate the position
+				if (this.manifestSource){ // for HLS and HDS, since the movie duration changes, we need to recalculate the position
 					currentPlayTime = currentPlayTime * previousSpeed / this.currentSpeed;
 				}
 				var fileName = source.substr(source.lastIndexOf("/"));
