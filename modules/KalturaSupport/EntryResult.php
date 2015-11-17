@@ -220,8 +220,11 @@ class EntryResult {
 		}
 
         $vars = $this->uiconf->playerConfig['vars'];
+		$playerConfig = $this->uiconf->getPlayerConfig();
 		if( is_array( $resultObject['contextData'] ) && isset( $resultObject['contextData']['code'] ) && $resultObject['contextData']['code'] == 'ENTRY_ID_NOT_FOUND' && !isset($vars['referenceId'])){
-			$this->error = 'No source video was found';
+			if (!isset($playerConfig['plugins']['strings']['mwe-embedplayer-missing-source'])){
+				$this->error = 'No source video was found';
+			}
 			return array();
 		}
 

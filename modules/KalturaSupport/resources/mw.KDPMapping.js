@@ -1172,11 +1172,13 @@
 					embedPlayer.pause();
 					break;
 				case 'doStop':
-					setTimeout(function() {
-						embedPlayer.ignoreNextNativeEvent = true;
-                			        embedPlayer.seek(0, true);
-						embedPlayer.stop();
-					},10);
+					if ( !embedPlayer.stopped ){
+						setTimeout(function() {
+							embedPlayer.ignoreNextNativeEvent = true;
+	                                    embedPlayer.seek(0, true);
+							embedPlayer.stop();
+						},10);
+					}
 					break;
 				case 'doReplay':
 					embedPlayer.replay();

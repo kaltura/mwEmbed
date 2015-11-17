@@ -438,9 +438,11 @@
 				// if on the first call ( and video not ready issue load, play
 				if (callbackCount == 0 && vid.paused) {
 					this.stopEventPropagation();
+					this.isWaitingForSeekReady = true;
 					var vidObj = $(vid);
 					var eventName = mw.isIOS() ? "canplaythrough.seekPrePlay" : "canplay.seekPrePlay";
 					vidObj.off(eventName).one(eventName, function () {
+						_this.isWaitingForSeekReady = false;
 						_this.restoreEventPropagation();
 						if (vid.duration > 0) {
 							_this.log("player can seek");
@@ -474,6 +476,10 @@
 			} else {
 				setTimeout(function(){
 					_this.log("player can seek");
+					if (_this.isWaitingForSeekReady){
+						_this.restoreEventPropagation();
+						_this.isWaitingForSeekReady = false;
+					}
 					return checkVideoStateDeferred.resolve();
 				}, 10);
 			}
@@ -1363,7 +1369,9 @@
 				this.pause();
 				this.currentTime = 0;
 				this.addStartTimeCheck();
-				this.play();
+				if (this.canAutoPlay()) {
+					this.play();
+				}
 			}
 		},
 		setInline: function ( state ) {

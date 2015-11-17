@@ -196,6 +196,7 @@
 					controls: false,
 					height: "100%",
 					width: "100%",
+					dasheverywhere: this.getDrmConfig(),
 					plugins: {
 						audiotracks: {},
 						texttracks: {}
@@ -207,12 +208,20 @@
 					//Hide native player UI
 					el.find(".vjs-poster, .vjs-control-bar, .vjs-big-play-button" ).css("display", "none");
 					el.attr('data-src', _this.getSrc());
-					//Set schedule while paused to true to allow buffering when in paused state
-					_this.playerElement.mediaPlayer.setScheduleWhilePaused(true);
-					//Continue only after manifest loaded event has been dispatched
-					this.one("manifestLoaded", function(){
-						callback();
-					});
+					//Set specific playback engine settings
+					if (_this.playerElement.getActiveTech() == "dashjs") {
+						//Set schedule while paused to true to allow buffering when in paused state
+						_this.playerElement.mediaPlayer.setScheduleWhilePaused(true);
+
+						//Continue only after manifest loaded event has been dispatched
+						this.one("manifestLoaded", function () {
+							callback();
+						});
+					} else {
+						setTimeout(function(){
+							callback();
+						}, 0);
+					}
 					_this.updateDashContext();
 				} );
 				this.bindHelper('switchAudioTrack', function (e, data) {
