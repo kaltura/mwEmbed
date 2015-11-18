@@ -514,7 +514,6 @@
 		},
 
 		getChromecastSource: function(){
-			// find the best quality MP4 source
 			var sources = this.embedPlayer.mediaElement.sources;
 			var videoSize = 0;
 			var newSource = null;
@@ -522,9 +521,13 @@
 			var i = 0;
 			for ( i=0 ; i < sources.length; i++){
 				var source = sources[i];
-				if ($.inArray(source.mimeType, supportedMimeTypes) !== -1 && parseInt(source.sizebytes) > videoSize){
-					newSource = source;
-					videoSize = parseInt(newSource.sizebytes);
+				if ($.inArray(source.mimeType, supportedMimeTypes) !== -1){
+					if (source.sizebytes && parseInt(source.sizebytes) > videoSize){ // find the best quality MP4 source
+						newSource = source;
+						videoSize = parseInt(newSource.sizebytes);
+					}else{
+						newSource = source;
+					}
 				}
 			}
 			if (newSource){

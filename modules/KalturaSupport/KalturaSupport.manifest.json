@@ -1806,7 +1806,7 @@
         }
     },
     "strings": {
-        "description": "Enables overwriting player strings. For full string keys listing, review the <a href=\"http://player.kaltura.com/docs/Strings\" target=\"_blank\">Strings documentation page</a>",
+        "description": "Enables overwriting player strings.<br>For full string keys listing, review the <a href=\"http://player.kaltura.com/docs/Strings\" target=\"_blank\">Strings documentation page.</a><br>You can override strings seperately for different locales by adding the locale code before the string key and then a dot. For more info, look at the <a href=\"http://player.kaltura.com/modules/KalturaSupport/tests/StringsLocale.html\" target=\"_blank\">Strings locale demo.</a>",
         "type": "featuremenu",
         "label": "Strings",
         "model": "config.plugins.strings",

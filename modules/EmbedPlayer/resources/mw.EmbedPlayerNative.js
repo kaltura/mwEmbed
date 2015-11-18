@@ -5,7 +5,7 @@
  */
 (function (mw, $) {
 	"use strict";
-
+	
 	mw.EmbedPlayerNative = {
 
 		//Instance Name
@@ -437,9 +437,11 @@
 				// if on the first call ( and video not ready issue load, play
 				if (callbackCount == 0 && vid.paused) {
 					this.stopEventPropagation();
+					this.isWaitingForSeekReady = true;
 					var vidObj = $(vid);
 					var eventName = mw.isIOS() ? "canplaythrough.seekPrePlay" : "canplay.seekPrePlay";
 					vidObj.off(eventName).one(eventName, function () {
+						_this.isWaitingForSeekReady = false;
 						_this.restoreEventPropagation();
 						if (vid.duration > 0) {
 							_this.log("player can seek");
@@ -473,6 +475,10 @@
 			} else {
 				setTimeout(function(){
 					_this.log("player can seek");
+					if (_this.isWaitingForSeekReady){
+						_this.restoreEventPropagation();
+						_this.isWaitingForSeekReady = false;
+					}
 					return checkVideoStateDeferred.resolve();
 				}, 10);
 			}
@@ -823,18 +829,6 @@
 			var vid = this.getPlayerElement();
 			// parent.$('body').append( $('<a />').attr({ 'style': 'position: absolute; top:0;left:0;', 'target': '_blank', 'href': this.getPlayerElement().src }).text('SRC') );
 			var _this = this;
-
-			var nativeCalloutPlugin = {
-				'exist': false
-			};
-			if (mw.isMobileDevice()) {
-				this.triggerHelper('nativePlayCallout', [ nativeCalloutPlugin ]);
-			}
-
-			if (nativeCalloutPlugin.exist) {
-				// if nativeCallout plugin exist play implementation is changed
-				return;
-			}
 
 			// if starting playback from stoped state and not in an ad or otherise blocked controls state:
 			// restore player:
@@ -1367,7 +1361,9 @@
 				this.pause();
 				this.currentTime = 0;
 				this.addStartTimeCheck();
-				this.play();
+				if (this.canAutoPlay()) {
+					this.play();
+				}
 			}
 		},
 		setInline: function ( state ) {

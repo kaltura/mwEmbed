@@ -109,6 +109,11 @@
 			if( this.getConfig( 'anonymizeIp' ) ){
 				window._gaq.push(['_gat._anonymizeIp']);
 			}
+			// set correct utmp when unfriendly iframe
+			if ( !mw.getConfig('EmbedPlayer.IsFriendlyIframe' ) && typeof(document.referrer)!= 'undefined' ){
+				//get path and remove everything after ? and # in the URL to send clean path to GA
+				window._gaq.push(['_set', 'page', document.referrer.replace(/^[^:]+:\/\/[^/]+/, '').replace(/#.*/, '').replace(/\?.*/, '')]);
+			}
 			window._gaq.push([ '_trackPageview' ]);
 			var ga = document.createElement('script');
 			ga.type = 'text/javascript';
@@ -261,7 +266,7 @@
 			var customEvents = [];
 
 			if (this.getConfig('customEvent')) {
-				customEvents = this.getConfig('customEvent').split(',');
+				customEvents = this.getConfig('customEvent').replace(/ /g,'').split(',');
 				if ($.inArray(methodName, customEvents) != -1) {
 					if (this.getConfig(methodName + "Category")) {
 						eventCategory = this.getConfig(methodName + "Category");
