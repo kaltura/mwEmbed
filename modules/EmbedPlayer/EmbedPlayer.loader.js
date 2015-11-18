@@ -76,8 +76,8 @@
 				}
 				processPlayerIntervalMaxTries--;
 				if (processPlayerIntervalMaxTries === 0){
-					showPlayerError();
 					clearInterval(processPlayerInterval);
+					showPlayerError();
 				}
 			} ,0);
 
