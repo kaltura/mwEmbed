@@ -1262,7 +1262,9 @@
 		},
 		// retruns only the runtime config 
 		getRuntimeSettings: function( settings ){
-			var runtimeSettings = {}
+			var runtimeSettings = {};
+			var allowedVars = mw.getConfig('Kaltura.AllowedVars');
+			allowedVars = allowedVars.split(",");
 			for( var i in settings ){
 				// entry id should never be included ( hurts player iframe cache )
 				if( i == 'entry_id' ){
@@ -1273,10 +1275,7 @@
 					runtimeSettings[i] = {};
 					for( var j in settings[i] ){
 						// Special Case a few falshvars that are alwayse coppied to iframe:
-						if( j == 'inlineScript' ||
-							j == 'autoPlay'
-							// ( there will be more of these ). 
-						){
+						if( $.inArray( j, allowedVars) > -1	){
 							runtimeSettings[i][j] = settings[i][j];
 							continue;
 						}
