@@ -248,6 +248,11 @@ $wgKalturaApiFeatures = array();
 $wgEnableKalturaOverrideDomain = true;
 
 /*********************************************************
+ * A comma-delimited string of allowed flashavrs to be passed to server on dynamic embed call:
+********************************************************/
+$wgAllowedVars = "inlineScript";
+
+/*********************************************************
  * Include local settings override:
 ********************************************************/
 $wgLocalSettingsFile = realpath( dirname( __FILE__ ) ) . '/../LocalSettings.php';
