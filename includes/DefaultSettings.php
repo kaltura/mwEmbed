@@ -251,6 +251,8 @@ $wgEnableKalturaOverrideDomain = true;
  * A comma-delimited string of allowed flashavrs to be passed to server on dynamic embed call:
 ********************************************************/
 $wgAllowedVars = "inlineScript";
+$wgAllowedPluginVars = "templatePath,templates"; //,loadInIframe,iframeHTML5Js,iframeHTML5Css,onPageJs,onPageCss
+$wgAllowedPluginVarsPartials = "{html5ps}";
 
 /*********************************************************
  * Include local settings override:

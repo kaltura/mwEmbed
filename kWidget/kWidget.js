@@ -1265,32 +1265,54 @@
 			var runtimeSettings = {};
 			var allowedVars = mw.getConfig('Kaltura.AllowedVars');
 			allowedVars = allowedVars.split(",");
-			for( var i in settings ){
+			var allowedPluginVars = mw.getConfig('Kaltura.AllowedPluginVars');
+			allowedPluginVars = allowedPluginVars.split(",");
+			var allowedPluginVarsPartials = mw.getConfig('Kaltura.AllowedPluginVarsPartials');
+			allowedPluginVarsPartials = allowedPluginVarsPartials.split(",");
+
+			for( var settingsKey in settings ){
 				// entry id should never be included ( hurts player iframe cache )
-				if( i == 'entry_id' ){
+				if( settingsKey == 'entry_id' ){
 					continue;
 				}
-				if( i =='flashvars' ){
+				if( settingsKey =='flashvars' ){
 					// add flashvars container:
-					runtimeSettings[i] = {};
-					for( var j in settings[i] ){
-						// Special Case a few falshvars that are alwayse coppied to iframe:
-						if( $.inArray( j, allowedVars) > -1	){
-							runtimeSettings[i][j] = settings[i][j];
+					var runtimeFlashvars = runtimeSettings[settingsKey] = {};
+					var flashvars = settings[settingsKey];
+					for( var flashvarKey in flashvars ){
+						// Special Case a few flashvars that are always copied to iframe:
+						if( $.inArray( flashvarKey, allowedVars) > -1	){
+							runtimeFlashvars[flashvarKey] = flashvars[flashvarKey];
 							continue;
 						}
-						if( typeof settings[i][j] == 'object' ){
-							// Set an empty plugin if any value is presnet ( note this means .plugin=false overrides do still load the plugin
-							// but this is "OK" because the client is likely setting this at runtime on purpuse. Its more value 
-							// to get a cache hit all time time indepdendently of alterting enabaled disabled flag. 
-							// Plugin diablement will still be read during runtime player buildout. 
-							runtimeSettings[i][j]={};
+						if( typeof flashvars[flashvarKey] == 'object' ){
+							// Set an empty plugin if any value is preset ( note this means .plugin=false overrides do still load the plugin
+							// but this is "OK" because the client is likely setting this at runtime on purpose. Its more value
+							// to get a cache hit all time time independently of alerting enabled/disabled flag.
+							// Plugin diablement will still be read during runtime player build-out.
+							var runtimePlugin = runtimeFlashvars[flashvarKey]={};
+							var plugin = flashvars[flashvarKey];
+							for( var pluginKey in plugin ) {
+								var pluginVal = plugin[pluginKey];
+								// Special Case a few flashvars that are always copied to iframe:
+								if ($.inArray(pluginKey, allowedPluginVars) > -1) {
+									runtimePlugin[pluginKey] = pluginVal;
+								}
+								if (typeof pluginVal == "string") {
+									// Special case vars that require server side template substations
+									for (var idx in allowedPluginVarsPartials) {
+										if (pluginVal.indexOf(allowedPluginVarsPartials[idx]) > -1){
+											runtimePlugin[pluginKey] = plugin[pluginKey];
+										}
+									}
+								}
+							}
 						}
 					}
 					// don't do high level copy of flashvars
 					continue;
 				}
-				runtimeSettings[ i ] = settings[i];
+				runtimeSettings[ settingsKey ] = settings[settingsKey];
 			}
 			return runtimeSettings;
 		},
@@ -1299,9 +1321,9 @@
 		 */
 		getIframeRequest: function (elm, requestSettings) {
 			var settings = requestSettings;
-			// Check if its a inline scirpts setup: 
+			// Check if its a inline scirpts setup:
 			if( this.isInlineScirptRequest( requestSettings ) ){
-				// segment out all configuration 
+				// segment out all configuration
 				settings = this.getRuntimeSettings( requestSettings );
 				this.widgetOriginalSettings [elm.id] = requestSettings;
 				mw.setConfig("widgetOriginalSettings_" + elm.id, requestSettings);
