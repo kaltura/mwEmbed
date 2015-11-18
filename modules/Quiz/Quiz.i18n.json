@@ -34,6 +34,7 @@
     "mwe-quiz-yourAnswer":"Your Answer:",
     "mwe-quiz-correctAnswer":"Correct Answer:",
     "mwe-quiz-gotIt":"Got It !",
-    "mwe-quiz-pdf":"Pre-test Available"
+    "mwe-quiz-pdf":"Pre-test Available",
+    "mwe-quiz-completed":"Completed"
   }
 }
