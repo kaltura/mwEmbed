@@ -1304,6 +1304,7 @@
 				// segment out all configuration 
 				settings = this.getRuntimeSettings( requestSettings );
 				this.widgetOriginalSettings [elm.id] = requestSettings;
+				mw.setConfig("widgetOriginalSettings_" + elm.id, requestSettings);
 			}
 			
 			// Get the base set of kaltura params ( entry_id, uiconf_id etc )
