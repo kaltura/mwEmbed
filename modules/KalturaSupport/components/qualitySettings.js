@@ -89,6 +89,7 @@
 			}else{
 				this.embedPlayer.getVideoHolder().find(".largePlayBtn").show();
 			}
+			this.embedPlayer.triggerHelper("hideMobileComponents");
 		},
 		showRegisteredPlugins: function(){
 			this.pluginsScreenOpened = true;
@@ -114,6 +115,7 @@
 			this.embedPlayer.getVideoHolder().find(".largePlayBtn").hide();
 			this.embedPlayer.getControlBarContainer().fadeOut();
 			this.embedPlayer.getTopBarContainer().fadeOut();
+			this.embedPlayer.triggerHelper("showMobileComponents");
 		}
 	}));
 

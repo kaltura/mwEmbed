@@ -211,6 +211,7 @@ class UiConfResult {
 		$basePlugins = array(
 			'statistics' => array(),
 			'controlBarContainer' => array(),
+			'qualitySettings' => array(),
 			'keyboardShortcuts' => array(),
 			'liveCore' => array(),
 			'liveStatus' => array(),
@@ -534,6 +535,7 @@ class UiConfResult {
 		$plugins = array(
 			"topBarContainer" => array(),
 			"controlBarContainer" => array(),
+			"qualitySettings" => array(),
 			"sideBarContainer" => array(),
 			"scrubber" => array(),
 			"largePlayBtn" => array(),
