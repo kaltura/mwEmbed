@@ -6,8 +6,7 @@
     "templates": "resources/tmpl/offline.tmpl.html",
     "dependencies": [
       "mw.KBaseScreen",
-      "largeLocalStorage",
-      "moment"
+      "largeLocalStorage"
     ]
   }
 }

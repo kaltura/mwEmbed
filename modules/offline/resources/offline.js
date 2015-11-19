@@ -12,7 +12,8 @@
       order: 50,
 
       notificationName: 'offline',
-      storageRootName: 'kOfflineStorage',
+      contentId: 'kOfflineStorage',
+      showIndicator: true,
       requestedStorageSize: 1024 * 1024 * 1024 // in bytes, 1GB by default
     },
 
@@ -20,6 +21,8 @@
     entryMetadata: null,
 
     setup: function () {
+      navigator.persistentStorage = navigator.persistentStorage ||
+        navigator.webkitPersistentStorage;
       this.overrideBindings();
       this.setBindings();
     },
@@ -36,17 +39,23 @@
     setBindings: function () {
       var _this = this;
 
+      if (!this.getConfig('showIndicator')) {
+        this.getComponent().addClass('hide-important');
+      }
+
       this.bind('playerReady', function () {
         var entryId = _this.getPlayer().evaluate('{mediaProxy.entry}').id;
         console.info('PLAYER READY WITH ENTRY:', entryId);
 
         _this.entryMetadata = null;
+        _this.updateUI();
         _this.getMetadataForEntryId(entryId)
           .then(function (metadata) {
             console.info('METADATA LOADED:', metadata);
             _this.sendNotification('entryExist', entryId);
             _this.entryMetadata = metadata;
             _this.overrideXhr();
+            _this.updateUI();
           })
           .finally(function () {
             _this.sendNotification('readyToDownload');
@@ -58,25 +67,34 @@
       });
 
       this.bind('deleteLocalEntry', function (event, entryId) {
-        entryId = entryId || (_this.entryMetadata && _this.entryMetadata.id);
-        console.info('DELETE LOCAL ENTRY', entryId);
+        _this.deleteLocalEntry(entryId)
+          .then(function () {
+            _this.sendNotification('deleteEntrySuccess', entryId);
+          })
+          .catch(function () {
+            _this.sendNotification('deleteEntryFail', entryId);
+          })
+          .finally(function () {
+            _this.reportUsage();
+          });
+      });
+    },
 
-        _this.getLls().then(function (lls) {
-          lls.rm(entryId)
-            .then(function () {
-              _this.sendNotification('deleteEntrySuccess', entryId);
+    deleteLocalEntry: function (entryId) {
+      var _this = this;
 
-              if (_this.entryMetadata && _this.entryMetadata.id === entryId) {
-                _this.cancelOverrideXhr();
-                _this.entryMetadata = null;
-              }
+      entryId = entryId || (this.entryMetadata && this.entryMetadata.id);
+      console.info('DELETE LOCAL ENTRY', entryId);
 
-              console.info('DELETED', entryId);
-            })
-            .catch(function () {
-              _this.sendNotification('deleteEntryFail', entryId);
-              console.error('UNABLE TO DELETE', entryId);
-            });
+      return this.getLls().then(function (lls) {
+        return lls.rm(entryId).then(function () {
+          if (_this.entryMetadata && _this.entryMetadata.id === entryId) {
+            _this.cancelOverrideXhr();
+            _this.entryMetadata = null;
+            _this.updateUI();
+          }
+
+          console.info('DELETED', entryId);
         });
       });
     },
@@ -195,7 +213,8 @@
       savePromises = segments.reduce(function (promises, segment) {
         return promises.concat(segment.fragments.map(function (fragment) {
           return _this.getLls().then(function (lls) {
-            return lls.setAttachment(entryId, _this.getFileName(fragment.url), new Blob([fragment.data]));
+            return lls.setAttachment(entryId, _this.getFileName(fragment.url),
+              new Blob([fragment.data]));
           });
         }));
       }, []);
@@ -203,6 +222,10 @@
       Q.all(savePromises)
         .then(function () {
           _this.sendNotification('entrySaveSuccess', entryId);
+
+          entry.byteLength = segments.reduce(function (prev, segment) {
+            return prev + segment.byteLength;
+          }, 0);
 
           entry.filesMapping = segments.map(function (segment) {
             return {
@@ -221,9 +244,16 @@
           }
 
           _this.overrideXhr();
+          _this.updateUI();
 
           _this.sendNotification('savedEntryData', entry);
           console.info('ENTRY SAVED SUCCESSFULLY!');
+        })
+        .catch(function () {
+          _this.sendNotification('filesCleared');
+        })
+        .finally(function () {
+          _this.reportUsage();
         });
     },
 
@@ -243,10 +273,13 @@
       if (typeof segment.startNumber !== 'number') {
         return this.downloadFragment(segment.urlTemplate)
           .then(function (data) {
+            var byteLength = data.byteLength;
             segment.fragments = [];
+            segment.byteLength = byteLength;
             segment.fragments.push({
               url: segment.urlTemplate,
-              data: data
+              data: data,
+              byteLength: byteLength
             });
 
             return segment;
@@ -257,6 +290,7 @@
       var deferred = Q.defer();
 
       segment.fragments = [];
+      segment.byteLength = 0;
       doDownloadFragment(segment.urlTemplate, segment.startNumber);
       return deferred.promise;
 
@@ -266,9 +300,13 @@
 
         _this.downloadFragment(url)
           .then(function (data) {
+            var byteLength = data.byteLength;
+
+            segment.byteLength += byteLength;
             segment.fragments.push({
               url: url,
-              data: data
+              data: data,
+              byteLength: byteLength
             });
 
             doDownloadFragment(urlTemplate, currentNumber);
@@ -385,17 +423,32 @@
     },
 
     getLls: function () {
-      var _this = this;
+      return this.lls ? Q(this.lls) : this.requestLls();
+    },
 
-      return this.lls ? Q(this.lls) : new LargeLocalStorage({
-        size: this.getConfig('requestedStorageSize'),
-        name: this.getConfig('storageRootName')
-      }).initialized.then(function (lls) {
-        console.info('INITIALIZED LLS WITH CAPACITY:', lls.getCapacity());
-        return (_this.lls = lls);
-      }, function () {
-        console.error('ERROR CREATING LLS. USER DENIAL.');
-      });
+    requestLls: function () {
+      var _this = this;
+      var requestedStorageSize = this.getConfig('requestedStorageSize');
+
+      return this.llsPromise || (this.llsPromise = new LargeLocalStorage({
+        size: requestedStorageSize,
+        name: this.getConfig('contentId')
+      }).initialized
+        .then(function (lls) {
+          var capacity = lls.getCapacity();
+          console.info('INITIALIZED LLS WITH CAPACITY:', capacity);
+
+          if (capacity !== requestedStorageSize) {
+            return Q.reject(lls);
+          }
+
+          return lls;
+        })
+        .catch(function () {
+          _this.llsPromise = null;
+          _this.sendNotification('userFsDenial');
+          console.error('ERROR CREATING LLS. USER DENIAL.');
+        }));
     },
 
     getFileName: function (url) {
@@ -459,6 +512,34 @@
       });
     },
 
+    reportUsage: function () {
+      var _this = this;
+
+      return this.getUsageAndQuota()
+        .then(function (usage) {
+          _this.sendNotification('fsUsageSuccess', usage);
+        })
+        .catch(function (error) {
+          _this.sendNotification('fsUsageError', error);
+        });
+    },
+
+    getUsageAndQuota: function () {
+      var deferred = Q.defer();
+
+      navigator.persistentStorage.queryUsageAndQuota(function (byteUsed, byteCap) {
+        deferred.resolve({
+          used: byteUsed,
+          free: (byteCap - byteUsed),
+          total: byteCap
+        });
+      }, function (error) {
+        deferred.reject(error);
+      });
+
+      return deferred.promise;
+    },
+
     xhrGet: function (path, responseType) {
       var response = Q.defer();
       var request = new XMLHttpRequest();
@@ -491,6 +572,20 @@
 
     escapeRegExp: function (str) {
       return str.trim().replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+    },
+
+    updateUI: function () {
+      var $component = this.getComponent();
+
+      if (this.entryMetadata) {
+        $component
+          .addClass('icon-checkmark')
+          .removeClass('icon-download');
+      } else {
+        $component
+          .addClass('icon-download')
+          .removeClass('icon-checkmark');
+      }
     }
   }));
 })(window.mw, window.$, window.LargeLocalStorage, window.Q);

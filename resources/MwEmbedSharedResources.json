@@ -464,8 +464,5 @@
     "largeLocalStorage": {
         "scripts": "resources/largeLocalStorage/LargeLocalStorage.js",
         "dependencies": "q"
-    },
-    "moment": {
-        "scripts": "resources/moment/moment.min.js"
     }
 }
