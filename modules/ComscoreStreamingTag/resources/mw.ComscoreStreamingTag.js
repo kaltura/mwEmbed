@@ -168,14 +168,17 @@
 		callStreamSensePlugin:function(){
 			var args = $.makeArray( arguments );
 			var action = args[0];
-			if( parent && parent[ this.getConfig('trackEventMonitor') ] ){
-				// Translate the event type to make it more human readable
-				var parsedArgs = args.slice();
-				if (action == "notify") {
-					parsedArgs[1] = ns_.StreamSense.PlayerEvents.toString(parsedArgs[1])
+			try {
+				if ( parent && parent[this.getConfig( 'trackEventMonitor' )] ) {
+					// Translate the event type to make it more human readable
+					var parsedArgs = args.slice();
+					if ( action == "notify" ) {
+						parsedArgs[1] = ns_.StreamSense.PlayerEvents.toString( parsedArgs[1] )
+					}
+					parent[this.getConfig( 'trackEventMonitor' )]( parsedArgs );
 				}
-				parent[ this.getConfig('trackEventMonitor') ]( parsedArgs );
 			}
+			catch(e){}
 			args.splice(0, 1);
 			this.streamSenseInstance[action].apply(this, args);
 		},
