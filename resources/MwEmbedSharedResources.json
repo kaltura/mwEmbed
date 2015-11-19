@@ -457,5 +457,12 @@
     "dotdotdot": {
         "scripts": "resources/jquery.dotdotdot/jquery.dotdotdot.min.js",
         "dependencies": "jquery"
+    },
+    "q": {
+        "scripts": "resources/q/q.js"
+    },
+    "largeLocalStorage": {
+        "scripts": "resources/largeLocalStorage/LargeLocalStorage.js",
+        "dependencies": "q"
     }
 }
