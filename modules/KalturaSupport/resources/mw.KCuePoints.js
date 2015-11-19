@@ -331,18 +331,39 @@
 		 * @param {Number} time Time in milliseconds
 		 */
 		getNextCuePoint: function (time) {
-			if (!isNaN(time) && time >= 0) {
-				var cuePoints = this.midCuePointsArray;
-				// Start looking for the cue point via time, return first match:
-				for (var i = 0; i < cuePoints.length; i++) {
-					if (cuePoints[i].startTime >= time) {
-						return cuePoints[i];
-					}
-				}
+            if (!isNaN(time) && time >= 0) {
+				if( this.embedPlayer.isLive() && !this.embedPlayer.isDVR() ){
+                    //Live NO DVR
+                    return this.getNextLiveCuePoint(parseInt(time/1000));
+                }else{
+                    var cuePoints = this.midCuePointsArray;
+                    // Start looking for the cue point via time, return FIRST match:
+                    for (var i = 0; i < cuePoints.length; i++) {
+                        if (cuePoints[i].startTime >= time) {
+                            return cuePoints[i];
+                        }
+                    }
+                }
 			}
 			// No cue point found in range return false:
 			return false;
 		},
+        getNextLiveCuePoint: function (time) {
+            var cuePoints = this.getCuePointsByType(mw.KCuePoints.TYPE.THUMB);
+            // TODO: sort the cuePoitns by createdAt
+
+            // Start looking for the cue point via time, return LAST match:
+            var lastCuePoint;
+            for (var i = 0; i < cuePoints.length; i++) {
+                if ( cuePoints[i].createdAt <= time ) {
+                    lastCuePoint = cuePoints[i];
+                }
+            }
+            if(lastCuePoint){
+                mw.log("KCuePoints :: getNextLiveCuePoint :: currentTime " + mw.seconds2npt(time) + " | lastCuePoint.createdAt " + mw.seconds2npt(lastCuePoint.createdAt));
+                return lastCuePoint;
+            }
+        },
 		/**
 		 * Returns the previous cuePoint object for requested time
 		 * @param {Number} time Time in milliseconds
