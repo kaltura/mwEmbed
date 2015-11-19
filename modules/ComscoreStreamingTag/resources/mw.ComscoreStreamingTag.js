@@ -430,6 +430,10 @@
 			// Split and trim the spaces
 			rawConfig.split(/ *, */g).forEach(function(x) {
 				// Create two groups, one for the label name and the second one for the label value without any "
+				try {
+					x = decodeURIComponent( x );
+				}
+				catch(e){}
 				var re = /([^=]+)="?([^"]+)"?/g;
 				var arr = re.exec(x);
 				arr[2] && (result[arr[1]] = _this.evaluateString(arr[2]));
