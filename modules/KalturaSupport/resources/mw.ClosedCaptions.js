@@ -160,7 +160,7 @@
 				_this.getMenu().close();
 			});
 
-			this.bind( 'showHideClosedCaptions preHideScreen hideMobileComponents', function(){
+			this.bind( 'showHideClosedCaptions', function(){
 				if( _this.getConfig('displayCaptions') === true ){
 					_this.setConfig('displayCaptions', false);
 				} else {
@@ -168,7 +168,7 @@
 				}
 			});
 
-			this.bind( 'showClosedCaptions', function(){
+			this.bind( 'showClosedCaptions preHideScreen hideMobileComponents', function(){
 				if( _this.getConfig('displayCaptions') === false ){
 					_this.setConfig('displayCaptions', true);
 				}
