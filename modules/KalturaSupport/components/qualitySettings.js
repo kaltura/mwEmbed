@@ -12,7 +12,7 @@
 		},
 
 		title: gM( 'mwe-embedplayer-quality_settings' ),
-		closingEvents: 'onAddPlayerSpinner onplay updatedPlaybackRate',
+		closingEvents: 'onAddPlayerSpinner onplay updatedPlaybackRate changedClosedCaptions',
 		registeredPlugins: [],
 		shouldResumePlay: false,
 		pluginsScreenOpened: false,
