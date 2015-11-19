@@ -12,19 +12,45 @@
 
   <body>
     <h2>Local Media download and playback DRM content</h2>
+    <div>
+      Select Entry:
+      <select id="entriesList">
+        <option value="1_uywvjgqk">1_uywvjgqk</option>
+        <option value="1_2dkcg837">1_2dkcg837</option>
+        <option value="1_yn8do3sv">1_yn8do3sv</option>
+        <option value="1_z5g9ooai">1_z5g9ooai</option>
+        <option value="1_59druc0h">1_59druc0h</option>
+      </select>
+      <button id="load" onclick="loadPlayer()">load</button>
+    </div>
     <div id="kaltura_player" style="width:560px;height:395px;"></div>
     <button id="download" disabled>Download</button>
     <button id="delete" disabled>Delete</button>
     <br/>
     <textarea id="textarea" style="width:560px;height:200px;white-space:nowrap;" readonly></textarea>
     <script>
+
+
       mw.setConfig('Kaltura.UdrmServerURL', 'https://udrm.kaltura.com/');
+
+      function loadPlayer(){
+
       kWidget.embed({
         "targetId": "kaltura_player",
-        "entry_id": "0_caq7yan7",
-        "wid": "_1788671",
-        "uiconf_id": 30484161,
+        "entry_id": $("#entriesList :selected").val() , // [1_uywvjgqk,1_2dkcg837,1_yn8do3sv,1_z5g9ooai,1_59druc0h]
+        "wid": "_243342",
+        "uiconf_id": 21099702,
         "flashvars": {
+          "multiDrm": {
+            "plugin": true
+          },
+          "widevine": {
+            "plugin": true
+          },
+          "closedCaptions" : {
+            "plugin" : true
+          },
+
           "offline": {
             "plugin": true,
             "templatePath": "resources/tmpl/offline.tmpl.html"
@@ -34,6 +60,7 @@
         "readyCallback": function (playerId) {
           var kdp = document.getElementById(playerId);
           var textArea = document.getElementById('textarea');
+          textarea.value = "";
           var downloadBtn = document.getElementById('download');
           var deleteBtn = document.getElementById('delete');
 
@@ -60,6 +87,9 @@
           });
         }
       });
+      }
+      loadPlayer();
+
     </script>
   </body>
 </html>

@@ -1,3 +1,9 @@
 .hide-important {
   display: none !important;
 }
+.btn.comp.offline{
+  color: green;
+}
+.btn.comp.offline.icon-download{
+  color: orange;
+}
