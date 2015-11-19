@@ -38,7 +38,7 @@ body {
 	padding-right: 5px;
 }
 .topBarContainer.hover {
-	top: -2.6em;
+	top: -2.8em;
 }
 .topBarContainer.open {
 	top: 0;
@@ -246,6 +246,9 @@ body {
 .mobile .playbackRateSelector .btn{
     font-family: 'Lato', Helvetica, Arial;;
 }
+.mobile .videoHolder .playbackRateSelector .btn{
+    font-family: 'icomoon';
+}
 .btnNarrow{
 	width: 1.8em;
 }
@@ -263,7 +266,7 @@ body {
 }
 .dropup {
 	position: relative;
-	height: 100%;
+	height: 99%;
 }
 
 .pull-right {
@@ -273,7 +276,25 @@ body {
 .pull-left {
 	float: left;
 }
-
+.mobile .videoHolder {
+    text-align: center;
+}
+.mobile .videoHolder .btn {
+    font-size: 3.6em;
+    margin-top: 0em;
+}
+.mobile .videoHolder .comp {
+    display: inline-block;
+}
+.btnLabel{
+    font-family: 'Lato', Helvetica, Arial;
+    font-weight: normal;
+    font-size: 0.3em;
+   display: none;
+}
+.mobile .btnLabel{
+    display: block;
+}
 .largePlayBtn {
 	cursor: pointer;
 	position: absolute;
@@ -1600,6 +1621,19 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
     height: 100%;
     opacity: 1;
     transition: opacity 400ms ease-out;
+    transition: background 400ms ease-out;
+}
+.mobile .pluginsScreenOpened .controlBarShadow{
+    background: rgba(0,0,0,0.75);
+}
+.mobile .btn.closePluginsScreen{
+    position: absolute;
+    font-size: 1.6em;
+    height: 140px;
+    right: -50px;
+}
+.mobile .pluginsScreenOpened .btn.closePluginsScreen{
+    right: 50px;
 }
 .mobile.player-out .controlBarShadow{
     opacity: 0;

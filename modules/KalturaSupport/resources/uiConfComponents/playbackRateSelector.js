@@ -11,7 +11,9 @@
 		 	'defaultSpeed': '1',
 			'speeds': ".5,.75,1,1.5,2",
 			'enableKeyboardShortcuts': true,
-			'serverSpeedPlayback': false
+			'serverSpeedPlayback': false,
+			'title': gM( 'mwe-embedplayer-speed' ),
+			'smartContainer': 'qualitySettings'
 		},
 
 		isDisabled: false,
@@ -243,7 +245,9 @@
 			if (this.getPlayer().mediaLoadedFlag){
 				this.getPlayer().getPlayerElement().playbackRate = newSpeed;
 			}
-			this.getBtn().text( newSpeed + 'x' );
+			if (!mw.isMobileDevice()){
+				this.getBtn().text( newSpeed + 'x' );
+			}
 			this.getPlayer().triggerHelper( 'updatedPlaybackRate', newSpeed);
 		},
 		getCurrentSpeedIndex: function(){
@@ -267,10 +271,12 @@
 			var _this = this;
 			if( !this.$el ) {
 				var $menu = $( '<ul />' );
+				var text = mw.isMobileDevice() ? '' : this.currentSpeed + 'x';
+				var classes = mw.isMobileDevice() ? 'btn icon-speedrate' : 'btn';
 				var $button = $( '<button />' )
-								.addClass( 'btn' )
-								.attr('title', 'Playback Speed')
-								.text( this.currentSpeed + 'x' )
+								.addClass( classes )
+								.attr('title', this.getConfig('title'))
+								.text( text )
 								.click( function(e){
 									_this.toggleMenu();
 								});
@@ -300,7 +306,7 @@
 			this.isDisabled = true;
 			this.getComponent().removeClass( 'open' );
 			this.getBtn().addClass( 'disabled' );
-		},
+		}
 	}));
 
 } )( window.mw, window.jQuery );

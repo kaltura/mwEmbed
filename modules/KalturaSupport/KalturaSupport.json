@@ -408,6 +408,11 @@
 		"dependencies": "mw.KBaseComponent",
 		"kalturaPluginName": "playbackRateSelector"
 	},
+	"qualitySettings": {
+		"scripts": "components/qualitySettings.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "qualitySettings"
+	},
 	"streamSelector": {
 		"scripts": "components/streamSelector.js",
 		"dependencies": "mw.KBaseComponent",
