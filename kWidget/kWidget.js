@@ -405,7 +405,7 @@
 			}
 
 			// Check for size override in kWidget embed call
-			function checkSizeOveride(dim) {
+			function checkSizeOverride(dim) {
 				if (settings[ dim ]) {
 					// check for non px value:
 					if (parseInt(settings[ dim ]) == settings[ dim ]) {
@@ -415,8 +415,8 @@
 				}
 			}
 
-			checkSizeOveride('width');
-			checkSizeOveride('height');
+			checkSizeOverride('width');
+			checkSizeOverride('height');
 
 			// Unset any destroyed widget with the same id:
 			if (this.destroyedWidgets[ targetId ]) {
@@ -919,15 +919,7 @@
 
 		},
 
-		/**
-		 * Output an html5 iframe player, once the html5 library is loaded
-		 *
-		 * @param {string} targetId target container for iframe
-		 * @param {object} settings object used to build iframe settings
-		 */
-		outputHTML5Iframe: function (targetId, settings) {
-			var _this = this;
-			var widgetElm = document.getElementById(targetId);
+		createIframe: function(targetId, widgetElm){
 			var iframeId = widgetElm.id + '_ifp';
 			var iframeCssText = 'border:0px; max-width: 100%; max-height: 100%; width:100%;height:100%;';
 
@@ -938,7 +930,7 @@
 			iframe.className = 'mwEmbedKalturaIframe';
 			iframe.setAttribute('aria-labelledby', 'Player ' + targetId);
 			iframe.setAttribute('aria-describedby', 'The Kaltura Dynamic Video Player');
-			// IE8 requires frameborder attribute to hide frame border: 
+			// IE8 requires frameborder attribute to hide frame border:
 			iframe.setAttribute('frameborder', '0');
 
 			// Allow Fullscreen
@@ -948,13 +940,10 @@
 
 			// copy the target element css to the iframe proxy style:
 			iframe.style.cssText = iframeCssText;
-
 			// fix for iOS8 iframe overflow issue
-			var userAgent = navigator.userAgent;
-			var isIOS = ( userAgent.indexOf('iPad') != -1 || userAgent.indexOf('iPhone') != -1 );
 			try {
 				var iframeHeight = widgetElm.style.height ? widgetElm.style.height : widgetElm.offsetHeight;
-				if (isIOS && parseInt(iframeHeight) > 0) {
+				if (this.isIOS() && (parseInt(iframeHeight) > 0)) {
 					iframe.style.height = iframeHeight;
 					var updateIframeID = setTimeout(function(){
 						iframe.style.height = "100%";
@@ -969,9 +958,10 @@
 			} catch (e) {
 				this.log("Error when trying to set iframe height: " + e.message);
 			}
+			return iframe;
+		},
 
-			// Create the iframe proxy that wraps the actual iframe
-			// and will be converted into an "iframe" player via jQuery.fn.iFramePlayer call
+		createIframeProxy: function(widgetElm){
 			var iframeProxy = document.createElement("div");
 			iframeProxy.id = widgetElm.id;
 			iframeProxy.name = widgetElm.name;
@@ -979,27 +969,11 @@
 			iframeProxy.className = 'kWidgetIframeContainer' + moreClass;
 			// Update the iframe proxy style per org embed widget:
 			iframeProxy.style.cssText = widgetElm.style.cssText + ';overflow: hidden';
-			iframeProxy.appendChild(iframe);
+			return iframeProxy;
+		},
 
-			// Replace the player with the iframe:
-			widgetElm.parentNode.replaceChild(iframeProxy, widgetElm);
-
-			// Check if we need to capture a play event ( iOS sync embed call )
-			if (settings.captureClickEventForiOS && (this.isIOS() || this.isAndroid())) {
-				this.captureClickWrapedIframeUpdate(targetId, settings, iframe);
-				return;
-			}
-			// get the callback name:
-			var cbName = this.getIframeCbName(targetId);
-
-			// Try and  get playload from local cache ( autoEmbed )
-			if (this.iframeAutoEmbedCache[ targetId ]) {
-				window[ cbName ](this.iframeAutoEmbedCache[ targetId ]);
-				return ;
-			}
-			
-			var iframeRequest = this.getIframeRequest( widgetElm, settings );
-			
+		createContentInjectCallback: function(cbName, iframe, iframeRequest, settings){
+			var _this = this;
 			// Do a normal async content inject:
 			window[ cbName ] = function ( iframeData ) {
 				var newDoc = iframe.contentWindow.document;
@@ -1010,77 +984,125 @@
 					newDoc.getElementsByTagName('body')[0].setAttribute("oncontextmenu","return false;");
 				}
 				newDoc.close();
-				// if empty populate for the first time: 
-				if(  _this.isInlineScirptRequest(settings) 
-						&& 
-					( ! _this.getFromStorage( iframeRequest ) || _this.getFromStorage(iframeRequest) == "null" ) 
-				) {
+
+				// if empty populate for the first time:
+				if(  _this.isInlineScriptRequest(settings) &&
+					( ! _this.getFromStorage( iframeRequest ) || _this.getFromStorage(iframeRequest) == "null" )) {
 					_this.setStorage( iframeRequest, iframeData.content );
 				}
-				// after being set, await async update to cache object:
-				window[ cbName ] = function(iframeData){
-					// only populate the cache if request was an inlines scripts request. 
-					if( _this.isInlineScirptRequest(settings) ){
-						_this.setStorage( iframeRequest, iframeData.content );
-					}
-				};
+				// Clear out this global function
+				window[cbName] = null;
 			};
-			// try to get payload from localStorage cache 
-			var iframeData = this.getFromStorage( iframeRequest );
-			if( !mw.getConfig('debug') && iframeData && iframeData != "null" ){
-				window[ cbName ]({'content' : iframeData });
-				// we don't retrun here, instead we run the get request to update the uiconf storage 
-				// TODO this should just be a 304 check not a full download of the iframe ( normally )
-				// RETURN UNTIL WE HAVE 30$ check in palce. 
-				return ;
-			}
-			
-			// -----> IE8 and IE9 hack to solve Studio issues. SUP-3795. Should be handled from PHP side and removed <----
-			var isLowIE = document.documentMode && document.documentMode < 10;
-			if ( isLowIE && settings.flashvars.jsonConfig ){
-				jsonConfig = settings.flashvars.jsonConfig;
-				delete settings.flashvars.jsonConfig;
-				if ( iframeRequest.length > 2083 ){
-					this.log( "Warning iframe requests (" + iframeRequest.length + ") exceeds 2083 charachters, won't cache on CDN." )
-					$.ajax({
-						type: "POST",
-						dataType: 'text',
-						url: this.getIframeUrl() + '?' +	this.getIframeRequest(widgetElm, settings),
-						data: {"jsonConfig": jsonConfig}
-					}).success(function (data) {
-							var contentData = {content: data};
-							window[cbName](contentData);
-						})
-						.error(function (e) {
-							_this.log("Error in player iframe request")
-						})
-					return ;
-				}
-			}else{
-				// -----> End of IE8 and IE9 hack <----
+		},
 
-				if ( iframeRequest.length > 2083 ){
-					this.log( "Warning iframe requests (" + iframeRequest.length + ") exceeds 2083 charachters, won't cache on CDN." )
-					$.ajax({
-						type: "POST",
-						dataType: 'text',
-						url: this.getIframeUrl(),
-						data: iframeRequest
-					}).success(function (data) {
-							var contentData = {content: data};
-							window[cbName](contentData);
-						})
-						.error(function (e) {
-							_this.log("Error in player iframe request")
-						})
-					return ;
+		createContentUpdateCallback: function(cbName, iframeRequest, settings){
+			var _this = this;
+			window[cbName] = function (iframeData) {
+				debugger;
+				// only populate the cache if request was an inlines scripts request.
+				if (_this.isInlineScriptRequest(settings)) {
+					_this.setStorage(iframeRequest, iframeData.content);
 				}
+				// Clear out this global function
+				window[cbName] = null;
+			};
+		},
+
+		requestPlayer: function(iframeRequest, widgetElm, targetId, cbName, settings){
+			var _this = this;
+			if ( iframeRequest.length > 2083 ){
+				this.log( "Warning iframe requests (" + iframeRequest.length + ") exceeds 2083 charachters, won't cache on CDN." );
+				var url = this.getIframeUrl();
+				var requestData = iframeRequest;
+				var isLowIE = document.documentMode && document.documentMode < 10;
+				if ( isLowIE && settings.flashvars.jsonConfig ){
+					// -----> IE8 and IE9 hack to solve Studio issues. SUP-3795. Should be handled from PHP side and removed <----
+					jsonConfig = settings.flashvars.jsonConfig;
+					delete settings.flashvars.jsonConfig;
+					url += '?' + this.getIframeRequest(widgetElm, settings);
+					requestData = {"jsonConfig": jsonConfig};
+				}
+				$.ajax({
+					type: "POST",
+					dataType: 'text',
+					url: url,
+					data: requestData
+				})
+				.success(function (data) {
+					var contentData = {content: data};
+					window[cbName](contentData);
+				})
+				.error(function (e) {
+					_this.log("Error in player iframe request")
+				})
+			} else {
+				var iframeUrl = this.getIframeUrl() + '?' + iframeRequest;
+				// Store iframe urls
+				this.iframeUrls[ targetId ] = iframeUrl;
+				// do an iframe payload request:
+				this.appendScriptUrl( iframeUrl +'&callback=' + cbName );
 			}
-			var iframeUrl = this.getIframeUrl() + '?' + iframeRequest;
-			// Store iframe urls
-			_this.iframeUrls[ targetId ] = iframeUrl;
-			// do an iframe payload request:
-			_this.appendScriptUrl( iframeUrl +'&callback=' + cbName );
+		},
+
+		/**
+		 * Output an html5 iframe player, once the html5 library is loaded
+		 *
+		 * @param {string} targetId target container for iframe
+		 * @param {object} settings object used to build iframe settings
+		 */
+		outputHTML5Iframe: function (targetId, settings) {
+			var widgetElm = document.getElementById(targetId);
+			var iframe = this.createIframe(targetId, widgetElm);
+			// Create the iframe proxy that wraps the actual iframe
+			// and will be converted into an "iframe" player via jQuery.fn.iFramePlayer call
+			var iframeProxy = this.createIframeProxy(widgetElm);
+			iframeProxy.appendChild(iframe);
+
+			// Replace the player with the iframe:
+			widgetElm.parentNode.replaceChild(iframeProxy, widgetElm);
+
+			var requestSettings = $.extend(true, {}, settings);
+			// Check if its a inline scripts setup:
+			if( this.isInlineScriptRequest( requestSettings ) ){
+				// segment out all configuration
+				requestSettings = this.getRuntimeSettings( requestSettings );
+				this.widgetOriginalSettings [widgetElm.id] = settings;
+				mw.setConfig("widgetOriginalSettings_" + widgetElm.id, settings);
+			}
+
+			// Check if we need to capture a play event ( iOS sync embed call )
+			if (settings.captureClickEventForiOS && (this.isIOS() || this.isAndroid())) {
+				this.captureClickWrapedIframeUpdate(targetId, requestSettings, iframe);
+			} else {
+				// get the callback name:
+				var cbName = this.getIframeCbName(targetId);
+
+				// Try and  get playload from local cache ( autoEmbed )
+				if (this.iframeAutoEmbedCache[targetId]) {
+					window[cbName](this.iframeAutoEmbedCache[targetId]);
+					return;
+				}
+
+				var iframeRequest = this.getIframeRequest(widgetElm, requestSettings);
+
+				// Do a normal async content inject:
+				this.createContentInjectCallback(cbName, iframe, iframeRequest, requestSettings);
+
+				// try to get payload from localStorage cache
+				var iframeData = this.getFromStorage(iframeRequest);
+
+				if (!mw.getConfig('debug') && iframeData && iframeData != "null") {
+					window[cbName]({'content': iframeData});
+					// we don't retrun here, instead we run the get request to update the uiconf storage
+					// TODO this should just be a 304 check not a full download of the iframe ( normally )
+					// RETURN UNTIL WE HAVE 30$ check in palce.
+					//return ;
+					cbName += "updateAsync";
+					// after being set, await async update to cache object:
+					this.createContentUpdateCallback(cbName, iframeRequest, requestSettings);
+				}
+				this.requestPlayer(iframeRequest, widgetElm, targetId, cbName, requestSettings);
+			}
 		},
 		getFromStorage: function( cacheKey ){
 			var storage = window['localStorage']
@@ -1241,7 +1263,7 @@
 				for (var script in scripts) {
 					evalScript(scripts[ script ]);
 				}
-			}
+			};
 
 			// Add the iframe script:
 			_this.appendScriptUrl(this.getIframeUrl() + '?' +
@@ -1249,7 +1271,7 @@
 				'&callback=' + cbName +
 				'&parts=1');
 		},
-		isInlineScirptRequest: function( settings ){
+		isInlineScriptRequest: function( settings ){
 			// don't inline scripts in debug mode: 
 			if( mw.getConfig('debug') ){
 				return false;
@@ -1319,21 +1341,12 @@
 		/**
 		 * Build the iframe request from supplied settings:
 		 */
-		getIframeRequest: function (elm, requestSettings) {
-			var settings = requestSettings;
-			// Check if its a inline scirpts setup:
-			if( this.isInlineScirptRequest( requestSettings ) ){
-				// segment out all configuration
-				settings = this.getRuntimeSettings( requestSettings );
-				this.widgetOriginalSettings [elm.id] = requestSettings;
-				mw.setConfig("widgetOriginalSettings_" + elm.id, requestSettings);
-			}
-			
+		getIframeRequest: function (elm, settings) {
 			// Get the base set of kaltura params ( entry_id, uiconf_id etc )
 			var iframeRequest = this.embedSettingsToUrl( settings );
 
 			// Add the player id:
-			iframeRequest += '&playerId=' + elm.id
+			iframeRequest += '&playerId=' + elm.id;
 
 			// Add &debug is in debug mode
 			if (mw.getConfig('debug')) {
