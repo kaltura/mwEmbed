@@ -33,7 +33,8 @@
 		buffering: false,
 		seeking: false,
 		playing: false,
-		lastKnownwPercentage: 0,
+		checkEveryIndex:0,
+		lastKnownwTime: 0,
 		// Mapping for the module settings and the StreamSense plugin
 		configOptions: {c2:"c2", pageView:"pageview", logUrl:"logurl", persistentLabels:"persistentlabels", debug:"debug"},
 
@@ -201,11 +202,12 @@
 				_this.buffering = false;
 			});
 
-			embedPlayer.bindHelper( 'updatePlayHeadPercent' + _this.bindPostfix, function(){
+			embedPlayer.bindHelper( 'monitorEvent' + _this.bindPostfix, function(){
+				if (_this.checkEveryIndex++%2 !=0) return;
 				var args = $.makeArray( arguments );
-				var percent = args[1];
-				if (percent != _this.lastKnownwPercentage && !_this.seeking && !_this.buffering) {
-					if (percent > _this.lastKnownwPercentage) {
+				var currentTime = embedPlayer.getPlayerElementTime();
+				if (currentTime != _this.lastKnownwTime && !_this.seeking ) {
+					if (currentTime > _this.lastKnownwTime) {
 						_this.onPlay();
 					} else {
 						_this.onPause();
@@ -213,7 +215,7 @@
 				} else {
 					_this.onPause();
 				}
-				_this.lastKnownwPercentage = percent;
+				_this.lastKnownwTime = currentTime;
 			});
 
 			embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostfix, function(){
