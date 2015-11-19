@@ -244,7 +244,7 @@
 					// ignore buffer events during seek: 
 					_this.sendBeacon( 'bufferUnderrun', {
 						'time': _this.embedPlayer.currentTime,
-						'duration': new Date().getTime() - startBufferClock,
+						'duration': new Date().getTime() - startBufferClock
 					});
 				});
 			});
@@ -307,7 +307,7 @@
 					//'totalBytes':"0", // value is only sent along with the dataType parameter. If the bitrate parameter is sent, then this one is not needed.
 					//'dataType': "0", // Kaltura does not really do RTMP streams any more. 
 					'diffTime': new Date().getTime() - _this.previusPingTime
-					// 'nodeHost' //String that indicates the CDNâ Node Host
+					// 'nodeHost' //String that indicates the CDNï¿½ Node Host
 				});
 				// update previusPingTime 
 				_this.previusPingTime = new Date().getTime();
