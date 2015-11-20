@@ -7,10 +7,11 @@
       parent: 'controlsContainer',
       displayImportance: 'low',
       showTooltip: true,
-      templatePath: 'resources/tmpl/offline.tmpl.html',
+      templatePath: '../offline/resources/tmpl/offline.tmpl.html',
       tooltip: 'Local media',
       order: 50,
 
+      showInternalUI: false,
       notificationName: 'offline',
       contentId: 'kOfflineStorage',
       showIndicator: true,
@@ -19,6 +20,10 @@
 
     iconBtnClass: 'icon-download',
     entryMetadata: null,
+    templateData: {
+      status: 'Downloading',
+      progress: 50
+    },
 
     setup: function () {
       navigator.persistentStorage = navigator.persistentStorage ||
@@ -78,6 +83,41 @@
             _this.reportUsage();
           });
       });
+
+      if (this.getConfig('showInternalUI')) {
+        this.bind(this.getConfig('notificationName'), function (event, payload) {
+          var type = payload.type;
+          var data = payload.data;
+
+          if (type === 'downloadStarted') {
+            _this.showScreen();
+            _this.updateTemplate({
+              status: 'Prepairing to download',
+              progress: 0
+            });
+          } else if (type === 'progress') {
+            _this.updateTemplate({
+              progress: data
+            });
+          } else if (type === 'fragmentsDownloadStart') {
+            _this.updateTemplate({
+              status: 'Downloading...'
+            });
+          } else if (type === 'entryDownloadSuccess') {
+            _this.updateTemplate({
+              status: 'Saving...'
+            });
+          } else if (type === 'entrySaveFail') {
+            _this.updateTemplate({
+              status: 'Entry saving failed'
+            });
+          } else if (type === 'savedEntryData' || type === 'entrySaveSuccess') {
+            _this.updateTemplate({
+              status: 'Saved'
+            });
+          }
+        });
+      }
     },
 
     deleteLocalEntry: function (entryId) {
@@ -201,6 +241,7 @@
           _this.saveEntry(entry, downloadedSegments);
         })
         .catch(function (error) {
+          _this.sendNotification('entrySaveFail', entry.id);
           console.error(error);
         });
     },
@@ -259,98 +300,122 @@
 
     downloadSegments: function (segments) {
       var _this = this;
+      var totalLength = 0;
+      var loadedLength = 0;
+      var progressMap = [];
+      var progress = 0;
 
       return Q.all(segments.map(function (segment) {
-        return _this.downloadSegment(segment);
+        return _this.countSegment(segment);
       })).then(function (segments) {
-        return segments;
-      }).catch(function () {
-        console.error('FAILED LOADING ENTRY');
+        _this.sendNotification('fragmentsDownloadStart');
+        totalLength = segments.reduce(function (prev, segment, segmentIndex) {
+          progressMap.push([]);
+          return prev + (segment.byteLength = segment.fragments.reduce(function (prev, fragment, fragmentIndex) {
+            progressMap[segmentIndex].push([]);
+            progressMap[segmentIndex][fragmentIndex] = 0;
+            return prev + fragment.byteLength;
+          }, 0));
+        }, 0);
+
+        return Q.all(segments.map(function (segment) {
+          return _this.downloadSegment(segment);
+        }));
+      }).progress(function (e) {
+        var loaded = e.value.value.loaded;
+        var current = progressMap[e.index][e.value.index];
+        var diff = loaded - current;
+        var newProgress;
+
+        loadedLength += diff;
+        progressMap[e.index][e.value.index] = loaded;
+        newProgress = Math.round(loadedLength / totalLength * 100);
+
+        if (progress !== newProgress) {
+          progress = newProgress;
+          _this.sendNotification('progress', progress);
+          console.log('PROGRESS', progress + '%');
+        }
+      }).catch(function (error) {
+        _this.sendNotification('entryDownloadFail');
+        console.error('FAILED LOADING ENTRY', error);
       });
     },
 
-    downloadSegment: function (segment) {
-      if (typeof segment.startNumber !== 'number') {
-        return this.downloadFragment(segment.urlTemplate)
-          .then(function (data) {
-            var byteLength = data.byteLength;
-            segment.fragments = [];
-            segment.byteLength = byteLength;
-            segment.fragments.push({
-              url: segment.urlTemplate,
-              data: data,
-              byteLength: byteLength
-            });
-
-            return segment;
-          });
-      }
-
+    countSegment: function (segment) {
       var _this = this;
       var deferred = Q.defer();
+      var shouldIncrement = (typeof segment.startNumber === 'number');
 
       segment.fragments = [];
-      segment.byteLength = 0;
-      doDownloadFragment(segment.urlTemplate, segment.startNumber);
+      doCountFragments(segment.urlTemplate, segment.startNumber);
       return deferred.promise;
 
+      function doCountFragments(urlTemplate, currentNumber) {
+        var fragmentUrl = urlTemplate.replace('$Number$', currentNumber);
 
-      function doDownloadFragment(urlTemplate, currentNumber) {
-        var url = urlTemplate.replace('$Number$', currentNumber++);
-
-        _this.downloadFragment(url)
-          .then(function (data) {
-            var byteLength = data.byteLength;
-
-            segment.byteLength += byteLength;
-            segment.fragments.push({
-              url: url,
-              data: data,
-              byteLength: byteLength
-            });
-
-            doDownloadFragment(urlTemplate, currentNumber);
-          })
-          .catch(function (reason) {
-            if (reason && reason.status === 404) {
-              _this.sendNotification('segmentSuccess', segment);
-              deferred.resolve(segment);
-            } else {
-              _this.sendNotification('segmentFail', reason);
-              deferred.reject(reason);
-            }
+        _this.retryXhrIfFails(function () {
+          return _this.xhrGetFirstProgress(fragmentUrl, 'arraybuffer');
+        }, function () {
+          _this.sendNotification('fragmentHeadersRetry', fragmentUrl);
+        })
+        .then(function (result) {
+          _this.sendNotification('fragmentHeadersSuccess', fragmentUrl);
+          segment.fragments.push({
+            url: fragmentUrl,
+            byteLength: result.event.total
           });
+
+          if (shouldIncrement) {
+            doCountFragments(urlTemplate, ++currentNumber);
+          } else {
+            deferred.resolve(segment);
+          }
+        })
+        .catch(function (errorResult) {
+          if (errorResult && errorResult.status === 404) {
+            deferred.resolve(segment);
+          } else {
+            _this.sendNotification('fragmentHeadersFail', fragmentUrl);
+            deferred.reject(errorResult);
+          }
+        });
       }
     },
 
-    downloadFragment: function (fragmentUrl) {
+    downloadSegment: function (segment) {
       var _this = this;
-      var counter = 0;
-      var deferred = Q.defer();
 
-      query();
-      return deferred.promise;
+      return Q.all(segment.fragments.map(function (fragment) {
+        return _this.retryXhrIfFails(function () {
+          return _this.xhrGet(fragment.url, 'arraybuffer');
+        }, function () {
+          _this.sendNotification('fragmentRetry', fragment.url);
+        }).then(function (data) {
+          _this.sendNotification('fragmentSuccess', fragment.url);
+          fragment.data = data;
+          return fragment;
+        }).catch(function () {
+          _this.sendNotification('fragmentFail', fragment.url);
+        });
+      })).then(function () {
+        return segment;
+      });
+    },
 
+    retryXhrIfFails: function (promiseFn, onRetryFn) {
+      return promiseFn()
+        .catch(function (errorResult) {
+          if (errorResult && errorResult.status === 404) {
+            return Q.reject(errorResult);
+          }
 
-      function query() {
-        _this.xhrGet(fragmentUrl, 'arraybuffer')
-          .then(function (data) {
-            _this.sendNotification('fragmentSuccess', fragmentUrl);
-            deferred.resolve(data);
-          })
-          .catch(function (reason) {
-            if (reason.status !== 404 && counter++ < 1) {
-              _this.sendNotification('fragmentRetry', fragmentUrl);
-              query();
-            } else {
-              if (reason.status !== 404) {
-                _this.sendNotification('fragmentFail', fragmentUrl);
-              }
+          if (typeof onRetryFn === 'function') {
+            onRetryFn();
+          }
 
-              deferred.reject(reason);
-            }
-          });
-      }
+          return promiseFn();
+        });
     },
 
     getSegmentsFromManifest: function ($manifest) {
@@ -423,7 +488,7 @@
     },
 
     getLls: function () {
-      return this.lls ? Q(this.lls) : this.requestLls();
+      return Q(this.lls || this.requestLls());
     },
 
     requestLls: function () {
@@ -558,6 +623,31 @@
         }
       };
 
+      request.onprogress = function (e) {
+        response.notify(e);
+      };
+
+      request.send('');
+
+      return response.promise;
+    },
+
+    xhrGetFirstProgress: function (path, responseType) {
+      var response = Q.defer();
+      var request = new XMLHttpRequest();
+
+      request.responseType = responseType || 'text';
+      request.open('GET', path, true);
+      request.onprogress = function (e) {
+        var status = request.status;
+        response[(status >= 200 && status < 400) ? 'resolve' : 'reject']({
+          status: status,
+          event: e
+        });
+
+        request.abort();
+      };
+
       request.send('');
 
       return response.promise;
@@ -586,6 +676,22 @@
           .addClass('icon-download')
           .removeClass('icon-checkmark');
       }
+    },
+
+    updateTemplate: function (params) {
+      var _this = this;
+      var status = (params && params.status) || '';
+      var progress = params && params.progress;
+
+      this.getScreen().then(function ($screen) {
+        var $status = _this.$status ||
+          (_this.$status = $($screen.find('#offlineStatus')));
+        var $progress = _this.$progress ||
+          (_this.$progress = $($screen.find('#offlineProgress')));
+
+        $status.text(status || $status.text());
+        $progress.val(typeof progress === 'number' ? progress : $progress.val());
+      });
     }
   }));
 })(window.mw, window.$, window.LargeLocalStorage, window.Q);

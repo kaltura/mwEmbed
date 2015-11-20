@@ -1,9 +1,21 @@
 .hide-important {
   display: none !important;
 }
+
 .btn.comp.offline{
   color: green;
 }
+
 .btn.comp.offline.icon-download{
   color: orange;
+}
+
+.offline-plugin {
+  padding: 64px 16px 0;
+  text-align: center;
+}
+
+.offline-plugin__progress {
+  width: 100%;
+  height: 24px;
 }
