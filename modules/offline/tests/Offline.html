@@ -30,6 +30,7 @@
     <textarea id="textarea" style="width:560px;height:200px;white-space:nowrap;" readonly></textarea>
     <script>
 
+      mw.setConfig('forceMobileHTML5', true);
       mw.setConfig('Kaltura.UdrmServerURL', 'https://udrm.kaltura.com/');
 
       function loadPlayer(){
@@ -52,6 +53,7 @@
 
           "offline": {
             "plugin": true,
+            "templatePath": "../offline/resources/tmpl/offline.tmpl.html"
           },
           "streamerType": "auto"
         },
@@ -90,3 +92,4 @@
 
     </script>
   </body>
+</html>
