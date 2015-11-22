@@ -13,7 +13,7 @@
 			"flavor1": {"custom_data": "...", "signature": "..."},
 			"flavor2": {"custom_data": "...", "signature": "..."}
 		},
-		"
+		"licenseServerBaseURL": "https://drm.example.com/license"
 	}
 */
 
