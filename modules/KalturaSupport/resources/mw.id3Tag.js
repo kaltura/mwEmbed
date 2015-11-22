@@ -29,10 +29,23 @@
 
                         break;
                 }
-                mw.log("id3Tag plugin :: got tag | time = " + mw.seconds2npt(time));
+
+                _this.sendTrackEventMonitor(mw.seconds2npt(time));
                 _this.getPlayer().setCurrentTime(time);
 			});
-		}
+		},
+
+        sendTrackEventMonitor: function(time) {
+            // Send the id3Tag info to the trackEventMonitor
+            if( this.getConfig( 'trackEventMonitor' ) ) {
+                try {
+                    window.parent[this.getConfig('trackEventMonitor')](
+                        "id3Tag plugin :: id3 tag | time = " + time
+                    );
+                } catch (e) {}
+            }
+            mw.log("id3Tag plugin :: id3 tag | time = " + time);
+        }
 	}));
 
 } )( window.mw, window.jQuery );
