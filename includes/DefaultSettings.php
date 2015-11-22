@@ -272,6 +272,7 @@ include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/api
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweFeaturesList.php' );
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiLanguageSupport.php' );
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweUpgradePlayer.php' );
+include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiGetLicenseData.php' );
 include_once( realpath( dirname( __FILE__ ) )  . '/../studio/studioService.php');
 /**
  * Extensions should register foreign module sources here. 'local' is a
