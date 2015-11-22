@@ -22,7 +22,7 @@
 			this.addBindings();
 		},
 		isSafeEnviornment: function(){
-			return mw.isMobileDevice();
+			return mw.isMobileDevice() && mw.getConfig("EmbedPlayer.UseSmartContainers") !== false;
 		},
 		getComponent: function() {
 			var _this = this;
