@@ -1000,7 +1000,6 @@
 		createContentUpdateCallback: function(cbName, iframeRequest, settings, ttlUnixVal){
 			var _this = this;
 			window[cbName] = function (iframeData) {
-				debugger;
 				// only populate the cache if request was an inlines scripts request.
 				if (_this.isInlineScriptRequest(settings) && kWidget.storage.isSupported()) {
 					kWidget.storage.setWithTTL(iframeRequest, iframeData.content, ttlUnixVal);
