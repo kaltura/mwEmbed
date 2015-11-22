@@ -32,6 +32,12 @@
 			"nanoScroller"
 		]
 	},
+	"mw.KBaseSmartContainer": {
+		"scripts": "resources/mw.KBaseSmartContainer.js",
+		"dependencies": [
+			"mw.KBaseComponent"
+		]
+	},
 	"mw.KBaseComponent": {
 		"scripts": "resources/mw.KBaseComponent.js",
 		"dependencies": [
@@ -410,7 +416,7 @@
 	},
 	"qualitySettings": {
 		"scripts": "components/qualitySettings.js",
-		"dependencies": "mw.KBaseComponent",
+		"dependencies": "mw.KBaseSmartContainer",
 		"kalturaPluginName": "qualitySettings"
 	},
 	"streamSelector": {
