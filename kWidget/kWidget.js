@@ -972,7 +972,7 @@
 			return iframeProxy;
 		},
 
-		createContentInjectCallback: function(cbName, iframe, iframeRequest, settings){
+		createContentInjectCallback: function(cbName, iframe, iframeRequest, settings, ttlUnixVal){
 			var _this = this;
 			// Do a normal async content inject:
 			window[ cbName ] = function ( iframeData ) {
@@ -985,23 +985,25 @@
 				}
 				newDoc.close();
 
-				// if empty populate for the first time:
-				if(  _this.isInlineScriptRequest(settings) &&
-					( ! _this.getFromStorage( iframeRequest ) || _this.getFromStorage(iframeRequest) == "null" )) {
-					_this.setStorage( iframeRequest, iframeData.content );
+				if(  _this.isInlineScriptRequest(settings) && kWidget.storage.isSupported()){
+					// if empty populate for the first time:
+					var iframeStoredData = kWidget.storage.getWithTTL( iframeRequest );
+					if (iframeStoredData == null) {
+						kWidget.storage.setWithTTL(iframeRequest, iframeData.content, ttlUnixVal);
+					}
 				}
 				// Clear out this global function
 				window[cbName] = null;
 			};
 		},
 
-		createContentUpdateCallback: function(cbName, iframeRequest, settings){
+		createContentUpdateCallback: function(cbName, iframeRequest, settings, ttlUnixVal){
 			var _this = this;
 			window[cbName] = function (iframeData) {
 				debugger;
 				// only populate the cache if request was an inlines scripts request.
-				if (_this.isInlineScriptRequest(settings)) {
-					_this.setStorage(iframeRequest, iframeData.content);
+				if (_this.isInlineScriptRequest(settings) && kWidget.storage.isSupported()) {
+					kWidget.storage.setWithTTL(iframeRequest, iframeData.content, ttlUnixVal);
 				}
 				// Clear out this global function
 				window[cbName] = null;
@@ -1011,6 +1013,7 @@
 		requestPlayer: function(iframeRequest, widgetElm, targetId, cbName, settings){
 			var _this = this;
 			if ( iframeRequest.length > 2083 ){
+				//TODO:Need to output an error, cause we don't depend on jquery explicitly
 				this.log( "Warning iframe requests (" + iframeRequest.length + ") exceeds 2083 charachters, won't cache on CDN." );
 				var url = this.getIframeUrl();
 				var requestData = iframeRequest;
@@ -1085,12 +1088,17 @@
 
 				var iframeRequest = this.getIframeRequest(widgetElm, requestSettings);
 
+				//Get TTL for cache entries form user settings or use default
+				var ttlUnixVal = settings.flashvars["Kaltura.CacheTTL"]|| mw.getConfig("Kaltura.CacheTTL");
+
 				// Do a normal async content inject:
-				this.createContentInjectCallback(cbName, iframe, iframeRequest, requestSettings);
+				this.createContentInjectCallback(cbName, iframe, iframeRequest, requestSettings, ttlUnixVal);
 
 				// try to get payload from localStorage cache
-				var iframeData = this.getFromStorage(iframeRequest);
-
+				var iframeData = null;
+				if (kWidget.storage.isSupported()) {
+					iframeData = kWidget.storage.getWithTTL(iframeRequest);
+				}
 				if (!mw.getConfig('debug') && iframeData && iframeData != "null") {
 					window[cbName]({'content': iframeData});
 					// we don't retrun here, instead we run the get request to update the uiconf storage
@@ -1099,21 +1107,9 @@
 					//return ;
 					cbName += "updateAsync";
 					// after being set, await async update to cache object:
-					this.createContentUpdateCallback(cbName, iframeRequest, requestSettings);
+					this.createContentUpdateCallback(cbName, iframeRequest, requestSettings, ttlUnixVal);
 				}
 				this.requestPlayer(iframeRequest, widgetElm, targetId, cbName, requestSettings);
-			}
-		},
-		getFromStorage: function( cacheKey ){
-			var storage = window['localStorage']
-			if ( storage && storage.getItem ) {
-				return storage.getItem( cacheKey );
-			}
-		},
-		setStorage: function( cacheKey, value ){
-			var stroage = window['localStorage'];
-			if( stroage && stroage.setItem ){
-				stroage.setItem( cacheKey, value);
 			}
 		},
 		/**

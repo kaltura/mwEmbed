@@ -254,6 +254,8 @@ $wgAllowedVars = "inlineScript";
 $wgAllowedPluginVars = "templatePath,templates"; //,loadInIframe,iframeHTML5Js,iframeHTML5Css,onPageJs,onPageCss
 $wgAllowedPluginVarsPartials = "{html5ps}";
 
+// Kaltura cache TTL value in unix time for dynamic embed local storage caching of kWidget, default is 10 minutes
+$wgCacheTTL = (10 * 60 * 1000);
 /*********************************************************
  * Include local settings override:
 ********************************************************/
