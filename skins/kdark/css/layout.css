@@ -216,6 +216,7 @@ body {
     color: white;
     outline: 0;
     text-shadow: none;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 .mobile .btn:focus {
     outline: 0;
