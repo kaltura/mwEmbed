@@ -23,11 +23,30 @@
 
         },
         set: function (cacheKey, value) {
-            storage.setItem(NS + md5(cacheKey), value);
+            var success = true;
+            try {
+                storage.setItem(NS + md5(cacheKey), value);
+            } catch (err){
+                if (this.isQuotaExceeded(err)){
+                    success = false;
+                }
+            }
+            return success;
         },
         setWithTTL: function (cacheKey, value, ttl) {
-            this.set(cacheKey, value);
-            storage.setItem(NS + md5(cacheKey) + ttlSuffix, (new Date().getTime() + ttl));
+            var success = this.set(cacheKey, value);
+            try {
+                if (success) {
+                    storage.setItem(NS + md5(cacheKey) + ttlSuffix, (new Date().getTime() + ttl));
+                    success = true;
+                }
+            } catch (err){
+                if (this.isQuotaExceeded(err)){
+                    this.delete(cacheKey);
+                    success = false;
+                }
+            }
+            return success;
         },
         delete: function (cacheKey) {
             storage.removeItem(NS + md5(cacheKey));
@@ -51,6 +70,28 @@
             catch(err) {
                 return false;
             }
+        },
+        isQuotaExceeded: function(e) {
+            var quotaExceeded = false;
+            if (e) {
+                if (e.code) {
+                    switch (e.code) {
+                        case 22:
+                            quotaExceeded = true;
+                            break;
+                        case 1014:
+                            // Firefox
+                            if (e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+                                quotaExceeded = true;
+                            }
+                            break;
+                    }
+                } else if (e.number === -2147024882) {
+                    // Internet Explorer 8
+                    quotaExceeded = true;
+                }
+            }
+            return quotaExceeded;
         }
     };
     kWidget.storage = storageManger;
