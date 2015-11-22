@@ -212,6 +212,7 @@ class UiConfResult {
 			'statistics' => array(),
 			'controlBarContainer' => array(),
 			'keyboardShortcuts' => array(),
+			'id3Tag' => array(),
 			'liveCore' => array(),
 			'liveStatus' => array(),
 			'reportError' => array(),
@@ -543,6 +544,7 @@ class UiConfResult {
 			"durationLabel" => array(),
 			"currentTimeLabel" => array(),
 			"keyboardShortcuts" => array(),
+			"id3Tag" => array(),
 			"liveCore" => array(),
 			"liveStatus" => array(),
 			"reportError" => array()
