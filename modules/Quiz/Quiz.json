@@ -1,6 +1,10 @@
 {
   "quiz": {
-    "scripts":["resources/quiz.js"],
+    "scripts":[
+      "resources/quiz.js",
+      "resources/IVQApiCall.js",
+      "resources/IVQModule.js"
+    ],
     "dependencies": "mw.KBaseScreen",
     "kalturaPluginName": "quiz",
     "styles": "resources/css/quiz.css",

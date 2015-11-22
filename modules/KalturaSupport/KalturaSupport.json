@@ -146,6 +146,11 @@
 		"dependencies": "mw.KBasePlugin",
 		"kalturaLoad": "always"
 	},
+   "id3Tag": {
+     "scripts": "resources/mw.id3Tag.js",
+     "dependencies": "mw.KBasePlugin",
+     "kalturaLoad": "always"
+   },
 	"controlBarContainer": {
 		"scripts": "components/controlBarContainer.js",
 		"dependencies": "mw.KBasePlugin",
