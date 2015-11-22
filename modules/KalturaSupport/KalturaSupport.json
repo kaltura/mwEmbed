@@ -275,6 +275,7 @@
 	},
 	"infoScreen": {
 		"scripts": "components/info/info.js",
+		"styles": "components/info/info.css",
 		"templates": "components/info/info.tmpl.html",
 		"dependencies": [
 			"mw.KBaseScreen"

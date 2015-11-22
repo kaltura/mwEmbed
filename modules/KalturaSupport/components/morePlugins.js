@@ -12,7 +12,7 @@
 		},
 
 		title: gM( 'mwe-embedplayer-more' ),
-		closingEvents: 'onAddPlayerSpinner onplay preShowScreen'
+		closingEvents: 'onAddPlayerSpinner onplay preHideScreen'
 	}));
 
 } )( window.mw, window.jQuery );

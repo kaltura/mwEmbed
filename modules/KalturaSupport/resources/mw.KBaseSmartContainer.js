@@ -61,7 +61,7 @@
 				}
 			});
 		},
-		hideRegisteredPlugins: function(){
+		hideRegisteredPlugins: function(checkResumePlay){
 			this.pluginsScreenOpened = false;
 			this.embedPlayer.getVideoHolder().removeClass( "pluginsScreenOpened" );
 			this.embedPlayer.getVideoHolder().find(".closePluginsScreen").remove(); // remove close button
@@ -72,7 +72,7 @@
 			this.embedPlayer.getControlBarContainer().show();
 			this.embedPlayer.getTopBarContainer().show();
 
-			if ( this.shouldResumePlay ){
+			if ( checkResumePlay && this.shouldResumePlay ){
 				this.embedPlayer.play();
 			}else{
 				this.embedPlayer.getVideoHolder().find(".largePlayBtn").show();
@@ -110,7 +110,7 @@
 			var closeBtn = $("<button class='btn icon-close closePluginsScreen'></button>")
 				.on('click',function(e){
 					if ( _this.pluginsScreenOpened ){
-						_this.hideRegisteredPlugins();
+						_this.hideRegisteredPlugins(true);
 					}
 				});
 			_this.embedPlayer.getVideoHolder().append(closeBtn);

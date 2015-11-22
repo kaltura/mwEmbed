@@ -8,8 +8,8 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 		align: "right",
 		tooltip: 'Info',
 		showTooltip: true,
-		usePreviewPlayer: true,
-		previewPlayerEnabled: true,
+		usePreviewPlayer: false,
+		previewPlayerEnabled: false,
 		templatePath: 'components/info/info.tmpl.html',
 		smartContainer: 'morePlugins'
 	},
@@ -27,6 +27,9 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 	},
 	isSafeEnviornment: function() {
 		return !mw.isIpad() || ( mw.isIpad() && mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') !== false );
+	},
+	closeScreen: function(){
+		this.hideScreen();
 	}
 
 }));
