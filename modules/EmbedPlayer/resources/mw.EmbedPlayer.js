@@ -2190,7 +2190,7 @@
 		preSequenceFlag: false,
 		inPreSequence: false,
 		replayEventCount: 0,
-		play: function () {debugger;
+		play: function () {
 			if (this.seeking){
 				this.log("Play while seeking, will play after seek!");
 				this.stopAfterSeek = false;
