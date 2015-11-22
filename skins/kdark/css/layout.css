@@ -258,6 +258,7 @@ body {
 	height: 1px !important;
 	overflow: hidden;
 	display: block;
+    position: absolute;
 }
 .accessibilityLabel{
 	font-size: 0;
