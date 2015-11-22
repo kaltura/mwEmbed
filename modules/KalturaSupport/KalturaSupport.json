@@ -424,6 +424,11 @@
 		"dependencies": "mw.KBaseSmartContainer",
 		"kalturaPluginName": "qualitySettings"
 	},
+	"morePlugins": {
+		"scripts": "components/morePlugins.js",
+		"dependencies": "mw.KBaseSmartContainer",
+		"kalturaPluginName": "morePlugins"
+	},
 	"streamSelector": {
 		"scripts": "components/streamSelector.js",
 		"dependencies": "mw.KBaseComponent",

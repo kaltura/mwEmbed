@@ -285,8 +285,12 @@ body {
     font-size: 3.6em;
     margin-top: 0em;
 }
+.mobile .videoHolder .btn.comp {
+    position: relative;
+}
 .mobile .videoHolder .comp {
     display: inline-block;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 .btnLabel{
     font-family: 'Lato', Helvetica, Arial;

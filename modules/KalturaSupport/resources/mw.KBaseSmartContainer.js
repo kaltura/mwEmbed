@@ -20,7 +20,7 @@
 				this.$el = $( '<button />' )
 							.attr( 'title', this.title )
 							.addClass( "btn" + this.getCssClass() )
-							.click( function() {
+							.on('click', function(e) {
 								if ( !_this.pluginsScreenOpened ){
 									_this.showRegisteredPlugins();
 								}else{
@@ -48,14 +48,6 @@
 					}
 					setTimeout(function(){
 						_this.hideRegisteredPlugins();
-						// add close button to the smart container screen
-						var closeBtn = $("<button class='btn icon-close closePluginsScreen'></button>")
-							.click(function(){
-								if ( _this.pluginsScreenOpened ){
-									_this.hideRegisteredPlugins();
-								}
-							});
-						_this.embedPlayer.getVideoHolder().remove(".closePluginsScreen").append(closeBtn);
 					},0);
 				}else{
 					// if we have less than 2 plugins registered to the smart container - hide it so it won't be used
@@ -72,6 +64,7 @@
 		hideRegisteredPlugins: function(){
 			this.pluginsScreenOpened = false;
 			this.embedPlayer.getVideoHolder().removeClass( "pluginsScreenOpened" );
+			this.embedPlayer.getVideoHolder().find(".closePluginsScreen").remove(); // remove close button
 			for ( var i = 0; i < this.registeredPlugins.length; i++ ){
 				this.registeredPlugins[i].hide();
 			}
@@ -87,6 +80,7 @@
 			this.embedPlayer.triggerHelper("hideMobileComponents"); // used by plugins like closed captions to restore captions on screen
 		},
 		showRegisteredPlugins: function(){
+			var _this = this;
 			this.pluginsScreenOpened = true;
 			this.embedPlayer.getVideoHolder().addClass( "pluginsScreenOpened" );
 
@@ -111,6 +105,15 @@
 			this.embedPlayer.getControlBarContainer().fadeOut();
 			this.embedPlayer.getTopBarContainer().fadeOut();
 			this.embedPlayer.triggerHelper("showMobileComponents"); // used by plugins like closed captions to hide captions
+
+			// add close button to the smart container screen
+			var closeBtn = $("<button class='btn icon-close closePluginsScreen'></button>")
+				.on('click',function(e){
+					if ( _this.pluginsScreenOpened ){
+						_this.hideRegisteredPlugins();
+					}
+				});
+			_this.embedPlayer.getVideoHolder().append(closeBtn);
 		}
 	});
 

@@ -35,6 +35,7 @@
         "mwe-share-errDuration": "Time offset cannot be longer than movie duration.",
         "mwe-share-errFormat": "Please use the hh:mm:ss format.",
 	    "mwe-embedplayer-quality_settings": "Quality settings",
+	    "mwe-embedplayer-more": "More",
         "mwe-embedplayer-player_expend": "Expand player",
         "mwe-embedplayer-player_retract": "Shrink player",
         "mwe-timedtext-no-subtitles": "No Subtitles",

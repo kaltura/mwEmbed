@@ -12,7 +12,11 @@
 		},
 
 		title: gM( 'mwe-embedplayer-quality_settings' ),
-		closingEvents: 'onAddPlayerSpinner onplay updatedPlaybackRate changedClosedCaptions'
+		closingEvents: 'onAddPlayerSpinner onplay updatedPlaybackRate changedClosedCaptions',
+		registeredPlugins: [],
+		shouldResumePlay: false,
+		pluginsScreenOpened: false,
+		isDisabled: false
 	}));
 
 } )( window.mw, window.jQuery );
