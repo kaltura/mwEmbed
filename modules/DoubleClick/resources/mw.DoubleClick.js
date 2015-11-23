@@ -1062,6 +1062,9 @@
 					// hide content / show playerplayer position:
 					_this.hideContent();
 
+					if ( mw.isIOS() && _this.embedPlayer.seeking ){
+						_this.embedPlayer.restorePlayerOnScreen();
+					}
 					// set ad playing flag:
 
 					_this.embedPlayer.sequenceProxy.isInSequence = true;
