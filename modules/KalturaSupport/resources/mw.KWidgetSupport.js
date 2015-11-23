@@ -851,7 +851,7 @@ mw.KWidgetSupport.prototype = {
 		
 		// Check for autoMute:
 		var autoMute = getAttr( 'autoMute' );
-		if( autoMute ){
+		if( autoMute && !mw.isMobileDevice()){
 			setTimeout(function(){
 				embedPlayer.toggleMute( true );
 			},300);
