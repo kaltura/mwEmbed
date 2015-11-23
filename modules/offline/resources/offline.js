@@ -10,9 +10,8 @@
       templatePath: '../offline/resources/tmpl/offline.tmpl.html',
       tooltip: 'Local media',
       order: 50,
-
-      showInternalUI: false,
-      notificationName: 'offline',
+      useInternalUI: false,
+      notificationName: 'offlineAPIEvent',
       contentId: 'kOfflineStorage',
       showIndicator: true,
       requestedStorageSize: 1024 * 1024 * 1024 // in bytes, 1GB by default
@@ -34,11 +33,15 @@
 
     overrideBindings: function overrideBindings() {
       var _this = this;
-
       this.getComponent().unbind('click');
-      this.getComponent().click(function () {
-        _this.startDownload();
-      });
+      if(this.getConfig('useInternalUI')){
+        this.getComponent().click(function () {
+          _this.startDownload();
+        });
+      }else{
+        //disable mouse hand cursor
+        _this.getComponent().css("cursor","default");
+      }
     },
 
     setBindings: function () {
@@ -50,28 +53,28 @@
 
       this.bind('playerReady', function () {
         var entryId = _this.getPlayer().evaluate('{mediaProxy.entry}').id;
-        console.info('PLAYER READY WITH ENTRY:', entryId);
+        _this.log('PLAYER READY WITH ENTRY:', entryId);
 
         _this.entryMetadata = null;
         _this.updateUI();
         _this.getMetadataForEntryId(entryId)
           .then(function (metadata) {
-            console.info('METADATA LOADED:', metadata);
-            _this.sendNotification('entryExist', entryId);
+            _this.log('METADATA LOADED:', metadata);
+            _this.sendNotification('entryExists', entryId);
             _this.entryMetadata = metadata;
             _this.overrideXhr();
             _this.updateUI();
           })
           .finally(function () {
-            _this.sendNotification('readyToDownload');
+            _this.sendNotification('offlinePluginReady');
           });
       });
 
-      this.bind('startDownload', function () {
+      this.bind('offlineStartDownload', function () {
         _this.startDownload();
       });
 
-      this.bind('deleteLocalEntry', function (event, entryId) {
+      this.bind('offlineDeleteLocalEntry', function (event, entryId) {
         _this.deleteLocalEntry(entryId)
           .then(function () {
             _this.sendNotification('deleteEntrySuccess', entryId);
@@ -84,7 +87,7 @@
           });
       });
 
-      if (this.getConfig('showInternalUI')) {
+      if (this.getConfig('useInternalUI')) {
         this.bind(this.getConfig('notificationName'), function (event, payload) {
           var type = payload.type;
           var data = payload.data;
@@ -124,7 +127,7 @@
       var _this = this;
 
       entryId = entryId || (this.entryMetadata && this.entryMetadata.id);
-      console.info('DELETE LOCAL ENTRY', entryId);
+      _this.log('DELETE LOCAL ENTRY', entryId);
 
       return this.getLls().then(function (lls) {
         return lls.rm(entryId).then(function () {
@@ -133,8 +136,7 @@
             _this.entryMetadata = null;
             _this.updateUI();
           }
-
-          console.info('DELETED', entryId);
+          _this.log('DELETED', entryId);
         });
       });
     },
@@ -142,13 +144,13 @@
     startDownload: function () {
       var _this = this;
       var entryId = _this.getPlayer().evaluate('{mediaProxy.entry}').id;
-      console.info('START DOWNLOAD RECEIVED');
+      this.log('START DOWNLOAD RECEIVED');
 
       if (_this.entryMetadata) {
-        _this.sendNotification('entryExist', entryId);
-        console.info('THIS ENTRY ALREADY EXISTS');
+        _this.sendNotification('entryExists', entryId);
+        _this.log('THIS ENTRY ALREADY EXISTS');
       } else {
-        console.info('START DOWNLOADING');
+        _this.log('START DOWNLOADING');
         _this.downloadEntry();
       }
     },
@@ -172,11 +174,11 @@
 
         if (mappedFile) {
           xhr.send = function (data) {
-            console.info('CAPTURED:', mappedFile);
+            _this.log('CAPTURED:', mappedFile);
 
             _this.readAttachment(_this.entryMetadata.id, mappedFile)
               .then(function (data) {
-                console.info('CACHE HIT FOR', mappedFile);
+                _this.log('CACHE HIT FOR', mappedFile);
                 var onload = xhr.onload;
 
                 Object.defineProperties(xhr, {
@@ -200,7 +202,7 @@
 
                 onload.call(xhr);
               }).catch(function () {
-                console.error('NO CACHE HIT');
+                _this.log('NO CACHE HIT');
                 send.call(xhr, data);
               });
           };
@@ -222,7 +224,7 @@
         }
       });
 
-      console.info('URL', url, 'MAPPED TO', fileName);
+     this.log('URL', url, 'MAPPED TO', fileName);
       return fileName;
     },
 
@@ -236,13 +238,13 @@
         .then(this.getSegmentsFromManifest.bind(this))
         .then(this.downloadSegments.bind(this))
         .then(function (downloadedSegments) {
-          console.info('DOWNLOADED SEGMENTS', downloadedSegments);
+          _this.log('DOWNLOADED SEGMENTS', downloadedSegments);
           _this.sendNotification('entryDownloadSuccess', entry.id);
           _this.saveEntry(entry, downloadedSegments);
         })
         .catch(function (error) {
           _this.sendNotification('entrySaveFail', entry.id);
-          console.error(error);
+          _this.log(error);
         });
     },
 
@@ -288,7 +290,7 @@
           _this.updateUI();
 
           _this.sendNotification('savedEntryData', entry);
-          console.info('ENTRY SAVED SUCCESSFULLY!');
+          _this.log('ENTRY SAVED SUCCESSFULLY!');
         })
         .catch(function () {
           _this.sendNotification('filesCleared');
@@ -334,11 +336,11 @@
         if (progress !== newProgress) {
           progress = newProgress;
           _this.sendNotification('progress', progress);
-          console.log('PROGRESS', progress + '%');
+          _this.log('PROGRESS', progress + '%');
         }
       }).catch(function (error) {
         _this.sendNotification('entryDownloadFail');
-        console.error('FAILED LOADING ENTRY', error);
+        _this.log('FAILED LOADING ENTRY', error);
       });
     },
 
@@ -469,7 +471,7 @@
         segments.push(initialUrlSegment, mediaUrlSegment);
       });
 
-      console.info('SEGMENTS', segments);
+      _this.log('SEGMENTS', segments);
       return segments;
     },
 
@@ -482,7 +484,7 @@
           return $($.parseXML(xml));
         })
         .catch(function (reason) {
-          console.error('FAILED LOADING MANIFEST');
+            _this.log('FAILED LOADING MANIFEST');
           _this.sendNotification('manifestError', reason);
         });
     },
@@ -501,7 +503,7 @@
       }).initialized
         .then(function (lls) {
           var capacity = lls.getCapacity();
-          console.info('INITIALIZED LLS WITH CAPACITY:', capacity);
+                _this.log('INITIALIZED LLS WITH CAPACITY:', capacity);
 
           if (capacity !== requestedStorageSize) {
             return Q.reject(lls);
@@ -512,7 +514,7 @@
         .catch(function () {
           _this.llsPromise = null;
           _this.sendNotification('userFsDenial');
-          console.error('ERROR CREATING LLS. USER DENIAL.');
+          _this.log('ERROR CREATING LLS. USER DENIAL.');
         }));
     },
 
@@ -525,7 +527,7 @@
 
       return this.getLls().then(function (lls) {
         return lls.getAttachment(docKey, attachKey).then(function (file) {
-          console.info('ATTACHMENT READ SUCCESSFULLY:', docKey + '/' + attachKey, file);
+          _this.log('ATTACHMENT READ SUCCESSFULLY:', docKey + '/' + attachKey, file);
           if (!file) {
             return Q.reject(file);
           }
@@ -538,13 +540,13 @@
     readFile: function (file, asString) {
       var deferred = Q.defer();
       var reader = new FileReader();
-
+      var _this = this;
       reader.onloadend = function () {
         if (this.readyState === FileReader.DONE) {
-          console.info('FILE READ SUCCESSFULLY:', file);
+          _this.log('FILE READ SUCCESSFULLY:', file);
           deferred.resolve(this.result);
         } else {
-          console.info('FILE READ ERROR:', file);
+          _this.log('FILE READ ERROR:', file);
           deferred.reject(this.result);
         }
       };

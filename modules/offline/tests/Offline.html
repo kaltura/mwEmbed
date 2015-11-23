@@ -30,7 +30,7 @@
     <button id="download" disabled>Download</button>
     <button id="delete" disabled>Delete</button>
     <br/>
-    <textarea id="textarea" style="width:560px;height:200px;white-space:nowrap;" readonly></textarea>
+    <textarea id="textarea" style="width:560px;height:200px;white-space:nowrap;" ></textarea>
     <script>
 
       mw.setConfig('forceMobileHTML5', true);
@@ -79,10 +79,7 @@
             deleteBtn.disabled = false;
           });
 
-          kdp.kBind('offline', function (event) {
-
-
-
+          kdp.kBind('offlineAPIEvent', function (event) {
             var data = event.data;
             switch(event.type){
               case "entrySaveSuccess":
@@ -99,7 +96,7 @@
               case "progress":
                 $('#progress-inner').css("width", data+"%");
                     break;
-              case "readyToDownload":
+              case "offlinePluginReady":
                       if (downloadBtn.disabled){
                         downloadBtn.disabled = false;
                       }
