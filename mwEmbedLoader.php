@@ -385,7 +385,7 @@ class mwEmbedLoader {
 			$wgKalturaCDNUrl, $wgKalturaStatsServiceUrl,$wgKalturaLiveStatsServiceUrl, $wgKalturaIframeRewrite, $wgEnableIpadHTMLControls,
 			$wgKalturaAllowIframeRemoteService, $wgKalturaUseAppleAdaptive, $wgKalturaEnableEmbedUiConfJs,
 			$wgKalturaGoogleAnalyticsUA, $wgHTML5PsWebPath, $wgAllowedVars, $wgAllowedPluginVars, $wgAllowedPluginVarsPartials,
-			$wgCacheTTL;
+			$wgCacheTTL, $wgMaxCacheEntries;
 		$exportedJS ='';
 		// Set up globals to be exported as mwEmbed config:
 		$exportedJsConfig= array(
@@ -410,6 +410,7 @@ class mwEmbedLoader {
 			'Kaltura.APITimeout' => 10000,
 			'Kaltura.kWidgetPsUrl' => $wgHTML5PsWebPath,
 			'Kaltura.CacheTTL' => $wgCacheTTL,
+			'Kaltura.MaxCacheEntries' => $wgMaxCacheEntries,
 			'Kaltura.AllowedVars' => $wgAllowedVars,
 			'Kaltura.AllowedPluginVars' => $wgAllowedPluginVars,
 			'Kaltura.AllowedPluginVarsPartials' => $wgAllowedPluginVarsPartials

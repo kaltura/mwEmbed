@@ -63,6 +63,20 @@
                 storage.removeItem(arr[i]);
             }
         },
+        getEntriesCount: function(){
+            var count = 0;
+            var i;
+            var key;
+            var foundSuffix;
+            for (i = 0; i < storage.length; i+=1) {
+                key = storage.key(i);
+                foundSuffix = key.match(ttlSuffix + "$");
+                if ((key.indexOf(NS) === 0) && (foundSuffix === null)) {
+                    count += 1;
+                }
+            }
+            return count;
+        },
         isSupported: function() {
             try {
                 return (('localStorage' in win) && (win['localStorage'] != null) && (win['localStorage'] != undefined));

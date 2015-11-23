@@ -989,7 +989,7 @@
 					// if empty populate for the first time:
 					var iframeStoredData = kWidget.storage.getWithTTL( iframeRequest );
 					if (iframeStoredData == null) {
-						kWidget.storage.setWithTTL(iframeRequest, iframeData.content, ttlUnixVal);
+						_this.cachePlayer(iframeRequest, iframeData.content, ttlUnixVal);
 					}
 				}
 				// Clear out this global function
@@ -997,12 +997,12 @@
 			};
 		},
 
-		createContentUpdateCallback: function(cbName, iframeRequest, settings, ttlUnixVal){
+		createContentUpdateCallback: function(cbName, iframeRequest, settings, ttlUnixVal, maxCacheEntries){
 			var _this = this;
 			window[cbName] = function (iframeData) {
 				// only populate the cache if request was an inlines scripts request.
 				if (_this.isInlineScriptRequest(settings) && kWidget.storage.isSupported()) {
-					kWidget.storage.setWithTTL(iframeRequest, iframeData.content, ttlUnixVal);
+					_this.cachePlayer(iframeRequest, iframeData.content, ttlUnixVal);
 				}
 				// Clear out this global function
 				window[cbName] = null;
@@ -1046,6 +1046,21 @@
 			}
 		},
 
+		isStorageMaxLimitExceeded: function(settings){
+			//Get max cache entries form user settings or use default
+			var maxCacheEntries = settings.flashvars["Kaltura.MaxCacheEntries"]|| mw.getConfig("Kaltura.MaxCacheEntries");
+			var cacheEntriesCount = kWidget.storage.getEntriesCount();
+			return (cacheEntriesCount >= maxCacheEntries);
+		},
+		cachePlayer: function(key, value, ttl){
+			var success = kWidget.storage.setWithTTL(key, value, ttl);
+			if (success) {
+				this.log("Player data stored in cache!");
+			} else {
+				this.log("Error: unable to store Player data in cache!");
+			}
+		},
+
 		/**
 		 * Output an html5 iframe player, once the html5 library is loaded
 		 *
@@ -1082,33 +1097,39 @@
 				// Try and  get playload from local cache ( autoEmbed )
 				if (this.iframeAutoEmbedCache[targetId]) {
 					window[cbName](this.iframeAutoEmbedCache[targetId]);
-					return;
+				} else {
+
+					var iframeRequest = this.getIframeRequest(widgetElm, requestSettings);
+
+					//Get TTL for cache entries form user settings or use default
+					var ttlUnixVal = settings.flashvars["Kaltura.CacheTTL"] || mw.getConfig("Kaltura.CacheTTL");
+
+					//Prepare an iframe content injection hook
+					this.createContentInjectCallback(cbName, iframe, iframeRequest, requestSettings, ttlUnixVal);
+
+					// try to get payload from localStorage cache
+					var iframeData = null;
+					if (kWidget.storage.isSupported()) {
+						iframeData = kWidget.storage.getWithTTL(iframeRequest);
+					}
+					//If iframe content is in cache then load it immediately and update from server for next time
+					if (!mw.getConfig('debug') && iframeData && iframeData != "null") {
+						window[cbName]({'content': iframeData});
+						// we don't retrun here, instead we run the get request to update the uiconf storage
+						// TODO this should just be a 304 check not a full download of the iframe ( normally )
+						// RETURN UNTIL WE HAVE 30$ check in palce.
+						//return ;
+						cbName += "updateAsync";
+						// after loading iframe, prepare a content update hook
+						this.createContentUpdateCallback(cbName, iframeRequest, requestSettings, ttlUnixVal);
+					}
+					//Enforce the max storage entries setting to avoid over populating the localStorage
+					if (kWidget.storage.isSupported() && this.isStorageMaxLimitExceeded(settings)) {
+						kWidget.storage.clearNS();
+					}
+					// Do a normal async content inject/update request:
+					this.requestPlayer(iframeRequest, widgetElm, targetId, cbName, requestSettings);
 				}
-
-				var iframeRequest = this.getIframeRequest(widgetElm, requestSettings);
-
-				//Get TTL for cache entries form user settings or use default
-				var ttlUnixVal = settings.flashvars["Kaltura.CacheTTL"]|| mw.getConfig("Kaltura.CacheTTL");
-
-				// Do a normal async content inject:
-				this.createContentInjectCallback(cbName, iframe, iframeRequest, requestSettings, ttlUnixVal);
-
-				// try to get payload from localStorage cache
-				var iframeData = null;
-				if (kWidget.storage.isSupported()) {
-					iframeData = kWidget.storage.getWithTTL(iframeRequest);
-				}
-				if (!mw.getConfig('debug') && iframeData && iframeData != "null") {
-					window[cbName]({'content': iframeData});
-					// we don't retrun here, instead we run the get request to update the uiconf storage
-					// TODO this should just be a 304 check not a full download of the iframe ( normally )
-					// RETURN UNTIL WE HAVE 30$ check in palce.
-					//return ;
-					cbName += "updateAsync";
-					// after being set, await async update to cache object:
-					this.createContentUpdateCallback(cbName, iframeRequest, requestSettings, ttlUnixVal);
-				}
-				this.requestPlayer(iframeRequest, widgetElm, targetId, cbName, requestSettings);
 			}
 		},
 		/**

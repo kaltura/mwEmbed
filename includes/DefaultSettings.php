@@ -256,6 +256,8 @@ $wgAllowedPluginVarsPartials = "{html5ps}";
 
 // Kaltura cache TTL value in unix time for dynamic embed local storage caching of kWidget, default is 10 minutes
 $wgCacheTTL = (10 * 60 * 1000);
+// Kaltura max cache entries, limit max available cached entries per domain to avoid over populating localStorage
+$wgMaxCacheEntries = 1;
 /*********************************************************
  * Include local settings override:
 ********************************************************/
