@@ -159,30 +159,28 @@
 			if ( this.trackCuePoints ){
 				this.handleCuePoints();
 			}
-			if ( mw.isIE8() || mw.isIE9() || _this.leadWithFlash ) {
-				if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
-					mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
-					_this.isChromeless = true;
-					_this.prevSlotType = 'none';
-					_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
-						_this.bindChromelessEvents();
-					});
-					_this.embedPlayer.bindHelper( 'volumeChanged' + this.bindPostfix, function(event, percent){
-						mw.log("DoubleClick::chromeless volumeChanged: " + percent );
-						_this.embedPlayer.setPlayerElementVolume( percent );
-					});
-					_this.embedPlayer.bindHelper( 'Kaltura_SendNotification' + this.bindPostfix, function(event, notificationName, notificationData){
-						if (notificationName === "doPause"){
-							_this.embedPlayer.getPlayerElement().pause();
-						}
-					});
-					_this.addManagedBinding();
-					callback();
-					return;
-				} else if ( mw.isIE8() || mw.isIE9() ) {   //no flash on IE8/9
-					callback();
-					return;
-				}
+			if (( mw.isIE8() || mw.isIE9() || _this.leadWithFlash ) && (mw.supportsFlash())) {
+				mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
+				_this.isChromeless = true;
+				_this.prevSlotType = 'none';
+				_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
+					_this.bindChromelessEvents();
+				});
+				_this.embedPlayer.bindHelper( 'volumeChanged' + this.bindPostfix, function(event, percent){
+					mw.log("DoubleClick::chromeless volumeChanged: " + percent );
+					_this.embedPlayer.setPlayerElementVolume( percent );
+				});
+				_this.embedPlayer.bindHelper( 'Kaltura_SendNotification' + this.bindPostfix, function(event, notificationName, notificationData){
+					if (notificationName === "doPause"){
+						_this.embedPlayer.getPlayerElement().pause();
+					}
+				});
+				_this.addManagedBinding();
+				callback();
+				return;
+			} else if ( mw.isIE8() || mw.isIE9() ) {   //no flash on IE8/9
+				callback();
+				return;
 			}
 
 			//if we got till here we're going to use the javascript - check if we have spacific javascript configuration
