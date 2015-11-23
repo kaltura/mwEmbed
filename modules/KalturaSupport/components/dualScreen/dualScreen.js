@@ -772,8 +772,11 @@
                     return deferred.reject();
                 }
 
+                var _this = this;
+
                 this.secondPlayer = new mw.dualScreen.videoPlayer(this.getPlayer(), function () {
                     this.setUrl(secondScreenUrl);
+                    this.setPoster(_this.secondStreamPosterUrl);
                     deferred.resolve(true);
                 }, "videoPlayer");
 
@@ -801,6 +804,7 @@
                     }
                     secondScreenUrl = this.getSlavePrigressiveUrl(masterSource, secondStream.id, assetId);
                 }
+                this.secondStreamPosterUrl = secondStream.data.meta.thumbnailUrl;
                 return secondScreenUrl;
             },
 

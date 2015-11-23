@@ -40,6 +40,14 @@
             this.bind("onChangeStreamDone", function () {
                 _this.syncEnabled = true;
             });
+            this.bind("setPlayerPoster", function () {
+                if(this.videoElementReady) {
+                    _this.updatePosterHTML();
+                }
+            });
+            this.bind("removePoster", function () {
+                _this.removePoster();
+            });
 
             //adaptive bitrate or
             this.bind("bitrateChange", function (e, newBitrate) {
@@ -95,6 +103,8 @@
                     _this.initSender();
                     break;
             }
+            this.updatePosterHTML();
+            this.videoElementReady = true;
         },
 
         initNativePlayer: function(){
@@ -254,6 +264,48 @@
             }
             mw.log("--- DualScreen :: second screen :: videoPlayer :: onDebugInfoReceived | " + msg);
             */
+        },
+        getPoster: function(){
+            return this.poster;
+        },
+        setPoster: function(thumbnailUrl){
+            this.poster = kWidgetSupport.getKalturaThumbnailUrl({
+                url: thumbnailUrl,
+                width: this.getPlayer().getWidth(),
+                height: this.getPlayer().getHeight()
+            });
+        },
+        updatePosterHTML: function () {
+            mw.log('DualScreen :: second screen :: updatePosterHTML ' + this.poster);
+            if(this.hasPoster){
+                return;
+            }
+            this.hasPoster = true;
+            // Set by black pixel if no poster is found:
+            var posterSrc = this.poster;
+            var posterCss = {};
+            if (!posterSrc) {
+                posterSrc = mw.getConfig('EmbedPlayer.BlackPixel');
+                posterCss = {
+                    'position': 'absolute',
+                    'height': '100%',
+                    'width': '100%'
+                };
+            }
+
+            $("#secondScreen").append($('<img />')
+                .css(posterCss)
+                .attr({
+                    'src': this.poster
+                })
+                .addClass('playerPoster')
+                .load(function () {
+                    $('.playerPoster').attr('alt', gM('mwe-embedplayer-video-thumbnail'));
+                }));
+        },
+        removePoster: function(){
+            $("#secondScreen").find('.playerPoster').remove();
+            this.hasPoster = false;
         }
     });
 })( window.mw, window.jQuery );
