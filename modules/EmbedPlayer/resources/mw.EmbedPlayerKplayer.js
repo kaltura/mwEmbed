@@ -586,15 +586,17 @@
 				this.flashActivationRequired = false;
 				$(this).show();
 			}
+            if(this.isLive() && !this.isDVR()){
+                $(this).trigger('timeupdate');
+                return; //for Live + no DVR the flashCurrentTime will be updated through id3Tag
+            }
 			if (this.seeking) {
 				this.seeking = false;
                 this.flashCurrentTime = playheadValue;
 			}else {
-                //update flashCurrentTime only if not (Live + no DVR)
-                if( this.isLive() && !this.isDVR() && this.flashCurrentTime < playheadValue){
+                if(this.flashCurrentTime < playheadValue){
                     this.flashCurrentTime = playheadValue;
                 }
-                //for Live + no DVR the flashCurrentTime will be updated through id3Tag
             }
 			$(this).trigger('timeupdate');
 		},
