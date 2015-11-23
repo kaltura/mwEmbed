@@ -26,14 +26,16 @@
         <div class="k-description-container mediaBoxText">
             <span class="k-description" title="<%=mediaItem.description%>" data-show-tooltip="true"><%=mediaItem.description%></span>
         </div>
-        <span class="mediaBoxText k-chapter-time" title="<%=meta.titles.chapterStartTime%>" data-show-tooltip="true">
-            <span class="icon-start_time"></span>
-            <span><%=mediaItem.startTimeDisplay%></span>
-        </span>
-        <span class="k-duration mediaBoxText k-chapter-time" title="<%=meta.titles.chapterDuration%>" data-show-tooltip="true">
-            <span class="icon-duration"></span>
-            <span id="mediaItemDuration"><%=mediaItem.durationDisplay%></span>
-        </span>
+        <% if (mediaItem.startTimeDisplay){ %>
+            <span class="mediaBoxText k-chapter-time" title="<%=meta.titles.chapterStartTime%>" data-show-tooltip="true">
+                <span class="icon-start_time"></span>
+                <span><%=mediaItem.startTimeDisplay%></span>
+            </span>
+            <span class="k-duration mediaBoxText k-chapter-time" title="<%=meta.titles.chapterDuration%>" data-show-tooltip="true">
+                <span class="icon-duration"></span>
+                <span id="mediaItemDuration"><%=mediaItem.durationDisplay%></span>
+            </span>
+        <%}%>
     </div>
     <div class="boxShadow"></div>
     <div class="boxOutline"></div>
