@@ -38,14 +38,28 @@
 				for ( var plugin in plugins){
 					if ( plugins[plugin].getConfig("smartContainer") && plugins[plugin].getConfig("smartContainer") === _this.pluginName ){
 						_this.registeredPlugins.push(plugins[plugin]);
+						// add close events
+						if (plugins[plugin].getConfig("smartContainerCloseEvent")){
+							var closeEvent = plugins[plugin].getConfig("smartContainerCloseEvent");
+							if ( _this.closingEvents.indexOf(closeEvent) === -1 ){
+								_this.closingEvents += " " + closeEvent;
+							}
+						}
 					}
 				}
-				// if we have more than 1 plugin registered to this smart container - move the plugins to the smart container screen
+				// if we have more than 1 plugin registered to this smart container - move the plugins to the smart container screen and bind events
 				if ( _this.registeredPlugins.length > 1 ){
 					for ( var i = 0; i < _this.registeredPlugins.length; i++ ){
 						_this.registeredPlugins[i].setConfig("parent", "videoHolder");
 						_this.registeredPlugins[i].setConfig("align", "center");
 					}
+
+					_this.bind( _this.closingEvents, function(){ // close the smart container screen on each one of the closing events (if its opened)
+						if ( _this.pluginsScreenOpened ){
+							_this.hideRegisteredPlugins();
+						}
+					});
+
 					setTimeout(function(){
 						_this.hideRegisteredPlugins();
 					},0);
@@ -55,11 +69,6 @@
 				}
 			});
 
-			this.bind( this.closingEvents, function(){ // close the smart container screen on each one of the closing events (if its opened)
-				if ( _this.pluginsScreenOpened ){
-					_this.hideRegisteredPlugins();
-				}
-			});
 		},
 		hideRegisteredPlugins: function(checkResumePlay){
 			this.pluginsScreenOpened = false;

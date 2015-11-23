@@ -11,8 +11,7 @@
 			"cssClass": "icon-more"
 		},
 
-		title: gM( 'mwe-embedplayer-more' ),
-		closingEvents: 'onAddPlayerSpinner onplay preHideScreen'
+		title: gM( 'mwe-embedplayer-more' )
 	}));
 
 } )( window.mw, window.jQuery );

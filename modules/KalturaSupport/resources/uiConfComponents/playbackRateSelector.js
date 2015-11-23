@@ -13,7 +13,8 @@
 			'enableKeyboardShortcuts': true,
 			'serverSpeedPlayback': false,
 			'title': gM( 'mwe-embedplayer-speed' ),
-			'smartContainer': 'qualitySettings'
+			'smartContainer': 'qualitySettings',
+			'smartContainerCloseEvent': 'updatedPlaybackRate'
 		},
 
 		isDisabled: false,

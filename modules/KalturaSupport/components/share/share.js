@@ -12,6 +12,7 @@
 			displayImportance: 'medium',
 			templatePath: 'components/share/share.tmpl.html',
 			smartContainer: 'morePlugins',
+			smartContainerCloseEvent: 'preHideScreen',
 
 			usePreviewPlayer: false,
 			previewPlayerEnabled: false,

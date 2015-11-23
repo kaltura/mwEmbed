@@ -11,7 +11,8 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 		usePreviewPlayer: false,
 		previewPlayerEnabled: false,
 		templatePath: 'components/info/info.tmpl.html',
-		smartContainer: 'morePlugins'
+		smartContainer: 'morePlugins',
+		smartContainerCloseEvent: 'preHideScreen'
 	},
 	iconBtnClass: "icon-info",
 	setup: function () {

@@ -25,7 +25,8 @@
 			// Can be used to force loading specific language and expose to other plugins
 			"forceLoadLanguage": false,
 			"title": gM( 'mwe-embedplayer-timed_text'),
-			"smartContainer": "qualitySettings"
+			"smartContainer": "qualitySettings",
+			'smartContainerCloseEvent': 'changedClosedCaptions'
 		},
 
 		textSources: [],
