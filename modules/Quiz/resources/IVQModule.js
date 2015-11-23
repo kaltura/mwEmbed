@@ -218,7 +218,8 @@
                 var _this = this;
                 if (!_this.isErr) {
                     if (_this.quizPlugin.isScreenVisible()){
-                        _this.quizPlugin.removeScreen();
+                        //_this.quizPlugin.removeScreen();
+                        _this.quizPlugin.ivqHideScreen();
                         if (_this.quizPlugin.isSeekingIVQ ) {
                             _this.embedPlayer.stopPlayAfterSeek = false;
                         }
@@ -227,12 +228,16 @@
                     _this.embedPlayer.triggerHelper( 'onEnableKeyboardBinding' );
                     _this.embedPlayer.play();
                     _this.quizPlugin.displayBubbles();
+                    _this.quizPlugin.selectedAnswer = null;
                     _this.almostDoneDisplaySwithcer = true;
                 }
             },
             gotoScrubberPos: function (questionNr) {
                 var _this = this;
-                _this.currentQuestionNumber = questionNr;
+                if (_this.embedPlayer.isPlaying()){
+                    _this.embedPlayer.pause();
+                }
+                _this.currentQuestionNumber = $.cpObject.cpArray[questionNr].startTime;
                 _this.embedPlayer.stopPlayAfterSeek = true;
                 _this.embedPlayer.sendNotification('doSeek', (($.cpObject.cpArray[questionNr].startTime) /1000)+1);
             },
@@ -248,7 +253,6 @@
                     }
                 });
             },
-
             checkUserEntryIdReady:function(callback){
                 var _this = this;
                 if (_this.intrVal){
@@ -329,11 +333,11 @@
                 _this.embedPlayer.getInterface().find(".display-all-container").hide().fadeIn(400);
 
                 if((_this.embedPlayer.getInterface().find(".second-row").length) == 0 ){
-                    _this.embedPlayer.getInterface().find(".display-all-container").addClass("margin-top7");
+                    _this.embedPlayer.getInterface().find(".display-all-container").addClass("margin-top8");
                     _this.embedPlayer.getInterface().find(".left-arrow").addClass("margin-top4");
                 }
                 else{
-                    _this.embedPlayer.getInterface().find(".display-all-container").removeClass("margin-top7");
+                    _this.embedPlayer.getInterface().find(".display-all-container").removeClass("margin-top8");
                     _this.embedPlayer.getInterface().find(".left-arrow").removeClass("margin-top4");
 
 
@@ -481,9 +485,13 @@
             errMsg:function(errMsg,data){
                 var _this = this;
                 mw.log(errMsg, data);
-                _this.quizPlugin.removeShowScreen("contentScreen");
+                _this.quizPlugin.ivqShowScreen();
+                _this.KIVQScreenTemplate.tmplErrorScreen();
+
+               // need to check error handlong screen !!
+                //_this.quizPlugin.removeShowScreen("contentScreen");
+
                 $(".sub-text").html(gM('mwe-quiz-err-msg'));
-                $("div").removeClass('confirm-box');
 
                 _this.isErr = true;
             },
