@@ -24,6 +24,9 @@
       <button id="load" onclick="loadPlayer()">load</button>
     </div>
     <div id="kaltura_player" style="width:560px;height:395px;"></div>
+    <br/>
+    Progress bar: <div id="progress-outer" style="background-color: #BBBBBB ; width: 300px;height: 20px;"><div id="progress-inner" style="width:0px;background-color: #553388 ;height: 20px"></div></div>
+    <br/>
     <button id="download" disabled>Download</button>
     <button id="delete" disabled>Delete</button>
     <br/>
@@ -69,7 +72,7 @@
           });
 
           deleteBtn.addEventListener('click', function () {
-            kdp.sendNotification('deleteLocalEntry', '0_caq7yan7');
+            kdp.sendNotification('deleteLocalEntry',  $("#entriesList :selected").val() );
           });
 
           kdp.kBind('playerReady', function () {
@@ -77,10 +80,30 @@
           });
 
           kdp.kBind('offline', function (event) {
-            var data = event.data;
 
-            if (event.type === 'readyToDownload' && downloadBtn.disabled) {
-              downloadBtn.disabled = false;
+
+
+            var data = event.data;
+            switch(event.type){
+              case "entrySaveSuccess":
+                $('#progress-inner').css("background-color", "green");
+                    // :)
+                    break;
+              case "readyToDownload":
+              case "deleteEntrySuccess":
+              case "manifestLoaded":
+                    //reset progress bar
+                $('#progress-inner').css("background-color",  "#553388");
+                $('#progress-inner').css("width", "0%");
+                    break;
+              case "progress":
+                $('#progress-inner').css("width", data+"%");
+                    break;
+              case "readyToDownload":
+                      if (downloadBtn.disabled){
+                        downloadBtn.disabled = false;
+                      }
+                    break;
             }
 
             textarea.value += event.type + (data ? (': ' + JSON.stringify(data)) : '') + '\n';
