@@ -38,6 +38,7 @@
     width: 100%;
     text-align: right;
     cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 .infoScreen .info-close:hover{
     text-shadow: 0px 0px 10px #fff;
