@@ -38,7 +38,7 @@
 		LIVE_OFFLINE_ALERT_TIMEOUT: 8000,
 		ignoreEnableGui: false,
 		flashActivationRequired: false,
-        unresolvedSrcURL: false,
+        	unresolvedSrcURL: false,
 
 		// Create our player element
 		setup: function (readyCallback) {
@@ -68,7 +68,7 @@
 			this.updateSources();
 
 			var flashvars = {};
-		this.getEntryUrl().then(function (srcToPlay) {
+			this.getEntryUrl().then(function (srcToPlay) {
 				flashvars.widgetId = "_" + _this.kpartnerid;
 				flashvars.partnerId = _this.kpartnerid;
 				flashvars.autoMute = _this.muted || mw.getConfig('autoMute');
@@ -100,9 +100,9 @@
                     flashvars.ignoreAkamaiHD = mw.getConfig("ignoreAkamaiHD");
                 }
 
-				//add OSMF HLS Plugin if the source is HLS
-				if (_this.isHlsSource(_this.mediaElement.selectedSource)) {
-					flashvars.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
+		//add OSMF HLS Plugin if the source is HLS
+		if (_this.isHlsSource(_this.mediaElement.selectedSource) || (_this.streamerType == 'applehttp')) {
+			flashvars.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
                     if(mw.getConfig("hlsLiveSegmentBuffer")) {
                         flashvars.KalturaHLS["liveSegmentBuffer"] = mw.getConfig("hlsLiveSegmentBuffer");
                     }
@@ -796,6 +796,9 @@
 				fileExt = 'smil';
 			} else if (this.streamerType === 'live') {
 				format = 'rtmp';
+			} else if (this.streamerType === 'applehttp') {
+				format = 'applehttp';
+				fileExt = 'm3u8';
 			} else {
 				format = this.streamerType;
 				if (format == 'http') {
