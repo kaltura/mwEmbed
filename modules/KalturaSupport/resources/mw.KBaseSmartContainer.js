@@ -2,7 +2,7 @@
 
 	mw.KBaseSmartContainer = mw.KBaseComponent.extend({
 		title: "settings",                          // default title attribute for the smart container button. Should be override by each specific smart container
-		closingEvents: 'onAddPlayerSpinner onplay', // events that trigger closing the smart container plugins screen. should be override for each smart container according to its plugins
+		closingEvents: 'onplay', // events that trigger closing the smart container plugins screen. should be override for each smart container according to its plugins
 		registeredPlugins: [],                      // plugins to display in the Smart Container plugins screen
 		shouldResumePlay: false,                    // resume playback when closing the smart container screen
 		pluginsScreenOpened: false,                 // flag for when the smart container screen is open
@@ -58,6 +58,13 @@
 						if ( _this.pluginsScreenOpened ){
 							_this.hideRegisteredPlugins();
 						}
+						_this.checkResumePlayback();
+					});
+
+					_this.bind( "preShowScreen", function(){ // close the smart container screen when opening a kBaseScreen plugin
+						if ( _this.pluginsScreenOpened ){
+							_this.hideRegisteredPlugins();
+						}
 					});
 
 					setTimeout(function(){
@@ -70,7 +77,7 @@
 			});
 
 		},
-		hideRegisteredPlugins: function(checkResumePlay){
+		hideRegisteredPlugins: function(){
 			this.pluginsScreenOpened = false;
 			this.embedPlayer.getVideoHolder().removeClass( "pluginsScreenOpened" );
 			this.embedPlayer.getVideoHolder().find(".closePluginsScreen").remove(); // remove close button
@@ -80,12 +87,6 @@
 
 			this.embedPlayer.getControlBarContainer().show();
 			this.embedPlayer.getTopBarContainer().show();
-
-			if ( checkResumePlay && this.shouldResumePlay ){
-				this.embedPlayer.play();
-			}else{
-				this.embedPlayer.getVideoHolder().find(".largePlayBtn").show();
-			}
 			this.embedPlayer.getVideoHolder().find(".nextPrevBtn").show();
 			this.embedPlayer.triggerHelper("hideMobileComponents"); // used by plugins like closed captions to restore captions on screen
 		},
@@ -121,10 +122,20 @@
 			var closeBtn = $("<button class='btn icon-close closePluginsScreen'></button>")
 				.on('click',function(e){
 					if ( _this.pluginsScreenOpened ){
-						_this.hideRegisteredPlugins(true);
+						_this.hideRegisteredPlugins();
+						_this.checkResumePlayback();
 					}
 				});
 			_this.embedPlayer.getVideoHolder().append(closeBtn);
+		},
+
+		checkResumePlayback: function(){
+			if ( this.shouldResumePlay ){
+				this.shouldResumePlay = false;
+				this.embedPlayer.play();
+			}else{
+				this.embedPlayer.getVideoHolder().find(".largePlayBtn").show();
+			}
 		}
 	});
 
