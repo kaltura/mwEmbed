@@ -218,7 +218,6 @@
                 var _this = this;
                 if (!_this.isErr) {
                     if (_this.quizPlugin.isScreenVisible()){
-                        //_this.quizPlugin.removeScreen();
                         _this.quizPlugin.ivqHideScreen();
                         if (_this.quizPlugin.isSeekingIVQ ) {
                             _this.embedPlayer.stopPlayAfterSeek = false;

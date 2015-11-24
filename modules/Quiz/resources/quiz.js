@@ -199,7 +199,7 @@
                     _this.KIVQScreenTemplate.tmplHint();
                     $(".header-container").addClass('close-button')
                         .on('click', function () {
-                            $(".screen-content" ).removeClass('bk-gradient');
+                           // $(".screen-content" ).removeClass('bk-gradient');
                             _this.ssSetCurrentQuestion(questionNr,true);
 
                         });
@@ -426,9 +426,6 @@
                     _this.KIVQModule.submitAnswer(questionNr,_this.selectedAnswer);
                     _this.selectedAnswer = null;
                     $(this).delay(1800).fadeOut(function () {
-                          if (!_this.reviewMode) {
-                              _this.ivqHideScreen();
-                          }
                         _this.KIVQModule.checkIfDone(questionNr)
                     });
                 });
@@ -441,7 +438,9 @@
             embedPlayer.getInterface().find(".bubble").empty().remove();
         },
         ivqHideScreen:function(){
-            var _this = this;
+            var _this = this,embedPlayer = this.getPlayer();
+         //   embedPlayer.getInterface().find('.ivqContainer').empty();
+            embedPlayer.getInterface().find('.screen-content').empty();
             _this.hideScreen();
         },
         addFooter: function (questionNr) {

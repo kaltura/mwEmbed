@@ -17,6 +17,8 @@
 
                 this.destroy();
                 this.embedPlayer = embedPlayer;
+
+                //this.embedPlayer.getInterface().find('.screen-content');
             },
             tmplWelcome:function(){
                 var _this = this;
@@ -34,18 +36,21 @@
             tmplQuestion:function(){
                 var _this = this;
                 $(_this.emptyScreen()).hide().append(
-                '<div class="header-container">' +
-                '<div class="display-question"></div>' +
-                '</div>' +
-                ' <div class="answers-container"></div>' +
-                ' <div class = "ftr-container">' +
-                '<div class="ftr-left"></div>' +
-                '<div class="ftr-right"></div>' +
+                '<div class="ivqContainer">'+
+                '   <div class="header-container">' +
+                '       <div class="display-question"></div>' +
+                '   </div>' +
+                '   <div class="answers-container"></div>' +
+                '   <div class = "ftr-container">' +
+                '       <div class="ftr-left"></div>' +
+                '       <div class="ftr-right"></div>' +
+                '   </div>'+
                 '</div>').fadeIn( "slow" );
             },
             tmplReviewAnswer:function(){
                 var _this = this;
                 $(_this.emptyScreen()).hide().append(
+                '<div class="ivqContainer">'+
                 '<div class="header-container"></div>'+
                 '<div class = "reviewAnswerNr"> </div>'+
                 '<div class ="reviewAnswerPlace" >'+
@@ -54,6 +59,7 @@
                 '<div class="yourAnswer"></div>'+
                 '<div class="correctAnswerText"></div>'+
                 '<div class="correctAnswer"></div>'+
+                '</div>'+
                 '</div>'+
                 '<div class="gotItBox"></div>').fadeIn( "slow" );
 
@@ -139,7 +145,8 @@
                     '</div>').fadeIn( "slow" );
             },
             emptyScreen:function(){
-                var cleanScreen = this.embedPlayer.getInterface().find('.screen-content').empty();
+              //  var cleanScreen = this.embedPlayer.getInterface().find('.ivqContainer').empty();
+              var cleanScreen = this.embedPlayer.getInterface().find('.screen-content').empty();
                 return cleanScreen;
             },
             destroy: function () {
