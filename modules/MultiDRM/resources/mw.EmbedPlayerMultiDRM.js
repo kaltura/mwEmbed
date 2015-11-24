@@ -834,31 +834,13 @@
 		/**
 		 * Handle the native paused event
 		 */
-		onPause: function () {
+		_onpause: function () {
 			var _this = this;
 			this.playing = false;
-			if (this.ignoreNextNativeEvent) {
-				this.ignoreNextNativeEvent = false;
-				return;
-			}
 			var timeSincePlay = Math.abs(this.absoluteStartPlayTime - new Date().getTime());
 			this.log(" OnPaused:: propagate:" + this._propagateEvents +
 			' time since play: ' + timeSincePlay + ' duringSeek:' + this.seeking);
-			// Only trigger parent pause if more than MonitorRate time has gone by.
-			// Some browsers trigger native pause events when they "play" or after a src switch
-			if (!this.seeking && !this.userSlide
-				&&
-				timeSincePlay > mw.getConfig('EmbedPlayer.MonitorRate')
-			) {
-				_this.parent_pause();
-				// in iphone when we're back from the native payer we need to show the image with the play button
-				if (mw.isIphone()) {
-					_this.updatePosterHTML();
-				}
-			} else {
-				// try to continue playback:
-				this.getPlayerElement().play();
-			}
+
 		},
 
 		/**
@@ -898,32 +880,36 @@
 			this.updateVideoDuration();
 
 			//Check and add manifest data
-			this.addSubtitleTracks();
-			this.addAudioTracks();
-			this.addAbrFlavors();
+			if (this.playerElement.getActiveTech() == "dashjs") {
+				this.addSubtitleTracks();
 
-			var _this = this;
-			var update = function(){
-				var player = _this.getPlayerElement();
-				//Get Playback statistics
-				var stats = player.getPlaybackStatistics();
+				this.addAudioTracks();
+				this.addAbrFlavors();
 
-				var videoData = stats.video.activeTrack;
-				if (videoData){
-				}
-				var audioData = stats.audio.activeTrack;
-				if (audioData){
-					_this.onAudioTrackSelected({index: audioData.id});
-				}
-				var textData = stats.text.activeTrack;
-				if (textData){
-				}
-			};
-			//Run initial update to get active video/audio/caption tracks
-			update();
-			//Validate status every 5 sec
-			setInterval(function(){update();}, 5000);
+				var _this = this;
+				var update = function () {
+					var player = _this.getPlayerElement();
+					//Get Playback statistics
+					var stats = player.getPlaybackStatistics();
 
+					var videoData = stats.video.activeTrack;
+					if (videoData) {
+					}
+					var audioData = stats.audio.activeTrack;
+					if (audioData) {
+						_this.onAudioTrackSelected({index: audioData.id});
+					}
+					var textData = stats.text.activeTrack;
+					if (textData) {
+					}
+				};
+				//Run initial update to get active video/audio/caption tracks
+				update();
+				//Validate status every 5 sec
+				setInterval(function () {
+					update();
+				}, 5000);
+			}
 			// Check if in "playing" state and we are _propagateEvents events and continue to playback:
 			if (!this.paused && this._propagateEvents) {
 				this.getPlayerElement().play();
