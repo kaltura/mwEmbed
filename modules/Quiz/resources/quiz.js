@@ -129,6 +129,7 @@
             this.embedPlayer.triggerHelper( 'onDisableKeyboardBinding' );
             this._super();
 
+
         },
         ssWelcome: function () {
             var _this = this;
@@ -439,8 +440,7 @@
         },
         ivqHideScreen:function(){
             var _this = this,embedPlayer = this.getPlayer();
-         //   embedPlayer.getInterface().find('.ivqContainer').empty();
-            embedPlayer.getInterface().find('.screen-content').empty();
+            embedPlayer.getInterface().find('.ivqContainer').empty().remove();
             _this.hideScreen();
         },
         addFooter: function (questionNr) {

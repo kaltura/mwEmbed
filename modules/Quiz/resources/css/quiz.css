@@ -81,11 +81,11 @@
 }
 .ivqContainer{
     position: relative;
-    height: 90%;
+    height: 100%;
 }
 .bottomContainer{
     position: absolute;
-    bottom: -4vw;
+    bottom: 1vw;
     width: 100%;
 }
 .completed-BottonContainer{

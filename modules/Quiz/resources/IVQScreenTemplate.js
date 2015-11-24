@@ -14,11 +14,8 @@
             bindPostfix: '.KIVQScreenTemplate',
             init: function (embedPlayer) {
                 var _this = this;
-
                 this.destroy();
                 this.embedPlayer = embedPlayer;
-
-                //this.embedPlayer.getInterface().find('.screen-content');
             },
             tmplWelcome:function(){
                 var _this = this;
@@ -145,8 +142,9 @@
                     '</div>').fadeIn( "slow" );
             },
             emptyScreen:function(){
-              //  var cleanScreen = this.embedPlayer.getInterface().find('.ivqContainer').empty();
-              var cleanScreen = this.embedPlayer.getInterface().find('.screen-content').empty();
+                this.embedPlayer.getInterface().find('.ivqContainer').remove();
+                var cleanScreen = this.embedPlayer.getInterface().find('.screen-content');
+
                 return cleanScreen;
             },
             destroy: function () {
