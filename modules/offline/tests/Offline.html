@@ -1,0 +1,115 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Local Media</title>
+    <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+    <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+    <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+
+    <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+    <script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+  </head>
+
+  <body>
+    <h2>Local Media download and playback DRM content</h2>
+    <div>
+      Select Entry:
+      <select id="entriesList">
+        <option value="1_uywvjgqk">1_uywvjgqk</option>
+        <option value="1_2dkcg837">1_2dkcg837</option>
+        <option value="1_yn8do3sv">1_yn8do3sv</option>
+        <option value="1_z5g9ooai">1_z5g9ooai</option>
+        <option value="1_59druc0h">1_59druc0h</option>
+      </select>
+      <button id="load" onclick="loadPlayer()">load</button>
+    </div>
+    <div id="kaltura_player" style="width:560px;height:395px;"></div>
+    <br/>
+    Progress bar: <div id="progress-outer" style="background-color: #BBBBBB ; width: 300px;height: 20px;"><div id="progress-inner" style="width:0px;background-color: #553388 ;height: 20px"></div></div>
+    <br/>
+    <button id="download" disabled>Download</button>
+    <button id="delete" disabled>Delete</button>
+    <br/>
+    <textarea id="textarea" style="width:560px;height:200px;white-space:nowrap;" ></textarea>
+    <script>
+
+      mw.setConfig('forceMobileHTML5', true);
+      mw.setConfig('Kaltura.UdrmServerURL', 'https://udrm.kaltura.com/');
+
+      function loadPlayer(){
+
+      kWidget.embed({
+        "targetId": "kaltura_player",
+        "entry_id": $("#entriesList :selected").val() , // [1_uywvjgqk,1_2dkcg837,1_yn8do3sv,1_z5g9ooai,1_59druc0h]
+        "wid": "_243342",
+        "uiconf_id": 21099702,
+        "flashvars": {
+          "multiDrm": {
+            "plugin": true
+          },
+          "widevine": {
+            "plugin": true
+          },
+          "closedCaptions" : {
+            "plugin" : true
+          },
+
+          "offline": {
+            "plugin": true,
+            "templatePath": "../offline/resources/tmpl/offline.tmpl.html"
+          },
+          "streamerType": "auto"
+        },
+        "readyCallback": function (playerId) {
+          var kdp = document.getElementById(playerId);
+          var textArea = document.getElementById('textarea');
+          textarea.value = "";
+          var downloadBtn = document.getElementById('download');
+          var deleteBtn = document.getElementById('delete');
+
+          downloadBtn.addEventListener('click', function () {
+            kdp.sendNotification('startDownload');
+          });
+
+          deleteBtn.addEventListener('click', function () {
+            kdp.sendNotification('deleteLocalEntry',  $("#entriesList :selected").val() );
+          });
+
+          kdp.kBind('playerReady', function () {
+            deleteBtn.disabled = false;
+          });
+
+          kdp.kBind('offlineAPIEvent', function (event) {
+            var data = event.data;
+            switch(event.type){
+              case "entrySaveSuccess":
+                $('#progress-inner').css("background-color", "green");
+                    // :)
+                    break;
+              case "readyToDownload":
+              case "deleteEntrySuccess":
+              case "manifestLoaded":
+                    //reset progress bar
+                $('#progress-inner').css("background-color",  "#553388");
+                $('#progress-inner').css("width", "0%");
+                    break;
+              case "progress":
+                $('#progress-inner').css("width", data+"%");
+                    break;
+              case "offlinePluginReady":
+                      if (downloadBtn.disabled){
+                        downloadBtn.disabled = false;
+                      }
+                    break;
+            }
+
+            textarea.value += event.type + (data ? (': ' + JSON.stringify(data)) : '') + '\n';
+          });
+        }
+      });
+      }
+      loadPlayer();
+
+    </script>
+  </body>
+</html>
