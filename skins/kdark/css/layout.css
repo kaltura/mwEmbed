@@ -478,10 +478,14 @@ body {
 }
 .mobile .nextPrevBtn {
     width: 100%;
+    text-align: left;
 }
 .mobile .nextPrevBtn>.btn {
     position: relative;
-    margin-top: 0.5em;
+    font-size: 1.6em;
+    margin-top: -25px;
+    height: 50px;
+    top: 50%;
 }
 
 .mobile .nextPrevBtn>.btn.icon-prev {

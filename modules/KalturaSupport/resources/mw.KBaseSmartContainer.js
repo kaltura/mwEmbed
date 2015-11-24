@@ -86,6 +86,7 @@
 			}else{
 				this.embedPlayer.getVideoHolder().find(".largePlayBtn").show();
 			}
+			this.embedPlayer.getVideoHolder().find(".nextPrevBtn").show();
 			this.embedPlayer.triggerHelper("hideMobileComponents"); // used by plugins like closed captions to restore captions on screen
 		},
 		showRegisteredPlugins: function(){
@@ -95,7 +96,7 @@
 
 			// calculate the width for each plugin. Adding 1 to the plugins count to add some spacing. Done each time the plugins are shown to support responsive players.
 			var pluginWidth = this.embedPlayer.getVideoHolder().width() / (this.registeredPlugins.length + 1);
-			this.embedPlayer.getVideoHolder().find(".btn").not(".closePluginsScreen").width(pluginWidth);
+			this.embedPlayer.getVideoHolder().find(".btn").not(".closePluginsScreen, .icon-next, .icon-prev").width(pluginWidth);
 
 			for ( var i = 0; i < this.registeredPlugins.length; i++ ){
 				var plugin = this.registeredPlugins[i].getComponent();
@@ -111,6 +112,7 @@
 			this.shouldResumePlay = !this.embedPlayer.paused;
 			this.embedPlayer.pause();
 			this.embedPlayer.getVideoHolder().find(".largePlayBtn").hide();
+			this.embedPlayer.getVideoHolder().find(".nextPrevBtn").hide();
 			this.embedPlayer.getControlBarContainer().fadeOut();
 			this.embedPlayer.getTopBarContainer().fadeOut();
 			this.embedPlayer.triggerHelper("showMobileComponents"); // used by plugins like closed captions to hide captions
