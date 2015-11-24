@@ -159,30 +159,28 @@
 			if ( this.trackCuePoints ){
 				this.handleCuePoints();
 			}
-			if ( mw.isIE8() || mw.isIE9() || _this.leadWithFlash ) {
-				if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
-					mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
-					_this.isChromeless = true;
-					_this.prevSlotType = 'none';
-					_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
-						_this.bindChromelessEvents();
-					});
-					_this.embedPlayer.bindHelper( 'volumeChanged' + this.bindPostfix, function(event, percent){
-						mw.log("DoubleClick::chromeless volumeChanged: " + percent );
-						_this.embedPlayer.setPlayerElementVolume( percent );
-					});
-					_this.embedPlayer.bindHelper( 'Kaltura_SendNotification' + this.bindPostfix, function(event, notificationName, notificationData){
-						if (notificationName === "doPause"){
-							_this.embedPlayer.getPlayerElement().pause();
-						}
-					});
-					_this.addManagedBinding();
-					callback();
-					return;
-				} else if ( mw.isIE8() || mw.isIE9() ) {   //no flash on IE8/9
-					callback();
-					return;
-				}
+			if (( mw.isIE8() || mw.isIE9() || _this.leadWithFlash ) && (mw.supportsFlash())) {
+				mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
+				_this.isChromeless = true;
+				_this.prevSlotType = 'none';
+				_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
+					_this.bindChromelessEvents();
+				});
+				_this.embedPlayer.bindHelper( 'volumeChanged' + this.bindPostfix, function(event, percent){
+					mw.log("DoubleClick::chromeless volumeChanged: " + percent );
+					_this.embedPlayer.setPlayerElementVolume( percent );
+				});
+				_this.embedPlayer.bindHelper( 'Kaltura_SendNotification' + this.bindPostfix, function(event, notificationName, notificationData){
+					if (notificationName === "doPause"){
+						_this.embedPlayer.getPlayerElement().pause();
+					}
+				});
+				_this.addManagedBinding();
+				callback();
+				return;
+			} else if ( mw.isIE8() || mw.isIE9() ) {   //no flash on IE8/9
+				callback();
+				return;
 			}
 
 			//if we got till here we're going to use the javascript - check if we have spacific javascript configuration
@@ -495,7 +493,7 @@
 			}
 			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 
-			if (isLinear) {
+			if (isLinear && !this.isNativeSDK) {
 				this.embedPlayer.enablePlayControls(["scrubber","share","infoScreen","related"]);
 			} else {
 				_this.embedPlayer.pause();
@@ -1064,6 +1062,9 @@
 					// hide content / show playerplayer position:
 					_this.hideContent();
 
+					if ( mw.isIOS() && _this.embedPlayer.seeking ){
+						_this.embedPlayer.restorePlayerOnScreen();
+					}
 					// set ad playing flag:
 
 					_this.embedPlayer.sequenceProxy.isInSequence = true;
@@ -1145,6 +1146,7 @@
 
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				mw.log("DoubleClick:: adStart");
+				_this.embedPlayer.sequenceProxy.isInSequence = true;
 				// set volume when ad starts to enable autoMute. TODO: remove next line once DoubleClick fix their bug when setting adsManager.volume before ad starts
 				_this.embedPlayer.setPlayerElementVolume(_this.embedPlayer.volume);
 				// trigger ad play event
@@ -1215,11 +1217,8 @@
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				mw.log("DoubleClick:: allAdsCompleted");
 				setTimeout(function(){
-					var isContentCompleted = true;
-					if (mw.isNativeApp()) {
-						isContentCompleted = _this.currentAdSlotType == 'postroll';
-					}
-					_this.restorePlayer(isContentCompleted);
+					// content completed
+					_this.restorePlayer(true);
 				},0);
 				if (_this.currentAdSlotType == 'postroll'){
 					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', _this.entryDuration );
@@ -1276,7 +1275,6 @@
 			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
 				mw.log("DoubleClick:: contentPauseRequested");
 				_this.entryDuration = _this.embedPlayer.getDuration();
-				_this.embedPlayer.sequenceProxy.isInSequence = true;
 				_this.embedPlayer.stopMonitor();
 				_this.playingLinearAd = true;
 			},'contentPauseRequested', true);

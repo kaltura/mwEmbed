@@ -8,7 +8,7 @@
 	mw.addKalturaConfCheck( function( embedPlayer, callback ){
 		if( embedPlayer.isPluginEnabled( 'multiDrm' ) ) {
 			var drmConfig = setEmbedPlayerConfig(embedPlayer);
-			if ((mseSupported && !mw.isFirefox) || drmConfig.forceDASH) {
+			if ((mseSupported && !mw.isFirefox()) || drmConfig.forceDASH) {
 				mw.log("Media Source Extensions supported on this browser");
 				registerDashPlayer();
 				//Get multiDRM supported sources

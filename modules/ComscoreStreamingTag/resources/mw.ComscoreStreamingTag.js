@@ -33,7 +33,8 @@
 		buffering: false,
 		seeking: false,
 		playing: false,
-		lastKnownwPercentage: 0,
+		checkEveryIndex:0,
+		lastKnownwTime: 0,
 		// Mapping for the module settings and the StreamSense plugin
 		configOptions: {c2:"c2", pageView:"pageview", logUrl:"logurl", persistentLabels:"persistentlabels", debug:"debug"},
 
@@ -167,14 +168,17 @@
 		callStreamSensePlugin:function(){
 			var args = $.makeArray( arguments );
 			var action = args[0];
-			if( parent && parent[ this.getConfig('trackEventMonitor') ] ){
-				// Translate the event type to make it more human readable
-				var parsedArgs = args.slice();
-				if (action == "notify") {
-					parsedArgs[1] = ns_.StreamSense.PlayerEvents.toString(parsedArgs[1])
+			try {
+				if ( parent && parent[this.getConfig( 'trackEventMonitor' )] ) {
+					// Translate the event type to make it more human readable
+					var parsedArgs = args.slice();
+					if ( action == "notify" ) {
+						parsedArgs[1] = ns_.StreamSense.PlayerEvents.toString( parsedArgs[1] )
+					}
+					parent[this.getConfig( 'trackEventMonitor' )]( parsedArgs );
 				}
-				parent[ this.getConfig('trackEventMonitor') ]( parsedArgs );
 			}
+			catch(e){}
 			args.splice(0, 1);
 			this.streamSenseInstance[action].apply(this, args);
 		},
@@ -201,11 +205,12 @@
 				_this.buffering = false;
 			});
 
-			embedPlayer.bindHelper( 'updatePlayHeadPercent' + _this.bindPostfix, function(){
+			embedPlayer.bindHelper( 'monitorEvent' + _this.bindPostfix, function(){
+				if (_this.checkEveryIndex++%2 !=0) return;
 				var args = $.makeArray( arguments );
-				var percent = args[1];
-				if (percent != _this.lastKnownwPercentage && !_this.seeking && !_this.buffering) {
-					if (percent > _this.lastKnownwPercentage) {
+				var currentTime = embedPlayer.getPlayerElementTime();
+				if (currentTime != _this.lastKnownwTime && !_this.seeking ) {
+					if (currentTime > _this.lastKnownwTime) {
 						_this.onPlay();
 					} else {
 						_this.onPause();
@@ -213,7 +218,7 @@
 				} else {
 					_this.onPause();
 				}
-				_this.lastKnownwPercentage = percent;
+				_this.lastKnownwTime = currentTime;
 			});
 
 			embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostfix, function(){
@@ -425,6 +430,10 @@
 			// Split and trim the spaces
 			rawConfig.split(/ *, */g).forEach(function(x) {
 				// Create two groups, one for the label name and the second one for the label value without any "
+				try {
+					x = decodeURIComponent( x );
+				}
+				catch(e){}
 				var re = /([^=]+)="?([^"]+)"?/g;
 				var arr = re.exec(x);
 				arr[2] && (result[arr[1]] = _this.evaluateString(arr[2]));

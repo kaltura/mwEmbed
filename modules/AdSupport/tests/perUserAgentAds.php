@@ -23,6 +23,11 @@ if( strstr($ua, 'iPad') !== false ){
 }
 
 header ("Content-Type:text/xml");
+header('Expires: Sun, 01 Jan 2014 00:00:00 GMT');
+header('Cache-Control: no-store, no-cache, must-revalidate');
+header('Cache-Control: post-check=0, pre-check=0', FALSE);
+header('Pragma: no-cache');
+
 // write out the headers:
 echo '<?xml version="1.0" encoding="UTF-8" standalone="no"?>';
 ?>
