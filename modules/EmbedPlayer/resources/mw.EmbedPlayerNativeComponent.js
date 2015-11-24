@@ -74,7 +74,7 @@
 			'loadEmbeddedCaptions',
 			'flavorsListChanged',
 			'sourceSwitchingStarted',
-			'sourceSwitchingEnd',
+			'sourceSwitchingEnd'
 		],
 
 		// Native player supported feature set
@@ -405,7 +405,7 @@
 			// [{"assetid":0,"bandwidth":517120,"type":"video/mp4","height":0},{"assetid":1,"bandwidth":727040,"type":"video/mp4","height":0},{"assetid":2,"bandwidth":1041408,"type":"video/mp4","height":0}]
 			// 
 			
-			var flavorsList = []
+			var flavorsList = [];
 			$.each(data.tracks, function(idx, obj) {
 				var flavor = {
 					assetid: obj.originalIndex,
@@ -413,8 +413,8 @@
 					bandwidth: obj.bitrate,
 					height: obj.height,
 					width: obj.width,
-					type: "video/mp4", // not sure about that
-				}
+					type: "video/mp4" // not sure about that
+				};
 				flavorsList.push(flavor);
 			});
 			
