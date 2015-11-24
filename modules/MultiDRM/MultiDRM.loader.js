@@ -7,16 +7,15 @@
 	//Load 3rd party plugins if DRM sources are available
 	mw.addKalturaConfCheck( function( embedPlayer, callback ){
 		if( embedPlayer.isPluginEnabled( 'multiDrm' ) ) {
-			if (mseSupported && mw.isChrome()) {
+			var drmConfig = setEmbedPlayerConfig(embedPlayer);
+			if ((mseSupported && !mw.isFirefox()) || drmConfig.forceDASH) {
 				mw.log("Media Source Extensions supported on this browser");
 				registerDashPlayer();
-				var sources = embedPlayer.getSources();
-				var drmSources = sources.filter( function ( source ) {
-					return ( ( source.mimeType === "application/dash+xml" ) ||
-					( source.mimeType === "video/ism" || source.mimeType === "video/playreadySmooth" && mw.isChrome() &&  !mw.isMobileDevice()) );
-				} );
-				var isDrmSourceAvailable = drmSources.length > 0;
-				if ( isDrmSourceAvailable ) {
+				//Get multiDRM supported sources
+				var allSources = embedPlayer.getSources();
+				var drmSources = getMultiDrmSupportedSources(allSources);
+				//If there are supported medias load the playback library
+				if ( hasDrmSources(drmSources) ) {
 					mw.log("Media sources found, loading DASH player");
 					var clDashPlayerUrl = embedPlayer.getKalturaConfig( "multiDrm", "clDashPlayerUrl" ) || mw.getMwEmbedPath() + "node_modules/mwEmbed-Dash-Everywhere/video.js";
 					var dashJsUrl = embedPlayer.getKalturaConfig( "multiDrm", "dashJsUrl" ) || mw.getMwEmbedPath() + "node_modules/mwEmbed-Dash-Everywhere/cldasheverywhere.min.js";
@@ -24,14 +23,7 @@
 						$.getScript( clDashPlayerUrl)
 							.then(function(){return $.getScript( dashJsUrl)})
 							.done(function(){
-								mw.log("DASH player loaded, setting configuration");
-								//Get user configuration
-								var drmUserConfig = embedPlayer.getKalturaConfig("multiDrm");
-								//Get default config
-								var drmConfig = getDefaultDrmConfig(embedPlayer.kpartnerid);
-								//Deep extend custom config
-								$.extend(true, drmConfig, drmUserConfig);
-								embedPlayer.setKalturaConfig("multiDrm", drmConfig);
+								mw.log("DASH player loaded");
 								//Set reference for DASH playback engine
 								mw.dash = {
 									player: videojs
@@ -58,6 +50,29 @@
 			callback();
 		}
 	});
+
+	function setEmbedPlayerConfig(embedPlayer){
+		//Get user configuration
+		var drmUserConfig = embedPlayer.getKalturaConfig("multiDrm");
+		//Get default config
+		var drmConfig = getDefaultDrmConfig(embedPlayer.kpartnerid);
+		//Deep extend custom config
+		$.extend(true, drmConfig, drmUserConfig);
+		embedPlayer.setKalturaConfig("multiDrm", drmConfig);
+		return drmConfig;
+	}
+
+	function getMultiDrmSupportedSources(sources){
+		var drmSources = sources.filter( function ( source ) {
+			return ( ( source.mimeType === "application/dash+xml" ) ||
+			( (source.mimeType === "video/ism" || source.mimeType === "video/playreadySmooth") && mw.isChrome() &&  !mw.isMobileDevice()) );
+		} );
+		return drmSources;
+	}
+
+	function hasDrmSources(drmSources){
+		return drmSources.length > 0;
+	}
 
 	function registerDashPlayer(){
 		// Add multidrm player:
@@ -129,9 +144,11 @@
 			"generatePSSH": false,
 			"authenticationToken": null ,
 			"widevineLicenseServerURL": null,
+			"playReadyLicenseServerURL": null,
 			"accessLicenseServerURL": null,
-			"flashFile": mw.getConfig("EmbedPlayer.dashAsUrl"),
-			"techs": ["dashjs", "dashas"] ,
+			"flashFile": mw.getConfig("EmbedPlayer.dashAsUrl") || mw.getMwEmbedPath() + "node_modules/mwEmbed-Dash-Everywhere/dashas/dashas.swf",
+			"silverlightFile": mw.getConfig("EmbedPlayer.dashCsUrl") || mw.getMwEmbedPath() + "node_modules/mwEmbed-Dash-Everywhere/dashcs/dashcs.xap",
+			"techs": mw.isFirefox()? ["dashcs"] : ["dashjs", "dashcs"] ,
 			"debug": false
 		};
 		return defaultConfig;

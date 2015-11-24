@@ -6,7 +6,7 @@
 
 	mw.ComscoreStreamingTag.prototype = {
 
-		pluginVersion: "1.0.3",
+		pluginVersion: "1.0.4",
 		reportingPluginName: "kaltura",
 		playerVersion: mw.getConfig('version'),
 		genericPluginUrlSecure: "https://sb.scorecardresearch.com/c2/plugins/streamingtag_plugin_generic.js",
@@ -437,7 +437,7 @@
 			// Match all the elements inside {}
 			var re = /{[^}]+}/g;
 			var result = str.replace(re, function(match, p1, p2) {
-				return _this.embedPlayer.evaluate(p1)
+				return _this.embedPlayer.evaluate(match)
 			});
 			return result;
 		},

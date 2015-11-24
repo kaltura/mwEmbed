@@ -74,7 +74,7 @@
 			'loadEmbeddedCaptions',
 			'flavorsListChanged',
 			'sourceSwitchingStarted',
-			'sourceSwitchingEnd',
+			'sourceSwitchingEnd'
 		],
 
 		// Native player supported feature set
@@ -139,9 +139,37 @@
 		embedPlayerHTML: function () {
 		},
 
+		// Build the licenseUri (if needed) and send it to the native component as the "licenseUri" attribute.
+		pushLicenseUri: function () {
+			var licenseServer = mw.getConfig('Kaltura.UdrmServerURL');
+			var licenseParams = this.mediaElement.getLicenseUriComponent();
+			
+			if (licenseServer && licenseParams) {
+				var licenseUri;
+				// Build licenseUri by mimeType.
+				var sourceMimeType = this.mediaElement.selectedSource && this.mediaElement.selectedSource.mimeType;
+				switch (sourceMimeType) {
+					case "video/wvm":
+						// widevine classic
+						licenseUri = licenseServer + "/widevine/license?" + licenseParams;
+						break;
+					case "application/dash+xml":
+						// widevine modular, because we don't have any other dash DRM right now.
+						licenseUri = licenseServer + "/cenc/widevine/license?" + licenseParams;
+						break;
+					default:
+						break;
+				}
+				if (licenseUri) {
+					this.getPlayerElement().attr('licenseUri', licenseUri);
+				}
+			}
+		},
+
 		setSrcAttribute: function( source ) {
 			this.getPlayerElement().attr('src', source);
 			this.playingSource =  source;
+			this.pushLicenseUri();
 		},
 
 		playerSwitchSource: function (source, switchCallback, doneCallback) {
@@ -377,7 +405,7 @@
 			// [{"assetid":0,"bandwidth":517120,"type":"video/mp4","height":0},{"assetid":1,"bandwidth":727040,"type":"video/mp4","height":0},{"assetid":2,"bandwidth":1041408,"type":"video/mp4","height":0}]
 			// 
 			
-			var flavorsList = []
+			var flavorsList = [];
 			$.each(data.tracks, function(idx, obj) {
 				var flavor = {
 					assetid: obj.originalIndex,
@@ -385,8 +413,8 @@
 					bandwidth: obj.bitrate,
 					height: obj.height,
 					width: obj.width,
-					type: "video/mp4", // not sure about that
-				}
+					type: "video/mp4" // not sure about that
+				};
 				flavorsList.push(flavor);
 			});
 			

@@ -679,7 +679,7 @@
 				} );
 			}
 
-			if (items.length === 0 && this.getConfig('showEmptyPlaylistError')) {
+			if (items.length === 0 && this.getConfig('showEmptyPlaylistError')){
 				//If no items then show error message
 				this.showEmptyPlaylistError();
 				this.configMediaListFeatures();
