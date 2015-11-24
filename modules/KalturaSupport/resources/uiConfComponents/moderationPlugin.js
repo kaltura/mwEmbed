@@ -8,6 +8,8 @@
 		 	"displayImportance": "low",
 		 	"align": "right",
 		 	"showTooltip": true,
+			"smartContainer": 'morePlugins',
+			"smartContainerCloseEvent": 'closeMenuOverlay',
 
 		 	"tooltip": gM("ks-MODERATION-REPORT"),
 		 	"reasonSex": gM("ks-MODERATION-REASON-SEX"),
