@@ -834,31 +834,13 @@
 		/**
 		 * Handle the native paused event
 		 */
-		onPause: function () {
+		_onpause: function () {
 			var _this = this;
 			this.playing = false;
-			if (this.ignoreNextNativeEvent) {
-				this.ignoreNextNativeEvent = false;
-				return;
-			}
 			var timeSincePlay = Math.abs(this.absoluteStartPlayTime - new Date().getTime());
 			this.log(" OnPaused:: propagate:" + this._propagateEvents +
 			' time since play: ' + timeSincePlay + ' duringSeek:' + this.seeking);
-			// Only trigger parent pause if more than MonitorRate time has gone by.
-			// Some browsers trigger native pause events when they "play" or after a src switch
-			if (!this.seeking && !this.userSlide
-				&&
-				timeSincePlay > mw.getConfig('EmbedPlayer.MonitorRate')
-			) {
-				_this.parent_pause();
-				// in iphone when we're back from the native payer we need to show the image with the play button
-				if (mw.isIphone()) {
-					_this.updatePosterHTML();
-				}
-			} else {
-				// try to continue playback:
-				this.getPlayerElement().play();
-			}
+
 		},
 
 		/**
