@@ -11,7 +11,7 @@
     "mediaWiki"
   ],
   "dependencies": {
-    "mwEmbed-Dash-Everywhere": "kaltura/mwEmbed-Dash-Everywhere#v3.1.4-silverlight"
+    "mwEmbed-Dash-Everywhere": "git+ssh://git@github.com:kaltura/mwEmbed-Dash-Everywhere.git#v3.1.4-silverlight"
   },
   "homepage": "https://github.com/kaltura/mwEmbed/"
 }
