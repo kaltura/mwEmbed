@@ -6,6 +6,7 @@
 		registeredPlugins: [],                      // plugins to display in the Smart Container plugins screen
 		shouldResumePlay: false,                    // resume playback when closing the smart container screen
 		pluginsScreenOpened: false,                 // flag for when the smart container screen is open
+		overlayOpen: false,                         // flag indicating an overlay screen is currently open (for example when a moderation report is open)
 		isDisabled: false,
 
 		setup: function( embedPlayer ) {
@@ -21,7 +22,7 @@
 							.attr( 'title', this.title )
 							.addClass( "btn" + this.getCssClass() )
 							.on('click', function(e) {
-								if ( !_this.pluginsScreenOpened ){
+								if ( !_this.pluginsScreenOpened && !_this.overlayOpen ){
 									_this.showRegisteredPlugins();
 								}else{
 									_this.hideRegisteredPlugins();
@@ -61,10 +62,17 @@
 						_this.checkResumePlayback();
 					});
 
-					_this.bind( "preShowScreen", function(){ // close the smart container screen when opening a kBaseScreen plugin
+					_this.bind( "preShowScreen displayMenuOverlay", function(){ // close the smart container screen when opening a kBaseScreen plugin
 						if ( _this.pluginsScreenOpened ){
 							_this.hideRegisteredPlugins();
 						}
+					});
+
+					_this.bind( "displayMenuOverlay", function(){ // close the smart container screen when opening a kBaseScreen plugin
+						_this.overlayOpen = true;
+					});
+					_this.bind( "closeMenuOverlay", function(){ // close the smart container screen when opening a kBaseScreen plugin
+						_this.overlayOpen = false;
 					});
 
 					setTimeout(function(){

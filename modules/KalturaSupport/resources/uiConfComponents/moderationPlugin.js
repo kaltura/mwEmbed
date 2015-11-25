@@ -3,14 +3,16 @@
 	mw.PluginManager.add( 'moderation', mw.KBaseScreen.extend({
 
 		defaultConfig: {
-			"parent": "controlsContainer",
+			"parent": mw.isMobileDevice() ? 'topBarContainer' : 'controlsContainer',
 		 	"order": 62,
 		 	"displayImportance": "low",
 		 	"align": "right",
 		 	"showTooltip": true,
 			"smartContainer": 'morePlugins',
 			"smartContainerCloseEvent": 'closeMenuOverlay',
-
+			"header": gM("ks-MODERATION-HEADER"),
+			"text": gM("ks-MODERATION-TEXT"),
+			"placeholder": gM("ks-MODERATION-PLACEHOLDER"),
 		 	"tooltip": gM("ks-MODERATION-REPORT"),
 		 	"reasonSex": gM("ks-MODERATION-REASON-SEX"),
 		 	"reasonViolence": gM("ks-MODERATION-REASON-VIOLENCE"),
@@ -29,32 +31,28 @@
 
 			// Disable space key binding to enable entering "space" inside the textarea
 		 	this.getPlayer().triggerHelper( 'onDisableKeyboardBinding' );
-
 		 	var $header = $( '<h2 />' ).text(this.getConfig( 'header' ));
 			var $moderationMessage = $( '<div />' ).append(
 				$( '<span />' ).text(this.getConfig( 'text' )),
-				$( '<div />' ).append(
-					$( '<select />' )
-						.attr( 'id','flagType' )
-						.append(
-							$( '<option />' ).attr( 'value', 1 ).text( _this.getConfig( 'reasonSex' ) ),
-							$( '<option />' ).attr( 'value', 2 ).text( _this.getConfig( 'reasonViolence' ) ),
-							$( '<option />' ).attr( 'value', 3 ).text( _this.getConfig( 'reasonHarmful' ) ),
-							$( '<option />' ).attr( 'value', 4 ).text( _this.getConfig( 'reasonSpam' ) )
-						)
-					),
+				$('<div></div>').append(
+						$('<i></i>')
+							.addClass("icon-toggle")).append(
+				$( '<select />' )
+					.attr( 'id','flagType' )
+					.append(
+						$( '<option />' ).attr( 'value', 1 ).text( _this.getConfig( 'reasonSex' ) ),
+						$( '<option />' ).attr( 'value', 2 ).text( _this.getConfig( 'reasonViolence' ) ),
+						$( '<option />' ).attr( 'value', 3 ).text( _this.getConfig( 'reasonHarmful' ) ),
+						$( '<option />' ).attr( 'value', 4 ).text( _this.getConfig( 'reasonSpam' ) )
+					)
+					.css({'width': '100%', 'height': '26px', 'margin-top': '10px'})),
 				$( '<textarea />' )
 					.attr( 'id', 'flagComments' )
-					.css({'width': '95%', 'height': '50px', 'margin-top': '5px'}),
+					.attr( 'placeholder', gM("ks-MODERATION-PLACEHOLDER" ))
+					.css({'width': '100%', 'height': '40px', 'margin-top': '10px'}),
 				$('<div/>' ).append(
-				$('<button />')
-					.addClass( 'ui-state-default ui-corner-all copycode' )
-					.text( gM("ks-MODERATION-CANCEL") )
-					.click(function(){
-						_this.closeModal();
-					}),
-				$( '<button />' )
-					.addClass( 'ui-state-default ui-corner-all copycode' )
+					$( '<div />' )
+					.addClass( 'reportButton right' )
 					.text( gM("ks-MODERATION-SUBMIT") )
 					.click(function() {
 						_this.submitFlag({
@@ -86,10 +84,7 @@
 		},
 		submitFlag: function(flagObj) {
 			var _this = this;
-
-			this.getPlayer().layoutBuilder.closeMenuOverlay();
 			this.getPlayer().addPlayerSpinner();
-
 			this.getKalturaClient().doRequest( {
 				'service' : 'baseentry',
 				'action' : 'flag',
@@ -103,8 +98,8 @@
 					.append(
 						$( '<h3 />' ).text( gM("ks-MODERATION-THANKS") ),
 						$( '<div />' ).append(
-							$( '<button />' )
-								.addClass( 'ui-state-default ui-corner-all copycode' )
+							$( '<div />' )
+								.addClass( 'reportButton' )
 								.text( gM("ks-MODERATION-DONE") )
 								.click(function() {
 									_this.getPlayer().triggerHelper( 'onEnableKeyboardBinding' );
@@ -113,6 +108,11 @@
 						)
 					);
 				_this.getPlayer().layoutBuilder.displayMenuOverlay( $flagScreen );
+			},
+			false,
+			function(error){
+				_this.log("Error sending report to server: " + error);
+				_this.getPlayer().layoutBuilder.closeMenuOverlay();
 			});
 		},
 		getComponent: function(){
