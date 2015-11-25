@@ -636,6 +636,9 @@ body { letter-spacing: 0.04em; }
 .dropup .dropdown-menu,.navbar-fixed-bottom .dropdown .dropdown-menu {
 	top: auto;
 	bottom: 102%;
+	overflow-x: hidden;
+    max-height: 300px;
+    width: auto !important;
 }
 
 .dropup .dropdown-submenu > .dropdown-menu {
