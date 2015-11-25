@@ -75,7 +75,7 @@ $container['cache_helper'] = $container->share(function ($c) {
  		$useCache = false;
 	}
 
-	$className =  'no_cache_adapter';
+	$className = ($useCache) ? 'file_cache_adapter' : 'no_cache_adapter';
 	return new KalturaCache( $c[ $className ], $c['cache_expiry'] );
 });
 

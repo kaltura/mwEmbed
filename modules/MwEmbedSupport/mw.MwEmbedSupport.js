@@ -106,7 +106,6 @@ Date.now = Date.now || function(){ return +new Date; };
 	 * Aliased load function
 	 */
 	mw.load = function( resources, callback ){
-		callback();return;
 		mw.loader.using( resources, callback, function(){
 			// failed to load
 			mw.log("Failed to load resources:"  + resources );
