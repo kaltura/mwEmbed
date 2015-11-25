@@ -180,7 +180,8 @@
 						_this.hideSpinner();
 					},250);
 				}
-
+				mw.log("EmbedPlayerYouTube:: Trigger: playerReady for HTML5 player");
+				$(_this).trigger('playerReady');
 			};
 			// YOUTUBE FLASH PLAYER READY
 			window['onYouTubePlayerReady'] = function( playerIdStr ){
@@ -202,6 +203,8 @@
 				}else{
 					window['hidePlayer']();
 				}
+				mw.log("EmbedPlayerYouTube:: Trigger: playerReady for Flash player");
+				$(_this).trigger('playerReady');
 			};
 			// YOUTUBE IFRAME READY
 			window['onYouTubeIframeAPIReady'] = function( playerIdStr ){
@@ -410,6 +413,12 @@
 				callback();
 				if( mw.getConfig('autoPlay') || _this.isPlaylist){
 					if (mw.isMobileDevice()){
+						if (mw.isIphone()){
+							$(".largePlayBtn").hide();
+							setTimeout(function(){
+								_this.hideSpinner();
+							},350);
+						}
 						if (_this.ytMobilePlayed){
 							_this.play();
 						}else{
@@ -577,8 +586,10 @@
 			mw.log("Seeking to: " + seekTime);
 			var _this = this;
 			this.seeking = true;
+			this.stopSeekWatchDog();
 			$( this ).trigger( 'seeking' );
 			var yt = this.getPlayerElement();
+			var currentTime = this.getPlayerElementTime();
 			yt.seekTo( seekTime );
 			this.layoutBuilder.onSeek();
 			// Since Youtube don't have a seeked event , we must turn off the seeking flag and restore pause state if needed
@@ -588,6 +599,40 @@
 					_this.seeking = false;
 					_this.pause();
 				},500);
+			} else {
+				this.startSeekWatchDog(currentTime);
+			}
+		},
+		startSeekWatchDog: function(refTime){
+			this.log("startSeekWatchDog");
+			var interval = 1000;
+			var lastTime = refTime;
+			var _this = this;
+			var yt = this.getPlayerElement();
+			this.checkPlayerTime = function () {
+				if(yt.getPlayerState() == YT.PlayerState.PLAYING ) {
+					var t = yt.getCurrentTime();
+					///expecting 1 second interval , with 500 ms margin
+					if (Math.abs(t - lastTime - 1) > 0.5) {
+						// if seek threshold was detected and we're still in seeking state fire event
+						if(_this.seeking) {
+							$(_this).trigger('seeked');
+							_this.seeking = false;
+						}
+						_this.stopSeekWatchDog();
+						return;
+					}
+				}
+				lastTime = yt.getCurrentTime();
+				_this.watchDogTimer = setTimeout(_this.checkPlayerTime, interval); /// repeat function call in 1 second
+			};
+			this.watchDogTimer = setTimeout(this.checkPlayerTime, interval);
+		},
+		stopSeekWatchDog: function(){
+			this.log("stopSeekWatchDog");
+			if (this.watchDogTimer){
+				clearTimeout(this.watchDogTimer);
+				this.watchDogTimer = null;
 			}
 		},
 

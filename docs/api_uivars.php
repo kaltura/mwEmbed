@@ -240,7 +240,7 @@ $uiVars = array(
 		'vars' => array(
 			'entryId' => array(
 				'type' => 'String',
-				'desc' => 'Valid Kaltura media entry id or a media URL (to use URL set sourceType=URL)',
+				'desc' => 'Valid Kaltura media entry id. To support directly assigning media see <a href="#uiVarsMediaProxy">MediaProxy</a>',
 				'default' => '',
 				'example' => '../modules/KalturaSupport/tests/kWidget.embed.qunit.html'
 			),
@@ -261,6 +261,7 @@ $uiVars = array(
 				'type' => 'String',
 				'desc' => 'The type of media source to load, either a URL or id of valid Kaltura media entry',
 				'default' => 'entryId',
+				'availability' => 'kdp',
 				'example' => ''
 			),
 			'streamerType' => array(
@@ -645,6 +646,12 @@ $uiVars = array(
 					'default' => '2',
 					'example' => ''
 			),
+			'EmbedPlayer.SeekTargetThreshold'  => array(
+					'type' => 'Number',
+					'desc' => "Seek target precision threshold. Will not seek if difference between playback element time and seek target time is lower than the specified value",
+					'default' => '0.1',
+					'example' => ''
+			),
 			/*'EmbedPlayer.WebKitPlaysInline' => array(
 			 		'type' => 'Boolean',
 					'desc' => "Determines if should play the video inline or not",
@@ -812,6 +819,36 @@ $uiVars = array(
 	'mediaProxy'=> array(
 		'desc' => "The MediaProxy object is responsible for referencing and loading of the current playing media.",
 		'vars' => array(
+			'mediaProxy.entry' => array(
+					'type' => 'Object',
+					'desc' => 'Supports partial or complete override of <a href="http://www.kaltura.com/api_v3/testmeDoc/index.php?object=KalturaBaseEntry">entry object</a>.',
+					'example' => '../modules/KalturaSupport/tests/StandAlonePlayerMediaProxyOverride.html'
+			),
+			'mediaProxy.entryCuePoints' => array(
+					'type' => 'Object',
+					'desc' => 'Supports partial or complete override of <a href="http://www.kaltura.com/api_v3/testmeDoc/index.php?object=KalturaCuePoint">player cuePoints</a>.',
+					'example' => '../modules/KalturaSupport/tests/StandAlonePlayerMediaProxyOverride.html'
+			),
+			'mediaProxy.entryCuePoints' => array(
+					'type' => 'Object',
+					'desc' => 'Supports partial or complete override of <a href="http://www.kaltura.com/api_v3/testmeDoc/index.php?object=KalturaCuePoint">player cuePoints</a>.',
+					'example' => '../modules/KalturaSupport/tests/StandAlonePlayerMediaProxyOverride.html'
+			),
+			'mediaProxy.contextData' => array(
+					'type' => 'Object',
+					'desc' => 'Supports partial or complete override of entry access control restriction.',
+					'example' => '../modules/KalturaSupport/tests/StandAlonePlayerMediaProxyOverride.html'
+			),
+			'mediaProxy.entryMetadata' => array(
+					'type' => 'Object',
+					'desc' => 'Supports partial or complete override of entry custom metadata.',
+					'example' => '../modules/KalturaSupport/tests/StandAlonePlayerMediaProxyOverride.html'
+			),
+			'mediaProxy.sources' => array(
+					'type' => 'Object',
+					'desc' => 'Supports partial or complete override of entry media sources.',
+					'example' => '../modules/KalturaSupport/tests/StandAlonePlayerMediaProxyOverride.html'
+			),
 			'mediaProxy.selectedFlavorId' => array(
 					'type' => 'String',
 					'desc' => 'The transcoding flavor currently playing. A valid id of a transcoding flavor associated with Kaltura entry currently being played',

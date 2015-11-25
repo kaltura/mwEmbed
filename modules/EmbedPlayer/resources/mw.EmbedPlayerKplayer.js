@@ -189,7 +189,8 @@
 						'mediaError': 'onMediaError',
 						'bitrateChange': 'onBitrateChange',
                         'textTracksReceived': 'onTextTracksReceived',
-                        'debugInfoReceived': 'onDebugInfoReceived'
+                        'debugInfoReceived': 'onDebugInfoReceived',
+                        'id3tag': 'onId3tag'
 					};
 				_this.playerObject = this.getElement();
 					$.each(bindEventMap, function (bindName, localMethod) {
@@ -585,11 +586,15 @@
 				this.flashActivationRequired = false;
 				$(this).show();
 			}
+            if(this.isLive() && !this.isDVR()){
+                $(this).trigger('timeupdate');
+                return; //for Live + no DVR the flashCurrentTime will be updated through id3Tag
+            }
 			if (this.seeking) {
 				this.seeking = false;
                 this.flashCurrentTime = playheadValue;
 			}else {
-                if( this.flashCurrentTime < playheadValue){
+                if(this.flashCurrentTime < playheadValue){
                     this.flashCurrentTime = playheadValue;
                 }
             }
@@ -736,6 +741,11 @@
             }
             this.triggerHelper('debugInfoReceived', data);
             mw.log("EmbedPlayerKplayer:: onDebugInfoReceived | " + msg);
+        },
+
+        onId3tag: function (data) {
+            var id3Tag = window.atob(data.data);
+            this.triggerHelper('onId3Tag', id3Tag);
         },
 
 		/**

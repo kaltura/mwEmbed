@@ -310,9 +310,9 @@ body {
 	z-index: 100;
 	position: absolute;
 	left: 0;
-	top: -0.2em;
-	width: 1.1em;
-	height: 1.1em;
+	top: -3px;
+	width: 16px;
+	height: 16px;
 	border-radius: 50%;
 	outline: 0;
 	margin-left: -0.38em;

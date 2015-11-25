@@ -176,7 +176,8 @@ mw.KAnalytics.prototype = {
 
 
 		// Add referrer parameter
-		eventSet[ 'referrer' ] = encodeURIComponent( mw.getConfig('EmbedPlayer.IframeParentUrl') );
+		var pageReferrer =  mw.getConfig('EmbedPlayer.IsFriendlyIframe') ? mw.getConfig('EmbedPlayer.IframeParentUrl') : document.referrer;
+		eventSet[ 'referrer' ] = encodeURIComponent( pageReferrer );
 
 		// Add in base service and action calls:
 		var eventRequest = {'service' : 'stats', 'action' : 'collect'};

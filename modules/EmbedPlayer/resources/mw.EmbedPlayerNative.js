@@ -5,7 +5,7 @@
  */
 (function (mw, $) {
 	"use strict";
-
+	
 	mw.EmbedPlayerNative = {
 
 		//Instance Name
@@ -110,6 +110,7 @@
 					_this.layoutBuilder.closeAlert();
 				}
 			});
+            $(this).bind('firstPlay', this.parseTextTracks());
 		},
 		/**
 		 * Updates the supported features given the "type of player"
@@ -437,9 +438,11 @@
 				// if on the first call ( and video not ready issue load, play
 				if (callbackCount == 0 && vid.paused) {
 					this.stopEventPropagation();
+					this.isWaitingForSeekReady = true;
 					var vidObj = $(vid);
 					var eventName = mw.isIOS() ? "canplaythrough.seekPrePlay" : "canplay.seekPrePlay";
 					vidObj.off(eventName).one(eventName, function () {
+						_this.isWaitingForSeekReady = false;
 						_this.restoreEventPropagation();
 						if (vid.duration > 0) {
 							_this.log("player can seek");
@@ -473,6 +476,10 @@
 			} else {
 				setTimeout(function(){
 					_this.log("player can seek");
+					if (_this.isWaitingForSeekReady){
+						_this.restoreEventPropagation();
+						_this.isWaitingForSeekReady = false;
+					}
 					return checkVideoStateDeferred.resolve();
 				}, 10);
 			}
@@ -487,16 +494,20 @@
 		 * @param {Function} callback
 		 * 		Function called once time has been set.
 		 */
-		setCurrentTime: function( seekTime ) {
-			this.log("setCurrentTime seekTime:" + seekTime );
-			// Try to update the playerElement time:
-			try {
-				var vid = this.getPlayerElement();
-				vid.currentTime = this.currentSeekTargetTime;
-			} catch (e) {
-				this.log("Error: Could not set video tag seekTime");
-				this.triggerHelper("seeked");
-			}
+		setCurrentTime: function( time ) {
+            if( this.isLive() && !this.isDVR() ){
+                this.LiveCurrentTime = time;
+            }else {
+                this.log("setCurrentTime seekTime:" + time);
+                // Try to update the playerElement time:
+                try {
+                    var vid = this.getPlayerElement();
+                    vid.currentTime = this.currentSeekTargetTime;
+                } catch (e) {
+                    this.log("Error: Could not set video tag seekTime");
+                    this.triggerHelper("seeked");
+                }
+            }
 		},
 		/**
 		 * Get the embed player time
@@ -510,6 +521,9 @@
 				this.stop();
 				return false;
 			}
+            if( this.isLive() && !this.isDVR() ){
+                return this.LiveCurrentTime;
+            }
 			var ct = this.playerElement.currentTime;
 			// Return 0 or a positive number:
 			if (!ct || isNaN(ct) || ct < 0 || !isFinite(ct)) {
@@ -823,18 +837,6 @@
 			var vid = this.getPlayerElement();
 			// parent.$('body').append( $('<a />').attr({ 'style': 'position: absolute; top:0;left:0;', 'target': '_blank', 'href': this.getPlayerElement().src }).text('SRC') );
 			var _this = this;
-
-			var nativeCalloutPlugin = {
-				'exist': false
-			};
-			if (mw.isMobileDevice()) {
-				this.triggerHelper('nativePlayCallout', [ nativeCalloutPlugin ]);
-			}
-
-			if (nativeCalloutPlugin.exist) {
-				// if nativeCallout plugin exist play implementation is changed
-				return;
-			}
 
 			// if starting playback from stoped state and not in an ad or otherise blocked controls state:
 			// restore player:
@@ -1367,11 +1369,41 @@
 				this.pause();
 				this.currentTime = 0;
 				this.addStartTimeCheck();
-				this.play();
+				if (this.canAutoPlay()) {
+					this.play();
+				}
 			}
 		},
 		setInline: function ( state ) {
 			this.getPlayerElement().attr('webkit-playsinline', '');
-		}
+		},
+        parseTextTracks: function(){
+            var vid = this.getPlayerElement();
+            var _this = this;
+            var interval = setInterval(function() {
+                for (var i = 0; i < vid.textTracks.length; i++) {
+                    //TODO: add audio support
+
+                    //if Live + No DVR add id3 tags support
+                    if (vid.textTracks[i].kind === "metadata" && _this.isLive() && !_this.isDVR()) {
+                        _this.id3Tag(vid.textTracks[i]);
+                        clearInterval(interval);
+                        vid.textTracks[i].mode = "hidden";
+                    }
+                }
+            }, 500);
+        },
+        id3Tag: function(metadataTrack){
+            var _this = this;
+            metadataTrack.addEventListener("cuechange", function (evt) {
+                try {
+                    var id3Tag = evt.currentTarget.cues[evt.currentTarget.cues.length - 1].value.data;
+                    _this.triggerHelper('onId3Tag', id3Tag);
+                }
+                catch (e) {
+                    mw.log("Native player :: id3Tag :: ERROR :: "+e);
+                }
+            }, false);
+        }
 	};
 })(mediaWiki, jQuery);

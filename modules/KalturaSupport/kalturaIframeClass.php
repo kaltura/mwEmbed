@@ -598,6 +598,11 @@ class kalturaIframeClass {
 			color: #fff;
 			overflow: hidden;
 		}
+		@-moz-document url-prefix() {
+			img:-moz-loading {
+				visibility: hidden;
+			}
+		}
 		video::-webkit-media-controls-start-playback-button {
 			display:none !important;
 		}
@@ -786,7 +791,7 @@ HTML;
 		}
 		//Set the kwidget-ps folder for the loader script
 		$o.="mw.config.set('pskwidgetpath', '$psRelativePath');";
-		// check if loadingSpinner plugin has config: 
+		// check if loadingSpinner plugin has config:
 		if( isset( $playerConfig['plugins']['loadingSpinner'] ) ){
 			$o.='mw.config.set(\'loadingSpinner\', '. 
 				json_encode( $playerConfig['plugins']['loadingSpinner'] ) . ")\n";
@@ -1187,7 +1192,7 @@ HTML;
 			customResources = customResources.concat( kalturaIframePackageData.skinResources );
 		}
 		<?php echo $callbackJS ?>
-		
+
 		<?php
 	}
 	function getPlayerCheckScript(){

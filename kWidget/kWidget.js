@@ -20,7 +20,7 @@
 
 		// Stores widgets that are ready:
 		readyWidgets: {},
-		
+
 		// stores original embed settings per widget:
 		widgetOriginalSettings: {},
 
@@ -176,30 +176,30 @@
 				}
 			}
 
-
-			// Check if using staging server on non-staging site:
-			if (
-				// make sure this is Kaltura SaaS we are checking:
-			mw.getConfig( "Kaltura.ServiceUrl" ).indexOf( 'kaltura.com' ) != -1
-			&&
-				// check that the library is not on production
-			this.getPath().indexOf( 'i.kaltura.com' ) == -1
-			&&
-			this.getPath().indexOf( 'isec.kaltura.com' ) == -1
-			&&
-				// check that we player is not on a staging site:
-			window.location.host != 'kgit.html5video.org'
-			&&
-			window.location.host != 'player.kaltura.com'
-			&&
-			window.location.host != 'localhost'
-			) {
-				if ( console && console.error ) {
-					console.error( "Error: Using non-prodcution version of kaltura player library. Please see http://knowledge.kaltura.com/production-player-urls" )
+			//Show non-production error by default, and allow overriding via flashvar
+			if (!mw.getConfig( "Kaltura.SupressNonProductionUrlsWarning", false )) {
+				// Check if using staging server on non-staging site:
+				if (
+					// make sure this is Kaltura SaaS we are checking:
+					mw.getConfig("Kaltura.ServiceUrl").indexOf('kaltura.com') != -1
+					&&
+						// check that the library is not on production
+					this.getPath().indexOf('i.kaltura.com') == -1
+					&&
+					this.getPath().indexOf('isec.kaltura.com') == -1
+					&&
+						// check that we player is not on a staging site:
+					window.location.host != 'kgit.html5video.org'
+					&&
+					window.location.host != 'player.kaltura.com'
+					&&
+					window.location.host != 'localhost'
+				) {
+					if (console && console.error) {
+						console.error("Error: Using non-prodcution version of kaltura player library. Please see http://knowledge.kaltura.com/production-player-urls")
+					}
 				}
 			}
-
-
 		},
 
 		/**
@@ -245,7 +245,7 @@
 			var _this = this;
 
 			_this.log("jsCallbackReady for " + widgetId);
-			
+
 			if (this.destroyedWidgets[ widgetId ]) {
 				// don't issue ready callbacks on destroyed widgets:
 				return;
@@ -260,7 +260,7 @@
 			// extend the element with kBind kUnbind:
 			this.extendJsListener(player);
 
-			// check for inlineSciprts mode original settings: 
+			// check for inlineSciprts mode original settings:
 			if( this.widgetOriginalSettings[widgetId] ){
 				// TODO these settings may be a bit late for plugins config ( should be set earlier in build out )
 				// for now just null out settings and changeMedia:
@@ -277,7 +277,7 @@
 			} else{
 				player.kBind('mediaReady', function () {
 					// Set the load time against startTime for the current playerId:
-					player.setKDPAttribute("playerStatusProxy", "loadTime", 
+					player.setKDPAttribute("playerStatusProxy", "loadTime",
 							( (new Date().getTime() - _this.startTime[ widgetId ] ) / 1000.0 ).toFixed(2) );
 				});
 			}
@@ -351,7 +351,7 @@
 			if (!settings.flashvars) {
 				settings.flashvars = {};
 			}
-			
+
 			// set player load check at start embed method call
 			this.startTime[targetId] = new Date().getTime();
 
@@ -596,7 +596,8 @@
 			if (!settings.flashvars) {
 				settings.flashvars = {};
 			}
-
+			// autoPlay media after thumbnail interaction
+			settings.flashvars.autoPlay = true;
 			// inject the centered css rule ( if not already )
 			this.addThumbCssRules();
 
@@ -607,7 +608,7 @@
 			}
 			elm.innerHTML = '' +
 				'<div style="position: relative; width: 100%; height: 100%;">' +
-				'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl(settings) + '" >' +
+				'<input type="image" alt="play video content" class="kWidgetCentered" src="' + this.getKalturaThumbUrl(settings) + '" >' +
 				'<div class="kWidgetCentered kWidgetPlayBtn" ' +
 				'id="' + targetId + '_playBtn"' +
 				'></div></div>';
@@ -621,9 +622,6 @@
 				settings.readyCallback = function (playerId) {
 					// issue a play ( since we already clicked the play button )
 					var kdp = document.getElementById(playerId);
-					kdp.kBind('mediaReady', function () {
-						kdp.sendNotification('doPlay');
-					});
 					if (typeof orgEmbedCallback == 'function') {
 						orgEmbedCallback(playerId);
 					}
@@ -1147,7 +1145,7 @@
 			}
 			return cbName;
 		},
-		// TODO does this need to be part of the kWidget library? 
+		// TODO does this need to be part of the kWidget library?
 		resizeOvelayByHolderSize: function (overlaySize, parentSize, ratio) {
 			var overlayRatio = overlaySize.width / overlaySize.height;
 
@@ -1288,17 +1286,17 @@
 				'&parts=1');
 		},
 		isInlineScriptRequest: function( settings ){
-			// don't inline scripts in debug mode: 
+			// don't inline scripts in debug mode:
 			if( mw.getConfig('debug') ){
 				return false;
 			}
-			// check for inlineScript flag: 
+			// check for inlineScript flag:
 			if( settings.flashvars['inlineScript'] ){
 				return true;
 			}
 			return false;
 		},
-		// retruns only the runtime config 
+		// retruns only the runtime config
 		getRuntimeSettings: function( settings ){
 			var runtimeSettings = {};
 			var allowedVars = mw.getConfig('Kaltura.AllowedVars');
