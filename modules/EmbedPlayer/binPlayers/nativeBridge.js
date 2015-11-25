@@ -46,7 +46,7 @@
 		bindPostfix: ".nativeBridge",
 		subscribed: [],
 		playerMethods: [ 'stop', 'play', 'pause', 'replay', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen', 'notifyKPlayerEvent', 'notifyKPlayerEvaluated', 'notifyJsReady', 'showChromecastDeviceList', 'notifyLayoutReady',
-			'doneFSBtnPressed', 'addNativeAirPlayButton', 'showNativeAirPlayButton', 'hideNativeAirPlayButton', 'doNativeAction', 'textTracksReceived', 'loadEmbeddedCaptions' ],
+			'doneFSBtnPressed', 'addNativeAirPlayButton', 'showNativeAirPlayButton', 'hideNativeAirPlayButton', 'doNativeAction', 'textTracksReceived', 'loadEmbeddedCaptions', 'togglePictureInPicture' ],
 
 		registePlayer: function (proxyElement) {
 			var _this = this;

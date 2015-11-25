@@ -35,7 +35,11 @@
 						.attr( 'title', this.nextTitle )
 						.addClass( "btn btnNarrow icon-new-tab pull-right" )
 						.click( function() {
-							_this.embedPlayer.playerElement.webkitSetPresentationMode(_this.embedPlayer.playerElement.webkitPresentationMode === "picture-in-picture" ? "inline" : "picture-in-picture");
+							if( _this.embedPlayer.isNativeApp() ) {
+								_this.embedPlayer.togglePictureInPicture();
+							} else {
+								_this.embedPlayer.playerElement.webkitSetPresentationMode(_this.embedPlayer.playerElement.webkitPresentationMode === "picture-in-picture" ? "inline" : "picture-in-picture");
+							}
 						});
 
 				}
