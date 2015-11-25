@@ -48,17 +48,16 @@
                 var _this = this;
                 $(_this.emptyScreen()).hide().append(
                 '<div class="ivqContainer">'+
-                '<div class="header-container"></div>'+
-                '<div class = "reviewAnswerNr"> </div>'+
-                '<div class ="reviewAnswerPlace" >'+
-                '<div class="theQuestion"></div>'+
-                '<div class="yourAnswerText"></div>'+
-                '<div class="yourAnswer"></div>'+
-                '<div class="correctAnswerText"></div>'+
-                '<div class="correctAnswer"></div>'+
-                '</div>'+
-                '</div>'+
-                '<div class="gotItBox"></div>').fadeIn( "slow" );
+                '   <div class="header-container"></div>'+
+                '   <div class = "reviewAnswerNr"> </div>'+
+                '   <div class ="reviewAnswerPlace" >'+
+                '       <div class="theQuestion"></div>'+
+                '       <div class="yourAnswerText"></div>'+
+                '       <div class="yourAnswer"></div>'+
+                '       <div class="correctAnswerText"></div>'+
+                '       <div class="correctAnswer"></div>'+
+                '   </div>'+
+                '<div class="gotItBox"></div></div>').fadeIn( "slow" );
 
             },
             tmplSubmitted:function(){

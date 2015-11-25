@@ -200,7 +200,6 @@
                     _this.KIVQScreenTemplate.tmplHint();
                     $(".header-container").addClass('close-button')
                         .on('click', function () {
-                           // $(".screen-content" ).removeClass('bk-gradient');
                             _this.ssSetCurrentQuestion(questionNr,true);
 
                         });
@@ -214,7 +213,6 @@
                     _this.KIVQScreenTemplate.tmplWhy();
                     $(".header-container").addClass('close-button')
                         .on('click', function () {
-                            //_this.removeShowScreen("reviewAnswer");
                             _this.KIVQScreenTemplate.tmplReviewAnswer();
                             _this.ssReviewAnswer(questionNr);
                         });
@@ -302,7 +300,6 @@
                     });
                     $(document).off('click','.q-box-false')
                         .on('click', '.q-box-false', function () {
-                            //_this.removeShowScreen("reviewAnswer");
                             _this.KIVQScreenTemplate.tmplReviewAnswer();
                             _this.ssReviewAnswer(parseInt($(this).attr('id')));
                     });
@@ -315,7 +312,6 @@
                 .on('click', function () {
                     _this.KIVQScreenTemplate.tmplThankYou();
                     $(".title-text").html(gM('mwe-quiz-thankYou'));
-                    //_this.removeShowScreen("contentScreen");
                     $(this).delay(1000).fadeIn(function () {
                         _this.KIVQModule.continuePlay();
                     });
