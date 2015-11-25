@@ -510,7 +510,7 @@ class kalturaIframeClass {
 		$_GET['lang'] = $this->getLangKey();
 		// include skin and language in cache path, as a custom param needed for startup
 		$cachePath = $wgScriptCacheDirectory . '/startup.' .
-			$wgMwEmbedVersion . $_GET['skin'] . $_GET['lang'] . $wgHTTPProtocol . '.min.js';
+			$wgMwEmbedVersion . $_GET['skin'] . $_GET['lang'] . $wgHTTPProtocol . '.' . $_SERVER['SERVER_NAME'] . '.min.js';
 			
 		// check for cached startup:
 		if( !$wgEnableScriptDebug){
@@ -596,7 +596,14 @@ class kalturaIframeClass {
 			color: #fff;
 			overflow: hidden;
 		}
-		
+		@-moz-document url-prefix() {
+			img:-moz-loading {
+				visibility: hidden;
+			}
+		}
+		video::-webkit-media-controls-start-playback-button {
+			display:none !important;
+		}
 		div,video {
 			margin: 0;
 			padding: 0;
@@ -650,7 +657,7 @@ HTML;
 			$theme = $playerConfig['plugins']['theme'];
 			$customStyle = '<style type="text/css">';
 			if (isset($theme['buttonsSize'])){
-				$customStyle = $customStyle . 'body {font-size: ' . $theme['buttonsSize'] . 'px}';
+				$customStyle = $customStyle . '.controlsContainer, .topBarContainer {font-size: ' . $theme['buttonsSize'] . 'px}';
 			}
 			if (isset($theme['buttonsColor'])){
 				$customStyle = $customStyle . '.btn {background-color: ' . $theme['buttonsColor'] . '}';
@@ -941,7 +948,7 @@ HTML;
 				// check for returned errors: 
 				echo json_encode( $payload );
 			?>;
-			var isIE8 = /msie 8/.test(navigator.userAgent.toLowerCase());
+			var isIE8 = document.documentMode === 8;
 		</script>
 		<script type="text/javascript">
 			<!-- Include the mwEmbedStartup script inline will initialize the resource loader -->
@@ -1196,9 +1203,16 @@ HTML;
 	<?php echo $this->outputSkinCss(); ?>
 	<?php echo $this->outputCustomCss(); ?>
 
-	<!--[if lt IE 10]>
-	<script type="text/javascript" src="<?php echo $this->getPath(); ?>resources/PIE/PIE.js"></script>
-	<![endif]-->
+	<script type="text/javascript">
+		(function (document) {
+			if (document.documentMode && document.documentMode <= 9) {
+				var tag = document.createElement('script');
+				tag.type = 'text/javascript';
+				tag.src = "<?php echo $this->getPath(); ?>resources/PIE/PIE.js";
+				document.getElementsByTagName('head')[0].appendChild(tag);
+			}
+		})(window.document);
+	</script>
 </head>
 <body>
 <?php echo $this->getKalturaIframeScripts(); ?>

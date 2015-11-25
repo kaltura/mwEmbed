@@ -39,8 +39,6 @@
 				&&
 				$.cookie( this.cookieName ) == 'None')
 				||
-				this.getConfig('displayCaptions') === null
-				||
 				( this.getConfig( 'hideClosedCaptions') === true )
 			){
 				this.setConfig('displayCaptions', false );
@@ -153,9 +151,11 @@
 
 			this.bind( 'onplay', function(){
 				_this.playbackStarted = true;
+				_this.getMenu().close();
 			});
 			this.bind( 'hidePlayerControls', function(){
 				_this.getComponent().removeClass( 'open' );
+				_this.getMenu().close();
 			});
 
 			this.bind( 'showHideClosedCaptions', function(){
@@ -305,15 +305,19 @@
 			this.updateTimeOffset();
 			// Get from <track> elements
 			$.each( this.getPlayer().getTextTracks(), function( inx, textSource ){
-				_this.textSources.push( new mw.TextSource( textSource ) );
+				var textSource = new mw.TextSource( textSource );
+				if ( !_this.textSourcesInSources(_this.textSources, textSource) ){
+					_this.textSources.push( textSource );
+				}
 			});
 
 			this.loadCaptionsFromApi(function( captions ){
 				// Add track elements
 				$.each(captions, function(){
-					_this.textSources.push(
-						_this.getTextSourceFromDB( this )
-					);
+					var textSource = _this.getTextSourceFromDB( this );
+					if ( !_this.textSourcesInSources(_this.textSources, textSource) ){
+						_this.textSources.push(textSource);
+					}
 				});
 				// Allow plugins to override text sources data
 				_this.getPlayer().triggerHelper( 'ccDataLoaded', [_this.textSources, function(textSources){
@@ -333,6 +337,14 @@
 				}
 				callback();
 			});
+		},
+		textSourcesInSources: function(sources, textSource){
+			for ( var  i = 0; i < sources.length; i++ ){
+				if ( sources[i].id === textSource.id ){
+					return true;
+				}
+			}
+			return false;
 		},
 		loadCaptionsFromApi: function( callback ){
 			if(!this.getPlayer().kentryid){
@@ -797,6 +809,8 @@
 
 			// Check if we even have textSources
 			if( sources == 0 ){
+				this.setConfig('displayCaptions', false);
+
 				if( this.getConfig('hideWhenEmpty') === true ) {
 					this.getBtn().hide();
 				}
@@ -813,6 +827,9 @@
 
 				return this.getMenu();
 			} else {
+				if( this.getConfig('hideWhenEmpty') == true ){
+					this.setConfig('visible', true)
+				}
 				this.getBtn().show();
 				// show new timed captions text if exists
 				this.showCaptions();

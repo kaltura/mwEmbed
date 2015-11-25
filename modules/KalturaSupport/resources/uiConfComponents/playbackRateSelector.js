@@ -25,7 +25,7 @@
 				return false;
 			}
 			this.bind('playerReady', function(){
-				if ( _this.getConfig("serverSpeedPlayback") === true ){
+				if ( _this.getConfig("serverSpeedPlayback") === true && _this.manifestSource ){
 					deferred.resolve(true);
 				}
 				if ( _this.embedPlayer.isLive() ){
@@ -33,7 +33,7 @@
 				}
 				// check if we have sources that can play with Native library:
 				if (_this.embedPlayer.mediaElement.getNativePlayableSources().length > 0){
-					deferred.resolve(document.createElement( "video" ).playbackRate);
+					deferred.resolve(document.createElement( "video" ).playbackRate && !mw.isMobileDevice());
 				}
 			});
 			return deferred.promise();
@@ -56,6 +56,10 @@
 			});
 
 			this.bind( 'onChangeMediaDone', function(){
+				_this.currentSpeed = 1;
+				_this.getBtn().text( '1x' );
+				_this.buildMenu();
+
 				_this.manifestSource = null;
 			});
 
@@ -152,21 +156,28 @@
 		setSpeed: function( newSpeed ){
 			var _this = this;
 			this.log('Set Speed to: ' + newSpeed);
+			var previousSpeed = this.currentSpeed;
 			this.currentSpeed = newSpeed;
 			// check if we need to switch interfaces: 
-			if( this.getPlayer().instanceOf != 'Native' || (mw.isMobileDevice() && this.getConfig("serverSpeedPlayback"))){
-				this.handlePlayerInstanceUpdate( newSpeed );
+			if( this.getPlayer().instanceOf != 'Native' || (mw.isMobileDevice() && this.getConfig("serverSpeedPlayback") && this.manifestSource)){
+				this.handlePlayerInstanceUpdate( newSpeed, previousSpeed );
 				return ;
 			}
 			this.updatePlaybackRate( newSpeed );
 		},
-		handlePlayerInstanceUpdate: function( newSpeed ){
+		handlePlayerInstanceUpdate: function( newSpeed, previousSpeed ){
 			var _this = this;
 			var currentPlayTime = this.getPlayer().currentTime;
 			this.currentSpeed = newSpeed;
-			if (this.getConfig("serverSpeedPlayback") && this.currentSpeed <= 2 && (this.getPlayer().instanceOf === 'Kplayer' || mw.isMobileDevice()) && this.manifestSource){
+			if (this.getConfig("serverSpeedPlayback") && this.currentSpeed <= 2 && (this.getPlayer().instanceOf === 'Kplayer' || mw.isMobileDevice())){
+				// for decimal numbers, make sure we have only one digit after the dot (server limitation)
+				if ( this.currentSpeed % 1 !== 0 ){
+					this.currentSpeed = this.currentSpeed.toFixed(1);
+				}
 				var source = this.manifestSource;
-
+				if (this.manifestSource){ // for HLS and HDS, since the movie duration changes, we need to recalculate the position
+					currentPlayTime = currentPlayTime * previousSpeed / this.currentSpeed;
+				}
 				var fileName = source.substr(source.lastIndexOf("/"));
 				var base = source.substr(0,source.lastIndexOf("/"));
 				if (fileName.indexOf("/a.f4m") === 0){
@@ -178,19 +189,6 @@
 				var newSrc = base + "/playbackRate/" + this.currentSpeed + fileName;
 				this.updatePlaybackRate( newSpeed );
 
-				if ( currentPlayTime > 0 ){
-					$(this.embedPlayer).bind("playing", function(){
-						$(_this.embedPlayer).unbind("playing");
-						setTimeout(function(){
-							if (mw.isIOS()){
-								_this.getPlayer().getPlayerElement().currentTime =  currentPlayTime / newSpeed ;
-							}else{
-								_this.embedPlayer.seek( currentPlayTime / newSpeed );
-							}
-						},0);
-					});
-				}
-
 				if (mw.isMobileDevice()){
 					this.getPlayer().getPlayerElement().src = newSrc;
 					this.getPlayer().mediaElement.selectedSource.src = newSrc;
@@ -200,6 +198,21 @@
 				}else{
 					this.embedPlayer.playerObject.sendNotification("changeMedia", { "entryUrl" : newSrc});
 					this.embedPlayer.play();
+				}
+
+				if ( currentPlayTime > 0 ){
+					this.embedPlayer.stopMonitor();
+					$(this.embedPlayer).bind("playing", function(){
+						$(_this.embedPlayer).unbind("playing");
+						setTimeout(function(){
+							if (mw.isIOS()){
+								_this.getPlayer().getPlayerElement().currentTime =  currentPlayTime ;
+							}else{
+								_this.embedPlayer.seek( currentPlayTime );
+							}
+							_this.embedPlayer.startMonitor();
+						},0);
+					});
 				}
 			}else{
 				var source = this.getPlayer().mediaElement.autoSelectNativeSource();
@@ -216,7 +229,7 @@
 								_this.unbind("seeked");
 							});
 							_this.getPlayer().seek( currentPlayTime ); // issue a seek if given new seek time
-						}, 0);
+						}, 200);
 					}
 				});
 			}

@@ -12,7 +12,8 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 		accessibleVolumeChange: 0.1,
 		showSlider: true,
         pinVolumeBar: false,
-		useCookie: true
+		useCookie: true,
+		uniquePlayerCookie: false
 
 	},
 	icons: {
@@ -24,7 +25,7 @@ mw.PluginManager.add( 'volumeControl', mw.KBaseComponent.extend({
 	setup: function( embedPlayer ) {
 		this.addBindings();
 		var _this = this;
-		this.cookieName = this.pluginName + '_volumeValue';
+		this.cookieName = _this.getConfig( 'uniquePlayerCookie' ) ? this.pluginName + '_volumeValue_' + this.embedPlayer.kuiconfid : this.pluginName + '_volumeValue';
 		this.bind( 'playerReady ' , function () {
 			if ( (_this.getConfig( 'useCookie' ) && $.cookie( _this.cookieName ) ) ) {
 				var volumeValue = parseInt( $.cookie( _this.cookieName ) );

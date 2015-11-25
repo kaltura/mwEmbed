@@ -9,11 +9,11 @@
 		 	"align": "right",
 		 	"showTooltip": true,
 
-		 	"tooltip": "Report",
-		 	"reasonSex": "Sexual Content",
-		 	"reasonViolence": "Violent Or Repulsive",
-		 	"reasonHarmful": "Harmful Or Dangerous Act",
-		 	"reasonSpam": "Spam / Commercials"
+		 	"tooltip": gM("ks-MODERATION-REPORT"),
+		 	"reasonSex": gM("ks-MODERATION-REASON-SEX"),
+		 	"reasonViolence": gM("ks-MODERATION-REASON-VIOLENCE"),
+		 	"reasonHarmful": gM("ks-MODERATION-REASON-HARMFUL"),
+		 	"reasonSpam": gM("ks-MODERATION-REASON-SPAM")
 		},
 
 		drawModal: function() {
@@ -47,13 +47,13 @@
 				$('<div/>' ).append(
 				$('<button />')
 					.addClass( 'ui-state-default ui-corner-all copycode' )
-					.text("Cancel")
+					.text( gM("ks-MODERATION-CANCEL") )
 					.click(function(){
 						_this.closeModal();
 					}),
 				$( '<button />' )
 					.addClass( 'ui-state-default ui-corner-all copycode' )
-					.text( 'Submit' )
+					.text( gM("ks-MODERATION-SUBMIT") )
 					.click(function() {
 						_this.submitFlag({
 							'flagType': $( '#flagType' ).val(),
@@ -99,11 +99,11 @@
 				_this.getPlayer().hideSpinner();
 				var $flagScreen = $( '<div />' )
 					.append(
-						$( '<h3 />' ).text( 'Thank you for sharing your concerns' ),
+						$( '<h3 />' ).text( gM("ks-MODERATION-THANKS") ),
 						$( '<div />' ).append(
 							$( '<button />' )
 								.addClass( 'ui-state-default ui-corner-all copycode' )
-								.text( 'Done' )
+								.text( gM("ks-MODERATION-DONE") )
 								.click(function() {
 									_this.getPlayer().triggerHelper( 'onEnableKeyboardBinding' );
 									_this.closeModal();

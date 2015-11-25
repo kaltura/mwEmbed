@@ -20,7 +20,7 @@
 
 <div class="form-group">
     <label for="url">HLS URL</label>
-    <input type="email" class="form-control" id="url" value="http://cdnapi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_sf5ovm7u/flavorIds/1_jl7y56al/format/applehttp/protocol/http/a.m3u8">
+    <input type="email" class="form-control" id="url" value="http://cdnapi.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_uka1msg4/flavorIds/1_vqhfu6uy,1_80sohj7p,1_ry9w1l0b/format/applehttp/protocol/http/a.m3u8">
   </div>
   
   <div class="form-group">
@@ -44,21 +44,37 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
 <table>
     <tbody>
     <tr>
-        <th scope="row">hlsSegmentBuffer</th>
+        <th scope="row">hlsLiveSegmentBuffer</th>
         <td><input type="number" class="form-control" id="segBuffer" value="-1"/></td>
     </tr>
     <tr>
-        <th scope="row">hlsOverrideTargetDuration</th>
-        <td><input type="number" class="form-control" id="targetDuration" value="-1"/></td>
+        <th scope="row">hlsInitialBufferTime</th>
+        <td><input type="number" class="form-control" id="iniBuffer" value="-1"/></td>
+    </tr>
+    <tr>
+        <th scope="row">hlsExpandedBufferTime</th>
+        <td><input type="number" class="form-control" id="exBuffer" value="-1"/></td>
+    </tr>
+    <tr>
+        <th scope="row">hlsMaxBufferTime</th>
+        <td><input type="number" class="form-control" id="maxBuffer" value="-1"/></td>
     </tr>
     <tr>
         <th scope="row">hlsLogs</th>
         <td><input type="checkbox" class="form-control" id="hlsLogs" value="" checked/></td>
     </tr>
+    <tr>
+        <th scope="row">DVR</th>
+        <td><input type="checkbox" class="form-control" id="dvr" /></td>
+    </tr>
+    <tr>
+        <th scope="row">wmode</th>
+        <td><input type="text" class="form-control" id="wmode" value="transparent" /></td>
+    </tr>
 </table>
     <br/>
 <input type="button" id="generate" value="Create Player" />
-<input type="button" id="showVisualisation" value="Show Visualisation" />
+<input type="button" id="showVisualisation" value="Show/Hide Visualisation Animation" />
 <br><br>
 <div id="kaltura_player" style="width:624px; height: 387px;display:block;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject">
 </div>
@@ -118,21 +134,47 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
 			$('#nativeCallout-native').attr('checked', !vals.ncweb );
 			$('#url').val( vals.url );
 			$('#urlthumb').val( vals.thumb );
-            $('#segBuffer').val( vals.hlsSegmentBuffer );
-            $('#targetDuration').val( vals.hlsOverrideTargetDuration );
+            $('#segBuffer').val( vals.hlsLiveSegmentBuffer );
+            $('#iniBuffer').val( vals.hlsInitialBufferTime );
+            $('#exBuffer').val( vals.hlsExpandedBufferTime );
+            $('#maxBuffer').val( vals.hlsMaxBufferTime );
             $('#hlsLogs').attr('checked', vals.hlsLogs );
+            $('#wmode' ).val(vals.wmode);
+            $('#dvr' ).attr('checked', vals.dvr );
 		}
 	}catch(err){
 		
 	}
-	
+
 	// handle click event 
 	$('#generate').click( function() {
+        //save the current state of the hlsLogs checkbox
+        var _this = this;
+        _this.hlsLogsIsChecked = $('#hlsLogs').is(':checked'); //used later on inside kWidget ReadyCallback
+
+        //hide visualization controls if hlsLogs check box is unchecked
+        if(_this.hlsLogsIsChecked){
+            $('#showVisualisation').show();
+        }else{
+            $('#showVisualisation').hide();
+            $('#visualisation').hide();
+        }
+
+        //clear canvas
+        stopDrawing();
+
+        //clear debug info fields
         if ($('#segBuffer').val() === ""){
             $('#segBuffer').val( -1 );
         }
-        if ($('#targetDuration').val() === ""){
-            $('#targetDuration').val( -1 );
+        if ($('#iniBuffer').val() === ""){
+            $('#iniBuffer').val( -1 );
+        }
+        if ($('#exBuffer').val() === ""){
+            $('#exBuffer').val( -1 );
+        }
+        if ($('#maxBuffer').val() === ""){
+            $('#maxBuffer').val( -1 );
         }
         $('#droppedFrames').text("");
         $('#currentBitrate').text("");
@@ -148,18 +190,26 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
 			'ncweb':$('#nativeCallout-web').is(':checked'),
 			'url': $('#url').val(),
 			'thumb':  $('#urlthumb').val(),
-            'hlsSegmentBuffer': parseInt($('#segBuffer').val()),
-            'hlsOverrideTargetDuration': parseInt($('#targetDuration').val())
+            'hlsLiveSegmentBuffer': parseInt($('#segBuffer').val()),
+            'hlsInitialBufferTime': parseInt($('#iniBuffer').val()),
+            'hlsExpandedBufferTime': parseInt($('#exBuffer').val()),
+            'hlsMaxBufferTime': parseInt($('#maxBuffer').val()),
+            'hlsLogs': $('#hlsLogs').is(':checked'),
+            'wmode':$('#wmode' ).val(),
+            'dvr':  $('#dvr').is(':checked')
 		}));
 		
 		var settings = {
 			"LeadWithHLSOnFlash": true,
             "ForceFlashOnDesktopSafari": true,
-            "hlsSegmentBuffer": parseInt($('#segBuffer').val()),
-            "hlsOverrideTargetDuration": parseInt($('#targetDuration').val()),
+            "hlsLiveSegmentBuffer": parseInt($('#segBuffer').val()),
+            "hlsInitialBufferTime": parseInt($('#iniBuffer').val()),
+            "hlsExpandedBufferTime": parseInt($('#exBuffer').val()),
+            "hlsMaxBufferTime": parseInt($('#maxBuffer').val()),
             "hlsLogs": $('#hlsLogs').is(':checked'),
             "sourceSelector.plugin" : true,
             "closedCaptions.showEmbeddedCaptions" : true,
+            "wmode":$('#wmode' ).val(),
             'debugInfo': {
                 'plugin': true
             },
@@ -191,6 +241,9 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
 					// set live stream HLS url: 
 					"hlsStreamUrl":  $('#url').val()
 			};
+            if ($('#dvr').is(':checked')){
+                settings['mediaProxy']['meta']['dvrStatus']  = true;
+            }
 			// enable liveCore plugin, without 'api based is-stream-live checks':
 			settings.liveCore = { 
 					"plugin":true, 
@@ -211,6 +264,9 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
 		});
 
         kWidget.addReadyCallback(function( playerId ){
+            if(_this.hlsLogsIsChecked) {
+                startDrawing();
+            }
             var kdp = document.getElementById( playerId );
             kdp.kBind("debugInfoReceived", function( data ){
                 var ts;
@@ -247,11 +303,6 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
     // handle click event
     $('#showVisualisation').click( function() {
         $('#visualisation').toggle();
-
-        if($('#kaltura_player_ifp').is(':visible') && $('#visualisation').is(':visible')){
-            // Initiate buffer rendering.
-            requestAnimationFrame(redrawBuffer);
-        }
     });
 </script>
 

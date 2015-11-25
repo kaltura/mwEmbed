@@ -16,6 +16,9 @@
 	box-sizing: border-box;
 	cursor: pointer;
 }
+.fullscreen .related .item {
+	height: 33.3%;
+}
 .related .item:hover .title {
 	display: block;
 }
@@ -108,7 +111,7 @@
 
 	.related .featured {
 		width: 50% !important;
-		height: 66% !important;
+		height: 65.9% !important;
 	}
 }
 
@@ -132,7 +135,7 @@
 
 	.related .featured {
 		width: 50% !important;
-		height: 66% !important;
+		height: 65.9% !important;
 	}
 }
 /* smartphone - portrait web*/
@@ -183,16 +186,22 @@
 
 	.fullscreen .related .item {
 		width: 25%;
-		height: 33%;
+		height: 33.3%;
 	}
 
 	.fullscreen .related .featured {
-		width: 100% !important;
-		height: 50% !important;
+		width: 50%;
+		height: 66%;
 	}
-
+    .screen-content{
+        width: 100% !important;
+    }
 }
-
+@media only screen and (max-width: 1050px) and (min-width: 651px)  and (orientation: portrait){
+    .screen-content{
+        height: 50% !important;
+    }
+}
 
 @media only screen and (max-width: 1290px) and (min-width: 1051px) {
 	/* Medium desktop: 4 tiles */

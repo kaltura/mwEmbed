@@ -1,3 +1,4 @@
+/*jshint bitwise: false*/
 
 (function (mw, $, ko) {
 	"use strict";
@@ -17,6 +18,56 @@
 		moduleStatus: ko.observable(undefined),
 		announcementOnlyStatus: ko.observable(false),
 
+		// get an hash code from a ks
+		getKSHash: function(ks) {
+			var hash = 0, i, chr, len;
+			if (ks.length === 0){
+				return hash;
+			}
+			for (i = 0, len = ks.length; i < len; i++) {
+				chr   = ks.charCodeAt(i);
+				hash  = ((hash << 5) - hash) + chr;
+				hash |= 0; // Convert to 32bit integer
+			}
+
+			return hash.toString();
+		},
+
+		getRandomInt: function(min, max) {
+			return Math.floor(Math.random() * (max - min + 1)) + min;
+		},
+
+		// return something like ##guestHashSeparator-186168013885295##
+		generateUserId: function(){
+			var _this = this;
+
+			return	"##" +
+					_this.getConfig("userId") + "HashSeparator" +
+					_this.getKSHash(_this.getPlayer().getFlashvars().ks) +
+					_this.getRandomInt(10000,99999999).toString() +
+					"##";
+		},
+
+		getUserID: function(){
+			var _this = this;
+
+			// If our user ID is the same as the configured anonymousUserId we need to generate one, or get it from localStorage (if exists)
+			if (!_this.getConfig("userRole") || _this.getConfig("userRole") === "anonymousRole"){
+
+				//if localStorage is available, get & store the user id from it;
+				if(window.localStorage) {
+					if (!localStorage.kAnonymousUserId) {
+						localStorage.kAnonymousUserId = _this.generateUserId();
+					}
+					return localStorage.kAnonymousUserId;
+				}else{
+					// localStorage is not available. Just generate a user id
+					return _this.generateUserId();
+				}
+			}
+			return _this.getConfig("userId");
+		},
+
 		getBaseConfig: function() {
 			var parentConfig = this._super();
 			return $.extend({}, parentConfig, {
@@ -27,6 +78,7 @@
 		setup: function () {
 			this.addBindings();
 		},
+
         destroy: function(){
             var _this = this;
             if (_this.KQnaModule) {
@@ -175,13 +227,13 @@
             var embedPlayer = this.getPlayer();
 			if (!this.$qnaListContainer) {
 
-				// for unfriendly iFrames, where we can't access window['parent'] we set on page to true
-				if ( !this.getConfig( 'onPage' ) ) {
+				// for unfriendly iFrames, where we can't access window['parent'] we set on page to false
+				if ( this.getConfig( 'onPage' ) ) {
 					try{
 						var parent = window['parent'].document;
 					}catch(e){
-						this.setConfig('onPage', true);
-						mw.log("cant access window['parent'] - setting to true");
+						this.setConfig('onPage', false);
+						mw.log("cant access window['parent'] - setting to false");
 					}
 				}
 
@@ -282,6 +334,28 @@
 			_this.getQnaContainer().find('.listHolder').height(newHeight);
 		},
 
+		submitQuestion : function(){
+			var _this = this;
+			var textArea = _this.getQnaContainer().find('.qnaQuestionTextArea');
+			var question = textArea.val();
+
+			// protection from empty string
+			if (!(/\S/.test(question))){
+				return false;
+			}
+
+			if (_this.getPlayer().isOffline() && !_this.getConfig( 'allowNewQuestionWhenNotLive' )){
+				alert(gM('qna-cant-ask-while-not-live'));
+			} else {
+				if (question !== gM('qna-default-question-box-text')) {
+					_this.KQnaService.submitQuestion(question);
+					_this.resetTextArea(textArea);
+					return true;
+				}
+			}
+			return false;
+		},
+
 		bindButtons : function(){
 			var _this = this;
 			var sendButton = _this.getQnaContainer().find('.qnaSendButton');
@@ -290,16 +364,7 @@
 			sendButton
 				.off('click')
 				.on('click', function(){
-					var question = _this.getQnaContainer().find('.qnaQuestionTextArea').val();
-
-					if (_this.getPlayer().isOffline() && !_this.getConfig( 'allowNewQuestionWhenNotLive' )){
-						alert(gM('qna-cant-ask-while-not-live'));
-					} else {
-					if (question !== gM('qna-default-question-box-text')) {
-						_this.KQnaService.submitQuestion(question);
-						_this.resetTextArea(textArea);
-					}
-					}
+					_this.submitQuestion();
 				});
 			var cancelButton = _this.getQnaContainer().find('.qnaCancelButton');
 			cancelButton.text(gM('qna-cancel-button-text'));
@@ -327,6 +392,16 @@
 						_this.resetTextArea(textArea);
 					}
 				});
+
+			textArea.keydown(function(e){
+				// if its an enter, and the shift|alt|ctrl were not down - submit the question
+				if (e.keyCode === 13 && !e.altKey && !e.shiftKey && !e.ctrlKey){
+					if (_this.submitQuestion()) {
+						e.target.blur();
+					}
+					e.preventDefault();
+				}
+			});
 
 			textArea.bind("mousewheel",function(ev) {
 				ev.preventDefault();

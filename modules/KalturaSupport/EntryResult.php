@@ -58,45 +58,49 @@ class EntryResult {
 	
 	function getResult(){
 		$mediaProxyOverride = json_decode(json_encode( $this->uiconf->getPlayerConfig( 'mediaProxy' ) ), true);
-		// check for user supplied mediaProxy override of entryResult
-		if( $mediaProxyOverride && isset( $mediaProxyOverride['entry'] ) ){
-			$mediaProxyOverride['entry']['manualProvider'] = 'true';
-			return $mediaProxyOverride;
-		}
 		// Check for entry or reference Id
 		if( ! $this->request->getEntryId() && ! $this->request->getReferenceId() ) {
+			
+			// check for user supplied mediaProxy override of entryResult
+			if( $mediaProxyOverride && isset( $mediaProxyOverride['entry'] ) ){
+				$mediaProxyOverride['entry']['manualProvider'] = 'true';
+				return $mediaProxyOverride;
+			}
 			return array();
 		}
 		
-		// Check for entry cache:
+		// Check for entry non-expired entry cache:
 		if ( !$this->request->hasKS() ){
-            $this->entryResultObj = unserialize( $this->cache->get( $this->getCacheKey() ) );
-            if( $this->entryResultObj ){
-                return $this->entryResultObj;
-            }
-        }
-		
-		// Check if we have a cached result object:
+			$this->entryResultObj = unserialize( $this->cache->get( $this->getCacheKey() ) );
+		}
+
+		// Check if we have need to load from api
 		if( ! $this->entryResultObj ){
 			$this->entryResultObj = $this->getEntryResultFromApi();
+			// if no errors, not admin and we have access, and we have a fresh API result, add to cache.
+			// note playback will always go through playManifest
+			// so we don't care if we cache where one users has permission but another does not.
+			// we never cache admin or ks users access so would never expose info that not defined across anonymous regional access.
+			if( $this->isCachable() ){
+				$this->cache->set( $this->getCacheKey(), serialize( $this->entryResultObj ) );
+				$this->cache->set( $this->getCacheKey() + '_savetime', time() );
+			}
 		}
-		// if no errors, not admin and we have access, add to cache. 
-		// note playback will always go through playManifest 
-		// so we don't care if we cache where one users has permission but another does not. 
-		// we never cache admin or ks users access so would never expose info that not defined across anonymous regional access. 
-		if( $this->isCachable() ){
-			$this->cache->set( $this->getCacheKey(), serialize( $this->entryResultObj ) );
-			$this->cache->set( $this->getCacheKey() + '_savetime', time() );
-		}
-		
-		//check if we have errors on the entry
+		// check if we have errors on the entry
 		if ($this->error) {
 			$this->entryResultObj['error'] = $this->error;
+		}
+		// merge in mediaProxy values if set:
+		if( $mediaProxyOverride ){
+			$this->entryResultObj = array_replace_recursive($this->entryResultObj,  $mediaProxyOverride);
+			if( isset( $mediaProxyOverride['sources'] ) ){
+				$mediaProxyOverride['entry']['manualProvider'] = 'true';
+			}
 		}
 		return $this->entryResultObj;
 	}
 	function isCachable(){
-		return !$this->error 
+		return !$this->error
 				&& 
 			$this->isAccessControlAllowed( $this->entryResultObj ) 
 				&&
@@ -209,12 +213,28 @@ class EntryResult {
 		} else {
 			$resultObject['meta'] = array();
 		}
-
-		// Check that the ks was valid on the first response ( flavors ) 
+		// Check that the ks was valid on the first response ( flavors )
 		if( is_array( $resultObject['meta'] ) && isset( $resultObject['meta']['code'] ) && $resultObject['meta']['code'] == 'INVALID_KS' ){
 			$this->error = 'Error invalid KS';
 			return array();
 		}
+
+        $vars = $this->uiconf->playerConfig['vars'];
+		$playerConfig = $this->uiconf->getPlayerConfig();
+		if( is_array( $resultObject['contextData'] ) && isset( $resultObject['contextData']['code'] ) && $resultObject['contextData']['code'] == 'ENTRY_ID_NOT_FOUND' && !isset($vars['referenceId'])){
+			if (!isset($playerConfig['plugins']['strings']['mwe-embedplayer-missing-source'])){
+				$this->error = 'No source video was found';
+			}
+			return array();
+		}
+
+		//if the video is still uploading or converting
+		if ( isset($resultObject['meta']) &&  isset( $resultObject['meta']->status ) &&
+			($resultObject['meta']->status == 0  || $resultObject['meta']->status == 1)){
+				$this->error = 'No source video was found - Entry in process';
+				return array();
+		}
+
 		
 		// Set partner id from entry meta data
 		if( is_object( $resultObject['meta'] ) &&  isset($resultObject['meta']->partnerId) ) {

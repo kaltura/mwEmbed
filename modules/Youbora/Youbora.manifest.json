@@ -1,0 +1,20 @@
+{
+    "youbora": {
+        "label": "Youbora Analytics",
+        "description": "A powerful intelligence analytics and optimization platform to deliver online TV-quality video experiences.<br>",
+        "attributes": {
+            "youboraDataLib": {
+                "doc": "The url for the youbora smartplugin javaScirpt library",
+                "type": "url"
+            },
+            "trackEventMonitor": {
+                "doc": "Track Youbora media analytics events with a named callback.",
+                "type": "string"
+            },
+            "userId": {
+                 "doc": "The user id of the current user",
+                "type": "string"
+            }
+        }
+    }
+}

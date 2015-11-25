@@ -11,7 +11,8 @@
 			"switchOnResize": false,
 			"simpleFormat": true,
 			"iconClass": "icon-cog",
-            "displayMode": "size" //'size' – displays frame size ( default ), 'bitrate' – displays the bitrate, 'sizebitrate' displays size followed by bitrate
+            "displayMode": "size", //'size' – displays frame size ( default ), 'bitrate' – displays the bitrate, 'sizebitrate' displays size followed by bitrate
+            "hideSource": false
 		},
 
 		isDisabled: false,
@@ -70,6 +71,9 @@
                 if ( _this.getMenu().isOpen() )
                     _this.getMenu().close();
             });
+			this.bind( 'onChangeMedia', function(){
+				_this.sourcesList = [];
+			});
 
 			// Check for switch on resize option
 			if( this.getConfig( 'switchOnResize' ) ){
@@ -125,6 +129,10 @@
             //add Auto for addaptive bitrate streams
             if ( !this.handleAdaptiveBitrateAndContinue() )
                 return;
+
+            if (this.getConfig('hideSource')) {
+                this.getPlayer().mediaElement.removeSourceFlavor(sources);
+            }
 
 			if( sources.length == 1 ){
 				// no need to do building menu logic. 
@@ -241,7 +249,16 @@
             }
 
             //HLS, HDS
-            if(  this.getPlayer().streamerType != "http" && !this.getPlayer().isPlaying() ){
+            if (mw.isNativeApp()) {
+            	this.sourcesList = [];
+                this.addAutoToMenu();
+                return true;
+            }
+
+            if ( this.getPlayer().streamerType != "http" && !this.getPlayer().isPlaying() ){
+                if(this.getPlayer().streamerType !== "hls" && !mw.EmbedTypes.getMediaPlayers().isSupportedPlayer('kplayer')){ //If flash disabled, player fallback to http progressive, but the streamerType might still be hdnetwork
+                    return true;
+                }
                 this.addAutoToMenu();
                 return false;
             }

@@ -97,13 +97,22 @@
 			window._gaq = window._gaq || [];
 			window._gaq.push([ '_setAccount', _this.getConfig('urchinCode') ]);
 			if (mw.getConfig('debug')) {
-				window._gaq.push([ '_setDomainName', 'none' ]);
-				window._gaq.push([ '_setAllowLinker', true ]);
+				window._gaq.push( ['_setDomainName' , 'none'] );
+				window._gaq.push( ['_setAllowLinker' , true] );
+			}
+
+			if (_this.getConfig('allowLinker')) {
+				window._gaq.push( ['_setAllowLinker' , true] );
 			}
 			// check if we should anonymize Ips, from google docs: 
 			// https://developers.google.com/analytics/devguides/collection/gajs/methods/gaJSApi_gat#_gat._anonymizeIp
 			if( this.getConfig( 'anonymizeIp' ) ){
 				window._gaq.push(['_gat._anonymizeIp']);
+			}
+			// set correct utmp when unfriendly iframe
+			if ( !mw.getConfig('EmbedPlayer.IsFriendlyIframe' ) && typeof(document.referrer)!= 'undefined' ){
+				//get path and remove everything after ? and # in the URL to send clean path to GA
+				window._gaq.push(['_set', 'page', document.referrer.replace(/^[^:]+:\/\/[^/]+/, '').replace(/#.*/, '').replace(/\?.*/, '')]);
 			}
 			window._gaq.push([ '_trackPageview' ]);
 			var ga = document.createElement('script');
@@ -252,12 +261,12 @@
 				return false;
 			}
 
-			var eventCategory = this.trackingCategory;
+			var eventCategory = this.getConfig("trackingCategory") || this.trackingCategory;
 			var eventAction = methodName;
 			var customEvents = [];
 
 			if (this.getConfig('customEvent')) {
-				customEvents = this.getConfig('customEvent').split(',');
+				customEvents = this.getConfig('customEvent').replace(/ /g,'').split(',');
 				if ($.inArray(methodName, customEvents) != -1) {
 					if (this.getConfig(methodName + "Category")) {
 						eventCategory = this.getConfig(methodName + "Category");
@@ -303,6 +312,10 @@
 					}
 				}
 
+			}
+			// check for configured optionalLabel override: 
+			if( this.getConfig('optionalLabel') ){
+				return  this.getConfig('optionalLabel');
 			}
 			return ( refString + clipTitle + "|" + entryId + "|" + widgetId + "|" +uiconfId  );
 		},

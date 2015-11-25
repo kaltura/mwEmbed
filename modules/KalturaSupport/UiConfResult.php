@@ -171,7 +171,6 @@ class UiConfResult {
 		}
 		// Get our flashVars
 		$vars = $this->normalizeFlashVars();
-
 		// Add uiVars into vars array
 		if ( isset($playerConfig['uiVars']) ) {
 			foreach( $playerConfig['uiVars'] as $key=>$value ) {
@@ -213,6 +212,7 @@ class UiConfResult {
 			'statistics' => array(),
 			'controlBarContainer' => array(),
 			'keyboardShortcuts' => array(),
+			'id3Tag' => array(),
 			'liveCore' => array(),
 			'liveStatus' => array(),
 			'reportError' => array(),
@@ -544,6 +544,7 @@ class UiConfResult {
 			"durationLabel" => array(),
 			"currentTimeLabel" => array(),
 			"keyboardShortcuts" => array(),
+			"id3Tag" => array(),
 			"liveCore" => array(),
 			"liveStatus" => array(),
 			"reportError" => array()

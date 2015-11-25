@@ -6,13 +6,8 @@ require_once( realpath( dirname( __FILE__ ) ) . '/modules/KalturaSupport/Kaltura
 // only include the iframe if we need to: 
 // Include MwEmbedWebStartSetup.php for all of mediawiki support
 if( isset( $_GET['autoembed'] ) ){
-	require_once( realpath( dirname( __FILE__ ) ) . '/modules/ExternalPlayers/ExternalPlayers.php' );
-	$externalPlayersPath =  realpath( dirname( __FILE__ ) ) . '/modules/ExternalPlayers/ExternalPlayers.';
-    if( is_file( $externalPlayersPath . "json" ) ){
-        $plugins = json_decode( file_get_contents($externalPlayersPath . "json"), TRUE );
-    } elseif( is_file( $externalPlayersPath . "php" ) ){
-        $plugins = include($externalPlayersPath . "php");
-    }
+	$externalPlayersPath =  realpath( dirname( __FILE__ ) ) . '/modules/ExternalPlayers/ExternalPlayers.json';
+	$plugins = json_decode( file_get_contents($externalPlayersPath ), TRUE );
 	require ( dirname( __FILE__ ) . '/includes/MwEmbedWebStartSetup.php' );
 	require_once( realpath( dirname( __FILE__ ) ) . '/modules/KalturaSupport/kalturaIframeClass.php' );
 }
@@ -284,6 +279,10 @@ class mwEmbedLoader {
 			$o.="\n".'mw.setConfig(\'Kaltura.ForceFlashOnIE10\', true );' . "\n";
 		}
 
+		if( $this->getUiConfObject()->getPlayerConfig( null, 'Kaltura.SupressNonProductionUrlsWarning' ) === true ){
+			$o.="\n".'mw.setConfig(\'Kaltura.SupressNonProductionUrlsWarning\', true );' . "\n";
+		}
+
 		if( $this->getUiConfObject()->isJson() ) {
 			$o.="\n"."kWidget.addUserAgentRule('{$this->request()->get('uiconf_id')}', '/.*/', 'leadWithHTML5');";
 		}
@@ -388,7 +387,7 @@ class mwEmbedLoader {
 			$wgKalturaUseManifestUrls, $wgHTTPProtocol, $wgKalturaServiceUrl, $wgKalturaServiceBase,
 			$wgKalturaCDNUrl, $wgKalturaStatsServiceUrl,$wgKalturaLiveStatsServiceUrl, $wgKalturaIframeRewrite, $wgEnableIpadHTMLControls,
 			$wgKalturaAllowIframeRemoteService, $wgKalturaUseAppleAdaptive, $wgKalturaEnableEmbedUiConfJs,
-			$wgKalturaGoogleAnalyticsUA, $wgHTML5PsWebPath;
+			$wgKalturaGoogleAnalyticsUA, $wgHTML5PsWebPath, $wgKalturaSupressNonProductionUrlsWarning;
 		$exportedJS ='';
 		// Set up globals to be exported as mwEmbed config:
 		$exportedJsConfig= array(
@@ -410,6 +409,7 @@ class mwEmbedLoader {
 			'Kaltura.UseAppleAdaptive' => $wgKalturaUseAppleAdaptive,
 			'Kaltura.EnableEmbedUiConfJs' => $wgKalturaEnableEmbedUiConfJs,
 			'Kaltura.PageGoogleAnalytics' => $wgKalturaGoogleAnalyticsUA,
+			'Kaltura.SupressNonProductionUrlsWarning' => $wgKalturaSupressNonProductionUrlsWarning,
 			'Kaltura.APITimeout' => 10000,
 			'Kaltura.kWidgetPsUrl' => $wgHTML5PsWebPath
 		);
@@ -477,8 +477,8 @@ class mwEmbedLoader {
 			}
 		} else {
 			
-			// Default expire time for the loader to 3 hours ( kaltura version always have diffrent version tags; for new versions )
-			$max_age = 60*60*3;
+			// Default expire time for the loader to 10 min ( we support 304 not modified so no need for long expire )
+			$max_age = 60*10;
 			// if the loader request includes uiConf set age to 10 min ( uiConf updates should propgate in ~10 min )
 			if( $this->request()->get('uiconf_id') ){
 				$max_age = 60*10;

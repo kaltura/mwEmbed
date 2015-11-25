@@ -10,7 +10,7 @@
 		//test comment for testing pull request
 
 		// Instance name:
-		instanceOf : 'youtube',
+		instanceOf : 'YouTube',
 
 		bindPostfix: '.YouTube',
 
@@ -24,10 +24,11 @@
 		playerEmbedFlag: false,
 		//Flag holdinng end state
 		hasEnded: false,
-
+		ytMobilePlayed: false,
 		//the youtube entry id
 		youtubeEntryId : "",
-
+		playerReady: null,
+		isPlaylist: false,
 		//the youtube preFix
 		//TODO grab from a configuration
 		youtubePreFix : "//www.youtube.com/apiplayer?video_id=",
@@ -43,8 +44,8 @@
 			'fullscreen' : (mw.getConfig('previewMode') == null) ? true : false
 		},
 		init: function(){
-			var _this = this;
-			_this._playContorls = false;
+			this._playContorls = false;
+			this.playerReady = $.Deferred();
 		},
 
 		onPlayerStateChange : function (event){
@@ -79,6 +80,7 @@
 						_this.hasEnded = true;
 						break;
 					case 1:
+						_this.ytMobilePlayed = true;
 						if (_this.hasEnded){
 							_this.hasEnded = false;
 							return;
@@ -158,12 +160,13 @@
 				window['iframePlayer'] = event.target;
 				_this.setDuration();
 				_this._playContorls = true;
+				_this.playerReady.resolve();
 				//autoMute
 				if(mw.getConfig('autoMute')){
 					_this.setVolume(0);
 				}
 				//autoplay
-				if(mw.getConfig('autoPlay')){
+				if(mw.getConfig('autoPlay') && _this.canAutoPlay()){
 					_this.play();
 				}else{
 					window['hidePlayer']();
@@ -177,7 +180,8 @@
 						_this.hideSpinner();
 					},250);
 				}
-
+				mw.log("EmbedPlayerYouTube:: Trigger: playerReady for HTML5 player");
+				$(_this).trigger('playerReady');
 			};
 			// YOUTUBE FLASH PLAYER READY
 			window['onYouTubePlayerReady'] = function( playerIdStr ){
@@ -199,6 +203,8 @@
 				}else{
 					window['hidePlayer']();
 				}
+				mw.log("EmbedPlayerYouTube:: Trigger: playerReady for Flash player");
+				$(_this).trigger('playerReady');
 			};
 			// YOUTUBE IFRAME READY
 			window['onYouTubeIframeAPIReady'] = function( playerIdStr ){
@@ -208,6 +214,7 @@
 				$('.ui-icon-arrowthickstop-1-s').hide();
 				$('.ui-icon-flag').hide();
 				var embedPlayer = $('#' + window["pid"].replace( 'pid_', '' ) )[0];
+				_this.isPlaylist = embedPlayer.playlist;
 				var playerVars;
 				//basic configuration
 				playerVars = {
@@ -328,9 +335,10 @@
 				$('.persistentNativePlayer').replaceWith(embedStr);
 			} else {
 				// embed iframe ( native skin in iOS )
-				$('.persistentNativePlayer').replaceWith('<div id="'+this.pid+'"></div>');
+				$('.videoHolder').append('<div id="'+this.pid+'"></div>');
 				var tag = document.createElement('script');
 				tag.src = "//www.youtube.com/iframe_api";
+				tag.id = "youTubeLib";
 				var firstScriptTag = document.getElementsByTagName('script')[0];
 				firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 			}
@@ -350,22 +358,33 @@
 			var _this = this;
 			mw.log("addBindings" , 5);
 
-			this.bindHelper ('layoutBuildDone' , function(){
+			this.bindHelper ('layoutBuildDone' + this.bindPostfix , function(){
 				if (mw.isMobileDevice()){
 					$(".largePlayBtn").css("opacity",0);
 					$(".mwEmbedPlayer").width(0);
 				}
 			});
 
-			this.bindHelper ('playerReady' , function(){
-				$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
+			this.bindHelper ('onChangeMedia' + this.bindPostfix , function(){
 				if (mw.isMobileDevice()){
-					_this._playContorls = false;
-					$( _this ).trigger( 'onDisableInterfaceComponents', [] );
+					$(".largePlayBtn").css("opacity",1);
+					$(".mwEmbedPlayer").width("100%");
+					$( _this ).trigger( 'onEnableInterfaceComponents', []);
+				}
+				if (_this.referenceId){
+					_this.getPlayerElement().loadVideoById(_this.referenceId);
 				}
 			});
 
-			this.bindHelper("onEndedDone", function(){
+			this.bindHelper ('playerReady' + this.bindPostfix , function(){
+				$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
+				if (!_this.canAutoPlay()){
+					_this._playContorls = false;
+					$( _this ).trigger( 'onDisableInterfaceComponents', [["playlistAPI"]] );
+				}
+			});
+
+			this.bindHelper("onEndedDone" + this.bindPostfix, function(){
 				// restore the black cover after layout update is done (it is removed by updatePosterHTML in EmbedPlayer.js)
 				setTimeout(function(){
 					$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
@@ -383,6 +402,44 @@
 				}
 
 			})
+		},
+		changeMediaCallback: function (callback) {
+			var _this = this;
+			if (mw.isMobileDevice()){
+				$(".largePlayBtn").css("opacity",0);
+				$(".mwEmbedPlayer").width(0);
+			}
+			this.playerReady.promise().then(function(){
+				callback();
+				if( mw.getConfig('autoPlay') || _this.isPlaylist){
+					if (mw.isMobileDevice()){
+						if (mw.isIphone()){
+							$(".largePlayBtn").hide();
+							setTimeout(function(){
+								_this.hideSpinner();
+							},350);
+						}
+						if (_this.ytMobilePlayed){
+							_this.play();
+						}else{
+							_this.getPlayerElement().stopVideo();
+							_this._playContorls = false;
+							$( _this ).trigger( 'onDisableInterfaceComponents', [["playlistAPI"]] );
+						}
+					}else{
+				        _this.play();
+					}
+				}
+			});
+		},
+		canAutoPlay: function(){
+			return !mw.isMobileDevice() || (mw.isMobileDevice() && this.ytMobilePlayed);
+		},
+		getKClient: function () {
+			if (!this.kClient) {
+				this.kClient = mw.kApiGetPartnerClient(this.kwidgetid);
+			}
+			return this.kClient;
 		},
 		supportsVolumeControl: function(){
 			// if ipad no.
@@ -491,6 +548,21 @@
 			this.parent_pause();
 		},
 		/**
+		 * clean method cleans the player when switching to another player: remove iframe, kill player, remove script tags from document head
+		 */
+		clean: function(){
+			$('.blackBoxHide').hide();
+			this.getPlayerElement().destroy(); // remove iframe
+			if (typeof YT !== 'undefined'){
+				YT = null; // kill player
+			}
+			this.unbindHelper( this.bindPostfix ); // remove bindings
+			// remove scripts from head
+			$("#youTubeLib").remove();
+			$("#www-widgetapi-script").remove();
+		},
+
+		/**
 		 * playerSwitchSource switches the player source working around a few bugs in browsers
 		 *
 		 * @param {object}
@@ -511,13 +583,57 @@
 		 *			percentage Percentage of total stream length to seek to
 		 */
 		seek : function( seekTime ){
+			mw.log("Seeking to: " + seekTime);
+			var _this = this;
 			this.seeking = true;
+			this.stopSeekWatchDog();
 			$( this ).trigger( 'seeking' );
 			var yt = this.getPlayerElement();
+			var currentTime = this.getPlayerElementTime();
 			yt.seekTo( seekTime );
 			this.layoutBuilder.onSeek();
-			// Since Youtube don't have a seeked event , we must turn off the seeking flag
-			this.seeking = false;
+			// Since Youtube don't have a seeked event , we must turn off the seeking flag and restore pause state if needed
+			if ( !this.isPlaying() ){
+				setTimeout(function(){
+					$( _this ).trigger( 'seeked' );
+					_this.seeking = false;
+					_this.pause();
+				},500);
+			} else {
+				this.startSeekWatchDog(currentTime);
+			}
+		},
+		startSeekWatchDog: function(refTime){
+			this.log("startSeekWatchDog");
+			var interval = 1000;
+			var lastTime = refTime;
+			var _this = this;
+			var yt = this.getPlayerElement();
+			this.checkPlayerTime = function () {
+				if(yt.getPlayerState() == YT.PlayerState.PLAYING ) {
+					var t = yt.getCurrentTime();
+					///expecting 1 second interval , with 500 ms margin
+					if (Math.abs(t - lastTime - 1) > 0.5) {
+						// if seek threshold was detected and we're still in seeking state fire event
+						if(_this.seeking) {
+							$(_this).trigger('seeked');
+							_this.seeking = false;
+						}
+						_this.stopSeekWatchDog();
+						return;
+					}
+				}
+				lastTime = yt.getCurrentTime();
+				_this.watchDogTimer = setTimeout(_this.checkPlayerTime, interval); /// repeat function call in 1 second
+			};
+			this.watchDogTimer = setTimeout(this.checkPlayerTime, interval);
+		},
+		stopSeekWatchDog: function(){
+			this.log("stopSeekWatchDog");
+			if (this.watchDogTimer){
+				clearTimeout(this.watchDogTimer);
+				this.watchDogTimer = null;
+			}
 		},
 
 		/**
@@ -530,10 +646,13 @@
 //		if ( this.getPlayerElement() && this.playerElement.sendNotification ){
 //			this.playerElement.sendNotification('changeVolume', percentage);
 //		}
-			var yt = this.getPlayerElement();
-			if(yt.setVolume) {
-				yt.setVolume(percentage * 100);
-			}
+			var _this = this;
+			this.playerReady.promise().then(function(){
+				var yt = _this.getPlayerElement();
+				if(yt.setVolume) {
+					yt.setVolume(percentage * 100);
+				}
+			});
 		},
 
 		/**

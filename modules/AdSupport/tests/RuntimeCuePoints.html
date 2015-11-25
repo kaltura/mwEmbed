@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+	<title>Runtime Cuepoints</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+  </head>
+  <body>
+	<h1>
+	Runtime Cuepoints
+	</h1>
+	<br>
+<div id="kaltura_player" style="width:400px;height:330px;"></div>
+<script>
+	kWidget.featureConfig({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id' : '12905712',
+		'entry_id' : '0_uka1msg4',
+		'flashvars': {
+			'vast': {
+				'trackCuePoints': true
+			},
+			'titleLabel': {
+				'plugin': true,
+			},
+			'mediaProxy':{
+				'entry':{
+					'name':"This shows partial runtime override of entry name"
+				},
+				'entryCuePoints': [{
+					"protocolType": 1,
+					"adType": 1, 
+					"cuePointType": "adCuePoint.Ad",
+					"startTime": 5000,
+					"sourceUrl": "http://projects.kaltura.com/mdale/hotelVastAd.xml"
+				}]
+			}
+		},
+	})
+</script>
+	<h3> How to set cuePoints at Runtime </h3>
+	cuePoints at Runtime work by partial mediaProxy override. Here you can see a <a href="https://www.kaltura.com/api_v3/testmeDoc/index.php?object=KalturaCuePoint" target="_new">cuePoint object</a> added with startTime 5 seconds.
+	<pre class="prettyprint linenums">
+&lt;script&gt;
+	kWidget.embed({
+		'targetId': 'kaltura_player',
+		'wid': '_243342',
+		'uiconf_id' : '13306622',
+		'entry_id' : '0_uka1msg4',
+		'flashvars': {
+			'vast': {
+				'trackCuePoints': true
+			},
+			'mediaProxy':{
+				'entry':{
+					'name':"This shows partial runtime override of entry name"
+				},
+				'entryCuePoints': [{
+					"protocolType": 1,
+					"adType": 1, 
+					"cuePointType": "adCuePoint.Ad",
+					"startTime": 5000,
+					"sourceUrl": "http://projects.kaltura.com/mdale/hotelVastAd.xml"
+				}]
+			}
+		},
+	})
+&lt;/script&gt;
+	</pre>
+  </body>
+</html>

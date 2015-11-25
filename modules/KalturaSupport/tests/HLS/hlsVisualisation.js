@@ -210,6 +210,9 @@
     // Main function - renders player state.
     function redrawBuffer()
     {
+        if( mode === "stop" ){
+            return;
+        }
         // Keep processing.
         requestAnimationFrame(redrawBuffer);
 
@@ -460,6 +463,58 @@
         console.log("hlsVisualisation :: Now showing " + mode);
 
         bufferDirty = true;
+    }
+
+    function stopDrawing()
+    {
+        mode = "stop";
+
+        var _canvas = document.getElementById('canvas');
+        var context = _canvas.getContext('2d');
+        context.clearRect(0, 0, _canvas.width, _canvas.height);
+
+        console.log("hlsVisualisation :: Now showing " + mode);
+        resetAllVars();
+    }
+
+    function startDrawing()
+    {
+        mode = "tags";
+        bufferDirty = true;
+        // Initiate buffer rendering.
+        requestAnimationFrame(redrawBuffer);
+
+        console.log("hlsVisualisation :: Now showing " + mode);
+    }
+
+    function resetAllVars(){
+        tags=[];
+        lastTagSubmission = -1;
+        playheadTime = 0;
+        audioLowWatermark = 0;
+        videoLowWatermark = 0;
+        downloadState = {};
+        manifestState = {};
+        requestLog = [];
+        bufferDirty = true;
+        lastBufferRender = 0;
+        isSetup = false;
+        howFarBack = 20;
+        howFarBack_max = 120;
+        howFarBack_min = 1;
+        howFarBack_step = 0.5;
+        width = 1024, height = 256;
+        rowHeight = 15;
+        flvRowMap = {};
+        flvRowMap[0x08] = 1;
+        flvRowMap[0x09] = 2;
+        flvRowMap[0x12] = 3;
+        flvRowMap["downloads"] = 4;
+        dragStartX, dragStartY;
+        isDrag = false;
+        dragStartTime = undefined;
+        timeOffset = 0;
+        timeOffset_max = 120;
     }
 
 

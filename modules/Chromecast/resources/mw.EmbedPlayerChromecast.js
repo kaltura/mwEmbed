@@ -26,6 +26,14 @@
 		setup: function( readyCallback ) {
 			mw.log('EmbedPlayerChromecast:: Setup');
 			var _this = this;
+			$.extend(this.vid,{
+				'pause': function(){
+					_this.pause();
+				},
+				'play': function(){
+					_this.play();
+				}
+			});
 		},
 
 		// override these functions so embedPlayer won't try to sync time
@@ -48,11 +56,13 @@
 		},
 
 		clipDone: function() {
-			mw.log("clip done");
+			mw.log("Chromecast::clip done");
 			if (this.vid.mediaFinishedCallback){
 				this.vid.mediaFinishedCallback();
+				this.vid.mediaFinishedCallback = null;
 			}
 			$(this.vid).trigger("ended");
+			this.onClipDone();
 		},
 
 		play: function() {
@@ -71,12 +81,8 @@
 
 		switchPlaySource: function( source, switchCallback, doneCallback ){
 			$(this).trigger("chromecastSwitchMedia", [source.src, source.mimeType]);
-			if (switchCallback){
-				this.vid.mediaLoadedCallback = switchCallback;
-			}
-			if (doneCallback){
-				this.vid.mediaFinishedCallback = doneCallback;
-			}
+			this.vid.mediaLoadedCallback = switchCallback;
+			this.vid.mediaFinishedCallback = doneCallback;
 		},
 
 		mediaLoaded: function(mediaSession){
@@ -85,6 +91,7 @@
 			this.updateDuration(mediaSession.media.duration);
 			if (this.vid.mediaLoadedCallback){
 				this.vid.mediaLoadedCallback(this.vid);
+				this.vid.mediaLoadedCallback = null;
 			}
 		},
 
@@ -98,10 +105,10 @@
 			return this.vid;
 		},
 
-		seek: function(percentage) {
-			mw.log("seek "+percentage);
+		seek: function(position) {
+			mw.log("seek to "+position);
 			this.seeking = true;
-			$(this).trigger("chromecastSeek", [percentage * 100]);
+			$(this).trigger("chromecastSeek", [position / this.vid.duration * 100]);
 			$(this.vid).trigger("seek");
 		},
 

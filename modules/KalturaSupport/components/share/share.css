@@ -211,6 +211,7 @@
 .share a:link {
 	color: #ffffff;
 	text-decoration: none;
+    outline: none;
 }
 .share a:visited {
 	color: #ffffff;

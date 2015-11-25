@@ -6,13 +6,19 @@
  *
  */
 
+if (isset($_SERVER["HTTP_X_FORWARDED_HOST"]))
+{
+	 $_SERVER["HTTP_HOST"] = $_SERVER["HTTP_X_FORWARDED_HOST"];
+	 $_SERVER["SERVER_NAME"] = $_SERVER["HTTP_X_FORWARDED_HOST"];
+}
+
 // The default cache directory
 $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 
 $wgBaseMwEmbedPath = realpath( dirname( __FILE__ ) . '/../' );
 
 // The version of the library:
-$wgMwEmbedVersion = '2.33.rc24';
+$wgMwEmbedVersion = '2.38.rc4';
 
 // Default HTTP protocol from GET or SERVER parameters
 if( isset($_GET['protocol']) ) {
@@ -250,20 +256,6 @@ if( is_file( $wgLocalSettingsFile ) ){
 	require_once( $wgLocalSettingsFile );
 }
 
-//Override Domain
-//===============
-//Override here all variables that are using wgServer
-if ( $wgEnableKalturaOverrideDomain && isset( $_GET['od'] ) ){
-	$wgServer = htmlspecialchars( $_GET['od'] ) . dirname( dirname( $_SERVER['SCRIPT_NAME'] ) ) .'/';
-
-	// Default Load Script path
-    $wgLoadScript = $wgServer . $wgScriptPath . 'load.php';
-    // Support legacy $wgResourceLoaderUrl url.
-    $wgResourceLoaderUrl = $wgLoadScript;
-
-    $wgMwEmbedProxyUrl =  $wgServer . $wgScriptPath . 'simplePhpXMLProxy.php';
-}
-
 //Set global configs into $wgMwEmbedModuleConfig in order to enable
 //resource loader to output the config in the response
 // if Manifest urls should be used:
@@ -280,6 +272,7 @@ include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/api
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweFeaturesList.php' );
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiLanguageSupport.php' );
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweUpgradePlayer.php' );
+include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiGetLicenseData.php' );
 include_once( realpath( dirname( __FILE__ ) )  . '/../studio/studioService.php');
 /**
  * Extensions should register foreign module sources here. 'local' is a

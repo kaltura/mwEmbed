@@ -172,8 +172,32 @@ if( window.QUnit ){
 	}
 </script>
 <br><br>
-<div style="clear:both">
-<h3>Custom Thumbnail embed</h3>
+<div style="clear:both"></div>
+<h3 id="custom-play-btn">Custom play button</h3>
+You can override the playButton with on-page CSS: 
+<pre class="prettyprint linenums">
+.kWidgetPlayBtn {
+	background: url("flower.jpg");
+}
+</pre>
+<style>
+#player-target-css-example .kWidgetPlayBtn{
+	background: url("externalResources/flower.jpg");
+}
+</style>
+<div id="player-target-css-example" style="width:400px;height:300px"></div>
+<script type="text/javascript">
+kWidget.thumbEmbed({
+	'targetId': 'player-target-css-example',
+	'wid': '_243342',
+	'uiconf_id' : '12905712',
+	'entry_id': '0_uka1msg4'
+});
+</script>
+</div>
+
+<div style="clear:both"></div>
+<h3>Custom Thumbnail embed HTML</h3>
 <div id="player-target" style="width:400px;height:300px"></div>
 <br>
 <b>Load the entry data from the API, then embed with captureClickEventForiOS flag for one click playback for iOS</b>

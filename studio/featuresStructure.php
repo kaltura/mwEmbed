@@ -85,6 +85,13 @@ return array(
                 "endline" => "true",
                 "model" => "config.plugins.controlBarContainer.hover"
             ),
+//            array(
+//               "label" => "Localization code:",
+//                "type" => "text",
+//                "size" => "small",
+//                "endline" => "true",
+//                "model" => "config.enviornmentConfig.localizationCode"
+//            ),
 			array(
 				"label" => "Last Update",
 				"type" => "readonly",
@@ -153,11 +160,11 @@ return array(
             ),
 			"bumper" => "",
 			"vast" => "",
-			"skipBtn" => "",
-			"skipNotice" => "",
-			"noticeMessage" => "",
 			"doubleClick" => "",
-			"freeWheel" => ""
+			"freeWheel" => "",
+			"skipBtn" => "",
+            "skipNotice" => "",
+            "noticeMessage" => ""
 		)
 	),
 	"plugins"=> array(

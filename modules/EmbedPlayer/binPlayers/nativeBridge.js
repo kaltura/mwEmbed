@@ -45,8 +45,9 @@
 		isJsCallbackReady: false,
 		bindPostfix: ".nativeBridge",
 		subscribed: [],
-		playerMethods: [ 'stop', 'play', 'pause', 'replay', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen', 'notifyKPlayerEvent', 'notifyKPlayerEvaluated', 'notifyJsReady', 'showChromecastDeviceList', 'notifyLayoutReady',
-			'doneFSBtnPressed', 'addNativeAirPlayButton', 'showNativeAirPlayButton', 'hideNativeAirPlayButton', 'doNativeAction', 'textTracksReceived', 'loadEmbeddedCaptions', 'togglePictureInPicture' ],
+		playerMethods: [
+			'stop', 'play', 'pause', 'replay', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen', 'notifyKPlayerEvent', 'notifyKPlayerEvaluated', 'notifyJsReady', 'showChromecastDeviceList', 'notifyLayoutReady',
+			'doneFSBtnPressed', 'addNativeAirPlayButton', 'showNativeAirPlayButton', 'hideNativeAirPlayButton', 'doNativeAction', 'textTracksReceived', 'loadEmbeddedCaptions', 'flavorsListChanged', 'switchFlavor','togglePictureInPicture' ],
 
 		registePlayer: function (proxyElement) {
 			var _this = this;
@@ -138,9 +139,9 @@
 				//set undefined
 				eventValue = void(0);
 			}
-
+			var jsEventValue;
 			if (eventValue != undefined) {
-				var jsEventValue = this.stringConvertion(eventValue);
+				jsEventValue = this.stringConvertion(eventValue);
 			}
 
 			if (eventName == 'timeupdate') {
@@ -160,6 +161,7 @@
 			}
 
 			$(this.proxyElement).trigger(eventName, [jsEventValue]);
+
 
 			if (this.subscribed[eventName]) {
 				this.subscribed[eventName](jsEventValue);

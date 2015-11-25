@@ -1,0 +1,23 @@
+@startuml
+
+skinparam handwritten true
+
+[EmbedPlayer] -left-> [Timeline]
+
+package "Sync" {
+[ImageSync]
+[VideoSync]
+}
+
+[Timeline] <--- [VideoSync]
+[Cuepoints] <--- [ImageSync]
+[Cuepoints] -> [Timeline]
+[SecondPlayer] --> Sync
+
+skinparam component {
+	BackgroundColor #DDDDDD
+	ArrowColor black
+	BorderColor #DDDDDD
+}
+
+@enduml

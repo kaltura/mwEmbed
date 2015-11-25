@@ -79,20 +79,30 @@
 		"scripts": "resources/mw.KAdPlayer.js"
 	},
 	"dualScreen": {
-		"scripts": "components/dualScreen/dualScreen.js",
-		"styles": "components/dualScreen/dualScreen.css",
-		"templates": "components/dualScreen/dualScreenControlBar.tmpl.html",
+		"scripts": [
+			"components/dualScreen/dualScreen.js",
+			"components/dualScreen/dualScreenControlBar.js",
+			"components/dualScreen/displays.js",
+			"components/dualScreen/display.js",
+			"components/dualScreen/imagePlayer.js",
+			"components/dualScreen/videoPlayer.js",
+			"components/dualScreen/videoSync.js",
+			"components/dualScreen/fsm.js",
+			"components/dualScreen/dualScreenStatesConfig.js"
+		],
+		"styles": [
+			"components/dualScreen/dualScreen.css",
+			"components/dualScreen/dualScreenControlBar.css"
+		],
+		"templates": {
+			"dualScreenControlBar": "components/dualScreen/dualScreenControlBar.tmpl.html"
+		},
 		"dependencies": [
 			"mw.KBaseComponent",
 			"jquery.ui.draggable",
-			"jquery.ui.resizable",
-			"dualScreenControlBar"
+			"jquery.ui.resizable"
 		],
 		"kalturaPluginName": "dualScreen"
-	},
-	"dualScreenControlBar": {
-		"scripts": "components/dualScreen/dualScreenControlBar.js",
-		"styles": "components/dualScreen/dualScreenControlBar.css"
 	},
 	"hammerEvents": {
 		"scripts": "components/hammerEvents/hammerEvents.js",
@@ -130,6 +140,11 @@
 		"dependencies": "mw.KBasePlugin",
 		"kalturaLoad": "always"
 	},
+   "id3Tag": {
+     "scripts": "resources/mw.id3Tag.js",
+     "dependencies": "mw.KBasePlugin",
+     "kalturaLoad": "always"
+   },
 	"controlBarContainer": {
 		"scripts": "components/controlBarContainer.js",
 		"dependencies": "mw.KBasePlugin",

@@ -197,6 +197,15 @@
 			'callbackArgs' => 'true / false',
 			'desc' => 'Dispatches when the player starts or stops buffering'
 		),
+		'bufferStartEvent' => array(
+			'desc' => 'Dispatches when the player starts buffering',
+			'example' => '../modules/KalturaSupport/tests/PlayerBufferTest.qunit.html'
+		),
+		'bufferEndEvent' => array(
+			'callbackArgs' => 'bufferTime: The amount of time since last buffer start event.',
+			'desc' => 'Dispatches when the player starts buffering',
+			'example' => '../modules/KalturaSupport/tests/PlayerBufferTest.qunit.html'
+		),
 		'scrubberDragStart' => array(
 			'callbackArgs' => 'None',
 			'desc' => 'The scrubber had started being dragged',

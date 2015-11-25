@@ -11,7 +11,7 @@
 		},
 		isSafeEnviornment: function(){
 			 // If mw.getConfig( "EmbedPlayer.ForceNativeComponent") is null or empty
-			if( mw.getConfig( "EmbedPlayer.ForceNativeComponent" ) && mw.isIOS() ) {
+			if( mw.getConfig( "EmbedPlayer.ForceNativeComponent" ) && !mw.isAndroid() ) {
 				return true;
 			}
 
@@ -27,14 +27,14 @@
 			this.bind('onShowControlBar', function() {
 				setTimeout(function(){
 					_this.showNativeAirPlayButton( _this.getComponent()[0].getBoundingClientRect() );
-				}, 200);
+				}, 1000);
 			});
 
 			this.bind('onHideControlBar', function() {
 				_this.hideNativeAirPlayButton();
 			});
 
-			this.bind('enterfullscreen exitfullscreen', function() {
+			this.bind('enterfullscreen exitfullscreen updateLayout', function() {
 				if( this.isControlsVisible ){
 					_this.showNativeAirPlayButton( _this.getComponent()[0].getBoundingClientRect() );
 				}

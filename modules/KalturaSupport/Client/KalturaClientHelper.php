@@ -13,6 +13,7 @@ class KalturaClientHelper {
 	
 	function __construct( $options ) {
 		$this->options = $options;
+		$this->client = $this->getClient();
 	}
 
 	private function getOption( $key ) {
