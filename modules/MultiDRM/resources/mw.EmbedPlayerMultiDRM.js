@@ -247,8 +247,14 @@
 			}
 		},
 		updateDashContext: function(){
+			var _this = this;
 			if (this.getPlayerElement() && this.getSrc()) {
-				this.playerElement.loadVideo( this.getSrc(), this.getDrmConfig() );
+				this.resolveSrcURL( this.getSrc() ).then( function(source){
+					_this.playerElement.loadVideo( source, _this.getDrmConfig() );
+				}, function(){
+					//Report on playManifest redirect error
+					_this.triggerHelper('embedPlayerError');
+				} );
 			}
 		},
 		getDrmConfig: function(){
