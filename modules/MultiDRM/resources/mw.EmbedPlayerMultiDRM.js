@@ -253,6 +253,7 @@
 					_this.playerElement.loadVideo( source, _this.getDrmConfig() );
 				}, function(){
 					//Report on playManifest redirect error
+					_this.log("Failed resolving playManifest request: " + _this.getSrc());
 					_this.triggerHelper('embedPlayerError');
 				} );
 			}
