@@ -3,8 +3,9 @@
 	mw.PluginManager.add( 'id3Tag', mw.KBasePlugin.extend({
 
         defaultConfig: {
-            updateTimeInterval: 1 // 1 second interval for update live time between id3 tags events (as for now we get id3 tag each 8 seconds)
+            updateTimeIntervalSec: 1 // 1 second interval for update live time between id3 tags events (as for now we get id3 tag each 8 seconds)
         },
+        timeIntervalSec: 1,
         updatedTime: 0,
         intervalCounter: 4, //default interval counter will be 4 (updateTimeInterval = 1 second / this.embedPlayer.monitorRate = 250 milliseconds)
         counter: 0,
@@ -17,22 +18,16 @@
         },
 
 		setup: function() {
+            this.timeIntervalSec = this.getConfig('updateTimeIntervalSec');
+            this.intervalCounter = this.timeIntervalSec / (this.embedPlayer.monitorRate/1000);
             this.addBinding();
-            this.timeInterval = this.getConfig('updateTimeInterval');
-            this.intervalCounter = this.timeInterval / (this.embedPlayer.monitorRate/1000);
         },
         addBinding: function () {
 			var _this = this;
 
             this.bind('monitorEvent', function() {
                 if( _this.updatedTime > 0 ){
-                    _this.counter++;
-                    if ( _this.counter === _this.intervalCounter ) {
-                        _this.counter = 0;
-                        _this.updatedTime = _this.updatedTime + _this.timeInterval;
-                        _this.getPlayer().setCurrentTime(_this.updatedTime);
-                        _this.sendTrackEventMonitor(mw.seconds2npt(_this.updatedTime), false);
-                    }
+                    _this.updateTime();
                 }
             });
 
@@ -40,6 +35,16 @@
                 _this.parseTag(tag);
 			});
 		},
+
+        updateTime: function(){
+            this.counter++;
+            if ( this.counter === this.intervalCounter ) {
+                this.counter = 0;
+                this.updatedTime = this.updatedTime + this.timeIntervalSec;
+                this.getPlayer().setCurrentTime(this.updatedTime);
+                this.sendTrackEventMonitor(mw.seconds2npt(this.updatedTime), false);
+            }
+        },
 
         parseTag: function(tag){
             var time;
@@ -63,6 +68,7 @@
             }
             if(time) {
                 this.updatedTime = time;
+                this.counter = 0; //reset time update interval counter
                 this.getPlayer().setCurrentTime(time);
                 this.sendTrackEventMonitor(mw.seconds2npt(time), true);
             }
