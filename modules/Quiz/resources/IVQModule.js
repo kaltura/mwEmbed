@@ -332,11 +332,11 @@
                 _this.embedPlayer.getInterface().find(".display-all-container").hide().fadeIn(400);
 
                 if((_this.embedPlayer.getInterface().find(".second-row").length) == 0 ){
-                    _this.embedPlayer.getInterface().find(".display-all-container").addClass("margin-top8");
+                    _this.embedPlayer.getInterface().find(".display-all-container").addClass("margin-top6");
                     _this.embedPlayer.getInterface().find(".left-arrow").addClass("margin-top4");
                 }
                 else{
-                    _this.embedPlayer.getInterface().find(".display-all-container").removeClass("margin-top8");
+                    _this.embedPlayer.getInterface().find(".display-all-container").removeClass("margin-top6");
                     _this.embedPlayer.getInterface().find(".left-arrow").removeClass("margin-top4");
 
 

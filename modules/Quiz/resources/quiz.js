@@ -278,8 +278,10 @@
 
             _this.KIVQScreenTemplate.tmplSubmitted();
 
-            $(".title-text").html("Submitted").addClass("padding14");
-
+            $(".title-text").html(gM('mwe-quiz-Submitted'));
+            if(cpArray.length <= 6){
+                $(".title-text").addClass("padding14");
+            }
             if ($.quizParams.showGradeAfterSubmission){
                 if (!$.quizParams.showCorrectAfterSubmission) {
                     $(".title-text").addClass("padding35");
@@ -295,7 +297,6 @@
                     $(document).off('click','.q-box')
                         .on('click', '.q-box', function () {
                             _this.KIVQScreenTemplate.tmplReviewAnswer();
-                            //_this.removeShowScreen("reviewAnswer");
                             _this.ssReviewAnswer(parseInt($(this).attr('id')));
                     });
                     $(document).off('click','.q-box-false')
