@@ -1338,6 +1338,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			var $currentButton = $( '<button />' )
 			.addClass( 'alert-button' )
 				.text( label )
+				.width(Math.floor(100 / buttonsNum) + "%")
 				.click( function( eventObject ) {
 					callback( eventObject );
 					_this.closeAlert( alertObj.keepOverlay );

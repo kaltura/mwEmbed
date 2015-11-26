@@ -891,7 +891,15 @@ body {
 	vertical-align: middle;
 	box-sizing: border-box;
 }
-
+.mobile .alert-container{
+    font-family: 'Lato', Helvetica, Arial;
+    background-color: rgba(255,255,255,0.9);
+    width: 60%;
+    padding-top: 20px;
+    max-height: 40% !important;
+    color: #484848;
+    letter-spacing: 0;
+}
 .alert {
 	display: table-cell;
 	width: 100%;
@@ -900,12 +908,37 @@ body {
 }
 
 .alert-title {
-	font-size: 1.8em;
 	padding-left: 1.8em;
 	padding-bottom: 0.6em;
 	text-align: center;
 }
-
+.mobile .alert-title {
+    font-size: 18px !important;
+    font-weight: bold !important;
+    background-color: transparent;
+    border: 0px solid black;
+}
+.mobile .alert-message {
+    font-size: 18px !important;
+    font-weight: bold !important;
+}
+.mobile .alert-buttons-container {
+    padding-bottom: 0px !important;
+    padding-top: 20px;
+    width: 100%
+}
+.mobile .alert-button {
+    height: 30px;
+    font-family: 'Lato', Helvetica, Arial;
+    font-size: 14px;
+    border: none;
+    background: transparent;
+    border-top: 1px solid #cacaca;
+    border-left: 1px solid #cacaca;
+    border-radius: 0px;
+    color: #3984EF;
+    width: 100%;
+}
 .alert-body {
 	padding: 1.5em 2.2em;
 	font-size: 1.5em;
