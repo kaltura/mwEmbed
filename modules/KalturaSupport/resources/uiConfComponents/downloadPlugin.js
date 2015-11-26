@@ -4,7 +4,9 @@
 
 		defaultConfig: {
 			align: "right",
-			parent: "controlsContainer",
+			"parent": mw.isMobileDevice() ? 'topBarContainer' : 'controlsContainer',
+			smartContainer: 'morePlugins',
+			smartContainerCloseEvent: 'downloadMedia',
 			displayImportance: "low",
 			downloadName: '{mediaProxy.entry.name}',
 			showTooltip: true,
