@@ -1,6 +1,7 @@
 {
     "mw.MediaElement": {
-        "scripts": "resources/mw.MediaElement.js"
+        "scripts": "resources/mw.MediaElement.js",
+        "dependencies": "base64_encode"
     },
     "mw.MediaPlayer": {
         "scripts": "resources/mw.MediaPlayer.js"
