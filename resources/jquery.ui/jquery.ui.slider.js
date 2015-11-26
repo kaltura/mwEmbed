@@ -167,8 +167,13 @@ $.widget( "ui.slider", $.ui.mouse, {
 			return false;
 		}
 
+		var outerWidth = this.element.outerWidth();
+			//IE11 iframe fullscreen fix (KMS-4606)
+		if( !mw.getConfig('EmbedPlayer.IsFriendlyIframe') && window["resizeScrubberIE11"] === true ){
+			outerWidth = this.element.context.clientWidth;
+		}
 		this.elementSize = {
-			width: window["resizeScrubberIE11"]===true ? $(window).width() : this.element.outerWidth(), //IE11 iframe fullscreen fix (KMS-4606)
+			width:  outerWidth,
 			height: this.element.outerHeight()
 		};
 		this.elementOffset = this.element.offset();
