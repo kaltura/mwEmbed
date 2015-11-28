@@ -1,0 +1,12 @@
+{
+  "offline": {
+    "kalturaPluginName": "offline",
+    "scripts": "resources/offline.js",
+    "styles": "resources/css/offline.css",
+    "templates": "resources/tmpl/offline.tmpl.html",
+    "dependencies": [
+      "mw.KBaseScreen",
+      "largeLocalStorage"
+    ]
+  }
+}
