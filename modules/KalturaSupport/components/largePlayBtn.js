@@ -47,6 +47,9 @@
 				if( newState == 'load' ){
 					_this.hide(true);
 				}
+				if( newState == 'play' ){
+					_this.hide(true);
+				}
 				if( newState == 'pause' && _this.getPlayer().isPauseLoading ){
 					_this.hide();
 				}
