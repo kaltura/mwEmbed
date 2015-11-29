@@ -140,40 +140,6 @@
 		supportsVolumeControl: function () {
 			return  !( mw.isIpad() || mw.isAndroid() || mw.isMobileChrome() || this.useNativePlayerControls() );
 		},
-		/**
-		 * Adds an HTML screen and moves the video tag off screen, works around some iPhone bugs
-		 */
-		addPlayScreenWithNativeOffScreen: function () {
-			if (!mw.isIphone()) {
-				return;
-			}
-			var _this = this;
-			// Hide the player offscreen:
-			if (!this.inline) {
-				this.hidePlayerOffScreen();
-				this.keepPlayerOffScreenFlag = true;
-			}
-
-
-			// Add an image poster:
-			var posterSrc = ( this.poster ) ? this.poster :
-				mw.getConfig('EmbedPlayer.BlackPixel');
-			// Check if the poster is already present:
-			if ($(this).find('.playerPoster').length) {
-				$(this).find('.playerPoster').attr('src', posterSrc);
-			} else {
-				$(this).append(
-					$('<img />')
-						.attr('src', posterSrc)
-						.addClass('playerPoster')
-						.load(function () {
-							_this.applyIntrinsicAspect();
-							$('.playerPoster').attr('alt', _this.posterAlt);
-						})
-				);
-			}
-			$(this).show();
-		},
 		changeMediaCallback: function (callback) {
 			// Check if we have source
 			if (!this.getSource()) {
@@ -1151,10 +1117,6 @@
 				timeSincePlay > mw.getConfig('EmbedPlayer.MonitorRate')
 				) {
 				_this.parent_pause();
-				// in iphone when we're back from the native payer we need to show the image with the play button
-				if (mw.isIphone()) {
-					_this.updatePosterHTML();
-				}
 			} else {
 				// try to continue playback:
 				this.getPlayerElement().play();
@@ -1181,6 +1143,9 @@
 			}
 			// Set firstEmbedPlay state to false to avoid initial play invocation :
 			this.ignoreNextNativeEvent = false;
+			if (mw.isIphone()){
+				this.getInterface().removeClass("player-out");
+			}
 		},
 
 		/**
