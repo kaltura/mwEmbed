@@ -248,6 +248,17 @@ $wgKalturaApiFeatures = array();
 $wgEnableKalturaOverrideDomain = true;
 
 /*********************************************************
+ * A comma-delimited string of allowed flashavrs to be passed to server on dynamic embed call:
+********************************************************/
+$wgAllowedVars = "inlineScript";
+$wgAllowedPluginVars = "templatePath,templates"; //,loadInIframe,iframeHTML5Js,iframeHTML5Css,onPageJs,onPageCss
+$wgAllowedPluginVarsPartials = "{html5ps}";
+// Kaltura cache TTL value in unix time for dynamic embed local storage caching of kWidget, default is 10 minutes
+$wgCacheTTL = (10 * 60 * 1000);
+// Kaltura max cache entries, limit max available cached entries per domain to avoid over populating localStorage
+$wgMaxCacheEntries = 1;
+
+/*********************************************************
  * Include local settings override:
 ********************************************************/
 $wgLocalSettingsFile = realpath( dirname( __FILE__ ) ) . '/../LocalSettings.php';
