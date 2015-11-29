@@ -114,7 +114,9 @@
 				//get path and remove everything after ? and # in the URL to send clean path to GA
 				window._gaq.push(['_set', 'page', document.referrer.replace(/^[^:]+:\/\/[^/]+/, '').replace(/#.*/, '').replace(/\?.*/, '')]);
 			}
-			window._gaq.push([ '_trackPageview' ]);
+			if ( !this.getConfig('disableTrackPageview') ) {
+				window._gaq.push(['_trackPageview']);
+			}
 			var ga = document.createElement('script');
 			ga.type = 'text/javascript';
 			ga.async = true;
