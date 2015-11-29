@@ -1,6 +1,6 @@
 {
   "heartbeat": {
-    "label": "heartbeat",
+    "label": "Adobe Heartbeat",
     "description": "Adobe Heartbeat analytics Kaltura implementation. Adobe Heartbeat supports a dynamic set of attributes based on events you want to track and data you want to associate with each event.",
     "attributes": {
       "visitorId": {
