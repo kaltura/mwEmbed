@@ -34,6 +34,8 @@
             setupQuiz:function(){
                 var _this = this;
 
+                this.embedPlayer.disableComponentsHover();
+
                 _this.KIVQApi.getUserEntryIdAndQuizParams( function(data) {
                     if (!_this.checkApiResponse('User Entry err-->', data[0])) {
                         return false;
