@@ -44,10 +44,7 @@
 				_this.hide();
 			});
 			this.bind('onPlayerStateChange', function(e, newState, oldState){
-				if( newState == 'load' ){
-					_this.hide(true);
-				}
-				if( newState == 'play' ){
+				if( newState == 'load' || newState == 'play' ){
 					_this.hide(true);
 				}
 				if( newState == 'pause' && _this.getPlayer().isPauseLoading ){
