@@ -7,6 +7,7 @@
 		},
 
 		keepOnScreen: false,
+		screenOpen: false,
 
 		setup: function(){
 			// Bind player
@@ -47,6 +48,7 @@
 					_this.show();
 				});
 				this.bind( 'hideScreen', function(){
+					_this.screenOpen = false;
 					if (!_this.embedPlayer.paused){
 						_this.keepOnScreen = false;
 						_this.hide();
@@ -59,6 +61,7 @@
 					_this.hide();
 				});
 				this.bind( 'showScreen', function(){
+					_this.screenOpen = true;
 					_this.keepOnScreen = false;
 					_this.hide();
 				});
@@ -71,11 +74,13 @@
 			}
 		},
 		show: function(){
-			this.getComponent().addClass( 'open' );
-			// Trigger the screen overlay with layout info:
-			this.getPlayer().triggerHelper( 'onShowToplBar', {
-				'top' : this.getComponent().height() + 15
-			});
+			if ( !this.screenOpen ){
+				this.getComponent().addClass( 'open' );
+				// Trigger the screen overlay with layout info:
+				this.getPlayer().triggerHelper( 'onShowToplBar', {
+					'top' : this.getComponent().height() + 15
+				});
+			}
 		},
 		hide: function(){
 			if( this.keepOnScreen || this.forceOnScreen) return;

@@ -7,6 +7,8 @@
 			order: 4,
 			align: "right",
 			tooltip: gM('mwe-embedplayer-related'),
+			smartContainer: 'morePlugins',
+			smartContainerCloseEvent: 'hideScreen',
 			showTooltip: true,
 			itemsLimit: 12,
 			displayOnPlaybackDone: true,
@@ -474,6 +476,9 @@
 				});
 			}
 			return defer;
+		},
+		closeScreen: function(){
+			this.hideScreen();
 		}
 	}));
 
