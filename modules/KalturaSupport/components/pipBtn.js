@@ -35,7 +35,7 @@
 						.attr( 'title', this.nextTitle )
 						.addClass( "btn btnNarrow icon-new-tab pull-right" )
 						.click( function() {
-							if( _this.embedPlayer.isNativeApp() ) {
+							if( mw.getConfig("EmbedPlayer.ForceNativeComponent") ) {
 								_this.embedPlayer.togglePictureInPicture();
 							} else {
 								_this.embedPlayer.playerElement.webkitSetPresentationMode(_this.embedPlayer.playerElement.webkitPresentationMode === "picture-in-picture" ? "inline" : "picture-in-picture");
