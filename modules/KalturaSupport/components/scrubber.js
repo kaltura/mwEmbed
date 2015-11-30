@@ -342,6 +342,10 @@
 					$(_this.getPlayer()).one('hidePlayerControls onFocusOutOfIframe', function () {
 						$(document).trigger('mouseup');
 					});
+					// display playhead on mobile seek
+					if(mw.isMobileDevice()) {
+						$(".ui-slider-handle").addClass("scrubber:active playHead");
+					}
 				},
 				slide: function (event, ui) {
 					_this.updateAttr(ui);
@@ -357,6 +361,12 @@
 						embedPlayer.userSlide = false;
 						embedPlayer.seeking = true;
 						embedPlayer.seek(seekTime);
+						// hide playhead on mobile seek end
+						if(mw.isMobileDevice()) {
+							setTimeout(function(){
+								$(".scrubber:hover .playHead, .scrubber:active .playHead").removeClass("scrubber:hover playHead scrubber:hover");
+							}, 2000);
+						}
 					}
 				}
 			};
