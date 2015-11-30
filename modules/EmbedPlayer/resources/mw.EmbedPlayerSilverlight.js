@@ -480,7 +480,8 @@
 						'textTrackSelected': 'onTextTrackSelected' ,
 						'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions' ,
 						'error': 'onError' ,
-						'alert': 'onError'
+						'alert': 'onError',
+						'id3tag': 'onId3tag'
 					};
 
 					_this.playerObject = playerElement;
@@ -647,6 +648,10 @@
 			mw.log( 'EmbedPlayerSPlayer::onError: ' + message );
 			this.triggerHelper( 'embedPlayerError' , [data] );
 		} ,
+		onId3tag: function (id3Tag) {
+			this.triggerHelper('onId3Tag', id3Tag);
+		},
+
 
 		handlePlayerError: function ( data ) {
 			var messageText = this.getKalturaMsg( 'ks-CLIP_NOT_FOUND' );

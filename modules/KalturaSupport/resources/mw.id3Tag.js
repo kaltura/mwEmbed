@@ -53,6 +53,7 @@
                     time = JSON.parse(tag).timestamp / 1000;
                     break;
                 case "Kplayer":
+                case "Silverlight":
                     //flash tag: gibrish{"id":"ac1d4fd80c79bf7807f6c33061833a784ff5ce62","timestamp":1.447225650123E12,"offset":1431918.0,"objectType":"KalturaSyncPoint"}
                     try{
                         tag = tag.substring(tag.indexOf('{'), tag.length); //remove unreadable gibrish from the tag string
@@ -61,9 +62,6 @@
                     }catch(e){
                         mw.log("id3Tag plugin :: ERROR parsing tag : " + tag);
                     }
-                    break;
-                case "splayer":
-                    //add code for Silverlight player
                     break;
             }
             if(time) {
