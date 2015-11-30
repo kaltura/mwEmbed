@@ -1076,7 +1076,7 @@
 			// Replace the player with the iframe:
 			widgetElm.parentNode.replaceChild(iframeProxy, widgetElm);
 
-			var requestSettings = $.extend(true, {}, settings);
+			var requestSettings = JSON.parse(JSON.stringify(settings));
 			// Check if its a inline scripts setup:
 			if( this.isInlineScriptRequest( requestSettings ) ){
 				// segment out all configuration
@@ -1317,7 +1317,7 @@
 					var flashvars = settings[settingsKey];
 					for( var flashvarKey in flashvars ){
 						// Special Case a few flashvars that are always copied to iframe:
-						if( $.inArray( flashvarKey, allowedVars) > -1	){
+						if ([].indexOf.call( allowedVars, flashvarKey, 0 ) > -1) {
 							runtimeFlashvars[flashvarKey] = flashvars[flashvarKey];
 							continue;
 						}
@@ -1331,7 +1331,7 @@
 							for( var pluginKey in plugin ) {
 								var pluginVal = plugin[pluginKey];
 								// Special Case a few flashvars that are always copied to iframe:
-								if ($.inArray(pluginKey, allowedPluginVars) > -1) {
+								if ([].indexOf.call( allowedPluginVars, pluginKey, 0 ) > -1) {
 									runtimePlugin[pluginKey] = pluginVal;
 								}
 								if (typeof pluginVal == "string") {
