@@ -342,9 +342,7 @@
 					});
 					// display playhead on mobile seek
 					if(mw.isMobileDevice()) {
-						$(".scrubber .playHead").css({
-							"transform": "scale(1, 1)"
-						});
+						$(".ui-slider-handle").addClass("scrubber:active playHead");
 					}
 				},
 				slide: function (event, ui) {
@@ -364,9 +362,7 @@
 						// hide playhead on mobile seek end
 						if(mw.isMobileDevice()) {
 							setTimeout(function(){
-								$(".scrubber .playHead").css({
-									"transform":"scale(0, 0)"
-								});
+								$(".scrubber:hover .playHead, .scrubber:active .playHead").removeClass("scrubber:hover playHead scrubber:hover");
 							}, 2000);
 						}
 					}

@@ -310,9 +310,9 @@ body {
 	z-index: 100;
 	position: absolute;
 	left: 0;
-	top: -0.18em;
-	width: 0.9em;
-	height: 0.9em;
+	top: -0.19em;
+	width: 1em;
+	height: 1em;
 	border-radius: 50%;
 	outline: 0;
 	margin-left: -0.535em;
@@ -342,10 +342,10 @@ body {
 	-o-transition-property:     -o-transform-origin, -o-transform;
 	transition-property:        transform-origin, transform;
 	/*transition-duration*/
-	-webkit-transition-duration:0.2s, 0.2s;
-	-moz-transition-duration:0.2s, 0.2s;
-	-o-transition-duration:0.2s, 0.2s;
-	transition-duration:0.2s, 0.2s;
+	-webkit-transition-duration:0.1s, 0.1s;
+	-moz-transition-duration:0.1s, 0.1s;
+	-o-transition-duration:0.1s, 0.1s;
+	transition-duration:0.1s, 0.1s;
 	/*transition-timing-function*/
 	-webkit-transition-timing-function:ease-out, ease-out;
 	-moz-transition-timing-function:ease-out, ease-out;
