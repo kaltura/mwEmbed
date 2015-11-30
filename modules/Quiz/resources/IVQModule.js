@@ -25,6 +25,7 @@
                 var _this = this;
 
                 _this.KIVQApi = new mw.KIVQApi(embedPlayer);
+                _this.KIVQScreenTemplate = new mw.KIVQScreenTemplate(embedPlayer);
 
                 this.destroy();
                 this.embedPlayer = embedPlayer;
@@ -228,7 +229,7 @@
                     _this.embedPlayer.enablePlayControls();
                     _this.embedPlayer.triggerHelper( 'onEnableKeyboardBinding' );
                     _this.embedPlayer.play();
-                    _this.quizPlugin.displayBubbles();
+                    _this.showQuizOnScrubber();
                     _this.quizPlugin.selectedAnswer = null;
                     _this.almostDoneDisplaySwithcer = true;
                 }
@@ -466,6 +467,14 @@
             q2i: function (i) {
                 return parseInt(i) - 1;
             },
+            showQuizOnScrubber:function(){
+                var _this = this;
+                _this.quizPlugin.displayBubbles();
+            },
+            hideQuizOnScrubber:function(){
+                this.embedPlayer.getInterface().find(".bubble-cont").empty().remove();
+                this.embedPlayer.getInterface().find(".bubble").empty().remove();
+            },
             checkApiResponse:function(msg,data){
                 var _this = this;
                 if (data.objectType.indexOf("Exception") >= 0 ){
@@ -485,18 +494,17 @@
             },
             errMsg:function(errMsg,data){
                 var _this = this;
+                if (data.code ==="PROVIDED_ENTRY_IS_NOT_A_QUIZ"){
+                    return
+                }
                 mw.log(errMsg, data);
                 _this.quizPlugin.ivqShowScreen();
                 _this.KIVQScreenTemplate.tmplErrorScreen();
-
-               // need to check error handlong screen !!
-                //_this.quizPlugin.removeShowScreen("contentScreen");
-
                 $(".sub-text").html(gM('mwe-quiz-err-msg'));
-
                 _this.isErr = true;
             },
             destroy: function () {
+
                 var _this = this;
                 clearInterval(_this.intrVal);
                 _this.intrVal = null;

@@ -23,6 +23,7 @@
         inFullScreen : false,
         selectedAnswer:null,
 
+
         setup: function () {
             var _this = this;
             var embedPlayer = this.getPlayer();
@@ -58,6 +59,7 @@
                 if(!_this.isSeekingIVQ){
                     _this.KIVQModule.cuePointReachedHandler(e, cuePointObj)
                 }
+
                 if(_this.enablePlayDuringScreen) {
                     _this.enablePlayDuringScreen = false;
                 }
@@ -103,8 +105,25 @@
                     _this.displayBubbles();
                 }
             });
+            this.bind( 'preShowScreen', function( event, screenName ){
+                if ( !embedPlayer.isInSequence() ){
+                        embedPlayer.disablePlayControls();
+                }
+                    _this.KIVQModule.hideQuizOnScrubber();
+            });
+            this.bind( 'preHideScreen', function( event, screenName ){
+                if (screenName != 'quiz'){
+                    _this.KIVQModule.showQuizOnScrubber();
+                }
+            });
+            this.bind('onChangeMediaDone', function(){
+                //todo fix this
+                $.cpObject = {};
+                $.quizParams = {};
+                _this.KIVQModule.hideQuizOnScrubber();
+                _this.KIVQModule.setupQuiz(embedPlayer);
 
-
+            });
         },
         getKClient: function () {
             if (!this.kClient) {
@@ -125,11 +144,8 @@
 
         showScreen:function(){
             this.embedPlayer.pause();
-            this.embedPlayer.disablePlayControls();
             this.embedPlayer.triggerHelper( 'onDisableKeyboardBinding' );
             this._super();
-
-
         },
         ssWelcome: function () {
             var _this = this;
@@ -228,7 +244,6 @@
             if ($.cpObject.cpArray[questionNr].hintText){
                 _this.ssDisplayHint(questionNr)
             }
-
             $(".display-question").text(cPo.question);
             $.each(cPo.answeres, function (key, value) {
                 var div= $("<div class ='single-answer-box-bk'>"
@@ -246,8 +261,6 @@
             }
             this.addFooter(questionNr);
         },
-
-
         ssAllCompleted: function () {
             var _this = this;
             this.reviewMode = true;
@@ -432,8 +445,6 @@
         ivqShowScreen:function(){
             var _this = this,embedPlayer = this.getPlayer();
             _this.showScreen();
-            embedPlayer.getInterface().find(".bubble-cont").empty().remove();
-            embedPlayer.getInterface().find(".bubble").empty().remove();
         },
         ivqHideScreen:function(){
             var _this = this,embedPlayer = this.getPlayer();
@@ -500,9 +511,7 @@
             else{
                 bubbleIsFS = "bubble-window";
             }
-
-            embedPlayer.getInterface().find(".bubble-cont").empty().remove();
-            embedPlayer.getInterface().find(".bubble").empty().remove();
+            _this.KIVQModule.hideQuizOnScrubber();
 
             scrubber.parent().prepend('<div class="bubble-cont"></div>');
 
