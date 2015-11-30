@@ -26,7 +26,8 @@
 				});
 			},
 			isSafeEnviornment: function(){
-				return mw.isIOS9() && mw.isIpad();
+				var vid = document.createElement('video');
+				return $.isFunction(vid.webkitSetPresentationMode) && !mw.isIpad2() ;
 			},
 			getComponent: function() {
 				var _this = this;
