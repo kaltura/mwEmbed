@@ -1143,6 +1143,9 @@ mw.KWidgetSupport.prototype = {
 		if( data.meta &&  data.meta.code == "INVALID_KS" ){
 			errObj = embedPlayer.getKalturaMsgObject( "NO_KS" );
 		}
+		if( data.meta && (data.meta.status == 1 || data.meta.status == 0) ){
+			errObj = embedPlayer.getKalturaMsgObject( "ks-ENTRY_CONVERTING" );
+		}
 		if( data.error ) {
 			errObj = embedPlayer.getKalturaMsgObject( 'GENERIC_ERROR' );
 			errObj.message = data.error;

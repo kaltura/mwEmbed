@@ -197,7 +197,6 @@
 						_this.defaultBottom = layout.bottom;
 						// Move the text track down if present
 						_this.getPlayer().getInterface().find('.track')
-							.stop()
 							.animate(layout, 'fast');
 					}
 				});

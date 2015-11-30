@@ -29,8 +29,9 @@ mw.KEntryLoader.prototype = {
 		// Normalize flashVars
 		kProperties.flashvars = kProperties.flashvars || {};
 
+
 		if( this.getCacheKey( kProperties ) && this.playerLoaderCache[ this.getCacheKey( kProperties ) ] ){
-			mw.log( "KApi:: playerLoader load from cache: " + !!( this.playerLoaderCache[ this.getCacheKey( kProperties ) ] ) );
+		mw.log( "KApi:: playerLoader load from cache: " + !!( this.playerLoaderCache[ this.getCacheKey( kProperties ) ] ) );
 			callback( this.playerLoaderCache[ this.getCacheKey( kProperties ) ] );
 			return ;
 		}
@@ -120,9 +121,8 @@ mw.KEntryLoader.prototype = {
 		}
 		_this.getNamedDataFromRequest( requestObject, fillCacheAndRunCallback );
 	},
-
 	/**
-	 * Do the player data Request and populate named dat
+	 * Do the player data Request and populate named data
 	 * @pram {object} requestObject Request object
 	 * @parm {function} callback Function called with named data
 	 */
@@ -168,7 +168,7 @@ mw.KEntryLoader.prototype = {
 			$.each( $xml, function(inx, node){
 				result[ node.nodeName ] = node.textContent;
 			});
-		}
+		} 
 		return result;
 	},
 	/**

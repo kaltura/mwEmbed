@@ -52,6 +52,10 @@
 			if ( this.getConfig("receiverMode") === true ){
 				return; // don't initialize Chroemcast when running on the custom receiver
 			}
+			// send application ID to native app
+			if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
+				embedPlayer.getPlayerElement().attr( 'chromecastAppId', this.getConfig( 'applicationID' ));
+			}
 			var _this = this;
 			this.addBindings();
 			var ticks = 0;
