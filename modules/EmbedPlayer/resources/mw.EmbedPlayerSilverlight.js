@@ -481,8 +481,7 @@
 						'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions' ,
 						'error': 'onError' ,
 						'alert': 'onError',
-						'individualizing': 'onIndividualizing',
-						'acquiringLicense': 'onAcquiringLicense'
+						'id3tag': 'onId3tag'
 					};
 
 					_this.playerObject = playerElement;
@@ -649,17 +648,10 @@
 			mw.log( 'EmbedPlayerSPlayer::onError: ' + message );
 			this.triggerHelper( 'embedPlayerError' , [data] );
 		} ,
+		onId3tag: function (id3Tag) {
+			this.triggerHelper('onId3Tag', id3Tag);
+		},
 
-		onIndividualizing: function(){
-			this.log("Individualizing started");
-			this.isIndividualizing = true;
-		},
-		onAcquiringLicense: function(){
-			if (this.isIndividualizing){
-				this.log("Individualizing ended");
-			}
-			this.log("Acquiring License");
-		},
 
 		handlePlayerError: function ( data ) {
 			var messageText = this.getKalturaMsg( 'ks-CLIP_NOT_FOUND' );
@@ -808,10 +800,7 @@
 			if ( this.seeking ) {
 				this.seeking = false;
 			}
-			//ignore multicast, slCurrentTime will be updated through id3Tag
-			if(!this.isMulticast) {
-				this.slCurrentTime = playheadValue;
-			}
+			this.slCurrentTime = playheadValue;
 			$( this ).trigger( 'timeupdate' );
 		} ,
 
