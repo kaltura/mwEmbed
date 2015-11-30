@@ -624,7 +624,8 @@ mw.MediaElement.prototype = {
 			signature: this.selectedSource["signature"]
 		};
 		if (this.selectedSource.flavors){
-			licenseData.files = encodeURIComponent(window.btoa(this.selectedSource.flavors));
+			var base64encode = window.btoa ? window.btoa : window.base64_encode;
+			licenseData.files = encodeURIComponent(base64encode(this.selectedSource.flavors));
 		}
 
 		return licenseData;

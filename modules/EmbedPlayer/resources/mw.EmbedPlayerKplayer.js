@@ -586,15 +586,17 @@
 				this.flashActivationRequired = false;
 				$(this).show();
 			}
+            if(this.isLive() && !this.isDVR()){
+                $(this).trigger('timeupdate');
+                return; //for Live + no DVR the flashCurrentTime will be updated through id3Tag
+            }
 			if (this.seeking) {
 				this.seeking = false;
                 this.flashCurrentTime = playheadValue;
 			}else {
-                //update flashCurrentTime only if not (Live + no DVR)
-                if( this.isLive() && !this.isDVR() && this.flashCurrentTime < playheadValue){
+                if(this.flashCurrentTime < playheadValue){
                     this.flashCurrentTime = playheadValue;
                 }
-                //for Live + no DVR the flashCurrentTime will be updated through id3Tag
             }
 			$(this).trigger('timeupdate');
 		},
@@ -819,16 +821,21 @@
 				+ ksString + "/uiConfId/" + this.kuiconfid + this.getPlaymanifestArg("referrerSig", "referrerSig")
 				+ this.getPlaymanifestArg("tags", "flavorTags") + "/a/a." + fileExt + "?referrer=" + this.b64Referrer;
 
-            if (srcUrl.indexOf("&seekFrom=") !== -1) {
-				srcUrl = srcUrl.substr(0, srcUrl.indexOf("&seekFrom="));
-			}
-			if (srcUrl.indexOf("&clipTo=") !== -1) {
-				srcUrl = srcUrl.substr(0, this.selectedSource.src.indexOf("&clipTo="));
-			}
+
 			if (this.supportsURLTimeEncoding() && this.pauseTime) {
+				// remove previous clipTo param from the URL if exists
+				if (srcUrl.indexOf("&clipTo=") !== -1) {
+					srcUrl = srcUrl.substr(0, this.selectedSource.src.indexOf("&clipTo="));
+				}
+				// add the new clipTo param to the URL
 				srcUrl = srcUrl + "&clipTo=" + parseInt(this.pauseTime) * 1000;
 			}
 			if (this.supportsURLTimeEncoding() && this.startTime) {
+				// remove previous seekFrom param from the URL if exists
+				if (srcUrl.indexOf("&seekFrom=") !== -1) {
+					srcUrl = srcUrl.substr(0, srcUrl.indexOf("&seekFrom="));
+				}
+				// add the new seekFrom param to the URL
 				srcUrl = srcUrl + "&seekFrom=" + parseInt(this.startTime) * 1000;
 			}
 
