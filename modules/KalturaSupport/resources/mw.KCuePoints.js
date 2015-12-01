@@ -144,6 +144,9 @@
 
 			// Create associative cuepoint array to enable comparing new cuepoints vs existing ones
 			var cuePoints = this.getCuePoints();
+			cuePoints.sort(function(a,b) {
+				return a.createdAt- b.createdAt;
+			})
 			this.associativeCuePoints = {};
 			$.each(cuePoints, function (index, cuePoint) {
 				_this.associativeCuePoints[cuePoint.id] = cuePoint;
@@ -159,12 +162,12 @@
 					'filter:objectType': 'KalturaCuePointFilter',
 					'filter:statusIn': '1',
 					'filter:cuePointTypeEqual': 'thumbCuePoint.Thumb',
-					'filter:orderBy': "+createdAt"
+					'filter:orderBy': "+createdAt" //let backend sorting them
 				};
-				var lastUpdatedAt = _this.getLastUpdateTime() + 1;
+				var lastCreationTime = _this.getLastCreationTime() + 1;
 				// Only add lastUpdatedAt filter if any cue points already received
-				if (lastUpdatedAt > 0) {
-					request['filter:updatedAtGreaterThanOrEqual'] = lastUpdatedAt;
+				if (lastCreationTime > 0) {
+					request['filter:createdAtGreaterThanOrEqual'] = lastCreationTime;
 				}
 				_this.getKalturaClient().doRequest( request,
 					function (data) {
@@ -226,6 +229,16 @@
 				}
 			});
 			return lastUpdateTime;
+		},
+		getLastCreationTime: function () {
+			var cuePoints = this.getCuePoints();
+			var lastCreationTime = -1;
+			$.each(cuePoints, function (key, cuePoint) {
+				if (lastCreationTime < cuePoint.createdAt) {
+					lastCreationTime = cuePoint.createdAt;
+				}
+			});
+			return lastCreationTime;
 		},
 		getKalturaClient: function () {
 			if (!this.kClient) {
@@ -350,14 +363,44 @@
 			return false;
 		},
         getNextLiveCuePoint: function (time) {
-            var cuePoints = this.getCuePointsByType(mw.KCuePoints.TYPE.THUMB);
-            // Start looking for the cue point via time, return LAST match:
-            var lastCuePoint;
-            for (var i = 0; i < cuePoints.length; i++) {
-                if ( cuePoints[i].createdAt <= time ) {
-                    lastCuePoint = cuePoints[i];
-                }
-            }
+
+			var _this=this;
+			var cuePoints = this.getCuePoints();
+
+			if (cuePoints.length==0) {
+				return null;
+			}
+
+			///TODO better performance log(n) instead of o(n)
+			var findCurrentCuePoint=function(startIndex) {
+
+				//assume sorted cuePoints array
+				for (var i = startIndex; i < cuePoints.length; i++) {
+
+					if (cuePoints[i].cuePointType !== mw.KCuePoints.TYPE.THUMB) {
+						continue;
+					}
+
+					if (cuePoints[i].createdAt > time) {
+						break;
+					}
+					_this.currentCuePointIndex=i;
+				}
+			}
+
+			if (!this.currentCuePointIndex) { //first time
+				this.currentCuePointIndex=0;
+			}
+
+			//if we  moved backward (seeked backward), we restart the search
+			if (cuePoints[this.currentCuePointIndex].createdAt>=time) {
+				findCurrentCuePoint(0);
+			} else { //otherwise search from the next position to find future cue point
+				findCurrentCuePoint(this.currentCuePointIndex + 1);
+			}
+
+			var lastCuePoint=cuePoints[this.currentCuePointIndex];
+
             if(lastCuePoint){
                 mw.log("KCuePoints :: getNextLiveCuePoint :: currentTime " + mw.seconds2npt(time) + " | lastCuePoint.createdAt " + mw.seconds2npt(lastCuePoint.createdAt));
                 return lastCuePoint;

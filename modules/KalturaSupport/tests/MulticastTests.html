@@ -31,7 +31,7 @@
     //var hlssource='http://kalsegsec-a.akamaihd.net/dc-1/m/ny-live-publish3/kLive/smil:1_oorxcge2_publish.smil/chunklist_b2096000.m3u8';
 
    // var multicast='http://'+localhost+':9000/kMulticast/'+hlssource;
-//    var multicast='239.1.2.3:5552';
+//    var multicast='234.2.2.3:12340';
 
     var replaceSources=[];
     if (window.multicast) {
@@ -63,23 +63,41 @@
     }
     kWidget.featureConfig({
         'targetId': 'kaltura_player',
-        'wid': '_1742181',
-        'uiconf_id' : '27889722',
+        'wid': '_1802381',
+        'uiconf_id' : '30139111',
         'flashvars': {
             "liveCore":{"plugin":true} ,
 
             'LeadWithHLSOnFlash':true,
-           'LeadWithUnicastToMulticast': true,
+          // 'LeadWithUnicastToMulticast': true,
             'debugInfo': {
                 'plugin': true,
                 'isVisible':true
             },
+            "currentTimeLabel": {
+                "plugin": true
+            },
+            /*
+            'id3Tag': {
+                'trackEventMonitor': 'id3TrackingLog'
+            },*/
+            "audioSelector": {
+                "plugin": true
+            },
+            "chapters": {
+                "plugin":true
+            },
+            "dualScreen": {
+                "plugin":true
+            },
+            "EmbedPlayer.LiveCuepoints": true,
             'disableMulticastFallback':false,
            'autoPlay': true
         },
-        'entry_id': "1_lha5zenv"
+        'entry_id': "1_yinsgmiv"
 
     });
 </script>
 </body>
 </html>
+<div>
