@@ -54,9 +54,8 @@
                     break;
                 case "Kplayer":
                 case "Silverlight":
-                    //flash tag: gibrish{"id":"ac1d4fd80c79bf7807f6c33061833a784ff5ce62","timestamp":1.447225650123E12,"offset":1431918.0,"objectType":"KalturaSyncPoint"}
+                    //id3 tag: {"id":"ac1d4fd80c79bf7807f6c33061833a784ff5ce62","timestamp":1.447225650123E12,"offset":1431918.0,"objectType":"KalturaSyncPoint"}
                     try{
-                        tag = tag.substring(tag.indexOf('{'), tag.length); //remove unreadable gibrish from the tag string
                         var timestamp = tag.match(/timestamp\"\:([0-9|\.|A-F]+)/);
                         time = parseFloat(timestamp[1]) / 1000;
                     }catch(e){
