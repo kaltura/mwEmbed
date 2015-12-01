@@ -160,7 +160,7 @@
 					'action': 'list',
 					'filter:entryIdEqual': entryId,
 					'filter:objectType': 'KalturaCuePointFilter',
-					'filter:statusIn': '1',
+					'filter:statusIn': '1,3', //1=READY, 3=HANDLED  (3 is after copying to VOD)
 					'filter:cuePointTypeEqual': 'thumbCuePoint.Thumb',
 					'filter:orderBy': "+createdAt" //let backend sorting them
 				};
