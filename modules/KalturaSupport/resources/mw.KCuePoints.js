@@ -157,8 +157,9 @@
 					'action': 'list',
 					'filter:entryIdEqual': entryId,
 					'filter:objectType': 'KalturaCuePointFilter',
-					'filter:statusIn': '1,3',
-					'filter:cuePointTypeEqual': 'thumbCuePoint.Thumb'
+					'filter:statusIn': '1',
+					'filter:cuePointTypeEqual': 'thumbCuePoint.Thumb',
+					'filter:orderBy': "+createdAt"
 				};
 				var lastUpdatedAt = _this.getLastUpdateTime() + 1;
 				// Only add lastUpdatedAt filter if any cue points already received
@@ -350,8 +351,6 @@
 		},
         getNextLiveCuePoint: function (time) {
             var cuePoints = this.getCuePointsByType(mw.KCuePoints.TYPE.THUMB);
-            // TODO: sort the cuePoitns by createdAt
-
             // Start looking for the cue point via time, return LAST match:
             var lastCuePoint;
             for (var i = 0; i < cuePoints.length; i++) {
