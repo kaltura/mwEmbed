@@ -463,6 +463,11 @@
 				});
 			});
 
+			// update the layout on layoutBuildDone event
+			this.bindOnceHelper("layoutBuildDone", function(){
+				_this.doUpdateLayout();
+			});
+
 			// Set default state to load
 			if (!this.currentState) {
 				doChangeState('load');
