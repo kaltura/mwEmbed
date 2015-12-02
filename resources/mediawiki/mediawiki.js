@@ -370,7 +370,8 @@ var mw = ( function ( $, undefined ) {
 				// Flag indicating that document ready has occured
 				ready = false,
 				// Selector cache for the marker element. Use getMarker() to get/use the marker!
-				$marker = null;
+				$marker = null,
+				isIELessThan9 = document.documentMode && document.documentMode < 9;
 
 			/* Cache document ready status */
 
@@ -428,7 +429,20 @@ var mw = ( function ( $, undefined ) {
 			}
 
 			function addInlineCSS( css ) {
-				var $style, style, $newStyle;
+				var $style, style, $newStyle, fontRegexp = /@font-face\s*\{[^\}]*\}/g, matches;
+
+				// IE 8 has a bug (eg: https://github.com/webpack/style-loader/issues/58)
+				// We have to create individual <style> tag for each @font-face declaration
+				// Test and match @font-face declarations
+				if ( isIELessThan9 && $.isArray( matches = css.match( fontRegexp ) ) ) {
+					// Remove @font-face declarations
+					css = css.replace( fontRegexp, '' );
+
+					// Add <style> tag containing @font-face declaration
+					// below marker to not to conflict with styles merging above
+					addStyleTag( matches.join( '' ) );
+				}
+
 				$style = getMarker().prev();
 				if ( $style.is( 'style' ) && $style.data( 'ResourceLoaderDynamicStyleTag' ) === true ) {
 					// There's already a dynamic <style> tag present, append to it. This recycling of
