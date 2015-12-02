@@ -111,8 +111,12 @@
 				var plugin = this.registeredPlugins[i].getComponent();
 				// add plugin label if not exist
 				if ( !plugin.find(".btnLabel").length ){
-					plugin.find(".btn .accessibilityLabel").remove(); // remove accessibility label if exists as the new label can be used for the same purpose
-					plugin.find(".btn").append("<p class='btnLabel'>" + this.registeredPlugins[i].getConfig('title') + "</p>");
+					var pluginBtn = plugin.find(".btn");
+					if ( pluginBtn.length === 0 && plugin.hasClass("btn")){
+						pluginBtn = plugin;
+					}
+					pluginBtn.append("<p class='btnLabel'>" + this.registeredPlugins[i].getConfig('title') + "</p>");
+					pluginBtn.find(".accessibilityLabel").remove(); // remove accessibility label if exists as the new label can be used for the same purpose
 				}
 				plugin.fadeIn(400, function(){
 					$(this).css("display","inline-block");

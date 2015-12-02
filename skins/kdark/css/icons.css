@@ -185,80 +185,80 @@
     content: "\e627";
 }
 
-.mobile .icon-related:before {
+.mobile .icon-settings:before {
     content: "\e900";
 }
-.mobile .icon-viewpoint:before {
+.mobile .icon-share:before {
     content: "\e901";
 }
-.mobile .icon-split:before {
+.mobile .icon-more:before {
     content: "\e902";
 }
-.mobile .icon-single:before {
+.mobile .icon-chromecast:before {
     content: "\e903";
 }
-.mobile .icon-mainslide:before {
+.mobile .icon-airplay:before {
     content: "\e904";
 }
-.mobile .icon-swap:before {
+.mobile .icon-contract:before {
     content: "\e905";
 }
-.mobile .icon-download:before {
+.mobile .icon-expand:before {
     content: "\e906";
 }
-.mobile .icon-attachments:before {
+.mobile .icon-play:before {
     content: "\e907";
 }
-.mobile .icon-flag:before {
+.mobile .icon-pause:before {
     content: "\e908";
 }
-.mobile .icon-speedrate:before {
+.mobile .icon-prev:before {
     content: "\e909";
 }
-.mobile .icon-cc:before {
+.mobile .icon-next:before {
     content: "\e90a";
 }
-.mobile .icon-info:before {
+.mobile .icon-richmedia:before {
     content: "\e90b";
 }
-.mobile .icon-richmedia:before {
+.mobile .icon-info:before {
     content: "\e90c";
 }
-.mobile .icon-next:before {
-    font-size: 32px;
+.mobile .icon-cc:before {
     content: "\e90d";
 }
-.mobile .icon-prev:before {
-    font-size: 32px;
+.mobile .icon-speedrate:before {
     content: "\e90e";
 }
-.mobile .icon-pause:before {
+.mobile .icon-flag:before {
     content: "\e90f";
 }
-.mobile .icon-play:before {
-    margin-left: 2px;
+.mobile .icon-attachments:before {
     content: "\e910";
 }
-.mobile .icon-expand:before {
+.mobile .icon-download:before {
     content: "\e911";
 }
-.mobile .icon-contract:before {
+.mobile .icon-swap:before {
     content: "\e912";
 }
-.mobile .icon-airplay:before {
+.mobile .icon-mainslide:before {
     content: "\e913";
 }
-.mobile .icon-chromecast:before {
+.mobile .icon-single:before {
     content: "\e914";
 }
-.mobile .icon-more:before {
+.mobile .icon-split:before {
     content: "\e915";
 }
-.mobile .icon-share:before {
+.mobile .icon-viewpoint:before {
     content: "\e916";
 }
-.mobile .icon-settings:before {
-    content: "\e917";
+.mobile .icon-related:before {
+    content: "\e91c";
+}
+.mobile .icon-ad:before {
+    content: "\e91e";
 }
 
 

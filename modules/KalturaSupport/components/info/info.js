@@ -10,6 +10,7 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 		showTooltip: true,
 		usePreviewPlayer: false,
 		previewPlayerEnabled: false,
+		title:  gM( 'mwe-embedplayer-info' ),
 		templatePath: 'components/info/info.tmpl.html',
 		smartContainer: 'morePlugins',
 		smartContainerCloseEvent: 'hideScreen'

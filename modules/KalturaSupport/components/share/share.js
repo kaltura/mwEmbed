@@ -8,6 +8,7 @@
 			order: 5,
 			align: "right",
 			tooltip:  gM( 'mwe-embedplayer-share' ),
+			title:  gM( 'mwe-embedplayer-share' ),
 			showTooltip: true,
 			displayImportance: 'medium',
 			templatePath: 'components/share/share.tmpl.html',

@@ -10,6 +10,7 @@
 		 	"showTooltip": true,
 			"smartContainer": 'morePlugins',
 			"smartContainerCloseEvent": 'closeMenuOverlay',
+			"title": gM("ks-MODERATION-REPORT"),
 			"header": gM("ks-MODERATION-HEADER"),
 			"text": gM("ks-MODERATION-TEXT"),
 			"placeholder": gM("ks-MODERATION-PLACEHOLDER"),

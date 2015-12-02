@@ -29,6 +29,7 @@
         "mwe-embedplayer-videos": "videos",
         "mwe-embedplayer-download_clip": "Download video",
         "mwe-embedplayer-share": "Share",
+	    "mwe-embedplayer-info": "Info",
         "mwe-share-startTimeLbl": "Start video at",
         "mwe-share-secureEmbedLbl": "Secured embed",
         "mwe-share-copyLbl": "Copy",
