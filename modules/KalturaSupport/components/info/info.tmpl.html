@@ -1,7 +1,7 @@
-<div class='panel-right'>
-	<div class='created'>Uploaded on {mediaProxy.entry.createdAt|dateFormat}</div>
+<div class="infoScreenPanel">
+    <div class="info-close"><span class="icon-close"  data-click="closeScreen"></span></div>
+	<div class='title'>{mediaProxy.entry.name}</div>
+	<span class="icon-infoScreen-clock"></span><span class='created'>Uploaded on {mediaProxy.entry.createdAt|dateFormat}</span>
+    <span class="icon-infoScreen-eye"></span><span class='views'>{mediaProxy.entry.views|numberWithCommas} Views</span>
 	<div class='description'>{mediaProxy.entry.description}</div>
-</div>
-<div class='panel-left'>
-	<div class='views'>{mediaProxy.entry.views|numberWithCommas} Views</div>
 </div>

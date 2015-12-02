@@ -110,6 +110,7 @@
 					_this.layoutBuilder.closeAlert();
 				}
 			});
+            $(this).bind('firstPlay', this.parseTextTracks());
 		},
 		/**
 		 * Updates the supported features given the "type of player"
@@ -138,40 +139,6 @@
 		},
 		supportsVolumeControl: function () {
 			return  !( mw.isIpad() || mw.isAndroid() || mw.isMobileChrome() || this.useNativePlayerControls() );
-		},
-		/**
-		 * Adds an HTML screen and moves the video tag off screen, works around some iPhone bugs
-		 */
-		addPlayScreenWithNativeOffScreen: function () {
-			if (!mw.isIphone()) {
-				return;
-			}
-			var _this = this;
-			// Hide the player offscreen:
-			if (!this.inline) {
-				this.hidePlayerOffScreen();
-				this.keepPlayerOffScreenFlag = true;
-			}
-
-
-			// Add an image poster:
-			var posterSrc = ( this.poster ) ? this.poster :
-				mw.getConfig('EmbedPlayer.BlackPixel');
-			// Check if the poster is already present:
-			if ($(this).find('.playerPoster').length) {
-				$(this).find('.playerPoster').attr('src', posterSrc);
-			} else {
-				$(this).append(
-					$('<img />')
-						.attr('src', posterSrc)
-						.addClass('playerPoster')
-						.load(function () {
-							_this.applyIntrinsicAspect();
-							$('.playerPoster').attr('alt', _this.posterAlt);
-						})
-				);
-			}
-			$(this).show();
 		},
 		changeMediaCallback: function (callback) {
 			// Check if we have source
@@ -493,16 +460,20 @@
 		 * @param {Function} callback
 		 * 		Function called once time has been set.
 		 */
-		setCurrentTime: function( seekTime ) {
-			this.log("setCurrentTime seekTime:" + seekTime );
-			// Try to update the playerElement time:
-			try {
-				var vid = this.getPlayerElement();
-				vid.currentTime = this.currentSeekTargetTime;
-			} catch (e) {
-				this.log("Error: Could not set video tag seekTime");
-				this.triggerHelper("seeked");
-			}
+		setCurrentTime: function( time ) {
+            if( this.isLive() && !this.isDVR() ){
+                this.LiveCurrentTime = time;
+            }else {
+                this.log("setCurrentTime seekTime:" + time);
+                // Try to update the playerElement time:
+                try {
+                    var vid = this.getPlayerElement();
+                    vid.currentTime = this.currentSeekTargetTime;
+                } catch (e) {
+                    this.log("Error: Could not set video tag seekTime");
+                    this.triggerHelper("seeked");
+                }
+            }
 		},
 		/**
 		 * Get the embed player time
@@ -516,6 +487,9 @@
 				this.stop();
 				return false;
 			}
+            if( this.isLive() && !this.isDVR() ){
+                return this.LiveCurrentTime;
+            }
 			var ct = this.playerElement.currentTime;
 			// Return 0 or a positive number:
 			if (!ct || isNaN(ct) || ct < 0 || !isFinite(ct)) {
@@ -1143,10 +1117,6 @@
 				timeSincePlay > mw.getConfig('EmbedPlayer.MonitorRate')
 				) {
 				_this.parent_pause();
-				// in iphone when we're back from the native payer we need to show the image with the play button
-				if (mw.isIphone()) {
-					_this.updatePosterHTML();
-				}
 			} else {
 				// try to continue playback:
 				this.getPlayerElement().play();
@@ -1173,6 +1143,9 @@
 			}
 			// Set firstEmbedPlay state to false to avoid initial play invocation :
 			this.ignoreNextNativeEvent = false;
+			if (mw.isIphone()){
+				this.getInterface().removeClass("player-out");
+			}
 		},
 
 		/**
@@ -1368,6 +1341,34 @@
 		},
 		setInline: function ( state ) {
 			this.getPlayerElement().attr('webkit-playsinline', '');
-		}
+		},
+        parseTextTracks: function(){
+            var vid = this.getPlayerElement();
+            var _this = this;
+            var interval = setInterval(function() {
+                for (var i = 0; i < vid.textTracks.length; i++) {
+                    //TODO: add audio support
+
+                    //if Live + No DVR add id3 tags support
+                    if (vid.textTracks[i].kind === "metadata" && _this.isLive() && !_this.isDVR()) {
+                        _this.id3Tag(vid.textTracks[i]);
+                        clearInterval(interval);
+                        vid.textTracks[i].mode = "hidden";
+                    }
+                }
+            }, 500);
+        },
+        id3Tag: function(metadataTrack){
+            var _this = this;
+            metadataTrack.addEventListener("cuechange", function (evt) {
+                try {
+                    var id3Tag = evt.currentTarget.cues[evt.currentTarget.cues.length - 1].value.data;
+                    _this.triggerHelper('onId3Tag', id3Tag);
+                }
+                catch (e) {
+                    mw.log("Native player :: id3Tag :: ERROR :: "+e);
+                }
+            }, false);
+        }
 	};
 })(mediaWiki, jQuery);

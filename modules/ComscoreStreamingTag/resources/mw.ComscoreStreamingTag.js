@@ -1,12 +1,17 @@
 ( function( mw, $ ) { "use strict";
 
+	/*
+	 Limitations:
+	 - No buffer events.
+	 - No tracing for the overlay ads
+	 */
 	mw.ComscoreStreamingTag = function( embedPlayer, callback ){
 		this.init( embedPlayer, callback );
 	};
 
 	mw.ComscoreStreamingTag.prototype = {
 
-		pluginVersion: "1.0.4",
+		pluginVersion: "1.0.5",
 		reportingPluginName: "kaltura",
 		playerVersion: mw.getConfig('version'),
 		genericPluginUrlSecure: "https://sb.scorecardresearch.com/c2/plugins/streamingtag_plugin_generic.js",
@@ -19,7 +24,7 @@
 		streamSenseInstance: null, // Placeholder reference for comScore Generic plugin
 
 		clipNumberMap: {},
-	    clipNumberCounter: 0,
+		clipNumberCounter: 0,
 		playerEvents: null,
 		inFullScreen: false,
 		currentPlayerPluginState: null, // Keep track of the comScore pluguin state
@@ -33,7 +38,8 @@
 		buffering: false,
 		seeking: false,
 		playing: false,
-		lastKnownwPercentage: 0,
+		checkEveryIndex:0,
+		lastKnownTime: 0,
 		// Mapping for the module settings and the StreamSense plugin
 		configOptions: {c2:"c2", pageView:"pageview", logUrl:"logurl", persistentLabels:"persistentlabels", debug:"debug"},
 
@@ -123,9 +129,9 @@
 
 		onPlay: function() {
 			if (this.playing
-				&& !this.buffering
+					/*&& !this.buffering*/ // We can not rely on the buffering event. See TAG-2035
 				&& !this.seeking
-			    && this.getPlayerPluginState() != this.PlayerPluginState().PLAYING
+				&& this.getPlayerPluginState() != this.PlayerPluginState().PLAYING
 				&& this.getPlayerPluginState()!= this.PlayerPluginState().AD_PLAYING) {
 				this.setClip();
 				var seek = this.getPlayerPluginState() == this.PlayerPluginState().SEEKING;
@@ -144,6 +150,35 @@
 					this.callStreamSensePlugin("notify", this.playerEvents.PAUSE, this.getLabels(seek), this.getCurrentPosition());
 				}
 			}
+		},
+
+		onAdPlay: function(adId, type, index, duration) {
+			if (arguments.length != 4) {
+				var adMetadata = this.embedPlayer.evaluate( '{sequenceProxy.activePluginMetadata}' );
+				if (!adMetadata) return;
+				adId = adMetadata.ID;
+				type = adMetadata.type.toLowerCase();
+				duration = adMetadata.duration * 1000;
+				index = 0; // Unknown value
+			}
+			if (type != 'preroll' && type != 'midroll' && type != "postroll") {
+				return; // ComScore only tag prerolls, midrolls and postrolls
+			}
+			if (this.currentAd.id == adId) return; // If this is already in use, ignore it
+
+			this.currentAd.id = adId;
+			this.currentAd.type = type;
+			this.currentAd.index = index;
+			if (this.adsPlayed.length < index + 1) {
+				this.adsPlayed.push(this.currentAd);
+			}
+			if (this.currentAd.duration > 0){
+				this.currentAd.duration = duration;
+			}
+			this.setPlayerPluginState(this.PlayerPluginState().AD_PLAYING);
+			this.callStreamSensePlugin("setClip", this.getClipLabels(), false, {}, true);
+			this.callStreamSensePlugin("notify", this.playerEvents.PLAY, this.getLabels(), 0);
+			this.shouldSetClip = true;
 		},
 
 		setPlayerPluginState: function(newState) {
@@ -167,14 +202,15 @@
 		callStreamSensePlugin:function(){
 			var args = $.makeArray( arguments );
 			var action = args[0];
-			if( parent && parent[ this.getConfig('trackEventMonitor') ] ){
-				// Translate the event type to make it more human readable
-				var parsedArgs = args.slice();
-				if (action == "notify") {
-					parsedArgs[1] = ns_.StreamSense.PlayerEvents.toString(parsedArgs[1])
+			try {
+				if (parent && parent[this.getConfig('trackEventMonitor')]) {
+					var parsedArgs = args.slice();
+					if (action == "notify") {
+						parsedArgs[1] = ns_.StreamSense.PlayerEvents.toString(parsedArgs[1])
+					}
+					parent[this.getConfig('trackEventMonitor')](parsedArgs);
 				}
-				parent[ this.getConfig('trackEventMonitor') ]( parsedArgs );
-			}
+			} catch (e) {}
 			args.splice(0, 1);
 			this.streamSenseInstance[action].apply(this, args);
 		},
@@ -192,20 +228,22 @@
 			});
 
 			embedPlayer.bindHelper( 'bufferStartEvent' + _this.bindPostfix, function(){
-				_this.buffering = true;
-				_this.setClip();
-				_this.callStreamSensePlugin("notify", _this.playerEvents.BUFFER, {}, _this.getCurrentPosition());
+				// We can not rely on the buffer events
+				//_this.buffering = true;
+				//_this.setClip();
+				//_this.callStreamSensePlugin("notify", _this.playerEvents.BUFFER, {}, _this.getCurrentPosition());
 			});
 
 			embedPlayer.bindHelper( 'bufferEndEvent' + _this.bindPostfix, function(){
-				_this.buffering = false;
+				// We can not rely on the buffer events
+				//_this.buffering = false;
 			});
 
-			embedPlayer.bindHelper( 'updatePlayHeadPercent' + _this.bindPostfix, function(){
-				var args = $.makeArray( arguments );
-				var percent = args[1];
-				if (percent != _this.lastKnownwPercentage && !_this.seeking && !_this.buffering) {
-					if (percent > _this.lastKnownwPercentage) {
+			embedPlayer.bindHelper( 'monitorEvent' + _this.bindPostfix, function(){
+				if (_this.checkEveryIndex++ % 2 != 0) return;
+				var currentTime = embedPlayer.getPlayerElementTime();
+				if (currentTime != _this.lastKnownTime && !_this.seeking) {
+					if (currentTime > _this.lastKnownTime) {
 						_this.onPlay();
 					} else {
 						_this.onPause();
@@ -213,7 +251,7 @@
 				} else {
 					_this.onPause();
 				}
-				_this.lastKnownwPercentage = percent;
+				_this.lastKnownTime = currentTime;
 			});
 
 			embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostfix, function(){
@@ -271,21 +309,16 @@
 			});
 
 			embedPlayer.bindHelper('onAdOpen' + _this.bindPostfix, function(event, adId, networkName, type, index) {
-				_this.currentAd.id = adId;
-				_this.currentAd.type = type;
-				_this.currentAd.index = index;
+				_this.onAdPlay(adId, type, index, 0);
+			});
 
-				// Check if the add is already stored. The ads are played in order.
-				if (_this.adsPlayed.length < index + 1) {
-					_this.adsPlayed.push(_this.currentAd);
-				}
+			embedPlayer.bindHelper('AdSupport_StartAdPlayback' + _this.bindPostfix, function() {
+				_this.onAdPlay();
+			});
 
-				// We need to update the player plugin state before setting up the clip.
-				_this.setPlayerPluginState(_this.PlayerPluginState().AD_PLAYING);
-				_this.callStreamSensePlugin("setClip", _this.getClipLabels(), false, {}, true);
-				_this.callStreamSensePlugin("notify", _this.playerEvents.PLAY, _this.getLabels(), 0);
-
-				_this.shouldSetClip = true;
+			embedPlayer.bindHelper('AdSupport_AdUpdateDuration' + _this.bindPostfix, function(event, duration) {
+				_this.onAdPlay();
+				_this.currentAd.duration = duration * 1000;
 			});
 
 			embedPlayer.bindHelper('AdSupport_EndAdPlayback' + _this.bindPostfix, function() {
@@ -334,21 +367,21 @@
 				// We cannot include playlist length - in number of items as well as an amount of time - because the
 				// player does not have any info about the number of ads and their length.
 
-				labels.ns_st_cp = playlist.length;
+				 labels.ns_st_cp = playlist.length;
 
-				var totVidLength = 0;
-				for (var i = 0; i < playlist.items.length; i++) {
-					totVidLength += playlist.items[i].duration * 1000;
-				}
-				labels.ns_st_ca = totVidLength; // total playlist length
-				*/
+				 var totVidLength = 0;
+				 for (var i = 0; i < playlist.items.length; i++) {
+				 totVidLength += playlist.items[i].duration * 1000;
+				 }
+				 labels.ns_st_ca = totVidLength; // total playlist length
+				 */
 			} else {
 				/*
 				// We cannot include playlist length as amount of time because the player does not have any info about
 				// the number of ads and their length.
 
-				labels.ns_st_ca = this.getDuration();
-				*/
+				 labels.ns_st_ca = this.getDuration();
+				 */
 				labels.ns_st_pl = this.getMediaName(); // Playlist title set to content media title.
 			}
 			return labels;
@@ -421,13 +454,17 @@
 		parserRawConfig: function(configName) {
 			var _this = this;
 			var rawConfig = this.embedPlayer.getRawKalturaConfig(this.moduleName, configName)
+			if (!rawConfig) return [];
 			var result = {};
 			// Split and trim the spaces
 			rawConfig.split(/ *, */g).forEach(function(x) {
+				try {
+					x = decodeURIComponent(x);
+				} catch (e) {}
 				// Create two groups, one for the label name and the second one for the label value without any "
-				var re = /([^=]+)="?([^"]+)"?/g;
+				var re = /([^=]+)="?([^"]*)"?/g;
 				var arr = re.exec(x);
-				arr[2] && (result[arr[1]] = _this.evaluateString(arr[2]));
+				(arr.length == 3) && (result[arr[1]] = _this.evaluateString(arr[2]));
 			});
 			return result;
 		},

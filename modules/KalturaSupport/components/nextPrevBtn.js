@@ -3,7 +3,7 @@
 	mw.PluginManager.add( 'nextPrevBtn', mw.KBaseComponent.extend({
 
 		defaultConfig: {
-			'parent': 'controlsContainer',
+			'parent': mw.isMobileDevice() ? 'videoHolder' : 'controlsContainer',
 			'accessibleControls': false,
 			'layout': "horizontal",
 			'order': 5,
@@ -19,19 +19,70 @@
 		nextTitle: gM( 'mwe-embedplayer-next_clip' ),
 		prevTitle: gM( 'mwe-embedplayer-prev_clip' ),
 
+		setup: function() {
+			this.addBindings();
+		},
+		addBindings: function() {
+			var _this = this;
+			if (mw.isMobileDevice()){
+				this.bind('onChangeMediaDone playerReady onpause onEndedDone onRemovePlayerSpinner showPlayerControls', function(){
+					if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() && !_this.embedPlayer.changeMediaStarted ){
+						_this.show();
+					}
+				});
+
+				this.bind('onShowControlBar', function(){
+					if( _this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
+						_this.show();
+					}
+				});
+				this.bind('playing AdSupport_StartAdPlayback onAddPlayerSpinner onHideControlBar', function(){
+					_this.hide();
+				});
+				this.bind('onPlayerStateChange', function(e, newState, oldState){
+					if( newState == 'load' ){
+						_this.hide();
+					}
+					if( newState == 'pause' && _this.embedPlayer.isPauseLoading ){
+						_this.hide();
+					}
+				});
+				this.bind( 'hideScreen', function(){
+					if (_this.embedPlayer.paused){
+						_this.show();
+					}
+				});
+			}
+		},
+		show: function(){
+			if ( !this.isDisabled ) {
+				this.getComponent().show();
+			}
+		},
+		hide: function( force ){
+			this.getComponent().hide();
+		},
 		getComponent: function() {
 			var _this = this;
+			var eventName = 'click';
+			if ( mw.isMobileDevice() ){
+				eventName = 'touchstart';
+			}
 			if( !this.$el ) {
 				var $nextBtn = $( '<button />' )
 					.attr( 'title', this.nextTitle )
 					.addClass( "btn btnNarrow icon-next" )
-					.click( function() {
+					.on(eventName, function(e) {
+						e.stopPropagation();
+						e.preventDefault();
 						$( _this.embedPlayer ).trigger( 'playNextClip' );
 					});
 				var $prevBtn = $( '<button />' )
 					.attr( 'title', this.prevTitle )
 					.addClass( "btn btnNarrow icon-prev" )
-					.click( function() {
+					.on(eventName, function(e) {
+						e.stopPropagation();
+						e.preventDefault();
 						$( _this.embedPlayer ).trigger( 'playPreviousClip' );
 					});
 

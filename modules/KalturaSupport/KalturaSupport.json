@@ -32,6 +32,12 @@
 			"nanoScroller"
 		]
 	},
+	"mw.KBaseSmartContainer": {
+		"scripts": "resources/mw.KBaseSmartContainer.js",
+		"dependencies": [
+			"mw.KBaseComponent"
+		]
+	},
 	"mw.KBaseComponent": {
 		"scripts": "resources/mw.KBaseComponent.js",
 		"dependencies": [
@@ -140,6 +146,11 @@
 		"dependencies": "mw.KBasePlugin",
 		"kalturaLoad": "always"
 	},
+   "id3Tag": {
+     "scripts": "resources/mw.id3Tag.js",
+     "dependencies": "mw.KBasePlugin",
+     "kalturaLoad": "always"
+   },
 	"controlBarContainer": {
 		"scripts": "components/controlBarContainer.js",
 		"dependencies": "mw.KBasePlugin",
@@ -175,6 +186,11 @@
 		"dependencies": "mw.KBaseComponent",
 		"kalturaPluginName": "largePlayBtn"
 	},
+    "pipBtn":{
+      "scripts": "components/pipBtn.js",
+      "dependencies": "mw.KBaseComponent",
+      "kalturaPluginName": "pipBtn"
+    },
 	"playPauseBtn": {
 		"scripts": "components/playPauseBtn.js",
 		"dependencies": "mw.KBaseComponent",
@@ -264,6 +280,7 @@
 	},
 	"infoScreen": {
 		"scripts": "components/info/info.js",
+		"styles": "components/info/info.css",
 		"templates": "components/info/info.tmpl.html",
 		"dependencies": [
 			"mw.KBaseScreen"
@@ -407,6 +424,16 @@
 		"scripts": "resources/uiConfComponents/playbackRateSelector.js",
 		"dependencies": "mw.KBaseComponent",
 		"kalturaPluginName": "playbackRateSelector"
+	},
+	"qualitySettings": {
+		"scripts": "components/qualitySettings.js",
+		"dependencies": "mw.KBaseSmartContainer",
+		"kalturaPluginName": "qualitySettings"
+	},
+	"morePlugins": {
+		"scripts": "components/morePlugins.js",
+		"dependencies": "mw.KBaseSmartContainer",
+		"kalturaPluginName": "morePlugins"
 	},
 	"streamSelector": {
 		"scripts": "components/streamSelector.js",

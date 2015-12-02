@@ -639,6 +639,10 @@
 			this.getPlayerElement().showNativeAirPlayButton([x, y, w, h]);
 		},
 
+		togglePictureInPicture: function() {
+			this.getPlayerElement().togglePictureInPicture();
+		},
+
 		hideNativeAirPlayButton: function () {
 			this.getPlayerElement().hideNativeAirPlayButton();
 		},

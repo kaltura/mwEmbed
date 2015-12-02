@@ -139,19 +139,29 @@ mw.MediaPlayers.prototype = {
 		}
 		if ( mw.getConfig( 'EmbedPlayer.ForceNativeComponent' ) && this.isSupportedPlayer( 'nativeComponentPlayer' )) {
 			var nativeComponentPlayer = mw.EmbedTypes.getNativeComponentPlayerVideo();
-			var nativeComponentPlayerSupported = mimePlayers.filter(function(mimePlayer){return mimePlayer.id === nativeComponentPlayer.id}).length > 0;
-			if (nativeComponentPlayerSupported) {
+			if (this.isPlayerSupportMimeType(mimePlayers, nativeComponentPlayer)) {
 				mimePlayers = [nativeComponentPlayer];
 			} else {
 				mimePlayers = [];
 			}
 		}
-		if ( (mw.getConfig( 'EmbedPlayer.ForceKPlayer' ) || ( mw.getConfig( 'ForceFlashOnDesktopSafari') && mw.isDesktopSafari() ) )
-			&& this.isSupportedPlayer( 'kplayer' ) && mimeType !== "video/youtube" ) {
-			mimePlayers = [mw.EmbedTypes.getKplayer()];
+		if ( ( mw.getConfig( 'EmbedPlayer.ForceKPlayer' ) ||
+			( mw.getConfig( 'ForceFlashOnDesktopSafari') && mw.isDesktopSafari() ) ) &&
+			this.isSupportedPlayer( 'kplayer' ) && mimeType !== "video/youtube" ) {
+			var kplayer = mw.EmbedTypes.getKplayer();
+			if (this.isPlayerSupportMimeType(mimePlayers, kplayer)) {
+				mimePlayers = [kplayer];
+			} else {
+				mimePlayers = [];
+			}
 		}
 		if (mw.getConfig( 'EmbedPlayer.ForceSPlayer') && this.isSupportedPlayer('splayer')) {
-			mimePlayers = [mw.EmbedTypes.getSilverlightPlayer()];
+			var silverlightPlayer = mw.EmbedTypes.getSilverlightPlayer();
+			if (this.isPlayerSupportMimeType(mimePlayers, silverlightPlayer)) {
+				mimePlayers = [silverlightPlayer];
+			} else {
+				mimePlayers = [];
+			}
 		}
 
 		// Check for prior preference for this mime type
@@ -168,6 +178,12 @@ mw.MediaPlayers.prototype = {
 		}
 		// mw.log( 'No default player found for ' + mimeType );
 		return null;
+	},
+	isPlayerSupportMimeType: function(mimePlayers, player){
+		var playerSupported = mimePlayers.filter(function(mimePlayer){
+			return mimePlayer.id === player.id;
+		});
+		return (playerSupported.length > 0);
 	},
 	/**
 	 * Returns only a native video tag player

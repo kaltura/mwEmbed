@@ -1,0 +1,82 @@
+@import url(http://fonts.googleapis.com/css?family=Lato:300,400,700,900);
+.screen.infoScreen{
+    font-family: 'Lato', Helvetica, Arial;
+}
+.infoScreen .title{
+    font-size: 28px;
+    font-family: "Lato";
+    font-weight: bold;
+    color: rgb(255, 255, 255);
+    margin-bottom: 10px;
+    margin-top: 30px;
+}
+
+.infoScreen .screen-content {
+    padding: 10px;
+    position: relative;
+    height: 100%;
+}
+.infoScreen .created {
+    font-size: 13px;
+    margin-left: 8px;
+}
+
+.infoScreen .description {
+    font-size: 16px;
+    margin-top: 24px;
+}
+.infoScreen .views {
+    font-size: 13px;
+    margin-left: 8px;
+}
+.infoScreen .infoScreenPanel{
+    width: 80%;
+    margin-left: 10%;
+    text-align: left;
+}
+.infoScreen .info-close{
+    width: 100%;
+    text-align: right;
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+.infoScreen .info-close:hover{
+    text-shadow: 0px 0px 10px #fff;
+}
+@font-face {
+    font-family: 'info';
+    src:url('fonts/info.eot?6jqndw');
+    src:url('fonts/info.eot?6jqndw#iefix') format('embedded-opentype'),
+    url('fonts/info.ttf?6jqndw') format('truetype'),
+    url('fonts/info.woff?6jqndw') format('woff'),
+    url('fonts/info.svg?6jqndw#icomoon') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+[class^="icon-infoScreen-"], [class*=" icon-infoScreen"] {
+    font-family: 'info' !important;
+    font-size: 16px;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-infoScreen-clock:before {
+    content: "\e901";
+    position: relative;
+    top: 3px;
+}
+.icon-infoScreen-eye:before {
+    content: "\e900";
+    position: relative;
+    top: 2px;
+    margin-left: 40px;
+}

@@ -25,6 +25,10 @@
 			return this.getConfig("sliderPreview") && !this.isDisabled && !this.embedPlayer.isLive();
 		},
 		setup: function (embedPlayer) {
+			if ( mw.isMobileDevice() ){
+				this.setConfig('parent','controlsContainer');
+				this.setConfig('showOnlyTime',true);
+			}
 			// make sure insert mode reflects parent type:
 			if (this.getConfig('parent') == 'controlsContainer') {
 				this.setConfig('insertMode', 'lastChild');
@@ -39,6 +43,9 @@
 			this.bind('durationChange', function (event, duration) {
 				_this.duration = duration;
 			});
+            this.bind('seeked', function () {
+                _this.justSeeked = true;
+            });
 
 			// check if parent is controlsContainer
 			if (this.getConfig('parent') == 'controlsContainer') {
@@ -159,6 +166,10 @@
             }
 		},
         checkForLiveEdge: function (){
+            if(this.justSeeked){
+                this.justSeeked = false;
+                return;
+            }
             var playHeadPercent = (this.getPlayHeadComponent().position().left + this.getPlayHeadComponent().width()/2) / this.getComponent().width();
             playHeadPercent = parseInt(playHeadPercent*100);
 

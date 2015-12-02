@@ -851,7 +851,7 @@ mw.KWidgetSupport.prototype = {
 		
 		// Check for autoMute:
 		var autoMute = getAttr( 'autoMute' );
-		if( autoMute ){
+		if( autoMute && !mw.isMobileDevice()){
 			setTimeout(function(){
 				embedPlayer.toggleMute( true );
 			},300);
@@ -1142,6 +1142,9 @@ mw.KWidgetSupport.prototype = {
 		var errObj = null;
 		if( data.meta &&  data.meta.code == "INVALID_KS" ){
 			errObj = embedPlayer.getKalturaMsgObject( "NO_KS" );
+		}
+		if( data.meta && (data.meta.status == 1 || data.meta.status == 0) ){
+			errObj = embedPlayer.getKalturaMsgObject( "ks-ENTRY_CONVERTING" );
 		}
 		if( data.error ) {
 			errObj = embedPlayer.getKalturaMsgObject( 'GENERIC_ERROR' );

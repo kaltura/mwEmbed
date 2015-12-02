@@ -12,7 +12,9 @@
 			"simpleFormat": true,
 			"iconClass": "icon-cog",
             "displayMode": "size", //'size' – displays frame size ( default ), 'bitrate' – displays the bitrate, 'sizebitrate' displays size followed by bitrate
-            "hideSource": false
+            "hideSource": false,
+			"title": gM( 'mwe-embedplayer-select_source' ),
+			'smartContainer': 'qualitySettings'
 		},
 
 		isDisabled: false,

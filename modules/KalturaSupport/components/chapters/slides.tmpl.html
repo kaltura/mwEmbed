@@ -15,10 +15,12 @@
                     <%=(mediaItem.chapterNumber + 1)%>.<%=(mediaItem.slideNumber + 1)%>
                 </div>
             <%}%>
-            <span class="mediaBoxText k-chapter-time" title="<%=meta.titles.slideStartTime%>" data-show-tooltip="true">
-                <span class="icon-start_time"></span>
-            <span><%=mediaItem.startTimeDisplay%></span>
-        </span>
+            <% if (mediaItem.startTimeDisplay){ %>
+                <span class="mediaBoxText k-chapter-time" title="<%=meta.titles.slideStartTime%>" data-show-tooltip="true">
+                    <span class="icon-start_time"></span>
+                    <span><%=mediaItem.startTimeDisplay%></span>
+                </span>
+            <%}%>
         </div>
     </div>
     <div class="slideOverlay"></div>

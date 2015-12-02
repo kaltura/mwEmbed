@@ -16,7 +16,8 @@
 			'align': "right",
 			'applicationID': "FFCC6D19", // DB6462E9: Chromecast default receiver, FFCC6D19: Kaltura custom receiver supporting DRM, HLS and smooth streaming
 			'showTooltip': true,
-			'tooltip': 'Chromecast',
+			'tooltip': gM('mwe-chromecast-chromecast'),
+			'title': gM('mwe-chromecast-chromecast'),
 			'receiverMode': false,
 			'debugReceiver': false,
 			'receiverLogo': false,
@@ -51,6 +52,10 @@
 		setup: function( embedPlayer ) {
 			if ( this.getConfig("receiverMode") === true ){
 				return; // don't initialize Chroemcast when running on the custom receiver
+			}
+			// send application ID to native app
+			if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
+				embedPlayer.getPlayerElement().attr( 'chromecastAppId', this.getConfig( 'applicationID' ));
 			}
 			var _this = this;
 			this.addBindings();

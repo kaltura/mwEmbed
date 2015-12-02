@@ -114,6 +114,13 @@ return array(
                 "endline" => "false",
                 "model" => "config.uiVars.enableTooltips"
             ),
+//            array(
+//                "label" => "Simulate Mobile",
+//                "type" => "checkbox",
+//                "initvalue" => false,
+//                "endline" => "false",
+//                "model" => "config.uiVars.EmbedPlayer.SimulateMobile"
+//            ),
 			"titleLabel" => "",
 			"logo" => "",
 			"loadingSpinner" => "",
@@ -140,6 +147,7 @@ return array(
 			"googleAnalytics" => "",
 			"comscore" => "",
 			"nielsenCombined" => "",
+			"heartbeat" => "",
 			"omnitureOnPage" => "",
 			"statistics" => "",
 		)
