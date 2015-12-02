@@ -66,7 +66,8 @@ you can use the generic selector below, but it's slower:
 .icon-toggle,
 .icon-locator,
 .icon-audio,
-.icon-toggleAll{
+.icon-toggleAll,
+.icon-new-tab{
 	font-family: 'icomoon';
 	speak: none;
 	font-style: normal;
@@ -238,4 +239,8 @@ you can use the generic selector below, but it's slower:
 .icon-audio:before {
     content: "\e627";
 }
+.icon-new-tab:before {
+    content: "\e628";
+}
+
 
