@@ -847,16 +847,18 @@ body {
     padding-top: 20px;
 }
 .overlay-content select{
-    border: 0;
-    outline: 1px solid #fff;
-    background-color: transparent;
-    color: #fff;
+    color: #000000;
     -ms-box-sizing:border-box;
     -moz-box-sizing:border-box;
     -webkit-box-sizing:border-box;
     box-sizing:border-box;
 }
-
+.mobile .overlay-content select{
+    border: 0;
+    color: #fff;
+    outline: 1px solid #fff;
+    background-color: transparent;
+}
 .overlay-content textarea{
     border: 0;
     outline: 1px solid #fff;
@@ -1339,7 +1341,10 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 }
 
 .overlay {
-	background: rgba(0,0,0,0.7);
+    background: rgb(0,0,0);
+    -ms-filter: progid:DXImageTransform.Microsoft.Alpha(opacity=70);
+    filter: alpha(opacity=70);
+    background: rgba(0,0,0,0.7);
 }
 
 .alert-footer .btn {
