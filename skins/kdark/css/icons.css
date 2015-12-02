@@ -187,7 +187,7 @@
 .icon-new-tab:before {
     content: "\e628";
 }
-.mobile .icon-settings:before {
+.mobile .icon-cog:before {
     content: "\e900";
 }
 .mobile .icon-share:before {
