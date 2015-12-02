@@ -180,6 +180,11 @@
 		"dependencies": "mw.KBaseComponent",
 		"kalturaPluginName": "largePlayBtn"
 	},
+    "pipBtn":{
+      "scripts": "components/pipBtn.js",
+      "dependencies": "mw.KBaseComponent",
+      "kalturaPluginName": "pipBtn"
+    },
 	"playPauseBtn": {
 		"scripts": "components/playPauseBtn.js",
 		"dependencies": "mw.KBaseComponent",
