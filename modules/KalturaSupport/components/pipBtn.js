@@ -12,6 +12,7 @@
 				'showTooltip': true,
 				'align': "right",
 				'smartContainer': 'morePlugins',
+				'smartContainerCloseEvent': 'pipEvent',
 				'title': gM( 'mwe-embedplayer-pip' ),
 				"displayImportance": "medium"
 			},
@@ -42,6 +43,7 @@
 							} else {
 								_this.embedPlayer.playerElement.webkitSetPresentationMode(_this.embedPlayer.playerElement.webkitPresentationMode === "picture-in-picture" ? "inline" : "picture-in-picture");
 							}
+							_this.embedPlayer.triggerHelper("pipEvent");
 						});
 
 				}
