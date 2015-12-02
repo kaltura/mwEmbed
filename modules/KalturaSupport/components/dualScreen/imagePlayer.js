@@ -115,6 +115,7 @@
 					} );
 				} );
 			}
+
 			cuePoints.sort(function (a, b) {
 				return a.startTime - b.startTime;
 			});
@@ -258,19 +259,30 @@
 			var currentTime = this.getPlayer().currentTime *1000;
 			var cuePoints = this.getCuePoints();
 			var cuePoint;
+			var duration=this.getPlayer().isLive() ? 0 : this.getPlayer().getDuration() * 1000;
+
+			if (!this.lastCurrentCuePointIndex ||
+				cuePoints[this.lastCurrentCuePointIndex].startTime>currentTime) { //if we seeked backward, restart search
+				this.lastCurrentCuePointIndex=0;
+			}
 			// Start looking for the cue point via time, return first match:
-			for ( var i = 0; i < cuePoints.length; i++ ) {
+			//assume sortedCuePoints array
+			for ( var i = this.lastCurrentCuePointIndex; i < cuePoints.length; i++ ) {
+
+				if (cuePoints[i].cuePointType !== mw.KCuePoints.TYPE.THUMB) { //we want only slides
+					continue;
+				}
+
 				var startTime = cuePoints[i].startTime;
-				//Retrieve end time from cuePoint metadata, unless it's less one and then use clip duration.
-				//If clip duration doesn't exist or it's 0 then use current time(in multicast live duration is
-				//always 0)
-				var endTime = cuePoints[i + 1] ? cuePoints[i + 1].startTime :
-					(this.getPlayer().getDuration() * 1000) ?
-						(this.getPlayer().getDuration() * 1000) : (currentTime + 1);
-				if ( startTime <= currentTime && currentTime < endTime ) {
-					cuePoint = cuePoints[i];
+
+				if ( (startTime > currentTime) ||  //stop once we found a future slide (or out of range slide)
+					(duration>0 && startTime>duration)) {
 					break;
 				}
+
+				this.lastCurrentCuePointIndex=i;
+				cuePoint=cuePoints[i];
+
 			}
 			return cuePoint;
 		}

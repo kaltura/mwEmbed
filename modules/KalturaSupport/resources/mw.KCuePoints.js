@@ -139,14 +139,23 @@
 				}
 			}
 		},
+		fixLiveCuePointArray:function(arr) {
+			$.each(arr, function (index,cuePoint) {
+				cuePoint.startTime = cuePoint.createdAt*1000; //start time is in ms and createdAt is in seconds
+			});
+			arr.sort(function (a, b) {
+				return a.createdAt - b.createdAt;
+			});
+		},
 		requestLiveCuepoints: function () {
 			var _this = this;
 
 			// Create associative cuepoint array to enable comparing new cuepoints vs existing ones
 			var cuePoints = this.getCuePoints();
-			cuePoints.sort(function(a,b) {
-				return a.createdAt- b.createdAt;
-			})
+
+			this.fixLiveCuePointArray(this.midCuePointsArray);
+			this.fixLiveCuePointArray(cuePoints);
+
 			this.associativeCuePoints = {};
 			$.each(cuePoints, function (index, cuePoint) {
 				_this.associativeCuePoints[cuePoint.id] = cuePoint;
@@ -177,6 +186,7 @@
 							mw.log("Error:: KCuePoints could not retrieve live cuepoints");
 							return;
 						}
+						_this.fixLiveCuePointArray(data.objects);
 						_this.updateCuePoints(data.objects);
 						_this.embedPlayer.triggerHelper('KalturaSupport_CuePointsUpdated', [data.totalCount]);
 					}
@@ -346,66 +356,18 @@
 		 */
 		getNextCuePoint: function (time) {
             if (!isNaN(time) && time >= 0) {
-				if( this.embedPlayer.isLive() && !this.embedPlayer.isDVR() ){
-                    //Live NO DVR
-                    return this.getNextLiveCuePoint(parseInt(time/1000));
-                }else{
-                    var cuePoints = this.midCuePointsArray;
-                    // Start looking for the cue point via time, return FIRST match:
-                    for (var i = 0; i < cuePoints.length; i++) {
-                        if (cuePoints[i].startTime >= time) {
-                            return cuePoints[i];
-                        }
-                    }
-                }
+
+				var cuePoints = this.midCuePointsArray;
+				// Start looking for the cue point via time, return FIRST match:
+				for (var i = 0; i < cuePoints.length; i++) {
+					if (cuePoints[i].startTime >= time) {
+						return cuePoints[i];
+					}
+				}
 			}
 			// No cue point found in range return false:
 			return false;
 		},
-        getNextLiveCuePoint: function (time) {
-
-			var _this=this;
-			var cuePoints = this.getCuePoints();
-
-			if (cuePoints.length==0) {
-				return null;
-			}
-
-			///TODO better performance log(n) instead of o(n)
-			var findCurrentCuePoint=function(startIndex) {
-
-				//assume sorted cuePoints array
-				for (var i = startIndex; i < cuePoints.length; i++) {
-
-					if (cuePoints[i].cuePointType !== mw.KCuePoints.TYPE.THUMB) {
-						continue;
-					}
-
-					if (cuePoints[i].createdAt > time) {
-						break;
-					}
-					_this.currentCuePointIndex=i;
-				}
-			}
-
-			if (!this.currentCuePointIndex) { //first time
-				this.currentCuePointIndex=0;
-			}
-
-			//if we  moved backward (seeked backward), we restart the search
-			if (cuePoints[this.currentCuePointIndex].createdAt>=time) {
-				findCurrentCuePoint(0);
-			} else { //otherwise search from the next position to find future cue point
-				findCurrentCuePoint(this.currentCuePointIndex + 1);
-			}
-
-			var lastCuePoint=cuePoints[this.currentCuePointIndex];
-
-            if(lastCuePoint){
-                mw.log("KCuePoints :: getNextLiveCuePoint :: currentTime " + mw.seconds2npt(time) + " | lastCuePoint.createdAt " + mw.seconds2npt(lastCuePoint.createdAt));
-                return lastCuePoint;
-            }
-        },
 		/**
 		 * Returns the previous cuePoint object for requested time
 		 * @param {Number} time Time in milliseconds

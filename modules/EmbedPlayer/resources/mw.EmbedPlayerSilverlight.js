@@ -800,7 +800,10 @@
 			if ( this.seeking ) {
 				this.seeking = false;
 			}
-			this.slCurrentTime = playheadValue;
+			//ignore multicast, slCurrentTime will be updated through id3Tag
+			if(!this.isMulticast) {
+				this.slCurrentTime = playheadValue;
+			}
 			$( this ).trigger( 'timeupdate' );
 		} ,
 
