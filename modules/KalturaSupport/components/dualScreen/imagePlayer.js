@@ -36,9 +36,7 @@
 			//In live mode wait for first updatetime that is bigger then 0 for syncing initial slide
 			if (mw.getConfig("EmbedPlayer.LiveCuepoints") && this.getPlayer().isLive()) {
 				this.bind( 'timeupdate', function ( ) {
-					if (!_this.getPlayer().isMulticast &&
-						!_this.getPlayer().isDVR() &&
-						_this.getPlayer().currentTime > 0) {
+					if (_this.getPlayer().currentTime > 0) {
 						_this.unbind('timeupdate');
 					}
 					var cuePoint = _this.getCurrentCuePoint();
@@ -246,8 +244,10 @@
 		},
 		getNextCuePoint: function ( time ) {
 			var cuePoints = this.getCuePoints();
+
 			// Start looking for the cue point via time, return first match:
 			for ( var i = 0; i < cuePoints.length; i++ ) {
+
 				if ( cuePoints[i].startTime >= time ) {
 					return cuePoints[i];
 				}
@@ -261,17 +261,8 @@
 			var cuePoint;
 			var duration=this.getPlayer().isLive() ? 0 : this.getPlayer().getDuration() * 1000;
 
-			if (!this.lastCurrentCuePointIndex ||
-				cuePoints[this.lastCurrentCuePointIndex].startTime>currentTime) { //if we seeked backward, restart search
-				this.lastCurrentCuePointIndex=0;
-			}
-			// Start looking for the cue point via time, return first match:
 			//assume sortedCuePoints array
-			for ( var i = this.lastCurrentCuePointIndex; i < cuePoints.length; i++ ) {
-
-				if (cuePoints[i].cuePointType !== mw.KCuePoints.TYPE.THUMB) { //we want only slides
-					continue;
-				}
+			for ( var i = 0; i < cuePoints.length; i++ ) {
 
 				var startTime = cuePoints[i].startTime;
 
@@ -280,7 +271,6 @@
 					break;
 				}
 
-				this.lastCurrentCuePointIndex=i;
 				cuePoint=cuePoints[i];
 
 			}
