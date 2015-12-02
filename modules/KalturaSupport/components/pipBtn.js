@@ -32,8 +32,8 @@
 				var _this = this;
 				if( !this.$el ) {
 					this.$el  = $( '<button />' )
-						.attr( 'title', this.nextTitle )
-						.addClass( "btn btnNarrow icon-new-tab pull-right" )
+						.attr( 'title', this.pipTitle )
+						.addClass( "btn icon-new-tab pull-right" )
 						.click( function() {
 							if( mw.getConfig("EmbedPlayer.ForceNativeComponent") ) {
 								_this.embedPlayer.togglePictureInPicture();

@@ -55,7 +55,7 @@
 		return ( userAgent.indexOf('iPad') != -1 );
 	};
 	mw.isIpad2 = function () {
-		return ( mw.isIpad() && ( window.devicePixelRatio && window.devicePixelRatio < 2 ) );
+		return ( mw.isIpad() && window.devicePixelRatio && window.devicePixelRatio < 2 );
 	};
 	mw.isIpad3 = function () {
 		return  /OS 3_/.test(userAgent) && mw.isIpad();
