@@ -1362,7 +1362,6 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 }
 .mobile .controlBarContainer .logo{
     margin-top: -0.1em;
-    width: 2.8em;
 }
 .logo img {
 	margin: auto;

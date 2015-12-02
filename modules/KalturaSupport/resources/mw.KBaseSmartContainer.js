@@ -115,6 +115,7 @@
 					if ( pluginBtn.length === 0 && plugin.hasClass("btn")){
 						pluginBtn = plugin;
 					}
+					pluginBtn.removeClass("pull-right");
 					pluginBtn.append("<p class='btnLabel'>" + this.registeredPlugins[i].getConfig('title') + "</p>");
 					pluginBtn.find(".accessibilityLabel").remove(); // remove accessibility label if exists as the new label can be used for the same purpose
 				}

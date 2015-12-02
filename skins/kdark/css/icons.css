@@ -184,7 +184,9 @@
 .icon-audio:before {
     content: "\e627";
 }
-
+.icon-new-tab:before {
+    content: "\e628";
+}
 .mobile .icon-settings:before {
     content: "\e900";
 }
