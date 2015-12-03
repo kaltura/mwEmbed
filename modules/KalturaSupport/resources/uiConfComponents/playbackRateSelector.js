@@ -55,7 +55,7 @@
 				_this.buildMenu();
 			});
 
-			this.bind( 'onChangeMediaDone', function(){
+			this.bind( 'onChangeMedia', function(){
 				_this.currentSpeed = 1;
 				_this.getBtn().text( '1x' );
 				_this.buildMenu();
