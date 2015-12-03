@@ -426,6 +426,26 @@ return array(
                 'type' => 'string',
                 'initvalue' => "vertical"
             ),
+            'DynaTransSponsorLogo' => array(
+                'doc' => "Sponsor logo on the right corner of the widget footer.",
+                'type' => 'string',
+                'initvalue' => ""
+            ),
+            'DynaTransSponsorHref' => array(
+                'doc' => "Link for the Sponsor logo displayed on right side of footer.",
+                'type' => 'string',
+                'initvalue' => ""
+            ),
+            'DynaTransClientHref' => array(
+                'doc' => "Link for the client logo displayed on left side of footer",
+                'type' => 'string',
+                'initvalue' => "https:\/\/cielo24.com"
+            ),
+            'DynaTransHideFooter' => array(
+                'doc' => "Control display of the footer of the widget - including all logos, links, and Display text.",
+                'type' => 'boolean',
+                'initvalue' => false
+            ),
         )
     ),
 );
