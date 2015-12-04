@@ -296,6 +296,8 @@
         // stores current bitrate for adaptive bitrate video
         currentBitrate: -1,
 
+		drmRequired: false,
+
 		/**
 		 * embedPlayer
 		 *
@@ -845,14 +847,22 @@
 			// Check if no player is selected
 			if (!this.selectedPlayer || !this.mediaElement.selectedSource) {
 				var errorObj;
-				//check if we had silverlight flavors and no silverlight installed - prompt to install silverlight
-				if (!mw.isMobileDevice() && !mw.EmbedTypes.getMediaPlayers().isSupportedPlayer('splayer')) {
-					$.each(this.mediaElement.sources, function (currentIndex, currentSource) {
-						if (currentSource.getFlavorId() == "ism") {
-							errorObj = _this.getKalturaMsgObject('mwe-embedplayer-install-silverlight');
-							return;
-						}
-					});
+				if (this.isDrmRequired()){
+					if (!this.isPluginEnabled( 'multiDrm' )){
+						errorObj = this.getKalturaMsgObject('mwe-embedplayer-drm-error-not-enabled');
+					} else {
+						errorObj = this.getKalturaMsgObject('mwe-embedplayer-drm-error-not-supported');
+					}
+				} else {
+					//check if we had silverlight flavors and no silverlight installed - prompt to install silverlight
+					if (!mw.isMobileDevice() && !mw.EmbedTypes.getMediaPlayers().isSupportedPlayer('splayer')) {
+						$.each(this.mediaElement.sources, function (currentIndex, currentSource) {
+							if (currentSource.getFlavorId() == "ism") {
+								errorObj = _this.getKalturaMsgObject('mwe-embedplayer-install-silverlight');
+								return;
+							}
+						});
+					}
 				}
 				if (!errorObj) {
 					this.showPlayerError();
@@ -3004,6 +3014,14 @@
 
 		isLive: function () {
 			return this.live;
+		},
+
+		setDrmRequired: function (isDrm) {
+			this.drmRequired = isDrm;
+		},
+
+		isDrmRequired: function () {
+			return this.drmRequired;
 		},
 
 		isDVR: function () {
