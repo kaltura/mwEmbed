@@ -14,8 +14,8 @@
             if (value) {
                 var timestamp = storage.getItem(NS + md5(cacheKey) + ttlSuffix);
                 if (timestamp && (timestamp - (new Date().getTime()) < 0)) {
-                    this.delete(md5(cacheKey));
-                    this.delete(md5(cacheKey) + ttlSuffix);
+                    this.deleteKey(md5(cacheKey));
+                    this.deleteKey(md5(cacheKey) + ttlSuffix);
                     value = null;
                 }
             }
@@ -42,13 +42,13 @@
                 }
             } catch (err){
                 if (this.isQuotaExceeded(err)){
-                    this.delete(cacheKey);
+                    this.deleteKey(cacheKey);
                     success = false;
                 }
             }
             return success;
         },
-        delete: function (cacheKey) {
+        deleteKey: function (cacheKey) {
             storage.removeItem(NS + md5(cacheKey));
         },
         clearNS: function () {

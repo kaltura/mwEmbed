@@ -102,12 +102,12 @@
             $filtered = $this->resolve( $filtered );
 
             // If all modules are ready, nothing dependency be done
-            if ( $this->compare( $this->filter( ['ready'], $filtered ), $filtered ) ) {
+            if ( $this->compare($this->filter( array('ready'), $filtered ) , $filtered ) ) {
                 return;
             }
 
             // If any modules have errors
-            if ( count($this->filter( ['error'], $filtered )) > 0 ) {
+            if ( count($this->filter( array('error'), $filtered )) > 0 ) {
                 return;
             }
             // Since some modules are not yet ready, queue up a request
@@ -161,7 +161,7 @@
         function resolve( $module ) {
             // Allow calling with an array of module names
             if ( is_array( $module ) ) {
-                $modules = [];
+                $modules = array();
                 for ( $m = 0; $m < count($module); $m += 1 ) {
                     $deps = $this->resolve( $module[$m] );
                     for ( $n = 0; $n < count($deps); $n += 1 ) {
@@ -222,7 +222,7 @@
             $queue = array();
 
             // Queue up any dependencies that are registered
-            $dependencies = $this->filter( ['registered'], $dependencies );
+            $dependencies = $this->filter( array('registered'), $dependencies );
             for ( $n = 0; $n < count($dependencies); $n += 1 ) {
                 if ( !in_array( $dependencies[$n], $queue ) ) {
                     array_push($queue, $dependencies[$n]);

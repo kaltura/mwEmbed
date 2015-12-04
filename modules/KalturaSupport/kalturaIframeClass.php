@@ -1026,7 +1026,7 @@ HTML;
 			var isIE8 = document.documentMode === 8;
 		</script>
 		<script type="text/javascript">
-			<!-- Include the mwEmbedStartup script inline will initialize the resource loader -->
+			// Include the mwEmbedStartup script inline will initialize the resource loader
 			<?php echo $this->getMwEmbedStartInline() ?>
 			// IE9 has out of order execution, wait for mw:
 			var waitForMwCount = 0;

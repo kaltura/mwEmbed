@@ -465,6 +465,11 @@
 				});
 			});
 
+			// update the layout on layoutBuildDone event
+			this.bindOnceHelper("layoutBuildDone", function(){
+				_this.doUpdateLayout();
+			});
+
 			// Set default state to load
 			if (!this.currentState) {
 				doChangeState('load');
@@ -1686,7 +1691,11 @@
 			}
 
 			// Add a loader to the embed player:
-			this.pauseLoading();
+			// call these 3 lines inline instead of using this.pauseLoading() to prevent stack overflow in IE8 (FEC-4429)
+			// this means we are very close to the IE8 stack being full. might have to revisit here if the stack overflow returns (maybe wrap these 3 lines in a 0 sec timeout)
+			this.isPauseLoading = true;
+			this.pause();
+			this.addPlayerSpinner();
 
 			// Stop the monitor
 			this.stopMonitor();

@@ -1526,7 +1526,7 @@
 
 				var settingTabHtml = ( showSettingsTab ) ?
 					'<li><a data-getter="getSettings" href="#tab-settings-' + id + '" data-toggle="tab">' +
-						'<i class="kpcicon-integrate"></i>Integrate</a></li>' :
+						/*'<i class="kpcicon-integrate"></i>Integrate</a></li>'*/ '' :
 					'';
 				$(_this).empty().append(
 					$('<div />')

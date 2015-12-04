@@ -1092,19 +1092,18 @@
 				// get the callback name:
 				var cbName = this.getIframeCbName(targetId);
 
+				var iframeRequest = this.getIframeRequest(widgetElm, requestSettings);
+
+				//Get TTL for cache entries form user settings or use default
+				var ttlUnixVal = settings.flashvars["Kaltura.CacheTTL"] || mw.getConfig("Kaltura.CacheTTL");
+
+				//Prepare an iframe content injection hook
+				this.createContentInjectCallback(cbName, iframe, iframeRequest, requestSettings, ttlUnixVal);
+
 				// Try and  get playload from local cache ( autoEmbed )
 				if (this.iframeAutoEmbedCache[targetId]) {
 					window[cbName](this.iframeAutoEmbedCache[targetId]);
 				} else {
-
-					var iframeRequest = this.getIframeRequest(widgetElm, requestSettings);
-
-					//Get TTL for cache entries form user settings or use default
-					var ttlUnixVal = settings.flashvars["Kaltura.CacheTTL"] || mw.getConfig("Kaltura.CacheTTL");
-
-					//Prepare an iframe content injection hook
-					this.createContentInjectCallback(cbName, iframe, iframeRequest, requestSettings, ttlUnixVal);
-
 					// try to get payload from localStorage cache
 					var iframeData = null;
 					if (kWidget.storage.isSupported()) {
