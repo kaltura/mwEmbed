@@ -10,8 +10,8 @@
 	mw.addKalturaConfCheck( function( embedPlayer, callback ){
 		if( embedPlayer.isPluginEnabled( 'multiDrm' ) ) {
 			var drmConfig = setEmbedPlayerConfig(embedPlayer);
-			//Check if we can play via MSE or via fallback silverlight when forceDASH is set to true
-			if (isMseSupported() || (drmConfig.forceDASH && mw.supportSilverlight())) {
+			//Check if we can play via MSE or via fallback silverlight when forceDASH is set to true or in native App
+			if (isMseSupported() || (drmConfig.forceDASH && mw.supportSilverlight()) || mw.isNativeApp()) {
 				mw.log("Media Source Extensions supported on this browser");
 				registerDashPlayer();
 				//Get multiDRM supported sources
