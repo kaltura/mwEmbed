@@ -1851,7 +1851,7 @@
 			}
 
 			$(this).find(".playerPoster").remove();
-				if ( mw.getConfig('autoPlay') && !mw.isMobileDevice()){
+				if ( this.currentState=="load" && mw.getConfig('autoPlay') && !mw.isMobileDevice()){
 				return;
 			}
 				if ( mw.getConfig('EmbedPlayer.HidePosterOnStart') === true
