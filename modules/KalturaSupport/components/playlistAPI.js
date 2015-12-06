@@ -325,7 +325,10 @@
 					}
 				}else{
 					var width = this.getConfig("fixedControls") ? $( ".playlistInterface" ).width() - this.getConfig("horizontalControlsWidth")*2 : $( ".playlistInterface" ).width();
-					this.setConfig( 'mediaItemWidth', Math.floor(width / this.getConfig("MinClips")) );
+					// if the number of items in the playlist is lower than MinClips, calculate mediaItemWidth according to it, else according to MinClips settings
+					var itemsNumber = this.playlistSet.length ? this.playlistSet[this.currentPlaylistIndex].items.length : this.getConfig('MinClips');
+					var clipsNumber = itemsNumber < this.getConfig('MinClips') ? itemsNumber : this.getConfig('MinClips');
+					this.setConfig('mediaItemWidth', Math.floor(width / clipsNumber));
 				}
 				if ( this.getConfig('onPage') !== true ){ // do not refresh mediaListContainer on page
 					this.$mediaListContainer = null;
