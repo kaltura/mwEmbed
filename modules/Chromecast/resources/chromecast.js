@@ -117,9 +117,9 @@
 					.attr( 'title', this.startCastTitle )
 					.addClass( "btn icon-chromecast" + this.getCssClass() )
 					.click( function() {
-						if( _this.embedPlayer.selectedPlayer && _this.embedPlayer.selectedPlayer.library != "NativeComponent" ) {
-								_this.toggleCast();
-						} else {
+						_this.toggleCast();
+
+						if( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
 							// 'NativeComponent' event for showing chromecast device list on mobile native apps
 							$( _this.embedPlayer ).trigger( 'showChromecastDeviceList' );
 
@@ -156,20 +156,69 @@
 				// launch app
 				this.showConnectingMessage();
 				this.embedPlayer.disablePlayControls(["chromecast"]);
-				var sessionRequest = new chrome.cast.SessionRequest(this.getConfig("applicationID").toString(), [chrome.cast.Capability.VIDEO_OUT], 60000);
-				chrome.cast.requestSession(
-					function(e){
-						_this.onRequestSessionSuccess(e);
-					}, 
-					function(error){
-						_this.onLaunchError(error);
-					},
-					sessionRequest
-				);
+				if ( !mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
+					var sessionRequest = new chrome.cast.SessionRequest(this.getConfig("applicationID").toString(), [chrome.cast.Capability.VIDEO_OUT], 60000);
+					chrome.cast.requestSession(
+						function(e){
+							_this.onRequestSessionSuccess(e);
+						},
+						function(error){
+							_this.onLaunchError(error);
+						},
+						sessionRequest
+					);
+				} else {
+					$(this.embedPlayer).bind('onNativeRequestSessionSuccess', function() {
+						_this.sendCCRecieverParams();
+					});
+
+					$(this.embedPlayer).bind('onNativeLaunchError', function() {
+						//TODO:: attach error message from native layer
+						_this.onLaunchError();
+					});
+				}
 			}else{
 				// stop casting
 				this.stopMedia();
 				this.stopApp();
+			}
+		},
+
+		sendCCRecieverParams: function() {
+			//set receiver debug if needed
+			if ( this.getConfig( "debugReceiver" ) ) {
+				this.sendMessage( {'type': 'show', 'target': 'debug'} );
+			}
+			//set kaltura logo if needed
+			if ( this.getConfig( "receiverLogo" ) ) {
+				this.sendMessage( {'type': 'show', 'target': 'logo'} );
+			}
+			// add DRM support
+			if ( this.drmConfig ) {
+				this.sendMessage( {'type': 'license', 'value': this.drmConfig.contextData.widevineLicenseServerURL} );
+				this.log( "set license URL to: " + this.drmConfig.contextData.widevineLicenseServerURL );
+			}
+			if ( this.getConfig( "useKalturaPlayer" ) === true ){
+				this.sendMessage( {'type': 'embed', 'publisherID': this.embedPlayer.kwidgetid.substr(1),
+					'uiconfID': this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid,
+					'debugKalturaPlayer': this.getConfig( "debugKalturaPlayer" )} );
+				this.embedPlayer.showErrorMsg(
+					{'title':'Chromecast Player',
+						'message': gM( 'mwe-chromecast-loading' ),
+						'props':{
+							'customAlertContainerCssClass': 'connectingMsg',
+							'customAlertTitleCssClass': 'hidden',
+							'textColor': '#ffffff'
+						}
+					}
+				);
+			} else {
+				this.sendMessage( {'type': 'load'} );
+				if ( !mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
+					this.loadMedia();
+				} else {
+					this.embedPlayer.loadCCMedia();
+				}
 			}
 		},
 
@@ -180,36 +229,7 @@
 			this.getComponent().css("color","#35BCDA");
 			this.updateTooltip(this.stopCastTitle);
 			this.casting = true;
-			// set receiver debug if needed
-			if ( this.getConfig("debugReceiver") ){
-				this.sendMessage({'type': 'show', 'target': 'debug'});
-			}
-			// set kaltura logo if needed
-			if ( this.getConfig("receiverLogo") ){
-				this.sendMessage({'type': 'show', 'target': 'logo'});
-			}
-			// add DRM support
-			if (this.drmConfig){
-				this.sendMessage({'type': 'license', 'value': this.drmConfig.contextData.widevineLicenseServerURL});
-				this.log("set license URL to: " + this.drmConfig.contextData.widevineLicenseServerURL);
-			}
-			if (this.getConfig("useKalturaPlayer") === true){
-				this.sendMessage({'type': 'embed', 'publisherID': this.embedPlayer.kwidgetid.substr(1), 'uiconfID': this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid, 'debugKalturaPlayer': this.getConfig("debugKalturaPlayer")});
-				this.embedPlayer.showErrorMsg(
-					{'title':'Chromecast Player',
-						'message': gM('mwe-chromecast-loading'),
-						'props':{
-							'customAlertContainerCssClass': 'connectingMsg',
-							'customAlertTitleCssClass': 'hidden',
-							'textColor': '#ffffff'
-						}
-					}
-				);
-			} else {
-				this.sendMessage({'type': 'load'});
-				this.loadMedia();
-			}
-
+			this.sendCCRecieverParams();
 			var _this = this;
 			this.session.addMessageListener(this.MESSAGE_NAMESPACE, function(namespace, message){
 				_this.log("Got Message From Receiver: "+message);
@@ -576,9 +596,13 @@
 
 		sendMessage: function(message) {
 			var _this = this;
-			if (this.session != null) {
-				this.session.sendMessage( this.MESSAGE_NAMESPACE, message, this.onMsgSuccess.bind(this,
-					'Message sent: ' + JSON.stringify(message)), this.onMsgError);
+			if ( !mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
+				if (this.session != null) {
+					this.session.sendMessage(this.MESSAGE_NAMESPACE, message,
+						this.onMsgSuccess.bind(this, 'Message sent: ' + JSON.stringify(message)), this.onMsgError);
+				}
+			} else {
+				this.embedPlayer.sendCCRecieverMessage(this.MESSAGE_NAMESPACE, message);
 			}
 		},
 

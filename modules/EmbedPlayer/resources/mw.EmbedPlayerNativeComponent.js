@@ -643,6 +643,14 @@
 			this.getPlayerElement().togglePictureInPicture();
 		},
 
+		sendCCRecieverMessage: function(messageNamespace, message) {
+			this.getPlayerElement().sendCCRecieverMessage([messageNamespace, message]);
+		},
+
+		loadCCMedia: function() {
+			this.getPlayerElement().loadCCMedia();
+		},
+
 		hideNativeAirPlayButton: function () {
 			this.getPlayerElement().hideNativeAirPlayButton();
 		},
