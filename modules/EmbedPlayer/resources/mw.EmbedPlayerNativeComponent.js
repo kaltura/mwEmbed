@@ -70,6 +70,7 @@
 			'exitfullscreen',
 			'chromecastDeviceConnected',
 			'chromecastDeviceDisConnected',
+			'onNativeRequestSessionSuccess',
 			'textTracksReceived',
 			'loadEmbeddedCaptions',
 			'flavorsListChanged',
