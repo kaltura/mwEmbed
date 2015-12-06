@@ -481,7 +481,9 @@
 						'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions' ,
 						'error': 'onError' ,
 						'alert': 'onError',
-						'id3tag': 'onId3tag'
+						'id3tag': 'onId3tag',
+						'individualizing': 'onIndividualizing',
+						'acquiringLicense': 'onAcquiringLicense'
 					};
 
 					_this.playerObject = playerElement;
@@ -652,6 +654,17 @@
 			this.triggerHelper('onId3Tag', id3Tag);
 		},
 
+
+		onIndividualizing: function(){
+			this.log("Individualizing started");
+			this.isIndividualizing = true;
+		},
+		onAcquiringLicense: function(){
+			if (this.isIndividualizing){
+				this.log("Individualizing ended");
+			}
+			this.log("Acquiring License");
+		},
 
 		handlePlayerError: function ( data ) {
 			var messageText = this.getKalturaMsg( 'ks-CLIP_NOT_FOUND' );

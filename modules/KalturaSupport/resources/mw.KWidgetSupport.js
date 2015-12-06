@@ -264,6 +264,8 @@ mw.KWidgetSupport.prototype = {
 				this.updateVodPlayerData(embedPlayer, playerData);
 			}
 		}
+		//Flag DRM required if sources have DRM data attached with them
+		this.updateDrmPlayerData(embedPlayer);
 		// Check for "image" mediaType ( 2 )
 		this.updateImagePlayerData(embedPlayer, playerData);
 		// Check for external media:
@@ -511,6 +513,13 @@ mw.KWidgetSupport.prototype = {
 		if ( playerData.sources ) {
 			this.addSources( embedPlayer, playerData.sources  );
 		}
+	},
+	updateDrmPlayerData: function(embedPlayer){
+		var drmSources = embedPlayer.mediaElement.sources.filter(function(source){
+			return (source.signature && source.custom_data);
+		});
+		var drmRequired = (drmSources.length > 0);
+		embedPlayer.setDrmRequired( drmRequired );
 	},
 	updateImagePlayerData: function(embedPlayer, playerData){
 		// Check for "image" mediaType ( 2 )
