@@ -215,7 +215,16 @@
 					});
 				}
 			}else{
-				var source = this.getPlayer().mediaElement.autoSelectNativeSource();
+				// look for native sources and send them to the autoSelectSource function
+				var nativeSources = [];
+				var playableSources = this.getPlayer().mediaElement.getPlayableSources();
+				$.each( playableSources, function(i, source ){
+					if ( source.mimeType == 'video/mp4' || source.mimeType == 'video/h264' ) {
+						nativeSources.push( source );
+					}
+				});
+				var options = nativeSources.length ? { 'sources' : nativeSources } : {};
+				var source = this.getPlayer().mediaElement.autoSelectSource(options);
 				var player = mw.EmbedTypes.getMediaPlayers().getNativePlayer( source.mimeType );
 				this.getPlayer().selectPlayer ( player );
 				this.getPlayer().updatePlaybackInterface( function(){
