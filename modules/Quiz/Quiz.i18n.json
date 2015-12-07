@@ -11,7 +11,7 @@
     "mwe-quiz-invideoTip":"All questions must be answered.</br>The quiz will be submitted at the end.",
     "mwe-quiz-almostDone":"Almost Done",
     "mwe-quiz-remainUnAnswered":"It appears that the following questions remained unanswered",
-    "mwe-quiz-pressRelevatToAnswer":"Press on relevant question to answer",
+    "mwe-quiz-pressRelevatToAnswer":"You must answer all questions before you can submit",
     "mwe-quiz-doneReview":"DONE REVIEW",
     "mwe-quiz-done":"Done !",
     "mwe-quiz-reviewNextQ":"REVIEW NEXT QUESTION",
@@ -35,6 +35,7 @@
     "mwe-quiz-yourAnswer":"Your Answer:",
     "mwe-quiz-correctAnswer":"Correct Answer:",
     "mwe-quiz-gotIt":"Got It !",
+    "mwe-quiz-okGotIt":"Ok, Got It!",
     "mwe-quiz-pdf":"Pre-test Available",
     "mwe-quiz-completed":"Completed"
   }

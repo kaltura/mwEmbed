@@ -125,6 +125,24 @@
                     '   </div>'+
                     '</div>').fadeIn( "slow" );
             },
+            tmplAlmostDone:function(){
+                var _this = this;
+                $(_this.emptyScreen()).hide().append(
+                    '<div class="ivqContainer">' +
+                    '   <div class="title-text "></div>' +
+                    '   <div class="sub-text"></div>'+
+                    '   <div class="display-all-container">'+
+                    '       <div class ="hex-row">'+
+                    '           <div class="hex-column  left-arrow" style="display: none;"></div>'+
+                    '           <div class="hex-column  right-arrow" style="display: none;" ></div>'+
+                    '           <div class="hex-column hexagon-container"></div>'+
+                    '       </div>'+
+                    '   </div>'+
+                    '   <div class="bottomContainer">'+
+                    '       <div class="confirm-box"></div>'+
+                    '   </div>' +
+                    '</div>').fadeIn( "slow" );
+            },
             tmplThankYou:function(){
                 var _this = this;
                 $(_this.emptyScreen()).hide().append(

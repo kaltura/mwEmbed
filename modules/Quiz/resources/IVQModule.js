@@ -19,7 +19,7 @@
             isErr: false,
             quizSubmitted: false,
             intrVal: null,
-            almostDoneDisplaySwithcer: true,
+            quizEndFlow: false,
 
             init: function (embedPlayer,quizPlugin) {
                 var _this = this;
@@ -196,25 +196,16 @@
 
                 if (_this.quizSubmitted) {
                     _this.quizPlugin.ssSubmitted(_this.score);
-                } else {
-
+                    _this.quizEndFlow = true;
+                }
+                else{
                     if ($.isEmptyObject($.grep($.cpObject.cpArray, function (el) {
                             return el.isAnswerd === false
                         }))) {
-                        _this.quizPlugin.ssAllCompleted();
+                        _this.quizPlugin.reviewMode = true;
+                        _this.quizEndFlow = true;
                     }
-                    else {
-                        if ((questionNr === ($.cpObject.cpArray.length) - 1)  ) {
-                            if (_this.almostDoneDisplaySwithcer){
-                                _this.quizPlugin.ssAlmostDone(_this.getUnansweredQuestNrs());
-                                _this.almostDoneDisplaySwithcer = false;
-                            }else{
-                                _this.continuePlay();
-                            }
-                        } else {
-                            _this.continuePlay();
-                        }
-                    }
+                    _this.continuePlay();
                 }
             },
             continuePlay: function () {
@@ -231,7 +222,6 @@
                     _this.embedPlayer.play();
                     _this.showQuizOnScrubber();
                     _this.quizPlugin.selectedAnswer = null;
-                    _this.almostDoneDisplaySwithcer = true;
                 }
             },
             gotoScrubberPos: function (questionNr) {
@@ -318,7 +308,47 @@
                     }
                 })
             },
+            bubbleSizeSelector: function (inFullScreen) {
+                var _this = this, buObj = {bubbleAnsSize: "", bubbleUnAnsSize: ""};
+                if (_this.quizEndFlow) {
+                    if (inFullScreen) {
+                        buObj.bubbleAnsSize = "bubble-fullscreen";
+                        buObj.bubbleUnAnsSize = "bubble-window-quizEndFlow";
+                    }
+                    else {
+                        buObj.bubbleAnsSize = "bubble-window";
+                        buObj.bubbleUnAnsSize = "bubble-window-quizEndFlow";
+                    }
+                }
+                else {
+                    if (inFullScreen) {
+                        buObj.bubbleAnsSize = "bubble-fullscreen";
+                        buObj.bubbleUnAnsSize = "bubble-fullscreen";
+                    }
+                    else {
+                        buObj.bubbleAnsSize = "bubble-window";
+                        buObj.bubbleUnAnsSize = "bubble-window";
+                    }
+                }
+                return buObj
+            },
+            quizEndScenario:function(){
+                var _this = this,anUnswered = _this.getUnansweredQuestNrs();;
+                _this.embedPlayer.stopPlayAfterSeek = true;
 
+                if (anUnswered) {
+                    _this.quizEndFlow = true;
+                    _this.quizPlugin.ssAlmostDone(anUnswered);
+                }else{
+
+                    if (!_this.quizSubmitted){
+                        _this.quizPlugin.ssAllCompleted();
+                    }
+                    else{
+                        _this.quizPlugin.ssSubmitted(_this.score)
+                    }
+                }
+            },
             displayHex:function (hexPositionContDisplay,cpArray){
                 var _this = this;
                 var numberOfQuestionsInRow = 6;
@@ -470,10 +500,22 @@
             showQuizOnScrubber:function(){
                 var _this = this;
                 _this.quizPlugin.displayBubbles();
+                if (_this.quizEndFlow){
+                    _this.quizPlugin.displayQuizEnd();
+                }
             },
             hideQuizOnScrubber:function(){
+                var _this = this;
                 this.embedPlayer.getInterface().find(".bubble-cont").empty().remove();
                 this.embedPlayer.getInterface().find(".bubble").empty().remove();
+                _this.hideQuizEndOnScrubber();
+            },
+            showQuizEndOnScrubber:function(){
+                var _this = this;
+                _this.quizPlugin.displayQuizEnd();
+            },
+            hideQuizEndOnScrubber:function(embedPlayer){
+                this.embedPlayer.getInterface().find(".quizDone-cont").empty().remove();
             },
             checkApiResponse:function(msg,data){
                 var _this = this;
