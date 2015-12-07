@@ -450,7 +450,7 @@ mw.MediaElement.prototype = {
 	autoSelectNativeSource: function() {
 		mw.log( "MediaElement::autoSelectNativeSource");
 		// check if already auto selected source can just "switch" to native: 
-		if (! this.selectedSource && ! this.autoSelectSource( { 'forceNative':true }) ) {
+		if (! this.selectedSource && ! this.autoSelectSource() ) {
 			return false;
 		}
 		// attempt to select player: 
