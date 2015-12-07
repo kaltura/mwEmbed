@@ -231,6 +231,20 @@ mw.MediaElement.prototype = {
 			return _this.selectedSource;
 		}
 
+		if ( options.forceNative === true ){
+			$.each( playableSources, function(inx, source ){
+				var mimeType = source.mimeType;
+				var player = mw.EmbedTypes.getMediaPlayers().getDefaultPlayer( mimeType );
+				if ( (mimeType == 'video/mp4' || mimeType == 'video/h264') && player && player.library == 'Native' && source) {
+					mw.log('MediaElement::forceNative passed - setting to native source:' + source.getTitle() );
+					_this.setSource( source );
+				}
+			});
+		};
+		if ( this.selectedSource ) {
+			return this.selectedSource;
+		}
+
 		// Set via marked default:
 		var hasDefaultSource = false;
 		$.each( playableSources, function( inx, source ){
@@ -450,7 +464,7 @@ mw.MediaElement.prototype = {
 	autoSelectNativeSource: function() {
 		mw.log( "MediaElement::autoSelectNativeSource");
 		// check if already auto selected source can just "switch" to native: 
-		if (! this.selectedSource && ! this.autoSelectSource( { 'forceNative':true }) ) {
+		if (! this.autoSelectSource( { 'forceNative':true }) && ! this.selectedSource ) {
 			return false;
 		}
 		// attempt to select player: 
