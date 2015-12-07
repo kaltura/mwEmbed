@@ -3,6 +3,7 @@
  * Kaltura iFrame class:
  */
 require_once 'KalturaCommon.php';
+require_once 'KalturaDependencyResolver.php';
 
 class kalturaIframeClass {
 
@@ -16,6 +17,7 @@ class kalturaIframeClass {
 	var $envConfig = null; // lazy init
 	var $iframeContent = null;
 	var $iframeOutputHash = null;
+	var $inlineScript = false;
 
 	var $templates = array();
 
@@ -708,7 +710,8 @@ HTML;
 	 * Get all the kaltura defined modules from player config
 	 * */
 	function outputKalturaModules(){
-		global $wgMwEmbedEnabledModules, $wgKwidgetPsEnabledModules, $wgKalturaPSHtml5ModulesDir, $psRelativePath;
+		global $wgMwEmbedEnabledModules, $wgKwidgetPsEnabledModules, $wgKalturaPSHtml5ModulesDir, $psRelativePath,
+		$wgEnableScriptDebug;
 		$o='';
 		// Init modules array, always include MwEmbedSupport
 		$moduleList = array( 'mw.MwEmbedSupport' );
@@ -762,8 +765,7 @@ HTML;
 		$jsonModuleList = json_encode($moduleList);
 		$jsonPsModuleList = json_encode($psModuleList);
 		$JST = $this->getTemplatesJSON();
-		//Set the kwidget-ps folder for the loader script
-		$o.="mw.config.set('pskwidgetpath', '$psRelativePath');";
+
 		// export the loading spinner config early on:
 		$o.= <<<HTML
 		// Export our HTML templates
@@ -780,10 +782,16 @@ HTML;
 			if( itemToDelete != -1 )
 				moduleList.splice( itemToDelete, 1);
 		}
-		mw.config.set('KalturaSupport.DepModuleList', moduleList);
-		mw.loader.load(moduleList);
 HTML;
-		// check if loadingSpinner plugin has config: 
+		//Set the kwidget-ps folder for the loader script
+        $o.="mw.config.set('pskwidgetpath', '$psRelativePath');";
+		// inline scripts if debug mode is off and flag is set:
+		if ($this->inlineScript && !$wgEnableScriptDebug ){
+			$o.= $this->outputInlineScript(array_merge($moduleList, $psModuleList));
+		} else {
+			$o.= 'mw.config.set(\'KalturaSupport.DepModuleList\', moduleList);mw.loader.load(moduleList);';
+		}
+		// check if loadingSpinner plugin has config:
 		if( isset( $playerConfig['plugins']['loadingSpinner'] ) ){
 			$o.='mw.config.set(\'loadingSpinner\', '. 
 				json_encode( $playerConfig['plugins']['loadingSpinner'] ) . ")\n";
@@ -816,6 +824,64 @@ HTML;
             }
         }
         return $moduleList;
+	}
+
+	function outputInlineScript($moduleList){
+		$o = "";
+		$modules = array();
+
+		$resolvedModuleDependencyList = $this->getModuleDependencyList($moduleList);
+
+		// "Fake" the request headers as ResourceLoaderContext derives it's data for module resolving from them
+		$_GET['only'] = NULL;
+		$_GET['modules'] = ResourceLoader::makePackedModulesString( $resolvedModuleDependencyList );
+
+		$fauxRequest = new WebRequest;
+		$resourceLoader = new MwEmbedResourceLoader();
+		foreach ($resolvedModuleDependencyList as $moduleName){
+			$modules[$moduleName] = $resourceLoader->getModule( $moduleName );
+		}
+		$s = $resourceLoader->makeModuleResponse(
+			new MwEmbedResourceLoaderContext( $resourceLoader, $fauxRequest ) ,
+			$modules,
+			array()
+		);
+		$o.='window.inlineScript = true;';
+		$o.=$s;
+		$o.= ResourceLoader::makeLoaderStateScript(
+						array_fill_keys( $resolvedModuleDependencyList , 'ready' ) );
+		return $o;
+	}
+
+	function getModuleDependencyList($moduleList){
+		$modulesRegistry = $this->getModulesRegistry($moduleList);
+
+		$kalturaDependencyResolver = new KalturaDependencyResolver();
+		$kalturaDependencyResolver->register($modulesRegistry);
+
+		// Set the startup modules state to ready cause they were already included in startup load
+		$kalturaDependencyResolver->setState(array(
+			"jquery" => "ready",
+			"mediawiki" => "ready",
+			"mw.MwEmbedSupport" => "ready",
+			"jquery.triggerQueueCallback" => "ready",
+			"Spinner" => "ready",
+			"jquery.loadingSpinner" => "ready"
+		));
+
+		$moduleList = $kalturaDependencyResolver->getDependencies($moduleList);
+		return $moduleList;
+	}
+
+	function getModulesRegistry(){
+		global $wgScriptCacheDirectory, $wgMwEmbedVersion;
+		$registrations;
+		$cachePath = $wgScriptCacheDirectory . '/registrations.' . $wgMwEmbedVersion . $_GET['skin'] . $_GET['lang'] . '.min.json';
+		if( is_file( $cachePath ) ){
+			$registrations = json_decode(file_get_contents( $cachePath ), true);
+		}
+
+		return $registrations;
 	}
 
 	function addModuleTemplate( $module = null, $plugin = null, $basePath = null){
@@ -882,7 +948,7 @@ HTML;
 	}
 
 	function getKalturaIframeScripts(){
-	    global $wgMwEmbedVersion, $wgKalturaApiFeatures;
+	    global $wgMwEmbedVersion, $wgKalturaApiFeatures, $wgEnableScriptDebug;
 		ob_start();
 		?>
 		<script type="text/javascript">
@@ -904,7 +970,16 @@ HTML;
 					window['kWidget'] = window['parent']['kWidget']; 
 				} else {
 					// include kWiget script if not already avaliable
-					document.write('<script src="<?php echo $this->getMwEmbedLoaderLocation() ?>"></scr' + 'ipt>' );
+					<?php
+					if ($this->inlineScript && !$wgEnableScriptDebug ){
+						$response = file_get_contents($this->getMwEmbedLoaderLocation());
+						//print_r($response);
+					} else {
+					?>
+						document.write('<script src="<?php echo $this->getMwEmbedLoaderLocation() ?>"></scr' + 'ipt>' );
+					<?php
+					}
+					?>
 				}
 			} catch( e ) {
 				// include kWiget script if not already avaliable
@@ -915,7 +990,7 @@ HTML;
 		<!-- Output any iframe based packaged data -->
 		<script type="text/javascript">
 			// Initialize the iframe with associated setup
-			window.kalturaIframePackageData = <?php 
+			window.kalturaIframePackageData = <?php
 				$payload = array(
 					// The base player config controls most aspects of player display and sources
 					'playerConfig' => $this->getUiConfResult()->getPlayerConfig(),
@@ -951,7 +1026,7 @@ HTML;
 			var isIE8 = document.documentMode === 8;
 		</script>
 		<script type="text/javascript">
-			<!-- Include the mwEmbedStartup script inline will initialize the resource loader -->
+			// Include the mwEmbedStartup script inline will initialize the resource loader
 			<?php echo $this->getMwEmbedStartInline() ?>
 			// IE9 has out of order execution, wait for mw:
 			var waitForMwCount = 0;
@@ -1116,9 +1191,8 @@ HTML;
 		if( isIE8 ){
 			customResources = customResources.concat( kalturaIframePackageData.skinResources );
 		}
-		loadCustomResourceIncludes( customResources, function(){ 
-			<?php echo $callbackJS ?>
-		});
+		<?php echo $callbackJS ?>
+
 		<?php
 	}
 	function getPlayerCheckScript(){
@@ -1154,8 +1228,8 @@ HTML;
 					}
 					<?php
 						$this->loadCustomResources(
-							$this->outputKalturaModules() . 
-							'mw.loader.go();'
+							$this->outputKalturaModules() .
+							'if (window.inlineScript === false){mw.loader.go();}'
 						);
 					?>
 				});
@@ -1186,6 +1260,12 @@ HTML;
 		return $this->iframeOutputHash;
 	}
 	function getIFramePageOutput( ){
+		$this->inlineScript = false;
+		$flashvars = $this->request->getFlashVars();
+
+		if (isset($flashvars['inlineScript']) && $flashvars['inlineScript'] == "true"){
+			$this->inlineScript = true;
+		}
         if( !$this->iframeContent ){
 			global $wgRemoteWebInspector, $wgEnableScriptDebug;
 			$uiConfId =  htmlspecialchars( $this->request->get('uiconf_id') );

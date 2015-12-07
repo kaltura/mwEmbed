@@ -309,7 +309,7 @@ button::-moz-focus-inner {
 }
 .sliderPreview .arrow{
 	display: block !important;
-	margin-left: -30px;
+	margin-left: 10px;
 	bottom: -4px !important;
 }
 .sliderPreview {
@@ -1145,8 +1145,6 @@ button::-moz-focus-inner {
 }
 .smartContainer{
 	font-size: 26px;
-	margin-right: 10px;
-	margin-left: 10px;
 	margin-top: 2px;
 	width: 46px;
 	background-color: transparent;
@@ -1158,7 +1156,7 @@ button::-moz-focus-inner {
 	font-size: 26px;
 	margin-right: 16px;
 	margin-top: 2px;
-	width: 26px;
+    width: 46px;
 	background-color: transparent;
 }
 .mobile .controlsContainer .comp{
