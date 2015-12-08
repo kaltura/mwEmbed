@@ -2,7 +2,6 @@
 
 	/*
 	 Limitations:
-	 - No buffer events.
 	 - No tracing for the overlay ads
 	 */
 	mw.ComscoreStreamingTag = function( embedPlayer, callback ){
@@ -11,7 +10,7 @@
 
 	mw.ComscoreStreamingTag.prototype = {
 
-		pluginVersion: "1.0.5",
+		pluginVersion: "1.0.6",
 		reportingPluginName: "kaltura",
 		playerVersion: mw.getConfig('version'),
 		genericPluginUrlSecure: "https://sb.scorecardresearch.com/c2/plugins/streamingtag_plugin_generic.js",
@@ -127,9 +126,8 @@
 			}
 		},
 
-		onPlay: function() {
+		onPlaybackActive: function() {
 			if (this.playing
-					/*&& !this.buffering*/ // We can not rely on the buffering event. See TAG-2035
 				&& !this.seeking
 				&& this.getPlayerPluginState() != this.PlayerPluginState().PLAYING
 				&& this.getPlayerPluginState()!= this.PlayerPluginState().AD_PLAYING) {
@@ -137,10 +135,11 @@
 				var seek = this.getPlayerPluginState() == this.PlayerPluginState().SEEKING;
 				this.callStreamSensePlugin("notify", this.playerEvents.PLAY, this.getLabels(seek), this.getCurrentPosition());
 				this.setPlayerPluginState(this.PlayerPluginState().PLAYING);
+				this.lastKnownTime = this.embedPlayer.getPlayerElementTime();
 			}
 		},
 
-		onPause: function() {
+		onPlaybackInactive: function() {
 			if (this.getPlayerPluginState() == this.PlayerPluginState().PLAYING) {
 				var seek = this.getPlayerPluginState() == this.PlayerPluginState().SEEKING;
 				if (this.getDuration() == this.getCurrentPosition()) {
@@ -149,7 +148,12 @@
 					this.setPlayerPluginState(this.PlayerPluginState().PAUSED);
 					this.callStreamSensePlugin("notify", this.playerEvents.PAUSE, this.getLabels(seek), this.getCurrentPosition());
 				}
+				this.lastKnownTime = this.embedPlayer.getPlayerElementTime();
 			}
+		},
+
+		onBuffering: function() {
+			this.callStreamSensePlugin("notify", this.playerEvents.BUFFER, {});
 		},
 
 		onAdPlay: function(adId, type, index, duration) {
@@ -228,28 +232,27 @@
 			});
 
 			embedPlayer.bindHelper( 'bufferStartEvent' + _this.bindPostfix, function(){
-				// We can not rely on the buffer events
-				//_this.buffering = true;
-				//_this.setClip();
-				//_this.callStreamSensePlugin("notify", _this.playerEvents.BUFFER, {}, _this.getCurrentPosition());
+				_this.buffering = true;
 			});
 
 			embedPlayer.bindHelper( 'bufferEndEvent' + _this.bindPostfix, function(){
-				// We can not rely on the buffer events
-				//_this.buffering = false;
+				_this.buffering = false;
 			});
 
 			embedPlayer.bindHelper( 'monitorEvent' + _this.bindPostfix, function(){
 				if (_this.checkEveryIndex++ % 2 != 0) return;
+
 				var currentTime = embedPlayer.getPlayerElementTime();
-				if (currentTime != _this.lastKnownTime && !_this.seeking) {
-					if (currentTime > _this.lastKnownTime) {
-						_this.onPlay();
-					} else {
-						_this.onPause();
-					}
+				if (_this.playing && currentTime == _this.lastKnownTime && _this.buffering) {
+					// If the user pressed the play button but is paused and buffering we count it as the playhead hit
+					// the end of the buffer and the buffer is being filled
+					_this.onBuffering();
 				} else {
-					_this.onPause();
+					if (currentTime != _this.lastKnownTime && !_this.seeking) {
+						_this.onPlaybackActive();
+					} else {
+						_this.onPlaybackInactive();
+					}
 				}
 				_this.lastKnownTime = currentTime;
 			});
@@ -259,7 +262,7 @@
 			});
 
 			embedPlayer.bindHelper( 'playerUpdatePlayhead' + _this.bindPostfix, function(event){
-				_this.log("playerUpdatePlayhead ");
+				_this.log("playerUpdatePlayhead");
 			});
 
 			embedPlayer.bindHelper('onplay' + _this.bindPostfix, function() {
@@ -268,20 +271,24 @@
 
 			embedPlayer.bindHelper('onpause' + _this.bindPostfix, function(event) {
 				_this.playing = false;
-				_this.onPause();
+				_this.onPlaybackInactive();
 			});
 
 			embedPlayer.bindHelper('doStop' + _this.bindPostfix, function(event) {
 				_this.setPlayerPluginState(_this.PlayerPluginState().ENDED_PLAYING);
 				var seek = _this.getPlayerPluginState() == _this.PlayerPluginState().SEEKING;
 				_this.callStreamSensePlugin("notify", _this.playerEvents.END, _this.getLabels(seek));
+				_this.lastKnownTime = 0;
+				_this.checkEveryIndex = 0;
 			});
 
 			embedPlayer.bindHelper('seeked.started' + _this.bindPostfix, function(event) {
 				_this.seeking = true;
 				if (_this.playing && _this.getPlayerPluginState() != _this.PlayerPluginState().SEEKING) {
+					_this.onPlaybackInactive();
 					_this.setPlayerPluginState(_this.PlayerPluginState().SEEKING);
-					_this.callStreamSensePlugin("notify", _this.playerEvents.PAUSE, _this.getLabels(true), _this.getCurrentPosition());
+					//_this.callStreamSensePlugin("notify", _this.playerEvents.PAUSE, _this.getLabels(true), _this.getCurrentPosition());
+
 				}
 			});
 
@@ -364,8 +371,8 @@
 			if (playlist) {
 				labels.ns_st_pl = playlist.name; // Playlist title set to player playlist's name.
 				/*
-				// We cannot include playlist length - in number of items as well as an amount of time - because the
-				// player does not have any info about the number of ads and their length.
+				 // We cannot include playlist length - in number of items as well as an amount of time - because the
+				 // player does not have any info about the number of ads and their length.
 
 				 labels.ns_st_cp = playlist.length;
 
@@ -377,8 +384,8 @@
 				 */
 			} else {
 				/*
-				// We cannot include playlist length as amount of time because the player does not have any info about
-				// the number of ads and their length.
+				 // We cannot include playlist length as amount of time because the player does not have any info about
+				 // the number of ads and their length.
 
 				 labels.ns_st_ca = this.getDuration();
 				 */
