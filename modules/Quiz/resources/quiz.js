@@ -322,6 +322,7 @@
                     _this.KIVQScreenTemplate.tmplThankYou();
                     $(".title-text").html(gM('mwe-quiz-thankYou'));
                     $(this).delay(1000).fadeIn(function () {
+                        _this.KIVQModule.quizEndFlow = false;
                         _this.KIVQModule.continuePlay();
                     });
                 });

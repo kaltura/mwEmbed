@@ -196,7 +196,6 @@
 
                 if (_this.quizSubmitted) {
                     _this.quizPlugin.ssSubmitted(_this.score);
-                    _this.quizEndFlow = true;
                 }
                 else{
                     if ($.isEmptyObject($.grep($.cpObject.cpArray, function (el) {
@@ -510,10 +509,10 @@
                 this.embedPlayer.getInterface().find(".bubble").empty().remove();
                 _this.hideQuizEndOnScrubber();
             },
-            showQuizEndOnScrubber:function(){
-                var _this = this;
-                _this.quizPlugin.displayQuizEnd();
-            },
+            //showQuizEndOnScrubber:function(){
+            //    var _this = this;
+            //    _this.quizPlugin.displayQuizEnd();
+            //},
             hideQuizEndOnScrubber:function(embedPlayer){
                 this.embedPlayer.getInterface().find(".quizDone-cont").empty().remove();
             },
