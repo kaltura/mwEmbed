@@ -213,6 +213,9 @@
 						}
 					}
 				);
+				if ( !mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
+					this.embedPlayer.loadCCMedia();
+				}
 			} else {
 				this.sendMessage( {'type': 'load'} );
 				if ( !mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
