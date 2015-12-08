@@ -154,7 +154,6 @@
 
 		onBuffering: function() {
 			this.callStreamSensePlugin("notify", this.playerEvents.BUFFER, {});
-			this.setPlayerPluginState(this.PlayerPluginState().BUFFERING);
 		},
 
 		onAdPlay: function(adId, type, index, duration) {
