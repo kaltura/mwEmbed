@@ -198,13 +198,6 @@
 
            _this.KIVQModule.displayHex(_this.KIVQModule.setHexContainerPos("current"),unAnsweredArr);
 
-            $(document).off('click','.q-box')
-                .on('click', '.q-box', function () {
-                var selectQ = parseInt($(this).attr('id'));
-
-              _this.KIVQModule.gotoScrubberPos(selectQ);
-              _this.ssSetCurrentQuestion(selectQ,false);
-            });
         },
 
         ssDisplayHint: function(questionNr){
