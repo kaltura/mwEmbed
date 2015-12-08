@@ -577,7 +577,7 @@ ol.second-row{
 .bubble{
     position: absolute;
     bottom: 0;
-    font-family: "Lato-Bold";
+    font-family: "Lato";
     text-align: center;
     font-size: 1vw;
     background-size: 100% 100%;
@@ -595,7 +595,7 @@ ol.second-row{
     height: 7.5vh;
     line-height: 7.5vh;
     font-weight: 900;
-    font-family: "Lato-Bold";
+    font-family: "Lato";
     font-size: 2.5vw;
 }
 .bubble-window{
@@ -610,8 +610,8 @@ ol.second-row{
     height: 7.5vh;
     line-height: 7.5vh;
     font-weight: 900;
-    font-family: "Lato-Bold";
-    font-size: 2.5vw;
+    font-family: "Lato";
+    font-size: 1.8vw;
 }
 
 .bubble-cont{
