@@ -283,7 +283,7 @@
 
         ssSubmitted: function (score) {
             var _this = this,cpArray = $.cpObject.cpArray;
-            _this.ivqShowScreen();//
+            _this.ivqShowScreen();
             _this.KIVQScreenTemplate.tmplSubmitted();
 
             $(".title-text").html(gM('mwe-quiz-Submitted'));
@@ -489,8 +489,12 @@
             var  _this = this,displayClass,embedPlayer = this.getPlayer(),handleBubbleclick;
             var scrubber = embedPlayer.getInterface().find(".scrubber");
             var buSize = _this.KIVQModule.bubbleSizeSelector(_this.inFullScreen);
+
             _this.KIVQModule.hideQuizOnScrubber();
-            scrubber.parent().prepend('<div class="bubble-cont"></div>');
+
+            var buCotainerPos = _this.KIVQModule.quizEndFlow ? "bubble-cont bu-margin3":"bubble-cont bu-margin1";
+
+            scrubber.parent().prepend('<div class="'+buCotainerPos+'"></div>');
 
             $.each($.cpObject.cpArray, function (key, val) {
                 displayClass = val.isAnswerd ? "bubble bubble-ans " + buSize.bubbleAnsSize
@@ -518,9 +522,10 @@
             });
         },
         displayQuizEnd:function(){
-            var  _this = this,embedPlayer = this.getPlayer();
-            var scrubber = embedPlayer.getInterface().find(".scrubber");
-            this.embedPlayer.getInterface().find(".quizDone-cont").empty().remove();
+            var  _this = this;
+            var scrubber = this.embedPlayer.getInterface().find(".scrubber");
+            _this.KIVQModule.hideQuizEndOnScrubber();
+
             scrubber.parent().prepend('<div class="quizDone-cont"></div>');
 
             $(document).off( 'click', '.quizDone-cont' )

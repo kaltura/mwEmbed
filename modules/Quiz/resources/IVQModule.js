@@ -500,7 +500,7 @@
                 var _this = this;
                 _this.quizPlugin.displayBubbles();
                 if (_this.quizEndFlow){
-                    _this.quizPlugin.displayQuizEnd();
+                    _this.showQuizEndOnScrubber();
                 }
             },
             hideQuizOnScrubber:function(){
@@ -509,10 +509,10 @@
                 this.embedPlayer.getInterface().find(".bubble").empty().remove();
                 _this.hideQuizEndOnScrubber();
             },
-            //showQuizEndOnScrubber:function(){
-            //    var _this = this;
-            //    _this.quizPlugin.displayQuizEnd();
-            //},
+            showQuizEndOnScrubber:function(){
+                var _this = this;
+                _this.quizPlugin.displayQuizEnd();
+            },
             hideQuizEndOnScrubber:function(embedPlayer){
                 this.embedPlayer.getInterface().find(".quizDone-cont").empty().remove();
             },
