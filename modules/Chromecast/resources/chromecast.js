@@ -105,7 +105,8 @@
 			$(this.embedPlayer).bind('playerReady', function() {
 				if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
 					// send application ID to native app
-					_this.embedPlayer.getPlayerElement().attr( 'chromecastAppId', _this.getConfig( 'applicationID' ));
+					var castParams = '["' + _this.getConfig( 'applicationID' ) + '","' + _this.MESSAGE_NAMESPACE + '"]';
+					_this.embedPlayer.getPlayerElement().attr( 'chromecastAppId', castParams);
 				}
 			});
 		},

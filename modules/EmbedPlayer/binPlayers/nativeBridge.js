@@ -96,7 +96,7 @@
 			this.notifyJsReadyFunc();
 		},
 		sendNotification: function (eventName, eventValue) {
-			this.embedPlayer.sendNotification(eventName, JSON.parse(eventValue));
+			this.embedPlayer.sendNotification(eventName, eventValue);
 		},
 		/**
 		 *
