@@ -783,14 +783,14 @@ HTML;
 				moduleList.splice( itemToDelete, 1);
 		}
 HTML;
+		//Set the kwidget-ps folder for the loader script
+        $o.="mw.config.set('pskwidgetpath', '$psRelativePath');";
 		// inline scripts if debug mode is off and flag is set:
 		if ($this->inlineScript && !$wgEnableScriptDebug ){
 			$o.= $this->outputInlineScript(array_merge($moduleList, $psModuleList));
 		} else {
 			$o.= 'mw.config.set(\'KalturaSupport.DepModuleList\', moduleList);mw.loader.load(moduleList);';
 		}
-		//Set the kwidget-ps folder for the loader script
-		$o.="mw.config.set('pskwidgetpath', '$psRelativePath');";
 		// check if loadingSpinner plugin has config:
 		if( isset( $playerConfig['plugins']['loadingSpinner'] ) ){
 			$o.='mw.config.set(\'loadingSpinner\', '. 
@@ -1026,7 +1026,7 @@ HTML;
 			var isIE8 = document.documentMode === 8;
 		</script>
 		<script type="text/javascript">
-			<!-- Include the mwEmbedStartup script inline will initialize the resource loader -->
+			// Include the mwEmbedStartup script inline will initialize the resource loader
 			<?php echo $this->getMwEmbedStartInline() ?>
 			// IE9 has out of order execution, wait for mw:
 			var waitForMwCount = 0;

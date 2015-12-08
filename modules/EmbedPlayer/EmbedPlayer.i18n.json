@@ -63,6 +63,8 @@
         "mwe-embedplayer-disable-audio-description": "Disable audio description",
         "mwe-embedplayer-no-audio-description": "No audio description available",
         "mwe-embedplayer-install-silverlight": "This video requires Microsoft Silverlight, which is currently not available on your browser. Please <a href=\"http://www.microsoft.com/silverlight/\" target=\"_blank\"> install Microsoft Silverlight </a> to view this video.",
+        "mwe-embedplayer-drm-error-not-enabled": "This content is DRM protected, it can only be played via DRM enabled players.",
+        "mwe-embedplayer-drm-error-not-supported": "This content is DRM protected, please use the latest browser that supports content protection\r\nor check that your browser has the <a href=\"http://www.microsoft.com/silverlight/\" target=\"_blank\">sliverlight plugin</a> installed and enabled.",
         "mwe-embedplayer-player-on-air": "LIVE",
         "mwe-embedplayer-player-off-air": "Off Air",
         "mwe-embedplayer-player-jump-to-live": "Jump to live",

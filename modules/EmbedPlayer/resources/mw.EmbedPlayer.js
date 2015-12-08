@@ -296,6 +296,8 @@
         // stores current bitrate for adaptive bitrate video
         currentBitrate: -1,
 
+		drmRequired: false,
+
 		/**
 		 * embedPlayer
 		 *
@@ -850,14 +852,22 @@
 			// Check if no player is selected
 			if (!this.selectedPlayer || !this.mediaElement.selectedSource) {
 				var errorObj;
-				//check if we had silverlight flavors and no silverlight installed - prompt to install silverlight
-				if (!mw.isMobileDevice() && !mw.EmbedTypes.getMediaPlayers().isSupportedPlayer('splayer')) {
-					$.each(this.mediaElement.sources, function (currentIndex, currentSource) {
-						if (currentSource.getFlavorId() == "ism") {
-							errorObj = _this.getKalturaMsgObject('mwe-embedplayer-install-silverlight');
-							return;
-						}
-					});
+				if (this.isDrmRequired()){
+					if (!this.isPluginEnabled( 'multiDrm' )){
+						errorObj = this.getKalturaMsgObject('mwe-embedplayer-drm-error-not-enabled');
+					} else {
+						errorObj = this.getKalturaMsgObject('mwe-embedplayer-drm-error-not-supported');
+					}
+				} else {
+					//check if we had silverlight flavors and no silverlight installed - prompt to install silverlight
+					if (!mw.isMobileDevice() && !mw.EmbedTypes.getMediaPlayers().isSupportedPlayer('splayer')) {
+						$.each(this.mediaElement.sources, function (currentIndex, currentSource) {
+							if (currentSource.getFlavorId() == "ism") {
+								errorObj = _this.getKalturaMsgObject('mwe-embedplayer-install-silverlight');
+								return;
+							}
+						});
+					}
 				}
 				if (!errorObj) {
 					this.showPlayerError();
@@ -1681,7 +1691,11 @@
 			}
 
 			// Add a loader to the embed player:
-			this.pauseLoading();
+			// call these 3 lines inline instead of using this.pauseLoading() to prevent stack overflow in IE8 (FEC-4429)
+			// this means we are very close to the IE8 stack being full. might have to revisit here if the stack overflow returns (maybe wrap these 3 lines in a 0 sec timeout)
+			this.isPauseLoading = true;
+			this.pause();
+			this.addPlayerSpinner();
 
 			// Stop the monitor
 			this.stopMonitor();
@@ -1832,7 +1846,7 @@
 			}
 
 			$(this).find(".playerPoster").remove();
-				if ( mw.getConfig('autoPlay') && !mw.isMobileDevice()){
+				if ( this.currentState=="load" && mw.getConfig('autoPlay') && !mw.isMobileDevice()){
 				return;
 			}
 				if ( mw.getConfig('EmbedPlayer.HidePosterOnStart') === true
@@ -2997,6 +3011,14 @@
 
 		isLive: function () {
 			return this.live;
+		},
+
+		setDrmRequired: function (isDrm) {
+			this.drmRequired = isDrm;
+		},
+
+		isDrmRequired: function () {
+			return this.drmRequired;
 		},
 
 		isDVR: function () {

@@ -98,6 +98,11 @@
         "label": "Adobe video player plugin debug logging",
         "type": "boolean",
         "initvalue": false
+      },
+      "trackEventMonitor":{
+        "doc": "A global callback function for logging Adobe Heartbeat events.",
+        "label": "Event monitor function name",
+        "type": "string"
       }
     }
   }

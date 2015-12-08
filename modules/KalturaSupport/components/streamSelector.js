@@ -159,7 +159,7 @@
 					}
 				} );
 			} else {
-				mw.log('streamSelector::No streams avaialble, disabling component');
+				mw.log('streamSelector::No streams available, disabling component');
 				_this.$el.hide();
 			}
 			_this.embedPlayer.triggerHelper('streamsReady');

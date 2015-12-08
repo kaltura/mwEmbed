@@ -543,16 +543,11 @@ mw.PlayerLayoutBuilder.prototype = {
 		var bindFirstPlay = false;
 		_this.addRightClickBinding();
 
-		this.updateLayoutTimeout = null;
 		_this.updateComponentsVisibility();
 		_this.updatePlayerSizeClass();
 		b('updateLayout', function(){
-			// Firefox unable to get component width correctly without timeout
-			clearTimeout(_this.updateLayoutTimeout);
-			_this.updateLayoutTimeout = setTimeout(function(){
 				_this.updateComponentsVisibility();
 				_this.updatePlayerSizeClass();
-			},100);
 		});
 
 		// Bind into play.ctrl namespace ( so we can unbind without affecting other play bindings )

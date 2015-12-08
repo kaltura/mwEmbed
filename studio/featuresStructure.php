@@ -147,7 +147,6 @@ return array(
 			"googleAnalytics" => "",
 			"comscore" => "",
 			"nielsenCombined" => "",
-			"heartbeat" => "",
 			"omnitureOnPage" => "",
 			"statistics" => "",
 		)
