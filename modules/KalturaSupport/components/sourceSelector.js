@@ -14,7 +14,8 @@
             "displayMode": "size", //'size' – displays frame size ( default ), 'bitrate' – displays the bitrate, 'sizebitrate' displays size followed by bitrate
             "hideSource": false,
 			"title": gM( 'mwe-embedplayer-select_source' ),
-			'smartContainer': 'qualitySettings'
+			'smartContainer': 'qualitySettings',
+			'smartContainerCloseEvent': 'SourceChange'
 		},
 
 		isDisabled: false,
