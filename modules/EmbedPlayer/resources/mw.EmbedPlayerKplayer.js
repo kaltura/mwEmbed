@@ -91,7 +91,7 @@
 					_this.setFlashvars('flavorId', flashvars.flavorId);
 				}
 
-				if (_this.streamerType != 'http' && _this.mediaElement.selectedSource) {
+				if (_this.streamerType != 'http' && _this.streamerType != 'hls' && _this.mediaElement.selectedSource) {
 					flashvars.selectedFlavorIndex = _this.getSourceIndex(_this.mediaElement.selectedSource);
 				}
 
@@ -224,9 +224,26 @@
                         _this.playerObject.sendNotification("doTextTrackSwitch", { textIndex :data.index});
                     }
                 });
+
+                _this.bindHelper('liveOnline', function(){
+                    if( this.isLive && !this.isDVR() ) {
+                        $(".largePlayBtn").hide();
+                        _this.reset();
+                    }
+                });
 			});
 
 		},
+
+        reset: function(){
+            this.restarting = true;
+            var _this = this;
+            this.clean();
+            this.setup(function(){
+                _this.restarting = false;
+                _this.play();
+            });
+        },
 
 		isHlsSource: function (source) {
 			if (source && (source.getMIMEType() == 'application/vnd.apple.mpegurl' )) {
@@ -484,6 +501,9 @@
 		 * play method calls parent_play to update the interface
 		 */
 		play: function () {
+            if(this.restarting){
+                return;
+            }
             var _this = this;
 			mw.log('EmbedPlayerKplayer::play');
             if(this.unresolvedSrcURL){
