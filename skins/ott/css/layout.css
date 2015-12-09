@@ -309,7 +309,7 @@ button::-moz-focus-inner {
 }
 .sliderPreview .arrow{
 	display: block !important;
-	margin-left: -30px;
+	margin-left: 10px;
 	bottom: -4px !important;
 }
 .sliderPreview {

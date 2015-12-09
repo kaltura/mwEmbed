@@ -167,11 +167,10 @@ mw.MediaElement.prototype = {
 			options = {};
 		}
 		if ( this.autoSelectSourceExecute( options ) ){
-			this.selectedSource.src = this.selectedSource.src.replace(/seekFrom\/\d+\//, '');
-			this.selectedSource.src = this.selectedSource.src.replace(/clipTo\/\d+\//, '');
 			var updatedDuration = 0;
 			if (options.supportsURLTimeEncoding && !!options.endTime) {
 				updatedDuration = options.endTime;
+				this.selectedSource.src = this.selectedSource.src.replace(/clipTo\/\d+\//, '');
 				this.selectedSource.src = this.selectedSource.src.replace(
 					"playManifest/", 
 					"playManifest/clipTo/" + parseInt(options.endTime) * 1000 + "/"
@@ -179,6 +178,7 @@ mw.MediaElement.prototype = {
 			}
 			if (options.supportsURLTimeEncoding && !! options.startTime) {
 				updatedDuration -= options.startTime;
+				this.selectedSource.src = this.selectedSource.src.replace(/seekFrom\/\d+\//, '');
 				this.selectedSource.src = this.selectedSource.src.replace(
 					"playManifest/", 
 					"playManifest/seekFrom/" + parseInt(options.startTime) * 1000 + "/"
@@ -450,7 +450,7 @@ mw.MediaElement.prototype = {
 	autoSelectNativeSource: function() {
 		mw.log( "MediaElement::autoSelectNativeSource");
 		// check if already auto selected source can just "switch" to native: 
-		if (! this.selectedSource && ! this.autoSelectSource( { 'forceNative':true }) ) {
+		if (! this.selectedSource && ! this.autoSelectSource() ) {
 			return false;
 		}
 		// attempt to select player: 
