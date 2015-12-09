@@ -5,8 +5,29 @@
 	position: absolute;
 	top: 0; bottom: 0; left: 0; right: 0;
 }
+.related .related-close{
+    width: 100%;
+    text-align: right;
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+.fullscreen .related-close{
+    padding-top: 3px;
+}
+.screen.related{
+    padding-top: 0px;
+}
+.related .icon-close{
+    margin-right: 5px;
+}
 .related .screen-content {
-	padding: 0 5px; overflow: hidden; height: 100%;
+	padding: 10px 5px;
+    overflow: hidden;
+    height: 100%;
+}
+.mobile .related .screen-content {
+    padding: 0px 5px;
+    padding-bottom: 15px;
 }
 .related .item {
 	position: relative;

@@ -4,12 +4,15 @@
 
 		defaultConfig: {
 			align: "right",
-			parent: "controlsContainer",
+			"parent": mw.isMobileDevice() ? 'topBarContainer' : 'controlsContainer',
+			smartContainer: 'morePlugins',
+			smartContainerCloseEvent: 'downloadMedia',
 			displayImportance: "low",
 			downloadName: '{mediaProxy.entry.name}',
 			showTooltip: true,
 			preferredBitrate: '',
 			flavorID: '',
+			title: gM('mwe-embedplayer-download_clip'),
 		 	order: 53
 		},
 		isSafeEnviornment: function(){
@@ -47,7 +50,7 @@
 			var _this = this;
 			if( !this.$el ) {
 				this.$el = $( '<button />' )
-							.attr( 'title', 'Download Media' )
+							.attr( 'title', this.getConfig('title') )
 							.addClass( "btn icon-download" + this.getCssClass() )
 							.click( function() {
 								if( _this.isDisabled ) return ;

@@ -8,9 +8,12 @@
 			defaultConfig: {
 				'parent': 'controlsContainer',
 				'accessibleControls': false,
-				'order': 5,
+				'order': 53,
 				'showTooltip': true,
 				'align': "right",
+				'smartContainer': 'morePlugins',
+				'smartContainerCloseEvent': 'pipEvent',
+				'title': gM( 'mwe-embedplayer-pip' ),
 				"displayImportance": "medium"
 			},
 
@@ -33,13 +36,14 @@
 				if( !this.$el ) {
 					this.$el  = $( '<button />' )
 						.attr( 'title', this.pipTitle )
-						.addClass( "btn icon-new-tab pull-right" )
+						.addClass( "btn icon-new-tab pull-right" + this.getCssClass() )
 						.click( function() {
 							if( mw.getConfig("EmbedPlayer.ForceNativeComponent") ) {
 								_this.embedPlayer.togglePictureInPicture();
 							} else {
 								_this.embedPlayer.playerElement.webkitSetPresentationMode(_this.embedPlayer.playerElement.webkitPresentationMode === "picture-in-picture" ? "inline" : "picture-in-picture");
 							}
+							_this.embedPlayer.triggerHelper("pipEvent");
 						});
 
 				}

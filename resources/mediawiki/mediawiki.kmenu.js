@@ -1,7 +1,18 @@
  ( function( mw, $ ) {"use strict";
     
     mw.KMenu = function( $element, options ) {
-
+		if (mw.isMobileDevice()){
+			this.mobileMenu = $("<select class='mobileMenuSelect'></select>");
+			$element.parent().prepend(this.mobileMenu);
+			this.mobileMenu.change(function(){
+				var title = this.value;
+				$element.find("li>a").each(function(index, item){
+					if ($(item).attr("title") === title){
+						$(item).trigger("click");
+					}
+				});
+			});
+		}
     	// Set some defaults
     	var defaults = {
             cssClass: "dropdown-menu",
@@ -48,16 +59,19 @@
             return tabIndex += parseFloat('.' + idx);
         },
         addItem: function( item ){
+	        if (mw.isMobileDevice()){
+		        this.mobileMenu.append($('<option>', { value : item.label }).text(item.label));
+	        }
         	var _this = this;
         	item.idx = this.itemIdx;
             var attrs = item.attributes || {};
             var $item = $('<li />')
 						.addClass(item.cssClass)
                         .attr(attrs)
-						.append( 
+						.append(
 							$('<a />')
 							.attr({
-								'href': '#', 
+								'href': '#',
                                 'title': item.label,
                                 'role': 'menuitemcheckbox',
                                 'aria-checked': 'false',
@@ -74,7 +88,7 @@
                                 // Support for onSelected method
                                 if( $.isFunction(_this.options.onSelected) ) {
                                     _this.options.onSelected(item);
-                                }						
+                                }
 								_this.close();
 							})
 						);
@@ -83,14 +97,14 @@
             if( this.itemIdx > 0 ){
                 this.addDivider();
             }
-            
+
 			this.$el.append( $item );
 
             if( item.active ){
                 $item.addClass('active').attr('aria-checked', 'true');
 	            this.selectedIndex = this.itemIdx;
             }
-			// Incrase out counter ( for tab index )						
+			// Incrase out counter ( for tab index )
 			this.itemIdx++;
         },
         addDivider: function(){

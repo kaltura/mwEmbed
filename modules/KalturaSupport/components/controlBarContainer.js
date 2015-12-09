@@ -9,6 +9,9 @@
 		keepOnScreen: false,
 
 		setup: function(){
+			if (mw.isMobileDevice()){
+				this.setConfig("hover", true);
+			}
 			// Exit if we're using native controls
 			if( this.getPlayer().useNativePlayerControls() ) {
 				this.getPlayer().enableNativeControls();
@@ -29,9 +32,13 @@
 			this.bind( 'showInlineDownloadLink', function(){
 				_this.hide();
 			});
-			this.bind( 'layoutBuildDone ended', function(){
+			this.bind( 'ended', function(){
 				_this.show();
-
+			});
+			this.bind( 'layoutBuildDone', function(){
+				if (!mw.isMobileDevice()){
+					_this.show();
+				}
 			});
 
 			// Bind hover events
@@ -48,7 +55,15 @@
 					_this.keepOnScreen = true;
 					_this.show();
 				});
-				this.bind( 'onComponentsHoverEnabled', function(){
+				this.bind( 'hideScreen', function(){
+					if (!_this.embedPlayer.paused){
+						_this.keepOnScreen = false;
+						_this.hide();
+					}else{
+						_this.show();
+					}
+				});
+				this.bind( 'onComponentsHoverEnabled showScreen', function(){
 					_this.keepOnScreen = false;
 					_this.hide();
 				});
@@ -97,7 +112,7 @@
 						.on("mouseenter", function(){
 							_this.forceOnScreen = true;
 						})
-						.on("mouseleave", function(){
+						.on("mouseleave click", function(){
 							_this.forceOnScreen = false;
 						});
 					this.embedPlayer.getVideoHolder().addClass('hover');
