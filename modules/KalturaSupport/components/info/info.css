@@ -35,6 +35,8 @@
 }
 .infoScreen .info-close{
     width: 100%;
+    font-size: 1.2em;
+    font-weight: bold;
     text-align: right;
     cursor: pointer;
     -webkit-tap-highlight-color: rgba(0,0,0,0);
