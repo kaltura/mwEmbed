@@ -1,64 +1,36 @@
 ( function( mw, $ ) {"use strict";
 
 	mw.PluginManager.add( 'nativeCallout', mw.KBasePlugin.extend({
+
+		// Defaults for KalturaPlay
 		defaultConfig: {
-			"storeUrl": null,
-			"mimeName": null,
-			"iframeUrl": null,
-			'templatePath': 'components/nativeCallout/nativeCallout.tmpl.html',
-			"applinkPrefix": null,
+			androidApplinkBaseURL: 	"https://kgit.html5video.org/kplay?",
+			iosApplinkBaseURL: 		"https://kgit.html5video.org/kplay?",
+			appInstallLandingPage: 	"https://kgit.html5video.org/kplay",
 		},
-
-		IOS_STORE_URL: "http://itunes.apple.com/app/id919225951",
-		ANDROID_STORE_URL: "https://play.google.com/store/apps/details?id=com.kaltura.kalturaplayertoolkit",
-		IOS_MIME_NAME: "kalturaPlayerToolkit://",
-		ANDROID_MIME_NAME: "http://kalturaplayertoolkit.com",
-		APPLINK_URL_PREFIX: "https://kalturaplay.appspot.com/play?",
-
-		ANDROID_STORE_IMAGE: "store-android-nativecallout",
-		IOS_STORE_IMAGE: "store-ios-nativecallout",
 
 		setup: function(){
 			mw.EmbedTypes.getMediaPlayers().defaultPlayers[ 'video/wvm' ].push( 'Native' );
-			// Bind player
+
+			if (mw.isAndroid()) {
+				this.applinkBase = this.getConfig("androidApplinkBaseURL");
+			} else if (mw.isIOS()) {
+				this.applinkBase = this.getConfig("iosApplinkBaseURL");
+			}
+
 			this.addBindings();
-			if( !this.getConfig( "storeUrl" ) ) {
-				this.setConfig( "storeUrl", mw.isAndroid() ? this.ANDROID_STORE_URL : this.IOS_STORE_URL );
-			}
-
-			if( !this.getConfig( "storeImage" ) ) {
-				this.setConfig( "storeImage", mw.isAndroid() ? this.ANDROID_STORE_IMAGE : this.IOS_STORE_IMAGE );
-			}
-
-			// TODO: safe to remove?
-			if( !this.getConfig( "mimeName" ) ) {
-				this.setConfig( "mimeName", mw.isAndroid() ? this.ANDROID_MIME_NAME : this.IOS_MIME_NAME );
-			}
-
-			if( !this.getConfig( "iframeUrl" ) ) {
-				var chromecastPluginFlashvar = "&flashvars[chromecast.plugin]=true";
-				this.setConfig( "iframeUrl", encodeURI( kWidget.iframeUrls[ this.embedPlayer.id ] + chromecastPluginFlashvar ) );
-			}
-			
-			if (!this.getConfig("applinkPrefix")) {
-				if (mw.isIOSBelow9()) {
-					// legacy, used with iOS<9
-					this.setConfig("applinkPrefix", this.IOS_MIME_NAME + "?iframeUrl:=");
-				} else {
-					this.setConfig("applinkPrefix", this.APPLINK_URL_PREFIX);
-				}
-			}
 		},
+		
 		isSafeEnviornment: function(){
-			return mw.isMobileDevice() === true;
+			// Only load the plugin on mobile browser (NOT in the native SDK) 
+			return mw.isMobileDevice() && !mw.isNativeApp();
 		},
+		
 		addBindings: function() {
 			var _this = this;
 			this.bind('prePlayAction', function (event, prePlay) {
-				if (mw.isMobileDevice() && !mw.isNativeApp()) {
-					prePlay.allowPlayback = false;
-					_this.calloutNativePlayer();
-				}
+				prePlay.allowPlayback = false;
+				_this.calloutNativePlayer();
 			});	
 		},
 
@@ -82,61 +54,18 @@
 
 		calloutNativePlayer: function() {
 			var _this = this;
-			var timeout;
+			
+			var isFriendlyIframe = mw.getConfig('EmbedPlayer.IsFriendlyIframe');
+			var embedFrameURL = isFriendlyIframe ? kWidget.iframeUrls[ this.embedPlayer.id ] : location.href;
+			var calloutURL = _this.applinkBase + "embedFrameURL=" + encodeURIComponent(embedFrameURL);
 
-			function preventPopup() {
-				clearTimeout(timeout);
-				timeout = null;
-				window.removeEventListener('pagehide', preventPopup);
+			if (isFriendlyIframe) {
+				// We're in a friendly frame -- just navigate
+				parent.document.location.assign(calloutURL);
+			} else {
+				// If frame is not friendly, we need to open the callout URL using window.open().
+				window.open(calloutURL);
 			}
-
-			function isHidden() {
-				if (typeof document.hidden !== 'undefined') {
-					return document.hidden;
-				} else if (typeof document.mozHidden !== 'undefined') {
-					return document.mozHidden;
-				} else if (typeof document.msHidden !== 'undefined') {
-					return document.msHidden;
-				} else if (typeof document.webkitHidden !== 'undefined') {
-					return document.webkitHidden;
-				}
-
-				return false;
-			}
-
-			function showNativeCallout() {
-				_this.getTemplateHTML()
-					.then(function (htmlMarkup) {
-						var storeImage = $("<div/>", {"class": _this.getConfig("storeImage")});
-						var storeElement = htmlMarkup.find("#store");
-						storeElement.attr('href', _this.getConfig("storeUrl"));
-						storeElement.append(storeImage);
-						var $el = _this.getComponent();
-						$el.append(htmlMarkup);
-						_this.embedPlayer.getPlayerPoster().addClass("blur");
-						_this.embedPlayer.getVideoHolder().find(".largePlayBtn").hide();
-						_this.embedPlayer.disablePlayControls();
-						var components = ['fullScreenBtn', 'logo'];
-						_this.embedPlayer.triggerHelper("onDisableInterfaceComponents", components);
-					}, function (msg) {
-						mw.log(msg);
-					});
-			}
-
-			var url = _this.getConfig("applinkPrefix") + _this.getConfig("iframeUrl");
-			var popup = [];
-			setTimeout(function () {
-				popup.close();
-				//show the open play store splash screen
-				setTimeout(function () {
-					if (isHidden()) {
-						//app is loaded
-					} else {
-						showNativeCallout();
-					}
-				}, 1000);
-			}, 1000);
-			popup = window.open(url);
 		}
 	}));
 

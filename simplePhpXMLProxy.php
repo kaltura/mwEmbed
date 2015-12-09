@@ -153,7 +153,10 @@ function isValidHost( $url = null ){
 	
 	if(!$url)
 		return false;
-
+    $scheme = parse_url($url, PHP_URL_SCHEME);
+    if ( $scheme != "http" && $scheme != "https"){
+        return false;
+    }
 	$host = parse_url($url, PHP_URL_HOST);
 	if( $host === null ){
 		return false;

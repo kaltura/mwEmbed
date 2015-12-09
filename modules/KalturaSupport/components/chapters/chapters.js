@@ -397,11 +397,14 @@
 						rotatorUrl: thumbnailRotatorUrl
 					},
 					startTime: item.startTime / 1000,
-					startTimeDisplay: _this.formatTimeDisplayValue(mw.seconds2npt(item.startTime / 1000)),
 					endTime: null,
 					durationDisplay: null
 
 				};
+                //apply time only in VOD or in live if DVR is supported
+                if ((_this.getPlayer().isLive() && _this.getPlayer().isDVR()) || !_this.getPlayer().isLive()) {
+                    mediaItem.startTimeDisplay = _this.formatTimeDisplayValue(mw.seconds2npt(item.startTime / 1000));
+                }
 				if (mediaItem.type === mw.KCuePoints.THUMB_SUB_TYPE.CHAPTER) {
 					//Save reference to chapters in chapter map object
 					_this.chaptersMap.push({
@@ -551,7 +554,9 @@
 					placeholder: gM('ks-chapters-search-placeholder'),
 					autocapitalize: "off",
 					autocorrect :"off",
-					autocomplete: "off"} );
+
+				}).
+					attr("autocomplete", "off");
 				var searchBoxWrapper = $( "<div/>", {"id": "searchBoxWrapper"} )
 					.append( searchBox );
 				var clearSearchBoxContainer = $( "<div/>", {
