@@ -91,6 +91,17 @@
 			this.bind('replayEvent preSequence', function(){
 				_this.stopTimer();
 			});
+
+			this.bind('preShowScreen', function (event, screenName) {
+				if ( screenName === "related" ){
+					_this.embedPlayer.disablePlayControls();
+				}
+			});
+			this.bind('preHideScreen', function (event, screenName) {
+				if ( screenName === "related" ){
+					_this.embedPlayer.enablePlayControls();
+				}
+			});
 		},
 
 		showScreen: function(){
