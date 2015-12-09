@@ -227,7 +227,6 @@
 
                 _this.bindHelper('liveOnline', function(){
                     if( this.isLive && !this.isDVR() ) {
-                        $(".largePlayBtn").hide();
                         _this.reset();
                     }
                 });
