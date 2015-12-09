@@ -1300,10 +1300,15 @@
 			var runtimeSettings = {};
 			var allowedVars = mw.getConfig('Kaltura.AllowedVars');
 			allowedVars = allowedVars.split(",");
+
+			var allowedVarsKeyPartials = mw.getConfig('Kaltura.AllowedVarsKeyPartials');
+			allowedVarsKeyPartials = allowedVarsKeyPartials.split(",");
+
 			var allowedPluginVars = mw.getConfig('Kaltura.AllowedPluginVars');
 			allowedPluginVars = allowedPluginVars.split(",");
-			var allowedPluginVarsPartials = mw.getConfig('Kaltura.AllowedPluginVarsPartials');
-			allowedPluginVarsPartials = allowedPluginVarsPartials.split(",");
+
+			var allowedPluginVarsValPartials = mw.getConfig('Kaltura.AllowedPluginVarsValPartials');
+			allowedPluginVarsValPartials = allowedPluginVarsValPartials.split(",");
 
 			for( var settingsKey in settings ){
 				// entry id should never be included ( hurts player iframe cache )
@@ -1315,10 +1320,20 @@
 					var runtimeFlashvars = runtimeSettings[settingsKey] = {};
 					var flashvars = settings[settingsKey];
 					for( var flashvarKey in flashvars ){
-						// Special Case a few flashvars that are always copied to iframe:
-						if ([].indexOf.call( allowedVars, flashvarKey, 0 ) > -1) {
-							runtimeFlashvars[flashvarKey] = flashvars[flashvarKey];
-							continue;
+						if( typeof flashvars[flashvarKey] != 'object' ) {
+							var flashvar = flashvars[flashvarKey];
+							// Special Case a few flashvars that are always copied to iframe:
+							if ([].indexOf.call(allowedVars, flashvarKey, 0) > -1) {
+								runtimeFlashvars[flashvarKey] = flashvar;
+								continue;
+							}
+							// Special case vars that require server side template substations
+							for (var idx in allowedVarsKeyPartials) {
+								if (flashvarKey.indexOf(allowedVarsKeyPartials[idx]) > -1) {
+									runtimeFlashvars[flashvarKey] = flashvar;
+									continue;
+								}
+							}
 						}
 						if( typeof flashvars[flashvarKey] == 'object' ){
 							// Set an empty plugin if any value is preset ( note this means .plugin=false overrides do still load the plugin
@@ -1332,12 +1347,14 @@
 								// Special Case a few flashvars that are always copied to iframe:
 								if ([].indexOf.call( allowedPluginVars, pluginKey, 0 ) > -1) {
 									runtimePlugin[pluginKey] = pluginVal;
+									continue;
 								}
 								if (typeof pluginVal == "string") {
 									// Special case vars that require server side template substations
-									for (var idx in allowedPluginVarsPartials) {
-										if (pluginVal.indexOf(allowedPluginVarsPartials[idx]) > -1){
+									for (var idx in allowedPluginVarsValPartials) {
+										if (pluginVal.indexOf(allowedPluginVarsValPartials[idx]) > -1){
 											runtimePlugin[pluginKey] = plugin[pluginKey];
+											continue;
 										}
 									}
 								}

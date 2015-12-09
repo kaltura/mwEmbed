@@ -388,7 +388,7 @@ class mwEmbedLoader {
 			$wgKalturaUseManifestUrls, $wgHTTPProtocol, $wgKalturaServiceUrl, $wgKalturaServiceBase,
 			$wgKalturaCDNUrl, $wgKalturaStatsServiceUrl,$wgKalturaLiveStatsServiceUrl, $wgKalturaIframeRewrite, $wgEnableIpadHTMLControls,
 			$wgKalturaAllowIframeRemoteService, $wgKalturaUseAppleAdaptive, $wgKalturaEnableEmbedUiConfJs,
-			$wgKalturaGoogleAnalyticsUA, $wgHTML5PsWebPath, $wgAllowedVars, $wgAllowedPluginVars, $wgAllowedPluginVarsPartials,
+			$wgKalturaGoogleAnalyticsUA, $wgHTML5PsWebPath, $wgAllowedVars, $wgAllowedPluginVars, $wgAllowedPluginVarsValPartials, $wgAllowedVarsKeyPartials,
 			$wgCacheTTL, $wgMaxCacheEntries, $wgKalturaSupressNonProductionUrlsWarning;
 		$exportedJS ='';
 		// Set up globals to be exported as mwEmbed config:
@@ -417,8 +417,9 @@ class mwEmbedLoader {
 			'Kaltura.CacheTTL' => $wgCacheTTL,
 			'Kaltura.MaxCacheEntries' => $wgMaxCacheEntries,
 			'Kaltura.AllowedVars' => $wgAllowedVars,
+			'Kaltura.AllowedVarsKeyPartials' => $wgAllowedVarsKeyPartials,
 			'Kaltura.AllowedPluginVars' => $wgAllowedPluginVars,
-			'Kaltura.AllowedPluginVarsPartials' => $wgAllowedPluginVarsPartials
+			'Kaltura.AllowedPluginVarsValPartials' => $wgAllowedPluginVarsValPartials
 		);
 		if( isset( $_GET['pskwidgetpath'] ) ){
 			$exportedJsConfig[ 'Kaltura.KWidgetPsPath' ] = htmlspecialchars( $_GET['pskwidgetpath'] );
