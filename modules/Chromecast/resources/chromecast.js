@@ -96,7 +96,14 @@
 
 			$( this.embedPlayer).bind('chromecastShowConnectingMsg', function(){
 				_this.showConnectingMessage();
+				_this.embedPlayer.disablePlayControls(["chromecast"]);
 			});
+
+			$( this.embedPlayer).bind('hideConnectingMessage', function(){
+				_this.embedPlayer.layoutBuilder.closeAlert();
+				_this.embedPlayer.enablePlayControls();
+			});
+
 
 			$( this.embedPlayer).bind('updateDashContextData', function(e, drmConfig){
 				_this.drmConfig = drmConfig;
