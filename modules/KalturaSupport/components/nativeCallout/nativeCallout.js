@@ -4,9 +4,9 @@
 
 		// Defaults for KalturaPlay
 		defaultConfig: {
-			"androidApplinkBaseURL": 	"https://kgit.html5video.org/kplay?",
-			"iosApplinkBaseURL": 		"kalturaplay:///kplay?",
-			"appInstallLandingPage": 	"https://kgit.html5video.org/kplay",
+			androidApplinkBaseURL: 	"https://kgit.html5video.org/kplay?",
+			iosApplinkBaseURL: 		"https://kgit.html5video.org/kplay?",
+			appInstallLandingPage: 	"https://kgit.html5video.org/kplay",
 		},
 
 		setup: function(){
@@ -55,30 +55,16 @@
 		calloutNativePlayer: function() {
 			var _this = this;
 			
-			function getCalloutURL(embedFrameURL) {
-				var url = _this.applinkBase + "embedFrameURL=" + encodeURIComponent(embedFrameURL);
-				console.log("url:", url);
-				return url;
-			}
-			
 			var isFriendlyIframe = mw.getConfig('EmbedPlayer.IsFriendlyIframe');
 			var embedFrameURL = isFriendlyIframe ? kWidget.iframeUrls[ this.embedPlayer.id ] : location.href;
 			var calloutURL = _this.applinkBase + "embedFrameURL=" + encodeURIComponent(embedFrameURL);
-			var calloutIsWebpage = /^https?:/.test(calloutURL);
 
-			if (isFriendlyIframe && calloutIsWebpage) {
-				// Simplest case, callout is a web page and we're a friendly page -- just navigate
+			if (isFriendlyIframe) {
+				// We're in a friendly frame -- just navigate
 				parent.document.location.assign(calloutURL);
 			} else {
 				// If frame is not friendly, we need to open the callout URL using window.open().
-				// If callout URL is not a webpage, we need to navigate to landing page immediately.
-				var popup = [];
-				setTimeout(function () {
-					if (!calloutIsWebpage) {
-						popup.location.assign(_this.getConfig("appInstallLandingPage"));
-					}
-				}, 200);
-				popup = window.open(calloutURL);
+				window.open(calloutURL);
 			}
 		}
 	}));
