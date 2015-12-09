@@ -2,31 +2,31 @@
     font-family: 'Lato', Helvetica, Arial;
 }
 .infoScreen .title{
-    font-size: 28px;
+    font-size: 2.1em;
     font-family: "Lato";
     font-weight: bold;
     color: rgb(255, 255, 255);
-    margin-bottom: 10px;
-    margin-top: 30px;
+    margin-bottom: 0.7em;
+    margin-top: 2.2em;
 }
 
 .infoScreen .screen-content {
-    padding: 10px;
+    padding: 0.7em;
     position: relative;
     height: 100%;
 }
 .infoScreen .created {
-    font-size: 13px;
-    margin-left: 8px;
+    font-size: 0.8em;
+    margin-left: 0.5em;
 }
 
 .infoScreen .description {
-    font-size: 16px;
-    margin-top: 24px;
+    font-size: 1em;
+    margin-top: 1.5em;
 }
 .infoScreen .views {
-    font-size: 13px;
-    margin-left: 8px;
+    font-size: 0.8em;
+    margin-left: 0.5em;
 }
 .infoScreen .infoScreenPanel{
     width: 80%;
@@ -73,11 +73,11 @@
 .icon-infoScreen-clock:before {
     content: "\e901";
     position: relative;
-    top: 3px;
+    top: 0.1em;
 }
 .icon-infoScreen-eye:before {
     content: "\e900";
     position: relative;
-    top: 2px;
-    margin-left: 40px;
+    top: 0.1em;
+    margin-left: 2.5em;
 }
