@@ -808,11 +808,18 @@
 		play: function () {
 			var duration = parseInt(this.duration, 10).toFixed(2);
 			var curTime = parseInt(this.getPlayerElementTime(), 10).toFixed(2);
-			if (( this.currentState === "end" ) ||
-				( this.currentState === "pause" && duration === curTime && this.getPlayerElementTime() > 0 )) {
+			//Rewind video element if using JS player, SL player doesn't require it
+			if ((this.playerElement.getActiveTech() == "dashjs") && (( this.currentState === "end" ) ||
+				( this.currentState === "pause" && duration === curTime && this.getPlayerElementTime() > 0 ))) {
 				this.stopPlayAfterSeek = false;
 				this.seek(0.01, false);
 			} else {
+				//Hack for letting silverlight player handle replay by itself, as seeking to 0.01 kills playback
+				if ((this.playerElement.getActiveTech() == "dashcs") && (( this.currentState === "end" ) ||
+					( this.currentState === "pause" && duration === curTime && this.getPlayerElementTime() > 0 ))) {
+					this.currentState = "load";
+					this.currentTime = 0;
+				}
 				if ( this.parent_play() ) {
 					var _this = this;
 					setTimeout( function () {
