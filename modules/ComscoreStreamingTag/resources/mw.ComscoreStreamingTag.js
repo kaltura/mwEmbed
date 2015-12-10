@@ -2,7 +2,7 @@
 
 	/*
 	 Limitations:
-	 - No tracing for the overlay ads
+	 - No tracking for the overlay ads
 	 */
 	mw.ComscoreStreamingTag = function( embedPlayer, callback ){
 		this.init( embedPlayer, callback );
@@ -10,7 +10,7 @@
 
 	mw.ComscoreStreamingTag.prototype = {
 
-		pluginVersion: "1.0.6",
+		pluginVersion: "1.0.7",
 		reportingPluginName: "kaltura",
 		playerVersion: mw.getConfig('version'),
 		genericPluginUrlSecure: "https://sb.scorecardresearch.com/c2/plugins/streamingtag_plugin_generic.js",
@@ -36,6 +36,7 @@
 		shouldSetClip: true,
 		buffering: false,
 		seeking: false,
+		isPlaybackIntended: false,
 		playing: false,
 		checkEveryIndex:0,
 		lastKnownTime: 0,
@@ -127,10 +128,11 @@
 		},
 
 		onPlaybackActive: function() {
-			if (this.playing
+			if (this.isPlaybackIntended
+				&& this.playing
 				&& !this.seeking
 				&& this.getPlayerPluginState() != this.PlayerPluginState().PLAYING
-				&& this.getPlayerPluginState()!= this.PlayerPluginState().AD_PLAYING) {
+				&& this.getPlayerPluginState() != this.PlayerPluginState().AD_PLAYING) {
 				this.setClip();
 				var seek = this.getPlayerPluginState() == this.PlayerPluginState().SEEKING;
 				this.callStreamSensePlugin("notify", this.playerEvents.PLAY, this.getLabels(seek), this.getCurrentPosition());
@@ -141,13 +143,8 @@
 
 		onPlaybackInactive: function() {
 			if (this.getPlayerPluginState() == this.PlayerPluginState().PLAYING) {
-				var seek = this.getPlayerPluginState() == this.PlayerPluginState().SEEKING;
-				if (this.getDuration() == this.getCurrentPosition()) {
-					this.callStreamSensePlugin("notify", this.playerEvents.END, this.getLabels(seek));
-				}else {
-					this.setPlayerPluginState(this.PlayerPluginState().PAUSED);
-					this.callStreamSensePlugin("notify", this.playerEvents.PAUSE, this.getLabels(seek), this.getCurrentPosition());
-				}
+				this.setPlayerPluginState(this.PlayerPluginState().PAUSED);
+				this.callStreamSensePlugin("notify", this.playerEvents.PAUSE, this.getLabels(this.seeking), this.getCurrentPosition());
 				this.lastKnownTime = this.embedPlayer.getPlayerElementTime();
 			}
 		},
@@ -167,9 +164,9 @@
 				index = 0; // Unknown value
 			}
 			if (type != 'preroll' && type != 'midroll' && type != "postroll") {
-				return; // ComScore only tag prerolls, midrolls and postrolls
+				return; // ComScore only tags prerolls, midrolls and postrolls
 			}
-			if (this.currentAd.id == adId) return; // If this is already in use, ignore it
+			if (this.currentAd.id == adId) return; // If this is already in use, ignore it.
 
 			this.currentAd.id = adId;
 			this.currentAd.type = type;
@@ -242,17 +239,29 @@
 
 			embedPlayer.bindHelper( 'monitorEvent' + _this.bindPostfix, function(){
 				if (_this.checkEveryIndex++ % 2 != 0) return;
-
 				var currentTime = embedPlayer.getPlayerElementTime();
-				if (_this.playing && currentTime == _this.lastKnownTime && _this.buffering) {
-					// If the user pressed the play button but is paused and buffering we count it as the playhead hit
-					// the end of the buffer and the buffer is being filled
-					_this.onBuffering();
-				} else {
-					if (currentTime != _this.lastKnownTime && !_this.seeking) {
-						_this.onPlaybackActive();
+
+				if (currentTime != _this.lastKnownTime) {
+					if (_this.isPlaybackIntended) {
+						_this.playing = true;
 					} else {
-						_this.onPlaybackInactive();
+						_this.playing = false;
+					}
+				} else {
+					_this.playing = false;
+				}
+				if (_this.isPlaybackIntended) {
+					if( !_this.playing && _this.buffering) {
+						// If the user pressed the play button while the player is paused and buffering
+						// then this can be considered buffering due to an empty buffer
+						// (i.e., buffering prior to playback or re-buffering during playback).
+						_this.onBuffering();
+					} else {
+						if (_this.playing && !_this.seeking) {
+							_this.onPlaybackActive();
+						} else {
+							_this.onPlaybackInactive();
+						}
 					}
 				}
 				_this.lastKnownTime = currentTime;
@@ -262,34 +271,39 @@
 				_this.destroy();
 			});
 
-			embedPlayer.bindHelper( 'playerUpdatePlayhead' + _this.bindPostfix, function(event){
-				_this.log("playerUpdatePlayhead");
-			});
+			//This event has not been observed to be triggered.
+			//embedPlayer.bindHelper( 'playerUpdatePlayhead' + _this.bindPostfix, function(event){
+			//_this.log("playerUpdatePlayhead");
+			//});
 
 			embedPlayer.bindHelper('onplay' + _this.bindPostfix, function() {
-				_this.playing = true;
+				_this.isPlaybackIntended = true;
 			});
 
 			embedPlayer.bindHelper('onpause' + _this.bindPostfix, function(event) {
+				_this.isPlaybackIntended = false;
 				_this.playing = false;
 				_this.onPlaybackInactive();
 			});
 
 			embedPlayer.bindHelper('doStop' + _this.bindPostfix, function(event) {
-				_this.setPlayerPluginState(_this.PlayerPluginState().ENDED_PLAYING);
 				var seek = _this.getPlayerPluginState() == _this.PlayerPluginState().SEEKING;
-				_this.callStreamSensePlugin("notify", _this.playerEvents.END, _this.getLabels(seek));
+				_this.setPlayerPluginState(_this.PlayerPluginState().ENDED_PLAYING);
+				if(_this.isPlaybackIntended && _this.playing) {
+					_this.callStreamSensePlugin("notify", _this.playerEvents.END, _this.getLabels(seek));
+				}
 				_this.lastKnownTime = 0;
 				_this.checkEveryIndex = 0;
 			});
 
 			embedPlayer.bindHelper('seeked.started' + _this.bindPostfix, function(event) {
 				_this.seeking = true;
-				if (_this.playing && _this.getPlayerPluginState() != _this.PlayerPluginState().SEEKING) {
+				if (_this.isPlaybackIntended && _this.getPlayerPluginState() != _this.PlayerPluginState().SEEKING) {
 					_this.onPlaybackInactive();
 					_this.setPlayerPluginState(_this.PlayerPluginState().SEEKING);
+					// The following statement is ineffective as the 'seeked.started' event is only triggered AFTER seeking has completed.
+					// At that time the plugin has already sent the PAUSE event to indicate playback halted, which can be confirmed visually.
 					//_this.callStreamSensePlugin("notify", _this.playerEvents.PAUSE, _this.getLabels(true), _this.getCurrentPosition());
-
 				}
 			});
 
