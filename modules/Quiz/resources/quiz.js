@@ -23,6 +23,8 @@
         inFullScreen : false,
         selectedAnswer:null,
 
+
+
         setup: function () {
             var _this = this;
             var embedPlayer = this.getPlayer();
@@ -59,13 +61,17 @@
                     _this.enablePlayDuringScreen = false;
                 }
             });
+
            this.bind('prePlayAction', function (e, data) {
-                if(_this.getPlayer().firstPlay && !_this.firstPlay){
-                    data.allowPlayback = false;
-                    _this.firstPlay = true;
-                    _this.enablePlayDuringScreen = false;
-                    _this.ssWelcome();
-                }
+
+                   if(_this.getPlayer().firstPlay && !_this.firstPlay){
+                       data.allowPlayback = false;
+                       _this.firstPlay = true;
+                       _this.enablePlayDuringScreen = false;
+                       _this.KIVQModule.checkQKDPReady(function(){
+                           _this.ssWelcome();
+                       })
+                   }
             });
 
             this.bind('seeked', function () {
@@ -77,10 +83,13 @@
             });
 
             embedPlayer.addJsListener( 'kdpReady', function(){
+                _this.KIVQModule.isQKDPReady = true;
+
                 if (embedPlayer.autoplay) {
                     embedPlayer.autoplay = false;
                 }
                 embedPlayer.removeJsListener( 'kdpReady');
+
             });
             embedPlayer.addJsListener( 'playerPlayEnd', function(){
                 _this.KIVQModule.quizEndScenario();
@@ -192,7 +201,7 @@
 
             $(document).off('click','.confirm-box')
                 .on('click', '.confirm-box', function () {
-                    _this.embedPlayer.sendNotification('doSeek', 0);
+                    _this.KIVQModule.gotoScrubberPos(-1);
                     _this.KIVQModule.continuePlay();
                 });
 
@@ -268,9 +277,8 @@
 
             $(".review-button").html(gM('mwe-quiz-review'))
                 .on('click', function () {
-                    _this.embedPlayer.sendNotification('doSeek', 0);
+                    _this.KIVQModule.gotoScrubberPos(-1);
                     _this.KIVQModule.continuePlay();
-
                 });
 
             $(".submit-button").html(gM('mwe-quiz-submit'))
@@ -323,7 +331,7 @@
                     $(".title-text").html(gM('mwe-quiz-thankYou'));
                     $(this).delay(1000).fadeIn(function () {
                         _this.KIVQModule.quizEndFlow = false;
-                        _this.KIVQModule.continuePlay();
+                        _this.KIVQModule.gotoScrubberPos(-1);
                     });
                 });
         },
@@ -366,7 +374,7 @@
                     $(this).addClass('single-answer-box-small')
                         .after($('<div></div>')
                             .addClass("single-answer-box-apply")
-                            .text(gM('mwe-quiz-apply'))
+                            .text(gM('mwe-quiz-continue'))
                     )
                 });
             _this.selectedAnswer = null;
@@ -416,7 +424,7 @@
                         $(this).addClass('single-answer-box-small')
                             .after($('<div></div>')
                                 .addClass("single-answer-box-apply")
-                                .text(gM('mwe-quiz-apply'))
+                                .text(gM('mwe-quiz-continue'))
                         )
                     });
                 _this.selectedAnswer =  $('.single-answer-box-small').attr('id');
@@ -525,6 +533,7 @@
             var  _this = this;
             var scrubber = this.embedPlayer.getInterface().find(".scrubber");
             _this.KIVQModule.hideQuizEndOnScrubber();
+
 
             scrubber.parent().prepend('<div class="quizDone-cont"></div>');
 
