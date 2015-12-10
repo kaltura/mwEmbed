@@ -89,7 +89,9 @@
 				}
 			}
 
-			var standalonePluginUrl = this.isSecure() ? this.genericPluginUrlSecure : this.genericPluginUrl;
+			var genericPluginUrlSecure = this.getConfig("genericPluginUrlSecure") || this.genericPluginUrlSecure;
+			var genericPluginUrl = this.getConfig("genericPluginUrl") || this.genericPluginUrl;
+			var standalonePluginUrl = this.isSecure() ? genericPluginUrlSecure : genericPluginUrl;
 
 			kWidget.appendScriptUrl(standalonePluginUrl, function(){
 				_this.streamSenseInstance = new ns_.StreamSense.Plugin(comScoreSettings, _this.reportingPluginName, _this.pluginVersion, _this.playerVersion, {
