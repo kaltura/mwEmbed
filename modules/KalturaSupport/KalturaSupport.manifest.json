@@ -1716,18 +1716,18 @@
         "type": "featuremenu",
         "model": "config.plugins.nativeCallout",
         "attributes": {
-            "storeUrl": {
-                "doc": "The URL for the app market",
+            "androidApplinkBaseURL": {
+                "doc": "Base URL for applink, Android.",
                 "initvalue": "",
                 "type": "string"
             },
-            "mimeName": {
-                "doc": "The linker for opening your native app",
+            "iosApplinkBaseURL": {
+                "doc": "Base URL for applink, iOS.",
                 "initvalue": "",
                 "type": "string"
             },
-            "iframeUrl": {
-                "doc": "iFrame URL",
+            "appInstallLandingPage": {
+                "doc": "Landing page for app install; shown if applink URL is not a web page.",
                 "initvalue": "",
                 "type": "string"
             }

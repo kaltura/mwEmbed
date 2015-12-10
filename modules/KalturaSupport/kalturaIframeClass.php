@@ -1191,7 +1191,9 @@ HTML;
 		if( isIE8 ){
 			customResources = customResources.concat( kalturaIframePackageData.skinResources );
 		}
-		<?php echo $callbackJS ?>
+		loadCustomResourceIncludes( customResources, function(){
+            <?php echo $callbackJS ?>
+        });
 
 		<?php
 	}
