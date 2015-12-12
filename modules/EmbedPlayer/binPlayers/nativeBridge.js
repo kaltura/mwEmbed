@@ -145,6 +145,7 @@
 			}
 
 			if (eventName == 'timeupdate') {
+				console.info('timeupdate ' + eventValue);
 				this.proxyElement['currentTime'] = jsEventValue;
 			} else if (eventName == 'progress') {
 				this.proxyElement['progress'] = jsEventValue;
