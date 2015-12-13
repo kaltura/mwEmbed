@@ -139,11 +139,23 @@
 				}
 			}
 		},
+		fixLiveCuePointArray:function(arr) {
+			$.each(arr, function (index,cuePoint) {
+				cuePoint.startTime = cuePoint.createdAt*1000; //start time is in ms and createdAt is in seconds
+			});
+			arr.sort(function (a, b) {
+				return a.createdAt - b.createdAt;
+			});
+		},
 		requestLiveCuepoints: function () {
 			var _this = this;
 
 			// Create associative cuepoint array to enable comparing new cuepoints vs existing ones
 			var cuePoints = this.getCuePoints();
+
+			this.fixLiveCuePointArray(this.midCuePointsArray);
+			this.fixLiveCuePointArray(cuePoints);
+
 			this.associativeCuePoints = {};
 			$.each(cuePoints, function (index, cuePoint) {
 				_this.associativeCuePoints[cuePoint.id] = cuePoint;
@@ -157,13 +169,14 @@
 					'action': 'list',
 					'filter:entryIdEqual': entryId,
 					'filter:objectType': 'KalturaCuePointFilter',
-					'filter:statusIn': '1,3',
-					'filter:cuePointTypeEqual': 'thumbCuePoint.Thumb'
+					'filter:statusIn': '1,3', //1=READY, 3=HANDLED  (3 is after copying to VOD)
+					'filter:cuePointTypeEqual': 'thumbCuePoint.Thumb',
+					'filter:orderBy': "+createdAt" //let backend sorting them
 				};
-				var lastUpdatedAt = _this.getLastUpdateTime() + 1;
+				var lastCreationTime = _this.getLastCreationTime() + 1;
 				// Only add lastUpdatedAt filter if any cue points already received
-				if (lastUpdatedAt > 0) {
-					request['filter:updatedAtGreaterThanOrEqual'] = lastUpdatedAt;
+				if (lastCreationTime > 0) {
+					request['filter:createdAtGreaterThanOrEqual'] = lastCreationTime;
 				}
 				_this.getKalturaClient().doRequest( request,
 					function (data) {
@@ -173,6 +186,7 @@
 							mw.log("Error:: KCuePoints could not retrieve live cuepoints");
 							return;
 						}
+						_this.fixLiveCuePointArray(data.objects);
 						_this.updateCuePoints(data.objects);
 						_this.embedPlayer.triggerHelper('KalturaSupport_CuePointsUpdated', [data.totalCount]);
 					}
@@ -225,6 +239,16 @@
 				}
 			});
 			return lastUpdateTime;
+		},
+		getLastCreationTime: function () {
+			var cuePoints = this.getCuePoints();
+			var lastCreationTime = -1;
+			$.each(cuePoints, function (key, cuePoint) {
+				if (lastCreationTime < cuePoint.createdAt) {
+					lastCreationTime = cuePoint.createdAt;
+				}
+			});
+			return lastCreationTime;
 		},
 		getKalturaClient: function () {
 			if (!this.kClient) {
@@ -332,38 +356,18 @@
 		 */
 		getNextCuePoint: function (time) {
             if (!isNaN(time) && time >= 0) {
-				if( this.embedPlayer.isLive() && !this.embedPlayer.isDVR() ){
-                    //Live NO DVR
-                    return this.getNextLiveCuePoint(parseInt(time/1000));
-                }else{
-                    var cuePoints = this.midCuePointsArray;
-                    // Start looking for the cue point via time, return FIRST match:
-                    for (var i = 0; i < cuePoints.length; i++) {
-                        if (cuePoints[i].startTime >= time) {
-                            return cuePoints[i];
-                        }
-                    }
-                }
+
+				var cuePoints = this.midCuePointsArray;
+				// Start looking for the cue point via time, return FIRST match:
+				for (var i = 0; i < cuePoints.length; i++) {
+					if (cuePoints[i].startTime >= time) {
+						return cuePoints[i];
+					}
+				}
 			}
 			// No cue point found in range return false:
 			return false;
 		},
-        getNextLiveCuePoint: function (time) {
-            var cuePoints = this.getCuePointsByType(mw.KCuePoints.TYPE.THUMB);
-            // TODO: sort the cuePoitns by createdAt
-
-            // Start looking for the cue point via time, return LAST match:
-            var lastCuePoint;
-            for (var i = 0; i < cuePoints.length; i++) {
-                if ( cuePoints[i].createdAt <= time ) {
-                    lastCuePoint = cuePoints[i];
-                }
-            }
-            if(lastCuePoint){
-                mw.log("KCuePoints :: getNextLiveCuePoint :: currentTime " + mw.seconds2npt(time) + " | lastCuePoint.createdAt " + mw.seconds2npt(lastCuePoint.createdAt));
-                return lastCuePoint;
-            }
-        },
 		/**
 		 * Returns the previous cuePoint object for requested time
 		 * @param {Number} time Time in milliseconds

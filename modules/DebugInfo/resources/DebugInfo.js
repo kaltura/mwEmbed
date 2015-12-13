@@ -88,9 +88,14 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
 
             elem.html(this.getHTML());
 
-            _this.$scope.getFileName=function(url){
+            _this.$scope.getFileName=function(url) {
                 var index=url.lastIndexOf('/');
-                return index<0  ? url : url.substring(index+1);
+                var query_index=url.indexOf('?',index);
+                if (query_index<0) {
+                    query_index=undefined;
+                }
+
+                return index<0  ? url : url.substring(index+1,query_index);
             };
 
             _this.binder=new mw.HtmlBinderHelper(elem,_this.$scope);
