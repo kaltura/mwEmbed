@@ -322,9 +322,7 @@
 				}
 			}else{
 				if (this.getLayout() === "vertical"){
-					setTimeout(function () {
-						_this.getMedialistComponent().height(componentHeight - _this.getMedialistHeaderComponent().height());
-					}, 0);
+					this.getMedialistComponent().height(componentHeight - this.getMedialistHeaderComponent().height());
 				}else{
 					this.getMedialistComponent().height(this.getConfig("mediaItemHeight"));
 				}
