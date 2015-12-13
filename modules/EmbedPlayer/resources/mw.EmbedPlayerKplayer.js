@@ -102,33 +102,38 @@
 
 				//add OSMF HLS Plugin if the source is HLS
 				if (_this.isHlsSource(_this.mediaElement.selectedSource)) {
-					flashvars.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
-                    if(mw.getConfig("hlsLiveSegmentBuffer")) {
-                        flashvars.KalturaHLS["liveSegmentBuffer"] = mw.getConfig("hlsLiveSegmentBuffer");
+					var hlsPluginConfiguration = {plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize'};
+                    if (mw.getConfig("hlsLiveSegmentBuffer")) {
+                        hlsPluginConfiguration["liveSegmentBuffer"] = mw.getConfig("hlsLiveSegmentBuffer");
                     }
-                    if(mw.getConfig("hlsInitialBufferTime")) {
-                        flashvars.KalturaHLS["initialBufferTime"] = mw.getConfig("hlsInitialBufferTime");
+                    if (mw.getConfig("hlsInitialBufferTime")) {
+                        hlsPluginConfiguration["initialBufferTime"] = mw.getConfig("hlsInitialBufferTime");
                     }
-                    if(mw.getConfig("hlsExpandedBufferTime")) {
-                        flashvars.KalturaHLS["expandedBufferTime"] = mw.getConfig("hlsExpandedBufferTime");
+                    if (mw.getConfig("hlsExpandedBufferTime")) {
+                        hlsPluginConfiguration["expandedBufferTime"] = mw.getConfig("hlsExpandedBufferTime");
                     }
-                    if(mw.getConfig("hlsMaxBufferTime")) {
-                        flashvars.KalturaHLS["maxBufferTime"] = mw.getConfig("hlsMaxBufferTime");
+                    if (mw.getConfig("hlsMaxBufferTime")) {
+                        hlsPluginConfiguration["maxBufferTime"] = mw.getConfig("hlsMaxBufferTime");
                     }
-                    if(mw.getConfig("hlsLogs")) {
-                        flashvars.KalturaHLS["sendLogs"] = mw.getConfig("hlsLogs");
-	                    var func = ["onManifest","onNextRequest","onDownload","onCurrentTime","onTag"];
-	                    for (var index=0;index<func.length ;index++){
+                    if (mw.getConfig("hlsLogs")) {
+                        hlsPluginConfiguration["sendLogs"] = mw.getConfig("hlsLogs");
+                        var func = ["onManifest", "onNextRequest", "onDownload", "onCurrentTime", "onTag"];
+                        for (var index = 0; index < func.length; index++) {
 
-		                    (function() {
-			                    var x =  func[index];
-			                    if ( x ) {
-				                    window[x] = function (a,b,c,d,e,f,g,h) {
-					                    parent.window[x]( a,b,c,d,e,f,g,h );
-				                    }
-			                    }
-		                    })();
-	                    }
+                            (function () {
+                                var x = func[index];
+                                if (x) {
+                                    window[x] = function (a, b, c, d, e, f, g, h) {
+                                        parent.window[x](a, b, c, d, e, f, g, h);
+                                    }
+                                }
+                            })();
+                        }
+                    }
+                    if( _this.isLive && !_this.isDVR() ){
+                        flashvars.KalturaHLS2 = hlsPluginConfiguration;
+                    }else {
+                        flashvars.KalturaHLS = hlsPluginConfiguration;
                     }
 					flashvars.streamerType = _this.streamerType = 'hls';
 				}

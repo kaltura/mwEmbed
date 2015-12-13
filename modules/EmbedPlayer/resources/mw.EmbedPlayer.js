@@ -1833,11 +1833,6 @@
             mw.log('EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
 			var _this = this;
 
-			if (this.isImagePlayScreen()) {
-				this.addPlayScreenWithNativeOffScreen();
-				return;
-			}
-
 			// Set by black pixel if no poster is found:
 			var posterSrc = this.poster;
 			var posterCss = {};
@@ -1893,13 +1888,6 @@
 				$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
 				$(this).find('.playerPoster').remove();
 			}
-		},
-		/**
-		 * Abstract method, must be set by player interface
-		 */
-		addPlayScreenWithNativeOffScreen: function () {
-			mw.log("Error: EmbedPlayer, Must override 'addPlayScreenWithNativeOffScreen' with player inteface");
-			return;
 		},
 		/**
 		 * Checks if native controls should be used

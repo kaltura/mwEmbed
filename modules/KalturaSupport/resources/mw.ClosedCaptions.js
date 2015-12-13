@@ -23,7 +23,8 @@
 			"useExternalClosedCaptions": false,
 			"offButtonPosition": "first",
 			// Can be used to force loading specific language and expose to other plugins
-			"forceLoadLanguage": false
+			"forceLoadLanguage": false,
+			"title": gM( 'mwe-embedplayer-timed_text')
 		},
 
 		textSources: [],
@@ -166,13 +167,13 @@
 				}
 			});
 
-			this.bind( 'showClosedCaptions', function(){
+			this.bind( 'showClosedCaptions preHideScreen hideMobileComponents', function(){
 				if( _this.getConfig('displayCaptions') === false ){
 					_this.setConfig('displayCaptions', true);
 				}
 			});
 
-			this.bind( 'hideClosedCaptions', function(){
+			this.bind( 'hideClosedCaptions preShowScreen showMobileComponents', function(){
 				if( _this.getConfig('displayCaptions') === true ){
 					_this.setConfig('displayCaptions', false);
 				}
@@ -934,7 +935,7 @@
 				var $menu = $( '<ul />' ).addClass( 'dropdown-menu' );
 				var $button = $( '<button />' )
 								.addClass( 'btn icon-cc' )
-								.attr('title', gM( 'mwe-embedplayer-timed_text' ) )
+								.attr('title', _this.getConfig('title') )
 								.click( function(e){
 									if ( _this.getMenu().numOfChildren() > 0 ) {
 										_this.getMenu().toggle();

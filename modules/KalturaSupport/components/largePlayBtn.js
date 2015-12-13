@@ -27,8 +27,8 @@
 				});
 			});
 			
-			this.bind('onChangeMediaDone playerReady onpause onEndedDone onRemovePlayerSpinner', function(){
-				if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
+			this.bind('onChangeMediaDone playerReady onpause onEndedDone onRemovePlayerSpinner showPlayerControls', function(){
+				if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() && !_this.embedPlayer.changeMediaStarted ){
 					_this.getComponent().removeClass("icon-pause").addClass("icon-play");
 					_this.show();
 				}
@@ -44,11 +44,16 @@
 				_this.hide();
 			});
 			this.bind('onPlayerStateChange', function(e, newState, oldState){
-				if( newState == 'load' ){
+				if( newState == 'load' || newState == 'play' ){
 					_this.hide(true);
 				}
 				if( newState == 'pause' && _this.getPlayer().isPauseLoading ){
 					_this.hide();
+				}
+			});
+			this.bind( 'hideScreen', function(){
+				if (mw.isMobileDevice() && _this.getPlayer().paused){
+					_this.show();
 				}
 			});
             this.bind('liveOnline', function(){
@@ -103,7 +108,7 @@
 			var _this = this;
 			var eventName = 'click';
 			if ( mw.isAndroid() ){
-				eventName = 'touchstart';
+				eventName += ' touchstart';
 			}
 			if( !this.$el ) {
 				this.$el = $( '<a />' )

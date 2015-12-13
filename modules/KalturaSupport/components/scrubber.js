@@ -25,6 +25,10 @@
 			return this.getConfig("sliderPreview") && !this.isDisabled && !this.embedPlayer.isLive();
 		},
 		setup: function (embedPlayer) {
+			if ( mw.isMobileDevice() ){
+				this.setConfig('parent','controlsContainer');
+				this.setConfig('showOnlyTime',true);
+			}
 			// make sure insert mode reflects parent type:
 			if (this.getConfig('parent') == 'controlsContainer') {
 				this.setConfig('insertMode', 'lastChild');

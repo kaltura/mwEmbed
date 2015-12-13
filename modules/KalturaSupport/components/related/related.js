@@ -7,6 +7,9 @@
 			order: 4,
 			align: "right",
 			tooltip: gM('mwe-embedplayer-related'),
+			title: gM('mwe-embedplayer-related'),
+			smartContainer: 'morePlugins',
+			smartContainerCloseEvent: 'hideScreen',
 			showTooltip: true,
 			itemsLimit: 12,
 			displayOnPlaybackDone: true,
@@ -49,30 +52,6 @@
 				_this.getItemsData();
 			});
 
-			this.bind('onOpenFullScreen', function() {
-				setTimeout(function(){
-					$('.item-inner img').each(function() {
-						$(this).css("margin-top", 0 +"px");
-						$(this).css("margin-left", 0 +"px");
-						$(this).width("100%");
-						$(this).height("100%");
-					});
-					_this.resizeThumbs();
-				},200);
-
-			});
-			this.bind('onCloseFullScreen', function() {
-				setTimeout(function(){
-					$('.item-inner img').each(function() {
-						$(this).css("margin-top", 0 +"px");
-						$(this).css("margin-left", 0 +"px");
-						$(this).width("100%");
-						$(this).height("100%");
-					});
-					_this.resizeThumbs();
-				},200);
-			});
-
 			if( this.getConfig('displayOnPlaybackDone') ){
 				this.bind('onEndedDone', function(){
 					if ( _this.error ) {
@@ -87,6 +66,17 @@
 
 			this.bind('replayEvent preSequence', function(){
 				_this.stopTimer();
+			});
+
+			this.bind('preShowScreen', function (event, screenName) {
+				if ( screenName === "related" ){
+					_this.embedPlayer.disablePlayControls();
+				}
+			});
+			this.bind('preHideScreen', function (event, screenName) {
+				if ( screenName === "related" ){
+					_this.embedPlayer.enablePlayControls();
+				}
 			});
 		},
 
@@ -474,6 +464,9 @@
 				});
 			}
 			return defer;
+		},
+		closeScreen: function(){
+			this.hideScreen();
 		}
 	}));
 

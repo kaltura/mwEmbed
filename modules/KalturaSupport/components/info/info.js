@@ -8,9 +8,12 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 		align: "right",
 		tooltip: 'Info',
 		showTooltip: true,
-		usePreviewPlayer: true,
-		previewPlayerEnabled: true,
-		templatePath: 'components/info/info.tmpl.html'
+		usePreviewPlayer: false,
+		previewPlayerEnabled: false,
+		title:  gM( 'mwe-embedplayer-info' ),
+		templatePath: 'components/info/info.tmpl.html',
+		smartContainer: 'morePlugins',
+		smartContainerCloseEvent: 'hideScreen'
 	},
 	iconBtnClass: "icon-info",
 	setup: function () {
@@ -18,6 +21,27 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 			this.setConfig("showTooltip",false);
 			this.setConfig("usePreviewPlayer",false);
 		}
+		this.addBindings();
+	},
+	addBindings: function () {
+		var _this = this;
+		var embedPlayer = this.getPlayer();
+		this.bind('preShowScreen', function (event, screenName) {
+			if ( screenName === "infoScreen" ){
+				_this.getScreen().then(function(screen){
+					screen.addClass('semiTransparentBkg');
+					$("#"+embedPlayer.getPlayerElement().id).addClass("blur");
+					embedPlayer.getPlayerPoster().addClass("blur");
+					embedPlayer.disablePlayControls();
+				});
+			}
+		});
+		this.bind('preHideScreen', function (event, screenName) {
+			if ( screenName === "infoScreen" ){
+				embedPlayer.enablePlayControls();
+			}
+		});
+
 	},
 	addScreenBindings: function(){
 		if (mw.isNativeApp()) {
@@ -26,6 +50,13 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 	},
 	isSafeEnviornment: function() {
 		return !mw.isIpad() || ( mw.isIpad() && mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') !== false );
+	},
+	closeScreen: function(){
+		if (this.getPlayer().getPlayerElement()) {
+			$( "#" + this.getPlayer().getPlayerElement().id ).removeClass( "blur" );
+			this.getPlayer().getPlayerPoster().removeClass( "blur" );
+		}
+		this.hideScreen();
 	}
 
 }));
