@@ -884,6 +884,7 @@ body {
 }
 .mobile .overlay-win, .mobile .overlay-win button, .mobile .overlay-win select, .mobile .overlay-win textarea{
     font-family: 'Lato', Helvetica, Arial !important;
+    font-size: 1em;
 }
 
 .alert-container {
