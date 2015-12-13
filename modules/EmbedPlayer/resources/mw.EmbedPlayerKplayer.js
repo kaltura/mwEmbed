@@ -91,7 +91,7 @@
 					_this.setFlashvars('flavorId', flashvars.flavorId);
 				}
 
-				if (_this.streamerType != 'http' && _this.mediaElement.selectedSource) {
+				if (_this.streamerType != 'http' && _this.streamerType != 'hls' && _this.mediaElement.selectedSource) {
 					flashvars.selectedFlavorIndex = _this.getSourceIndex(_this.mediaElement.selectedSource);
 				}
 
@@ -102,33 +102,38 @@
 
 				//add OSMF HLS Plugin if the source is HLS
 				if (_this.isHlsSource(_this.mediaElement.selectedSource)) {
-					flashvars.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
-                    if(mw.getConfig("hlsLiveSegmentBuffer")) {
-                        flashvars.KalturaHLS["liveSegmentBuffer"] = mw.getConfig("hlsLiveSegmentBuffer");
+					var hlsPluginConfiguration = {plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize'};
+                    if (mw.getConfig("hlsLiveSegmentBuffer")) {
+                        hlsPluginConfiguration["liveSegmentBuffer"] = mw.getConfig("hlsLiveSegmentBuffer");
                     }
-                    if(mw.getConfig("hlsInitialBufferTime")) {
-                        flashvars.KalturaHLS["initialBufferTime"] = mw.getConfig("hlsInitialBufferTime");
+                    if (mw.getConfig("hlsInitialBufferTime")) {
+                        hlsPluginConfiguration["initialBufferTime"] = mw.getConfig("hlsInitialBufferTime");
                     }
-                    if(mw.getConfig("hlsExpandedBufferTime")) {
-                        flashvars.KalturaHLS["expandedBufferTime"] = mw.getConfig("hlsExpandedBufferTime");
+                    if (mw.getConfig("hlsExpandedBufferTime")) {
+                        hlsPluginConfiguration["expandedBufferTime"] = mw.getConfig("hlsExpandedBufferTime");
                     }
-                    if(mw.getConfig("hlsMaxBufferTime")) {
-                        flashvars.KalturaHLS["maxBufferTime"] = mw.getConfig("hlsMaxBufferTime");
+                    if (mw.getConfig("hlsMaxBufferTime")) {
+                        hlsPluginConfiguration["maxBufferTime"] = mw.getConfig("hlsMaxBufferTime");
                     }
-                    if(mw.getConfig("hlsLogs")) {
-                        flashvars.KalturaHLS["sendLogs"] = mw.getConfig("hlsLogs");
-	                    var func = ["onManifest","onNextRequest","onDownload","onCurrentTime","onTag"];
-	                    for (var index=0;index<func.length ;index++){
+                    if (mw.getConfig("hlsLogs")) {
+                        hlsPluginConfiguration["sendLogs"] = mw.getConfig("hlsLogs");
+                        var func = ["onManifest", "onNextRequest", "onDownload", "onCurrentTime", "onTag"];
+                        for (var index = 0; index < func.length; index++) {
 
-		                    (function() {
-			                    var x =  func[index];
-			                    if ( x ) {
-				                    window[x] = function (a,b,c,d,e,f,g,h) {
-					                    parent.window[x]( a,b,c,d,e,f,g,h );
-				                    }
-			                    }
-		                    })();
-	                    }
+                            (function () {
+                                var x = func[index];
+                                if (x) {
+                                    window[x] = function (a, b, c, d, e, f, g, h) {
+                                        parent.window[x](a, b, c, d, e, f, g, h);
+                                    }
+                                }
+                            })();
+                        }
+                    }
+                    if( _this.isLive && !_this.isDVR() ){
+                        flashvars.KalturaHLS2 = hlsPluginConfiguration;
+                    }else {
+                        flashvars.KalturaHLS = hlsPluginConfiguration;
                     }
 					flashvars.streamerType = _this.streamerType = 'hls';
 				}
@@ -224,9 +229,25 @@
                         _this.playerObject.sendNotification("doTextTrackSwitch", { textIndex :data.index});
                     }
                 });
+
+                _this.bindHelper('liveOnline', function(){
+                    if( this.isLive && !this.isDVR() ) {
+                        _this.reset();
+                    }
+                });
 			});
 
 		},
+
+        reset: function(){
+            this.restarting = true;
+            var _this = this;
+            this.clean();
+            this.setup(function(){
+                _this.restarting = false;
+                _this.play();
+            });
+        },
 
 		isHlsSource: function (source) {
 			if (source && (source.getMIMEType() == 'application/vnd.apple.mpegurl' )) {
@@ -484,6 +505,9 @@
 		 * play method calls parent_play to update the interface
 		 */
 		play: function () {
+            if(this.restarting){
+                return;
+            }
             var _this = this;
 			mw.log('EmbedPlayerKplayer::play');
             if(this.unresolvedSrcURL){

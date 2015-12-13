@@ -111,6 +111,11 @@
 				}
 			});
             $(this).bind('firstPlay', this.parseTextTracks());
+            this.bindHelper('liveOnline', function(){
+                if( this.isLive() && !this.isDVR() ) {
+                    this.resetSrc = true;
+                }
+            });
 		},
 		/**
 		 * Updates the supported features given the "type of player"
@@ -816,8 +821,9 @@
 					if (_this.getPlayerElement() && _this.getPlayerElement().play) {
 						_this.log(" issue native play call:");
 						// make sure the source is set:
-						if ($(vid).attr('src') != _this.getSrc()) {
+						if ( $(vid).attr('src') != _this.getSrc() || _this.resetSrc ) {
 							$(vid).attr('src', _this.getSrc());
+                            _this.resetSrc = false;
 						}
 						_this.hideSpinnerOncePlaying();
 						// make sure the video tag is displayed:

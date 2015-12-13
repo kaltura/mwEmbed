@@ -56,6 +56,11 @@
 					_this.show();
 				}
 			});
+            this.bind('liveOnline', function(){
+                if( _this.getPlayer().isLive && !_this.getPlayer().isDVR() ) {
+                    _this.hide();
+                }
+            });
 		},
 		show: function(){
 			if ( !this.isDisabled ) {
