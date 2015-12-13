@@ -655,7 +655,7 @@ HTML;
 
 	function outputCustomCss(){
 		$playerConfig = $this->getUiConfResult()->getPlayerConfig();
-		if (isset($playerConfig['plugins']['theme'])){
+		if (isset($playerConfig['plugins']['theme']) && $playerConfig['plugins']['theme']['plugin']){
 			$theme = $playerConfig['plugins']['theme'];
 			$customStyle = '<style type="text/css">';
 			if (isset($theme['buttonsSize'])){
