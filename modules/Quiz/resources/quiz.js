@@ -201,7 +201,7 @@
 
             $(document).off('click','.confirm-box')
                 .on('click', '.confirm-box', function () {
-                    _this.KIVQModule.gotoScrubberPos(-1);
+                    _this.embedPlayer.sendNotification('doSeek', 0);
                     _this.KIVQModule.continuePlay();
                 });
 
@@ -277,7 +277,7 @@
 
             $(".review-button").html(gM('mwe-quiz-review'))
                 .on('click', function () {
-                    _this.KIVQModule.gotoScrubberPos(-1);
+                    _this.embedPlayer.sendNotification('doSeek', 0);
                     _this.KIVQModule.continuePlay();
                 });
 
@@ -331,7 +331,8 @@
                     $(".title-text").html(gM('mwe-quiz-thankYou'));
                     $(this).delay(1000).fadeIn(function () {
                         _this.KIVQModule.quizEndFlow = false;
-                        _this.KIVQModule.gotoScrubberPos(-1);
+                        _this.embedPlayer.sendNotification('doSeek', 1);
+                        _this.KIVQModule.continuePlay();
                     });
                 });
         },
@@ -441,7 +442,7 @@
                     _this.KIVQModule.submitAnswer(questionNr,_this.selectedAnswer);
                     _this.selectedAnswer = null;
                     $(this).delay(1800).fadeOut(function () {
-                        _this.KIVQModule.checkIfDone(questionNr)
+                        _this.KIVQModule.checkIfDone(questionNr);
                     });
                 });
         },

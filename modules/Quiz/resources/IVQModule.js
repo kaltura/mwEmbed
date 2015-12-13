@@ -228,13 +228,10 @@
                 if (_this.embedPlayer.isPlaying()){
                     _this.embedPlayer.pause();
                 }
-                 if (parseInt(questionNr) >= 0){
-                     _this.embedPlayer.stopPlayAfterSeek = true;
-                     seekTo = (($.cpObject.cpArray[questionNr].startTime) /1000)+0.5;
-                 }
-                 else{
-                     seekTo = 0;
-                 }
+
+                _this.embedPlayer.stopPlayAfterSeek = true;
+                seekTo = (($.cpObject.cpArray[questionNr].startTime) /1000)+0.5;
+
                 _this.embedPlayer.sendNotification('doSeek', seekTo);
             },
             cuePointReachedHandler: function (e, cuePointObj) {
@@ -362,7 +359,7 @@
                         _this.quizPlugin.ssAllCompleted();
                     }
                     else{
-                        _this.quizPlugin.ssSubmitted(_this.score)
+                       _this.continuePlay();
                     }
                 }
             },
