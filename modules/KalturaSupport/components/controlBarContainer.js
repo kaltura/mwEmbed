@@ -36,7 +36,8 @@
 				_this.show();
 			});
 			this.bind( 'layoutBuildDone', function(){
-				if (!mw.isMobileDevice()){
+				var skin = _this.embedPlayer.getRawKalturaConfig("layout") ? _this.embedPlayer.getRawKalturaConfig("layout").skin : "kdark";
+				if (!mw.isMobileDevice() || skin !== "kdark"){
 					_this.show();
 				}
 			});
