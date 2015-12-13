@@ -262,10 +262,10 @@ mw.KWidgetSupport.prototype = {
 				this.updateEmbedServicesData(embedPlayer, playerData);
 			} else {
 				this.updateVodPlayerData(embedPlayer, playerData);
+				//Flag DRM required if sources have DRM data attached with them
+				this.updateDrmPlayerData(embedPlayer);
 			}
 		}
-		//Flag DRM required if sources have DRM data attached with them
-		this.updateDrmPlayerData(embedPlayer);
 		// Check for "image" mediaType ( 2 )
 		this.updateImagePlayerData(embedPlayer, playerData);
 		// Check for external media:
