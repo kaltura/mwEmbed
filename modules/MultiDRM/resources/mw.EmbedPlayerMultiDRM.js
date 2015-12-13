@@ -1125,9 +1125,15 @@
 									break;
 								case 'LICENSE_ACQUISITION_ERROR':
 									errorMessage = gM("DRM_LICENSE_ACQUISITION_ERROR");
+								case 'KEY_SYSTEM_ERROR':
+									errorMessage = gM("DRM_KEY_SYSTEM_ERROR");
 									break;
 							}
-							_this.triggerHelper('embedPlayerError', [ {errorMessage: errorMessage} ]);
+							_this.triggerHelper('embedPlayerError', [ {
+								errorMessage: errorMessage,
+								code: playerError.code,
+								subtype: playerError.subtype
+							} ]);
 						}
 						error.code = playerError.code;
 						error.subtype = playerError.subtype;
