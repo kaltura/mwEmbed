@@ -75,6 +75,12 @@
 						_this.overlayOpen = false;
 					});
 
+					_this.bind( "onShowInterfaceComponents", function(){
+						setTimeout(function(){
+							_this.hideRegisteredPlugins();
+						},0);
+					});
+
 					setTimeout(function(){
 						_this.hideRegisteredPlugins();
 					},0);
