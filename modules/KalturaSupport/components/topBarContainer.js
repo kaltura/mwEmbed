@@ -63,6 +63,7 @@
 				this.bind( 'showScreen', function(){
 					_this.screenOpen = true;
 					_this.keepOnScreen = false;
+					_this.forceOnScreen = false;
 					_this.hide();
 				});
 				this.bind( 'onHideSideBar', function(){
