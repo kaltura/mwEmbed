@@ -416,6 +416,8 @@
 					if ( _this.getConfig("adTagUrl") && ( _this.isLinear === false || _this.allAdsCompletedFlag || _this.adLoaderErrorFlag) ){
 						_this.restorePlayer(true);
 					}
+					// if no postroll was set restore the player
+					_this.restorePlayerNoPostroll();
 				};
 
 				//if we're in JS mode - check if we have spacific JS configuration for the postroll
@@ -1348,11 +1350,7 @@
 					_this.adsLoader.contentComplete();
 					_this.embedPlayer._propagateEvents = false;
 				}
-				if (!_this.getConfig("adTagUrl") && !_this.getConfig("postrollUrl")){
-					_this.currentAdSlotType = "postroll";
-					_this.restorePlayer(true);
-				}
-
+				_this.restorePlayerNoPostroll();
 			});
 
 
@@ -1513,6 +1511,13 @@
 				$(window).unbind(_this.adClickEvent);
 			} else if( _this.isAdClickTimeoutEnabled ) {
 				_this.isAdClickTimeoutEnabled = false;
+			}
+		},
+		restorePlayerNoPostroll:function(){
+			var _this = this;
+			if (!_this.getConfig("adTagUrl") && !_this.getConfig("postrollUrl")){
+				_this.currentAdSlotType = "postroll";
+				_this.restorePlayer(true);
 			}
 		},
 		/**
