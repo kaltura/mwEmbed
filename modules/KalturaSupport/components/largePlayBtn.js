@@ -40,7 +40,7 @@
 					_this.show();
 				}
 			});
-			this.bind('playing AdSupport_StartAdPlayback onAddPlayerSpinner onHideControlBar', function(){
+			this.bind('playing AdSupport_StartAdPlayback onAddPlayerSpinner onHideControlBar hidePlayerControls', function(){
 				_this.hide();
 			});
 			this.bind('onPlayerStateChange', function(e, newState, oldState){
