@@ -326,15 +326,9 @@
                     _this.KIVQScreenTemplate.tmplThankYou();
                     $(".title-text").html(gM('mwe-quiz-thankYou'));
                     $(this).delay(1000).fadeIn(function () {
-
-                        if  (!_this.KIVQModule.quizEndFlow){
-                            _this.KIVQModule.continuePlay();
-
-                        }else{
                             _this.KIVQModule.quizEndFlow = false;
-                            _this.ivqHideScreen();
                             _this.embedPlayer.seek(0,true);
-                       }
+                            _this.KIVQModule.continuePlay();
                     });
                 });
         },
