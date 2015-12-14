@@ -10,7 +10,7 @@
 
 	mw.ComscoreStreamingTag.prototype = {
 
-		pluginVersion: "1.0.8",
+		pluginVersion: "1.0.9",
 		reportingPluginName: "kaltura",
 		playerVersion: mw.getConfig('version'),
 
@@ -36,8 +36,9 @@
 		seeking: false,
 		isPlaybackIntended: false,
 		playing: false,
-		checkEveryIndex:0,
-		lastKnownTime: 0,
+		samePositionRepeatedCount:0,
+		lastPosition: undefined,
+		lastPositionDuringBuffering: undefined,
 		// Mapping for the module settings and the StreamSense plugin
 		configOptions: {c2:"c2", pageView:"pageview", logUrl:"logurl", persistentLabels:"persistentlabels", debug:"debug"},
 
@@ -89,7 +90,7 @@
 
 			/***************************************************************************************
 			 *	This is the start of the comScore Streaming Tag core API + comScore GenericPlugin. *
-			 * PLEASE DO NOT CHANGE THE FOLLOWING LINES OF CODE.                                   *
+			 * PLEASE DO NOT CHANGE THE FOLLOWING BLOCK OF CODE.                                   *
 			 ***************************************************************************************/
 
 			// Copyright (c) 2014 comScore, Inc.
@@ -98,7 +99,7 @@
 
 			/***************************************************************************************
 			 *	This is the end of the comScore Streaming Tag core API + comScore GenericPlugin.   *
-			 * PLEASE DO NOT CHANGE THE PREVIOUS LINES OF CODE.                                    *
+			 * PLEASE DO NOT CHANGE THE PREVIOUS BLOCK OF CODE.                                    *
 			 ***************************************************************************************/
 
 			_this.streamSenseInstance = new ns_.StreamSense.Plugin(comScoreSettings, _this.reportingPluginName, _this.pluginVersion, _this.playerVersion, {
@@ -142,10 +143,11 @@
 				&& this.getPlayerPluginState() != this.PlayerPluginState().PLAYING
 				&& this.getPlayerPluginState() != this.PlayerPluginState().AD_PLAYING) {
 				this.setClip();
-				var seek = this.getPlayerPluginState() == this.PlayerPluginState().SEEKING;
+				var seek = this.hasSeeked; //var seek = this.getPlayerPluginState() == this.PlayerPluginState().SEEKING;
+				this.hasSeeked = false;
 				this.callStreamSensePlugin("notify", this.playerEvents.PLAY, this.getLabels(seek), this.getCurrentPosition());
 				this.setPlayerPluginState(this.PlayerPluginState().PLAYING);
-				this.lastKnownTime = this.embedPlayer.getPlayerElementTime();
+				this.lastPosition = this.embedPlayer.getPlayerElementTime();
 			}
 		},
 
@@ -153,13 +155,38 @@
 			if (this.getPlayerPluginState() == this.PlayerPluginState().PLAYING) {
 				this.setPlayerPluginState(this.PlayerPluginState().PAUSED);
 				this.callStreamSensePlugin("notify", this.playerEvents.PAUSE, this.getLabels(this.seeking), this.getCurrentPosition());
-				this.lastKnownTime = this.embedPlayer.getPlayerElementTime();
+				this.lastPosition = this.embedPlayer.getPlayerElementTime();
 			}
 		},
 
 		onBuffering: function() {
 			this.callStreamSensePlugin("notify", this.playerEvents.BUFFER, {});
 			this.setPlayerPluginState(this.PlayerPluginState().BUFFERING);
+		},
+
+		onSeekStart: function() {
+			this.seeking = true; // Could also use this.embedPlayer.seeking;
+			if (this.isPlaybackIntended && this.getPlayerPluginState() != this.PlayerPluginState().SEEKING) {
+				this.onPlaybackInactive();
+				this.setPlayerPluginState(this.PlayerPluginState().SEEKING);
+			}
+		},
+
+		onSeekStop: function() {
+			this.seeking = false; // Could also use this.embedPlayer.seeking;
+			this.hasSeeked = true;
+		},
+
+		onPlaybackEnded: function() {
+			var seek = this.getPlayerPluginState() == this.PlayerPluginState().SEEKING;
+			this.setPlayerPluginState(this.PlayerPluginState().ENDED_PLAYING);
+			if(this.isPlaybackIntended) {
+				this.callStreamSensePlugin("notify", this.playerEvents.END, this.getLabels(seek), this.getCurrentPosition());
+			}
+			this.isPlaybackIntended = false;
+			this.playing = false;
+			this.lastPosition = undefined;
+			this.samePositionRepeatedCount = 0;
 		},
 
 		onAdPlay: function(adId, type, index, duration) {
@@ -239,84 +266,90 @@
 
 			embedPlayer.bindHelper( 'bufferStartEvent' + _this.bindPostfix, function(){
 				_this.buffering = true;
+				_this.lastPositionDuringBuffering = embedPlayer.getPlayerElementTime();
 			});
 
 			embedPlayer.bindHelper( 'bufferEndEvent' + _this.bindPostfix, function(){
 				_this.buffering = false;
+				_this.lastPositionDuringBuffering = undefined;
+				_this.samePositionRepeatedCount = 0;
 			});
 
 			embedPlayer.bindHelper( 'monitorEvent' + _this.bindPostfix, function(){
-				if (_this.checkEveryIndex++ % 2 != 0) return;
-				var currentTime = embedPlayer.getPlayerElementTime();
+				var position = embedPlayer.getPlayerElementTime();
 
-				if (currentTime != _this.lastKnownTime) {
-					if (_this.isPlaybackIntended) {
-						_this.playing = true;
-					} else {
-						_this.playing = false;
-					}
-				} else {
-					_this.playing = false;
-				}
 				if (_this.isPlaybackIntended) {
-					if( !_this.playing && _this.buffering) {
-						// If the user pressed the play button while the player is paused and buffering
-						// then this can be considered buffering due to an empty buffer
-						// (i.e., buffering prior to playback or re-buffering during playback).
-						_this.onBuffering();
-					} else {
-						if (_this.playing && !_this.seeking) {
-							_this.onPlaybackActive();
-						} else {
+					if(_this.buffering) {
+						if(_this.playing) {
+							if(_this.lastPositionDuringBuffering != undefined
+								&& _this.lastPositionDuringBuffering == position) {
+								_this.samePositionRepeatedCount ++
+								if(_this.samePositionRepeatedCount >= 2 ) {
+									// If we have the same position for at least 2 successive monitorEvents then rebuffering is occurring.
+									_this.playing = false;
+									_this.onBuffering();
+								}
+							}
+						}
+						else {
+							_this.playing = false;
+							_this.onBuffering();
+						}
+					}
+					else {
+						if (!(_this.lastPosition == undefined && position == _this.lastPosition)
+							|| (_this.lastPosition != undefined && _this.lastPosition != position)) {
+							// Playback is active.
+							if(_this.playing != true) {
+								_this.playing = true;
+								_this.onPlaybackActive();
+							}
+						}
+						else {
+							// Playback is halted.
+							// The tracking of buffering further above in this function
+							// is usually effectively preventing this code from being executed.
+							_this.playing = false;
 							_this.onPlaybackInactive();
 						}
 					}
 				}
-				_this.lastKnownTime = currentTime;
+				_this.lastPosition = position;
 			});
 
 			embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostfix, function(){
 				_this.destroy();
 			});
 
-			//This event has not been observed to be triggered.
-			//embedPlayer.bindHelper( 'playerUpdatePlayhead' + _this.bindPostfix, function(event){
-			//_this.log("playerUpdatePlayhead");
-			//});
-
 			embedPlayer.bindHelper('onplay' + _this.bindPostfix, function() {
 				_this.isPlaybackIntended = true;
 			});
 
 			embedPlayer.bindHelper('onpause' + _this.bindPostfix, function(event) {
-				_this.isPlaybackIntended = false;
+				// _this.isPlaybackIntended = false; // No longer needed.
 				_this.playing = false;
 				_this.onPlaybackInactive();
 			});
 
 			embedPlayer.bindHelper('doStop' + _this.bindPostfix, function(event) {
-				var seek = _this.getPlayerPluginState() == _this.PlayerPluginState().SEEKING;
-				_this.setPlayerPluginState(_this.PlayerPluginState().ENDED_PLAYING);
-				if(_this.isPlaybackIntended && _this.playing) {
-					_this.callStreamSensePlugin("notify", _this.playerEvents.END, _this.getLabels(seek));
-				}
-				_this.lastKnownTime = 0;
-				_this.checkEveryIndex = 0;
+				_this.onPlaybackEnded();
 			});
 
-			embedPlayer.bindHelper('seeked.started' + _this.bindPostfix, function(event) {
-				_this.seeking = true;
-				if (_this.isPlaybackIntended && _this.getPlayerPluginState() != _this.PlayerPluginState().SEEKING) {
-					_this.onPlaybackInactive();
-					_this.setPlayerPluginState(_this.PlayerPluginState().SEEKING);
-					// The following statement is ineffective as the 'seeked.started' event is only triggered AFTER seeking has completed.
-					// At that time the plugin has already sent the PAUSE event to indicate playback halted, which can be confirmed visually.
-					//_this.callStreamSensePlugin("notify", _this.playerEvents.PAUSE, _this.getLabels(true), _this.getCurrentPosition());
+			embedPlayer.bindHelper( 'preSeek' + _this.bindPostfix, function(){
+				var currentTime = embedPlayer.getPlayerElementTime();
+				if(_this.lastPosition != currentTime) {
+					_this.lastPosition = currentTime;
 				}
 			});
 
-			embedPlayer.bindHelper('seeked.stopped' + _this.bindPostfix, function(event) {
-				_this.seeking = false;
+			embedPlayer.bindHelper('seeking' + _this.bindPostfix, function(event) {
+				// Using 'seeking' instead of 'seeked.started'
+				_this.onSeekStart();
+			});
+
+			embedPlayer.bindHelper('seeked' + _this.bindPostfix, function(event) {
+				// Using 'seeking' instead of 'seeked.stopped'
+				_this.onSeekStop();
 			});
 
 			embedPlayer.bindHelper('onOpenFullScreen' + _this.bindPostfix, function() {
