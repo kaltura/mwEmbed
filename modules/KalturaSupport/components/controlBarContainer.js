@@ -95,10 +95,14 @@
 				if( this.getConfig('hover') && this.getPlayer().isOverlayControls() ) {
 					this.$el.addClass('hover')
 						.on("mouseenter", function(){
-							_this.forceOnScreen = true;
+							if ( !mw.isMobileDevice() ){
+								_this.forceOnScreen = true;
+							}
 						})
 						.on("mouseleave", function(){
-							_this.forceOnScreen = false;
+							if ( !mw.isMobileDevice() ){
+								_this.forceOnScreen = false;
+							}
 						});
 					this.embedPlayer.getVideoHolder().addClass('hover');
 				} else {
