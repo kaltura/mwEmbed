@@ -52,6 +52,28 @@
 				_this.getItemsData();
 			});
 
+			this.bind('onOpenFullScreen', function() {
+				setTimeout(function(){
+					$('.item-inner img').each(function() {
+						$(this).css("margin-top", 0 +"px");
+						$(this).css("margin-left", 0 +"px");
+						$(this).width("100%");
+						$(this).height("100%");
+					});
+				},200);
+
+			});
+			this.bind('onCloseFullScreen', function() {
+				setTimeout(function(){
+					$('.item-inner img').each(function() {
+						$(this).css("margin-top", 0 +"px");
+						$(this).css("margin-left", 0 +"px");
+						$(this).width("100%");
+						$(this).height("100%");
+					});
+				},200);
+			});
+
 			if( this.getConfig('displayOnPlaybackDone') ){
 				this.bind('onEndedDone', function(){
 					if ( _this.error ) {
