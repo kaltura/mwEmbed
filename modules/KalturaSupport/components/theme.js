@@ -24,7 +24,9 @@
 			var _this = this;
 			// update drop shadow after the layout is ready
 			this.bind('layoutBuildDone', function(){
-				_this.onConfigChange('buttonsIconColorDropShadow', _this.getConfig('buttonsIconColorDropShadow'));
+				for (var prop in _this.defaultConfig){
+					_this.onConfigChange(prop, _this.getConfig(prop));
+				}
 				if ( mw.isIE() ){
 					$(".btn").not(".playHead").css({'margin-left': 1+'px','margin-right': 1+'px'});
 				}
@@ -32,6 +34,9 @@
 		},
 		onConfigChange: function( property, value ){
 			if (value != null){
+				if (mw.isMobileDevice() && property !== 'buttonsIconColor' && property !== 'applyToLargePlayButton'){
+					return;
+				}
 				switch( property ) {
 					case 'applyToLargePlayButton':
 						if (!this.getConfig('applyToLargePlayButton')) {
@@ -50,9 +55,16 @@
 						}
 						break;
 					case 'buttonsIconColor':
-						$(".btn").not(".playHead").attr("style","color: " + value + " !important; background-color: "+ this.getConfig('buttonsColor') +" !important; text-shadow: "+ this.getConfig('dropShadowColor') +" !important");
-						if (this.getConfig('applyToLargePlayButton')) {
-							$(".largePlayBtn ").attr("style", "color: " + value + " !important; background-color: " + this.getConfig('buttonsColor') + " !important");
+						if (mw.isMobileDevice()){
+							$(".btn").not(".playHead").attr("style","color: " + value + " !important");
+							if (this.getConfig('applyToLargePlayButton')) {
+								$(".largePlayBtn ").attr("style", "color: " + value + " !important");
+							}
+						}else{
+							$(".btn").not(".playHead").attr("style","color: " + value + " !important; background-color: "+ this.getConfig('buttonsColor') +" !important; text-shadow: "+ this.getConfig('dropShadowColor') +" !important");
+							if (this.getConfig('applyToLargePlayButton')) {
+								$(".largePlayBtn ").attr("style", "color: " + value + " !important; background-color: " + this.getConfig('buttonsColor') + " !important");
+							}
 						}
 						break;
 					case 'sliderColor':
