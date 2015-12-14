@@ -23,8 +23,6 @@
         inFullScreen : false,
         selectedAnswer:null,
 
-
-
         setup: function () {
             var _this = this;
             var embedPlayer = this.getPlayer();
@@ -64,14 +62,15 @@
 
            this.bind('prePlayAction', function (e, data) {
 
-                   if(_this.getPlayer().firstPlay && !_this.firstPlay){
-                       data.allowPlayback = false;
-                       _this.firstPlay = true;
-                       _this.enablePlayDuringScreen = false;
-                       _this.KIVQModule.checkQKDPReady(function(){
-                           _this.ssWelcome();
-                       })
-                   }
+                if(_this.getPlayer().firstPlay && !_this.firstPlay){
+                    data.allowPlayback = false;
+                    _this.firstPlay = true;
+                    _this.enablePlayDuringScreen = false;
+                    _this.KIVQModule.checkQKDPReady(function(){
+                        _this.ssWelcome();
+                        _this.unbind('prePlayAction');
+                    });
+                };
             });
 
             this.bind('seeked', function () {
@@ -119,12 +118,10 @@
                 }
             });
             this.bind('onChangeMediaDone', function(){
-                //todo fix this
                 $.cpObject = {};
                 $.quizParams = {};
                 _this.KIVQModule.hideQuizOnScrubber();
                 _this.KIVQModule.setupQuiz(embedPlayer);
-
             });
         },
         getKClient: function () {
@@ -201,10 +198,9 @@
 
             $(document).off('click','.confirm-box')
                 .on('click', '.confirm-box', function () {
-                    _this.embedPlayer.sendNotification('doSeek', 0);
+                    _this.embedPlayer.seek(0,true);
                     _this.KIVQModule.continuePlay();
                 });
-
            _this.KIVQModule.displayHex(_this.KIVQModule.setHexContainerPos("current"),unAnsweredArr);
 
         },
@@ -277,7 +273,7 @@
 
             $(".review-button").html(gM('mwe-quiz-review'))
                 .on('click', function () {
-                    _this.embedPlayer.sendNotification('doSeek', 0);
+                    _this.embedPlayer.seek(0,true);
                     _this.KIVQModule.continuePlay();
                 });
 
@@ -330,9 +326,15 @@
                     _this.KIVQScreenTemplate.tmplThankYou();
                     $(".title-text").html(gM('mwe-quiz-thankYou'));
                     $(this).delay(1000).fadeIn(function () {
-                        _this.KIVQModule.quizEndFlow = false;
-                        _this.embedPlayer.sendNotification('doSeek', 1);
-                        _this.KIVQModule.continuePlay();
+
+                        if  (!_this.KIVQModule.quizEndFlow){
+                            _this.KIVQModule.continuePlay();
+
+                        }else{
+                            _this.KIVQModule.quizEndFlow = false;
+                            _this.ivqHideScreen();
+                            _this.embedPlayer.seek(0,true);
+                       }
                     });
                 });
         },
@@ -443,6 +445,7 @@
                     _this.selectedAnswer = null;
                     $(this).delay(1800).fadeOut(function () {
                         _this.KIVQModule.checkIfDone(questionNr);
+
                     });
                 });
         },
@@ -452,9 +455,15 @@
             _this.showScreen();
         },
         ivqHideScreen:function(){
+
             var _this = this,embedPlayer = this.getPlayer();
             embedPlayer.getInterface().find('.ivqContainer').empty().remove();
             _this.hideScreen();
+            _this.embedPlayer.enablePlayControls();
+            _this.embedPlayer.triggerHelper( 'onEnableKeyboardBinding' );
+            _this.KIVQModule.showQuizOnScrubber();
+
+
         },
         addFooter: function (questionNr) {
             var _this = this;
@@ -485,7 +494,7 @@
                         .css("float", "right"));
                 if (_this.KIVQModule.canSkip) {
                     $(".ftr-right").html(gM('mwe-quiz-skipForNow')).on('click', function () {
-                        _this.KIVQModule.checkIfDone(questionNr);
+                        _this.KIVQModule.continuePlay();
                     });
                 }else if(!_this.KIVQModule.canSkip && $.cpObject.cpArray[questionNr].isAnswerd ){
                     $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {

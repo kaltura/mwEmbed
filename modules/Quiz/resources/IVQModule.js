@@ -198,11 +198,10 @@
                     _this.quizPlugin.ssSubmitted(_this.score);
                 }
                 else{
-                    if ($.isEmptyObject($.grep($.cpObject.cpArray, function (el) {
-                            return el.isAnswerd === false
-                        }))) {
-                        _this.quizPlugin.reviewMode = true;
+                    var anUnswered = _this.getUnansweredQuestNrs();
+                    if (!anUnswered){
                         _this.quizEndFlow = true;
+                        _this.quizPlugin.reviewMode = true;
                     }
                     _this.continuePlay();
                 }
@@ -216,10 +215,7 @@
                             _this.embedPlayer.stopPlayAfterSeek = false;
                         }
                     }
-                    _this.embedPlayer.enablePlayControls();
-                    _this.embedPlayer.triggerHelper( 'onEnableKeyboardBinding' );
                     _this.embedPlayer.play();
-                    _this.showQuizOnScrubber();
                     _this.quizPlugin.selectedAnswer = null;
                 }
             },
@@ -231,7 +227,6 @@
 
                 _this.embedPlayer.stopPlayAfterSeek = true;
                 seekTo = (($.cpObject.cpArray[questionNr].startTime) /1000)+0.5;
-
                 _this.embedPlayer.sendNotification('doSeek', seekTo);
             },
             cuePointReachedHandler: function (e, cuePointObj) {
@@ -347,19 +342,15 @@
                 return buObj
             },
             quizEndScenario:function(){
-                var _this = this,anUnswered = _this.getUnansweredQuestNrs();;
+                var _this = this,anUnswered = _this.getUnansweredQuestNrs();
                 _this.embedPlayer.stopPlayAfterSeek = true;
 
                 if (anUnswered) {
                     _this.quizEndFlow = true;
                     _this.quizPlugin.ssAlmostDone(anUnswered);
                 }else{
-
                     if (!_this.quizSubmitted){
                         _this.quizPlugin.ssAllCompleted();
-                    }
-                    else{
-                       _this.continuePlay();
                     }
                 }
             },
