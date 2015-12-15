@@ -56,7 +56,7 @@
 					_this.keepOnScreen = true;
 					_this.show();
 				});
-				this.bind( 'hideScreen', function(){
+				this.bind( 'hideScreen closeMenuOverlay', function(){
 					if (!_this.embedPlayer.paused){
 						_this.keepOnScreen = false;
 						_this.hide();
@@ -64,7 +64,7 @@
 						_this.show();
 					}
 				});
-				this.bind( 'onComponentsHoverEnabled showScreen', function(){
+				this.bind( 'onComponentsHoverEnabled showScreen displayMenuOverlay', function(){
 					_this.keepOnScreen = false;
 					_this.hide();
 				});

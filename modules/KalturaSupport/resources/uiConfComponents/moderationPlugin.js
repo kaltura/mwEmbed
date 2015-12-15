@@ -68,6 +68,8 @@
 			var closeCallback = function() {
 				// Enable space key binding
 				_this.getPlayer().triggerHelper( 'onEnableKeyboardBinding' );
+				$( "#" + _this.getPlayer().getPlayerElement().id ).removeClass( "blur" );
+				_this.getPlayer().getPlayerPoster().removeClass( "blur" );
 				if( isPlaying ) {
 					_this.getPlayer().play();
 				}
@@ -77,10 +79,14 @@
 		},
 		showModal: function(screen, closeCallback){
 			this.getPlayer().disablePlayControls();
+			$("#"+this.getPlayer().getPlayerElement().id).addClass("blur");
+			this.getPlayer().getPlayerPoster().addClass("blur");
 			this.getPlayer().layoutBuilder.displayMenuOverlay( screen, closeCallback );
 		},
 		closeModal: function(){
 			this.getPlayer().enablePlayControls();
+			$( "#" + this.getPlayer().getPlayerElement().id ).removeClass( "blur" );
+			this.getPlayer().getPlayerPoster().removeClass( "blur" );
 			this.getPlayer().layoutBuilder.closeMenuOverlay();
 		},
 		submitFlag: function(flagObj) {
