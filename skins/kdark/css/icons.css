@@ -209,9 +209,11 @@
     content: "\e906";
 }
 .mobile .icon-play:before {
+    margin-left: 2px;
     content: "\e907";
 }
 .mobile .icon-pause:before {
+    margin-left: -2px;
     content: "\e908";
 }
 .mobile .icon-prev:before {
