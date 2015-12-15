@@ -60,7 +60,7 @@
                 }
             });
 
-           this.bind('prePlayAction', function (e, data) {
+            this.bind('prePlayAction', function (e, data) {
 
                 if(_this.getPlayer().firstPlay && !_this.firstPlay){
                     data.allowPlayback = false;
@@ -83,7 +83,6 @@
 
             embedPlayer.addJsListener( 'kdpReady', function(){
                 _this.KIVQModule.isQKDPReady = true;
-
                 if (embedPlayer.autoplay) {
                     embedPlayer.autoplay = false;
                 }
@@ -187,22 +186,24 @@
         },
 
         ssAlmostDone: function (unAnsweredArr) {
-            var _this = this;
+            var _this = this,embedPlayer = this.getPlayer();;
 
             _this.ivqShowScreen();
             _this.KIVQScreenTemplate.tmplAlmostDone();
+            if(unAnsweredArr.length < 8){
+                $(".title-text").addClass("padding17");
+            }
 
-            $(".title-text").html(gM('mwe-quiz-almostDone')).addClass("padding14");
+            $(".title-text").html(gM('mwe-quiz-almostDone'));
             $(".sub-text").html(gM('mwe-quiz-remainUnAnswered') + '</br>' + gM('mwe-quiz-pressRelevatToAnswer'));
             $(".confirm-box").html(gM('mwe-quiz-okGotIt'));
 
             $(document).off('click','.confirm-box')
                 .on('click', '.confirm-box', function () {
-                    _this.embedPlayer.seek(0,true);
-                    _this.KIVQModule.continuePlay();
+                   _this.embedPlayer.seek(0,true);
+                   _this.KIVQModule.continuePlay();
                 });
            _this.KIVQModule.displayHex(_this.KIVQModule.setHexContainerPos("current"),unAnsweredArr);
-
         },
 
         ssDisplayHint: function(questionNr){
@@ -321,14 +322,18 @@
                 $(".title-text").addClass("padding35");
                 $(".sub-text").html(gM('mwe-quiz-completedQuiz'));
             }
-            $(".confirm-box").html(gM('mwe-quiz-done')).off()
+            $(document).off('click','.confirm-box')
+            $(".confirm-box").html(gM('mwe-quiz-done'))
                 .on('click', function () {
                     _this.KIVQScreenTemplate.tmplThankYou();
                     $(".title-text").html(gM('mwe-quiz-thankYou'));
                     $(this).delay(1000).fadeIn(function () {
-                            _this.KIVQModule.quizEndFlow = false;
-                            _this.embedPlayer.seek(0,true);
-                            _this.KIVQModule.continuePlay();
+                        _this.KIVQModule.quizEndFlow = false;
+                        if (_this.embedPlayer.getPlayerElementTime() > 0){
+                            _this.ivqHideScreen();
+                            _this.embedPlayer.seek(0 , false);
+                        }
+                        _this.KIVQModule.continuePlay();
                     });
                 });
         },
@@ -536,8 +541,6 @@
         displayQuizEnd:function(){
             var  _this = this;
             var scrubber = this.embedPlayer.getInterface().find(".scrubber");
-            _this.KIVQModule.hideQuizEndOnScrubber();
-
 
             scrubber.parent().prepend('<div class="quizDone-cont"></div>');
 

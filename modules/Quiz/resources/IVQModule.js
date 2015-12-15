@@ -193,7 +193,6 @@
                     _this.continuePlay();
                     return
                 }
-
                 if (_this.quizSubmitted) {
                     _this.quizPlugin.ssSubmitted(_this.score);
                 }
@@ -211,6 +210,7 @@
                 if (!_this.isErr) {
                     if (_this.quizPlugin.isScreenVisible()){
                         _this.quizPlugin.ivqHideScreen();
+
                         if (_this.quizPlugin.isSeekingIVQ ) {
                             _this.embedPlayer.stopPlayAfterSeek = false;
                         }
@@ -344,14 +344,11 @@
             quizEndScenario:function(){
                 var _this = this,anUnswered = _this.getUnansweredQuestNrs();
                 _this.embedPlayer.stopPlayAfterSeek = true;
-
                 if (anUnswered) {
                     _this.quizEndFlow = true;
                     _this.quizPlugin.ssAlmostDone(anUnswered);
-                }else{
-                    if (!_this.quizSubmitted){
+                }else if (!_this.quizSubmitted){
                         _this.quizPlugin.ssAllCompleted();
-                    }
                 }
             },
             displayHex:function (hexPositionContDisplay,cpArray){
@@ -517,6 +514,7 @@
             },
             showQuizEndOnScrubber:function(){
                 var _this = this;
+                _this.hideQuizEndOnScrubber();
                 _this.quizPlugin.displayQuizEnd();
             },
             hideQuizEndOnScrubber:function(embedPlayer){
