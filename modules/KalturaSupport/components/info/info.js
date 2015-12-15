@@ -39,6 +39,10 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 		this.bind('preHideScreen', function (event, screenName) {
 			if ( screenName === "infoScreen" ){
 				embedPlayer.enablePlayControls();
+				if (_this.getPlayer().getPlayerElement()) {
+					$( "#" + _this.getPlayer().getPlayerElement().id ).removeClass( "blur" );
+					_this.getPlayer().getPlayerPoster().removeClass( "blur" );
+				}
 			}
 		});
 
@@ -50,13 +54,6 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 	},
 	isSafeEnviornment: function() {
 		return !mw.isIpad() || ( mw.isIpad() && mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') !== false );
-	},
-	closeScreen: function(){
-		if (this.getPlayer().getPlayerElement()) {
-			$( "#" + this.getPlayer().getPlayerElement().id ).removeClass( "blur" );
-			this.getPlayer().getPlayerPoster().removeClass( "blur" );
-		}
-		this.hideScreen();
 	}
 
 }));

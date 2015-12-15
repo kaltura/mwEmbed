@@ -169,6 +169,18 @@
 			});
 			this.bind('preHideScreen', function (event, screenName) {
 				if ( screenName === "share" ){
+					if (_this.getPlayer().getPlayerElement()) {
+						$( "#" + _this.getPlayer().getPlayerElement().id ).removeClass( "blur" );
+						_this.getPlayer().getPlayerPoster().removeClass( "blur" );
+					}
+					$(".embed-offset-container").hide();
+					$(".embed-container>.share-copy-btn").hide();
+					$(".share-offset-container").hide();
+					$(".share-container>.share-copy-btn").hide();
+					$(".share-offset").val("00:00");
+					$(".share-alert").hide();
+					$('.share-secured').attr('checked', false);
+					_this.enablePlayDuringScreen = false;
 					if ( !_this.enablePlayDuringScreen ){
 						_this.shareScreenOpened = false;
 					}
@@ -230,14 +242,6 @@
 					}
 				}
 			});
-		},
-
-		hideScreen: function(){
-			this._super();
-			if (this.getPlayer().getPlayerElement()) {
-				$( "#" + this.getPlayer().getPlayerElement().id ).removeClass( "blur" );
-				this.getPlayer().getPlayerPoster().removeClass( "blur" );
-			}
 		},
 
 		getTemplateData: function () {
@@ -411,14 +415,6 @@
 			return true;
 		},
 		closeScreen: function(){
-			$(".embed-offset-container").hide();
-			$(".embed-container>.share-copy-btn").hide();
-			$(".share-offset-container").hide();
-			$(".share-container>.share-copy-btn").hide();
-			$(".share-offset").val("00:00");
-			$(".share-alert").hide();
-			$('.share-secured').attr('checked', false);
-			this.enablePlayDuringScreen = false;
 			this.hideScreen();
 		},
 

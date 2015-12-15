@@ -32,17 +32,6 @@
     margin-left: 10%;
     text-align: left;
 }
-.infoScreen .info-close{
-    width: 100%;
-    font-size: 1.2em;
-    font-weight: bold;
-    text-align: right;
-    cursor: pointer;
-    -webkit-tap-highlight-color: rgba(0,0,0,0);
-}
-.infoScreen .info-close:hover{
-    text-shadow: 0px 0px 10px #fff;
-}
 @font-face {
     font-family: 'info';
     src:url('fonts/info.eot?6jqndw');
@@ -53,7 +42,6 @@
     font-weight: normal;
     font-style: normal;
 }
-
 [class^="icon-infoScreen-"], [class*=" icon-infoScreen"] {
     font-family: 'info' !important;
     font-size: 16px;
