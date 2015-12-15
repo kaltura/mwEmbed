@@ -189,10 +189,14 @@
 				this.getTemplateHTML(this.getTemplateData())
 				.then(
 				function(data) {
+					var closeBtn = $('<span class="icon-close"/>')
+						.on('click', function(){
+							_this.hideScreen();
+						});
 					_this.$screen = $('<div />')
 						.addClass('screen ' + _this.pluginName)
 						.append(
-							$('<div class="screen-content" /> ').append(data)
+							$('<div class="screen-content" /> ').append(closeBtn).append(data)
 						);
 
 					// Create expand button
