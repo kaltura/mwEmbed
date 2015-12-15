@@ -880,8 +880,6 @@
 							vid.play();
 						}
 						_this.mobilePlayed = true;
-						// re-start the monitor:
-						_this.monitor();
 					}
 				} else {
 					_this.log(" parent play returned false, don't issue play on native element");
@@ -1187,6 +1185,8 @@
 			}
 			// Set firstEmbedPlay state to false to avoid initial play invocation :
 			this.ignoreNextNativeEvent = false;
+			// re-start the monitor:
+			this.monitor();
 		},
 
 		/**
