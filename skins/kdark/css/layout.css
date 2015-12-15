@@ -866,6 +866,7 @@ body {
     color: #fff;
     padding-left: 8px;
     padding-top: 5px;
+    outline-offset: 0px;
     -ms-box-sizing:border-box;
     -moz-box-sizing:border-box;
     -webkit-box-sizing:border-box;
