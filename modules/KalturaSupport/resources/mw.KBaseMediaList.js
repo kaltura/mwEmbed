@@ -322,7 +322,10 @@
 				}
 			}else{
 				if (this.getLayout() === "vertical"){
-					this.getMedialistComponent().height(componentHeight - this.getMedialistHeaderComponent().height());
+					// set height asynchronously to fix iOS wrong playlist height issue
+					setTimeout(function () {
+						_this.getMedialistComponent().height(_this.getComponent().height() - _this.getMedialistHeaderComponent().height());
+					}, 0);
 				}else{
 					this.getMedialistComponent().height(this.getConfig("mediaItemHeight"));
 				}
