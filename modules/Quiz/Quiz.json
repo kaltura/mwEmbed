@@ -3,7 +3,8 @@
     "scripts":[
       "resources/quiz.js",
       "resources/IVQApiCall.js",
-      "resources/IVQModule.js"
+      "resources/IVQModule.js",
+      "resources/IVQScreenTemplate.js"
     ],
     "dependencies": "mw.KBaseScreen",
     "kalturaPluginName": "quiz",
