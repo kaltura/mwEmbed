@@ -130,7 +130,7 @@
                             })();
                         }
                     }
-                    if( _this.isLive && !_this.isDVR() ){
+                    if( _this.isLive() && !_this.isDVR() ){
                         flashvars.KalturaHLS2 = hlsPluginConfiguration;
                     }else {
                         flashvars.KalturaHLS = hlsPluginConfiguration;
@@ -231,7 +231,7 @@
                 });
 
                 _this.bindHelper('liveOnline', function(){
-                    if( this.isLive && !this.isDVR() ) {
+                    if( this.isLive() && !this.isDVR() ) {
                         _this.reset();
                     }
                 });
