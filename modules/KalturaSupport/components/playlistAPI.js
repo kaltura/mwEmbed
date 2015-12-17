@@ -57,11 +57,13 @@
 		page: 1,                 // start page for paging
 		pagingInProgress: false, // flag to block paging call during previous paging
 		pagingDone: false,       // flag for when there are no more entries in the next page so no need to load it
+		playlistInterfaceHeight: null,
 
 		setup: function (embedPlayer) {
 			if ( $(".playlistInterface").length === 0 ){
 				$(".mwPlayerContainer").wrap('<div class="playlistInterface" style="position: relative; width: 100%; height: 100%"></div>');
 			}
+			this.playlistInterfaceHeight = $(".playlistInterface").height();
 			if (this.getConfig('includeInLayout') === false) { // support hidden playlists - force onPage and hide its div.
 				this.setConfig('onPage', true);
 			}
@@ -688,6 +690,9 @@
 				this.configMediaListFeatures();
 			} else {
 				this.clearEmptyPlaylistError();
+				if (this.playlistInterfaceHeight){
+					$( ".playlistInterface").height(this.playlistInterfaceHeight);
+				}
 				this.renderMediaList();  // set the media list in KBaseMediaList
 
 				// support initial selectedIndex or initItemEntryId
