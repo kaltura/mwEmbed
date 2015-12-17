@@ -10,7 +10,7 @@
 
 	mw.ComscoreStreamingTag.prototype = {
 
-		pluginVersion: "1.0.10",
+		pluginVersion: "1.0.11",
 		reportingPluginName: "kaltura",
 		playerVersion: mw.getConfig('version'),
 
@@ -40,6 +40,8 @@
 		lastPosition: undefined,
 		lastPositionDuringBuffering: undefined,
 		lastPositionAfterSeeking: undefined,
+		isIphone: mw.isIphone(),
+		playerElement: undefined,
 		// Mapping for the module settings and the StreamSense plugin
 		configOptions: {c2:"c2", pageView:"pageview", logUrl:"logurl", persistentLabels:"persistentlabels", debug:"debug"},
 
@@ -125,12 +127,13 @@
 
 		log: function(message) {
 			//this.streamSenseInstance.log("ComScoreStreamingTag::   " + message);
-			message += "; lp: " + (this.lastPosition ? "Y":"N") +
+			message += "; lp: " + this.lastPosition +
 				"; pbi: " + (this.isPlaybackIntended ? "Y":"N") +
 				"; p: " + (this.playing ? "Y":"N") +
 				"; b: " + (this.buffering ? "Y":"N") + (this.buffering ? "; lpdb: " + this.lastPositionDuringBuffering : "") +
 				"; s: " + (this.seeking ? "Y":"N") +
-				"; hs: " + (this.hasSeeked ? "Y":"N") + (this.hasSeeked ? "; lpas: " + this.lastPositionAfterSeeking : "")
+				"; hs: " + (this.hasSeeked ? "Y":"N") + (this.hasSeeked ? "; lpas: " + this.lastPositionAfterSeeking : "") +
+				"; iPhone: " + (this.isIphone ? "Y":"N")
 			;
 			mw.log("ComScoreStreamingTag::   " + message);
 		},
@@ -192,7 +195,7 @@
 					else {
 						(this.getPlayerPluginState() == this.PlayerPluginState().PLAYING) && this.log('playback halted @ ' + position);
 						// Playback is halted.
-						// The tracking of buffering further above in this function 
+						// The tracking of buffering further above in this function
 						// is usually effectively preventing this code from being executed.
 						this.playing = false;
 						this.onPlaybackInactive();
@@ -213,7 +216,7 @@
 		onPlaybackActive: function() {
 			if (this.isPlaying()) {
 				this.setClip();
-				var seek = this.hasSeeked; //var seek = this.getPlayerPluginState() == this.PlayerPluginState().SEEKING;
+				var seek = this.hasSeeked;
 				this.hasSeeked = false;
 				this.callStreamSensePlugin("notify", this.playerEvents.PLAY, this.getLabels(seek), this.getCurrentPosition());
 				this.setPlayerPluginState(this.PlayerPluginState().PLAYING);
@@ -235,9 +238,14 @@
 		},
 
 		onSeekStart: function() {
-			this.log('seeking from ' + this.embedPlayer.getPlayerElementTime());
+			var currentTime = this.embedPlayer.getPlayerElementTime();
+			this.log('seeking from ' + currentTime);
 			this.seeking = true; // Could also use this.embedPlayer.seeking;
 			this.playing = false;
+			if(this.lastPosition != currentTime) {
+				this.lastPosition = currentTime;
+			}
+			this.lastPositionAfterSeeking = undefined;
 			if (this.isPlaybackIntended && this.getPlayerPluginState() != this.PlayerPluginState().SEEKING) {
 				this.onPlaybackInactive();
 				this.setPlayerPluginState(this.PlayerPluginState().SEEKING);
@@ -297,7 +305,7 @@
 
 		setPlayerPluginState: function(newState) {
 			if (newState && newState !== this.currentPlayerPluginState) {
-				this.log("NEW PLAYBACK STATE: " + this.PlayerPluginState().toString(newState).toUpperCase());
+				this.log("NEW PLAYBACK STATE: " + this.PlayerPluginState().toString(newState).toUpperCase() + " @ " + this.embedPlayer.getPlayerElementTime());
 				this.currentPlayerPluginState = newState;
 			}
 		},
@@ -334,6 +342,22 @@
 			embedPlayer.unbindHelper( _this.bindPostfix );
 
 			embedPlayer.bindHelper( 'SourceChange' + _this.bindPostfix, function(){
+				// This entire if-statement and involved variables are a temporary fix to for seeking issues on iPhone.
+				if(_this.isIphone && !_this.attachedIphoneSeekingHandlers) {
+					_this.playerElement = _this.embedPlayer.getPlayerElement();
+					if(typeof _this.playerElement !== "undefined") {
+						_this.log("Binding to iPhone seeking events.");
+						$(_this.playerElement).bind('seeking', function () {
+							// report seeking
+							_this.onSeekStart();
+						});
+						$(_this.playerElement).bind('seeked', function () {
+							// report seeked
+							_this.onSeekStop();
+						});
+						_this.attachedIphoneSeekingHandlers = true;
+					}
+				}
 				var selectedSrc = _this.embedPlayer.mediaElement.selectedSource;
 				_this.currentBitrate = selectedSrc.getBitrate() * 1024;
 			});
@@ -373,14 +397,9 @@
 				_this.onPlaybackEnded();
 			});
 
-			embedPlayer.bindHelper( 'preSeek' + _this.bindPostfix, function(){
-				_this.log('preSeek @ ' + embedPlayer.getPlayerElementTime());
-				var currentTime = embedPlayer.getPlayerElementTime();
-				if(_this.lastPosition != currentTime) {
-					_this.lastPosition = currentTime;
-				}
-				_this.lastPositionAfterSeeking = undefined;
-			});
+			// embedPlayer.bindHelper( 'preSeek' + _this.bindPostfix, function(){
+			// 	_this.log('preSeek @ ' + embedPlayer.getPlayerElementTime());
+			// });
 
 			embedPlayer.bindHelper('seeking' + _this.bindPostfix, function(event) {
 				// Using 'seeking' instead of 'seeked.started'
@@ -449,6 +468,13 @@
 
 		destroy: function() {
 			$( this.embedPlayer ).unbind( this.bindPostfix );
+			// This entire if-statement and involved variables are a temporary fix to for seeking issues on iPhone.
+			if(this.isIphone && this.attachedIphoneSeekingHandlers) {
+				$( this.playerElement ).unbind('seeking');
+				$( this.playerElement ).unbind('seeked');
+				this.attachedIphoneSeekingHandlers = false;
+				this.playerElement = undefined;
+			}
 		},
 
 		getLabels: function(seek) {
