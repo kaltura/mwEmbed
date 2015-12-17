@@ -130,12 +130,8 @@
                             })();
                         }
                     }
-                    if( _this.isLive() && !_this.isDVR() ){
-                        flashvars.KalturaHLS2 = hlsPluginConfiguration;
-                    }else {
-                        flashvars.KalturaHLS = hlsPluginConfiguration;
-                    }
-					flashvars.streamerType = _this.streamerType = 'hls';
+                    flashvars.KalturaHLS = hlsPluginConfiguration;
+                    flashvars.streamerType = _this.streamerType = 'hls';
 				}
 
 				if (_this.isLive() && _this.streamerType == 'rtmp' && !_this.cancelLiveAutoPlay) {
