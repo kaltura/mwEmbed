@@ -202,6 +202,11 @@
 					_this.dataIntialized = false;
 					_this.mediaList = [];
 					_this.chaptersMap = [];
+                    _this.cache = {};
+                    _this.dataSet = null;
+                    _this.renderOnData = false;
+                    _this.selectedChapterIndex = 0;
+                    _this.selectedMediaItemIndex= 0;
 				}
 			});
 
