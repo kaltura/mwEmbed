@@ -220,9 +220,6 @@
 						}
 					}
 				);
-				if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
-					this.sendMessage( {'type': 'load'} );
-				}
 			} else {
 				this.sendMessage( {'type': 'load'} );
 				if ( !mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {

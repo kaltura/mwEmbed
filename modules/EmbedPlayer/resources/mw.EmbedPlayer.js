@@ -2767,9 +2767,7 @@
 			}
 
 			// Update currentTime via embedPlayer
-			console.info('before ' + _this.currentTime + '  ' + _this.getPlayerElementTime());
 			_this.currentTime = _this.getPlayerElementTime();
-			console.info('after ' + _this.currentTime + '  ' + _this.getPlayerElementTime());
 			// Update the previousTime ( so we can know if the user-javascript changed currentTime )
 			_this.previousTime = _this.currentTime;
 			// Check for a pauseTime to stop playback in temporal media fragments
