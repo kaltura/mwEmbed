@@ -3,7 +3,7 @@
 	function resolvePlayerConfig(serverSettings, clientSettings){
 		var resolvedSettings = jQuery.extend(true, {}, serverSettings);
 
-		if (serverSettings.vars["inlineScript"]) {
+		if (serverSettings.vars["inlineScript"] && (clientSettings !== null)) {
 
 			var clientFlashvars = clientSettings.flashvars;
 			var clientPlugins = {};
