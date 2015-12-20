@@ -154,7 +154,7 @@
 				this.shouldResumePlay = false;
 				this.embedPlayer.play();
 			}else{
-				this.embedPlayer.getVideoHolder().find(".largePlayBtn").show();
+				this.embedPlayer.triggerHelper("showLargePlayBtn");
 			}
 		}
 	});

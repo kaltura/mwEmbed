@@ -27,8 +27,8 @@
 				});
 			});
 			
-			this.bind('onChangeMediaDone playerReady onpause onEndedDone onRemovePlayerSpinner showPlayerControls', function(){
-				if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() && !_this.embedPlayer.changeMediaStarted ){
+			this.bind('onChangeMediaDone playerReady onpause onEndedDone onRemovePlayerSpinner showPlayerControls showLargePlayBtn', function(e){
+				if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
 					_this.getComponent().removeClass("icon-pause").addClass("icon-play");
 					_this.show();
 				}
@@ -40,7 +40,7 @@
 					_this.show();
 				}
 			});
-			this.bind('playing AdSupport_StartAdPlayback onAddPlayerSpinner onHideControlBar', function(){
+			this.bind('playing AdSupport_StartAdPlayback onAddPlayerSpinner onHideControlBar onChangeMedia', function(e){
 				_this.hide();
 			});
 			this.bind('onPlayerStateChange', function(e, newState, oldState){
@@ -63,7 +63,7 @@
             });
 		},
 		show: function(){
-			if ( !this.isDisabled ) {
+			if ( !this.isDisabled && !this.embedPlayer.changeMediaStarted ) {
 				this.getComponent().show();
 			}
 			this.shouldShow = true;
@@ -97,7 +97,7 @@
 		onEnable: function(){
 			this.isDisabled = false;
 			if ( this.shouldShow ) {
-				this.getComponent().show();
+				this.show();
 			}
 		},
 		onDisable: function(){
