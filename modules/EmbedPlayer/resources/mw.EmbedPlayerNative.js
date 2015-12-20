@@ -846,6 +846,8 @@
 							vid.play();
 						}
 						_this.mobilePlayed = true;
+						// re-start the monitor:
+						_this.monitor();
 					}
 				} else {
 					_this.log(" parent play returned false, don't issue play on native element");
