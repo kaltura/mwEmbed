@@ -56,7 +56,7 @@
 						break;
 					case 'buttonsIconColor':
 						if (mw.isMobileDevice()){
-							$(".btn").not(".playHead").attr("style","color: " + value + " !important");
+							$(".btn:visible").not(".playHead").attr("style","color: " + value + " !important");
 							if (this.getConfig('applyToLargePlayButton')) {
 								$(".largePlayBtn ").attr("style", "color: " + value + " !important");
 							}
