@@ -92,7 +92,7 @@
 
 			this.bind('preShowScreen', function (event, screenName) {
 				if ( screenName === "related" ){
-					_this.embedPlayer.disablePlayControls();
+					_this.embedPlayer.disablePlayControls(['playPauseBtn']);
 				}
 			});
 			this.bind('preHideScreen', function (event, screenName) {
