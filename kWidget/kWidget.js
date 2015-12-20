@@ -1095,6 +1095,9 @@
 				requestSettings = this.getRuntimeSettings( requestSettings );
 				this.widgetOriginalSettings [widgetElm.id] = settings;
 				mw.setConfig("widgetOriginalSettings_" + widgetElm.id, settings);
+			} else {
+				//If this is not an inlineScript request or we don't support it make sure to falsify it
+				settings.flashvars['inlineScript'] = false;
 			}
 
 			// Check if we need to capture a play event ( iOS sync embed call )
