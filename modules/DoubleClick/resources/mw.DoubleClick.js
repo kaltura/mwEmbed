@@ -471,6 +471,19 @@
 					}
 				}
 			});
+
+			if (mw.isMobileDevice()){
+				_this.embedPlayer.bindHelper('onShowControlBar' + this.bindPostfix, function (event) {
+					if ( !_this.isLinear ){
+						$(_this.getAdContainer()).css({top:-60});
+					}
+				});
+				_this.embedPlayer.bindHelper('onHideControlBar' + this.bindPostfix, function (event) {
+					if ( !_this.isLinear ){
+						$(_this.getAdContainer()).css({top:0});
+					}
+				});
+			}
 		},
 
 		pauseAd: function (isLinear) {
@@ -1000,6 +1013,7 @@
 					_this.monitorAdProgress();
 				} else{
 					_this.embedPlayer.getInterface().find(".ad-notice-label").hide();
+					$(_this.getAdContainer()).addClass("overlayAdContainer");
 					_this.restorePlayer();
 				}
 
