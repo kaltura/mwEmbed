@@ -74,8 +74,8 @@ mw.PlayerLayoutBuilder.prototype = {
 			}
 
 			var $videoDisplay = $embedPlayer.parent('.videoDisplay');
-			if( $videoDisplay.find('.controlBarShadow').length == 0 ){
-				$(".mwEmbedPlayer").before('<div class="controlBarShadow"></div>');
+			if( $videoDisplay.find('.videoShadow').length == 0 ){
+				$(".mwEmbedPlayer").before('<div class="videoShadow"></div>');
 			}
 			// build the videoHolder wrapper if needed
 			if( $videoDisplay.parent('.videoHolder').length == 0 ){
