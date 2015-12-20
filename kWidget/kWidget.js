@@ -1298,7 +1298,7 @@
 		},
 		isInlineScriptRequest: function( settings ){
 			// don't inline scripts in debug mode:
-			if( mw.getConfig('debug') ){
+			if( mw.getConfig('debug') || this.isMobileDevice()){
 				return false;
 			}
 			// check for inlineScript flag:
