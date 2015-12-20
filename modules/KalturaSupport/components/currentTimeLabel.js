@@ -13,7 +13,8 @@
 
 		setup: function () {
 			var _this = this;
-			if (mw.isMobileDevice()){
+			var skin = this.embedPlayer.getRawKalturaConfig("layout") ? this.embedPlayer.getRawKalturaConfig("layout").skin : "kdark";
+			if ( mw.isMobileDevice() && skin === "kdark" ){
 				this.getComponent().data("width",0.1);
 			}
 			this.bindTimeUpdate();
