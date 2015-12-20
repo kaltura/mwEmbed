@@ -45,18 +45,24 @@
 		},
 
 		setDefaults: function(){
+			this.setBaseThumbSettings();
+			this._super( );
+		},
+		setBaseThumbSettings: function(){
 			this.baseThumbSettings = {
 				'partner_id': this.getPlayer().kpartnerid,
 				'uiconf_id': this.getPlayer().kuiconfid,
 				'entry_id': this.getPlayer().kentryid,
 				'width': this.getConfig( "thumbWidth" )
 			};
-			this._super( );
 		},
-
 		_addBindings: function () {
 			var _this = this;
 			this._super();
+
+			this.bind('onChangeMedia', function(){
+				_this.setBaseThumbSettings();
+			});
 
 			this.bind('updateLayout', function(){
 				if (_this.getPlayer().layoutBuilder.isInFullScreen() ||
