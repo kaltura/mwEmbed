@@ -605,6 +605,7 @@ ol.second-row{
     font-weight: 900;
     font-family: "Lato";
     font-size: 1.5vw;
+    bottom: 6px;
 }
 .bubble-window{
     width: 3vw;
