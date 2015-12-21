@@ -1,6 +1,6 @@
 /**
  * Created by mark.feder Kaltura.
- * V2.39.rc3.IVQ-rc1
+ * V2.39.quiz-rc1
  */
 (function (mw, $) {
     "use strict";
