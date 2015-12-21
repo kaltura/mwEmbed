@@ -200,7 +200,13 @@
 			}
 			return null;
 		},
-		/**
+        getCurrentBufferLength: function() {
+            if ( this.playerElement ) {
+                return this.playerElement.getCurrentBufferLength();
+            }
+            return null;
+        },
+        /**
 		 * add js listener for the given callback. Creates generic methodName and adds it to this playerElement
 		 * @param callback to call
 		 * @param eventName notification name to listen for
