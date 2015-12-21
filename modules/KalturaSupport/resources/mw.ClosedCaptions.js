@@ -831,6 +831,7 @@
 					this.setConfig('visible', true)
 				}
 				this.getBtn().show();
+				this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");
 				// show new timed captions text if exists
 				this.showCaptions();
 			}
@@ -858,6 +859,9 @@
 					'active': ( _this.selectedSource === source && _this.getConfig( "displayCaptions" )  )
 				});
 				items.push({'label':source.label, 'value':source.label});
+				if (mw.isMobileDevice() && _this.selectedSource === source){
+					_this.getMenu().setActive(idx+1);
+				}
 			});
 
 			this.getActiveCaption();
