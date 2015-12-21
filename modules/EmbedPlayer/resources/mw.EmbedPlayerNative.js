@@ -1412,6 +1412,9 @@
                     mw.log("Native player :: id3Tag :: ERROR :: "+e);
                 }
             }, false);
+        },
+        getCurrentBufferLength: function(){
+            return parseInt(this.playerElement.buffered.end(0) - this.playerElement.currentTime); //return buffer length in seconds
         }
 	};
 })(mediaWiki, jQuery);

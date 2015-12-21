@@ -992,7 +992,10 @@
 				}
 			}
 
-		}
+		},
+        getCurrentBufferLength: function(){
+            return parseInt(this.playerObject.getCurrentBufferLength()); //return buffer length in seconds
+        }
 	};
 
 })(mediaWiki, jQuery);
