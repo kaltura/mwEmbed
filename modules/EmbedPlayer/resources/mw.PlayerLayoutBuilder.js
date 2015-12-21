@@ -658,7 +658,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		clearTimeout(this.hideControlsTimeout);
 		this.getInterface().removeClass( this.outPlayerClass );
 		this.removeTouchOverlay();
-		if (this.isInFullScreen()){
+		if (this.$interface.find(".mwEmbedPlayer").hasClass( "noCursor" )){
 			this.$interface.find(".mwEmbedPlayer").removeClass("noCursor");
 		}
 		this.embedPlayer.triggerHelper( 'showPlayerControls' );
