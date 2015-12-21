@@ -49,9 +49,9 @@
 			var _this = this;
 			this.addBindings();
 			var ticks = 0;
-			var intervalID = setInterval(function(){
-				ticks++;
-				if( typeof chrome !== "undefined" && typeof chrome.cast !== "undefined" ){
+			 var intervalID = setInterval(function(){
+				 ticks++;
+				if( typeof chrome !== "undefined" && typeof chrome.cast !== "undefined" && typeof chrome.cast.SessionRequest !== "undefined"){
 					_this.initializeCastApi();
 					clearInterval(intervalID);
 				}else{
