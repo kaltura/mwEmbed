@@ -45,7 +45,16 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 				}
 			}
 		});
-
+		this.bind('onOpenFullScreen', function () {
+			setTimeout(function(){
+				if (embedPlayer.getVideoHolder().width() <= 640){
+					embedPlayer.getVideoHolder().addClass("fullscreen-video-size-small");
+				}
+			},500);
+		});
+		this.bind('onCloseFullScreen', function () {
+			embedPlayer.getVideoHolder().removeClass("fullscreen-video-size-small");
+		});
 	},
 	addScreenBindings: function(){
 		if (mw.isNativeApp()) {
