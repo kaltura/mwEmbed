@@ -1,3 +1,7 @@
+/**
+ * Created by mark.feder Kaltura.
+ * V2.39.rc3.IVQ-rc1
+ */
 (function (mw, $) {
     "use strict";
     $.cpObject = {};
