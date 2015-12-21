@@ -59,7 +59,7 @@
 			var ticks = 0;
 			 var intervalID = setInterval(function(){
 				 ticks++;
-				if( typeof chrome !== "undefined" && typeof chrome.cast !== "undefined" ){
+				if( typeof chrome !== "undefined" && typeof chrome.cast !== "undefined" && typeof chrome.cast.SessionRequest !== "undefined" ){
 					_this.initializeCastApi();
 					clearInterval(intervalID);
 				}else{
