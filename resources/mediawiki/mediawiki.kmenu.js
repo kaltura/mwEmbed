@@ -165,8 +165,14 @@
             var selector = null;
             if( typeof idx == 'number' ){
                 selector = 'li:not(.' + this.options.dividerClass + ',.label):eq(' + idx + ')';
+	            if (mw.isMobileDevice()){
+		            this.mobileMenu.get(0).selectedIndex = idx;
+	            }
             } else {
                 selector = 'li[' + idx.key + '=' + idx.val + ']';
+	            if (mw.isMobileDevice()){
+		            this.mobileMenu.val(idx.val);
+	            }
             }
 	        this.$el.find( selector ).addClass( 'active' ).attr('aria-checked', 'true');
 	        this.$el.find( selector +" a").focus();

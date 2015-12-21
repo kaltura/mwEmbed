@@ -230,6 +230,9 @@
 							itemLabels.push(label)
 							items.push({'label':label, 'value':label});
 						}
+						if (mw.isMobileDevice() && _this.isSourceSelected(source)){
+							_this.getMenu().setActive(sourceIndex);
+						}
 					}
 				}
 			});

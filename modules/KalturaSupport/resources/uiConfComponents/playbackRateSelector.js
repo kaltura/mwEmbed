@@ -154,6 +154,9 @@
 					},
 					'active': active
 				});
+				if (mw.isMobileDevice() && active){
+					_this.getMenu().setActive(idx);
+				}
 			});
 		},
 		setSpeed: function( newSpeed ){
