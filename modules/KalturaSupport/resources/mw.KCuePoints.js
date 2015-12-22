@@ -197,18 +197,11 @@
 			if (rawCuePoints.length > 0) {
 				var _this = this;
 
-				var associativeRawCuePoints = {};
-				$.each(rawCuePoints, function (index, cuePoint) {
-					associativeRawCuePoints[cuePoint.id] = cuePoint;
-				});
-
 				var updatedCuePoints = [];
-				//Only add new cuepoints or existing cuepoints which have a newer updateAt value
-				$.each(associativeRawCuePoints, function (id, rawCuePoint) {
-					if ((!_this.associativeCuePoints[id]) /*||
-						( _this.associativeCuePoints[id] &&
-							_this.associativeCuePoints[id].updatedAt < rawCuePoint.updatedAt )*/) {
-						_this.associativeCuePoints[id] = rawCuePoint;
+				//Only add new cuepoints
+				$.each(rawCuePoints, function (id, rawCuePoint) {
+					if (!_this.associativeCuePoints[rawCuePoint.id]) {
+						_this.associativeCuePoints[rawCuePoint.id] = rawCuePoint;
 						updatedCuePoints.push(rawCuePoint);
 					}
 				});
