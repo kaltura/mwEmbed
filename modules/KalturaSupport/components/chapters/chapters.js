@@ -40,11 +40,13 @@
 		},
 
 		mediaList: [], //Hold the medialist items
+		chaptersMap: [],
+		slidesMap: [],
+		pendingMediaItems: [], //Hold the medialist items that are pending to be displayed in live stream
 		cache: {}, //Hold the search data cache
-		dataSet: null, //Hold current dataset returnd from API
+		dataSet: null, //Hold current dataset returned from API
 		renderOnData: false, //Indicate if to wait for data before rendering layout
 		freezeTimeIndicators: false,
-		chaptersMap: [],
 		activeItem: 0,
 		selectedChapterIndex: 0,
 		inSlideAnimation: false,
@@ -88,14 +90,16 @@
 							}
 						} );
 						//Create media items from raw data
-						_this.addMediaItems( chaptersRawData );
+						var mediaItems = _this.createMediaItems(chaptersRawData);
+						_this.addMediaItems( mediaItems );
 						_this.markMediaItemsAsDisplayed( _this.mediaList );
 						//If no chapters or only chapters then disable chapter toggling
 						if (_this.chaptersMap.length === 0 || _this.mediaList.length === _this.chaptersMap.length){
 							_this.disableChapterToggle();
 						}
 						//Need to recalc all durations after we have all the items startTime values
-						_this.setMediaItemTime();
+						_this.setMediaItemTime(_this.slidesMap);
+						_this.setChaptersTime(_this.chaptersMap);
 						//Set data initialized flag for handlers to start working
 						_this.dataIntialized = true;
 						if ( _this.renderOnData ) {
@@ -112,53 +116,39 @@
 				if (!_this.dataIntialized) {
 					_this.dataIntialized = true;
 				}
-				cuepoints.sort(function(a, b){
-					return (a.startTime - b.startTime > 0) ||
-						(a.startTime === b.startTime && b.subType ===2  );
-				});
-				_this.addMediaItems(cuepoints);
 
-				_this.setMediaItemTime();
+				var mediaItems = _this.createMediaItems(cuepoints);
+				_this.addMediaItems(mediaItems);
+				_this.pendingMediaItems = _this.pendingMediaItems.concat(mediaItems);
+
+				_this.log("Total pending items: " + _this.pendingMediaItems.length);
+
+				mediaItems.unshift(_this.mediaList[_this.mediaList.length-1-mediaItems.length]);
+				_this.setMediaItemTime(mediaItems);
 			});
 
-			this.bind("freezeTimeIndicators", function(e, val){
+			this.bind("seeked", function(){
+
+				var item = _this.mediaList[ _this.selectedMediaItemIndex ];
+				if ( item && item.active ) {
+					item.active = false;
+				}
+
+				var activeDomObj = _this.getActiveItem();
+				activeDomObj.find(".slideOverlay").removeClass("watched");
+
+				//On seek reset the active item index so we can find items even if seek is to past time(e.g. rewind)
+				_this.selectedMediaItemIndex = 0;
+            });
+
+            this.bind("freezeTimeIndicators", function(e, val){
 				_this.freezeTimeIndicators = val;
 			});
 
-			this.bind("monitorEvent", function () {
+			this.bind("updatePlayHeadPercent", function () {
 				if (_this.dataIntialized) {
-					var items = [];
-					//Check for items that weren't displayed yet
-					$.each(_this.mediaList, function (index, item) {
-						if (item.startTime <= _this.getPlayer().getPlayerElementTime() && !item.displayed) {
-							items.push(item);
-						}
-					});
-					if (items.length > 0) {
-						//Set items as displayed
-						_this.markMediaItemsAsDisplayed(items);
-						//Create DOM markup and append to list
-						var mediaItems = _this.createMediaItems(items);
-						if (_this.renderOnData) {
-							_this.show();
-							_this.renderOnData = false;
-							//Render only items that are in the DVR window, and save future items in temp list
-							var tempList = _this.mediaList;
-							_this.mediaList = items;
-							//Render the items to be shown
-							_this.renderMediaList();
-							//Return all items to media list
-							_this.mediaList = tempList;
-						} else {
-							_this.getComponent().find("ul").append(mediaItems);
-						}
-						//Mark current added items index as the index to start scroll from and re-init the scroll logic
-						_this.startFrom = _this.mediaList.length - _this.mediaItemVisible;
-						_this.configMediaListFeatures();
-						_this.renderScroller();
-						_this.updateActiveItem();
-						$( _this.embedPlayer ).trigger( "mediaListLayoutUpdated" );
-					}
+					_this.handlePendingItems();
+					_this.updateActiveItem();
 				}
 			});
 
@@ -184,12 +174,6 @@
 				_this.show();
 			});
 
-			this.bind('updatePlayHeadPercent', function () {
-				if (_this.dataIntialized) {
-					_this.updateActiveItem();
-				}
-			});
-
 			this.bind('onChangeStream', function () {
 				_this.maskChangeStreamEvents = true;
 			});
@@ -202,6 +186,7 @@
 					_this.dataIntialized = false;
 					_this.mediaList = [];
 					_this.chaptersMap = [];
+					_this.slidesMap = [];
                     _this.cache = {};
                     _this.dataSet = null;
                     _this.renderOnData = false;
@@ -236,6 +221,29 @@
 		},
 		addKeyboardShortcuts: function (addKeyCallback) {
 			var _this = this;
+			function toggleItemChapter(toState) {
+				if ( !_this.maskKeyboardShortcuts ) {
+					var chapter;
+					var currentSelectedItem = document.activeElement;
+					var currentSelectedObj = $( currentSelectedItem );
+					var currentSelectedObjType = currentSelectedObj.data( "boxType" );
+					if ( currentSelectedObjType === mw.KCuePoints.THUMB_SUB_TYPE.CHAPTER ) {
+						chapter = currentSelectedItem;
+					} else if ( currentSelectedObjType === mw.KCuePoints.THUMB_SUB_TYPE.SLIDE ) {
+						var slideChapterIndex = currentSelectedObj.data( "chapterIndex" );
+						chapter = _this.getMediaListDomElements()
+								.filter( ".chapterBox[data-chapter-index=" + slideChapterIndex + "]" );
+					}
+					chapter = $(chapter);
+					var chapterCollapsed = (chapter.attr("data-chapter-collapsed") === "true");
+					if ((chapterCollapsed && toState === "expand") || (!chapterCollapsed && toState === "collapse")) {
+						_this.toggleChapter( chapter );
+					}
+					if (!chapterCollapsed && toState === "collapse"){
+						chapter.focus();
+					}
+				}
+			}
 			// Add Shift+I for open side bar
 			addKeyCallback(this.getConfig("keyboardShortcutsMap").goToActiveTile, function () {
 				if (!_this.maskKeyboardShortcuts) {
@@ -262,29 +270,6 @@
 			addKeyCallback(this.getConfig("keyboardShortcutsMap").collapse, function () {
 				toggleItemChapter("collapse");
 			});
-			function toggleItemChapter(toState) {
-				if ( !_this.maskKeyboardShortcuts ) {
-					var chapter;
-					var currentSelectedItem = document.activeElement;
-					var currentSelectedObj = $( currentSelectedItem );
-					var currentSelectedObjType = currentSelectedObj.data( "boxType" );
-					if ( currentSelectedObjType === mw.KCuePoints.THUMB_SUB_TYPE.CHAPTER ) {
-						chapter = currentSelectedItem;
-					} else if ( currentSelectedObjType === mw.KCuePoints.THUMB_SUB_TYPE.SLIDE ) {
-						var slideChapterIndex = currentSelectedObj.data( "chapterIndex" );
-						chapter = _this.getMediaListDomElements()
-							.filter( ".chapterBox[data-chapter-index=" + slideChapterIndex + "]" );
-					}
-					chapter = $(chapter);
-					var chapterCollapsed = (chapter.attr("data-chapter-collapsed") === "true");
-					if ((chapterCollapsed && toState === "expand") || (!chapterCollapsed && toState === "collapse")) {
-						_this.toggleChapter( chapter );
-					}
-					if (!chapterCollapsed && toState === "collapse"){
-						chapter.focus();
-					}
-				}
-			}
 		},
 		isSafeEnviornment: function () {
 			return (!this.getPlayer().useNativePlayerControls() &&
@@ -310,6 +295,58 @@
 			return !this.getPlayer().isLive() && cuePointsExist;
 
 		},
+		handlePendingItems: function(){
+			if (this.pendingMediaItems.length > 0) {
+				var itemsToBeDisplayed = this.getPendingItemsToDisplay();
+				if (itemsToBeDisplayed.length > 0) {
+					this.log("Selected " + itemsToBeDisplayed.length + " pending item(s) to be displayed, " + this.pendingMediaItems.length + " remaining");
+					//Set items as displayed
+					this.markMediaItemsAsDisplayed(itemsToBeDisplayed);
+					this.displayPendingItems(itemsToBeDisplayed);
+					//Mark current added items index as the index to start scroll from and re-init the scroll logic
+					this.startFrom = this.mediaList.length - this.mediaItemVisible;
+					this.configMediaListFeatures();
+					this.renderScroller();
+					$(this.embedPlayer).trigger("mediaListLayoutUpdated");
+				}
+			}
+		},
+		getPendingItemsToDisplay: function(){
+			var items = [];
+			var itemsToRemoveIndexes = [];
+
+			var currentTime = this.getPlayer().getPlayerElementTime();
+
+			//Check for items that weren't displayed yet
+			$.each(this.pendingMediaItems, function (index, item) {
+				if (item.startTime <= currentTime && !item.displayed) {
+					items.push(item);
+					itemsToRemoveIndexes.push(index);
+				}
+			});
+			var _this = this;
+			$.each(itemsToRemoveIndexes, function (index) {
+				_this.pendingMediaItems.splice(index, 1);
+			});
+			return items;
+		},
+		displayPendingItems: function(itemsToBeDisplayed){
+			if (this.renderOnData) {
+				this.show();
+				this.renderOnData = false;
+				//Render only items that are in the DVR window, and save future items in temp list
+				var tempList = this.mediaList;
+				this.mediaList = itemsToBeDisplayed;
+				//Render the items to be shown
+				this.renderMediaList();
+				//Return all items to media list
+				this.mediaList = tempList;
+			} else {
+				//Create DOM markup and append to list
+				var mediaItems = this.renderMediaItems(itemsToBeDisplayed);
+				this.getComponent().find("ul").append(mediaItems);
+			}
+		},
 		getCuePoints: function(){
 			var cuePoints = [];
 			var _this = this;
@@ -332,7 +369,7 @@
 				return this._super();
 			}
 		},
-		createMediaItems: function (mediaListItems) {
+		renderMediaItems: function (mediaListItems) {
 			var _this = this;
 			//Fetch slides template
 			var slideTemplate = this.getTemplatePartialHTML("slides");
@@ -374,13 +411,13 @@
 			};
 			return metaData;
 		},
-		addMediaItems: function (items) {
+		createMediaItems: function (items) {
 			var _this = this;
 
 			//Get current item number
 			var orderId = this.mediaList.length;
 			//Map items to mediaList items
-			var mediaList = $.map(items, function (item) {
+			var mediaItems = $.map(items, function (item) {
 				var mediaItem;
 				var customData = item.partnerData ? JSON.parse(item.partnerData) : {};
 				var title = item.title || customData.title;
@@ -420,6 +457,7 @@
 					//Set chapter number
 					mediaItem.chapterNumber = _this.chaptersMap.length - 1;
 				} else if (mediaItem.type === mw.KCuePoints.THUMB_SUB_TYPE.SLIDE){
+					_this.slidesMap.push(mediaItem);
 					//Reference child elements of chapter if it exist
 					var currentChapter = _this.chaptersMap[_this.chaptersMap.length - 1];
 					if (currentChapter) {
@@ -434,9 +472,13 @@
 				}
 				return mediaItem;
 			});
+			return mediaItems;
+		},
+		addMediaItems: function(mediaItems){
 			//Add media items to mediaList cache - need to concat here new to existing list in
 			//order to support live cuepoints which adds up as stream progress
-			this.mediaList = this.mediaList.concat(mediaList);
+			this.log("Adding " + mediaItems.length + " new item(s)");
+			this.mediaList = this.mediaList.concat(mediaItems);
 		},
 		getMediaBoxHeight: function(mediaItem){
 			//Get media box height by mediaItemRatio and by media item type (Chapter/Slide)
@@ -504,35 +546,38 @@
 				callback.apply(_this, [response]);
 			});
 		},
-		setMediaItemTime: function () {
-			var _this = this;
-			$.each(this.chaptersMap, function (index, item) {
-				if (_this.chaptersMap[index + 1]) {
-					item.data.endTime = _this.chaptersMap[index + 1].data.startTime;
-				} else {
-					item.data.endTime = _this.getPlayer().duration;
-				}
-
-				item.data.durationDisplay = mw.seconds2npt((item.data.endTime - item.data.startTime));
-			});
-			$.each(this.mediaList, function (index, item) {
+		setMediaItemTime: function (mediaItem) {
+			var duration = this.getPlayer().duration;
+			$.each(mediaItem, function (index, item) {
 				if (item.type !== mw.KCuePoints.THUMB_SUB_TYPE.SLIDE){
 					return true;
 				}
 				var runningIndex = index + 1;
-				while (_this.mediaList[runningIndex]){
-					if (_this.mediaList[runningIndex].type === mw.KCuePoints.THUMB_SUB_TYPE.SLIDE){
+				while (mediaItem[runningIndex]){
+					if (mediaItem[runningIndex].type === mw.KCuePoints.THUMB_SUB_TYPE.SLIDE){
 						break;
 					}
 					runningIndex++;
 				}
-				if (_this.mediaList[runningIndex]) {
-					item.endTime = _this.mediaList[runningIndex].startTime;
+				if (mediaItem[runningIndex]) {
+					item.endTime = mediaItem[runningIndex].startTime;
 				} else {
-					item.endTime = _this.getPlayer().duration;
+					item.endTime = duration;
 				}
 
 				item.durationDisplay = mw.seconds2npt((item.endTime - item.startTime));
+			});
+		},
+		setChaptersTime: function(chapters){
+			var duration = this.getPlayer().duration;
+			$.each(chapters, function (index, item) {
+				if (chapters[index + 1]) {
+					item.data.endTime = chapters[index + 1].data.startTime;
+				} else {
+					item.data.endTime = duration;
+				}
+
+				item.data.durationDisplay = mw.seconds2npt((item.data.endTime - item.data.startTime));
 			});
 		},
 		formatTimeDisplayValue: function (time) {
@@ -966,26 +1011,31 @@
 		},
 		updateActiveItem: function () {
 			if (!this.freezeTimeIndicators) {
-				this.updateActiveChapter();
 				// search chapter for current active
-
 				var activeItemIndex = 0;
 				var time = this.getPlayer().currentTime;
-				$.each( this.mediaList, function ( inx, item ) {
-					if ( item.type === mw.KCuePoints.THUMB_SUB_TYPE.SLIDE && (time > item.startTime ) ) {
+				var item;
+				var i;
+				for (i=this.selectedMediaItemIndex; i < this.slidesMap.length; i++){
+                    item = this.slidesMap[i];
+					if ((time >= item.startTime ) && (time < item.endTime )){
 						activeItemIndex = item.order;
-					}
-				} );
+						break;
+                    }
+                }
+				if (this.isLiveCuepoints() && i===(this.slidesMap.length)){
+					activeItemIndex = item.order;
+				}
 
-				var actualActiveIndex = this.selectedMediaItemIndex;
 				var activeDomObj = this.getActiveItem();
 
 				// Check if active is not already set:
-				var item = this.mediaList[ activeItemIndex ];
-				if ( actualActiveIndex === activeItemIndex ) {
+				item = this.mediaList[ activeItemIndex ];
+				if ( this.selectedMediaItemIndex === activeItemIndex ) {
 					// update duration count down:
 					if ( item ) {
-						if ( !item.active ) {
+                        this.updateActiveChapter(item.chapterNumber);
+                        if ( !item.active ) {
 							this.setSelectedMedia( activeItemIndex );
 							item.active = true;
 							activeDomObj.find(".slideOverlay").addClass("watched");
@@ -995,7 +1045,6 @@
 					if ( item && item.active ) {
 						item.active = false;
 					}
-
 					activeDomObj.find(".slideOverlay").removeClass("watched");
 
 					// Check if we should pause on chapter update:
@@ -1011,33 +1060,26 @@
 				}
 			}
 		},
-		updateActiveChapter: function(){
-			if (this.chaptersMap.length > 0) {
-				var activeChapterIndex = -1;
-				var time = this.getPlayer().currentTime;
-				$.each( this.chaptersMap, function ( inx, item ) {
-					if ( time > item.data.startTime ) {
-						activeChapterIndex = item.data.chapterNumber;
-					}
-				} );
-
+		updateActiveChapter: function(chapterNumber){
+			if(this.chaptersMap.length > 0){
 				var actualActiveIndex = this.selectedChapterIndex;
-				var chapterObj = this.chaptersMap[actualActiveIndex].data;
-
+				var chapterObj;
 				var endTime;
-				if ( actualActiveIndex === activeChapterIndex ) {
-					this.selectedChapterIndex = activeChapterIndex;
+				//Only update chapter if we switch from one chapter to another or
+				//when switching from a slide under a chapter to a slide not under a chapter
+				if (((actualActiveIndex !== -1) && (chapterNumber !== -1)) ||
+					((actualActiveIndex !== -1) && (chapterNumber === -1))) {
+					chapterObj = this.chaptersMap[actualActiveIndex].data;
 					endTime = chapterObj.endTime;
-					var countDown = Math.abs( time - endTime );
-					this.updateActiveChapterDuration( chapterObj.order, countDown );
-				} else {
-					var startTime = chapterObj.startTime;
-					endTime = chapterObj.endTime;
-					this.updateActiveChapterDuration( chapterObj.order, endTime - startTime );
-					if ( this.chaptersMap[ activeChapterIndex ] ) {
-						this.selectedChapterIndex = activeChapterIndex;
+					if ((chapterNumber > -1) && (actualActiveIndex === chapterNumber)) {
+						var countDown = Math.abs(this.getPlayer().currentTime - endTime);
+						this.updateActiveChapterDuration(chapterObj.order, countDown);
+					} else {
+						var startTime = chapterObj.startTime;
+						this.updateActiveChapterDuration(chapterObj.order, endTime - startTime);
 					}
 				}
+				this.selectedChapterIndex = chapterNumber;
 			}
 		},
 		updateActiveChapterDuration: function(chapterNumber, remainingDuration){
