@@ -75,6 +75,9 @@
 			}
 		},
 		show: function(){
+			if(mw.isMobileDevice() && this.getPlayer().getPlayerPoster().length){
+				return; // prevent showing controls on top of the poster when the video first loads
+			}
 			if ( !this.screenOpen ){
 				this.getComponent().addClass( 'open' );
 				// Trigger the screen overlay with layout info:
