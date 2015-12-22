@@ -166,9 +166,7 @@
 			mw.log("mw.KCuePoints::start live cue points watchdog, polling rate: " + liveCuepointsRequestInterval + "ms");
 
 			//Start live cuepoint pulling
-			this.liveCuePointsIntervalId = setInterval(function(){
-				_this.requestLiveCuepoints();
-			}, liveCuepointsRequestInterval);
+			this.liveCuePointsIntervalId = setInterval(function(){_this.requestLiveCuepoints();}, liveCuepointsRequestInterval);
 
 			//Todo: stop when live is offline or when stopped/paused
 			this.embedPlayer.bindHelper("liveOffline", function(){
