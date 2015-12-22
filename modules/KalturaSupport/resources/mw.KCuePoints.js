@@ -216,10 +216,6 @@
 					this.requestThumbAsset(updatedCuePoints, function () {
 						_this.embedPlayer.triggerHelper('KalturaSupport_ThumbCuePointsUpdated', [updatedCuePoints]);
 					});
-					// sort the cuePoitns by startTime:
-					this.midCuePointsArray.sort(function (a, b) {
-						return a.startTime - b.startTime;
-					});
 				}
 			}
 		},
