@@ -630,6 +630,7 @@
 				// Check for secondary plugins:
 				$.each(manifestData, function (otherPluginId, pluginObject) {
 					if (pluginObject.attributes && pluginName != otherPluginId) {
+						$otherPlugins.append($('<h3 style="text-decoration:underline;"/>').text(otherPluginId));
 						$otherPlugins.append(
 							$('<b />').html(pluginObject.description)
 						);
