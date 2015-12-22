@@ -30,9 +30,15 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 			if ( screenName === "infoScreen" ){
 				_this.getScreen().then(function(screen){
 					screen.addClass('semiTransparentBkg');
-					$("#"+embedPlayer.getPlayerElement().id).addClass("blur");
-					embedPlayer.getPlayerPoster().addClass("blur");
 					embedPlayer.disablePlayControls();
+				});
+			}
+		});
+		this.bind('showScreen', function (event, screenName) {
+			if ( screenName === "infoScreen" ){
+				_this.getScreen().then(function(screen){
+					$(embedPlayer.getPlayerElement()).addClass("blur");
+					embedPlayer.getPlayerPoster().addClass("blur");
 				});
 			}
 		});

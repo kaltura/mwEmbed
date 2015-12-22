@@ -145,9 +145,6 @@
 					_this.getScreen().then(function(screen){
 						screen.addClass('semiTransparentBkg'); // add semi-transparent background for share plugin screen only. Won't affect other screen based plugins
 						_this.shareScreenOpened = true;
-						// add blur effect to video and poster
-						$("#"+embedPlayer.getPlayerElement().id).addClass("blur");
-						embedPlayer.getPlayerPoster().addClass("blur");
 						// prevent keyboard key actions to allow typing in share screen fields
 						embedPlayer.triggerHelper( 'onDisableKeyboardBinding' );
 						// disable all player controls except play button, scrubber and volume control
@@ -164,6 +161,14 @@
 						if (embedPlayer.getVideoHolder().width() < 400){
 							$(".share").addClass("small");
 						}
+					});
+				}
+			});
+			this.bind('showScreen', function (event, screenName) {
+				if ( screenName === "share" ){
+					_this.getScreen().then(function(screen){
+						$(embedPlayer.getPlayerElement()).addClass("blur");
+						embedPlayer.getPlayerPoster().addClass("blur");
 					});
 				}
 			});
@@ -212,7 +217,7 @@
 
 			this.bind( 'onpause', function(event, data){
 				if ( _this.shareScreenOpened ){
-					$("#"+embedPlayer.getPlayerElement().id).addClass("blur");
+					$(embedPlayer.getPlayerElement()).addClass("blur");
 					embedPlayer.getPlayerPoster().addClass("blur");
 				}
 			});
@@ -339,7 +344,7 @@
 			},0);
 
 			// close button override
-			$(".share .icon-close").on("click", function(){
+			$(".share .icon-close").on("mousedown", function(e){
 				_this.closeScreen();
 			});
 
@@ -409,7 +414,7 @@
 		},
 		closeScreen: function(){
 			if (this.getPlayer().getPlayerElement()) {
-				$( "#" + this.getPlayer().getPlayerElement().id ).removeClass( "blur" );
+				$( this.getPlayer().getPlayerElement()).removeClass( "blur" );
 				this.getPlayer().getPlayerPoster().removeClass( "blur" );
 			}
 			$(".embed-offset-container").hide();

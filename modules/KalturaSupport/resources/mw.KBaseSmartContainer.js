@@ -94,6 +94,7 @@
 		hideRegisteredPlugins: function(){
 			this.pluginsScreenOpened = false;
 			this.embedPlayer.getVideoHolder().removeClass( "pluginsScreenOpened" );
+			$(this.embedPlayer.getPlayerElement()).removeClass("blur");
 			this.embedPlayer.getVideoHolder().find(".closePluginsScreen").remove(); // remove close button
 			for ( var i = 0; i < this.registeredPlugins.length; i++ ){
 				this.registeredPlugins[i].hide();
@@ -109,7 +110,7 @@
 			var _this = this;
 			this.pluginsScreenOpened = true;
 			this.embedPlayer.getVideoHolder().addClass( "pluginsScreenOpened" );
-
+			$(this.embedPlayer.getPlayerElement()).addClass("blur");
 			// calculate the width for each plugin. Adding 1 to the plugins count to add some spacing. Done each time the plugins are shown to support responsive players.
 			var pluginWidth = this.embedPlayer.getVideoHolder().width() / (this.registeredPlugins.length + 1);
 			this.embedPlayer.getVideoHolder().find(".btn").not(".closePluginsScreen, .icon-next, .icon-prev").width(pluginWidth);
