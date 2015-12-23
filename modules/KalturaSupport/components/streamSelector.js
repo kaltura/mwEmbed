@@ -137,6 +137,7 @@
 				} else {
 					mw.log('streamSelector::Error retrieving streams, disabling component');
 					_this.$el.hide();
+					_this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");
 				}
 			});
 		},
