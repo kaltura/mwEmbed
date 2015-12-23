@@ -181,6 +181,7 @@ return array(
 			"restrictUserAgent" => "",
 			"widevine" => "",
 			"multiDrm" => "",
+			"debugInfo" => "",
 			"sourceSelector" => "",
 			"download" => "",
 			"nativeCallout" => "",
