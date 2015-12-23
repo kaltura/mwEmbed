@@ -118,7 +118,23 @@
 				});
 				_this.addMediaItems(cuepoints);
 
+<<<<<<< HEAD
 				_this.setMediaItemTime();
+=======
+				var mediaItems = _this.createMediaItems(cuepoints);
+				_this.addMediaItems(mediaItems);
+				_this.pendingMediaItems = _this.pendingMediaItems.concat(mediaItems);
+
+				_this.log("Total pending items: " + _this.pendingMediaItems.length);
+
+				//Last cuepoint duration is the entry duration minus cuepoint start time, 
+				//but in live we don't have duration so last cuepoint doesn't have duration.
+				//So in live cuepoints whenever a new cupoint arrives we can calculate the previous last cuepoint
+				//duration using the new cuepoint, e.g. new cuepoint strat time minus previous cuepoint start time
+				//so we add to the new cuepoints that arrived the last previous cuepoint before calling setMediaItemTime
+				mediaItems.unshift(_this.mediaList[_this.mediaList.length-1-mediaItems.length]);
+				_this.setMediaItemTime(mediaItems);
+>>>>>>> a7c4f53... Update chapters.js
 			});
 
 			this.bind("freezeTimeIndicators", function(e, val){
