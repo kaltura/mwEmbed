@@ -50,8 +50,11 @@
 				}
 				// if we have more than 1 plugin registered to this smart container - move the plugins to the smart container screen and bind events
 				if ( _this.registeredPlugins.length > 1 ){
+					if (!_this.embedPlayer.getVideoHolder().find(".smartContainer").length){
+						_this.embedPlayer.getVideoHolder().append("<div class='smartContainer'></div>");
+					}
 					for ( var i = 0; i < _this.registeredPlugins.length; i++ ){
-						_this.registeredPlugins[i].setConfig("parent", "videoHolder");
+						_this.registeredPlugins[i].setConfig("parent", "smartContainer");
 						_this.registeredPlugins[i].setConfig("align", "center");
 					}
 

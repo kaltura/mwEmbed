@@ -23,8 +23,11 @@
     padding-top: 0px;
 }
 .related .icon-close{
-    margin-right: 5px;
+    padding-top: 0 !important;
     right: 0.5em !important;
+}
+.mobile .related .icon-close{
+    margin-right: -2.6em;
 }
 .related .screen-content {
 	padding: 10px 5px;
