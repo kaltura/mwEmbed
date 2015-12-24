@@ -194,20 +194,16 @@
 
             _this.ivqShowScreen();
             _this.KIVQScreenTemplate.tmplAlmostDone();
-            if(unAnsweredArr.length < 8){
-                $(".title-text").addClass("padding17");
-            }
 
             $(".title-text").html(gM('mwe-quiz-almostDone'));
-            $(".sub-text").html(gM('mwe-quiz-remainUnAnswered') + '</br>' + gM('mwe-quiz-pressRelevatToAnswer'));
-            $(".confirm-box").html(gM('mwe-quiz-okGotIt'));
+            $(".sub-text").html(gM('mwe-quiz-remainUnAnswered') + '</br>' + gM('mwe-quiz-pressRelevatToAnswer'))
+            $(".confirm-box").html(gM('mwe-quiz-okGotIt'))
 
             $(document).off('click','.confirm-box')
                 .on('click', '.confirm-box', function () {
                     _this.embedPlayer.seek(0,true);
                     _this.KIVQModule.continuePlay();
                 });
-            _this.KIVQModule.displayHex(_this.KIVQModule.setHexContainerPos("current"),unAnsweredArr);
         },
 
         ssDisplayHint: function(questionNr){
@@ -269,9 +265,8 @@
             _this.ivqShowScreen();
             _this.KIVQScreenTemplate.tmplAllCompleted();
 
-            $(".title-text").addClass('padding20').html(gM('mwe-quiz-completed'));
-
-            $(".sub-text").addClass('margin-top4').html(gM('mwe-quiz-TakeAMoment') + '<strong> '+ gM('mwe-quiz-review').toLowerCase() +' </strong>'
+            $(".title-text").html(gM('mwe-quiz-completed'));
+            $(".sub-text").html(gM('mwe-quiz-TakeAMoment') + '<strong> '+ gM('mwe-quiz-review').toLowerCase() +' </strong>'
                 + gM('mwe-quiz-yourAnswers') + '</br><strong> '+ gM('mwe-quiz-or') +' </strong>'
                 + gM('mwe-quiz-goAhead')+ '<strong> '+ gM('mwe-quiz-submit').toLowerCase() +' </strong>'
             );

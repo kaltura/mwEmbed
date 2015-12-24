@@ -36,7 +36,10 @@
     font-weight: 900;
 }
 .padding4{
-    padding-top: 4vh !important;
+     padding-top: 4vh !important;
+ }
+.padding3{
+    padding-top: 3vh !important;
 }
 .padding8{
     padding-top: 8vh !important;
@@ -44,14 +47,17 @@
 .padding14{
     padding-top:14vh!important;
 }
-.padding17{
-    padding-top:17vh!important;
-}
+/*.padding17{*/
+    /*padding-top:17vh!important;*/
+/*}*/
 .padding23{
     padding-top:23vh !important;
 }
 .padding20{
     padding-top:20vh !important;
+}
+.padding26{
+    padding-top:26vh !important;
 }
 .padding35{
     padding-top:35vh !important;
@@ -68,7 +74,9 @@
 .margin-top7{
     margin-top: 7vh !important;
 }
-
+.paddingB20{
+    padding-bottom: 20vh!important;
+}
 .padding-left11{
     padding-left: 11vw !important;
 }

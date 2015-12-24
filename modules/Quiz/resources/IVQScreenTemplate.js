@@ -96,7 +96,7 @@
                 var _this = this;
                 $(_this.emptyScreen()).hide().append(
                     '<div class="ivqContainer">'+
-                    '   <div class="title-text"></div>'+
+                    '   <div class="title-text padding20"></div>'+
                     '   <div class="sub-text margin-top4"></div>'+
                     '   <div class="completed-BottonContainer">'+
                     '       <div class="review-button button-box-attr font-Lato2"></div>'+
@@ -126,16 +126,9 @@
                 var _this = this;
                 $(_this.emptyScreen()).hide().append(
                     '<div class="ivqContainer">' +
-                    '   <div class="title-text "></div>' +
-                    '   <div class="sub-text"></div>'+
-                    '   <div class="display-all-container">'+
-                    '       <div class ="hex-row">'+
-                    '           <div class="hex-column  left-arrow" style="display: none;"></div>'+
-                    '           <div class="hex-column  right-arrow" style="display: none;" ></div>'+
-                    '           <div class="hex-column hexagon-container"></div>'+
-                    '       </div>'+
-                    '   </div>'+
-                    '   <div class="bottomContainer">'+
+                    '   <div class="title-text padding20"></div>' +
+                    '   <div class="sub-text padding4"></div>'+
+                    '   <div class="bottomContainer  paddingB20">'+
                     '       <div class="confirm-box"></div>'+
                     '   </div>' +
                     '</div>').fadeIn( "slow" );
