@@ -2161,6 +2161,10 @@
 			return (this.sequenceProxy && this.sequenceProxy.isInSequence);
 		},
 
+		isMobileSkin: function(){
+			var skin = this.getRawKalturaConfig("layout") ? this.getRawKalturaConfig("layout").skin : "kdark";
+			return ( mw.getConfig("EmbedPlayer.EnableMobileSkin") === true && skin === "kdark" && mw.isMobileDevice());
+		},
 
 		/**
 		 * Will trigger 'preSequence' event

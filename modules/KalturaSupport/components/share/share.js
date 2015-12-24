@@ -12,8 +12,6 @@
 			showTooltip: true,
 			displayImportance: 'medium',
 			templatePath: 'components/share/share.tmpl.html',
-			smartContainer: 'morePlugins',
-			smartContainerCloseEvent: 'hideScreen',
 
 			usePreviewPlayer: false,
 			previewPlayerEnabled: false,
