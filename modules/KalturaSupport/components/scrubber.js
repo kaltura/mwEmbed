@@ -25,7 +25,7 @@
 			return this.getConfig("sliderPreview") && !this.isDisabled && !this.embedPlayer.isLive();
 		},
 		setup: function (embedPlayer) {
-			if ( mw.isMobileDevice() ){
+			if ( this.embedPlayer.isMobileSkin() ){
 				this.setConfig('parent','controlsContainer');
 				this.setConfig('showOnlyTime',true);
 			}

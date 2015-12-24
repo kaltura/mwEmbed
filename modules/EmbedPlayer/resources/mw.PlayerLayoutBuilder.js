@@ -103,6 +103,10 @@ mw.PlayerLayoutBuilder.prototype = {
 				this.$interface.addClass('mobile');
 			}
 
+			if( this.embedPlayer.isMobileSkin() ){
+				this.$interface.addClass('mobileSkin');
+			}
+
 			if( mw.isTouchDevice() ){
 				this.$interface.addClass('touch');
 			}

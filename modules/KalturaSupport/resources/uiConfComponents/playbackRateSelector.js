@@ -154,7 +154,7 @@
 					},
 					'active': active
 				});
-				if (mw.isMobileDevice() && active){
+				if (_this.embedPlayer.isMobileSkin() && active){
 					_this.getMenu().setActive(idx);
 				}
 			});
@@ -268,7 +268,7 @@
 			if (this.getPlayer().mediaLoadedFlag){
 				this.getPlayer().getPlayerElement().playbackRate = newSpeed;
 			}
-			if (!mw.isMobileDevice()){
+			if (!this.embedPlayer.isMobileSkin()){
 				this.getBtn().text( newSpeed + 'x' );
 			}
 			this.getPlayer().triggerHelper( 'updatedPlaybackRate', newSpeed);
@@ -294,8 +294,8 @@
 			var _this = this;
 			if( !this.$el ) {
 				var $menu = $( '<ul />' );
-				var text = mw.isMobileDevice() ? '' : this.currentSpeed + 'x';
-				var classes = mw.isMobileDevice() ? 'btn icon-speedrate' : 'btn';
+				var text = this.embedPlayer.isMobileSkin() ? '' : this.currentSpeed + 'x';
+				var classes = this.embedPlayer.isMobileSkin() ? 'btn icon-speedrate' : 'btn';
 				var $button = $( '<button />' )
 								.addClass( classes )
 								.attr('title', this.getConfig('title'))

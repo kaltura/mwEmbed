@@ -22,11 +22,14 @@
 .screen.related{
     padding-top: 0px;
 }
+.hover .screen.related{
+    padding-bottom: 10px;
+}
 .related .icon-close{
     padding-top: 0 !important;
     right: 0.5em !important;
 }
-.mobile .related .icon-close{
+.mobileSkin .related .icon-close{
     margin-right: -2.6em;
 }
 .related .screen-content {
@@ -34,11 +37,11 @@
     overflow: hidden;
     height: 100%;
 }
-.mobile .related .screen-content {
+.mobileSkin .related .screen-content {
     padding: 0px 5px;
     padding-bottom: 15px;
 }
-.fullscreen.mobile .related .screen-content {
+.fullscreen.mobileSkin .related .screen-content {
     padding: 10px 5px;
 }
 .related .item {

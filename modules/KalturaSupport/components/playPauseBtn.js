@@ -23,7 +23,7 @@
 			this.addBindings();
 		},
 		isSafeEnviornment: function(){
-			return !mw.isMobileDevice();
+			return !this.embedPlayer.isMobileSkin();
 		},
 		getComponent: function() {
 			var _this = this;

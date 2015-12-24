@@ -187,81 +187,81 @@
 .icon-new-tab:before {
     content: "\e628";
 }
-.mobile .icon-cog:before {
+.mobileSkin .icon-cog:before {
     content: "\e900";
 }
-.mobile .icon-share:before {
+.mobileSkin .icon-share:before {
     content: "\e901";
 }
-.mobile .icon-more:before {
+.mobileSkin .icon-more:before {
     content: "\e902";
 }
-.mobile .icon-chromecast:before {
+.mobileSkin .icon-chromecast:before {
     content: "\e903";
 }
-.mobile .icon-airplay:before {
+.mobileSkin .icon-airplay:before {
     content: "\e904";
 }
-.mobile .icon-contract:before {
+.mobileSkin .icon-contract:before {
     content: "\e905";
 }
-.mobile .icon-expand:before {
+.mobileSkin .icon-expand:before {
     content: "\e906";
 }
-.mobile .icon-play:before {
+.mobileSkin .icon-play:before {
     margin-left: 2px;
     content: "\e907";
 }
-.mobile .icon-pause:before {
+.mobileSkin .icon-pause:before {
     margin-left: -2px;
     content: "\e908";
 }
-.mobile .icon-prev:before {
+.mobileSkin .icon-prev:before {
     content: "\e909";
 }
-.mobile .icon-next:before {
+.mobileSkin .icon-next:before {
     content: "\e90a";
 }
-.mobile .icon-richmedia:before {
+.mobileSkin .icon-richmedia:before {
     content: "\e90b";
 }
-.mobile .icon-info:before {
+.mobileSkin .icon-info:before {
     content: "\e90c";
 }
-.mobile .icon-cc:before {
+.mobileSkin .icon-cc:before {
     content: "\e90d";
 }
-.mobile .icon-speedrate:before {
+.mobileSkin .icon-speedrate:before {
     content: "\e90e";
 }
-.mobile .icon-flag:before {
+.mobileSkin .icon-flag:before {
     content: "\e90f";
 }
-.mobile .icon-attachments:before {
+.mobileSkin .icon-attachments:before {
     content: "\e910";
 }
-.mobile .icon-download:before {
+.mobileSkin .icon-download:before {
     content: "\e911";
 }
-.mobile .icon-swap:before {
+.mobileSkin .icon-swap:before {
     content: "\e912";
 }
-.mobile .icon-mainslide:before {
+.mobileSkin .icon-mainslide:before {
     content: "\e913";
 }
-.mobile .icon-single:before {
+.mobileSkin .icon-single:before {
     content: "\e914";
 }
-.mobile .icon-split:before {
+.mobileSkin .icon-split:before {
     content: "\e915";
 }
-.mobile .icon-viewpoint:before {
+.mobileSkin .icon-viewpoint:before {
     content: "\e916";
 }
-.mobile .icon-related:before {
+.mobileSkin .icon-related:before {
     content: "\e91c";
 }
-.mobile .icon-ad:before {
+.mobileSkin .icon-ad:before {
     content: "\e91e";
 }
 
