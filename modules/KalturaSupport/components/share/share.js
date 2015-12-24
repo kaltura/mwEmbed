@@ -181,6 +181,11 @@
 					if ( !embedPlayer.isInSequence() ){
 						embedPlayer.enablePlayControls();
 					}
+					// remove blur
+					if (embedPlayer.getPlayerElement()) {
+						$( "#" + embedPlayer.getPlayerElement().id ).removeClass( "blur" );
+						embedPlayer.getPlayerPoster().removeClass( "blur" );
+					}
 				}
 			});
 

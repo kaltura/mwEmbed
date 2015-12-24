@@ -21,6 +21,18 @@
 		 	"reasonSpam": gM("ks-MODERATION-REASON-SPAM")
 		},
 
+		setup: function () {
+			this.addBindings();
+		},
+
+		addBindings: function () {
+			this.bind('onChangeMedia', $.proxy(function () {
+				this.getPlayer().triggerHelper( 'onEnableKeyboardBinding' );
+				$(this.getPlayer().getPlayerElement()).removeClass( "blur" );
+				this.getPlayer().getPlayerPoster().removeClass( "blur" );
+			}, this));
+		},
+
 		drawModal: function() {
 			if (this.isDisabled) return;
 			var _this = this;
