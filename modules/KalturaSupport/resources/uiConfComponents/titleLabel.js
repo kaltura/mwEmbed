@@ -10,8 +10,7 @@
 		},
 		setup: function(){
 			var _this = this;
-			var skin = this.embedPlayer.getRawKalturaConfig("layout") ? this.embedPlayer.getRawKalturaConfig("layout").skin : "kdark";
-			if (mw.isMobileDevice() && skin === "kdark"){
+			if (this.embedPlayer.isMobileSkin()){
 				this.setConfig('parent','controlBarContainer');
 				this.setConfig('insertMode','firstChild');
 				this.bind('onHideControlBar', function(){
@@ -57,8 +56,7 @@
 			);
 		},
 		getAvailableWidth:function(){
-			var skin = this.embedPlayer.getRawKalturaConfig("layout") ? this.embedPlayer.getRawKalturaConfig("layout").skin : "kdark";
-			if (mw.isMobileDevice() && skin === "kdark"){
+			if (this.embedPlayer.isMobileSkin()){
 				return "90%";
 			}else{
 				return this.embedPlayer.getWidth() - ($('.' + this.getConfig('parent') + ' .btn').length + 1) * 30;

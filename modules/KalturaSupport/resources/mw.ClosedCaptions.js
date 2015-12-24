@@ -861,7 +861,7 @@
 					'active': ( _this.selectedSource === source && _this.getConfig( "displayCaptions" )  )
 				});
 				items.push({'label':source.label, 'value':source.label});
-				if (mw.isMobileDevice() && _this.selectedSource === source){
+				if (_this.embedPlayer.isMobileSkin() && _this.selectedSource === source){
 					_this.getMenu().setActive(idx+1);
 				}
 			});

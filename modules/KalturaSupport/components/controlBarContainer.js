@@ -9,7 +9,7 @@
 		keepOnScreen: false,
 
 		setup: function(){
-			if (mw.isMobileDevice()){
+			if (this.embedPlayer.isMobileSkin()){
 				this.setConfig("hover", true);
 			}
 			// Exit if we're using native controls
@@ -36,8 +36,7 @@
 				_this.show();
 			});
 			this.bind( 'layoutBuildDone', function(){
-				var skin = _this.embedPlayer.getRawKalturaConfig("layout") ? _this.embedPlayer.getRawKalturaConfig("layout").skin : "kdark";
-				if (!mw.isMobileDevice() || skin !== "kdark"){
+				if (!_this.embedPlayer.isMobileSkin()){
 					_this.show();
 				}
 			});
@@ -79,7 +78,7 @@
 			}
 		},
 		show: function(){
-			if(mw.isMobileDevice() && this.getPlayer().getPlayerPoster().length){
+			if(this.embedPlayer.isMobileSkin() && this.getPlayer().getPlayerPoster().length){
 				return; // prevent showing controls on top of the poster when the video first loads
 			}
 			this.getPlayer().isControlsVisible = true;

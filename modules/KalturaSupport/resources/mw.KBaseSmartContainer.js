@@ -13,7 +13,7 @@
 			this.addBindings();
 		},
 		isSafeEnviornment: function(){
-			return mw.isMobileDevice() && mw.getConfig("EmbedPlayer.UseSmartContainers") !== false; // disable on desktop or "EmbedPlayer.UseSmartContainers" flashvar set to false
+			return this.embedPlayer.isMobileSkin() && mw.getConfig("EmbedPlayer.UseSmartContainers") !== false; // disable on desktop or "EmbedPlayer.UseSmartContainers" flashvar set to false
 		},
 		getComponent: function() {
 			var _this = this;
