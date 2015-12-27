@@ -216,14 +216,38 @@
             _this.canvas.addEventListener("mousemove", function (e) {
                 _this._findxy('move', e)
             }, false);
+            var _this = this;
+            _this.canvas.addEventListener("touchmove", function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if(e.clientX == undefined){
+                    e.clientX = e.pageX;
+                    e.clientY = e.pageY;
+                }
+                _this._findxy('move', e);
+            }, false);
             _this.canvas.addEventListener("mousedown", function (e) {
-                _this._findxy('down', e)
+                _this._findxy('down', e);
+            }, false);
+            _this.canvas.addEventListener("touchstart", function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.clientX = e.pageX;
+                e.clientY = e.pageY;
+                _this._findxy('down', e);
             }, false);
             _this.canvas.addEventListener("mouseup", function (e) {
-                _this._findxy('up', e)
+                _this._findxy('up', e);
+            }, false);
+            _this.canvas.addEventListener("touchend", function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.clientX = e.pageX;
+                e.clientY = e.pageY;
+                _this._findxy('up', e);
             }, false);
             _this.canvas.addEventListener("mouseout", function (e) {
-                _this._findxy('out', e)
+                _this._findxy('out', e);
             }, false);
         },
 
@@ -281,7 +305,8 @@
                     this.x = "black";
                     break;
                 case "white":
-                    this.canvasCtx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+                    this.x = "white";
+                    //this.canvasCtx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
                     break;
             }
             this.y = 2;
@@ -306,6 +331,20 @@
                     this.dot_flag = false;
                 }
             }
+            if(res == 'touchMove'){
+                if (this.flag) {
+                    this.prevX = this.currX;
+                    this.prevY = this.currY;
+                    this.currX = e.clientX - this.canvas.offsetLeft;
+                    this.currY = e.clientY - this.canvas.offsetTop;
+                    if(this.x != "white"){
+                        this._draw();
+                    }
+                    else{
+                        this.canvasCtx.clearRect(this.prevX, this.prevY, this.currX, this.currY);
+                    }
+                }
+            }
             if (res == 'up' || res == "out") {
                 this.flag = false;
             }
@@ -315,7 +354,12 @@
                     this.prevY = this.currY;
                     this.currX = e.clientX - this.canvas.offsetLeft;
                     this.currY = e.clientY - this.canvas.offsetTop;
-                    this._draw();
+                    if(this.x != "white"){
+                        this._draw();
+                    }
+                    else{
+                        this.canvasCtx.clearRect(this.prevX, this.prevY, this.currX, this.currY);
+                    }
                 }
             }
         },
