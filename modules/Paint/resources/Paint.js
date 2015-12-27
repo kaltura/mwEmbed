@@ -6,11 +6,15 @@
         defaultConfig: {
             parent: "controlsContainer",
             templatePath: '../Paint/resources/templates/paint.tmpl.html',
-            editMode : false
+            editMode : false,
+            paintCPTheme: 'default'
         },
         //plugin parameters
         duringEdit : false,
+        seekForPaint : false,
+        cpPressed : false,
         kClient : null,
+        embedPlayer : null,
         canvas : null,
         canvasCtx : null,
         canvasWidth : 0,
@@ -26,9 +30,11 @@
         y : 2,
 
 		setup: function(){
-            var embedPlayer = this.getPlayer();
-            this.editMode = (this.getConfig('editMode') !== 'undefined') ?
+            this.embedPlayer = this.getPlayer();
+            this.editMode = (this.getConfig('editMode') !== undefined) ?
                                 this.getConfig('editMode') : this.defaultConfig.editMode;
+            this.paintCPTheme = (this.getConfig('paintCPTheme') !== undefined) ?
+                                        this.getConfig('paintCPTheme') : this.defaultConfig.paintCPTheme;
             if(!this.editMode){
                 this.getAllPaintCuePoints();
             }
@@ -38,7 +44,6 @@
 
 		addBindings:function(){
             var _this = this;
-            var embedPlayer = this.getPlayer();
             this.bind('onOpenFullScreen', function() {
                 //listen to event only when resizing the player window
                 _this.bind('updateLayout', function() {
@@ -53,12 +58,30 @@
                     _this.unbind('updateLayout');
                 });
             });
+            this.bind('seeked', function () {
+                _this.embedPlayer.stopPlayAfterSeek = true;
+                _this.enablePlayDuringScreen = false;
+                if(!_this.seekForPaint){
+                    if (_this.isScreenVisible()) {
+                        $('#painterCanvas').empty().remove();
+                        _this.hideScreen();
+                    }
+                }
+            });
+            this.bind('seek', function () {
+                _this.seekForPaint = false;
+            });
+            this.bind('seeking', function () {
+                if(!_this.cpPressed){
+                    _this.seekForPaint = false;
+                }
+                _this.cpPressed = false;
+            });
             if(this.editMode) {
                 this.bind('showScreen', function () {
-                    //embedPlayer.disablePlayControls();
                     _this.duringEdit = true;
                     $('.largePlayBtn').css('display', 'none');
-                    embedPlayer.pause();
+                    _this.embedPlayer.pause();
                 });
 
                 this.bind('onpause', function () {
@@ -77,21 +100,24 @@
                 });
             }else {
                 this.bind('KalturaSupport_CuePointReached', function (e, cuePointObj) {
-                    if(cuePointObj.cuePoint){
-                        _this._showPainterCanvas(cuePointObj.cuePoint);
-                        if(_this.enablePlayDuringScreen) {
-                            _this.enablePlayDuringScreen = false;
+                    if(_this.seekForPaint){
+                        if(cuePointObj.cuePoint){
+                            _this._showPainterCanvas(cuePointObj.cuePoint);
+                            if(_this.enablePlayDuringScreen) {
+                                _this.enablePlayDuringScreen = false;
+                            }
+                            //removing the 'play' icon from the middle of the screen
+                            $('.largePlayBtn').css('display', 'none');
                         }
-                        //removing the 'play' icon from the middle of the screen
-                        $('.largePlayBtn').css('display', 'none');
+                        _this.seekForPaint = false;
                     }
                 });
-
                 //only for first initialization of paint cue points on the scrubber
-                //this.bind('onplay', function () {
-                //    _this.displayBubbles();
-                //    _this.unbind('onplay');
-                //});
+                this.bind('onplay', function () {
+                    _this.displayBubbles();
+                    _this.seekForPaint = true;
+                    if (_this.isScreenVisible()) _this.removeScreen();
+                });
             }
         },
 
@@ -109,11 +135,10 @@
         //retrieve all current entry related code cue points
         getAllPaintCuePoints : function() {
             var _this = this;
-            var embedPlayer = this.getPlayer();
             var getCps = {
                 'service': 'cuepoint_cuepoint',
                 'action': 'list',
-                'filter:entryIdEqual': embedPlayer.kentryid,
+                'filter:entryIdEqual': _this.embedPlayer.kentryid,
                 'filter:objectType': 'KalturaCodeCuePointFilter',
                 'filter:orderBy': '+startTime'
             };
@@ -126,14 +151,13 @@
 
         displayBubbles : function() {
             var _this = this;
-            var embedPlayer = this.getPlayer();
-            var msDuration = embedPlayer.evaluate('{mediaProxy.entry.msDuration}');
-            var scrubber = embedPlayer.getInterface().find(".scrubber");
+            var msDuration = _this.embedPlayer.evaluate('{mediaProxy.entry.msDuration}');
+            var scrubber = _this.embedPlayer.getInterface().find(".scrubber");
             var cPo = $.paintCpObjects;
 
             //cleaning current bubbles display
-            embedPlayer.getInterface().find(".paint-bubble-container").empty().remove();
-            embedPlayer.getInterface().find(".paint-bubble").empty().remove();
+            _this.embedPlayer.getInterface().find(".paint-bubble-container").empty().remove();
+            _this.embedPlayer.getInterface().find(".paint-bubble-" + _this.paintCPTheme).empty().remove();
 
             scrubber.parent().prepend('<div class="paint-bubble-container"></div>');
 
@@ -143,11 +167,13 @@
                 $('.paint-bubble-container')
                     .append($('<div id ="' + key + '" style="margin-left:' + pos + '%">'
                             + (parseInt(key) + 1) + ' </div>')
-                    .addClass("paint-bubble"));
+                    .addClass("paint-bubble-" + _this.paintCPTheme));
             });
 
-            $('.paint-bubble').on('click', function () {
-                _this._gotoScrubberPos($(this).attr('id'));
+            $('.paint-bubble-' + _this.paintCPTheme).on('click', function () {
+                _this.seekForPaint = true;
+                _this.embedPlayer.pause();
+                _this._gotoScrubberPos(_this, $(this).attr('id'));
             });
         },
 
@@ -157,10 +183,11 @@
             this.showScreen();
         },
 
-        _gotoScrubberPos : function (cuePointId) {
-            var embedPlayer = this.getPlayer();
-            embedPlayer.stopPlayAfterSeek = true;
-            embedPlayer.sendNotification('doSeek', (($.paintCpObjects[cuePointId].startTime) /1000)+0.1);
+        _gotoScrubberPos : function (_this, cuePointId) {
+            _this.cpPressed = true;
+            _this.embedPlayer.stopPlayAfterSeek = true;
+            _this.seekForPaint = true;
+            _this.embedPlayer.sendNotification('doSeek', (($.paintCpObjects[cuePointId].startTime) /1000)+0.1);
         },
 
         //show the canvas on top of the player
@@ -378,14 +405,13 @@
         //saving the canvas painting as a cue point for current entry
         _savePaintCuePoint : function() {
             var _this = this;
-            var embedPlayer = this.embedPlayer;
             var paintData = this.canvas.toDataURL();
             var cuePoint = {
                 "service": "cuePoint_cuePoint",
                 "action": "add",
                 "cuePoint:objectType": "KalturaCodeCuePoint",
-                "cuePoint:entryId": embedPlayer.kentryid,
-                "cuePoint:startTime": embedPlayer.currentTime * 1000,
+                "cuePoint:entryId": _this.embedPlayer.kentryid,
+                "cuePoint:startTime": _this.embedPlayer.currentTime * 1000,
                 "cuePoint:code": 'dataUrl',
                 "cuePoint:description": paintData
             };
@@ -398,12 +424,11 @@
 
         //make the player playing the media again
         _continuePlay: function () {
-            var embedPlayer = this.getPlayer();
             if (this.isScreenVisible()){
                 this.removeScreen();
             }
-            embedPlayer.enablePlayControls();
-            embedPlayer.play();
+            this.embedPlayer.enablePlayControls();
+            this.embedPlayer.play();
         },
 
         //get current client
