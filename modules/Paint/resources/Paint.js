@@ -173,7 +173,7 @@
             $('.paint-bubble-' + _this.paintCPTheme).on('click', function () {
                 _this.seekForPaint = true;
                 _this.embedPlayer.pause();
-                _this._gotoScrubberPos(_this, $(this).attr('id'));
+                _this._gotoScrubberPos($(this).attr('id'));
             });
         },
 
@@ -183,11 +183,11 @@
             this.showScreen();
         },
 
-        _gotoScrubberPos : function (_this, cuePointId) {
-            _this.cpPressed = true;
-            _this.embedPlayer.stopPlayAfterSeek = true;
-            _this.seekForPaint = true;
-            _this.embedPlayer.sendNotification('doSeek', (($.paintCpObjects[cuePointId].startTime) /1000)+0.1);
+        _gotoScrubberPos : function (cuePointId) {
+            this.cpPressed = true;
+            this.embedPlayer.stopPlayAfterSeek = true;
+            this.seekForPaint = true;
+            this.embedPlayer.sendNotification('doSeek', (($.paintCpObjects[cuePointId].startTime) /1000)+0.1);
         },
 
         //show the canvas on top of the player
