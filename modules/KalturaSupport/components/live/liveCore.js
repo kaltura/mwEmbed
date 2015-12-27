@@ -159,11 +159,11 @@
 					if ( !_this.getPlayer().getError() ) {
 						_this.getPlayer().enablePlayControls();
 					}
+                    embedPlayer.triggerHelper( 'liveOnline' );
 					if ( _this.playWhenOnline ) {
 						embedPlayer.play();
 						_this.playWhenOnline = false;
 					}
-					embedPlayer.triggerHelper( 'liveOnline' );
 
 					//reload livestream
 					if ( !embedPlayer.firstPlay && _this.isDVR() ) {

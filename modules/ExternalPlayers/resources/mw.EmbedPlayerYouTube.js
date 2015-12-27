@@ -161,6 +161,7 @@
 				_this.setDuration();
 				_this._playContorls = true;
 				_this.playerReady.resolve();
+				$(_this).trigger('playerReady');
 				//autoMute
 				if(mw.getConfig('autoMute')){
 					_this.setVolume(0);
@@ -180,7 +181,7 @@
 						_this.hideSpinner();
 					},250);
 				}
-
+				mw.log("EmbedPlayerYouTube:: Trigger: playerReady for HTML5 player");
 			};
 			// YOUTUBE FLASH PLAYER READY
 			window['onYouTubePlayerReady'] = function( playerIdStr ){
@@ -202,6 +203,8 @@
 				}else{
 					window['hidePlayer']();
 				}
+				mw.log("EmbedPlayerYouTube:: Trigger: playerReady for Flash player");
+				$(_this).trigger('playerReady');
 			};
 			// YOUTUBE IFRAME READY
 			window['onYouTubeIframeAPIReady'] = function( playerIdStr ){
@@ -410,6 +413,12 @@
 				callback();
 				if( mw.getConfig('autoPlay') || _this.isPlaylist){
 					if (mw.isMobileDevice()){
+						if (mw.isIphone()){
+							$(".largePlayBtn").hide();
+							setTimeout(function(){
+								_this.hideSpinner();
+							},350);
+						}
 						if (_this.ytMobilePlayed){
 							_this.play();
 						}else{

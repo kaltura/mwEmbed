@@ -159,30 +159,28 @@
 			if ( this.trackCuePoints ){
 				this.handleCuePoints();
 			}
-			if ( mw.isIE8() || mw.isIE9() || _this.leadWithFlash ) {
-				if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
-					mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
-					_this.isChromeless = true;
-					_this.prevSlotType = 'none';
-					_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
-						_this.bindChromelessEvents();
-					});
-					_this.embedPlayer.bindHelper( 'volumeChanged' + this.bindPostfix, function(event, percent){
-						mw.log("DoubleClick::chromeless volumeChanged: " + percent );
-						_this.embedPlayer.setPlayerElementVolume( percent );
-					});
-					_this.embedPlayer.bindHelper( 'Kaltura_SendNotification' + this.bindPostfix, function(event, notificationName, notificationData){
-						if (notificationName === "doPause"){
-							_this.embedPlayer.getPlayerElement().pause();
-						}
-					});
-					_this.addManagedBinding();
-					callback();
-					return;
-				} else if ( mw.isIE8() || mw.isIE9() ) {   //no flash on IE8/9
-					callback();
-					return;
-				}
+			if (( mw.isIE8() || mw.isIE9() || _this.leadWithFlash ) && (mw.supportsFlash())) {
+				mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
+				_this.isChromeless = true;
+				_this.prevSlotType = 'none';
+				_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
+					_this.bindChromelessEvents();
+				});
+				_this.embedPlayer.bindHelper( 'volumeChanged' + this.bindPostfix, function(event, percent){
+					mw.log("DoubleClick::chromeless volumeChanged: " + percent );
+					_this.embedPlayer.setPlayerElementVolume( percent );
+				});
+				_this.embedPlayer.bindHelper( 'Kaltura_SendNotification' + this.bindPostfix, function(event, notificationName, notificationData){
+					if (notificationName === "doPause"){
+						_this.embedPlayer.getPlayerElement().pause();
+					}
+				});
+				_this.addManagedBinding();
+				callback();
+				return;
+			} else if ( mw.isIE8() || mw.isIE9() ) {   //no flash on IE8/9
+				callback();
+				return;
 			}
 
 			//if we got till here we're going to use the javascript - check if we have spacific javascript configuration
@@ -495,7 +493,7 @@
 			}
 			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 
-			if (isLinear) {
+			if (isLinear && !this.isNativeSDK) {
 				this.embedPlayer.enablePlayControls(["scrubber","share","infoScreen","related"]);
 			} else {
 				_this.embedPlayer.pause();
@@ -1064,6 +1062,9 @@
 					// hide content / show playerplayer position:
 					_this.hideContent();
 
+					if ( mw.isIOS() && _this.embedPlayer.seeking ){
+						_this.embedPlayer.restorePlayerOnScreen();
+					}
 					// set ad playing flag:
 
 					_this.embedPlayer.sequenceProxy.isInSequence = true;
@@ -1136,161 +1137,161 @@
 			});
 		},
 		bindChromelessEvents: function(){
-			var _this = this;
-			// bind to chromeless player events
-			this.embedPlayer.getPlayerElement().subscribe(function(){
-				mw.log("DoubleClick:: adLoadedEvent");
-				_this.adManagerLoaded = true;
-			}, 'adLoadedEvent');
+			//First check that we even have a player element to access, player will be empty in cases where we do
+			//an empty player loading first and only after that we ask for entry data
+			if (this.embedPlayer.getPlayerElement() !== undefined && this.embedPlayer.getPlayerElement() !== null) {
+				var _this = this;
+				// bind to chromeless player events
+				this.embedPlayer.getPlayerElement().subscribe(function () {
+					mw.log("DoubleClick:: adLoadedEvent");
+					_this.adManagerLoaded = true;
+				}, 'adLoadedEvent');
 
-			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
-				mw.log("DoubleClick:: adStart");
-				// set volume when ad starts to enable autoMute. TODO: remove next line once DoubleClick fix their bug when setting adsManager.volume before ad starts
-				_this.embedPlayer.setPlayerElementVolume(_this.embedPlayer.volume);
-				// trigger ad play event
-				$(_this.embedPlayer).trigger("onAdPlay",[adInfo.adID, null, null, 0, adInfo.duration]); //index is missing =0 by now
-				// This changes player state to the relevant value ( play-state )
-				$(_this.embedPlayer).trigger("playing");
-				$(_this.embedPlayer).trigger("onplay");
-				if (_this.currentAdSlotType != _this.prevSlotType) {
-					_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
-					_this.prevSlotType = _this.currentAdSlotType;
-				}
-				if (adInfo.duration > 0){
-					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', adInfo.duration );
-				}
-				if ( _this.isChromeless ) {
-					$(".mwEmbedPlayer").hide();
-				}
-				if ( _this.getConfig( 'countdownText' ) && _this.embedPlayer.getInterface().find(".ad-notice-label").length == 0){
-					// Add the notice target:
-					_this.embedPlayer.getVideoHolder().append(
-						$('<span />')
-							.addClass( 'ad-component ad-notice-label' )
-					);
-				}
-				// Send a notification to trigger associated events and update ui
-				_this.embedPlayer.paused = false;
-			},'adStart', true);
-
-
-			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
-				mw.log("DoubleClick:: adLoaded");
-				_this.isLinear = adInfo.isLinear;
-				if (!_this.isLinear && _this.isChromeless ){
-					$(".mwEmbedPlayer").hide();
-					mw.setConfig("EmbedPlayer.EnableFlashActivation", false);
-				}
-				var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
-				// dispatch adOpen event
-				$( _this.embedPlayer).trigger( 'onAdOpen',[adInfo.adID, adInfo.adSystem, currentAdSlotType, adInfo.adPosition] );
-				if (!_this.isLinear){
-					_this.restorePlayer();
-					setTimeout(function(){
-						_this.embedPlayer.getPlayerElement().play();
-					},250);
-				}else{
-					if (!adInfo.skippable){
-						_this.showSkipBtn();
+				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
+					mw.log("DoubleClick:: adStart");
+					_this.embedPlayer.sequenceProxy.isInSequence = true;
+					// set volume when ad starts to enable autoMute. TODO: remove next line once DoubleClick fix their bug when setting adsManager.volume before ad starts
+					_this.embedPlayer.setPlayerElementVolume(_this.embedPlayer.volume);
+					// trigger ad play event
+					$(_this.embedPlayer).trigger("onAdPlay", [adInfo.adID, null, null, 0, adInfo.duration]); //index is missing =0 by now
+					// This changes player state to the relevant value ( play-state )
+					$(_this.embedPlayer).trigger("playing");
+					$(_this.embedPlayer).trigger("onplay");
+					if (_this.currentAdSlotType != _this.prevSlotType) {
+						_this.embedPlayer.adTimeline.updateUiForAdPlayback(_this.currentAdSlotType);
+						_this.prevSlotType = _this.currentAdSlotType;
 					}
-				}
-			},'adLoaded', true);
-
-			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
-				mw.log("DoubleClick:: adCompleted");
-				$(_this.embedPlayer).trigger('onAdComplete',[adInfo.adID, mw.npt2seconds($(".currentTimeLabel").text())]);
-				_this.hideSkipBtn();
-			},'adCompleted', true);
-
-			this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
-				mw.log("DoubleClick:: adClicked");
-				_this.toggleAdPlayback(adInfo.isLinear);
-			}, 'adClicked', true);
-
-			this.embedPlayer.getPlayerElement().subscribe(function(companionInfo){
-				mw.log("DoubleClick:: displayCompanion");
-				_this.showCompanion(companionInfo.companionID, companionInfo.content);
-			},'displayCompanion', true);
-
-			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
-				mw.log("DoubleClick:: allAdsCompleted");
-				setTimeout(function(){
-					var isContentCompleted = true;
-					if (mw.isNativeApp()) {
-						isContentCompleted = _this.currentAdSlotType == 'postroll';
+					if (adInfo.duration > 0) {
+						_this.embedPlayer.triggerHelper('AdSupport_AdUpdateDuration', adInfo.duration);
 					}
-					_this.restorePlayer(isContentCompleted);
-				},0);
-				if (_this.currentAdSlotType == 'postroll'){
-					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration', _this.entryDuration );
-					_this.embedPlayer.triggerHelper( 'timeupdate', 0);
-				}
-				_this.embedPlayer.triggerHelper( 'onAllAdsCompleted' );
-			},'allAdsCompleted', true);
-
-			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
-				mw.log("DoubleClick:: adRemainingTimeChange");
-				if (adInfo.duration > 0){
-					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', (adInfo.duration - adInfo.remain));
-					_this.embedPlayer.updatePlayHead( adInfo.time / adInfo.duration );
-				}
-				// Update sequence property per active ad:
-				if (adInfo.remain > 0){
-					_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  parseInt(adInfo.remain) );
-				}
-				if (_this.getConfig('countdownText')){
-					_this.embedPlayer.getInterface().find(".ad-notice-label").text(_this.getConfig('countdownText'));
-				}
-				_this.updateRemainingAdTime(adInfo.time);
-			},'adRemainingTimeChange', true);
-
-			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
-				mw.log("DoubleClick:: contentResumeRequested");
-				_this.embedPlayer.sequenceProxy.isInSequence = false;
-				if (_this.prevSlotType === "midroll") {
-					_this.prevSlotType = ""; // to support multiple midrolls we must clear prevSlotType when the midroll is finished
-				}
-				_this.currentAdSlotType = _this.embedPlayer.adTimeline.currentAdSlotType;
-				if (_this.currentAdSlotType == 'midroll'){
-					setTimeout(function(){
-						_this.embedPlayer.setDuration(_this.entryDuration);
-						_this.embedPlayer.startMonitor();
-						_this.embedPlayer.getPlayerElement().play();
-					},250);
-				}
-				if ( _this.currentAdSlotType !== 'postroll' ){
-					_this.restorePlayer(null, true);
-					if ( _this.currentAdSlotType === 'preroll' ){
-						_this.currentAdSlotType = "midroll";
+					if (_this.isChromeless) {
+						$(".mwEmbedPlayer").hide();
 					}
-					if ( !_this.isNativeSDK ) {
+					if (_this.getConfig('countdownText') && _this.embedPlayer.getInterface().find(".ad-notice-label").length == 0) {
+						// Add the notice target:
+						_this.embedPlayer.getVideoHolder().append(
+								$('<span />')
+										.addClass('ad-component ad-notice-label')
+						);
+					}
+					// Send a notification to trigger associated events and update ui
+					_this.embedPlayer.paused = false;
+				}, 'adStart', true);
+
+
+				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
+					mw.log("DoubleClick:: adLoaded");
+					_this.isLinear = adInfo.isLinear;
+					if (!_this.isLinear && _this.isChromeless) {
+						$(".mwEmbedPlayer").hide();
+						mw.setConfig("EmbedPlayer.EnableFlashActivation", false);
+					}
+					var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
+					// dispatch adOpen event
+					$(_this.embedPlayer).trigger('onAdOpen', [adInfo.adID, adInfo.adSystem, currentAdSlotType, adInfo.adPosition]);
+					if (!_this.isLinear) {
+						_this.restorePlayer();
 						setTimeout(function () {
+							_this.embedPlayer.getPlayerElement().play();
+						}, 250);
+					} else {
+						if (!adInfo.skippable) {
+							_this.showSkipBtn();
+						}
+					}
+				}, 'adLoaded', true);
+
+				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
+					mw.log("DoubleClick:: adCompleted");
+					$(_this.embedPlayer).trigger('onAdComplete', [adInfo.adID, mw.npt2seconds($(".currentTimeLabel").text())]);
+					_this.hideSkipBtn();
+				}, 'adCompleted', true);
+
+				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
+					mw.log("DoubleClick:: adClicked");
+					_this.toggleAdPlayback(adInfo.isLinear);
+				}, 'adClicked', true);
+
+				this.embedPlayer.getPlayerElement().subscribe(function (companionInfo) {
+					mw.log("DoubleClick:: displayCompanion");
+					_this.showCompanion(companionInfo.companionID, companionInfo.content);
+				}, 'displayCompanion', true);
+
+				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
+					mw.log("DoubleClick:: allAdsCompleted");
+					setTimeout(function () {
+						// content completed
+						_this.restorePlayer(true);
+					}, 0);
+					if (_this.currentAdSlotType == 'postroll') {
+						_this.embedPlayer.triggerHelper('AdSupport_AdUpdateDuration', _this.entryDuration);
+						_this.embedPlayer.triggerHelper('timeupdate', 0);
+					}
+					_this.embedPlayer.triggerHelper('onAllAdsCompleted');
+				}, 'allAdsCompleted', true);
+
+				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
+					mw.log("DoubleClick:: adRemainingTimeChange");
+					if (adInfo.duration > 0) {
+						_this.embedPlayer.triggerHelper('AdSupport_AdUpdatePlayhead', (adInfo.duration - adInfo.remain));
+						_this.embedPlayer.updatePlayHead(adInfo.time / adInfo.duration);
+					}
+					// Update sequence property per active ad:
+					if (adInfo.remain > 0) {
+						_this.embedPlayer.adTimeline.updateSequenceProxy('timeRemaining', parseInt(adInfo.remain));
+					}
+					if (_this.getConfig('countdownText')) {
+						_this.embedPlayer.getInterface().find(".ad-notice-label").text(_this.getConfig('countdownText'));
+					}
+					_this.updateRemainingAdTime(adInfo.time);
+				}, 'adRemainingTimeChange', true);
+
+				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
+					mw.log("DoubleClick:: contentResumeRequested");
+					_this.embedPlayer.sequenceProxy.isInSequence = false;
+					if (_this.prevSlotType === "midroll") {
+						_this.prevSlotType = ""; // to support multiple midrolls we must clear prevSlotType when the midroll is finished
+					}
+					_this.currentAdSlotType = _this.embedPlayer.adTimeline.currentAdSlotType;
+					if (_this.currentAdSlotType == 'midroll') {
+						setTimeout(function () {
+							_this.embedPlayer.setDuration(_this.entryDuration);
 							_this.embedPlayer.startMonitor();
 							_this.embedPlayer.getPlayerElement().play();
-						}, 100);
+						}, 250);
 					}
-				}
-				_this.playingLinearAd = false;
-			},'contentResumeRequested', true);
+					if (_this.currentAdSlotType !== 'postroll') {
+						_this.restorePlayer(null, true);
+						if (_this.currentAdSlotType === 'preroll') {
+							_this.currentAdSlotType = "midroll";
+						}
+						if (!_this.isNativeSDK) {
+							setTimeout(function () {
+								_this.embedPlayer.startMonitor();
+								_this.embedPlayer.getPlayerElement().play();
+							}, 100);
+						}
+					}
+					_this.playingLinearAd = false;
+				}, 'contentResumeRequested', true);
 
-			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
-				mw.log("DoubleClick:: contentPauseRequested");
-				_this.entryDuration = _this.embedPlayer.getDuration();
-				_this.embedPlayer.sequenceProxy.isInSequence = true;
-				_this.embedPlayer.stopMonitor();
-				_this.playingLinearAd = true;
-			},'contentPauseRequested', true);
+				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
+					mw.log("DoubleClick:: contentPauseRequested");
+					_this.entryDuration = _this.embedPlayer.getDuration();
+					_this.embedPlayer.stopMonitor();
+					_this.playingLinearAd = true;
+				}, 'contentPauseRequested', true);
 
-			this.embedPlayer.getPlayerElement().subscribe(function(adInfo){
-				mw.log("DoubleClick:: adsLoadError");
-				setTimeout(function(){
-					_this.embedPlayer.hideSpinner();
-					_this.adLoaderErrorFlag = true;
-					$( _this.embedPlayer ).trigger("adErrorEvent");
-					_this.restorePlayer();
-				},100);
-			},'adsLoadError', true);
-
+				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
+					mw.log("DoubleClick:: adsLoadError");
+					setTimeout(function () {
+						_this.embedPlayer.hideSpinner();
+						_this.adLoaderErrorFlag = true;
+						$(_this.embedPlayer).trigger("adErrorEvent");
+						_this.restorePlayer();
+					}, 100);
+				}, 'adsLoadError', true);
+			}
 		},
 
 		getPlayerSize: function(){

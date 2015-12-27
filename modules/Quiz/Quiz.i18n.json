@@ -8,18 +8,19 @@
     "mwe-quiz-next":"CONTINUE",
     "mwe-quiz-why":"WHY",
     "mwe-quiz-hint":"HINT",
-    "mwe-quiz-invideoTip":"Answers are submitted at the end of the quiz.</br> All questions must be answered.",
+    "mwe-quiz-invideoTip":"All questions must be answered.</br>The quiz will be submitted at the end.",
     "mwe-quiz-almostDone":"Almost Done",
     "mwe-quiz-remainUnAnswered":"It appears that the following questions remained unanswered",
-    "mwe-quiz-pressRelevatToAnswer":"Press on relevant question to answer",
+    "mwe-quiz-pressRelevatToAnswer":"You must answer all questions before you can submit",
     "mwe-quiz-doneReview":"DONE REVIEW",
     "mwe-quiz-done":"Done !",
     "mwe-quiz-reviewNextQ":"REVIEW NEXT QUESTION",
     "mwe-quiz-question":"QUESTION",
     "mwe-quiz-skipForNow":"SKIP FOR NOW",
     "mwe-quiz-unanswered":"UN-ANSWERED",
-    "mwe-quiz-completedScore":"You completed the quiz, your score is ",
-    "mwe-quiz-reviewSubmit":"press any question to review submission",
+    "mwe-quiz-Submitted":"Submitted",
+    "mwe-quiz-completedScore":"You completed the quiz and your score is ",
+    "mwe-quiz-reviewSubmit":"Press any question to review how you performed",
     "mwe-quiz-thankYou":"Thank You.",
     "mwe-quiz-ok":"Ok",
     "mwe-quiz-completedQuiz":"You completed the quiz",
@@ -34,6 +35,8 @@
     "mwe-quiz-yourAnswer":"Your Answer:",
     "mwe-quiz-correctAnswer":"Correct Answer:",
     "mwe-quiz-gotIt":"Got It !",
-    "mwe-quiz-pdf":"Pre-test Available"
+    "mwe-quiz-okGotIt":"Ok, Got It!",
+    "mwe-quiz-pdf":"Pre-test Available",
+    "mwe-quiz-completed":"Completed"
   }
 }

@@ -543,11 +543,13 @@ mw.KAdPlayer.prototype = {
 				mw.sendBeaconUrl( adSlot.videoClickTracking [i]);
 			}
 			//handle wrapper clickTracking
-			if(adSlot.wrapperData ){
-				adSlot.wrapperData.contents().find('ClickTracking').each(function(a,b){
-					mw.sendBeaconUrl($(b).contents().text());
-					mw.log("KAdPlayer:: sendBeacon to (wrapper): " + $(b).contents().text() );
-				})
+			if( adSlot.wrapperData && adSlot.wrapperData.length > 0 ){
+				for ( var i = 0, iMax = adSlot.wrapperData.length; i < iMax; i++) {
+					adSlot.wrapperData[i].contents().find('ClickTracking').each(function(a,b){
+						mw.sendBeaconUrl($(b).contents().text());
+						mw.log("KAdPlayer:: sendBeacon to (wrapper): " + $(b).contents().text() );
+					})
+				}
 			}
 		}
 		window.open( clickthrough );
@@ -944,6 +946,7 @@ mw.KAdPlayer.prototype = {
 			'width' : _this.embedPlayer.getVideoHolder().width(),
 			'height' : _this.embedPlayer.getVideoHolder().height()
 		};
+		// TODO Does this need to be parat of the always loaded kWidget library ? 
 		var screenSize = kWidget.resizeOvelayByHolderSize(nonLinearConf, videoSize, 0.9);
 		var layout = {
 			'width' : screenSize.width + 'px',
@@ -1580,7 +1583,7 @@ mw.KAdPlayer.prototype = {
 					});
 					_this.embedPlayer.unbindHelper('onCloseFullScreen' + bindPostFix).bindHelper('onCloseFullScreen' + bindPostFix, function(){
 						if( VPAIDObj.resizeAd && typeof VPAIDObj.resizeAd == "function" ){
-							setTimeout(function(){VPAIDObj.resizeAd(_this.embedPlayer.width,_this.embedPlayer.height,"normal")},1000);
+							setTimeout(function(){VPAIDObj.resizeAd(_this.embedPlayer.getWidth(),_this.embedPlayer.getVideoHolder().height(),"normal")},1000);
 						}
 					});
 				}
@@ -1608,10 +1611,9 @@ mw.KAdPlayer.prototype = {
 				if ( adConf.adParameters ) {
 					playerParams.vpaidAdParameters = escape( adConf.adParameters );
 				}
-				if ( adConf.vpaid.flash.width ) {
-					playerParams.vpaidAdWidth = adConf.vpaid.flash.width;
-					playerParams.vpaidAdHeight = adConf.vpaid.flash.height;
-				}
+				playerParams.vpaidAdWidth = _this.embedPlayer.getWidth();
+				playerParams.vpaidAdHeight = _this.embedPlayer.getVideoHolder().height();
+
 				//flashvars to load vpaidPlugin.swf and to disable on screen clicks since vpaid swf will handle the clicks
 				var adSibling = new mw.PlayerElementFlash( vpaidId, vpaidId + "_obj", playerParams, null, function () {
 					VPAIDObj = this.getElement();

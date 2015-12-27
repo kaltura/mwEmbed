@@ -12,45 +12,35 @@
                 "label": "Event monitor function name",
                 "type": "string"
             },
-            "trackingCategory":{
-            	"doc": "The default category to be used for all default player events.",
-                "label": "Event category override",
-                "type": "string"
-            },
-			"optionalLabel":{
-				"doc": "The default label to be used for all default player events.",
-                "label": "Label override",
-                "type": "string"
-			},
-            "anonymizeIp": {
-				"doc" : "If the google anonymizeIp flag should be set to anonymize user reports within google analytics.",
-				"label": "Anonymize Ips",
-				"type" : "boolean"
-			},
             "customEvent": {
                 "doc": "Comma separated list of events you want to track.",
                 "label": "Custom events list",
                 "type": "string"
             },
-            "doPlayCategory": {
-                "doc": "Category sent to Google analytics for prefixed event.",
-                "label": "Category for event",
+            "trackingCategory": {
+                "doc": "Deafult Category sent to Google analytics for all events.",
+                "label": "Events default category",
                 "type": "string"
             },
-            "doPlayAction": {
-                "doc": "Action sent to Google Analytics for prefixed event.",
-                "label": "Action for event",
-                "type": "string"
-            },
-            "doPlayValue": {
-                "doc": "Value sent to Google Analytics for prefixed event",
-                "label": "Value for event",
-                "type": "string"
-            },
-             "doPlayLabel": {
-                "doc": "Allows for custom labels overrides for the prefixed event.",
-                "label": "Label string",
-                "type": "string"
+	        "optionalLabel":{
+		        "doc": "The default label to be used for all tracked events.",
+		        "label": "Label override",
+		        "type": "string"
+	        },
+	        "anonymizeIp": {
+		        "doc" : "If the google anonymizeIp flag should be set to anonymize user reports within google analytics.",
+		        "label": "Anonymize Ips",
+		        "type" : "boolean"
+	        },
+	        "allowLinker": {
+		        "doc" : "Enables Google Analytics to do Cross-domain tracking.",
+		        "label": "Allow linker",
+		        "type" : "boolean"
+	        },
+            "disableTrackPageview": {
+                "doc" : "Main logic for Google Analytic tracker code, sends the tracking data back to the Google Analytics servers if enabled.",
+                "label": "Do not allow page tracking",
+                "type" : "boolean"
             }
         }
     }

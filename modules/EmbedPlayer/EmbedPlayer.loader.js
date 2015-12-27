@@ -60,13 +60,38 @@
 
 		// Remove any duplicates in the dependencySet:
 		dependencySet = $.unique( dependencySet );
+		var processPlayer = function(){
+			// Setup enhanced language support:
+			 window.gM = mw.jqueryMsg.getMessageFunction( {} );
+			mw.processEmbedPlayers( playerSelect , readyCallback );
+		};
+
+		if (window.inlineScript){
+			var processPlayerIntervalMaxTries = 20;
+			var processPlayerInterval = setInterval(function(){
+				if (mw && mw.processEmbedPlayers) {
+					clearInterval(processPlayerInterval);
+					processPlayerInterval = null;
+					processPlayer();
+				}
+				processPlayerIntervalMaxTries--;
+				if (processPlayerIntervalMaxTries === 0){
+					clearInterval(processPlayerInterval);
+					showPlayerError();
+				}
+			} ,0);
+
+			return;
+		}
 
 		// Do the request and process the playerElements with updated dependency set
 		mediaWiki.loader.using( dependencySet, function(){
-			// Setup enhanced language support:
-			window.gM = mw.jqueryMsg.getMessageFunction( {} );
-			mw.processEmbedPlayers( playerSelect, readyCallback );
+			processPlayer();
 		}, function( e ){
+			showPlayerError(e);
+		});
+
+		function showPlayerError(e){
 			$( playerSelect).each( function(index, playerElement){
 				// apply spinner to outer container ( video does not have size while loading in firefox )
 				var $spinerTarget = $( playerElement ).parents('.mwPlayerContainer');
@@ -85,7 +110,7 @@
 					title:  'Player failed',
 					message: 'The player or one of its dependencies have failed loading',
 					buttons: null,
-					noButtons: null,
+					noButtons: true,
 					callbackFunction:  null,
 					isExternal: true,
 					props: {
@@ -123,7 +148,7 @@
 
 			});
 			throw new Error( 'Error loading EmbedPlayer dependency set: ' + (e && e.message)  );
-		});
+		}
 
 		function createErrorMessage(alertObj) {
 			var $container = $( '<div />' ).addClass( 'alert-container' );

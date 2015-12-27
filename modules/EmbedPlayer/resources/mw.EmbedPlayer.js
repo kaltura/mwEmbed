@@ -296,6 +296,8 @@
         // stores current bitrate for adaptive bitrate video
         currentBitrate: -1,
 
+		drmRequired: false,
+
 		/**
 		 * embedPlayer
 		 *
@@ -461,6 +463,11 @@
 					var stateString = ( typeof state === 'function' ) ? state() : state;
 					doChangeState(stateString);
 				});
+			});
+
+			// update the layout on layoutBuildDone event
+			this.bindOnceHelper("layoutBuildDone", function(){
+				_this.doUpdateLayout();
 			});
 
 			// Set default state to load
@@ -845,14 +852,22 @@
 			// Check if no player is selected
 			if (!this.selectedPlayer || !this.mediaElement.selectedSource) {
 				var errorObj;
-				//check if we had silverlight flavors and no silverlight installed - prompt to install silverlight
-				if (!mw.isMobileDevice() && !mw.EmbedTypes.getMediaPlayers().isSupportedPlayer('splayer')) {
-					$.each(this.mediaElement.sources, function (currentIndex, currentSource) {
-						if (currentSource.getFlavorId() == "ism") {
-							errorObj = _this.getKalturaMsgObject('mwe-embedplayer-install-silverlight');
-							return;
-						}
-					});
+				if (this.isDrmRequired()){
+					if (!this.isPluginEnabled( 'multiDrm' )){
+						errorObj = this.getKalturaMsgObject('mwe-embedplayer-drm-error-not-enabled');
+					} else {
+						errorObj = this.getKalturaMsgObject('mwe-embedplayer-drm-error-not-supported');
+					}
+				} else {
+					//check if we had silverlight flavors and no silverlight installed - prompt to install silverlight
+					if (!mw.isMobileDevice() && !mw.EmbedTypes.getMediaPlayers().isSupportedPlayer('splayer')) {
+						$.each(this.mediaElement.sources, function (currentIndex, currentSource) {
+							if (currentSource.getFlavorId() == "ism") {
+								errorObj = _this.getKalturaMsgObject('mwe-embedplayer-install-silverlight');
+								return;
+							}
+						});
+					}
 				}
 				if (!errorObj) {
 					this.showPlayerError();
@@ -1092,21 +1107,16 @@
 
 			// Check if currentTime is already set to the seek target:
 			var playerElementTime = parseFloat(this.getPlayerElementTime()).toFixed(2);
-			if (playerElementTime === seekTime) {
+			if (Math.abs(playerElementTime - seekTime) < mw.getConfig("EmbedPlayer.SeekTargetThreshold", 0.1)) {
 				mw.log("EmbedPlayer:: seek: current time matches seek target: " +
-					playerElementTime + ' == ' + seekTime);
-				if (this.seeking) {
-					this.seeking = false;
-					$(this).trigger('seeked');
-				}
-				this.seekedHandler();
-				return;
+					playerElementTime + ' ~== ' + seekTime );
+				$(this).trigger('seeked');
+			} else {
+				var _this = this;
+				this.canSeek().then(function () {
+					_this.doSeek(seekTime, stopAfterSeek);
+				});
 			}
-
-			var _this = this;
-			this.canSeek().then(function(){
-				_this.doSeek(seekTime, stopAfterSeek);
-			});
 		},
 		/**
 		 * seekedHandler function handles all players seeked teardown operations
@@ -1318,9 +1328,13 @@
 
 			// Update the playerReady flag
 			this.playerReadyFlag = true;
-			mw.log("EmbedPlayer:: Trigger: playerReady");
-			// trigger the player ready event;
-			$(this).trigger('playerReady');
+			// trigger the player ready event unless we are loading Youtube external player which triggers its own playerReady event (SUP-5072);
+			if ( this.mediaElement && this.mediaElement.selectedSource && this.mediaElement.selectedSource.mimeType === "video/youtube") {
+				mw.log("EmbedPlayer:: Loading Youtube player. playerReady event to be dispatched by Youtube player.");
+			}else{
+				mw.log("EmbedPlayer:: Trigger: playerReady");
+				$(this).trigger('playerReady');
+			}
 			this.triggerWidgetLoaded();
 
 			// Check if we want to block the player display
@@ -1547,7 +1561,6 @@
 					downloadUrl = dlUrl;
 				}
 			});
-
 			$(this).trigger('showInlineDownloadLink', [downloadUrl]);
 		},
 		/**
@@ -1678,7 +1691,11 @@
 			}
 
 			// Add a loader to the embed player:
-			this.pauseLoading();
+			// call these 3 lines inline instead of using this.pauseLoading() to prevent stack overflow in IE8 (FEC-4429)
+			// this means we are very close to the IE8 stack being full. might have to revisit here if the stack overflow returns (maybe wrap these 3 lines in a 0 sec timeout)
+			this.isPauseLoading = true;
+			this.pause();
+			this.addPlayerSpinner();
 
 			// Stop the monitor
 			this.stopMonitor();
@@ -1834,7 +1851,12 @@
 			}
 
 			$(this).find(".playerPoster").remove();
-			if (mw.getConfig('EmbedPlayer.HidePosterOnStart') === true) {
+				if ( this.currentState=="load" && mw.getConfig('autoPlay') && !mw.isMobileDevice()){
+				return;
+			}
+				if ( mw.getConfig('EmbedPlayer.HidePosterOnStart') === true
+					&&
+					!(this.currentState=="end" && mw.getConfig('EmbedPlayer.ShowPosterOnStop')) ) {
 				return;
 			}
 			// support IE9 and IE10 compatibility modes
@@ -3001,6 +3023,14 @@
 
 		isLive: function () {
 			return this.live;
+		},
+
+		setDrmRequired: function (isDrm) {
+			this.drmRequired = isDrm;
+		},
+
+		isDrmRequired: function () {
+			return this.drmRequired;
 		},
 
 		isDVR: function () {

@@ -310,9 +310,9 @@ body {
 	z-index: 100;
 	position: absolute;
 	left: 0;
-	top: -0.2em;
-	width: 1.1em;
-	height: 1.1em;
+	top: -3px;
+	width: 16px;
+	height: 16px;
 	border-radius: 50%;
 	outline: 0;
 	margin-left: -0.38em;
@@ -1378,9 +1378,6 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 	background-color: black;
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
 }
-.cssChecker{
-	display: none !important;
-}
 
 .AlertMessageTransparent{
 	background-color : transparent;
@@ -1446,3 +1443,7 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
 @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+
+.cssChecker{
+    display: none !important;
+}

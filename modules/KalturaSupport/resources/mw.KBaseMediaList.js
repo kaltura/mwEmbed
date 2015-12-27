@@ -41,23 +41,29 @@
 				'fixedControls': false,
 				'horizontalControlsWidth': 20,
 				'showEmptyPlaylistError': true
-
 			});
 		},
 
 		setDefaults: function(){
+			this.setBaseThumbSettings();
+			this._super( );
+		},
+		setBaseThumbSettings: function(){
 			this.baseThumbSettings = {
 				'partner_id': this.getPlayer().kpartnerid,
 				'uiconf_id': this.getPlayer().kuiconfid,
 				'entry_id': this.getPlayer().kentryid,
 				'width': this.getConfig( "thumbWidth" )
 			};
-			this._super( );
 		},
-
 		_addBindings: function () {
 			var _this = this;
 			this._super();
+
+			this.bind('onChangeMedia', function(){
+				_this.setBaseThumbSettings();
+			});
+
 			this.bind('updateLayout', function(){
 				if (_this.getPlayer().layoutBuilder.isInFullScreen() ||
 					(!_this.getConfig("fullScreenDisplayOnly") &&
@@ -88,7 +94,6 @@
 			$( this.embedPlayer ).bind('onOpenFullScreen', function() {
 				if ( !_this.getConfig( 'parent') ){
 					_this.getComponent().hide();
-					$(".videoHolder").width("100%");
 				}
 			});
 
@@ -96,7 +101,6 @@
 			$( this.embedPlayer ).bind('onCloseFullScreen', function() {
 				if ( !_this.getConfig( 'parent') ){
 					_this.getComponent().show();
-					$(".videoHolder").width(_this.videoWidth+"px");
 				}
 			});
 
@@ -145,10 +149,10 @@
 						var cssLink = this.getConfig('cssFileName');
 						if (cssLink) {
 							//Scroller CSS
-							$( 'head', window.parent.document ).append( '<link type="text/css" rel="stylesheet" href="' + kWidget.getPath() + this.getConfig("scrollerCssPath") + '"/>' );
+							kWidget.appendCssUrl( kWidget.getPath() + this.getConfig("scrollerCssPath"), window.parent.document );
 							//Plugin CSS
 							cssLink = cssLink.toLowerCase().indexOf("http") === 0 ? cssLink : kWidget.getPath() + cssLink; // support external CSS links
-							$( 'head', window.parent.document ).append( '<link type="text/css" rel="stylesheet" href="' + cssLink + '"/>' );
+							kWidget.appendCssUrl( cssLink, window.parent.document );
 						} else {
 							mw.log( "Error: "+ this.pluginName +" could not find CSS link" );
 						}
@@ -177,12 +181,16 @@
 					this.$mediaListContainer = $( ".playlistInterface");
 					// resize the video to make place for the playlist according to its position (left, top, right, bottom)
 					if ( this.getConfig( 'containerPosition' ) == 'right' || this.getConfig( 'containerPosition' ) == 'left' ) {
-						$( ".videoHolder, .mwPlayerContainer" ).css( "width", this.$mediaListContainer.width() - this.getConfig( "mediaItemWidth" ) + "px" );
-						this.videoWidth = (this.$mediaListContainer.width() - this.getConfig( "mediaItemWidth" ));
+						var clipsWidth = parseInt(this.getConfig("mediaItemWidth"));
+						if ( this.getConfig("mediaItemWidth").toString().indexOf("%") !== -1 ){
+							clipsWidth = this.$mediaListContainer.width() * clipsWidth / 100;
+						}
+						$( ".mwPlayerContainer" ).width(this.$mediaListContainer.width() - clipsWidth);
 					}
 					if ( this.getConfig( 'containerPosition' ) == 'left' ) {
 						$( ".mwPlayerContainer" ).css( "float", "right" );
 					}
+
 					if ( this.getConfig( 'containerPosition' ) == 'top' || this.getConfig( 'containerPosition' ) == 'bottom' ) {
 						var playlistHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * this.getConfig( "MinClips" ) + this.getMedialistHeaderComponent().height() : this.getConfig( "mediaItemHeight" ) + this.getConfig('horizontalHeaderHeight');
 						this.getComponent().height(playlistHeight);

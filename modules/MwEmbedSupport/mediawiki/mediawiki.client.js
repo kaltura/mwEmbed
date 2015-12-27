@@ -54,9 +54,17 @@
 	mw.isIpad = function () {
 		return ( userAgent.indexOf('iPad') != -1 );
 	};
+	mw.isIpad2 = function () {
+		return ( mw.isIpad() && window.devicePixelRatio && window.devicePixelRatio < 2 );
+	};
 	mw.isIpad3 = function () {
 		return  /OS 3_/.test(userAgent) && mw.isIpad();
 	};
+	
+	// Note on those Android checks: Windows Phone browser has "Android" in its userAgent.
+	// https://msdn.microsoft.com/en-us/library/hh869301%28v=vs.85%29.aspx
+	// So the Android checks must make sure the string does not include "Windows".
+	
 	mw.isAndroid44 = function () {
 		return ( userAgent.indexOf('Android 4.4') != -1  && userAgent.indexOf('Windows') === -1 );
 	};
@@ -79,8 +87,10 @@
 		return ( userAgent.indexOf('Android') != -1 && userAgent.indexOf('Windows') === -1);
 	};
 	mw.isAndroid4andUp = function () {
-		return ( (userAgent.indexOf('Android 4.') != -1) || (userAgent.indexOf('Android 5.') != -1) && userAgent.indexOf('Windows') === -1 );
+		return ( (userAgent.indexOf('Android 4.') != -1) || (userAgent.indexOf('Android 5.') != -1) || (userAgent.indexOf('Android 6.') != -1) ) && userAgent.indexOf('Windows') === -1;
 	};
+	
+	
 	mw.isFirefox = function () {
 		return ( userAgent.indexOf('Firefox') != -1 );
 	};
@@ -138,11 +148,17 @@
 		// Known Limitation - It will return false for iOS8 Simulator
 		return ( /OS 8_/.test(userAgent) || /Version\/8/.test(userAgent) ) && mw.isIOS();
 	};
-
 	mw.isIOS9 = function () {
+		// Known Limitation - It will return false for iOS8 Simulator
 		return ( /OS 9_/.test(userAgent) || /Version\/9/.test(userAgent) ) && mw.isIOS();
 	};
 
+	mw.isIOSBelow9 = function () {
+		// mw.isIOSV() methods check mw.isIOS(), but because of the OR operator it will be checked multiple times. 
+		// Short-circuit to save many calls.
+		return mw.isIOS() && (mw.isIOS3() || mw.isIOS4() || mw.isIOS5() || mw.isIOS6() || mw.isIOS7() || mw.isIOS8());
+	};
+	
 	mw.isIOS8_9 = function () {
 		return mw.isIOS8() || mw.isIOS9();
 	};

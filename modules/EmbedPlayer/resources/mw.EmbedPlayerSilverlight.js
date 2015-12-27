@@ -480,7 +480,9 @@
 						'textTrackSelected': 'onTextTrackSelected' ,
 						'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions' ,
 						'error': 'onError' ,
-						'alert': 'onError'
+						'alert': 'onError',
+						'individualizing': 'onIndividualizing',
+						'acquiringLicense': 'onAcquiringLicense'
 					};
 
 					_this.playerObject = playerElement;
@@ -647,6 +649,17 @@
 			mw.log( 'EmbedPlayerSPlayer::onError: ' + message );
 			this.triggerHelper( 'embedPlayerError' , [data] );
 		} ,
+
+		onIndividualizing: function(){
+			this.log("Individualizing started");
+			this.isIndividualizing = true;
+		},
+		onAcquiringLicense: function(){
+			if (this.isIndividualizing){
+				this.log("Individualizing ended");
+			}
+			this.log("Acquiring License");
+		},
 
 		handlePlayerError: function ( data ) {
 			var messageText = this.getKalturaMsg( 'ks-CLIP_NOT_FOUND' );

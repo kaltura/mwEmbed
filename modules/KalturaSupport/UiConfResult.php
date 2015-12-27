@@ -212,6 +212,7 @@ class UiConfResult {
 			'statistics' => array(),
 			'controlBarContainer' => array(),
 			'keyboardShortcuts' => array(),
+			'id3Tag' => array(),
 			'liveCore' => array(),
 			'liveStatus' => array(),
 			'reportError' => array(),
@@ -271,7 +272,11 @@ class UiConfResult {
 		$brokenFlashVarXMl =  'autoPlay=false&screensLayer.startScreenOverId=startScreen&screensLayer.startScreenId=startScreen';
 		$uiConf = str_replace( $brokenFlashVarXMl, htmlentities( $brokenFlashVarXMl ), $uiConf );
 		// handle any non-escapsed &
-		$uiConf = preg_replace('/&[^; ]{0,6}.?/e', "((substr('\\0',-1) == ';') ? '\\0' : '&amp;'.substr('\\0',1))", $uiConf);
+		$uiConf=preg_replace_callback('/&[^; ]{0,6}.?/',
+        	function ($matches){
+                	return ((substr($matches[0],-1) === ';') ? $matches[0] : '&amp;'.substr($matches[0],1));
+        	},
+		$uiConf);
 
 		return $uiConf;
 	}
@@ -543,6 +548,7 @@ class UiConfResult {
 			"durationLabel" => array(),
 			"currentTimeLabel" => array(),
 			"keyboardShortcuts" => array(),
+			"id3Tag" => array(),
 			"liveCore" => array(),
 			"liveStatus" => array(),
 			"reportError" => array()

@@ -220,16 +220,21 @@ class EntryResult {
 		}
 
         $vars = $this->uiconf->playerConfig['vars'];
+		$playerConfig = $this->uiconf->getPlayerConfig();
 		if( is_array( $resultObject['contextData'] ) && isset( $resultObject['contextData']['code'] ) && $resultObject['contextData']['code'] == 'ENTRY_ID_NOT_FOUND' && !isset($vars['referenceId'])){
-			$this->error = 'No source video was found';
+			if (!isset($playerConfig['plugins']['strings']['mwe-embedplayer-missing-source'])){
+				$this->error = 'No source video was found';
+			}
 			return array();
 		}
 
 		//if the video is still uploading or converting
 		if ( isset($resultObject['meta']) &&  isset( $resultObject['meta']->status ) &&
 			($resultObject['meta']->status == 0  || $resultObject['meta']->status == 1)){
+			 if (!isset($playerConfig['plugins']['strings']['ks-ENTRY_CONVERTING'])){
 				$this->error = 'No source video was found - Entry in process';
 				return array();
+				}
 		}
 
 		
