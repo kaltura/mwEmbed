@@ -12,6 +12,7 @@
         //plugin parameters
         duringEdit : false,
         seekForPaint : false,
+        cpPressed : false,
         kClient : null,
         embedPlayer : null,
         canvas : null,
@@ -61,9 +62,20 @@
                 _this.embedPlayer.stopPlayAfterSeek = true;
                 _this.enablePlayDuringScreen = false;
                 if(!_this.seekForPaint){
-                    if (_this.isScreenVisible()) _this.removeScreen(); //use hide screen (clear dom manually)
+                    if (_this.isScreenVisible()) {
+                        $('#painterCanvas').empty().remove();
+                        _this.hideScreen();
+                    }
                 }
+            });
+            this.bind('seek', function () {
                 _this.seekForPaint = false;
+            });
+            this.bind('seeking', function () {
+                if(!_this.cpPressed){
+                    _this.seekForPaint = false;
+                }
+                _this.cpPressed = false;
             });
             if(this.editMode) {
                 this.bind('showScreen', function () {
@@ -88,19 +100,22 @@
                 });
             }else {
                 this.bind('KalturaSupport_CuePointReached', function (e, cuePointObj) {
-                    if(cuePointObj.cuePoint){
-                        _this._showPainterCanvas(cuePointObj.cuePoint);
-                        if(_this.enablePlayDuringScreen) {
-                            _this.enablePlayDuringScreen = false;
+                    if(_this.seekForPaint){
+                        if(cuePointObj.cuePoint){
+                            _this._showPainterCanvas(cuePointObj.cuePoint);
+                            if(_this.enablePlayDuringScreen) {
+                                _this.enablePlayDuringScreen = false;
+                            }
+                            //removing the 'play' icon from the middle of the screen
+                            $('.largePlayBtn').css('display', 'none');
                         }
-                        //removing the 'play' icon from the middle of the screen
-                        $('.largePlayBtn').css('display', 'none');
+                        _this.seekForPaint = false;
                     }
                 });
-
                 //only for first initialization of paint cue points on the scrubber
                 this.bind('onplay', function () {
                     _this.displayBubbles();
+                    _this.seekForPaint = true;
                     if (_this.isScreenVisible()) _this.removeScreen();
                 });
             }
@@ -156,9 +171,9 @@
             });
 
             $('.paint-bubble-' + _this.paintCPTheme).on('click', function () {
+                _this.seekForPaint = true;
                 _this.embedPlayer.pause();
-                _this.seekedPaint = true;
-                _this._gotoScrubberPos($(this).attr('id'));
+                _this._gotoScrubberPos(_this, $(this).attr('id'));
             });
         },
 
@@ -168,10 +183,11 @@
             this.showScreen();
         },
 
-        _gotoScrubberPos : function (cuePointId) {
-            this.embedPlayer.stopPlayAfterSeek = true;
-            this.seekForPaint = true;
-            this.embedPlayer.sendNotification('doSeek', (($.paintCpObjects[cuePointId].startTime) /1000)+0.1);
+        _gotoScrubberPos : function (_this, cuePointId) {
+            _this.cpPressed = true;
+            _this.embedPlayer.stopPlayAfterSeek = true;
+            _this.seekForPaint = true;
+            _this.embedPlayer.sendNotification('doSeek', (($.paintCpObjects[cuePointId].startTime) /1000)+0.1);
         },
 
         //show the canvas on top of the player
