@@ -103,6 +103,10 @@ mw.PlayerLayoutBuilder.prototype = {
 				this.$interface.addClass('mobile');
 			}
 
+			if( this.embedPlayer.isMobileSkin() ){
+				this.$interface.addClass('mobileSkin');
+			}
+
 			if( mw.isTouchDevice() ){
 				this.$interface.addClass('touch');
 			}
@@ -135,7 +139,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	* @return {Number} control bar height
 	*/
 	getHeight: function(){
-		return this.height;
+		return this.embedPlayer.isMobileSkin() ? mw.getConfig( 'EmbedPlayer.MobileControlsHeight' ) : this.height;
 	},
 
 	clearInterface: function() {
@@ -213,6 +217,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		'topBarContainer': [],
 		'sideBarContainer': [],
 		'videoHolder': [],
+		'smartContainer': [],
 		'controlBarContainer': [],
 		'controlsContainer': []
 	},

@@ -118,7 +118,9 @@
 
 				//if we moved from live to offline  - show message
 				if ( _this.onAirStatus && !onAirObj.onAirStatus ) {
-					//sometimes offline is only for a second and the message is not needed..
+                    //calculate offlineAlertOffset for timeout (by default = 0 as sometimes offline is only for a second and the message is not needed..)
+                    var offlineAlertOffest = _this.calculateOfflineAlertOffest();
+
 					setTimeout( function() {
 						if ( !_this.onAirStatus ) {
                             //if we already played once it means stream data was loaded. We can continue playing in "VOD" mode
@@ -147,7 +149,7 @@
 							    _this.getPlayer().disablePlayControls();
                             }
                         }
-					}, _this.getConfig( 'offlineAlertOffest' ) );
+					}, offlineAlertOffest );
 
 					embedPlayer.triggerHelper( 'liveOffline' );
 
@@ -472,7 +474,16 @@
 				return true;
 			}
 			return false;
-		}
+		},
+
+        calculateOfflineAlertOffest: function() {
+            var offlineAlertOffest = this.getConfig( 'offlineAlertOffest' );
+            var bufferLength = this.getPlayer().getCurrentBufferLength() *1000;
+            if(bufferLength>0){
+                offlineAlertOffest = bufferLength;
+            }
+            return offlineAlertOffest;
+        }
 
 	}));
 

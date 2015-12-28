@@ -24,7 +24,9 @@
 			"offButtonPosition": "first",
 			// Can be used to force loading specific language and expose to other plugins
 			"forceLoadLanguage": false,
-			"title": gM( 'mwe-embedplayer-timed_text')
+			"title": gM( 'mwe-embedplayer-timed_text'),
+			"smartContainer": "qualitySettings",
+			'smartContainerCloseEvent': 'changedClosedCaptions'
 		},
 
 		textSources: [],
@@ -859,7 +861,7 @@
 					'active': ( _this.selectedSource === source && _this.getConfig( "displayCaptions" )  )
 				});
 				items.push({'label':source.label, 'value':source.label});
-				if (mw.isMobileDevice() && _this.selectedSource === source){
+				if (_this.embedPlayer.isMobileSkin() && _this.selectedSource === source){
 					_this.getMenu().setActive(idx+1);
 				}
 			});

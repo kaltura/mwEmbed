@@ -1,7 +1,7 @@
  ( function( mw, $ ) {"use strict";
     
     mw.KMenu = function( $element, options ) {
-		if (mw.isMobileDevice()){
+		if (mw.getConfig("EmbedPlayer.EnableMobileSkin") && mw.isMobileDevice()){
 			this.mobileMenu = $("<select class='mobileMenuSelect'></select>");
 			$element.parent().prepend(this.mobileMenu);
 			this.mobileMenu.change(function(){
@@ -59,7 +59,7 @@
             return tabIndex += parseFloat('.' + idx);
         },
         addItem: function( item ){
-	        if (mw.isMobileDevice()){
+	        if (mw.getConfig("EmbedPlayer.EnableMobileSkin") && mw.isMobileDevice()){
 		        this.mobileMenu.append($('<option>', { value : item.label }).text(item.label));
 	        }
         	var _this = this;
@@ -165,12 +165,12 @@
             var selector = null;
             if( typeof idx == 'number' ){
                 selector = 'li:not(.' + this.options.dividerClass + ',.label):eq(' + idx + ')';
-	            if (mw.isMobileDevice()){
+	            if (mw.getConfig("EmbedPlayer.EnableMobileSkin") && mw.isMobileDevice()){
 		            this.mobileMenu.get(0).selectedIndex = idx;
 	            }
             } else {
                 selector = 'li[' + idx.key + '=' + idx.val + ']';
-	            if (mw.isMobileDevice()){
+	            if (mw.getConfig("EmbedPlayer.EnableMobileSkin") && mw.isMobileDevice()){
 		            this.mobileMenu.val(idx.val);
 	            }
             }

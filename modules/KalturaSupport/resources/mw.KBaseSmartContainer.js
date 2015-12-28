@@ -13,7 +13,7 @@
 			this.addBindings();
 		},
 		isSafeEnviornment: function(){
-			return mw.isMobileDevice() && mw.getConfig("EmbedPlayer.UseSmartContainers") !== false; // disable on desktop or "EmbedPlayer.UseSmartContainers" flashvar set to false
+			return this.embedPlayer.isMobileSkin() && mw.getConfig("EmbedPlayer.UseSmartContainers") !== false; // disable on desktop or "EmbedPlayer.UseSmartContainers" flashvar set to false
 		},
 		getComponent: function() {
 			var _this = this;
@@ -50,8 +50,11 @@
 				}
 				// if we have more than 1 plugin registered to this smart container - move the plugins to the smart container screen and bind events
 				if ( _this.registeredPlugins.length > 1 ){
+					if (!_this.embedPlayer.getVideoHolder().find(".smartContainer").length){
+						_this.embedPlayer.getVideoHolder().append("<div class='smartContainer'></div>");
+					}
 					for ( var i = 0; i < _this.registeredPlugins.length; i++ ){
-						_this.registeredPlugins[i].setConfig("parent", "videoHolder");
+						_this.registeredPlugins[i].setConfig("parent", "smartContainer");
 						_this.registeredPlugins[i].setConfig("align", "center");
 					}
 
@@ -94,6 +97,7 @@
 		hideRegisteredPlugins: function(){
 			this.pluginsScreenOpened = false;
 			this.embedPlayer.getVideoHolder().removeClass( "pluginsScreenOpened" );
+			$(this.embedPlayer.getPlayerElement()).removeClass("blur");
 			this.embedPlayer.getVideoHolder().find(".closePluginsScreen").remove(); // remove close button
 			for ( var i = 0; i < this.registeredPlugins.length; i++ ){
 				this.registeredPlugins[i].hide();
@@ -109,7 +113,7 @@
 			var _this = this;
 			this.pluginsScreenOpened = true;
 			this.embedPlayer.getVideoHolder().addClass( "pluginsScreenOpened" );
-
+			$(this.embedPlayer.getPlayerElement()).addClass("blur");
 			// calculate the width for each plugin. Adding 1 to the plugins count to add some spacing. Done each time the plugins are shown to support responsive players.
 			var pluginWidth = this.embedPlayer.getVideoHolder().width() / (this.registeredPlugins.length + 1);
 			this.embedPlayer.getVideoHolder().find(".btn").not(".closePluginsScreen, .icon-next, .icon-prev").width(pluginWidth);

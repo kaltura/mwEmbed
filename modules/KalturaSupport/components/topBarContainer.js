@@ -23,7 +23,7 @@
 				_this.show();
 			});
 			this.bind( 'layoutBuildDone', function(){
-				if (!mw.isMobileDevice()){
+				if (!_this.embedPlayer.isMobileSkin()){
 					_this.show();
 				}
 			});
@@ -75,6 +75,9 @@
 			}
 		},
 		show: function(){
+			if(this.embedPlayer.isMobileSkin() && this.getPlayer().getPlayerPoster().length){
+				return; // prevent showing controls on top of the poster when the video first loads
+			}
 			if ( !this.screenOpen ){
 				this.getComponent().addClass( 'open' );
 				// Trigger the screen overlay with layout info:

@@ -802,9 +802,9 @@
 			var originalSrc = this.mediaElement.selectedSource.getSrc();
 			if (this.isHlsSource(this.mediaElement.selectedSource)) {
                 // add playerType=flash indicator (Kaltura Live HLS only)
-                if( this.isLive() &&  mw.getConfig('isLiveKalturaHLS') ) {
-                    originalSrc = originalSrc + "&playerType=flash";
-                }
+                //if( this.isLive() &&  mw.getConfig('isLiveKalturaHLS') ) {
+                //    originalSrc = originalSrc + "&playerType=flash";
+                //}
 
 				this.resolveSrcURL(originalSrc)
 					.then(function (srcToPlay) {
@@ -995,7 +995,10 @@
 				}
 			}
 
-		}
+		},
+        getCurrentBufferLength: function(){
+            return parseInt(this.playerObject.getCurrentBufferLength()); //return buffer length in seconds
+        }
 	};
 
 })(mediaWiki, jQuery);
