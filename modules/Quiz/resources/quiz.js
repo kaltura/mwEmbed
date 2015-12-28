@@ -242,10 +242,14 @@
             if ($.cpObject.cpArray[questionNr].hintText){
                 _this.ssDisplayHint(questionNr)
             }
+
+            if (cPo.question.length < 68){
+                $(".display-question").addClass("padding9");
+            }
             $(".display-question").text(cPo.question);
             $.each(cPo.answeres, function (key, value) {
                 var div= $("<div class ='single-answer-box-bk'>"
-                + "<div class ='single-answer-box' id="
+                + "<div class ='single-answer-box-txt' id="
                 + key + "><p></p></div></div>");
                 div.find('p').text(value);
                 div.appendTo('.answers-container');
@@ -367,30 +371,29 @@
         },
         showSelectedQuestion:function(questionNr){
             var _this = this;
-            $('.single-answer-box#'+_this.selectedAnswer +'')
+            $('.single-answer-box-txt#'+_this.selectedAnswer +'')
                 .parent().addClass("wide")
                 .addClass('single-answer-box-bk-apply')
-                .children().removeClass('single-answer-box')
+                .children().removeClass('single-answer-box-txt')
                 .addClass(function(){
-                    $(this).addClass('single-answer-box-small')
+                    $(this).addClass('single-answer-box-txt-wide')
                         .after($('<div></div>')
-                            .addClass("single-answer-box-apply")
+                            .addClass("single-answer-box-apply qContinue")
                             .text(gM('mwe-quiz-continue'))
                     )
                 });
-            _this.selectedAnswer = null;
         },
         showAnswered: function (cPo, questionNr) {
             var _this = this;
             $.each(cPo.answeres, function (key, value) {
                 if (key == $.cpObject.cpArray[questionNr].selectedAnswer) {
-                    $('#' + key).parent().addClass("wide single-answer-box-bk-applied disable");
-                    $('#' + key).removeClass('single-answer-box')
+                    $('#' + key).parent().addClass("wide single-answer-box-bk-apply disable");
+                    $('#' + key).removeClass('single-answer-box-txt')
                         .addClass(function(){
-                            $(this).addClass('single-answer-box-small')
+                            $(this).addClass('single-answer-box-txt-wide ')
                                 .after($('<div></div>')
-                                    .addClass("single-answer-box-apply disable")
-                                    .text(gM('mwe-quiz-applied'))
+                                .addClass("single-answer-box-apply qApplied disable")
+                                .text(gM('mwe-quiz-applied'))
                             )
                         });
                 }
@@ -403,65 +406,61 @@
             var _this = this;
             if (_this.KIVQModule.quizSubmitted) return;
 
-            if (_this.selectedAnswer){
+            if (_this.selectedAnswer &&! cPo.selectedAnswer ){
                 _this.showSelectedQuestion(questionNr);
-            }
+            };
 
-            $('.single-answer-box-bk' ).on('click',function(){
-                if ($(this).hasClass('disable')){
-                    return false;
-                }
-                $('.answers-container').find('.disable').removeClass('disable');
-                $('.single-answer-box-bk').each(function () {
-                    $(this).removeClass('wide single-answer-box-bk-apply single-answer-box-bk-applied');
-                    $('.single-answer-box-apply').empty().remove();
-                    $(this).children().removeClass('single-answer-box-small').addClass('single-answer-box');
-                });
+           $('.single-answer-box-bk').off().on('click',function(e){
 
-                $(this).addClass("wide")
-                    .addClass('single-answer-box-bk-apply')
-                    .children().removeClass('single-answer-box')
-                    .addClass(function(){
-                        $(this).addClass('single-answer-box-small')
-                            .after($('<div></div>')
-                                .addClass("single-answer-box-apply")
-                                .text(gM('mwe-quiz-continue'))
-                        )
-                    });
-                _this.selectedAnswer =  $('.single-answer-box-small').attr('id');
+                if ($(this).hasClass('disable')) return false;
 
-            });
-            $(document).off( 'click', '.single-answer-box-apply' )
-                .on('click', '.single-answer-box-apply', function () {
-                    if ($(this).hasClass('disable')) return false;
-                    $('.single-answer-box-apply').addClass('disable')
-                        .text(gM('mwe-quiz-applied'))
-                        .parent().removeClass('single-answer-box-bk-apply').hide().fadeOut('fast')
-                        .addClass('single-answer-box-bk-applied disable').hide().fadeIn('fast');
-
+                if (e.target.className === 'single-answer-box-apply qContinue' ){
+                    e.stopPropagation();
+                    $('.single-answer-box-bk').addClass('disable');
+                            $('.single-answer-box-apply').fadeOut(100,function(){
+                                $(this).addClass('disable')
+                                    .removeClass('qContinue')
+                                    .text(gM('mwe-quiz-applied'))
+                                    .addClass('qApplied').fadeIn(100);
+                            });
                     _this.KIVQModule.submitAnswer(questionNr,_this.selectedAnswer);
                     _this.selectedAnswer = null;
-                    $(this).delay(1800).fadeOut(function () {
-                        _this.KIVQModule.checkIfDone(questionNr);
-
+                    setTimeout(function(){_this.KIVQModule.checkIfDone(questionNr)},1800);
+                }
+               else{
+                    $('.answers-container').find('.disable').removeClass('disable');
+                    $('.single-answer-box-bk').each(function () {
+                        $(this).removeClass('wide single-answer-box-bk-apply single-answer-box-bk-applied');
+                        $('.single-answer-box-apply').empty().remove();
+                        $(this).children().removeClass('single-answer-box-txt-wide').addClass('single-answer-box-txt');
                     });
-                });
-        },
 
+                    $(this).addClass("wide")
+                        .addClass('single-answer-box-bk-apply')
+                        .children().removeClass('single-answer-box-txt')
+                        .addClass(function(){
+                            $(this).addClass('single-answer-box-txt-wide')
+                                .after($('<div></div>')
+                                    .addClass("single-answer-box-apply qContinue")
+                                    .text(gM('mwe-quiz-continue'))
+                            )
+                        });
+                    _this.selectedAnswer =  $('.single-answer-box-txt-wide').attr('id');
+               }
+           });
+        },
         ivqShowScreen:function(){
             var _this = this,embedPlayer = this.getPlayer();
             _this.showScreen();
         },
         ivqHideScreen:function(){
-
             var _this = this,embedPlayer = this.getPlayer();
+
             embedPlayer.getInterface().find('.ivqContainer').empty().remove();
             _this.hideScreen();
             _this.embedPlayer.enablePlayControls();
             _this.embedPlayer.triggerHelper( 'onEnableKeyboardBinding' );
             _this.KIVQModule.showQuizOnScrubber();
-
-
         },
         addFooter: function (questionNr) {
             var _this = this;
@@ -530,13 +529,11 @@
             }
             $('.bubble','.bubble-ans','.bubble-un-ans').off();
             $(handleBubbleclick).on('click', function () {
-                console.log('clickstart')
                 _this.unbind('seeking');
                 _this.KIVQModule.gotoScrubberPos(parseInt($(this).attr('id')));
                 _this.bind('seeking', function () {
                     _this.isSeekingIVQ = true;
                 });
-                console.log('clickend')
             });
         },
         displayQuizEnd:function(){
