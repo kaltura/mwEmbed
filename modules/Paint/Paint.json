@@ -1,9 +1,7 @@
 {
 	"paint": {
 		"kalturaPluginName": "paint",
-		"templates": {
-			"paint": "../Paint/resources/templates/paint.tmpl.html"
-		},
+		
 		"dependencies": [
 			"mw.KBaseScreen"
 		],
