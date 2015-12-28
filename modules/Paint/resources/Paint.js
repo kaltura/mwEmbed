@@ -44,23 +44,21 @@
 
 		addBindings:function(){
             var _this = this;
-            this.bind('onOpenFullScreen', function() {
+            _this.bind('onOpenFullScreen', function() {
                 //listen to event only when resizing the player window
                 _this.bind('updateLayout', function() {
                     _this._initCanvasDimensions();
                     _this.unbind('updateLayout');
                 });
             });
-            this.bind('onCloseFullScreen', function() {
+            _this.bind('onCloseFullScreen', function() {
                 //listen to event only when resizing the player window
                 _this.bind('updateLayout', function() {
                     _this._initCanvasDimensions();
                     _this.unbind('updateLayout');
                 });
             });
-            this.bind('seeked', function () {
-                _this.embedPlayer.stopPlayAfterSeek = true;
-                _this.enablePlayDuringScreen = false;
+            _this.bind('seeked', function () {
                 if(!_this.seekForPaint){
                     if (_this.isScreenVisible()) {
                         $('#painterCanvas').empty().remove();
@@ -68,34 +66,34 @@
                     }
                 }
             });
-            this.bind('seek', function () {
+            _this.bind('seek', function () {
                 _this.seekForPaint = false;
             });
-            this.bind('seeking', function () {
+            _this.bind('seeking', function () {
                 if(!_this.cpPressed){
                     _this.seekForPaint = false;
                 }
                 _this.cpPressed = false;
             });
-            if(this.editMode) {
-                this.bind('showScreen', function () {
+            if(_this.editMode) {
+                _this.bind('showScreen', function () {
                     _this.duringEdit = true;
                     $('.largePlayBtn').css('display', 'none');
                     _this.embedPlayer.pause();
                 });
 
-                this.bind('onpause', function () {
+                _this.bind('onpause', function () {
                     _this._showPainterCanvas();
                 });
 
-                this.bind('onPauseInterfaceUpdate', function () {
+                _this.bind('onPauseInterfaceUpdate', function () {
                     //continue to hide big play icon if still in editing
                     if(_this.duringEdit) {
                         $('.largePlayBtn').css('display', 'none');
                     }
                 });
 
-                this.bind('onplay', function () {
+                _this.bind('onplay', function () {
                     _this.duringEdit = false;
                 });
             }else {
@@ -112,8 +110,8 @@
                         _this.seekForPaint = false;
                     }
                 });
-                //only for first initialization of paint cue points on the scrubber
-                this.bind('onplay', function () {
+                ////only for first initialization of paint cue points on the scrubber
+                _this.bind('onplay', function () {
                     _this.displayBubbles();
                     _this.seekForPaint = true;
                     if (_this.isScreenVisible()) _this.removeScreen();
@@ -170,10 +168,16 @@
                     .addClass("paint-bubble-" + _this.paintCPTheme));
             });
 
-            $('.paint-bubble-' + _this.paintCPTheme).on('click', function () {
+            $('.paint-bubble-' + _this.paintCPTheme).on('click', function (e) {
                 _this.seekForPaint = true;
-                _this.embedPlayer.pause();
-                _this._gotoScrubberPos($(this).attr('id'));
+                _this.unbind('seeking');
+                _this._gotoScrubberPos(_this, $(this).attr('id'));
+                _this.bind('seeking', function () {
+                    if(!_this.cpPressed){
+                        _this.seekForPaint = false;
+                    }
+                    _this.cpPressed = false;
+                });
             });
         },
 
@@ -183,11 +187,12 @@
             this.showScreen();
         },
 
-        _gotoScrubberPos : function (cuePointId) {
-            this.cpPressed = true;
-            this.embedPlayer.stopPlayAfterSeek = true;
-            this.seekForPaint = true;
-            this.embedPlayer.sendNotification('doSeek', (($.paintCpObjects[cuePointId].startTime) /1000)+0.1);
+        _gotoScrubberPos : function (that, cuePointId) {
+            that.cpPressed = true;
+            that.seekForPaint = true;
+            that.embedPlayer.stopPlayAfterSeek = true;
+            that.enablePlayDuringScreen = false;
+            that.embedPlayer.sendNotification('doSeek', (($.paintCpObjects[cuePointId].startTime) /1000)+0.1);
         },
 
         //show the canvas on top of the player
