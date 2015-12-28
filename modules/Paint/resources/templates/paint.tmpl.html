@@ -1,0 +1,18 @@
+<% if( paint.editMode) { %>
+<div id="painterElements">
+<!--color box-->
+    <div id="painterColors">
+        <div class="colorBoxItem icon-paint-pencil2" id="blue"></div>
+        <div class="colorBoxItem icon-paint-pencil2" id="red"></div>
+        <div class="colorBoxItem icon-paint-pencil2" id="yellow"></div>
+        <div class="colorBoxItem icon-paint-pencil2" id="green"></div>
+        <div class="colorBoxItem" id="white"><img src="../resources/ereser.ico" style="width:20px;height:19px;"alt="ereser"> </div>
+    </div>
+    <div id="painterControllers">
+        <i class="paintCtrl icon-paint-checkmark" id="paintSave"></i>
+        <i class="paintCtrl icon-paint-cross" id="paintCancel"></i>
+    </div>
+</div>
+<% } %>
+<!--painting canvas-->
+<canvas id="painterCanvas"></canvas>
