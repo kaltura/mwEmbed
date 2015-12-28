@@ -4,12 +4,8 @@
 		"templates": {
 			"paint": "../Paint/resources/templates/paint.tmpl.html"
 		},
-		"dependencies": [
-			"mw.KBaseScreen"
-		],
-		"scripts": [
-			"resources/Paint.js"
-		],
+		"dependencies":"mw.KBaseScreen",
+		"scripts": "resources/Paint.js",
 		"styles": [
 			"resources/css/paint.css",
 			"resources/css/fonts.css"
