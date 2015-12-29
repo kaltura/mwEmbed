@@ -41,7 +41,8 @@
 				"keyboardShortcutsMap": {
 					"nextState": 81,   // Add q Sign for next state
 					"switchView": 87   // Add w Sigh for switch views
-				}
+				},
+                "secondEntryId":""
 			},
 			display: {},
 			syncEnabled: true,
@@ -478,7 +479,7 @@
 						showLoadingSlide();
 					} );
 					setTimeout( function () {
-						_this.fsm.consumeEvent( "switchView" );
+						//_this.fsm.consumeEvent( "switchView" );
 						if (_this.getPlayer().isAudio()){
 							_this.fsm.consumeEvent( "hide" );
 						}
@@ -787,11 +788,18 @@
                 var secondScreenUrl;
 
                 var secondStream = this.streamSelector.getNextStream();
-                if( !secondStream || secondStream.id === this.embedPlayer.evaluate("{mediaProxy.entry.id}") ){
+                if( !this.getConfig().secondEntryId && (!secondStream || secondStream.id === this.embedPlayer.evaluate("{mediaProxy.entry.id}") ) ){
                     return;
                 }
 
                 var masterSource = this.getPlayer().mediaElement.selectedSource;
+
+                //secondEntryId was passed by configuration
+                if(this.getConfig().secondEntryId){
+                    //replace entryID of master player with the entryID of the slaveStream
+                    secondScreenUrl = masterSource.src.replace(this.embedPlayer.evaluate("{mediaProxy.entry.id}"), this.getConfig().secondEntryId);
+                    return secondScreenUrl;
+                }
 
                 //adaptive bit-rate
                 if( masterSource.src.indexOf('m3u8') > 0 || ( mw.getConfig('streamerType') && mw.getConfig('streamerType') !== 'http' ) ){
