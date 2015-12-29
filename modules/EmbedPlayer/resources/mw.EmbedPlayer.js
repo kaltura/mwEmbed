@@ -1847,11 +1847,11 @@
 
 			$(this).find(".playerPoster").remove();
 			//remove poster on autoPlay when player loaded
-			if ( this.currentState=="load" && mw.getConfig('autoPlay') && !mw.isMobileDevice()){
+			if ( (this.currentState==null || this.currentState=="load") && mw.getConfig('autoPlay') && !mw.isMobileDevice()){
 				return;
 			}
 			//remove poster on start
-			if ( mw.getConfig('EmbedPlayer.HidePosterOnStart') === true && this.currentState=="load" ) {
+			if ( (this.currentState==null || this.currentState=="load") && mw.getConfig('EmbedPlayer.HidePosterOnStart') === true ) {
 				return;
 			}
 			//remove poster on end
