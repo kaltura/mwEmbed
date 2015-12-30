@@ -161,6 +161,7 @@
 				_this.setDuration();
 				_this._playContorls = true;
 				_this.playerReady.resolve();
+				$(_this).trigger('playerReady');
 				//autoMute
 				if(mw.getConfig('autoMute')){
 					_this.setVolume(0);
@@ -181,7 +182,6 @@
 					},250);
 				}
 				mw.log("EmbedPlayerYouTube:: Trigger: playerReady for HTML5 player");
-				$(_this).trigger('playerReady');
 			};
 			// YOUTUBE FLASH PLAYER READY
 			window['onYouTubePlayerReady'] = function( playerIdStr ){

@@ -1,6 +1,51 @@
 ( function( mw, $, playerData ) { "use strict";
 
-	//Check if we are a friendly iframe: 
+	function resolvePlayerConfig(serverSettings, clientSettings){
+		var resolvedSettings = jQuery.extend(true, {}, serverSettings);
+
+		if (serverSettings.vars["inlineScript"] && (clientSettings !== null)) {
+
+			var clientFlashvars = clientSettings.flashvars;
+			var clientPlugins = {};
+			var clientVars = {};
+
+			//Categorize client flashvars to plugins and vars
+			$.each(clientFlashvars, function (name, value) {
+				//Check if uiVar can be overridden from server side, if not then set
+				//TODO: exclude $pluginId == 'Kaltura' || $pluginId == 'EmbedPlayer' || $pluginId == 'KalturaSupport'
+				if ($.isPlainObject(value)) {
+					clientPlugins[name] = value;
+				} else {
+					clientVars[name] = value;
+				}
+			});
+
+			//Resolve player vars, with respect to uiVar override settings
+			if (serverSettings && serverSettings.uiVars) {
+				//Get all vars from server
+				var resolvedVars = resolvedSettings.vars;
+				var serverUiVars = serverSettings.uiVars;
+				//Iterate over server configuration
+				$.each(serverUiVars, function (i, serverUiVar) {
+					var name = serverUiVar.key;
+					//Check if uiVar can be overridden from server side, if not then set client side var if it exist
+					if (clientVars[name] && !serverUiVar.overrideFlashvar) {
+						resolvedVars[name] = clientVars[name];
+					}
+				});
+				//Set all client vars that don't exist at all in uiConf
+				$.each(clientVars, function (name, value) {
+					if (!resolvedVars[name]) {
+						resolvedVars[name] = value;
+					}
+				});
+			}
+			//Combine the plugins data
+			$.extend(true, resolvedSettings.plugins, clientPlugins);
+		}
+		return resolvedSettings;
+	}
+	//Check if we are a friendly iframe:
 	try {
 		if( window['parent'] && window['parent']['kWidget'] && window !== window['parent'] ){
 			mw.config.set( 'EmbedPlayer.IsFriendlyIframe', true );
@@ -10,7 +55,7 @@
 	} catch(e) {
 		mw.config.set( 'EmbedPlayer.IsFriendlyIframe', false );
 	}
-	
+
 	// Parse any configuration options passed via window['parent']
 	if( mw.config.get( 'EmbedPlayer.IsFriendlyIframe' ) ){
 		try {
@@ -37,9 +82,12 @@
 			kWidget.log( "KalturaIframePlayerSetup, could not get configuration " );
 		}
 	}
-	
+	var serverSettings = playerData['playerConfig'];
+	var clientSettings = mw.getConfig("widgetOriginalSettings_" + playerData.playerId);
+	var playerConfig = resolvePlayerConfig(serverSettings, clientSettings);
+
 	// Set the main KalturaSupport.PlayerConfig var:
-	mw.config.set( 'KalturaSupport.PlayerConfig', playerData['playerConfig'] );
+	mw.config.set( 'KalturaSupport.PlayerConfig', playerConfig );
 
 	// We should first read the config for the hashObj and after that overwrite with our own settings
 	// The entire block below must be after mw.config.set( hashObj.mwConfig );

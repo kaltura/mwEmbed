@@ -52,12 +52,13 @@
 			if ( this.getConfig("receiverMode") === true ){
 				return; // don't initialize Chroemcast when running on the custom receiver
 			}
+
 			var _this = this;
 			this.addBindings();
 			var ticks = 0;
 			 var intervalID = setInterval(function(){
 				 ticks++;
-				if( typeof chrome !== "undefined" && typeof chrome.cast !== "undefined" ){
+				if( typeof chrome !== "undefined" && typeof chrome.cast !== "undefined" && typeof chrome.cast.SessionRequest !== "undefined"){
 					_this.initializeCastApi();
 					clearInterval(intervalID);
 				}else{
@@ -99,6 +100,13 @@
 
 			$( this.embedPlayer).bind('updateDashContextData', function(e, drmConfig){
 				_this.drmConfig = drmConfig;
+			});
+
+			$(this.embedPlayer).bind('playerReady', function() {
+				if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
+					// send application ID to native app
+					_this.embedPlayer.getPlayerElement().attr( 'chromecastAppId', _this.getConfig( 'applicationID' ));
+				}
 			});
 		},
 

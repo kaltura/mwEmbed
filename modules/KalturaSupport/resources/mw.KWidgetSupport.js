@@ -262,6 +262,8 @@ mw.KWidgetSupport.prototype = {
 				this.updateEmbedServicesData(embedPlayer, playerData);
 			} else {
 				this.updateVodPlayerData(embedPlayer, playerData);
+				//Flag DRM required if sources have DRM data attached with them
+				this.updateDrmPlayerData(embedPlayer);
 			}
 		}
 		// Check for "image" mediaType ( 2 )
@@ -511,6 +513,13 @@ mw.KWidgetSupport.prototype = {
 		if ( playerData.sources ) {
 			this.addSources( embedPlayer, playerData.sources  );
 		}
+	},
+	updateDrmPlayerData: function(embedPlayer){
+		var drmSources = embedPlayer.mediaElement.sources.filter(function(source){
+			return (source.signature && source.custom_data);
+		});
+		var drmRequired = (drmSources.length > 0);
+		embedPlayer.setDrmRequired( drmRequired );
 	},
 	updateImagePlayerData: function(embedPlayer, playerData){
 		// Check for "image" mediaType ( 2 )
@@ -851,7 +860,7 @@ mw.KWidgetSupport.prototype = {
 		
 		// Check for autoMute:
 		var autoMute = getAttr( 'autoMute' );
-		if( autoMute ){
+		if( autoMute && !mw.isMobileDevice()){
 			setTimeout(function(){
 				embedPlayer.toggleMute( true );
 			},300);
@@ -1142,6 +1151,9 @@ mw.KWidgetSupport.prototype = {
 		var errObj = null;
 		if( data.meta &&  data.meta.code == "INVALID_KS" ){
 			errObj = embedPlayer.getKalturaMsgObject( "NO_KS" );
+		}
+		if( data.meta && (data.meta.status == 1 || data.meta.status == 0) ){
+			errObj = embedPlayer.getKalturaMsgObject( "ks-ENTRY_CONVERTING" );
 		}
 		if( data.error ) {
 			errObj = embedPlayer.getKalturaMsgObject( 'GENERIC_ERROR' );

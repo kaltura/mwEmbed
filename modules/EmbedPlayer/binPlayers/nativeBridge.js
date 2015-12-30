@@ -45,9 +45,9 @@
 		isJsCallbackReady: false,
 		bindPostfix: ".nativeBridge",
 		subscribed: [],
-		playerMethods: [ 
+		playerMethods: [
 			'stop', 'play', 'pause', 'replay', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen', 'notifyKPlayerEvent', 'notifyKPlayerEvaluated', 'notifyJsReady', 'showChromecastDeviceList', 'notifyLayoutReady',
-			'doneFSBtnPressed', 'addNativeAirPlayButton', 'showNativeAirPlayButton', 'hideNativeAirPlayButton', 'doNativeAction', 'textTracksReceived', 'loadEmbeddedCaptions', 'flavorsListChanged', 'switchFlavor' ],
+			'doneFSBtnPressed', 'addNativeAirPlayButton', 'showNativeAirPlayButton', 'hideNativeAirPlayButton', 'doNativeAction', 'textTracksReceived', 'loadEmbeddedCaptions', 'flavorsListChanged', 'switchFlavor','togglePictureInPicture' ],
 
 		registePlayer: function (proxyElement) {
 			var _this = this;
@@ -96,7 +96,7 @@
 			this.notifyJsReadyFunc();
 		},
 		sendNotification: function (eventName, eventValue) {
-			this.embedPlayer.sendNotification(eventName, JSON.parse(eventValue));
+			this.embedPlayer.sendNotification(eventName, eventValue);
 		},
 		/**
 		 *

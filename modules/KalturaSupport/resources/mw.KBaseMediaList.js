@@ -45,18 +45,24 @@
 		},
 
 		setDefaults: function(){
+			this.setBaseThumbSettings();
+			this._super( );
+		},
+		setBaseThumbSettings: function(){
 			this.baseThumbSettings = {
 				'partner_id': this.getPlayer().kpartnerid,
 				'uiconf_id': this.getPlayer().kuiconfid,
 				'entry_id': this.getPlayer().kentryid,
 				'width': this.getConfig( "thumbWidth" )
 			};
-			this._super( );
 		},
-
 		_addBindings: function () {
 			var _this = this;
 			this._super();
+
+			this.bind('onChangeMedia', function(){
+				_this.setBaseThumbSettings();
+			});
 
 			this.bind('updateLayout', function(){
 				if (_this.getPlayer().layoutBuilder.isInFullScreen() ||
@@ -143,10 +149,10 @@
 						var cssLink = this.getConfig('cssFileName');
 						if (cssLink) {
 							//Scroller CSS
-							$( 'head', window.parent.document ).append( '<link type="text/css" rel="stylesheet" href="' + kWidget.getPath() + this.getConfig("scrollerCssPath") + '"/>' );
+							kWidget.appendCssUrl( kWidget.getPath() + this.getConfig("scrollerCssPath"), window.parent.document );
 							//Plugin CSS
 							cssLink = cssLink.toLowerCase().indexOf("http") === 0 ? cssLink : kWidget.getPath() + cssLink; // support external CSS links
-							$( 'head', window.parent.document ).append( '<link type="text/css" rel="stylesheet" href="' + cssLink + '"/>' );
+							kWidget.appendCssUrl( cssLink, window.parent.document );
 						} else {
 							mw.log( "Error: "+ this.pluginName +" could not find CSS link" );
 						}

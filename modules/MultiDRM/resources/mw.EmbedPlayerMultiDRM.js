@@ -808,16 +808,25 @@
 		play: function () {
 			var duration = parseInt(this.duration, 10).toFixed(2);
 			var curTime = parseInt(this.getPlayerElementTime(), 10).toFixed(2);
-			if (( this.currentState === "end" ) ||
-				( this.currentState === "pause" && duration === curTime && this.getPlayerElementTime() > 0 )) {
+			//Rewind video element if using JS player, SL player doesn't require it
+			if ((this.playerElement.getActiveTech() == "dashjs") && (( this.currentState === "end" ) ||
+				( this.currentState === "pause" && duration === curTime && this.getPlayerElementTime() > 0 ))) {
 				this.stopPlayAfterSeek = false;
 				this.seek(0.01, false);
 			} else {
+				//Hack for letting silverlight player handle replay by itself, as seeking to 0.01 kills playback
+				if ((this.playerElement.getActiveTech() == "dashcs") && (( this.currentState === "end" ) ||
+					( this.currentState === "pause" && duration === curTime && this.getPlayerElementTime() > 0 ))) {
+					this.currentState = "load";
+					this.currentTime = 0;
+				}
 				if ( this.parent_play() ) {
 					var _this = this;
 					setTimeout( function () {
+						_this.getPlayerElement().one("play", function(){
+							_this.monitor();
+						});
 						_this.getPlayerElement().play();
-						_this.monitor();
 					}, (this.mediaLoadedFlag ? 100 : 2000) );
 				} else {
 					mw.log( "EmbedPlayerMultiDRM:: parent play returned false, don't issue play on player element" );
@@ -1125,9 +1134,15 @@
 									break;
 								case 'LICENSE_ACQUISITION_ERROR':
 									errorMessage = gM("DRM_LICENSE_ACQUISITION_ERROR");
+								case 'KEY_SYSTEM_ERROR':
+									errorMessage = gM("DRM_KEY_SYSTEM_ERROR");
 									break;
 							}
-							_this.triggerHelper('embedPlayerError', [ {errorMessage: errorMessage} ]);
+							_this.triggerHelper('embedPlayerError', [ {
+								errorMessage: errorMessage,
+								code: playerError.code,
+								subtype: playerError.subtype
+							} ]);
 						}
 						error.code = playerError.code;
 						error.subtype = playerError.subtype;

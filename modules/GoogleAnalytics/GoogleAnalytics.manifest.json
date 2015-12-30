@@ -36,7 +36,12 @@
 		        "doc" : "Enables Google Analytics to do Cross-domain tracking.",
 		        "label": "Allow linker",
 		        "type" : "boolean"
-	        }
+	        },
+            "disableTrackPageview": {
+                "doc" : "Main logic for Google Analytic tracker code, sends the tracking data back to the Google Analytics servers if enabled.",
+                "label": "Do not allow page tracking",
+                "type" : "boolean"
+            }
         }
     }
 }

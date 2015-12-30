@@ -40,7 +40,7 @@
 					_this.show();
 				}
 			});
-			this.bind('playing AdSupport_StartAdPlayback onAddPlayerSpinner onHideControlBar', function(){
+			this.bind('playing AdSupport_StartAdPlayback onAddPlayerSpinner onHideControlBar hidePlayerControls', function(){
 				_this.hide();
 			});
 			this.bind('onPlayerStateChange', function(e, newState, oldState){
@@ -51,6 +51,11 @@
 					_this.hide();
 				}
 			});
+            this.bind('liveOnline', function(){
+                if( _this.getPlayer().isLive && !_this.getPlayer().isDVR() ) {
+                    _this.hide();
+                }
+            });
 		},
 		show: function(){
 			if ( !this.isDisabled ) {

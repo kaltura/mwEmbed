@@ -946,6 +946,7 @@ mw.KAdPlayer.prototype = {
 			'width' : _this.embedPlayer.getVideoHolder().width(),
 			'height' : _this.embedPlayer.getVideoHolder().height()
 		};
+		// TODO Does this need to be parat of the always loaded kWidget library ? 
 		var screenSize = kWidget.resizeOvelayByHolderSize(nonLinearConf, videoSize, 0.9);
 		var layout = {
 			'width' : screenSize.width + 'px',
