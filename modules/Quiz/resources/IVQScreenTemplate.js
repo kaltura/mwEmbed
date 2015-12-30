@@ -16,13 +16,14 @@
             },
             tmplWelcome:function(){
                 var _this = this;
+                $(".icon-close").css("display", "none");
                 $(_this.emptyScreen()).hide().append(
                 '<div class="ivqContainer">' +
                 '<div class="welcome"></div>' +
                 '<div class="pdf-download"></div>' +
                 '<div class="welcomeMessage"></div>' +
                 '<div class="InvideoTipMessage"></div>' +
-                '<div class="bottomContainer">' +
+                '<div class="bottomContainer paddingB12">' +
                 '<div class="confirm-box"></div>' +
                 '</div>' +
                 '</div>').fadeIn( "slow" );
@@ -70,7 +71,7 @@
                 '           <div class="hex-column hexagon-container"></div>' +
                 '       </div>' +
                 '   </div>' +
-                '   <div class="bottomContainer">' +
+                '   <div class="bottomContainer ">' +
                 '       <div class="confirm-box"></div>' +
                 '   </div>' +
                 '</div>').fadeIn( "slow" );

@@ -1,6 +1,6 @@
 /**
  * Created by mark.feder Kaltura.
- * V2.39.quiz-rc2
+ * V2.39.quiz-rc3
  */
 (function (mw, $) {
     "use strict";
@@ -288,22 +288,23 @@
                     _this.KIVQModule.setSubmitQuiz();
                 });
         },
-
         ssSubmitted: function (score) {
             var _this = this,cpArray = $.cpObject.cpArray;
             _this.ivqShowScreen();
             _this.KIVQScreenTemplate.tmplSubmitted();
 
             $(".title-text").html(gM('mwe-quiz-Submitted'));
-            if(cpArray.length <= 6){
-                $(".title-text").addClass("padding14");
-            }
+
             if ($.quizParams.showGradeAfterSubmission){
                 if (!$.quizParams.showCorrectAfterSubmission) {
-                    $(".title-text").addClass("padding35");
+                    $(".title-text").addClass("padding31");
                     $(".sub-text").html(gM('mwe-quiz-completedScore')
                     + '<span class="scoreBig">' + score + '</span>' + ' %');
+                    $(".bottomContainer").addClass("paddingB20");
                 } else {
+                    if(cpArray.length <= 6){
+                        $(".title-text").addClass("padding14");
+                    }
                     $(".sub-text").html(gM('mwe-quiz-completedScore')
                     + '<span class="scoreBig">' + score + '</span>' + ' %' + '</br>'
                     + gM('mwe-quiz-reviewSubmit'));
@@ -322,8 +323,9 @@
                         });
                 }
             }else{
-                $(".title-text").addClass("padding35");
+                $(".title-text").addClass("padding31");
                 $(".sub-text").html(gM('mwe-quiz-completedQuiz'));
+                $(".bottomContainer").addClass("paddingB20");
             }
             $(document).off('click','.confirm-box')
             $(".confirm-box").html(gM('mwe-quiz-done'))
@@ -482,13 +484,15 @@
             } else {
                 $(".ftr-left").append($('<span> ' + gM('mwe-quiz-question') + ' ' + this.KIVQModule.i2q(questionNr)
                 + '/' + $.cpObject.cpArray.length + '</span>')
-                    .css("float", "right"))
+                    .css("float", "right")
+                    .css("cursor","default"))
                     .append($('<div></div>')
                         .addClass("pie")
                         .css("float", "right"))
                     .append($('<span>' + (_this.KIVQModule.getUnansweredQuestNrs()).length + ' '
                     + gM('mwe-quiz-unanswered') + '</span>')
-                        .css("float", "right"));
+                        .css("float", "right")
+                        .css("cursor","default"));
                 if (_this.KIVQModule.canSkip) {
                     $(".ftr-right").html(gM('mwe-quiz-skipForNow')).on('click', function () {
                         _this.KIVQModule.checkIfDone(questionNr)
