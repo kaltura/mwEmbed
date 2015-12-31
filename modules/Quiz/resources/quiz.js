@@ -209,20 +209,19 @@
         ssDisplayHint: function(questionNr){
             var _this = this;
             var embedPlayer = _this.getPlayer();
-            $(".header-container").prepend("<div class ='hint-why-box'>"+ gM('mwe-quiz-hint') +"</div>")
+            $("<div>"+ gM('mwe-quiz-hint') +"</div>").prependTo(".header-container").addClass('hint-why-box')
                 .on('click', function () {
                     _this.KIVQScreenTemplate.tmplHint();
                     $(".header-container").addClass('close-button')
                         .on('click', function () {
                             _this.ssSetCurrentQuestion(questionNr,true);
-
                         });
                     $(".hint-container").append($.cpObject.cpArray[questionNr].hintText);
                 })
         },
         ssDisplayWhy: function (questionNr) {
             var _this = this;
-            $(".header-container").prepend("<div class ='hint-why-box'>"+ gM('mwe-quiz-why') +"</div>")
+            $("<div>"+ gM('mwe-quiz-why') +"</div>").prependTo(".header-container").addClass('hint-why-box')
                 .on('click', function () {
                     _this.KIVQScreenTemplate.tmplWhy();
                     $(".header-container").addClass('close-button')
