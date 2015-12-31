@@ -193,7 +193,7 @@
 
 					if ( this.getConfig( 'containerPosition' ) == 'top' || this.getConfig( 'containerPosition' ) == 'bottom' ) {
 						var playlistHeight = this.getLayout() === "vertical" ? this.getConfig( "mediaItemHeight" ) * this.getConfig( "MinClips" ) + this.getMedialistHeaderComponent().height() : this.getConfig( "mediaItemHeight" ) + this.getConfig('horizontalHeaderHeight');
-						this.getComponent().height(playlistHeight);
+						this.getComponent().height( mw.getConfig('EmbedPlayer.IsFriendlyIframe') ? playlistHeight : playlistHeight - this.getMedialistHeaderComponent().height() );
 						$( ".mwPlayerContainer" ).css( "height", this.$mediaListContainer.height() - playlistHeight + "px" );
 						var controlBarHeight = 0;
 						$('.block').each(function() {
