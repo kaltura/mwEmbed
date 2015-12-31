@@ -1687,7 +1687,13 @@
 				return;
 			}
 			if (typeof console != 'undefined' && console.log) {
-				console.log("kWidget: " + msg);
+				if (this.isIE8()){
+					try{
+						console.log("kWidget: " + msg);
+					}catch(e){}
+				}else{
+					console.log("kWidget: " + msg);
+				}
 			}
 		},
 
