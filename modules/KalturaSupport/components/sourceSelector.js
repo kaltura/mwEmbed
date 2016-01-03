@@ -78,6 +78,10 @@
 				_this.sourcesList = [];
 			});
 
+			this.bind( 'onDisableInterfaceComponents', function(e, arg ){
+				_this.getMenu().close();
+			});
+
 			// Check for switch on resize option
 			if( this.getConfig( 'switchOnResize' ) ){
 				this.bind( 'updateLayout', function(){
