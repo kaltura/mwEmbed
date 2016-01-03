@@ -1647,7 +1647,8 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 
 .AlertContainerTransparent{
 	background-color : transparent;
-	position: fixed;
+	position: absolute;
+    width: 80%;
 	top: 50%;
 	left: 50%;
 	-webkit-transform: translate(-50%, -50%);
