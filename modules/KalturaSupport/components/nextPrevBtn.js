@@ -3,7 +3,7 @@
 	mw.PluginManager.add( 'nextPrevBtn', mw.KBaseComponent.extend({
 
 		defaultConfig: {
-			'parent': mw.isMobileDevice() ? 'videoHolder' : 'controlsContainer',
+			'parent': 'controlsContainer',
 			'accessibleControls': false,
 			'layout': "horizontal",
 			'order': 5,
@@ -20,39 +20,40 @@
 		prevTitle: gM( 'mwe-embedplayer-prev_clip' ),
 
 		setup: function() {
-			this.addBindings();
+			if (this.embedPlayer.isMobileSkin()){
+				this.setConfig('parent','videoHolder');
+				this.addBindings();
+			}
 		},
 		addBindings: function() {
 			var _this = this;
-			if (mw.isMobileDevice()){
-				this.bind('onChangeMediaDone playerReady onpause onEndedDone onRemovePlayerSpinner showPlayerControls', function(){
-					if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() && !_this.embedPlayer.changeMediaStarted ){
-						_this.show();
-					}
-				});
+			this.bind('onChangeMediaDone playerReady onpause onEndedDone onRemovePlayerSpinner showPlayerControls', function(){
+				if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() && !_this.embedPlayer.changeMediaStarted ){
+					_this.show();
+				}
+			});
 
-				this.bind('onShowControlBar', function(){
-					if( _this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
-						_this.show();
-					}
-				});
-				this.bind('playing AdSupport_StartAdPlayback onAddPlayerSpinner onHideControlBar', function(){
+			this.bind('onShowControlBar', function(){
+				if( _this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
+					_this.show();
+				}
+			});
+			this.bind('playing AdSupport_StartAdPlayback onAddPlayerSpinner onHideControlBar', function(){
+				_this.hide();
+			});
+			this.bind('onPlayerStateChange', function(e, newState, oldState){
+				if( newState == 'load' ){
 					_this.hide();
-				});
-				this.bind('onPlayerStateChange', function(e, newState, oldState){
-					if( newState == 'load' ){
-						_this.hide();
-					}
-					if( newState == 'pause' && _this.embedPlayer.isPauseLoading ){
-						_this.hide();
-					}
-				});
-				this.bind( 'hideScreen', function(){
-					if (_this.embedPlayer.paused){
-						_this.show();
-					}
-				});
-			}
+				}
+				if( newState == 'pause' && _this.embedPlayer.isPauseLoading ){
+					_this.hide();
+				}
+			});
+			this.bind( 'hideScreen', function(){
+				if (_this.embedPlayer.paused){
+					_this.show();
+				}
+			});
 		},
 		show: function(){
 			if ( !this.isDisabled ) {
