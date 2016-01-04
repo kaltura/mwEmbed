@@ -823,6 +823,12 @@
 						// make sure the source is set:
 						if ( $(vid).attr('src') != _this.getSrc() || _this.resetSrc ) {
 							$(vid).attr('src', _this.getSrc());
+                            //trigger play again for iPad and El Capitan
+                            setTimeout( function () {
+                                if ( !_this.playing ) {
+                                    vid.play();
+                                }
+                            }, 100 );
                             _this.resetSrc = false;
 						}
 						_this.hideSpinnerOncePlaying();

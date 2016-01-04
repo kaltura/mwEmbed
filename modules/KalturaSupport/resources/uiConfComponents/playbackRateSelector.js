@@ -81,6 +81,10 @@
 				_this.setSpeedFromApi( arg );
 			});
 
+			this.bind( 'onDisableInterfaceComponents', function(e, arg ){
+				_this.getMenu().close();
+			});
+
 			if( this.getConfig('enableKeyboardShortcuts') ){
 				this.bind( 'addKeyBindCallback', function( e, addKeyCallback ){
 					_this.addKeyboardShortcuts( addKeyCallback );

@@ -213,6 +213,9 @@
 			this.bind("playSegmentEvent", function(){
 				_this.updateTimeOffset();
 			});
+			this.bind( 'onDisableInterfaceComponents', function(e, arg ){
+				_this.getMenu().close();
+			});
 		},
 		updateTextSize: function(){
 			// Check if we are in fullscreen or not, if so add an additional bottom offset of

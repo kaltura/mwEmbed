@@ -198,6 +198,7 @@
 					embedPlayer.firstPlay &&
 					embedPlayer.autoplay &&
 					embedPlayer.canAutoPlay() &&
+					!embedPlayer.isInSequence() &&
 					!embedPlayer.isPlaying() ) {
 					embedPlayer.play();
 				}

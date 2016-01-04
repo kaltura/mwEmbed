@@ -595,6 +595,7 @@
 			// Since Youtube don't have a seeked event , we must turn off the seeking flag and restore pause state if needed
 			if ( !this.isPlaying() ){
 				setTimeout(function(){
+					_this.currentTime = seekTime;
 					$( _this ).trigger( 'seeked' );
 					_this.seeking = false;
 					_this.pause();

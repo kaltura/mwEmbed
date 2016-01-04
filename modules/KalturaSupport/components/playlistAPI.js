@@ -163,6 +163,7 @@
 			});
 
 			$( this.embedPlayer ).bind('onOpenFullScreen', function() {
+				$( ".playlistInterface").height("100%");
 				_this.redrawOnResize = false;
 				clearTimeout(window.redrawTimeOutID);
 			});
@@ -314,7 +315,7 @@
 		},
 		redrawPlaylist: function(){
 			var _this = this;
-			if (!this.getPlayer().layoutBuilder.isInFullScreen() && this.redrawOnResize && this.redrawOnResize && this.playlistSet.length > 0) {
+			if (!this.getPlayer().layoutBuilder.isInFullScreen() && this.redrawOnResize && this.playlistSet.length > 0) {
 				// decide the width of the items. For vertical layout: 3rd of the container. For horizontal: according to MinClips value
 				if ( this.getLayout() === "vertical" ){
 					var saveScrollTop = this.getMedialistComponent().find(".nano-content").scrollTop(); // save scrollTop
