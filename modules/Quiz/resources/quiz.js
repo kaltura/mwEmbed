@@ -1,6 +1,6 @@
 /**
  * Created by mark.feder Kaltura.
- * V2.39.quiz-rc3
+ * V2.39.quiz-rc4
  */
 (function (mw, $) {
     "use strict";
@@ -337,16 +337,20 @@
             $(document).off('click','.confirm-box')
             $(".confirm-box").html(gM('mwe-quiz-done'))
                 .on('click', function () {
-                    _this.KIVQScreenTemplate.tmplThankYou();
-                    $(".title-text").html(gM('mwe-quiz-thankYou'));
-                    $(this).delay(1000).fadeIn(function () {
-                        _this.KIVQModule.quizEndFlow = false;
-                        if (_this.embedPlayer.getPlayerElementTime() > 0){
-                            _this.ivqHideScreen();
-                            _this.embedPlayer.seek(0 , false);
-                        }
+                    if (mw.isMobileDevice() || _this.embedPlayer.getPlayerElementTime() === 0 ){
                         _this.KIVQModule.continuePlay();
-                    });
+                    }else {
+                        _this.KIVQScreenTemplate.tmplThankYou();
+                        $(".title-text").html(gM('mwe-quiz-thankYou'));
+                        $(this).delay(1000).fadeIn(function () {
+                            _this.KIVQModule.quizEndFlow = false;
+                            if (_this.embedPlayer.getPlayerElementTime() > 0) {
+                                _this.ivqHideScreen();
+                                _this.embedPlayer.seek(0, false);
+                            }
+                            _this.KIVQModule.continuePlay();
+                        });
+                    }
                 });
         },
         ssReviewAnswer: function (selectedQuestion) {
