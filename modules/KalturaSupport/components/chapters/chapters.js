@@ -1014,11 +1014,11 @@
 			this.$searchFormWrapper.blur();
 			this.$searchFormWrapper.find("#searchBox").blur();
 		},
-		findActiveItem: function(data, currentActiveIndex){
+		findActiveItem: function(data, startIndex){
 			var activeItemIndex = -1;
 			var time = this.getPlayer().currentTime;
 			var item;
-			var i = (currentActiveIndex > -1) ? currentActiveIndex : 0;
+			var i = (startIndex > -1) ? startIndex : 0;
 
 			for (i; i < data.length; i++){
 				item = data[i];
@@ -1090,7 +1090,7 @@
 			if (index > -1 && index < this.chaptersMap.length) {
 				var chapterObj = this.chaptersMap[index];
 				var endTime = chapterObj.endTime;
-				var countDown = Math.abs(this.getPlayer().currentTime - endTime);
+				var countDown = endTime - this.getPlayer().currentTime;
 				this.updateActiveChapterDuration(chapterObj.order, countDown);
 			} else{
 				this.log("error - tried to access chapters out of index bound");
