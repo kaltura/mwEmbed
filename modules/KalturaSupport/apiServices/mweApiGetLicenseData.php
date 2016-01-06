@@ -3,7 +3,7 @@
 /*
 	Returns json with license acquisition data. 
 	Required parameters:
-		wid, uiconf_id, entry_id, ks, drm (wv_classic|wv_modular)
+		wid, uiconf_id, entry_id, ks, drm (wvclassic|wvcenc)
 	Optional parameter:
 		flavor_ids  (comma-separated list)
 		
@@ -54,10 +54,10 @@ class mweApiGetLicenseData {
             
             $drm = $_REQUEST['drm'];
             switch ($drm) {
-                case 'wv_classic':
+                case 'wvclassic':
                     $licensePath = 'widevine/license';
                     break;
-                case 'wv_modular':
+                case 'wvcenc':
                     $licensePath = 'cenc/widevine/license';
                     break;
                 default:
