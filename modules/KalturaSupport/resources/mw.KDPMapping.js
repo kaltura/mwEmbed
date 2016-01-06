@@ -1161,6 +1161,9 @@
 						})
 						return;
 					}
+					if ( notificationData && notificationData.userInitiated ){
+						embedPlayer.triggerHelper( 'userInitiatedPlay' );
+					}
 					embedPlayer.play();
 					break;
 				case 'doPause':

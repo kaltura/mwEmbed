@@ -91,7 +91,7 @@
 				this.getPlayer().sendNotification('doPause');
 			}else{
 				this.getPlayer().triggerHelper( 'goingtoplay' );
-				this.getPlayer().sendNotification('doPlay');
+				this.getPlayer().sendNotification('doPlay',{'userInitiated': true});
 			}
 		},
 		onEnable: function(){
