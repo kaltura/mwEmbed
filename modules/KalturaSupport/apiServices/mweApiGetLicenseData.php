@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL | E_STRICT);
+
 /*
 	Returns json with license acquisition data. 
 	Required parameters:
