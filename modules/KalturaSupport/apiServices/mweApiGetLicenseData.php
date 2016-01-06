@@ -66,15 +66,17 @@ class mweApiGetLicenseData {
 
             // EntryResult throws an exception when something's wrong
             $flavorData = $this->getRawFlavorData();
-            $response = array();
+            $licenseUris = array();
             foreach ($flavorData as $flavorId => $flavorCustomDataSig) {
                 $custom_data = $flavorCustomDataSig['custom_data'];
                 $signature = $flavorCustomDataSig['signature'];
                 $url = sprintf('%s/%s?custom_data=%s&signature=%s', 
                         $udrmBaseURL, $licensePath, $custom_data, $signature);
-                $response[$flavorId] = $url;
+                $licenseUris[$flavorId] = $url;
             }
-            $response = $this->filterByRequestedFlavors($response);
+            $licenseUris = $this->filterByRequestedFlavors($licenseUris);
+            
+            $response = array('licenseUri' => $licenseUris);
             
         } catch (Exception $e) {
             $response = array(
