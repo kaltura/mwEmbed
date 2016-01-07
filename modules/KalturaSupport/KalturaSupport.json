@@ -461,5 +461,10 @@
 		"scripts": "components/reportError.js",
 		"dependencies": "mw.KBaseComponent",
 		"kalturaPluginName": "reportError"
+	},
+	"videoBackground": {
+		"scripts": "components/videoBackground.js",
+		"dependencies": "mw.KBaseComponent",
+		"kalturaPluginName": "videoBackground"
 	}
 }
