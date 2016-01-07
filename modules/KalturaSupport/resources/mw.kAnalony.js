@@ -5,9 +5,6 @@
 	"use strict";
 
 	mw.PluginManager.add( 'kAnalony' , mw.KBasePlugin.extend( {
-		defaultConfig: {
-			'customVars': 3
-		},
 		PlayerEvent:{
 			"IMPRESSION": 1,
 			"PLAY_REQUEST": 2,
@@ -314,7 +311,7 @@
 			var statsEvent = {
 				'entryId'           : _this.embedPlayer.kentryid,
 				'partnerId'         : _this.embedPlayer.kpartnerid,
-				'eventType'         :  eventType,
+				'eventType'         : eventType,
 				'ks'                : ks ? ks : '',
 				'sessionId'         : _this.embedPlayer.evaluate('{configProxy.sessionId}'),
 				'eventIndex'        : _this.eventIndex,
@@ -334,15 +331,19 @@
 			}
 
 			// add custom vars
-			for (var i = 1; i <= this.getConfig("customVars"); i++){
-				var key = "customVar" + i;
-				if ( this.getConfig(key) ){
+			var config = this.getConfig();
+			for (var key in config){
+				if (key.indexOf("customVar") !== -1){
 					var customVarObj = {};
-					customVarObj[key] = this.getConfig(key);
+					customVarObj[key] = config[key];
 					$.extend(statsEvent, customVarObj);
 				}
 			}
 
+			// add playbackContext
+			if (mw.getConfig("playbackContext")){
+				statsEvent["playbackContext"] = mw.getConfig("playbackContext");
+			}
 
 			var eventRequest = {'service' : 'liveStats', 'action' : 'collect'};
 			$.each(statsEvent , function (index , value) {
@@ -359,9 +360,6 @@
 					mw.log("Failed sync time from server");
 				}
 			}, true );
-
-			console.log("---> send event type: "+eventType+" , currentBitRate: "+_this.currentBitRate);
-
 		}
 	}));
 } )( window.mw, window.jQuery );
