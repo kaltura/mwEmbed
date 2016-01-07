@@ -8,8 +8,10 @@
 
 if (isset($_SERVER["HTTP_X_FORWARDED_HOST"]))
 {
-	 $_SERVER["HTTP_HOST"] = $_SERVER["HTTP_X_FORWARDED_HOST"];
-	 $_SERVER["SERVER_NAME"] = $_SERVER["HTTP_X_FORWARDED_HOST"];
+    // support multiple hosts (comma separated) in HTTP_X_FORWARDED_HOST
+    $xForwardedHosts = explode(',', $_SERVER['HTTP_X_FORWARDED_HOST']);
+    $_SERVER["HTTP_HOST"] = $xForwardedHosts[0];
+    $_SERVER["SERVER_NAME"] = $xForwardedHosts[0];
 }
 
 // The default cache directory
