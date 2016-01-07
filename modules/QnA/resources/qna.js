@@ -97,11 +97,11 @@
 			var qnaObject = _this.getQnaContainer().find(".qnaModuleBackground");
 
 			if (!qnaObject.is(":visible")){
-				onVideoTogglePluginButton.removeClass('icon-qna-close');
-				onVideoTogglePluginButton.addClass('icon-qna-Ask');
+				onVideoTogglePluginButton.removeClass('qna-icon-close');
+				onVideoTogglePluginButton.addClass('qna-icon-Ask');
 			} else {
-				onVideoTogglePluginButton.removeClass('icon-qna-Ask');
-				onVideoTogglePluginButton.addClass('icon-qna-close');
+				onVideoTogglePluginButton.removeClass('qna-icon-Ask');
+				onVideoTogglePluginButton.addClass('qna-icon-close');
 			}
 		},
 
@@ -131,7 +131,7 @@
 
 			this.bind('layoutBuildDone', function (event, screenName) {
 				// add the Q&A toggle button to be on the video
-				embedPlayer.getVideoHolder().append('<div class="qna-on-video-btn icon-qna-close"><div class="qna-badge"></div></div>');
+				embedPlayer.getVideoHolder().append('<div class="qna-on-video-btn qna-icon-close"><div class="qna-badge"></div></div>');
 				_this.getQnaContainer();
 				qnaObject = _this.getQnaContainer().find(".qnaModuleBackground");
 				onVideoTogglePluginButton = $('.qna-on-video-btn');
