@@ -828,7 +828,7 @@
                                 if ( !_this.playing ) {
                                     vid.play();
                                 }
-                            }, 100 );
+                            }, 200 );
                             _this.resetSrc = false;
 						}
 						_this.hideSpinnerOncePlaying();
