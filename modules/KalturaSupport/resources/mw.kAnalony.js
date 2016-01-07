@@ -10,6 +10,7 @@
 			"IMPRESSION": 1,
 			"PLAY_REQUEST": 2,
 			"PLAY": 3,
+			"RESUME": 4,
 			"PLAY_25PERCENT": 11,
 			"PLAY_50PERCENT": 12,
 			"PLAY_75PERCENT": 13,
@@ -24,6 +25,12 @@
 			"PAUSE": 33,
 			"REPLAY": 34,
 			"SEEK": 35,
+			"RELATED_CLICKED": 36,
+			"RELATED_SELECTED": 37,
+			"CAPTIONS": 38,
+			"SOURCE_SELECTED": 39,
+			"INFO": 40,
+			"SPEED": 41,
 			"VIEW": 99
 		},
 		startTime:null,
@@ -104,7 +111,11 @@
 
 			this.embedPlayer.bindHelper( 'onplay' , function () {
 				if ( !this.isInSequence() ){
-					_this.sendAnalytics(playerEvent.PLAY);
+					if ( _this.firstPlay ){
+						_this.sendAnalytics(playerEvent.PLAY);
+					}else{
+						_this.sendAnalytics(playerEvent.RESUME);
+					}
 				}
 			});
 			this.embedPlayer.bindHelper( 'userInitiatedPause' , function () {
@@ -154,6 +165,32 @@
 
 			this.embedPlayer.bindHelper( 'moderationSubmit' , function (e, reportType) {
 				_this.sendAnalytics(playerEvent.REPORT_SUBMITED, { "reportType": reportType});
+			});
+
+			this.embedPlayer.bindHelper( 'relatedOpen' , function () {
+				_this.sendAnalytics(playerEvent.RELATED_CLICKED);
+			});
+
+			this.embedPlayer.bindHelper( 'relatedVideoSelect' , function (e, data) {
+				if (!data.autoSelected){
+					_this.sendAnalytics(playerEvent.RELATED_SELECTED, { "relatedEntryId": data.entryId});
+				}
+			});
+
+			this.embedPlayer.bindHelper( 'selectClosedCaptions' , function (e, language) {
+				_this.sendAnalytics(playerEvent.CAPTIONS, { "caption": language});
+			});
+
+			this.embedPlayer.bindHelper( 'newSourceSelected' , function (e, flavourId) {
+				_this.sendAnalytics(playerEvent.SOURCE_SELECTED, { "flavourId": flavourId});
+			});
+
+			this.embedPlayer.bindHelper( 'infoScreenOpen' , function () {
+				_this.sendAnalytics(playerEvent.INFO);
+			});
+
+			this.embedPlayer.bindHelper( 'updatedPlaybackRate' , function (e, speed) {
+				_this.sendAnalytics(playerEvent.SPEED, {"playbackSpeed": speed});
 			});
 
 			this.embedPlayer.bindHelper('onPlayerStateChange', function(e, newState, oldState) {

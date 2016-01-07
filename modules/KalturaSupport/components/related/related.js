@@ -79,7 +79,7 @@
 					if ( _this.error ) {
 						return;
 					}
-					_this.showScreen();
+					_this.showScreen(true);
 					if( _this.getConfig('autoContinueEnabled') && _this.getConfig('autoContinueTime') ){
 						_this.startTimer();
 					}
@@ -102,8 +102,11 @@
 			});
 		},
 
-		showScreen: function(){
+		showScreen: function(auto){
 			var _this = this;
+			if ( auto !== true){
+				this.embedPlayer.triggerHelper("relatedOpen");
+			}
 			this._super(); // this is an override of showScreen in mw.KBaseScreen.js - call super
 			if (this.numOfEntries > 0 && this.loadedThumbnails < this.numOfEntries) { // related data was loaded but thumbnails were not loaded yet
 				$('.item-inner').each(function () {
@@ -173,7 +176,7 @@
 					_this.stopTimer();
 					// Make sure we change media only if related is visible and we have next item
 					if( _this.isScreenVisible() && _this.templateData && _this.templateData.nextItem ){
-						_this.changeMedia( null, {entryId: _this.templateData.nextItem.id} );
+						_this.changeMedia( null, {entryId: _this.templateData.nextItem.id},true );
 					}
 				}
 			};
@@ -353,7 +356,7 @@
 			}
 		},
 
-		changeMedia: function( e, data ){
+		changeMedia: function( e, data, auto ){
 			this.stopTimer();
 			var _this = this;
 			// update the selected entry:
@@ -376,7 +379,7 @@
 					}
 				}
 			}
-
+			data["autoSelected"] = (auto === true);
 			this.getPlayer().sendNotification('relatedVideoSelect', data);
 
 			if(this.getConfig('clickUrl')){
