@@ -5,7 +5,9 @@
 	"use strict";
 
 	mw.PluginManager.add( 'kAnalony' , mw.KBasePlugin.extend( {
-
+		defaultConfig: {
+			'customVars': 3
+		},
 		PlayerEvent:{
 			"IMPRESSION": 1,
 			"PLAY_REQUEST": 2,
@@ -33,7 +35,7 @@
 			"SPEED": 41,
 			"VIEW": 99
 		},
-		startTime:null,
+		startTime: null,
 		reportingInterval : 10000,
 		bufferTime : 0,
 		eventIndex : 1,
@@ -87,13 +89,13 @@
 			_this.viewEventInterval = window.setTimeout(function() { instance(); }, speed);
 		},
 
-
 		setup: function( ) {
 			this.eventIndex = 1;
 			this.bufferTime = 0;
 			this.currentBitRate = -1;
 			this.addBindings();
 	    },
+
 		addBindings : function() {
 			var _this = this;
 			var playerEvent = this.PlayerEvent;
@@ -193,61 +195,37 @@
 				_this.sendAnalytics(playerEvent.SPEED, {"playbackSpeed": speed});
 			});
 
+			this.embedPlayer.bindHelper('bufferStartEvent', function(){
+				_this.bufferStartTime = new Date();
+			});
+
+			this.embedPlayer.bindHelper('bufferEndEvent', function(){
+				_this.calculateBuffer();
+				_this.bufferStartTime = null;
+			});
+
+			this.embedPlayer.bindHelper( 'bitrateChange' ,function( event, newBitrate){
+				_this.currentBitRate = newBitrate;
+			} );
+
 			this.embedPlayer.bindHelper('onPlayerStateChange', function(e, newState, oldState) {
 				if (newState === "pause" ){
 					_this.stopViewTracking();
 				}
 				if (newState === "play"){
-					_this.startViewTracking();
+					if ( oldState === "start" || oldState === "pause" ){
+						_this.startViewTracking();
+					}
 				}
 			});
 
-
-//				var _this = this;
-//				this.bind('onPlayerStateChange', function(e, newState, oldState) {
-//					if (newState === "pause" ){
-//						_this.stopLiveEvents();
-//						_this.playing = false;
-//					}
-//					if (newState === "play"){
-//						_this.startLiveEvents();
-//						_this.playing = true;
-//					}
-//				});
-//				this.bind('bufferStartEvent',function(){
-//					_this.bufferStartTime = new Date();
-//				});
-//				this.bind('bufferEndEvent',function(){
-//					_this.calculateBuffer();
-//					_this.bufferStartTime = null;
-//				});
-//				this.bind( 'bitrateChange' ,function( event,newBitrate){
-//					_this.currentBitRate = newBitrate;
-//				} );
-//
-//				this.bind( 'liveStreamStatusUpdate' ,function( event, status ){
-//					if (!status){
-//						//we're offline
-//						_this.stopLiveEvents();
-//						_this.bufferTime = 0;
-//						_this.bufferStartTime = null;
-//					} else{
-//						 if (_this.playing && !_this.isLiveEventsOn){
-//							 _this.startLiveEvents();
-//						 }
-//					}
-//				});
-//
-//				this.bind( 'movingBackToLive', function() {
-//					_this.eventType = 1;
-//				} );
-//
-//				this.bind( 'seeked seeking onpause', function() {
-//					if ( _this.getPlayer().isDVR() ) {
-//						_this.eventType = 2;
-//					}
-//				});
-
+			// events for capturing the bitrate of the currently playing source
+			this.embedPlayer.bindHelper( 'SourceSelected' , function (e, source) {
+				_this.currentBitRate = source.getBitrate();
+			});
+			this.embedPlayer.bindHelper( 'sourceSwitchingEnd' , function (e, newSource) {
+				_this.currentBitRate = newSource.newBitrate;
+			});
 		},
 		resetPlayerflags:function(){
 			this._p25Once = false;
@@ -282,24 +260,23 @@
 			}
 		},
 
-//		calculateBuffer : function ( closeSession ){
-//			var _this = this;
-//			//if we want to calculate the buffer till now - first check we have started buffer
-//			if (closeSession &&  !_this.bufferStartTime){
-//					return;
-//			}
-//
-//			//calc the buffer time
-//			this.bufferTime += (new Date() - _this.bufferStartTime) / 1000;
-//			if (this.bufferTime > 10){
-//				this.bufferTime = 10;
-//			}
-//			//set the buffer start time to now - in order to continue and counting the current buffer session
-//			if ( closeSession ){
-//				_this.bufferStartTime = new Date();
-//			}
-//
-//		},
+		calculateBuffer : function ( closeSession ){
+			var _this = this;
+			//if we want to calculate the buffer till now - first check we have started buffer
+			if (closeSession &&  !_this.bufferStartTime){
+					return;
+			}
+
+			//calc the buffer time
+			this.bufferTime += (new Date() - _this.bufferStartTime) / 1000;
+			if (this.bufferTime > 10){
+				this.bufferTime = 10;
+			}
+			//set the buffer start time to now - in order to continue and counting the current buffer session
+			if ( closeSession ){
+				_this.bufferStartTime = new Date();
+			}
+		},
 
 		stopViewTracking :function(){
 			var _this = this;
@@ -319,38 +296,60 @@
 			}
 			_this.smartSetInterval(function(){
 				_this.sendAnalytics(playerEvent.VIEW);
+				_this.bufferTime = 0;
 			},_this.reportingInterval,_this.monitorIntervalObj);
 
 		},
 		sendAnalytics : function(eventType, additionalData){
-			console.log("---> send event type: "+eventType+" , data: "+JSON.stringify(additionalData));
-			return;
 			var _this = this;
-			_this.calculateBuffer(true);
+			this.calculateBuffer(true);
 			_this.kClient = mw.kApiGetPartnerClient( _this.embedPlayer.kwidgetid );
 			if ( _this.embedPlayer.isMulticast && $.isFunction( _this.embedPlayer.getMulticastBitrate ) ) {
 				_this.currentBitRate = _this.embedPlayer.getMulticastBitrate();
 			}
-			var liveStatsEvent = {
-				'entryId'     : _this.embedPlayer.kentryid,
-				'partnerId'   : _this.embedPlayer.kpartnerid,
-				'eventType'   :  eventType,
-				'sessionId'   : _this.embedPlayer.evaluate('{configProxy.sessionId}'),
-				'eventIndex'  : _this.eventIndex,
-				'bufferTime'  : _this.bufferTime,
-				'bitrate'     : _this.currentBitRate,
-				'referrer'    :  encodeURIComponent( mw.getConfig('EmbedPlayer.IframeParentUrl') ),
-				'isLive'      :  1,
-				'deliveryType': _this.embedPlayer.streamerType,
-				'startTime'   : _this.startTime
+			// get ks if available
+			var client = mw.kApiGetPartnerClient( this.embedPlayer.kwidgetid );
+			var ks = client.getKs();
+
+			var statsEvent = {
+				'entryId'           : _this.embedPlayer.kentryid,
+				'partnerId'         : _this.embedPlayer.kpartnerid,
+				'eventType'         :  eventType,
+				'ks'                : ks ? ks : '',
+				'sessionId'         : _this.embedPlayer.evaluate('{configProxy.sessionId}'),
+				'eventIndex'        : _this.eventIndex,
+				'bufferTime'        : _this.bufferTime,
+				'actualBitrate'     : _this.currentBitRate,
+				'referrer'          :  encodeURIComponent( mw.getConfig('EmbedPlayer.IframeParentUrl') ),
+				'deliveryType'      : _this.embedPlayer.streamerType,
+				'sessionStartTime'  : _this.startTime,
+				'uiConfId'          : _this.embedPlayer.kuiconfid,
+				'clientVer'         : mw.getConfig("version"),
+				'position'          : _this.embedPlayer.currentTime
 			};
+
+			// add specific events data
+			if (additionalData){
+				$.extend(statsEvent, additionalData);
+			}
+
+			// add custom vars
+			for (var i = 1; i <= this.getConfig("customVars"); i++){
+				var key = "customVar" + i;
+				if ( this.getConfig(key) ){
+					var customVarObj = {};
+					customVarObj[key] = this.getConfig(key);
+					$.extend(statsEvent, customVarObj);
+				}
+			}
+
+
 			var eventRequest = {'service' : 'liveStats', 'action' : 'collect'};
-			$.each(liveStatsEvent , function (index , value) {
+			$.each(statsEvent , function (index , value) {
 				eventRequest[ 'event:' + index] = value;
 			});
-			_this.bufferTime = 0;
-			_this.eventIndex +=1;
-			_this.embedPlayer.triggerHelper( 'liveAnalyticsEvent' , liveStatsEvent);
+			_this.eventIndex += 1;
+			_this.embedPlayer.triggerHelper( 'analyticsEvent' , statsEvent);
 			_this.kClient.doRequest( eventRequest, function(data){
 				try {
 					if (!_this.startTime ) {
@@ -360,6 +359,8 @@
 					mw.log("Failed sync time from server");
 				}
 			}, true );
+
+			console.log("---> send event type: "+eventType+" , currentBitRate: "+_this.currentBitRate);
 
 		}
 	}));
