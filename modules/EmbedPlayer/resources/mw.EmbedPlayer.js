@@ -2500,8 +2500,10 @@
 
 		togglePlayback: function () {
 				if (this.paused) {
+					this.triggerHelper( 'userInitiatedPlay' );
 					this.play();
 				} else {
+					this.triggerHelper( 'userInitiatedPause' );
 					this.pause();
 				}
 		},

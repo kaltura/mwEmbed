@@ -88,7 +88,7 @@
 			event.preventDefault();
 			event.stopPropagation();
 			if ( this.getConfig("togglePause") && this.getPlayer().isPlaying() ){
-				this.getPlayer().sendNotification('doPause');
+				this.getPlayer().sendNotification('doPause',{'userInitiated': true});
 			}else{
 				this.getPlayer().triggerHelper( 'goingtoplay' );
 				this.getPlayer().sendNotification('doPlay',{'userInitiated': true});

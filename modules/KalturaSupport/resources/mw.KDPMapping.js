@@ -1172,6 +1172,9 @@
 						embedPlayer.triggerHelper( 'doPause' );
 						break;
 					}
+					if ( notificationData && notificationData.userInitiated ){
+						embedPlayer.triggerHelper( 'userInitiatedPause' );
+					}
 					embedPlayer.pause();
 					break;
 				case 'doStop':
