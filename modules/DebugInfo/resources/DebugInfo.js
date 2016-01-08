@@ -45,9 +45,26 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
 
     bindToHlsEvents:function() {
         var _this = this;
+
+        var re = /([^k\/]*)\/(?:kCache|kVOD)/ig;
+
         this.bind("debugInfoReceived", function( e, data ){
             var $scope=_this.$scope;
+            var m;
 
+            if (data.uri) {
+                try {
+                    $scope.kesChain = "";
+                    var m;
+                    while ((m = re.exec(data.uri)) !== null) {
+                        if ($scope.kesChain.length > 0) {
+                            $scope.kesChain += " <= ";
+                        }
+                        $scope.kesChain += m[1];
+                    }
+                }catch(e) {
+                }
+            }
             if( data.info && data.info == "Playing segment"){
                 $scope.hlsCurrentSegment=data.uri;
             }

@@ -6,6 +6,7 @@
     padding: 5px;
     margin: 10px;
     z-index: 100;
+    pointer-events: none
 }
 
 .mw-debug-info-close-btn {
@@ -20,6 +21,10 @@
     background: #000000;
     padding: 3px 3px 3px 3px;
     text-decoration: none;
+    pointer-events: auto
+}
+.mw-debug-info-copy-btn {
+    pointer-events: auto
 }
 
 .mw-debug-info-close-btn:hover {
@@ -40,4 +45,5 @@
 .mw-debug-info-a:active {
 
     color: white;
+    pointer-events: auto
 }
