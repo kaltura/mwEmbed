@@ -82,7 +82,7 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
         this.isVisible=visible;
 
         if (visible) {
-            _this.embedPlayer.getVideoHolder().append("<div class='mw-debug-info'>");
+            _this.embedPlayer.getVideoHolder().prepend("<div class='mw-debug-info'>");
             var elem=$(".mw-debug-info");
 
 

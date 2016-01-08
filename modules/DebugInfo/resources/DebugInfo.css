@@ -5,7 +5,7 @@
     overflow: hidden;
     padding: 5px;
     margin: 10px;
-    z-index: 0;
+    z-index: 100;
 }
 
 .mw-debug-info-close-btn {
