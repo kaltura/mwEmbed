@@ -44,6 +44,25 @@
 .mw-debug-info-a:hover,
 .mw-debug-info-a:active {
 
+    white-space: nowrap;
     color: white;
     pointer-events: auto
+}
+
+
+.mw-debug-info-separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+.mw-debug-info-separator::before, .mw-debug-info-separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid white;
+}
+.mw-debug-info-separator::before {
+    margin-right: .25em;
+}
+.mw-debug-info-separator::after {
+    margin-left: .25em;
 }

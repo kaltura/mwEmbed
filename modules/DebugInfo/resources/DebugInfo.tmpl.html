@@ -7,7 +7,7 @@
     <div>mimeType: {{mimeType}}</div>
     <div>currentState: {{currentState}}</div>
     <div ng-show="hls">
-        <span>HLS Information:</span><br>
+        <div class="mw-debug-info-separator">HLS Information</div>
         <div ng-show="kesChain">KES: {{kesChain}}</div>
         <span>current:</span><a class="mw-debug-info-a" href="{{hlsCurrentSegment}}">{{hlsCurrentSegment | getFileName}}</a><br>
         <span>downloading:</span><a class="mw-debug-info-a" href="{{hlsDownloadingSegment}}">{{hlsDownloadingSegment | getFileName}}</a><br>
@@ -17,8 +17,8 @@
         <div>currentBitrate: {{currentBitrate}}</div>
     </div>
     <div ng-show="multicast">
-        <div>Multicast Information:</div>
-        <div class="mw-debug-info-text" title="{{multiastServerUrl}}">KES: {{multiastServerUrl}}</div>
+        <div class="mw-debug-info-separator">Multicast Information</div>
+        <span>KES:</span><a class="mw-debug-info-a" href="{{multiastServerUrl}}">{{kesChain}}</a><br>
         <div>multicast Address: {{mcAddress}}</div>
         <div>session id: {{multicastSessionId}}</div>
         <div>bitrate: {{currentBitrate}}</div>
