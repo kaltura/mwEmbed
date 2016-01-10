@@ -243,6 +243,7 @@
 			// set responsiveness
 			if ( !mw.isIOS7()) {
 				this.bind( 'resizeEvent' , function () {
+					$( ".playlistInterface").height("100%");
 					_this.redrawPlaylist();
 				} );
 			}

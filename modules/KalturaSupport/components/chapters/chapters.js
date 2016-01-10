@@ -49,6 +49,7 @@
 		freezeTimeIndicators: false,
 		activeItem: 0,
 		selectedChapterIndex: 0,
+		selectedSlideIndex: 0,
 		inSlideAnimation: false,
 		barsMinimized: false,
 		searchResultShown: false,
@@ -133,7 +134,6 @@
 			});
 
 			this.bind("seeked", function(){
-
 				var item = _this.mediaList[ _this.selectedMediaItemIndex ];
 				if ( item && item.active ) {
 					item.active = false;
@@ -142,11 +142,15 @@
 				var activeDomObj = _this.getActiveItem();
 				activeDomObj.find(".slideOverlay").removeClass("watched");
 
+				_this.resetChapterProgress(_this.selectedChapterIndex);
+
 				//On seek reset the active item index so we can find items even if seek is to past time(e.g. rewind)
 				_this.selectedMediaItemIndex = 0;
-            });
+				_this.selectedSlideIndex = 0;
+				_this.selectedChapterIndex = 0;
+			});
 
-            this.bind("freezeTimeIndicators", function(e, val){
+			this.bind("freezeTimeIndicators", function(e, val){
 				_this.freezeTimeIndicators = val;
 			});
 
@@ -192,11 +196,12 @@
 					_this.mediaList = [];
 					_this.chaptersMap = [];
 					_this.slidesMap = [];
-                    _this.cache = {};
-                    _this.dataSet = null;
-                    _this.renderOnData = false;
-                    _this.selectedChapterIndex = 0;
-                    _this.selectedMediaItemIndex= 0;
+					_this.cache = {};
+					_this.dataSet = null;
+					_this.renderOnData = false;
+					_this.selectedChapterIndex = 0;
+					_this.selectedSlideIndex= 0;
+					_this.selectedMediaItemIndex= 0;
 				}
 			});
 
@@ -448,17 +453,14 @@
 					durationDisplay: null
 
 				};
-                //apply time only in VOD or in live if DVR is supported
-                if ((_this.getPlayer().isLive() && _this.getPlayer().isDVR()) || !_this.getPlayer().isLive()) {
-                    mediaItem.startTimeDisplay = _this.formatTimeDisplayValue(mw.seconds2npt(item.startTime / 1000));
-                }
+				//apply time only in VOD or in live if DVR is supported
+				if ((_this.getPlayer().isLive() && _this.getPlayer().isDVR()) || !_this.getPlayer().isLive()) {
+					mediaItem.startTimeDisplay = _this.formatTimeDisplayValue(mw.seconds2npt(item.startTime / 1000));
+				}
 				if (mediaItem.type === mw.KCuePoints.THUMB_SUB_TYPE.CHAPTER) {
 					//Save reference to chapters in chapter map object
-					_this.chaptersMap.push({
-						id: mediaItem.id,
-						data: mediaItem,
-						children: []
-					});
+					mediaItem.children = [];
+					_this.chaptersMap.push(mediaItem);
 					//Set chapter number
 					mediaItem.chapterNumber = _this.chaptersMap.length - 1;
 				} else if (mediaItem.type === mw.KCuePoints.THUMB_SUB_TYPE.SLIDE){
@@ -467,10 +469,10 @@
 					var currentChapter = _this.chaptersMap[_this.chaptersMap.length - 1];
 					if (currentChapter) {
 						currentChapter.children.push( mediaItem );
-						currentChapter.data.hasChildren = true;
+						currentChapter.hasChildren = true;
 						mediaItem.hasParent = true;
 						mediaItem.slideNumber = currentChapter.children.length - 1;
-						mediaItem.chapterNumber = currentChapter.data.chapterNumber;
+						mediaItem.chapterNumber = currentChapter.chapterNumber;
 					} else {
 						mediaItem.chapterNumber = -1;
 					}
@@ -577,12 +579,12 @@
 			var duration = this.getPlayer().duration;
 			$.each(chapters, function (index, item) {
 				if (chapters[index + 1]) {
-					item.data.endTime = chapters[index + 1].data.startTime;
+					item.endTime = chapters[index + 1].startTime;
 				} else {
-					item.data.endTime = duration;
+					item.endTime = duration;
 				}
 
-				item.data.durationDisplay = mw.seconds2npt((item.data.endTime - item.data.startTime));
+				item.durationDisplay = mw.seconds2npt((item.endTime - item.startTime));
 			});
 		},
 		formatTimeDisplayValue: function (time) {
@@ -611,7 +613,7 @@
 					autocorrect :"off",
 
 				}).
-					attr("autocomplete", "off");
+				attr("autocomplete", "off");
 				var searchBoxWrapper = $( "<div/>", {"id": "searchBoxWrapper"} )
 					.append( searchBox );
 				var clearSearchBoxContainer = $( "<div/>", {
@@ -629,7 +631,7 @@
 						return false;
 					} );
 				var searchFormWrapper = this.$searchFormWrapper = $( "<div/>", {"class": "searchFormWrapper"} )
-					//Magnifying glass icon
+				//Magnifying glass icon
 					.append( magnifyGlassContainer )
 					//Search input box
 					.append( searchBoxWrapper )
@@ -724,10 +726,10 @@
 
 				//Init typeahead lib
 				var typeahead = searchBox.typeahead( {
-						minLength: 3,
-						highlight: true,
-						hint: false
-					},
+							minLength: 3,
+							highlight: true,
+							hint: false
+						},
 					{
 						name: 'label',
 						displayKey: function ( obj ) {
@@ -769,8 +771,8 @@
 						_this.maximizeSearchBar();
 					} )
 					.on( "blur", function () {
-						_this.getPlayer().triggerHelper( "onEnableKeyboardBinding" );
-					} );
+							_this.getPlayer().triggerHelper( "onEnableKeyboardBinding" );
+						} );
 			}
 		},
 		focusSearchBar: function(){
@@ -828,50 +830,50 @@
 			}
 
 			this.getKalturaClient().doRequest(request,
-				function (data) {
-					if (!_this.isValidResult(data)) {
-						return;
-					}
-					// Validate result
-					var results = {
-						hash: {},
-						sortedKeys: []
-					};
-
-					$.each(data.objects, function (index, res) {
-						if (!_this.isValidResult(res)) {
-							data[index] = null;
+					function (data) {
+						if (!_this.isValidResult(data)) {
+							return;
 						}
+						// Validate result
+						var results = {
+							hash: {},
+							sortedKeys: []
+						};
 
-						var searchData = [res.title, res.description];
-						//Check if res tags is not empty before adding data
-						if (res.tags) {
-							var tags = res.tags.split( "," );
-							tags = $.grep( tags, function ( n ) {
-								return(n);
-							} );
-
-							searchData = searchData.concat( tags );
-						}
-
-						$.each(searchData, function(index, data){
-							if (results.hash[data]) {
-								results.hash[data].push(res.id);
-							} else {
-								results.hash[data] = [res.id];
-								results.sortedKeys.push(data);
+						$.each(data.objects, function (index, res) {
+							if (!_this.isValidResult(res)) {
+								data[index] = null;
 							}
+
+							var searchData = [res.title, res.description];
+							//Check if res tags is not empty before adding data
+							if (res.tags) {
+								var tags = res.tags.split( "," );
+								tags = $.grep( tags, function ( n ) {
+									return(n);
+								} );
+
+								searchData = searchData.concat( tags );
+							}
+
+							$.each(searchData, function(index, data){
+								if (results.hash[data]) {
+									results.hash[data].push(res.id);
+								} else {
+									results.hash[data] = [res.id];
+									results.sortedKeys.push(data);
+								}
+							});
 						});
-					});
-					results.sortedKeys.sort();
+						results.sortedKeys.sort();
 
-					_this.dataSet = results.hash;
-					_this.cache[expression] = results;
+						_this.dataSet = results.hash;
+						_this.cache[expression] = results;
 
-					if (callback) {
-						callback(results.sortedKeys);
+						if (callback) {
+							callback(results.sortedKeys);
+						}
 					}
-				}
 			);
 		},
 		showSearchResults: function(searchResults){
@@ -890,9 +892,9 @@
 						mediaBoxObj.removeClass( "resultNoMatch" );
 					} else {
 						mediaBoxObj
-							.addClass( "resultNoMatch" )
-							.filter("[data-chapter-index!=-1]" ) //Only collapse slides under chapters
-							.addClass("collapsed");
+								.addClass( "resultNoMatch" )
+								.filter("[data-chapter-index!=-1]" ) //Only collapse slides under chapters
+								.addClass("collapsed");
 					}
 				} );
 				var _this = this;
@@ -948,8 +950,8 @@
 		renderBottomBar: function(){
 			this.getMedialistFooterComponent().empty();
 			var bottomBar = $("<div/>", {"class": "footerWrapper"} )
-				.append($("<span/>", {"class": "slideLocator icon-locator", "title": gM("ks-chapters-locate-active-media")}))
-				.append($("<span/>", {"class": "toggleAll icon-toggleAll", "title": gM("ks-chapters-toggle-all-chapter")}));
+					.append($("<span/>", {"class": "slideLocator icon-locator", "title": gM("ks-chapters-locate-active-media")}))
+					.append($("<span/>", {"class": "toggleAll icon-toggleAll", "title": gM("ks-chapters-toggle-all-chapter")}));
 			this.getMedialistFooterComponent().append(bottomBar);
 		},
 		isValidResult: function (data) {
@@ -970,7 +972,7 @@
 		mediaClicked: function (mediaIndex) {
 			//Only apply seek in VOD or in live if DVR is supported
 			if ((this.getPlayer().isLive() && this.getPlayer().isDVR()) ||
-				!this.getPlayer().isLive()) {
+					!this.getPlayer().isLive()) {
 				// see to start time and play ( +.1 to avoid highlight of prev chapter )
 				this.getPlayer().sendNotification('doSeek', ( this.mediaList[mediaIndex].startTime ) + 0.1);
 			}
@@ -978,7 +980,7 @@
 		doOnScrollerUpdate: function(data){
 			//If maximum scroll has changed then reset last position
 			if (this.maximumScroll !== data.maximum ||
-				this.previousDirection !== data.direction){
+					this.previousDirection !== data.direction){
 				this.lastScrollPosition = data.position;
 			}
 			//Save data for comparison on next iteration
@@ -1001,8 +1003,8 @@
 				//On scroll down minimize searchbar after 20% scroll from max scroll height
 				//or when scroll to bottom
 				if ((!this.barsMinimized &&
-					((data.position - this.lastScrollPosition) / this.maximumScroll) > 0.1) ||
-					(data.position === data.maximum)){
+						((data.position - this.lastScrollPosition) / this.maximumScroll) > 0.1) ||
+						(data.position === data.maximum)){
 					this.barsMinimized = true;
 					this.minimizeSearchBar();
 					this.lastScrollPosition = -1;
@@ -1012,77 +1014,96 @@
 			this.$searchFormWrapper.blur();
 			this.$searchFormWrapper.find("#searchBox").blur();
 		},
+		findActiveItem: function(data, startIndex){
+			var activeItemIndex = -1;
+			var time = this.getPlayer().currentTime;
+			var item;
+			var i = (startIndex > -1) ? startIndex : 0;
+
+			for (i; i < data.length; i++){
+				item = data[i];
+				if ((time >= item.startTime ) && (time < item.endTime )){
+					activeItemIndex = i;
+					break;
+				}
+			}
+			return activeItemIndex;
+		},
 		updateActiveItem: function () {
 			if (!this.freezeTimeIndicators) {
-				// search chapter for current active
-				var activeItemIndex = 0;
-				var time = this.getPlayer().currentTime;
-				var item;
-				var i;
-				for (i=this.selectedMediaItemIndex; i < this.slidesMap.length; i++){
-                    item = this.slidesMap[i];
-					if ((time >= item.startTime ) && (time < item.endTime )){
-						activeItemIndex = item.order;
-						break;
-                    }
-                }
-				if (this.isLiveCuepoints() && i===(this.slidesMap.length)){
-					activeItemIndex = item.order;
-				}
+				this.updateActiveChapter();
+				this.updateActiveSlide();
+			}
+		},
+		updateActiveSlide: function(){
+			var activeSlideIndex = this.findActiveItem(this.slidesMap, this.selectedSlideIndex);
+			if (activeSlideIndex < 0 && this.isLiveCuepoints()){
+				activeSlideIndex = this.slidesMap[this.slidesMap.length-1].order;
+			}
 
-				var activeDomObj = this.getActiveItem();
-
+			if (activeSlideIndex >= 0) {
+				var activeDomObj;
 				// Check if active is not already set:
-				item = this.mediaList[ activeItemIndex ];
-				if ( this.selectedMediaItemIndex === activeItemIndex ) {
-					// update duration count down:
-					if ( item ) {
-                        this.updateActiveChapter(item.chapterNumber);
-                        if ( !item.active ) {
-							this.setSelectedMedia( activeItemIndex );
-							item.active = true;
-							activeDomObj.find(".slideOverlay").addClass("watched");
-						}
+				var item;
+				if (this.selectedSlideIndex === activeSlideIndex) {
+					// update state current active slide:
+					item = this.slidesMap[activeSlideIndex];
+					if (item && !item.active) {
+						this.setSelectedMedia(item.order);
+						item.active = true;
+						activeDomObj = this.getActiveItem();
+						activeDomObj.find(".slideOverlay").addClass("watched");
 					}
 				} else {
-					if ( item && item.active ) {
+					// update state of previous active slide:
+					item = this.slidesMap[this.selectedSlideIndex];
+					if (item && item.active) {
 						item.active = false;
 					}
+					activeDomObj = this.getActiveItem();
 					activeDomObj.find(".slideOverlay").removeClass("watched");
 
 					// Check if we should pause on chapter update:
-					if ( this.getConfig( 'pauseAfterChapter' ) && !this.skipPauseFlag ) {
-						this.getPlayer().sendNotification( 'doPause' );
+					if (this.getConfig('pauseAfterChapter') && !this.skipPauseFlag) {
+						this.getPlayer().sendNotification('doPause');
 					}
 					// restore skip pause flag:
 					this.skipPauseFlag = false;
-
-					if ( this.mediaList[ activeItemIndex ] ) {
-						this.setSelectedMedia( activeItemIndex );
-					}
 				}
 			}
+			this.selectedSlideIndex = activeSlideIndex;
 		},
-		updateActiveChapter: function(chapterNumber){
+		updateActiveChapter: function(){
 			if(this.chaptersMap.length > 0){
+				var activeChapterNumber = this.findActiveItem(this.chaptersMap, this.selectedChapterIndex);
 				var actualActiveIndex = this.selectedChapterIndex;
-				var chapterObj;
-				var endTime;
-				//Only update chapter if we switch from one chapter to another or
-				//when switching from a slide under a chapter to a slide not under a chapter
-				if (((actualActiveIndex !== -1) && (chapterNumber !== -1)) ||
-					((actualActiveIndex !== -1) && (chapterNumber === -1))) {
-					chapterObj = this.chaptersMap[actualActiveIndex].data;
-					endTime = chapterObj.endTime;
-					if ((chapterNumber > -1) && (actualActiveIndex === chapterNumber)) {
-						var countDown = Math.abs(this.getPlayer().currentTime - endTime);
-						this.updateActiveChapterDuration(chapterObj.order, countDown);
-					} else {
-						var startTime = chapterObj.startTime;
-						this.updateActiveChapterDuration(chapterObj.order, endTime - startTime);
-					}
+				if ((activeChapterNumber > -1) && (actualActiveIndex === activeChapterNumber)) {
+					this.updateChapterProgress(activeChapterNumber);
+				} else if (actualActiveIndex > -1){
+					this.resetChapterProgress(actualActiveIndex);
 				}
-				this.selectedChapterIndex = chapterNumber;
+
+				this.selectedChapterIndex = activeChapterNumber;
+			}
+		},
+		updateChapterProgress: function(index){
+			if (index > -1 && index < this.chaptersMap.length) {
+				var chapterObj = this.chaptersMap[index];
+				var endTime = chapterObj.endTime;
+				var countDown = endTime - this.getPlayer().currentTime;
+				this.updateActiveChapterDuration(chapterObj.order, countDown);
+			} else{
+				this.log("error - tried to access chapters out of index bound");
+			}
+		},
+		resetChapterProgress: function(index){
+			if (index > -1 && index < this.chaptersMap.length) {
+				var chapterObj = this.chaptersMap[index];
+				var endTime = chapterObj.endTime;
+				var startTime = chapterObj.startTime;
+				this.updateActiveChapterDuration(chapterObj.order, endTime - startTime);
+			} else {
+				this.log("error - tried to access chapters out of index bound");
 			}
 		},
 		updateActiveChapterDuration: function(chapterNumber, remainingDuration){
@@ -1098,77 +1119,77 @@
 			this.transitionsToBeFired = 0;
 			var slideBoxes = this.getComponent().find(".slideBox" );
 			slideBoxes
-				.off('transitionend webkitTransitionEnd' )
-				.on('transitionend webkitTransitionEnd', function(e){
-					var $target = $( e.target ); // target letter transitionend fired on
-					if ( /transform/i.test( e.originalEvent.propertyName ) ) { // check event fired on "transform" prop
-					_this.transitionsToBeFired -= 1;
-					_this.transitionsToBeFired = _this.transitionsToBeFired < 0 ? 0 : _this.transitionsToBeFired;
-					$target.css( {transitionDelay: '0ms'} ); // set transition delay to 0 so when 'dropped' class is removed, letter appears instantly
-					if ( _this.transitionsToBeFired === 0 ) { // all transitions on characters have completed?
-						delay = 0.1;
-						_this.renderScroller({stop: false});
-						_this.inSlideAnimation = false;
-						_this.getPlayer().triggerHelper("slideAnimationEnded");
+					.off('transitionend webkitTransitionEnd' )
+					.on('transitionend webkitTransitionEnd', function(e){
+						var $target = $( e.target ); // target letter transitionend fired on
+						if ( /transform/i.test( e.originalEvent.propertyName ) ) { // check event fired on "transform" prop
+							_this.transitionsToBeFired -= 1;
+							_this.transitionsToBeFired = _this.transitionsToBeFired < 0 ? 0 : _this.transitionsToBeFired;
+							$target.css( {transitionDelay: '0ms'} ); // set transition delay to 0 so when 'dropped' class is removed, letter appears instantly
+							if ( _this.transitionsToBeFired === 0 ) { // all transitions on characters have completed?
+								delay = 0.1;
+								_this.renderScroller({stop: false});
+								_this.inSlideAnimation = false;
+								_this.getPlayer().triggerHelper("slideAnimationEnded");
+							}
+						}
+					})
+					//Set handler for TAB between chapters and slides
+					.off('focus').on('focus', function(e){
+				//Calculate if TAB forward or TAB backward(SHIFT+TAB)
+				var prev = $(e.relatedTarget ).data("mediaboxIndex");
+				var cur = $(this).data("mediaboxIndex");
+				var direction = (cur-prev) === 1 ? 1 : 0;
+				//Get the associated chapter of the slide
+				var slideChapterIndex = $(this).data( "chapterIndex" );
+				var chapter = _this.getMediaListDomElements()
+						.filter( ".chapterBox[data-chapter-index=" + slideChapterIndex + "]" );
+				chapter = $(chapter);
+				//If slide is under a collapsed chapter then go to associated chapter
+				var chapterCollapsed = (chapter.attr("data-chapter-collapsed") === "true");
+				if (chapterCollapsed){
+					var targetChapter = _this.getMediaListDomElements()
+							.filter( ".chapterBox[data-chapter-index=" + (slideChapterIndex + direction ) + "]" );
+					if (targetChapter) {
+						targetChapter.focus();
 					}
 				}
-				})
-				//Set handler for TAB between chapters and slides
-				.off('focus').on('focus', function(e){
-					//Calculate if TAB forward or TAB backward(SHIFT+TAB)
-					var prev = $(e.relatedTarget ).data("mediaboxIndex");
-					var cur = $(this).data("mediaboxIndex");
-					var direction = (cur-prev) === 1 ? 1 : 0;
-					//Get the associated chapter of the slide
-					var slideChapterIndex = $(this).data( "chapterIndex" );
-					var chapter = _this.getMediaListDomElements()
-						.filter( ".chapterBox[data-chapter-index=" + slideChapterIndex + "]" );
-					chapter = $(chapter);
-					//If slide is under a collapsed chapter then go to associated chapter
-					var chapterCollapsed = (chapter.attr("data-chapter-collapsed") === "true");
-					if (chapterCollapsed){
-						var targetChapter = _this.getMediaListDomElements()
-							.filter( ".chapterBox[data-chapter-index=" + (slideChapterIndex + direction ) + "]" );
-						if (targetChapter) {
-							targetChapter.focus();
-						}
-					}
-				});
+			});
 
 			var mediaBoxes = this.getMediaListDomElements();
 			mediaBoxes.on('mousedown mouseup mouseout', function(){
-					this.blur();
-				});
+				this.blur();
+			});
 
 			this.getComponent().find(".slideBoxToggle")
-				.off("click").on("click", function(e){
-					e.stopPropagation();
-					var chapter = $( this ).parent();
-					_this.toggleChapter(chapter);
-				});
+					.off("click").on("click", function(e){
+				e.stopPropagation();
+				var chapter = $( this ).parent();
+				_this.toggleChapter(chapter);
+			});
 
 			this.getMedialistFooterComponent()
-				.find(".toggleAll" )
-				.off("click").on("click", function(){
-					if (_this.chapterToggleEnabled) {
-						var chapters = _this.getMediaListDomElements().filter( ".chapterBox" );
-						var collapsedChapters = chapters.filter( "[data-chapter-collapsed=true]" );
-						var expandedChapters = chapters.filter( "[data-chapter-collapsed=false]" );
-						if ( chapters.length === collapsedChapters.length || chapters.length === expandedChapters.length ) {
-							_this.toggleChapter( chapters );
-						} else if ( collapsedChapters.length >= expandedChapters.length ) {
-							_this.toggleChapter( expandedChapters );
-						} else {
-							_this.toggleChapter( collapsedChapters );
-						}
+					.find(".toggleAll" )
+					.off("click").on("click", function(){
+				if (_this.chapterToggleEnabled) {
+					var chapters = _this.getMediaListDomElements().filter( ".chapterBox" );
+					var collapsedChapters = chapters.filter( "[data-chapter-collapsed=true]" );
+					var expandedChapters = chapters.filter( "[data-chapter-collapsed=false]" );
+					if ( chapters.length === collapsedChapters.length || chapters.length === expandedChapters.length ) {
+						_this.toggleChapter( chapters );
+					} else if ( collapsedChapters.length >= expandedChapters.length ) {
+						_this.toggleChapter( expandedChapters );
+					} else {
+						_this.toggleChapter( collapsedChapters );
 					}
-				});
+				}
+			});
 
 			this.getMedialistFooterComponent()
-				.find(".slideLocator" )
-				.off("click").on("click", function(){
-					_this.scrollToActiveItem();
-				});
+					.find(".slideLocator" )
+					.off("click").on("click", function(){
+				_this.scrollToActiveItem();
+			});
 		},
 		collapseAll: function(){
 			if (this.chapterToggleEnabled) {
@@ -1225,12 +1246,12 @@
 				this.resetSearchResults();
 				this.doOnSlideAnimationEnded(function(){
 					var mediaBox = _this.getMediaListDomElements()
-						.filter( ".mediaBox[data-mediaBox-index=" + item.order + "]" );
+							.filter( ".mediaBox[data-mediaBox-index=" + item.order + "]" );
 					if ( item.type === mw.KCuePoints.THUMB_SUB_TYPE.SLIDE ) {
 						if ( item.hasParent ) {
 							if ( mediaBox.hasClass( "collapsed" ) ) {
 								var chapter = _this.getMediaListDomElements()
-									.filter( ".chapterBox[data-chapter-index=" + item.chapterNumber + "]" );
+										.filter( ".chapterBox[data-chapter-index=" + item.chapterNumber + "]" );
 								_this.toggleChapter( chapter );
 							}
 						}

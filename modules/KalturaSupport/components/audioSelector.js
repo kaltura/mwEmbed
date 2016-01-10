@@ -170,7 +170,6 @@
 		setStream: function (stream) {
 			this.currentStream = stream;
 			this.embedPlayer.triggerHelper('switchAudioTrack', {index: stream.index });
-			this.embedPlayer.seek( this.embedPlayer.currentTime );
 		},
 		toggleMenu: function () {
 			if (this.isDisabled) {

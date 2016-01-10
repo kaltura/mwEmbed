@@ -827,8 +827,9 @@
                             setTimeout( function () {
                                 if ( !_this.playing ) {
                                     vid.play();
+                                    _this.parseTextTracks();
                                 }
-                            }, 100 );
+                            }, 300 );
                             _this.resetSrc = false;
 						}
 						_this.hideSpinnerOncePlaying();
