@@ -300,30 +300,32 @@
 		sendAnalytics : function(eventType, additionalData){
 			var _this = this;
 			this.calculateBuffer(true);
-			_this.kClient = mw.kApiGetPartnerClient( _this.embedPlayer.kwidgetid );
-			if ( _this.embedPlayer.isMulticast && $.isFunction( _this.embedPlayer.getMulticastBitrate ) ) {
-				_this.currentBitRate = _this.embedPlayer.getMulticastBitrate();
+			this.kClient = mw.kApiGetPartnerClient( this.embedPlayer.kwidgetid );
+			if ( this.embedPlayer.isMulticast && $.isFunction( this.embedPlayer.getMulticastBitrate ) ) {
+				this.currentBitRate = this.embedPlayer.getMulticastBitrate();
 			}
-			// get ks if available
-			var client = mw.kApiGetPartnerClient( this.embedPlayer.kwidgetid );
-			var ks = client.getKs();
 
 			var statsEvent = {
-				'entryId'           : _this.embedPlayer.kentryid,
-				'partnerId'         : _this.embedPlayer.kpartnerid,
+				'entryId'           : this.embedPlayer.kentryid,
+				'partnerId'         : this.embedPlayer.kpartnerid,
 				'eventType'         : eventType,
-				'ks'                : ks ? ks : '',
-				'sessionId'         : _this.embedPlayer.evaluate('{configProxy.sessionId}'),
-				'eventIndex'        : _this.eventIndex,
-				'bufferTime'        : _this.bufferTime,
-				'actualBitrate'     : _this.currentBitRate,
-				'referrer'          :  encodeURIComponent( mw.getConfig('EmbedPlayer.IframeParentUrl') ),
-				'deliveryType'      : _this.embedPlayer.streamerType,
-				'sessionStartTime'  : _this.startTime,
-				'uiConfId'          : _this.embedPlayer.kuiconfid,
+				'sessionId'         : this.embedPlayer.evaluate('{configProxy.sessionId}'),
+				'eventIndex'        : this.eventIndex,
+				'bufferTime'        : this.bufferTime,
+				'actualBitrate'     : this.currentBitRate,
+				'referrer'          : encodeURIComponent( mw.getConfig('EmbedPlayer.IframeParentUrl') ),
+				'deliveryType'      : this.embedPlayer.streamerType,
+				'sessionStartTime'  : this.startTime,
+				'uiConfId'          : this.embedPlayer.kuiconfid,
 				'clientVer'         : mw.getConfig("version"),
-				'position'          : _this.embedPlayer.currentTime
+				'position'          : this.embedPlayer.currentTime
 			};
+
+			// add ks if available
+			var ks = this.kClient.getKs();
+			if (ks){
+				statsEvent["ks"] = ks;
+			}
 
 			// add specific events data
 			if (additionalData){
@@ -349,9 +351,9 @@
 			$.each(statsEvent , function (index , value) {
 				eventRequest[ 'event:' + index] = value;
 			});
-			_this.eventIndex += 1;
-			_this.embedPlayer.triggerHelper( 'analyticsEvent' , statsEvent);
-			_this.kClient.doRequest( eventRequest, function(data){
+			this.eventIndex += 1;
+			this.embedPlayer.triggerHelper( 'analyticsEvent' , statsEvent);
+			this.kClient.doRequest( eventRequest, function(data){
 				try {
 					if (!_this.startTime ) {
 						_this.startTime = data;
