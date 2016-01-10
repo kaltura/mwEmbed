@@ -43,11 +43,35 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
 
     },
 
+    extractKES:function(url) {
+        try {
+            var $scope=this.$scope;
+            var re = /https?:\/\/(?:([^\/]*)\/(?:kCache|kVOD|kMulticast)\/)(?:([^\/]*)\/(?:kCache|kVOD|kMulticast)\/)?(?:([^\/]*)\/(?:kCache|kVOD|kMulticast)\/)?(?:([^\/]*)\/(?:kCache|kVOD|kMulticast)\/)?([^\/]*)\//i;
+            $scope.kesChain = "";
+            var m2=re.exec(url);
+            for (var i=1;i<m2.length;i++) {
+                if (!m2[i]) {
+                    continue;
+                }
+                if ($scope.kesChain.length > 0) {
+                    $scope.kesChain += " => ";
+                }
+                $scope.kesChain += m2[i];
+            }
+
+
+        }catch(e) {
+        }
+    },
     bindToHlsEvents:function() {
         var _this = this;
+
+
         this.bind("debugInfoReceived", function( e, data ){
             var $scope=_this.$scope;
-
+            if (data.uri) {
+                _this.extractKES(data.uri);
+            }
             if( data.info && data.info == "Playing segment"){
                 $scope.hlsCurrentSegment=data.uri;
             }
@@ -82,7 +106,7 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
         this.isVisible=visible;
 
         if (visible) {
-            _this.embedPlayer.getVideoHolder().append("<div class='mw-debug-info'>");
+            _this.embedPlayer.getVideoHolder().prepend("<div class='mw-debug-info'>");
             var elem=$(".mw-debug-info");
 
 
@@ -179,6 +203,8 @@ mw.PluginManager.add( 'debugInfo', mw.KBaseComponent.extend({
                 this.$scope.mcPacketLoss=data.PacketLoss;
                 this.$scope.mcPacketsPerSec=data.PacketRate;
                 this.$scope.multicastSessionId=data.multicastSessionId;
+
+                this.extractKES(data.multiastServerUrl);
             }
         }
     }
