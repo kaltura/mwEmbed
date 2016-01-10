@@ -186,6 +186,8 @@
 }
 
 .alert-message {
+	overflow: auto;
+	max-height: inherit;
 	padding : 5px;
 	font-weight : normal !important;
 	text-align: center;
