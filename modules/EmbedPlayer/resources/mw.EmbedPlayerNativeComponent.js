@@ -122,11 +122,13 @@
 			this.bindHelper("onEndedDone", function () {
 				_this.playbackDone = true;
 			});
+			this.bindHelper("canplay", function () {
+				readyCallback();
+			});
 			this.resolveSrcURL(this.getSrc()).then(
 				function (resolvedSrc) {
 					mw.log("EmbedPlayerNativeComponent::resolveSrcURL get succeeded");
 					_this.setSrcAttribute( resolvedSrc );
-					readyCallback();
 				},
 				function () {
 					mw.log("EmbedPlayerNativeComponent::resolveSrcURL get failed");
