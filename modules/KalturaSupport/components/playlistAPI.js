@@ -163,6 +163,7 @@
 			});
 
 			$( this.embedPlayer ).bind('onOpenFullScreen', function() {
+				$( ".playlistInterface").height("100%");
 				_this.redrawOnResize = false;
 				clearTimeout(window.redrawTimeOutID);
 			});
