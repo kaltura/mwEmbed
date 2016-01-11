@@ -1096,7 +1096,7 @@
 
 					// for preroll ad that doesn't play using our video tag - we can load our video tag to improve performance once the ad finish
 					if ( _this.currentAdSlotType === "preroll" && !_this.adsManager.isCustomPlaybackUsed() ){
-						_this.embedPlayer.getPlayerElement().load();
+						_this.embedPlayer.load();
 					}
 				}else{
 					_this.embedPlayer.getInterface().find(".largePlayBtn").css(	"z-index", 1);
