@@ -474,7 +474,7 @@
 				}
 			});
 
-			if (mw.isMobileDevice()){
+			if (_this.embedPlayer.isMobileSkin()){
 				_this.embedPlayer.bindHelper('onShowControlBar' + this.bindPostfix, function (event) {
 					if ( !_this.isLinear ){
 						$(_this.getAdContainer()).css({top:-60});
