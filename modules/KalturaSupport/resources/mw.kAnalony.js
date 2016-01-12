@@ -327,6 +327,11 @@
 				statsEvent["ks"] = ks;
 			}
 
+			// add preferred bitrate if defined by the user
+			if ( this.embedPlayer.getRawKalturaConfig('mediaProxy') && this.embedPlayer.getRawKalturaConfig('mediaProxy').preferedFlavorBR ){
+				statsEvent["expectedQuality"] = this.embedPlayer.getRawKalturaConfig('mediaProxy').preferedFlavorBR;
+			}
+
 			// add specific events data
 			if (additionalData){
 				$.extend(statsEvent, additionalData);
