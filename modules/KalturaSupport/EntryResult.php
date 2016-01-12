@@ -361,9 +361,10 @@ class EntryResult {
 		}
 
 		// check for generic "block"
-		$actions = isset( $accessControl->accessControlActions ) ? 
-					$accessControl->accessControlActions:
-					isset( $accessControl->actions )? $accessControl->actions: null;
+		$actions = isset( $accessControl['accessControlActions']) ?
+					$accessControl['accessControlActions']:
+					isset( $accessControl['actions'] )? $accessControl['actions']: null;
+
 
 		if( $actions && count( $actions ) ) {
 			for($i=0;$i<count($actions); $i++){

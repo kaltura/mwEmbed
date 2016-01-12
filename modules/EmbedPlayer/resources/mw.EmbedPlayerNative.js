@@ -1106,9 +1106,14 @@
 		 * Handle the native durationchange event
 		 */
 		_ondurationchange: function (event, data) {
-			if (this.playerElement && !isNaN(this.playerElement.duration) && isFinite(this.playerElement.duration)) {
+			if ( this.playerElement && !isNaN(this.playerElement.duration) && isFinite(this.playerElement.duration) ) {
 				this.setDuration(this.getPlayerElement().duration);
+                return;
 			}
+            // fix for ipad air 2 and El Capitan that sends 0 as duration for new live streams (webcast)
+            if ( this.playerElement && !isFinite(this.playerElement.duration) && this.isLive() && !this.isDVR() ) {
+                this.setDuration(this.getPlayerElement().duration); //set duration to infinity in order to pass updatePlayheadStatus (embedPlayer)
+            }
 		},
 		/**
 		 * Handle the native paused event
