@@ -668,7 +668,7 @@
 		},
 
 		isVideoSiblingEnabled: function () {
-			return false;
+			return true;
 		},
 
 		isPlaying: function () {
