@@ -74,13 +74,15 @@ mw.PlayerLayoutBuilder.prototype = {
 			}
 
 			var $videoDisplay = $embedPlayer.parent('.videoDisplay');
-
+			if( $videoDisplay.find('.videoShadow').length == 0 ){
+				$(".mwEmbedPlayer").before('<div class="videoShadow"></div>');
+			}
 			// build the videoHolder wrapper if needed
 			if( $videoDisplay.parent('.videoHolder').length == 0 ){
 				$videoDisplay.parent('.videoDisplay').wrap(
-					$('<div />').addClass( 'videoHolder' )
+					$('<div />').addClass( 'videoHolder')
 				);
-			}			
+			}
 
 			var $videoHolder = $videoDisplay.parent( '.videoHolder' );
 			if( $videoHolder.parent( '.mwPlayerContainer' ).length == 0 ){
@@ -99,6 +101,10 @@ mw.PlayerLayoutBuilder.prototype = {
 
 			if( mw.isMobileDevice() ){
 				this.$interface.addClass('mobile');
+			}
+
+			if( this.embedPlayer.isMobileSkin() ){
+				this.$interface.addClass('mobileSkin');
 			}
 
 			if( mw.isTouchDevice() ){
@@ -133,7 +139,7 @@ mw.PlayerLayoutBuilder.prototype = {
 	* @return {Number} control bar height
 	*/
 	getHeight: function(){
-		return this.height;
+		return this.embedPlayer.isMobileSkin() ? mw.getConfig( 'EmbedPlayer.MobileControlsHeight' ) : this.height;
 	},
 
 	clearInterface: function() {
@@ -211,6 +217,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		'topBarContainer': [],
 		'sideBarContainer': [],
 		'videoHolder': [],
+		'smartContainer': [],
 		'controlBarContainer': [],
 		'controlsContainer': []
 	},
@@ -542,6 +549,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		_this.addRightClickBinding();
 
 		_this.updateComponentsVisibility();
+		_this.updatePlayerSizeClass();
 		b('updateLayout', function(){
 				_this.updateComponentsVisibility();
 				_this.updatePlayerSizeClass();
@@ -655,7 +663,7 @@ mw.PlayerLayoutBuilder.prototype = {
 		clearTimeout(this.hideControlsTimeout);
 		this.getInterface().removeClass( this.outPlayerClass );
 		this.removeTouchOverlay();
-		if (this.isInFullScreen()){
+		if (this.$interface.find(".mwEmbedPlayer").hasClass( "noCursor" )){
 			this.$interface.find(".mwEmbedPlayer").removeClass("noCursor");
 		}
 		this.embedPlayer.triggerHelper( 'showPlayerControls' );
@@ -1160,32 +1168,22 @@ mw.PlayerLayoutBuilder.prototype = {
 			.css( {
 				'height' : '100%',
 				'width' : '100%',
-				'z-index' : 2
-			} )
+				'z-index' : mw.isMobileDevice() ? 200 : 2
+			})
 		);
 
 		var $closeButton = [];
 
 		if ( !hideCloseButton ) {
 			// Setup the close button
-			$closeButton = $('<div />')
-			.addClass( 'ui-state-default ui-corner-all ui-icon_link rButton overlayCloseButton')
-			.css({
-				'position': 'absolute',
-				'cursor' : 'pointer',
-				'top' : '2px',
-				'right' : '2px'
-			})
+			$closeButton = $('<button></button>')
+			.addClass( 'btn icon-close closePluginsScreen')
 			.click( function() {
 				_this.closeMenuOverlay();
 				if( closeCallback ){
 					closeCallback();
 				}
-			} )
-			.append(
-					$('<span />')
-					.addClass( 'ui-icon ui-icon-closethick' )
-			);
+			} );
 		}
 		var margin = $(".topBarContainer").length === 0 ? '0 10px 10px 0' : '22px 10px 10px 0'; // if we have a topBarContainer - push the content 22 pixels down
 		var overlayMenuCss = {
@@ -1193,8 +1191,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			'width' : '100%',
 			'position' : 'absolute',
 			'margin': margin,
-			'overflow' : 'auto',
-			'padding' : '4px',
+			'overflow' : 'hidden',
 			'z-index' : 3
 		};
 		var $overlayMenu = $('<div />')
@@ -1209,7 +1206,7 @@ mw.PlayerLayoutBuilder.prototype = {
 
 
 		// Append the overlay menu to the player interface
-		$overlayContainer.prepend(
+		$overlayContainer.find(".overlay").append(
 			$overlayMenu
 		)
 		.find( '.overlay-win' )
@@ -1341,6 +1338,7 @@ mw.PlayerLayoutBuilder.prototype = {
 			var $currentButton = $( '<button />' )
 			.addClass( 'alert-button' )
 				.text( label )
+				.width(Math.floor(100 / buttonsNum) + "%")
 				.click( function( eventObject ) {
 					callback( eventObject );
 					_this.closeAlert( alertObj.keepOverlay );

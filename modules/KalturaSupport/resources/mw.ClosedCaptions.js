@@ -23,7 +23,10 @@
 			"useExternalClosedCaptions": false,
 			"offButtonPosition": "first",
 			// Can be used to force loading specific language and expose to other plugins
-			"forceLoadLanguage": false
+			"forceLoadLanguage": false,
+			"title": gM( 'mwe-embedplayer-timed_text'),
+			"smartContainer": "qualitySettings",
+			'smartContainerCloseEvent': 'changedClosedCaptions'
 		},
 
 		textSources: [],
@@ -166,13 +169,13 @@
 				}
 			});
 
-			this.bind( 'showClosedCaptions', function(){
+			this.bind( 'showClosedCaptions preHideScreen hideMobileComponents', function(){
 				if( _this.getConfig('displayCaptions') === false ){
 					_this.setConfig('displayCaptions', true);
 				}
 			});
 
-			this.bind( 'hideClosedCaptions', function(){
+			this.bind( 'hideClosedCaptions preShowScreen showMobileComponents', function(){
 				if( _this.getConfig('displayCaptions') === true ){
 					_this.setConfig('displayCaptions', false);
 				}
@@ -209,6 +212,9 @@
 			});
 			this.bind("playSegmentEvent", function(){
 				_this.updateTimeOffset();
+			});
+			this.bind( 'onDisableInterfaceComponents', function(e, arg ){
+				_this.getMenu().close();
 			});
 		},
 		updateTextSize: function(){
@@ -830,6 +836,7 @@
 					this.setConfig('visible', true)
 				}
 				this.getBtn().show();
+				this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");
 				// show new timed captions text if exists
 				this.showCaptions();
 			}
@@ -857,6 +864,9 @@
 					'active': ( _this.selectedSource === source && _this.getConfig( "displayCaptions" )  )
 				});
 				items.push({'label':source.label, 'value':source.label});
+				if (_this.embedPlayer.isMobileSkin() && _this.selectedSource === source){
+					_this.getMenu().setActive(idx+1);
+				}
 			});
 
 			this.getActiveCaption();
@@ -934,7 +944,7 @@
 				var $menu = $( '<ul />' ).addClass( 'dropdown-menu' );
 				var $button = $( '<button />' )
 								.addClass( 'btn icon-cc' )
-								.attr('title', gM( 'mwe-embedplayer-timed_text' ) )
+								.attr('title', _this.getConfig('title') )
 								.click( function(e){
 									if ( _this.getMenu().numOfChildren() > 0 ) {
 										_this.getMenu().toggle();

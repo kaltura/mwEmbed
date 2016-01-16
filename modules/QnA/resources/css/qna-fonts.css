@@ -10,7 +10,7 @@
     font-style: normal;
 }
 
-[class^="icon-qna-"], [class*=" icon-qna-"] {
+[class^="qna-icon-"], [class*=" qna-icon-"] {
     font-family: 'qna';
     speak: none;
     font-style: normal;
@@ -24,47 +24,47 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-qna-drop:before {
+.qna-icon-drop:before {
     content: "\e600";
 }
 
-.icon-qna-drop2:before {
+.qna-icon-drop2:before {
     content: "\e601";
 }
 
-.icon-qna-tech:before {
+.qna-icon-tech:before {
     content: "\e602";
 }
 
-.icon-qna-more:before {
+.qna-icon-more:before {
     content: "\e603";
 }
 
-.icon-qna-expand:before {
+.qna-icon-expand:before {
     content: "\e608";
 }
 
-.icon-qna-Ask:before {
+.qna-icon-Ask:before {
     content: "\e605";
 }
 
-.icon-qna-close:before {
+.qna-icon-close:before {
     content: "\e606";
 }
 
-.icon-qna-Announcement:before {
+.qna-icon-Announcement:before {
     content: "\e607";
 }
 
-.icon-qna-collapse:before {
+.qna-icon-collapse:before {
     content: "\e604";
 }
 
-.icon-qna-bullet:before {
+.qna-icon-bullet:before {
     content: "\e609";
 }
 
-.icon-qna-answeronair:before {
+.qna-icon-answeronair:before {
     content: "\e60a";
 }
 

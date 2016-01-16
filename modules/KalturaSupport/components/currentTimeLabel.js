@@ -13,6 +13,9 @@
 
 		setup: function () {
 			var _this = this;
+			if ( this.embedPlayer.isMobileSkin() ){
+				this.getComponent().data("width",0.1);
+			}
 			this.bindTimeUpdate();
 			this.bind('externalTimeUpdate', function (e, newTime) {
 				if (newTime != undefined) {

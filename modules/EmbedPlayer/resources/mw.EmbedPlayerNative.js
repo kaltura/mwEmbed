@@ -145,40 +145,6 @@
 		supportsVolumeControl: function () {
 			return  !( mw.isIpad() || mw.isAndroid() || mw.isMobileChrome() || this.useNativePlayerControls() );
 		},
-		/**
-		 * Adds an HTML screen and moves the video tag off screen, works around some iPhone bugs
-		 */
-		addPlayScreenWithNativeOffScreen: function () {
-			if (!mw.isIphone()) {
-				return;
-			}
-			var _this = this;
-			// Hide the player offscreen:
-			if (!this.inline) {
-				this.hidePlayerOffScreen();
-				this.keepPlayerOffScreenFlag = true;
-			}
-
-
-			// Add an image poster:
-			var posterSrc = ( this.poster ) ? this.poster :
-				mw.getConfig('EmbedPlayer.BlackPixel');
-			// Check if the poster is already present:
-			if ($(this).find('.playerPoster').length) {
-				$(this).find('.playerPoster').attr('src', posterSrc);
-			} else {
-				$(this).append(
-					$('<img />')
-						.attr('src', posterSrc)
-						.addClass('playerPoster')
-						.load(function () {
-							_this.applyIntrinsicAspect();
-							$('.playerPoster').attr('alt', _this.posterAlt);
-						})
-				);
-			}
-			$(this).show();
-		},
 		changeMediaCallback: function (callback) {
 			// Check if we have source
 			if (!this.getSource()) {
@@ -857,6 +823,13 @@
 						// make sure the source is set:
 						if ( $(vid).attr('src') != _this.getSrc() || _this.resetSrc ) {
 							$(vid).attr('src', _this.getSrc());
+                            //trigger play again for iPad and El Capitan
+                            setTimeout( function () {
+                                if ( !_this.playing ) {
+                                    vid.play();
+                                    _this.parseTextTracks();
+                                }
+                            }, 300 );
                             _this.resetSrc = false;
 						}
 						_this.hideSpinnerOncePlaying();
@@ -1131,9 +1104,14 @@
 		 * Handle the native durationchange event
 		 */
 		_ondurationchange: function (event, data) {
-			if (this.playerElement && !isNaN(this.playerElement.duration) && isFinite(this.playerElement.duration)) {
+			if ( this.playerElement && !isNaN(this.playerElement.duration) && isFinite(this.playerElement.duration) ) {
 				this.setDuration(this.getPlayerElement().duration);
+                return;
 			}
+            // fix for ipad air 2 and El Capitan that sends 0 as duration for new live streams (webcast)
+            if ( this.playerElement && !isFinite(this.playerElement.duration) && this.isLive() && !this.isDVR() ) {
+                this.setDuration(this.getPlayerElement().duration); //set duration to infinity in order to pass updatePlayheadStatus (embedPlayer)
+            }
 		},
 		/**
 		 * Handle the native paused event
@@ -1155,10 +1133,6 @@
 				timeSincePlay > mw.getConfig('EmbedPlayer.MonitorRate')
 				) {
 				_this.parent_pause();
-				// in iphone when we're back from the native payer we need to show the image with the play button
-				if (mw.isIphone()) {
-					_this.updatePosterHTML();
-				}
 			} else {
 				// try to continue playback:
 				this.getPlayerElement().play();
@@ -1185,6 +1159,9 @@
 			}
 			// Set firstEmbedPlay state to false to avoid initial play invocation :
 			this.ignoreNextNativeEvent = false;
+			if (mw.isIphone()){
+				this.getInterface().removeClass("player-out");
+			}
 			// re-start the monitor:
 			this.monitor();
 		},
@@ -1410,6 +1387,9 @@
                     mw.log("Native player :: id3Tag :: ERROR :: "+e);
                 }
             }, false);
+        },
+        getCurrentBufferLength: function(){
+            return parseInt(this.playerElement.buffered.end(0) - this.playerElement.currentTime); //return buffer length in seconds
         }
 	};
 })(mediaWiki, jQuery);

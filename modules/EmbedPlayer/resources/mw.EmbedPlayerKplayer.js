@@ -764,7 +764,10 @@
         },
 
         onId3tag: function (data) {
-            var id3Tag = window.atob(data.data);
+			var id3Tag = base64_decode(data.data);
+			///todo  this is a temp fix until we remove the ID3 header from the content in the flash code
+			id3Tag = id3Tag.substring(id3Tag.indexOf('{'));
+
             this.triggerHelper('onId3Tag', id3Tag);
         },
 
@@ -799,9 +802,9 @@
 			var originalSrc = this.mediaElement.selectedSource.getSrc();
 			if (this.isHlsSource(this.mediaElement.selectedSource)) {
                 // add playerType=flash indicator (Kaltura Live HLS only)
-                if( this.isLive() &&  mw.getConfig('isLiveKalturaHLS') ) {
-                    originalSrc = originalSrc + "&playerType=flash";
-                }
+                //if( this.isLive() &&  mw.getConfig('isLiveKalturaHLS') ) {
+                //    originalSrc = originalSrc + "&playerType=flash";
+                //}
 
 				this.resolveSrcURL(originalSrc)
 					.then(function (srcToPlay) {
@@ -992,7 +995,10 @@
 				}
 			}
 
-		}
+		},
+        getCurrentBufferLength: function(){
+            return parseInt(this.playerObject.getCurrentBufferLength()); //return buffer length in seconds
+        }
 	};
 
 })(mediaWiki, jQuery);

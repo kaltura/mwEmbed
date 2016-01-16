@@ -36,9 +36,7 @@
 			//In live mode wait for first updatetime that is bigger then 0 for syncing initial slide
 			if (mw.getConfig("EmbedPlayer.LiveCuepoints") && this.getPlayer().isLive()) {
 				this.bind( 'timeupdate', function ( ) {
-					if (!_this.getPlayer().isMulticast &&
-						!_this.getPlayer().isDVR() &&
-						_this.getPlayer().currentTime > 0) {
+					if (_this.getPlayer().currentTime > 0) {
 						_this.unbind('timeupdate');
 					}
 					var cuePoint = _this.getCurrentCuePoint();
@@ -115,6 +113,7 @@
 					} );
 				} );
 			}
+
 			cuePoints.sort(function (a, b) {
 				return a.startTime - b.startTime;
 			});
@@ -245,8 +244,10 @@
 		},
 		getNextCuePoint: function ( time ) {
 			var cuePoints = this.getCuePoints();
+
 			// Start looking for the cue point via time, return first match:
 			for ( var i = 0; i < cuePoints.length; i++ ) {
+
 				if ( cuePoints[i].startTime >= time ) {
 					return cuePoints[i];
 				}
@@ -258,19 +259,20 @@
 			var currentTime = this.getPlayer().currentTime *1000;
 			var cuePoints = this.getCuePoints();
 			var cuePoint;
-			// Start looking for the cue point via time, return first match:
+			var duration=this.getPlayer().isLive() ? 0 : this.getPlayer().getDuration() * 1000;
+
+			//assume sortedCuePoints array
 			for ( var i = 0; i < cuePoints.length; i++ ) {
+
 				var startTime = cuePoints[i].startTime;
-				//Retrieve end time from cuePoint metadata, unless it's less one and then use clip duration.
-				//If clip duration doesn't exist or it's 0 then use current time(in multicast live duration is
-				//always 0)
-				var endTime = cuePoints[i + 1] ? cuePoints[i + 1].startTime :
-					(this.getPlayer().getDuration() * 1000) ?
-						(this.getPlayer().getDuration() * 1000) : (currentTime + 1);
-				if ( startTime <= currentTime && currentTime < endTime ) {
-					cuePoint = cuePoints[i];
+
+				if ( (startTime > currentTime) ||  //stop once we found a future slide (or out of range slide)
+					(duration>0 && startTime>duration)) {
 					break;
 				}
+
+				cuePoint=cuePoints[i];
+
 			}
 			return cuePoint;
 		}
