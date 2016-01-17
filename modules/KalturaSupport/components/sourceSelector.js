@@ -83,7 +83,7 @@
 			});
 
 			// Check for switch on resize option
-			if( this.getConfig( 'switchOnResize' ) ){
+			if( this.getConfig( 'switchOnResize' ) && !_this.embedPlayer.isLive() ){
 				this.bind( 'updateLayout', function(){
 					// workaround to avoid the amount of 'updateLayout' events
 					// !seeking will avoid getting current time equal to 0
