@@ -1,7 +1,4 @@
-/**
- * Created by mark.feder on 11/22/2015.
- */
-/**
+/*
  * Created by mark.feder on 10/13/2015.
  */
 (function (mw, $) {
@@ -19,13 +16,14 @@
             },
             tmplWelcome:function(){
                 var _this = this;
+                $(".icon-close").css("display", "none");
                 $(_this.emptyScreen()).hide().append(
                 '<div class="ivqContainer">' +
                 '<div class="welcome"></div>' +
                 '<div class="pdf-download"></div>' +
                 '<div class="welcomeMessage"></div>' +
                 '<div class="InvideoTipMessage"></div>' +
-                '<div class="bottomContainer">' +
+                '<div class="bottomContainer paddingB12">' +
                 '<div class="confirm-box"></div>' +
                 '</div>' +
                 '</div>').fadeIn( "slow" );
@@ -73,7 +71,7 @@
                 '           <div class="hex-column hexagon-container"></div>' +
                 '       </div>' +
                 '   </div>' +
-                '   <div class="bottomContainer">' +
+                '   <div class="bottomContainer ">' +
                 '       <div class="confirm-box"></div>' +
                 '   </div>' +
                 '</div>').fadeIn( "slow" );
@@ -99,7 +97,7 @@
                 var _this = this;
                 $(_this.emptyScreen()).hide().append(
                     '<div class="ivqContainer">'+
-                    '   <div class="title-text"></div>'+
+                    '   <div class="title-text padding20"></div>'+
                     '   <div class="sub-text margin-top4"></div>'+
                     '   <div class="completed-BottonContainer">'+
                     '       <div class="review-button button-box-attr font-Lato2"></div>'+
@@ -129,16 +127,9 @@
                 var _this = this;
                 $(_this.emptyScreen()).hide().append(
                     '<div class="ivqContainer">' +
-                    '   <div class="title-text "></div>' +
-                    '   <div class="sub-text"></div>'+
-                    '   <div class="display-all-container">'+
-                    '       <div class ="hex-row">'+
-                    '           <div class="hex-column  left-arrow" style="display: none;"></div>'+
-                    '           <div class="hex-column  right-arrow" style="display: none;" ></div>'+
-                    '           <div class="hex-column hexagon-container"></div>'+
-                    '       </div>'+
-                    '   </div>'+
-                    '   <div class="bottomContainer">'+
+                    '   <div class="title-text padding20"></div>' +
+                    '   <div class="sub-text padding4"></div>'+
+                    '   <div class="bottomContainer  paddingB20">'+
                     '       <div class="confirm-box"></div>'+
                     '   </div>' +
                     '</div>').fadeIn( "slow" );
