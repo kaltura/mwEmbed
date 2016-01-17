@@ -352,7 +352,7 @@
 				statsEvent["playbackContext"] = mw.getConfig("playbackContext");
 			}
 
-			var eventRequest = {'service' : 'liveStats', 'action' : 'collect'};
+			var eventRequest = {'service' : 'analytics', 'action' : 'collectEvent'};
 			$.each(statsEvent , function (index , value) {
 				eventRequest[ 'event:' + index] = value;
 			});
