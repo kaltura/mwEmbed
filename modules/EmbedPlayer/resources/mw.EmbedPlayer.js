@@ -1307,6 +1307,11 @@
 		showPlayer: function () {
 			mw.log('EmbedPlayer:: showPlayer: ' + this.id + ' interace: w:' + this.width + ' h:' + this.height);
 			var _this = this;
+
+            if( mw.getConfig('preload')==='auto' ){
+                this.load();
+            }
+
 			// Remove the player loader spinner if it exists
 			this.hideSpinner();
 			// If a isPersistentNativePlayer ( overlay the controls )
@@ -2760,7 +2765,7 @@
 			}
 			if (!_this.isLive() && _this.instanceOf != 'ImageOverlay') {
 				if (_this.isPlaying() && _this.currentTime == _this.getPlayerElementTime()) {
-					_this.bufferStart();
+                    _this.bufferStart();
 				} else if (_this.buffering) {
 					_this.bufferEnd();
 				}

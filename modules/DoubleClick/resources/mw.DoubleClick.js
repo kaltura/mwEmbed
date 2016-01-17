@@ -1170,6 +1170,10 @@
 
 				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
 					mw.log("DoubleClick:: adStart");
+                    // for preroll ad that doesn't play using our video tag - we can load our video tag to improve performance once the ad finish
+                    if ( _this.currentAdSlotType === "preroll" ){
+                        _this.embedPlayer.load();
+                    }
 					_this.embedPlayer.sequenceProxy.isInSequence = true;
 					// set volume when ad starts to enable autoMute. TODO: remove next line once DoubleClick fix their bug when setting adsManager.volume before ad starts
 					_this.embedPlayer.setPlayerElementVolume(_this.embedPlayer.volume);

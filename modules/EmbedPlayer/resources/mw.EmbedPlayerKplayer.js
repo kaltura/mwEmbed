@@ -39,6 +39,10 @@
 		ignoreEnableGui: false,
 		flashActivationRequired: false,
         unresolvedSrcURL: false,
+        kPreload: {
+            'preLoading':false,
+            'playPending':false
+        },
 
 		// Create our player element
 		setup: function (readyCallback) {
@@ -202,7 +206,7 @@
 					}
 					readyCallback();
 
-					if (mw.getConfig('autoMute')) {
+                    if (mw.getConfig('autoMute')) {
 						_this.triggerHelper("volumeChanged", 0);
 					}
 
@@ -234,6 +238,15 @@
 			});
 
 		},
+
+        load: function(){
+            //block preload if live or autoplay, unless autoplay was activated on a player with preroll
+            if( !this.isLive() && (!this.autoplay || ( this.autoplay && this.isInSequence() ) ) ) {
+                //activate preload workaround: start downloading segments and pause the stream
+                this.kPreload.preLoading = true;
+                this.playerObject.play();
+            }
+        },
 
         reset: function(){
             this.restarting = true;
@@ -406,6 +419,14 @@
 		 * update the interface
 		 */
 		onPause: function () {
+            if(this.kPreload.preLoading){
+                this.kPreload.preLoading = false;
+                if(this.kPreload.playPending){
+                    this.kPreload.playPending = false;
+                    this.play();
+                }
+                return;
+            }
 			$(this).trigger("pause");
 		},
 
@@ -414,6 +435,10 @@
 		 * parent_play
 		 */
 		onPlay: function () {
+            if(this.kPreload.preLoading){
+                this.playerObject.pause();
+                return;
+            }
 			if ( mw.isChrome() && !this.flashActivationRequired && mw.getConfig("EmbedPlayer.EnableFlashActivation") !== false ){
 				this.flashActivationRequired = true;
 				$(this).hide();
@@ -501,6 +526,10 @@
 		 * play method calls parent_play to update the interface
 		 */
 		play: function () {
+            if(this.kPreload.preLoading){
+                this.kPreload.playPending = true;
+                return;
+            }
             if(this.restarting){
                 return;
             }
