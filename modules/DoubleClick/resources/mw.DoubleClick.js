@@ -416,6 +416,8 @@
 					if ( _this.getConfig("adTagUrl") && ( _this.isLinear === false || _this.allAdsCompletedFlag || _this.adLoaderErrorFlag) ){
 						_this.restorePlayer(true);
 					}
+					// if no postroll was set restore the player
+					_this.restorePlayerNoPostroll();
 				};
 
 				//if we're in JS mode - check if we have spacific JS configuration for the postroll
@@ -472,7 +474,7 @@
 				}
 			});
 
-			if (mw.isMobileDevice()){
+			if (_this.embedPlayer.isMobileSkin()){
 				_this.embedPlayer.bindHelper('onShowControlBar' + this.bindPostfix, function (event) {
 					if ( !_this.isLinear ){
 						$(_this.getAdContainer()).css({top:-60});
@@ -1091,6 +1093,11 @@
 
 					// Send a notification to trigger associated events and update ui
 					_this.embedPlayer.sendNotification('doPlay');
+
+					// for preroll ad that doesn't play using our video tag - we can load our video tag to improve performance once the ad finish
+					if ( _this.currentAdSlotType === "preroll" && !_this.adsManager.isCustomPlaybackUsed() ){
+						_this.embedPlayer.load();
+					}
 				}else{
 					_this.embedPlayer.getInterface().find(".largePlayBtn").css(	"z-index", 1);
 				}
@@ -1365,11 +1372,7 @@
 					_this.adsLoader.contentComplete();
 					_this.embedPlayer._propagateEvents = false;
 				}
-				if (!_this.getConfig("adTagUrl") && !_this.getConfig("postrollUrl")){
-					_this.currentAdSlotType = "postroll";
-					_this.restorePlayer(true);
-				}
-
+				_this.restorePlayerNoPostroll();
 			});
 
 
@@ -1503,8 +1506,10 @@
 			if( $.isFunction( this.restorePlayerCallback ) && !onContentComplete ){
 				// also do the normal restore ( will issue an async play call )
 				var shouldContinue = !onContentComplete;
+				mw.setConfig('LoadingSpinner.Disabled', true);
 				this.restorePlayerCallback(shouldContinue);
 				this.restorePlayerCallback = null;
+				mw.setConfig('LoadingSpinner.Disabled', false);
 			} else { // do a manual restore:
 				// restore player with normal events:
 				this.embedPlayer.adTimeline.restorePlayer( null, adPlayed);
@@ -1530,6 +1535,13 @@
 				$(window).unbind(_this.adClickEvent);
 			} else if( _this.isAdClickTimeoutEnabled ) {
 				_this.isAdClickTimeoutEnabled = false;
+			}
+		},
+		restorePlayerNoPostroll:function(){
+			var _this = this;
+			if (!_this.getConfig("adTagUrl") && !_this.getConfig("postrollUrl")){
+				_this.currentAdSlotType = "postroll";
+				_this.restorePlayer(true);
 			}
 		},
 		/**
