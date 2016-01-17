@@ -21,7 +21,8 @@
 	<body>
 		<h2> Youbora Media Analytics and QoS </h2>
 		<div id="kaltura_player" style="width:470px;height:300px"></div>
-		<a id="changeMedia" href="#">ChangeMedia</a>
+        <br/><button id="changeMedia">ChangeMedia</button><br/><br/>
+
 		<script>
 			kWidget.featureConfig({
 				'targetId' : 'kaltura_player',
@@ -35,17 +36,19 @@
 					}
 				},
 				'readyCallback': function(){
-					$('#analyticsContainer').remove();
 					$('#changeMedia').click(function(){
+                        $('#analyticsLog').text('');
 						$('#kaltura_player')[0].sendNotification( 'changeMedia', { 'entryId':'0_swup5zao' } );
-					}).after('<div id="analyticsContainer" style="width:100%;float:left;" >'+
-						'<i>Analytics events:</i><br />' +
-							'<textarea id="analyticsLog" style="width:100%;height:280px;" ></textarea>' +
-						'</div>'
-					)
+					});
 				}
 			});
 		</script>
+
+        <div id="analyticsContainer" style="width:100%; float:left">
+            <i>Analytics events:</i><br/>
+            <textarea id="analyticsLog" style="width:100%; height:280px"></textarea>
+        </div>
+
 	</body>
 
 </html>
