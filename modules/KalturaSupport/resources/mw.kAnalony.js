@@ -98,8 +98,8 @@
 			var playerEvent = this.PlayerEvent;
 			this.embedPlayer.bindHelper( 'playerReady' , function () {
 				_this.resetPlayerflags();
-		        if (this.kalturaContextData && this.kalturaContextData.flavorAssets && this.kalturaContextData.flavorAssets.length === 1){
-			        _this.currentBitRate = this.kalturaContextData.flavorAssets[0].bitrate;
+		        if ( _this.kalturaContextData && _this.kalturaContextData.flavorAssets && _this.kalturaContextData.flavorAssets.length === 1 ){
+			        _this.currentBitRate = _this.kalturaContextData.flavorAssets[0].bitrate;
 		        }
 				_this.sendAnalytics(playerEvent.IMPRESSION);
 			});
@@ -218,10 +218,14 @@
 
 			// events for capturing the bitrate of the currently playing source
 			this.embedPlayer.bindHelper( 'SourceSelected' , function (e, source) {
-				_this.currentBitRate = source.getBitrate();
+				if (source.getBitrate()){
+					_this.currentBitRate = source.getBitrate();
+				}
 			});
 			this.embedPlayer.bindHelper( 'sourceSwitchingEnd' , function (e, newSource) {
-				_this.currentBitRate = newSource.newBitrate;
+				if (newSource.newBitrate){
+					_this.currentBitRate = newSource.newBitrate;
+				}
 			});
 		},
 		resetPlayerflags:function(){
