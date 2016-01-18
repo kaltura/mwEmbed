@@ -13,37 +13,23 @@ function jsKalturaPlayerTest( videoId ){
     // Name this module
 	module( "KalturaAnalytics" );
 
-	asyncTest("Analytics VOD Test: Play event", function(){
-        kdp.kBind( 'analyticsEvent' , function ( data ) {
-            if (data["eventType"] == 3){
-                ok( (data["eventType"] == 3),"event type: "+data["eventType"] + " (Play event)");
-                ok( !! data["sessionId"] === true, "Unique sessionId");
-                ok( !! data["referrer"] === true, "Referrer send");
-                ok( (data["position"] == 0),"Player current time: "+data["position"]);
-                ok( !! data["expectedQuality"] === true, "Preferred bitrate: "+data["expectedQuality"]+" kbps");
-                ok( !! data["actualBitrate"] === true, "Bitrate detected: "+data["actualBitrate"]+" kbps");
-                ok( Math.abs(data["actualBitrate"]-data["expectedQuality"]) < 200, "Selected bitrate ("+ data["actualBitrate"] + " kbps) close to preferred bitrate ("+ data["expectedQuality"] + " kbps). Delta < 200 kbbs");
-            }
-        });
-        setTimeout(function(){
+    asyncTest("Analytics Live Test: Pause event", function(){
+        kdp.kBind("playerReady",function(){
             kdp.sendNotification("doPlay");
-            start();
-        },1000)
-	});
-
-    asyncTest("Analytics VOD Test: Pause event", function(){
+        });
         kdp.kBind( 'analyticsEvent' , function ( data ) {
             if (data["eventType"] == 33){
-                ok( (data["eventType"] == 33),"event type: "+data["eventType"] + " (Pause event)");
+                ok( data["eventType"] == 33,"event type: "+data["eventType"] + " (Pause event)");
                 ok( !! data["sessionId"] === true, "Unique sessionId");
                 ok( !! data["referrer"] === true, "Referrer send");
-                ok( (data["position"] > 0),"Player current time larger than 0 ( "+data["position"]+" seconds )");
+                ok( data["position"] == 0,"Player current time: "+data["position"]);
+                ok( data["actualBitrate"] !== -1, "Bitrate detected: "+data["actualBitrate"]+" kbps");
             }
         });
         setTimeout(function(){
             $iframe.find(".playPauseBtn").click();
             start();
-        },5000)
+        },20000)
 	});
 }
 
@@ -58,15 +44,22 @@ function jsKalturaPlayerTest( videoId ){
 <br />
 <div id="kaltura_player" style="width:400px;height:333px;"></div>
 <script>
-
+    mw.setConfig("LeadWithHLSOnFlash",true);
 	kWidget.embed( {
 		'targetId' :'kaltura_player',
         'wid': '_243342',
         'uiconf_id' : '12905712',
-        'entry_id' : '0_uka1msg4',
+        'entry_id': '1_bhej6q2a',
 		'flashvars': {
             "kAnalony":{
                 "plugin":true
+            },
+            "liveCore":{
+                "plugin":true,
+                "disableLiveCheck":true
+            } ,
+            "liveStatus":{
+                "plugin":false
             },
             'sourceSelector': {
                 "plugin": true,
