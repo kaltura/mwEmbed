@@ -102,7 +102,7 @@
                         else{
                             _this.kQuizUserEntryId = userData.id;
                         }
-                  });
+                    });
                 }
             },
             setSubmitQuiz:function(){
@@ -132,7 +132,7 @@
                 _this.KIVQApi.downloadIvqPDF(entryId, function(data){
                     window.location.assign(data);
                     if (!_this.checkApiResponse('Download PDF  err -->',data)){
-                            return false;
+                        return false;
                     }
                 });
             },
@@ -199,8 +199,10 @@
                 else{
                     var anUnswered = _this.getUnansweredQuestNrs();
                     if (!anUnswered){
-                        _this.quizEndFlow = true;
                         _this.quizPlugin.reviewMode = true;
+                    }
+                    if (($.cpObject.cpArray.length - 1) === questionNr){
+                        _this.quizEndFlow = true;
                     }
                     _this.continuePlay();
                 }
@@ -224,10 +226,9 @@
                 if (_this.embedPlayer.isPlaying()){
                     _this.embedPlayer.pause();
                 }
-
                 _this.embedPlayer.stopPlayAfterSeek = true;
                 seekTo = (($.cpObject.cpArray[questionNr].startTime) /1000)+0.5;
-                _this.embedPlayer.sendNotification('doSeek', seekTo);
+                _this.embedPlayer.seek(seekTo,true);
             },
             cuePointReachedHandler: function (e, cuePointObj) {
                 var _this = this;
@@ -348,7 +349,7 @@
                     _this.quizEndFlow = true;
                     _this.quizPlugin.ssAlmostDone(anUnswered);
                 }else if (!_this.quizSubmitted){
-                        _this.quizPlugin.ssAllCompleted();
+                    _this.quizPlugin.ssAllCompleted();
                 }
             },
             displayHex:function (hexPositionContDisplay,cpArray){
