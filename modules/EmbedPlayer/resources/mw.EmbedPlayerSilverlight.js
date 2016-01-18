@@ -481,6 +481,7 @@
 						'loadEmbeddedCaptions': 'onLoadEmbeddedCaptions' ,
 						'error': 'onError' ,
 						'alert': 'onError',
+						'id3tag': 'onId3tag',
 						'individualizing': 'onIndividualizing',
 						'acquiringLicense': 'onAcquiringLicense'
 					};
@@ -649,6 +650,10 @@
 			mw.log( 'EmbedPlayerSPlayer::onError: ' + message );
 			this.triggerHelper( 'embedPlayerError' , [data] );
 		} ,
+		onId3tag: function (id3Tag) {
+			this.triggerHelper('onId3Tag', id3Tag);
+		},
+
 
 		onIndividualizing: function(){
 			this.log("Individualizing started");
@@ -808,7 +813,10 @@
 			if ( this.seeking ) {
 				this.seeking = false;
 			}
-			this.slCurrentTime = playheadValue;
+			//ignore multicast, slCurrentTime will be updated through id3Tag
+			if(!this.isMulticast) {
+				this.slCurrentTime = playheadValue;
+			}
 			$( this ).trigger( 'timeupdate' );
 		} ,
 

@@ -7,6 +7,9 @@
 			order: 4,
 			align: "right",
 			tooltip: gM('mwe-embedplayer-related'),
+			title: gM('mwe-embedplayer-related'),
+			smartContainer: 'morePlugins',
+			smartContainerCloseEvent: 'hideScreen',
 			showTooltip: true,
 			itemsLimit: 12,
 			displayOnPlaybackDone: true,
@@ -57,7 +60,6 @@
 						$(this).width("100%");
 						$(this).height("100%");
 					});
-					_this.resizeThumbs();
 				},200);
 
 			});
@@ -69,7 +71,6 @@
 						$(this).width("100%");
 						$(this).height("100%");
 					});
-					_this.resizeThumbs();
 				},200);
 			});
 
@@ -87,6 +88,17 @@
 
 			this.bind('replayEvent preSequence', function(){
 				_this.stopTimer();
+			});
+
+			this.bind('preShowScreen', function (event, screenName) {
+				if ( screenName === "related" ){
+					_this.embedPlayer.disablePlayControls(['playPauseBtn']);
+				}
+			});
+			this.bind('preHideScreen', function (event, screenName) {
+				if ( screenName === "related" ){
+					_this.embedPlayer.enablePlayControls();
+				}
 			});
 		},
 
@@ -474,6 +486,9 @@
 				});
 			}
 			return defer;
+		},
+		closeScreen: function(){
+			this.hideScreen();
 		}
 	}));
 

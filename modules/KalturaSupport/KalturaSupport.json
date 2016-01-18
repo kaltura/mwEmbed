@@ -32,6 +32,12 @@
 			"nanoScroller"
 		]
 	},
+	"mw.KBaseSmartContainer": {
+		"scripts": "resources/mw.KBaseSmartContainer.js",
+		"dependencies": [
+			"mw.KBaseComponent"
+		]
+	},
 	"mw.KBaseComponent": {
 		"scripts": "resources/mw.KBaseComponent.js",
 		"dependencies": [
@@ -274,6 +280,7 @@
 	},
 	"infoScreen": {
 		"scripts": "components/info/info.js",
+		"styles": "components/info/info.css",
 		"templates": "components/info/info.tmpl.html",
 		"dependencies": [
 			"mw.KBaseScreen"
@@ -417,6 +424,16 @@
 		"scripts": "resources/uiConfComponents/playbackRateSelector.js",
 		"dependencies": "mw.KBaseComponent",
 		"kalturaPluginName": "playbackRateSelector"
+	},
+	"qualitySettings": {
+		"scripts": "components/qualitySettings.js",
+		"dependencies": "mw.KBaseSmartContainer",
+		"kalturaPluginName": "qualitySettings"
+	},
+	"morePlugins": {
+		"scripts": "components/morePlugins.js",
+		"dependencies": "mw.KBaseSmartContainer",
+		"kalturaPluginName": "morePlugins"
 	},
 	"streamSelector": {
 		"scripts": "components/streamSelector.js",

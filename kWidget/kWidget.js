@@ -547,6 +547,13 @@
 					'background: url(\'' + imagePath + 'player_big_play_button.png\') ;' +
 					'z-index: 1;' +
 				'} ' + "\n" +
+				'.kWidgetAccessibilityLabel { ' +
+				'font-size:0;' +
+				'height: 1px;' +
+				'overflow: hidden;' +
+				'display:block;' +
+				'position:absolute;' +
+				'} ' + "\n" +
 				'.kWidgetPlayBtn:hover{ ' +
 					'background: url(\'' + imagePath + 'player_big_play_button_hover.png\');"' +
 				'} ';
@@ -608,10 +615,10 @@
 			}
 			elm.innerHTML = '' +
 				'<div style="position: relative; width: 100%; height: 100%;">' +
-				'<input type="image" alt="play video content" class="kWidgetCentered" src="' + this.getKalturaThumbUrl(settings) + '" >' +
-				'<div class="kWidgetCentered kWidgetPlayBtn" ' +
-				'id="' + targetId + '_playBtn"' +
-				'></div></div>';
+				'<button class="kWidgetCentered kWidgetPlayBtn" ' + 'id="' + targetId + '_playBtn" >' +
+				'<span class="kWidgetAccessibilityLabel">' + 'Play video content' + '</span></button>' +
+				'<img class="kWidgetCentered" src="' + this.getKalturaThumbUrl(settings) + '" >' +
+				'</div>';
 			// Add a click binding to do the really embed:
 			var playBtn = document.getElementById(targetId + '_playBtn');
 			this.addEvent(playBtn, 'click', function () {
@@ -622,6 +629,11 @@
 				settings.readyCallback = function (playerId) {
 					// issue a play ( since we already clicked the play button )
 					var kdp = document.getElementById(playerId);
+					kdp.kBind('mediaReady', function () {
+						setTimeout(function () {
+							kdp.sendNotification('doPlay');
+						}, 0);
+					});
 					if (typeof orgEmbedCallback == 'function') {
 						orgEmbedCallback(playerId);
 					}
@@ -1675,7 +1687,13 @@
 				return;
 			}
 			if (typeof console != 'undefined' && console.log) {
-				console.log("kWidget: " + msg);
+				if (this.isIE8()){
+					try{
+						console.log("kWidget: " + msg);
+					}catch(e){}
+				}else{
+					console.log("kWidget: " + msg);
+				}
 			}
 		},
 

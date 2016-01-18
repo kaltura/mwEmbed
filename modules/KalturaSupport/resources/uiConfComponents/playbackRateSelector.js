@@ -11,7 +11,10 @@
 		 	'defaultSpeed': '1',
 			'speeds': ".5,.75,1,1.5,2",
 			'enableKeyboardShortcuts': true,
-			'serverSpeedPlayback': false
+			'serverSpeedPlayback': false,
+			'title': gM( 'mwe-embedplayer-speed' ),
+			'smartContainer': 'qualitySettings',
+			'smartContainerCloseEvent': 'updatedPlaybackRate'
 		},
 
 		isDisabled: false,
@@ -76,6 +79,10 @@
 			});
 			this.bind( 'playbackRateChangeSpeed', function(e, arg ){
 				_this.setSpeedFromApi( arg );
+			});
+
+			this.bind( 'onDisableInterfaceComponents', function(e, arg ){
+				_this.getMenu().close();
 			});
 
 			if( this.getConfig('enableKeyboardShortcuts') ){
@@ -151,6 +158,9 @@
 					},
 					'active': active
 				});
+				if (_this.embedPlayer.isMobileSkin() && active){
+					_this.getMenu().setActive(idx);
+				}
 			});
 		},
 		setSpeed: function( newSpeed ){
@@ -262,7 +272,9 @@
 			if (this.getPlayer().mediaLoadedFlag){
 				this.getPlayer().getPlayerElement().playbackRate = newSpeed;
 			}
-			this.getBtn().text( newSpeed + 'x' );
+			if (!this.embedPlayer.isMobileSkin()){
+				this.getBtn().text( newSpeed + 'x' );
+			}
 			this.getPlayer().triggerHelper( 'updatedPlaybackRate', newSpeed);
 		},
 		getCurrentSpeedIndex: function(){
@@ -286,10 +298,12 @@
 			var _this = this;
 			if( !this.$el ) {
 				var $menu = $( '<ul />' );
+				var text = this.embedPlayer.isMobileSkin() ? '' : this.currentSpeed + 'x';
+				var classes = this.embedPlayer.isMobileSkin() ? 'btn icon-speedrate' : 'btn';
 				var $button = $( '<button />' )
-								.addClass( 'btn' )
-								.attr('title', 'Playback Speed')
-								.text( this.currentSpeed + 'x' )
+								.addClass( classes )
+								.attr('title', this.getConfig('title'))
+								.text( text )
 								.click( function(e){
 									_this.toggleMenu();
 								});
@@ -319,7 +333,7 @@
 			this.isDisabled = true;
 			this.getComponent().removeClass( 'open' );
 			this.getBtn().addClass( 'disabled' );
-		},
+		}
 	}));
 
 } )( window.mw, window.jQuery );

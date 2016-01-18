@@ -12,7 +12,10 @@
 			"simpleFormat": true,
 			"iconClass": "icon-cog",
             "displayMode": "size", //'size' – displays frame size ( default ), 'bitrate' – displays the bitrate, 'sizebitrate' displays size followed by bitrate
-            "hideSource": false
+            "hideSource": false,
+			"title": gM( 'mwe-embedplayer-select_source' ),
+			'smartContainer': 'qualitySettings',
+			'smartContainerCloseEvent': 'SourceChange'
 		},
 
 		isDisabled: false,
@@ -73,6 +76,10 @@
             });
 			this.bind( 'onChangeMedia', function(){
 				_this.sourcesList = [];
+			});
+
+			this.bind( 'onDisableInterfaceComponents', function(e, arg ){
+				_this.getMenu().close();
 			});
 
 			// Check for switch on resize option
@@ -226,6 +233,9 @@
 						if ($.inArray(label, itemLabels) === -1){
 							itemLabels.push(label)
 							items.push({'label':label, 'value':label});
+						}
+						if (_this.embedPlayer.isMobileSkin() && _this.isSourceSelected(source)){
+							_this.getMenu().setActive(sourceIndex);
 						}
 					}
 				}

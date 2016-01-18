@@ -1252,7 +1252,7 @@
 				}
 			}
 			// display thumbnail upon movie end if showThumbnailOnEnd Flashvar is set to true and not looped
-			if (this.getFlashvars("EmbedPlayer.ShowPosterOnStop") !== false && !this.loop) {
+			if (!this.loop) {
 				this.updatePosterHTML();
 			}
 		},
@@ -1350,7 +1350,7 @@
 			}
 			// Auto play stopped ( no playerReady has already started playback ) and if not on an iPad with iOS > 3
 			// livestream autoPlay is handled by liveCore
-			if (this.isStopped() && this.autoplay && this.canAutoPlay() && !this.isLive()) {
+			if (this.isStopped() && this.autoplay && !this.changeMediaStarted && this.canAutoPlay() && !this.isLive()) {
 				mw.log('EmbedPlayer::showPlayer::Do autoPlay');
 				_this.play();
 			}
@@ -1833,11 +1833,6 @@
             mw.log('EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
 			var _this = this;
 
-			if (this.isImagePlayScreen()) {
-				this.addPlayScreenWithNativeOffScreen();
-				return;
-			}
-
 			// Set by black pixel if no poster is found:
 			var posterSrc = this.poster;
 			var posterCss = {};
@@ -1851,12 +1846,16 @@
 			}
 
 			$(this).find(".playerPoster").remove();
-				if ( this.currentState=="load" && mw.getConfig('autoPlay') && !mw.isMobileDevice()){
+			//remove poster on autoPlay when player loaded
+			if ( (this.currentState==null || this.currentState=="load") && mw.getConfig('autoPlay') && !mw.isMobileDevice()){
 				return;
 			}
-				if ( mw.getConfig('EmbedPlayer.HidePosterOnStart') === true
-					&&
-					!(this.currentState=="end" && mw.getConfig('EmbedPlayer.ShowPosterOnStop')) ) {
+			//remove poster on start
+			if ( (this.currentState==null || this.currentState=="load") && mw.getConfig('EmbedPlayer.HidePosterOnStart') === true ) {
+				return;
+			}
+			//remove poster on end
+			if ( mw.getConfig('EmbedPlayer.ShowPosterOnStop') === false && this.currentState=="end" ) {
 				return;
 			}
 			// support IE9 and IE10 compatibility modes
@@ -1893,13 +1892,6 @@
 				$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
 				$(this).find('.playerPoster').remove();
 			}
-		},
-		/**
-		 * Abstract method, must be set by player interface
-		 */
-		addPlayScreenWithNativeOffScreen: function () {
-			mw.log("Error: EmbedPlayer, Must override 'addPlayScreenWithNativeOffScreen' with player inteface");
-			return;
 		},
 		/**
 		 * Checks if native controls should be used
@@ -2173,6 +2165,10 @@
 			return (this.sequenceProxy && this.sequenceProxy.isInSequence);
 		},
 
+		isMobileSkin: function(){
+			var skin = this.getRawKalturaConfig("layout") ? this.getRawKalturaConfig("layout").skin : "kdark";
+			return ( mw.getConfig("EmbedPlayer.EnableMobileSkin") === true && skin === "kdark" && mw.isMobileDevice());
+		},
 
 		/**
 		 * Will trigger 'preSequence' event
@@ -2270,6 +2266,10 @@
 			// Remove any poster div ( that would overlay the player )
 			if (!this.isAudioPlayer) {
 				this.removePoster();
+			}
+
+			if (mw.getConfig("EmbedPlayer.KeepPoster")){
+				this.updatePosterHTML();
 			}
 
 			// We need first play event for analytics purpose

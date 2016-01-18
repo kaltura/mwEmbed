@@ -88,6 +88,7 @@
 			}
 		},
 		hideScreen: function () {
+			var _this = this;
 			if (!this.error) {
 				this.getPlayer().triggerHelper( 'preHideScreen', [this.pluginName] );
 				if ( this.hasPreviewPlayer() ) {
@@ -101,7 +102,9 @@
 
 				if ( !this.enablePlayDuringScreen && this.isScreenVisible() ){
 					this.getScreen().then(function(screen){
-						screen.fadeOut( 400 );
+						screen.fadeOut( 400, $.proxy( function () {
+							_this.getPlayer().triggerHelper( 'hideScreen', [_this.pluginName] );
+						}, this ) );
 					});
 				}
 			}
@@ -186,10 +189,14 @@
 				this.getTemplateHTML(this.getTemplateData())
 				.then(
 				function(data) {
+					var closeBtn = $('<span class="icon-close"/>')
+						.on('click', function(){
+							_this.hideScreen();
+						});
 					_this.$screen = $('<div />')
 						.addClass('screen ' + _this.pluginName)
 						.append(
-							$('<div class="screen-content" /> ').append(data)
+							$('<div class="screen-content" /> ').append(closeBtn).append(data)
 						);
 
 					// Create expand button

@@ -212,7 +212,8 @@
 		},
 		setHeight: function(){
 			var height = this.getPlayer().getHeight() - this.getPlayer().getControlBarContainer().height();
-			if (this.getPlayer().getTopBarContainer().length){
+			var noControls = this.getPlayer().isMobileSkin() ? 2 : 0;
+			if (this.getPlayer().getTopBarContainer().length && this.getPlayer().getTopBarContainer().children().length !== noControls) {
 				height -= this.getPlayer().getTopBarContainer().height();
 				//If topbar exist then add top value
 				this.getComponent().css('top', this.getPlayer().getTopBarContainer().height());

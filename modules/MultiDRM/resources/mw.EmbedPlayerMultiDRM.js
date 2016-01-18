@@ -802,6 +802,8 @@
 				}
 			}
 		},
+		//Disable check - handled on lower level
+		checkClipDoneCondition: function(){},
 		/**
 		 * play method calls parent_play to update the interface
 		 */
@@ -823,10 +825,8 @@
 				if ( this.parent_play() ) {
 					var _this = this;
 					setTimeout( function () {
-						_this.getPlayerElement().one("play", function(){
-							_this.monitor();
-						});
 						_this.getPlayerElement().play();
+						_this.monitor();
 					}, (this.mediaLoadedFlag ? 100 : 2000) );
 				} else {
 					mw.log( "EmbedPlayerMultiDRM:: parent play returned false, don't issue play on player element" );

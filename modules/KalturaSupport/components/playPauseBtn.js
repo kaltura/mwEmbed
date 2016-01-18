@@ -22,6 +22,9 @@
 		setup: function( embedPlayer ) {
 			this.addBindings();
 		},
+		isSafeEnviornment: function(){
+			return !this.embedPlayer.isMobileSkin();
+		},
 		getComponent: function() {
 			var _this = this;
 			if( !this.$el ) {

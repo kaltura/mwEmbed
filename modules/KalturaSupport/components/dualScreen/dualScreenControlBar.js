@@ -45,7 +45,8 @@
 					.addClass( 'controlBar componentOff dualScreen' + this.getCssClass() )
 					.append(transformedHTML);
 				//If top bar exist then position controlBar under it
-				if (this.embedPlayer.getTopBarContainer().length) {
+				var noControls = this.embedPlayer.isMobileSkin() ? 2 : 0;
+				if (this.embedPlayer.getTopBarContainer().length && this.embedPlayer.getTopBarContainer().children().length !== noControls) {
 					var height = this.embedPlayer.getTopBarContainer().height();
 					this.$controlBar.css("top", height + "px");
 				}
