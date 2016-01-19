@@ -292,10 +292,11 @@
 					showComponentsArr.push( 'scrubber', 'currentTimeLabel' );
 				} else {  //live + no DVR
 					showComponentsArr.push( 'liveStatus' );
+                    hideComponentsArr.push( 'scrubber' );
 					if ( _this.getConfig('hideCurrentTimeLabel') ){
-						hideComponentsArr.push( 'scrubber', 'currentTimeLabel' );
+						hideComponentsArr.push( 'currentTimeLabel' );
 					} else {
-						showComponentsArr.push( 'scrubber', 'currentTimeLabel' );
+						showComponentsArr.push( 'currentTimeLabel' );
 					}
 				}
 
