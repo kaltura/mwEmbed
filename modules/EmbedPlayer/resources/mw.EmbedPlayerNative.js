@@ -1384,7 +1384,6 @@
                 if( vid.textTracks.length > 0 ) {
                     for (var i = 0; i < vid.textTracks.length; i++) {
                         if (vid.textTracks[i].kind === "metadata") {
-                            mw.log("------ counter = "+ counter);
                             //add id3 tags support (for now only if Live + no DVR)
                             _this.id3Tag(vid.textTracks[i]);
                             vid.textTracks[i].mode = "hidden";
