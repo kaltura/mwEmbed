@@ -91,6 +91,7 @@
 			this.bindFirstPlay();
 			// unbind any prev session events:
 			this.unbind('bufferEndEvent');
+			this.unbind('timeupdate');
 
 			// track content end:
 			this.unbind('postEnded');
@@ -202,24 +203,26 @@
 			this.unbind( 'onpause' );
 			this.unbind(  'onplay' );
 
-			this.unbind('firstPlay');
-			this.bind('firstPlay', function(){
-				// on play send the "start" action: 
-				var beaconObj = {
-					'resource': _this.getCurrentVideoSrc(),
-					// 'transcode' // not presently used. 
-					'live': _this.embedPlayer.isLive(),
-					'properties': JSON.stringify( _this.getMediaProperties() ),
-					'user': _this.getConfig('userId') || "", // should be the active user id,
-					'referer': _this.embedPlayer.evaluate('{utility.referrer_url}'),
-					'totalBytes': "0", // could potentially be populated if we use XHR for iframe payload + static loader + DASH MSE for segments )
-					'pingTime': _this.pingTime
-				};
-				beaconObj = $.extend( beaconObj, _this.getCustomParams() );
-				_this.sendBeacon( 'start', beaconObj );
-				_this.playRequestStartTime = new Date().getTime();
-				_this.firstPlayDone = true;
-				_this.bindFirstJoin();
+			this.unbind('firstPlay AdSupport_PreSequence');
+			this.bind('firstPlay AdSupport_PreSequence', function(){
+				if (!_this.firstPlayDone){
+					// on play send the "start" action:
+					var beaconObj = {
+						'resource': _this.getCurrentVideoSrc(),
+						// 'transcode' // not presently used.
+						'live': _this.embedPlayer.isLive(),
+						'properties': JSON.stringify( _this.getMediaProperties() ),
+						'user': _this.getConfig('userId') || "", // should be the active user id,
+						'referer': _this.embedPlayer.evaluate('{utility.referrer_url}'),
+						'totalBytes': "0", // could potentially be populated if we use XHR for iframe payload + static loader + DASH MSE for segments )
+						'pingTime': _this.pingTime
+					};
+					beaconObj = $.extend( beaconObj, _this.getCustomParams() );
+					_this.sendBeacon( 'start', beaconObj );
+					_this.playRequestStartTime = new Date().getTime();
+					_this.firstPlayDone = true;
+					_this.bindFirstJoin();
+				}
 			});
 		},
 		bindFirstJoin: function(){
@@ -230,7 +233,7 @@
 				_this.unbind('timeupdate');
 				_this.sendBeacon( 'joinTime', {
 					'time': new Date().getTime() - _this.playRequestStartTime,
-					'eventTime': _this.embedPlayer.currentTime,
+					'eventTime': _this.embedPlayer.currentTime
 				});
 				_this.bindPingTracking(); // start "ping monitoring"
 				_this.bindPlaybackEvents();
