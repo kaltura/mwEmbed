@@ -169,6 +169,10 @@
 			this.bind('bufferStartEvent',function(){
 				var startBufferPlayerTime = _this.embedPlayer.currentTime;
 				bufferStartTime = Date.now();
+				if (checkBufferUnderrun){
+					clearInterval(checkBufferUnderrun);
+					checkBufferUnderrun = null;
+				}
 				checkBufferUnderrun = setInterval(function(){
 					if (_this.embedPlayer.currentTime === startBufferPlayerTime){
 						shouldReprotBufferUnderrun = true;
