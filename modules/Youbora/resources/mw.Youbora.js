@@ -215,8 +215,6 @@
 				_this.sendBeacon( 'start', beaconObj );
 				_this.playRequestStartTime = new Date().getTime();
 				_this.firstPlayDone = true;
-				// start "ping monitoring"
-				_this.bindPingTracking();
 				_this.bindFirstJoin();
 			});
 		},
@@ -230,6 +228,7 @@
 					'time': new Date().getTime() - _this.playRequestStartTime,
 					'eventTime': _this.embedPlayer.currentTime,
 				});
+				_this.bindPingTracking(); // start "ping monitoring"
 				_this.bindPlaybackEvents();
 			});
 		},
