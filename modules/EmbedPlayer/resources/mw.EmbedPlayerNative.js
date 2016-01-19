@@ -110,13 +110,22 @@
 					_this.layoutBuilder.closeAlert();
 				}
 			});
-            $(this).bind('firstPlay', this.parseTextTracks());
+            this.addBindings();
+		},
+        addBindings: function(){
+            var _this = this;
+            this.bindHelper('firstPlay', function(){
+                _this.parseTracks();
+            });
+            this.bindHelper('switchAudioTrack', function (e, data) {
+                _this.switchAudioTrack(data.index);
+            });
             this.bindHelper('liveOnline', function(){
-                if( this.isLive() && !this.isDVR() ) {
-                    this.resetSrc = true;
+                if( _this.isLive() && !_this.isDVR() ) {
+                    _this.resetSrc = true;
                 }
             });
-		},
+        },
 		/**
 		 * Updates the supported features given the "type of player"
 		 */
@@ -827,7 +836,7 @@
                             setTimeout( function () {
                                 if ( !_this.playing ) {
                                     vid.play();
-                                    _this.parseTextTracks();
+                                    _this.parseTracks();
                                 }
                             }, 300 );
                             _this.resetSrc = false;
@@ -1177,7 +1186,6 @@
 		 */
 		_onloadedmetadata: function () {
 			this.getPlayerElement();
-
 			// only update duration if we don't have one: ( some browsers give bad duration )
 			// like Android 4 default browser
 			if (!this.duration
@@ -1362,21 +1370,33 @@
 		setInline: function ( state ) {
 			this.getPlayerElement().attr('webkit-playsinline', '');
 		},
-        parseTextTracks: function(){
+        parseTracks: function(){
             var vid = this.getPlayerElement();
+            this.parseAudioTracks(vid, 0); //0 is for a setTimer counter. Try to catch audioTracks, give up after 5 seconds
+            if(this.isLive() && !this.isDVR()) {
+                //right now we parse metadata textTrack in order to read id3Tag only for live without DVR
+                this.parseTextTracks(vid, 0); //0 is for a setTimer counter. Try to catch textTracks.kind === "metadata, give up after 10 seconds
+            }
+        },
+        parseTextTracks: function(vid, counter){
             var _this = this;
-            var interval = setInterval(function() {
-                for (var i = 0; i < vid.textTracks.length; i++) {
-                    //TODO: add audio support
-
-                    //if Live + No DVR add id3 tags support
-                    if (vid.textTracks[i].kind === "metadata" && _this.isLive() && !_this.isDVR()) {
-                        _this.id3Tag(vid.textTracks[i]);
-                        clearInterval(interval);
-                        vid.textTracks[i].mode = "hidden";
+            setTimeout(function() {
+                if( vid.textTracks.length > 0 ) {
+                    for (var i = 0; i < vid.textTracks.length; i++) {
+                        if (vid.textTracks[i].kind === "metadata") {
+                            mw.log("------ counter = "+ counter);
+                            //add id3 tags support (for now only if Live + no DVR)
+                            _this.id3Tag(vid.textTracks[i]);
+                            vid.textTracks[i].mode = "hidden";
+                        }
+                    }
+                }else{
+                    //try to catch textTracks.kind === "metadata, give up after 10 seconds
+                    if( counter < 10 ){
+                        _this.parseTextTracks(vid, ++counter);
                     }
                 }
-            }, 500);
+            }, 1000);
         },
         id3Tag: function(metadataTrack){
             var _this = this;
@@ -1389,6 +1409,29 @@
                     mw.log("Native player :: id3Tag :: ERROR :: "+e);
                 }
             }, false);
+        },
+        parseAudioTracks: function(vid, counter){
+            var _this = this;
+            setTimeout (function() {
+                if( vid.audioTracks.length > 0 ) {
+                    var data ={'languages':[]};
+                    for (var i = 0; i < vid.audioTracks.length; i++) {
+                        var lang = {};
+                        lang.index = i;
+                        lang.label = vid.audioTracks[i].label;
+                        data.languages.push(lang);
+                    }
+                    _this.triggerHelper('audioTracksReceived', data);
+                }else{
+                    //try to catch audioTracks, give up after 5 seconds
+                    if( counter < 5 ){
+                        _this.parseAudioTracks(vid, ++counter);
+                    }
+                }
+            }, 1000);
+        },
+        switchAudioTrack: function(audioTrackIndex){
+            this.getPlayerElement().audioTracks[audioTrackIndex].enabled = true;
         },
         getCurrentBufferLength: function(){
             return parseInt(this.playerElement.buffered.end(0) - this.playerElement.currentTime); //return buffer length in seconds
