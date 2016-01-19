@@ -24,6 +24,7 @@
             init: function (embedPlayer,quizPlugin) {
                 var _this = this;
 
+
                 _this.KIVQApi = new mw.KIVQApi(embedPlayer);
                 _this.KIVQScreenTemplate = new mw.KIVQScreenTemplate(embedPlayer);
 
@@ -34,7 +35,6 @@
 
             setupQuiz:function(){
                 var _this = this;
-
                 this.embedPlayer.disableComponentsHover();
 
                 _this.KIVQApi.getUserEntryIdAndQuizParams( function(data) {
@@ -127,6 +127,7 @@
                     }
                 });
             },
+
             getIvqPDF:function(entryId){
                 var _this = this;
                 _this.KIVQApi.downloadIvqPDF(entryId, function(data){
@@ -368,11 +369,11 @@
                 _this.embedPlayer.getInterface().find(".display-all-container").hide().fadeIn(400);
 
                 if((_this.embedPlayer.getInterface().find(".second-row").length) == 0 ){
-                    _this.embedPlayer.getInterface().find(".display-all-container").addClass("margin-top7");
+                    _this.embedPlayer.getInterface().find(".display-all-container").addClass("margin-top5");
                     _this.embedPlayer.getInterface().find(".left-arrow").addClass("margin-top4");
                 }
                 else{
-                    _this.embedPlayer.getInterface().find(".display-all-container").removeClass("margin-top7");
+                    _this.embedPlayer.getInterface().find(".display-all-container").removeClass("margin-top5");
                     _this.embedPlayer.getInterface().find(".left-arrow").removeClass("margin-top4");
 
 

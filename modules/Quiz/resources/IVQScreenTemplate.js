@@ -18,72 +18,72 @@
                 var _this = this;
                 $(".icon-close").css("display", "none");
                 $(_this.emptyScreen()).hide().append(
-                '<div class="ivqContainer">' +
-                '<div class="welcome"></div>' +
-                '<div class="pdf-download"></div>' +
-                '<div class="welcomeMessage"></div>' +
-                '<div class="InvideoTipMessage"></div>' +
-                '<div class="bottomContainer paddingB12">' +
-                '<div class="confirm-box"></div>' +
-                '</div>' +
-                '</div>').fadeIn( "slow" );
+                    '<div class="ivqContainer">' +
+                    '<div class="welcome"></div>' +
+                    '<div class="pdf-download"></div>' +
+                    '<div class="welcomeMessage"></div>' +
+                    '<div class="InvideoTipMessage"></div>' +
+                    '<div class="bottomContainer padding10">' +
+                    '<div class="confirm-box"></div>' +
+                    '</div>' +
+                    '</div>').fadeIn( "slow" );
             },
             tmplQuestion:function(){
                 var _this = this;
                 $(_this.emptyScreen()).hide().append(
-                '<div class="ivqContainer">'+
-                '   <div class="header-container">' +
-                '       <div class="display-question"></div>' +
-                '   </div>' +
-                '   <div class="answers-container"></div>' +
-                '   <div class = "ftr-container">' +
-                '       <div class="ftr-left"></div>' +
-                '       <div class="ftr-right"></div>' +
-                '   </div>'+
-                '</div>').fadeIn( "slow" );
+                    '<div class="ivqContainer">'+
+                    '   <div class="header-container">' +
+                    '       <div class="display-question"></div>' +
+                    '   </div>' +
+                    '   <div class="answers-container"></div>' +
+                    '   <div class = "ftr-container">' +
+                    '       <div class="ftr-left"></div>' +
+                    '       <div class="ftr-right"></div>' +
+                    '   </div>'+
+                    '</div>').fadeIn( "slow" );
             },
             tmplReviewAnswer:function(){
                 var _this = this;
                 $(_this.emptyScreen()).hide().append(
-                '<div class="ivqContainer">'+
-                '   <div class="header-container"></div>'+
-                '   <div class = "reviewAnswerNr"> </div>'+
-                '   <div class ="reviewAnswerPlace" >'+
-                '       <div class="theQuestion"></div>'+
-                '       <div class="yourAnswerText"></div>'+
-                '       <div class="yourAnswer"></div>'+
-                '       <div class="correctAnswerText"></div>'+
-                '       <div class="correctAnswer"></div>'+
-                '   </div>'+
-                '<div class="gotItBox"></div></div>').fadeIn( "slow" );
+                    '<div class="ivqContainer">'+
+                    '   <div class="header-container"></div>'+
+                    '   <div class = "reviewAnswerNr"> </div>'+
+                    '   <div class ="reviewAnswerPlace" >'+
+                    '       <div class="theQuestion"></div>'+
+                    '       <div class="yourAnswerText"></div>'+
+                    '       <div class="yourAnswer"></div>'+
+                    '       <div class="correctAnswerText"></div>'+
+                    '       <div class="correctAnswer"></div>'+
+                    '   </div>'+
+                    '<div class="gotItBox"></div></div>').fadeIn( "slow" );
 
             },
             tmplSubmitted:function(){
                 var _this = this;
                 $(_this.emptyScreen()).hide().append(
-                '<div class="ivqContainer">' +
-                '   <div class="title-text"></div>' +
-                '   <div class="sub-text"></div>' +
-                '   <div class="display-all-container">' +
-                '       <div class ="hex-row">' +
-                '           <div class="hex-column  left-arrow" style="display: none;"></div>' +
-                '           <div class="hex-column  right-arrow" style="display: none;" ></div>' +
-                '           <div class="hex-column hexagon-container"></div>' +
-                '       </div>' +
-                '   </div>' +
-                '   <div class="bottomContainer ">' +
-                '       <div class="confirm-box"></div>' +
-                '   </div>' +
-                '</div>').fadeIn( "slow" );
+                    '<div class="ivqContainer">' +
+                    '   <div class="title-text"></div>' +
+                    '   <div class="sub-text"></div>' +
+                    '   <div class="display-all-container">' +
+                    '       <div class ="hex-row">' +
+                    '           <div class="hex-column  left-arrow" style="display: none;"></div>' +
+                    '           <div class="hex-column  right-arrow" style="display: none;" ></div>' +
+                    '           <div class="hex-column hexagon-container"></div>' +
+                    '       </div>' +
+                    '   </div>' +
+                    '   <div class="bottomContainer ">' +
+                    '       <div class="confirm-box"></div>' +
+                    '   </div>' +
+                    '</div>').fadeIn( "slow" );
 
             },
             tmplHint:function(){
                 var _this = this;
                 $(_this.emptyScreen()).hide().append(
-                '<div class="ivqContainer">'+
-                '   <div class="header-container"></div>'+
-                '   <div class="hint-container"></div>'+
-                '</div>').fadeIn( "slow" );
+                    '<div class="ivqContainer">'+
+                    '   <div class="header-container"></div>'+
+                    '   <div class="hint-container"></div>'+
+                    '</div>').fadeIn( "slow" );
             },
             tmplWhy:function(){
                 var _this = this;
@@ -129,7 +129,7 @@
                     '<div class="ivqContainer">' +
                     '   <div class="title-text padding20"></div>' +
                     '   <div class="sub-text padding4"></div>'+
-                    '   <div class="bottomContainer  paddingB20">'+
+                    '   <div class="bottomContainer  padding10">'+
                     '       <div class="confirm-box"></div>'+
                     '   </div>' +
                     '</div>').fadeIn( "slow" );
