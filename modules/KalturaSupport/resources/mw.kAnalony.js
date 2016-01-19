@@ -48,6 +48,7 @@
 		_p100Once: false,
 		hasSeeked: false,
 		lastSeek: 0,
+		dvr: false,
 
 		smartSetInterval:function(callback,time,monitorObj) {
 			var _this = this;
@@ -128,6 +129,19 @@
 			this.embedPlayer.bindHelper( 'seeked' , function (e, seekTarget) {
 				_this.hasSeeked = true;
 				_this.lastSeek = seekTarget;
+				if ( _this.embedPlayer.isDVR() ) {
+					_this.dvr = true;
+				}
+			});
+
+			this.embedPlayer.bindHelper( 'movingBackToLive', function() {
+				_this.dvr = false;
+			} );
+
+			this.embedPlayer.bindHelper( 'seeking onpause', function() {
+				if ( _this.embedPlayer.isDVR() ) {
+					_this.dvr = true;
+				}
 			});
 
 			this.embedPlayer.bindHelper( 'userInitiatedSeek' , function (e, seekTarget) {
@@ -309,6 +323,12 @@
 				this.currentBitRate = this.embedPlayer.getMulticastBitrate();
 			}
 
+			// set playbackType
+			var playbackType = "vod";
+			if (this.embedPlayer.isLive()){
+				playbackType = this.dvr ? "dvr" : "live";
+			}
+
 			var statsEvent = {
 				'entryId'           : this.embedPlayer.kentryid,
 				'partnerId'         : this.embedPlayer.kpartnerid,
@@ -322,7 +342,8 @@
 				'sessionStartTime'  : this.startTime,
 				'uiConfId'          : this.embedPlayer.kuiconfid,
 				'clientVer'         : mw.getConfig("version"),
-				'position'          : this.embedPlayer.currentTime
+				'position'          : this.embedPlayer.currentTime,
+				'playbackType'      : playbackType
 			};
 
 			// add ks if available
