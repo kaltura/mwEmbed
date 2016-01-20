@@ -32,7 +32,6 @@
         setup: function () {
             var _this = this;
             var embedPlayer = this.getPlayer();
-            console.log('------  setup');
             _this.KIVQModule = new mw.KIVQModule(embedPlayer, _this);
             _this.KIVQModule.setupQuiz(embedPlayer);
             _this.KIVQScreenTemplate = new mw.KIVQScreenTemplate(embedPlayer);
