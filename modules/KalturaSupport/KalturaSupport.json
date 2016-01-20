@@ -420,6 +420,13 @@
 		],
 		"kalturaPluginName": "liveAnalytics"
 	},
+	"kAnalony": {
+		"scripts": "resources/mw.kAnalony.js",
+		"dependencies": [
+			"mw.KBasePlugin"
+		],
+		"kalturaPluginName": "kAnalony"
+	},
 	"playbackRateSelectorPlugin": {
 		"scripts": "resources/uiConfComponents/playbackRateSelector.js",
 		"dependencies": "mw.KBaseComponent",

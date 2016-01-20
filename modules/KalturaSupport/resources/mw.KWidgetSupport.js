@@ -293,7 +293,7 @@ mw.KWidgetSupport.prototype = {
 
 					if (action.pattern && action.replacement) {
 						var regExp=new RegExp(action.pattern, "i");
-						var urlsToModify = ['Kaltura.ServiceUrl','Kaltura.StatsServiceUrl','Kaltura.ServiceBase','Kaltura.LiveStatsServiceUrl'];
+						var urlsToModify = ['Kaltura.ServiceUrl','Kaltura.StatsServiceUrl','Kaltura.ServiceBase','Kaltura.LiveStatsServiceUrl','Kaltura.AnalyticsUrl'];
 						urlsToModify.forEach(function (key) {
 							var serviceUrl = mw.config.get(key);
 							var match = serviceUrl.match( regExp );
