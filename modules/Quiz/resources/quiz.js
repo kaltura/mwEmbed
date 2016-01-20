@@ -1,6 +1,6 @@
 /**
  * Created by mark.feder Kaltura.
- * V2.40.quiz-rc1
+ * V2.40.quiz-rc2
  */
 (function (mw, $) {
     "use strict";
@@ -29,19 +29,20 @@
         seekToQuestionTime:null,
         isQuiz:null,
 
-
         isSafeEnviornment: function () {
-            var _this = this,deferred = $.Deferred();
-            var embedPlayer = this.getPlayer();
-            if (embedPlayer.kalturaPlayerMetaData.capabilities === "quiz.quiz"){
-                _this.quizSetup(embedPlayer);
-                return true;
-            }else{
-                return false;
-            }
+            //var _this = this;
+            //var embedPlayer = this.getPlayer();
+            //if (embedPlayer.kalturaPlayerMetaData.capabilities === "quiz.quiz"){
+            //    _this.quizSetup(embedPlayer);
+            //    return true;
+            //}else{
+            //    return false;
+            //}
         },
-        quizSetup: function (embedPlayer) {
+        setup: function () {
             var _this = this;
+            var embedPlayer = this.getPlayer();
+
             _this.KIVQModule = new mw.KIVQModule(embedPlayer, _this);
             _this.KIVQModule.setupQuiz(embedPlayer);
             _this.KIVQScreenTemplate = new mw.KIVQScreenTemplate(embedPlayer);
@@ -529,7 +530,13 @@
                         .css("float", "right")
                         .css("cursor","default"));
                 if (_this.KIVQModule.canSkip) {
-                    $(".ftr-right").html(gM('mwe-quiz-skipForNow')).on('click', function () {
+                    var skipTxt;
+                    if ($.cpObject.cpArray[questionNr].isAnswerd){
+                        skipTxt = gM('mwe-quiz-next');
+                    }else{
+                        skipTxt = gM('mwe-quiz-skipForNow');
+                    }
+                    $(".ftr-right").html(skipTxt).on('click', function () {
                         _this.KIVQModule.checkIfDone(questionNr)
                     });
                 }else if(!_this.KIVQModule.canSkip && $.cpObject.cpArray[questionNr].isAnswerd ){
