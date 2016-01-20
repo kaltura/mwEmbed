@@ -29,29 +29,25 @@
         seekToQuestionTime:null,
         isQuiz:null,
 
-        setup: function () {
-            var _this = this;
+
+        isSafeEnviornment: function () {
+            var _this = this,deferred = $.Deferred();
             var embedPlayer = this.getPlayer();
+            if (embedPlayer.kalturaPlayerMetaData.capabilities === "quiz.quiz"){
+                _this.quizSetup(embedPlayer);
+                return true;
+            }else{
+                return false;
+            }
+        },
+        quizSetup: function (embedPlayer) {
+            var _this = this;
             _this.KIVQModule = new mw.KIVQModule(embedPlayer, _this);
             _this.KIVQModule.setupQuiz(embedPlayer);
             _this.KIVQScreenTemplate = new mw.KIVQScreenTemplate(embedPlayer);
 
             this.addBindings();
 
-        },
-        isSafeEnviornment: function () {
-            var _this = this,deferred = $.Deferred();
-            var embedPlayer = this.getPlayer();
-            var checkIfQuizParams = {
-                'service': 'baseEntry',
-                'action': 'getByIds',
-                'entryIds': _this.embedPlayer.kentryid
-                };
-            _this.getKClient().doRequest(checkIfQuizParams, function (data) {
-                deferred.resolve(data[0].capabilities === "quiz.quiz");
-            });
-
-            return deferred.promise();
         },
         addBindings: function () {
             var _this = this;
