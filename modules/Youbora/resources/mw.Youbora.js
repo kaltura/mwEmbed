@@ -141,8 +141,8 @@
 			var _this = this;
 			// track pause: 
 			var userHasPaused = false;
-			this.unbind( 'onpause');
-			this.bind( 'onpause', function( playerState ){
+			this.unbind( 'userInitiatedPause');
+			this.bind( 'userInitiatedPause', function( playerState ){
 				// ignore if pause is within .5 seconds of end of video of after change media:
 				if ( _this.embedPlayer.firstPlay || ( _this.embedPlayer.duration - _this.embedPlayer.currentTime ) < .5  ){
 					return ;
@@ -151,8 +151,8 @@
 				userHasPaused = true;
 			});
 			// after first play, track resume:
-			this.unbind( 'onplay');
-			this.bind( 'onplay', function( playerState ){
+			this.unbind( 'userInitiatedPlay');
+			this.bind( 'userInitiatedPlay', function( playerState ){
 				// ignore if resume within .5 seconds of end of video:
 				if( ( _this.embedPlayer.duration - _this.embedPlayer.currentTime ) < .5  ){
 					return ;
@@ -200,8 +200,8 @@
 			var _this = this;
 			// unbind any existing events: 
 			this.unbind( 'bufferStartEvent');
-			this.unbind( 'onpause' );
-			this.unbind(  'onplay' );
+			this.unbind( 'userInitiatedPause' );
+			this.unbind(  'userInitiatedPlay' );
 
 			this.unbind('firstPlay AdSupport_PreSequence');
 			this.bind('firstPlay AdSupport_PreSequence', function(){
