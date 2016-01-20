@@ -97,7 +97,7 @@
 		togglePlayback: function() {
 			if( this.isDisabled ) return ;
 			var notificationName = ( this.getPlayer().isPlaying() ) ? 'doPause' : 'doPlay';
-			this.getPlayer().sendNotification( notificationName );
+			this.getPlayer().sendNotification( notificationName, {'userInitiated': true} );
 		}
 	})
 	);

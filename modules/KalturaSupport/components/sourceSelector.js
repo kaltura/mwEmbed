@@ -303,6 +303,7 @@
                         'id': source.getAssetId()
                     },
                     'callback': function () {
+	                    _this.getPlayer().triggerHelper("newSourceSelected", source.getAssetId());
                         _this.getPlayer().switchSrc(source);
                     },
                     'active': _this.isSourceSelected(source)
