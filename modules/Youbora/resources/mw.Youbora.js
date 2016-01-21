@@ -229,6 +229,9 @@
 			var _this = this;
 			// track joinTime ( time between play and positive time )
 			this.bind('timeupdate', function(){
+				if (_this.embedPlayer.currentTime === 0){
+					return;
+				}
 				// only track the first timeupdate:
 				_this.unbind('timeupdate');
 				_this.sendBeacon( 'joinTime', {
