@@ -1414,7 +1414,7 @@
         parseAudioTracks: function(vid, counter){
             var _this = this;
             setTimeout (function() {
-                if( vid.audioTracks.length > 0 ) {
+                if( vid.audioTracks && vid.audioTracks.length > 0 ) {
                     var data ={'languages':[]};
                     for (var i = 0; i < vid.audioTracks.length; i++) {
                         var lang = {};
