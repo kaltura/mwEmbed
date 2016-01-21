@@ -172,7 +172,9 @@
 					if ( !_this.playlist ){
 						_this.pause();
 					}
-					_this.updatePosterHTML();
+					if ( !_this.isPlaying() ) {
+						_this.updatePosterHTML();
+					}
 				}
 				callback();
 			});
@@ -749,7 +751,7 @@
 					}
 
 					// issue the play request:
-					vid.play();
+					_this.play();
 					if (mw.isMobileDevice()) {
 						setTimeout(function () {
 							handleSwitchCallback();
