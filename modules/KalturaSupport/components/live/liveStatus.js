@@ -22,7 +22,12 @@
 
 		setup: function() {
 			this.prevIconClass = this.onAirIconClass;
-			this.addBindings();
+            var _this = this;
+            this.bind( 'playerReady', function() {
+                if( _this.getPlayer().isLive() ) {
+                    _this.addBindings();
+                }
+            });
 		},
 		addBindings: function() {
 			var _this = this;
