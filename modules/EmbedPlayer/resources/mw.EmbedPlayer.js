@@ -2273,7 +2273,7 @@
 				this.removePoster();
 			}
 
-			if (mw.getConfig("EmbedPlayer.KeepPoster")){
+			if (mw.getConfig("EmbedPlayer.KeepPoster") && this.isAudioPlayer){
 				this.updatePosterHTML();
 			}
 
