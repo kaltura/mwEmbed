@@ -84,7 +84,7 @@
 
 			// Check for switch on resize option
 			if( this.getConfig( 'switchOnResize' ) ){
-				this.bind( 'updateLayout', function(){
+				this.bind( 'resizeEvent', function(){
 					// workaround to avoid the amount of 'updateLayout' events
 					// !seeking will avoid getting current time equal to 0
 					if ( !_this.inUpdateLayout && !_this.embedPlayer.seeking ){
