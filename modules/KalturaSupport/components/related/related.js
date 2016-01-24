@@ -139,7 +139,6 @@
 					if (heightOffset > 0) {
 						$img.css("margin-top", heightOffset * (-1) + 'px');
 					} else {
-						// setTimeout to resolve issue in IE/FF image gets squished in certain width
 						$img.height(divHeight);
 						$img.width($img.width() * divHeight / $img.height());
 						widthOffset = ($img.width() - divWidth) / 2;
