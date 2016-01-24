@@ -486,6 +486,18 @@
 					}
 				});
 			}
+
+			// due to IMA removal of custom playback on Android devices, we must get a user gesture for each new entry in order to show prerolls. Preventing auto play after change media in such cases.
+			if ( !_this.isNativeSDK && _this.embedPlayer.playlist && mw.isMobileDevice() && mw.isAndroid() ){
+				_this.embedPlayer.setKalturaConfig( 'playlistAPI', 'autoPlay',false );
+				_this.embedPlayer.autoplay = false;
+				_this.embedPlayer.bindHelper('onChangeMedia', function () {
+					_this.embedPlayer.bindHelper('prePlayAction', function (event, prePlay) {
+						prePlay.allowPlayback = false;
+						_this.embedPlayer.unbindHelper('prePlayAction');
+					});
+				});
+			}
 		},
 
 		pauseAd: function (isLinear) {
@@ -972,15 +984,6 @@
 				if ( _this.saveTimeWhenSwitchMedia ) {
 					_this.timeToReturn = _this.embedPlayer.currentTime;
 				}
-				// sometimes CONTENT_PAUSE_REQUESTED is the last event we receive :(
-				// give double click 12 seconds to load the ad, else return to content playback
-				setTimeout( function(){
-					if( $.isFunction( _this.startedAdPlayback ) ){
-						mw.log( " CONTENT_PAUSE_REQUESTED without no ad LOADED! ");
-						// ad error will resume playback
-						_this.onAdError( " CONTENT_PAUSE_REQUESTED without no ad LOADED! ");
-					}
-				}, 12000 );
 			} );
 			adsListener( 'LOADED', function(adEvent){
 				var adData = adEvent.getAdData();
