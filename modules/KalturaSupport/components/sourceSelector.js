@@ -311,7 +311,7 @@
             }
 		},
         getSourceSizeName: function( source ){
-			if( source.getHeight() == 0 && source.width == 0){
+			if( source.getHeight() == 0 ){
 				return gM( 'mwe-embedplayer-audio_source' ) + this.getSourceTitleBitrate(source);
 			} else if( source.getHeight() < 255 ){
 				return '240P';
@@ -373,7 +373,7 @@
             if( source.getHeight() ){
                 title = this.getSourceSizeName( source ) + ' ';
             }
-			if(!(source.getHeight() == 0 && source.width == 0)) {
+			if(!(source.getHeight() == 0)) {
 				title += this.getSourceTitleBitrate(source);
 			}
             return title;
