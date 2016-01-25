@@ -26,6 +26,8 @@
             this.bind( 'playerReady', function() {
                 if( _this.getPlayer().isLive() ) {
                     _this.addBindings();
+                }else{
+                    _this.removeBindings();
                 }
             });
 		},
@@ -64,6 +66,10 @@
                 }
             });
 		},
+
+        removeBindings: function(){
+            this.unbind( 'liveStreamStatusUpdate movingBackToLive onplay seeked seeking onpause onLiveOffSynchChanged' );
+        },
 
 		getComponent: function() {
 			var _this = this;
