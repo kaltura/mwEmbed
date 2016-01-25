@@ -534,7 +534,10 @@
             },
             sendIVQMesageToListener:function(){
                 try {
-                    window.parent.postMessage("QuizSubmitted", "*");
+                    var _this = this;
+                    window.kdp = document.getElementById( this.getPlayer().id );
+                    window.kdp.sendNotification("QuizSubmitted", _this.kQuizUserEntryId);
+
                 } catch (e) {
                     mw.log('postMessage listener of parent is undefined: ', e);
                 }
