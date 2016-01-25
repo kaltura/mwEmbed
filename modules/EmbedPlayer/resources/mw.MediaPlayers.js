@@ -56,7 +56,11 @@ mw.MediaPlayers.prototype = {
 		if ( mw.getConfig("LeadWithHLSOnFlash") ) {
 			this.defaultPlayers['application/vnd.apple.mpegurl'].push('Kplayer');
 		}
-
+        var nativeFormats = window.kNativeSDK ? window.kNativeSDK.supportedFormats : null;
+        // If nativeComponent can play dash, use it.
+        if (nativeFormats && ('application/dash+xml' in $.extend({}, nativeFormats.drm, nativeFormats.clear))) {
+            this.defaultPlayers['application/dash+xml'] = ['NativeComponent'];
+        }
 	},
 
 	/**

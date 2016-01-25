@@ -82,14 +82,24 @@
 		return drmConfig;
 	}
 
-	function getMultiDrmSupportedSources(sources){
-		var drmSources = sources.filter( function ( source ) {
-			return ( ( !mw.isNativeApp() && ( source.mimeType === "application/dash+xml" ||
-			( ( source.mimeType === "video/ism" || source.mimeType === "video/playreadySmooth" ) && mw.isChrome() &&  !mw.isMobileDevice() ) ) ) ||
-			( source.mimeType === "video/wvm" && mw.isNativeApp()) );
-		} );
-		return drmSources;
-	}
+    function getMultiDrmSupportedSources(sources) {
+        var drmSources = sources.filter(function (source) {
+            if (mw.isNativeApp()) {
+                var nativeFormats = window.kNativeSDK ? window.kNativeSDK.supportedFormats : null;
+                if (nativeFormats) {
+                    return nativeFormats.drm && nativeFormats.drm[source.mimeType];
+                } else {
+                    // legacy: only wvm.
+                    return source.mimeType === "video/wvm";
+                }
+            } else {
+                // Browser
+                return source.mimeType === "application/dash+xml" ||
+                    ((source.mimeType === "video/ism" || source.mimeType === "video/playreadySmooth") && mw.isChrome() && !mw.isMobileDevice());
+            }
+        });
+        return drmSources;
+    }
 
 	function removeNonDrmSources(sources, drmSources, enableHlsAes, embedPlayer){
 		if (enableHlsAes && mw.isMobileDevice()){
