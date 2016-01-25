@@ -370,10 +370,10 @@
         },
         getSourceTitleSizeBitrate: function( source ){
             var title = '';
-            if( source.getHeight() ){
+            if ( source.getHeight() ){
                 title = this.getSourceSizeName( source ) + ' ';
             }
-			if(!(source.getHeight() == 0)) {
+			if ( source.getHeight() !== 0 ) {
 				title += this.getSourceTitleBitrate(source);
 			}
             return title;
