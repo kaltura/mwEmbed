@@ -751,7 +751,11 @@
 					}
 
 					// issue the play request:
-					_this.play();
+					if (_this.isInSequence()){
+						vid.play();
+					}else{
+						_this.play();
+					}
 					if (mw.isMobileDevice()) {
 						setTimeout(function () {
 							handleSwitchCallback();
