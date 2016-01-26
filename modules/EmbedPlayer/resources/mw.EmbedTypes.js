@@ -12,16 +12,26 @@
  * We can't cleanly store these values per library since player library is sometimes
  * loaded post player detection
  */
+
+
 //Native Mobile player
-var nativeFormats = window.kNativeSDK ? window.kNativeSDK.supportedFormats : null;
-if (nativeFormats) {
-    // Extract mimetypes from keys. 
-    nativeFormats = Object.keys(nativeFormats.all);
-} else {
-    // legacy
-    nativeFormats = ['video/h264', 'video/mp4', 'application/vnd.apple.mpegurl', 'video/wvm'];
-}
-var nativeComponentPlayerVideo = new mw.MediaPlayer( 'nativeComponentPlayer', nativeFormats, 'NativeComponent' );
+var nativeComponentPlayerVideo = (function() {
+    // Assuming window.kNativeSDK.supportedFormats holds an object with this structure:
+    // {"all":{"application/dash+xml":[null,"widevine"],"application/vnd.apple.mpegurl":[null],"video/mp4":[null],"video/wvm":["widevine"]},"clear":{"application/dash+xml":true,"application/vnd.apple.mpegurl":true,"video/mp4":true},"drm":{"application/dash+xml":["widevine"],"video/wvm":["widevine"]}}
+    var nativeFormats = window.kNativeSDK ? window.kNativeSDK.supportedFormats : null;
+    if (nativeFormats) {
+        // Extract mimetypes from keys. 
+        nativeFormats = Object.keys(nativeFormats.all);
+    } else {
+        // legacy
+        nativeFormats = ['video/h264', 'video/mp4', 'application/vnd.apple.mpegurl', 'video/wvm'];
+    }
+
+    return new mw.MediaPlayer( 'nativeComponentPlayer', nativeFormats, 'NativeComponent' );
+})();
+
+
+
 
 // Flash based players:
 var kplayer = new mw.MediaPlayer('kplayer', ['video/live', 'video/kontiki', 'video/x-flv', 'video/h264', 'video/mp4', 'audio/mpeg', 'application/x-shockwave-flash', 'application/vnd.apple.mpegurl'], 'Kplayer');
