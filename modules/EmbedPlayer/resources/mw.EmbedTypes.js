@@ -16,7 +16,7 @@
 var nativeFormats = window.kNativeSDK ? window.kNativeSDK.supportedFormats : null;
 if (nativeFormats) {
     // Extract mimetypes from keys. 
-    nativeFormats = Object.keys($.extend({}, nativeFormats.drm, nativeFormats.clear));
+    nativeFormats = Object.keys(nativeFormats.all);
 } else {
     // legacy
     nativeFormats = ['video/h264', 'video/mp4', 'application/vnd.apple.mpegurl', 'video/wvm'];

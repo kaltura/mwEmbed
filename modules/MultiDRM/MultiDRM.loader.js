@@ -83,15 +83,13 @@
 	}
 
     function getMultiDrmSupportedSources(sources) {
+        var nativeFormats = window.kNativeSDK ? window.kNativeSDK.supportedFormats : null;
         var drmSources = sources.filter(function (source) {
-            if (mw.isNativeApp()) {
-                var nativeFormats = window.kNativeSDK ? window.kNativeSDK.supportedFormats : null;
-                if (nativeFormats) {
-                    return nativeFormats.drm && nativeFormats.drm[source.mimeType];
-                } else {
-                    // legacy: only wvm.
-                    return source.mimeType === "video/wvm";
-                }
+            if (nativeFormats) {
+                return nativeFormats.drm && nativeFormats.drm[source.mimeType];
+            } else if (mw.isNativeApp()) {
+                // legacy: only wvm.
+                return source.mimeType === "video/wvm";
             } else {
                 // Browser
                 return source.mimeType === "application/dash+xml" ||

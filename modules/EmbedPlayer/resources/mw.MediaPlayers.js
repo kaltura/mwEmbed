@@ -58,7 +58,7 @@ mw.MediaPlayers.prototype = {
 		}
         var nativeFormats = window.kNativeSDK ? window.kNativeSDK.supportedFormats : null;
         // If nativeComponent can play dash, use it.
-        if (nativeFormats && ('application/dash+xml' in $.extend({}, nativeFormats.drm, nativeFormats.clear))) {
+        if (nativeFormats && ('application/dash+xml' in nativeFormats.all)) {
             this.defaultPlayers['application/dash+xml'] = ['NativeComponent'];
         }
 	},
