@@ -159,7 +159,7 @@
 			if ( this.trackCuePoints ){
 				this.handleCuePoints();
 			}
-			if (( mw.isIE8() || mw.isIE9() || _this.leadWithFlash ) && (mw.supportsFlash())) {
+			if (( mw.isIE8() || mw.isIE9() || mw.isEdge() || _this.leadWithFlash ) && (mw.supportsFlash())) {
 				mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
 				_this.isChromeless = true;
 				_this.prevSlotType = 'none';
