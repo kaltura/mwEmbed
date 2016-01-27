@@ -17,16 +17,15 @@
 //Native Mobile player
 var nativeComponentPlayerVideo = (function() {
     // Assuming window.kNativeSDK.supportedFormats holds an object with this structure:
-    // {"all":{"application/dash+xml":[null,"widevine"],"application/vnd.apple.mpegurl":[null],"video/mp4":[null],"video/wvm":["widevine"]},"clear":{"application/dash+xml":true,"application/vnd.apple.mpegurl":true,"video/mp4":true},"drm":{"application/dash+xml":["widevine"],"video/wvm":["widevine"]}}
+    // {"drmTypes":["video/wvm","application/dash+xml"],"clearTypes":["application/vnd.apple.mpegurl","video/mp4","application/dash+xml"],"allTypes":["application/vnd.apple.mpegurl","video/wvm","video/mp4","application/dash+xml"]}
     var nativeFormats = window.kNativeSDK ? window.kNativeSDK.supportedFormats : null;
     if (nativeFormats) {
-        // Extract mimetypes from keys. 
-        nativeFormats = Object.keys(nativeFormats.all);
+        // Extract mimetypes from keys.
+        nativeFormats = nativeFormats.allTypes;
     } else {
         // legacy
         nativeFormats = ['video/h264', 'video/mp4', 'application/vnd.apple.mpegurl', 'video/wvm'];
     }
-
     return new mw.MediaPlayer( 'nativeComponentPlayer', nativeFormats, 'NativeComponent' );
 })();
 

@@ -6,6 +6,15 @@
 	function isMseSupported(){
 		return (window['MediaSource'] || window['WebKitMediaSource']) && !mw.isFirefox() && !mw.isDesktopSafari() && !mw.isMobileChrome();
 	}
+
+    var nativeSdkDRMTypes = (function() {
+        if (window.kNativeSDK) {
+            return window.kNativeSDK.supportedFormats.drmTypes;
+        } else {
+            return ['video/wvm'];
+        }
+    })();
+
 	//Load 3rd party plugins if DRM sources are available
 	mw.addKalturaConfCheck( function( embedPlayer, callback ){
 		//For native callout on mobile browsers let the flow continue to native APP and decide if DRM is enbaled and supported in native SDK
@@ -83,13 +92,9 @@
 	}
 
     function getMultiDrmSupportedSources(sources) {
-        var nativeFormats = window.kNativeSDK ? window.kNativeSDK.supportedFormats : null;
         var drmSources = sources.filter(function (source) {
-            if (nativeFormats) {
-                return nativeFormats.drm && nativeFormats.drm[source.mimeType];
-            } else if (mw.isNativeApp()) {
-                // legacy: only wvm.
-                return source.mimeType === "video/wvm";
+            if (mw.isNativeApp()) {
+                return $.inArray(source.mimeType, nativeSdkDRMTypes) >= 0;
             } else {
                 // Browser
                 return source.mimeType === "application/dash+xml" ||
