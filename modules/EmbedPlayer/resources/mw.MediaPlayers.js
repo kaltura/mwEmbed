@@ -142,7 +142,7 @@ mw.MediaPlayers.prototype = {
 			var imageOverlayPlayer = mw.EmbedTypes.getNativeImageOverlayPlayer();
 			if (this.isPlayerSupportMimeType(mimePlayers, nativeComponentPlayer)) {
 				mimePlayers = [nativeComponentPlayer];
-			} else if(imageOverlayPlayer.supportsMIMEType(mimeType) ) {debugger;
+			} else if(imageOverlayPlayer.supportsMIMEType(mimeType) ) {
 				mimePlayers = [imageOverlayPlayer];
 			} else {
 				mimePlayers = [];
