@@ -169,9 +169,6 @@
 					// switch source calls .play() that some browsers require.
 					// to reflect source switches. Playlists handle pause state so no need to pause in playlist
 					_this.ignoreNextNativeEvent = true;
-					if ( !_this.playlist ){
-						_this.pause();
-					}
 					if ( !_this.isPlaying() ) {
 						_this.updatePosterHTML();
 					}
