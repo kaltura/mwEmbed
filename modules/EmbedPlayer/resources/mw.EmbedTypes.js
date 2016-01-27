@@ -72,6 +72,10 @@ mw.EmbedTypes = {
 		return nativeComponentPlayerVideo;
 	},
 
+	getNativeImageOverlayPlayer: function(){
+		return imageOverlayPlayer;
+	},
+
 	/**
 	 * If the browsers supports a given mimetype
 	 *
