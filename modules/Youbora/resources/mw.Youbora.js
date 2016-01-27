@@ -25,7 +25,8 @@
 				"audioChannels": ""
 			},
 			"userId": null,
-			"youboraVersion":'2.0.0',
+			"youboraVersion":'2.2.1',
+			"bufferUnderrunThreshold": 1000,
 			// by default configured against the "kaltura" house account
 			"accountName": 'kaltura',
 			"trackEventMonitor": null,
@@ -34,20 +35,15 @@
 			// player id
 			"param2": "{configProxy.kw.uiconfid}"
 		},
-		// the view index is incremented as users views multiple clips in a given play session. 
-		// set to -1 by default to have always increment "start" start at zero.
+		// the view index is incremented as users views multiple clips in a given play session.
 		viewIndex: 0,
 		// if beacon requests are sent before youbora is setup queue them: 
 		queuedBeacons: [],
-		// current ad:
-		currentAd:{},
-		// timestamp for ad complete: 
-		adCompleteTime: null,
 		// the active ping interval:
 		activePingInterval: null,
 		// the flag for active viewcode generation  
 		settingUpViewCodeFlag: null,
-		
+		viewCode: null,
 		
 		setup: function(){
 			var _this = this;
@@ -56,12 +52,11 @@
 				// clear ping interval
 				clearInterval( _this.activePingInterval );
 				_this.activePingInterval = null;
-				// on changeMedia clear out viewCode
-				_this.viewCode = null;
+				// on changeMedia increment the viewIndex
+				_this.incrementViewIndex();
 			});
 			this.bind('onChangeMediaDone', function(){
 				_this.addBindings();
-				_this.setupViewCode();
 			});
 			this.addBindings();
 			this.setupViewCode();
@@ -69,13 +64,14 @@
 		setupViewCode: function(){
 			var _this = this;
 			if( this.settingUpViewCodeFlag ){
-				this.log( "setupViewCode -> skiped viewCode is already being generated.");
+				this.log( "setupViewCode -> skipped viewCode is already being generated.");
 				return ;
 			}
 			this.settingUpViewCodeFlag = true;
 			// setup and view code: 
 			var payload = this.getBaseParams();
 			payload['pluginVersion'] = this.getPluginVersion();
+			payload['system'] = this.getConfig('accountName');
 			var setupUrl = '//nqs.nice264.com/data?' + $.param( payload );
 			$.get( setupUrl, function(xmlData){
 				_this.host = $(xmlData).find('h').text();
@@ -95,7 +91,10 @@
 			this.bindFirstPlay();
 			// unbind any prev session events:
 			this.unbind('bufferEndEvent');
+			this.unbind('timeupdate');
+
 			// track content end:
+			this.unbind('postEnded');
 			this.bind( 'postEnded', function(){
 				_this.sendBeacon( 'stop', {
 					'diffTime': new Date().getTime() - _this.previusPingTime
@@ -104,68 +103,29 @@
 				_this.activePingInterval = null;
 				// reset the firstPlay flag:
 				_this.embedPlayer.firstPlay = true;
-				// on end clear out viewCode: 
-				_this.viewCode = null;
 				_this.bindFirstPlay();
 			});
-			this.bindAdEvents();
+
+			// handle errors
+			this.bind('embedPlayerError mediaLoadError', function () {
+				_this.sendBeacon( 'error', {
+					'player': 'kaltura-player-v' + MWEMBED_VERSION,
+					'errorCode': '-1', // currently we don't support error codes
+					'msg': _this.embedPlayer.getError().message,
+					'resource': _this.getCurrentVideoSrc(),
+					// 'transcode' // not presently used.
+					'live': _this.embedPlayer.isLive(),
+					'properties': JSON.stringify( _this.getMediaProperties() ),
+					'user': _this.getConfig('userId') || "", // should be the active user id,
+					'referer': _this.embedPlayer.evaluate('{utility.referrer_url}'),
+					'totalBytes': "0", // could potentially be populated if we use XHR for iframe payload + static loader + DASH MSE for segments )
+					'pingTime': _this.pingTime
+				});
+			});
 		},
 		incrementViewIndex: function(){
 			this.viewIndex++;
 			this.log( "increment viewIndex: " + this.viewIndex );
-		},
-		bindAdEvents: function(){
-			var _this = this;
-			this.unbind('onAdOpen');
-			this.bind( 'onAdOpen', function(event, adId, networkName, type, index) {
-				_this.currentAd.id = adId;
-				_this.currentAd.type = type;
-				_this.currentAd.index = index;
-				// on midroll or  increment before ad events:
-				if( type == 'midroll' ||  type == 'postroll'){
-					// do not increment index during ads
-					//_this.incrementViewIndex();
-				}
-				_this.unbind( 'onAdComplete');
-				_this.bind( 'onAdComplete', function() {
-					_this.adCompleteTime = new Date().getTime();
-					/*_this.sendBeacon( 'stop', {
-						'diffTime': new Date().getTime() - _this.previusPingTime
-					});*/
-					// do not increment index during ads
-					//_this.incrementViewIndex();
-				});
-				// wait for ad duration update to trigger ad start event
-				_this.unbind( 'AdSupport_AdUpdateDuration');
-				_this.bind('AdSupport_AdUpdateDuration', function(e, duration){
-					// TODO add YouBora logic
-					return false;
-					_this.unbind("AdSupport_AdUpdateDuration");
-					var adMetadata = _this.embedPlayer.evaluate( '{sequenceProxy.activePluginMetadata}' );
-					// issue youbora ad start (  just "start" with ad metadata )
-					var beaconObj = {
-						'resource': adMetadata.url,
-						// 'transcode' // not presently used. 
-						'live': _this.embedPlayer.isLive(),
-						'properties': JSON.stringify({ 	
-							'filename':  adMetadata.type + "_" + ( adMetadata.name || "" ),
-							'content_id': adMetadata.ID,
-							'content_metadata': {
-								"title": adMetadata.title,
-								"duration": duration, 
-							},
-						}),
-						'referer': _this.embedPlayer.evaluate('{utility.referrer_url}'),
-						'totalBytes': "0",
-						'pingTime': _this.pingTime,
-					};
-					beaconObj = $.extend( beaconObj, _this.getCustomParams() );
-					_this.sendBeacon( 'start', beaconObj );
-					
-					// start ping tracking: 
-					_this.bindPingTracking();
-				});
-			});
 		},
 		getCustomParams: function(){
 			var paramObj = {};
@@ -181,19 +141,19 @@
 			var _this = this;
 			// track pause: 
 			var userHasPaused = false;
-			this.unbind( 'onpause');
-			this.bind( 'onpause', function( playerState ){
-				// ignore if pause is within .5 seconds of end of video: 
-				if( ( _this.embedPlayer.duration - _this.embedPlayer.currentTime ) < .5  ){
+			this.unbind( 'userInitiatedPause');
+			this.bind( 'userInitiatedPause', function( playerState ){
+				// ignore if pause is within .5 seconds of end of video of after change media:
+				if ( _this.embedPlayer.firstPlay || ( _this.embedPlayer.duration - _this.embedPlayer.currentTime ) < .5  ){
 					return ;
 				}
 				_this.sendBeacon( 'pause' );
 				userHasPaused = true;
 			});
 			// after first play, track resume:
-			this.unbind( 'onplay');
-			this.bind( 'onplay', function( playerState ){
-				// ignore if resume if within .5 seconds of end of video: 
+			this.unbind( 'userInitiatedPlay');
+			this.bind( 'userInitiatedPlay', function( playerState ){
+				// ignore if resume within .5 seconds of end of video:
 				if( ( _this.embedPlayer.duration - _this.embedPlayer.currentTime ) < .5  ){
 					return ;
 				}
@@ -202,92 +162,83 @@
 					userHasPaused = false;
 				}
 			});
-			// track buffer under run 
-			var startBufferClock = null;
-			// track seek times for seek false positives 
-			var seekTime = null;
-			// update seek time both at start and end of seek ( sometime buffer end happens before seek end )
-			_this.unbind('preSeek');
-			_this.bind('preSeek', function(){
-				seekTime = new Date().getTime();
-			})
-			// clear out startBufferClock
-			this.bind('postEnded', function(){
-				startBufferClock = null;
-			});
+
+			// handle buffer underrun tracking
+			var checkBufferUnderrun = null;
+			var shouldReprotBufferUnderrun = false;
+			var bufferStartTime = null;
 			this.bind('bufferStartEvent',function(){
-				startBufferClock = new Date().getTime();
-				_this.log("bufferStartEvent:: startBufferClock: " + startBufferClock);
-				_this.unbind('seeked');
-				_this.bind('seeked', function(){
-					seekTime = new Date().getTime();
-				})
-				_this.unbind('bufferEndEvent');
-				_this.bind('bufferEndEvent',function(){
-					if( !startBufferClock || startBufferClock > new Date().getTime() ){
-						_this.log("startBufferClock null or predates current time");
-						return;
+				var startBufferPlayerTime = _this.embedPlayer.currentTime;
+				bufferStartTime = Date.now();
+				if (checkBufferUnderrun){
+					clearInterval(checkBufferUnderrun);
+					checkBufferUnderrun = null;
+				}
+				checkBufferUnderrun = setInterval(function(){
+					if (_this.embedPlayer.currentTime === startBufferPlayerTime){
+						shouldReprotBufferUnderrun = true;
+					}else{
+						startBufferPlayerTime = _this.embedPlayer.currentTime;
 					}
-					_this.log("bufferEndEvent:: time since start:" + ( startBufferClock > new Date().getTime() ) );
-					// if less then 1000 ms from seek end don't trigger underrun:
-					_this.log("bufferEndEvent:: detla from seek time:" + (new Date().getTime() - seekTime ) );
-					if( seekTime && (new Date().getTime() - seekTime ) < 1000 ){
-						return ;
-					}
-					// if less then 1000 ms from ad end don't trigger underrun:
-					_this.log("bufferEndEvent:: detla from ad end:" + (new Date().getTime() -  _this.adCompleteTime ) );
-					if( _this.adCompleteTime && (new Date().getTime() - _this.adCompleteTime ) < 1000  ){
-						return ;
-					}
-					seekTime = null;
-					_this.adCompleteTime = null;
-					// ignore buffer events during seek: 
+				},_this.getConfig("bufferUnderrunThreshold"));
+			});
+
+			this.bind('bufferEndEvent seeked',function(e){
+				clearInterval(checkBufferUnderrun);
+				checkBufferUnderrun = null;
+				if ( e.type === 'bufferEndEvent' && shouldReprotBufferUnderrun ){
+					shouldReprotBufferUnderrun = false;
 					_this.sendBeacon( 'bufferUnderrun', {
 						'time': _this.embedPlayer.currentTime,
-						'duration': new Date().getTime() - startBufferClock
+						'duration': Date.now() - bufferStartTime
 					});
-				});
+				}
 			});
 		},
+
 		bindFirstPlay:function(){
 			var _this = this;
 			// unbind any existing events: 
 			this.unbind( 'bufferStartEvent');
-			this.unbind( 'onpause' );
-			this.unbind(  'onplay' );
+			this.unbind( 'userInitiatedPause' );
+			this.unbind(  'userInitiatedPlay' );
 
-			this.bind('firstPlay', function(){
-				_this.unbind('firstPlay');
-				// on play send the "start" action: 
-				var beaconObj = {
-					'resource': _this.getCurrentVideoSrc(),
-					// 'transcode' // not presently used. 
-					'live': _this.embedPlayer.isLive(),
-					'properties': JSON.stringify( _this.getMediaProperties() ),
-					'user': _this.getConfig('userId') || "", // should be the active user id,
-					'referer': _this.embedPlayer.evaluate('{utility.referrer_url}'),
-					'totalBytes': "0", // could potentially be populated if we use XHR for iframe payload + static loader + DASH MSE for segments )
-					'pingTime': _this.pingTime,
-				};
-				beaconObj = $.extend( beaconObj, _this.getCustomParams() );
-				_this.sendBeacon( 'start', beaconObj );
-				_this.playRequestStartTime = new Date().getTime();
-				_this.firstPlayDone = true;
-				// start "ping monitoring"
-				_this.bindPingTracking();
-				_this.bindFirstJoin();
+			this.unbind('firstPlay AdSupport_PreSequence');
+			this.bind('firstPlay AdSupport_PreSequence', function(){
+				if (!_this.firstPlayDone){
+					// on play send the "start" action:
+					var beaconObj = {
+						'resource': _this.getCurrentVideoSrc(),
+						// 'transcode' // not presently used.
+						'live': _this.embedPlayer.isLive(),
+						'properties': JSON.stringify( _this.getMediaProperties() ),
+						'user': _this.getConfig('userId') || "", // should be the active user id,
+						'referer': _this.embedPlayer.evaluate('{utility.referrer_url}'),
+						'totalBytes': "0", // could potentially be populated if we use XHR for iframe payload + static loader + DASH MSE for segments )
+						'pingTime': _this.pingTime
+					};
+					beaconObj = $.extend( beaconObj, _this.getCustomParams() );
+					_this.sendBeacon( 'start', beaconObj );
+					_this.playRequestStartTime = new Date().getTime();
+					_this.firstPlayDone = true;
+					_this.bindFirstJoin();
+				}
 			});
 		},
 		bindFirstJoin: function(){
 			var _this = this;
 			// track joinTime ( time between play and positive time )
 			this.bind('timeupdate', function(){
+				if (_this.embedPlayer.currentTime === 0){
+					return;
+				}
 				// only track the first timeupdate:
 				_this.unbind('timeupdate');
 				_this.sendBeacon( 'joinTime', {
 					'time': new Date().getTime() - _this.playRequestStartTime,
-					'eventTime': _this.embedPlayer.currentTime,
+					'eventTime': _this.embedPlayer.currentTime
 				});
+				_this.bindPingTracking(); // start "ping monitoring"
 				_this.bindPlaybackEvents();
 			});
 		},
@@ -325,7 +276,7 @@
 				'content_id': this.getEntryProperty( 'id'),
 				'content_metadata': contentMetadata,
 				'transaction_type': 'Free', // should use 'rent', 'subscription', 'EST' as available,
-				'quality': this.getQaulity(),
+				'quality': this.getQaulity()
 				//'content_type': ? // Trailer, Episode, Movie,
 				//'device': this.getDeviceObj() // not really easily populated.
 			}
@@ -343,7 +294,7 @@
 		 */
 		getQaulity: function(){
 			var source = this.getPlayer().mediaElement.selectedSource;
-			if( source.getHeight() > 480 ){
+			if( source && source.getHeight() > 480 ){
 				return 'HD'
 			}
 			return 'SD'
@@ -416,9 +367,6 @@
 			}
 			// else just return the normal content source:
 			return this.embedPlayer.getSrc();
-		},
-		inAd: function(){
-			return !! this.embedPlayer.evaluate( '{sequenceProxy.isInSequence}' );
 		}
 
 	}))

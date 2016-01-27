@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<title>Youbora Media Analytics</title>
+		<title>Youbora with VAST ads</title>
 		<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 		<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 		<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
@@ -19,7 +19,8 @@
 	</head>
 
 	<body>
-		<h2> Youbora Media Analytics </h2>
+		<h2> Youbora with VAST ads </h2>
+        <p>This page demonstrates using the Youbora analytics plugin when playing a video with VAST ads: 2 Pre-rolls and one Mid-roll.</p>
 		<div id="kaltura_player" style="width:470px;height:300px"></div>
         <br/><button id="changeMedia">ChangeMedia</button><br/><br/>
 
@@ -33,8 +34,29 @@
 					'youbora': {
 						'trackEventMonitor': 'trackYouboraAnalyticsEvent',
                         'bufferUnderrunThreshold': 1000,
-						'userId': 'my-user-id'
-					}
+                        'userId': 'my-user-id'
+					},
+                    'vast': {
+                        'numPreroll' : 1,
+                        'storeSession': false,
+                        'prerollUrl' : 'http://projects.kaltura.com/MichalR/vast3_demo.xml',
+                        'timeout' : 4,
+                        'preSequence' : 1,
+                        'trackCuePoints': true
+                    },
+                    'skipBtn':{
+                        'label': 'Skip Ad',
+                        'skipOffset': 1
+                    },
+                    'mediaProxy':{
+                        'entryCuePoints': [{
+                            "protocolType": 1,
+                            "adType": 1,
+                            "cuePointType": "adCuePoint.Ad",
+                            "startTime": 5000,
+                            "sourceUrl": "http://projects.kaltura.com/mdale/hotelVastAd.xml"
+                        }]
+                    }
 				},
 				'readyCallback': function(){
 					$('#changeMedia').click(function(){

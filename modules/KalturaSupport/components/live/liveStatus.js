@@ -22,7 +22,14 @@
 
 		setup: function() {
 			this.prevIconClass = this.onAirIconClass;
-			this.addBindings();
+            var _this = this;
+            this.bind( 'playerReady', function() {
+                if( _this.getPlayer().isLive() ) {
+                    _this.addBindings();
+                }else{
+                    _this.removeBindings();
+                }
+            });
 		},
 		addBindings: function() {
 			var _this = this;
@@ -40,21 +47,29 @@
 			} );
 
 			this.bind( 'seeked seeking onpause onLiveOffSynchChanged', function(e, param) {
-				if ( _this.getPlayer().isDVR() ) {
-					if( e.type === 'onLiveOffSynchChanged' && param === false ){
-                        // synch with Live edge
-                        _this.backToLive();
-                    }else {
-                        // live is off-synch
-                        _this.getPlayer().setLiveOffSynch(true);
-                        if ( _this.onAirStatus ) {
-                            _this.setOffSyncUI();
-                        }
-                        _this.prevIconClass = _this.unsyncIConClass;
+				if( e.type === 'onLiveOffSynchChanged' && param === false ){
+                    // synch with Live edge
+                    _this.backToLive();
+                }else {
+                    // live is off-synch
+                    _this.getPlayer().setLiveOffSynch(true);
+                    if ( _this.onAirStatus ) {
+                        _this.setOffSyncUI();
                     }
-				}
+                    _this.prevIconClass = _this.unsyncIConClass;
+                }
 			});
+            this.bind( 'onplay', function() {
+                if ( !_this.getPlayer().isDVR() ) {
+                    // synch with Live edge
+                    _this.getPlayer().setLiveOffSynch(false);
+                }
+            });
 		},
+
+        removeBindings: function(){
+            this.unbind( 'liveStreamStatusUpdate movingBackToLive onplay seeked seeking onpause onLiveOffSynchChanged' );
+        },
 
 		getComponent: function() {
 			var _this = this;
@@ -67,7 +82,7 @@
 				var $icon  =$( '<div />' )
                     .addClass( 'btn timers '+ this.offlineIconClass + this.getCssClass() )
                     .click( function() {
-                        if ( _this.onAirStatus && _this.getPlayer().isDVR() && _this.prevIconClass != _this.onAirIconClass ) {
+                        if ( _this.onAirStatus && _this.prevIconClass !== _this.onAirIconClass ) {
                             _this.getPlayer().setLiveOffSynch(false);
                         }else{
                             _this.getPlayer().setLiveOffSynch(true);

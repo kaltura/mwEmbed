@@ -83,8 +83,8 @@
 			});
 
 			// Check for switch on resize option
-			if( this.getConfig( 'switchOnResize' ) ){
-				this.bind( 'updateLayout', function(){
+			if( this.getConfig( 'switchOnResize' ) && !_this.embedPlayer.isLive() ){
+				this.bind( 'resizeEvent', function(){
 					// workaround to avoid the amount of 'updateLayout' events
 					// !seeking will avoid getting current time equal to 0
 					if ( !_this.inUpdateLayout && !_this.embedPlayer.seeking ){
@@ -303,6 +303,7 @@
                         'id': source.getAssetId()
                     },
                     'callback': function () {
+	                    _this.getPlayer().triggerHelper("newSourceSelected", source.getAssetId());
                         _this.getPlayer().switchSrc(source);
                     },
                     'active': _this.isSourceSelected(source)
@@ -310,7 +311,9 @@
             }
 		},
         getSourceSizeName: function( source ){
-			if( source.getHeight() < 255 ){
+			if( source.getHeight() == 0 ){
+				return gM( 'mwe-embedplayer-audio_source' ) + this.getSourceTitleBitrate(source);
+			} else if( source.getHeight() < 255 ){
 				return '240P';
 			} else if( source.getHeight() < 370 ){
 				return '360P';
@@ -367,10 +370,12 @@
         },
         getSourceTitleSizeBitrate: function( source ){
             var title = '';
-            if( source.getHeight() ){
+            if ( source.getHeight() ){
                 title = this.getSourceSizeName( source ) + ' ';
             }
-            title += this.getSourceTitleBitrate(source);
+			if ( source.getHeight() !== 0 ) {
+				title += this.getSourceTitleBitrate(source);
+			}
             return title;
         },
 		toggleMenu: function(){

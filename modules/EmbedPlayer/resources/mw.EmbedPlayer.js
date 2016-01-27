@@ -1740,11 +1740,10 @@
 					//remove black bg when showing poster after change media
 					$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
 					// reload the player
-					if (_this.autoplay && _this.canAutoPlay() ) {
+					if (_this.canAutoPlay() ) {
 						if (!_this.isAudioPlayer) {
 							_this.removePoster();
 						}
-						_this.play();
 					}
 
 					$this.trigger('onChangeMediaDone');
@@ -2513,8 +2512,10 @@
 
 		togglePlayback: function () {
 				if (this.paused) {
+					this.triggerHelper( 'userInitiatedPlay' );
 					this.play();
 				} else {
+					this.triggerHelper( 'userInitiatedPause' );
 					this.pause();
 				}
 		},

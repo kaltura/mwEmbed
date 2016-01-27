@@ -172,7 +172,9 @@
 					if ( !_this.playlist ){
 						_this.pause();
 					}
-					_this.updatePosterHTML();
+					if ( !_this.isPlaying() ) {
+						_this.updatePosterHTML();
+					}
 				}
 				callback();
 			});
@@ -749,7 +751,11 @@
 					}
 
 					// issue the play request:
-					vid.play();
+					if (_this.isInSequence()){
+						vid.play();
+					}else{
+						_this.play();
+					}
 					if (mw.isMobileDevice()) {
 						setTimeout(function () {
 							handleSwitchCallback();
@@ -1412,7 +1418,7 @@
         parseAudioTracks: function(vid, counter){
             var _this = this;
             setTimeout (function() {
-                if( vid.audioTracks.length > 0 ) {
+                if( vid.audioTracks && vid.audioTracks.length > 0 ) {
                     var data ={'languages':[]};
                     for (var i = 0; i < vid.audioTracks.length; i++) {
                         var lang = {};
