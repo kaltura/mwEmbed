@@ -19,7 +19,7 @@
             quizSubmitted: false,
             intrVal: null,
             quizEndFlow: false,
-            isQKDPReady:false,
+
 
             init: function (embedPlayer,quizPlugin) {
                 var _this = this;
@@ -228,7 +228,7 @@
                     _this.embedPlayer.pause();
                 }
                 _this.embedPlayer.stopPlayAfterSeek = true;
-                seekTo = (($.cpObject.cpArray[questionNr].startTime) /1000)+0.5;
+                seekTo = (($.cpObject.cpArray[questionNr].startTime) /1000);//+0.5;
                 _this.embedPlayer.seek(seekTo,true);
             },
             cuePointReachedHandler: function (e, cuePointObj) {
@@ -241,19 +241,6 @@
                         _this.quizPlugin.ssSetCurrentQuestion(key,false);
                     }
                 });
-            },
-            checkQKDPReady:function(callback){
-                var _this = this;
-                if (_this.intrVal){
-                    _this.intrVal = false;
-                }
-                _this.intrVal = setInterval(function () {
-                    if (_this.isQKDPReady){
-                        clearInterval(_this.intrVal);
-                        _this.intrVal = false;
-                        callback()
-                    }
-                }, 500);
             },
 
             checkUserEntryIdReady:function(callback){
@@ -270,14 +257,9 @@
                 }, 500);
             },
             checkCuepointsReady:function(callback){
-                var _this = this;
-                if (_this.intrVal){
-                    _this.intrVal = false;
-                }
-                _this.intrVal = setInterval(function () {
-                    if ($.cpObject.cpArray){
-                        clearInterval(_this.intrVal);
-                        _this.intrVal = false;
+                var interVal = setInterval(function () {
+                    if ($.cpObject.cpArray && $.quizParams ){
+                        clearInterval(interVal);
                         callback()
                     }
                 }, 500);
@@ -558,8 +540,16 @@
                 var _this = this;
                 clearInterval(_this.intrVal);
                 _this.intrVal = null;
-            }
-
+            },
+            unloadQuizPlugin:function(embedPlayer){
+              var _this = this;
+                $.cpObject = {};
+                $.quizParams = {};
+                $(this.embedPlayer).unbind(_this.quizPlugin.bindPostfix);
+                embedPlayer.unbindHelper(_this.quizPlugin.bindPostfix);
+                embedPlayer.removeJsListener(_this.quizPlugin.bindPostfix);
+                _this.hideQuizOnScrubber();
+                mw.log("Quiz: No Quiz Avaliable");            }
         })) {
     }
 })(window.mw, window.jQuery );
