@@ -55,10 +55,9 @@
 				// on changeMedia increment the viewIndex
 				_this.incrementViewIndex();
 			});
-			this.bind('onChangeMediaDone', function(){
+			this.bind('playerReady', function(){
 				_this.addBindings();
 			});
-			this.addBindings();
 			this.setupViewCode();
 		},
 		setupViewCode: function(){
