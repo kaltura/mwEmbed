@@ -1252,7 +1252,7 @@
 				}
 			}
 			// display thumbnail upon movie end if showThumbnailOnEnd Flashvar is set to true and not looped
-			if (!this.loop) {
+			if (this.getFlashvars("EmbedPlayer.ShowPosterOnStop") !== false && !this.loop) {
 				this.updatePosterHTML();
 			}
 		},
@@ -1851,15 +1851,10 @@
 
 			$(this).find(".playerPoster").remove();
 			//remove poster on autoPlay when player loaded
-			if ( (this.currentState==null || this.currentState=="load") && mw.getConfig('autoPlay') && !mw.isMobileDevice()){
+			if ( this.currentState=="load" && mw.getConfig('autoPlay') && !mw.isMobileDevice()){
 				return;
 			}
-			//remove poster on start
-			if ( (this.currentState==null || this.currentState=="load") && mw.getConfig('EmbedPlayer.HidePosterOnStart') === true ) {
-				return;
-			}
-			//remove poster on end
-			if ( mw.getConfig('EmbedPlayer.ShowPosterOnStop') === false && this.currentState=="end" ) {
+			if ( mw.getConfig('EmbedPlayer.HidePosterOnStart') === true && !(this.currentState=="end" && mw.getConfig('EmbedPlayer.ShowPosterOnStop')) ) {
 				return;
 			}
 			// support IE9 and IE10 compatibility modes
@@ -2270,10 +2265,6 @@
 			// Remove any poster div ( that would overlay the player )
 			if (!this.isAudioPlayer) {
 				this.removePoster();
-			}
-
-			if (mw.getConfig("EmbedPlayer.KeepPoster")){
-				this.updatePosterHTML();
 			}
 
 			// We need first play event for analytics purpose
