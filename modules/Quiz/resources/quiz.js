@@ -27,12 +27,14 @@
         inFullScreen:false,
         selectedAnswer:null,
         seekToQuestionTime:null,
+      //  firstPlay:true,
 
         setup: function () {
             var _this = this;
             var embedPlayer = this.getPlayer();
 
             embedPlayer.addJsListener( 'kdpReady', function(){
+
                 _this.KIVQModule = new mw.KIVQModule(embedPlayer, _this);
 
                 if (embedPlayer.kalturaPlayerMetaData.capabilities === "quiz.quiz"){
@@ -132,7 +134,7 @@
                 _this.KIVQModule.hideQuizOnScrubber();
             });
             this.bind( 'preHideScreen'+_this.bindPostfix, function( event, screenName ){
-                if (screenName != 'quiz'){
+                if (screenName != 'quiz' && !_this.getPlayer().firstPlay){
                     _this.KIVQModule.showQuizOnScrubber();
                 }
             });

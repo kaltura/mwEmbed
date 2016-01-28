@@ -549,7 +549,7 @@
                 embedPlayer.unbindHelper(_this.quizPlugin.bindPostfix);
                 embedPlayer.removeJsListener(_this.quizPlugin.bindPostfix);
                 _this.hideQuizOnScrubber();
-                mw.log("Quiz: No Quiz Avaliable");            }
+                mw.log("Quiz: No Quiz Available");            }
         })) {
     }
 })(window.mw, window.jQuery );
