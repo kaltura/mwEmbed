@@ -76,6 +76,7 @@
 		leadWithFlash: true,
 
 		adManagerLoaded: false,
+		adManagerAutoStart: false,
 
 		localizationCode: null,
 
@@ -217,6 +218,9 @@
 					// No defined ad pattern always use managed bindings
 					_this.addManagedBinding();
 				}
+				// Request ads
+				mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
+				_this.requestAds();
 				// Issue the callback to continue player build out:
 				callback();
 			}, function( errorCode ){
@@ -377,9 +381,18 @@
 					failureCB( errorCode );
 				} );
 		},
+		startAdsManager: function(){
+			// Initialize the ads manager. In case of ad playlist with a preroll, the preroll will start playing immediately.
+			this.adsManager.init( this.embedPlayer.getWidth(), this.embedPlayer.getHeight(), google.ima.ViewMode.NORMAL);
+			this.adsManager.setVolume( this.embedPlayer.getPlayerElementVolume() );
+			// Start the ad playback. For video and overlay ads, this will start the ads. For automatic ad rules controller ads, this will be ignored.
+			mw.log( "DoubleClick::adsManager.play" );
+			this.adsManager.start();
+		},
 		addManagedBinding: function(){
 			var _this = this;
 			mw.log( "DoubleClick::addManagedBinding" );
+
 			_this.embedPlayer.bindHelper( 'AdSupport_preroll' + _this.bindPostfix, function( event, sequenceProxy ){
 				// Add the slot to the given sequence proxy target target
 				sequenceProxy[ _this.getSequenceIndex( 'preroll' ) ] = function(callback){
@@ -390,9 +403,14 @@
 					_this.shouldPausePlaylist = true;
 					// Setup the restore callback
 					_this.restorePlayerCallback = callback;
-					// Request ads
-					mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
-					_this.requestAds();
+
+					// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
+					_this.getAdDisplayContainer().initialize();
+					if ( _this.adManagerLoaded ){
+						_this.startAdsManager();
+					}else{
+						_this.adManagerAutoStart = true;
+					}
 				}
 			});
 
@@ -734,7 +752,6 @@
 				{
 					this.restorePlayerCallback();
 				}
-				this.getAdDisplayContainer().initialize();
 				return;
 			}
 			var _this = this;
@@ -749,7 +766,7 @@
 			adTagUrl = _this.addAdRequestParams( adTagUrl );
 
 			// Update the local lastRequestedAdTagUrl for debug and audits
-			_this.embedPlayer.setKDPAttribute( this.pluginName, 'requestedAdTagUrl', adTagUrl );
+			this.embedPlayer.setKDPAttribute( this.pluginName, 'requestedAdTagUrl', adTagUrl );
 
 			// Create ad request object.
 			var adsRequest = {};
@@ -769,7 +786,7 @@
 				adsRequest['adType'] = adType;
 			}
 			// Set the size in the adsRequest
-			var size = _this.getPlayerSize();
+			var size = this.getPlayerSize();
 
 			adsRequest.linearAdSlotWidth = size.width;
 			adsRequest.linearAdSlotHeight = size.height;
@@ -777,7 +794,7 @@
 			adsRequest.nonLinearAdSlotWidth = size.width;
 			adsRequest.nonLinearAdSlotHeight = size.height;
 
-			var timeoutVal = _this.getConfig("adsManagerLoadedTimeout") || 5000;
+			var timeoutVal = this.getConfig("adsManagerLoadedTimeout") || 5000;
 			mw.log( "DoubleClick::requestAds: start timer for adsManager loading check: " + timeoutVal + "ms");
 			this.adsManagerLoadedTimeoutId = setTimeout(function(){
 				if ( !_this.adManagerLoaded ){
@@ -789,7 +806,7 @@
 			// if on chromeless - reuest ads using the KDP DoubleClick plugin instead of the JS plugin
 			if (this.isChromeless){
 				adsRequest.adTagUrl = encodeURIComponent(adsRequest.adTagUrl);
-				_this.embedPlayer.getPlayerElement().sendNotification( 'requestAds', adsRequest );
+				this.embedPlayer.getPlayerElement().sendNotification( 'requestAds', adsRequest );
 				mw.log( "DoubleClick::requestAds: Chromeless player request ad from KDP plugin");
 				return;
 			}
@@ -801,19 +818,19 @@
 			}
 
 			// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
-			this.getAdDisplayContainer().initialize();
+			this.getAdDisplayContainer();
 
 			// Create ads loader.
-			_this.adsLoader = new google.ima.AdsLoader( _this.adDisplayContainer );
+			this.adsLoader = new google.ima.AdsLoader( _this.adDisplayContainer );
 
 			// Attach the events before making the request.
-			_this.adsLoader.addEventListener(
+			this.adsLoader.addEventListener(
 				google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
 				function( event ){
 					_this.onAdsManagerLoaded( event );
 				},
 				false);
-			_this.adsLoader.addEventListener(
+			this.adsLoader.addEventListener(
 				google.ima.AdErrorEvent.Type.AD_ERROR,
 				function(event ){
 					_this.onAdError( event );
@@ -822,57 +839,40 @@
 
 			// 4. Make the request.
 			try{
-				_this.adsLoader.requestAds( adsRequest );
+				this.adsLoader.requestAds( adsRequest );
 			}catch(e){
-				_this.onAdError( e );
+				this.onAdError( e );
 			}
 		},
 		// Handles the ads manager loaded event. In case of no ads, the AD_ERROR
 		// event is issued and error handler is invoked.
 		onAdsManagerLoaded: function( loadedEvent ) {
-			var _this = this;
 			mw.log( 'DoubleClick:: onAdsManagerLoaded' );
 
 			mw.log( "DoubleClick::requestAds: clear timer for adsManager loading check");
 			clearTimeout(this.adsManagerLoadedTimeoutId);
 			this.adsManagerLoadedTimeoutId = null;
 
-			// 1. Retrieve the ads manager. Regardless of ad type (video ad,
-			//	overlay or ad playlist controlled by ad rules), the API is the
-			//	same.
-			//
-			// It is required to pass in the ad display container created
-			// previously and the content element, so the SDK can track content
-			// and play ads automatically.
-			//
 			var adsRenderingSettings = new google.ima.AdsRenderingSettings();
 			if (!this.getConfig("adTagUrl")){
 				adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true; // for manual VAST, get the SDK to restore the player
 			}
 			adsRenderingSettings.useStyledNonLinearAds = true;
 			this.adsManager = loadedEvent.getAdsManager( this.embedPlayer, adsRenderingSettings );
-			if ( _this.adManager != null ) {
-				_this.adManagerLoaded = true;
-			}
+			this.adManagerLoaded = true;
 
 			// add a global ad manager refrence:
-			$( _this.embedPlayer ).data( 'doubleClickAdsMangerRef', _this.adsManager );
+			$( this.embedPlayer ).data( 'doubleClickAdsMangerRef', this.adsManager );
 
 			// Add Ad Manager Listeners
-			_this.addAdMangerListeners();
+			this.addAdMangerListeners();
 
 			// Add embedPlayer listeners:
-			_this.addEmbedPlayerListeners();
+			this.addEmbedPlayerListeners();
 
-			// Initialize the ads manager. In case of ad playlist with a preroll,
-			// the preroll will start playing immediately.
-			_this.adsManager.init( _this.embedPlayer.getWidth(), _this.embedPlayer.getHeight(), google.ima.ViewMode.NORMAL);
-			_this.adsManager.setVolume( _this.embedPlayer.getPlayerElementVolume() );
-			// Start the ad playback. For video and overlay ads, this will
-			// start the ads. For automatic ad rules controller ads, this will be
-			// ignored.
-			mw.log( "DoubleClick::adsManager.play" );
-			_this.adsManager.start();
+			if ( this.adManagerAutoStart ){
+				this.startAdsManager();
+			}
 		},
 		displayCompanions: function(ad){
 			if ( this.getConfig( 'disableCompanionAds' )){
