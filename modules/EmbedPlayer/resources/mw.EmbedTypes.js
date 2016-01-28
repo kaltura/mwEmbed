@@ -20,7 +20,7 @@ var nativeComponentPlayerVideo = (function() {
     // {"drmTypes":["video/wvm","application/dash+xml"],"clearTypes":["application/vnd.apple.mpegurl","video/mp4","application/dash+xml"],"allTypes":["application/vnd.apple.mpegurl","video/wvm","video/mp4","application/dash+xml"]}
     var nativeFormats = window.kNativeSDK ? window.kNativeSDK.supportedFormats : null;
     if (nativeFormats) {
-        // Extract mimetypes from keys.
+        // Get all supported mimetypes.
         nativeFormats = nativeFormats.allTypes;
     } else {
         // legacy
