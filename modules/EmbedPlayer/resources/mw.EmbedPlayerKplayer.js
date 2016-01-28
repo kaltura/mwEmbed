@@ -967,27 +967,25 @@
 			return (!this.isLive() || (this.isLive() && !this.isOffline()));
 		},
 		backToLive: function () {
-
 			this.triggerHelper('movingBackToLive');
             var _this = this;
-            this.bindHelper('playing.backToLive', function(){
-                _this.unbindHelper('playing.backToLive');
-                _this.playerObject.sendNotification('goLive');
-                if(_this.isDVR() && _this.buffering){
-                    _this.verifyLiveEdge();
+            if(this.isDVR()){
+                this.playerObject.sendNotification('goLive');
+                if (this.buffering) {
+                    this.bindHelper('bufferEndEvent.backToLive', function () {
+                        _this.unbindHelper('bufferEndEvent.backToLive');
+                        _this.playerObject.seek(_this.getDuration());
+                        //Unfreeze scrubber
+                        _this.syncMonitor();
+                    });
                 }
-            });
+            }else{
+                this.bindHelper('playing.backToLive', function () {
+                    _this.unbindHelper('playing.backToLive');
+                    _this.playerObject.sendNotification('goLive');
+                });
+            }
 		},
-
-        verifyLiveEdge: function(){
-            var _this = this;
-            this.bindHelper('bufferEndEvent.backToLive', function () {
-                _this.unbindHelper('bufferEndEvent.backToLive');
-                _this.playerObject.seek(_this.getDuration());
-                //Unfreeze scrubber
-                _this.syncMonitor();
-            });
-        },
 
 		setKPlayerAttribute: function (host, prop, val) {
 			this.playerObject.setKDPAttribute(host, prop, val);

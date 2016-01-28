@@ -10,7 +10,7 @@
 
 	mw.ComscoreStreamingTag.prototype = {
 
-		pluginVersion: "1.0.11",
+		pluginVersion: "1.1.0",
 		reportingPluginName: "kaltura",
 		playerVersion: mw.getConfig('version'),
 
@@ -35,11 +35,13 @@
 		buffering: false,
 		seeking: false,
 		isPlaybackIntended: false,
+		hasPlaybackStarted: false,
 		playing: false,
 		samePositionRepeatedCount:0,
 		lastPosition: undefined,
 		lastPositionDuringBuffering: undefined,
 		lastPositionAfterSeeking: undefined,
+		startingPosition: undefined,
 		isIphone: mw.isIphone(),
 		playerElement: undefined,
 		// Mapping for the module settings and the StreamSense plugin
@@ -126,15 +128,17 @@
 		},
 
 		log: function(message) {
-			//this.streamSenseInstance.log("ComScoreStreamingTag::   " + message);
 			message += "; lp: " + this.lastPosition +
+				"; sp: " + this.startingPosition +
 				"; pbi: " + (this.isPlaybackIntended ? "Y":"N") +
+				"; pbs: " + (this.hasPlaybackStarted ? "Y":"N") +
 				"; p: " + (this.playing ? "Y":"N") +
 				"; b: " + (this.buffering ? "Y":"N") + (this.buffering ? "; lpdb: " + this.lastPositionDuringBuffering : "") +
 				"; s: " + (this.seeking ? "Y":"N") +
 				"; hs: " + (this.hasSeeked ? "Y":"N") + (this.hasSeeked ? "; lpas: " + this.lastPositionAfterSeeking : "") +
 				"; iPhone: " + (this.isIphone ? "Y":"N")
 			;
+			// this.streamSenseInstance.log("ComScoreStreamingTag::   " + message);
 			mw.log("ComScoreStreamingTag::   " + message);
 		},
 
@@ -144,6 +148,7 @@
 			if (this.shouldSetClip) {
 				this.callStreamSensePlugin("setClip", this.getClipLabels(), false, [], true);
 				this.shouldSetClip = false;
+				this.startingPosition = undefined;
 			}
 		},
 
@@ -151,6 +156,13 @@
 			var position = this.embedPlayer.getPlayerElementTime();
 
 			if (this.isPlaybackIntended) {
+				if(!this.hasPlaybackStarted) {
+					if(!this.seeking && typeof this.startingPosition === 'undefined') {
+						this.log('Storing starting position (confirmed not seeking): ' + position);
+						this.startingPosition = position;
+					}
+				}
+
 				if(this.buffering) {
 					if(this.playing) {
 						if(this.lastPositionDuringBuffering != undefined && this.lastPositionDuringBuffering == position) {
@@ -177,6 +189,13 @@
 					if (!(this.lastPosition == undefined && position == this.lastPosition) || (this.lastPosition != undefined && this.lastPosition != position)) {
 						if(this.hasSeeked) {
 							if(this.lastPositionAfterSeeking !== undefined && this.lastPositionAfterSeeking != position) {
+								if(!this.hasPlaybackStarted) {
+									if(typeof this.startingPosition === 'undefined') {
+										this.log('Storing starting position (active playback detected): ' + position);
+										this.startingPosition = position;
+									}
+								}
+								this.hasPlaybackStarted = true;
 								this.log('playback active after seeking @ ' + position);
 								this.playing = true;
 								this.onPlaybackActive();
@@ -185,6 +204,13 @@
 						}
 						else {
 							// Playback is active.
+							if(!this.hasPlaybackStarted) {
+								if(typeof this.startingPosition === 'undefined') {
+									this.log('Storing starting position (active playback detected): ' + position);
+									this.startingPosition = position;
+								}
+							}
+							this.hasPlaybackStarted = true;
 							if(!this.playing) {
 								this.log('playback active @ ' + position);
 								this.playing = true;
@@ -207,6 +233,7 @@
 
 		isPlaying: function () {
 			return this.isPlaybackIntended
+				&& this.hasPlaybackStarted
 				&& this.playing
 				&& !this.seeking
 				&& (this.getPlayerPluginState() != this.PlayerPluginState().PLAYING)
@@ -218,7 +245,15 @@
 				this.setClip();
 				var seek = this.hasSeeked;
 				this.hasSeeked = false;
-				this.callStreamSensePlugin("notify", this.playerEvents.PLAY, this.getLabels(seek), this.getCurrentPosition());
+
+				if(typeof this.startingPosition === 'undefined') {
+					this.callStreamSensePlugin("notify", this.playerEvents.PLAY, this.getLabels(seek), this.getCurrentPosition());
+				}
+				else {
+					this.callStreamSensePlugin("notify", this.playerEvents.PLAY, this.getLabels(seek), this.getStartingPosition());
+					this.startingPosition = undefined;
+				}
+
 				this.setPlayerPluginState(this.PlayerPluginState().PLAYING);
 				this.lastPosition = this.embedPlayer.getPlayerElementTime();
 			}
@@ -242,11 +277,11 @@
 			this.log('seeking from ' + currentTime);
 			this.seeking = true; // Could also use this.embedPlayer.seeking;
 			this.playing = false;
-			if(this.lastPosition != currentTime) {
+			if(this.hasPlaybackStarted && this.lastPosition != currentTime) {
 				this.lastPosition = currentTime;
 			}
 			this.lastPositionAfterSeeking = undefined;
-			if (this.isPlaybackIntended && this.getPlayerPluginState() != this.PlayerPluginState().SEEKING) {
+			if (this.isPlaybackIntended && this.hasPlaybackStarted && this.getPlayerPluginState() != this.PlayerPluginState().SEEKING) {
 				this.onPlaybackInactive();
 				this.setPlayerPluginState(this.PlayerPluginState().SEEKING);
 			}
@@ -267,7 +302,9 @@
 				this.callStreamSensePlugin("notify", this.playerEvents.END, this.getLabels(seek), this.getCurrentPosition());
 			}
 			this.isPlaybackIntended = false;
+			this.hasPlaybackStarted = false;
 			this.playing = false;
+			this.startingPosition = undefined;
 			this.lastPosition = undefined;
 			this.lastPositionDuringBuffering = undefined;
 			this.lastPositionAfterSeeking = undefined;
@@ -685,6 +722,13 @@
 
 		getVolume: function() {
 			return this.embedPlayer.evaluate('{video.volume}') || "0";
+		},
+
+		getStartingPosition: function() {
+			if (typeof this.startingPosition === 'undefined')
+				return this.getCurrentPosition(); // Fall back to the current position.
+			var startTime = this.startingPosition * 1000;
+			return isNaN(startTime) ? 0 : Math.max(Math.floor(startTime), 0);
 		},
 
 		getCurrentPosition: function() {

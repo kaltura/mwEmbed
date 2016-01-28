@@ -845,7 +845,12 @@
 			}
 			this.parent_pause();
 		},
-
+		/**
+		 * load method calls parent_load to start fetching media from server, in case of DRM the license request will be handled as well
+		 */
+		load: function () {
+			this.getPlayerElement().load();
+		},
 
 		/**
 		 * Handle the native paused event
