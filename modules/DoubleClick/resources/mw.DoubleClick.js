@@ -404,12 +404,16 @@
 					// Setup the restore callback
 					_this.restorePlayerCallback = callback;
 
-					// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
-					_this.getAdDisplayContainer().initialize();
-					if ( _this.adManagerLoaded ){
-						_this.startAdsManager();
+					if ( _this.isChromeless ){
+						_this.requestAds();
 					}else{
-						_this.adManagerAutoStart = true;
+						// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
+						_this.getAdDisplayContainer().initialize();
+						if ( _this.adManagerLoaded ){
+							_this.startAdsManager();
+						}else{
+							_this.adManagerAutoStart = true;
+						}
 					}
 				}
 			});
