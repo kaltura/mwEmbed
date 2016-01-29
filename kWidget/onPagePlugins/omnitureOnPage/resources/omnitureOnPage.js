@@ -200,7 +200,12 @@ kWidget.addReadyCallback( function( playerId ){
 				extraEvars = additionalEvarsAndProps.split(",");
 			}
 			if( additionalEvarsAndPropsValues ){
-				extraEvarsValues = additionalEvarsAndPropsValues.split(",");
+				// custom delimiter is used in situations when
+				// some evaluated extraValues contain comma character
+				// because this.getConfig('additionalEvarsAndPropsValues')
+				// returns already evaluated values
+				var extraEvarsValuesDelimiter = this.getConfig('additionalEvarsAndPropsValuesDelimiter') || ',';
+				extraEvarsValues = additionalEvarsAndPropsValues.split(extraEvarsValuesDelimiter);
 				for( var j=0; j < extraEvarsValues.length; j++ ) {
 					extraEvarsValues[j] = this.kdp.evaluate(extraEvarsValues[j]);
 				}
