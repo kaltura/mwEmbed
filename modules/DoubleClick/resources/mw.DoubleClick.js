@@ -190,6 +190,8 @@
 			}
 
 			_this.embedPlayer.bindHelper( 'layoutBuildDone' + this.bindPostfix, function(event){
+				// Request ads
+				mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
 				_this.requestAds();
 			});
 
@@ -222,8 +224,6 @@
 					// No defined ad pattern always use managed bindings
 					_this.addManagedBinding();
 				}
-				// Request ads
-				mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
 				// Issue the callback to continue player build out:
 				callback();
 			}, function( errorCode ){
