@@ -278,8 +278,10 @@
 				return;
 			}
 			// Update the player source ( if needed )
-			if ($(vid).attr('src') != this.getSrc(this.currentTime) && !mw.isIE()) {
-				$(vid).attr('src', this.getSrc(this.currentTime));
+			if (!this.skipUpdateSource) {
+				if ( $( vid ).attr( 'src' ) != this.getSrc( this.currentTime ) && !mw.isIE() ) {
+					$( vid ).attr( 'src' , this.getSrc( this.currentTime ) );
+				}
 			}
 
 			if (this.muted) {
