@@ -132,6 +132,14 @@
 			'desc' => 'Triggered when the player enters a play state. This event be triggered multiple times during a single playback session.
 				For example, playerPlayed will be triggered between ads and when the user plays content after pausing it.'
 		),
+		'userInitiatedPlay' => array(
+			'callbackArgs' => 'None',
+			'desc' => 'Triggered when the player enters a play state due to user action. For example, when user clicked the play button.'
+		),
+		'userInitiatedPause' => array(
+			'callbackArgs' => 'None',
+			'desc' => 'Triggered when the player enters a pause state due to user action. For example, when user clicked the pause button.'
+		),
 		'playerSeekStart' => array(
 			'callbackArgs' => 'None',
 			'desc' => 'Notify about a seek activity that started'
@@ -139,6 +147,10 @@
 		'playerSeekEnd' => array(
 			'callbackArgs' => 'None',
 			'desc' => 'Notify that the seek activity has finished'
+		),
+		'userInitiatedSeek' => array(
+			'callbackArgs' => 'None',
+			'desc' => 'Triggered when the player performs a seek operation due to user action. For example, when user moves the scrubber head or clicks the scrubber track.'
 		),
 		'playerUpdatePlayhead' => array(
 			'callbackArgs' => 'Player current time',

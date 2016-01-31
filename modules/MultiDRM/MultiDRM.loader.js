@@ -6,6 +6,15 @@
 	function isMseSupported(){
 		return (window['MediaSource'] || window['WebKitMediaSource']) && !mw.isFirefox() && !mw.isDesktopSafari() && !mw.isMobileChrome();
 	}
+
+    var nativeSdkDRMTypes = (function() {
+        if (window.kNativeSDK) {
+            return window.kNativeSDK.supportedFormats.drmTypes;
+        } else {
+            return ['video/wvm'];
+        }
+    })();
+
 	//Load 3rd party plugins if DRM sources are available
 	mw.addKalturaConfCheck( function( embedPlayer, callback ){
 		//For native callout on mobile browsers let the flow continue to native APP and decide if DRM is enbaled and supported in native SDK
@@ -82,14 +91,18 @@
 		return drmConfig;
 	}
 
-	function getMultiDrmSupportedSources(sources){
-		var drmSources = sources.filter( function ( source ) {
-			return ( ( !mw.isNativeApp() && ( source.mimeType === "application/dash+xml" ||
-			( ( source.mimeType === "video/ism" || source.mimeType === "video/playreadySmooth" ) && mw.isChrome() &&  !mw.isMobileDevice() ) ) ) ||
-			( source.mimeType === "video/wvm" && mw.isNativeApp()) );
-		} );
-		return drmSources;
-	}
+    function getMultiDrmSupportedSources(sources) {
+        var drmSources = sources.filter(function (source) {
+            if (mw.isNativeApp()) {
+                return $.inArray(source.mimeType, nativeSdkDRMTypes) >= 0;
+            } else {
+                // Browser
+                return source.mimeType === "application/dash+xml" ||
+                    ((source.mimeType === "video/ism" || source.mimeType === "video/playreadySmooth") && mw.isChrome() && !mw.isMobileDevice());
+            }
+        });
+        return drmSources;
+    }
 
 	function removeNonDrmSources(sources, drmSources, enableHlsAes, embedPlayer){
 		if (enableHlsAes && mw.isMobileDevice()){
