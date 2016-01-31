@@ -19,7 +19,8 @@
             quizSubmitted: false,
             intrVal: null,
             quizEndFlow: false,
-
+            bindPostfix: '.quizPlugin',
+            reviewMode:false,
 
             init: function (embedPlayer,quizPlugin) {
                 var _this = this;
@@ -200,7 +201,7 @@
                 else{
                     var anUnswered = _this.getUnansweredQuestNrs();
                     if (!anUnswered){
-                        _this.quizPlugin.reviewMode = true;
+                        _this.reviewMode = true;
                     }
                     if (($.cpObject.cpArray.length - 1) === questionNr){
                         _this.quizEndFlow = true;
@@ -301,10 +302,10 @@
                     }
                 })
             },
-            bubbleSizeSelector: function (inFullScreen) {
+            bubbleSizeSelector: function (isFullScreen) {
                 var _this = this, buObj = {bubbleAnsSize: "", bubbleUnAnsSize: ""};
                 if (_this.quizEndFlow) {
-                    if (inFullScreen) {
+                    if (isFullScreen) {
                         buObj.bubbleAnsSize = "bubble-fullscreen";
                         buObj.bubbleUnAnsSize = "bubble-window-quizEndFlow";
                     }
@@ -314,7 +315,7 @@
                     }
                 }
                 else {
-                    if (inFullScreen) {
+                    if (isFullScreen) {
                         buObj.bubbleAnsSize = "bubble-fullscreen";
                         buObj.bubbleUnAnsSize = "bubble-fullscreen";
                     }
@@ -486,7 +487,8 @@
             showQuizOnScrubber:function(){
                 var _this = this;
                 _this.quizPlugin.displayBubbles();
-                if (_this.quizEndFlow){
+                //!_this.quizSubmitted for IOS9 Android5 &&
+                if (_this.quizEndFlow && !_this.quizSubmitted){
                     _this.showQuizEndOnScrubber();
                 }
             },
@@ -499,7 +501,7 @@
             showQuizEndOnScrubber:function(){
                 var _this = this;
                 _this.hideQuizEndOnScrubber();
-                _this.quizPlugin.displayQuizEnd();
+                _this.quizPlugin.displayQuizEndMarker();
             },
             hideQuizEndOnScrubber:function(embedPlayer){
                 this.embedPlayer.getInterface().find(".quizDone-cont").empty().remove();
@@ -517,9 +519,8 @@
             sendIVQMesageToListener:function(){
                 try {
                     var _this = this;
-                    window.kdp = document.getElementById( this.getPlayer().id );
+                    window.kdp = document.getElementById( _this.getPlayer().id );
                     window.kdp.sendNotification("QuizSubmitted", _this.kQuizUserEntryId);
-
                 } catch (e) {
                     mw.log('postMessage listener of parent is undefined: ', e);
                 }
@@ -545,9 +546,9 @@
               var _this = this;
                 $.cpObject = {};
                 $.quizParams = {};
-                $(this.embedPlayer).unbind(_this.quizPlugin.bindPostfix);
-                embedPlayer.unbindHelper(_this.quizPlugin.bindPostfix);
-                embedPlayer.removeJsListener(_this.quizPlugin.bindPostfix);
+                $(this.embedPlayer).unbind(_this.bindPostfix);
+                embedPlayer.unbindHelper(_this.bindPostfix);
+                embedPlayer.removeJsListener(_this.bindPostfix);
                 _this.hideQuizOnScrubber();
                 mw.log("Quiz: No Quiz Available");            }
         })) {
