@@ -393,10 +393,6 @@
 			this.playerObject.setKDPAttribute('mediaProxy', 'isMp4', this.isMp4Src());
 			this.playerObject.setKDPAttribute('mediaProxy', 'entryDuration', this.getDuration()); //TODO - to support inteliseek - set the correct duration using seekFrom and clipTo
 			this.getEntryUrl().then(function (srcToPlay) {
-				_this.bindHelper("onChangeMediaDone", function(){
-					_this.unbindHelper("onChangeMediaDone");
-					_this.play();
-				});
 				_this.playerObject.sendNotification('changeMedia', {
 					entryUrl: srcToPlay
 				});
