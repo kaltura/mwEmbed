@@ -1330,10 +1330,13 @@
 		},
 
 		backToLive: function () {
-			this.triggerHelper('movingBackToLive');
+            var _this = this;
 			var vid = this.getPlayerElement();
 			vid.load();
 			vid.play();
+            setTimeout( function() {
+                _this.triggerHelper('movingBackToLive'); //for some reason on Mac the isLive client response is a little bit delayed, so in order to get update liveUI properly, we need to delay "movingBackToLive" helper
+            }, 1000 );
 		},
 		isVideoSiblingEnabled: function () {
 			if (mw.isIphone() || mw.isAndroid2() || mw.isWindowsPhone() || mw.isAndroid40() || mw.isMobileChrome()
