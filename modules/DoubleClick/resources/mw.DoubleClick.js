@@ -189,6 +189,10 @@
 				_this.adTagUrl = _this.getConfig( 'prerollUrlJS' );
 			}
 
+			_this.embedPlayer.bindHelper( 'layoutBuildDone' + this.bindPostfix, function(event){
+				_this.requestAds();
+			});
+
 			// Load double click ima per doc:
 			this.loadIma( function(){
 				// Determine if we are in managed or kaltura point based mode.
@@ -220,7 +224,6 @@
 				}
 				// Request ads
 				mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
-				_this.requestAds();
 				// Issue the callback to continue player build out:
 				callback();
 			}, function( errorCode ){
@@ -407,7 +410,14 @@
 					if ( _this.isChromeless ){
 						_this.requestAds();
 					}else{
-						// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
+						// Set the content element to player element:
+						var playerElement =  _this.embedPlayer.getPlayerElement();
+						//Load the video tag to enable setting the source by doubleClick library
+						if (mw.isMobileDevice() && !_this.playerElementLoaded) {
+							_this.playerElementLoaded = true;
+							playerElement.load();
+						}
+						_this.saveTimeWhenSwitchMedia = mw.isMobileDevice();
 						_this.getAdDisplayContainer().initialize();
 						if ( _this.adManagerLoaded ){
 							_this.startAdsManager();
@@ -599,14 +609,7 @@
 		 */
 		getContent:function(){
 			// Set the content element to player element:
-			var playerElement =  this.embedPlayer.getPlayerElement();
-			//Load the video tag to enable setting the source by doubleClick library
-			if (mw.isMobileDevice() && !this.playerElementLoaded) {
-				this.playerElementLoaded = true;
-				playerElement.load();
-			}
-			this.saveTimeWhenSwitchMedia = mw.isMobileDevice();
-			return playerElement;
+			return this.embedPlayer.getPlayerElement();
 		},
 		getAdContainer: function(){
 			if( !$('#' + this.getAdContainerId() ).length ){
@@ -798,14 +801,6 @@
 			adsRequest.nonLinearAdSlotWidth = size.width;
 			adsRequest.nonLinearAdSlotHeight = size.height;
 
-			var timeoutVal = this.getConfig("adsManagerLoadedTimeout") || 5000;
-			mw.log( "DoubleClick::requestAds: start timer for adsManager loading check: " + timeoutVal + "ms");
-			this.adsManagerLoadedTimeoutId = setTimeout(function(){
-				if ( !_this.adManagerLoaded ){
-					mw.log( "DoubleClick::requestAds: adsManager failed loading after " + timeoutVal + "ms");
-					_this.onAdError("adsManager failed loading!");
-				}
-			}, timeoutVal);
 
 			// if on chromeless - reuest ads using the KDP DoubleClick plugin instead of the JS plugin
 			if (this.isChromeless){
@@ -820,6 +815,15 @@
 				mw.log( "DoubleClick::requestAds: Native SDK player request ad ");
 				return;
 			}
+
+			var timeoutVal = this.getConfig("adsManagerLoadedTimeout") || 5000;
+			mw.log( "DoubleClick::requestAds: start timer for adsManager loading check: " + timeoutVal + "ms");
+			this.adsManagerLoadedTimeoutId = setTimeout(function(){
+				if ( !_this.adManagerLoaded ){
+					mw.log( "DoubleClick::requestAds: adsManager failed loading after " + timeoutVal + "ms");
+					_this.onAdError("adsManager failed loading!");
+				}
+			}, timeoutVal);
 
 			// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
 			this.getAdDisplayContainer();
@@ -853,9 +857,11 @@
 		onAdsManagerLoaded: function( loadedEvent ) {
 			mw.log( 'DoubleClick:: onAdsManagerLoaded' );
 
-			mw.log( "DoubleClick::requestAds: clear timer for adsManager loading check");
-			clearTimeout(this.adsManagerLoadedTimeoutId);
-			this.adsManagerLoadedTimeoutId = null;
+			if (this.adsManagerLoadedTimeoutId){
+				mw.log( "DoubleClick::requestAds: clear timer for adsManager loading check");
+				clearTimeout(this.adsManagerLoadedTimeoutId);
+				this.adsManagerLoadedTimeoutId = null;
+			}
 
 			var adsRenderingSettings = new google.ima.AdsRenderingSettings();
 			if (!this.getConfig("adTagUrl")){
