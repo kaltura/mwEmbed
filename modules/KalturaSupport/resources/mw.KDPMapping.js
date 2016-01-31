@@ -1161,6 +1161,9 @@
 						})
 						return;
 					}
+					if ( notificationData && notificationData.userInitiated ){
+						embedPlayer.triggerHelper( 'userInitiatedPlay' );
+					}
 					embedPlayer.play();
 					break;
 				case 'doPause':
@@ -1168,6 +1171,9 @@
 					if( embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence ) {
 						embedPlayer.triggerHelper( 'doPause' );
 						break;
+					}
+					if ( notificationData && notificationData.userInitiated ){
+						embedPlayer.triggerHelper( 'userInitiatedPause' );
 					}
 					embedPlayer.pause();
 					break;

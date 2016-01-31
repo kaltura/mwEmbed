@@ -367,6 +367,7 @@
 					if (embedPlayer.userSlide) {
 						embedPlayer.userSlide = false;
 						embedPlayer.seeking = true;
+						embedPlayer.triggerHelper("userInitiatedSeek", seekTime);
 						embedPlayer.seek(seekTime);
 					}
 				}
