@@ -519,8 +519,9 @@
             sendIVQMesageToListener:function(){
                 try {
                     var _this = this;
-                    window.kdp = document.getElementById( _this.getPlayer().id );
+                    window.kdp = document.getElementById( _this.embedPlayer.id );
                     window.kdp.sendNotification("QuizSubmitted", _this.kQuizUserEntryId);
+                    mw.log('Quiz: QuizSubmitted ');
                 } catch (e) {
                     mw.log('postMessage listener of parent is undefined: ', e);
                 }
