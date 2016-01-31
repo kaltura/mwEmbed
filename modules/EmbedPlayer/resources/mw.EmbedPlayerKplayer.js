@@ -968,18 +968,26 @@
 		},
 		backToLive: function () {
 			this.triggerHelper('movingBackToLive');
-            this.playerObject.sendNotification('goLive');
-
-            if(this.buffering){
-                var _this = this;
-                this.bindHelper('bufferEndEvent', function () {
-                    _this.unbindHelper('bufferEndEvent');
-                    _this.playerObject.seek(_this.getDuration());
-                    //Unfreeze scrubber
-                    _this.syncMonitor();
+            var _this = this;
+            var evChannel = ".kBackToLive"; //event channel name ".backToLive" already exists in liveCore class
+            if(this.isDVR()){
+                this.playerObject.sendNotification('goLive');
+                if (this.buffering) {
+                    this.bindHelper('bufferEndEvent'+evChannel, function () {
+                        _this.unbindHelper('bufferEndEvent'+evChannel);
+                        _this.playerObject.seek(_this.getDuration());
+                        //Unfreeze scrubber
+                        _this.syncMonitor();
+                    });
+                }
+            }else{
+                this.bindHelper('playing'+evChannel, function () {
+                    _this.unbindHelper('playing'+evChannel);
+                    _this.playerObject.sendNotification('goLive');
                 });
             }
 		},
+
 		setKPlayerAttribute: function (host, prop, val) {
 			this.playerObject.setKDPAttribute(host, prop, val);
 		},
