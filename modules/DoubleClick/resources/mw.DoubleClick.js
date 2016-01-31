@@ -159,7 +159,7 @@
 			if ( this.trackCuePoints ){
 				this.handleCuePoints();
 			}
-			if (( mw.isIE8() || mw.isIE9() || _this.leadWithFlash ) && (mw.supportsFlash())) {
+			if (( mw.isIE8() || mw.isIE9() || mw.isEdge() || _this.leadWithFlash ) && (mw.supportsFlash())) {
 				mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
 				_this.isChromeless = true;
 				_this.prevSlotType = 'none';
@@ -484,6 +484,18 @@
 					if ( !_this.isLinear ){
 						$(_this.getAdContainer()).css({top:0});
 					}
+				});
+			}
+
+			// due to IMA removal of custom playback on Android devices, we must get a user gesture for each new entry in order to show prerolls. Preventing auto play after change media in such cases.
+			if ( !_this.isNativeSDK && _this.embedPlayer.playlist && mw.isMobileDevice() && mw.isAndroid() ){
+				_this.embedPlayer.setKalturaConfig( 'playlistAPI', 'autoPlay',false );
+				_this.embedPlayer.autoplay = false;
+				_this.embedPlayer.bindHelper('onChangeMedia', function () {
+					_this.embedPlayer.bindHelper('prePlayAction', function (event, prePlay) {
+						prePlay.allowPlayback = false;
+						_this.embedPlayer.unbindHelper('prePlayAction');
+					});
 				});
 			}
 		},
@@ -972,15 +984,6 @@
 				if ( _this.saveTimeWhenSwitchMedia ) {
 					_this.timeToReturn = _this.embedPlayer.currentTime;
 				}
-				// sometimes CONTENT_PAUSE_REQUESTED is the last event we receive :(
-				// give double click 12 seconds to load the ad, else return to content playback
-				setTimeout( function(){
-					if( $.isFunction( _this.startedAdPlayback ) ){
-						mw.log( " CONTENT_PAUSE_REQUESTED without no ad LOADED! ");
-						// ad error will resume playback
-						_this.onAdError( " CONTENT_PAUSE_REQUESTED without no ad LOADED! ");
-					}
-				}, 12000 );
 			} );
 			adsListener( 'LOADED', function(adEvent){
 				var adData = adEvent.getAdData();
@@ -1170,6 +1173,10 @@
 
 				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
 					mw.log("DoubleClick:: adStart");
+                    // for preroll ad that doesn't play using our video tag - we can load our video tag to improve performance once the ad finish
+                    if ( _this.currentAdSlotType === "preroll" ){
+                        _this.embedPlayer.load();
+                    }
 					_this.embedPlayer.sequenceProxy.isInSequence = true;
 					// set volume when ad starts to enable autoMute. TODO: remove next line once DoubleClick fix their bug when setting adsManager.volume before ad starts
 					_this.embedPlayer.setPlayerElementVolume(_this.embedPlayer.volume);

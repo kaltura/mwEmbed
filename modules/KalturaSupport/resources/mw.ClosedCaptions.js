@@ -858,6 +858,7 @@
 							_this.setConfig('displayCaptions', false);
 						} else {
 							_this.setTextSource( source );
+							_this.embedPlayer.triggerHelper("selectClosedCaptions", source.label);
 							_this.getActiveCaption();
 						}
 					},
@@ -894,6 +895,7 @@
 				},
 				'callback': function(){
 					_this.selectedSource = null;
+					_this.embedPlayer.triggerHelper("selectClosedCaptions", "Off");
 					_this.setConfig('displayCaptions', false);
 					// also update the cookie to "None"
 					_this.getPlayer().setCookie( _this.cookieName, 'None' );

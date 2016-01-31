@@ -19,10 +19,12 @@
             quizSubmitted: false,
             intrVal: null,
             quizEndFlow: false,
-            isQKDPReady:false,
+            bindPostfix: '.quizPlugin',
+            reviewMode:false,
 
             init: function (embedPlayer,quizPlugin) {
                 var _this = this;
+
 
                 _this.KIVQApi = new mw.KIVQApi(embedPlayer);
                 _this.KIVQScreenTemplate = new mw.KIVQScreenTemplate(embedPlayer);
@@ -34,7 +36,6 @@
 
             setupQuiz:function(){
                 var _this = this;
-
                 this.embedPlayer.disableComponentsHover();
 
                 _this.KIVQApi.getUserEntryIdAndQuizParams( function(data) {
@@ -127,6 +128,7 @@
                     }
                 });
             },
+
             getIvqPDF:function(entryId){
                 var _this = this;
                 _this.KIVQApi.downloadIvqPDF(entryId, function(data){
@@ -199,7 +201,7 @@
                 else{
                     var anUnswered = _this.getUnansweredQuestNrs();
                     if (!anUnswered){
-                        _this.quizPlugin.reviewMode = true;
+                        _this.reviewMode = true;
                     }
                     if (($.cpObject.cpArray.length - 1) === questionNr){
                         _this.quizEndFlow = true;
@@ -227,7 +229,7 @@
                     _this.embedPlayer.pause();
                 }
                 _this.embedPlayer.stopPlayAfterSeek = true;
-                seekTo = (($.cpObject.cpArray[questionNr].startTime) /1000)+0.5;
+                seekTo = (($.cpObject.cpArray[questionNr].startTime) /1000);//+0.5;
                 _this.embedPlayer.seek(seekTo,true);
             },
             cuePointReachedHandler: function (e, cuePointObj) {
@@ -240,19 +242,6 @@
                         _this.quizPlugin.ssSetCurrentQuestion(key,false);
                     }
                 });
-            },
-            checkQKDPReady:function(callback){
-                var _this = this;
-                if (_this.intrVal){
-                    _this.intrVal = false;
-                }
-                _this.intrVal = setInterval(function () {
-                    if (_this.isQKDPReady){
-                        clearInterval(_this.intrVal);
-                        _this.intrVal = false;
-                        callback()
-                    }
-                }, 500);
             },
 
             checkUserEntryIdReady:function(callback){
@@ -269,14 +258,9 @@
                 }, 500);
             },
             checkCuepointsReady:function(callback){
-                var _this = this;
-                if (_this.intrVal){
-                    _this.intrVal = false;
-                }
-                _this.intrVal = setInterval(function () {
-                    if ($.cpObject.cpArray){
-                        clearInterval(_this.intrVal);
-                        _this.intrVal = false;
+                var interVal = setInterval(function () {
+                    if ($.cpObject.cpArray && $.quizParams ){
+                        clearInterval(interVal);
                         callback()
                     }
                 }, 500);
@@ -318,10 +302,10 @@
                     }
                 })
             },
-            bubbleSizeSelector: function (inFullScreen) {
+            bubbleSizeSelector: function (isFullScreen) {
                 var _this = this, buObj = {bubbleAnsSize: "", bubbleUnAnsSize: ""};
                 if (_this.quizEndFlow) {
-                    if (inFullScreen) {
+                    if (isFullScreen) {
                         buObj.bubbleAnsSize = "bubble-fullscreen";
                         buObj.bubbleUnAnsSize = "bubble-window-quizEndFlow";
                     }
@@ -331,7 +315,7 @@
                     }
                 }
                 else {
-                    if (inFullScreen) {
+                    if (isFullScreen) {
                         buObj.bubbleAnsSize = "bubble-fullscreen";
                         buObj.bubbleUnAnsSize = "bubble-fullscreen";
                     }
@@ -368,11 +352,11 @@
                 _this.embedPlayer.getInterface().find(".display-all-container").hide().fadeIn(400);
 
                 if((_this.embedPlayer.getInterface().find(".second-row").length) == 0 ){
-                    _this.embedPlayer.getInterface().find(".display-all-container").addClass("margin-top7");
+                    _this.embedPlayer.getInterface().find(".display-all-container").addClass("margin-top5");
                     _this.embedPlayer.getInterface().find(".left-arrow").addClass("margin-top4");
                 }
                 else{
-                    _this.embedPlayer.getInterface().find(".display-all-container").removeClass("margin-top7");
+                    _this.embedPlayer.getInterface().find(".display-all-container").removeClass("margin-top5");
                     _this.embedPlayer.getInterface().find(".left-arrow").removeClass("margin-top4");
 
 
@@ -503,7 +487,8 @@
             showQuizOnScrubber:function(){
                 var _this = this;
                 _this.quizPlugin.displayBubbles();
-                if (_this.quizEndFlow){
+                //!_this.quizSubmitted for IOS9 Android5 &&
+                if (_this.quizEndFlow && !_this.quizSubmitted){
                     _this.showQuizEndOnScrubber();
                 }
             },
@@ -516,7 +501,7 @@
             showQuizEndOnScrubber:function(){
                 var _this = this;
                 _this.hideQuizEndOnScrubber();
-                _this.quizPlugin.displayQuizEnd();
+                _this.quizPlugin.displayQuizEndMarker();
             },
             hideQuizEndOnScrubber:function(embedPlayer){
                 this.embedPlayer.getInterface().find(".quizDone-cont").empty().remove();
@@ -533,7 +518,9 @@
             },
             sendIVQMesageToListener:function(){
                 try {
-                    window.parent.postMessage("QuizSubmitted", "*");
+                    var _this = this;
+                    window.kdp = document.getElementById( _this.getPlayer().id );
+                    window.kdp.sendNotification("QuizSubmitted", _this.kQuizUserEntryId);
                 } catch (e) {
                     mw.log('postMessage listener of parent is undefined: ', e);
                 }
@@ -554,8 +541,16 @@
                 var _this = this;
                 clearInterval(_this.intrVal);
                 _this.intrVal = null;
-            }
-
+            },
+            unloadQuizPlugin:function(embedPlayer){
+              var _this = this;
+                $.cpObject = {};
+                $.quizParams = {};
+                $(this.embedPlayer).unbind(_this.bindPostfix);
+                embedPlayer.unbindHelper(_this.bindPostfix);
+                embedPlayer.removeJsListener(_this.bindPostfix);
+                _this.hideQuizOnScrubber();
+                mw.log("Quiz: No Quiz Available");            }
         })) {
     }
 })(window.mw, window.jQuery );
