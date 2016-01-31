@@ -195,6 +195,7 @@
 						'bitrateChange': 'onBitrateChange',
                         'textTracksReceived': 'onTextTracksReceived',
                         'debugInfoReceived': 'onDebugInfoReceived',
+						'readyToPlay': 'onReadyToPlay',
                         'id3tag': 'onId3tag'
 					};
 				_this.playerObject = this.getElement();
@@ -392,6 +393,10 @@
 			this.playerObject.setKDPAttribute('mediaProxy', 'isMp4', this.isMp4Src());
 			this.playerObject.setKDPAttribute('mediaProxy', 'entryDuration', this.getDuration()); //TODO - to support inteliseek - set the correct duration using seekFrom and clipTo
 			this.getEntryUrl().then(function (srcToPlay) {
+				_this.bindHelper("onChangeMediaDone", function(){
+					_this.unbindHelper("onChangeMediaDone");
+					_this.play();
+				});
 				_this.playerObject.sendNotification('changeMedia', {
 					entryUrl: srcToPlay
 				});
@@ -792,6 +797,10 @@
             mw.log("EmbedPlayerKplayer:: onDebugInfoReceived | " + msg);
         },
 
+		onReadyToPlay: function (){
+            this.triggerHelper('readyToPlay');
+        },
+
         onId3tag: function (data) {
 			var id3Tag = base64_decode(data.data);
 			///todo  this is a temp fix until we remove the ID3 header from the content in the flash code
@@ -959,18 +968,26 @@
 		},
 		backToLive: function () {
 			this.triggerHelper('movingBackToLive');
-            this.playerObject.sendNotification('goLive');
-
-            if(this.buffering){
-                var _this = this;
-                this.bindHelper('bufferEndEvent', function () {
-                    _this.unbindHelper('bufferEndEvent');
-                    _this.playerObject.seek(_this.getDuration());
-                    //Unfreeze scrubber
-                    _this.syncMonitor();
+            var _this = this;
+            var evChannel = ".kBackToLive"; //event channel name ".backToLive" already exists in liveCore class
+            if(this.isDVR()){
+                this.playerObject.sendNotification('goLive');
+                if (this.buffering) {
+                    this.bindHelper('bufferEndEvent'+evChannel, function () {
+                        _this.unbindHelper('bufferEndEvent'+evChannel);
+                        _this.playerObject.seek(_this.getDuration());
+                        //Unfreeze scrubber
+                        _this.syncMonitor();
+                    });
+                }
+            }else{
+                this.bindHelper('playing'+evChannel, function () {
+                    _this.unbindHelper('playing'+evChannel);
+                    _this.playerObject.sendNotification('goLive');
                 });
             }
 		},
+
 		setKPlayerAttribute: function (host, prop, val) {
 			this.playerObject.setKDPAttribute(host, prop, val);
 		},

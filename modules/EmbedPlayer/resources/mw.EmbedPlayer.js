@@ -1252,7 +1252,7 @@
 				}
 			}
 			// display thumbnail upon movie end if showThumbnailOnEnd Flashvar is set to true and not looped
-			if (!this.loop) {
+			if (this.getFlashvars("EmbedPlayer.ShowPosterOnStop") !== false && !this.loop) {
 				this.updatePosterHTML();
 			}
 		},
@@ -1740,11 +1740,10 @@
 					//remove black bg when showing poster after change media
 					$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
 					// reload the player
-					if (_this.autoplay && _this.canAutoPlay() ) {
+					if (_this.canAutoPlay() ) {
 						if (!_this.isAudioPlayer) {
 							_this.removePoster();
 						}
-						_this.play();
 					}
 
 					$this.trigger('onChangeMediaDone');
@@ -1852,15 +1851,10 @@
 
 			$(this).find(".playerPoster").remove();
 			//remove poster on autoPlay when player loaded
-			if ( (this.currentState==null || this.currentState=="load") && mw.getConfig('autoPlay') && !mw.isMobileDevice()){
+			if ( this.currentState=="load" && mw.getConfig('autoPlay') && !mw.isMobileDevice()){
 				return;
 			}
-			//remove poster on start
-			if ( (this.currentState==null || this.currentState=="load") && mw.getConfig('EmbedPlayer.HidePosterOnStart') === true ) {
-				return;
-			}
-			//remove poster on end
-			if ( mw.getConfig('EmbedPlayer.ShowPosterOnStop') === false && this.currentState=="end" ) {
+			if ( mw.getConfig('EmbedPlayer.HidePosterOnStart') === true && !(this.currentState=="end" && mw.getConfig('EmbedPlayer.ShowPosterOnStop')) ) {
 				return;
 			}
 			// support IE9 and IE10 compatibility modes
@@ -2273,10 +2267,6 @@
 				this.removePoster();
 			}
 
-			if (mw.getConfig("EmbedPlayer.KeepPoster")){
-				this.updatePosterHTML();
-			}
-
 			// We need first play event for analytics purpose
 			if (this.firstPlay && this._propagateEvents) {
 				this.firstPlay = false;
@@ -2513,8 +2503,10 @@
 
 		togglePlayback: function () {
 				if (this.paused) {
+					this.triggerHelper( 'userInitiatedPlay' );
 					this.play();
 				} else {
+					this.triggerHelper( 'userInitiatedPause' );
 					this.pause();
 				}
 		},
