@@ -473,6 +473,10 @@
 				embedPlayer.triggerHelper(eventToTrigger);
 				_this.loadingEntry = false; // Update the loadingEntry flag//
 
+				if (mobileAutoPlay && embedPlayer.canAutoPlay()) {
+					embedPlayer.play();
+				}
+
 				if (mw.isMobileDevice() && !mobileAutoPlay){
 					mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
 					embedPlayer.updatePosterHTML();
