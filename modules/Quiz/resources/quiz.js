@@ -1,6 +1,6 @@
 /**
  * Created by mark.feder Kaltura.
- * V2.40.quiz-rc4
+ * V2.40.quiz-rc5
  */
 (function (mw, $) {
     "use strict";
@@ -41,12 +41,26 @@
                     _this.KIVQModule.setupQuiz(embedPlayer);
                     _this.KIVQScreenTemplate = new mw.KIVQScreenTemplate(embedPlayer);
 
+                    if(embedPlayer.playlist){//playlist
+                        _this.KIVQModule.unloadQuizPlugin(embedPlayer);
+                        embedPlayer.stop();
+                    };
                     _this.addBindings();
 
+                    if(!embedPlayer.playlist){//playlist
+                        embedPlayer.disablePlayControls();
+                        embedPlayer.addPlayerSpinner();
+                    };
                     embedPlayer.disablePlayControls();
                     embedPlayer.addPlayerSpinner();
 
                     _this.KIVQModule.checkCuepointsReady(function(){
+                        if(embedPlayer.playlist){//playlist
+                            _this.enablePlayDuringScreen = false;
+                            _this.ssWelcome();
+                            mw.log("Quiz: playlistWelcome");
+                            embedPlayer.enablePlayControls();
+                        };
                         embedPlayer.hideSpinner();
                         embedPlayer.enablePlayControls();
                     });
@@ -57,10 +71,11 @@
                     if (!$("link[href=cssLink]").length){
                         $('head', window.parent.document).append('<link type="text/css" rel="stylesheet" href="' + cssLink + '"/>');
                     }
-
-                }else{
-                    _this.KIVQModule.unloadQuizPlugin(embedPlayer);
                 }
+                else{
+                    _this.KIVQModule.unloadQuizPlugin(embedPlayer);
+                    embedPlayer.enablePlayControls();
+                 }
             });
         },
         addBindings: function () {
@@ -70,14 +85,19 @@
             this.bind('prePlayAction'+_this.KIVQModule.bindPostfix, function (e, data) {
                 mw.log("Quiz: PrePlay");
 
-                _this.KIVQModule.showQuizOnScrubber();
-                if(_this.getPlayer().firstPlay && !_this.firstPlay){
-                    data.allowPlayback = false;
-                    _this.firstPlay = true;
-                    _this.enablePlayDuringScreen = false;
-                    _this.ssWelcome();
-                    _this.unbind('prePlayAction');
+                if(!embedPlayer.playlist){
+                    if(_this.getPlayer().firstPlay) {
+                        mw.log("Quiz: Welcome");
+                        data.allowPlayback = false;
+                        _this.enablePlayDuringScreen = false;
+                        _this.ssWelcome();
+
+                    }else{
+                        _this.KIVQModule.showQuizOnScrubber();
+                        mw.log("Quiz: preplay Show Quiz on Scrubber");
+                    };
                 };
+                _this.unbind('prePlayAction' + _this.KIVQModule.bindPostfix);
             });
 
             this.bind('KalturaSupport_CuePointReached'+_this.KIVQModule.bindPostfix, function (e, cuePointObj) {
@@ -96,19 +116,20 @@
             });
 
             var playerElement = _this.embedPlayer.getPlayerElement();
-            $(playerElement).bind('seeked', function () {
+            $(playerElement).bind('seeked'+_this.KIVQModule.bindPostfix, function () {
                 setTimeout(function () {
                     _this.isSeekingIVQ = false;}, 0);
                 mw.log("Quiz: Seeked ");
             });
 
-            $(playerElement).bind('seeking', function () {
+            $(playerElement).bind('seeking'+_this.KIVQModule.bindPostfix, function () {
                     _this.isSeekingIVQ = true;
                     mw.log("Quiz: Seeking ");
                 });
 
             embedPlayer.addJsListener( 'playerPlayEnd'+_this.KIVQModule.bindPostfix, function(){
                 _this.KIVQModule.quizEndScenario();
+                mw.log("Quiz: PlayerPlayEnd");
             });
 
             embedPlayer.bindHelper('onOpenFullScreen'+_this.KIVQModule.bindPostfix, function() {
@@ -140,6 +161,7 @@
                     if (!_this.embedPlayer._playContorls){
                         _this.KIVQModule.showQuizOnScrubber();
                         embedPlayer.enablePlayControls();
+                        mw.log("Quiz: Continue Play Hide Screen");
                         embedPlayer.play();
                     };
                 }
@@ -199,7 +221,6 @@
                 .on('click', function () {
                     _this.KIVQModule.checkIfDone(-1);
                 });
-
         },
 
         ssAlmostDone: function (unAnsweredArr) {
@@ -214,8 +235,9 @@
 
             $(document).off('click','.confirm-box')
                 .on('click', '.confirm-box', function () {
+                    _this.embedPlayer.stopPlayAfterSeek = false;
                     _this.embedPlayer.seek(0,false);
-                    _this.KIVQModule.continuePlay();
+                    _this.hideScreen();
                 });
         },
 

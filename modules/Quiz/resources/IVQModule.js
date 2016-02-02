@@ -62,6 +62,10 @@
                                     _this.quizSubmitted = true;
                                     break;
                                 case '1':
+                                    if(_this.embedPlayer.playlist){
+                                        mw.log("Quiz: Playlist Don't Auto Continue");
+                                        _this.embedPlayer.setKDPAttribute('playlistAPI','autoContinue',false);
+                                    };
                                     break;
                                 case '2':
                                     _this.errMsg('quiz deleted', data);
@@ -124,6 +128,11 @@
                             _this.quizSubmitted = true;
                         });
                         _this.sendIVQMesageToListener();
+
+                        if(this.embedPlayer.playlist){
+                            mw.log("Quiz: Playlist Let Auto Continue");
+                            this.embedPlayer.setKDPAttribute('playlistAPI','autoContinue',true);
+                        };
 
                     }
                 });
@@ -219,6 +228,7 @@
                             _this.embedPlayer.stopPlayAfterSeek = false;
                         }
                     }
+                    mw.log("Quiz: Continue Play  ");
                     _this.embedPlayer.play();
                     _this.quizPlugin.selectedAnswer = null;
                 }
@@ -228,9 +238,10 @@
                 if (_this.embedPlayer.isPlaying()){
                     _this.embedPlayer.pause();
                 }
-                _this.embedPlayer.stopPlayAfterSeek = true;
-                seekTo = (($.cpObject.cpArray[questionNr].startTime) /1000);//+0.5;
-                _this.embedPlayer.seek(seekTo,true);
+            //    _this.embedPlayer.stopPlayAfterSeek = true;
+                seekTo = (($.cpObject.cpArray[questionNr].startTime) /1000); //-0.1;
+                mw.log("Quiz: seekTo: " + seekTo);
+                _this.embedPlayer.seek(seekTo,false);
             },
             cuePointReachedHandler: function (e, cuePointObj) {
                 var _this = this;
@@ -486,6 +497,7 @@
             },
             showQuizOnScrubber:function(){
                 var _this = this;
+                mw.log("Quiz: Show Quiz on Scrubber");
                 _this.quizPlugin.displayBubbles();
                 //!_this.quizSubmitted for IOS9 Android5 &&
                 if (_this.quizEndFlow && !_this.quizSubmitted){
@@ -521,7 +533,7 @@
                     var _this = this;
                     window.kdp = document.getElementById( _this.embedPlayer.id );
                     window.kdp.sendNotification("QuizSubmitted", _this.kQuizUserEntryId);
-                    mw.log('Quiz: QuizSubmitted ');
+                    mw.log('Quiz: QuizSubmitted sent to kdp');
                 } catch (e) {
                     mw.log('postMessage listener of parent is undefined: ', e);
                 }
@@ -545,13 +557,15 @@
             },
             unloadQuizPlugin:function(embedPlayer){
               var _this = this;
+                var playerElement = _this.embedPlayer.getPlayerElement();
                 $.cpObject = {};
                 $.quizParams = {};
                 $(this.embedPlayer).unbind(_this.bindPostfix);
+                $(playerElement).unbind(_this.bindPostfix);
                 embedPlayer.unbindHelper(_this.bindPostfix);
                 embedPlayer.removeJsListener(_this.bindPostfix);
                 _this.hideQuizOnScrubber();
-                mw.log("Quiz: No Quiz Available");            }
+                mw.log("Quiz: Unload Plugin");            }
         })) {
     }
 })(window.mw, window.jQuery );
