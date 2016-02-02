@@ -1516,7 +1516,9 @@
 				mw.setConfig('LoadingSpinner.Disabled', true);
 				this.restorePlayerCallback(shouldContinue);
 				this.restorePlayerCallback = null;
-				mw.setConfig('LoadingSpinner.Disabled', false);
+				setTimeout(function(){
+					mw.setConfig('LoadingSpinner.Disabled', false);
+				},500);
 			} else { // do a manual restore:
 				// restore player with normal events:
 				this.embedPlayer.adTimeline.restorePlayer( null, adPlayed);
