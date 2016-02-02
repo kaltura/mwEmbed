@@ -826,6 +826,9 @@
 					b( 'playerReady', function(){
 						callback( 'ready', embedPlayer.id );
 					});
+					b( 'bufferStartEvent', function(){
+						callback( 'buffering', embedPlayer.id );
+					});
 					b( 'onpause', function(){
 						callback( 'paused', embedPlayer.id );
 					});
