@@ -7,13 +7,7 @@
 		return (window['MediaSource'] || window['WebKitMediaSource']) && !mw.isFirefox() && !mw.isDesktopSafari() && !mw.isMobileChrome();
 	}
 
-    var nativeSdkDRMTypes = (function() {
-        if (window.kNativeSDK) {
-            return window.kNativeSDK.supportedFormats.drmTypes;
-        } else {
-            return ['video/wvm'];
-        }
-    })();
+    var nativeSdkDRMTypes = window.kNativeSdk.drmFormats;
 
 	//Load 3rd party plugins if DRM sources are available
 	mw.addKalturaConfCheck( function( embedPlayer, callback ){
