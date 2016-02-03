@@ -21,7 +21,7 @@
     },
     "tvpapiAnalytics": {
         "scripts": "resources/tvpapiAnalytics.js",
-        "dependencies": ["mw.KBasePlugin"],
+        "dependencies": ["tvpapiRequest"],
         "kalturaPluginName": "tvpapiAnalytics"
     },
     "tvpapiCatchUp": {

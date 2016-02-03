@@ -77,5 +77,5 @@
             return false;
         }
     });
-    mw.PluginManager.add( 'catchUp', catchUp);
+    mw.PluginManager.add( 'tvpapiCatchUp', catchUp);
 })(window.mw, window.jQuery);

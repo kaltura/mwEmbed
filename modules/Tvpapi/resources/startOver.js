@@ -76,5 +76,5 @@
             return false;
         }
     });
-    mw.PluginManager.add( 'startOver', startOver);
+    mw.PluginManager.add( 'tvpapiStartOver', startOver);
 })(window.mw, window.jQuery);
