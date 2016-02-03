@@ -36,7 +36,7 @@
 
             setupQuiz:function(){
                 var _this = this;
-                this.embedPlayer.disableComponentsHover();
+                //var embedPlayer = this.getPlayer();
 
                 _this.KIVQApi.getUserEntryIdAndQuizParams( function(data) {
                     if (!_this.checkApiResponse('User Entry err-->', data[0])) {
@@ -239,7 +239,7 @@
                     _this.embedPlayer.pause();
                 }
             //    _this.embedPlayer.stopPlayAfterSeek = true;
-                seekTo = (($.cpObject.cpArray[questionNr].startTime) /1000); //-0.1;
+                seekTo = (($.cpObject.cpArray[questionNr].startTime) /1000)-0.9;
                 mw.log("Quiz: seekTo: " + seekTo);
                 _this.embedPlayer.seek(seekTo,false);
             },
@@ -557,11 +557,11 @@
             },
             unloadQuizPlugin:function(embedPlayer){
               var _this = this;
-                var playerElement = _this.embedPlayer.getPlayerElement();
+               // var playerElement = _this.embedPlayer.getPlayerElement();
                 $.cpObject = {};
                 $.quizParams = {};
                 $(this.embedPlayer).unbind(_this.bindPostfix);
-                $(playerElement).unbind(_this.bindPostfix);
+            //    $(playerElement).unbind(_this.bindPostfix);
                 embedPlayer.unbindHelper(_this.bindPostfix);
                 embedPlayer.removeJsListener(_this.bindPostfix);
                 _this.hideQuizOnScrubber();

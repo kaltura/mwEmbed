@@ -1,6 +1,6 @@
 /**
  * Created by mark.feder Kaltura.
- * V2.40.quiz-rc5
+ * V2.40.quiz-rc6
  */
 (function (mw, $) {
     "use strict";
@@ -24,10 +24,17 @@
         inFullScreen:false,
         selectedAnswer:null,
         seekToQuestionTime:null,
+        multiStreamWelcomeSkip:false,
 
         setup: function () {
             var _this = this;
             var embedPlayer = this.getPlayer();
+            embedPlayer.disableComponentsHover();
+
+            this.bind('onChangeStream', function () {
+                mw.log("Quiz: multistream On");
+                _this.multiStreamWelcomeSkip = true;
+            });
 
             embedPlayer.addJsListener( 'kdpReady', function(){
 
@@ -75,6 +82,9 @@
                 else{
                     _this.KIVQModule.unloadQuizPlugin(embedPlayer);
                     embedPlayer.enablePlayControls();
+                    if(embedPlayer.playlist){//playlist
+                        _this.embedPlayer.setKDPAttribute('playlistAPI','autoContinue',true);
+                    };
                  }
             });
         },
@@ -82,24 +92,30 @@
             var _this = this;
             var embedPlayer = this.getPlayer();
 
-            this.bind('prePlayAction'+_this.KIVQModule.bindPostfix, function (e, data) {
-                mw.log("Quiz: PrePlay");
+            if (!_this.multiStreamWelcomeSkip){
+                this.bind('prePlayAction'+_this.KIVQModule.bindPostfix, function (e, data) {
+                    mw.log("Quiz: PrePlay");
+                    if(!embedPlayer.playlist){
+                        if(_this.getPlayer().firstPlay) {
+                            mw.log("Quiz: Welcome");
+                            data.allowPlayback = false;
+                            _this.enablePlayDuringScreen = false;
+                            _this.ssWelcome();
 
-                if(!embedPlayer.playlist){
-                    if(_this.getPlayer().firstPlay) {
-                        mw.log("Quiz: Welcome");
-                        data.allowPlayback = false;
-                        _this.enablePlayDuringScreen = false;
-                        _this.ssWelcome();
-
-                    }else{
-                        _this.KIVQModule.showQuizOnScrubber();
-                        mw.log("Quiz: preplay Show Quiz on Scrubber");
+                        }else{
+                            _this.KIVQModule.showQuizOnScrubber();
+                            mw.log("Quiz: preplay Show Quiz on Scrubber");
+                        };
                     };
-                };
-                _this.unbind('prePlayAction' + _this.KIVQModule.bindPostfix);
-            });
-
+                    _this.unbind('prePlayAction' + _this.KIVQModule.bindPostfix);
+                });
+            }else{
+                this.bind('prePlayAction'+_this.KIVQModule.bindPostfix, function (e, data) {
+                    _this.KIVQModule.showQuizOnScrubber();
+                   // _this.unbind('prePlayAction' + _this.KIVQModule.bindPostfix);
+                });
+                _this.KIVQModule.continuePlay();
+            };
             this.bind('KalturaSupport_CuePointReached'+_this.KIVQModule.bindPostfix, function (e, cuePointObj) {
                 if(!_this.isSeekingIVQ){
                     if ((_this.seekToQuestionTime ===  cuePointObj.cuePoint.startTime)
@@ -115,19 +131,17 @@
                 }
             });
 
-            var playerElement = _this.embedPlayer.getPlayerElement();
-            $(playerElement).bind('seeked'+_this.KIVQModule.bindPostfix, function () {
-                setTimeout(function () {
-                    _this.isSeekingIVQ = false;}, 0);
+            embedPlayer.bindHelper('seeked'+_this.KIVQModule.bindPostfix, function () {
+               _this.isSeekingIVQ = false;
                 mw.log("Quiz: Seeked ");
             });
 
-            $(playerElement).bind('seeking'+_this.KIVQModule.bindPostfix, function () {
-                    _this.isSeekingIVQ = true;
-                    mw.log("Quiz: Seeking ");
-                });
+            embedPlayer.bindHelper('preSeek'+_this.KIVQModule.bindPostfix, function () {
+                _this.isSeekingIVQ = true;
+                mw.log("Quiz: Seeking ");
+            });
 
-            embedPlayer.addJsListener( 'playerPlayEnd'+_this.KIVQModule.bindPostfix, function(){
+            embedPlayer.bindHelper( 'playbackComplete'+_this.KIVQModule.bindPostfix, function(){
                 _this.KIVQModule.quizEndScenario();
                 mw.log("Quiz: PlayerPlayEnd");
             });
