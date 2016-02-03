@@ -197,9 +197,7 @@ kWidget.api.prototype = {
 		var response = data;
 		try {
 			response = JSON.parse( data );
-		}catch(e){
-			mw.log("Error parsing JSON");
-		}
+		}catch(e){}
 		return response;
 	},
 	xhrGet: function( url, param, callback ){

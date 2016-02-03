@@ -57,8 +57,7 @@ mw.MediaPlayers.prototype = {
 			this.defaultPlayers['application/vnd.apple.mpegurl'].push('Kplayer');
 		}
 		// If nativeComponent can play dash, use it.
-        var nativeFormats = window.kNativeSDK ? window.kNativeSDK.supportedFormats : null;
-        if (nativeFormats && $.inArray('application/dash+xml', nativeFormats.allTypes)>=0) {
+        if ($.inArray('application/dash+xml', window.kNativeSdk.allFormats) >= 0) {
             this.defaultPlayers['application/dash+xml'] = ['NativeComponent'];
         }
 	},
