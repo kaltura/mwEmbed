@@ -1,7 +1,8 @@
 /**
  * Created by mark.feder Kaltura.
- * V2.40.quiz-rc6
+ * V2.40.quiz-rc6 r
  */
+
 (function (mw, $) {
     "use strict";
     $.cpObject = {};
