@@ -85,6 +85,11 @@
 			this.bindNativeEvents();
 		},
 
+		notifyErrorOccurred: function (errObj) {
+			NativeBridge.videoPlayer.execute('setAttribute',
+				[ "playerError", errObj.title + ", " + errObj.message ]);
+		},
+
 		notifyJsReadyFunc: function () {
 			if (this.isJsCallbackReady && this.proxyElement) {
 				this.proxyElement.notifyJsReady([]);
@@ -93,6 +98,9 @@
 
 		registerEmbedPlayer: function (embedPlayer) {
 			this.embedPlayer = embedPlayer;
+			this.embedPlayer.unbind("playerError").bind("playerError", function (e, errObj) {
+				this.notifyErrorOccurred(errObj);
+			});
 			this.notifyJsReadyFunc();
 		},
 		sendNotification: function (eventName, eventValue) {
@@ -162,7 +170,6 @@
 
 			$(this.proxyElement).trigger(eventName, [jsEventValue]);
 
-
 			if (this.subscribed[eventName]) {
 				this.subscribed[eventName](jsEventValue);
 			}
@@ -203,9 +210,11 @@
 		}
 	};
 
-
 	if (mw.getConfig('EmbedPlayer.ForceNativeComponent') === true) {
 		window["NativeBridge"] = NativeBridge;
+		$(".mwPlayerContainer").bind("playerError", function (e, errObj) {
+			NativeBridge.videoPlayer.notifyErrorOccurred(errObj);
+		});
 		kWidget.addReadyCallback(function () {
 			NativeBridge.videoPlayer.isJsCallbackReady = true;
 			NativeBridge.videoPlayer.notifyJsReadyFunc();

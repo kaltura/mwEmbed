@@ -1466,6 +1466,7 @@
 		showErrorMsg: function (errorObj) {
 			// Remove a loading spinner
 			this.hideSpinner();
+			$(this).trigger('playerError', errorObj);
 			// clear change media flag
 			this.changeMediaStarted = false;
 			if (this.layoutBuilder) {
