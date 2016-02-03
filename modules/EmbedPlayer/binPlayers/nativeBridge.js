@@ -86,8 +86,8 @@
 		},
 
 		notifyErrorOccurred: function (errObj) {
-			NativeBridge.videoPlayer.execute('setAttribute',
-				[ "playerError", errObj.title + ", " + errObj.message ]);
+			var errMsg = errObj != null ? errObj.title + ", " + errObj.message : "error undefined";
+			NativeBridge.videoPlayer.execute('setAttribute', [ "playerError", errMsg ]);
 		},
 
 		notifyJsReadyFunc: function () {
@@ -97,9 +97,10 @@
 		},
 
 		registerEmbedPlayer: function (embedPlayer) {
+			var _this = this;
 			this.embedPlayer = embedPlayer;
 			this.embedPlayer.unbind("playerError").bind("playerError", function (e, errObj) {
-				this.notifyErrorOccurred(errObj);
+				_this.notifyErrorOccurred(errObj);
 			});
 			this.notifyJsReadyFunc();
 		},
@@ -212,7 +213,7 @@
 
 	if (mw.getConfig('EmbedPlayer.ForceNativeComponent') === true) {
 		window["NativeBridge"] = NativeBridge;
-		$(".mwPlayerContainer").bind("playerError", function (e, errObj) {
+		$(".mwPlayerContainer").one("playerError", function (e, errObj) {
 			NativeBridge.videoPlayer.notifyErrorOccurred(errObj);
 		});
 		kWidget.addReadyCallback(function () {
