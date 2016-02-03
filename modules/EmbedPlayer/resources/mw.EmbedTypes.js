@@ -15,7 +15,7 @@
 
 
 //Native Mobile player
-var nativeComponentPlayerVideo = new mw.MediaPlayer( 'nativeComponentPlayer', window.kNativeSdk.allFormats, 'NativeComponent' );
+var nativeComponentPlayerVideo = new mw.MediaPlayer( 'nativeComponentPlayer', window.kNativeSdk && window.kNativeSdk.allFormats, 'NativeComponent' );
 
 // Flash based players:
 var kplayer = new mw.MediaPlayer('kplayer', ['video/live', 'video/kontiki', 'video/x-flv', 'video/h264', 'video/mp4', 'audio/mpeg', 'application/x-shockwave-flash', 'application/vnd.apple.mpegurl'], 'Kplayer');
