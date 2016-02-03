@@ -51,7 +51,7 @@
                 contentType: "application/json",
                 statusCode: {
                     401: function() {
-                        _this.embedPlayer.embedPlayer("tvpapiTokenExpired");
+                        _this.embedPlayer.triggerHelper("tvpapiTokenExpired");
                     }
                 },
                 data: JSON.stringify( data ),

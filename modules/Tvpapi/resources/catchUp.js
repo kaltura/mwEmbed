@@ -19,7 +19,7 @@
 
         setup: function ( ) {
             this.addBindings();
-            this.getPlayer().setLive( false);
+            this.getPlayer().setLive(false);
         },
 
         addBindings: function () {
