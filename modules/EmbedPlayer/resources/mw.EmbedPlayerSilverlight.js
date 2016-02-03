@@ -361,7 +361,6 @@
 			};
 
 			var doEmbedFunc = function ( resolvedSrc ) {
-				resolvedSrc = "http://pr.cinepolisklic.com/video/pr/troya-a-eng-Web.ism/Manifest";
 				var flashvars = {
 					startvolume: _this.volume
 				};
