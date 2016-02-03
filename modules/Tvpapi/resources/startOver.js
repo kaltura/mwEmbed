@@ -11,7 +11,10 @@
             "userIP": "",
             "refferer": "",
             "countryCd2": "",
-            "languageCode3": ""
+            "languageCode3": "",
+            //There's an issue with startOver and open ended LIVE manifest - so use this flag to force
+            //close ended manifest, where the end time returning from TVPAPI will be in the future.
+            "forceCloseEndedManifest": false
         },
 
         isDisabled: false,
@@ -39,7 +42,7 @@
                 var data = {
                     "mediaFileID": source.assetid,
                     "basicLink": source.src,
-                    "formatType": 1,
+                    "formatType": config.forceCloseEndedManifest ? 0 : 1,
                     "EPGItemID": config.EPGItemID,
                     "startTime": config.startTime,
                     "userIP": config.userIP,
