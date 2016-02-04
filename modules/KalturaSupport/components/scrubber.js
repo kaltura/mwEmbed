@@ -22,7 +22,7 @@
         liveEdge: 98,
 
 		isSliderPreviewEnabled: function () {
-			return this.getConfig("sliderPreview") && !this.isDisabled && !this.embedPlayer.isLive();
+			return this.getConfig("sliderPreview") && !this.isDisabled;
 		},
 		setup: function (embedPlayer) {
 			if ( this.embedPlayer.isMobileSkin() ){
@@ -33,6 +33,10 @@
 			if (this.getConfig('parent') == 'controlsContainer') {
 				this.setConfig('insertMode', 'lastChild');
 			}
+            //new DVR layout: no time label, only negative live edge offset at the mousemove over the scrubber
+            if(this.embedPlayer.isDVR()){
+                this.setConfig('showOnlyTime',true);
+            }
 			this.addBindings();
             if (this.isSliderPreviewEnabled()) {
 				this.setupThumbPreview();
@@ -41,7 +45,7 @@
 		addBindings: function () {
 			var _this = this;
 			this.bind('durationChange', function (event, duration) {
-				_this.duration = duration;
+                _this.duration = duration;
 			});
             this.bind('seeked', function () {
                 _this.justSeeked = true;
@@ -153,7 +157,7 @@
 			});
 		},
 		updatePlayheadUI: function (val) {
-            if( this.getPlayer().instanceOf !== 'Native' && this.getPlayer().isPlaying() && !this.paused && this.embedPlayer.isDVR() ) {
+            if( this.getPlayer().isPlaying() && !this.paused && this.embedPlayer.isDVR() ) {
                 this.checkForLiveEdge();
                 if( !this.getPlayer().isLiveOffSynch()) {
                     this.getComponent().slider('option', 'value', 999);
@@ -172,8 +176,7 @@
             }
             var playHeadPercent = (this.getPlayHeadComponent().position().left + this.getPlayHeadComponent().width()/2) / this.getComponent().width();
             playHeadPercent = parseInt(playHeadPercent*100);
-
-            if( this.getPlayer().isLiveOffSynch() && playHeadPercent > this.liveEdge -1 ){
+            if( this.getPlayer().isLiveOffSynch() && playHeadPercent >= this.liveEdge ){
                 this.getPlayer().setLiveOffSynch(false);
             }
         },
@@ -324,7 +327,17 @@
 				$sliderPreview.css("border", "0px");
 			}
 			$(".scrubber .arrow").css("left", thumbWidth / 2 - 4);
-			$sliderPreviewTime.text(kWidget.seconds2npt(currentTime));
+            var timeText;
+            if( this.embedPlayer.isDVR() ){
+                if( this.getPlayer().isLiveOffSynch() && parseInt(perc*100) > this.liveEdge ){
+                    timeText = 'LIVE';
+                }else {
+                    timeText = "-" + kWidget.seconds2npt(this.duration - currentTime);
+                }
+            }else{
+                timeText = kWidget.seconds2npt(currentTime);
+            }
+			$sliderPreviewTime.text(timeText);
 			$sliderPreviewTime.css({bottom: 2, left: thumbWidth / 2 - $sliderPreviewTime.width() / 2 + 3});
 			$sliderPreview.css("width", thumbWidth);
 
