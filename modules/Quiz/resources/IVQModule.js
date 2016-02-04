@@ -1,5 +1,5 @@
 /**
- * Created by mark.feder on 10/13/2015. r
+ * Created by mark.feder on 10/13/2015.
  */
 (function (mw, $) {
     "use strict";
@@ -21,10 +21,10 @@
             quizEndFlow: false,
             bindPostfix: '.quizPlugin',
             reviewMode:false,
+            isKPlaylist:false,
 
             init: function (embedPlayer,quizPlugin) {
                 var _this = this;
-
 
                 _this.KIVQApi = new mw.KIVQApi(embedPlayer);
                 _this.KIVQScreenTemplate = new mw.KIVQScreenTemplate(embedPlayer);
@@ -36,7 +36,6 @@
 
             setupQuiz:function(){
                 var _this = this;
-                //var embedPlayer = this.getPlayer();
 
                 _this.KIVQApi.getUserEntryIdAndQuizParams( function(data) {
                     if (!_this.checkApiResponse('User Entry err-->', data[0])) {
@@ -52,7 +51,6 @@
                                 _this.canSkip = (e.value.toLowerCase() === 'true');
                             }
                         });
-
                         if (data[0].totalCount > 0) {
                             switch (String(data[0].objects[0].status)) {
                                 case 'quiz.3':
@@ -60,14 +58,8 @@
                                         _this.score = Math.round(data[0].objects[0].score * 100);
                                     }
                                     _this.quizSubmitted = true;
-                                    mw.log("Quiz: Playlist Auto Continue When Submitted");
-                                    _this.embedPlayer.setKDPAttribute('playlistAPI','autoContinue',true);
                                     break;
                                 case '1':
-                                    if(_this.embedPlayer.playlist){
-                                        mw.log("Quiz: Playlist Don't Auto Continue");
-                                        _this.embedPlayer.setKDPAttribute('playlistAPI','autoContinue',false);
-                                    };
                                     break;
                                 case '2':
                                     _this.errMsg('quiz deleted', data);
@@ -76,6 +68,17 @@
                             }
                         }
                     }
+
+                    if(_this.isKPlaylist){
+                        if (_this.quizSubmitted){
+                            mw.log("Quiz: Playlist Auto Continue When Submitted");
+                            _this.embedPlayer.setKDPAttribute('playlistAPI','autoContinue',true);
+                        }else{
+                            mw.log("Quiz: Playlist Don't Auto Continue");
+                            _this.embedPlayer.setKDPAttribute('playlistAPI','autoContinue',false);
+                        }
+                    }
+
                     _this.setUserEntryId(data);
                     _this.checkUserEntryIdReady(function(){
                     _this.getQuestionsAndAnswers(_this.populateCpObject);
@@ -99,6 +102,7 @@
             setUserEntryId:function(data){
                 var _this = this;
                 if (data[0].totalCount > 0 &&  !$.isEmptyObject(data[0].objects[0])) {
+                    mw.log('Quiz: Set user entry id');
                     _this.kQuizUserEntryId = data[0].objects[0].id;
                 }
                 else{
@@ -107,6 +111,7 @@
                             return false;
                         }
                         else{
+                            mw.log('Quiz: create user entry id');
                             _this.kQuizUserEntryId = userData.id;
                         }
                     });
@@ -231,11 +236,7 @@
             },
             gotoScrubberPos: function (questionNr) {
                 var _this = this,seekTo;
-                if (_this.embedPlayer.isPlaying()){
-                    _this.embedPlayer.pause();
-                }
-            //    _this.embedPlayer.stopPlayAfterSeek = true;
-                seekTo = (($.cpObject.cpArray[questionNr].startTime) /1000)-0.9;
+                seekTo = (($.cpObject.cpArray[questionNr].startTime) /1000)-0.5;
                 mw.log("Quiz: seekTo: " + seekTo);
                 _this.embedPlayer.seek(seekTo,false);
             },
@@ -553,15 +554,13 @@
             },
             unloadQuizPlugin:function(embedPlayer){
               var _this = this;
-               // var playerElement = _this.embedPlayer.getPlayerElement();
                 $.cpObject = {};
                 $.quizParams = {};
                 $(this.embedPlayer).unbind(_this.bindPostfix);
-            //    $(playerElement).unbind(_this.bindPostfix);
                 embedPlayer.unbindHelper(_this.bindPostfix);
                 embedPlayer.removeJsListener(_this.bindPostfix);
                 _this.hideQuizOnScrubber();
-                mw.log("Quiz: Unload Plugin");            }
+                mw.log("Quiz: Plugin Unloaded");            }
         })) {
     }
 })(window.mw, window.jQuery );
