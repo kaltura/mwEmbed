@@ -107,10 +107,11 @@
 
 			// handle errors
 			this.bind('embedPlayerError mediaLoadError', function () {
+				var errorMsg = _this.embedPlayer.getError() ? _this.embedPlayer.getError().message : _this.embedPlayer.getErrorMessage();
 				_this.sendBeacon( 'error', {
 					'player': 'kaltura-player-v' + MWEMBED_VERSION,
 					'errorCode': '-1', // currently we don't support error codes
-					'msg': _this.embedPlayer.getError().message,
+					'msg': errorMsg,
 					'resource': _this.getCurrentVideoSrc(),
 					// 'transcode' // not presently used.
 					'live': _this.embedPlayer.isLive(),
@@ -193,6 +194,11 @@
 					});
 				}
 			});
+
+			this.bind('onAdPlay',function(e){
+				clearInterval(checkBufferUnderrun);
+				checkBufferUnderrun = null;
+			});
 		},
 
 		bindFirstPlay:function(){
@@ -202,8 +208,8 @@
 			this.unbind( 'userInitiatedPause' );
 			this.unbind(  'userInitiatedPlay' );
 
-			this.unbind('firstPlay AdSupport_PreSequence');
-			this.bind('firstPlay AdSupport_PreSequence', function(){
+			this.unbind('firstPlay');
+			this.bind('firstPlay', function(){
 				if (!_this.firstPlayDone){
 					// on play send the "start" action:
 					var beaconObj = {
@@ -250,9 +256,10 @@
 			// start previusPingTime at bind time: 
 			this.previusPingTime = new Date().getTime();
 			this.activePingInterval = setInterval(function(){
+				var bitrate = _this.embedPlayer.mediaElement.selectedSource.getBitrate();
 				_this.sendBeacon( 'ping',{
 					'pingTime': (( new Date().getTime() - _this.previusPingTime )  / 1000 ).toFixed(), // round seconds
-					'bitrate': _this.embedPlayer.mediaElement.selectedSource.getBitrate() || -1,
+					'bitrate': bitrate ? bitrate * 1024 : -1,
 					'time': _this.embedPlayer.currentTime,
 					//'totalBytes':"0", // value is only sent along with the dataType parameter. If the bitrate parameter is sent, then this one is not needed.
 					//'dataType': "0", // Kaltura does not really do RTMP streams any more. 
