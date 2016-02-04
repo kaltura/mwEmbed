@@ -1,17 +1,37 @@
 {
+    "tvpapiAPI": {
+        "scripts": "resources/tvpapiAPI.js",
+        "dependencies": ["mw.KBasePlugin"] ,
+        "kalturaPluginName": "tvpapiAPI"
+    },
+    "tvpapiRequest": {
+        "scripts": "resources/tvpapiRequest.js",
+        "dependencies": ["mw.KBasePlugin"],
+        "kalturaPluginName": "tvpapiRequest"
+    },
     "tvpapiGetLicensedLinks": {
         "scripts": "resources/getLicensedLinks.js",
-        "dependencies": ["mw.KBasePlugin"] ,
+        "dependencies": ["tvpapiRequest"] ,
         "kalturaPluginName": "tvpapiGetLicensedLinks"
     },
     "tvpapiGetLicenseData": {
         "scripts": "resources/getLicenseData.js",
-        "dependencies": ["mw.KBasePlugin"],
+        "dependencies": ["tvpapiRequest"],
         "kalturaPluginName": "tvpapiGetLicenseData"
     },
     "tvpapiAnalytics": {
         "scripts": "resources/tvpapiAnalytics.js",
-        "dependencies": ["mw.KBasePlugin"],
+        "dependencies": ["tvpapiRequest"],
         "kalturaPluginName": "tvpapiAnalytics"
+    },
+    "tvpapiCatchUp": {
+        "scripts": "resources/catchUp.js",
+        "dependencies": ["tvpapiRequest"] ,
+        "kalturaPluginName": "tvpapiCatchUp"
+    },
+    "tvpapiStartOver": {
+        "scripts": "resources/startOver.js",
+        "dependencies": ["tvpapiRequest"] ,
+        "kalturaPluginName": "tvpapiStartOver"
     }
 }

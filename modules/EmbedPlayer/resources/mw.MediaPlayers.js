@@ -56,7 +56,11 @@ mw.MediaPlayers.prototype = {
 		if ( mw.getConfig("LeadWithHLSOnFlash") ) {
 			this.defaultPlayers['application/vnd.apple.mpegurl'].push('Kplayer');
 		}
-
+		// If nativeComponent can play dash, use it.
+        var nativeFormats = window.kNativeSDK ? window.kNativeSDK.supportedFormats : null;
+        if (nativeFormats && $.inArray('application/dash+xml', nativeFormats.allTypes)>=0) {
+            this.defaultPlayers['application/dash+xml'] = ['NativeComponent'];
+        }
 	},
 
 	/**
@@ -139,8 +143,11 @@ mw.MediaPlayers.prototype = {
 		}
 		if ( mw.getConfig( 'EmbedPlayer.ForceNativeComponent' ) && this.isSupportedPlayer( 'nativeComponentPlayer' )) {
 			var nativeComponentPlayer = mw.EmbedTypes.getNativeComponentPlayerVideo();
+			var imageOverlayPlayer = mw.EmbedTypes.getNativeImageOverlayPlayer();
 			if (this.isPlayerSupportMimeType(mimePlayers, nativeComponentPlayer)) {
 				mimePlayers = [nativeComponentPlayer];
+			} else if(imageOverlayPlayer.supportsMIMEType(mimeType) ) {
+				mimePlayers = [imageOverlayPlayer];
 			} else {
 				mimePlayers = [];
 			}

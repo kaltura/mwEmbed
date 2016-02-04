@@ -14,39 +14,52 @@
 		unsyncIConClass: 'icon-off-air live-icon live-off-sync-icon',
 		noThumbClass: 'not-clickable',
 
-		liveText: gM( 'mwe-embedplayer-player-on-air' ),
-		offlineText: gM( 'mwe-embedplayer-player-off-air' ),
-		tooltip: gM( 'mwe-embedplayer-player-jump-to-live' ),
+        stringsReady: false,
+		liveText: '',
+		offlineText: '',
+		tooltip: '',
 
 		prevIconClass: undefined,
+		bindPostfix: '.LiveStatus',
 
 		setup: function() {
 			this.prevIconClass = this.onAirIconClass;
             var _this = this;
             this.bind( 'playerReady', function() {
+                if(!_this.stringsReady){
+                    _this.initStrings();
+                    _this.setLiveStreamStatus();
+                }
                 if( _this.getPlayer().isLive() ) {
                     _this.addBindings();
-                }else{
-                    _this.removeBindings();
                 }
             });
+			this.bind( 'onChangeMedia', function() {
+                _this.removeBindings();
+            });
 		},
+        initStrings: function(){
+            this.liveText = gM( 'mwe-embedplayer-player-on-air' );
+            this.offlineText = gM( 'mwe-embedplayer-player-off-air' );
+            this.tooltip = gM( 'mwe-embedplayer-player-jump-to-live' );
+            this.stringsReady = true;
+        },
 		addBindings: function() {
 			var _this = this;
-			this.bind( 'liveStreamStatusUpdate', function( e, onAirObj ) {
+			this.bind( 'liveStreamStatusUpdate' + _this.bindPostfix, function( e, onAirObj ) {
 				if ( onAirObj.onAirStatus != _this.onAirStatus ) {
 					_this.onAirStatus = onAirObj.onAirStatus;
 					_this.setLiveStreamStatus();
 				}
 			} );
-			this.bind( 'movingBackToLive', function() {
+			this.bind( 'movingBackToLive' + _this.bindPostfix, function() {
 				if ( _this.onAirStatus ) {
 					_this.setLiveUI();
 					_this.prevIconClass = _this.onAirIconClass ;
 				}
 			} );
 
-			this.bind( 'seeked seeking onpause onLiveOffSynchChanged', function(e, param) {
+			this.bind( 'seeked'+_this.bindPostfix+' seeking'+_this.bindPostfix+' onpause'+_this.bindPostfix+' onLiveOffSynchChanged'+_this.bindPostfix, function(e, param) {
 				if( e.type === 'onLiveOffSynchChanged' && param === false ){
                     // synch with Live edge
                     _this.backToLive();
@@ -59,8 +72,8 @@
                     _this.prevIconClass = _this.unsyncIConClass;
                 }
 			});
-            this.bind( 'onplay', function() {
-                if ( !_this.getPlayer().isDVR() ) {
+            this.bind( 'onplay' + _this.bindPostfix, function() {
+                if ( !_this.getPlayer().isDVR() && !_this.embedPlayer.changeMediaStarted) {
                     // synch with Live edge
                     _this.getPlayer().setLiveOffSynch(false);
                 }
@@ -68,7 +81,7 @@
 		},
 
         removeBindings: function(){
-            this.unbind( 'liveStreamStatusUpdate movingBackToLive onplay seeked seeking onpause onLiveOffSynchChanged' );
+            this.unbind(  this.bindPostfix );
         },
 
 		getComponent: function() {

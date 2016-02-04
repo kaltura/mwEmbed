@@ -543,6 +543,7 @@
 					'cursor:pointer;' +
 					'height: 53px;' +
 					'width: 70px;' +
+					'border-style: none;' +
 					'top: 50%; left: 50%; margin-top: -26.5px; margin-left: -35px; ' +
 					'background: url(\'' + imagePath + 'player_big_play_button.png\') ;' +
 					'z-index: 1;' +
