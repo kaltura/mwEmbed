@@ -14,9 +14,10 @@
 		unsyncIConClass: 'icon-off-air live-icon live-off-sync-icon',
 		noThumbClass: 'not-clickable',
 
-		liveText: gM( 'mwe-embedplayer-player-on-air' ),
-		offlineText: gM( 'mwe-embedplayer-player-off-air' ),
-		tooltip: gM( 'mwe-embedplayer-player-jump-to-live' ),
+        stringsReady: false,
+		liveText: '',
+		offlineText: '',
+		tooltip: '',
 
 		prevIconClass: undefined,
 		bindPostfix: '.LiveStatus',
@@ -25,6 +26,10 @@
 			this.prevIconClass = this.onAirIconClass;
             var _this = this;
             this.bind( 'playerReady', function() {
+                if(!_this.stringsReady){
+                    _this.initStrings();
+                    _this.setLiveStreamStatus();
+                }
                 if( _this.getPlayer().isLive() ) {
                     _this.addBindings();
                 }
@@ -33,6 +38,12 @@
                 _this.removeBindings();
             });
 		},
+        initStrings: function(){
+            this.liveText = gM( 'mwe-embedplayer-player-on-air' );
+            this.offlineText = gM( 'mwe-embedplayer-player-off-air' );
+            this.tooltip = gM( 'mwe-embedplayer-player-jump-to-live' );
+            this.stringsReady = true;
+        },
 		addBindings: function() {
 			var _this = this;
 			this.bind( 'liveStreamStatusUpdate' + _this.bindPostfix, function( e, onAirObj ) {
