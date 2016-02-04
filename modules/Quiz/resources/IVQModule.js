@@ -60,6 +60,8 @@
                                         _this.score = Math.round(data[0].objects[0].score * 100);
                                     }
                                     _this.quizSubmitted = true;
+                                    mw.log("Quiz: Playlist Auto Continue When Submitted");
+                                    _this.embedPlayer.setKDPAttribute('playlistAPI','autoContinue',true);
                                     break;
                                 case '1':
                                     if(_this.embedPlayer.playlist){
@@ -76,7 +78,7 @@
                     }
                     _this.setUserEntryId(data);
                     _this.checkUserEntryIdReady(function(){
-                        _this.getQuestionsAndAnswers(_this.populateCpObject);
+                    _this.getQuestionsAndAnswers(_this.populateCpObject);
                     });
                 });
             },
@@ -128,12 +130,6 @@
                             _this.quizSubmitted = true;
                         });
                         _this.sendIVQMesageToListener();
-
-                        if(this.embedPlayer.playlist){
-                            mw.log("Quiz: Playlist Let Auto Continue");
-                            this.embedPlayer.setKDPAttribute('playlistAPI','autoContinue',true);
-                        };
-
                     }
                 });
             },
