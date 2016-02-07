@@ -135,7 +135,7 @@ mw.KWidgetSupport.prototype = {
 		embedPlayer.bindHelper( 'KalturaSupport_EntryDataReady', function() {
 			// Set duration
 			debugger;
-			embedPlayer.setDuration( embedPlayer.kalturaPlayerMetaData.msDuration / 1000);
+			embedPlayer.setDuration( embedPlayer.kalturaPlayerMetaData.duration );
 			
 			// Update thumbnail
 			var thumbUrl = _this.getKalturaThumbnailUrl({
@@ -281,6 +281,9 @@ mw.KWidgetSupport.prototype = {
 	},
 	updatePlayerContextData: function(embedPlayer, playerData){
 		if( playerData.contextData ){
+			if ( playerData.contextData.msDuration) {
+				embedPlayer.kalturaPlayerMetaData.duration = playerData.contextData.msDuration / 1000;
+			}
 			embedPlayer.kalturaContextData = playerData.contextData;
 			if (playerData.contextData &&
 				$.isArray(playerData.contextData.accessControlActions)) {
@@ -1714,7 +1717,7 @@ mw.KWidgetSupport.prototype = {
 		this.removedAdaptiveFlavors = false;
 		// Apple adaptive streaming is broken for short videos
 		// remove adaptive sources if duration is less then 10 seconds,
-		if( playerData.meta.msDuration/1000 < 10 ) {
+		if( playerData.meta.duration < 10 ) {
 			deviceSources = this.removeAdaptiveFlavors( deviceSources );
 		}
 
