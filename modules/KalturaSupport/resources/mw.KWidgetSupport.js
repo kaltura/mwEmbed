@@ -134,7 +134,6 @@ mw.KWidgetSupport.prototype = {
 		// Update poster when we get entry meta data
 		embedPlayer.bindHelper( 'KalturaSupport_EntryDataReady', function() {
 			// Set duration
-			debugger;
 			embedPlayer.setDuration( embedPlayer.kalturaPlayerMetaData.duration );
 			
 			// Update thumbnail
