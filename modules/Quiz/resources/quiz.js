@@ -54,7 +54,9 @@
                         _this.KIVQModule.unloadQuizPlugin(embedPlayer);
                         embedPlayer.stop();
                     }else{
-                        embedPlayer.disablePlayControls();
+                        if(!_this.multiStreamWelcomeSkip){
+                            embedPlayer.disablePlayControls();
+                        }
                         embedPlayer.addPlayerSpinner();
                     };
 
@@ -70,12 +72,18 @@
                         embedPlayer.hideSpinner();
                         embedPlayer.enablePlayControls();
                     });
+
                     mw.log("Quiz: Quiz Loading..");
 
-                    var cssLink = "modules/Quiz/resources/css/quizFonts.css";
-                    cssLink = cssLink.toLowerCase().indexOf("http") === 0 ? cssLink : kWidget.getPath() + cssLink;
-                    if (!$("link[href=cssLink]").length){
-                        $('head', window.parent.document).append('<link type="text/css" rel="stylesheet" href="' + cssLink + '"/>');
+                    try {
+                        var cssLink = "modules/Quiz/resources/css/quizFonts.css";
+                        cssLink = cssLink.toLowerCase().indexOf("http") === 0 ? cssLink : kWidget.getPath() + cssLink;
+                        if (!$("link[href=cssLink]").length){
+                            $('head', window.parent.document).append('<link type="text/css" rel="stylesheet" href="' + cssLink + '"/>');
+                        }
+                    }
+                    catch(err) {
+                        mw.log("Quiz: Err loading fonts :"+err.message);
                     }
                 }
                 else{
