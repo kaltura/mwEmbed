@@ -393,6 +393,10 @@
                             _this.KIVQModule.continuePlay();
                         });
                     }
+                    if(_this.KIVQModule.isKPlaylist){
+                        mw.log("Quiz: Playlist Auto Continue After Submitted");
+                        _this.embedPlayer.setKDPAttribute('playlistAPI','autoContinue',true);
+                    }
                 });
         },
         ssReviewAnswer: function (selectedQuestion) {
