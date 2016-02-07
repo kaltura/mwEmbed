@@ -60,9 +60,10 @@
                         embedPlayer.addPlayerSpinner();
                     };
 
-                    _this.addBindings();
-
                     _this.KIVQModule.checkCuepointsReady(function(){
+
+                        _this.addBindings();
+
                         if(_this.KIVQModule.isKPlaylist){
                             _this.enablePlayDuringScreen = false;
                             _this.ssWelcome();
@@ -98,10 +99,10 @@
         addBindings: function () {
             var _this = this;
             var embedPlayer = this.getPlayer();
-
+            mw.log("Quiz: Add Bindings ");
             if (!_this.multiStreamWelcomeSkip){
                 this.bind('prePlayAction'+_this.KIVQModule.bindPostfix, function (e, data) {
-                    mw.log("Quiz: PrePlay");
+                    mw.log("Quiz: Bind PrePlay");
                     if(!_this.KIVQModule.isKPlaylist){
                         if(_this.getPlayer().firstPlay) {
                             mw.log("Quiz: Welcome");
