@@ -134,7 +134,8 @@ mw.KWidgetSupport.prototype = {
 		// Update poster when we get entry meta data
 		embedPlayer.bindHelper( 'KalturaSupport_EntryDataReady', function() {
 			// Set duration
-			embedPlayer.setDuration( embedPlayer.kalturaPlayerMetaData.duration );
+			debugger;
+			embedPlayer.setDuration( embedPlayer.kalturaPlayerMetaData.msDuration / 1000);
 			
 			// Update thumbnail
 			var thumbUrl = _this.getKalturaThumbnailUrl({
@@ -1713,7 +1714,7 @@ mw.KWidgetSupport.prototype = {
 		this.removedAdaptiveFlavors = false;
 		// Apple adaptive streaming is broken for short videos
 		// remove adaptive sources if duration is less then 10 seconds,
-		if( playerData.meta.duration < 10 ) {
+		if( playerData.meta.msDuration/1000 < 10 ) {
 			deviceSources = this.removeAdaptiveFlavors( deviceSources );
 		}
 
