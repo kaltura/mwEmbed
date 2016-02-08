@@ -553,7 +553,7 @@
 			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 
 			if (isLinear && !this.isNativeSDK) {
-				this.embedPlayer.enablePlayControls(["scrubber","share","infoScreen","related"]);
+				this.embedPlayer.enablePlayControls(["scrubber","share","infoScreen","related","playlistAPI","nextPrevBtn"]);
 			} else {
 				_this.embedPlayer.pause();
 			}
