@@ -121,7 +121,11 @@
                     //calculate offlineAlertOffset for timeout (by default = 0 as sometimes offline is only for a second and the message is not needed..)
                     var offlineAlertOffest = _this.calculateOfflineAlertOffest();
 
-					setTimeout( function() {
+                    if (_this.offAirTimeout){
+                        clearTimeout(_this.offAirTimeout);
+                    }
+
+                    _this.offAirTimeout = setTimeout( function() {
 						if ( !_this.onAirStatus ) {
                             //if we already played once it means stream data was loaded. We can continue playing in "VOD" mode
 							if ( !embedPlayer.firstPlay && _this.isDVR() ) {
@@ -154,6 +158,10 @@
 					embedPlayer.triggerHelper( 'liveOffline' );
 
 				}  else if ( !_this.onAirStatus && onAirObj.onAirStatus ) {
+                    if (_this.offAirTimeout){
+                        clearTimeout(_this.offAirTimeout);
+                        _this.offAirTimeout = null;
+                    }
 					if ( _this.getPlayer().removePosterFlag && !_this.playWhenOnline && !embedPlayer.isPlaying() ) {
 						_this.addPoster();
 					}
