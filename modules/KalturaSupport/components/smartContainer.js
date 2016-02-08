@@ -15,6 +15,7 @@
 
 		menuOpened: false,
 		$menu: null,
+		closeMenuTimeoutId: null,
 
 		setup: function( embedPlayer ) {
 			if ( $.isEmptyObject(this.getConfig("config")) ){
@@ -66,12 +67,26 @@
 
 		openMenu: function(x){
 			// set menu position
+			var _this = this;
 			var rightPosition = this.embedPlayer.getVideoHolder().width() - x - this.getComponent().width()/2; // set right position for the menu according to the mouse click x position
 			var bottomPosition = 0; // set the menu bottom to the video holder bottom
 			if  ( this.embedPlayer.getKalturaConfig( "controlBarContainer", "hover" ) === true ){
 				bottomPosition = this.embedPlayer.getInterface().find(".controlBarContainer").height(); // for hovering controls, update the menu bottom to the controls bar height
 			}
 			this.getMenu().css({"bottom": bottomPosition, "right": rightPosition}).show();
+			this.getMenu().on("mouseleave", function(){
+				clearInterval(_this.closeMenuTimeoutId);
+				_this.closeMenuTimeoutId = null;
+				_this.closeMenuTimeoutId = setInterval(function(){
+					if (_this.menuOpened){
+						_this.closeMenu();
+					}
+				},5000);
+			});
+			this.getMenu().on("mouseenter", function(){
+				clearInterval(_this.closeMenuTimeoutId);
+				_this.closeMenuTimeoutId = null;
+			});
 			this.menuOpened = true;
 			this.getPlayer().triggerHelper( 'onDisableKeyboardBinding' );
 			this.getPlayer().triggerHelper( 'onComponentsHoverDisabled' );
