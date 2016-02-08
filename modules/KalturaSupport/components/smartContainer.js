@@ -75,17 +75,21 @@
 			}
 			this.getMenu().css({"bottom": bottomPosition, "right": rightPosition}).show();
 			this.getMenu().on("mouseleave", function(){
-				clearInterval(_this.closeMenuTimeoutId);
-				_this.closeMenuTimeoutId = null;
-				_this.closeMenuTimeoutId = setInterval(function(){
+				if (_this.closeMenuTimeoutId){
+					clearTimeout(_this.closeMenuTimeoutId);
+					_this.closeMenuTimeoutId = null;
+				}
+				_this.closeMenuTimeoutId = setTimeout(function(){
 					if (_this.menuOpened){
 						_this.closeMenu();
 					}
 				},5000);
 			});
 			this.getMenu().on("mouseenter", function(){
-				clearInterval(_this.closeMenuTimeoutId);
-				_this.closeMenuTimeoutId = null;
+				if (_this.closeMenuTimeoutId){
+					clearTimeout(_this.closeMenuTimeoutId);
+					_this.closeMenuTimeoutId = null;
+				}
 			});
 			this.menuOpened = true;
 			this.getPlayer().triggerHelper( 'onDisableKeyboardBinding' );
@@ -94,6 +98,10 @@
 		},
 
 		closeMenu: function(){
+			if (this.closeMenuTimeoutId){
+				clearTimeout(this.closeMenuTimeoutId);
+				this.closeMenuTimeoutId = null;
+			}
 			this.getMenu().find("ul").hide();
 			this.getMenu().hide();
 			this.menuOpened = false;
