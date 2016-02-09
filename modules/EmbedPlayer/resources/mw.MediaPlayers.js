@@ -61,9 +61,14 @@ mw.MediaPlayers.prototype = {
             this.defaultPlayers['application/dash+xml'] = ['NativeComponent'];
         }
 
-		// If nativeComponent can play dash, use it.
-		if ($.inArray('application/vnd.apple.mpegurl',  window.kNativeSdk && window.kNativeSdk.allFormats) >= 0) {
-			this.defaultPlayers['application/vnd.apple.mpegurl'] = ['NativeComponent'];
+		// If nativeComponent can play hls, use it.
+		if (window.kNativeSdk && window.kNativeSdk.allFormats) {
+			if ( $.inArray( 'application/vnd.apple.mpegurl' , window.kNativeSdk && window.kNativeSdk.allFormats ) >= 0 ) {
+				this.defaultPlayers['application/vnd.apple.mpegurl'] = ['NativeComponent'];
+			}
+		} else {
+			//backward compatibility for sdk that don't send the allFormats param
+			this.defaultPlayers['application/vnd.apple.mpegurl'] = ['NativeComponent','Native'];
 		}
 	},
 
