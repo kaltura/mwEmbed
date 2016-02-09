@@ -1122,7 +1122,8 @@ mw.KWidgetSupport.prototype = {
 				var entryResult =  window.kalturaIframePackageData.entryResult;
 				_this.handlePlayerData( embedPlayer, entryResult );
 				//if we dont have special widgetID or the KS is defined continue as usual
-				if ( "_" + embedPlayer.kpartnerid == playerRequest.widget_id || _this.kClient.getKs() ) {
+				var kpartnerid = embedPlayer.kpartnerid ? embedPlayer.kpartnerid : "";
+				if ( "_" + kpartnerid == playerRequest.widget_id || _this.kClient.getKs() ) {
 					callback( entryResult );
 				}else{
 					//if we have special widgetID and we dont have a KS - ask for KS before continue the process
