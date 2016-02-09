@@ -280,6 +280,9 @@ mw.KWidgetSupport.prototype = {
 	},
 	updatePlayerContextData: function(embedPlayer, playerData){
 		if( playerData.contextData ){
+			if ( playerData.contextData.msDuration) {
+				embedPlayer.kalturaPlayerMetaData.duration = playerData.contextData.msDuration / 1000;
+			}
 			embedPlayer.kalturaContextData = playerData.contextData;
 			if (playerData.contextData &&
 				$.isArray(playerData.contextData.accessControlActions)) {
