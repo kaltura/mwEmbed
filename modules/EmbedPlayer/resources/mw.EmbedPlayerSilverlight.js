@@ -728,6 +728,12 @@
 			this.parent_pause();
 		} ,
 		/**
+		 * load method calls parent_load to start fetching media from server, in case of DRM the license request will be handled as well
+		 */
+		load: function () {
+			this.playerObject.load();
+		},
+		/**
 		 * playerSwitchSource switches the player source working around a few bugs in browsers
 		 *
 		 * @param {object}
@@ -865,7 +871,13 @@
 			this.parent_onFlavorsListChanged( values.flavors );
 
 		} ,
-
+		getSources: function(){
+			// check if manifest defined flavors have been defined:
+			if( this.manifestAdaptiveFlavors.length ){
+				return this.manifestAdaptiveFlavors;
+			}
+			return this.parent_getSources();
+		},
 		onEnableGui: function ( data , id ) {
 			if ( data.guiEnabled === false ) {
 				this.disablePlayControls();
@@ -929,8 +941,9 @@
 		 */
 		getSourceIndex: function ( source ) {
 			var sourceIndex = null;
-			$.each( this.mediaElement.getPlayableSources() , function ( currentIndex , currentSource ) {
-				if ( source.getBitrate() == currentSource.getBitrate() ) {
+			var sourceAssetId = source.getAssetId();
+			$.each( this.getSources() , function ( currentIndex , currentSource ) {
+				if (sourceAssetId == currentSource.getAssetId()) {
 					sourceIndex = currentIndex;
 					return false;
 				}
@@ -945,11 +958,11 @@
 				var trackIndex = -1;
 				if ( source !== -1 ) {
 					trackIndex = this.getSourceIndex( source );
+					mw.log("EmbedPlayerSPlayer:: switch to track index: " + trackIndex);
+					$(this).trigger('sourceSwitchingStarted', [
+						{currentBitrate: source.getBitrate()}
+					]);
 				}
-				mw.log( "EmbedPlayerSPlayer:: switch to track index: " + trackIndex );
-				$( this ).trigger( 'sourceSwitchingStarted' , [
-					{currentBitrate: source.getBitrate()}
-				] );
 				this.requestedSrcIndex = trackIndex;
 				this.playerObject.selectTrack( trackIndex );
 			}

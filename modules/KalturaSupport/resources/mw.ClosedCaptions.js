@@ -71,27 +71,8 @@
 						}
 					});
 				}
-				this.bind( 'onEmbeddedData', function( e, captionData ) {
-					//remove old captions
-					var $tracks = _this.embedPlayer.getInterface().find( '.track' );
-					$tracks.each( function( inx, caption){
-						if(  $( caption ).attr('data-capId') == captionData.capId ){
-							$( caption ).remove();
-						}
-					});
-					if ( _this.getConfig( 'displayCaptions' ) === true ) {
-						var caption = captionData;
-						//if we got raw ttml <p>
-						if ( captionData.ttml ) {
-							var xml =  $.parseXML( mw.html.unescape( decodeURIComponent( captionData.ttml ) ));
-							caption.caption = _this.selectedSource.parseCaptionObjTTML( $(xml).find( 'p' )[0] );
-						}
-						if ( !_this.selectedSource ) {
-							_this.selectedSource = caption.source;
-						}
-                        var captionContent = _this.parseCaption(caption.caption);
-						_this.addCaption( _this.selectedSource, caption.capId, captionContent );
-					}
+				this.bind( 'onEmbeddedData', function (e, captions){
+					_this.handleEmbeddedData(captions);
 				});
 				this.bind( 'changedClosedCaptions', function () {
 					_this.getPlayer().triggerHelper('newClosedCaptionsData');
@@ -110,6 +91,7 @@
 							newSources.push( source );
 						} );
 						_this.buildMenu( newSources );
+						outOfBandCaptionEventHandlers.call(_this);
 					}
 				} );
 			} else {
@@ -561,7 +543,10 @@
 			return selectedSource;
 		},
 		monitor: function(){
-			this.updateSourceDisplay( this.selectedSource, this.getPlayer().currentTime );
+			// Only apply monitor if captions are avaialble
+			if (this.selectedSource && this.selectedSource.captions && this.selectedSource.captions.length > 0) {
+				this.updateSourceDisplay(this.selectedSource, this.getPlayer().currentTime);
+			}
 		},
 		updateSourceDisplay: function ( source, time ) {
 			var _this = this;
@@ -858,6 +843,7 @@
 							_this.setConfig('displayCaptions', false);
 						} else {
 							_this.setTextSource( source );
+							_this.embedPlayer.triggerHelper("selectClosedCaptions", source.label);
 							_this.getActiveCaption();
 						}
 					},
@@ -894,6 +880,7 @@
 				},
 				'callback': function(){
 					_this.selectedSource = null;
+					_this.embedPlayer.triggerHelper("selectClosedCaptions", "Off");
 					_this.setConfig('displayCaptions', false);
 					// also update the cookie to "None"
 					_this.getPlayer().setCookie( _this.cookieName, 'None' );
@@ -913,6 +900,7 @@
 					}
 				});
 			}
+
 			this.selectedSource = source;
 
 			if( !this.getConfig('displayCaptions') ){
@@ -991,7 +979,55 @@
                 parsedCaption=parsedCaption.replace(regExp,"");
 
             return { "content" : parsedCaption };
-        }
+        },
+		handleEmbeddedData: function( captionData ) {
+			//remove old captions
+			var $tracks = this.embedPlayer.getInterface().find( '.track' );
+			$tracks.each( function( inx, caption){
+				if(  $( caption ).attr('data-capId') == captionData.capId ){
+					$( caption ).remove();
+				}
+			});
+			if ( this.getConfig( 'displayCaptions' ) === true ) {
+				if ( !this.selectedSource ) {
+					this.selectedSource = captionData.source;
+				}
+				//if we got raw ttml <p>
+				if ( captionData.ttml ) {
+					this.handleTTML(captionData);
+				} else {
+					// else handle direct caption string - pay attention we don't support start and end time here yet!
+					this.handleVTT(captionData);
+				}
+			}
+		},
+		handleTTML: function(captionData){
+			var timestamp = 0;
+			var xml =  $.parseXML( mw.html.unescape( decodeURIComponent( captionData.ttml ) ));
+			var p =$(xml).find( 'p' )[0];
+			captionData.caption = this.selectedSource.parseCaptionObjTTML( p );
+
+			//Extract the manifest chunk timestamp
+			var attr = p.attributes;
+			var i;
+			for (i=0; i< attr.length; i++){
+				if (attr[i].nodeName === "timestamp"){
+					timestamp = parseFloat(attr[i].value);
+					break;
+				}
+			}
+			var captionContent = this.parseCaption(captionData.caption);
+			var newCaption = {
+				start: captionData.caption.start + timestamp,
+				end: captionData.caption.end + timestamp,
+				content: captionContent.content
+			};
+			this.selectedSource.captions.push(newCaption);
+		},
+		handleVTT: function(captionData){
+			var captionContent = this.parseCaption(captionData.caption);
+			this.addCaption( this.selectedSource, captionData.capId, captionContent );
+		}
 	}));
 
 } )( window.mw, window.jQuery );

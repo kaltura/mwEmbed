@@ -73,9 +73,10 @@
 		//flag that indicates we are now playing linear ad
 		playingLinearAd:false,
 
-		leadWithFlash: true,
+		leadWithFlash: false,
 
 		adManagerLoaded: false,
+		adManagerAutoStart: false,
 
 		localizationCode: null,
 
@@ -159,7 +160,7 @@
 			if ( this.trackCuePoints ){
 				this.handleCuePoints();
 			}
-			if (( mw.isIE8() || mw.isIE9() || _this.leadWithFlash ) && (mw.supportsFlash())) {
+			if (( mw.isIE8() || mw.isIE9() || mw.isEdge() || _this.leadWithFlash ) && (mw.supportsFlash())) {
 				mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
 				_this.isChromeless = true;
 				_this.prevSlotType = 'none';
@@ -187,6 +188,12 @@
 			if ( _this.getConfig( 'prerollUrlJS' ) !== undefined && !_this.getConfig( 'adTagUrl' )) {
 				_this.adTagUrl = _this.getConfig( 'prerollUrlJS' );
 			}
+
+			_this.embedPlayer.bindHelper( 'playerReady' + this.bindPostfix, function(event){
+				// Request ads
+				mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
+				_this.requestAds();
+			});
 
 			// Load double click ima per doc:
 			this.loadIma( function(){
@@ -377,9 +384,18 @@
 					failureCB( errorCode );
 				} );
 		},
+		startAdsManager: function(){
+			// Initialize the ads manager. In case of ad playlist with a preroll, the preroll will start playing immediately.
+			this.adsManager.init( this.embedPlayer.getWidth(), this.embedPlayer.getHeight(), google.ima.ViewMode.NORMAL);
+			this.adsManager.setVolume( this.embedPlayer.getPlayerElementVolume() );
+			// Start the ad playback. For video and overlay ads, this will start the ads. For automatic ad rules controller ads, this will be ignored.
+			mw.log( "DoubleClick::adsManager.play" );
+			this.adsManager.start();
+		},
 		addManagedBinding: function(){
 			var _this = this;
 			mw.log( "DoubleClick::addManagedBinding" );
+
 			_this.embedPlayer.bindHelper( 'AdSupport_preroll' + _this.bindPostfix, function( event, sequenceProxy ){
 				// Add the slot to the given sequence proxy target target
 				sequenceProxy[ _this.getSequenceIndex( 'preroll' ) ] = function(callback){
@@ -390,9 +406,25 @@
 					_this.shouldPausePlaylist = true;
 					// Setup the restore callback
 					_this.restorePlayerCallback = callback;
-					// Request ads
-					mw.log( "DoubleClick:: addManagedBinding : requestAds for preroll:" +  _this.getConfig( 'adTagUrl' )  );
-					_this.requestAds();
+
+					if ( _this.isChromeless ){
+						_this.requestAds();
+					}else{
+						// Set the content element to player element:
+						var playerElement =  _this.embedPlayer.getPlayerElement();
+						//Load the video tag to enable setting the source by doubleClick library
+						if (mw.isMobileDevice() && !_this.playerElementLoaded) {
+							_this.playerElementLoaded = true;
+							playerElement.load();
+						}
+						_this.saveTimeWhenSwitchMedia = mw.isMobileDevice();
+						_this.getAdDisplayContainer().initialize();
+						if ( _this.adManagerLoaded ){
+							_this.startAdsManager();
+						}else{
+							_this.adManagerAutoStart = true;
+						}
+					}
 				}
 			});
 
@@ -486,6 +518,18 @@
 					}
 				});
 			}
+
+			// due to IMA removal of custom playback on Android devices, we must get a user gesture for each new entry in order to show prerolls. Preventing auto play after change media in such cases.
+			if ( !_this.isNativeSDK && _this.embedPlayer.playlist && mw.isMobileDevice() && mw.isAndroid() ){
+				_this.embedPlayer.setKalturaConfig( 'playlistAPI', 'autoPlay',false );
+				_this.embedPlayer.autoplay = false;
+				_this.embedPlayer.bindHelper('onChangeMedia', function () {
+					_this.embedPlayer.bindHelper('prePlayAction', function (event, prePlay) {
+						prePlay.allowPlayback = false;
+						_this.embedPlayer.unbindHelper('prePlayAction');
+					});
+				});
+			}
 		},
 
 		pauseAd: function (isLinear) {
@@ -509,7 +553,7 @@
 			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 
 			if (isLinear && !this.isNativeSDK) {
-				this.embedPlayer.enablePlayControls(["scrubber","share","infoScreen","related"]);
+				this.embedPlayer.enablePlayControls(["scrubber","share","infoScreen","related","playlistAPI","nextPrevBtn"]);
 			} else {
 				_this.embedPlayer.pause();
 			}
@@ -565,14 +609,7 @@
 		 */
 		getContent:function(){
 			// Set the content element to player element:
-			var playerElement =  this.embedPlayer.getPlayerElement();
-			//Load the video tag to enable setting the source by doubleClick library
-			if (mw.isMobileDevice() && !this.playerElementLoaded) {
-				this.playerElementLoaded = true;
-				playerElement.load();
-			}
-			this.saveTimeWhenSwitchMedia = mw.isMobileDevice();
-			return playerElement;
+			return this.embedPlayer.getPlayerElement();
 		},
 		getAdContainer: function(){
 			if( !$('#' + this.getAdContainerId() ).length ){
@@ -722,7 +759,6 @@
 				{
 					this.restorePlayerCallback();
 				}
-				this.getAdDisplayContainer().initialize();
 				return;
 			}
 			var _this = this;
@@ -737,7 +773,7 @@
 			adTagUrl = _this.addAdRequestParams( adTagUrl );
 
 			// Update the local lastRequestedAdTagUrl for debug and audits
-			_this.embedPlayer.setKDPAttribute( this.pluginName, 'requestedAdTagUrl', adTagUrl );
+			this.embedPlayer.setKDPAttribute( this.pluginName, 'requestedAdTagUrl', adTagUrl );
 
 			// Create ad request object.
 			var adsRequest = {};
@@ -757,7 +793,7 @@
 				adsRequest['adType'] = adType;
 			}
 			// Set the size in the adsRequest
-			var size = _this.getPlayerSize();
+			var size = this.getPlayerSize();
 
 			adsRequest.linearAdSlotWidth = size.width;
 			adsRequest.linearAdSlotHeight = size.height;
@@ -765,19 +801,11 @@
 			adsRequest.nonLinearAdSlotWidth = size.width;
 			adsRequest.nonLinearAdSlotHeight = size.height;
 
-			var timeoutVal = _this.getConfig("adsManagerLoadedTimeout") || 5000;
-			mw.log( "DoubleClick::requestAds: start timer for adsManager loading check: " + timeoutVal + "ms");
-			this.adsManagerLoadedTimeoutId = setTimeout(function(){
-				if ( !_this.adManagerLoaded ){
-					mw.log( "DoubleClick::requestAds: adsManager failed loading after " + timeoutVal + "ms");
-					_this.onAdError("adsManager failed loading!");
-				}
-			}, timeoutVal);
 
 			// if on chromeless - reuest ads using the KDP DoubleClick plugin instead of the JS plugin
 			if (this.isChromeless){
 				adsRequest.adTagUrl = encodeURIComponent(adsRequest.adTagUrl);
-				_this.embedPlayer.getPlayerElement().sendNotification( 'requestAds', adsRequest );
+				this.embedPlayer.getPlayerElement().sendNotification( 'requestAds', adsRequest );
 				mw.log( "DoubleClick::requestAds: Chromeless player request ad from KDP plugin");
 				return;
 			}
@@ -788,20 +816,30 @@
 				return;
 			}
 
+			var timeoutVal = this.getConfig("adsManagerLoadedTimeout") || 5000;
+			mw.log( "DoubleClick::requestAds: start timer for adsManager loading check: " + timeoutVal + "ms");
+			this.adsManagerLoadedTimeoutId = setTimeout(function(){
+				if ( !_this.adManagerLoaded ){
+					mw.log( "DoubleClick::requestAds: adsManager failed loading after " + timeoutVal + "ms");
+					_this.onAdError("adsManager failed loading!");
+				}
+			}, timeoutVal);
+
 			// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
-			this.getAdDisplayContainer().initialize();
+			this.getAdDisplayContainer();
+			this.hideAdContainer();
 
 			// Create ads loader.
-			_this.adsLoader = new google.ima.AdsLoader( _this.adDisplayContainer );
+			this.adsLoader = new google.ima.AdsLoader( _this.adDisplayContainer );
 
 			// Attach the events before making the request.
-			_this.adsLoader.addEventListener(
+			this.adsLoader.addEventListener(
 				google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
 				function( event ){
 					_this.onAdsManagerLoaded( event );
 				},
 				false);
-			_this.adsLoader.addEventListener(
+			this.adsLoader.addEventListener(
 				google.ima.AdErrorEvent.Type.AD_ERROR,
 				function(event ){
 					_this.onAdError( event );
@@ -810,57 +848,42 @@
 
 			// 4. Make the request.
 			try{
-				_this.adsLoader.requestAds( adsRequest );
+				this.adsLoader.requestAds( adsRequest );
 			}catch(e){
-				_this.onAdError( e );
+				this.onAdError( e );
 			}
 		},
 		// Handles the ads manager loaded event. In case of no ads, the AD_ERROR
 		// event is issued and error handler is invoked.
 		onAdsManagerLoaded: function( loadedEvent ) {
-			var _this = this;
 			mw.log( 'DoubleClick:: onAdsManagerLoaded' );
 
-			mw.log( "DoubleClick::requestAds: clear timer for adsManager loading check");
-			clearTimeout(this.adsManagerLoadedTimeoutId);
-			this.adsManagerLoadedTimeoutId = null;
+			if (this.adsManagerLoadedTimeoutId){
+				mw.log( "DoubleClick::requestAds: clear timer for adsManager loading check");
+				clearTimeout(this.adsManagerLoadedTimeoutId);
+				this.adsManagerLoadedTimeoutId = null;
+			}
 
-			// 1. Retrieve the ads manager. Regardless of ad type (video ad,
-			//	overlay or ad playlist controlled by ad rules), the API is the
-			//	same.
-			//
-			// It is required to pass in the ad display container created
-			// previously and the content element, so the SDK can track content
-			// and play ads automatically.
-			//
 			var adsRenderingSettings = new google.ima.AdsRenderingSettings();
 			if (!this.getConfig("adTagUrl")){
 				adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true; // for manual VAST, get the SDK to restore the player
 			}
 			adsRenderingSettings.useStyledNonLinearAds = true;
 			this.adsManager = loadedEvent.getAdsManager( this.embedPlayer, adsRenderingSettings );
-			if ( _this.adManager != null ) {
-				_this.adManagerLoaded = true;
-			}
+			this.adManagerLoaded = true;
 
 			// add a global ad manager refrence:
-			$( _this.embedPlayer ).data( 'doubleClickAdsMangerRef', _this.adsManager );
+			$( this.embedPlayer ).data( 'doubleClickAdsMangerRef', this.adsManager );
 
 			// Add Ad Manager Listeners
-			_this.addAdMangerListeners();
+			this.addAdMangerListeners();
 
 			// Add embedPlayer listeners:
-			_this.addEmbedPlayerListeners();
+			this.addEmbedPlayerListeners();
 
-			// Initialize the ads manager. In case of ad playlist with a preroll,
-			// the preroll will start playing immediately.
-			_this.adsManager.init( _this.embedPlayer.getWidth(), _this.embedPlayer.getHeight(), google.ima.ViewMode.NORMAL);
-			_this.adsManager.setVolume( _this.embedPlayer.getPlayerElementVolume() );
-			// Start the ad playback. For video and overlay ads, this will
-			// start the ads. For automatic ad rules controller ads, this will be
-			// ignored.
-			mw.log( "DoubleClick::adsManager.play" );
-			_this.adsManager.start();
+			if ( this.adManagerAutoStart ){
+				this.startAdsManager();
+			}
 		},
 		displayCompanions: function(ad){
 			if ( this.getConfig( 'disableCompanionAds' )){
@@ -972,15 +995,6 @@
 				if ( _this.saveTimeWhenSwitchMedia ) {
 					_this.timeToReturn = _this.embedPlayer.currentTime;
 				}
-				// sometimes CONTENT_PAUSE_REQUESTED is the last event we receive :(
-				// give double click 12 seconds to load the ad, else return to content playback
-				setTimeout( function(){
-					if( $.isFunction( _this.startedAdPlayback ) ){
-						mw.log( " CONTENT_PAUSE_REQUESTED without no ad LOADED! ");
-						// ad error will resume playback
-						_this.onAdError( " CONTENT_PAUSE_REQUESTED without no ad LOADED! ");
-					}
-				}, 12000 );
 			} );
 			adsListener( 'LOADED', function(adEvent){
 				var adData = adEvent.getAdData();
@@ -1158,6 +1172,7 @@
 			});
 		},
 		bindChromelessEvents: function(){
+			var adInfoObj = {};
 			//First check that we even have a player element to access, player will be empty in cases where we do
 			//an empty player loading first and only after that we ask for entry data
 			if (this.embedPlayer.getPlayerElement() !== undefined && this.embedPlayer.getPlayerElement() !== null) {
@@ -1170,11 +1185,15 @@
 
 				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
 					mw.log("DoubleClick:: adStart");
+                    // for preroll ad that doesn't play using our video tag - we can load our video tag to improve performance once the ad finish
+                    if ( _this.currentAdSlotType === "preroll" ){
+                        _this.embedPlayer.load();
+                    }
 					_this.embedPlayer.sequenceProxy.isInSequence = true;
 					// set volume when ad starts to enable autoMute. TODO: remove next line once DoubleClick fix their bug when setting adsManager.volume before ad starts
 					_this.embedPlayer.setPlayerElementVolume(_this.embedPlayer.volume);
 					// trigger ad play event
-					$(_this.embedPlayer).trigger("onAdPlay", [adInfo.adID, null, null, 0, adInfo.duration]); //index is missing =0 by now
+					$(_this.embedPlayer).trigger("onAdPlay", [adInfo.adID, adInfoObj.adSystem, adInfoObj.currentAdSlotType, adInfoObj.adPosition, adInfo.duration]); //index is missing =0 by now
 					// This changes player state to the relevant value ( play-state )
 					$(_this.embedPlayer).trigger("playing");
 					$(_this.embedPlayer).trigger("onplay");
@@ -1210,6 +1229,10 @@
 					var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
 					// dispatch adOpen event
 					$(_this.embedPlayer).trigger('onAdOpen', [adInfo.adID, adInfo.adSystem, currentAdSlotType, adInfo.adPosition]);
+					adInfoObj.id = adInfo.adID;
+					adInfoObj.adSystem = adInfo.adSystem;
+					adInfoObj.currentAdSlotType = currentAdSlotType;
+					adInfoObj.adPosition = adInfo.adPosition;
 					if (!_this.isLinear) {
 						_this.restorePlayer();
 						setTimeout(function () {
@@ -1509,7 +1532,9 @@
 				mw.setConfig('LoadingSpinner.Disabled', true);
 				this.restorePlayerCallback(shouldContinue);
 				this.restorePlayerCallback = null;
-				mw.setConfig('LoadingSpinner.Disabled', false);
+				setTimeout(function(){
+					mw.setConfig('LoadingSpinner.Disabled', false);
+				},500);
 			} else { // do a manual restore:
 				// restore player with normal events:
 				this.embedPlayer.adTimeline.restorePlayer( null, adPlayed);
