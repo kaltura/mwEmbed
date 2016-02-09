@@ -81,6 +81,12 @@
 				// update async view code generation flag. 
 				_this.settingUpViewCodeFlag = false;
 				_this.hanldeQueue();
+				// in case playback already started (autoplay) and ping interval wasn't set yet (as it didn't have a pingTime when playback started) - start ping interval
+				if (!_this.activePingInterval && _this.firstPlayDone){
+					_this.activePingInterval = setInterval(function(){
+						_this.sendPing();
+					}, _this.pingTime * 1000);
+				}
 			});
 		},
 		addBindings:function(){
@@ -267,27 +273,28 @@
 			if( this.activePingInterval ){
 				return ;
 			}
-			var sendPing = function(){
-				var bitrate = _this.embedPlayer.mediaElement.selectedSource.getBitrate();
-				_this.sendBeacon( 'ping',{
-					'pingTime': (( new Date().getTime() - _this.previusPingTime )  / 1000 ).toFixed(), // round seconds
-					'bitrate': bitrate ? bitrate * 1024 : -1,
-					'time': _this.embedPlayer.currentTime,
-					//'totalBytes':"0", // value is only sent along with the dataType parameter. If the bitrate parameter is sent, then this one is not needed.
-					//'dataType': "0", // Kaltura does not really do RTMP streams any more.
-					'diffTime': new Date().getTime() - _this.previusPingTime
-					// 'nodeHost' //String that indicates the CDN� Node Host
-				});
-				// update previusPingTime
-				_this.previusPingTime = new Date().getTime();
-			};
-			// start previusPingTime at bind time: 
+			// if pingTime was already retrieved from the server, setup the ping interval. If not, it will be set once the pingTime is retrieved from the server
+			if (this.pingTime){
+				this.activePingInterval = setInterval(function(){
+					_this.sendPing();
+				}, this.pingTime * 1000);
+			}
+			this.sendPing();
+		},
+		sendPing: function(){
+			var bitrate = this.embedPlayer.mediaElement.selectedSource.getBitrate();
+			this.sendBeacon( 'ping',{
+				'pingTime': (( new Date().getTime() - this.previusPingTime )  / 1000 ).toFixed(), // round seconds
+				'bitrate': bitrate ? bitrate * 1024 : -1,
+				'time': this.embedPlayer.currentTime,
+				//'totalBytes':"0", // value is only sent along with the dataType parameter. If the bitrate parameter is sent, then this one is not needed.
+				//'dataType': "0", // Kaltura does not really do RTMP streams any more.
+				'diffTime': new Date().getTime() - this.previusPingTime
+				// 'nodeHost' //String that indicates the CDN� Node Host
+			});
+			// update previusPingTime
 			this.previusPingTime = new Date().getTime();
-			this.activePingInterval = setInterval(function(){
-				sendPing();
-			}, this.pingTime * 1000 );
-			sendPing();
-		}, 
+		},
 		getMediaProperties: function(){
 			var _this = this;
 			// evaluate each content metadata property: 
