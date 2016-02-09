@@ -146,6 +146,7 @@ return array(
 			"akamaiMediaAnalytics" => "",
 			"googleAnalytics" => "",
 			"comscore" => "",
+			"comScoreStreamingTag" => "",
 			"nielsenCombined" => "",
 			"omnitureOnPage" => "",
 			"statistics" => "",
