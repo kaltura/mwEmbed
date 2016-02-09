@@ -223,7 +223,6 @@
 
                     $(".pdf-download-img").on('click',function(){
                         _this.KIVQModule.getIvqPDF(_this.embedPlayer.kentryid);
-                        $(".pdf-download-img").off();
                     });
                 }
                 $.grep($.quizParams.uiAttributes, function (e) {
