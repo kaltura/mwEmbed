@@ -1172,6 +1172,7 @@
 			});
 		},
 		bindChromelessEvents: function(){
+			var adInfoObj = {};
 			//First check that we even have a player element to access, player will be empty in cases where we do
 			//an empty player loading first and only after that we ask for entry data
 			if (this.embedPlayer.getPlayerElement() !== undefined && this.embedPlayer.getPlayerElement() !== null) {
@@ -1192,7 +1193,7 @@
 					// set volume when ad starts to enable autoMute. TODO: remove next line once DoubleClick fix their bug when setting adsManager.volume before ad starts
 					_this.embedPlayer.setPlayerElementVolume(_this.embedPlayer.volume);
 					// trigger ad play event
-					$(_this.embedPlayer).trigger("onAdPlay", [adInfo.adID, null, null, 0, adInfo.duration]); //index is missing =0 by now
+					$(_this.embedPlayer).trigger("onAdPlay", [adInfo.adID, adInfoObj.adSystem, adInfoObj.currentAdSlotType, adInfoObj.adPosition, adInfo.duration]); //index is missing =0 by now
 					// This changes player state to the relevant value ( play-state )
 					$(_this.embedPlayer).trigger("playing");
 					$(_this.embedPlayer).trigger("onplay");
@@ -1228,6 +1229,10 @@
 					var currentAdSlotType = _this.isLinear ? _this.currentAdSlotType : "overlay";
 					// dispatch adOpen event
 					$(_this.embedPlayer).trigger('onAdOpen', [adInfo.adID, adInfo.adSystem, currentAdSlotType, adInfo.adPosition]);
+					adInfoObj.id = adInfo.adID;
+					adInfoObj.adSystem = adInfo.adSystem;
+					adInfoObj.currentAdSlotType = currentAdSlotType;
+					adInfoObj.adPosition = adInfo.adPosition;
 					if (!_this.isLinear) {
 						_this.restorePlayer();
 						setTimeout(function () {
