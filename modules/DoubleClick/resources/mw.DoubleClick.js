@@ -73,7 +73,7 @@
 		//flag that indicates we are now playing linear ad
 		playingLinearAd:false,
 
-		leadWithFlash: true,
+		leadWithFlash: false,
 
 		adManagerLoaded: false,
 		adManagerAutoStart: false,
