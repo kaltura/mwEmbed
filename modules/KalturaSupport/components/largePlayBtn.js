@@ -63,7 +63,10 @@
             });
 		},
 		show: function(){
-			if ( !this.isDisabled && !this.embedPlayer.changeMediaStarted ) {
+			if ( !this.isDisabled ) {
+				if (this.embedPlayer.isMobileSkin() && this.embedPlayer.changeMediaStarted){
+					return; // prevent showing large play button on top of the spinner when using mobile skin and changing media
+				}
 				this.getComponent().show();
 			}
 			this.shouldShow = true;
