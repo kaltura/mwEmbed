@@ -1,7 +1,7 @@
 /**
  * Created by mark.feder Kaltura.
- * V2.40.quiz-rc7
- */
+ *
+ * */
 
 (function (mw, $) {
     "use strict";
@@ -26,12 +26,13 @@
         selectedAnswer:null,
         seekToQuestionTime:null,
         multiStreamWelcomeSkip:false,
+        IVQVer:'IVQ-2.41.rc1',
 
         setup: function () {
             var _this = this;
             var embedPlayer = this.getPlayer();
             embedPlayer.disableComponentsHover();
-
+            mw.log("Quiz: " + _this.IVQVer);
             this.bind('onChangeStream', function () {
                 mw.log("Quiz: multistream On");
                 _this.multiStreamWelcomeSkip = true;
