@@ -43,14 +43,16 @@
             //Screen view state handlers
             toggleMainDisplay: function () {
                 var curMain = this.getMainDisplay();
-                var curAux =this.getAuxDisplay();
+                var curAux = this.getAuxDisplay();
 
                 var resizeLimits = curAux.getResizeLimits();
                 this.aux.setResizeLimits(resizeLimits);
                 var props = curAux.getProperties();
 
-                curMain.toggleMain(props);
-                curAux.toggleMain();
+                curAux.toggleSecondary(curMain);
+                setTimeout(function(){
+                    curMain.toggleMain(props);
+                },120);
 
                 this.main = curAux;
                 this.aux = curMain;

@@ -139,13 +139,26 @@
 
 		//Screen view state handlers
 		toggleMain: function (props) {
-			this.setConfig("isMain", !this.getConfig("isMain"));
-			this.obj.attr( 'data-display-rule', this.getConfig("isMain") ? mw.dualScreen.display.TYPE.PRIMARY : mw.dualScreen.display.TYPE.SECONDARY );
-			this.obj.toggleClass( 'firstScreen secondScreen' );
-			if (!this.getConfig("isMain")){
-				this.repaint(props);
-			}
+            this.toggleConfig();
+            this.obj.toggleClass('secondScreen firstScreen');
+			this.repaint(props);
 		},
+        toggleSecondary: function (curMain) {
+            var _this = this;
+            this.toggleConfig();
+            this.obj.toggleClass( 'secondScreen secondScreenMoveOut');
+            setTimeout(function(){
+                _this.disableTransition();
+                _this.obj.removeClass('secondScreenMoveOut' ).addClass('firstScreen' );
+                curMain.obj.css('z-index',2);
+                _this.obj.css('z-index',1);
+            }, 100);
+
+        },
+        toggleConfig: function(){
+            this.setConfig("isMain", !this.getConfig("isMain"));
+            this.obj.attr( 'data-display-rule', this.getConfig("isMain") ? mw.dualScreen.display.TYPE.PRIMARY : mw.dualScreen.display.TYPE.SECONDARY );
+        },
 		enableSideBySideView: function () {
 			var toClass = this.getConfig("isMain")? "sideBySideLeft" : "sideBySideRight";
 			this.obj.addClass( toClass );

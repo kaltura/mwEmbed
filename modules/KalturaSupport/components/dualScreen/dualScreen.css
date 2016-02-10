@@ -13,6 +13,17 @@
     box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.3);
     background-color: rgb(0,0,0);
 }
+.secondScreenMoveOut{
+    -ms-transform: translate(200%, 0);
+    -webkit-transform: translate(200%, 0);
+    -moz-transform: translate(200%, 0);
+    -o-transform: translate(200%, 0);
+    transform: translate(200%, 0);
+    -webkit-box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.3);
+    -moz-box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.3);
+    box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.3);
+    background-color: rgb(0,0,0);
+}
 .imagePlayer{
     position: absolute;
     top: 0;
