@@ -69,6 +69,7 @@
 
 			this.bindHelper( 'switchAudioTrack' , function ( e , data ) {
 				if ( _this.playerObject ) {
+					_this.requestedAudioIndex = data.index;
 					_this.playerObject.selectAudioTrack( data.index );
 				}
 			} );
@@ -883,8 +884,15 @@
 
 		onAudioTrackSelected: function ( data ) {
 			var _this = this;
+			var audioTrack = JSON.parse( data );
+			//TODO: we always get the previous audio track index here, need to fix in silverlight player.
+			//As we don't have adaptive audio bitrate, only audio tracks for languages then this bug is not critical as
+			//the actual change in UI is made from the audio selector side
+			if ( this.requestedAudioIndex !== null && audioTrack.index !== this.requestedAudioIndex ) {
+				return;
+			}
 			this.callIfReady( function () {
-				_this.triggerHelper( 'audioTrackIndexChanged' , JSON.parse( data ) );
+				_this.triggerHelper( 'audioTrackIndexChanged' , audioTrack );
 			} );
 		} ,
 
