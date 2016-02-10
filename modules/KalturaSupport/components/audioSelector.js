@@ -160,7 +160,7 @@
 			this.getMenu().$el.find("a").addClass("truncateText");
 		},
 		externalSetStream: function (id) {
-			var stream = this.streams[id];
+			var stream = this.streams[id.index];
 			if (stream) {
 				this.setStream(stream);
 			} else {
@@ -168,8 +168,10 @@
 			}
 		},
 		setStream: function (stream) {
-			this.currentStream = stream;
-			this.embedPlayer.triggerHelper('switchAudioTrack', {index: stream.index });
+			if (this.currentStream !== stream ) {
+				this.currentStream = stream;
+				this.embedPlayer.triggerHelper('switchAudioTrack', {index: stream.index});
+			}
 		},
 		toggleMenu: function () {
 			if (this.isDisabled) {
