@@ -68,7 +68,7 @@ mw.MediaPlayers.prototype = {
 			}
 		} else {
 			//backward compatibility for sdk that don't send the allFormats param
-			this.defaultPlayers['application/vnd.apple.mpegurl'] = ['NativeComponent','Native'];
+			this.defaultPlayers['application/vnd.apple.mpegurl'].push('NativeComponent');
 		}
 	},
 
