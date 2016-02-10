@@ -635,8 +635,10 @@
 			}
 
 			// Update the duration ( only if not in url time encoding mode:
-			this.setDuration( data );
-			this.playerObject.duration = data;
+			//First parse float the number to overcome locale/culture format issues
+			var floatDuration = parseFloat(data);
+			this.setDuration( floatDuration );
+			this.playerObject.duration = floatDuration;
 		} ,
 
 		onClipDone: function () {
@@ -915,7 +917,7 @@
 		 */
 		getPlayerElementTime: function () {
 			// update currentTime
-			return this.slCurrentTime;
+			return parseFloat(this.slCurrentTime);
 		} ,
 
 		/**
