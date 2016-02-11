@@ -20,7 +20,7 @@
 			this.bind( 'durationChange', function(event, duration){
 				if( !_this.getPlayer().isInSequence() ){
 					_this.contentDuration = duration;
-					_this.updateUI( Math.floor(duration) );
+					_this.updateUI( Math.round(duration) );
 				}
 			});
 			// Support duration for Ads
