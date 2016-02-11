@@ -41,7 +41,8 @@
 				"keyboardShortcutsMap": {
 					"nextState": 81,   // Add q Sign for next state
 					"switchView": 87   // Add w Sigh for switch views
-				}
+				},
+				cuePointsSyncTimeoutInterval : 3000
 			},
 			display: {},
 			syncEnabled: true,
@@ -51,12 +52,30 @@
 			fsmState: [],
 			screenShown: false,
 			currentScreenNameShown: "",
-
+			cuePointsSync :{
+				syncTimeoutId : null,
+				lastCuePointUpdateTime : null,
+				lastCuePointId : null
+			},
+			kClient : null,
 			setup: function ( ) {
 				this.initConfig();
 				this.initDisplays();
 				this.initFSM();
 				this.addBindings();
+
+
+				this.requestCuePoints();
+
+				// TODO [1] should we sync when not live?
+					if (this.embedPlayer.isLive()) {
+						this.startCuePointsSync();
+					}
+
+			},
+
+			destroy: function () {
+				this.endCuePointsSync();
 			},
 			isSafeEnviornment: function () {
 				this.initSecondPlayer();
@@ -621,7 +640,106 @@
 					at: location[0]+location[1],
 					of: $( this.getPlayer().getInterface() )
 				});
-			}
+			},
+			startCuePointsSync: function () {
+				var _this = this;
+
+				//Start live cuepoint pulling
+				this.cuePointsSync.syncTimeoutId = setInterval(function () {
+					_this.requestCuePoints();
+				}, _this.getConfig("cuePointsSyncTimeoutInterval") || 3000);
+			},
+			endCuePointsSync : function()
+			{
+				if (this.cuePointsSync.syncTimeoutId) {
+					clearInterval(this.cuePointsSync.syncTimeoutId);
+					this.cuePointsSync.syncTimeoutId = null;
+				}
+			},
+			getKClient: function () {
+				if (!this.kClient) {
+					this.kClient = mw.kApiGetPartnerClient(this.embedPlayer.kwidgetid);
+				}
+				return this.kClient;
+			},
+			requestCuePoints:function() {
+				var _this = this;
+
+					var entryId = _this.embedPlayer.kentryid;
+
+					// build list annotation cue point request
+					var request = {
+						'service': 'cuepoint_cuepoint',
+						'action': 'list',
+						'filter:objectType': 'KalturaCodeCuePointFilter',
+						'filter:tagsLike':'player-view-mode',
+						'filter:entryIdEqual': entryId,
+						'filter:cuePointTypeEqual': 'codeCuePoint.Code',
+						'filter:orderBy': '-createdAt',
+						'pager:pageSize' : 1
+					};
+
+					var lastUpdatedAt = _this.cuePointsSync.lastCuePointUpdateTime;
+					// Only add lastUpdatedAt filter if any cue points already received
+					if (lastUpdatedAt > 0) {
+						request['filter:updatedAtGreaterThanOrEqual'] = lastUpdatedAt;
+					}
+
+					_this.getKClient().doRequest(request,
+						function (result) {
+							// if an error pop out:
+							if (!result || !result.objects || result.objects.length < 1) {
+								return;
+							}
+
+							var cuePoint = result.objects[0];
+
+							if (cuePoint === undefined || cuePoint.code === undefined ||
+								(	_this.cuePointsSync.lastCuePointUpdateTime === cuePoint.updatedAt && 	_this.cuePointsSync.lastCuePointId === cuePoint.id)){
+								// ignore any cuepoint that has no code or was already handled (same update date and id)
+								return;
+							}
+
+							_this.cuePointsSync.lastCuePointUpdateTime = cuePoint.updatedAt;
+							_this.cuePointsSync.lastCuePointId = cuePoint.id;
+
+							try {
+								var cuePointCode=JSON.parse(cuePoint.code);
+
+								var action;
+								switch(cuePointCode.playerViewModeId)
+								{
+									case "side-by-side-stream-on-right":
+										action = "SbS";
+										break;
+									case "side-by-side-stream-on-left":
+										action = "SbS";
+										break;
+									case "stream-inside-presentation":
+										action = "PiP";
+										break;
+									case "presentation-inside-stream":
+										action = "PiP";
+										break;
+									case "stream-only":
+										action = "hide";
+										break;
+									case "presentation-only":
+										action = "hide";
+										break;
+								}
+								if (action) {
+									mw.log("Changing player view to " + action);
+									_this.getPlayer().triggerHelper('dualScreenStateChange', action);
+								}
+							}
+							catch(e) {
+								mw.log("Error:: Error parsing 'player-view-mode' code cue point "+ e.message+ " "+ e.stack);
+							}
+						}
+					);
+			},
+
 		} )
 	);
 }
