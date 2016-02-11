@@ -51,8 +51,9 @@
 
                 curAux.toggleSecondary(curMain);
                 setTimeout(function(){
+                    curAux.obj.removeClass('secondScreenMoveOut' ).addClass('firstScreen' );
                     curMain.toggleMain(props);
-                },120);
+                },200);
 
                 this.main = curAux;
                 this.aux = curMain;

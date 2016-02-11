@@ -149,7 +149,6 @@
             this.obj.toggleClass( 'secondScreen secondScreenMoveOut');
             setTimeout(function(){
                 _this.disableTransition();
-                _this.obj.removeClass('secondScreenMoveOut' ).addClass('firstScreen' );
                 curMain.obj.css('z-index',2);
                 _this.obj.css('z-index',1);
             }, 100);
