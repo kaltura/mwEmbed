@@ -274,7 +274,10 @@
 				var _this = this;
 				this.playerElement.one("manifestLoaded", function () {
 					_this.manifestLoaded = true;
-					return manifestLoadedDeferred.resolve();
+					//Prevent issues with stack order when issuing autoplay or play command right after playerReady
+					setTimeout(function(){
+						manifestLoadedDeferred.resolve();
+					},0);
 				});
 			}
 			return manifestLoadedDeferred;
