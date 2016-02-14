@@ -653,7 +653,6 @@
 						// Restore
 						vid.controls = originalControlsState;
 						_this.ignoreNextError = false;
-						_this.ignoreNextNativeEvent = false;
 						// check if we have a switch callback and issue it now:
 						if ($.isFunction(switchCallback)) {
 							_this.log(" playerSwitchSource> call switchCallback");
