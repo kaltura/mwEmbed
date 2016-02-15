@@ -141,7 +141,8 @@ onload = function () {
 							console.log("set license noW");
 							mediaElement.autoplay = false;
 							setMediaElementEvents(mediaElement);
-							mediaManager.setMediaElement(mediaElement);
+							mediaManager = new cast.receiver.MediaManager(mediaElement);
+							//mediaManager.setMediaElement(mediaElement);
 							setMediaManagerEvents();
 							messageBus.broadcast("readyForMedia");
 						});
