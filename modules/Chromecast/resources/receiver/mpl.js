@@ -141,6 +141,8 @@ onload = function () {
 								var attr = mediaElement.attributes.item(i);
 								video.setAttribute(attr.nodeName, attr.nodeValue);
 							}
+							var new_video = video.cloneNode(true);
+							video.parentNode.replaceChild(new_video, video);
 							mediaElement = video;// document.getElementById('vid');
 							mediaElement.autoplay = false;
 							setMediaElementEvents(mediaElement);
