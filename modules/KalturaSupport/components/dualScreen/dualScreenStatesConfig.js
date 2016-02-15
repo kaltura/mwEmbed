@@ -67,10 +67,9 @@
 			'events': {
 				'hide': {
 					name: 'hide',
-					action: function (context) {
+					action: function () {
 						this.disableUserActions();
 						this.hideDisplay( );
-						this.syncMainDisplayType(context);
 					}
 				}
 			}
@@ -88,7 +87,6 @@
 						}
 						this.enableUserActions();
 						this.showDisplay( );
-						this.syncMainDisplayType(context);
 					}
 				},
 				'switchView': {
