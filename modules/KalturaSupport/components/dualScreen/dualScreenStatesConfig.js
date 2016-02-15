@@ -64,39 +64,35 @@
 		{
 			'name': 'PiP',
 			'initial': true,
-			'events': {
-				'hide': {
-					name: 'hide',
-					action: function () {
-						this.disableUserActions();
-						this.hideDisplay( );
+			'invoke' : function(context)
+			{
+				if (context.previousState !== 'PiP')
+				{
+					this.enableUserActions();
+					this.showDisplay();
+
+					if (context.currentMainDisplayType !== 'video')
+					{
+						this.toggleMainDisplay();
 					}
 				}
 			}
 		},
 		{
 			'name': 'hide',
-			'events': {
-				'PiP': {
-					name: 'PiP',
-					action: function (context) {
-						if (this.getPrimary() === this.getAuxDisplay()) {
-							this.showDisplay( );
-							this.toggleMainDisplay();
+			'invoke' : function(context)
+			{
+				if (context.previousState !== 'hide')
+				{
+					this.disableUserActions();
+					this.hideDisplay( );
+				}
 
-						}
-						this.enableUserActions();
-						this.showDisplay( );
-					}
-				},
-				'switchView': {
-					name: 'hide',
-					action: function () {
-						this.showDisplay( );
-						this.toggleMainDisplay();
-						this.hideDisplay( );
-
-					}
+				if (context.targetMainDisplayType && context.currentMainDisplayType !== context.targetMainDisplayType)
+				{
+					this.showDisplay( );
+					this.toggleMainDisplay();
+					this.hideDisplay( );
 				}
 			}
 		}
