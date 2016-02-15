@@ -28,7 +28,7 @@ onload = function () {
 	mediaElement = document.getElementById('receiverVideoElement');
 	mediaElement.autoplay = false;
 	setMediaElementEvents(mediaElement);
-	//mediaManager = new cast.receiver.MediaManager(mediaElement);
+	mediaManager = new cast.receiver.MediaManager(mediaElement);
 
 	castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
 	messageBus = castReceiverManager.getCastMessageBus('urn:x-cast:com.kaltura.cast.player');
@@ -141,8 +141,10 @@ onload = function () {
 							console.log("set license noW");
 							mediaElement.autoplay = false;
 							setMediaElementEvents(mediaElement);
-							mediaManager = new cast.receiver.MediaManager(mediaElement);
-							//mediaManager.setMediaElement(mediaElement);
+							mediaManager.setMediaElement(mediaElement);
+							if (licenseUrl) {
+								mediaHost.licenseUrl = licenseUrl;
+							}
 							setMediaManagerEvents();
 							messageBus.broadcast("readyForMedia");
 						});
