@@ -157,7 +157,7 @@
 				if (activeButtonId=== _this.controlBarComponents.pip.id){
 					switchBtn
 						.addClass("disabled")
-						.this.id( "option", "content", _this.nativeAppTooltip);
+						.tooltip( "option", "content", _this.nativeAppTooltip);
 				} else if(activeButtonId === _this.controlBarComponents.singleView.id){
 					switchBtn.tooltip( "option", "content", _this.controlBarComponents.switchView.title);
 				}
