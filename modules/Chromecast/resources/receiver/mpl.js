@@ -28,7 +28,7 @@ onload = function () {
 //	mediaElement = document.getElementById('receiverVideoElement');
 //	mediaElement.autoplay = false;
 //	setMediaElementEvents(mediaElement);
-//	mediaManager = new cast.receiver.MediaManager(mediaElement);
+	mediaManager = new cast.receiver.MediaManager();
 
 	castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
 	messageBus = castReceiverManager.getCastMessageBus('urn:x-cast:com.kaltura.cast.player');
@@ -140,7 +140,6 @@ onload = function () {
 							mediaElement = video;// document.getElementById('vid');
 							mediaElement.autoplay = false;
 							setMediaElementEvents(mediaElement);
-							mediaManager = new cast.receiver.MediaManager(mediaElement);
 							mediaManager.setMediaElement(mediaElement);
 							setMediaManagerEvents();
 							messageBus.broadcast("readyForMedia");
