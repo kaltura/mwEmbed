@@ -25,16 +25,16 @@ onload = function () {
 	cast.receiver.logger.setLevelValue(cast.receiver.LoggerLevel.DEBUG);
 	cast.player.api.setLoggerLevel(cast.player.api.LoggerLevel.DEBUG);
 
-	mediaElement = document.getElementById('receiverVideoElement');
-	mediaElement.autoplay = false;
-	setMediaElementEvents(mediaElement);
-	mediaManager = new cast.receiver.MediaManager(mediaElement);
+//	mediaElement = document.getElementById('receiverVideoElement');
+//	mediaElement.autoplay = false;
+//	setMediaElementEvents(mediaElement);
+//	mediaManager = new cast.receiver.MediaManager(mediaElement);
 
 	castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
 	messageBus = castReceiverManager.getCastMessageBus('urn:x-cast:com.kaltura.cast.player');
 
-	setCastReceiverManagerEvents();
-	initApp();
+//	setCastReceiverManagerEvents();
+//	initApp();
 
 	messageBus.onMessage = function (event) {
 		console.log('### Message Bus - Media Message: ' + JSON.stringify(event));
@@ -141,11 +141,15 @@ onload = function () {
 								var attr = mediaElement.attributes.item(i);
 								video.setAttribute(attr.nodeName, attr.nodeValue);
 							}
+							setCastReceiverManagerEvents();
+
 							mediaElement = video;// document.getElementById('vid');
 							mediaElement.autoplay = false;
 							setMediaElementEvents(mediaElement);
 							mediaManager.setMediaElement(mediaElement);
 							setMediaManagerEvents();
+
+							initApp();
 							messageBus.broadcast("readyForMedia");
 						});
 					}
