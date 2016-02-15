@@ -137,7 +137,7 @@ onload = function () {
 							while(video.attributes.length > 0){
 								video.removeAttribute(video.attributes[0].name);
 							}
-							mediaElement = video;// document.getElementById('vid');
+							mediaElement = document.getElementById('vid');
 							mediaElement.autoplay = false;
 							setMediaElementEvents(mediaElement);
 							mediaManager.setMediaElement(mediaElement);
