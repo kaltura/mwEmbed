@@ -21,14 +21,14 @@
 				mainDisplayType = state.mainDisplayType;
 			}else
 			{
-				if (state === 'switchView')
-				{
-					action = this.currentState.name;
-					mainDisplayType = (this.context.getPrimary() === this.context.getAuxDisplay()) ? 'video' : 'presentation';
-				}else {
-					action = state;
-					mainDisplayType = null;
-				}
+				action = state;
+				mainDisplayType = null;
+			}
+
+			if (action === 'switchView')
+			{
+				action = this.currentState.name;
+				mainDisplayType = (this.context.getPrimary() === this.context.getAuxDisplay()) ? 'video' : 'presentation';
 			}
 
 			if ( this.states[this.indexes[action]] ) {
