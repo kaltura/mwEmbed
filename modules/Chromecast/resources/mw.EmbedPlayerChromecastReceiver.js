@@ -89,7 +89,7 @@
 							_this[ '_on' + eventName ].apply(_this, argArray);
 						} else {
 							// No local handler directly propagate the event to the abstract object:
-							//$(_this).trigger(eventName, argArray);
+							$(_this).trigger(eventName, argArray);
 						}
 					}
 				});
@@ -114,7 +114,7 @@
 			this.stopped = false;
 			this.layoutBuilder.hidePlayerControls();
 			$(this).trigger('onPlayerStateChange', [ "play", "pause" ]);
-			this.parent_play();
+			//this.parent_play();
 		},
 		// override these functions so embedPlayer won't try to sync time
 		syncCurrentTime: function(){},
