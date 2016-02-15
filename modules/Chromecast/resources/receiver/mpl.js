@@ -137,12 +137,6 @@ onload = function () {
 							while(video.attributes.length > 0){
 								video.removeAttribute(video.attributes[0].name);
 							}
-							for (var i = 0; i < mediaElement.attributes.length; i++) {
-								var attr = mediaElement.attributes.item(i);
-								video.setAttribute(attr.nodeName, attr.nodeValue);
-							}
-
-
 							mediaElement = video;// document.getElementById('vid');
 							mediaElement.autoplay = false;
 							setMediaElementEvents(mediaElement);
