@@ -142,7 +142,7 @@ onload = function () {
 								video.setAttribute(attr.nodeName, attr.nodeValue);
 							}
 							video.parentNode.replaceChild(mediaElement, video);
-							//mediaElement = video;// document.getElementById('vid');
+
 							mediaElement.autoplay = false;
 							setMediaElementEvents(mediaElement);
 							mediaManager.setMediaElement(mediaElement);
