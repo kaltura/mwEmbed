@@ -29,7 +29,7 @@ onload = function () {
 	mediaElement.autoplay = false;
 	setMediaElementEvents(mediaElement);
 	mediaManager = new cast.receiver.MediaManager(mediaElement);
-	mediaManager.setMediaElement(mediaElement);
+
 	castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
 	messageBus = castReceiverManager.getCastMessageBus('urn:x-cast:com.kaltura.cast.player');
 
@@ -106,11 +106,11 @@ onload = function () {
 			customData = payload['value'];
 			setDebugMessage('customData', customData);
 		} else if (payload['type'] === 'load') {
-//			mediaElement = document.getElementById('receiverVideoElement');
-//			mediaElement.autoplay = false;
-//			setMediaElementEvents(mediaElement);
-//			mediaManager.setMediaElement(mediaElement);
-//			setMediaManagerEvents();
+			mediaElement = document.getElementById('receiverVideoElement');
+			mediaElement.autoplay = false;
+			setMediaElementEvents(mediaElement);
+			mediaManager.setMediaElement(mediaElement);
+			setMediaManagerEvents();
 		} else if (payload['type'] === 'embed' && !playerInitialized) {
 			var publisherID = payload['publisherID'];
 			var uiconfID = payload['uiconfID'];
