@@ -25,10 +25,10 @@ onload = function () {
 	cast.receiver.logger.setLevelValue(cast.receiver.LoggerLevel.DEBUG);
 	cast.player.api.setLoggerLevel(cast.player.api.LoggerLevel.DEBUG);
 
-	mediaElement = document.getElementById('receiverVideoElement');
-	mediaElement.autoplay = false;
-	setMediaElementEvents(mediaElement);
-	mediaManager = new cast.receiver.MediaManager(mediaElement);
+//	mediaElement = document.getElementById('receiverVideoElement');
+//	mediaElement.autoplay = false;
+//	setMediaElementEvents(mediaElement);
+//	mediaManager = new cast.receiver.MediaManager(mediaElement);
 
 	castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
 	messageBus = castReceiverManager.getCastMessageBus('urn:x-cast:com.kaltura.cast.player');
@@ -106,11 +106,11 @@ onload = function () {
 			customData = payload['value'];
 			setDebugMessage('customData', customData);
 		} else if (payload['type'] === 'load') {
-			mediaElement = document.getElementById('receiverVideoElement');
-			mediaElement.autoplay = false;
-			setMediaElementEvents(mediaElement);
-			mediaManager.setMediaElement(mediaElement);
-			setMediaManagerEvents();
+//			mediaElement = document.getElementById('receiverVideoElement');
+//			mediaElement.autoplay = false;
+//			setMediaElementEvents(mediaElement);
+//			mediaManager.setMediaElement(mediaElement);
+//			setMediaManagerEvents();
 		} else if (payload['type'] === 'embed' && !playerInitialized) {
 			var publisherID = payload['publisherID'];
 			var uiconfID = payload['uiconfID'];
@@ -138,10 +138,16 @@ onload = function () {
 								video.removeAttribute(video.attributes[0].name);
 							}
 							mediaElement = video;// document.getElementById('vid');
-							console.log("----> set license now!");
+//							console.log("----> set license now!");
+//							mediaElement.autoplay = false;
+//							setMediaElementEvents(mediaElement);
+//							mediaManager.setMediaElement(mediaElement);
+//							setMediaManagerEvents();
+
+
 							mediaElement.autoplay = false;
 							setMediaElementEvents(mediaElement);
-							mediaManager.setMediaElement(mediaElement);
+							mediaManager = new cast.receiver.MediaManager(mediaElement);
 							setMediaManagerEvents();
 							messageBus.broadcast("readyForMedia");
 						});
@@ -443,9 +449,8 @@ function setMediaManagerEvents() {
 					requestInfo.withCredentials = true;
 				};
 			}
-			console.log("----> look for licenseUrl: "+licenseUrl);
+
 			if (licenseUrl) {
-				console.log("----> licenseUrl: "+licenseUrl);
 				mediaHost.licenseUrl = licenseUrl;
 			}
 
