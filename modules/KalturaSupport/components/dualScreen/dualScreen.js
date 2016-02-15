@@ -53,6 +53,7 @@
 			screenShown: false,
 			currentScreenNameShown: "",
 			cuePointsSync :{
+				busy : false,
 				syncTimeoutId : null,
 				lastCuePointUpdateTime : null,
 				lastCuePointId : null
@@ -63,17 +64,7 @@
 				this.initDisplays();
 				this.initFSM();
 				this.addBindings();
-
-
-				this.requestCuePoints();
-
-				// TODO [1] should we sync when not live?
-					if (this.embedPlayer.isLive()) {
-						this.startCuePointsSync();
-					}
-
 			},
-
 			destroy: function () {
 				this.endCuePointsSync();
 			},
@@ -100,7 +91,7 @@
 								_this.disabled = false;
 								_this.restoreView("disabledScreen");
 							}
-							_this.setInitialView();
+
 							if (!_this.render) {
 								_this.getPrimary().obj.css({
 									'top': '',
@@ -109,6 +100,22 @@
 									'height': ''
 								}).removeClass('firstScreen');
 								_this.hideDisplay();
+							}
+
+							// TODO [1] should we sync when not live?
+							// start monitoring the cuepoints
+							if (_this.embedPlayer.isLive()) {
+								_this.requestCuePoints(function(result)
+									{
+										if (!result.handled) {
+											_this.setInitialView();
+										}
+									}
+								);
+								_this.startCuePointsSync();
+							}else
+							{
+								_this.setInitialView();
 							}
 						} else {
 							_this.log("render condition are not met - disabling");
@@ -327,10 +334,12 @@
 
 					//Attach the primaryPlayerContainer to the primary display
 					var primaryDisplay = this.displays.getPrimary();
+					primaryPlayerContainer.attr('data-display-type','video');
 					primaryDisplay.attachView(primaryPlayerContainer);
 
 					//Attach the secondaryDisplay to the second display
 					var secondaryDisplay = this.displays.getSecondary();
+					secondaryPlayerContainer.attr('data-display-type','presentation');
 					secondaryDisplay.attachView(secondaryPlayerContainer);
 
 					//Proxy pointer events from the second screen to the embedPlayer layer
@@ -393,7 +402,6 @@
 					showLoadingSlide();
 				}
 			},
-
 			//Manage display helpers
 			disableView: function(){
 				this.displays.getAuxDisplay().obj.css("visibility", "hidden");
@@ -662,10 +670,16 @@
 				}
 				return this.kClient;
 			},
-			requestCuePoints:function() {
+			requestCuePoints:function(cb) {
 				var _this = this;
 
 					var entryId = _this.embedPlayer.kentryid;
+
+					if (_this.cuePointsSync.busy)
+					{
+						// dont invoke duplicate requests. previous request already in progress.
+						return;
+					}
 
 					// build list annotation cue point request
 					var request = {
@@ -685,56 +699,78 @@
 						request['filter:updatedAtGreaterThanOrEqual'] = lastUpdatedAt;
 					}
 
+					_this.cuePointsSync.busy = true;
 					_this.getKClient().doRequest(request,
 						function (result) {
-							// if an error pop out:
-							if (!result || !result.objects || result.objects.length < 1) {
-								return;
-							}
-
-							var cuePoint = result.objects[0];
-
-							if (cuePoint === undefined || cuePoint.code === undefined ||
-								(	_this.cuePointsSync.lastCuePointUpdateTime === cuePoint.updatedAt && 	_this.cuePointsSync.lastCuePointId === cuePoint.id)){
-								// ignore any cuepoint that has no code or was already handled (same update date and id)
-								return;
-							}
-
-							_this.cuePointsSync.lastCuePointUpdateTime = cuePoint.updatedAt;
-							_this.cuePointsSync.lastCuePointId = cuePoint.id;
-
 							try {
+								// if an error pop out:
+								if (!result || !result.objects || result.objects.length < 1) {
+									if (cb)
+									{
+										cb({handled : false});
+									}
+									return;
+								}
+
+								var cuePoint = result.objects[0];
+
+								if (cuePoint === undefined || cuePoint.code === undefined ||
+									(	_this.cuePointsSync.lastCuePointUpdateTime === cuePoint.updatedAt && 	_this.cuePointsSync.lastCuePointId === cuePoint.id)){
+									// ignore any cuepoint that has no code or was already handled (same update date and id)
+									if (cb)
+									{
+										cb({handled : false});
+									}
+									return;
+								}
+
+								_this.cuePointsSync.lastCuePointUpdateTime = cuePoint.updatedAt;
+								_this.cuePointsSync.lastCuePointId = cuePoint.id;
+
 								var cuePointCode=JSON.parse(cuePoint.code);
 
-								var action;
+								var action,
+									mainDisplayType;
 								switch(cuePointCode.playerViewModeId)
 								{
-									case "side-by-side-stream-on-right":
+									case "side-by-side-video-on-right":
 										action = "SbS";
+										mainDisplayType = 'presentation';
 										break;
-									case "side-by-side-stream-on-left":
+									case "side-by-side-video-on-left":
 										action = "SbS";
+										mainDisplayType = 'video';
 										break;
-									case "stream-inside-presentation":
+									case "video-inside-presentation":
 										action = "PiP";
+										mainDisplayType = 'presentation';
 										break;
-									case "presentation-inside-stream":
+									case "presentation-inside-video":
 										action = "PiP";
+										mainDisplayType = 'video';
 										break;
-									case "stream-only":
+									case "video-only":
 										action = "hide";
+										mainDisplayType = 'video';
 										break;
 									case "presentation-only":
 										action = "hide";
+										mainDisplayType = 'presentation';
 										break;
 								}
 								if (action) {
-									mw.log("Changing player view to " + action);
-									_this.getPlayer().triggerHelper('dualScreenStateChange', action);
+									mw.log("Changing player view to '" + action + "' with main display '" + mainDisplayType + "'");
+									_this.getPlayer().triggerHelper('dualScreenStateChange', { action : action, mainDisplayType : mainDisplayType});
+									if (cb)
+									{
+										cb({handled : true});
+									}
 								}
 							}
 							catch(e) {
 								mw.log("Error:: Error parsing 'player-view-mode' code cue point "+ e.message+ " "+ e.stack);
+							}finally{
+								_this.cuePointsSync.busy = false;
 							}
 						}
 					);
