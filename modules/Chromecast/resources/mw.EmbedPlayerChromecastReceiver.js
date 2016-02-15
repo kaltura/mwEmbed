@@ -89,7 +89,7 @@
 							_this[ '_on' + eventName ].apply(_this, argArray);
 						} else {
 							// No local handler directly propagate the event to the abstract object:
-							$(_this).trigger(eventName, argArray);
+							//$(_this).trigger(eventName, argArray);
 						}
 					}
 				});
