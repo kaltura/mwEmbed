@@ -28,6 +28,7 @@ onload = function () {
 	mediaElement = document.getElementById('receiverVideoElement');
 	mediaElement.autoplay = false;
 	setMediaElementEvents(mediaElement);
+	mediaManager.setMediaElement(mediaElement);
 	mediaManager = new cast.receiver.MediaManager(mediaElement);
 
 	castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
@@ -106,11 +107,11 @@ onload = function () {
 			customData = payload['value'];
 			setDebugMessage('customData', customData);
 		} else if (payload['type'] === 'load') {
-			mediaElement = document.getElementById('receiverVideoElement');
-			mediaElement.autoplay = false;
-			setMediaElementEvents(mediaElement);
-			mediaManager.setMediaElement(mediaElement);
-			setMediaManagerEvents();
+//			mediaElement = document.getElementById('receiverVideoElement');
+//			mediaElement.autoplay = false;
+//			setMediaElementEvents(mediaElement);
+//			mediaManager.setMediaElement(mediaElement);
+//			setMediaManagerEvents();
 		} else if (payload['type'] === 'embed' && !playerInitialized) {
 			var publisherID = payload['publisherID'];
 			var uiconfID = payload['uiconfID'];
