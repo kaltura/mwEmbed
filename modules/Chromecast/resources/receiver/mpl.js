@@ -142,9 +142,6 @@ onload = function () {
 							mediaElement.autoplay = false;
 							setMediaElementEvents(mediaElement);
 							mediaManager.setMediaElement(mediaElement);
-							if (licenseUrl) {
-								mediaHost.licenseUrl = licenseUrl;
-							}
 							setMediaManagerEvents();
 							messageBus.broadcast("readyForMedia");
 						});
