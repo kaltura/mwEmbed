@@ -140,10 +140,9 @@ onload = function () {
 							mediaElement = video;// document.getElementById('vid');
 							mediaElement.autoplay = false;
 							setMediaElementEvents(mediaElement);
+							mediaManager = new cast.receiver.MediaManager(mediaElement);
 							mediaManager.setMediaElement(mediaElement);
 							setMediaManagerEvents();
-
-
 							messageBus.broadcast("readyForMedia");
 						});
 					}
