@@ -109,6 +109,7 @@ onload = function () {
 			mediaElement = document.getElementById('receiverVideoElement');
 			mediaElement.autoplay = false;
 			setMediaElementEvents(mediaElement);
+			mediaManager = new cast.receiver.MediaManager(mediaElement);
 			mediaManager.setMediaElement(mediaElement);
 			setMediaManagerEvents();
 		} else if (payload['type'] === 'embed' && !playerInitialized) {
