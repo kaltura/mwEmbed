@@ -407,7 +407,7 @@
 					// Setup the restore callback
 					_this.restorePlayerCallback = callback;
 
-					if ( _this.isChromeless ){
+					if ( _this.isChromeless || _this.isNativeSDK ){
 						_this.requestAds();
 					}else{
 						// Set the content element to player element:
@@ -484,7 +484,7 @@
 				if (_this.isChromeless){
 					_this.embedPlayer.getPlayerElement().sendNotification("hideContent");
 				}else{
-					if ( _this.embedPlayer.isVideoSiblingEnabled() && !mw.isAndroidNativeBrowser() ) {
+					if ( _this.embedPlayer.isVideoSiblingEnabled() && !mw.isAndroidNativeBrowser() && !_this.isNativeSDK) {
 						$(".mwEmbedPlayer").addClass("mwEmbedPlayerBlackBkg");
 						_this.embedPlayer.addBlackScreen();
 					}else{
@@ -497,7 +497,7 @@
 				if (_this.isChromeless){
 					_this.embedPlayer.getPlayerElement().sendNotification("showContent");
 				}else{
-					if ( _this.embedPlayer.isVideoSiblingEnabled() && !mw.isAndroidNativeBrowser() ) {
+					if ( _this.embedPlayer.isVideoSiblingEnabled() && !mw.isAndroidNativeBrowser() && !_this.isNativeSDK) {
 						$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
 						_this.embedPlayer.removeBlackScreen();
 					}else{
