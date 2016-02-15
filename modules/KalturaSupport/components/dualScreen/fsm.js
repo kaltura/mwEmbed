@@ -12,11 +12,35 @@
 				this.currentState = this.states[i];
 			}
 		}
-		this.consumeEvent = function ( e ) {
-			if ( this.currentState.events[e] ) {
-				this.fsmTransitionHandlers(this.currentState.name, e);
-				this.currentState.events[e].action.call(this.context);
-				this.currentState = this.states[this.indexes[this.currentState.events[e].name]];
+		this.consumeEvent = function ( state ) {
+			var action;
+			var mainDisplayType;
+			if (typeof state === 'object')
+			{
+				action = state.action;
+				mainDisplayType = state.mainDisplayType;
+			}else
+			{
+				if (state === 'switchView')
+				{
+					action = this.currentState.name;
+					mainDisplayType = (this.context.getPrimary() === this.context.getAuxDisplay()) ? 'video' : 'presentation';
+				}else {
+					action = state;
+					mainDisplayType = null;
+				}
+			}
+
+			if ( this.states[this.indexes[action]] ) {
+				this.fsmTransitionHandlers(this.currentState.name, action);
+
+				var previousState = this.currentState.name;
+				var currentMainDisplayType = (this.context.getPrimary() === this.context.getAuxDisplay()) ? 'presentation' : 'video';
+				this.currentState = this.states[this.indexes[action]];
+				this.currentState.invoke.call(this.context, {
+					previousState :previousState,
+					currentMainDisplayType :currentMainDisplayType ,
+					targetMainDisplayType : mainDisplayType});
 			}
 		};
 		this.canConsumeEvent = function ( e ) {

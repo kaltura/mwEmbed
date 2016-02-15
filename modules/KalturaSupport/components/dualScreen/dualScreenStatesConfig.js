@@ -5,83 +5,56 @@
 		{
 			'name': 'PiP',
 			'initial': true,
-			'events': {
-				'SbS': {
-					name: 'SbS',
-					action: function () {
-						this.disableUserActions( );
-						this.enableSideBySideView();
-
-					}
-				},
-				'hide': {
-					name: 'hide',
-					action: function (  ) {
-						this.disableUserActions( );
-						this.hideDisplay( );
-					}
-				},
-				'switchView': {
-					name: 'PiP',
-					action: function () {
-						this.disableUserActions( );
-						this.toggleMainDisplay();
-						this.enableUserActions( );
-					}
+			'invoke' : function(context)
+			{
+				if (context.previousState !== 'PiP')
+				{
+					this.enableUserActions();
+					this.showDisplay();
+					this.disableSideBySideView();
 				}
+
+				if (context.targetMainDisplayType && context.currentMainDisplayType !== context.targetMainDisplayType)
+				{
+					this.toggleMainDisplay();
+				}
+
 			}
 		},
 		{
 			'name': 'SbS',
-			'events': {
-				'PiP': {
-					name: 'PiP',
-					action: function () {
-						this.enableUserActions( );
-						this.disableSideBySideView();
-					}
-				},
-				'hide': {
-					name: 'hide',
-					action: function () {
-						this.disableSideBySideView();
-						this.hideDisplay( );
-					}
-				},
-				'switchView': {
-					name: 'SbS',
-					action: function () {
-						this.toggleSideBySideView();
-						this.toggleMainDisplay();
-					}
+			'invoke' : function(context)
+			{
+				if (context.previousState !== 'SbS')
+				{
+					this.disableUserActions( );
+					this.showDisplay();
+					this.enableSideBySideView();
+				}
+
+				if (context.targetMainDisplayType && context.currentMainDisplayType !== context.targetMainDisplayType)
+				{
+					this.toggleSideBySideView();
+					this.toggleMainDisplay();
 				}
 			}
 		},
 		{
 			'name': 'hide',
-			'events': {
-				'PiP': {
-					name: 'PiP',
-					action: function () {
-						this.enableUserActions( );
-						this.showDisplay( );
-					}
-				},
-				'switchView': {
-					name: 'hide',
-					action: function () {
-						this.showDisplay( );
-						this.toggleMainDisplay();
-						this.hideDisplay( );
+			'invoke' : function(context)
+			{
+				if (context.previousState !== 'hide')
+				{
+					this.disableUserActions( );
+					this.disableSideBySideView();
+					this.hideDisplay( );
+				}
 
-					}
-				},
-				'SbS': {
-					name: 'SbS',
-					action: function () {
-						this.enableSideBySideView();
-						this.showDisplay( );
-					}
+				if (context.targetMainDisplayType && context.currentMainDisplayType !== context.targetMainDisplayType)
+				{
+					this.showDisplay( );
+					this.toggleMainDisplay();
+					this.hideDisplay( );
 				}
 			}
 		}
@@ -94,9 +67,10 @@
 			'events': {
 				'hide': {
 					name: 'hide',
-					action: function (  ) {
+					action: function (context) {
 						this.disableUserActions();
 						this.hideDisplay( );
+						this.syncMainDisplayType(context);
 					}
 				}
 			}
@@ -106,7 +80,7 @@
 			'events': {
 				'PiP': {
 					name: 'PiP',
-					action: function () {
+					action: function (context) {
 						if (this.getPrimary() === this.getAuxDisplay()) {
 							this.showDisplay( );
 							this.toggleMainDisplay();
@@ -114,6 +88,7 @@
 						}
 						this.enableUserActions();
 						this.showDisplay( );
+						this.syncMainDisplayType(context);
 					}
 				},
 				'switchView': {
