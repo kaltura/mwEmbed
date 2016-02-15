@@ -24,11 +24,11 @@ var playerInitialized = false;
 onload = function () {
 	cast.receiver.logger.setLevelValue(cast.receiver.LoggerLevel.DEBUG);
 	cast.player.api.setLoggerLevel(cast.player.api.LoggerLevel.DEBUG);
-//
-//	mediaElement = document.getElementById('receiverVideoElement');
-//	mediaElement.autoplay = false;
-//	setMediaElementEvents(mediaElement);
-//	mediaManager = new cast.receiver.MediaManager(mediaElement);
+
+	mediaElement = document.getElementById('receiverVideoElement');
+	mediaElement.autoplay = false;
+	setMediaElementEvents(mediaElement);
+	mediaManager = new cast.receiver.MediaManager(mediaElement);
 
 	castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
 	messageBus = castReceiverManager.getCastMessageBus('urn:x-cast:com.kaltura.cast.player');
@@ -109,7 +109,6 @@ onload = function () {
 			mediaElement = document.getElementById('receiverVideoElement');
 			mediaElement.autoplay = false;
 			setMediaElementEvents(mediaElement);
-			mediaManager = new cast.receiver.MediaManager(mediaElement);
 			mediaManager.setMediaElement(mediaElement);
 			setMediaManagerEvents();
 		} else if (payload['type'] === 'embed' && !playerInitialized) {
