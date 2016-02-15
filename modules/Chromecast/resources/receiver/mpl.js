@@ -28,9 +28,8 @@ onload = function () {
 	mediaElement = document.getElementById('receiverVideoElement');
 	mediaElement.autoplay = false;
 	setMediaElementEvents(mediaElement);
-	mediaManager.setMediaElement(mediaElement);
 	mediaManager = new cast.receiver.MediaManager(mediaElement);
-
+	mediaManager.setMediaElement(mediaElement);
 	castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
 	messageBus = castReceiverManager.getCastMessageBus('urn:x-cast:com.kaltura.cast.player');
 
