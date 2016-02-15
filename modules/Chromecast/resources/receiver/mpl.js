@@ -138,7 +138,7 @@ onload = function () {
 								video.removeAttribute(video.attributes[0].name);
 							}
 							mediaElement = video;// document.getElementById('vid');
-							console.log("---------------- !!!!!!!!!!!!!!!!!");
+							console.log("----> set license now!");
 							mediaElement.autoplay = false;
 							setMediaElementEvents(mediaElement);
 							mediaManager.setMediaElement(mediaElement);
@@ -443,8 +443,9 @@ function setMediaManagerEvents() {
 					requestInfo.withCredentials = true;
 				};
 			}
-
+			console.log("----> look for licenseUrl: "+licenseUrl);
 			if (licenseUrl) {
+				console.log("----> licenseUrl: "+licenseUrl);
 				mediaHost.licenseUrl = licenseUrl;
 			}
 
