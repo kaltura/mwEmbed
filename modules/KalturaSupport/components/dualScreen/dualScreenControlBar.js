@@ -92,25 +92,14 @@
 				.on( 'click' + this.postFix + ' touchstart' + this.postFix, 'li > span', function (e) {
 					e.stopPropagation();
 					e.preventDefault();
+
+					_this.changeButtonsStyles.call(_this,this.id);
+
 					var btn = _this.controlBarComponents[this.id];
-					var obj = $(this);
-					//Change state button disabled state
-					if (obj.data("type") === "state") {
-						buttons.removeClass( "disabled" );
-						obj.addClass( "disabled" );
-					}
-					if (mw.isNativeApp()){
-						if (this.id === _this.controlBarComponents.pip.id){
-							switchBtn
-								.addClass("disabled")
-								.tooltip( "option", "content", _this.nativeAppTooltip);
-						} else if(this.id === _this.controlBarComponents.singleView.id){
-							switchBtn.tooltip( "option", "content", _this.controlBarComponents.switchView.title);
-						}
-					}
 					if (btn && btn.event){
-						_this.embedPlayer.triggerHelper("dualScreenStateChange", btn.event);
+						_this.embedPlayer.triggerHelper("dualScreenStateChange", {action : btn.event, invoker : 'dualScreenControlBar'});
 					}
+
 					return false;
 				} );
 
@@ -121,6 +110,58 @@
 			//Set tooltips
 			buttons.attr('data-show-tooltip', true);
 			this.embedPlayer.layoutBuilder.setupTooltip(buttons, "arrowTop");
+
+			// listen to state change and update buttons style accordingly
+			_this.bind( 'dualScreenStateChange', function(e, state){
+
+				var eventToCompare;
+				var invoker;
+				if (typeof state === 'object')
+				{
+					eventToCompare = state.action;
+					invoker = state.invoker;
+				}else {
+					eventToCompare = state;
+				}
+
+				if (invoker === 'dualScreenControlBar')
+				{
+					return;
+				}
+
+				for(var prop in _this.controlBarComponents)
+				{
+					var item = _this.controlBarComponents[prop];
+					if (item.event === eventToCompare)
+					{
+						_this.changeButtonsStyles.call(_this,prop);
+					}
+				}
+
+			});
+		},
+		changeButtonsStyles : function(activeButtonId)
+		{
+			var _this = this;
+			var buttons = _this.getComponent().find( "span" );
+			var switchBtn = buttons.filter('[data-type="switch"]');
+
+			var btn = this.controlBarComponents[activeButtonId];
+			var obj = $(_this.getComponent().find('#' + activeButtonId)[0]);
+			//Change state button disabled state
+			if (obj.data("type") === "state") {
+				buttons.removeClass( "disabled" );
+				obj.addClass( "disabled" );
+			}
+			if (mw.isNativeApp()){
+				if (activeButtonId=== _this.controlBarComponents.pip.id){
+					switchBtn
+						.addClass("disabled")
+						.this.id( "option", "content", _this.nativeAppTooltip);
+				} else if(activeButtonId === _this.controlBarComponents.singleView.id){
+					switchBtn.tooltip( "option", "content", _this.controlBarComponents.switchView.title);
+				}
+			}
 		},
 		disable: function () {
 			clearTimeout(this.getComponent().handleTouchTimeoutId);
