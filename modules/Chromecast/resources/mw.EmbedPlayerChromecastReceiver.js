@@ -135,7 +135,7 @@
 		},
 
 		getPlayerElementTime: function(){
-			return this.getPlayerElement().currentTime;
+			return this.vid.currentTime;
 		},
 
 		isVideoSiblingEnabled: function() {
