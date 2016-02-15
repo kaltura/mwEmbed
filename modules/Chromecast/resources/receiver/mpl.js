@@ -125,6 +125,7 @@ onload = function () {
 			}
 			mw.setConfig("chromecastReceiver", true);
 			mw.setConfig("Kaltura.ExcludedModules", "chromecast");
+			mw.getConfig('EmbedPlayer.NativeControls',true);
 			kWidget.embed({
 				"targetId": "kaltura_player",
 				"wid": "_" + publisherID,
