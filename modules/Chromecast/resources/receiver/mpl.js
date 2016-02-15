@@ -25,10 +25,10 @@ onload = function () {
 	cast.receiver.logger.setLevelValue(cast.receiver.LoggerLevel.DEBUG);
 	cast.player.api.setLoggerLevel(cast.player.api.LoggerLevel.DEBUG);
 
-//	mediaElement = document.getElementById('receiverVideoElement');
-//	mediaElement.autoplay = false;
-//	setMediaElementEvents(mediaElement);
-	mediaManager = new cast.receiver.MediaManager();
+	mediaElement = document.getElementById('receiverVideoElement');
+	mediaElement.autoplay = false;
+	setMediaElementEvents(mediaElement);
+	mediaManager = new cast.receiver.MediaManager(mediaElement);
 
 	castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
 	messageBus = castReceiverManager.getCastMessageBus('urn:x-cast:com.kaltura.cast.player');
@@ -136,6 +136,10 @@ onload = function () {
 						kdp.kBind("chromecastReceiverLoaded", function( video ){
 							while(video.attributes.length > 0){
 								video.removeAttribute(video.attributes[0].name);
+							}
+							for (var i = 0; i < mediaElement.attributes.length; i++) {
+								var attr = mediaElement.attributes.item(i);
+								video.setAttribute(attr.nodeName, attr.nodeValue);
 							}
 							mediaElement = video;// document.getElementById('vid');
 							mediaElement.autoplay = false;
