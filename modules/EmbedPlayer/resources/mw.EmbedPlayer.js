@@ -3040,7 +3040,7 @@
 		},
 
 		isDrmRequired: function () {
-			return this.drmRequired;
+			return this.drmRequired && !this.getRawKalturaConfig("embedPlayerChromecastReceiver","plugin") === true;
 		},
 
 		isDVR: function () {
