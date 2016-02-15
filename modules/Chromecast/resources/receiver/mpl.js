@@ -138,7 +138,7 @@ onload = function () {
 								video.removeAttribute(video.attributes[0].name);
 							}
 							mediaElement = video;// document.getElementById('vid');
-							console.log("set license noW");
+							mediaElement = document.getElementById('receiverVideoElement');
 							mediaElement.autoplay = false;
 							setMediaElementEvents(mediaElement);
 							mediaManager.setMediaElement(mediaElement);
