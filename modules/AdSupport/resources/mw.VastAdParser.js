@@ -168,7 +168,7 @@ mw.VastAdParser = {
 					currentAd.companions.push( staticResource );
 				}
 			});
-			
+
 			// look for icons
 			currentAd.icons = [];
 			$ad.find('Icons Icon').each( function( na, icon ){
@@ -185,8 +185,12 @@ mw.VastAdParser = {
 
 			});
 			addVideoClicksIfExist();
-			if (( currentAd.videoFiles && currentAd.videoFiles.length > 0 ) || currentAd.vpaid) {
-				adConf.ads.push( currentAd );
+			if (
+			    ( currentAd.videoFiles && currentAd.videoFiles.length > 0 ) ||
+			    ( currentAd.vpaid && currentAd.vpaid.js ) ||
+			    ( currentAd.vpaid && currentAd.vpaid.flash && mw.supportsFlash() ) ||
+			    ( currentAd.nonLinear && currentAd.nonLinear.length > 0) ) {
+			    adConf.ads.push( currentAd );
 			}
 		});
 		adConf.videoClickTracking = _this.videoClickTrackingUrl;
