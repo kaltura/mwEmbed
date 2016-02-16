@@ -407,6 +407,9 @@
 						//Encode URL so it can be passed via HTML tag
 						flashvars.licenseURL = encodeURIComponent(licenseUrl);
 
+						//Default audio track config to allow setting it on silverlight init
+						flashvars.defaultAudioTrack = _this.audioTrack.defaultTrack;
+
 						var customData = {
 							partnerId: _this.kpartnerid ,
 							ks: _this.getFlashvars( 'ks' ) ,

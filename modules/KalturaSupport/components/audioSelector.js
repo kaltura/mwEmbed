@@ -28,6 +28,9 @@
 
 		setup: function () {
 			this.addBindings();
+			this.getPlayer().audioTrack = {
+				defaultTrack: this.getConfig('defaultStream')
+			};
 		},
 		destroy: function () {
 			this._super();
@@ -103,7 +106,7 @@
 			return this.streams[this.getCurrentStreamIndex()];
 		},
 		getDefaultStream: function () {
-			return this.streams[(this.getConfig('defaultStream') - 1)];
+			return this.streams[(this.getConfig('defaultStream'))];
 		},
 		getCurrentStreamIndex: function () {
 			var _this = this;
