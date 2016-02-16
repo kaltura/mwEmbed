@@ -983,11 +983,6 @@
 					};
 					_this.embedPlayer.adTimeline.displaySlots( 'midroll' ,restoreMidroll);
 				}
-				// set a local method for true ad playback start.
-				_this.startedAdPlayback = function(){
-					_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
-					_this.startedAdPlayback = null;
-				};
 				// loading ad:
 				_this.embedPlayer.pauseLoading();
 				_this.embedPlayer.stopPlayAfterSeek = true;
@@ -997,6 +992,7 @@
 				}
 			} );
 			adsListener( 'LOADED', function(adEvent){
+				_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
 				var adData = adEvent.getAdData();
 				if ( adData) {
 					_this.isLinear = adData.linear;
@@ -1006,10 +1002,6 @@
 				// dispatch adOpen event
 				$( _this.embedPlayer).trigger( 'onAdOpen',[adData.adId, adData.adSystem, currentAdSlotType, adData.adPodInfo ? adData.adPodInfo.adPosition : 0] );
 
-				// check for started ad playback sequence callback
-				if( _this.startedAdPlayback ){
-					_this.startedAdPlayback();
-				}
 				_this.duration= _this.adsManager.getRemainingTime();
 				if (_this.duration >= 0) {
 					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration' , _this.duration );
@@ -1073,11 +1065,6 @@
 				}
 				// update the last ad start time:
 				lastAdStartTime = new Date().getTime();
-
-				// check for started ad playback sequence callback
-				if( _this.startedAdPlayback ){
-					_this.startedAdPlayback();
-				}
 				_this.adActive = true;
 				if (_this.isLinear) {
 					if (!ad.isSkippable()){
