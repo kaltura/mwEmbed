@@ -11,7 +11,7 @@
 			"iconClass": "icon-audio",
 			"showTooltip": true,
 			"labelWidthPercentage": 33,
-			"defaultStream": 1,
+			"defaultStream": 0,
 			"maxNumOfStream": 4,
 			"enableKeyboardShortcuts": true,
 			"keyboardShortcutsMap": {
