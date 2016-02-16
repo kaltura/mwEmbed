@@ -373,7 +373,7 @@
             if ( source.getHeight() ){
                 title = this.getSourceSizeName( source ) + ' ';
             }
-			if ( source.getHeight() != 0 ) {
+			if ( parseInt(source.getHeight()) !== 0 ) {
 				title += this.getSourceTitleBitrate(source);
 			}
             return title;
