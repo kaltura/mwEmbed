@@ -53,11 +53,12 @@
 		],
 
 		setup: function( readyCallback ) {
+			this.setPlayerElement(parent.document.getElementById('receiverVideoElement'));
 			this.applyMediaElementBindings();
 			mw.log('EmbedPlayerChromecastReceiver:: Setup. Video element: '+this.getPlayerElement().toString());
 			this.getPlayerElement().src = '';
 			$(this).trigger("chromecastReceiverLoaded");
-			this.setPlayerElement(parent.document.getElementById('receiverVideoElement'));
+
 			var _this = this;
 			this._propagateEvents = true;
 			$(this.getPlayerElement()).css('position', 'absolute');
