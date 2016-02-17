@@ -105,7 +105,7 @@
 		registerEmbedPlayer: function (embedPlayer) {
 			var _this = this;
 			this.embedPlayer = embedPlayer;
-			this.embedPlayer.unbind("playerError").bind("playerError", function (e, errObj) {
+			$(this.embedPlayer).unbind("playerError").bind("playerError", function (e, errObj) {
 				_this.notifyErrorOccurred(errObj);
 			});
 			this.notifyJsReadyFunc();
