@@ -410,6 +410,11 @@
 					if ( _this.isChromeless || _this.isNativeSDK ){
 						_this.requestAds();
 					}else{
+						if ( !_this.getConfig("adTagUrl") ){
+							mw.log("DoubleClick::No adTagUrl defined. Restore player and resume playback.")
+							_this.restorePlayer(true);
+							return;
+						}
 						// Set the content element to player element:
 						var playerElement =  _this.embedPlayer.getPlayerElement();
 						//Load the video tag to enable setting the source by doubleClick library
