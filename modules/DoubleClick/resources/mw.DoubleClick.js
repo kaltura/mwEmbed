@@ -1172,6 +1172,7 @@
 				var _this = this;
 				// bind to chromeless player events
 				this.embedPlayer.getPlayerElement().subscribe(function () {
+					_this.embedPlayer.hideSpinner();
 					mw.log("DoubleClick:: adLoadedEvent");
 					_this.adManagerLoaded = true;
 				}, 'adLoadedEvent');
