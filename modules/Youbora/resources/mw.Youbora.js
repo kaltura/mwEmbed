@@ -52,7 +52,9 @@
 				// clear ping interval
 				clearInterval( _this.activePingInterval );
 				_this.activePingInterval = null;
-				// on changeMedia increment the viewIndex
+			});
+			this.bind('onChangeMediaDone', function(){
+				// after changeMedia - increment the viewIndex
 				_this.incrementViewIndex();
 			});
 			this.bind('playerReady', function(){
