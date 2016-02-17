@@ -57,8 +57,8 @@
 			mw.log('EmbedPlayerChromecastReceiver:: Setup. Video element: '+this.getPlayerElement().toString());
 			this.getPlayerElement().src = '';
 			$(this).trigger("chromecastReceiverLoaded");
-			console.log("------> setting element: "+document.parent.getElementById('receiverVideoElement'));
-			this.setPlayerElement(document.parent.getElementById('receiverVideoElement'));
+			console.log("------> setting element: "+parent.document.getElementById('receiverVideoElement'));
+			this.setPlayerElement(parent.document.getElementById('receiverVideoElement'));
 			var _this = this;
 			this._propagateEvents = true;
 			$(this.getPlayerElement()).css('position', 'absolute');
