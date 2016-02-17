@@ -133,7 +133,7 @@ onload = function () {
 					if (!playerInitialized){
 						playerInitialized = true;
 						var kdp = document.getElementById(playerId);
-						kdp.kBind("chromecastReceiverLoaded", function( video ){
+						kdp.kBind("chromecastReceiverLoaded", function(){
 							mediaElement = document.getElementById('receiverVideoElement');
 							mediaElement.autoplay = false;
 							setMediaElementEvents(mediaElement);

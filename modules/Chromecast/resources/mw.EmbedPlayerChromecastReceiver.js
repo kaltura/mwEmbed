@@ -25,7 +25,6 @@
 		duration: 0,
 		userSlide: false,
 		volume: 1,
-		vid: null,
 		monitorInterval: null,
 		receiverName: '',
 		nativeEvents: [
@@ -54,11 +53,12 @@
 		],
 
 		setup: function( readyCallback ) {
-			this.vid = this.getPlayerElement();
 			this.applyMediaElementBindings();
 			mw.log('EmbedPlayerChromecastReceiver:: Setup. Video element: '+this.getPlayerElement().toString());
 			this.getPlayerElement().src = '';
-			$(this).trigger("chromecastReceiverLoaded",[this.getPlayerElement()]);
+			$(this).trigger("chromecastReceiverLoaded");
+			console.log("------> setting element: "+document.parent.getElementById('receiverVideoElement'));
+			this.setPlayerElement(document.parent.getElementById('receiverVideoElement'));
 			var _this = this;
 			this._propagateEvents = true;
 			$(this.getPlayerElement()).css('position', 'absolute');
@@ -123,20 +123,24 @@
 		isInSequence: function(){return false;},
 
 		monitor: function(){
-			if ( this.vid && this.vid.currentTime !== null && this.vid.duration !== null) {
-				$(this).trigger("updatePlayHeadPercent",[ this.vid.currentTime / this.vid.duration ]);
-				$( this ).trigger( 'externalTimeUpdate', [this.vid.currentTime]);
+			var vid = this.getPlayerElement();
+			if ( vid && vid.currentTime !== null && vid.duration !== null) {
+				$(this).trigger("updatePlayHeadPercent",[ vid.currentTime / vid.duration ]);
+				$( this ).trigger( 'externalTimeUpdate', [vid.currentTime]);
 			}
 			$(this).trigger( 'monitorEvent' );
 		},
 
+		setPlayerElement: function (mediaElement) {
+			this.playerElement = mediaElement;
+		},
 		getPlayerElement: function () {
-			this.playerElement = $('#' + this.pid).get(0);
+			//this.playerElement = $('#' + this.pid).get(0);
 			return this.playerElement;
 		},
 
 		getPlayerElementTime: function(){
-			return this.vid.currentTime;
+			return this.getPlayerElement().currentTime;
 		},
 
 		isVideoSiblingEnabled: function() {
