@@ -57,7 +57,7 @@
 			mw.log('EmbedPlayerChromecastReceiver:: Setup. Video element: '+this.getPlayerElement().toString());
 			this.getPlayerElement().src = '';
 			$(this).trigger("chromecastReceiverLoaded");
-			if (arent.document.getElementById('receiverVideoElement')){
+			if (parent.document.getElementById('receiverVideoElement')){
 				console.log("------> setting element");
 			}else{
 				console.log("------> can find element");
