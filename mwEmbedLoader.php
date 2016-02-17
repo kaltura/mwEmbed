@@ -386,7 +386,7 @@ class mwEmbedLoader {
 	private function getExportedConfig(){
 		global $wgEnableScriptDebug, $wgResourceLoaderUrl, $wgMwEmbedVersion, $wgMwEmbedProxyUrl, $wgKalturaUseManifestUrls,
 			$wgKalturaUseManifestUrls, $wgHTTPProtocol, $wgKalturaServiceUrl, $wgKalturaServiceBase,
-			$wgKalturaCDNUrl, $wgKalturaStatsServiceUrl,$wgKalturaLiveStatsServiceUrl, $wgKalturaIframeRewrite, $wgEnableIpadHTMLControls,
+			$wgKalturaCDNUrl, $wgKalturaStatsServiceUrl,$wgKalturaLiveStatsServiceUrl, $wgKalturaAnalyticsServiceUrl, $wgKalturaIframeRewrite, $wgEnableIpadHTMLControls,
 			$wgKalturaAllowIframeRemoteService, $wgKalturaUseAppleAdaptive, $wgKalturaEnableEmbedUiConfJs,
 			$wgKalturaGoogleAnalyticsUA, $wgHTML5PsWebPath, $wgAllowedVars, $wgAllowedPluginVars, $wgAllowedPluginVarsValPartials, $wgAllowedVarsKeyPartials,
 			$wgCacheTTL, $wgMaxCacheEntries, $wgKalturaSupressNonProductionUrlsWarning;
@@ -403,6 +403,7 @@ class mwEmbedLoader {
 			'Kaltura.CdnUrl' => $wgKalturaCDNUrl,
 			'Kaltura.StatsServiceUrl' => $wgKalturaStatsServiceUrl,
 			'Kaltura.LiveStatsServiceUrl'=>$wgKalturaLiveStatsServiceUrl,
+			'Kaltura.AnalyticsUrl'=>$wgKalturaAnalyticsServiceUrl,
 			'Kaltura.IframeRewrite' => $wgKalturaIframeRewrite,
 			'EmbedPlayer.EnableIpadHTMLControls' => $wgEnableIpadHTMLControls,
 			'EmbedPlayer.UseFlashOnAndroid' => true,

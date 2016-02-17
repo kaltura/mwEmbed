@@ -43,6 +43,7 @@
 		proxyElement: null,
 		embedPlayer: null,
 		isJsCallbackReady: false,
+		callReadyOnPlayerElementRegistered: false,
 		bindPostfix: ".nativeBridge",
 		subscribed: [],
 		playerMethods: [
@@ -83,16 +84,30 @@
 			}
 
 			this.bindNativeEvents();
+			if (this.callReadyOnPlayerElementRegistered){
+				this.proxyElement.notifyJsReady([]);
+			}
+		},
+
+		notifyErrorOccurred: function (errObj) {
+			var errMsg = errObj != null ? errObj.title + ", " + errObj.message : "error undefined";
+			NativeBridge.videoPlayer.execute('setAttribute', [ "playerError", errMsg ]);
 		},
 
 		notifyJsReadyFunc: function () {
 			if (this.isJsCallbackReady && this.proxyElement) {
 				this.proxyElement.notifyJsReady([]);
+			} else {
+				this.callReadyOnPlayerElementRegistered = true;
 			}
 		},
 
 		registerEmbedPlayer: function (embedPlayer) {
+			var _this = this;
 			this.embedPlayer = embedPlayer;
+			this.embedPlayer.unbind("playerError").bind("playerError", function (e, errObj) {
+				_this.notifyErrorOccurred(errObj);
+			});
 			this.notifyJsReadyFunc();
 		},
 		sendNotification: function (eventName, eventValue) {
@@ -162,7 +177,6 @@
 
 			$(this.proxyElement).trigger(eventName, [jsEventValue]);
 
-
 			if (this.subscribed[eventName]) {
 				this.subscribed[eventName](jsEventValue);
 			}
@@ -203,9 +217,11 @@
 		}
 	};
 
-
 	if (mw.getConfig('EmbedPlayer.ForceNativeComponent') === true) {
 		window["NativeBridge"] = NativeBridge;
+		$(".mwPlayerContainer").one("playerError", function (e, errObj) {
+			NativeBridge.videoPlayer.notifyErrorOccurred(errObj);
+		});
 		kWidget.addReadyCallback(function () {
 			NativeBridge.videoPlayer.isJsCallbackReady = true;
 			NativeBridge.videoPlayer.notifyJsReadyFunc();

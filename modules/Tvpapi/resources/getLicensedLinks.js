@@ -1,29 +1,11 @@
 (function (mw, $) {
 	"use strict";
 
-	mw.PluginManager.add( 'tvpapiGetLicensedLinks', mw.KBasePlugin.extend( {
+	var tvpapiGetLicensedLinks = mw.tvpapiRequest.extend( {
 
 		defaultConfig: {
 			"restMethod": "GetLicensedLinks",
-			"restApiBaseUrl": "",
-			"baseConfig": {
-				"initObj": {
-					"Locale": {
-						LocaleLanguage: "",
-						LocaleCountry: "",
-						LocaleDevice: "",
-						LocaleUserState: "Unknown"
-					},
-					Platform: "Web",
-					SiteGuid: "-1",
-					DomainID: "",
-					UDID: "",
-					"ApiUser": "",
-					"ApiPass": ""
-				},
-				"mediaFileID": "",
-				"baseLink": ""
-			}
+			"restApiBaseUrl": null
 		},
 
 		isDisabled: false,
@@ -31,13 +13,6 @@
 
 		setup: function ( embedPlayer ) {
 			this.addBindings();
-		},
-
-		getProxyConfig: function( attr, raw ) {
-			if( raw ){
-				return this.embedPlayer.getRawKalturaConfig( "proxyData", attr );
-			}
-			return this.embedPlayer.getKalturaConfig( "proxyData", attr );
 		},
 
 		addBindings: function () {
@@ -52,66 +27,40 @@
 		},
 
 		getMediaLicenseLink: function(event, source){
-			var baseUrl = this.getPlayer().getKalturaConfig( null, 'TVPAPIBaseUrl' ) || this.getConfig( "restApiBaseUrl" );
-			var restMethod = this.getConfig("restMethod");
-			if (baseUrl != "" && restMethod != "") {
-				var url = baseUrl + restMethod;
-				var proxyConfig = this.getProxyConfig();
-				var baseConfig = this.getConfig( "baseConfig" );
+			var url = this.getRequestUrl();
+			if (url) {
+				var data = {
+					"mediaFileID": source.assetid,
+					"baseLink": source.src,
+					"initObj": this.getInitObj()
+				};
+
+				var getResponseLink = function (res) {
+					return res.mainUrl ||
+							( res.licensed_link && res.licensed_link.main_url );
+				};
+
 				var _this = this;
 
-				var merge = function( base, data ) {
-					var combinedData = {};
-					var confItem;
-					for ( confItem in base ) {
-						if ( typeof(base[confItem]) == "object" ) {
-							combinedData[confItem] = merge( base[confItem], data[confItem] );
+				this.doRequest(url, data).then(
+					function (res) {
+						var mediaLink = getResponseLink(res);
+						if (mediaLink) {
+							_this.getPlayer().triggerHelper('tvpapiSubscription', [res]);
+							source.src = mediaLink;
 						} else {
-							if ( data[confItem] !== undefined ) {
-								combinedData[confItem] = data[confItem];
-							}
+							_this.getPlayer().triggerHelper('tvpapiNoSubscription', [res]);
 						}
-					}
-					return combinedData;
-				};
-
-				var combinedData = $.extend(true, baseConfig, proxyConfig );// merge( baseConfig, proxyConfig );
-
-				combinedData["mediaFileID"] = source.assetid;
-				combinedData["baseLink"] = combinedData["basicLink"] =  source.src;
-
-				var successHandler = function ( res ) {
-					var url = getResponseLink(res);
-					if( url ) {
-						_this.getPlayer().triggerHelper('tvpapiSubscription', [res]);
-						source.src = url;
-					} else {
-						_this.getPlayer().triggerHelper('tvpapiNoSubscription', [res]);
-					}
-				};
-				var errorHandler = function ( xmlHttpRequest, status ) {
-					//TODO:Handle error - dispatch event
-				};
-
-				var getResponseLink = function(res) {
-					return res.mainUrl ||
-						( res.licensed_link && res.licensed_link.main_url );
-				}
-
-				$.ajax( {
-					url: url,
-					type: "POST",
-					dataType: "json",
-					contentType: "application/json",
-					data: JSON.stringify( combinedData ),
-					//complete: completeHandler,
-					success: successHandler,
-					error: errorHandler,
-					async: false
-				} );
+					},
+					function (xmlHttpRequest, status) {
+						//TODO:Handle error - dispatch event
+					},
+					null
+				);
 			}
 
 			return false;
 		}
-	}));
+	});
+	mw.PluginManager.add( 'tvpapiGetLicensedLinks', tvpapiGetLicensedLinks);
 })(window.mw, window.jQuery);

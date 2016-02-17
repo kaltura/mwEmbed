@@ -110,13 +110,22 @@
 					_this.layoutBuilder.closeAlert();
 				}
 			});
-            $(this).bind('firstPlay', this.parseTextTracks());
+            this.addBindings();
+		},
+        addBindings: function(){
+            var _this = this;
+            this.bindHelper('firstPlay', function(){
+                _this.parseTracks();
+            });
+            this.bindHelper('switchAudioTrack', function (e, data) {
+                _this.switchAudioTrack(data.index);
+            });
             this.bindHelper('liveOnline', function(){
-                if( this.isLive() && !this.isDVR() ) {
-                    this.resetSrc = true;
+                if( _this.isLive() && !_this.isDVR() ) {
+                    _this.resetSrc = true;
                 }
             });
-		},
+        },
 		/**
 		 * Updates the supported features given the "type of player"
 		 */
@@ -160,10 +169,9 @@
 					// switch source calls .play() that some browsers require.
 					// to reflect source switches. Playlists handle pause state so no need to pause in playlist
 					_this.ignoreNextNativeEvent = true;
-					if ( !_this.playlist ){
-						_this.pause();
+					if ( !_this.isPlaying() ) {
+						_this.updatePosterHTML();
 					}
-					_this.updatePosterHTML();
 				}
 				callback();
 			});
@@ -635,28 +643,6 @@
 					// hide the player offscreen while we switch
 					_this.hidePlayerOffScreen();
 
-					// restore position once we have metadata
-					$(vid).bind('loadedmetadata' + switchBindPostfix, function () {
-						$(vid).unbind('loadedmetadata' + switchBindPostfix);
-						_this.log(" playerSwitchSource> loadedmetadata callback for:" + src);
-						// ( do not update the duration )
-						// Android and iOS <5 gives bogus duration, depend on external metadata
-
-						// keep going towards playback! if  switchCallback has not been called yet
-						// we need the "playing" event to trigger the switch callback
-						if (!mw.isIOS71() && $.isFunction(switchCallback) && !_this.isVideoSiblingEnabled()) {
-							vid.play();
-						} else {
-							_this.removeBlackScreen();
-						}
-					});
-
-					$(vid).bind('pause' + switchBindPostfix, function () {
-						_this.log("playerSwitchSource> received pause during switching, issue play to continue source switching!")
-						$(vid).unbind('pause' + switchBindPostfix);
-						vid.play();
-					});
-
 					var handleSwitchCallback = function () {
 						//Clear pause binding on switch exit in case it wasn't triggered.
 						$(vid).unbind('pause' + switchBindPostfix);
@@ -667,7 +653,6 @@
 						// Restore
 						vid.controls = originalControlsState;
 						_this.ignoreNextError = false;
-						_this.ignoreNextNativeEvent = false;
 						// check if we have a switch callback and issue it now:
 						if ($.isFunction(switchCallback)) {
 							_this.log(" playerSwitchSource> call switchCallback");
@@ -677,15 +662,12 @@
 						}
 					};
 
-					// once playing issue callbacks:
-					$(vid).bind('playing' + switchBindPostfix, function () {
-						$(vid).unbind('playing' + switchBindPostfix);
-						_this.log(" playerSwitchSource> playing callback: " + vid.currentTime);
+					// restore position once we have metadata
+					$(vid).bind('loadedmetadata' + switchBindPostfix, function () {
+						$(vid).unbind('loadedmetadata' + switchBindPostfix);
+						_this.log(" playerSwitchSource> loadedmetadata callback for:" + src);
 						handleSwitchCallback();
-						setTimeout(function () {
-							_this.removeBlackScreen();
-						}, 100);
-
+						_this.removeBlackScreen();
 					});
 
 					// Add the end binding if we have a post event:
@@ -706,11 +688,6 @@
 							// issue the doneCallback
 							doneCallback();
 
-							// Support loop for older iOS
-							// Temporarily disabled pending more testing or refactor into a better place.
-							//if ( _this.loop ) {
-							//	vid.play();
-							//}
 							return false;
 						});
 
@@ -739,8 +716,6 @@
 						}
 					}
 
-					// issue the play request:
-					vid.play();
 					if (mw.isMobileDevice()) {
 						setTimeout(function () {
 							handleSwitchCallback();
@@ -827,7 +802,7 @@
                             setTimeout( function () {
                                 if ( !_this.playing ) {
                                     vid.play();
-                                    _this.parseTextTracks();
+                                    _this.parseTracks();
                                 }
                             }, 300 );
                             _this.resetSrc = false;
@@ -853,6 +828,8 @@
 							vid.play();
 						}
 						_this.mobilePlayed = true;
+						// re-start the monitor:
+						_this.monitor();
 					}
 				} else {
 					_this.log(" parent play returned false, don't issue play on native element");
@@ -1175,7 +1152,6 @@
 		 */
 		_onloadedmetadata: function () {
 			this.getPlayerElement();
-
 			// only update duration if we don't have one: ( some browsers give bad duration )
 			// like Android 4 default browser
 			if (!this.duration
@@ -1317,10 +1293,13 @@
 		},
 
 		backToLive: function () {
-			this.triggerHelper('movingBackToLive');
+            var _this = this;
 			var vid = this.getPlayerElement();
 			vid.load();
 			vid.play();
+            setTimeout( function() {
+                _this.triggerHelper('movingBackToLive'); //for some reason on Mac the isLive client response is a little bit delayed, so in order to get update liveUI properly, we need to delay "movingBackToLive" helper
+            }, 1000 );
 		},
 		isVideoSiblingEnabled: function () {
 			if (mw.isIphone() || mw.isAndroid2() || mw.isWindowsPhone() || mw.isAndroid40() || mw.isMobileChrome()
@@ -1360,21 +1339,32 @@
 		setInline: function ( state ) {
 			this.getPlayerElement().attr('webkit-playsinline', '');
 		},
-        parseTextTracks: function(){
+        parseTracks: function(){
             var vid = this.getPlayerElement();
+            this.parseAudioTracks(vid, 0); //0 is for a setTimer counter. Try to catch audioTracks, give up after 5 seconds
+            if(this.isLive() && !this.isDVR()) {
+                //right now we parse metadata textTrack in order to read id3Tag only for live without DVR
+                this.parseTextTracks(vid, 0); //0 is for a setTimer counter. Try to catch textTracks.kind === "metadata, give up after 10 seconds
+            }
+        },
+        parseTextTracks: function(vid, counter){
             var _this = this;
-            var interval = setInterval(function() {
-                for (var i = 0; i < vid.textTracks.length; i++) {
-                    //TODO: add audio support
-
-                    //if Live + No DVR add id3 tags support
-                    if (vid.textTracks[i].kind === "metadata" && _this.isLive() && !_this.isDVR()) {
-                        _this.id3Tag(vid.textTracks[i]);
-                        clearInterval(interval);
-                        vid.textTracks[i].mode = "hidden";
+            setTimeout(function() {
+                if( vid.textTracks.length > 0 ) {
+                    for (var i = 0; i < vid.textTracks.length; i++) {
+                        if (vid.textTracks[i].kind === "metadata") {
+                            //add id3 tags support (for now only if Live + no DVR)
+                            _this.id3Tag(vid.textTracks[i]);
+                            vid.textTracks[i].mode = "hidden";
+                        }
+                    }
+                }else{
+                    //try to catch textTracks.kind === "metadata, give up after 10 seconds
+                    if( counter < 10 ){
+                        _this.parseTextTracks(vid, ++counter);
                     }
                 }
-            }, 500);
+            }, 1000);
         },
         id3Tag: function(metadataTrack){
             var _this = this;
@@ -1387,6 +1377,29 @@
                     mw.log("Native player :: id3Tag :: ERROR :: "+e);
                 }
             }, false);
+        },
+        parseAudioTracks: function(vid, counter){
+            var _this = this;
+            setTimeout (function() {
+                if( vid.audioTracks && vid.audioTracks.length > 0 ) {
+                    var data ={'languages':[]};
+                    for (var i = 0; i < vid.audioTracks.length; i++) {
+                        var lang = {};
+                        lang.index = i;
+                        lang.label = vid.audioTracks[i].label;
+                        data.languages.push(lang);
+                    }
+                    _this.triggerHelper('audioTracksReceived', data);
+                }else{
+                    //try to catch audioTracks, give up after 5 seconds
+                    if( counter < 5 ){
+                        _this.parseAudioTracks(vid, ++counter);
+                    }
+                }
+            }, 1000);
+        },
+        switchAudioTrack: function(audioTrackIndex){
+            this.getPlayerElement().audioTracks[audioTrackIndex].enabled = true;
         },
         getCurrentBufferLength: function(){
             return parseInt(this.playerElement.buffered.end(0) - this.playerElement.currentTime); //return buffer length in seconds

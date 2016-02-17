@@ -298,6 +298,9 @@
 
 		drmRequired: false,
 
+        //the offset in hours:minutes:seconds from the playable live edge.
+        liveEdgeOffset: 0,
+
 		/**
 		 * embedPlayer
 		 *
@@ -1252,7 +1255,7 @@
 				}
 			}
 			// display thumbnail upon movie end if showThumbnailOnEnd Flashvar is set to true and not looped
-			if (!this.loop) {
+			if (this.getFlashvars("EmbedPlayer.ShowPosterOnStop") !== false && !this.loop) {
 				this.updatePosterHTML();
 			}
 		},
@@ -1307,6 +1310,11 @@
 		showPlayer: function () {
 			mw.log('EmbedPlayer:: showPlayer: ' + this.id + ' interace: w:' + this.width + ' h:' + this.height);
 			var _this = this;
+
+            if( mw.getConfig('preload')==='auto' ){
+                this.load();
+            }
+
 			// Remove the player loader spinner if it exists
 			this.hideSpinner();
 			// If a isPersistentNativePlayer ( overlay the controls )
@@ -1461,6 +1469,7 @@
 		showErrorMsg: function (errorObj) {
 			// Remove a loading spinner
 			this.hideSpinner();
+			this.triggerHelper('playerError', errorObj);
 			// clear change media flag
 			this.changeMediaStarted = false;
 			if (this.layoutBuilder) {
@@ -1735,11 +1744,10 @@
 					//remove black bg when showing poster after change media
 					$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
 					// reload the player
-					if (_this.autoplay && _this.canAutoPlay() ) {
+					if (_this.canAutoPlay() ) {
 						if (!_this.isAudioPlayer) {
 							_this.removePoster();
 						}
-						_this.play();
 					}
 
 					$this.trigger('onChangeMediaDone');
@@ -1847,15 +1855,10 @@
 
 			$(this).find(".playerPoster").remove();
 			//remove poster on autoPlay when player loaded
-			if ( (this.currentState==null || this.currentState=="load") && mw.getConfig('autoPlay') && !mw.isMobileDevice()){
+			if ( this.currentState=="load" && mw.getConfig('autoPlay') && !mw.isMobileDevice()){
 				return;
 			}
-			//remove poster on start
-			if ( (this.currentState==null || this.currentState=="load") && mw.getConfig('EmbedPlayer.HidePosterOnStart') === true ) {
-				return;
-			}
-			//remove poster on end
-			if ( mw.getConfig('EmbedPlayer.ShowPosterOnStop') === false && this.currentState=="end" ) {
+			if ( mw.getConfig('EmbedPlayer.HidePosterOnStart') === true && !(this.currentState=="end" && mw.getConfig('EmbedPlayer.ShowPosterOnStop')) ) {
 				return;
 			}
 			// support IE9 and IE10 compatibility modes
@@ -2268,10 +2271,6 @@
 				this.removePoster();
 			}
 
-			if (mw.getConfig("EmbedPlayer.KeepPoster")){
-				this.updatePosterHTML();
-			}
-
 			// We need first play event for analytics purpose
 			if (this.firstPlay && this._propagateEvents) {
 				this.firstPlay = false;
@@ -2508,8 +2507,10 @@
 
 		togglePlayback: function () {
 				if (this.paused) {
+					this.triggerHelper( 'userInitiatedPlay' );
 					this.play();
 				} else {
+					this.triggerHelper( 'userInitiatedPause' );
 					this.pause();
 				}
 		},
@@ -2760,7 +2761,7 @@
 			}
 			if (!_this.isLive() && _this.instanceOf != 'ImageOverlay') {
 				if (_this.isPlaying() && _this.currentTime == _this.getPlayerElementTime()) {
-					_this.bufferStart();
+                    _this.bufferStart();
 				} else if (_this.buffering) {
 					_this.bufferEnd();
 				}
@@ -2784,6 +2785,15 @@
 				if (!this.userSlide && !this.seeking ) {
 					var playHeadPercent = ( this.currentTime - this.startOffset ) / this.duration;
 					this.updatePlayHead(playHeadPercent);
+                    //update liveEdgeOffset
+                    if(this.isDVR()){
+                        var perc = parseInt(playHeadPercent*1000);
+                        if(perc>998) {
+                            this.liveEdgeOffset = 0;
+                        }else {
+                            this.liveEdgeOffset = this.duration - perc/1000 * this.duration;
+                        }
+                    }
 				}
 			}
 		},
@@ -3275,7 +3285,32 @@
 			}
 			//adaptive bitrate
 			return this.currentBitrate;
-		}
+		},
+
+         /*
+         * get current offset from the playable live edge inside DVR window (positive number for negative offset)
+         */
+        getLiveEdgeOffset: function () {
+            return this.liveEdgeOffset;
+        },
+
+        /*
+         * Some players parse playmanifest and reload flavors list by calling this function
+         * @param offset {positive number}: number of seconds to move back from the playable live edge inside DVR window
+         * @param callback {function}: callback (if exists) will be executed after the seek
+         */
+        setLiveEdgeOffset: function(offset, callback){
+            mw.log( 'EmbedPlayer :: setLiveEdgeOffset -' + offset );
+            this.seek(this.getDuration()-offset);
+            if ($.isFunction(callback)) {
+                callback();
+            }
+        },
+
+        getCurrentBufferLength: function(){
+            mw.log("Error: getPlayerElementTime should be implemented by embed library");
+        }
+
 	};
 
 })(window.mw, window.jQuery);
