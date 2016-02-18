@@ -110,6 +110,7 @@
 				_this.activePingInterval = null;
 				// reset the firstPlay flag:
 				_this.embedPlayer.firstPlay = true;
+				_this.firstPlayDone = false;
 				_this.bindFirstPlay();
 			});
 
