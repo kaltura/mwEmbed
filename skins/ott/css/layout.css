@@ -989,7 +989,7 @@ button::-moz-focus-inner {
 }
 
 .btn:focus {
-	outline: 1px solid #66CCFF;
+	outline: 1px solid #00D6FF;
 }
 
 .mobile .btn:focus {
