@@ -1234,7 +1234,11 @@ body {
 }
 
 .btn:focus {
-	outline: 1px dotted #999;
+	outline: 1px solid #66CCFF;
+}
+
+.mobile .btn:focus {
+	outline: none;
 }
 
 .largePlayBtn {
