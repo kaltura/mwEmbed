@@ -44,9 +44,11 @@
 		// the flag for active viewcode generation  
 		settingUpViewCodeFlag: null,
 		viewCode: null,
+		currentBitRate: -1,
 		
 		setup: function(){
 			var _this = this;
+			this.currentBitRate = -1;
 			// init function defines a manual callback ( needs to be set on every new 'stream' )
 			this.bind('onChangeMedia', function(){
 				// clear ping interval
@@ -58,6 +60,9 @@
 				_this.incrementViewIndex();
 			});
 			this.bind('playerReady', function(){
+				if ( _this.kalturaContextData && _this.kalturaContextData.flavorAssets && _this.kalturaContextData.flavorAssets.length === 1 ){
+					_this.currentBitRate = _this.kalturaContextData.flavorAssets[0].bitrate;
+				}
 				_this.addBindings();
 			});
 			this.setupViewCode();
@@ -130,6 +135,21 @@
 					'totalBytes': "0", // could potentially be populated if we use XHR for iframe payload + static loader + DASH MSE for segments )
 					'pingTime': _this.pingTime
 				});
+			});
+
+			this.bind( 'bitrateChange' ,function( event, newBitrate){
+				_this.currentBitRate = newBitrate;
+			} );
+			// events for capturing the bitrate of the currently playing source
+			this.bind( 'SourceSelected' , function (e, source) {
+				if (source.getBitrate()){
+					_this.currentBitRate = source.getBitrate();
+				}
+			});
+			this.bind( 'sourceSwitchingEnd' , function (e, newSource) {
+				if (newSource.newBitrate){
+					_this.currentBitRate = newSource.newBitrate;
+				}
 			});
 		},
 		incrementViewIndex: function(){
@@ -257,12 +277,9 @@
 		bindFirstJoin: function(){
 			var _this = this;
 			// track joinTime ( time between play and positive time )
-			this.bind('timeupdate', function(){
-				if (_this.embedPlayer.currentTime === 0){
-					return;
-				}
-				// only track the first timeupdate:
-				_this.unbind('timeupdate');
+			this.bind('playing', function(){
+				// only track the first playing event:
+				_this.unbind('playing');
 				_this.sendBeacon( 'joinTime', {
 					'time': new Date().getTime() - _this.playRequestStartTime,
 					'eventTime': _this.embedPlayer.currentTime
@@ -285,10 +302,13 @@
 			this.sendPing();
 		},
 		sendPing: function(){
-			var bitrate = this.embedPlayer.mediaElement.selectedSource.getBitrate();
+			if ( this.embedPlayer.isMulticast && $.isFunction( this.embedPlayer.getMulticastBitrate ) ) {
+				this.currentBitRate = this.embedPlayer.getMulticastBitrate();
+			}
+			var pingTime = this.previusPingTime ? (( new Date().getTime() - this.previusPingTime )  / 1000 ).toFixed() : 0;
 			this.sendBeacon( 'ping',{
-				'pingTime': (( new Date().getTime() - this.previusPingTime )  / 1000 ).toFixed(), // round seconds
-				'bitrate': bitrate ? bitrate * 1024 : -1,
+				'pingTime': pingTime, // round seconds
+				'bitrate': this.currentBitRate !== -1 ? this.currentBitRate * 1024 : -1,
 				'time': this.embedPlayer.currentTime,
 				//'totalBytes':"0", // value is only sent along with the dataType parameter. If the bitrate parameter is sent, then this one is not needed.
 				//'dataType': "0", // Kaltura does not really do RTMP streams any more.
