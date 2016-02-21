@@ -134,10 +134,10 @@ onload = function () {
 						playerInitialized = true;
 						var kdp = document.getElementById(playerId);
 						kdp.kBind("chromecastReceiverLoaded", function(){
-							mediaElement = document.getElementById('receiverVideoElement');
-							mediaElement.autoplay = false;
-							setMediaElementEvents(mediaElement);
-							mediaManager.setMediaElement(mediaElement);
+//							mediaElement = document.getElementById('receiverVideoElement');
+//							mediaElement.autoplay = false;
+//							setMediaElementEvents(mediaElement);
+//							mediaManager.setMediaElement(mediaElement);
 							setMediaManagerEvents();
 							messageBus.broadcast("readyForMedia");
 						});
