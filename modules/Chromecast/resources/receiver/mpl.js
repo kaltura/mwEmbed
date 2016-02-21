@@ -119,7 +119,7 @@ onload = function () {
 			if (payload['debugKalturaPlayer'] == true){
 				mw.setConfig("debug", true);
 				mw.setConfig("debugTarget", "kdebug");
-				mw.setConfig("debugFilter", "KAnalytics");
+				//mw.setConfig("debugFilter", "---");
 				mw.setConfig("autoScrollDebugTarget", true);
 				document.getElementById('kdebug').style.display = 'block';
 			}
