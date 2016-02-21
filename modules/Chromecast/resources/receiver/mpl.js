@@ -106,10 +106,6 @@ onload = function () {
 			customData = payload['value'];
 			setDebugMessage('customData', customData);
 		} else if (payload['type'] === 'load') {
-//			mediaElement = document.getElementById('receiverVideoElement');
-//			mediaElement.autoplay = false;
-//			setMediaElementEvents(mediaElement);
-//			mediaManager.setMediaElement(mediaElement);
 			setMediaManagerEvents();
 		} else if (payload['type'] === 'embed' && !playerInitialized) {
 			var publisherID = payload['publisherID'];
@@ -134,10 +130,6 @@ onload = function () {
 						playerInitialized = true;
 						var kdp = document.getElementById(playerId);
 						kdp.kBind("chromecastReceiverLoaded", function(){
-//							mediaElement = document.getElementById('receiverVideoElement');
-//							mediaElement.autoplay = false;
-//							setMediaElementEvents(mediaElement);
-//							mediaManager.setMediaElement(mediaElement);
 							setMediaManagerEvents();
 							messageBus.broadcast("readyForMedia");
 						});
