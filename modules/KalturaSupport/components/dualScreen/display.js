@@ -146,7 +146,7 @@
         toggleSecondary: function (curMain) {
             var _this = this;
             this.toggleConfig();
-            this.obj.toggleClass( 'secondScreen secondScreenMoveOut');
+            this.obj.toggleClass( 'secondScreen hiddenScreen');
             setTimeout(function(){
                 _this.disableTransition();
                 curMain.obj.css('z-index',2);
