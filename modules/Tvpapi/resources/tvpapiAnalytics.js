@@ -124,6 +124,8 @@
 			// Do not send requests during ad playback
 			if( !this.getPlayer().isInSequence() ) {
 				var printableData =  JSON.stringify(data, null, '\t');
+				//Emit the report API event
+				this.getPlayer().triggerHelper(service, [service, data]);
 				this.log('report: ' + service + ": " + printableData);
 				this.restMethod = service;
 				var url = this.getRequestUrl();

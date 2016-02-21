@@ -311,8 +311,8 @@
             }
 		},
         getSourceSizeName: function( source ){
-			if( source.getHeight() == 0 ){
-				return gM( 'mwe-embedplayer-audio_source' ) + this.getSourceTitleBitrate(source);
+			if( source.getHeight() == 0 && this.getPlayer().streamerType == "http"){
+				return gM( 'mwe-embedplayer-audio_source' ) + ( this.getConfig( 'displayMode' ) == 'sizebitrate' ? "" : this.getSourceTitleBitrate(source) );
 			} else if( source.getHeight() < 255 ){
 				return '240P';
 			} else if( source.getHeight() < 370 ){
@@ -373,9 +373,7 @@
             if ( source.getHeight() ){
                 title = this.getSourceSizeName( source ) + ' ';
             }
-			if ( source.getHeight() !== 0 ) {
-				title += this.getSourceTitleBitrate(source);
-			}
+			title += this.getSourceTitleBitrate(source);
             return title;
         },
 		toggleMenu: function(){

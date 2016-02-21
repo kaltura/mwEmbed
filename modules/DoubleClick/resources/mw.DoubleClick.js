@@ -407,9 +407,14 @@
 					// Setup the restore callback
 					_this.restorePlayerCallback = callback;
 
-					if ( _this.isChromeless ){
+					if ( _this.isChromeless || _this.isNativeSDK ){
 						_this.requestAds();
 					}else{
+						if ( !_this.getConfig("adTagUrl") ){
+							mw.log("DoubleClick::No adTagUrl defined. Restore player and resume playback.")
+							_this.restorePlayer(true);
+							return;
+						}
 						// Set the content element to player element:
 						var playerElement =  _this.embedPlayer.getPlayerElement();
 						//Load the video tag to enable setting the source by doubleClick library
@@ -484,7 +489,7 @@
 				if (_this.isChromeless){
 					_this.embedPlayer.getPlayerElement().sendNotification("hideContent");
 				}else{
-					if ( _this.embedPlayer.isVideoSiblingEnabled() && !mw.isAndroidNativeBrowser() ) {
+					if ( _this.embedPlayer.isVideoSiblingEnabled() && !mw.isAndroidNativeBrowser() && !_this.isNativeSDK) {
 						$(".mwEmbedPlayer").addClass("mwEmbedPlayerBlackBkg");
 						_this.embedPlayer.addBlackScreen();
 					}else{
@@ -497,7 +502,7 @@
 				if (_this.isChromeless){
 					_this.embedPlayer.getPlayerElement().sendNotification("showContent");
 				}else{
-					if ( _this.embedPlayer.isVideoSiblingEnabled() && !mw.isAndroidNativeBrowser() ) {
+					if ( _this.embedPlayer.isVideoSiblingEnabled() && !mw.isAndroidNativeBrowser() && !_this.isNativeSDK) {
 						$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
 						_this.embedPlayer.removeBlackScreen();
 					}else{
@@ -827,7 +832,6 @@
 
 			// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
 			this.getAdDisplayContainer();
-			this.hideAdContainer();
 
 			// Create ads loader.
 			this.adsLoader = new google.ima.AdsLoader( _this.adDisplayContainer );
@@ -836,12 +840,14 @@
 			this.adsLoader.addEventListener(
 				google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
 				function( event ){
+					_this.hideAdContainer();
 					_this.onAdsManagerLoaded( event );
 				},
 				false);
 			this.adsLoader.addEventListener(
 				google.ima.AdErrorEvent.Type.AD_ERROR,
 				function(event ){
+					_this.hideAdContainer();
 					_this.onAdError( event );
 				},
 				false);
@@ -983,11 +989,6 @@
 					};
 					_this.embedPlayer.adTimeline.displaySlots( 'midroll' ,restoreMidroll);
 				}
-				// set a local method for true ad playback start.
-				_this.startedAdPlayback = function(){
-					_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
-					_this.startedAdPlayback = null;
-				};
 				// loading ad:
 				_this.embedPlayer.pauseLoading();
 				_this.embedPlayer.stopPlayAfterSeek = true;
@@ -997,6 +998,7 @@
 				}
 			} );
 			adsListener( 'LOADED', function(adEvent){
+				_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
 				var adData = adEvent.getAdData();
 				if ( adData) {
 					_this.isLinear = adData.linear;
@@ -1006,10 +1008,6 @@
 				// dispatch adOpen event
 				$( _this.embedPlayer).trigger( 'onAdOpen',[adData.adId, adData.adSystem, currentAdSlotType, adData.adPodInfo ? adData.adPodInfo.adPosition : 0] );
 
-				// check for started ad playback sequence callback
-				if( _this.startedAdPlayback ){
-					_this.startedAdPlayback();
-				}
 				_this.duration= _this.adsManager.getRemainingTime();
 				if (_this.duration >= 0) {
 					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration' , _this.duration );
@@ -1073,11 +1071,6 @@
 				}
 				// update the last ad start time:
 				lastAdStartTime = new Date().getTime();
-
-				// check for started ad playback sequence callback
-				if( _this.startedAdPlayback ){
-					_this.startedAdPlayback();
-				}
 				_this.adActive = true;
 				if (_this.isLinear) {
 					if (!ad.isSkippable()){
@@ -1179,6 +1172,7 @@
 				var _this = this;
 				// bind to chromeless player events
 				this.embedPlayer.getPlayerElement().subscribe(function () {
+					_this.embedPlayer.hideSpinner();
 					mw.log("DoubleClick:: adLoadedEvent");
 					_this.adManagerLoaded = true;
 				}, 'adLoadedEvent');
