@@ -875,6 +875,7 @@
 				if (!errorObj) {
 					this.showPlayerError();
 				} else {
+					this.setError(errorObj);
 					this.showErrorMsg(errorObj);
 				}
 				mw.log("EmbedPlayer:: setupSourcePlayer > player ready ( but with errors ) ");
