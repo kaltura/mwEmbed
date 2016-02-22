@@ -475,7 +475,7 @@
 		stopApp: function() {
 			clearInterval(this.monitorInterval);
 			var _this = this;
-
+			var seekTime = this.getCurrentTime();
 			// stop casting
 			this.session.stop(this.onStopAppSuccess, this.onError);
 			this.getComponent().css("color","white");
@@ -487,8 +487,8 @@
 			this.savedPlayer = null;
 			this.embedPlayer.disablePlayer();
 			this.embedPlayer.updatePlaybackInterface();
-			this.embedPlayer.play();
 			this.embedPlayer.enablePlayControls();
+			this.embedPlayer.seek(seekTime, false);
 		},
 
 		onStopAppSuccess: function() {
