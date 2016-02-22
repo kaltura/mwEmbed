@@ -173,7 +173,7 @@
 			this.unbind( 'userInitiatedPause');
 			this.bind( 'userInitiatedPause', function( playerState ){
 				// ignore if pause is within .5 seconds of end of video of after change media:
-				if ( _this.embedPlayer.firstPlay || ( _this.embedPlayer.duration - _this.embedPlayer.currentTime ) < .5  ){
+				if ( Math.abs(_this.embedPlayer.firstPlay || ( _this.embedPlayer.duration - _this.embedPlayer.currentTime )) < .5  ){
 					return ;
 				}
 				_this.sendBeacon( 'pause' );
@@ -183,7 +183,7 @@
 			this.unbind( 'userInitiatedPlay');
 			this.bind( 'userInitiatedPlay', function( playerState ){
 				// ignore if resume within .5 seconds of end of video:
-				if( ( _this.embedPlayer.duration - _this.embedPlayer.currentTime ) < .5  ){
+				if( ( Math.abs(_this.embedPlayer.duration - _this.embedPlayer.currentTime )) < .5  ){
 					return ;
 				}
 				if( userHasPaused ){
