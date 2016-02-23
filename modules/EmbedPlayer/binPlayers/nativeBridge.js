@@ -43,6 +43,7 @@
 		proxyElement: null,
 		embedPlayer: null,
 		isJsCallbackReady: false,
+		callReadyOnPlayerElementRegistered: false,
 		bindPostfix: ".nativeBridge",
 		subscribed: [],
 		playerMethods: [
@@ -83,6 +84,9 @@
 			}
 
 			this.bindNativeEvents();
+			if (this.callReadyOnPlayerElementRegistered){
+				this.proxyElement.notifyJsReady([]);
+			}
 		},
 
 		notifyErrorOccurred: function (errObj) {
@@ -93,13 +97,15 @@
 		notifyJsReadyFunc: function () {
 			if (this.isJsCallbackReady && this.proxyElement) {
 				this.proxyElement.notifyJsReady([]);
+			} else {
+				this.callReadyOnPlayerElementRegistered = true;
 			}
 		},
 
 		registerEmbedPlayer: function (embedPlayer) {
 			var _this = this;
 			this.embedPlayer = embedPlayer;
-			this.embedPlayer.unbind("playerError").bind("playerError", function (e, errObj) {
+			$(this.embedPlayer).unbind("playerError").bind("playerError", function (e, errObj) {
 				_this.notifyErrorOccurred(errObj);
 			});
 			this.notifyJsReadyFunc();

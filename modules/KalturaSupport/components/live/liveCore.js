@@ -119,44 +119,8 @@
 				//if we moved from live to offline  - show message
 				if ( _this.onAirStatus && !onAirObj.onAirStatus ) {
                     //calculate offlineAlertOffset for timeout (by default = 0 as sometimes offline is only for a second and the message is not needed..)
-                    var offlineAlertOffest = _this.calculateOfflineAlertOffest();
-
-                    if (_this.offAirTimeout){
-                        clearTimeout(_this.offAirTimeout);
-                    }
-
-                    _this.offAirTimeout = setTimeout( function() {
-						if ( !_this.onAirStatus ) {
-                            //if we already played once it means stream data was loaded. We can continue playing in "VOD" mode
-							if ( !embedPlayer.firstPlay && _this.isDVR() ) {
-                                embedPlayer.triggerHelper( 'liveEventEnded' );
-							} else {
-								//remember last state
-								_this.playWhenOnline = embedPlayer.isPlaying();
-
-                                if( _this.getConfig('showThumbnailWhenOffline') ){
-                                    _this.addPoster();
-                                } else {
-                                    embedPlayer.layoutBuilder.displayAlert({
-                                        title: embedPlayer.getKalturaMsg('ks-LIVE-STREAM-OFFLINE-TITLE'),
-                                        message: embedPlayer.getKalturaMsg('ks-LIVE-STREAM-OFFLINE'),
-                                        keepOverlay: true,
-                                        noButtons: true,
-                                        props: {
-                                            customAlertTitleCssClass: "AlertTitleTransparent",
-                                            customAlertMessageCssClass: "AlertMessageTransparent",
-                                            customAlertContainerCssClass: "AlertContainerTransparent"
-                                        }
-                                    });
-                                }
-
-							    _this.getPlayer().disablePlayControls();
-                            }
-                        }
-					}, offlineAlertOffest );
-
-					embedPlayer.triggerHelper( 'liveOffline' );
-
+                    var firstOfflineAlertOffest = _this.calculateOfflineAlertOffest();
+                    _this.setOffAir(firstOfflineAlertOffest);
 				}  else if ( !_this.onAirStatus && onAirObj.onAirStatus ) {
                     if (_this.offAirTimeout){
                         clearTimeout(_this.offAirTimeout);
@@ -258,6 +222,53 @@
 				 }
 			});
 		},
+
+        setOffAir: function(offlineAlertOffest) {
+            var _this = this;
+            var embedPlayer = this.getPlayer();
+
+            if (_this.offAirTimeout){
+                clearTimeout(_this.offAirTimeout);
+                _this.offAirTimeout = null;
+            }
+
+            _this.offAirTimeout = setTimeout( function() {
+                if ( !_this.onAirStatus ) {
+                    //recheck the buffer length
+                    var secondOfflineAlertOffest = _this.calculateOfflineAlertOffest();
+                    if( secondOfflineAlertOffest > 1000 ) {
+                        _this.setOffAir(secondOfflineAlertOffest);
+                    } else {
+                        //if we already played once it means stream data was loaded. We can continue playing in "VOD" mode
+                        if (!embedPlayer.firstPlay && _this.isDVR()) {
+                            embedPlayer.triggerHelper('liveEventEnded');
+                        } else {
+                            //remember last state
+                            _this.playWhenOnline = embedPlayer.isPlaying();
+
+                            if (_this.getConfig('showThumbnailWhenOffline')) {
+                                _this.addPoster();
+                            } else {
+                                embedPlayer.layoutBuilder.displayAlert({
+                                    title: embedPlayer.getKalturaMsg('ks-LIVE-STREAM-OFFLINE-TITLE'),
+                                    message: embedPlayer.getKalturaMsg('ks-LIVE-STREAM-OFFLINE'),
+                                    keepOverlay: true,
+                                    noButtons: true,
+                                    props: {
+                                        customAlertTitleCssClass: "AlertTitleTransparent",
+                                        customAlertMessageCssClass: "AlertMessageTransparent",
+                                        customAlertContainerCssClass: "AlertContainerTransparent"
+                                    }
+                                });
+                            }
+
+                            _this.getPlayer().disablePlayControls();
+                        }
+                        embedPlayer.triggerHelper('liveOffline');
+                    }
+                }
+            }, offlineAlertOffest );
+        },
 
 		isLiveChanged: function() {
 			var _this = this;

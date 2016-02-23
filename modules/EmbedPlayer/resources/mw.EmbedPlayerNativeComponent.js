@@ -582,6 +582,14 @@
 			this.triggerHelper('embedPlayerError', data);
 		},
 
+		_onbufferchange: function (event , isBuffering) {
+			if (isBuffering === "true") {
+				this.bufferStart();
+			} else {
+				this.bufferEnd();
+			}
+		},
+
 		/**
 		 * buffer progress
 		 * @param event

@@ -390,6 +390,7 @@ mw.KAdPlayer.prototype = {
 				targetSource,
 				function( vid ) {
 					_this.addAdBindings( vid, adSlot, adConf );
+					vid.play();
 				},
 				function(){
 					adSlot.playbackDone();
