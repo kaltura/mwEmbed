@@ -41,7 +41,7 @@
 		        "label": "Lead with flash",
 		        "doc": "If the flash based DFP runtime should be used where flash is available.",
 		        "type": "boolean",
-		        "initvalue": true
+		        "initvalue": false
 	        },
             "contentId": {
                 "doc": "The contentId, used by DoubleClick plugin API, generally the entry ID, but can also be custom metadata mapping",
