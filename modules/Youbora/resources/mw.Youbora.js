@@ -173,7 +173,7 @@
 			this.unbind( 'userInitiatedPause');
 			this.bind( 'userInitiatedPause', function( playerState ){
 				// ignore if pause is within .5 seconds of end of video of after change media:
-				if ( _this.embedPlayer.firstPlay || ( _this.embedPlayer.duration - _this.embedPlayer.currentTime ) < .5  ){
+				if ( Math.abs(_this.embedPlayer.firstPlay || ( _this.embedPlayer.duration - _this.embedPlayer.currentTime )) < .5  ){
 					return ;
 				}
 				_this.sendBeacon( 'pause' );
@@ -183,7 +183,7 @@
 			this.unbind( 'userInitiatedPlay');
 			this.bind( 'userInitiatedPlay', function( playerState ){
 				// ignore if resume within .5 seconds of end of video:
-				if( ( _this.embedPlayer.duration - _this.embedPlayer.currentTime ) < .5  ){
+				if( ( Math.abs(_this.embedPlayer.duration - _this.embedPlayer.currentTime )) < .5  ){
 					return ;
 				}
 				if( userHasPaused ){
@@ -304,6 +304,10 @@
 		sendPing: function(){
 			if ( this.embedPlayer.isMulticast && $.isFunction( this.embedPlayer.getMulticastBitrate ) ) {
 				this.currentBitRate = this.embedPlayer.getMulticastBitrate();
+			}
+			var bitrate = this.embedPlayer.mediaElement.selectedSource.getBitrate();
+			if (this.currentBitRate === -1 && bitrate > 0){
+				this.currentBitRate = bitrate;
 			}
 			var pingTime = this.previusPingTime ? (( new Date().getTime() - this.previusPingTime )  / 1000 ).toFixed() : 0;
 			this.sendBeacon( 'ping',{

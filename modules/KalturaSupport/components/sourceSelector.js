@@ -311,7 +311,7 @@
             }
 		},
         getSourceSizeName: function( source ){
-			if( source.getHeight() == 0 && this.getPlayer().streamerType == "http"){
+			if( source.getHeight() == 0 ){
 				return gM( 'mwe-embedplayer-audio_source' ) + ( this.getConfig( 'displayMode' ) == 'sizebitrate' ? "" : this.getSourceTitleBitrate(source) );
 			} else if( source.getHeight() < 255 ){
 				return '240P';

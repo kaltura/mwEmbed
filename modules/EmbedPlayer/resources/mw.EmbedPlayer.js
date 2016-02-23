@@ -2391,10 +2391,10 @@
 				.attr('id', sId);
 		},
 		hideSpinner: function () {
+			$(this).trigger('onRemovePlayerSpinner');
 			var $spinner = $('#loadingSpinner_' + this.id + ',.loadingSpinner');
 			if ($spinner.length > 0) {
 				// remove the spinner
-				$(this).trigger('onRemovePlayerSpinner');
 				$spinner.remove();
 			}
 
