@@ -1326,7 +1326,7 @@
 						_this.embedPlayer.hideSpinner();
 						_this.adLoaderErrorFlag = true;
 						$(_this.embedPlayer).trigger("adErrorEvent");
-						_this.restorePlayer();
+						_this.onAdError("adsLoadError");
 					}, 100);
 				}, 'adsLoadError', true);
 			}
@@ -1495,7 +1495,16 @@
 			if (this.adsManager && $.isFunction( this.adsManager.unload ) ) {
 				this.adsManager.unload();
 			}
-			this.restorePlayer(this.contentDoneFlag);
+			if (this.embedPlayer.isInSequence()){
+				this.restorePlayer(this.contentDoneFlag);
+				this.embedPlayer.play();
+			}else{
+				if (this.adsManagerLoadedTimeoutId){
+					clearTimeout(this.adsManagerLoadedTimeoutId);
+					this.adsManagerLoadedTimeoutId = null;
+				}
+				this.destroy();
+			}
 		},
 		restorePlayer: function( onContentComplete, adPlayed ){
 			if (this.isdestroy && this.getConfig("adTagUrl")){ // DFP trafficed and already destroyed
@@ -1524,7 +1533,6 @@
 				mw.setConfig('LoadingSpinner.Disabled', true);
 				this.restorePlayerCallback(shouldContinue);
 				this.restorePlayerCallback = null;
-				this.embedPlayer.play();
 				setTimeout(function(){
 					mw.setConfig('LoadingSpinner.Disabled', false);
 				},500);
@@ -1545,7 +1553,6 @@
 						_this.embedPlayer.seek(_this.timeToReturn);
 						_this.timeToReturn = null;
 					}
-
 					this.embedPlayer.play();
 				}
 			}
