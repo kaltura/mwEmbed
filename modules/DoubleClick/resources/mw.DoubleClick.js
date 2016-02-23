@@ -1495,7 +1495,7 @@
 			if (this.adsManager && $.isFunction( this.adsManager.unload ) ) {
 				this.adsManager.unload();
 			}
-			this.restorePlayer(true);
+			this.restorePlayer(this.contentDoneFlag);
 		},
 		restorePlayer: function( onContentComplete, adPlayed ){
 			if (this.isdestroy && this.getConfig("adTagUrl")){ // DFP trafficed and already destroyed
@@ -1524,6 +1524,7 @@
 				mw.setConfig('LoadingSpinner.Disabled', true);
 				this.restorePlayerCallback(shouldContinue);
 				this.restorePlayerCallback = null;
+				this.embedPlayer.play();
 				setTimeout(function(){
 					mw.setConfig('LoadingSpinner.Disabled', false);
 				},500);
