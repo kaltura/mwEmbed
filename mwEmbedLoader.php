@@ -49,6 +49,7 @@ class mwEmbedLoader {
 		'kWidget/kWidget.util.js',	
 		// kWidget basic api wrapper
 		'resources/crypto/MD5.js',
+		'kWidget/kWidget.storage.js',
 		'kWidget/kWidget.api.js'
 	);
 
@@ -279,6 +280,10 @@ class mwEmbedLoader {
 			$o.="\n".'mw.setConfig(\'Kaltura.ForceFlashOnIE10\', true );' . "\n";
 		}
 
+		if( $this->getUiConfObject()->getPlayerConfig( null, 'Kaltura.SupressNonProductionUrlsWarning' ) === true ){
+			$o.="\n".'mw.setConfig(\'Kaltura.SupressNonProductionUrlsWarning\', true );' . "\n";
+		}
+
 		if( $this->getUiConfObject()->isJson() ) {
 			$o.="\n"."kWidget.addUserAgentRule('{$this->request()->get('uiconf_id')}', '/.*/', 'leadWithHTML5');";
 		}
@@ -381,9 +386,10 @@ class mwEmbedLoader {
 	private function getExportedConfig(){
 		global $wgEnableScriptDebug, $wgResourceLoaderUrl, $wgMwEmbedVersion, $wgMwEmbedProxyUrl, $wgKalturaUseManifestUrls,
 			$wgKalturaUseManifestUrls, $wgHTTPProtocol, $wgKalturaServiceUrl, $wgKalturaServiceBase,
-			$wgKalturaCDNUrl, $wgKalturaStatsServiceUrl,$wgKalturaLiveStatsServiceUrl, $wgKalturaIframeRewrite, $wgEnableIpadHTMLControls,
+			$wgKalturaCDNUrl, $wgKalturaStatsServiceUrl,$wgKalturaLiveStatsServiceUrl, $wgKalturaAnalyticsServiceUrl, $wgKalturaIframeRewrite, $wgEnableIpadHTMLControls,
 			$wgKalturaAllowIframeRemoteService, $wgKalturaUseAppleAdaptive, $wgKalturaEnableEmbedUiConfJs,
-			$wgKalturaGoogleAnalyticsUA, $wgHTML5PsWebPath;
+			$wgKalturaGoogleAnalyticsUA, $wgHTML5PsWebPath, $wgAllowedVars, $wgAllowedPluginVars, $wgAllowedPluginVarsValPartials, $wgAllowedVarsKeyPartials,
+			$wgCacheTTL, $wgMaxCacheEntries, $wgKalturaSupressNonProductionUrlsWarning;
 		$exportedJS ='';
 		// Set up globals to be exported as mwEmbed config:
 		$exportedJsConfig= array(
@@ -397,6 +403,7 @@ class mwEmbedLoader {
 			'Kaltura.CdnUrl' => $wgKalturaCDNUrl,
 			'Kaltura.StatsServiceUrl' => $wgKalturaStatsServiceUrl,
 			'Kaltura.LiveStatsServiceUrl'=>$wgKalturaLiveStatsServiceUrl,
+			'Kaltura.AnalyticsUrl'=>$wgKalturaAnalyticsServiceUrl,
 			'Kaltura.IframeRewrite' => $wgKalturaIframeRewrite,
 			'EmbedPlayer.EnableIpadHTMLControls' => $wgEnableIpadHTMLControls,
 			'EmbedPlayer.UseFlashOnAndroid' => true,
@@ -405,8 +412,15 @@ class mwEmbedLoader {
 			'Kaltura.UseAppleAdaptive' => $wgKalturaUseAppleAdaptive,
 			'Kaltura.EnableEmbedUiConfJs' => $wgKalturaEnableEmbedUiConfJs,
 			'Kaltura.PageGoogleAnalytics' => $wgKalturaGoogleAnalyticsUA,
+			'Kaltura.SupressNonProductionUrlsWarning' => $wgKalturaSupressNonProductionUrlsWarning,
 			'Kaltura.APITimeout' => 10000,
-			'Kaltura.kWidgetPsUrl' => $wgHTML5PsWebPath
+			'Kaltura.kWidgetPsUrl' => $wgHTML5PsWebPath,
+			'Kaltura.CacheTTL' => $wgCacheTTL,
+			'Kaltura.MaxCacheEntries' => $wgMaxCacheEntries,
+			'Kaltura.AllowedVars' => $wgAllowedVars,
+			'Kaltura.AllowedVarsKeyPartials' => $wgAllowedVarsKeyPartials,
+			'Kaltura.AllowedPluginVars' => $wgAllowedPluginVars,
+			'Kaltura.AllowedPluginVarsValPartials' => $wgAllowedPluginVarsValPartials
 		);
 		if( isset( $_GET['pskwidgetpath'] ) ){
 			$exportedJsConfig[ 'Kaltura.KWidgetPsPath' ] = htmlspecialchars( $_GET['pskwidgetpath'] );

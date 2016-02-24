@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title> Kaltura Player HLS URL Tester </title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+	<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+	<style>
+        #url { width: 1005px; vertical-align: middle;}
+        #playingSeg, #downloadingSeg, #processedSeg  { width: 600px; vertical-align: middle;}
+        #id3Tracking { width:530px;height:200px; }
+        th, td {text-align: left; padding: 0px 10px; border: 1px solid darkgray; height: 28px}
+        td input {margin: 0 !important; border:0 !important;}
+
+	</style>
+</head>
+
+<body>
+<h2> Kaltura Live HLS URL Tester </h2>
+
+<label for="url">HLS Live URL (default url is Kaltura Live without DVR, running on testing environment)</label>
+<input type="email" class="form-control" id="url" value="http://qa-apache-testing-ubu-01.dev.kaltura.com/p/1091/sp/109100/playManifest/entryId/0_f8re4ujs/format/applehttp/protocol/http/uiConfId/15089201/a.m3u8">
+
+<div>
+<label class="radio inline"><input type="radio" name="nativecallout" id="nativeCallout-web"  checked="checked">Web</label>
+<label class="radio inline"><input type="radio" name="nativecallout" id="nativeCallout-native">Native Callout</label><br>
+Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout.html">More about NativeCallout</a><br>
+</div>
+<br/>
+<div>
+<b>Flashvars for HLS plugin:</b>
+<table>
+    <tbody>
+    <tr>
+        <th scope="row">hlsLiveSegmentBuffer</th>
+        <td><input type="number" class="form-control" id="segBuffer" value="-1"/></td>
+    </tr>
+    <tr>
+        <th scope="row">hlsInitialBufferTime</th>
+        <td><input type="number" class="form-control" id="iniBuffer" value="-1"/></td>
+    </tr>
+    <tr>
+        <th scope="row">hlsExpandedBufferTime</th>
+        <td><input type="number" class="form-control" id="exBuffer" value="-1"/></td>
+    </tr>
+    <tr>
+        <th scope="row">hlsMaxBufferTime</th>
+        <td><input type="number" class="form-control" id="maxBuffer" value="-1"/></td>
+    </tr>
+    <tr>
+        <th scope="row">DVR</th>
+        <td><input type="checkbox" class="form-control" id="dvr" /></td>
+    </tr>
+</table>
+    <br/>
+<input type="button" id="generate" value="Create Player" />
+<br><br>
+<div id="kaltura_player" style="width:624px; height: 387px;display:block;" itemprop="video" itemscope itemtype="http://schema.org/VideoObject">
+</div>
+
+<br/><br/>
+<b>The id3 tags monitor.</b><br>
+<textarea id="id3Tracking"></textarea>
+<br/><br/>
+
+<b>Debug Info for HLS plugin:</b>
+<table>
+    <tr>
+        <th>Buffer length (in seconds)</th>
+        <th>Dropped frames</th>
+        <th>Current bitrate</th>
+        <th>Current FPS</th>
+    </tr>
+    <tr>
+        <td><label id="bufferLen"/></td>
+        <td><label id="droppedFrames"/></td>
+        <td><label id="currentBitrate"/></td>
+        <td><label id="currentFPS"/></td>
+    </tr>
+</table>
+<br/>
+<table>
+    <tbody>
+    <tr>
+        <th scope="row">Downloading segment</th>
+        <td><label id="downloadingSeg"/></td>
+    </tr>
+    <tr>
+        <th scope="row">Finished processing segment</th>
+        <td><label id="processedSeg"/></td>
+    </tr>
+    <tr>
+        <th scope="row">Playing segment</th>
+        <td><label id="playingSeg"/></td>
+    </tr>
+    </tbody>
+</table>
+
+<script>
+    // update form based on hash values if present:
+	try{
+		var vals = JSON.parse( decodeURIComponent( window.location.hash ).substr(1)  );
+		if( vals ){
+			$('#streamtype-vod').attr('checked', vals.stvod );
+			$('#streamtype-live').attr('checked', !vals.stvod );
+			$('#nativeCallout-web').attr('checked', vals.ncweb );
+			$('#nativeCallout-native').attr('checked', !vals.ncweb );
+			$('#url').val( vals.url );
+            $('#segBuffer').val( vals.hlsLiveSegmentBuffer );
+            $('#iniBuffer').val( vals.hlsInitialBufferTime );
+            $('#exBuffer').val( vals.hlsExpandedBufferTime );
+            $('#maxBuffer').val( vals.hlsMaxBufferTime );
+            $('#dvr' ).attr('checked', vals.dvr );
+		}
+	}catch(err){
+		
+	}
+	
+	// handle click event 
+	$('#generate').click( function() {
+        if ($('#segBuffer').val() === ""){
+            $('#segBuffer').val( -1 );
+        }
+        if ($('#iniBuffer').val() === ""){
+            $('#iniBuffer').val( -1 );
+        }
+        if ($('#exBuffer').val() === ""){
+            $('#exBuffer').val( -1 );
+        }
+        if ($('#maxBuffer').val() === ""){
+            $('#maxBuffer').val( -1 );
+        }
+        $('#droppedFrames').text("");
+        $('#currentBitrate').text("");
+        $('#bufferLen').text("");
+        $('#playingSeg').text("");
+        $('#processedSeg').text("");
+        $('#downloadingSeg').text("");
+        $('#currentFPS').text("");
+
+		// poulate hash url 
+		window.location.hash = encodeURIComponent( JSON.stringify( {
+			'stvod':$('#streamtype-vod').is(':checked'),
+			'ncweb':$('#nativeCallout-web').is(':checked'),
+			'url': $('#url').val(),
+            'hlsLiveSegmentBuffer': parseInt($('#segBuffer').val()),
+            'hlsInitialBufferTime': parseInt($('#iniBuffer').val()),
+            'hlsExpandedBufferTime': parseInt($('#exBuffer').val()),
+            'hlsMaxBufferTime': parseInt($('#maxBuffer').val()),
+            'dvr':  $('#dvr').is(':checked')
+
+        }));
+		
+		var settings = {
+			"LeadWithHLSOnFlash": true,
+            "hlsLiveSegmentBuffer": parseInt($('#segBuffer').val()),
+            "hlsInitialBufferTime": parseInt($('#iniBuffer').val()),
+            "hlsExpandedBufferTime": parseInt($('#exBuffer').val()),
+            "hlsMaxBufferTime": parseInt($('#maxBuffer').val()),
+
+            "sourceSelector.plugin" : true,
+            "closedCaptions.showEmbeddedCaptions" : true,
+            'debugInfo': {
+                'plugin': true
+            },
+            'id3Tag': {
+                'trackEventMonitor': 'id3TrackingLog'
+            },
+            "audioSelector": {
+                "plugin": true
+            },
+            "mediaProxy": {
+     			'entry':{
+    				'name': "My Video"
+    			},
+    			'sources':[]
+    		}
+		};
+
+        // set sources for live:
+        settings.mediaProxy.meta = {
+                // set live ENUM type
+                "type": 7,
+                // set live stream HLS url:
+                "hlsStreamUrl":  $('#url').val()
+        };
+        if ($('#dvr').is(':checked')){
+            settings['mediaProxy']['meta']['dvrStatus']  = true;
+        }
+        // enable liveCore plugin, without 'api based is-stream-live checks':
+        settings.liveCore = {
+                "plugin":true,
+                "disableLiveCheck":true
+        };
+
+		if( !$('#nativeCallout-web').is(':checked') ){
+			settings.nativeCallout = {
+				"plugin":true
+			}
+		}
+		// update page hash 
+		kWidget.embed({
+			"targetId": "kaltura_player",
+			"wid": "_243342",
+			"uiconf_id": "12905712",
+			"flashvars": settings
+		});
+
+        kWidget.addReadyCallback(function( playerId ){
+            var kdp = document.getElementById( playerId );
+            kdp.kBind("debugInfoReceived", function( data ){
+                var ts;
+                if( data.uri ){
+                    var url = data.uri.split('.');
+                    ts = url[url.length-2] + ".ts";
+                }
+                if( data.info && data.info == "Playing segment"){
+                    $('#playingSeg').text( ts );
+                }
+                if( data.info && data.info == "Downloading segment"){
+                    $('#downloadingSeg').text( ts);
+                }
+                if( data.info && data.info == "Finished processing segment"){
+                    $('#processedSeg').text( ts );
+                }
+                if( data.bufferLength ){
+                    $('#bufferLen').text( data.bufferLength );
+                }
+                if( data.droppedFrames ){
+                    $('#droppedFrames').text( data.droppedFrames );
+                }
+                if( data.currentBitrate ){
+                    $('#currentBitrate').text( data.currentBitrate );
+                }
+                if( data.FPS ){
+                    $('#currentFPS').text( data.FPS );
+                }
+            });
+        });
+	});
+
+    function id3TrackingLog( eventStr, eventPayload ){
+        $t = $('#id3Tracking');
+        $t.append( eventStr );
+        if( eventPayload ){
+            $t.append( ": " + JSON.stringify( eventPayload ) );
+        }
+        $t.append( "\n" );
+    }
+</script>
+
+
+</body>
+</html>

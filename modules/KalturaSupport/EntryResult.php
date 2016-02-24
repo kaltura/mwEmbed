@@ -231,8 +231,10 @@ class EntryResult {
 		//if the video is still uploading or converting
 		if ( isset($resultObject['meta']) &&  isset( $resultObject['meta']->status ) &&
 			($resultObject['meta']->status == 0  || $resultObject['meta']->status == 1)){
+			 if (!isset($playerConfig['plugins']['strings']['ks-ENTRY_CONVERTING'])){
 				$this->error = 'No source video was found - Entry in process';
 				return array();
+				}
 		}
 
 		
@@ -359,9 +361,10 @@ class EntryResult {
 		}
 
 		// check for generic "block"
-		$actions = isset( $accessControl->accessControlActions ) ? 
-					$accessControl->accessControlActions:
-					isset( $accessControl->actions )? $accessControl->actions: null;
+		$actions = isset( $accessControl['accessControlActions']) ?
+					$accessControl['accessControlActions']:
+					isset( $accessControl['actions'] )? $accessControl['actions']: null;
+
 
 		if( $actions && count( $actions ) ) {
 			for($i=0;$i<count($actions); $i++){

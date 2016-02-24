@@ -23,7 +23,10 @@
 			"useExternalClosedCaptions": false,
 			"offButtonPosition": "first",
 			// Can be used to force loading specific language and expose to other plugins
-			"forceLoadLanguage": false
+			"forceLoadLanguage": false,
+			"title": gM( 'mwe-embedplayer-timed_text'),
+			"smartContainer": "qualitySettings",
+			'smartContainerCloseEvent': 'changedClosedCaptions'
 		},
 
 		textSources: [],
@@ -68,27 +71,8 @@
 						}
 					});
 				}
-				this.bind( 'onEmbeddedData', function( e, captionData ) {
-					//remove old captions
-					var $tracks = _this.embedPlayer.getInterface().find( '.track' );
-					$tracks.each( function( inx, caption){
-						if(  $( caption ).attr('data-capId') == captionData.capId ){
-							$( caption ).remove();
-						}
-					});
-					if ( _this.getConfig( 'displayCaptions' ) === true ) {
-						var caption = captionData;
-						//if we got raw ttml <p>
-						if ( captionData.ttml ) {
-							var xml =  $.parseXML( mw.html.unescape( decodeURIComponent( captionData.ttml ) ));
-							caption.caption = _this.selectedSource.parseCaptionObjTTML( $(xml).find( 'p' )[0] );
-						}
-						if ( !_this.selectedSource ) {
-							_this.selectedSource = caption.source;
-						}
-                        var captionContent = _this.parseCaption(caption.caption);
-						_this.addCaption( _this.selectedSource, caption.capId, captionContent );
-					}
+				this.bind( 'onEmbeddedData', function (e, captions){
+					_this.handleEmbeddedData(captions);
 				});
 				this.bind( 'changedClosedCaptions', function () {
 					_this.getPlayer().triggerHelper('newClosedCaptionsData');
@@ -107,6 +91,7 @@
 							newSources.push( source );
 						} );
 						_this.buildMenu( newSources );
+						outOfBandCaptionEventHandlers.call(_this);
 					}
 				} );
 			} else {
@@ -166,13 +151,13 @@
 				}
 			});
 
-			this.bind( 'showClosedCaptions', function(){
+			this.bind( 'showClosedCaptions preHideScreen hideMobileComponents', function(){
 				if( _this.getConfig('displayCaptions') === false ){
 					_this.setConfig('displayCaptions', true);
 				}
 			});
 
-			this.bind( 'hideClosedCaptions', function(){
+			this.bind( 'hideClosedCaptions preShowScreen showMobileComponents', function(){
 				if( _this.getConfig('displayCaptions') === true ){
 					_this.setConfig('displayCaptions', false);
 				}
@@ -194,7 +179,6 @@
 						_this.defaultBottom = layout.bottom;
 						// Move the text track down if present
 						_this.getPlayer().getInterface().find('.track')
-							.stop()
 							.animate(layout, 'fast');
 					}
 				});
@@ -210,6 +194,9 @@
 			});
 			this.bind("playSegmentEvent", function(){
 				_this.updateTimeOffset();
+			});
+			this.bind( 'onDisableInterfaceComponents', function(e, arg ){
+				_this.getMenu().close();
 			});
 		},
 		updateTextSize: function(){
@@ -556,7 +543,10 @@
 			return selectedSource;
 		},
 		monitor: function(){
-			this.updateSourceDisplay( this.selectedSource, this.getPlayer().currentTime );
+			// Only apply monitor if captions are avaialble
+			if (this.selectedSource && this.selectedSource.captions && this.selectedSource.captions.length > 0) {
+				this.updateSourceDisplay(this.selectedSource, this.getPlayer().currentTime);
+			}
 		},
 		updateSourceDisplay: function ( source, time ) {
 			var _this = this;
@@ -831,6 +821,7 @@
 					this.setConfig('visible', true)
 				}
 				this.getBtn().show();
+				this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");
 				// show new timed captions text if exists
 				this.showCaptions();
 			}
@@ -852,12 +843,16 @@
 							_this.setConfig('displayCaptions', false);
 						} else {
 							_this.setTextSource( source );
+							_this.embedPlayer.triggerHelper("selectClosedCaptions", source.label);
 							_this.getActiveCaption();
 						}
 					},
 					'active': ( _this.selectedSource === source && _this.getConfig( "displayCaptions" )  )
 				});
 				items.push({'label':source.label, 'value':source.label});
+				if (_this.embedPlayer.isMobileSkin() && _this.selectedSource === source){
+					_this.getMenu().setActive(idx+1);
+				}
 			});
 
 			this.getActiveCaption();
@@ -885,6 +880,7 @@
 				},
 				'callback': function(){
 					_this.selectedSource = null;
+					_this.embedPlayer.triggerHelper("selectClosedCaptions", "Off");
 					_this.setConfig('displayCaptions', false);
 					// also update the cookie to "None"
 					_this.getPlayer().setCookie( _this.cookieName, 'None' );
@@ -904,6 +900,7 @@
 					}
 				});
 			}
+
 			this.selectedSource = source;
 
 			if( !this.getConfig('displayCaptions') ){
@@ -935,7 +932,7 @@
 				var $menu = $( '<ul />' ).addClass( 'dropdown-menu' );
 				var $button = $( '<button />' )
 								.addClass( 'btn icon-cc' )
-								.attr('title', gM( 'mwe-embedplayer-timed_text' ) )
+								.attr('title', _this.getConfig('title') )
 								.click( function(e){
 									if ( _this.getMenu().numOfChildren() > 0 ) {
 										_this.getMenu().toggle();
@@ -982,7 +979,55 @@
                 parsedCaption=parsedCaption.replace(regExp,"");
 
             return { "content" : parsedCaption };
-        }
+        },
+		handleEmbeddedData: function( captionData ) {
+			//remove old captions
+			var $tracks = this.embedPlayer.getInterface().find( '.track' );
+			$tracks.each( function( inx, caption){
+				if(  $( caption ).attr('data-capId') == captionData.capId ){
+					$( caption ).remove();
+				}
+			});
+			if ( this.getConfig( 'displayCaptions' ) === true ) {
+				if ( !this.selectedSource ) {
+					this.selectedSource = captionData.source;
+				}
+				//if we got raw ttml <p>
+				if ( captionData.ttml ) {
+					this.handleTTML(captionData);
+				} else {
+					// else handle direct caption string - pay attention we don't support start and end time here yet!
+					this.handleVTT(captionData);
+				}
+			}
+		},
+		handleTTML: function(captionData){
+			var timestamp = 0;
+			var xml =  $.parseXML( mw.html.unescape( decodeURIComponent( captionData.ttml ) ));
+			var p =$(xml).find( 'p' )[0];
+			captionData.caption = this.selectedSource.parseCaptionObjTTML( p );
+
+			//Extract the manifest chunk timestamp
+			var attr = p.attributes;
+			var i;
+			for (i=0; i< attr.length; i++){
+				if (attr[i].nodeName === "timestamp"){
+					timestamp = parseFloat(attr[i].value);
+					break;
+				}
+			}
+			var captionContent = this.parseCaption(captionData.caption);
+			var newCaption = {
+				start: captionData.caption.start + timestamp,
+				end: captionData.caption.end + timestamp,
+				content: captionContent.content
+			};
+			this.selectedSource.captions.push(newCaption);
+		},
+		handleVTT: function(captionData){
+			var captionContent = this.parseCaption(captionData.caption);
+			this.addCaption( this.selectedSource, captionData.capId, captionContent );
+		}
 	}));
 
 } )( window.mw, window.jQuery );

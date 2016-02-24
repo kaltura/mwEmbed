@@ -630,6 +630,7 @@
 				// Check for secondary plugins:
 				$.each(manifestData, function (otherPluginId, pluginObject) {
 					if (pluginObject.attributes && pluginName != otherPluginId) {
+						$otherPlugins.append($('<h3 style="text-decoration:underline;"/>').text(otherPluginId));
 						$otherPlugins.append(
 							$('<b />').html(pluginObject.description)
 						);
@@ -1526,7 +1527,7 @@
 
 				var settingTabHtml = ( showSettingsTab ) ?
 					'<li><a data-getter="getSettings" href="#tab-settings-' + id + '" data-toggle="tab">' +
-						'<i class="kpcicon-integrate"></i>Integrate</a></li>' :
+						/*'<i class="kpcicon-integrate"></i>Integrate</a></li>'*/ '' :
 					'';
 				$(_this).empty().append(
 					$('<div />')

@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<title>Youbora QoS and Analytics</title>
+		<title>Youbora Media Analytics</title>
 		<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 		<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 		<script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
@@ -19,9 +19,10 @@
 	</head>
 
 	<body>
-		<h2> Youbora Media Analytics and QoS </h2>
+		<h2> Youbora Media Analytics </h2>
 		<div id="kaltura_player" style="width:470px;height:300px"></div>
-		<a id="changeMedia" href="#">ChangeMedia</a>
+        <br/><button id="changeMedia">Change Media</button><br/><br/>
+
 		<script>
 			kWidget.featureConfig({
 				'targetId' : 'kaltura_player',
@@ -31,42 +32,24 @@
 				'flashvars' : {
 					'youbora': {
 						'trackEventMonitor': 'trackYouboraAnalyticsEvent',
-						"userId": "my-user-id"
-					},
-					'vast': {
-						'numPreroll' : 1,
-						'storeSession': false,
-						'prerollUrl' : 'http://projects.kaltura.com/mdale/hotelVastAd.xml',
-						'timeout' : 4,
-						'preSequence' : 1,
-						'trackCuePoints': true
-					},
-					'skipBtn':{
-						'label': 'Skip Ad',
-						'skipOffset': 1
-					},
-					'mediaProxy':{
-						'entryCuePoints': [{
-							"protocolType": 1,
-							"adType": 1, 
-							"cuePointType": "adCuePoint.Ad",
-							"startTime": 5000,
-							"sourceUrl": "http://projects.kaltura.com/mdale/hotelVastAd.xml"
-						}]
+                        'bufferUnderrunThreshold': 1000,
+						'userId': 'my-user-id'
 					}
 				},
 				'readyCallback': function(){
-					$('#analyticsContainer').remove();
 					$('#changeMedia').click(function(){
+                        $('#analyticsLog').text('');
 						$('#kaltura_player')[0].sendNotification( 'changeMedia', { 'entryId':'0_swup5zao' } );
-					}).after('<div id="analyticsContainer" style="width:100%;float:left;" >'+
-						'<i>Analytics events:</i><br />' +
-							'<textarea id="analyticsLog" style="width:100%;height:280px;" ></textarea>' +
-						'</div>'
-					)
+					});
 				}
 			});
 		</script>
+
+        <div id="analyticsContainer" style="width:100%; float:left">
+            <i>Analytics events:</i><br/>
+            <textarea id="analyticsLog" style="width:100%; height:280px"></textarea>
+        </div>
+
 	</body>
 
 </html>

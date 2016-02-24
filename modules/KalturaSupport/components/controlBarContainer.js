@@ -9,6 +9,9 @@
 		keepOnScreen: false,
 
 		setup: function(){
+			if (this.embedPlayer.isMobileSkin()){
+				this.setConfig("hover", true);
+			}
 			// Exit if we're using native controls
 			if( this.getPlayer().useNativePlayerControls() ) {
 				this.getPlayer().enableNativeControls();
@@ -29,9 +32,13 @@
 			this.bind( 'showInlineDownloadLink', function(){
 				_this.hide();
 			});
-			this.bind( 'layoutBuildDone ended', function(){
+			this.bind( 'ended', function(){
 				_this.show();
-
+			});
+			this.bind( 'layoutBuildDone', function(){
+				if (!_this.embedPlayer.isMobileSkin()){
+					_this.show();
+				}
 			});
 
 			// Bind hover events
@@ -48,7 +55,15 @@
 					_this.keepOnScreen = true;
 					_this.show();
 				});
-				this.bind( 'onComponentsHoverEnabled', function(){
+				this.bind( 'hideScreen closeMenuOverlay', function(){
+					if (!_this.embedPlayer.paused){
+						_this.keepOnScreen = false;
+						_this.hide();
+					}else{
+						_this.show();
+					}
+				});
+				this.bind( 'onComponentsHoverEnabled showScreen displayMenuOverlay', function(){
 					_this.keepOnScreen = false;
 					_this.hide();
 				});
@@ -63,6 +78,9 @@
 			}
 		},
 		show: function(){
+			if(this.embedPlayer.isMobileSkin() && this.getPlayer().getPlayerPoster().length){
+				return; // prevent showing controls on top of the poster when the video first loads
+			}
 			this.getPlayer().isControlsVisible = true;
 			this.getComponent().addClass( 'open' );
 			// Trigger the screen overlay with layout info:
@@ -97,7 +115,7 @@
 						.on("mouseenter", function(){
 							_this.forceOnScreen = true;
 						})
-						.on("mouseleave", function(){
+						.on("mouseleave click", function(){
 							_this.forceOnScreen = false;
 						});
 					this.embedPlayer.getVideoHolder().addClass('hover');

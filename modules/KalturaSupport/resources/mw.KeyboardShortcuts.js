@@ -231,7 +231,7 @@
 				return false;
 			}
 			var notificationName = ( this.getPlayer().isPlaying() ) ? 'doPause' : 'doPlay';
-			this.getPlayer().sendNotification( notificationName );
+			this.getPlayer().sendNotification( notificationName,{'userInitiated': true} );
 			return false;
 		},
 		seek: function( seekType, direction ){
@@ -300,7 +300,7 @@
 			if( !this.canSeek ) {
 				return false;
 			}
-			this.getPlayer().seek(this.getPlayer().getDuration());
+			this.getPlayer().seek(this.getPlayer().getDuration()-0.1);
 		},
 		getOpenedMenu: function(){
 			var openedMenu = null;

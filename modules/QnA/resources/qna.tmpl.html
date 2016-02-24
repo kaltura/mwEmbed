@@ -1,6 +1,6 @@
 <div class="qnaModuleBackgroundHider">
     <div class="qnaListHiderTextHolder">
-        <div class="qnaListHiderIcon icon-qna-Ask"></div>
+        <div class="qnaListHiderIcon qna-icon-Ask"></div>
         <div class="qnaListHiderText" data-bind="text: qnaListHiderText()"></div>
     </div>
 </div>
@@ -22,7 +22,7 @@
     <div class="listHolder nano">
         <div class="nano-content">
 
-            <div data-bind="if: myObservableAnswerOnAirQueue().length > 0 && playerTime() > 0 && playerTime()*1000 >= myObservableAnswerOnAirQueue()[0]().cuePoint().startTime">
+            <div data-bind="if: myObservableAnswerOnAirQueue().length > 0 && playerTime() > 0 && playerTime() >= myObservableAnswerOnAirQueue()[0]().cuePoint().createdAt">
                 <div class="qnaAnswerOnAirHolder">
                     <div class="qnaThread qnaEntry qnaAnswerOnAir">
                         <div class = "AnswerOnAirTriangle"></div>
@@ -31,7 +31,7 @@
                         <div>
                             <div class="qnaAnswerOnAirTitle" data-bind="text: myObservableAnswerOnAirQueue()[0]().getTitle()">
                             </div>
-                            <div class="answerOnAirIcon icon-qna-answeronair"></div>
+                            <div class="answerOnAirIcon qna-icon-answeronair"></div>
                         </div>
                     </div>
                 </div>
@@ -53,7 +53,7 @@
                         <br>
                         <div>
                             <div data-bind='css: {  "qnaAnnouncementTitle" : !isRead(), "qnaAnnouncementTitleRead" : isRead()}, text: entries()[0]().getTitle()'></div>
-                            <div class="icon-qna-Announcement"
+                            <div class="qna-icon-Announcement"
                                  data-bind='css:{  "qnaAnnouncementIcon" : !isRead(),
                                                     "qnaAnnouncementIconRead" : isRead()
                                                 }'>
@@ -72,25 +72,25 @@
                             <div data-bind="if: !$parent.isCollapsed() || $index()===0">
                                 <!--Thread is collapsed-->
                                 <div data-bind="if: $index()===0 && thread.hasUnreadEntries() && $parent.isCollapsed()">
-                                    <div class="icon-qna-bullet qna-bullet-icon qna-bullet-icon-unread qna-bullet-icon-middle-drop"></div>
+                                    <div class="qna-icon-bullet qna-bullet-icon qna-bullet-icon-unread qna-bullet-icon-middle-drop"></div>
                                 </div>
 
                                 <div data-bind="if: $parent.entries().length > 1">
                                     <!--Thread is not collapsed-->
                                     <div data-bind="if: $index()===0 && !$parent.isCollapsed()">
-                                        <div class="icon-qna-drop2 qna-bullet-icon qna-bullet-icon-read qna-bullet-icon-top-drop"></div>
+                                        <div class="qna-icon-drop2 qna-bullet-icon qna-bullet-icon-read qna-bullet-icon-top-drop"></div>
                                     </div>
 
                                     <div data-bind="if: $index()===$parent.entries().length-1 && !$parent.isCollapsed()">
                                         <div data-bind='css:{   "qna-bullet-icon-read": isRead(),
                                                                 "qna-bullet-icon-unread": !isRead()}'
-                                             class="icon-qna-drop qna-bullet-icon qna-bullet-icon-read qna-bullet-icon-bottom-drop"></div>
+                                             class="qna-icon-drop qna-bullet-icon qna-bullet-icon-read qna-bullet-icon-bottom-drop"></div>
                                     </div>
 
                                     <div data-bind="if: $index()!==0 && $index()!== $parent.entries().length-1">
                                         <div data-bind='css:{   "qna-bullet-icon-read": isRead(),
                                                                 "qna-bullet-icon-unread": !isRead()}'
-                                             class="icon-qna-bullet qna-bullet-icon qna-bullet-icon-read qna-bullet-icon-middle-drop"></div>
+                                             class="qna-icon-bullet qna-bullet-icon qna-bullet-icon-read qna-bullet-icon-middle-drop"></div>
                                     </div>
                                 </div>
 
@@ -116,8 +116,8 @@
                                          data-bind='text: timestamp.qnaTimestamp($parents[1].currentTime)'></div>
                                     <div data-bind="if: $index()===0 && (thread.entries().length > 1 || !$parents[1].announcementOnlyStatus())">
                                         <div class="collapseExpandIcon"
-                                             data-bind="css:{   'icon-qna-collapse': $parent.isCollapsed(),
-                                                                'icon-qna-expand': !$parent.isCollapsed()
+                                             data-bind="css:{   'qna-icon-collapse': $parent.isCollapsed(),
+                                                                'qna-icon-expand': !$parent.isCollapsed()
                                                             }"></div></div>
                                 </div>
                             </div>

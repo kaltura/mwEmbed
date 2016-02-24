@@ -13,11 +13,18 @@
 
 		setup: function () {
 			var _this = this;
+			if ( this.embedPlayer.isMobileSkin() ){
+				this.getComponent().data("width",0.1);
+			}
 			this.bindTimeUpdate();
 			this.bind('externalTimeUpdate', function (e, newTime) {
 				if (newTime != undefined) {
 					_this.updateUI(newTime);
 				}
+			});
+			// zero the current time when changing media
+			this.bind('onChangeMediaDone', function () {
+				_this.updateUI(0);
 			});
 			//will stop listening to native timeupdate events
 			this.bind('detachTimeUpdate', function () {

@@ -83,6 +83,8 @@
 
 		streamerType: 'dash',
 
+		manifestLoaded: false,
+
 		// Native player supported feature set
 		supports: {
 			'playHead': true,
@@ -194,8 +196,10 @@
 				this.playerElement = mw.dash.player( this.pid, {
 					autoplay: false,
 					controls: false,
+					preload: "none",
 					height: "100%",
 					width: "100%",
+					dasheverywhere: this.getDrmConfig(),
 					plugins: {
 						audiotracks: {},
 						texttracks: {}
@@ -206,14 +210,25 @@
 					var el = $(_this.playerElement.el() );
 					//Hide native player UI
 					el.find(".vjs-poster, .vjs-control-bar, .vjs-big-play-button" ).css("display", "none");
-					el.attr('data-src', _this.getSrc());
-					//Set schedule while paused to true to allow buffering when in paused state
-					_this.playerElement.mediaPlayer.setScheduleWhilePaused(true);
-					//Continue only after manifest loaded event has been dispatched
-					this.one("manifestLoaded", function(){
+					//Set specific playback engine settings
+					if (_this.playerElement.getActiveTech() == "dashjs") {
+						//Set schedule while paused to true to allow buffering when in paused state
+						_this.playerElement.mediaPlayer.setScheduleWhilePaused(true);
+
+						//Need to know if manifest was loaded before allowing playback to start
+						this.one("manifestLoaded", function () {
+							_this.manifestLoaded = true;
+						});
 						callback();
-					});
-					_this.updateDashContext();
+					} else {
+						setTimeout(function(){
+							callback();
+						}, 0);
+					}
+					//In IE and Edge source is preloaded, so defer this until we request play for the first time
+					if (!mw.isEdge() && !mw.isIE()) {
+						_this.updateDashContext();
+					}
 				} );
 				this.bindHelper('switchAudioTrack', function (e, data) {
 					if (_this.getPlayerElement()) {
@@ -234,13 +249,38 @@
 				this.bindHelper('closedCaptionsHidden', function () {
 					_this.getPlayerElement().textTrackDisplay.hide();
 				});
-
 			}
 		},
 		updateDashContext: function(){
+			var _this = this;
 			if (this.getPlayerElement() && this.getSrc()) {
-				this.playerElement.loadVideo( this.getSrc(), this.getDrmConfig() );
+				this.resolveSrcURL( this.getSrc() ).then( function(source){
+					_this.manifestLoaded = false;
+					var el = $(_this.playerElement.el() );
+					el.attr('data-src', _this.getSrc());
+					_this.playerElement.loadVideo( source, _this.getDrmConfig() );
+				}, function(){
+					//Report on playManifest redirect error
+					_this.log("Failed resolving playManifest request: " + _this.getSrc());
+					_this.triggerHelper('embedPlayerError');
+				} );
 			}
+		},
+		waitForManifestLoaded: function(){
+			var manifestLoadedDeferred = $.Deferred();
+			if (this.manifestLoaded){
+				return manifestLoadedDeferred.resolve();
+			} else {
+				var _this = this;
+				this.playerElement.one("manifestLoaded", function () {
+					_this.manifestLoaded = true;
+					//Prevent issues with stack order when issuing autoplay or play command right after playerReady
+					setTimeout(function(){
+						manifestLoadedDeferred.resolve();
+					},0);
+				});
+			}
+			return manifestLoadedDeferred;
 		},
 		getDrmConfig: function(){
 			var drmConfig = this.getKalturaConfig('multiDrm');
@@ -786,23 +826,42 @@
 				}
 			}
 		},
+		//Disable check - handled on lower level
+		checkClipDoneCondition: function(){},
 		/**
 		 * play method calls parent_play to update the interface
 		 */
 		play: function () {
 			var duration = parseInt(this.duration, 10).toFixed(2);
 			var curTime = parseInt(this.getPlayerElementTime(), 10).toFixed(2);
-			if (( this.currentState === "end" ) ||
-				( this.currentState === "pause" && duration === curTime && this.getPlayerElementTime() > 0 )) {
+			//Rewind video element if using JS player, SL player doesn't require it
+			if ((this.playerElement.getActiveTech() == "dashjs") && (( this.currentState === "end" ) ||
+				( this.currentState === "pause" && duration === curTime && this.getPlayerElementTime() > 0 ))) {
 				this.stopPlayAfterSeek = false;
 				this.seek(0.01, false);
 			} else {
+				//Hack for letting silverlight player handle replay by itself, as seeking to 0.01 kills playback
+				if ((this.playerElement.getActiveTech() == "dashcs") && (( this.currentState === "end" ) ||
+					( this.currentState === "pause" && duration === curTime && this.getPlayerElementTime() > 0 ))) {
+					this.currentState = "load";
+					this.currentTime = 0;
+				}
 				if ( this.parent_play() ) {
-					var _this = this;
-					setTimeout( function () {
+					var play = function () {
 						_this.getPlayerElement().play();
 						_this.monitor();
-					}, (this.mediaLoadedFlag ? 100 : 2000) );
+					};
+					var _this = this;
+					//If source isn't set yet then load now, this is used for deferred loading in browsers (IE, Edge)
+					//which don't respect preload=none
+					var el = $(this.playerElement.el());
+					if (el.attr('data-src') !== this.getSrc()){
+						this.updateDashContext();
+
+					}
+					//Make sure manifest is loaded before calling play, this is especially important for
+					//very large manifests which take time to parse!
+					this.waitForManifestLoaded().then(play);
 				} else {
 					mw.log( "EmbedPlayerMultiDRM:: parent play returned false, don't issue play on player element" );
 				}
@@ -820,36 +879,23 @@
 			}
 			this.parent_pause();
 		},
-
+		/**
+		 * load method calls parent_load to start fetching media from server, in case of DRM the license request will be handled as well
+		 */
+		load: function () {
+			this.getPlayerElement().load();
+		},
 
 		/**
 		 * Handle the native paused event
 		 */
-		onPause: function () {
+		_onpause: function () {
 			var _this = this;
 			this.playing = false;
-			if (this.ignoreNextNativeEvent) {
-				this.ignoreNextNativeEvent = false;
-				return;
-			}
 			var timeSincePlay = Math.abs(this.absoluteStartPlayTime - new Date().getTime());
 			this.log(" OnPaused:: propagate:" + this._propagateEvents +
 			' time since play: ' + timeSincePlay + ' duringSeek:' + this.seeking);
-			// Only trigger parent pause if more than MonitorRate time has gone by.
-			// Some browsers trigger native pause events when they "play" or after a src switch
-			if (!this.seeking && !this.userSlide
-				&&
-				timeSincePlay > mw.getConfig('EmbedPlayer.MonitorRate')
-			) {
-				_this.parent_pause();
-				// in iphone when we're back from the native payer we need to show the image with the play button
-				if (mw.isIphone()) {
-					_this.updatePosterHTML();
-				}
-			} else {
-				// try to continue playback:
-				this.getPlayerElement().play();
-			}
+
 		},
 
 		/**
@@ -889,32 +935,36 @@
 			this.updateVideoDuration();
 
 			//Check and add manifest data
-			this.addSubtitleTracks();
-			this.addAudioTracks();
-			this.addAbrFlavors();
+			if (this.playerElement.getActiveTech() == "dashjs") {
+				this.addSubtitleTracks();
 
-			var _this = this;
-			var update = function(){
-				var player = _this.getPlayerElement();
-				//Get Playback statistics
-				var stats = player.getPlaybackStatistics();
+				this.addAudioTracks();
+				this.addAbrFlavors();
 
-				var videoData = stats.video.activeTrack;
-				if (videoData){
-				}
-				var audioData = stats.audio.activeTrack;
-				if (audioData){
-					_this.onAudioTrackSelected({index: audioData.id});
-				}
-				var textData = stats.text.activeTrack;
-				if (textData){
-				}
-			};
-			//Run initial update to get active video/audio/caption tracks
-			update();
-			//Validate status every 5 sec
-			setInterval(function(){update();}, 5000);
+				var _this = this;
+				var update = function () {
+					var player = _this.getPlayerElement();
+					//Get Playback statistics
+					var stats = player.getPlaybackStatistics();
 
+					var videoData = stats.video.activeTrack;
+					if (videoData) {
+					}
+					var audioData = stats.audio.activeTrack;
+					if (audioData) {
+						_this.onAudioTrackSelected({index: audioData.id});
+					}
+					var textData = stats.text.activeTrack;
+					if (textData) {
+					}
+				};
+				//Run initial update to get active video/audio/caption tracks
+				update();
+				//Validate status every 5 sec
+				setInterval(function () {
+					update();
+				}, 5000);
+			}
 			// Check if in "playing" state and we are _propagateEvents events and continue to playback:
 			if (!this.paused && this._propagateEvents) {
 				this.getPlayerElement().play();
@@ -1123,9 +1173,15 @@
 									break;
 								case 'LICENSE_ACQUISITION_ERROR':
 									errorMessage = gM("DRM_LICENSE_ACQUISITION_ERROR");
+								case 'KEY_SYSTEM_ERROR':
+									errorMessage = gM("DRM_KEY_SYSTEM_ERROR");
 									break;
 							}
-							_this.triggerHelper('embedPlayerError', [ {errorMessage: errorMessage} ]);
+							_this.triggerHelper('embedPlayerError', [ {
+								errorMessage: errorMessage,
+								code: playerError.code,
+								subtype: playerError.subtype
+							} ]);
 						}
 						error.code = playerError.code;
 						error.subtype = playerError.subtype;

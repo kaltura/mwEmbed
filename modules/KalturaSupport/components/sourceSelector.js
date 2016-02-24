@@ -12,7 +12,10 @@
 			"simpleFormat": true,
 			"iconClass": "icon-cog",
             "displayMode": "size", //'size' – displays frame size ( default ), 'bitrate' – displays the bitrate, 'sizebitrate' displays size followed by bitrate
-            "hideSource": false
+            "hideSource": false,
+			"title": gM( 'mwe-embedplayer-select_source' ),
+			'smartContainer': 'qualitySettings',
+			'smartContainerCloseEvent': 'SourceChange'
 		},
 
 		isDisabled: false,
@@ -75,9 +78,13 @@
 				_this.sourcesList = [];
 			});
 
+			this.bind( 'onDisableInterfaceComponents', function(e, arg ){
+				_this.getMenu().close();
+			});
+
 			// Check for switch on resize option
-			if( this.getConfig( 'switchOnResize' ) ){
-				this.bind( 'updateLayout', function(){
+			if( this.getConfig( 'switchOnResize' ) && !_this.embedPlayer.isLive() ){
+				this.bind( 'resizeEvent', function(){
 					// workaround to avoid the amount of 'updateLayout' events
 					// !seeking will avoid getting current time equal to 0
 					if ( !_this.inUpdateLayout && !_this.embedPlayer.seeking ){
@@ -227,6 +234,9 @@
 							itemLabels.push(label)
 							items.push({'label':label, 'value':label});
 						}
+						if (_this.embedPlayer.isMobileSkin() && _this.isSourceSelected(source)){
+							_this.getMenu().setActive(sourceIndex);
+						}
 					}
 				}
 			});
@@ -293,6 +303,7 @@
                         'id': source.getAssetId()
                     },
                     'callback': function () {
+	                    _this.getPlayer().triggerHelper("newSourceSelected", source.getAssetId());
                         _this.getPlayer().switchSrc(source);
                     },
                     'active': _this.isSourceSelected(source)
@@ -300,7 +311,9 @@
             }
 		},
         getSourceSizeName: function( source ){
-			if( source.getHeight() < 255 ){
+			if( source.getHeight() == 0 ){
+				return gM( 'mwe-embedplayer-audio_source' ) + ( this.getConfig( 'displayMode' ) == 'sizebitrate' ? "" : this.getSourceTitleBitrate(source) );
+			} else if( source.getHeight() < 255 ){
 				return '240P';
 			} else if( source.getHeight() < 370 ){
 				return '360P';
@@ -357,10 +370,10 @@
         },
         getSourceTitleSizeBitrate: function( source ){
             var title = '';
-            if( source.getHeight() ){
+            if ( source.getHeight() ){
                 title = this.getSourceSizeName( source ) + ' ';
             }
-            title += this.getSourceTitleBitrate(source);
+			title += this.getSourceTitleBitrate(source);
             return title;
         },
 		toggleMenu: function(){

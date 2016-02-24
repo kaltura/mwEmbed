@@ -16,7 +16,8 @@
 			'align': "right",
 			'applicationID': "FFCC6D19", // DB6462E9: Chromecast default receiver, FFCC6D19: Kaltura custom receiver supporting DRM, HLS and smooth streaming
 			'showTooltip': true,
-			'tooltip': 'Chromecast',
+			'tooltip': gM('mwe-chromecast-chromecast'),
+			'title': gM('mwe-chromecast-chromecast'),
 			'receiverMode': false,
 			'debugReceiver': false,
 			'receiverLogo': false,
@@ -52,12 +53,13 @@
 			if ( this.getConfig("receiverMode") === true ){
 				return; // don't initialize Chroemcast when running on the custom receiver
 			}
+
 			var _this = this;
 			this.addBindings();
 			var ticks = 0;
 			 var intervalID = setInterval(function(){
 				 ticks++;
-				if( typeof chrome !== "undefined" && typeof chrome.cast !== "undefined" ){
+				if( typeof chrome !== "undefined" && typeof chrome.cast !== "undefined" && typeof chrome.cast.SessionRequest !== "undefined" ){
 					_this.initializeCastApi();
 					clearInterval(intervalID);
 				}else{
@@ -99,6 +101,13 @@
 
 			$( this.embedPlayer).bind('updateDashContextData', function(e, drmConfig){
 				_this.drmConfig = drmConfig;
+			});
+
+			$(this.embedPlayer).bind('playerReady', function() {
+				if ( mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
+					// send application ID to native app
+					_this.embedPlayer.getPlayerElement().attr( 'chromecastAppId', _this.getConfig( 'applicationID' ));
+				}
 			});
 		},
 

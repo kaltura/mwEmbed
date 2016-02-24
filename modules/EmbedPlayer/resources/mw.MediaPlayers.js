@@ -34,7 +34,7 @@ mw.MediaPlayers.prototype = {
 		this.defaultPlayers['video/x-flv'] = ['Kplayer', 'Vlc'];
 		this.defaultPlayers['video/h264'] = ['NativeComponent', 'Native', 'Kplayer', 'Silverlight', 'Vlc'];
 		this.defaultPlayers['video/mp4'] = ['NativeComponent', 'Native', 'Kplayer', 'Silverlight', 'Vlc'];
-		this.defaultPlayers['application/vnd.apple.mpegurl'] = ['NativeComponent', 'Native'];
+		this.defaultPlayers['application/vnd.apple.mpegurl'] = ['Native'];
 		this.defaultPlayers['application/x-shockwave-flash'] = ['Kplayer'];
 
 		this.defaultPlayers['video/ogg'] = ['Native', 'Vlc', 'Java', 'Generic'];
@@ -56,7 +56,20 @@ mw.MediaPlayers.prototype = {
 		if ( mw.getConfig("LeadWithHLSOnFlash") ) {
 			this.defaultPlayers['application/vnd.apple.mpegurl'].push('Kplayer');
 		}
+		// If nativeComponent can play dash, use it.
+        if ($.inArray('application/dash+xml',  window.kNativeSdk && window.kNativeSdk.allFormats) >= 0) {
+            this.defaultPlayers['application/dash+xml'] = ['NativeComponent'];
+        }
 
+		// If nativeComponent can play hls, use it.
+		if (window.kNativeSdk && window.kNativeSdk.allFormats) {
+			if ( $.inArray( 'application/vnd.apple.mpegurl' , window.kNativeSdk && window.kNativeSdk.allFormats ) >= 0 ) {
+				this.defaultPlayers['application/vnd.apple.mpegurl'] = ['NativeComponent'];
+			}
+		} else {
+			//backward compatibility for sdk that don't send the allFormats param
+			this.defaultPlayers['application/vnd.apple.mpegurl'].push('NativeComponent');
+		}
 	},
 
 	/**
@@ -139,19 +152,32 @@ mw.MediaPlayers.prototype = {
 		}
 		if ( mw.getConfig( 'EmbedPlayer.ForceNativeComponent' ) && this.isSupportedPlayer( 'nativeComponentPlayer' )) {
 			var nativeComponentPlayer = mw.EmbedTypes.getNativeComponentPlayerVideo();
-			var nativeComponentPlayerSupported = mimePlayers.filter(function(mimePlayer){return mimePlayer.id === nativeComponentPlayer.id}).length > 0;
-			if (nativeComponentPlayerSupported) {
+			var imageOverlayPlayer = mw.EmbedTypes.getNativeImageOverlayPlayer();
+			if (this.isPlayerSupportMimeType(mimePlayers, nativeComponentPlayer)) {
 				mimePlayers = [nativeComponentPlayer];
+			} else if(imageOverlayPlayer.supportsMIMEType(mimeType) ) {
+				mimePlayers = [imageOverlayPlayer];
 			} else {
 				mimePlayers = [];
 			}
 		}
-		if ( (mw.getConfig( 'EmbedPlayer.ForceKPlayer' ) || ( mw.getConfig( 'ForceFlashOnDesktopSafari') && mw.isDesktopSafari() ) )
-			&& this.isSupportedPlayer( 'kplayer' ) && mimeType !== "video/youtube" ) {
-			mimePlayers = [mw.EmbedTypes.getKplayer()];
+		if ( ( mw.getConfig( 'EmbedPlayer.ForceKPlayer' ) ||
+			( mw.getConfig( 'ForceFlashOnDesktopSafari') && mw.isDesktopSafari() ) ) &&
+			this.isSupportedPlayer( 'kplayer' ) && mimeType !== "video/youtube" ) {
+			var kplayer = mw.EmbedTypes.getKplayer();
+			if (this.isPlayerSupportMimeType(mimePlayers, kplayer)) {
+				mimePlayers = [kplayer];
+			} else {
+				mimePlayers = [];
+			}
 		}
 		if (mw.getConfig( 'EmbedPlayer.ForceSPlayer') && this.isSupportedPlayer('splayer')) {
-			mimePlayers = [mw.EmbedTypes.getSilverlightPlayer()];
+			var silverlightPlayer = mw.EmbedTypes.getSilverlightPlayer();
+			if (this.isPlayerSupportMimeType(mimePlayers, silverlightPlayer)) {
+				mimePlayers = [silverlightPlayer];
+			} else {
+				mimePlayers = [];
+			}
 		}
 
 		// Check for prior preference for this mime type
@@ -168,6 +194,12 @@ mw.MediaPlayers.prototype = {
 		}
 		// mw.log( 'No default player found for ' + mimeType );
 		return null;
+	},
+	isPlayerSupportMimeType: function(mimePlayers, player){
+		var playerSupported = mimePlayers.filter(function(mimePlayer){
+			return mimePlayer.id === player.id;
+		});
+		return (playerSupported.length > 0);
 	},
 	/**
 	 * Returns only a native video tag player
