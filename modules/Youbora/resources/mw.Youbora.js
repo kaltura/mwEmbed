@@ -266,6 +266,7 @@
 		},
 		bindFirstJoin: function(){
 			var _this = this;
+			this.unbind('playing');
 			// track joinTime ( time between play and positive time )
 			this.bind('playing', function(){
 				// only track the first playing event:
