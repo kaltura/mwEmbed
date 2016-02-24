@@ -524,9 +524,9 @@ mw.PlayerLayoutBuilder.prototype = {
 				}
 			}
 			//if we're in native app android <=4.3 we dont want to add player click bindings
-			if( !(mw.isNativeApp() && ( mw.isAndroid43() || mw.isAndroid41() || mw.isAndroid42() ) ) ) {
+			//if( !(mw.isNativeApp() && ( mw.isAndroid43() || mw.isAndroid41() || mw.isAndroid42() ) ) ) {
 				_this.addPlayerClickBindings();
-			}
+			//}
 
 		};
 
