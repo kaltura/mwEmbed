@@ -120,7 +120,7 @@
 			});
 
 			// handle errors
-			this.bind('embedPlayerError mediaLoadError', function () {
+			this.bind('embedPlayerError mediaLoadError playerError', function () {
 				var errorMsg = _this.embedPlayer.getError() ? _this.embedPlayer.getError().message : _this.embedPlayer.getErrorMessage();
 				_this.sendBeacon( 'error', {
 					'player': 'kaltura-player-v' + MWEMBED_VERSION,
