@@ -56,6 +56,7 @@
 			$(this).bind('layoutBuildDone', function(){
 				this.getVideoHolder().find('video').remove();
 			});
+
 			this.setPlayerElement(parent.document.getElementById('receiverVideoElement'));
 			this.applyMediaElementBindings();
 			mw.log('EmbedPlayerChromecastReceiver:: Setup. Video element: '+this.getPlayerElement().toString());
