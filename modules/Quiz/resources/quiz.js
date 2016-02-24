@@ -258,7 +258,7 @@
                 .on('click', '.confirm-box', function () {
                     _this.embedPlayer.stopPlayAfterSeek = false;
                     _this.embedPlayer.seek(0,false);
-                    _this.hideScreen();
+                    _this.ivqHideScreen();
                 });
         },
 
