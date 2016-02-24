@@ -53,7 +53,7 @@
 		],
 
 		setup: function( readyCallback ) {
-			this.bind('layoutBuildDone', function(){
+			$(this).bind('layoutBuildDone', function(){
 				this.getVideoHolder().find('video').remove();
 			});
 			this.setPlayerElement(parent.document.getElementById('receiverVideoElement'));
