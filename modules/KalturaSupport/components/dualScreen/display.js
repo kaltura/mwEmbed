@@ -139,22 +139,19 @@
 
 		//Screen view state handlers
 		toggleMain: function (props) {
-            this.toggleConfig();
+            this.toggleMainConfig();
             this.obj.toggleClass('secondScreen firstScreen');
 			this.repaint(props);
 		},
-        toggleSecondary: function (curMain) {
+        toggleSecondary: function (callback) {
             var _this = this;
-            this.toggleConfig();
+            this.toggleMainConfig();
             this.obj.toggleClass( 'secondScreen hiddenScreen');
             setTimeout(function(){
-                _this.disableTransition();
-                curMain.obj.css('z-index',2);
-                _this.obj.css('z-index',1);
+                callback();
             }, 100);
-
         },
-        toggleConfig: function(){
+        toggleMainConfig: function(){
             this.setConfig("isMain", !this.getConfig("isMain"));
             this.obj.attr( 'data-display-rule', this.getConfig("isMain") ? mw.dualScreen.display.TYPE.PRIMARY : mw.dualScreen.display.TYPE.SECONDARY );
         },
@@ -168,12 +165,29 @@
 		disableSideBySideView: function () {
 			this.obj.removeClass( 'sideBySideRight sideBySideLeft' );
 		},
-		hide: function ( ) {
+        disableMain: function () {
+            this.obj.removeClass('firstScreen').addClass('secondScreen');
+            this.bringToFront();
+        },
+        enableMain: function () {
+            this.obj.removeClass('secondScreen').addClass('firstScreen');
+            this.sendToBack();
+        },
+        toggleHiddenToMain: function () {
+            this.obj.removeClass('hiddenScreen' ).addClass('firstScreen' );
+        },
+		hide: function () {
 			this.obj.addClass( 'hiddenScreen' );
 		},
-		show: function ( ) {
+		show: function () {
 			this.obj.removeClass( 'hiddenScreen' );
 		},
+        bringToFront: function ( ) {
+            this.obj.css('z-index',2);
+        },
+        sendToBack: function ( ) {
+            this.obj.css('z-index',1);
+        },
 
 		//Screen animation controller
 		enableTransition: function () {
