@@ -69,7 +69,7 @@
 		},
 		setupViewCode: function(){
 			var _this = this;
-			if( this.settingUpViewCodeFlag ){
+			if( this.settingUpViewCodeFlag || this.viewCode !== null){
 				this.log( "setupViewCode -> skipped viewCode is already being generated.");
 				return ;
 			}
