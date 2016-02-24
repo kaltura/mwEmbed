@@ -10,6 +10,7 @@
 		},
 
 		updateEnabled: true,
+		labelWidth: null,
 
 		setup: function () {
 			var _this = this;
@@ -61,6 +62,12 @@
 		updateUI: function (time) {
 			if (this.updateEnabled) {
 				this.getComponent().text(mw.seconds2npt(time));
+				// check if the time change caused the label width to change (got to 10 minutes or 1 hour) and recalculate components position if needed
+				var currentWidth = this.$el.width();
+				if ( currentWidth !== this.labelWidth ){
+					this.embedPlayer.layoutBuilder.updateComponentsVisibility();
+					this.labelWidth = currentWidth;
+				}
 			}
 		},
 		getCurrentTime: function () {
@@ -76,6 +83,7 @@
 					.addClass("timers" + this.getCssClass())
 					.text('0:00');
 			}
+			this.labelWidth = this.$el.width();
 			return this.$el;
 		},
 		show: function () {
