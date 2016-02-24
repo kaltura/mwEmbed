@@ -598,6 +598,7 @@
 				this.hideSpinner();
 				this.stopped = this.paused = false;
 			}
+			this.removePoster();
 		} ,
 
 		callReadyFunc: function () {
@@ -704,6 +705,7 @@
 				//need to refactor the volume logic and remove this.
 				this.setPlayerElementVolume( this.volume );
 				//bring back the player
+				this.removePoster();
 				this.getPlayerContainer().css( 'visibility' , 'visible' );
 				_this.playerObject.play();
 				this.monitor();
