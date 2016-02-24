@@ -30,7 +30,7 @@
 
         setup: function () {
             var _this = this;
-            var embedPlayer = this.getPlayer();
+            var embedPlayer = _this.getPlayer();
             embedPlayer.disableComponentsHover();
             mw.log("Quiz: " + _this.IVQVer);
             this.bind('onChangeStream', function () {
@@ -48,7 +48,7 @@
                         embedPlayer.autoplay = false;
                     }
 
-                    _this.KIVQModule.setupQuiz(embedPlayer);
+                    _this.KIVQModule.setupQuiz();
                     _this.KIVQScreenTemplate = new mw.KIVQScreenTemplate(embedPlayer);
 
                     if(_this.KIVQModule.isKPlaylist){
@@ -66,10 +66,10 @@
                         _this.addBindings();
 
                         if(_this.KIVQModule.isKPlaylist){
+                            embedPlayer.stop();//
                             _this.enablePlayDuringScreen = false;
                             _this.ssWelcome();
                             mw.log("Quiz: playlistWelcome");
-                            embedPlayer.enablePlayControls();
                         };
                         embedPlayer.hideSpinner();
                         embedPlayer.enablePlayControls();
@@ -529,6 +529,7 @@
             _this.embedPlayer.enablePlayControls();
             _this.embedPlayer.triggerHelper( 'onEnableKeyboardBinding' );
             _this.KIVQModule.showQuizOnScrubber();
+            $(".icon-close").css("display", "");
         },
         addFooter: function (questionNr) {
             var _this = this;
