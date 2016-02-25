@@ -28,7 +28,7 @@
 			});
 			
 			this.bind('onChangeMediaDone playerReady onpause onEndedDone onRemovePlayerSpinner showPlayerControls showLargePlayBtn', function(e){
-				if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
+				if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() && !_this.embedPlayer.isPauseLoading ){
 					_this.getComponent().removeClass("icon-pause").addClass("icon-play");
 					_this.show();
 				}
