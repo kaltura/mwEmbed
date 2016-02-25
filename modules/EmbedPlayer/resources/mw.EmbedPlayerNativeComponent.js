@@ -112,7 +112,7 @@
 			this.proxyElement = divElement;
 			try {
 				if (NativeBridge.videoPlayer) {
-					NativeBridge.videoPlayer.registePlayer(this.getPlayerElement());
+					NativeBridge.videoPlayer.registerPlayer(this.getPlayerElement());
 					NativeBridge.videoPlayer.registerEmbedPlayer(this);
 				}
 			}
