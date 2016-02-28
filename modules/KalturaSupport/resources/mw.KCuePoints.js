@@ -198,7 +198,7 @@
 				'filter:entryIdEqual': entryId,
 				'filter:objectType': 'KalturaCuePointFilter',
 				'filter:statusIn': '1,3', //1=READY, 3=HANDLED  (3 is after copying to VOD)
-				'filter:cuePointTypeEqual': 'thumbCuePoint.Thumb',
+				'filter:cuePointTypeIn': 'thumbCuePoint.Thumb,codeCuePoint.Code',
 				'filter:orderBy': "+createdAt" //let backend sorting them
 			};
 			var lastCreationTime = _this.getLastCreationTime() + 1;
@@ -436,7 +436,7 @@
 			} else {
 				return;
 			}
-			mw.log('mw.KCuePoints :: Trigger event: ' + eventName + ' - ' + rawCuePoint.cuePointType + ' at: ' + rawCuePoint.startTime);
+			mw.log('mw.KCuePoints :: Trigger event: ' + eventName + ' - ' + rawCuePoint.cuePointType + ' at: ' + rawCuePoint.startTime );
 			$(this.embedPlayer).trigger(eventName, cuePointWrapper);
 			// TOOD "midSequenceComplete"
 		},
