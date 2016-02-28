@@ -2817,7 +2817,7 @@
 						_this.onClipDone();
 					}
 					_this.clipDoneTimeout = null;
-				}, timeoutVal * 1000 );
+				}, (timeoutVal * 1000) );
 			}
 		},
 		cancelClipDoneGuard: function() {
