@@ -284,8 +284,9 @@ mw.KAnalytics.prototype = {
 		} );
 
 		// Let updateTimeStats handle the currentTime monitor timing
-
+		mw.log("KAnalytics :: bind to monitor event");
 		$( embedPlayer ).bind( 'monitorEvent' + this.bindPostFix, function(){
+			mw.log("KAnalytics :: monitorEvent");
 			_this.updateTimeStats();
 		});
 
