@@ -642,7 +642,10 @@
 			return 'adContainer' + this.embedPlayer.id;
 		},
 		hideAdContainer: function () {
-			$("#" + this.getAdContainerId()).hide();
+			$("#" + this.getAdContainerId()).css("visibility", "hidden");
+		},
+		showAdContainer: function () {
+			$("#" + this.getAdContainerId()).css("visibility", "visible");
 		},
 		getAdDisplayContainer: function(){
 			//  Create the ad display container. Use an existing DOM element
@@ -832,7 +835,7 @@
 
 			// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
 			this.getAdDisplayContainer();
-
+			this.hideAdContainer();
 			// Create ads loader.
 			this.adsLoader = new google.ima.AdsLoader( _this.adDisplayContainer );
 
@@ -840,7 +843,6 @@
 			this.adsLoader.addEventListener(
 				google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
 				function( event ){
-					_this.hideAdContainer();
 					_this.onAdsManagerLoaded( event );
 				},
 				false);
@@ -998,6 +1000,7 @@
 				}
 			} );
 			adsListener( 'LOADED', function(adEvent){
+				_this.showAdContainer();
 				_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
 				var adData = adEvent.getAdData();
 				if ( adData) {
