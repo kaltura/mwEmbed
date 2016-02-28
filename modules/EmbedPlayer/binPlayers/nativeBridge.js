@@ -43,14 +43,13 @@
 		proxyElement: null,
 		embedPlayer: null,
 		isJsCallbackReady: false,
-		callReadyOnPlayerElementRegistered: false,
 		bindPostfix: ".nativeBridge",
 		subscribed: [],
 		playerMethods: [
 			'stop', 'play', 'pause', 'replay', 'setPlayerSource', 'bindPlayerEvents', 'showNativePlayer', 'hideNativePlayer', 'toggleFullscreen', 'notifyKPlayerEvent', 'notifyKPlayerEvaluated', 'notifyJsReady', 'showChromecastDeviceList', 'notifyLayoutReady',
 			'doneFSBtnPressed', 'addNativeAirPlayButton', 'showNativeAirPlayButton', 'hideNativeAirPlayButton', 'doNativeAction', 'textTracksReceived', 'loadEmbeddedCaptions', 'flavorsListChanged', 'switchFlavor','togglePictureInPicture' ],
 
-		registePlayer: function (proxyElement) {
+		registerPlayer: function (proxyElement) {
 			var _this = this;
 			this.proxyElement = proxyElement;
 
@@ -84,9 +83,6 @@
 			}
 
 			this.bindNativeEvents();
-			if (this.callReadyOnPlayerElementRegistered){
-				this.proxyElement.notifyJsReady([]);
-			}
 		},
 
 		notifyErrorOccurred: function (errObj) {
@@ -97,8 +93,6 @@
 		notifyJsReadyFunc: function () {
 			if (this.isJsCallbackReady && this.proxyElement) {
 				this.proxyElement.notifyJsReady([]);
-			} else {
-				this.callReadyOnPlayerElementRegistered = true;
 			}
 		},
 

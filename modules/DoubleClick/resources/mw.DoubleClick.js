@@ -642,7 +642,10 @@
 			return 'adContainer' + this.embedPlayer.id;
 		},
 		hideAdContainer: function () {
-			$("#" + this.getAdContainerId()).hide();
+			$("#" + this.getAdContainerId()).css("visibility", "hidden");
+		},
+		showAdContainer: function () {
+			$("#" + this.getAdContainerId()).css("visibility", "visible");
 		},
 		getAdDisplayContainer: function(){
 			//  Create the ad display container. Use an existing DOM element
@@ -832,7 +835,7 @@
 
 			// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
 			this.getAdDisplayContainer();
-
+			this.hideAdContainer();
 			// Create ads loader.
 			this.adsLoader = new google.ima.AdsLoader( _this.adDisplayContainer );
 
@@ -840,7 +843,6 @@
 			this.adsLoader.addEventListener(
 				google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
 				function( event ){
-					_this.hideAdContainer();
 					_this.onAdsManagerLoaded( event );
 				},
 				false);
@@ -998,6 +1000,7 @@
 				}
 			} );
 			adsListener( 'LOADED', function(adEvent){
+				_this.showAdContainer();
 				_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
 				var adData = adEvent.getAdData();
 				if ( adData) {
@@ -1192,7 +1195,6 @@
 					$(_this.embedPlayer).trigger("playing");
 					$(_this.embedPlayer).trigger("onplay");
 					if (_this.currentAdSlotType != _this.prevSlotType) {
-						_this.embedPlayer.adTimeline.updateUiForAdPlayback(_this.currentAdSlotType);
 						_this.prevSlotType = _this.currentAdSlotType;
 					}
 					if (adInfo.duration > 0) {
@@ -1215,6 +1217,7 @@
 
 				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
 					mw.log("DoubleClick:: adLoaded");
+					_this.embedPlayer.adTimeline.updateUiForAdPlayback(_this.currentAdSlotType);
 					_this.isLinear = adInfo.isLinear;
 					if (!_this.isLinear && _this.isChromeless) {
 						$(".mwEmbedPlayer").hide();
@@ -1586,6 +1589,7 @@
 				if ( this.getConfig("adTagUrl") && this.playingLinearAd ) {
 					this.restorePlayer(true);
 				}
+				$(".ad-skip-btn").remove(); // remove skip button from the DOM
 				setTimeout(function(){
 					_this.removeAdContainer();
 					if ( _this.adsLoader ) {
