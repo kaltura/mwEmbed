@@ -12,35 +12,40 @@
 				this.currentState = this.states[i];
 			}
 		}
-		this.consumeEvent = function ( state ) {
-			var action;
-			var mainDisplayType;
-			if (typeof state === 'object')
+		this.consumeEvent = function ( args ) {
+			var targetState;
+			var targetMainDisplayType;
+			if (typeof args === 'object')
 			{
-				action = state.action;
-				mainDisplayType = state.mainDisplayType;
+				// the event args contains a combination of a target state and main display type.
+				targetState = args.action;
+				targetMainDisplayType = args.mainDisplayType;
 			}else
 			{
-				action = state;
-				mainDisplayType = null;
+				// backward compatibility: the event args represents the target state only
+				targetState = args;
+				targetMainDisplayType = null;
 			}
 
-			if (action === 'switchView')
+			if (targetState === 'switchView')
 			{
-				action = this.currentState.name;
-				mainDisplayType = (this.context.getPrimary() === this.context.getAuxDisplay()) ? 'video' : 'presentation';
+				// backward compatibility: transform 'switchView' state into relevant state / main display types
+				targetState = this.currentState.name;
+				targetMainDisplayType = (this.context.getPrimary() === this.context.getAuxDisplay()) ? 'video' : 'presentation';
 			}
 
-			if ( this.states[this.indexes[action]] ) {
-				this.fsmTransitionHandlers(this.currentState.name, action);
+			if ( this.states[this.indexes[targetState]] ) {
+				this.fsmTransitionHandlers(this.currentState.name, targetState);
 
 				var previousState = this.currentState.name;
 				var currentMainDisplayType = (this.context.getPrimary() === this.context.getAuxDisplay()) ? 'presentation' : 'video';
-				this.currentState = this.states[this.indexes[action]];
+
+				this.currentState = this.states[this.indexes[targetState]];
+
 				this.currentState.invoke.call(this.context, {
 					previousState :previousState,
 					currentMainDisplayType :currentMainDisplayType ,
-					targetMainDisplayType : mainDisplayType});
+					targetMainDisplayType : targetMainDisplayType});
 			}
 		};
 		this.canConsumeEvent = function ( e ) {
