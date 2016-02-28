@@ -1586,6 +1586,7 @@
 				if ( this.getConfig("adTagUrl") && this.playingLinearAd ) {
 					this.restorePlayer(true);
 				}
+				$(".ad-skip-btn").remove(); // remove skip button from the DOM
 				setTimeout(function(){
 					_this.removeAdContainer();
 					if ( _this.adsLoader ) {
