@@ -542,6 +542,9 @@ function initApp() {
 }
 
 function setCaption(trackNumber) {
+	if (protocol===null){
+		return;
+	}
 	var current, next;
 	var streamCount = protocol.getStreamCount();
 	var streamInfo;
