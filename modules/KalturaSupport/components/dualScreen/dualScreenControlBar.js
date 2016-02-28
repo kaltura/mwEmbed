@@ -93,7 +93,7 @@
 					e.stopPropagation();
 					e.preventDefault();
 
-					_this.changeButtonsStyles.call(_this,this.id);
+					_this.changeButtonsStyles(this.id);
 
 					var btn = _this.controlBarComponents[this.id];
 					if (btn && btn.event){
@@ -126,6 +126,7 @@
 
 				if (invoker === 'dualScreenControlBar')
 				{
+					// the state change was invoked by this component so no need to handle that notification
 					return;
 				}
 
@@ -134,19 +135,23 @@
 					var item = _this.controlBarComponents[prop];
 					if (item.event === eventToCompare)
 					{
-						_this.changeButtonsStyles.call(_this,prop);
+						_this.changeButtonsStyles(prop);
 					}
 				}
 
 			});
 		},
+		/**
+		 * Changes the style of the buttons according to the selected view mode.
+		 * This affect they layout only and doesn't change the player state.
+		 * @param activeButtonId
+         */
 		changeButtonsStyles : function(activeButtonId)
 		{
 			var _this = this;
 			var buttons = _this.getComponent().find( "span" );
 			var switchBtn = buttons.filter('[data-type="switch"]');
 
-			var btn = this.controlBarComponents[activeButtonId];
 			var obj = $(_this.getComponent().find('#' + activeButtonId)[0]);
 			//Change state button disabled state
 			if (obj.data("type") === "state") {
