@@ -132,7 +132,7 @@
 				$(this).trigger("updatePlayHeadPercent",[ vid.currentTime / vid.duration ]);
 				$( this ).trigger( 'externalTimeUpdate', [vid.currentTime]);
 			}
-			$(this).trigger( 'monitorEvent' );
+			_this.parent_monitor();
 		},
 
 		setPlayerElement: function (mediaElement) {
