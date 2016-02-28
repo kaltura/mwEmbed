@@ -284,9 +284,8 @@ mw.KAnalytics.prototype = {
 		} );
 
 		// Let updateTimeStats handle the currentTime monitor timing
-		mw.log("KAnalytics :: bind to monitor event");
+
 		$( embedPlayer ).bind( 'monitorEvent' + this.bindPostFix, function(){
-			mw.log("KAnalytics :: monitorEvent");
 			_this.updateTimeStats();
 		});
 
@@ -322,7 +321,7 @@ mw.KAnalytics.prototype = {
 		// Set the seek and time percent:
 		var percent = embedPlayer.currentTime / embedPlayer.duration;
 		var seekPercent = this.lastSeek/ embedPlayer.duration;
-		mw.log("KAnalytics :: doSendAnalyticsEvent > embedPlayer.currentTime = " + embedPlayer.currentTime+", embedPlayer.duration = "+embedPlayer.duration );
+
 
 		// Send updates based on logic present in StatisticsMediator.as
 		if ( !embedPlayer.isLive() ){
