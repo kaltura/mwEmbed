@@ -188,13 +188,13 @@ function setMediaManagerEvents() {
 	 * @param {Object} obj An error object from callback
 	 */
 	mediaManager.onError = function (obj) {
-		setDebugMessage('mediaManagerMessage', 'ERROR - ' + obj.toString());
+		setDebugMessage('mediaManagerMessage', 'ERROR - ' + JSON.stringify(obj));
 
 		mediaManager['onErrorOrig'](obj);
-		if (mediaPlayer) {
-			mediaPlayer.unload();
-			mediaPlayer = null;
-		}
+//		if (mediaPlayer) {
+//			mediaPlayer.unload();
+//			mediaPlayer = null;
+//		}
 	};
 
 	/**
