@@ -810,6 +810,8 @@ function setDebugMessage(elementId, message) {
  * get media player state
  */
 function getPlayerState() {
-	var playerState = mediaPlayer.getState();
-	setDebugMessage('mediaPlayerState', 'underflow: ' + playerState['underflow']);
+	if (mediaPlayer){
+		var playerState = mediaPlayer.getState();
+		setDebugMessage('mediaPlayerState', 'underflow: ' + playerState['underflow']);
+	}
 }
