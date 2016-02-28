@@ -41,8 +41,7 @@
 				"keyboardShortcutsMap": {
 					"nextState": 81,   // Add q Sign for next state
 					"switchView": 87   // Add w Sigh for switch views
-				},
-				cuePointsSyncTimeoutInterval : 3000
+				}
 			},
 			display: {},
 			syncEnabled: true,
@@ -52,21 +51,12 @@
 			fsmState: [],
 			screenShown: false,
 			currentScreenNameShown: "",
-			cuePointsSync :{
-				busy : false,
-				syncTimeoutId : null,
-				lastCuePointUpdateTime : null,
-				lastCuePointId : null
-			},
 			kClient : null,
 			setup: function ( ) {
 				this.initConfig();
 				this.initDisplays();
 				this.initFSM();
 				this.addBindings();
-			},
-			destroy: function () {
-				this.endCuePointsSync();
 			},
 			isSafeEnviornment: function () {
 				this.initSecondPlayer();
@@ -92,6 +82,8 @@
 								_this.restoreView("disabledScreen");
 							}
 
+							_this.setInitialView(); // Keep the initial view logic to preserve behavior used by screen capture
+
 							if (!_this.render) {
 								_this.getPrimary().obj.css({
 									'top': '',
@@ -102,21 +94,25 @@
 								_this.hideDisplay();
 							}
 
-							// TODO [1] should we sync when not live?
-							// start monitoring the cuepoints
-							if (_this.embedPlayer.isLive()) {
-								_this.requestCuePoints(function(result)
-									{
-										if (!result.handled) {
-											_this.setInitialView();
-										}
-									}
-								);
-								_this.startCuePointsSync();
-							}else
-							{
-								_this.setInitialView();
-							}
+							_this.bind( 'KalturaSupport_CuePointReached', function ( e, cuePointObj ) {
+								var cuePoint = cuePointObj.cuePoint;
+
+								if (!cuePoint || cuePoint.cuePointType !== 'codeCuePoint.Code' || cuePoint.tags !== 'player-view-mode' ||
+									!cuePoint.code)
+								{
+									// ignore any cue point not relevant to player view mode.
+									return;
+								}
+
+								_this.handleCuePoint(cuePoint);
+							} );
+
+							_this.bind( 'timeupdate', function ( ) {
+								if (_this.getPlayer().currentTime > 0) {
+									_this.unbind('timeupdate');
+									_this.handleCurrentPlayerViewModeCuePoint();
+								}
+							} );
 						} else {
 							_this.log("render condition are not met - disabling");
 							if (!_this.disabled){
@@ -125,6 +121,8 @@
 							}
 						}
 					}
+
+
 				} );
 
 				this.bind( 'postDualScreenTransition', function () {
@@ -244,7 +242,7 @@
 							action = "PiP";
 							break;
 					}
-					_this.getPlayer().triggerHelper('dualScreenStateChange', action);
+					_this.getPlayer().triggerHelper('dualScreenStateChange', "switchView");
 				});
 				// Add w Sigh for switch view
 				addKeyCallback(this.getConfig("keyboardShortcutsMap").switchView, function () {
@@ -649,132 +647,122 @@
 					of: $( this.getPlayer().getInterface() )
 				});
 			},
-			startCuePointsSync: function () {
-				var _this = this;
-
-				//Start live cuepoint pulling
-				this.cuePointsSync.syncTimeoutId = setInterval(function () {
-					_this.requestCuePoints();
-				}, _this.getConfig("cuePointsSyncTimeoutInterval") || 3000);
-			},
-			endCuePointsSync : function()
-			{
-				if (this.cuePointsSync.syncTimeoutId) {
-					clearInterval(this.cuePointsSync.syncTimeoutId);
-					this.cuePointsSync.syncTimeoutId = null;
-				}
-			},
 			getKClient: function () {
 				if (!this.kClient) {
 					this.kClient = mw.kApiGetPartnerClient(this.embedPlayer.kwidgetid);
 				}
 				return this.kClient;
 			},
-			requestCuePoints:function(cb) {
-				var _this = this;
+			/**
+			 * Searches for the first/next cue point after the current player time
+			 * @returns a matching cue point if found, null otherwise
+			 */
+			getCurrentPlayerViewModeCuePoint: function ( ) {
 
-					var entryId = _this.embedPlayer.kentryid;
+				var currentTime = this.getPlayer().currentTime *1000;
+				var cuePoints = this.getPlayerViewModeCuePoints();
+				var cuePoint;
+				var duration=this.getPlayer().isLive() ? 0 : this.getPlayer().getDuration() * 1000;
 
-					if (_this.cuePointsSync.busy)
-					{
-						// dont invoke duplicate requests. previous request already in progress.
-						return;
+				//assume sortedCuePoints array
+				for ( var i = 0; i < cuePoints.length; i++ ) {
+
+					var startTime = cuePoints[i].startTime;
+
+					if ( (startTime > currentTime) ||  //stop once we found a future slide (or out of range slide)
+						(duration>0 && startTime>duration)) {
+						break;
 					}
 
-					// build list annotation cue point request
-					var request = {
-						'service': 'cuepoint_cuepoint',
-						'action': 'list',
-						'filter:objectType': 'KalturaCodeCuePointFilter',
-						'filter:tagsLike':'player-view-mode',
-						'filter:entryIdEqual': entryId,
-						'filter:cuePointTypeEqual': 'codeCuePoint.Code',
-						'filter:orderBy': '-createdAt',
-						'pager:pageSize' : 1
-					};
+					cuePoint=cuePoints[i];
 
-					var lastUpdatedAt = _this.cuePointsSync.lastCuePointUpdateTime;
-					// Only add lastUpdatedAt filter if any cue points already received
-					if (lastUpdatedAt > 0) {
-						request['filter:updatedAtGreaterThanOrEqual'] = lastUpdatedAt;
-					}
-
-					_this.cuePointsSync.busy = true;
-					_this.getKClient().doRequest(request,
-						function (result) {
-							try {
-								// if an error pop out:
-								if (!result || !result.objects || result.objects.length < 1) {
-									if (cb)
-									{
-										cb({handled : false});
-									}
-									return;
-								}
-
-								var cuePoint = result.objects[0];
-
-								if (cuePoint === undefined || cuePoint.code === undefined ||
-									(	_this.cuePointsSync.lastCuePointUpdateTime === cuePoint.updatedAt && 	_this.cuePointsSync.lastCuePointId === cuePoint.id)){
-									// ignore any cuepoint that has no code or was already handled (same update date and id)
-									if (cb)
-									{
-										cb({handled : false});
-									}
-									return;
-								}
-
-								_this.cuePointsSync.lastCuePointUpdateTime = cuePoint.updatedAt;
-								_this.cuePointsSync.lastCuePointId = cuePoint.id;
-
-								var cuePointCode=JSON.parse(cuePoint.code);
-
-								var action,
-									mainDisplayType;
-								switch(cuePointCode.playerViewModeId)
-								{
-									case "side-by-side-video-on-right":
-										action = "SbS";
-										mainDisplayType = 'presentation';
-										break;
-									case "side-by-side-video-on-left":
-										action = "SbS";
-										mainDisplayType = 'video';
-										break;
-									case "video-inside-presentation":
-										action = "PiP";
-										mainDisplayType = 'presentation';
-										break;
-									case "presentation-inside-video":
-										action = "PiP";
-										mainDisplayType = 'video';
-										break;
-									case "video-only":
-										action = "hide";
-										mainDisplayType = 'video';
-										break;
-									case "presentation-only":
-										action = "hide";
-										mainDisplayType = 'presentation';
-										break;
-								}
-								if (action) {
-									mw.log("Changing player view to '" + action + "' with main display '" + mainDisplayType + "'");
-									_this.getPlayer().triggerHelper('dualScreenStateChange', { action : action, mainDisplayType : mainDisplayType});
-									if (cb)
-									{
-										cb({handled : true});
-									}
-								}
-							}
-							catch(e) {
-								mw.log("Error:: Error parsing 'player-view-mode' code cue point "+ e.message+ " "+ e.stack);
-							}finally{
-								_this.cuePointsSync.busy = false;
-							}
-						}
-					);
+				}
+				return cuePoint;
 			},
+			/**
+			 * Gets all the cue points of type player view mode
+			 * @returns {Array}
+			 */
+			getPlayerViewModeCuePoints : function()
+			{
+				var _this = this;
+				var cuePoints = [];
+				if ( this.getPlayer().kCuePoints ) {
+					var filteredCuePoints = _this.getPlayer().kCuePoints.getCuePointsByType( 'codeCuePoint.Code' );
+					if (filteredCuePoints)
+					{
+						// using grep assure that the original array was not affected
+						cuePoints = $.grep(filteredCuePoints,function(item)
+						{
+							return item.tags === 'player-view-mode';
+						});
+					}
+				}
+
+				cuePoints.sort(function (a, b) {
+					return a.startTime - b.startTime;
+				});
+
+				return cuePoints;
+			},
+			handleCurrentPlayerViewModeCuePoint : function()
+			{
+				var cuePoint = this.getCurrentPlayerViewModeCuePoint();
+
+				if (cuePoint)
+				{
+					this.handleCuePoint(cuePoint);
+				}
+			},
+			handleCuePoint : function(cuePoint)
+			{
+				var action, mainDisplayType;
+
+				if (!cuePoint || cuePoint.cuePointType !== 'codeCuePoint.Code' || cuePoint.tags !== 'player-view-mode' ||
+					!cuePoint.code)
+				{
+					// ignore any cue point not relevant to player view mode.
+					return;
+				}
+
+				var cuePointCode = JSON.parse(cuePoint.code);
+				if (cuePointCode.playerViewModeId) {
+					// NOTE: The left display is considered as the main display in the player.
+					// For example: 'video-on-left' means 'video' stream as main and 'video-on-right' means 'presentation' stream as main.
+					switch (cuePointCode.playerViewModeId) {
+						case "side-by-side-video-on-right":
+							action = "SbS";
+							mainDisplayType = 'presentation';
+							break;
+						case "side-by-side-video-on-left":
+							action = "SbS";
+							mainDisplayType = 'video';
+							break;
+						case "video-inside-presentation":
+							action = "PiP";
+							mainDisplayType = 'presentation';
+							break;
+						case "presentation-inside-video":
+							action = "PiP";
+							mainDisplayType = 'video';
+							break;
+						case "video-only":
+							action = "hide";
+							mainDisplayType = 'video';
+							break;
+						case "presentation-only":
+							action = "hide";
+							mainDisplayType = 'presentation';
+							break;
+					}
+				}
+
+				if (action) {
+					mw.log("Changing player view to '" + action + "' with main display '" + mainDisplayType + "'");
+
+					this.getPlayer().triggerHelper('dualScreenStateChange', { action : action, mainDisplayType : mainDisplayType});
+				}
+			}
 
 		} )
 	);
