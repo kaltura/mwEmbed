@@ -542,9 +542,6 @@ function initApp() {
 }
 
 function setCaption(trackNumber) {
-	if (protocol===null){
-		return;
-	}
 	var current, next;
 	var streamCount = protocol.getStreamCount();
 	var streamInfo;
@@ -659,6 +656,9 @@ function setMediaElementEvents(mediaElement) {
 
 	});
 	mediaElement.addEventListener('loadeddata', function (e) {
+		if (protocol === null){
+			return;
+		}
 		console.log('######### MEDIA ELEMENT DATA LOADED');
 		setDebugMessage('mediaElementState', 'Data Loaded');
 		messageBus.broadcast("mediaElement:Data Loaded");
