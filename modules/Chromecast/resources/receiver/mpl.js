@@ -191,10 +191,10 @@ function setMediaManagerEvents() {
 		setDebugMessage('mediaManagerMessage', 'ERROR - ' + JSON.stringify(obj));
 
 		mediaManager['onErrorOrig'](obj);
-//		if (mediaPlayer) {
-//			mediaPlayer.unload();
-//			mediaPlayer = null;
-//		}
+		if (mediaPlayer) {
+			mediaPlayer.unload();
+			mediaPlayer = null;
+		}
 	};
 
 	/**
