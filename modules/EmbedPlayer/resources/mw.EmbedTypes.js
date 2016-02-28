@@ -15,22 +15,7 @@
 
 
 //Native Mobile player
-var nativeComponentPlayerVideo = (function() {
-    // Assuming window.kNativeSDK.supportedFormats holds an object with this structure:
-    // {"drmTypes":["video/wvm","application/dash+xml"],"clearTypes":["application/vnd.apple.mpegurl","video/mp4","application/dash+xml"],"allTypes":["application/vnd.apple.mpegurl","video/wvm","video/mp4","application/dash+xml"]}
-    var nativeFormats = window.kNativeSDK ? window.kNativeSDK.supportedFormats : null;
-    if (nativeFormats) {
-        // Get all supported mimetypes.
-        nativeFormats = nativeFormats.allTypes;
-    } else {
-        // legacy
-        nativeFormats = ['video/h264', 'video/mp4', 'application/vnd.apple.mpegurl', 'video/wvm'];
-    }
-    return new mw.MediaPlayer( 'nativeComponentPlayer', nativeFormats, 'NativeComponent' );
-})();
-
-
-
+var nativeComponentPlayerVideo = new mw.MediaPlayer( 'nativeComponentPlayer', window.kNativeSdk && window.kNativeSdk.allFormats, 'NativeComponent' );
 
 // Flash based players:
 var kplayer = new mw.MediaPlayer('kplayer', ['video/live', 'video/kontiki', 'video/x-flv', 'video/h264', 'video/mp4', 'audio/mpeg', 'application/x-shockwave-flash', 'application/vnd.apple.mpegurl'], 'Kplayer');

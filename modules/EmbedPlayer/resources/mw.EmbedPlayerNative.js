@@ -645,28 +645,6 @@
 					// hide the player offscreen while we switch
 					_this.hidePlayerOffScreen();
 
-					// restore position once we have metadata
-					$(vid).bind('loadedmetadata' + switchBindPostfix, function () {
-						$(vid).unbind('loadedmetadata' + switchBindPostfix);
-						_this.log(" playerSwitchSource> loadedmetadata callback for:" + src);
-						// ( do not update the duration )
-						// Android and iOS <5 gives bogus duration, depend on external metadata
-
-						// keep going towards playback! if  switchCallback has not been called yet
-						// we need the "playing" event to trigger the switch callback
-						if (!mw.isIOS71() && $.isFunction(switchCallback) && !_this.isVideoSiblingEnabled()) {
-							vid.play();
-						} else {
-							_this.removeBlackScreen();
-						}
-					});
-
-					$(vid).bind('pause' + switchBindPostfix, function () {
-						_this.log("playerSwitchSource> received pause during switching, issue play to continue source switching!")
-						$(vid).unbind('pause' + switchBindPostfix);
-						vid.play();
-					});
-
 					var handleSwitchCallback = function () {
 						//Clear pause binding on switch exit in case it wasn't triggered.
 						$(vid).unbind('pause' + switchBindPostfix);
@@ -677,7 +655,6 @@
 						// Restore
 						vid.controls = originalControlsState;
 						_this.ignoreNextError = false;
-						_this.ignoreNextNativeEvent = false;
 						// check if we have a switch callback and issue it now:
 						if ($.isFunction(switchCallback)) {
 							_this.log(" playerSwitchSource> call switchCallback");
@@ -687,15 +664,12 @@
 						}
 					};
 
-					// once playing issue callbacks:
-					$(vid).bind('playing' + switchBindPostfix, function () {
-						$(vid).unbind('playing' + switchBindPostfix);
-						_this.log(" playerSwitchSource> playing callback: " + vid.currentTime);
+					// restore position once we have metadata
+					$(vid).bind('loadedmetadata' + switchBindPostfix, function () {
+						$(vid).unbind('loadedmetadata' + switchBindPostfix);
+						_this.log(" playerSwitchSource> loadedmetadata callback for:" + src);
 						handleSwitchCallback();
-						setTimeout(function () {
-							_this.removeBlackScreen();
-						}, 100);
-
+						_this.removeBlackScreen();
 					});
 
 					// Add the end binding if we have a post event:
@@ -716,11 +690,6 @@
 							// issue the doneCallback
 							doneCallback();
 
-							// Support loop for older iOS
-							// Temporarily disabled pending more testing or refactor into a better place.
-							//if ( _this.loop ) {
-							//	vid.play();
-							//}
 							return false;
 						});
 
@@ -749,12 +718,6 @@
 						}
 					}
 
-					// issue the play request:
-					if (_this.isInSequence()){
-						vid.play();
-					}else{
-						_this.play();
-					}
 					if (mw.isMobileDevice()) {
 						setTimeout(function () {
 							handleSwitchCallback();
@@ -1135,25 +1098,14 @@
 		 * Handle the native paused event
 		 */
 		_onpause: function () {
-			var _this = this;
 			this.playing = false;
 			if (this.ignoreNextNativeEvent) {
 				this.ignoreNextNativeEvent = false;
 				return;
 			}
-			var timeSincePlay = Math.abs(this.absoluteStartPlayTime - new Date().getTime());
-			this.log(" OnPaused:: propagate:" + this._propagateEvents +
-				' time since play: ' + timeSincePlay + ' duringSeek:' + this.seeking);
-			// Only trigger parent pause if more than MonitorRate time has gone by.
-			// Some browsers trigger native pause events when they "play" or after a src switch
-			if (!this.seeking && !this.userSlide
-				&&
-				timeSincePlay > mw.getConfig('EmbedPlayer.MonitorRate')
-				) {
-				_this.parent_pause();
-			} else {
-				// try to continue playback:
-				this.getPlayerElement().play();
+			this.log(" OnPaused:: propagate:" + this._propagateEvents + ' duringSeek:' + this.seeking);
+			if (!this.seeking && !this.userSlide) {
+				this.parent_pause();
 			}
 		},
 

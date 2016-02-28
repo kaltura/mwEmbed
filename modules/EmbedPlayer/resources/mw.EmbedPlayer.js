@@ -872,6 +872,7 @@
 				if (!errorObj) {
 					this.showPlayerError();
 				} else {
+					this.setError(errorObj);
 					this.showErrorMsg(errorObj);
 				}
 				mw.log("EmbedPlayer:: setupSourcePlayer > player ready ( but with errors ) ");
@@ -1466,6 +1467,7 @@
 		showErrorMsg: function (errorObj) {
 			// Remove a loading spinner
 			this.hideSpinner();
+			this.triggerHelper('playerError', errorObj);
 			// clear change media flag
 			this.changeMediaStarted = false;
 			if (this.layoutBuilder) {
@@ -2386,10 +2388,10 @@
 				.attr('id', sId);
 		},
 		hideSpinner: function () {
+			$(this).trigger('onRemovePlayerSpinner');
 			var $spinner = $('#loadingSpinner_' + this.id + ',.loadingSpinner');
 			if ($spinner.length > 0) {
 				// remove the spinner
-				$(this).trigger('onRemovePlayerSpinner');
 				$spinner.remove();
 			}
 
@@ -3272,7 +3274,12 @@
 			}
 			//adaptive bitrate
 			return this.currentBitrate;
-		}
+		},
+
+        getCurrentBufferLength: function(){
+            mw.log("Error: getPlayerElementTime should be implemented by embed library");
+        }
+
 	};
 
 })(window.mw, window.jQuery);

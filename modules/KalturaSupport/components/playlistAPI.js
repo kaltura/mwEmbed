@@ -473,6 +473,10 @@
 				embedPlayer.triggerHelper(eventToTrigger);
 				_this.loadingEntry = false; // Update the loadingEntry flag//
 
+				if (mobileAutoPlay && embedPlayer.canAutoPlay()) {
+					embedPlayer.play();
+				}
+
 				if (mw.isMobileDevice() && !mobileAutoPlay){
 					mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
 					embedPlayer.updatePosterHTML();
@@ -507,13 +511,13 @@
 		addClipBindings: function (clipIndex) {
 			var _this = this;
 			mw.log("PlaylistAPI::addClipBindings");
-			// Setup postEnded event binding to play next clip (if autoContinue is true )
-			if (this.getConfig("autoContinue") == true) {
-				$(this.embedPlayer).unbind('postEnded' + this.bindPostFix).bind('postEnded' + this.bindPostFix, function () {
+			// Setup postEnded event binding to play next clip
+			$(this.embedPlayer).unbind('postEnded' + this.bindPostFix).bind('postEnded' + this.bindPostFix, function () {
+				if (_this.getConfig("autoContinue") == true) {
 					mw.log("PlaylistAPI:: postEnded > on inx: " + clipIndex);
 					_this.playNext(true);
-				});
-			}
+				}
+			});
 		},
 
 		playNext: function (autoScrollToMedia) {

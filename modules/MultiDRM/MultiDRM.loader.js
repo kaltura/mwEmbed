@@ -7,13 +7,6 @@
 		return (window['MediaSource'] || window['WebKitMediaSource']) && !mw.isFirefox() && !mw.isDesktopSafari() && !mw.isMobileChrome();
 	}
 
-    var nativeSdkDRMTypes = (function() {
-        if (window.kNativeSDK) {
-            return window.kNativeSDK.supportedFormats.drmTypes;
-        } else {
-            return ['video/wvm'];
-        }
-    })();
 
 	//Load 3rd party plugins if DRM sources are available
 	mw.addKalturaConfCheck( function( embedPlayer, callback ){
@@ -94,6 +87,7 @@
     function getMultiDrmSupportedSources(sources) {
         var drmSources = sources.filter(function (source) {
             if (mw.isNativeApp()) {
+                var nativeSdkDRMTypes = window.kNativeSdk && window.kNativeSdk.drmFormats;
                 return $.inArray(source.mimeType, nativeSdkDRMTypes) >= 0;
             } else {
                 // Browser

@@ -361,6 +361,11 @@ kWidget.addReadyCallback( function( playerId ){
 				play();
 			});
 			this.bind( 'doPause', stop );
+			this.bind( 'userInitiatedPlay', function(){
+				if (!firstPlay){
+					play();
+				}
+			} );
 			this.bind( 'AdSupport_midSequenceComplete', play );
 			this.bind( 'playerPlayEnd', function(){
 				close();
