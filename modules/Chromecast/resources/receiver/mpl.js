@@ -106,10 +106,6 @@ onload = function () {
 			customData = payload['value'];
 			setDebugMessage('customData', customData);
 		} else if (payload['type'] === 'load') {
-			mediaElement = document.getElementById('receiverVideoElement');
-			mediaElement.autoplay = false;
-			setMediaElementEvents(mediaElement);
-			mediaManager.setMediaElement(mediaElement);
 			setMediaManagerEvents();
 		} else if (payload['type'] === 'embed' && !playerInitialized) {
 			var publisherID = payload['publisherID'];
@@ -192,7 +188,7 @@ function setMediaManagerEvents() {
 	 * @param {Object} obj An error object from callback
 	 */
 	mediaManager.onError = function (obj) {
-		setDebugMessage('mediaManagerMessage', 'ERROR - ' + JSON.stringify(obj));
+		setDebugMessage('mediaManagerMessage', 'ERROR - ' + obj.toString());
 
 		mediaManager['onErrorOrig'](obj);
 		if (mediaPlayer) {
