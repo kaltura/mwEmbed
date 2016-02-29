@@ -1373,12 +1373,16 @@
                 if( vid.audioTracks && vid.audioTracks.length > 0 ) {
                     var data ={'languages':[]};
                     for (var i = 0; i < vid.audioTracks.length; i++) {
-                        var lang = {};
-                        lang.index = i;
-                        lang.label = vid.audioTracks[i].label;
-                        data.languages.push(lang);
+                        if( vid.audioTracks[i].label !== "" ) {
+                            var lang = {};
+                            lang.index = i;
+                            lang.label = vid.audioTracks[i].label;
+                            data.languages.push(lang);
+                        }
                     }
-                    _this.triggerHelper('audioTracksReceived', data);
+                    if( data.languages.length > 0 ) {
+                        _this.triggerHelper('audioTracksReceived', data);
+                    }
                 }else{
                     //try to catch audioTracks, give up after 5 seconds
                     if( counter < 5 ){
