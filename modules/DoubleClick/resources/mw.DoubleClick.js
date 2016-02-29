@@ -258,6 +258,7 @@
 						}
 					}
 					_this.adCuePoints.push(cuePointWrapper.cuePoint.id);
+					_this.adManagerAutoStart = true;
 					_this.requestAds();
 				}
 			});
@@ -410,7 +411,7 @@
 					if ( _this.isChromeless || _this.isNativeSDK ){
 						_this.requestAds();
 					}else{
-						if ( !_this.getConfig("adTagUrl") ){
+						if ( !_this.getConfig("adTagUrl") && !_this.getConfig("prerollUrl") && !_this.getConfig( 'prerollUrlJS' ) ){
 							mw.log("DoubleClick::No adTagUrl defined. Restore player and resume playback.")
 							_this.restorePlayer(true);
 							return;
@@ -456,7 +457,7 @@
 					// if no postroll was set restore the player
 					_this.restorePlayerNoPostroll();
 				};
-
+				_this.adManagerAutoStart = true;
 				//if we're in JS mode - check if we have spacific JS configuration for the postroll
 				if ( !_this.isChromeless &&
 					_this.getConfig("postrollUrlJS") &&
