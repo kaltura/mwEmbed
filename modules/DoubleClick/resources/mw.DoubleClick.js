@@ -1057,15 +1057,15 @@
                 if ( ad.getAdPodInfo() && ad.getAdPodInfo().getAdPosition() ){ adPosition = ad.getAdPodInfo().getAdPosition(); }
 
                 // collect POD parameters is exists (ad.getAdPodInfo().getPodIndex() exists = POD)
-                var podPosition;
-                var podStartTime;
+                var podPosition = null;
+                var podStartTime = null;
 
                 if( ad.getAdPodInfo() && ad.getAdPodInfo().getPodIndex() !== -1) {
-                    podPosition = ad.getAdPodInfo().getPodIndex()+1;
+                    podPosition = ad.getAdPodInfo().getPodIndex();
                     podStartTime = ad.getAdPodInfo().getTimeOffset();
                 }
                 // trigger ad play event
-                $(_this.embedPlayer).trigger("onAdPlay",[ad.getAdId(),ad.getAdSystem(),currentAdSlotType,adPosition,ad.getDuration(), podPosition, podStartTime]);
+				$(_this.embedPlayer).trigger("onAdPlay",[ad.getAdId(),ad.getAdSystem(),currentAdSlotType,adPosition,ad.getDuration(), podPosition, podStartTime, ad.getTitle()]);
 				// This changes player state to the relevant value ( play-state )
 				$(_this.embedPlayer).trigger("playing");
 				// Check for ad Stacking ( two starts in less then 250ms )
@@ -1189,36 +1189,49 @@
 
 				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
 					mw.log("DoubleClick:: adStart");
-                    // for preroll ad that doesn't play using our video tag - we can load our video tag to improve performance once the ad finish
-                    if ( _this.currentAdSlotType === "preroll" ){
-                        _this.embedPlayer.load();
-                    }
-					_this.embedPlayer.sequenceProxy.isInSequence = true;
-					// set volume when ad starts to enable autoMute. TODO: remove next line once DoubleClick fix their bug when setting adsManager.volume before ad starts
-					_this.embedPlayer.setPlayerElementVolume(_this.embedPlayer.volume);
+					// for preroll ad that doesn't play using our video tag - we can load our video tag to improve performance once the ad finish
+					if ( !adInfo.linear && _this.currentAdSlotType === "preroll" ){
+						_this.embedPlayer.load();
+					}
 					// trigger ad play event
-					$(_this.embedPlayer).trigger("onAdPlay", [adInfo.adID, adInfoObj.adSystem, adInfoObj.currentAdSlotType, adInfoObj.adPosition, adInfo.duration]); //index is missing =0 by now
-					// This changes player state to the relevant value ( play-state )
-					$(_this.embedPlayer).trigger("playing");
-					$(_this.embedPlayer).trigger("onplay");
-					if (_this.currentAdSlotType != _this.prevSlotType) {
-						_this.prevSlotType = _this.currentAdSlotType;
+					// collect POD parameters is exists
+					var podPosition = null;
+					var podStartTime = null;
+
+					if( adInfo.adPodInfo && adInfo.adPodInfo.podIndex !== -1) {
+						podPosition = adInfo.adPodInfo.podIndex;
+						podStartTime = adInfo.adPodInfo.timeOffset;
 					}
-					if (adInfo.duration > 0) {
-						_this.embedPlayer.triggerHelper('AdSupport_AdUpdateDuration', adInfo.duration);
-					}
-					if (_this.isChromeless) {
-						$(".mwEmbedPlayer").hide();
-					}
-					if (_this.getConfig('countdownText') && _this.embedPlayer.getInterface().find(".ad-notice-label").length == 0) {
-						// Add the notice target:
-						_this.embedPlayer.getVideoHolder().append(
+					$(_this.embedPlayer).trigger("onAdPlay", [adInfo.adID, adInfoObj.adSystem, adInfoObj.currentAdSlotType, adInfoObj.adPosition, adInfo.duration, podPosition,  podStartTime, adInfo.adTitle ]); //index is missing =0 by now
+
+					if (adInfo.linear){
+						_this.embedPlayer.sequenceProxy.isInSequence = true;
+						// set volume when ad starts to enable autoMute. TODO: remove next line once DoubleClick fix their bug when setting adsManager.volume before ad starts
+						_this.embedPlayer.setPlayerElementVolume(_this.embedPlayer.volume);
+						$(_this.embedPlayer).trigger("playing");
+						$(_this.embedPlayer).trigger("onplay");
+						if (_this.currentAdSlotType != _this.prevSlotType) {
+							_this.embedPlayer.adTimeline.updateUiForAdPlayback(_this.currentAdSlotType);
+							_this.prevSlotType = _this.currentAdSlotType;
+						}
+						if (adInfo.duration > 0) {
+							_this.embedPlayer.triggerHelper('AdSupport_AdUpdateDuration', adInfo.duration);
+						}
+						if (_this.isChromeless) {
+							$(".mwEmbedPlayer").hide();
+						}
+						if (_this.getConfig('countdownText') && _this.embedPlayer.getInterface().find(".ad-notice-label").length == 0) {
+							// Add the notice target:
+							_this.embedPlayer.getVideoHolder().append(
 								$('<span />')
-										.addClass('ad-component ad-notice-label')
-						);
+									.addClass('ad-component ad-notice-label')
+							);
+						}
+						// Send a notification to trigger associated events and update ui
+						_this.embedPlayer.paused = false;
+					}else{
+						_this.embedPlayer.play();
 					}
-					// Send a notification to trigger associated events and update ui
-					_this.embedPlayer.paused = false;
 				}, 'adStart', true);
 
 
@@ -1239,9 +1252,6 @@
 					adInfoObj.adPosition = adInfo.adPosition;
 					if (!_this.isLinear) {
 						_this.restorePlayer();
-						setTimeout(function () {
-							_this.embedPlayer.getPlayerElement().play();
-						}, 250);
 					} else {
 						if (!adInfo.skippable) {
 							_this.showSkipBtn();

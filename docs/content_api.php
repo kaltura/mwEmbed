@@ -114,9 +114,6 @@ require_once( realpath( dirname( __FILE__ ) ) . '/api_evaluates.php' );
 			$o.='<li class="linkable" id="'. $key .'">';
 			$o.='<span class="key">'. $key . '</span><br>';
 			$o.= $var['desc'];
-			if( isset( $var['example'] ) && $var['example'] != '' ){
-				$o.= '<br><a href="'. $var['example'] . '" target="_blank">Usage Example</a>';
-			}
 			if(  isset( $var['type'] ) ){
 				$o.='<br><span class="type">Type</span>: <br>&nbsp;&nbsp;&nbsp;&nbsp;' .$var['type'];
 			}
@@ -145,6 +142,9 @@ require_once( realpath( dirname( __FILE__ ) ) . '/api_evaluates.php' );
 			if( isset( $var['default'] ) && $var['default'] != '' ){
 				$o.='<br><span class="default">Default</span>: <br>&nbsp;&nbsp;&nbsp;&nbsp;' .$var['default'];
 			}
+            if( isset( $var['example'] ) && $var['example'] != '' ){
+                $o.= '<br><a href="'. $var['example'] . '" target="_blank">Usage Example</a>';
+            }
 			if( isset( $var['availability'] ) && $var['availability'] == 'kdp' ){
 				$o.= '<br><span class="label label-warning">Legacy Only</span>';
 			}
