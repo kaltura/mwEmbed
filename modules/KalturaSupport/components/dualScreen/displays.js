@@ -43,15 +43,22 @@
             //Screen view state handlers
             toggleMainDisplay: function () {
                 var curMain = this.getMainDisplay();
-                var curAux =this.getAuxDisplay();
+                var curAux = this.getAuxDisplay();
 
                 var resizeLimits = curAux.getResizeLimits();
                 this.aux.setResizeLimits(resizeLimits);
                 var props = curAux.getProperties();
 
-                curMain.toggleMain(props);
-                curAux.toggleMain();
-
+                var switchZindex = function(){
+                    curAux.disableTransition();
+                    curMain.bringToFront();
+                    curAux.sendToBack();
+                };
+                curAux.toggleSecondary(switchZindex);
+                setTimeout(function(){
+                    curAux.toggleHiddenToMain();
+                    curMain.toggleMain(props);
+                },200);
                 this.main = curAux;
                 this.aux = curMain;
             },
@@ -66,6 +73,16 @@
             disableSideBySideView: function () {
                 this.getMainDisplay().disableSideBySideView();
                 this.getAuxDisplay().disableSideBySideView();
+            },
+            toggleMainConfig: function () {
+                var curMain = this.getMainDisplay();
+                var curAux = this.getAuxDisplay();
+                curMain.toggleMainConfig();
+                curMain.disableMain();
+                curAux.toggleMainConfig();
+                curAux.enableMain();
+                this.main = curAux;
+                this.aux = curMain;
             },
             hideDisplay: function ( ) {
                 this.getAuxDisplay().hide();

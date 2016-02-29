@@ -308,11 +308,15 @@
 					if ( !_this.dvrWindow ) {
 						_this.dvrWindow = _this.defaultDVRWindow;
 					}
-					showComponentsArr.push( 'scrubber' );
-                    hideComponentsArr.push( 'currentTimeLabel' ); //new DVR layout: no time label, only negative live edge offset at the mousemove over the scrubber
+					showComponentsArr.push( 'scrubber', 'currentTimeLabel' );
 				} else {  //live + no DVR
 					showComponentsArr.push( 'liveStatus' );
-                    hideComponentsArr.push( 'scrubber', 'currentTimeLabel' );
+                    hideComponentsArr.push( 'scrubber' );
+                    if ( _this.getConfig('hideCurrentTimeLabel') ){
+                    	hideComponentsArr.push( 'currentTimeLabel' );
+                    } else {
+                    	showComponentsArr.push( 'currentTimeLabel' );
+                    }
 				}
 
 				if ( _this.isNativeHLS() ) {

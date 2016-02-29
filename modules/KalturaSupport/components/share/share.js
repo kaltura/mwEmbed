@@ -445,6 +445,7 @@
 			var url = network.url;
 			url = decodeURIComponent(url);        // url was encoded to keep curly brackets for template tokens
 			url = this.getPlayer().evaluate(url); // replace tokens
+			url = url.replace('#','%23'); // encode hash sign to keep time offset
 			var networks = this.getConfig('shareConfig');
 			// send event for analytics
 			$( embedPlayer ).trigger( "socialShareEvent", networks[network.id] );

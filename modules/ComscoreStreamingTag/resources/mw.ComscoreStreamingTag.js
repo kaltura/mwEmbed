@@ -1,16 +1,17 @@
-( function( mw, $ ) { "use strict";
+(function (mw, $) {
+	"use strict";
 
 	/*
 	 Limitations:
 	 - No tracking for the overlay ads
 	 */
-	mw.ComscoreStreamingTag = function( embedPlayer, callback ){
-		this.init( embedPlayer, callback );
+	mw.ComscoreStreamingTag = function (embedPlayer, callback) {
+		this.init(embedPlayer, callback);
 	};
 
 	mw.ComscoreStreamingTag.prototype = {
 
-		pluginVersion: "1.1.0",
+		pluginVersion: "1.1.1",
 		reportingPluginName: "kaltura",
 		playerVersion: mw.getConfig('version'),
 
@@ -37,7 +38,7 @@
 		isPlaybackIntended: false,
 		hasPlaybackStarted: false,
 		playing: false,
-		samePositionRepeatedCount:0,
+		samePositionRepeatedCount: 0,
 		lastPosition: undefined,
 		lastPositionDuringBuffering: undefined,
 		lastPositionAfterSeeking: undefined,
@@ -45,10 +46,16 @@
 		isIphone: mw.isIphone(),
 		playerElement: undefined,
 		// Mapping for the module settings and the StreamSense plugin
-		configOptions: {c2:"c2", pageView:"pageview", logUrl:"logurl", persistentLabels:"persistentlabels", debug:"debug"},
+		configOptions: {
+			c2: "c2",
+			pageView: "pageview",
+			logUrl: "logurl",
+			persistentLabels: "persistentlabels",
+			debug: "debug"
+		},
 
 		PlayerPluginState: function () {
-			var stringMap = [ "initializing", "idle", "new_clip_loaded", "playing", "paused", "ended_playing", "buffering", "seeking", "scrubbing", "ad_playing", "ad_paused", "ad_ended_playing", "destroyed"];
+			var stringMap = ["initializing", "idle", "new_clip_loaded", "playing", "paused", "ended_playing", "buffering", "seeking", "scrubbing", "ad_playing", "ad_paused", "ad_ended_playing", "destroyed"];
 			return {
 				INITIALIZING: 0,
 				IDLE: 1,
@@ -69,7 +76,7 @@
 			};
 		},
 
-		init: function( embedPlayer, callback ){
+		init: function (embedPlayer, callback) {
 			this.embedPlayer = embedPlayer;
 			this.currentPlayerPluginState = this.PlayerPluginState().INITIALIZING;
 			var _this = this;
@@ -94,7 +101,7 @@
 			}
 
 			/***************************************************************************************
-			 *	This is the start of the comScore Streaming Tag core API + comScore GenericPlugin. *
+			 *    This is the start of the comScore Streaming Tag core API + comScore GenericPlugin. *
 			 * PLEASE DO NOT CHANGE THE FOLLOWING BLOCK OF CODE.                                   *
 			 ***************************************************************************************/
 
@@ -103,7 +110,7 @@
 					,n=e.match(t);for(var r in n)if(n.hasOwnProperty(r)){var i=n[r].split("=",2);if(i.length==2){var s=i[0].replace(/(^\s+|\s+$)/g,"");s!=""&&(x[s]=i[1])}}}function St(e){if(!e)return;var t=e.split(",");for(var n in t)if(t.hasOwnProperty(n)){var r=t[n].split("=",2);if(r.length==2){var i=r[0].replace(/(^\s+|\s+$)/g,"");i!=""&&(g.setLabel(i,r[1]),q[i]=r[1])}}}function xt(t){var n=g.getPixelURL();if(t.logurl)n=t.logurl;else if(t.c2){var r=t.secure?"https://sb":"http"+(document.location.href.charAt(4)=="s"?"s://sb":"://b");n=r+".scorecardresearch.com/p?c1=2",g.setLabel("c2",t.c2)}n&&g.setPixelURL(n);if(e.isTrue(t.pageview)){var i={};if(typeof document!="undefined"){var s=document;i.c7=s.URL,i.c8=s.title,i.c9=s.referrer}g.setLabels(i)}t.renditions,T=e.isTrue(t.debug),t.labelmapping&&Et(t.labelmapping),t.persistentlabels&&St(t.persistentlabels),t.throttling==="1"||t.throttling===!0?g.setThrottlingEnabled(!0):g.setThrottlingEnabled(!1);var o;(o=t.include)&&typeof o=="string"&&(o===a?b=a:o.length>0&&(b=o.split(","))),b!==a&&(o=t.include_prefixes)&&(o===a?b=a:(b||(b=[]),w=b.length,b.push.apply(b,o.split(","))));if(typeof b=="undefined")E=a;else{var u;(u=t.exclude)&&typeof u=="string"&&(u===a?E=a:u.length>0&&(E=u.split(","))),E!==a&&(u=t.exclude_prefixes)&&(u===a?E=a:(E||(E=[]),S=E.length,E.push.apply(E,u.split(","))))}}function Tt(e){var t={},n,r,i,s;if(E===a)return{};if(b&&b!==a){for(n=0,r=b.length;n<r;n++){var o=b[n];s=w>=0&&n>=w;for(i in e)e.hasOwnProperty(i)&&(t[i]||(t[i]=s?i.indexOf(o)===0:i==o))}for(i in t)t.hasOwnProperty(i)&&t[i]===!1&&delete e[i];t={}}if(E)for(n=0,r=E.length;n<r;n++){var u=E[n];s=S>=0&&n>=S;for(i in e)e.hasOwnProperty(i)&&(s?i.indexOf(u)===0:i==u)&&(t[i]=!0);for(i in t)t.hasOwnProperty(i)&&e.hasOwnProperty(i)&&delete e[i];t={}}return e}function Nt(t,n){var r=E===a;if(t.length>0&&t[0].map!="undefined"){var i=t[0].map;r||e.extend(n,Tt(e.cloneObject(i)));for(var s in i)if(i.hasOwnProperty(s)){var o=/^([Cc][A-Da-d]_)?ns_st_.+/,u=/^[Cc][A-Da-d]?([1-9]|1[0-9]|20)$/,f,l,c;if(f=s.match(/^data-(.+)/)){l=f[1].match(o)!=null,c=f[1].match(u)!=null;if(l||c)n[f[1]]=i[s]}else{l=s.match(o)!=null,c=s.match(u)!=null;if(l||c)n[s]=i[s]}}}}function Ct(t,n){var r=o.labelMapping;for(var i in r)if(r.hasOwnProperty(i)){var s="",u=/^"([^"]+)"$/i,a=/"([^"]+?)"|[a-z0-9\._-]+\s*/gi,f=r[i].match(a);for(var l=0;l<f.length;l++){var c=f[l].replace(/(?:^\s+|\s+$)/g,"");if(u.test(c)){var h=u.exec(c);s+=h[1]}else try{var p="",d=c.lastIndexOf(".");d>=1&&d<c.length-1&&(p=c.substring(0,d),c=c.substring(d+1,c.length));for(var v=0;v<t.length;v++){var m=t[v];if(p==m.prefix){m.map[c]&&(s+=e.toString(m.map[c]));break}}}catch(g){kt("Exception occurred while processing mapped labels")}n[i]=s}}}function kt(){if(T){var e=new Date,t=e.getDate(),n=e.getMonth()+1,r=e.getHours(),i=e.getMinutes(),s=e.getSeconds(),o=e.getFullYear()+"-"+(n<10?"0"+n:n)+"-"+(t<10?"0"+t:t)+" "+(r<10?"0"+r:r)+":"+(i<10?"0"+i:i)+":"+(s<10?"0"+s:s)+"."+e.getMilliseconds(),u=["comScore",o],a=Array.prototype.slice.call(arguments);console&&console.log(u.concat(a).toString())}}var o=this,u="2.1.5",a="_all_",f=10,l=500,c=[[-1,1],[-0.5,0,.5],[-0.3,-0.1,.1,.3],[-0.2,-0.1,0,.1,.2],[-0.14286,-0.08571,-0.02857,.02857,.08571,.14286],[-0.10714,-0.07143,-0.03571,0,.03571,.07143,.10714],[-0.08333,-0.05952,-0.03571,-0.0119,.0119,.03571,.05952,.08333],[-0.06667,-0.05,-0.03333,-0.01667,0,.01667,.03333,.05,.06667],[-0.05455,-0.04242,-0.0303,-0.01818,-0.00606,.00606,.01818,.0303,.04242,.05455],[-0.04545,-0.03636,-0.02727,-0.01818,-0.00909,0,.00909,.01818,.02727,.03636,.04545],[-0.03846,-0.03147,-0.02448,-0.01748,-0.01049,-0.0035,.0035,.01049,.01748,.02448,.03147,.03846],[-0.03297,-0.02747,-0.02198,-0.01648,-0.01099,-0.00549,0,.00549,.01099,.01648,.02198,.02747,.03297]],h=1.25,d=2,v=300,m=6,g={},y=[],b,w=-1,E,S=-1,x={},T=!1,N=!1,C=!1,k=!1,L=!1,A=!1,O=s.position&&s.position.call(o,null)||0,M=!1,_,D=[],P=[],H=!1,B=!1,j=!1,F={},I={},q={},R=!1,U=!1;z(),e.isTrue(t.pageview)&&g.viewNotify(null,g.getLabels())};return t.extractParams=function(e,t,n){var r=t.length,i,s,o={},u=e.indexOf(t),a;typeof n=="undefined"&&(n="&");if(u>=0){a=e.substr(u+r).split(n);for(i=0,s=a.length;i<s;i++){var f=a[i].split("=");f.length===2&&(o[f[0]]=decodeURIComponent(f[1]))}}return o},t}();return y.Plugin=b,y}();
 
 			/***************************************************************************************
-			 *	This is the end of the comScore Streaming Tag core API + comScore GenericPlugin.   *
+			 *    This is the end of the comScore Streaming Tag core API + comScore GenericPlugin.   *
 			 * PLEASE DO NOT CHANGE THE PREVIOUS BLOCK OF CODE.                                    *
 			 ***************************************************************************************/
 
@@ -116,33 +123,34 @@
 				position: function () {
 					return _this.getCurrentPosition();
 				},
-				preMeasurement: function() {
+				preMeasurement: function () {
 					return true;
 				},
-				postMeasurement: function() {}
+				postMeasurement: function () {
+				}
 			});
-			_this.addPlayerBindings( _callback );
+			_this.addPlayerBindings(_callback);
 			// We only need to create the StreamingTag Playlist here because the player re-initialises the whole
 			// plugin each time it loads a(nother) content media assets.
 			_this.callStreamSensePlugin("setPlaylist", _this.getPlaylistLabels(), true);
 		},
 
-		log: function(message) {
+		log: function (message) {
 			message += "; lp: " + this.lastPosition +
 				"; sp: " + this.startingPosition +
-				"; pbi: " + (this.isPlaybackIntended ? "Y":"N") +
-				"; pbs: " + (this.hasPlaybackStarted ? "Y":"N") +
-				"; p: " + (this.playing ? "Y":"N") +
-				"; b: " + (this.buffering ? "Y":"N") + (this.buffering ? "; lpdb: " + this.lastPositionDuringBuffering : "") +
-				"; s: " + (this.seeking ? "Y":"N") +
-				"; hs: " + (this.hasSeeked ? "Y":"N") + (this.hasSeeked ? "; lpas: " + this.lastPositionAfterSeeking : "") +
-				"; iPhone: " + (this.isIphone ? "Y":"N")
+				"; pbi: " + (this.isPlaybackIntended ? "Y" : "N") +
+				"; pbs: " + (this.hasPlaybackStarted ? "Y" : "N") +
+				"; p: " + (this.playing ? "Y" : "N") +
+				"; b: " + (this.buffering ? "Y" : "N") + (this.buffering ? "; lpdb: " + this.lastPositionDuringBuffering : "") +
+				"; s: " + (this.seeking ? "Y" : "N") +
+				"; hs: " + (this.hasSeeked ? "Y" : "N") + (this.hasSeeked ? "; lpas: " + this.lastPositionAfterSeeking : "") +
+				"; iPhone: " + (this.isIphone ? "Y" : "N")
 			;
 			// this.streamSenseInstance.log("ComScoreStreamingTag::   " + message);
 			mw.log("ComScoreStreamingTag::   " + message);
 		},
 
-		setClip: function() {
+		setClip: function () {
 			// Clip labels only need to be set once per loaded media asset (ad or content)
 			// and BEFORE the Streaming Tag is notified that the media is playing.
 			if (this.shouldSetClip) {
@@ -152,22 +160,22 @@
 			}
 		},
 
-		onPlayheadPositionUpdate: function() {
+		onPlayheadPositionUpdate: function () {
 			var position = this.embedPlayer.getPlayerElementTime();
 
 			if (this.isPlaybackIntended) {
-				if(!this.hasPlaybackStarted) {
-					if(!this.seeking && typeof this.startingPosition === 'undefined') {
+				if (!this.hasPlaybackStarted) {
+					if (!this.seeking && typeof this.startingPosition === 'undefined') {
 						this.log('Storing starting position (confirmed not seeking): ' + position);
 						this.startingPosition = position;
 					}
 				}
 
-				if(this.buffering) {
-					if(this.playing) {
-						if(this.lastPositionDuringBuffering != undefined && this.lastPositionDuringBuffering == position) {
-							this.samePositionRepeatedCount ++
-							if(this.samePositionRepeatedCount >= 2 ) {
+				if (this.buffering) {
+					if (this.playing) {
+						if (this.lastPositionDuringBuffering != undefined && this.lastPositionDuringBuffering == position) {
+							this.samePositionRepeatedCount++
+							if (this.samePositionRepeatedCount >= 2) {
 								(this.getPlayerPluginState() != this.PlayerPluginState().BUFFERING) && this.log('buffering during playback @ ' + position);
 								// If we have the same position for at least 2 successive monitorEvents then rebuffering is occurring.
 								this.playing = false;
@@ -178,7 +186,7 @@
 					}
 					else {
 						(this.getPlayerPluginState() != this.PlayerPluginState().BUFFERING) && this.log('buffering outside of playback @ ' + position);
-						if(this.getPlayerPluginState() != this.PlayerPluginState().BUFFERING) {
+						if (this.getPlayerPluginState() != this.PlayerPluginState().BUFFERING) {
 							this.playing = false;
 							this.setClip();
 							this.onBuffering();
@@ -187,10 +195,10 @@
 				}
 				else {
 					if (!(this.lastPosition == undefined && position == this.lastPosition) || (this.lastPosition != undefined && this.lastPosition != position)) {
-						if(this.hasSeeked) {
-							if(this.lastPositionAfterSeeking !== undefined && this.lastPositionAfterSeeking != position) {
-								if(!this.hasPlaybackStarted) {
-									if(typeof this.startingPosition === 'undefined') {
+						if (this.hasSeeked) {
+							if (this.lastPositionAfterSeeking !== undefined && this.lastPositionAfterSeeking != position) {
+								if (!this.hasPlaybackStarted) {
+									if (typeof this.startingPosition === 'undefined') {
 										this.log('Storing starting position (active playback detected): ' + position);
 										this.startingPosition = position;
 									}
@@ -204,14 +212,14 @@
 						}
 						else {
 							// Playback is active.
-							if(!this.hasPlaybackStarted) {
-								if(typeof this.startingPosition === 'undefined') {
+							if (!this.hasPlaybackStarted) {
+								if (typeof this.startingPosition === 'undefined') {
 									this.log('Storing starting position (active playback detected): ' + position);
 									this.startingPosition = position;
 								}
 							}
 							this.hasPlaybackStarted = true;
-							if(!this.playing) {
+							if (!this.playing) {
 								this.log('playback active @ ' + position);
 								this.playing = true;
 								this.onPlaybackActive();
@@ -240,13 +248,13 @@
 				&& (this.getPlayerPluginState() != this.PlayerPluginState().AD_PLAYING);
 		},
 
-		onPlaybackActive: function() {
+		onPlaybackActive: function () {
 			if (this.isPlaying()) {
 				this.setClip();
 				var seek = this.hasSeeked;
 				this.hasSeeked = false;
 
-				if(typeof this.startingPosition === 'undefined') {
+				if (typeof this.startingPosition === 'undefined') {
 					this.callStreamSensePlugin("notify", this.playerEvents.PLAY, this.getLabels(seek), this.getCurrentPosition());
 				}
 				else {
@@ -259,7 +267,7 @@
 			}
 		},
 
-		onPlaybackInactive: function() {
+		onPlaybackInactive: function () {
 			if (this.getPlayerPluginState() == this.PlayerPluginState().PLAYING) {
 				this.setPlayerPluginState(this.PlayerPluginState().PAUSED);
 				this.callStreamSensePlugin("notify", this.playerEvents.PAUSE, this.getLabels(this.seeking), this.getCurrentPosition());
@@ -267,17 +275,17 @@
 			}
 		},
 
-		onBuffering: function() {
+		onBuffering: function () {
 			this.callStreamSensePlugin("notify", this.playerEvents.BUFFER, {});
 			this.setPlayerPluginState(this.PlayerPluginState().BUFFERING);
 		},
 
-		onSeekStart: function() {
+		onSeekStart: function () {
 			var currentTime = this.embedPlayer.getPlayerElementTime();
 			this.log('seeking from ' + currentTime);
 			this.seeking = true; // Could also use this.embedPlayer.seeking;
 			this.playing = false;
-			if(this.hasPlaybackStarted && this.lastPosition != currentTime) {
+			if (this.hasPlaybackStarted && this.lastPosition != currentTime) {
 				this.lastPosition = currentTime;
 			}
 			this.lastPositionAfterSeeking = undefined;
@@ -287,18 +295,18 @@
 			}
 		},
 
-		onSeekStop: function() {
+		onSeekStop: function () {
 			this.lastPositionAfterSeeking = this.embedPlayer.getPlayerElementTime();
 			this.log('seeking to ' + this.lastPositionAfterSeeking);
 			this.seeking = false; // Could also use this.embedPlayer.seeking;
 			this.hasSeeked = true;
 		},
 
-		onPlaybackEnded: function() {
+		onPlaybackEnded: function () {
 			this.log('playback ended @ ' + this.embedPlayer.getPlayerElementTime());
 			var seek = this.getPlayerPluginState() == this.PlayerPluginState().SEEKING;
 			this.setPlayerPluginState(this.PlayerPluginState().ENDED_PLAYING);
-			if(this.isPlaybackIntended) {
+			if (this.isPlaybackIntended) {
 				this.callStreamSensePlugin("notify", this.playerEvents.END, this.getLabels(seek), this.getCurrentPosition());
 			}
 			this.isPlaybackIntended = false;
@@ -311,9 +319,9 @@
 			this.samePositionRepeatedCount = 0;
 		},
 
-		onAdPlay: function(adId, type, index, duration) {
+		onAdPlay: function (adId, type, index, duration) {
 			if (arguments.length != 4) {
-				var adMetadata = this.embedPlayer.evaluate( '{sequenceProxy.activePluginMetadata}' );
+				var adMetadata = this.embedPlayer.evaluate('{sequenceProxy.activePluginMetadata}');
 				if (!adMetadata) return;
 				adId = adMetadata.ID;
 				type = adMetadata.type.toLowerCase();
@@ -331,7 +339,7 @@
 			if (this.adsPlayed.length < index + 1) {
 				this.adsPlayed.push(this.currentAd);
 			}
-			if (this.currentAd.duration > 0){
+			if (this.currentAd.duration > 0) {
 				this.currentAd.duration = duration;
 			}
 			this.setPlayerPluginState(this.PlayerPluginState().AD_PLAYING);
@@ -340,14 +348,14 @@
 			this.shouldSetClip = true;
 		},
 
-		setPlayerPluginState: function(newState) {
+		setPlayerPluginState: function (newState) {
 			if (newState && newState !== this.currentPlayerPluginState) {
 				this.log("NEW PLAYBACK STATE: " + this.PlayerPluginState().toString(newState).toUpperCase() + " @ " + this.embedPlayer.getPlayerElementTime());
 				this.currentPlayerPluginState = newState;
 			}
 		},
 
-		getPlayerPluginState: function() {
+		getPlayerPluginState: function () {
 			return this.currentPlayerPluginState;
 		},
 
@@ -355,8 +363,8 @@
 			return this.embedPlayer.getKalturaConfig(this.moduleName, attr);
 		},
 
-		callStreamSensePlugin:function(){
-			var args = $.makeArray( arguments );
+		callStreamSensePlugin: function () {
+			var args = $.makeArray(arguments);
 			var action = args[0];
 			try {
 				if (parent && parent[this.getConfig('trackEventMonitor')]) {
@@ -366,23 +374,24 @@
 					}
 					parent[this.getConfig('trackEventMonitor')](parsedArgs);
 				}
-			} catch (e) {}
+			} catch (e) {
+			}
 			args.splice(0, 1);
 			this.streamSenseInstance[action].apply(this, args);
 		},
 
-		addPlayerBindings: function( callback ) {
+		addPlayerBindings: function (callback) {
 			var _this = this;
 			var embedPlayer = this.embedPlayer;
 
 			// Unbind any old bindings:
-			embedPlayer.unbindHelper( _this.bindPostfix );
+			embedPlayer.unbindHelper(_this.bindPostfix);
 
-			embedPlayer.bindHelper( 'SourceChange' + _this.bindPostfix, function(){
+			embedPlayer.bindHelper('SourceChange' + _this.bindPostfix, function () {
 				// This entire if-statement and involved variables are a temporary fix to for seeking issues on iPhone.
-				if(_this.isIphone && !_this.attachedIphoneSeekingHandlers) {
+				if (_this.isIphone && !_this.attachedIphoneSeekingHandlers) {
 					_this.playerElement = _this.embedPlayer.getPlayerElement();
-					if(typeof _this.playerElement !== "undefined") {
+					if (typeof _this.playerElement !== "undefined") {
 						_this.log("Binding to iPhone seeking events.");
 						$(_this.playerElement).bind('seeking', function () {
 							// report seeking
@@ -399,38 +408,38 @@
 				_this.currentBitrate = selectedSrc.getBitrate() * 1024;
 			});
 
-			embedPlayer.bindHelper( 'bufferStartEvent' + _this.bindPostfix, function(){
+			embedPlayer.bindHelper('bufferStartEvent' + _this.bindPostfix, function () {
 				_this.buffering = true;
 				_this.lastPositionDuringBuffering = embedPlayer.getPlayerElementTime();
 			});
 
-			embedPlayer.bindHelper( 'bufferEndEvent' + _this.bindPostfix, function(){
+			embedPlayer.bindHelper('bufferEndEvent' + _this.bindPostfix, function () {
 				_this.buffering = false;
 				_this.lastPositionDuringBuffering = undefined;
 				_this.samePositionRepeatedCount = 0;
 			});
 
-			embedPlayer.bindHelper( 'monitorEvent' + _this.bindPostfix, function(){
+			embedPlayer.bindHelper('monitorEvent' + _this.bindPostfix, function () {
 				_this.onPlayheadPositionUpdate();
 			});
 
-			embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostfix, function(){
+			embedPlayer.bindHelper('onChangeMedia' + _this.bindPostfix, function () {
 				_this.destroy();
 			});
 
-			embedPlayer.bindHelper('onplay' + _this.bindPostfix, function() {
+			embedPlayer.bindHelper('onplay' + _this.bindPostfix, function () {
 				_this.log('playback is intended (onplay) @ ' + embedPlayer.getPlayerElementTime());
 				_this.isPlaybackIntended = true;
 			});
 
-			embedPlayer.bindHelper('onpause' + _this.bindPostfix, function(event) {
+			embedPlayer.bindHelper('onpause' + _this.bindPostfix, function (event) {
 				_this.log('playback halted (onpause) @ ' + embedPlayer.getPlayerElementTime());
 				// _this.isPlaybackIntended = false; // No longer needed.
 				_this.playing = false;
 				_this.onPlaybackInactive();
 			});
 
-			embedPlayer.bindHelper('doStop' + _this.bindPostfix, function(event) {
+			embedPlayer.bindHelper('doStop' + _this.bindPostfix, function (event) {
 				_this.onPlaybackEnded();
 			});
 
@@ -438,49 +447,49 @@
 			// 	_this.log('preSeek @ ' + embedPlayer.getPlayerElementTime());
 			// });
 
-			embedPlayer.bindHelper('seeking' + _this.bindPostfix, function(event) {
+			embedPlayer.bindHelper('seeking' + _this.bindPostfix, function (event) {
 				// Using 'seeking' instead of 'seeked.started'
 				_this.onSeekStart();
 			});
 
-			embedPlayer.bindHelper('seeked' + _this.bindPostfix, function(event) {
+			embedPlayer.bindHelper('seeked' + _this.bindPostfix, function (event) {
 				// Using 'seeking' instead of 'seeked.stopped'
 				_this.onSeekStop();
 			});
 
-			embedPlayer.bindHelper('onOpenFullScreen' + _this.bindPostfix, function() {
+			embedPlayer.bindHelper('onOpenFullScreen' + _this.bindPostfix, function () {
 				_this.inFullScreen = true;
 				_this.streamSenseInstance.setLabel("ns_st_ws", _this.isFullScreen() ? "full" : "norm", true);
 			});
 
-			embedPlayer.bindHelper('onCloseFullScreen' + _this.bindPostfix, function() {
+			embedPlayer.bindHelper('onCloseFullScreen' + _this.bindPostfix, function () {
 				_this.inFullScreen = false;
 				_this.streamSenseInstance.setLabel("ns_st_ws", _this.isFullScreen() ? "full" : "norm", true);
 			});
 
-			embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostFix, function(){
+			embedPlayer.bindHelper('onChangeMedia' + _this.bindPostFix, function () {
 				_this.log("onChangeMedia ");
 			});
 
-			embedPlayer.bindHelper( 'onPlayerStateChange' + _this.bindPostFix, function(event){
+			embedPlayer.bindHelper('onPlayerStateChange' + _this.bindPostFix, function (event) {
 				// This code appears to never be called?
 				_this.log("onPlayerStateChange " + event);
 			});
 
-			embedPlayer.bindHelper('onAdOpen' + _this.bindPostfix, function(event, adId, networkName, type, index) {
+			embedPlayer.bindHelper('onAdOpen' + _this.bindPostfix, function (event, adId, networkName, type, index) {
 				_this.onAdPlay(adId, type, index, 0);
 			});
 
-			embedPlayer.bindHelper('AdSupport_StartAdPlayback' + _this.bindPostfix, function() {
+			embedPlayer.bindHelper('AdSupport_StartAdPlayback' + _this.bindPostfix, function () {
 				_this.onAdPlay();
 			});
 
-			embedPlayer.bindHelper('AdSupport_AdUpdateDuration' + _this.bindPostfix, function(event, duration) {
+			embedPlayer.bindHelper('AdSupport_AdUpdateDuration' + _this.bindPostfix, function (event, duration) {
 				_this.onAdPlay();
 				_this.currentAd.duration = duration * 1000;
 			});
 
-			embedPlayer.bindHelper('AdSupport_EndAdPlayback' + _this.bindPostfix, function() {
+			embedPlayer.bindHelper('AdSupport_EndAdPlayback' + _this.bindPostfix, function () {
 				_this.setPlayerPluginState(_this.PlayerPluginState().AD_ENDED_PLAYING);
 				_this.callStreamSensePlugin("notify", _this.playerEvents.END, _this.getLabels());
 				_this.currentAd.id = "";
@@ -489,11 +498,11 @@
 				_this.currentAd.duration = 0;
 			});
 
-			embedPlayer.bindHelper('AdSupport_AdUpdateDuration' + _this.bindPostfix, function(event, duration) {
+			embedPlayer.bindHelper('AdSupport_AdUpdateDuration' + _this.bindPostfix, function (event, duration) {
 				_this.currentAd.duration = duration * 1000;
 			});
 
-			embedPlayer.bindHelper('adClick' + _this.bindPostfix, function(url) {
+			embedPlayer.bindHelper('adClick' + _this.bindPostfix, function (url) {
 				// When the ad is clicked its also paused
 				_this.callStreamSensePlugin("notify", _this.playerEvents.PAUSE, _this.getLabels());
 				_this.callStreamSensePlugin("notify", _this.playerEvents.AD_CLICK, _this.getLabels());
@@ -503,18 +512,18 @@
 			callback();
 		},
 
-		destroy: function() {
-			$( this.embedPlayer ).unbind( this.bindPostfix );
+		destroy: function () {
+			$(this.embedPlayer).unbind(this.bindPostfix);
 			// This entire if-statement and involved variables are a temporary fix to for seeking issues on iPhone.
-			if(this.isIphone && this.attachedIphoneSeekingHandlers) {
-				$( this.playerElement ).unbind('seeking');
-				$( this.playerElement ).unbind('seeked');
+			if (this.isIphone && this.attachedIphoneSeekingHandlers) {
+				$(this.playerElement).unbind('seeking');
+				$(this.playerElement).unbind('seeked');
 				this.attachedIphoneSeekingHandlers = false;
 				this.playerElement = undefined;
 			}
 		},
 
-		getLabels: function(seek) {
+		getLabels: function (seek) {
 			//get common labels values
 			this.streamSenseInstance.setLabel("ns_st_br", this.currentBitrate, true);
 			this.streamSenseInstance.setLabel("ns_st_ws", this.isFullScreen() ? "full" : "norm", true);
@@ -523,7 +532,7 @@
 			return seek ? {ns_st_ui: "seek"} : {};
 		},
 
-		getPlaylistLabels: function() {
+		getPlaylistLabels: function () {
 			var labels = {};
 
 			var playlist = this.getPlayList();
@@ -553,7 +562,7 @@
 			return labels;
 		},
 
-		getClipLabels: function() {
+		getClipLabels: function () {
 			var labels = {};
 
 			if (this.getPlayerPluginState() == this.PlayerPluginState().AD_PLAYING) {
@@ -570,25 +579,28 @@
 
 				// Assign classification type labels.
 				labels.ns_st_ty = this.isVideoContent() ? "video" : "audio";
-				if(this.isLiveStream()) {
+				if (this.isLiveStream()) {
 					labels.ns_st_li = "1";
 				}
 				labels.ns_st_ct = this.getMediaType(false, this.isVideoContent(), this.isLiveStream());
 
-				// Update the Advertisement flag to reflect pre-roll, mid-roll, post-roll, where possible.
-				if (this.currentAd.type) { //this is a pre-roll add
-					switch (this.currentAd.type) {
-						case 'preroll':
-							labels.ns_st_ad = "pre-roll";
-							break;
-						case 'midroll':
-							labels.ns_st_ad = "mid-roll";
-							break;
-						case 'postroll':
-							labels.ns_st_ad = "post-roll";
-							break;
-					}
-				}
+				// TODO: The following code will be commented out until a more suitable solution for determining ad
+				// types is found or until Kaltura normalizes the behaviour of the related API accross different
+				// player environment (e.g. ad types are not correctly collected in live stream environments).
+				//// Update the Advertisement flag to reflect pre-roll, mid-roll, post-roll, where possible.
+				//if (this.currentAd.type) { //this is a pre-roll add
+				//    switch (this.currentAd.type) {
+				//        case 'preroll':
+				//            labels.ns_st_ad = "pre-roll";
+				//            break;
+				//        case 'midroll':
+				//            labels.ns_st_ad = "mid-roll";
+				//            break;
+				//        case 'postroll':
+				//            labels.ns_st_ad = "post-roll";
+				//            break;
+				//    }
+				//}
 			} else {
 				// Currently playing content media - set the clip labels accordingly.
 
@@ -605,8 +617,9 @@
 
 				// Assign classification type labels.
 				labels.ns_st_ty = this.isVideoContent() ? "video" : "audio";
-				if(this.isLiveStream()) {
+				if (this.isLiveStream()) {
 					labels.ns_st_li = "1";
+					labels.ns_st_cl = "0";
 				}
 				labels.ns_st_ct = this.getMediaType(true, this.isVideoContent(), this.isLiveStream());
 			}
@@ -617,16 +630,17 @@
 			return labels;
 		},
 
-		parserRawConfig: function(configName) {
+		parserRawConfig: function (configName) {
 			var _this = this;
 			var rawConfig = this.embedPlayer.getRawKalturaConfig(this.moduleName, configName)
 			if (!rawConfig) return [];
 			var result = {};
 			// Split and trim the spaces
-			rawConfig.split(/ *, */g).forEach(function(x) {
+			rawConfig.split(/ *, */g).forEach(function (x) {
 				try {
 					x = decodeURIComponent(x);
-				} catch (e) {}
+				} catch (e) {
+				}
 				// Create two groups, one for the label name and the second one for the label value without any "
 				var re = /([^=]+)="?([^"]*)"?/g;
 				var arr = re.exec(x);
@@ -635,31 +649,31 @@
 			return result;
 		},
 
-		evaluateString: function(str) {
+		evaluateString: function (str) {
 			var _this = this;
 			// Match all the elements inside {}
 			var re = /{[^}]+}/g;
-			var result = str.replace(re, function(match, p1, p2) {
+			var result = str.replace(re, function (match, p1, p2) {
 				return _this.embedPlayer.evaluate(match)
 			});
 			return result;
 		},
 
-		getMediaType: function(isContent, isVideo, isLive) {
+		getMediaType: function (isContent, isVideo, isLive) {
 			// There currently is no way to determine the number of content parts from the player API.
 			// Because of that some part of this logic will not be executed.
 			// We keep the logic in place in case this improves at some point.
-			if(isContent) {
-				if(isVideo) {
+			if (isContent) {
+				if (isVideo) {
 					// Media is video+audio or video-only (image-only).
-					if(isLive) {
+					if (isLive) {
 						return "vc23"; // Live means unicast/simulcast/multicast streaming.
 					}
-					else{
+					else {
 						var numberOfContentParts = this.getTotalNumberOfContentParts();
-						if(numberOfContentParts == 1)
+						if (numberOfContentParts == 1)
 							return "vc11"; // Assuming short form if there is only 1 part.
-						else if(numberOfContentParts > 1)
+						else if (numberOfContentParts > 1)
 							return "vc12"; // Assuming long form is there is more than 1 part.
 						else {
 							// This can only happen when numberOfContentParts == 0, which means we don't know the number.
@@ -669,7 +683,7 @@
 				}
 				else {
 					// Media is audio-only.
-					if(isLive) {
+					if (isLive) {
 						return "ac23";
 					}
 					else {
@@ -689,87 +703,92 @@
 				// Media is ad.
 				if (this.currentAd.type) {
 					// There is no sub-classifaction for live streams.
-					if(isLive) return "va21";
-					// Sub classification for non-live streams.
-					switch (this.currentAd.type) {
-						case 'preroll':
-							return isVideo ? "va11" : "aa11";
-							break;
-						case 'midroll':
-							return isVideo ? "va12" : "aa12";
-							break;
-						case 'postroll':
-							return isVideo ? "va13" : "aa13";
-							break;
-					}
+					if (isLive) return "va21";
+
+					// TODO: The following code will be commented out until a more suitable solution for determining ad
+					// types is found or until Kaltura normalizes the behaviour of the related API accross different
+					// player environment (e.g. ad types are not correctly collected in live stream environments).
+					//// Sub classification for non-live streams.
+					//switch (this.currentAd.type) {
+					//    case 'preroll':
+					//        return isVideo ? "va11" : "aa11";
+					//        break;
+					//    case 'midroll':
+					//        return isVideo ? "va12" : "aa12";
+					//        break;
+					//    case 'postroll':
+					//        return isVideo ? "va13" : "aa13";
+					//        break;
+					//}
 					return isVideo ? "va00" : "aa00";
 				}
 			}
 			return "vc00"; // This won't ever be reached, but this would be the default fallback value.
 		},
 
-		getPlayList: function() {
+		getPlayList: function () {
 			var playlist = this.embedPlayer.evaluate("{playlistAPI.dataProvider}");
 			if (playlist)
 				return playlist.content[0];
 			return null;
 		},
 
-		getDuration: function() {
+		getDuration: function () {
 			var duration = this.embedPlayer.evaluate("{mediaProxy.entry.duration}");
 			return isNaN(duration) ? 0 : Math.max(Math.floor(duration * 1000), 0);
 		},
 
-		getVolume: function() {
-			return this.embedPlayer.evaluate('{video.volume}') || "0";
+		getVolume: function () {
+			var volume = this.embedPlayer.evaluate('{video.volume}') || "0";
+			return Math.max(Math.floor(parseInt(volume) * 100), 0);
 		},
 
-		getStartingPosition: function() {
+		getStartingPosition: function () {
 			if (typeof this.startingPosition === 'undefined')
 				return this.getCurrentPosition(); // Fall back to the current position.
 			var startTime = this.startingPosition * 1000;
 			return isNaN(startTime) ? 0 : Math.max(Math.floor(startTime), 0);
 		},
 
-		getCurrentPosition: function() {
-			if (!this.embedPlayer || !this.embedPlayer.evaluate('{video.player.currentTime}'))
+		getCurrentPosition: function () {
+			if (!this.embedPlayer || !this.embedPlayer.evaluate('{video.player.currentTime}') || this.isLiveStream())
 				return 0;
 			var currentTime = this.embedPlayer.evaluate('{video.player.currentTime}') * 1000;
 			return isNaN(currentTime) ? 0 : Math.max(Math.floor(currentTime), 0);
 		},
 
-		isFullScreen: function() {
+		isFullScreen: function () {
 			return this.inFullScreen;
 		},
 
-		getMediaName: function() {
+		getMediaName: function () {
 			return this.embedPlayer.evaluate("{mediaProxy.entry.name}") || this.unknownValue;
 		},
 
-		getClipURL: function() {
+		getClipURL: function () {
 			return this.embedPlayer.evaluate("{mediaProxy.entry.downloadUrl}") || this.unknownValue;
 		},
 
-		isVideoContent: function() {
+		isVideoContent: function () {
 			// This function should return true if the media asset has a visual component, i.e., if it's video or image.
 			// We're not using embedPlayer.isImageSource(), but rather just check if the media asset is audio or not.
 			return !(this.embedPlayer.isAudio());
 		},
 
-		getPlayerSize: function() {
+		getPlayerSize: function () {
 			return this.embedPlayer.getVideoHolder().width() + 'x' + this.embedPlayer.getVideoHolder().height();
 		},
 
-		getEntryId: function() {
+		getEntryId: function () {
 			return this.embedPlayer.evaluate("{mediaProxy.entry.id}");
 		},
 
-		isLiveStream: function() {
+		isLiveStream: function () {
 			var streamerType = this.embedPlayer.evaluate("{mediaProxy.isLive}");
 			return streamerType || false;
 		},
 
-		getPartNumber: function() {
+		getPartNumber: function () {
 			var currentTime = this.getCurrentPosition();
 			var partNumber = 1;
 			var lastStartAd = -1;
@@ -784,13 +803,13 @@
 			return partNumber;
 		},
 
-		getTotalNumberOfContentParts: function() {
+		getTotalNumberOfContentParts: function () {
 			// It is not possible to retrieve all the number of ad breaks (and their cue points).
 			// This means the total number of content parts is unknown, which is indicated by value 0.
 			return 0;
 		},
 
-		getClipNumber: function(mediaId) {
+		getClipNumber: function (mediaId) {
 			var cn = this.clipNumberMap[mediaId];
 			if (cn) {
 				return cn;
@@ -804,9 +823,9 @@
 			return this.clipNumberCounter;
 		},
 
-		isSecure:  function () {
+		isSecure: function () {
 			return mw.getConfig('Kaltura.Protocol') == 'https';
 		}
 	};
 
-})( window.mw, jQuery);
+})(window.mw, jQuery);
