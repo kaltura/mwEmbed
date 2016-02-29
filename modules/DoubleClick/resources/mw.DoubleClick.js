@@ -642,8 +642,11 @@
 		getAdContainerId: function(){
 			return 'adContainer' + this.embedPlayer.id;
 		},
-		hideAdContainer: function () {
+		hideAdContainer: function (removeFromDOM) {
 			$("#" + this.getAdContainerId()).css("visibility", "hidden");
+			if (removeFromDOM){
+				$("#" + this.getAdContainerId()).hide();
+			}
 		},
 		showAdContainer: function () {
 			$("#" + this.getAdContainerId()).css("visibility", "visible");
@@ -836,7 +839,7 @@
 
 			// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
 			this.getAdDisplayContainer();
-			this.hideAdContainer();
+			this.hideAdContainer(false);
 			// Create ads loader.
 			this.adsLoader = new google.ima.AdsLoader( _this.adDisplayContainer );
 
@@ -850,7 +853,7 @@
 			this.adsLoader.addEventListener(
 				google.ima.AdErrorEvent.Type.AD_ERROR,
 				function(event ){
-					_this.hideAdContainer();
+					_this.hideAdContainer(true);
 					_this.onAdError( event );
 				},
 				false);
@@ -1520,8 +1523,8 @@
 				this.embedPlayer.getInterface().find(".ad-notice-label").remove();
 				this.embedPlayer.getPlayerElement().redrawObject(50);
 			}else{
-				if (_this.isLinear || _this.adLoaderErrorFlag){
-					_this.hideAdContainer();
+				if (_this.isLinear !== false || _this.adLoaderErrorFlag){
+					_this.hideAdContainer(true);
 				}
 			}
 			this.embedPlayer.sequenceProxy.isInSequence = false;
