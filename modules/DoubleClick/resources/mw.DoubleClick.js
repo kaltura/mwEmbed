@@ -540,6 +540,7 @@
 
 		pauseAd: function (isLinear) {
 			var _this = this;
+			this.adPaused = true;
 			this.embedPlayer.paused = true;
 			$(this.embedPlayer).trigger('onpause');
 			var classes = "adCover";
@@ -577,6 +578,7 @@
 
 		resumeAd: function (isLinear) {
 			var _this = this;
+			this.adPaused = false;
 			this.embedPlayer.paused = false;
 			$(".adCover").remove();
 			$(this.embedPlayer).trigger("onPlayerStateChange", ["play", this.embedPlayer.currentState]);
@@ -599,7 +601,7 @@
 
 		toggleAdPlayback: function (isLinear) {
 			if (this.getConfig("pauseAdOnClick") !== false) {
-				if (this.embedPlayer.paused) {
+				if (this.adPaused) {
 					this.resumeAd(isLinear);
 				} else {
 					$(this.embedPlayer).trigger('adClick');
