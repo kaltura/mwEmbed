@@ -1005,8 +1005,10 @@
 			} );
 			adsListener( 'LOADED', function(adEvent){
 				_this.showAdContainer();
-				_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
 				var adData = adEvent.getAdData();
+				if ( !adData.adPodInfo || ( adData.adPodInfo && adData.adPodInfo.adPosition === 1 ) ){
+					_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
+				}
 				if ( adData) {
 					_this.isLinear = adData.linear;
 				}
