@@ -1148,10 +1148,6 @@
 				}
 				if ( _this.currentAdSlotType != 'postroll') {
 					_this.restorePlayer();
-
-					if( mw.isIOS8_9() && mw.isIpad()  ) {
-						$( _this.embedPlayer.getPlayerElement() ).attr('preload',"metadata" );
-					}
 				}
 			});
 			adsListener( 'ALL_ADS_COMPLETED', function(){
@@ -1537,6 +1533,9 @@
 				mw.setConfig('LoadingSpinner.Disabled', true);
 				this.restorePlayerCallback(shouldContinue);
 				this.restorePlayerCallback = null;
+				if (shouldContinue){
+					this.embedPlayer.play();
+				}
 				setTimeout(function(){
 					mw.setConfig('LoadingSpinner.Disabled', false);
 				},500);
