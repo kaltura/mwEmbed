@@ -94,25 +94,16 @@
 								_this.hideDisplay();
 							}
 
-							_this.bind( 'KalturaSupport_CuePointReached', function ( e, cuePointObj ) {
-								var cuePoint = cuePointObj.cuePoint;
-
-								if (!cuePoint || cuePoint.cuePointType !== 'codeCuePoint.Code' || cuePoint.tags !== 'player-view-mode' ||
-									!cuePoint.code)
-								{
-									// ignore any cue point not relevant to player view mode.
-									return;
-								}
-
-								_this.handleCuePoint(cuePoint);
-							} );
-
-							_this.bind( 'timeupdate', function ( ) {
-								if (_this.getPlayer().currentTime > 0) {
-									_this.unbind('timeupdate');
+							// This plugin uses 'mw.KCuePoints' to retrieve que points, to persist the same conditions
+							// we listen to the same events as 'mw.KCuePoints'
+							$(_this.embedPlayer).bind(
+								"monitorEvent" + _this.getPlayer().kCuePoints.bindPostfix +
+								" seeked" + _this.getPlayer().kCuePoints.bindPostfix +
+								" onplay" + _this.getPlayer().kCuePoints.bindPostfix,
+								function (e) {
 									_this.handleCurrentPlayerViewModeCuePoint();
-								}
-							} );
+								});
+
 						} else {
 							_this.log("render condition are not met - disabling");
 							if (!_this.disabled){
@@ -677,6 +668,17 @@
 					cuePoint=cuePoints[i];
 
 				}
+
+				// TODO [es] remove to optimze performance
+				if (cuePoint)
+				{
+					var nextCuePoint = i < cuePoints.length ? cuePoints[i] : null;
+					var message= 'dualscreen: current cue point (' + cuePoint.id + ') time ' + new Date(cuePoint.startTime) + ' | server time ' + new Date(currentTime);
+
+					if (nextCuePoint) message += ' | next cue point (' + nextCuePoint.id + ') time ' + new Date(nextCuePoint.startTime);
+
+					mw.log(message);
+				}
 				return cuePoint;
 			},
 			/**
@@ -688,21 +690,8 @@
 				var _this = this;
 				var cuePoints = [];
 				if ( this.getPlayer().kCuePoints ) {
-					var filteredCuePoints = _this.getPlayer().kCuePoints.getCuePointsByType( 'codeCuePoint.Code' );
-					if (filteredCuePoints)
-					{
-						// using grep assure that the original array was not affected
-						cuePoints = $.grep(filteredCuePoints,function(item)
-						{
-							return item.tags === 'player-view-mode';
-						});
-					}
+					cuePoints = _this.getPlayer().kCuePoints.getCodeCuePointsByTag({tag : 'player-view-mode', sortDesc : false});
 				}
-
-				cuePoints.sort(function (a, b) {
-					return a.startTime - b.startTime;
-				});
-
 				return cuePoints;
 			},
 			handleCurrentPlayerViewModeCuePoint : function()
@@ -716,6 +705,7 @@
 			},
 			handleCuePoint : function(cuePoint)
 			{
+				var _this = this;
 				var action, mainDisplayType;
 
 				if (!cuePoint || cuePoint.cuePointType !== 'codeCuePoint.Code' || cuePoint.tags !== 'player-view-mode' ||
@@ -724,6 +714,14 @@
 					// ignore any cue point not relevant to player view mode.
 					return;
 				}
+
+				if (_this._lastHandledCuePoint && _this._lastHandledCuePoint.id === cuePoint.id )
+				{
+					// the requested que point was already handled
+					return;
+				}
+
+				_this._lastHandledCuePoint = cuePoint;
 
 				var cuePointCode = JSON.parse(cuePoint.code);
 				if (cuePointCode.playerViewModeId) {
@@ -758,11 +756,12 @@
 				}
 
 				if (action) {
-					mw.log("Changing player view to '" + action + "' with main display '" + mainDisplayType + "'");
+					mw.log("dualscreen: Changing player view to '" + action + "' with main display '" + mainDisplayType + "'");
 
 					this.getPlayer().triggerHelper('dualScreenStateChange', { action : action, mainDisplayType : mainDisplayType});
 				}
-			}
+			},
+
 
 		} )
 	);
