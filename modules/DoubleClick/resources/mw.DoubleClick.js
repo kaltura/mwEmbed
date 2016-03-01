@@ -555,7 +555,9 @@
 			if (this.isChromeless){
 				$(".videoDisplay").prepend(adCover);
 			}else{
-				$(this.getAdContainer()).append(adCover);
+				if (!mw.isIphone()){
+					$(this.getAdContainer()).append(adCover);
+				}
 			}
 			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 
@@ -1131,7 +1133,9 @@
 			adsListener('CLICK', function (adEvent) {
 				var ad = adEvent.getAd();
 				var isLinear = ad.isLinear();
-				_this.toggleAdPlayback(isLinear);
+				if (!mw.isIphone()){
+					_this.toggleAdPlayback(isLinear);
+				}
 			});
 
 			adsListener( 'FIRST_QUARTILE', function(){
