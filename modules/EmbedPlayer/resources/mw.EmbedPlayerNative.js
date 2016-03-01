@@ -754,8 +754,9 @@
 				return;
 			}
 			// Remove any poster div ( that would overlay the player )
-			if (!this.isAudioPlayer && !mw.getConfig("EmbedPlayer.KeepPoster") === true)
-				$(this).find('.playerPoster').remove();
+			if (!this.isAudioPlayer && !mw.getConfig("EmbedPlayer.KeepPoster") === true) {
+                this.removePoster();
+            }
 			// Restore video pos before calling sync syze
 			$(vid).css({
 				'left': '0px',
