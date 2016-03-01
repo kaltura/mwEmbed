@@ -669,16 +669,17 @@
 
 				}
 
-				// TODO [es] remove to optimze performance
-				if (cuePoint)
-				{
-					var nextCuePoint = i < cuePoints.length ? cuePoints[i] : null;
-					var message= 'dualscreen: current cue point (' + cuePoint.id + ') time ' + new Date(cuePoint.startTime) + ' | server time ' + new Date(currentTime);
-
-					if (nextCuePoint) message += ' | next cue point (' + nextCuePoint.id + ') time ' + new Date(nextCuePoint.startTime);
-
-					mw.log(message);
-				}
+				// NOTE: the code below can assist debugging issues with play view mode sync
+				// But it will polute the log console so keep it commented unless required for debugging purposes
+				//if (cuePoint)
+				//{
+				//	var nextCuePoint = i < cuePoints.length ? cuePoints[i] : null;
+				//	var message= 'dualscreen: current cue point (' + cuePoint.id + ') time ' + new Date(cuePoint.startTime) + ' | server time ' + new Date(currentTime);
+                //
+				//	if (nextCuePoint) message += ' | next cue point (' + nextCuePoint.id + ') time ' + new Date(nextCuePoint.startTime);
+                //
+				//	mw.log(message);
+				//}
 				return cuePoint;
 			},
 			/**
