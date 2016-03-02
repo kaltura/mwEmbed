@@ -278,8 +278,10 @@
 				return;
 			}
 			// Update the player source ( if needed )
-			if ($(vid).attr('src') != this.getSrc(this.currentTime) && !mw.isIE()) {
-				$(vid).attr('src', this.getSrc(this.currentTime));
+			if (!this.skipUpdateSource) {
+				if ( $( vid ).attr( 'src' ) != this.getSrc( this.currentTime ) && !mw.isIE() ) {
+					$( vid ).attr( 'src' , this.getSrc( this.currentTime ) );
+				}
 			}
 
 			if (this.muted) {
@@ -796,16 +798,18 @@
 					if (_this.getPlayerElement() && _this.getPlayerElement().play) {
 						_this.log(" issue native play call:");
 						// make sure the source is set:
-						if ( $(vid).attr('src') != _this.getSrc() || _this.resetSrc ) {
-							$(vid).attr('src', _this.getSrc());
-                            //trigger play again for iPad and El Capitan
-                            setTimeout( function () {
-                                if ( !_this.playing ) {
-                                    vid.play();
-                                    _this.parseTracks();
-                                }
-                            }, 300 );
-                            _this.resetSrc = false;
+						if (!_this.skipUpdateSource) {
+							if ( $( vid ).attr( 'src' ) != _this.getSrc() || _this.resetSrc ) {
+								$( vid ).attr( 'src' , _this.getSrc() );
+								//trigger play again for iPad and El Capitan
+								setTimeout( function () {
+									if ( !_this.playing ) {
+										vid.play();
+										_this.parseTracks();
+									}
+								} , 300 );
+								_this.resetSrc = false;
+							}
 						}
 						_this.hideSpinnerOncePlaying();
 						// make sure the video tag is displayed:
