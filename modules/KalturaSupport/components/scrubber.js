@@ -327,6 +327,7 @@
 				$sliderPreview.css("border", "0px");
 			}
 			$(".scrubber .arrow").css("left", thumbWidth / 2 - 4);
+
             var timeText;
             if( this.embedPlayer.isDVR() ){
                 if( this.getPlayer().isLiveOffSynch() && parseInt(perc*100) > this.liveEdge ){
@@ -337,7 +338,7 @@
             }else{
                 timeText = kWidget.seconds2npt(currentTime);
             }
-			$sliderPreviewTime.text(timeText);
+            $sliderPreviewTime.text(timeText);
 			$sliderPreviewTime.css({bottom: 2, left: thumbWidth / 2 - $sliderPreviewTime.width() / 2 + 3});
 			$sliderPreview.css("width", thumbWidth);
 
