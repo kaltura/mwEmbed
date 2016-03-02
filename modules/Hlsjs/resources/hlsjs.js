@@ -1,6 +1,6 @@
 ( function( mw, $ , Hls ) {"use strict";
 
-	if (Hls.isSupported() && mw.getConfig("LeadWithHlsOnJs")) {
+	if (Hls.isSupported() && mw.getConfig("LeadWithHLSOnJs")) {
 		// Add HLS Logic player:
 		mw.setConfig("streamerType", "hls");
 		mw.supportsFlash = function () {
