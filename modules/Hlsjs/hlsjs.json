@@ -1,5 +1,5 @@
 {
-    "hlsjs": {
+    "Hlsjs": {
         "scripts": [
             "resources/hls.min.js" ,
           "resources/hlsjs.js"
