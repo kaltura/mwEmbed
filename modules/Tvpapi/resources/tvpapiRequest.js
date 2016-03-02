@@ -44,6 +44,7 @@
         },
 
         doRequest: function(url, data){
+            var _this = this;
             var deferredAjax = $.ajax( {
                 url: url,
                 type: "POST",

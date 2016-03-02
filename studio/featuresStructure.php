@@ -148,7 +148,6 @@ return array(
 			"comscore" => "",
 			"nielsenCombined" => "",
 			"omnitureOnPage" => "",
-			"youbora" => "",
 			"statistics" => "",
 		)
 	),

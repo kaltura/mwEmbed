@@ -25,7 +25,7 @@
         },
         renewTvpapiToken: function(token){
             var initObj = this.getProxyConfig("initObj");
-            initObj.token = token;
+            initObj.Token = token;
             this.setProxyConfig("initObj", initObj);
         }
     });

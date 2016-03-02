@@ -112,7 +112,7 @@
 			this.proxyElement = divElement;
 			try {
 				if (NativeBridge.videoPlayer) {
-					NativeBridge.videoPlayer.registePlayer(this.getPlayerElement());
+					NativeBridge.videoPlayer.registerPlayer(this.getPlayerElement());
 					NativeBridge.videoPlayer.registerEmbedPlayer(this);
 				}
 			}
@@ -580,6 +580,14 @@
 		 */
 		_onerror: function (event, data) {
 			this.triggerHelper('embedPlayerError', data);
+		},
+
+		_onbufferchange: function (event , isBuffering) {
+			if (isBuffering === "true") {
+				this.bufferStart();
+			} else {
+				this.bufferEnd();
+			}
 		},
 
 		/**
