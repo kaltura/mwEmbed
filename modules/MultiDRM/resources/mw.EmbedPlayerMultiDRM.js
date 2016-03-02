@@ -826,8 +826,6 @@
 				}
 			}
 		},
-		//Disable check - handled on lower level
-		checkClipDoneCondition: function(){},
 		/**
 		 * play method calls parent_play to update the interface
 		 */
