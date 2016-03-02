@@ -62,63 +62,61 @@
 					event = event.data;
 				}
 				var stateName;
-				var embedPlayer = $('#' + window["pid"].replace( 'pid_', '' ) )[0];
 
 				// enable controls (if disabled on mobile devices)
 				if (mw.isMobileDevice()){
 					_this._playContorls = true;
-					$( _this ).trigger( 'onEnableInterfaceComponents', []);
+					_this.triggerHelper( 'onEnableInterfaceComponents', []);
 				}
 
 				// move to other method
 				switch( event ){
-					case -1:
+					case YT.PlayerState.UNSTARTED:
 						stateName = "unstarted";
 						break;
-					case 0:
+					case YT.PlayerState.ENDED:
 						stateName = "ended";
 						_this.hasEnded = true;
 						break;
-					case 1:
+					case YT.PlayerState.PLAYING:
 						_this.ytMobilePlayed = true;
 						if (_this.hasEnded){
 							_this.hasEnded = false;
 							return;
 						}
-						$(embedPlayer).trigger("onPlayerStateChange",["play"]);
+						_this.triggerHelper("onPlayerStateChange",["play"]);
 						// hide the player container so that youtube click through work
-						$(".mwEmbedPlayer").width("100%");
-						$('.mwEmbedPlayer').hide();
+						$(_this).width("100%");
+						$(_this).hide();
 						//hide the poster
 						$(".playerPoster").hide();
 						$('.blackBoxHide').hide();
-						_this.play();
 						stateName = "playing";
 						// update duraiton
 						_this.setDuration();
 						// trigger the seeked event only if this is seek and not in play
 						if(_this.seeking){
 							_this.seeking = false;
-							$( _this ).trigger( 'seeked' );
+							_this.triggerHelper( 'seeked' );
 							// update the playhead status
 							_this.updatePlayheadStatus();
 						}
 						break;
-					case 2:
+					case YT.PlayerState.PAUSED:
 						if (mw.isMobileDevice()){
 							$(".largePlayBtn").hide();
 						}
 						stateName = "paused";
-						$(embedPlayer).trigger("onPlayerStateChange",["pause"]);
+						_this.triggerHelper("onPlayerStateChange",["pause"]);
 						_this.parent_pause();
 						break;
-					case 3:
+					case YT.PlayerState.BUFFERING:
 						stateName = "buffering";
 						break;
 					case 4:
 						stateName = "unbuffering";
 						break;
-					case 5:
+					case YT.PlayerState.CUED:
 						stateName = "video cued";
 						break;
 				}
@@ -127,7 +125,7 @@
 			};
 			window['hidePlayer'] = function( event ){
 
-			}
+			};
 			window['onError'] = function( event ){
 				mw.log("Error! YouTubePlayer" ,2);
 				//$('#loadingSpinner_kaltura_player').append('<br/>Error!');
@@ -161,7 +159,7 @@
 				_this.setDuration();
 				_this._playContorls = true;
 				_this.playerReady.resolve();
-				$(_this).trigger('playerReady');
+				_this.triggerHelper('playerReady');
 				//autoMute
 				if(mw.getConfig('autoMute')){
 					_this.setVolume(0);
@@ -204,7 +202,7 @@
 					window['hidePlayer']();
 				}
 				mw.log("EmbedPlayerYouTube:: Trigger: playerReady for Flash player");
-				$(_this).trigger('playerReady');
+				_this.triggerHelper('playerReady');
 			};
 			// YOUTUBE IFRAME READY
 			window['onYouTubeIframeAPIReady'] = function( playerIdStr ){
@@ -348,7 +346,7 @@
 			var dur = this.getPlayerElement().getDuration();
 			if (dur && dur != 1 && (this.duration == 0 || (this.duration > 0 && this.duration != dur)) ){
 				this.duration = this.getPlayerElement().getDuration();
-				$(this).trigger('durationChange',[this.duration]);
+				this.triggerHelper('durationChange',[this.duration]);
 			}
 		},
 		onPlayerReady : function (event){
@@ -369,7 +367,7 @@
 				if (mw.isMobileDevice()){
 					$(".largePlayBtn").css("opacity",1);
 					$(".mwEmbedPlayer").width("100%");
-					$( _this ).trigger( 'onEnableInterfaceComponents', []);
+					_this.triggerHelper( 'onEnableInterfaceComponents', []);
 				}
 				if (_this.referenceId){
 					_this.getPlayerElement().loadVideoById(_this.referenceId);
@@ -380,7 +378,7 @@
 				$('.playerPoster').before('<div class="blackBoxHide" style="width:100%;height:100%;background:black;position:absolute;"></div>');
 				if (!_this.canAutoPlay()){
 					_this._playContorls = false;
-					$( _this ).trigger( 'onDisableInterfaceComponents', [["playlistAPI"]] );
+					_this.triggerHelper( 'onDisableInterfaceComponents', [["playlistAPI"]] );
 				}
 			});
 
@@ -396,7 +394,7 @@
 				}else{
 					_this.getPlayerElement().seekTo(0);  // fix for a bug in replay (loop)
 					setTimeout(function(){
-						$(_this).trigger("onPlayerStateChange",["end"]); // this will trigger the replay button to appear
+						_this.triggerHelper("onPlayerStateChange",["end"]); // this will trigger the replay button to appear
 						_this.pause();
 					},200);
 				}
@@ -424,7 +422,7 @@
 						}else{
 							_this.getPlayerElement().stopVideo();
 							_this._playContorls = false;
-							$( _this ).trigger( 'onDisableInterfaceComponents', [["playlistAPI"]] );
+							_this.triggerHelper( 'onDisableInterfaceComponents', [["playlistAPI"]] );
 						}
 					}else{
 				        _this.play();
@@ -536,7 +534,7 @@
 
 		monitor: function(){
 			this.parent_monitor();
-			$( this ).trigger( 'timeupdate' );
+			this.triggerHelper( 'timeupdate' );
 		},
 
 		/**
@@ -582,22 +580,18 @@
 		 * @param {Float}
 		 *			percentage Percentage of total stream length to seek to
 		 */
-		seek : function( seekTime ){
+		doSeek: function( seekTime ){
 			mw.log("Seeking to: " + seekTime);
 			var _this = this;
-			this.seeking = true;
 			this.stopSeekWatchDog();
-			$( this ).trigger( 'seeking' );
-			var yt = this.getPlayerElement();
 			var currentTime = this.getPlayerElementTime();
-			yt.seekTo( seekTime );
-			this.layoutBuilder.onSeek();
+			var yt = this.getPlayerElement();
+			yt.seekTo( seekTime, true );
 			// Since Youtube don't have a seeked event , we must turn off the seeking flag and restore pause state if needed
 			if ( !this.isPlaying() ){
 				setTimeout(function(){
 					_this.currentTime = seekTime;
-					$( _this ).trigger( 'seeked' );
-					_this.seeking = false;
+					_this.triggerHelper( 'seeked' );
 					_this.pause();
 				},500);
 			} else {
@@ -617,8 +611,8 @@
 					if (Math.abs(t - lastTime - 1) > 0.5) {
 						// if seek threshold was detected and we're still in seeking state fire event
 						if(_this.seeking) {
-							$(_this).trigger('seeked');
-							_this.seeking = false;
+							_this.log("seeked trigger");
+							_this.triggerHelper('seeked');
 						}
 						_this.stopSeekWatchDog();
 						return;
@@ -630,8 +624,8 @@
 			this.watchDogTimer = setTimeout(this.checkPlayerTime, interval);
 		},
 		stopSeekWatchDog: function(){
-			this.log("stopSeekWatchDog");
 			if (this.watchDogTimer){
+				this.log("stopSeekWatchDog");
 				clearTimeout(this.watchDogTimer);
 				this.watchDogTimer = null;
 			}

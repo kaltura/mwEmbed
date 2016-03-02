@@ -274,7 +274,10 @@
 				var _this = this;
 				this.playerElement.one("manifestLoaded", function () {
 					_this.manifestLoaded = true;
-					return manifestLoadedDeferred.resolve();
+					//Prevent issues with stack order when issuing autoplay or play command right after playerReady
+					setTimeout(function(){
+						manifestLoadedDeferred.resolve();
+					},0);
 				});
 			}
 			return manifestLoadedDeferred;
@@ -823,8 +826,6 @@
 				}
 			}
 		},
-		//Disable check - handled on lower level
-		checkClipDoneCondition: function(){},
 		/**
 		 * play method calls parent_play to update the interface
 		 */

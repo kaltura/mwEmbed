@@ -124,6 +124,8 @@
 			// Do not send requests during ad playback
 			if( !this.getPlayer().isInSequence() ) {
 				var printableData =  JSON.stringify(data, null, '\t');
+				//Emit the report API event
+				this.getPlayer().triggerHelper(service, data);
 				this.log('report: ' + service + ": " + printableData);
 				this.restMethod = service;
 				var url = this.getRequestUrl();
@@ -133,7 +135,7 @@
 
 					this.doRequest(url, data).then(
 							function (data) {
-								_this.log('response for ' + service + ': ' + printableData);
+								_this.log('response for ' + service + ': ' + data);
 								if (data == '"Concurrent"') {
 									_this.concurrentFlag = true;
 									_this.getPlayer().triggerHelper('tvpapiShowConcurrent');

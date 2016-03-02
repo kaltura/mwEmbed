@@ -28,7 +28,7 @@
 			});
 			
 			this.bind('onChangeMediaDone playerReady onpause onEndedDone onRemovePlayerSpinner showPlayerControls showLargePlayBtn', function(e){
-				if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() ){
+				if( !_this.embedPlayer.isPlaying() && !_this.embedPlayer.isInSequence() && !_this.embedPlayer.isPauseLoading ){
 					_this.getComponent().removeClass("icon-pause").addClass("icon-play");
 					_this.show();
 				}
@@ -63,7 +63,10 @@
             });
 		},
 		show: function(){
-			if ( !this.isDisabled && !this.embedPlayer.changeMediaStarted ) {
+			if ( !this.isDisabled ) {
+				if (this.embedPlayer.isMobileSkin() && this.embedPlayer.changeMediaStarted){
+					return; // prevent showing large play button on top of the spinner when using mobile skin and changing media
+				}
 				this.getComponent().show();
 			}
 			this.shouldShow = true;

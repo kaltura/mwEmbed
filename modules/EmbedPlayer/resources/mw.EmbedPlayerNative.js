@@ -653,7 +653,6 @@
 						// Restore
 						vid.controls = originalControlsState;
 						_this.ignoreNextError = false;
-						_this.ignoreNextNativeEvent = false;
 						// check if we have a switch callback and issue it now:
 						if ($.isFunction(switchCallback)) {
 							_this.log(" playerSwitchSource> call switchCallback");
@@ -1095,25 +1094,14 @@
 		 * Handle the native paused event
 		 */
 		_onpause: function () {
-			var _this = this;
 			this.playing = false;
 			if (this.ignoreNextNativeEvent) {
 				this.ignoreNextNativeEvent = false;
 				return;
 			}
-			var timeSincePlay = Math.abs(this.absoluteStartPlayTime - new Date().getTime());
-			this.log(" OnPaused:: propagate:" + this._propagateEvents +
-				' time since play: ' + timeSincePlay + ' duringSeek:' + this.seeking);
-			// Only trigger parent pause if more than MonitorRate time has gone by.
-			// Some browsers trigger native pause events when they "play" or after a src switch
-			if (!this.seeking && !this.userSlide
-				&&
-				timeSincePlay > mw.getConfig('EmbedPlayer.MonitorRate')
-				) {
-				_this.parent_pause();
-			} else {
-				// try to continue playback:
-				this.getPlayerElement().play();
+			this.log(" OnPaused:: propagate:" + this._propagateEvents + ' duringSeek:' + this.seeking);
+			if (!this.seeking && !this.userSlide) {
+				this.parent_pause();
 			}
 		},
 
