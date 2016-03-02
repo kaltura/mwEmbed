@@ -34,7 +34,7 @@
                     if (context.targetMainDisplayType && context.currentMainDisplayType !== context.targetMainDisplayType) {
                         // make sure the right display type is setup
                         this.toggleSideBySideView();
-                        this.toggleMainDisplay();
+                        this.toggleMainConfig();
                     }
                 }
             },
