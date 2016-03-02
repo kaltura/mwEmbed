@@ -215,7 +215,7 @@
                         "dash": "application/dash+xml",
                         "mp4":  "video/mp4",
                         "wvm":  "video/wvm",
-                        "hls":  "application/vnd.apple.mpegurl",
+                        "hls":  "application/vnd.apple.mpegurl"
                     };
                     for (var i = 0; i < names.length; i++) {
                         mimeTypes.push(map[names[i]]);
