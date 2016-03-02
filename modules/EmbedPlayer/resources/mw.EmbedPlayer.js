@@ -298,7 +298,10 @@
 
 		drmRequired: false,
 
-		/**
+        //the offset in hours:minutes:seconds from the playable live edge.
+        liveEdgeOffset: 0,
+
+        /**
 		 * embedPlayer
 		 *
 		 * @constructor
@@ -2785,6 +2788,15 @@
 				if (!this.userSlide && !this.seeking ) {
 					var playHeadPercent = ( this.currentTime - this.startOffset ) / this.duration;
 					this.updatePlayHead(playHeadPercent);
+                    //update liveEdgeOffset
+                    if(this.isDVR()){
+                        var perc = parseInt(playHeadPercent*1000);
+                        if(perc>998) {
+                            this.liveEdgeOffset = 0;
+                        }else {
+                            this.liveEdgeOffset = this.duration - perc/1000 * this.duration;
+                        }
+                    }
 				}
 			}
 		},
@@ -3277,6 +3289,26 @@
 			//adaptive bitrate
 			return this.currentBitrate;
 		},
+
+        /*
+        * get current offset from the playable live edge inside DVR window (positive number for negative offset)
+        */
+        getLiveEdgeOffset: function () {
+          return this.liveEdgeOffset;
+        },
+
+        /*
+        * Some players parse playmanifest and reload flavors list by calling this function
+        * @param offset {positive number}: number of seconds to move back from the playable live edge inside DVR window
+        * @param callback {function}: callback (if exists) will be executed after the seek
+        */
+        setLiveEdgeOffset: function(offset, callback){
+           mw.log( 'EmbedPlayer :: setLiveEdgeOffset -' + offset );
+           this.seek(this.getDuration()-offset);
+           if ($.isFunction(callback)) {
+              callback();
+           }
+        },
 
         getCurrentBufferLength: function(){
             mw.log("Error: getPlayerElementTime should be implemented by embed library");
