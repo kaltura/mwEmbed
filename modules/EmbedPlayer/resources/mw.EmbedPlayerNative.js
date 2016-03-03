@@ -743,7 +743,7 @@
 					if (_this.isInSequence()){
 						vid.play();
 					}else{
-						if ( !( _this.embedPlayer.playlist && mw.isAndroid() ) ){
+						if ( !( _this.playlist && mw.isAndroid() ) ){
 							_this.play();
 						}
 

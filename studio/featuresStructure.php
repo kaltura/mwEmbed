@@ -190,7 +190,6 @@ return array(
 			"multiDrm" => "",
 			"sourceSelector" => "",
 			"download" => "",
-			"nativeCallout" => "",
 			"strings" => "",
 			"uiVars" => ""
 		)

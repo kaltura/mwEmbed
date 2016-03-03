@@ -529,11 +529,15 @@
 			if ( !_this.isNativeSDK && _this.embedPlayer.playlist && mw.isMobileDevice() && mw.isAndroid() ){
 				_this.embedPlayer.setKalturaConfig( 'playlistAPI', 'autoPlay',false );
 				_this.embedPlayer.autoplay = false;
-				_this.embedPlayer.bindHelper('onChangeMedia', function () {
-					_this.embedPlayer.bindHelper('prePlayAction', function (event, prePlay) {
-						prePlay.allowPlayback = false;
-						_this.embedPlayer.unbindHelper('prePlayAction');
-					});
+
+				_this.embedPlayer.bindHelper('prePlayAction', function (event, prePlay) {
+					prePlay.allowPlayback = false;
+					mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
+					_this.embedPlayer.updatePosterHTML();
+				});
+
+				_this.embedPlayer.bindHelper('userInitiatedPlay', function () {
+					_this.embedPlayer.unbindHelper('prePlayAction');
 				});
 			}
 		},
@@ -983,7 +987,7 @@
 						//Restore video content duration after ad playback
 						_this.embedPlayer.setDuration(previousDuration);
 						_this.embedPlayer.addPlayerSpinner();
-						if ( _this.saveTimeWhenSwitchMedia && _this.timeToReturn ) {
+						if ( _this.adsManager.isCustomPlaybackUsed() && _this.saveTimeWhenSwitchMedia && _this.timeToReturn ) {
 							//Save original onLoadedCallback
 							var orgOnLoadedCallback = _this.embedPlayer.onLoadedCallback;
 							//Wait for video loadedmetadata before issuing seek
@@ -1153,6 +1157,11 @@
 				_this.hideSkipBtn();
 			});
 			// Resume content:
+			adsListener( 'SKIPPED', function(){
+				mw.log("DoubleClick:: adSkipped");
+				$( _this.embedPlayer).trigger( 'onAdSkip' );
+			});
+			// Resume content:
 			adsListener( 'CONTENT_RESUME_REQUESTED', function(){
 				_this.playingLinearAd = false;
 				// Update slot type, if a preroll switch to midroll
@@ -1273,6 +1282,11 @@
 					mw.log("DoubleClick:: adClicked");
 					_this.toggleAdPlayback(adInfo.isLinear);
 				}, 'adClicked', true);
+
+				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
+					mw.log("DoubleClick:: adSkipped");
+					$( _this.embedPlayer).trigger( 'onAdSkip' );
+				}, 'adSkipped', true);
 
 				this.embedPlayer.getPlayerElement().subscribe(function (companionInfo) {
 					mw.log("DoubleClick:: displayCompanion");
