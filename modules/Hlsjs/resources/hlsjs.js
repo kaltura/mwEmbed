@@ -2,7 +2,10 @@
 
 	if (Hls.isSupported() && mw.getConfig("LeadWithHLSOnJs")) {
 		// Add HLS Logic player:
-		mw.setConfig("streamerType", "hls");
+		//Force HLS streamer type
+		var config = mw.config.get("KalturaSupport.PlayerConfig");
+		config.vars.streamerType = "hls";
+		mw.config.set("KalturaSupport.PlayerConfig", config);
 		mw.supportsFlash = function () {
 			return false;
 		};
