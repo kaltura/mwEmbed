@@ -189,6 +189,7 @@
 							break;
 						case Hls.ErrorTypes.MEDIA_ERROR:
 							if (this.mediaErrorRecoveryCounter > 1) {
+								this.log("fatal media error encountered, try to recover - switch audio codec");
 								//Try to switch audio codec if first recoverMediaError call didn't work
 								this.hls.swapAudioCodec();
 							}
@@ -198,29 +199,39 @@
 							break;
 						default:
 							// cannot recover
+							this.log("fatal media error encountered, cannot recover");
 							this.clean();
-							//In case HLS js fails fallback to Flash OSMF if applicable
-							//1. Remove hls from native players
-							//2. Add Flash player
-							//3. Set flag to force HLS on flash and not on JS
-							//4. Stop current media playback
-							//5. Set autoplay to restart playback after flash engine is loaded
-							//6. Call setupSourcePlayer to reload playback engine
-							mw.EmbedTypes.mediaPlayers.removeMIMETypePlayers('application/vnd.apple.mpegurl', 'Native');
-							mw.EmbedTypes.mediaPlayers.setMIMETypePlayers('application/vnd.apple.mpegurl', 'Kplayer');
-							mw.EmbedTypes.addFlashPlayer();
-							var embedPlayer = this.getPlayer();
-							embedPlayer.setKalturaConfig("", "LeadWithHLSOnJs", false);
-							embedPlayer.setKalturaConfig("", "LeadWithHLSOnFlash", true);
-							embedPlayer.stop();
-							embedPlayer.autoplay = true;
-							embedPlayer.setupSourcePlayer();
+							if( mw.supportsFlash() ) {
+								this.log("Try flash fallback");
+								this.fallbackToFlash();
+							} else {
+								mw.log("EmbedPlayerKPlayer::MediaError error code: " + error);
+								this.triggerHelper('embedPlayerError', [ data ]);
+							}
 							break;
 					}
 				} else {
 					//If not fatal then log issue, we can switch case errors for specific issues
 					this.log("Error: " + data.type + ", " + data.details);
 				}
+			},
+			fallbackToFlash: function(){
+				//In case HLS js fails fallback to Flash OSMF if applicable
+				//1. Remove hls from native players
+				//2. Add Flash player
+				//3. Set flag to force HLS on flash and not on JS
+				//4. Stop current media playback
+				//5. Set autoplay to restart playback after flash engine is loaded
+				//6. Call setupSourcePlayer to reload playback engine
+				mw.EmbedTypes.mediaPlayers.removeMIMETypePlayers('application/vnd.apple.mpegurl', 'Native');
+				mw.EmbedTypes.mediaPlayers.setMIMETypePlayers('application/vnd.apple.mpegurl', 'Kplayer');
+				mw.EmbedTypes.addFlashPlayer();
+				var embedPlayer = this.getPlayer();
+				embedPlayer.setKalturaConfig("", "LeadWithHLSOnJs", false);
+				embedPlayer.setKalturaConfig("", "LeadWithHLSOnFlash", true);
+				embedPlayer.stop();
+				embedPlayer.autoplay = true;
+				embedPlayer.setupSourcePlayer();
 			},
 			/**
 			 * Parse ABR data to model
