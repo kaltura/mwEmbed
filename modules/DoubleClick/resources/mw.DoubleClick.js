@@ -891,6 +891,9 @@
 			if (!this.getConfig("adTagUrl")){
 				adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true; // for manual VAST, get the SDK to restore the player
 			}
+			if ( this.getConfig( 'enableCountDown' ) === true){
+				adsRenderingSettings["uiElements"] = [];
+			}
 			adsRenderingSettings.useStyledNonLinearAds = true;
 			this.adsManager = loadedEvent.getAdsManager( this.embedPlayer, adsRenderingSettings );
 			this.adManagerLoaded = true;
