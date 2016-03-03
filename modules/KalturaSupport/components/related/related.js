@@ -81,6 +81,7 @@
 					}
 					_this.showScreen(true);
 					if( _this.getConfig('autoContinueEnabled') && _this.getConfig('autoContinueTime') ){
+						_this.embedPlayer.playlist = true;
 						_this.startTimer();
 					}
 				});
