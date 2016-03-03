@@ -82,7 +82,6 @@
 				this.loaded = false;
 				this.unRegisterHlsEvents();
 				this.restorePlayerMehods();
-				this.hls.off(Hls.Events.ERROR);
 				this.hls.detachMedia();
 				this.hls.destroy();
 			},
@@ -108,22 +107,35 @@
 			 * Register HLS playback engine events
 			 */
 			registerHlsEvents: function () {
-				this.hls.on(Hls.Events.MEDIA_ATTACHED, this.onMediaAttached.bind(this));
-				this.hls.on(Hls.Events.MANIFEST_PARSED, this.onManifestParsed.bind(this));
-				this.hls.on(Hls.Events.FRAG_PARSING_METADATA, this.onFragParsingMetadata.bind(this));
-				this.hls.on(Hls.Events.LEVEL_SWITCH, this.onLevelSwitch.bind(this));
-				this.hls.on(Hls.Events.FRAG_CHANGED, this.onFragChanged.bind(this));
-				this.hls.on(Hls.Events.ERROR, this.onError.bind(this));
+				this.onMediaAttachedHandler = this.onMediaAttached.bind(this);
+				this.hls.on(Hls.Events.MEDIA_ATTACHED, this.onMediaAttachedHandler);
+				this.onManifestParsedHandler = this.onManifestParsed.bind(this);
+				this.hls.on(Hls.Events.MANIFEST_PARSED, this.onManifestParsedHandler);
+				this.onFragParsingMetadataHandler = this.onFragParsingMetadata.bind(this);
+				this.hls.on(Hls.Events.FRAG_PARSING_METADATA, this.onFragParsingMetadataHandler);
+				this.onLevelSwitchHandler = this.onLevelSwitch.bind(this);
+				this.hls.on(Hls.Events.LEVEL_SWITCH, this.onLevelSwitchHandler);
+				this.onFragChangedHandler = this.onFragChanged.bind(this);
+				this.hls.on(Hls.Events.FRAG_CHANGED, this.onFragChangedHandler);
+				this.onErrorHandler = this.onError.bind(this);
+				this.hls.on(Hls.Events.ERROR, this.onErrorHandler);
 			},
 			/**
 			 * Unregister HLS playback engine events
 			 */
 			unRegisterHlsEvents: function () {
-				this.hls.off(Hls.Events.MEDIA_ATTACHED);
-				this.hls.off(Hls.Events.MANIFEST_PARSED);
-				this.hls.off(Hls.Events.LEVEL_SWITCH);
-				this.hls.off(Hls.Events.FRAG_CHANGED);
-				this.hls.off(Hls.Events.ERROR);
+				this.hls.off(Hls.Events.MEDIA_ATTACHED, this.onMediaAttachedHandler);
+				this.onMediaAttachedHandler = null;
+				this.hls.off(Hls.Events.MANIFEST_PARSED, this.onManifestParsedHandler);
+				this.onManifestParsedHandler = null;
+				this.hls.off(Hls.Events.LEVEL_SWITCH, this.onFragParsingMetadataHandler);
+				this.onFragParsingMetadataHandler = null;
+				this.hls.off(Hls.Events.LEVEL_SWITCH, this.onLevelSwitchHandler);
+				this.onLevelSwitchHandler = null;
+				this.hls.off(Hls.Events.FRAG_CHANGED, this.onFragChangedHandler);
+				this.onFragChangedHandler = null
+				this.hls.off(Hls.Events.ERROR, this.onErrorHandler);
+				this.onErrorHandler = null;
 			},
 			//Event handlers
 			/**
