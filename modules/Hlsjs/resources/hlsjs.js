@@ -6,6 +6,7 @@
 		var config = mw.config.get("KalturaSupport.PlayerConfig");
 		config.vars.streamerType = "hls";
 		mw.config.set("KalturaSupport.PlayerConfig", config);
+		var orig_supportsFlash = mw.supportsFlash;
 		mw.supportsFlash = function () {
 			return false;
 		};
@@ -14,7 +15,7 @@
 				//application/vnd.apple.mpegurl
 				var hlsPlayer = new mw.MediaPlayer('hlsPlayer', ['video/h264', 'video/mp4', 'application/vnd.apple.mpegurl'], 'Native');
 				mediaPlayers.addPlayer(hlsPlayer);
-				mw.EmbedTypes.mediaPlayers.defaultPlayers['application/vnd.apple.mpegurl'] = ['Native'];
+				mw.EmbedTypes.mediaPlayers.setMIMETypePlayers('application/vnd.apple.mpegurl', 'Native');
 			}
 		});
 
@@ -197,7 +198,23 @@
 							break;
 						default:
 							// cannot recover
-							this.hls.destroy();
+							this.clean();
+							//In case HLS js fails fallback to Flash OSMF if applicable
+							//1. Remove hls from native players
+							//2. Add Flash player
+							//3. Set flag to force HLS on flash and not on JS
+							//4. Stop current media playback
+							//5. Set autoplay to restart playback after flash engine is loaded
+							//6. Call setupSourcePlayer to reload playback engine
+							mw.EmbedTypes.mediaPlayers.removeMIMETypePlayers('application/vnd.apple.mpegurl', 'Native');
+							mw.EmbedTypes.mediaPlayers.setMIMETypePlayers('application/vnd.apple.mpegurl', 'Kplayer');
+							mw.EmbedTypes.addFlashPlayer();
+							var embedPlayer = this.getPlayer();
+							embedPlayer.setKalturaConfig("", "LeadWithHLSOnJs", false);
+							embedPlayer.setKalturaConfig("", "LeadWithHLSOnFlash", true);
+							embedPlayer.stop();
+							embedPlayer.autoplay = true;
+							embedPlayer.setupSourcePlayer();
 							break;
 					}
 				} else {
@@ -242,6 +259,7 @@
 			restorePlayerMehods: function () {
 				this.getPlayer().backToLive = this.orig_backToLive;
 				this.getPlayer().switchSrc = this.orig_switchSrc;
+				mw.supportsFlash = orig_supportsFlash;
 			},
 			//Overidable player methods, "this" is bound to HLS plugin instance!
 			/**
