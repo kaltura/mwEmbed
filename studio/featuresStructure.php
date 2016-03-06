@@ -149,6 +149,7 @@ return array(
 			"nielsenCombined" => "",
 			"omnitureOnPage" => "",
 			"statistics" => "",
+			"youbora" => ""
 		)
 	),
 	"monetization"=> array(
