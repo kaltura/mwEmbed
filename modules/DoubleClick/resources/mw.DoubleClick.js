@@ -1224,7 +1224,6 @@
 						$(_this.embedPlayer).trigger("playing");
 						$(_this.embedPlayer).trigger("onplay");
 						if (_this.currentAdSlotType != _this.prevSlotType) {
-							_this.embedPlayer.adTimeline.updateUiForAdPlayback(_this.currentAdSlotType);
 							_this.prevSlotType = _this.currentAdSlotType;
 						}
 						if (adInfo.duration > 0) {
@@ -1251,7 +1250,7 @@
 				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
 					mw.log("DoubleClick:: adLoaded");
 					_this.isLinear = adInfo.isLinear;
-					if (_this.isLinear){
+					if (_this.isLinear && adInfo.adPosition === 1){
 						_this.embedPlayer.adTimeline.updateUiForAdPlayback(_this.currentAdSlotType);
 					}
 					if (!_this.isLinear && _this.isChromeless) {
