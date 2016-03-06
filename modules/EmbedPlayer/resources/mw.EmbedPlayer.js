@@ -2788,9 +2788,7 @@
 			}
 		},
 		checkClipDoneCondition: function(){
-			mw.log('GILAD checkClipDoneCondition ');
 			if ( this.currentTime >= 0 && this.duration ) {
-				mw.log('GILAD checkClipDoneCondition we are done');
 				// Check if we are "done"
 				if (!this.isLive()) {
 					var endPresentationTime = this.duration;
