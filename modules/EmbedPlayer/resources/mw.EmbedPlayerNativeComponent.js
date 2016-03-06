@@ -377,6 +377,13 @@
 			mw.log("EmbedPlayerNativeComponent:: seek::");
 			this.getPlayerElement().attr('currentTime', seekTime);
 		},
+		seek: function (seekTime, stopAfterSeek) {
+			if (seekTime === 0){
+				seekTime = 0.01;
+			}
+			this.parent_seek(seekTime, stopAfterSeek);
+
+		},
 
 		/**
 		 * Set the current time with a callback
@@ -389,6 +396,9 @@
 		setCurrentTime: function( seekTime , callback ) {
 			seekTime = parseFloat( seekTime );
 			mw.log( "EmbedPlayerNativeComponent:: setCurrentTime to " + seekTime );
+			if (seekTime === 0){
+				seekTime = 0.01;
+			}
 			this.getPlayerElement().attr('currentTime', seekTime);
 			if ($.isFunction(callback)) {
 				callback();
