@@ -119,6 +119,16 @@
                     if (mw.getConfig("hlsMaxBufferTime")) {
                         hlsPluginConfiguration["maxBufferTime"] = mw.getConfig("hlsMaxBufferTime");
                     }
+                    var preferedBitRate = _this.evaluate( '{mediaProxy.preferedFlavorBR}' );
+                    if( preferedBitRate ) {
+                        hlsPluginConfiguration["prefBitrate"] = preferedBitRate;
+                    }
+                    if( mw.getConfig("maxBitrate") ) {
+                        hlsPluginConfiguration["maxBitrate"] = mw.getConfig("maxBitrate");
+                    }
+                    if( mw.getConfig("minBitrate") ) {
+                        hlsPluginConfiguration["minBitrate"] = mw.getConfig("minBitrate");
+                    }
                     if (mw.getConfig("hlsLogs")) {
                         hlsPluginConfiguration["sendLogs"] = mw.getConfig("hlsLogs");
                         var func = ["onManifest", "onNextRequest", "onDownload", "onCurrentTime", "onTag"];

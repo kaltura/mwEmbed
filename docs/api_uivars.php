@@ -859,11 +859,23 @@ $uiVars = array(
 			'mediaProxy.preferedFlavorBR' => array(
 					'type' => 'Integer',
 					'desc' => 'A prefered bitrate for selecting the flavor to be played. '.
-						'In the case of HLS, this param is passed to the manifest chaning the flavor list with prefered bitrate flavor first. '. 
+						'In the case of HLS, this param is passed to the manifest changing the flavor list with prefered bitrate flavor first. '.
 						'In case of an RTMP adaptive mbr, a -1 value will force an auto switching as opposed to manual one. Will be affective only if the "disableBitrateCookie=true" Flashvar is sent.',
 					'default' => '1000',
 					'example' => '../modules/KalturaSupport/tests/FlavorSelector.preferedFlavorBR.qunit.html'
 			),
+			'maxBitrate' => array(
+                    'type' => 'Integer',
+                    'desc' => 'A maximum bitrate allowed. '.
+                        'HLS only.',
+                        'default' => 'NaN',
+            ),
+            'minBitrate' => array(
+                    'type' => 'Integer',
+                    'desc' => 'A minimum bitrate allowed. '.
+                        'HLS only.',
+                        'default' => 'NaN',
+            ),
 			'mediaProxy.imageDefaultDuration' => array(
 					'type' => 'Integer',
 					'desc' => 'In case an Image media is played in a playlist, this value sets the default time period that the image will hold until the next image is presented. Any positive number representing seconds is acceptable',
