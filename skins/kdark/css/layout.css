@@ -3,6 +3,7 @@ body {
 	/*Disable the default behavior of an Anchor in jQuery Mobile (iOS)*/
 	-webkit-touch-callout: none ; /* disable the iOS popup when long-press on a link */
 	-webkit-user-select: none ; /* disable selection/copy of UIWebView */
+	-webkit-tap-highlight-color: rgba(255, 255, 255, 0); /* diable blue screen on selection */
 }
 .topBarContainer {
 	position: absolute;

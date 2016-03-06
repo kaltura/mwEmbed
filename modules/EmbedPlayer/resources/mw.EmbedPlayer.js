@@ -1108,7 +1108,7 @@
 
 			// Check if currentTime is already set to the seek target:
 			var playerElementTime = parseFloat(this.getPlayerElementTime()).toFixed(2);
-			if (Math.abs(playerElementTime - seekTime) < mw.getConfig("EmbedPlayer.SeekTargetThreshold", 0.1)) {
+			if (Math.abs(playerElementTime - seekTime) < mw.getConfig("EmbedPlayer.SeekTargetThreshold", 0.01)) {
 				mw.log("EmbedPlayer:: seek: current time matches seek target: " +
 					playerElementTime + ' ~== ' + seekTime );
 				$(this).trigger('seeked');
@@ -1188,6 +1188,7 @@
 			if (!_this._propagateEvents) {
 				return;
 			}
+			this.stopAfterSeek = true;
 			mw.log('EmbedPlayer::onClipDone: propagate:' + _this._propagateEvents + ' id:' +
 				this.id + ' doneCount:' + this.donePlayingCount + ' stop state:' + this.isStopped());
 
@@ -2787,7 +2788,9 @@
 			}
 		},
 		checkClipDoneCondition: function(){
+			mw.log('GILAD checkClipDoneCondition ');
 			if ( this.currentTime >= 0 && this.duration ) {
+				mw.log('GILAD checkClipDoneCondition we are done');
 				// Check if we are "done"
 				if (!this.isLive()) {
 					var endPresentationTime = this.duration;
