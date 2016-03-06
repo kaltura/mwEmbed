@@ -408,7 +408,13 @@
 						flashvars.licenseURL = encodeURIComponent(licenseUrl);
 
 						//Default audio track config to allow setting it on silverlight init
-						flashvars.defaultAudioTrack = _this.audioTrack.defaultTrack;
+						flashvars.defaultAudioTrack = _this.audioTrack ? _this.audioTrack.defaultTrack : (-1);
+
+						//Add delay to audio change for initial change to avoid audio change hick-ups
+						var waitForDefaultAudioTrackTimeout = _this.getKalturaConfig( null , 'waitForDefaultAudioTrackTimeout' );
+						if (waitForDefaultAudioTrackTimeout){
+							flashvars.waitForDefaultAudioTrackTimeout = waitForDefaultAudioTrackTimeout;
+						}
 
 						var customData = {
 							partnerId: _this.kpartnerid ,
