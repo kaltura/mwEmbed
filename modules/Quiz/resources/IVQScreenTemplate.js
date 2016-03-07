@@ -30,6 +30,7 @@
             },
             tmplQuestion:function(){
                 var _this = this;
+                $(".icon-close").css("display", "none");
                 $(_this.emptyScreen()).hide().append(
                     '<div class="ivqContainer">'+
                     '   <div class="header-container">' +
@@ -44,6 +45,7 @@
             },
             tmplReviewAnswer:function(){
                 var _this = this;
+                $(".icon-close").css("display", "none");
                 $(_this.emptyScreen()).hide().append(
                     '<div class="ivqContainer">'+
                     '   <div class="header-container"></div>'+
@@ -60,6 +62,7 @@
             },
             tmplSubmitted:function(){
                 var _this = this;
+                $(".icon-close").css("display", "none");
                 $(_this.emptyScreen()).hide().append(
                     '<div class="ivqContainer">' +
                     '   <div class="title-text"></div>' +
@@ -79,6 +82,7 @@
             },
             tmplHint:function(){
                 var _this = this;
+                $(".icon-close").css("display", "none");
                 $(_this.emptyScreen()).hide().append(
                     '<div class="ivqContainer">'+
                     '   <div class="header-container"></div>'+
@@ -87,6 +91,7 @@
             },
             tmplWhy:function(){
                 var _this = this;
+                $(".icon-close").css("display", "none");
                 $(_this.emptyScreen()).hide().append(
                     '<div class="ivqContainer">' +
                     '   <div class="header-container"></div>' +
@@ -95,6 +100,7 @@
             },
             tmplAllCompleted:function(){
                 var _this = this;
+                $(".icon-close").css("display", "none");
                 $(_this.emptyScreen()).hide().append(
                     '<div class="ivqContainer">'+
                     '   <div class="title-text padding20"></div>'+
@@ -107,6 +113,7 @@
             },
             tmplDisplayHexContainer:function(){
                 var _this = this;
+                $(".icon-close").css("display", "none");
                 $(_this.emptyScreen()).hide().append(
                     '<div class="ivqContainer">'+
                     '   <div class="title-text"></div>'+
@@ -125,6 +132,7 @@
             },
             tmplAlmostDone:function(){
                 var _this = this;
+                $(".icon-close").css("display", "none");
                 $(_this.emptyScreen()).hide().append(
                     '<div class="ivqContainer">' +
                     '   <div class="title-text padding20"></div>' +
@@ -136,6 +144,7 @@
             },
             tmplThankYou:function(){
                 var _this = this;
+                $(".icon-close").css("display", "none");
                 $(_this.emptyScreen()).hide().append(
                     '<div class="ivqContainer">' +
                     '   <div class="title-text thank-you"></div>' +
