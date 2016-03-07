@@ -1140,6 +1140,7 @@
 				if (!mw.isIphone()){
 					_this.toggleAdPlayback(isLinear);
 				}
+				$( _this.embedPlayer).trigger( 'onAdClick' );
 			});
 
 			adsListener( 'FIRST_QUARTILE', function(){
@@ -1282,6 +1283,7 @@
 				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
 					mw.log("DoubleClick:: adClicked");
 					_this.toggleAdPlayback(adInfo.isLinear);
+					$( _this.embedPlayer).trigger( 'onAdClick' );
 				}, 'adClicked', true);
 
 				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
