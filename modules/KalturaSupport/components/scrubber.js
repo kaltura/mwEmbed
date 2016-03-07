@@ -330,6 +330,11 @@
 			if (kWidget.isIE8()) {
 				$sliderPreview.css("height", 43);
 			}
+			if ($sliderPreview.width() > 0){
+				$sliderPreview.css("visibility","visible");
+			}else{
+				$sliderPreview.css("visibility","hidden");
+			}
 			$sliderPreview.show();
 		},
 		hideThumbnailPreview: function () {
