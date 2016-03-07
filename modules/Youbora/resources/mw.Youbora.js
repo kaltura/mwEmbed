@@ -55,12 +55,14 @@
 				// clear ping interval
 				clearInterval( _this.activePingInterval );
 				_this.activePingInterval = null;
+				_this.sendBeacon( 'stop', {
+					'diffTime': new Date().getTime() - _this.previusPingTime
+				});
 				// unbind all events
 				_this.unbind( _this.bindPostfix );
-			});
-			this.bind('onChangeMediaDone', function(){
-				// after changeMedia - increment the viewIndex
-				_this.incrementViewIndex();
+				if (_this.firstPlayDone){
+					_this.incrementViewIndex();
+				}
 			});
 			this.bind('playerReady', function(){
 				if ( _this.kalturaContextData && _this.kalturaContextData.flavorAssets && _this.kalturaContextData.flavorAssets.length === 1 ){
@@ -116,7 +118,9 @@
 				// reset the firstPlay flag:
 				_this.embedPlayer.firstPlay = true;
 				_this.firstPlayDone = false;
-				_this.bindFirstPlay();
+				_this.unbind( _this.bindPostfix );
+				_this.incrementViewIndex();
+				_this.addBindings();
 			});
 
 			// handle errors
@@ -195,22 +199,24 @@
 			var shouldReprotBufferUnderrun = false;
 			var bufferStartTime = null;
 			this.bind('bufferStartEvent' + this.bindPostfix,function(){
-				var startBufferPlayerTime = _this.embedPlayer.currentTime;
-				bufferStartTime = Date.now();
-				if (checkBufferUnderrun){
-					clearInterval(checkBufferUnderrun);
-					checkBufferUnderrun = null;
-				}
-				checkBufferUnderrun = setInterval(function(){
-					if (_this.embedPlayer.currentTime === startBufferPlayerTime){
-						shouldReprotBufferUnderrun = true;
-					}else{
-						startBufferPlayerTime = _this.embedPlayer.currentTime;
+				if (!_this.embedPlayer.seeking){
+					var startBufferPlayerTime = _this.embedPlayer.currentTime;
+					bufferStartTime = Date.now();
+					if (checkBufferUnderrun){
+						clearInterval(checkBufferUnderrun);
+						checkBufferUnderrun = null;
 					}
-				},_this.getConfig("bufferUnderrunThreshold"));
+					checkBufferUnderrun = setInterval(function(){
+						if (_this.embedPlayer.currentTime === startBufferPlayerTime){
+							shouldReprotBufferUnderrun = true;
+						}else{
+							startBufferPlayerTime = _this.embedPlayer.currentTime;
+						}
+					},_this.getConfig("bufferUnderrunThreshold"));
+				}
 			});
 
-			this.bind('bufferEndEvent' + this.bindPostfix + ' seeked' + this.bindPostfix,function(e){
+			this.bind('bufferEndEvent' + this.bindPostfix,function(e){
 				clearInterval(checkBufferUnderrun);
 				checkBufferUnderrun = null;
 				if ( e.type === 'bufferEndEvent' && shouldReprotBufferUnderrun ){
@@ -232,6 +238,7 @@
 			var _this = this;
 			var sendStartEvent = function(){
 				var beaconObj = {
+					'player': 'kaltura-player-v' + MWEMBED_VERSION,
 					'resource': _this.getCurrentVideoSrc(),
 					// 'transcode' // not presently used.
 					'live': _this.embedPlayer.isLive(),
@@ -320,6 +327,8 @@
 			$.each( contentMetadata, function(k,v){
 				contentMetadata[k] = _this.embedPlayer.evaluate( v );
 			});
+			contentMetadata["title"] = this.embedPlayer.evaluate("{mediaProxy.entry.name}");
+			contentMetadata["duration"] = this.embedPlayer.evaluate("{mediaProxy.entry.duration}");
 			return {
 				'filename': this.getEntryProperty( 'name' ),
 				'content_id': this.getEntryProperty( 'id'),

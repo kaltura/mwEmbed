@@ -1191,8 +1191,6 @@
 			if (!_this._propagateEvents) {
 				return;
 			}
-			//Make sure that play after seek is canceled
-			this.stopAfterSeek = true;
 			mw.log('EmbedPlayer::onClipDone: propagate:' + _this._propagateEvents + ' id:' +
 				this.id + ' doneCount:' + this.donePlayingCount + ' stop state:' + this.isStopped());
 
@@ -2788,15 +2786,6 @@
 				if (!this.userSlide && !this.seeking ) {
 					var playHeadPercent = ( this.currentTime - this.startOffset ) / this.duration;
 					this.updatePlayHead(playHeadPercent);
-                    //update liveEdgeOffset
-                    if(this.isDVR()){
-                        var perc = parseInt(playHeadPercent*1000);
-                        if(perc>998) {
-                            this.liveEdgeOffset = 0;
-                        }else {
-                            this.liveEdgeOffset = this.duration - perc/1000 * this.duration;
-                        }
-                    }
 				}
 			}
 		},
@@ -2821,15 +2810,15 @@
 		setClipDoneGuard: function(){
 			if (!this.clipDoneTimeout && this.shouldEndClip) {
 				var _this = this;
-				var timeoutVal = (Math.abs(this.duration - this.currentTime) * 2);
-				this.log( "Setting clip done guard check in " + timeoutVal + " seconds" );
+				var timeoutVal = (this.duration * 0.02 * 1000);
+				this.log( "Setting clip done guard check in " + (timeoutVal / 1000) + " seconds" );
 				this.clipDoneTimeout = setTimeout( function () {
 					if ( _this.shouldEndClip && !_this.isLive() ) {
 						_this.log( "clipDone guard > should run clip done :: " + _this.currentTime );
 						_this.onClipDone();
 					}
 					_this.clipDoneTimeout = null;
-				}, (timeoutVal * 1000) );
+				}, timeoutVal );
 			}
 		},
 		cancelClipDoneGuard: function() {
