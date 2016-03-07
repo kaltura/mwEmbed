@@ -139,8 +139,8 @@
 		// Live stream player?
 		"live": false,
 
-	    // Live stream only - not playing live edge, user paused or seeked to play DVR content
-        "liveOffSynch": false,
+		// Live stream only - not playing live edge, user paused or seeked to play DVR content
+		"liveOffSynch": false,
 
 		// Is Audio Player (defined in kWidgetSupport)
 		"isAudioPlayer": false,
@@ -150,7 +150,7 @@
 
 		//indicates that the current sources list was set by "ReplaceSources" config
 		"sourcesReplaced": false,
-		
+
 		"streamerType": 'http',
 
 		"shouldEndClip": true,
@@ -284,7 +284,7 @@
 
 		//if the player should handle playerError events
 		shouldHandlePlayerError: true,
-		
+
 		// stores the manifest derived flavor index / list:
 		"manifestAdaptiveFlavors": [],
 
@@ -293,8 +293,8 @@
 
 		playerPrefix: 'BasePlayer',
 
-        // stores current bitrate for adaptive bitrate video
-        currentBitrate: -1,
+		// stores current bitrate for adaptive bitrate video
+		currentBitrate: -1,
 
 		drmRequired: false,
 
@@ -801,9 +801,9 @@
 				_this.handlePlayerError(data);
 			});
 
-            this.bindHelper('bitrateChange', function (e, data) {
-                _this.currentBitrate = data;
-            });
+			this.bindHelper('bitrateChange', function (e, data) {
+				_this.currentBitrate = data;
+			});
 
 			// Check for source replace configuration:
 			if (mw.getConfig('EmbedPlayer.ReplaceSources')) {
@@ -887,14 +887,14 @@
 			$(this).trigger('playerReady');
 			this.triggerWidgetLoaded();
 		},
-		/** 
+		/**
 		 * Wraps the autoSelect source call passing in temporal url options
-		 * for use of temporal urls where supported. 
+		 * for use of temporal urls where supported.
 		 */
 		autoSelectTemporalSource: function(options){
 			var baseTimeOptions =  {
-				'supportsURLTimeEncoding': this.supportsURLTimeEncoding(), 
-				'startTime' :this.startTime, 
+				'supportsURLTimeEncoding': this.supportsURLTimeEncoding(),
+				'startTime' :this.startTime,
 				'endTime': this.pauseTime
 			};
 			this.mediaElement.autoSelectSource( $.extend( {},baseTimeOptions, options ) );
@@ -975,7 +975,7 @@
 			_this.runPlayerStartupMethods( callback );
 		},
 		/**
-		 * Run player startup methods: 
+		 * Run player startup methods:
 		 */
 		runPlayerStartupMethods: function( callback ){
 			// Update feature support
@@ -1188,7 +1188,6 @@
 			if (!_this._propagateEvents) {
 				return;
 			}
-			this.stopAfterSeek = true;
 			mw.log('EmbedPlayer::onClipDone: propagate:' + _this._propagateEvents + ' id:' +
 				this.id + ' doneCount:' + this.donePlayingCount + ' stop state:' + this.isStopped());
 
@@ -1310,9 +1309,9 @@
 			mw.log('EmbedPlayer:: showPlayer: ' + this.id + ' interace: w:' + this.width + ' h:' + this.height);
 			var _this = this;
 
-            if( mw.getConfig('preload')==='auto' ){
-                this.load();
-            }
+			if( mw.getConfig('preload')==='auto' ){
+				this.load();
+			}
 
 			// Remove the player loader spinner if it exists
 			this.hideSpinner();
@@ -1373,8 +1372,8 @@
 
 		doUpdateLayout: function (skipTrigger) {
 			// Set window height if in iframe:
-            var containerHeight = this.layoutBuilder.getContainerHeight();
-            var newHeight = containerHeight - this.layoutBuilder.getComponentsHeight();
+			var containerHeight = this.layoutBuilder.getContainerHeight();
+			var newHeight = containerHeight - this.layoutBuilder.getComponentsHeight();
 			var currentHeight = this.getVideoHolder().height();
 			var deltaHeight = Math.abs(currentHeight - newHeight);
 			mw.log('EmbedPlayer: doUpdateLayout:: containerHeight: ' +
@@ -1837,7 +1836,7 @@
 		 * Updates the poster HTML
 		 */
 		updatePosterHTML: function () {
-            mw.log('EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
+			mw.log('EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
 			var _this = this;
 
 			// Set by black pixel if no poster is found:
@@ -2505,13 +2504,13 @@
 
 
 		togglePlayback: function () {
-				if (this.paused) {
-					this.triggerHelper( 'userInitiatedPlay' );
-					this.play();
-				} else {
-					this.triggerHelper( 'userInitiatedPause' );
-					this.pause();
-				}
+			if (this.paused) {
+				this.triggerHelper( 'userInitiatedPlay' );
+				this.play();
+			} else {
+				this.triggerHelper( 'userInitiatedPause' );
+				this.pause();
+			}
 		},
 		isMuted: function () {
 			return this.muted;
@@ -2760,7 +2759,7 @@
 			}
 			if (!_this.isLive() && _this.instanceOf != 'ImageOverlay') {
 				if (_this.isPlaying() && _this.currentTime == _this.getPlayerElementTime()) {
-                    _this.bufferStart();
+					_this.bufferStart();
 				} else if (_this.buffering) {
 					_this.bufferEnd();
 				}
@@ -2928,7 +2927,7 @@
 			return this.mediaElement.selectedSource;
 		},
 		/**
-		 * Retuns the set of playable sources. 
+		 * Retuns the set of playable sources.
 		 */
 		getSources: function(){
 			return this.mediaElement.getPlayableSources();
@@ -3042,16 +3041,16 @@
 
 		},
 
-        isLiveOffSynch: function () {
-            return this.liveOffSynch;
-        },
+		isLiveOffSynch: function () {
+			return this.liveOffSynch;
+		},
 
-        setLiveOffSynch: function (status) {
-            if( status !== this.liveOffSynch ) {
-                this.liveOffSynch = status;
-                $(this).trigger('onLiveOffSynchChanged', [status]);
-            }
-        },
+		setLiveOffSynch: function (status) {
+			if( status !== this.liveOffSynch ) {
+				this.liveOffSynch = status;
+				$(this).trigger('onLiveOffSynchChanged', [status]);
+			}
+		},
 
 		disableComponentsHover: function () {
 			if (this.layoutBuilder) {
@@ -3117,7 +3116,7 @@
 			}
 		},
 		/**
-		 * Switches a player source 
+		 * Switches a player source
 		 * @param {Object} source asset to switch to
 		 */
 		switchSrc: function( source ){
@@ -3277,9 +3276,9 @@
 			return this.currentBitrate;
 		},
 
-        getCurrentBufferLength: function(){
-            mw.log("Error: getPlayerElementTime should be implemented by embed library");
-        }
+		getCurrentBufferLength: function(){
+			mw.log("Error: getPlayerElementTime should be implemented by embed library");
+		}
 
 	};
 
