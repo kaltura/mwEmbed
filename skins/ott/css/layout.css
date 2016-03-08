@@ -267,9 +267,7 @@ button::-moz-focus-inner {
 .end-state .largePlayBtn:before {
 	content: "\e605" !important;
 }
-.mobile.start-state .largePlayBtn {
-	display: block !important;
-}
+
 .mobile.pause-state .largePlayBtn {
 	display: block !important;
 }
@@ -282,6 +280,9 @@ button::-moz-focus-inner {
 }
 .mobile.seeking-state .largePlayBtn {
 	display: none !important;
+}
+.mobile.start-state .largePlayBtn {
+    display: block !important;
 }
 .scrubber {
 	position: relative;
