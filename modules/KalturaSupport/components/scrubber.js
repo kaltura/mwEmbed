@@ -368,6 +368,9 @@
 					_this.updateAttr(ui);
 					// Only run the onChange event if done by a user slide
 					// (otherwise it runs times it should not)
+					if (seekTime === 0){
+						seekTime = 0.01;
+					}
 					if (embedPlayer.userSlide) {
 						embedPlayer.userSlide = false;
 						embedPlayer.seeking = true;
