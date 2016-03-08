@@ -226,7 +226,8 @@
 						}, 0);
 					}
 					//In IE and Edge source is preloaded, so defer this until we request play for the first time
-					if (!mw.isEdge() && !mw.isIE()) {
+					//IF autoplay is set then play flow will call update context
+					if (!_this.autoplay && (!mw.isEdge() && !mw.isIE())) {
 						_this.updateDashContext();
 					}
 				} );
