@@ -297,7 +297,7 @@
 			this.getPlayer().seek(0);
 		},
 		gotoEndKeyCallback: function(){
-			if( !this.canSeek ) {
+			if( !this.canSeek || this.getPlayer().currentState === 'end') {
 				return false;
 			}
 			this.getPlayer().seek(this.getPlayer().getDuration()-0.1);
