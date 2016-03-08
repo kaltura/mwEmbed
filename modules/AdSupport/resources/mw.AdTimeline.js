@@ -388,9 +388,7 @@
 			// Set the current slot type :
 			this.currentAdSlotType = slotType;
 			// Stop the native embedPlayer events so we can play the preroll and bumper
-			if ( slotType === "preroll" ||  slotType === "bumper" ){
-				embedPlayer.stopEventPropagation();
-			}
+			embedPlayer.stopEventPropagation();
 			// TODO read the add disable control bar to ad config and check that here.
 			var components = ['fullScreenBtn','logo','volumeControl'];
 			if (mw.getConfig('enableControlsDuringAd')) {
