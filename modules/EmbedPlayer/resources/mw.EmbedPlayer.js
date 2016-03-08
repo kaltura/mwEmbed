@@ -2786,6 +2786,15 @@
 				if (!this.userSlide && !this.seeking ) {
 					var playHeadPercent = ( this.currentTime - this.startOffset ) / this.duration;
 					this.updatePlayHead(playHeadPercent);
+                    //update liveEdgeOffset
+                    if(this.isDVR()){
+                        var perc = parseInt(playHeadPercent*1000);
+                        if(perc>998) {
+                            this.liveEdgeOffset = 0;
+                        }else {
+                            this.liveEdgeOffset = this.duration - perc/1000 * this.duration;
+                        }
+                    }
 				}
 			}
 		},
