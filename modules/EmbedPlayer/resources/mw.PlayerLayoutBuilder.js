@@ -806,7 +806,6 @@ mw.PlayerLayoutBuilder.prototype = {
 										 clearTimeout(_this.hideControlsTimeout);
 										 _this.hideControlsTimeout = null;
 									 }
-									 console.log('GILAD CONTRILS');
 									 _this.hideControlsTimeout = setTimeout(function(){
 										 _this.hidePlayerControls();
 									 }, 5000);
