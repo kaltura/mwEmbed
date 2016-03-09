@@ -269,7 +269,7 @@
 		},
 		waitForManifestLoaded: function(){
 			var manifestLoadedDeferred = $.Deferred();
-			if (this.manifestLoaded){
+			if (this.manifestLoaded || (this.playerElement.getActiveTech() == "dashcs")){
 				return manifestLoadedDeferred.resolve();
 			} else {
 				var _this = this;
