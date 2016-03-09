@@ -583,24 +583,26 @@
 		},
 
 		resumeAd: function (isLinear) {
-			var _this = this;
-			this.adPaused = false;
-			this.embedPlayer.paused = false;
-			$(".adCover").remove();
-			$(this.embedPlayer).trigger("onPlayerStateChange", ["play", this.embedPlayer.currentState]);
-			if (isLinear) {
-				this.embedPlayer.disablePlayControls();
-			} else {
-				_this.embedPlayer.play();
-			}
+			if (this.adPaused){
+				var _this = this;
+				this.adPaused = false;
+				this.embedPlayer.paused = false;
+				$(".adCover").remove();
+				$(this.embedPlayer).trigger("onPlayerStateChange", ["play", this.embedPlayer.currentState]);
+				if (isLinear) {
+					this.embedPlayer.disablePlayControls();
+				} else {
+					_this.embedPlayer.play();
+				}
 
-			if (_this.isChromeless) {
-				_this.embedPlayer.getPlayerElement().sendNotification("resumeAd");
-			} else {
-				if (this.adsManager) {
-					this.adsManager.resume();
-				}else{
-					_this.embedPlayer.getPlayerElement().resume();
+				if (_this.isChromeless) {
+					_this.embedPlayer.getPlayerElement().sendNotification("resumeAd");
+				} else {
+					if (this.adsManager) {
+						this.adsManager.resume();
+					}else{
+						_this.embedPlayer.getPlayerElement().resume();
+					}
 				}
 			}
 		},
@@ -1017,9 +1019,6 @@
 			adsListener( 'LOADED', function(adEvent){
 				_this.showAdContainer();
 				var adData = adEvent.getAdData();
-				if ( adData.linear && (!adData.adPodInfo || ( adData.adPodInfo && adData.adPodInfo.adPosition === 1) ) ){
-					_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
-				}
 				if ( adData) {
 					_this.isLinear = adData.linear;
 				}
@@ -1061,7 +1060,9 @@
 				}
                 var adPosition =  0;
                 if ( ad.getAdPodInfo() && ad.getAdPodInfo().getAdPosition() ){ adPosition = ad.getAdPodInfo().getAdPosition(); }
-
+				if ( _this.isLinear && adPosition === 1){
+					_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
+				}
                 // collect POD parameters is exists (ad.getAdPodInfo().getPodIndex() exists = POD)
                 var podPosition = null;
                 var podStartTime = null;
@@ -1225,6 +1226,10 @@
 						$(_this.embedPlayer).trigger("playing");
 						$(_this.embedPlayer).trigger("onplay");
 						if (_this.currentAdSlotType != _this.prevSlotType) {
+							_this.embedPlayer.adTimeline.updateUiForAdPlayback(_this.currentAdSlotType);
+							_this.prevSlotType = _this.currentAdSlotType;
+						}
+						if (_this.currentAdSlotType != _this.prevSlotType) {
 							_this.prevSlotType = _this.currentAdSlotType;
 						}
 						if (adInfo.duration > 0) {
@@ -1251,9 +1256,6 @@
 				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
 					mw.log("DoubleClick:: adLoaded");
 					_this.isLinear = adInfo.isLinear;
-					if (_this.isLinear && adInfo.adPosition === 1){
-						_this.embedPlayer.adTimeline.updateUiForAdPlayback(_this.currentAdSlotType);
-					}
 					if (!_this.isLinear && _this.isChromeless) {
 						$(".mwEmbedPlayer").hide();
 						mw.setConfig("EmbedPlayer.EnableFlashActivation", false);
@@ -1451,12 +1453,14 @@
 							$( embedPlayer ).trigger( "onPlayerStateChange", ["pause", embedPlayer.currentState] );
 							break;
 						case 'doPlay':
-							_this.adPaused = false;
-							_this.adsManager.resume();
-							embedPlayer.paused = false;
-							$( embedPlayer ).trigger( 'onplay' );
-							$( embedPlayer ).trigger( "onPlayerStateChange", ["play", embedPlayer.currentState] );
-							_this.monitorAdProgress();
+							if (_this.adPaused){
+								_this.adPaused = false;
+								_this.adsManager.resume();
+								embedPlayer.paused = false;
+								$( embedPlayer ).trigger( 'onplay' );
+								$( embedPlayer ).trigger( "onPlayerStateChange", ["play", embedPlayer.currentState] );
+								_this.monitorAdProgress();
+							}
 							break;
 						case 'doStop':
 							_this.adsManager.stop();
