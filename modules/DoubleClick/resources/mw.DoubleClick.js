@@ -529,11 +529,15 @@
 			if ( !_this.isNativeSDK && _this.embedPlayer.playlist && mw.isMobileDevice() && mw.isAndroid() ){
 				_this.embedPlayer.setKalturaConfig( 'playlistAPI', 'autoPlay',false );
 				_this.embedPlayer.autoplay = false;
-				_this.embedPlayer.bindHelper('onChangeMedia', function () {
-					_this.embedPlayer.bindHelper('prePlayAction', function (event, prePlay) {
-						prePlay.allowPlayback = false;
-						_this.embedPlayer.unbindHelper('prePlayAction');
-					});
+
+				_this.embedPlayer.bindHelper('prePlayAction', function (event, prePlay) {
+					prePlay.allowPlayback = false;
+					mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
+					_this.embedPlayer.updatePosterHTML();
+				});
+
+				_this.embedPlayer.bindHelper('userInitiatedPlay', function () {
+					_this.embedPlayer.unbindHelper('prePlayAction');
 				});
 			}
 		},
@@ -887,6 +891,9 @@
 			if (!this.getConfig("adTagUrl")){
 				adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true; // for manual VAST, get the SDK to restore the player
 			}
+			if ( this.getConfig( 'enableCountDown' ) === true){
+				adsRenderingSettings["uiElements"] = [];
+			}
 			adsRenderingSettings.useStyledNonLinearAds = true;
 			this.adsManager = loadedEvent.getAdsManager( this.embedPlayer, adsRenderingSettings );
 			this.adManagerLoaded = true;
@@ -983,7 +990,7 @@
 						//Restore video content duration after ad playback
 						_this.embedPlayer.setDuration(previousDuration);
 						_this.embedPlayer.addPlayerSpinner();
-						if ( _this.saveTimeWhenSwitchMedia && _this.timeToReturn ) {
+						if ( _this.adsManager.isCustomPlaybackUsed() && _this.saveTimeWhenSwitchMedia && _this.timeToReturn ) {
 							//Save original onLoadedCallback
 							var orgOnLoadedCallback = _this.embedPlayer.onLoadedCallback;
 							//Wait for video loadedmetadata before issuing seek
@@ -1013,7 +1020,7 @@
 			adsListener( 'LOADED', function(adEvent){
 				_this.showAdContainer();
 				var adData = adEvent.getAdData();
-				if ( !adData.adPodInfo || ( adData.adPodInfo && adData.adPodInfo.adPosition === 1 ) ){
+				if ( adData.linear && (!adData.adPodInfo || ( adData.adPodInfo && adData.adPodInfo.adPosition === 1) ) ){
 					_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
 				}
 				if ( adData) {
@@ -1153,6 +1160,11 @@
 				_this.hideSkipBtn();
 			});
 			// Resume content:
+			adsListener( 'SKIPPED', function(){
+				mw.log("DoubleClick:: adSkipped");
+				$( _this.embedPlayer).trigger( 'onAdSkip' );
+			});
+			// Resume content:
 			adsListener( 'CONTENT_RESUME_REQUESTED', function(){
 				_this.playingLinearAd = false;
 				// Update slot type, if a preroll switch to midroll
@@ -1215,7 +1227,6 @@
 						$(_this.embedPlayer).trigger("playing");
 						$(_this.embedPlayer).trigger("onplay");
 						if (_this.currentAdSlotType != _this.prevSlotType) {
-							_this.embedPlayer.adTimeline.updateUiForAdPlayback(_this.currentAdSlotType);
 							_this.prevSlotType = _this.currentAdSlotType;
 						}
 						if (adInfo.duration > 0) {
@@ -1241,8 +1252,10 @@
 
 				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
 					mw.log("DoubleClick:: adLoaded");
-					_this.embedPlayer.adTimeline.updateUiForAdPlayback(_this.currentAdSlotType);
 					_this.isLinear = adInfo.isLinear;
+					if (_this.isLinear && adInfo.adPosition === 1){
+						_this.embedPlayer.adTimeline.updateUiForAdPlayback(_this.currentAdSlotType);
+					}
 					if (!_this.isLinear && _this.isChromeless) {
 						$(".mwEmbedPlayer").hide();
 						mw.setConfig("EmbedPlayer.EnableFlashActivation", false);
@@ -1273,6 +1286,11 @@
 					mw.log("DoubleClick:: adClicked");
 					_this.toggleAdPlayback(adInfo.isLinear);
 				}, 'adClicked', true);
+
+				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
+					mw.log("DoubleClick:: adSkipped");
+					$( _this.embedPlayer).trigger( 'onAdSkip' );
+				}, 'adSkipped', true);
 
 				this.embedPlayer.getPlayerElement().subscribe(function (companionInfo) {
 					mw.log("DoubleClick:: displayCompanion");
@@ -1557,9 +1575,6 @@
 				mw.setConfig('LoadingSpinner.Disabled', true);
 				this.restorePlayerCallback(shouldContinue);
 				this.restorePlayerCallback = null;
-				if (shouldContinue){
-					this.embedPlayer.play();
-				}
 				setTimeout(function(){
 					mw.setConfig('LoadingSpinner.Disabled', false);
 				},500);

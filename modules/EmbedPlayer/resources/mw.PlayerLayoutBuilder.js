@@ -799,7 +799,9 @@ mw.PlayerLayoutBuilder.prototype = {
 							setTimeout( function() {
 								_this.mouseMovedFlag = true;
 								_this.showPlayerControls();
-								_this.addMouseMoveHandler();
+								if ( mw.hasMouseEvents() ) {
+									_this.addMouseMoveHandler();
+								}
 								_this.getInterface().find( '#touchOverlay' ).remove();
 							}, 500);
 
