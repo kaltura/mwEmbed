@@ -26,7 +26,7 @@
         selectedAnswer:null,
         seekToQuestionTime:null,
         multiStreamWelcomeSkip:false,
-        IVQVer:'IVQ-2.41.rc1',
+        IVQVer:'IVQ-2.41.rc2',
 
         setup: function () {
             var _this = this;
