@@ -40,7 +40,7 @@
                         'service': 'cuepoint_cuepoint',
                         'action': 'list',
                         'filter:entryIdEqual': _this.embedPlayer.kentryid,
-                        'filter:objectType': 'KalturaCuePointFilter',
+                        'filter:objectType': 'KalturaQuestionCuePointFilter',
                         'filter:cuePointTypeEqual': 'quiz.QUIZ_QUESTION',
                         'filter:orderBy': '+startTime'
                     },{
