@@ -33,6 +33,7 @@
 		defaultBottom: 15,
 		lastActiveCaption: null,
 		ended: false,
+		preShowScreenDisplayCaptionsValue: null,
 
 		setup: function(){
 			var _this = this;
@@ -152,12 +153,16 @@
 			});
 
 			this.bind( 'showClosedCaptions preHideScreen hideMobileComponents', function(){
-				if( _this.getConfig('displayCaptions') === false ){
+				if( _this.preShowScreenDisplayCaptionsValue === null && _this.getConfig('displayCaptions') === false ){
 					_this.setConfig('displayCaptions', true);
+				}else if( _this.preShowScreenDisplayCaptionsValue !== _this.getConfig('displayCaptions') ){
+						_this.setConfig('displayCaptions', _this.preShowScreenDisplayCaptionsValue);
+					_this.preShowScreenDisplayCaptionsValue = null;
 				}
 			});
 
 			this.bind( 'hideClosedCaptions preShowScreen showMobileComponents', function(){
+				_this.preShowScreenDisplayCaptionsValue = _this.getConfig('displayCaptions');
 				if( _this.getConfig('displayCaptions') === true ){
 					_this.setConfig('displayCaptions', false);
 				}
