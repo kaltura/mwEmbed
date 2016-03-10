@@ -608,7 +608,7 @@
 		},
 
 		toggleAdPlayback: function (isLinear) {
-			if (this.getConfig("pauseAdOnClick") !== false) {
+			if (this.getConfig("pauseAdOnClick") !== false && !this.isNativeSDK) {
 				if (this.adPaused) {
 					this.resumeAd(isLinear);
 				} else {
