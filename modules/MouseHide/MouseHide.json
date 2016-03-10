@@ -1,0 +1,7 @@
+{
+    "MouseHide":{
+        "scripts":["resources/mouseHide.js"],
+        "dependencies": ["mw.KBaseComponent"],
+        "kalturaPluginName": "mouseHide"
+    }
+}
