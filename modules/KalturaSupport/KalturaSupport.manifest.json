@@ -1616,6 +1616,16 @@
                 "label": "Reason: Spam",
                 "doc": "Reason: Spam.",
                 "type": "string"
+            },
+            "additionalReasons": {
+                "label": "Comma separated reasons. Comma character is not allowed in labels",
+                "doc": "Comma separated reasons. Comma character is not allowed in labels ",
+                "type": "string"
+            },
+            "sendLabelWithComments": {
+                "doc": "If this is set to true the selected label will be hard coded into the comment. This will work even with empty comments",
+                "type": "boolean",
+                "initvalue": false
             }
         }
     },
