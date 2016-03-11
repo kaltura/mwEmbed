@@ -159,30 +159,28 @@
 			if ( this.trackCuePoints ){
 				this.handleCuePoints();
 			}
-			if ( mw.isIE8() || mw.isIE9() || _this.leadWithFlash ) {
-				if ( mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'kplayer' ) ) {
-					mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
-					_this.isChromeless = true;
-					_this.prevSlotType = 'none';
-					_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
-						_this.bindChromelessEvents();
-					});
-					_this.embedPlayer.bindHelper( 'volumeChanged' + this.bindPostfix, function(event, percent){
-						mw.log("DoubleClick::chromeless volumeChanged: " + percent );
-						_this.embedPlayer.setPlayerElementVolume( percent );
-					});
-					_this.embedPlayer.bindHelper( 'Kaltura_SendNotification' + this.bindPostfix, function(event, notificationName, notificationData){
-						if (notificationName === "doPause"){
-							_this.embedPlayer.getPlayerElement().pause();
-						}
-					});
-					_this.addManagedBinding();
-					callback();
-					return;
-				} else if ( mw.isIE8() || mw.isIE9() ) {   //no flash on IE8/9
-					callback();
-					return;
-				}
+			if (( mw.isIE8() || mw.isIE9() || _this.leadWithFlash ) && (mw.supportsFlash())) {
+				mw.setConfig( 'EmbedPlayer.ForceKPlayer' , true );
+				_this.isChromeless = true;
+				_this.prevSlotType = 'none';
+				_this.embedPlayer.bindHelper('playerReady' + _this.bindPostfix, function() {
+					_this.bindChromelessEvents();
+				});
+				_this.embedPlayer.bindHelper( 'volumeChanged' + this.bindPostfix, function(event, percent){
+					mw.log("DoubleClick::chromeless volumeChanged: " + percent );
+					_this.embedPlayer.setPlayerElementVolume( percent );
+				});
+				_this.embedPlayer.bindHelper( 'Kaltura_SendNotification' + this.bindPostfix, function(event, notificationName, notificationData){
+					if (notificationName === "doPause"){
+						_this.embedPlayer.getPlayerElement().pause();
+					}
+				});
+				_this.addManagedBinding();
+				callback();
+				return;
+			} else if ( mw.isIE8() || mw.isIE9() ) {   //no flash on IE8/9
+				callback();
+				return;
 			}
 
 			//if we got till here we're going to use the javascript - check if we have spacific javascript configuration
@@ -418,6 +416,8 @@
 					if ( _this.getConfig("adTagUrl") && ( _this.isLinear === false || _this.allAdsCompletedFlag || _this.adLoaderErrorFlag) ){
 						_this.restorePlayer(true);
 					}
+					// if no postroll was set restore the player
+					_this.restorePlayerNoPostroll();
 				};
 
 				//if we're in JS mode - check if we have spacific JS configuration for the postroll
@@ -1064,6 +1064,9 @@
 					// hide content / show playerplayer position:
 					_this.hideContent();
 
+					if ( mw.isIOS() && _this.embedPlayer.seeking ){
+						_this.embedPlayer.restorePlayerOnScreen();
+					}
 					// set ad playing flag:
 
 					_this.embedPlayer.sequenceProxy.isInSequence = true;
@@ -1350,10 +1353,7 @@
 					_this.adsLoader.contentComplete();
 					_this.embedPlayer._propagateEvents = false;
 				}
-				if (!_this.getConfig("adTagUrl") && !_this.getConfig("postrollUrl")){
-					_this.currentAdSlotType = "postroll";
-					_this.restorePlayer(true);
-				}
+				_this.restorePlayerNoPostroll();
 
 			});
 
@@ -1516,6 +1516,13 @@
 			} else if( _this.isAdClickTimeoutEnabled ) {
 				_this.isAdClickTimeoutEnabled = false;
 			}
+		},
+		restorePlayerNoPostroll:function(){
+				var _this = this;
+				if (!_this.getConfig("adTagUrl") && !_this.getConfig("postrollUrl")){
+					_this.currentAdSlotType = "postroll";
+					_this.restorePlayer(true);
+				}
 		},
 		/**
 		 * TODO should be provided by the generic ad plugin class.
