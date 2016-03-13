@@ -1222,7 +1222,7 @@
 					}
 					$(_this.embedPlayer).trigger("onAdPlay", [adInfo.adID, adInfoObj.adSystem, adInfoObj.currentAdSlotType, adInfoObj.adPosition, adInfo.duration, podPosition,  podStartTime, adInfo.adTitle ]); //index is missing =0 by now
 
-					if (adInfo.linear){
+					if (_this.isNativeSDK || adInfo.linear){ // TODO: remove isNativeSDK once we pass the adInfo object from the native app SDK (currently not passed)
 						_this.embedPlayer.sequenceProxy.isInSequence = true;
 						// set volume when ad starts to enable autoMute. TODO: remove next line once DoubleClick fix their bug when setting adsManager.volume before ad starts
 						_this.embedPlayer.setPlayerElementVolume(_this.embedPlayer.volume);
