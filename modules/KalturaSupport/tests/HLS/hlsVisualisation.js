@@ -131,6 +131,7 @@
     function onCurrentTime(t, isAbsolute)
     {
         playheadTime = t;
+        seconds2npt(playheadTime);
         bufferDirty = true;
     }
 
@@ -517,4 +518,34 @@
         timeOffset_max = 120;
     }
 
+function seconds2npt ( sec ) {
+    if ( isNaN( sec ) ) {
+        console.log("hlsVisualisation :: Time is NAN ");
+        return;
+    }
+
+    var tm = {};
+    tm.days = Math.floor( sec / ( 3600 * 24 ) );
+    tm.hours = Math.floor( Math.round( sec ) / 3600 ) % 24;
+    tm.minutes = Math.floor( ( Math.round( sec ) / 60 ) % 60 );
+    tm.seconds = Math.round(sec) % 60;
+
+    // Round the number of seconds to the required number of significant
+    // digits
+    tm.seconds = Math.round( tm.seconds * 1000 ) / 1000;
+
+    if ( tm.seconds < 10 ){
+        tm.seconds = '0' +	tm.seconds;
+    }
+    var hoursStr = '';
+    if( tm.hours !== 0 ){
+        if ( tm.minutes < 10 ) {
+            tm.minutes = '0' + tm.minutes;
+        }
+        hoursStr = tm.hours + ":";
+    }
+
+    var time =  hoursStr + tm.minutes + ":" + tm.seconds;
+    console.log("hlsVisualisation :: Time is "+time);
+}
 

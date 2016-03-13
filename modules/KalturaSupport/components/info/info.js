@@ -31,6 +31,7 @@ mw.PluginManager.add( 'infoScreen', mw.KBaseScreen.extend({
 				_this.getScreen().then(function(screen){
 					screen.addClass('semiTransparentBkg');
 					embedPlayer.disablePlayControls();
+					embedPlayer.triggerHelper("infoScreenOpen");
 				});
 			}
 		});

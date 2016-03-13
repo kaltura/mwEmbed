@@ -203,16 +203,18 @@
 								// trigger the preSequenceComplete event ( always fired )
 								embedPlayer.triggerHelper( 'AdSupport_PreSequenceComplete' );
 
-								if( playedAnAdFlag  ){
-									// reset displaySlotCount:
-									_this.displayedSlotCount=0;
-								}
 								// Restore the player only do event trigger if we played an ad
 								_this.restorePlayer( null, playedAnAdFlag );
 								// Restore duration:
 								embedPlayer.setDuration( orgDuration );
-								// Continue playback
-								embedPlayer.play();
+
+								if( playedAnAdFlag  ){
+									// reset displaySlotCount:
+									_this.displayedSlotCount=0;
+									// Continue playback
+									embedPlayer.play();
+								}
+
 							};
 							// Check if the src does not match original src if
 							// so switch back and restore original bindings

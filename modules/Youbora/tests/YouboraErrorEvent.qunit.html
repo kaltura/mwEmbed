@@ -20,6 +20,9 @@
 
 	<body>
 		<h2> Youbora Media Analytics </h2>
+        <p>This page demonstrates error events reporting.<br>
+        Start playing the video and then click the "Change Media" button.<br>
+        Since the required media ID doesn't exists, the player displays an error message and reports the error to Youbora.</p>
 		<div id="kaltura_player" style="width:470px;height:300px"></div>
         <br/><button id="changeMedia">Change Media</button><br/><br/>
 
@@ -39,7 +42,7 @@
 				'readyCallback': function(){
 					$('#changeMedia').click(function(){
                         $('#analyticsLog').text('');
-						$('#kaltura_player')[0].sendNotification( 'changeMedia', { 'entryId':'0_swup5zao' } );
+						$('#kaltura_player')[0].sendNotification( 'changeMedia', { 'entryId':'0_swup5za' } );
 					});
 				}
 			});

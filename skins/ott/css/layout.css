@@ -989,7 +989,11 @@ button::-moz-focus-inner {
 }
 
 .btn:focus {
-	outline: 1px dotted #999;
+	outline: 1px solid #00D6FF;
+}
+
+.mobile .btn:focus {
+	outline: none;
 }
 
 .scrubber.disabled {

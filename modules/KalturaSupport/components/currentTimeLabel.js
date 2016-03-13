@@ -22,6 +22,10 @@
 					_this.updateUI(newTime);
 				}
 			});
+			// zero the current time when changing media
+			this.bind('onChangeMediaDone', function () {
+				_this.updateUI(0);
+			});
 			//will stop listening to native timeupdate events
 			this.bind('detachTimeUpdate', function () {
 				_this.unbind('timeupdate');
