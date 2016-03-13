@@ -125,7 +125,12 @@
 		syncCurrentTime: function(){},
 
 		isInSequence: function(){return false;},
-
+		_ondurationchange: function (event, data) {
+			if ( this.playerElement && !isNaN(this.playerElement.duration) && isFinite(this.playerElement.duration) ) {
+				this.setDuration(this.getPlayerElement().duration);
+				return;
+			}
+		},
 		monitor: function(){
 			var vid = this.getPlayerElement();
 			if ( vid && vid.currentTime !== null && vid.duration !== null) {
