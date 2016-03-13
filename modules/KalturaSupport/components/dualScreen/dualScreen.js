@@ -233,7 +233,7 @@
 							action = "PiP";
 							break;
 					}
-					_this.getPlayer().triggerHelper('dualScreenStateChange', "switchView");
+					_this.getPlayer().triggerHelper('dualScreenStateChange', action);
 				});
 				// Add w Sigh for switch view
 				addKeyCallback(this.getConfig("keyboardShortcutsMap").switchView, function () {
@@ -323,12 +323,10 @@
 
 					//Attach the primaryPlayerContainer to the primary display
 					var primaryDisplay = this.displays.getPrimary();
-					primaryPlayerContainer.attr('data-display-type','video');
 					primaryDisplay.attachView(primaryPlayerContainer);
 
 					//Attach the secondaryDisplay to the second display
 					var secondaryDisplay = this.displays.getSecondary();
-					secondaryPlayerContainer.attr('data-display-type','presentation');
 					secondaryDisplay.attachView(secondaryPlayerContainer);
 
 					//Proxy pointer events from the second screen to the embedPlayer layer
@@ -637,12 +635,6 @@
 					at: location[0]+location[1],
 					of: $( this.getPlayer().getInterface() )
 				});
-			},
-			getKClient: function () {
-				if (!this.kClient) {
-					this.kClient = mw.kApiGetPartnerClient(this.embedPlayer.kwidgetid);
-				}
-				return this.kClient;
 			},
 			/**
 			 * Searches for the first/next cue point after the current player time
