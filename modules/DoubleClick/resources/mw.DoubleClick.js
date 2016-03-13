@@ -380,13 +380,15 @@
 				cache: true
 			})
 			.success(function (data) {
-				clearTimeout(imaLoaderTimeoutID);
 				successCB();
 			})
 			.error(function( jqxhr, textStatus, errorCode ) {
-				clearTimeout(imaLoaderTimeoutID);
 				failureCB( errorCode );
 			})
+			.always(function() {
+				clearTimeout(imaLoaderTimeoutID);
+			})
+
 		},
 		startAdsManager: function(){
 			// Initialize the ads manager. In case of ad playlist with a preroll, the preroll will start playing immediately.
