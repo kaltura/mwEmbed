@@ -69,6 +69,7 @@
 			if (this.monitorInterval !== null){
 				clearInterval(this.monitorInterval);
 			}
+			this.stopped = false;
 			this.monitorInterval = setInterval(function(){_this.monitor();},1000);
 			readyCallback();
 		},
@@ -105,21 +106,21 @@
 		 * Handle the native paused event
 		 */
 		_onpause: function () {
-			this.paused = true;
+			this.pause();
 			this.layoutBuilder.showPlayerControls();
 			$(this).trigger('onPlayerStateChange', [ "pause", "play" ]);
-			this.parent_pause();
+
 		},
 
 		/**
 		 * Handle the native play event
 		 */
 		_onplay: function () {
-			this.paused = false;
-			this.stopped = false;
+			this.play();
+			this.restoreEventPropagation();
 			this.layoutBuilder.hidePlayerControls();
 			$(this).trigger('onPlayerStateChange', [ "play", "pause" ]);
-			//this.parent_play();
+
 		},
 		// override these functions so embedPlayer won't try to sync time
 		syncCurrentTime: function(){
