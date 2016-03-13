@@ -376,14 +376,20 @@
 			if ( this.getConfig( 'debugMode' ) === true ){
 				imaURL =  '//s0.2mdn.net/instream/html5/ima3_debug.js';
 			}
-			$.getScript( imaURL , function() {
+
+			$.ajax({
+				url: imaURL,
+				dataType: "script",
+				cache: true
+			})
+			.success(function (data) {
 				isLoaded = true;
 				successCB();
-			} )
-				.fail( function( jqxhr, settings, errorCode ) {
-					isLoaded = true;
-					failureCB( errorCode );
-				} );
+			})
+			.error(function( jqxhr, textStatus, errorCode ) {
+				isLoaded = true;
+				failureCB( errorCode );
+			})
 		},
 		startAdsManager: function(){
 			// Initialize the ads manager. In case of ad playlist with a preroll, the preroll will start playing immediately.
