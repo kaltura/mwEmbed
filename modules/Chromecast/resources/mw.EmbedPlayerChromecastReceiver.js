@@ -122,7 +122,9 @@
 			//this.parent_play();
 		},
 		// override these functions so embedPlayer won't try to sync time
-		syncCurrentTime: function(){},
+		syncCurrentTime: function(){
+			this.currentTime = this.getPlayerElementTime();
+		},
 
 		isInSequence: function(){return false;},
 		_ondurationchange: function (event, data) {
