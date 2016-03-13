@@ -407,6 +407,9 @@
 						//Encode URL so it can be passed via HTML tag
 						flashvars.licenseURL = encodeURIComponent(licenseUrl);
 
+						//Default audio track config to allow setting it on silverlight init
+						flashvars.defaultAudioTrack = _this.audioTrack && _this.audioTrack.defaultTrack;
+
 						var customData = {
 							partnerId: _this.kpartnerid ,
 							ks: _this.getFlashvars( 'ks' ) ,
@@ -595,6 +598,7 @@
 				this.hideSpinner();
 				this.stopped = this.paused = false;
 			}
+			this.removePoster();
 		} ,
 
 		callReadyFunc: function () {
@@ -701,6 +705,7 @@
 				//need to refactor the volume logic and remove this.
 				this.setPlayerElementVolume( this.volume );
 				//bring back the player
+				this.removePoster();
 				this.getPlayerContainer().css( 'visibility' , 'visible' );
 				_this.playerObject.play();
 				this.monitor();

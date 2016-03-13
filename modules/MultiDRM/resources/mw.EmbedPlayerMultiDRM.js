@@ -228,7 +228,8 @@
 						}, 0);
 					}
 					//In IE and Edge source is preloaded, so defer this until we request play for the first time
-					if (!mw.isEdge() && !mw.isIE()) {
+					//IF autoplay is set then play flow will call update context
+					if (!_this.autoplay && (!mw.isEdge() && !mw.isIE())) {
 						_this.updateDashContext();
 					}
 				} );
@@ -270,7 +271,7 @@
 		},
 		waitForManifestLoaded: function(){
 			var manifestLoadedDeferred = $.Deferred();
-			if (this.manifestLoaded){
+			if (this.manifestLoaded || (this.playerElement.getActiveTech() == "dashcs")){
 				return manifestLoadedDeferred.resolve();
 			} else {
 				var _this = this;
@@ -828,8 +829,6 @@
 				}
 			}
 		},
-		//Disable check - handled on lower level
-		checkClipDoneCondition: function(){},
 		/**
 		 * play method calls parent_play to update the interface
 		 */

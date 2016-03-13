@@ -20,7 +20,7 @@ Can't find what your looking for in the documentation, ran into an issue check t
 
 ## Hacking on mwEmbed
 
-* Pull requests can be sent to <a href="https://github.com/kaltura/mwEmbed/">our git hub repo</a>. 
+* Pull requests can be sent to <a href="https://github.com/kaltura/mwEmbed/">our git hub repo</a>. Pull requests should be open against the master branch.
 * Our coding conventions <a href="http://www.mediawiki.org/wiki/Manual:Coding_conventions/JavaScript">follow mediaWiki js guidelines</a>. 
 * See [getting strated guide](http://knowledge.kaltura.com/kaltura-player-toolkit-theme-skin-and-plugins-guide)
 * Also see [Yeoman project](https://github.com/kaltura/generator-kalturaplayer-module) for auto generating skeleton kaltura player plugins.  

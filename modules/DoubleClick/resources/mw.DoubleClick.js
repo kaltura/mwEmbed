@@ -258,6 +258,7 @@
 						}
 					}
 					_this.adCuePoints.push(cuePointWrapper.cuePoint.id);
+					_this.adManagerAutoStart = true;
 					_this.requestAds();
 				}
 			});
@@ -407,9 +408,14 @@
 					// Setup the restore callback
 					_this.restorePlayerCallback = callback;
 
-					if ( _this.isChromeless ){
+					if ( _this.isChromeless || _this.isNativeSDK ){
 						_this.requestAds();
 					}else{
+						if ( !_this.getConfig("adTagUrl") && !_this.getConfig("prerollUrl") && !_this.getConfig( 'prerollUrlJS' ) ){
+							mw.log("DoubleClick::No adTagUrl defined. Restore player and resume playback.")
+							_this.restorePlayer(true);
+							return;
+						}
 						// Set the content element to player element:
 						var playerElement =  _this.embedPlayer.getPlayerElement();
 						//Load the video tag to enable setting the source by doubleClick library
@@ -451,7 +457,7 @@
 					// if no postroll was set restore the player
 					_this.restorePlayerNoPostroll();
 				};
-
+				_this.adManagerAutoStart = true;
 				//if we're in JS mode - check if we have spacific JS configuration for the postroll
 				if ( !_this.isChromeless &&
 					_this.getConfig("postrollUrlJS") &&
@@ -484,7 +490,7 @@
 				if (_this.isChromeless){
 					_this.embedPlayer.getPlayerElement().sendNotification("hideContent");
 				}else{
-					if ( _this.embedPlayer.isVideoSiblingEnabled() && !mw.isAndroidNativeBrowser() ) {
+					if ( _this.embedPlayer.isVideoSiblingEnabled() && !mw.isAndroidNativeBrowser() && !_this.isNativeSDK) {
 						$(".mwEmbedPlayer").addClass("mwEmbedPlayerBlackBkg");
 						_this.embedPlayer.addBlackScreen();
 					}else{
@@ -497,7 +503,7 @@
 				if (_this.isChromeless){
 					_this.embedPlayer.getPlayerElement().sendNotification("showContent");
 				}else{
-					if ( _this.embedPlayer.isVideoSiblingEnabled() && !mw.isAndroidNativeBrowser() ) {
+					if ( _this.embedPlayer.isVideoSiblingEnabled() && !mw.isAndroidNativeBrowser() && !_this.isNativeSDK) {
 						$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
 						_this.embedPlayer.removeBlackScreen();
 					}else{
@@ -523,17 +529,22 @@
 			if ( !_this.isNativeSDK && _this.embedPlayer.playlist && mw.isMobileDevice() && mw.isAndroid() ){
 				_this.embedPlayer.setKalturaConfig( 'playlistAPI', 'autoPlay',false );
 				_this.embedPlayer.autoplay = false;
-				_this.embedPlayer.bindHelper('onChangeMedia', function () {
-					_this.embedPlayer.bindHelper('prePlayAction', function (event, prePlay) {
-						prePlay.allowPlayback = false;
-						_this.embedPlayer.unbindHelper('prePlayAction');
-					});
+
+				_this.embedPlayer.bindHelper('prePlayAction', function (event, prePlay) {
+					prePlay.allowPlayback = false;
+					mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
+					_this.embedPlayer.updatePosterHTML();
+				});
+
+				_this.embedPlayer.bindHelper('userInitiatedPlay', function () {
+					_this.embedPlayer.unbindHelper('prePlayAction');
 				});
 			}
 		},
 
 		pauseAd: function (isLinear) {
 			var _this = this;
+			this.adPaused = true;
 			this.embedPlayer.paused = true;
 			$(this.embedPlayer).trigger('onpause');
 			var classes = "adCover";
@@ -548,7 +559,9 @@
 			if (this.isChromeless){
 				$(".videoDisplay").prepend(adCover);
 			}else{
-				$(this.getAdContainer()).append(adCover);
+				if (!mw.isIphone()){
+					$(this.getAdContainer()).append(adCover);
+				}
 			}
 			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 
@@ -570,30 +583,33 @@
 		},
 
 		resumeAd: function (isLinear) {
-			var _this = this;
-			this.embedPlayer.paused = false;
-			$(".adCover").remove();
-			$(this.embedPlayer).trigger("onPlayerStateChange", ["play", this.embedPlayer.currentState]);
-			if (isLinear) {
-				this.embedPlayer.disablePlayControls();
-			} else {
-				_this.embedPlayer.play();
-			}
+			if (this.adPaused){
+				var _this = this;
+				this.adPaused = false;
+				this.embedPlayer.paused = false;
+				$(".adCover").remove();
+				$(this.embedPlayer).trigger("onPlayerStateChange", ["play", this.embedPlayer.currentState]);
+				if (isLinear) {
+					this.embedPlayer.disablePlayControls();
+				} else {
+					_this.embedPlayer.play();
+				}
 
-			if (_this.isChromeless) {
-				_this.embedPlayer.getPlayerElement().sendNotification("resumeAd");
-			} else {
-				if (this.adsManager) {
-					this.adsManager.resume();
-				}else{
-					_this.embedPlayer.getPlayerElement().resume();
+				if (_this.isChromeless) {
+					_this.embedPlayer.getPlayerElement().sendNotification("resumeAd");
+				} else {
+					if (this.adsManager) {
+						this.adsManager.resume();
+					}else{
+						_this.embedPlayer.getPlayerElement().resume();
+					}
 				}
 			}
 		},
 
 		toggleAdPlayback: function (isLinear) {
-			if (this.getConfig("pauseAdOnClick") !== false) {
-				if (this.embedPlayer.paused) {
+			if (this.getConfig("pauseAdOnClick") !== false && !this.isNativeSDK) {
+				if (this.adPaused) {
 					this.resumeAd(isLinear);
 				} else {
 					$(this.embedPlayer).trigger('adClick');
@@ -636,8 +652,14 @@
 		getAdContainerId: function(){
 			return 'adContainer' + this.embedPlayer.id;
 		},
-		hideAdContainer: function () {
-			$("#" + this.getAdContainerId()).hide();
+		hideAdContainer: function (removeFromDOM) {
+			$("#" + this.getAdContainerId()).css("visibility", "hidden");
+			if (removeFromDOM){
+				$("#" + this.getAdContainerId()).hide();
+			}
+		},
+		showAdContainer: function () {
+			$("#" + this.getAdContainerId()).css("visibility", "visible");
 		},
 		getAdDisplayContainer: function(){
 			//  Create the ad display container. Use an existing DOM element
@@ -672,6 +694,9 @@
 							if ( _this.isChromeless ){
 								_this.embedPlayer.getPlayerElement().sendNotification( 'skipAd' );
 							}else{
+								if (_this.adPaused){
+									_this.resumeAd(true);
+								}
 								_this.adsManager.stop();
 								if (_this.currentAdSlotType === "postroll" && _this.getConfig( 'adTagUrl' ) ){
 									_this.restorePlayer(true);
@@ -827,8 +852,7 @@
 
 			// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
 			this.getAdDisplayContainer();
-			this.hideAdContainer();
-
+			this.hideAdContainer(false);
 			// Create ads loader.
 			this.adsLoader = new google.ima.AdsLoader( _this.adDisplayContainer );
 
@@ -842,6 +866,7 @@
 			this.adsLoader.addEventListener(
 				google.ima.AdErrorEvent.Type.AD_ERROR,
 				function(event ){
+					_this.hideAdContainer(true);
 					_this.onAdError( event );
 				},
 				false);
@@ -867,6 +892,9 @@
 			var adsRenderingSettings = new google.ima.AdsRenderingSettings();
 			if (!this.getConfig("adTagUrl")){
 				adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true; // for manual VAST, get the SDK to restore the player
+			}
+			if ( this.getConfig( 'enableCountDown' ) === true){
+				adsRenderingSettings["uiElements"] = [];
 			}
 			adsRenderingSettings.useStyledNonLinearAds = true;
 			this.adsManager = loadedEvent.getAdsManager( this.embedPlayer, adsRenderingSettings );
@@ -964,7 +992,7 @@
 						//Restore video content duration after ad playback
 						_this.embedPlayer.setDuration(previousDuration);
 						_this.embedPlayer.addPlayerSpinner();
-						if ( _this.saveTimeWhenSwitchMedia && _this.timeToReturn ) {
+						if ( _this.adsManager.isCustomPlaybackUsed() && _this.saveTimeWhenSwitchMedia && _this.timeToReturn ) {
 							//Save original onLoadedCallback
 							var orgOnLoadedCallback = _this.embedPlayer.onLoadedCallback;
 							//Wait for video loadedmetadata before issuing seek
@@ -983,11 +1011,6 @@
 					};
 					_this.embedPlayer.adTimeline.displaySlots( 'midroll' ,restoreMidroll);
 				}
-				// set a local method for true ad playback start.
-				_this.startedAdPlayback = function(){
-					_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
-					_this.startedAdPlayback = null;
-				};
 				// loading ad:
 				_this.embedPlayer.pauseLoading();
 				_this.embedPlayer.stopPlayAfterSeek = true;
@@ -997,6 +1020,7 @@
 				}
 			} );
 			adsListener( 'LOADED', function(adEvent){
+				_this.showAdContainer();
 				var adData = adEvent.getAdData();
 				if ( adData) {
 					_this.isLinear = adData.linear;
@@ -1006,10 +1030,6 @@
 				// dispatch adOpen event
 				$( _this.embedPlayer).trigger( 'onAdOpen',[adData.adId, adData.adSystem, currentAdSlotType, adData.adPodInfo ? adData.adPodInfo.adPosition : 0] );
 
-				// check for started ad playback sequence callback
-				if( _this.startedAdPlayback ){
-					_this.startedAdPlayback();
-				}
 				_this.duration= _this.adsManager.getRemainingTime();
 				if (_this.duration >= 0) {
 					_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdateDuration' , _this.duration );
@@ -1043,17 +1063,19 @@
 				}
                 var adPosition =  0;
                 if ( ad.getAdPodInfo() && ad.getAdPodInfo().getAdPosition() ){ adPosition = ad.getAdPodInfo().getAdPosition(); }
-
+				if ( _this.isLinear && adPosition === 1){
+					_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
+				}
                 // collect POD parameters is exists (ad.getAdPodInfo().getPodIndex() exists = POD)
-                var podPosition;
-                var podStartTime;
+                var podPosition = null;
+                var podStartTime = null;
 
                 if( ad.getAdPodInfo() && ad.getAdPodInfo().getPodIndex() !== -1) {
-                    podPosition = ad.getAdPodInfo().getPodIndex()+1;
+                    podPosition = ad.getAdPodInfo().getPodIndex();
                     podStartTime = ad.getAdPodInfo().getTimeOffset();
                 }
                 // trigger ad play event
-                $(_this.embedPlayer).trigger("onAdPlay",[ad.getAdId(),ad.getAdSystem(),currentAdSlotType,adPosition,ad.getDuration(), podPosition, podStartTime]);
+				$(_this.embedPlayer).trigger("onAdPlay",[ad.getAdId(),ad.getAdSystem(),currentAdSlotType,adPosition,ad.getDuration(), podPosition, podStartTime, ad.getTitle()]);
 				// This changes player state to the relevant value ( play-state )
 				$(_this.embedPlayer).trigger("playing");
 				// Check for ad Stacking ( two starts in less then 250ms )
@@ -1073,11 +1095,6 @@
 				}
 				// update the last ad start time:
 				lastAdStartTime = new Date().getTime();
-
-				// check for started ad playback sequence callback
-				if( _this.startedAdPlayback ){
-					_this.startedAdPlayback();
-				}
 				_this.adActive = true;
 				if (_this.isLinear) {
 					if (!ad.isSkippable()){
@@ -1124,7 +1141,10 @@
 			adsListener('CLICK', function (adEvent) {
 				var ad = adEvent.getAd();
 				var isLinear = ad.isLinear();
-				_this.toggleAdPlayback(isLinear);
+				if (!mw.isIphone()){
+					_this.toggleAdPlayback(isLinear);
+				}
+				$( _this.embedPlayer).trigger( 'onAdClick' );
 			});
 
 			adsListener( 'FIRST_QUARTILE', function(){
@@ -1142,6 +1162,11 @@
 				_this.hideSkipBtn();
 			});
 			// Resume content:
+			adsListener( 'SKIPPED', function(){
+				mw.log("DoubleClick:: adSkipped");
+				$( _this.embedPlayer).trigger( 'onAdSkip' );
+			});
+			// Resume content:
 			adsListener( 'CONTENT_RESUME_REQUESTED', function(){
 				_this.playingLinearAd = false;
 				// Update slot type, if a preroll switch to midroll
@@ -1151,10 +1176,6 @@
 				}
 				if ( _this.currentAdSlotType != 'postroll') {
 					_this.restorePlayer();
-
-					if( mw.isIOS8_9() && mw.isIpad()  ) {
-						$( _this.embedPlayer.getPlayerElement() ).attr('preload',"metadata" );
-					}
 				}
 			});
 			adsListener( 'ALL_ADS_COMPLETED', function(){
@@ -1179,43 +1200,59 @@
 				var _this = this;
 				// bind to chromeless player events
 				this.embedPlayer.getPlayerElement().subscribe(function () {
+					_this.embedPlayer.hideSpinner();
 					mw.log("DoubleClick:: adLoadedEvent");
 					_this.adManagerLoaded = true;
 				}, 'adLoadedEvent');
 
 				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
 					mw.log("DoubleClick:: adStart");
-                    // for preroll ad that doesn't play using our video tag - we can load our video tag to improve performance once the ad finish
-                    if ( _this.currentAdSlotType === "preroll" ){
-                        _this.embedPlayer.load();
-                    }
-					_this.embedPlayer.sequenceProxy.isInSequence = true;
-					// set volume when ad starts to enable autoMute. TODO: remove next line once DoubleClick fix their bug when setting adsManager.volume before ad starts
-					_this.embedPlayer.setPlayerElementVolume(_this.embedPlayer.volume);
+					// for preroll ad that doesn't play using our video tag - we can load our video tag to improve performance once the ad finish
+					if ( !adInfo.linear && _this.currentAdSlotType === "preroll" ){
+						_this.embedPlayer.load();
+					}
 					// trigger ad play event
-					$(_this.embedPlayer).trigger("onAdPlay", [adInfo.adID, adInfoObj.adSystem, adInfoObj.currentAdSlotType, adInfoObj.adPosition, adInfo.duration]); //index is missing =0 by now
-					// This changes player state to the relevant value ( play-state )
-					$(_this.embedPlayer).trigger("playing");
-					$(_this.embedPlayer).trigger("onplay");
-					if (_this.currentAdSlotType != _this.prevSlotType) {
-						_this.embedPlayer.adTimeline.updateUiForAdPlayback(_this.currentAdSlotType);
-						_this.prevSlotType = _this.currentAdSlotType;
+					// collect POD parameters is exists
+					var podPosition = null;
+					var podStartTime = null;
+
+					if( adInfo.adPodInfo && adInfo.adPodInfo.podIndex !== -1) {
+						podPosition = adInfo.adPodInfo.podIndex;
+						podStartTime = adInfo.adPodInfo.timeOffset;
 					}
-					if (adInfo.duration > 0) {
-						_this.embedPlayer.triggerHelper('AdSupport_AdUpdateDuration', adInfo.duration);
-					}
-					if (_this.isChromeless) {
-						$(".mwEmbedPlayer").hide();
-					}
-					if (_this.getConfig('countdownText') && _this.embedPlayer.getInterface().find(".ad-notice-label").length == 0) {
-						// Add the notice target:
-						_this.embedPlayer.getVideoHolder().append(
+					$(_this.embedPlayer).trigger("onAdPlay", [adInfo.adID, adInfoObj.adSystem, adInfoObj.currentAdSlotType, adInfoObj.adPosition, adInfo.duration, podPosition,  podStartTime, adInfo.adTitle ]); //index is missing =0 by now
+
+					if (_this.isNativeSDK || adInfo.linear){ // TODO: remove isNativeSDK once we pass the adInfo object from the native app SDK (currently not passed)
+						_this.embedPlayer.sequenceProxy.isInSequence = true;
+						// set volume when ad starts to enable autoMute. TODO: remove next line once DoubleClick fix their bug when setting adsManager.volume before ad starts
+						_this.embedPlayer.setPlayerElementVolume(_this.embedPlayer.volume);
+						$(_this.embedPlayer).trigger("playing");
+						$(_this.embedPlayer).trigger("onplay");
+						if (_this.currentAdSlotType != _this.prevSlotType) {
+							_this.embedPlayer.adTimeline.updateUiForAdPlayback(_this.currentAdSlotType);
+							_this.prevSlotType = _this.currentAdSlotType;
+						}
+						if (_this.currentAdSlotType != _this.prevSlotType) {
+							_this.prevSlotType = _this.currentAdSlotType;
+						}
+						if (adInfo.duration > 0) {
+							_this.embedPlayer.triggerHelper('AdSupport_AdUpdateDuration', adInfo.duration);
+						}
+						if (_this.isChromeless) {
+							$(".mwEmbedPlayer").hide();
+						}
+						if (_this.getConfig('countdownText') && _this.embedPlayer.getInterface().find(".ad-notice-label").length == 0) {
+							// Add the notice target:
+							_this.embedPlayer.getVideoHolder().append(
 								$('<span />')
-										.addClass('ad-component ad-notice-label')
-						);
+									.addClass('ad-component ad-notice-label')
+							);
+						}
+						// Send a notification to trigger associated events and update ui
+						_this.embedPlayer.paused = false;
+					}else{
+						_this.embedPlayer.play();
 					}
-					// Send a notification to trigger associated events and update ui
-					_this.embedPlayer.paused = false;
 				}, 'adStart', true);
 
 
@@ -1235,9 +1272,6 @@
 					adInfoObj.adPosition = adInfo.adPosition;
 					if (!_this.isLinear) {
 						_this.restorePlayer();
-						setTimeout(function () {
-							_this.embedPlayer.getPlayerElement().play();
-						}, 250);
 					} else {
 						if (!adInfo.skippable) {
 							_this.showSkipBtn();
@@ -1254,7 +1288,13 @@
 				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
 					mw.log("DoubleClick:: adClicked");
 					_this.toggleAdPlayback(adInfo.isLinear);
+					$( _this.embedPlayer).trigger( 'onAdClick' );
 				}, 'adClicked', true);
+
+				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
+					mw.log("DoubleClick:: adSkipped");
+					$( _this.embedPlayer).trigger( 'onAdSkip' );
+				}, 'adSkipped', true);
 
 				this.embedPlayer.getPlayerElement().subscribe(function (companionInfo) {
 					mw.log("DoubleClick:: displayCompanion");
@@ -1332,7 +1372,7 @@
 						_this.embedPlayer.hideSpinner();
 						_this.adLoaderErrorFlag = true;
 						$(_this.embedPlayer).trigger("adErrorEvent");
-						_this.restorePlayer();
+						_this.onAdError("adsLoadError");
 					}, 100);
 				}, 'adsLoadError', true);
 			}
@@ -1416,12 +1456,14 @@
 							$( embedPlayer ).trigger( "onPlayerStateChange", ["pause", embedPlayer.currentState] );
 							break;
 						case 'doPlay':
-							_this.adPaused = false;
-							_this.adsManager.resume();
-							embedPlayer.paused = false;
-							$( embedPlayer ).trigger( 'onplay' );
-							$( embedPlayer ).trigger( "onPlayerStateChange", ["play", embedPlayer.currentState] );
-							_this.monitorAdProgress();
+							if (_this.adPaused){
+								_this.adPaused = false;
+								_this.adsManager.resume();
+								embedPlayer.paused = false;
+								$( embedPlayer ).trigger( 'onplay' );
+								$( embedPlayer ).trigger( "onPlayerStateChange", ["play", embedPlayer.currentState] );
+								_this.monitorAdProgress();
+							}
 							break;
 						case 'doStop':
 							_this.adsManager.stop();
@@ -1501,8 +1543,15 @@
 			if (this.adsManager && $.isFunction( this.adsManager.unload ) ) {
 				this.adsManager.unload();
 			}
-			if (this.embedPlayer.sequenceProxy.isInSequence){
+			if (this.embedPlayer.isInSequence()){
 				this.restorePlayer(this.contentDoneFlag);
+				this.embedPlayer.play();
+			}else{
+				if (this.adsManagerLoadedTimeoutId){
+					clearTimeout(this.adsManagerLoadedTimeoutId);
+					this.adsManagerLoadedTimeoutId = null;
+				}
+				this.destroy();
 			}
 		},
 		restorePlayer: function( onContentComplete, adPlayed ){
@@ -1519,8 +1568,8 @@
 				this.embedPlayer.getInterface().find(".ad-notice-label").remove();
 				this.embedPlayer.getPlayerElement().redrawObject(50);
 			}else{
-				if (_this.isLinear || _this.adLoaderErrorFlag){
-					_this.hideAdContainer();
+				if (_this.isLinear !== false || _this.adLoaderErrorFlag){
+					_this.hideAdContainer(true);
 				}
 			}
 			this.embedPlayer.sequenceProxy.isInSequence = false;
@@ -1552,7 +1601,6 @@
 						_this.embedPlayer.seek(_this.timeToReturn);
 						_this.timeToReturn = null;
 					}
-
 					this.embedPlayer.play();
 				}
 			}
@@ -1586,6 +1634,7 @@
 				if ( this.getConfig("adTagUrl") && this.playingLinearAd ) {
 					this.restorePlayer(true);
 				}
+				$(".ad-skip-btn").remove(); // remove skip button from the DOM
 				setTimeout(function(){
 					_this.removeAdContainer();
 					if ( _this.adsLoader ) {

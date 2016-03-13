@@ -54,6 +54,8 @@
 		// Disable switch source callback
 		disableSwitchSourceCallback: false,
 
+		capturePauseAfterSourceSwitch: false,
+
 		// Flag specifying if a mobile device already played. If true - mobile device can autoPlay
 		mobilePlayed: false,
 		// All the native events per:
@@ -643,6 +645,22 @@
 					// hide the player offscreen while we switch
 					_this.hidePlayerOffScreen();
 
+					// restore position once we have metadata
+					$(vid).bind('loadedmetadata' + switchBindPostfix, function () {
+						$(vid).unbind('loadedmetadata' + switchBindPostfix);
+						_this.log(" playerSwitchSource> loadedmetadata callback for:" + src);
+						// ( do not update the duration )
+						// Android and iOS <5 gives bogus duration, depend on external metadata
+
+						// keep going towards playback! if  switchCallback has not been called yet
+						// we need the "playing" event to trigger the switch callback
+						if (!mw.isIOS71() && $.isFunction(switchCallback) && !_this.isVideoSiblingEnabled()) {
+							vid.play();
+						} else {
+							_this.removeBlackScreen();
+						}
+					});
+
 					var handleSwitchCallback = function () {
 						//Clear pause binding on switch exit in case it wasn't triggered.
 						$(vid).unbind('pause' + switchBindPostfix);
@@ -653,6 +671,7 @@
 						// Restore
 						vid.controls = originalControlsState;
 						_this.ignoreNextError = false;
+						_this.ignoreNextNativeEvent = false;
 						// check if we have a switch callback and issue it now:
 						if ($.isFunction(switchCallback)) {
 							_this.log(" playerSwitchSource> call switchCallback");
@@ -660,14 +679,18 @@
 							switchCallback(vid);
 							switchCallback = null;
 						}
+						_this.capturePauseAfterSourceSwitch = true;
 					};
 
-					// restore position once we have metadata
-					$(vid).bind('loadedmetadata' + switchBindPostfix, function () {
-						$(vid).unbind('loadedmetadata' + switchBindPostfix);
-						_this.log(" playerSwitchSource> loadedmetadata callback for:" + src);
+					// once playing issue callbacks:
+					$(vid).bind('playing' + switchBindPostfix, function () {
+						$(vid).unbind('playing' + switchBindPostfix);
+						_this.log(" playerSwitchSource> playing callback: " + vid.currentTime);
 						handleSwitchCallback();
-						_this.removeBlackScreen();
+						setTimeout(function () {
+							_this.removeBlackScreen();
+						}, 100);
+
 					});
 
 					// Add the end binding if we have a post event:
@@ -716,6 +739,15 @@
 						}
 					}
 
+					// issue the play request:
+					if (_this.isInSequence()){
+						vid.play();
+					}else{
+						if ( !( _this.playlist && mw.isAndroid() ) ){
+							_this.play();
+						}
+
+					}
 					if (mw.isMobileDevice()) {
 						setTimeout(function () {
 							handleSwitchCallback();
@@ -754,8 +786,9 @@
 				return;
 			}
 			// Remove any poster div ( that would overlay the player )
-			if (!this.isAudioPlayer && !mw.getConfig("EmbedPlayer.KeepPoster") === true)
-				$(this).find('.playerPoster').remove();
+			if (!this.isAudioPlayer && !mw.getConfig("EmbedPlayer.KeepPoster") === true) {
+                this.removePoster();
+            }
 			// Restore video pos before calling sync syze
 			$(vid).css({
 				'left': '0px',
@@ -1100,19 +1133,17 @@
 				this.ignoreNextNativeEvent = false;
 				return;
 			}
-			var timeSincePlay = Math.abs(this.absoluteStartPlayTime - new Date().getTime());
-			this.log(" OnPaused:: propagate:" + this._propagateEvents +
-				' time since play: ' + timeSincePlay + ' duringSeek:' + this.seeking);
+			this.log(" OnPaused:: propagate:" + this._propagateEvents  + ' duringSeek:' + this.seeking);
 			// Only trigger parent pause if more than MonitorRate time has gone by.
 			// Some browsers trigger native pause events when they "play" or after a src switch
-			if (!this.seeking && !this.userSlide
-				&&
-				timeSincePlay > mw.getConfig('EmbedPlayer.MonitorRate')
-				) {
+			if (!this.seeking && !this.userSlide &&	!this.capturePauseAfterSourceSwitch	) {
 				_this.parent_pause();
 			} else {
-				// try to continue playback:
-				this.getPlayerElement().play();
+				if (this.capturePauseAfterSourceSwitch && this.currentTime < 0.1){
+					// try to continue playback:
+					this.getPlayerElement().play();
+					this.capturePauseAfterSourceSwitch = false;
+				}
 			}
 		},
 
@@ -1384,12 +1415,16 @@
                 if( vid.audioTracks && vid.audioTracks.length > 0 ) {
                     var data ={'languages':[]};
                     for (var i = 0; i < vid.audioTracks.length; i++) {
-                        var lang = {};
-                        lang.index = i;
-                        lang.label = vid.audioTracks[i].label;
-                        data.languages.push(lang);
+                        if( vid.audioTracks[i].label !== "" ) {
+                            var lang = {};
+                            lang.index = i;
+                            lang.label = vid.audioTracks[i].label;
+                            data.languages.push(lang);
+                        }
                     }
-                    _this.triggerHelper('audioTracksReceived', data);
+                    if( data.languages.length > 0 ) {
+                        _this.triggerHelper('audioTracksReceived', data);
+                    }
                 }else{
                     //try to catch audioTracks, give up after 5 seconds
                     if( counter < 5 ){

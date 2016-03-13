@@ -1,7 +1,7 @@
 /**
  * Created by mark.feder Kaltura.
- * V2.40.quiz-rc7
- */
+ *
+ * */
 
 (function (mw, $) {
     "use strict";
@@ -26,12 +26,13 @@
         selectedAnswer:null,
         seekToQuestionTime:null,
         multiStreamWelcomeSkip:false,
+        IVQVer:'IVQ-2.41.rc2',
 
         setup: function () {
             var _this = this;
-            var embedPlayer = this.getPlayer();
+            var embedPlayer = _this.getPlayer();
             embedPlayer.disableComponentsHover();
-
+            mw.log("Quiz: " + _this.IVQVer);
             this.bind('onChangeStream', function () {
                 mw.log("Quiz: multistream On");
                 _this.multiStreamWelcomeSkip = true;
@@ -47,7 +48,7 @@
                         embedPlayer.autoplay = false;
                     }
 
-                    _this.KIVQModule.setupQuiz(embedPlayer);
+                    _this.KIVQModule.setupQuiz();
                     _this.KIVQScreenTemplate = new mw.KIVQScreenTemplate(embedPlayer);
 
                     if(_this.KIVQModule.isKPlaylist){
@@ -65,10 +66,10 @@
                         _this.addBindings();
 
                         if(_this.KIVQModule.isKPlaylist){
+                            embedPlayer.stop();//
                             _this.enablePlayDuringScreen = false;
                             _this.ssWelcome();
                             mw.log("Quiz: playlistWelcome");
-                            embedPlayer.enablePlayControls();
                         };
                         embedPlayer.hideSpinner();
                         embedPlayer.enablePlayControls();
@@ -222,7 +223,6 @@
 
                     $(".pdf-download-img").on('click',function(){
                         _this.KIVQModule.getIvqPDF(_this.embedPlayer.kentryid);
-                        $(".pdf-download-img").off();
                     });
                 }
                 $.grep($.quizParams.uiAttributes, function (e) {
@@ -258,7 +258,7 @@
                 .on('click', '.confirm-box', function () {
                     _this.embedPlayer.stopPlayAfterSeek = false;
                     _this.embedPlayer.seek(0,false);
-                    _this.hideScreen();
+                    _this.ivqHideScreen();
                 });
         },
 
@@ -529,6 +529,7 @@
             _this.embedPlayer.enablePlayControls();
             _this.embedPlayer.triggerHelper( 'onEnableKeyboardBinding' );
             _this.KIVQModule.showQuizOnScrubber();
+            $(".icon-close").css("display", "");
         },
         addFooter: function (questionNr) {
             var _this = this;
