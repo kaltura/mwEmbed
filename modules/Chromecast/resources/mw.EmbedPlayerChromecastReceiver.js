@@ -25,7 +25,6 @@
 		duration: 0,
 		userSlide: false,
 		volume: 1,
-		vid: null,
 		monitorInterval: null,
 		receiverName: '',
 		nativeEvents: [
@@ -54,10 +53,16 @@
 		],
 
 		setup: function( readyCallback ) {
-			this.vid = this.getPlayerElement();
+			$(this).bind('layoutBuildDone', function(){
+				this.getVideoHolder().find('video').remove();
+			});
+
+			this.setPlayerElement(parent.document.getElementById('receiverVideoElement'));
 			this.applyMediaElementBindings();
 			mw.log('EmbedPlayerChromecastReceiver:: Setup. Video element: '+this.getPlayerElement().toString());
-			$(this).trigger("chromecastReceiverLoaded",[this.getPlayerElement()]);
+			this.getPlayerElement().src = '';
+			$(this).trigger("chromecastReceiverLoaded");
+
 			var _this = this;
 			this._propagateEvents = true;
 			$(this.getPlayerElement()).css('position', 'absolute');
@@ -114,7 +119,7 @@
 			this.stopped = false;
 			this.layoutBuilder.hidePlayerControls();
 			$(this).trigger('onPlayerStateChange', [ "play", "pause" ]);
-			this.parent_play();
+			//this.parent_play();
 		},
 		// override these functions so embedPlayer won't try to sync time
 		syncCurrentTime: function(){},
@@ -122,15 +127,20 @@
 		isInSequence: function(){return false;},
 
 		monitor: function(){
-			if ( this.vid && this.vid.currentTime !== null && this.vid.duration !== null) {
-				$(this).trigger("updatePlayHeadPercent",[ this.vid.currentTime / this.vid.duration ]);
-				$( this ).trigger( 'externalTimeUpdate', [this.vid.currentTime]);
+			var vid = this.getPlayerElement();
+			if ( vid && vid.currentTime !== null && vid.duration !== null) {
+				$(this).trigger("updatePlayHeadPercent",[ vid.currentTime / vid.duration ]);
+				$( this ).trigger( 'externalTimeUpdate', [vid.currentTime]);
 			}
 			$(this).trigger( 'monitorEvent' );
+			this.parent_monitor();
 		},
 
+		setPlayerElement: function (mediaElement) {
+			this.playerElement = mediaElement;
+		},
 		getPlayerElement: function () {
-			this.playerElement = $('#' + this.pid).get(0);
+			//this.playerElement = $('#' + this.pid).get(0);
 			return this.playerElement;
 		},
 

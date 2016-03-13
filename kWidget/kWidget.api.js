@@ -197,9 +197,7 @@ kWidget.api.prototype = {
 		var response = data;
 		try {
 			response = JSON.parse( data );
-		}catch(e){
-			console.log("Error parsing JSON");
-		}
+		}catch(e){}
 		return response;
 	},
 	xhrGet: function( url, param, callback ){
@@ -299,6 +297,9 @@ kWidget.api.prototype = {
 		}
 		if( serviceType && serviceType == 'liveStats' &&  mw.getConfig( 'Kaltura.LiveStatsServiceUrl' ) ) {
 			serviceUrl = mw.getConfig( 'Kaltura.LiveStatsServiceUrl' );
+		}
+		if( serviceType && serviceType == 'analytics' &&  mw.getConfig( 'Kaltura.AnalyticsUrl' ) ) {
+			serviceUrl = mw.getConfig( 'Kaltura.AnalyticsUrl' );
 		}
 		return serviceUrl + mw.getConfig( 'Kaltura.ServiceBase' ) + serviceType;
 	},

@@ -73,6 +73,7 @@ mw.KAnalytics.prototype = {
 	 * 			kalturaClient Kaltura client object for the api session.
 	 */
 	init: function( embedPlayer ) {
+		var _this = this;
 		// set the version of html5 player
 		this.version = mw.getConfig( 'version' );
 		// Setup the local reference to the embed player
@@ -84,8 +85,10 @@ mw.KAnalytics.prototype = {
 		// Remove any old bindings:
 		$( embedPlayer ).unbind( this.bindPostFix );
 
-		// Setup the initial state of some flags
-		this.resetPlayerflags();
+		$( embedPlayer ).bind( 'playerReady' + this.bindPostFix, function(){
+			// Setup the initial state of some flags
+			_this.resetPlayerflags();
+		});
 
 		// Add relevant hooks for reporting beacons
 		this.bindPlayerEvents();

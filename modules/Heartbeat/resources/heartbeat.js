@@ -80,7 +80,7 @@
             this.embedPlayer.bindHelper('bufferEndEvent', function(){ _this.trackBufferEnd(); });
             this.embedPlayer.bindHelper('sourceSwitchingEnd', function(){ _this.trackBitrateChangeEnd(); });
 
-            this.embedPlayer.bindHelper('onAdPlay', function(event, adID, adSystem, type, adIndex, adDuration, mediaName, podPosition, podStartTime){
+            this.embedPlayer.bindHelper('onAdPlay', function(event, adID, adSystem, type, adIndex, adDuration, podPosition, podStartTime, mediaName){
                 _this.trackAdStart({id:adID, position:adIndex, length:adDuration, name:mediaName, podPosition:podPosition, podStartTime:podStartTime}); });
             this.embedPlayer.bindHelper('onAdComplete', function(){ _this.trackAdComplete(); });
 

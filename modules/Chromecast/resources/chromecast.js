@@ -181,6 +181,7 @@
 			this.getComponent().css("color","#35BCDA");
 			this.updateTooltip(this.stopCastTitle);
 			this.casting = true;
+			this.embedPlayer.casting = true;
 			// set receiver debug if needed
 			if ( this.getConfig("debugReceiver") ){
 				this.sendMessage({'type': 'show', 'target': 'debug'});
@@ -428,6 +429,7 @@
 				this.log("no session");
 				return;
 			}
+			this.savedPosition = 0;
 			// if URL and mime type were passed use it. If not - get the them from the embed player current source
 			var currentMediaURL = url || this.embedPlayer.getSource().src;
 			var mimeType = mime || this.embedPlayer.getSource().mimeType;
@@ -475,20 +477,21 @@
 		stopApp: function() {
 			clearInterval(this.monitorInterval);
 			var _this = this;
-
+			var seekTime = this.getCurrentTime();
 			// stop casting
 			this.session.stop(this.onStopAppSuccess, this.onError);
 			this.getComponent().css("color","white");
 			this.updateTooltip(this.startCastTitle);
 			this.casting = false;
+			this.embedPlayer.casting = false;
 			this.embedPlayer.getInterface().find(".chromecastScreen").remove();
 			// restore native player
 			this.embedPlayer.selectPlayer(this.savedPlayer);
 			this.savedPlayer = null;
 			this.embedPlayer.disablePlayer();
 			this.embedPlayer.updatePlaybackInterface();
-			this.embedPlayer.play();
 			this.embedPlayer.enablePlayControls();
+			this.embedPlayer.seek(seekTime, false);
 		},
 
 		onStopAppSuccess: function() {

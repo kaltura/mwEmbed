@@ -139,8 +139,8 @@
 		// Live stream player?
 		"live": false,
 
-	    // Live stream only - not playing live edge, user paused or seeked to play DVR content
-        "liveOffSynch": false,
+		// Live stream only - not playing live edge, user paused or seeked to play DVR content
+		"liveOffSynch": false,
 
 		// Is Audio Player (defined in kWidgetSupport)
 		"isAudioPlayer": false,
@@ -150,11 +150,14 @@
 
 		//indicates that the current sources list was set by "ReplaceSources" config
 		"sourcesReplaced": false,
-		
+
 		"streamerType": 'http',
 
 		"shouldEndClip": true,
-		"buffering": false
+		"buffering": false,
+
+		// indicates the the player is currently casting to Chromecast
+		"casting": false
 	});
 
 	/**
@@ -284,7 +287,7 @@
 
 		//if the player should handle playerError events
 		shouldHandlePlayerError: true,
-		
+
 		// stores the manifest derived flavor index / list:
 		"manifestAdaptiveFlavors": [],
 
@@ -293,12 +296,15 @@
 
 		playerPrefix: 'BasePlayer',
 
-        // stores current bitrate for adaptive bitrate video
-        currentBitrate: -1,
+		// stores current bitrate for adaptive bitrate video
+		currentBitrate: -1,
 
 		drmRequired: false,
 
-		/**
+        //the offset in hours:minutes:seconds from the playable live edge.
+        liveEdgeOffset: 0,
+
+        /**
 		 * embedPlayer
 		 *
 		 * @constructor
@@ -724,6 +730,10 @@
 
 		getPlayerByStreamerType: function (source) {
 			var targetPlayer;
+			// if currently casting - always return the Chromecast player
+			if ( this.casting ){
+				return mw.EmbedTypes.getMediaPlayers().getPlayerById('chromecast');
+			}
 			//currently only kplayer can handle other streamerTypes
 			if (!mw.getConfig('EmbedPlayer.IgnoreStreamerType')
 				&& !this.isImageSource()   //not an image entry
@@ -801,9 +811,9 @@
 				_this.handlePlayerError(data);
 			});
 
-            this.bindHelper('bitrateChange', function (e, data) {
-                _this.currentBitrate = data;
-            });
+			this.bindHelper('bitrateChange', function (e, data) {
+				_this.currentBitrate = data;
+			});
 
 			// Check for source replace configuration:
 			if (mw.getConfig('EmbedPlayer.ReplaceSources')) {
@@ -872,6 +882,7 @@
 				if (!errorObj) {
 					this.showPlayerError();
 				} else {
+					this.setError(errorObj);
 					this.showErrorMsg(errorObj);
 				}
 				mw.log("EmbedPlayer:: setupSourcePlayer > player ready ( but with errors ) ");
@@ -888,12 +899,12 @@
 		},
 		/** 
 		 * Wraps the autoSelect source call passing in temporal url options
-		 * for use of temporal urls where supported. 
+		 * for use of temporal urls where supported.
 		 */
 		autoSelectTemporalSource: function(options){
 			var baseTimeOptions =  {
-				'supportsURLTimeEncoding': this.supportsURLTimeEncoding(), 
-				'startTime' :this.startTime, 
+				'supportsURLTimeEncoding': this.supportsURLTimeEncoding(),
+				'startTime' :this.startTime,
 				'endTime': this.pauseTime
 			};
 			this.mediaElement.autoSelectSource( $.extend( {},baseTimeOptions, options ) );
@@ -1252,7 +1263,7 @@
 				}
 			}
 			// display thumbnail upon movie end if showThumbnailOnEnd Flashvar is set to true and not looped
-			if (!this.loop) {
+			if (this.getFlashvars("EmbedPlayer.ShowPosterOnStop") !== false && !this.loop) {
 				this.updatePosterHTML();
 			}
 		},
@@ -1307,6 +1318,11 @@
 		showPlayer: function () {
 			mw.log('EmbedPlayer:: showPlayer: ' + this.id + ' interace: w:' + this.width + ' h:' + this.height);
 			var _this = this;
+
+			if( mw.getConfig('preload')==='auto' ){
+				this.load();
+			}
+
 			// Remove the player loader spinner if it exists
 			this.hideSpinner();
 			// If a isPersistentNativePlayer ( overlay the controls )
@@ -1366,8 +1382,8 @@
 
 		doUpdateLayout: function (skipTrigger) {
 			// Set window height if in iframe:
-            var containerHeight = this.layoutBuilder.getContainerHeight();
-            var newHeight = containerHeight - this.layoutBuilder.getComponentsHeight();
+			var containerHeight = this.layoutBuilder.getContainerHeight();
+			var newHeight = containerHeight - this.layoutBuilder.getComponentsHeight();
 			var currentHeight = this.getVideoHolder().height();
 			var deltaHeight = Math.abs(currentHeight - newHeight);
 			mw.log('EmbedPlayer: doUpdateLayout:: containerHeight: ' +
@@ -1461,6 +1477,7 @@
 		showErrorMsg: function (errorObj) {
 			// Remove a loading spinner
 			this.hideSpinner();
+			this.triggerHelper('playerError', errorObj);
 			// clear change media flag
 			this.changeMediaStarted = false;
 			if (this.layoutBuilder) {
@@ -1735,11 +1752,10 @@
 					//remove black bg when showing poster after change media
 					$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
 					// reload the player
-					if (_this.autoplay && _this.canAutoPlay() ) {
+					if (_this.canAutoPlay() ) {
 						if (!_this.isAudioPlayer) {
 							_this.removePoster();
 						}
-						_this.play();
 					}
 
 					$this.trigger('onChangeMediaDone');
@@ -1830,7 +1846,7 @@
 		 * Updates the poster HTML
 		 */
 		updatePosterHTML: function () {
-            mw.log('EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
+			mw.log('EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
 			var _this = this;
 
 			// Set by black pixel if no poster is found:
@@ -1847,15 +1863,10 @@
 
 			$(this).find(".playerPoster").remove();
 			//remove poster on autoPlay when player loaded
-			if ( (this.currentState==null || this.currentState=="load") && mw.getConfig('autoPlay') && !mw.isMobileDevice()){
+			if ( this.currentState=="load" && mw.getConfig('autoPlay') && !mw.isMobileDevice()){
 				return;
 			}
-			//remove poster on start
-			if ( (this.currentState==null || this.currentState=="load") && mw.getConfig('EmbedPlayer.HidePosterOnStart') === true ) {
-				return;
-			}
-			//remove poster on end
-			if ( mw.getConfig('EmbedPlayer.ShowPosterOnStop') === false && this.currentState=="end" ) {
+			if ( mw.getConfig('EmbedPlayer.HidePosterOnStart') === true && !(this.currentState=="end" && mw.getConfig('EmbedPlayer.ShowPosterOnStop')) ) {
 				return;
 			}
 			// support IE9 and IE10 compatibility modes
@@ -2268,10 +2279,6 @@
 				this.removePoster();
 			}
 
-			if (mw.getConfig("EmbedPlayer.KeepPoster")){
-				this.updatePosterHTML();
-			}
-
 			// We need first play event for analytics purpose
 			if (this.firstPlay && this._propagateEvents) {
 				this.firstPlay = false;
@@ -2391,10 +2398,10 @@
 				.attr('id', sId);
 		},
 		hideSpinner: function () {
+			$(this).trigger('onRemovePlayerSpinner');
 			var $spinner = $('#loadingSpinner_' + this.id + ',.loadingSpinner');
 			if ($spinner.length > 0) {
 				// remove the spinner
-				$(this).trigger('onRemovePlayerSpinner');
 				$spinner.remove();
 			}
 
@@ -2507,11 +2514,13 @@
 
 
 		togglePlayback: function () {
-				if (this.paused) {
-					this.play();
-				} else {
-					this.pause();
-				}
+			if (this.paused) {
+				this.triggerHelper( 'userInitiatedPlay' );
+				this.play();
+			} else {
+				this.triggerHelper( 'userInitiatedPause' );
+				this.pause();
+			}
 		},
 		isMuted: function () {
 			return this.muted;
@@ -2784,6 +2793,15 @@
 				if (!this.userSlide && !this.seeking ) {
 					var playHeadPercent = ( this.currentTime - this.startOffset ) / this.duration;
 					this.updatePlayHead(playHeadPercent);
+                    //update liveEdgeOffset
+                    if(this.isDVR()){
+                        var perc = parseInt(playHeadPercent*1000);
+                        if(perc>998) {
+                            this.liveEdgeOffset = 0;
+                        }else {
+                            this.liveEdgeOffset = this.duration - perc/1000 * this.duration;
+                        }
+                    }
 				}
 			}
 		},
@@ -2928,7 +2946,7 @@
 			return this.mediaElement.selectedSource;
 		},
 		/**
-		 * Retuns the set of playable sources. 
+		 * Retuns the set of playable sources.
 		 */
 		getSources: function(){
 			return this.mediaElement.getPlayableSources();
@@ -3030,7 +3048,7 @@
 		},
 
 		isDrmRequired: function () {
-			return this.drmRequired;
+			return this.drmRequired && !this.getRawKalturaConfig("embedPlayerChromecastReceiver","plugin") === true;
 		},
 
 		isDVR: function () {
@@ -3042,16 +3060,16 @@
 
 		},
 
-        isLiveOffSynch: function () {
-            return this.liveOffSynch;
-        },
+		isLiveOffSynch: function () {
+			return this.liveOffSynch;
+		},
 
-        setLiveOffSynch: function (status) {
-            if( status !== this.liveOffSynch ) {
-                this.liveOffSynch = status;
-                $(this).trigger('onLiveOffSynchChanged', [status]);
-            }
-        },
+		setLiveOffSynch: function (status) {
+			if( status !== this.liveOffSynch ) {
+				this.liveOffSynch = status;
+				$(this).trigger('onLiveOffSynchChanged', [status]);
+			}
+		},
 
 		disableComponentsHover: function () {
 			if (this.layoutBuilder) {
@@ -3117,7 +3135,7 @@
 			}
 		},
 		/**
-		 * Switches a player source 
+		 * Switches a player source
 		 * @param {Object} source asset to switch to
 		 */
 		switchSrc: function( source ){
@@ -3275,7 +3293,32 @@
 			}
 			//adaptive bitrate
 			return this.currentBitrate;
+		},
+
+        /*
+        * get current offset from the playable live edge inside DVR window (positive number for negative offset)
+        */
+        getLiveEdgeOffset: function () {
+          return this.liveEdgeOffset;
+        },
+
+        /*
+        * Some players parse playmanifest and reload flavors list by calling this function
+        * @param offset {positive number}: number of seconds to move back from the playable live edge inside DVR window
+        * @param callback {function}: callback (if exists) will be executed after the seek
+        */
+        setLiveEdgeOffset: function(offset, callback){
+           mw.log( 'EmbedPlayer :: setLiveEdgeOffset -' + offset );
+           this.seek(this.getDuration()-offset);
+           if ($.isFunction(callback)) {
+              callback();
+           }
+        },
+
+		getCurrentBufferLength: function(){
+			mw.log("Error: getPlayerElementTime should be implemented by embed library");
 		}
+
 	};
 
 })(window.mw, window.jQuery);

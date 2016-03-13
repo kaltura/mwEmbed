@@ -826,6 +826,9 @@
 					b( 'playerReady', function(){
 						callback( 'ready', embedPlayer.id );
 					});
+					b( 'bufferStartEvent', function(){
+						callback( 'buffering', embedPlayer.id );
+					});
 					b( 'onpause', function(){
 						callback( 'paused', embedPlayer.id );
 					});
@@ -1161,6 +1164,9 @@
 						})
 						return;
 					}
+					if ( notificationData && notificationData.userInitiated ){
+						embedPlayer.triggerHelper( 'userInitiatedPlay' );
+					}
 					embedPlayer.play();
 					break;
 				case 'doPause':
@@ -1168,6 +1174,9 @@
 					if( embedPlayer.sequenceProxy && embedPlayer.sequenceProxy.isInSequence ) {
 						embedPlayer.triggerHelper( 'doPause' );
 						break;
+					}
+					if ( notificationData && notificationData.userInitiated ){
+						embedPlayer.triggerHelper( 'userInitiatedPause' );
 					}
 					embedPlayer.pause();
 					break;

@@ -52,6 +52,8 @@
 		// Disable switch source callback
 		disableSwitchSourceCallback: false,
 
+		updateInterval: null,
+
 		// Flag specifying if a mobile device already played. If true - mobile device can autoPlay
 		mobilePlayed: false,
 		// All the native events per:
@@ -82,6 +84,8 @@
 		],
 
 		streamerType: 'dash',
+
+		manifestLoaded: false,
 
 		// Native player supported feature set
 		supports: {
@@ -194,6 +198,7 @@
 				this.playerElement = mw.dash.player( this.pid, {
 					autoplay: false,
 					controls: false,
+					preload: "none",
 					height: "100%",
 					width: "100%",
 					dasheverywhere: this.getDrmConfig(),
@@ -207,22 +212,26 @@
 					var el = $(_this.playerElement.el() );
 					//Hide native player UI
 					el.find(".vjs-poster, .vjs-control-bar, .vjs-big-play-button" ).css("display", "none");
-					el.attr('data-src', _this.getSrc());
 					//Set specific playback engine settings
 					if (_this.playerElement.getActiveTech() == "dashjs") {
 						//Set schedule while paused to true to allow buffering when in paused state
 						_this.playerElement.mediaPlayer.setScheduleWhilePaused(true);
 
-						//Continue only after manifest loaded event has been dispatched
+						//Need to know if manifest was loaded before allowing playback to start
 						this.one("manifestLoaded", function () {
-							callback();
+							_this.manifestLoaded = true;
 						});
+						callback();
 					} else {
 						setTimeout(function(){
 							callback();
 						}, 0);
 					}
-					_this.updateDashContext();
+					//In IE and Edge source is preloaded, so defer this until we request play for the first time
+					//IF autoplay is set then play flow will call update context
+					if (!_this.autoplay && (!mw.isEdge() && !mw.isIE())) {
+						_this.updateDashContext();
+					}
 				} );
 				this.bindHelper('switchAudioTrack', function (e, data) {
 					if (_this.getPlayerElement()) {
@@ -243,13 +252,15 @@
 				this.bindHelper('closedCaptionsHidden', function () {
 					_this.getPlayerElement().textTrackDisplay.hide();
 				});
-
 			}
 		},
 		updateDashContext: function(){
 			var _this = this;
 			if (this.getPlayerElement() && this.getSrc()) {
 				this.resolveSrcURL( this.getSrc() ).then( function(source){
+					_this.manifestLoaded = false;
+					var el = $(_this.playerElement.el() );
+					el.attr('data-src', _this.getSrc());
 					_this.playerElement.loadVideo( source, _this.getDrmConfig() );
 				}, function(){
 					//Report on playManifest redirect error
@@ -257,6 +268,22 @@
 					_this.triggerHelper('embedPlayerError');
 				} );
 			}
+		},
+		waitForManifestLoaded: function(){
+			var manifestLoadedDeferred = $.Deferred();
+			if (this.manifestLoaded || (this.playerElement.getActiveTech() == "dashcs")){
+				return manifestLoadedDeferred.resolve();
+			} else {
+				var _this = this;
+				this.playerElement.one("manifestLoaded", function () {
+					_this.manifestLoaded = true;
+					//Prevent issues with stack order when issuing autoplay or play command right after playerReady
+					setTimeout(function(){
+						manifestLoadedDeferred.resolve();
+					},0);
+				});
+			}
+			return manifestLoadedDeferred;
 		},
 		getDrmConfig: function(){
 			var drmConfig = this.getKalturaConfig('multiDrm');
@@ -802,8 +829,6 @@
 				}
 			}
 		},
-		//Disable check - handled on lower level
-		checkClipDoneCondition: function(){},
 		/**
 		 * play method calls parent_play to update the interface
 		 */
@@ -823,11 +848,21 @@
 					this.currentTime = 0;
 				}
 				if ( this.parent_play() ) {
-					var _this = this;
-					setTimeout( function () {
+					var play = function () {
 						_this.getPlayerElement().play();
 						_this.monitor();
-					}, (this.mediaLoadedFlag ? 100 : 2000) );
+					};
+					var _this = this;
+					//If source isn't set yet then load now, this is used for deferred loading in browsers (IE, Edge)
+					//which don't respect preload=none
+					var el = $(this.playerElement.el());
+					if (el.attr('data-src') !== this.getSrc()){
+						this.updateDashContext();
+
+					}
+					//Make sure manifest is loaded before calling play, this is especially important for
+					//very large manifests which take time to parse!
+					this.waitForManifestLoaded().then(play);
 				} else {
 					mw.log( "EmbedPlayerMultiDRM:: parent play returned false, don't issue play on player element" );
 				}
@@ -845,7 +880,12 @@
 			}
 			this.parent_pause();
 		},
-
+		/**
+		 * load method calls parent_load to start fetching media from server, in case of DRM the license request will be handled as well
+		 */
+		load: function () {
+			this.getPlayerElement().load();
+		},
 
 		/**
 		 * Handle the native paused event
@@ -922,7 +962,7 @@
 				//Run initial update to get active video/audio/caption tracks
 				update();
 				//Validate status every 5 sec
-				setInterval(function () {
+				this.updateInterval = setInterval(function () {
 					update();
 				}, 5000);
 			}
@@ -1258,6 +1298,12 @@
 			} else {
 				this.log("seek target verified");
 				return waitForSeekTargetDeferred.resolve();
+			}
+		},
+		clean: function(){
+			if (this.updateInterval){
+				clearInterval(this.updateInterval);
+				this.updateInterval = null;
 			}
 		},
 		/**

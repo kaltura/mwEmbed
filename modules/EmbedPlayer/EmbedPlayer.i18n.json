@@ -12,6 +12,7 @@
         "mwe-embedplayer-volume-value": "Volume $1%",
         "mwe-embedplayer-volume-increase": "Increase Volume",
         "mwe-embedplayer-volume-decrease": "Decrease Volume",
+        "mwe-embedplayer-audio_source": "Audio",
         "mwe-embedplayer-select_source": "Quality Settings",
         "mwe-embedplayer-switch_source": "switch in progress",
         "mwe-embedplayer-auto_source": "Auto",
