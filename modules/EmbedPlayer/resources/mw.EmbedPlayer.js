@@ -1111,7 +1111,7 @@
 
 			// Check if currentTime is already set to the seek target:
 			var playerElementTime = parseFloat(this.getPlayerElementTime()).toFixed(2);
-			if (Math.abs(playerElementTime - seekTime) < mw.getConfig("EmbedPlayer.SeekTargetThreshold", 0.1)) {
+			if (Math.abs(playerElementTime - seekTime) < mw.getConfig("EmbedPlayer.SeekTargetThreshold", 0.01)) {
 				mw.log("EmbedPlayer:: seek: current time matches seek target: " +
 					playerElementTime + ' ~== ' + seekTime );
 				$(this).trigger('seeked');
@@ -1213,6 +1213,10 @@
 					// Restore events if we are not running the interface done actions
 					this.restoreEventPropagation();
 					return;
+				}
+
+				if (!this.stopAfterSeek) {
+					this.stopAfterSeek = true;
 				}
 
 				// if the ended event did not trigger more timeline actions run the actual stop:
@@ -2221,6 +2225,7 @@
 				// prevent getting another clipdone event on replay
 				this.stopPlayAfterSeek = false;
 				this.seek(0.01, false);
+				return false;
 			}
 			// Store the absolute play time ( to track native events that should not invoke interface updates )
 			mw.log("EmbedPlayer:: play: " + this._propagateEvents + ' isStopped: ' + _this.isStopped());
@@ -2819,15 +2824,15 @@
 		setClipDoneGuard: function(){
 			if (!this.clipDoneTimeout && this.shouldEndClip) {
 				var _this = this;
-				var timeoutVal = (this.duration * 0.02 * 1000);
-				this.log( "Setting clip done guard check in " + (timeoutVal / 1000) + " seconds" );
+				var timeoutVal = (Math.abs(this.duration - this.currentTime) * 2);
+				+				this.log( "Setting clip done guard check in " + timeoutVal + " seconds" );
 				this.clipDoneTimeout = setTimeout( function () {
 					if ( _this.shouldEndClip && !_this.isLive() ) {
 						_this.log( "clipDone guard > should run clip done :: " + _this.currentTime );
 						_this.onClipDone();
 					}
 					_this.clipDoneTimeout = null;
-				}, timeoutVal );
+				}, (timeoutVal * 1000) );
 			}
 		},
 		cancelClipDoneGuard: function() {
