@@ -171,7 +171,7 @@
 						break;
 					case "application/vnd.apple.mpegurl":
 						// fps
-						licenseUri = licenseServer + "/cenc/fps/license?" + licenseParams;
+						licenseUri = licenseServer + "/fps/license?" + licenseParams;
 						//Add the FPS certificate
 						this.getPlayerElement().attr('fpsCertificate', this.mediaElement.selectedSource.fpsCertificate);
 						break;
