@@ -2825,7 +2825,7 @@
 			if (!this.clipDoneTimeout && this.shouldEndClip) {
 				var _this = this;
 				var timeoutVal = (Math.abs(this.duration - this.currentTime) * 2);
-				this.log( "Setting clip done guard check in " + timeoutVal + " seconds" );
+				+				this.log( "Setting clip done guard check in " + timeoutVal + " seconds" );
 				this.clipDoneTimeout = setTimeout( function () {
 					if ( _this.shouldEndClip && !_this.isLive() ) {
 						_this.log( "clipDone guard > should run clip done :: " + _this.currentTime );
