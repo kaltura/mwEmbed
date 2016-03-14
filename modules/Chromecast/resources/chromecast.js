@@ -82,6 +82,7 @@
 
 			$( this.embedPlayer).bind('chromecastDeviceConnected', function(){
 				_this.getComponent().css("color","#35BCDA");
+				this.getInterface().find(".chromecastScreen").remove();
 				$(_this.embedPlayer).html(_this.getPlayingScreen());
 				$(".chromecastThumb").load(function(){
 					setTimeout(function(){
@@ -425,7 +426,7 @@
 
 		loadMedia: function(url, mime) {
 			var _this = this;
-			if (!this.session) {
+			if (!this.session || (!url && !this.embedPlayer.getSource())) {
 				this.log("no session");
 				return;
 			}

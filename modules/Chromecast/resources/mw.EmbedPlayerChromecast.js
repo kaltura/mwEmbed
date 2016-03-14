@@ -79,6 +79,9 @@
 			this.parent_pause();
 		},
 
+		canAutoPlay: function () {
+			return true;
+		},
 		changeMediaCallback: function (callback) {
 			var _this = this;
 			// Check if we have source
