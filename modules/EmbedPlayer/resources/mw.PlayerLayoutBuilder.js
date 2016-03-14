@@ -799,7 +799,7 @@ mw.PlayerLayoutBuilder.prototype = {
 							setTimeout( function() {
 								_this.mouseMovedFlag = true;
 								_this.showPlayerControls();
-								if ( mw.hasMouseEvents() ) {
+								if ( !mw.getConfig( "EmbedPlayer.ForceNativeComponent") ) {
 									_this.addMouseMoveHandler();
 								}
 								_this.getInterface().find( '#touchOverlay' ).remove();

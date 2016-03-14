@@ -139,8 +139,8 @@
 		// Live stream player?
 		"live": false,
 
-	    // Live stream only - not playing live edge, user paused or seeked to play DVR content
-        "liveOffSynch": false,
+		// Live stream only - not playing live edge, user paused or seeked to play DVR content
+		"liveOffSynch": false,
 
 		// Is Audio Player (defined in kWidgetSupport)
 		"isAudioPlayer": false,
@@ -150,7 +150,7 @@
 
 		//indicates that the current sources list was set by "ReplaceSources" config
 		"sourcesReplaced": false,
-		
+
 		"streamerType": 'http',
 
 		"shouldEndClip": true,
@@ -284,7 +284,7 @@
 
 		//if the player should handle playerError events
 		shouldHandlePlayerError: true,
-		
+
 		// stores the manifest derived flavor index / list:
 		"manifestAdaptiveFlavors": [],
 
@@ -293,8 +293,8 @@
 
 		playerPrefix: 'BasePlayer',
 
-        // stores current bitrate for adaptive bitrate video
-        currentBitrate: -1,
+		// stores current bitrate for adaptive bitrate video
+		currentBitrate: -1,
 
 		drmRequired: false,
 
@@ -804,9 +804,9 @@
 				_this.handlePlayerError(data);
 			});
 
-            this.bindHelper('bitrateChange', function (e, data) {
-                _this.currentBitrate = data;
-            });
+			this.bindHelper('bitrateChange', function (e, data) {
+				_this.currentBitrate = data;
+			});
 
 			// Check for source replace configuration:
 			if (mw.getConfig('EmbedPlayer.ReplaceSources')) {
@@ -892,12 +892,12 @@
 		},
 		/** 
 		 * Wraps the autoSelect source call passing in temporal url options
-		 * for use of temporal urls where supported. 
+		 * for use of temporal urls where supported.
 		 */
 		autoSelectTemporalSource: function(options){
 			var baseTimeOptions =  {
-				'supportsURLTimeEncoding': this.supportsURLTimeEncoding(), 
-				'startTime' :this.startTime, 
+				'supportsURLTimeEncoding': this.supportsURLTimeEncoding(),
+				'startTime' :this.startTime,
 				'endTime': this.pauseTime
 			};
 			this.mediaElement.autoSelectSource( $.extend( {},baseTimeOptions, options ) );
@@ -1215,6 +1215,10 @@
 					return;
 				}
 
+				if (!this.stopAfterSeek) {
+					this.stopAfterSeek = true;
+				}
+
 				// if the ended event did not trigger more timeline actions run the actual stop:
 				if (this.onDoneInterfaceFlag) {
 					mw.log("EmbedPlayer::onDoneInterfaceFlag=true do interface done");
@@ -1312,9 +1316,9 @@
 			mw.log('EmbedPlayer:: showPlayer: ' + this.id + ' interace: w:' + this.width + ' h:' + this.height);
 			var _this = this;
 
-            if( mw.getConfig('preload')==='auto' ){
-                this.load();
-            }
+			if( mw.getConfig('preload')==='auto' ){
+				this.load();
+			}
 
 			// Remove the player loader spinner if it exists
 			this.hideSpinner();
@@ -1375,8 +1379,8 @@
 
 		doUpdateLayout: function (skipTrigger) {
 			// Set window height if in iframe:
-            var containerHeight = this.layoutBuilder.getContainerHeight();
-            var newHeight = containerHeight - this.layoutBuilder.getComponentsHeight();
+			var containerHeight = this.layoutBuilder.getContainerHeight();
+			var newHeight = containerHeight - this.layoutBuilder.getComponentsHeight();
 			var currentHeight = this.getVideoHolder().height();
 			var deltaHeight = Math.abs(currentHeight - newHeight);
 			mw.log('EmbedPlayer: doUpdateLayout:: containerHeight: ' +
@@ -1839,7 +1843,7 @@
 		 * Updates the poster HTML
 		 */
 		updatePosterHTML: function () {
-            mw.log('EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
+			mw.log('EmbedPlayer:updatePosterHTML:' + this.id + ' poster:' + this.poster);
 			var _this = this;
 
 			// Set by black pixel if no poster is found:
@@ -2222,6 +2226,7 @@
 				// prevent getting another clipdone event on replay
 				this.stopPlayAfterSeek = false;
 				this.seek(0.01, false);
+				return false;
 			}
 			// Store the absolute play time ( to track native events that should not invoke interface updates )
 			mw.log("EmbedPlayer:: play: " + this._propagateEvents + ' isStopped: ' + _this.isStopped());
@@ -2508,13 +2513,13 @@
 
 
 		togglePlayback: function () {
-				if (this.paused) {
-					this.triggerHelper( 'userInitiatedPlay' );
-					this.play();
-				} else {
-					this.triggerHelper( 'userInitiatedPause' );
-					this.pause();
-				}
+			if (this.paused) {
+				this.triggerHelper( 'userInitiatedPlay' );
+				this.play();
+			} else {
+				this.triggerHelper( 'userInitiatedPause' );
+				this.pause();
+			}
 		},
 		isMuted: function () {
 			return this.muted;
@@ -2763,7 +2768,7 @@
 			}
 			if (!_this.isLive() && _this.instanceOf != 'ImageOverlay') {
 				if (_this.isPlaying() && _this.currentTime == _this.getPlayerElementTime()) {
-                    _this.bufferStart();
+					_this.bufferStart();
 				} else if (_this.buffering) {
 					_this.bufferEnd();
 				}
@@ -2820,15 +2825,15 @@
 		setClipDoneGuard: function(){
 			if (!this.clipDoneTimeout && this.shouldEndClip) {
 				var _this = this;
-				var timeoutVal = (this.duration * 0.02 * 1000);
-				this.log( "Setting clip done guard check in " + (timeoutVal / 1000) + " seconds" );
+				var timeoutVal = (Math.abs(this.duration - this.currentTime) * 2);
+				this.log( "Setting clip done guard check in " + timeoutVal + " seconds" );
 				this.clipDoneTimeout = setTimeout( function () {
 					if ( _this.shouldEndClip && !_this.isLive() ) {
 						_this.log( "clipDone guard > should run clip done :: " + _this.currentTime );
 						_this.onClipDone();
 					}
 					_this.clipDoneTimeout = null;
-				}, timeoutVal );
+				}, (timeoutVal * 1000) );
 			}
 		},
 		cancelClipDoneGuard: function() {
@@ -2940,7 +2945,7 @@
 			return this.mediaElement.selectedSource;
 		},
 		/**
-		 * Retuns the set of playable sources. 
+		 * Retuns the set of playable sources.
 		 */
 		getSources: function(){
 			return this.mediaElement.getPlayableSources();
@@ -3054,16 +3059,16 @@
 
 		},
 
-        isLiveOffSynch: function () {
-            return this.liveOffSynch;
-        },
+		isLiveOffSynch: function () {
+			return this.liveOffSynch;
+		},
 
-        setLiveOffSynch: function (status) {
-            if( status !== this.liveOffSynch ) {
-                this.liveOffSynch = status;
-                $(this).trigger('onLiveOffSynchChanged', [status]);
-            }
-        },
+		setLiveOffSynch: function (status) {
+			if( status !== this.liveOffSynch ) {
+				this.liveOffSynch = status;
+				$(this).trigger('onLiveOffSynchChanged', [status]);
+			}
+		},
 
 		disableComponentsHover: function () {
 			if (this.layoutBuilder) {
@@ -3129,7 +3134,7 @@
 			}
 		},
 		/**
-		 * Switches a player source 
+		 * Switches a player source
 		 * @param {Object} source asset to switch to
 		 */
 		switchSrc: function( source ){
@@ -3309,9 +3314,9 @@
            }
         },
 
-        getCurrentBufferLength: function(){
-            mw.log("Error: getPlayerElementTime should be implemented by embed library");
-        }
+		getCurrentBufferLength: function(){
+			mw.log("Error: getPlayerElementTime should be implemented by embed library");
+		}
 
 	};
 

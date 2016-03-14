@@ -258,7 +258,7 @@
 				this.getCaptionsOverlay().hide();
 				var $cc = this.embedPlayer.getInterface().find('.captionContainer' );
 				$cc.remove();
-				this.embedPlayer.doUpdateLayout();
+				this.embedPlayer.doUpdateLayout(true);
 				this.getPlayer().triggerHelper('closedCaptionsHidden');
 			}
 		},
