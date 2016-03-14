@@ -44,7 +44,7 @@
 		updatePlayhead: function (currentTime, duration) {
 			this.currentTime = currentTime;
 			this.vid.currentTime = currentTime;
-			if ( !this.seeking && !this.userSlide) {
+			if ( !this.seeking && !this.userSlide && duration) {
 				$(this).trigger("updatePlayHeadPercent",[ currentTime / duration ]);
 				$( this ).trigger( 'timeupdate' );
 			}

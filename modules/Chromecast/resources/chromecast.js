@@ -492,7 +492,14 @@
 			this.embedPlayer.disablePlayer();
 			this.embedPlayer.updatePlaybackInterface();
 			this.embedPlayer.enablePlayControls();
-			this.embedPlayer.seek(seekTime, false);
+			if (this.embedPlayer.isLive()){
+				this.embedPlayer.pause();
+				setTimeout(function(){
+					_this.embedPlayer.play();
+				},1000);
+			}else{
+				this.embedPlayer.seek(seekTime, false);
+			}
 		},
 
 		onStopAppSuccess: function() {
