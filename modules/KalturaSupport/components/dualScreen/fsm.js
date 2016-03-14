@@ -12,40 +12,46 @@
 				this.currentState = this.states[i];
 			}
 		}
-		this.consumeEvent = function ( args ) {
-			var targetState;
-			var targetMainDisplayType;
-			if (typeof args === 'object')
+		this.consumeEvent = function ( e ) {
+			var targetEvents = [];
+
+			if (typeof e === 'string')
 			{
-				// the event args contains a combination of a target state and main display type.
-				targetState = args.action;
-				targetMainDisplayType = args.mainDisplayType;
-			}else
+				// backward compatibility: the event args contains the event name only
+				targetEvents.push(e);
+			}else if (typeof e === 'object' && e.action === 'switchView')
 			{
-				// backward compatibility: the event args represents the target state only
-				targetState = args;
-				targetMainDisplayType = null;
+				// backward compatibility: the event args action equals 'switchView' which is a special event
+				targetEvents.push(e.action);
+			}else if (typeof e === 'object')
+			{
+				// the event args contains an action and (optionally) main display type
+
+				// push the action as first state transition
+				targetEvents.push(e.action);
+
+				// check if need to invoke 'switchView' on the new state
+				var targetMainDisplayType = e.mainDisplayType;
+				var currentMainDisplayType = (this.context.getPrimary() === this.context.getMainDisplay()) ? mw.dualScreen.display.TYPE.PRIMARY : mw.dualScreen.display.TYPE.SECONDARY;
+
+				if (targetMainDisplayType && currentMainDisplayType !== targetMainDisplayType)
+				{
+					// the user want to switch between primary <-> secondary - use 'switchView' event if exists
+					targetEvents.push('switchView');
+				}
 			}
 
-			if (targetState === 'switchView')
+			for(var i = 0; i<targetEvents.length;i++)
 			{
-				// backward compatibility: transform 'switchView' state into relevant state / main display types
-				targetState = this.currentState.name;
-				targetMainDisplayType = (this.context.getPrimary() === this.context.getAuxDisplay()) ? 'video' : 'presentation';
-			}
+				var targetEvent = targetEvents[i];
+				mw.log('fsm.consumeEvent(): invoking event ' + targetEvent);
 
-			if ( this.states[this.indexes[targetState]] ) {
-				this.fsmTransitionHandlers(this.currentState.name, targetState);
+				if ( this.currentState.events[targetEvent] ) {
+					this.fsmTransitionHandlers(this.currentState.name, targetEvent);
+					this.currentState.events[targetEvent].action.call(this.context);
+					this.currentState = this.states[this.indexes[this.currentState.events[targetEvent].name]];
+				}
 
-				var previousState = this.currentState.name;
-				var currentMainDisplayType = (this.context.getPrimary() === this.context.getAuxDisplay()) ? 'presentation' : 'video';
-
-				this.currentState = this.states[this.indexes[targetState]];
-
-				this.currentState.invoke.call(this.context, {
-					previousState :previousState,
-					currentMainDisplayType :currentMainDisplayType ,
-					targetMainDisplayType : targetMainDisplayType});
 			}
 		};
 		this.canConsumeEvent = function ( e ) {

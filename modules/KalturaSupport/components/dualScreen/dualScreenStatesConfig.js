@@ -1,96 +1,133 @@
-(function (mw) {
-        "use strict";
-        mw.dualScreen = mw.dualScreen || {};
-        mw.dualScreen.states = [
-            {
-                'name': 'PiP',
-                'initial': true,
-                'invoke': function (context) {
+(function ( mw ) {
+	"use strict";
+	mw.dualScreen = mw.dualScreen || {};
+	mw.dualScreen.states = [
+		{
+			'name': 'PiP',
+			'initial': true,
+			'events': {
+				'SbS': {
+					name: 'SbS',
+					action: function () {
+						this.disableUserActions( );
+						this.enableSideBySideView();
 
-                    if (context.previousState !== 'PiP') {
-                        // make sure the player is setup to PiP mode
-                        this.enableUserActions();
-                        this.showDisplay();
-                        this.disableSideBySideView();
-                    }
-
-                    if (context.targetMainDisplayType && context.currentMainDisplayType !== context.targetMainDisplayType) {
-                        // make sure the right display type is setup
-                        this.toggleMainDisplay();
-                    }
-
-                }
-            },
-            {
-                'name': 'SbS',
-                'invoke': function (context) {
-                    if (context.previousState !== 'SbS') {
-                        // make sure the player is setup to SbS mode
-                        this.disableUserActions();
-                        this.showDisplay();
-                        this.enableSideBySideView();
-                    }
-
-                    if (context.targetMainDisplayType && context.currentMainDisplayType !== context.targetMainDisplayType) {
-                        // make sure the right display type is setup
-                        this.toggleSideBySideView();
+					}
+				},
+				'hide': {
+					name: 'hide',
+					action: function (  ) {
+						this.disableUserActions( );
+						this.hideDisplay( );
+					}
+				},
+				'switchView': {
+					name: 'PiP',
+					action: function () {
+						this.disableUserActions( );
+						this.toggleMainDisplay();
+						this.enableUserActions( );
+					}
+				}
+			}
+		},
+		{
+			'name': 'SbS',
+			'events': {
+				'PiP': {
+					name: 'PiP',
+					action: function () {
+						this.enableUserActions( );
+						this.disableSideBySideView();
+					}
+				},
+				'hide': {
+					name: 'hide',
+					action: function () {
+						this.disableSideBySideView();
+						this.hideDisplay( );
+					}
+				},
+				'switchView': {
+					name: 'SbS',
+					action: function () {
+						this.toggleSideBySideView();
                         this.toggleMainConfig();
-                    }
-                }
-            },
-            {
-                'name': 'hide',
-                'invoke': function (context) {
-                    if (context.previousState !== 'hide') {
-                        // make sure the player is setup to single mode
-                        this.disableUserActions();
-                        this.disableSideBySideView();
-                        this.hideDisplay();
-                    }
+					}
+				}
+			}
+		},
+		{
+			'name': 'hide',
+			'events': {
+				'PiP': {
+					name: 'PiP',
+					action: function () {
+						this.enableUserActions( );
+						this.showDisplay( );
+					}
+				},
+				'switchView': {
+					name: 'hide',
+					action: function () {
+						this.showDisplay( );
+						this.toggleMainDisplay();
+						this.hideDisplay( );
 
-                    if (context.targetMainDisplayType && context.currentMainDisplayType !== context.targetMainDisplayType) {
-                        // make sure the right display type is setup
-                        this.showDisplay();
-                        this.toggleMainDisplay();
-                        this.hideDisplay();
-                    }
-                }
-            }
-        ];
+					}
+				},
+				'SbS': {
+					name: 'SbS',
+					action: function () {
+						this.enableSideBySideView();
+						this.showDisplay( );
+					}
+				}
+			}
+		}
+	];
 
-        mw.dualScreen.nativeAppStates = [
-            {
-                'name': 'PiP',
-                'initial': true,
-                'invoke': function (context) {
-                    if (context.previousState !== 'PiP') {
-                        // make sure the player is setup to PiP mode
-                        this.enableUserActions();
-                        this.showDisplay();
+	mw.dualScreen.nativeAppStates = [
+		{
+			'name': 'PiP',
+			'initial': true,
+			'events': {
+				'hide': {
+					name: 'hide',
+					action: function (  ) {
+						this.disableUserActions();
+						this.hideDisplay( );
+					}
+				}
+			}
+		},
+		{
+			'name': 'hide',
+			'events': {
+				'PiP': {
+					name: 'PiP',
+					action: function () {
+						if (this.getPrimary() === this.getAuxDisplay()) {
+							this.showDisplay( );
+							this.toggleMainDisplay();
 
-                        if (context.currentMainDisplayType !== 'video') {
-                            // make sure PiP show only video stream (in native app only video is supported in PiP)
-                            this.toggleMainDisplay();
-                        }
-                    }
-                }
-            },
-            {
-                'name': 'hide',
-                'invoke': function (context) {
-                    if (context.previousState !== 'hide') {
-                        // make sure the player is setup to single mode
-                        this.disableUserActions();
-                        this.hideDisplay();
-                    }
+						}
+						this.enableUserActions();
+						this.showDisplay( );
+					}
+				},
+				'switchView': {
+					name: 'hide',
+					action: function () {
+						this.showDisplay( );
+						this.toggleMainDisplay();
+						this.hideDisplay( );
 
-                    if (context.targetMainDisplayType && context.currentMainDisplayType !== context.targetMainDisplayType) {
-                        // make sure the right display type is setup
-                        this.showDisplay();
-                        this.toggleMainDisplay();
-                        this.hideDisplay();
-                    }
-                }
-            }
-        ];
-    })(window.mw);
+					}
+				}
+			}
+		}
+	];
+}
+
+)( window.mw );

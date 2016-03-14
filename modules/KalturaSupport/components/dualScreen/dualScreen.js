@@ -51,7 +51,7 @@
 			fsmState: [],
 			screenShown: false,
 			currentScreenNameShown: "",
-			kClient : null,
+			externalControlManager : null,
 			setup: function ( ) {
 				this.initConfig();
 				this.initDisplays();
@@ -81,9 +81,7 @@
 								_this.disabled = false;
 								_this.restoreView("disabledScreen");
 							}
-
-							_this.setInitialView(); // Keep the initial view logic to preserve behavior used by screen capture
-
+							_this.setInitialView();
 							if (!_this.render) {
 								_this.getPrimary().obj.css({
 									'top': '',
@@ -94,16 +92,7 @@
 								_this.hideDisplay();
 							}
 
-							// This plugin uses 'mw.KCuePoints' to retrieve que points, to persist the same conditions
-							// we listen to the same events as 'mw.KCuePoints'
-							$(_this.embedPlayer).bind(
-								"monitorEvent" + _this.getPlayer().kCuePoints.bindPostfix +
-								" seeked" + _this.getPlayer().kCuePoints.bindPostfix +
-								" onplay" + _this.getPlayer().kCuePoints.bindPostfix,
-								function (e) {
-									_this.handleCurrentPlayerViewModeCuePoint();
-								});
-
+							_this.initExternalControlManager();
 						} else {
 							_this.log("render condition are not met - disabling");
 							if (!_this.disabled){
@@ -112,8 +101,6 @@
 							}
 						}
 					}
-
-
 				} );
 
 				this.bind( 'postDualScreenTransition', function () {
@@ -284,8 +271,15 @@
 
 				this.fsm = new mw.dualScreen.StateMachine( selectedStatesMap, this.displays, fsmTransitionHandlers );
 			},
+			initExternalControlManager : function()
+			{
+				var _this = this;
+				this.externalControlManager = new mw.dualScreen.externalControlManager(this.getPlayer(), function () {
+				}, "dualScreenExternalControlManager");
+			},
 			initDisplays: function () {
 				var _this = this;
+
 				this.displays = new mw.dualScreen.displays(this.getPlayer(), function () {
 					this.setConfig({
 						resizeHandlesFadeout: _this.getConfig( 'resizeHandlesFadeout' ),
@@ -389,6 +383,7 @@
 					showLoadingSlide();
 				}
 			},
+
 			//Manage display helpers
 			disableView: function(){
 				this.displays.getAuxDisplay().obj.css("visibility", "hidden");
@@ -635,127 +630,7 @@
 					at: location[0]+location[1],
 					of: $( this.getPlayer().getInterface() )
 				});
-			},
-			/**
-			 * Searches for the first/next cue point after the current player time
-			 * @returns a matching cue point if found, null otherwise
-			 */
-			getCurrentPlayerViewModeCuePoint: function ( ) {
-
-				var currentTime = this.getPlayer().currentTime *1000;
-				var cuePoints = this.getPlayerViewModeCuePoints();
-				var cuePoint;
-				var duration=this.getPlayer().isLive() ? 0 : this.getPlayer().getDuration() * 1000;
-
-				//assume sortedCuePoints array
-				for ( var i = 0; i < cuePoints.length; i++ ) {
-
-					var startTime = cuePoints[i].startTime;
-
-					if ( (startTime > currentTime) ||  //stop once we found a future slide (or out of range slide)
-						(duration>0 && startTime>duration)) {
-						break;
-					}
-
-					cuePoint=cuePoints[i];
-
-				}
-
-				// NOTE: the code below can assist debugging issues with play view mode sync
-				// But it will polute the log console so keep it commented unless required for debugging purposes
-				//if (cuePoint)
-				//{
-				//	var nextCuePoint = i < cuePoints.length ? cuePoints[i] : null;
-				//	var message= 'dualscreen: current cue point (' + cuePoint.id + ') time ' + new Date(cuePoint.startTime) + ' | server time ' + new Date(currentTime);
-                //
-				//	if (nextCuePoint) message += ' | next cue point (' + nextCuePoint.id + ') time ' + new Date(nextCuePoint.startTime);
-                //
-				//	mw.log(message);
-				//}
-				return cuePoint;
-			},
-			/**
-			 * Gets all the cue points of type player view mode
-			 * @returns {Array}
-			 */
-			getPlayerViewModeCuePoints : function()
-			{
-				var _this = this;
-				var cuePoints = [];
-				if ( this.getPlayer().kCuePoints ) {
-					cuePoints = _this.getPlayer().kCuePoints.getCodeCuePointsByTag({tag : 'player-view-mode', sortDesc : false});
-				}
-				return cuePoints;
-			},
-			handleCurrentPlayerViewModeCuePoint : function()
-			{
-				var cuePoint = this.getCurrentPlayerViewModeCuePoint();
-
-				if (cuePoint)
-				{
-					this.handleCuePoint(cuePoint);
-				}
-			},
-			handleCuePoint : function(cuePoint)
-			{
-				var _this = this;
-				var action, mainDisplayType;
-
-				if (!cuePoint || cuePoint.cuePointType !== 'codeCuePoint.Code' || cuePoint.tags !== 'player-view-mode' ||
-					!cuePoint.code)
-				{
-					// ignore any cue point not relevant to player view mode.
-					return;
-				}
-
-				if (_this._lastHandledCuePoint && _this._lastHandledCuePoint.id === cuePoint.id )
-				{
-					// the requested que point was already handled
-					return;
-				}
-
-				_this._lastHandledCuePoint = cuePoint;
-
-				var cuePointCode = JSON.parse(cuePoint.code);
-				if (cuePointCode.playerViewModeId) {
-					// NOTE: The left display is considered as the main display in the player.
-					// For example: 'video-on-left' means 'video' stream as main and 'video-on-right' means 'presentation' stream as main.
-					switch (cuePointCode.playerViewModeId) {
-						case "side-by-side-video-on-right":
-							action = "SbS";
-							mainDisplayType = 'presentation';
-							break;
-						case "side-by-side-video-on-left":
-							action = "SbS";
-							mainDisplayType = 'video';
-							break;
-						case "video-inside-presentation":
-							action = "PiP";
-							mainDisplayType = 'presentation';
-							break;
-						case "presentation-inside-video":
-							action = "PiP";
-							mainDisplayType = 'video';
-							break;
-						case "video-only":
-							action = "hide";
-							mainDisplayType = 'video';
-							break;
-						case "presentation-only":
-							action = "hide";
-							mainDisplayType = 'presentation';
-							break;
-					}
-				}
-
-				if (action) {
-					mw.log("dualscreen: Changing player view to '" + action + "' with main display '" + mainDisplayType + "'");
-
-					this.getPlayer().triggerHelper('dualScreenStateChange', { action : action, mainDisplayType : mainDisplayType});
-				}
-			},
-
-
+			}
 		} )
 	);
 }

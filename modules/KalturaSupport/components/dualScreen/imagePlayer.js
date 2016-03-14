@@ -59,8 +59,11 @@
 						return false;
 					}
 				});
+
 				if (!cuePoint){
-					cuePoint = _this.getCurrentCuePoint();
+					// TODO [es]: TBD with Oren - I removed this since reached event will also trigger for code cue points and if I understood you correctly this workaround is redundant
+					// cuePoint = _this.getCurrentCuePoint();
+					return;
 				}
 				_this.sync( cuePoint );
 			} );
