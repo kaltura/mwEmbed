@@ -1215,6 +1215,10 @@
 					return;
 				}
 
+				if (!this.stopAfterSeek) {
+					this.stopAfterSeek = true;
+				}
+
 				// if the ended event did not trigger more timeline actions run the actual stop:
 				if (this.onDoneInterfaceFlag) {
 					mw.log("EmbedPlayer::onDoneInterfaceFlag=true do interface done");
@@ -2221,6 +2225,7 @@
 				// prevent getting another clipdone event on replay
 				this.stopPlayAfterSeek = false;
 				this.seek(0.01, false);
+				return false;
 			}
 			// Store the absolute play time ( to track native events that should not invoke interface updates )
 			mw.log("EmbedPlayer:: play: " + this._propagateEvents + ' isStopped: ' + _this.isStopped());
@@ -2819,15 +2824,15 @@
 		setClipDoneGuard: function(){
 			if (!this.clipDoneTimeout && this.shouldEndClip) {
 				var _this = this;
-				var timeoutVal = (this.duration * 0.02 * 1000);
-				this.log( "Setting clip done guard check in " + (timeoutVal / 1000) + " seconds" );
+				var timeoutVal = (Math.abs(this.duration - this.currentTime) * 2);
+				this.log( "Setting clip done guard check in " + timeoutVal + " seconds" );
 				this.clipDoneTimeout = setTimeout( function () {
 					if ( _this.shouldEndClip && !_this.isLive() ) {
 						_this.log( "clipDone guard > should run clip done :: " + _this.currentTime );
 						_this.onClipDone();
 					}
 					_this.clipDoneTimeout = null;
-				}, timeoutVal );
+				}, (timeoutVal * 1000) );
 			}
 		},
 		cancelClipDoneGuard: function() {
