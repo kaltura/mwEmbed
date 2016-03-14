@@ -17,6 +17,9 @@
         syncEnabled: true,
         url:"",
 
+        masterBitrate: 0, //relevant only for adaptive bitrate
+        changeBitrateOffset: 15000, // 15 seconds offset between the master and the slave bitrate change (slave video should wait till the master's  bitrate is stable)
+
         setup: function () {
             this.addBinding();
         },
@@ -25,7 +28,7 @@
             return true;
         },
 
-        canRender: function(){
+        canRender: function () {
           return true;
         },
 
@@ -49,19 +52,21 @@
                 _this.removePoster();
             });
 
-            //adaptive bitrate or
+            //adaptive bitrate
             this.bind("bitrateChange", function (e, newBitrate) {
                 mw.log("DualScreen :: MASTER :: bitrateChange :: newBitrate = " + newBitrate);
-                //TODO: find closest bitrate and send notification to flash (should be supported only for adaptive bitrate)
-                //switchSrc(newBitrate);
-
-                // progressive download via flash should be dealt by dual screen (findClosestPlayableFlavor)
+                if ( !_this.masterBitrate ) {
+                    _this.masterBitrate = newBitrate;
+                }
+                if( _this.manifestAdaptiveFlavors && _this.currentBitrate ) {
+                    _this.onMasterBitrateChanged(newBitrate);
+                }
             });
 
             //progressive download native
             this.bind("sourceSwitchingEnd", function (e, newBitrate) {
                 mw.log("DualScreen :: MASTER :: sourceSwitchingEnd :: newBitrate = " + newBitrate.newBitrate ? newBitrate.newBitrate : newBitrate);
-                //TODO: should be dealt by dual screen (findClosestPlayableFlavor)
+                //TODO: progressive download - should be dealt by dual screen (findClosestPlayableFlavor)
             });
 
             this.bind("bufferStartEvent", function () {
@@ -77,7 +82,7 @@
             //TODO: decide what to do in the case of slave player buffering
         },
 
-        setUrl: function(url){
+        setUrl: function ( url ) {
             this.url = url;
         },
 
@@ -88,7 +93,7 @@
             return this.$el;
         },
 
-        initPlayerElement: function(){
+        initPlayerElement: function () {
             mw.log("DualScreen :: second screen :: videoPlayer :: initPlayerElement");
             var _this = this;
             var player = this.getPlayer();
@@ -107,7 +112,7 @@
             this.videoElementReady = true;
         },
 
-        initNativePlayer: function(){
+        initNativePlayer: function () {
             var _this = this;
             this.$el =
                 $('<video>')
@@ -121,7 +126,7 @@
             this.$el.get(0).supportsPlaybackrate =  true;
         },
 
-        initKPlayer: function(){
+        initKPlayer: function () {
             //HLS case - add OSMF-HLS plugin if url includes 'm3u8' string
             // check for f4v (Akamai HD plugin?)
             //do we need to load any other flash plugins if master uses them?
@@ -136,8 +141,9 @@
             if(this.url.indexOf('m3u8') > 0){
                 fv.KalturaHLS = { plugin: 'true', asyncInit: 'true', loadingPolicy: 'preInitialize' };
                 fv.streamerType = "hls";
-                //current solution brings only one bitrate, so there is no way to change bitrate in the future to the bigger one. TODO: we should be able to load all the flavors, but fix the stream on the lowest bitrate.
-                fv.KalturaHLS["targetBitrate"] = 100; //TODO: implement 'mediaProxy.preferedFlavorBR' for EmbedPlayerKplayer. source selector should still get all the bitrates and select the current selected.
+                //load slave video with the lowest bitrate. In order to save CPU resources, slave will switch to the higher bitrate only after the main video will reach stable bitrate.
+                fv.KalturaHLS["prefBitrate"] = 50;
+                fv.disableAutoDynamicStreamSwitch = true;
             }else{
                 fv.isMp4 = true;
                 if( mw.getConfig('streamerType') ){
@@ -149,14 +155,9 @@
 
             var vidSibling = new mw.PlayerElementFlash( "secondScreen", "vidSibling_obj", fv, _this, function () {
                 var bindEventMap = {
-                    'switchingChangeStarted': 'onSwitchingChangeStarted',
                     'switchingChangeComplete': 'onSwitchingChangeComplete',
                     'flavorsListChanged': 'onFlavorsListChanged',
-
-                    'bufferChange': 'onBufferChange',
-
                     'mediaLoaded': 'onMediaLoaded',
-
                     'mediaError': 'onMediaError',
                     'bitrateChange': 'onBitrateChange',
                     'debugInfoReceived': 'onDebugInfoReceived'
@@ -203,7 +204,7 @@
 
         },
 
-        sync: function(){
+        sync: function () {
             if (!this.videoSync) {
                 this.videoSync = new mw.dualScreen.videoSync(this.getPlayer(), function () {
                 }, "videoSync");
@@ -211,70 +212,114 @@
             }
         },
 
-        //kplayer events
-        onFlavorsListChanged: function (data) {
-            mw.log("DualScreen :: second screen :: videoPlayer :: got FlavorsList");
-            this.manifestAdaptiveFlavors = data.flavors;
-            for(var i=0; i<this.manifestAdaptiveFlavors.length; i++){
-                mw.log("DualScreen :: second screen :: videoPlayer :: onFlavorsListChanged :: AdaptiveFlavor = " + this.manifestAdaptiveFlavors[i].bandwidth);
-            }
-            //TODO: after the master stabilized on some bitrate, find closest bitrate inside manifestAdaptiveFlavors and switch the bitrate of the slave player
-        },
-
-        onMediaLoaded: function(){
+        //kplayer events and functions
+        onMediaLoaded: function () {
             mw.log("DualScreen :: second screen :: videoPlayer :: onMediaLoaded");
-            //lock second player on lowest bitrate
-            //this.playerObject.sendNotification('doSwitch', { flavorIndex: 0 });
         },
 
-        onSwitchingChangeStarted: function (data) {
-            mw.log("DualScreen :: second screen :: videoPlayer :: onSwitchingChangeStarted :: currentBitrate = " + data.currentBitrate + "  |  data.currentIndex = " + data.currentIndex);
-        },
-
-        onSwitchingChangeComplete: function (data, id) {
-            if ( data && data.newBitrate ) {
-                mw.log("DualScreen :: second screen :: videoPlayer :: onSwitchingChangeComplete :: data.newBitrate = " + data.newBitrate);
-            }
-        },
-
-        switchSrc: function (source) {
-            this.playerObject.sendNotification('doSwitch', { flavorIndex: this.getSourceIndex(source) });
-        },
-
-        getSourceIndex: function (source) {
-            var sourceIndex = 0; //autoDynamicStreamSwitch (adaptive bitrate) can't be enabled in the slave player, so sourceIndex can't ever be -1
-            //TODO: if this.manifestAdaptiveFlavors !== undefined -> find closest flavor index for adaptive bitrate, else -> find closest source index for progressive download
-            return sourceIndex;
-        },
-
-        onMediaError: function(data){
+        onMediaError: function ( data ) {
             mw.log("DualScreen :: second screen :: videoPlayer :: onMediaError :: error: " + data);
             //TODO: handle error
         },
 
-        onBitrateChange: function(data){
+        onDebugInfoReceived: function ( data ) {
+            /*
+             var msg = '';
+             for (var prop in data) {
+             msg += prop + ': ' + data[prop]+' | ';
+             }
+             mw.log("--- DualScreen :: second screen :: videoPlayer :: onDebugInfoReceived | " + msg);
+             */
+        },
+
+        onFlavorsListChanged: function ( data ) {
+            this.manifestAdaptiveFlavors = [];
+            mw.log("DualScreen :: second screen :: videoPlayer :: onFlavorsListChanged --------- START");
+            for(var i=0; i<data.flavors.length; i++){
+                this.manifestAdaptiveFlavors.push( Math.round( data.flavors[i].bandwidth / 1024 * 10 ) / 10 );
+                mw.log("DualScreen :: second screen :: flavor "+ i +" = " + this.manifestAdaptiveFlavors[i]);
+            }
+            mw.log("DualScreen :: second screen :: videoPlayer :: onFlavorsListChanged --------- END");
+        },
+
+        onBitrateChange: function ( data ) {
             mw.log("DualScreen :: second screen :: videoPlayer :: onBitrateChange " + data);
         },
 
-        onDebugInfoReceived: function(data){
-            /*
-            var msg = '';
-            for (var prop in data) {
-                msg += prop + ': ' + data[prop]+' | ';
+        onSwitchingChangeComplete: function ( data, id ) {
+            if ( data && data.newBitrate ) {
+                this.currentBitrate = data.newBitrate;
+                mw.log("DualScreen :: second screen :: videoPlayer :: onSwitchingChangeComplete :: currentBitrate = " + this.currentBitrate);
             }
-            mw.log("--- DualScreen :: second screen :: videoPlayer :: onDebugInfoReceived | " + msg);
-            */
         },
+
+        onMasterBitrateChanged: function ( newMasterBitrate ) {
+            var _this = this;
+
+            if ( newMasterBitrate < this.masterBitrate && this.currentBitrate !== this.manifestAdaptiveFlavors[0] ) {
+                mw.log("DualScreen :: second screen :: change bitrate for slave video to the lowest ");
+                this.playerObject.sendNotification('doSwitch', { flavorIndex: 0 });
+                this.masterBitrate = newMasterBitrate;
+            }
+
+            if (this.changeBitrateTimeout){
+                mw.log("DualScreen :: second screen :: clear changeBitrate timeout");
+                this.clearTimeout(this.changeBitrateTimeout);
+            }
+
+            this.changeBitrateTimeout = setTimeout( function ( ) {
+                if ( _this.masterBitrate !== newMasterBitrate ) {
+                    var newFlavor = _this.findClosestBitrate(newMasterBitrate);
+                    mw.log("DualScreen :: second screen :: found new bitrate = "+ newFlavor.bitrate+" | currentBitrate = "+_this.currentBitrate);
+                    if( newFlavor.bitrate !== _this.currentBitrate ) {
+                        mw.log("DualScreen :: second screen :: change bitrate for slave video = "+ newFlavor.bitrate);
+                        _this.playerObject.sendNotification('doSwitch', { flavorIndex: newFlavor.index });
+                        _this.masterBitrate = newMasterBitrate;
+                        _this.clearTimeout(_this.changeBitrateTimeout);
+                    }
+                }
+            }, _this.changeBitrateOffset );
+        },
+
+        findClosestBitrate: function ( targetBitrate ) {
+            var selectedFlavor = {index:this.manifestAdaptiveFlavors.indexOf(this.currentBitrate), bitrate: this.currentBitrate};
+            if (this.manifestAdaptiveFlavors.length > 1) {
+                var diff = Math.abs(targetBitrate - this.manifestAdaptiveFlavors[0]);
+                for (var ind = 1; ind < this.manifestAdaptiveFlavors.length; ind++) {
+                    var newdiff = Math.abs(targetBitrate - this.manifestAdaptiveFlavors[ind]);
+                    if (newdiff < diff) {
+                        diff = newdiff;
+                        selectedFlavor.index = ind;
+                        selectedFlavor.bitrate = this.manifestAdaptiveFlavors[ind];
+                    }
+                }
+            }
+            return selectedFlavor;
+        },
+
+        switchSrc: function ( source ) {
+            this.playerObject.sendNotification('doSwitch', { flavorIndex: this.getSourceIndex(source) });
+        },
+
+        getSourceIndex: function ( source ) {
+            var sourceIndex = 0; //autoDynamicStreamSwitch (adaptive bitrate) can't be enabled in the slave player, so sourceIndex can't ever be -1
+            //TODO: if this.manifestAdaptiveFlavors !== undefined -> find closest flavor index for adaptive bitrate, else -> find closest source index for progressive download
+            return sourceIndex;
+        },
+        //end of kplayer events and functions
+
         getPoster: function(){
             return this.poster;
         },
-        setPoster: function(thumbnailUrl){
+
+        setPoster: function ( thumbnailUrl ) {
             this.poster = kWidgetSupport.getKalturaThumbnailUrl({
                 url: thumbnailUrl,
                 width: this.getPlayer().getWidth(),
                 height: this.getPlayer().getHeight()
             });
         },
+
         updatePosterHTML: function () {
             mw.log('DualScreen :: second screen :: updatePosterHTML ' + this.poster);
             if(this.hasPoster){
@@ -303,9 +348,15 @@
                     $('.playerPoster').attr('alt', gM('mwe-embedplayer-video-thumbnail'));
                 }));
         },
-        removePoster: function(){
+
+        removePoster: function () {
             $("#secondScreen").find('.playerPoster').remove();
             this.hasPoster = false;
+        },
+
+        clearTimeout: function ( timeout ) {
+            clearTimeout(timeout);
+            timeout = null;
         }
     });
 })( window.mw, window.jQuery );
