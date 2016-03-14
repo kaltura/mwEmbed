@@ -24,7 +24,6 @@
 		// The bind postfix:
 		bindPostfix: '.kCuePoints',
 		midCuePointsArray: [],
-		codeCuePointsArray : [],
 		liveCuePointsIntervalId: null,
 		supportedCuePoints: [
 			mw.KCuePoints.TYPE.CODE,
@@ -69,7 +68,6 @@
 			});
 			// Create new array with midrolls only
 			var newCuePointsArray = [];
-			var newCodeCuePointsArray = [];
 			$.each(cuePoints, function (idx, cuePoint) {
 				if ((_this.getVideoAdType(cuePoint) == 'pre' || _this.getVideoAdType(cuePoint) == 'post') &&
 					cuePoint.cuePointType == 'adCuePoint.Ad') {
@@ -77,19 +75,12 @@
 				} else {
 					// Midroll or non-ad cuepoint
 					if (cuePoint.cuePointType != "eventCuePoint.Event") {
-
 						newCuePointsArray.push(cuePoint);
-
-						if (cuePoint.cuePointType === 'codeCuePoint.Code')
-						{
-							newCodeCuePointsArray.push(cuePoint);
-						}
 					}
 				}
 			});
 
 			this.midCuePointsArray = newCuePointsArray;
-			this.codeCuePointsArray = newCodeCuePointsArray;
 		},
 		initSupportedCuepointTypes: function(){
 			//Initial flashvars configuration arrives in form of comma-separated string,
@@ -233,37 +224,25 @@
 			if (rawCuePoints.length > 0) {
 				var _this = this;
 
-				var thumbNewCuePoints = [];
-				var codeNewCuePoints = [];
+				var updatedCuePoints = [];
 				//Only add new cuepoints
 				$.each(rawCuePoints, function (id, rawCuePoint) {
 					if (!_this.associativeCuePoints[rawCuePoint.id]) {
 						_this.associativeCuePoints[rawCuePoint.id] = rawCuePoint;
-
-						if (rawCuePoint.cuePointType === 'codeCuePoint.Code')
-						{
-							codeNewCuePoints.push(rawCuePoint);
-						}else {
-							thumbNewCuePoints.push(rawCuePoint);
-						}
+						updatedCuePoints.push(rawCuePoint);
 					}
 				});
 
-				if (thumbNewCuePoints.length > 0) {
+				if (updatedCuePoints.length > 0) {
 					var cuePoints = this.getCuePoints();
 					//update cuepoints
-					$.merge(cuePoints, thumbNewCuePoints);
+					$.merge(cuePoints, updatedCuePoints);
 					//update midpoint cuepoints
-					$.merge(this.midCuePointsArray, thumbNewCuePoints);
+					$.merge(this.midCuePointsArray, updatedCuePoints);
 					//Request thumb asset only for new cuepoints
-					this.requestThumbAsset(thumbNewCuePoints, function () {
-						_this.embedPlayer.triggerHelper('KalturaSupport_ThumbCuePointsUpdated', [thumbNewCuePoints]);
+					this.requestThumbAsset(updatedCuePoints, function () {
+						_this.embedPlayer.triggerHelper('KalturaSupport_ThumbCuePointsUpdated', [updatedCuePoints]);
 					});
-				}
-
-				if (codeNewCuePoints.length > 0) {
-					// update code cue points
-					$.merge(this.codeCuePointsArray, codeNewCuePoints);
 				}
 			}
 		},
@@ -309,8 +288,9 @@
 		 */
 		addPlayerBindings: function () {
 			var _this = this;
-			// Get first cue point
-			var currentCuePoint = this.getNextCuePoint(0);
+
+			var nextCuePointIndex = null;
+
 			var embedPlayer = this.embedPlayer;
 
 			// Don't add any bindings if no cuePoint exists )
@@ -323,29 +303,67 @@
 				_this.destroy();
 			});
 
+
 			// Bind to monitorEvent to trigger the cue points events and update he nextCuePoint
 			$(embedPlayer).bind(
 				"monitorEvent" + this.bindPostfix +
-					" seeked" + this.bindPostfix +
-					" onplay" + this.bindPostfix +
-					" KalturaSupport_ThumbCuePointsUpdated" + this.bindPostfix,
+				" seeked" + this.bindPostfix +
+				" onplay" + this.bindPostfix +
+				" KalturaSupport_ThumbCuePointsUpdated" + this.bindPostfix,
 				function (e) {
+					// TODO [es]: oren, we are we listening here for 'KalturaSupport_ThumbCuePointsUpdated'?
 					var currentTime = embedPlayer.getPlayerElementTime() * 1000;
+
+					if (nextCuePointIndex == null)
+					{
+						mw.log('mw.KCuePoints.bind(' + e.type + '): first time searching for cue points to handle - find first relevant cue point');
+						// this is the first time we search for cue points to handle - find first relevant cue point
+						nextCuePointIndex = _this.getNextCuePointIndex(currentTime);
+					}
+
+					mw.log('mw.KCuePoints.bind(' + e.type + '): checking for cue points that should be handled starting from index ' + nextCuePointIndex + ' (server time ' + new Date(currentTime) + ')');
+
 					//In case of seeked the current cuepoint needs to be updated to new seek time before
 					if (e.type == "seeked") {
-						currentCuePoint = _this.getPreviousCuePoint(currentTime);
+						mw.log('mw.KCuePoints.bind(' + e.type + '): event of type seeked invoked, re-searching for first relevant cuepoint by time');
+						nextCuePointIndex = _this.getPreviousCuePointIndex(currentTime);
+						mw.log('mw.KCuePoints.bind(' + e.type + '): found new cue point index ' + nextCuePointIndex);
 					}
-					// Check if the currentCuePoint exists
-					if (currentCuePoint && currentTime > currentCuePoint.startTime && embedPlayer._propagateEvents) {
-						// Make a copy of the cue point to be triggered.
-						// Sometimes the trigger can result in monitorEvent being called and an
+
+					var cuePointsReachedToHandle = _this.getCuePointsReached(currentTime,nextCuePointIndex);
+
+					if (cuePointsReachedToHandle.cuePoints.length > 0)
+					{
+						mw.log('mw.KCuePoints.bind(' + e.type + '): found ' + cuePointsReachedToHandle.cuePoints.length + ' cue point that should be handled');
+						nextCuePointIndex = cuePointsReachedToHandle.lastIndex + 1;
+						mw.log('mw.KCuePoints.bind(' + e.type + '): updating current index to ' + nextCuePointIndex + ' (will be used next time searching for cue points to handle)');
+
+						var clonedCuePointsToHandle = [];
+						for(var i = 0; i < cuePointsReachedToHandle.cuePoints.length;i++)
+						{
+							var reachedCuePoint = cuePointsReachedToHandle.cuePoints[i];
+							mw.log('mw.KCuePoints.bind(' + e.type + '): trigger event for cuePoint ' + reachedCuePoint.id + ' with start time ' + new Date(reachedCuePoint.startTime));
+
+							// Make a copy of the cue point to be triggered.
+							// Sometimes the trigger can result in monitorEvent being called and an
+							// infinite loop ( ie ad network error, no ad received, and restore player calling monitor() )
+							var cuePointToBeTriggered = $.extend({}, reachedCuePoint);
+							clonedCuePointsToHandle.push(cuePointToBeTriggered); // update the cloned list that will be used to invoke event
+
+							// Trigger the cue point
+							_this.triggerCuePoint(cuePointToBeTriggered);
+						}
+
+						// invoke the reached aggregated event - use the cloned list since
+						// sometimes the trigger can result in monitorEvent being called and an
 						// infinite loop ( ie ad network error, no ad received, and restore player calling monitor() )
-						var cuePointToBeTriggered = $.extend({}, currentCuePoint);
-						// Trigger the cue point
-						_this.triggerCuePoint(cuePointToBeTriggered);
+						_this.triggerCuePointsReachedAggregated(clonedCuePointsToHandle,{playerEventType : e.type});
 					}
-					// Update the current Cue Point to the "next" cue point
-					currentCuePoint = _this.getNextCuePoint(currentTime);
+
+					var nextCuePoint = _this.getCuePointByIndex(nextCuePointIndex);
+					if (nextCuePoint) {
+						mw.log('mw.KCuePoints.bind(' + e.type + '): next cue point should be handled on ' + new Date(nextCuePoint.startTime));
+					}
 				}
 			);
 		},
@@ -357,27 +375,6 @@
 				this.embedPlayer.rawCuePoints = [];
 			}
 			return this.embedPlayer.rawCuePoints;
-		},
-		getCodeCuePointsByTag : function(args)
-		{
-			var tag = args.tag;
-			var sortDesc = args.sortDesc;
-
-			var result = [];
-
-			if (tag && this.codeCuePointsArray)
-			{
-				result = $.grep(this.codeCuePointsArray,function(item)
-				{
-					return item.tags === tag;
-				});
-			}
-
-			result.sort(function (a, b) {
-				return sortDesc ? (b.startTime - a.startTime) : (a.startTime - b.startTime);
-			});
-
-			return result;
 		},
 		getCuePointsByType: function (type, subType) {
 			var filteredCuePoints = this.getCuePoints();
@@ -408,41 +405,110 @@
 			}
 			return foundAttr;
 		},
+
 		/**
 		 * Returns the next cuePoint object for requested time
 		 * @param {Number} time Time in milliseconds
 		 */
 		getNextCuePoint: function (time) {
-            if (!isNaN(time) && time >= 0) {
+			var nextCuePointIndex = this.getNextCuePointIndex(time, 0);
+
+			if (nextCuePointIndex !== -1)
+			{
+				var cuePoints = this.midCuePointsArray;
+				return cuePoints[nextCuePointIndex];
+			}
+
+			// No cue point found in range return false:
+			return false;
+		},
+		/**
+		 * Returns the next cuePoint index for requested time
+		 * @param {Number} time Time in milliseconds
+		 * @param startFromIndex the first index to start the search from
+		 * @returns {*}
+		 */
+		getNextCuePointIndex: function (time, startFromIndex) {
+			if (!isNaN(time) && time >= 0) {
+
+				startFromIndex = startFromIndex || 0;
 
 				var cuePoints = this.midCuePointsArray;
 				// Start looking for the cue point via time, return FIRST match:
-				for (var i = 0; i < cuePoints.length; i++) {
+				for (var i = startFromIndex; i < cuePoints.length; i++) {
 					if (cuePoints[i].startTime >= time) {
-						return cuePoints[i];
+						return i;
 					}
 				}
 			}
 			// No cue point found in range return false:
-			return false;
+			return -1;
 		},
 		/**
 		 * Returns the previous cuePoint object for requested time
 		 * @param {Number} time Time in milliseconds
 		 */
 		getPreviousCuePoint: function (time) {
+			var previousCuePointIndex = this.getPreviousCuePointIndex(time);
+
+			if (previousCuePointIndex !== -1)
+			{
+				var cuePoints = this.midCuePointsArray;
+				return cuePoints[previousCuePointIndex];
+			}
+
+			// no cue point index provided, return false
+			return false;
+		},
+		/**
+		 * Returns the previous cuePoint index for requested time
+		 * @param {Number} time Time in milliseconds
+		 */
+		getPreviousCuePointIndex: function (time) {
 			if (!isNaN(time) && time >= 0) {
 				var cuePoints = this.midCuePointsArray;
 				// Start looking for the cue point via time, return first match:
 				for (var i = 0; i < cuePoints.length; i++) {
 					if (cuePoints[i].startTime >= time) {
 						var index = (i - 1 > 0) ? (i - 1) : 0;
-						return cuePoints[index];
+						return index;
 					}
 				}
 			}
+
 			// if no cuepoint found then return last one:
-			return cuePoints[cuePoints.length - 1];
+			return cuePoints.length - 1;
+		},
+		getCuePointByIndex : function(index)
+		{
+			if (index && index < this.midCuePointsArray.length && index > -1)
+			{
+				var cuePoints = this.midCuePointsArray;
+				return cuePoints[index];
+			}
+
+			return null;
+		},
+		getCuePointsReached : function(time, startFromIndex) {
+
+			var result = {cuePoints: [], startIndex: startFromIndex, lastIndex: null};
+			if (startFromIndex != null && startFromIndex > -1 && !isNaN(time) && time >= 0) {
+				{
+					var cuePoints = this.midCuePointsArray;
+
+					for (var i = startFromIndex; i < cuePoints.length; i++) {
+						var curPoint = cuePoints[i];
+						if (curPoint.startTime <= time) {
+							result.cuePoints.push(curPoint);
+							result.lastIndex = i;
+						} else {
+							break;
+						}
+					}
+				}
+			}
+
+			return result;
 		},
 		/**
 		 * Triggers the given cue point
@@ -478,11 +544,53 @@
 			} else {
 				return;
 			}
-			mw.log('mw.KCuePoints :: Trigger event: ' + eventName + ' - ' + rawCuePoint.cuePointType + ' at: ' + rawCuePoint.startTime );
+			mw.log('mw.KCuePoints :: Trigger event: ' + eventName + ' - ' + rawCuePoint.cuePointType + ' at: ' + rawCuePoint.startTime);
 			$(this.embedPlayer).trigger(eventName, cuePointWrapper);
 			// TOOD "midSequenceComplete"
 		},
+		/**
+		 *
+		 * @param cuePoints
+		 * @param eventContext
+         */
+		triggerCuePointsReachedAggregated: function (cuePoints, eventContext) {
 
+			var filteredCuePoints = [];
+			for(var i = 0; i < cuePoints.length;i++)
+			{
+				var cuePoint = cuePoints[i];
+				if (cuePoint.cuePointType != 'adCuePoint.Ad' && $.inArray(cuePoint.cuePointType, mw.getConfig("EmbedPlayer.SupportedCuepointTypes")) !== -1){
+					// use the same conditions used in function 'triggerCuePoint' to detect which cue points should be handled.
+					filteredCuePoints.push(cuePoint);
+
+					/*
+					 * Evaluate cuePoint sourceURL strings ( used for VAST property substitutions )
+					 */
+					cuePoint.sourceUrl = this.embedPlayer.evaluate(cuePoint.sourceUrl);
+				}
+			}
+
+			if (filteredCuePoints.length === 0)
+			{
+				// after filtering the cue points we left with empty list of cue points to handle
+				return;
+			}
+
+			/*
+			 * The cue point object is wrapped with another object that has context property.
+			 * We used that property so that the different plugins will know the context of the ad
+			 * In case the cue point is not a adOpportunity their will be no context
+			 *
+			 * This matches the KDP implementation
+			 * */
+			var eventArgs = $.extend({
+				'cuePoints': filteredCuePoints
+			},eventContext);
+
+
+			mw.log('mw.KCuePoints :: Trigger event \'KalturaSupport_CuePointsReachedAggregated\' with - ' + filteredCuePoints.length + ' cue points to handle');
+			$(this.embedPlayer).trigger('KalturaSupport_CuePointsReachedAggregated', eventArgs);
+		},
 		// Get Ad Type from Cue Point
 		getVideoAdType: function (rawCuePoint) {
 			if (rawCuePoint.startTime === 0) {
@@ -549,3 +657,4 @@
 	};
 
 })(window.mw, window.jQuery);
+
