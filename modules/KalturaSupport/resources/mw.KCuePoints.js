@@ -325,7 +325,7 @@
 						if (nextPendingCuePointIndex > 0 && nextPendingCuePointIndex <= _this.midCuePointsArray.length) {
 							// invoke the following logic if we passed a cue point
 							// TODO [es] -> [om] is my assumption about the clone is correct
-							var passedCuePoints = _this.midCuePointsArray.slice(0,nextPendingCuePointIndex-1); // get a list of all the cue points that were passed
+							var passedCuePoints = _this.midCuePointsArray.slice(0,nextPendingCuePointIndex); // get a list of all the cue points that were passed
 							// no need to clone the quepoint since the clone workaround appears to be relevant to 'monitorEvent' event
 							_this.triggerCuePointsPassedDueToSeekAggregated(passedCuePoints);
 						}
@@ -365,7 +365,12 @@
 
 						var nextCuePoint = _this.getCuePointByIndex(nextPendingCuePointIndex);
 						if (nextCuePoint && currentTime) {
-							mw.log('mw.KCuePoints.bind(' + e.type + '): next cue point with id ' + nextCuePoint.id + ' should be handled in ' + Math.round((nextCuePoint.startTime - currentTime )/1000) + ' seconds (type \'' + nextCuePoint.cuePointType + '\', tags \'' + nextCuePoint.tags + '\', startTime \'' + new Date(nextCuePoint.startTime) + '\')');
+							var seconds = Math.round((nextCuePoint.startTime - currentTime )/1000);
+
+							if (seconds < 30) {
+								// log only if when the next cue point will be reached in less then 30 seconds
+								mw.log('mw.KCuePoints.bind(' + e.type + '): next cue point with id ' + nextCuePoint.id + ' should be handled in ' + seconds + ' seconds (type \'' + nextCuePoint.cuePointType + '\', tags \'' + nextCuePoint.tags + '\', startTime \'' + new Date(nextCuePoint.startTime) + '\')');
+							}
 						}
 					}
 				}
@@ -438,11 +443,16 @@
 				startFromIndex = startFromIndex || 0;
 
 				var cuePoints = this.midCuePointsArray;
+
 				// Start looking for the cue point via time, return FIRST match:
-				for (var i = startFromIndex; i < cuePoints.length; i++) {
-					if (cuePoints[i].startTime >= time) {
-						return i;
+				if (cuePoints && cuePoints.length > 0) {
+					for (var i = startFromIndex; i < cuePoints.length; i++) {
+						if (cuePoints[i].startTime >= time) {
+							return i;
+						}
 					}
+
+					return cuePoints.length; // return the next index which is out-side of the array (because all items in array were already handled)
 				}
 			}
 			// No cue point found in range return false:
@@ -461,8 +471,11 @@
 		getCuePointsReached : function(time, startFromIndex) {
 
 			var result = {cuePoints: [], startIndex: startFromIndex, lastIndex: null};
-			if ($.isNumeric(startFromIndex) && startFromIndex > -1 && !isNaN(time) && time >= 0) {
+
+			if ($.isNumeric(startFromIndex) &&  !isNaN(time) && time >= 0) {
 				{
+					startFromIndex =  (startFromIndex < 0) ? 0 : startFromIndex;
+
 					var cuePoints = this.midCuePointsArray;
 
 					for (var i = startFromIndex; i < cuePoints.length; i++) {
@@ -571,15 +584,21 @@
 			 * */
 			var eventArgs = $.extend({
 				'cuePoints': filteredCuePoints,
-				filter : function(args)
+				filter: function(args)
 				{
 					var result = [];
 
 					if (this.cuePoints)
 					{
-						result = $.grep(this.cuePoints,function(item)
+						result = $.grep(this.cuePoints,function(cuePoint)
 						{
-							return (!args.tag || (item.tags === args.tag) && (!args.type || (item.cuePointType === args.type)));
+							var isValidTag =(!args.tag || (cuePoint.tags === args.tag));
+							var isValidType = (!args.types || $.grep(args.types,function(cuePointType)
+							{
+								return (!cuePointType.main || cuePointType.main === cuePoint.cuePointType) && (!cuePointType.sub || cuePointType.sub === cuePoint.subType);
+							}).length > 0);
+
+							return  isValidTag && isValidType;
 						});
 
 						result.sort(function (a, b) {
