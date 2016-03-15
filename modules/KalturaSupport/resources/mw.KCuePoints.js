@@ -230,10 +230,12 @@
 					if (!_this.associativeCuePoints[rawCuePoint.id]) {
 						_this.associativeCuePoints[rawCuePoint.id] = rawCuePoint;
 						updatedCuePoints.push(rawCuePoint);
+						mw.log('mwKCuePoints.updateCuePoints: added to queue cue point with id ' + rawCuePoint.id);
 					}
 				});
 
 				if (updatedCuePoints.length > 0) {
+					// TODO [es] -> Oren - will 'this.getCuePoints()' consumers be affected now that we will add also the code cue points?
 					var cuePoints = this.getCuePoints();
 					//update cuepoints
 					$.merge(cuePoints, updatedCuePoints);
@@ -315,8 +317,6 @@
 					// TODO [es]: oren, we are we listening here for 'KalturaSupport_ThumbCuePointsUpdated'?
 					var currentTime = embedPlayer.getPlayerElementTime() * 1000;
 
-					mw.log('mw.KCuePoints.bind(' + e.type + '): checking for cue points that should be handled starting from index ' + nextCuePointIndex + ' (server time ' + new Date(currentTime) + ')');
-
 					//In case of seeked the current cuepoint needs to be updated to new seek time before
 					if (e.type == "seeked") {
 						mw.log('mw.KCuePoints.bind(' + e.type + '): event of type seeked invoked, re-searching for first relevant cuepoint by time');
@@ -324,39 +324,42 @@
 						mw.log('mw.KCuePoints.bind(' + e.type + '): found new cue point index ' + nextCuePointIndex);
 					}
 
-					var cuePointsReachedToHandle = _this.getCuePointsReached(currentTime,nextCuePointIndex);
 
-					if (cuePointsReachedToHandle.cuePoints.length > 0)
-					{
-						mw.log('mw.KCuePoints.bind(' + e.type + '): found ' + cuePointsReachedToHandle.cuePoints.length + ' cue point that should be handled');
-						nextCuePointIndex = cuePointsReachedToHandle.lastIndex + 1;
-						mw.log('mw.KCuePoints.bind(' + e.type + '): updating current index to ' + nextCuePointIndex + ' (will be used next time searching for cue points to handle)');
+					if (_this.getCuePointByIndex(nextCuePointIndex)) {
+						mw.log('mw.KCuePoints.bind(' + e.type + '): checking for cue points that should be handled starting from index ' + nextCuePointIndex + ' (server time ' + new Date(currentTime) + ')');
 
-						var clonedCuePointsToHandle = [];
-						for(var i = 0; i < cuePointsReachedToHandle.cuePoints.length;i++)
-						{
-							var reachedCuePoint = cuePointsReachedToHandle.cuePoints[i];
-							mw.log('mw.KCuePoints.bind(' + e.type + '): trigger event for cuePoint ' + reachedCuePoint.id + ' with start time ' + new Date(reachedCuePoint.startTime));
+						var cuePointsReachedToHandle = _this.getCuePointsReached(currentTime, nextCuePointIndex);
 
-							// Make a copy of the cue point to be triggered.
-							// Sometimes the trigger can result in monitorEvent being called and an
+						if (cuePointsReachedToHandle.cuePoints.length > 0) {
+							mw.log('mw.KCuePoints.bind(' + e.type + '): found ' + cuePointsReachedToHandle.cuePoints.length + ' cue point that should be handled');
+							nextCuePointIndex = cuePointsReachedToHandle.lastIndex + 1;
+							mw.log('mw.KCuePoints.bind(' + e.type + '): updating current index to ' + nextCuePointIndex + ' (will be used next time searching for cue points to handle)');
+
+							var clonedCuePointsToHandle = [];
+							for (var i = 0; i < cuePointsReachedToHandle.cuePoints.length; i++) {
+								var reachedCuePoint = cuePointsReachedToHandle.cuePoints[i];
+								mw.log('mw.KCuePoints.bind(' + e.type + '): trigger event for cuePoint ' + reachedCuePoint.id + ' with start time ' + new Date(reachedCuePoint.startTime));
+
+								// Make a copy of the cue point to be triggered.
+								// Sometimes the trigger can result in monitorEvent being called and an
+								// infinite loop ( ie ad network error, no ad received, and restore player calling monitor() )
+								var cuePointToBeTriggered = $.extend({}, reachedCuePoint);
+								clonedCuePointsToHandle.push(cuePointToBeTriggered); // update the cloned list that will be used to invoke event
+
+								// Trigger the cue point
+								_this.triggerCuePoint(cuePointToBeTriggered);
+							}
+
+							// invoke the reached aggregated event - use the cloned list since
+							// sometimes the trigger can result in monitorEvent being called and an
 							// infinite loop ( ie ad network error, no ad received, and restore player calling monitor() )
-							var cuePointToBeTriggered = $.extend({}, reachedCuePoint);
-							clonedCuePointsToHandle.push(cuePointToBeTriggered); // update the cloned list that will be used to invoke event
-
-							// Trigger the cue point
-							_this.triggerCuePoint(cuePointToBeTriggered);
+							_this.triggerCuePointsReachedAggregated(clonedCuePointsToHandle, {playerEventType: e.type});
 						}
 
-						// invoke the reached aggregated event - use the cloned list since
-						// sometimes the trigger can result in monitorEvent being called and an
-						// infinite loop ( ie ad network error, no ad received, and restore player calling monitor() )
-						_this.triggerCuePointsReachedAggregated(clonedCuePointsToHandle,{playerEventType : e.type});
-					}
-
-					var nextCuePoint = _this.getCuePointByIndex(nextCuePointIndex);
-					if (nextCuePoint) {
-						mw.log('mw.KCuePoints.bind(' + e.type + '): next cue point should be handled on ' + new Date(nextCuePoint.startTime));
+						var nextCuePoint = _this.getCuePointByIndex(nextCuePointIndex);
+						if (nextCuePoint) {
+							mw.log('mw.KCuePoints.bind(' + e.type + '): next cue point with id ' + nextCuePoint.id + ' should be handled on ' + new Date(nextCuePoint.startTime));
+						}
 					}
 				}
 			);
@@ -475,7 +478,7 @@
 		},
 		getCuePointByIndex : function(index)
 		{
-			if (index && index < this.midCuePointsArray.length && index > -1)
+			if ($.isNumeric(index) && index > -1 && index < this.midCuePointsArray.length)
 			{
 				var cuePoints = this.midCuePointsArray;
 				return cuePoints[index];
@@ -486,7 +489,7 @@
 		getCuePointsReached : function(time, startFromIndex) {
 
 			var result = {cuePoints: [], startIndex: startFromIndex, lastIndex: null};
-			if (startFromIndex != null && startFromIndex > -1 && !isNaN(time) && time >= 0) {
+			if ($.isNumeric(startFromIndex) && startFromIndex > -1 && !isNaN(time) && time >= 0) {
 				{
 					var cuePoints = this.midCuePointsArray;
 
