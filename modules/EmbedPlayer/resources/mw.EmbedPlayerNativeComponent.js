@@ -696,27 +696,6 @@
 			return true;
 		},
 
-		getSources: function(){
-			// check if manifest defined flavors have been defined:
-			if( this.manifestAdaptiveFlavors.length ){
-				return this.manifestAdaptiveFlavors;
-			}
-			return this.parent_getSources();
-		},
-		getSourceIndex: function (source) {
-			var sourceIndex = null;
-			$.each( this.getSources(), function( currentIndex, currentSource ) {
-				if (source.getAssetId() == currentSource.getAssetId()) {
-					sourceIndex = currentIndex;
-					return false;
-				}
-			});
-			// check for null, a zero index would evaluate false
-			if( sourceIndex == null ){
-				this.log("Error could not find source: " + source.getSrc());
-			}
-			return sourceIndex;
-		},
 		switchSrc: function (source) {
 			var sourceIndex = (source === -1) ? -1 : source.assetid;
 			this.getPlayerElement().switchFlavor(sourceIndex);

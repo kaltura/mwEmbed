@@ -876,13 +876,6 @@
 			var values = JSON.parse( data );
 			this.parent_onFlavorsListChanged( values.flavors );
 
-		} ,
-		getSources: function(){
-			// check if manifest defined flavors have been defined:
-			if( this.manifestAdaptiveFlavors.length ){
-				return this.manifestAdaptiveFlavors;
-			}
-			return this.parent_getSources();
 		},
 		onEnableGui: function ( data , id ) {
 			if ( data.guiEnabled === false ) {
@@ -949,23 +942,6 @@
 			return $( '#' + this.containerId );
 		} ,
 
-		/*
-		 * get the source index for a given source
-		 */
-		getSourceIndex: function ( source ) {
-			var sourceIndex = null;
-			var sourceAssetId = source.getAssetId();
-			$.each( this.getSources() , function ( currentIndex , currentSource ) {
-				if (sourceAssetId == currentSource.getAssetId()) {
-					sourceIndex = currentIndex;
-					return false;
-				}
-			} );
-			if ( sourceIndex == null ) {
-				mw.log( "EmbedPlayerSPlayer:: Error could not find source: " + source.getSrc() );
-			}
-			return sourceIndex;
-		} ,
 		switchSrc: function ( source ) {
 			if ( this.playerObject && this.mediaElement.getPlayableSources().length > 1 ) {
 				var trackIndex = -1;
