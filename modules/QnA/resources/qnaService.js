@@ -588,6 +588,7 @@ DAL for Q&A Module
                     'service': 'cuepoint_cuepoint',
                     'action': 'list',
                     'filter:entryIdEqual': entryId,
+                    'filter:tagsLike':'WEBCASTSTATETAG',
                     'filter:cuePointTypeEqual': 'codeCuePoint.Code',
                     'filter:orderBy': '-createdAt',
                     'pager:pageSize': 1,
