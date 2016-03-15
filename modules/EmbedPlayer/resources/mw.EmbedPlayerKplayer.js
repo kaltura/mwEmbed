@@ -122,6 +122,7 @@
                     var preferedBitRate = _this.evaluate( '{mediaProxy.preferedFlavorBR}' );
                     if( preferedBitRate ) {
                         hlsPluginConfiguration["prefBitrate"] = preferedBitRate;
+                        flashvars.disableAutoDynamicStreamSwitch = true; // disable autoDynamicStreamSwitch logic inside KDP (while playing + if player.isDynamicStream turn autoSwitch on)
                     }
                     if( mw.getConfig("maxBitrate") ) {
                         hlsPluginConfiguration["maxBitrate"] = mw.getConfig("maxBitrate");

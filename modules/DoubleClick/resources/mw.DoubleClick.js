@@ -362,28 +362,33 @@
 		 */
 		loadIma:function( successCB, failureCB ){
 			var _this = this;
-			var isLoaded = false;
 			var timeoutVal = _this.getConfig("adsManagerLoadedTimeout") || 5000;
 			mw.log( "DoubleClick::loadIma: start timer for adsManager loading check: " + timeoutVal + "ms");
-			setTimeout(function(){
-				if ( !isLoaded ){
-					mw.log( "DoubleClick::loadIma: adsManager failed loading after " + timeoutVal + "ms");
-					failureCB();
-				}
+			var imaLoaderTimeoutID = setTimeout(function(){
+				mw.log( "DoubleClick::loadIma: adsManager failed loading after " + timeoutVal + "ms");
+				failureCB();
 			}, timeoutVal);
 
 			var imaURL =  '//s0.2mdn.net/instream/html5/ima3.js';
 			if ( this.getConfig( 'debugMode' ) === true ){
 				imaURL =  '//s0.2mdn.net/instream/html5/ima3_debug.js';
 			}
-			$.getScript( imaURL , function() {
-				isLoaded = true;
+
+			$.ajax({
+				url: imaURL,
+				dataType: "script",
+				cache: true
+			})
+			.success(function (data) {
 				successCB();
-			} )
-				.fail( function( jqxhr, settings, errorCode ) {
-					isLoaded = true;
-					failureCB( errorCode );
-				} );
+			})
+			.error(function( jqxhr, textStatus, errorCode ) {
+				failureCB( errorCode );
+			})
+			.always(function() {
+				clearTimeout(imaLoaderTimeoutID);
+			})
+
 		},
 		startAdsManager: function(){
 			// Initialize the ads manager. In case of ad playlist with a preroll, the preroll will start playing immediately.
@@ -583,30 +588,32 @@
 		},
 
 		resumeAd: function (isLinear) {
-			var _this = this;
-			this.adPaused = false;
-			this.embedPlayer.paused = false;
-			$(".adCover").remove();
-			$(this.embedPlayer).trigger("onPlayerStateChange", ["play", this.embedPlayer.currentState]);
-			if (isLinear) {
-				this.embedPlayer.disablePlayControls();
-			} else {
-				_this.embedPlayer.play();
-			}
+			if (this.adPaused){
+				var _this = this;
+				this.adPaused = false;
+				this.embedPlayer.paused = false;
+				$(".adCover").remove();
+				$(this.embedPlayer).trigger("onPlayerStateChange", ["play", this.embedPlayer.currentState]);
+				if (isLinear) {
+					this.embedPlayer.disablePlayControls();
+				} else {
+					_this.embedPlayer.play();
+				}
 
-			if (_this.isChromeless) {
-				_this.embedPlayer.getPlayerElement().sendNotification("resumeAd");
-			} else {
-				if (this.adsManager) {
-					this.adsManager.resume();
-				}else{
-					_this.embedPlayer.getPlayerElement().resume();
+				if (_this.isChromeless) {
+					_this.embedPlayer.getPlayerElement().sendNotification("resumeAd");
+				} else {
+					if (this.adsManager) {
+						this.adsManager.resume();
+					}else{
+						_this.embedPlayer.getPlayerElement().resume();
+					}
 				}
 			}
 		},
 
 		toggleAdPlayback: function (isLinear) {
-			if (this.getConfig("pauseAdOnClick") !== false) {
+			if (this.getConfig("pauseAdOnClick") !== false && !this.isNativeSDK) {
 				if (this.adPaused) {
 					this.resumeAd(isLinear);
 				} else {
@@ -1020,9 +1027,6 @@
 			adsListener( 'LOADED', function(adEvent){
 				_this.showAdContainer();
 				var adData = adEvent.getAdData();
-				if ( adData.linear && (!adData.adPodInfo || ( adData.adPodInfo && adData.adPodInfo.adPosition === 1) ) ){
-					_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
-				}
 				if ( adData) {
 					_this.isLinear = adData.linear;
 				}
@@ -1064,7 +1068,9 @@
 				}
                 var adPosition =  0;
                 if ( ad.getAdPodInfo() && ad.getAdPodInfo().getAdPosition() ){ adPosition = ad.getAdPodInfo().getAdPosition(); }
-
+				if ( _this.isLinear && adPosition === 1){
+					_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
+				}
                 // collect POD parameters is exists (ad.getAdPodInfo().getPodIndex() exists = POD)
                 var podPosition = null;
                 var podStartTime = null;
@@ -1143,6 +1149,7 @@
 				if (!mw.isIphone()){
 					_this.toggleAdPlayback(isLinear);
 				}
+				$( _this.embedPlayer).trigger( 'onAdClick' );
 			});
 
 			adsListener( 'FIRST_QUARTILE', function(){
@@ -1220,12 +1227,16 @@
 					}
 					$(_this.embedPlayer).trigger("onAdPlay", [adInfo.adID, adInfoObj.adSystem, adInfoObj.currentAdSlotType, adInfoObj.adPosition, adInfo.duration, podPosition,  podStartTime, adInfo.adTitle ]); //index is missing =0 by now
 
-					if (adInfo.linear){
+					if (_this.isNativeSDK || adInfo.linear){ // TODO: remove isNativeSDK once we pass the adInfo object from the native app SDK (currently not passed)
 						_this.embedPlayer.sequenceProxy.isInSequence = true;
 						// set volume when ad starts to enable autoMute. TODO: remove next line once DoubleClick fix their bug when setting adsManager.volume before ad starts
 						_this.embedPlayer.setPlayerElementVolume(_this.embedPlayer.volume);
 						$(_this.embedPlayer).trigger("playing");
 						$(_this.embedPlayer).trigger("onplay");
+						if (_this.currentAdSlotType != _this.prevSlotType) {
+							_this.embedPlayer.adTimeline.updateUiForAdPlayback(_this.currentAdSlotType);
+							_this.prevSlotType = _this.currentAdSlotType;
+						}
 						if (_this.currentAdSlotType != _this.prevSlotType) {
 							_this.prevSlotType = _this.currentAdSlotType;
 						}
@@ -1253,9 +1264,6 @@
 				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
 					mw.log("DoubleClick:: adLoaded");
 					_this.isLinear = adInfo.isLinear;
-					if (_this.isLinear && adInfo.adPosition === 1){
-						_this.embedPlayer.adTimeline.updateUiForAdPlayback(_this.currentAdSlotType);
-					}
 					if (!_this.isLinear && _this.isChromeless) {
 						$(".mwEmbedPlayer").hide();
 						mw.setConfig("EmbedPlayer.EnableFlashActivation", false);
@@ -1285,6 +1293,7 @@
 				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
 					mw.log("DoubleClick:: adClicked");
 					_this.toggleAdPlayback(adInfo.isLinear);
+					$( _this.embedPlayer).trigger( 'onAdClick' );
 				}, 'adClicked', true);
 
 				this.embedPlayer.getPlayerElement().subscribe(function (adInfo) {
@@ -1452,12 +1461,14 @@
 							$( embedPlayer ).trigger( "onPlayerStateChange", ["pause", embedPlayer.currentState] );
 							break;
 						case 'doPlay':
-							_this.adPaused = false;
-							_this.adsManager.resume();
-							embedPlayer.paused = false;
-							$( embedPlayer ).trigger( 'onplay' );
-							$( embedPlayer ).trigger( "onPlayerStateChange", ["play", embedPlayer.currentState] );
-							_this.monitorAdProgress();
+							if (_this.adPaused){
+								_this.adPaused = false;
+								_this.adsManager.resume();
+								embedPlayer.paused = false;
+								$( embedPlayer ).trigger( 'onplay' );
+								$( embedPlayer ).trigger( "onPlayerStateChange", ["play", embedPlayer.currentState] );
+								_this.monitorAdProgress();
+							}
 							break;
 						case 'doStop':
 							_this.adsManager.stop();
