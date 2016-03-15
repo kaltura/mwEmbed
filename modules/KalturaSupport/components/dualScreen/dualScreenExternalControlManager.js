@@ -6,8 +6,10 @@
             setup : function()
             {
                 var _this = this;
-                this.bind( 'KalturaSupport_CuePointsReachedAggregated', function ( e, args ) {
-                    var relevantCuePoints = _this.filterCuePointsByTags({cuePoints : args.cuePoints,tag : 'player-view-mode',sortDesc : true});
+
+                this.bind( 'KalturaSupport_CuePointsPassedDueToSeekAggregated KalturaSupport_CuePointsReachedAggregated', function ( e, args ) {
+
+                    var relevantCuePoints = args.filter({tag : 'player-view-mode',sortDesc : true});
                     var mostUpdatedCuePointToHandle = relevantCuePoints.length> 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
 
                     if (mostUpdatedCuePointToHandle)
@@ -15,29 +17,6 @@
                         _this.handleCuePoint(mostUpdatedCuePointToHandle);
                     }
                 });
-            },
-            /**
-             * Get all the cue points filtered by tag and ordered either desc/asc
-             * @param args
-             * @returns {Array}
-             */
-            filterCuePointsByTags : function(args)
-            {
-                var result = [];
-
-                if (args.tag && args.cuePoints)
-                {
-                    result = $.grep(args.cuePoints,function(item)
-                    {
-                        return item.tags === args.tag;
-                    });
-
-                    result.sort(function (a, b) {
-                        return args.sortDesc ? (b.startTime - a.startTime) : (a.startTime - b.startTime);
-                    });
-                }
-
-                return result;
             },
             handleCuePoint : function(cuePoint)
             {
@@ -84,7 +63,7 @@
                 }
 
                 if (action) {
-                    mw.log("dualscreenExternalControlManager.handleCuePoint(): Changing player view to '" + action + "' with main display '" + mainDisplayType + "'");
+                    mw.log("dualscreenExternalControlManager.handleCuePoint(): Changing player view to '" + action + "' with main display '" + mainDisplayType + "' (provided token '" + cuePointCode.playerViewModeId + "')");
 
                     this.getPlayer().triggerHelper('dualScreenStateChange', { action : action, mainDisplayType : mainDisplayType});
                 }
