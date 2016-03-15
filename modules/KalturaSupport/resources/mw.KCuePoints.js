@@ -289,7 +289,8 @@
 		addPlayerBindings: function () {
 			var _this = this;
 
-			var nextCuePointIndex = null;
+			// Get first cue point
+			var nextCuePointIndex = _this.getNextCuePointIndex(0);
 
 			var embedPlayer = this.embedPlayer;
 
@@ -313,13 +314,6 @@
 				function (e) {
 					// TODO [es]: oren, we are we listening here for 'KalturaSupport_ThumbCuePointsUpdated'?
 					var currentTime = embedPlayer.getPlayerElementTime() * 1000;
-
-					if (nextCuePointIndex == null)
-					{
-						mw.log('mw.KCuePoints.bind(' + e.type + '): first time searching for cue points to handle - find first relevant cue point');
-						// this is the first time we search for cue points to handle - find first relevant cue point
-						nextCuePointIndex = _this.getNextCuePointIndex(currentTime);
-					}
 
 					mw.log('mw.KCuePoints.bind(' + e.type + '): checking for cue points that should be handled starting from index ' + nextCuePointIndex + ' (server time ' + new Date(currentTime) + ')');
 
