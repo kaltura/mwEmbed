@@ -130,6 +130,9 @@
                     if( mw.getConfig("minBitrate") ) {
                         hlsPluginConfiguration["minBitrate"] = mw.getConfig("minBitrate");
                     }
+                    if( mw.getConfig("forceCropBottomPercent") && mw.isChrome() ) {
+                        hlsPluginConfiguration["forceCropBottomPercent"] = mw.getConfig("forceCropBottomPercent");
+                    }
                     if (mw.getConfig("hlsLogs")) {
                         hlsPluginConfiguration["sendLogs"] = mw.getConfig("hlsLogs");
                         var func = ["onManifest", "onNextRequest", "onDownload", "onCurrentTime", "onTag"];
