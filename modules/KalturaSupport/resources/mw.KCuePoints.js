@@ -326,7 +326,6 @@
 
 
 					if (_this.getCuePointByIndex(nextCuePointIndex)) {
-						mw.log('mw.KCuePoints.bind(' + e.type + '): checking for cue points that should be handled starting from index ' + nextCuePointIndex + ' (server time ' + new Date(currentTime) + ')');
 
 						var cuePointsReachedToHandle = _this.getCuePointsReached(currentTime, nextCuePointIndex);
 
@@ -357,8 +356,8 @@
 						}
 
 						var nextCuePoint = _this.getCuePointByIndex(nextCuePointIndex);
-						if (nextCuePoint) {
-							mw.log('mw.KCuePoints.bind(' + e.type + '): next cue point with id ' + nextCuePoint.id + ' should be handled on ' + new Date(nextCuePoint.startTime));
+						if (nextCuePoint && currentTime) {
+							mw.log('mw.KCuePoints.bind(' + e.type + '): next cue point with id ' + nextCuePoint.id + ' should be handled in ' + Math.round((nextCuePoint.startTime - currentTime )/1000) + ' seconds (at ' + nextCuePoint.startTime + ')');
 						}
 					}
 				}
