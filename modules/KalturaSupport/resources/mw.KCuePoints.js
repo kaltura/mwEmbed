@@ -369,7 +369,7 @@
 
 							if (seconds < 30) {
 								// log only if when the next cue point will be reached in less then 30 seconds
-								mw.log('mw.KCuePoints.bind(' + e.type + '): next cue point with id ' + nextCuePoint.id + ' should be handled in ' + seconds + ' seconds (type \'' + nextCuePoint.cuePointType + '\', tags \'' + nextCuePoint.tags + '\', startTime \'' + new Date(nextCuePoint.startTime) + '\')');
+								mw.log('mw.KCuePoints.bind(' + e.type + '): next cue point with id ' + nextCuePoint.id + ' should be handled in ' + seconds + ' seconds (type \'' + nextCuePoint.cuePointType + '\', tags \'' + nextCuePoint.tags + '\')');
 							}
 						}
 					}
