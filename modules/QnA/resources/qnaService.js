@@ -220,9 +220,10 @@ DAL for Q&A Module
             this.embedPlayer = embedPlayer;
             this.qnaPlugin = qnaPlugin;
 
-            this.requestCuePoints();
+
 
             if (embedPlayer.isLive()) {
+                this.requestCuePoints();
                 this.registerItemNotification();
             }
 
