@@ -1667,6 +1667,8 @@ mw.KWidgetSupport.prototype = {
 					protocol: protocol,
 					clipAspect: validClipAspect
 				});
+				this.attachFlavorAssetDrmData(hlsSource, targetFlavors[0], flavorDrmData);
+				hlsSource.fpsCertificate = this.getFairplayCert(playerData);
 				deviceSources.push(hlsSource);
 				addedHlsStream = true;
 			}
@@ -1804,6 +1806,15 @@ mw.KWidgetSupport.prototype = {
 		var assetDrmData = this.getFlavorAssetDrmData(assetId, flavorDrmData);
 		$.extend(source, assetDrmData);
 		return source;
+	},
+	getFairplayCert: function(playerData){
+		var publicCertificate = null;
+		if (playerData.contextData.pluginData &&
+			playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData &&
+			playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData.publicCertificate){
+			publicCertificate = playerData.contextData.pluginData.KalturaDrmEntryContextPluginData.publicCertificate;
+		}
+		return publicCertificate;
 	},
 	getFlavorAssetsDrmData: function(playerData){
 		var flavorDrmData = {};

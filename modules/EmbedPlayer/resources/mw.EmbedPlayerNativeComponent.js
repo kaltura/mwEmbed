@@ -169,6 +169,12 @@
 						// widevine modular, because we don't have any other dash DRM right now.
 						licenseUri = licenseServer + "/cenc/widevine/license?" + licenseParams;
 						break;
+					case "application/vnd.apple.mpegurl":
+						// fps
+						licenseUri = licenseServer + "/fps/license?" + licenseParams;
+						//Add the FPS certificate
+						this.getPlayerElement().attr('fpsCertificate', this.mediaElement.selectedSource.fpsCertificate);
+						break;
 					default:
 						break;
 				}
