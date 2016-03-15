@@ -82,13 +82,7 @@
 
 			$( this.embedPlayer).bind('chromecastDeviceConnected', function(){
 				_this.getComponent().css("color","#35BCDA");
-				this.getInterface().find(".chromecastScreen").remove();
-				$(_this.embedPlayer).html(_this.getPlayingScreen());
-				$(".chromecastThumb").load(function(){
-					setTimeout(function(){
-						_this.setPlayingScreen();
-					},0);
-				});
+				_this.updateScreen();
 			});
 			$( this.embedPlayer).bind('chromecastDeviceDisConnected', function(){
 				_this.getComponent().css("color","white");
@@ -102,6 +96,10 @@
 
 			$( this.embedPlayer).bind('updateDashContextData', function(e, drmConfig){
 				_this.drmConfig = drmConfig;
+			});
+
+			$( this.embedPlayer).bind('onChangeMedia', function(e, drmConfig){
+				_this.savedPosition = 0;
 			});
 
 			$(this.embedPlayer).bind('playerReady', function() {
@@ -298,7 +296,7 @@
 					_this.embedPlayer.receiverName = _this.session.receiver.friendlyName;
 					// set volume and position according to the video settings before switching players
 					_this.setVolume(null, _this.savedVolume);
-					if (_this.currentMediaSession.media.duration && _this.savedPosition > 0){
+					if (_this.currentMediaSession.media.duration && _this.savedPosition > 0 && !_this.embedPlayer.changeMediaStarted){
 						_this.seekMedia(_this.savedPosition / _this.currentMediaSession.media.duration * 100);
 					}
 					// update media duration for durationLable component
@@ -306,12 +304,7 @@
 					if (_this.autoPlay){
 						_this.embedPlayer.play();
 					}
-					$(_this.embedPlayer).html(_this.getPlayingScreen());
-					$(".chromecastThumb").load(function(){
-						setTimeout(function(){
-							_this.setPlayingScreen();
-						},0);
-					});
+					_this.updateScreen();
 					// hide kaltura logo
 					if ( _this.getConfig("receiverLogo") ){
 						_this.sendMessage({'type': 'hide', 'target': 'logo'});
@@ -492,6 +485,10 @@
 			this.embedPlayer.disablePlayer();
 			this.embedPlayer.updatePlaybackInterface();
 			this.embedPlayer.enablePlayControls();
+			if (this.embedPlayer.playlist){
+				mw.setConfig("EmbedPlayer.KeepPoster",false);
+				mw.setConfig('EmbedPlayer.HidePosterOnStart', true);
+			}
 			if (this.embedPlayer.isLive()){
 				this.embedPlayer.pause();
 				setTimeout(function(){
@@ -560,6 +557,16 @@
 			}
 		} ,
 
+		updateScreen: function(){
+			var _this = this;
+			this.embedPlayer.getInterface().find(".chromecastScreen").remove();
+			this.embedPlayer.getVideoHolder().append(this.getPlayingScreen());
+			$(".chromecastThumb").load(function(){
+				setTimeout(function(){
+					_this.setPlayingScreen();
+				},0);
+			});
+		},
 
 		getPlayingScreen: function(){
 			return '<div class="chromecastScreen" style="background-color: #000000; opacity: 0.7; width: 100%; height: 100%; font-family: Arial; position: absolute">' +

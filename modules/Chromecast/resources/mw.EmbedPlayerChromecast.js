@@ -90,7 +90,12 @@
 				return;
 			}
 			this.switchPlaySource(this.getSource(), function () {
-				_this.updatePosterHTML();
+				mw.setConfig("EmbedPlayer.KeepPoster",true);
+				mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
+				setTimeout(function(){
+					_this.updatePosterHTML();
+				},0);
+
 				callback();
 			});
 		},
