@@ -297,7 +297,7 @@
 			var embedPlayer = this.embedPlayer;
 
 			// Don't add any bindings if no cuePoint exists )
-			if (!( ( embedPlayer.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) || currentCuePoint)) {
+			if (!( ( embedPlayer.isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") ) || (this.getCuePoints() || []).length !== 0)) {
 				return;
 			}
 
