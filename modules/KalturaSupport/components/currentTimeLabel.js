@@ -6,7 +6,8 @@
 		defaultConfig: {
 			"parent": "controlsContainer",
 			"order": 21,
-			"displayImportance": "high"
+			"displayImportance": "high",
+			"countDownMode": false
 		},
 
 		updateEnabled: true,
@@ -15,7 +16,8 @@
 		setup: function () {
 			var _this = this;
 			if ( this.embedPlayer.isMobileSkin() ){
-				this.getComponent().data("width",0.1);
+				this.setConfig("order", 26);
+				this.setConfig("countDownMode", true);
 			}
 			this.bindTimeUpdate();
 			this.bind('externalTimeUpdate', function (e, newTime) {
@@ -65,6 +67,9 @@
 		},
 		updateUI: function (time) {
 			if (this.updateEnabled) {
+				if (this.getConfig("countDownMode")){
+					time = this.embedPlayer.getDuration() - time;
+				}
 				this.getComponent().text(mw.seconds2npt(time));
 				// check if the time change caused the label width to change (got to 10 minutes or 1 hour) and recalculate components position if needed
 				var currentWidth = this.$el.width();
@@ -86,6 +91,9 @@
 				this.$el = $('<div />')
 					.addClass("timers" + this.getCssClass())
 					.text('0:00');
+			}
+			if (this.getConfig("countDownMode")){
+				this.$el.text(mw.seconds2npt(this.embedPlayer.getDuration()));
 			}
 			this.labelWidth = this.$el.width();
 			return this.$el;
