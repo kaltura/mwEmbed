@@ -4,6 +4,7 @@
 
 	mw.dualScreen.imagePlayer = mw.KBaseComponent.extend({
 		defaultConfig: {
+
 			cuePointType: [{
 				"main": mw.KCuePoints.TYPE.THUMB,
 				"sub": [mw.KCuePoints.THUMB_SUB_TYPE.SLIDE]
@@ -48,25 +49,45 @@
 				var currentCuepoint = _this.getCurrentCuePoint() || _this.getCuePoints()[0];
 				_this.sync(currentCuepoint);
 			} );
-			this.bind( 'KalturaSupport_CuePointReached', function ( e, cuePointObj ) {
-				var cuePoint;
+
+			function filterCuePointsByType(cuePoints, sortDesc)
+			{
+				var result = [];
+
 				$.each(_this.getConfig("cuePointType"), function(i, cuePointType){
 					var main = $.isArray(cuePointType.main) ? cuePointType.main : [cuePointType.main];
 					var sub = $.isArray(cuePointType.sub) ? cuePointType.sub : [cuePointType.sub];
-					if ( ( $.inArray( cuePointObj.cuePoint.cuePointType, main ) > -1 ) &&
-						( $.inArray( cuePointObj.cuePoint.subType, sub ) > -1 ) ) {
-						cuePoint = cuePointObj.cuePoint;
-						return false;
-					}
+
+					$.each(cuePoints,function(index,cuePoint)
+					{
+						if ( ( $.inArray( cuePoint.cuePointType, main ) > -1 ) &&
+							( $.inArray( cuePoint.subType, sub ) > -1 ) ) {
+							result.push(cuePoint);
+						}
+					});
+
 				});
 
-				if (!cuePoint){
-					// TODO [es]: TBD with Oren - I removed this since reached event will also trigger for code cue points and if I understood you correctly this workaround is redundant
-					// cuePoint = _this.getCurrentCuePoint();
-					return;
+				result.sort(function (a, b) {
+					return sortDesc ? (b.startTime - a.startTime) : (a.startTime - b.startTime);
+				});
+
+				return result;
+			}
+			this.bind( 'KalturaSupport_CuePointsPassedDueToSeekAggregated KalturaSupport_CuePointsReachedAggregated', function ( e, args ) {
+
+				// TODO [es] -> [om] check if configuration of cuePointType value can/is modified or do we always use the same values. if it is always this values can use the improved code
+				//var relevantCuePoints = args.filter({types : _this.getConfig("cuePointType"),sortDesc : true});
+				var relevantCuePoints = filterCuePointsByType(args.cuePoints,true);
+				var mostUpdatedCuePointToHandle = relevantCuePoints.length> 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
+
+				if (mostUpdatedCuePointToHandle)
+				{
+					mw.log("imagePlayer.addBinding(cuePointEvents): syncing thumb with id '" + mostUpdatedCuePointToHandle.id);
+					_this.sync(mostUpdatedCuePointToHandle);
 				}
-				_this.sync( cuePoint );
-			} );
+			});
+
 			this.bind("onChangeMedia", function(){
 				//Clear the current slide before loading the new media
 				_this.getComponent().attr("src", "");
