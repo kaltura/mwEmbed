@@ -663,7 +663,7 @@
 					kdp.kBind('mediaReady', function () {
 						setTimeout(function () {
 							kdp.sendNotification('doPlay');
-						}, 0);
+						}, 100);
 					});
 					if (typeof orgEmbedCallback == 'function') {
 						orgEmbedCallback(playerId);
