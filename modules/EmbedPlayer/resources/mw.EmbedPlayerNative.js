@@ -54,8 +54,6 @@
 		// Disable switch source callback
 		disableSwitchSourceCallback: false,
 
-		capturePauseAfterSourceSwitch: false,
-
 		// Flag specifying if a mobile device already played. If true - mobile device can autoPlay
 		mobilePlayed: false,
 		// All the native events per:
@@ -679,7 +677,6 @@
 							switchCallback(vid);
 							switchCallback = null;
 						}
-						_this.capturePauseAfterSourceSwitch = true;
 					};
 
 					// once playing issue callbacks:
@@ -1133,17 +1130,19 @@
 				this.ignoreNextNativeEvent = false;
 				return;
 			}
-			this.log(" OnPaused:: propagate:" + this._propagateEvents  + ' duringSeek:' + this.seeking);
+			var timeSincePlay = Math.abs(this.absoluteStartPlayTime - new Date().getTime());
+			this.log(" OnPaused:: propagate:" + this._propagateEvents +
+				' time since play: ' + timeSincePlay + ' duringSeek:' + this.seeking);
 			// Only trigger parent pause if more than MonitorRate time has gone by.
 			// Some browsers trigger native pause events when they "play" or after a src switch
-			if (!this.seeking && !this.userSlide &&	!this.capturePauseAfterSourceSwitch	) {
+			if (!this.seeking && !this.userSlide
+				&&
+				timeSincePlay > mw.getConfig('EmbedPlayer.MonitorRate')
+				) {
 				_this.parent_pause();
 			} else {
-				if (this.capturePauseAfterSourceSwitch && this.currentTime < 0.1){
-					// try to continue playback:
-					this.getPlayerElement().play();
-					this.capturePauseAfterSourceSwitch = false;
-				}
+				// try to continue playback:
+				this.getPlayerElement().play();
 			}
 		},
 
