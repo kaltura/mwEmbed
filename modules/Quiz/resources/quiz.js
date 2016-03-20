@@ -1,3 +1,8 @@
+/**
+ * Created by mark.feder Kaltura.
+ *
+ * */
+
 (function (mw, $) {
     "use strict";
     $.cpObject = {};
@@ -15,155 +20,175 @@
             usePreviewPlayer: false,
             previewPlayerEnabled: false
         },
-        entryData: null,
-        state: "start",
-        currentQuestionNumber: 0,
-        kQuizUserEntryId: null,
-        reviewMode: false,
-        showCorrectKeyOnAnswer: false,
-        showResultOnAnswer: false,
-        canSkip: true,
-        showTotalScore:true,
-        score: null,
-        sliceArray: [],
-        hexPosContainerPos:0,
+
         isSeekingIVQ:false,
-        isErr: false,
-        alowLastQuestionSeekTemp:false,
+        inFullScreen:false,
+        selectedAnswer:null,
+        seekToQuestionTime:null,
+        multiStreamWelcomeSkip:false,
+        IVQVer:'IVQ-2.41.rc2',
 
         setup: function () {
             var _this = this;
-            var getQuizuserEntryIdAndQuizParams = [{
-                'service': 'userEntry',
-                'action': 'list',
-                'filter:objectType': 'KalturaQuizUserEntryFilter',
-                'filter:entryIdEqual': _this.embedPlayer.kentryid,
-                'filter:userIdEqualCurrent':'1',
-                'filter:orderBy': '-createdAt'
-            }, {
-                'service': 'quiz_quiz',
-                'action': 'get',
-                'entryId': _this.embedPlayer.kentryid
-            }];
+            var embedPlayer = _this.getPlayer();
+            embedPlayer.disableComponentsHover();
+            mw.log("Quiz: " + _this.IVQVer);
+            this.bind('onChangeStream', function () {
+                mw.log("Quiz: multistream On");
+                _this.multiStreamWelcomeSkip = true;
+            });
 
-            _this.getKClient().doRequest(getQuizuserEntryIdAndQuizParams, function (data) {
+            embedPlayer.addJsListener( 'kdpReady', function(){
 
-                if (!_this._checkApiResponse('User Entry err-->',data[0])){
-                    return false;
-                }
-                if (!_this._checkApiResponse('Quiz Params err-->',data[1])){
-                    return false;
-                }
-                else{
-                    $.quizParams = data[1];
-                }
+                _this.KIVQModule = new mw.KIVQModule(embedPlayer, _this);
+                _this.KIVQModule.isKPlaylist = (typeof (embedPlayer.playlist) === "undefined" ) ? false : true;
 
-                if (data[0].totalCount > 0 &&  !$.isEmptyObject(data[0].objects[0])) {
-
-                    _this.kQuizUserEntryId = data[0].objects[0].id;
-
-                    switch (String(data[0].objects[0].status)) {
-                        case 'quiz.3':
-                            _this.score = Math.round(data[0].objects[0].score *100);
-                            _this._getQuestionCpAPI(_this._populateCpObject);
-                            break;
-                        case '1':
-                            _this._getQuestionCpAPI(_this._populateCpObject);
-                            break;
-                        case '2':
-                            _this._errMsg('quiz deleted',data);
-                            return false;
-                            break;
+                if (embedPlayer.kalturaPlayerMetaData.capabilities === "quiz.quiz"){
+                    if (embedPlayer.autoplay) {
+                        embedPlayer.autoplay = false;
                     }
-                }
-                else {
-                    var createQuizuserEntryId = {
-                        'service': 'userEntry',
-                        'action': 'add',
-                        'userEntry:objectType': 'KalturaQuizUserEntry',
-                        'userEntry:entryId': _this.embedPlayer.kentryid
+
+                    _this.KIVQModule.setupQuiz();
+                    _this.KIVQScreenTemplate = new mw.KIVQScreenTemplate(embedPlayer);
+
+                    if(_this.KIVQModule.isKPlaylist){
+                        _this.KIVQModule.unloadQuizPlugin(embedPlayer);
+                        embedPlayer.stop();
+                    }else{
+                        if(!_this.multiStreamWelcomeSkip){
+                            embedPlayer.disablePlayControls();
+                        }
+                        embedPlayer.addPlayerSpinner();
                     };
 
-                    _this.getKClient().doRequest(createQuizuserEntryId, function (data) {
-                           if (!_this._checkApiResponse('Add KQ user entry id err -->',data)){
-                               return false;
-                           }
-                        _this.kQuizUserEntryId = data.id;
-                        _this._getQuestionCpAPI(_this._populateCpObject);
+                    _this.KIVQModule.checkCuepointsReady(function(){
+
+                        _this.addBindings();
+
+                        if(_this.KIVQModule.isKPlaylist){
+                            embedPlayer.stop();//
+                            _this.enablePlayDuringScreen = false;
+                            _this.ssWelcome();
+                            mw.log("Quiz: playlistWelcome");
+                        };
+                        embedPlayer.hideSpinner();
+                        embedPlayer.enablePlayControls();
                     });
+
+                    mw.log("Quiz: Quiz Loading..");
+
+                    try {
+                        var cssLink = "modules/Quiz/resources/css/quizFonts.css";
+                        cssLink = cssLink.toLowerCase().indexOf("http") === 0 ? cssLink : kWidget.getPath() + cssLink;
+                        if (!$("link[href=cssLink]").length){
+                            $('head', window.parent.document).append('<link type="text/css" rel="stylesheet" href="' + cssLink + '"/>');
+                        }
+                    }
+                    catch(err) {
+                        mw.log("Quiz: Err loading fonts :"+err.message);
+                    }
                 }
+                else{
+                    _this.KIVQModule.unloadQuizPlugin(embedPlayer);
+                    embedPlayer.enablePlayControls();
+                    if(_this.KIVQModule.isKPlaylist){
+                        _this.embedPlayer.setKDPAttribute('playlistAPI','autoContinue',true);
+                    };
+                 }
             });
-            this.addBindings();
         },
         addBindings: function () {
             var _this = this;
             var embedPlayer = this.getPlayer();
-            var firstPlay = true;
-            this.bind('layoutBuildDone', function () {
-                var entryRequest = {
-                    'service': 'baseEntry',
-                    'action': 'get',
-                    'entryId': embedPlayer.kentryid
-                };
-                _this.getKClient().doRequest(entryRequest, function (data) {
+            mw.log("Quiz: Add Bindings ");
+            if (!_this.multiStreamWelcomeSkip){
+                this.bind('prePlayAction'+_this.KIVQModule.bindPostfix, function (e, data) {
+                    mw.log("Quiz: Bind PrePlay");
+                    if(!_this.KIVQModule.isKPlaylist){
+                        if(_this.getPlayer().firstPlay) {
+                            mw.log("Quiz: Welcome");
+                            data.allowPlayback = false;
+                            _this.enablePlayDuringScreen = false;
+                            _this.ssWelcome();
 
-                    if (!_this._checkApiResponse('Get baseEntry err -->',data)){
-                        return false;
-                    }
-                    _this.entryData = data;
-                    _this._initParams();
-
+                        }else{
+                            _this.KIVQModule.showQuizOnScrubber();
+                            mw.log("Quiz: preplay Show Quiz on Scrubber");
+                        };
+                    };
+                    _this.unbind('prePlayAction' + _this.KIVQModule.bindPostfix);
                 });
-            });
-
-            this.bind('KalturaSupport_CuePointReached', function (e, cuePointObj) {
-
+            }else{
+                this.bind('prePlayAction'+_this.KIVQModule.bindPostfix, function (e, data) {
+                    _this.KIVQModule.showQuizOnScrubber();
+                });
+                _this.KIVQModule.continuePlay();
+            };
+            this.bind('KalturaSupport_CuePointReached'+_this.KIVQModule.bindPostfix, function (e, cuePointObj) {
                 if(!_this.isSeekingIVQ){
-                    _this.qCuePointHandler(e, cuePointObj)
+                    if ((_this.seekToQuestionTime ===  cuePointObj.cuePoint.startTime)
+                        || (_this.seekToQuestionTime === null))
+                         {
+                        _this.KIVQModule.cuePointReachedHandler(e, cuePointObj);
+                        _this.seekToQuestionTime = null;
+                        mw.log("Quiz: CuePoint Reached time: " + cuePointObj.cuePoint.startTime);
+                    }
                 }
                 if(_this.enablePlayDuringScreen) {
                     _this.enablePlayDuringScreen = false;
                 }
             });
 
-            this.bind('showScreen', function () {
-                embedPlayer.disablePlayControls();
-                embedPlayer.pause();
+            embedPlayer.bindHelper('seeked'+_this.KIVQModule.bindPostfix, function () {
+               _this.isSeekingIVQ = false;
+                mw.log("Quiz: Seeked");
             });
 
-            this.bind('prePlayAction', function (e, data) {
-                if(_this.getPlayer().firstPlay && !_this.firstPlay){
-                    data.allowPlayback = false;
-                    _this.firstPlay=true;
-                    _this.enablePlayDuringScreen = true;
-                    _this._showWelcomeScreen();
-                }
-            });
-
-
-            this.bind('seeked', function () {
-                _this.alowLastQuestionSeekTemp = false;
-                setTimeout(function () {
-                    _this.isSeekingIVQ = false;}, 0);
-            });
-            this.bind('seeking', function () {
+            embedPlayer.bindHelper('seeking'+_this.KIVQModule.bindPostfix, function () {
                 _this.isSeekingIVQ = true;
+                mw.log("Quiz: Seeking.. ");
             });
 
-            embedPlayer.addJsListener( 'kdpReady', function(){
-                if (embedPlayer.autoplay) {
-                    embedPlayer.autoplay = false;
-                }
-                embedPlayer.removeJsListener( 'kdpReady');
+            embedPlayer.bindHelper('playbackComplete'+_this.KIVQModule.bindPostfix, function(){
+                _this.KIVQModule.quizEndScenario();
+                mw.log("Quiz: playbackComplete");
             });
-            embedPlayer.addJsListener( 'playerPlayEnd', function(){
-                var anUnswered = _this.getUnansweredQuestNrs();
-                if (anUnswered) {
-                    _this.alowLastQuestionSeekTemp = true;
-                    _this.almostDone(anUnswered);
+
+            embedPlayer.bindHelper('onOpenFullScreen'+_this.KIVQModule.bindPostfix, function() {
+                _this.inFullScreen = true;
+                if (!_this.isScreenVisible()) {
+                    _this.KIVQModule.showQuizOnScrubber();
                 }
             });
-        },
+            embedPlayer.bindHelper('onCloseFullScreen'+_this.KIVQModule.bindPostfix, function() {
+                _this.inFullScreen = false;
+                if (!_this.isScreenVisible()) {
+                    _this.KIVQModule.showQuizOnScrubber();
+                }
+            });
+            embedPlayer.bindHelper( 'preShowScreen'+_this.KIVQModule.bindPostfix, function( event, screenName ){
+                if ( !embedPlayer.isInSequence() ){
+                    embedPlayer.disablePlayControls();
+                    embedPlayer.triggerHelper( 'onDisableKeyboardBinding');
+                }
+                _this.KIVQModule.hideQuizOnScrubber();
+            });
+            embedPlayer.bindHelper( 'preHideScreen'+_this.KIVQModule.bindPostfix, function( event, screenName ){
+                if (screenName != 'quiz' && !_this.getPlayer().firstPlay){
+                    _this.KIVQModule.showQuizOnScrubber();
+                }
+            });
+            embedPlayer.bindHelper('hideScreen'+_this.KIVQModule.bindPostfix, function(event, screenName){
+                if(screenName === 'quiz'){
+                    if (!_this.embedPlayer._playContorls){
+                        _this.KIVQModule.showQuizOnScrubber();
+                        embedPlayer.enablePlayControls();
+                        mw.log("Quiz: Continue Play Hide Screen");
+                        embedPlayer.play();
+                    };
+                }
+            });
+          },
         getKClient: function () {
             if (!this.kClient) {
                 this.kClient = mw.kApiGetPartnerClient(this.embedPlayer.kwidgetid);
@@ -173,48 +198,35 @@
         getTemplateHTML: function (data) {
             var defer = $.Deferred();
             var quizStartTemplate = this.getTemplatePartialHTML("quizstart");
-
             var $template = $(quizStartTemplate({
                 'quiz': this,
                 quizStartTemplate: quizStartTemplate
             }));
             return defer.resolve($template);
         },
-        _continuePlay: function () {
-            var _this = this, embedPlayer = this.getPlayer();
-            if (!_this.isErr) {
-                if (_this.isScreenVisible()){
-                    _this.removeScreen();
-                    if (_this.isSeekingIVQ) {
-                        embedPlayer.stopPlayAfterSeek = false;
-                    }
-                }
-                embedPlayer.enablePlayControls();
-                embedPlayer.play();
-                _this.displayBubbles();
-            }
+
+        showScreen:function(){
+            this.embedPlayer.pause();
+            this._super();
         },
-        _initParams: function () {
+
+        ssWelcome: function () {
             var _this = this;
-            $.grep($.quizParams.uiAttributes, function (e) {
-                if (e.key == "showTotalScore") {
-                    _this.showTotalScore = (e.value.toLowerCase() ==='true') ;
-                }
-                if (e.key == "canSkip") {
-                    _this.canSkip = (e.value.toLowerCase() ==='true') ;
-                }
-            });
-        },
-        _showWelcomeScreen: function () {
-            var _this = this;
-            _this.removeShowScreen("welcome");
+            _this.ivqShowScreen();
+            _this.KIVQScreenTemplate.tmplWelcome();
+
             $(".welcome").html(gM('mwe-quiz-welcome'));
-            $(".confirm-box").html(gM('mwe-quiz-plsWait'));
+                if ($.quizParams.allowDownload ) {
+                    $(".pdf-download").prepend('<div class="pdf-download-img">' +
+                    '</div><div class="pdf-download-txt">'
+                    + gM('mwe-quiz-pdf')+'</div>');
 
-            _this._checkCuepointsReady(function(){
-
+                    $(".pdf-download-img").on('click',function(){
+                        _this.KIVQModule.getIvqPDF(_this.embedPlayer.kentryid);
+                    });
+                }
                 $.grep($.quizParams.uiAttributes, function (e) {
-                    switch(e.key){
+                     switch(e.key){
                         case 'welcomeMessage':
                             $(".welcomeMessage").html(e.value);
                             break;
@@ -223,260 +235,82 @@
                                 $(".InvideoTipMessage").html(gM('mwe-quiz-invideoTip'));
                             }
                             break;
-                        case 'canDownloadQuestions':
-                            //if (e.value ==='true'){
-                            //    $(".pdf-download").prepend('<div class="pdf-download-img">' +
-                            //    '</div><div class="pdf-download-txt">'
-                            //    + gM('mwe-quiz-pdf')+'</div>');
-                            //
-                            //    $(".pdf-download-img").on('click',function(){
-                            //       _this._downloadPDF();
-                            //       $(".pdf-download-img").off();
-                            //    })
-                            //}
-                            break;
                     }
                 });
-                $(".confirm-box").html(gM('mwe-quiz-continue'))
-                    .on('click', function () {
-                        _this.checkIfDone(0);
-                    });
-            });
-        },
 
-       _checkCuepointsReady:function(callback){
-           var intrVal;
-           intrVal = setInterval(function () {
-               if ($.cpObject.cpArray){
-                   clearInterval(intrVal);
-                   callback()
-               }
-           }, 500);
-        },
-
-        _gotoScrubberPos: function (questionNr) {
-            var _this = this,embedPlayer = _this.getPlayer();
-            embedPlayer.stopPlayAfterSeek = true;
-            embedPlayer.sendNotification('doSeek', (($.cpObject.cpArray[questionNr].startTime) /1000)+0.1);
-        },
-        qCuePointHandler: function (e, cuePointObj) {
-            var _this = this;
-            if (!$.quizParams.showCorrectAfterSubmission && _this.score !== null) return;
-            $.each($.cpObject.cpArray, function (key, val) {
-                if ($.cpObject.cpArray[key].startTime === cuePointObj.cuePoint.startTime) {
-                    _this.currentQuestionNumber = key;
-                    _this.setCurrentQuestion(key);
-                }
-            });
-        },
-       showAnswered: function (cPo, questionNr) {
-            var _this = this;
-            $.each(cPo.answeres, function (key, value) {
-                if (key == $.cpObject.cpArray[questionNr].selectedAnswer) {
-                    $('#' + key).parent().addClass("wide single-answer-box-bk-applied disable");
-                    $('#' + key).removeClass('single-answer-box')
-                                .addClass(function(){
-                                    $(this).addClass('single-answer-box-small')
-                                            .after($('<div></div>')
-                                            .addClass("single-answer-box-apply disable")
-                                            .text(gM('mwe-quiz-applied'))
-                                    )
-                                });
-                }
-            });
-            if ($.quizParams.allowAnswerUpdate ) {
-                _this._selectAnswerConroller(cPo, questionNr);
-            }
-       },
-       _selectAnswerConroller: function (cPo, questionNr) {
-            var _this = this,selectedAnswer = null;
-            if (_this.score !== null) return;
-
-            $('.single-answer-box-bk' ).on('click',function(){
-                if ($(this).hasClass('disable')){
-                    return false;
-                }
-                $('.answers-container').find('.disable').removeClass('disable');
-                $('.single-answer-box-bk').each(function () {
-                    $(this).removeClass('wide single-answer-box-bk-apply single-answer-box-bk-applied');
-                    $('.single-answer-box-apply').empty().remove();
-                    $(this).children().removeClass('single-answer-box-small').addClass('single-answer-box');
-                });
-
-                $(this).addClass("wide")
-                        .addClass('single-answer-box-bk-apply')
-                        .children().removeClass('single-answer-box')
-                        .addClass(function(){
-                            $(this).addClass('single-answer-box-small')
-                                    .after($('<div></div>')
-                                    .addClass("single-answer-box-apply")
-                                    .text(gM('mwe-quiz-apply'))
-                            )
-                    });
-                selectedAnswer =  $('.single-answer-box-small').attr('id');
-            });
-            $(document).off( 'click', '.single-answer-box-apply' )
-            .on('click', '.single-answer-box-apply', function () {
-                    if ($(this).hasClass('disable')) return false;
-                    $('.single-answer-box-apply').addClass('disable')
-                    .text(gM('mwe-quiz-applied'))
-                    .parent().removeClass('single-answer-box-bk-apply').hide().fadeOut('fast')
-                    .addClass('single-answer-box-bk-applied disable').hide().fadeIn('fast');
-
-                _this._submitAnswer(questionNr,selectedAnswer);
-
-                $(this).delay(1800).fadeOut(function () {
-                    if (_this.isScreenVisible()) _this.removeScreen();
-                    _this.checkIfDone(questionNr)
-                });
-            });
-       },
-       _submitAnswer:function(questionNr,selectedAnswer){
-            var _this = this,answerParams = {};
-            $.cpObject.cpArray[questionNr].selectedAnswer = selectedAnswer;
-
-            var quizSetAnswer = {
-                'service': 'cuepoint_cuepoint',
-                'cuePoint:objectType': "KalturaAnswerCuePoint",
-                'cuePoint:answerKey': _this.i2q(selectedAnswer),
-                'cuePoint:quizUserEntryId': _this.kQuizUserEntryId
-            };
-
-            if ($.cpObject.cpArray[questionNr].isAnswerd) {
-                answerParams = {
-                    'action': 'update',
-                    'id': $.cpObject.cpArray[questionNr].answerCpId,
-                    'cuePoint:entryId': _this.embedPlayer.kentryid
-                }
-            } else {
-                $.cpObject.cpArray[questionNr].isAnswerd = true;
-                answerParams = {
-                    'action': 'add',
-                    'cuePoint:entryId': $.cpObject.cpArray[questionNr].cpEntryId,
-                    'cuePoint:parentId': $.cpObject.cpArray[questionNr].cpId,
-                    'cuePoint:startTime': '0'
-                };
-            }
-                _this._addAnswerAPI(
-                _this.i2q(questionNr),
-                $.extend(quizSetAnswer, answerParams)
-                );
-       },
-       _addAnswerAPI: function (questionNr, quizSetAnswer) {
-            var _this = this;
-           _this.getKClient().doRequest(quizSetAnswer, function (data) {
-               if (!_this._checkApiResponse('Add or Update answer err -->',data)){
-                   return false;
-               }
-               else {
-                   $.cpObject.cpArray[_this.q2i(questionNr)].answerCpId = data.id;
-                  // todo remove check
-                   $.cpObject.cpArray[_this.q2i(questionNr)].isCorrect = data.isCorrect;
-                   $.cpObject.cpArray[_this.q2i(questionNr)].explanation = data.explanation;
-                   $.cpObject.cpArray[_this.q2i(questionNr)].correctAnswerKeys = data.correctAnswerKeys;
-               }
-           });
-       },
-        almostDone: function (unAnsweredArr) {
-            var _this = this,embedPlayer = _this.getPlayer();
-
-            _this.removeShowScreen("hexScreen");
-
-            $("div").removeClass('confirm-box');
-            $(".title-text").html(gM('mwe-quiz-almostDone')).addClass("padding14");
-            $(".sub-text").html(gM('mwe-quiz-remainUnAnswered') + '</br>' + gM('mwe-quiz-pressRelevatToAnswer'));
-
-            _this.displayHex(_this.setHexContainerPos("current"),unAnsweredArr);
-
-            $(document).off('click','.q-box')
-                .on('click', '.q-box', function () {
-                var selectQ = $(this).attr('id');
-                embedPlayer.enablePlayControls();
-                if ((_this.q2i($.cpObject.cpArray.length)) != (parseInt(selectQ)) ) {
-                    _this._gotoScrubberPos(selectQ);
-                }
-                if (_this.alowLastQuestionSeekTemp){
-                    _this._gotoScrubberPos(selectQ);
-                }
-                _this.setCurrentQuestion(selectQ);
-            });
-        },
-        checkIfDone: function (questionNr) {
-            var _this = this;
-            if(_this.isErr){
-                return
-            }
-            if (_this.score !=null) {
-                _this._submitted(_this.score);
-            } else {
-
-                if ($.isEmptyObject($.grep($.cpObject.cpArray, function (el) {
-                        return el.isAnswerd === false
-                    }))) {
-                    _this.allCompleted();
-                }
-                else {
-                    if ((questionNr === ($.cpObject.cpArray.length) - 1) && ($.cpObject.cpArray.length > 1)) {
-                        _this.almostDone(_this.getUnansweredQuestNrs());
-                    } else {
-                        _this._continuePlay();
-                    }
-                }
-            }
-        },
-
-        getUnansweredQuestNrs: function () {
-            var unanswerdArr = [];
-            $.each($.cpObject.cpArray, function (key, val) {
-                if ($.cpObject.cpArray[key].isAnswerd === false) {
-                    unanswerdArr.push($.cpObject.cpArray[key]);
-                }
-            });
-            if ($.isEmptyObject(unanswerdArr)) return false;
-            else return unanswerdArr;
-        },
-
-        _displayHW: function (HWSelector,questionNr,buttonText,displayText) {
-            var _this = this;
-            $(".header-container").prepend("<div class ='hint-why-box'>"+ buttonText +"</div>")
+            $(".confirm-box").html(gM('mwe-quiz-continue')).show()
                 .on('click', function () {
-                    _this.removeShowScreen("hintWhyScreen");
+                    _this.KIVQModule.checkIfDone(-1);
+                });
+        },
+
+        ssAlmostDone: function (unAnsweredArr) {
+            var _this = this,embedPlayer = this.getPlayer();;
+
+            _this.ivqShowScreen();
+            _this.KIVQScreenTemplate.tmplAlmostDone();
+
+            $(".title-text").html(gM('mwe-quiz-almostDone'));
+            $(".sub-text").html(gM('mwe-quiz-remainUnAnswered') + '</br>' + gM('mwe-quiz-pressRelevatToAnswer'))
+            $(".confirm-box").html(gM('mwe-quiz-okGotIt'))
+
+            $(document).off('click','.confirm-box')
+                .on('click', '.confirm-box', function () {
+                    _this.embedPlayer.stopPlayAfterSeek = false;
+                    _this.embedPlayer.seek(0,false);
+                    _this.ivqHideScreen();
+                });
+        },
+
+        ssDisplayHint: function(questionNr){
+            var _this = this;
+            var embedPlayer = _this.getPlayer();
+            $("<div>"+ gM('mwe-quiz-hint') +"</div>").prependTo(".header-container").addClass('hint-why-box')
+                .on('click', function () {
+                    _this.KIVQScreenTemplate.tmplHint();
                     $(".header-container").addClass('close-button')
                         .on('click', function () {
-                            $(".screen-content" ).removeClass('bk-gradient');
-                            if (_this.isScreenVisible()){
-                                _this.removeScreen();
-                            }
-                            switch(HWSelector){
-                                case 'hint':_this.setCurrentQuestion(questionNr);
-                                    break;
-                                case 'why': _this.state = "reviewAnswer";
-                                    _this.reviewAnswer(questionNr);
-                                    break;
-                            }
+                            _this.ssSetCurrentQuestion(questionNr,true);
                         });
-                    $(".hint-container").append(displayText);
+                    $(".hint-container").append($.cpObject.cpArray[questionNr].hintText);
                 })
         },
-        setCurrentQuestion: function (questionNr) {
+        ssDisplayWhy: function (questionNr) {
+            var _this = this;
+            $("<div>"+ gM('mwe-quiz-why') +"</div>").prependTo(".header-container").addClass('hint-why-box')
+                .on('click', function () {
+                    _this.KIVQScreenTemplate.tmplWhy();
+                    $(".header-container").addClass('close-button')
+                        .on('click', function () {
+                            _this.KIVQScreenTemplate.tmplReviewAnswer();
+                            _this.ssReviewAnswer(questionNr);
+                        });
+                    $(".hint-container").append($.cpObject.cpArray[questionNr].explanation);
+                })
+        },
+        ssSetCurrentQuestion: function (questionNr,replaceContentNoReload) {
             var _this = this,cPo = $.cpObject.cpArray[questionNr];
-            _this.removeShowScreen("question");
+
+            _this.ivqShowScreen();
+            _this.KIVQScreenTemplate.tmplQuestion();
 
             if ($.cpObject.cpArray[questionNr].hintText){
-                _this._displayHW('hint',questionNr,
-                    (gM('mwe-quiz-hint')),$.cpObject.cpArray[questionNr].hintText)
+                _this.ssDisplayHint(questionNr)
             }
 
+            if (cPo.question.length < 68){
+                $(".display-question").addClass("padding7");
+            }
             $(".display-question").text(cPo.question);
             $.each(cPo.answeres, function (key, value) {
                 var div= $("<div class ='single-answer-box-bk'>"
-                    + "<div class ='single-answer-box' id="
-                    + key + "><p></p></div></div>");
+                + "<div class ='single-answer-box-txt' id="
+                + key + "><p></p></div></div>");
                 div.find('p').text(value);
                 div.appendTo('.answers-container');
             });
 
-            if (cPo.isAnswerd) {
+            if (cPo.isAnswerd){
                 _this.showAnswered(cPo, questionNr);
             }
             else {
@@ -484,146 +318,105 @@
             }
             this.addFooter(questionNr);
         },
-
-        addFooter: function (questionNr) {
+        ssAllCompleted: function () {
             var _this = this;
-            if (_this.score !== null) {
-                $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {
-                    _this._continuePlay()
-                });
-                return;
-            }
-            if (this.reviewMode) {
-                $(".ftr-left").html(gM('mwe-quiz-doneReview')).on('click', function () {
-                    _this.allCompleted();
-                });
-                if ($.cpObject.cpArray.length > 1) {
-                    $(".ftr-right").html(gM('mwe-quiz-reviewNextQ')).on('click', function () {
-                        if (_this.isScreenVisible()) _this.removeScreen();
-                        function nextQuestionNr(questionNr) {
-                            if (questionNr == $.cpObject.cpArray.length - 1) {
-                                return 0;
-                            } else {
-                                return ++questionNr;
-                            }
-                        }
-                        _this.setCurrentQuestion(nextQuestionNr(questionNr));
-                    });
-                }
-            } else {
-                $(".ftr-left").append($('<span> ' + gM('mwe-quiz-question') + ' ' + this.i2q(questionNr)
-                                + '/' + $.cpObject.cpArray.length + '</span>')
-                                .css("float", "right"))
-                                .append($('<div></div>')
-                                .addClass("pie")
-                                .css("float", "right"))
-                                .append($('<span>' + (_this.getUnansweredQuestNrs()).length + ' '
-                                    + gM('mwe-quiz-unanswered') + '</span>')
-                                    .css("float", "right"));
-                if (_this.canSkip) {
-                    $(".ftr-right").html(gM('mwe-quiz-skipForNow')).on('click', function () {
-                        _this.checkIfDone(questionNr);
-                    });
-                }else if(!_this.canSkip && $.cpObject.cpArray[questionNr].isAnswerd ){
-                    $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {
-                        _this._continuePlay()
-                    });
-                }
-            }
-        },
-        allCompleted: function () {
-            var _this = this;
-            this.reviewMode = true;
-            _this.removeShowScreen("completed");
-            $(".title-text").html("Completed");
+            _this.KIVQModule.reviewMode = true;
+            _this.ivqShowScreen();
+            _this.KIVQScreenTemplate.tmplAllCompleted();
 
+            $(".title-text").html(gM('mwe-quiz-completed'));
             $(".sub-text").html(gM('mwe-quiz-TakeAMoment') + '<strong> '+ gM('mwe-quiz-review').toLowerCase() +' </strong>'
-                    + gM('mwe-quiz-yourAnswers') + '</br><strong> '+ gM('mwe-quiz-or') +' </strong>'
-                    + gM('mwe-quiz-goAhead')+ '<strong> '+ gM('mwe-quiz-submit').toLowerCase() +' </strong>'
+                + gM('mwe-quiz-yourAnswers') + '</br><strong> '+ gM('mwe-quiz-or') +' </strong>'
+                + gM('mwe-quiz-goAhead')+ '<strong> '+ gM('mwe-quiz-submit').toLowerCase() +' </strong>'
             );
 
             $(".review-button").html(gM('mwe-quiz-review'))
                 .on('click', function () {
-                _this.setCurrentQuestion(0);
-            });
+                    _this.embedPlayer.seek(0,true);
+                    _this.KIVQModule.continuePlay();
+                });
 
             $(".submit-button").html(gM('mwe-quiz-submit'))
                 .on('click', function () {
-                $(this).off('click')
-                $(this).html(gM('mwe-quiz-plsWait'))
-                _this._submitQuizApi();
-            });
-        },
-        _submitQuizApi: function () {
-            var _this = this;
-            var submitQuizParams = {
-                'service': 'userEntry',
-                'action': 'submitQuiz',
-                'id': _this.kQuizUserEntryId
-            };
-            _this.getKClient().doRequest(submitQuizParams, function (data) {
-                if (!_this._checkApiResponse('Submit Quiz err -->',data)){
-                    return false;
-                }
-                $.cpObject = {};
-                _this._getQuestionCpAPI(_this._populateCpObject)
-                _this._checkCuepointsReady(function(){
-                    _this.score = Math.round(data.score *100);
-                    _this._submitted(_this.score);
+                    $(this).off('click');
+                    $(this).html(gM('mwe-quiz-plsWait'));
+                    _this.KIVQModule.setSubmitQuiz();
                 });
-            });
         },
-        _submitted: function (score) {
+        ssSubmitted: function (score) {
             var _this = this,cpArray = $.cpObject.cpArray;
-            _this.removeShowScreen("hexScreen");
+            _this.ivqShowScreen();
+            _this.KIVQScreenTemplate.tmplSubmitted();
 
-            $(".title-text").html("Submitted").addClass("padding8");
+            $(".title-text").html(gM('mwe-quiz-Submitted'));
 
-            if (_this.showTotalScore){
+            if ($.quizParams.showGradeAfterSubmission){
                 if (!$.quizParams.showCorrectAfterSubmission) {
-                    $(".title-text").addClass("padding35");
+                    $(".title-text").addClass("padding23");
                     $(".sub-text").html(gM('mwe-quiz-completedScore')
-                        + '<span class="scoreBig">' + score + '</span>' + ' %');
+                    + '<span class="scoreBig">' + score + '</span>' + ' %');
+                    $(".bottomContainer").addClass("paddingB20");
                 } else {
-                    $(".sub-text").html(gM('mwe-quiz-completedScore')
-                        + '<span class="scoreBig">' + score + '</span>' + ' %' + '</br>'
-                        + gM('mwe-quiz-reviewSubmit'));
+                    if(cpArray.length <= 6){
+                        $(".title-text").addClass("padding10");
+                    }else{
+                        $(".title-text").addClass("padding3");
+                    }
 
-                    _this.displayHex(_this.setHexContainerPos("current"),cpArray);
+                    $(".sub-text").html(gM('mwe-quiz-completedScore')
+                    + '<span class="scoreBig">' + score + '</span>' + ' %' + '</br>'
+                    + gM('mwe-quiz-reviewSubmit'));
+
+                    _this.KIVQModule.displayHex(_this.KIVQModule.setHexContainerPos("current"),cpArray);
 
                     $(document).off('click','.q-box')
                         .on('click', '.q-box', function () {
-                        _this.removeShowScreen("reviewAnswer");
-                        _this.reviewAnswer($(this).attr('id'));
-                    });
+                            _this.KIVQScreenTemplate.tmplReviewAnswer();
+                            _this.ssReviewAnswer(parseInt($(this).attr('id')));
+                        });
                     $(document).off('click','.q-box-false')
                         .on('click', '.q-box-false', function () {
-                        _this.removeShowScreen("reviewAnswer");
-                        _this.reviewAnswer($(this).attr('id'));
-                    });
+                            _this.KIVQScreenTemplate.tmplReviewAnswer();
+                            _this.ssReviewAnswer(parseInt($(this).attr('id')));
+                        });
                 }
             }else{
-                $(".title-text").addClass("padding35");
+                $(".title-text").addClass("padding23");
                 $(".sub-text").html(gM('mwe-quiz-completedQuiz'));
+                $(".bottomContainer").addClass("paddingB20");
             }
+            $(document).off('click','.confirm-box')
             $(".confirm-box").html(gM('mwe-quiz-done'))
                 .on('click', function () {
-                    _this.removeShowScreen("contentScreen");
-                    $(".title-text").html(gM('mwe-quiz-thankYou')).addClass('thank-you');
-                    $("div").removeClass('confirm-box');
-                    $(this).delay(1000).fadeIn(function () {
-                        _this._continuePlay();
-                    });
+                    if (mw.isMobileDevice() || _this.embedPlayer.getPlayerElementTime() === 0 ){
+                        _this.KIVQModule.continuePlay();
+                    }else {
+                        _this.KIVQScreenTemplate.tmplThankYou();
+                        $(".title-text").html(gM('mwe-quiz-thankYou'));
+                        $(this).delay(1000).fadeIn(function () {
+                            _this.KIVQModule.quizEndFlow = false;
+                            if (_this.embedPlayer.getPlayerElementTime() > 0) {
+                                _this.ivqHideScreen();
+                                _this.embedPlayer.seek(0, false);
+                            }
+                            _this.KIVQModule.continuePlay();
+                        });
+                    }
+                    if(_this.KIVQModule.isKPlaylist){
+                        mw.log("Quiz: Playlist Auto Continue After Submitted");
+                        _this.embedPlayer.setKDPAttribute('playlistAPI','autoContinue',true);
+                    }
                 });
         },
-        reviewAnswer: function (selectedQuestion) {
+        ssReviewAnswer: function (selectedQuestion) {
             var _this = this;
-            _this.showScreen();
+
             if ($.cpObject.cpArray[selectedQuestion].explanation ){
-                _this._displayHW('why',selectedQuestion,(gM('mwe-quiz-why')),$.cpObject.cpArray[selectedQuestion].explanation)
+                _this.ssDisplayWhy(selectedQuestion)
             }
-            $(".reviewAnswerNr").append(_this.i2q(selectedQuestion));
-            $(".theQuestion").html(gM('mwe-quiz-q') + "  " + $.cpObject.cpArray[selectedQuestion].question);
+            $(".reviewAnswerNr").append(_this.KIVQModule.i2q(selectedQuestion));
+            //$(".theQuestion").html(gM('mwe-quiz-q') + "  " + $.cpObject.cpArray[selectedQuestion].question);
+            $(".theQuestion").html($.cpObject.cpArray[selectedQuestion].question);
             $(".yourAnswerText").html(gM('mwe-quiz-yourAnswer'));
             $(".yourAnswer").html($.cpObject.cpArray[selectedQuestion].answeres[$.cpObject.cpArray[selectedQuestion].selectedAnswer]);
             if (!$.cpObject.cpArray[selectedQuestion].isCorrect) {
@@ -636,304 +429,201 @@
 
                     return $.cpObject.cpArray[selectedQuestion]
                         .answeres[
-                        _this.q2i($.cpObject.cpArray[selectedQuestion].correctAnswerKeys[0].value)
+                        _this.KIVQModule.q2i($.cpObject.cpArray[selectedQuestion].correctAnswerKeys[0].value)
                         ];
                 }
                 else {return " "}
             });
             $('.gotItBox').html(gM('mwe-quiz-gotIt')).bind('click', function () {
-                _this._submitted(_this.score);
+                _this.ssSubmitted(_this.KIVQModule.score);
             });
         },
-        _getQuestionCpAPI: function (callback) {
+        showSelectedQuestion:function(questionNr){
             var _this = this;
-            var getCp = [{
-                'service': 'cuepoint_cuepoint',
-                'action': 'list',
-                'filter:entryIdEqual': _this.embedPlayer.kentryid,
-                'filter:objectType': 'KalturaCuePointFilter',
-                'filter:cuePointTypeEqual': 'quiz.QUIZ_QUESTION',
-                'filter:orderBy': '+startTime'
-            },{
-                'service': 'cuepoint_cuepoint',
-                'action': 'list',
-                'filter:objectType': 'KalturaAnswerCuePointFilter',
-                'filter:entryIdEqual': _this.embedPlayer.kentryid,
-                'filter:quizUserEntryIdEqual':_this.kQuizUserEntryId,
-                'filter:cuePointTypeEqual': 'quiz.QUIZ_ANSWER'
-            }];
-            _this.getKClient().doRequest(getCp, function (data) {
-
-                    if (!_this._checkApiResponse('Get question err -->',data[0])){
-                        return false;
-                    }
-                    if (!_this._checkApiResponse('Get answer err -->',data[1])){
-                        return false;
-                    }
-                callback(data);
-            });
-        },
-        _populateCpObject: function (data) {
-            var cpArray = [];
-            for (var i = 0; i < (data[0].objects.length); i++) {
-                var arr = [];
-                $.each(data[0].objects[i].optionalAnswers, function (key, value) {
-                    arr.push(value.text.toString());
+            $('.single-answer-box-txt#'+_this.selectedAnswer +'')
+                .parent().addClass("wide")
+                .addClass('single-answer-box-bk-apply')
+                .children().removeClass('single-answer-box-txt')
+                .addClass(function(){
+                    $(this).addClass('single-answer-box-txt-wide')
+                        .after($('<div></div>')
+                            .addClass("single-answer-box-apply qContinue")
+                            .text(gM('mwe-quiz-continue'))
+                    )
                 });
-                var ansP = {
-                    isAnswerd: false,
-                    selectedAnswer: null,
-                    answerCpId: null,
-                    isCorrect: null,
-                    correctAnswerKeys: null,
-                    explanation: null
-                };
-                if (!$.isEmptyObject(data[1].objects)) {
-                    $.grep(data[1].objects, function (el) {
-                        if (el.parentId === data[0].objects[i].id) {
-                            ansP.isAnswerd = true;
-                            ansP.selectedAnswer = (parseInt(el.answerKey) - 1);
-                            ansP.answerCpId = el.id;
-                            ansP.isCorrect = el.isCorrect;
-                            ansP.correctAnswerKeys = el.correctAnswerKeys;
-                            ansP.explanation = el.explanation;
-                            return el
-                        }
-                    });
+        },
+        showAnswered: function (cPo, questionNr) {
+            var _this = this;
+            $.each(cPo.answeres, function (key, value) {
+                if (key == $.cpObject.cpArray[questionNr].selectedAnswer) {
+                    $('#' + key).parent().addClass("wide single-answer-box-bk-apply disable");
+                    $('#' + key).removeClass('single-answer-box-txt')
+                        .addClass(function(){
+                            $(this).addClass('single-answer-box-txt-wide ')
+                                .after($('<div></div>')
+                                    .addClass("single-answer-box-apply qApplied disable")
+                                    .text(gM('mwe-quiz-applied'))
+                            )
+                        });
                 }
-                cpArray.push({
-                    key: i,
-                    question: data[0].objects[i].question,
-                    answeres: arr,
-                    isAnswerd: ansP.isAnswerd,
-                    selectedAnswer: ansP.selectedAnswer,
-                    isCorrect: ansP.isCorrect,
-                    correctAnswerKeys: ansP.correctAnswerKeys,
-                    explanation: ansP.explanation,
-                    hintText: data[0].objects[i].hint,
-                    startTime: data[0].objects[i].startTime,
-                    cpId: data[0].objects[i].id,
-                    cpEntryId: data[0].objects[i].entryId,
-                    answerCpId: ansP.answerCpId
-                });
-            }
-            $.cpObject.cpArray = cpArray;
-        },
-        removeShowScreen:function(state){
-            var _this = this,embedPlayer = this.getPlayer();
-            this.removeScreen();
-            _this.state = state;
-            this.showScreen();
-            embedPlayer.getInterface().find(".bubble-cont").empty().remove();
-            embedPlayer.getInterface().find(".bubble").empty().remove();
-        },
-        i2q: function (i) {
-            return parseInt(i) + 1;
-        },
-        q2i: function (i) {
-            return parseInt(i) - 1;
-        },
-
-        displayHex:function (hexPositionContDisplay,cpArray){
-            var _this = this,embedPlayer = this.getPlayer();
-            var numberOfQuestionsInRow = 6;
-            _this.sliceArray = _this.buildSliceArr(numberOfQuestionsInRow,cpArray.length);
-
-            var displayRows = $.grep(_this.sliceArray, function (element, index) {
-                return element.rContPos == hexPositionContDisplay;
             });
-
-            $.each(displayRows,function(key,val){
-               var rowHexElements =  _this.makeHexRow(val.rStart,val.rEnd+1,key,cpArray);
-               embedPlayer.getInterface().find(".hexagon-container").append(rowHexElements);
-            });
-            embedPlayer.getInterface().find(".display-all-container").hide().fadeIn(400);
-
-            if((embedPlayer.getInterface().find(".second-row").length) == 0 ){
-                embedPlayer.getInterface().find(".display-all-container").addClass("margin-top7");
-                embedPlayer.getInterface().find(".left-arrow").addClass("margin-top4");
+            if ($.quizParams.allowAnswerUpdate ) {
+                _this._selectAnswerConroller(cPo, questionNr);
             }
-            else{
-                embedPlayer.getInterface().find(".display-all-container").removeClass("margin-top7");
-                embedPlayer.getInterface().find(".left-arrow").removeClass("margin-top4");
+        },
+        _selectAnswerConroller: function (cPo, questionNr) {
+            var _this = this;
+            if (_this.KIVQModule.quizSubmitted) {return false};
 
+            if (_this.selectedAnswer &&! cPo.selectedAnswer ){
+                _this.showSelectedQuestion(questionNr);
+            };
 
-                if($(".second-row li").length % 2 == 0){
-                    embedPlayer.getInterface().find(".second-row").removeClass("padding-left11");
+            $('.single-answer-box-bk').off().on('click',function(e){
+
+                if ($(this).hasClass('disable')) {return false};
+
+                if (e.target.className === 'single-answer-box-apply qContinue' ){
+                    e.stopPropagation();
+                    $('.single-answer-box-bk').addClass('disable');
+                    $('.single-answer-box-apply').fadeOut(100,function(){
+                        $(this).addClass('disable')
+                            .removeClass('qContinue')
+                            .text(gM('mwe-quiz-applied'))
+                            .addClass('qApplied').fadeIn(100);
+                    });
+                    _this.KIVQModule.submitAnswer(questionNr,_this.selectedAnswer);
+                    _this.selectedAnswer = null;
+                    setTimeout(function(){_this.KIVQModule.checkIfDone(questionNr)},1800);
                 }
                 else{
-                    embedPlayer.getInterface().find(".second-row").addClass("padding-left11");
+                    $('.answers-container').find('.disable').removeClass('disable');
+                    $('.single-answer-box-bk').each(function () {
+                        $(this).removeClass('wide single-answer-box-bk-apply single-answer-box-bk-applied');
+                        $('.single-answer-box-apply').empty().remove();
+                        $(this).children().removeClass('single-answer-box-txt-wide').addClass('single-answer-box-txt');
+                    });
+
+                    $(this).addClass("wide")
+                        .addClass('single-answer-box-bk-apply')
+                        .children().removeClass('single-answer-box-txt')
+                        .addClass(function(){
+                            $(this).addClass('single-answer-box-txt-wide')
+                                .after($('<div></div>')
+                                    .addClass("single-answer-box-apply qContinue")
+                                    .text(gM('mwe-quiz-continue'))
+                            )
+                        });
+                    _this.selectedAnswer =  $('.single-answer-box-txt-wide').attr('id');
                 }
-            }
-
-            switch(_this._checkHexStatusForArrow()) {
-                case 'none':
-                    $(".right-arrow").off().hide();
-                    $(".left-arrow").off().hide();
-                    return;
-                    break;
-                case 'left':
-                    $(".right-arrow").hide();
-                    $(".left-arrow").show();
-                    break;
-                case 'right':
-                    $(".left-arrow").hide();
-                    $(".right-arrow").show();
-                    break;
-                case 'both':
-                    $(".left-arrow").show();
-                    $(".right-arrow").show();
-                    break;
-            }
-
-            $(".right-arrow").off().on('click', function(){
-                embedPlayer.getInterface().find(".hexagon-container").empty();
-                _this.displayHex(_this.setHexContainerPos("right"),cpArray);
-
-            });
-
-            $(".left-arrow").off().on('click', function(){
-                embedPlayer.getInterface().find(".hexagon-container").empty();
-                _this.displayHex(_this.setHexContainerPos("left"),cpArray);
             });
         },
-        buildSliceArr: function (hexInRow,cpArrayLen) {
-            var i = 0,arr = [],rStart,rEnd,cp = 0,switcher = false,hexInRow2 = hexInRow - 1;
-            do {
-                rStart = i;
-                rEnd = i + hexInRow;
-                if (!switcher) {
-                    rEnd = i + hexInRow;
-                    arr.push({rStart: i, rEnd: i + hexInRow, rContPos: cp});
-                }
-                else {
-                    rEnd = i + hexInRow2;
-                    arr.push({rStart: i, rEnd: i + hexInRow2 , rContPos: cp});
-                }
-                i = rEnd + 1;
-                if (switcher) cp ++;
-                switcher = !switcher;
-            } while (i < cpArrayLen);
-            return arr;
+        ivqShowScreen:function(){
+            var _this = this,embedPlayer = this.getPlayer();
+            _this.showScreen();
         },
-        makeHexRow: function (rStart,rEnd,rowNumber,cpArray) {
-            var ol,el,_this = this;
-            ol = document.createElement('ol');
-            $.each(cpArray.slice(rStart, rEnd), function (i, data) {
-                el = document.createElement('li');
-                var questionHexType = (function () {
-                    if (data.isCorrect===null || data.isCorrect){
-                        return 'q-box';
-                    }
-                    else {
-                        return 'q-box-false';
-                    }
-                })();
-                $(el).addClass(questionHexType).attr("id", data.key).append(_this.i2q(data.key));
-                switch(rowNumber){
-                    case 0:$(ol).addClass('first-row');break;
-                    case 1:$(ol).addClass('second-row');break;
-                }
-                ol.appendChild(el);
-            });
-            return ol;
+        ivqHideScreen:function(){
+            var _this = this,embedPlayer = this.getPlayer();
+            embedPlayer.getInterface().find('.ivqContainer').empty().remove();
+            _this.hideScreen();
+            _this.embedPlayer.enablePlayControls();
+            _this.embedPlayer.triggerHelper( 'onEnableKeyboardBinding' );
+            _this.KIVQModule.showQuizOnScrubber();
+            $(".icon-close").css("display", "");
         },
-
-        setHexContainerPos:function(action){
-            var posNr,_this = this;
-
-            switch(action){
-                case "current": posNr = _this.hexPosContainerPos;break;
-                case "right": posNr = ++_this.hexPosContainerPos;break;
-                case "left":posNr = --_this.hexPosContainerPos;break;
-            }
-            return posNr;
-        },
-
-        _checkHexStatusForArrow:function(){
+        addFooter: function (questionNr) {
             var _this = this;
-            var lastPos = ((_this.sliceArray.slice(-1))[0].rContPos);
-            var sliceArrLen =_this.sliceArray.length;
 
-            if  (_this.hexPosContainerPos == 0  && sliceArrLen <= 2) {
-                return 'none';
+            if (_this.KIVQModule.quizSubmitted) {
+                $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {
+                    _this.KIVQModule.continuePlay();
+                });
+                return;
             }
+            if (_this.KIVQModule.reviewMode) {
+                $(".ftr-left").append ($('<span>   ' +  gM('mwe-quiz-review').toUpperCase()
+                + ' ' + gM('mwe-quiz-question') + ' ' + this.KIVQModule.i2q(questionNr)
+                + '/' + $.cpObject.cpArray.length + '</span>'));
 
-            if  (_this.hexPosContainerPos == 0  && sliceArrLen >= 3) {
-                return 'right';
-            }
-            else if (_this.hexPosContainerPos == lastPos && sliceArrLen  >= 3 ){
-                return 'left';
-            }
-            else  {
-                return 'both';
+                $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {
+                    _this.KIVQModule.continuePlay();
+                });
+            } else {
+                $(".ftr-left").append($('<span> ' + gM('mwe-quiz-question') + ' ' + this.KIVQModule.i2q(questionNr)
+                + '/' + $.cpObject.cpArray.length + '</span>')
+                    .css("float", "right")
+                    .css("cursor","default"))
+                    .append($('<div></div>')
+                        .addClass("pie")
+                        .css("float", "right"))
+                    .append($('<span>' + (_this.KIVQModule.getUnansweredQuestNrs()).length + ' '
+                    + gM('mwe-quiz-unanswered') + '</span>')
+                        .css("float", "right")
+                        .css("cursor","default"));
+                if (_this.KIVQModule.canSkip) {
+                    var skipTxt;
+                    if ($.cpObject.cpArray[questionNr].isAnswerd){
+                        skipTxt = gM('mwe-quiz-next');
+                    }else{
+                        skipTxt = gM('mwe-quiz-skipForNow');
+                    }
+                    $(".ftr-right").html(skipTxt).on('click', function () {
+                        _this.KIVQModule.checkIfDone(questionNr)
+                    });
+                }else if(!_this.KIVQModule.canSkip && $.cpObject.cpArray[questionNr].isAnswerd ){
+                    $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {
+                        _this.KIVQModule.checkIfDone(questionNr)
+                    });
+                }
             }
         },
-
-            displayBubbles:function(){
-            var  _this = this,embedPlayer = this.getPlayer(),handleBubbleclick;
+        displayBubbles:function(){
+            var  _this = this,displayClass,embedPlayer = this.getPlayer(),handleBubbleclick;
             var scrubber = embedPlayer.getInterface().find(".scrubber");
-            var displayClass,cPo = $.cpObject.cpArray;
+            var buSize = _this.KIVQModule.bubbleSizeSelector(_this.inFullScreen);
 
-            embedPlayer.getInterface().find(".bubble-cont").empty().remove();
-            embedPlayer.getInterface().find(".bubble").empty().remove();
+            _this.KIVQModule.hideQuizOnScrubber();
 
-            scrubber.parent().prepend('<div class="bubble-cont"></div>');
+            var buCotainerPos = _this.KIVQModule.quizEndFlow ? "bubble-cont bu-margin3":"bubble-cont bu-margin1";
 
-            $.each(cPo, function (key, val) {
-                displayClass = val.isAnswerd ? "bubble bubble-ans" : "bubble bubble-un-ans";
-                var pos = Math.round(((val.startTime/_this.entryData.msDuration)*100) * 10)/10;
+            scrubber.parent().prepend('<div class="'+buCotainerPos+'"></div>');
+
+            $.each($.cpObject.cpArray, function (key, val) {
+                displayClass = val.isAnswerd ? "bubble bubble-ans " + buSize.bubbleAnsSize
+                    : "bubble bubble-un-ans " + buSize.bubbleUnAnsSize;
+
+                var pos = (Math.round(((val.startTime/embedPlayer.kalturaPlayerMetaData.msDuration)*100) * 10)/10)-1;
                 $('.bubble-cont').append($('<div id ="' + key + '" style="margin-left:' + pos + '%">' +
-                    _this.i2q(key) + ' </div>')
+                    _this.KIVQModule.i2q(key) + ' </div>')
                         .addClass(displayClass)
                 );
             });
 
-            if (_this.canSkip) {
+            if (_this.KIVQModule.canSkip) {
                 handleBubbleclick = '.bubble';
             }
             else{
                 handleBubbleclick = '.bubble-ans';
             }
-
+            $('.bubble','.bubble-ans','.bubble-un-ans').off();
             $(handleBubbleclick).on('click', function () {
-                _this.unbind('seeking');
-                _this._gotoScrubberPos($(this).attr('id'));
-                _this.bind('seeking', function () {
-                    _this.isSeekingIVQ = true;
+                var qNumber = parseInt($(this).attr('id'));
+                _this.seekToQuestionTime = $.cpObject.cpArray[qNumber].startTime;
+                _this.KIVQModule.gotoScrubberPos(qNumber);
+                _this.isSeekingIVQ = true;
+                mw.log("Quiz: gotoScrubberPos : " + qNumber);
+            });
+        },
+        displayQuizEndMarker:function(){
+            var  _this = this;
+            var scrubber = this.embedPlayer.getInterface().find(".scrubber");
+
+            scrubber.parent().prepend('<div class="quizDone-cont"></div>');
+
+            $(document).off( 'click', '.quizDone-cont' )
+                .on('click', '.quizDone-cont', function () {
+                    _this.KIVQModule.quizEndScenario();
                 });
-            });
-        },
-       _checkApiResponse:function(msg,data){
-           var _this = this;
-           if (data.objectType.indexOf("Exception") >= 0){
-               _this._errMsg(msg, data );
-               return false;
-           }
-           else{
-               return true;
-           }
-    },
-        _downloadPDF:function(){
-            var _this = this;
-            var quizPDF = {
-                'service': 'quiz_quiz',
-                'action': 'servepdf',
-                'entryId': _this.embedPlayer.kentryid
-            };
-            _this.getKClient().doRequest(quizPDF, function(data) {
-                if (!_this._checkApiResponse('Get pdf err -->',data)){
-                    return false;
-                }
-            });
-        },
-        _errMsg:function(errMsg,data){
-            var _this = this;
-            mw.log(errMsg, data);
-            _this.removeShowScreen("contentScreen");
-            $(".sub-text").html(gM('mwe-quiz-err-msg'));
-            $("div").removeClass('confirm-box');
-            _this.isErr = true;
         }
     }));
 })(window.mw, window.jQuery);

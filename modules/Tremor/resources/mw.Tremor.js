@@ -1,13 +1,13 @@
 ( function( mw, $ ) { "use strict";
 
-/* reference  players look like this: 
- * 
+/* reference  players look like this:
+ *
  * <video id="player" width="400" height="300" preload="none"
-					 src="http://demo.tremormedia.com/~agrant/html5test.mp4"> 
-		</video> 
-		
+					 src="http://demo.tremormedia.com/~agrant/html5test.mp4">
+		</video>
+
 		<div class="compBanner" id="content_300"></div>
-		
+
 		<script type="text/javascript">
 			ACUDEO.Player({player: "player",
 					banner: "content_300",

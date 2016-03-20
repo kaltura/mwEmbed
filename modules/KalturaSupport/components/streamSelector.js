@@ -9,6 +9,7 @@
 			"displayImportance": 'low',
 			"align": "right",
 			"showTooltip": true,
+			"hideWhenEmpty": true,
 			"labelWidthPercentage": 33,
 			"defaultStream": 1,
 			"maxNumOfStream": 4,
@@ -102,6 +103,10 @@
 					}
 			});
 
+			this.bind( 'onDisableInterfaceComponents', function(e, arg ){
+				_this.getMenu().close();
+			});
+
 			if (this.getConfig('enableKeyboardShortcuts')) {
 				this.bind('addKeyBindCallback', function (e, addKeyCallback) {
 					_this.addKeyboardShortcuts(addKeyCallback);
@@ -133,10 +138,16 @@
 				// Validate result
 				if (data && _this.isValidResult(data[0] && data[0].totalCount > 0)) {
 					_this.createStreamList(data);
-					_this.$el.show();
+					if( _this.getConfig('hideWhenEmpty') == true ){
+						_this.setConfig('visible', true);
+					}
+					_this.getBtn().show();
 				} else {
 					mw.log('streamSelector::Error retrieving streams, disabling component');
-					_this.$el.hide();
+					if( _this.getConfig('hideWhenEmpty') == false ){
+						_this.setConfig('visible', true);
+					}
+					_this.embedPlayer.triggerHelper("updateComponentsVisibilityDone");
 				}
 			});
 		},
@@ -159,8 +170,8 @@
 					}
 				} );
 			} else {
-				mw.log('streamSelector::No streams avaialble, disabling component');
-				_this.$el.hide();
+				mw.log('streamSelector::No streams available, disabling component');
+				_this.getBtn().hide();
 			}
 			_this.embedPlayer.triggerHelper('streamsReady');
 		},

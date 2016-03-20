@@ -8,7 +8,7 @@
 	var userAgent = navigator.userAgent;
 
 	mw.isMobileDevice = function () {
-		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isAndroid() || mw.isWindowsPhone() || mw.getConfig("EmbedPlayer.ForceNativeComponent") === true )
+		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isAndroid() || mw.isWindowsPhone() || mw.getConfig("EmbedPlayer.ForceNativeComponent") === true || mw.getConfig("EmbedPlayer.SimulateMobile") === true )
 	};
 	mw.isNativeApp = function () {
 		return mw.getConfig("EmbedPlayer.ForceNativeComponent");
@@ -53,6 +53,9 @@
 	};
 	mw.isIpad = function () {
 		return ( userAgent.indexOf('iPad') != -1 );
+	};
+	mw.isIpad2 = function () {
+		return ( mw.isIpad() && window.devicePixelRatio && window.devicePixelRatio < 2 );
 	};
 	mw.isIpad3 = function () {
 		return  /OS 3_/.test(userAgent) && mw.isIpad();
@@ -145,8 +148,8 @@
 		// Known Limitation - It will return false for iOS8 Simulator
 		return ( /OS 8_/.test(userAgent) || /Version\/8/.test(userAgent) ) && mw.isIOS();
 	};
-
 	mw.isIOS9 = function () {
+		// Known Limitation - It will return false for iOS8 Simulator
 		return ( /OS 9_/.test(userAgent) || /Version\/9/.test(userAgent) ) && mw.isIOS();
 	};
 

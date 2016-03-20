@@ -12,8 +12,10 @@
  * We can't cleanly store these values per library since player library is sometimes
  * loaded post player detection
  */
+
+
 //Native Mobile player
-var nativeComponentPlayerVideo = new mw.MediaPlayer( 'nativeComponentPlayer', ['video/h264', 'video/mp4', 'application/vnd.apple.mpegurl', 'video/wvm'], 'NativeComponent' );
+var nativeComponentPlayerVideo = new mw.MediaPlayer( 'nativeComponentPlayer', window.kNativeSdk && window.kNativeSdk.allFormats, 'NativeComponent' );
 
 // Flash based players:
 var kplayer = new mw.MediaPlayer('kplayer', ['video/live', 'video/kontiki', 'video/x-flv', 'video/h264', 'video/mp4', 'audio/mpeg', 'application/x-shockwave-flash', 'application/vnd.apple.mpegurl'], 'Kplayer');
@@ -70,6 +72,10 @@ mw.EmbedTypes = {
 
 	getNativeComponentPlayerVideo: function(){
 		return nativeComponentPlayerVideo;
+	},
+
+	getNativeImageOverlayPlayer: function(){
+		return imageOverlayPlayer;
 	},
 
 	/**

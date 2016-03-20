@@ -32,7 +32,8 @@ class RequestHelper {
 		'height'=> null,
 		'playerId' => null,
 		'vid_sec' => null,
-		'vid_slices' => null
+		'vid_slices' => null,
+		'inlineScript' => null
 	);
 
 
@@ -331,7 +332,8 @@ class RequestHelper {
 	}
 	
 	public function hasKS() {
-		return isset($this->ks);
+		global $wgForceCache;
+		return $wgForceCache ? false : isset($this->ks);
 	}
 
 	public function getKS() {

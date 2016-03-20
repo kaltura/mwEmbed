@@ -57,11 +57,13 @@
 		page: 1,                 // start page for paging
 		pagingInProgress: false, // flag to block paging call during previous paging
 		pagingDone: false,       // flag for when there are no more entries in the next page so no need to load it
+		playlistInterfaceHeight: null,
 
 		setup: function (embedPlayer) {
 			if ( $(".playlistInterface").length === 0 ){
 				$(".mwPlayerContainer").wrap('<div class="playlistInterface" style="position: relative; width: 100%; height: 100%"></div>');
 			}
+			this.playlistInterfaceHeight = $(".playlistInterface").height();
 			if (this.getConfig('includeInLayout') === false) { // support hidden playlists - force onPage and hide its div.
 				this.setConfig('onPage', true);
 			}
@@ -161,6 +163,7 @@
 			});
 
 			$( this.embedPlayer ).bind('onOpenFullScreen', function() {
+				$( ".playlistInterface").height("100%");
 				_this.redrawOnResize = false;
 				clearTimeout(window.redrawTimeOutID);
 			});
@@ -240,6 +243,7 @@
 			// set responsiveness
 			if ( !mw.isIOS7()) {
 				this.bind( 'resizeEvent' , function () {
+					$( ".playlistInterface").height("100%");
 					_this.redrawPlaylist();
 				} );
 			}
@@ -312,7 +316,7 @@
 		},
 		redrawPlaylist: function(){
 			var _this = this;
-			if (!this.getPlayer().layoutBuilder.isInFullScreen() && this.redrawOnResize && this.redrawOnResize && this.playlistSet.length > 0) {
+			if (!this.getPlayer().layoutBuilder.isInFullScreen() && this.redrawOnResize && this.playlistSet.length > 0) {
 				// decide the width of the items. For vertical layout: 3rd of the container. For horizontal: according to MinClips value
 				if ( this.getLayout() === "vertical" ){
 					var saveScrollTop = this.getMedialistComponent().find(".nano-content").scrollTop(); // save scrollTop
@@ -325,7 +329,10 @@
 					}
 				}else{
 					var width = this.getConfig("fixedControls") ? $( ".playlistInterface" ).width() - this.getConfig("horizontalControlsWidth")*2 : $( ".playlistInterface" ).width();
-					this.setConfig( 'mediaItemWidth', Math.floor(width / this.getConfig("MinClips")) );
+					// if the number of items in the playlist is lower than MinClips, calculate mediaItemWidth according to it, else according to MinClips settings
+					var itemsNumber = this.playlistSet.length ? this.playlistSet[this.currentPlaylistIndex].items.length : this.getConfig('MinClips');
+					var clipsNumber = itemsNumber < this.getConfig('MinClips') ? itemsNumber : this.minClips;
+					this.setConfig('mediaItemWidth', Math.floor(width / clipsNumber));
 				}
 				if ( this.getConfig('onPage') !== true ){ // do not refresh mediaListContainer on page
 					this.$mediaListContainer = null;
@@ -465,12 +472,14 @@
 				mw.log('mw.PlaylistAPI:: onChangeMediaDone');
 				embedPlayer.triggerHelper(eventToTrigger);
 				_this.loadingEntry = false; // Update the loadingEntry flag//
+
 				// play clip that was selected when autoPlay=false. if autoPlay=true, the embedPlayer will do that for us.
 				if (!_this.getConfig("autoPlay") && mobileAutoPlay && embedPlayer.canAutoPlay()) {
 					setTimeout(function(){
 						embedPlayer.play();
 					},500); // timeout is required when loading live entries
 				}
+
 				if (mw.isMobileDevice() && !mobileAutoPlay){
 					mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
 					embedPlayer.updatePosterHTML();
@@ -505,13 +514,13 @@
 		addClipBindings: function (clipIndex) {
 			var _this = this;
 			mw.log("PlaylistAPI::addClipBindings");
-			// Setup postEnded event binding to play next clip (if autoContinue is true )
-			if (this.getConfig("autoContinue") == true) {
-				$(this.embedPlayer).unbind('postEnded' + this.bindPostFix).bind('postEnded' + this.bindPostFix, function () {
+			// Setup postEnded event binding to play next clip
+			$(this.embedPlayer).unbind('postEnded' + this.bindPostFix).bind('postEnded' + this.bindPostFix, function () {
+				if (_this.getConfig("autoContinue") == true) {
 					mw.log("PlaylistAPI:: postEnded > on inx: " + clipIndex);
 					_this.playNext(true);
-				});
-			}
+				}
+			});
 		},
 
 		playNext: function (autoScrollToMedia) {
@@ -685,6 +694,9 @@
 				this.configMediaListFeatures();
 			} else {
 				this.clearEmptyPlaylistError();
+				if (this.playlistInterfaceHeight){
+					$( ".playlistInterface").height(this.playlistInterfaceHeight);
+				}
 				this.renderMediaList();  // set the media list in KBaseMediaList
 
 				// support initial selectedIndex or initItemEntryId

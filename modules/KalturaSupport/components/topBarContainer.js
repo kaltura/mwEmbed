@@ -7,6 +7,7 @@
 		},
 
 		keepOnScreen: false,
+		screenOpen: false,
 
 		setup: function(){
 			// Bind player
@@ -18,10 +19,14 @@
 			this.bind( 'addLayoutContainer', function() {
 				_this.getPlayer().getVideoHolder().before( _this.getComponent() );
 			});
-			this.bind( 'layoutBuildDone ended', function(){
+			this.bind( 'ended', function(){
 				_this.show();
 			});
-
+			this.bind( 'layoutBuildDone', function(){
+				if (!_this.embedPlayer.isMobileSkin()){
+					_this.show();
+				}
+			});
 			// If have no components, hide
 			this.bind('layoutBuildDone', function(){
 				if( !_this.getComponent().children().length ){
@@ -42,8 +47,23 @@
 					_this.keepOnScreen = true;
 					_this.show();
 				});
-				this.bind( 'onComponentsHoverEnabled', function(){
+				this.bind( 'hideScreen closeMenuOverlay', function(){
+					_this.screenOpen = false;
+					if (!_this.embedPlayer.paused){
+						_this.keepOnScreen = false;
+						_this.hide();
+					}else{
+						_this.show();
+					}
+				});
+				this.bind( 'onComponentsHoverEnabled displayMenuOverlay', function(){
 					_this.keepOnScreen = false;
+					_this.hide();
+				});
+				this.bind( 'showScreen', function(){
+					_this.screenOpen = true;
+					_this.keepOnScreen = false;
+					_this.forceOnScreen = false;
 					_this.hide();
 				});
 				this.bind( 'onHideSideBar', function(){
@@ -55,11 +75,16 @@
 			}
 		},
 		show: function(){
-			this.getComponent().addClass( 'open' );
-			// Trigger the screen overlay with layout info:
-			this.getPlayer().triggerHelper( 'onShowToplBar', {
-				'top' : this.getComponent().height() + 15
-			});
+			if(this.embedPlayer.isMobileSkin() && this.getPlayer().getPlayerPoster().length){
+				return; // prevent showing controls on top of the poster when the video first loads
+			}
+			if ( !this.screenOpen ){
+				this.getComponent().addClass( 'open' );
+				// Trigger the screen overlay with layout info:
+				this.getPlayer().triggerHelper( 'onShowToplBar', {
+					'top' : this.getComponent().height() + 15
+				});
+			}
 		},
 		hide: function(){
 			if( this.keepOnScreen || this.forceOnScreen) return;

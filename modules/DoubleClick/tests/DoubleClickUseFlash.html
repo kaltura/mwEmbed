@@ -1,0 +1,35 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title> DoubleClick using Flash </title>
+
+    <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+    <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+    <script type="text/javascript" src="../../../docs/js/doc-bootstrap.js"></script>
+</head>
+<body>
+<h3>DoubleClick using Flash</h3>
+<div id="videoTarget" style="width:600px;height:430px"></div>
+<script>
+    kWidget.featureConfig({
+        'targetId': 'videoTarget',
+        'wid': '_243342',
+        'cache_st': 2,
+        'uiconf_id' : '25550701',
+        'entry_id' : '0_swup5zao',
+        'flashvars': {
+            'doubleClick':{
+                'plugin':true,
+                'leadWithFlash': true,
+                'adTagUrl': 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpremidpost&cmsid=496&vid=short_onecue&correlator=[timestamp]',
+                'disableCompanionAds' : false,
+                'debugMode':false
+            },
+            //'debugMode':'true',
+            'adsOnReplay':true
+        }
+    });
+</script>
+</body>
+</html>

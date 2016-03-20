@@ -118,40 +118,14 @@
 
 				//if we moved from live to offline  - show message
 				if ( _this.onAirStatus && !onAirObj.onAirStatus ) {
-					//sometimes offline is only for a second and the message is not needed..
-					setTimeout( function() {
-						if ( !_this.onAirStatus ) {
-                            //if we already played once it means stream data was loaded. We can continue playing in "VOD" mode
-							if ( !embedPlayer.firstPlay && _this.isDVR() ) {
-                                embedPlayer.triggerHelper( 'liveEventEnded' );
-							} else {
-								//remember last state
-								_this.playWhenOnline = embedPlayer.isPlaying();
-
-                                if( _this.getConfig('showThumbnailWhenOffline') ){
-                                    _this.addPoster();
-                                } else {
-                                    embedPlayer.layoutBuilder.displayAlert({
-                                        title: embedPlayer.getKalturaMsg('ks-LIVE-STREAM-OFFLINE-TITLE'),
-                                        message: embedPlayer.getKalturaMsg('ks-LIVE-STREAM-OFFLINE'),
-                                        keepOverlay: true,
-                                        noButtons: true,
-                                        props: {
-                                            customAlertTitleCssClass: "AlertTitleTransparent",
-                                            customAlertMessageCssClass: "AlertMessageTransparent",
-                                            customAlertContainerCssClass: "AlertContainerTransparent"
-                                        }
-                                    });
-                                }
-
-							    _this.getPlayer().disablePlayControls();
-                            }
-                        }
-					}, _this.getConfig( 'offlineAlertOffest' ) );
-
-					embedPlayer.triggerHelper( 'liveOffline' );
-
+                    //calculate offlineAlertOffset for timeout (by default = 0 as sometimes offline is only for a second and the message is not needed..)
+                    var firstOfflineAlertOffest = _this.calculateOfflineAlertOffest();
+                    _this.setOffAir(firstOfflineAlertOffest);
 				}  else if ( !_this.onAirStatus && onAirObj.onAirStatus ) {
+                    if (_this.offAirTimeout){
+                        clearTimeout(_this.offAirTimeout);
+                        _this.offAirTimeout = null;
+                    }
 					if ( _this.getPlayer().removePosterFlag && !_this.playWhenOnline && !embedPlayer.isPlaying() ) {
 						_this.addPoster();
 					}
@@ -159,11 +133,11 @@
 					if ( !_this.getPlayer().getError() ) {
 						_this.getPlayer().enablePlayControls();
 					}
+                    embedPlayer.triggerHelper( 'liveOnline' );
 					if ( _this.playWhenOnline ) {
 						embedPlayer.play();
 						_this.playWhenOnline = false;
 					}
-					embedPlayer.triggerHelper( 'liveOnline' );
 
 					//reload livestream
 					if ( !embedPlayer.firstPlay && _this.isDVR() ) {
@@ -196,6 +170,7 @@
 					embedPlayer.firstPlay &&
 					embedPlayer.autoplay &&
 					embedPlayer.canAutoPlay() &&
+					!embedPlayer.isInSequence() &&
 					!embedPlayer.isPlaying() ) {
 					embedPlayer.play();
 				}
@@ -248,6 +223,53 @@
 			});
 		},
 
+        setOffAir: function(offlineAlertOffest) {
+            var _this = this;
+            var embedPlayer = this.getPlayer();
+
+            if (_this.offAirTimeout){
+                clearTimeout(_this.offAirTimeout);
+                _this.offAirTimeout = null;
+            }
+
+            _this.offAirTimeout = setTimeout( function() {
+                if ( !_this.onAirStatus ) {
+                    //recheck the buffer length
+                    var secondOfflineAlertOffest = _this.calculateOfflineAlertOffest();
+                    if( secondOfflineAlertOffest > 1000 ) {
+                        _this.setOffAir(secondOfflineAlertOffest);
+                    } else {
+                        //if we already played once it means stream data was loaded. We can continue playing in "VOD" mode
+                        if (!embedPlayer.firstPlay && _this.isDVR()) {
+                            embedPlayer.triggerHelper('liveEventEnded');
+                        } else {
+                            //remember last state
+                            _this.playWhenOnline = embedPlayer.isPlaying();
+
+                            if (_this.getConfig('showThumbnailWhenOffline')) {
+                                _this.addPoster();
+                            } else {
+                                embedPlayer.layoutBuilder.displayAlert({
+                                    title: embedPlayer.getKalturaMsg('ks-LIVE-STREAM-OFFLINE-TITLE'),
+                                    message: embedPlayer.getKalturaMsg('ks-LIVE-STREAM-OFFLINE'),
+                                    keepOverlay: true,
+                                    noButtons: true,
+                                    props: {
+                                        customAlertTitleCssClass: "AlertTitleTransparent",
+                                        customAlertMessageCssClass: "AlertMessageTransparent",
+                                        customAlertContainerCssClass: "AlertContainerTransparent"
+                                    }
+                                });
+                            }
+
+                            _this.getPlayer().disablePlayControls();
+                        }
+                        embedPlayer.triggerHelper('liveOffline');
+                    }
+                }
+            }, offlineAlertOffest );
+        },
+
 		isLiveChanged: function() {
 			var _this = this;
 			var embedPlayer = this.getPlayer();
@@ -289,11 +311,12 @@
 					showComponentsArr.push( 'scrubber', 'currentTimeLabel' );
 				} else {  //live + no DVR
 					showComponentsArr.push( 'liveStatus' );
-					if ( _this.getConfig('hideCurrentTimeLabel') ){
-						hideComponentsArr.push( 'scrubber', 'currentTimeLabel' );
-					} else {
-						showComponentsArr.push( 'scrubber', 'currentTimeLabel' );
-					}
+                    hideComponentsArr.push( 'scrubber' );
+                    if ( _this.getConfig('hideCurrentTimeLabel') ){
+                    	hideComponentsArr.push( 'currentTimeLabel' );
+                    } else {
+                    	showComponentsArr.push( 'currentTimeLabel' );
+                    }
 				}
 
 				if ( _this.isNativeHLS() ) {
@@ -472,7 +495,16 @@
 				return true;
 			}
 			return false;
-		}
+		},
+
+        calculateOfflineAlertOffest: function() {
+            var offlineAlertOffest = this.getConfig( 'offlineAlertOffest' );
+            var bufferLength = this.getPlayer().getCurrentBufferLength() *1000;
+            if(bufferLength>0){
+                offlineAlertOffest = bufferLength;
+            }
+            return offlineAlertOffest;
+        }
 
 	}));
 

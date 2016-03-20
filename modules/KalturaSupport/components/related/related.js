@@ -7,6 +7,9 @@
 			order: 4,
 			align: "right",
 			tooltip: gM('mwe-embedplayer-related'),
+			title: gM('mwe-embedplayer-related'),
+			smartContainer: 'morePlugins',
+			smartContainerCloseEvent: 'hideScreen',
 			showTooltip: true,
 			itemsLimit: 12,
 			displayOnPlaybackDone: true,
@@ -57,7 +60,6 @@
 						$(this).width("100%");
 						$(this).height("100%");
 					});
-					_this.resizeThumbs();
 				},200);
 
 			});
@@ -69,7 +71,6 @@
 						$(this).width("100%");
 						$(this).height("100%");
 					});
-					_this.resizeThumbs();
 				},200);
 			});
 
@@ -78,8 +79,9 @@
 					if ( _this.error ) {
 						return;
 					}
-					_this.showScreen();
+					_this.showScreen(true);
 					if( _this.getConfig('autoContinueEnabled') && _this.getConfig('autoContinueTime') ){
+						_this.embedPlayer.playlist = true;
 						_this.startTimer();
 					}
 				});
@@ -88,10 +90,24 @@
 			this.bind('replayEvent preSequence', function(){
 				_this.stopTimer();
 			});
+
+			this.bind('preShowScreen', function (event, screenName) {
+				if ( screenName === "related" ){
+					_this.embedPlayer.disablePlayControls(['playPauseBtn']);
+				}
+			});
+			this.bind('preHideScreen', function (event, screenName) {
+				if ( screenName === "related" ){
+					_this.embedPlayer.enablePlayControls();
+				}
+			});
 		},
 
-		showScreen: function(){
+		showScreen: function(auto){
 			var _this = this;
+			if ( auto !== true){
+				this.embedPlayer.triggerHelper("relatedOpen");
+			}
 			this._super(); // this is an override of showScreen in mw.KBaseScreen.js - call super
 			if (this.numOfEntries > 0 && this.loadedThumbnails < this.numOfEntries) { // related data was loaded but thumbnails were not loaded yet
 				$('.item-inner').each(function () {
@@ -127,8 +143,8 @@
 					if (heightOffset > 0) {
 						$img.css("margin-top", heightOffset * (-1) + 'px');
 					} else {
-						$img.width($img.width() * divHeight / $img.height());
 						$img.height(divHeight);
+						$img.width($img.width() * divHeight / $img.height());
 						widthOffset = ($img.width() - divWidth) / 2;
 						$img.css("margin-left", widthOffset * (-1) + 'px');
 					}
@@ -161,7 +177,7 @@
 					_this.stopTimer();
 					// Make sure we change media only if related is visible and we have next item
 					if( _this.isScreenVisible() && _this.templateData && _this.templateData.nextItem ){
-						_this.changeMedia( null, {entryId: _this.templateData.nextItem.id} );
+						_this.changeMedia( null, {entryId: _this.templateData.nextItem.id},true );
 					}
 				}
 			};
@@ -341,7 +357,7 @@
 			}
 		},
 
-		changeMedia: function( e, data ){
+		changeMedia: function( e, data, auto ){
 			this.stopTimer();
 			var _this = this;
 			// update the selected entry:
@@ -364,7 +380,7 @@
 					}
 				}
 			}
-
+			data["autoSelected"] = (auto === true);
 			this.getPlayer().sendNotification('relatedVideoSelect', data);
 
 			if(this.getConfig('clickUrl')){
@@ -474,6 +490,9 @@
 				});
 			}
 			return defer;
+		},
+		closeScreen: function(){
+			this.hideScreen();
 		}
 	}));
 

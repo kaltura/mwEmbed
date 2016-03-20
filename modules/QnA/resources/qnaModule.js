@@ -29,7 +29,7 @@
                     _this.applyLayout();
                     _this.qnaPlugin.updateUnreadBadge();
                 });
-                this.playerTime = ko.observable(embedPlayer.currentTime);
+                this.playerTime = ko.observable(embedPlayer.getPlayerElementTime());
 
                 // An entry in a Q&A thread (not an announcement) was clicked
                 // if it's the first one in the thread - collapse / Expand the thread
@@ -134,7 +134,7 @@
                 if (this.waitFirstPlayInterval === null){
                     this.waitFirstPlayInterval = setInterval(function(){
                         if (embedPlayer.currentTime > 0){
-                            _this.qnaService.AnswerOnAirQueueUpdate(embedPlayer.currentTime);
+                            _this.qnaService.AnswerOnAirQueueUpdate(embedPlayer.getPlayerElementTime());
                             clearInterval(_this.waitFirstPlayInterval);
                         }
                     }, 100);

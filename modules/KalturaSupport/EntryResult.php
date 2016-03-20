@@ -107,9 +107,20 @@ class EntryResult {
 			!$this->request->hasKS();
 	}
 	function getCacheKey(){
+		global $wgForceCache;
 		$key = '';
-		if ($this->request->isEmbedServicesEnabled() && $this->request->isEmbedServicesRequest()){
-			$key.= md5( serialize( $this->request->getEmbedServicesRequest() ) );
+		if ( $this->request->isEmbedServicesEnabled() && $this->request->isEmbedServicesRequest() ) {
+			if ( $wgForceCache ) {
+				$data = $this->request->getEmbedServicesRequest();
+				$config = "none";
+				if ( isset( $data->config ) ){
+					$config = serialize($data->config);
+				}
+				$cacheKey = $data->MediaID .'_'.$config;
+				$key.= md5( serialize( $cacheKey ) );
+			}
+			else
+				$key.= md5( serialize( $this->request->getEmbedServicesRequest() ) );
 		}
 		if( $this->request->getEntryId() ){
 			$key.= $this->request->getEntryId();
@@ -220,16 +231,21 @@ class EntryResult {
 		}
 
         $vars = $this->uiconf->playerConfig['vars'];
+		$playerConfig = $this->uiconf->getPlayerConfig();
 		if( is_array( $resultObject['contextData'] ) && isset( $resultObject['contextData']['code'] ) && $resultObject['contextData']['code'] == 'ENTRY_ID_NOT_FOUND' && !isset($vars['referenceId'])){
-			$this->error = 'No source video was found';
+			if (!isset($playerConfig['plugins']['strings']['mwe-embedplayer-missing-source'])){
+				$this->error = 'No source video was found';
+			}
 			return array();
 		}
 
 		//if the video is still uploading or converting
 		if ( isset($resultObject['meta']) &&  isset( $resultObject['meta']->status ) &&
 			($resultObject['meta']->status == 0  || $resultObject['meta']->status == 1)){
+			 if (!isset($playerConfig['plugins']['strings']['ks-ENTRY_CONVERTING'])){
 				$this->error = 'No source video was found - Entry in process';
 				return array();
+				}
 		}
 
 		
@@ -356,9 +372,10 @@ class EntryResult {
 		}
 
 		// check for generic "block"
-		$actions = isset( $accessControl->accessControlActions ) ? 
-					$accessControl->accessControlActions:
-					isset( $accessControl->actions )? $accessControl->actions: null;
+		$actions = isset( $accessControl['accessControlActions']) ?
+					$accessControl['accessControlActions']:
+					isset( $accessControl['actions'] )? $accessControl['actions']: null;
+
 
 		if( $actions && count( $actions ) ) {
 			for($i=0;$i<count($actions); $i++){

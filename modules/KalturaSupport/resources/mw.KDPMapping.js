@@ -826,6 +826,9 @@
 					b( 'playerReady', function(){
 						callback( 'ready', embedPlayer.id );
 					});
+					b( 'bufferStartEvent', function(){
+						callback( 'buffering', embedPlayer.id );
+					});
 					b( 'onpause', function(){
 						callback( 'paused', embedPlayer.id );
 					});
@@ -1161,6 +1164,9 @@
 						})
 						return;
 					}
+					if ( notificationData && notificationData.userInitiated ){
+						embedPlayer.triggerHelper( 'userInitiatedPlay' );
+					}
 					embedPlayer.play();
 					break;
 				case 'doPause':
@@ -1169,14 +1175,19 @@
 						embedPlayer.triggerHelper( 'doPause' );
 						break;
 					}
+					if ( notificationData && notificationData.userInitiated ){
+						embedPlayer.triggerHelper( 'userInitiatedPause' );
+					}
 					embedPlayer.pause();
 					break;
 				case 'doStop':
-					setTimeout(function() {
-						embedPlayer.ignoreNextNativeEvent = true;
-                			        embedPlayer.seek(0, true);
-						embedPlayer.stop();
-					},10);
+					if ( !embedPlayer.stopped ){
+						setTimeout(function() {
+							embedPlayer.ignoreNextNativeEvent = true;
+	                                    embedPlayer.seek(0, true);
+							embedPlayer.stop();
+						},10);
+					}
 					break;
 				case 'doReplay':
 					embedPlayer.replay();

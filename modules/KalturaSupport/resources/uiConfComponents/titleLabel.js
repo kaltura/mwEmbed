@@ -10,6 +10,19 @@
 		},
 		setup: function(){
 			var _this = this;
+			if (this.embedPlayer.isMobileSkin()){
+				this.setConfig('parent','controlBarContainer');
+				this.setConfig('insertMode','firstChild');
+				this.bind('onHideControlBar', function(){
+					_this.$el.fadeOut();
+				});
+				this.bind('layoutBuildDone', function(){
+					_this.$el.hide();
+				});
+				this.bind('onShowControlBar', function(){
+					_this.$el.fadeIn();
+				});
+			}
 			this.bind('playerReady', function(){
 				// Update title to entry name
 				_this.getComponent()
@@ -43,7 +56,11 @@
 			);
 		},
 		getAvailableWidth:function(){
-			return this.embedPlayer.getWidth() - ($('.' + this.getConfig('parent') + ' .btn').length + 1) * 30;
+			if (this.embedPlayer.isMobileSkin()){
+				return "90%";
+			}else{
+				return this.embedPlayer.getWidth() - ($('.' + this.getConfig('parent') + ' .btn').length + 1) * 30;
+			}
 		},
 		getComponent: function() {
 			if( !this.$el ) {
