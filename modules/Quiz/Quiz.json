@@ -8,7 +8,9 @@
     ],
     "dependencies": "mw.KBaseScreen",
     "kalturaPluginName": "quiz",
-    "styles": "resources/css/quiz.css",
+    "styles": ["resources/css/quiz.css",
+               "resources/css/quizFonts.css"
+              ],
     "templates":{
       "quizstart": "../Quiz/resources/templates/quiz.tmpl.html"
     },

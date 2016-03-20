@@ -280,6 +280,9 @@ mw.KWidgetSupport.prototype = {
 	},
 	updatePlayerContextData: function(embedPlayer, playerData){
 		if( playerData.contextData ){
+			if ( playerData.contextData.msDuration) {
+				embedPlayer.kalturaPlayerMetaData.duration = Math.floor(playerData.contextData.msDuration / 1000);
+			}
 			embedPlayer.kalturaContextData = playerData.contextData;
 			if (playerData.contextData &&
 				$.isArray(playerData.contextData.accessControlActions)) {
@@ -293,7 +296,7 @@ mw.KWidgetSupport.prototype = {
 
 					if (action.pattern && action.replacement) {
 						var regExp=new RegExp(action.pattern, "i");
-						var urlsToModify = ['Kaltura.ServiceUrl','Kaltura.StatsServiceUrl','Kaltura.ServiceBase','Kaltura.LiveStatsServiceUrl'];
+						var urlsToModify = ['Kaltura.ServiceUrl','Kaltura.StatsServiceUrl','Kaltura.ServiceBase','Kaltura.LiveStatsServiceUrl','Kaltura.AnalyticsUrl'];
 						urlsToModify.forEach(function (key) {
 							var serviceUrl = mw.config.get(key);
 							var match = serviceUrl.match( regExp );
@@ -1119,16 +1122,17 @@ mw.KWidgetSupport.prototype = {
 				var entryResult =  window.kalturaIframePackageData.entryResult;
 				_this.handlePlayerData( embedPlayer, entryResult );
 				//if we dont have special widgetID or the KS is defined continue as usual
-				if ( "_" + embedPlayer.kpartnerid == playerRequest.widget_id || _this.kClient.getKs() ) {
+				var kpartnerid = embedPlayer.kpartnerid ? embedPlayer.kpartnerid : "";
+				if ( "_" + kpartnerid == playerRequest.widget_id || _this.kClient.getKs() ) {
 					callback( entryResult );
 				}else{
 					//if we have special widgetID and we dont have a KS - ask for KS before continue the process
 					this.kClient.forceKs(playerRequest.widget_id,function(ks) {
 						_this.kClient.setKs( ks );
-						if ( window.kalturaIframePackageData.playerConfig && !window.kalturaIframePackageData.playerConfig.vars ) {
-							window.kalturaIframePackageData.playerConfig.vars = {};
+						if ( embedPlayer.playerConfig && !embedPlayer.playerConfig.vars ) {
+							embedPlayer.playerConfig.vars = {};
 						}
-						window.kalturaIframePackageData.playerConfig.vars.ks = ks;
+						embedPlayer.playerConfig.vars.ks = ks;
 						callback( entryResult );
 					},function(){
 						mw.log("Error occur while trying to create widget KS");

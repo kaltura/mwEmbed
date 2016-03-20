@@ -472,12 +472,14 @@
 				mw.log('mw.PlaylistAPI:: onChangeMediaDone');
 				embedPlayer.triggerHelper(eventToTrigger);
 				_this.loadingEntry = false; // Update the loadingEntry flag//
+
 				// play clip that was selected when autoPlay=false. if autoPlay=true, the embedPlayer will do that for us.
 				if (!_this.getConfig("autoPlay") && mobileAutoPlay && embedPlayer.canAutoPlay()) {
 					setTimeout(function(){
 						embedPlayer.play();
 					},500); // timeout is required when loading live entries
 				}
+
 				if (mw.isMobileDevice() && !mobileAutoPlay){
 					mw.setConfig('EmbedPlayer.HidePosterOnStart', false);
 					embedPlayer.updatePosterHTML();
@@ -512,13 +514,13 @@
 		addClipBindings: function (clipIndex) {
 			var _this = this;
 			mw.log("PlaylistAPI::addClipBindings");
-			// Setup postEnded event binding to play next clip (if autoContinue is true )
-			if (this.getConfig("autoContinue") == true) {
-				$(this.embedPlayer).unbind('postEnded' + this.bindPostFix).bind('postEnded' + this.bindPostFix, function () {
+			// Setup postEnded event binding to play next clip
+			$(this.embedPlayer).unbind('postEnded' + this.bindPostFix).bind('postEnded' + this.bindPostFix, function () {
+				if (_this.getConfig("autoContinue") == true) {
 					mw.log("PlaylistAPI:: postEnded > on inx: " + clipIndex);
 					_this.playNext(true);
-				});
-			}
+				}
+			});
 		},
 
 		playNext: function (autoScrollToMedia) {

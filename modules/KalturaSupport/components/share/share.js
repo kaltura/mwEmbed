@@ -445,9 +445,11 @@
 			var url = network.url;
 			url = decodeURIComponent(url);        // url was encoded to keep curly brackets for template tokens
 			url = this.getPlayer().evaluate(url); // replace tokens
-
+			url = url.replace('#','%23'); // encode hash sign to keep time offset
+			var networks = this.getConfig('shareConfig');
+			// send event for analytics
+			$( embedPlayer ).trigger( "socialShareEvent", networks[network.id] );
 			if (mw.isNativeApp()) {
-				var networks = this.getConfig('shareConfig');
 				var id = network.id;
 				var shareParams = {
 					actionType: 'share',
@@ -475,8 +477,6 @@
 				}
 				return false;
 			}
-			// send event for analytics
-			$( embedPlayer ).trigger( "socialShareEvent" );
 		},
 		getThumbnailURL: function () {
 			return kWidgetSupport.getKalturaThumbnailUrl({

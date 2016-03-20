@@ -3,7 +3,7 @@
  */
 (function (mw, $) {
     "use strict";
-        mw.KIVQApi = function (embedPlayer) {
+    mw.KIVQApi = function (embedPlayer) {
         return this.init(embedPlayer);
     };
     if (!(mw.KIVQApi.prototype = {
@@ -34,89 +34,89 @@
                         callback(data);
                     });
                 };
-            this.getQuestionAnswerCuepoint = function(kQuizUserEntryId,callback){
+                this.getQuestionAnswerCuepoint = function(kQuizUserEntryId,callback){
 
-                var getCp = [{
-                    'service': 'cuepoint_cuepoint',
-                    'action': 'list',
-                    'filter:entryIdEqual': _this.embedPlayer.kentryid,
-                    'filter:objectType': 'KalturaCuePointFilter',
-                    'filter:cuePointTypeEqual': 'quiz.QUIZ_QUESTION',
-                    'filter:orderBy': '+startTime'
-                },{
-                    'service': 'cuepoint_cuepoint',
-                    'action': 'list',
-                    'filter:objectType': 'KalturaAnswerCuePointFilter',
-                    'filter:entryIdEqual':_this.embedPlayer.kentryid,
-                    'filter:quizUserEntryIdEqual':kQuizUserEntryId,
-                    'filter:cuePointTypeEqual': 'quiz.QUIZ_ANSWER'
-                }];
+                    var getCp = [{
+                        'service': 'cuepoint_cuepoint',
+                        'action': 'list',
+                        'filter:entryIdEqual': _this.embedPlayer.kentryid,
+                        'filter:objectType': 'KalturaQuestionCuePointFilter',
+                        'filter:cuePointTypeEqual': 'quiz.QUIZ_QUESTION',
+                        'filter:orderBy': '+startTime'
+                    },{
+                        'service': 'cuepoint_cuepoint',
+                        'action': 'list',
+                        'filter:objectType': 'KalturaAnswerCuePointFilter',
+                        'filter:entryIdEqual':_this.embedPlayer.kentryid,
+                        'filter:quizUserEntryIdEqual':kQuizUserEntryId,
+                        'filter:cuePointTypeEqual': 'quiz.QUIZ_ANSWER'
+                    }];
 
-                _this.getKClient().doRequest(getCp, function (data) {
+                    _this.getKClient().doRequest(getCp, function (data) {
 
-                    callback(data);
-                });
-            };
-
-            this.createQuizUserEntryId = function(callback){
-
-                var createQuizuserEntryId = {
-                    'service': 'userEntry',
-                    'action': 'add',
-                    'userEntry:objectType': 'KalturaQuizUserEntry',
-                    'userEntry:entryId': _this.embedPlayer.kentryid
+                        callback(data);
+                    });
                 };
 
-                _this.getKClient().doRequest(createQuizuserEntryId, function (data) {
-                    callback(data);
-                });
+                this.createQuizUserEntryId = function(callback){
 
-            };
-            this.addAnswer = function(isAnswered,selectedAnswer,kQuizUserEntryId,questionNr,callback){
-
-                var _this = this,answerParams = {};
-                var quizSetAnswer = {
-                    'service': 'cuepoint_cuepoint',
-                    'cuePoint:objectType': "KalturaAnswerCuePoint",
-                    'cuePoint:answerKey': selectedAnswer,
-                    'cuePoint:quizUserEntryId': kQuizUserEntryId
-                };
-
-                if (isAnswered) {
-                    answerParams = {
-                        'action': 'update',
-                        'id': $.cpObject.cpArray[questionNr].answerCpId,
-                        'cuePoint:entryId': _this.embedPlayer.kentryid
-                    }
-                } else {
-                    answerParams = {
+                    var createQuizuserEntryId = {
+                        'service': 'userEntry',
                         'action': 'add',
-                        'cuePoint:entryId': $.cpObject.cpArray[questionNr].cpEntryId,
-                        'cuePoint:parentId': $.cpObject.cpArray[questionNr].cpId,
-                        'cuePoint:startTime': '0'
+                        'userEntry:objectType': 'KalturaQuizUserEntry',
+                        'userEntry:entryId': _this.embedPlayer.kentryid
                     };
-                }
 
-                $.extend(quizSetAnswer, answerParams);
-                _this.getKClient().doRequest(quizSetAnswer, function (data) {
+                    _this.getKClient().doRequest(createQuizuserEntryId, function (data) {
+                        callback(data);
+                    });
 
-                    callback(data);
-                });
-            };
-
-            this.submitQuiz = function (kQuizUserEntryId,callback) {
-
-                var submitQuizParams = {
-                    'service': 'userEntry',
-                    'action': 'submitQuiz',
-                    'id': kQuizUserEntryId
                 };
-                _this.getKClient().doRequest(submitQuizParams, function (data) {
+                this.addAnswer = function(isAnswered,selectedAnswer,kQuizUserEntryId,questionNr,callback){
 
-                  callback(data);
+                    var _this = this,answerParams = {};
+                    var quizSetAnswer = {
+                        'service': 'cuepoint_cuepoint',
+                        'cuePoint:objectType': "KalturaAnswerCuePoint",
+                        'cuePoint:answerKey': selectedAnswer,
+                        'cuePoint:quizUserEntryId': kQuizUserEntryId
+                    };
 
-                });
-            };
+                    if (isAnswered) {
+                        answerParams = {
+                            'action': 'update',
+                            'id': $.cpObject.cpArray[questionNr].answerCpId,
+                            'cuePoint:entryId': _this.embedPlayer.kentryid
+                        }
+                    } else {
+                        answerParams = {
+                            'action': 'add',
+                            'cuePoint:entryId': $.cpObject.cpArray[questionNr].cpEntryId,
+                            'cuePoint:parentId': $.cpObject.cpArray[questionNr].cpId,
+                            'cuePoint:startTime': '0'
+                        };
+                    }
+
+                    $.extend(quizSetAnswer, answerParams);
+                    _this.getKClient().doRequest(quizSetAnswer, function (data) {
+
+                        callback(data);
+                    });
+                };
+
+                this.submitQuiz = function (kQuizUserEntryId,callback) {
+
+                    var submitQuizParams = {
+                        'service': 'userEntry',
+                        'action': 'submitQuiz',
+                        'id': kQuizUserEntryId
+                    };
+                    _this.getKClient().doRequest(submitQuizParams, function (data) {
+
+                        callback(data);
+
+                    });
+                };
 
                 this.downloadIvqPDF = function (EntryId,callback) {
                     var downloadPdf = {

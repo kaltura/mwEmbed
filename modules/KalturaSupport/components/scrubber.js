@@ -41,7 +41,7 @@
 		addBindings: function () {
 			var _this = this;
 			this.bind('durationChange', function (event, duration) {
-				_this.duration = duration;
+                _this.duration = duration;
 			});
             this.bind('seeked', function () {
                 _this.justSeeked = true;
@@ -172,7 +172,6 @@
             }
             var playHeadPercent = (this.getPlayHeadComponent().position().left + this.getPlayHeadComponent().width()/2) / this.getComponent().width();
             playHeadPercent = parseInt(playHeadPercent*100);
-
             if( this.getPlayer().isLiveOffSynch() && playHeadPercent > this.liveEdge -1 ){
                 this.getPlayer().setLiveOffSynch(false);
             }
@@ -324,12 +323,17 @@
 				$sliderPreview.css("border", "0px");
 			}
 			$(".scrubber .arrow").css("left", thumbWidth / 2 - 4);
-			$sliderPreviewTime.text(kWidget.seconds2npt(currentTime));
+            $sliderPreviewTime.text(kWidget.seconds2npt(currentTime));
 			$sliderPreviewTime.css({bottom: 2, left: thumbWidth / 2 - $sliderPreviewTime.width() / 2 + 3});
 			$sliderPreview.css("width", thumbWidth);
 
 			if (kWidget.isIE8()) {
 				$sliderPreview.css("height", 43);
+			}
+			if ($sliderPreview.width() > 0){
+				$sliderPreview.css("visibility","visible");
+			}else{
+				$sliderPreview.css("visibility","hidden");
 			}
 			$sliderPreview.show();
 		},
@@ -367,6 +371,7 @@
 					if (embedPlayer.userSlide) {
 						embedPlayer.userSlide = false;
 						embedPlayer.seeking = true;
+						embedPlayer.triggerHelper("userInitiatedSeek", seekTime);
 						embedPlayer.seek(seekTime);
 					}
 				}

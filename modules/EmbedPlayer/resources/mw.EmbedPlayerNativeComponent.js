@@ -112,7 +112,7 @@
 			this.proxyElement = divElement;
 			try {
 				if (NativeBridge.videoPlayer) {
-					NativeBridge.videoPlayer.registePlayer(this.getPlayerElement());
+					NativeBridge.videoPlayer.registerPlayer(this.getPlayerElement());
 					NativeBridge.videoPlayer.registerEmbedPlayer(this);
 				}
 			}
@@ -377,6 +377,13 @@
 			mw.log("EmbedPlayerNativeComponent:: seek::");
 			this.getPlayerElement().attr('currentTime', seekTime);
 		},
+		seek: function (seekTime, stopAfterSeek) {
+			if (seekTime === 0){
+				seekTime = 0.01;
+			}
+			this.parent_seek(seekTime, stopAfterSeek);
+
+		},
 
 		/**
 		 * Set the current time with a callback
@@ -389,6 +396,9 @@
 		setCurrentTime: function( seekTime , callback ) {
 			seekTime = parseFloat( seekTime );
 			mw.log( "EmbedPlayerNativeComponent:: setCurrentTime to " + seekTime );
+			if (seekTime === 0){
+				seekTime = 0.01;
+			}
 			this.getPlayerElement().attr('currentTime', seekTime);
 			if ($.isFunction(callback)) {
 				callback();
@@ -580,6 +590,14 @@
 		 */
 		_onerror: function (event, data) {
 			this.triggerHelper('embedPlayerError', data);
+		},
+
+		_onbufferchange: function (event , isBuffering) {
+			if (isBuffering === "true") {
+				this.bufferStart();
+			} else {
+				this.bufferEnd();
+			}
 		},
 
 		/**
