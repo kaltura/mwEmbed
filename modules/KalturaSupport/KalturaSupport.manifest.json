@@ -1705,6 +1705,45 @@
             }
         }
     },
+    "dualScreen": {
+        "description": "Dual screen plugin",
+        "attributes": {
+            "playerView": {
+                "doc": "Player View",
+                "type": "enum",
+                "enum": [
+                    "side-by-side-video-on-right",
+                    "side-by-side-video-on-left",
+                    "video-inside-presentation",
+                    "presentation-inside-video",
+                    "video-only",
+                    "presentation-only"
+                ],
+                "initvalue": "video-inside-presentation",
+                "options": [
+                    {
+                        "label": "sbs p",
+                        "value": "side-by-side-video-on-right"
+                    },{
+                        "label": "sbs v",
+                        "value": "side-by-side-video-on-left"
+                    },{
+                        "label": "pip p",
+                        "value": "video-inside-presentation"
+                    },{
+                        "label": "pip v",
+                        "value": "presentation-inside-video"
+                    },{
+                        "label": "video only",
+                        "value": "video-only"
+                    },{
+                        "label": "presentation only",
+                        "value": "presentation-only"
+                    }
+                ]
+            }
+        }
+    },
     "airPlay": {
         "description": "Enables wireless streaming of audio, video, and photos, together with related metadata between devices, for iOS.",
         "type": "featuremenu",
