@@ -132,7 +132,7 @@ return array(
 			"share" => "",
 			"playersJsReceiver" => "",
 			"related" => "",
-			"dualScreen" => "",
+//			"dualScreen" => "",
 			"playlistAPI" => "",
 			"nextPrevBtn" => ""
 		)
