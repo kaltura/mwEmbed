@@ -10,7 +10,7 @@
 			mw.setConfig("disableOnScreenClick",true);
 			var renderer;
 			var _this = this;
-			this.bind("playing play pause seek" , function(){
+			this.bind("playing play pause seek seeked" , function(){
 				$(_this.getPlayer().getPlayerElement() ).hide();
 			});
 			this.bind("updateLayout", function(){
@@ -29,7 +29,7 @@
 				var savedLongitude;
 				var savedLatitude;
 				var texture;
-
+				$(_this.getPlayer().getPlayerElement() ).css('z-index','-1');
 				// setting up the renderer
 				renderer = new THREE.WebGLRenderer();
 				renderer.setSize(window.innerWidth, window.innerHeight);
