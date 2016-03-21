@@ -33,6 +33,7 @@
 				},
 				"menuFadeout": 5000,
 				"resizeHandlesFadeout": 5000,
+				"mainViewDisplay": 0, // DONT USE THIS - obslete... 1 - Main stream, 2 - Presentation
 				"defaultDualScreenViewId": 'video-inside-presentation',
 				"fullScreenDisplayOnly": false,
 				"minDisplayWidth": 0,
@@ -376,7 +377,22 @@
 					showLoadingSlide();
 				}
 
-				var defaultDualScreenViewId = this.getConfig('defaultDualScreenViewId');
+				var defaultDualScreenViewId = '';
+				var backwardCompetabilityView = this.getConfig('mainViewDisplay');
+
+				switch (backwardCompetabilityView)
+				{
+					case 1:
+						defaultDualScreenViewId = 'presentation-inside-video';
+						break;
+					case 2:
+						defaultDualScreenViewId = 'video-inside-presentation';
+						break;
+					default:
+						defaultDualScreenViewId = this.getConfig('defaultDualScreenViewId');
+						break;
+				}
+
 				if (defaultDualScreenViewId)
 				{
 					setTimeout( function () {
