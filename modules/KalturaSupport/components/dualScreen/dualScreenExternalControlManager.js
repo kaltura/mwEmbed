@@ -7,7 +7,7 @@
             {
                 var _this = this;
 
-                this.bind( 'KalturaSupport_CuePointsPassedDueToSeekAggregated KalturaSupport_CuePointsReachedAggregated', function ( e, args ) {
+                _this.cuePointsManager = new mw.dualScreen.CuePointsManager('dualScreenExternalControlManager','',this.getPlayer(), function (args) {
 
                     var relevantCuePoints = args.filter({tag : 'player-view-mode',sortDesc : true});
                     var mostUpdatedCuePointToHandle = relevantCuePoints.length> 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
