@@ -1253,6 +1253,10 @@
 						if (notificationData.referenceId){
 							embedPlayer.referenceId = notificationData.referenceId;
 						}
+
+						// Update the proxy data
+						embedPlayer.setKalturaConfig("proxyData", "data", notificationData.proxyData);
+
 						// Clear player & entry meta
 						embedPlayer.kalturaPlayerMetaData = null;
 						embedPlayer.kalturaEntryMetaData = null;
