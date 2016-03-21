@@ -7,15 +7,16 @@
             {
                 var _this = this;
 
-                _this.cuePointsManager = new mw.dualScreen.CuePointsManager('dualScreenExternalControlManager','',this.getPlayer(), function (args) {
+                this.bind( 'playerReady', function() {
+                    _this.cuePointsManager = new mw.dualScreen.CuePointsManager('dualScreenExternalControlManager', '', _this.getPlayer(), function (args) {
 
-                    var relevantCuePoints = args.filter({tag : 'player-view-mode',sortDesc : true});
-                    var mostUpdatedCuePointToHandle = relevantCuePoints.length> 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
+                        var relevantCuePoints = args.filter({tag: 'player-view-mode', sortDesc: true});
+                        var mostUpdatedCuePointToHandle = relevantCuePoints.length > 0 ? relevantCuePoints[0] : null; // since we ordered the relevant cue points descending - the first cue point is the most updated
 
-                    if (mostUpdatedCuePointToHandle)
-                    {
-                        _this.handleCuePoint(mostUpdatedCuePointToHandle);
-                    }
+                        if (mostUpdatedCuePointToHandle) {
+                            _this.handleCuePoint(mostUpdatedCuePointToHandle);
+                        }
+                    });
                 });
             },
             handleCuePoint : function(cuePoint)

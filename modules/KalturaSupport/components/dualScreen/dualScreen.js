@@ -56,6 +56,7 @@
 				this.initConfig();
 				this.initDisplays();
 				this.initFSM();
+				this.initExternalControlManager();
 				this.addBindings();
 			},
 			isSafeEnviornment: function () {
@@ -92,7 +93,6 @@
 								_this.hideDisplay();
 							}
 
-							_this.initExternalControlManager();
 						} else {
 							_this.log("render condition are not met - disabling");
 							if (!_this.disabled){
