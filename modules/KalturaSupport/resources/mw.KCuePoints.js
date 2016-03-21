@@ -338,7 +338,7 @@
 						var cuePointsReachedToHandle = _this.getCuePointsReached(currentTime, nextPendingCuePointIndex);
 
 						if (cuePointsReachedToHandle.cuePoints.length > 0) {
-							mw.log('mw.KCuePoints.bind(' + e.type + '): found ' + cuePointsReachedToHandle.cuePoints.length + ' cue point that should be handled');
+							mw.log('mw.KCuePoints.bind(' + e.type + '): found ' + cuePointsReachedToHandle.cuePoints.length + ' cue point that should be handled (server time ' + currentTime + ')');
 							nextPendingCuePointIndex = cuePointsReachedToHandle.lastIndex + 1;
 							mw.log('mw.KCuePoints.bind(' + e.type + '): updating current index to ' + nextPendingCuePointIndex + ' (will be used next time searching for cue points to handle)');
 
@@ -367,9 +367,9 @@
 						if (nextCuePoint && currentTime) {
 							var seconds = Math.round((nextCuePoint.startTime - currentTime )/1000);
 
-							if (seconds < 30) {
-								// log only if when the next cue point will be reached in less then 30 seconds
-								mw.log('mw.KCuePoints.bind(' + e.type + '): next cue point with id ' + nextCuePoint.id + ' should be handled in ' + seconds + ' seconds (type \'' + nextCuePoint.cuePointType + '\', tags \'' + nextCuePoint.tags + '\')');
+							if (seconds < 120) {
+								// log only if when the next cue point will be reached in less then x seconds
+								mw.log('mw.KCuePoints.bind(' + e.type + '): next cue point with id ' + nextCuePoint.id + ' should be handled in ' + seconds + ' seconds (type \'' + nextCuePoint.cuePointType + '\', tags \'' + nextCuePoint.tags + '\', time ' + nextCuePoint.startTime + ', server time ' + currentTime + ')');
 							}
 						}
 					}
