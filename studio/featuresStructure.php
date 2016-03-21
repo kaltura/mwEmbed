@@ -150,6 +150,7 @@ return array(
 			"nielsenCombined" => "",
 			"omnitureOnPage" => "",
 			"statistics" => "",
+			"youbora" => ""
 		)
 	),
 	"monetization"=> array(
@@ -191,7 +192,6 @@ return array(
 			"multiDrm" => "",
 			"sourceSelector" => "",
 			"download" => "",
-			"nativeCallout" => "",
 			"strings" => "",
 			"uiVars" => ""
 		)

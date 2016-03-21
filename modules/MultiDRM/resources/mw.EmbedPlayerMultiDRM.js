@@ -226,7 +226,8 @@
 						}, 0);
 					}
 					//In IE and Edge source is preloaded, so defer this until we request play for the first time
-					if (!mw.isEdge() && !mw.isIE()) {
+					//IF autoplay is set then play flow will call update context
+					if (!_this.autoplay && (!mw.isEdge() && !mw.isIE())) {
 						_this.updateDashContext();
 					}
 				} );
@@ -268,7 +269,7 @@
 		},
 		waitForManifestLoaded: function(){
 			var manifestLoadedDeferred = $.Deferred();
-			if (this.manifestLoaded){
+			if (this.manifestLoaded || (this.playerElement.getActiveTech() == "dashcs")){
 				return manifestLoadedDeferred.resolve();
 			} else {
 				var _this = this;
@@ -1054,27 +1055,6 @@
 					this.onFlavorsListChanged(flavors);
 				}
 			}
-		},
-		getSources: function(){
-			// check if manifest defined flavors have been defined:
-			if( this.manifestAdaptiveFlavors.length ){
-				return this.manifestAdaptiveFlavors;
-			}
-			return this.parent_getSources();
-		},
-		getSourceIndex: function (source) {
-			var sourceIndex = null;
-			$.each( this.getSources(), function( currentIndex, currentSource ) {
-				if (source.getAssetId() == currentSource.getAssetId()) {
-					sourceIndex = currentIndex;
-					return false;
-				}
-			});
-			// check for null, a zero index would evaluate false
-			if( sourceIndex == null ){
-				this.log("Error could not find source: " + source.getSrc());
-			}
-			return sourceIndex;
 		},
 		switchSrc: function (source) {
 			if( source !== -1 ){

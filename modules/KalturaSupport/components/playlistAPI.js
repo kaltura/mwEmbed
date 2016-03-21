@@ -473,8 +473,11 @@
 				embedPlayer.triggerHelper(eventToTrigger);
 				_this.loadingEntry = false; // Update the loadingEntry flag//
 
-				if (mobileAutoPlay && embedPlayer.canAutoPlay()) {
-					embedPlayer.play();
+				// play clip that was selected when autoPlay=false. if autoPlay=true, the embedPlayer will do that for us.
+				if (!_this.getConfig("autoPlay") && mobileAutoPlay && embedPlayer.canAutoPlay()) {
+					setTimeout(function(){
+						embedPlayer.play();
+					},500); // timeout is required when loading live entries
 				}
 
 				if (mw.isMobileDevice() && !mobileAutoPlay){

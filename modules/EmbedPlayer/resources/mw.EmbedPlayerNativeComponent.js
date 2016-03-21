@@ -169,6 +169,12 @@
 						// widevine modular, because we don't have any other dash DRM right now.
 						licenseUri = licenseServer + "/cenc/widevine/license?" + licenseParams;
 						break;
+					case "application/vnd.apple.mpegurl":
+						// fps
+						licenseUri = licenseServer + "/fps/license?" + licenseParams;
+						//Add the FPS certificate
+						this.getPlayerElement().attr('fpsCertificate', this.mediaElement.selectedSource.fpsCertificate);
+						break;
 					default:
 						break;
 				}
@@ -377,6 +383,13 @@
 			mw.log("EmbedPlayerNativeComponent:: seek::");
 			this.getPlayerElement().attr('currentTime', seekTime);
 		},
+		seek: function (seekTime, stopAfterSeek) {
+			if (seekTime === 0){
+				seekTime = 0.01;
+			}
+			this.parent_seek(seekTime, stopAfterSeek);
+
+		},
 
 		/**
 		 * Set the current time with a callback
@@ -389,6 +402,9 @@
 		setCurrentTime: function( seekTime , callback ) {
 			seekTime = parseFloat( seekTime );
 			mw.log( "EmbedPlayerNativeComponent:: setCurrentTime to " + seekTime );
+			if (seekTime === 0){
+				seekTime = 0.01;
+			}
 			this.getPlayerElement().attr('currentTime', seekTime);
 			if ($.isFunction(callback)) {
 				callback();
@@ -686,27 +702,6 @@
 			return true;
 		},
 
-		getSources: function(){
-			// check if manifest defined flavors have been defined:
-			if( this.manifestAdaptiveFlavors.length ){
-				return this.manifestAdaptiveFlavors;
-			}
-			return this.parent_getSources();
-		},
-		getSourceIndex: function (source) {
-			var sourceIndex = null;
-			$.each( this.getSources(), function( currentIndex, currentSource ) {
-				if (source.getAssetId() == currentSource.getAssetId()) {
-					sourceIndex = currentIndex;
-					return false;
-				}
-			});
-			// check for null, a zero index would evaluate false
-			if( sourceIndex == null ){
-				this.log("Error could not find source: " + source.getSrc());
-			}
-			return sourceIndex;
-		},
 		switchSrc: function (source) {
 			var sourceIndex = (source === -1) ? -1 : source.assetid;
 			this.getPlayerElement().switchFlavor(sourceIndex);

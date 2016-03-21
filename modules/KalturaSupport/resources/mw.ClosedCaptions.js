@@ -152,7 +152,7 @@
 			});
 
 			this.bind( 'showClosedCaptions preHideScreen hideMobileComponents', function(){
-				if( _this.getConfig('displayCaptions') === false ){
+				if( !_this.embedPlayer.changeMediaStarted && _this.getConfig('displayCaptions') === false ){
 					_this.setConfig('displayCaptions', true);
 				}
 			});
@@ -258,7 +258,7 @@
 				this.getCaptionsOverlay().hide();
 				var $cc = this.embedPlayer.getInterface().find('.captionContainer' );
 				$cc.remove();
-				this.embedPlayer.doUpdateLayout();
+				this.embedPlayer.doUpdateLayout(true);
 				this.getPlayer().triggerHelper('closedCaptionsHidden');
 			}
 		},
