@@ -1706,9 +1706,11 @@
         }
     },
     "dualScreen": {
+        "label": "Dual Screen",
         "description": "Dual screen plugin",
         "attributes": {
             "defaultDualScreenViewId": {
+                "label": "view",
                 "doc": "Player View",
                 "type": "enum",
                 "enum": [
