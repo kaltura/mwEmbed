@@ -1708,7 +1708,7 @@
     "dualScreen": {
         "description": "Dual screen plugin",
         "attributes": {
-            "playerView": {
+            "defaultDualScreenViewId": {
                 "doc": "Player View",
                 "type": "enum",
                 "enum": [
