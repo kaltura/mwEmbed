@@ -84,6 +84,7 @@
 		streamerType: 'dash',
 
 		manifestLoaded: false,
+		dashContextUpdated: false,
 
 		// Native player supported feature set
 		supports: {
@@ -254,6 +255,7 @@
 		},
 		updateDashContext: function(){
 			var _this = this;
+			this.dashContextUpdated = true;
 			if (this.getPlayerElement() && this.getSrc()) {
 				this.resolveSrcURL( this.getSrc() ).then( function(source){
 					_this.manifestLoaded = false;
@@ -563,49 +565,57 @@
 			}
 
 			var vidObj = $(vid.contentEl() ).find("video")[0];
-
-			if ( (vidObj && vidObj.readyState < 3) || (this.getDuration() === 0)) {
-				// if on the first call ( and video not ready issue load, play
-				if (callbackCount == 0 && vid.paused()) {
-					this.stopEventPropagation();
-
-					var eventName = mw.isIOS() ? "canplaythrough.seekPrePlay" : "canplay.seekPrePlay";
-					$(vidObj).off(eventName).one(eventName, function () {
-						_this.restoreEventPropagation();
-						if (vid.duration() > 0) {
-							_this.log("player can seek");
-							clearTimeout( _this.canSeekTimeout );
-							this.canSeekTimeout = null;
-							setTimeout( function () {
-								return checkVideoStateDeferred.resolve();
-							}, 10 );
-						} else {
-							_this.log("player can't seek - video duration not available, wait for video duration update");
-						}
-					});
-					this.log("player can't seek - try to init video element ready state");
-					vid.play();
-				}
-				// Try to seek for 15 seconds:
-				if (callbackCount >= 15) {
-					this.log("Error:: with seek request, media never in ready state");
-					return checkVideoStateDeferred.resolve();
-				}
-				// manually trigger the loadedmetadata since stopEventPropagation was called but we must have this event triggered during seek operation (SUP-4237)
-				$(vidObj).off('loadedmetadata.seekPrePlay').one('loadedmetadata.seekPrePlay', function () {
-					_this._onloadedmetadata();
-				});
-				this.log("player can't seek - wait video element ready state");
-				this.canSeekTimeout = setTimeout(function () {
-					this.canSeekTimeout = null;
-					_this.canSeek(checkVideoStateDeferred, callbackCount + 1);
-				}, 1000);
-			} else {
-				setTimeout(function(){
-					_this.log("player can seek");
-					return checkVideoStateDeferred.resolve();
-				}, 10);
+			//If DRM context is not yet updated then update it now, this happens in late binding
+			//situations(IE/EDGE, autoplay, or when seek is issued very early)
+			if (!this.dashContextUpdated){
+				this.updateDashContext();
 			}
+			//Always wait for manifest loaded before trying to initiate a seek request
+			//otherwise it will cause the dash player engine to throw an exception
+			this.waitForManifestLoaded().then(function(){
+				if ( (vidObj && vidObj.readyState < 3) || (_this.getDuration() === 0)) {
+					// if on the first call ( and video not ready issue load, play
+					if ((callbackCount == 0) && vid.paused()) {
+						_this.stopEventPropagation();
+
+						var eventName = mw.isIOS() ? "canplaythrough.seekPrePlay" : "canplay.seekPrePlay";
+						$(vidObj).off(eventName).one(eventName, function () {
+							_this.restoreEventPropagation();
+							if (vid.duration() > 0) {
+								_this.log("player can seek");
+								clearTimeout( _this.canSeekTimeout );
+								_this.canSeekTimeout = null;
+								setTimeout( function () {
+									return checkVideoStateDeferred.resolve();
+								}, 10 );
+							} else {
+								_this.log("player can't seek - video duration not available, wait for video duration update");
+							}
+						});
+						_this.log("player can't seek - try to init video element ready state");
+						vid.play();
+					}
+					// Try to seek for 15 seconds:
+					if (callbackCount >= 15) {
+						_this.log("Error:: with seek request, media never in ready state");
+						return checkVideoStateDeferred.resolve();
+					}
+					// manually trigger the loadedmetadata since stopEventPropagation was called but we must have this event triggered during seek operation (SUP-4237)
+					$(vidObj).off('loadedmetadata.seekPrePlay').one('loadedmetadata.seekPrePlay', function () {
+						_this._onloadedmetadata();
+					});
+					_this.log("player can't seek - wait video element ready state");
+					_this.canSeekTimeout = setTimeout(function () {
+						_this.canSeekTimeout = null;
+						_this.canSeek(checkVideoStateDeferred, callbackCount + 1);
+					}, 1000);
+				} else {
+					setTimeout(function(){
+						_this.log("player can seek");
+						return checkVideoStateDeferred.resolve();
+					}, 10);
+				}
+			})
 			return checkVideoStateDeferred;
 		},
 		/**
@@ -639,6 +649,7 @@
 			var src = source.getSrc();
 			var vid = this.getPlayerElement();
 			var switchBindPostfix = '.playerSwitchSource';
+			this.dashContextUpdated = false;
 			this.isPauseLoading = false;
 
 			// Make sure the switch source is different:
