@@ -195,7 +195,8 @@
 				this.log("set license URL to: " + this.drmConfig.contextData.widevineLicenseServerURL);
 			}
 			if (this.getConfig("useKalturaPlayer") === true){
-				this.sendMessage({'type': 'embed', 'publisherID': this.embedPlayer.kwidgetid.substr(1), 'uiconfID': this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid, 'debugKalturaPlayer': this.getConfig("debugKalturaPlayer")});
+				var flashVars = this.getFlashVars();
+				this.sendMessage({'type': 'embed', 'publisherID': this.embedPlayer.kwidgetid.substr(1), 'uiconfID': this.embedPlayer.kuiconfid, 'entryID': this.embedPlayer.kentryid, 'debugKalturaPlayer': this.getConfig("debugKalturaPlayer"), 'flashVars': flashVars});
 				this.embedPlayer.showErrorMsg(
 					{'title':'Chromecast Player',
 						'message': gM('mwe-chromecast-loading'),
@@ -218,6 +219,17 @@
 					_this.loadMedia();
 				}
 			});
+		},
+		getFlashVars: function(){
+			var _this = this;
+			var plugins = ['doubleClick', 'youbora'];
+			var fv = {};
+			plugins.forEach(function(plugin){
+				if (!$.isEmptyObject(_this.embedPlayer.getKalturaConfig(plugin))){
+					fv[plugin] = _this.embedPlayer.getKalturaConfig(plugin);
+				}
+			});
+			return fv;
 		},
 
 		onLaunchError: function(error) {
@@ -261,6 +273,16 @@
 
 		onMediaDiscovered: function(how, mediaSession) {
 			this.embedPlayer.layoutBuilder.closeAlert();
+			// if page reloaded and in playlist - select the currently playing clip
+			if (this.embedPlayer.playlist){
+				var castedManifest = mediaSession.media.contentId;
+				var castedMedia = castedManifest.substr(castedManifest.indexOf("/entryId/")+9,10);
+				var currentManifest = this.embedPlayer.getSource().src;
+				var currentMedia = currentManifest.substr(currentManifest.indexOf("/entryId/")+9,10);
+				if (castedMedia !== currentMedia){
+					this.stopApp();
+				}
+			}
 			this.log("new media session ID:" + mediaSession.mediaSessionId + ' (' + how + ')');
 			this.currentMediaSession = mediaSession;
 			this.getComponent().css("color","#35BCDA");
@@ -495,7 +517,10 @@
 					_this.embedPlayer.play();
 				},1000);
 			}else{
-				this.embedPlayer.seek(seekTime, false);
+				setTimeout(function(){
+					_this.embedPlayer.seek(seekTime, false);
+				},1000);
+
 			}
 		},
 

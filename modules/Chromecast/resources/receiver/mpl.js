@@ -121,6 +121,22 @@ onload = function () {
 			}
 			mw.setConfig("chromecastReceiver", true);
 			mw.setConfig("Kaltura.ExcludedModules", "chromecast");
+			var fv = {
+				'controlBarContainer': {
+					'plugin': true,
+					"hover": true
+				},
+				"multiDrm": {
+					'plugin': false
+				},
+				"embedPlayerChromecastReceiver": {
+					'plugin': true
+				},
+				"chromecast": {
+					'plugin': false
+				}
+			};
+			fv = extend(fv, payload['flashVars']);
 			kWidget.embed({
 				"targetId": "kaltura_player",
 				"wid": "_" + publisherID,
@@ -135,21 +151,7 @@ onload = function () {
 						});
 					}
 				},
-				"flashvars": {
-					'controlBarContainer': {
-						'plugin': true,
-						"hover": true
-					},
-					"multiDrm": {
-						'plugin': false
-					},
-					"embedPlayerChromecastReceiver": {
-						'plugin': true
-					},
-					"chromecast": {
-						'plugin': false
-					}
-				},
+				"flashvars": fv,
 				"cache_st": 1438601385,
 				"entry_id": entryID
 			});
@@ -817,4 +819,10 @@ function getPlayerState() {
 		var playerState = mediaPlayer.getState();
 		setDebugMessage('mediaPlayerState', 'underflow: ' + playerState['underflow']);
 	}
+}
+function extend(a, b){
+	for(var key in b)
+		if(b.hasOwnProperty(key))
+			a[key] = b[key];
+	return a;
 }
