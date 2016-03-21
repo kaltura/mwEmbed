@@ -33,7 +33,7 @@
 				},
 				"menuFadeout": 5000,
 				"resizeHandlesFadeout": 5000,
-				"mainViewDisplay": 2, // 1 - Main stream, 2 - Presentation
+				"defaultDualScreenViewId": 'video-inside-presentation',
 				"fullScreenDisplayOnly": false,
 				"minDisplayWidth": 0,
 				"minDisplayHeight": 0,
@@ -366,21 +366,27 @@
 					}
 				};
 
-				//Set initial view state according to configuration and playback engine
-				if ( this.getConfig( "mainViewDisplay" ) === 2 && !mw.isNativeApp() ||
+				if ( this.getConfig( "defaultDualScreenViewId" ) !== 'video-only' && !mw.isNativeApp() ||
 					this.getPlayer().isAudio()) {
 					this.bind( 'postDualScreenTransition.spinnerPostFix', function () {
 						_this.unbind( 'postDualScreenTransition.spinnerPostFix' );
 						showLoadingSlide();
 					} );
-					setTimeout( function () {
-						_this.fsm.consumeEvent( "switchView" );
-						if (_this.getPlayer().isAudio()){
-							_this.fsm.consumeEvent( "hide" );
-						}
-					}, 1000 );
 				} else {
 					showLoadingSlide();
+				}
+
+				var defaultDualScreenViewId = this.getConfig('defaultDualScreenViewId');
+				if (defaultDualScreenViewId)
+				{
+					setTimeout( function () {
+						_this.externalControlManager.setViewById(defaultDualScreenViewId);
+
+						//if (_this.getPlayer().isAudio()){
+						//	// The product removed explicit handling for such a scenario
+						//}
+					}, 1000 );
+
 				}
 			},
 

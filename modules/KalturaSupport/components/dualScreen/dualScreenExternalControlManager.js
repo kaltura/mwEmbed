@@ -19,23 +19,15 @@
                     });
                 });
             },
-            handleCuePoint : function(cuePoint)
+            setViewById : function(viewId)
             {
-                var _this = this;
                 var action, mainDisplayType;
 
-                if (!cuePoint || cuePoint.cuePointType !== 'codeCuePoint.Code' || cuePoint.tags !== 'player-view-mode' ||
-                    !cuePoint.code)
+                if (viewId)
                 {
-                    // ignore any cue point not relevant to player view mode.
-                    return;
-                }
-
-                var cuePointCode = JSON.parse(cuePoint.code);
-                if (cuePointCode.playerViewModeId) {
                     // NOTE: The left display is considered as the main display in the player.
                     // For example: 'video-on-left' means 'video' stream as main and 'video-on-right' means 'presentation' stream as main.
-                    switch (cuePointCode.playerViewModeId) {
+                    switch (viewId) {
                         case "side-by-side-video-on-right":
                             action = "SbS";
                             mainDisplayType = mw.dualScreen.display.TYPE.SECONDARY;
@@ -59,14 +51,34 @@
                         case "presentation-only":
                             action = "hide";
                             mainDisplayType = mw.dualScreen.display.TYPE.SECONDARY;
+                            break
+                        default:
                             break;
                     }
+
+                    if (action) {
+                        mw.log("dualscreenExternalControlManager.handleCuePoint(): Changing player view to '" + action + "' with main display '" + mainDisplayType + "' (provided id '" + viewId + "')");
+
+                        this.getPlayer().triggerHelper('dualScreenStateChange', { action : action, mainDisplayType : mainDisplayType});
+                    }
+
                 }
 
-                if (action) {
-                    mw.log("dualscreenExternalControlManager.handleCuePoint(): Changing player view to '" + action + "' with main display '" + mainDisplayType + "' (provided token '" + cuePointCode.playerViewModeId + "')");
+            },
+            handleCuePoint : function(cuePoint)
+            {
+                var _this = this;
 
-                    this.getPlayer().triggerHelper('dualScreenStateChange', { action : action, mainDisplayType : mainDisplayType});
+                if (!cuePoint || cuePoint.cuePointType !== 'codeCuePoint.Code' || cuePoint.tags !== 'player-view-mode' ||
+                    !cuePoint.code)
+                {
+                    // ignore any cue point not relevant to player view mode.
+                    return;
+                }
+
+                var cuePointCode = JSON.parse(cuePoint.code);
+                if (cuePointCode.playerViewModeId) {
+                    _this.setViewById(cuePointCode.playerViewModeId)
                 }
             }
         });
