@@ -557,65 +557,77 @@
 				this.playing = true;
 			}
 
-			// some initial calls to prime the seek:
-			if (vid.currentTime() === 0 && callbackCount === 0) {
-				// when seeking turn off preload none and issue a load call.
-				vid.preload('auto');
-//				vid.load();
-			}
-
-			var vidObj = $(vid.contentEl() ).find("video")[0];
-			//If DRM context is not yet updated then update it now, this happens in late binding
-			//situations(IE/EDGE, autoplay, or when seek is issued very early)
-			if (!this.dashContextUpdated){
-				this.updateDashContext();
-			}
-			//Always wait for manifest loaded before trying to initiate a seek request
-			//otherwise it will cause the dash player engine to throw an exception
-			this.waitForManifestLoaded().then(function(){
-				if ( (vidObj && vidObj.readyState < 3) || (_this.getDuration() === 0)) {
-					// if on the first call ( and video not ready issue load, play
-					if ((callbackCount == 0) && vid.paused()) {
-						_this.stopEventPropagation();
-
-						var eventName = mw.isIOS() ? "canplaythrough.seekPrePlay" : "canplay.seekPrePlay";
-						$(vidObj).off(eventName).one(eventName, function () {
-							_this.restoreEventPropagation();
-							if (vid.duration() > 0) {
-								_this.log("player can seek");
-								clearTimeout( _this.canSeekTimeout );
-								_this.canSeekTimeout = null;
-								setTimeout( function () {
-									return checkVideoStateDeferred.resolve();
-								}, 10 );
-							} else {
-								_this.log("player can't seek - video duration not available, wait for video duration update");
-							}
-						});
-						_this.log("player can't seek - try to init video element ready state");
-						vid.play();
-					}
-					// Try to seek for 15 seconds:
-					if (callbackCount >= 15) {
-						_this.log("Error:: with seek request, media never in ready state");
-						return checkVideoStateDeferred.resolve();
-					}
-					// manually trigger the loadedmetadata since stopEventPropagation was called but we must have this event triggered during seek operation (SUP-4237)
-					$(vidObj).off('loadedmetadata.seekPrePlay').one('loadedmetadata.seekPrePlay', function () {
-						_this._onloadedmetadata();
-					});
-					_this.log("player can't seek - wait video element ready state");
-					_this.canSeekTimeout = setTimeout(function () {
-						_this.canSeekTimeout = null;
-						_this.canSeek(checkVideoStateDeferred, callbackCount + 1);
-					}, 1000);
-				} else {
-					setTimeout(function(){
-						_this.log("player can seek");
-						return checkVideoStateDeferred.resolve();
-					}, 10);
+			if (this.playerElement.getActiveTech() == "dashjs") {
+				// some initial calls to prime the seek:
+				if (vid.currentTime() === 0 && callbackCount === 0) {
+					// when seeking turn off preload none and issue a load call.
+					vid.preload('auto');
 				}
-			})
+
+				var vidObj = $(vid.contentEl()).find("video")[0];
+				//If DRM context is not yet updated then update it now, this happens in late binding
+				//situations(IE/EDGE, autoplay, or when seek is issued very early)
+				if (!this.dashContextUpdated) {
+					this.updateDashContext();
+				}
+				//Always wait for manifest loaded before trying to initiate a seek request
+				//otherwise it will cause the dash player engine to throw an exception
+				this.waitForManifestLoaded().then(function () {
+					if ((vidObj && vidObj.readyState < 3) || (_this.getDuration() === 0)) {
+						// if on the first call ( and video not ready issue load, play
+						if ((callbackCount == 0) && vid.paused()) {
+							_this.stopEventPropagation();
+
+							var eventName = mw.isIOS() ? "canplaythrough.seekPrePlay" : "canplay.seekPrePlay";
+							$(vidObj).off(eventName).one(eventName, function () {
+								_this.restoreEventPropagation();
+								if (vid.duration() > 0) {
+									_this.log("player can seek");
+									clearTimeout(_this.canSeekTimeout);
+									_this.canSeekTimeout = null;
+									setTimeout(function () {
+										return checkVideoStateDeferred.resolve();
+									}, 10);
+								} else {
+									_this.log("player can't seek - video duration not available, wait for video duration update");
+								}
+							});
+							_this.log("player can't seek - try to init video element ready state");
+							vid.play();
+						}
+						// Try to seek for 15 seconds:
+						if (callbackCount >= 15) {
+							_this.log("Error:: with seek request, media never in ready state");
+							return checkVideoStateDeferred.resolve();
+						}
+						// manually trigger the loadedmetadata since stopEventPropagation was called but we must have this event triggered during seek operation (SUP-4237)
+						$(vidObj).off('loadedmetadata.seekPrePlay').one('loadedmetadata.seekPrePlay', function () {
+							_this._onloadedmetadata();
+						});
+						_this.log("player can't seek - wait video element ready state");
+						_this.canSeekTimeout = setTimeout(function () {
+							_this.canSeekTimeout = null;
+							_this.canSeek(checkVideoStateDeferred, callbackCount + 1);
+						}, 1000);
+					} else {
+						setTimeout(function () {
+							_this.log("player can seek");
+							return checkVideoStateDeferred.resolve();
+						}, 10);
+					}
+				});
+			} else {
+				var resolve = function(){
+					_this.log("player can seek");
+					return checkVideoStateDeferred.resolve();
+				};
+				//In dashcs there's no manifestLoaded event so rely on loadedmetadata event to know if ready to seek
+				if (_this.mediaLoadedFlag){
+					resolve();
+				} else {
+					_this.playerElement.one("loadedmetadata", resolve);
+				}
+			}
 			return checkVideoStateDeferred;
 		},
 		/**
