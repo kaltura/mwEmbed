@@ -571,7 +571,7 @@
 			$(this.embedPlayer).trigger("onPlayerStateChange", ["pause", this.embedPlayer.currentState]);
 
 			if (isLinear && !this.isNativeSDK) {
-				this.embedPlayer.enablePlayControls(["scrubber","share","infoScreen","related","playlistAPI","nextPrevBtn"]);
+				this.embedPlayer.enablePlayControls(["scrubber","share","infoScreen","related","playlistAPI","nextPrevBtn","sourceSelector"]);
 			} else {
 				_this.embedPlayer.pause();
 			}
@@ -1080,7 +1080,7 @@
                     podStartTime = ad.getAdPodInfo().getTimeOffset();
                 }
                 // trigger ad play event
-				$(_this.embedPlayer).trigger("onAdPlay",[ad.getAdId(),ad.getAdSystem(),currentAdSlotType,adPosition,ad.getDuration(), podPosition, podStartTime, ad.getTitle()]);
+				$(_this.embedPlayer).trigger("onAdPlay",[ad.getAdId(),ad.getAdSystem(),currentAdSlotType,adPosition,ad.getDuration(), podPosition, podStartTime, ad.getTitle(), ad.getTraffickingParameters()]);
 				// This changes player state to the relevant value ( play-state )
 				$(_this.embedPlayer).trigger("playing");
 				// Check for ad Stacking ( two starts in less then 250ms )
@@ -1225,7 +1225,7 @@
 						podPosition = adInfo.adPodInfo.podIndex;
 						podStartTime = adInfo.adPodInfo.timeOffset;
 					}
-					$(_this.embedPlayer).trigger("onAdPlay", [adInfo.adID, adInfoObj.adSystem, adInfoObj.currentAdSlotType, adInfoObj.adPosition, adInfo.duration, podPosition,  podStartTime, adInfo.adTitle ]); //index is missing =0 by now
+					$(_this.embedPlayer).trigger("onAdPlay", [adInfo.adID, adInfoObj.adSystem, adInfoObj.currentAdSlotType, adInfoObj.adPosition, adInfo.duration, podPosition,  podStartTime, adInfo.adTitle, adInfo.traffickingParameters ]); //index is missing =0 by now
 
 					if (_this.isNativeSDK || adInfo.linear){ // TODO: remove isNativeSDK once we pass the adInfo object from the native app SDK (currently not passed)
 						_this.embedPlayer.sequenceProxy.isInSequence = true;

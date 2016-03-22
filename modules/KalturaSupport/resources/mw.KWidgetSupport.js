@@ -1091,6 +1091,11 @@ mw.KWidgetSupport.prototype = {
 			playerRequest.entry_id =  embedPlayer.kentryid;
 		}
 
+		var proxyData = embedPlayer.getKalturaConfig('proxyData', 'data');
+		if(proxyData){
+			playerRequest.proxyData = proxyData;
+		}
+
 		// Add the flashvars
 		playerRequest.flashvars = embedPlayer.getFlashvars();
 
