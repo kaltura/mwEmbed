@@ -256,18 +256,20 @@
 
 				var retryTime= _this.getKalturaConfig( null , 'multicastKESStartInterval' ) || _this.defaultMulticastKESStartInterval;
 
-				if (_this.multicastSessionId)
+				if (!_this.liveIsOffline && _this.multicastSessionId)
 					retryTime=_this.getKalturaConfig( null , 'multicastKeepAliveInterval' ) || _this.defaultMulticastKeepAliveInterval;
 
 				_this.keepAliveMCTimeout = setTimeout( function () {
 					try {
-						_this.connectToKES( _this.multiastServerUrl ).then( onKESResponse ,
-							function() {
-								mw.log( 'no response from KES... switch KES and retry' );
-								_this.selectNextKES();
-								startConnectToKESTimer();
-							}
-						);
+						if(!_this.liveIsOffline) {
+							_this.connectToKES(_this.multiastServerUrl).then(onKESResponse,
+								function () {
+									mw.log('no response from KES... switch KES and retry');
+									_this.selectNextKES();
+									startConnectToKESTimer();
+								}
+							);
+						}
 					}
 					catch ( e ) {
 						mw.log( 'connectToKES failed ' + e.message + ' ' + e.stack );
@@ -434,11 +436,18 @@
 					}
 				} else if ( isMimeType( "video/multicast" ) ) {
 
+					_this.liveIsOffline = false;
 					_this.bindHelper( "liveOffline" , function () {
 						//if stream became offline
+						mw.log('PlayerSilverlight. liveOffline');
 						if ( _this.playerObject ) {
 							_this.playerObject.stop();
 						}
+						_this.liveIsOffline = true;
+					} );
+					_this.bindHelper( "liveOnline" , function () {
+						mw.log('PlayerSilverlight. liveIsOffline');
+						_this.liveIsOffline = false;
 					} );
 
 					flashvars.multicastPlayer = true;
