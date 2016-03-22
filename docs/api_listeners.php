@@ -344,7 +344,7 @@
 			'desc' => 'Defines the value of the type property of an ad start notification'
 		),
 		'onAdPlay' => array(
-			'callbackArgs' => 'Ad ID, Ad System, Ad Type, Ad Position, Ad Duration, Ad Pod Position, Ad Pod start time, Ad title',
+			'callbackArgs' => 'Ad ID, Ad System, Ad Type, Ad Position, Ad Duration, Ad Pod Position, Ad Pod start time, Ad title, Trafficking Parameters (DoubleClick only)',
 			'desc' => 'Dispatched when the ad starts to play. Use this event to get the ad property values',
 			'example' => '../modules/DoubleClick/tests/DoubleClickAdEvents.qunit.html'
 		),
