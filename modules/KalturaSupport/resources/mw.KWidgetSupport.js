@@ -1812,7 +1812,7 @@ mw.KWidgetSupport.prototype = {
 		if (playerData.contextData.pluginData &&
 			playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData &&
 			playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData.publicCertificate){
-			publicCertificate = playerData.contextData.pluginData.KalturaDrmEntryContextPluginData.publicCertificate;
+			publicCertificate = playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData.publicCertificate;
 		}
 		return publicCertificate;
 	},
