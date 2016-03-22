@@ -136,6 +136,7 @@
 		} );
 	}
 
+    // Polyfills from MDN
 	if (!Array.prototype.filter) {
 		Array.prototype.filter = function(fun/*, thisArg*/) {
 			'use strict';
@@ -155,12 +156,6 @@
 			for (var i = 0; i < len; i++) {
 				if (i in t) {
 					var val = t[i];
-
-					// NOTE: Technically this should Object.defineProperty at
-					//       the next index, as push can be affected by
-					//       properties on Object.prototype and Array.prototype.
-					//       But that method's new, and collisions should be
-					//       rare, so use the more-compatible alternative.
 					if (fun.call(thisArg, val, i, t)) {
 						res.push(val);
 					}
@@ -171,6 +166,29 @@
 		};
 	}
 
+	if (!Array.prototype.findIndex) {
+      Array.prototype.findIndex = function(predicate) {
+        if (this === null) {
+          throw new TypeError('Array.prototype.findIndex called on null or undefined');
+        }
+        if (typeof predicate !== 'function') {
+          throw new TypeError('predicate must be a function');
+        }
+        var list = Object(this);
+        var length = list.length >>> 0;
+        var thisArg = arguments[1];
+        var value;
+
+        for (var i = 0; i < length; i++) {
+          value = list[i];
+          if (predicate.call(thisArg, value, i, list)) {
+            return i;
+          }
+        }
+        return -1;
+      };
+    }
+    
 	function getDefaultDrmConfig(partnerId){
 		var defaultConfig = {
 			"drm": "auto",
