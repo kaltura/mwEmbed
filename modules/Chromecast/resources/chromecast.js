@@ -272,22 +272,30 @@
 		},
 
 		onMediaDiscovered: function(how, mediaSession) {
+			var _this = this;
 			this.embedPlayer.layoutBuilder.closeAlert();
 			// if page reloaded and in playlist - select the currently playing clip
-			if (this.embedPlayer.playlist){
-				var castedManifest = mediaSession.media.contentId;
-				var castedMedia = castedManifest.substr(castedManifest.indexOf("/entryId/")+9,10);
-				var currentManifest = this.embedPlayer.getSource().src;
-				var currentMedia = currentManifest.substr(currentManifest.indexOf("/entryId/")+9,10);
-				if (castedMedia !== currentMedia){
-					this.stopApp();
-				}
+			if ( how === 'onRequestSessionSuccess_' && this.embedPlayer.playlist){
+				this.stopApp();
+				// TODO: handle playlist reload
+				return;
+//				var castedManifest = mediaSession.media.contentId;
+//				var castedMedia = castedManifest.substr(castedManifest.indexOf("/entryId/")+9,10);
+//				var currentManifest = this.embedPlayer.getSource().src;
+//				var currentMedia = currentManifest.substr(currentManifest.indexOf("/entryId/")+9,10);
+//				if (castedMedia !== currentMedia){
+//					setTimeout(function(){
+//						_this.casting = true;
+//						_this.embedPlayer.casting = true;
+//						_this.embedPlayer.sendNotification("playlistPlayMediaById",castedMedia);
+//					},0);
+//
+//				}
 			}
 			this.log("new media session ID:" + mediaSession.mediaSessionId + ' (' + how + ')');
 			this.currentMediaSession = mediaSession;
 			this.getComponent().css("color","#35BCDA");
 			this.updateTooltip(this.stopCastTitle);
-			var _this = this;
 			mediaSession.addUpdateListener(function(e){_this.onMediaStatusUpdate(e);});
 			this.mediaCurrentTime = this.currentMediaSession.currentTime;
 			this.mediaDuration = this.currentMediaSession.media.duration;
