@@ -222,7 +222,7 @@
 		},
 		getFlashVars: function(){
 			var _this = this;
-			var plugins = ['doubleClick', 'youbora'];
+			var plugins = ['doubleClick', 'youbora', 'kAnalony', 'related', 'comScoreStreamingTag', 'watermark', 'heartbeat'];
 			var fv = {};
 			plugins.forEach(function(plugin){
 				if (!$.isEmptyObject(_this.embedPlayer.getKalturaConfig(plugin))){
