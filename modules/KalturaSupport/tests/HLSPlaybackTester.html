@@ -28,6 +28,11 @@
   </div>
 
 <div>
+    Engine:<br>
+    <label class="radio inline"><input type="radio" name="engine" id="engine-js" checked="checked">JS</label>
+    <label class="radio inline"><input type="radio" name="engine" id="engine-flash">Flash</label>
+</div>
+<div>
  Stream Type:<br>
 <label class="radio inline"><input type="radio" name="streamtype" id="streamtype-vod" checked="checked">VOD</label>
 <label class="radio inline"><input type="radio" name="streamtype" id="streamtype-live">Live</label>
@@ -108,7 +113,9 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
 	try{
 		var vals = JSON.parse( decodeURIComponent( window.location.hash ).substr(1)  );
 		if( vals ){
-			$('#streamtype-vod').attr('checked', vals.stvod );
+            $('#engine-js').attr('checked', vals.engine );
+            $('#engine-flash').attr('checked', !vals.engine );
+            $('#streamtype-vod').attr('checked', vals.stvod );
 			$('#streamtype-live').attr('checked', !vals.stvod );
 			$('#nativeCallout-web').attr('checked', vals.ncweb );
 			$('#nativeCallout-native').attr('checked', !vals.ncweb );
@@ -148,7 +155,8 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
 
 		// poulate hash url 
 		window.location.hash = encodeURIComponent( JSON.stringify( {
-			'stvod':$('#streamtype-vod').is(':checked'),
+			'engine': $('#engine-js').is(':checked'),
+            'stvod':$('#streamtype-vod').is(':checked'),
 			'ncweb':$('#nativeCallout-web').is(':checked'),
 			'url': $('#url').val(),
 			'thumb':  $('#urlthumb').val(),
@@ -161,7 +169,11 @@ Kaltura Play: Applies only to iOS, Android Browser views. <a href="nativeCallout
         }));
 		
 		var settings = {
-			"LeadWithHLSOnFlash": true,
+            "LeadWithHLSOnJs": $('#engine-js').is(':checked'),
+			"LeadWithHLSOnFlash": !$('#engine-js').is(':checked'),
+            hlsjs: {
+              plugin: $('#engine-js').is(':checked')
+            },
             "hlsLiveSegmentBuffer": parseInt($('#segBuffer').val()),
             "hlsInitialBufferTime": parseInt($('#iniBuffer').val()),
             "hlsExpandedBufferTime": parseInt($('#exBuffer').val()),
