@@ -256,18 +256,20 @@
 
 				var retryTime= _this.getKalturaConfig( null , 'multicastKESStartInterval' ) || _this.defaultMulticastKESStartInterval;
 
-				if (_this.multicastSessionId)
+				if (!_this.liveIsOffline && _this.multicastSessionId)
 					retryTime=_this.getKalturaConfig( null , 'multicastKeepAliveInterval' ) || _this.defaultMulticastKeepAliveInterval;
 
 				_this.keepAliveMCTimeout = setTimeout( function () {
 					try {
-						_this.connectToKES( _this.multiastServerUrl ).then( onKESResponse ,
-							function() {
-								mw.log( 'no response from KES... switch KES and retry' );
-								_this.selectNextKES();
-								startConnectToKESTimer();
-							}
-						);
+						if(!_this.liveIsOffline) {
+							_this.connectToKES(_this.multiastServerUrl).then(onKESResponse,
+								function () {
+									mw.log('no response from KES... switch KES and retry');
+									_this.selectNextKES();
+									startConnectToKESTimer();
+								}
+							);
+						}
 					}
 					catch ( e ) {
 						mw.log( 'connectToKES failed ' + e.message + ' ' + e.stack );
@@ -434,11 +436,18 @@
 					}
 				} else if ( isMimeType( "video/multicast" ) ) {
 
+					_this.liveIsOffline = false;
 					_this.bindHelper( "liveOffline" , function () {
 						//if stream became offline
+						mw.log('PlayerSilverlight. liveOffline');
 						if ( _this.playerObject ) {
 							_this.playerObject.stop();
 						}
+						_this.liveIsOffline = true;
+					} );
+					_this.bindHelper( "liveOnline" , function () {
+						mw.log('PlayerSilverlight. liveIsOffline');
+						_this.liveIsOffline = false;
 					} );
 
 					flashvars.multicastPlayer = true;
@@ -876,13 +885,6 @@
 			var values = JSON.parse( data );
 			this.parent_onFlavorsListChanged( values.flavors );
 
-		} ,
-		getSources: function(){
-			// check if manifest defined flavors have been defined:
-			if( this.manifestAdaptiveFlavors.length ){
-				return this.manifestAdaptiveFlavors;
-			}
-			return this.parent_getSources();
 		},
 		onEnableGui: function ( data , id ) {
 			if ( data.guiEnabled === false ) {
@@ -949,23 +951,6 @@
 			return $( '#' + this.containerId );
 		} ,
 
-		/*
-		 * get the source index for a given source
-		 */
-		getSourceIndex: function ( source ) {
-			var sourceIndex = null;
-			var sourceAssetId = source.getAssetId();
-			$.each( this.getSources() , function ( currentIndex , currentSource ) {
-				if (sourceAssetId == currentSource.getAssetId()) {
-					sourceIndex = currentIndex;
-					return false;
-				}
-			} );
-			if ( sourceIndex == null ) {
-				mw.log( "EmbedPlayerSPlayer:: Error could not find source: " + source.getSrc() );
-			}
-			return sourceIndex;
-		} ,
 		switchSrc: function ( source ) {
 			if ( this.playerObject && this.mediaElement.getPlayableSources().length > 1 ) {
 				var trackIndex = -1;

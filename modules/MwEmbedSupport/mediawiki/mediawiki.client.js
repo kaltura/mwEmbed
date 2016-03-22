@@ -117,7 +117,7 @@
 			)
 	};
 	mw.isWindowsPhone = function () {
-		return (  userAgent.indexOf('Windows Phone') != -1 || (userAgent.indexOf('Windows') != -1 && userAgent.indexOf('Touch') != -1  && userAgent.indexOf('Tablet') === -1));
+		return userAgent.indexOf('Windows Phone') != -1 ;
 	};
 	mw.isIOS = function () {
 		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() );

@@ -76,6 +76,14 @@ mw.KEntryLoader.prototype = {
 				baseEntryRequestObj['filter:idEqual'] = kProperties.entry_id;
 			}
 		}
+
+		var withProxyData = false;
+		// Filter by proxy data
+		if(kProperties.proxyData){
+			baseEntryRequestObj['filter:freeText'] = JSON.stringify(kProperties.proxyData);
+			withProxyData = true;
+		}
+
 		requestObject.push(baseEntryRequestObj);
 		var streamerType = kProperties.flashvars.streamerType || 'http';
 		var flavorTags = kProperties.flashvars.flavorTags || 'all';
@@ -119,14 +127,14 @@ mw.KEntryLoader.prototype = {
 				'filter:entryIdEqual' : entryIdValue
 			});
 		}
-		_this.getNamedDataFromRequest( requestObject, fillCacheAndRunCallback );
+		_this.getNamedDataFromRequest( requestObject, fillCacheAndRunCallback, withProxyData);
 	},
 	/**
 	 * Do the player data Request and populate named data
 	 * @pram {object} requestObject Request object
 	 * @parm {function} callback Function called with named data
 	 */
-	getNamedDataFromRequest: function( requestObject, callback ){
+	getNamedDataFromRequest: function( requestObject, callback , withProxyData){
 		var _this = this;
 		// Do the request and pass along the callback
 		this.clinet.doRequest( requestObject, function( data ){
@@ -158,7 +166,7 @@ mw.KEntryLoader.prototype = {
 				namedData['entryCuePoints'] = data[ dataIndex ].objects;
 			}
 			callback( namedData );
-		});
+		}, undefined, undefined, withProxyData);
 	},
 	convertCustomDataXML: function( data ){
 		var result = {};

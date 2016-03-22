@@ -1018,7 +1018,12 @@
 			// Do a normal async content inject:
 			window[ cbName ] = function ( iframeData ) {
 				var newDoc = iframe.contentWindow.document;
-				newDoc.open();
+				if(_this.isFirefox()){
+					// in FF we have to pass the "replace" parameter to inherit the current history
+					newDoc.open("text/html", "replace");
+				} else {
+					newDoc.open();
+				}
 				newDoc.write(iframeData.content);
 				// TODO are we sure this needs to be on this side of the iframe?
 				if ( mw.getConfig("EmbedPlayer.DisableContextMenu") ){
@@ -1805,6 +1810,9 @@
 			return ( (navigator.userAgent.indexOf('iPhone') != -1) ||
 				(navigator.userAgent.indexOf('iPod') != -1) ||
 				(navigator.userAgent.indexOf('iPad') != -1) );
+		},
+		isFirefox: function(){
+			return navigator.userAgent.indexOf('Firefox') != -1;
 		},
 		isIE: function () {
 			return /\bMSIE\b/.test(navigator.userAgent);
