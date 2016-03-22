@@ -85,16 +85,39 @@
 	}
 
     function getMultiDrmSupportedSources(sources) {
-        var drmSources = sources.filter(function (source) {
-            if (mw.isNativeApp()) {
-                var nativeSdkDRMTypes = window.kNativeSdk && window.kNativeSdk.drmFormats;
-                return $.inArray(source.mimeType, nativeSdkDRMTypes) >= 0;
-            } else {
-                // Browser
+
+        var drmSources = [];
+        if (!mw.isNativeApp()) {
+            drmSources = sources.filter(function (source) {
                 return source.mimeType === "application/dash+xml" ||
                     ((source.mimeType === "video/ism" || source.mimeType === "video/playreadySmooth") && mw.isChrome() && !mw.isMobileDevice());
+            });
+        } else {
+            drmSources = sources.filter(function (source) {
+                var nativeSdkDRMTypes = window.kNativeSdk && window.kNativeSdk.drmFormats;
+                return $.inArray(source.mimeType, nativeSdkDRMTypes) >= 0;
+            });
+            
+            // Additional check for iOS, to select FairPlay or WidevineClassic.
+            if (kWidget.isIOS()) {
+                var fpsIndex = drmSources.findIndex(function(src) {return src.mimeType === "application/vnd.apple.mpegurl"});
+                var wvmIndex = drmSources.findIndex(function(src) {return src.mimeType === "video/wvm"});
+                if (fpsIndex >= 0) {
+                    if (drmSources[fpsIndex].fpsCertificate) {
+                        // FPS is supported and configured, remove WVM
+                        if (wvmIndex >= 0) {
+                            drmSources.splice(wvmIndex, 1);
+                            wvmIndex = -1;
+                        }
+                    } else {
+                        // FPS is supported by the platform, but not configured in the backend -- remove it.
+                        drmSources.splice(fpsIndex, 1);
+                        fpsIndex = -1;
+                    }
+                }
             }
-        });
+        }
+        
         return drmSources;
     }
 
