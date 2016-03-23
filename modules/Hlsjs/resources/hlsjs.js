@@ -81,7 +81,7 @@
 				this.LoadHLS = false;
 				this.loaded = false;
 				this.unRegisterHlsEvents();
-				this.restorePlayerMehods();
+				this.restorePlayerMethods();
 				this.hls.detachMedia();
 				this.hls.destroy();
 			},
@@ -282,7 +282,7 @@
 			/**
 			 * Disable override player methods for HLS playback
 			 */
-			restorePlayerMehods: function () {
+			restorePlayerMethods: function () {
 				this.getPlayer().backToLive = this.orig_backToLive;
 				this.getPlayer().switchSrc = this.orig_switchSrc;
 				mw.supportsFlash = orig_supportsFlash;
