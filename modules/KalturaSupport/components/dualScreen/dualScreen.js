@@ -275,8 +275,10 @@
 			initExternalControlManager : function()
 			{
 				var _this = this;
-				this.externalControlManager = new mw.dualScreen.externalControlManager(this.getPlayer(), function () {
-				}, "dualScreenExternalControlManager");
+				if (this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") || this.getPlayer().kCuePoints) {
+					this.externalControlManager = new mw.dualScreen.externalControlManager(this.getPlayer(), function () {
+					}, "dualScreenExternalControlManager");
+				}
 			},
 			initDisplays: function () {
 				var _this = this;
