@@ -16,9 +16,7 @@
         cuePoints: [],
         syncEnabled: true,
         url:"",
-
-        masterBitrate: 0, //relevant only for adaptive bitrate
-        changeBitrateOffset: 15000, // 15 seconds offset between the master and the slave bitrate change (slave video should wait till the master's  bitrate is stable)
+        ABR: false, //adaptive bitrate video
 
         setup: function () {
             this.addBinding();
@@ -55,12 +53,6 @@
             //adaptive bitrate
             this.bind("bitrateChange", function (e, newBitrate) {
                 mw.log("DualScreen :: MASTER :: bitrateChange :: newBitrate = " + newBitrate);
-                if ( !_this.masterBitrate ) {
-                    _this.masterBitrate = newBitrate;
-                }
-                if( _this.manifestAdaptiveFlavors && _this.currentBitrate ) {
-                    _this.onMasterBitrateChanged(newBitrate);
-                }
             });
 
             //progressive download native
@@ -144,6 +136,7 @@
                 //load slave video with the lowest bitrate. In order to save CPU resources, slave will switch to the higher bitrate only after the main video will reach stable bitrate.
                 fv.KalturaHLS["prefBitrate"] = 50;
                 fv.disableAutoDynamicStreamSwitch = true;
+                this.ABR = true;
             }else{
                 fv.isMp4 = true;
                 if( mw.getConfig('streamerType') ){
@@ -159,7 +152,6 @@
                     'flavorsListChanged': 'onFlavorsListChanged',
                     'mediaLoaded': 'onMediaLoaded',
                     'mediaError': 'onMediaError',
-                    'bitrateChange': 'onBitrateChange',
                     'debugInfoReceived': 'onDebugInfoReceived'
                 };
                 _this.playerObject = this.getElement();
@@ -242,69 +234,14 @@
             mw.log("DualScreen :: second screen :: videoPlayer :: onFlavorsListChanged --------- END");
         },
 
-        onBitrateChange: function ( data ) {
-            mw.log("DualScreen :: second screen :: videoPlayer :: onBitrateChange " + data);
-        },
-
         onSwitchingChangeComplete: function ( data, id ) {
             if ( data && data.newBitrate ) {
-                this.currentBitrate = data.newBitrate;
-                mw.log("DualScreen :: second screen :: videoPlayer :: onSwitchingChangeComplete :: currentBitrate = " + this.currentBitrate);
+                mw.log("DualScreen :: second screen :: videoPlayer :: onSwitchingChangeComplete :: currentBitrate = " + data.newBitrate);
             }
         },
 
-        onMasterBitrateChanged: function ( newMasterBitrate ) {
-            var _this = this;
-
-            if ( newMasterBitrate < this.masterBitrate && this.currentBitrate !== this.manifestAdaptiveFlavors[0] ) {
-                mw.log("DualScreen :: second screen :: change bitrate for slave video to the lowest ");
-                this.playerObject.sendNotification('doSwitch', { flavorIndex: 0 });
-                this.masterBitrate = newMasterBitrate;
-            }
-
-            if (this.changeBitrateTimeout){
-                mw.log("DualScreen :: second screen :: clear changeBitrate timeout");
-                this.clearTimeout(this.changeBitrateTimeout);
-            }
-
-            this.changeBitrateTimeout = setTimeout( function ( ) {
-                if ( _this.masterBitrate !== newMasterBitrate ) {
-                    var newFlavor = _this.findClosestBitrate(newMasterBitrate);
-                    mw.log("DualScreen :: second screen :: found new bitrate = "+ newFlavor.bitrate+" | currentBitrate = "+_this.currentBitrate);
-                    if( newFlavor.bitrate !== _this.currentBitrate ) {
-                        mw.log("DualScreen :: second screen :: change bitrate for slave video = "+ newFlavor.bitrate);
-                        _this.playerObject.sendNotification('doSwitch', { flavorIndex: newFlavor.index });
-                        _this.masterBitrate = newMasterBitrate;
-                        _this.clearTimeout(_this.changeBitrateTimeout);
-                    }
-                }
-            }, _this.changeBitrateOffset );
-        },
-
-        findClosestBitrate: function ( targetBitrate ) {
-            var selectedFlavor = {index:this.manifestAdaptiveFlavors.indexOf(this.currentBitrate), bitrate: this.currentBitrate};
-            if (this.manifestAdaptiveFlavors.length > 1) {
-                var diff = Math.abs(targetBitrate - this.manifestAdaptiveFlavors[0]);
-                for (var ind = 1; ind < this.manifestAdaptiveFlavors.length; ind++) {
-                    var newdiff = Math.abs(targetBitrate - this.manifestAdaptiveFlavors[ind]);
-                    if (newdiff < diff) {
-                        diff = newdiff;
-                        selectedFlavor.index = ind;
-                        selectedFlavor.bitrate = this.manifestAdaptiveFlavors[ind];
-                    }
-                }
-            }
-            return selectedFlavor;
-        },
-
-        switchSrc: function ( source ) {
-            this.playerObject.sendNotification('doSwitch', { flavorIndex: this.getSourceIndex(source) });
-        },
-
-        getSourceIndex: function ( source ) {
-            var sourceIndex = 0; //autoDynamicStreamSwitch (adaptive bitrate) can't be enabled in the slave player, so sourceIndex can't ever be -1
-            //TODO: if this.manifestAdaptiveFlavors !== undefined -> find closest flavor index for adaptive bitrate, else -> find closest source index for progressive download
-            return sourceIndex;
+        switchSrc: function ( sourceInd ) {
+            this.playerObject.sendNotification('doSwitch', { flavorIndex: sourceInd });
         },
         //end of kplayer events and functions
 
@@ -357,6 +294,9 @@
         clearTimeout: function ( timeout ) {
             clearTimeout(timeout);
             timeout = null;
+        },
+        isABR: function () {
+          return this.ABR;
         }
     });
 })( window.mw, window.jQuery );

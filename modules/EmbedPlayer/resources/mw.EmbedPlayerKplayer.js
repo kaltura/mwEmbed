@@ -119,9 +119,8 @@
                     if (mw.getConfig("hlsMaxBufferTime")) {
                         hlsPluginConfiguration["maxBufferTime"] = mw.getConfig("hlsMaxBufferTime");
                     }
-                    var preferedBitRate = _this.evaluate( '{mediaProxy.preferedFlavorBR}' );
-                    if( preferedBitRate ) {
-                        hlsPluginConfiguration["prefBitrate"] = preferedBitRate;
+                    if( mw.getConfig("preferedBitrate") ) {
+                        hlsPluginConfiguration["prefBitrate"] = mw.getConfig("preferedBitrate");
                         flashvars.disableAutoDynamicStreamSwitch = true; // disable autoDynamicStreamSwitch logic inside KDP (while playing + if player.isDynamicStream turn autoSwitch on)
                     }
                     if( mw.getConfig("maxBitrate") ) {
@@ -968,8 +967,8 @@
 				});
 				return;
 			}
-            var sourceIndex = -1; //autoDynamicStreamSwitch = true for adaptive bitrate (Auto)
-            if( source !== -1 ){
+            var sourceIndex = source; //-1 for autoDynamicStreamSwitch = true :: adaptive bitrate (Auto), 0 for lowest bitrate
+            if( typeof source !== "number" ){
                 sourceIndex = this.getSourceIndex(source);
             }
 			this.playerObject.sendNotification('doSwitch', { flavorIndex: sourceIndex });

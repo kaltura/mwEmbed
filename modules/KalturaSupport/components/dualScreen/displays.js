@@ -42,6 +42,7 @@
 
             //Screen view state handlers
             toggleMainDisplay: function () {
+                var _this = this;
                 var curMain = this.getMainDisplay();
                 var curAux = this.getAuxDisplay();
 
@@ -58,6 +59,7 @@
                 setTimeout(function(){
                     curAux.toggleHiddenToMain();
                     curMain.toggleMain(props);
+                    _this.getPlayer().triggerHelper( "dualScreenDisplaysSwitched" );
                 },200);
                 this.main = curAux;
                 this.aux = curMain;

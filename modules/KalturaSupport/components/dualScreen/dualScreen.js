@@ -54,6 +54,7 @@
             streamSelectorLoaded: false,
 
 			setup: function ( ) {
+                mw.setConfig("preferedBitrate", 50); //ABR - load kplayer video with the lowest fixed bitrate in order to give dual screen full control on ABR (right now supported for HLS kplayer only). Will be ignored in Native player
 				this.initConfig();
 				this.initDisplays();
 				this.initFSM();
@@ -130,6 +131,17 @@
 				this.bind( 'dualScreenStateChange', function(e, state){
 					_this.fsm.consumeEvent( state );
 				});
+
+                this.bind( 'dualScreenDisplaysSwitched sourcesReplaced', function(e){
+                    if ( _this.secondPlayer instanceof mw.dualScreen.videoPlayer && _this.secondPlayer.isABR() ){
+                        if( e.type === 'sourcesReplaced' ){
+                           _this.abrSourcesLoaded = true;
+                        }
+                        if( _this.abrSourcesLoaded ) {
+                            _this.handleABR();
+                        }
+                    }
+                });
 
 				//Listen to events which affect controls view state
 				this.bind( 'showPlayerControls' , function(){
@@ -865,6 +877,18 @@
                 //replace flavors (all available flavor ids) of master player with the available flavor ids of the slaveStream
                 slaveUrl = slaveUrl.replace(masterSource.flavors, flavors);
                 return slaveUrl;
+            },
+
+            handleABR: function ( ) {
+                if ( this.getPlayer().getVideoDisplay().attr('data-display-rule') === 'primary' ) {
+                    mw.log("DualScreen :: handleABR :: set kplayer to ABR AUTO and secondPlayer to lowest bitrate");
+                    this.getPlayer().switchSrc(-1);
+                    this.secondPlayer.switchSrc(0);
+                } else {
+                    mw.log("DualScreen :: handleABR :: set secondPlayer to ABR AUTO and kplayer to lowest bitrate");
+                    this.getPlayer().switchSrc(0);
+                    this.secondPlayer.switchSrc(-1);
+                }
             },
 
 			//Display
