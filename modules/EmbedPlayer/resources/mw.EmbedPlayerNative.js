@@ -54,8 +54,6 @@
 		// Disable switch source callback
 		disableSwitchSourceCallback: false,
 
-		capturePauseAfterSourceSwitch: false,
-
 		// Flag specifying if a mobile device already played. If true - mobile device can autoPlay
 		mobilePlayed: false,
 		// All the native events per:
@@ -280,8 +278,10 @@
 				return;
 			}
 			// Update the player source ( if needed )
-			if ($(vid).attr('src') != this.getSrc(this.currentTime) && !mw.isIE()) {
-				$(vid).attr('src', this.getSrc(this.currentTime));
+			if (!this.skipUpdateSource) {
+				if ( $( vid ).attr( 'src' ) != this.getSrc( this.currentTime ) && !mw.isIE() ) {
+					$( vid ).attr( 'src' , this.getSrc( this.currentTime ) );
+				}
 			}
 
 			if (this.muted) {
@@ -679,7 +679,6 @@
 							switchCallback(vid);
 							switchCallback = null;
 						}
-						_this.capturePauseAfterSourceSwitch = true;
 					};
 
 					// once playing issue callbacks:
@@ -829,16 +828,18 @@
 					if (_this.getPlayerElement() && _this.getPlayerElement().play) {
 						_this.log(" issue native play call:");
 						// make sure the source is set:
-						if ( $(vid).attr('src') != _this.getSrc() || _this.resetSrc ) {
-							$(vid).attr('src', _this.getSrc());
-                            //trigger play again for iPad and El Capitan
-                            setTimeout( function () {
-                                if ( !_this.playing ) {
-                                    vid.play();
-                                    _this.parseTracks();
-                                }
-                            }, 300 );
-                            _this.resetSrc = false;
+						if (!_this.skipUpdateSource) {
+							if ( $( vid ).attr( 'src' ) != _this.getSrc() || _this.resetSrc ) {
+								$( vid ).attr( 'src' , _this.getSrc() );
+								//trigger play again for iPad and El Capitan
+								setTimeout( function () {
+									if ( !_this.playing ) {
+										vid.play();
+										_this.parseTracks();
+									}
+								} , 300 );
+								_this.resetSrc = false;
+							}
 						}
 						_this.hideSpinnerOncePlaying();
 						// make sure the video tag is displayed:
@@ -1079,7 +1080,7 @@
 							if ( (Math.abs( _this.currentSeekTargetTime - _this.getPlayerElement().currentTime ) > 2) &&
 								callbackCount <= 15 ) {
 								setTimeout( function () {
-									timeupdateCallback( callbackCount++ );
+									timeupdateCallback( ++callbackCount );
 								}, 100 );
 							} else {
 								if ( callbackCount > 15 ) {
@@ -1133,17 +1134,19 @@
 				this.ignoreNextNativeEvent = false;
 				return;
 			}
-			this.log(" OnPaused:: propagate:" + this._propagateEvents  + ' duringSeek:' + this.seeking);
+			var timeSincePlay = Math.abs(this.absoluteStartPlayTime - new Date().getTime());
+			this.log(" OnPaused:: propagate:" + this._propagateEvents +
+				' time since play: ' + timeSincePlay + ' duringSeek:' + this.seeking);
 			// Only trigger parent pause if more than MonitorRate time has gone by.
 			// Some browsers trigger native pause events when they "play" or after a src switch
-			if (!this.seeking && !this.userSlide &&	!this.capturePauseAfterSourceSwitch	) {
+			if (!this.seeking && !this.userSlide
+				&&
+				timeSincePlay > mw.getConfig('EmbedPlayer.MonitorRate')
+				) {
 				_this.parent_pause();
 			} else {
-				if (this.capturePauseAfterSourceSwitch && this.currentTime < 0.1){
-					// try to continue playback:
-					this.getPlayerElement().play();
-					this.capturePauseAfterSourceSwitch = false;
-				}
+				// try to continue playback:
+				this.getPlayerElement().play();
 			}
 		},
 
