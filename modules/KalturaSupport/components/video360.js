@@ -104,10 +104,10 @@
 
 				// when the mouse is pressed, we switch to manual control and save current coordinates
 				function onDocumentMouseDown(event){
-					event.preventDefault();
+					//event.preventDefault();
 					_this.manualControl = true;
-					savedX = event.clientX;
-					savedY = event.clientY;
+					savedX = event.clientX || event.originalEvent.touches[0].pageX;
+					savedY = event.clientY || event.originalEvent.touches[0].pageY;
 					savedLongitude = longitude;
 					savedLatitude = latitude;
 				}
@@ -115,8 +115,8 @@
 				// when the mouse moves, if in manual contro we adjust coordinates
 				function onDocumentMouseMove(event){
 					if(_this.manualControl){
-						longitude = (savedX - event.clientX) * _this.getConfig("moveMultiplier") + savedLongitude;
-						latitude = (event.clientY - savedY) * _this.getConfig("moveMultiplier") + savedLatitude;
+						longitude = savedX - (event.clientX || event.originalEvent.touches[0].pageX) * _this.getConfig("moveMultiplier") + savedLongitude;
+						latitude = ((event.clientY || event.originalEvent.touches[0].pageY) - savedY) * _this.getConfig("moveMultiplier") + savedLatitude;
 					}
 				}
 
@@ -126,9 +126,9 @@
 				}
 
 				// listeners
-				document.addEventListener("mousedown", onDocumentMouseDown, false);
-				document.addEventListener("mousemove", onDocumentMouseMove, false);
-				document.addEventListener("mouseup", onDocumentMouseUp, false);
+				$(document).on("mousedown touchstart", onDocumentMouseDown);
+				$(document).on("mousemove touchmove", onDocumentMouseMove);
+				$(document).on("mouseup touchend", onDocumentMouseUp    );
 				render();
 			});
 		}
