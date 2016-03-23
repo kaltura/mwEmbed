@@ -58,6 +58,16 @@
 			}
 			$(this.embedPlayer).unbind(this.bindPostfix);
 		},
+		sortCuePointsByStartTime : function(cuePoints)
+		{
+			if (cuePoints) {
+				cuePoints.sort(function (a, b) {
+					return a.startTime - b.startTime;
+				});
+			}
+
+			return cuePoints;
+		},
 		/*
 		 * Trigger Pre/Post cue points and create Mid cue points array
 		 */
@@ -76,20 +86,25 @@
 					_this.triggerCuePoint(cuePoint);
 				} else {
 					// Midroll or non-ad cuepoint
-					if (cuePoint.cuePointType != "eventCuePoint.Event") {
-
+					if (cuePoint.cuePointType === 'codeCuePoint.Code')
+					{
+						newCodeCuePointsArray.push(cuePoint);
+					}else if (cuePoint.cuePointType != "eventCuePoint.Event") {
 						newCuePointsArray.push(cuePoint);
-
-						if (cuePoint.cuePointType === 'codeCuePoint.Code')
-						{
-							newCodeCuePointsArray.push(cuePoint);
-						}
 					}
 				}
 			});
 
 			this.midCuePointsArray = newCuePointsArray;
-			this.codeCuePointsArray = newCodeCuePointsArray;
+
+			// When getting the cue points from the server as part of the bootstrapping, the cuepoints aren't necessary ordered by startTime.
+			// also the startTime contains wrong values.
+			// 1. We need to sort by startTime, otherwise the consumer of this service will need to sort it on their own which will affect performance
+			// (the consumer will need to sort each time traversing on the array and also validate that the order of the previous cue points weren't affected)
+			// 2. The cue points 'startTime' values are being manipulated in this service later in the workflow, we need it to be assigned in order
+			// for having the cue points to be ordered by startTime.
+			_this.fixLiveCuePointArray(newCodeCuePointsArray);
+			this.codeCuePointsArray = _this.sortCuePointsByStartTime(newCodeCuePointsArray);
 		},
 		initSupportedCuepointTypes: function(){
 			//Initial flashvars configuration arrives in form of comma-separated string,
@@ -262,6 +277,14 @@
 				}
 
 				if (codeNewCuePoints.length > 0) {
+
+					// When getting the cue points from the server as part of the bootstrapping, the cuepoints aren't necessary ordered by startTime.
+					// The consumers of the code cue points assumes it is sorted (otherwise they will need to sort it on their own which will affect performance
+					// (the consumer will need to sort each time traversing on the array and also validate that the order of the previous cue points weren't affected)
+					// NOTE: since we try to perform as few changes as possible in this service, we don't provide any indication if a new cuepoint starttime is earlier then
+					// a cue point already exists in the array.
+					_this.sortCuePointsByStartTime(codeNewCuePoints);
+
 					// update code cue points
 					$.merge(this.codeCuePointsArray, codeNewCuePoints);
 				}
@@ -360,7 +383,7 @@
 		},
 		getCodeCuePoints : function()
 		{
-			return this.codeCuePointsArray;
+			return this.codeCuePointsArray || [];
 		},
 		getCuePointsByType: function (type, subType) {
 			var filteredCuePoints = this.getCuePoints();
