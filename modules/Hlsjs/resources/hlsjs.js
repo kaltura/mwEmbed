@@ -179,6 +179,9 @@
 			 * @param data
 			 */
 			onFragChanged: function (event, data) {
+				if ( data && data.frag && data.frag.duration){
+					this.fragmentDuration = data.frag.duration;
+				}
 				if (this.isLevelSwitching &&
 					(data && data.frag && (this.levelIndex == data.frag.level))) {
 					this.isLevelSwitching = false;
@@ -291,11 +294,13 @@
 			backToLive: function () {
 				var _this = this;
 				var vid = this.getPlayer().getPlayerElement();
-				vid.currentTime = vid.duration;
+				this.embedPlayer.goingBackToLive = true;
+				vid.currentTime = vid.duration - this.fragmentDuration * 3;
 				//for some reason on Mac the isLive client response is a little bit delayed, so in order to get update
 				// liveUI properly, we need to delay "movingBackToLive" helper
 				setTimeout(function () {
 					_this.getPlayer().triggerHelper('movingBackToLive');
+					_this.embedPlayer.goingBackToLive = false;
 				}, 1000);
 			},
 			/**

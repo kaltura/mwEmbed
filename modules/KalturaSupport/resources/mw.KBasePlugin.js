@@ -163,7 +163,7 @@ mw.KBasePlugin = Class.extend({
 
 		return false;
 	},
-	bind: function( eventName, callback ){
+	bind: function( eventName, callback , once ){
 		var bindEventsString = '',
 			events = eventName.split(" "),
 			totalEvents = events.length,
@@ -175,6 +175,9 @@ mw.KBasePlugin = Class.extend({
 				space = '';
 			}
 			bindEventsString += events[ i ] + this.bindPostFix + space;
+		}
+		if (once){
+			return this.embedPlayer.bindOnceHelper( bindEventsString, callback);
 		}
 		return this.embedPlayer.bindHelper( bindEventsString, callback);
 	},

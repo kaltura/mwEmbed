@@ -58,20 +58,23 @@
 					_this.prevIconClass = _this.onAirIconClass ;
 				}
 			} );
-
-			this.bind( 'seeked'+_this.bindPostfix+' seeking'+_this.bindPostfix+' onpause'+_this.bindPostfix+' onLiveOffSynchChanged'+_this.bindPostfix, function(e, param) {
-				if( e.type === 'onLiveOffSynchChanged' && param === false ){
-                    // synch with Live edge
-                    _this.backToLive();
-                }else {
-                    // live is off-synch
-                    _this.getPlayer().setLiveOffSynch(true);
-                    if ( _this.onAirStatus ) {
-                        _this.setOffSyncUI();
-                    }
-                    _this.prevIconClass = _this.unsyncIConClass;
-                }
-			});
+			this.bind('playing',function() {
+				_this.bind( 'seeked' + _this.bindPostfix + ' seeking' + _this.bindPostfix + ' onpause' + _this.bindPostfix + ' onLiveOffSynchChanged' + _this.bindPostfix , function ( e , param ) {
+					if (!_this.getPlayer().goingBackToLive) {
+						if ( e.type === 'onLiveOffSynchChanged' && param === false ) {
+							// synch with Live edge
+							_this.backToLive();
+						} else {
+							// live is off-synch
+							_this.getPlayer().setLiveOffSynch( true );
+							if ( _this.onAirStatus ) {
+								_this.setOffSyncUI();
+							}
+							_this.prevIconClass = _this.unsyncIConClass;
+						}
+					}
+				} );
+			} ,true);
             this.bind( 'onplay' + _this.bindPostfix, function() {
                 if ( !_this.getPlayer().isDVR() && !_this.embedPlayer.changeMediaStarted) {
                     // synch with Live edge
