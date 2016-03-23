@@ -6,6 +6,7 @@
 
         var $player = $(player);
         var nextPendingCuePointIndex = null;
+        var lastHandledServerTime = null;
 
         function log(context, message) {
             mw.log(name + "." + context + ":" + message);
@@ -54,27 +55,35 @@
             return player.kCuePoints.getCodeCuePoints();
         }
 
+        /**
+         * Invoke reached event manually for all cue points the started before server time.
+         * Ignore optimization that prevent notifying a cue point that was already notified by managing
+         * all cue points from the beginning of the entry time.
+         */
+        function reinvokeReachedLogicManually()
+        {
+            var currentTime = player.getPlayerElementTime() * 1000;
+            log('reinvokeReachedLogicManually', 'server time was modified to a past time (previously ' + lastHandledServerTime + ', current ' + currentTime + "). re-invoke logic by finding all cue points relevant until current time" );
+            lastHandledServerTime = currentTime;
+
+            nextPendingCuePointIndex = getNextCuePointIndex(currentTime, 0);
+
+            var cuePoints = getCodeCuePoints();
+
+            if (nextPendingCuePointIndex > 0 && nextPendingCuePointIndex <= cuePoints.length) {
+                // invoke the following logic if we passed a cue point
+                var passedCuePoints = cuePoints.slice(0, nextPendingCuePointIndex); // get a list of all the cue points that were passed
+                triggerReachedCuePoints(passedCuePoints);
+            }
+        }
+
         function initialize() {
             nextPendingCuePointIndex = getNextCuePointIndex(0);
 
             $player.bind('onChangeMedia', function () {
+                // reset internal state to be ready for new media
                 nextPendingCuePointIndex = getNextCuePointIndex(0);
-            });
-
-            $player.bind('seeked', function () {
-                //In case of seeked the current cuepoint needs to be updated to new seek time before
-                var currentTime = player.getPlayerElementTime() * 1000;
-
-                log('bind(seeked)', 'event of type seeked invoked, re-searching for first relevant cuepoint by new time. ');
-                nextPendingCuePointIndex = getNextCuePointIndex(currentTime, 0);
-
-                var cuePoints = getCodeCuePoints();
-
-                if (nextPendingCuePointIndex > 0 && nextPendingCuePointIndex <= cuePoints.length) {
-                    // invoke the following logic if we passed a cue point
-                    var passedCuePoints = cuePoints.slice(0, nextPendingCuePointIndex); // get a list of all the cue points that were passed
-                    triggerReachedCuePoints(passedCuePoints);
-                }
+                lastHandledServerTime = null;
             });
 
             $player.bind(
@@ -82,6 +91,18 @@
                 " onplay" + bindPostfix,
                 function (e) {
                     var currentTime = player.getPlayerElementTime() * 1000;
+
+                    if ($.isNumeric(lastHandledServerTime) && lastHandledServerTime > currentTime)
+                    {
+                        // this part handles situation when user 'seek' from the player or if the server time changes
+                        // for unknown reason. We don't use the 'seek' event since it sometimes provide an offset time and
+                        // fix the value later but our code already modify its' internal state according to the offset time.
+                        reinvokeReachedLogicManually();
+                        return;
+                    }
+
+                    lastHandledServerTime = currentTime;
+
 
                     if (getCuePointByIndex(nextPendingCuePointIndex)) {
 
