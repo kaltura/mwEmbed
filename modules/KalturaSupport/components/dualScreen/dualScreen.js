@@ -34,7 +34,7 @@
 				"menuFadeout": 5000,
 				"resizeHandlesFadeout": 5000,
 				"mainViewDisplay": 0, // DONT USE THIS - obslete... 1 - Main stream, 2 - Presentation
-				"defaultDualScreenViewId": 'video-inside-presentation',
+				"defaultDualScreenViewId": 'pip-parent-in-small',
 				"fullScreenDisplayOnly": false,
 				"minDisplayWidth": 0,
 				"minDisplayHeight": 0,
@@ -367,7 +367,7 @@
 					}
 				};
 
-				if ( this.getConfig( "defaultDualScreenViewId" ) !== 'video-only' && !mw.isNativeApp() ||
+				if ( this.getConfig( "defaultDualScreenViewId" ) !== 'parent-only' && !mw.isNativeApp() ||
 					this.getPlayer().isAudio()) {
 					this.bind( 'postDualScreenTransition.spinnerPostFix', function () {
 						_this.unbind( 'postDualScreenTransition.spinnerPostFix' );
@@ -383,10 +383,10 @@
 				switch (backwardCompetabilityView)
 				{
 					case 1:
-						defaultDualScreenViewId = 'presentation-inside-video';
+						defaultDualScreenViewId = 'pip-parent-in-large';
 						break;
 					case 2:
-						defaultDualScreenViewId = 'video-inside-presentation';
+						defaultDualScreenViewId = 'pip-parent-in-small';
 						break;
 					default:
 						defaultDualScreenViewId = this.getConfig('defaultDualScreenViewId');

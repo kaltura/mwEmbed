@@ -28,27 +28,27 @@
                     // NOTE: The left display is considered as the main display in the player.
                     // For example: 'video-on-left' means 'video' stream as main and 'video-on-right' means 'presentation' stream as main.
                     switch (viewId) {
-                        case "side-by-side-video-on-right":
+                        case "sbs-parent-in-right":
                             action = "SbS";
                             mainDisplayType = mw.dualScreen.display.TYPE.SECONDARY;
                             break;
-                        case "side-by-side-video-on-left":
+                        case "sbs-parent-in-left":
                             action = "SbS";
                             mainDisplayType = mw.dualScreen.display.TYPE.PRIMARY;
                             break;
-                        case "video-inside-presentation":
+                        case "pip-parent-in-small":
                             action = "PiP";
                             mainDisplayType = mw.dualScreen.display.TYPE.SECONDARY;
                             break;
-                        case "presentation-inside-video":
+                        case "pip-parent-in-large":
                             action = "PiP";
                             mainDisplayType = mw.dualScreen.display.TYPE.PRIMARY;
                             break;
-                        case "video-only":
+                        case "parent-only":
                             action = "hide";
                             mainDisplayType = mw.dualScreen.display.TYPE.PRIMARY;
                             break;
-                        case "presentation-only":
+                        case "no-parent":
                             action = "hide";
                             mainDisplayType = mw.dualScreen.display.TYPE.SECONDARY;
                             break
