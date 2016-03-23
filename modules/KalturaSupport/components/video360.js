@@ -115,7 +115,7 @@
 				// when the mouse moves, if in manual contro we adjust coordinates
 				function onDocumentMouseMove(event){
 					if(_this.manualControl){
-						longitude = savedX - (event.clientX || event.originalEvent.touches[0].pageX) * _this.getConfig("moveMultiplier") + savedLongitude;
+						longitude = (savedX - (event.clientX || event.originalEvent.touches[0].pageX)) * _this.getConfig("moveMultiplier") + savedLongitude;
 						latitude = ((event.clientY || event.originalEvent.touches[0].pageY) - savedY) * _this.getConfig("moveMultiplier") + savedLatitude;
 					}
 				}
