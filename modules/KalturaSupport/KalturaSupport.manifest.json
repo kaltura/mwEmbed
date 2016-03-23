@@ -1707,40 +1707,40 @@
     },
     "dualScreen": {
         "label": "Dual Screen",
-        "description": "Dual screen plugin",
+        "description": "The Kaltura Player is the front-end interface used to view captured videos and/or presentations. The Kaltura Player provides you with multiple interactive viewing options, such as Picture-in-Picture, Side-by-Side, and other displays",
         "attributes": {
             "defaultDualScreenViewId": {
-                "label": "view",
-                "doc": "Player View",
+                "label": "Default Layout",
+                "doc": "Default Layout",
                 "type": "enum",
                 "enum": [
-                    "side-by-side-video-on-right",
-                    "side-by-side-video-on-left",
-                    "video-inside-presentation",
-                    "presentation-inside-video",
-                    "video-only",
-                    "presentation-only"
+                    "sbs-parent-in-right",
+                    "sbs-parent-in-left",
+                    "pip-parent-in-small",
+                    "pip-parent-in-large",
+                    "parent-only",
+                    "no-parent"
                 ],
-                "initvalue": "video-inside-presentation",
+                "initvalue": "pip-parent-in-small",
                 "options": [
                     {
-                        "label": "sbs p",
-                        "value": "side-by-side-video-on-right"
+                        "label": "Side by Side / parent in right",
+                        "value": "sbs-parent-in-right"
                     },{
-                        "label": "sbs v",
-                        "value": "side-by-side-video-on-left"
+                        "label": "Side by Side / parent in left",
+                        "value": "sbs-parent-in-left"
                     },{
-                        "label": "pip p",
-                        "value": "video-inside-presentation"
+                        "label": "Picture in Picture / parent in small view",
+                        "value": "pip-parent-in-small"
                     },{
-                        "label": "pip v",
-                        "value": "presentation-inside-video"
+                        "label": "Picture in Picture / parent in large view",
+                        "value": "pip-parent-in-large"
                     },{
-                        "label": "video only",
-                        "value": "video-only"
+                        "label": "Parent Only",
+                        "value": "parent-only"
                     },{
-                        "label": "presentation only",
-                        "value": "presentation-only"
+                        "label": "No Parent",
+                        "value": "no-parent"
                     }
                 ]
             }
