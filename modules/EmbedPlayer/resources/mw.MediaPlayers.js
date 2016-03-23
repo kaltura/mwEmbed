@@ -130,6 +130,33 @@ mw.MediaPlayers.prototype = {
 		}
 		return mimePlayers;
 	},
+	setMIMETypePlayers: function( mimeType, playerName ){
+		if (this.defaultPlayers[mimeType] && $.isArray(this.defaultPlayers[mimeType])) {
+			var contains = false;
+			$.each(this.defaultPlayers[mimeType], function(index, name){
+				if (name === playerName){
+					contains = true;
+					return false;
+				}
+			});
+			if (!contains) {
+				this.defaultPlayers[mimeType].push(playerName);
+			}
+		} else {
+			this.defaultPlayers[mimeType] = [playerName];
+		}
+	},
+	removeMIMETypePlayers: function( mimeType, playerName ){
+		if (this.defaultPlayers[mimeType] && $.isArray(this.defaultPlayers[mimeType])) {
+			var _this = this;
+			$.each(this.defaultPlayers[mimeType], function(index, name){
+				if (name === playerName){
+					_this.defaultPlayers[mimeType].splice(index, 1);
+					return false;
+				}
+			});
+		}
+	},
 	/**
 	 * Deprecated method call lacked get prefix for getter. 
 	 */

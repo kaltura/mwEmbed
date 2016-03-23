@@ -939,23 +939,6 @@
 			}
 			return argString;
 		},
-		/*
-		 * get the source index for a given source
-		 */
-		getSourceIndex: function (source) {
-			var sourceIndex = null;
-			$.each( this.getSources(), function( currentIndex, currentSource ) {
-				if (source.getAssetId() == currentSource.getAssetId()) {
-					sourceIndex = currentIndex;
-					return false;
-				}
-			});
-			// check for null, a zero index would evaluate false
-			if( sourceIndex == null ){
-				mw.log("EmbedPlayerKplayer:: Error could not find source: " + source.getSrc());
-			}
-			return sourceIndex;
-		},
 		switchSrc: function (source) {
 			var _this = this;
 			//http requires source switching, all other switch will be handled by OSMF in KDP
