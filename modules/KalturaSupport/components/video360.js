@@ -4,7 +4,9 @@
 	mw.PluginManager.add('video360', mw.KBasePlugin.extend({
 
 		defaultConfig: {
-			manualControl:false
+			manualControl:false,
+			moveMultiplier:0.3,
+			demo:false
 		},
 		setup: function() {
 			mw.setConfig("disableOnScreenClick",true);
@@ -16,19 +18,22 @@
 			this.bind("updateLayout", function(){
 				renderer.setSize(window.innerWidth, window.innerHeight);
 			});
+			this.bind("hidePlayerControls", function(){
+				_this.manualControl = false;
+			});
 			this.bind("playerReady sourcesReplaced" , function(){
 				_this.getPlayer().layoutBuilder.removePlayerClickBindings();
 				var player = _this.getPlayer();
 				var video = player.getPlayerElement();
 				var container = player.getVideoDisplay();
-				var manualControl = _this.getConfig("manualControl");
-				var longitude = 0;
+				var longitude = 180;
 				var latitude = 0;
 				var savedX;
 				var savedY;
 				var savedLongitude;
 				var savedLatitude;
 				var texture;
+				_this.manualControl = _this.getConfig("manualControl");
 				$(_this.getPlayer().getPlayerElement() ).css('z-index','-1');
 				// setting up the renderer
 				renderer = new THREE.WebGLRenderer();
@@ -58,17 +63,13 @@
 				scene.add(sphereMesh);
 				function render(){
 					if ( video.readyState === video.HAVE_ENOUGH_DATA ) {
-
 						if ( texture ) texture.needsUpdate = true;
-
 					}
-
-
 					requestAnimationFrame(render);
 
-					if(!manualControl){
-						longitude += 0.1;
-					}
+					//if(!_this.manualControl){
+					//	longitude += _this.getConfig("moveMultiplier");
+					//}
 
 					// limiting latitude from -85 to 85 (cannot point to the sky or under your feet)
 					latitude = Math.max(-85, Math.min(85, latitude));
@@ -82,12 +83,29 @@
 					// calling again render function
 					renderer.render(scene, camera);
 
+					if (_this.getConfig("demo")){
+						if (!_this.demoStep){
+							_this.demoStep = 1;
+						}
+						if (_this.demoStep < 500 ){
+							_this.demoStep++;
+							longitude += _this.getConfig("moveMultiplier");
+
+						}  else if (_this.demoStep < 1000) {
+							_this.demoStep++;
+							longitude -= _this.getConfig("moveMultiplier");
+
+						}  else {
+							_this.setConfig("demo",false)
+						}
+					}
+
 				}
 
 				// when the mouse is pressed, we switch to manual control and save current coordinates
 				function onDocumentMouseDown(event){
 					event.preventDefault();
-					manualControl = true;
+					_this.manualControl = true;
 					savedX = event.clientX;
 					savedY = event.clientY;
 					savedLongitude = longitude;
@@ -96,15 +114,15 @@
 
 				// when the mouse moves, if in manual contro we adjust coordinates
 				function onDocumentMouseMove(event){
-					if(manualControl){
-						longitude = (savedX - event.clientX) * 0.1 + savedLongitude;
-						latitude = (event.clientY - savedY) * 0.1 + savedLatitude;
+					if(_this.manualControl){
+						longitude = (savedX - event.clientX) * _this.getConfig("moveMultiplier") + savedLongitude;
+						latitude = (event.clientY - savedY) * _this.getConfig("moveMultiplier") + savedLatitude;
 					}
 				}
 
 				// when the mouse is released, we turn manual control off
 				function onDocumentMouseUp(event){
-					manualControl = false;
+					_this.manualControl = false;
 				}
 
 				// listeners
