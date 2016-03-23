@@ -495,7 +495,7 @@
 			// make sure we propagating events, and the current instance is in the correct closure.
 			if (this._propagateEvents && this.instanceOf === this.instanceOf) {
 				var argArray = $.makeArray(arguments);
-				//if (eventName!=="timeupdate" && eventName!=="progress") console.info(eventName);
+				//if (e.type!=="timeupdate" && e.type!=="progress") console.info(e.type);
 				// Check if there is local handler:
 				if (this[ '_on' + e.type ]) {
 					this[ '_on' + e.type ].apply(this, argArray);
@@ -941,6 +941,11 @@
 			}
 			// Set firstEmbedPlay state to false to avoid initial play invocation :
 			this.ignoreNextNativeEvent = false;
+
+			//Emulate playing event for silverlight
+			if (this.playerElement.getActiveTech() == "dashcs") {
+				this.triggerHelper("playing");
+			}
 		},
 		_ondurationchange: function (event, data) {
 			this.setDuration(this.getPlayerElement().duration());
