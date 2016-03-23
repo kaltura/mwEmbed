@@ -53,11 +53,13 @@
 			currentScreenNameShown: "",
             streamSelectorLoaded: false,
 
+			externalControlManager : null,
 			setup: function ( ) {
                 mw.setConfig("preferedBitrate", 50); //ABR - load kplayer video with the lowest fixed bitrate in order to give dual screen full control on ABR (right now supported for HLS kplayer only). Will be ignored in Native player
 				this.initConfig();
 				this.initDisplays();
 				this.initFSM();
+				this.initExternalControlManager();
 				this.addBindings();
 			},
 			isSafeEnviornment: function () {
@@ -351,6 +353,14 @@
 
 				this.fsm = new mw.dualScreen.StateMachine( selectedStatesMap, this.displays, fsmTransitionHandlers );
 			},
+			initExternalControlManager : function()
+			{
+				var _this = this;
+                if (this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") || this.getPlayer().kCuePoints) {
+                    this.externalControlManager = new mw.dualScreen.externalControlManager(this.getPlayer(), function () {
+                    }, "dualScreenExternalControlManager");
+                }
+			},
 			initDisplays: function () {
 				var _this = this;
 				this.displays = new mw.dualScreen.displays(this.getPlayer(), function () {
@@ -483,8 +493,7 @@
 					}
 				};
 
-				//Set initial view state according to configuration and playback engine
-				if ( this.getConfig( "mainViewDisplay" ) === 2 && !mw.isNativeApp() ||
+				if ( this.getConfig( "defaultDualScreenViewId" ) !== 'parent-only' && !mw.isNativeApp() ||
 					this.getPlayer().isAudio()) {
 					this.bind( 'postDualScreenTransition.spinnerPostFix', function () {
 						_this.unbind( 'postDualScreenTransition.spinnerPostFix' );
@@ -498,6 +507,34 @@
 					}, 1000 );
 				} else {
 					showLoadingSlide();
+				}
+
+				var defaultDualScreenViewId = '';
+				var backwardCompetabilityView = this.getConfig('mainViewDisplay');
+
+				switch (backwardCompetabilityView)
+				{
+					case 1:
+						defaultDualScreenViewId = 'pip-parent-in-large';
+						break;
+					case 2:
+						defaultDualScreenViewId = 'pip-parent-in-small';
+						break;
+					default:
+						defaultDualScreenViewId = this.getConfig('defaultDualScreenViewId');
+						break;
+				}
+
+				if (defaultDualScreenViewId)
+				{
+					setTimeout( function () {
+						_this.externalControlManager.setViewById(defaultDualScreenViewId);
+
+						//if (_this.getPlayer().isAudio()){
+						//	// The product removed explicit handling for such a scenario
+						//}
+					}, 1000 );
+
 				}
 			},
 
@@ -709,9 +746,9 @@
                 var deferred = $.Deferred();
 
                 //check if entry has cue-points (PPT presentation has been recorded)
-                if (this.getPlayer().kCuePoints) {
+                if (this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") || this.getPlayer().kCuePoints) {
                   //load second screen as imagePlayer
-                  this.loadSeconScreenImage().then(function () {
+                  this.loadSecondScreenImage().then(function () {
                       deferred.resolve(true);
                   });
                 } else {
@@ -753,7 +790,7 @@
                 });
             },
 
-            loadSeconScreenImage: function(){
+            loadSecondScreenImage: function(){
                 var _this = this;
                 var deferred = $.Deferred();
 
