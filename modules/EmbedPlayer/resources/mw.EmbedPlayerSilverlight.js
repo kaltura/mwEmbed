@@ -36,6 +36,7 @@
 		isMulticast: false ,
 		isError: false ,
 		readyFuncs: [] ,
+		isOnline: true,
 		// Create our player element
 		setup: function ( readyCallback ) {
 			var _this = this;
@@ -50,62 +51,6 @@
 				readyCallback();
 				return;
 			}
-
-			_this.onlineHandler = function (){
-
-				var def = $.Deferred(),
-					off = undefined;
-
-
-
-				var goOnline = function (){
-					if(def.promise().state() === 'pending') {
-						off = $.Deferred();
-						def.resolve();
-					}
-				};
-
-				goOnline();
-
-				var goOffline = function (){
-					if(def.promise().state() === 'resolved') {
-						def = $.Deferred();
-						off.resolve();
-					}
-				};
-
-				_this.bindHelper( "liveOffline" , function () {
-					//if stream became offline
-					mw.log('PlayerSilverlight. went offline');
-					goOffline();
-				} );
-				_this.bindHelper( "liveOnline" , function () {
-					mw.log('PlayerSilverlight. went online');
-					goOnline();
-				} );
-
-				return {
-					isOnline : function (){
-						return def.promise().state() === 'resolved';
-					},
-					isOffline : function (){
-						return def.promise().state() === 'pending';
-					},
-					isDone : function (){
-						return def.promise().state() === 'rejected';
-					},
-					clean: function(){
-						def.reject();
-						off.reject();
-					},
-					whenOnline: function (){
-						return def.promise();
-					},
-					whenOffline: function (){
-						return off.promise();
-					}
-				};
-			}();
 
 			// Create the container
 			this.getVideoDisplay().prepend(
@@ -262,7 +207,7 @@
 
 			var onKESResponse = function ( response ) {
 
-				if(_this.onlineHandler.isOnline()){
+				if(_this.isOnline){
 
 					mw.log('EmbedPlayerSPlayer got multicast details from KES: ' + JSON.stringify(response));
 
@@ -307,18 +252,13 @@
 			};
 
 			var onKESErrorResponce = function (){
-				if(_this.onlineHandler.isOnline()){
+				if(_this.isOnline){
 					mw.log('no response from KES... switch KES and retry');
 					_this.selectNextKES();
 				} else {
 					mw.log( 'EmbedPlayerSPlayer got error from KES while offline' );
 				}
 			};
-
-			var connectToKESWithMulticastUrl = function(){
-				return _this.connectToKES(_this.multiastServerUrl);
-			};
-
 
 			var startConnectToKESTimer = function () {
 
@@ -327,21 +267,27 @@
 					return;
 				}
 
-				if(_this.onlineHandler.isDone()){
-					return;
-				}
-
 				var retryTime= _this.getKalturaConfig( null , 'multicastKESStartInterval' ) || _this.defaultMulticastKESStartInterval;
 
-				if (_this.onlineHandler.isOnline() && _this.multicastSessionId)
+				if (_this.isOnline && _this.multicastSessionId)
 					retryTime=_this.getKalturaConfig( null , 'multicastKeepAliveInterval' ) || _this.defaultMulticastKeepAliveInterval;
 
 				_this.keepAliveMCTimeout = setTimeout( function () {
-					_this.onlineHandler.whenOnline()
-							.then(connectToKESWithMulticastUrl, mw.log )
-							.then(onKESResponse,onKESErrorResponce)
-							.always(startConnectToKESTimer);
+					try {
+						if(_this.isOnline)
+						{
+							_this.connectToKES(_this.multiastServerUrl)	.then(onKESResponse, onKESErrorResponce)
+								.always(startConnectToKESTimer);
+						} else {
+							startConnectToKESTimer();
+						}
+					}
+					catch(err){
+						mw.log( 'EmbedPlayerSPlayer connectToKES error ' + err );
+						startConnectToKESTimer();
+					}
 				} , retryTime );
+
 			};
 
 
@@ -503,15 +449,18 @@
 				} else if ( isMimeType( "video/multicast" ) ) {
 
 
-					var registerPlayerStopWhenOffline = function registerPlayerStopWhenOffline (){
-						_this.onlineHandler.whenOffline().then(function(){
-							if ( _this.playerObject ) {
-								_this.playerObject.stop();
-							}
-							_this.onlineHandler.whenOnline().then(registerPlayerStopWhenOffline);
-						});
-					};
-					registerPlayerStopWhenOffline();
+					_this.bindHelper( "liveOffline" , function () {
+						//if stream became offline
+						mw.log('PlayerSilverlight. went offline');
+						if ( _this.playerObject ) {
+							_this.playerObject.stop();
+						}
+						_this.isOnline = false;
+					} );
+					_this.bindHelper( "liveOnline" , function () {
+						mw.log('PlayerSilverlight. went online');
+						_this.isOnline = true;
+					} );
 
 					flashvars.multicastPlayer = true;
 					flashvars.streamAddress = resolvedSrc;
@@ -1039,7 +988,6 @@
 				clearTimeout( this.keepAliveMCTimeout );
 				this.keepAliveMCTimeout = null;
 			}
-			this.onlineHandler.clean();
 		} ,
 
 		callIfReady: function ( callback ) {
