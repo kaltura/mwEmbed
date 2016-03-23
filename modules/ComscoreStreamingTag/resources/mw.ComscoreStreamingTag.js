@@ -11,7 +11,7 @@
 
 	mw.ComscoreStreamingTag.prototype = {
 
-		pluginVersion: "1.1.1",
+		pluginVersion: "1.1.2",
 		reportingPluginName: "kaltura",
 		playerVersion: mw.getConfig('version'),
 
@@ -138,6 +138,7 @@
 		log: function (message) {
 			message += "; lp: " + this.lastPosition +
 				"; sp: " + this.startingPosition +
+				"; pos: " + this.embedPlayer.getPlayerElementTime() +
 				"; pbi: " + (this.isPlaybackIntended ? "Y" : "N") +
 				"; pbs: " + (this.hasPlaybackStarted ? "Y" : "N") +
 				"; p: " + (this.playing ? "Y" : "N") +
@@ -162,7 +163,6 @@
 
 		onPlayheadPositionUpdate: function () {
 			var position = this.embedPlayer.getPlayerElementTime();
-
 			if (this.isPlaybackIntended) {
 				if (!this.hasPlaybackStarted) {
 					if (!this.seeking && typeof this.startingPosition === 'undefined') {
@@ -173,28 +173,26 @@
 
 				if (this.buffering) {
 					if (this.playing) {
-						if (this.lastPositionDuringBuffering != undefined && this.lastPositionDuringBuffering == position) {
-							this.samePositionRepeatedCount++
+						if (typeof this.lastPositionDuringBuffering !== 'undefined' && this.lastPositionDuringBuffering === position) {
+							this.samePositionRepeatedCount++;
 							if (this.samePositionRepeatedCount >= 2) {
-								(this.getPlayerPluginState() != this.PlayerPluginState().BUFFERING) && this.log('buffering during playback @ ' + position);
-								// If we have the same position for at least 2 successive monitorEvents then rebuffering is occurring.
+								if (this.getPlayerPluginState() != this.PlayerPluginState().BUFFERING) {
+									this.log('buffering during playback @ ' + position);
+								}
 								this.playing = false;
 								this.onBuffering();
-
 							}
 						}
-					}
-					else {
-						(this.getPlayerPluginState() != this.PlayerPluginState().BUFFERING) && this.log('buffering outside of playback @ ' + position);
+					} else {
 						if (this.getPlayerPluginState() != this.PlayerPluginState().BUFFERING) {
+							this.log('buffering outside of playback @ ' + position);
 							this.playing = false;
 							this.setClip();
 							this.onBuffering();
 						}
 					}
-				}
-				else {
-					if (!(this.lastPosition == undefined && position == this.lastPosition) || (this.lastPosition != undefined && this.lastPosition != position)) {
+				} else {
+					if (!(typeof this.lastPosition === 'undefined' && typeof position === 'undefined') || (typeof this.lastPosition !== 'undefined' && this.lastPosition !== position)) {
 						if (this.hasSeeked) {
 							if (this.lastPositionAfterSeeking !== undefined && this.lastPositionAfterSeeking != position) {
 								if (!this.hasPlaybackStarted) {
@@ -209,28 +207,27 @@
 								this.onPlaybackActive();
 								this.lastPositionAfterSeeking = undefined;
 							}
-						}
-						else {
-							// Playback is active.
+						} else {
 							if (!this.hasPlaybackStarted) {
 								if (typeof this.startingPosition === 'undefined') {
-									this.log('Storing starting position (active playback detected): ' + position);
+									this.log('Storing starting position (start of playback detected): ' + position);
 									this.startingPosition = position;
 								}
 							}
-							this.hasPlaybackStarted = true;
-							if (!this.playing) {
+
+							if(typeof this.lastPosition !== 'undefined' && this.lastPosition !== position) {
+								this.log('Setting hasPlaybackStarted flag to true (playhead change detected: lastPosition = ' + this.lastPosition + '; position = ' + position + ')');
+								this.hasPlaybackStarted = true;
+							}
+
+							if (this.hasPlaybackStarted && !this.playing) {
 								this.log('playback active @ ' + position);
 								this.playing = true;
 								this.onPlaybackActive();
 							}
 						}
-					}
-					else {
+					} else {
 						(this.getPlayerPluginState() == this.PlayerPluginState().PLAYING) && this.log('playback halted @ ' + position);
-						// Playback is halted.
-						// The tracking of buffering further above in this function
-						// is usually effectively preventing this code from being executed.
 						this.playing = false;
 						this.onPlaybackInactive();
 					}
@@ -632,7 +629,7 @@
 
 		parserRawConfig: function (configName) {
 			var _this = this;
-			var rawConfig = this.embedPlayer.getRawKalturaConfig(this.moduleName, configName)
+			var rawConfig = this.embedPlayer.getRawKalturaConfig(this.moduleName, configName);
 			if (!rawConfig) return [];
 			var result = {};
 			// Split and trim the spaces
