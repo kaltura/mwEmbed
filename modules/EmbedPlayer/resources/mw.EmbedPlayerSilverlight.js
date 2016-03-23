@@ -282,8 +282,8 @@
 							startConnectToKESTimer();
 						}
 					}
-					catch(err){
-						mw.log( 'EmbedPlayerSPlayer connectToKES error ' + err );
+					catch(e){
+						mw.log( 'connectToKES failed ' + e.message + ' ' + e.stack );
 						startConnectToKESTimer();
 					}
 				} , retryTime );
