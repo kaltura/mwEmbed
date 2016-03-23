@@ -1253,7 +1253,7 @@
 							if ( (Math.abs( _this.currentSeekTargetTime - _this.getPlayerElement().currentTime() ) > 2) &&
 								callbackCount <= 15 ) {
 								setTimeout( function () {
-									timeupdateCallback( callbackCount++ );
+									timeupdateCallback( ++callbackCount );
 								}, 100 );
 							} else {
 								if ( callbackCount > 15 ) {
