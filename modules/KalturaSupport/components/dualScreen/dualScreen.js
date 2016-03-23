@@ -739,6 +739,7 @@
                         deferred.resolve(true);
                     },
                     function(){
+                        mw.log('ERROR loading second screen video, destroy streamSelector');
                         _this.destroyStreamSelector();
                         deferred.resolve(false);
                     });
@@ -746,8 +747,8 @@
 
             waitForPlayerReady: function ( deferred ) {
                 var _this = this;
-                var evChannel = ".dsPlayerReady";
-                this.bind( 'playerReady'+evChannel, function (  ) {
+                this.bind( 'playerReady.dsPlayerReady', function (  ) {
+                    _this.unbind('playerReady.dsPlayerReady');
                     _this.loadSecondScreenVideoAndResolve(deferred);
                 });
             },
