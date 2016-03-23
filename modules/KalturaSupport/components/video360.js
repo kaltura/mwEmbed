@@ -133,4 +133,4 @@
 			});
 		}
 	}));
-})(window.mw, window.jQuery, THREE);
+})(window.mw, window.jQuery, window.THREE);

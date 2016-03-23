@@ -4,7 +4,7 @@
  * @author mrdoob / http://mrdoob.com/
  */
 
-var THREE = { REVISION: '73' };
+window.THREE = { REVISION: '73' };
 
 //
 

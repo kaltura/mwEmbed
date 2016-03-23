@@ -459,6 +459,7 @@
         "dependencies": "jquery"
     },
     "threejs":{
-      "scripts": "resources/threejs/three.js"
+      "dependencies": "jquery",
+      "scripts": "resources/threejs/three.min.js"
     }
 }
