@@ -295,7 +295,7 @@
 				var _this = this;
 				var vid = this.getPlayer().getPlayerElement();
 				this.embedPlayer.goingBackToLive = true;
-				vid.currentTime = vid.duration - this.fragmentDuration * 3;
+				vid.currentTime = vid.duration - (this.fragmentDuration || 10) * 3;
 				//for some reason on Mac the isLive client response is a little bit delayed, so in order to get update
 				// liveUI properly, we need to delay "movingBackToLive" helper
 				setTimeout(function () {

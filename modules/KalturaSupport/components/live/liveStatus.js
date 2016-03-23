@@ -58,7 +58,7 @@
 					_this.prevIconClass = _this.onAirIconClass ;
 				}
 			} );
-			this.bind('playing',function() {
+			this.once('playing' + _this.bindPostfix,function() {
 				_this.bind( 'seeked' + _this.bindPostfix + ' seeking' + _this.bindPostfix + ' onpause' + _this.bindPostfix + ' onLiveOffSynchChanged' + _this.bindPostfix , function ( e , param ) {
 					if (!_this.getPlayer().goingBackToLive) {
 						if ( e.type === 'onLiveOffSynchChanged' && param === false ) {
@@ -74,7 +74,7 @@
 						}
 					}
 				} );
-			} ,true);
+			});
             this.bind( 'onplay' + _this.bindPostfix, function() {
                 if ( !_this.getPlayer().isDVR() && !_this.embedPlayer.changeMediaStarted) {
                     // synch with Live edge

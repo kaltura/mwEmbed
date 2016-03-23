@@ -163,6 +163,9 @@ mw.KBasePlugin = Class.extend({
 
 		return false;
 	},
+	once: function(eventName,callback) {
+		return this.bind( eventName , callback , true );
+	},
 	bind: function( eventName, callback , once ){
 		var bindEventsString = '',
 			events = eventName.split(" "),
