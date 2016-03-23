@@ -85,6 +85,7 @@
 			addBindings: function () {
 				var _this = this;
                 this.bind( 'playerReady', function (  ) {
+                    _this.playerReadyFlag = true;
                     if( _this.secondPlayer ){
                         _this.renderDualScreenView();
                     }else{
@@ -718,13 +719,11 @@
                    //TODO: add ResponseProfile filter at the php stage in order o add indicator to the entry metadata if the entry has sub-entries.
                    this.loadStreamSelector()
                        .then(function () {
-                           _this.loadSeconScreenVideo().then(function () {
-                               deferred.resolve(true);
-                           },
-                           function(){
-                               _this.destroyStreamSelector();
-                               deferred.resolve(false);
-                           });
+                           if ( _this.playerReadyFlag ) {
+                               _this.loadSecondScreenVideoAndResolve(deferred);
+                           } else {
+                               _this.waitForPlayerReady(deferred);
+                           }
                        }, function () { // master entry doesn't has sub-entries
                            _this.destroyStreamSelector();
                            deferred.reject();
@@ -733,6 +732,26 @@
 
                 return deferred.promise();
 			},
+
+            loadSecondScreenVideoAndResolve: function ( deferred ) {
+                var _this = this;
+                this.loadSecondScreenVideo().then(function () {
+                        deferred.resolve(true);
+                    },
+                    function(){
+                        mw.log('ERROR loading second screen video, destroy streamSelector');
+                        _this.destroyStreamSelector();
+                        deferred.resolve(false);
+                    });
+            },
+
+            waitForPlayerReady: function ( deferred ) {
+                var _this = this;
+                this.bind( 'playerReady.dsPlayerReady', function (  ) {
+                    _this.unbind('playerReady.dsPlayerReady');
+                    _this.loadSecondScreenVideoAndResolve(deferred);
+                });
+            },
 
             loadSeconScreenImage: function(){
                 var _this = this;
@@ -776,7 +795,7 @@
                 }
             },
 
-            loadSeconScreenVideo: function(){
+            loadSecondScreenVideo: function(){
                 var deferred = $.Deferred();
 
                 var secondScreenUrl = this.getSlaveUrl();
@@ -806,9 +825,9 @@
                 var masterSource = this.getPlayer().mediaElement.selectedSource;
 
                 //adaptive bit-rate
-                if( masterSource.src.indexOf('m3u8') > 0 || ( mw.getConfig('streamerType') && mw.getConfig('streamerType') !== 'http' ) ){
+                if (masterSource.src.indexOf('m3u8') > 0 || ( mw.getConfig('streamerType') && mw.getConfig('streamerType') !== 'http' )) {
                     secondScreenUrl = this.getSlaveAdaptiveUrl(masterSource, secondStream);
-                }else {
+                } else {
                     // progressive download
                     var assetId = this.findClosestPlayableFlavor(masterSource, secondStream);
                     if (!assetId) {
