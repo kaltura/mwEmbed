@@ -33,7 +33,8 @@
 				},
 				"menuFadeout": 5000,
 				"resizeHandlesFadeout": 5000,
-				"mainViewDisplay": 2, // 1 - Main stream, 2 - Presentation
+				"mainViewDisplay": 0, // DONT USE THIS - obslete... 1 - Main stream, 2 - Presentation
+				"defaultDualScreenViewId": 'pip-parent-in-small',
 				"fullScreenDisplayOnly": false,
 				"minDisplayWidth": 0,
 				"minDisplayHeight": 0,
@@ -51,11 +52,12 @@
 			fsmState: [],
 			screenShown: false,
 			currentScreenNameShown: "",
-
+			externalControlManager : null,
 			setup: function ( ) {
 				this.initConfig();
 				this.initDisplays();
 				this.initFSM();
+				this.initExternalControlManager();
 				this.addBindings();
 			},
 			isSafeEnviornment: function () {
@@ -91,6 +93,7 @@
 								}).removeClass('firstScreen');
 								_this.hideDisplay();
 							}
+
 						} else {
 							_this.log("render condition are not met - disabling");
 							if (!_this.disabled){
@@ -269,8 +272,17 @@
 
 				this.fsm = new mw.dualScreen.StateMachine( selectedStatesMap, this.displays, fsmTransitionHandlers );
 			},
+			initExternalControlManager : function()
+			{
+				var _this = this;
+				if (this.getPlayer().isLive() && mw.getConfig("EmbedPlayer.LiveCuepoints") || this.getPlayer().kCuePoints) {
+					this.externalControlManager = new mw.dualScreen.externalControlManager(this.getPlayer(), function () {
+					}, "dualScreenExternalControlManager");
+				}
+			},
 			initDisplays: function () {
 				var _this = this;
+
 				this.displays = new mw.dualScreen.displays(this.getPlayer(), function () {
 					this.setConfig({
 						resizeHandlesFadeout: _this.getConfig( 'resizeHandlesFadeout' ),
@@ -357,21 +369,42 @@
 					}
 				};
 
-				//Set initial view state according to configuration and playback engine
-				if ( this.getConfig( "mainViewDisplay" ) === 2 && !mw.isNativeApp() ||
+				if ( this.getConfig( "defaultDualScreenViewId" ) !== 'parent-only' && !mw.isNativeApp() ||
 					this.getPlayer().isAudio()) {
 					this.bind( 'postDualScreenTransition.spinnerPostFix', function () {
 						_this.unbind( 'postDualScreenTransition.spinnerPostFix' );
 						showLoadingSlide();
 					} );
-					setTimeout( function () {
-						_this.fsm.consumeEvent( "switchView" );
-						if (_this.getPlayer().isAudio()){
-							_this.fsm.consumeEvent( "hide" );
-						}
-					}, 1000 );
 				} else {
 					showLoadingSlide();
+				}
+
+				var defaultDualScreenViewId = '';
+				var backwardCompetabilityView = this.getConfig('mainViewDisplay');
+
+				switch (backwardCompetabilityView)
+				{
+					case 1:
+						defaultDualScreenViewId = 'pip-parent-in-large';
+						break;
+					case 2:
+						defaultDualScreenViewId = 'pip-parent-in-small';
+						break;
+					default:
+						defaultDualScreenViewId = this.getConfig('defaultDualScreenViewId');
+						break;
+				}
+
+				if (defaultDualScreenViewId)
+				{
+					setTimeout( function () {
+						_this.externalControlManager.setViewById(defaultDualScreenViewId);
+
+						//if (_this.getPlayer().isAudio()){
+						//	// The product removed explicit handling for such a scenario
+						//}
+					}, 1000 );
+
 				}
 			},
 

@@ -1091,6 +1091,11 @@ mw.KWidgetSupport.prototype = {
 			playerRequest.entry_id =  embedPlayer.kentryid;
 		}
 
+		var proxyData = embedPlayer.getKalturaConfig('proxyData', 'data');
+		if(proxyData){
+			playerRequest.proxyData = proxyData;
+		}
+
 		// Add the flashvars
 		playerRequest.flashvars = embedPlayer.getFlashvars();
 
@@ -1812,7 +1817,7 @@ mw.KWidgetSupport.prototype = {
 		if (playerData.contextData.pluginData &&
 			playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData &&
 			playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData.publicCertificate){
-			publicCertificate = playerData.contextData.pluginData.KalturaDrmEntryContextPluginData.publicCertificate;
+			publicCertificate = playerData.contextData.pluginData.KalturaFairplayEntryContextPluginData.publicCertificate;
 		}
 		return publicCertificate;
 	},
