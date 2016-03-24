@@ -1889,7 +1889,7 @@
 		 * Remove the poster
 		 */
 		removePoster: function () {
-			if ( !mw.getConfig("EmbedPlayer.KeepPoster") === true ){
+			if ( !mw.getConfig("EmbedPlayer.KeepPoster") === true && !this.isAudio()){
 				$(".mwEmbedPlayer").removeClass("mwEmbedPlayerBlackBkg");
 				$(this).find('.playerPoster').remove();
 			}
