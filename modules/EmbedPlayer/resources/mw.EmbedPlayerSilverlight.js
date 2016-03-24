@@ -36,6 +36,7 @@
 		isMulticast: false ,
 		isError: false ,
 		readyFuncs: [] ,
+		isOnline: true,
 		// Create our player element
 		setup: function ( readyCallback ) {
 			var _this = this;
@@ -204,47 +205,59 @@
 				}
 			}
 
-
 			var onKESResponse = function ( response ) {
 
-				mw.log( 'EmbedPlayerSPlayer got multicast details from KES: ' + JSON.stringify( response ) );
+				if(_this.isOnline){
+
+					mw.log('EmbedPlayerSPlayer got multicast details from KES: ' + JSON.stringify(response));
 
 
-				//verify we got a valid response from KES
-				if ( response && response.multicastAddress && response.multicastPort && response.hls ) {
+					//verify we got a valid response from KES
+					if (response && response.multicastAddress && response.multicastPort && response.hls) {
 
-					var multicastAddress = response.multicastAddress + ":" + response.multicastPort;
-					mw.log( 'multicastAddress: ' + multicastAddress + ' KES: ' + response.multicastSourceAddress);
+						var multicastAddress = response.multicastAddress + ":" + response.multicastPort;
+						mw.log('multicastAddress: ' + multicastAddress + ' KES: ' + response.multicastSourceAddress);
 
-					//first time
-					if ( !_this.multicastAddress ||
-						_this.multicastAddress !== multicastAddress ||
-						_this.multicastSessionId !== response.id ) {
+						//first time
+						if (!_this.multicastAddress ||
+							_this.multicastAddress !== multicastAddress ||
+							_this.multicastSessionId !== response.id) {
 
-						var firstTime = ( _this.multicastAddress == null);
-						_this.multicastAddress = multicastAddress;
-						_this.multicastSourceAddress = response.multicastSourceAddress;
-						_this.multicastPolicyOverMulticastEnabled = response.multicastPolicyOverMulticastEnabled;
-						_this.multicastSessionId = response.id;
+							var firstTime = ( _this.multicastAddress == null);
+							_this.multicastAddress = multicastAddress;
+							_this.multicastSourceAddress = response.multicastSourceAddress;
+							_this.multicastPolicyOverMulticastEnabled = response.multicastPolicyOverMulticastEnabled;
+							_this.multicastSessionId = response.id;
 
-						if (firstTime) {
-							doEmbedFunc(multicastAddress);
-						} else {
-							_this.refreshSilverlightMulticastParams();
+							if (firstTime) {
+								doEmbedFunc(multicastAddress);
+							} else {
+								_this.refreshSilverlightMulticastParams();
+							}
+
 						}
+					} else {
+						//if we got a response from KES that it's still loading, don't do anything
+						if (response && response.state === "Loading") {
 
+							mw.log('KES still loading, retrying later');
+						} else {
+							mw.log('Got error from KES, switch to another one and keep trying');
+							_this.selectNextKES();
+						}
 					}
 				} else {
-					//if we got a response from KES that it's still loading, don't do anything
-					if (response && response.state==="Loading") {
-
-						mw.log('KES still loading, retrying later');
-					} else {
-						mw.log('Got error from KES, switch to another one and keep trying');
-						_this.selectNextKES();
-					}
+					mw.log( 'EmbedPlayerSPlayer got multicast details from KES while offline' );
 				}
-				startConnectToKESTimer();
+			};
+
+			var onKESErrorResponce = function (){
+				if(_this.isOnline){
+					mw.log('no response from KES... switch KES and retry');
+					_this.selectNextKES();
+				} else {
+					mw.log( 'EmbedPlayerSPlayer got error from KES while offline' );
+				}
 			};
 
 			var startConnectToKESTimer = function () {
@@ -256,24 +269,25 @@
 
 				var retryTime= _this.getKalturaConfig( null , 'multicastKESStartInterval' ) || _this.defaultMulticastKESStartInterval;
 
-				if (_this.multicastSessionId)
+				if (_this.isOnline && _this.multicastSessionId)
 					retryTime=_this.getKalturaConfig( null , 'multicastKeepAliveInterval' ) || _this.defaultMulticastKeepAliveInterval;
 
 				_this.keepAliveMCTimeout = setTimeout( function () {
 					try {
-						_this.connectToKES( _this.multiastServerUrl ).then( onKESResponse ,
-							function() {
-								mw.log( 'no response from KES... switch KES and retry' );
-								_this.selectNextKES();
-								startConnectToKESTimer();
-							}
-						);
+						if(_this.isOnline)
+						{
+							_this.connectToKES(_this.multiastServerUrl)	.then(onKESResponse, onKESErrorResponce)
+								.always(startConnectToKESTimer);
+						} else {
+							startConnectToKESTimer();
+						}
 					}
-					catch ( e ) {
+					catch(e){
 						mw.log( 'connectToKES failed ' + e.message + ' ' + e.stack );
 						startConnectToKESTimer();
 					}
 				} , retryTime );
+
 			};
 
 
@@ -434,11 +448,18 @@
 					}
 				} else if ( isMimeType( "video/multicast" ) ) {
 
+
 					_this.bindHelper( "liveOffline" , function () {
 						//if stream became offline
+						mw.log('PlayerSilverlight. went offline');
 						if ( _this.playerObject ) {
 							_this.playerObject.stop();
 						}
+						_this.isOnline = false;
+					} );
+					_this.bindHelper( "liveOnline" , function () {
+						mw.log('PlayerSilverlight. went online');
+						_this.isOnline = true;
 					} );
 
 					flashvars.multicastPlayer = true;
