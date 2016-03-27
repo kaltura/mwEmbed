@@ -136,7 +136,6 @@
 			var embedPlayer = this.getPlayer();
 			this.bind('playerReady', function () {
 				_this.setupPlayerURL();
-				_this.getScreen();
 			});
 			this.bind('preShowScreen', function (event, screenName) {
 				if ( screenName === "share" ){

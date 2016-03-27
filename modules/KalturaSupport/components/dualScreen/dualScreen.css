@@ -1,5 +1,6 @@
 /*Screens*/
 .firstScreen{
+    position: absolute;
     top: 0px !important;
     left: 0px !important;
     height: 100% !important;
