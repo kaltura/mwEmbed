@@ -398,8 +398,9 @@
 				if (defaultDualScreenViewId)
 				{
 					setTimeout( function () {
-						_this.externalControlManager.setViewById(defaultDualScreenViewId);
-
+                        if ( _this.externalControlManager ) {
+                            _this.externalControlManager.setViewById(defaultDualScreenViewId);
+                        }
 						//if (_this.getPlayer().isAudio()){
 						//	// The product removed explicit handling for such a scenario
 						//}
