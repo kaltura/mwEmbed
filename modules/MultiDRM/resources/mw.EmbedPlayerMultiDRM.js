@@ -557,6 +557,12 @@
 				this.playing = true;
 			}
 
+			//If DRM context is not yet updated then update it now, this happens in late binding
+			//situations(IE/EDGE, autoplay, or when seek is issued very early)
+			if (!this.dashContextUpdated) {
+				this.updateDashContext();
+			}
+
 			if (this.playerElement.getActiveTech() == "dashjs") {
 				// some initial calls to prime the seek:
 				if (vid.currentTime() === 0 && callbackCount === 0) {
@@ -565,11 +571,6 @@
 				}
 
 				var vidObj = $(vid.contentEl()).find("video")[0];
-				//If DRM context is not yet updated then update it now, this happens in late binding
-				//situations(IE/EDGE, autoplay, or when seek is issued very early)
-				if (!this.dashContextUpdated) {
-					this.updateDashContext();
-				}
 				//Always wait for manifest loaded before trying to initiate a seek request
 				//otherwise it will cause the dash player engine to throw an exception
 				this.waitForManifestLoaded().then(function () {
@@ -626,6 +627,7 @@
 					resolve();
 				} else {
 					_this.playerElement.one("loadedmetadata", resolve);
+					_this.getPlayerElement().play();
 				}
 			}
 			return checkVideoStateDeferred;
@@ -854,20 +856,10 @@
 		 * play method calls parent_play to update the interface
 		 */
 		play: function () {
-			var duration = parseInt(this.duration, 10).toFixed(2);
-			var curTime = parseInt(this.getPlayerElementTime(), 10).toFixed(2);
-			//Rewind video element if using JS player, SL player doesn't require it
-			if ((this.playerElement.getActiveTech() == "dashjs") && (( this.currentState === "end" ) ||
-				( this.currentState === "pause" && duration === curTime && this.getPlayerElementTime() > 0 ))) {
+			if (this.shouldHandleReplay()) {
 				this.stopPlayAfterSeek = false;
 				this.seek(0.01, false);
 			} else {
-				//Hack for letting silverlight player handle replay by itself, as seeking to 0.01 kills playback
-				if ((this.playerElement.getActiveTech() == "dashcs") && (( this.currentState === "end" ) ||
-					( this.currentState === "pause" && duration === curTime && this.getPlayerElementTime() > 0 ))) {
-					this.currentState = "load";
-					this.currentTime = 0;
-				}
 				if ( this.parent_play() ) {
 					var play = function () {
 						_this.getPlayerElement().play();
@@ -888,6 +880,13 @@
 					mw.log( "EmbedPlayerMultiDRM:: parent play returned false, don't issue play on player element" );
 				}
 			}
+		},
+
+		shouldHandleReplay: function(){
+			var duration = parseInt(this.duration, 10).toFixed(2);
+			var curTime = parseInt(this.getPlayerElementTime(), 10).toFixed(2);
+			return (( this.currentState === "end" ) ||
+			( this.currentState === "pause" && duration === curTime && this.getPlayerElementTime() > 0 ));
 		},
 
 		/**
@@ -1146,6 +1145,10 @@
 		 */
 		_onended: function () {
 			if (this.getPlayerElement()) {
+				if (this.getPlayerElement().getActiveTech() == "dashcs"){
+					this.mediaLoadedFlag = false;
+				}
+				this.paused = true;
 				this.log('onended:' + this.playerElement.currentTime() + ' real dur:' + this.getDuration() + ' ended ' + this._propagateEvents);
 				if (this._propagateEvents && !this.isLive()) {
 					this.onClipDone();
