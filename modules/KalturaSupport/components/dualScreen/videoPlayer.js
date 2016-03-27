@@ -46,8 +46,8 @@
                     _this.updatePosterHTML();
                 }
             });
-            this.bind("removePoster", function () {
-                _this.removePoster();
+            this.bind("removeVideoPoster", function () {
+                _this.removeVideoPoster();
             });
 
             //adaptive bitrate
@@ -286,7 +286,7 @@
                 }));
         },
 
-        removePoster: function () {
+        removeVideoPoster: function () {
             $("#secondScreen").find('.playerPoster').remove();
             this.hasPoster = false;
         },

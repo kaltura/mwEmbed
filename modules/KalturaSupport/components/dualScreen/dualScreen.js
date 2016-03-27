@@ -54,6 +54,7 @@
             streamSelectorLoaded: false,
 
 			externalControlManager : null,
+
 			setup: function ( ) {
                 mw.setConfig("preferedBitrate", 50); //ABR - load kplayer video with the lowest fixed bitrate in order to give dual screen full control on ABR (right now supported for HLS kplayer only). Will be ignored in Native player
 				this.initConfig();
@@ -67,10 +68,13 @@
                 var _this = this;
                 var deferred = $.Deferred();
                 this.initSecondPlayer().then(function(){
+                    mw.log('DualScreen - isSafeEnviornment = true');
                     deferred.resolve(true);
                 }, function () { //url for second screen not found or not valid
-                    //TODO: validate channel playlist logic (test page needed) - configuration can be found here: http://externaltests.dev.kaltura.com/player/library/channel_playlist/v.playlist_LC_autoPlay.html (uiconf: 15135421)
-                    if( _this.isPlaylistPersistent()) {
+                    mw.log('DualScreen - isSafeEnviornment :: url for second screen not found or not valid');
+                    if( _this.isPlaylistPersistent() ) {
+                        mw.log('DualScreen - isSafeEnviornment :: playList case :: set plugin to desable');
+                        _this.disabled = true; //dual screen disabled for non LC entries in channel playlist
                         deferred.resolve(true);
                         return;
                     }
@@ -87,11 +91,22 @@
 			addBindings: function () {
 				var _this = this;
                 this.bind( 'playerReady', function (  ) {
+                    mw.log('DualScreen - playerReady');
                     _this.playerReadyFlag = true;
-                    if( _this.secondPlayer ){
-                        _this.renderDualScreenView();
-                    }else{
-                        _this.waitForSecondScreen = setInterval(function () {_this.renderDualScreenView();}, 500);
+                    if( _this.resetSecondPlayer ){
+                        mw.log('DualScreen - playerReady :: reset second player');
+                        _this.resetSecondPlayer = false;
+                        _this.reset();
+                    } else {
+                        if ( _this.secondPlayer ) {
+                            _this.renderDualScreenView();
+                        } else {
+                            mw.log('DualScreen - playerReady :: wait for second player');
+                            _this.waitingCounter = 0;
+                            _this.waitForSecondScreen = setInterval(function () {
+                                _this.renderDualScreenView();
+                            }, 500);
+                        }
                     }
 				} );
 
@@ -182,7 +197,8 @@
 				});
 
 				this.bind("onChangeMedia", function(){
-					if ( _this.syncEnabled && !_this.disabled){
+                    mw.log('DualScreen - onChangeMedia');
+                    if ( _this.syncEnabled && !_this.disabled){
 						//Reset the displays view
 						if (_this.fsm.getStatus() !== "PiP") {
 							_this.fsm.consumeEvent('PiP');
@@ -196,6 +212,13 @@
 							_this.controlBar = null;
 						}
 					}
+                    //channel play list
+                    if( _this.isPlaylistPersistent() ) {
+                        mw.log('DualScreen - onChangeMedia :: play list case - reset flag on');
+                        _this.playerReadyFlag = false;
+                        _this.secondScreen = null;
+                        _this.resetSecondPlayer = true;
+                    }
 				});
 				this.bind("onChangeStream", function(){
 					_this.syncEnabled = false;
@@ -210,6 +233,18 @@
 					});
 				}
 			},
+
+            reset: function ( ) {
+                var _this = this;
+                this.initSecondPlayer().then(function(){
+                    mw.log('DualScreen - reset :: second screen loaded');
+                    _this.renderDualScreenView();
+                }, function () { //url for second screen not found or not valid
+                    mw.log('DualScreen - reset :: url for second screen not found or not valid');
+                    _this.disabled = true; //dual screen disabled for non LC entries in channel playlist
+                });
+            },
+
 			addKeyboardShortcuts: function (addKeyCallback) {
 				var _this = this;
 				// Add q Sign for next state
@@ -238,6 +273,7 @@
                 if( this.secondPlayer ) {
                     mw.log("DualScreen :: renderDualScreenView init");
                     clearInterval(this.waitForSecondScreen);
+                    this.waitForSecondScreen = null;
                     
                     if (this.syncEnabled) {
                         var _this = this;
@@ -275,39 +311,14 @@
                             }
                         }
                     }
-                    
-                    /*
-
-                     if (_this.syncEnabled){
-                     _this.initView();
-                     _this.initControlBar();
-                     if (_this.secondPlayer.canRender()) {
-                     _this.log("render condition are met - initializing");
-                     _this.checkRenderConditions();
-                     if (_this.disabled){
-                     _this.disabled = false;
-                     _this.restoreView("disabledScreen");
-                     }
-                     _this.setInitialView();
-                     if (!_this.render) {
-                     _this.getPrimary().obj.css({
-                     'top': '',
-                     'left': '',
-                     'width': '',
-                     'height': ''
-                     }).removeClass('firstScreen');
-                     _this.hideDisplay();
-                     }
-                     } else {
-                     _this.log("render condition are not met - disabling");
-                     if (!_this.disabled){
-                     _this.minimizeView("disabledScreen");
-                     _this.disabled = true;
-                     }
-                     }
-                     }
-                     
-                     */
+                } else {
+                    if ( this.waitingCounter < 5 ) {
+                        this.waitingCounter++;
+                    } else {
+                        mw.log("DualScreen :: clear waitForSecondScreen timer - no second screen");
+                        clearInterval(this.waitForSecondScreen);
+                        this.waitForSecondScreen = null;
+                    }
                 }
             },
 			initConfig: function () {
@@ -528,8 +539,9 @@
 				if (defaultDualScreenViewId)
 				{
 					setTimeout( function () {
-						_this.externalControlManager.setViewById(defaultDualScreenViewId);
-
+                        if ( _this.externalControlManager ) {
+                            _this.externalControlManager.setViewById(defaultDualScreenViewId);
+                        }
 						//if (_this.getPlayer().isAudio()){
 						//	// The product removed explicit handling for such a scenario
 						//}
@@ -778,7 +790,7 @@
                     function(){
                         mw.log('ERROR loading second screen video, destroy streamSelector');
                         _this.destroyStreamSelector();
-                        deferred.resolve(false);
+                        deferred.reject(); //deferred.resolve(false);
                     });
             },
 
