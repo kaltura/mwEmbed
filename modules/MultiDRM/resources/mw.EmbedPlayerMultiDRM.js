@@ -85,6 +85,7 @@
 
 		manifestLoaded: false,
 		dashContextUpdated: false,
+		isSeekable: false,
 
 		// Native player supported feature set
 		supports: {
@@ -133,6 +134,7 @@
 				return;
 			}
 			var _this = this;
+			this.isSeekable = false;
 			// If switching a Persistent native player update the source:
 			// ( stop and play won't refresh the source  )
 			_this.switchPlaySource(this.getSource(), function () {
@@ -547,6 +549,11 @@
 		canSeek: function(deferred, callbackCount){
 			var vid = this.getPlayerElement();
 			var checkVideoStateDeferred = deferred || $.Deferred();
+
+			if (this.isSeekable){
+				checkVideoStateDeferred.resolve();
+			}
+
 			var _this = this;
 			if( !callbackCount ){
 				callbackCount = 0;
@@ -587,6 +594,7 @@
 									clearTimeout(_this.canSeekTimeout);
 									_this.canSeekTimeout = null;
 									setTimeout(function () {
+										_this.isSeekable = true;
 										return checkVideoStateDeferred.resolve();
 									}, 10);
 								} else {
@@ -599,6 +607,7 @@
 						// Try to seek for 15 seconds:
 						if (callbackCount >= 15) {
 							_this.log("Error:: with seek request, media never in ready state");
+							_this.isSeekable = false;
 							return checkVideoStateDeferred.resolve();
 						}
 						// manually trigger the loadedmetadata since stopEventPropagation was called but we must have this event triggered during seek operation (SUP-4237)
@@ -613,6 +622,7 @@
 					} else {
 						setTimeout(function () {
 							_this.log("player can seek");
+							_this.isSeekable = true;
 							return checkVideoStateDeferred.resolve();
 						}, 10);
 					}
@@ -620,6 +630,7 @@
 			} else {
 				var resolve = function(){
 					_this.log("player can seek");
+					_this.isSeekable = true;
 					return checkVideoStateDeferred.resolve();
 				};
 				//In dashcs there's no manifestLoaded event so rely on loadedmetadata event to know if ready to seek
