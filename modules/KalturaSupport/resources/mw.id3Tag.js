@@ -12,10 +12,7 @@
         bindPostfix: '.id3Tag',
 
         isSafeEnviornment: function () {
-            if( this.getPlayer().isLive() && !this.getPlayer().isDVR() ){
-                return true;
-            }
-            return false;
+            return true;
         },
 
 		setup: function() {
@@ -24,8 +21,7 @@
             this.intervalCounter = this.timeIntervalSec / (this.embedPlayer.monitorRate/1000);
 
             this.bind( 'playerReady', function() {
-
-                if( _this.getPlayer().isLive() ) {
+                if( _this.getPlayer().isLive() && !this.getPlayer().isDVR()  ) {
                     _this.addBinding();
                 }
             });
