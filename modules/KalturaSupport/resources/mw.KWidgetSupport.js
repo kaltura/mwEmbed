@@ -765,31 +765,31 @@ mw.KWidgetSupport.prototype = {
 			}
 			var srcToPlay = null;
 			var qp = ( srcURL.indexOf('?') === -1) ? '?' : '&';
-
-			$.ajax({
-				url: srcURL + qp + "responseFormat=jsonp",
-				timeout: 7000,
-				dataType: 'jsonp',
-				success: function( playmanifest ){
-					var flavors = playmanifest.flavors;
-					if ( flavors && flavors.length === 1 ) {
-						srcToPlay = flavors[0].url;
-						deferred.resolve( srcToPlay );
-						//if we get more then 1 flavors we dont need the redirect so we'll use the same url
-						// the playmanifest service will return the manifest directly.
-					} else if (flavors && flavors.length > 1){
-						if (srcURL.indexOf("applehttp_to_mc")===-1)
-							deferred.resolve( srcURL );
-						else
-							deferred.resolve( playmanifest );
-					} else {
-						deferred.reject();
-					}
-				},
-				error: function() {
-					deferred.reject();
-				}
-			});
+			deferred.resolve( srcURL );
+			//$.ajax({
+			//	url: srcURL + qp + "responseFormat=jsonp",
+			//	timeout: 7000,
+			//	dataType: 'jsonp',
+			//	success: function( playmanifest ){
+			//		var flavors = playmanifest.flavors;
+			//		if ( flavors && flavors.length === 1 ) {
+			//			srcToPlay = flavors[0].url;
+			//			deferred.resolve( srcToPlay );
+			//			//if we get more then 1 flavors we dont need the redirect so we'll use the same url
+			//			// the playmanifest service will return the manifest directly.
+			//		} else if (flavors && flavors.length > 1){
+			//			if (srcURL.indexOf("applehttp_to_mc")===-1)
+			//				deferred.resolve( srcURL );
+			//			else
+			//				deferred.resolve( playmanifest );
+			//		} else {
+			//			deferred.reject();
+			//		}
+			//	},
+			//	error: function() {
+			//		deferred.reject();
+			//	}
+			//});
 			return deferred.promise();
 		};
 
