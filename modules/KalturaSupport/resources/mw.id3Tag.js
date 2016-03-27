@@ -21,7 +21,7 @@
             this.intervalCounter = this.timeIntervalSec / (this.embedPlayer.monitorRate/1000);
 
             this.bind( 'playerReady', function() {
-                 if( _this.getPlayer().isLive() && !this.getPlayer().isDVR() ) {
+                 if( _this.getPlayer().isLive() && !_this.getPlayer().isDVR() ) {
                     _this.addBinding();
                  }
             });
