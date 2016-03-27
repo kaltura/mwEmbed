@@ -106,7 +106,7 @@
 					e.stopPropagation();
 					e.preventDefault();
 
-					_this.changeButtonsStyles(this.id);
+					_this.changeButtonsStyles(this.id, true); // pass clicked indicator in order to open subMenu if needed
 
 					var btn = _this.controlBarComponents[this.id];
 					if (btn && btn.event){
@@ -161,7 +161,7 @@
 		 * This affect they layout only and doesn't change the player state.
 		 * @param activeButtonId
          */
-		changeButtonsStyles : function(activeButtonId)
+		changeButtonsStyles : function(activeButtonId, clicked)
 		{
 			var _this = this;
 			var buttons = _this.getComponent().find( "span" );
@@ -172,7 +172,7 @@
             var obj = $(_this.getComponent().find('#' + activeButtonId)[0]);
 
             //Change state button disabled state
-            if (obj.data("type") === "state") {
+            if (obj.data("type") === "state" && clicked ) {
                 //show state buttons if selected state was clicked
                 if (obj.hasClass("stateSelected")) {
                     stateButtons.removeClass( "subMenuHidden" );
