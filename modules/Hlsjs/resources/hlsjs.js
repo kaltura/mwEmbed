@@ -267,6 +267,7 @@
 							'data-assetid': index
 						};
 					});
+					this.getPlayer().setKDPAttribute('sourceSelector', 'visible', true);
 					this.getPlayer().onFlavorsListChanged(flavors);
 				}
 			},
