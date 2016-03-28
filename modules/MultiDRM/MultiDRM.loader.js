@@ -33,8 +33,12 @@
 					var clDashPlayerUrl = embedPlayer.getKalturaConfig( "multiDrm", "clDashPlayerUrl" ) || mw.getMwEmbedPath() + "node_modules/mwEmbed-Dash-Everywhere/video.js";
 					var dashJsUrl = embedPlayer.getKalturaConfig( "multiDrm", "dashJsUrl" ) || mw.getMwEmbedPath() + "node_modules/mwEmbed-Dash-Everywhere/cldasheverywhere.min.js";
 					if (clDashPlayerUrl && dashJsUrl) {
-						$.getScript( clDashPlayerUrl)
-							.then(function(){return $.getScript( dashJsUrl)})
+						$.ajax( {
+								url: clDashPlayerUrl,
+								cache: true})
+							.then($.ajax( {
+								url: dashJsUrl,
+								cache: true}))
 							.done(function(){
 								mw.log("DASH player loaded");
 								//Set reference for DASH playback engine
