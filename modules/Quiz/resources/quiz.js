@@ -29,7 +29,8 @@
         IVQVer:'IVQ-2.41.rc2',
 
         setup: function () {
-            var _this = this;
+            var _this = this,
+                promise;
             var embedPlayer = _this.getPlayer();
             embedPlayer.disableComponentsHover();
             mw.log("Quiz: " + _this.IVQVer);
@@ -48,7 +49,13 @@
                         embedPlayer.autoplay = false;
                     }
 
-                    _this.KIVQModule.setupQuiz();
+                    promise = _this.KIVQModule.setupQuiz();
+                    promise.fail(function(data, msg) {
+                        mw.log("Quiz: error loading quiz " + msg);
+                        embedPlayer.enablePlayControls();
+                        embedPlayer.hideSpinner();
+                        embedPlayer.play();
+                    });
                     _this.KIVQScreenTemplate = new mw.KIVQScreenTemplate(embedPlayer);
 
                     if(_this.KIVQModule.isKPlaylist){
