@@ -36,16 +36,18 @@
 						$.ajax( {
 								url: clDashPlayerUrl,
 								cache: true})
-							.then($.ajax( {
+							.then(function(){ return $.ajax( {
 								url: dashJsUrl,
-								cache: true}))
+								cache: true});})
 							.done(function(){
 								mw.log("DASH player loaded");
 								//Set reference for DASH playback engine
 								mw.dash = {
 									player: videojs
 								};
-								callback();
+								setTimeout(function(){
+									callback();
+								}, 0);
 							})
 							.fail(function( ) {
 								mw.log("Error::Playback engine couldn't be found");
