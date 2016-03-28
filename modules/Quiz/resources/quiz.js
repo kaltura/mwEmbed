@@ -52,9 +52,9 @@
                     promise = _this.KIVQModule.setupQuiz();
                     promise.fail(function(data, msg) {
                         mw.log("Quiz: error loading quiz " + msg);
-                        embedPlayer.enablePlayControls();
                         embedPlayer.hideSpinner();
-                        embedPlayer.play();
+                        embedPlayer.enablePlayControls();
+                        _this.KIVQModule.unloadQuizPlugin(embedPlayer);
                     });
                     _this.KIVQScreenTemplate = new mw.KIVQScreenTemplate(embedPlayer);
 
