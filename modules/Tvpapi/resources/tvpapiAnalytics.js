@@ -141,7 +141,7 @@
 					this.doRequest(url, data).then(
 							function (data) {
 								_this.log('response for ' + service + ': ' + data);
-								if (data == '"Concurrent"') {
+								if (data == 'Concurrent') {
 									_this.concurrentFlag = true;
 									_this.getPlayer().triggerHelper('tvpapiShowConcurrent');
 								}
