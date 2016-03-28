@@ -35,8 +35,8 @@
             },
 
             setupQuiz:function(){
-                var _this = this;
-                var deferred = $.Deferred();
+                var _this = this,
+                deferred = $.Deferred();
                 _this.KIVQApi.getUserEntryIdAndQuizParams( function(data) {
                     if (!_this.checkApiResponse('User Entry err-->', data[0])) {
                         return false;
