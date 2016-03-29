@@ -551,7 +551,7 @@
 			var checkVideoStateDeferred = deferred || $.Deferred();
 
 			if (this.isSeekable){
-				checkVideoStateDeferred.resolve();
+				return checkVideoStateDeferred.resolve();
 			}
 
 			var _this = this;
