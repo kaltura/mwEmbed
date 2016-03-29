@@ -1158,6 +1158,7 @@
 			if (this.getPlayerElement()) {
 				if (this.getPlayerElement().getActiveTech() == "dashcs"){
 					this.mediaLoadedFlag = false;
+					this.isSeekable = false;
 				}
 				this.paused = true;
 				this.log('onended:' + this.playerElement.currentTime() + ' real dur:' + this.getDuration() + ' ended ' + this._propagateEvents);
