@@ -973,6 +973,9 @@
 			// Update if there's no duration or actual media duration is not the same as the metadata duration
 			this.updateVideoDuration();
 
+			//Update volume
+			this.setVolume(this.volume);
+
 			//Check and add manifest data
 			if (this.playerElement.getActiveTech() == "dashjs") {
 				this.addSubtitleTracks();
