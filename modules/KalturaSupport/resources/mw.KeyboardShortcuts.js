@@ -300,7 +300,7 @@
 			if( !this.canSeek || this.getPlayer().currentState === 'end') {
 				return false;
 			}
-			this.getPlayer().seek(this.getPlayer().getDuration()-0.1);
+			this.getPlayer().seek(this.getPlayer().getDuration()-1);
 		},
 		getOpenedMenu: function(){
 			var openedMenu = null;
