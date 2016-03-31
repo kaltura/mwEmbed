@@ -1188,6 +1188,7 @@
 			if (!_this._propagateEvents) {
 				return;
 			}
+			this.stopAfterSeek = true;
 			mw.log('EmbedPlayer::onClipDone: propagate:' + _this._propagateEvents + ' id:' +
 				this.id + ' doneCount:' + this.donePlayingCount + ' stop state:' + this.isStopped());
 
